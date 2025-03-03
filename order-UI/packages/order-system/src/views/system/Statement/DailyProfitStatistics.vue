@@ -1,6 +1,7 @@
 <script>
 import { parseTime } from '@/utils/ruoyi';
 import { getDailyProfitStatistics } from '@/api/system/statement';
+import { fix } from '@/api/tool/format';
 
 export default {
 	name: 'DailyProfitStatistics',
@@ -27,44 +28,86 @@ export default {
 				systemPayableFreightYear: 0,
 				systemInvoiceOutYear: 0,
 				systemInvoiceInYear: 0,
-				systemDailyExpenseYear: 0
+				systemDailyExpenseYear: 0,
+				systemRebateReceivableDay: 0,
+				systemRebateReceivableMonth: 0,
+				systemRebateReceivableYear: 0,
+				systemPriceReductionReceivableDay: 0,
+				systemPriceReductionReceivableMonth: 0,
+				systemPriceReductionReceivableYear: 0,
+				systemCustomerCommissionPayableDay: 0,
+				systemCustomerCommissionPayableMonth: 0,
+				systemCustomerCommissionPayableYear: 0,
+				systemTicketPointDiffDay: 0,
+				systemTicketPointDiffMonth: 0,
+				systemTicketPointDiffYear: 0,
+				systemRebateLastMonthSettlementDay: 0,
+				systemRebateLastMonthSettlementMonth: 0,
+				systemRebateLastMonthSettlementYear: 0
 			}
 		};
 	},
 	computed: {
+		// 当日订单系统利润
 		dailyProfit() {
+			// 计算当日的订单系统利润：收入减去成本、运费和费用
 			return (
-				this.dailyProfitStatistics.systemGlassRevenueDay -
-				this.dailyProfitStatistics.systemGlassCostDay -
-				this.dailyProfitStatistics.systemPayableFreightDay +
-				this.dailyProfitStatistics.systemInvoiceOutDay -
-				this.dailyProfitStatistics.systemInvoiceInDay -
-				this.dailyProfitStatistics.systemDailyExpenseDay
+				this.dailyProfitStatistics.systemGlassRevenueDay - // 玻璃收入
+				this.dailyProfitStatistics.systemGlassCostDay - // 玻璃成本
+				this.dailyProfitStatistics.systemPayableFreightDay + // 应付运费
+				this.dailyProfitStatistics.systemInvoiceOutDay - // 票点收入
+				this.dailyProfitStatistics.systemInvoiceInDay - // 票点成本
+				this.dailyProfitStatistics.systemDailyExpenseDay // 管理费用
 			);
 		},
+		// 本月订单系统利润
 		monthlyProfit() {
+			// 计算本月的订单系统利润：收入减去成本、运费和费用
 			return (
-				this.dailyProfitStatistics.systemGlassRevenueMonth -
-				this.dailyProfitStatistics.systemGlassCostMonth -
-				this.dailyProfitStatistics.systemPayableFreightMonth +
-				this.dailyProfitStatistics.systemInvoiceOutMonth -
-				this.dailyProfitStatistics.systemInvoiceInMonth -
-				this.dailyProfitStatistics.systemDailyExpenseMonth
+				this.dailyProfitStatistics.systemGlassRevenueMonth - // 玻璃收入
+				this.dailyProfitStatistics.systemGlassCostMonth - // 玻璃成本
+				this.dailyProfitStatistics.systemPayableFreightMonth + // 应付运费
+				this.dailyProfitStatistics.systemInvoiceOutMonth - // 票点收入
+				this.dailyProfitStatistics.systemInvoiceInMonth - // 票点成本
+				this.dailyProfitStatistics.systemDailyExpenseMonth // 管理费用
 			);
 		},
+		// 本年订单系统利润
 		yearlyProfit() {
-			// 年度利润计算
+			// 计算本年的订单系统利润：收入减去成本、运费和费用
 			return (
-				this.dailyProfitStatistics.systemGlassRevenueYear -
-				this.dailyProfitStatistics.systemGlassCostYear -
-				this.dailyProfitStatistics.systemPayableFreightYear +
-				this.dailyProfitStatistics.systemInvoiceOutYear -
-				this.dailyProfitStatistics.systemInvoiceInYear -
-				this.dailyProfitStatistics.systemDailyExpenseYear
+				this.dailyProfitStatistics.systemGlassRevenueYear - // 玻璃收入
+				this.dailyProfitStatistics.systemGlassCostYear - // 玻璃成本
+				this.dailyProfitStatistics.systemPayableFreightYear + // 应付运费
+				this.dailyProfitStatistics.systemInvoiceOutYear - // 票点收入
+				this.dailyProfitStatistics.systemInvoiceInYear - // 票点成本
+				this.dailyProfitStatistics.systemDailyExpenseYear // 管理费用
 			);
+		},
+		// 修正后的本月未入账金额结余
+		unaccountedAmount() {
+			// 计算本月未入账金额结余
+			return (
+				this.dailyProfitStatistics.systemRebateReceivableMonth +
+				this.dailyProfitStatistics.systemPriceReductionReceivableMonth -
+				this.dailyProfitStatistics.systemCustomerCommissionPayableMonth +
+				this.dailyProfitStatistics.systemTicketPointDiffMonth
+			);
+		},
+		// 修正后的本日应当利润
+		dailyExpectedProfit() {
+			// 计算本日应当利润
+			return this.monthlyProfit + this.unaccountedAmount - this.dailyProfitStatistics.systemInvoiceInMonth;
 		}
 	},
+
 	methods: {
+		calculateUnaccountedAmount(a, b, c, d) {
+			return fix(a + b - c + d);
+		},
+		calculateProfitToday(a, b, c) {
+			return fix(a + b - c);
+		},
 		getList() {
 			getDailyProfitStatistics(this.queryParams).then(res => {
 				if (!res.rows && !res.data) {
@@ -74,11 +117,9 @@ export default {
 				this.dailyProfitStatistics = res.rows || res.data;
 			});
 		},
-		// 处理查询
 		handleQuery() {
 			this.getList();
 		},
-		// 重置查询
 		resetQuery() {
 			this.queryParams.date = parseTime(new Date(), '{y}-{m}-{d}');
 			this.handleQuery();
@@ -112,7 +153,6 @@ export default {
 					<th>当日合计</th>
 					<th>本月累计</th>
 					<th>本年累计</th>
-					<!-- 新增年合计列 -->
 				</tr>
 			</thead>
 			<tbody>
@@ -123,106 +163,164 @@ export default {
 					<td>￥ {{ dailyProfitStatistics.systemGlassRevenueDay.toFixed(2) }}</td>
 					<td>￥ {{ dailyProfitStatistics.systemGlassRevenueMonth.toFixed(2) }}</td>
 					<td>￥ {{ dailyProfitStatistics.systemGlassRevenueYear.toFixed(2) }}</td>
-					<!-- 年度数据 -->
 				</tr>
 				<tr class="bg-yellow">
 					<td>减：订单系统玻璃成本</td>
 					<td>￥ {{ dailyProfitStatistics.systemGlassCostDay.toFixed(2) }}</td>
 					<td>￥ {{ dailyProfitStatistics.systemGlassCostMonth.toFixed(2) }}</td>
 					<td>￥ {{ dailyProfitStatistics.systemGlassCostYear.toFixed(2) }}</td>
-					<!-- 年度数据 -->
 				</tr>
 				<tr class="bg-yellow">
 					<td>减：订单系统应付运费</td>
 					<td>￥ {{ dailyProfitStatistics.systemPayableFreightDay.toFixed(2) }}</td>
 					<td>￥ {{ dailyProfitStatistics.systemPayableFreightMonth.toFixed(2) }}</td>
 					<td>￥ {{ dailyProfitStatistics.systemPayableFreightYear.toFixed(2) }}</td>
-					<!-- 年度数据 -->
 				</tr>
 				<tr class="bg-yellow">
 					<td>加：订单系统票点收入</td>
 					<td>￥ {{ dailyProfitStatistics.systemInvoiceOutDay.toFixed(2) }}</td>
 					<td>￥ {{ dailyProfitStatistics.systemInvoiceOutMonth.toFixed(2) }}</td>
 					<td>￥ {{ dailyProfitStatistics.systemInvoiceOutYear.toFixed(2) }}</td>
-					<!-- 年度数据 -->
 				</tr>
 				<tr class="bg-yellow">
 					<td>减：订单系统票点成本</td>
 					<td>￥ {{ dailyProfitStatistics.systemInvoiceInDay.toFixed(2) }}</td>
 					<td>￥ {{ dailyProfitStatistics.systemInvoiceInMonth.toFixed(2) }}</td>
 					<td>￥ {{ dailyProfitStatistics.systemInvoiceInYear.toFixed(2) }}</td>
-					<!-- 年度数据 -->
 				</tr>
 				<tr class="bg-yellow">
 					<td>减：订单系统管理费用</td>
 					<td>￥ {{ dailyProfitStatistics.systemDailyExpenseDay.toFixed(2) }}</td>
 					<td>￥ {{ dailyProfitStatistics.systemDailyExpenseMonth.toFixed(2) }}</td>
 					<td>￥ {{ dailyProfitStatistics.systemDailyExpenseYear.toFixed(2) }}</td>
-					<!-- 年度数据 -->
 				</tr>
 				<tr class="bg-yellow">
 					<td>订单系统利润</td>
 					<td>￥ {{ dailyProfit.toFixed(2) }}</td>
 					<td>￥ {{ monthlyProfit.toFixed(2) }}</td>
 					<td>￥ {{ yearlyProfit.toFixed(2) }}</td>
-					<!-- 年度利润 -->
 				</tr>
 
 				<!-- 未入账部分 -->
 				<tr class="bg-green">
 					<td rowspan="5">未入账部分（权责发生）</td>
 					<td>①当日应收计提厂家返利金额</td>
-					<td>￥ {{ dailyProfitStatistics.systemGlassCostDay.toFixed(2) }}</td>
-					<td>￥ {{ dailyProfitStatistics.systemGlassCostMonth.toFixed(2) }}</td>
-					<td>￥ {{ dailyProfitStatistics.systemGlassCostYear.toFixed(2) }}</td>
-					<!-- 年度数据 -->
+					<td>￥ {{ dailyProfitStatistics.systemRebateReceivableDay.toFixed(2) }}</td>
+					<td>￥ {{ dailyProfitStatistics.systemRebateReceivableMonth.toFixed(2) }}</td>
+					<td>￥ {{ dailyProfitStatistics.systemRebateReceivableYear.toFixed(2) }}</td>
 				</tr>
 				<tr class="bg-green">
 					<td>②当日应收计提厂家降价金额</td>
-					<td>￥ {{ dailyProfitStatistics.systemPayableFreightDay.toFixed(2) }}</td>
-					<td>￥ {{ dailyProfitStatistics.systemPayableFreightMonth.toFixed(2) }}</td>
-					<td>￥ {{ dailyProfitStatistics.systemPayableFreightYear.toFixed(2) }}</td>
-					<!-- 年度数据 -->
+					<td>￥ {{ dailyProfitStatistics.systemPriceReductionReceivableDay.toFixed(2) }}</td>
+					<td>￥ {{ dailyProfitStatistics.systemPriceReductionReceivableMonth.toFixed(2) }}</td>
+					<td>￥ {{ dailyProfitStatistics.systemPriceReductionReceivableYear.toFixed(2) }}</td>
 				</tr>
 				<tr class="bg-green">
 					<td>③当日应付客户佣金金额</td>
-					<td>￥ {{ dailyProfitStatistics.systemInvoiceOutDay.toFixed(2) }}</td>
-					<td>￥ {{ dailyProfitStatistics.systemInvoiceOutMonth.toFixed(2) }}</td>
-					<td>￥ {{ dailyProfitStatistics.systemInvoiceOutYear.toFixed(2) }}</td>
-					<!-- 年度数据 -->
+					<td>￥ {{ dailyProfitStatistics.systemCustomerCommissionPayableDay.toFixed(2) }}</td>
+					<td>￥ {{ dailyProfitStatistics.systemCustomerCommissionPayableMonth.toFixed(2) }}</td>
+					<td>￥ {{ dailyProfitStatistics.systemCustomerCommissionPayableYear.toFixed(2) }}</td>
 				</tr>
 				<tr class="bg-green">
 					<td>④当日票点差额(即厂家含税和客户含税差额，已折合票点）</td>
-					<td>￥ {{ dailyProfitStatistics.systemInvoiceInDay.toFixed(2) }}</td>
-					<td>￥ {{ dailyProfitStatistics.systemInvoiceInMonth.toFixed(2) }}</td>
-					<td>￥ {{ dailyProfitStatistics.systemInvoiceInYear.toFixed(2) }}</td>
-					<!-- 年度数据 -->
+					<td>￥ {{ dailyProfitStatistics.systemTicketPointDiffDay.toFixed(2) }}</td>
+					<td>￥ {{ dailyProfitStatistics.systemTicketPointDiffMonth.toFixed(2) }}</td>
+					<td>￥ {{ dailyProfitStatistics.systemTicketPointDiffYear.toFixed(2) }}</td>
 				</tr>
 				<tr class="bg-green">
 					<td>当月未入账金额结余=①+②-③+④</td>
-					<td>￥ {{ dailyProfitStatistics.systemDailyExpenseDay.toFixed(2) }}</td>
-					<td>￥ {{ dailyProfitStatistics.systemDailyExpenseMonth.toFixed(2) }}</td>
-					<td>￥ {{ dailyProfitStatistics.systemDailyExpenseYear.toFixed(2) }}</td>
-					<!-- 年度数据 -->
+					<td>
+						￥
+						{{
+							calculateUnaccountedAmount(
+								dailyProfitStatistics.systemRebateReceivableDay,
+								dailyProfitStatistics.systemPriceReductionReceivableDay,
+								dailyProfitStatistics.systemCustomerCommissionPayableDay,
+								dailyProfitStatistics.systemTicketPointDiffDay
+							)
+						}}
+					</td>
+					<td>
+						￥
+						{{
+							calculateUnaccountedAmount(
+								dailyProfitStatistics.systemRebateReceivableMonth,
+								dailyProfitStatistics.systemPriceReductionReceivableMonth,
+								dailyProfitStatistics.systemCustomerCommissionPayableMonth,
+								dailyProfitStatistics.systemTicketPointDiffMonth
+							)
+						}}
+					</td>
+					<td>
+						￥
+						{{
+							calculateUnaccountedAmount(
+								dailyProfitStatistics.systemRebateReceivableYear,
+								dailyProfitStatistics.systemPriceReductionReceivableYear,
+								dailyProfitStatistics.systemCustomerCommissionPayableYear,
+								dailyProfitStatistics.systemTicketPointDiffYear
+							)
+						}}
+					</td>
 				</tr>
 
 				<!-- 已入账部分 -->
 				<tr>
 					<td rowspan="1">已入账部分</td>
 					<td>减去上个月返利在本日入账的金额（订单系统上面供应商返利台账取数）</td>
-					<td>￥ {{ dailyProfitStatistics.systemInvoiceInDay.toFixed(2) }}</td>
-					<td>￥ {{ dailyProfitStatistics.systemInvoiceInMonth.toFixed(2) }}</td>
-					<td>￥ {{ dailyProfitStatistics.systemInvoiceInYear.toFixed(2) }}</td>
-					<!-- 年度数据 -->
+					<td>￥ {{ dailyProfitStatistics.systemRebateLastMonthSettlementDay }}</td>
+					<td>￥ {{ dailyProfitStatistics.systemRebateLastMonthSettlementMonth }}</td>
+					<td>￥ {{ dailyProfitStatistics.systemRebateLastMonthSettlementYear }}</td>
 				</tr>
 
 				<!-- 本日应当利润 -->
 				<tr class="bg-orign">
 					<td colspan="2">本日应当利润</td>
-					<td>￥ {{ dailyProfitStatistics.systemInvoiceInDay.toFixed(2) }}</td>
-					<td>￥ {{ dailyProfitStatistics.systemInvoiceInMonth.toFixed(2) }}</td>
-					<td>￥ {{ dailyProfitStatistics.systemInvoiceInYear.toFixed(2) }}</td>
-					<!-- 年度数据 -->
+					<td>
+						￥
+						{{
+							calculateProfitToday(
+								dailyProfit,
+								calculateUnaccountedAmount(
+									dailyProfitStatistics.systemRebateReceivableDay,
+									dailyProfitStatistics.systemPriceReductionReceivableDay,
+									dailyProfitStatistics.systemCustomerCommissionPayableDay,
+									dailyProfitStatistics.systemTicketPointDiffDay
+								),
+								dailyProfitStatistics.systemRebateLastMonthSettlementDay
+							)
+						}}
+					</td>
+					<td>
+						￥
+						{{
+							calculateProfitToday(
+								dailyProfit,
+								calculateUnaccountedAmount(
+									dailyProfitStatistics.systemRebateReceivableMonth,
+									dailyProfitStatistics.systemPriceReductionReceivableMonth,
+									dailyProfitStatistics.systemCustomerCommissionPayableMonth,
+									dailyProfitStatistics.systemTicketPointDiffMonth
+								),
+								dailyProfitStatistics.systemRebateLastMonthSettlementMonth
+							)
+						}}
+					</td>
+					<td>
+						￥
+						{{
+							calculateProfitToday(
+								dailyProfit,
+								calculateUnaccountedAmount(
+									dailyProfitStatistics.systemRebateReceivableYear,
+									dailyProfitStatistics.systemPriceReductionReceivableYear,
+									dailyProfitStatistics.systemCustomerCommissionPayableYear,
+									dailyProfitStatistics.systemTicketPointDiffYear
+								),
+								dailyProfitStatistics.systemRebateLastMonthSettlementYear
+							)
+						}}
+					</td>
 				</tr>
 			</tbody>
 		</table>
@@ -235,21 +333,21 @@ export default {
 	margin: 0 auto;
 	border-collapse: collapse;
 	text-align: center;
+}
 
-	th,
-	td {
-		padding: 12px;
-		border: 1px solid #ddd;
-	}
+th,
+td {
+	padding: 12px;
+	border: 1px solid #ddd;
+}
 
-	th {
-		background-color: #f5f5f5;
-		font-weight: bold;
-	}
+th {
+	background-color: #f5f5f5;
+	font-weight: bold;
+}
 
-	tr:hover {
-		background-color: #f9f9f9;
-	}
+tr:hover {
+	background-color: #f9f9f9;
 }
 
 .bg-yellow {
