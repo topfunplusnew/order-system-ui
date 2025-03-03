@@ -51,13 +51,17 @@ export var mixin_choose_order = {
 		handleCommitCompany(val) {
 			this.queryParamsSupplier.supplier = val.companyName;
 		},
-		// 确认选择供应商
-		handleCommitSupplier() {
+		// todo 不分页的获取返利列表
+		getDetailBySupperNoPage(query) {
 			// 点击选择供应商和时间段后 查询列表 然后弹出选择货物详情
-			noPageListRebate(addDateRange(this.queryParamsSupplier, this.queryParamsSupplier.dateRange)).then(res => {
+			noPageListRebate(query).then(res => {
 				this.needToSelectOrderDetailList = res.rows;
 				this.orderGoodsListVisible = true;
 			});
+		},
+		// 确认选择供应商
+		handleCommitSupplier() {
+			this.getDetailBySupperNoPage(this.queryParamsSupplier);
 		},
 		// 2. 直接选择订单
 		// 点击选择订单弹出的订单列表页选择某个订单 需要自动填充信息
@@ -88,16 +92,20 @@ export var mixin_choose_order = {
 				this.orderVisible = true;
 			});
 		},
+		// 这个多选框每次都会返回一个数组 表示当前已经选中的货物
 		// 订单多选
 		handleSelectionChangeOrders(selection) {
+			this.goods = [];
 			this.goods = selection;
 		},
 		// 多选某个货物
 		handleSelectionChangeOrderDetail(selection) {
+			this.goods = [];
 			this.goods = selection;
 		},
 		// 选择需要返利的订单进行返利
 		handleSelectOrderDetailChange(selection) {
+			this.goods = [];
 			this.goods = selection;
 			this.orderGoodsListVisible = false;
 			this.orderBySupplierVisible = false;
@@ -108,7 +116,13 @@ export var mixin_choose_order = {
 			this.orderGoodsVisible = true;
 		},
 		// 确认选择 货物的列表 点击后 会把goods数组中的id 放到form中
+		// 计算重箱和面积并且将选择的货物放入body
 		submitSelectOrderDetail() {
+			this.form.orderDetailIds = [];
+			if (!this.goods || this.goods.length < 0) {
+				this.$message.info('请选择货物');
+				return;
+			}
 			// 计算重箱和面积的和
 			const result = this.goods.reduce(
 				(prev, next) => {
@@ -120,19 +134,18 @@ export var mixin_choose_order = {
 				},
 				{ area: 0, weightBox: 0 } // 初始值
 			);
-
+			// 推入id数组
 			this.goods.forEach(item => {
 				this.form.orderDetailIds.push(item.id);
 			});
-
-			// 判断一下是重箱还是面积 选择进行复制
+			// 判断一下是重箱还是面积
 			if (this.form.rebateMethod === 1) {
 				this.form.weightBox = result.weightBox || 0;
 			} else {
 				this.form.area = result.area || 0;
 			}
+			// 修复精度
 			this.form.rebate = fix((this.form.area || this.form.weightBox) * this.form.unitPrice);
-
 			this.orderDialogVisible = false;
 		},
 		// 清空已选择的货物

@@ -118,7 +118,7 @@
 
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
-		<!-- 添加或修改返利回扣对话框 -->
+		<!-- todo 添加或修改返利回扣对话框 -->
 		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="800px" append-to-body>
 			<el-row>
 				<el-form ref="form" :model="form" :rules="rules" label-width="120px">
@@ -376,7 +376,7 @@
 		</InfoDialog>
 
 		<!--    根据供应商选择订单-->
-		<InfoDialog title="根据供应商选择订单" :visible.sync="orderBySupplierVisible" @update:visible="orderBySupplierVisible = false">
+		<InfoDialog title="根据供应商选择订单" :visible.sync="orderBySupplierVisible" @update:visible="orderBySupplierVisible = false" width="500px">
 			<template #info>
 				<div>
 					<el-row style="text-align: center">
@@ -392,6 +392,10 @@
 											:limit-info="{
 												companyType: '供应商'
 											}"
+											:query-name="queryCompany"
+											query-info="companyName"
+											query-label="供应商查找"
+											@update:queryName="value => (queryCompany = value)"
 											@commitBack="handleCommitCompany"
 										>
 											<template #table-columns>
@@ -405,16 +409,8 @@
 									</el-col>
 								</el-row>
 							</el-form-item>
-							<el-form-item label="时间段">
-								<el-date-picker
-									v-model="queryParamsSupplier.dateRange"
-									style="width: 240px"
-									value-format="yyyy-MM-dd HH:mm:ss"
-									type="daterange"
-									range-separator="-"
-									start-placeholder="开始日期"
-									end-placeholder="结束日期"
-								></el-date-picker>
+							<el-form-item label="时间">
+								<el-date-picker v-model="queryParamsSupplier.orderDate" type="date" placeholder="选择订单货物时间" value-format="yyyy-MM-dd"></el-date-picker>
 							</el-form-item>
 						</el-form>
 					</el-row>
@@ -428,7 +424,7 @@
 		<!--    订单货物列表-->
 		<InfoDialog title="根据供应商所选货物列表" :visible.sync="orderGoodsListVisible" @update:visible="orderGoodsListVisible = false">
 			<template #info>
-				<OrderDetailList :order-detail-list="needToSelectOrderDetailList" @handleSelect="handleSelectOrderDetailChange" />
+				<OrderDetailList :order-detail-list="needToSelectOrderDetailList" @handleSelect="handleSelectOrderDetailChange" @handleQuery="value => getDetailBySupperNoPage(value)" />
 			</template>
 		</InfoDialog>
 	</div>
@@ -636,6 +632,7 @@ export default {
 			// 搜索供应商
 			queryCompanyGive: '',
 			bankAcountSelf: '',
+			queryCompany: '',
 
 			// 订单选择的框
 			selectOrdersList: [],

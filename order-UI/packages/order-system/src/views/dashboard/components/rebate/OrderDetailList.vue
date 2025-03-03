@@ -12,16 +12,26 @@ export default {
 	data() {
 		return {
 			loading: false,
-			selectedList: []
+			selectedList: [],
+			queryParams: {}
 		};
 	},
-	computed: {},
+	computed: {
+		// 选择的货物列表
+		filterSelectedList() {
+			return this.orderDetailList;
+		}
+	},
 	methods: {
 		handleSelectionChange(selection) {
 			this.selectedList = selection;
 		},
 		submitSelectOrderDetail() {
 			this.$emit('handleSelect', this.selectedList);
+		},
+		// 对货物进行查询和筛选
+		handleQuery() {
+			this.$emit('handleQuery', this.queryParams);
 		}
 	}
 };
@@ -29,13 +39,33 @@ export default {
 
 <template>
 	<div>
-		<el-button :disabled="selectedList.length === 0" type="success" size="mini" @click="submitSelectOrderDetail">选择所选货物</el-button>
+		<!--		需要对货物进行查询和筛选-->
+		<el-form :model="queryParams" size="mini" :inline="true" label-width="100px">
+			<el-row>
+				<el-form-item label="日期" prop="orderDate">
+					<el-date-picker v-model="queryParams.orderDate" type="date" placeholder="选择订单货物时间" value-format="yyyy-MM-dd"></el-date-picker>
+				</el-form-item>
+				<el-form-item label="供应商名称" prop="supplier">
+					<!--          换成输入框-->
+					<el-input v-model="queryParams.supplier" placeholder="请输入供应商名称"></el-input>
+				</el-form-item>
+				<el-form-item label="级别名称" prop="levelName">
+					<el-input v-model="queryParams.levelName" placeholder="请输入供应商名称"></el-input>
+				</el-form-item>
+			</el-row>
+			<el-form-item>
+				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+			</el-form-item>
+			<el-form-item>
+				<el-button :disabled="selectedList.length === 0" type="success" size="mini" @click="submitSelectOrderDetail">选择所选货物</el-button>
+			</el-form-item>
+		</el-form>
 		<el-table
 			id="printBox"
 			v-horizontal-scroll="'always'"
 			v-loading="loading"
 			border
-			:data="orderDetailList"
+			:data="filterSelectedList"
 			:cell-style="
 				() => {
 					return { padding: '.5px' };
@@ -62,7 +92,9 @@ export default {
 			<el-table-column label="出厂单价" align="center" prop="price" min-width="90" />
 			<el-table-column label="出厂是否含税" align="center" prop="isIncludeTaxFactory">
 				<template slot-scope="scope">
-					<el-tag :type="scope.row.isIncludeTaxFactory === '否' ? 'danger' : 'success'" disable-transitions>{{ scope.row.isIncludeTaxFactory }}</el-tag>
+					<el-tag :type="scope.row.isIncludeTaxFactory === '否' ? 'danger' : 'success'" disable-transitions>
+						{{ scope.row.isIncludeTaxFactory }}
+					</el-tag>
 				</template>
 			</el-table-column>
 			<!-- 其他列保持类似 -->
