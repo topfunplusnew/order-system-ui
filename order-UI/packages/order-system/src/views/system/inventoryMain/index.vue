@@ -1128,6 +1128,10 @@ export default {
 		submitForm() {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
+					if (this.inventoryDetailList.length === 0) {
+						this.$message.error('请添加库存明细');
+						return;
+					}
 					this.form.inventoryDetailList = this.inventoryDetailList;
 					// 计算陆运费
 					this.form.allLandFreight = this.isLand ? this.inventoryDetailList.reduce((prev, curr) => Number(prev) + Number(curr.landFreight), 0) : 0;
