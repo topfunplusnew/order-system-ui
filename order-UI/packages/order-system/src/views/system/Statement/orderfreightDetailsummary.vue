@@ -64,7 +64,8 @@
 		>
 			<!-- 序号 -->
 			<el-table-column v-if="columns[0].visible" label="序号" align="center" type="index" width="160" />
-
+			<!-- 车牌号 -->
+			<el-table-column v-if="columns[6].visible" label="车牌号" align="center" prop="carNo" width="110" />
 			<!-- 司机姓名 -->
 			<el-table-column v-if="columns[1].visible" label="司机姓名" align="center" prop="companyName" width="110" />
 
@@ -91,18 +92,6 @@
 					{{ Math.abs(scope.row.negativeSum) }}
 				</template>
 			</el-table-column>
-
-			<!-- 平账金额 -->
-			<!--			<el-table-column-->
-			<!--				v-if="columns[6].visible"-->
-			<!--				label="平账金额"-->
-			<!--				align="center"-->
-			<!--				prop="balanceaccountsAmount"-->
-			<!--				width="160"-->
-			<!--			/>-->
-
-			<!-- 车牌号 -->
-			<el-table-column v-if="columns[6].visible" label="车牌号" align="center" prop="carNo" width="110" />
 
 			<!-- 期末方向 -->
 			<el-table-column v-if="columns[7].visible" label="期末方向" align="center" prop="initialBalanceDirection" width="160">
