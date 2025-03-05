@@ -72,7 +72,6 @@
 			</right-toolbar>
 		</el-row>
 
-		<!-- todo -->
 		<el-table
 			id="printBox"
 			v-loading="loading"
@@ -951,6 +950,7 @@ export default {
 		// 取消按钮
 		cancel() {
 			this.open = false;
+			this.$refs.fileUploader.clearFileList();
 			this.reset();
 		},
 		// 表单重置
@@ -1089,6 +1089,7 @@ export default {
 							this.$modal.msgSuccess('支付成功~');
 							this.open = false;
 							this.getList();
+							this.$refs.fileUploader.clearFileList();
 						});
 
 						// 新增操作
@@ -1112,6 +1113,7 @@ export default {
 							this.$modal.msgSuccess('新增成功');
 							this.open = false;
 							this.getList();
+							this.$refs.fileUploader.clearFileList();
 						});
 					}
 				}
