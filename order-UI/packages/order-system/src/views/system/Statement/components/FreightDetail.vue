@@ -54,6 +54,7 @@ export default {
 	},
 
 	methods: {
+		fix,
 		// 查看明细 点击的时候 先让用户输入时间 然后拿该行数据的companyId查询该司机的明细账
 		handleCheck() {
 			// 打开时间选择框
@@ -250,19 +251,19 @@ export default {
 					<!--        这两列应该是根据moneyAmount字段的正负进行判断-->
 					<el-table-column show-overflow-tooltip label="借方发生额" align="center" width="140">
 						<template slot-scope="scope">
-							{{ scope.row.moneyAmount > 0 ? '-' : Math.abs(scope.row.moneyAmount) }}
+							{{ scope.row.moneyAmount > 0 ? fix(Math.abs(scope.row.moneyAmount)) : '-' }}
 						</template>
 					</el-table-column>
 					<el-table-column show-overflow-tooltip label="贷方发生额" align="center" width="140">
 						<template slot-scope="scope">
-							{{ scope.row.moneyAmount > 0 ? scope.row.moneyAmount : '-' }}
+							{{ scope.row.moneyAmount > 0 ? '-' : fix(scope.row.moneyAmount) }}
 						</template>
 					</el-table-column>
 
 					<!--        方向根据余额本币的正负进行判断 这个要先查询上年结转的余额本币 进行填充-->
 					<el-table-column show-overflow-tooltip label="方向" align="center" width="140">
 						<template slot-scope="scope">
-							{{ scope.row.moneyAmountLocal > 0 ? '贷方' : '借方' }}
+							{{ scope.row.moneyAmountLocal > 0 ? '借方' : '贷方' }}
 						</template>
 					</el-table-column>
 

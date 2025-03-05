@@ -89,7 +89,7 @@
 			<!-- 贷方 -->
 			<el-table-column v-if="columns[5].visible" label="贷方" align="center" prop="negativeSum" width="160">
 				<template slot-scope="scope">
-					{{ Math.abs(scope.row.negativeSum) }}
+					{{ fix(Math.abs(scope.row.negativeSum)) }}
 				</template>
 			</el-table-column>
 
@@ -150,6 +150,7 @@ import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import { getFreightSubjectDetailSummary, getFreightSubjectDetailSummarySomeDay, getOrderFreightDetailSummary } from '../../../api/system/statement';
 import { parseTime } from '../../../utils/ruoyi';
 import FreightDetail from './components/FreightDetail.vue';
+import {fix} from "order-system/src/api/tool/format";
 
 export default {
 	name: 'LendMoney',
@@ -216,6 +217,7 @@ export default {
 		this.getList();
 	},
 	methods: {
+    fix,
 		/** 查询向外部借出款信息列表 */
 		getList() {
 			this.loading = true;
