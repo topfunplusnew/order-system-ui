@@ -107,7 +107,7 @@ export const ReportType = Object.freeze({
 		// 第三方开票 客户为发票卖出
 		invoiceother: '发票售出',
 		offsetting: '冲抵货款',
-		inventory: '商品入库',
+		inventory_detail: '商品入库',
 		rebate: '供应商返利',
 		balanceaccounts: '平账'
 	},
