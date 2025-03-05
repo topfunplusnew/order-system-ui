@@ -49,9 +49,6 @@
 		<el-table id="educe-table" :data="tableData" border style="width: 100%" v-loading="loading" size="small">
 			<el-table-column prop="operateDate" label="日期"></el-table-column>
 			<el-table-column prop="payNo" label="欠款明细">
-				<!--				<template slot-scope="scope">-->
-				<!--					<el-button v-if="scope.row.payNo" type="text" size="mini" @click="handleSearch(scope.row)">点击查询对应信息</el-button>-->
-				<!--				</template>-->
 				<template slot-scope="scope">
 					<div v-for="(item, index) in scope.row.lenderList" :key="index">
 						<span style="color: red; margin-right: 6px">[{{ moduleNames[item.tableName] }}]</span>

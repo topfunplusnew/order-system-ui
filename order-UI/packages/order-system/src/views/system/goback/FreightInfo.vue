@@ -46,12 +46,31 @@
 		<el-table id="educe-table" :data="tableData" border style="width: 100%" v-loading="loading" size="small">
 			<el-table-column prop="operateDate" label="日期"></el-table-column>
 			<el-table-column prop="payNo" label="欠款明细">
+				<!--				<template slot-scope="scope">-->
+				<!--					<el-button v-if="scope.row.payNo" type="text" size="mini" @click="handleSearch(scope.row)">点击查询对应信息</el-button>-->
+				<!--				</template>-->
+
 				<template slot-scope="scope">
-					<el-button v-if="scope.row.payNo" type="text" size="mini" @click="handleSearch(scope.row)">点击查询对应信息</el-button>
+					<div v-for="(item, index) in scope.row.lenderList" :key="index">
+						<span style="color: red; margin-right: 6px">[{{ moduleNames[item.tableName] }}]</span>
+						<span style="margin-right: 7px">{{ item.lender }}</span>
+						<i class="el-icon-s-order" style="cursor: pointer" @click="handleCheckDetail(item)"></i>
+					</div>
 				</template>
 			</el-table-column>
-			<el-table-column prop="lender" label="借方发生额"></el-table-column>
-			<el-table-column prop="borrower" label="贷方发生额"></el-table-column>
+			<el-table-column prop="lender" label="借方发生额">
+				<template slot-scope="scope">
+					<span>
+						{{ scope.row.lender }}
+					</span>
+				</template>
+			</el-table-column>
+			<el-table-column prop="borrower" label="贷方发生额">
+				<template slot-scope="scope">
+					<span style="margin-right: 10px">{{ scope.row.borrower }}</span>
+					<i class="el-icon-s-order" style="cursor: pointer" @click="handleCheckBorrowerDetailList(scope.row)"></i>
+				</template>
+			</el-table-column>
 			<el-table-column prop="moneyAmountLocal" label="余额本币">
 				<template slot-scope="scope">
 					<span :class="{ negative: scope.row.moneyAmountLocal < 0 }">{{ scope.row.moneyAmountLocal }}</span>
@@ -66,14 +85,30 @@
 		<el-dialog title="信息" :visible.sync="infoVisible" width="900px" append-to-body>
 			<component :is="Components" :need-to-show-info="needToShowInfo" />
 		</el-dialog>
+
+		<el-dialog title="明细信息" :visible.sync="detailVisible" width="900px" append-to-body>
+			<el-table :data="detailList" border style="width: 100%" v-loading="detailLoading" size="mini" :summary-method="getSummaries" show-summary>
+				<el-table-column prop="operateDate" label="日期"></el-table-column>
+				<el-table-column prop="payNo" label="凭证号"></el-table-column>
+				<el-table-column prop="lender" label="借方(客户提货+买票点)"></el-table-column>
+				<el-table-column prop="borrower" label="贷方(收客户款)"></el-table-column>
+				<el-table-column prop="moneyAmountLocal" label="余额本币"></el-table-column>
+				<!--        添加查看列-->
+				<el-table-column label="查看明细">
+					<template slot-scope="scope">
+						<i class="el-icon-s-order" style="cursor: pointer" @click="handleCheckDetail(scope.row)"></i>
+					</template>
+				</el-table-column>
+			</el-table>
+		</el-dialog>
 	</div>
 </template>
 
 <script>
 import { getCustomerSubjectDetailSomeDay, getCustomerSubjectDetailSummary, getFreightSubjectDetailSummary, getFreightSubjectDetailSummarySomeDay } from '@/api/system/statement';
-import { fix } from '@/api/tool/format';
+import { aggregateByDay, fix } from '@/api/tool/format';
 import { getFunction } from '@/utils/order/mapper';
-import { TableName } from '@/api/tool/enums';
+import { moduleNames, TableName } from '@/api/tool/enums';
 import GOODS_ORDER from '@/components/NeedToShow/GOODS_ORDER.vue';
 import PAYMENT from '@/components/NeedToShow/PAYMENT.vue';
 import INVOICE_IN from '@/components/NeedToShow/INVOICE_IN.vue';
@@ -91,6 +126,11 @@ import { listCars } from '@/api/system/cars';
 
 export default {
 	name: 'FreightInfo',
+	computed: {
+		moduleNames() {
+			return moduleNames;
+		}
+	},
 	components: { SearchOption },
 	mixins: [common_excel],
 	data() {
@@ -114,7 +154,10 @@ export default {
 				startTime: [{ required: true, message: '请选择开始时间', trigger: 'blur' }],
 				endTime: [{ required: true, message: '请选择结束时间', trigger: 'blur' }],
 				vehicle: [{ required: true, message: '请选择车辆', trigger: 'blur' }]
-			}
+			},
+			detailLoading: false,
+			detailList: [],
+			detailVisible: false
 		};
 	},
 	methods: {
@@ -158,6 +201,45 @@ export default {
 			});
 			this.tableData = [];
 		},
+		getSummaries(param) {
+			const { columns, data } = param;
+			const sums = [];
+			columns.forEach((column, index) => {
+				if (index === 0) {
+					sums[index] = '总价';
+					return;
+				}
+				const values = data.map(item => Number(item[column.property]));
+				const exclude = ['operateDate', 'payNo', 'lender', 'borrower'];
+				if (exclude.includes(column.property)) {
+					sums[index] = '';
+					return;
+				}
+				if (!values.every(value => isNaN(value))) {
+					sums[index] = values.reduce((prev, curr) => {
+						const value = Number(curr);
+						if (!isNaN(value)) {
+							return prev + curr;
+						} else {
+							return prev;
+						}
+					}, 0);
+					sums[index] += ' 元';
+				} else {
+					sums[index] = 'N/A';
+				}
+			});
+
+			return sums;
+		},
+		// 点击小记事本查看详情
+		handleCheckDetail(row) {
+			this.handleSearch(row);
+		},
+		handleCheckBorrowerDetailList(row) {
+			this.detailList = row.borrowerList;
+			this.detailVisible = true;
+		},
 		checkFreightDetail(query, lastYearDetail) {
 			// 查询客户明细账
 			getFreightSubjectDetailSummary(query).then(res => {
@@ -176,24 +258,59 @@ export default {
 					let lastMoney = Number(lastYearDetail.moneyAmount);
 					// 累计金额
 					let nowMoney = Number(0);
+					// 累计借方和贷方
+					let totalLender = 0,
+						totalBorrower = 0,
+						lenderDetailList = [],
+						borrowerDetailList = [];
+					// 先处理借贷方的合并和收集
+					res.rows.forEach(item => {
+						const amount = Number(item.moneyAmount);
+						if (amount > 0) {
+							// 如果 moneyAmount 大于 0，累加到 totalLender
+							totalLender += amount;
+						} else if (amount < 0) {
+							// 如果 moneyAmount 小于 0，累加到 totalBorrower
+							totalBorrower += amount;
+						}
+					});
 					// 拿到汇总账
 					const append = res.rows.map(item => {
 						// 金额累计计算
-						nowMoney = lastMoney + Number(item.moneyAmount);
+						nowMoney = Number(lastMoney) + Number(item.moneyAmount);
 						// 更新
 						lastMoney = nowMoney;
-						return {
+
+						const mapped = {
 							operateDate: item.operateDate,
 							payNo: item.payNo,
-							lender: fix(item.moneyAmount) > 0 ? fix(item.moneyAmount) : 0,
-							borrower: fix(item.moneyAmount) < 0 ? fix(item.moneyAmount) : 0,
+							// 借贷钱数总和
+							lender: totalLender,
+							borrower: totalBorrower,
+							// 余额本币
 							moneyAmountLocal: fix(nowMoney),
 							// 模块名
 							tableName: item.tableName
 						};
+
+						lenderDetailList.push({
+							...mapped,
+							lender: fix(item.moneyAmount) > 0 ? fix(item.moneyAmount) : 0
+						});
+						borrowerDetailList.push({
+							...mapped,
+							borrower: fix(item.moneyAmount) < 0 ? fix(item.moneyAmount) : 0
+						});
+
+						return {
+							...mapped,
+							// 借贷明细列表
+							lenderList: lenderDetailList,
+							borrowerList: borrowerDetailList
+						};
 					});
 					// 添加到上年结转数据的后面
-					this.tableData = this.tableData.concat(append);
+					this.tableData = aggregateByDay(append, `moneyAmountLocal`, `operateDate`);
 				} catch (err) {
 					this.$message.error('计算错误:', err);
 				}
