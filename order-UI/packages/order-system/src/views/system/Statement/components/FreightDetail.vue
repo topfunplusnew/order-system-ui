@@ -18,19 +18,21 @@ import { ReportType } from '../../../../api/tool/enums';
 import { fix } from '../../../../api/tool/format';
 import { getConfigValue } from '../data/config_get';
 import ORDER_FREIGHTVue from '../../../../components/NeedToShow/ORDER_FREIGHT.vue';
+import SearchOption from '@/components/SearchOption.vue';
+import { parseTime } from '@/utils/ruoyi';
+import { PUBLIC_DICT_TYPE } from '@/utils/order';
+import { listCars } from '@/api/system/cars';
 
 export default {
 	name: 'FreightDetail',
-	components: { TotalTag },
-	props: {
-		// 需要查看的那一行司机的信息
-		detail: {
-			type: Object,
-			default: () => {}
-		}
-	},
+	components: { SearchOption, TotalTag },
 	data() {
 		return {
+			searchForm: {
+				carNo: null,
+				driverId: ''
+			},
+			carNo: null,
 			loading: false,
 			// 弹窗
 			dialogVisible: false,
@@ -48,12 +50,16 @@ export default {
 		};
 	},
 	computed: {
+		PUBLIC_DICT_TYPE() {
+			return PUBLIC_DICT_TYPE;
+		},
 		driverId() {
 			return this.detail.companyId;
 		}
 	},
 
 	methods: {
+		listCars,
 		fix,
 		// 查看明细 点击的时候 先让用户输入时间 然后拿该行数据的companyId查询该司机的明细账
 		handleCheck() {
@@ -63,7 +69,7 @@ export default {
 				this.tableData = [];
 				// 组装查询条件 分别为开始时间 结束时间 司机id
 				const query = {
-					companyId: this.driverId,
+					companyId: this.searchForm.driverId,
 					beginTime: res.beginTime,
 					endTime: res.endTime
 				};
@@ -209,13 +215,44 @@ export default {
 
 <template>
 	<div>
-		<!--    司机明细表的按钮-->
-		<el-button type="primary" size="mini" @click="handleCheck">查看明细</el-button>
-
-		<!--    司机明细表的弹窗-->
-		<el-dialog title="提示" :visible.sync="dialogVisible" width="900px" fullscreen append-to-body>
-			<br />
-			<br />
+		<div class="app-container">
+			<el-form :inline="true" :model="searchForm" class="demo-form-inline" size="small">
+				<el-form-item label="车牌" prop="carNo">
+					<el-row>
+						<el-col :span="4">
+							<SearchOption
+								:limit-info="{}"
+								:get-data="listCars"
+								query-info="carNo"
+								query-label="车牌号"
+								:query-name="carNo"
+								@update:queryName="value => (carNo = value)"
+								@commitBack="
+									value => {
+										searchForm.driverId = value.id;
+										searchForm.carNo = value.carNo;
+									}
+								"
+							>
+								<template #table-columns>
+									<el-table-column label="车牌/柜号" align="center" prop="carNo" />
+									<el-table-column label="司机姓名/海运公司" align="center" prop="driver" />
+									<el-table-column label="司机电话" align="center" prop="tel" />
+									<el-table-column label="运输类型" align="center" prop="carType" />
+								</template>
+							</SearchOption>
+						</el-col>
+						<el-col :span="20">
+							<el-input disabled clearable v-model="searchForm.carNo" placeholder="请选择车牌" size="small">
+								<i slot="prefix" class="el-input__icon el-icon-search"></i>
+							</el-input>
+						</el-col>
+					</el-row>
+				</el-form-item>
+				<el-form-item>
+					<el-button type="primary" icon="el-icon-search" size="mini" @click="handleCheck">搜索</el-button>
+				</el-form-item>
+			</el-form>
 			<!--      司机的结转数据-->
 			<el-card class="box-card">
 				<el-table
@@ -273,16 +310,12 @@ export default {
 					<el-table-column show-overflow-tooltip label="我方开户行地址" align="center" prop="selfBankName" width="140" />
 				</el-table>
 			</el-card>
-			<span slot="footer" class="dialog-footer">
-				<el-button @click="dialogVisible = false">取 消</el-button>
-				<el-button type="primary" @click="dialogVisible = false">确 定</el-button>
-			</span>
-		</el-dialog>
 
-		<!--    对应信息的弹窗-->
-		<el-dialog title="信息" :visible.sync="infoVisible" width="900px" append-to-body>
-			<component :is="Components" :need-to-show-info="needToShowInfo" />
-		</el-dialog>
+			<!--    对应信息的弹窗-->
+			<el-dialog title="信息" :visible.sync="infoVisible" width="900px" append-to-body>
+				<component :is="Components" :need-to-show-info="needToShowInfo" />
+			</el-dialog>
+		</div>
 	</div>
 </template>
 

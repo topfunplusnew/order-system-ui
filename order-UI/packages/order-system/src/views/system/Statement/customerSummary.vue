@@ -84,11 +84,11 @@
 			<el-table-column v-if="columns[10].visible" show-overflow-tooltip label="期末余额" align="center" prop="endingBalance" width="140" />
 			<el-table-column v-if="columns[11].visible" show-overflow-tooltip label="业务经理" align="center" prop="dailyReceiveMoney" width="140" />
 			<!-- 操作列 -->
-			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
-				<template slot-scope="scope">
-					<CustomerDetail :detail="scope.row" />
-				</template>
-			</el-table-column>
+			<!--			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">-->
+			<!--				<template slot-scope="scope">-->
+			<!--					<CustomerDetail :detail="scope.row" />-->
+			<!--				</template>-->
+			<!--			</el-table-column>-->
 		</el-table>
 
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />

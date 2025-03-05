@@ -20,19 +20,21 @@ import BANK_ACCEPTANCE from '@/components/NeedToShow/BANK_ACCEPTANCE.vue';
 import ORDER_FREIGHTVue from '../../../../components/NeedToShow/ORDER_FREIGHT.vue';
 import RECEIVE_MONEY from '@/components/NeedToShow/RECEIVE_MONEY.vue';
 import BALANCEACCOUNT from '@/components/NeedToShow/BALANCEACCOUNT.vue';
+import SearchOption from '@/components/SearchOption.vue';
+import { parseTime } from '@/utils/ruoyi';
+import { listCompany } from '@/api/system/company';
+import { PUBLIC_DICT_TYPE } from '@/utils/order';
 
 export default {
 	name: 'CustomerDetail',
-	components: { TotalTag },
-	props: {
-		// 需要查看的那一行客户的信息
-		detail: {
-			type: Object,
-			default: () => {}
-		}
-	},
+	components: { SearchOption, TotalTag },
 	data() {
 		return {
+			searchForm: {
+				customer: null,
+				companyId: ''
+			},
+			companyName: null,
 			loading: false,
 			// 弹窗
 			dialogVisible: false,
@@ -49,13 +51,13 @@ export default {
 		};
 	},
 	computed: {
-		// 客户的id
-		customerId() {
-			return this.detail.companyId;
+		PUBLIC_DICT_TYPE() {
+			return PUBLIC_DICT_TYPE;
 		}
 	},
 
 	methods: {
+		listCompany,
 		// 查看明细 点击的时候 先让用户输入时间 然后拿该行数据的companyId查询该客户的明细账
 		handleCheck() {
 			// 清除一下状态
@@ -64,7 +66,7 @@ export default {
 			this.$datePicker().then(res => {
 				// 组装查询条件 分别为开始时间 结束时间 客户id
 				const query = {
-					companyId: this.customerId,
+					companyId: this.searchForm.companyId,
 					beginTime: res.beginTime,
 					endTime: res.endTime
 				};
@@ -227,83 +229,107 @@ export default {
 </script>
 
 <template>
-	<div>
-		<!--    客户明细表的按钮-->
-		<el-button type="primary" size="mini" @click="handleCheck">查看明细</el-button>
+	<div class="app-container">
+		<el-form :inline="true" :model="searchForm" class="demo-form-inline" size="small">
+			<el-form-item label="客户" prop="customer">
+				<el-row>
+					<el-col :span="4">
+						<SearchOption
+							:limit-info="{ companyType: PUBLIC_DICT_TYPE.CUSTOMER }"
+							:get-data="listCompany"
+							query-info="companyName"
+							query-label="公司名称"
+							:query-name="companyName"
+							@update:queryName="value => (companyName = value)"
+							@commitBack="
+								value => {
+									searchForm.companyId = value.id;
+									searchForm.customer = value.companyName;
+								}
+							"
+						>
+							<template #table-columns>
+								<el-table-column :label="PUBLIC_DICT_TYPE.CUSTOMER" align="center" prop="companyName" />
+								<el-table-column label="老板姓名" align="center" prop="leader" />
+								<el-table-column label="老板电话" align="center" prop="leaderTel" />
+								<el-table-column label="区域" align="center" prop="region" />
+								<el-table-column label="销售经理" align="center" prop="salesManager" />
+							</template>
+						</SearchOption>
+					</el-col>
+					<el-col :span="20">
+						<el-input disabled clearable v-model="searchForm.customer" placeholder="请选择客户" size="small">
+							<i slot="prefix" class="el-input__icon el-icon-search"></i>
+						</el-input>
+					</el-col>
+				</el-row>
+			</el-form-item>
+			<el-form-item>
+				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleCheck">搜索</el-button>
+			</el-form-item>
+		</el-form>
+		<TotalTag :tags="tags" />
+		<br />
+		<br />
+		<!--      客户的结转数据-->
+		<el-card class="box-card">
+			<el-table
+				id="printBox"
+				v-loading="loading"
+				v-horizontal-scroll="'always'"
+				border
+				:data="tableData"
+				max-height="600px"
+				size="mini"
+				:cell-style="
+					() => {
+						return { padding: '2px' };
+					}
+				"
+			>
+				<el-table-column show-overflow-tooltip label="时间" align="center" prop="operateDate" width="140" />
+				<!--      操作列-->
+				<el-table-column label="凭证号" align="center" class-name="small-padding fixed-width" width="140" prop="payNo">
+					<template slot-scope="scope">
+						<el-button v-if="scope.row.payNo" type="text" size="mini" @click="handleSearch(scope.row)">点击查询对应信息</el-button>
+					</template>
+				</el-table-column>
+				<el-table-column show-overflow-tooltip label="科目编码" align="center" prop="subjectNo" width="140" />
+				<el-table-column show-overflow-tooltip label="科目名称" align="center" prop="subjectName" width="140" />
+				<el-table-column show-overflow-tooltip label="客户编号" align="center" prop="companyId" width="140" />
+				<el-table-column show-overflow-tooltip label="客户名称" align="center" prop="companyName" width="140" />
+				<el-table-column show-overflow-tooltip label="客户银行户名（对方真实收付款名称）" align="center" prop="otherAccountsName" width="140" />
+				<el-table-column show-overflow-tooltip label="客户银行卡号" align="center" prop="otherBankNo" width="140" />
 
-		<!--    客户明细表的弹窗-->
-		<el-dialog title="提示" :visible.sync="dialogVisible" width="900px" fullscreen append-to-body>
-			<!--      客户明细表五个字段的显示组件 跟现在的客户明细表在一个查询框下
-                含税货款、不含税货款、公户收款、私户收款、票点收入
-                这五个数据-->
-			<TotalTag :tags="tags" />
-			<br />
-			<br />
-			<!--      客户的结转数据-->
-			<el-card class="box-card">
-				<el-table
-					id="printBox"
-					v-loading="loading"
-					v-horizontal-scroll="'always'"
-					border
-					:data="tableData"
-					max-height="600px"
-					size="mini"
-					:cell-style="
-						() => {
-							return { padding: '2px' };
-						}
-					"
-				>
-					<el-table-column show-overflow-tooltip label="时间" align="center" prop="operateDate" width="140" />
-					<!--      操作列-->
-					<el-table-column label="凭证号" align="center" class-name="small-padding fixed-width" width="140" prop="payNo">
-						<template slot-scope="scope">
-							<el-button v-if="scope.row.payNo" type="text" size="mini" @click="handleSearch(scope.row)">点击查询对应信息</el-button>
-						</template>
-					</el-table-column>
-					<el-table-column show-overflow-tooltip label="科目编码" align="center" prop="subjectNo" width="140" />
-					<el-table-column show-overflow-tooltip label="科目名称" align="center" prop="subjectName" width="140" />
-					<el-table-column show-overflow-tooltip label="客户编号" align="center" prop="companyId" width="140" />
-					<el-table-column show-overflow-tooltip label="客户名称" align="center" prop="companyName" width="140" />
-					<el-table-column show-overflow-tooltip label="客户银行户名（对方真实收付款名称）" align="center" prop="otherAccountsName" width="140" />
-					<el-table-column show-overflow-tooltip label="客户银行卡号" align="center" prop="otherBankNo" width="140" />
+				<!-- TODO 摘要根据表名来确定类型 例如 payment对应付款 receive对应收款(应收付款)  md文档中有详细-->
+				<el-table-column show-overflow-tooltip label="摘要" align="center" prop="summary" width="140" />
 
-					<!-- TODO 摘要根据表名来确定类型 例如 payment对应付款 receive对应收款(应收付款)  md文档中有详细-->
-					<el-table-column show-overflow-tooltip label="摘要" align="center" prop="summary" width="140" />
+				<!--        这两列应该是根据moneyAmount字段的正负进行判断-->
+				<el-table-column show-overflow-tooltip label="借方(客户提货+买票点)" align="center" prop="positiveSum" width="140">
+					<template slot-scope="scope">
+						{{ scope.row.moneyAmount > 0 ? scope.row.moneyAmount : '-' }}
+					</template>
+				</el-table-column>
+				<el-table-column show-overflow-tooltip label="贷方(收客户款)" align="center" prop="negativeSum" width="140">
+					<template slot-scope="scope">
+						{{ scope.row.moneyAmount > 0 ? '-' : Math.abs(scope.row.moneyAmount) }}
+					</template>
+				</el-table-column>
 
-					<!--        这两列应该是根据moneyAmount字段的正负进行判断-->
-					<el-table-column show-overflow-tooltip label="借方(客户提货+买票点)" align="center" prop="positiveSum" width="140">
-						<template slot-scope="scope">
-							{{ scope.row.moneyAmount > 0 ? scope.row.moneyAmount : '-' }}
-						</template>
-					</el-table-column>
-					<el-table-column show-overflow-tooltip label="贷方(收客户款)" align="center" prop="negativeSum" width="140">
-						<template slot-scope="scope">
-							{{ scope.row.moneyAmount > 0 ? '-' : Math.abs(scope.row.moneyAmount) }}
-						</template>
-					</el-table-column>
+				<!--        方向根据余额本币的正负进行判断 这个要先查询上年结转的余额本币 进行填充-->
+				<el-table-column show-overflow-tooltip label="方向" align="center" width="140">
+					<template slot-scope="scope">
+						{{ scope.row.moneyAmountLocal > 0 ? '借方' : '贷方' }}
+					</template>
+				</el-table-column>
 
-					<!--        方向根据余额本币的正负进行判断 这个要先查询上年结转的余额本币 进行填充-->
-					<el-table-column show-overflow-tooltip label="方向" align="center" width="140">
-						<template slot-scope="scope">
-							{{ scope.row.moneyAmountLocal > 0 ? '借方' : '贷方' }}
-						</template>
-					</el-table-column>
+				<el-table-column show-overflow-tooltip label="余额本币" align="center" prop="moneyAmountLocal" width="140" />
+				<el-table-column show-overflow-tooltip label="我方收款户名" align="center" prop="selfAccountsName" width="140" />
+				<el-table-column show-overflow-tooltip label="我方银行账号" align="center" prop="selfBankNo" width="140" />
+				<el-table-column show-overflow-tooltip label="我方开户行地址" align="center" prop="selfBankName" width="140" />
+			</el-table>
+		</el-card>
 
-					<el-table-column show-overflow-tooltip label="余额本币" align="center" prop="moneyAmountLocal" width="140" />
-					<el-table-column show-overflow-tooltip label="我方收款户名" align="center" prop="selfAccountsName" width="140" />
-					<el-table-column show-overflow-tooltip label="我方银行账号" align="center" prop="selfBankNo" width="140" />
-					<el-table-column show-overflow-tooltip label="我方开户行地址" align="center" prop="selfBankName" width="140" />
-				</el-table>
-			</el-card>
-			<span slot="footer" class="dialog-footer">
-				<el-button @click="dialogVisible = false">取 消</el-button>
-				<el-button type="primary" @click="dialogVisible = false">确 定</el-button>
-			</span>
-		</el-dialog>
-
-		<!--    对应信息的弹窗-->
 		<el-dialog title="信息" :visible.sync="infoVisible" width="900px" append-to-body>
 			<component :is="Components" :need-to-show-info="needToShowInfo" />
 		</el-dialog>
