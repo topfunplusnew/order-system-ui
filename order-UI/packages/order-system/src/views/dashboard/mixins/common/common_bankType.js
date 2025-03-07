@@ -1,5 +1,7 @@
 // 通用的 只给付款模块使用的 全局银行卡账户类型  有两种类型 由字典管理 分别为 现金户 和 承兑户
 
+import { BankAcceptanceType } from '@/api/tool/enums';
+
 export var mixin_bankType = {
 	methods: {
 		// 填充我方的银行卡账户类型

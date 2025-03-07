@@ -103,8 +103,7 @@
 						<el-form-item label="背书人" prop="endorserName">
 							<el-row>
 								<el-col :span="20">
-									<!--                  v-model="form.endorser"-->
-									<el-input disabled placeholder="请输入背书人" v-model="displayEndorserName" />
+									<el-input disabled placeholder="请输入背书人" v-model="form.endorserName" />
 								</el-col>
 								<el-col :span="4">
 									<!-- 选择的是客户或者供应商名称-->
@@ -389,8 +388,7 @@ export default {
 						trigger: 'blur'
 					}
 				]
-			},
-			displayEndorserName: null
+			}
 		};
 	},
 	// 展示与隐藏

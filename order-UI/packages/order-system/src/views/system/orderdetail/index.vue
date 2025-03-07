@@ -1,7 +1,7 @@
 <template>
 	<div class="app-container">
 		<!--    查询组-->
-		<el-form v-show="showSearch" ref="queryForm" :model="queryOrderInfo" size="small" :inline="true" label-width="100px"></el-form>
+		<el-form v-show="showSearch" ref="queryForm" :model="queryOrderInfo" size="mini" :inline="true" label-width="100px"></el-form>
 		<!--       表格上方操作栏-->
 
 		<el-row :gutter="10" class="mb8">

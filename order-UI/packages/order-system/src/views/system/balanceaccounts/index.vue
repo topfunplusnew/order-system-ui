@@ -130,7 +130,7 @@
 					<el-table-column label="公司id" align="center" prop="id" />
 					<el-table-column fixed="right" label="操作" width="100">
 						<template slot-scope="scope">
-							<el-button type="danger" size="small" @click="commitCompanyInfo(scope.row)">确定</el-button>
+							<el-button type="danger" size="mini" @click="commitCompanyInfo(scope.row)">确定</el-button>
 						</template>
 					</el-table-column>
 				</el-table>

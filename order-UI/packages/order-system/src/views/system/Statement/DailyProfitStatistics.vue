@@ -123,8 +123,8 @@ export default {
 				<el-date-picker v-model="queryParams.date" type="date" placeholder="选择日期" value-format="yyyy-MM-dd" style="width: 240px" size="mini" />
 			</el-form-item>
 			<el-form-item>
-				<el-button type="primary" icon="el-icon-search" size="small" @click="handleQuery">搜索</el-button>
-				<el-button icon="el-icon-refresh" size="small" @click="resetQuery">重置</el-button>
+				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
 			</el-form-item>
 		</el-form>
 

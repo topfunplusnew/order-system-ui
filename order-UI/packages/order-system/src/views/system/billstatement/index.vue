@@ -434,18 +434,18 @@ export default {
 	watch: {
 		columns: {
 			handler: function (newVal) {
-				localStorage.setItem('bankacceptance-columns', JSON.stringify(newVal));
+				localStorage.setItem('billstatement-columns', JSON.stringify(newVal));
 			},
 			deep: true
 		}
 	},
 	created() {
 		this.getList();
-		if (localStorage.getItem('bankacceptance-columns') === 'null' || !localStorage.getItem('bankacceptance-columns')) {
+		if (localStorage.getItem('billstatement-columns') === 'null' || !localStorage.getItem('billstatement-columns')) {
 			// 设置localStorage
-			localStorage.setItem('bankacceptance-columns', JSON.stringify(this.columns));
+			localStorage.setItem('billstatement-columns', JSON.stringify(this.columns));
 		} else {
-			this.columns = JSON.parse(localStorage.getItem('bankacceptance-columns'));
+			this.columns = JSON.parse(localStorage.getItem('billstatement-columns'));
 		}
 	},
 	methods: {

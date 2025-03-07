@@ -128,7 +128,7 @@
 					</el-col>
 					<el-col :span="12">
 						<el-form-item label="执行策略" prop="misfirePolicy">
-							<el-radio-group v-model="form.misfirePolicy" size="small">
+							<el-radio-group v-model="form.misfirePolicy" size="mini">
 								<el-radio-button label="1">立即执行</el-radio-button>
 								<el-radio-button label="2">执行一次</el-radio-button>
 								<el-radio-button label="3">放弃执行</el-radio-button>
@@ -137,7 +137,7 @@
 					</el-col>
 					<el-col :span="12">
 						<el-form-item label="是否并发" prop="concurrent">
-							<el-radio-group v-model="form.concurrent" size="small">
+							<el-radio-group v-model="form.concurrent" size="mini">
 								<el-radio-button label="0">允许</el-radio-button>
 								<el-radio-button label="1">禁止</el-radio-button>
 							</el-radio-group>

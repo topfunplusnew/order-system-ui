@@ -1,6 +1,6 @@
 <template>
 	<div class="app-container">
-		<el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+		<el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="68px">
 			<el-form-item label="车辆型号" prop="model">
 				<el-input v-model="queryParams.model" placeholder="请输入车辆型号" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>

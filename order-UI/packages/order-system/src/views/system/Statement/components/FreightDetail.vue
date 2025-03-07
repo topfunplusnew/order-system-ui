@@ -216,7 +216,7 @@ export default {
 <template>
 	<div>
 		<div class="app-container">
-			<el-form :inline="true" :model="searchForm" class="demo-form-inline" size="small">
+			<el-form :inline="true" :model="searchForm" class="demo-form-inline" size="mini">
 				<el-form-item label="车牌" prop="carNo">
 					<el-row>
 						<el-col :span="4">
@@ -243,7 +243,7 @@ export default {
 							</SearchOption>
 						</el-col>
 						<el-col :span="20">
-							<el-input disabled clearable v-model="searchForm.carNo" placeholder="请选择车牌" size="small">
+							<el-input disabled clearable v-model="searchForm.carNo" placeholder="请选择车牌" size="mini">
 								<i slot="prefix" class="el-input__icon el-icon-search"></i>
 							</el-input>
 						</el-col>

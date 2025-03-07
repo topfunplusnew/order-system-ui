@@ -92,7 +92,7 @@ export default {
 							v-model="queryParams.acountsName"
 							placeholder="请输入账户名称"
 							clearable
-							size="small"
+							size="mini"
 							prefix-icon="el-icon-search"
 							style="width: 200px; margin-right: 10px"
 							@keyup.enter.native="handleQuery"

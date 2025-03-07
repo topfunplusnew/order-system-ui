@@ -64,7 +64,7 @@
 			<!-- 操作列 -->
 			<el-table-column label="操作" align="center" width="120">
 				<template #default="scope">
-					<el-button size="small" type="text" @click="viewCarDetails(scope.row.carNo)">查看车辆详情</el-button>
+					<el-button size="mini" type="text" @click="viewCarDetails(scope.row.carNo)">查看车辆详情</el-button>
 				</template>
 			</el-table-column>
 		</el-table>

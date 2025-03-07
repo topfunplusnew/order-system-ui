@@ -2,9 +2,9 @@
 	<div class="customer-total">
 		<!-- 搜索区域 -->
 		<div class="search-area">
-			<el-form :inline="true" :model="searchForm" ref="form" :rules="rules" class="demo-form-inline" size="small">
+			<el-form :inline="true" :model="searchForm" ref="form" :rules="rules" class="demo-form-inline" size="mini">
 				<el-form-item label="时间：" prop="endTime">
-					<el-date-picker clearable v-model="searchForm.endTime" type="date" placeholder="请选择时间" value-format="yyyy-MM-dd" size="small"></el-date-picker>
+					<el-date-picker clearable v-model="searchForm.endTime" type="date" placeholder="请选择时间" value-format="yyyy-MM-dd" size="mini"></el-date-picker>
 				</el-form-item>
 				<el-form-item label="客户" prop="customer">
 					<el-row>
@@ -28,32 +28,32 @@
 							</SearchOption>
 						</el-col>
 						<el-col :span="20">
-							<el-input disabled clearable v-model="searchForm.customer" placeholder="请选择客户" size="small">
+							<el-input disabled clearable v-model="searchForm.customer" placeholder="请选择客户" size="mini">
 								<i slot="prefix" class="el-input__icon el-icon-search"></i>
 							</el-input>
 						</el-col>
 					</el-row>
 				</el-form-item>
 				<el-form-item label="余额：" prop="balanceCompare">
-					<el-select clearable v-model="searchForm.balanceCompare" placeholder="请选择" style="width: 80px" size="small">
+					<el-select clearable v-model="searchForm.balanceCompare" placeholder="请选择" style="width: 80px" size="mini">
 						<el-option label="≥" value="ge"></el-option>
 						<el-option label="≤" value="le"></el-option>
 						<el-option label="=" value="eq"></el-option>
 					</el-select>
 				</el-form-item>
 				<el-form-item prop="balanceValue">
-					<el-input clearable v-model="searchForm.balanceValue" placeholder="请输入余额" size="small" style="width: 120px; margin-left: 5px"></el-input>
+					<el-input clearable v-model="searchForm.balanceValue" placeholder="请输入余额" size="mini" style="width: 120px; margin-left: 5px"></el-input>
 				</el-form-item>
 				<el-form-item>
-					<el-button type="primary" @click="getList" size="small">查询</el-button>
-					<el-button @click="reset" size="small">刷新</el-button>
-					<el-button type="success" @click="excelExport(['查看客户信息'])" size="small">导出Excel</el-button>
+					<el-button type="primary" @click="getList" size="mini">查询</el-button>
+					<el-button @click="reset" size="mini">刷新</el-button>
+					<el-button type="success" @click="excelExport(['查看客户信息'])" size="mini">导出Excel</el-button>
 				</el-form-item>
 			</el-form>
 		</div>
 
 		<!-- 表格区域 -->
-		<el-table id="educe-table" :data="tableData" border style="width: 100%" v-loading="loading" size="small">
+		<el-table id="educe-table" :data="tableData" border style="width: 100%" v-loading="loading" size="mini">
 			<el-table-column prop="time" label="日期"></el-table-column>
 			<el-table-column prop="companyName" label="客户"></el-table-column>
 			<el-table-column prop="moneyAmount" label="余额">

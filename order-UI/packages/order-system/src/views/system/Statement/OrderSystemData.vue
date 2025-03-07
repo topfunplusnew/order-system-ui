@@ -68,6 +68,21 @@ export default {
 				}
 				this.orderSystemData = res.data;
 			});
+		},
+		handleExport() {
+			this.$prompt('请选择返利日期', '提示', {
+				confirmButtonText: '确定',
+				cancelButtonText: '取消',
+				inputType: 'date'
+			}).then(({ value: date }) => {
+				this.download(
+					'statistics/getSystemMultiDimensionData',
+					{
+						date: date
+					},
+					`数据统计_${new Date().getTime()}.xlsx`
+				);
+			});
 		}
 	}
 };
@@ -82,6 +97,9 @@ export default {
 				</el-form-item>
 				<el-form-item>
 					<el-button type="primary" icon="el-icon-search" size="mini" @click="fetchOrderSystemData">搜索</el-button>
+				</el-form-item>
+				<el-form-item>
+					<el-button type="warning" icon="el-icon-files" size="mini" @click="handleExport">导出</el-button>
 				</el-form-item>
 			</el-form>
 

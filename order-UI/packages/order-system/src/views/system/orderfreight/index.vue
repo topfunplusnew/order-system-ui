@@ -242,7 +242,7 @@
 												{{ item.moneyAmount }}
 											</el-descriptions-item>
 											<el-descriptions-item label="运输类型">
-												<el-tag size="small">
+												<el-tag size="mini">
 													{{ item.freightType }}
 												</el-tag>
 											</el-descriptions-item>

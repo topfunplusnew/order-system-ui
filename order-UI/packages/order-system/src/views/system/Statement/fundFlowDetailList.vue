@@ -1,16 +1,16 @@
 <template>
 	<div class="bank-statement">
 		<!-- 查询条件部分 -->
-		<el-form :model="query" label-width="100px" class="query-form" :inline="true">
+		<el-form :model="query" label-width="100px" class="query-form" :inline="true" size="mini">
 			<el-form-item label="开始日期：" prop="startTime">
-				<el-date-picker v-model="query.startTime" type="date" placeholder="选择开始日期" size="small" value-format="yyyy-MM-dd" :clearable="false"></el-date-picker>
+				<el-date-picker v-model="query.startTime" type="date" placeholder="选择开始日期" size="mini" value-format="yyyy-MM-dd" :clearable="false"></el-date-picker>
 			</el-form-item>
 			<el-form-item label="结束日期：" prop="endTime">
 				<el-date-picker
 					v-model="query.endTime"
 					type="date"
 					placeholder="选择结束日期"
-					size="small"
+					size="mini"
 					value-format="yyyy-MM-dd"
 					:clearable="false"
 					:disabled="!query.startTime"
@@ -20,7 +20,7 @@
 			<el-form-item label="我方卡号：" required>
 				<el-row>
 					<el-col :span="20">
-						<el-input v-model="query.ourBankNO" placeholder="请输入我方卡号" size="small" disabled></el-input>
+						<el-input v-model="query.ourBankNO" placeholder="请输入我方卡号" size="mini" disabled></el-input>
 					</el-col>
 					<el-col :span="4">
 						<SearchOption
@@ -59,15 +59,24 @@
 					</el-col>
 				</el-row>
 			</el-form-item>
+			<el-form-item label="银行账户类型" required>
+				<BankType
+					@updateSelectedType="
+						value => {
+							query.bankCardType = value;
+						}
+					"
+				/>
+			</el-form-item>
 			<el-form-item label="对象名称：">
-				<el-input v-model="query.otherName" placeholder="请输入对象名称" size="small"></el-input>
+				<el-input v-model="query.otherName" placeholder="请输入对象名称" size="mini"></el-input>
 			</el-form-item>
 			<el-form-item label="对方户名：">
-				<el-input v-model="query.otherAccountName" placeholder="请输入对方户名" size="small"></el-input>
+				<el-input v-model="query.otherAccountName" placeholder="请输入对方户名" size="mini"></el-input>
 			</el-form-item>
 			<el-form-item>
-				<el-button type="primary" size="small" @click="fetchStatementData" :loading="loading">查询</el-button>
-				<el-button size="small" @click="resetQuery">重置</el-button>
+				<el-button type="primary" size="mini" @click="fetchStatementData" :loading="loading">查询</el-button>
+				<el-button size="mini" @click="resetQuery">重置</el-button>
 			</el-form-item>
 		</el-form>
 
@@ -154,9 +163,10 @@ import { getPayment, getPaymentByPayNO } from '@/api/system/payment';
 import PAYMENT from '@/components/NeedToShow/PAYMENT.vue';
 import SearchOption from '@/components/SearchOption.vue';
 import { listBankAccount } from '@/api/system/bankAccount';
+import BankType from '@/views/dashboard/components/common/BankType.vue';
 
 export default {
-	components: { SearchOption, DialogWrapper },
+	components: { BankType, SearchOption, DialogWrapper },
 	mixins: [common_dialog],
 	data() {
 		return {
@@ -166,7 +176,8 @@ export default {
 				endTime: '',
 				otherName: '',
 				otherAccountName: '',
-				ourBankNO: ''
+				ourBankNO: '',
+				bankCardType: ''
 			},
 			statementData: [], // 银行流水数据
 			loading: false, // 加载状态

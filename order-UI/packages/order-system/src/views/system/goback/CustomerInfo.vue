@@ -2,12 +2,12 @@
 	<div class="customer-info">
 		<!-- 搜索区域 -->
 		<div class="search-area">
-			<el-form :inline="true" :model="searchForm" ref="form" :rules="rules" class="demo-form-inline" size="small">
+			<el-form :inline="true" :model="searchForm" ref="form" :rules="rules" class="demo-form-inline" size="mini">
 				<el-form-item label="开始时间：" prop="startTime">
-					<el-date-picker v-model="searchForm.startTime" type="date" placeholder="请选择开始时间" value-format="yyyy-MM-dd" size="small"></el-date-picker>
+					<el-date-picker v-model="searchForm.startTime" type="date" placeholder="请选择开始时间" value-format="yyyy-MM-dd" size="mini"></el-date-picker>
 				</el-form-item>
 				<el-form-item label="结束时间：" prop="endTime">
-					<el-date-picker v-model="searchForm.endTime" type="date" placeholder="请选择结束时间" value-format="yyyy-MM-dd" size="small"></el-date-picker>
+					<el-date-picker v-model="searchForm.endTime" type="date" placeholder="请选择结束时间" value-format="yyyy-MM-dd" size="mini"></el-date-picker>
 				</el-form-item>
 				<el-form-item label="客户" prop="customer">
 					<el-row>
@@ -31,22 +31,22 @@
 							</SearchOption>
 						</el-col>
 						<el-col :span="20">
-							<el-input disabled v-model="searchForm.customer" placeholder="请选择客户" clearable size="small">
+							<el-input disabled v-model="searchForm.customer" placeholder="请选择客户" clearable size="mini">
 								<i slot="prefix" class="el-input__icon el-icon-search"></i>
 							</el-input>
 						</el-col>
 					</el-row>
 				</el-form-item>
 				<el-form-item>
-					<el-button type="primary" @click="getList" size="small">查询</el-button>
-					<el-button @click="reset" size="small">刷新</el-button>
-					<el-button type="success" @click="excelExport(['欠款明细'])" size="small">导出Excel</el-button>
+					<el-button type="primary" @click="getList" size="mini">查询</el-button>
+					<el-button @click="reset" size="mini">刷新</el-button>
+					<el-button type="success" @click="excelExport(['欠款明细'])" size="mini">导出Excel</el-button>
 				</el-form-item>
 			</el-form>
 		</div>
 
 		<!-- 表格区域 -->
-		<el-table id="educe-table" :data="tableData" border style="width: 100%" v-loading="loading" size="small">
+		<el-table id="educe-table" :data="tableData" border style="width: 100%" v-loading="loading" size="mini">
 			<el-table-column prop="operateDate" label="日期"></el-table-column>
 			<el-table-column prop="payNo" label="欠款明细">
 				<template slot-scope="scope">

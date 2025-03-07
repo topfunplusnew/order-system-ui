@@ -189,7 +189,7 @@
                 {{ defaultBankCardInfo.bankNo }}
               </el-descriptions-item>
               <el-descriptions-item label="余额">
-                <el-tag size="small">{{ defaultBankCardInfo.amount }}</el-tag>
+                <el-tag size="mini">{{ defaultBankCardInfo.amount }}</el-tag>
               </el-descriptions-item>
             </el-descriptions>
           </el-row>
@@ -199,7 +199,7 @@
               <el-descriptions-item label="开户行">暂无</el-descriptions-item>
               <el-descriptions-item label="银行卡号">暂无</el-descriptions-item>
               <el-descriptions-item label="余额">
-                <el-tag size="small">暂无</el-tag>
+                <el-tag size="mini">暂无</el-tag>
               </el-descriptions-item>
               <el-descriptions-item>
                 <el-button

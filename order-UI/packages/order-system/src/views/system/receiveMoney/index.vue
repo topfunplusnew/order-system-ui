@@ -109,7 +109,7 @@
 						</el-form-item>
 						<!--  对方银行卡的消费类型 (承兑户或者现金户)-->
 						<el-form-item label="我方银行账户类型">
-							<BankType :select-type="form.selfBankCardType" @updateSelectedType="changeSelfBankType" />
+							<BankType :select-type="form.selfBankCardType" @updateSelectedType="changeSelfBankType" @updateBankAcceptance="value => (form.params.bankacceptance = value)" />
 						</el-form-item>
 						<el-form-item label="我方户名" prop="selfAcountsName">
 							<el-row>
@@ -207,7 +207,7 @@
 							</el-row>
 						</el-form-item>
 						<el-form-item label="对方银行账户类型" v-if="value !== '对外付款'">
-							<BankType :select-type="form.otherBankCardType" @updateSelectedType="changeOtherBankType" />
+							<BankType :baned="true" :select-type="form.otherBankCardType" @updateSelectedType="changeOtherBankType" />
 						</el-form-item>
 						<el-form-item label="对方账号" prop="otherBankNo" v-if="value !== '对外付款'">
 							<el-col :span="10">
@@ -458,6 +458,7 @@ export default {
 		// 取消按钮
 		cancel() {
 			this.open = false;
+			this.$bus.$emit('changeFlag', false);
 			this.reset();
 		},
 		// 表单重置
@@ -489,7 +490,10 @@ export default {
 				userId: null,
 				UserName: null,
 				updateTime: null,
-				delFlag: null
+				delFlag: null,
+				params: {
+					bankacceptance: null
+				}
 			};
 			this.resetForm('form');
 		},
@@ -534,6 +538,9 @@ export default {
 						const id = row.id || this.ids;
 						getReceiveMoney(id).then(response => {
 							this.form = response.data;
+							// 这里需要处理一下 把params对象建立起来
+							this.form.params = {};
+							this.$bus.$emit('changeFlag', response.data.bankacceptanceId > 0 ? response.data.bankacceptanceId : false);
 							this.form.receiveType = response.data.receiveType.split('-');
 							this.open = true;
 							this.title = '修改收款信息';
@@ -573,6 +580,7 @@ export default {
 							this.open = false;
 							this.clearFiles();
 							this.getList();
+							this.$bus.$emit('changeFlag', false);
 						});
 					} else {
 						// 去除参数
@@ -596,6 +604,7 @@ export default {
 							this.open = false;
 							this.clearFiles();
 							this.getList();
+							this.$bus.$emit('changeFlag', false);
 						});
 					}
 				}
