@@ -212,24 +212,24 @@ export default {
 		},
 		// 查看调整单信息
 		handleCheckAdjust(row) {
-			const query = {
-				adjustOrderid: row.id
-			};
-			listGoodsOrder(query).then(res => {
-				if (res.rows.length === 0) {
-					this.$modal.msgError('该订单没有调整单');
+			listGoodsOrder({ adjustOrderid: row.id }).then(res => {
+				// 筛选出不是负数的那一条订单数据
+				const adjustOrder = res.rows.filter(item => item.isAdjust !== -1)[0];
+				if (!adjustOrder) {
+					this.$modal.msgError('该订单没有调整单或者数据错误!');
 					return;
 				}
-				const data = res.rows.filter(item => item.isAdjust > 0)[0];
-				this.openDialog(
-					GOODS_ORDER,
-					'查看调整单信息',
-					'650px',
-					{
-						needToShowInfo: data
-					},
-					true
-				);
+				getGoodsOrder(adjustOrder.id).then(response => {
+					this.openDialog(
+						GOODS_ORDER,
+						'查看调整单信息',
+						'650px',
+						{
+							needToShowInfo: response.data
+						},
+						true
+					);
+				});
 			});
 		},
 		// 查看原订单的信息
@@ -513,8 +513,8 @@ export default {
 				<!--      右侧操作栏-->
 				<el-table-column show-overflow-tooltip label="订单操作" align="center" class-name="small-padding fixed-width" width="200px" fixed="right">
 					<template slot-scope="scope">
-						<el-button size="mini" type="text" v-if="!isAdjustOrder" @click="handleCheckAdjust(scope.row)">查看调整单</el-button>
-						<el-button size="mini" type="text" :disabled="scope.row.isAdjust < 0" @click="handleOrderItemInfo(scope.row)">调整单</el-button>
+						<el-button size="mini" type="text" :disabled="scope.row.isAdjusted !== 1" v-if="!isAdjustOrder" @click="handleCheckAdjust(scope.row)">查看调整单</el-button>
+						<el-button size="mini" type="text" :disabled="scope.row.isAdjust < 0 || scope.row.isAdjusted === 1" @click="handleOrderItemInfo(scope.row)">调整单</el-button>
 						<el-button v-if="isAdjustOrder" size="mini" type="text" @click="handleCheckPrevious(scope.row)">查看原单据</el-button>
 						<!--          发货单-->
 						<el-dropdown size="mini" type="text">

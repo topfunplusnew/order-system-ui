@@ -28,16 +28,13 @@ export var mixin_order_adjustOrder = {
 					let orderInfo = res.data;
 					// 将每个货物信息的ordersNo赋值为空 并且去除不必要的参数
 					orderInfo.orderDetailList.forEach(item => {
-						item.ordersNo = '';
 						item = excludeParams(item, this.$exclude);
 					});
 					// 去除字段
 					orderInfo = excludeParams(orderInfo, this.$exclude);
 					// 调整单
 					adjustGoodsOrder({
-						...orderInfo,
-						ordersNo: '',
-						adjustDate: parseTime(new Date())
+						...orderInfo
 					}).then(() => {
 						this.$message.success('调整单提交成功');
 						this.getList();
