@@ -514,7 +514,7 @@ export default {
 				<el-table-column show-overflow-tooltip label="订单操作" align="center" class-name="small-padding fixed-width" width="200px" fixed="right">
 					<template slot-scope="scope">
 						<el-button size="mini" type="text" :disabled="scope.row.isAdjusted !== 1" v-if="!isAdjustOrder" @click="handleCheckAdjust(scope.row)">查看调整单</el-button>
-						<el-button size="mini" type="text" :disabled="scope.row.isAdjust < 0 || scope.row.isAdjusted === 1" @click="handleOrderItemInfo(scope.row)">调整单</el-button>
+						<el-button size="mini" type="text" :disabled="scope.row.isAdjusted === 1" @click="handleOrderItemInfo(scope.row)">调整单</el-button>
 						<el-button v-if="isAdjustOrder" size="mini" type="text" @click="handleCheckPrevious(scope.row)">查看原单据</el-button>
 						<!--          发货单-->
 						<el-dropdown size="mini" type="text">
