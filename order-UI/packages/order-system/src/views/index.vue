@@ -150,8 +150,21 @@
 			</el-col>
 		</el-row>
 		<div class="fixed-footer">
-			<el-button type="primary" icon="el-icon-download" size="mini" @click="handleDownload">一键下载</el-button>
+			<div v-if="downloadProgress !== 0">
+				<el-progress :percentage="downloadProgress"></el-progress>
+			</div>
+			<div>
+				<el-button type="primary" icon="el-icon-download" size="mini" @click="handleDownload">一键下载</el-button>
+			</div>
 		</div>
+
+		<el-dialog title="一键下载" :visible.sync="dialogVisible" width="30%" :before-close="handleClose">
+			<span>这是一段信息</span>
+			<span slot="footer" class="dialog-footer">
+				<el-button @click="dialogVisible = false">取 消</el-button>
+				<el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+			</span>
+		</el-dialog>
 	</div>
 </template>
 
@@ -159,6 +172,7 @@
 import { getDailyProfit, getDeliveryList } from '../api/system/statement';
 import { mixin_printHTML } from './dashboard/mixins/print';
 import { parseTime } from '@/utils/ruoyi';
+import { mapGetters, mapState } from 'vuex';
 
 export default {
 	name: 'Index',
@@ -215,32 +229,48 @@ export default {
 			],
 			dailyProfit: null,
 			dailyExpense: null,
-			moneyAmount: null
+			moneyAmount: null,
+			dialogVisible: false
 		};
 	},
 	created() {
 		this.getList();
 		this.handleProfitSearch();
 	},
+	computed: {
+		...mapGetters(['downloadProgress'])
+	},
 	methods: {
 		// 一键下载
 		handleDownload() {
+			this.$confirm('是否导出空表(若不导出空表导出速率会更快)?', '提示', {
+				confirmButtonText: '是',
+				cancelButtonText: '否',
+				type: 'warning'
+			})
+				.then(() => {
+					this.handleOption(true);
+				})
+				.catch(() => {
+					this.handleOption();
+				});
+		},
+		handleOption(exportEmptyData = false) {
 			this.$prompt('请选择导出日期', '提示', {
 				confirmButtonText: '确定',
 				cancelButtonText: '取消',
 				inputType: 'date'
 			}).then(res => {
-				console.log(res);
-				this.download(
+				this.downLoadOnce(
 					'/system/allExport/export',
 					{
-						date: res.value
+						date: res.value,
+						exportEmptyData: exportEmptyData
 					},
 					`FullReport_${new Date().getTime()}.xlsx`
 				);
 			});
 		},
-
 		handleSearch() {
 			this.getList();
 		},
@@ -269,6 +299,9 @@ export default {
 				},
 				`todayOrderList${new Date().getTime()}.xlsx`
 			);
+		},
+		handleClose() {
+			this.dialogVisible = false;
 		}
 	}
 };
@@ -351,10 +384,11 @@ export default {
 }
 
 .fixed-footer {
+	border-radius: 10px;
 	position: fixed;
 	bottom: 0;
-	left: 0;
-	width: 100%;
+	left: 20%;
+	width: 80%;
 	background: #fff;
 	border-top: 1px solid #ddd;
 	padding: 10px 20px;

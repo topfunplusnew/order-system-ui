@@ -6,6 +6,7 @@ import errorCode from '@/utils/errorCode';
 import { tansParams, blobValidate } from '@/utils/ruoyi';
 import cache from '@/plugins/cache';
 import { saveAs } from 'file-saver';
+import { getDownLoadProgress, getDownLoadStatus, resetDownLoadProgress } from '@/api/system/onceDownload';
 
 let downloadLoadingInstance;
 // 是否显示重新登录
@@ -147,7 +148,7 @@ service.interceptors.response.use(
 );
 
 // 通用下载方法-修改版
-export function download(url, params, filename, config) {
+export function download(url, params, filename, config, isShowConfig = false) {
 	let progress = 0; // 初始化进度
 	const maxProgress = 98; // 假进度条的最大值，留出2%等待真实下载完成
 	let fakeProgressInterval;
@@ -194,6 +195,116 @@ export function download(url, params, filename, config) {
 		.then(async data => {
 			clearInterval(fakeProgressInterval); // 停止假进度
 			downloadLoadingInstance.setText(`正在下载数据，请稍候 (100%)`); // 下载完成设置为100%
+
+			const isBlob = blobValidate(data);
+			if (isBlob) {
+				const blob = new Blob([data]);
+				saveAs(blob, filename);
+			} else {
+				const resText = await data.text();
+				const rspObj = JSON.parse(resText);
+				const errMsg = errorCode[rspObj.code] || rspObj.msg || errorCode['default'];
+				Message.error(errMsg);
+			}
+			downloadLoadingInstance.close();
+		})
+		.catch(r => {
+			clearInterval(fakeProgressInterval); // 停止假进度
+			console.error(r);
+			Message.error('下载文件出现错误，请联系管理员！');
+			downloadLoadingInstance.close();
+		});
+}
+
+// 一键下载的方法
+export function onceDownload(url, params, filename, config) {
+	// 先获取是否可以下载
+	getDownLoadStatus().then(status => {
+		if (status) {
+			downLoadFile(url, params, filename, config);
+		} else {
+			Message.success('文件正在正常下载中，请勿重复下载!');
+		}
+	});
+}
+
+async function downLoadFile(url, params, filename, config) {
+	const { data } = await getDownLoadProgress();
+	if (data.NowProgress !== 0) {
+		await resetDownLoadProgress();
+		return;
+	}
+	await store.dispatch('downloadOnce/setPercent', 0);
+	let progress = data.NowProgress; // 初始化进度
+	const maxProgress = data.MaxProgress; // 假进度条的最大值，留出2%等待真实下载完成
+	let fakeProgressInterval;
+
+	// 启动下载的 Loading
+	downloadLoadingInstance = Loading.service({
+		text: `正在进行一键下载操作，请稍候 (${progress}%)`,
+		spinner: 'el-icon-loading',
+		background: 'rgba(0, 0, 0, 0.7)'
+	});
+
+	function calculateIncrement(progress, maxProgress) {
+		const remainingProgress = maxProgress - progress;
+		const base = 1 + remainingProgress / maxProgress; // 基于剩余进度动态调整对数函数的基数
+		return Math.log(base) * 10; // 增量由对数函数计算得出，乘以一个系数控制增长速度
+	}
+
+	// 启动假进度条
+	fakeProgressInterval = setInterval(() => {
+		if (progress < maxProgress) {
+			const increment = calculateIncrement(progress, maxProgress);
+			progress += increment;
+			progress = Math.min(progress, maxProgress); // 防止超过最大值
+			downloadLoadingInstance.setText(`正在下载系统数据，请稍候 (${Math.round(progress)}%)`);
+		} else {
+			clearInterval(fakeProgressInterval); // 停止假进度
+		}
+	}, 500); // 每500ms更新一次进度
+
+	let elNotificationComponent;
+	let timeout = setTimeout(() => {
+		elNotificationComponent = Notification({
+			title: '下载卡顿提醒',
+			dangerouslyUseHTMLString: true,
+			message: '<button>下载卡住了?点此重新下载</button>',
+			duration: 500000,
+			type: 'warning',
+			onClick: () => {
+				downLoadFile(url, params, filename, config);
+			}
+		});
+	}, 3000);
+
+	// // 每一秒发送一次请求 拿取下载进度
+	let downloadInterval = setInterval(async () => {
+		await store.dispatch('downloadOnce/setPercent');
+	}, 2000);
+
+	// 发送下载请求
+	return service
+		.post(url, params, {
+			transformRequest: [
+				params => {
+					return tansParams(params);
+				}
+			],
+			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+			responseType: 'blob',
+			timeout: 600000, // 超时时间，默认600秒
+			...config
+		})
+		.then(async data => {
+			clearInterval(fakeProgressInterval); // 停止假进度
+			clearInterval(downloadInterval); // 停止下载进度
+			clearTimeout(timeout);
+			// 关闭右上角提示
+			elNotificationComponent.close();
+			await store.dispatch('downloadOnce/setPercent', 100);
+			downloadLoadingInstance.setText(`下载完毕  (100%)`); // 下载完成设置为100%
+			Message.success('下载完毕');
 
 			const isBlob = blobValidate(data);
 			if (isBlob) {

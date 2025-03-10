@@ -10,7 +10,7 @@ import { getConfigKey } from '@/api/system/config';
 import { getDicts } from '@/api/system/dict/data';
 import '@/assets/styles/index.scss'; // global css
 import '@/assets/styles/ruoyi.scss'; // ruoyi css
-import { download } from '@/utils/request';
+import { download, onceDownload } from '@/utils/request';
 import { addDateRange, handleTree, parseTime, resetForm, selectDictLabel, selectDictLabels } from '@/utils/ruoyi';
 import App from './App.vue';
 import './assets/icons'; // icon
@@ -48,7 +48,6 @@ import VForm from 'vform-builds'; // 引入VForm库
 import 'vform-builds/dist/VFormDesigner.css'; // 引入VForm样式
 import service from './utils/request';
 
-
 // 虚拟滚动
 import VueVirtualScroller from 'vue-virtual-scroller';
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css';
@@ -69,6 +68,9 @@ Vue.prototype.selectDictLabels = selectDictLabels;
 Vue.prototype.download = download;
 Vue.prototype.handleTree = handleTree;
 Vue.prototype.$print = print;
+
+// 一键下载
+Vue.prototype.downLoadOnce = onceDownload;
 
 // todo 以下是自己封装的一些常用的繁琐操作函数
 // 1.需要排除的字段信息

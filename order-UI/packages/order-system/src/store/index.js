@@ -16,6 +16,7 @@ import inventory from '@/store/modules/inventory';
 import paymentApply from '@/store/modules/paymentApply';
 import trash from '@/store/modules/trash';
 import excel from '@/store/modules/excel';
+import downloadOnce from '@/store/modules/downloadOnce';
 
 Vue.use(Vuex);
 
@@ -39,9 +40,10 @@ const store = new Vuex.Store({
 		// 垃圾桶
 		trash,
 		// excel
-		excel
+		excel,
 		// 出差
 		// bussinessTrip: () => import('./modules/bussinessTrip')
+		downloadOnce
 	},
 	getters
 });
