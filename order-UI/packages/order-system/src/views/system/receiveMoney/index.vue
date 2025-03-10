@@ -287,6 +287,11 @@ import { getBankAcceptance } from '@/api/system/bankAcceptance';
 
 export default {
 	name: 'ReceiveMoney',
+	computed: {
+		BankAcceptanceType() {
+			return BankAcceptanceType;
+		}
+	},
 	components: { BankType, CheckFiles, SearchOption },
 	mixins: [mixin_printHTML, mixin_receive_money_fill, mixin_checkfile, mixin_bankType, mixin_receive_money_subject],
 	data() {
