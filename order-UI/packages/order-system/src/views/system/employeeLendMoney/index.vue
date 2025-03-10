@@ -162,9 +162,6 @@
 							</el-col>
 						</el-row>
 					</el-form-item>
-					<el-form-item label="我方银行账户类型">
-						<BankType :select-type="recoverMoneyEntity.selfBankCardType" @updateSelectedType="changeCustomSelfBankType" />
-					</el-form-item>
 					<el-form-item label="收回账号" prop="bankNo">
 						<el-input v-model="recoverMoneyEntity.bankNo" placeholder="请输入收回账号" />
 					</el-form-item>

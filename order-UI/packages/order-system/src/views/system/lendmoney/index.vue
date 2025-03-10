@@ -277,7 +277,12 @@
 						</el-row>
 					</el-form-item>
 					<el-form-item label="我方银行账户类型">
-						<BankType :select-type="recoverMoneyEntity.selfBankCardType" @updateSelectedType="changeCustomSelfBankType" />
+						<BankType
+							:bill-type="BankAcceptanceType.PAY_TYPE.RECEIVE"
+							:select-type="recoverMoneyEntity.selfBankCardType"
+							@updateSelectedType="changeCustomSelfBankType"
+							@updateBankAcceptance="value => (form.params.bankacceptance = value)"
+						/>
 					</el-form-item>
 					<el-form-item label="收回账号" prop="bankNo">
 						<el-input v-model="recoverMoneyEntity.bankNo" placeholder="请输入收回账号" />
@@ -315,7 +320,7 @@ import { addRecoverMoney } from '@/api/system/recoverMoney';
 import SearchOption from '@/components/SearchOption.vue';
 import { listBankAccount } from '@/api/system/bankAccount';
 import ApplyPayment from '@/views/dashboard/components/common/ApplyPayment.vue';
-import { TableName } from '@/api/tool/enums';
+import { BankAcceptanceType, TableName } from '@/api/tool/enums';
 import { excludeParams } from '@/api/tool/exclude';
 import { mixin_reviveMoney } from '../../dashboard/mixins/receive';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
@@ -571,6 +576,9 @@ export default {
 		this.$store.dispatch('money/getTempLendMoneyList');
 	},
 	computed: {
+		BankAcceptanceType() {
+			return BankAcceptanceType;
+		},
 		TableName() {
 			return TableName;
 		},
