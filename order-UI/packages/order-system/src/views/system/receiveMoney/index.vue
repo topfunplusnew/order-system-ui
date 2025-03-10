@@ -109,7 +109,12 @@
 						</el-form-item>
 						<!--  对方银行卡的消费类型 (承兑户或者现金户)-->
 						<el-form-item label="我方银行账户类型">
-							<BankType :select-type="form.selfBankCardType" @updateSelectedType="changeSelfBankType" @updateBankAcceptance="value => (form.params.bankacceptance = value)" />
+							<BankType
+								:bill-type="BankAcceptanceType.PAY_TYPE.RECEIVE"
+								:select-type="form.selfBankCardType"
+								@updateSelectedType="changeSelfBankType"
+								@updateBankAcceptance="value => (form.params.bankacceptance = value)"
+							/>
 						</el-form-item>
 						<el-form-item label="我方户名" prop="selfAcountsName">
 							<el-row>

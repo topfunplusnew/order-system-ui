@@ -87,7 +87,7 @@
 			@selection-change="handleSelectionChange"
 			ref="paymentTable"
 		>
-			<el-table-column type="selection" width="55" />
+			<!--			<el-table-column type="selection" width="55" />-->
 			<el-table-column label="id" align="center" prop="id" v-if="columns[0].visible" />
 			<el-table-column label="日期" align="center" prop="fundsDate" width="120" v-if="columns[1].visible" show-overflow-tooltip>
 				<template #default="scope">
@@ -204,7 +204,12 @@
 					<el-input v-model="form.moneyAmount" placeholder="请输入金额" />
 				</el-form-item>
 				<el-form-item label="我方银行账户类型">
-					<BankType :select-type="form.selfBankCardType" @updateSelectedType="changeSelfBankType" @updateBankAcceptance="value => (form.params.bankacceptance = value)" />
+					<BankType
+						:bill-type="BankAcceptanceType.PAY_TYPE.PAYMENT"
+						:select-type="form.selfBankCardType"
+						@updateSelectedType="changeSelfBankType"
+						@updateBankAcceptance="value => (form.params.bankacceptance = value)"
+					/>
 				</el-form-item>
 				<!--        对方信息-->
 				<el-form-item label="我方户名" prop="selfAcountsName">
@@ -562,7 +567,7 @@ import { mixin_bankType } from '../../dashboard/mixins/common/common_bankType';
 import StateTag from '@/views/dashboard/components/common/StateTag.vue';
 import { batchPayment } from '../../../api/system/payment';
 import { getFunction } from '../../../utils/order/mapper';
-import { TableName } from '../../../api/tool/enums';
+import { BankAcceptanceType, TableName } from '../../../api/tool/enums';
 import GOODS_ORDER from '@/components/NeedToShow/GOODS_ORDER.vue';
 import INVENTORY from '@/components/NeedToShow/INVENTORY.vue';
 import INVOICE_IN from '@/components/NeedToShow/INVOICE_IN.vue';
@@ -763,6 +768,9 @@ export default {
 		};
 	},
 	computed: {
+		BankAcceptanceType() {
+			return BankAcceptanceType;
+		},
 		PAYMENT_TYPES() {
 			return PAYMENT_TYPES;
 		},

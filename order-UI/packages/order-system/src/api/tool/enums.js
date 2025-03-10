@@ -196,5 +196,10 @@ export const PaymentOptions = Object.freeze([
 
 export const BankAcceptanceType = Object.freeze({
 	BANK_CASH: '银行活期存款',
-	ACCEPTANCE: '承兑'
+	ACCEPTANCE: '承兑',
+
+	PAY_TYPE: {
+		PAYMENT: '支出',
+		RECEIVE: '收入'
+	}
 });

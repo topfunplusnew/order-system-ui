@@ -5,14 +5,25 @@ import SearchOption from '@/components/SearchOption.vue';
 import { listCompany } from '@/api/system/company';
 import { listBankAccount } from '@/api/system/bankAccount';
 import { excludeParams } from '@/api/tool/exclude';
+import { BankAcceptanceType, PaymentState } from '@/api/tool/enums';
 
 export default {
 	name: 'BankacceptanceForm',
+	computed: {
+		BankAcceptanceType() {
+			return BankAcceptanceType;
+		}
+	},
 	components: { SearchOption },
 	props: {
 		bankacceptanceInfo: {
 			type: Object,
 			default: () => {}
+		},
+		// 票据的类型 根据收付款类型确定
+		billType: {
+			type: String,
+			default: '收入'
 		}
 	},
 	data() {
@@ -37,7 +48,7 @@ export default {
 				reason: [
 					{
 						required: true,
-						message: '请选择收票事由',
+						message: `请选择${this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT ? '背书' : '收票'}事由`,
 						trigger: 'change'
 					}
 				],
@@ -150,7 +161,6 @@ export default {
 		},
 		bankacceptanceInfo: {
 			handler(value) {
-				console.log('承兑信息', value);
 				this.$nextTick(() => {
 					Object.assign(this.form, value);
 				});
@@ -178,13 +188,13 @@ export default {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
 					if (this.form.id != null) {
-						this.form.billType = '收入';
+						this.form.billType = this.billType;
 						this.form = excludeParams(this.form, this.$exclude);
 						this.$emit('submitForm', this.form, () => {
 							this.reset();
 						});
 					} else {
-						this.form.billType = '收入';
+						this.form.billType = this.billType;
 						this.form = excludeParams(this.form, this.$exclude);
 						this.$emit('submitForm', this.form, () => {
 							this.reset();
@@ -205,7 +215,7 @@ export default {
 				dueDate: null,
 				billAccount: null,
 				billDate: null,
-				billType: '收入',
+				billType: this.billType,
 				// 收票是由默认为购买
 				reason: '购买',
 				billAmount: null,
@@ -238,19 +248,19 @@ export default {
 						<el-form-item label="票据号码" prop="billNo">
 							<el-input v-model="form.billNo" placeholder="请输入票据号码" />
 						</el-form-item>
-						<el-form-item label="收票事由" prop="reason">
+						<el-form-item :label="`${this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT ? '背书' : '收票'}事由`" prop="reason">
 							<el-radio v-model="form.reason" label="购买">购买</el-radio>
 							<el-radio v-model="form.reason" label="客户付款">客户付款</el-radio>
 						</el-form-item>
-						<el-form-item label="背书人类型" prop="reason">
+						<el-form-item :label="`${this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT ? '被背书人类型' : '背书人类型'}`" prop="reason">
 							<el-radio v-model="type" label="客户">客户</el-radio>
 							<el-radio v-model="type" label="供应商">供应商</el-radio>
 						</el-form-item>
-						<el-form-item label="背书人" prop="endorserName">
+						<el-form-item :label="`${this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT ? '被背书人' : '背书人'}`" prop="endorserName">
 							<el-row>
 								<el-col :span="20">
 									<!--                  v-model="form.endorser"-->
-									<el-input disabled placeholder="请输入背书人" v-model="form.endorserName" />
+									<el-input disabled :placeholder="`请输入${this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT ? '被背书人' : '背书人'}`" v-model="form.endorserName" />
 								</el-col>
 								<el-col :span="4">
 									<!-- 选择的是客户或者供应商名称-->
@@ -280,13 +290,13 @@ export default {
 								</el-col>
 							</el-row>
 						</el-form-item>
-						<el-form-item label="收入票据金额" prop="billAmount">
+						<el-form-item :label="`${this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT ? '支出' : '收入'}票据金额`" prop="billAmount">
 							<el-input v-model="form.billAmount" placeholder="请输入票据金额" />
 						</el-form-item>
-						<el-form-item label="收入贴息点数" prop="inDiscountPoints">
+						<el-form-item :label="`${this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT ? '支出' : '收入'}贴息点数`" prop="inDiscountPoints">
 							<el-input v-model="form.inDiscountPoints" placeholder="请输入贴息点数" />
 						</el-form-item>
-						<el-form-item label="收入贴息金额" prop="inDiscountAmount">
+						<el-form-item :label="`${this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT ? '支出' : '收入'}贴息金额`" prop="inDiscountAmount">
 							<el-input disabled v-model="form.inDiscountAmount" placeholder="请输入贴息金额" />
 						</el-form-item>
 					</el-col>
