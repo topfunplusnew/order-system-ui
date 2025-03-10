@@ -170,7 +170,7 @@
 					<!--          选择收入账户类型-->
 					<el-form-item label="收入账户类型">
 						<!-- 选择银行卡类型的组件 -->
-						<BankType @updateSelectedType="changeSelfBankType" />
+						<BankType @updateSelectedType="changeSelfBankType" @updateBankAcceptance="value => (form.params.bankacceptance = value)" />
 					</el-form-item>
 					<el-form-item :label="source">
 						<el-row>
@@ -318,7 +318,7 @@
 				<div v-if="cashType === CASH_TYPE.TRANSFER">
 					<!--          选择支出账户类型-->
 					<el-form-item label="支出账户类型">
-						<BankType @updateSelectedType="changeOtherBankType" />
+						<BankType :baned="true" @updateSelectedType="changeOtherBankType" />
 					</el-form-item>
 					<!--        2.选择去-->
 					<el-form-item :label="target">
@@ -740,7 +740,10 @@ export default {
 				otherBankType: null,
 				// 2025-2-28 新增转账账户
 				sourceBankNo: null,
-				targetBankNo: null
+				targetBankNo: null,
+				params: {
+					bankacceptance: null
+				}
 			};
 			// 把展示字段给赋值为null
 			this.sourceName = null;

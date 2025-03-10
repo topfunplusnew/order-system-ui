@@ -8,6 +8,16 @@ export var mixin_bankType = {
 		changeSelfBankType(value) {
 			if (this.form && typeof this.form === 'object') {
 				this.$set(this.form, 'selfBankCardType', value);
+				if (value === BankAcceptanceType.ACCEPTANCE) {
+					this.$set(this.form, 'otherBankCardType', BankAcceptanceType.ACCEPTANCE);
+					this.form.params = {
+						bankacceptance: null
+					};
+				}
+				if (value === BankAcceptanceType.BANK_CASH) {
+					this.$set(this.form, 'otherBankCardType', BankAcceptanceType.BANK_CASH);
+					this.$bus.$emit('changeFlag', false);
+				}
 			} else {
 				console.log('form unexpected');
 			}

@@ -2,7 +2,7 @@
 
 <template>
 	<div>
-		<el-select v-model="localSelectType" placeholder="请选择账户类型" @change="handleEmitType">
+		<el-select :disabled="optionBaned" v-model="localSelectType" placeholder="请选择账户类型" @change="handleEmitType">
 			<el-option v-for="item in dict.type.order_bank_card_type_nodel" :key="item.value" :label="item.label" :value="item.value" />
 		</el-select>
 
@@ -23,6 +23,11 @@ export default {
 	components: { BankacceptanceForm },
 	dicts: ['order_bank_card_type_nodel'],
 	props: {
+		// 禁用选择
+		optionBaned: {
+			type: Boolean,
+			default: false
+		},
 		// 已经选择的
 		selectType: {
 			type: String,
@@ -73,7 +78,7 @@ export default {
 		// 传递给父组件 然后更新父组件的 selectedType 值
 		handleEmitType(value) {
 			this.$emit('updateSelectedType', value);
-			if (BankAcceptanceType.ACCEPTANCE === value && !this.baned) {
+			if (BankAcceptanceType.ACCEPTANCE === value) {
 				this.drawer = true;
 			}
 		},

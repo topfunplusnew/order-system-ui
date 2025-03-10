@@ -207,7 +207,7 @@
 							</el-row>
 						</el-form-item>
 						<el-form-item label="对方银行账户类型" v-if="value !== '对外付款'">
-							<BankType :baned="true" :select-type="form.otherBankCardType" @updateSelectedType="changeOtherBankType" />
+							<BankType :option-baned="true" :baned="true" :select-type="form.otherBankCardType" @updateSelectedType="changeOtherBankType" />
 						</el-form-item>
 						<el-form-item label="对方账号" prop="otherBankNo" v-if="value !== '对外付款'">
 							<el-col :span="10">
@@ -266,7 +266,7 @@ import SearchOption from '@/components/SearchOption.vue';
 import { listBankAccount } from '@/api/system/bankAccount';
 import { excludeParams } from '@/api/tool/exclude';
 import { addReason } from '@/api/system/user';
-import { TableName } from '@/api/tool/enums';
+import { BankAcceptanceType, TableName } from '@/api/tool/enums';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
 import CheckFiles from '../../../components/CheckFiles.vue';
 
@@ -278,6 +278,7 @@ import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfi
 import BankType from '@/views/dashboard/components/common/BankType.vue';
 import { mixin_bankType } from '../../dashboard/mixins/common/common_bankType';
 import { mixin_receive_money_subject } from '@/views/dashboard/mixins/receivemoney/receive_money_subject';
+import { getBankAcceptance } from '@/api/system/bankAcceptance';
 
 export default {
 	name: 'ReceiveMoney',
@@ -525,56 +526,71 @@ export default {
 				confirmButtonText: '确定',
 				cancelButtonText: '取消',
 				type: 'warning'
-			})
-				.then(({ value }) => {
-					addReason({
-						reason: value,
-						tableName: TableName.RECEIVE_MONEY,
-						tid: row.id,
-						modifyTime: this.modifyTime
-					}).then(() => {
-						this.$message.success('提交成功');
-						this.reset();
-						const id = row.id || this.ids;
-						getReceiveMoney(id).then(response => {
-							this.form = response.data;
-							// 这里需要处理一下 把params对象建立起来
-							this.form.params = {};
-							this.$bus.$emit('changeFlag', response.data.bankacceptanceId > 0 ? response.data.bankacceptanceId : false);
-							this.form.receiveType = response.data.receiveType.split('-');
-							this.open = true;
-							this.title = '修改收款信息';
-						});
-					});
-				})
-				.catch(() => {
-					this.$message({
-						type: 'warning',
-						message: '请先输入编辑原因!'
+			}).then(({ value }) => {
+				addReason({
+					reason: value,
+					tableName: TableName.RECEIVE_MONEY,
+					tid: row.id,
+					modifyTime: this.modifyTime
+				}).then(() => {
+					this.$message.success('提交成功');
+					this.reset();
+					const id = row.id || this.ids;
+					getReceiveMoney(id).then(response => {
+						this.form = response.data;
+						this.$bus.$emit('changeFlag', response.data.bankacceptanceId > 0 ? response.data.bankacceptanceId : false);
+						this.form.receiveType = response.data.receiveType.split('-');
+						// 处理银行账户类型
+						let flag = false;
+						if (!response.data.bankacceptanceId) {
+							this.$message.warning('该收款信息无凭证相关信息');
+							flag = true;
+						}
+						if (!flag) {
+							getBankAcceptance(response.data.bankacceptanceId).then(result => {
+								if (!result.data) {
+									this.$message.error('获取凭证数据失败:该行数据存储了凭证ID但没有查询到该ID对应的相关数据');
+									return;
+								}
+								this.$nextTick(() => {
+									this.form.params.bankacceptance = result.data;
+								});
+							});
+						}
+						this.open = true;
+						this.title = '修改收款信息';
 					});
 				});
+			});
 		},
 
 		/** 提交按钮 */
 		submitForm() {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
-					if (this.form.id != null) {
-						// 去除参数
-						this.form = excludeParams(this.form, this.$exclude);
-						// 需要拼凑收款类型  但是不能修改响应式的payType 这是一个数组
-						let receiveType = null;
-						if (this.form.receiveType) {
-							receiveType = this.form.receiveType.join('-');
-						} else {
-							this.$message.warning('请选择收款类型');
+					// 校验收款类型 和银行卡类型
+					if (!this.form.receiveType) {
+						this.$message.warning('请选择收款类型');
+						return;
+					}
+					if (!this.form.selfBankCardType || !this.form.otherBankCardType) {
+						this.$message.warning('请选择银行账户类型,缺一不可!');
+						return;
+					}
+					if (this.form.selfBankCardType && this.form.otherBankCardType) {
+						if (this.form.selfBankCardType !== this.form.otherBankCardType) {
+							this.$message.warning('操作失败，无法进行承兑与活期存款或者相反的交易,类型需要保持一致');
 							return;
 						}
-						// 组装收款对象
-						const body = {
-							...this.form,
-							receiveType: receiveType
-						};
+					}
+					let receiveType = null;
+					const body = {
+						...this.form,
+						receiveType: receiveType
+					};
+					this.form = excludeParams(this.form, this.$exclude);
+					body.receiveType = this.form.receiveType.join('-');
+					if (this.form.id != null) {
 						updateReceiveMoney(body).then(() => {
 							this.$modal.msgSuccess('修改成功');
 							this.open = false;
@@ -583,22 +599,6 @@ export default {
 							this.$bus.$emit('changeFlag', false);
 						});
 					} else {
-						// 去除参数
-						this.form = excludeParams(this.form, this.$exclude);
-						// 需要拼凑收款类型  但是不能修改响应式的payType 这是一个数组
-						let receiveType = null;
-						if (this.form.receiveType) {
-							receiveType = this.form.receiveType.join('-');
-						} else {
-							this.$message.warning('请选择收款类型');
-							return;
-						}
-						// 组装收款对象
-						const body = {
-							...this.form,
-							receiveType: receiveType
-						};
-						// 添加收款信息
 						addReceiveMoney(body).then(() => {
 							this.$modal.msgSuccess('新增成功');
 							this.open = false;
