@@ -583,15 +583,10 @@ export default {
 							return;
 						}
 					}
-					let receiveType = null;
-					const body = {
-						...this.form,
-						receiveType: receiveType
-					};
 					this.form = excludeParams(this.form, this.$exclude);
-					body.receiveType = this.form.receiveType.join('-');
+					this.form.receiveType = this.form.receiveType.join('-');
 					if (this.form.id != null) {
-						updateReceiveMoney(body).then(() => {
+						updateReceiveMoney(this.form).then(() => {
 							this.$modal.msgSuccess('修改成功');
 							this.open = false;
 							this.clearFiles();
@@ -599,7 +594,7 @@ export default {
 							this.$bus.$emit('changeFlag', false);
 						});
 					} else {
-						addReceiveMoney(body).then(() => {
+						addReceiveMoney(this.form).then(() => {
 							this.$modal.msgSuccess('新增成功');
 							this.open = false;
 							this.clearFiles();

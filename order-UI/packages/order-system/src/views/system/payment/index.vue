@@ -367,7 +367,7 @@
 					</el-form-item>
 				</el-row>
 				<el-form-item label="对方银行账户类型" v-if="value !== '对外付款'">
-					<BankType :baned="true" :select-type="form.otherBankCardType" @updateSelectedType="changeOtherBankType" />
+					<BankType :option-baned="true" :baned="true" :select-type="form.otherBankCardType" @updateSelectedType="changeOtherBankType" />
 				</el-form-item>
 				<el-form-item label="对方账号" prop="otherBankNo" v-if="value !== '对外付款'">
 					<el-row>
@@ -492,7 +492,7 @@
 			<div>
 				<el-form :model="chooseInfo" label-width="150px">
 					<el-form-item label="我方银行账户类型" prop="selfBankNo">
-						<BankType :baned="true" v-if="oneClickPaymentDialogVisible" :select-type="chooseInfo.selfBankCardType" @updateSelectedType="changeCustomSelfBankType" />
+						<BankType :option-baned="true" :baned="true" v-if="oneClickPaymentDialogVisible" :select-type="chooseInfo.selfBankCardType" @updateSelectedType="changeCustomSelfBankType" />
 					</el-form-item>
 					<el-form-item label="我方户名" prop="selfAcountsName">
 						<el-row>
@@ -951,6 +951,7 @@ export default {
 		cancel() {
 			this.open = false;
 			this.$refs.fileUploader.clearFileList();
+			this.$bus.$emit('changeFlag', false);
 			this.reset();
 		},
 		// 表单重置
@@ -1058,6 +1059,7 @@ export default {
 						this.$modal.msgSuccess(res.msg);
 						this.reset();
 						this.getList();
+						// todo 付款没有修改 承兑的逻辑没有从收款信息迁移过来
 					});
 				});
 			}
@@ -1066,10 +1068,8 @@ export default {
 		handlePayment() {
 			// 先去除无用参数
 			this.chooseInfo = excludeParams(this.chooseInfo, this.$exclude);
-
 			// 对auditState做保证处理
 			this.chooseInfo.auditState = this.chooseInfo.auditState === null ? '0' : this.chooseInfo.auditState === true ? '1' : '0';
-
 			// 更新付款状态
 			updatePayment({ ...this.chooseInfo, paymentState: '已支付' }).then(res => {
 				this.$modal.msgSuccess(res.msg);
@@ -1084,8 +1084,25 @@ export default {
 		submitForm() {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
+					// 校验收款类型 和银行卡类型
+					if (!this.form.payType) {
+						this.$message.warning('请选择付款类型');
+						return;
+					}
+					if (!this.form.selfBankCardType || !this.form.otherBankCardType) {
+						this.$message.warning('请选择银行账户类型,缺一不可!');
+						return;
+					}
+					if (this.form.selfBankCardType && this.form.otherBankCardType) {
+						if (this.form.selfBankCardType !== this.form.otherBankCardType) {
+							this.$message.warning('操作失败，无法进行承兑与活期存款或者相反的交易,类型需要保持一致');
+							return;
+						}
+					}
+					this.form = excludeParams(this.form, this.$exclude);
+					this.form.payType = this.form.payType.join('-');
 					if (this.form.id != null) {
-						this.form = excludeParams(this.form, this.$exclude);
+						// todo 同上 付款没有更新的操作 这里的逻辑没有与承兑挂钩
 						this.form.paymentState = '已支付';
 						// 修改支付状态
 						updatePayment(this.form).then(() => {
@@ -1097,25 +1114,12 @@ export default {
 
 						// 新增操作
 					} else {
-						// 去除参数
-						this.form = excludeParams(this.form, this.$exclude);
-						// 需要拼凑支付类型  但是不能修改响应式的payType 这是一个数组
-						let paymentType = null;
-						if (this.form.payType) {
-							paymentType = this.form.payType.join('-');
-						} else {
-							this.$message.warning('请选择付款类型');
-							return;
-						}
-						// 填充公司类型
 						this.form.companyType = this.value;
-						// 拼凑body
-						const body = { ...this.form, payType: paymentType };
-						// 添加付款信息
-						addPayment(body).then(() => {
+						addPayment(this.form).then(() => {
 							this.$modal.msgSuccess('新增成功');
 							this.open = false;
 							this.getList();
+							this.$bus.$emit('changeFlag', false);
 							this.$refs.fileUploader.clearFileList();
 						});
 					}
