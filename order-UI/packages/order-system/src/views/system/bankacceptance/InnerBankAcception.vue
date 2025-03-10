@@ -128,13 +128,13 @@
 								</el-col>
 							</el-row>
 						</el-form-item>
-						<el-form-item label="收入票据金额" prop="billAmount">
+						<el-form-item label="票据金额" prop="billAmount">
 							<el-input v-model="form.billAmount" placeholder="请输入票据金额" />
 						</el-form-item>
-						<el-form-item label="收入贴息点数" prop="inDiscountPoints">
+						<el-form-item label="贴息点数" prop="inDiscountPoints">
 							<el-input v-model="form.inDiscountPoints" placeholder="请输入贴息点数" />
 						</el-form-item>
-						<el-form-item label="收入贴息金额" prop="inDiscountAmount">
+						<el-form-item label="贴息金额" prop="inDiscountAmount">
 							<el-input disabled v-model="form.inDiscountAmount" placeholder="请输入贴息金额" />
 						</el-form-item>
 					</el-col>
