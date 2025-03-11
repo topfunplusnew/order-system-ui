@@ -203,3 +203,9 @@ export const BankAcceptanceType = Object.freeze({
 		RECEIVE: '收入'
 	}
 });
+
+// 佣金相关的枚举
+export const CommissionType = Object.freeze({
+	CUSTOMER: 0,
+	SUPPLIER: 1
+});
