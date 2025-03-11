@@ -83,9 +83,9 @@
 			<el-table-column show-overflow-tooltip label="差异" align="center" prop="difference" width="100" />
 			<el-table-column show-overflow-tooltip label="差异原因" align="center" prop="differenceReason" width="100" />
 			<!--      加一列操作列-->
-			<el-table-column show-overflow-tooltip label="操作" align="center" width="100" fixed="right">
+			<el-table-column show-overflow-tooltip label="操作" align="center" width="200" fixed="right">
 				<template slot-scope="scope">
-					<el-button type="text" size="mini" @click="handleEdit(scope.row)">编辑</el-button>
+					<el-button type="text" size="mini" @click="handleEdit(scope.row)">{{ scope.id ? '修改佣金信息' : '新增佣金信息' }}</el-button>
 					<el-button type="text" size="mini" @click="handleDelete(scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
@@ -218,25 +218,29 @@ export default {
 		},
 		// 修改
 		handleEdit(row) {
-			console.log(row);
-			getCommission(row.id).then(res => {
-				const commissionData = {
-					orderDetailId: res.data.orderDetailId,
-					commissionUnitPrice: res.data.commissionUnitPrice,
-					otherPaymentAmount: res.data.otherPaymentAmount
-				};
-				this.openDialog(
-					CommissionsForm,
-					'修改厂家返利',
-					'400px',
-					{
-						type: CommissionType.SUPPLIER,
-						orderDetailId: this.orderDetailId,
-						body: commissionData
-					},
-					false
-				);
-			});
+			this.orderDetailId = row.orderDetailId;
+			if (!row.id) {
+				this.handleAdd();
+			} else {
+				getCommission(row.id).then(res => {
+					const commissionData = {
+						orderDetailId: res.data.orderDetailId,
+						commissionUnitPrice: res.data.commissionUnitPrice,
+						otherPaymentAmount: res.data.otherPaymentAmount
+					};
+					this.openDialog(
+						CommissionsForm,
+						'修改厂家返利',
+						'400px',
+						{
+							type: CommissionType.SUPPLIER,
+							orderDetailId: this.orderDetailId,
+							body: commissionData
+						},
+						false
+					);
+				});
+			}
 		},
 		handleDelete(row) {},
 		// 提交表单
