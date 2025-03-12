@@ -559,6 +559,7 @@ export default {
 			scope.row.storeID = '';
 			scope.row.logisticsProfit = '';
 			scope.row.customerCommission = '';
+			scope.row.factoryCommission = '';
 			scope.row.isAdjusted = 0;
 			scope.row.adjustOrderNo = '';
 			scope.row.adjustDate = '';
@@ -1075,7 +1076,11 @@ export default {
 							<el-input size="mini" v-model="scope.row.customerCommission" placeholder="请输入佣金" />
 						</template>
 					</el-table-column>
-
+					<el-table-column label="厂家佣金" prop="factoryCommission" width="150">
+						<template #default="scope">
+							<el-input size="mini" v-model="scope.row.factoryCommission" placeholder="请输入佣金" />
+						</template>
+					</el-table-column>
 					<!--          降价金额-->
 					<el-table-column label="计提厂家返利金额" prop="customerCommission" width="150">
 						<template #default="scope">

@@ -212,7 +212,7 @@ export default {
 		async getList() {
 			this.loading = true;
 			try {
-				const response = await listCommission(this.queryParams, CommissionType.SUPPLIER);
+				const response = await listCommission(this.queryParams, CommissionType.CUSTOMER);
 				this.tableData = response.rows;
 				this.total = response.total;
 			} catch (error) {
@@ -242,7 +242,7 @@ export default {
 						'修改客户佣金',
 						'400px',
 						{
-							type: CommissionType.SUPPLIER,
+							type: CommissionType.CUSTOMER,
 							orderDetailId: this.orderDetailId,
 							body: commissionData
 						},
@@ -253,7 +253,7 @@ export default {
 		},
 		handleDelete(row) {},
 		handleApplyPayment(row) {
-			this.needMoney = this.PaymentApplyInfoVisible = true;
+			this.PaymentApplyInfoVisible = true;
 		},
 		// 提交表单
 		submitForm() {},
