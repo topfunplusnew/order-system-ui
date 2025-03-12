@@ -1,5 +1,5 @@
 <script>
-import { getMoneyChangeSummary } from '@/api/system/statement';
+import { getMoneyChangeSummary, getMoneyChangeSummaryByDate } from '@/api/system/statement';
 import { fix } from 'order-system/src/api/tool/format';
 import { getPreviousDay } from '@/utils/Date';
 import { parseTime } from '@/utils/ruoyi';
@@ -12,19 +12,34 @@ export default {
 				startTime: '',
 				endTime: ''
 			},
+			// 数据固定后的数组
 			changeTableData: [],
+			// 变动
+			changeMoneyTableData: [],
 			spanArr: [] // 存储合并信息的数组
 		};
 	},
-	created() {},
+	computed: {
+		columnHeaderFix() {
+			return `日期:` + (this.changeForm.endTime ? this.changeForm.endTime : '未选择日期') + `(数据固定后截取)`;
+		},
+		columnHeaderChange() {
+			return `日期:` + (this.changeForm.endTime ? this.changeForm.endTime : '未选择日期') + `(当日截取)`;
+		}
+	},
 	methods: {
 		fix,
 		async handleChangeSearch() {
 			// 开始时间为endTime往前推一天
 			this.changeForm.startTime = parseTime(getPreviousDay(new Date(this.changeForm.endTime)), '{y}-{m}-{d}');
+			// 查询固定数据 原来的接口默认为固定 存入数据库的数据
 			const response = await getMoneyChangeSummary(this.changeForm);
 			const data = response.data;
 			this.changeTableData = this.formatTableData(data);
+			// 查询变动数据
+			const changeMoney = await getMoneyChangeSummaryByDate(this.changeForm.endTime);
+			const body = changeMoney.data;
+			this.changeMoneyTableData = this.formatTableData(body.originalData);
 		},
 		formatValue(row, column, cellValue) {
 			return Number(cellValue).toFixed(2);
@@ -162,31 +177,63 @@ export default {
 			</el-form>
 
 			<!-- 表格 -->
-			<el-row :gutter="10">
-				<el-table :data="changeTableData" border class="money-table" :row-style="tableRowClassName" :span-method="objectSpanMethod">
-					<el-table-column label="科目名称">
-						<template slot-scope="scope">
-							<!-- 只在第一行显示“股东权益” -->
-							<div v-if="scope.$index === 0">股东权益</div>
-							<!-- 合并“资产类” -->
-							<div v-if="scope.$index === 1">资产类</div>
-							<!-- 合并“负债类” -->
-							<div v-if="scope.$index === 6">负债类</div>
-						</template>
-					</el-table-column>
-					<el-table-column prop="label" label="项目"></el-table-column>
-					<el-table-column prop="value" label="上日资金总额" :formatter="formatValue"></el-table-column>
-					<el-table-column label="对比日资金流变动">
-						<template slot-scope="scope">
-							<!-- 只在第一行显示差值 -->
-							<div v-if="scope.$index === 0">
-								{{ fix(scope.row.anotherLabel - scope.row.value) }}
-							</div>
-						</template>
-					</el-table-column>
-					<el-table-column prop="anotherLabel" label="本日资金总额" :formatter="formatValue"></el-table-column>
-					<el-table-column prop="anotherValue" label="当日资金总额变动情况" :formatter="formatValue"></el-table-column>
-				</el-table>
+			<el-row :gutter="30">
+				<el-col :span="12">
+					<el-table size="mini" :data="changeMoneyTableData" border class="money-table" :row-style="tableRowClassName" :span-method="objectSpanMethod">
+						<el-table-column :label="columnHeaderChange" align="center">
+							<el-table-column label="科目名称">
+								<template slot-scope="scope">
+									<!-- 只在第一行显示“股东权益” -->
+									<div v-if="scope.$index === 0">股东权益</div>
+									<!-- 合并“资产类” -->
+									<div v-if="scope.$index === 1">资产类</div>
+									<!-- 合并“负债类” -->
+									<div v-if="scope.$index === 6">负债类</div>
+								</template>
+							</el-table-column>
+							<el-table-column prop="label" label="项目"></el-table-column>
+							<el-table-column prop="value" label="上日资金总额" :formatter="formatValue"></el-table-column>
+							<el-table-column label="当日利润变动">
+								<template slot-scope="scope">
+									<!-- 只在第一行显示差值 -->
+									<div v-if="scope.$index === 0">
+										{{ fix(scope.row.anotherLabel - scope.row.value) }}
+									</div>
+								</template>
+							</el-table-column>
+							<el-table-column prop="anotherLabel" label="本日资金总额" :formatter="formatValue"></el-table-column>
+							<el-table-column prop="anotherValue" label="当日资金总额变动情况" :formatter="formatValue"></el-table-column>
+						</el-table-column>
+					</el-table>
+				</el-col>
+				<el-col :span="12">
+					<el-table size="mini" :data="changeTableData" border class="money-table" :row-style="tableRowClassName" :span-method="objectSpanMethod">
+						<el-table-column :label="columnHeaderFix" align="center">
+							<el-table-column label="科目名称">
+								<template slot-scope="scope">
+									<!-- 只在第一行显示“股东权益” -->
+									<div v-if="scope.$index === 0">股东权益</div>
+									<!-- 合并“资产类” -->
+									<div v-if="scope.$index === 1">资产类</div>
+									<!-- 合并“负债类” -->
+									<div v-if="scope.$index === 6">负债类</div>
+								</template>
+							</el-table-column>
+							<el-table-column prop="label" label="项目"></el-table-column>
+							<el-table-column prop="value" label="上日资金总额" :formatter="formatValue"></el-table-column>
+							<el-table-column label="当日利润变动">
+								<template slot-scope="scope">
+									<!-- 只在第一行显示差值 -->
+									<div v-if="scope.$index === 0">
+										{{ fix(scope.row.anotherLabel - scope.row.value) }}
+									</div>
+								</template>
+							</el-table-column>
+							<el-table-column prop="anotherLabel" label="本日资金总额" :formatter="formatValue"></el-table-column>
+							<el-table-column prop="anotherValue" label="当日资金总额变动情况" :formatter="formatValue"></el-table-column>
+						</el-table-column>
+					</el-table>
+				</el-col>
 			</el-row>
 		</div>
 	</div>

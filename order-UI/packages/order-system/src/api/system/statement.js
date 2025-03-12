@@ -388,7 +388,7 @@ export function getMoneySummary(query) {
 }
 
 /**
- * 资金变动统计
+ * 资金变动统计(数据截取版)
  * @param {Object} query
  * @param {string} query.startTime - 开始时间
  * @param {string} query.endTime - 结束时间
@@ -399,6 +399,21 @@ export function getMoneyChangeSummary(query) {
 		url: '/statistics/getallmoneychange',
 		method: 'get',
 		params: query
+	});
+}
+
+///system/allmoneybacklog/getInfoByDate/{date}
+/**
+ * 资金变动统计(数据变动版)
+ * @param {Object} query
+ * @param {string} query.startTime - 开始时间
+ * @param {string} query.endTime - 结束时间
+ * @returns
+ */
+export function getMoneyChangeSummaryByDate(date) {
+	return request({
+		url: '/system/allmoneybacklog/getInfoByDate/' + date,
+		method: 'get'
 	});
 }
 
