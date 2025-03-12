@@ -266,8 +266,7 @@ export default {
 		},
 		handleDelete(row) {},
 		handleApplyPayment(row) {
-      this.needMoney =
-			this.PaymentApplyInfoVisible = true;
+			this.needMoney = this.PaymentApplyInfoVisible = true;
 		},
 		// 提交表单
 		submitForm() {},

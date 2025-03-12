@@ -1,7 +1,7 @@
 <template>
 	<div class="app-container">
 		<hr color="#e6e6e6" />
-		<el-form ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
+		<el-form ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="130px">
 			<el-form-item label="开始时间" prop="beginTime">
 				<el-date-picker v-model="queryParams.params.startTime" type="date" placeholder="请选择开始时间" value-format="yyyy-MM-dd" clearable />
 			</el-form-item>
@@ -11,10 +11,23 @@
 			<el-form-item label="客户名称" prop="companyName">
 				<el-input v-model="queryParams.companyName" placeholder="请输入客户名称" clearable />
 			</el-form-item>
+			<el-form-item label="支付状态" prop="companyName">
+				<el-select v-model="queryParams.params.isNoPay" placeholder="请选择">
+					<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+				</el-select>
+			</el-form-item>
+			<el-form-item label="是否可支付" prop="companyName">
+				<el-select v-model="queryParams.params.isCanPay" placeholder="请选择">
+					<el-option v-for="item in pay_options" :key="item.value" :label="item.label" :value="item.value" />
+				</el-select>
+			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
 			</el-form-item>
 		</el-form>
+		<el-row>
+			<el-button size="mini" icon="el-icon-refresh" @click="refresh">刷新</el-button>
+		</el-row>
 		<el-row :gutter="10" class="mb8">
 			<right-toolbar :columns="columns" @queryTable="getList">
 				<template #print>
@@ -22,13 +35,14 @@
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML" />
 					</el-col>
 				</template>
+				<template #export>
+					<el-col :span="1.5">
+						<el-button plain icon="el-icon-folder-opened" size="mini" @click="handleExport" />
+					</el-col>
+				</template>
 			</right-toolbar>
 		</el-row>
 
-		<el-row>
-			<el-button size="mini" icon="el-icon-refresh" @click="refresh">刷新</el-button>
-			<el-button type="danger" size="mini" icon="el-icon-plus" @click="handleAdd">新增</el-button>
-		</el-row>
 		<br />
 		<el-table
 			id="printBox"
@@ -67,11 +81,19 @@
 			<el-table-column show-overflow-tooltip label="佣金单价" align="center" prop="commissionUnitPrice" width="100" />
 			<el-table-column show-overflow-tooltip label="已验证佣金" align="center" prop="verifiedCommission" width="100" />
 			<el-table-column show-overflow-tooltip label="其他付款金额" align="center" prop="otherPaymentAmount" width="100" />
-			<el-table-column show-overflow-tooltip label="佣金金额" align="center" prop="commissionAmount" width="100" />
+			<el-table-column show-overflow-tooltip label="应付佣金金额" align="center" prop="commissionAmount" width="100" />
 			<el-table-column show-overflow-tooltip label="实际客户佣金" align="center" prop="actualCustomerCommission" width="100" />
-			<el-table-column show-overflow-tooltip label="资金日期" align="center" prop="fundDate" width="100" />
+			<el-table-column show-overflow-tooltip label="支付日期" align="center" prop="fundDate" width="100" />
 			<el-table-column show-overflow-tooltip label="差异" align="center" prop="difference" width="100" />
 			<el-table-column show-overflow-tooltip label="差异原因" align="center" prop="differenceReason" width="100" />
+			<!--      加一列操作列-->
+			<el-table-column show-overflow-tooltip label="操作" align="center" width="230" fixed="right">
+				<template slot-scope="scope">
+					<el-button type="text" size="mini" @click="handleEdit(scope.row)">{{ scope.id ? '修改佣金信息' : '填写佣金信息' }}</el-button>
+					<el-button type="text" size="mini" @click="handleDelete(scope.row)">删除</el-button>
+					<el-button type="text" size="mini" @click="handleApplyPayment(scope.row)">申请付款</el-button>
+				</template>
+			</el-table-column>
 		</el-table>
 
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
@@ -88,20 +110,33 @@
 				@confirm="handleDialogConfirm"
 			/>
 		</div>
+
+		<!--    申请付款-->
+		<el-dialog :close-on-click-modal="false" :show-close="false" title="付款申请" :visible.sync="PaymentApplyInfoVisible" width="45%">
+			<keep-alive>
+				<ApplyPayment :table-name="TableName.REPAYMENT" :t-i-d="tID" :need-money="needMoney" :need-info="{}" @changeOpen="changePaymentApplyInfoVisible" />
+			</keep-alive>
+		</el-dialog>
 	</div>
 </template>
 
 <script>
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
-import { listCommission } from '@/api/commission';
-import { CommissionType } from '@/api/tool/enums';
+import { getCommission, listCommission } from '@/api/commission';
+import { CommissionType, TableName } from '@/api/tool/enums';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 import CommissionsForm from '@/views/system/Commission/components/CommissionsForm.vue';
+import ApplyPayment from '@/views/dashboard/components/common/ApplyPayment.vue';
 
 export default {
-	name: 'CUSTOMERCommission',
-	components: { DialogWrapper },
+	name: 'SupplierCommission',
+	computed: {
+		TableName() {
+			return TableName;
+		}
+	},
+	components: { ApplyPayment, DialogWrapper },
 	mixins: [mixin_printHTML, common_dialog],
 	data() {
 		return {
@@ -122,7 +157,34 @@ export default {
 			tableData: [],
 			selectedRow: null, // 当前选中的行
 			orderDetailId: null,
-			total: 0
+			total: 0,
+			options: [
+				{
+					value: '',
+					label: '全部'
+				},
+				{
+					value: false,
+					label: '已付款'
+				},
+				{
+					value: true,
+					label: '未付款'
+				}
+			],
+			pay_options: [
+				{
+					value: false,
+					label: '可支付'
+				},
+				{
+					value: true,
+					label: '不可支付'
+				}
+			],
+			PaymentApplyInfoVisible: false,
+			tID: null,
+			needMoney: null
 		};
 	},
 	methods: {
@@ -150,7 +212,7 @@ export default {
 		async getList() {
 			this.loading = true;
 			try {
-				const response = await listCommission(this.queryParams, CommissionType.CUSTOMER);
+				const response = await listCommission(this.queryParams, CommissionType.SUPPLIER);
 				this.tableData = response.rows;
 				this.total = response.total;
 			} catch (error) {
@@ -168,20 +230,53 @@ export default {
 			this.openDialog(
 				CommissionsForm,
 				'新增厂家返利',
-				'50%',
+				'400px',
 				{
-					type: CommissionType.CUSTOMER,
+					type: CommissionType.SUPPLIER,
 					orderDetailId: this.orderDetailId
 				},
 				false
 			);
 		},
 		// 修改
-		handleEdit() {},
+		handleEdit(row) {
+			this.orderDetailId = row.orderDetailId;
+			if (!row.id) {
+				this.handleAdd();
+			} else {
+				getCommission(row.id).then(res => {
+					const commissionData = {
+						orderDetailId: res.data.orderDetailId,
+						commissionUnitPrice: res.data.commissionUnitPrice,
+						otherPaymentAmount: res.data.otherPaymentAmount
+					};
+					this.openDialog(
+						CommissionsForm,
+						'修改厂家返利',
+						'400px',
+						{
+							type: CommissionType.SUPPLIER,
+							orderDetailId: this.orderDetailId,
+							body: commissionData
+						},
+						false
+					);
+				});
+			}
+		},
+		handleDelete(row) {},
+		handleApplyPayment(row) {
+			this.needMoney = this.PaymentApplyInfoVisible = true;
+		},
 		// 提交表单
-		async submitForm() {},
+		submitForm() {},
 		// 导出
-		async handleExport() {}
+		handleExport() {},
+		changePaymentApplyInfoVisible() {
+			this.needMoney = 0;
+			this.PaymentApplyInfoVisible = false;
+			this.getList();
+		}
 	},
 	mounted() {
 		this.getList(); // 页面加载时获取数据
