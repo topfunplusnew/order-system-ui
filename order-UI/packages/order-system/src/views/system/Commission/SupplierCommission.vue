@@ -27,7 +27,6 @@
 		</el-form>
 		<el-row>
 			<el-button size="mini" icon="el-icon-refresh" @click="refresh">刷新</el-button>
-			<el-button type="danger" size="mini" icon="el-icon-plus" @click="handleAdd">新增</el-button>
 		</el-row>
 		<el-row :gutter="10" class="mb8">
 			<right-toolbar :columns="columns" @queryTable="getList">
@@ -90,7 +89,7 @@
 			<!--      加一列操作列-->
 			<el-table-column show-overflow-tooltip label="操作" align="center" width="230" fixed="right">
 				<template slot-scope="scope">
-					<el-button type="text" size="mini" @click="handleEdit(scope.row)">{{ scope.id ? '修改佣金信息' : '新增佣金信息' }}</el-button>
+					<el-button type="text" size="mini" @click="handleEdit(scope.row)">{{ scope.id ? '修改佣金信息' : '填写佣金信息' }}</el-button>
 					<el-button type="text" size="mini" @click="handleDelete(scope.row)">删除</el-button>
 					<el-button type="text" size="mini" @click="handleApplyPayment(scope.row)">申请付款</el-button>
 				</template>
@@ -111,20 +110,33 @@
 				@confirm="handleDialogConfirm"
 			/>
 		</div>
+
+		<!--    申请付款-->
+		<el-dialog :close-on-click-modal="false" :show-close="false" title="付款申请" :visible.sync="PaymentApplyInfoVisible" width="45%">
+			<keep-alive>
+				<ApplyPayment :table-name="TableName.REPAYMENT" :t-i-d="tID" :need-money="needMoney" :need-info="{}" @changeOpen="changePaymentApplyInfoVisible" />
+			</keep-alive>
+		</el-dialog>
 	</div>
 </template>
 
 <script>
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import { getCommission, listCommission } from '@/api/commission';
-import { CommissionType } from '@/api/tool/enums';
+import { CommissionType, TableName } from '@/api/tool/enums';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 import CommissionsForm from '@/views/system/Commission/components/CommissionsForm.vue';
+import ApplyPayment from '@/views/dashboard/components/common/ApplyPayment.vue';
 
 export default {
 	name: 'SupplierCommission',
-	components: { DialogWrapper },
+	computed: {
+		TableName() {
+			return TableName;
+		}
+	},
+	components: { ApplyPayment, DialogWrapper },
 	mixins: [mixin_printHTML, common_dialog],
 	data() {
 		return {
@@ -169,7 +181,10 @@ export default {
 					value: true,
 					label: '不可支付'
 				}
-			]
+			],
+			PaymentApplyInfoVisible: false,
+			tID: null,
+			needMoney: null
 		};
 	},
 	methods: {
@@ -250,11 +265,19 @@ export default {
 			}
 		},
 		handleDelete(row) {},
-		handleApplyPayment() {},
+		handleApplyPayment(row) {
+      this.needMoney =
+			this.PaymentApplyInfoVisible = true;
+		},
 		// 提交表单
 		submitForm() {},
 		// 导出
-		handleExport() {}
+		handleExport() {},
+		changePaymentApplyInfoVisible() {
+			this.needMoney = 0;
+			this.PaymentApplyInfoVisible = false;
+			this.getList();
+		}
 	},
 	mounted() {
 		this.getList(); // 页面加载时获取数据
