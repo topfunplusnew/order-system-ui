@@ -83,6 +83,7 @@ export default {
 
 		// 审核
 		handleCheckState(item) {
+			console.log('审核信息:', item);
 			this.checkWithTableName(item.paymentApply.tableName, item.paymentApply.tid);
 			// 赋值 先拿到付款申请对象
 			this.currentCheckPaymentApply = item.paymentApply;

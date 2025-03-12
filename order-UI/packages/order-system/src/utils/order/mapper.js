@@ -141,6 +141,7 @@ export class TableComponentsTools {
 	// 这个方法可以根据表名获取对应的组件 然后展示
 	getComponentsByTableName(tableName) {
 		if (!tableName) {
+			this.$message.error('getComponentsByTableName函数调用出错，表名或表ID为空');
 			throw new Error('getComponentsByTableName函数调用出错，表名为空');
 		}
 		switch (tableName) {
@@ -182,6 +183,7 @@ export class TableComponentsTools {
 	// 根据表名获取对应的信息
 	async getInformationByTableName(tableName, tID) {
 		if (!tableName || !tID) {
+			this.$message.error('getInformationByTableName函数调用出错，表名或表ID为空');
 			throw new Error('getInformationByTableName函数调用出错，表名或表ID为空');
 		}
 		const { data } = await getFunction(tableName)(tID);

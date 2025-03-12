@@ -1,6 +1,5 @@
 <template>
 	<div class="app-container">
-		<hr color="#e6e6e6" />
 		<el-form ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="130px">
 			<el-form-item label="开始时间" prop="beginTime">
 				<el-date-picker v-model="queryParams.params.startTime" type="date" placeholder="请选择开始时间" value-format="yyyy-MM-dd" clearable />
@@ -27,6 +26,7 @@
 		</el-form>
 		<el-row>
 			<el-button size="mini" icon="el-icon-refresh" @click="refresh">刷新</el-button>
+			<el-button :disabled="selections.length <= 0" size="mini" type="success" icon="el-icon-s-claim" @click="handleOnceApply">一键申请</el-button>
 		</el-row>
 		<el-row :gutter="10" class="mb8">
 			<right-toolbar :columns="columns" @queryTable="getList">
@@ -45,6 +45,7 @@
 
 		<br />
 		<el-table
+			ref="multipleTable"
 			id="printBox"
 			v-loading="loading"
 			v-horizontal-scroll="'always'"
@@ -58,7 +59,7 @@
 			"
 			@selection-change="handleSelectionChange"
 		>
-			<el-table-column type="selection" width="55" align="center" />
+			<el-table-column type="selection" width="55" align="center" :selectable="(row, index) => row.id !== null" />
 			<!--			<el-table-column show-overflow-tooltip label="订单号" align="center" prop="ordersNo" width="140" />-->
 			<el-table-column show-overflow-tooltip label="订单日期" align="center" prop="orderDate" width="140" />
 			<el-table-column show-overflow-tooltip label="客户名称" align="center" prop="companyName" width="140" />
@@ -128,6 +129,8 @@ import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 import CommissionsForm from '@/views/system/Commission/components/CommissionsForm.vue';
 import ApplyPayment from '@/views/dashboard/components/common/ApplyPayment.vue';
+import OncePaymentApply from '@/views/system/Commission/components/OncePaymentApply.vue';
+import { ExtraInfo, PaymentApply, SourceInfo } from '@/types/payment';
 
 export default {
 	name: 'CUSTOMERCommission',
@@ -156,6 +159,7 @@ export default {
 			loading: false,
 			tableData: [],
 			selectedRow: null, // 当前选中的行
+			selections: [],
 			orderDetailId: null,
 			total: 0,
 			options: [
@@ -191,6 +195,35 @@ export default {
 		this.getList(); // 页面加载时获取数据
 	},
 	methods: {
+		handleOnceApply() {
+			let extra = new ExtraInfo({ sourceInfos: [] });
+			this.selections.forEach(item => {
+				let s = new SourceInfo({
+					tableId: item.id,
+					tableName: TableName.ORDERCOMMISION
+				});
+				extra.pushSourceInfo(s);
+			});
+
+			let applications = this.selections.map(item => {
+				return new PaymentApply({
+					moneyAmount: item.commissionAmount,
+					extraInfo: extra,
+					tableName: TableName.ORDERCOMMISION // 后端要求必须传递 否则会出问题
+				});
+			});
+
+			// 打开弹窗
+			this.openDialog(
+				OncePaymentApply,
+				'申请列表',
+				'1100px',
+				{
+					applications
+				},
+				false
+			);
+		},
 		// 刷新表格
 		refresh() {
 			this.queryParams = {
@@ -227,6 +260,7 @@ export default {
 		// 选中行
 		handleSelectionChange(selection) {
 			this.selectedRow = selection.length > 0 ? selection[0] : null;
+			this.selections = selection;
 		},
 		handleAdd() {
 			this.openDialog(
@@ -268,20 +302,26 @@ export default {
 		},
 		handleDelete(row) {
 			if (row.id) {
-				deleteCommission(row.id).then(res => {
-					this.$message.success('删除成功');
-					this.getList();
+				this.$confirm('是否确认删除佣金信息?', '提示', {
+					confirmButtonText: '确定',
+					cancelButtonText: '取消',
+					type: 'warning'
+				}).then(() => {
+					deleteCommission(row.id).then(() => {
+						this.$message.success('删除成功');
+						this.getList();
+					});
 				});
 			} else {
 				this.$message.warning('此信息由订单产生，由于未生成相关佣金信息，不可删除!');
 			}
 		},
 		handleApplyPayment(row) {
-			this.PaymentApplyInfoVisible = true;
 			if (!row.id) {
 				this.$message.error('此佣金信息还未生成，无法进行付款申请');
 			}
 			this.tID = row.id;
+			this.PaymentApplyInfoVisible = true;
 		},
 		// 导出
 		handleExport() {

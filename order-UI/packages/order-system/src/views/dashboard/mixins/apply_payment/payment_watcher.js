@@ -21,6 +21,11 @@ export var mixin_payment_watcher = {
 		moneyInputDisabled: {
 			type: Boolean,
 			default: true
+		},
+		// 是否为多个付款申请
+		isMulti: {
+			type: Boolean,
+			default: false
 		}
 	},
 	watch: {

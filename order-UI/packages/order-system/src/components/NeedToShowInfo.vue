@@ -17,9 +17,13 @@ export default {
 		};
 	},
 	computed: {
-		// eslint-disable-next-line
-		show() {
-			return this.getComponents(this.tableNameToProp);
+		show: {
+			get() {
+				return this.getComponents(this.tableNameToProp);
+			},
+			set(value) {
+				this.show = value;
+			}
 		}
 	},
 	watch: {

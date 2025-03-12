@@ -16,6 +16,7 @@ export var mixin_payment_fill = {
 		},
 		handleCommitBackOther(val) {
 			this.form.companyName = val.companyName;
+			this.form.companyType = val.companyType;
 			this.form.companyId = val.id;
 		},
 		// 对方信息(银行卡信息) - 点击确认后自动填充

@@ -82,16 +82,16 @@
 			<el-table-column show-overflow-tooltip label="已验证佣金" align="center" prop="verifiedCommission" width="100" />
 			<el-table-column show-overflow-tooltip label="其他付款金额" align="center" prop="otherPaymentAmount" width="100" />
 			<el-table-column show-overflow-tooltip label="应付佣金金额" align="center" prop="commissionAmount" width="100" />
-			<el-table-column show-overflow-tooltip label="实际客户佣金" align="center" prop="actualCustomerCommission" width="100" />
+			<el-table-column show-overflow-tooltip label="实际厂家佣金" align="center" prop="actualCustomerCommission" width="100" />
 			<el-table-column show-overflow-tooltip label="支付日期" align="center" prop="fundDate" width="100" />
 			<el-table-column show-overflow-tooltip label="差异" align="center" prop="difference" width="100" />
 			<el-table-column show-overflow-tooltip label="差异原因" align="center" prop="differenceReason" width="100" />
 			<!--      加一列操作列-->
 			<el-table-column show-overflow-tooltip label="操作" align="center" width="230" fixed="right">
 				<template slot-scope="scope">
-					<el-button type="text" size="mini" @click="handleEdit(scope.row)">{{ scope.id ? '修改佣金信息' : '填写佣金信息' }}</el-button>
-					<el-button type="text" size="mini" @click="handleDelete(scope.row)">删除</el-button>
-					<el-button type="text" size="mini" @click="handleApplyPayment(scope.row)">申请付款</el-button>
+					<el-button type="text" size="mini" @click="handleEdit(scope.row)">{{ scope.row.id ? '修改佣金信息' : '填写佣金信息' }}</el-button>
+					<el-button :disabled="scope.row.id === null" type="text" size="mini" @click="handleDelete(scope.row)">删除</el-button>
+					<el-button :disabled="scope.row.id === null" type="text" size="mini" @click="handleApplyPayment(scope.row)">申请付款</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -114,7 +114,7 @@
 		<!--    申请付款-->
 		<el-dialog :close-on-click-modal="false" :show-close="false" title="付款申请" :visible.sync="PaymentApplyInfoVisible" width="45%">
 			<keep-alive>
-				<ApplyPayment :table-name="TableName.REPAYMENT" :t-i-d="tID" :need-money="needMoney" :need-info="{}" @changeOpen="changePaymentApplyInfoVisible" />
+				<ApplyPayment :money-input-disabled="false" :table-name="TableName.ORDERCOMMISION" :t-i-d="tID" :need-money="needMoney" :need-info="{}" @changeOpen="changePaymentApplyInfoVisible" />
 			</keep-alive>
 		</el-dialog>
 	</div>
@@ -122,7 +122,7 @@
 
 <script>
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
-import { getCommission, listCommission } from '@/api/commission';
+import { deleteCommission, getCommission, listCommission } from '@/api/commission';
 import { CommissionType, TableName } from '@/api/tool/enums';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
@@ -130,7 +130,7 @@ import CommissionsForm from '@/views/system/Commission/components/CommissionsFor
 import ApplyPayment from '@/views/dashboard/components/common/ApplyPayment.vue';
 
 export default {
-	name: 'SupplierCommission',
+	name: 'CUSTOMERCommission',
 	computed: {
 		TableName() {
 			return TableName;
@@ -186,6 +186,9 @@ export default {
 			tID: null,
 			needMoney: null
 		};
+	},
+	created() {
+		this.getList(); // 页面加载时获取数据
 	},
 	methods: {
 		// 刷新表格
@@ -263,22 +266,44 @@ export default {
 				});
 			}
 		},
-		handleDelete(row) {},
-		handleApplyPayment(row) {
-			this.needMoney = this.PaymentApplyInfoVisible = true;
+		handleDelete(row) {
+			if (row.id) {
+				this.$confirm('是否确认删除佣金信息?', '提示', {
+					confirmButtonText: '确定',
+					cancelButtonText: '取消',
+					type: 'warning'
+				}).then(() => {
+					deleteCommission(row.id).then(() => {
+						this.$message.success('删除成功');
+						this.getList();
+					});
+				});
+			} else {
+				this.$message.warning('此信息由订单产生，由于未生成相关佣金信息，不可删除!');
+			}
 		},
-		// 提交表单
-		submitForm() {},
+		handleApplyPayment(row) {
+			this.PaymentApplyInfoVisible = true;
+			if (!row.id) {
+				this.$message.error('此佣金信息还未生成，无法进行付款申请');
+			}
+			this.tID = row.id;
+		},
 		// 导出
-		handleExport() {},
+		handleExport() {
+			this.download(
+				'system/ordercommission/export',
+				{
+					...this.queryParams
+				},
+				`厂家佣金_${new Date().getTime()}.xlsx`
+			);
+		},
 		changePaymentApplyInfoVisible() {
 			this.needMoney = 0;
 			this.PaymentApplyInfoVisible = false;
 			this.getList();
 		}
-	},
-	mounted() {
-		this.getList(); // 页面加载时获取数据
 	}
 };
 </script>

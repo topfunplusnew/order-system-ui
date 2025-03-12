@@ -363,6 +363,14 @@ export default {
 		submitForm() {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
+					// 如果是多个付款审核 需要把信息返回给父组件进行使用
+					if (this.isMulti) {
+						this.$message.success('付款申请提交成功');
+						this.$emit('getApplyPayment', this.form);
+						this.$emit('changeOpen');
+						return;
+					}
+
 					excludeParams(this, this.$exclude);
 					// 填充对应表名和主键
 					this.form.tableName = this.tableName;

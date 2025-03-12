@@ -75,9 +75,9 @@ export var mixin_payment_apply = {
 		// 填充运费信息 这里是根据父组件传递过来的信息对象needInfo
 		fillFreightInfo() {
 			// 需要司机信息
-			if (this.needInfo.isExit !== undefined) {
+			if (this.needInfo?.isExit !== undefined) {
 				// 如果信息对象中需要司机信息
-				if (this.needInfo.isExit === true) {
+				if (this.needInfo?.isExit === true) {
 					// 自动填充 拿到父组件传递过来的需要的信息对象 needInfo
 					this.form.otherAcountsName = this.needInfo.otherAcountsName;
 					this.form.companyName = this.needInfo.companyName;
