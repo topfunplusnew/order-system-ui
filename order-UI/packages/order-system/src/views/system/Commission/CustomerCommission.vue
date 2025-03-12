@@ -110,9 +110,9 @@ export default {
 				pageNum: 1,
 				pageSize: 10,
 				params: {
-					showOrder: true,
-					isNoPay: false,
-					isCanPay: true,
+					showOrder: null,
+					isNoPay: null,
+					isCanPay: null,
 					startTime: null,
 					endTime: null
 				}
@@ -129,9 +129,16 @@ export default {
 		// 刷新表格
 		refresh() {
 			this.queryParams = {
-				beginTime: '',
-				endTime: '',
-				companyName: ''
+				companyName: '',
+				pageNum: 1,
+				pageSize: 10,
+				params: {
+					showOrder: null,
+					isNoPay: null,
+					isCanPay: null,
+					startTime: null,
+					endTime: null
+				}
 			};
 			this.getList();
 		},
