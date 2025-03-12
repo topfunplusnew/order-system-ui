@@ -225,6 +225,18 @@ export default {
 		handleSelectionChange(selection) {
 			this.selectedRow = selection.length > 0 ? selection[0] : null;
 		},
+		handleAdd() {
+			this.openDialog(
+				CommissionsForm,
+				'新增厂家佣金',
+				'400px',
+				{
+					type: CommissionType.SUPPLIER,
+					orderDetailId: this.orderDetailId
+				},
+				false
+			);
+		},
 		// 修改
 		handleEdit(row) {
 			this.orderDetailId = row.orderDetailId;

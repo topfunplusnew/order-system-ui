@@ -89,7 +89,7 @@
 			<!--      加一列操作列-->
 			<el-table-column show-overflow-tooltip label="操作" align="center" width="230" fixed="right">
 				<template slot-scope="scope">
-					<el-button type="text" size="mini" @click="handleEdit(scope.row)">{{ scope.id ? '修改佣金信息' : '填写佣金信息' }}</el-button>
+					<el-button type="text" size="mini" @click="handleEdit(scope.row)">{{ scope.row.id ? '修改佣金信息' : '填写佣金信息' }}</el-button>
 					<el-button type="text" size="mini" @click="handleDelete(scope.row)">删除</el-button>
 					<el-button type="text" size="mini" @click="handleApplyPayment(scope.row)">申请付款</el-button>
 				</template>
@@ -114,7 +114,7 @@
 		<!--    申请付款-->
 		<el-dialog :close-on-click-modal="false" :show-close="false" title="付款申请" :visible.sync="PaymentApplyInfoVisible" width="45%">
 			<keep-alive>
-				<ApplyPayment :table-name="TableName.REPAYMENT" :t-i-d="tID" :need-money="needMoney" :need-info="{}" @changeOpen="changePaymentApplyInfoVisible" />
+				<ApplyPayment :table-name="TableName.ORDERCOMMISION" :t-i-d="tID" :need-money="needMoney" :need-info="{}" @changeOpen="changePaymentApplyInfoVisible" />
 			</keep-alive>
 		</el-dialog>
 	</div>
@@ -122,7 +122,7 @@
 
 <script>
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
-import { getCommission, listCommission } from '@/api/commission';
+import { deleteCommission, getCommission, listCommission } from '@/api/commission';
 import { CommissionType, TableName } from '@/api/tool/enums';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
@@ -130,7 +130,7 @@ import CommissionsForm from '@/views/system/Commission/components/CommissionsFor
 import ApplyPayment from '@/views/dashboard/components/common/ApplyPayment.vue';
 
 export default {
-	name: 'SupplierCommission',
+	name: 'CUSTOMERCommission',
 	computed: {
 		TableName() {
 			return TableName;
@@ -225,6 +225,18 @@ export default {
 		handleSelectionChange(selection) {
 			this.selectedRow = selection.length > 0 ? selection[0] : null;
 		},
+		handleAdd() {
+			this.openDialog(
+				CommissionsForm,
+				'新增客户佣金',
+				'400px',
+				{
+					type: CommissionType.CUSTOMER,
+					orderDetailId: this.orderDetailId
+				},
+				false
+			);
+		},
 		// 修改
 		handleEdit(row) {
 			this.orderDetailId = row.orderDetailId;
@@ -251,9 +263,19 @@ export default {
 				});
 			}
 		},
-		handleDelete(row) {},
+		handleDelete(row) {
+			if (row.id) {
+				deleteCommission(row.id).then(res => {
+					this.$message.success('删除成功');
+					this.getList();
+				});
+			} else {
+				this.$message.warning('此信息由订单产生，由于未生成相关佣金信息，不可删除!');
+			}
+		},
 		handleApplyPayment(row) {
 			this.PaymentApplyInfoVisible = true;
+			this.tID = row.id;
 		},
 		// 提交表单
 		submitForm() {},

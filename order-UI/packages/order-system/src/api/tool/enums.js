@@ -42,7 +42,8 @@ export const TableName = Object.freeze({
 	INVENTORMAIN: 'inventory_main',
 	INVENTORDETAIL: 'inventory_detail',
 	DAILY: 'daily',
-	CASH_RECORD: 'cash_record'
+	CASH_RECORD: 'cash_record',
+	ORDERCOMMISION: 'ordercommission'
 });
 
 export const moduleNames = Object.freeze({
@@ -82,7 +83,8 @@ export const moduleNames = Object.freeze({
 	storehouse: '仓库',
 	inventory_main: '库存',
 	inventory_detail: '库存明细',
-	bankacceptance: '商业票据'
+	bankacceptance: '商业票据',
+	ordercommission: '订单佣金'
 });
 
 // 报表所用类型
