@@ -90,8 +90,8 @@
 			<el-table-column show-overflow-tooltip label="操作" align="center" width="230" fixed="right">
 				<template slot-scope="scope">
 					<el-button type="text" size="mini" @click="handleEdit(scope.row)">{{ scope.row.id ? '修改佣金信息' : '填写佣金信息' }}</el-button>
-					<el-button type="text" size="mini" @click="handleDelete(scope.row)">删除</el-button>
-					<el-button type="text" size="mini" @click="handleApplyPayment(scope.row)">申请付款</el-button>
+					<el-button :disabled="scope.row.id === null" type="text" size="mini" @click="handleDelete(scope.row)">删除</el-button>
+					<el-button :disabled="scope.row.id === null" type="text" size="mini" @click="handleApplyPayment(scope.row)">申请付款</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -114,7 +114,7 @@
 		<!--    申请付款-->
 		<el-dialog :close-on-click-modal="false" :show-close="false" title="付款申请" :visible.sync="PaymentApplyInfoVisible" width="45%">
 			<keep-alive>
-				<ApplyPayment :table-name="TableName.ORDERCOMMISION" :t-i-d="tID" :need-money="needMoney" :need-info="{}" @changeOpen="changePaymentApplyInfoVisible" />
+				<ApplyPayment :money-input-disabled="false" :table-name="TableName.ORDERCOMMISION" :t-i-d="tID" :need-money="needMoney" :need-info="{}" @changeOpen="changePaymentApplyInfoVisible" />
 			</keep-alive>
 		</el-dialog>
 	</div>
@@ -186,6 +186,9 @@ export default {
 			tID: null,
 			needMoney: null
 		};
+	},
+	created() {
+		this.getList(); // 页面加载时获取数据
 	},
 	methods: {
 		// 刷新表格
@@ -275,20 +278,26 @@ export default {
 		},
 		handleApplyPayment(row) {
 			this.PaymentApplyInfoVisible = true;
+			if (!row.id) {
+				this.$message.error('此佣金信息还未生成，无法进行付款申请');
+			}
 			this.tID = row.id;
 		},
-		// 提交表单
-		submitForm() {},
 		// 导出
-		handleExport() {},
+		handleExport() {
+			this.download(
+				'system/ordercommission/export',
+				{
+					...this.queryParams
+				},
+				`客户佣金_${new Date().getTime()}.xlsx`
+			);
+		},
 		changePaymentApplyInfoVisible() {
 			this.needMoney = 0;
 			this.PaymentApplyInfoVisible = false;
 			this.getList();
 		}
-	},
-	mounted() {
-		this.getList(); // 页面加载时获取数据
 	}
 };
 </script>

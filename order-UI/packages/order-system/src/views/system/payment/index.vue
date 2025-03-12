@@ -168,7 +168,7 @@
 			</el-table-column>
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="150" fixed="right">
 				<template slot-scope="scope">
-					<el-button v-if="scope.row.paymentState === '未支付'" v-hasPermi="['system:payment:edit']" size="mini" type="text" @click="handleUpdate(scope.row)">付款</el-button>
+					<el-button v-if="scope.row.paymentState === '未支付'" v-hasPermi="['system:payment:edit']" size="mini" type="text" @click="handlePaymentRow(scope.row)">付款</el-button>
 					<el-button v-else-if="scope.row.paymentState === '已支付'" v-hasPermi="['system:payment:edit']" size="mini" disabled type="success">已付款</el-button>
 					<el-button v-else size="mini" disabled type="warning">申请中</el-button>
 					<el-button v-hasPermi="['system:payment:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
@@ -421,7 +421,12 @@
 			<div>
 				<el-form :model="chooseInfo" label-width="150px">
 					<el-form-item label="我方银行账户类型" prop="selfBankNo">
-						<BankType :select-type="chooseInfo.selfBankCardType" @updateSelectedType="changeCustomSelfBankType" />
+						<BankType
+							:bill-type="BankAcceptanceType.PAY_TYPE.PAYMENT"
+							:select-type="chooseInfo.selfBankCardType"
+							@updateSelectedType="changeCustomSelfBankType"
+							@updateBankAcceptance="value => (chooseInfo.params.bankacceptance = value)"
+						/>
 					</el-form-item>
 					<el-form-item label="我方户名" prop="selfAcountsName">
 						<el-row>
@@ -456,14 +461,6 @@
 					<el-form-item label="我方开户行" prop="selfBankName">
 						<el-input v-model="chooseInfo.selfBankName" placeholder="请输入我方开户行" />
 					</el-form-item>
-					<!--          选择对方银行账户类型-->
-					<!--					<el-form-item label="对方银行账户类型">-->
-					<!--						<BankType-->
-					<!--							v-if="chooseBankDialogVisible"-->
-					<!--							:select-type="chooseInfo.otherBankCardType"-->
-					<!--							@updateSelectedType="changeCustomOtherBankType"-->
-					<!--						/>-->
-					<!--					</el-form-item>-->
 				</el-form>
 			</div>
 			<span slot="footer" class="dialog-footer">
@@ -471,75 +468,6 @@
 				<el-button type="primary" @click="handlePayment">确 定</el-button>
 			</span>
 		</el-dialog>
-
-		<el-dialog title="一键付款" :visible.sync="oneClickPaymentDialogVisible" width="50%" size="mini">
-			<el-divider>一键付款信息</el-divider>
-			<el-table :data="batchPaymentData" border>
-				<el-table-column prop="otherAcountsName" label="对方户名" />
-				<el-table-column prop="otherBankNo" label="对方账号" />
-				<el-table-column prop="otherBankName" label="对方开户行" />
-				<el-table-column label="对方账户类型">
-					<template slot-scope="scope">
-						<BankType v-if="oneClickPaymentDialogVisible" :select-type="scope.row.otherBankCardType" @updateSelectedType="value => changeRowOtherBankType(scope.row, value)" />
-					</template>
-				</el-table-column>
-				<el-table-column prop="moneyAmount" label="金额" />
-				<el-table-column label="来源信息">
-					<template slot-scope="scope">
-						<div v-for="info in scope.row.extraInfo.sourceInfos" :key="info.tableId">
-							<!-- {{ info.tableName }} - {{ info.tableId }} -->
-							<el-button size="mini" @click="viewSourceInfo(scope.row)">查看{{ `ID:` + info.tableId }}</el-button>
-						</div>
-					</template>
-				</el-table-column>
-			</el-table>
-			<el-divider>我方信息</el-divider>
-			<div>
-				<el-form :model="chooseInfo" label-width="150px">
-					<el-form-item label="我方银行账户类型" prop="selfBankNo">
-						<BankType :option-baned="true" :baned="true" v-if="oneClickPaymentDialogVisible" :select-type="chooseInfo.selfBankCardType" @updateSelectedType="changeCustomSelfBankType" />
-					</el-form-item>
-					<el-form-item label="我方户名" prop="selfAcountsName">
-						<el-row>
-							<el-col :span="10">
-								<el-input v-model="chooseInfo.selfAcountsName" placeholder="请输入我方户名" />
-							</el-col>
-							<el-col :span="3">
-								<SearchOption
-									:limit-info="{ acountsType: '己方公司' }"
-									:get-data="listBankAccount"
-									icon="el-icon-search"
-									query-label="户名查找"
-									query-info="acountsName"
-									:query-name="queryChoose"
-									@commitBack="handleCommitBackChoose"
-									@update:queryName="handleUpdateQueryChoose"
-								>
-									<template #table-columns>
-										<el-table-column label="账号类型" align="center" prop="acountsType" />
-										<el-table-column label="显示名称" align="center" prop="displayName" />
-										<el-table-column label="开户行" align="center" prop="bankName" />
-										<el-table-column label="开户名" align="center" prop="acountsName" />
-										<el-table-column label="账号" align="center" prop="bankNo" />
-									</template>
-								</SearchOption>
-							</el-col>
-						</el-row>
-					</el-form-item>
-					<el-form-item label="我方账号" prop="selfBankNo">
-						<el-input v-model="chooseInfo.selfBankNo" placeholder="请输入我方账号" />
-					</el-form-item>
-					<el-form-item label="我方开户行" prop="selfBankName">
-						<el-input v-model="chooseInfo.selfBankName" placeholder="请输入我方开户行" />
-					</el-form-item>
-				</el-form>
-			</div>
-			<span slot="footer" class="dialog-footer">
-				<el-button @click="handleCloseOnce">取 消</el-button>
-				<el-button type="primary" @click="handleSubmitOnce">确 定</el-button>
-			</span>
-		</el-dialog>
-
 		<el-dialog title="信息" :visible.sync="infoVisible" width="900px" append-to-body>
 			<component :is="Components" :need-to-show-info="needToShowInfo" />
 		</el-dialog>
@@ -565,20 +493,7 @@ import CheckDetail from '../../dashboard/components/payment/CheckDetail.vue';
 import BankType from '@/views/dashboard/components/common/BankType.vue';
 import { mixin_bankType } from '../../dashboard/mixins/common/common_bankType';
 import StateTag from '@/views/dashboard/components/common/StateTag.vue';
-import { batchPayment } from '../../../api/system/payment';
-import { getFunction } from '../../../utils/order/mapper';
-import { BankAcceptanceType, TableName } from '../../../api/tool/enums';
-import GOODS_ORDER from '@/components/NeedToShow/GOODS_ORDER.vue';
-import INVENTORY from '@/components/NeedToShow/INVENTORY.vue';
-import INVOICE_IN from '@/components/NeedToShow/INVOICE_IN.vue';
-import INVOICE_ORTHER from '@/components/NeedToShow/INVOICE_ORTHER.vue';
-import INVOICE_OUT from '@/components/NeedToShow/INVOICE_OUT.vue';
-import OFFSETTING from '@/components/NeedToShow/OFFSETTING.vue';
-import PAYMENT from '@/components/NeedToShow/PAYMENT.vue';
-import REBATE from '@/components/NeedToShow/REBATE.vue';
-import BANK_ACCEPTANCE from '@/components/NeedToShow/BANK_ACCEPTANCE.vue';
-import BUSSNIESS_TRIPVue from '../../../components/NeedToShow/BUSSNIESS_TRIP.vue';
-import LEND_MONEYVue from '../../../components/NeedToShow/LEND_MONEY.vue';
+import { BankAcceptanceType } from '../../../api/tool/enums';
 import CheckFiles from '@/components/CheckFiles.vue';
 import { mixin_checkfile } from '@/views/dashboard/mixins/checkfiles/mixin_checkfile';
 
@@ -809,137 +724,13 @@ export default {
 		isNull,
 		listCars,
 		listBankAccount,
-		batchPayment,
 		listCompany,
-		// 一键付款
-		// handleOnce() {
-		// 	this.$nextTick(() => {
-		// 		this.$refs.paymentTable.clearSelection();
-		// 		const unpaidRows = this.computedPaymentList.filter(row => row.paymentState === '未支付');
-		// 		if (unpaidRows.length === 0) {
-		// 			this.$message.warning('没有需要付款的信息');
-		// 		} else {
-		// 			unpaidRows.forEach(row => {
-		// 				this.$refs.paymentTable.toggleRowSelection(row, true);
-		// 			});
-		// 			// 处理数据
-		// 			const selectRows = unpaidRows.map(row => {
-		// 				return {
-		// 					...row,
-		// 					auditState: row.auditState === true ? '1' : '0'
-		// 				};
-		// 			});
-		// 			// 对选中的行按照对方账户进行分组 然后批量付款
-		// 			const map = new Map();
-		// 			selectRows.forEach(row => {
-		// 				// 处理null的情况
-		// 				if (!row.otherBankName || !row.otherBankNo || !row.otherAcountsName) {
-		// 					this.$message.warning('对方银行账户信息不完整');
-		// 					return;
-		// 				}
-		//
-		// 				// 组合一个唯一键作为键值
-		// 				const key = `${row.otherBankName}#${row.otherBankNo}#${row.otherAcountsName}`;
-		// 				if (map.has(key)) {
-		// 					map.get(key).extraInfo.sourceInfos.push({
-		// 						tableName: row.tableName,
-		// 						tableId: row.tID
-		// 					});
-		// 				} else {
-		// 					map.set(key, {
-		// 						...row,
-		// 						extraInfo: {
-		// 							sourceInfos: [
-		// 								{
-		// 									tableName: row.tableName,
-		// 									tableId: row.tID
-		// 								}
-		// 							]
-		// 						}
-		// 					});
-		// 				}
-		// 			});
-		// 			// 将map转为数组
-		// 			const data = Array.from(map.values());
-		// 			this.batchPaymentData = data;
-		// 			// 重置我方信息
-		// 			this.resetChooseInfo();
-		// 			// 打开弹窗
-		// 			this.oneClickPaymentDialogVisible = true;
-		// 		}
-		// 	});
-		// },
 		handleCommitUpload(value) {
 			this.form.attachment = value;
-		},
-		// 表格中选择对方银行卡类型
-		changeRowOtherBankType(row, value) {
-			row.otherBankCardType = value;
-		},
-		handleCloseOnce() {
-			this.oneClickPaymentDialogVisible = false;
-		},
-		handleSubmitOnce() {
-			// 一键付款 chooseInfo
-			const data = this.batchPaymentData.map(item => {
-				return {
-					...item,
-					selfAcountsName: this.chooseInfo.selfAcountsName,
-					selfBankNo: this.chooseInfo.selfBankNo,
-					selfBankName: this.chooseInfo.selfBankName,
-					selfBankCardType: this.chooseInfo.selfBankCardType
-				};
-			});
-			this.batchPayment(data).then(res => {
-				this.$message.success(res.msg);
-				this.resetChooseInfo();
-				this.oneClickPaymentDialogVisible = false;
-				this.getList();
-			});
-		},
-		// 查看来源信息
-		viewSourceInfo(row) {
-			getFunction(row.tableName)(row.tID).then(res => {
-				if (!res.data) {
-					this.$message.error('未找到来源信息');
-					return;
-				}
-				// 填充数据
-				this.needToShowInfo = res.data;
-				// 根据对应表名渲染对应的展示组件
-				this.Components = this.getComponents(row.tableName);
-				if (this.Components !== null) {
-					// 打开弹窗
-					this.infoVisible = true;
-				} else {
-					this.$message.warning('组件渲染有误');
-				}
-			});
-		},
-		getComponents(tableName) {
-			const components = {
-				[TableName.GOODS_ORDER]: GOODS_ORDER,
-				[TableName.PAYMENT]: PAYMENT,
-				[TableName.INVOICE_IN]: INVOICE_IN,
-				[TableName.INVOICE_OUT]: INVOICE_OUT,
-				[TableName.INVOICE_OTHER]: INVOICE_ORTHER,
-				[TableName.OFFSETTING]: OFFSETTING,
-				[TableName.REBATE]: REBATE,
-				[TableName.INVENTORMAIN]: INVENTORY,
-				// 需要前端在这两个明细表上进行适配bankacceptance
-				[TableName.BANK_ACCOUNT_CHANGE]: BANK_ACCEPTANCE,
-				[TableName.BUSINESS_TRIP]: BUSSNIESS_TRIPVue,
-				[TableName.LEND_MONEY]: LEND_MONEYVue
-			};
-			return components[tableName] || null; // 默认返回 null，如果没有匹配的 tableName
 		},
 		// 选择我方银行账户类型
 		changeCustomSelfBankType(value) {
 			this.chooseInfo.selfBankCardType = value;
-		},
-		// 选择对方银行账户类型
-		changeCustomOtherBankType(value) {
-			this.chooseInfo.otherBankCardType = value;
 		},
 		/** 查询付款信息列表 */
 		getList() {
@@ -1024,7 +815,10 @@ export default {
 				userId: null,
 				UserName: null,
 				updateTime: null,
-				delFlag: null
+				delFlag: null,
+				params: {
+					bankacceptance: null
+				}
 			};
 		},
 		/** 搜索按钮操作 */
@@ -1050,11 +844,15 @@ export default {
 			this.title = '添加付款信息';
 		},
 		// 付款的操作
-		handleUpdate(row) {
+		handlePaymentRow(row) {
 			// 如果没有我方银行卡信息 需要跳出选择银行卡信息
 			if (!row.selfBankID) {
 				this.resetChooseInfo();
 				this.chooseInfo = row;
+				// 初始化承兑对象
+				this.chooseInfo.params = {
+					bankacceptance: null
+				};
 				this.chooseBankDialogVisible = true;
 			} else {
 				this.$confirm('是否付款?', '提示', {

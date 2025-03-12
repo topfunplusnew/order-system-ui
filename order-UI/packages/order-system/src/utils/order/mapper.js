@@ -17,7 +17,6 @@ import { getInvoiceIn } from '../../api/system/invoiceIn';
 import { getInvoiceOther } from '../../api/system/invoiceOther';
 import { getInvoiceOut } from '../../api/system/invoiceOut';
 import { getLendMoney } from '../../api/system/lendMoney';
-import { getOffsetting } from '../../api/system/Offsetting';
 import { getOilCard } from '../../api/system/oilCard';
 import { getOilCardConsume } from '../../api/system/OilCardConsume';
 import { getOilCardFundTransfer } from '../../api/system/oilCardFundTransfer';
@@ -35,40 +34,64 @@ import { getStoreHouse } from '../../api/system/StoreHouse';
 import { TableName } from '../../api/tool/enums';
 import { getGenTable } from '../../api/tool/gen';
 import { getRecord } from '@/api/system/record';
+import CARS from '@/components/NeedToShow/CARS.vue';
+import BORROWMONEY from '@/components/NeedToShow/BORROWMONEY.vue';
+import ORDER_FREIGHT from '@/components/NeedToShow/ORDER_FREIGHT.vue';
+import OIL_RECHARGE from '@/components/NeedToShow/OIL_RECHARGE.vue';
+import INVOICE_IN from '@/components/NeedToShow/INVOICE_IN.vue';
+import GOODS_ORDER from '@/components/NeedToShow/GOODS_ORDER.vue';
+import ORDER_COMMISION from '@/components/NeedToShow/ORDER_COMMISION.vue';
+import { getCommission } from '@/api/commission';
+import ORDER_DETAIL from '@/components/NeedToShow/ORDER_DETAIL.vue';
 
+// 根据表名  获取对应的get函数方法
 export function getFunction(tableName) {
 	switch (tableName) {
+		// 订单列表
 		case TableName.GOODS_ORDER:
 			return getGoodsOrder;
+		case TableName.ORDER_DETAIL:
+			return getOrderDetail;
+		// 订单佣金信息
+		case TableName.ORDERCOMMISION:
+			return getCommission;
+		// 付款
 		case TableName.PAYMENT:
 			return getPayment;
+		// 发票的三个 收入支出和第三方
 		case TableName.INVOICE_IN:
 			return getInvoiceIn;
 		case TableName.INVOICE_OUT:
 			return getInvoiceOut;
 		case TableName.INVOICE_OTHER:
 			return getInvoiceOther;
+		// 冲抵货款 后来改为cash record
 		case TableName.OFFSETTING:
 			return getRecord;
+		// 返利信息
 		case TableName.REBATE:
 			return getRebate;
+		// 库存的主表和从表
 		case TableName.INVENTORMAIN:
 			return getInventoryMain;
 		case TableName.INVENTORDETAIL:
 			return getDetail;
-		case TableName.ORDER_DETAIL:
-			return getOrderDetail;
+		// 虚拟资金变动
 		case TableName.BANK_ACCOUNT_CHANGE:
 			return getBankAcceptance;
-		// 2025-01-24新增
+		// 借款信息
 		case TableName.BORROWED_MONEY:
 			return getBorrowedMoney;
+		// 出差信息
 		case TableName.BUSINESS_TRIP:
 			return getBusinessTrip;
+		// 车辆申请
 		case TableName.CAR_APPLY:
 			return getCarApply;
+		// 外部车辆信息
 		case TableName.CARS:
 			return getCars;
+		// 客户或者供应商信息
 		case TableName.COMPANY:
 			return getCompany;
 		case TableName.CUSTOMER_VISIT:
@@ -111,5 +134,57 @@ export function getFunction(tableName) {
 			return getStoreHouse;
 		case TableName.BANK_ACCEPTANCE:
 			return getBankAcceptance;
+	}
+}
+
+export class TableComponentsTools {
+	// 这个方法可以根据表名获取对应的组件 然后展示
+	getComponentsByTableName(tableName) {
+		if (!tableName) {
+			throw new Error('getComponentsByTableName函数调用出错，表名为空');
+		}
+		switch (tableName) {
+			// 如果是订单信息
+			case TableName.GOODS_ORDER: {
+				return GOODS_ORDER;
+			}
+			// 如果是订单佣金
+			case TableName.ORDERCOMMISION: {
+				return ORDER_COMMISION;
+			}
+			// 订单个体信息
+			case TableName.ORDER_DETAIL: {
+				return ORDER_DETAIL;
+			}
+			// 如果是车辆信息
+			case TableName.CARS: {
+				return CARS;
+			}
+			// 如果是借钱信息
+			case TableName.BORROWED_MONEY: {
+				return BORROWMONEY;
+			}
+			// 如果是订单运费
+			case TableName.ORDER_FREIGHT: {
+				return ORDER_FREIGHT;
+			}
+			// 如果是油卡充值
+			case TableName.OIL_RECHARGE: {
+				return OIL_RECHARGE;
+			}
+			// 如果是发票购入
+			case TableName.INVOICE_IN: {
+				return INVOICE_IN;
+			}
+		}
+	}
+
+	// 根据表名获取对应的信息
+	async getInformationByTableName(tableName, tID) {
+		if (!tableName || !tID) {
+			throw new Error('getInformationByTableName函数调用出错，表名或表ID为空');
+		}
+		const { data } = await getFunction(tableName)(tID);
+		return data;
 	}
 }

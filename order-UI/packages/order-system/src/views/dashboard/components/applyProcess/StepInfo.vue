@@ -1,13 +1,8 @@
 <script>
 import { getUserProfile } from '@/api/system/user';
 import CheckApply from '@/views/dashboard/components/applyProcess/CheckApply.vue';
-import { TableName } from '@/api/tool/enums';
-import { getOrderFreight } from '@/api/system/orderFreight';
-import { getBorrowedMoney } from '@/api/system/borrowedMoney';
 import NeedToShowInfo from '@/components/NeedToShowInfo.vue';
-import { getOilRecharge } from '@/api/system/oilRecharge';
-import { getInvoiceIn } from '@/api/system/invoiceIn';
-import { getGoodsOrder } from '../../../../api/system/goodsOrder';
+import { TableComponentsTools } from '@/utils/order/mapper';
 
 export default {
 	name: 'StepInfo',
@@ -88,11 +83,7 @@ export default {
 
 		// 审核
 		handleCheckState(item) {
-			console.log('审核个体信息', item);
-			// 根据tableName来决定给哪个发请求
-			// todo tid? tID?
 			this.checkWithTableName(item.paymentApply.tableName, item.paymentApply.tid);
-
 			// 赋值 先拿到付款申请对象
 			this.currentCheckPaymentApply = item.paymentApply;
 			// 组装审核基本对象 传递给子组件审核页面
@@ -115,50 +106,11 @@ export default {
 		},
 
 		// 根据表名查询
-		// todo 这里后续需要不断迭代
-		checkWithTableName(tableName, tID) {
+		async checkWithTableName(tableName, tID) {
 			// 展示对应表信息
 			this.tableNameToProp = tableName;
-			switch (tableName) {
-				// 订单运费
-				case TableName.ORDER_FREIGHT: {
-					// 发请求 获取订单运费信息
-					getOrderFreight(tID).then(res => {
-						this.needToShowInfo = res.data;
-					});
-					break;
-				}
-				// 借钱
-				case TableName.BORROWED_MONEY:
-					getBorrowedMoney(tID).then(res => {
-						this.needToShowInfo = res.data;
-					});
-					break;
-				// case 'paymentApplyDetailItem':
-				// 	this.needToShowInfo = item.paymentApplyDetailItem;
-				// 	break;
-
-				// 油卡充值
-				case TableName.OIL_RECHARGE:
-					getOilRecharge(tID).then(res => {
-						this.needToShowInfo = res.data;
-					});
-					break;
-				// 发票买入
-				case TableName.INVOICE_IN:
-					getInvoiceIn(tID).then(res => {
-						this.needToShowInfo = res.data;
-					});
-					break;
-				// 商品订单
-				case TableName.GOODS_ORDER:
-					getGoodsOrder(tID).then(res => {
-						this.needToShowInfo = res.data;
-					});
-					break;
-				default:
-					break;
-			}
+			const tableComponentsTools = new TableComponentsTools();
+			this.needToShowInfo = await tableComponentsTools.getInformationByTableName(tableName, tID);
 		}
 	}
 };
@@ -225,9 +177,19 @@ export default {
 				<!-- 审核页面 checkPaymentApplyDialogVisible-->
 				<el-dialog :close-on-click-modal="false" title="流程审核" :visible.sync="checkPaymentApplyDialogVisible" width="65%" append-to-body>
 					<!--   需要展示的对应的表信息-->
-					<NeedToShowInfo :need-to-show-info="needToShowInfo" :table-name-to-prop="tableNameToProp" />
-					<hr />
-					<CheckApply :payment-apply-info="currentCheckPaymentApply" :check-apply-info="checkApplyInfo" @update:isCheckState="handleUpdateCheckState" />
+					<CheckApply :payment-apply-info="currentCheckPaymentApply" :check-apply-info="checkApplyInfo" @update:isCheckState="handleUpdateCheckState">
+						<template #additional>
+							<el-collapse accordion>
+								<el-collapse-item>
+									<template slot="title">
+										<i class="header-icon el-icon-info"></i>
+										<span class="payment-title">[付款相关信息]</span>
+									</template>
+									<NeedToShowInfo :need-to-show-info="needToShowInfo" :table-name-to-prop="tableNameToProp" />
+								</el-collapse-item>
+							</el-collapse>
+						</template>
+					</CheckApply>
 					<span slot="footer" class="dialog-footer">
 						<el-button @click="checkPaymentApplyDialogVisible = false">取 消</el-button>
 						<el-button type="primary" @click="checkPaymentApplyDialogVisible = false">确 定</el-button>
@@ -246,5 +208,10 @@ export default {
 /*卡片遮罩*/
 .shadow {
 	opacity: 50%;
+}
+
+.payment-title {
+	font-weight: bold;
+	color: red;
 }
 </style>

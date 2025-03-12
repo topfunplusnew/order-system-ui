@@ -105,6 +105,7 @@ export default {
 				</el-descriptions-item>
 			</el-descriptions>
 		</el-row>
+		<slot name="additional" />
 		<br />
 		<hr />
 		<el-row>
