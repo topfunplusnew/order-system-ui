@@ -225,19 +225,6 @@ export default {
 		handleSelectionChange(selection) {
 			this.selectedRow = selection.length > 0 ? selection[0] : null;
 		},
-		// 新增
-		handleAdd() {
-			this.openDialog(
-				CommissionsForm,
-				'新增厂家返利',
-				'400px',
-				{
-					type: CommissionType.SUPPLIER,
-					orderDetailId: this.orderDetailId
-				},
-				false
-			);
-		},
 		// 修改
 		handleEdit(row) {
 			this.orderDetailId = row.orderDetailId;
@@ -252,7 +239,7 @@ export default {
 					};
 					this.openDialog(
 						CommissionsForm,
-						'修改厂家返利',
+						'修改客户佣金',
 						'400px',
 						{
 							type: CommissionType.SUPPLIER,
