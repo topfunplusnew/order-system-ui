@@ -152,6 +152,7 @@ export default {
 			try {
 				const response = await listCommission(this.queryParams, CommissionType.CUSTOMER);
 				this.tableData = response.rows;
+				this.total = response.total;
 			} catch (error) {
 				console.error('获取数据失败', error);
 			} finally {

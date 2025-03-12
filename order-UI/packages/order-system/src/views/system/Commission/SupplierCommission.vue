@@ -1,7 +1,7 @@
 <template>
 	<div class="app-container">
 		<hr color="#e6e6e6" />
-		<el-form ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
+		<el-form ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="130px">
 			<el-form-item label="开始时间" prop="beginTime">
 				<el-date-picker v-model="queryParams.params.startTime" type="date" placeholder="请选择开始时间" value-format="yyyy-MM-dd" clearable />
 			</el-form-item>
@@ -25,6 +25,10 @@
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
 			</el-form-item>
 		</el-form>
+		<el-row>
+			<el-button size="mini" icon="el-icon-refresh" @click="refresh">刷新</el-button>
+			<el-button type="danger" size="mini" icon="el-icon-plus" @click="handleAdd">新增</el-button>
+		</el-row>
 		<el-row :gutter="10" class="mb8">
 			<right-toolbar :columns="columns" @queryTable="getList">
 				<template #print>
@@ -32,13 +36,14 @@
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML" />
 					</el-col>
 				</template>
+				<template #export>
+					<el-col :span="1.5">
+						<el-button plain icon="el-icon-folder-opened" size="mini" @click="handleExport" />
+					</el-col>
+				</template>
 			</right-toolbar>
 		</el-row>
 
-		<el-row>
-			<el-button size="mini" icon="el-icon-refresh" @click="refresh">刷新</el-button>
-			<el-button type="danger" size="mini" icon="el-icon-plus" @click="handleAdd">新增</el-button>
-		</el-row>
 		<br />
 		<el-table
 			id="printBox"
@@ -79,14 +84,15 @@
 			<el-table-column show-overflow-tooltip label="其他付款金额" align="center" prop="otherPaymentAmount" width="100" />
 			<el-table-column show-overflow-tooltip label="应付佣金金额" align="center" prop="commissionAmount" width="100" />
 			<el-table-column show-overflow-tooltip label="实际客户佣金" align="center" prop="actualCustomerCommission" width="100" />
-			<el-table-column show-overflow-tooltip label="资金日期" align="center" prop="fundDate" width="100" />
+			<el-table-column show-overflow-tooltip label="支付日期" align="center" prop="fundDate" width="100" />
 			<el-table-column show-overflow-tooltip label="差异" align="center" prop="difference" width="100" />
 			<el-table-column show-overflow-tooltip label="差异原因" align="center" prop="differenceReason" width="100" />
 			<!--      加一列操作列-->
-			<el-table-column show-overflow-tooltip label="操作" align="center" width="200" fixed="right">
+			<el-table-column show-overflow-tooltip label="操作" align="center" width="230" fixed="right">
 				<template slot-scope="scope">
 					<el-button type="text" size="mini" @click="handleEdit(scope.row)">{{ scope.id ? '修改佣金信息' : '新增佣金信息' }}</el-button>
 					<el-button type="text" size="mini" @click="handleDelete(scope.row)">删除</el-button>
+					<el-button type="text" size="mini" @click="handleApplyPayment(scope.row)">申请付款</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -193,6 +199,7 @@ export default {
 			try {
 				const response = await listCommission(this.queryParams, CommissionType.SUPPLIER);
 				this.tableData = response.rows;
+				this.total = response.total;
 			} catch (error) {
 				console.error('获取数据失败', error);
 			} finally {
@@ -243,10 +250,11 @@ export default {
 			}
 		},
 		handleDelete(row) {},
+		handleApplyPayment() {},
 		// 提交表单
-		async submitForm() {},
+		submitForm() {},
 		// 导出
-		async handleExport() {}
+		handleExport() {}
 	},
 	mounted() {
 		this.getList(); // 页面加载时获取数据
