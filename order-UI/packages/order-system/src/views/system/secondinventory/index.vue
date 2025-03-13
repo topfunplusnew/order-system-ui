@@ -22,16 +22,16 @@
 				</template>
 				<!-- 后端说导出不要了 -->
 				<!-- <template #export>
-					<el-col :span="1.5">
-						<el-button
-							v-hasPermi="['system:secondinventory:export']"
-							plain
-							icon="el-icon-folder-opened"
-							size="mini"
-							@click="handleExport"
-						></el-button>
-					</el-col>
-				</template> -->
+          <el-col :span="1.5">
+            <el-button
+              v-hasPermi="['system:secondinventory:export']"
+              plain
+              icon="el-icon-folder-opened"
+              size="mini"
+              @click="handleExport"
+            ></el-button>
+          </el-col>
+        </template> -->
 			</right-toolbar>
 		</el-row>
 
@@ -511,19 +511,19 @@
 							<el-input size="mini" v-model="scope.row.logisticsProfit" placeholder="请输入物流利润" />
 						</template>
 					</el-table-column>
-					<el-table-column label="客户佣金" prop="customerCommission" width="150">
+					<el-table-column label="厂家佣金" prop="factoryCommission" width="150">
 						<template #default="scope">
-							<el-input size="mini" v-model="scope.row.customerCommission" placeholder="请输入客户佣金" />
+							<el-input size="mini" v-model="scope.row.factoryCommission" placeholder="请输入厂家佣金" />
 						</template>
 					</el-table-column>
 
 					<!--          降价金额-->
-					<el-table-column label="计提厂家返利金额" prop="customerCommission" width="150">
+					<el-table-column label="计提厂家返利金额" prop="factoryRebateAmount" width="150">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.factoryRebateAmount" placeholder="请输入计提厂家返利金额" />
 						</template>
 					</el-table-column>
-					<el-table-column label="计提厂家降价金额" prop="customerCommission" width="150">
+					<el-table-column label="计提厂家降价金额" prop="factoryDiscountAmount" width="150">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.factoryDiscountAmount" placeholder="请输入计提厂家降价金额" />
 						</template>
@@ -990,7 +990,7 @@ export default {
 			scope.row.paymentsWithSundry = '';
 			scope.row.additionalFees = '';
 			scope.row.rebate = '';
-			scope.row.customerCommission = '';
+			scope.row.factoryCommission = '';
 			scope.row.comments = '';
 		},
 
@@ -1047,7 +1047,7 @@ export default {
 			obj.paymentsWithSundry = '';
 			obj.additionalFees = '';
 			obj.rebate = '';
-			obj.customerCommission = '';
+			obj.factoryCommission = '';
 			obj.comments = '';
 			this.inventoryDetailList.push(obj);
 		},

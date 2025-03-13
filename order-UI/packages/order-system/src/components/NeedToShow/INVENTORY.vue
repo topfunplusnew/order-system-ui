@@ -61,6 +61,11 @@ export default {
 				<el-table-column prop="profit" label="利润" width="150">
 					<template #default="scope">{{ scope.row.profit || '0' }} 元</template>
 				</el-table-column>
+				<el-table-column prop="factoryCommission" label="厂家佣金" width="150">
+					<template #default="scope">
+						<el-tag size="small">{{ scope.row.factoryCommission || '无' }}</el-tag>
+					</template>
+				</el-table-column>
 				<el-table-column prop="comments" label="备注" width="150">
 					<template #default="scope">
 						<el-tag size="small">{{ scope.row.comments || '无' }}</el-tag>

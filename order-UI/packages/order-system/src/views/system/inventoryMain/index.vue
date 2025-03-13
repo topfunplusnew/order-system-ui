@@ -206,13 +206,6 @@
 					</el-form-item>
 					<!-- 添加车队 -->
 					<el-form-item label="车队">
-						<!-- <el-input
-              v-model="form.fleet"
-              type="text"
-              size="mini"
-              placeholder="请输入车队"
-              style="width: 130px"
-            /> -->
 						<el-row>
 							<el-col :span="12">
 								<el-input v-model="form.fleet" type="text" size="mini" placeholder="请输入车队" />
@@ -587,12 +580,18 @@
 							<el-input size="mini" v-model="scope.row.logisticsProfit" placeholder="请输入物流利润" />
 						</template>
 					</el-table-column>
-					<el-table-column label="客户佣金" prop="customerCommission" width="150">
+					<!--          库存没有客户佣金-->
+					<!--					<el-table-column label="客户佣金" prop="customerCommission" width="150">-->
+					<!--						<template #default="scope">-->
+					<!--							<el-input size="mini" v-model="scope.row.customerCommission" placeholder="请输入客户佣金" />-->
+					<!--						</template>-->
+					<!--					</el-table-column>-->
+					<!--          添加厂家佣金 -->
+					<el-table-column label="厂家佣金" prop="factoryCommission" width="150">
 						<template #default="scope">
-							<el-input size="mini" v-model="scope.row.customerCommission" placeholder="请输入客户佣金" />
+							<el-input size="mini" v-model="scope.row.factoryCommission" placeholder="请输入厂家佣金" />
 						</template>
 					</el-table-column>
-
 					<!--          降价金额-->
 					<el-table-column label="计提厂家返利金额" prop="customerCommission" width="150">
 						<template #default="scope">

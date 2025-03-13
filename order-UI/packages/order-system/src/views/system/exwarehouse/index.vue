@@ -32,16 +32,16 @@
 				</template>
 				<!--    后端说导出不要了 删除了    导出-->
 				<!-- <template #export>
-					<el-col :span="1.5">
-						<el-button
-							v-hasPermi="['system:exwarehouse:export']"
-							plain
-							icon="el-icon-folder-opened"
-							size="mini"
-							@click="handleExport"
-						></el-button>
-					</el-col>
-				</template> -->
+          <el-col :span="1.5">
+            <el-button
+              v-hasPermi="['system:exwarehouse:export']"
+              plain
+              icon="el-icon-folder-opened"
+              size="mini"
+              @click="handleExport"
+            ></el-button>
+          </el-col>
+        </template> -->
 			</right-toolbar>
 		</el-row>
 
@@ -323,7 +323,7 @@
 				<el-descriptions-item label="返利">
 					{{ inventoryInfo.rebate }}
 				</el-descriptions-item>
-				<el-descriptions-item label="客户佣金">
+				<el-descriptions-item label="厂家佣金">
 					{{ inventoryInfo.customerCommission }}
 				</el-descriptions-item>
 				<el-descriptions-item label="备注信息">

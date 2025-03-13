@@ -121,7 +121,7 @@
 					<el-table-column v-if="columns[30].visible" label="总货款杂费" align="center" prop="paymentsWithSundry" />
 					<el-table-column v-if="columns[31].visible" label="加费" align="center" prop="additionalFees" />
 					<el-table-column v-if="columns[32].visible" label="返利金额" align="center" prop="rebate" />
-					<el-table-column v-if="columns[33].visible" label="客户佣金" align="center" prop="customerCommission" />
+					<el-table-column v-if="columns[33].visible" label="厂家佣金" align="center" prop="factoryCommission" />
 					<el-table-column v-if="columns[34].visible" label="备注" align="center" prop="comments" />
 					<!-- 操作列 -->
 					<el-table-column v-if="columns[35].visible" label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="120px">
@@ -238,8 +238,8 @@
 				<el-form-item label="返利金额" prop="rebate">
 					<el-input v-model="form.rebate" placeholder="请输入返利金额" />
 				</el-form-item>
-				<el-form-item label="客户佣金" prop="customerCommission">
-					<el-input v-model="form.customerCommission" placeholder="请输入客户佣金" />
+				<el-form-item label="厂家佣金" prop="factoryCommission">
+					<el-input v-model="form.factoryCommission" placeholder="请输入厂家佣金" />
 				</el-form-item>
 				<el-form-item label="备注" prop="comments">
 					<el-input v-model="form.comments" placeholder="请输入备注" />
@@ -367,7 +367,7 @@ export default {
 				paymentsWithSundry: null,
 				additionalFees: null,
 				rebate: null,
-				customerCommission: null,
+				factoryCommission: null,
 				comments: null,
 				exWareHoustId: null,
 				delFlag: null,
@@ -485,8 +485,8 @@ export default {
 				{ key: 32, label: '返利金额', prop: 'rebate', visible: true },
 				{
 					key: 33,
-					label: '客户佣金',
-					prop: 'customerCommission',
+					label: '厂家佣金',
+					prop: 'factoryCommission',
 					visible: true
 				},
 				{ key: 34, label: '备注', prop: 'comments', visible: true },
@@ -591,7 +591,7 @@ export default {
 				paymentsWithSundry: null,
 				additionalFees: null,
 				rebate: null,
-				customerCommission: null,
+				factoryCommission: null,
 				comments: null,
 				exWareHoustId: null,
 				delFlag: null
