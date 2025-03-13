@@ -29,6 +29,7 @@ export default {
 	},
 	methods: {
 		fix,
+		// 搜索
 		async handleChangeSearch() {
 			// 开始时间为endTime往前推一天
 			this.changeForm.startTime = parseTime(getPreviousDay(new Date(this.changeForm.endTime)), '{y}-{m}-{d}');
@@ -41,9 +42,11 @@ export default {
 			const body = changeMoney.data;
 			this.changeMoneyTableData = this.formatTableData(body.originalData);
 		},
+		// 对数据进行精确
 		formatValue(row, column, cellValue) {
 			return Number(cellValue).toFixed(2);
 		},
+		// 计算总资产
 		calculateTotalBalance(data) {
 			return (
 				data.companyTotalBalance + // ①应收账款---客户欠款合计数
@@ -57,6 +60,7 @@ export default {
 			) // ⑧其他应付款---公司从外面借款合计
 				.toFixed(2);
 		},
+		// 对第一行数据进行高亮
 		tableRowClassName({ rowIndex }) {
 			if (rowIndex === 0) {
 				return {
@@ -67,7 +71,9 @@ export default {
 			}
 			return {};
 		},
+		// 对数据进行格式化处理
 		formatTableData(list, type) {
+			console.log(list, type);
 			const { startTimeMoney, endTimeMoney } = list;
 
 			// 计算数据差异的函数
@@ -85,6 +91,8 @@ export default {
 				remainingInventoryAmount: calculateDifference('remainingInventoryAmount')
 			};
 
+			console.log(data);
+
 			// 创建表格数据的函数
 			const createRow = (label, value, anotherLabel, anotherValue) => ({
 				label,
@@ -95,15 +103,15 @@ export default {
 
 			// 返回格式化后的数据
 			return [
-				createRow('资金总额（即股东权益）=①+②+③+④+⑤-⑥-⑦-⑧', this.calculateTotalBalance(data), this.calculateTotalBalance(startTimeMoney), this.calculateTotalBalance(endTimeMoney)),
-				createRow('①应收账款---客户欠款合计数', data.companyTotalBalance, startTimeMoney.companyTotalBalance, endTimeMoney.companyTotalBalance),
-				createRow('②银行存款---公司所有银行资金合计', data.selfCompanyTotalFunds, startTimeMoney.selfCompanyTotalFunds, endTimeMoney.selfCompanyTotalFunds),
-				createRow('③保证金----期货保证金', data.futuresMarginBalance, startTimeMoney.futuresMarginBalance, endTimeMoney.futuresMarginBalance),
-				createRow('④其他应收---个人或公司从我公司借款', data.loanFromCompany, startTimeMoney.loanFromCompany, endTimeMoney.loanFromCompany),
-				createRow('⑤库存', data.remainingInventoryAmount, startTimeMoney.remainingInventoryAmount, endTimeMoney.remainingInventoryAmount),
-				createRow('⑥应付账款---运费合计', data.driverUnpaidAmount, startTimeMoney.driverUnpaidAmount, endTimeMoney.driverUnpaidAmount),
-				createRow('⑦应付账款---欠厂家货款', data.supplierTotalBalance, startTimeMoney.supplierTotalBalance, endTimeMoney.supplierTotalBalance),
-				createRow('⑧其他应付款---公司从外面借款合计', data.loanBalance, startTimeMoney.loanBalance, endTimeMoney.loanBalance)
+				createRow('资金总额（即股东权益）=①+②+③+④+⑤-⑥-⑦-⑧', this.calculateTotalBalance(startTimeMoney), this.calculateTotalBalance(endTimeMoney), this.calculateTotalBalance(data)),
+				createRow('①应收账款---客户欠款合计数', startTimeMoney.companyTotalBalance, endTimeMoney.companyTotalBalance, data.companyTotalBalance),
+				createRow('②银行存款---公司所有银行资金合计', startTimeMoney.selfCompanyTotalFunds, endTimeMoney.selfCompanyTotalFunds, data.selfCompanyTotalFunds),
+				createRow('③保证金----期货保证金', startTimeMoney.futuresMarginBalance, endTimeMoney.futuresMarginBalance, data.futuresMarginBalance),
+				createRow('④其他应收---个人或公司从我公司借款', startTimeMoney.loanFromCompany, endTimeMoney.loanFromCompany, data.loanFromCompany),
+				createRow('⑤库存', startTimeMoney.remainingInventoryAmount, endTimeMoney.remainingInventoryAmount, data.remainingInventoryAmount),
+				createRow('⑥应付账款---运费合计', startTimeMoney.driverUnpaidAmount, endTimeMoney.driverUnpaidAmount, data.driverUnpaidAmount),
+				createRow('⑦应付账款---欠厂家货款', startTimeMoney.supplierTotalBalance, endTimeMoney.supplierTotalBalance, data.supplierTotalBalance),
+				createRow('⑧其他应付款---公司从外面借款合计', startTimeMoney.loanBalance, endTimeMoney.loanBalance, data.loanBalance)
 			];
 		},
 		// 合并行和列的方法
