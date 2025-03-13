@@ -3,9 +3,15 @@ import { getBackupInfoV1, getMoneyChangeSummary, getMoneyChangeSummaryByDate } f
 import { fix } from 'order-system/src/api/tool/format';
 import { getPreviousDay } from '@/utils/Date';
 import { parseTime } from '@/utils/ruoyi';
+import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
+import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
+import OrderChanging from '@/views/dashboard/backuplog/goodsorder/OrderChanging.vue';
+import ChooseModule from '@/views/dashboard/backuplog/ChooseModule.vue';
 
 export default {
 	name: 'MoneyChangeTotalAmount',
+	components: { DialogWrapper },
+	mixins: [common_dialog],
 	data() {
 		return {
 			changeForm: {
@@ -92,9 +98,9 @@ export default {
 			}
 			if (this.diffRows.includes(rowIndex)) {
 				return {
-					color: 'red !important',
+					color: '#ffdc00 !important',
 					fontSize: '16px !important',
-					background: '#ffdc00'
+					fontWeight: 'bold !important'
 				};
 			}
 			return {};
@@ -150,7 +156,26 @@ export default {
 
 				// 根据模块名查询具体的变动信息
 				getBackupInfoV1(query).then(res => {
-					console.log(res);
+					if (!res.rows) {
+						this.$message.warning('该模块没有变动信息');
+						return;
+					}
+					if (res.rows.length === 0) {
+						this.$message.warning('该模块没有变动信息');
+						return;
+					}
+					const moduleList = Array.from(new Set(res.rows.map(item => item.tableName)));
+					// 对res.rows的数据
+					this.openDialog(
+						ChooseModule,
+						'请选择模块查看其详细资金变动',
+						'700px',
+						{
+							moduleList,
+							result: res.rows
+						},
+						false
+					);
 				});
 			}
 		},
@@ -159,7 +184,6 @@ export default {
 			if (column.property === 'value' && this.diffRows.includes(rowIndex)) {
 				return {
 					cursor: 'pointer'
-					// 可以添加其他点击效果样式
 				};
 			}
 			return {
@@ -316,6 +340,19 @@ export default {
 					</el-table>
 				</el-col>
 			</el-row>
+		</div>
+
+		<div v-if="currentComponent">
+			<DialogWrapper
+				:current-component="currentComponent"
+				:dialog-visible="dialogVisible"
+				:dialog-props="dialogProps"
+				:dialog-title="dialogTitle"
+				:dialog-width="dialogWidth"
+				@update:dialogVisible="args => (dialogVisible = false)"
+				@close="handleCloseDialog"
+				@confirm="handleDialogConfirm"
+			/>
 		</div>
 	</div>
 </template>
