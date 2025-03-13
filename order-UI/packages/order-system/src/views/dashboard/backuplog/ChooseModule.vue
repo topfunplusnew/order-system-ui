@@ -1,8 +1,13 @@
 <script>
 import { moduleNames } from 'order-system/src/api/tool/enums';
+import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
+import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
+import OrderChanging from '@/views/dashboard/backuplog/goodsorder/OrderChanging.vue';
 
 export default {
 	name: 'index',
+	components: { DialogWrapper },
+	mixins: [common_dialog],
 	computed: {
 		moduleNames() {
 			return moduleNames;
@@ -20,8 +25,21 @@ export default {
 	},
 	methods: {
 		// 查看对应模块的数据
-		handleCheckModule() {
-			const data = this.groupByTableName(this.result);
+		handleCheckModule(moduleName) {
+			const data = this.groupByTableName(this.result)[moduleName] || [];
+			if (data.length > 0) {
+				this.openDialog(
+					OrderChanging,
+					'订单修改记录',
+					'1100px',
+					{
+						compareData: data
+					},
+					false
+				);
+			} else {
+				this.$message.warning('组件数据有误,ChooseModule');
+			}
 		},
 		groupByTableName(data) {
 			return data.reduce((result, item) => {
@@ -47,6 +65,19 @@ export default {
 					{{ moduleNames[item] }}
 				</li>
 			</ul>
+		</div>
+
+		<div v-if="currentComponent">
+			<DialogWrapper
+				:current-component="currentComponent"
+				:dialog-visible="dialogVisible"
+				:dialog-props="dialogProps"
+				:dialog-title="dialogTitle"
+				:dialog-width="dialogWidth"
+				@update:dialogVisible="args => (dialogVisible = false)"
+				@close="handleCloseDialog"
+				@confirm="handleDialogConfirm"
+			/>
 		</div>
 	</div>
 </template>

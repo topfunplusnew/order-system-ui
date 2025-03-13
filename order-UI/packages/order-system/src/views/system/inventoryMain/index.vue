@@ -464,7 +464,7 @@
 					<!-- 后端跟我说这个放在后面，实际片数不展示  -->
 					<el-table-column label="库存量" prop="stockNumber" width="150">
 						<template #default="scope">
-							<el-input size="mini" v-model.lazy="scope.row.stockNumber" @change="() => (scope.row.actualPieces = scope.row.stockNumber)" placeholder="入库时片数" />
+							<el-input size="mini" v-model="scope.row.stockNumber" placeholder="入库时片数" />
 						</template>
 					</el-table-column>
 					<!-- <el-table-column label="实际片数" prop="actualPieces" width="150">
@@ -915,7 +915,7 @@ export default {
 		},
 		calculatePacks(scope) {
 			const res = scope.row.packs * scope.row.piecesPerPack;
-			scope.row.actualPieces = scope.row.pieces = res;
+			scope.row.stockNumber = scope.row.pieces = res;
 			// 计算吨位
 			scope.row.tonnage = fix(((Number(scope.row.height) - Number(scope.row.erro)) * scope.row.length * scope.row.width * scope.row.pieces) / 1000000 / 20 / 20);
 			if (scope.row.paymentFactory > 0) {
@@ -958,9 +958,9 @@ export default {
 		calculatePayment(scope) {
 			function calcu() {
 				if (scope.row.isIncludeTaxFactory === 1 && scope.row.isIncludeTaxSale === 0) {
-					scope.row.payments = fix((scope.row.length * scope.row.width * scope.row.actualPieces) / (1000000 * scope.row.paymentUnload) + Number(scope.row.paymentsWithSundry));
+					scope.row.payments = fix((scope.row.length * scope.row.width * scope.row.stockNumber) / (1000000 * scope.row.paymentUnload) + Number(scope.row.paymentsWithSundry));
 				} else {
-					scope.row.payments = fix((scope.row.length * scope.row.width * scope.row.actualPieces * scope.row.paymentUnload) / 1000000 + Number(scope.row.paymentsWithSundry));
+					scope.row.payments = fix((scope.row.length * scope.row.width * scope.row.stockNumber * scope.row.paymentUnload) / 1000000 + Number(scope.row.paymentsWithSundry));
 				}
 			}
 
