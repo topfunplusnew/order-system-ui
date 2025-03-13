@@ -226,4 +226,13 @@ export const CommissionType = Object.freeze({
 	SUPPLIER: 1
 });
 
-
+export const MoneyChangeModuleName = Object.freeze({
+	companyTotalBalance: 'companyTotalBalance',
+	supplierTotalBalance: 'supplierTotalBalance',
+	driverUnpaidAmount: 'driverUnpaidAmount',
+	selfCompanyTotalFunds: 'selfCompanyTotalFunds',
+	loanBalance: 'loanBalance',
+	futuresMarginBalance: 'futuresMarginBalance',
+	loanFromCompany: 'loanFromCompany',
+	remainingInventoryAmount: 'remainingInventoryAmount'
+});

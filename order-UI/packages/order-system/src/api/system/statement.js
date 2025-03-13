@@ -417,6 +417,15 @@ export function getMoneyChangeSummaryByDate(date) {
 	});
 }
 
+// /system/backuplog/getBackupInfoV1
+export function getBackupInfoV1(query) {
+	return request({
+		url: '/system/backuplog/getBackupInfoV1',
+		method: 'get',
+		params: query
+	});
+}
+
 /**
  * 获取每日利润
  * @param {Object} query
