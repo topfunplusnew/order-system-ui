@@ -291,6 +291,7 @@ export default {
 						'修改客户佣金',
 						'400px',
 						{
+							id: row.id,
 							type: CommissionType.CUSTOMER,
 							orderDetailId: this.orderDetailId,
 							body: commissionData

@@ -1,7 +1,7 @@
 <script>
 import SearchOption from '@/components/SearchOption.vue';
 import { listGoodsOrder } from '@/api/system/goodsOrder';
-import { addCommission } from '@/api/commission';
+import { addCommission, updateCommission } from '@/api/commission';
 import reLength from '@/views/dashboard/mixins/reLength';
 
 export default {
@@ -64,7 +64,14 @@ export default {
 			// 这里要判断是新增还是修改 如果是修改 还需要额外添加一个字段difference_reason
 			if (this.id) {
 				this.form.difference_reason = this.differenceReason;
+				updateCommission(this.form).then(res => {
+					this.$message.success('修改成功');
+					that.dialogVisible = false;
+					this.reset();
+				});
+				return;
 			}
+
 			addCommission(this.form).then(res => {
 				this.$message.success('添加成功');
 				that.dialogVisible = false;
