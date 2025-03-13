@@ -12,7 +12,6 @@
 		:destroy-on-close="true"
 		@close="handleClose"
 	>
-		<!-- 动态渲染内容 -->
 		<component :is="currentComponent" ref="dynamicComponent" v-bind="dialogProps" />
 
 		<!-- 底部操作按钮 -->
