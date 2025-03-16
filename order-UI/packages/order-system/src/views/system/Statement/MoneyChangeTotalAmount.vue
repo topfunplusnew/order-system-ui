@@ -58,7 +58,7 @@ export default {
 			// 计算差异行
 			this.$nextTick(() => {
 				this.diffRows = [];
-				const minLength = Math.min(this.changeTableData.length, this.changeMoneyTableData.length);
+				const minLength = Math.max(this.changeTableData.length, this.changeMoneyTableData.length);
 				for (let i = 0; i < minLength; i++) {
 					const fixed = Number(this.changeTableData[i].value).toFixed(2);
 					const change = Number(this.changeMoneyTableData[i].value).toFixed(2);
