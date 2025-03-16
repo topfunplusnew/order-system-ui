@@ -124,8 +124,22 @@ export default {
 						required: true,
 						message: '请输入贴息点数',
 						trigger: 'blur'
+					},
+					// 金额校验
+					{
+						validator: (rule, value, callback) => {
+							if (!/^\d+(\.\d{1,2})?$/.test(value)) {
+								callback(new Error('金额只能为数字且小数点后最多两位'));
+							} else if (parseFloat(value) > 1) {
+								callback(new Error('贴息点数不能超过 1'));
+							} else {
+								callback();
+							}
+						},
+						trigger: 'blur'
 					}
 				],
+
 				inDiscountAmount: [
 					{
 						required: true,

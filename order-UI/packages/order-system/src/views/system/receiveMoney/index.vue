@@ -594,6 +594,12 @@ export default {
 						}
 					}
 					this.form = excludeParams(this.form, this.$exclude);
+					// 对结果进行特殊处理
+					if (typeof this.form.receiveType === 'string') {
+						this.form.receiveType = null;
+						this.$message.warning('请选择收款类型');
+						return;
+					}
 					this.form.receiveType = this.form.receiveType.join('-');
 					if (this.form.id != null) {
 						updateReceiveMoney(this.form).then(() => {

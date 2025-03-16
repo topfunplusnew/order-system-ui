@@ -906,6 +906,12 @@ export default {
 						}
 					}
 					this.form = excludeParams(this.form, this.$exclude);
+					// 对结果进行特殊处理
+					if (typeof this.form.payType === 'string') {
+						this.form.payType = null;
+						this.$message.warning('请选择付款类型');
+						return;
+					}
 					this.form.payType = this.form.payType.join('-');
 					if (this.form.id != null) {
 						// todo 同上 付款没有更新的操作 这里的逻辑没有与承兑挂钩
