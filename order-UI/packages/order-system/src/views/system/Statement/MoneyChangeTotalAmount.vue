@@ -7,6 +7,7 @@ import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import OrderChanging from '@/views/dashboard/backuplog/goodsorder/OrderChanging.vue';
 import ChooseModule from '@/views/dashboard/backuplog/ChooseModule.vue';
+import { TableName } from '@/api/tool/enums';
 
 export default {
 	name: 'MoneyChangeTotalAmount',
@@ -153,7 +154,8 @@ export default {
 					variableName,
 					date
 				};
-
+				// 需要把订单详情从展示的表模块列表中去除
+				const filter = tableName => tableName !== TableName.ORDER_DETAIL;
 				// 根据模块名查询具体的变动信息
 				getBackupInfoV1(query).then(res => {
 					if (!res.rows) {
@@ -164,7 +166,8 @@ export default {
 						this.$message.warning('该模块没有变动信息');
 						return;
 					}
-					const moduleList = Array.from(new Set(res.rows.map(item => item.tableName)));
+					let moduleList = Array.from(new Set(res.rows.map(item => item.tableName)));
+					moduleList = moduleList.filter(filter);
 					// 对res.rows的数据
 					this.openDialog(
 						ChooseModule,

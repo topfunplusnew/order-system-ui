@@ -1,5 +1,5 @@
 <script>
-import { moduleNames } from 'order-system/src/api/tool/enums';
+import { moduleNames, TableName } from 'order-system/src/api/tool/enums';
 import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import OrderChanging from '@/views/dashboard/backuplog/goodsorder/OrderChanging.vue';
@@ -26,7 +26,7 @@ export default {
 	methods: {
 		// 查看对应模块的数据
 		handleCheckModule(moduleName) {
-			const data = this.groupByTableName(this.result)[moduleName] || [];
+			const data = this.groupByTableName(this.result, this.optionsForOrder)[moduleName] || [];
 			if (data.length > 0) {
 				this.openDialog(
 					OrderChanging,
@@ -42,13 +42,24 @@ export default {
 				this.$message.warning('组件数据有误,ChooseModule');
 			}
 		},
-		groupByTableName(data) {
+		// 需要把goodsOrder和orderDetail的放一起 也就是说 遍历到orderDetail的时候 往goodsOrder的分组里扔
+		optionsForOrder(tableName) {
+			if (tableName === TableName.ORDER_DETAIL) {
+				return TableName.GOODS_ORDER;
+			}
+			return tableName;
+		},
+		groupByTableName(data, callback) {
+			if (!Array.isArray(data)) {
+				return {};
+			}
+			callback = callback || this.optionsForOrder;
 			return data.reduce((result, item) => {
 				const tableName = item.tableName; // 获取当前项的 tableName
 				if (!result[tableName]) {
 					result[tableName] = []; // 如果分组不存在，初始化一个空数组
 				}
-				result[tableName].push(item); // 将当前项添加到对应的分组中
+				result[callback(tableName)].push(item); // 将当前项添加到对应的分组中
 				return result;
 			}, {}); // 初始值为空对象
 		},

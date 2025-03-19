@@ -34,7 +34,21 @@ export const JsonUtils = {
  */
 export function completeJsonData(template, incomplete) {
 	return Object.keys(template).reduce((result, key) => {
-		result[key] = key in incomplete ? incomplete[key] : '';
+		result[key] = key in incomplete ? incomplete[key] : template[key];
 		return result;
 	}, {});
+}
+
+export class TypeUtils {
+	checkType(variable) {
+		if (typeof variable === 'object' && variable !== null) {
+			if (Array.isArray(variable)) {
+				return 'Array';
+			} else {
+				return 'Object';
+			}
+		} else {
+			return 'Not an object or array';
+		}
+	}
 }
