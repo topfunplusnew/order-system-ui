@@ -428,13 +428,22 @@ export default {
 		// 提交订单
 		handleProcess(that) {
 			return new Promise((resolve, reject) => {
+				// 如果子项为空 不允许新增
+				if (this.orderdetailList.length === 0) {
+					this.$message.error('请添加货物信息');
+					return;
+				}
+				// 如果isSea为真但是不填写海运信息 或者 isLand为真 但是不填写陆运信息
+				if (this.isSea && !this.orderInfo.seaCarID && !this.orderInfo.seaCarNo) {
+					this.$message.error('请填写完整的海运信息!');
+					return;
+				}
+				if (this.isLand && !this.orderInfo.landCarID && !this.orderInfo.landCarNo) {
+					this.$message.error('请填写完整的陆运信息!');
+					return;
+				}
 				// 如果是新增订单
 				if (!this.orderId) {
-					// 如果子项为空 不允许新增
-					if (this.orderdetailList.length === 0) {
-						this.$message.error('请添加货物信息');
-						return;
-					}
 					this.orderInfo.orderDetailList = this.orderdetailList;
 					const updateOrderItem = item => {
 						item.customerID = this.orderInfo.customerID;
@@ -455,11 +464,6 @@ export default {
 						resolve();
 					});
 				} else {
-					// 如果子项为空 不允许新增
-					if (this.orderdetailList.length === 0) {
-						this.$message.error('请添加货物信息');
-						return;
-					}
 					this.orderInfo.orderDetailList = this.orderdetailList;
 					const formatOrderItem = () => ({
 						customerID: this.orderInfo.customerID,
