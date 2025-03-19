@@ -122,34 +122,6 @@ Vue.prototype.$close = () => {
 	Loading.service({}).close();
 };
 
-// 3.时间范围查询方法
-// targetList: 需要筛选的数组
-// targetProperty: 需要筛选的时间字段
-// return 筛选后的数组
-// 使用: this.$dateRange(this, this.bankList, 'createTime', this.timesQuery.startTime,this.timesQuery.endTime)
-Vue.prototype.$dateRange = function (_this, targetList, targetProperty, startTime, endTime) {
-	// 开始时间 结束时间的时间戳
-	const start = new Date(startTime).getTime();
-	const end_date = new Date(endTime);
-	end_date.setDate(end_date.getDate() + 1);
-	const end = end_date.getTime();
-
-	// 校验
-	if (startTime === '' || endTime === '') {
-		this.$message.error('开始时间或结束时间不能为空!');
-		return _this[targetList];
-	} else if (start > end) {
-		this.$message.error('开始时间不能大于结束时间!');
-		return _this[targetList];
-	} else {
-		// 筛选
-		return _this[targetList].filter(item => {
-			const target = new Date(Number(item[targetProperty])).getTime();
-			return target >= start && target <= end;
-		});
-	}
-};
-
 import DatePickerDialog from './views/dashboard/components/common/DatePickerDialog.vue';
 
 Vue.prototype.$datePicker = function () {

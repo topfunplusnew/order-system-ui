@@ -28,21 +28,13 @@ export const JsonUtils = {
 
 /**
  * 补齐 JSON 数据
- * @param {Object} completeJson 完整的 JSON 数据（模板）
- * @param {Object} incompleteJson 不完整的 JSON 数据
+ * @param {Object} template 完整的 JSON 数据（模板）
+ * @param {Object} incomplete 不完整的 JSON 数据
  * @returns {Object} 补齐后的 JSON 数据
  */
-export function completeJsonData(completeJson, incompleteJson) {
-	// 创建一个新对象，避免直接修改原始数据
-	const result = { ...incompleteJson };
-
-	// 遍历完整 JSON 的所有属性
-	for (const key in completeJson) {
-		// 如果当前属性在不完整的 JSON 中不存在，则补齐
-		if (!(key in result)) {
-			result[key] = null; // 补齐为 null
-		}
-	}
-
-	return result;
+export function completeJsonData(template, incomplete) {
+	return Object.keys(template).reduce((result, key) => {
+		result[key] = key in incomplete ? incomplete[key] : '';
+		return result;
+	}, {});
 }

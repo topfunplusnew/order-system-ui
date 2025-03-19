@@ -1,6 +1,5 @@
 <script>
 import { completeJsonData, JsonUtils } from '@/views/dashboard/backuplog';
-import { getFunction } from '@/utils/order/mapper';
 import { excludeParams } from '@/api/tool/exclude';
 
 export default {
@@ -18,122 +17,121 @@ export default {
 	data() {
 		return {
 			translate: [
-				'ID',
+				'编号',
+				'车队',
 				'备注',
-				'公司ID',
-				'资金日期',
-				'收款编号',
-				'自方银行ID',
-				'自方银行账号',
-				'公司名称',
-				'公司类型',
-				'金额',
-				'他方银行账号',
-				'收款类型',
-				'自方银行名称',
-				'他方银行名称',
-				'自方账户名称',
-				'银行承兑ID',
-				'他方账户名称',
-				'交易历史',
-				'备注',
-				'自方银行卡类型',
-				'他方银行卡类型',
-				'表名',
-				'表ID',
-				'交易历史附件',
-				'开始时间',
-				'结束时间'
+				'客户',
+				'调整次数',
+				'订单号',
+				'海运车号',
+				'陆运车辆ID',
+				'陆运车号',
+				'订单日期',
+				'总吨位',
+				'审核状态',
+				'客户ID',
+				'是否调整单',
+				'陆运银行账号',
+				'海运运费',
+				'总付款',
+				'陆运运费',
+				'销售经理',
+				'发票状态',
+				'陆运银行名称',
+				'海运司机电话',
+				'调整订单ID',
+				'陆运司机电话',
+				'海运司机姓名',
+				'陆运司机姓名',
+				'总运费价格',
+				'出厂货款',
+				'客户是否开票',
+				'供应商是否开票'
 			]
 		};
 	},
-	async mounted() {
-		// 这里的json 是不完全的json  需要进行补齐 然后需要通过模块名称拿取对应的get方法 然后随便get一个实例 根据这个实例去补全json
-		if (!this.compareData.length === 0) {
-			throw new Error('未找到对应数据');
-		}
-		// 获取一个样例数据
-		const example = this.compareData[0].originalInfo;
-		if (!example) {
-			throw new Error('未找到对应数据，数据为不完全数据!');
-		}
-		if (!JsonUtils.getJson(example).id) {
-			throw new Error('未找到对应数据，数据为不完全数据!');
-		}
-		if (!this.moduleName) {
-			throw new Error('内部错误，模块名称为空!');
-		}
-		// 获取一个样例数据 然后补全json
-		const { data: tip } = await getFunction(this.moduleName)(JsonUtils.getJson(this.compareData[0].originalInfo).id);
-		if (!tip) {
-			throw new Error('获取id数据时有问题，未找到对应数据，数据为不完全数据!');
-		}
-		const beforeJson = this.compareData.map(item => {
-			const previous1 = JsonUtils.getJson(item.originalInfo);
-			return excludeParams(completeJsonData(tip, previous1), this.$exclude);
-		});
+	mounted() {
+		this.render(0);
+	},
+	methods: {
+		// 渲染函数
+		render(index) {
+			if (!this.compareData.length) {
+				throw new Error('未找到对应数据');
+			}
 
-		const afterJson = this.compareData.map(item => {
-			const previous2 = JsonUtils.getJson(item.changedInfo);
-			return excludeParams(excludeParams(completeJsonData(tip, previous2), this.$exclude));
-		});
+			let item1 = this.compareData[index].originalInfo;
+			let item2 = this.compareData[index].changedInfo;
+			const beforeJson = JsonUtils.getJson(item1);
+			const afterJson = JsonUtils.getJson(item2);
+			item2 = completeJsonData(beforeJson, afterJson);
+			item1 = beforeJson;
 
-		// json就是需要比较的完整的对象数据 tableId是表格的id status是修改前的还是修改后的
-		function renderTable(json, tableId, status, headerList) {
-			console.log('参数', json, tableId, status, headerList);
+			console.log('item:', item1, '\n', item2);
+
+			// 渲染表格
+			this.$nextTick(() => {
+				this.renderTable(item1, 'beforeTable' + index, '修改前', this.translate);
+				this.renderTable(item2, 'afterTable' + index, '修改后', this.translate);
+			});
+		},
+
+		// 渲染表格
+		renderTable(json, tableId, status, headerList) {
+			if (!json || !status) {
+				throw new Error('缺少参数');
+			}
 
 			const table = document.getElementById(tableId);
+			if (!table) {
+				console.error(`表格 ${tableId} 未找到`);
+				return;
+			}
+
 			const thead = table.querySelector('thead tr');
 			const tbody = table.querySelector('tbody');
-
-			// 清空内容
 			thead.innerHTML = '';
 			tbody.innerHTML = '';
 
-			// 如果传递的中文数组和json长度不一致
-			if (headerList && headerList.length !== Object.keys(json[0]).length) {
-				throw new Error('表头数据与json数据不一致');
+			const dataKeys = Object.keys(excludeParams(json));
+			if (dataKeys.length === 0) {
+				throw new Error('渲染表格时出问题,json数据为空');
 			}
-			// 渲染表头 这里是通过json获取的 所以 可不可以传递一个数组 来渲染表头数据 headerRow = []
-			// 所以keys是需要传递的中文数组
-			const headerRow = ['状态', ...headerList];
+
+			// 修正表头长度
+			const headerRow = ['状态', ...headerList.slice(0, dataKeys.length)];
 			headerRow.forEach(key => {
 				const th = document.createElement('th');
 				th.textContent = key;
-				th.style.background = '#0073e6';
-				th.style.color = 'white';
 				th.style.textAlign = 'center';
 				thead.appendChild(th);
 			});
 
-			const jsonKeys = Object.keys(json);
-			// 渲染数据行
-			json.forEach((item, index) => {
+			try {
 				const tr = document.createElement('tr');
 				tr.style.textAlign = 'center';
-				if (index === 0) {
-					const statusTd = document.createElement('td');
-					statusTd.textContent = status;
-					statusTd.rowSpan = json.length;
-					statusTd.classList.add('status-cell');
-					tr.appendChild(statusTd);
-				}
 
-				jsonKeys.forEach(key => {
+				// 状态列
+				const statusTd = document.createElement('td');
+				statusTd.textContent = status;
+				statusTd.classList.add('status-cell');
+				tr.appendChild(statusTd);
+
+				// JSON 数据列
+				dataKeys.forEach(key => {
 					const td = document.createElement('td');
-					td.textContent = item[key];
+					td.textContent = json[key] !== undefined ? json[key] : 'null';
 					td.classList.add('table-d');
 					td.style.textAlign = 'center';
 					tr.appendChild(td);
 				});
-				tbody.appendChild(tr);
-			});
-		}
 
-		renderTable(beforeJson, 'beforeTable', '修改前', this.translate);
-		renderTable(afterJson, 'afterTable', '修改后', this.translate);
-	},
-	methods: {
+				tbody.appendChild(tr);
+			} catch (err) {
+				console.log(err);
+			}
+		},
+
 		handleProcess() {},
 		handleReject() {}
 	}
@@ -144,7 +142,7 @@ export default {
 	<div>
 		<div class="table-container" v-for="(item, index) in compareData" :key="index">
 			<div class="container">
-				<table id="beforeTable">
+				<table :id="'beforeTable' + index">
 					<thead>
 						<tr></tr>
 					</thead>
@@ -153,7 +151,7 @@ export default {
 			</div>
 
 			<div class="container">
-				<table id="afterTable">
+				<table :id="'afterTable' + index">
 					<thead>
 						<tr></tr>
 					</thead>
@@ -174,26 +172,32 @@ export default {
 
 .container {
 	border-radius: 8px;
-	max-width: 1100px;
+	max-width: 1400px;
 	max-height: 700px;
 }
 
 table {
-	width: 100%;
+	width: 100%; /* 让表格整体缩小一些 */
+	max-width: 1400px; /* 限制最大宽度 */
 	border-collapse: collapse;
 	margin-bottom: 10px;
+	border: 1px solid #ddd;
 }
 
-.table-header,
-.table-d {
-	border: 1px solid #ddd;
+th,
+td {
+	border: 1px solid #ddd !important;
 	padding: 8px;
 	text-align: center;
 }
 
-.status-cell {
-	font-weight: bold;
-	text-align: center;
-	background-color: #f0f0f0;
+th {
+	background-color: #989494 !important;
+}
+
+/* 调整状态列宽度 */
+th:first-child,
+td:first-child {
+	width: 150px; /* 设置状态列的宽度 */
 }
 </style>

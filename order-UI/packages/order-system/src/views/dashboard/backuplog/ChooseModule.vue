@@ -31,7 +31,7 @@ export default {
 				this.openDialog(
 					OrderChanging,
 					'订单修改记录',
-					'1200px',
+					'1500px',
 					{
 						compareData: data,
 						moduleName
