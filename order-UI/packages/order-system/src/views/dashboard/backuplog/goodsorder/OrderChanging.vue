@@ -1,5 +1,5 @@
 <script>
-import { completeJsonData, JsonUtils, TypeUtils } from '@/views/dashboard/backuplog';
+import { completeJsonData, JsonUtils } from '@/views/dashboard/backuplog';
 import { excludeParams } from '@/api/tool/exclude';
 import { keyOptioner, paramFieldFilter } from '@/views/dashboard/backuplog/goodsorder/index';
 
@@ -61,23 +61,6 @@ export default {
 	// 还需要一个函数指针数组，以防甲方加新功能
 	methods: {
 		/**
-		 * 类型过滤器 根据备份数据行的backupType进行处理
-		 * @param backupRow 备份数据行的对象
-		 */
-		typeFilter(backupRow) {
-			if (!backupRow.changedInfo && !backupRow.originalInfo) {
-				throw new Error('备份数据行有误，改变后的信息和改变前信息都为空!');
-			}
-			if (backupRow.backupType === 'insert') {
-				backupRow.originalInfo = backupRow.changedInfo;
-				return backupRow;
-			}
-			if (backupRow.backupType === 'delete') {
-				backupRow.changedInfo = backupRow.originalInfo;
-				return backupRow;
-			}
-		},
-		/**
 		 * 渲染表格
 		 * @param index 要渲染的数据的索引
 		 */
@@ -85,13 +68,12 @@ export default {
 			if (!this.compareData.length) {
 				throw new Error('未找到对应数据');
 			}
-
+			// 转为json数据
 			let pre = JsonUtils.getJson(this.compareData[index].originalInfo);
 			let aft = JsonUtils.getJson(this.compareData[index].changedInfo);
-
 			// 键值对处理
-			keyOptioner(pre);
-			keyOptioner(aft);
+			pre = keyOptioner(pre);
+			aft = keyOptioner(aft);
 			// 对id等的参数进行过滤
 			let [item1, item2] = paramFieldFilter([pre, completeJsonData(pre, aft)]);
 			console.log('item:', item1, item2);

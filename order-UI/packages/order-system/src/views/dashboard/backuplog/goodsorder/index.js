@@ -39,3 +39,21 @@ export function paramFieldFilter(jsonList) {
 		return jsonList.map(json => operateJson(json));
 	}
 }
+
+/**
+ * 类型过滤器 根据备份数据行的backupType进行处理
+ * @param backupRow 备份数据行的对象
+ */
+export function typeFilter(backupRow) {
+	if (!backupRow.changedInfo && !backupRow.originalInfo) {
+		throw new Error('备份数据行有误，改变后的信息和改变前信息都为空!');
+	}
+	if (backupRow.backupType === 'insert') {
+		backupRow.originalInfo = backupRow.changedInfo;
+		return backupRow;
+	}
+	if (backupRow.backupType === 'delete') {
+		backupRow.changedInfo = backupRow.originalInfo;
+		return backupRow;
+	}
+}
