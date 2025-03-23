@@ -5,9 +5,9 @@ import { getPreviousDay } from '@/utils/Date';
 import { parseTime } from '@/utils/ruoyi';
 import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
-import OrderChanging from '@/views/dashboard/backuplog/goodsorder/OrderChanging.vue';
 import ChooseModule from '@/views/dashboard/backuplog/ChooseModule.vue';
 import { TableName } from '@/api/tool/enums';
+import _ from 'lodash';
 
 export default {
 	name: 'MoneyChangeTotalAmount',
@@ -20,7 +20,7 @@ export default {
 				endTime: ''
 			},
 			// 数据固定后的数组
-			changeTableData: [],
+			fixedMoneyTableData: [],
 			// 变动
 			changeMoneyTableData: [],
 			spanArr: [], // 存储合并信息的数组
@@ -30,45 +30,125 @@ export default {
 			}),
 
 			diffRows: [],
-			diffModules: []
+			diffModules: [],
+
+			// 表格上方查询日期
+			targetLeftDate: null,
+			targetRightDate: null
 		};
 	},
 	computed: {
 		columnHeaderFix() {
-			return `日期:` + (this.changeForm.endTime ? this.changeForm.endTime : '未选择日期') + `(数据固定后截取)`;
+			return `日期:` + (this.targetRightDate ? this.targetRightDate : this.changeForm.endTime ? this.changeForm.endTime : '未选择日期') + `(数据固定后截取)`;
 		},
 		columnHeaderChange() {
-			return `日期:` + (this.changeForm.endTime ? this.changeForm.endTime : '未选择日期') + `(当日截取)`;
+			return `日期:` + (this.targetLeftDate ? this.targetLeftDate : this.changeForm.endTime ? this.changeForm.endTime : '未选择日期') + `(当日截取)`;
 		}
 	},
 	methods: {
 		fix,
+		// 更新表格的数据
+		updateTableData(type) {
+			type === 1 ? this.getChangeData(null, this.targetLeftDate) : this.getChangeData(null, this.targetRightDate);
+		},
+		// 对左侧时间的校验逻辑
+		changeLeftDate(value) {
+			if (!this.changeForm.endTime) {
+				this.$message.error('请先选择顶部搜索时间！');
+				this.targetLeftDate = null;
+				return;
+			}
+			// 这里选择的时候 如果顶部的时间没选择的话 不允许选择 如果顶部选择了 那么不能小于顶部时间
+			if (value && value < this.changeForm.endTime) {
+				this.$message({
+					message: '左侧时间不能小于顶部搜索框时间',
+					type: 'error'
+				});
+				this.targetLeftDate = null;
+			}
+		},
+		// 表格右侧时间的校验逻辑
+		changeRightDate(value) {
+			// 如果没有选择左侧时间  那么就提示不行
+			if (!this.targetLeftDate) {
+				this.$message.error('请先选择左侧搜索时间！');
+				this.targetRightDate = null;
+				return;
+			}
+			// 如果选择的时间小于左侧的时间 那么就提示不行
+			if (value && value < this.targetLeftDate) {
+				this.$message({
+					message: '右侧时间不能小于左侧时间',
+					type: 'error'
+				});
+				this.targetRightDate = null;
+			}
+		},
 		// 搜索
 		async handleChangeSearch() {
-			// 开始时间为endTime往前推一天
-			this.changeForm.startTime = parseTime(getPreviousDay(new Date(this.changeForm.endTime)), '{y}-{m}-{d}');
-			// 查询固定数据 原来的接口默认为固定 存入数据库的数据
-			const response = await getMoneyChangeSummary(this.changeForm);
-			const data = response.data;
-			this.changeTableData = this.formatTableData(data);
-			// 查询变动数据
-			const changeMoney = await getMoneyChangeSummaryByDate(this.changeForm.endTime);
-			const body = changeMoney.data;
-			this.changeMoneyTableData = this.formatTableData(body.originalData);
-
+			// 获取左侧的
+			const left = await this.getChangeData(null, this.targetLeftDate, this.fixedMoneyTableData);
+			this.fixedMoneyTableData = this.formatTableData(left);
+			// 获取右侧的
+			const right = await this.getChangeData(null, this.targetRightDate, this.changeMoneyTableData);
+			this.changeMoneyTableData = this.formatTableData(right);
+			// 计算差异
+			this.calculateDiff();
+		},
+		// 计算差异行 在图表中显示高亮
+		calculateDiff(leftTableData, rightTableData) {
 			// 计算差异行
 			this.$nextTick(() => {
 				this.diffRows = [];
-				const minLength = Math.max(this.changeTableData.length, this.changeMoneyTableData.length);
+				let leftData = leftTableData || this.fixedMoneyTableData;
+				let rightData = rightTableData || this.changeMoneyTableData;
+				if (!leftData || !rightData) {
+					throw new Error('左右侧数据为空,函数calculateDiff发生计算错误');
+				}
+				// 进行计算差异
+				const minLength = Math.max(leftData.length, rightData.length);
 				for (let i = 0; i < minLength; i++) {
-					const fixed = Number(this.changeTableData[i].value).toFixed(2);
-					const change = Number(this.changeMoneyTableData[i].value).toFixed(2);
+					const fixed = Number(leftData[i].value).toFixed(2);
+					const change = Number(rightData[i].value).toFixed(2);
 					if (fixed !== change) {
 						this.diffRows.push(i);
-						this.diffModules.push(this.changeMoneyTableData[i].moduleName);
+						this.diffModules.push(rightData[i].moduleName);
 					}
 				}
 			});
+		},
+		// 对第一行 以及 calculateDiff 计算出的差异列进行高亮显示
+		tableRowClassName({ rowIndex }) {
+			if (rowIndex === 0) {
+				return {
+					color: 'red !important',
+					fontWeight: 'bold !important',
+					fontSize: '16px !important'
+				};
+			}
+			if (this.diffRows.includes(rowIndex)) {
+				return {
+					color: '#ffdc00 !important',
+					fontSize: '16px !important',
+					fontWeight: 'bold !important'
+				};
+			}
+			return {};
+		},
+		/**
+		 * 获取变动数据
+		 * @param backupDate 顶部搜索框的时间
+		 * @param targetDate  下表中左侧的时间或者右侧的时间 不传则默认顶部搜索框的时间
+		 * @returns {Promise<void>}
+		 */
+		async getChangeData(backupDate, targetDate) {
+			// 查询变动数据
+			const query = {
+				backupDate: backupDate || this.changeForm.endTime,
+				targetDate: targetDate || this.changeForm.endTime
+			};
+			const changeMoney = await getMoneyChangeSummaryByDate(query);
+			return changeMoney.data.originalData;
 		},
 		// 对数据进行精确
 		formatValue(row, column, cellValue) {
@@ -88,26 +168,9 @@ export default {
 			) // ⑧其他应付款---公司从外面借款合计
 				.toFixed(2);
 		},
-		// 对第一行数据进行高亮
-		tableRowClassName({ rowIndex }) {
-			if (rowIndex === 0) {
-				return {
-					color: 'red !important',
-					fontWeight: 'bold !important',
-					fontSize: '16px !important'
-				};
-			}
-			if (this.diffRows.includes(rowIndex)) {
-				return {
-					color: '#ffdc00 !important',
-					fontSize: '16px !important',
-					fontWeight: 'bold !important'
-				};
-			}
-			return {};
-		},
 		// 对数据进行格式化处理
 		formatTableData(list) {
+			console.log(list);
 			// 根据type进行判断 然后存入一个数组 进行对比 然后高亮相关列
 			const { startTimeMoney, endTimeMoney } = list;
 
@@ -149,10 +212,11 @@ export default {
 			if (this.diffModules.includes(row.moduleName)) {
 				// 在这里 把moduleName传给后端
 				const variableName = row.moduleName;
-				const date = this.changeForm.endTime;
 				const query = {
 					variableName,
-					date
+					backupDate: this.changeForm.endTime,
+					firstTargetDate: this.targetLeftDate,
+					secondTargetDate: this.targetRightDate
 				};
 				// 需要把订单详情从展示的表模块列表中去除
 				const filter = tableName => tableName !== TableName.ORDER_DETAIL;
@@ -228,7 +292,7 @@ export default {
 				if (rowIndex === 0) {
 					// 第一行显示差值，合并所有行
 					return {
-						rowspan: this.changeTableData.length,
+						rowspan: this.fixedMoneyTableData.length,
 						colspan: 1
 					};
 				} else {
@@ -259,16 +323,32 @@ export default {
 					<el-date-picker v-model="changeForm.endTime" type="date" value-format="yyyy-MM-dd" placeholder="选择日期"></el-date-picker>
 				</el-form-item>
 				<el-form-item>
-					<el-button type="primary" @click="handleChangeSearch">搜索</el-button>
+					<el-button :disabled="!changeForm.endTime || !targetLeftDate || !targetRightDate" type="primary" @click="handleChangeSearch">搜索</el-button>
 				</el-form-item>
 			</el-form>
 
 			<el-row>
 				<el-alert title="标记为黄色的数据代表有差异，可点击查看模块详细数据变动" type="warning"></el-alert>
 			</el-row>
+			<br />
 			<!-- 表格 -->
 			<el-row :gutter="30">
 				<el-col :span="12">
+					<!--          日期选择框-->
+					<el-row>
+						<el-col :span="20">
+							<el-date-picker
+								size="mini"
+								v-model="targetLeftDate"
+								type="date"
+								value-format="yyyy-MM-dd"
+								placeholder="选择当日截取查询日期,默认为顶部搜索框的时间"
+								style="width: 100%"
+								@change="changeLeftDate"
+							></el-date-picker>
+						</el-col>
+					</el-row>
+					<br />
 					<el-table
 						@row-click="handleRowClick"
 						:cell-style="cellStyle"
@@ -306,11 +386,25 @@ export default {
 					</el-table>
 				</el-col>
 				<el-col :span="12">
+					<el-row>
+						<el-col :span="20">
+							<el-date-picker
+								size="mini"
+								v-model="targetRightDate"
+								type="date"
+								value-format="yyyy-MM-dd"
+								placeholder="选择数据固定后日期,默认为顶部搜索框的时间"
+								style="width: 100%"
+								@change="changeRightDate"
+							></el-date-picker>
+						</el-col>
+					</el-row>
+					<br />
 					<el-table
 						@row-click="handleRowClick"
 						:cell-style="cellStyle"
 						size="mini"
-						:data="changeTableData"
+						:data="fixedMoneyTableData"
 						border
 						class="money-table"
 						:row-style="tableRowClassName"
