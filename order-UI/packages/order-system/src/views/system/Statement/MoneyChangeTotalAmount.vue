@@ -133,7 +133,7 @@ export default {
 			return {};
 		},
 		/**
-		 * 获取变动数据
+		 * 获取变动数据 23号修改的数据，现在给B为23,C为24,A给19现在能搜索出来
 		 * @param backupDate 顶部搜索框的时间
 		 * @param targetDate  下表中左侧的时间或者右侧的时间 不传则默认顶部搜索框的时间
 		 * @returns {Promise<void>}

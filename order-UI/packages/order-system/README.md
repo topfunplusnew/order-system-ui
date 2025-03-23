@@ -26,6 +26,8 @@ module.exports = {
 
 #### yarn 下载 及 操作 monorepo 项目 https://juejin.cn/post/7081440800143310884
 
+yarn add -dev <package-name> [--ignore-engines]
+
 Yarn 下载包的流程大致可以分为以下几个步骤：
 
 1. 读取配置文件

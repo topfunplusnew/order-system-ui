@@ -1,14 +1,17 @@
 <script>
 import { completeJsonData, JsonUtils, TypeUtils } from '@/views/dashboard/backuplog';
 import { excludeParams } from '@/api/tool/exclude';
+import { keyOptioner } from '@/views/dashboard/backuplog/goodsorder/index';
 
 export default {
 	name: 'OrderChanging',
 	props: {
+		// 要进行比较的数据列表
 		compareData: {
 			type: Array,
 			default: () => []
 		},
+		// 模块名称
 		moduleName: {
 			type: String,
 			default: ''
@@ -57,17 +60,6 @@ export default {
 	// 还需要参数过滤器，需要筛选掉不必要的参数 例如编号 订单编号 各种后端用来绑定用的id
 	// 还需要一个函数指针数组，以防甲方加新功能
 	methods: {
-		/**
-		 * 键值对过滤器 对json的键进行特殊处理 操作为 先把字母大写 再去除下划线
-		 * @param json 需要处理的json对象
-		 */
-		keyOptioner(json) {
-			return Object.keys(json).reduce((acc, key) => {
-				const newKey = key.replace(/_/g, '').replace(/^[a-z]/, match => match.toUpperCase());
-				acc[newKey] = json[key];
-				return acc;
-			}, {});
-		},
 		/**
 		 * 类型过滤器 根据备份数据行的backupType进行处理
 		 * @param backupRow 备份数据行的对象
@@ -121,6 +113,10 @@ export default {
 
 			let pre = JsonUtils.getJson(this.compareData[index].originalInfo);
 			let aft = JsonUtils.getJson(this.compareData[index].changedInfo);
+
+			// 键值对处理
+			keyOptioner(pre);
+			keyOptioner(aft);
 			// 对id等的参数进行过滤
 			let [item1, item2] = this.paramFieldFilter([pre, completeJsonData(pre, aft)]);
 			console.log('item:', item1, item2);

@@ -14,10 +14,12 @@ export default {
 		}
 	},
 	props: {
+		// 模块列表
 		moduleList: {
 			type: Array,
 			default: () => []
 		},
+		// 变动数据详细列表
 		result: {
 			type: Array,
 			default: () => []
@@ -26,7 +28,9 @@ export default {
 	methods: {
 		// 查看对应模块的数据
 		handleCheckModule(moduleName) {
-			const data = this.groupByTableName(this.result, this.optionsForOrder)[moduleName] || [];
+			// 需要把goodsOrder和orderDetail的放一起 也就是说 遍历到orderDetail的时候 往goodsOrder的分组里扔
+			const optionsForOrder = tableName => (tableName === TableName.ORDER_DETAIL ? TableName.GOODS_ORDER : tableName);
+			const data = this.groupByTableName(this.result, optionsForOrder)[moduleName] || [];
 			if (data.length > 0) {
 				this.openDialog(
 					OrderChanging,
@@ -42,24 +46,16 @@ export default {
 				this.$message.warning('组件数据有误,ChooseModule');
 			}
 		},
-		// 需要把goodsOrder和orderDetail的放一起 也就是说 遍历到orderDetail的时候 往goodsOrder的分组里扔
-		optionsForOrder(tableName) {
-			if (tableName === TableName.ORDER_DETAIL) {
-				return TableName.GOODS_ORDER;
-			}
-			return tableName;
-		},
 		groupByTableName(data, callback) {
 			if (!Array.isArray(data)) {
 				return {};
 			}
-			callback = callback || this.optionsForOrder;
 			return data.reduce((result, item) => {
 				const tableName = item.tableName; // 获取当前项的 tableName
 				if (!result[tableName]) {
 					result[tableName] = []; // 如果分组不存在，初始化一个空数组
 				}
-				result[callback(tableName)].push(item); // 将当前项添加到对应的分组中
+				callback ? result[callback(tableName)].push(item) : result[tableName].push(item); // 将当前项添加到对应的分组中
 				return result;
 			}, {}); // 初始值为空对象
 		},
