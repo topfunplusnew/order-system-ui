@@ -1,13 +1,10 @@
 <script>
-import { getBackupInfoV1, getMoneyChangeSummary, getMoneyChangeSummaryByDate } from '@/api/system/statement';
+import { getBackupInfoV1, getMoneyChangeSummaryByDate } from '@/api/system/statement';
 import { fix } from 'order-system/src/api/tool/format';
-import { getPreviousDay } from '@/utils/Date';
-import { parseTime } from '@/utils/ruoyi';
 import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import ChooseModule from '@/views/dashboard/backuplog/ChooseModule.vue';
 import { TableName } from '@/api/tool/enums';
-import _ from 'lodash';
 
 export default {
 	name: 'MoneyChangeTotalAmount',
