@@ -1,7 +1,7 @@
 <script>
 import { completeJsonData, JsonUtils, TypeUtils } from '@/views/dashboard/backuplog';
 import { excludeParams } from '@/api/tool/exclude';
-import { keyOptioner } from '@/views/dashboard/backuplog/goodsorder/index';
+import { keyOptioner, paramFieldFilter } from '@/views/dashboard/backuplog/goodsorder/index';
 
 export default {
 	name: 'OrderChanging',
@@ -78,31 +78,6 @@ export default {
 			}
 		},
 		/**
-		 * 参数过滤器 需要对json中的属性键值和值进行过滤 比如订单编号，还有各种带id后端用来绑定用的字段等
-		 * @param jsonList 需要处理的json数组
-		 */
-		paramFieldFilter(jsonList) {
-			const typeUtil = new TypeUtils();
-			const operateJson = json => {
-				const newJson = { ...json }; // 创建一个新对象
-				for (const key in newJson) {
-					if (key.toLowerCase().includes('id')) {
-						// 忽略大小写
-						delete newJson[key];
-					}
-				}
-				return newJson;
-			};
-
-			if (typeUtil.checkType(jsonList) === 'Object') {
-				return operateJson(jsonList);
-			}
-
-			if (typeUtil.checkType(jsonList) === 'Array') {
-				return jsonList.map(json => operateJson(json));
-			}
-		},
-		/**
 		 * 渲染表格
 		 * @param index 要渲染的数据的索引
 		 */
@@ -118,7 +93,7 @@ export default {
 			keyOptioner(pre);
 			keyOptioner(aft);
 			// 对id等的参数进行过滤
-			let [item1, item2] = this.paramFieldFilter([pre, completeJsonData(pre, aft)]);
+			let [item1, item2] = paramFieldFilter([pre, completeJsonData(pre, aft)]);
 			console.log('item:', item1, item2);
 
 			// 渲染表格
