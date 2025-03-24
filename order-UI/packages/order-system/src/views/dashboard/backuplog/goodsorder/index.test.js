@@ -1,6 +1,5 @@
 import { describe, expect, test } from '@jest/globals';
 import { paramFieldFilter, typeFilter } from '@/views/dashboard/backuplog/goodsorder/index';
-
 // 测试JSON的key转换
 describe('keyOptioner module', () => {
 	const json = {

@@ -1,11 +1,18 @@
 <script>
-import { completeJsonData, JsonUtils } from '@/views/dashboard/backuplog';
-import { excludeParams } from '@/api/tool/exclude';
+import { completeJsonData, JsonUtils, TypeUtils } from '@/views/dashboard/backuplog';
 import { keyOptioner, paramFieldFilter, typeFilter } from '@/views/dashboard/backuplog/goodsorder/index';
 import { TableName } from '@/api/tool/enums';
-
+import _ from 'lodash';
+import { TableConfig } from '../backup.config';
+import OrderInfos from '@/views/dashboard/components/goodsOrder/OrderInfos.vue';
+// 这里的逻辑需要层层筛选 需要加一些过滤器 对json的操作
+// 现在的逻辑 是 根据模块分组了 订单需要筛选掉调整单生成的负数单和调整单，然后库存也是 所以需要一个过滤器
+// 另外 新增 insert的备份记录 原信息给null  新信息给新增的信息
+// 还需要参数过滤器，需要筛选掉不必要的参数 例如编号 订单编号 各种后端用来绑定用的id
+// 还需要一个函数指针数组，以防甲方加新功能
 export default {
 	name: 'OrderChanging',
+	components: { OrderInfos },
 	props: {
 		// 要进行比较的数据列表
 		compareData: {
@@ -19,55 +26,56 @@ export default {
 		}
 	},
 	data() {
-		return {
-			translate: [
-				'路径',
-				'船队',
-				'备注',
-				'客户',
-				'是否调整',
-				'海运柜号',
-				'陆运车牌',
-				'订单日期',
-				'海运银行账号',
-				'调整日期',
-				'总吨数',
-				'审核状态',
-				'是否已调整',
-				'陆运银行账号',
-				'海运运费',
-				'总付款',
-				'陆运运费',
-				'销售经理',
-				'海运银行名称',
-				'付款状态',
-				'发票状态',
-				'陆运银行名称',
-				'收款凭证',
-				'海运司机电话',
-				'陆运司机电话',
-				'海运司机姓名',
-				'供应商名称',
-				'陆运司机姓名',
-				'总运费',
-				'工厂总付款',
-				'客户是否开发票',
-				'供应商是否开发票'
-			]
-		};
+		return {};
+	},
+	// 主要针对订单和库存这两个模块 进行分组
+	computed: {
+		TableName() {
+			return TableName;
+		},
+		// 对数据进行处理 根据模块名称
+		renderData() {
+			return Object.entries(_.groupBy(this.compareData, item => item.uuid)).map(entries => {
+				return _.groupBy(entries[1], item => item.tableName);
+			});
+		}
 	},
 	mounted() {
-		console.log(this.compareData);
-		this.compareData.forEach((item, index) => {
-			this.render(index);
-		});
+		console.log('需要比较的数据:', this.compareData);
+		console.log('renderData', this.renderData);
+		if (this.moduleName === TableName.GOODS_ORDER || this.moduleName === TableName.INVENTORMAIN) {
+			this.getTable();
+		} else {
+			this.compareData.forEach((item, index) => {
+				this.render(index);
+			});
+		}
 	},
-	// 这里的逻辑需要层层筛选 需要加一些过滤器 对json的操作
-	// 现在的逻辑 是 根据模块分组了 订单需要筛选掉调整单生成的负数单和调整单，然后库存也是 所以需要一个过滤器
-	// 另外 新增 insert的备份记录 原信息给null  新信息给新增的信息
-	// 还需要参数过滤器，需要筛选掉不必要的参数 例如编号 订单编号 各种后端用来绑定用的id
-	// 还需要一个函数指针数组，以防甲方加新功能
+
 	methods: {
+		getTable() {
+			for (let index = 0; index < this.renderData.length; index++) {
+				const item = this.renderData[index];
+				const before = _.cloneDeep(
+					item.orderdetail.map(item => {
+						const _item = typeFilter(item);
+						return JsonUtils.getJson(_item.originalInfo);
+					})
+				);
+				const after = _.cloneDeep(
+					item.orderdetail.map(item => {
+						const _item = typeFilter(item);
+						return JsonUtils.getJson(_item.changedInfo);
+					})
+				);
+				try {
+					this.renderTable(before, 'multi-beforeTable' + index, '修改前');
+					this.renderTable(after, 'multi-afterTable' + index, '修改后');
+				} catch (err) {
+					console.log(err);
+				}
+			}
+		},
 		/**
 		 * 渲染表格
 		 * @param index 要渲染的数据的索引
@@ -76,8 +84,17 @@ export default {
 			if (!this.compareData || !this.compareData.length) {
 				throw new Error('未找到对应数据');
 			}
+			// 渲染非订单的数据
+			this.processData(index, undefined);
+		},
+		/**
+		 * 处理数据的函数
+		 * @param index 要处理的数据的索引 也就是备份数据的索引
+		 * @param processData 备份数据数组 默认为传入组件的数据 也就是后端直接返回的备份数据数组
+		 */
+		processData(index, processData = []) {
 			// 处理一下type
-			let current = this.compareData[index];
+			let current = processData || this.compareData[index];
 			current = typeFilter(current);
 			// 转为json数据
 			let pre = JsonUtils.getJson(current.originalInfo);
@@ -90,54 +107,88 @@ export default {
 			let [item1, item2] = paramFieldFilter([pre, completeJsonData(pre, aft)], [orderParamFilter], this.$exclude);
 			// 渲染表格
 			this.$nextTick(() => {
-				this.renderTable(item1, 'beforeTable' + index, '修改前', this.translate);
-				this.renderTable(item2, 'afterTable' + index, '修改后', this.translate);
+				this.renderTable(item1, 'beforeTable' + index, '修改前');
+				this.renderTable(item2, 'afterTable' + index, '修改后');
 			});
 		},
-
 		/**
 		 * 渲染表格
-		 * @param json 需要渲染的一条备份信息
+		 * @param {*[]} data 表格数据 一行 或者多行
 		 * @param tableId 表格元素的id
-		 * @param status  状态列的展示
-		 * @param headerList  表头数组
+		 * @param status  状态列的展示 是修改前还是修改后
 		 */
-		renderTable(json, tableId, status, headerList) {
-			if (!json || !status) {
-				throw new Error('缺少参数');
+		renderTable(data, tableId, status) {
+			if (!data || !status) {
+				console.error('缺少参数');
+				return;
 			}
-
+			let processData = null;
+			if (TypeUtils.prototype.checkType(data) === 'Object') {
+				processData = [data];
+			}
+			if (TypeUtils.prototype.checkType(data) === 'Array') {
+				if (data.length === 0) {
+					console.error('渲染表格,renderTable函数出问题,数据为空');
+					return;
+				}
+				processData = data;
+			}
+			if (processData === null) {
+				console.error('processData 为空');
+				return;
+			}
 			const table = document.getElementById(tableId);
 			if (!table) {
 				console.error(`表格 ${tableId} 未找到`);
 				return;
 			}
-
 			const thead = table.querySelector('thead tr');
 			const tbody = table.querySelector('tbody');
 			thead.innerHTML = '';
 			tbody.innerHTML = '';
-
-			const dataKeys = Object.keys(excludeParams(json));
-			if (dataKeys.length === 0) {
-				throw new Error('渲染表格时出问题,json数据为空');
-			}
-
-			// 修正表头长度
-			const headerRow = ['状态', ...headerList.slice(0, dataKeys.length)];
-			headerRow.forEach(key => {
+			// 渲染表头
+			this.renderTableHeader(thead);
+			// 渲染表格行数据
+			processData.forEach(item => {
+				this.renderTableRows(tbody, item, status);
+			});
+		},
+		/**
+		 * 渲染表头字段 修正表头长度 并且渲染顶部
+		 * @param thead 表格的表头DOM元素
+		 */
+		renderTableHeader(thead) {
+			const config = TableConfig[TableName.ORDER_DETAIL];
+			const mappers = config.mappers;
+			const dataKeys = Object.keys(mappers);
+			// 渲染表头字段 修正表头长度 并且渲染顶部
+			const headerRow = ['状态', ...dataKeys.slice(0, dataKeys.length)];
+			for (let key of headerRow) {
+				if (typeof mappers[key] === 'object') {
+					continue;
+				}
 				const th = document.createElement('th');
-				th.textContent = key;
+				// 这里对数据可以进行处理 判断当前字段对应的值是不是object
+				th.textContent = mappers[key];
 				th.style.textAlign = 'center';
 				th.style.backgroundColor = '#e8e5e5';
 				th.style.border = '1px solid black';
 				thead.appendChild(th);
-			});
-
+			}
+		},
+		/**
+		 * 渲染表格行数据
+		 * @param tbody 表格行的body DOM元素
+		 * @param json  需要渲染的json数据
+		 * @param status  状态字段 修改前还是修改后
+		 */
+		renderTableRows(tbody, json, status = '修改前') {
+			const config = TableConfig[TableName.ORDER_DETAIL];
+			const mappers = config.mappers;
+			const dataKeys = Object.keys(mappers);
 			try {
 				const tr = document.createElement('tr');
 				tr.style.textAlign = 'center';
-
 				// 状态列
 				const statusTd = document.createElement('td');
 				statusTd.textContent = status;
@@ -146,17 +197,15 @@ export default {
 				statusTd.style.width = '120px';
 				statusTd.classList.add('status-cell');
 				tr.appendChild(statusTd);
-
 				// JSON 数据列
 				dataKeys.forEach(key => {
 					const td = document.createElement('td');
-					td.textContent = json[key] !== undefined ? json[key] : 'null';
+					td.textContent = json[key] !== undefined ? json[key] : '';
 					td.classList.add('table-d');
 					td.style.textAlign = 'center';
 					td.style.border = '1px solid black';
 					tr.appendChild(td);
 				});
-
 				tbody.appendChild(tr);
 			} catch (err) {
 				console.log(err);
@@ -171,49 +220,86 @@ export default {
 
 <template>
 	<div>
-		<div class="table-container" v-for="(item, index) in compareData" :key="index">
-			<div class="container">
-				<table :id="'beforeTable' + index">
-					<thead>
-						<tr></tr>
-					</thead>
-					<tbody></tbody>
-				</table>
-			</div>
+		<!--    订单或者库存的数据渲染使用-->
+		<div v-if="moduleName === TableName.GOODS_ORDER || moduleName === TableName.INVENTORMAIN">
+			<div>
+				<div class="table-container" v-for="(item, index) in renderData" :key="index">
+					<OrderInfos :order-info="JSON.parse(item.goodsorder[0].originalInfo)" />
+					<div id="table-gen">
+						<div class="container">
+							<table :id="'multi-beforeTable' + index">
+								<thead>
+									<tr></tr>
+								</thead>
+								<tbody></tbody>
+							</table>
+						</div>
 
-			<div class="container">
-				<table :id="'afterTable' + index">
-					<thead>
-						<tr></tr>
-					</thead>
-					<tbody></tbody>
-				</table>
+						<div class="container">
+							<table :id="'multi-afterTable' + index">
+								<thead>
+									<tr></tr>
+								</thead>
+								<tbody></tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+				<el-divider />
 			</div>
-			<br />
-			<br />
-			<br />
+		</div>
+		<!--    非订单的数据渲染使用-->
+		<div v-else>
+			<div>
+				<div class="table-container" v-for="(item, index) in compareData" :key="index">
+					<div class="container">
+						<table :id="'beforeTable' + index">
+							<thead>
+								<tr></tr>
+							</thead>
+							<tbody></tbody>
+						</table>
+					</div>
+					<div class="container">
+						<table :id="'afterTable' + index">
+							<thead>
+								<tr></tr>
+							</thead>
+							<tbody></tbody>
+						</table>
+					</div>
+				</div>
+				<br />
+				<br />
+				<br />
+			</div>
 		</div>
 	</div>
 </template>
 
 <style scoped>
 .table-container {
-	margin: 0 auto;
+	width: 100%;
+	margin: 40px auto;
 	display: flex;
 	justify-content: center;
 	flex-direction: column;
-	max-height: 500px;
+	max-height: 660px;
+}
+
+#table-gen {
+	overflow-x: scroll;
 }
 
 .container {
 	border-radius: 8px;
 	max-width: 1400px;
-	max-height: 500px;
+	max-height: 660px;
 }
 
 table {
-	width: 100%; /* 让表格整体缩小一些 */
-	max-width: 1400px; /* 限制最大宽度 */
+	width: 3200px; /* 让表格整体缩小一些 */
+	max-width: 3200px; /* 限制最大宽度 */
 	border-collapse: collapse;
 	margin-bottom: 10px;
 	border: 1px solid #ddd;
@@ -227,7 +313,7 @@ td {
 }
 
 th {
-	background-color: #989494 !important;
+	background-color: #817e7e !important;
 }
 
 /* 调整状态列宽度 */

@@ -1,5 +1,4 @@
 import { TypeUtils } from '@/views/dashboard/backuplog';
-import Vue from 'vue';
 
 /**
  * 键值对过滤器 对json的键进行特殊处理 操作为 先把字母大写 再去除下划线
