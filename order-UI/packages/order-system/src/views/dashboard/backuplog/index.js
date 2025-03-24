@@ -52,3 +52,17 @@ export class TypeUtils {
 		}
 	}
 }
+
+/**
+ * 判断是否为今天
+ * @param dateStr
+ * @returns {boolean}
+ */
+export function isToday(dateStr) {
+	const inputDate = new Date(dateStr); // 将 yyyy-MM-dd 转换为 Date 对象
+	if (isNaN(inputDate)) return false; // 如果日期无效，直接返回 false
+
+	const today = new Date();
+
+	return inputDate.getFullYear() === today.getFullYear() && inputDate.getMonth() === today.getMonth() && inputDate.getDate() === today.getDate();
+}

@@ -1,5 +1,5 @@
 import { describe, expect, test } from '@jest/globals';
-import { keyOptioner, paramFieldFilter, typeFilter } from '@/views/dashboard/backuplog/goodsorder/index';
+import { paramFieldFilter, typeFilter } from '@/views/dashboard/backuplog/goodsorder/index';
 
 // 测试JSON的key转换
 describe('keyOptioner module', () => {
@@ -9,7 +9,9 @@ describe('keyOptioner module', () => {
 		id: 1,
 		order_id: 100,
 		pay_id: 1,
-		id_index: 1
+		id_index: 1,
+		createTime: '2025-03-23 16:32:56',
+		updateTime: '2025-03-23 16:32:56'
 	};
 
 	const json1 = {
@@ -17,11 +19,15 @@ describe('keyOptioner module', () => {
 		age: 18,
 		pay_id: 1,
 		id_index: 1,
-		order_id_id: 100
+		order_id_id: 100,
+		createTime: '2025-03-23 16:32:56',
+		updateTime: '2025-03-23 16:32:56',
+		ORDERSNO: '1234567890'
 	};
+	const exclude = ['addtime', 'userId', 'UserName', 'delFlag', 'submitflag', 'cancelFlag', 'createBy', 'createTime', 'updateBy', 'updateTime', 'isedit', 'userName'];
 
 	test('json', () => {
-		expect(paramFieldFilter([json, json1])).toEqual([
+		expect(paramFieldFilter([json, json1], undefined, exclude)).toEqual([
 			{
 				name: 'zhangsan',
 				age: 18

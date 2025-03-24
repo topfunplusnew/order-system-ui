@@ -75,7 +75,24 @@ Vue.prototype.downLoadOnce = onceDownload;
 // todo 以下是自己封装的一些常用的繁琐操作函数
 // 1.需要排除的字段信息
 // 使用: this.form = excludeParams(this.form, this.$exclude)  api/tool/exclude.js
-Vue.prototype.$exclude = ['addtime', 'userId', 'UserName', 'delFlag', 'submitflag', 'cancelFlag', 'createBy', 'createTime', 'updateBy', 'updateTime', 'isedit', 'userName'];
+Vue.prototype.$exclude = [
+	'addtime',
+	'userId',
+	'UserName',
+	'delFlag',
+	'submitflag',
+	'cancelFlag',
+	'createBy',
+	'createTime',
+	'updateBy',
+	'updateTime',
+	'isedit',
+	'userName',
+	'create_time',
+	'update_time',
+	'username',
+	'cancelflag'
+];
 Vue.prototype.$excludeWithUpdate = [
 	'addtime',
 	'userId',

@@ -1,7 +1,8 @@
 <script>
 import { completeJsonData, JsonUtils } from '@/views/dashboard/backuplog';
 import { excludeParams } from '@/api/tool/exclude';
-import { keyOptioner, paramFieldFilter } from '@/views/dashboard/backuplog/goodsorder/index';
+import { keyOptioner, paramFieldFilter, typeFilter } from '@/views/dashboard/backuplog/goodsorder/index';
+import { TableName } from '@/api/tool/enums';
 
 export default {
 	name: 'OrderChanging',
@@ -20,39 +21,46 @@ export default {
 	data() {
 		return {
 			translate: [
-				'编号',
-				'车队',
+				'路径',
+				'船队',
 				'备注',
 				'客户',
-				'调整次数',
-				'订单号',
-				'海运车号',
-				'陆运车号',
+				'是否调整',
+				'海运柜号',
+				'陆运车牌',
 				'订单日期',
-				'总吨位',
+				'海运银行账号',
+				'调整日期',
+				'总吨数',
 				'审核状态',
-				'是否调整单',
+				'是否已调整',
 				'陆运银行账号',
 				'海运运费',
 				'总付款',
 				'陆运运费',
 				'销售经理',
+				'海运银行名称',
+				'付款状态',
 				'发票状态',
 				'陆运银行名称',
+				'收款凭证',
 				'海运司机电话',
 				'陆运司机电话',
 				'海运司机姓名',
+				'供应商名称',
 				'陆运司机姓名',
-				'总运费价格',
-				'出厂货款',
-				'客户是否开票',
-				'供应商是否开票'
+				'总运费',
+				'工厂总付款',
+				'客户是否开发票',
+				'供应商是否开发票'
 			]
 		};
 	},
 	mounted() {
-		console.log('进行处理的数据:', this.compareData);
-		this.render(0);
+		console.log(this.compareData);
+		this.compareData.forEach((item, index) => {
+			this.render(index);
+		});
 	},
 	// 这里的逻辑需要层层筛选 需要加一些过滤器 对json的操作
 	// 现在的逻辑 是 根据模块分组了 订单需要筛选掉调整单生成的负数单和调整单，然后库存也是 所以需要一个过滤器
@@ -65,19 +73,21 @@ export default {
 		 * @param index 要渲染的数据的索引
 		 */
 		render(index) {
-			if (!this.compareData.length) {
+			if (!this.compareData || !this.compareData.length) {
 				throw new Error('未找到对应数据');
 			}
+			// 处理一下type
+			let current = this.compareData[index];
+			current = typeFilter(current);
 			// 转为json数据
-			let pre = JsonUtils.getJson(this.compareData[index].originalInfo);
-			let aft = JsonUtils.getJson(this.compareData[index].changedInfo);
+			let pre = JsonUtils.getJson(current.originalInfo);
+			let aft = JsonUtils.getJson(current.changedInfo);
 			// 键值对处理
 			pre = keyOptioner(pre);
 			aft = keyOptioner(aft);
 			// 对id等的参数进行过滤
-			let [item1, item2] = paramFieldFilter([pre, completeJsonData(pre, aft)]);
-			console.log('item:', item1, item2);
-
+			const orderParamFilter = this.moduleName === TableName.GOODS_ORDER ? key => key === 'ORDERSNO' || key.indexOf('ORDERSNO') !== -1 : undefined;
+			let [item1, item2] = paramFieldFilter([pre, completeJsonData(pre, aft)], [orderParamFilter], this.$exclude);
 			// 渲染表格
 			this.$nextTick(() => {
 				this.renderTable(item1, 'beforeTable' + index, '修改前', this.translate);
@@ -179,6 +189,9 @@ export default {
 					<tbody></tbody>
 				</table>
 			</div>
+			<br />
+			<br />
+			<br />
 		</div>
 	</div>
 </template>
@@ -189,12 +202,13 @@ export default {
 	display: flex;
 	justify-content: center;
 	flex-direction: column;
+	max-height: 500px;
 }
 
 .container {
 	border-radius: 8px;
 	max-width: 1400px;
-	max-height: 700px;
+	max-height: 500px;
 }
 
 table {

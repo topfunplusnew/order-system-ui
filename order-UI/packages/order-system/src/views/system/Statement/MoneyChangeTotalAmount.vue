@@ -5,6 +5,7 @@ import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import ChooseModule from '@/views/dashboard/backuplog/ChooseModule.vue';
 import { TableName } from '@/api/tool/enums';
+import { isToday } from '@/views/dashboard/backuplog';
 
 export default {
 	name: 'MoneyChangeTotalAmount',
@@ -61,7 +62,7 @@ export default {
 				return;
 			}
 			// 不能选择今天
-			if (value && value >= new Date()) {
+			if (isToday(value)) {
 				this.$message({
 					message: '不能选择今天',
 					type: 'error'
@@ -87,12 +88,12 @@ export default {
 				return;
 			}
 			// 不能选择今天
-			if (value && value >= new Date()) {
+			if (isToday(value)) {
 				this.$message({
 					message: '不能选择今天',
 					type: 'error'
 				});
-				this.targetLeftDate = null;
+				this.targetRightDate = null;
 			}
 		},
 		// 搜索
@@ -122,7 +123,6 @@ export default {
 				for (let i = 0; i < minLength; i++) {
 					const fixed = Number(leftData[i].anotherValue).toFixed(2);
 					const change = Number(rightData[i].anotherValue).toFixed(2);
-					console.log(fixed, change);
 					if (fixed !== change) {
 						this.diffRows.push(i);
 						this.diffModules.push(rightData[i].moduleName);
