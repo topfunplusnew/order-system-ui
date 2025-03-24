@@ -44,10 +44,6 @@ export default {
 	},
 	methods: {
 		fix,
-		// 更新表格的数据
-		updateTableData(type) {
-			type === 1 ? this.getChangeData(null, this.targetLeftDate) : this.getChangeData(null, this.targetRightDate);
-		},
 		// 对左侧时间的校验逻辑
 		changeLeftDate(value) {
 			if (!this.changeForm.endTime) {
@@ -59,6 +55,15 @@ export default {
 			if (value && value < this.changeForm.endTime) {
 				this.$message({
 					message: '左侧时间不能小于顶部搜索框时间',
+					type: 'error'
+				});
+				this.targetLeftDate = null;
+				return;
+			}
+			// 不能选择今天
+			if (value && value >= new Date()) {
+				this.$message({
+					message: '不能选择今天',
 					type: 'error'
 				});
 				this.targetLeftDate = null;
@@ -79,21 +84,31 @@ export default {
 					type: 'error'
 				});
 				this.targetRightDate = null;
+				return;
+			}
+			// 不能选择今天
+			if (value && value >= new Date()) {
+				this.$message({
+					message: '不能选择今天',
+					type: 'error'
+				});
+				this.targetLeftDate = null;
 			}
 		},
 		// 搜索
 		async handleChangeSearch() {
 			// 获取左侧的
-			const left = await this.getChangeData(null, this.targetLeftDate, this.fixedMoneyTableData);
+			const left = await this.getChangeData(this.changeForm.endTime, this.targetLeftDate);
 			this.fixedMoneyTableData = this.formatTableData(left);
 			// 获取右侧的
-			const right = await this.getChangeData(null, this.targetRightDate, this.changeMoneyTableData);
+			const right = await this.getChangeData(this.changeForm.endTime, this.targetRightDate);
 			this.changeMoneyTableData = this.formatTableData(right);
 			// 计算差异
-			this.calculateDiff();
+			this.calculateDiff(left, right);
 		},
 		// 计算差异行 在图表中显示高亮
 		calculateDiff(leftTableData, rightTableData) {
+			console.log('执行calculateDiff函数', leftTableData, rightTableData);
 			// 计算差异行
 			this.$nextTick(() => {
 				this.diffRows = [];
@@ -102,11 +117,12 @@ export default {
 				if (!leftData || !rightData) {
 					throw new Error('左右侧数据为空,函数calculateDiff发生计算错误');
 				}
+
 				// 进行计算差异
 				const minLength = Math.max(leftData.length, rightData.length);
 				for (let i = 0; i < minLength; i++) {
-					const fixed = Number(leftData[i].value).toFixed(2);
-					const change = Number(rightData[i].value).toFixed(2);
+					const fixed = Number(leftData[i].anotherValue).toFixed(2);
+					const change = Number(rightData[i].anotherValue).toFixed(2);
 					if (fixed !== change) {
 						this.diffRows.push(i);
 						this.diffModules.push(rightData[i].moduleName);
