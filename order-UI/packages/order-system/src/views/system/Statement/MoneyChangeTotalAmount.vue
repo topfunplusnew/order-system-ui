@@ -104,11 +104,10 @@ export default {
 			const right = await this.getChangeData(this.changeForm.endTime, this.targetRightDate);
 			this.changeMoneyTableData = this.formatTableData(right);
 			// 计算差异
-			this.calculateDiff(left, right);
+			this.calculateDiff();
 		},
 		// 计算差异行 在图表中显示高亮
 		calculateDiff(leftTableData, rightTableData) {
-			console.log('执行calculateDiff函数', leftTableData, rightTableData);
 			// 计算差异行
 			this.$nextTick(() => {
 				this.diffRows = [];
@@ -123,6 +122,7 @@ export default {
 				for (let i = 0; i < minLength; i++) {
 					const fixed = Number(leftData[i].anotherValue).toFixed(2);
 					const change = Number(rightData[i].anotherValue).toFixed(2);
+					console.log(fixed, change);
 					if (fixed !== change) {
 						this.diffRows.push(i);
 						this.diffModules.push(rightData[i].moduleName);
