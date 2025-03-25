@@ -4,6 +4,7 @@ import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import OrderChanging from '@/views/dashboard/backuplog/goodsorder/OrderChanging.vue';
 import { TypeUtils } from '@/views/dashboard/backuplog/index';
+import { filtersFunc } from '@/views/dashboard/backuplog/goodsorder';
 
 export default {
 	name: 'index',
@@ -33,33 +34,23 @@ export default {
 		console.log('ChooseModule:', this.moduleList, this.result);
 	},
 	methods: {
-		// 将订单详情的数据归类到订单主表信息
-		filtersFunc(tableName) {
-			return tableName === TableName.ORDER_DETAIL ? TableName.GOODS_ORDER : tableName;
-		},
-		filtersInventory(tableName) {
-			return tableName === TableName.INVENTORDETAIL ? TableName.INVENTORMAIN : tableName;
-		},
+		filtersFunc,
 		/**
 		 * 弹出的弹窗点击某一个模块 可以查看该模块的详细变动信息
 		 * @param moduleName  表名
-		 * @param filters 需要对变动信息进行处理的过滤器链
+		 * @param filter 需要对变动信息进行处理的过滤器链
 		 */
-		handleCheckModule(moduleName, filters = []) {
-			if (filters.length === 0) {
+		handleCheckModule(moduleName, filter) {
+			if (!filter) {
 				console.warn('handleCheckModule函数执行,未传入过滤器参数');
 			}
+			if (typeof filter !== 'function') {
+				throw new Error('handleCheckModule,函数个体必须为函数类型');
+			}
 			// 对模块名进行处理
-			let tableName = null;
-			filters.forEach(func => {
-				if (typeof func !== 'function') {
-					throw new Error('handleCheckModule函数循环函数数组时出现问题,函数个体必须为函数类型');
-				}
-				tableName = func(moduleName);
-			});
-
+			let tableName = filter(moduleName);
 			console.log('tableName', tableName);
-			const data = this.groupByTableName(this.result, filters)[tableName] || [];
+			const data = this.groupByTableName(this.result, filter)[tableName] || [];
 			console.log('分组后的数据:', data);
 			if (data.length > 0) {
 				this.openDialog(
@@ -79,10 +70,10 @@ export default {
 		/**
 		 * 根据tableName分组数据
 		 * @param {[]} data 需要进行分组的备份数据
-		 * @param {Function[]} callbacks 回调函数，用于处理分组后的数据
+		 * @param {Function} callback 回调函数，用于处理分组后的数据
 		 * @returns {{}|*}
 		 */
-		groupByTableName(data, callbacks = []) {
+		groupByTableName(data, callback) {
 			// 分组函数
 			const process = (callback, result, item) => {
 				const tableName = callback ? callback(item.tableName) : item.tableName; // 获取当前项的 tableName
@@ -98,7 +89,7 @@ export default {
 				return;
 			}
 			// 如果传入的回调函数数组长度为0 那么就是不对数据进行处理 直接分组
-			if (callbacks.length === 0) {
+			if (!callback) {
 				console.warn('groupByTableName函数执行,未传入回调函数');
 				// 没有传函数 单纯分组
 				return data.reduce((result, item) => {
@@ -106,12 +97,10 @@ export default {
 				});
 			}
 			return data.reduce((result, item) => {
-				callbacks.forEach(callback => {
-					if (typeof callback !== 'function') {
-						throw new Error('groupByTableName函数循环函数数组时出现问题,函数个体必须为函数类型');
-					}
-					result = process(callback, result, item);
-				});
+				if (typeof callback !== 'function') {
+					throw new Error('groupByTableName函数循环函数数组时出现问题,函数个体必须为函数类型');
+				}
+				result = process(callback, result, item);
 				return result;
 			}, {}); // 初始值为空对象
 		},
@@ -125,7 +114,7 @@ export default {
 	<div>
 		<div class="container">
 			<ul class="module-list">
-				<li class="module-item" v-for="(item, index) in moduleList" :key="index" @click="handleCheckModule(item, [filtersFunc, filtersInventory])">
+				<li class="module-item" v-for="(item, index) in moduleList" :key="index" @click="handleCheckModule(item, filtersFunc)">
 					{{ moduleNames[item] }}
 				</li>
 			</ul>

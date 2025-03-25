@@ -1,6 +1,6 @@
 <script>
 import { completeJsonData, JsonUtils, TypeUtils } from '@/views/dashboard/backuplog';
-import { keyOptioner, paramFieldFilter, typeFilter } from '@/views/dashboard/backuplog/goodsorder/index';
+import { filtersFunc, keyOptioner, paramFieldFilter, transFuc, typeFilter } from '@/views/dashboard/backuplog/goodsorder/index';
 import { moduleNames, TableName } from '@/api/tool/enums';
 import _ from 'lodash';
 import { TableConfig } from '../backup.config';
@@ -73,32 +73,21 @@ export default {
 		getTable(prop) {
 			for (let index = 0; index < this.renderData.length; index++) {
 				const item = this.renderData[index];
-				console.log('getTable:item', item);
-				const before = item[prop]
-					? _.cloneDeep(
-							item[prop].map(item => {
-								const _item = typeFilter(item);
-								return JsonUtils.getJson(_item.originalInfo);
-							})
-					  )
-					: [];
-				const after = item[prop]
-					? _.cloneDeep(
-							item[prop].map(item => {
-								const _item = typeFilter(item);
-								return JsonUtils.getJson(_item.changedInfo);
-							})
-					  )
-					: [];
-				console.log('getTable:');
-				console.log('before', before);
-				console.log('after', after);
-				try {
-					this.renderTable(before, 'multi-beforeTable' + index, '修改前');
-					this.renderTable(after, 'multi-afterTable' + index, '修改后');
-				} catch (err) {
-					console.log(err);
-				}
+				const _getData = (prop, type) => {
+					const key = type === 1 ? 'originalInfo' : 'changedInfo';
+					return item[prop]
+						? _.cloneDeep(
+								item[prop].map(item => {
+									const _item = typeFilter(item);
+									return JsonUtils.getJson(_item[key]);
+								})
+						  )
+						: [];
+				};
+				const before = _getData(prop, 1);
+				const after = _getData(prop, 2);
+				this.renderTable(before, 'multi-beforeTable' + index, '修改前');
+				this.renderTable(after, 'multi-afterTable' + index, '修改后');
 			}
 		},
 		/**
@@ -143,6 +132,7 @@ export default {
 		 * @param status  状态列的展示 是修改前还是修改后
 		 */
 		renderTable(data, tableId, status) {
+			console.log('tableId:', tableId);
 			if (!data || !status) {
 				console.error('缺少参数');
 				return;
@@ -160,12 +150,12 @@ export default {
 			}
 			// 获取dom元素
 			const table = document.getElementById(tableId);
-			const thead = table.querySelector('thead tr');
-			const tbody = table.querySelector('tbody');
 			if (!table) {
 				console.error(`表格 ${tableId} 未找到`);
 				return;
 			}
+			const thead = table.querySelector('thead tr');
+			const tbody = table.querySelector('tbody');
 			if (processData === null) {
 				console.error('processData 为空');
 				this.renderNull(tbody);
@@ -185,7 +175,8 @@ export default {
 		 * @param thead 表格的表头DOM元素
 		 */
 		renderTableHeader(thead) {
-			const config = TableConfig[TableName.ORDER_DETAIL];
+			const config = TableConfig[transFuc(this.moduleName)];
+			console.log(config);
 			const mappers = config.mappers;
 			const dataKeys = Object.keys(mappers);
 			// 渲染表头字段 修正表头长度 并且渲染顶部
@@ -220,7 +211,7 @@ export default {
 		 * @param status  状态字段 修改前还是修改后
 		 */
 		renderTableRows(tbody, json, status = '修改前') {
-			const config = TableConfig[TableName.ORDER_DETAIL];
+			const config = TableConfig[transFuc(this.moduleName)];
 			const mappers = config.mappers;
 			const dataKeys = Object.keys(mappers);
 			try {
@@ -252,10 +243,21 @@ export default {
 		 * 对订单主表信息进行数据处理
 		 * @param item  备份信息主表
 		 * @param type  类型
+		 * @param moduleName  模块名
 		 * @returns {any}
 		 */
-		getProcessedOrder(item, type) {
-			const row = typeFilter(_.cloneDeep(item).goodsorder[0]);
+		getProcessedOrder(item, type, moduleName) {
+			let row = null;
+			switch (moduleName) {
+				case TableName.GOODS_ORDER:
+					row = typeFilter(_.cloneDeep(item).goodsorder[0]);
+					break;
+				case TableName.INVENTORMAIN:
+					row = typeFilter(_.cloneDeep(item).inventory_main[0]);
+					break;
+				default:
+					row = typeFilter(_.cloneDeep(item).goodsorder[0]);
+			}
 			if (type === 'before') {
 				return JSON.parse(row.originalInfo);
 			}
@@ -289,7 +291,7 @@ export default {
 								<el-collapse-item :title="moduleNames[moduleName] + `主信息修改前`" :name="item.id">
 									<div>
 										<div v-if="item.goodsorder[0].originalInfo !== 'null'">
-											<OrderInfos :order-info="getProcessedOrder(item, 'before')" />
+											<OrderInfos :order-info="getProcessedOrder(item, 'before', moduleName)" />
 										</div>
 										<div v-else>{{ moduleNames[moduleName] }}无修改前记录</div>
 									</div>
@@ -297,7 +299,7 @@ export default {
 								<el-collapse-item title="订单主信息修改后" :name="item.id">
 									<div>
 										<div v-if="item.goodsorder[0].changedInfo !== 'null'">
-											<OrderInfos :order-info="getProcessedOrder(item, 'after')" />
+											<OrderInfos :order-info="getProcessedOrder(item, 'after', moduleName)" />
 										</div>
 										<div v-else>{{ moduleNames[moduleName] }}无修改后记录</div>
 									</div>
@@ -311,7 +313,7 @@ export default {
 								<el-collapse-item :title="moduleNames[moduleName] + `主信息修改前`" :name="item.id">
 									<div>
 										<div v-if="item.inventory_main[0].originalInfo !== 'null'">
-											<INVENTORY :need-to-show-info="getProcessedOrder(item, 'before')" />
+											<INVENTORY :need-to-show-info="getProcessedOrder(item, 'before', moduleName)" />
 										</div>
 										<div v-else>{{ moduleNames[moduleName] }}无修改前记录</div>
 									</div>
@@ -319,7 +321,7 @@ export default {
 								<el-collapse-item title="订单主信息修改后" :name="item.id">
 									<div>
 										<div v-if="item.inventory_main[0].changedInfo !== 'null'">
-											<INVENTORY :need-to-show-info="getProcessedOrder(item, 'after')" />
+											<INVENTORY :need-to-show-info="getProcessedOrder(item, 'after', moduleName)" />
 										</div>
 										<div v-else>{{ moduleNames[moduleName] }}无修改后记录</div>
 									</div>

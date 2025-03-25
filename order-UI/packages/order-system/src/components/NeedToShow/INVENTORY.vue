@@ -13,7 +13,7 @@ export default {
 <template>
 	<div class="inventory-container">
 		<el-card class="inventory-card">
-			<el-descriptions title="库存信息" border column="3" :labelStyle="{ width: '150px' }">
+			<el-descriptions title="库存信息" border :column="3" :labelStyle="{ width: '150px' }">
 				<el-descriptions-item label="供应商">{{ needToShowInfo.supplier || '-' }}</el-descriptions-item>
 				<el-descriptions-item label="总运费单价">{{ needToShowInfo.allFreightPrice || '0' }} 元</el-descriptions-item>
 				<el-descriptions-item label="子项陆运费之和">{{ needToShowInfo.allLandFreight || '0' }} 元</el-descriptions-item>

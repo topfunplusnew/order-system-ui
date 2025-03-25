@@ -1,4 +1,5 @@
 import { TypeUtils } from '@/views/dashboard/backuplog';
+import { TableName } from '@/api/tool/enums';
 
 /**
  * 键值对过滤器 对json的键进行特殊处理 操作为 先把字母大写 再去除下划线
@@ -83,5 +84,28 @@ export function typeFilter(backupRow) {
 	if (backupRow.backupType === 'delete' || backupRow.backupType === 'update') {
 		backupRow.changedInfo = backupRow.originalInfo;
 		return backupRow;
+	}
+}
+
+// 将订单详情的数据归类到订单主表信息
+export function filtersFunc(tableName) {
+	switch (tableName) {
+		case TableName.ORDER_DETAIL:
+			return TableName.GOODS_ORDER;
+		case TableName.INVENTORDETAIL:
+			return TableName.INVENTORMAIN;
+		default:
+			return tableName;
+	}
+}
+
+export function transFuc(tableName) {
+	switch (tableName) {
+		case TableName.GOODS_ORDER:
+			return TableName.ORDER_DETAIL;
+		case TableName.INVENTORMAIN:
+			return TableName.INVENTORDETAIL;
+		default:
+			return tableName;
 	}
 }
