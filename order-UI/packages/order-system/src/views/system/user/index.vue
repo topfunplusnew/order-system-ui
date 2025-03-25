@@ -100,7 +100,7 @@
 					<el-table-column v-if="columns[5].visible" key="phonenumber" label="手机号码" align="center" prop="phonenumber" width="120" />
 					<el-table-column v-if="columns[6].visible" key="phonenumber" label="就职状态" align="center" prop="state" width="120" />
 					<el-table-column v-if="columns[7].visible" key="phonenumber" label="入职时间" align="center" prop="startDate" width="120" />
-					<el-table-column v-if="columns[8].visible" key="phonenumber" label="身份证号码" align="center" prop="iDCard" width="120" />
+					<el-table-column v-if="columns[8].visible" key="phonenumber" label="身份证号码" align="center" prop="idCard" width="120" />
 					<el-table-column v-if="columns[10].visible" label="性别" align="center" prop="sex" width="120">
 						<!-- 0男1女 -->
 
@@ -221,7 +221,7 @@
 								<el-input v-model="form.phonenumber" placeholder="请输入手机号码" maxlength="11" />
 							</el-form-item>
 							<el-form-item label="身份证号码">
-								<el-input v-model="form.iDCard" placeholder="请输入身份证号码" />
+								<el-input v-model="form.idCard" placeholder="请输入身份证号码" />
 							</el-form-item>
 							<el-form-item label="开户银行">
 								<el-input v-model="form.bankName" placeholder="请输入开户银行" />
@@ -659,7 +659,7 @@ export default {
 						trigger: 'blur'
 					}
 				],
-				iDCard: [
+				idCard: [
 					{
 						pattern: /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/,
 						message: '请输入正确的身份证号码',
@@ -855,7 +855,7 @@ export default {
 				postName: null,
 				state: null,
 				startDate: null,
-				iDCard: null,
+				idCard: null,
 				birthday: null,
 				nation: null,
 				politicalStatus: null,
