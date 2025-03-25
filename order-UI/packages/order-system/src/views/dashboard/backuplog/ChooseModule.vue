@@ -37,6 +37,9 @@ export default {
 		filtersFunc(tableName) {
 			return tableName === TableName.ORDER_DETAIL ? TableName.GOODS_ORDER : tableName;
 		},
+		filtersInventory(tableName) {
+			return tableName === TableName.INVENTORDETAIL ? TableName.INVENTORMAIN : tableName;
+		},
 		/**
 		 * 弹出的弹窗点击某一个模块 可以查看该模块的详细变动信息
 		 * @param moduleName  表名
@@ -122,7 +125,7 @@ export default {
 	<div>
 		<div class="container">
 			<ul class="module-list">
-				<li class="module-item" v-for="(item, index) in moduleList" :key="index" @click="handleCheckModule(item, [filtersFunc])">
+				<li class="module-item" v-for="(item, index) in moduleList" :key="index" @click="handleCheckModule(item, [filtersFunc, filtersInventory])">
 					{{ moduleNames[item] }}
 				</li>
 			</ul>

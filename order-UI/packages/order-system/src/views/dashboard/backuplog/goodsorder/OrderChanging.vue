@@ -1,7 +1,7 @@
 <script>
 import { completeJsonData, JsonUtils, TypeUtils } from '@/views/dashboard/backuplog';
 import { keyOptioner, paramFieldFilter, typeFilter } from '@/views/dashboard/backuplog/goodsorder/index';
-import { TableName } from '@/api/tool/enums';
+import { moduleNames, TableName } from '@/api/tool/enums';
 import _ from 'lodash';
 import { TableConfig } from '../backup.config';
 import OrderInfos from '@/views/dashboard/components/goodsOrder/OrderInfos.vue';
@@ -35,12 +35,16 @@ export default {
 	},
 	// 主要针对订单和库存这两个模块 进行分组
 	computed: {
+		moduleNames() {
+			return moduleNames;
+		},
 		TableName() {
 			return TableName;
 		},
 		// 对数据进行处理 根据模块名称
 		renderData() {
 			return Object.entries(_.groupBy(this.compareData, item => item.uuid)).map(entries => {
+				console.log('entries', entries);
 				return _.groupBy(entries[1], item => item.tableName);
 			});
 		}
@@ -49,8 +53,10 @@ export default {
 		console.log('该模块为:', this.moduleName);
 		console.log('需要比较的数据:', this.compareData);
 		console.log('renderData', this.renderData);
-		if (this.moduleName === TableName.GOODS_ORDER || this.moduleName === TableName.INVENTORMAIN) {
-			this.getTable();
+		if (this.moduleName === TableName.GOODS_ORDER) {
+			this.getTable(TableName.ORDER_DETAIL);
+		} else if (this.moduleName === TableName.INVENTORMAIN) {
+			this.getTable(TableName.INVENTORDETAIL);
 		} else {
 			this.compareData.forEach((item, index) => {
 				this.render(index);
@@ -59,21 +65,25 @@ export default {
 	},
 
 	methods: {
-		getTable() {
+		/**
+		 * 针对库存和订单模块
+		 * @param prop
+		 */
+		getTable(prop) {
 			for (let index = 0; index < this.renderData.length; index++) {
 				const item = this.renderData[index];
 				console.log('getTable:item', item);
-				const before = item.orderdetail
+				const before = item[prop]
 					? _.cloneDeep(
-							item.orderdetail.map(item => {
+							item[prop].map(item => {
 								const _item = typeFilter(item);
 								return JsonUtils.getJson(_item.originalInfo);
 							})
 					  )
 					: [];
-				const after = item.orderdetail
+				const after = item[prop]
 					? _.cloneDeep(
-							item.orderdetail.map(item => {
+							item[prop].map(item => {
 								const _item = typeFilter(item);
 								return JsonUtils.getJson(_item.changedInfo);
 							})
@@ -267,18 +277,18 @@ export default {
 				<div class="table-container" v-for="(item, index) in renderData" :key="index">
 					<el-card class="box-card">
 						<div slot="header" class="clearfix">
-							<span style="font-size: 17px; font-weight: bold; color: red; letter-spacing: 3px">订单修改记录{{ index + 1 }}</span>
+							<span style="font-size: 17px; font-weight: bold; color: red; letter-spacing: 3px">{{ moduleNames[moduleName] }}修改记录[{{ index + 1 }}]</span>
 							<!--              后续可以添加操作按钮-->
 							<!--							<el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>-->
 						</div>
 						<div v-if="item.goodsorder">
 							<el-collapse v-model="activeNames" @change="handleChange">
-								<el-collapse-item title="订单主信息修改前" :name="item.id">
+								<el-collapse-item :title="moduleNames[moduleName] + `主信息修改前`" :name="item.id">
 									<div>
 										<div v-if="item.goodsorder[0].originalInfo !== 'null'">
 											<OrderInfos :order-info="getProcessedOrder(item, 'before')" />
 										</div>
-										<div v-else>订单无修改前记录</div>
+										<div v-else>{{ moduleNames[moduleName] }}无修改前记录</div>
 									</div>
 								</el-collapse-item>
 								<el-collapse-item title="订单主信息修改后" :name="item.id">
@@ -286,11 +296,11 @@ export default {
 										<div v-if="item.goodsorder[0].changedInfo !== 'null'">
 											<OrderInfos :order-info="getProcessedOrder(item, 'after')" />
 										</div>
-										<div v-else>订单无修改后记录</div>
+										<div v-else>{{ moduleNames[moduleName] }}无修改后记录</div>
 									</div>
 								</el-collapse-item>
 							</el-collapse>
-							<el-divider>订单货物修改记录</el-divider>
+							<el-divider>{{ moduleNames[moduleName] }}货物修改记录</el-divider>
 						</div>
 						<div id="table-gen">
 							<div class="container">

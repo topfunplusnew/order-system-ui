@@ -264,7 +264,25 @@ export default {
 					params: {
 						startTime: null,
 						endTime: null,
-						tableNames: ['orderDetail', 'goodsorder'],
+						tableNames: [
+							'virtualbankaccountchange',
+							'payment',
+							'receivemoney',
+							'invoiceother',
+							'invoicein',
+							'invoiceout',
+							'bankacceptance',
+							'orderDetail',
+							'goodsorder',
+							'orderfreight',
+							'inventory_detail',
+							'inventory_main',
+							'bankaccountchange',
+							'borrowedmoney',
+							'repayment',
+							'lendmoney',
+							'recovermoney'
+						],
 						targetDate: null
 					}
 				};
@@ -280,6 +298,7 @@ export default {
 					}
 					let moduleList = Array.from(new Set(res.rows.map(item => item.tableName)));
 					moduleList = moduleList.filter(tableName => tableName !== TableName.ORDER_DETAIL);
+					moduleList = moduleList.filter(tableName => tableName !== TableName.INVENTORDETAIL);
 					// 对res.rows的数据
 					this.openDialog(
 						ChooseModule,
