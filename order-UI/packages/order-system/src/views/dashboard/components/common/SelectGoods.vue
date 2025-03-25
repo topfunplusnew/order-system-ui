@@ -239,6 +239,8 @@ export default {
 					if (row.params.totalInvoiceAmount > 0) {
 						if (row.params.totalInvoiceAmount > row.allPayments) {
 							this.$message.warning('参数有误：已开票金额大于总货款');
+							// 取消勾选
+							this.$refs.goodsTable.clearSelection();
 							break;
 						}
 						money += row.params.totalInvoiceAmount;
@@ -257,6 +259,8 @@ export default {
 					if (row.params.totalInvoiceAmount > 0) {
 						if (row.params.totalInvoiceAmount > _total) {
 							this.$message.warning('参数有误：已开票金额大于总出厂货款');
+							// 取消勾选
+							this.$refs.goodsTable.clearSelection();
 							break;
 						}
 						money += row.params.totalInvoiceAmount;
