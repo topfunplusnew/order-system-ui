@@ -114,13 +114,15 @@ export default {
 			let pre = JsonUtils.getJson(current.originalInfo);
 			let aft = JsonUtils.getJson(current.changedInfo);
 			// 键值对处理
-			pre = keyOptioner(pre);
-			aft = keyOptioner(aft);
+			// pre = keyOptioner(pre);
+			// aft = keyOptioner(aft);
 			// 对id等的参数进行过滤
 			const orderParamFilter = this.moduleName === TableName.GOODS_ORDER ? key => key === 'ORDERSNO' || key.indexOf('ORDERSNO') !== -1 : undefined;
 			// 需要根据表名判断是否需要传递函数数组
 			const callbackList = this.moduleName === TableName.GOODS_ORDER || this.moduleName === TableName.INVENTORMAIN ? [orderParamFilter] : [];
 			let [item1, item2] = paramFieldFilter([pre, completeJsonData(pre, aft)], callbackList, this.$exclude);
+
+			console.log('item1:', item1, item2);
 			// 渲染表格
 			this.$nextTick(() => {
 				this.renderTable(item1, 'beforeTable' + index, '修改前');
@@ -211,6 +213,11 @@ export default {
 		 * @param status  状态字段 修改前还是修改后
 		 */
 		renderTableRows(tbody, json, status = '修改前') {
+			console.log('renderTableRows', json, status);
+			if (!json || !status) {
+				console.error('缺少参数');
+				return;
+			}
 			const config = TableConfig[transFuc(this.moduleName)];
 			const mappers = config.mappers;
 			const dataKeys = Object.keys(mappers);

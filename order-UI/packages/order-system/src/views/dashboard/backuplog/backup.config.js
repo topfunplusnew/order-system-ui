@@ -173,7 +173,7 @@ export const TableConfig = {
 		}
 	},
 	// 借出资金回收
-	[TableName.PAYMENT]: {
+	[TableName.RECOVER_MONEY]: {
 		mappers: {
 			recoverDate: '回收日期',
 			acountsName: '账户名称',
@@ -294,7 +294,6 @@ export const TableConfig = {
 	// 第三方发票
 	[TableName.INVOICE_OTHER]: {
 		mappers: {
-			ordersNo: '订单编号',
 			invoiceDate: '发票日期',
 			invoiceAmount: '发票金额',
 			supplierTicketPoint: '供应商税点',
