@@ -26,7 +26,12 @@ export default {
 		}
 	},
 	data() {
-		return {};
+		return {
+			activeNames: ['1']
+		};
+	},
+	created() {
+		console.log('OrderChanging', this.compareData, this.moduleName);
 	},
 	// 主要针对订单和库存这两个模块 进行分组
 	computed: {
@@ -41,6 +46,7 @@ export default {
 		}
 	},
 	mounted() {
+		console.log('该模块为:', this.moduleName);
 		console.log('需要比较的数据:', this.compareData);
 		console.log('renderData', this.renderData);
 		if (this.moduleName === TableName.GOODS_ORDER || this.moduleName === TableName.INVENTORMAIN) {
@@ -56,18 +62,26 @@ export default {
 		getTable() {
 			for (let index = 0; index < this.renderData.length; index++) {
 				const item = this.renderData[index];
-				const before = _.cloneDeep(
-					item.orderdetail.map(item => {
-						const _item = typeFilter(item);
-						return JsonUtils.getJson(_item.originalInfo);
-					})
-				);
-				const after = _.cloneDeep(
-					item.orderdetail.map(item => {
-						const _item = typeFilter(item);
-						return JsonUtils.getJson(_item.changedInfo);
-					})
-				);
+				console.log('getTable:item', item);
+				const before = item.orderdetail
+					? _.cloneDeep(
+							item.orderdetail.map(item => {
+								const _item = typeFilter(item);
+								return JsonUtils.getJson(_item.originalInfo);
+							})
+					  )
+					: [];
+				const after = item.orderdetail
+					? _.cloneDeep(
+							item.orderdetail.map(item => {
+								const _item = typeFilter(item);
+								return JsonUtils.getJson(_item.changedInfo);
+							})
+					  )
+					: [];
+				console.log('getTable:');
+				console.log('before', before);
+				console.log('after', after);
 				try {
 					this.renderTable(before, 'multi-beforeTable' + index, '修改前');
 					this.renderTable(after, 'multi-afterTable' + index, '修改后');
@@ -133,17 +147,19 @@ export default {
 				}
 				processData = data;
 			}
-			if (processData === null) {
-				console.error('processData 为空');
-				return;
-			}
+			// 获取dom元素
 			const table = document.getElementById(tableId);
+			const thead = table.querySelector('thead tr');
+			const tbody = table.querySelector('tbody');
 			if (!table) {
 				console.error(`表格 ${tableId} 未找到`);
 				return;
 			}
-			const thead = table.querySelector('thead tr');
-			const tbody = table.querySelector('tbody');
+			if (processData === null) {
+				console.error('processData 为空');
+				this.renderNull(tbody);
+				return;
+			}
 			thead.innerHTML = '';
 			tbody.innerHTML = '';
 			// 渲染表头
@@ -175,6 +191,16 @@ export default {
 				th.style.border = '1px solid black';
 				thead.appendChild(th);
 			}
+		},
+		renderNull(tbody) {
+			const tr = document.createElement('tr');
+			const td = document.createElement('td'); // 使用td更合适
+			td.textContent = '暂无货物修改记录';
+			td.className = 'no-data-cell'; // 使用CSS类代替内联样式
+			// 计算或传递colSpan值
+			td.colSpan = tbody.parentElement.rows[0]?.cells?.length || 1;
+			tr.appendChild(td);
+			tbody.appendChild(tr);
 		},
 		/**
 		 * 渲染表格行数据
@@ -211,7 +237,22 @@ export default {
 				console.log(err);
 			}
 		},
-
+		/**
+		 * 对订单主表信息进行数据处理
+		 * @param item  备份信息主表
+		 * @param type  类型
+		 * @returns {any}
+		 */
+		getProcessedOrder(item, type) {
+			const row = typeFilter(_.cloneDeep(item).goodsorder[0]);
+			if (type === 'before') {
+				return JSON.parse(row.originalInfo);
+			}
+			if (type === 'after') {
+				return JSON.parse(row.changedInfo);
+			}
+		},
+		handleChange() {},
 		handleProcess() {},
 		handleReject() {}
 	}
@@ -224,28 +265,53 @@ export default {
 		<div v-if="moduleName === TableName.GOODS_ORDER || moduleName === TableName.INVENTORMAIN">
 			<div>
 				<div class="table-container" v-for="(item, index) in renderData" :key="index">
-					<OrderInfos :order-info="JSON.parse(item.goodsorder[0].originalInfo)" />
-					<div id="table-gen">
-						<div class="container">
-							<table :id="'multi-beforeTable' + index">
-								<thead>
-									<tr></tr>
-								</thead>
-								<tbody></tbody>
-							</table>
+					<el-card class="box-card">
+						<div slot="header" class="clearfix">
+							<span style="font-size: 17px; font-weight: bold; color: red; letter-spacing: 3px">订单修改记录{{ index + 1 }}</span>
+							<!--              后续可以添加操作按钮-->
+							<!--							<el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>-->
 						</div>
-
-						<div class="container">
-							<table :id="'multi-afterTable' + index">
-								<thead>
-									<tr></tr>
-								</thead>
-								<tbody></tbody>
-							</table>
+						<div v-if="item.goodsorder">
+							<el-collapse v-model="activeNames" @change="handleChange">
+								<el-collapse-item title="订单主信息修改前" :name="item.id">
+									<div>
+										<div v-if="item.goodsorder[0].originalInfo !== 'null'">
+											<OrderInfos :order-info="getProcessedOrder(item, 'before')" />
+										</div>
+										<div v-else>订单无修改前记录</div>
+									</div>
+								</el-collapse-item>
+								<el-collapse-item title="订单主信息修改后" :name="item.id">
+									<div>
+										<div v-if="item.goodsorder[0].changedInfo !== 'null'">
+											<OrderInfos :order-info="getProcessedOrder(item, 'after')" />
+										</div>
+										<div v-else>订单无修改后记录</div>
+									</div>
+								</el-collapse-item>
+							</el-collapse>
+							<el-divider>订单货物修改记录</el-divider>
 						</div>
-					</div>
+						<div id="table-gen">
+							<div class="container">
+								<table :id="'multi-beforeTable' + index">
+									<thead>
+										<tr></tr>
+									</thead>
+									<tbody></tbody>
+								</table>
+							</div>
+							<div class="container">
+								<table :id="'multi-afterTable' + index">
+									<thead>
+										<tr></tr>
+									</thead>
+									<tbody></tbody>
+								</table>
+							</div>
+						</div>
+					</el-card>
 				</div>
-				<el-divider />
 			</div>
 		</div>
 		<!--    非订单的数据渲染使用-->
@@ -284,7 +350,8 @@ export default {
 	display: flex;
 	justify-content: center;
 	flex-direction: column;
-	max-height: 660px;
+	max-height: 1000px;
+	overflow-y: scroll;
 }
 
 #table-gen {
@@ -294,7 +361,7 @@ export default {
 .container {
 	border-radius: 8px;
 	max-width: 1400px;
-	max-height: 660px;
+	max-height: 1000px;
 }
 
 table {
@@ -320,5 +387,11 @@ th {
 th:first-child,
 td:first-child {
 	width: 150px; /* 设置状态列的宽度 */
+}
+
+.no-data-cell {
+	text-align: center;
+	background-color: #e8e5e5;
+	border: 1px solid black;
 }
 </style>

@@ -6,6 +6,7 @@ import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import ChooseModule from '@/views/dashboard/backuplog/ChooseModule.vue';
 import { TableName } from '@/api/tool/enums';
 import { isToday } from '@/views/dashboard/backuplog';
+import { getFundChangeDetail } from '@/api/system/sql';
 
 export default {
 	name: 'MoneyChangeTotalAmount',
@@ -224,17 +225,51 @@ export default {
 		handleRowClick(row, column, event) {
 			if (this.diffModules.includes(row.moduleName)) {
 				// 在这里 把moduleName传给后端
-				const variableName = row.moduleName;
-				const query = {
-					variableName,
-					backupDate: this.changeForm.endTime,
-					firstTargetDate: this.targetLeftDate,
-					secondTargetDate: this.targetRightDate
-				};
-				// 需要把订单详情从展示的表模块列表中去除
-				const filter = tableName => tableName !== TableName.ORDER_DETAIL;
+				// const variableName = row.moduleName;
+				// const query = {
+				// 	variableName,
+				// 	backupDate: this.changeForm.endTime,
+				// 	firstTargetDate: this.targetLeftDate,
+				// 	secondTargetDate: this.targetRightDate
+				// };
+				// // 需要把订单详情从展示的表模块列表中去除
+				// const filter = tableName => tableName !== TableName.ORDER_DETAIL;
 				// 根据模块名查询具体的变动信息
-				getBackupInfoV1(query).then(res => {
+				// getBackupInfoV1(query).then(res => {
+				// 	if (!res.rows) {
+				// 		this.$message.warning('该模块没有变动信息');
+				// 		return;
+				// 	}
+				// 	if (res.rows.length === 0) {
+				// 		this.$message.warning('该模块没有变动信息');
+				// 		return;
+				// 	}
+				// 	let moduleList = Array.from(new Set(res.rows.map(item => item.tableName)));
+				// 	moduleList = moduleList.filter(filter);
+				// 	// 对res.rows的数据
+				// 	this.openDialog(
+				// 		ChooseModule,
+				// 		'请选择模块查看其详细资金变动',
+				// 		'700px',
+				// 		{
+				// 			moduleList,
+				// 			result: res.rows
+				// 		},
+				// 		false
+				// 	);
+				// });
+				const qs = {
+					pageNum: 2,
+					pageSize: 30,
+					params: {
+						startTime: null,
+						endTime: null,
+						tableNames: ['orderDetail', 'goodsorder'],
+						targetDate: null
+					}
+				};
+				// todo 测试接口 信息更全 测试完毕后换回V1接口
+				getFundChangeDetail(qs).then(res => {
 					if (!res.rows) {
 						this.$message.warning('该模块没有变动信息');
 						return;
@@ -244,7 +279,7 @@ export default {
 						return;
 					}
 					let moduleList = Array.from(new Set(res.rows.map(item => item.tableName)));
-					moduleList = moduleList.filter(filter);
+					moduleList = moduleList.filter(tableName => tableName !== TableName.ORDER_DETAIL);
 					// 对res.rows的数据
 					this.openDialog(
 						ChooseModule,

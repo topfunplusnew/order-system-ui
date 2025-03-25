@@ -72,6 +72,7 @@ export function paramFieldFilter(jsonList, callbackList = [], excludeParams = []
  * @param backupRow 备份数据行的对象
  */
 export function typeFilter(backupRow) {
+	console.log('typeFilter:', backupRow);
 	if (backupRow.originalInfo === 'null' && backupRow.changedInfo === 'null') {
 		console.error('备份数据行originalInfo和changedInfo为null,索引为:', backupRow.id);
 	}
