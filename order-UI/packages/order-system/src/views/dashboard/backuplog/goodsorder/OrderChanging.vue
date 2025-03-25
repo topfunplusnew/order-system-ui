@@ -5,6 +5,7 @@ import { moduleNames, TableName } from '@/api/tool/enums';
 import _ from 'lodash';
 import { TableConfig } from '../backup.config';
 import OrderInfos from '@/views/dashboard/components/goodsOrder/OrderInfos.vue';
+import INVENTORY from '@/components/NeedToShow/INVENTORY.vue';
 // 这里的逻辑需要层层筛选 需要加一些过滤器 对json的操作
 // 现在的逻辑 是 根据模块分组了 订单需要筛选掉调整单生成的负数单和调整单，然后库存也是 所以需要一个过滤器
 // 另外 新增 insert的备份记录 原信息给null  新信息给新增的信息
@@ -12,7 +13,7 @@ import OrderInfos from '@/views/dashboard/components/goodsOrder/OrderInfos.vue';
 // 还需要一个函数指针数组，以防甲方加新功能
 export default {
 	name: 'OrderChanging',
-	components: { OrderInfos },
+	components: { INVENTORY, OrderInfos },
 	props: {
 		// 要进行比较的数据列表
 		compareData: {
@@ -281,6 +282,8 @@ export default {
 							<!--              后续可以添加操作按钮-->
 							<!--							<el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>-->
 						</div>
+
+						<!--            对于订单-->
 						<div v-if="item.goodsorder">
 							<el-collapse v-model="activeNames" @change="handleChange">
 								<el-collapse-item :title="moduleNames[moduleName] + `主信息修改前`" :name="item.id">
@@ -295,6 +298,28 @@ export default {
 									<div>
 										<div v-if="item.goodsorder[0].changedInfo !== 'null'">
 											<OrderInfos :order-info="getProcessedOrder(item, 'after')" />
+										</div>
+										<div v-else>{{ moduleNames[moduleName] }}无修改后记录</div>
+									</div>
+								</el-collapse-item>
+							</el-collapse>
+							<el-divider>{{ moduleNames[moduleName] }}货物修改记录</el-divider>
+						</div>
+						<!--            对于库存 todo 需要调试-->
+						<div v-if="item.inventory_main">
+							<el-collapse v-model="activeNames" @change="handleChange">
+								<el-collapse-item :title="moduleNames[moduleName] + `主信息修改前`" :name="item.id">
+									<div>
+										<div v-if="item.inventory_main[0].originalInfo !== 'null'">
+											<INVENTORY :need-to-show-info="getProcessedOrder(item, 'before')" />
+										</div>
+										<div v-else>{{ moduleNames[moduleName] }}无修改前记录</div>
+									</div>
+								</el-collapse-item>
+								<el-collapse-item title="订单主信息修改后" :name="item.id">
+									<div>
+										<div v-if="item.inventory_main[0].changedInfo !== 'null'">
+											<INVENTORY :need-to-show-info="getProcessedOrder(item, 'after')" />
 										</div>
 										<div v-else>{{ moduleNames[moduleName] }}无修改后记录</div>
 									</div>
