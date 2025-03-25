@@ -1,6 +1,7 @@
 import FreeApply from '@/components/FreeApply.vue';
 import { getCars } from '../../../../api/system/cars';
 import { FreightSource } from '../../../../api/tool/enums';
+
 /**
  *  运费申请
  */
@@ -17,7 +18,6 @@ export var mixin_order_freeApply = {
 			let source = null;
 			if (row.source === '订单' || row.source === '调整单') source = FreightSource.GOODS_ORDER;
 			else source = FreightSource.INVENTORY_MAIN;
-
 			getCars(row.car_id).then(res => {
 				if (!res.data) {
 					this.$message.error('请先添加车辆信息');

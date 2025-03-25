@@ -4,6 +4,7 @@ import { mixin_order_freeApply } from '../../dashboard/mixins/order/order_freeAp
 import { common_dialog } from '../../dashboard/mixins/common/common_dialog';
 import DialogWrapper from '../../dashboard/components/common/DialogWrapper.vue';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
+
 export default {
 	name: 'index',
 	components: { DialogWrapper },
@@ -110,8 +111,6 @@ export default {
 		}
 	},
 	methods: {
-		getOrderFreight,
-		updateOrderFreight,
 		formatDate(date) {
 			const year = date.getFullYear();
 			const month = (date.getMonth() + 1).toString().padStart(2, '0');
@@ -149,10 +148,6 @@ export default {
 				pageSize: 10
 			};
 			this.handleQuery();
-		},
-		viewReceipt(url) {
-			this.receiptImageUrl = url;
-			this.receiptDialogVisible = true;
 		},
 		viewAttachments(receiveProof) {
 			if (!receiveProof.trim()) {
@@ -312,13 +307,13 @@ export default {
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- <el-dialog
-			:title="'查看收据'"
-			:visible.sync="receiptDialogVisible"
-			width="50%"
-			append-to-body
-		>
-			<img :src="receiptImageUrl" alt="收据" style="width: 100%" />
-		</el-dialog> -->
+      :title="'查看收据'"
+      :visible.sync="receiptDialogVisible"
+      width="50%"
+      append-to-body
+    >
+      <img :src="receiptImageUrl" alt="收据" style="width: 100%" />
+    </el-dialog> -->
 
 		<el-dialog :title="'附件查看'" :visible.sync="attachmentDialogVisible" width="50%" append-to-body>
 			<el-carousel :interval="5000" type="card" height="400px" v-if="imageAttachments.length">
@@ -353,10 +348,12 @@ export default {
 	padding: 20px;
 	border-radius: 8px;
 }
+
 .sea-transport {
 	font-weight: bold;
 	color: #409eff;
 }
+
 .land-transport {
 	font-weight: bold;
 	color: #e6a23c;

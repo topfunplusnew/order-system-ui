@@ -87,22 +87,26 @@ export default {
 		listCompany,
 		// 提交运费信息
 		handleProcess(that) {
-			// this.orderInfo就是父组件传递过来的组装的运费信息
-			Object.assign(this.form, this.orderInfo);
-			// 发送请求 添加运费信息 applyDate为现在
-			const query = {
-				...this.form,
-				applyDate: parseTime(new Date()),
-				applyUserName: this.trueName
-			};
-			return new Promise((resolve, reject) => {
-				// 添加运费信息
-				addOrderFreight(query).then(() => {
-					that.dialogVisible = false;
-					this.reset();
-					this.$message.success('操作成功');
-					resolve();
-				});
+			this.$refs['form'].validate(isValid => {
+				if (isValid) {
+					// this.orderInfo就是父组件传递过来的组装的运费信息
+					Object.assign(this.form, this.orderInfo);
+					// 发送请求 添加运费信息 applyDate为现在
+					const query = {
+						...this.form,
+						applyDate: parseTime(new Date()),
+						applyUserName: this.trueName
+					};
+					return new Promise((resolve, reject) => {
+						// 添加运费信息
+						addOrderFreight(query).then(() => {
+							that.dialogVisible = false;
+							this.reset();
+							this.$message.success('操作成功');
+							resolve();
+						});
+					});
+				}
 			});
 		},
 		// 选择银行卡 自动填充相关信息

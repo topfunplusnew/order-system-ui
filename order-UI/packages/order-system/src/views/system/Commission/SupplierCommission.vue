@@ -208,8 +208,7 @@ export default {
 			let applications = this.selections.map(item => {
 				return new PaymentApply({
 					moneyAmount: item.commissionAmount,
-					extraInfo: extra,
-					tableName: TableName.ORDERCOMMISION // 后端要求必须传递 否则会出问题
+					extraInfo: extra
 				});
 			});
 

@@ -79,6 +79,9 @@ export default {
 			currentId: null
 		};
 	},
+	created() {
+		console.log('application:', this.applications);
+	},
 	methods: {
 		handleApprove() {
 			this.applyDialogVisible = true;
@@ -94,13 +97,21 @@ export default {
 				this.$message.error('申请列表为空!');
 				return;
 			}
-			this.applications.forEach(item => (item.payType = item.payType.join('-')));
+			try {
+				this.applications.forEach(item => (item.payType = item.payType.join('-')));
+			} catch (err) {
+				this.$message.error('请先填写申请信息!');
+			}
 			this.$confirm('确定批量申请吗？', '提示', {
 				confirmButtonText: '确定',
 				cancelButtonText: '取消',
 				type: 'warning'
 			}).then(() => {
-				addPaymentApply(this.applications[0]).then(res => {
+				const data = {
+					...this.applications[0],
+					tableName: TableName.ORDERCOMMISION
+				};
+				addPaymentApply(data).then(res => {
 					this.$message.success('一键申请成功');
 					that.dialogVisible = false;
 				});

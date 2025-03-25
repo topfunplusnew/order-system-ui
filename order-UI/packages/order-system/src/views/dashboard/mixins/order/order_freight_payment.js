@@ -2,6 +2,7 @@
 import { batchPayment } from '../../../../api/system/payment';
 import { TableName } from '../../../../api/tool/enums';
 import { parseTime } from '../../../../utils/ruoyi';
+
 export var mixin_order_freight_payment = {
 	data: function () {
 		return {
