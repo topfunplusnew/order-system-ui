@@ -265,7 +265,6 @@ export default {
 						startTime: null,
 						endTime: null,
 						tableNames: [
-							'virtualbankaccountchange',
 							'payment',
 							'receivemoney',
 							'invoiceother',

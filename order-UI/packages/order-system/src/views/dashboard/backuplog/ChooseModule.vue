@@ -140,7 +140,8 @@ export default {
 	list-style: none;
 	padding: 0;
 	display: flex;
-	gap: 30px;
+	flex-wrap: wrap;
+	gap: 20px;
 }
 
 .module-item {

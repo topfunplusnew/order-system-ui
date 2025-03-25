@@ -61,11 +61,11 @@ export const TableConfig = {
 			return typeof callback === 'function' ? callback(this) : this;
 		}
 	},
+	// 库存子表货物
 	[TableName.INVENTORDETAIL]: {
 		mappers: {
 			storeHouseName: '仓库名称',
 			storeDate: '入库日期',
-			id: 'ID',
 			stockNumber: '库存数量',
 			supplier: '供应商',
 			levelName: '产品级别',
@@ -99,6 +99,262 @@ export const TableConfig = {
 			factoryCommission: '厂家佣金',
 			factoryRebateAmount: '计提厂家返利金额',
 			factoryDiscountAmount: '计提厂家降价金额',
+			comments: '备注'
+		},
+		options(callback) {
+			return typeof callback === 'function' ? callback(this) : this;
+		}
+	},
+	// 其他表的展示
+	// 订单运费
+	[TableName.ORDER_FREIGHT]: {
+		mappers: {
+			freightType: '运输类型',
+			moneyAmount: '金额',
+			paidAmount: '已支付金额',
+			selfAcountsName: '己方账户名称',
+			selfBankNo: '己方银行账号',
+			selfBankName: '己方银行名称',
+			otherAcountsName: '对方账户名称',
+			otherBankNo: '对方银行账号',
+			otherBankName: '对方银行名称',
+			paymentState: '支付状态',
+			driverName: '司机姓名',
+			carNo: '车牌号',
+			fleet: '车队',
+			applyUserName: '申请人',
+			applyDate: '申请日期',
+			payUserName: '支付用户名',
+			payDate: '支付日期',
+			comments: '备注',
+			checkState: '审核状态'
+		},
+		options(callback) {
+			return typeof callback === 'function' ? callback(this) : this;
+		}
+	},
+	// 银行账户变动
+	[TableName.BANK_ACCOUNT_CHANGE]: {
+		mappers: {
+			selfBankNo: '己方银行账号',
+			operateDate: '操作日期',
+			changeType: '变动类型',
+			moneyAmount: '金额',
+			comments: '备注',
+			companyType: '公司类型',
+			bankCardType: '银行卡类型'
+		},
+		options(callback) {
+			return typeof callback === 'function' ? callback(this) : this;
+		}
+	},
+	// 付款
+	[TableName.PAYMENT]: {
+		mappers: {
+			fundsDate: '资金日期',
+			payType: '支付类型',
+			moneyAmount: '金额',
+			selfAcountsName: '己方账户名称',
+			selfBankNo: '己方银行账号',
+			selfBankName: '己方银行名称',
+			selfBankID: '己方银行编号',
+			otherAcountsName: '对方账户名称',
+			otherBankNo: '对方银行账号',
+			otherBankName: '对方银行名称',
+			paymentState: '支付状态',
+			auditState: '审核状态',
+			companyName: '公司名称',
+			companyType: '公司类型',
+			comments: '备注',
+			transactionHistory: '交易历史'
+		},
+		options(callback) {
+			return typeof callback === 'function' ? callback(this) : this;
+		}
+	},
+	// 借出资金回收
+	[TableName.PAYMENT]: {
+		mappers: {
+			recoverDate: '回收日期',
+			acountsName: '账户名称',
+			bankNo: '银行账号',
+			moneyAmount: '金额',
+			comments: '备注',
+			startTime: '开始时间',
+			endTime: '结束时间'
+		},
+		options(callback) {
+			return typeof callback === 'function' ? callback(this) : this;
+		}
+	},
+	// 借入款
+	[TableName.BORROWED_MONEY]: {
+		mappers: {
+			origin: '来源',
+			moneyAmount: '金额',
+			ratio: '利率',
+			loanDate: '贷款日期',
+			loanDuring: '贷款期限',
+			mortgageGuarantee: '抵押担保',
+			acountsName: '账户名称',
+			bankNo: '银行账号',
+			comments: '备注'
+		},
+		options(callback) {
+			return typeof callback === 'function' ? callback(this) : this;
+		}
+	},
+	// 借出款
+	[TableName.LEND_MONEY]: {
+		mappers: {
+			futuresMarginCompany: '期货保证金公司',
+			type: '类型',
+			targetType: '目标类型',
+			target: '目标',
+			moneyAmount: '金额',
+			targetAcountsName: '目标账户名称',
+			targetBankNo: '目标银行账号',
+			targetBankName: '目标银行名称',
+			selfAcountsName: '己方账户名称',
+			selfBankNo: '己方银行账号',
+			selfBankName: '己方银行名称',
+			futuresDate: '期货日期',
+			reason: '原因',
+			comments: '备注'
+		},
+		options(callback) {
+			return typeof callback === 'function' ? callback(this) : this;
+		}
+	},
+	// 贷款还款记录
+	[TableName.REPAYMENT]: {
+		mappers: {
+			moneyAmount: '金额',
+			ratio: '利率',
+			payDate: '支付日期',
+			acountsName: '账户名称',
+			bankNo: '银行账号',
+			comments: '备注',
+			checkState: '审核状态',
+			startTime: '开始时间',
+			endTime: '结束时间'
+		},
+		options(callback) {
+			return typeof callback === 'function' ? callback(this) : this;
+		}
+	},
+	// 商业票据
+	[TableName.BANK_ACCEPTANCE]: {
+		mappers: {
+			operateDate: '操作日期',
+			billNo: '票据编号',
+			issueDate: '开票日期',
+			dueDate: '到期日期',
+			billAccount: '票据账户',
+			billDate: '票据日期',
+			billType: '票据类型',
+			reason: '原因',
+			endorserName: '背书人名称',
+			endorser: '背书人编号',
+			origin: '来源',
+			billAmount: '票据金额',
+			inDiscountPoints: '贴现点数',
+			inDiscountAmount: '贴现金额',
+			billCategory: '票据类别',
+			comments: '备注'
+		},
+		options(callback) {
+			return typeof callback === 'function' ? callback(this) : this;
+		}
+	},
+	// 收款
+	[TableName.RECEIVE_MONEY]: {
+		mappers: {
+			fundsDate: '资金日期',
+			receiveType: '收款类型',
+			moneyAmount: '金额',
+			selfAcountsName: '己方账户名称',
+			selfBankNo: '己方银行账号',
+			selfBankName: '己方银行名称',
+			selfBankID: '己方银行编号',
+			otherAcountsName: '对方账户名称',
+			otherBankNo: '对方银行账号',
+			otherBankName: '对方银行名称',
+			companyName: '公司名称',
+			companyId: '公司编号',
+			companyType: '公司类型',
+			comments: '备注',
+			startTime: '开始时间',
+			endTime: '结束时间'
+		},
+		options(callback) {
+			return typeof callback === 'function' ? callback(this) : this;
+		}
+	},
+	// 第三方发票
+	[TableName.INVOICE_OTHER]: {
+		mappers: {
+			ordersNo: '订单编号',
+			invoiceDate: '发票日期',
+			invoiceAmount: '发票金额',
+			supplierTicketPoint: '供应商税点',
+			supplierPointAmount: '供应商税点金额',
+			customer: '客户名称',
+			invoiceCompanyName: '开票公司名称',
+			customerTicketPoint: '客户税点',
+			customerPointAmount: '客户税点金额',
+			comments: '备注',
+			beginTime: '开始时间',
+			endTime: '结束时间',
+			oweAmount: '欠款金额',
+			supplier: '供应商名称',
+			userName: '用户名',
+			Supplier: '供应商名称'
+		},
+		options(callback) {
+			return typeof callback === 'function' ? callback(this) : this;
+		}
+	},
+	// 发票卖出
+	[TableName.INVOICE_OUT]: {
+		mappers: {
+			invoiceDate: '发票日期',
+			invoiceObject: '发票对象',
+			invoiceAmount: '发票金额',
+			companyType: '公司类型',
+			companyName: '公司名称',
+			companyID: '公司编号',
+			invoiceCompanyName: '开票公司名称',
+			ticketPoint: '税点',
+			ticketPointAmount: '税点金额',
+			isOrderTax: '是否订单税',
+			paymentReceipts: '付款凭证',
+			invoiceAttachments: '发票附件',
+			comments: '备注',
+			beginTime: '开始时间',
+			endTime: '结束时间',
+			oweAmount: '欠款金额'
+		},
+		options(callback) {
+			return typeof callback === 'function' ? callback(this) : this;
+		}
+	},
+	// 发票买入
+	[TableName.INVOICE_IN]: {
+		mappers: {
+			invoiceDate: '发票日期',
+			paymentReceipts: '付款凭证',
+			beginTime: '开始时间',
+			endTime: '结束时间',
+			invoiceObject: '发票对象',
+			invoiceAmount: '发票金额',
+			companyType: '公司类型',
+			companyName: '公司名称',
+			companyID: '公司编号',
+			invoiceCompanyName: '开票公司名称',
+			ticketPoint: '税点',
+			ticketPointAmount: '税点金额',
+			isOrderTax: '是否订单税',
 			comments: '备注'
 		},
 		options(callback) {

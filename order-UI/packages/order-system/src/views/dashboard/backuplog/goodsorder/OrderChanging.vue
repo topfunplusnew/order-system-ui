@@ -45,19 +45,18 @@ export default {
 		// 对数据进行处理 根据模块名称
 		renderData() {
 			return Object.entries(_.groupBy(this.compareData, item => item.uuid)).map(entries => {
-				console.log('entries', entries);
 				return _.groupBy(entries[1], item => item.tableName);
 			});
 		}
 	},
 	mounted() {
-		console.log('该模块为:', this.moduleName);
-		console.log('需要比较的数据:', this.compareData);
-		console.log('renderData', this.renderData);
+		// 如果是订单和库存
 		if (this.moduleName === TableName.GOODS_ORDER) {
 			this.getTable(TableName.ORDER_DETAIL);
 		} else if (this.moduleName === TableName.INVENTORMAIN) {
 			this.getTable(TableName.INVENTORDETAIL);
+
+			// 对于其他的情况 用render函数去渲染表格
 		} else {
 			this.compareData.forEach((item, index) => {
 				this.render(index);
@@ -106,10 +105,11 @@ export default {
 		 * @param index 要处理的数据的索引 也就是备份数据的索引
 		 * @param processData 备份数据数组 默认为传入组件的数据 也就是后端直接返回的备份数据数组
 		 */
-		processData(index, processData = []) {
+		processData(index, processData) {
 			// 处理一下type
 			let current = processData || this.compareData[index];
 			current = typeFilter(current);
+			console.log('非订单current:', current);
 			// 转为json数据
 			let pre = JsonUtils.getJson(current.originalInfo);
 			let aft = JsonUtils.getJson(current.changedInfo);
@@ -118,7 +118,9 @@ export default {
 			aft = keyOptioner(aft);
 			// 对id等的参数进行过滤
 			const orderParamFilter = this.moduleName === TableName.GOODS_ORDER ? key => key === 'ORDERSNO' || key.indexOf('ORDERSNO') !== -1 : undefined;
-			let [item1, item2] = paramFieldFilter([pre, completeJsonData(pre, aft)], [orderParamFilter], this.$exclude);
+			// 需要根据表名判断是否需要传递函数数组
+			const callbackList = this.moduleName === TableName.GOODS_ORDER || this.moduleName === TableName.INVENTORMAIN ? [orderParamFilter] : [];
+			let [item1, item2] = paramFieldFilter([pre, completeJsonData(pre, aft)], callbackList, this.$exclude);
 			// 渲染表格
 			this.$nextTick(() => {
 				this.renderTable(item1, 'beforeTable' + index, '修改前');
@@ -132,7 +134,6 @@ export default {
 		 * @param status  状态列的展示 是修改前还是修改后
 		 */
 		renderTable(data, tableId, status) {
-			console.log('tableId:', tableId);
 			if (!data || !status) {
 				console.error('缺少参数');
 				return;
@@ -176,7 +177,6 @@ export default {
 		 */
 		renderTableHeader(thead) {
 			const config = TableConfig[transFuc(this.moduleName)];
-			console.log(config);
 			const mappers = config.mappers;
 			const dataKeys = Object.keys(mappers);
 			// 渲染表头字段 修正表头长度 并且渲染顶部
@@ -236,7 +236,7 @@ export default {
 				});
 				tbody.appendChild(tr);
 			} catch (err) {
-				console.log(err);
+				console.error(err);
 			}
 		},
 		/**
