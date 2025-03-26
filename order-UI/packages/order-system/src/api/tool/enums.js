@@ -1,19 +1,5 @@
 // 系统常用枚举类
 
-import CARS from '@/components/NeedToShow/CARS.vue';
-import BORROWMONEY from '@/components/NeedToShow/BORROWMONEY.vue';
-import ORDER_FREIGHT from '@/components/NeedToShow/ORDER_FREIGHT.vue';
-import OIL_RECHARGE from '@/components/NeedToShow/OIL_RECHARGE.vue';
-import INVOICE_IN from '@/components/NeedToShow/INVOICE_IN.vue';
-import GOODS_ORDER from '@/components/NeedToShow/GOODS_ORDER.vue';
-import ORDER_COMMISION from '@/components/NeedToShow/ORDER_COMMISION.vue';
-import { getOrderFreight } from '@/api/system/orderFreight';
-import { getBorrowedMoney } from '@/api/system/borrowedMoney';
-import { getOilRecharge } from '@/api/system/oilRecharge';
-import { getInvoiceIn } from '@/api/system/invoiceIn';
-import { getGoodsOrder } from '@/api/system/goodsOrder';
-import { getFunction } from '@/utils/order/mapper';
-
 export const TableName = Object.freeze({
 	BANK_ACCEPTANCE: 'bankacceptance',
 	BANK_ACCOUNT_CHANGE: 'bankaccountchange',
@@ -236,3 +222,8 @@ export const MoneyChangeModuleName = Object.freeze({
 	loanFromCompany: 'loanFromCompany',
 	remainingInventoryAmount: 'remainingInventoryAmount'
 });
+
+export const RebateType = {
+	Weight: '重箱',
+	Square: '面积'
+};

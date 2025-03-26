@@ -132,8 +132,8 @@
 							<!--              需要进行选择 是面积值还是重箱值-->
 							<el-form-item label="返利方式" prop="rebateMethod">
 								<el-select v-model="form.rebateMethod" placeholder="请选择" :disabled="!form.unitPrice" @change="() => (form.rebate > 0 ? submitSelectOrderDetail() : '')">
-									<el-option label="重箱" :value="1" />
-									<el-option label="面积" :value="2" />
+									<el-option label="重箱" value="重箱" />
+									<el-option label="面积" value="面积" />
 								</el-select>
 							</el-form-item>
 
@@ -433,7 +433,7 @@
 <script>
 import { listRebate, getRebate, delRebate, addRebate, updateRebate } from '@/api/system/Rebate';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
-import { TableName } from '@/api/tool/enums';
+import { RebateType, TableName } from '@/api/tool/enums';
 import { listGoodsOrder } from '@/api/system/goodsOrder';
 import OrderInfos from '@/views/dashboard/components/goodsOrder/OrderInfos.vue';
 import OrderDetailInfo from '@/views/dashboard/components/goodsOrder/OrderDetailInfo.vue';
@@ -540,10 +540,9 @@ export default {
 				unitPrice: [
 					{
 						required: true,
-						message: '系数不能为空',
+						message: '单价不能为空',
 						trigger: 'blur'
-					},
-					{ min: 0, message: '系数必须大于0', trigger: 'blur' }
+					}
 				],
 				rebateDate: [
 					{
@@ -557,8 +556,7 @@ export default {
 						required: true,
 						message: '返利金额不能为空',
 						trigger: 'blur'
-					},
-					{ min: 0, message: '返利金额必须大于0', trigger: 'blur' }
+					}
 				],
 				rebateType: [
 					{
@@ -835,6 +833,8 @@ export default {
 					listOrderDetailByIds(ids).then(res => {
 						this.goods = res.rows;
 					});
+					// 填充选择框
+					this.form.rebateMethod = response.data.rebateMethod === 1 ? RebateType.Weight : RebateType.Square;
 				}
 				// 打开修改弹窗
 				this.open = true;
@@ -845,6 +845,7 @@ export default {
 		submitForm() {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
+					this.form.rebateMethod = this.form.rebateMethod === RebateType.Weight ? 1 : 2;
 					if (this.form.id != null) {
 						updateRebate(this.form).then(() => {
 							this.$modal.msgSuccess('修改成功');

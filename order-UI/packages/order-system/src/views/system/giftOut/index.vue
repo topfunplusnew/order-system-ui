@@ -215,7 +215,7 @@ import { OTHER_TYPE } from '../../../utils/order';
 export default {
 	name: 'GiftOut',
 	components: { SearchOption },
-	dicts: ['orderorder_gift_out_method', 'order_gift_source'],
+	dicts: ['order_gift_out_method', 'order_gift_source'],
 	mixins: [mixin_printHTML, mixin_gift_out_fill],
 	data() {
 		return {

@@ -29,7 +29,7 @@
 			<el-table-column v-if="columns[2].visible" label="出库量" align="center" prop="outAmount" />
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
 				<template slot-scope="scope">
-					<el-button v-hasPermi="['system:secondinventory:add']" size="mini" type="text" @click="secondInventory(scope.row)">破损后入库</el-button>
+					<!--					<el-button v-hasPermi="['system:secondinventory:add']" size="mini" type="text" @click="secondInventory(scope.row)">破损后入库</el-button>-->
 					<el-button v-hasPermi="['system:secondinventory:list']" size="mini" type="text" @click="checkInvoInfo(scope.row)">查看库存信息</el-button>
 					<el-button v-hasPermi="['system:secondinventory:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
 					<el-button v-hasPermi="['system:secondinventory:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>

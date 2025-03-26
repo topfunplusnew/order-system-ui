@@ -9,7 +9,7 @@
   "scripts": {
     "order": "yarn workspaces run dev",
     "build": "yarn workspaces run build:stage",
-    "install-order": "yarn workspaces order-system install --ignore-engines"
+    "install-order": "yarn install --ignore-engines"
   },
   "engines": {
     "node": ">=18.20.6"

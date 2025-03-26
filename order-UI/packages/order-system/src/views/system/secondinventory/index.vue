@@ -812,7 +812,9 @@ export default {
 					levelID: res.data.levelID,
 					height: res.data.height,
 					length: res.data.length,
-					width: res.data.width
+					width: res.data.width,
+					erro: res.data.erro,
+					tonnage: res.data.tonnage
 				});
 				this.secondInventoryVisible = true;
 			});
