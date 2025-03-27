@@ -6,10 +6,11 @@ import _ from 'lodash';
 import { TableConfig } from '../backup.config';
 import OrderInfos from '@/views/dashboard/components/goodsOrder/OrderInfos.vue';
 import INVENTORY from '@/components/NeedToShow/INVENTORY.vue';
+import FlexTable from '@/views/dashboard/backuplog/goodsorder/FlexTable.vue';
 
 export default {
-	name: 'OrderChanging',
-	components: { INVENTORY, OrderInfos },
+	name: 'CommonChange',
+	components: { FlexTable, INVENTORY, OrderInfos },
 	props: {
 		// 要进行比较的数据列表
 		compareData: {
@@ -27,6 +28,9 @@ export default {
 			activeNames: ['1']
 		};
 	},
+	created() {
+		console.log('renderData', this.renderData);
+	},
 	// 主要针对订单和库存这两个模块 进行分组
 	computed: {
 		moduleNames() {
@@ -37,100 +41,85 @@ export default {
 		},
 		// 对数据进行处理 根据模块名称
 		renderData() {
-			console.log('compareData', this.compareData);
 			// 这里要处理那种 修改前为数组 修改后也为数组的
-			let _data = _.cloneDeep(this.compareData);
-			for (let i = 0; i < _data.length; i++) {
-				let _backlog = _data[i];
-				let _newBacklog = {};
-				if (_backlog.originalInfo && _backlog.changedInfo) {
-					const _jsonedOriginlog = JsonUtils.getJson(_backlog.originalInfo);
-					const _jsonedChangedlog = JsonUtils.getJson(_backlog.changedInfo);
-					const _originDataType = TypeUtils.prototype.checkType(_jsonedOriginlog);
-					const _changedDataType = TypeUtils.prototype.checkType(_jsonedChangedlog);
-					// 如果是数组
-					if (_originDataType === 'Array' && _changedDataType === 'Array') {
-						if (_originDataType.length === 0 || _jsonedChangedlog.length === 0) {
-							return;
-						}
-						// 循环这个数组 并且创造出备份信息 推入到备份信息中 顺序不保证
-						for (let j = 0; j < _jsonedOriginlog.length; j++) {
-							if (_jsonedOriginlog[j]) {
-								_newBacklog = {
-									..._backlog,
-									originalInfo: _jsonedOriginlog[j]
-								};
-								_data.push(_newBacklog);
-							}
-						}
-						for (let k = 0; k < _jsonedChangedlog.length; k++) {
-							if (_jsonedChangedlog[k]) {
-								_newBacklog = {
-									..._backlog,
-									changedInfo: _jsonedChangedlog[k]
-								};
-								_data.push(_newBacklog);
-							}
-						}
+			let data = _.cloneDeep(this.compareData);
+			let extra = [];
+			let extraIds = [];
+			const process = (arr, backlog, type) => {
+				console.log(arr, backlog, type);
+				arr.forEach(element => {
+					element &&
+						extra.push({
+							...backlog,
+							tableName: backlog.tableName,
+							originalInfo: type ? backlog : null,
+							changedInfo: type ? null : backlog
+						});
+					if (element.id) {
+						extraIds.push(backlog.id);
 					}
-				}
-			}
-			return Object.entries(_.groupBy(_data, item => item.uuid)).map(entries => {
+				});
+			};
+			// 处理为json
+			const mapped = data
+				.map(backlog => {
+					if (backlog.originalInfo && backlog.changedInfo) {
+						backlog.originalInfo = JsonUtils.getJson(backlog.originalInfo);
+						backlog.changedInfo = JsonUtils.getJson(backlog.changedInfo);
+						return backlog;
+					}
+					return backlog;
+				})
+				.map(backlog => {
+					const ori = _.cloneDeep(backlog.originalInfo);
+					const chag = _.cloneDeep(backlog.changedInfo);
+					console.log('ori,chag', ori, chag);
+					const originDataType = TypeUtils.prototype.checkType(ori);
+					const changedDataType = TypeUtils.prototype.checkType(chag);
+					// 如果两边都是数组
+					if (originDataType === 'Array' && changedDataType === 'Array') {
+						if (ori.length === 0 || chag.length === 0) return backlog;
+						process(ori, backlog, true);
+						process(chag, backlog, false);
+						return backlog;
+						// 其中一个是数组
+					} else if (originDataType === 'Array' && changedDataType !== 'Array') {
+						if (ori.length === 0) return backlog;
+						process(ori, backlog, true);
+					} else if (originDataType !== 'Array' && changedDataType === 'Array') {
+						if (chag.length === 0) return backlog;
+						process(chag, backlog, false);
+					} else {
+						return backlog;
+					}
+				})
+				.filter(backlog => !extraIds.includes(backlog.id));
+			return Object.entries(_.groupBy(mapped, item => item.uuid)).map(entries => {
 				return _.groupBy(entries[1], item => item.tableName);
 			});
-		}
-	},
-	mounted() {
-		// 如果是订单和库存
-		if (this.moduleName === TableName.GOODS_ORDER) {
-			this.getTable(TableName.ORDER_DETAIL);
-		} else if (this.moduleName === TableName.INVENTORMAIN) {
-			this.getTable(TableName.INVENTORDETAIL);
-			// 对于其他的情况 用render函数去渲染表格
-		} else {
-			this.compareData.forEach((item, index) => {
-				this.render(index, item);
+		},
+		bodyData() {
+			return this.renderData.map(backlog => {
+				const moduleName = this.moduleName;
+				const isMulti = Object.keys(backlog).length > 0;
+				const isGoodsOrInventory = moduleName === TableName.GOODS_ORDER || moduleName === TableName.INVENTORY_MAIN;
+
+				return {
+					isMulti,
+					isAdjust: isMulti ? ((backlog.goodsOrder?.length || backlog.inventory_main?.length) ?? 0) > 0 : false,
+					main_info: {
+						data: this.items ? undefined : backlog[moduleName],
+						items: isGoodsOrInventory ? backlog.goodsOrder || backlog.inventory_main : undefined
+					},
+					sub_info: isGoodsOrInventory ? { items: [] } : undefined,
+					params: TableConfig[moduleName]?.params || [],
+					extraParams: TableConfig[moduleName]?.extraParams || [],
+					extraInfo: {}
+				};
 			});
 		}
-
-		this.renderData.forEach((_, index) => {
-			let beforeTable, afterTable;
-			if (this.moduleName === TableName.GOODS_ORDER || this.moduleName === TableName.INVENTORMAIN) {
-				beforeTable = document.getElementById('multi-beforeTable' + index);
-				afterTable = document.getElementById('multi-afterTable' + index);
-			} else {
-				beforeTable = document.getElementById('beforeTable' + index);
-				afterTable = document.getElementById('afterTable' + index);
-			}
-			this.compareTables(beforeTable, afterTable);
-		});
 	},
-
 	methods: {
-		/**
-		 * 针对库存和订单模块
-		 * @param prop
-		 */
-		getTable(prop) {
-			for (let index = 0; index < this.renderData.length; index++) {
-				const item = this.renderData[index];
-				const _getData = (prop, type) => {
-					const key = type === 1 ? 'originalInfo' : 'changedInfo';
-					return item[prop]
-						? _.cloneDeep(
-								item[prop].map(item => {
-									const _item = typeFilter(item);
-									return JsonUtils.getJson(_item[key]);
-								})
-						  )
-						: [];
-				};
-				const before = _getData(prop, 1);
-				const after = _getData(prop, 2);
-				this.renderTable(before, 'multi-beforeTable' + index, '修改前');
-				this.renderTable(after, 'multi-afterTable' + index, '修改后');
-			}
-		},
 		/**
 		 * 渲染表格
 		 * @param index 要渲染的数据的索引
@@ -454,11 +443,7 @@ export default {
 								操作时间:
 								<span>{{ calculateProp(item, moduleName).time }}</span>
 							</span>
-							<!--              后续可以添加操作按钮-->
-							<!--							<el-button style="float: right; padding: 3px 0" type="text">操作类型:{{ item.logicBackupType }} 时间:{{ item.changed_targetTime }}</el-button>-->
 						</div>
-
-						<!--            对于订单-->
 						<div v-if="item.goodsorder">
 							<el-collapse v-model="activeNames" @change="handleChange">
 								<el-collapse-item :title="moduleNames[moduleName] + `主信息修改前`" :name="item.id">
@@ -501,25 +486,7 @@ export default {
 							</el-collapse>
 							<el-divider>{{ moduleNames[moduleName] }}货物修改记录</el-divider>
 						</div>
-						<div id="table-gen">
-							<!--              需要使用纯JS的方式 把这两个表格中 某些列不同的高亮出来-->
-							<div class="container" id="table-before">
-								<table :id="'multi-beforeTable' + index">
-									<thead>
-										<tr></tr>
-									</thead>
-									<tbody></tbody>
-								</table>
-							</div>
-							<div class="container" id="table-after">
-								<table :id="'multi-afterTable' + index">
-									<thead>
-										<tr></tr>
-									</thead>
-									<tbody></tbody>
-								</table>
-							</div>
-						</div>
+						<FlexTable :body="renderData" />
 					</el-card>
 				</div>
 			</div>
@@ -539,32 +506,10 @@ export default {
 								操作时间:
 								<span>{{ calculateProp(item, moduleName).time }}</span>
 							</span>
-							<!--              后续可以添加操作按钮-->
-							<!--							<el-button style="float: right; padding: 3px 0" type="text">操作类型:{{ item.logicBackupType }} 时间:{{ item.changed_targetTime }}</el-button>-->
 						</div>
-						<div id="table-gen">
-							<div class="container" id="table-before">
-								<table :id="'beforeTable' + index">
-									<thead>
-										<tr></tr>
-									</thead>
-									<tbody></tbody>
-								</table>
-							</div>
-							<div class="container" id="table-after">
-								<table :id="'afterTable' + index">
-									<thead>
-										<tr></tr>
-									</thead>
-									<tbody></tbody>
-								</table>
-							</div>
-						</div>
+						<FlexTable :body="renderData" />
 					</el-card>
 				</div>
-				<br />
-				<br />
-				<br />
 			</div>
 		</div>
 	</div>

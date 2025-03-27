@@ -5,6 +5,7 @@ import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import OrderChanging from '@/views/dashboard/backuplog/goodsorder/OrderChanging.vue';
 import { TypeUtils } from '@/views/dashboard/backuplog/index';
 import { filtersFunc } from '@/views/dashboard/backuplog/goodsorder';
+import CommonChange from '@/views/dashboard/backuplog/goodsorder/CommonChange.vue';
 
 export default {
 	name: 'index',
@@ -52,7 +53,7 @@ export default {
 			const data = this.groupByTableName(this.result, filter)[tableName] || [];
 			if (data.length > 0) {
 				this.openDialog(
-					OrderChanging,
+					CommonChange,
 					'模块修改记录',
 					'1500px',
 					{

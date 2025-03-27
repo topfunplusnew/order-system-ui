@@ -57,6 +57,13 @@ export const TableConfig = {
 			isAudit: '是否审核',
 			exWarehouseDate: '出库日期'
 		},
+		params: [
+			{
+				name: 'invoiceAmount',
+				label: '发票金额'
+			}
+		],
+		extraParams: [],
 		options(callback) {
 			return typeof callback === 'function' ? callback(this) : this;
 		}
