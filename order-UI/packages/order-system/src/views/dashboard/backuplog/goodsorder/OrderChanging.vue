@@ -270,9 +270,18 @@ export default {
 			}
 		},
 		calculateProp(item, moduleName) {
+			console.log('calculateProp', item, moduleName);
 			let _type = null;
-			let _oriType = item[moduleName].slice(0, 1)[0].backupType;
-			let _oriTime = item[moduleName].slice(0, 1)[0].backupTime;
+			let _oriType = null;
+			let _oriTime = null;
+			// 对订单或者库存单独处理
+			if (moduleName === TableName.GOODS_ORDER || moduleName === TableName.INVENTORMAIN) {
+				_oriType = item[moduleName].slice(0, 1)[0].backupType;
+				_oriTime = item[moduleName].slice(0, 1)[0].backupTime;
+			} else {
+				_oriType = item.backupType;
+				_oriTime = item.backupTime;
+			}
 			if (_oriType === 'insert') {
 				_type = '新增';
 			} else if (_oriType === 'delete') {
@@ -377,22 +386,31 @@ export default {
 		<div v-else>
 			<div>
 				<div class="table-container" v-for="(item, index) in compareData" :key="index">
-					<div class="container">
-						<table :id="'beforeTable' + index">
-							<thead>
-								<tr></tr>
-							</thead>
-							<tbody></tbody>
-						</table>
-					</div>
-					<div class="container">
-						<table :id="'afterTable' + index">
-							<thead>
-								<tr></tr>
-							</thead>
-							<tbody></tbody>
-						</table>
-					</div>
+					<el-card class="box-card">
+						<div slot="header" class="clearfix">
+							<span style="font-size: 18px; font-weight: bold; color: red; letter-spacing: 3px">{{ moduleNames[moduleName] }}修改记录[{{ index + 1 }}]</span>
+							<span style="margin-left: 40px; font-weight: bold; font-size: 14px; color: #555353">操作类型:{{ calculateProp(item, moduleName).type }}</span>
+							<span style="margin-left: 40px; font-weight: bold; font-size: 14px; color: #4a4949">操作时间:{{ calculateProp(item, moduleName).time }}</span>
+							<!--              后续可以添加操作按钮-->
+							<!--							<el-button style="float: right; padding: 3px 0" type="text">操作类型:{{ item.logicBackupType }} 时间:{{ item.changed_targetTime }}</el-button>-->
+						</div>
+						<div class="container">
+							<table :id="'beforeTable' + index">
+								<thead>
+									<tr></tr>
+								</thead>
+								<tbody></tbody>
+							</table>
+						</div>
+						<div class="container">
+							<table :id="'afterTable' + index">
+								<thead>
+									<tr></tr>
+								</thead>
+								<tbody></tbody>
+							</table>
+						</div>
+					</el-card>
 				</div>
 				<br />
 				<br />
