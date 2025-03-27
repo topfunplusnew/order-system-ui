@@ -296,7 +296,7 @@ export default {
 	<div>
 		<!--    订单或者库存的数据渲染使用-->
 		<div v-if="moduleName === TableName.GOODS_ORDER || moduleName === TableName.INVENTORMAIN">
-			<div>
+			<div class="body">
 				<div class="table-container" v-for="(item, index) in renderData" :key="index">
 					<el-card class="box-card">
 						<div slot="header" class="clearfix">
@@ -403,24 +403,23 @@ export default {
 </template>
 
 <style scoped>
+.body {
+	background-color: red;
+}
+
 .table-container {
 	width: 100%;
 	margin: 40px auto;
 	display: flex;
 	justify-content: center;
 	flex-direction: column;
-	max-height: 1000px;
 	overflow-y: scroll;
-}
-
-#table-gen {
-	overflow-x: scroll;
 }
 
 .container {
 	border-radius: 8px;
 	max-width: 1400px;
-	max-height: 1000px;
+	overflow-x: scroll;
 }
 
 table {
