@@ -39,10 +39,10 @@ export default {
 		 */
 		handleCheckModule(moduleName, filter) {
 			if (!filter) {
-				console.warn('handleCheckModule函数执行,未传入过滤器参数');
+				this.$log.warn('handleCheckModule函数执行,未传入过滤器参数');
 			}
 			if (!moduleName) {
-				console.warn('handleCheckModule函数执行,未传入模块名参数');
+				this.$log.warn('handleCheckModule函数执行,未传入模块名参数');
 			}
 			if (typeof filter !== 'function') {
 				throw new Error('handleCheckModule,函数个体必须为函数类型');
@@ -84,12 +84,12 @@ export default {
 			};
 			// 如果传入的数据不是数组
 			if (TypeUtils.prototype.checkType(data) !== 'Array') {
-				console.error('groupByTableName函数发生错误,数据类型错误，请传入数组');
+				this.$log.error('groupByTableName函数发生错误,数据类型错误，请传入数组');
 				return;
 			}
 			// 如果传入的回调函数数组长度为0 那么就是不对数据进行处理 直接分组
 			if (!callback) {
-				console.warn('groupByTableName函数执行,未传入回调函数');
+				this.$log.warn('groupByTableName函数执行,未传入回调函数');
 				// 没有传函数 单纯分组
 				return data.reduce((result, item) => {
 					return process(undefined, result, item);

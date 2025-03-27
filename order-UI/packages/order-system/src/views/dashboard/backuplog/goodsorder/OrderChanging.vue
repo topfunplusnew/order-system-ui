@@ -41,12 +41,53 @@ export default {
 		},
 		// 对数据进行处理 根据模块名称
 		renderData() {
-			return Object.entries(_.groupBy(this.compareData, item => item.uuid)).map(entries => {
+			console.log('compareData', this.compareData);
+			// 这里要处理那种 修改前为数组 修改后也为数组的
+			let _data = _.cloneDeep(this.compareData);
+			for (let i = 0; i < _data.length; i++) {
+				let _backlog = _data[i];
+				let _newBacklog = {};
+				if (_backlog.originalInfo && _backlog.changedInfo) {
+					const _jsonedOriginlog = JsonUtils.getJson(_backlog.originalInfo);
+					const _jsonedChangedlog = JsonUtils.getJson(_backlog.changedInfo);
+					const _originDataType = TypeUtils.prototype.checkType(_jsonedOriginlog);
+					const _changedDataType = TypeUtils.prototype.checkType(_jsonedChangedlog);
+					// 如果是数组
+					if (_originDataType === 'Array' && _changedDataType === 'Array') {
+						if (_originDataType.length === 0 || _jsonedChangedlog.length === 0) {
+							return;
+						}
+						// 循环这个数组 并且创造出备份信息 推入到备份信息中 顺序不保证
+						for (let j = 0; j < _jsonedOriginlog.length; j++) {
+							if (_jsonedOriginlog[j]) {
+								_newBacklog = {
+									..._backlog,
+									originalInfo: _jsonedOriginlog[j]
+								};
+								_data.push(_newBacklog);
+							}
+						}
+						for (let k = 0; k < _jsonedChangedlog.length; k++) {
+							if (_jsonedChangedlog[k]) {
+								_newBacklog = {
+									..._backlog,
+									changedInfo: _jsonedChangedlog[k]
+								};
+								_data.push(_newBacklog);
+							}
+						}
+					}
+				}
+			}
+
+			console.log('处理数组后:', _data);
+			return Object.entries(_.groupBy(_data, item => item.uuid)).map(entries => {
 				return _.groupBy(entries[1], item => item.tableName);
 			});
 		}
 	},
 	mounted() {
+		console.log('compareData:', this.compareData);
 		// 如果是订单和库存
 		if (this.moduleName === TableName.GOODS_ORDER) {
 			this.getTable(TableName.ORDER_DETAIL);
@@ -58,6 +99,18 @@ export default {
 				this.render(index, item);
 			});
 		}
+
+		this.renderData.forEach((_, index) => {
+			let beforeTable, afterTable;
+			if (this.moduleName === TableName.GOODS_ORDER || this.moduleName === TableName.INVENTORMAIN) {
+				beforeTable = document.getElementById('multi-beforeTable' + index);
+				afterTable = document.getElementById('multi-afterTable' + index);
+			} else {
+				beforeTable = document.getElementById('beforeTable' + index);
+				afterTable = document.getElementById('afterTable' + index);
+			}
+			this.compareTables(beforeTable, afterTable);
+		});
 	},
 
 	methods: {
@@ -119,10 +172,8 @@ export default {
 			let [item1, item2] = paramFieldFilter([pre, completeJsonData(pre, aft)], callbackList, this.$exclude);
 
 			// 渲染表格
-			this.$nextTick(() => {
-				this.renderTable(item1, 'beforeTable' + index, '修改前');
-				this.renderTable(item2, 'afterTable' + index, '修改后');
-			});
+			this.renderTable(item1, 'beforeTable' + index, '修改前');
+			this.renderTable(item2, 'afterTable' + index, '修改后');
 		},
 		/**
 		 * 渲染表格
@@ -187,6 +238,7 @@ export default {
 				th.textContent = mappers[key];
 				th.style.textAlign = 'center';
 				th.style.backgroundColor = '#e8e5e5';
+				th.style.width = '250px';
 				th.style.border = '1px solid black';
 				thead.appendChild(th);
 			}
@@ -232,6 +284,7 @@ export default {
 					td.textContent = json[key] !== undefined ? json[key] : '';
 					td.classList.add('table-d');
 					td.style.textAlign = 'center';
+					td.style.width = '250px';
 					td.style.border = '1px solid black';
 					tr.appendChild(td);
 				});
@@ -314,6 +367,72 @@ export default {
 					};
 			}
 		},
+		// 高亮某些列
+		/**
+		 * 比较两个表格的内容是否一致
+		 * @param {HTMLElement} table1 第一个表格元素
+		 * @param {HTMLElement} table2 第二个表格元素
+		 * @param {Object} options 配置项
+		 * @param {boolean} options.highlightDiff 是否高亮显示差异（默认true）
+		 * @param {string} options.highlightColor 高亮颜色（默认'#ffdddd'）
+		 * @returns {boolean} 是否完全一致
+		 */
+		/**
+     * 比较两个表格的内容是否一致（包含表头，忽略第一列）
+     * @param {HTMLElement} table1 第一个表格
+     * @param {HTMLElement} table2 第二个表格
+     * @param {Object} options 配置项
+     * @param {boolean} options.highlightDiff 是否高亮差异（默认true）
+     @param {string} options.highlightFontColor 高亮颜色（默认'#ffdddd'）
+     * @param {string} options.highlightColor 高亮颜色（默认'#ffdddd'）
+     * * @returns {boolean} 是否完全一致
+     */
+		compareTables(table1, table2, options = {}) {
+			const { highlightDiff = true, highlightColor = '#FFEB3B', highlightFontColor = '#000000' } = options;
+
+			// 获取所有行（包含表头）
+			const rows1 = table1.querySelectorAll('tr'); // 不再限定tbody
+			const rows2 = table2.querySelectorAll('tr');
+
+			if (rows1.length !== rows2.length) {
+				return false;
+			}
+
+			let isPerfectMatch = true;
+
+			rows1.forEach((row1, rowIndex) => {
+				const row2 = rows2[rowIndex];
+				const cells1 = row1.querySelectorAll('th, td'); // 同时匹配th和td
+				const cells2 = row2.querySelectorAll('th, td');
+
+				if (cells1.length !== cells2.length) {
+					isPerfectMatch = false;
+					return;
+				}
+
+				// 从第二列开始比较（跳过索引0的第一列）
+				for (let cellIndex = 1; cellIndex < cells1.length; cellIndex++) {
+					const cell1 = cells1[cellIndex];
+					const cell2 = cells2[cellIndex];
+					const text1 = cell1.textContent.trim();
+					const text2 = cell2.textContent.trim();
+
+					if (text1 !== text2) {
+						isPerfectMatch = false;
+						if (highlightDiff) {
+							cell1.style.backgroundColor = highlightColor;
+							cell2.style.backgroundColor = highlightColor;
+							cell1.style.color = highlightFontColor;
+							cell2.style.color = highlightFontColor;
+							cell1.style.fontWeight = 'bold';
+							cell2.style.fontWeight = 'bold';
+						}
+					}
+				}
+			});
+
+			return isPerfectMatch;
+		},
 		handleChange() {},
 		handleProcess() {},
 		handleReject() {}
@@ -387,7 +506,8 @@ export default {
 							<el-divider>{{ moduleNames[moduleName] }}货物修改记录</el-divider>
 						</div>
 						<div id="table-gen">
-							<div class="container">
+							<!--              需要使用纯JS的方式 把这两个表格中 某些列不同的高亮出来-->
+							<div class="container" id="table-before">
 								<table :id="'multi-beforeTable' + index">
 									<thead>
 										<tr></tr>
@@ -395,7 +515,7 @@ export default {
 									<tbody></tbody>
 								</table>
 							</div>
-							<div class="container">
+							<div class="container" id="table-after">
 								<table :id="'multi-afterTable' + index">
 									<thead>
 										<tr></tr>
@@ -427,7 +547,7 @@ export default {
 							<!--							<el-button style="float: right; padding: 3px 0" type="text">操作类型:{{ item.logicBackupType }} 时间:{{ item.changed_targetTime }}</el-button>-->
 						</div>
 						<div id="table-gen">
-							<div class="container">
+							<div class="container" id="table-before">
 								<table :id="'beforeTable' + index">
 									<thead>
 										<tr></tr>
@@ -435,7 +555,7 @@ export default {
 									<tbody></tbody>
 								</table>
 							</div>
-							<div class="container">
+							<div class="container" id="table-after">
 								<table :id="'afterTable' + index">
 									<thead>
 										<tr></tr>
