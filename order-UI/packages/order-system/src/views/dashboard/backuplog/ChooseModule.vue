@@ -44,6 +44,9 @@ export default {
 			if (!filter) {
 				console.warn('handleCheckModule函数执行,未传入过滤器参数');
 			}
+			if (!moduleName) {
+				console.warn('handleCheckModule函数执行,未传入模块名参数');
+			}
 			if (typeof filter !== 'function') {
 				throw new Error('handleCheckModule,函数个体必须为函数类型');
 			}
@@ -78,6 +81,7 @@ export default {
 				if (!result[tableName]) {
 					result[tableName] = []; // 如果分组不存在，初始化一个空数组
 				}
+
 				callback ? result[callback(tableName)].push(item) : result[tableName].push(item); // 将当前项添加到对应的分组中
 				return result;
 			};
