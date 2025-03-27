@@ -30,9 +30,6 @@ export default {
 			default: () => []
 		}
 	},
-	created() {
-		console.log('ChooseModule:', this.moduleList, this.result);
-	},
 	methods: {
 		filtersFunc,
 		/**

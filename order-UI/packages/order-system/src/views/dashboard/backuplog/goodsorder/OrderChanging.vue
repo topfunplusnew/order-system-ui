@@ -31,9 +31,6 @@ export default {
 			activeNames: ['1']
 		};
 	},
-	created() {
-		console.log('OrderChanging', this.compareData, this.moduleName);
-	},
 	// 主要针对订单和库存这两个模块 进行分组
 	computed: {
 		moduleNames() {
@@ -109,7 +106,6 @@ export default {
 			// 处理一下type
 			let current = processData || this.compareData[index];
 			current = typeFilter(current);
-			console.log('current', current);
 			// 转为json数据
 			let pre = JsonUtils.getJson(current.originalInfo);
 			let aft = JsonUtils.getJson(current.changedInfo);
@@ -136,7 +132,7 @@ export default {
 		 */
 		renderTable(data, tableId, status) {
 			if (!data || !status) {
-				console.error('缺少参数');
+				this.$log.error('缺少参数');
 				return;
 			}
 			let processData = null;
@@ -145,7 +141,7 @@ export default {
 			}
 			if (TypeUtils.prototype.checkType(data) === 'Array') {
 				if (data.length === 0) {
-					console.error('渲染表格,renderTable函数出问题,数据为空');
+					this.$log.warn("渲染表格,renderTable函数出问题,数据为空,可能为修改审核状态或者开票状态'");
 					return;
 				}
 				processData = data;
@@ -153,13 +149,13 @@ export default {
 			// 获取dom元素
 			const table = document.getElementById(tableId);
 			if (!table) {
-				console.error(`表格 ${tableId} 未找到`);
+				this.$log.error(`表格 ${tableId} 未找到`);
 				return;
 			}
 			const thead = table.querySelector('thead tr');
 			const tbody = table.querySelector('tbody');
 			if (processData === null) {
-				console.error('processData 为空');
+				this.$log.error('processData 为空');
 				this.renderNull(tbody);
 				return;
 			}
@@ -213,7 +209,7 @@ export default {
 		 */
 		renderTableRows(tbody, json, status = '修改前') {
 			if (!json || !status) {
-				console.error('缺少参数');
+				this.$log.error('缺少参数');
 				return;
 			}
 			const config = TableConfig[transFuc(this.moduleName)];
@@ -241,7 +237,7 @@ export default {
 				});
 				tbody.appendChild(tr);
 			} catch (err) {
-				console.error(err);
+				this.$log.error(err);
 			}
 		},
 		/**
@@ -252,7 +248,6 @@ export default {
 		 * @returns {any}
 		 */
 		getProcessedOrder(item, type, moduleName) {
-			console.log('getProcessedOrder', item, type, moduleName);
 			let row = null;
 			switch (moduleName) {
 				case TableName.GOODS_ORDER:

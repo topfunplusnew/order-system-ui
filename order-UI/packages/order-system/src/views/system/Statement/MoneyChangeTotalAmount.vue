@@ -184,7 +184,6 @@ export default {
 		},
 		// 对数据进行格式化处理
 		formatTableData(list) {
-			console.log(list);
 			// 根据type进行判断 然后存入一个数组 进行对比 然后高亮相关列
 			const { startTimeMoney, endTimeMoney } = list;
 

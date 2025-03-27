@@ -47,7 +47,7 @@ import 'print-js/dist/print.css';
 import VForm from 'vform-builds'; // 引入VForm库
 import 'vform-builds/dist/VFormDesigner.css'; // 引入VForm样式
 import service from './utils/request';
-
+import { Logger } from '@/utils/order/logger';
 // 虚拟滚动
 import VueVirtualScroller from 'vue-virtual-scroller';
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css';
@@ -61,19 +61,19 @@ Vue.prototype.getConfigKey = getConfigKey;
 Vue.prototype.parseTime = parseTime;
 Vue.prototype.resetForm = resetForm;
 Vue.prototype.addDateRange = addDateRange;
-// Vue.prototype.adDateRange = adDateRange
-
 Vue.prototype.selectDictLabel = selectDictLabel;
 Vue.prototype.selectDictLabels = selectDictLabels;
 Vue.prototype.download = download;
 Vue.prototype.handleTree = handleTree;
 Vue.prototype.$print = print;
+Vue.prototype.$log = new Logger({
+	prefix: 'MyApp',
+	enableDebug: true
+});
 
 // 一键下载
 Vue.prototype.downLoadOnce = onceDownload;
 
-// todo 以下是自己封装的一些常用的繁琐操作函数
-// 1.需要排除的字段信息
 // 使用: this.form = excludeParams(this.form, this.$exclude)  api/tool/exclude.js
 Vue.prototype.$exclude = [
 	'addtime',
