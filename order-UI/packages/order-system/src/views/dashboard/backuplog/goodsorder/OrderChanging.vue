@@ -402,7 +402,7 @@ export default {
 
 			rows1.forEach((row1, rowIndex) => {
 				const row2 = rows2[rowIndex];
-				const cells1 = row1.querySelectorAll('th, td'); // 同时匹配th和td
+				const cells1 = row1.querySelectorAll('th, td');
 				const cells2 = row2.querySelectorAll('th, td');
 
 				if (cells1.length !== cells2.length) {
