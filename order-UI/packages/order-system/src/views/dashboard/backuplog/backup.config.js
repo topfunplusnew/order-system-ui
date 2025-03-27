@@ -315,10 +315,7 @@ export const TableConfig = {
 			ticketPoint: '税点',
 			ticketPointAmount: '税点金额',
 			isOrderTax: '是否订单税',
-			paymentReceipts: '付款凭证',
-			invoiceAttachments: '发票附件',
 			comments: '备注',
-			endTime: '结束时间',
 			oweAmount: '欠款金额'
 		},
 		options(callback) {
@@ -329,7 +326,6 @@ export const TableConfig = {
 	[TableName.INVOICE_IN]: {
 		mappers: {
 			invoiceDate: '发票日期',
-			paymentReceipts: '付款凭证',
 			endTime: '结束时间',
 			invoiceObject: '发票对象',
 			invoiceAmount: '发票金额',
