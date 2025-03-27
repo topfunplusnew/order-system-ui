@@ -404,7 +404,6 @@ export default {
 
 <style scoped>
 .body {
-	background-color: red;
 }
 
 .table-container {
@@ -416,10 +415,13 @@ export default {
 	overflow-y: scroll;
 }
 
+#table-gen {
+	overflow-x: scroll;
+}
+
 .container {
 	border-radius: 8px;
 	max-width: 1400px;
-	overflow-x: scroll;
 }
 
 table {
