@@ -50,12 +50,12 @@ export default {
 		}
 	},
 	mounted() {
+		console.log('renderData:', this.renderData);
 		// 如果是订单和库存
 		if (this.moduleName === TableName.GOODS_ORDER) {
 			this.getTable(TableName.ORDER_DETAIL);
 		} else if (this.moduleName === TableName.INVENTORMAIN) {
 			this.getTable(TableName.INVENTORDETAIL);
-
 			// 对于其他的情况 用render函数去渲染表格
 		} else {
 			this.compareData.forEach((item, index) => {
@@ -109,7 +109,6 @@ export default {
 			// 处理一下type
 			let current = processData || this.compareData[index];
 			current = typeFilter(current);
-			console.log('非订单current:', current);
 			// 转为json数据
 			let pre = JsonUtils.getJson(current.originalInfo);
 			let aft = JsonUtils.getJson(current.changedInfo);
@@ -122,7 +121,6 @@ export default {
 			const callbackList = this.moduleName === TableName.GOODS_ORDER || this.moduleName === TableName.INVENTORMAIN ? [orderParamFilter] : [];
 			let [item1, item2] = paramFieldFilter([pre, completeJsonData(pre, aft)], callbackList, this.$exclude);
 
-			console.log('item1:', item1, item2);
 			// 渲染表格
 			this.$nextTick(() => {
 				this.renderTable(item1, 'beforeTable' + index, '修改前');
@@ -213,7 +211,6 @@ export default {
 		 * @param status  状态字段 修改前还是修改后
 		 */
 		renderTableRows(tbody, json, status = '修改前') {
-			console.log('renderTableRows', json, status);
 			if (!json || !status) {
 				console.error('缺少参数');
 				return;
@@ -272,6 +269,22 @@ export default {
 				return JSON.parse(row.changedInfo);
 			}
 		},
+		calculateProp(item, moduleName) {
+			let _type = null;
+			let _oriType = item[moduleName].slice(0, 1)[0].backupType;
+			let _oriTime = item[moduleName].slice(0, 1)[0].backupTime;
+			if (_oriType === 'insert') {
+				_type = '新增';
+			} else if (_oriType === 'delete') {
+				_type = '删除';
+			} else {
+				_type = '修改';
+			}
+			return {
+				time: _oriTime,
+				type: _type
+			};
+		},
 		handleChange() {},
 		handleProcess() {},
 		handleReject() {}
@@ -287,9 +300,11 @@ export default {
 				<div class="table-container" v-for="(item, index) in renderData" :key="index">
 					<el-card class="box-card">
 						<div slot="header" class="clearfix">
-							<span style="font-size: 17px; font-weight: bold; color: red; letter-spacing: 3px">{{ moduleNames[moduleName] }}修改记录[{{ index + 1 }}]</span>
+							<span style="font-size: 18px; font-weight: bold; color: red; letter-spacing: 3px">{{ moduleNames[moduleName] }}修改记录[{{ index + 1 }}]</span>
+							<span style="margin-left: 40px; font-weight: bold; font-size: 14px; color: #555353">操作类型:{{ calculateProp(item, moduleName).type }}</span>
+							<span style="margin-left: 40px; font-weight: bold; font-size: 14px; color: #4a4949">操作时间:{{ calculateProp(item, moduleName).time }}</span>
 							<!--              后续可以添加操作按钮-->
-							<!--							<el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>-->
+							<!--							<el-button style="float: right; padding: 3px 0" type="text">操作类型:{{ item.logicBackupType }} 时间:{{ item.changed_targetTime }}</el-button>-->
 						</div>
 
 						<!--            对于订单-->
@@ -303,7 +318,7 @@ export default {
 										<div v-else>{{ moduleNames[moduleName] }}无修改前记录</div>
 									</div>
 								</el-collapse-item>
-								<el-collapse-item title="订单主信息修改后" :name="item.id">
+								<el-collapse-item :title="moduleNames[moduleName] + `主信息修改后`" :name="item.id">
 									<div>
 										<div v-if="item.goodsorder[0].changedInfo !== 'null'">
 											<OrderInfos :order-info="getProcessedOrder(item, 'after', moduleName)" />

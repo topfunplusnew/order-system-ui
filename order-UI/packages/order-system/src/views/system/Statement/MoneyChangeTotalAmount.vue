@@ -99,10 +99,10 @@ export default {
 		},
 		// 搜索
 		async handleChangeSearch() {
-			// 获取左侧的
+			// 获取左侧的数据
 			const left = await this.getChangeData(this.changeForm.endTime, this.targetLeftDate);
 			this.fixedMoneyTableData = this.formatTableData(left);
-			// 获取右侧的
+			// 获取右侧的数据
 			const right = await this.getChangeData(this.changeForm.endTime, this.targetRightDate);
 			this.changeMoneyTableData = this.formatTableData(right);
 			// 计算差异
