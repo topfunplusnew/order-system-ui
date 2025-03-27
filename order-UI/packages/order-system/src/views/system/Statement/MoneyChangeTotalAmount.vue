@@ -38,10 +38,10 @@ export default {
 	},
 	computed: {
 		columnHeaderFix() {
-			return `日期:` + (this.targetRightDate ? this.targetRightDate : this.changeForm.endTime ? this.changeForm.endTime : '未选择日期') + `(数据固定后截取)`;
+			return `日期:` + (this.changeForm.endTime ? this.changeForm.endTime : '未选择日期') + `(${this.targetRightDate === null ? '' : this.targetRightDate}固定截取)`;
 		},
 		columnHeaderChange() {
-			return `日期:` + (this.targetLeftDate ? this.targetLeftDate : this.changeForm.endTime ? this.changeForm.endTime : '未选择日期') + `(当日截取)`;
+			return `日期:` + (this.changeForm.endTime ? this.changeForm.endTime : '未选择日期') + `(${this.targetLeftDate === null ? '' : this.targetLeftDate}当日截取)`;
 		}
 	},
 	methods: {
