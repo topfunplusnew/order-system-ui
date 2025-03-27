@@ -50,7 +50,6 @@ export default {
 		}
 	},
 	mounted() {
-		console.log('renderData:', this.renderData);
 		// 如果是订单和库存
 		if (this.moduleName === TableName.GOODS_ORDER) {
 			this.getTable(TableName.ORDER_DETAIL);
@@ -59,7 +58,8 @@ export default {
 			// 对于其他的情况 用render函数去渲染表格
 		} else {
 			this.compareData.forEach((item, index) => {
-				this.render(index);
+				console.log('render函数:', item, index);
+				this.render(index, item);
 			});
 		}
 	},
@@ -92,13 +92,14 @@ export default {
 		/**
 		 * 渲染表格
 		 * @param index 要渲染的数据的索引
+		 * @param item 备份数据行
 		 */
-		render(index) {
+		render(index, item) {
 			if (!this.compareData || !this.compareData.length) {
 				throw new Error('未找到对应数据');
 			}
 			// 渲染非订单的数据
-			this.processData(index, undefined);
+			this.processData(index, item);
 		},
 		/**
 		 * 处理数据的函数
@@ -109,6 +110,7 @@ export default {
 			// 处理一下type
 			let current = processData || this.compareData[index];
 			current = typeFilter(current);
+			console.log('current', current);
 			// 转为json数据
 			let pre = JsonUtils.getJson(current.originalInfo);
 			let aft = JsonUtils.getJson(current.changedInfo);
@@ -251,6 +253,7 @@ export default {
 		 * @returns {any}
 		 */
 		getProcessedOrder(item, type, moduleName) {
+			console.log('getProcessedOrder', item, type, moduleName);
 			let row = null;
 			switch (moduleName) {
 				case TableName.GOODS_ORDER:
@@ -270,7 +273,6 @@ export default {
 			}
 		},
 		calculateProp(item, moduleName) {
-			console.log('calculateProp', item, moduleName);
 			let _type = null;
 			let _oriType = null;
 			let _oriTime = null;
@@ -385,7 +387,7 @@ export default {
 		<!--    非订单的数据渲染使用-->
 		<div v-else>
 			<div>
-				<div class="table-container" v-for="(item, index) in compareData" :key="index">
+				<div class="else-table-container" v-for="(item, index) in compareData" :key="index">
 					<el-card class="box-card">
 						<div slot="header" class="clearfix">
 							<span style="font-size: 18px; font-weight: bold; color: red; letter-spacing: 3px">{{ moduleNames[moduleName] }}修改记录[{{ index + 1 }}]</span>
@@ -394,21 +396,23 @@ export default {
 							<!--              后续可以添加操作按钮-->
 							<!--							<el-button style="float: right; padding: 3px 0" type="text">操作类型:{{ item.logicBackupType }} 时间:{{ item.changed_targetTime }}</el-button>-->
 						</div>
-						<div class="container">
-							<table :id="'beforeTable' + index">
-								<thead>
-									<tr></tr>
-								</thead>
-								<tbody></tbody>
-							</table>
-						</div>
-						<div class="container">
-							<table :id="'afterTable' + index">
-								<thead>
-									<tr></tr>
-								</thead>
-								<tbody></tbody>
-							</table>
+						<div id="table-gen">
+							<div class="container">
+								<table :id="'beforeTable' + index">
+									<thead>
+										<tr></tr>
+									</thead>
+									<tbody></tbody>
+								</table>
+							</div>
+							<div class="container">
+								<table :id="'afterTable' + index">
+									<thead>
+										<tr></tr>
+									</thead>
+									<tbody></tbody>
+								</table>
+							</div>
 						</div>
 					</el-card>
 				</div>
@@ -421,10 +425,16 @@ export default {
 </template>
 
 <style scoped>
-.body {
+.table-container {
+	width: 100%;
+	margin: 40px auto;
+	display: flex;
+	justify-content: center;
+	flex-direction: column;
+	overflow-y: scroll;
 }
 
-.table-container {
+.else-table-container {
 	width: 100%;
 	margin: 40px auto;
 	display: flex;

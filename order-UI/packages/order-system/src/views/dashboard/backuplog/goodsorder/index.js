@@ -76,14 +76,23 @@ export function typeFilter(backupRow) {
 	if (backupRow.originalInfo === 'null' && backupRow.changedInfo === 'null') {
 		console.error('备份数据行originalInfo和changedInfo为null,索引为:', backupRow.id);
 	}
-	if (backupRow.backupType === 'insert') {
+	// if (backupRow.backupType === 'insert') {
+	// 	backupRow.originalInfo = backupRow.changedInfo;
+	// 	return backupRow;
+	// }
+	// if (backupRow.backupType === 'delete' || backupRow.backupType === 'update') {
+	// 	backupRow.changedInfo = backupRow.originalInfo;
+	// 	return backupRow;
+	// }
+	if (backupRow.logicBackupType === 'insert') {
 		backupRow.originalInfo = backupRow.changedInfo;
 		return backupRow;
 	}
-	if (backupRow.backupType === 'delete' || backupRow.backupType === 'update') {
+	if (backupRow.logicBackupType === 'delete') {
 		backupRow.changedInfo = backupRow.originalInfo;
 		return backupRow;
 	}
+	return backupRow;
 }
 
 // 将订单详情的数据归类到订单主表信息

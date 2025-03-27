@@ -1,5 +1,6 @@
 import { describe, expect, test } from '@jest/globals';
 import { paramFieldFilter, typeFilter } from '@/views/dashboard/backuplog/goodsorder/index';
+import { completeJsonData } from '@/views/dashboard/backuplog';
 // 测试JSON的key转换
 describe('keyOptioner module', () => {
 	const json = {
@@ -89,3 +90,25 @@ describe('typeFilter module', () => {
 		});
 	});
 });
+
+// 测试JSON补全
+describe('completeJsonData module', () => {
+	const template = {
+		name: 'zhangsan',
+		age: 18,
+		pay_id: 1,
+		id_index: 1
+	};
+	const incl = {
+		name: 'zhangsan'
+	};
+	test('completeJsonData', () => {
+		expect(completeJsonData(template, incl)).toEqual({
+			name: 'zhangsan',
+			age: 18,
+			pay_id: 1,
+			id_index: 1
+		});
+	});
+});
+
