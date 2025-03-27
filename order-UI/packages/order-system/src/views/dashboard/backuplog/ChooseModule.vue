@@ -49,13 +49,11 @@ export default {
 			}
 			// 对模块名进行处理
 			let tableName = filter(moduleName);
-			console.log('tableName', tableName);
 			const data = this.groupByTableName(this.result, filter)[tableName] || [];
-			console.log('分组后的数据:', data);
 			if (data.length > 0) {
 				this.openDialog(
 					OrderChanging,
-					'订单修改记录',
+					'模块修改记录',
 					'1500px',
 					{
 						compareData: data,

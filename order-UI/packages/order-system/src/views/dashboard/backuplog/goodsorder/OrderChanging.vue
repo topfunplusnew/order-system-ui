@@ -58,7 +58,6 @@ export default {
 			// 对于其他的情况 用render函数去渲染表格
 		} else {
 			this.compareData.forEach((item, index) => {
-				console.log('render函数:', item, index);
 				this.render(index, item);
 			});
 		}
@@ -273,26 +272,25 @@ export default {
 			}
 		},
 		calculateProp(item, moduleName) {
-			let _type = null;
-			let _oriType = null;
-			let _oriTime = null;
-			// 对订单或者库存单独处理
-			if (moduleName === TableName.GOODS_ORDER || moduleName === TableName.INVENTORMAIN) {
-				_oriType = item[moduleName].slice(0, 1)[0].backupType;
-				_oriTime = item[moduleName].slice(0, 1)[0].backupTime;
-			} else {
-				_oriType = item.backupType;
-				_oriTime = item.backupTime;
-			}
-			if (_oriType === 'insert') {
-				_type = '新增';
-			} else if (_oriType === 'delete') {
-				_type = '删除';
-			} else {
-				_type = '修改';
-			}
+			// 统一获取备份类型和时间
+			const getBackupData = () => {
+				if (moduleName === TableName.GOODS_ORDER) {
+					return item[TableName.ORDER_DETAIL]?.[0] || {};
+				} else if (moduleName === TableName.INVENTORMAIN) {
+					return item[TableName.INVENTORDETAIL]?.[0] || {};
+				}
+				return item;
+			};
+			const { backupType = '', backupTime = null } = getBackupData();
+			// 映射操作类型
+			const typeMap = {
+				insert: '新增',
+				delete: '删除',
+				default: '修改'
+			};
+			const _type = typeMap[backupType] || typeMap.default;
 			return {
-				time: _oriTime,
+				time: backupTime,
 				type: _type
 			};
 		},
