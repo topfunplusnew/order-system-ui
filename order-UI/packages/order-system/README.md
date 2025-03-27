@@ -106,3 +106,77 @@ postinstall 的执行顺序：
 在使用 postinstall 时，确保执行的脚本是无副作用且适合在每次安装时执行的。例如，不要在 postinstall 脚本中执行长时间运行的任务。
 如果某些依赖包有 postinstall 脚本（很多现代包会在安装时自动运行某些任务），这些脚本也会被依次执行。
 总的来说，postinstall 脚本是一个非常灵活的工具，允许开发者在包安装后执行一系列操作，从而让项目更好地适配和配置。
+
+
+
+
+
+## 资金变动统计数据处理逻辑
+
+对于renderData分组数据，如果是订单或者库存 ，才会有主子表信息
+```js
+const obj = {
+   body: {
+      main_info: {
+         // 是否是订单或库存 Object.keys(renderData[index]).length > 0 ? true : false
+         isMulti: true,
+         // isMulti ? (renderData[index].goodsOrder.length || renderData[index].inventory_main.length) > 0 ? true : false : false
+         isAdjust: true,
+         data: {
+            id: '1',
+            backupTime: '2025-05-02',
+            logicBackupType: 'insert',
+            changedInfo: '{"id": null, "path": null}',
+            originalInfo: null,
+            uuid: '5c2c6305-10d7-40b0-a0e2-3a02233ef91c'
+         },
+         items: [
+            {
+               id: '1',
+               backupTime: '2025-05-02',
+               logicBackupType: 'insert',
+               changedInfo: '{"id": null, "path": null}',
+               originalInfo: null,
+               uuid: '5c2c6305-10d7-40b0-a0e2-3a02233ef91c'
+            },
+            {
+               id: '2',
+               backupTime: '2025-05-02',
+               logicBackupType: 'insert',
+               changedInfo: '{"id": null, "path": null}',
+               originalInfo: null,
+               uuid: '5c2c6305-10d7-40b0-a0e2-3a02233ef91c'
+            }
+         ]
+      },
+      sub_info: {
+         items: [
+            {
+               orders_no: 'xxsd',
+               pieces: '20'
+            },
+            {
+               orders_no: 'xxsd',
+               pieces: '20'
+            }
+         ],
+         params: [
+            {
+               name: 'payment',
+               label: '总货款',
+               option: () => {}
+            },
+            {
+               name: 'paymentFactory',
+               label: '出厂货款',
+               option: () => {}
+            }
+         ]
+      },
+      extraInfo: {
+         _: ''
+      }
+   }
+};
+
+```

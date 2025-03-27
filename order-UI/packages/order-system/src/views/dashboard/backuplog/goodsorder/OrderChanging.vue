@@ -6,11 +6,7 @@ import _ from 'lodash';
 import { TableConfig } from '../backup.config';
 import OrderInfos from '@/views/dashboard/components/goodsOrder/OrderInfos.vue';
 import INVENTORY from '@/components/NeedToShow/INVENTORY.vue';
-// 这里的逻辑需要层层筛选 需要加一些过滤器 对json的操作
-// 现在的逻辑 是 根据模块分组了 订单需要筛选掉调整单生成的负数单和调整单，然后库存也是 所以需要一个过滤器
-// 另外 新增 insert的备份记录 原信息给null  新信息给新增的信息
-// 还需要参数过滤器，需要筛选掉不必要的参数 例如编号 订单编号 各种后端用来绑定用的id
-// 还需要一个函数指针数组，以防甲方加新功能
+
 export default {
 	name: 'OrderChanging',
 	components: { INVENTORY, OrderInfos },
@@ -79,8 +75,6 @@ export default {
 					}
 				}
 			}
-
-			console.log('处理数组后:', _data);
 			return Object.entries(_.groupBy(_data, item => item.uuid)).map(entries => {
 				return _.groupBy(entries[1], item => item.tableName);
 			});
@@ -88,6 +82,7 @@ export default {
 	},
 	mounted() {
 		console.log('compareData:', this.compareData);
+		console.log('renderData:', this.renderData);
 		// 如果是订单和库存
 		if (this.moduleName === TableName.GOODS_ORDER) {
 			this.getTable(TableName.ORDER_DETAIL);
@@ -390,16 +385,15 @@ export default {
 		compareTables(table1, table2, options = {}) {
 			const { highlightDiff = true, highlightColor = '#FFEB3B', highlightFontColor = '#000000' } = options;
 
-			// 获取所有行（包含表头）
-			const rows1 = table1.querySelectorAll('tr'); // 不再限定tbody
+			const rows1 = table1.querySelectorAll('tr');
 			const rows2 = table2.querySelectorAll('tr');
 
-			if (rows1.length !== rows2.length) {
-				return false;
-			}
+			if (rows1.length !== rows2.length) return false;
 
 			let isPerfectMatch = true;
+			const changedColumns = new Set(); // 存储存在差异的列索引
 
+			// 第一轮：检测差异列
 			rows1.forEach((row1, rowIndex) => {
 				const row2 = rows2[rowIndex];
 				const cells1 = row1.querySelectorAll('th, td');
@@ -410,26 +404,31 @@ export default {
 					return;
 				}
 
-				// 从第二列开始比较（跳过索引0的第一列）
 				for (let cellIndex = 1; cellIndex < cells1.length; cellIndex++) {
-					const cell1 = cells1[cellIndex];
-					const cell2 = cells2[cellIndex];
-					const text1 = cell1.textContent.trim();
-					const text2 = cell2.textContent.trim();
+					const text1 = cells1[cellIndex].textContent.trim();
+					const text2 = cells2[cellIndex].textContent.trim();
 
 					if (text1 !== text2) {
 						isPerfectMatch = false;
-						if (highlightDiff) {
-							cell1.style.backgroundColor = highlightColor;
-							cell2.style.backgroundColor = highlightColor;
-							cell1.style.color = highlightFontColor;
-							cell2.style.color = highlightFontColor;
-							cell1.style.fontWeight = 'bold';
-							cell2.style.fontWeight = 'bold';
-						}
+						changedColumns.add(cellIndex); // 记录差异列
 					}
 				}
 			});
+
+			// 第二轮：高亮整列
+			if (highlightDiff && changedColumns.size > 0) {
+				const allRows = [...rows1, ...rows2];
+				changedColumns.forEach(cellIndex => {
+					allRows.forEach(row => {
+						const cell = row.querySelector(`th:nth-child(${cellIndex + 1}), td:nth-child(${cellIndex + 1})`);
+						if (cell) {
+							cell.style.backgroundColor = highlightColor;
+							cell.style.color = highlightFontColor;
+							cell.style.fontWeight = 'bold';
+						}
+					});
+				});
+			}
 
 			return isPerfectMatch;
 		},
@@ -483,7 +482,6 @@ export default {
 							</el-collapse>
 							<el-divider>{{ moduleNames[moduleName] }}货物修改记录</el-divider>
 						</div>
-						<!--            对于库存 todo 需要调试-->
 						<div v-if="item.inventory_main">
 							<el-collapse v-model="activeNames" @change="handleChange">
 								<el-collapse-item :title="moduleNames[moduleName] + `主信息修改前`" :name="item.id">
