@@ -227,3 +227,9 @@ export const RebateType = {
 	Weight: '重箱',
 	Square: '面积'
 };
+
+export const System_Option_Type = {
+	INSERT: '新增',
+	UPDATE: '修改',
+	DELETE: '删除'
+};

@@ -1,7 +1,7 @@
 <script>
 import { completeJsonData, JsonUtils, TypeUtils } from '@/views/dashboard/backuplog';
 import { filtersFunc, keyOptioner, paramFieldFilter, transFuc, typeFilter } from '@/views/dashboard/backuplog/goodsorder/index';
-import { moduleNames, TableName } from '@/api/tool/enums';
+import { moduleNames, System_Option_Type, TableName } from '@/api/tool/enums';
 import _ from 'lodash';
 import { TableConfig } from '../backup.config';
 import OrderInfos from '@/views/dashboard/components/goodsOrder/OrderInfos.vue';
@@ -289,6 +289,31 @@ export default {
 				type: _type
 			};
 		},
+		// 类型的高亮处理
+		// 确保返回的对象键名是合法的 CSS 属性
+		typeStyle(type) {
+			switch (type) {
+				case System_Option_Type.INSERT:
+					return {
+						backgroundColor: '#f0f9eb',
+						color: '#67c23a'
+					};
+				case System_Option_Type.UPDATE:
+					return {
+						backgroundColor: '#def6ef',
+						color: '#0695a3'
+					};
+				case System_Option_Type.DELETE:
+					return {
+						backgroundColor: '#fde2e2',
+						color: '#f35914'
+					};
+				default:
+					return {
+						backgroundColor: '#fde2e2'
+					};
+			}
+		},
 		handleChange() {},
 		handleProcess() {},
 		handleReject() {}
@@ -305,8 +330,14 @@ export default {
 					<el-card class="box-card">
 						<div slot="header" class="clearfix">
 							<span style="font-size: 18px; font-weight: bold; color: red; letter-spacing: 3px">{{ moduleNames[moduleName] }}修改记录[{{ index + 1 }}]</span>
-							<span style="margin-left: 40px; font-weight: bold; font-size: 14px; color: #555353">操作类型:{{ calculateProp(item, moduleName).type }}</span>
-							<span style="margin-left: 40px; font-weight: bold; font-size: 14px; color: #4a4949">操作时间:{{ calculateProp(item, moduleName).time }}</span>
+							<span style="margin-left: 40px; font-weight: bold; font-size: 14px; color: #555353">
+								操作类型:
+								<span :style="typeStyle(calculateProp(item, moduleName).type)">{{ calculateProp(item, moduleName).type }}</span>
+							</span>
+							<span style="margin-left: 40px; font-weight: bold; font-size: 14px; color: #4a4949">
+								操作时间:
+								<span>{{ calculateProp(item, moduleName).time }}</span>
+							</span>
 							<!--              后续可以添加操作按钮-->
 							<!--							<el-button style="float: right; padding: 3px 0" type="text">操作类型:{{ item.logicBackupType }} 时间:{{ item.changed_targetTime }}</el-button>-->
 						</div>
@@ -384,8 +415,14 @@ export default {
 					<el-card class="box-card">
 						<div slot="header" class="clearfix">
 							<span style="font-size: 18px; font-weight: bold; color: red; letter-spacing: 3px">{{ moduleNames[moduleName] }}修改记录[{{ index + 1 }}]</span>
-							<span style="margin-left: 40px; font-weight: bold; font-size: 14px; color: #555353">操作类型:{{ calculateProp(item, moduleName).type }}</span>
-							<span style="margin-left: 40px; font-weight: bold; font-size: 14px; color: #4a4949">操作时间:{{ calculateProp(item, moduleName).time }}</span>
+							<span style="margin-left: 40px; font-weight: bold; font-size: 14px; color: #555353">
+								操作类型:
+								<span :style="typeStyle(calculateProp(item, moduleName).type)">{{ calculateProp(item, moduleName).type }}</span>
+							</span>
+							<span style="margin-left: 40px; font-weight: bold; font-size: 14px; color: #4a4949">
+								操作时间:
+								<span>{{ calculateProp(item, moduleName).time }}</span>
+							</span>
 							<!--              后续可以添加操作按钮-->
 							<!--							<el-button style="float: right; padding: 3px 0" type="text">操作类型:{{ item.logicBackupType }} 时间:{{ item.changed_targetTime }}</el-button>-->
 						</div>
