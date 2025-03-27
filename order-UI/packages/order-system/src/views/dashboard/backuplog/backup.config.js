@@ -157,7 +157,6 @@ export const TableConfig = {
 			selfAcountsName: '己方账户名称',
 			selfBankNo: '己方银行账号',
 			selfBankName: '己方银行名称',
-			selfBankID: '己方银行编号',
 			otherAcountsName: '对方账户名称',
 			otherBankNo: '对方银行账号',
 			otherBankName: '对方银行名称',
@@ -179,9 +178,7 @@ export const TableConfig = {
 			acountsName: '账户名称',
 			bankNo: '银行账号',
 			moneyAmount: '金额',
-			comments: '备注',
-			startTime: '开始时间',
-			endTime: '结束时间'
+			comments: '备注'
 		},
 		options(callback) {
 			return typeof callback === 'function' ? callback(this) : this;
@@ -235,9 +232,7 @@ export const TableConfig = {
 			acountsName: '账户名称',
 			bankNo: '银行账号',
 			comments: '备注',
-			checkState: '审核状态',
-			startTime: '开始时间',
-			endTime: '结束时间'
+			checkState: '审核状态'
 		},
 		options(callback) {
 			return typeof callback === 'function' ? callback(this) : this;
@@ -247,7 +242,6 @@ export const TableConfig = {
 	[TableName.BANK_ACCEPTANCE]: {
 		mappers: {
 			operateDate: '操作日期',
-			billNo: '票据编号',
 			issueDate: '开票日期',
 			dueDate: '到期日期',
 			billAccount: '票据账户',
@@ -255,7 +249,6 @@ export const TableConfig = {
 			billType: '票据类型',
 			reason: '原因',
 			endorserName: '背书人名称',
-			endorser: '背书人编号',
 			origin: '来源',
 			billAmount: '票据金额',
 			inDiscountPoints: '贴现点数',
@@ -276,15 +269,12 @@ export const TableConfig = {
 			selfAcountsName: '己方账户名称',
 			selfBankNo: '己方银行账号',
 			selfBankName: '己方银行名称',
-			selfBankID: '己方银行编号',
 			otherAcountsName: '对方账户名称',
 			otherBankNo: '对方银行账号',
 			otherBankName: '对方银行名称',
 			companyName: '公司名称',
-			companyId: '公司编号',
 			companyType: '公司类型',
 			comments: '备注',
-			startTime: '开始时间',
 			endTime: '结束时间'
 		},
 		options(callback) {
@@ -303,7 +293,6 @@ export const TableConfig = {
 			customerTicketPoint: '客户税点',
 			customerPointAmount: '客户税点金额',
 			comments: '备注',
-			beginTime: '开始时间',
 			endTime: '结束时间',
 			oweAmount: '欠款金额',
 			supplier: '供应商名称',
@@ -322,7 +311,6 @@ export const TableConfig = {
 			invoiceAmount: '发票金额',
 			companyType: '公司类型',
 			companyName: '公司名称',
-			companyID: '公司编号',
 			invoiceCompanyName: '开票公司名称',
 			ticketPoint: '税点',
 			ticketPointAmount: '税点金额',
@@ -330,7 +318,6 @@ export const TableConfig = {
 			paymentReceipts: '付款凭证',
 			invoiceAttachments: '发票附件',
 			comments: '备注',
-			beginTime: '开始时间',
 			endTime: '结束时间',
 			oweAmount: '欠款金额'
 		},
@@ -343,13 +330,11 @@ export const TableConfig = {
 		mappers: {
 			invoiceDate: '发票日期',
 			paymentReceipts: '付款凭证',
-			beginTime: '开始时间',
 			endTime: '结束时间',
 			invoiceObject: '发票对象',
 			invoiceAmount: '发票金额',
 			companyType: '公司类型',
 			companyName: '公司名称',
-			companyID: '公司编号',
 			invoiceCompanyName: '开票公司名称',
 			ticketPoint: '税点',
 			ticketPointAmount: '税点金额',
