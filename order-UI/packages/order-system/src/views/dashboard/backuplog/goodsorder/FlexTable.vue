@@ -17,6 +17,15 @@ export default {
 			return this.body.main_info.data;
 		}
 	},
+	watch: {
+		idx: {
+			handler() {
+				this.$nextTick(() => {
+					this.mountTable();
+				});
+			}
+		}
+	},
 	props: {
 		index: {
 			type: Number,
@@ -51,11 +60,6 @@ export default {
 			}
 		}
 	},
-	watch: {
-		compareData() {
-			this.mountTable();
-		}
-	},
 	mounted() {
 		this.mountTable();
 	},
@@ -64,7 +68,7 @@ export default {
 			const items = _.cloneDeep(this.body.main_info.items);
 			const data = _.cloneDeep(this.body.main_info.data);
 			// 子表信息 只有库存和订单有
-			const sub_items = _.cloneDeep(this.body.sub_info.items);
+			const sub_items = this.body.sub_info ? _.cloneDeep(this.body.sub_info) : [];
 			// 如果是订单或者库存
 			if (this.body.moduleName === TableName.GOODS_ORDER || this.body.moduleName === TableName.INVENTORMAIN) {
 				items.forEach((_, index) => {
@@ -298,41 +302,39 @@ export default {
 					<footer></footer>
 				</div>
 				<div v-if="body.sub_info">
-					<div v-if="body.sub_info.items">
-						<h4>[货物信息]</h4>
-						<el-divider />
-						<div v-for="(item, index) in body.sub_info.items" :key="index">
-							<header>
-								<span style="font-weight: bold; font-size: 14px; color: #555353">
-									操作类型:
-									<span :style="typeStyle(calculateProp(item).type)">{{ calculateProp(item).type }}</span>
-								</span>
-								<span style="margin-left: 40px; font-weight: bold; font-size: 14px; color: #4a4949">
-									操作时间:
-									<span>{{ calculateProp(item).time }}</span>
-								</span>
-							</header>
-							<section>
-								<div id="table-gen">
-									<div class="container" id="table-before">
-										<table :ref="'sub-multi-beforeTable' + index">
-											<thead>
-												<tr></tr>
-											</thead>
-											<tbody></tbody>
-										</table>
-									</div>
-									<div class="container" id="table-after">
-										<table :ref="'sub-multi-afterTable' + index">
-											<thead>
-												<tr></tr>
-											</thead>
-											<tbody></tbody>
-										</table>
-									</div>
+					<h4>[货物信息]</h4>
+					<el-divider />
+					<div v-for="(item, index) in body.sub_info" :key="index">
+						<header>
+							<span style="font-weight: bold; font-size: 14px; color: #555353">
+								操作类型:
+								<span :style="typeStyle(calculateProp(item).type)">{{ calculateProp(item).type }}</span>
+							</span>
+							<span style="margin-left: 40px; font-weight: bold; font-size: 14px; color: #4a4949">
+								操作时间:
+								<span>{{ calculateProp(item).time }}</span>
+							</span>
+						</header>
+						<section>
+							<div id="table-gen">
+								<div class="container" id="table-before">
+									<table :ref="'sub-multi-beforeTable' + index">
+										<thead>
+											<tr></tr>
+										</thead>
+										<tbody></tbody>
+									</table>
 								</div>
-							</section>
-						</div>
+								<div class="container" id="table-after">
+									<table :ref="'sub-multi-afterTable' + index">
+										<thead>
+											<tr></tr>
+										</thead>
+										<tbody></tbody>
+									</table>
+								</div>
+							</div>
+						</section>
 					</div>
 				</div>
 			</div>

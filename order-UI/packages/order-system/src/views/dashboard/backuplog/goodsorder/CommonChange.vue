@@ -115,7 +115,12 @@ export default {
 					}
 					return backlog;
 				})
-				.filter(backlog => !extraIds.includes(backlog.id));
+				.filter(backlog => !extraIds.includes(backlog.id))
+				.sort((a, b) => {
+					// 将 backupTime 转换为日期对象进行比较
+					return new Date(a.backupTime) - new Date(b.backupTime);
+				})
+				.reverse();
 			return Object.entries(_.groupBy(finalResult, item => item.uuid)).map(entries => _.groupBy(entries[1], item => item.tableName));
 		},
 		bodyData() {
@@ -123,6 +128,14 @@ export default {
 				const moduleName = this.moduleName;
 				const isMulti = Object.keys(backlog).length > 1;
 				const isGoodsOrInventory = moduleName === TableName.GOODS_ORDER || moduleName === TableName.INVENTORY_MAIN;
+				let sub_info = null;
+				if (isGoodsOrInventory) {
+					if (moduleName === TableName.GOODS_ORDER) {
+						sub_info = backlog.orderdetail;
+					} else {
+						sub_info = backlog.inventory_detail;
+					}
+				}
 				return {
 					moduleName,
 					isMulti,
@@ -131,7 +144,7 @@ export default {
 						data: backlog[moduleName],
 						items: isGoodsOrInventory ? backlog.goodsorder || backlog.inventory_main : undefined
 					},
-					sub_info: isGoodsOrInventory ? { items: backlog.orderdetail || backlog.inventory_detail } : undefined,
+					sub_info,
 					params: TableConfig[moduleName]?.params || [],
 					extraParams: TableConfig[moduleName]?.extraParams || [],
 					extraInfo: {}
@@ -223,7 +236,7 @@ export default {
 
 				<div id="scrollContainer" class="scroll-area">
 					<div v-for="(item, idx) in paginatedData" :key="idx">
-						<FlexTable :body="item" :index="idx + (currentPage - 1) * pageSize" />
+						<FlexTable :body="item" :index="idx + (currentPage - 1) * pageSize" :key="`${currentPage}-${idx}`" />
 					</div>
 
 					<div v-if="paginatedData.length === 0" class="no-data">暂无数据</div>
