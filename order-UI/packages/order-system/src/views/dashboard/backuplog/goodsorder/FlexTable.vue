@@ -68,19 +68,17 @@ export default {
 			const items = this.body.main_info.items ? _.cloneDeep(this.body.main_info.items) : [];
 			const data = this.body.main_info.data ? _.cloneDeep(this.body.main_info.data) : [];
 			const sub_items = this.body.sub_info ? _.cloneDeep(this.body.sub_info) : [];
+			let diffs = null;
 			const renderTables = (items, isSubTable = false) => {
 				items.forEach((item, index) => {
 					const prefix = isSubTable ? 'sub-multi-' : 'multi-';
 					const bTable = `${prefix}beforeTable${index}`;
 					const aTable = `${prefix}afterTable${index}`;
 					const dTable = `${prefix}diffTable${index}`; // 新增差异表格
-
 					const before = item.originalInfo ? [item.originalInfo] : [];
 					const after = item.changedInfo ? [item.changedInfo] : [];
-
 					// 计算差异
-					const diffs = this.calculateDifferences(item.originalInfo || {}, item.changedInfo || {});
-
+					diffs = this.calculateDifferences(item.originalInfo || {}, item.changedInfo || {});
 					this.renderTable(before, bTable, '修改前', isSubTable, diffs);
 					this.renderTable(after, aTable, '修改后', isSubTable, diffs);
 					this.renderDiffTable(diffs, dTable, isSubTable); // 渲染差异表格
@@ -98,7 +96,8 @@ export default {
 			// 处理其他表
 			else {
 				data.forEach((item, index) => {
-					this.render(index, item);
+					diffs = this.calculateDifferences(item.originalInfo || {}, item.changedInfo || {});
+					this.render(index, item, diffs);
 				});
 			}
 		},
@@ -108,8 +107,10 @@ export default {
 		 * @param tableId 表格元素的id
 		 * @param status  状态列的展示 是修改前还是修改后
 		 * @param isDetail  是否是明细
+		 * @param diffs  差异
 		 */
 		renderTable(data, tableId, status, isDetail = false, diffs) {
+			console.log(data, tableId, status, isDetail, diffs);
 			// 获取dom元素
 			const table = this.$refs[tableId][0];
 			if (!table) {
@@ -134,6 +135,8 @@ export default {
 				this.renderNull(table);
 				return;
 			}
+
+			console.log('data', data);
 			// 渲染表格行数据
 			data.forEach(item => {
 				this.renderTableRows(tbody, item, status, isDetail, diffs);
@@ -158,8 +161,6 @@ export default {
 			const config = isDetail ? TableConfig[this.body.multiModuleName] : TableConfig[this.body.moduleName];
 			const mappers = config.mappers;
 			const dataKeys = Object.keys(mappers);
-			// 需要计算的字段
-			const calcuKeys = Object.keys(config.params);
 			const headerRow = ['状态', ...dataKeys.slice(0, dataKeys.length)];
 			for (let key of headerRow) {
 				if (typeof mappers[key] === 'object') {
@@ -174,41 +175,17 @@ export default {
 				thead.appendChild(th);
 			}
 		},
-		// todo 渲染差异
-		renderTableDiff(tbody, isDetail) {
-			const config = isDetail ? TableConfig[this.body.multiModuleName] : TableConfig[this.body.moduleName];
-			const mappers = config.mappers;
-			const dataKeys = Object.keys(mappers);
-			// 需要计算的字段
-			const calcuKeys = config.params;
-			const diffRow = null; //todo 差异列
-			for (let key of diffRow) {
-				if (typeof mappers[key] === 'object') {
-					continue;
-				}
-				const tr = document.createElement('tr');
-				dataKeys.forEach(key => {
-					const td = document.createElement('td');
-					td.textContent = calcuKeys.find(item => item.name === key).label;
-					td.style.textAlign = 'center';
-					td.style.backgroundColor = '#f10505';
-					td.style.width = '250px';
-					td.style.border = '1px solid black';
-					tr.appendChild(td);
-				});
-				tbody.appendChild(tr);
-			}
-		},
 		/**
 		 * 渲染表格行数据
 		 * @param tbody 表格行的body DOM元素
 		 * @param json  需要渲染的json数据
 		 * @param status  状态字段 修改前还是修改后
 		 * @param isDetail 是否是明细
+		 * @param diffs 差异
 		 */
 		renderTableRows(tbody, json, status = '修改前', isDetail, diffs) {
 			if (!json || !status) {
-				this.$log.error('缺少参数');
+				this.renderNull(tbody);
 				return;
 			}
 			let config = isDetail ? TableConfig[this.body.multiModuleName] : TableConfig[this.body.moduleName];
@@ -225,6 +202,7 @@ export default {
 				statusTd.classList.add('status-cell');
 				tr.appendChild(statusTd);
 				dataKeys.forEach(key => {
+					console.log(key, config, json[key], diffs);
 					const td = document.createElement('td');
 					td.textContent = json[key] !== undefined ? config.options(key, json[key]) : '';
 					// 添加高亮逻辑
@@ -248,13 +226,17 @@ export default {
 		 * 渲染表格
 		 * @param index 要渲染的数据的索引
 		 * @param item 备份数据行
+		 * @param diff 差异
 		 */
-		render(index, item) {
+		render(index, item, diff) {
+			console.log(index, item, diff);
 			if (!this.compareData || !this.compareData.length) {
 				throw new Error('未找到对应数据');
 			}
-			this.renderTable([item.originalInfo], 'beforeTable' + index, '修改前');
-			this.renderTable([item.changedInfo], 'afterTable' + index, '修改后');
+			const dTable = `diffTable${index}`;
+			this.renderTable([item.originalInfo], 'beforeTable' + index, '修改前', undefined, diff);
+			this.renderTable([item.changedInfo], 'afterTable' + index, '修改后', undefined, diff);
+			this.renderDiffTable(diff, dTable); // 渲染差异表格
 		},
 
 		calculateProp(item) {
@@ -322,7 +304,7 @@ export default {
 			return diffs;
 		},
 
-		renderDiffTable(diffs, tableId, isDetail) {
+		renderDiffTable(diffs, tableId, isDetail = false) {
 			const table = this.$refs[tableId]?.[0];
 			if (!table) return;
 			const thead = table.querySelector('thead tr');
