@@ -67,10 +67,10 @@
 					<StateTag
 						:state-title="scope.row.checkState"
 						:state-mapper="{
-							0: '未审核',
-							1: '已审核',
-							2: '已支付',
-							3: '未申请'
+							0: PAYMENT_APPLY_STATE.UNAPPLIED,
+							1: PAYMENT_APPLY_STATE.CHECKED,
+							2: PAYMENT_APPLY_STATE.PAID,
+							3: PAYMENT_APPLY_STATE.CHECKING
 						}"
 					/>
 				</template>
@@ -79,8 +79,10 @@
 			<el-table-column v-if="columns[7].visible" label="备注" align="center" prop="comments" />
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="260px" fixed="right">
 				<template slot-scope="scope">
-					<el-button size="mini" type="text" @click="applyForPayment(scope.row)">发起付款申请</el-button>
-					<el-button :disabled="scope.row.checkState === '已支付'" v-hasPermi="['system:businesstrip:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
+					<el-button :disabled="scope.row.checkState !== PAYMENT_APPLY_STATE.UNAPPLIED" size="mini" type="text" @click="applyForPayment(scope.row)">发起付款申请</el-button>
+					<el-button :disabled="scope.row.checkState === PAYMENT_APPLY_STATE.CHECKED" v-hasPermi="['system:businesstrip:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">
+						修改
+					</el-button>
 					<el-button v-hasPermi="['system:businesstrip:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
@@ -263,7 +265,7 @@ import { delBusinessTrip, getBusinessTrip, updateBusinessTrip, listBusinessTrip 
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import { mapGetters } from 'vuex';
 import ApplyPayment from '@/views/dashboard/components/common/ApplyPayment.vue';
-import { TableName } from '@/api/tool/enums';
+import { PAYMENT_APPLY_STATE, TableName } from '@/api/tool/enums';
 import { listBankAccount } from '@/api/system/bankAccount';
 import { mixin_business_trip_add } from '../../dashboard/mixins/bussiness/business_trip_add';
 import StepsForm from '../../dashboard/components/businessTrip/StepsForm.vue';
@@ -438,6 +440,9 @@ export default {
 		}
 	},
 	computed: {
+		PAYMENT_APPLY_STATE() {
+			return PAYMENT_APPLY_STATE;
+		},
 		TableName() {
 			return TableName;
 		},

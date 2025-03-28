@@ -149,17 +149,13 @@ export const PaymentState = [
 	}
 ];
 
-// 审核状态
-export const CheckState = [
-	{
-		value: '未申请',
-		label: '未申请'
-	},
-	{
-		value: '审核中',
-		label: '审核中'
-	}
-];
+// 付款申请状态
+export const PAYMENT_APPLY_STATE = {
+	CHECKED: '未支付',
+	UNAPPLIED: '未申请',
+	CHECKING: '审核中',
+	PAID: '已支付'
+};
 
 // 运费来源
 export const FreightSource = Object.freeze({
