@@ -297,27 +297,21 @@ export default {
 		// 计算两个对象差异的方法（支持嵌套对象）
 		calculateDifferences(original = {}, changed = {}) {
 			const diffs = {};
-
-			// 合并所有可能的key
+			// 合并所有可能的key 但是要过滤掉一些可能用户感知不到的字段 需要排除
 			const allKeys = new Set([...Object.keys(original), ...Object.keys(changed)]);
-
 			allKeys.forEach(key => {
-				// 处理嵌套对象（例如inventoryDetailList）
 				if (key === 'inventoryDetailList') {
 					const originalList = original[key] || [];
 					const changedList = changed[key] || [];
 					diffs[key] = this.calculateListDifferences(originalList, changedList);
 					return;
 				}
-
 				// 处理普通字段
 				const origVal = original[key];
 				const changedVal = changed[key];
-
 				if (typeof origVal === 'number' || typeof changedVal === 'number') {
 					const numOrig = Number(origVal) || 0;
 					const numChanged = Number(changedVal) || 0;
-
 					if (numOrig !== numChanged) {
 						diffs[key] = numChanged - numOrig;
 					}
@@ -325,34 +319,27 @@ export default {
 					diffs[key] = '[changed]'; // 非数字类型标记为已修改
 				}
 			});
-
 			return diffs;
 		},
 
 		renderDiffTable(diffs, tableId, isDetail) {
 			const table = this.$refs[tableId]?.[0];
 			if (!table) return;
-
 			const thead = table.querySelector('thead tr');
 			const tbody = table.querySelector('tbody');
 			thead.innerHTML = '';
 			tbody.innerHTML = '';
-
 			this.renderTableHeader(thead, isDetail);
-
 			const tr = document.createElement('tr');
 			tr.classList.add('diff-row');
-
 			// 状态列
 			const statusTd = document.createElement('td');
 			statusTd.textContent = '差异值';
 			tr.appendChild(statusTd);
-
 			const config = isDetail ? TableConfig[this.body.multiModuleName] : TableConfig[this.body.moduleName];
 			Object.keys(config.mappers).forEach(key => {
 				const td = document.createElement('td');
 				const diffValue = diffs[key];
-
 				// 格式化显示
 				if (typeof diffValue === 'number') {
 					td.textContent = diffValue > 0 ? `+${diffValue.toFixed(2)}` : diffValue.toFixed(2);
@@ -363,23 +350,19 @@ export default {
 				} else {
 					td.textContent = '-';
 				}
-
 				tr.appendChild(td);
 			});
-
 			tbody.appendChild(tr);
 		},
 		// 计算数组差异的方法
 		calculateListDifferences(originalList, changedList) {
 			const maxLength = Math.max(originalList.length, changedList.length);
 			const diffs = [];
-
 			for (let i = 0; i < maxLength; i++) {
 				const orig = originalList[i] || {};
 				const changed = changedList[i] || {};
 				diffs.push(this.calculateDifferences(orig, changed));
 			}
-
 			return diffs;
 		}
 	}
