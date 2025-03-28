@@ -128,6 +128,29 @@ export const TableConfig = {
 			return typeof callback === 'function' ? callback(this) : this;
 		}
 	},
+	[TableName.INVENTORMAIN]: {
+		mappers: {
+			storeHouseName: '仓库名称',
+			storeDate: '入库日期',
+			landCarNo: '陆运车牌号',
+			landDriverTel: '陆运司机电话',
+			landDriverName: '陆运司机姓名',
+			seaCarNo: '海运车牌号',
+			seaDriverTel: '海运司机电话',
+			seaDriverName: '海运司机姓名',
+			landBankNo: '陆运银行账号',
+			seaBankNo: '海运银行账号',
+			landBankName: '陆运开户行',
+			seaBankName: '海运开户行',
+			allTonnage: '总吨位',
+			allFreightPrice: '总运费单价',
+			fleet: '车队',
+			checkState: '审核状态'
+		},
+		options(callback) {
+			return typeof callback === 'function' ? callback(this) : this;
+		}
+	},
 	// 库存子表货物
 	[TableName.INVENTORDETAIL]: {
 		mappers: {

@@ -62,13 +62,16 @@ export default {
 	},
 	mounted() {
 		this.mountTable();
+		console.log('backlog', this.body);
 	},
 	methods: {
 		mountTable() {
-			const items = _.cloneDeep(this.body.main_info.items);
-			const data = _.cloneDeep(this.body.main_info.data);
+			const items = this.body.main_info.items ? _.cloneDeep(this.body.main_info.items) : [];
+			const data = this.body.main_info.data ? _.cloneDeep(this.body.main_info.data) : [];
 			// 子表信息 只有库存和订单有
 			const sub_items = this.body.sub_info ? _.cloneDeep(this.body.sub_info) : [];
+
+			console.log('mountTable', items, data, sub_items);
 			// 如果是订单或者库存
 			if (this.body.moduleName === TableName.GOODS_ORDER || this.body.moduleName === TableName.INVENTORMAIN) {
 				items.forEach((_, index) => {
@@ -84,10 +87,10 @@ export default {
 					sub_items.forEach((_, index) => {
 						const bTable = `sub-multi-beforeTable${index}`;
 						const aTable = `sub-multi-afterTable${index}`;
-						const before = items.map(item => item.originalInfo);
-						const after = items.map(item => item.changedInfo);
-						this.renderTable(before, bTable, '修改前');
-						this.renderTable(after, aTable, '修改后');
+						const before = sub_items.map(item => item.originalInfo);
+						const after = sub_items.map(item => item.changedInfo);
+						this.renderTable(before, bTable, '修改前', true);
+						this.renderTable(after, aTable, '修改后', true);
 					});
 				}
 			} else {
@@ -101,14 +104,21 @@ export default {
 		 * @param {*[]} data 表格数据 一行 或者多行
 		 * @param tableId 表格元素的id
 		 * @param status  状态列的展示 是修改前还是修改后
+		 * @param isDetail  是否是明细
 		 */
-		renderTable(data, tableId, status) {
+		renderTable(data, tableId, status, isDetail = false) {
 			// 获取dom元素
 			const table = this.$refs[tableId][0];
 			if (!table) {
 				this.$log.error(`表格 ${tableId} 未找到`);
 				return;
 			}
+			const thead = table.querySelector('thead tr');
+			const tbody = table.querySelector('tbody');
+			thead.innerHTML = '';
+			tbody.innerHTML = '';
+			// 渲染表头
+			this.renderTableHeader(thead, isDetail);
 			if (!data || !status) {
 				// render一个空行
 				this.renderNull(table);
@@ -118,18 +128,12 @@ export default {
 				return;
 			}
 			if (data.length === 0) {
-				this.$log.error('渲染表格,renderTable函数出问题,数据为空');
+				this.renderNull(table);
 				return;
 			}
-			const thead = table.querySelector('thead tr');
-			const tbody = table.querySelector('tbody');
-			thead.innerHTML = '';
-			tbody.innerHTML = '';
-			// 渲染表头
-			this.renderTableHeader(thead);
 			// 渲染表格行数据
 			data.forEach(item => {
-				if (item) this.renderTableRows(tbody, item, status);
+				if (item) this.renderTableRows(tbody, item, status, isDetail);
 				else this.renderNull(tbody);
 			});
 		},
@@ -146,9 +150,10 @@ export default {
 		/**
 		 * 渲染表头字段 修正表头长度 并且渲染顶部
 		 * @param thead 表格的表头DOM元素
+		 * @param isDetail 是否是明细
 		 */
-		renderTableHeader(thead) {
-			const config = TableConfig[this.body.moduleName];
+		renderTableHeader(thead, isDetail) {
+			const config = isDetail ? TableConfig[this.body.multiModuleName] : TableConfig[this.body.moduleName];
 			const mappers = config.mappers;
 			const dataKeys = Object.keys(mappers);
 			const headerRow = ['状态', ...dataKeys.slice(0, dataKeys.length)];
@@ -170,13 +175,14 @@ export default {
 		 * @param tbody 表格行的body DOM元素
 		 * @param json  需要渲染的json数据
 		 * @param status  状态字段 修改前还是修改后
+		 * @param isDetail 是否是明细
 		 */
-		renderTableRows(tbody, json, status = '修改前') {
+		renderTableRows(tbody, json, status = '修改前', isDetail) {
 			if (!json || !status) {
 				this.$log.error('缺少参数');
 				return;
 			}
-			const config = TableConfig[this.body.moduleName];
+			let config = isDetail ? TableConfig[this.body.multiModuleName] : TableConfig[this.body.moduleName];
 			const mappers = config.mappers;
 			const dataKeys = Object.keys(mappers);
 			try {
@@ -302,7 +308,7 @@ export default {
 					<footer></footer>
 				</div>
 				<div v-if="body.sub_info">
-					<h4>[货物信息]</h4>
+					<h4>[{{ moduleNames[body.multiModuleName] }}]</h4>
 					<el-divider />
 					<div v-for="(item, index) in body.sub_info" :key="index">
 						<header>
