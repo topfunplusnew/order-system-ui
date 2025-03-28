@@ -68,24 +68,24 @@ export default {
 			const items = this.body.main_info.items ? _.cloneDeep(this.body.main_info.items) : [];
 			const data = this.body.main_info.data ? _.cloneDeep(this.body.main_info.data) : [];
 			const sub_items = this.body.sub_info ? _.cloneDeep(this.body.sub_info) : [];
-
 			const renderTables = (items, isSubTable = false) => {
-				items.forEach((backlog, index) => {
+				items.forEach((item, index) => {
 					const prefix = isSubTable ? 'sub-multi-' : 'multi-';
 					const bTable = `${prefix}beforeTable${index}`;
 					const aTable = `${prefix}afterTable${index}`;
-					const before = items.map(item => item.originalInfo);
-					const after = items.map(item => item.changedInfo);
+					const dTable = `${prefix}diffTable${index}`; // 新增差异表格
 
-					this.renderTable(before, bTable, '修改前', isSubTable);
-					this.renderTable(after, aTable, '修改后', isSubTable);
+					const before = item.originalInfo ? [item.originalInfo] : [];
+					const after = item.changedInfo ? [item.changedInfo] : [];
 
-					if (!isSubTable) {
-						console.log('主表差异:', backlog);
-					}
+					// 计算差异
+					const diffs = this.calculateDifferences(item.originalInfo || {}, item.changedInfo || {});
+
+					this.renderTable(before, bTable, '修改前', isSubTable, diffs);
+					this.renderTable(after, aTable, '修改后', isSubTable, diffs);
+					this.renderDiffTable(diffs, dTable, isSubTable); // 渲染差异表格
 				});
 			};
-
 			// 处理订单或库存
 			if ([TableName.GOODS_ORDER, TableName.INVENTORMAIN].includes(this.body.moduleName)) {
 				// 渲染主表
@@ -93,12 +93,6 @@ export default {
 				// 渲染子表
 				if (sub_items.length > 0) {
 					renderTables(sub_items, true);
-					// 实际差异计算应该在这里
-					const subDiffs = sub_items.map(item => {
-						// 返回计算后的差异对象
-						return this.calculateDifferences(item);
-					});
-					console.log('子表差异计算结果:', subDiffs);
 				}
 			}
 			// 处理其他表
@@ -108,12 +102,6 @@ export default {
 				});
 			}
 		},
-		// 新增的差异计算方法
-		calculateDifferences(item) {
-			// 这里实现实际的差异计算逻辑
-			const diffs = {};
-			return diffs;
-		},
 		/**
 		 * 渲染表格
 		 * @param {*[]} data 表格数据 一行 或者多行
@@ -121,7 +109,7 @@ export default {
 		 * @param status  状态列的展示 是修改前还是修改后
 		 * @param isDetail  是否是明细
 		 */
-		renderTable(data, tableId, status, isDetail = false) {
+		renderTable(data, tableId, status, isDetail = false, diffs) {
 			// 获取dom元素
 			const table = this.$refs[tableId][0];
 			if (!table) {
@@ -148,8 +136,7 @@ export default {
 			}
 			// 渲染表格行数据
 			data.forEach(item => {
-				if (item) this.renderTableRows(tbody, item, status, isDetail);
-				else this.renderNull(tbody);
+				this.renderTableRows(tbody, item, status, isDetail, diffs);
 			});
 		},
 		renderNull(tbody) {
@@ -219,7 +206,7 @@ export default {
 		 * @param status  状态字段 修改前还是修改后
 		 * @param isDetail 是否是明细
 		 */
-		renderTableRows(tbody, json, status = '修改前', isDetail) {
+		renderTableRows(tbody, json, status = '修改前', isDetail, diffs) {
 			if (!json || !status) {
 				this.$log.error('缺少参数');
 				return;
@@ -240,6 +227,10 @@ export default {
 				dataKeys.forEach(key => {
 					const td = document.createElement('td');
 					td.textContent = json[key] !== undefined ? config.options(key, json[key]) : '';
+					// 添加高亮逻辑
+					if (diffs[key]) {
+						td.style.backgroundColor = status === '修改前' ? '#ffeeba' : '#c3e6cb';
+					}
 					td.classList.add('table-d');
 					td.style.textAlign = 'center';
 					td.style.width = '250px';
@@ -303,8 +294,94 @@ export default {
 					};
 			}
 		},
-		// 渲染差异列
-		renderDiff(thead) {}
+		// 计算两个对象差异的方法（支持嵌套对象）
+		calculateDifferences(original = {}, changed = {}) {
+			const diffs = {};
+
+			// 合并所有可能的key
+			const allKeys = new Set([...Object.keys(original), ...Object.keys(changed)]);
+
+			allKeys.forEach(key => {
+				// 处理嵌套对象（例如inventoryDetailList）
+				if (key === 'inventoryDetailList') {
+					const originalList = original[key] || [];
+					const changedList = changed[key] || [];
+					diffs[key] = this.calculateListDifferences(originalList, changedList);
+					return;
+				}
+
+				// 处理普通字段
+				const origVal = original[key];
+				const changedVal = changed[key];
+
+				if (typeof origVal === 'number' || typeof changedVal === 'number') {
+					const numOrig = Number(origVal) || 0;
+					const numChanged = Number(changedVal) || 0;
+
+					if (numOrig !== numChanged) {
+						diffs[key] = numChanged - numOrig;
+					}
+				} else if (origVal !== changedVal) {
+					diffs[key] = '[changed]'; // 非数字类型标记为已修改
+				}
+			});
+
+			return diffs;
+		},
+
+		renderDiffTable(diffs, tableId, isDetail) {
+			const table = this.$refs[tableId]?.[0];
+			if (!table) return;
+
+			const thead = table.querySelector('thead tr');
+			const tbody = table.querySelector('tbody');
+			thead.innerHTML = '';
+			tbody.innerHTML = '';
+
+			this.renderTableHeader(thead, isDetail);
+
+			const tr = document.createElement('tr');
+			tr.classList.add('diff-row');
+
+			// 状态列
+			const statusTd = document.createElement('td');
+			statusTd.textContent = '差异值';
+			tr.appendChild(statusTd);
+
+			const config = isDetail ? TableConfig[this.body.multiModuleName] : TableConfig[this.body.moduleName];
+			Object.keys(config.mappers).forEach(key => {
+				const td = document.createElement('td');
+				const diffValue = diffs[key];
+
+				// 格式化显示
+				if (typeof diffValue === 'number') {
+					td.textContent = diffValue > 0 ? `+${diffValue.toFixed(2)}` : diffValue.toFixed(2);
+				} else if (diffValue === '[changed]') {
+					td.textContent = '有修改';
+				} else if (typeof diffValue === 'object') {
+					td.textContent = '查看明细'; // 嵌套差异提示
+				} else {
+					td.textContent = '-';
+				}
+
+				tr.appendChild(td);
+			});
+
+			tbody.appendChild(tr);
+		},
+		// 计算数组差异的方法
+		calculateListDifferences(originalList, changedList) {
+			const maxLength = Math.max(originalList.length, changedList.length);
+			const diffs = [];
+
+			for (let i = 0; i < maxLength; i++) {
+				const orig = originalList[i] || {};
+				const changed = changedList[i] || {};
+				diffs.push(this.calculateDifferences(orig, changed));
+			}
+
+			return diffs;
+		}
 	}
 };
 </script>
@@ -347,6 +424,14 @@ export default {
 									<tbody></tbody>
 								</table>
 							</div>
+							<div class="container">
+								<table :ref="'multi-diffTable' + index">
+									<thead>
+										<tr></tr>
+									</thead>
+									<tbody></tbody>
+								</table>
+							</div>
 						</div>
 					</section>
 					<footer></footer>
@@ -383,6 +468,15 @@ export default {
 										<tbody></tbody>
 									</table>
 								</div>
+								<!--                差异-->
+								<div class="container">
+									<table :ref="'sub-multi-diffTable' + index">
+										<thead>
+											<tr></tr>
+										</thead>
+										<tbody></tbody>
+									</table>
+								</div>
 							</div>
 						</section>
 					</div>
@@ -412,6 +506,14 @@ export default {
 						</div>
 						<div class="container" id="table-after">
 							<table :ref="'afterTable' + index">
+								<thead>
+									<tr></tr>
+								</thead>
+								<tbody></tbody>
+							</table>
+						</div>
+						<div class="container">
+							<table :ref="'diffTable' + index">
 								<thead>
 									<tr></tr>
 								</thead>
@@ -487,5 +589,28 @@ h3 {
 h4 {
 	font-weight: bold;
 	font-size: 16px;
+}
+
+/* 在style标签内添加 */
+.diff-row td {
+	background-color: #fff3cd !important;
+	font-weight: bold;
+	color: #856404;
+}
+
+/* 差异表格样式 */
+table[id*='diffTable'] td {
+	background-color: #fff3cd;
+	font-weight: bold;
+}
+
+/* 修改前高亮 */
+#table-before td[style*='background-color: rgb(255, 238, 186)'] {
+	background-color: #ffeeba !important;
+}
+
+/* 修改后高亮 */
+#table-after td[style*='background-color: rgb(195, 230, 203)'] {
+	background-color: #c3e6cb !important;
 }
 </style>
