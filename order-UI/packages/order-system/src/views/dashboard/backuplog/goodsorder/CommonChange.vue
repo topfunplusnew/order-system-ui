@@ -2,7 +2,7 @@
 import { completeJsonData, JsonUtils, TypeUtils } from '@/views/dashboard/backuplog';
 import { moduleNames, TableName } from '@/api/tool/enums';
 import _ from 'lodash';
-import { TableConfig } from '../backup.config';
+import { MultiList, TableConfig } from '../backup.config';
 import FlexTable from '@/views/dashboard/backuplog/goodsorder/FlexTable.vue';
 
 export default {
@@ -124,28 +124,27 @@ export default {
 			return Object.entries(_.groupBy(finalResult, item => item.uuid)).map(entries => _.groupBy(entries[1], item => item.tableName));
 		},
 		bodyData() {
-			console.log('renderData:', this.renderData);
 			return this.renderData.map(backlog => {
-				console.log('backlog', backlog);
 				const moduleName = this.moduleName;
 				let multiModuleName = null;
 				// 如果分组出来的备份信息的key不止一个 那么就是复合数据
-				const multiList = [TableName.INVENTORDETAIL, TableName.ORDER_DETAIL];
+				const multiList = MultiList;
 				const isMulti = Object.keys(backlog).some(key => multiList.includes(key));
-				if (isMulti) {
-					if (moduleName === TableName.GOODS_ORDER) multiModuleName = TableName.ORDER_DETAIL;
-					else if (moduleName === TableName.INVENTORMAIN) multiModuleName = TableName.INVENTORDETAIL;
-				}
 				let items = null;
 				let sub_info = null;
 
 				if (moduleName === TableName.GOODS_ORDER) {
 					items = backlog.goodsorder;
 					sub_info = backlog.orderdetail;
+					isMulti && (multiModuleName = TableName.ORDER_DETAIL);
 				} else if (moduleName === TableName.INVENTORMAIN) {
 					items = backlog.inventory_main;
 					sub_info = backlog.inventory_detail;
+					isMulti && (multiModuleName = TableName.INVENTORDETAIL);
 				}
+				// 需要计算的列 和 明细 需要计算的列
+				const params = TableConfig[moduleName]?.params || [];
+				const extraParams = TableConfig[multiModuleName]?.params || [];
 				return {
 					moduleName,
 					multiModuleName,
@@ -156,8 +155,8 @@ export default {
 						items: items
 					},
 					sub_info,
-					params: TableConfig[moduleName]?.params || [],
-					extraParams: TableConfig[multiModuleName]?.extraParams || [],
+					params,
+					extraParams,
 					extraInfo: {}
 				};
 			});
@@ -181,12 +180,6 @@ export default {
 			immediate: true,
 			handler(newVal) {
 				this.totalPages = Math.ceil(newVal.length / this.pageSize);
-			}
-		},
-		paginatedData: {
-			immediate: true,
-			handler(newVal) {
-				console.log('newVal', newVal);
 			}
 		}
 	},

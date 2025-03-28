@@ -62,42 +62,57 @@ export default {
 	},
 	mounted() {
 		this.mountTable();
-		console.log('backlog', this.body);
 	},
 	methods: {
 		mountTable() {
 			const items = this.body.main_info.items ? _.cloneDeep(this.body.main_info.items) : [];
 			const data = this.body.main_info.data ? _.cloneDeep(this.body.main_info.data) : [];
-			// 子表信息 只有库存和订单有
 			const sub_items = this.body.sub_info ? _.cloneDeep(this.body.sub_info) : [];
 
-			console.log('mountTable', items, data, sub_items);
-			// 如果是订单或者库存
-			if (this.body.moduleName === TableName.GOODS_ORDER || this.body.moduleName === TableName.INVENTORMAIN) {
-				items.forEach((_, index) => {
-					const bTable = `multi-beforeTable${index}`;
-					const aTable = `multi-afterTable${index}`;
+			const renderTables = (items, isSubTable = false) => {
+				items.forEach((backlog, index) => {
+					const prefix = isSubTable ? 'sub-multi-' : 'multi-';
+					const bTable = `${prefix}beforeTable${index}`;
+					const aTable = `${prefix}afterTable${index}`;
 					const before = items.map(item => item.originalInfo);
 					const after = items.map(item => item.changedInfo);
-					this.renderTable(before, bTable, '修改前');
-					this.renderTable(after, aTable, '修改后');
+
+					this.renderTable(before, bTable, '修改前', isSubTable);
+					this.renderTable(after, aTable, '修改后', isSubTable);
+
+					if (!isSubTable) {
+						console.log('主表差异:', backlog);
+					}
 				});
-				// 渲染子表数据
-				if (sub_items && sub_items.length > 0) {
-					sub_items.forEach((_, index) => {
-						const bTable = `sub-multi-beforeTable${index}`;
-						const aTable = `sub-multi-afterTable${index}`;
-						const before = sub_items.map(item => item.originalInfo);
-						const after = sub_items.map(item => item.changedInfo);
-						this.renderTable(before, bTable, '修改前', true);
-						this.renderTable(after, aTable, '修改后', true);
+			};
+
+			// 处理订单或库存
+			if ([TableName.GOODS_ORDER, TableName.INVENTORMAIN].includes(this.body.moduleName)) {
+				// 渲染主表
+				renderTables(items);
+				// 渲染子表
+				if (sub_items.length > 0) {
+					renderTables(sub_items, true);
+					// 实际差异计算应该在这里
+					const subDiffs = sub_items.map(item => {
+						// 返回计算后的差异对象
+						return this.calculateDifferences(item);
 					});
+					console.log('子表差异计算结果:', subDiffs);
 				}
-			} else {
+			}
+			// 处理其他表
+			else {
 				data.forEach((item, index) => {
 					this.render(index, item);
 				});
 			}
+		},
+		// 新增的差异计算方法
+		calculateDifferences(item) {
+			// 这里实现实际的差异计算逻辑
+			const diffs = {};
+			return diffs;
 		},
 		/**
 		 * 渲染表格
@@ -156,6 +171,8 @@ export default {
 			const config = isDetail ? TableConfig[this.body.multiModuleName] : TableConfig[this.body.moduleName];
 			const mappers = config.mappers;
 			const dataKeys = Object.keys(mappers);
+			// 需要计算的字段
+			const calcuKeys = Object.keys(config.params);
 			const headerRow = ['状态', ...dataKeys.slice(0, dataKeys.length)];
 			for (let key of headerRow) {
 				if (typeof mappers[key] === 'object') {
@@ -168,6 +185,31 @@ export default {
 				th.style.width = '250px';
 				th.style.border = '1px solid black';
 				thead.appendChild(th);
+			}
+		},
+		// todo 渲染差异
+		renderTableDiff(tbody, isDetail) {
+			const config = isDetail ? TableConfig[this.body.multiModuleName] : TableConfig[this.body.moduleName];
+			const mappers = config.mappers;
+			const dataKeys = Object.keys(mappers);
+			// 需要计算的字段
+			const calcuKeys = config.params;
+			const diffRow = null; //todo 差异列
+			for (let key of diffRow) {
+				if (typeof mappers[key] === 'object') {
+					continue;
+				}
+				const tr = document.createElement('tr');
+				dataKeys.forEach(key => {
+					const td = document.createElement('td');
+					td.textContent = calcuKeys.find(item => item.name === key).label;
+					td.style.textAlign = 'center';
+					td.style.backgroundColor = '#f10505';
+					td.style.width = '250px';
+					td.style.border = '1px solid black';
+					tr.appendChild(td);
+				});
+				tbody.appendChild(tr);
 			}
 		},
 		/**
@@ -183,8 +225,8 @@ export default {
 				return;
 			}
 			let config = isDetail ? TableConfig[this.body.multiModuleName] : TableConfig[this.body.moduleName];
-			const mappers = config.mappers;
-			const dataKeys = Object.keys(mappers);
+			const dataKeys = Object.keys(config.mappers); //mappers是配置文件里配置的字段
+
 			try {
 				const tr = document.createElement('tr');
 				tr.style.textAlign = 'center';
@@ -197,7 +239,7 @@ export default {
 				tr.appendChild(statusTd);
 				dataKeys.forEach(key => {
 					const td = document.createElement('td');
-					td.textContent = json[key] !== undefined ? json[key] : '';
+					td.textContent = json[key] !== undefined ? config.options(key, json[key]) : '';
 					td.classList.add('table-d');
 					td.style.textAlign = 'center';
 					td.style.width = '250px';
@@ -260,7 +302,9 @@ export default {
 						backgroundColor: '#fde2e2'
 					};
 			}
-		}
+		},
+		// 渲染差异列
+		renderDiff(thead) {}
 	}
 };
 </script>
@@ -271,11 +315,11 @@ export default {
 			<div v-if="body.moduleName === TableName.GOODS_ORDER || body.moduleName === TableName.INVENTORMAIN">
 				<h3>{{ moduleNames[this.body.moduleName] }}信息[{{ index + 1 }}]</h3>
 				<el-divider />
-				<div v-for="(item, index) in body.main_info.items" :key="index">
+				<div v-for="(item, index) in body.main_info.items" :key="index" style="margin-bottom: 40px">
 					<header>
 						<span style="font-weight: bold; font-size: 14px; color: #555353">
 							操作类型:
-							<span :style="typeStyle(calculateProp(item).type)">{{ calculateProp(item).type }}</span>
+							<span :style="typeStyle(calculateProp(item).type)">[{{ calculateProp(item).type }}]</span>
 						</span>
 						<span style="margin-left: 40px; font-weight: bold; font-size: 14px; color: #4a4949">
 							操作时间:
@@ -307,14 +351,14 @@ export default {
 					</section>
 					<footer></footer>
 				</div>
-				<div v-if="body.sub_info">
+				<div v-if="body.sub_info" style="margin-bottom: 40px">
 					<h4>[{{ moduleNames[body.multiModuleName] }}]</h4>
 					<el-divider />
 					<div v-for="(item, index) in body.sub_info" :key="index">
 						<header>
 							<span style="font-weight: bold; font-size: 14px; color: #555353">
 								操作类型:
-								<span :style="typeStyle(calculateProp(item).type)">{{ calculateProp(item).type }}</span>
+								<span :style="typeStyle(calculateProp(item).type)">[{{ calculateProp(item).type }}]</span>
 							</span>
 							<span style="margin-left: 40px; font-weight: bold; font-size: 14px; color: #4a4949">
 								操作时间:
@@ -346,11 +390,11 @@ export default {
 			</div>
 			<div v-else>
 				<h3>{{ moduleNames[this.body.moduleName] }}[信息{{ index + 1 }}]</h3>
-				<div class="else-table-container" v-for="(item, index) in body.main_info.data" :key="index">
+				<div class="else-table-container" v-for="(item, index) in body.main_info.data" :key="index" style="margin-bottom: 40px">
 					<header>
 						<span style="font-weight: bold; font-size: 14px; color: #555353">
 							操作类型:
-							<span :style="typeStyle(calculateProp(item).type)">{{ calculateProp(item).type }}</span>
+							<span :style="typeStyle(calculateProp(item).type)">[{{ calculateProp(item).type }}]</span>
 						</span>
 						<span style="margin-left: 40px; font-weight: bold; font-size: 14px; color: #4a4949">
 							操作时间:

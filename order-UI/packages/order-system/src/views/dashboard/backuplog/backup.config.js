@@ -1,5 +1,7 @@
 import { TableName } from '@/api/tool/enums';
 
+// 如果是复合数据 列出详细表
+export const MultiList = [TableName.INVENTORDETAIL, TableName.ORDER_DETAIL];
 export const TableConfig = {
 	// 订单主表
 	[TableName.GOODS_ORDER]: {
@@ -23,8 +25,6 @@ export const TableConfig = {
 			isAdjusted: '是否已调整',
 			adjustDate: '调整日期',
 			isAdjust: '是否调整单',
-			customerIsInvoice: '客户开票状态',
-			isSupplierInvoice: '供应商开票状态',
 			comments: '备注',
 			landFreight: '陆运运费(元)',
 			seaFreight: '海运运费(元)',
@@ -35,24 +35,44 @@ export const TableConfig = {
 			allFreightPrice: '总运费(元)'
 		},
 		params: [
-			{
-				name: 'paymentFactory',
-				label: '出厂货款'
-			},
-			{
-				name: 'payments',
-				label: '总货款'
-			},
-			{
-				name: 'freight',
-				label: '总运费'
-			}
+			{ name: 'landFreight', label: '陆运运费(元)' },
+			{ name: 'seaFreight', label: '海运运费(元)' },
+			{ name: 'allPayments', label: '总货款金额(元)' },
+			{ name: 'allPaymentFactory', label: '出厂货款(元)' },
+			{ name: 'allTonnage', label: '总吨位(吨)' },
+			{ name: 'allFreightPrice', label: '总运费(元)' }
 		],
 		extraParams: [],
-		options(callback) {
-			return typeof callback === 'function' ? callback(this) : this;
+		options(key, value) {
+			switch (key) {
+				case 'isAdjusted': {
+					if (value === 0) {
+						return '否';
+					}
+					if (value === 1) {
+						return '是';
+					}
+					break;
+				}
+				case 'isAdjust': {
+					if (value > 0) {
+						return '调整单';
+					}
+					if (value === 0) {
+						return '原订单';
+					}
+					if (value < 0) {
+						return '负数单';
+					}
+					break;
+				}
+				default: {
+					return value;
+				}
+			}
 		}
 	},
+
 	// 订单货物
 	[TableName.ORDER_DETAIL]: {
 		mappers: {
@@ -110,24 +130,93 @@ export const TableConfig = {
 			exWarehouseDate: '出库日期'
 		},
 		params: [
-			{
-				name: 'paymentFactory',
-				label: '出厂货款'
-			},
-			{
-				name: 'payments',
-				label: '总货款'
-			},
-			{
-				name: 'freight',
-				label: '总运费'
-			}
+			{ name: 'packs', label: '包数' },
+			{ name: 'piecesPerPack', label: '每包片数' },
+			{ name: 'pieces', label: '出厂片数' },
+			{ name: 'price', label: '出厂单价' },
+			{ name: 'sundryCost', label: '杂费' },
+			{ name: 'paymentFactory', label: '出厂货款' },
+			{ name: 'actualPieces', label: '卸货片数' },
+			{ name: 'paymentUnload', label: '卸货价' },
+			{ name: 'paymentsWithSundry', label: '总货款杂费' },
+			{ name: 'payments', label: '总货款' },
+			{ name: 'erro', label: '误差' },
+			{ name: 'tonnage', label: '吨位' },
+			{ name: 'landFreightPrice', label: '陆运费单价' },
+			{ name: 'additionalFees', label: '加费' },
+			{ name: 'landFreight', label: '陆运费用' },
+			{ name: 'seaFreight', label: '海运费用' },
+			{ name: 'freight', label: '总运费' },
+			{ name: 'otherCost', label: '其他费用' },
+			{ name: 'logisticsProfit', label: '物流利润' },
+			{ name: 'customerCommission', label: '客户佣金' },
+			{ name: 'factoryCommission', label: '厂家佣金' },
+			{ name: 'factoryRebateAmount', label: '计提厂家返利金额' },
+			{ name: 'factoryDiscountAmount', label: '计提厂家降价金额' },
+			{ name: 'invoiceAmount', label: '发票金额' },
+			{ name: 'customerInvoiceAmount', label: '客户发票金额' },
+			{ name: 'profit', label: '利润' },
+			{ name: 'profitNoTax', label: '不含税利润' }
 		],
 		extraParams: [],
-		options(callback) {
-			return typeof callback === 'function' ? callback(this) : this;
+		options(key, value) {
+			switch (key) {
+				case 'isIncludeTaxSale': {
+					if (value === 0) {
+						return '否';
+					}
+					if (value === 1) {
+						return '是';
+					}
+					break;
+				}
+				case 'isIncludeTaxFactory': {
+					if (value === 0) {
+						return '否';
+					}
+					if (value === 1) {
+						return '是';
+					}
+					break;
+				}
+				case 'isAdjusted': {
+					if (value === 0) {
+						return '否';
+					}
+					if (value === 1) {
+						return '是';
+					}
+					break;
+				}
+				case 'isAdjust': {
+					if (value > 0) {
+						return '调整单';
+					}
+					if (value === 0) {
+						return '原订单';
+					}
+					if (value < 0) {
+						return '负数单';
+					}
+					break;
+				}
+				case 'isAudit': {
+					if (value === 0) {
+						return '否';
+					}
+					if (value === 1) {
+						return '是';
+					}
+					break;
+				}
+				default: {
+					return value;
+				}
+			}
 		}
 	},
+
+	// 库存主表
 	[TableName.INVENTORMAIN]: {
 		mappers: {
 			storeHouseName: '仓库名称',
@@ -147,10 +236,19 @@ export const TableConfig = {
 			fleet: '车队',
 			checkState: '审核状态'
 		},
-		options(callback) {
-			return typeof callback === 'function' ? callback(this) : this;
+		params: [
+			{ name: 'allTonnage', label: '总吨位' },
+			{ name: 'allFreightPrice', label: '总运费单价' }
+		],
+		options(key, value) {
+			switch (key) {
+				default: {
+					return value;
+				}
+			}
 		}
 	},
+
 	// 库存子表货物
 	[TableName.INVENTORDETAIL]: {
 		mappers: {
@@ -191,11 +289,42 @@ export const TableConfig = {
 			factoryDiscountAmount: '计提厂家降价金额',
 			comments: '备注'
 		},
-		options(callback) {
-			return typeof callback === 'function' ? callback(this) : this;
+		params: [
+			{ name: 'stockNumber', label: '库存数量' },
+			{ name: 'pieces', label: '出厂片数' },
+			{ name: 'piecesPerPack', label: '每包片数' },
+			{ name: 'packs', label: '包数' },
+			{ name: 'price', label: '出厂单价' },
+			{ name: 'sundryCost', label: '杂费' },
+			{ name: 'paymentFactory', label: '出厂货款' },
+			{ name: 'paymentUnload', label: '卸货价' },
+			{ name: 'payments', label: '总货款' },
+			{ name: 'erro', label: '误差' },
+			{ name: 'tonnage', label: '吨位' },
+			{ name: 'landFreightPrice', label: '陆运费单价' },
+			{ name: 'landFreight', label: '陆运费用' },
+			{ name: 'seaFreight', label: '海运费用' },
+			{ name: 'freight', label: '总运费' },
+			{ name: 'otherCost', label: '其他费用' },
+			{ name: 'profit', label: '利润' },
+			{ name: 'profitNoTax', label: '不含税利润' },
+			{ name: 'actualPieces', label: '卸货片数' },
+			{ name: 'paymentsWithSundry', label: '总货款杂费' },
+			{ name: 'additionalFees', label: '加费' },
+			{ name: 'customerCommission', label: '客户佣金' },
+			{ name: 'factoryCommission', label: '厂家佣金' },
+			{ name: 'factoryRebateAmount', label: '计提厂家返利金额' },
+			{ name: 'factoryDiscountAmount', label: '计提厂家降价金额' }
+		],
+		options(key, value) {
+			switch (key) {
+				default: {
+					return value;
+				}
+			}
 		}
 	},
-	// 其他表的展示
+
 	// 订单运费
 	[TableName.ORDER_FREIGHT]: {
 		mappers: {
@@ -219,10 +348,19 @@ export const TableConfig = {
 			comments: '备注',
 			checkState: '审核状态'
 		},
-		options(callback) {
-			return typeof callback === 'function' ? callback(this) : this;
+		params: [
+			{ name: 'moneyAmount', label: '金额' },
+			{ name: 'paidAmount', label: '已支付金额' }
+		],
+		options(key, value) {
+			switch (key) {
+				default: {
+					return value;
+				}
+			}
 		}
 	},
+
 	// 银行账户变动
 	[TableName.BANK_ACCOUNT_CHANGE]: {
 		mappers: {
@@ -234,10 +372,16 @@ export const TableConfig = {
 			companyType: '公司类型',
 			bankCardType: '银行卡类型'
 		},
-		options(callback) {
-			return typeof callback === 'function' ? callback(this) : this;
+		params: [{ name: 'moneyAmount', label: '金额' }],
+		options(key, value) {
+			switch (key) {
+				default: {
+					return value;
+				}
+			}
 		}
 	},
+
 	// 付款
 	[TableName.PAYMENT]: {
 		mappers: {
@@ -257,10 +401,16 @@ export const TableConfig = {
 			comments: '备注',
 			transactionHistory: '交易历史'
 		},
-		options(callback) {
-			return typeof callback === 'function' ? callback(this) : this;
+		params: [{ name: 'moneyAmount', label: '金额' }],
+		options(key, value) {
+			switch (key) {
+				default: {
+					return value;
+				}
+			}
 		}
 	},
+
 	// 借出资金回收
 	[TableName.RECOVER_MONEY]: {
 		mappers: {
@@ -270,10 +420,16 @@ export const TableConfig = {
 			moneyAmount: '金额',
 			comments: '备注'
 		},
-		options(callback) {
-			return typeof callback === 'function' ? callback(this) : this;
+		params: [{ name: 'moneyAmount', label: '金额' }],
+		options(key, value) {
+			switch (key) {
+				default: {
+					return value;
+				}
+			}
 		}
 	},
+
 	// 借入款
 	[TableName.BORROWED_MONEY]: {
 		mappers: {
@@ -287,10 +443,19 @@ export const TableConfig = {
 			bankNo: '银行账号',
 			comments: '备注'
 		},
-		options(callback) {
-			return typeof callback === 'function' ? callback(this) : this;
+		params: [
+			{ name: 'moneyAmount', label: '金额' },
+			{ name: 'ratio', label: '利率' }
+		],
+		options(key, value) {
+			switch (key) {
+				default: {
+					return value;
+				}
+			}
 		}
 	},
+
 	// 借出款
 	[TableName.LEND_MONEY]: {
 		mappers: {
@@ -309,10 +474,16 @@ export const TableConfig = {
 			reason: '原因',
 			comments: '备注'
 		},
-		options(callback) {
-			return typeof callback === 'function' ? callback(this) : this;
+		params: [{ name: 'moneyAmount', label: '金额' }],
+		options(key, value) {
+			switch (key) {
+				default: {
+					return value;
+				}
+			}
 		}
 	},
+
 	// 贷款还款记录
 	[TableName.REPAYMENT]: {
 		mappers: {
@@ -324,10 +495,16 @@ export const TableConfig = {
 			comments: '备注',
 			checkState: '审核状态'
 		},
-		options(callback) {
-			return typeof callback === 'function' ? callback(this) : this;
+		params: [{ name: 'moneyAmount', label: '金额' }],
+		options(key, value) {
+			switch (key) {
+				default: {
+					return value;
+				}
+			}
 		}
 	},
+
 	// 商业票据
 	[TableName.BANK_ACCEPTANCE]: {
 		mappers: {
@@ -346,10 +523,19 @@ export const TableConfig = {
 			billCategory: '票据类别',
 			comments: '备注'
 		},
-		options(callback) {
-			return typeof callback === 'function' ? callback(this) : this;
+		params: [
+			{ name: 'billAmount', label: '票据金额' },
+			{ name: 'inDiscountAmount', label: '贴现金额' }
+		],
+		options(key, value) {
+			switch (key) {
+				default: {
+					return value;
+				}
+			}
 		}
 	},
+
 	// 收款
 	[TableName.RECEIVE_MONEY]: {
 		mappers: {
@@ -367,10 +553,16 @@ export const TableConfig = {
 			comments: '备注',
 			endTime: '结束时间'
 		},
-		options(callback) {
-			return typeof callback === 'function' ? callback(this) : this;
+		params: [{ name: 'moneyAmount', label: '金额' }],
+		options(key, value) {
+			switch (key) {
+				default: {
+					return value;
+				}
+			}
 		}
 	},
+
 	// 第三方发票
 	[TableName.INVOICE_OTHER]: {
 		mappers: {
@@ -389,10 +581,21 @@ export const TableConfig = {
 			userName: '用户名',
 			Supplier: '供应商名称'
 		},
-		options(callback) {
-			return typeof callback === 'function' ? callback(this) : this;
+		params: [
+			{ name: 'invoiceAmount', label: '发票金额' },
+			{ name: 'supplierPointAmount', label: '供应商税点金额' },
+			{ name: 'customerPointAmount', label: '客户税点金额' },
+			{ name: 'oweAmount', label: '欠款金额' }
+		],
+		options(key, value) {
+			switch (key) {
+				default: {
+					return value;
+				}
+			}
 		}
 	},
+
 	// 发票卖出
 	[TableName.INVOICE_OUT]: {
 		mappers: {
@@ -408,10 +611,20 @@ export const TableConfig = {
 			comments: '备注',
 			oweAmount: '欠款金额'
 		},
-		options(callback) {
-			return typeof callback === 'function' ? callback(this) : this;
+		params: [
+			{ name: 'invoiceAmount', label: '发票金额' },
+			{ name: 'ticketPointAmount', label: '税点金额' },
+			{ name: 'oweAmount', label: '欠款金额' }
+		],
+		options(key, value) {
+			switch (key) {
+				default: {
+					return value;
+				}
+			}
 		}
 	},
+
 	// 发票买入
 	[TableName.INVOICE_IN]: {
 		mappers: {
@@ -427,8 +640,16 @@ export const TableConfig = {
 			isOrderTax: '是否订单税',
 			comments: '备注'
 		},
-		options(callback) {
-			return typeof callback === 'function' ? callback(this) : this;
+		params: [
+			{ name: 'invoiceAmount', label: '发票金额' },
+			{ name: 'ticketPointAmount', label: '税点金额' }
+		],
+		options(key, value) {
+			switch (key) {
+				default: {
+					return value;
+				}
+			}
 		}
 	}
 };
