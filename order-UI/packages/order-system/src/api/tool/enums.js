@@ -209,7 +209,8 @@ export const BankAcceptanceType = Object.freeze({
 // 佣金相关的枚举
 export const CommissionType = Object.freeze({
 	CUSTOMER: 0,
-	SUPPLIER: 1
+	SUPPLIER: 1,
+	INVENTORY: 2
 });
 
 export const MoneyChangeModuleName = Object.freeze({

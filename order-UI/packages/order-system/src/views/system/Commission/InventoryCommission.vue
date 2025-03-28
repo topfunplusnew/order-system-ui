@@ -7,8 +7,8 @@
 			<el-form-item label="结束时间" prop="endTime">
 				<el-date-picker v-model="queryParams.params.endTime" type="date" placeholder="请选择结束时间" value-format="yyyy-MM-dd" clearable />
 			</el-form-item>
-			<el-form-item label="客户名称" prop="companyName">
-				<el-input v-model="queryParams.companyName" placeholder="请输入客户名称" clearable />
+			<el-form-item label="厂家名称" prop="companyName">
+				<el-input v-model="queryParams.companyName" placeholder="请输入厂家名称" clearable />
 			</el-form-item>
 			<el-form-item label="支付状态" prop="companyName">
 				<el-select v-model="queryParams.params.isNoPay" placeholder="请选择">
@@ -60,9 +60,8 @@
 			@selection-change="handleSelectionChange"
 		>
 			<el-table-column type="selection" width="55" align="center" :selectable="(row, index) => row.id !== null" />
-			<!--			<el-table-column show-overflow-tooltip label="订单号" align="center" prop="ordersNo" width="140" />-->
-			<el-table-column show-overflow-tooltip label="订单日期" align="center" prop="orderDate" width="140" />
-			<el-table-column show-overflow-tooltip label="客户名称" align="center" prop="companyName" width="140" />
+			<el-table-column show-overflow-tooltip label="日期" align="center" prop="orderDate" width="140" />
+			<el-table-column show-overflow-tooltip label="厂家名称" align="center" prop="companyName" width="140" />
 			<el-table-column show-overflow-tooltip label="产品名称" align="center" prop="levelName" width="140" />
 			<el-table-column show-overflow-tooltip label="单位" align="center" prop="countingUnit" width="100" />
 			<el-table-column show-overflow-tooltip label="高度" align="center" prop="height" width="100" />
@@ -83,7 +82,7 @@
 			<el-table-column show-overflow-tooltip label="已验证佣金" align="center" prop="verifiedCommission" width="100" />
 			<el-table-column show-overflow-tooltip label="其他付款金额" align="center" prop="otherPaymentAmount" width="100" />
 			<el-table-column show-overflow-tooltip label="应付佣金金额" align="center" prop="commissionAmount" width="100" />
-			<el-table-column show-overflow-tooltip label="实际客户佣金" align="center" prop="actualCustomerCommission" width="100" />
+			<el-table-column show-overflow-tooltip label="实际库存厂家佣金" align="center" prop="actualCustomerCommission" width="100" />
 			<el-table-column show-overflow-tooltip label="支付日期" align="center" prop="fundDate" width="100" />
 			<el-table-column show-overflow-tooltip label="差异" align="center" prop="difference" width="100" />
 			<el-table-column show-overflow-tooltip label="差异原因" align="center" prop="differenceReason" width="100" />
@@ -248,7 +247,7 @@ export default {
 		async getList() {
 			this.loading = true;
 			try {
-				const response = await listCommission(this.queryParams, CommissionType.CUSTOMER);
+				const response = await listCommission(this.queryParams, CommissionType.INVENTORY);
 				this.tableData = response.rows;
 				this.total = response.total;
 			} catch (error) {
@@ -265,10 +264,10 @@ export default {
 		handleAdd() {
 			this.openDialog(
 				CommissionsForm,
-				'新增客户佣金',
+				'新增库存厂家佣金',
 				'400px',
 				{
-					type: CommissionType.CUSTOMER,
+					type: CommissionType.INVENTORY,
 					orderDetailId: this.orderDetailId
 				},
 				false
@@ -276,6 +275,7 @@ export default {
 		},
 		// 修改
 		handleEdit(row) {
+			console.log('row', row);
 			this.orderDetailId = row.orderDetailId;
 			if (!row.id) {
 				this.handleAdd();
@@ -292,11 +292,11 @@ export default {
 					};
 					this.openDialog(
 						CommissionsForm,
-						'修改客户佣金',
+						'修改库存厂家佣金',
 						'400px',
 						{
 							id: row.id,
-							type: CommissionType.CUSTOMER,
+							type: CommissionType.INVENTORY,
 							orderDetailId: this.orderDetailId,
 							body: commissionData
 						},
@@ -335,7 +335,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`客户佣金_${new Date().getTime()}.xlsx`
+				`库存厂家佣金_${new Date().getTime()}.xlsx`
 			);
 		},
 		changePaymentApplyInfoVisible() {

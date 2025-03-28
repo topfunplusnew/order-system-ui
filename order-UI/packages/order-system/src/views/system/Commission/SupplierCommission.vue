@@ -280,6 +280,10 @@ export default {
 				this.handleAdd();
 			} else {
 				getCommission(row.id).then(res => {
+					if (!res.data) {
+						this.$message.warning('数据不存在!');
+						return;
+					}
 					const commissionData = {
 						orderDetailId: res.data.orderDetailId,
 						commissionUnitPrice: res.data.commissionUnitPrice,
