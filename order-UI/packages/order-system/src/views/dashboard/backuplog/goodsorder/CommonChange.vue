@@ -1,23 +1,18 @@
 <script>
 import { completeJsonData, JsonUtils, TypeUtils } from '@/views/dashboard/backuplog';
-import { filtersFunc, keyOptioner, paramFieldFilter, transFuc, typeFilter } from '@/views/dashboard/backuplog/goodsorder/index';
-import { moduleNames, System_Option_Type, TableName } from '@/api/tool/enums';
+import { moduleNames, TableName } from '@/api/tool/enums';
 import _ from 'lodash';
 import { TableConfig } from '../backup.config';
-import OrderInfos from '@/views/dashboard/components/goodsOrder/OrderInfos.vue';
-import INVENTORY from '@/components/NeedToShow/INVENTORY.vue';
 import FlexTable from '@/views/dashboard/backuplog/goodsorder/FlexTable.vue';
 
 export default {
 	name: 'CommonChange',
-	components: { FlexTable, INVENTORY, OrderInfos },
+	components: { FlexTable },
 	props: {
-		// 要进行比较的数据列表
 		compareData: {
 			type: Array,
 			default: () => []
 		},
-		// 模块名称
 		moduleName: {
 			type: String,
 			default: ''
@@ -25,401 +20,185 @@ export default {
 	},
 	data() {
 		return {
-			activeNames: ['1']
+			activeNames: ['1'],
+			currentPage: 1, // 当前页码
+			pageSize: 20, // 每页显示数量
+			totalPages: 1 // 总页数
 		};
 	},
-	created() {
-		console.log('renderData', this.renderData);
-	},
-	// 主要针对订单和库存这两个模块 进行分组
 	computed: {
-		moduleNames() {
-			return moduleNames;
-		},
 		TableName() {
 			return TableName;
 		},
-		// 对数据进行处理 根据模块名称
 		renderData() {
-			// 这里要处理那种 修改前为数组 修改后也为数组的
 			let data = _.cloneDeep(this.compareData);
-			let extra = [];
-			let extraIds = [];
-			const process = (arr, backlog, type) => {
-				console.log(arr, backlog, type);
-				arr.forEach(element => {
-					element &&
-						extra.push({
-							...backlog,
-							tableName: backlog.tableName,
-							originalInfo: type ? backlog : null,
-							changedInfo: type ? null : backlog
-						});
-					if (element.id) {
-						extraIds.push(backlog.id);
-					}
-				});
-			};
-			// 处理为json
-			const mapped = data
+			const result = data.map(backlog => {
+				let processed = { ...backlog };
+				if (processed.logicBackupType === 'insert' && processed.originalInfo === 'null' && processed.changedInfo !== 'null') {
+					processed.changedInfo = JsonUtils.getJson(processed.changedInfo);
+					processed.originalInfo = null;
+				}
+				if (processed.logicBackupType === 'delete' && processed.changedInfo === 'null' && processed.originalInfo !== 'null') {
+					processed.originalInfo = JsonUtils.getJson(processed.originalInfo);
+					processed.changedInfo = null;
+				}
+				if (processed.logicBackupType === 'update' && processed.originalInfo !== 'null' && processed.changedInfo !== 'null') {
+					const origin = JsonUtils.getJson(processed.originalInfo);
+					const changed = JsonUtils.getJson(processed.changedInfo);
+					processed.originalInfo = origin;
+					processed.changedInfo = completeJsonData(origin, changed);
+				}
+				return processed;
+			});
+			const extra = [];
+			const extraIds = [];
+			const finalResult = result
 				.map(backlog => {
-					if (backlog.originalInfo && backlog.changedInfo) {
-						backlog.originalInfo = JsonUtils.getJson(backlog.originalInfo);
-						backlog.changedInfo = JsonUtils.getJson(backlog.changedInfo);
+					const ori = _.cloneDeep(backlog.originalInfo);
+					const chag = _.cloneDeep(backlog.changedInfo);
+					const originDataType = TypeUtils.prototype.checkType(ori);
+					const changedDataType = TypeUtils.prototype.checkType(chag);
+					if (originDataType === 'Array' && changedDataType === 'Array') {
+						if (ori.length > 0 && chag.length > 0) {
+							ori.forEach(element => {
+								if (element) {
+									extra.push({
+										...backlog,
+										tableName: backlog.tableName,
+										originalInfo: backlog,
+										changedInfo: null
+									});
+									if (element.id) extraIds.push(backlog.id);
+								}
+							});
+							chag.forEach(element => {
+								if (element) {
+									extra.push({
+										...backlog,
+										tableName: backlog.tableName,
+										originalInfo: null,
+										changedInfo: backlog
+									});
+									if (element.id) extraIds.push(backlog.id);
+								}
+							});
+						}
+						return backlog;
+					} else if (originDataType === 'Array' && changedDataType !== 'Array') {
+						if (ori.length === 0) return backlog;
+						ori.forEach(element => {
+							if (element) {
+								extra.push({
+									...backlog,
+									tableName: backlog.tableName,
+									originalInfo: backlog,
+									changedInfo: null
+								});
+								if (element.id) extraIds.push(backlog.id);
+							}
+						});
+					} else if (originDataType !== 'Array' && changedDataType === 'Array') {
+						if (chag.length === 0) return backlog;
+						chag.forEach(element => {
+							if (element) {
+								extra.push({
+									...backlog,
+									tableName: backlog.tableName,
+									originalInfo: null,
+									changedInfo: backlog
+								});
+								if (element.id) extraIds.push(backlog.id);
+							}
+						});
+					} else {
 						return backlog;
 					}
 					return backlog;
 				})
-				.map(backlog => {
-					const ori = _.cloneDeep(backlog.originalInfo);
-					const chag = _.cloneDeep(backlog.changedInfo);
-					console.log('ori,chag', ori, chag);
-					const originDataType = TypeUtils.prototype.checkType(ori);
-					const changedDataType = TypeUtils.prototype.checkType(chag);
-					// 如果两边都是数组
-					if (originDataType === 'Array' && changedDataType === 'Array') {
-						if (ori.length === 0 || chag.length === 0) return backlog;
-						process(ori, backlog, true);
-						process(chag, backlog, false);
-						return backlog;
-						// 其中一个是数组
-					} else if (originDataType === 'Array' && changedDataType !== 'Array') {
-						if (ori.length === 0) return backlog;
-						process(ori, backlog, true);
-					} else if (originDataType !== 'Array' && changedDataType === 'Array') {
-						if (chag.length === 0) return backlog;
-						process(chag, backlog, false);
-					} else {
-						return backlog;
-					}
-				})
 				.filter(backlog => !extraIds.includes(backlog.id));
-			return Object.entries(_.groupBy(mapped, item => item.uuid)).map(entries => {
-				return _.groupBy(entries[1], item => item.tableName);
-			});
+			return Object.entries(_.groupBy(finalResult, item => item.uuid)).map(entries => _.groupBy(entries[1], item => item.tableName));
 		},
 		bodyData() {
 			return this.renderData.map(backlog => {
 				const moduleName = this.moduleName;
-				const isMulti = Object.keys(backlog).length > 0;
+				const isMulti = Object.keys(backlog).length > 1;
 				const isGoodsOrInventory = moduleName === TableName.GOODS_ORDER || moduleName === TableName.INVENTORY_MAIN;
-
 				return {
+					moduleName,
 					isMulti,
-					isAdjust: isMulti ? ((backlog.goodsOrder?.length || backlog.inventory_main?.length) ?? 0) > 0 : false,
+					isAdjust: isMulti && isGoodsOrInventory && (backlog.goodsorder?.length > 1 || false),
 					main_info: {
-						data: this.items ? undefined : backlog[moduleName],
-						items: isGoodsOrInventory ? backlog.goodsOrder || backlog.inventory_main : undefined
+						data: backlog[moduleName],
+						items: isGoodsOrInventory ? backlog.goodsorder || backlog.inventory_main : undefined
 					},
-					sub_info: isGoodsOrInventory ? { items: [] } : undefined,
+					sub_info: isGoodsOrInventory ? { items: backlog.orderdetail || backlog.inventory_detail } : undefined,
 					params: TableConfig[moduleName]?.params || [],
 					extraParams: TableConfig[moduleName]?.extraParams || [],
 					extraInfo: {}
 				};
 			});
+		},
+		paginatedData() {
+			// 确保数据已准备好
+			if (!this.bodyData || this.bodyData.length === 0) return [];
+
+			const start = (this.currentPage - 1) * this.pageSize;
+			const end = start + this.pageSize;
+
+			// 确保分页范围有效
+			return this.bodyData.slice(Math.max(0, start), Math.min(end, this.bodyData.length));
+		},
+		totalItems() {
+			return this.bodyData.length;
+		}
+	},
+	watch: {
+		bodyData: {
+			immediate: true,
+			handler(newVal) {
+				this.totalPages = Math.ceil(newVal.length / this.pageSize);
+			}
+		},
+		paginatedData: {
+			immediate: true,
+			handler(newVal) {
+				console.log('newVal', newVal);
+			}
 		}
 	},
 	methods: {
-		/**
-		 * 渲染表格
-		 * @param index 要渲染的数据的索引
-		 * @param item 备份数据行
-		 */
-		render(index, item) {
-			if (!this.compareData || !this.compareData.length) {
-				throw new Error('未找到对应数据');
+		prevPage() {
+			if (this.currentPage > 1) {
+				this.currentPage--;
+				this.scrollToTop();
 			}
-			// 渲染非订单的数据
-			this.processData(index, item);
 		},
-		/**
-		 * 处理数据的函数
-		 * @param index 要处理的数据的索引 也就是备份数据的索引
-		 * @param processData 备份数据数组 默认为传入组件的数据 也就是后端直接返回的备份数据数组
-		 */
-		processData(index, processData) {
-			// 处理一下type
-			let current = processData || this.compareData[index];
-			current = typeFilter(current);
-			// 转为json数据
-			let pre = JsonUtils.getJson(current.originalInfo);
-			let aft = JsonUtils.getJson(current.changedInfo);
-			// 键值对处理
-			// pre = keyOptioner(pre);
-			// aft = keyOptioner(aft);
-			// 对id等的参数进行过滤
-			const orderParamFilter = this.moduleName === TableName.GOODS_ORDER ? key => key === 'ORDERSNO' || key.indexOf('ORDERSNO') !== -1 : undefined;
-			// 需要根据表名判断是否需要传递函数数组
-			const callbackList = this.moduleName === TableName.GOODS_ORDER || this.moduleName === TableName.INVENTORMAIN ? [orderParamFilter] : [];
-			let [item1, item2] = paramFieldFilter([pre, completeJsonData(pre, aft)], callbackList, this.$exclude);
+		nextPage() {
+			if (this.currentPage < this.totalPages) {
+				this.currentPage++;
+				this.scrollToTop();
+			}
+		},
+		goToPage(page) {
+			// 确保页码是数字
+			page = Number(page);
 
-			// 渲染表格
-			this.renderTable(item1, 'beforeTable' + index, '修改前');
-			this.renderTable(item2, 'afterTable' + index, '修改后');
-		},
-		/**
-		 * 渲染表格
-		 * @param {*[]} data 表格数据 一行 或者多行
-		 * @param tableId 表格元素的id
-		 * @param status  状态列的展示 是修改前还是修改后
-		 */
-		renderTable(data, tableId, status) {
-			if (!data || !status) {
-				this.$log.error('缺少参数');
-				return;
-			}
-			let processData = null;
-			if (TypeUtils.prototype.checkType(data) === 'Object') {
-				processData = [data];
-			}
-			if (TypeUtils.prototype.checkType(data) === 'Array') {
-				if (data.length === 0) {
-					this.$log.warn("渲染表格,renderTable函数出问题,数据为空,可能为修改审核状态或者开票状态'");
-					return;
-				}
-				processData = data;
-			}
-			// 获取dom元素
-			const table = document.getElementById(tableId);
-			if (!table) {
-				this.$log.error(`表格 ${tableId} 未找到`);
-				return;
-			}
-			const thead = table.querySelector('thead tr');
-			const tbody = table.querySelector('tbody');
-			if (processData === null) {
-				this.$log.error('processData 为空');
-				this.renderNull(tbody);
-				return;
-			}
-			thead.innerHTML = '';
-			tbody.innerHTML = '';
-			// 渲染表头
-			this.renderTableHeader(thead);
-			// 渲染表格行数据
-			processData.forEach(item => {
-				this.renderTableRows(tbody, item, status);
-			});
-		},
-		/**
-		 * 渲染表头字段 修正表头长度 并且渲染顶部
-		 * @param thead 表格的表头DOM元素
-		 */
-		renderTableHeader(thead) {
-			const config = TableConfig[transFuc(this.moduleName)];
-			const mappers = config.mappers;
-			const dataKeys = Object.keys(mappers);
-			// 渲染表头字段 修正表头长度 并且渲染顶部
-			const headerRow = ['状态', ...dataKeys.slice(0, dataKeys.length)];
-			for (let key of headerRow) {
-				if (typeof mappers[key] === 'object') {
-					continue;
-				}
-				const th = document.createElement('th');
-				// 这里对数据可以进行处理 判断当前字段对应的值是不是object
-				th.textContent = mappers[key];
-				th.style.textAlign = 'center';
-				th.style.backgroundColor = '#e8e5e5';
-				th.style.width = '250px';
-				th.style.border = '1px solid black';
-				thead.appendChild(th);
-			}
-		},
-		renderNull(tbody) {
-			const tr = document.createElement('tr');
-			const td = document.createElement('td'); // 使用td更合适
-			td.textContent = '暂无货物修改记录';
-			td.className = 'no-data-cell'; // 使用CSS类代替内联样式
-			// 计算或传递colSpan值
-			td.colSpan = tbody.parentElement.rows[0]?.cells?.length || 1;
-			tr.appendChild(td);
-			tbody.appendChild(tr);
-		},
-		/**
-		 * 渲染表格行数据
-		 * @param tbody 表格行的body DOM元素
-		 * @param json  需要渲染的json数据
-		 * @param status  状态字段 修改前还是修改后
-		 */
-		renderTableRows(tbody, json, status = '修改前') {
-			if (!json || !status) {
-				this.$log.error('缺少参数');
-				return;
-			}
-			const config = TableConfig[transFuc(this.moduleName)];
-			const mappers = config.mappers;
-			const dataKeys = Object.keys(mappers);
-			try {
-				const tr = document.createElement('tr');
-				tr.style.textAlign = 'center';
-				// 状态列
-				const statusTd = document.createElement('td');
-				statusTd.textContent = status;
-				statusTd.style.textAlign = 'center';
-				statusTd.style.border = '1px solid black';
-				statusTd.style.width = '120px';
-				statusTd.classList.add('status-cell');
-				tr.appendChild(statusTd);
-				// JSON 数据列
-				dataKeys.forEach(key => {
-					const td = document.createElement('td');
-					td.textContent = json[key] !== undefined ? json[key] : '';
-					td.classList.add('table-d');
-					td.style.textAlign = 'center';
-					td.style.width = '250px';
-					td.style.border = '1px solid black';
-					tr.appendChild(td);
-				});
-				tbody.appendChild(tr);
-			} catch (err) {
-				this.$log.error(err);
-			}
-		},
-		/**
-		 * 对订单主表信息进行数据处理
-		 * @param item  备份信息主表
-		 * @param type  类型
-		 * @param moduleName  模块名
-		 * @returns {any}
-		 */
-		getProcessedOrder(item, type, moduleName) {
-			let row = null;
-			switch (moduleName) {
-				case TableName.GOODS_ORDER:
-					row = typeFilter(_.cloneDeep(item).goodsorder[0]);
-					break;
-				case TableName.INVENTORMAIN:
-					row = typeFilter(_.cloneDeep(item).inventory_main[0]);
-					break;
-				default:
-					row = typeFilter(_.cloneDeep(item).goodsorder[0]);
-			}
-			if (type === 'before') {
-				return JSON.parse(row.originalInfo);
-			}
-			if (type === 'after') {
-				return JSON.parse(row.changedInfo);
-			}
-		},
-		calculateProp(item, moduleName) {
-			// 统一获取备份类型和时间
-			const getBackupData = () => {
-				if (moduleName === TableName.GOODS_ORDER) {
-					return item[TableName.ORDER_DETAIL]?.[0] || {};
-				} else if (moduleName === TableName.INVENTORMAIN) {
-					return item[TableName.INVENTORDETAIL]?.[0] || {};
-				}
-				return item;
-			};
-			const { backupType = '', backupTime = null } = getBackupData();
-			// 映射操作类型
-			const typeMap = {
-				insert: '新增',
-				delete: '删除',
-				default: '修改'
-			};
-			const _type = typeMap[backupType] || typeMap.default;
-			return {
-				time: backupTime,
-				type: _type
-			};
-		},
-		// 类型的高亮处理
-		// 确保返回的对象键名是合法的 CSS 属性
-		typeStyle(type) {
-			switch (type) {
-				case System_Option_Type.INSERT:
-					return {
-						backgroundColor: '#f0f9eb',
-						color: '#67c23a'
-					};
-				case System_Option_Type.UPDATE:
-					return {
-						backgroundColor: '#def6ef',
-						color: '#0695a3'
-					};
-				case System_Option_Type.DELETE:
-					return {
-						backgroundColor: '#fde2e2',
-						color: '#f35914'
-					};
-				default:
-					return {
-						backgroundColor: '#fde2e2'
-					};
-			}
-		},
-		// 高亮某些列
-		/**
-		 * 比较两个表格的内容是否一致
-		 * @param {HTMLElement} table1 第一个表格元素
-		 * @param {HTMLElement} table2 第二个表格元素
-		 * @param {Object} options 配置项
-		 * @param {boolean} options.highlightDiff 是否高亮显示差异（默认true）
-		 * @param {string} options.highlightColor 高亮颜色（默认'#ffdddd'）
-		 * @returns {boolean} 是否完全一致
-		 */
-		/**
-     * 比较两个表格的内容是否一致（包含表头，忽略第一列）
-     * @param {HTMLElement} table1 第一个表格
-     * @param {HTMLElement} table2 第二个表格
-     * @param {Object} options 配置项
-     * @param {boolean} options.highlightDiff 是否高亮差异（默认true）
-     @param {string} options.highlightFontColor 高亮颜色（默认'#ffdddd'）
-     * @param {string} options.highlightColor 高亮颜色（默认'#ffdddd'）
-     * * @returns {boolean} 是否完全一致
-     */
-		compareTables(table1, table2, options = {}) {
-			const { highlightDiff = true, highlightColor = '#FFEB3B', highlightFontColor = '#000000' } = options;
+			// 验证页码范围
+			if (isNaN(page)) page = 1;
+			if (page < 1) page = 1;
+			if (page > this.totalPages) page = this.totalPages;
 
-			const rows1 = table1.querySelectorAll('tr');
-			const rows2 = table2.querySelectorAll('tr');
-
-			if (rows1.length !== rows2.length) return false;
-
-			let isPerfectMatch = true;
-			const changedColumns = new Set(); // 存储存在差异的列索引
-
-			// 第一轮：检测差异列
-			rows1.forEach((row1, rowIndex) => {
-				const row2 = rows2[rowIndex];
-				const cells1 = row1.querySelectorAll('th, td');
-				const cells2 = row2.querySelectorAll('th, td');
-
-				if (cells1.length !== cells2.length) {
-					isPerfectMatch = false;
-					return;
-				}
-
-				for (let cellIndex = 1; cellIndex < cells1.length; cellIndex++) {
-					const text1 = cells1[cellIndex].textContent.trim();
-					const text2 = cells2[cellIndex].textContent.trim();
-
-					if (text1 !== text2) {
-						isPerfectMatch = false;
-						changedColumns.add(cellIndex); // 记录差异列
-					}
+			this.currentPage = page;
+			this.scrollToTop();
+		},
+		scrollToTop() {
+			this.$nextTick(() => {
+				const container = document.getElementById('scrollContainer');
+				if (container) {
+					container.scrollTo({ top: 0, behavior: 'smooth' });
 				}
 			});
-
-			// 第二轮：高亮整列
-			if (highlightDiff && changedColumns.size > 0) {
-				const allRows = [...rows1, ...rows2];
-				changedColumns.forEach(cellIndex => {
-					allRows.forEach(row => {
-						const cell = row.querySelector(`th:nth-child(${cellIndex + 1}), td:nth-child(${cellIndex + 1})`);
-						if (cell) {
-							cell.style.backgroundColor = highlightColor;
-							cell.style.color = highlightFontColor;
-							cell.style.fontWeight = 'bold';
-						}
-					});
-				});
-			}
-
-			return isPerfectMatch;
 		},
-		handleChange() {},
 		handleProcess() {},
 		handleReject() {}
 	}
@@ -428,124 +207,79 @@ export default {
 
 <template>
 	<div>
-		<!--    订单或者库存的数据渲染使用-->
-		<div v-if="moduleName === TableName.GOODS_ORDER || moduleName === TableName.INVENTORMAIN">
-			<div class="body">
-				<div class="table-container" v-for="(item, index) in renderData" :key="index">
-					<el-card class="box-card">
-						<div slot="header" class="clearfix">
-							<span style="font-size: 18px; font-weight: bold; color: red; letter-spacing: 3px">{{ moduleNames[moduleName] }}修改记录[{{ index + 1 }}]</span>
-							<span style="margin-left: 40px; font-weight: bold; font-size: 14px; color: #555353">
-								操作类型:
-								<span :style="typeStyle(calculateProp(item, moduleName).type)">{{ calculateProp(item, moduleName).type }}</span>
-							</span>
-							<span style="margin-left: 40px; font-weight: bold; font-size: 14px; color: #4a4949">
-								操作时间:
-								<span>{{ calculateProp(item, moduleName).time }}</span>
-							</span>
-						</div>
-						<div v-if="item.goodsorder">
-							<el-collapse v-model="activeNames" @change="handleChange">
-								<el-collapse-item :title="moduleNames[moduleName] + `主信息修改前`" :name="item.id">
-									<div>
-										<div v-if="item.goodsorder[0].originalInfo !== 'null'">
-											<OrderInfos :order-info="getProcessedOrder(item, 'before', moduleName)" />
-										</div>
-										<div v-else>{{ moduleNames[moduleName] }}无修改前记录</div>
-									</div>
-								</el-collapse-item>
-								<el-collapse-item :title="moduleNames[moduleName] + `主信息修改后`" :name="item.id">
-									<div>
-										<div v-if="item.goodsorder[0].changedInfo !== 'null'">
-											<OrderInfos :order-info="getProcessedOrder(item, 'after', moduleName)" />
-										</div>
-										<div v-else>{{ moduleNames[moduleName] }}无修改后记录</div>
-									</div>
-								</el-collapse-item>
-							</el-collapse>
-							<el-divider>{{ moduleNames[moduleName] }}货物修改记录</el-divider>
-						</div>
-						<div v-if="item.inventory_main">
-							<el-collapse v-model="activeNames" @change="handleChange">
-								<el-collapse-item :title="moduleNames[moduleName] + `主信息修改前`" :name="item.id">
-									<div>
-										<div v-if="item.inventory_main[0].originalInfo !== 'null'">
-											<INVENTORY :need-to-show-info="getProcessedOrder(item, 'before', moduleName)" />
-										</div>
-										<div v-else>{{ moduleNames[moduleName] }}无修改前记录</div>
-									</div>
-								</el-collapse-item>
-								<el-collapse-item title="订单主信息修改后" :name="item.id">
-									<div>
-										<div v-if="item.inventory_main[0].changedInfo !== 'null'">
-											<INVENTORY :need-to-show-info="getProcessedOrder(item, 'after', moduleName)" />
-										</div>
-										<div v-else>{{ moduleNames[moduleName] }}无修改后记录</div>
-									</div>
-								</el-collapse-item>
-							</el-collapse>
-							<el-divider>{{ moduleNames[moduleName] }}货物修改记录</el-divider>
-						</div>
-						<FlexTable :body="renderData" />
-					</el-card>
+		<div class="body">
+			<el-card class="box-card">
+				<!-- 分页控制器 -->
+				<div class="pagination-controls">
+					<el-button @click="prevPage" :disabled="currentPage === 1" size="small">上一页</el-button>
+
+					<span class="page-info">第 {{ currentPage }} 页 / 共 {{ totalPages }} 页 (共 {{ totalItems }} 条记录)</span>
+
+					<el-button @click="nextPage" :disabled="currentPage >= totalPages" size="small">下一页</el-button>
+
+					<!-- 快速跳转 -->
+					<el-input type="number" v-model="currentPage" :min="1" :max="totalPages" size="small" @change="goToPage(currentPage)" style="width: 80px; margin-left: 10px" />
 				</div>
-			</div>
-		</div>
-		<!--    非订单的数据渲染使用-->
-		<div v-else>
-			<div>
-				<div class="else-table-container" v-for="(item, index) in compareData" :key="index">
-					<el-card class="box-card">
-						<div slot="header" class="clearfix">
-							<span style="font-size: 18px; font-weight: bold; color: red; letter-spacing: 3px">{{ moduleNames[moduleName] }}修改记录[{{ index + 1 }}]</span>
-							<span style="margin-left: 40px; font-weight: bold; font-size: 14px; color: #555353">
-								操作类型:
-								<span :style="typeStyle(calculateProp(item, moduleName).type)">{{ calculateProp(item, moduleName).type }}</span>
-							</span>
-							<span style="margin-left: 40px; font-weight: bold; font-size: 14px; color: #4a4949">
-								操作时间:
-								<span>{{ calculateProp(item, moduleName).time }}</span>
-							</span>
-						</div>
-						<FlexTable :body="renderData" />
-					</el-card>
+
+				<div id="scrollContainer" class="scroll-area">
+					<div v-for="(item, idx) in paginatedData" :key="idx">
+						<FlexTable :body="item" :index="idx + (currentPage - 1) * pageSize" />
+					</div>
+
+					<div v-if="paginatedData.length === 0" class="no-data">暂无数据</div>
 				</div>
-			</div>
+
+				<!-- 底部重复分页控制 -->
+				<div class="pagination-controls bottom-controls">
+					<el-button @click="prevPage" :disabled="currentPage === 1" size="small">上一页</el-button>
+
+					<span class="page-info">第 {{ currentPage }} 页 / 共 {{ totalPages }} 页</span>
+
+					<el-button @click="nextPage" :disabled="currentPage >= totalPages" size="small">下一页</el-button>
+				</div>
+			</el-card>
 		</div>
 	</div>
 </template>
 
 <style scoped>
-.table-container {
-	width: 100%;
-	margin: 40px auto;
+.scroll-area {
+	height: 500px;
+	overflow-y: auto;
+	padding: 10px;
+	margin: 10px 0;
+}
+
+.pagination-controls {
 	display: flex;
+	align-items: center;
 	justify-content: center;
-	flex-direction: column;
-	overflow-y: scroll;
+	padding: 10px 0;
+	border-bottom: 1px solid #eee;
 }
 
-.else-table-container {
-	width: 100%;
-	margin: 40px auto;
-	display: flex;
-	justify-content: center;
-	flex-direction: column;
-	overflow-y: scroll;
+.bottom-controls {
+	border-top: 1px solid #eee;
+	border-bottom: none;
 }
 
-#table-gen {
-	overflow-x: scroll;
+.page-info {
+	margin: 0 15px;
+	font-size: 14px;
+	color: #666;
 }
 
-.container {
-	border-radius: 8px;
-	max-width: 1400px;
+.no-data {
+	text-align: center;
+	padding: 50px;
+	color: #999;
+	font-size: 16px;
 }
 
+/* 保持原有的表格样式 */
 table {
-	width: 3200px; /* 让表格整体缩小一些 */
-	max-width: 3200px; /* 限制最大宽度 */
+	width: 3200px;
+	max-width: 3200px;
 	border-collapse: collapse;
 	margin-bottom: 10px;
 	border: 1px solid #ddd;
@@ -562,15 +296,8 @@ th {
 	background-color: #817e7e !important;
 }
 
-/* 调整状态列宽度 */
 th:first-child,
 td:first-child {
-	width: 150px; /* 设置状态列的宽度 */
-}
-
-.no-data-cell {
-	text-align: center;
-	background-color: #e8e5e5;
-	border: 1px solid black;
+	width: 150px;
 }
 </style>

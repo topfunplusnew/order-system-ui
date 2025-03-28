@@ -622,10 +622,4 @@ th:first-child,
 td:first-child {
 	width: 150px; /* 设置状态列的宽度 */
 }
-
-.no-data-cell {
-	text-align: center;
-	background-color: #e8e5e5;
-	border: 1px solid black;
-}
 </style>

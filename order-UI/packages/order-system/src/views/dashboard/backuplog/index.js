@@ -1,5 +1,6 @@
 export const JsonUtils = {
 	getJson(json) {
+		// console.log(json);
 		try {
 			if (typeof json !== 'string') {
 				console.log('输入的数据不是有效的 JSON 字符串'); // 替换为 console.log

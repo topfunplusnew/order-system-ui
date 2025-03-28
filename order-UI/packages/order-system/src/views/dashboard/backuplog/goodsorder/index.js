@@ -76,14 +76,7 @@ export function typeFilter(backupRow) {
 	if (backupRow.originalInfo === 'null' && backupRow.changedInfo === 'null') {
 		console.error('备份数据行originalInfo和changedInfo为null,索引为:', backupRow.id);
 	}
-	// if (backupRow.backupType === 'insert') {
-	// 	backupRow.originalInfo = backupRow.changedInfo;
-	// 	return backupRow;
-	// }
-	// if (backupRow.backupType === 'delete' || backupRow.backupType === 'update') {
-	// 	backupRow.changedInfo = backupRow.originalInfo;
-	// 	return backupRow;
-	// }
+
 	if (backupRow.logicBackupType === 'insert') {
 		backupRow.originalInfo = backupRow.changedInfo;
 		return backupRow;

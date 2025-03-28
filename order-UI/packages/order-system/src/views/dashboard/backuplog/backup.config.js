@@ -1,6 +1,58 @@
 import { TableName } from '@/api/tool/enums';
 
 export const TableConfig = {
+	// 订单主表
+	[TableName.GOODS_ORDER]: {
+		mappers: {
+			orderDate: '订单日期',
+			customer: '客户名称',
+			landCarNo: '陆运车牌号',
+			landDriverTel: '陆运司机电话',
+			landDriverName: '陆运司机姓名',
+			seaCarNo: '海运车牌号',
+			seaDriverTel: '海运公司电话',
+			seaDriverName: '海运公司名称',
+			checkState: '审核状态',
+			invoiceState: '开票状态',
+			landBankName: '陆运司机开户行',
+			landBankNo: '陆运司机银行账号',
+			seaBankName: '海运公司开户行',
+			seaBankNo: '海运公司银行账号',
+			saleManager: '销售经理',
+			fleet: '车队',
+			isAdjusted: '是否已调整',
+			adjustDate: '调整日期',
+			isAdjust: '是否调整单',
+			customerIsInvoice: '客户开票状态',
+			isSupplierInvoice: '供应商开票状态',
+			comments: '备注',
+			landFreight: '陆运运费(元)',
+			seaFreight: '海运运费(元)',
+			supplierNames: '供应商名称',
+			allPayments: '总货款金额(元)',
+			allPaymentFactory: '出厂货款(元)',
+			allTonnage: '总吨位(吨)',
+			allFreightPrice: '总运费(元)'
+		},
+		params: [
+			{
+				name: 'paymentFactory',
+				label: '出厂货款'
+			},
+			{
+				name: 'payments',
+				label: '总货款'
+			},
+			{
+				name: 'freight',
+				label: '总运费'
+			}
+		],
+		extraParams: [],
+		options(callback) {
+			return typeof callback === 'function' ? callback(this) : this;
+		}
+	},
 	// 订单货物
 	[TableName.ORDER_DETAIL]: {
 		mappers: {
@@ -59,8 +111,16 @@ export const TableConfig = {
 		},
 		params: [
 			{
-				name: 'invoiceAmount',
-				label: '发票金额'
+				name: 'paymentFactory',
+				label: '出厂货款'
+			},
+			{
+				name: 'payments',
+				label: '总货款'
+			},
+			{
+				name: 'freight',
+				label: '总运费'
 			}
 		],
 		extraParams: [],
