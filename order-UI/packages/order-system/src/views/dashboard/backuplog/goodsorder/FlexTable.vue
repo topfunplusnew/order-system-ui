@@ -392,7 +392,7 @@ export default {
 			<div v-if="body.moduleName === TableName.GOODS_ORDER || body.moduleName === TableName.INVENTORMAIN">
 				<h3>{{ moduleNames[this.body.moduleName] }}信息[{{ index + 1 }}]</h3>
 				<el-divider />
-				<div v-for="(item, index) in body.main_info.items" :key="index" style="margin-bottom: 40px">
+				<div v-for="(item, index) in body.main_info.items" :key="index" style="padding-bottom: 40px">
 					<header>
 						<span style="font-weight: bold; font-size: 14px; color: #555353">
 							操作类型:
