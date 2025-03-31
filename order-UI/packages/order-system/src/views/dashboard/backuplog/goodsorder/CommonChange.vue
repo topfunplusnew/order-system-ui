@@ -63,7 +63,7 @@ export default {
 			return TableName;
 		},
 		renderData() {
-			console.log('compareData:', this.compareData);
+			console.log('compareData', this.compareData);
 			let data = _.cloneDeep(this.compareData);
 			// 存放展平后的数据
 			const extra = [];
@@ -88,76 +88,64 @@ export default {
 			// 以上代码调试无问题
 
 			// 开始进行解压缩的逻辑 逻辑就是 先根据原来的备份信息 生成新的，这些新的给一个新的id 推入数组
-			const finalResult = result
-				.map(backlog => {
-					const ori = _.cloneDeep(backlog.originalInfo);
-					const chag = _.cloneDeep(backlog.changedInfo);
-					const originDataType = TypeUtils.prototype.checkType(ori);
-					const changedDataType = TypeUtils.prototype.checkType(chag);
-					if (originDataType === 'Array' && changedDataType === 'Array') {
-						if (ori.length > 0 && chag.length > 0) {
-							console.log(ori);
-							// 这里逻辑有问题 直接把原来的推入进去 相当于没推
-							// fixme 整改逻辑，把backuplog复制一份，并且设置好originalInfo和changedInfo，然后再推入新的backlog
-							ori.forEach(element => {
-								if (element) {
-									extra.push({
-										...backlog,
-										id: backlog.id + getUuid(),
-										tableName: backlog.tableName,
-										originalInfo: backlog,
-										changedInfo: null
-									});
-									extraIds.push(backlog.id);
-								}
-							});
-							chag.forEach(element => {
-								if (element) {
-									extra.push({
-										...backlog,
-										id: backlog.id + getUuid(),
-										tableName: backlog.tableName,
-										originalInfo: null,
-										changedInfo: backlog
-									});
-									extraIds.push(backlog.id);
-								}
-							});
-						}
-						return backlog;
-					} else if (originDataType === 'Array' && changedDataType !== 'Array') {
-						if (ori.length === 0) return backlog;
+			const finalResult = result.map(backlog => {
+				const ori = _.cloneDeep(backlog.originalInfo);
+				const chag = _.cloneDeep(backlog.changedInfo);
+				const originDataType = TypeUtils.prototype.checkType(ori);
+				const changedDataType = TypeUtils.prototype.checkType(chag);
+				// 创建新元素的创建函数
+				const createNewBack = (element, isOri) => {
+					let newBacklog = _.cloneDeep(backlog);
+					newBacklog.originalInfo = isOri ? element : null;
+					newBacklog.changedInfo = isOri ? null : element;
+					newBacklog.id = backlog.id + getUuid();
+					newBacklog.tableName = backlog.tableName;
+					return newBacklog;
+				};
+				// 如果修改前和修改后的数据都是数组
+				if (originDataType === 'Array' && changedDataType === 'Array') {
+					if (ori.length > 0 && chag.length > 0) {
+						// 分别将原信息和修改后信息推入
 						ori.forEach(element => {
-							if (element) {
-								extra.push({
-									...backlog,
-									id: backlog.id + getUuid(),
-									tableName: backlog.tableName,
-									originalInfo: backlog,
-									changedInfo: null
-								});
-								extraIds.push(backlog.id);
-							}
+							const newBacklog = createNewBack(element, true);
+							console.log(newBacklog);
+							element && extra.push(newBacklog);
 						});
-					} else if (originDataType !== 'Array' && changedDataType === 'Array') {
-						if (chag.length === 0) return backlog;
 						chag.forEach(element => {
-							if (element) {
-								extra.push({
-									...backlog,
-									id: backlog.id + getUuid(),
-									tableName: backlog.tableName,
-									originalInfo: null,
-									changedInfo: backlog
-								});
-								extraIds.push(backlog.id);
-							}
+							const newBacklog = createNewBack(element, false);
+							element && extra.push(newBacklog);
 						});
+						extraIds.push(backlog.id);
 					} else {
-						return backlog;
+						console.log('数组为空');
 					}
 					return backlog;
-				})
+				} else if (originDataType === 'Array' && changedDataType !== 'Array') {
+					if (ori.length === 0) return backlog;
+					ori.forEach(element => {
+						const newBacklog = createNewBack(element, true);
+						element && extra.push(newBacklog);
+					});
+					extraIds.push(backlog.id);
+				} else if (originDataType !== 'Array' && changedDataType === 'Array') {
+					if (chag.length === 0) return backlog;
+					chag.forEach(element => {
+						const newBacklog = createNewBack(element, false);
+						element && extra.push(newBacklog);
+					});
+					extraIds.push(backlog.id);
+				} else {
+					return backlog;
+				}
+				return backlog;
+			});
+			// 推入新元素
+			extra.forEach(newBacklog => {
+				finalResult.push(newBacklog);
+			});
+			const totalResult = _.cloneDeep(finalResult);
+			// 对数据进行筛选排序和补全操作
+			const actualResult = totalResult
 				// 因为会无故根据老的带有数组属性的数据推入新的数据 所以需要把老信息删除
 				.filter(backlog => !extraIds.includes(backlog.id))
 				// 根据时间进行排序
@@ -170,20 +158,17 @@ export default {
 					let processed = { ...backlog };
 					const origin = _.cloneDeep(backlog.originalInfo);
 					const changed = _.cloneDeep(backlog.changedInfo);
-					if (!origin || !changed) {
-						return backlog;
-					}
+					if (!origin || !changed) return backlog;
 					origin && (processed.originalInfo = origin);
 					changed && (processed.changedInfo = completeJsonData(origin, changed));
 					return processed;
 				})
 				.reverse();
-
-			console.log('finalResult:', finalResult);
-			return Object.entries(_.groupBy(finalResult, item => item.uuid)).map(entries => _.groupBy(entries[1], item => item.tableName));
+			console.log(`actualResult`, actualResult);
+			return Object.entries(_.groupBy(actualResult, item => item.uuid)).map(entries => _.groupBy(entries[1], item => item.tableName));
 		},
 		bodyData() {
-			// console.log(`renderData`, this.renderData);
+			console.log(`renderData`, this.renderData);
 			return this.renderData.map(backlog => {
 				const moduleName = this.moduleName;
 				let multiModuleName = null;
