@@ -70,9 +70,13 @@
 			<el-table-column show-overflow-tooltip label="宽度" align="center" prop="width" width="100" />
 			<el-table-column show-overflow-tooltip label="每包片数" align="center" prop="piecesPerPack" width="100" />
 			<el-table-column show-overflow-tooltip label="包数" align="center" prop="packs" width="100" />
-			<el-table-column show-overflow-tooltip label="实际片数" align="center" prop="actualPieces" width="100" />
+			<el-table-column show-overflow-tooltip label="卸货片数" align="center" prop="actualPieces" width="100" />
 			<el-table-column show-overflow-tooltip label="卸货费用" align="center" prop="paymentUnload" width="100" />
-			<el-table-column show-overflow-tooltip label="含税销售" align="center" prop="isIncludeTaxSale" width="100" />
+			<el-table-column show-overflow-tooltip label="含税销售" align="center" prop="isIncludeTaxSale" width="100">
+				<template slot-scope="scope">
+					{{ scope.row.isIncludeTaxSale ? '含税' : '不含税' }}
+				</template>
+			</el-table-column>
 			<el-table-column show-overflow-tooltip label="杂费" align="center" prop="sundryCost" width="100" />
 			<el-table-column show-overflow-tooltip label="付款金额" align="center" prop="payments" width="100" />
 			<el-table-column show-overflow-tooltip label="利润" align="center" prop="profit" width="100" />
