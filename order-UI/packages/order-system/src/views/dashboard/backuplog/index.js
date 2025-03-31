@@ -6,12 +6,7 @@ export const JsonUtils = {
 				console.log('输入的数据不是有效的 JSON 字符串'); // 替换为 console.log
 				return null;
 			}
-			const obj = JSON.parse(json);
-			// 保命处理
-			if (TypeUtils.prototype.checkType(obj) === 'Array') {
-				return obj[0];
-			}
-			return obj;
+			return JSON.parse(json);
 		} catch (error) {
 			console.log('JSON 解析失败'); // 替换为 console.log
 			return null;
