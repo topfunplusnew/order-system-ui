@@ -372,6 +372,7 @@ export default {
 			// 获取操作类型
 			const operationType = this.calculateProp(item).type;
 
+			// fixme 这里 如果是空 那么就渲染一个空行 全部都是 -
 			const result = [];
 			// 如果不是 '新增' 操作，添加 '修改前' 行
 			if (operationType !== '新增') {
