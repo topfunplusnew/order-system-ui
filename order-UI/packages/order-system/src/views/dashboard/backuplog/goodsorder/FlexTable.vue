@@ -300,13 +300,14 @@ export default {
 				label: mappers[key], // 列头显示的文本
 				// 列内容格式化函数
 				formatter: (row, column, cellValue, index) => {
+					console.log('getTableColumns', row, column, cellValue, index);
 					// 如果当前行是 '差额' 行
 					if (row.status === '差额') {
 						// 使用 getDiffValue 方法格式化差额显示
 						return this.getDiffValue(row, key); // 传入整行数据和当前列的 key
 					}
 					// 对于非 '差额' 行 (修改前/修改后/新增)
-					const value = cellValue; // cellValue 就是 row[column.property]
+					const value = cellValue || '无'; // cellValue 就是 row[column.property]
 					// 检查是否有特定的格式化选项函数 (可能用于枚举值转换等)
 					if (typeof config.options === 'function') {
 						try {
@@ -367,12 +368,16 @@ export default {
 			// 安全获取原始信息和变更后信息，默认为空对象
 			const original = item?.originalInfo || {};
 			const changed = item?.changedInfo || {};
+
+			console.log(original, changed);
+			if (typeof original !== 'object' || typeof changed !== 'object') {
+				throw new Error('原始信息和变更信息必须是对象类型');
+			}
 			// 计算差异
 			const diff = this.calculateDifferences(original, changed);
 			// 获取操作类型
 			const operationType = this.calculateProp(item).type;
 
-			// fixme 这里 如果是空 那么就渲染一个空行 全部都是 -
 			const result = [];
 			// 如果不是 '新增' 操作，添加 '修改前' 行
 			if (operationType !== '新增') {
