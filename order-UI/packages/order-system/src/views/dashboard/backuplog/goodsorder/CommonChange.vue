@@ -8,9 +8,9 @@
 					<span class="page-info">第 {{ currentPage }} 页 / 共 {{ totalPages }} 页 (共 {{ totalItems }} 条记录)</span>
 					<el-button @click="nextPage" :disabled="currentPage >= totalPages" size="small">下一页</el-button>
 					<!-- 快速跳转 -->
-					<el-input type="number" v-model="currentPage" :min="1" :max="totalPages" size="small" @change="goToPage(currentPage)" style="width: 80px; margin-left: 10px" />
+					<!--					<el-input type="number" v-model="currentPage" :min="1" :max="totalPages" size="small" @change="goToPage(currentPage)" style="width: 80px; margin-left: 10px" />-->
 					<!-- 保存 JSON 按钮，方便调试 -->
-					<el-button type="primary" size="small" @click="saveJsonData" style="margin-left: 10px">保存 JSON(调试)</el-button>
+					<!--					<el-button type="primary" size="small" @click="saveJsonData" style="margin-left: 10px">保存 JSON(调试)</el-button>-->
 				</div>
 				<div id="scrollContainer" class="scroll-area">
 					<div v-for="(item, idx) in paginatedData" :key="idx">
@@ -54,7 +54,7 @@ export default {
 		return {
 			activeNames: ['1'],
 			currentPage: 1, // 当前页码
-			pageSize: 20, // 每页显示数量
+			pageSize: 10, // 每页显示数量
 			totalPages: 1 // 总页数
 		};
 	},
