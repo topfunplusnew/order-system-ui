@@ -279,26 +279,19 @@ export default {
 				prop: key,
 				label: mappers[key],
 				formatter: (row, column, cellValue, index) => {
-					// 移除之前的空对象 '-' 处理逻辑，让高亮正常显示原始/修改后的空值或 '-'
-					// if (cellValue === '-') {
-					//   return '-';
-					// }
 					if (row.status === '差额') {
 						return this.getDiffValue(row, key);
 					}
-					const value = cellValue; // 直接使用 cellValue
+					const value = cellValue;
 					if (typeof config.options === 'function') {
 						try {
-							// 注意：如果 options 函数期望处理 null/undefined，这里不要替换
 							const formattedValue = config.options(key, value);
-							// 如果 options 返回 null/undefined，我们可能还是希望显示 '-'
 							return formattedValue === null || typeof formattedValue === 'undefined' ? '-' : formattedValue;
 						} catch (error) {
 							console.error(`格式化字段 ${key} 的值 ${value} 时出错:`, error);
 							return value === null || typeof value === 'undefined' ? '-' : String(value);
 						}
 					} else {
-						// 默认处理 null/undefined 为 '-'
 						return value === null || typeof value === 'undefined' ? '-' : String(value);
 					}
 				}
@@ -308,18 +301,14 @@ export default {
 			const value = row ? row[key] : undefined;
 			if (typeof value === 'number') {
 				if (!isFinite(value)) return '-';
-				// 不再过滤 0，让 isMeaningfulDifference 控制高亮
 				return value > 0 ? `+${value.toFixed(2)}` : value.toFixed(2);
 			} else if (value === '[changed]') {
 				return '有修改';
 			} else if (value === '列表有变更') {
-				// 处理 totalDiff 的标记
 				return '列表有变更';
 			} else if (Array.isArray(value)) {
-				// 来自 calculateDifferences 的列表差异
 				return value.length > 0 ? '列表有变更' : '-';
 			} else if (typeof value === 'object' && value !== null) {
-				// 其他对象差异
 				return Object.keys(value).length > 0 ? '对象有修改' : '-';
 			} else if (value === null || typeof value === 'undefined' || value === '') {
 				return '-';
@@ -327,56 +316,70 @@ export default {
 				return '-';
 			}
 		},
+		isRowEmpty(row, columns) {
+			return columns.every(col => {
+				const value = row[col.prop];
+				return value === null || value === undefined || value === '';
+			});
+		},
 		getCombinedData(item) {
-			// 移除之前的空对象占位符逻辑，让高亮可以应用
 			const original = item?.originalInfo || {};
 			const changed = item?.changedInfo || {};
-			// if (_.isEmpty(original) && _.isEmpty(changed)) { ... } // 移除这部分
-
 			const operationType = this.calculateProp(item).type;
-			const diff = this.calculateDifferences(original, changed); // diff 计算仍需保留
+			const diff = this.calculateDifferences(original, changed);
+			const columns = this.getTableColumns();
 
 			const result = [];
 			if (operationType !== '新增') {
-				result.push({ status: '修改前', ...original });
+				const originalRow = { status: '修改前', ...original };
+				if (!this.isRowEmpty(originalRow, columns)) {
+					result.push(originalRow);
+				}
 			}
-			result.push({ status: '修改后', ...changed });
-			// 只有当计算出的差异对象包含有意义的差异时，才添加 '差额' 行
-			// （或者总是添加，让 getDiffValue 显示 '-' 或实际差异）
-			// 为了高亮逻辑简单（依赖diffProps），最好总是计算 diff
+			const changedRow = { status: '修改后', ...changed };
+			if (!this.isRowEmpty(changedRow, columns)) {
+				result.push(changedRow);
+			}
 			if (Object.keys(diff).length > 0) {
-				// 检查是否有意义差异决定是否真的 *显示* 差额行 (可选)
-				const hasMeaningful = Object.keys(diff).some(key => this.isMeaningfulDifference(diff[key]));
-				if (hasMeaningful) {
-					// 只在有实际内容显示时才添加差额行
-					result.push({ status: '差额', ...diff });
+				const diffRow = { status: '差额', ...diff };
+				// Check if the diff row (excluding status) has any meaningful difference
+				const hasMeaningfulDiff = columns.some(col => {
+					if (col.prop !== 'status') {
+						return this.isMeaningfulDifference(diffRow[col.prop]);
+					}
+					return false;
+				});
+				if (hasMeaningfulDiff) {
+					result.push(diffRow);
 				}
 			}
 			return result;
 		},
 		getCombinedSubData(subItems) {
-			// 移除之前的空对象占位符逻辑
 			if (!Array.isArray(subItems) || subItems.length === 0) {
 				return [];
 			}
-			// if (subItems.every(...)) { ... } // 移除这部分
-
 			const operationType = this.calculateProp(subItems[0]).type;
+			const columns = this.getTableColumns(true);
 			const allRows = [];
 
 			if (operationType !== '新增') {
 				subItems.forEach(sub => {
-					allRows.push({ status: '修改前', ...(sub?.originalInfo || {}) });
+					const originalRow = { status: '修改前', ...(sub?.originalInfo || {}) };
+					if (!this.isRowEmpty(originalRow, columns)) {
+						allRows.push(originalRow);
+					}
 				});
 			}
 			subItems.forEach(sub => {
-				allRows.push({ status: '修改后', ...(sub?.changedInfo || {}) });
+				const changedRow = { status: '修改后', ...(sub?.changedInfo || {}) };
+				if (!this.isRowEmpty(changedRow, columns)) {
+					allRows.push(changedRow);
+				}
 			});
 
-			// 计算汇总差异 totalDiff (需要完整计算以确定高亮列)
 			const allDiffs = subItems.map(sub => this.calculateDifferences(sub?.originalInfo || {}, sub?.changedInfo || {}));
 			const totalDiff = allDiffs.reduce((acc, diff) => {
-				/* ... 汇总逻辑不变 ... */
 				Object.entries(diff).forEach(([key, diffValue]) => {
 					const existingValue = acc[key];
 					if (key === 'inventoryDetailList' && Array.isArray(diffValue) && diffValue.length > 0) {
@@ -384,7 +387,7 @@ export default {
 					} else if (typeof diffValue === 'number' && isFinite(diffValue)) {
 						if (typeof existingValue === 'number' || existingValue === undefined) {
 							acc[key] = (existingValue || 0) + diffValue;
-						} // else 保持标记
+						}
 					} else if (diffValue === '[changed]' || (typeof diffValue === 'object' && diffValue !== null && !Array.isArray(diffValue))) {
 						if (existingValue !== '列表有变更') {
 							acc[key] = '[changed]';
@@ -394,16 +397,22 @@ export default {
 				return acc;
 			}, {});
 
-			// 检查是否有意义差异决定是否显示差额行
-			const hasMeaningful = Object.keys(totalDiff).some(key => this.isMeaningfulDifference(totalDiff[key]));
-			if (hasMeaningful) {
-				allRows.push({ status: '差额', ...totalDiff });
+			const diffRow = { status: '差额', ...totalDiff };
+			const hasMeaningfulDiff = columns.some(col => {
+				if (col.prop !== 'status') {
+					return this.isMeaningfulDifference(diffRow[col.prop]);
+				}
+				return false;
+			});
+			if (Object.keys(totalDiff).length > 0 && hasMeaningfulDiff) {
+				if (!this.isRowEmpty(diffRow, columns)) {
+					allRows.push(diffRow);
+				}
 			}
 
 			return allRows;
 		},
 		saveAsJson(data, type) {
-			// ... (saveAsJson 逻辑不变) ...
 			try {
 				if (
 					data === null ||
