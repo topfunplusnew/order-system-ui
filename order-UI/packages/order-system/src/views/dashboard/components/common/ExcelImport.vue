@@ -21,7 +21,9 @@ export default {
 			// sheet列表
 			sheetList: [],
 			// 批量开票的弹窗
-			invoiceAllVisible: false
+			invoiceAllVisible: false,
+			// 当前的操作步骤
+			currentStep: 1
 		};
 	},
 	methods: {
@@ -154,6 +156,7 @@ export default {
 
 			// 在数据下方添加说明信息
 			const notes = [
+				['注：请将此段说明删除整段删除后再进行导入开票的操作！'],
 				['数据填写规范说明：'],
 				['1. ID规则：'],
 				['   - 当类型为"己方公司"时，对应的ID必须为0'],
@@ -164,8 +167,7 @@ export default {
 				['   - 销方和购买方不能同时为除己方公司外的其他类型'],
 				['3. 金额规则：'],
 				['   - 价税合计必须保留两位小数'],
-				[''],
-				['注：此说明行可删除']
+				['']
 			];
 
 			// 计算数据的行数
@@ -191,6 +193,9 @@ export default {
 
 			// 下载文件
 			writeFile(wb, '批量开票模板.xlsx');
+
+			// 跳转下一步
+			this.currentStep = 2;
 		}
 	}
 };
@@ -199,10 +204,18 @@ export default {
 <template>
 	<div>
 		<!--    开票按钮-->
-		<div>
+		<div style="width: 100%">
+			<el-steps :active="currentStep" simple>
+				<el-step title="下载模板" icon="el-icon-upload"></el-step>
+				<el-step title="根据模板内容填写开票信息" icon="el-icon-edit"></el-step>
+				<el-step title="导入excel进行批量开票" icon="el-icon-s-order"></el-step>
+			</el-steps>
+			<el-divider></el-divider>
 			<div class="custom-file-input">
-				<el-button size="mini" type="success" @click="handleUpload">excel批量开票</el-button>
 				<el-button size="mini" type="primary" @click="downloadTemplate">下载模板</el-button>
+				<el-button size="mini" type="success" @click="handleUpload" :disabled="currentStep === 1">
+					{{ currentStep === 1 ? `批量开票(请先下载模板)` : `批量开票` }}
+				</el-button>
 				<input ref="fileInput" type="file" class="file-ipt" multiple @change="onChange" />
 			</div>
 		</div>

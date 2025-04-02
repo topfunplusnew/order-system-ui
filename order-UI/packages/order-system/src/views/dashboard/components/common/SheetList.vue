@@ -77,14 +77,19 @@ export default {
 			const excelInfo = this.handleReadExcel();
 
 			// 需要销售方id 销售方的名称和类型 以及购买方id  购买方类型 和名称
-			arr = excelInfo[excelIndex].map(item => {
-				return this.mapperParams(item); // 映射关系
-			});
+			for (let item of excelInfo[excelIndex]) {
+				if (item['销方ID'] && !/^\d+$/.test(item['销方ID'])) {
+					this.$message.error('导入的excel格式有误,请仔细阅读excel模板中的注意！');
+					return;
+				}
+				arr.push(this.mapperParams(item)); // 映射关系
+			}
 
+			// 检查excel中是否有同时存在的
 			let ok = arr.every(item => this.purchaseHandler(item));
-
 			if (!ok) {
 				this.$message.error('存在订单中存在购买方和销方的信息，请检查');
+				return;
 			}
 
 			// 对数组每一个进行遍历 收集元素
