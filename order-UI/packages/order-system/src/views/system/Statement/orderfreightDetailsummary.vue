@@ -149,12 +149,11 @@
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import { getFreightSubjectDetailSummary, getFreightSubjectDetailSummarySomeDay, getOrderFreightDetailSummary } from '../../../api/system/statement';
 import { parseTime } from '../../../utils/ruoyi';
-import FreightDetail from './components/FreightDetail.vue';
 import { fix } from 'order-system/src/api/tool/format';
 
 export default {
 	name: 'LendMoney',
-	components: { FreightDetail },
+	components: {},
 	dicts: ['order_target_type'],
 	mixins: [mixin_printHTML],
 	data() {

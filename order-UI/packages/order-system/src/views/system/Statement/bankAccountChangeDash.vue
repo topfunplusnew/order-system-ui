@@ -9,13 +9,16 @@
 				<p>请上传银行明细相关excel文件，excel文件中每一个sheet为一个银行卡的明细</p>
 				<el-button type="primary" @click="downloadTemplate" size="mini">下载excel模板</el-button>
 				<br />
-				<input type="file" @change="handleFileUpload" accept=".xlsx, .xls" />
+				<input type="file" @change="handleFileUpload" accept=".xlsx, .xls" ref="fileInput" />
 				<div v-if="uploadedFiles.length > 0" class="uploaded-files">
 					<h4>已上传的文件：</h4>
 					<ul>
 						<li v-for="(file, index) in uploadedFiles" :key="index" class="uploaded-file-item">
-							<ExcelIcon class="excel-icon" />
-							<el-link @click="handleFileClick(file)">{{ file.name }}</el-link>
+							<div class="sub-file-item">
+								<ExcelIcon class="excel-icon" />
+								<el-link @click="handleFileClick(file)">{{ file.name }}</el-link>
+							</div>
+							<el-button type="danger" size="mini" @click="handleFileDelete(file)">删除</el-button>
 						</li>
 					</ul>
 				</div>
@@ -123,9 +126,11 @@ export default {
 		};
 	},
 	methods: {
+		// 点击打开准备上传文件的弹窗
 		handleImport() {
 			this.importDialogVisible = true;
 		},
+		// 点击上传框 触发的上传
 		handleFileUpload(event) {
 			const file = event.target.files[0];
 			if (!file.name.endsWith('.xlsx') && !file.name.endsWith('.xls')) {
@@ -142,16 +147,26 @@ export default {
 					data: this.fileData
 				});
 				this.importDialogVisible = false;
+				// 打开选择sheet表的弹窗
 				this.sheetDialogVisible = true;
+				// 每次上传后清除上传的文件
+				this.$refs.fileInput.value = '';
 			};
 			reader.readAsArrayBuffer(file);
 		},
+		// 点击删除文件
+		handleFileDelete(file) {
+			this.uploadedFiles = this.uploadedFiles.filter(f => f !== file);
+			this.$message.success('文件已删除');
+		},
+		// 点击已上传的文件
 		handleFileClick(file) {
 			this.fileData = file.data;
 			const workbook = XLSX.read(this.fileData, { type: 'array' });
 			this.sheets = workbook.SheetNames;
 			this.sheetDialogVisible = true;
 		},
+		// 关闭
 		handleImportDialogClose() {
 			this.importDialogVisible = false;
 		},
@@ -159,7 +174,7 @@ export default {
 			// 获取系统数据
 			const query = {};
 			if (!/^\d{16,19}$/.test(this.selectedSheet)) {
-				this.$message.error('银行卡号格式错误');
+				this.$message.error('银行卡号格式错误，请将sheet表名称命名为符合规范的银行卡号！');
 				return;
 			}
 			query.selfBankNo = this.selectedSheet;
@@ -178,12 +193,12 @@ export default {
 		},
 		downloadTemplate() {
 			const workbook = XLSX.utils.book_new();
-			const sheetName = `银行卡号${Math.floor(Math.random() * 10000000000000000)}`;
+			const sheetName = `(此处应为合规的银行卡号)`;
 			const data = [
 				['操作日期', '变动类型', '金额', '公司类型', '银行卡类型', '用户名'],
 				['2023-01-01', '存款', '1000.00', '公司A', '储蓄卡', '张三'],
-				['2023-01-02', '取款', '500.00', '公司B', '信用卡', '李四']
-				// ...更多随机数据
+				['2023-01-02', '取款', '500.00', '公司B', '信用卡', '李四'],
+				['请按照', '规范', '填写', '', '', '']
 			];
 			const worksheet = XLSX.utils.aoa_to_sheet(data);
 			XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
@@ -210,12 +225,18 @@ export default {
 .uploaded-file-item {
 	display: flex;
 	align-items: center;
+	justify-content: space-around;
 	margin-top: 10px;
 	padding: 10px;
 	background-color: #f9f9f9;
 	border: 1px solid #e0e0e0;
 	border-radius: 5px;
 	gap: 26px;
+
+	.sub-file-item {
+		display: flex;
+		gap: 26px;
+	}
 }
 
 .uploaded-file-item .excel-icon {
