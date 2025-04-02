@@ -60,7 +60,7 @@
 			<el-table-column v-if="columns[7].visible" label="充值人员姓名" align="center" prop="rechargeName" />
 			<el-table-column v-if="columns[8].visible" label="充值附件" align="center" prop="attachment">
 				<template #default="scope">
-					<CheckFiles :path="scope.row.attachment" @needToUpdate="value => handleUpdateFilePath(value, scope.row, 'attachment', getOilRecharge(), updateOilRecharge())" />
+					<CheckFiles :is-upload="false" :path="scope.row.attachment" @needToUpdate="value => handleUpdateFilePath(value, scope.row, 'attachment', getOilRecharge(), updateOilRecharge())" />
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[9].visible" label="备注" align="center" prop="comments" />
@@ -278,7 +278,6 @@ export default {
 		listOilCard,
 		// 加油卡付款申请
 		addPaymentApply(row) {
-			console.log(row);
 			this.tid = row.id;
 			this.needMoney = row.rechargeMoney;
 			this.needInfo = row;

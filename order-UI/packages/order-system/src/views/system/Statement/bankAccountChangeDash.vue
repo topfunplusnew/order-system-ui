@@ -158,9 +158,12 @@ export default {
 		handleFileDelete(file) {
 			this.uploadedFiles = this.uploadedFiles.filter(f => f !== file);
 			this.$message.success('文件已删除');
+			// 清除选中的sheet 防止状态污染
+			this.selectedSheet = '';
 		},
 		// 点击已上传的文件
 		handleFileClick(file) {
+			this.selectedSheet = '';
 			this.fileData = file.data;
 			const workbook = XLSX.read(this.fileData, { type: 'array' });
 			this.sheets = workbook.SheetNames;

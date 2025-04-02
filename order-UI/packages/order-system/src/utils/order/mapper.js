@@ -43,6 +43,7 @@ import GOODS_ORDER from '@/components/NeedToShow/GOODS_ORDER.vue';
 import ORDER_COMMISION from '@/components/NeedToShow/ORDER_COMMISION.vue';
 import { getCommission } from '@/api/commission';
 import ORDER_DETAIL from '@/components/NeedToShow/ORDER_DETAIL.vue';
+import BUSSNIESS_TRIP from '@/components/NeedToShow/BUSSNIESS_TRIP.vue';
 
 // 根据表名  获取对应的get函数方法
 export function getFunction(tableName) {
@@ -137,8 +138,8 @@ export function getFunction(tableName) {
 	}
 }
 
+// 这个方法可以根据表名获取对应的组件 然后展示
 export class TableComponentsTools {
-	// 这个方法可以根据表名获取对应的组件 然后展示
 	getComponentsByTableName(tableName) {
 		if (!tableName) {
 			this.$message.error('getComponentsByTableName函数调用出错，表名或表ID为空');
@@ -176,6 +177,10 @@ export class TableComponentsTools {
 			// 如果是发票购入
 			case TableName.INVOICE_IN: {
 				return INVOICE_IN;
+			}
+			// 如果是出差
+			case TableName.BUSINESS_TRIP: {
+				return BUSSNIESS_TRIP;
 			}
 		}
 	}

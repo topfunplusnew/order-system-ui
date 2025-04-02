@@ -83,7 +83,8 @@ export default {
 
 		// 审核
 		handleCheckState(item) {
-			console.log('审核信息:', item);
+			console.log('item:', item);
+			// 查询对应表信息
 			this.checkWithTableName(item.paymentApply.tableName, item.paymentApply.tid);
 			// 赋值 先拿到付款申请对象
 			this.currentCheckPaymentApply = item.paymentApply;
@@ -183,8 +184,8 @@ export default {
 							<el-collapse accordion>
 								<el-collapse-item>
 									<template slot="title">
-										<i class="header-icon el-icon-info"></i>
-										<span class="payment-title">[付款相关信息]</span>
+										<i class="header-icon el-icon-info" style="margin-right: 10px"></i>
+										<span class="payment-title">[付款相关模块信息]-点此查看</span>
 									</template>
 									<NeedToShowInfo :need-to-show-info="needToShowInfo" :table-name-to-prop="tableNameToProp" />
 								</el-collapse-item>
@@ -192,8 +193,8 @@ export default {
 						</template>
 					</CheckApply>
 					<span slot="footer" class="dialog-footer">
-						<el-button @click="checkPaymentApplyDialogVisible = false">取 消</el-button>
-						<el-button type="primary" @click="checkPaymentApplyDialogVisible = false">确 定</el-button>
+						<el-button @click="checkPaymentApplyDialogVisible = false">关 闭</el-button>
+						<!--						<el-button type="primary" @click="checkPaymentApplyDialogVisible = false">确 定</el-button>-->
 					</span>
 				</el-dialog>
 			</el-col>

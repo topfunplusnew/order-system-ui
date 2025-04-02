@@ -496,6 +496,7 @@ import StateTag from '@/views/dashboard/components/common/StateTag.vue';
 import { BankAcceptanceType } from '../../../api/tool/enums';
 import CheckFiles from '@/components/CheckFiles.vue';
 import { mixin_checkfile } from '@/views/dashboard/mixins/checkfiles/mixin_checkfile';
+import _ from 'lodash';
 
 export default {
 	name: 'Payment',
@@ -848,27 +849,25 @@ export default {
 			// 如果没有我方银行卡信息 需要跳出选择银行卡信息
 			if (!row.selfBankID) {
 				this.resetChooseInfo();
-				this.chooseInfo = row;
+				this.chooseInfo = _.cloneDeep(row);
 				// 初始化承兑对象
-				this.chooseInfo.params = {
-					bankacceptance: null
-				};
+				this.chooseInfo.params = { bankacceptance: null };
 				this.chooseBankDialogVisible = true;
-			} else {
-				this.$confirm('是否付款?', '提示', {
-					confirmButtonText: '是',
-					cancelButtonText: '否',
-					type: 'success'
-				}).then(() => {
-					// 只需要更新状态
-					updatePayment({ ...row, paymentState: '已支付' }).then(res => {
-						this.$modal.msgSuccess(res.msg);
-						this.reset();
-						this.getList();
-						// todo 付款没有修改 承兑的逻辑没有从收款信息迁移过来
-					});
-				});
+				return;
 			}
+			this.$confirm('是否付款?', '提示', {
+				confirmButtonText: '是',
+				cancelButtonText: '否',
+				type: 'success'
+			}).then(() => {
+				// 只需要更新状态
+				updatePayment({ ...row, paymentState: '已支付' }).then(res => {
+					this.$modal.msgSuccess(res.msg);
+					this.reset();
+					this.getList();
+					// todo 付款没有修改 承兑的逻辑没有从收款信息迁移过来
+				});
+			});
 		},
 		// 付款处理 用户在弹出的弹窗点击确定
 		handlePayment() {
@@ -877,7 +876,8 @@ export default {
 			// 对auditState做保证处理
 			this.chooseInfo.auditState = this.chooseInfo.auditState === null ? '0' : this.chooseInfo.auditState === true ? '1' : '0';
 			// 更新付款状态
-			updatePayment({ ...this.chooseInfo, paymentState: '已支付' }).then(res => {
+			const newPayment = { ...this.chooseInfo, paymentState: '已支付' };
+			updatePayment(newPayment).then(res => {
 				this.$modal.msgSuccess(res.msg);
 				// 重置弹出窗的付款信息 主要包含我方银行卡的信息
 				this.resetChooseInfo();
