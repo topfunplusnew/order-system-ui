@@ -1,4 +1,5 @@
 import instance from '../../../../utils/request';
+import { debounce } from '@/utils/trash/utils';
 
 export function paymentAudit(params) {
 	return instance.request({
@@ -12,33 +13,25 @@ export function paymentAudit(params) {
 }
 
 export var mixin_payment_audit = {
-	data: function () {
-		return {};
-	},
-
 	methods: {
 		handlePaymentAudit(row, e) {
+			const debouncedPaymentAudit = debounce(function (row, auditStatus) {
+				paymentAudit({ ...row, auditStatus }).then(() => {
+					const message = auditStatus === '1' ? '复核成功!' : '取消复核!';
+					this.$message({
+						type: 'success',
+						message: message
+					});
+					this.getList();
+				});
+			}, 1000);
 			// 更新视图
 			row.auditStatus = e;
 			// 保存审核状态
 			let _auditState = e ? '1' : '0';
-			if (e === true) {
-				paymentAudit({ ...row, auditStatus: _auditState }).then(() => {
-					this.$message({
-						type: 'success',
-						message: '复核成功!'
-					});
-					this.getList();
-				});
-			} else {
-				paymentAudit({ ...row, auditStatus: _auditState }).then(() => {
-					this.$message({
-						type: 'success',
-						message: '取消复核!'
-					});
-					this.getList();
-				});
-			}
+
+			// 调用防抖后的函数，传递最新的 row 和 auditStatus
+			debouncedPaymentAudit.call(this, row, _auditState);
 		}
 	}
 };

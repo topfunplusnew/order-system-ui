@@ -7,6 +7,7 @@ export function getUuid() {
 	});
 }
 
+// 获取文件后缀
 export function findFileExtension(filename) {
 	// 如果filename为空 直接返回
 	if (!filename) {
@@ -20,4 +21,22 @@ export function findFileExtension(filename) {
 	}
 	// 返回'.'后面的字符串作为后缀名
 	return filename.substring(index + 1);
+}
+
+// 防抖函数
+export function debounce(func, delay) {
+	let timeoutId;
+
+	return function (...args) {
+		const context = this;
+
+		// 清除之前的定时器
+		clearTimeout(timeoutId);
+
+		// 设置一个新的定时器
+		timeoutId = setTimeout(function () {
+			// 在延迟时间后执行函数，并传递上下文和参数
+			func.apply(context, args);
+		}, delay);
+	};
 }
