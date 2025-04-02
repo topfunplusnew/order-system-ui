@@ -3,6 +3,8 @@
 		<div v-if="body.moduleName === TableName.GOODS_ORDER || body.moduleName === TableName.INVENTORMAIN">
 			<h3>{{ moduleNames[body.moduleName] }}信息[{{ index + 1 }}]</h3>
 			<el-divider />
+
+			<!--      循环主信息-->
 			<div v-for="(item, idx) in body.main_info.items" :key="idx" style="padding-bottom: 40px">
 				<header>
 					<span style="font-weight: bold; font-size: 14px; color: #555353">
@@ -183,6 +185,7 @@ export default {
 		},
 
 		// --- :cell-style 的包装处理函数 ---
+		// 检查每行的数据的每一个单元格，并返回一个样式对象
 		getCellStyleHandler(context, isSubInfo) {
 			// 获取当前 context (item 或 sub_info) 的有差异的属性集合
 			const diffProps = this.getAndCacheDiffProps(context, isSubInfo);
