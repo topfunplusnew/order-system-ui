@@ -420,8 +420,18 @@
 		<el-dialog title="请选择付款银行卡" :visible.sync="chooseBankDialogVisible" width="600px">
 			<div>
 				<el-form :model="chooseInfo" label-width="150px">
+					<el-form-item label="对方银行账户类型" prop="selfBankNo">
+						<BankType
+							:bill-type="BankAcceptanceType.PAY_TYPE.PAYMENT"
+							:select-type="chooseInfo.otherBankCardType"
+							@updateSelectedType="changeCustomSelfBankType"
+							@updateBankAcceptance="value => (chooseInfo.params.bankacceptance = value)"
+						/>
+					</el-form-item>
 					<el-form-item label="我方银行账户类型" prop="selfBankNo">
 						<BankType
+							:option-baned="true"
+							:baned="true"
 							:bill-type="BankAcceptanceType.PAY_TYPE.PAYMENT"
 							:select-type="chooseInfo.selfBankCardType"
 							@updateSelectedType="changeCustomSelfBankType"
@@ -731,6 +741,7 @@ export default {
 		},
 		// 选择我方银行账户类型
 		changeCustomSelfBankType(value) {
+			this.chooseInfo.otherBankCardType = value;
 			this.chooseInfo.selfBankCardType = value;
 		},
 		/** 查询付款信息列表 */
@@ -849,6 +860,7 @@ export default {
 			// 如果没有我方银行卡信息 需要跳出选择银行卡信息
 			if (!row.selfBankID) {
 				this.resetChooseInfo();
+				// 深克隆防止出现引用问题
 				this.chooseInfo = _.cloneDeep(row);
 				// 初始化承兑对象
 				this.chooseInfo.params = { bankacceptance: null };
@@ -905,8 +917,9 @@ export default {
 							return;
 						}
 					}
+					// 去除无用的参数
 					this.form = excludeParams(this.form, this.$exclude);
-					// 对结果进行特殊处理
+					// 对结果进行特殊处理 如果是字符串 就把响应式赋值为空，然后重新选择 如果是数组 ，那么不会进入这个判断
 					if (typeof this.form.payType === 'string') {
 						this.form.payType = null;
 						this.$message.warning('请选择付款类型');
@@ -914,16 +927,15 @@ export default {
 					}
 					this.form.payType = this.form.payType.join('-');
 					if (this.form.id != null) {
-						// todo 同上 付款没有更新的操作 这里的逻辑没有与承兑挂钩
+						// 同上 付款没有更新的操作 这里的逻辑没有与承兑挂钩 只是单纯修改支付状态
 						this.form.paymentState = '已支付';
-						// 修改支付状态
+						// 修改支付状态 这里逻辑上是支付 实际是修改
 						updatePayment(this.form).then(() => {
 							this.$modal.msgSuccess('支付成功~');
 							this.open = false;
 							this.getList();
 							this.$refs.fileUploader.clearFileList();
 						});
-
 						// 新增操作
 					} else {
 						this.form.companyType = this.value;

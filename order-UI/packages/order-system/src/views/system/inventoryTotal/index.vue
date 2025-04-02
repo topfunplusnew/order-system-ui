@@ -3,23 +3,23 @@
 		<el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" label-width="100px" class="search-form">
 			<!-- 后端不支持这两个字段的搜索 已删除 -->
 			<!-- <el-form-item label="仓库名称" prop="storeHouseName">
-				<el-input
-					v-model="queryParams.storeHouseName"
-					placeholder="请输入仓库名称"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
-			</el-form-item>
-			<el-form-item label="入库日期" prop="storeDate">
-				<el-date-picker
-					v-model="queryParams.storeDate"
-					type="date"
-					value-format="yyyy-MM-dd"
-					placeholder="选择入库日期"
-					clearable
-					@change="handleQuery"
-				/>
-			</el-form-item> -->
+        <el-input
+          v-model="queryParams.storeHouseName"
+          placeholder="请输入仓库名称"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="入库日期" prop="storeDate">
+        <el-date-picker
+          v-model="queryParams.storeDate"
+          type="date"
+          value-format="yyyy-MM-dd"
+          placeholder="选择入库日期"
+          clearable
+          @change="handleQuery"
+        />
+      </el-form-item> -->
 			<el-form-item label="级别名称" prop="levelName">
 				<el-input v-model="queryParams.levelName" placeholder="请输入级别名称" clearable />
 			</el-form-item>
@@ -61,10 +61,10 @@
 					<div class="card-content">
 						<el-table :data="paginatedData[category]" size="mini" border stripe>
 							<el-table-column label="级别名称" prop="levelName" align="center" show-overflow-tooltip />
-							<el-table-column label="剩余量" prop="total_remaining" align="center" />
+							<el-table-column label="剩余量" prop="totalRemaining" align="center" />
 							<el-table-column label="级别编码" prop="levelNo" align="center" />
-							<el-table-column label="总出库量" prop="total_stock_out" align="center" />
-							<el-table-column label="总入库量" prop="total_stock_in" align="center" />
+							<el-table-column label="总出库量" prop="totalStockOut" align="center" />
+							<el-table-column label="总入库量" prop="totalStockIn" align="center" />
 							<el-table-column label="价格" prop="price" align="center" />
 							<el-table-column label="类别编号" prop="categoryNo" align="center" />
 							<el-table-column label="类别名称" prop="categoryName" align="center" />
@@ -211,6 +211,7 @@ export default {
 .app-container {
 	padding: 20px;
 }
+
 .search-form {
 	margin-bottom: 20px;
 	background-color: #fff;
@@ -218,16 +219,19 @@ export default {
 	border-radius: 8px;
 	box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
+
 .category-card {
 	margin-bottom: 20px;
 	border-radius: 10px;
 	transition: transform 0.3s, box-shadow 0.3s;
 	box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
+
 .category-card:hover {
 	transform: translateY(-5px);
 	box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.15);
 }
+
 .card-header {
 	font-size: 18px;
 	font-weight: bold;
@@ -238,22 +242,27 @@ export default {
 	justify-content: space-between;
 	align-items: center;
 }
+
 .card-content {
 	font-size: 14px;
 	line-height: 1.5;
 	margin-bottom: 10px;
 }
+
 .change-log-button {
 	color: #409eff;
 	font-size: 12px;
 }
+
 .change-log-dialog .el-dialog__header {
 	background-color: #409eff;
 	color: #fff;
 }
+
 .change-log-dialog .el-dialog__body {
 	padding: 20px;
 }
+
 .el-table th,
 .el-table td {
 	padding: 8px 10px;

@@ -22,6 +22,7 @@ export default {
 	name: 'BankType',
 	components: { BankacceptanceForm },
 	dicts: ['order_bank_card_type_nodel'],
+	// 对于不需要选择的场景，设置optionBaned = true  banned= true
 	props: {
 		// 禁用选择
 		optionBaned: {
