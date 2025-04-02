@@ -296,7 +296,7 @@ export default {
 							<el-button style="float: right; padding: 3px 0" type="text">解释?</el-button>
 						</el-tooltip>
 					</div>
-					<el-alert title="注意：不能对负数单进行调整，且负数单不可修改!" type="warning" style="margin-bottom: 10px" show-icon effect="light" />
+					<el-alert title="订单列表点击调整单后，会在此生成调整单，不能对负数单进行调整，且负数单不可修改!" type="warning" style="margin-bottom: 10px" show-icon effect="light" />
 					<el-tag class="custom-tag">负数单</el-tag>
 					<el-tag type="info" class="tag-spacing">调整一次</el-tag>
 					<el-tag type="success" class="tag-spacing">调整两次</el-tag>

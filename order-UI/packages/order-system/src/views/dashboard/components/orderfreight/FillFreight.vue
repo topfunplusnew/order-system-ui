@@ -85,8 +85,8 @@ export default {
 		// 这里要让用户选择填充海运费还是陆运费
 		handleCommitBackOrder(val) {
 			// 判断是否包含陆运或海运
-			const hasLandFreight = val.landFreight ? true : false;
-			const hasSeaFreight = val.seaFreight ? true : false;
+			const hasLandFreight = !!val.landFreight;
+			const hasSeaFreight = !!val.seaFreight;
 
 			// 填充进本信息 ordersNo source
 			this.form.ordersNo = val.id;
@@ -313,45 +313,45 @@ export default {
 								<el-input disabled v-model="form.otherAcountsName" placeholder="请选择订单填充" />
 							</el-col>
 							<!-- <el-col :span="3">
-								<SearchOption
-									:get-data="listBankAccount"
-									icon="el-icon-search"
-									:limit-info="{}"
-									query-label="户名查找"
-									query-info="acountsName"
-									:query-name="queryCompany"
-									@commitBack="handleCommitBack"
-									@update:queryName="handleUpdateQueryName"
-								>
-									<template #table-columns>
-										<el-table-column
-											label="公司名称"
-											align="center"
-											prop="companyName"
-										/>
-										<el-table-column
-											label="公司类型"
-											align="center"
-											prop="companyType"
-										/>
-										<el-table-column
-											label="开户行"
-											align="center"
-											prop="bankName"
-										/>
-										<el-table-column
-											label="开户名"
-											align="center"
-											prop="acountsName"
-										/>
-										<el-table-column
-											label="账号"
-											align="center"
-											prop="bankNo"
-										/>
-									</template>
-								</SearchOption>
-							</el-col> -->
+                <SearchOption
+                  :get-data="listBankAccount"
+                  icon="el-icon-search"
+                  :limit-info="{}"
+                  query-label="户名查找"
+                  query-info="acountsName"
+                  :query-name="queryCompany"
+                  @commitBack="handleCommitBack"
+                  @update:queryName="handleUpdateQueryName"
+                >
+                  <template #table-columns>
+                    <el-table-column
+                      label="公司名称"
+                      align="center"
+                      prop="companyName"
+                    />
+                    <el-table-column
+                      label="公司类型"
+                      align="center"
+                      prop="companyType"
+                    />
+                    <el-table-column
+                      label="开户行"
+                      align="center"
+                      prop="bankName"
+                    />
+                    <el-table-column
+                      label="开户名"
+                      align="center"
+                      prop="acountsName"
+                    />
+                    <el-table-column
+                      label="账号"
+                      align="center"
+                      prop="bankNo"
+                    />
+                  </template>
+                </SearchOption>
+              </el-col> -->
 						</el-row>
 					</el-form-item>
 					<el-form-item label="对方账号" prop="otherBankNo">
@@ -370,20 +370,20 @@ export default {
 								<el-input disabled v-model="form.carNo" placeholder="请选择订单填充" />
 							</el-col>
 							<!-- <el-col :span="4">
-								<SearchOption
-									:limit-info="{ dictType: 'order_cars' }"
-									:get-data="listData"
-									query-label="车牌搜索"
-									:query-name="queryCars"
-									query-info="dictLabel"
-									@update:queryName="updateQueryCars"
-									@commitBack="handleCommitBackCars"
-								>
-									<template #table-columns>
-										<el-table-column label="车牌" prop="dictLabel" />
-									</template>
-								</SearchOption>
-							</el-col> -->
+                <SearchOption
+                  :limit-info="{ dictType: 'order_cars' }"
+                  :get-data="listData"
+                  query-label="车牌搜索"
+                  :query-name="queryCars"
+                  query-info="dictLabel"
+                  @update:queryName="updateQueryCars"
+                  @commitBack="handleCommitBackCars"
+                >
+                  <template #table-columns>
+                    <el-table-column label="车牌" prop="dictLabel" />
+                  </template>
+                </SearchOption>
+              </el-col> -->
 						</el-row>
 					</el-form-item>
 					<el-form-item label="车队" prop="fleet">
@@ -391,20 +391,20 @@ export default {
 							<el-input disabled v-model="form.fleet" placeholder="请选择订单填充" />
 						</el-col>
 						<!-- <el-col :span="4">
-							<SearchOption
-								:limit-info="{}"
-								:get-data="listFleet"
-								query-label="车队名称搜索"
-								:query-name="queryFleet"
-								query-info="fname"
-								@update:queryName="updateQueryFleet"
-								@commitBack="handleCommitBackFleet"
-							>
-								<template #table-columns>
-									<el-table-column label="车队名称" prop="fname" />
-								</template>
-							</SearchOption>
-						</el-col> -->
+              <SearchOption
+                :limit-info="{}"
+                :get-data="listFleet"
+                query-label="车队名称搜索"
+                :query-name="queryFleet"
+                query-info="fname"
+                @update:queryName="updateQueryFleet"
+                @commitBack="handleCommitBackFleet"
+              >
+                <template #table-columns>
+                  <el-table-column label="车队名称" prop="fname" />
+                </template>
+              </SearchOption>
+            </el-col> -->
 					</el-form-item>
 					<el-form-item label="申请日期" prop="applyDate">
 						<el-date-picker v-model="form.applyDate" type="datetime" placeholder="请选择申请日期" value-format="yyyy-MM-dd HH:mm:ss" />

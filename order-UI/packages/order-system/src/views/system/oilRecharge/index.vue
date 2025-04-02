@@ -69,7 +69,7 @@
 					<el-button v-if="scope.row.checkState === '未申请'" size="mini" type="text" @click="addPaymentApply(scope.row)">申请付款</el-button>
 					<el-button v-if="scope.row.checkState === '已支付'" size="mini" type="success" disabled>已支付</el-button>
 					<el-button v-if="scope.row.checkState === '未支付'" size="mini" type="danger" disabled>未支付</el-button>
-					<el-button v-hasPermi="['system:oilrecharge:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
+					<!--					<el-button v-hasPermi="['system:oilrecharge:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>-->
 					<el-button v-hasPermi="['system:oilrecharge:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
 				</template>
 			</el-table-column>

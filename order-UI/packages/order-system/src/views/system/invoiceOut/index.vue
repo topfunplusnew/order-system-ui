@@ -327,7 +327,7 @@ export default {
 	watch: {
 		columns: {
 			handler: function (newVal) {
-				localStorage.setItem('invoiceout-columns', JSON.stringify(newVal));
+				localStorage.setItem('order-invoiceout-columns', JSON.stringify(newVal));
 			},
 			deep: true
 		},
@@ -341,11 +341,11 @@ export default {
 	},
 	created() {
 		this.getList();
-		if (localStorage.getItem('invoiceout-columns') === 'null' || !localStorage.getItem('invoiceout-columns')) {
+		if (localStorage.getItem('order-invoiceout-columns') === 'null' || !localStorage.getItem('order-invoiceout-columns')) {
 			// 设置localStorage
-			localStorage.setItem('invoiceout-columns', JSON.stringify(this.columns));
+			localStorage.setItem('order-invoiceout-columns', JSON.stringify(this.columns));
 		} else {
-			this.columns = JSON.parse(localStorage.getItem('invoiceout-columns'));
+			this.columns = JSON.parse(localStorage.getItem('order-invoiceout-columns'));
 		}
 	},
 	methods: {

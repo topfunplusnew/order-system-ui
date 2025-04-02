@@ -128,8 +128,8 @@ export default {
 			// 银行卡账户类型的筛选
 			typeOption: [
 				{
-					value: '现金户',
-					label: '现金户'
+					value: '银行活期存款',
+					label: '银行活期存款'
 				},
 				{
 					value: '承兑',

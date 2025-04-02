@@ -8,8 +8,8 @@
 			<el-form-item label="结束时间" prop="endTime">
 				<el-date-picker v-model="queryParams.params.endTime" type="datetime" placeholder="请选择结束时间" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 			</el-form-item>
-			<el-form-item label="对象类型" prop="objectType">
-				<el-select v-model="queryParams.objectType" placeholder="请选择对象类型">
+			<el-form-item label="对象类型" prop="targetType">
+				<el-select v-model="queryParams.targetType" placeholder="请选择对象类型">
 					<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
 				</el-select>
 			</el-form-item>

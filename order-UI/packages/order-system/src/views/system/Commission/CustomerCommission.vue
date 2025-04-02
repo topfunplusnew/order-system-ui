@@ -42,7 +42,7 @@
 				</template>
 			</right-toolbar>
 		</el-row>
-
+		<el-alert title="添加佣金信息后，方可进行付款申请操作!" type="warning"></el-alert>
 		<br />
 		<el-table
 			ref="multipleTable"

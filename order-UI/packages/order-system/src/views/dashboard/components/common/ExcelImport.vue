@@ -222,14 +222,13 @@ export default {
 
 		<!--    批量开票弹窗 这里是主要选择订单的弹窗-->
 		<div>
-			<el-dialog title="请选择一个sheet" :visible.sync="dialogVisible" width="470px">
+			<el-dialog title="请选择该excel中的一个工作表后进行批量开票" :visible.sync="dialogVisible" width="470px">
 				<!-- 展示读取的excel基本信息-->
 				<el-card class="box-card">
 					<SheetList :sheet-list="sheetList" />
 				</el-card>
 				<span slot="footer" class="dialog-footer">
-					<el-button @click="dialogVisible = false">取 消</el-button>
-					<el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+					<el-button @click="dialogVisible = false">关 闭</el-button>
 				</span>
 			</el-dialog>
 		</div>
