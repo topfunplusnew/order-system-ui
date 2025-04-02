@@ -33,10 +33,12 @@ export default {
 	computed: {
 		// 过滤出来图片 给模板使用
 		imgList() {
+			// todo 这里有问题 报错undefied
 			// 不一定只有jpg格式的 可能还有png格式
 			const type = ['.jpeg', '.jpg', '.png', '.svg'];
 			// 根据文件名称的后缀来判断
 			return this.checkFileList.filter(el => {
+				if (!el) return false;
 				return type.some(item => item === el.slice(el.lastIndexOf('.')));
 			});
 		},
@@ -72,6 +74,11 @@ export default {
 		},
 		// 添加某个文件
 		handleAddFile(value) {
+			// 这里如果选择了不合适的文件 会返回undefined
+			if (!value) {
+				this.$message.error('上传的文件格式有误!');
+				return;
+			}
 			let newPath = null;
 			// 如果长度大于等于5 不得上传
 			if (this.checkFileList.length >= this.maxFileNum) {

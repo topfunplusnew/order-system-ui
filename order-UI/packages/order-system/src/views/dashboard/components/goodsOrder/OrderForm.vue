@@ -597,6 +597,8 @@ export default {
 	<div>
 		<!--    订单基本信息-->
 		<el-form :inline="true" :model="orderInfo" label-width="80px" :rules="orderRules">
+			<el-alert title="对于禁用的输入框只需点击旁边搜索按钮搜索对应信息，确认后即可自动填写!" type="warning"></el-alert>
+			<br />
 			<el-card class="box-card" shadow="hover">
 				<div slot="header" class="clearfix">
 					<el-button type="text" style="color: #156fb2" icon="el-icon-notebook-2">订单基本信息</el-button>
@@ -648,7 +650,7 @@ export default {
 					<el-form-item label="车牌">
 						<el-row>
 							<el-col :span="20">
-								<el-input v-model="orderInfo.landCarNo" type="text" size="mini" placeholder="请输入陆运车牌" style="width: 120px" />
+								<el-input disabled v-model="orderInfo.landCarNo" type="text" size="mini" placeholder="请选择陆运车牌" style="width: 120px" />
 							</el-col>
 							<el-col :span="4">
 								<!--搜索银行卡信息-->
@@ -675,15 +677,15 @@ export default {
 						</el-row>
 					</el-form-item>
 					<el-form-item label="司机">
-						<el-input v-model="orderInfo.landDriverName" type="text" size="mini" placeholder="请输入陆运司机姓名" style="width: 130px" />
+						<el-input disabled v-model="orderInfo.landDriverName" type="text" size="mini" placeholder="请选择车牌" style="width: 130px" />
 					</el-form-item>
 					<el-form-item label="电话">
-						<el-input v-model="orderInfo.landDriverTel" type="text" size="mini" placeholder="请输入陆运司机电话" style="width: 120px" />
+						<el-input disabled v-model="orderInfo.landDriverTel" type="text" size="mini" placeholder="请选择车牌" style="width: 120px" />
 					</el-form-item>
 					<el-form-item label="车队">
 						<el-row>
 							<el-col :span="12">
-								<el-input v-model="orderInfo.fleet" type="text" size="mini" placeholder="请输入车队" />
+								<el-input disabled v-model="orderInfo.fleet" type="text" size="mini" placeholder="请选择车队" />
 							</el-col>
 							<el-col :span="4">
 								<SearchOption
@@ -711,9 +713,13 @@ export default {
 				<el-row v-if="isSea" style="margin: 10px 0">
 					<!--   车牌修改为柜号 且自己输入 不提供自动填充 -->
 					<el-form-item label="柜号(填写)">
+						<el-input v-model="orderInfo.seaCarNo" type="text" size="mini" placeholder="请输入柜号" style="width: 120px" />
+					</el-form-item>
+					<!--  原为海运司机 现改为海运公司-->
+					<el-form-item label="海运公司">
 						<el-row>
 							<el-col :span="20">
-								<el-input v-model="orderInfo.seaCarNo" type="text" size="mini" placeholder="请输入柜号" style="width: 120px" />
+								<el-input disabled v-model="orderInfo.seaDriverName" type="text" size="mini" placeholder="请选择" style="width: 130px" />
 							</el-col>
 							<el-col :span="4">
 								<SearchOption
@@ -737,12 +743,8 @@ export default {
 							</el-col>
 						</el-row>
 					</el-form-item>
-					<!--  原为海运司机 现改为海运公司-->
-					<el-form-item label="海运公司">
-						<el-input v-model="orderInfo.seaDriverName" type="text" size="mini" placeholder="请输入海运公司" style="width: 130px" />
-					</el-form-item>
 					<el-form-item label="电话">
-						<el-input v-model="orderInfo.seaDriverTel" type="text" size="mini" placeholder="请输入电话" style="width: 120px" />
+						<el-input disabled v-model="orderInfo.seaDriverTel" type="text" size="mini" placeholder="请选择" style="width: 120px" />
 					</el-form-item>
 				</el-row>
 				<br />
@@ -778,7 +780,7 @@ export default {
 							<el-row>
 								<!-- 动态绑定的 Input -->
 								<el-col :span="12">
-									<el-input size="mini" v-model="scope.row[scope.row.currentType || 'supplier']" placeholder="请输入供应商/仓库" />
+									<el-input disabled size="mini" v-model="scope.row[scope.row.currentType || 'supplier']" placeholder="请输入供应商/仓库" />
 								</el-col>
 
 								<!-- 供应商按钮 -->
@@ -857,7 +859,7 @@ export default {
 					<el-table-column label="级别名称" prop="levelName" width="150">
 						<template #default="scope">
 							<el-col :span="16">
-								<el-input size="mini" v-model="scope.row.levelName" placeholder="请输入级别名称" />
+								<el-input disabled size="mini" v-model="scope.row.levelName" placeholder="请输入级别名称" />
 							</el-col>
 							<el-col :span="8">
 								<SearchOption
