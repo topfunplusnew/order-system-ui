@@ -285,6 +285,8 @@ import { common_dialog } from '../../dashboard/mixins/common/common_dialog';
 import DialogWrapper from '../../dashboard/components/common/DialogWrapper.vue';
 import CARS from '../../../components/NeedToShow/CARS.vue';
 import { listCars } from '../../../api/system/cars';
+import { listVehicles } from '@/api/system/vehicles';
+import COMPANY_CAR from '@/components/NeedToShow/COMPANY_CAR.vue';
 
 export default {
 	name: 'BusinessTrip',
@@ -558,10 +560,10 @@ export default {
 			this.queryCarApply = value;
 		},
 		handleCheckCar(row) {
-			listCars({ carNo: row.carNo }).then(res => {
+			listVehicles({ licensePlate: row.carNo }).then(res => {
 				if (res.rows.length > 0) {
 					this.openDialog(
-						CARS,
+						COMPANY_CAR,
 						'查看车辆信息',
 						'650px',
 						{
