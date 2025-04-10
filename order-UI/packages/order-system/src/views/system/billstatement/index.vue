@@ -103,25 +103,20 @@
 					@selection-change="handleSelectionChange"
 				>
 					<el-table-column label="ID" align="center" prop="id" width="120" show-overflow-tooltip />
-					<!--      <el-table-column label="操作日期" align="center" prop="operateDate" width="120" show-overflow-tooltip/>-->
 					<el-table-column label="票据号码" align="center" prop="billNo" width="120" show-overflow-tooltip />
 					<el-table-column label="出票日期" align="center" prop="issueDate" width="120" show-overflow-tooltip />
 					<el-table-column label="到期日期" align="center" prop="dueDate" width="120" show-overflow-tooltip />
 					<el-table-column label="我方承兑账户" align="center" prop="billAccount" width="120" show-overflow-tooltip />
 					<el-table-column label="票据交易日期" align="center" prop="billDate" width="120" show-overflow-tooltip />
-					<!--      <el-table-column label="分类（收入/支出）" align="center" prop="billType" width="120" show-overflow-tooltip/>-->
 					<el-table-column label="收票事由" align="center" prop="incomeReason" width="120" show-overflow-tooltip />
-					<!--      <el-table-column label="票据金额" align="center" prop="billAmount" width="120" show-overflow-tooltip/>-->
-					<!--      <el-table-column label="贴息点数" align="center" prop="inDiscountPoints" width="120" show-overflow-tooltip/>-->
-					<!--      <el-table-column label="贴息金额" align="center" prop="inDiscountAmount" width="120" show-overflow-tooltip/>-->
 					<el-table-column label="票据种类（电子/纸质）" align="center" prop="billCategory" width="120" show-overflow-tooltip />
-					<el-table-column label="背书人(来源)" align="center" prop="incomeEndorser" width="120" show-overflow-tooltip />
+					<el-table-column label="背书人(来源)" align="center" prop="incomeEndorserName" width="120" show-overflow-tooltip />
 					<el-table-column label="收入票据来源" align="center" prop="incomeOrigin" width="120" show-overflow-tooltip />
 					<el-table-column label="收入票据金额" align="center" prop="incomeBillAmount" width="120" show-overflow-tooltip />
 					<el-table-column label="收入贴息点数" align="center" prop="incomeInDiscountPoints" width="120" show-overflow-tooltip />
 					<el-table-column label="收入贴息金额" align="center" prop="incomeInDiscountAmount" width="120" show-overflow-tooltip />
 					<el-table-column label="背书是由" align="center" prop="expenseReason" width="120" show-overflow-tooltip />
-					<el-table-column label="被背书人" align="center" prop="expenseEndorser" width="120" show-overflow-tooltip />
+					<el-table-column label="被背书人" align="center" prop="expenseEndorserName" width="120" show-overflow-tooltip />
 					<el-table-column label="支出票据来源" align="center" prop="expenseOrigin" width="120" show-overflow-tooltip />
 					<el-table-column label="支出票据金额" align="center" prop="expenseBillAmount" width="120" show-overflow-tooltip />
 					<el-table-column label="支出贴息点数" align="center" prop="expenseInDiscountPoints" width="120" show-overflow-tooltip />
@@ -131,98 +126,6 @@
 				</el-table>
 			</template>
 		</InfoDialog>
-		<!-- 添加或修改商业票据、银行承兑对话框 -->
-		<!--    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="62%"-->
-		<!--               append-to-body>-->
-		<!--      <el-form ref="form" :model="form" :rules="rules" label-width="140px">-->
-		<!--        <el-row>-->
-		<!--          <el-col :span="12">-->
-		<!--            <el-form-item label="票据号码" prop="billNo">-->
-		<!--              <el-input v-model="form.billNo" placeholder="请输入票据号码"/>-->
-		<!--            </el-form-item>-->
-		<!--            <el-form-item label="收票事由" prop="reason">-->
-		<!--              <el-radio v-model="form.reason" label="购买">购买</el-radio>-->
-		<!--              <el-radio v-model="form.reason" label="客户付款">客户付款</el-radio>-->
-		<!--            </el-form-item>-->
-		<!--            <el-form-item label="贴息点数" prop="inDiscountPoints">-->
-		<!--              <el-input v-model="form.inDiscountPoints" placeholder="请输入贴息点数"/>-->
-		<!--            </el-form-item>-->
-		<!--            <el-form-item label="贴息金额" prop="inDiscountAmount">-->
-		<!--              <el-input v-model="form.inDiscountAmount" placeholder="请输入贴息金额"/>-->
-		<!--            </el-form-item>-->
-		<!--            <el-form-item label="我方承兑账户" prop="billAccount">-->
-		<!--              <el-row>-->
-		<!--                <el-col :span="10">-->
-		<!--                  <el-input v-model="form.billAccount" placeholder="请输入我方承兑账户"/>-->
-		<!--                </el-col>-->
-		<!--                <el-col :span="3">-->
-		<!--                  <SearchOption :get-data="listBankAccount" :limit-info="{accountType:'己方公司'}" title="我方承兑账户"-->
-		<!--                                @commitBack="handleCommitBack">-->
-		<!--                    <template #table-columns>-->
-		<!--                      <el-table-column label="开户名称(户名)" align="center" prop="acountsName"/>-->
-		<!--                      <el-table-column label="账号(银行账号)" align="center" prop="bankNo"/>-->
-		<!--                      <el-table-column label="开户行" align="center" prop="bankName"/>-->
-		<!--                      <el-table-column label="公司名称" align="center" prop="companyName"/>-->
-		<!--                    </template>-->
-		<!--                  </SearchOption>-->
-		<!--                </el-col>-->
-		<!--              </el-row>-->
-		<!--            </el-form-item>-->
-		<!--            <el-form-item label="我方收票日期" prop="billDate">-->
-		<!--              <el-date-picker-->
-		<!--                v-model="form.billDate"-->
-		<!--                type="datetime"-->
-		<!--                placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd HH:mm:ss">-->
-		<!--              </el-date-picker>-->
-		<!--            </el-form-item>-->
-		<!--            <el-form-item label="票据种类" prop="billCategory">-->
-		<!--              <el-radio v-model="form.billCategory" label="电子">购买</el-radio>-->
-		<!--              <el-radio v-model="form.billCategory" label="纸质">客户付款</el-radio>-->
-		<!--            </el-form-item>-->
-		<!--          </el-col>-->
-		<!--          <el-col :span="12">-->
-		<!--            <el-form-item label="票据金额" prop="billAmount">-->
-		<!--              <el-input v-model="form.billAmount" placeholder="请输入票据金额"/>-->
-		<!--            </el-form-item>-->
-		<!--            <el-form-item label="出票日期" prop="issueDate">-->
-		<!--              <el-date-picker-->
-		<!--                v-model="form.issueDate"-->
-		<!--                type="datetime"-->
-		<!--                placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd HH:mm:ss">-->
-		<!--              </el-date-picker>-->
-		<!--            </el-form-item>-->
-		<!--            <el-form-item label="到期日期" prop="dueDate">-->
-		<!--              <el-date-picker-->
-		<!--                v-model="form.dueDate"-->
-		<!--                type="datetime"-->
-		<!--                placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd HH:mm:ss">-->
-		<!--              </el-date-picker>-->
-		<!--            </el-form-item>-->
-		<!--            <el-form-item label="背书事由" prop="endorseReason">-->
-		<!--              <el-radio v-model="form.endorseReason" label="出卖">出卖</el-radio>-->
-		<!--              <el-radio v-model="form.endorseReason" label="付货款">付货款</el-radio>-->
-		<!--            </el-form-item>-->
-		<!--            <el-form-item label="来源" prop="origin">-->
-		<!--              <el-input v-model="form.origin" placeholder="请输入来源"/>-->
-		<!--            </el-form-item>-->
-
-		<!--            <el-form-item label="背书人" prop="endorser">-->
-		<!--              <el-input v-model="form.endorser" placeholder="请输入背书人"/>-->
-		<!--            </el-form-item>-->
-		<!--            <el-form-item label="被背书人" prop="endorsee">-->
-		<!--              <el-input v-model="form.endorsee" placeholder="请输入被背书人"/>-->
-		<!--            </el-form-item>-->
-		<!--            <el-form-item label="备注" prop="comments">-->
-		<!--              <el-input v-model="form.comments" placeholder="请输入备注"/>-->
-		<!--            </el-form-item>-->
-		<!--          </el-col>-->
-		<!--        </el-row>-->
-		<!--      </el-form>-->
-		<!--      <div slot="footer" class="dialog-footer">-->
-		<!--        <el-button type="primary" @click="submitForm">确 定</el-button>-->
-		<!--        <el-button @click="cancel">取 消</el-button>-->
-		<!--      </div>-->
-		<!--    </el-dialog>-->
 	</div>
 </template>
 
