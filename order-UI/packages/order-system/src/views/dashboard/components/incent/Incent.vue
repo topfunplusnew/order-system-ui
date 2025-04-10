@@ -18,7 +18,6 @@ export default {
 			this.orderItemVisible = true;
 		},
 		handleIndexOrder(value) {
-			console.log(value);
 			getGoodsOrder(value.id).then(res => {
 				this.$emit('update:orderInfo', res.data);
 			});
@@ -33,7 +32,7 @@ export default {
 
 		<InfoDialog :title="orderTitle" :visible.sync="orderItemVisible">
 			<template #info>
-				<IncentOrders @indexOrder="handleIndexOrder" @close="orderItemVisible = false" />
+				<IncentOrders :isBanMulti="true" @indexOrder="handleIndexOrder" @close="orderItemVisible = false" />
 			</template>
 		</InfoDialog>
 	</div>

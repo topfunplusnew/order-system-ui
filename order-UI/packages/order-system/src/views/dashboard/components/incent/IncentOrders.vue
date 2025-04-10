@@ -7,6 +7,12 @@ import { OptionInvent, Options } from '../../mixins/order/order_Invoice';
 export default {
 	name: 'IncentOrders',
 	components: { QuerySearchBar },
+	props: {
+		isBanMulti: {
+			type: Boolean,
+			default: false
+		}
+	},
 	data() {
 		return {
 			goodsOrderList: [],
@@ -109,7 +115,7 @@ export default {
 			"
 			@selection-change="handleSelectionChange"
 		>
-			<el-table-column type="selection" width="55" fixed="left"></el-table-column>
+			<el-table-column type="selection" width="55" fixed="left" v-if="!isBanMulti"></el-table-column>
 			<el-table-column show-overflow-tooltip label="ID" align="center" prop="id" fixed="left" />
 			<el-table-column show-overflow-tooltip label="日期" align="center" prop="orderDate" fixed="left" />
 			<el-table-column show-overflow-tooltip label="客户" align="center" prop="customer" fixed="left" />

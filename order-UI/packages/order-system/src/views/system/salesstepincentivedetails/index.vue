@@ -97,8 +97,9 @@
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[12].visible" label="备注" align="center" prop="remark" show-overflow-tooltip />
-			<el-table-column v-if="columns[13].visible" label="操作" align="center" class-name="small-padding fixed-width">
+			<el-table-column v-if="columns[13].visible" label="操作" align="center" class-name="small-padding fixed-width" width="200">
 				<template #default="scope">
+					<el-button size="mini" type="text" @click="handleCheckOrder(scope.row)">查看订单</el-button>
 					<el-button v-hasPermi="['system:salesstepincentivedetails:edit']" size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)">修改</el-button>
 					<el-button v-hasPermi="['system:salesstepincentivedetails:remove']" size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)">删除</el-button>
 				</template>
@@ -178,6 +179,9 @@ import { parseTime } from '../../../utils/ruoyi';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
 import Incent from '../../dashboard/components/incent/Incent.vue';
 import { mixin_step_order_fill } from './salespincent_fill';
+import { checkOrderByOrderNo, getGoodsOrder } from '@/api/system/goodsOrder';
+import _ from 'lodash';
+import GOODS_ORDER from '@/components/NeedToShow/GOODS_ORDER.vue';
 
 export default {
 	name: 'Salesstepincentivedetails',
@@ -316,6 +320,32 @@ export default {
 	},
 	methods: {
 		parseTime,
+		handleCheckOrder(row) {
+			if (!row.orderNo) {
+				this.$message.error('该行数据有误,订单编号为空!');
+			}
+			checkOrderByOrderNo(row.orderNo).then(res => {
+				if (!res.data) {
+					this.$message.error('该行数据有误,查询该订单编号未找到相关订单信息');
+				}
+				const { id: orderId } = _.cloneDeep(res.data);
+				getGoodsOrder(orderId).then(result => {
+					if (!result.data) {
+						this.$message.error('获取凭证数据失败:该行数据存储了订单编号但没有查询到该编号对应的相关数据');
+						return;
+					}
+					this.openDialog(
+						GOODS_ORDER,
+						'订单信息',
+						'800px',
+						{
+							needToShowInfo: res.data || res.rows[0]
+						},
+						false
+					);
+				});
+			});
+		},
 		/** 查询台阶制列表 */
 		getList() {
 			this.loading = true;

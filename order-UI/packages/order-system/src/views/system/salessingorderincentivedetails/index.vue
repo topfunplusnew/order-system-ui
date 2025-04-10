@@ -107,8 +107,9 @@
 
 			<el-table-column v-if="columns[9].visible" label="备注" align="center" prop="remark" show-overflow-tooltip />
 
-			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="200">
 				<template #default="scope">
+					<el-button size="mini" type="text" @click="handleCheckOrder(scope.row)">查看订单</el-button>
 					<el-button v-hasPermi="['system:salessingorderincentivedetails:edit']" size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)">修改</el-button>
 					<el-button v-hasPermi="['system:salessingorderincentivedetails:remove']" size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)">删除</el-button>
 				</template>
@@ -166,6 +167,19 @@
 				<el-button @click="cancel">取 消</el-button>
 			</div>
 		</el-dialog>
+
+		<div v-if="currentComponent">
+			<DialogWrapper
+				:current-component="currentComponent"
+				:dialog-visible="dialogVisible"
+				:dialog-props="dialogProps"
+				:dialog-title="dialogTitle"
+				:dialog-width="dialogWidth"
+				@update:dialogVisible="args => (dialogVisible = false)"
+				@close="handleCloseDialog"
+				@confirm="handleDialogConfirm"
+			/>
+		</div>
 	</div>
 </template>
 
@@ -181,11 +195,17 @@ import { mixin_printHTML } from '../../dashboard/mixins/print';
 import { mixin_sing_order_fill } from './saleorder_fill';
 import Incent from '../../dashboard/components/incent/Incent.vue';
 import { parseTime } from '../../../utils/ruoyi';
+import { checkOrderByOrderNo, getGoodsOrder } from '@/api/system/goodsOrder';
+import _ from 'lodash';
+import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
+import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
+import COMPANY from '@/components/NeedToShow/COMPANY.vue';
+import GOODS_ORDER from '@/components/NeedToShow/GOODS_ORDER.vue';
 
 export default {
 	name: 'Salessingorderincentivedetails',
-	components: { Incent },
-	mixins: [mixin_printHTML, mixin_sing_order_fill],
+	components: { DialogWrapper, Incent },
+	mixins: [mixin_printHTML, mixin_sing_order_fill, common_dialog],
 	data() {
 		return {
 			// 遮罩层
@@ -308,7 +328,33 @@ export default {
 	},
 	methods: {
 		parseTime,
-		/** 查询唱单制列表 */
+		// 操作中联查回订单信息
+		handleCheckOrder(row) {
+			if (!row.orderNo) {
+				this.$message.error('该行数据有误,订单编号为空!');
+			}
+			checkOrderByOrderNo(row.orderNo).then(res => {
+				if (!res.data) {
+					this.$message.error('该行数据有误,查询该订单编号未找到相关订单信息');
+				}
+				const { id: orderId } = _.cloneDeep(res.data);
+				getGoodsOrder(orderId).then(result => {
+					if (!result.data) {
+						this.$message.error('获取凭证数据失败:该行数据存储了订单编号但没有查询到该编号对应的相关数据');
+						return;
+					}
+					this.openDialog(
+						GOODS_ORDER,
+						'订单信息',
+						'800px',
+						{
+							needToShowInfo: res.data || res.rows[0]
+						},
+						false
+					);
+				});
+			});
+		},
 		getList() {
 			this.loading = true;
 			this.queryParams.params = {};
