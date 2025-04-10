@@ -56,8 +56,8 @@ export default {
 					sums[index] = '合计';
 					return;
 				}
-
 				const includes = [14, 19, 21, 24, 26, 28];
+				if (!data || data.length === 0) return;
 				const values = data.map(item => Number(item[column.property]));
 				if (!values.every(value => isNaN(value))) {
 					// 包含的计算
@@ -98,10 +98,6 @@ export default {
 		handleCommitCompany(val) {
 			this.moneyBackInfo.supplierID = val.id;
 			this.moneyBackInfo.supplier = val.companyName;
-		},
-		handleCommitBankAccountOut(val) {
-			this.moneyBackInfo.outAcountsName = val.acountsName;
-			this.moneyBackInfo.outBankNo = val.bankNo;
 		},
 		// 返利回扣
 		handleMoneyBack(row) {
@@ -161,12 +157,6 @@ export default {
 				<el-table-column v-if="!ban" label="操作" align="center" class-name="small-padding fixed-width" width="170px" fixed="left">
 					<template slot-scope="scope">
 						<el-button size="mini" type="warning" @click="handleMoneyBack(scope.row)">货物返利</el-button>
-						<!--            <el-button-->
-						<!--              size="mini"-->
-						<!--              type="danger"-->
-						<!--              @click="deleteOrderDetail(scope.row)"-->
-						<!--            >删除货物-->
-						<!--            </el-button>-->
 					</template>
 				</el-table-column>
 				<el-table-column label="仓库名称" align="center" prop="storeHouseName" show-overflow-tooltip>
@@ -230,43 +220,6 @@ export default {
 				<el-form-item label="金额" prop="rebate">
 					<el-input v-model="moneyBackInfo.rebate" placeholder="请输入金额" />
 				</el-form-item>
-				<!--				<el-form-item label="收款户名" prop="inAcountsName">-->
-				<!--					<el-row>-->
-				<!--						<el-col :span="10">-->
-				<!--							<el-input-->
-				<!--								v-model="moneyBackInfo.inAcountsName"-->
-				<!--								placeholder="请输入收款户名"-->
-				<!--							/>-->
-				<!--						</el-col>-->
-				<!--						<el-col :span="3">-->
-				<!--							<SearchOption-->
-				<!--								:limit-info="{}"-->
-				<!--								:get-data="listBankAccount"-->
-				<!--								@commitBack="handleCommitBankAccount"-->
-				<!--							>-->
-				<!--								<template #table-columns>-->
-				<!--									<el-table-column-->
-				<!--										label="开户行"-->
-				<!--										align="center"-->
-				<!--										prop="bankName"-->
-				<!--									/>-->
-				<!--									<el-table-column-->
-				<!--										label="开户名"-->
-				<!--										align="center"-->
-				<!--										prop="acountsName"-->
-				<!--									/>-->
-				<!--									<el-table-column label="账号" align="center" prop="bankNo" />-->
-				<!--								</template>-->
-				<!--							</SearchOption>-->
-				<!--						</el-col>-->
-				<!--					</el-row>-->
-				<!--				</el-form-item>-->
-				<!--				<el-form-item label="收款账号" prop="inBankNo">-->
-				<!--					<el-input-->
-				<!--						v-model="moneyBackInfo.inBankNo"-->
-				<!--						placeholder="请输入收款账号"-->
-				<!--					/>-->
-				<!--				</el-form-item>-->
 				<el-form-item label="供应商" prop="supplier">
 					<el-row>
 						<el-col :span="10">
@@ -285,43 +238,6 @@ export default {
 						</el-col>
 					</el-row>
 				</el-form-item>
-				<!--				<el-form-item label="付款户名" prop="outAcountsName">-->
-				<!--					<el-row>-->
-				<!--						<el-col :span="10">-->
-				<!--							<el-input-->
-				<!--								v-model="moneyBackInfo.outAcountsName"-->
-				<!--								placeholder="请输入付款户名"-->
-				<!--							/>-->
-				<!--						</el-col>-->
-				<!--						<el-col :span="3">-->
-				<!--							<SearchOption-->
-				<!--								:limit-info="{}"-->
-				<!--								:get-data="listBankAccount"-->
-				<!--								@commitBack="handleCommitBankAccountOut"-->
-				<!--							>-->
-				<!--								<template #table-columns>-->
-				<!--									<el-table-column-->
-				<!--										label="开户行"-->
-				<!--										align="center"-->
-				<!--										prop="bankName"-->
-				<!--									/>-->
-				<!--									<el-table-column-->
-				<!--										label="开户名"-->
-				<!--										align="center"-->
-				<!--										prop="acountsName"-->
-				<!--									/>-->
-				<!--									<el-table-column label="账号" align="center" prop="bankNo" />-->
-				<!--								</template>-->
-				<!--							</SearchOption>-->
-				<!--						</el-col>-->
-				<!--					</el-row>-->
-				<!--				</el-form-item>-->
-				<!--				<el-form-item label="付款款账号" prop="outBankNo">-->
-				<!--					<el-input-->
-				<!--						v-model="moneyBackInfo.outBankNo"-->
-				<!--						placeholder="请输入付款款账号"-->
-				<!--					/>-->
-				<!--				</el-form-item>-->
 				<el-form-item label="返利方式" prop="rebateMethod">
 					<el-select v-model="moneyBackInfo.rebateMethod" default-first-option placeholder="请选择返利方式">
 						<el-option v-for="item in rebateMethods" :key="item.dictValue" :label="item.dictLabel" :value="item.dictLabel"></el-option>
