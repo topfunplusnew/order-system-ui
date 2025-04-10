@@ -70,6 +70,8 @@ export var mixin_payment_watcher = {
 		// 监听传入的金额
 		needMoney: {
 			handler(val) {
+				// 自动填充除了钱之外的信息
+				this.loadForm();
 				// 如果传入的必须自动填充的金额大于0 则自动填充 且无法修改
 				if (this.needMoney >= 0) {
 					this.form.moneyAmount = this.needMoney;
@@ -82,7 +84,6 @@ export var mixin_payment_watcher = {
 		// 监听表的变化
 		tableName: {
 			handler(val) {
-				console.log('支付类型', val);
 				if (val === 'oilrecharge') {
 					this.form.companyType = '其他';
 				}

@@ -1,4 +1,3 @@
-<!--付款申请弹窗-->
 <template>
 	<div class="app-container">
 		<el-form ref="form" :model="form" :rules="rules" label-width="120px">
@@ -14,15 +13,12 @@
 				<el-input v-model="form.moneyAmount" placeholder="请输入金额" :disabled="inputDisabled && moneyInputDisabled" />
 			</el-form-item>
 			<el-form-item label="对方类型(请确认)">
-				<el-select v-model="value" placeholder="请选择">
+				<el-select v-model="value" placeholder="请选择" @change="handleOpponentTypeChange">
 					<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
 				</el-select>
 				<span style="color: #1c84c6; font-size: 12px">请注意选择正确的对方公司类型!</span>
 			</el-form-item>
 
-			<!--      公司的填充 这里主要是为了companyId 如果选择的是己方公司 那么就不显示这个选择公司-->
-
-			<!--      2025-2-28 后端说 如果是对外付款 不需要选择对方公司-->
 			<el-form-item v-if="value !== '员工' && value !== '对外付款'" label="对方公司" prop="companyName">
 				<el-row>
 					<el-col :span="14">
@@ -54,7 +50,6 @@
 				</el-row>
 			</el-form-item>
 
-			<!--      如果value选择的是客户-->
 			<el-row v-if="value === '客户'">
 				<el-form-item label="对方账号(客户)" prop="otherBankNo">
 					<el-row>
@@ -102,7 +97,6 @@
 					<el-input v-model="form.otherBankName" placeholder="请输入对方开户行" disabled />
 				</el-form-item>
 			</el-row>
-			<!--      如果是供应商-->
 			<el-row v-if="value === '供应商'">
 				<el-form-item label="对方账号(供应商)" prop="otherBankNo">
 					<el-row>
@@ -151,7 +145,6 @@
 					<el-input v-model="form.otherBankName" placeholder="请输入对方开户行" disabled />
 				</el-form-item>
 			</el-row>
-			<!--    如果是司机-->
 			<el-row v-if="value === '司机'">
 				<el-form-item label="对方账号(司机)" prop="otherBankNo">
 					<el-row>
@@ -200,7 +193,6 @@
 				</el-form-item>
 			</el-row>
 
-			<!--     如果选择的是 员工 -->
 			<el-row v-if="value === '员工'">
 				<el-form-item label="对方账号(员工)" prop="otherBankNo">
 					<el-row>
@@ -261,7 +253,9 @@
 		</el-form>
 		<div slot="footer" class="dialog-footer" style="text-align: center">
 			<el-button type="primary" @click="submitForm">提交申请</el-button>
-			<el-button @click="close">关闭</el-button>
+			<el-button @click="close">关闭并保存</el-button>
+			<el-button @click="clear">取消填写</el-button>
+			<!--			<el-button @click="saveForm">保存</el-button>-->
 		</div>
 	</div>
 </template>
@@ -314,35 +308,46 @@ export default {
 			},
 			// 表单校验
 			rules: {
-				fundsDate: [
-					{
-						required: true,
-						message: '付款日期不能为空',
-						trigger: 'blur'
-					}
-				],
-				moneyAmount: [
-					{
-						required: true,
-						message: '付款金额不能为空',
-						trigger: 'blur'
-					}
-				],
-				reason: [
-					{
-						required: true,
-						message: '付款事由不能为空',
-						trigger: 'blur'
-					}
-				]
+				fundsDate: [{ required: true, message: '付款日期不能为空', trigger: 'blur' }],
+				moneyAmount: [{ required: true, message: '付款金额不能为空', trigger: 'blur' }],
+				reason: [{ required: true, message: '付款事由不能为空', trigger: 'blur' }]
 			},
 			// 禁用输入框
 			inputDisabled: false,
 			// 禁用银行卡输入 因为现金支付不需要银行卡信息
-			bankInputDisabled: false
+			bankInputDisabled: false,
+			// 本地存储的 key
+			localStorageKey: 'paymentApplyForm',
+			// 下拉框选项
+			options: [
+				{ value: '客户', label: '客户' },
+				{ value: '供应商', label: '供应商' },
+				{ value: '司机', label: '司机' },
+				{ value: '员工', label: '员工' },
+				{ value: '对外付款', label: '对外付款' }
+			],
+			value: '', // 对方类型
+			queryOther: '', // 其他搜索参数
+			queryCompany: '' // 公司搜索参数
 		};
 	},
-
+	watch: {
+		value(newValue) {
+			// 当对方类型改变时，清空之前选择的公司和银行卡信息
+			if (this.form.companyType !== newValue) {
+				this.form.companyName = null;
+				this.form.companyId = null;
+				this.form.otherBankNo = null;
+				this.form.otherBankName = null;
+			}
+		}
+	},
+	mounted() {
+		this.loadForm();
+	},
+	beforeUnmount() {
+		this.saveForm();
+	},
 	methods: {
 		isNull,
 		listCompany,
@@ -358,6 +363,24 @@ export default {
 				this.total = response.total;
 				this.loading = false;
 			});
+		},
+		handleOpponentTypeChange(value) {
+			// 当对方类型改变时，触发相应的逻辑，例如清空某些字段
+			console.log('对方类型 changed to:', value);
+		},
+		handleUpdateQueryNameOther(val) {
+			this.queryOther = val;
+		},
+		handleCommitBackOther(row) {
+			this.form.companyName = row.companyName;
+			this.form.companyId = row.id;
+		},
+		handleUpdateQueryName(val) {
+			this.queryCompany = val;
+		},
+		handleCommitBack(row) {
+			this.form.otherBankNo = row.bankNo;
+			this.form.otherBankName = row.bankName;
 		},
 		/** 提交按钮 */
 		submitForm() {
@@ -384,13 +407,12 @@ export default {
 						return;
 					}
 					const payType = this.form.payType.join('-');
-					const body = {
-						...this.form,
-						payType: payType
-					};
+					const body = { ...this.form, payType: payType };
 					addPaymentApply(body).then(() => {
 						this.$modal.msgSuccess('付款申请添加成功');
 						this.reset();
+						// 提交成功后删除本地的缓存
+						this.clearForm();
 						this.$emit('changeOpen');
 					});
 				}
@@ -398,6 +420,12 @@ export default {
 		},
 		close() {
 			this.$emit('changeOpen');
+			this.saveForm();
+			this.reset();
+		},
+		clear() {
+			this.$emit('changeOpen');
+			this.clearForm();
 			this.reset();
 		},
 		// 表单重置
@@ -428,11 +456,47 @@ export default {
 				delFlag: null,
 				submitflag: null
 			};
-			this.currentSort = {
-				levelOne: '',
-				levelTwo: ''
-			};
+			this.value = ''; // 重置对方类型
+			this.currentSort = { levelOne: '', levelTwo: '' };
 			this.resetForm('form');
+		},
+		// 保存表单数据到 localStorage
+		saveForm() {
+			try {
+				localStorage.setItem(this.localStorageKey, JSON.stringify(this.form));
+				localStorage.setItem('paymentApplyFormOpponentType', this.value); // 保存对方类型
+				this.$message.success('表单信息已保存');
+			} catch (error) {
+				console.error('保存表单信息失败', error);
+				this.$message.error('保存表单信息失败');
+			}
+		},
+		// 清除本地保存的数据
+		clearForm() {
+			try {
+				localStorage.removeItem(this.localStorageKey);
+				localStorage.removeItem('paymentApplyFormOpponentType');
+				this.$message.success('已清除上次填写的数据');
+			} catch (error) {
+				console.error('清除表单信息失败', error);
+				this.$message.error('清除表单信息失败');
+			}
+		},
+		// 从 localStorage 加载表单数据
+		loadForm() {
+			try {
+				const savedForm = localStorage.getItem(this.localStorageKey);
+				const savedOpponentType = localStorage.getItem('paymentApplyFormOpponentType');
+				if (savedForm) {
+					this.form = JSON.parse(savedForm);
+					this.$message.success('已读取上次填写的数据');
+				}
+				if (savedOpponentType) {
+					this.value = savedOpponentType;
+				}
+			} catch (error) {
+				console.error('加载表单信息失败', error);
+			}
 		}
 	}
 };
