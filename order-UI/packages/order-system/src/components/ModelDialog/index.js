@@ -4,15 +4,12 @@ const ModelPlugin = {
 	install(Vue) {
 		Vue.prototype.$model = function (options) {
 			const ModelConstructor = Vue.extend(ModelDialog);
-
 			// 生成唯一标识
 			const uniqueId = `model-dialog-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-
 			// 创建容器并设置唯一标识
 			const container = document.createElement('div');
 			container.id = uniqueId;
 			document.body.appendChild(container);
-
 			// 创建组件实例
 			const instance = new ModelConstructor({
 				propsData: {
@@ -25,10 +22,10 @@ const ModelPlugin = {
 					// 对象
 					data: options.data || {},
 					labels: options.labels || {},
-					title: options.title || '信息展示'
+					title: options.title || '信息展示',
+					needToTotal: options.needToTotal || []
 				}
 			});
-
 			// 监听 update:visible 事件
 			instance.$on('update:visible', val => {
 				if (!val) {
@@ -44,7 +41,6 @@ const ModelPlugin = {
 					});
 				}
 			});
-
 			// 挂载实例到容器
 			instance.$mount(container);
 		};

@@ -741,7 +741,8 @@ export default {
 							label: '实收日期'
 						}
 					],
-					title: '返利流水账 '
+					title: '返利流水账 ',
+					needToTotal: [0]
 				});
 			});
 		},
