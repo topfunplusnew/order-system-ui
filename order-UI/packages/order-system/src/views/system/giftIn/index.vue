@@ -104,6 +104,7 @@
 			<el-table-column v-if="columns[7].visible" label="经办人" align="center" prop="handler" show-overflow-tooltip />
 
 			<el-table-column v-if="columns[8].visible" label="收礼方式" align="center" prop="receiveMethod" show-overflow-tooltip />
+			<el-table-column v-if="columns[9].visible" label="付款时间" align="center" prop="payTime" show-overflow-tooltip />
 
 			<el-table-column label="备注" align="center" prop="remark" show-overflow-tooltip />
 
@@ -293,7 +294,8 @@ export default {
 				{ key: 5, label: `数量`, visible: true },
 				{ key: 6, label: `预估价值/购买金额`, visible: true },
 				{ key: 7, label: `经办人`, visible: true },
-				{ key: 8, label: `收礼方式`, visible: true }
+				{ key: 8, label: `收礼方式`, visible: true },
+				{ key: 9, label: `付款时间`, visible: true }
 			],
 			companyType: ''
 		};
