@@ -476,18 +476,28 @@ export default {
 		handleAudit(row) {},
 		// 发起付款申请
 		applyForPayment(row) {
+			if (!row.id) {
+				this.$message.error('该行数据有误，id为空!');
+				return;
+			}
+			// 获取出差信息
 			getBusinessTrip(row.id).then(res => {
-				// 出差费用包含 报销项 车辆使用申请的保养金额 加油金额 初期金额
-				if (res.data.tripReimbursementList !== null && res.data.tripReimbursementList !== undefined) {
-					if (res.data.tripReimbursementList.length > 0) {
+				if (!res.data) {
+					this.$message.error('出差申请不存在');
+					return;
+				}
+				if (!res.data.tripReimbursementList) {
+					this.needMoney = 0;
+				} else {
+					// 如果没有报销项 就直接返回
+					if (res.data.tripReimbursementList.length <= 0) {
+						this.needMoney = 0;
+					} else {
+						// 出差费用包含 报销项 车辆使用申请的保养金额 加油金额 初期金额
 						res.data.tripReimbursementList.forEach(item => {
 							this.needMoney += item.itemCost;
 						});
-					} else {
-						this.needMoney = 0;
 					}
-				} else {
-					this.needMoney = 0;
 				}
 				this.tID = row.id;
 				this.applyForPaymentDialogVisible = true;
