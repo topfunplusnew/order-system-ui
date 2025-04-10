@@ -77,6 +77,11 @@
 			</el-table-column>
 
 			<el-table-column v-if="columns[7].visible" label="备注" align="center" prop="comments" />
+			<el-table-column label="派车审核" align="center" class-name="small-padding fixed-width">
+				<template slot-scope="scope">
+					<el-button size="mini" type="text" @click="handleAudit(scope.row)">审核</el-button>
+				</template>
+			</el-table-column>
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="260px" fixed="right">
 				<template slot-scope="scope">
 					<el-button :disabled="scope.row.checkState !== PAYMENT_APPLY_STATE.UNAPPLIED" size="mini" type="text" @click="applyForPayment(scope.row)">发起付款申请</el-button>
@@ -467,6 +472,8 @@ export default {
 				children: node.children
 			};
 		},
+		// TODO 派车审核 等待后端
+		handleAudit(row) {},
 		// 发起付款申请
 		applyForPayment(row) {
 			getBusinessTrip(row.id).then(res => {
