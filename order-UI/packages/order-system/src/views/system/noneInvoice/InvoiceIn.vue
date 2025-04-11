@@ -350,7 +350,7 @@ export default {
 	watch: {
 		columns: {
 			handler: function (newVal) {
-				localStorage.setItem('invoicein-columns', JSON.stringify(newVal));
+				localStorage.setItem('none-invoicein-columns', JSON.stringify(newVal));
 			},
 			deep: true
 		},
@@ -363,11 +363,11 @@ export default {
 	},
 	created() {
 		this.getList();
-		if (localStorage.getItem('invoicein-columns') === 'null' || !localStorage.getItem('invoicein-columns')) {
+		if (localStorage.getItem('none-invoicein-columns') === 'null' || !localStorage.getItem('none-invoicein-columns')) {
 			// 设置localStorage
-			localStorage.setItem('invoicein-columns', JSON.stringify(this.columns));
+			localStorage.setItem('none-invoicein-columns', JSON.stringify(this.columns));
 		} else {
-			this.columns = JSON.parse(localStorage.getItem('invoicein-columns'));
+			this.columns = JSON.parse(localStorage.getItem('none-invoicein-columns'));
 		}
 	},
 	methods: {
