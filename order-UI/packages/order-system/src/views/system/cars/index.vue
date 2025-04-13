@@ -87,7 +87,7 @@
 								:get-data="listBankAccount"
 								icon="el-icon-search"
 								query-info="acountsName"
-								query-label="户名查找"
+								query-label="开户名查找"
 								:query-name="queryCars"
 								@commitBack="handleCommitBack"
 								@update:queryName="handleCommitQueryName"
