@@ -396,13 +396,6 @@ export default {
 			this.form.companyID = val.id;
 			this.form.companyType = val.companyType;
 		},
-		checkOrderInfo(row) {
-			// 发请求 查看订单信息
-			getGoodsOrder(row.isOrderTax).then(res => {
-				this.orderInfo = res.data;
-				this.checkOrderInfoVisible = true;
-			});
-		},
 		// 添加付款申请
 		addPaymentApplyInfos(row) {
 			this.tID = row.id;

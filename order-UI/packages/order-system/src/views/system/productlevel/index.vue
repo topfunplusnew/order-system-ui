@@ -216,6 +216,7 @@ import { addData, delData, getDicts, listData } from '@/api/system/dict/data';
 import { updateData } from '../../../api/system/dict/data';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
 import { excludeParams } from '../../../api/tool/exclude';
+import { TypeUtils } from '@/views/dashboard/backuplog';
 
 export default {
 	name: 'ProductLevel',
@@ -465,9 +466,15 @@ export default {
 
 			// 获取产品字典信息 为了自动填充最大的分类编码
 			getDicts('order_product_categories').then(res => {
-				const maxNo = Math.max(...res.data.map(obj => Number(obj.dictValue)));
-				let maxValue = res.data.find(obj => Number(obj.dictValue) === maxNo).dictValue;
-				this.tempCategoryInfo.levelNo = plusOne(maxValue);
+				// 如果没有数据 则默认为001
+				if (!res.data || res.data.length === 0) {
+					this.tempCategoryInfo.levelNo = '001';
+					// 否则获取最大的分类编码
+				} else {
+					const maxNo = Math.max(...res.data.map(obj => Number(obj.dictValue)));
+					let maxValue = res.data.find(obj => Number(obj.dictValue) === maxNo).dictValue;
+					this.tempCategoryInfo.levelNo = plusOne(maxValue);
+				}
 				this.getDictsData();
 				this.addCategoryOpen = true;
 			});
