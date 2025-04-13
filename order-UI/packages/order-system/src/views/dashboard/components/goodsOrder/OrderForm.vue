@@ -911,15 +911,23 @@ export default {
 					</el-table-column>
 					<el-table-column label="每包片数" prop="piecesPerPack" width="150">
 						<template #default="scope">
-							<el-input size="mini" type="number" v-model="scope.row.piecesPerPack" @input="() => (scope.row.packs >= 0 ? calculatePacks(scope) : '')" placeholder="请输入每包片数" />
+							<!--              <el-input size="mini" type="number" v-model="scope.row.piecesPerPack" @input="() => (scope.row.packs >= 0 ? calculatePacks(scope) : '')" placeholder="请输入每包片数" />-->
+							<el-input size="mini" type="number" v-model="scope.row.piecesPerPack" placeholder="请输入每包片数" />
 						</template>
 					</el-table-column>
 					<el-table-column label="包数" prop="packs" width="150">
 						<template #default="scope">
+							<!--							<el-input-->
+							<!--								size="mini"-->
+							<!--								type="number"-->
+							<!--								@input="() => calculatePacks(scope)"-->
+							<!--								v-model.lazy="scope.row.packs"-->
+							<!--								:placeholder="scope.row.piecesPerPack <= 0 ? '请先输入每包片数' : '请输入包数'"-->
+							<!--								:disabled="scope.row.piecesPerPack <= 0"-->
+							<!--							/>-->
 							<el-input
 								size="mini"
 								type="number"
-								@input="() => calculatePacks(scope)"
 								v-model.lazy="scope.row.packs"
 								:placeholder="scope.row.piecesPerPack <= 0 ? '请先输入每包片数' : '请输入包数'"
 								:disabled="scope.row.piecesPerPack <= 0"
@@ -929,7 +937,7 @@ export default {
 
 					<el-table-column label="出厂片数" prop="pieces" width="150">
 						<template #default="scope">
-							<el-input type="number" size="mini" v-model="scope.row.pieces" placeholder="请输入出厂片数" disabled />
+							<el-input type="number" size="mini" v-model="scope.row.pieces" placeholder="请输入出厂片数" />
 						</template>
 					</el-table-column>
 
