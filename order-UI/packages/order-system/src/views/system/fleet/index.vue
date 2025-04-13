@@ -133,20 +133,6 @@ export default {
 						trigger: 'blur'
 					}
 				],
-				fleader: [
-					{
-						required: true,
-						message: '车队经理不能为空',
-						trigger: 'blur'
-					}
-				],
-				tel: [
-					{
-						required: true,
-						message: '车队经理电话不能为空',
-						trigger: 'blur'
-					}
-				],
 				address: [{ required: true, message: '地址不能为空', trigger: 'blur' }]
 			},
 			columns: [
