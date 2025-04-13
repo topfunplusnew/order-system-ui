@@ -79,6 +79,7 @@
 						</el-col>
 						<el-col :span="3">
 							<SearchOption
+								title="搜索未绑定的司机银行卡"
 								:limit-info="{
 									acountsType: '司机',
 									companyId: 0

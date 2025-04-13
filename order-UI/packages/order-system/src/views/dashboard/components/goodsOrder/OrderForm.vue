@@ -50,8 +50,7 @@ export default {
 						message: '请输入销售经理',
 						trigger: 'blur'
 					}
-				],
-				comments: [{ required: true, message: '请输入备注', trigger: 'blur' }]
+				]
 			},
 			// 2025/1/14 订单货物列表
 			orderdetailList: [],
