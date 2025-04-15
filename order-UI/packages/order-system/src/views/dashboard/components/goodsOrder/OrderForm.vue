@@ -937,7 +937,7 @@ export default {
 
 					<el-table-column label="出厂片数" prop="pieces" width="150">
 						<template #default="scope">
-							<el-input type="number" size="mini" v-model="scope.row.pieces" placeholder="请输入出厂片数" @input="() => calculatePacks(scope)" />
+							<el-input type="number" size="mini" v-model="scope.row.pieces" placeholder="请输入出厂片数" />
 						</template>
 					</el-table-column>
 
@@ -980,7 +980,7 @@ export default {
 					</el-table-column>
 					<el-table-column label="卸货片数" prop="actualPieces" width="150">
 						<template #default="scope">
-							<el-input size="mini" v-model="scope.row.actualPieces" placeholder="请输入卸货片数" />
+							<el-input size="mini" v-model="scope.row.actualPieces" placeholder="请输入卸货片数" @input="() => calculatePacks(scope)" />
 						</template>
 					</el-table-column>
 					<el-table-column label="卸货价" prop="paymentUnload" width="150">
