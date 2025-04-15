@@ -183,6 +183,16 @@ export default {
 						required: true,
 						message: '车牌号不能为空',
 						trigger: 'blur'
+					},
+					// TODO
+					{
+						validator(rule, value, callback) {
+							if (value.length > 7) {
+								callback(new Error('车牌号不能超过7个字符'));
+							} else {
+								callback();
+							}
+						}
 					}
 				],
 				driver: [
