@@ -980,7 +980,7 @@ export default {
 					</el-table-column>
 					<el-table-column label="卸货片数" prop="actualPieces" width="150">
 						<template #default="scope">
-							<el-input size="mini" v-model="scope.row.actualPieces" placeholder="请输入卸货片数" disabled />
+							<el-input size="mini" v-model="scope.row.actualPieces" placeholder="请输入卸货片数" />
 						</template>
 					</el-table-column>
 					<el-table-column label="卸货价" prop="paymentUnload" width="150">
