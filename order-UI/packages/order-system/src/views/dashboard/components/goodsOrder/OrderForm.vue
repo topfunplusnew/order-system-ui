@@ -929,6 +929,7 @@ export default {
 								size="mini"
 								type="number"
 								v-model.lazy="scope.row.packs"
+								@input="() => calculatePacks(scope)"
 								:placeholder="scope.row.piecesPerPack <= 0 ? '请先输入每包片数' : '请输入包数'"
 								:disabled="scope.row.piecesPerPack <= 0"
 							/>
