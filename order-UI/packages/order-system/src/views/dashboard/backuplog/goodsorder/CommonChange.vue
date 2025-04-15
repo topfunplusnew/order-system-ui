@@ -63,7 +63,6 @@ export default {
 			return TableName;
 		},
 		renderData() {
-			console.log('compareData', this.compareData);
 			let data = _.cloneDeep(this.compareData);
 			// 存放展平后的数据
 			const extra = [];

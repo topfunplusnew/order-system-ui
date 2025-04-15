@@ -50,16 +50,16 @@
 			@selection-change="handleSelectionChange"
 			class="table-container"
 		>
-			<el-table-column v-if="columns[0].visible" label="客户名称" align="center" prop="companyName" width="180" show-overflow-tooltip />
-			<el-table-column v-if="columns[1].visible" label="老板姓名" align="center" prop="leader" width="180" show-overflow-tooltip />
-			<el-table-column v-if="columns[2].visible" label="老板电话" align="center" prop="leaderTel" width="180" show-overflow-tooltip />
-			<el-table-column v-if="columns[3].visible" label="区域" align="center" prop="region" width="180" show-overflow-tooltip />
-			<el-table-column v-if="columns[4].visible" label="联系人" align="center" prop="relationName" width="180" show-overflow-tooltip />
-			<el-table-column v-if="columns[5].visible" label="销售经理" align="center" prop="salesManager" width="180" show-overflow-tooltip />
-			<el-table-column v-if="columns[6].visible" label="地址" align="center" prop="address" width="150" show-overflow-tooltip />
-			<el-table-column v-if="columns[7].visible" label="电话" align="center" prop="relationTel" width="180" show-overflow-tooltip />
-			<el-table-column v-if="columns[8].visible" label="备注" align="center" prop="comments" width="180" show-overflow-tooltip />
-			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="180">
+			<el-table-column v-if="columns[0].visible" label="客户名称" align="center" prop="companyName" show-overflow-tooltip />
+			<el-table-column v-if="columns[1].visible" label="老板姓名" align="center" prop="leader" show-overflow-tooltip />
+			<el-table-column v-if="columns[2].visible" label="老板电话" align="center" prop="leaderTel" show-overflow-tooltip />
+			<el-table-column v-if="columns[3].visible" label="区域" align="center" prop="region" show-overflow-tooltip />
+			<el-table-column v-if="columns[4].visible" label="联系人" align="center" prop="relationName" show-overflow-tooltip />
+			<el-table-column v-if="columns[5].visible" label="销售经理" align="center" prop="salesManager" show-overflow-tooltip />
+			<el-table-column v-if="columns[6].visible" label="地址" align="center" prop="address" show-overflow-tooltip />
+			<el-table-column v-if="columns[7].visible" label="电话" align="center" prop="relationTel" show-overflow-tooltip />
+			<el-table-column v-if="columns[8].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="200">
 				<template slot-scope="scope">
 					<el-button size="mini" type="text" @click="jumpBankNo(scope.row)">银行卡号</el-button>
 					<el-button v-hasPermi="['system:company:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">编辑</el-button>

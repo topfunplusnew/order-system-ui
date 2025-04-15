@@ -45,13 +45,13 @@
 			"
 			@selection-change="handleSelectionChange"
 		>
-			<el-table-column v-if="columns[0].visible" label="供应商" align="center" prop="companyName" width="200" show-overflow-tooltip />
-			<el-table-column v-if="columns[1].visible" label="地址" align="center" prop="address" width="200" show-overflow-tooltip />
-			<el-table-column v-if="columns[2].visible" label="联系人" align="center" prop="relationName" width="200" show-overflow-tooltip />
-			<el-table-column v-if="columns[3].visible" label="老板电话" align="center" prop="leaderTel" width="200" show-overflow-tooltip />
-			<el-table-column v-if="columns[4].visible" label="电话" align="center" prop="relationTel" width="200" show-overflow-tooltip />
-			<el-table-column v-if="columns[5].visible" label="备注" align="center" prop="comments" width="200" show-overflow-tooltip />
-			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="180">
+			<el-table-column v-if="columns[0].visible" label="供应商" align="center" prop="companyName" show-overflow-tooltip />
+			<el-table-column v-if="columns[1].visible" label="地址" align="center" prop="address" show-overflow-tooltip />
+			<el-table-column v-if="columns[2].visible" label="联系人" align="center" prop="relationName" show-overflow-tooltip />
+			<el-table-column v-if="columns[3].visible" label="老板电话" align="center" prop="leaderTel" show-overflow-tooltip />
+			<el-table-column v-if="columns[4].visible" label="电话" align="center" prop="relationTel" show-overflow-tooltip />
+			<el-table-column v-if="columns[5].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
 				<template slot-scope="scope">
 					<el-button size="mini" type="text" @click="jumpBankNo(scope.row)">银行卡号</el-button>
 					<el-button v-hasPermi="['system:companygive:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">编辑</el-button>
@@ -176,7 +176,7 @@
 					<el-table-column label="户名" align="center" prop="acountsName" />
 					<el-table-column label="银行卡号" align="center" prop="bankNo" />
 					<el-table-column label="银行卡余额" align="center" prop="amount" />
-					<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="180">
+					<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
 						<template slot-scope="scope">
 							<el-button v-hasPermi="['system:companygive:remove']" size="mini" @click="handleDeleteBankaccount(scope.row)">
 								<i class="el-icon-delete"></i>

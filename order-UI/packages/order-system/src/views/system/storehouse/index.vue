@@ -35,7 +35,7 @@
 		<el-table id="printBox" v-horizontal-scroll="'always'" v-loading="loading" size="mini" border :data="StoreHouseList" @selection-change="handleSelectionChange">
 			<el-table-column v-if="columns[0].visible" label="仓库名称" align="center" prop="storeHouseName" />
 			<el-table-column v-if="columns[1].visible" label="地址" align="center" prop="address" />
-			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="180">
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
 				<template slot-scope="scope">
 					<el-button v-hasPermi="['system:storehouse:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">编辑</el-button>
 					<el-button v-hasPermi="['system:storehouse:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
