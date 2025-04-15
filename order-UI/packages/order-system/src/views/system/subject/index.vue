@@ -89,9 +89,9 @@
 					<el-table-column v-if="columns[0].visible" label="科目名称" prop="title" />
 					<el-table-column v-if="columns[1].visible" label="科目编码" align="center" prop="subjectNo" />
 					<el-table-column label="排序" prop="orderNum" width="120"></el-table-column>
-					<el-table-column v-if="columns[2].visible" label="科目类别" align="center" prop="type" />
+					<!--					<el-table-column v-if="columns[2].visible" label="科目类别" align="center" prop="type" />-->
 					<!--          <el-table-column label="父级ID" align="center" prop="parentId" v-if="columns[3].visible"/>-->
-					<el-table-column v-if="columns[3].visible" label="备注" align="center" prop="remark" />
+					<el-table-column v-if="columns[2].visible" label="备注" align="center" prop="remark" />
 					<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
 						<template slot-scope="scope">
 							<el-button v-hasPermi="['system:subject:edit']" size="mini" @click="handleUpdate(scope.row)">修改</el-button>
@@ -108,12 +108,12 @@
 				<el-form-item label="父级ID" prop="parentId">
 					<treeselect v-model="form.parentId" :options="subjectOptions" :normalizer="normalizer" placeholder="请选择父级ID" />
 				</el-form-item>
-				<el-form-item label="分类名称" prop="type">
-					<!--          <el-input v-model="form.type" placeholder="请输入分类名称"/>-->
-					<el-select v-model="form.type" placeholder="请选择">
-						<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
-					</el-select>
-				</el-form-item>
+				<!--				<el-form-item label="分类名称" prop="type">-->
+				<!--					&lt;!&ndash;          <el-input v-model="form.type" placeholder="请输入分类名称"/>&ndash;&gt;-->
+				<!--					<el-select v-model="form.type" placeholder="请选择">-->
+				<!--						<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>-->
+				<!--					</el-select>-->
+				<!--				</el-form-item>-->
 				<el-form-item label="科目名称" prop="title">
 					<el-input v-model="form.title" placeholder="请输入科目名称" />
 				</el-form-item>
@@ -202,8 +202,8 @@ export default {
 			columns: [
 				{ key: 0, label: `科目名称`, visible: true },
 				{ key: 1, label: `科目编码`, visible: true },
-				{ key: 2, label: `科目类别`, visible: true },
-				{ key: 3, label: `备注`, visible: true }
+				// { key: 2, label: `科目类别`, visible: true },
+				{ key: 2, label: `备注`, visible: true }
 			],
 			// 表单校验
 			rules: {
@@ -212,13 +212,6 @@ export default {
 						required: true,
 						message: '科目名称不能为空',
 						trigger: 'blur'
-					}
-				],
-				type: [
-					{
-						required: true,
-						message: '科目类别不能为空',
-						trigger: 'change'
 					}
 				],
 				subjectNo: [{ required: true, message: '编号不能为空', trigger: 'blur' }]
@@ -274,7 +267,7 @@ export default {
 				if (val !== 0 && val !== null && val !== undefined) {
 					// 应该先getId 填充this.form.type数据
 					getSubject(val).then(response => {
-						this.form.type = response.data.type;
+						// this.form.type = response.data.type;
 						this.form.subjectNo = response.data.subjectNo;
 					});
 					// val是id 然后再拿id去查找该元素的子元素个数 用来拼接
