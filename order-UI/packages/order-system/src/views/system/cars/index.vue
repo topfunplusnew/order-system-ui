@@ -64,7 +64,7 @@
 		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="120px">
 				<el-form-item label="车牌" prop="carNo">
-					<el-input v-model="form.carNo" placeholder="请输入车牌" />
+					<el-input v-model="form.carNo" placeholder="请输入车牌" @input="handleCheckInput" />
 				</el-form-item>
 				<el-form-item label="司机" prop="driver">
 					<el-input v-model="form.driver" placeholder="请输入司机" />
@@ -184,11 +184,10 @@ export default {
 						message: '车牌号不能为空',
 						trigger: 'blur'
 					},
-					// TODO
 					{
 						validator(rule, value, callback) {
-							if (value.length > 7) {
-								callback(new Error('车牌号不能超过7个字符'));
+							if (value.length > 8) {
+								callback(new Error('车牌号不能超过8个字符'));
 							} else {
 								callback();
 							}
@@ -249,7 +248,6 @@ export default {
 			],
 			companyList: [],
 			queryCars: '',
-
 			// 查询对象
 			queryObject: {},
 			driverBankAccout: false
@@ -274,7 +272,6 @@ export default {
 	},
 	methods: {
 		listBankAccount,
-
 		handleCommitBack(val) {
 			this.form.bankName = val.bankName;
 			this.form.bankNo = val.bankNo;
@@ -291,6 +288,14 @@ export default {
 			};
 			// 查询该银行卡
 			this.driverBankAccout = true;
+		},
+		handleCheckInput(value) {
+			// 1. 清除所有空格
+			let cleanedValue = value.replace(/\s+/g, '');
+			// 2. 将字母转为大写（包括"鲁A"这类前缀）
+			cleanedValue = cleanedValue.toUpperCase();
+			// 3. 更新表单数据
+			this.form.carNo = cleanedValue;
 		},
 		/** 查询外部车辆信息列表 */
 		getList() {
