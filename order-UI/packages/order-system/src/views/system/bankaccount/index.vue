@@ -6,8 +6,8 @@
 					<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
 				</el-select>
 			</el-form-item>
-			<el-form-item label="户名" prop="acountsName">
-				<el-input v-model="queryParams.acountsName" placeholder="请输入户名" clearable @keyup.enter.native="handleQuery" />
+			<el-form-item label="开户名" prop="acountsName">
+				<el-input v-model="queryParams.acountsName" placeholder="请输入开户名" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="银行账号" prop="bankNo">
 				<el-input v-model="queryParams.bankNo" placeholder="请输入银行账号" clearable @keyup.enter.native="handleQuery" />
@@ -122,8 +122,8 @@
 						</el-form-item>
 					</el-row>
 				</div>
-				<!--        填写户名-->
-				<el-form-item label="户名" prop="acountsName">
+				<!--        填写开户名-->
+				<el-form-item label="开户名" prop="acountsName">
 					<!--          如果是司机 那么就选择-->
 					<el-row v-if="form.acountsType === PUBLIC_DICT_TYPE.DRIVER">
 						<el-col :span="20">
@@ -153,9 +153,16 @@
 							</el-tooltip>
 						</el-col>
 					</el-row>
-					<!--          如果不是司机 直接填写户名-->
+
+					<!--          如果不是司机 直接填写开户名-->
 					<el-row v-else>
-						<el-input v-model="form.acountsName" placeholder="请输入户名" />
+						<el-input v-model="form.acountsName" placeholder="请输入开户名" />
+					</el-row>
+				</el-form-item>
+				<!--          车牌-->
+				<el-form-item label="车牌号" prop="companyName" v-if="form.acountsType === PUBLIC_DICT_TYPE.DRIVER">
+					<el-row>
+						<el-input v-model="form.companyName" placeholder="请输入车牌" disabled />
 					</el-row>
 				</el-form-item>
 				<el-form-item v-if="isNeed" :label="showLabel" prop="companyName">
@@ -582,7 +589,7 @@ export default {
 			this.form.companyId = val.id;
 			this.form.companyType = '司机';
 			// 司机信息公司默认给的是司机
-			this.form.companyName = '司机';
+			this.form.companyName = val.carNo;
 		},
 		handleUpdateBankAccount(val) {
 			this.queryBankAccount = val;
