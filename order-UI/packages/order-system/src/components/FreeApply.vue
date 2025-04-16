@@ -124,7 +124,7 @@ export default {
 				otherAcountsName: null,
 				otherBankNo: null,
 				otherBankName: null,
-				payDate: null,
+				payDate: new Date(),
 				comments: null,
 				content: null
 			};

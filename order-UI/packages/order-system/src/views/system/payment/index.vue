@@ -770,7 +770,7 @@ export default {
 			this.form = {
 				id: null,
 				payNO: null,
-				fundsDate: null,
+				fundsDate: new Date(),
 				payType: null,
 				tableName: null,
 				tID: null,

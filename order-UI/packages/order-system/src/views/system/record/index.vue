@@ -642,12 +642,13 @@ export default {
 		CASH_TYPE() {
 			return CASH_TYPE;
 		},
+
 		/**
-		 * 显示的源
-		 * 冲抵货款的时候就是支出方金额
-		 * 内部转账的时候显示支出方 并且要显示填充搜索按钮
+		 * 显示的去
+		 * 冲抵货款的时候就是收入方金额
+		 * 内部转账的时候显示收入方 并且要显示填充搜索按钮
 		 */
-		source() {
+		target() {
 			// 如果是冲抵货款 那么就是用货款来去冲抵金额
 			if (this.cashType === CASH_TYPE.OFF_SETTING) {
 				return '支出方金额';
@@ -658,11 +659,11 @@ export default {
 			return '支出';
 		},
 		/**
-		 * 显示的去
-		 * 冲抵货款的时候就是收入方金额
-		 * 内部转账的时候显示收入方 并且要显示填充搜索按钮
+		 * 显示的源
+		 * 冲抵货款的时候就是支出方金额
+		 * 内部转账的时候显示支出方 并且要显示填充搜索按钮
 		 */
-		target() {
+		source() {
 			if (this.cashType === CASH_TYPE.OFF_SETTING) {
 				return '收入方金额';
 			}
@@ -719,7 +720,7 @@ export default {
 		reset() {
 			this.form = {
 				id: null,
-				transactionTime: null,
+				transactionTime: new Date(),
 				sourceId: null,
 				targetId: null,
 				amount: null,
@@ -727,11 +728,6 @@ export default {
 				referenceTableName: null,
 				attachment: null,
 				remarks: null,
-				addtime: null,
-				userId: null,
-				UserName: null,
-				updateTime: null,
-				delFlag: null,
 				// 收入方与支付方的公司类型
 				sourceCompanyType: '客户',
 				targetCompanyType: '客户',

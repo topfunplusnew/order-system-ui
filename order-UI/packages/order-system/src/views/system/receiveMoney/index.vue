@@ -477,7 +477,7 @@ export default {
 			this.form = {
 				id: null,
 				receiveNO: null,
-				fundsDate: null,
+				fundsDate: new Date(),
 				receiveType: null,
 				tableName: null,
 				tID: null,
