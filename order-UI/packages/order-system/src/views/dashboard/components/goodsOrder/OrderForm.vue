@@ -645,7 +645,7 @@ export default {
 					<el-checkbox v-model="isSea">海运</el-checkbox>
 				</el-form-item>
 				<!--      陆运-->
-				<el-row v-if="isLand" style="margin: 20px 0">
+				<el-row v-if="isLand" style="margin: 2px 0">
 					<el-form-item label="车牌">
 						<el-row>
 							<el-col :span="20">
@@ -709,7 +709,7 @@ export default {
 					</el-form-item>
 				</el-row>
 				<!--      海运-->
-				<el-row v-if="isSea" style="margin: 10px 0">
+				<el-row v-if="isSea" style="margin: 2px 0">
 					<!--   车牌修改为柜号 且自己输入 不提供自动填充 -->
 					<el-form-item label="柜号(填写)">
 						<el-input v-model="orderInfo.seaCarNo" type="text" size="mini" placeholder="请输入柜号" style="width: 120px" />
@@ -764,6 +764,7 @@ export default {
 
 				<!--        订单货物-->
 				<el-table
+					border
 					size="mini"
 					:data="orderdetailList"
 					show-summary
@@ -886,7 +887,7 @@ export default {
 							</el-col>
 						</template>
 					</el-table-column>
-					<el-table-column label="计量单位" prop="countingUnit" width="150">
+					<el-table-column label="计量单位" prop="countingUnit" width="100">
 						<template #default="scope">
 							<el-radio-group v-model="scope.row.countingUnit" size="mini">
 								<el-radio label="片">片数</el-radio>
@@ -894,28 +895,28 @@ export default {
 							</el-radio-group>
 						</template>
 					</el-table-column>
-					<el-table-column label="厚度" prop="height" width="150">
+					<el-table-column label="厚度" prop="height" width="90">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.height" placeholder="请选择产品级别" disabled />
 						</template>
 					</el-table-column>
-					<el-table-column label="长度" prop="length" width="150">
+					<el-table-column label="长度" prop="length" width="90">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.length" placeholder="请选择产品级别" disabled />
 						</template>
 					</el-table-column>
-					<el-table-column label="宽度" prop="width" width="150">
+					<el-table-column label="宽度" prop="width" width="90">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.width" placeholder="请选择产品级别" disabled />
 						</template>
 					</el-table-column>
-					<el-table-column label="每包片数" prop="piecesPerPack" width="150">
+					<el-table-column label="每包片数" prop="piecesPerPack" width="90">
 						<template #default="scope">
 							<!--              <el-input size="mini" type="number" v-model="scope.row.piecesPerPack" @input="() => (scope.row.packs >= 0 ? calculatePacks(scope) : '')" placeholder="请输入每包片数" />-->
 							<el-input size="mini" type="number" v-model="scope.row.piecesPerPack" placeholder="请输入每包片数" />
 						</template>
 					</el-table-column>
-					<el-table-column label="包数" prop="packs" width="150">
+					<el-table-column label="包数" prop="packs" width="90">
 						<template #default="scope">
 							<!--							<el-input-->
 							<!--								size="mini"-->
@@ -935,13 +936,13 @@ export default {
 						</template>
 					</el-table-column>
 
-					<el-table-column label="出厂片数" prop="pieces" width="150">
+					<el-table-column label="出厂片数" prop="pieces" width="90">
 						<template #default="scope">
 							<el-input type="number" size="mini" v-model="scope.row.pieces" placeholder="请输入出厂片数" @input="() => calculatePacks(scope)" />
 						</template>
 					</el-table-column>
 
-					<el-table-column label="出厂单价" prop="price" width="150">
+					<el-table-column label="出厂单价" prop="price" width="90">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -953,7 +954,7 @@ export default {
 							/>
 						</template>
 					</el-table-column>
-					<el-table-column label="出厂是否含税" prop="isIncludeTaxFactory" width="150">
+					<el-table-column label="出厂是否含税" prop="isIncludeTaxFactory" width="90">
 						<template #default="scope">
 							<el-radio-group v-model="scope.row.isIncludeTaxFactory" size="mini" @change="() => recalculateFactory(scope)">
 								<el-radio :label="1">是</el-radio>
@@ -961,7 +962,7 @@ export default {
 							</el-radio-group>
 						</template>
 					</el-table-column>
-					<el-table-column label="杂费" prop="sundryCost" width="150">
+					<el-table-column label="杂费" prop="sundryCost" width="90">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -973,17 +974,17 @@ export default {
 							/>
 						</template>
 					</el-table-column>
-					<el-table-column label="出厂货款" prop="paymentFactory" width="150">
+					<el-table-column label="出厂货款" prop="paymentFactory" width="90">
 						<template #default="scope">
 							<el-input size="mini" type="number" v-model="scope.row.paymentFactory" placeholder="请输入出厂货款" disabled />
 						</template>
 					</el-table-column>
-					<el-table-column label="卸货片数" prop="actualPieces" width="150">
+					<el-table-column label="卸货片数" prop="actualPieces" width="90">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.actualPieces" placeholder="请输入卸货片数" />
 						</template>
 					</el-table-column>
-					<el-table-column label="卸货价" prop="paymentUnload" width="150">
+					<el-table-column label="卸货价" prop="paymentUnload" width="90">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -994,7 +995,7 @@ export default {
 							/>
 						</template>
 					</el-table-column>
-					<el-table-column label="销售是否含税" prop="isIncludeTaxSale" width="150">
+					<el-table-column label="销售是否含税" prop="isIncludeTaxSale" width="90">
 						<template #default="scope">
 							<el-radio-group v-model="scope.row.isIncludeTaxSale" size="mini" @change="() => recalculateSale(scope)">
 								<el-radio :label="1">是</el-radio>
@@ -1013,7 +1014,7 @@ export default {
 							/>
 						</template>
 					</el-table-column>
-					<el-table-column label="总货款" prop="payments" width="150">
+					<el-table-column label="总货款" prop="payments" width="90">
 						<template #default="scope">
 							<el-input size="mini" type="number" v-model="scope.row.payments" placeholder="请输入总货款" disabled />
 						</template>
@@ -1023,7 +1024,7 @@ export default {
 							<el-input size="mini" v-model="scope.row.erro" placeholder="请输入误差" disabled />
 						</template>
 					</el-table-column>
-					<el-table-column label="吨位" prop="tonnage" width="150">
+					<el-table-column label="吨位" prop="tonnage" width="90">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.tonnage" placeholder="请输入吨位" disabled />
 						</template>
@@ -1038,7 +1039,7 @@ export default {
 							/>
 						</template>
 					</el-table-column>
-					<el-table-column label="加费" prop="additionalFees" width="150">
+					<el-table-column label="加费" prop="additionalFees" width="90">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -1049,65 +1050,64 @@ export default {
 							/>
 						</template>
 					</el-table-column>
-					<el-table-column label="陆运费" prop="landFreight" width="150" v-if="isLand" disabled>
+					<el-table-column label="陆运费" prop="landFreight" width="90" v-if="isLand" disabled>
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.landFreight" placeholder="请输入陆运费" />
 						</template>
 					</el-table-column>
-					<el-table-column label="海运费" prop="seaFreight" width="150" v-if="isSea">
+					<el-table-column label="海运费" prop="seaFreight" width="90" v-if="isSea">
 						<template #default="scope">
 							<el-input size="mini" v-model.lazy="scope.row.seaFreight" @input="() => calculateFreight(scope)" placeholder="请输入海运费" />
 						</template>
 					</el-table-column>
 
-					<el-table-column label="总运费" prop="freight" width="150">
+					<el-table-column label="总运费" prop="freight" width="90">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.freight" placeholder="请完善运费信息" disabled />
 						</template>
 					</el-table-column>
-					<el-table-column label="其他费用" prop="otherCost" width="150">
+					<el-table-column label="其他费用" prop="otherCost" width="90">
 						<template #default="scope">
 							<el-input size="mini" v-model.lazy="scope.row.otherCost" placeholder="请输入其他费用" @input="() => calculatePrice(scope)" />
 						</template>
 					</el-table-column>
-					<el-table-column label="利润" prop="profit" width="150">
+					<el-table-column label="利润" prop="profit" width="90">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.profit" placeholder="请输入利润" disabled />
 						</template>
 					</el-table-column>
-					<el-table-column label="不含税利润" prop="profitNoTax" width="150">
+					<el-table-column label="不含税利润" prop="profitNoTax" width="90">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.profitNoTax" placeholder="请输入不含税利润" disabled />
 						</template>
 					</el-table-column>
-					<el-table-column label="物流利润" prop="logisticsProfit" width="150">
+					<el-table-column label="物流利润" prop="logisticsProfit" width="90">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.logisticsProfit" placeholder="请输入物流利润" />
 						</template>
 					</el-table-column>
-					<el-table-column label="客户佣金" prop="customerCommission" width="150">
+					<el-table-column label="客户佣金" prop="customerCommission" width="90">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.customerCommission" placeholder="请输入佣金" />
 						</template>
 					</el-table-column>
-					<el-table-column label="厂家佣金" prop="factoryCommission" width="150">
+					<el-table-column label="厂家佣金" prop="factoryCommission" width="90">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.factoryCommission" placeholder="请输入佣金" />
 						</template>
 					</el-table-column>
 					<!--          降价金额-->
-					<el-table-column label="计提厂家返利金额" prop="factoryRebateAmount" width="150">
+					<el-table-column label="计提厂家返利金额" prop="factoryRebateAmount" width="90">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.factoryRebateAmount" placeholder="请输入计提厂家返利金额" />
 						</template>
 					</el-table-column>
-					<el-table-column label="计提厂家降价金额" prop="factoryDiscountAmount" width="150">
+					<el-table-column label="计提厂家降价金额" prop="factoryDiscountAmount" width="90">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.factoryDiscountAmount" placeholder="请输入计提厂家降价金额" />
 						</template>
 					</el-table-column>
-
-					<el-table-column label="备注" prop="comments" width="150">
+					<el-table-column label="备注" prop="comments" width="90">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.comments" placeholder="请输入备注" />
 						</template>

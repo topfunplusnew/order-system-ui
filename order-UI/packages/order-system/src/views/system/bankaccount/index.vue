@@ -73,10 +73,10 @@
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[3].visible" label="显示名称" align="center" prop="displayName" />
+			<el-table-column v-if="columns[7].visible" label="公司名称" align="center" prop="companyName" />
 			<el-table-column v-if="columns[4].visible" label="开户名称" align="center" prop="acountsName" />
 			<el-table-column v-if="columns[5].visible" label="银行账号" align="center" prop="bankNo" />
 			<el-table-column v-if="columns[6].visible" label="开户行" align="center" prop="bankName" />
-			<el-table-column v-if="columns[7].visible" label="公司名称" align="center" prop="companyName" />
 
 			<!-- 余额的展示 分为现金户和承兑户的展示 -->
 			<!-- bankAccountList需要在data中声明一个默认的属性 cardTypeBalances 不然会报undefined-->

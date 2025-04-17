@@ -16,7 +16,7 @@ export function sortByUpdateTime(a, b) {
 }
 
 export const fix = value => {
-	return Number(value).toFixed(3);
+	return Number(value).toFixed(4);
 };
 
 // 金钱转大写

@@ -139,7 +139,13 @@ export default {
 						trigger: 'blur'
 					}
 				],
-
+				endorserName: [
+					{
+						required: true,
+						message: '请输入背书人或被背书人',
+						trigger: 'blur'
+					}
+				],
 				inDiscountAmount: [
 					{
 						required: true,
