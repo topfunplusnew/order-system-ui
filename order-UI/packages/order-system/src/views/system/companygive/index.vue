@@ -64,7 +64,7 @@
 
 		<!-- 添加或修改供应商、供应商信息对话框 -->
 		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="54%" append-to-body>
-			<el-form ref="form" :model="form" :rules="rules" label-width="120px">
+			<el-form ref="form" :model="form" :rules="rules" label-width="120px" @keyup.enter.native="submitForm">
 				<el-row :gutter="4">
 					<el-col :span="12">
 						<el-form-item label="供应商名称" prop="companyName">

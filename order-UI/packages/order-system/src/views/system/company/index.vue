@@ -76,7 +76,8 @@
 		<!-- 添加或修改客户、供应商信息对话框 -->
 		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="54%"
 			append-to-body class="dialog-container">
-			<el-form ref="form" :model="form" :rules="rules" label-width="110px" @submit.native.prevent="submitForm">
+			<el-form ref="form" :model="form" :rules="rules" label-width="110px" @submit.native.prevent="submitForm"
+				@keyup.enter.native="submitForm">
 				<el-row :gutter="4">
 					<el-col :span="12">
 						<el-form-item label="客户名称" prop="companyName">
@@ -787,7 +788,6 @@ export default {
 		},
 		/** 提交按钮 */
 		submitForm() {
-			alert(1);
 			this.$refs['form'].validate(valid => {
 				if (valid) {
 					if (this.form.id != null) {
