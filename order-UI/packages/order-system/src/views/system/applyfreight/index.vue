@@ -240,6 +240,10 @@ export default {
 			<el-table-column v-if="columns[3].visible" show-overflow-tooltip prop="document_date" label="订单日期"
 				align="center" />
 
+			<!-- 订单状态 -->
+			<el-table-column v-if="columns[14].visible" show-overflow-tooltip prop="check_state" label="订单状态"
+				align="center" />
+
 			<!-- 客户/仓库名称 -->
 			<el-table-column v-if="columns[4].visible" show-overflow-tooltip prop="customer_or_storehouse_name"
 				label="客户/仓库名称" align="center" />
@@ -290,10 +294,6 @@ export default {
 
 			<!-- 订单来源 -->
 			<el-table-column v-if="columns[13].visible" show-overflow-tooltip prop="source" label="订单来源"
-				align="center" />
-
-			<!-- 订单状态 -->
-			<el-table-column v-if="columns[14].visible" show-overflow-tooltip prop="check_state" label="订单状态"
 				align="center" />
 
 			<!-- 收到条 -->
