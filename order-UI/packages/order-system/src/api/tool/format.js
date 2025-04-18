@@ -19,6 +19,11 @@ export const fix = value => {
 	return Number(value).toFixed(4);
 };
 
+export const fix_2 = value => {
+	return Number(value).toFixed(2);
+};
+
+
 // 金钱转大写
 export function numToChineseUppercase(n) {
 	if (n === 0) return '零元整'; // 特殊处理 0 元

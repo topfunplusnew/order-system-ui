@@ -10,7 +10,7 @@ export default {
 	props: {
 		orderInfo: {
 			type: Object,
-			default: function () {}
+			default: function () { }
 		}
 	},
 	data() {
@@ -43,6 +43,8 @@ export default {
 		// 查询客户余额
 		getCustomerSubjectDetailSomeDay(query).then(res => {
 			this.moneyAmount = res.data.moneyAmount;
+			console.log(res);
+
 		});
 	},
 	mounted() {
@@ -114,14 +116,14 @@ export default {
 					<tr>
 						<td />
 						<td style="text-align: left">货款</td>
-						<td colspan="7" />
+						<td colspan="8" />
 						<td>{{ fix(orderInfo.allPayments) }}</td>
 						<td />
 					</tr>
 					<tr>
 						<td />
 						<td style="text-align: left">余额</td>
-						<td colspan="7" />
+						<td colspan="8" />
 						<td>{{ fix(moneyAmount) }}</td>
 						<td />
 					</tr>
@@ -129,7 +131,7 @@ export default {
 						<td />
 						<!-- 货款 + 余额-->
 						<td style="text-align: left">货款合计</td>
-						<td colspan="7" />
+						<td colspan="8" />
 						<td>{{ fix(totalPayments) }}</td>
 						<td />
 					</tr>
@@ -137,7 +139,7 @@ export default {
 						<td />
 						<!--          合计只有一个大写-->
 						<td style="text-align: left">合计</td>
-						<td colspan="7">大写：{{ numToChineseUppercase(totalPayments) }}</td>
+						<td colspan="8">大写：{{ numToChineseUppercase(totalPayments) }}</td>
 						<td />
 						<td />
 					</tr>
