@@ -720,7 +720,7 @@ export default {
 		reset() {
 			this.form = {
 				id: null,
-				transactionTime: new Date(),
+				transactionTime: parseTime(new Date()),
 				sourceId: null,
 				targetId: null,
 				amount: null,

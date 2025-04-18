@@ -476,7 +476,7 @@ import { listPayment, delPayment, addPayment, updatePayment, getPayment } from '
 import SearchOption from '@/components/SearchOption.vue';
 import { listCompany } from '@/api/system/company';
 import { excludeParams } from '@/api/tool/exclude';
-import { addDateRange } from '@/utils/ruoyi';
+import {addDateRange, parseTime} from '@/utils/ruoyi';
 import { listBankAccount } from '../../../api/system/bankAccount';
 import { mixin_payment_audit } from '../../dashboard/mixins/payment/payment_audit';
 import { mixin_payment_select, PAYMENT_TYPES } from '../../dashboard/mixins/payment/payment_select';
@@ -750,7 +750,7 @@ export default {
 			this.form = {
 				id: null,
 				payNO: null,
-				fundsDate: new Date(),
+				fundsDate: parseTime(new Date()),
 				payType: null,
 				tableName: null,
 				tID: null,

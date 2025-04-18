@@ -1,30 +1,23 @@
 <template>
 	<div class="app-container">
-		<el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch"
-			label-width="100px">
+		<el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="100px">
 			<el-form-item label="仓库名称" prop="storeHouseName">
-				<el-input v-model="queryParams.storeHouseName" placeholder="请输入仓库名称" clearable
-					@keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.storeHouseName" placeholder="请输入仓库名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="入库日期" prop="storeDate">
-				<el-date-picker v-model="queryParams.storeDate" type="date" value-format="yyyy-MM-dd"
-					placeholder="选择入库日期" clearable />
+				<el-date-picker v-model="queryParams.storeDate" type="date" value-format="yyyy-MM-dd" placeholder="选择入库日期" clearable />
 			</el-form-item>
 			<el-form-item label="陆运车牌" prop="landCarNo">
-				<el-input v-model="queryParams.landCarNo" placeholder="请输入陆运车牌" clearable
-					@keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.landCarNo" placeholder="请输入陆运车牌" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="陆运司机电话" prop="landDriverTel">
-				<el-input v-model="queryParams.landDriverTel" placeholder="请输入陆运司机电话" clearable
-					@keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.landDriverTel" placeholder="请输入陆运司机电话" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="陆地司机姓名" prop="landDriverName">
-				<el-input v-model="queryParams.landDriverName" placeholder="请输入陆地司机姓名" clearable
-					@keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.landDriverName" placeholder="请输入陆地司机姓名" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="海运公司" prop="seaDriverName">
-				<el-input v-model="queryParams.seaDriverName" placeholder="请输入海运公司" clearable
-					@keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.seaDriverName" placeholder="请输入海运公司" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -34,20 +27,16 @@
 
 		<el-row :gutter="10" class="mb8">
 			<el-col :span="1.5">
-				<el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd"
-					v-hasPermi="['system:inventoryMain:add']">新增</el-button>
+				<el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd" v-hasPermi="['system:inventoryMain:add']">新增</el-button>
 			</el-col>
 			<el-col :span="1.5">
-				<el-button type="primary" plain icon="el-icon-edit" size="mini" :disabled="single" @click="handleUpdate"
-					v-hasPermi="['system:inventoryMain:edit']">修改</el-button>
+				<el-button type="primary" plain icon="el-icon-edit" size="mini" :disabled="single" @click="handleUpdate" v-hasPermi="['system:inventoryMain:edit']">修改</el-button>
 			</el-col>
 			<el-col :span="1.5">
-				<el-button type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple"
-					@click="handleDelete" v-hasPermi="['system:inventoryMain:remove']">删除</el-button>
+				<el-button type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete" v-hasPermi="['system:inventoryMain:remove']">删除</el-button>
 			</el-col>
 			<el-col :span="1.5">
-				<el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport"
-					v-hasPermi="['system:inventoryMain:export']">导出</el-button>
+				<el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport" v-hasPermi="['system:inventoryMain:export']">导出</el-button>
 			</el-col>
 			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
 				<template #print>
@@ -57,8 +46,7 @@
 				</template>
 				<template #export>
 					<el-col :span="1.5">
-						<el-button v-hasPermi="['system:bankaccount:export']" plain icon="el-icon-folder-opened"
-							size="mini" @click="handleExport"></el-button>
+						<el-button v-hasPermi="['system:bankaccount:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
 					</el-col>
 				</template>
 			</right-toolbar>
@@ -70,30 +58,25 @@
 			</div>
 		</el-col>
 		<el-col :span="20">
-			<el-table id="printBox" size="mini" v-loading="loading" :data="inventoryMainList"
-				@selection-change="handleSelectionChange" stripe style="width: 100%; margin-bottom: 20px">
+			<el-table id="printBox" size="mini" v-loading="loading" :data="inventoryMainList" @selection-change="handleSelectionChange" stripe style="width: 100%; margin-bottom: 20px">
 				<el-table-column type="selection" width="50" align="center" />
 
 				<el-table-column v-if="columns[0].visible" label="ID" align="center" prop="id" width="80" />
 
-				<el-table-column v-if="columns[1].visible" label="仓库名称" align="center" prop="storeHouseName"
-					width="150" />
+				<el-table-column v-if="columns[1].visible" label="仓库名称" align="center" prop="storeHouseName" width="150" />
 
 				<el-table-column v-if="columns[2].visible" label="入库日期" align="center" prop="storeDate" width="150" />
 
-				<el-table-column v-if="columns[3].visible" label="货物来源公司" align="center" prop="goodsCompany"
-					width="180" />
+				<el-table-column v-if="columns[3].visible" label="货物来源公司" align="center" prop="goodsCompany" width="180" />
 
 				<el-table-column v-if="columns[4].visible" label="审核状态" align="center" prop="checkState" width="150">
 					<template #default="scope">
 						<el-row v-if="scope.row.checkState === '已审核'">
-							<StateTag :state-title="scope.row.checkState" :state-mapper="{ 2: '已审核' }"
-								@click.native="handleReCheck(scope.row)" style="cursor: pointer" />
+							<StateTag :state-title="scope.row.checkState" :state-mapper="{ 2: '已审核' }" @click.native="handleReCheck(scope.row)" style="cursor: pointer" />
 						</el-row>
 						<el-row v-else>
 							<el-row>
-								<el-button v-hasPermi="['system:inventoryMain:audit']" type="text" size="mini"
-									@click="handleCheck(scope.row)">审核</el-button>
+								<el-button v-hasPermi="['system:inventoryMain:audit']" type="text" size="mini" @click="handleCheck(scope.row)">审核</el-button>
 							</el-row>
 						</el-row>
 					</template>
@@ -101,58 +84,43 @@
 
 				<el-table-column v-if="columns[5].visible" label="陆运车牌" align="center" prop="landCarNo" width="120" />
 
-				<el-table-column v-if="columns[6].visible" label="陆运司机电话" align="center" prop="landDriverTel"
-					width="150" />
+				<el-table-column v-if="columns[6].visible" label="陆运司机电话" align="center" prop="landDriverTel" width="150" />
 
-				<el-table-column v-if="columns[7].visible" label="陆地司机姓名" align="center" prop="landDriverName"
-					width="120" />
+				<el-table-column v-if="columns[7].visible" label="陆地司机姓名" align="center" prop="landDriverName" width="120" />
 
-				<el-table-column v-if="columns[8].visible" label="陆运银行卡号" align="center" prop="landBankNo"
-					width="120" />
+				<el-table-column v-if="columns[8].visible" label="陆运银行卡号" align="center" prop="landBankNo" width="120" />
 
-				<el-table-column v-if="columns[9].visible" label="陆运银行户名" align="center" prop="landBankName"
-					width="120" />
+				<el-table-column v-if="columns[9].visible" label="陆运银行户名" align="center" prop="landBankName" width="120" />
 
 				<el-table-column v-if="columns[10].visible" label="柜号" align="center" prop="seaCarNo" width="120" />
 
-				<el-table-column v-if="columns[11].visible" label="海运司机电话" align="center" prop="seaDriverTel"
-					width="150" />
+				<el-table-column v-if="columns[11].visible" label="海运司机电话" align="center" prop="seaDriverTel" width="150" />
 
-				<el-table-column v-if="columns[12].visible" label="海运公司" align="center" prop="seaDriverName"
-					width="120" />
+				<el-table-column v-if="columns[12].visible" label="海运公司" align="center" prop="seaDriverName" width="120" />
 
-				<el-table-column v-if="columns[13].visible" label="海运银行卡号" align="center" prop="seaBankNo"
-					width="120" />
+				<el-table-column v-if="columns[13].visible" label="海运银行卡号" align="center" prop="seaBankNo" width="120" />
 
-				<el-table-column v-if="columns[14].visible" label="海运银行户名" align="center" prop="seaBankName"
-					width="120" />
+				<el-table-column v-if="columns[14].visible" label="海运银行户名" align="center" prop="seaBankName" width="120" />
 
-				<el-table-column v-if="columns[15].visible" label="子项陆运费之和" align="center" prop="allLandFreight"
-					width="150" />
+				<el-table-column v-if="columns[15].visible" label="子项陆运费之和" align="center" prop="allLandFreight" width="150" />
 
-				<el-table-column v-if="columns[16].visible" label="子项海运费之和" align="center" prop="allSeaFreight"
-					width="150" />
+				<el-table-column v-if="columns[16].visible" label="子项海运费之和" align="center" prop="allSeaFreight" width="150" />
 
-				<el-table-column v-if="columns[17].visible" label="收到条附件路径" align="center" prop="allSeaFreight"
-					width="150" fixed="right">
+				<el-table-column v-if="columns[17].visible" label="收到条附件路径" align="center" prop="allSeaFreight" width="150" fixed="right">
 					<template slot-scope="scope">
-						<check-files :path="scope.row.receiveProof"
-							@needToUpdate="value => handleUpdateFilePath(value, scope.row, 'receiveProof', getInventoryMain, updateInventoryMain)" />
+						<check-files :path="scope.row.receiveProof" @needToUpdate="value => handleUpdateFilePath(value, scope.row, 'receiveProof', getInventoryMain, updateInventoryMain)" />
 					</template>
 				</el-table-column>
 
 				<el-table-column v-if="columns[18].visible" label="操作" align="center" width="150" fixed="right">
 					<template slot-scope="scope">
-						<el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)"
-							v-hasPermi="['system:inventoryMain:edit']">修改</el-button>
-						<el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)"
-							v-hasPermi="['system:inventoryMain:remove']">删除</el-button>
+						<el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)" v-hasPermi="['system:inventoryMain:edit']">修改</el-button>
+						<el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)" v-hasPermi="['system:inventoryMain:remove']">删除</el-button>
 					</template>
 				</el-table-column>
 			</el-table>
 
-			<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum"
-				:limit.sync="queryParams.pageSize" @pagination="getList" />
+			<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 		</el-col>
 
 		<!-- 添加或修改库存库存主表对话框 -->
@@ -163,10 +131,17 @@
 						<el-input disabled size="mini" v-model="form.storeHouseName" placeholder="请输入仓库名称" />
 					</el-col>
 					<el-col :span="8">
-						<SearchOption :get-data="listStoreHouse" icon="el-icon-s-home" :limit-info="{}"
-							query-label="仓库名称" query-info="storeHouseName" :query-name="queryStore"
+						<SearchOption
+							:get-data="listStoreHouse"
+							icon="el-icon-s-home"
+							:limit-info="{}"
+							query-label="仓库名称"
+							query-info="storeHouseName"
+							:query-name="queryStore"
 							@commitBack="value => handleCommitBackInventory(value)"
-							@update:queryName="handleUpdateQueryNameStore" :is-page="false">
+							@update:queryName="handleUpdateQueryNameStore"
+							:is-page="false"
+						>
 							<template #table-columns>
 								<el-table-column label="仓库名称" align="center" prop="storeHouseName" />
 								<el-table-column label="地址" align="center" prop="address" />
@@ -175,8 +150,7 @@
 					</el-col>
 				</el-form-item>
 				<el-form-item label="入库日期" prop="storeDate">
-					<el-date-picker v-model="form.storeDate" size="mini" type="datetime" placeholder="选择入库日期"
-						value-format="yyyy-MM-dd HH:mm:ss" style="width: 120px" />
+					<el-date-picker v-model="form.storeDate" size="mini" type="datetime" placeholder="选择入库日期" value-format="yyyy-MM-dd HH:mm:ss" style="width: 120px" />
 				</el-form-item>
 				<el-form-item label="货物来源" prop="goodsCompany">
 					<el-input size="mini" v-model="form.goodsCompany" placeholder="请输入货物来源公司(本部或者海盛)" />
@@ -193,14 +167,19 @@
 					<el-form-item label="车牌">
 						<el-row>
 							<el-col :span="20">
-								<el-input disabled v-model="form.landCarNo" type="text" size="mini" placeholder="请选择"
-									style="width: 120px" />
+								<el-input disabled v-model="form.landCarNo" type="text" size="mini" placeholder="请选择" style="width: 120px" />
 							</el-col>
 							<el-col :span="4">
 								<!--搜索银行卡信息-->
-								<SearchOption :limit-info="{ carType: '陆运' }" :get-data="listCars" query-label="车牌搜索"
-									query-info="carNo" :query-name="queryLandCar" @commitBack="handleCommitBackCar"
-									@update:queryName="handleChangeCar">
+								<SearchOption
+									:limit-info="{ carType: '陆运' }"
+									:get-data="listCars"
+									query-label="车牌搜索"
+									query-info="carNo"
+									:query-name="queryLandCar"
+									@commitBack="handleCommitBackCar"
+									@update:queryName="handleChangeCar"
+								>
 									<template #table-columns>
 										<el-table-column label="车牌" align="center" prop="carNo" />
 										<el-table-column label="司机" align="center" prop="driver" />
@@ -214,20 +193,16 @@
 						</el-row>
 					</el-form-item>
 					<el-form-item label="司机">
-						<el-input disabled v-model="form.landDriverName" type="text" size="mini" placeholder="请选择"
-							style="width: 130px" />
+						<el-input disabled v-model="form.landDriverName" type="text" size="mini" placeholder="请选择" style="width: 130px" />
 					</el-form-item>
 					<el-form-item label="电话">
-						<el-input disabled v-model="form.landDriverTel" type="text" size="mini" placeholder="请选择"
-							style="width: 120px" />
+						<el-input disabled v-model="form.landDriverTel" type="text" size="mini" placeholder="请选择" style="width: 120px" />
 					</el-form-item>
 					<el-form-item label="银行卡号">
-						<el-input disabled v-model="form.landBankNo" type="text" size="mini" placeholder="请选择"
-							style="width: 120px" />
+						<el-input disabled v-model="form.landBankNo" type="text" size="mini" placeholder="请选择" style="width: 120px" />
 					</el-form-item>
 					<el-form-item label="开户行">
-						<el-input disabled v-model="form.landBankName" type="text" size="mini" placeholder="请选择"
-							style="width: 120px" />
+						<el-input disabled v-model="form.landBankName" type="text" size="mini" placeholder="请选择" style="width: 120px" />
 					</el-form-item>
 					<!-- 添加车队 -->
 					<el-form-item label="车队">
@@ -236,9 +211,15 @@
 								<el-input disabled v-model="form.fleet" type="text" size="mini" placeholder="请输入车队" />
 							</el-col>
 							<el-col :span="4">
-								<SearchOption :limit-info="{}" :get-data="listFleet" query-label="车队名称"
-									query-info="fname" :query-name="queryFleet" @commitBack="handleCommitBackFleet"
-									@update:queryName="handleChangeFleet">
+								<SearchOption
+									:limit-info="{}"
+									:get-data="listFleet"
+									query-label="车队名称"
+									query-info="fname"
+									:query-name="queryFleet"
+									@commitBack="handleCommitBackFleet"
+									@update:queryName="handleChangeFleet"
+								>
 									<template #table-columns>
 										<el-table-column label="车队名称" align="center" prop="fname" />
 										<el-table-column label="车队经理" align="center" prop="fleader" />
@@ -257,13 +238,18 @@
 					<el-form-item label="柜号">
 						<el-row>
 							<el-col :span="20">
-								<el-input v-model="form.seaCarNo" type="text" size="mini" placeholder="请输入柜号"
-									style="width: 120px" />
+								<el-input v-model="form.seaCarNo" type="text" size="mini" placeholder="请输入柜号" style="width: 120px" />
 							</el-col>
 							<el-col :span="4">
-								<SearchOption :limit-info="{ carType: '海运' }" :get-data="listCars" query-label="车牌"
-									query-info="carNo" :query-name="querySeaCars" @commitBack="handleCommitBackSeaCar"
-									@update:queryName="handleChangeSeaCar">
+								<SearchOption
+									:limit-info="{ carType: '海运' }"
+									:get-data="listCars"
+									query-label="车牌"
+									query-info="carNo"
+									:query-name="querySeaCars"
+									@commitBack="handleCommitBackSeaCar"
+									@update:queryName="handleChangeSeaCar"
+								>
 									<template #table-columns>
 										<el-table-column label="车牌" align="center" prop="carNo" />
 										<el-table-column label="司机" align="center" prop="driver" />
@@ -277,20 +263,16 @@
 					</el-form-item>
 					<!--          todo 原为海运司机 现改为海运公司-->
 					<el-form-item label="海运公司">
-						<el-input v-model="form.seaDriverName" type="text" size="mini" placeholder="请输入海运公司"
-							style="width: 130px" />
+						<el-input v-model="form.seaDriverName" type="text" size="mini" placeholder="请输入海运公司" style="width: 130px" />
 					</el-form-item>
 					<el-form-item label="电话">
-						<el-input v-model="form.seaDriverTel" type="text" size="mini" placeholder="请输入电话"
-							style="width: 120px" />
+						<el-input v-model="form.seaDriverTel" type="text" size="mini" placeholder="请输入电话" style="width: 120px" />
 					</el-form-item>
 					<el-form-item label="银行卡号">
-						<el-input v-model="form.seaBankNo" type="text" size="mini" placeholder="请输入海运银行卡号"
-							style="width: 120px" />
+						<el-input v-model="form.seaBankNo" type="text" size="mini" placeholder="请输入海运银行卡号" style="width: 120px" />
 					</el-form-item>
 					<el-form-item label="开户行">
-						<el-input v-model="form.seaBankName" type="text" size="mini" placeholder="请输入海运开户行"
-							style="width: 120px" />
+						<el-input v-model="form.seaBankName" type="text" size="mini" placeholder="请输入海运开户行" style="width: 120px" />
 					</el-form-item>
 				</el-row>
 				<br />
@@ -298,19 +280,23 @@
 				<el-divider content-position="center">货物信息</el-divider>
 				<el-row :gutter="10" class="mb8">
 					<el-col :span="1.5">
-						<el-button type="primary" icon="el-icon-plus" size="mini"
-							@click="handleAddInventoryDetail">添加</el-button>
+						<el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAddInventoryDetail">添加</el-button>
 					</el-col>
 					<el-col :span="1.5">
-						<el-button type="danger" icon="el-icon-delete" size="mini"
-							@click="handleDeleteInventoryDetail">删除</el-button>
+						<el-button type="danger" icon="el-icon-delete" size="mini" @click="handleDeleteInventoryDetail">删除</el-button>
 					</el-col>
 				</el-row>
 
 				<!--        与订单一致-->
-				<el-table size="mini" :data="inventoryDetailList" show-summary :summary-method="getSummary"
-					:row-class-name="rowInventoryDetailIndex" @selection-change="handleInventoryDetailSelectionChange"
-					ref="inventoryDetail">
+				<el-table
+					size="mini"
+					:data="inventoryDetailList"
+					show-summary
+					:summary-method="getSummary"
+					:row-class-name="rowInventoryDetailIndex"
+					@selection-change="handleInventoryDetailSelectionChange"
+					ref="inventoryDetail"
+				>
 					<el-table-column type="selection" width="90" align="center" />
 					<el-table-column label="序号" align="center" prop="index" width="50" />
 					<el-table-column label="供应商" width="200">
@@ -323,13 +309,19 @@
 
 								<!-- 供应商按钮 -->
 								<el-col :span="6">
-									<SearchOption title="供应商信息" :get-data="listCompany" icon="el-icon-user"
-										query-label="公司名称" query-info="companyName" :query-name="querySupplier"
+									<SearchOption
+										title="供应商信息"
+										:get-data="listCompany"
+										icon="el-icon-user"
+										query-label="公司名称"
+										query-info="companyName"
+										:query-name="querySupplier"
 										:limit-info="{ companyType: '供应商' }"
 										@commitBack="value => handleCommitBackSupplier(scope, value)"
 										@update:queryName="handleUpdateQuerySupplier"
 										@click="setCurrentType(scope.row, 'supplier')"
-										:query-items="queryItemsSupplier">
+										:query-items="queryItemsSupplier"
+									>
 										<template #table-columns>
 											<el-table-column label="公司名称" align="center" prop="companyName" />
 											<el-table-column label="销售经理" align="center" prop="salesManager" />
@@ -349,11 +341,17 @@
 								<el-input disabled size="mini" v-model="scope.row.levelName" placeholder="请选择" />
 							</el-col>
 							<el-col :span="8">
-								<SearchOption :get-data="listProductLevel" icon="el-icon-search" :limit-info="{}"
-									query-label="级别名称" query-info="levelName" :query-name="queryLevel"
+								<SearchOption
+									:get-data="listProductLevel"
+									icon="el-icon-search"
+									:limit-info="{}"
+									query-label="级别名称"
+									query-info="levelName"
+									:query-name="queryLevel"
 									@update:queryName="handleUpdateQueryNameLevel"
 									@commitBack="value => handleCommitBackProductLevel(scope, value)"
-									:query-items="queryItemsOrder">
+									:query-items="queryItemsOrder"
+								>
 									<template #table-columns>
 										<el-table-column label="级别编码" align="center" prop="levelNo" />
 										<el-table-column label="级别名称" align="center" prop="levelName" />
@@ -392,50 +390,54 @@
 						</template>
 					</el-table-column>
 					<!-- <el-table-column label="库存量" prop="stockNumber" width="150">
-						<template #default="scope">
-						<el-input
-							size="mini"
-							v-model.lazy="scope.row.stockNumber"
-							@change="() => (scope.row.actualPieces = scope.row.stockNumber)"
-							placeholder="入库时片数"
-						/>
-						</template>
-					</el-table-column> -->
+            <template #default="scope">
+            <el-input
+              size="mini"
+              v-model.lazy="scope.row.stockNumber"
+              @change="() => (scope.row.actualPieces = scope.row.stockNumber)"
+              placeholder="入库时片数"
+            />
+            </template>
+          </el-table-column> -->
 					<el-table-column label="每包片数" prop="piecesPerPack" width="150">
 						<template #default="scope">
-							<el-input size="mini" type="number" v-model="scope.row.piecesPerPack"
-								@input="() => (scope.row.packs >= 0 ? calculatePacks(scope) : '')"
-								placeholder="请输入每包片数" />
+							<el-input size="mini" type="number" v-model="scope.row.piecesPerPack" @input="() => (scope.row.packs >= 0 ? calculatePacks(scope) : '')" placeholder="请输入每包片数" />
 						</template>
 					</el-table-column>
 					<el-table-column label="包数" prop="packs" width="150">
 						<template #default="scope">
-							<el-input size="mini" type="number" @input="() => calculatePacks(scope)"
+							<el-input
+								size="mini"
+								type="number"
+								@input="() => calculatePacks(scope)"
 								v-model.lazy="scope.row.packs"
 								:placeholder="scope.row.piecesPerPack <= 0 ? '请先输入每包片数' : '请输入包数'"
-								:disabled="scope.row.piecesPerPack <= 0" />
+								:disabled="scope.row.piecesPerPack <= 0"
+							/>
 						</template>
 					</el-table-column>
 
 					<el-table-column label="出厂片数" prop="pieces" width="150">
 						<template #default="scope">
-							<el-input type="number" size="mini" v-model="scope.row.pieces" placeholder="请输入出厂片数"
-								@input="() => calculatePacks(scope)" />
+							<el-input type="number" size="mini" v-model="scope.row.pieces" placeholder="请输入出厂片数" @input="() => calculatePacks(scope)" />
 						</template>
 					</el-table-column>
 
 					<el-table-column label="出厂单价" prop="price" width="150">
 						<template #default="scope">
-							<el-input size="mini" type="number" v-model="scope.row.price"
+							<el-input
+								size="mini"
+								type="number"
+								v-model="scope.row.price"
 								@input="scope.row.sundryCost >= 0 ? calculatePrice(scope) : ''"
 								:placeholder="scope.row.pieces <= 0 ? '请先完善出厂片数' : '请输入出厂单价'"
-								:disabled="scope.row.pieces <= 0" />
+								:disabled="scope.row.pieces <= 0"
+							/>
 						</template>
 					</el-table-column>
 					<el-table-column label="出厂是否含税" prop="isIncludeTaxFactory" width="150">
 						<template #default="scope">
-							<el-radio-group v-model="scope.row.isIncludeTaxFactory" size="mini"
-								@change="() => recalculateFactory(scope)">
+							<el-radio-group v-model="scope.row.isIncludeTaxFactory" size="mini" @change="() => recalculateFactory(scope)">
 								<el-radio :label="1">是</el-radio>
 								<el-radio :label="0">否</el-radio>
 							</el-radio-group>
@@ -443,16 +445,19 @@
 					</el-table-column>
 					<el-table-column label="杂费" prop="sundryCost" width="150">
 						<template #default="scope">
-							<el-input size="mini" type="number" v-model.lazy="scope.row.sundryCost"
+							<el-input
+								size="mini"
+								type="number"
+								v-model.lazy="scope.row.sundryCost"
 								@input="() => calculatePrice(scope)"
 								:placeholder="scope.row.price <= 0 ? '请先完善出厂单价' : '请输入杂费'"
-								:disabled="scope.row.price <= 0" />
+								:disabled="scope.row.price <= 0"
+							/>
 						</template>
 					</el-table-column>
 					<el-table-column label="出厂货款" prop="paymentFactory" width="150">
 						<template #default="scope">
-							<el-input size="mini" type="number" v-model="scope.row.paymentFactory" placeholder="请输入出厂货款"
-								disabled />
+							<el-input size="mini" type="number" v-model="scope.row.paymentFactory" placeholder="请输入出厂货款" disabled />
 						</template>
 					</el-table-column>
 
@@ -464,15 +469,18 @@
 					</el-table-column>
 					<el-table-column label="存货价" prop="paymentUnload" width="150">
 						<template #default="scope">
-							<el-input size="mini" type="number" v-model.lazy="scope.row.paymentUnload"
+							<el-input
+								size="mini"
+								type="number"
+								v-model.lazy="scope.row.paymentUnload"
 								placeholder="请输入存货价"
-								@input="scope.row.paymentsWithSundry >= 0 ? calculatePayment(scope) : ''" />
+								@input="scope.row.paymentsWithSundry >= 0 ? calculatePayment(scope) : ''"
+							/>
 						</template>
 					</el-table-column>
 					<el-table-column label="库存是否含税" prop="isIncludeTaxSale" width="150">
 						<template #default="scope">
-							<el-radio-group v-model="scope.row.isIncludeTaxSale" size="mini"
-								@change="() => recalculateSale(scope)">
+							<el-radio-group v-model="scope.row.isIncludeTaxSale" size="mini" @change="() => recalculateSale(scope)">
 								<el-radio :label="1">是</el-radio>
 								<el-radio :label="0">否</el-radio>
 							</el-radio-group>
@@ -481,15 +489,18 @@
 
 					<el-table-column label="库存杂费" prop="paymentsWithSundry" width="150">
 						<template #default="scope">
-							<el-input size="mini" v-model.lazy="scope.row.paymentsWithSundry"
-								@input="() => calculatePayment(scope)" :disabled="scope.row.paymentUnload <= 0"
-								:placeholder="scope.row.paymentUnload <= 0 ? '请先完善存货价' : '请输入库存杂费'" />
+							<el-input
+								size="mini"
+								v-model.lazy="scope.row.paymentsWithSundry"
+								@input="() => calculatePayment(scope)"
+								:disabled="scope.row.paymentUnload <= 0"
+								:placeholder="scope.row.paymentUnload <= 0 ? '请先完善存货价' : '请输入库存杂费'"
+							/>
 						</template>
 					</el-table-column>
 					<el-table-column label="库存金额" prop="payments" width="150">
 						<template #default="scope">
-							<el-input size="mini" type="number" v-model="scope.row.payments" placeholder="请输入库存金额"
-								disabled />
+							<el-input size="mini" type="number" v-model="scope.row.payments" placeholder="请输入库存金额" disabled />
 						</template>
 					</el-table-column>
 					<el-table-column label="误差" prop="erro" width="150">
@@ -504,17 +515,23 @@
 					</el-table-column>
 					<el-table-column label="陆运费单价" prop="landFreightPrice" width="150" v-if="isLand">
 						<template #default="scope">
-							<el-input size="mini" v-model.lazy="scope.row.landFreightPrice"
+							<el-input
+								size="mini"
+								v-model.lazy="scope.row.landFreightPrice"
 								@input="() => (scope.row.additionalFees >= 0 ? calculateLandFreight(scope) : '')"
-								placeholder="请输入陆运费单价" />
+								placeholder="请输入陆运费单价"
+							/>
 						</template>
 					</el-table-column>
 					<el-table-column label="加费" prop="additionalFees" width="150">
 						<template #default="scope">
-							<el-input size="mini" v-model.lazy="scope.row.additionalFees"
+							<el-input
+								size="mini"
+								v-model.lazy="scope.row.additionalFees"
 								@input="() => calculateLandFreight(scope)"
 								:placeholder="scope.row.landFreightPrice <= 0 ? '请先完善陆运费单价' : '请输入加费'"
-								:disabled="scope.row.landFreightPrice <= 0" />
+								:disabled="scope.row.landFreightPrice <= 0"
+							/>
 						</template>
 					</el-table-column>
 					<el-table-column label="陆运费" prop="landFreight" width="150" v-if="isLand" disabled>
@@ -524,8 +541,7 @@
 					</el-table-column>
 					<el-table-column label="海运费" prop="seaFreight" width="150" v-if="isSea">
 						<template #default="scope">
-							<el-input size="mini" v-model.lazy="scope.row.seaFreight"
-								@input="() => calculateFreight(scope)" placeholder="请输入海运费" />
+							<el-input size="mini" v-model.lazy="scope.row.seaFreight" @input="() => calculateFreight(scope)" placeholder="请输入海运费" />
 						</template>
 					</el-table-column>
 
@@ -536,8 +552,7 @@
 					</el-table-column>
 					<el-table-column label="其他费用" prop="otherCost" width="150">
 						<template #default="scope">
-							<el-input size="mini" v-model.lazy="scope.row.otherCost" placeholder="请输入其他费用"
-								@input="() => calculatePrice(scope)" />
+							<el-input size="mini" v-model.lazy="scope.row.otherCost" placeholder="请输入其他费用" @input="() => calculatePrice(scope)" />
 						</template>
 					</el-table-column>
 					<el-table-column label="利润" prop="profit" width="150">
@@ -922,9 +937,9 @@ export default {
 				} else {
 					return fix(
 						scope.row.payments -
-						scope.row.paymentFactory -
-						(scope.row.landFreight + scope.row.seaFreight) * 1.075 -
-						(((scope.row.height * scope.row.length * scope.row.width * scope.row.pieces) / 1000000 / 20) * 0.5 - scope.row.otherCost)
+							scope.row.paymentFactory -
+							(scope.row.landFreight + scope.row.seaFreight) * 1.075 -
+							(((scope.row.height * scope.row.length * scope.row.width * scope.row.pieces) / 1000000 / 20) * 0.5 - scope.row.otherCost)
 					);
 				}
 			}
@@ -1042,7 +1057,7 @@ export default {
 				id: null,
 				storeHouseid: null,
 				storeHouseName: null,
-				storeDate: new Date(),
+				storeDate: parseTime(new Date()),
 				landCarID: null,
 				landCarNo: null,
 				landDriverTel: null,
@@ -1142,7 +1157,7 @@ export default {
 					this.getList();
 					this.$modal.msgSuccess('删除成功');
 				})
-				.catch(() => { });
+				.catch(() => {});
 		},
 		/** 库存子序号 */
 		rowInventoryDetailIndex({ row, rowIndex }) {

@@ -458,7 +458,7 @@ export default {
 			this.form = {
 				id: null,
 				receiveNO: null,
-				fundsDate: new Date(),
+				fundsDate: parseTime(new Date()),
 				receiveType: null,
 				tableName: null,
 				tID: null,
