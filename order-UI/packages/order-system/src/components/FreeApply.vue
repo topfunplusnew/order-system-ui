@@ -33,13 +33,6 @@ export default {
 						trigger: 'blur'
 					}
 				],
-				otherBankName: [
-					{
-						required: true,
-						message: '请输入对方开户行',
-						trigger: 'blur'
-					}
-				],
 				payDate: [
 					{
 						required: true,
@@ -129,7 +122,7 @@ export default {
 				content: null
 			};
 		},
-		handleReject() {}
+		handleReject() { }
 	}
 };
 </script>
@@ -144,18 +137,11 @@ export default {
 					</el-col>
 					<el-col :span="4">
 						<!--搜索银行卡信息-->
-						<SearchOption
-							:limit-info="{
-								companyType: '司机',
-								acountsName: this.orderInfo.otherAcountsName
-							}"
-							:get-data="listBankAccount"
-							query-label="户名搜索"
-							query-info="acountsName"
-							:query-name="queryAcountsName"
-							@commitBack="handleCommitBack"
-							@update:queryName="handleChange"
-						>
+						<SearchOption :limit-info="{
+							companyType: '司机',
+							acountsName: this.orderInfo.otherAcountsName
+						}" :get-data="listBankAccount" query-label="户名搜索" query-info="acountsName" :query-name="queryAcountsName"
+							@commitBack="handleCommitBack" @update:queryName="handleChange">
 							<template #table-columns>
 								<el-table-column label="开户行" align="center" prop="bankName" />
 								<el-table-column label="开户名" align="center" prop="acountsName" />
@@ -173,7 +159,8 @@ export default {
 				<el-input disabled v-model="form.otherBankName" placeholder="请选择" />
 			</el-form-item>
 			<el-form-item label="支付日期" prop="payDate">
-				<el-date-picker v-model="form.payDate" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss" />
+				<el-date-picker v-model="form.payDate" type="datetime" placeholder="选择日期"
+					value-format="yyyy-MM-dd HH:mm:ss" />
 			</el-form-item>
 			<el-form-item label="备注信息">
 				<el-input v-model="form.content" placeholder="请输入备注信息" />

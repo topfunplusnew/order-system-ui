@@ -73,6 +73,32 @@ export default {
 			}
 		}
 	},
+	created() {
+		// 以当前页面路径作为 key 前缀
+		const storageKey = window.location.pathname + "-pagination";
+		const savedPage = localStorage.getItem(storageKey + "-page");
+		const savedLimit = localStorage.getItem(storageKey + "-limit");
+		if (savedPage) {
+			console.log("Loaded page:", savedPage);
+			this.$emit('update:page', Number(savedPage));
+		}
+		if (savedLimit) {
+			console.log("Loaded limit:", savedLimit);
+			this.$emit('update:limit', Number(savedLimit));
+		}
+	},
+	watch: {
+		page(newVal) {
+			const storageKey = window.location.pathname + "-pagination";
+			localStorage.setItem(storageKey + "-page", newVal);
+			console.log("Saved page:", newVal);
+		},
+		limit(newVal) {
+			const storageKey = window.location.pathname + "-pagination";
+			localStorage.setItem(storageKey + "-limit", newVal);
+			console.log("Saved limit:", newVal);
+		}
+	},
 	methods: {
 		handleSizeChange(val) {
 			if (this.currentPage * val > this.total) {
