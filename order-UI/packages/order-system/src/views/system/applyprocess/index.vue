@@ -137,13 +137,6 @@ export default {
 						message: '请输入对方账号',
 						trigger: 'blur'
 					}
-				],
-				otherBankName: [
-					{
-						required: true,
-						message: '请输入对方开户行',
-						trigger: 'blur'
-					}
 				]
 			},
 			needMoney: 0,
