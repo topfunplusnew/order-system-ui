@@ -462,24 +462,14 @@
 							<el-input size="mini" v-model="scope.row.stockNumber" placeholder="入库时片数" />
 						</template>
 					</el-table-column>
-					<!-- <el-table-column label="实际片数" prop="actualPieces" width="150">
-            <template #default="scope">
-              <el-input
-                size="mini"
-                v-model="scope.row.actualPieces"
-                placeholder="仓库还剩余片数"
-                disabled
-              />
-            </template>
-          </el-table-column> -->
-					<el-table-column label="卸货价" prop="paymentUnload" width="150">
+					<el-table-column label="存货价" prop="paymentUnload" width="150">
 						<template #default="scope">
 							<el-input size="mini" type="number" v-model.lazy="scope.row.paymentUnload"
-								placeholder="请输入卸货价"
+								placeholder="请输入存货价"
 								@input="scope.row.paymentsWithSundry >= 0 ? calculatePayment(scope) : ''" />
 						</template>
 					</el-table-column>
-					<el-table-column label="销售是否含税" prop="isIncludeTaxSale" width="150">
+					<el-table-column label="库存是否含税" prop="isIncludeTaxSale" width="150">
 						<template #default="scope">
 							<el-radio-group v-model="scope.row.isIncludeTaxSale" size="mini"
 								@change="() => recalculateSale(scope)">
@@ -489,16 +479,16 @@
 						</template>
 					</el-table-column>
 
-					<el-table-column label="总货款杂费" prop="paymentsWithSundry" width="150">
+					<el-table-column label="库存杂费" prop="paymentsWithSundry" width="150">
 						<template #default="scope">
 							<el-input size="mini" v-model.lazy="scope.row.paymentsWithSundry"
 								@input="() => calculatePayment(scope)" :disabled="scope.row.paymentUnload <= 0"
-								:placeholder="scope.row.paymentUnload <= 0 ? '请先完善卸货价' : '请输入总货款杂费'" />
+								:placeholder="scope.row.paymentUnload <= 0 ? '请先完善存货价' : '请输入库存杂费'" />
 						</template>
 					</el-table-column>
-					<el-table-column label="总货款" prop="payments" width="150">
+					<el-table-column label="库存金额" prop="payments" width="150">
 						<template #default="scope">
-							<el-input size="mini" type="number" v-model="scope.row.payments" placeholder="请输入总货款"
+							<el-input size="mini" type="number" v-model="scope.row.payments" placeholder="请输入库存金额"
 								disabled />
 						</template>
 					</el-table-column>
@@ -891,7 +881,7 @@ export default {
 			scope.row.width = val.width;
 			scope.row.levelNo = val.levelNo;
 		},
-		// 重新计算总货款
+		// 重新计算库存金额
 		recalculateSale(scope) {
 			this.calculatePayment(scope);
 		},
