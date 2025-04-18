@@ -160,7 +160,7 @@
 			<el-form ref="form" :model="form" :rules="rules" label-width="80px" :inline="true">
 				<el-form-item label="仓库名称" prop="storeHouseName">
 					<el-col :span="16">
-						<el-input size="mini" v-model="form.storeHouseName" placeholder="请输入仓库名称" />
+						<el-input disabled size="mini" v-model="form.storeHouseName" placeholder="请输入仓库名称" />
 					</el-col>
 					<el-col :span="8">
 						<SearchOption :get-data="listStoreHouse" icon="el-icon-s-home" :limit-info="{}"
@@ -189,11 +189,11 @@
 					<el-checkbox v-model="isLand">陆运</el-checkbox>
 					<el-checkbox v-model="isSea">海运</el-checkbox>
 				</el-form-item>
-				<el-row v-if="isLand" style="margin: 20px 0">
+				<el-row v-if="isLand" style="margin: 3px 0">
 					<el-form-item label="车牌">
 						<el-row>
 							<el-col :span="20">
-								<el-input v-model="form.landCarNo" type="text" size="mini" placeholder="请输入陆运车牌"
+								<el-input disabled v-model="form.landCarNo" type="text" size="mini" placeholder="请选择"
 									style="width: 120px" />
 							</el-col>
 							<el-col :span="4">
@@ -214,26 +214,26 @@
 						</el-row>
 					</el-form-item>
 					<el-form-item label="司机">
-						<el-input v-model="form.landDriverName" type="text" size="mini" placeholder="请输入陆运司机姓名"
+						<el-input disabled v-model="form.landDriverName" type="text" size="mini" placeholder="请选择"
 							style="width: 130px" />
 					</el-form-item>
 					<el-form-item label="电话">
-						<el-input v-model="form.landDriverTel" type="text" size="mini" placeholder="请输入陆运司机电话"
+						<el-input disabled v-model="form.landDriverTel" type="text" size="mini" placeholder="请选择"
 							style="width: 120px" />
 					</el-form-item>
 					<el-form-item label="银行卡号">
-						<el-input v-model="form.landBankNo" type="text" size="mini" placeholder="请输入陆运银行卡号"
+						<el-input disabled v-model="form.landBankNo" type="text" size="mini" placeholder="请选择"
 							style="width: 120px" />
 					</el-form-item>
 					<el-form-item label="开户行">
-						<el-input v-model="form.landBankName" type="text" size="mini" placeholder="请输入陆运开户行"
+						<el-input disabled v-model="form.landBankName" type="text" size="mini" placeholder="请选择"
 							style="width: 120px" />
 					</el-form-item>
 					<!-- 添加车队 -->
 					<el-form-item label="车队">
 						<el-row>
 							<el-col :span="12">
-								<el-input v-model="form.fleet" type="text" size="mini" placeholder="请输入车队" />
+								<el-input disabled v-model="form.fleet" type="text" size="mini" placeholder="请输入车队" />
 							</el-col>
 							<el-col :span="4">
 								<SearchOption :limit-info="{}" :get-data="listFleet" query-label="车队名称"
@@ -252,7 +252,7 @@
 					<!-- 添加附件上传 -->
 				</el-row>
 				<!--      海运-->
-				<el-row v-if="isSea" style="margin: 10px 0">
+				<el-row v-if="isSea" style="margin: 3px 0">
 					<!--   车牌修改为柜号 且自己输入 不提供自动填充 -->
 					<el-form-item label="柜号">
 						<el-row>
@@ -392,15 +392,15 @@
 						</template>
 					</el-table-column>
 					<!-- <el-table-column label="库存量" prop="stockNumber" width="150">
-            <template #default="scope">
-              <el-input
-                size="mini"
-                v-model.lazy="scope.row.stockNumber"
-                @change="() => (scope.row.actualPieces = scope.row.stockNumber)"
-                placeholder="入库时片数"
-              />
-            </template>
-          </el-table-column> -->
+						<template #default="scope">
+						<el-input
+							size="mini"
+							v-model.lazy="scope.row.stockNumber"
+							@change="() => (scope.row.actualPieces = scope.row.stockNumber)"
+							placeholder="入库时片数"
+						/>
+						</template>
+					</el-table-column> -->
 					<el-table-column label="每包片数" prop="piecesPerPack" width="150">
 						<template #default="scope">
 							<el-input size="mini" type="number" v-model="scope.row.piecesPerPack"
@@ -420,7 +420,7 @@
 					<el-table-column label="出厂片数" prop="pieces" width="150">
 						<template #default="scope">
 							<el-input type="number" size="mini" v-model="scope.row.pieces" placeholder="请输入出厂片数"
-								disabled />
+								@input="() => calculatePacks(scope)" />
 						</template>
 					</el-table-column>
 
@@ -881,6 +881,7 @@ export default {
 			scope.row.width = val.width;
 			scope.row.levelNo = val.levelNo;
 		},
+		// BEGIN
 		// 重新计算库存金额
 		recalculateSale(scope) {
 			this.calculatePayment(scope);
@@ -889,8 +890,8 @@ export default {
 			this.calculatePaymentFactory(scope);
 		},
 		calculatePacks(scope) {
-			const res = scope.row.packs * scope.row.piecesPerPack;
-			scope.row.stockNumber = scope.row.pieces = res;
+			// const res = scope.row.packs * scope.row.piecesPerPack;
+			// scope.row.actualPieces = scope.row.pieces = res;
 			// 计算吨位
 			scope.row.tonnage = fix(((Number(scope.row.height) - Number(scope.row.erro)) * scope.row.length * scope.row.width * scope.row.pieces) / 1000000 / 20 / 20);
 			if (scope.row.paymentFactory > 0) {
@@ -932,10 +933,10 @@ export default {
 		},
 		calculatePayment(scope) {
 			function calcu() {
-				if (scope.row.isIncludeTaxFactory === 1 && scope.row.isIncludeTaxSale === 0) {
-					scope.row.payments = fix((scope.row.length * scope.row.width * scope.row.stockNumber) / (1000000 * scope.row.paymentUnload) + Number(scope.row.paymentsWithSundry));
+				if (scope.row.isIncludeTaxFactory === 0 && scope.row.isIncludeTaxSale === 0) {
+					scope.row.payments = fix(((scope.row.length * scope.row.width * scope.row.pieces) / 1000000) * scope.row.paymentUnload + Number(scope.row.paymentsWithSundry));
 				} else {
-					scope.row.payments = fix((scope.row.length * scope.row.width * scope.row.stockNumber * scope.row.paymentUnload) / 1000000 + Number(scope.row.paymentsWithSundry));
+					scope.row.payments = fix((scope.row.length * scope.row.width * scope.row.pieces * scope.row.paymentUnload) / 1000000 + Number(scope.row.paymentsWithSundry));
 				}
 			}
 
@@ -955,6 +956,8 @@ export default {
 
 			this.calculatePrice(scope);
 		},
+
+		// END
 		handleCommitBackFleet(val) {
 			this.form.fleet = val.fname;
 		},
@@ -995,7 +998,7 @@ export default {
 			scope.row.otherCost = '';
 			scope.row.profit = '';
 			scope.row.profitNoTax = '';
-			scope.row.actualPieces = '';
+			// scope.row.actualPieces = '';
 			scope.row.paymentsWithSundry = '';
 			scope.row.additionalFees = '';
 			scope.row.rebate = '';
@@ -1176,7 +1179,7 @@ export default {
 			obj.otherCost = '';
 			obj.profit = '';
 			obj.profitNoTax = '';
-			obj.actualPieces = '';
+			// obj.actualPieces = '';
 			obj.paymentsWithSundry = '';
 			obj.additionalFees = '';
 			obj.rebate = '';
