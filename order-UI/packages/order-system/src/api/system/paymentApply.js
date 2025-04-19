@@ -45,10 +45,12 @@ export function delPaymentApply(id) {
 }
 
 // 提交未提交或者被驳回的付款申请信息
-export function submitPaymentApply(data) {
+export function submitPaymentApply(id) {
 	return request({
 		url: '/system/paymentApply/submit',
-		method: 'put',
-		data: data
+		method: 'get',
+		params: {
+			paymentApplyId: id
+		}
 	});
 }

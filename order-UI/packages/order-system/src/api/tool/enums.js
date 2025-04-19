@@ -239,3 +239,22 @@ export const AuditCheckState = Object.freeze({
 	REJECT: '驳回',
 	VOID: '作废'
 });
+
+export function getTagColor(checkState) {
+	switch (checkState) {
+		case AuditCheckState.PENDING:
+			return 'blue';
+		case AuditCheckState.ING:
+			return 'cyan';
+		case AuditCheckState.PASS:
+			return 'green';
+		case AuditCheckState.NOT_PASS:
+			return 'red';
+		case AuditCheckState.REJECT:
+			return 'orange';
+		case AuditCheckState.VOID:
+			return 'purple';
+		default:
+			return '';
+	}
+}

@@ -3,7 +3,7 @@ import { getUserProfile } from '@/api/system/user';
 import CheckApply from '@/views/dashboard/components/applyProcess/CheckApply.vue';
 import NeedToShowInfo from '@/components/NeedToShowInfo.vue';
 import { TableComponentsTools } from '@/utils/order/mapper';
-import { AuditCheckState } from '@/api/tool/enums';
+import { AuditCheckState, getTagColor } from '@/api/tool/enums';
 
 export default {
 	name: 'StepInfo',
@@ -76,8 +76,8 @@ export default {
 			}
 		},
 		// 标签
-		isTag(item) {
-			return item.checkState === '通过' ? 'success' : 'danger';
+		isTag(state) {
+			return getTagColor(state);
 		},
 		isChecked(item) {
 			return item.checkState;
@@ -159,14 +159,14 @@ export default {
 									<h2>{{ item.flowname }}</h2>
 									<p>
 										<span class="tx-bolder">审核结果:</span>
-										<el-tag :type="isTag(item)">{{ item.checkState }}</el-tag>
+										<a-tag :color="isTag(item.checkState)">{{ item.checkState }}</a-tag>
 									</p>
 									<p>
 										<span class="tx-bolder">审核意见:</span>
 										<span v-if="isChecked(item) === AuditCheckState.PASS">{{ processAuditInfo(item) }}</span>
 										<span v-else-if="isChecked(item) === AuditCheckState.REJECT">{{ processAuditInfo(item) }}</span>
 										<span v-else>
-											<el-tag type="warning">待审核</el-tag>
+											<a-tag :color="isTag(item.checkState)">待审核</a-tag>
 										</span>
 									</p>
 								</el-col>

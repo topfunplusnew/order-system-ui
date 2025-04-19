@@ -19,7 +19,8 @@ export default {
 		return {
 			// 审核意见
 			auditcommentYES: '',
-			auditcommentNO: ''
+			auditcommentNO: '',
+			auditcommentBACK: ''
 		};
 	},
 	computed: {
@@ -46,9 +47,9 @@ export default {
 				// 修改刷新标记vuex
 				this.$store.dispatch('apply/setChecked', this.checkApplyInfo.applyID);
 				this.auditcommentYES = '';
+				// 关闭弹窗
+				this.checkState = true;
 			});
-			// 关闭弹窗
-			this.checkState = true;
 		},
 		// 审核不通过
 		handleCheckError() {
@@ -62,9 +63,23 @@ export default {
 				// 修改刷新标记vuex
 				this.$store.dispatch('apply/setChecked', this.checkApplyInfo.applyID);
 				this.auditcommentNO = '';
+				// 关闭弹窗
+				this.checkState = false;
 			});
-			// 关闭弹窗
-			this.checkState = false;
+		},
+		handleCheckBack() {
+			updateAuditInfo({
+				checkState: '驳回',
+				auditcomment: this.auditcommentBACK,
+				...this.checkApplyInfo
+			}).then(res => {
+				this.$message.success('操作完毕~');
+				// 修改刷新标记vuex
+				this.$store.dispatch('apply/setChecked', this.checkApplyInfo.applyID);
+				this.auditcommentBACK = '';
+				// 关闭弹窗
+				this.checkState = false;
+			});
 		}
 	}
 };
@@ -115,24 +130,35 @@ export default {
 			<el-col :span="20">
 				<el-row>
 					<!--          审核通过-->
-					<el-col :span="12">
+					<el-col :span="8">
 						<el-row :gutter="4">
 							<el-col :span="12">
-								<el-input v-model="auditcommentYES" placeholder="请输入审核意见" type="text"></el-input>
+								<el-input size="mini" v-model="auditcommentYES" placeholder="请输入审核意见" type="text"></el-input>
 							</el-col>
 							<el-col :span="12">
-								<el-button type="success" @click="handleCheckSuccess">审核通过</el-button>
+								<el-button size="mini" type="success" @click="handleCheckSuccess">审核通过</el-button>
 							</el-col>
 						</el-row>
 					</el-col>
 					<!--          审核不通过-->
-					<el-col :span="12">
+					<el-col :span="8">
 						<el-row :gutter="4">
 							<el-col :span="12">
-								<el-input v-model="auditcommentNO" placeholder="请输入不通过原因" type="text"></el-input>
+								<el-input size="mini" v-model="auditcommentNO" placeholder="请输入不通过原因" type="text"></el-input>
 							</el-col>
 							<el-col :span="12">
-								<el-button type="danger" @click="handleCheckError">审核不通过</el-button>
+								<el-button size="mini" type="danger" @click="handleCheckError">审核不通过</el-button>
+							</el-col>
+						</el-row>
+					</el-col>
+					<!--          驳回-->
+					<el-col :span="8">
+						<el-row :gutter="4">
+							<el-col :span="12">
+								<el-input size="mini" v-model="auditcommentBACK" placeholder="请输入不通过原因" type="text"></el-input>
+							</el-col>
+							<el-col :span="12">
+								<el-button size="mini" type="danger" @click="handleCheckBack">驳回</el-button>
 							</el-col>
 						</el-row>
 					</el-col>

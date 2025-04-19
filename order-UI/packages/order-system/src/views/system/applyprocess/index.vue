@@ -13,7 +13,7 @@ import { mixin_payment_select, PAYMENT_TYPES } from '@/views/dashboard/mixins/pa
 import { listCompany } from '@/api/system/company';
 import { listBankAccount } from '@/api/system/bankAccount';
 import CheckFiles from '@/components/CheckFiles.vue';
-import { TableName, AuditCheckState } from '@/api/tool/enums';
+import { TableName, AuditCheckState, getTagColor } from '@/api/tool/enums';
 import { listCars } from '@/api/system/cars';
 import ApplyPayment from '@/views/dashboard/components/common/ApplyPayment.vue';
 import _ from 'lodash';
@@ -62,6 +62,12 @@ export default {
 					content: `点击这里,可以查看待提交(创建但进入审核状态),或者被驳回的付款申请信息`
 				}
 			],
+			// 漫游组件的完成的回调
+			tourCallBacks: {
+				onFinish: () => {
+					localStorage.setItem('applyprocess-tour', 'true');
+				}
+			},
 			tourOptions: {
 				labels: {
 					buttonSkip: '跳过教程',
@@ -237,7 +243,10 @@ export default {
 		this.getUnProcessedAuditList();
 	},
 	mounted() {
-		this.$tours['paymentApplyTour'].start();
+		if (!localStorage.getItem('applyprocess-tour')) {
+			this.$tours['paymentApplyTour'].start();
+			localStorage.setItem('applyprocess-tour', 'true');
+		}
 	},
 	computed: {
 		TableName() {
@@ -246,6 +255,7 @@ export default {
 		...mapGetters(['checked'])
 	},
 	methods: {
+		getTagColor,
 		listCars,
 		listBankAccount,
 		listCompany,
@@ -282,6 +292,7 @@ export default {
 		// 修改已经提交的 待提交或者驳回的付款申请记录 isEdit=true时为修改原有信息
 		reApply(paymentApplyInfo, isEdit = true) {
 			const clonedPaymentApplyInfo = _.cloneDeep(paymentApplyInfo);
+			console.log(`clonedPaymentApplyInfo`, clonedPaymentApplyInfo);
 			if (isEdit) {
 				this.openDialog(
 					ApplyPayment,
@@ -332,7 +343,8 @@ export default {
 		},
 		// 提交付款申请信息 此时会将状态改为审核中
 		submitReApplyInfo(paymentApplyInfo) {
-			submitPaymentApply(paymentApplyInfo).then(res => {
+			const { id } = paymentApplyInfo;
+			submitPaymentApply(id).then(res => {
 				this.$message.success('付款申请提交成功,请等待审核人审核!');
 				this.getAuditList();
 				this.getUnProcessedAuditList();
@@ -346,7 +358,7 @@ export default {
 		changePaymentApplyInfoVisible() {
 			this.needMoney = 0;
 			this.open = false;
-			this.getPaymentList();
+			this.getAuditList();
 			this.getUnProcessedAuditList();
 		},
 		refresh() {
@@ -357,6 +369,9 @@ export default {
 				this.total = res.total;
 				this.loading = false;
 			});
+		},
+		handleLearn() {
+			this.$tours['paymentApplyTour'].start();
 		},
 		// 重新刷新审核树
 		refreshApplyCheckInfo(applyID) {
@@ -375,8 +390,27 @@ export default {
 		},
 		// 查看某一行的审核流程信息
 		handleCheckApplyInfo(row) {
+			if (!row.id) {
+				this.$message.error('该行数据有误,付款申请编号为空!');
+				return;
+			}
 			getPaymentApply(row.id).then(res => {
-				this.auditInfoList = res.data.auditInfoList;
+				if (!res.data) {
+					this.$message.error('暂无数据!');
+					return;
+				}
+				if (!res.data.auditInfoList) {
+					this.$message.error('该付款申请没有审核记录!');
+					return;
+				}
+				const paymentApplyInfo = _.cloneDeep(res.data);
+				this.auditInfoList = paymentApplyInfo.auditInfoList.map(item => {
+					// 将主表信息放入字表,方便拿表名和ID
+					return {
+						...item,
+						paymentApply: paymentApplyInfo
+					};
+				});
 				this.checkApplyInfoDialogVisible = true;
 			});
 		},
@@ -446,24 +480,6 @@ export default {
 		handleQuery() {
 			this.pageNum = 1;
 			this.getAuditList();
-		},
-		getTagColor(checkState) {
-			switch (checkState) {
-				case AuditCheckState.PENDING:
-					return 'blue';
-				case AuditCheckState.ING:
-					return 'cyan';
-				case AuditCheckState.PASS:
-					return 'green';
-				case AuditCheckState.NOT_PASS:
-					return 'red';
-				case AuditCheckState.REJECT:
-					return 'orange';
-				case AuditCheckState.VOID:
-					return 'purple';
-				default:
-					return '';
-			}
 		}
 	}
 };
@@ -521,36 +537,14 @@ export default {
 			<el-col :span="1.5">
 				<el-button size="mini" @click="refresh">刷新</el-button>
 			</el-col>
+			<el-col :span="1.5">
+				<el-button size="mini" @click="handleLearn">查看教程</el-button>
+			</el-col>
 
 			<el-col :span="1.5">
 				<el-button size="mini" type="danger" @click="handleAdd">申请日常费用报销</el-button>
 			</el-col>
 
-			<!-- <el-col :span="1.5">
-        <a-popover title="待提交或已驳回的付款申请">
-          <template slot="content">
-            <a-anchor>
-              <a-list item-layout="horizontal" :data-source="alreadyApplyList" :pagination="pagination">
-                <a-list-item slot="renderItem" slot-scope="item, index">
-                  <a slot="actions" @click="reApply(item, true)">修改填写</a>
-                  <a slot="actions" @click="reApply(item, false)">重新填写</a>
-                  <a-list-item-meta :description="'提交时间:' + item.addtime">
-                    <span slot="title">{{ item.reason }}</span>
-                  </a-list-item-meta>
-
-                  <div style="margin: 5px">
-                    <a-tag :color="getTagColor(item.checkState)">{{ item.checkState }}</a-tag>
-                  </div>
-                </a-list-item>
-              </a-list>
-            </a-anchor>
-          </template>
-          <el-button size="mini" type="success">
-            <a-icon type="unordered-list" />
-            查看申请记录
-          </el-button>
-        </a-popover>
-      </el-col> -->
 			<el-col :span="1.5" style="position: fixed; bottom: 20px; right: 20px; z-index: 100">
 				<el-popover placement="top-start" trigger="hover" width="1000" title="待提交或已驳回的付款申请">
 					<template #reference>
@@ -715,7 +709,7 @@ export default {
 		</div>
 
 		<!--    漫游组件-->
-		<v-tour name="paymentApplyTour" :steps="tourSteps" :options="tourOptions"></v-tour>
+		<v-tour name="paymentApplyTour" :steps="tourSteps" :options="tourOptions" :callbacks="tourCallBacks"></v-tour>
 	</div>
 </template>
 
