@@ -376,17 +376,13 @@ export default {
 <template>
 	<div class="app-container">
 		<el-form ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="100px">
-			<el-form-item label="日期" prop="fundsDate">
-				<el-date-picker clearable v-model="queryParams.fundsDate" type="date" placeholder="选择日期"
+			<el-form-item label="开始日期" prop="fundsDateBegin">
+				<el-date-picker clearable v-model="queryParams.fundsDateBegin" type="date" placeholder="开始日期"
 					value-format="yyyy-MM-dd"></el-date-picker>
 			</el-form-item>
-			<el-form-item label="开始日期" prop="fundsDateBegin">
-				<el-date-picker clearable v-model="queryParams.fundsDateBegin" type="date"
-					placeholder="开始日期"></el-date-picker>
-			</el-form-item>
 			<el-form-item label="结束日期" prop="fundsDateEnd">
-				<el-date-picker clearable v-model="queryParams.fundsDateEnd" type="date"
-					placeholder="结束日期"></el-date-picker>
+				<el-date-picker clearable v-model="queryParams.fundsDateEnd" type="date" placeholder="结束日期"
+					value-format="yyyy-MM-dd"></el-date-picker>
 			</el-form-item>
 			<el-form-item label="支付类型" prop="payType">
 				<el-input clearable v-model="queryParams.payType" placeholder="请输入支付类型"></el-input>
