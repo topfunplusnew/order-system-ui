@@ -1,11 +1,11 @@
 import request from '@/utils/request';
 
 // 查询付款信息列表
-export function listPaymentApply(query) {
+export function listPaymentApply(data) {
 	return request({
 		url: '/system/paymentApply/list',
-		method: 'get',
-		params: query
+		method: 'post',
+		data: data
 	});
 }
 

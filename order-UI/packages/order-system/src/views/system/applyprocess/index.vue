@@ -140,7 +140,25 @@ export default {
 				]
 			},
 			needMoney: 0,
-			tID: null
+			tID: null,
+			// 新增搜索参数，默认值均为空
+			queryParams: {
+				fundsDate: '',
+				fundsDateBegin: '',
+				fundsDateEnd: '',
+				payType: '',
+				otherAcountsName: '',
+				otherBankNo: '',
+				otherBankName: '',
+				companyName: '',
+				companyId: '',
+				companyType: '',
+				reason: '',
+				checkState: '',
+				params: {
+					// checkStateList: []
+				}
+			}
 		};
 	},
 	watch: {
@@ -169,18 +187,8 @@ export default {
 		} else {
 			this.columns = JSON.parse(localStorage.getItem('applyprocess-columns'));
 		}
-		// 获取付款信息
-		listPaymentApply({
-			pageNum: this.pageNum,
-			pageSize: this.pageSize
-		}).then(res => {
-			this.paymentList = res.rows;
-			this.total = res.total;
-		});
-		// 获取所有的审核流程
-		listAuditInfo().then(res => {
-			this.allAuditInfoList = res.rows;
-		});
+		this.getAuditList();
+		this.getAuditStepList();
 	},
 	computed: {
 		TableName() {
@@ -192,6 +200,25 @@ export default {
 		listCars,
 		listBankAccount,
 		listCompany,
+		// 获取所有付款申请列表
+		getAuditList() {
+			const params = {
+				pageNum: this.pageNum,
+				pageSize: this.pageSize,
+				...this.queryParams
+			};
+			// 获取付款申请信息
+			listPaymentApply(params).then(res => {
+				this.paymentList = res.rows;
+				this.total = res.total;
+			});
+		},
+		getAuditStepList() {
+			// 获取所有的审核流程
+			listAuditInfo().then(res => {
+				this.allAuditInfoList = res.rows;
+			});
+		},
 		handleAdd() {
 			this.reset();
 			this.open = true;
@@ -214,10 +241,8 @@ export default {
 		},
 		refresh() {
 			this.loading = true;
-			listPaymentApply({
-				pageNum: this.pageNum,
-				pageSize: this.pageSize
-			}).then(res => {
+			const params = { pageNum: this.pageNum, pageSize: this.pageSize, ...this.queryParams };
+			listPaymentApply(params).then(res => {
 				this.paymentList = res.rows;
 				this.total = res.total;
 				this.loading = false;
@@ -338,6 +363,11 @@ export default {
 				delFlag: null
 			};
 			this.resetForm('form');
+		},
+		// 新增搜索按钮处理函数
+		handleQuery() {
+			this.pageNum = 1;
+			this.getAuditList();
 		}
 	}
 };
@@ -345,6 +375,58 @@ export default {
 
 <template>
 	<div class="app-container">
+		<el-form ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="100px">
+			<el-form-item label="日期" prop="fundsDate">
+				<el-date-picker clearable v-model="queryParams.fundsDate" type="date" placeholder="选择日期"
+					value-format="yyyy-MM-dd"></el-date-picker>
+			</el-form-item>
+			<el-form-item label="开始日期" prop="fundsDateBegin">
+				<el-date-picker clearable v-model="queryParams.fundsDateBegin" type="date"
+					placeholder="开始日期"></el-date-picker>
+			</el-form-item>
+			<el-form-item label="结束日期" prop="fundsDateEnd">
+				<el-date-picker clearable v-model="queryParams.fundsDateEnd" type="date"
+					placeholder="结束日期"></el-date-picker>
+			</el-form-item>
+			<el-form-item label="支付类型" prop="payType">
+				<el-input clearable v-model="queryParams.payType" placeholder="请输入支付类型"></el-input>
+			</el-form-item>
+			<el-form-item label="对方户名" prop="otherAcountsName">
+				<el-input clearable v-model="queryParams.otherAcountsName" placeholder="请输入对方户名"></el-input>
+			</el-form-item>
+			<el-form-item label="对方账号" prop="otherBankNo">
+				<el-input clearable v-model="queryParams.otherBankNo" placeholder="请输入对方账号"></el-input>
+			</el-form-item>
+			<el-form-item label="对方开户行" prop="otherBankName">
+				<el-input clearable v-model="queryParams.otherBankName" placeholder="请输入对方开户行"></el-input>
+			</el-form-item>
+			<el-form-item label="公司名称" prop="companyName">
+				<el-input clearable v-model="queryParams.companyName" placeholder="请输入公司名称"></el-input>
+			</el-form-item>
+			<el-form-item label="公司ID" prop="companyId">
+				<el-input clearable v-model="queryParams.companyId" placeholder="请输入公司ID"></el-input>
+			</el-form-item>
+			<el-form-item label="公司类型" prop="companyType">
+				<el-input clearable v-model="queryParams.companyType" placeholder="请输入公司类型"></el-input>
+			</el-form-item>
+			<el-form-item label="付款原因" prop="reason">
+				<el-input clearable v-model="queryParams.reason" placeholder="请输入付款原因"></el-input>
+			</el-form-item>
+			<el-form-item label="审核状态" prop="checkState">
+				<el-select clearable v-model="queryParams.checkState" placeholder="请选择审核状态">
+					<el-option label="待提交" value="待提交"></el-option>
+					<el-option label="审核中" value="审核中"></el-option>
+					<el-option label="通过" value="通过"></el-option>
+					<el-option label="未通过" value="未通过"></el-option>
+					<el-option label="驳回" value="驳回"></el-option>
+					<el-option label="作废" value="作废"></el-option>
+				</el-select>
+			</el-form-item>
+			<el-form-item>
+				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+			</el-form-item>
+		</el-form>
+
 		<el-row :gutter="10" class="mb8">
 			<el-col :span="1.5">
 				<el-button size="mini" @click="refresh">刷新</el-button>
@@ -366,8 +448,8 @@ export default {
 		<!--    放置付款信息列表-->
 		<el-row>
 			<el-table id="printBox" v-loading="loading" :data="paymentList" border :cell-style="() => {
-					return { padding: '.5px' };
-				}
+				return { padding: '.5px' };
+			}
 				" style="width: 100%" size="mini" align="center">
 				<el-table-column v-if="columns[0].visible" fixed prop="fundsDate" label="日期" width="150"
 					show-overflow-tooltip></el-table-column>
