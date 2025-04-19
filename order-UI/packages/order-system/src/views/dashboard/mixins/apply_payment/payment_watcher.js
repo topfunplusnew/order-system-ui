@@ -27,7 +27,7 @@ export var mixin_payment_watcher = {
 			type: Boolean,
 			default: false
 		},
-		// 在待提交或者驳回的状态下,是否禁用原有的保存 和 保存并修改等按钮
+		// 在待提交或者驳回的状态下,是否禁用原有的保存 和 保存并修改等按钮 控制按钮的显隐和银行卡的搜索
 		isOtherButtonDisabled: {
 			type: Boolean,
 			default: false
@@ -46,13 +46,15 @@ export var mixin_payment_watcher = {
 			handler(val) {
 				// 如果传入的银行卡是空的就直接返回
 				if (val === undefined) {
-					this.$notification.open({
-						message: '未找到对应的银行卡信息',
-						description: '该付款申请信息中的银行卡信息不存在,可能被删除或填写错误!',
-						onClick: () => {
-							console.log('Notification Clicked!');
-						}
-					});
+					if (this.isOtherButtonDisabled) {
+						this.$notification.open({
+							message: '未找到对应的银行卡信息',
+							description: '该付款申请信息中的银行卡信息不存在,可能被删除或填写错误!',
+							onClick: () => {
+								console.log('Notification Clicked!');
+							}
+						});
+					}
 					return;
 				}
 				// 否则去查询银行卡数据
@@ -88,6 +90,8 @@ export var mixin_payment_watcher = {
 			handler(val) {
 				if (JSON.stringify(this.needInfo) !== '{}') {
 					this.fillFreightInfo();
+				} else {
+					this.loadForm();
 				}
 			},
 			deep: true

@@ -108,13 +108,16 @@ export var mixin_payment_apply = {
 				listBankAccount(search).then(res => {
 					// 如果没有查到银行卡信息 那么就提示
 					if (res.rows.length === 0) {
-						this.$notification['error']({
-							message: '未找到对应的银行卡信息',
-							description: '该付款申请信息中的银行卡信息不存在,可能被删除或填写错误!',
-							onClick: () => {
-								console.log('Notification Clicked!');
-							}
-						});
+						// 如果是弹窗的付款申请
+						if (this.isOtherButtonDisabled) {
+							this.$notification['error']({
+								message: '未找到对应的银行卡信息',
+								description: '该付款申请信息中的银行卡信息不存在,可能被删除或填写错误!',
+								onClick: () => {
+									console.log('Notification Clicked!');
+								}
+							});
+						}
 					} else {
 						this.form.otherAcountsName = res.rows[0].acountsName;
 						this.form.otherBankNo = res.rows[0].bankNo;

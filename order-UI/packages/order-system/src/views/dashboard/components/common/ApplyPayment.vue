@@ -252,9 +252,12 @@
 			</el-form-item>
 		</el-form>
 		<div slot="footer" class="dialog-footer" style="text-align: center">
-			<!--			<el-button @click="handleProcess" v-if="isOtherButtonDisabled">保存修改</el-button>-->
-			<el-button type="primary" @click="submitForm" v-if="!isOtherButtonDisabled">提交申请</el-button>
-			<el-button @click="close" v-if="!isOtherButtonDisabled">关闭并保存</el-button>
+			<el-tooltip class="item" effect="dark" content="提交信息至服务器" placement="top-start">
+				<el-button type="primary" @click="submitForm" v-if="!isOtherButtonDisabled">提交申请</el-button>
+			</el-tooltip>
+			<el-tooltip class="item" effect="dark" content="可以将填写的信息暂存下来,但不提交,下次打开可继续填写" placement="top-start">
+				<el-button @click="close" v-if="!isOtherButtonDisabled">关闭并暂存</el-button>
+			</el-tooltip>
 			<el-button @click="clear" v-if="!isOtherButtonDisabled">取消填写</el-button>
 			<!--			<el-button @click="saveForm">保存</el-button>-->
 		</div>
@@ -500,6 +503,7 @@ export default {
 		},
 		// 保存表单数据到 localStorage
 		saveForm() {
+			console.log(1);
 			try {
 				localStorage.setItem(this.localStorageKey, JSON.stringify(this.form));
 				localStorage.setItem('paymentApplyFormOpponentType', this.value); // 保存对方类型

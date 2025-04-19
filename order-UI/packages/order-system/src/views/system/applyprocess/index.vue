@@ -304,17 +304,8 @@ export default {
 		changePaymentApplyInfoVisible() {
 			this.needMoney = 0;
 			this.open = false;
-			listPaymentApply({
-				pageNum: this.pageNum,
-				pageSize: this.pageSize
-			}).then(res => {
-				this.paymentList = res.rows;
-				this.total = res.total;
-			});
-			// 获取所有的审核流程
-			listAuditInfo().then(res => {
-				this.allAuditInfoList = res.rows;
-			});
+			this.getPaymentList();
+			this.getUnProcessedAuditList();
 		},
 		refresh() {
 			this.loading = true;
@@ -332,18 +323,12 @@ export default {
 				this.auditInfoList = res.rows;
 			});
 		},
-		// 分页获取列表
-		getPaymentList() {
-			listPaymentApply({ pageNum: this.pageNum, pageSize: this.pageSize }).then(res => {
-				this.paymentList = res.rows;
-			});
-		},
 		// 查看某一个行的信息
 		handleCheckInfo(row) {
-			this.checkInfoDialogVisible = true;
 			// 获取该行付款信息的详细信息 赋值到弹出框的描述表中
 			getPaymentApply(row.id).then(res => {
 				this.checkPaymentInfo = res.data;
+				this.checkInfoDialogVisible = true;
 			});
 		},
 		// 查看某一行的审核流程信息
@@ -480,6 +465,11 @@ export default {
 			</el-form-item>
 			<el-form-item>
 				<el-col :span="1.5">
+					<el-button size="mini" @click="resetQuery">重置</el-button>
+				</el-col>
+			</el-form-item>
+			<el-form-item>
+				<el-col :span="1.5">
 					<el-button size="mini" type="primary" @click="handleQuery">查询</el-button>
 				</el-col>
 			</el-form-item>
@@ -492,10 +482,6 @@ export default {
 
 			<el-col :span="1.5">
 				<el-button size="mini" type="danger" @click="handleAdd">申请日常费用报销</el-button>
-			</el-col>
-
-			<el-col :span="1.5">
-				<el-button size="mini" type="warning" @click="resetQuery">重置</el-button>
 			</el-col>
 
 			<el-col :span="1.5">
@@ -582,7 +568,7 @@ export default {
 				</el-table-column>
 			</el-table>
 			<!--      分页-->
-			<pagination v-show="total > 0" :total="total" :page.sync="pageNum" :limit.sync="pageSize" @pagination="getPaymentList" />
+			<pagination v-show="total > 0" :total="total" :page.sync="pageNum" :limit.sync="pageSize" @pagination="getAuditList" />
 		</el-row>
 
 		<!--    固定的锚点-->
