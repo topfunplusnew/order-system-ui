@@ -26,6 +26,18 @@ export var mixin_payment_watcher = {
 		isMulti: {
 			type: Boolean,
 			default: false
+		},
+		// 在待提交或者驳回的状态下,是否禁用原有的保存 和 保存并修改等按钮
+		isOtherButtonDisabled: {
+			type: Boolean,
+			default: false
+		},
+		// 额外信息 可以传递任意信息
+		extraInformation: {
+			type: Object,
+			default: () => {
+				return {};
+			}
 		}
 	},
 	watch: {
@@ -34,6 +46,13 @@ export var mixin_payment_watcher = {
 			handler(val) {
 				// 如果传入的银行卡是空的就直接返回
 				if (val === undefined) {
+					this.$notification.open({
+						message: '未找到对应的银行卡信息',
+						description: '该付款申请信息中的银行卡信息不存在,可能被删除或填写错误!',
+						onClick: () => {
+							console.log('Notification Clicked!');
+						}
+					});
 					return;
 				}
 				// 否则去查询银行卡数据
@@ -45,7 +64,13 @@ export var mixin_payment_watcher = {
 				listBankAccount(search).then(res => {
 					// 如果没有查到 那么就提示 并且清空数据
 					if (res.rows.length === 0) {
-						this.$message.error('未查询到该银行卡信息');
+						this.$notification['error']({
+							message: '未找到对应的银行卡信息',
+							description: '该付款申请信息中的银行卡信息不存在,可能被删除或填写错误!',
+							onClick: () => {
+								console.log('Notification Clicked!');
+							}
+						});
 						this.form.otherAcountsName = '';
 						this.form.otherBankNo = '';
 						this.form.otherBankName = '';

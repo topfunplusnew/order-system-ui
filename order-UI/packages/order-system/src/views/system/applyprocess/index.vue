@@ -261,17 +261,20 @@ export default {
 						needMoney: clonedPaymentApplyInfo.moneyAmount,
 						// 需要自动填充的信息 包含 对方户名:acountsName 对方账号 bankNo 对方开户行 bankName 对方公司 companyName
 						needInfo: {
-							accountsName: clonedPaymentApplyInfo.otherAcountsName,
 							bankNo: clonedPaymentApplyInfo.otherBankNo,
-							bankName: clonedPaymentApplyInfo.otherBankName,
-							companyName: clonedPaymentApplyInfo.companyName
+							acountsName: clonedPaymentApplyInfo.otherAcountsName,
+							bankName: clonedPaymentApplyInfo.otherBankName
 						},
 						// 是否禁用金额输入框
 						moneyInputDisabled: true,
 						// 是否为多个付款申请
-						isMulti: false
+						isMulti: false,
+						isOtherButtonDisabled: true,
+						extraInformation: {
+							__companyType: clonedPaymentApplyInfo.companyType
+						}
 					},
-					true
+					false
 				);
 			} else {
 				this.openDialog(ApplyPayment, '付款申请', '650px', {
@@ -282,9 +285,13 @@ export default {
 					needMoney: clonedPaymentApplyInfo.moneyAmount,
 					// 需要自动填充的信息 包含 对方户名:acountsName 对方账号 bankNo 对方开户行 bankName 对方公司 companyName
 					needInfo: {
-						accountsName: '',
+						acountsName: '',
 						bankNo: '',
 						bankName: ''
+					},
+					isOtherButtonDisabled: true,
+					extraInformation: {
+						__companyType: ''
 					}
 				});
 			}

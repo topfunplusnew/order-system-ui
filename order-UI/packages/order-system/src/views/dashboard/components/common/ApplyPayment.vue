@@ -252,16 +252,17 @@
 			</el-form-item>
 		</el-form>
 		<div slot="footer" class="dialog-footer" style="text-align: center">
-			<el-button type="primary" @click="submitForm">提交申请</el-button>
-			<el-button @click="close">关闭并保存</el-button>
-			<el-button @click="clear">取消填写</el-button>
+			<!--			<el-button @click="handleProcess" v-if="isOtherButtonDisabled">保存修改</el-button>-->
+			<el-button type="primary" @click="submitForm" v-if="!isOtherButtonDisabled">提交申请</el-button>
+			<el-button @click="close" v-if="!isOtherButtonDisabled">关闭并保存</el-button>
+			<el-button @click="clear" v-if="!isOtherButtonDisabled">取消填写</el-button>
 			<!--			<el-button @click="saveForm">保存</el-button>-->
 		</div>
 	</div>
 </template>
 
 <script>
-import { listPaymentApply, addPaymentApply } from '@/api/system/paymentApply';
+import { listPaymentApply, addPaymentApply, updatePaymentApply } from '@/api/system/paymentApply';
 import { excludeParams } from '@/api/tool/exclude';
 import SearchOption from '@/components/SearchOption.vue';
 import { listBankAccount } from '@/api/system/bankAccount';
@@ -273,7 +274,6 @@ import { listCompany } from '../../../../api/system/company';
 import { mixin_payment_fill } from '../../mixins/apply_payment/payment_fill';
 import { isNull } from '../../../../main';
 import { mixin_receive_money_subject } from '../../mixins/receivemoney/receive_money_subject';
-import { parseTime } from '@/utils/ruoyi';
 
 export default {
 	name: 'ApplyPayment',
@@ -291,7 +291,7 @@ export default {
 			form: {
 				tID: null,
 				tableName: null,
-				fundsDate: null,
+				fundsDate: new Date(),
 				payType: null,
 				moneyAmount: null,
 				otherAcountsName: null,
@@ -387,26 +387,28 @@ export default {
 		submitForm() {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
-					// 如果是多个付款审核 需要把信息返回给父组件进行使用
+					// 如果是多个付款审核 需要把信息返回给父组件进行使用 这种情况只有不在弹窗中才会使用其他情况没有
 					if (this.isMulti) {
 						this.$message.success('付款申请提交成功');
 						this.$emit('getApplyPayment', this.form);
 						this.$emit('changeOpen');
 						return;
 					}
-
-					excludeParams(this, this.$exclude);
 					// 填充对应表名和主键
-					this.form.tableName = this.tableName;
-					this.form.tID = this.tID;
-					this.form.checkState = ''; // 审核状态赋空
-					// 填充公司类型
-					this.form.companyType = this.value;
+					if (!this.tableName || !this.tID) {
+						this.$message.error('系统错误:付款时没有表名和表对应ID');
+						return;
+					}
 					// 添加付款类型
 					if (!this.form.payType) {
 						this.$modal.msgError('请选择付款类型');
 						return;
 					}
+					excludeParams(this, this.$exclude);
+					this.form.tableName = this.tableName;
+					this.form.tID = this.tID;
+					this.form.checkState = ''; // 审核状态赋空
+					this.form.companyType = this.value;
 					const payType = this.form.payType.join('-');
 					const body = { ...this.form, payType: payType };
 					addPaymentApply(body).then(() => {
@@ -416,6 +418,41 @@ export default {
 						this.clearForm();
 						this.$emit('changeOpen');
 					});
+				}
+			});
+		},
+		// 提交到数据库 但是状态是待提交
+		submitAndUpdate() {
+			this.$refs['form'].validate(valid => {
+				if (valid) {
+					if (this.form.id != null) {
+						if (!this.tableName || !this.tID) {
+							this.$message.error('系统错误:付款时没有表名和表对应ID');
+							return;
+						}
+						// 填充公司类型
+						if (!this.extraInformation.__companyType) {
+							this.$message.error('请选择公司类型!');
+							return;
+						}
+						// 添加付款类型
+						if (!this.form.payType) {
+							this.$modal.msgError('请选择付款类型');
+							return;
+						}
+						this.form.companyType = this.extraInformation.__companyType;
+						// 填充对应表名和主键
+						this.form.tableName = this.tableName;
+						this.form.tID = this.tID;
+						const payType = this.form.payType.join('-');
+						const body = { ...this.form, payType: payType };
+						updatePaymentApply(body).then(() => {
+							this.$modal.msgSuccess('付款申请保存成功,点击提交并审核可提交信息至审核流程');
+							this.reset();
+						});
+					} else {
+						this.$message.error('系统错误:付款时没有主键');
+					}
 				}
 			});
 		},
@@ -435,7 +472,7 @@ export default {
 				id: null,
 				tableName: null,
 				tID: null,
-				fundsDate: parseTime(new Date()),
+				fundsDate: new Date(),
 				payType: null,
 				moneyAmount: null,
 				otherAcountsName: null,
@@ -499,7 +536,9 @@ export default {
 				console.error('加载表单信息失败', error);
 			}
 		},
-		handleProcess() {},
+		handleProcess() {
+			this.submitAndUpdate();
+		},
 		handleReject() {}
 	}
 };
