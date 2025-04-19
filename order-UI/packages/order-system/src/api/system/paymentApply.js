@@ -43,3 +43,12 @@ export function delPaymentApply(id) {
 		method: 'delete'
 	});
 }
+
+// 提交未提交或者被驳回的付款申请信息
+export function submitPaymentApply(data) {
+	return request({
+		url: '/system/paymentApply/submit',
+		method: 'put',
+		data: data
+	});
+}

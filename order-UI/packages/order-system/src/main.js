@@ -51,10 +51,14 @@ import { Logger } from '@/utils/order/logger';
 // 虚拟滚动
 import VueVirtualScroller from 'vue-virtual-scroller';
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css';
-
+import DatePickerDialog from './views/dashboard/components/common/DatePickerDialog.vue';
 import Antd from 'ant-design-vue';
 import 'ant-design-vue/dist/antd.css';
+// 漫游组件
+import 'vue-tour/dist/vue-tour.css';
+import VueTour from 'vue-tour';
 
+Vue.use(VueTour);
 Vue.use(Antd);
 Vue.use(VueVirtualScroller);
 Vue.use(ModelPlugin);
@@ -142,8 +146,6 @@ Vue.prototype.$wait = () => {
 Vue.prototype.$close = () => {
 	Loading.service({}).close();
 };
-
-import DatePickerDialog from './views/dashboard/components/common/DatePickerDialog.vue';
 
 Vue.prototype.$datePicker = function () {
 	return new Promise(resolve => {

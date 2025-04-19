@@ -1,34 +1,34 @@
 <!--付款审核流程页面 需求:渲染需要付款的信息列表，付款信息中有多个审核流程 提供按钮筛选仅
 当前账号需要审核的流程 审核的过程调用修改接口-->
 <script>
-import { getPaymentApply, listPaymentApply } from '@/api/system/paymentApply';
+import { getPaymentApply, listPaymentApply, submitPaymentApply } from '@/api/system/paymentApply';
 import { listAuditInfoGroup } from '@/api/system/auditInfo';
 import StepInfo from '@/views/dashboard/components/applyProcess/StepInfo.vue';
 import { mapGetters } from 'vuex';
-import { listAuditInfo } from '../../../api/system/auditInfo';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
-import SearchOption from '@/components/SearchOption.vue';
-import BankType from '@/views/dashboard/components/common/BankType.vue';
 import { mixin_payment_subject } from '@/views/dashboard/mixins/payment/payment_subject';
 import { mixin_bankType } from '@/views/dashboard/mixins/common/common_bankType';
 import { mixin_paymentindex_fill } from '@/views/system/payment/paymentFill';
 import { mixin_payment_select, PAYMENT_TYPES } from '@/views/dashboard/mixins/payment/payment_select';
 import { listCompany } from '@/api/system/company';
 import { listBankAccount } from '@/api/system/bankAccount';
-import { excludeParams } from '@/api/tool/exclude';
-import { addPayment, updatePayment } from '@/api/system/payment';
 import CheckFiles from '@/components/CheckFiles.vue';
-import { OTHER_TYPE } from '@/utils/order';
-import { PaymentOptions, TableName, AuditCheckState } from '@/api/tool/enums';
+import { TableName, AuditCheckState } from '@/api/tool/enums';
 import { listCars } from '@/api/system/cars';
 import ApplyPayment from '@/views/dashboard/components/common/ApplyPayment.vue';
 import _ from 'lodash';
 import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
+import { mixin_tour } from '@/views/dashboard/mixins/tour';
 
 export default {
 	name: 'ApplyProcess',
-	components: { DialogWrapper, ApplyPayment, CheckFiles, StepInfo },
+	components: {
+		DialogWrapper,
+		ApplyPayment,
+		CheckFiles,
+		StepInfo
+	},
 	mixins: [mixin_printHTML, mixin_payment_subject, mixin_bankType, mixin_paymentindex_fill, mixin_payment_select, common_dialog],
 	data() {
 		return {
@@ -39,6 +39,37 @@ export default {
 					description: '测试数据'
 				}
 			],
+			tourSteps: [
+				{
+					target: '#step-1',
+					header: {
+						title: '搜索条件'
+					},
+					content: `点击这里可以搜索,可以搜索多个状态的付款申请信息`
+				},
+				{
+					target: '#printBox',
+					header: {
+						title: '非待提交的列表'
+					},
+					content: `这里可以看到状态为非 [待申请] 的付款申请信息列表`
+				},
+				{
+					target: '#step-3',
+					header: {
+						title: '查看申请列表'
+					},
+					content: `点击这里,可以查看待提交(创建但进入审核状态),或者被驳回的付款申请信息`
+				}
+			],
+			tourOptions: {
+				labels: {
+					buttonSkip: '跳过教程',
+					buttonPrevious: '上一步',
+					buttonNext: '下一步',
+					buttonStop: '完成'
+				}
+			},
 			pagination: {
 				onChange: page => {
 					console.log(page);
@@ -205,6 +236,9 @@ export default {
 		this.getAuditList();
 		this.getUnProcessedAuditList();
 	},
+	mounted() {
+		this.$tours['paymentApplyTour'].start();
+	},
 	computed: {
 		TableName() {
 			return TableName;
@@ -251,7 +285,7 @@ export default {
 			if (isEdit) {
 				this.openDialog(
 					ApplyPayment,
-					'付款申请',
+					'付款申请(点击确认后将保存数据,点击提交后信息进入审核流程)',
 					'650px',
 					{
 						tableName: clonedPaymentApplyInfo.tableName,
@@ -277,7 +311,7 @@ export default {
 					false
 				);
 			} else {
-				this.openDialog(ApplyPayment, '付款申请', '650px', {
+				this.openDialog(ApplyPayment, '付款申请(点击确认后将保存数据,点击提交后信息进入审核流程)', '650px', {
 					tableName: clonedPaymentApplyInfo.tableName,
 					// 关联表的主键ID
 					tID: clonedPaymentApplyInfo.tid,
@@ -295,6 +329,14 @@ export default {
 					}
 				});
 			}
+		},
+		// 提交付款申请信息 此时会将状态改为审核中
+		submitReApplyInfo(paymentApplyInfo) {
+			submitPaymentApply(paymentApplyInfo).then(res => {
+				this.$message.success('付款申请提交成功,请等待审核人审核!');
+				this.getAuditList();
+				this.getUnProcessedAuditList();
+			});
 		},
 		handleAdd() {
 			this.reset();
@@ -454,7 +496,7 @@ export default {
 			<el-form-item label="付款原因" prop="reason">
 				<el-input clearable v-model="queryParams.reason" placeholder="请输入付款原因"></el-input>
 			</el-form-item>
-			<el-form-item label="审核状态" prop="checkState">
+			<el-form-item label="审核状态" prop="checkState" id="step-1">
 				<el-select clearable v-model="queryParams.params.checkStateList" placeholder="请选择审核状态" multiple>
 					<el-option label="审核中" value="审核中"></el-option>
 					<el-option label="通过" value="通过"></el-option>
@@ -484,40 +526,56 @@ export default {
 				<el-button size="mini" type="danger" @click="handleAdd">申请日常费用报销</el-button>
 			</el-col>
 
-			<el-col :span="1.5">
-				<a-popover title="待提交或已驳回的付款申请">
-					<template slot="content">
-						<a-anchor>
-							<a-list item-layout="horizontal" :data-source="alreadyApplyList" :pagination="pagination">
-								<a-list-item slot="renderItem" slot-scope="item, index">
-									<a slot="actions" @click="reApply(item, true)">修改填写</a>
-									<a slot="actions" @click="reApply(item, false)">重新填写</a>
-									<a-list-item-meta :description="'提交时间:' + item.addtime">
-										<span slot="title">{{ item.reason }}</span>
-									</a-list-item-meta>
+			<!-- <el-col :span="1.5">
+        <a-popover title="待提交或已驳回的付款申请">
+          <template slot="content">
+            <a-anchor>
+              <a-list item-layout="horizontal" :data-source="alreadyApplyList" :pagination="pagination">
+                <a-list-item slot="renderItem" slot-scope="item, index">
+                  <a slot="actions" @click="reApply(item, true)">修改填写</a>
+                  <a slot="actions" @click="reApply(item, false)">重新填写</a>
+                  <a-list-item-meta :description="'提交时间:' + item.addtime">
+                    <span slot="title">{{ item.reason }}</span>
+                  </a-list-item-meta>
 
-									<div style="margin: 5px">
-										<a-tag :color="getTagColor(item.checkState)">{{ item.checkState }}</a-tag>
-									</div>
-								</a-list-item>
-							</a-list>
-						</a-anchor>
+                  <div style="margin: 5px">
+                    <a-tag :color="getTagColor(item.checkState)">{{ item.checkState }}</a-tag>
+                  </div>
+                </a-list-item>
+              </a-list>
+            </a-anchor>
+          </template>
+          <el-button size="mini" type="success">
+            <a-icon type="unordered-list" />
+            查看申请记录
+          </el-button>
+        </a-popover>
+      </el-col> -->
+			<el-col :span="1.5" style="position: fixed; bottom: 20px; right: 20px; z-index: 100">
+				<el-popover placement="top-start" trigger="hover" width="1000" title="待提交或已驳回的付款申请">
+					<template #reference>
+						<el-button type="success" circle style="width: 40px; height: 40px" id="step-3">
+							<a-icon type="unordered-list" />
+						</el-button>
 					</template>
-					<el-button size="mini" type="success">
-						<a-icon type="unordered-list" />
-						查看申请记录
-					</el-button>
-				</a-popover>
-			</el-col>
+					<a-anchor>
+						<a-list item-layout="horizontal" :data-source="alreadyApplyList" :pagination="pagination">
+							<a-list-item slot="renderItem" slot-scope="item, index">
+								<a slot="actions" @click="reApply(item, true)">修改填写</a>
+								<a slot="actions" @click="reApply(item, false)">重新填写</a>
+								<a slot="actions" @click="submitReApplyInfo(item)">提交</a>
+								<a-list-item-meta :description="'提交时间:' + item.addtime">
+									<span slot="title">{{ item.reason }}</span>
+								</a-list-item-meta>
 
-			<right-toolbar :columns="columns">
-				<!--    打印    -->
-				<template #print>
-					<el-col :span="1.5">
-						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
-					</el-col>
-				</template>
-			</right-toolbar>
+								<div style="margin: 5px">
+									<a-tag :color="getTagColor(item.checkState)">{{ item.checkState }}</a-tag>
+								</div>
+							</a-list-item>
+						</a-list>
+					</a-anchor>
+				</el-popover>
+			</el-col>
 		</el-row>
 
 		<!--    放置付款信息列表-->
@@ -655,6 +713,9 @@ export default {
 				@confirm="handleDialogConfirm"
 			/>
 		</div>
+
+		<!--    漫游组件-->
+		<v-tour name="paymentApplyTour" :steps="tourSteps" :options="tourOptions"></v-tour>
 	</div>
 </template>
 
