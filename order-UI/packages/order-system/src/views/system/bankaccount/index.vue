@@ -49,8 +49,8 @@
 		<!-- 打印内容 -->
 		<el-table id="printBox" v-loading="loading" v-horizontal-scroll="'always'" border :data="bankAccountList"
 			height="450px" size="mini" :cell-style="() => {
-					return { padding: '.5px' };
-				}
+				return { padding: '.5px' };
+			}
 				" @selection-change="handleSelectionChange">
 			<el-table-column v-if="columns[0].visible" label="绑定状态" align="center">
 				<template slot-scope="scope">
@@ -489,16 +489,14 @@ export default {
 		}
 	},
 	created() {
-		// this.getList();
+		this.getList();
 		if (localStorage.getItem('bankaccount-columns') === 'null' || !localStorage.getItem('bankaccount-columns')) {
 			localStorage.setItem('bankaccount-columns', JSON.stringify(this.columns));
 		} else {
 			this.columns = JSON.parse(localStorage.getItem('bankaccount-columns'));
 		}
 	},
-	mounted() {
-		this.getList();
-	},
+
 	filters: {
 		// values 为被筛选的数据 prop为自定义传入的属性
 		handleArray(values, prop) {
