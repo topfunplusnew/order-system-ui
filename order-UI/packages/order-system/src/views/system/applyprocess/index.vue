@@ -154,9 +154,8 @@ export default {
 				companyId: '',
 				companyType: '',
 				reason: '',
-				checkState: '',
 				params: {
-					// checkStateList: []
+					checkStateList: ['审核中', '通过', '未通过', '驳回', '作废']
 				}
 			}
 		};
@@ -250,15 +249,9 @@ export default {
 		},
 		// 分页获取列表
 		getPaymentList() {
-			this.$wait();
-			listPaymentApply({ pageNum: this.pageNum, pageSize: this.pageSize })
-				.then(res => {
-					this.paymentList = res.rows;
-					this.$close();
-				})
-				.catch(() => {
-					this.$close();
-				});
+			listPaymentApply({ pageNum: this.pageNum, pageSize: this.pageSize }).then(res => {
+				this.paymentList = res.rows;
+			});
 		},
 		// 查看某一个行的信息
 		handleCheckInfo(row) {
@@ -283,45 +276,6 @@ export default {
 		// 折叠面板打开某一个的回调
 		handleChangeApplyItem(e) {
 			console.log(e);
-		},
-		submitForm() {
-			this.$refs['form'].validate(valid => {
-				if (valid) {
-					if (this.form.id != null) {
-						this.form = excludeParams(this.form, this.$exclude);
-						this.form.paymentState = '已支付';
-						// 修改支付状态
-						updatePayment(this.form).then(() => {
-							this.$modal.msgSuccess('支付成功~');
-							this.open = false;
-							this.getList();
-						});
-
-						// 新增操作
-					} else {
-						// 去除参数
-						this.form = excludeParams(this.form, this.$exclude);
-						// 需要拼凑支付类型  但是不能修改响应式的payType 这是一个数组
-						let paymentType = null;
-						if (this.form.payType) {
-							paymentType = this.form.payType.join('-');
-						} else {
-							this.$message.warning('请选择付款类型');
-							return;
-						}
-						// 填充公司类型
-						this.form.companyType = this.value;
-						// 拼凑body
-						const body = { ...this.form, payType: paymentType, tableName: 'daily' };
-						// 添加付款信息
-						addPayment(body).then(() => {
-							this.$modal.msgSuccess('新增成功');
-							this.open = false;
-							this.getList();
-						});
-					}
-				}
-			});
 		},
 		cancel() {
 			this.open = false;
@@ -356,6 +310,25 @@ export default {
 				delFlag: null
 			};
 			this.resetForm('form');
+		},
+		resetQuery() {
+			this.queryParams = {
+				fundsDate: '',
+				fundsDateBegin: '',
+				fundsDateEnd: '',
+				payType: '',
+				otherAcountsName: '',
+				otherBankNo: '',
+				otherBankName: '',
+				companyName: '',
+				companyId: '',
+				companyType: '',
+				reason: '',
+				params: {
+					checkStateList: ['审核中', '通过', '未通过', '驳回', '作废']
+				}
+			};
+			this.getAuditList();
 		},
 		// 新增搜索按钮处理函数
 		handleQuery() {
@@ -394,8 +367,7 @@ export default {
 				<el-input clearable v-model="queryParams.reason" placeholder="请输入付款原因"></el-input>
 			</el-form-item>
 			<el-form-item label="审核状态" prop="checkState">
-				<el-select clearable v-model="queryParams.checkState" placeholder="请选择审核状态">
-					<el-option label="待提交" value="待提交"></el-option>
+				<el-select clearable v-model="queryParams.params.checkStateList" placeholder="请选择审核状态" multiple>
 					<el-option label="审核中" value="审核中"></el-option>
 					<el-option label="通过" value="通过"></el-option>
 					<el-option label="未通过" value="未通过"></el-option>
@@ -404,7 +376,9 @@ export default {
 				</el-select>
 			</el-form-item>
 			<el-form-item>
-				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+				<el-col :span="1.5">
+					<el-button size="mini" type="primary" @click="handleQuery">查询</el-button>
+				</el-col>
 			</el-form-item>
 		</el-form>
 
@@ -415,6 +389,10 @@ export default {
 
 			<el-col :span="1.5">
 				<el-button size="mini" type="danger" @click="handleAdd">申请日常费用报销</el-button>
+			</el-col>
+
+			<el-col :span="1.5">
+				<el-button size="mini" type="warning" @click="resetQuery">重置</el-button>
 			</el-col>
 
 			<right-toolbar :columns="columns">
