@@ -22,6 +22,7 @@ import { OTHER_TYPE } from '@/utils/order';
 import { PaymentOptions, TableName } from '@/api/tool/enums';
 import { listCars } from '@/api/system/cars';
 import ApplyPayment from '@/views/dashboard/components/common/ApplyPayment.vue';
+import _ from 'lodash';
 
 export default {
 	name: 'ApplyProcess',
@@ -194,6 +195,7 @@ export default {
 			this.columns = JSON.parse(localStorage.getItem('applyprocess-columns'));
 		}
 		this.getAuditList();
+		this.getUnProcessedAuditList();
 	},
 	computed: {
 		TableName() {
@@ -205,18 +207,40 @@ export default {
 		listCars,
 		listBankAccount,
 		listCompany,
-		// 获取所有付款申请列表
-		getAuditList() {
-			const params = {
+		// 获取待提交或者驳回的付款申请记录
+		getUnProcessedAuditList() {
+			const query = {
 				pageNum: this.pageNum,
-				pageSize: this.pageSize,
-				...this.queryParams
+				pageSize: this.pageSize
+			};
+			const json = {
+				params: {
+					userId: this.$store.getters.userId,
+					checkStateList: ['审核中', '驳回']
+				}
 			};
 			// 获取付款申请信息
-			listPaymentApply(params).then(res => {
+			listPaymentApply(query, json).then(res => {
+				this.alreadyApplyList = res.rows;
+			});
+		},
+		// 获取所有付款申请列表
+		getAuditList() {
+			const query = {
+				pageNum: this.pageNum,
+				pageSize: this.pageSize
+			};
+			const json = _.cloneDeep(this.queryParams);
+			// 获取付款申请信息
+			listPaymentApply(query, json).then(res => {
 				this.paymentList = res.rows;
 				this.total = res.total;
 			});
+		},
+		// 修改已经提交的 待提交或者驳回的付款申请记录
+		reApply(paymentApplyInfo, isEdit = true) {
+			if (isEdit) {
+			}
 		},
 		handleAdd() {
 			this.reset();
@@ -408,8 +432,8 @@ export default {
 						<a-anchor>
 							<a-list item-layout="horizontal" :data-source="alreadyApplyList">
 								<a-list-item slot="renderItem" slot-scope="item, index">
-									<a slot="actions">修改填写</a>
-									<a slot="actions">重新填写</a>
+									<a slot="actions" @click="reApply(item, true)">修改填写</a>
+									<a slot="actions" @click="reApply(item, false)">重新填写</a>
 									<a-list-item-meta :description="'提交时间:' + item.description">
 										<span slot="title">{{ item.title }}</span>
 									</a-list-item-meta>
