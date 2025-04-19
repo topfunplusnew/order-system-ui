@@ -273,6 +273,7 @@ import { listCompany } from '../../../../api/system/company';
 import { mixin_payment_fill } from '../../mixins/apply_payment/payment_fill';
 import { isNull } from '../../../../main';
 import { mixin_receive_money_subject } from '../../mixins/receivemoney/receive_money_subject';
+import {parseTime} from "@/utils/ruoyi";
 
 export default {
 	name: 'ApplyPayment',
