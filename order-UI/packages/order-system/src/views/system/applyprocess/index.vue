@@ -210,7 +210,11 @@ export default {
 				params: {
 					checkStateList: ['审核中', '通过', '未通过', '驳回', '作废']
 				}
-			}
+			},
+
+			// 传递给子组件的参数
+			needInfo: {},
+			extraInformation: {}
 		};
 	},
 	watch: {
@@ -293,6 +297,16 @@ export default {
 		reApply(paymentApplyInfo, isEdit = true) {
 			const clonedPaymentApplyInfo = _.cloneDeep(paymentApplyInfo);
 			console.log(`clonedPaymentApplyInfo`, clonedPaymentApplyInfo);
+			// 需要自动填充的信息
+			this.needInfo = {
+				bankNo: clonedPaymentApplyInfo.otherBankNo,
+				acountsName: clonedPaymentApplyInfo.otherAcountsName,
+				bankName: clonedPaymentApplyInfo.otherBankName
+			};
+			// 额外信息
+			this.extraInformation = {
+				__companyType: isEdit ? clonedPaymentApplyInfo.companyType : ''
+			};
 			if (isEdit) {
 				this.openDialog(
 					ApplyPayment,
@@ -305,19 +319,13 @@ export default {
 						// 需要自动填充的钱
 						needMoney: clonedPaymentApplyInfo.moneyAmount,
 						// 需要自动填充的信息 包含 对方户名:acountsName 对方账号 bankNo 对方开户行 bankName 对方公司 companyName
-						needInfo: {
-							bankNo: clonedPaymentApplyInfo.otherBankNo,
-							acountsName: clonedPaymentApplyInfo.otherAcountsName,
-							bankName: clonedPaymentApplyInfo.otherBankName
-						},
+						needInfo: this.needInfo,
 						// 是否禁用金额输入框
 						moneyInputDisabled: true,
 						// 是否为多个付款申请
 						isMulti: false,
 						isOtherButtonDisabled: true,
-						extraInformation: {
-							__companyType: clonedPaymentApplyInfo.companyType
-						}
+						extraInformation: this.extraInformation
 					},
 					false
 				);
@@ -329,15 +337,9 @@ export default {
 					// 需要自动填充的钱
 					needMoney: clonedPaymentApplyInfo.moneyAmount,
 					// 需要自动填充的信息 包含 对方户名:acountsName 对方账号 bankNo 对方开户行 bankName 对方公司 companyName
-					needInfo: {
-						acountsName: '',
-						bankNo: '',
-						bankName: ''
-					},
+					needInfo: this.needInfo,
 					isOtherButtonDisabled: true,
-					extraInformation: {
-						__companyType: ''
-					}
+					extraInformation: this.extraInformation
 				});
 			}
 		},
@@ -363,8 +365,9 @@ export default {
 		},
 		refresh() {
 			this.loading = true;
-			const params = { pageNum: this.pageNum, pageSize: this.pageSize, ...this.queryParams };
-			listPaymentApply(params).then(res => {
+			const query = { pageNum: this.pageNum, pageSize: this.pageSize };
+			const json = { ...this.queryParams };
+			listPaymentApply(query, json).then(res => {
 				this.paymentList = res.rows;
 				this.total = res.total;
 				this.loading = false;

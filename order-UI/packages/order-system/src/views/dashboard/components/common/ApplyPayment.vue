@@ -397,17 +397,12 @@ export default {
 						this.$emit('changeOpen');
 						return;
 					}
-					// 填充对应表名和主键
-					if (!this.tableName || !this.tID) {
-						this.$message.error('系统错误:付款时没有表名和表对应ID');
-						return;
-					}
 					// 添加付款类型
 					if (!this.form.payType) {
 						this.$modal.msgError('请选择付款类型');
 						return;
 					}
-					excludeParams(this, this.$exclude);
+					excludeParams(this.form, this.$exclude);
 					this.form.tableName = this.tableName;
 					this.form.tID = this.tID;
 					this.form.checkState = ''; // 审核状态赋空
@@ -503,7 +498,6 @@ export default {
 		},
 		// 保存表单数据到 localStorage
 		saveForm() {
-			console.log(1);
 			try {
 				localStorage.setItem(this.localStorageKey, JSON.stringify(this.form));
 				localStorage.setItem('paymentApplyFormOpponentType', this.value); // 保存对方类型

@@ -22,6 +22,7 @@ export var common_dialog = {
 	methods: {
 		// 打开弹窗的函数 嵌入到别的混入中使用
 		openDialog(component, title, width = '50%', props, closeConfirm = false) {
+			console.log(`dialogWrapperProps:`, props);
 			this.currentComponent = component;
 			this.dialogTitle = title;
 			this.dialogWidth = width;

@@ -44,6 +44,7 @@ export var mixin_payment_watcher = {
 		// 监听银行卡的变化 如果传入的银行卡信息有变化 就自动填充
 		'needInfo.bankNo': {
 			handler(val) {
+				console.log('银行卡信息变化', val);
 				// 如果传入的银行卡是空的就直接返回
 				if (val === undefined) {
 					if (this.isOtherButtonDisabled) {
@@ -88,6 +89,7 @@ export var mixin_payment_watcher = {
 		// 检测整个对象
 		needInfo: {
 			handler(val) {
+				console.log('watcher needInfo', val);
 				if (JSON.stringify(this.needInfo) !== '{}') {
 					this.fillFreightInfo();
 				} else {
