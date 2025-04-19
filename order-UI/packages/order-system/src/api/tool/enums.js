@@ -230,3 +230,12 @@ export const System_Option_Type = {
 	UPDATE: '修改',
 	DELETE: '删除'
 };
+
+export const AuditCheckState = Object.freeze({
+	PENDING: '待提交',
+	ING: '审核中',
+	PASS: '通过',
+	NOT_PASS: '未通过',
+	REJECT: '驳回',
+	VOID: '作废'
+});

@@ -3,6 +3,7 @@ import { getUserProfile } from '@/api/system/user';
 import CheckApply from '@/views/dashboard/components/applyProcess/CheckApply.vue';
 import NeedToShowInfo from '@/components/NeedToShowInfo.vue';
 import { TableComponentsTools } from '@/utils/order/mapper';
+import { AuditCheckState } from '@/api/tool/enums';
 
 export default {
 	name: 'StepInfo',
@@ -31,6 +32,9 @@ export default {
 		};
 	},
 	computed: {
+		AuditCheckState() {
+			return AuditCheckState;
+		},
 		// 当前审核进度
 		currentStep() {
 			// 找到step最大的
@@ -76,11 +80,11 @@ export default {
 			return item.checkState === '通过' ? 'success' : 'danger';
 		},
 		isChecked(item) {
-			if (item.checkState === '通过') {
-				return true;
-			} else return item.checkState === '未通过';
+			return item.checkState;
 		},
-
+		processAuditInfo(item) {
+			return item.auditcomment === null ? '无' : item.auditcomment;
+		},
 		// 审核
 		handleCheckState(item) {
 			console.log('item:', item);
@@ -134,7 +138,7 @@ export default {
 							</span>
 						</template>
 						<template #description>
-							<span style="font-weight: bolder">审核意见:{{ item.auditcomment === null ? '无' : item.auditcomment }}</span>
+							<span style="font-weight: bolder">审核意见:{{ processAuditInfo(item) }}</span>
 						</template>
 					</el-step>
 				</el-steps>
@@ -159,7 +163,8 @@ export default {
 									</p>
 									<p>
 										<span class="tx-bolder">审核意见:</span>
-										<span v-if="isChecked(item)">{{ item.auditcomment }}</span>
+										<span v-if="isChecked(item) === AuditCheckState.PASS">{{ processAuditInfo(item) }}</span>
+										<span v-else-if="isChecked(item) === AuditCheckState.REJECT">{{ processAuditInfo(item) }}</span>
 										<span v-else>
 											<el-tag type="warning">待审核</el-tag>
 										</span>

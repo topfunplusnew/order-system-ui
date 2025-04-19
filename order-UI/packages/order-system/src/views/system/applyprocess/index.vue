@@ -19,15 +19,17 @@ import { excludeParams } from '@/api/tool/exclude';
 import { addPayment, updatePayment } from '@/api/system/payment';
 import CheckFiles from '@/components/CheckFiles.vue';
 import { OTHER_TYPE } from '@/utils/order';
-import { PaymentOptions, TableName } from '@/api/tool/enums';
+import { PaymentOptions, TableName, AuditCheckState } from '@/api/tool/enums';
 import { listCars } from '@/api/system/cars';
 import ApplyPayment from '@/views/dashboard/components/common/ApplyPayment.vue';
 import _ from 'lodash';
+import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
+import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 
 export default {
 	name: 'ApplyProcess',
-	components: { ApplyPayment, CheckFiles, StepInfo },
-	mixins: [mixin_printHTML, mixin_payment_subject, mixin_bankType, mixin_paymentindex_fill, mixin_payment_select],
+	components: { DialogWrapper, ApplyPayment, CheckFiles, StepInfo },
+	mixins: [mixin_printHTML, mixin_payment_subject, mixin_bankType, mixin_paymentindex_fill, mixin_payment_select, common_dialog],
 	data() {
 		return {
 			// 已经提交的申请
@@ -37,6 +39,12 @@ export default {
 					description: '测试数据'
 				}
 			],
+			pagination: {
+				onChange: page => {
+					console.log(page);
+				},
+				pageSize: 10
+			},
 			loading: false,
 			columns: [
 				{ key: 0, label: `日期`, visible: true },
@@ -216,7 +224,7 @@ export default {
 			const json = {
 				params: {
 					userId: this.$store.getters.userId,
-					checkStateList: ['审核中', '驳回']
+					checkStateList: ['待提交', '驳回']
 				}
 			};
 			// 获取付款申请信息
@@ -237,9 +245,48 @@ export default {
 				this.total = res.total;
 			});
 		},
-		// 修改已经提交的 待提交或者驳回的付款申请记录
+		// 修改已经提交的 待提交或者驳回的付款申请记录 isEdit=true时为修改原有信息
 		reApply(paymentApplyInfo, isEdit = true) {
+			const clonedPaymentApplyInfo = _.cloneDeep(paymentApplyInfo);
 			if (isEdit) {
+				this.openDialog(
+					ApplyPayment,
+					'付款申请',
+					'650px',
+					{
+						tableName: clonedPaymentApplyInfo.tableName,
+						// 关联表的主键ID
+						tID: clonedPaymentApplyInfo.tid,
+						// 需要自动填充的钱
+						needMoney: clonedPaymentApplyInfo.moneyAmount,
+						// 需要自动填充的信息 包含 对方户名:acountsName 对方账号 bankNo 对方开户行 bankName 对方公司 companyName
+						needInfo: {
+							accountsName: clonedPaymentApplyInfo.otherAcountsName,
+							bankNo: clonedPaymentApplyInfo.otherBankNo,
+							bankName: clonedPaymentApplyInfo.otherBankName,
+							companyName: clonedPaymentApplyInfo.companyName
+						},
+						// 是否禁用金额输入框
+						moneyInputDisabled: true,
+						// 是否为多个付款申请
+						isMulti: false
+					},
+					true
+				);
+			} else {
+				this.openDialog(ApplyPayment, '付款申请', '650px', {
+					tableName: clonedPaymentApplyInfo.tableName,
+					// 关联表的主键ID
+					tID: clonedPaymentApplyInfo.tid,
+					// 需要自动填充的钱
+					needMoney: clonedPaymentApplyInfo.moneyAmount,
+					// 需要自动填充的信息 包含 对方户名:acountsName 对方账号 bankNo 对方开户行 bankName 对方公司 companyName
+					needInfo: {
+						accountsName: '',
+						bankNo: '',
+						bankName: ''
+					}
+				});
 			}
 		},
 		handleAdd() {
@@ -365,6 +412,24 @@ export default {
 		handleQuery() {
 			this.pageNum = 1;
 			this.getAuditList();
+		},
+		getTagColor(checkState) {
+			switch (checkState) {
+				case AuditCheckState.PENDING:
+					return 'blue';
+				case AuditCheckState.ING:
+					return 'cyan';
+				case AuditCheckState.PASS:
+					return 'green';
+				case AuditCheckState.NOT_PASS:
+					return 'red';
+				case AuditCheckState.REJECT:
+					return 'orange';
+				case AuditCheckState.VOID:
+					return 'purple';
+				default:
+					return '';
+			}
 		}
 	}
 };
@@ -430,13 +495,17 @@ export default {
 				<a-popover title="待提交或已驳回的付款申请">
 					<template slot="content">
 						<a-anchor>
-							<a-list item-layout="horizontal" :data-source="alreadyApplyList">
+							<a-list item-layout="horizontal" :data-source="alreadyApplyList" :pagination="pagination">
 								<a-list-item slot="renderItem" slot-scope="item, index">
 									<a slot="actions" @click="reApply(item, true)">修改填写</a>
 									<a slot="actions" @click="reApply(item, false)">重新填写</a>
-									<a-list-item-meta :description="'提交时间:' + item.description">
-										<span slot="title">{{ item.title }}</span>
+									<a-list-item-meta :description="'提交时间:' + item.addtime">
+										<span slot="title">{{ item.reason }}</span>
 									</a-list-item-meta>
+
+									<div style="margin: 5px">
+										<a-tag :color="getTagColor(item.checkState)">{{ item.checkState }}</a-tag>
+									</div>
 								</a-list-item>
 							</a-list>
 						</a-anchor>
@@ -579,6 +648,20 @@ export default {
 				<ApplyPayment :table-name="TableName.DAILY" :t-i-d="tID" :need-money="needMoney" :need-info="{}" @changeOpen="changePaymentApplyInfoVisible" :money-input-disabled="false" />
 			</keep-alive>
 		</el-dialog>
+
+		<div v-if="currentComponent">
+			<DialogWrapper
+				:current-component="currentComponent"
+				:dialog-visible="dialogVisible"
+				:dialog-props="dialogProps"
+				:dialog-title="dialogTitle"
+				:dialog-width="dialogWidth"
+				:close-confirm="closeConfirm"
+				@update:dialogVisible="args => (dialogVisible = false)"
+				@close="handleCloseDialog"
+				@confirm="handleDialogConfirm"
+			/>
+		</div>
 	</div>
 </template>
 
