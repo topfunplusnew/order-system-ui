@@ -52,6 +52,10 @@ import { Logger } from '@/utils/order/logger';
 import VueVirtualScroller from 'vue-virtual-scroller';
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css';
 
+import Antd from 'ant-design-vue';
+import 'ant-design-vue/dist/antd.css';
+
+Vue.use(Antd);
 Vue.use(VueVirtualScroller);
 Vue.use(ModelPlugin);
 

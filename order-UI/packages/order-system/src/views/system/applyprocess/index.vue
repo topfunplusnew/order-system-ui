@@ -29,6 +29,13 @@ export default {
 	mixins: [mixin_printHTML, mixin_payment_subject, mixin_bankType, mixin_paymentindex_fill, mixin_payment_select],
 	data() {
 		return {
+			// 已经提交的申请
+			alreadyApplyList: [
+				{
+					title: '测试数据',
+					description: '测试数据'
+				}
+			],
 			loading: false,
 			columns: [
 				{ key: 0, label: `日期`, visible: true },
@@ -395,6 +402,28 @@ export default {
 				<el-button size="mini" type="warning" @click="resetQuery">重置</el-button>
 			</el-col>
 
+			<el-col :span="1.5">
+				<a-popover title="待提交或已驳回的付款申请">
+					<template slot="content">
+						<a-anchor>
+							<a-list item-layout="horizontal" :data-source="alreadyApplyList">
+								<a-list-item slot="renderItem" slot-scope="item, index">
+									<a slot="actions">修改填写</a>
+									<a slot="actions">重新填写</a>
+									<a-list-item-meta :description="'提交时间:' + item.description">
+										<span slot="title">{{ item.title }}</span>
+									</a-list-item-meta>
+								</a-list-item>
+							</a-list>
+						</a-anchor>
+					</template>
+					<el-button size="mini" type="success">
+						<a-icon type="unordered-list" />
+						查看申请记录
+					</el-button>
+				</a-popover>
+			</el-col>
+
 			<right-toolbar :columns="columns">
 				<!--    打印    -->
 				<template #print>
@@ -404,6 +433,7 @@ export default {
 				</template>
 			</right-toolbar>
 		</el-row>
+
 		<!--    放置付款信息列表-->
 		<el-row>
 			<el-table
@@ -445,15 +475,17 @@ export default {
 						</el-tag>
 					</template>
 				</el-table-column>
-				<el-table-column v-if="columns[9].visible" fixed="right" label="审核流程" show-overflow-tooltip>
+				<el-table-column v-if="columns[9].visible" fixed="right" label="审核流程" show-overflow-tooltip align="center">
 					<template slot-scope="scope">
-						<el-button type="warning" size="mini" @click="handleCheckApplyInfo(scope.row)">查看</el-button>
+						<el-button type="text" size="mini" @click="handleCheckApplyInfo(scope.row)">查看</el-button>
 					</template>
 				</el-table-column>
 			</el-table>
 			<!--      分页-->
 			<pagination v-show="total > 0" :total="total" :page.sync="pageNum" :limit.sync="pageSize" @pagination="getPaymentList" />
 		</el-row>
+
+		<!--    固定的锚点-->
 
 		<!--    查看付款信息的详细信息-->
 		<el-dialog :close-on-click-modal="false" :show-close="false" title="付款信息详细" :visible.sync="checkInfoDialogVisible" width="50%">
