@@ -188,7 +188,6 @@ export default {
 			this.columns = JSON.parse(localStorage.getItem('applyprocess-columns'));
 		}
 		this.getAuditList();
-		this.getAuditStepList();
 	},
 	computed: {
 		TableName() {
@@ -211,12 +210,6 @@ export default {
 			listPaymentApply(params).then(res => {
 				this.paymentList = res.rows;
 				this.total = res.total;
-			});
-		},
-		getAuditStepList() {
-			// 获取所有的审核流程
-			listAuditInfo().then(res => {
-				this.allAuditInfoList = res.rows;
 			});
 		},
 		handleAdd() {
@@ -277,8 +270,8 @@ export default {
 		},
 		// 查看某一行的审核流程信息
 		handleCheckApplyInfo(row) {
-			listAuditInfoGroup({ applyID: row.id }).then(res => {
-				this.auditInfoList = res.rows;
+			getPaymentApply(row.id).then(res => {
+				this.auditInfoList = res.data.auditInfoList;
 				this.checkApplyInfoDialogVisible = true;
 			});
 		},
@@ -396,12 +389,6 @@ export default {
 			</el-form-item>
 			<el-form-item label="公司名称" prop="companyName">
 				<el-input clearable v-model="queryParams.companyName" placeholder="请输入公司名称"></el-input>
-			</el-form-item>
-			<el-form-item label="公司ID" prop="companyId">
-				<el-input clearable v-model="queryParams.companyId" placeholder="请输入公司ID"></el-input>
-			</el-form-item>
-			<el-form-item label="公司类型" prop="companyType">
-				<el-input clearable v-model="queryParams.companyType" placeholder="请输入公司类型"></el-input>
 			</el-form-item>
 			<el-form-item label="付款原因" prop="reason">
 				<el-input clearable v-model="queryParams.reason" placeholder="请输入付款原因"></el-input>
@@ -532,22 +519,20 @@ export default {
 
 		<!--      审核流程步骤图信息  -->
 		<el-dialog :close-on-click-modal="false" :show-close="false" :visible.sync="checkApplyInfoDialogVisible" title="审核流程多项信息" width="58%">
-			<el-row v-for="(item, index) in auditInfoList" :key="index">
-				<el-collapse v-model="activeNames" @change="handleChangeApplyItem">
-					<el-collapse-item name="1">
-						<template #title>
-							<el-row>
-								<span class="text-bolder">审核流程</span>
-							</el-row>
-						</template>
+			<el-collapse v-model="activeNames" @change="handleChangeApplyItem">
+				<el-collapse-item name="1">
+					<template #title>
 						<el-row>
-							<el-col :span="24">
-								<StepInfo :processInfo="item.auditInfos" />
-							</el-col>
+							<span class="text-bolder">审核流程</span>
 						</el-row>
-					</el-collapse-item>
-				</el-collapse>
-			</el-row>
+					</template>
+					<el-row>
+						<el-col :span="24">
+							<StepInfo :processInfo="auditInfoList" />
+						</el-col>
+					</el-row>
+				</el-collapse-item>
+			</el-collapse>
 			<span slot="footer" class="dialog-footer">
 				<el-button @click="checkApplyInfoDialogVisible = false">取 消</el-button>
 				<el-button type="primary" @click="onSubmitApply">确 定</el-button>
