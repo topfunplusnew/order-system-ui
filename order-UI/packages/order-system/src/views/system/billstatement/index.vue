@@ -2,17 +2,20 @@
 	<div class="app-container">
 		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
 			<el-form-item label="开始时间" prop="issueDateStart">
-				<el-date-picker v-model="queryParams.issueDateStart" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+				<el-date-picker v-model="queryParams.issueDateStart" type="datetime" placeholder="选择日期"
+					value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 			</el-form-item>
 			<el-form-item label="结束时间" prop="issueDateEnd">
-				<el-date-picker v-model="queryParams.issueDateEnd" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+				<el-date-picker v-model="queryParams.issueDateEnd" type="datetime" placeholder="选择日期"
+					value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 			</el-form-item>
 			<el-form-item label="票据号码" prop="billNo">
 				<el-input v-model="queryParams.billNo" placeholder="请输入票据号码" @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="排序方式">
 				<el-select v-model="queryParams.isOrderBybillNo" placeholder="请选择排序方式" size="mini" clearable>
-					<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
+					<el-option v-for="item in options" :key="item.value" :label="item.label"
+						:value="item.value"></el-option>
 				</el-select>
 			</el-form-item>
 			<el-form-item>
@@ -33,94 +36,111 @@
 				<!--        导出-->
 				<template #export>
 					<el-col :span="1.5">
-						<el-button v-hasPermi="['system:bankacceptance:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
+						<el-button v-hasPermi="['system:bankacceptance:export']" plain icon="el-icon-folder-opened"
+							size="mini" @click="handleExport"></el-button>
 					</el-col>
 				</template>
 			</right-toolbar>
 		</el-row>
 
-		<el-table
-			v-loading="loading"
-			v-horizontal-scroll="'always'"
-			border
-			:data="bankAcceptanceList"
-			show-summary
-			id="printBox"
-			:summary-method="getSummaries"
-			size="mini"
-			:cell-style="() => ({ padding: '1.5px' })"
-			height="480px"
-			@selection-change="handleSelectionChange"
-		>
-			<el-table-column v-if="columns[0].visible" label="ID" align="center" prop="id" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[1].visible" label="票据号码" align="center" prop="billNo" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[2].visible" label="出票日期" align="center" prop="issueDate" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[3].visible" label="到期日期" align="center" prop="dueDate" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[4].visible" label="我方承兑账户" align="center" prop="billAccount" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[5].visible" label="票据交易日期" align="center" prop="billDate" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[6].visible" label="收票事由" align="center" prop="incomeReason" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[7].visible" label="票据种类" align="center" prop="billCategory" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[8].visible" label="背书人" align="center" prop="incomeEndorserName" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[9].visible" label="收入票据来源" align="center" prop="incomeOrigin" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[10].visible" label="收入票据金额" align="center" prop="incomeBillAmount" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[11].visible" label="收入贴息点数" align="center" prop="incomeInDiscountPoints" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[12].visible" label="收入贴息金额" align="center" prop="incomeInDiscountAmount" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[13].visible" label="背书事由" align="center" prop="expenseReason" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[14].visible" label="被背书人" align="center" prop="expenseEndorserName" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[15].visible" label="支出票据来源" align="center" prop="expenseOrigin" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[16].visible" label="支出票据金额" align="center" prop="expenseBillAmount" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[17].visible" label="支出贴息点数" align="center" prop="expenseInDiscountPoints" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[18].visible" label="支出贴息金额" align="center" prop="expenseInDiscountAmount" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[19].visible" label="备注" align="center" prop="comments" width="120" show-overflow-tooltip />
+		<el-table v-loading="loading" v-horizontal-scroll="'always'" border :data="bankAcceptanceList" show-summary
+			id="printBox" :summary-method="getSummaries" size="mini" :cell-style="() => ({ padding: '1.5px' })"
+			height="480px" @selection-change="handleSelectionChange">
+			<el-table-column v-if="columns[0].visible" label="ID" align="center" prop="id" width="120"
+				show-overflow-tooltip />
+			<el-table-column v-if="columns[1].visible" label="票据号码" align="center" prop="billNo" width="120"
+				show-overflow-tooltip />
+			<el-table-column v-if="columns[2].visible" label="出票日期" align="center" prop="issueDate" width="120"
+				show-overflow-tooltip />
+			<el-table-column v-if="columns[3].visible" label="到期日期" align="center" prop="dueDate" width="120"
+				show-overflow-tooltip />
+			<el-table-column v-if="columns[4].visible" label="我方承兑账户" align="center" prop="billAccount" width="120"
+				show-overflow-tooltip />
+			<el-table-column v-if="columns[5].visible" label="票据交易日期" align="center" prop="billDate" width="120"
+				show-overflow-tooltip />
+			<el-table-column v-if="columns[6].visible" label="收票事由" align="center" prop="incomeReason" width="120"
+				show-overflow-tooltip />
+			<el-table-column v-if="columns[7].visible" label="票据种类" align="center" prop="billCategory" width="120"
+				show-overflow-tooltip />
+			<el-table-column v-if="columns[8].visible" label="背书人" align="center" prop="incomeEndorserName" width="120"
+				show-overflow-tooltip />
+			<el-table-column v-if="columns[9].visible" label="收入票据来源" align="center" prop="incomeOrigin" width="120"
+				show-overflow-tooltip />
+			<el-table-column v-if="columns[10].visible" label="收入票据金额" align="center" prop="incomeBillAmount"
+				width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[11].visible" label="收入贴息点数" align="center" prop="incomeInDiscountPoints"
+				width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[12].visible" label="收入贴息金额" align="center" prop="incomeInDiscountAmount"
+				width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[13].visible" label="背书事由" align="center" prop="expenseReason" width="120"
+				show-overflow-tooltip />
+			<el-table-column v-if="columns[14].visible" label="被背书人" align="center" prop="expenseEndorserName"
+				width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[15].visible" label="支出票据来源" align="center" prop="expenseOrigin" width="120"
+				show-overflow-tooltip />
+			<el-table-column v-if="columns[16].visible" label="支出票据金额" align="center" prop="expenseBillAmount"
+				width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[17].visible" label="支出贴息点数" align="center" prop="expenseInDiscountPoints"
+				width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[18].visible" label="支出贴息金额" align="center" prop="expenseInDiscountAmount"
+				width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[19].visible" label="备注" align="center" prop="comments" width="120"
+				show-overflow-tooltip />
 
-			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="150px" fixed="right">
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="150px"
+				fixed="right">
 				<template #default="scope">
-					<el-button v-hasPermi="['system:bankacceptance:remove']" size="mini" type="text" @click="handleCheck(scope.row)">查看详情</el-button>
-					<el-button v-hasPermi="['system:bankacceptance:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
+					<el-button v-hasPermi="['system:bankacceptance:remove']" size="mini" type="text"
+						@click="handleCheck(scope.row)">查看详情</el-button>
+					<el-button v-hasPermi="['system:bankacceptance:remove']" size="mini" type="danger"
+						@click="handleDelete(scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
 
-		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
+		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum"
+			:limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<InfoDialog title="票据详情" :visible.sync="totalVisible">
 			<template #info>
-				<el-table
-					v-loading="loading"
-					v-horizontal-scroll="'always'"
-					border
-					:data="bankAcceptanceMoneyList"
-					show-summary
-					id="printBox"
-					:summary-method="getSummaries"
-					size="mini"
-					:cell-style="
-						() => {
+				<el-table v-loading="loading" v-horizontal-scroll="'always'" border :data="bankAcceptanceMoneyList"
+					show-summary id="printBox" :summary-method="getSummaries" size="mini" :cell-style="() => {
 							return { padding: '2px' };
 						}
-					"
-					height="480px"
-					@selection-change="handleSelectionChange"
-				>
+						" height="480px" @selection-change="handleSelectionChange">
 					<el-table-column label="ID" align="center" prop="id" width="120" show-overflow-tooltip />
 					<el-table-column label="票据号码" align="center" prop="billNo" width="120" show-overflow-tooltip />
 					<el-table-column label="出票日期" align="center" prop="issueDate" width="120" show-overflow-tooltip />
 					<el-table-column label="到期日期" align="center" prop="dueDate" width="120" show-overflow-tooltip />
-					<el-table-column label="我方承兑账户" align="center" prop="billAccount" width="120" show-overflow-tooltip />
+					<el-table-column label="我方承兑账户" align="center" prop="billAccount" width="120"
+						show-overflow-tooltip />
 					<el-table-column label="票据交易日期" align="center" prop="billDate" width="120" show-overflow-tooltip />
-					<el-table-column label="收票事由" align="center" prop="incomeReason" width="120" show-overflow-tooltip />
-					<el-table-column label="票据种类（电子/纸质）" align="center" prop="billCategory" width="120" show-overflow-tooltip />
-					<el-table-column label="背书人(来源)" align="center" prop="incomeEndorserName" width="120" show-overflow-tooltip />
-					<el-table-column label="收入票据来源" align="center" prop="incomeOrigin" width="120" show-overflow-tooltip />
-					<el-table-column label="收入票据金额" align="center" prop="incomeBillAmount" width="120" show-overflow-tooltip />
-					<el-table-column label="收入贴息点数" align="center" prop="incomeInDiscountPoints" width="120" show-overflow-tooltip />
-					<el-table-column label="收入贴息金额" align="center" prop="incomeInDiscountAmount" width="120" show-overflow-tooltip />
-					<el-table-column label="背书是由" align="center" prop="expenseReason" width="120" show-overflow-tooltip />
-					<el-table-column label="被背书人" align="center" prop="expenseEndorserName" width="120" show-overflow-tooltip />
-					<el-table-column label="支出票据来源" align="center" prop="expenseOrigin" width="120" show-overflow-tooltip />
-					<el-table-column label="支出票据金额" align="center" prop="expenseBillAmount" width="120" show-overflow-tooltip />
-					<el-table-column label="支出贴息点数" align="center" prop="expenseInDiscountPoints" width="120" show-overflow-tooltip />
-					<el-table-column label="支出贴息金额" align="center" prop="expenseInDiscountAmount" width="120" show-overflow-tooltip />
+					<el-table-column label="收票事由" align="center" prop="incomeReason" width="120"
+						show-overflow-tooltip />
+					<el-table-column label="票据种类（电子/纸质）" align="center" prop="billCategory" width="120"
+						show-overflow-tooltip />
+					<el-table-column label="背书人(来源)" align="center" prop="incomeEndorserName" width="120"
+						show-overflow-tooltip />
+					<el-table-column label="收入票据来源" align="center" prop="incomeOrigin" width="120"
+						show-overflow-tooltip />
+					<el-table-column label="收入票据金额" align="center" prop="incomeBillAmount" width="120"
+						show-overflow-tooltip />
+					<el-table-column label="收入贴息点数" align="center" prop="incomeInDiscountPoints" width="120"
+						show-overflow-tooltip />
+					<el-table-column label="收入贴息金额" align="center" prop="incomeInDiscountAmount" width="120"
+						show-overflow-tooltip />
+					<el-table-column label="背书是由" align="center" prop="expenseReason" width="120"
+						show-overflow-tooltip />
+					<el-table-column label="被背书人" align="center" prop="expenseEndorserName" width="120"
+						show-overflow-tooltip />
+					<el-table-column label="支出票据来源" align="center" prop="expenseOrigin" width="120"
+						show-overflow-tooltip />
+					<el-table-column label="支出票据金额" align="center" prop="expenseBillAmount" width="120"
+						show-overflow-tooltip />
+					<el-table-column label="支出贴息点数" align="center" prop="expenseInDiscountPoints" width="120"
+						show-overflow-tooltip />
+					<el-table-column label="支出贴息金额" align="center" prop="expenseInDiscountAmount" width="120"
+						show-overflow-tooltip />
 					<el-table-column label="票据余额" align="center" prop="balance" width="120" show-overflow-tooltip />
 					<el-table-column label="备注" align="center" prop="comments" width="120" show-overflow-tooltip />
 				</el-table>
@@ -139,7 +159,7 @@ import InfoDialog from '../../../components/InfoDialog.vue';
 import { listBankAcceptanceBalanceMoney } from '../../../api/system/bankAcceptance';
 
 export default {
-	name: 'BankAcceptance',
+	name: 'BillStatement',
 	components: { InfoDialog },
 	mixins: [mixin_printHTML],
 	data() {
@@ -528,7 +548,7 @@ export default {
 					this.getList();
 					this.$modal.msgSuccess('删除成功');
 				})
-				.catch(() => {});
+				.catch(() => { });
 		},
 		/** 导出按钮操作 */
 		handleExport() {

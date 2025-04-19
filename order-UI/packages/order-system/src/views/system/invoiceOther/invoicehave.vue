@@ -1,11 +1,14 @@
 <template>
 	<div class="app-container">
-		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
+		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true"
+			label-width="150px">
 			<el-form-item label="开票日期" prop="invoiceDate">
-				<el-date-picker v-model="dateRange" style="width: 240px" value-format="yyyy-MM-dd HH:mm:ss" type="daterange" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
+				<el-date-picker v-model="dateRange" style="width: 240px" value-format="yyyy-MM-dd HH:mm:ss"
+					type="daterange" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
 			</el-form-item>
 			<el-form-item label="票据单位名称" prop="invoiceCompanyName">
-				<el-input v-model="queryParams.invoiceCompanyName" placeholder="请输入票据单位名称" clearable @keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.invoiceCompanyName" placeholder="请输入票据单位名称" clearable
+					@keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -16,7 +19,8 @@
 				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
 			</el-col>
 			<el-col :span="1.5">
-				<el-button v-hasPermi="['system:invoiceother:add']" type="danger" size="mini" @click="handleAdd">新增</el-button>
+				<el-button v-hasPermi="['system:invoiceother:add']" type="danger" size="mini"
+					@click="handleAdd">新增</el-button>
 			</el-col>
 			<!--      <el-col :span="1.5">
               <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
@@ -30,37 +34,36 @@
 				<!--        导出-->
 				<template #export>
 					<el-col :span="1.5">
-						<el-button v-hasPermi="['system:invoiceother:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
+						<el-button v-hasPermi="['system:invoiceother:export']" plain icon="el-icon-folder-opened"
+							size="mini" @click="handleExport"></el-button>
 					</el-col>
 				</template>
 			</right-toolbar>
 		</el-row>
 
-		<el-table
-			v-horizontal-scroll="'always'"
-			v-loading="loading"
-			border
-			:data="invoiceOtherList"
-			size="mini"
-			:cell-style="
-				() => {
+		<el-table v-horizontal-scroll="'always'" v-loading="loading" border :data="invoiceOtherList" size="mini"
+			:cell-style="() => {
 					return { padding: '.5px' };
 				}
-			"
-			@header-dragend="changeColWidth"
-			@selection-change="handleSelectionChange"
-		>
-			<el-table-column v-if="columns[0].visible" label="开票日期" align="center" prop="invoiceDate" show-overflow-tooltip />
-			<el-table-column v-if="columns[1].visible" label="开票金额" align="center" prop="invoiceAmount" show-overflow-tooltip />
-			<el-table-column v-if="columns[2].visible" label="供应商票点" align="center" prop="supplierTicketPoint" show-overflow-tooltip />
-			<el-table-column v-if="columns[3].visible" label="供应商票点金额" align="center" prop="supplierPointAmount" show-overflow-tooltip>
+				" @header-dragend="changeColWidth" @selection-change="handleSelectionChange">
+			<el-table-column v-if="columns[0].visible" label="开票日期" align="center" prop="invoiceDate"
+				show-overflow-tooltip />
+			<el-table-column v-if="columns[1].visible" label="开票金额" align="center" prop="invoiceAmount"
+				show-overflow-tooltip />
+			<el-table-column v-if="columns[2].visible" label="供应商票点" align="center" prop="supplierTicketPoint"
+				show-overflow-tooltip />
+			<el-table-column v-if="columns[3].visible" label="供应商票点金额" align="center" prop="supplierPointAmount"
+				show-overflow-tooltip>
 				<template #default="scope">
 					{{ scope.row.supplierPointAmount | changeNumber(changeLength) }}
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[4].visible" label="供应商公司名称" align="center" prop="Supplier" show-overflow-tooltip />
-			<el-table-column v-if="columns[5].visible" label="客户公司名称" align="center" prop="customer" show-overflow-tooltip />
-			<el-table-column v-if="columns[6].visible" label="订单信息" align="center" prop="isOrderTax" width="180" show-overflow-tooltip>
+			<el-table-column v-if="columns[4].visible" label="供应商公司名称" align="center" prop="Supplier"
+				show-overflow-tooltip />
+			<el-table-column v-if="columns[5].visible" label="客户公司名称" align="center" prop="customer"
+				show-overflow-tooltip />
+			<el-table-column v-if="columns[6].visible" label="订单信息" align="center" prop="isOrderTax" width="180"
+				show-overflow-tooltip>
 				<template slot-scope="scope">
 					<el-row v-if="scope.row.isOrderTax === 0">无关联订单</el-row>
 					<el-row v-else>
@@ -70,27 +73,33 @@
 			</el-table-column>
 			<el-table-column label="银行回执单" align="center" prop="paymentReceipts">
 				<template #default="scope">
-					<CheckFiles :path="scope.row.paymentReceipts" @needToUpdate="value => handleUpdateFilePath(value, scope.row, 'paymentReceipts', getInvoiceOther(), updateInvoiceOther())" />
+					<CheckFiles :path="scope.row.paymentReceipts"
+						@needToUpdate="value => handleUpdateFilePath(value, scope.row, 'paymentReceipts', getInvoiceOther(), updateInvoiceOther())" />
 				</template>
 			</el-table-column>
 			<el-table-column label="发票单" align="center" prop="invoiceAttachments">
 				<template #default="scope">
-					<CheckFiles :path="scope.row.invoiceAttachments" @needToUpdate="value => handleUpdateFilePath(value, scope.row, 'paymentReceipts', getInvoiceOther, updateInvoiceOther)" />
+					<CheckFiles :path="scope.row.invoiceAttachments"
+						@needToUpdate="value => handleUpdateFilePath(value, scope.row, 'paymentReceipts', getInvoiceOther, updateInvoiceOther)" />
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[7].visible" label="备注" align="center" prop="comments" />
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
 				<template slot-scope="scope">
-					<el-button v-hasPermi="['system:invoiceother:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
-					<el-button v-hasPermi="['system:invoiceother:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
+					<el-button v-hasPermi="['system:invoiceother:edit']" size="mini" type="primary"
+						@click="handleUpdate(scope.row)">修改</el-button>
+					<el-button v-hasPermi="['system:invoiceother:remove']" size="mini" type="danger"
+						@click="handleDelete(scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
 
-		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
+		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum"
+			:limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改商家直接给客户开发票对话框 -->
-		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" append-to-body width="800px">
+		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" append-to-body
+			width="800px">
 			<el-row>
 				<el-form ref="form" :model="form" :rules="rules" label-width="120px">
 					<!--        订单编号应该是选择某个订单 然后自动填充-->
@@ -100,44 +109,51 @@
 							<el-input v-model="form.orderIDS" disabled placeholder="请选择关联订单" />
 						</el-col>
 						<el-col :span="4">
-							<SearchOption
-								:limit-info="{}"
-								:get-data="listGoodsOrder"
-								query-info="customer"
-								query-label="客户名称"
-								:query-name="queryGoodsOrder"
-								@update:queryName="handleUpdateGoodsOrder"
-								@commitBack="handleCommitBackGoodsOrder"
-							>
+							<SearchOption :limit-info="{}" :get-data="listGoodsOrder" query-info="customer"
+								query-label="客户名称" :query-name="queryGoodsOrder"
+								@update:queryName="handleUpdateGoodsOrder" @commitBack="handleCommitBackGoodsOrder">
 								<template #table-columns>
-									<el-table-column show-overflow-tooltip label="ID" align="center" prop="id" fixed="left" />
-									<el-table-column show-overflow-tooltip label="日期" align="center" prop="orderDate" fixed="left" />
-									<el-table-column show-overflow-tooltip label="客户" align="center" prop="customer" fixed="left" />
-									<el-table-column show-overflow-tooltip label="供应商" align="center" prop="supplierNames" fixed="left" />
+									<el-table-column show-overflow-tooltip label="ID" align="center" prop="id"
+										fixed="left" />
+									<el-table-column show-overflow-tooltip label="日期" align="center" prop="orderDate"
+										fixed="left" />
+									<el-table-column show-overflow-tooltip label="客户" align="center" prop="customer"
+										fixed="left" />
+									<el-table-column show-overflow-tooltip label="供应商" align="center"
+										prop="supplierNames" fixed="left" />
 									<el-table-column label="订单编号" align="center" prop="ordersNo" width="200px" />
-									<el-table-column show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo" />
-									<el-table-column show-overflow-tooltip label="陆运司机电话" align="center" prop="landDriverTel" width="100px" />
-									<el-table-column show-overflow-tooltip label="陆地司机姓名" align="center" prop="landDriverName" width="100px" />
+									<el-table-column show-overflow-tooltip label="陆运车牌" align="center"
+										prop="landCarNo" />
+									<el-table-column show-overflow-tooltip label="陆运司机电话" align="center"
+										prop="landDriverTel" width="100px" />
+									<el-table-column show-overflow-tooltip label="陆地司机姓名" align="center"
+										prop="landDriverName" width="100px" />
 									<el-table-column show-overflow-tooltip label="柜号" align="center" prop="seaCarNo">
 										<template #default="scope">
 											{{ !scope.row.seaCarNo ? '无' : scope.row.seaCarNo }}
 										</template>
 									</el-table-column>
-									<el-table-column show-overflow-tooltip label="海运司机电话" align="center" prop="seaDriverTel" width="100px">
+									<el-table-column show-overflow-tooltip label="海运司机电话" align="center"
+										prop="seaDriverTel" width="100px">
 										<template #default="scope">
 											{{ !scope.row.seaDriverTel ? '无' : scope.row.seaDriverTel }}
 										</template>
 									</el-table-column>
-									<el-table-column show-overflow-tooltip label="海运公司" align="center" prop="seaDriverName" width="100px">
+									<el-table-column show-overflow-tooltip label="海运公司" align="center"
+										prop="seaDriverName" width="100px">
 										<template #default="scope">
 											{{ !scope.row.seaDriverName ? '无' : scope.row.seaDriverTel }}
 										</template>
 									</el-table-column>
-									<el-table-column show-overflow-tooltip label="销售经理" align="center" prop="saleManager" />
+									<el-table-column show-overflow-tooltip label="销售经理" align="center"
+										prop="saleManager" />
 									<el-table-column show-overflow-tooltip label="车队" align="center" prop="fleet" />
-									<el-table-column show-overflow-tooltip label="审核状态" align="center" prop="checkState" width="120"></el-table-column>
-									<el-table-column show-overflow-tooltip label="开票状态" align="center" prop="invoiceState" width="120px"></el-table-column>
-									<el-table-column show-overflow-tooltip label="打款状态" align="center" prop="paymentState">
+									<el-table-column show-overflow-tooltip label="审核状态" align="center" prop="checkState"
+										width="120"></el-table-column>
+									<el-table-column show-overflow-tooltip label="开票状态" align="center"
+										prop="invoiceState" width="120px"></el-table-column>
+									<el-table-column show-overflow-tooltip label="打款状态" align="center"
+										prop="paymentState">
 										<template slot-scope="scope">
 											<el-tag disable-transitions>
 												{{ scope.row.paymentState }}
@@ -161,22 +177,17 @@
 							<el-input v-model="form.supplierPointAmount" placeholder="请输入供应商票点金额" />
 						</el-form-item>
 						<el-form-item label="开票日期" prop="invoiceDate">
-							<el-date-picker v-model="form.invoiceDate" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+							<el-date-picker v-model="form.invoiceDate" type="datetime" placeholder="选择日期"
+								value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 						</el-form-item>
 						<el-form-item label="供应商公司名称" prop="Supplier">
 							<el-col :span="20">
 								<el-input disabled v-model="form.Supplier" placeholder="请选择" />
 							</el-col>
 							<el-col :span="4">
-								<SearchOption
-									:limit-info="{ companyType: '供应商' }"
-									:get-data="listCompany"
-									query-info="companyName"
-									query-label="公司名称"
-									:query-name="queryCompanyName"
-									@update:queryName="handleUpdateCompanyName"
-									@commitBack="handleCommitBackCompany"
-								>
+								<SearchOption :limit-info="{ companyType: '供应商' }" :get-data="listCompany"
+									query-info="companyName" query-label="公司名称" :query-name="queryCompanyName"
+									@update:queryName="handleUpdateCompanyName" @commitBack="handleCommitBackCompany">
 									<template #table-columns>
 										<el-table-column label="供应商" align="center" prop="companyName" />
 										<el-table-column label="老板姓名" align="center" prop="leader" />
@@ -195,15 +206,10 @@
 								<el-input disabled v-model="form.customer" placeholder="请选择" />
 							</el-col>
 							<el-col :span="4">
-								<SearchOption
-									:limit-info="{ companyType: '客户' }"
-									:get-data="listCompany"
-									query-info="companyName"
-									query-label="公司名称"
-									:query-name="queryCompanyCustomerName"
+								<SearchOption :limit-info="{ companyType: '客户' }" :get-data="listCompany"
+									query-info="companyName" query-label="公司名称" :query-name="queryCompanyCustomerName"
 									@update:queryName="handleUpdateCompanyCustomerName"
-									@commitBack="handleCommitBackCompanyCustomer"
-								>
+									@commitBack="handleCommitBackCompanyCustomer">
 									<template #table-columns>
 										<el-table-column label="客户" align="center" prop="relationName" />
 										<el-table-column label="老板姓名" align="center" prop="leader" />
@@ -236,7 +242,8 @@
 				<el-button @click="cancel">取 消</el-button>
 			</div>
 		</el-dialog>
-		<el-dialog :close-on-click-modal="false" :show-close="true" title="查看订单信息" :visible.sync="checkOrderInfoVisible" width="70%" append-to-body>
+		<el-dialog :close-on-click-modal="false" :show-close="true" title="查看订单信息" :visible.sync="checkOrderInfoVisible"
+			width="70%" append-to-body>
 			<OrderInfos :order-info="orderInfo" />
 		</el-dialog>
 	</div>
@@ -259,7 +266,7 @@ import { getInvoiceOther, updateInvoiceOther } from '../../../api/system/invoice
 import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfile';
 
 export default {
-	name: 'InvoiceOther',
+	name: 'InvoiceOtherHave',
 	components: { CheckFiles, OrderInfos, SearchOption },
 	mixins: [mixin_printHTML, reLength, mixin_checkfile],
 	data() {
@@ -587,7 +594,7 @@ export default {
 					this.getList();
 					this.$modal.msgSuccess('删除成功');
 				})
-				.catch(() => {});
+				.catch(() => { });
 		},
 		/** 导出按钮操作 */
 		handleExport() {

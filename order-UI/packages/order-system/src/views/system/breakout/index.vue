@@ -624,7 +624,7 @@ import { _fill } from './fill';
 import { updateInventoryMain, addInventoryMain } from '../../../api/system/inventoryMain';
 
 export default {
-	name: 'ExWarehouse',
+	name: 'BreakOut',
 	components: { SearchOption },
 	mixins: [_fill],
 	data() {

@@ -6,7 +6,7 @@ import DialogWrapper from '../../dashboard/components/common/DialogWrapper.vue';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
 
 export default {
-	name: 'index',
+	name: 'ApplyFreight',
 	components: { DialogWrapper },
 	mixins: [mixin_order_freeApply, common_dialog, mixin_printHTML],
 	data() {

@@ -4,20 +4,25 @@
 		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
 			<el-form-item label="账户类型">
 				<el-select v-model="queryParams.bankCardType" placeholder="账户类型" size="mini" clearable>
-					<el-option v-for="item in typeOption" :key="item.value" :label="item.label" :value="item.value"></el-option>
+					<el-option v-for="item in typeOption" :key="item.value" :label="item.label"
+						:value="item.value"></el-option>
 				</el-select>
 			</el-form-item>
 			<el-form-item label="开户名称" prop="acountsName">
-				<el-input v-model="queryParams.acountsName" placeholder="请输入开户名称" clearable @keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.acountsName" placeholder="请输入开户名称" clearable
+					@keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="开户行" prop="acountsName">
-				<el-input v-model="queryParams.bankName" placeholder="请输入开户行" clearable @keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.bankName" placeholder="请输入开户行" clearable
+					@keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="银行账号" prop="bankNo">
-				<el-input v-model="queryParams.bankNo" placeholder="请输入银行账号" clearable @keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.bankNo" placeholder="请输入银行账号" clearable
+					@keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="显示名称" prop="displayName">
-				<el-input v-model="queryParams.displayName" placeholder="请输入显示名称" clearable @keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.displayName" placeholder="请输入显示名称" clearable
+					@keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -29,7 +34,8 @@
 			</el-col>
 			<el-col :span="1.5">
 				<el-select v-model="value" placeholder="余额排序" size="mini">
-					<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
+					<el-option v-for="item in options" :key="item.value" :label="item.label"
+						:value="item.value"></el-option>
 				</el-select>
 			</el-col>
 
@@ -44,20 +50,11 @@
 			</el-col>
 		</el-row>
 
-		<el-table
-			id="printBox"
-			v-loading="loading"
-			v-horizontal-scroll="'always'"
-			border
-			:data="bankAccountList"
-			height="450px"
-			size="mini"
-			:cell-style="
-				() => {
+		<el-table id="printBox" v-loading="loading" v-horizontal-scroll="'always'" border :data="bankAccountList"
+			height="450px" size="mini" :cell-style="() => {
 					return { padding: '.5px' };
 				}
-			"
-		>
+				">
 			<el-table-column v-if="columns[0].visible" label="银行账号" align="center" prop="bankNo" show-overflow-tooltip>
 				<template #default="scope">
 					<div>
@@ -66,10 +63,14 @@
 					</div>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[1].visible" label="显示名称" align="center" prop="displayName" show-overflow-tooltip />
-			<el-table-column v-if="columns[2].visible" label="开户名称" align="center" prop="acountsName" show-overflow-tooltip />
-			<el-table-column v-if="columns[3].visible" label="开户行" align="center" prop="bankName" show-overflow-tooltip />
-			<el-table-column v-if="columns[4].visible" label="余额" align="center" prop="sumMoney" show-overflow-tooltip />
+			<el-table-column v-if="columns[1].visible" label="显示名称" align="center" prop="displayName"
+				show-overflow-tooltip />
+			<el-table-column v-if="columns[2].visible" label="开户名称" align="center" prop="acountsName"
+				show-overflow-tooltip />
+			<el-table-column v-if="columns[3].visible" label="开户行" align="center" prop="bankName"
+				show-overflow-tooltip />
+			<el-table-column v-if="columns[4].visible" label="余额" align="center" prop="sumMoney"
+				show-overflow-tooltip />
 		</el-table>
 	</div>
 </template>
@@ -80,7 +81,7 @@ import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import { listBankAccount, listBankAccountSelf } from '../../../api/system/bankAccount';
 
 export default {
-	name: 'BankAccount',
+	name: 'SelfMoney',
 	mixins: [mixin_printHTML],
 	data() {
 		return {

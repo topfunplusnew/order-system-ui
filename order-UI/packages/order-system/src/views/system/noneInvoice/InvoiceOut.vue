@@ -178,7 +178,7 @@ import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfi
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
 
 export default {
-	name: 'InvoiceOut',
+	name: 'NoneInvoiceOut',
 	components: { CheckFiles, OrderInfos, SearchOption },
 	mixins: [mixin_printHTML, reLength, mixin_checkfile],
 	data() {

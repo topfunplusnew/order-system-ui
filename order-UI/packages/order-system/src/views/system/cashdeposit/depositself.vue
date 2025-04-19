@@ -285,6 +285,7 @@ import { mixin_printHTML } from '../../dashboard/mixins/print';
 import { ReceiveType } from '../../../api/tool/enums';
 
 export default {
+	name: 'DepositSelf',
 	components: { ApplyPayment, SearchOption },
 	mixins: [mixin_reviveMoney, mixin_printHTML],
 	dicts: ['order_target_type'],

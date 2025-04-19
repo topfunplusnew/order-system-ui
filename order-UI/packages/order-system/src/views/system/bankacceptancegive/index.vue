@@ -212,7 +212,7 @@ import CheckTotal from '../../dashboard/components/bankacceptance/CheckTotal.vue
 import { listCompany } from '@/api/system/company';
 
 export default {
-	name: 'BankAcceptance',
+	name: 'BankAcceptanceGive',
 	components: { CheckTotal, SearchOption },
 	mixins: [mixin_bank_acception_fill, mixin_printHTML],
 	data() {

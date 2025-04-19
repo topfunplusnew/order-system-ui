@@ -136,7 +136,7 @@ import OncePaymentApply from '@/views/system/Commission/components/OncePaymentAp
 import { ExtraInfo, PaymentApply, SourceInfo } from '@/types/payment';
 
 export default {
-	name: 'CUSTOMERCommission',
+	name: 'INVENTORYCommission',
 	computed: {
 		TableName() {
 			return TableName;
