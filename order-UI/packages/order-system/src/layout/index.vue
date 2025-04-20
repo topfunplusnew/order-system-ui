@@ -1,6 +1,6 @@
 <template>
 	<div :class="classObj" class="app-wrapper" :style="{ '--current-color': theme }">
-		<div id="messsage-box-div" style="position: absolute; left: 800px; top: 15px; z-index: 1001"></div>
+		<div id="messsage-box-div" style="position: absolute; left: 800px; top: 15px; z-index: 2500"></div>
 		<div v-if="device === 'mobile' && sidebar.opened" class="drawer-bg" @click="handleClickOutside" />
 		<sidebar v-if="!sidebar.hide" class="sidebar-container" />
 		<div :class="{ hasTagsView: needTagsView, sidebarHide: sidebar.hide }" class="main-container">
