@@ -126,11 +126,7 @@ export default {
 
 <template>
 	<div>
-		<el-form 
-			ref="commissionForm"
-			:model="form" 
-			:rules="rules"
-			label-width="140px">
+		<el-form ref="commissionForm" :model="form" :rules="rules" label-width="140px">
 			<el-form-item label="订单编号">
 				<el-col :span="20">
 					<el-input v-model="form.orderDetailId" placeholder="请输入内容" disabled />
@@ -195,14 +191,10 @@ export default {
 					</SearchOption>
 				</el-col>
 			</el-form-item>
-			<el-form-item 
-				label="佣金单价"
-				prop="commissionUnitPrice">
+			<el-form-item label="佣金单价" prop="commissionUnitPrice">
 				<el-input v-model="form.commissionUnitPrice" placeholder="请输入内容" />
 			</el-form-item>
-			<el-form-item 
-				label="其他方式金额"
-				prop="otherPaymentAmount">
+			<el-form-item label="其他方式金额" prop="otherPaymentAmount">
 				<el-input v-model="form.otherPaymentAmount" placeholder="请输入内容" />
 			</el-form-item>
 		</el-form>
