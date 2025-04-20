@@ -6,6 +6,8 @@ import { listCompany } from '@/api/system/company';
 import { listBankAccount } from '@/api/system/bankAccount';
 import { excludeParams } from '@/api/tool/exclude';
 import { BankAcceptanceType, PaymentState } from '@/api/tool/enums';
+import { getMinIdByBillNo } from '@/api/system/bankAcceptance';
+import _ from 'lodash';
 
 export default {
 	name: 'BankacceptanceForm',
@@ -18,7 +20,7 @@ export default {
 	props: {
 		bankacceptanceInfo: {
 			type: Object,
-			default: () => { }
+			default: () => {}
 		},
 		// 票据的类型 根据收付款类型确定
 		billType: {
@@ -168,7 +170,8 @@ export default {
 			// 背书人类型 默认为客户
 			type: '客户',
 			// 搜索客户
-			companyName: ''
+			companyName: '',
+			debouncedGetBankAcceptanceDate: null
 		};
 	},
 	watch: {
@@ -181,9 +184,14 @@ export default {
 		},
 		bankacceptanceInfo: {
 			handler(value) {
-				this.$nextTick(() => {
-					Object.assign(this.form, value);
-				});
+				// 如果是修改,那么就填充value
+				if (value.id) {
+					this.$nextTick(() => {
+						Object.assign(this.form, value);
+						this.$message.success('自动填充填写成功');
+					});
+				}
+				this.getBankAcceptanceDate(value.billNo);
 				// 提交给父组件BankType 触发提交时间
 				this.$emit('assign', value);
 			},
@@ -192,6 +200,8 @@ export default {
 		}
 	},
 	created() {
+		// 创建防抖函数
+		this.debouncedGetBankAcceptanceDate = _.debounce(this.getBankAcceptanceDate, 500);
 		this.reset();
 	},
 	mounted() {
@@ -204,6 +214,27 @@ export default {
 	methods: {
 		listBankAccount,
 		listCompany,
+		// 获取票据信息
+		getBankAcceptanceDate(inputValue) {
+			if (!inputValue) {
+				this.$message.error('票据号码为空,填充失败');
+				return;
+			}
+			// 在这里 发送请求 获取三个时间 自动填充
+			getMinIdByBillNo(inputValue).then(res => {
+				if (!res.data) {
+					this.$message.error('该票据不存在,自动填充时间失败');
+					return;
+				}
+				const obj = _.cloneDeep(res.data);
+				// 填充三个时间
+				this.$nextTick(() => {
+					this.form.billDate = obj.billDate;
+					this.form.issueDate = obj.issueDate;
+					this.form.dueDate = obj.dueDate;
+				});
+			});
+		},
 		submitForm() {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
@@ -266,41 +297,39 @@ export default {
 				<el-row>
 					<el-col :span="12">
 						<el-form-item label="票据号码" prop="billNo">
-							<el-input v-model="form.billNo" placeholder="请输入票据号码" />
+							<el-input v-model="form.billNo" placeholder="请输入票据号码" @input="debouncedGetBankAcceptanceDate" />
 						</el-form-item>
-						<el-form-item
-							:label="`${this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT ? '背书' : '收票'}事由`"
-							prop="reason">
+						<el-form-item :label="`${this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT ? '背书' : '收票'}事由`" prop="reason">
 							<el-radio v-model="form.reason" label="购买">购买</el-radio>
 							<el-radio v-model="form.reason" label="客户付款">客户付款</el-radio>
 						</el-form-item>
-						<el-form-item
-							:label="`${this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT ? '被背书人类型' : '背书人类型'}`"
-							prop="reason">
+						<el-form-item :label="`${this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT ? '被背书人类型' : '背书人类型'}`" prop="reason">
 							<el-radio v-model="type" label="客户">客户</el-radio>
 							<el-radio v-model="type" label="供应商">供应商</el-radio>
 						</el-form-item>
-						<el-form-item
-							:label="`${this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT ? '被背书人' : '背书人'}`"
-							prop="endorserName">
+						<el-form-item :label="`${this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT ? '被背书人' : '背书人'}`" prop="endorserName">
 							<el-row>
 								<el-col :span="20">
 									<!--                  v-model="form.endorser"-->
-									<el-input disabled
-										:placeholder="`请输入${this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT ? '被背书人' : '背书人'}`"
-										v-model="form.endorserName" />
+									<el-input disabled :placeholder="`请输入${this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT ? '被背书人' : '背书人'}`" v-model="form.endorserName" />
 								</el-col>
 								<el-col :span="4">
 									<!-- 选择的是客户或者供应商名称-->
-									<SearchOption :limit-info="{ companyType: type }" :get-data="listCompany"
-										query-info="companyName" query-label="公司名称" :query-name="companyName"
-										@update:queryName="value => (companyName = value)" @commitBack="
+									<SearchOption
+										:limit-info="{ companyType: type }"
+										:get-data="listCompany"
+										query-info="companyName"
+										query-label="公司名称"
+										:query-name="companyName"
+										@update:queryName="value => (companyName = value)"
+										@commitBack="
 											value => {
 												form.endorserName = value.companyName;
 												form.origin = value.companyType;
 												form.endorser = value.id;
 											}
-										">
+										"
+									>
 										<template #table-columns>
 											<el-table-column :label="type" align="center" prop="companyName" />
 											<el-table-column label="老板姓名" align="center" prop="leader" />
@@ -312,19 +341,13 @@ export default {
 								</el-col>
 							</el-row>
 						</el-form-item>
-						<el-form-item
-							:label="`${this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT ? '支出' : '收入'}票据金额`"
-							prop="billAmount">
+						<el-form-item :label="`${this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT ? '支出' : '收入'}票据金额`" prop="billAmount">
 							<el-input v-model="form.billAmount" placeholder="请输入票据金额" />
 						</el-form-item>
-						<el-form-item
-							:label="`${this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT ? '支出' : '收入'}贴息点数`"
-							prop="inDiscountPoints">
+						<el-form-item :label="`${this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT ? '支出' : '收入'}贴息点数`" prop="inDiscountPoints">
 							<el-input v-model="form.inDiscountPoints" placeholder="请输入贴息点数" />
 						</el-form-item>
-						<el-form-item
-							:label="`${this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT ? '支出' : '收入'}贴息金额`"
-							prop="inDiscountAmount">
+						<el-form-item :label="`${this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT ? '支出' : '收入'}贴息金额`" prop="inDiscountAmount">
 							<el-input disabled v-model="form.inDiscountAmount" placeholder="请输入贴息金额" />
 						</el-form-item>
 					</el-col>
@@ -339,13 +362,22 @@ export default {
 									<el-input disabled v-model="form.billAccount" placeholder="请输入我方承兑账户" />
 								</el-col>
 								<el-col :span="4">
-									<SearchOption :get-data="listBankAccount" :limit-info="{
-										acountsType: '己方公司'
-									}" title="我方承兑账户" query-label="户名查找" query-info="acountsName" :query-name="queryBank" @commitBack="
+									<SearchOption
+										:get-data="listBankAccount"
+										:limit-info="{
+											acountsType: '己方公司'
+										}"
+										title="我方承兑账户"
+										query-label="户名查找"
+										query-info="acountsName"
+										:query-name="queryBank"
+										@commitBack="
 											value => {
 												form.billAccount = value.acountsName;
 											}
-										" @update:queryName="value => (queryBank = value)">
+										"
+										@update:queryName="value => (queryBank = value)"
+									>
 										<template #table-columns>
 											<el-table-column label="显示名称" align="center" prop="displayName" />
 											<el-table-column label="开户名称(户名)" align="center" prop="acountsName" />
@@ -357,16 +389,13 @@ export default {
 							</el-row>
 						</el-form-item>
 						<el-form-item label="我方收票日期" prop="billDate">
-							<el-date-picker v-model="form.billDate" type="datetime" placeholder="选择日期"
-								value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+							<el-date-picker v-model="form.billDate" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 						</el-form-item>
 						<el-form-item label="出票日期" prop="issueDate">
-							<el-date-picker v-model="form.issueDate" type="datetime" placeholder="选择日期"
-								value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+							<el-date-picker v-model="form.issueDate" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 						</el-form-item>
 						<el-form-item label="到期日期" prop="dueDate">
-							<el-date-picker v-model="form.dueDate" type="datetime" placeholder="选择日期"
-								value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+							<el-date-picker v-model="form.dueDate" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 						</el-form-item>
 						<el-form-item label="备注" prop="comments">
 							<el-input v-model="form.comments" placeholder="请输入备注" />

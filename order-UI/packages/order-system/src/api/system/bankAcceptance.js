@@ -60,3 +60,14 @@ export function listBankAcceptanceBalanceMoney(query) {
 		params: query
 	});
 }
+
+// 根据票据号码查询最小id记录
+export function getMinIdByBillNo(billNo) {
+	return request({
+		url: '/system/bankAcceptance/getMinIdByBillNo',
+		method: 'get',
+		params: {
+			billNo: billNo
+		}
+	});
+}
