@@ -77,11 +77,11 @@
 			</el-table-column>
 
 			<el-table-column v-if="columns[7].visible" label="备注" align="center" prop="comments" />
-			<el-table-column label="派车审核" align="center" class-name="small-padding fixed-width">
-				<template slot-scope="scope">
-					<el-button size="mini" type="text" @click="handleAudit(scope.row)">审核</el-button>
-				</template>
-			</el-table-column>
+			<!--			<el-table-column label="派车审核" align="center" class-name="small-padding fixed-width">-->
+			<!--				<template slot-scope="scope">-->
+			<!--					<el-button size="mini" type="text" @click="handleAudit(scope.row)">审核</el-button>-->
+			<!--				</template>-->
+			<!--			</el-table-column>-->
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="260px" fixed="right">
 				<template slot-scope="scope">
 					<el-button :disabled="scope.row.checkState !== PAYMENT_APPLY_STATE.UNAPPLIED" size="mini" type="text" @click="applyForPayment(scope.row)">发起付款申请</el-button>
@@ -249,6 +249,21 @@
 			</keep-alive>
 		</el-dialog>
 
+		<!-- 添加未审核通过车辆列表弹窗 -->
+		<el-dialog :visible.sync="notPassedCarDialogVisible" title="未审核通过的车辆" width="80%">
+			<el-table :data="notPassedCarList" border>
+				<el-table-column label="申请人" prop="applyUser" />
+				<el-table-column label="车牌号" prop="carNo" />
+				<el-table-column label="用车时间" prop="startTime" />
+				<el-table-column label="还车时间" prop="endTime" />
+				<el-table-column label="审核状态" prop="auditState">
+					<template slot-scope="scope">
+						<el-tag type="danger">{{ scope.row.auditState }}</el-tag>
+					</template>
+				</el-table-column>
+			</el-table>
+		</el-dialog>
+
 		<div v-if="currentComponent">
 			<DialogWrapper
 				:current-component="currentComponent"
@@ -266,7 +281,7 @@
 </template>
 
 <script>
-import { delBusinessTrip, getBusinessTrip, updateBusinessTrip, listBusinessTrip } from '@/api/system/BusinessTrip';
+import { delBusinessTrip, getBusinessTrip, updateBusinessTrip, listBusinessTrip, getCarApplyAuditStatus } from '@/api/system/BusinessTrip';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import { mapGetters } from 'vuex';
 import ApplyPayment from '@/views/dashboard/components/common/ApplyPayment.vue';
@@ -415,7 +430,11 @@ export default {
 
 			carsList: [],
 			checkedCars: [],
-			queryCarApply: ''
+			queryCarApply: '',
+
+			// 未审核通过车辆列表相关
+			notPassedCarDialogVisible: false,
+			notPassedCarList: []
 		};
 	},
 	// 展示与隐藏
@@ -480,27 +499,39 @@ export default {
 				this.$message.error('该行数据有误，id为空!');
 				return;
 			}
-			// 获取出差信息
-			getBusinessTrip(row.id).then(res => {
-				if (!res.data) {
-					this.$message.error('出差申请不存在');
+			// 先检查车辆审核状态
+			getCarApplyAuditStatus(row.id).then(res => {
+				if (res.data.hasNotPassedAudit) {
+					this.$message.warning('存在未通过审核的车辆，请先等待车辆审核通过');
+					if (!res.data.notPassedCarApplyList) {
+						this.$message.error(`数据出现问题,未找到车辆的信息`);
+						return;
+					}
+					// 存在未通过审核的车辆
+					this.notPassedCarList = res.data.notPassedCarApplyList;
+					this.notPassedCarDialogVisible = true;
 					return;
 				}
-				if (!res.data.tripReimbursementList) {
-					this.needMoney = 0;
-				} else {
-					// 如果没有报销项 就直接返回
-					if (res.data.tripReimbursementList.length <= 0) {
+				// 继续原有的付款申请逻辑
+				getBusinessTrip(row.id).then(res => {
+					if (!res.data) {
+						this.$message.error('出差申请不存在');
+						return;
+					}
+					if (!res.data.tripReimbursementList) {
 						this.needMoney = 0;
 					} else {
-						// 出差费用包含 报销项 车辆使用申请的保养金额 加油金额 初期金额
-						res.data.tripReimbursementList.forEach(item => {
-							this.needMoney += item.itemCost;
-						});
+						if (res.data.tripReimbursementList.length <= 0) {
+							this.needMoney = 0;
+						} else {
+							res.data.tripReimbursementList.forEach(item => {
+								this.needMoney += item.itemCost;
+							});
+						}
 					}
-				}
-				this.tID = row.id;
-				this.applyForPaymentDialogVisible = true;
+					this.tID = row.id;
+					this.applyForPaymentDialogVisible = true;
+				});
 			});
 		},
 		// 自动填写报销项

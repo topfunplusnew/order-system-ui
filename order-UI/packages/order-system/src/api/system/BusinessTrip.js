@@ -42,3 +42,11 @@ export function delBusinessTrip(id) {
 		method: 'delete'
 	});
 }
+
+// 查询车辆审核状态
+export function getCarApplyAuditStatus(bTripId) {
+	return request({
+		url: '/system/BusinessTrip/carApplyAuditStatus/' + bTripId,
+		method: 'get'
+	});
+}
