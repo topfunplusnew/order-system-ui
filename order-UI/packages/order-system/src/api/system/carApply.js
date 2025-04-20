@@ -53,3 +53,15 @@ export function updateCarApplyBatch(data) {
 		}
 	});
 }
+
+// 审核车辆派车申请状态
+export function auditCarApply(id, auditState) {
+	return request({
+		url: '/system/carApply/auditState',
+		method: 'put',
+		params: {
+			id,
+			auditState
+		}
+	});
+}

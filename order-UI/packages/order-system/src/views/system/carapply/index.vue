@@ -96,10 +96,20 @@
 					<CheckFiles :path="scope.row.path" @needToUpdate="value => handleUpdateFilePath(value, scope.row, 'path', getCarApply(), updateCarApply())" />
 				</template>
 			</el-table-column>
-			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="100px">
+			<el-table-column v-if="columns[30].visible" label="审核状态" align="center" prop="auditState" width="120px">
+				<template slot-scope="scope">
+					<el-tag :type="scope.row.auditState === '审核通过' ? 'success' : scope.row.auditState === '审核不通过' ? 'danger' : 'info'">
+						{{ scope.row.auditState || '待审核' }}
+					</el-tag>
+				</template>
+			</el-table-column>
+
+			<!--      TODO-->
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="180px">
 				<template slot-scope="scope">
 					<el-button v-hasPermi="['system:carapply:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
 					<el-button v-hasPermi="['system:carapply:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
+					<el-button v-hasPermi="['system:carapply:audit']" size="mini" type="warning" @click="handleAudit(scope.row)" v-if="scope.row.auditState === '待审核'">派车审核</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -408,7 +418,7 @@
 </template>
 
 <script>
-import { listCarApply, delCarApply, addCarApply } from '@/api/system/carApply';
+import { listCarApply, delCarApply, addCarApply, auditCarApply } from '@/api/system/carApply';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import { mixin_businesstrip_car_apply } from '../../dashboard/mixins/bussiness/businesstrip_car_apply';
 import { listData } from '../../../api/system/dict/data';
@@ -636,7 +646,8 @@ export default {
 				{ key: 26, label: '现金加油金额', visible: true },
 				{ key: 27, label: '派车人', visible: true },
 				{ key: 28, label: '备注', visible: true },
-				{ key: 29, label: '附件路径', visible: true }
+				{ key: 29, label: '附件路径', visible: true },
+				{ key: 30, label: '审核状态', visible: true }
 			],
 
 			queryItemsOilCard: {
@@ -883,6 +894,43 @@ export default {
 				},
 				`carApply_${new Date().getTime()}.xlsx`
 			);
+		},
+		/** 派车审核操作 */
+		handleAudit(row) {
+			this.$confirm({
+				title: '请选择审核结果',
+				content: '点击确定按钮后，将执行审核操作',
+				okText: '审核通过',
+				cancelText: '审核不通过',
+				onOk: () => {
+					return new Promise((resolve, reject) => {
+						auditCarApply(row.id, '审核通过')
+							.then(() => {
+								this.$modal.msgSuccess('审核通过成功');
+								this.getList();
+								resolve();
+							})
+							.catch(() => {
+								this.$modal.msgError('审核通过失败');
+								reject();
+							});
+					});
+				},
+				onCancel: () => {
+					return new Promise((resolve, reject) => {
+						auditCarApply(row.id, '审核不通过')
+							.then(() => {
+								this.$modal.msgSuccess('审核不通过成功');
+								this.getList();
+								resolve();
+							})
+							.catch(() => {
+								this.$modal.msgError('审核不通过失败');
+								reject();
+							});
+					});
+				}
+			});
 		}
 	}
 };
