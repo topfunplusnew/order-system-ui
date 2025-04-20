@@ -55,27 +55,41 @@ export default {
 				orderDetailId: this.orderDetailId ? this.orderDetailId : '',
 				difference_reason: null
 			},
-			queryOrder: null
+			queryOrder: null,
+			rules: {
+				commissionUnitPrice: [
+					{ required: true, message: '佣金单价不能为空', trigger: 'blur' },
+					{ pattern: /^[0-9]+(.[0-9]{1,2})?$/, message: '请输入数字，且最多保留两位小数', trigger: 'blur' }
+				],
+				otherPaymentAmount: [
+					{ required: true, message: '其他方式金额不能为空', trigger: 'blur' },
+					{ pattern: /^[0-9]+(.[0-9]{1,2})?$/, message: '请输入数字，且最多保留两位小数', trigger: 'blur' }
+				]
+			}
 		};
 	},
 	methods: {
 		listGoodsOrder,
 		handleProcess(that) {
-			// 这里要判断是新增还是修改 如果是修改 还需要额外添加一个字段difference_reason
-			if (this.id) {
-				this.form.difference_reason = this.differenceReason;
-				updateCommission(this.form).then(res => {
-					this.$message.success('修改成功');
-					that.dialogVisible = false;
-					this.reset();
-				});
-				return;
-			}
+			this.$refs.commissionForm.validate(valid => {
+				if (valid) {
+					// 这里要判断是新增还是修改 如果是修改 还需要额外添加一个字段difference_reason
+					if (this.id) {
+						this.form.difference_reason = this.differenceReason;
+						updateCommission(this.form).then(res => {
+							this.$message.success('修改成功');
+							that.dialogVisible = false;
+							this.reset();
+						});
+						return;
+					}
 
-			addCommission(this.form).then(res => {
-				this.$message.success('添加成功');
-				that.dialogVisible = false;
-				this.reset();
+					addCommission(this.form).then(res => {
+						this.$message.success('添加成功');
+						that.dialogVisible = false;
+						this.reset();
+					});
+				}
 			});
 		},
 		handleReject(that) {
@@ -112,7 +126,11 @@ export default {
 
 <template>
 	<div>
-		<el-form :model="form" label-width="140px">
+		<el-form 
+			ref="commissionForm"
+			:model="form" 
+			:rules="rules"
+			label-width="140px">
 			<el-form-item label="订单编号">
 				<el-col :span="20">
 					<el-input v-model="form.orderDetailId" placeholder="请输入内容" disabled />
@@ -177,10 +195,14 @@ export default {
 					</SearchOption>
 				</el-col>
 			</el-form-item>
-			<el-form-item label="佣金单价">
+			<el-form-item 
+				label="佣金单价"
+				prop="commissionUnitPrice">
 				<el-input v-model="form.commissionUnitPrice" placeholder="请输入内容" />
 			</el-form-item>
-			<el-form-item label="其他方式金额">
+			<el-form-item 
+				label="其他方式金额"
+				prop="otherPaymentAmount">
 				<el-input v-model="form.otherPaymentAmount" placeholder="请输入内容" />
 			</el-form-item>
 		</el-form>
