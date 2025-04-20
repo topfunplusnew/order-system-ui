@@ -252,7 +252,7 @@
 		</el-dialog>
 
 		<!-- 修改未审核通过车辆列表弹窗 -->
-		<el-dialog :visible.sync="notPassedCarDialogVisible" title="未审核通过的车辆" width="80%">
+		<el-dialog :visible.sync="notPassedCarDialogVisible" title="未审核通过的车辆" width="80%" height="600px">
 			<el-table :data="notPassedCarList" border>
 				<el-table-column label="申请人" prop="applyUser" />
 				<el-table-column label="车牌号" prop="carNo" />
@@ -264,7 +264,6 @@
 					</template>
 				</el-table-column>
 			</el-table>
-			<pagination v-show="notPassedCarList.length > 0" :total="notPassedCarList.length" :page.sync="currentPage" :limit.sync="currentPageSize" @pagination="getUnProcessedCars" />
 		</el-dialog>
 
 		<div v-if="currentComponent">
@@ -437,10 +436,7 @@ export default {
 
 			// 未审核通过车辆列表相关
 			notPassedCarDialogVisible: false,
-			notPassedCarList: [],
-			// 未审核通过车辆列表分页参数
-			currentPage: 1,
-			currentPageSize: 10
+			notPassedCarList: []
 		};
 	},
 	// 展示与隐藏
