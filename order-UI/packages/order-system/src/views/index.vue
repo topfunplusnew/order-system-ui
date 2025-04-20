@@ -155,9 +155,37 @@
 			</div>
 			<div>
 				<el-button type="primary" icon="el-icon-download" size="mini" @click="handleDownload">一键下载</el-button>
+				<el-button type="success" icon="el-icon-folder" size="mini" @click="showFileList">查看下载列表</el-button>
 			</div>
 		</div>
 
+		<!-- 添加文件列表弹窗 -->
+		<a-modal title="可下载文件列表" :visible="fileListVisible" @cancel="fileListVisible = false" :footer="null" :width="1000" :destroyOnClose="true" class="file-list-modal">
+			<a-list :data-source="fileList" class="file-list">
+				<a-list-item v-for="(item, index) in fileList" :key="index">
+					<a-row type="flex" justify="space-between" align="middle" style="width: 100%">
+						<a-col :span="12">
+							<a-space>
+								<a-icon :type="getIconType(item.fileName)" :style="getIconStyle(item.fileName)" />
+								<span class="filename">{{ item.fileName }}</span>
+							</a-space>
+						</a-col>
+						<a-col :span="6" class="date">{{ formatDate(item.lastModifiedTime) }}</a-col>
+						<a-col :span="3" class="size">{{ formatSize(item.size) }}</a-col>
+						<a-col :span="3" class="actions">
+							<a-space>
+								<a-button type="link" @click="downloadFile(item)" style="padding: 4px">
+									<a-icon type="download" style="color: #1890ff" />
+								</a-button>
+								<a-button type="link" @click="deleteFile(item)" style="padding: 4px">
+									<a-icon type="delete" style="color: #ff4d4f" />
+								</a-button>
+							</a-space>
+						</a-col>
+					</a-row>
+				</a-list-item>
+			</a-list>
+		</a-modal>
 		<el-dialog title="一键下载" :visible.sync="dialogVisible" width="30%" :before-close="handleClose">
 			<span>这是一段信息</span>
 			<span slot="footer" class="dialog-footer">
@@ -230,7 +258,25 @@ export default {
 			dailyProfit: null,
 			dailyExpense: null,
 			moneyAmount: null,
-			dialogVisible: false
+			dialogVisible: false,
+			fileListVisible: false,
+			fileList: [
+				{
+					fileName: '2023年11月报表.xlsx',
+					lastModifiedTime: '2023-11-20 15:30:00',
+					size: 1024576 // 1MB in bytes
+				},
+				{
+					fileName: '2023年10月报表.xlsx',
+					lastModifiedTime: '2023-10-31 18:20:00',
+					size: 2048576 // 2MB in bytes
+				},
+				{
+					fileName: '2023年9月报表.xlsx',
+					lastModifiedTime: '2023-09-30 12:00:00',
+					size: 3145728 // 3MB in bytes
+				}
+			]
 		};
 	},
 	created() {
@@ -302,6 +348,84 @@ export default {
 		},
 		handleClose() {
 			this.dialogVisible = false;
+		},
+		showFileList() {
+			this.fileListVisible = true;
+		},
+		formatSize(bytes) {
+			if (bytes === 0) return '0 B';
+			const k = 1024;
+			const sizes = ['B', 'KB', 'MB', 'GB'];
+			const i = Math.floor(Math.log(bytes) / Math.log(k));
+			return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+		},
+		formatDate(date) {
+			return date.split(' ')[0];
+		},
+		downloadFile(file) {
+			// 这里添加实际的文件下载逻辑
+			this.$message.success(`开始下载: ${file.fileName}`);
+		},
+		getFileIcon(fileName) {
+			const extension = fileName.split('.').pop().toLowerCase();
+			switch (extension) {
+				case 'xlsx':
+				case 'xls':
+					return 'excel';
+				case 'doc':
+				case 'docx':
+					return 'word';
+				case 'pdf':
+					return 'pdf';
+				default:
+					return 'file';
+			}
+		},
+		deleteFile(file) {
+			this.$confirm({
+				title: '确认删除',
+				content: `是否确认删除文件 "${file.fileName}"？`,
+				okText: '确认',
+				okType: 'danger',
+				cancelText: '取消',
+				onOk: () => {
+					// 这里添加实际的删除逻辑
+					const index = this.fileList.indexOf(file);
+					if (index > -1) {
+						this.fileList.splice(index, 1);
+					}
+					this.$message.success(`删除成功: ${file.fileName}`);
+				}
+			});
+		},
+		getIconType(fileName) {
+			const extension = fileName.split('.').pop().toLowerCase();
+			switch (extension) {
+				case 'xlsx':
+				case 'xls':
+					return 'file-excel';
+				case 'doc':
+				case 'docx':
+					return 'file-word';
+				case 'pdf':
+					return 'file-pdf';
+				default:
+					return 'file';
+			}
+		},
+		getIconStyle(fileName) {
+			const type = this.getFileIcon(fileName);
+			const color = {
+				excel: '#52c41a',
+				word: '#1890ff',
+				pdf: '#f5222d',
+				file: '#595959'
+			}[type];
+
+			return {
+				color,
+				fontSize: '20px'
+			};
 		}
 	}
 };
@@ -394,5 +518,58 @@ export default {
 	padding: 10px 20px;
 	text-align: right;
 	z-index: 1000;
+
+	.el-button {
+		margin-left: 10px;
+	}
+}
+
+.ant-list-item {
+	padding: 12px !important;
+
+	&:hover {
+		background-color: #fafafa;
+	}
+}
+
+.file-list-modal {
+	:deep(.ant-modal-body) {
+		padding: 12px 24px;
+		max-height: 600px;
+		overflow-y: auto;
+	}
+
+	.file-list {
+		width: 100%;
+
+		.ant-list-item {
+			padding: 12px 0;
+			border-bottom: 1px solid #f0f0f0;
+
+			&:hover {
+				background-color: #fafafa;
+			}
+
+			.filename {
+				font-size: 14px;
+			}
+
+			.date,
+			.size {
+				color: rgba(0, 0, 0, 0.45);
+				font-size: 14px;
+			}
+
+			.actions {
+				text-align: right;
+
+				.ant-btn {
+					&:hover {
+						background-color: #f0f0f0;
+					}
+				}
+			}
+		}
+	}
 }
 </style>
