@@ -282,29 +282,7 @@ export default {
 			</el-card>
 		</div>
 		<br />
-		<div v-if="isAdjustOrder">
-			<el-row>
-				<el-card class="box-card">
-					<div slot="header" class="clearfix">
-						<span style="font-weight: bold; font-size: 16px">调整次数示意</span>
 
-						<el-tooltip
-							content="负数单，表示该订单为调整订单A后，A订单产生的负数订单，数值与A订单为相反数调整一次意为订单A调整一次,产生的调整单B,记录此时该调整单B为一次调整;调整两次为，对调整单B进行调整，生成调整单C,记录该调整单C为二次调整,以此类推"
-							placement="bottom"
-							effect="light"
-						>
-							<el-button style="float: right; padding: 3px 0" type="text">解释?</el-button>
-						</el-tooltip>
-					</div>
-					<el-alert title="订单列表点击调整单后，会在此生成调整单，不能对负数单进行调整，且负数单不可修改!" type="warning" style="margin-bottom: 10px" show-icon effect="light" />
-					<el-tag class="custom-tag">负数单</el-tag>
-					<el-tag type="info" class="tag-spacing">调整一次</el-tag>
-					<el-tag type="success" class="tag-spacing">调整两次</el-tag>
-					<el-tag type="warning" class="tag-spacing">调整三次</el-tag>
-					<el-tag style="background-color: #ed5b3a; color: white" class="tag-spacing">三次以上</el-tag>
-				</el-card>
-			</el-row>
-		</div>
 		<!--    通用弹窗 配合common_dialogs 使用-->
 		<div v-if="currentComponent">
 			<DialogWrapper
@@ -539,6 +517,31 @@ export default {
 			</el-table>
 			<!--    分页组件-->
 			<pagination v-if="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
+
+			<br />
+			<div v-if="isAdjustOrder">
+				<el-row>
+					<el-card class="box-card">
+						<div slot="header" class="clearfix">
+							<span style="font-weight: bold; font-size: 16px">调整次数示意</span>
+
+							<el-tooltip
+								content="负数单，表示该订单为调整订单A后，A订单产生的负数订单，数值与A订单为相反数调整一次意为订单A调整一次,产生的调整单B,记录此时该调整单B为一次调整;调整两次为，对调整单B进行调整，生成调整单C,记录该调整单C为二次调整,以此类推"
+								placement="bottom"
+								effect="light"
+							>
+								<el-button style="float: right; padding: 3px 0" type="text">解释?</el-button>
+							</el-tooltip>
+						</div>
+						<el-alert title="订单列表点击调整单后，会在此生成调整单，不能对负数单进行调整，且负数单不可修改!" type="warning" style="margin-bottom: 10px" show-icon effect="light" />
+						<el-tag class="custom-tag">负数单</el-tag>
+						<el-tag type="info" class="tag-spacing">调整一次</el-tag>
+						<el-tag type="success" class="tag-spacing">调整两次</el-tag>
+						<el-tag type="warning" class="tag-spacing">调整三次</el-tag>
+						<el-tag style="background-color: #ed5b3a; color: white" class="tag-spacing">三次以上</el-tag>
+					</el-card>
+				</el-row>
+			</div>
 		</div>
 	</div>
 </template>
