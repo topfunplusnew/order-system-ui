@@ -155,7 +155,27 @@
 			</div>
 			<div>
 				<el-button type="primary" icon="el-icon-download" size="mini" @click="handleDownload">一键下载</el-button>
-				<el-button type="success" icon="el-icon-folder" size="mini" @click="showFileList">查看下载列表</el-button>
+				<!-- 修改这里，添加 el-popover -->
+				<el-popover placement="top" width="600" trigger="hover" popper-class="preview-popover">
+					<div class="preview-content">
+						<a-list :data-source="fileList.slice(0, 3)" class="preview-list">
+							<a-list-item v-for="(item, index) in fileList.slice(0, 3)" :key="index">
+								<a-row type="flex" justify="space-between" align="middle" style="width: 100%">
+									<a-col :span="14">
+										<a-space>
+											<a-icon :type="getIconType(item.fileName)" :style="getIconStyle(item.fileName)" />
+											<span class="filename">{{ item.fileName }}</span>
+										</a-space>
+									</a-col>
+									<a-col :span="6">{{ formatDate(item.lastModifiedTime) }}</a-col>
+									<a-col :span="4">{{ formatSize(item.size) }}</a-col>
+								</a-row>
+							</a-list-item>
+						</a-list>
+						<div v-if="fileList.length > 3" class="preview-footer">还有 {{ fileList.length - 3 }} 个文件，点击查看更多</div>
+					</div>
+					<el-button slot="reference" type="success" icon="el-icon-folder" size="mini" @click="showFileList">查看下载列表</el-button>
+				</el-popover>
 			</div>
 		</div>
 
@@ -570,6 +590,43 @@ export default {
 				}
 			}
 		}
+	}
+}
+
+// 添加预览相关样式
+.preview-content {
+	padding: 8px 0;
+
+	.preview-list {
+		.ant-list-item {
+			padding: 8px 12px;
+
+			&:hover {
+				background-color: #f5f5f5;
+			}
+
+			.filename {
+				font-size: 13px;
+			}
+		}
+	}
+
+	.preview-footer {
+		text-align: center;
+		color: #666;
+		font-size: 13px;
+		padding: 8px;
+		border-top: 1px solid #f0f0f0;
+	}
+}
+
+:deep(.preview-popover) {
+	padding: 0;
+
+	.el-popover__title {
+		margin: 0;
+		padding: 8px 12px;
+		border-bottom: 1px solid #f0f0f0;
 	}
 }
 </style>
