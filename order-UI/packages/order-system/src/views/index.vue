@@ -340,17 +340,18 @@ export default {
 	methods: {
 		// 一键下载
 		handleDownload() {
-			this.$confirm('是否导出空表(若不导出空表导出速率会更快)?', '提示', {
-				confirmButtonText: '是',
-				cancelButtonText: '否',
-				type: 'warning'
-			})
-				.then(() => {
+			this.$confirm({
+				title: '提示',
+				content: '是否导出空表(若不导出空表导出速率会更快)?',
+				okText: '是',
+				cancelText: '否',
+				onOk: () => {
 					this.handleOption(true);
-				})
-				.catch(() => {
+				},
+				onCancel: () => {
 					this.handleOption();
-				});
+				}
+			});
 		},
 		handleOption(exportEmptyData = false) {
 			this.$prompt('请选择导出日期', '提示', {
