@@ -51,3 +51,24 @@ export function batchAddSocialInsurance(data) {
 		data: data
 	});
 }
+
+// 导入社保基金数据
+export function importData(data, updateSupport) {
+	return request({
+		url: '/system/socialInsurance/importData',
+		method: 'post',
+		data: data,
+		params: {
+			updateSupport: updateSupport
+		}
+	});
+}
+
+// 下载社保基金模板
+export function importTemplate() {
+	return request({
+		url: '/system/socialInsurance/importTemplate',
+		method: 'post',
+		responseType: 'blob'
+	});
+}
