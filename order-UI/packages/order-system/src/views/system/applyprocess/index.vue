@@ -303,9 +303,11 @@ export default {
 				acountsName: clonedPaymentApplyInfo.otherAcountsName,
 				bankName: clonedPaymentApplyInfo.otherBankName
 			};
+			console.log(`needInfo:`, this.needInfo);
 			// 额外信息
 			this.extraInformation = {
-				__companyType: isEdit ? clonedPaymentApplyInfo.companyType : ''
+				__companyType: isEdit ? clonedPaymentApplyInfo.companyType : '',
+				__referenceId: clonedPaymentApplyInfo.id
 			};
 			if (isEdit) {
 				this.openDialog(
@@ -377,11 +379,9 @@ export default {
 			this.$tours['paymentApplyTour'].start();
 		},
 		// 重新刷新审核树
-		refreshApplyCheckInfo(applyID) {
-			// 获取所有的审核流程
-			listAuditInfoGroup({ applyID: applyID }).then(res => {
-				this.auditInfoList = res.rows;
-			});
+		refreshApplyCheckInfo() {
+			this.getAuditList();
+			this.getUnProcessedAuditList();
 		},
 		// 查看某一个行的信息
 		handleCheckInfo(row) {

@@ -64,6 +64,8 @@ export var mixin_payment_watcher = {
 					bankName: this.needInfo.bankName,
 					acountsName: this.needInfo.acountsName
 				};
+
+				console.log(`search`, search);
 				listBankAccount(search).then(res => {
 					// 如果没有查到 那么就提示 并且清空数据
 					if (res.rows.length === 0) {
@@ -84,7 +86,8 @@ export var mixin_payment_watcher = {
 					}
 				});
 			},
-			deep: true
+			deep: true,
+			immediate: true
 		},
 		// 检测整个对象
 		needInfo: {
@@ -96,7 +99,8 @@ export var mixin_payment_watcher = {
 					this.loadForm();
 				}
 			},
-			deep: true
+			deep: true,
+			immediate: true
 		},
 		// 监听传入的金额
 		needMoney: {
@@ -115,6 +119,7 @@ export var mixin_payment_watcher = {
 		// 监听表的变化
 		tableName: {
 			handler(val) {
+				console.log('tableName', val);
 				if (val === 'oilrecharge') {
 					this.form.companyType = '其他';
 				}
@@ -132,6 +137,21 @@ export var mixin_payment_watcher = {
 					this.form.companyType = '供应商';
 				}
 			}
+		},
+		// 监听额外信息
+		extraInformation: {
+			handler(val) {
+				console.log('extraInformation', val);
+				if (val.__companyType) {
+					this.form.companyType = val.__companyType;
+					this.value = val.__companyType;
+				}
+				if (val.__referenceId) {
+					this.form.id = val.__referenceId;
+				}
+			},
+			deep: true,
+			immediate: true
 		}
 	},
 	methods: {}

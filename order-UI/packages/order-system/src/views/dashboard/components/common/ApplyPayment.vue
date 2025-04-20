@@ -386,7 +386,7 @@ export default {
 			this.form.otherBankNo = row.bankNo;
 			this.form.otherBankName = row.bankName;
 		},
-		/** 提交按钮 */
+		// 正常付款申请
 		submitForm() {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
@@ -419,15 +419,11 @@ export default {
 				}
 			});
 		},
-		// 提交到数据库 但是状态是待提交
+		// 提交到数据库 但是状态是待提交 这个是当付款填写表单在弹窗中的时候
 		submitAndUpdate() {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
 					if (this.form.id != null) {
-						if (!this.tableName || !this.tID) {
-							this.$message.error('系统错误:付款时没有表名和表对应ID');
-							return;
-						}
 						// 填充公司类型
 						if (!this.extraInformation.__companyType) {
 							this.$message.error('请选择公司类型!');
