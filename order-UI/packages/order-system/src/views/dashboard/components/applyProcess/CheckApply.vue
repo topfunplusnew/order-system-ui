@@ -33,16 +33,16 @@ export default {
 			}
 		}
 	},
-	created() {},
 	methods: {
 		// 审核通过
 		handleCheckSuccess() {
-			// 调用接口 修改审核状态
-			updateAuditInfo({
+			const data = {
 				checkState: '通过',
 				auditcomment: this.auditcommentYES,
 				...this.checkApplyInfo
-			}).then(res => {
+			};
+			// 调用接口 修改审核状态
+			updateAuditInfo(data).then(res => {
 				this.$message.success('操作完毕~');
 				// 修改刷新标记vuex
 				this.$store.dispatch('apply/setChecked', this.checkApplyInfo.applyID);
@@ -53,12 +53,13 @@ export default {
 		},
 		// 审核不通过
 		handleCheckError() {
-			// 调用接口 修改审核状态
-			updateAuditInfo({
+			const data = {
 				checkState: '未通过',
 				auditcomment: this.auditcommentNO,
 				...this.checkApplyInfo
-			}).then(res => {
+			};
+			// 调用接口 修改审核状态
+			updateAuditInfo(data).then(res => {
 				this.$message.success('操作完毕~');
 				// 修改刷新标记vuex
 				this.$store.dispatch('apply/setChecked', this.checkApplyInfo.applyID);
@@ -68,11 +69,12 @@ export default {
 			});
 		},
 		handleCheckBack() {
-			updateAuditInfo({
+			const data = {
 				checkState: '驳回',
 				auditcomment: this.auditcommentBACK,
 				...this.checkApplyInfo
-			}).then(res => {
+			};
+			updateAuditInfo(data).then(res => {
 				this.$message.success('操作完毕~');
 				// 修改刷新标记vuex
 				this.$store.dispatch('apply/setChecked', this.checkApplyInfo.applyID);

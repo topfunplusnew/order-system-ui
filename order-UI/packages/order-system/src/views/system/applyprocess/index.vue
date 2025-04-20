@@ -212,6 +212,8 @@ export default {
 				}
 			},
 
+			// 当前操作的ID
+			currentID: '',
 			// 传递给子组件的参数
 			needInfo: {},
 			extraInformation: {}
@@ -278,6 +280,7 @@ export default {
 			// 获取付款申请信息
 			listPaymentApply(query, json).then(res => {
 				this.alreadyApplyList = res.rows;
+				this.$message.success(`成功获取待提交或已驳回的付款信息`);
 			});
 		},
 		// 获取所有付款申请列表
@@ -291,6 +294,7 @@ export default {
 			listPaymentApply(query, json).then(res => {
 				this.paymentList = res.rows;
 				this.total = res.total;
+				this.$message.success(`成功获取付款信息`);
 			});
 		},
 		// 修改已经提交的 待提交或者驳回的付款申请记录 isEdit=true时为修改原有信息
@@ -382,6 +386,8 @@ export default {
 		refreshApplyCheckInfo() {
 			this.getAuditList();
 			this.getUnProcessedAuditList();
+			// 重新获取当前的审核树
+			this.getAuditStepsList();
 		},
 		// 查看某一个行的信息
 		handleCheckInfo(row) {
@@ -397,7 +403,13 @@ export default {
 				this.$message.error('该行数据有误,付款申请编号为空!');
 				return;
 			}
-			getPaymentApply(row.id).then(res => {
+			this.currentID = row.id;
+			this.getAuditStepsList(row.id);
+		},
+		// 获取审核步骤信息
+		getAuditStepsList(id) {
+			const searchId = id || this.currentID;
+			getPaymentApply(searchId).then(res => {
 				if (!res.data) {
 					this.$message.error('暂无数据!');
 					return;
