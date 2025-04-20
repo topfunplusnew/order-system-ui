@@ -181,7 +181,30 @@
 
 		<!-- 添加文件列表弹窗 -->
 		<a-modal title="可下载文件列表" :visible="fileListVisible" @cancel="fileListVisible = false" :footer="null" :width="1000" :destroyOnClose="true" class="file-list-modal">
-			<a-list :data-source="fileList" class="file-list">
+			<div class="file-search-wrapper">
+				<div class="search-tip">
+					<a-alert type="warning" show-icon>
+						<div slot="message">如果搜索的时间范围过大，可能会有卡顿，视机器配置决定</div>
+					</a-alert>
+				</div>
+				<div class="search-form">
+					<a-form layout="inline">
+						<a-form-item label="开始时间">
+							<el-date-picker v-model="fileSearchForm.startTime" type="datetime" size="small" value-format="yyyy-MM-dd HH:mm:ss" placeholder="开始时间"></el-date-picker>
+						</a-form-item>
+						<a-form-item label="结束时间">
+							<el-date-picker v-model="fileSearchForm.endTime" type="datetime" size="small" value-format="yyyy-MM-dd HH:mm:ss" placeholder="结束时间"></el-date-picker>
+						</a-form-item>
+						<a-form-item>
+							<a-button type="primary" :loading="fileListLoading" @click="handleFileSearch">搜索</a-button>
+						</a-form-item>
+					</a-form>
+				</div>
+			</div>
+			<div class="file-list-header">
+				<span class="title">共 {{ fileList.length }} 个文件</span>
+			</div>
+			<a-list :data-source="fileList" class="file-list" :loading="fileListLoading" style="max-height: 450px; overflow-y: scroll">
 				<a-list-item v-for="(item, index) in fileList" :key="index">
 					<a-row type="flex" justify="space-between" align="middle" style="width: 100%">
 						<a-col :span="12">
@@ -221,6 +244,7 @@ import { getDailyProfit, getDeliveryList } from '../api/system/statement';
 import { mixin_printHTML } from './dashboard/mixins/print';
 import { parseTime } from '@/utils/ruoyi';
 import { mapGetters, mapState } from 'vuex';
+import { deleteExport, downloadFileByName, getAllExportList } from '../api/system/oncedownload/index';
 
 export default {
 	name: 'Index',
@@ -243,6 +267,19 @@ export default {
 			const i = String(date.getMinutes()).padStart(2, '0');
 			const s = String(date.getSeconds()).padStart(2, '0');
 			return `${y}-${m}-${d} ${h}:${i}:${s}`;
+		}
+
+		// 获取今天和一周前的日期
+		const today = new Date();
+		const weekAgo = new Date();
+		weekAgo.setDate(weekAgo.getDate() - 7);
+
+		// 格式化日期函数
+		function formatDateTime(date) {
+			const y = date.getFullYear();
+			const m = String(date.getMonth() + 1).padStart(2, '0');
+			const d = String(date.getDate()).padStart(2, '0');
+			return `${y}-${m}-${d} 00:00:00`;
 		}
 
 		return {
@@ -280,28 +317,22 @@ export default {
 			moneyAmount: null,
 			dialogVisible: false,
 			fileListVisible: false,
-			fileList: [
-				{
-					fileName: '2023年11月报表.xlsx',
-					lastModifiedTime: '2023-11-20 15:30:00',
-					size: 1024576 // 1MB in bytes
-				},
-				{
-					fileName: '2023年10月报表.xlsx',
-					lastModifiedTime: '2023-10-31 18:20:00',
-					size: 2048576 // 2MB in bytes
-				},
-				{
-					fileName: '2023年9月报表.xlsx',
-					lastModifiedTime: '2023-09-30 12:00:00',
-					size: 3145728 // 3MB in bytes
-				}
-			]
+			fileListLoading: false, // 添加文件列表加载状态
+			fileList: [], // 修改为空数组，由接口获取
+			fileListQuery: {
+				pageNum: 1,
+				pageSize: 10
+			},
+			fileSearchForm: {
+				startTime: formatDateTime(weekAgo),
+				endTime: formatDateTime(today)
+			}
 		};
 	},
 	created() {
 		this.getList();
 		this.handleProfitSearch();
+		this.getFileList();
 	},
 	computed: {
 		...mapGetters(['downloadProgress'])
@@ -382,9 +413,22 @@ export default {
 		formatDate(date) {
 			return date.split(' ')[0];
 		},
-		downloadFile(file) {
-			// 这里添加实际的文件下载逻辑
-			this.$message.success(`开始下载: ${file.fileName}`);
+		async downloadFile(file) {
+			try {
+				const res = await downloadFileByName(file.fileName);
+				// 处理文件下载响应
+				const blob = new Blob([res.data]);
+				const url = window.URL.createObjectURL(blob);
+				const link = document.createElement('a');
+				link.href = url;
+				link.download = file.fileName;
+				link.click();
+				window.URL.revokeObjectURL(url);
+				this.$message.success(`下载成功: ${file.fileName}`);
+			} catch (error) {
+				console.error('下载文件失败:', error);
+				this.$message.error(`下载失败: ${file.fileName}`);
+			}
 		},
 		getFileIcon(fileName) {
 			const extension = fileName.split('.').pop().toLowerCase();
@@ -401,20 +445,24 @@ export default {
 					return 'file';
 			}
 		},
-		deleteFile(file) {
+		async deleteFile(file) {
 			this.$confirm({
 				title: '确认删除',
 				content: `是否确认删除文件 "${file.fileName}"？`,
 				okText: '确认',
 				okType: 'danger',
 				cancelText: '取消',
-				onOk: () => {
-					// 这里添加实际的删除逻辑
-					const index = this.fileList.indexOf(file);
-					if (index > -1) {
-						this.fileList.splice(index, 1);
+				async onOk() {
+					try {
+						const res = await deleteExport(file.fileName);
+						if (res.code === 200) {
+							this.$message.success(`删除成功: ${file.fileName}`);
+							await this.getFileList(); // 重新加载文件列表
+						}
+					} catch (error) {
+						console.error('删除文件失败:', error);
+						this.$message.error(`删除失败: ${file.fileName}`);
 					}
-					this.$message.success(`删除成功: ${file.fileName}`);
 				}
 			});
 		},
@@ -446,6 +494,37 @@ export default {
 				color,
 				fontSize: '20px'
 			};
+		},
+		async getFileList() {
+			this.fileListLoading = true;
+			try {
+				const res = await getAllExportList(this.fileListQuery);
+				if (res.code === 200) {
+					this.fileList = res.data;
+				}
+			} catch (error) {
+				console.error('获取文件列表失败:', error);
+				this.$message.error('获取文件列表失败');
+			} finally {
+				this.fileListLoading = false;
+			}
+		},
+		async handleFileSearch() {
+			this.fileListLoading = true;
+			try {
+				const res = await getAllExportList({
+					startTime: this.fileSearchForm.startTime,
+					endTime: this.fileSearchForm.endTime
+				});
+				if (res.code === 200) {
+					this.fileList = res.data;
+				}
+			} catch (error) {
+				console.error('搜索文件列表失败:', error);
+				this.$message.error('搜索文件列表失败');
+			} finally {
+				this.fileListLoading = false;
+			}
 		}
 	}
 };
@@ -553,18 +632,42 @@ export default {
 }
 
 .file-list-modal {
-	:deep(.ant-modal-body) {
+	> .ant-modal-body {
+		height: 500px;
+		padding: 0;
+	}
+
+	> .ant-modal-content .ant-modal-body {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.file-list-header {
 		padding: 12px 24px;
-		max-height: 600px;
-		overflow-y: auto;
+		border-bottom: 1px solid #f0f0f0;
+		background: #fff;
+		position: sticky;
+		top: 0;
+		z-index: 1;
+
+		.title {
+			font-size: 14px;
+			color: rgba(0, 0, 0, 0.85);
+		}
 	}
 
 	.file-list {
-		width: 100%;
+		height: calc(100% - 45px); // 减去header的高度
+		overflow-y: auto;
+		padding: 0 24px;
 
 		.ant-list-item {
 			padding: 12px 0;
 			border-bottom: 1px solid #f0f0f0;
+
+			&:last-child {
+				border-bottom: none; // 最后一项移除底部边框
+			}
 
 			&:hover {
 				background-color: #fafafa;
@@ -588,6 +691,22 @@ export default {
 						background-color: #f0f0f0;
 					}
 				}
+			}
+		}
+	}
+
+	.file-search-wrapper {
+		padding: 16px 24px 0;
+
+		.search-tip {
+			margin-bottom: 16px;
+		}
+
+		.search-form {
+			margin-bottom: 16px;
+
+			.el-date-editor {
+				width: 190px;
 			}
 		}
 	}
