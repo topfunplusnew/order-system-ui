@@ -154,8 +154,9 @@
 				<el-progress :percentage="downloadProgress"></el-progress>
 			</div>
 			<div>
-				<el-button type="warning" icon="el-icon-download" size="mini" @click="handleBackgroundDownload">一键后台下载</el-button>
-				<el-button type="primary" icon="el-icon-download" size="mini" @click="handleDownload">一键下载</el-button>
+				<el-button type="info" icon="el-icon-question" size="mini" @click="handleLearn">查看教程</el-button>
+				<el-button id="step1" type="warning" icon="el-icon-download" size="mini" @click="handleBackgroundDownload">一键后台下载</el-button>
+				<el-button id="step2" type="primary" icon="el-icon-download" size="mini" @click="handleDownload">一键下载</el-button>
 				<!-- 修改这里，添加 el-popover -->
 				<el-popover placement="top" width="900" trigger="hover" popper-class="preview-popover">
 					<div class="preview-content">
@@ -175,7 +176,7 @@
 						</a-list>
 						<div v-if="fileList.length > 3" class="preview-footer">还有 {{ fileList.length - 3 }} 个文件，点击查看更多</div>
 					</div>
-					<el-button slot="reference" type="success" icon="el-icon-folder" size="mini" @click="showFileList">查看下载列表</el-button>
+					<el-button id="step3" slot="reference" type="success" icon="el-icon-folder" size="mini" @click="showFileList">查看下载列表</el-button>
 				</el-popover>
 			</div>
 		</div>
@@ -237,6 +238,8 @@
 				<el-button type="primary" @click="dialogVisible = false">确 定</el-button>
 			</span>
 		</el-dialog>
+		<!-- 添加漫游组件 -->
+		<v-tour name="downloadListTour" :steps="tourSteps" :options="tourOptions" :callbacks="tourCallBacks"></v-tour>
 	</div>
 </template>
 
@@ -249,7 +252,7 @@ import { deleteExport, downloadFileByName, getAllExportList, startExportAll } fr
 
 export default {
 	name: 'Index',
-	mixins: [mixin_printHTML],
+	mixins: [mixin_printHTML], // 添加漫游混入
 	data() {
 		// 获取今天零点
 		const startTime = new Date();
@@ -327,6 +330,42 @@ export default {
 			fileSearchForm: {
 				startTime: formatDateTime(weekAgo),
 				endTime: formatDateTime(today)
+			},
+			tourSteps: [
+				{
+					target: '#step1',
+					header: {
+						title: '一键后台下载'
+					},
+					content: `点击这里可以异步下载文件(文件在服务器下载)，下载完成后可以在文件列表中查看`
+				},
+				{
+					target: '#step2',
+					header: {
+						title: '一键下载'
+					},
+					content: `点击这里可以同步下载文件，需要等待下载完成`
+				},
+				{
+					target: '#step3',
+					header: {
+						title: '文件列表'
+					},
+					content: `点击这里可以查看所有下载历史记录,可以在这里选择需要下载的文件`
+				}
+			],
+			tourCallBacks: {
+				onFinish: () => {
+					localStorage.setItem('download-list-tour', 'true');
+				}
+			},
+			tourOptions: {
+				labels: {
+					buttonSkip: '跳过教程',
+					buttonPrevious: '上一步',
+					buttonNext: '下一步',
+					buttonStop: '完成'
+				}
 			}
 		};
 	},
@@ -334,6 +373,11 @@ export default {
 		this.getList();
 		this.handleProfitSearch();
 		this.getFileList();
+	},
+	mounted() {
+		if (!localStorage.getItem('download-list-tour')) {
+			this.$tours['downloadListTour'].start();
+		}
 	},
 	computed: {
 		...mapGetters(['downloadProgress'])
@@ -564,6 +608,9 @@ export default {
 			} finally {
 				this.fileListLoading = false;
 			}
+		},
+		handleLearn() {
+			this.$tours['downloadListTour'].start();
 		}
 	}
 };
