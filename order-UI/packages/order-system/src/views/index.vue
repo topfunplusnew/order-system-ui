@@ -154,9 +154,10 @@
 				<el-progress :percentage="downloadProgress"></el-progress>
 			</div>
 			<div>
+				<el-button type="warning" icon="el-icon-download" size="mini" @click="handleBackgroundDownload">一键后台下载</el-button>
 				<el-button type="primary" icon="el-icon-download" size="mini" @click="handleDownload">一键下载</el-button>
 				<!-- 修改这里，添加 el-popover -->
-				<el-popover placement="top" width="600" trigger="hover" popper-class="preview-popover">
+				<el-popover placement="top" width="900" trigger="hover" popper-class="preview-popover">
 					<div class="preview-content">
 						<a-list :data-source="fileList.slice(0, 3)" class="preview-list">
 							<a-list-item v-for="(item, index) in fileList.slice(0, 3)" :key="index">
@@ -244,7 +245,7 @@ import { getDailyProfit, getDeliveryList } from '../api/system/statement';
 import { mixin_printHTML } from './dashboard/mixins/print';
 import { parseTime } from '@/utils/ruoyi';
 import { mapGetters, mapState } from 'vuex';
-import { deleteExport, downloadFileByName, getAllExportList } from '../api/system/oncedownload/index';
+import { deleteExport, downloadFileByName, getAllExportList, startExportAll } from '../api/system/oncedownload/index';
 
 export default {
 	name: 'Index',
@@ -369,6 +370,43 @@ export default {
 				);
 			});
 		},
+		// 添加后台下载方法
+		handleBackgroundDownload() {
+			this.$prompt('请选择导出日期', '提示', {
+				confirmButtonText: '确定',
+				cancelButtonText: '取消',
+				inputType: 'date'
+			}).then(res => {
+				this.$confirm({
+					title: '提示',
+					content: '是否导出空表(若不导出空表导出速率会更快)?',
+					okText: '是',
+					cancelText: '否',
+					onOk: () => {
+						this.startBackgroundExport(res.value, true);
+					},
+					onCancel: () => {
+						this.startBackgroundExport(res.value, false);
+					}
+				});
+			});
+		},
+
+		async startBackgroundExport(date, exportEmptyData) {
+			try {
+				const res = await startExportAll({ date, exportEmptyData });
+				if (res.code === 200) {
+					this.$message.success('后台导出任务已开始，请稍后在文件列表中查看');
+					// 3秒后刷新文件列表
+					setTimeout(() => {
+						this.getFileList();
+					}, 3000);
+				}
+			} catch (error) {
+				this.$message.error('启动后台导出失败');
+				console.error('启动后台导出失败:', error);
+			}
+		},
 		handleSearch() {
 			this.getList();
 		},
@@ -418,7 +456,7 @@ export default {
 			try {
 				const res = await downloadFileByName(file.fileName);
 				// 处理文件下载响应
-				const blob = new Blob([res.data]);
+				const blob = new Blob([res]);
 				const url = window.URL.createObjectURL(blob);
 				const link = document.createElement('a');
 				link.href = url;
