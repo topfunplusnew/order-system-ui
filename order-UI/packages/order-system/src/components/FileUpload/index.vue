@@ -64,7 +64,32 @@ export default {
 		// 文件类型, 例如['png', 'jpg', 'jpeg']
 		fileType: {
 			type: Array,
-			default: () => ['doc', 'xls', 'ppt', 'txt', 'pdf', 'png', 'jpg', 'jpeg', 'docx', 'xlsx', 'pptx']
+			/**
+			 * 默认支持的文件类型
+			 * 
+			 * 该数组定义了文件上传组件支持的文件类型扩展名。
+			 * 包括以下几类文件：
+			 * 
+			 * 1. 图片文件: bmp, gif, jpg, jpeg, png, tif, tiff, heic, heif
+			 * 2. 文档文件: doc, docx, xls, xlsx, ppt, pptx, pdf, html, htm, txt, rtf, csv
+			 * 3. 压缩文件: rar, zip, gz, bz2, 7z
+			 * 4. 视频文件: mp4, avi, rmvb, mov, wmv, mkv
+			 * 5. 音频文件: mp3, wav, wma, m4a
+			 * 6. 邮件文件: eml, msg
+			 * 
+			 * 可以根据需求扩展或修改支持的文件类型。
+			 */
+			// 默认支持的文件类型
+			
+			default: () => [
+				'bmp', 'gif', 'jpg', 'jpeg', 'png', 'tif', 'tiff', 'heic', 'heif',
+				'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'pdf', 'html', 'htm', 'txt', 'rtf',
+				'csv', 'rar', 'zip', 'gz', 'bz2', '7z',
+				'mp4', 'avi', 'rmvb', 'mov', 'wmv', 'mkv',
+				'mp3', 'wav', 'wma', 'm4a',
+				'eml', 'msg'
+			]
+		},
 		},
 		// 是否显示提示
 		isShowTip: {
