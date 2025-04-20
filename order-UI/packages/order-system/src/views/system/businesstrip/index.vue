@@ -153,6 +153,8 @@
 								<el-button size="mini" type="danger" @click="handleDeleteCars">删除</el-button>
 							</el-col>
 						</el-row>
+					</el-row>
+					<el-row>
 						<el-table size="mini" :data="carsList" :row-class-name="rowCarsIndex" @selection-change="handleCarsSelectionChange">
 							<el-table-column type="selection" width="90" align="center" />
 							<el-table-column label="序号" align="center" prop="index" />
@@ -249,7 +251,7 @@
 			</keep-alive>
 		</el-dialog>
 
-		<!-- 添加未审核通过车辆列表弹窗 -->
+		<!-- 修改未审核通过车辆列表弹窗 -->
 		<el-dialog :visible.sync="notPassedCarDialogVisible" title="未审核通过的车辆" width="80%">
 			<el-table :data="notPassedCarList" border>
 				<el-table-column label="申请人" prop="applyUser" />
@@ -258,10 +260,11 @@
 				<el-table-column label="还车时间" prop="endTime" />
 				<el-table-column label="审核状态" prop="auditState">
 					<template slot-scope="scope">
-						<el-tag type="danger">{{ scope.row.auditState }}</el-tag>
+						<el-tag type="danger">{{ scope.row.auditState || '审核中' }}</el-tag>
 					</template>
 				</el-table-column>
 			</el-table>
+			<pagination v-show="notPassedCarList.length > 0" :total="notPassedCarList.length" :page.sync="currentPage" :limit.sync="currentPageSize" @pagination="getUnProcessedCars" />
 		</el-dialog>
 
 		<div v-if="currentComponent">
@@ -434,7 +437,10 @@ export default {
 
 			// 未审核通过车辆列表相关
 			notPassedCarDialogVisible: false,
-			notPassedCarList: []
+			notPassedCarList: [],
+			// 未审核通过车辆列表分页参数
+			currentPage: 1,
+			currentPageSize: 10
 		};
 	},
 	// 展示与隐藏
@@ -491,38 +497,32 @@ export default {
 				children: node.children
 			};
 		},
-		// TODO 派车审核 等待后端
-		handleAudit(row) {},
 		// 发起付款申请
 		applyForPayment(row) {
-			if (!row.id) {
+			const carId = row.id;
+			if (!carId) {
 				this.$message.error('该行数据有误，id为空!');
 				return;
 			}
 			// 先检查车辆审核状态
-			getCarApplyAuditStatus(row.id).then(res => {
-				if (res.data.hasNotPassedAudit) {
-					this.$message.warning('存在未通过审核的车辆，请先等待车辆审核通过');
-					if (!res.data.notPassedCarApplyList) {
-						this.$message.error(`数据出现问题,未找到车辆的信息`);
-						return;
-					}
-					// 存在未通过审核的车辆
-					this.notPassedCarList = res.data.notPassedCarApplyList;
-					this.notPassedCarDialogVisible = true;
-					return;
-				}
+			this.getUnProcessedCars(carId).then(_ => {
 				// 继续原有的付款申请逻辑
-				getBusinessTrip(row.id).then(res => {
+				getBusinessTrip(carId).then(res => {
+					// 如果数据不存在，则提示错误
 					if (!res.data) {
 						this.$message.error('出差申请不存在');
 						return;
 					}
+					// 如果没有报销单，则默认为0
 					if (!res.data.tripReimbursementList) {
 						this.needMoney = 0;
+
+						// 获取该出差项的报销项
 					} else {
+						// 如果没有报销项，则默认为0
 						if (res.data.tripReimbursementList.length <= 0) {
 							this.needMoney = 0;
+							// 如果有报销项，则计算报销项的总金额
 						} else {
 							res.data.tripReimbursementList.forEach(item => {
 								this.needMoney += item.itemCost;
@@ -531,6 +531,28 @@ export default {
 					}
 					this.tID = row.id;
 					this.applyForPaymentDialogVisible = true;
+				});
+			});
+		},
+		getUnProcessedCars(carId) {
+			return new Promise((resolve, reject) => {
+				getCarApplyAuditStatus(carId).then(res => {
+					// 如果hasNotPassedAudit为false 代表没有需要审核的车,可以正常走付款申请的流程
+					if (!res.data.hasNotPassedAudit) {
+						resolve();
+						return;
+					}
+					// 数据出现问题
+					if (!res.data.notPassedCarApplyList) {
+						this.$message.error(`数据出现问题,未找到车辆的信息`);
+						reject();
+						return;
+					}
+					this.$message.warning('存在未通过审核的车辆，请先等待车辆审核通过');
+					// 存在未通过审核的车辆
+					this.notPassedCarList = res.data.notPassedCarApplyList;
+					this.notPassedCarDialogVisible = true;
+					reject();
 				});
 			});
 		},

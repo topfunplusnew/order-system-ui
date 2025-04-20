@@ -52,12 +52,16 @@ import { Logger } from '@/utils/order/logger';
 import VueVirtualScroller from 'vue-virtual-scroller';
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css';
 import DatePickerDialog from './views/dashboard/components/common/DatePickerDialog.vue';
-import Antd from 'ant-design-vue';
+import Antd, { message } from 'ant-design-vue';
 import 'ant-design-vue/dist/antd.css';
 // 漫游组件
 import 'vue-tour/dist/vue-tour.css';
 import VueTour from 'vue-tour';
 
+message.config({
+	top: '10px',
+	getContainer: () => document.getElementById('messsage-box-div')
+});
 Vue.use(VueTour);
 Vue.use(Antd);
 Vue.use(VueVirtualScroller);
