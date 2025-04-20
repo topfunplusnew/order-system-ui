@@ -74,7 +74,7 @@
 			<el-table-column v-if="columns[12].visible" label="来源" align="center" prop="origin" width="120" show-overflow-tooltip />
 			<el-table-column v-if="columns[13].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
 
-			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="150px" fixed="right">
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="150px">
 				<template slot-scope="scope">
 					<el-button v-hasPermi="['system:bankacceptance:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
 					<el-button v-hasPermi="['system:bankacceptance:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>

@@ -2,12 +2,10 @@
 	<div class="app-container">
 		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
 			<el-form-item label="开始时间" prop="issueDateStart">
-				<el-date-picker v-model="queryParams.issueDateStart" type="datetime" placeholder="选择日期"
-					value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+				<el-date-picker v-model="queryParams.issueDateStart" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 			</el-form-item>
 			<el-form-item label="结束时间" prop="issueDateEnd">
-				<el-date-picker v-model="queryParams.issueDateEnd" type="datetime" placeholder="选择日期"
-					value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+				<el-date-picker v-model="queryParams.issueDateEnd" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 			</el-form-item>
 			<el-form-item label="票据号码" prop="billNo">
 				<el-input v-model="queryParams.billNo" placeholder="请输入票据号码" @keyup.enter.native="handleQuery" />
@@ -22,8 +20,7 @@
 				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
 			</el-col>
 			<el-col :span="1.5">
-				<el-button v-hasPermi="['system:bankacceptance:add']" type="danger" size="mini"
-					@click="handleAdd">添加收入商业票据</el-button>
+				<el-button v-hasPermi="['system:bankacceptance:add']" type="danger" size="mini" @click="handleAdd">添加收入商业票据</el-button>
 			</el-col>
 			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
 				<template #print>
@@ -34,74 +31,66 @@
 				<!--        导出-->
 				<template #export>
 					<el-col :span="1.5">
-						<el-button v-hasPermi="['system:bankacceptance:export']" plain icon="el-icon-folder-opened"
-							size="mini" @click="handleExport"></el-button>
+						<el-button v-hasPermi="['system:bankacceptance:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
 					</el-col>
 				</template>
 			</right-toolbar>
 		</el-row>
 
-		<el-table v-loading="loading" v-horizontal-scroll="'always'" border :data="bankAcceptanceList" show-summary
-			id="printBox" :summary-method="getSummaries" size="mini" :cell-style="() => {
-				return { padding: '1.5px' };
-			}
-				" height="480px" @selection-change="handleSelectionChange">
-			<el-table-column v-if="columns[0].visible" label="操作日期" align="center" prop="operateDate" width="120"
-				show-overflow-tooltip />
-			<el-table-column v-if="columns[1].visible" label="票据种类" align="center" prop="billCategory" width="120"
-				show-overflow-tooltip />
-			<el-table-column v-if="columns[2].visible" label="票据号码" align="center" prop="billNo" width="120"
-				show-overflow-tooltip>
+		<el-table
+			v-loading="loading"
+			v-horizontal-scroll="'always'"
+			border
+			:data="bankAcceptanceList"
+			show-summary
+			id="printBox"
+			:summary-method="getSummaries"
+			size="mini"
+			:cell-style="
+				() => {
+					return { padding: '1.5px' };
+				}
+			"
+			height="480px"
+			@selection-change="handleSelectionChange"
+		>
+			<el-table-column v-if="columns[0].visible" label="操作日期" align="center" prop="operateDate" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[1].visible" label="票据种类" align="center" prop="billCategory" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[2].visible" label="票据号码" align="center" prop="billNo" width="120" show-overflow-tooltip>
 				<!--        点击后出来一个台账-->
 				<template #default="scope">
 					<CheckTotal :row="scope.row" />
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[3].visible" label="出票日期" align="center" prop="issueDate" width="120"
-				show-overflow-tooltip />
-			<el-table-column v-if="columns[4].visible" label="到期日期" align="center" prop="dueDate" width="120"
-				show-overflow-tooltip />
-			<el-table-column v-if="columns[5].visible" label="我方承兑账户" align="center" prop="billAccount" width="120"
-				show-overflow-tooltip />
-			<el-table-column v-if="columns[6].visible" label="票据交易日期" align="center" prop="billDate" width="120"
-				show-overflow-tooltip />
-			<el-table-column v-if="columns[7].visible" label="背书事由" align="center" prop="reason" width="120"
-				show-overflow-tooltip />
-			<el-table-column v-if="columns[8].visible" label="背书人" align="center" prop="endorserName" width="120"
-				show-overflow-tooltip />
-			<el-table-column v-if="columns[9].visible" label="票据金额" align="center" prop="billAmount" width="120"
-				show-overflow-tooltip />
-			<el-table-column v-if="columns[10].visible" label="贴息点数" align="center" prop="inDiscountPoints" width="120"
-				show-overflow-tooltip />
-			<el-table-column v-if="columns[11].visible" label="贴息金额" align="center" prop="inDiscountAmount" width="120"
-				show-overflow-tooltip />
-			<el-table-column v-if="columns[12].visible" label="来源" align="center" prop="origin" width="120"
-				show-overflow-tooltip />
-			<el-table-column v-if="columns[13].visible" label="备注" align="center" prop="comments"
-				show-overflow-tooltip />
+			<el-table-column v-if="columns[3].visible" label="出票日期" align="center" prop="issueDate" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[4].visible" label="到期日期" align="center" prop="dueDate" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[5].visible" label="我方承兑账户" align="center" prop="billAccount" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[6].visible" label="票据交易日期" align="center" prop="billDate" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[7].visible" label="背书事由" align="center" prop="reason" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[8].visible" label="背书人" align="center" prop="endorserName" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[9].visible" label="票据金额" align="center" prop="billAmount" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[10].visible" label="贴息点数" align="center" prop="inDiscountPoints" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[11].visible" label="贴息金额" align="center" prop="inDiscountAmount" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[12].visible" label="来源" align="center" prop="origin" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[13].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
 
-			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="150px"
-				fixed="right">
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="150px">
 				<template slot-scope="scope">
-					<el-button v-hasPermi="['system:bankacceptance:edit']" size="mini" type="primary"
-						@click="handleUpdate(scope.row)">修改</el-button>
-					<el-button v-hasPermi="['system:bankacceptance:remove']" size="mini" type="danger"
-						@click="handleDelete(scope.row)">删除</el-button>
+					<el-button v-hasPermi="['system:bankacceptance:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
+					<el-button v-hasPermi="['system:bankacceptance:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
 
-		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum"
-			:limit.sync="queryParams.pageSize" @pagination="getList" />
+		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改商业票据、银行承兑对话框 -->
-		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="800px"
-			append-to-body>
+		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="800px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="140px">
 				<el-row>
 					<el-col :span="12">
 						<el-form-item label="票据号码" prop="billNo">
-							<el-input v-model="form.billNo" placeholder="请输入票据号码" />
+							<el-input v-model="form.billNo" placeholder="请输入票据号码" @input="debouncedGetBankAcceptanceDate" />
 						</el-form-item>
 						<el-form-item label="收票事由" prop="reason">
 							<el-radio v-model="form.reason" label="购买">购买</el-radio>
@@ -118,10 +107,15 @@
 								</el-col>
 								<el-col :span="4">
 									<!-- 选择的是客户或者供应商名称-->
-									<SearchOption :limit-info="{ companyType: type }" :get-data="listCompany"
-										query-info="companyName" query-label="公司名称" :query-name="companyName"
+									<SearchOption
+										:limit-info="{ companyType: type }"
+										:get-data="listCompany"
+										query-info="companyName"
+										query-label="公司名称"
+										:query-name="companyName"
 										@update:queryName="handleUpdateCompanyName"
-										@commitBack="handleCommitBackCompany">
+										@commitBack="handleCommitBackCompany"
+									>
 										<template #table-columns>
 											<el-table-column :label="type" align="center" prop="companyName" />
 											<el-table-column label="老板姓名" align="center" prop="leader" />
@@ -154,10 +148,18 @@
 									<el-input disabled v-model="form.billAccount" placeholder="请输入我方承兑账户" />
 								</el-col>
 								<el-col :span="4">
-									<SearchOption :get-data="listBankAccount" :limit-info="{
-										acountsType: '己方公司'
-									}" title="我方承兑账户" query-label="户名查找" query-info="acountsName" :query-name="queryBank"
-										@commitBack="handleCommitBack" @update:queryName="handleUpdateQueryName">
+									<SearchOption
+										:get-data="listBankAccount"
+										:limit-info="{
+											acountsType: '己方公司'
+										}"
+										title="我方承兑账户"
+										query-label="户名查找"
+										query-info="acountsName"
+										:query-name="queryBank"
+										@commitBack="handleCommitBack"
+										@update:queryName="handleUpdateQueryName"
+									>
 										<template #table-columns>
 											<el-table-column label="显示名称" align="center" prop="displayName" />
 											<el-table-column label="开户名称(户名)" align="center" prop="acountsName" />
@@ -169,16 +171,13 @@
 							</el-row>
 						</el-form-item>
 						<el-form-item label="我方收票日期" prop="billDate">
-							<el-date-picker v-model="form.billDate" type="datetime" placeholder="选择日期"
-								value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+							<el-date-picker v-model="form.billDate" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 						</el-form-item>
 						<el-form-item label="出票日期" prop="issueDate">
-							<el-date-picker v-model="form.issueDate" type="datetime" placeholder="选择日期"
-								value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+							<el-date-picker v-model="form.issueDate" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 						</el-form-item>
 						<el-form-item label="到期日期" prop="dueDate">
-							<el-date-picker v-model="form.dueDate" type="datetime" placeholder="选择日期"
-								value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+							<el-date-picker v-model="form.dueDate" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 						</el-form-item>
 						<el-form-item label="备注" prop="comments">
 							<el-input v-model="form.comments" placeholder="请输入备注" />
@@ -195,7 +194,7 @@
 </template>
 
 <script>
-import { listBankAcceptance, getBankAcceptance, delBankAcceptance, addBankAcceptance, updateBankAcceptance } from '@/api/system/bankAcceptance';
+import { listBankAcceptance, getBankAcceptance, delBankAcceptance, addBankAcceptance, updateBankAcceptance, getMinIdByBillNo } from '@/api/system/bankAcceptance';
 import { formatTime } from '@/api/tool/format';
 import SearchOption from '@/components/SearchOption.vue';
 import { listBankAccount } from '@/api/system/bankAccount';
@@ -204,6 +203,7 @@ import { excludeParams } from '@/api/tool/exclude';
 import { mixin_bankacception_fill } from '../../dashboard/mixins/bankacceptance/bankacception_fill';
 import CheckTotal from '../../dashboard/components/bankacceptance/CheckTotal.vue';
 import { listCompany } from '@/api/system/company';
+import _ from 'lodash';
 
 export default {
 	name: 'BankAcceptance',
@@ -399,7 +399,8 @@ export default {
 						trigger: 'blur'
 					}
 				]
-			}
+			},
+			debouncedGetBankAcceptanceDate: null
 		};
 	},
 	// 展示与隐藏
@@ -427,6 +428,8 @@ export default {
 		} else {
 			this.columns = JSON.parse(localStorage.getItem('bankacceptance-columns'));
 		}
+		// 创建防抖函数
+		this.debouncedGetBankAcceptanceDate = _.debounce(this.getBankAcceptanceDate, 500);
 	},
 	methods: {
 		listCompany,
@@ -536,7 +539,31 @@ export default {
 			this.reset();
 			this.open = true;
 			this.title = '添加收入商业票据、银行承兑';
-			this.form.billDate = formatTime(new Date());
+		},
+		// 获取票据信息
+		getBankAcceptanceDate(inputValue) {
+			if (!inputValue) {
+				this.$message.error('票据号码为空,填充失败');
+				return;
+			}
+			// 在这里 发送请求 获取三个时间 自动填充
+			getMinIdByBillNo(inputValue).then(res => {
+				if (!res.data) {
+					this.$message.error('该票据不存在,自动填充时间失败');
+					return;
+				}
+				if (this.form.id) {
+					this.$message.warning('操作为修改票据信息,未填充时间');
+					return;
+				}
+				const obj = _.cloneDeep(res.data);
+				// 填充三个时间
+				this.$nextTick(() => {
+					this.form.billDate = obj.billDate;
+					this.form.issueDate = obj.issueDate;
+					this.form.dueDate = obj.dueDate;
+				});
+			});
 		},
 		/** 修改按钮操作 */
 		handleUpdate(row) {
@@ -592,7 +619,7 @@ export default {
 					this.getList();
 					this.$modal.msgSuccess('删除成功');
 				})
-				.catch(() => { });
+				.catch(() => {});
 		},
 		/** 导出按钮操作 */
 		handleExport() {

@@ -220,6 +220,10 @@ export default {
 				this.$message.error('票据号码为空,填充失败');
 				return;
 			}
+			// 如果是修改 不用获取
+			if (this.form.id != null) {
+				return;
+			}
 			// 在这里 发送请求 获取三个时间 自动填充
 			getMinIdByBillNo(inputValue).then(res => {
 				if (!res.data) {

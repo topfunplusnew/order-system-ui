@@ -74,7 +74,7 @@
 			<el-table-column v-if="columns[13].visible" label="来源" align="center" prop="origin" show-overflow-tooltip />
 			<el-table-column v-if="columns[14].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
 
-			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="150px" fixed="right">
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="150px">
 				<template #default="scope">
 					<el-button v-hasPermi="['system:bankacceptance:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
 					<el-button v-hasPermi="['system:bankacceptance:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
@@ -90,7 +90,7 @@
 				<el-row>
 					<el-col :span="12">
 						<el-form-item label="票据号码" prop="billNo">
-							<el-input v-model="form.billNo" placeholder="请输入票据号码" />
+							<el-input v-model="form.billNo" placeholder="请输入票据号码" @input="debouncedGetBankAcceptanceDate" />
 						</el-form-item>
 						<el-form-item label="背书事由" prop="reason">
 							<el-radio v-model="form.reason" label="购买">购买</el-radio>
@@ -201,7 +201,7 @@
 </template>
 
 <script>
-import { listBankAcceptance, getBankAcceptance, delBankAcceptance, addBankAcceptance, updateBankAcceptance } from '@/api/system/bankAcceptance';
+import { listBankAcceptance, getBankAcceptance, delBankAcceptance, addBankAcceptance, updateBankAcceptance, getMinIdByBillNo } from '@/api/system/bankAcceptance';
 import { fix, formatTime } from '@/api/tool/format';
 import SearchOption from '@/components/SearchOption.vue';
 import { listBankAccount } from '@/api/system/bankAccount';
@@ -210,6 +210,7 @@ import { mixin_bank_acception_fill } from '../../dashboard/mixins/bankacceptance
 import { mixin_printHTML } from '../../dashboard/mixins/print';
 import CheckTotal from '../../dashboard/components/bankacceptance/CheckTotal.vue';
 import { listCompany } from '@/api/system/company';
+import _ from 'lodash';
 
 export default {
 	name: 'BankAcceptanceGive',
@@ -397,13 +398,28 @@ export default {
 					}
 				]
 			},
-			displayEndorserName: null
+			displayEndorserName: null,
+			debouncedGetBankAcceptanceDate: null
 		};
 	},
 	created() {
 		this.getList();
+		if (localStorage.getItem('bankacceptancegive-columns') === 'null' || !localStorage.getItem('bankacceptancegive-columns')) {
+			// 设置localStorage
+			localStorage.setItem('bankacceptancegive-columns', JSON.stringify(this.columns));
+		} else {
+			this.columns = JSON.parse(localStorage.getItem('bankacceptancegive-columns'));
+		}
+		// 创建防抖函数
+		this.debouncedGetBankAcceptanceDate = _.debounce(this.getBankAcceptanceDate, 500);
 	},
 	watch: {
+		columns: {
+			handler: function (newVal) {
+				localStorage.setItem('bankacceptancegive-columns', JSON.stringify(newVal));
+			},
+			deep: true
+		},
 		// 贴息金额的自动计算
 		form: {
 			handler() {
@@ -415,7 +431,6 @@ export default {
 	methods: {
 		listCompany,
 		listBankAccount,
-
 		// 自定义列统计总函数
 		getSummaries(param) {
 			const { columns, data } = param;
@@ -524,6 +539,31 @@ export default {
 			this.open = true;
 			this.title = '添加支出商业票据、银行承兑';
 			this.form.billDate = formatTime(new Date());
+		},
+		// 获取票据信息
+		getBankAcceptanceDate(inputValue) {
+			if (!inputValue) {
+				this.$message.error('票据号码为空,填充失败');
+				return;
+			}
+			// 在这里 发送请求 获取三个时间 自动填充
+			getMinIdByBillNo(inputValue).then(res => {
+				if (!res.data) {
+					this.$message.error('该票据不存在,自动填充时间失败');
+					return;
+				}
+				if (this.form.id) {
+					this.$message.warning('操作为修改票据信息,未填充时间');
+					return;
+				}
+				const obj = _.cloneDeep(res.data);
+				// 填充三个时间
+				this.$nextTick(() => {
+					this.form.billDate = obj.billDate;
+					this.form.issueDate = obj.issueDate;
+					this.form.dueDate = obj.dueDate;
+				});
+			});
 		},
 		/** 修改按钮操作 */
 		handleUpdate(row) {
