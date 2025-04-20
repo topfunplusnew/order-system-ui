@@ -109,7 +109,7 @@
 				<template slot-scope="scope">
 					<el-button v-hasPermi="['system:carapply:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
 					<el-button v-hasPermi="['system:carapply:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
-					<el-button v-hasPermi="['system:carapply:audit']" size="mini" type="warning" @click="handleAudit(scope.row)" v-if="scope.row.auditState === '待审核'">派车审核</el-button>
+					<el-button v-hasPermi="['system:carapply:audit']" size="mini" type="warning" @click="handleAudit(scope.row)" v-if="scope.row.auditState === null">派车审核</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
