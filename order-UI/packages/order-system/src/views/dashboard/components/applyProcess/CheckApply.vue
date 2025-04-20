@@ -125,6 +125,8 @@ export default {
 		<slot name="additional" />
 		<br />
 		<hr />
+		<a-alert message="如果驳回此审核信息,那么必须要填写驳回理由" banner />
+		<br />
 		<el-row>
 			<el-col :span="4">
 				<span style="font-weight: bolder; line-height: 35px">操作</span>

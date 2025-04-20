@@ -4,6 +4,7 @@ import CheckApply from '@/views/dashboard/components/applyProcess/CheckApply.vue
 import NeedToShowInfo from '@/components/NeedToShowInfo.vue';
 import { TableComponentsTools } from '@/utils/order/mapper';
 import { AuditCheckState, getTagColor } from '@/api/tool/enums';
+import { isEmpty } from '../../../../utils';
 
 export default {
 	name: 'StepInfo',
@@ -28,7 +29,9 @@ export default {
 			useApplyID: '',
 			needToShowInfo: {},
 			// 表名
-			tableNameToProp: ''
+			tableNameToProp: '',
+
+			isNeedToShowInfoEmpty: false
 		};
 	},
 	computed: {
@@ -51,6 +54,7 @@ export default {
 		});
 	},
 	methods: {
+		isEmpty,
 		findUserIdIndex(userId, arr) {
 			if (userId === undefined || userId === null || userId === '') {
 				return false;
@@ -114,9 +118,20 @@ export default {
 		// 根据表名查询
 		async checkWithTableName(tableName, tID) {
 			// 展示对应表信息
-			this.tableNameToProp = tableName;
-			const tableComponentsTools = new TableComponentsTools();
-			this.needToShowInfo = await tableComponentsTools.getInformationByTableName(tableName, tID);
+			try {
+				this.tableNameToProp = tableName;
+				const tableComponentsTools = new TableComponentsTools();
+				this.needToShowInfo = await tableComponentsTools.getInformationByTableName(tableName, tID);
+			} catch (e) {
+				this.isNeedToShowInfoEmpty = true;
+				this.$notification['warning']({
+					message: '未找到信息',
+					description: '当前需要审核的付款信息,无相关的关联信息',
+					onClick: () => {
+						console.log('Notification Clicked!');
+					}
+				});
+			}
 		}
 	}
 };
@@ -152,22 +167,26 @@ export default {
 			</el-col>
 			<el-col :span="18">
 				<el-timeline>
-					<el-timeline-item v-for="(item, index) in processInfo" :key="index" :timestamp="item.auditdate" placement="top">
+					<el-timeline-item v-for="(item, index) in processInfo" :key="index" :timestamp="item.addtime" placement="top">
 						<el-card :class="{ shadow: isDisable(item) }">
 							<el-row>
 								<el-col :span="18">
-									<h2>{{ item.flowname }}</h2>
+									<h2>{{ isEmpty(item.flowname) }}</h2>
 									<p>
-										<span class="tx-bolder">审核结果:</span>
-										<a-tag :color="isTag(item.checkState)">{{ item.checkState }}</a-tag>
+										<span>审核结果:</span>
+										<a-tag :color="isTag(item.checkState)">{{ isEmpty(item.checkState) }}</a-tag>
 									</p>
 									<p>
-										<span class="tx-bolder">审核意见:</span>
+										<span>审核意见:</span>
 										<span v-if="isChecked(item) === AuditCheckState.PASS">{{ processAuditInfo(item) }}</span>
 										<span v-else-if="isChecked(item) === AuditCheckState.REJECT">{{ processAuditInfo(item) }}</span>
 										<span v-else>
 											<a-tag :color="isTag(item.checkState)">待审核</a-tag>
 										</span>
+									</p>
+									<p>
+										<span>审核时间:</span>
+										<span>{{ isEmpty(item.auditdate) }}</span>
 									</p>
 								</el-col>
 								<el-col :span="4">
@@ -192,7 +211,10 @@ export default {
 										<i class="header-icon el-icon-info" style="margin-right: 10px"></i>
 										<span class="payment-title">[付款相关模块信息]-点此查看</span>
 									</template>
-									<NeedToShowInfo :need-to-show-info="needToShowInfo" :table-name-to-prop="tableNameToProp" />
+									<NeedToShowInfo v-if="!isNeedToShowInfoEmpty" :need-to-show-info="needToShowInfo" :table-name-to-prop="tableNameToProp" />
+									<span v-else>
+										<el-alert title="未找到对应信息" type="warning" description="当前需要审核的付款信息,无相关的关联信息" show-icon :closable="false"></el-alert>
+									</span>
 								</el-collapse-item>
 							</el-collapse>
 						</template>

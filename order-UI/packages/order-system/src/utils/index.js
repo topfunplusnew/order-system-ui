@@ -373,3 +373,12 @@ export function camelCase(str) {
 export function isNumberStr(str) {
 	return /^[+-]?(0|([1-9]\d*))(\.\d+)?$/g.test(str);
 }
+
+// 编写一个判空的方法 如果传入参数为空 那么返回 `-`
+export function isEmpty(value) {
+	if (value === null || value === undefined || value === '') {
+		return '-';
+	} else {
+		return value;
+	}
+}
