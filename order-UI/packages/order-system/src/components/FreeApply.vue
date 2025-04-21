@@ -46,19 +46,17 @@ export default {
 	computed: {
 		...mapGetters(['trueName'])
 	},
+	// 监听订单信息变化 自动填充司机信息
 	watch: {
-		'orderInfo.driverId': {
+		orderInfo: {
 			handler(val) {
-				getCars(val).then(res => {
-					// 自动填充司机信息
-					this.$nextTick(() => {
-						this.form.otherAcountsName = res.data.acountsName;
-						this.form.otherBankNo = res.data.bankNo;
-						this.form.otherBankName = res.data.bankName;
-					});
-				});
+				const query = {
+					companyId: val.driverId
+				};
+				this.getDriverAccountInfo(query);
 			},
-			deep: true
+			deep: true,
+			immediate: true
 		}
 	},
 	// 因为dialog的销毁机制 所以需要组件创建时发一次请求自动填充，还需要监听id的变化再次发请求改变
@@ -78,24 +76,37 @@ export default {
 	methods: {
 		listBankAccount,
 		listCompany,
+		// 补全司机信息的方法
+		getDriverAccountInfo(query) {
+			listBankAccount(query).then(res => {
+				if (!res.rows || res.rows.length === 0) {
+					this.$message.error('该司机未添加银行卡信息,请先为该司机添加银行卡');
+					return;
+				}
+				// 自动填充司机信息
+				this.$nextTick(() => {
+					this.form.otherAcountsName = res.rows[0].acountsName;
+					this.form.otherBankNo = res.rows[0].bankNo;
+					this.form.otherBankName = res.rows[0].bankName;
+				});
+			});
+		},
 		// 提交运费信息
 		handleProcess(that) {
 			this.$refs['form'].validate(isValid => {
 				if (isValid) {
-					// this.orderInfo就是父组件传递过来的组装的运费信息
-					Object.assign(this.form, this.orderInfo);
-					// 发送请求 添加运费信息 applyDate为现在
 					const query = {
-						...this.form,
+						...this.form, // 表单的信息
+						...this.orderInfo, // 订单信息
 						applyDate: parseTime(new Date()),
 						applyUserName: this.trueName
 					};
 					return new Promise((resolve, reject) => {
 						// 添加运费信息
 						addOrderFreight(query).then(() => {
-							that.dialogVisible = false;
-							this.reset();
 							this.$message.success('操作成功');
+							this.reset();
+							that.dialogVisible = false;
 							resolve();
 						});
 					});
@@ -122,7 +133,7 @@ export default {
 				content: null
 			};
 		},
-		handleReject() { }
+		handleReject() {}
 	}
 };
 </script>
@@ -137,11 +148,18 @@ export default {
 					</el-col>
 					<el-col :span="4">
 						<!--搜索银行卡信息-->
-						<SearchOption :limit-info="{
-							companyType: '司机',
-							acountsName: this.orderInfo.otherAcountsName
-						}" :get-data="listBankAccount" query-label="户名搜索" query-info="acountsName" :query-name="queryAcountsName"
-							@commitBack="handleCommitBack" @update:queryName="handleChange">
+						<SearchOption
+							:limit-info="{
+								acountsType: '司机',
+								companyId: this.orderInfo.driverId
+							}"
+							:get-data="listBankAccount"
+							query-label="户名搜索"
+							query-info="acountsName"
+							:query-name="queryAcountsName"
+							@commitBack="handleCommitBack"
+							@update:queryName="handleChange"
+						>
 							<template #table-columns>
 								<el-table-column label="开户行" align="center" prop="bankName" />
 								<el-table-column label="开户名" align="center" prop="acountsName" />
@@ -159,8 +177,7 @@ export default {
 				<el-input disabled v-model="form.otherBankName" placeholder="请选择" />
 			</el-form-item>
 			<el-form-item label="支付日期" prop="payDate">
-				<el-date-picker v-model="form.payDate" type="datetime" placeholder="选择日期"
-					value-format="yyyy-MM-dd HH:mm:ss" />
+				<el-date-picker v-model="form.payDate" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss" />
 			</el-form-item>
 			<el-form-item label="备注信息">
 				<el-input v-model="form.content" placeholder="请输入备注信息" />
