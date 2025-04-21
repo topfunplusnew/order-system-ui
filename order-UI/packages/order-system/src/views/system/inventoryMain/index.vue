@@ -1057,7 +1057,7 @@ export default {
 				id: null,
 				storeHouseid: null,
 				storeHouseName: null,
-				storeDate: parseTime(new Date()),
+				storeDate: new Date(),
 				landCarID: null,
 				landCarNo: null,
 				landDriverTel: null,
