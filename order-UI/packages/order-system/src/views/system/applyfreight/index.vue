@@ -246,6 +246,12 @@ export default {
 			<!-- 录入员 -->
 			<el-table-column v-if="columns[5].visible" show-overflow-tooltip prop="entry_user" label="录入员" align="center" />
 
+			<el-table-column show-overflow-tooltip prop="fleet" label="司机" align="center">
+				<template #default="scope">
+					{{ scope.row.transport_type === 'sea' ? '无' : scope.row.driverName }}
+				</template>
+			</el-table-column>
+
 			<!-- 车队 -->
 			<el-table-column v-if="columns[6].visible" show-overflow-tooltip prop="fleet" label="车队" align="center">
 				<template #default="scope">
