@@ -155,7 +155,9 @@
 			</div>
 			<div>
 				<el-button type="info" icon="el-icon-question" size="mini" @click="handleLearn">查看教程</el-button>
-				<el-button id="step1" type="warning" icon="el-icon-download" size="mini" @click="handleBackgroundDownload">一键后台下载</el-button>
+        <el-button id="step1" icon="el-icon-download" size="mini" type="warning" @click="handleBackgroundDownload">
+          预先导出
+        </el-button>
 				<el-button id="step2" type="primary" icon="el-icon-download" size="mini" @click="handleDownload">一键下载</el-button>
 				<!-- 修改这里，添加 el-popover -->
 				<el-popover placement="top" width="900" trigger="hover" popper-class="preview-popover">
@@ -176,7 +178,9 @@
 						</a-list>
 						<div v-if="fileList.length > 3" class="preview-footer">还有 {{ fileList.length - 3 }} 个文件，点击查看更多</div>
 					</div>
-					<el-button id="step3" slot="reference" type="success" icon="el-icon-folder" size="mini" @click="showFileList">查看下载列表</el-button>
+          <el-button id="step3" slot="reference" icon="el-icon-folder" size="mini" type="success" @click="showFileList">
+            下载列表
+          </el-button>
 				</el-popover>
 			</div>
 		</div>
@@ -244,11 +248,11 @@
 </template>
 
 <script>
-import { getDailyProfit, getDeliveryList } from '../api/system/statement';
-import { mixin_printHTML } from './dashboard/mixins/print';
-import { parseTime } from '@/utils/ruoyi';
-import { mapGetters, mapState } from 'vuex';
-import { deleteExport, downloadFileByName, getAllExportList, startExportAll } from '../api/system/oncedownload/index';
+import {getDailyProfit, getDeliveryList} from '../api/system/statement';
+import {mixin_printHTML} from './dashboard/mixins/print';
+import {parseTime} from '@/utils/ruoyi';
+import {mapGetters} from 'vuex';
+import {deleteExport, downloadFileByName, getAllExportList, startExportAll} from '../api/system/oncedownload/index';
 
 export default {
 	name: 'Index',
@@ -335,23 +339,23 @@ export default {
 				{
 					target: '#step1',
 					header: {
-						title: '一键后台下载'
+            title: '预先导出'
 					},
-					content: `点击这里可以异步下载文件(文件在服务器下载)，下载完成后可以在文件列表中查看`
+          content: `点击这个按钮,服务器会立刻开始导出数据并打包成excel,但不会下载到本地,稍后你可以在文件列表中查看到文件并下载,这样可以减少等待时间,推荐使用`
 				},
 				{
 					target: '#step2',
 					header: {
 						title: '一键下载'
 					},
-					content: `点击这里可以同步下载文件，需要等待下载完成`
+          content: `点击这个按钮,服务器会立刻准备导出数据,并直接写入到当前电脑,稍后,你可以在浏览器的下载列表中查看到文件`
 				},
 				{
 					target: '#step3',
 					header: {
 						title: '文件列表'
 					},
-					content: `点击这里可以查看所有下载历史记录,可以在这里选择需要下载的文件`
+          content: `鼠标悬浮在按钮上可以查看最近的文件列表,点击按钮可以查看所有的文件列表,你可以在这里下载服务器预先导出的文件`
 				}
 			],
 			tourCallBacks: {
