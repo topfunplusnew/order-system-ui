@@ -6,6 +6,10 @@ export default {
 			type: Object,
 			default: () => ({})
 		}
+	},
+	methods: {
+		handleProcess() {},
+		handleReject() {}
 	}
 };
 </script>

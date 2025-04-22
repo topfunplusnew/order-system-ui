@@ -258,3 +258,8 @@ export function getTagColor(checkState) {
 			return '';
 	}
 }
+
+export const APPLY_FREIGHT_SOURCE_TYPE = {
+	GOODS_ORDER: '订单',
+	INVENTORY_MAIN: '库存'
+}

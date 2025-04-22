@@ -4,6 +4,11 @@ import { mixin_order_freeApply } from '../../dashboard/mixins/order/order_freeAp
 import { common_dialog } from '../../dashboard/mixins/common/common_dialog';
 import DialogWrapper from '../../dashboard/components/common/DialogWrapper.vue';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
+import { getGoodsOrder } from '@/api/system/goodsOrder';
+import GOODS_ORDER from '@/components/NeedToShow/GOODS_ORDER.vue';
+import { APPLY_FREIGHT_SOURCE_TYPE } from '@/api/tool/enums';
+import { getInventoryMain } from '@/api/system/inventoryMain';
+import INVENTORY from '@/components/NeedToShow/INVENTORY.vue';
 
 export default {
 	name: 'ApplyFreight',
@@ -34,6 +39,8 @@ export default {
 			receiptImageUrl: '',
 			attachmentDialogVisible: false,
 			attachments: [],
+			orderDetailsDialogVisible: false,
+			currentOrder: null,
 			columns: [
 				{
 					key: 0,
@@ -156,6 +163,63 @@ export default {
 			}
 			this.attachments = receiveProof.split('|').filter(Boolean);
 			this.attachmentDialogVisible = true;
+		},
+		// 查看该运费信息的订单或者库存的信息
+		viewOrderDetails(row) {
+			// 如果该行的订单或者库存的id不存在,那么就报错
+			if (!row.source_id) {
+				this.$message.error('该行数据有误, 订单编号或库存编号为空');
+				return;
+			}
+
+			// 判断是订单产生的运费 还是库存产生的运费
+			switch (row.source) {
+				case APPLY_FREIGHT_SOURCE_TYPE.GOODS_ORDER: {
+					getGoodsOrder(row.source_id).then(res => {
+						if (!res.data) {
+							this.$message.error('该行为订单产生的运费,但获取订单信息有误!');
+							return;
+						}
+						this.currentOrder = res.data;
+						this.openDialog(
+							GOODS_ORDER,
+							'订单信息',
+							'1000px',
+							{
+								needToShowInfo: this.currentOrder
+							},
+							false
+						);
+					});
+					break;
+				}
+				case APPLY_FREIGHT_SOURCE_TYPE.INVENTORY_MAIN: {
+					getInventoryMain(row.source_id).then(res => {
+						if (!res.data) {
+							this.$message.error('该行为库存产生的运费,但获取库存信息失误');
+							return;
+						}
+						this.currentOrder = res.data;
+						this.openDialog(
+							INVENTORY,
+							'库存信息',
+							'1000px',
+							{
+								needToShowInfo: this.currentOrder
+							},
+							false
+						);
+					});
+					break;
+				}
+			}
+		},
+		handleApplyFreight(row) {
+			if (row.transport_type === 'land') {
+				this.handleApplyLandFree(row);
+			} else if (row.transport_type === 'sea') {
+				this.handleApplySeaFree(row);
+			}
 		}
 	},
 	created() {
@@ -297,21 +361,11 @@ export default {
 			<!-- 已支付金额 -->
 			<el-table-column v-if="columns[16].visible" show-overflow-tooltip prop="paid_amount" label="已支付金额" align="center" />
 
-			<!-- 运费申请 -->
-			<el-table-column show-overflow-tooltip label="运费申请" align="center" class-name="small-padding fixed-width" width="100px" fixed="right">
+			<!-- 操作列 -->
+			<el-table-column show-overflow-tooltip label="操作" align="center" class-name="small-padding fixed-width" width="180px" fixed="right">
 				<template #default="scope">
-					<el-dropdown size="mini" type="text">
-						<el-button type="text" :disabled="scope.row.payment_state !== '未申请'">操作</el-button>
-						<el-dropdown-menu slot="dropdown">
-							<el-dropdown-item>
-								<el-row v-if="scope.row.payment_state === '未申请'">
-									<el-button v-if="scope.row.transport_type === 'land'" size="mini" type="warning" @click="handleApplyLandFree(scope.row)">陆运费申请</el-button>
-									<el-button v-if="scope.row.transport_type === 'sea'" size="mini" type="primary" @click="handleApplySeaFree(scope.row)">海运费申请</el-button>
-								</el-row>
-								<el-row v-else>无运费信息</el-row>
-							</el-dropdown-item>
-						</el-dropdown-menu>
-					</el-dropdown>
+					<el-button size="mini" type="text" @click="viewOrderDetails(scope.row)">查看详情</el-button>
+					<el-button size="mini" type="text" :disabled="scope.row.payment_state !== '未申请'" @click="handleApplyFreight(scope.row)">运费申请</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
