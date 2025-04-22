@@ -13,8 +13,7 @@
 		</el-form>
 		<el-row>
 			<el-col :span="5">
-				<el-tree :data="tempCategories" :props="defaultProps" :load="getCategoryList"
-					@node-click="handleNodeClick">
+				<el-tree :data="tempCategories" :props="defaultProps" :load="getCategoryList" @node-click="handleNodeClick">
 					<span slot-scope="{ data }" class="custom-tree-node">
 						<span>
 							<i class="el-icon-document-remove"></i>
@@ -23,8 +22,7 @@
 					</span>
 				</el-tree>
 				<div style="width: 450px">
-					<pagination v-show="category_total > 0" :total="category_total" :page.sync="category_pageNum"
-						:limit.sync="category_pageSize" @pagination="getCategoryList" />
+					<pagination v-show="category_total > 0" :total="category_total" :page.sync="category_pageNum" :limit.sync="category_pageSize" @pagination="getCategoryList" />
 				</div>
 			</el-col>
 			<el-col :span="19">
@@ -47,17 +45,25 @@
 						<!--        导出-->
 						<template #export>
 							<el-col :span="1.5">
-								<el-button v-hasPermi="['system:company:export']" plain icon="el-icon-folder-opened"
-									size="mini" @click="handleExport"></el-button>
+								<el-button v-hasPermi="['system:company:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
 							</el-col>
 						</template>
 					</right-toolbar>
 				</el-row>
-				<el-table id="printBox" v-horizontal-scroll="'always'" v-loading="loading" border
-					:data="productLevelList" size="mini" :cell-style="() => {
-						return { padding: '.5px' };
-					}
-						" @selection-change="handleSelectionChange">
+				<el-table
+					id="printBox"
+					v-horizontal-scroll="'always'"
+					v-loading="loading"
+					border
+					:data="productLevelList"
+					size="mini"
+					:cell-style="
+						() => {
+							return { padding: '.5px' };
+						}
+					"
+					@selection-change="handleSelectionChange"
+				>
 					<el-table-column v-if="columns[0].visible" label="级别编码" align="center" prop="levelNo" />
 					<el-table-column v-if="columns[1].visible" label="级别名称" align="center" prop="levelName" />
 					<el-table-column v-if="columns[2].visible" label="分类编号" align="center" prop="categoryNo" />
@@ -68,29 +74,24 @@
 					<el-table-column v-if="columns[7].visible" label="吨位差" align="center" prop="tonnage" />
 					<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
 						<template slot-scope="scope">
-							<el-button v-hasPermi="['system:productlevel:edit']" size="mini" type="primary"
-								@click="handleUpdate(scope.row)">修改</el-button>
-							<el-button v-hasPermi="['system:productlevel:remove']" size="mini" type="danger"
-								@click="handleDelete(scope.row)">删除</el-button>
+							<el-button v-hasPermi="['system:productlevel:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
+							<el-button v-hasPermi="['system:productlevel:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
 						</template>
 					</el-table-column>
 				</el-table>
 			</el-col>
 		</el-row>
 
-		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum"
-			:limit.sync="queryParams.pageSize" @pagination="getList" />
+		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 		<!--    添加产品分类的弹窗-->
-		<el-dialog :close-on-click-modal="false" :show-close="false" title="添加产品分类" :visible.sync="addCategoryOpen"
-			width="600px">
+		<el-dialog :close-on-click-modal="false" :show-close="false" title="添加产品分类" :visible.sync="addCategoryOpen" width="600px">
 			<el-row>
 				<el-col :span="12">
 					<el-row>
 						<span>级别编码</span>
 					</el-row>
 					<el-row>
-						<el-input v-model="tempCategoryInfo.levelNo" placeholder="请输入级别编码"
-							@input="validateLevelNo"></el-input>
+						<el-input v-model="tempCategoryInfo.levelNo" placeholder="请输入级别编码" @input="validateLevelNo"></el-input>
 					</el-row>
 				</el-col>
 				<el-col :span="12">
@@ -115,12 +116,10 @@
 						<template slot-scope="scope">
 							<el-row>
 								<el-col :span="5">
-									<el-button type="text" size="mini"
-										@click="handleClickCategoryList(scope.row)">编辑</el-button>
+									<el-button type="text" size="mini" @click="handleClickCategoryList(scope.row)">编辑</el-button>
 								</el-col>
 								<el-col :span="5">
-									<el-button type="text" size="mini"
-										@click="handleDeteleLevel(scope.row)">删除分类</el-button>
+									<el-button type="text" size="mini" @click="handleDeteleLevel(scope.row)">删除分类</el-button>
 								</el-col>
 							</el-row>
 						</template>
@@ -128,8 +127,7 @@
 				</el-table>
 
 				<!--        分页-->
-				<pagination v-show="level_total > 0" :total="level_total" :page.sync="level_pageNum"
-					:limit.sync="level_pageSize" @pagination="getDictsData" />
+				<pagination v-show="level_total > 0" :total="level_total" :page.sync="level_pageNum" :limit.sync="level_pageSize" @pagination="getDictsData" />
 			</el-row>
 			<span slot="footer" class="dialog-footer">
 				<el-button @click="cancelAddProductLevel">取 消</el-button>
@@ -138,16 +136,12 @@
 		</el-dialog>
 
 		<!--    添加产品级别的弹窗-->
-		<el-dialog :close-on-click-modal="false" :show-close="false" title="添加产品级别" :visible.sync="addProductLevelOpen"
-			width="600px">
+		<el-dialog :close-on-click-modal="false" :show-close="false" title="添加产品级别" :visible.sync="addProductLevelOpen" width="600px">
 			<!--      添加产品级别的表单-->
-			<el-form ref="productForm" :model="addCategoryModel" size="mini" label-width="120px" :rules="rules"
-				@keyup.enter.native="submitAddLevel" @submit.native.prevent="submitAddLevel">
+			<el-form ref="productForm" :model="addCategoryModel" size="mini" label-width="120px" :rules="rules" @keyup.enter.native="submitAddLevel" @submit.native.prevent="submitAddLevel">
 				<el-form-item label="分类" prop="categoryName">
-					<el-select v-model="addCategoryModel.categoryName" placeholder="请选择分类名称"
-						@change="handleChangeLevelNo">
-						<el-option v-for="item in dict.type.order_product_categories" :key="item.value"
-							:label="item.label" :value="item.label"></el-option>
+					<el-select v-model="addCategoryModel.categoryName" placeholder="请选择分类名称" @change="handleChangeLevelNo">
+						<el-option v-for="item in dict.type.order_product_categories" :key="item.value" :label="item.label" :value="item.label"></el-option>
 					</el-select>
 				</el-form-item>
 				<el-form-item label="分类编号" prop="categoryNo">
@@ -179,7 +173,7 @@
 		</el-dialog>
 
 		<!-- 添加或修改产品级别对话框 -->
-		<!-- <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
+		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="80px" @keyup.enter.native="submitForm">
 				<el-form-item label="级别编码" prop="levelNo">
 					<el-input v-model="form.levelNo" placeholder="请输入支付类型" />
@@ -212,7 +206,7 @@
 				<el-button type="primary" @click="submitForm">确 定</el-button>
 				<el-button @click="cancel">取 消</el-button>
 			</div>
-		</el-dialog> -->
+		</el-dialog>
 	</div>
 </template>
 
@@ -716,7 +710,7 @@ export default {
 					this.getList();
 					this.$modal.msgSuccess('删除成功');
 				})
-				.catch(() => { });
+				.catch(() => {});
 		},
 		/** 导出按钮操作 */
 		handleExport() {

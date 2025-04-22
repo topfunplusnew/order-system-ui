@@ -91,31 +91,31 @@ export function numToChineseUppercase(n) {
 
 //需要提取日期中的年月日部分，然后将同一天的数据的 value 相加
 // 并且要把借贷的详细变成列表作为属性
-export function aggregateByDay(data, key, dateKey) {
-	if (typeof data !== 'object' || !Array.isArray(data)) {
-		throw new Error('data 必须是数组');
-	}
-	if (typeof key !== 'string' || typeof dateKey !== 'string') {
-		throw new Error('key 和 dateKey 必须是字符串');
-	}
-
-	// 使用 reduce 聚合数据
-	return Object.values(
-		data.reduce((acc, curr) => {
-			// 正则匹配日期中的年月日部分
-			const date = curr[dateKey].match(/^(\d{4}-\d{2}-\d{2})/)[1];
-
-			// 如果日期已经存在，则将 value 相加；否则，初始化
-			if (acc[date]) {
-				acc[date][key] = Number(acc[date][key]) + Number(curr[key]);
-			} else {
-				acc[date] = {
-					...curr,
-					[dateKey]: date,
-					[key]: curr[key] // 将借贷详细变成列表
-				};
-			}
-			return acc;
-		}, {})
-	);
-}
+// export function aggregateByDay(data, key, dateKey) {
+// 	if (typeof data !== 'object' || !Array.isArray(data)) {
+// 		throw new Error('data 必须是数组');
+// 	}
+// 	if (typeof key !== 'string' || typeof dateKey !== 'string') {
+// 		throw new Error('key 和 dateKey 必须是字符串');
+// 	}
+//
+// 	// 使用 reduce 聚合数据
+// 	return Object.values(
+// 		data.reduce((acc, curr) => {
+// 			// 正则匹配日期中的年月日部分
+// 			const date = curr[dateKey].match(/^(\d{4}-\d{2}-\d{2})/)[1];
+//
+// 			// 如果日期已经存在，则将 value 相加；否则，初始化
+// 			if (acc[date]) {
+// 				acc[date][key] = Number(acc[date][key]) + Number(curr[key]);
+// 			} else {
+// 				acc[date] = {
+// 					...curr,
+// 					[dateKey]: date,
+// 					[key]: curr[key] // 将借贷详细变成列表
+// 				};
+// 			}
+// 			return acc;
+// 		}, {})
+// 	);
+// }
