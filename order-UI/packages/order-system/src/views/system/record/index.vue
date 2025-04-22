@@ -144,7 +144,7 @@
 						<el-col :span="4">
 							<SearchOption
 								:get-data="listBankAccount"
-								:limit-info="{}"
+								:limit-info="{ acountsType: PUBLIC_DICT_TYPE.SELF_COMPANY }"
 								query-info="acountsName"
 								:query-name="querySourceBankNo"
 								query-label="户名"
@@ -181,7 +181,7 @@
 							<el-col :span="3">
 								<SearchOption
 									:get-data="listBankAccount"
-									:limit-info="{ acountsType: '己方公司' }"
+									:limit-info="{ acountsType: PUBLIC_DICT_TYPE.SELF_COMPANY }"
 									query-info="acountsName"
 									:query-name="querySupplier"
 									query-label="户名"
@@ -216,7 +216,7 @@
 								<el-input disabled v-model="sourceName" type="text" placeholder="请选择" />
 							</el-col>
 							<!--              如果是司机-->
-							<el-col v-if="form.sourceCompanyType === '司机'" :span="4">
+							<el-col v-if="form.sourceCompanyType === PUBLIC_DICT_TYPE.DRIVER" :span="4">
 								<SearchOption
 									:limit-info="{}"
 									:get-data="listCars"
@@ -234,7 +234,7 @@
 								</SearchOption>
 							</el-col>
 							<!--              如果是己方公司 -->
-							<el-col v-if="form.sourceCompanyType === '己方公司'" :span="4">
+							<el-col v-if="form.sourceCompanyType === PUBLIC_DICT_TYPE.SELF_COMPANY" :span="4">
 								<SearchOption
 									:limit-info="{
 										acountsType: form.sourceCompanyType
@@ -295,7 +295,7 @@
 						<el-col :span="4">
 							<SearchOption
 								:get-data="listBankAccount"
-								:limit-info="{}"
+								:limit-info="{ acountsType: PUBLIC_DICT_TYPE.SELF_COMPANY }"
 								query-info="acountsName"
 								:query-name="querySourceBankNo"
 								query-label="户名"
@@ -329,7 +329,7 @@
 							<el-col :span="3">
 								<SearchOption
 									:get-data="listBankAccount"
-									:limit-info="{ acountsType: '己方公司' }"
+									:limit-info="{ acountsType: PUBLIC_DICT_TYPE.SELF_COMPANY }"
 									query-info="acountsName"
 									:query-name="queryCustomer"
 									query-label="户名"
@@ -639,6 +639,9 @@ export default {
 	},
 	// 计算属性
 	computed: {
+		PUBLIC_DICT_TYPE() {
+			return PUBLIC_DICT_TYPE;
+		},
 		CASH_TYPE() {
 			return CASH_TYPE;
 		},

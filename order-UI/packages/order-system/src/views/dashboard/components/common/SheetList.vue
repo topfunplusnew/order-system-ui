@@ -85,6 +85,10 @@ export default {
 				arr.push(this.mapperParams(item)); // 映射关系
 			}
 
+			// 过滤掉arr中 属性全部为undefined的元素
+			arr = arr.filter(item => !Object.values(item).every(value => !value));
+			console.log(arr);
+
 			// 检查excel中是否有同时存在的
 			let ok = arr.every(item => this.purchaseHandler(item));
 			if (!ok) {
@@ -158,15 +162,10 @@ export default {
 		// 对公司进行校验
 		purchaseHandler(item) {
 			// 如果都为0
-			if (!item.purchaseId && !item.sellerId) {
+			if (item.purchaseId === 0 && item.sellerId === 0) {
 				return false;
-			}
-			// 如果购买方和销方的id都不为0
-			if (item.purchaseId && item.sellerId) {
-				return false;
-			}
-
-			return !(item.purchaseId < 0 || item.sellerId < 0);
+				// 如果购买方和销方的id都不为0
+			} else return !(item.purchaseId !== 0 && item.sellerId !== 0);
 		},
 		// 弹窗左侧供应商列表的筛选
 		handleFilter() {

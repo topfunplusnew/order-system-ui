@@ -261,7 +261,7 @@ export const PARAMS_TRANSFORM = {
 		allPayments: '总支付金额',
 		allPaymentFactory: '工厂总支付金额',
 		allTonnage: '总吨位',
-		allFreightPrice: '总运费价格',
+		allFreightPrice: '平均运费单价',
 		orderDetailList: '订单详情列表'
 	},
 	orderfreight: {
@@ -362,7 +362,7 @@ export const PARAMS_TRANSFORM = {
 		allLandFreight: '总陆运费',
 		allSeaFreight: '总海运费',
 		allTonnage: '总吨位',
-		allFreightPrice: '总运费价格',
+		allFreightPrice: '平均运费单价',
 		fleet: '车队',
 		receiveProof: '收货凭证',
 		landBankNo: '陆运银行账号',
