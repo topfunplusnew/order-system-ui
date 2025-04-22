@@ -23,7 +23,6 @@ export const fix_2 = value => {
 	return Number(value).toFixed(2);
 };
 
-
 // 金钱转大写
 export function numToChineseUppercase(n) {
 	if (n === 0) return '零元整'; // 特殊处理 0 元
@@ -116,7 +115,6 @@ export function aggregateByDay(data, key, dateKey) {
 					[key]: curr[key] // 将借贷详细变成列表
 				};
 			}
-
 			return acc;
 		}, {})
 	);

@@ -377,6 +377,8 @@ export default {
 			// scope.row.actualPieces = scope.row.pieces = res;
 			// 计算吨位
 			scope.row.tonnage = fix(((Number(scope.row.height) - Number(scope.row.erro)) * scope.row.length * scope.row.width * scope.row.pieces) / 1000000 / 20 / 20);
+			// 自动填写卸货片数
+			scope.row.actualPieces = scope.row.pieces;
 			if (scope.row.paymentFactory > 0) {
 				this.calculatePaymentFactory(scope);
 			}
@@ -1049,7 +1051,6 @@ export default {
 								v-model.lazy="scope.row.additionalFees"
 								@input="() => calculateLandFreight(scope)"
 								:placeholder="scope.row.landFreightPrice <= 0 ? '请先完善陆运费单价' : '请输入加费'"
-								:disabled="scope.row.landFreightPrice <= 0"
 							/>
 						</template>
 					</el-table-column>

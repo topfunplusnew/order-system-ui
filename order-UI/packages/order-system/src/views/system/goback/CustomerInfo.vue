@@ -211,7 +211,7 @@ export default {
 				customer: '',
 				companyId: null
 			});
-			this.tableData = [];
+			// this.tableData = [];
 		},
 		getSummaries(param) {
 			const { columns, data } = param;
