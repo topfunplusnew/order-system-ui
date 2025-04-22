@@ -1,22 +1,17 @@
 <template>
 	<div class="app-container">
-		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true"
-			label-width="120px">
+		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="120px">
 			<el-form-item label="开始日期" prop="startDate">
-				<el-date-picker v-model="queryParams.startDate" type="datetime" placeholder="选择日期"
-					value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+				<el-date-picker v-model="queryParams.startDate" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 			</el-form-item>
 			<el-form-item label="结束日期" prop="endDate">
-				<el-date-picker v-model="queryParams.endDate" type="datetime" placeholder="选择日期"
-					value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+				<el-date-picker v-model="queryParams.endDate" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 			</el-form-item>
 			<el-form-item label="供应商/客户" prop="searchCompamyName">
-				<el-input v-model="queryParams.searchCompamyName" placeholder="请输入供应商/客户" clearable
-					@keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.searchCompamyName" placeholder="请输入供应商/客户" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="开票单位" prop="searchInvoiceCompanyName">
-				<el-input v-model="queryParams.searchInvoiceCompanyName" placeholder="请输入开票单位" clearable
-					@keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.searchInvoiceCompanyName" placeholder="请输入开票单位" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -38,72 +33,58 @@
 				<!--        导出-->
 				<template #export>
 					<el-col :span="1.5">
-						<el-button v-hasPermi="['system:allinvoice:export']" plain icon="el-icon-folder-opened"
-							size="mini" @click="handleExport"></el-button>
+						<el-button v-hasPermi="['system:allinvoice:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
 					</el-col>
 				</template>
 			</right-toolbar>
 		</el-row>
 		<el-row></el-row>
-		<el-table id="printBox" v-horizontal-scroll="'always'" v-loading="loading" border :data="invoiceInList"
-			:cell-style="() => {
+		<el-table
+			id="printBox"
+			v-horizontal-scroll="'always'"
+			v-loading="loading"
+			border
+			:data="invoiceInList"
+			:cell-style="
+				() => {
 					return { padding: '1.5px' };
 				}
-				" size="mini" @selection-change="handleSelectionChange">
-			<el-table-column v-if="columns[0].visible" label="开票日期" align="center" prop="invoiceDate" width="140"
-				show-overflow-tooltip />
-			<el-table-column v-if="columns[1].visible" label="发票金额" align="center" prop="invoiceAmount" width="140"
-				show-overflow-tooltip />
-			<el-table-column v-if="columns[2].visible" label="公司类型" align="center" prop="companyType" width="140"
-				show-overflow-tooltip />
-			<el-table-column v-if="columns[3].visible" label="公司名称" align="center" prop="companyName" width="140"
-				show-overflow-tooltip />
-			<el-table-column v-if="columns[4].visible" label="开票单位名称" align="center" prop="invoiceCompanyName"
-				width="140" show-overflow-tooltip />
-			<el-table-column v-if="columns[5].visible" label="票点" align="center" prop="ticketPoint" width="140"
-				show-overflow-tooltip />
-			<el-table-column v-if="columns[6].visible" label="票点金额" align="center" prop="ticketPointAmount" width="140"
-				show-overflow-tooltip />
-			<el-table-column v-if="columns[7].visible" label="是否为订单税" align="center" prop="isOrderTax" width="140"
-				show-overflow-tooltip>
+			"
+			size="mini"
+			@selection-change="handleSelectionChange"
+		>
+			<el-table-column v-if="columns[0].visible" label="开票日期" align="center" prop="invoiceDate" width="140" show-overflow-tooltip />
+			<el-table-column v-if="columns[1].visible" label="发票金额" align="center" prop="invoiceAmount" width="140" show-overflow-tooltip />
+			<el-table-column v-if="columns[2].visible" label="公司类型" align="center" prop="companyType" width="140" show-overflow-tooltip />
+			<el-table-column v-if="columns[3].visible" label="公司名称" align="center" prop="companyName" width="140" show-overflow-tooltip />
+			<el-table-column v-if="columns[4].visible" label="开票单位名称" align="center" prop="invoiceCompanyName" width="140" show-overflow-tooltip />
+			<el-table-column v-if="columns[5].visible" label="票点" align="center" prop="ticketPoint" width="140" show-overflow-tooltip />
+			<el-table-column v-if="columns[6].visible" label="票点金额" align="center" prop="ticketPointAmount" width="140" show-overflow-tooltip />
+			<el-table-column v-if="columns[7].visible" label="是否为订单税" align="center" prop="isOrderTax" width="140" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<el-tag :type="scope.row.isOrderTax === 0 ? 'danger' : 'success'" disable-transitions>
 						{{ scope.row.isOrderTax === 0 ? '否' : '是' }}
 					</el-tag>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[8].visible" label="供应商名称" align="center" prop="supplier" width="140"
-				show-overflow-tooltip />
-			<el-table-column v-if="columns[9].visible" label="客户名称" align="center" prop="customer" width="140"
-				show-overflow-tooltip />
-			<el-table-column v-if="columns[10].visible" label="采购发票金额" align="center" prop="purchaseInvoiceAmount"
-				width="140" show-overflow-tooltip />
-			<el-table-column v-if="columns[11].visible" label="票点成本（点数）" align="center" prop="ticketPointCost"
-				width="140" show-overflow-tooltip />
-			<el-table-column v-if="columns[12].visible" label="票点成本（金额）" align="center" prop="ticketPointCostAmount"
-				width="140" show-overflow-tooltip />
-			<el-table-column v-if="columns[13].visible" label="票点收入（点数）" align="center" prop="ticketPointIncome"
-				width="140" show-overflow-tooltip />
-			<el-table-column v-if="columns[14].visible" label="票点收入（金额）" align="center" prop="ticketPointIncomeAmount"
-				width="140" show-overflow-tooltip />
-			<el-table-column v-if="columns[15].visible" label="票点差额" align="center" prop="ticketPointDifference"
-				width="140" show-overflow-tooltip />
-			<el-table-column v-if="columns[16].visible" label="总货款" align="center" prop="allPayments" width="140"
-				show-overflow-tooltip />
-			<el-table-column v-if="columns[17].visible" label="实际开票日期" align="center" prop="orderDate" width="140"
-				show-overflow-tooltip />
-			<el-table-column v-if="columns[18].visible" label="当月欠票" align="center" prop="oweamount" width="140"
-				show-overflow-tooltip />
-			<el-table-column v-if="columns[19].visible" label="备注" align="center" prop="comments" width="140"
-				show-overflow-tooltip />
+			<el-table-column v-if="columns[8].visible" label="供应商名称" align="center" prop="supplier" width="140" show-overflow-tooltip />
+			<el-table-column v-if="columns[9].visible" label="客户名称" align="center" prop="customer" width="140" show-overflow-tooltip />
+			<el-table-column v-if="columns[10].visible" label="采购发票金额" align="center" prop="purchaseInvoiceAmount" width="140" show-overflow-tooltip />
+			<el-table-column v-if="columns[11].visible" label="票点成本（点数）" align="center" prop="ticketPointCost" width="140" show-overflow-tooltip />
+			<el-table-column v-if="columns[12].visible" label="票点成本（金额）" align="center" prop="ticketPointCostAmount" width="140" show-overflow-tooltip />
+			<el-table-column v-if="columns[13].visible" label="票点收入（点数）" align="center" prop="ticketPointIncome" width="140" show-overflow-tooltip />
+			<el-table-column v-if="columns[14].visible" label="票点收入（金额）" align="center" prop="ticketPointIncomeAmount" width="140" show-overflow-tooltip />
+			<el-table-column v-if="columns[15].visible" label="票点差额" align="center" prop="ticketPointDifference" width="140" show-overflow-tooltip />
+			<el-table-column v-if="columns[16].visible" label="总货款" align="center" prop="allPayments" width="140" show-overflow-tooltip />
+			<el-table-column v-if="columns[17].visible" label="实际开票日期" align="center" prop="orderDate" width="140" show-overflow-tooltip />
+			<el-table-column v-if="columns[18].visible" label="当月欠票" align="center" prop="oweamount" width="140" show-overflow-tooltip />
+			<el-table-column v-if="columns[19].visible" label="备注" align="center" prop="comments" width="140" show-overflow-tooltip />
 		</el-table>
 
-		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum"
-			:limit.sync="queryParams.pageSize" @pagination="getList" />
+		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改发票购入信息对话框 -->
-		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px"
-			append-to-body>
+		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="80px">
 				<el-form-item label="开票日期" prop="invoiceDate">
 					<el-input v-model="form.invoiceDate" placeholder="请输入开票日期" />
@@ -335,30 +316,30 @@ export default {
 		},
 		/** 修改按钮操作 */
 		/* handleUpdate(row) {
-	  //修改之前的操作
-	  this.$prompt('请输入编辑原因', '提示', {
-		confirmButtonText: '确定',
-		cancelButtonText: '取消',
-		type: 'warning'
-	  }).then(({value}) => {
-		addReason({reason: value, tableName: TableName.INVOICE_IN, tid: row.id, modifyTime: this.modifyTime})
-		  .then(res => {
-			this.$message.success('提交成功')
-			this.reset();
-			const id = row.id || this.ids
-			getInvoiceIn(id).then(response => {
-			  this.form = response.data;
-			  this.open = true;
-			  this.title = "修改发票购入信息";
-			});
-		  })
-	  }).catch(() => {
-		this.$message({
-		  type: 'warning',
-		  message: '请先输入编辑原因!'
-		});
-	  });
-	},*/
+    //修改之前的操作
+    this.$prompt('请输入编辑原因', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+    }).then(({value}) => {
+    addReason({reason: value, tableName: TableName.INVOICE_IN, tid: row.id, modifyTime: this.modifyTime})
+      .then(res => {
+      this.$message.success('提交成功')
+      this.reset();
+      const id = row.id || this.ids
+      getInvoiceIn(id).then(response => {
+        this.form = response.data;
+        this.open = true;
+        this.title = "修改发票购入信息";
+      });
+      })
+    }).catch(() => {
+    this.$message({
+      type: 'warning',
+      message: '请先输入编辑原因!'
+    });
+    });
+  },*/
 		// handleUpdate(row) {
 		// 	this.reset();
 		// 	const id = row.id || this.ids;
@@ -400,7 +381,7 @@ export default {
 					this.getList();
 					this.$modal.msgSuccess('删除成功');
 				})
-				.catch(() => { });
+				.catch(() => {});
 		},
 		/** 导出按钮操作 */
 		handleExport() {

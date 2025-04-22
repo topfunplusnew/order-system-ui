@@ -16,7 +16,6 @@ export default {
 			<el-descriptions title="库存详细信息" :column="3" border>
 				<el-descriptions-item label="供应商">{{ needToShowInfo.supplier || '暂无数据' }}</el-descriptions-item>
 				<el-descriptions-item label="添加时间">{{ needToShowInfo.addtime || '暂无数据' }}</el-descriptions-item>
-				<el-descriptions-item label="总运费单价">{{ needToShowInfo.allFreightPrice || '0' }} 元</el-descriptions-item>
 				<el-descriptions-item label="子项陆运费之和">{{ needToShowInfo.allLandFreight || '0' }} 元</el-descriptions-item>
 				<el-descriptions-item label="子项海运费之和">{{ needToShowInfo.allSeaFreight || '0' }} 元</el-descriptions-item>
 				<el-descriptions-item label="子项吨位之和">{{ needToShowInfo.allTonnage || '0' }} 吨</el-descriptions-item>

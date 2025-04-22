@@ -32,7 +32,7 @@ export const TableConfig = {
 			allPayments: '总货款金额(元)',
 			allPaymentFactory: '出厂货款(元)',
 			allTonnage: '总吨位(吨)',
-			allFreightPrice: '总运费(元)'
+			allFreightPrice: '平均运费单价(元)'
 		},
 		params: [
 			{ name: 'landFreight', label: '陆运运费(元)' },
@@ -40,7 +40,7 @@ export const TableConfig = {
 			{ name: 'allPayments', label: '总货款金额(元)' },
 			{ name: 'allPaymentFactory', label: '出厂货款(元)' },
 			{ name: 'allTonnage', label: '总吨位(吨)' },
-			{ name: 'allFreightPrice', label: '总运费(元)' }
+			{ name: 'allFreightPrice', label: '平均运费单价(元)' }
 		],
 		extraParams: [],
 		options(key, value) {
@@ -232,13 +232,13 @@ export const TableConfig = {
 			landBankName: '陆运开户行',
 			seaBankName: '海运开户行',
 			allTonnage: '总吨位',
-			allFreightPrice: '总运费单价',
+			allFreightPrice: '平均运费单价',
 			fleet: '车队',
 			checkState: '审核状态'
 		},
 		params: [
 			{ name: 'allTonnage', label: '总吨位' },
-			{ name: 'allFreightPrice', label: '总运费单价' }
+			{ name: 'allFreightPrice', label: '平均运费单价' }
 		],
 		options(key, value) {
 			switch (key) {

@@ -11,7 +11,7 @@
 				<el-input v-model="queryParams.customer" placeholder="请输入客户名称" clearable size="mini" @keyup.enter.native="handleQuery"></el-input>
 			</el-form-item>
 			<el-form-item label="供应商" prop="supplierNames">
-				<el-input v-model="queryParams.supplierNames" placeholder="请输入供应商名称" clearable size="mini" @keyup.enter.native="handleQuery"></el-input>
+				<el-input v-model="queryParams.params.supplierNames" placeholder="请输入供应商名称" clearable size="mini" @keyup.enter.native="handleQuery"></el-input>
 			</el-form-item>
 			<el-form-item label="司机名称" prop="landDriverName">
 				<el-input v-model="queryParams.landDriverName" placeholder="请输入司机名称" clearable size="mini" @keyup.enter.native="handleQuery"></el-input>
@@ -81,7 +81,8 @@ export default {
 			queryParams: {
 				params: {
 					isIncludeTaxSale: null,
-					isIncludeTaxFactory: null
+					isIncludeTaxFactory: null,
+					supplierNames: null
 				}
 			}
 		};
@@ -153,7 +154,8 @@ export default {
 				comments: null,
 				params: {
 					isIncludeTaxSale: null,
-					isIncludeTaxFactory: null
+					isIncludeTaxFactory: null,
+					supplierNames: null
 				}
 			};
 		}

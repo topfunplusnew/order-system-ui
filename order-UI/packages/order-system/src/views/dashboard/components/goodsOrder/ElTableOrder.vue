@@ -387,7 +387,11 @@ export default {
 					</template>
 				</el-table-column>
 				<el-table-column v-if="columns[0].visible" show-overflow-tooltip label="ID" align="center" prop="id" fixed="left" />
-				<el-table-column v-if="columns[1].visible" show-overflow-tooltip label="日期" align="center" prop="orderDate" fixed="left" />
+				<el-table-column v-if="columns[1].visible" show-overflow-tooltip label="日期" align="center" prop="orderDate" fixed="left">
+					<template #default="scope">
+						<div>{{ parseTime(scope.row.orderDate, '{y}-{m}-{d}') }}</div>
+					</template>
+				</el-table-column>
 				<el-table-column v-if="columns[2].visible" show-overflow-tooltip label="客户" align="center" prop="customer" fixed="left" />
 				<el-table-column v-if="columns[3].visible" show-overflow-tooltip label="供应商" align="center" prop="supplierNames" fixed="left" width="200">
 					<template #default="scope">
@@ -459,7 +463,7 @@ export default {
 					</template>
 				</el-table-column>
 				<!--      客户供应商是否开票-->
-				<el-table-column v-if="columns[20].visible" show-overflow-tooltip label="客户是否开票" align="center" width="150px">
+				<el-table-column v-if="columns[20].visible" show-overflow-tooltip label="客户是否含税" align="center" width="150px">
 					<template #default="scope">
 						<el-row>
 							<el-row v-if="hasInvoice(scope.row, PUBLIC_DICT_TYPE.CUSTOMER)">
@@ -473,7 +477,7 @@ export default {
 						</el-row>
 					</template>
 				</el-table-column>
-				<el-table-column v-if="columns[21].visible" show-overflow-tooltip label="供应商是否开票" align="center" width="120px">
+				<el-table-column v-if="columns[21].visible" show-overflow-tooltip label="供应商是否含税" align="center" width="120px">
 					<template #default="scope">
 						<el-row>
 							<el-row v-if="hasInvoice(scope.row, PUBLIC_DICT_TYPE.SUPPLIER)">
