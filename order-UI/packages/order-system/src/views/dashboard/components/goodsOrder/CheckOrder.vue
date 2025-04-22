@@ -4,7 +4,7 @@
 	<div>
 		<el-descriptions border size="mini">
 			<el-descriptions-item label="订单日期">{{ orderInfo.orderDate }}</el-descriptions-item>
-			<el-descriptions-item label="客户(公司名称)">{{ orderInfo.companyName }}</el-descriptions-item>
+			<el-descriptions-item label="客户(公司名称)">{{ orderInfo.customer }}</el-descriptions-item>
 			<el-descriptions-item label="销售经理">{{ orderInfo.saleManager }}</el-descriptions-item>
 			<el-descriptions-item label="陆运车牌">{{ orderInfo.landCarNo }}</el-descriptions-item>
 			<el-descriptions-item label="陆运司机姓名">
