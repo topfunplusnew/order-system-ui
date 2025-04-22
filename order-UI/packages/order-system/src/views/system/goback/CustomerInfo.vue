@@ -72,7 +72,7 @@
 			</el-table-column>
 			<el-table-column prop="moneyAmountLocal" label="余额本币">
 				<template slot-scope="scope">
-					<span :class="{ negative: scope.row.moneyAmountLocal < 0 }">{{ scope.row.moneyAmountLocal }}</span>
+					<span :class="{ negative: scope.row.moneyAmountLocal < 0 }">{{ fix(scope.row.moneyAmountLocal) }}</span>
 				</template>
 			</el-table-column>
 		</el-table>

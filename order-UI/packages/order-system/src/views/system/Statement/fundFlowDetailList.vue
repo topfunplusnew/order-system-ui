@@ -182,9 +182,9 @@ export default {
 			statementData: [], // 银行流水数据
 			loading: false, // 加载状态
 			endTimePickerOptions: {
+				// 移除日期禁用限制，允许选择任何日期
 				disabledDate: date => {
-					// 结束日期不能早于开始日期
-					return this.query.startTime && date < new Date(this.query.startTime);
+					return false;
 				}
 			}
 		};
@@ -244,7 +244,16 @@ export default {
 			if (!this.query.startTime || !this.query.endTime) {
 				this.$message.warning('请选择开始日期和结束日期');
 				return;
+				}
+			
+			// 添加日期校验逻辑
+			const startDate = new Date(this.query.startTime);
+			const endDate = new Date(this.query.endTime);
+			if (endDate < startDate) {
+				this.$message.warning('结束日期不能早于开始日期');
+				return;
 			}
+			
 			this.loading = true;
 			// 先查询上年指定时间结转
 			const query = {

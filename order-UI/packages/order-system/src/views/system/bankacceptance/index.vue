@@ -90,7 +90,7 @@
 				<el-row>
 					<el-col :span="12">
 						<el-form-item label="票据号码" prop="billNo">
-							<el-input v-model="form.billNo" placeholder="请输入票据号码" @input="debouncedGetBankAcceptanceDate" />
+							<el-input v-model="form.billNo" placeholder="请输入票据号码" @blur="debouncedGetBankAcceptanceDate" />
 						</el-form-item>
 						<el-form-item label="收票事由" prop="reason">
 							<el-radio v-model="form.reason" label="购买">购买</el-radio>

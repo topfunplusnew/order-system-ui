@@ -157,14 +157,14 @@ export default {
 			<el-row>
 				<div>
 					<el-form ref="queryForm" :model="queryItems" size="mini" :inline="true" label-width="100px">
+						<el-form-item :label="queryLabel">
+							<el-input v-model="query" type="text" placeholder="请输入" size="mini" clearable></el-input>
+						</el-form-item>
 						<el-form-item v-for="item in queryItems.queryList" :label="item.label" :prop="item.prop" :key="item.id">
 							<el-input v-if="item.type === 'input'" v-model="item.value" placeholder="请输入" size="mini" clearable></el-input>
 							<el-select v-else-if="item.type === 'select'" v-model="item.value" size="mini" placeholder="请选择" clearable>
 								<el-option v-for="option in item.options" :key="option.value" :label="option.label" :value="option.value"></el-option>
 							</el-select>
-						</el-form-item>
-						<el-form-item :label="queryLabel">
-							<el-input v-model="query" type="text" placeholder="请输入" size="mini" clearable></el-input>
 						</el-form-item>
 						<el-form-item>
 							<el-button type="primary" size="mini" @click="handleSearchInfo">搜索</el-button>
