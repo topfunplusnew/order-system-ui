@@ -123,6 +123,7 @@ import { listVehicles } from '@/api/system/vehicles';
 import { common_excel } from '@/views/dashboard/mixins/common/common_excel';
 import ORDER_DETAIL from '@/components/NeedToShow/ORDER_DETAIL.vue';
 import { listCars } from '@/api/system/cars';
+import _ from 'lodash';
 
 export default {
 	name: 'FreightInfo',
@@ -243,78 +244,94 @@ export default {
 		checkFreightDetail(query, lastYearDetail) {
 			// 查询客户明细账
 			getFreightSubjectDetailSummary(query).then(res => {
-				if (!res.rows && !res.data) {
+				if (!res.data) {
 					this.$message.warning('未查询到相关数据');
 					this.loading = false;
 					return;
 				}
-				if (res.rows.length === 0) {
-					this.$message.warning('未查询到相关数据');
-					this.loading = false;
-					return;
-				}
-				try {
-					// 上年结转的余额
-					let lastMoney = Number(lastYearDetail.moneyAmount);
-					// 累计金额
-					let nowMoney = Number(0);
-					// 累计借方和贷方
-					let totalLender = 0,
-						totalBorrower = 0,
-						lenderDetailList = [],
-						borrowerDetailList = [];
-					// 先处理借贷方的合并和收集
-					res.rows.forEach(item => {
-						const amount = Number(item.moneyAmount);
-						if (amount > 0) {
-							// 如果 moneyAmount 大于 0，累加到 totalLender
-							totalLender += amount;
-						} else if (amount < 0) {
-							// 如果 moneyAmount 小于 0，累加到 totalBorrower
-							totalBorrower += amount;
+				if (Array.isArray(res.data)) {
+					if (res.data.length <= 0) {
+						this.$message.warning('未查询到相关数据');
+						this.loading = false;
+						return;
+					}
+					try {
+						// 上年结转的余额
+						let lastMoney = Number(lastYearDetail.moneyAmount);
+						// 累计金额
+						let nowMoney = Number(0);
+						// 累计借方和贷方
+						let lenderDetailList = [],
+							borrowerDetailList = [];
+						let sourceData = _.cloneDeep(res.data);
+						// 根据精确到天的日期 进行分组
+						sourceData = _.groupBy(sourceData, item => {
+							return item.operateDate.match(/^(\d{4}-\d{2}-\d{2})/)[1];
+						});
+						// 先处理借贷方的合并和收集
+						for (let key in sourceData) {
+							// 拿到每一个日期的数据 每一个日期对应的数据是一个数组
+							let dayData = _.cloneDeep(sourceData[key]);
+							// 对每一个日期下的数组数据中的每一项 进行一个借贷的计算
+							const { itemTotalLender, itemTotalBorrower } = dayData.reduce(
+								(acc, customerDetail) => {
+									const amount = Number(customerDetail.moneyAmount);
+									if (amount > 0) {
+										acc.itemTotalLender += amount;
+									} else {
+										acc.itemTotalBorrower += amount;
+									}
+									return acc;
+								},
+								{ itemTotalLender: 0, itemTotalBorrower: 0 } // 初始值
+							);
+
+							// 拿到汇总账
+							this.tableData = dayData.map(item => {
+								console.log(item);
+								// 金额累计计算
+								nowMoney = Number(lastMoney) + Number(item.moneyAmount);
+								lastMoney = nowMoney;
+
+								const mapped = {
+									operateDate: item.operateDate,
+									payNo: item.payNo,
+									// 借贷钱数总和
+									lender: itemTotalLender,
+									borrower: itemTotalBorrower,
+									// 余额本币
+									moneyAmountLocal: fix(nowMoney),
+									// 模块名
+									tableName: item.tableName
+								};
+
+								// 借方小项
+								const lenderItem = {
+									...mapped,
+									lender: fix(item.moneyAmount) > 0 ? fix(item.moneyAmount) : 0
+								};
+								lenderDetailList.push(lenderItem);
+								//
+								const borrowerItem = {
+									...mapped,
+									borrower: fix(item.moneyAmount) < 0 ? fix(item.moneyAmount) : 0
+								};
+								borrowerDetailList.push(borrowerItem);
+								return {
+									...mapped,
+									// 借贷明细列表
+									lenderList: lenderDetailList,
+									borrowerList: borrowerDetailList
+								};
+							});
+
+							console.log(`tableData`, this.tableData);
 						}
-					});
-					// 拿到汇总账
-					const append = res.rows.map(item => {
-						// 金额累计计算
-						nowMoney = Number(lastMoney) + Number(item.moneyAmount);
-						// 更新
-						lastMoney = nowMoney;
-
-						const mapped = {
-							operateDate: item.operateDate,
-							payNo: item.payNo,
-							// 借贷钱数总和
-							lender: totalLender,
-							borrower: totalBorrower,
-							// 余额本币
-							moneyAmountLocal: fix(nowMoney),
-							// 模块名
-							tableName: item.tableName
-						};
-
-						lenderDetailList.push({
-							...mapped,
-							lender: fix(item.moneyAmount) > 0 ? fix(item.moneyAmount) : 0
-						});
-						borrowerDetailList.push({
-							...mapped,
-							borrower: fix(item.moneyAmount) < 0 ? fix(item.moneyAmount) : 0
-						});
-
-						return {
-							...mapped,
-							// 借贷明细列表
-							lenderList: lenderDetailList,
-							borrowerList: borrowerDetailList
-						};
-					});
-					// 添加到上年结转数据的后面
-					this.tableData = aggregateByDay(append, `moneyAmountLocal`, `operateDate`);
-				} catch (err) {
-					this.$message.error('计算错误:', err);
+					} catch (err) {
+						this.$message.error('计算错误:', err);
+					}
+					this.loading = false;
 				}
-				this.loading = false;
 			});
 		},
 		handleSearch(row) {

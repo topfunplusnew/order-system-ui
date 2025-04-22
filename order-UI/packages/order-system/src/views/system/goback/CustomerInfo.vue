@@ -256,7 +256,7 @@ export default {
 				}
 				// 如果是数组类型
 				if (Array.isArray(res.data)) {
-					if (res.data.length < 0) {
+					if (res.data.length <= 0) {
 						this.$message.warning('未查询到相关数据');
 						this.loading = false;
 						return;
@@ -274,7 +274,6 @@ export default {
 						sourceData = _.groupBy(sourceData, item => {
 							return item.operateDate.match(/^(\d{4}-\d{2}-\d{2})/)[1];
 						});
-						console.log(`sourceData`, sourceData);
 						// 先处理借贷方的合并和收集
 						for (let key in sourceData) {
 							// 拿到每一个日期的数据 每一个日期对应的数据是一个数组
@@ -295,6 +294,7 @@ export default {
 
 							// 拿到汇总账
 							this.tableData = dayData.map(item => {
+								console.log(item);
 								// 金额累计计算
 								nowMoney = Number(lastMoney) + Number(item.moneyAmount);
 								lastMoney = nowMoney;
@@ -323,7 +323,6 @@ export default {
 									borrower: fix(item.moneyAmount) < 0 ? fix(item.moneyAmount) : 0
 								};
 								borrowerDetailList.push(borrowerItem);
-
 								return {
 									...mapped,
 									// 借贷明细列表
@@ -331,6 +330,8 @@ export default {
 									borrowerList: borrowerDetailList
 								};
 							});
+
+							console.log(`tableData`, this.tableData);
 						}
 					} catch (err) {
 						this.$message.error('计算错误:', err);
