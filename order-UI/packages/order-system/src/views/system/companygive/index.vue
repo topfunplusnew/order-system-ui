@@ -4,6 +4,9 @@
 			<el-form-item label="供应商名称" prop="companyName">
 				<el-input v-model="queryParams.companyName" placeholder="请输入供应商名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
+			<el-form-item label="联系人" prop="relationName">
+				<el-input v-model="queryParams.relationName" placeholder="请输入联系人名称" clearable @keyup.enter.native="handleQuery" />
+			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
 			</el-form-item>
