@@ -262,4 +262,10 @@ export function getTagColor(checkState) {
 export const APPLY_FREIGHT_SOURCE_TYPE = {
 	GOODS_ORDER: '订单',
 	INVENTORY_MAIN: '库存'
-}
+};
+
+// 支出或者收入类型的枚举
+export const PayType = Object.freeze({
+	PAYMENT: '支出',
+	RECEIVE: '收入'
+});

@@ -845,28 +845,34 @@ export default {
 		},
 		getSummary(param) {
 			const { columns, data } = param;
-			const exclude = [16, 19, 23, 24, 25, 28];
+			// 定义需要合计的列的 prop 属性名
+			const summedProps = ['payments', 'paymentFactory', 'tonnage', 'profit', 'otherCost', 'freight', 'factoryCommission'];
 			const sums = [];
 			columns.forEach((column, index) => {
 				if (index === 0) {
 					sums[index] = '合计';
 					return;
 				}
-				if (exclude.includes(index)) {
+				// 检查当前列的 prop 是否在需要合计的列表中
+				if (summedProps.includes(column.property)) {
 					const values = data.map(item => Number(item[column.property]));
 					if (!values.every(value => isNaN(value))) {
 						sums[index] = values.reduce((prev, curr) => {
 							const value = Number(curr);
 							if (!isNaN(value)) {
-								return prev + curr;
+								// 使用 fix 函数确保精度
+								return fix(prev + value);
 							} else {
 								return prev;
 							}
 						}, 0);
+						// 对最终结果应用 fix
 						sums[index] = fix(sums[index]);
 					} else {
 						sums[index] = 'N/A';
 					}
+				} else {
+					sums[index] = ''; // 不需要合计的列显示为空
 				}
 			});
 

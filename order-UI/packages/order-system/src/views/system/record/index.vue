@@ -170,7 +170,7 @@
 					<!--          选择收入账户类型-->
 					<el-form-item label="收入账户类型">
 						<!-- 选择银行卡类型的组件 -->
-						<BankType @updateSelectedType="changeSelfBankType" @updateBankAcceptance="value => (form.params.bankacceptance = value)" />
+						<BankType @updateSelectedType="changeSelfBankType" @updateBankAcceptance="value => (form.params.bankacceptance = value)" :bill-type="PayType.RECEIVE" />
 					</el-form-item>
 					<el-form-item :label="source">
 						<el-row>
@@ -318,7 +318,7 @@
 				<div v-if="cashType === CASH_TYPE.TRANSFER">
 					<!--          选择支出账户类型-->
 					<el-form-item label="支出账户类型">
-						<BankType :baned="true" @updateSelectedType="changeOtherBankType" />
+						<BankType :baned="true" @updateSelectedType="changeOtherBankType" :bill-type="PayType.PAYMENT" />
 					</el-form-item>
 					<!--        2.选择去-->
 					<el-form-item :label="target">
@@ -480,7 +480,7 @@ import { mixin_bankType } from '@/views/dashboard/mixins/common/common_bankType'
 import { listBankAccount, transfer } from '../../../api/system/bankAccount';
 import { listCompany } from '../../../api/system/company';
 import { getRecord, updateRecord } from '../../../api/system/record';
-import { TableName } from '../../../api/tool/enums';
+import { PayType, TableName } from '../../../api/tool/enums';
 import { excludeParams } from '../../../api/tool/exclude';
 import CheckFiles from '../../../components/CheckFiles.vue';
 import SearchOption from '../../../components/SearchOption.vue';
@@ -639,6 +639,9 @@ export default {
 	},
 	// 计算属性
 	computed: {
+		PayType() {
+			return PayType;
+		},
 		PUBLIC_DICT_TYPE() {
 			return PUBLIC_DICT_TYPE;
 		},
