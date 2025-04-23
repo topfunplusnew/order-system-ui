@@ -170,8 +170,7 @@ export default {
 			// 背书人类型 默认为客户
 			type: '客户',
 			// 搜索客户
-			companyName: '',
-			debouncedGetBankAcceptanceDate: null
+			companyName: ''
 		};
 	},
 	watch: {
@@ -201,7 +200,6 @@ export default {
 	},
 	created() {
 		// 创建防抖函数
-		this.debouncedGetBankAcceptanceDate = _.debounce(this.getBankAcceptanceDate, 500);
 		this.reset();
 	},
 	mounted() {
@@ -215,7 +213,9 @@ export default {
 		listBankAccount,
 		listCompany,
 		// 获取票据信息
-		getBankAcceptanceDate(inputValue) {
+		getBankAcceptanceDate(e) {
+			if (!e) return;
+			const inputValue = e.target.value;
 			if (!inputValue) {
 				this.$message.error('票据号码为空,填充失败');
 				return;
@@ -301,7 +301,7 @@ export default {
 				<el-row>
 					<el-col :span="12">
 						<el-form-item label="票据号码" prop="billNo">
-							<el-input v-model="form.billNo" placeholder="请输入票据号码" @input="debouncedGetBankAcceptanceDate" />
+							<el-input v-model="form.billNo" placeholder="请输入票据号码" @blur="getBankAcceptanceDate" />
 						</el-form-item>
 						<el-form-item :label="`${this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT ? '背书' : '收票'}事由`" prop="reason">
 							<el-radio v-model="form.reason" label="购买">购买</el-radio>
