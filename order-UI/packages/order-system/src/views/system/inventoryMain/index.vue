@@ -112,8 +112,9 @@
 					</template>
 				</el-table-column>
 
-				<el-table-column v-if="columns[18].visible" label="操作" align="center" width="150" fixed="right">
+				<el-table-column v-if="columns[18].visible" label="操作" align="center" width="180" fixed="right">
 					<template slot-scope="scope">
+						<el-button size="mini" type="text" icon="el-icon-edit" @click="handleCheckInventory(scope.row)">查看</el-button>
 						<el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)" v-hasPermi="['system:inventoryMain:edit']">修改</el-button>
 						<el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)" v-hasPermi="['system:inventoryMain:remove']">删除</el-button>
 					</template>
@@ -606,6 +607,19 @@
 				<el-button @click="cancel">取 消</el-button>
 			</div>
 		</el-dialog>
+
+		<div v-if="currentComponent">
+			<DialogWrapper
+				:current-component="currentComponent"
+				:dialog-visible="dialogVisible"
+				:dialog-props="dialogProps"
+				:dialog-title="dialogTitle"
+				:dialog-width="dialogWidth"
+				@update:dialogVisible="args => (dialogVisible = false)"
+				@close="handleCloseDialog"
+				@confirm="handleDialogConfirm"
+			/>
+		</div>
 	</div>
 </template>
 
@@ -625,11 +639,14 @@ import CheckFiles from '../../../components/CheckFiles.vue';
 import { auditInventory } from '../../../api/system/inventoryMain';
 import StateTag from '../../dashboard/components/common/StateTag.vue';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
+import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
+import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
+import INVENTORY from '@/components/NeedToShow/INVENTORY.vue';
 
 export default {
 	name: 'InventoryMain',
-	components: { SearchOption, CheckFiles, StateTag },
-	mixins: [_fill, mixin_checkfile, mixin_printHTML],
+	components: { DialogWrapper, SearchOption, CheckFiles, StateTag },
+	mixins: [_fill, mixin_checkfile, mixin_printHTML, common_dialog],
 	data() {
 		return {
 			// 遮罩层
@@ -1120,6 +1137,19 @@ export default {
 				this.inventoryDetailList = response.data.inventoryDetailList;
 				this.open = true;
 				this.title = '修改库存';
+			});
+		},
+		handleCheckInventory(row) {
+			if (!row.id) {
+				this.$message.error('该行数据有误 库存ID不存在');
+				return;
+			}
+			getInventoryMain(row.id).then(res => {
+				if (!res.data) {
+					this.$message.error('获取该行库存信息有误,数据未找到');
+					return;
+				}
+				this.openDialog(INVENTORY, '库存信息', '1000px', { needToShowInfo: res.data }, false);
 			});
 		},
 		/** 提交按钮 */
