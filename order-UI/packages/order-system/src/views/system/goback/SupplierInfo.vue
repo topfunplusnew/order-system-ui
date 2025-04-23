@@ -333,9 +333,8 @@ export default {
 							});
 							console.log(`tableData`, this.tableData);
 						}
-					} catch (err) {
 						this.$message.error('计算错误:', err);
-					}
+					} catch (err) {}
 				}
 				this.loading = false;
 			});

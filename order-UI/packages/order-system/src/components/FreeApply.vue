@@ -3,10 +3,12 @@
 import { addOrderFreight } from '@/api/system/orderFreight';
 import SearchOption from '@/components/SearchOption.vue';
 import { listCompany } from '@/api/system/company';
-import { listBankAccount } from '@/api/system/bankAccount';
-import { getCars } from '@/api/system/cars';
+import { listBankAccount, addBankAccount } from '@/api/system/bankAccount';
+import { getCars, listCars } from '@/api/system/cars';
 import { parseTime } from '@/utils/ruoyi';
 import { mapGetters } from 'vuex';
+import { PUBLIC_DICT_TYPE } from '@/utils/order';
+import { excludeParams } from '@/api/tool/exclude';
 
 export default {
 	name: 'FreeApply',
@@ -22,14 +24,14 @@ export default {
 				otherAcountsName: [
 					{
 						required: true,
-						message: '请输入对方户名',
+						message: '请选择或添加司机银行卡信息',
 						trigger: 'blur'
 					}
 				],
 				otherBankNo: [
 					{
 						required: true,
-						message: '请输入对方账号',
+						message: '请选择或添加司机银行卡信息',
 						trigger: 'blur'
 					}
 				],
@@ -40,13 +42,41 @@ export default {
 						trigger: 'blur'
 					}
 				]
-			}
+			},
+			addBankAccountDialogVisible: false,
+			bankAccountForm: {},
+			bankAccountRules: {
+				bankNo: [
+					{
+						required: true,
+						message: '银行账号不能为空',
+						trigger: 'blur'
+					}
+				],
+				acountsName: [
+					{
+						required: true,
+						message: '账户名称不能为空',
+						trigger: 'blur'
+					}
+				],
+				companyName: [
+					{
+						required: true,
+						message: '车牌号不能为空',
+						trigger: 'blur'
+					}
+				]
+			},
+			queryBankAccount: ''
 		};
 	},
 	computed: {
-		...mapGetters(['trueName'])
+		...mapGetters(['trueName']),
+		PUBLIC_DICT_TYPE() {
+			return PUBLIC_DICT_TYPE;
+		}
 	},
-	// 监听订单信息变化 自动填充司机信息
 	watch: {
 		orderInfo: {
 			handler(val) {
@@ -59,31 +89,27 @@ export default {
 			immediate: true
 		}
 	},
-	// 因为dialog的销毁机制 所以需要组件创建时发一次请求自动填充，还需要监听id的变化再次发请求改变
 	created() {
 		this.reset();
-		// 获取车辆信息 填充司机相关信息
+		this.resetBankAccountForm();
 		getCars(this.orderInfo.driverId).then(res => {
 			this.$nextTick(() => {
-				// 自动填充司机信息
 				this.form.otherAcountsName = res.data.acountsName;
 				this.form.otherBankNo = res.data.bankNo;
 				this.form.otherBankName = res.data.bankName;
 			});
 		});
 	},
-
 	methods: {
 		listBankAccount,
 		listCompany,
-		// 补全司机信息的方法
+		listCars,
 		getDriverAccountInfo(query) {
 			listBankAccount(query).then(res => {
 				if (!res.rows || res.rows.length === 0) {
 					this.$message.error('该司机未添加银行卡信息,请先为该司机添加银行卡');
 					return;
 				}
-				// 自动填充司机信息
 				this.$nextTick(() => {
 					this.form.otherAcountsName = res.rows[0].acountsName;
 					this.form.otherBankNo = res.rows[0].bankNo;
@@ -91,18 +117,16 @@ export default {
 				});
 			});
 		},
-		// 提交运费信息
 		handleProcess(that) {
 			this.$refs['form'].validate(isValid => {
 				if (isValid) {
 					const query = {
-						...this.form, // 表单的信息
-						...this.orderInfo, // 订单信息
+						...this.form,
+						...this.orderInfo,
 						applyDate: parseTime(new Date()),
 						applyUserName: this.trueName
 					};
 					return new Promise((resolve, reject) => {
-						// 添加运费信息
 						addOrderFreight(query).then(() => {
 							this.$message.success('操作成功');
 							this.reset();
@@ -113,13 +137,12 @@ export default {
 				}
 			});
 		},
-		// 选择银行卡 自动填充相关信息
+		handleReject() {},
 		handleCommitBack(val) {
 			this.form.otherAcountsName = val.acountsName;
 			this.form.otherBankName = val.bankName;
 			this.form.otherBankNo = val.bankNo;
 		},
-		// 搜索字段的自动填充
 		handleChange(val) {
 			this.queryAcountsName = val;
 		},
@@ -133,7 +156,58 @@ export default {
 				content: null
 			};
 		},
-		handleReject() {}
+		openAddBankAccountDialog() {
+			this.resetBankAccountForm();
+			this.addBankAccountDialogVisible = true;
+		},
+		cancelBankAccountForm() {
+			this.addBankAccountDialogVisible = false;
+			this.resetBankAccountForm();
+		},
+		resetBankAccountForm() {
+			this.bankAccountForm = {
+				id: null,
+				companyName: null,
+				companyId: null,
+				bankName: null,
+				isPublicAccount: null,
+				acountsName: null,
+				bankNo: null,
+				acountsType: PUBLIC_DICT_TYPE.DRIVER,
+				amount: null,
+				comments: null,
+				delFlag: null
+			};
+			this.resetForm('bankAccountFormRef');
+		},
+		submitBankAccountForm() {
+			this.$refs['bankAccountFormRef'].validate(valid => {
+				if (valid) {
+					if (!this.bankAccountForm.companyId) {
+						this.$message.error('请通过搜索选择一个车辆来绑定银行卡');
+						return;
+					}
+					const formData = excludeParams(this.bankAccountForm, this.$exclude);
+					formData.companyType = PUBLIC_DICT_TYPE.DRIVER;
+
+					addBankAccount(formData).then(() => {
+						this.$modal.msgSuccess('新增司机银行卡成功');
+						this.addBankAccountDialogVisible = false;
+						this.getDriverAccountInfo({ companyId: this.orderInfo.driverId });
+					});
+				}
+			});
+		},
+		handleCommitBackBankAccount(val) {
+			this.bankAccountForm.acountsName = val.acountsName || '';
+			this.bankAccountForm.companyId = val.id;
+			this.bankAccountForm.companyName = val.carNo;
+			this.bankAccountForm.bankNo = val.bankNo || '';
+			this.bankAccountForm.bankName = val.bankName || '';
+		},
+		handleUpdateBankAccount(val) {
+			this.queryBankAccount = val;
+		}
 	}
 };
 </script>
@@ -144,10 +218,9 @@ export default {
 			<el-form-item label="对方户名" prop="otherAcountsName">
 				<el-row>
 					<el-col :span="10">
-						<el-input disabled v-model="form.otherAcountsName" placeholder="请选择" />
+						<el-input disabled v-model="form.otherAcountsName" placeholder="请选择或添加" />
 					</el-col>
 					<el-col :span="4">
-						<!--搜索银行卡信息-->
 						<SearchOption
 							:limit-info="{
 								acountsType: '司机',
@@ -161,12 +234,15 @@ export default {
 							@update:queryName="handleChange"
 						>
 							<template #table-columns>
+								<el-table-column label="车牌号" align="center" prop="companyName" />
 								<el-table-column label="开户行" align="center" prop="bankName" />
 								<el-table-column label="开户名" align="center" prop="acountsName" />
 								<el-table-column label="账号" align="center" prop="bankNo" />
-								<el-table-column label="余额" align="center" prop="surplusMoney" />
 							</template>
 						</SearchOption>
+					</el-col>
+					<el-col :span="4">
+						<el-button type="primary" size="mini" @click="openAddBankAccountDialog">添加司机银行卡</el-button>
 					</el-col>
 				</el-row>
 			</el-form-item>
@@ -186,6 +262,54 @@ export default {
 				<el-input v-model="form.comments" placeholder="请输入附加备注" />
 			</el-form-item>
 		</el-form>
+
+		<el-dialog title="快速添加司机银行卡信息" :visible.sync="addBankAccountDialogVisible" width="500px" append-to-body :close-on-click-modal="false">
+			<el-form ref="bankAccountFormRef" :model="bankAccountForm" :rules="bankAccountRules" label-width="120px">
+				<el-form-item label="开户名" prop="acountsName">
+					<el-row>
+						<el-col :span="20">
+							<el-input v-model="bankAccountForm.acountsName" placeholder="请通过右侧按钮选择车辆" />
+						</el-col>
+						<el-col :span="4">
+							<el-tooltip content="选择车辆以绑定银行卡" placement="top">
+								<SearchOption
+									:limit-info="{}"
+									:get-data="listCars"
+									query-info="carNo"
+									query-label="车牌查找"
+									:query-name="queryBankAccount"
+									@update:queryName="handleUpdateBankAccount"
+									@commitBack="handleCommitBackBankAccount"
+								>
+									<template #table-columns>
+										<el-table-column label="司机" align="center" prop="driver" />
+										<el-table-column label="车牌号" align="center" prop="carNo" />
+										<el-table-column label="司机电话" align="center" prop="tel" />
+										<el-table-column label="开户名" align="center" prop="acountsName" />
+										<el-table-column label="账号" align="center" prop="bankNo" />
+										<el-table-column label="开户行" align="center" prop="bankName" />
+										<el-table-column label="运输方式" align="center" prop="carType" />
+									</template>
+								</SearchOption>
+							</el-tooltip>
+						</el-col>
+					</el-row>
+				</el-form-item>
+				<el-form-item label="车牌号" prop="companyName">
+					<el-input v-model="bankAccountForm.companyName" placeholder="选择车辆后自动填充" disabled />
+				</el-form-item>
+				<el-form-item label="银行账号" prop="bankNo">
+					<el-input v-model="bankAccountForm.bankNo" placeholder="请输入银行账号" />
+				</el-form-item>
+				<el-form-item label="开户行" prop="bankName">
+					<el-input v-model="bankAccountForm.bankName" placeholder="请输入开户行" />
+				</el-form-item>
+			</el-form>
+			<div slot="footer" class="dialog-footer">
+				<el-button type="primary" @click="submitBankAccountForm">确 定</el-button>
+				<el-button @click="cancelBankAccountForm">取 消</el-button>
+			</div>
+		</el-dialog>
 	</div>
 </template>
 
