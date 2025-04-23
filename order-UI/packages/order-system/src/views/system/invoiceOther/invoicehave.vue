@@ -300,6 +300,8 @@ export default {
 				// 客户不含税
 				customerTicketPoint: 0,
 				customerPointAmount: 0,
+				// 区分客户含税开票 和 成本和收入
+				type: 'customerTicketPointIsZero',
 				comments: null,
 				addtime: null,
 				userId: null,
