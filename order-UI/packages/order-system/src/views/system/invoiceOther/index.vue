@@ -518,6 +518,7 @@ export default {
 				invoiceCompanyName: null,
 				customerTicketPoint: null,
 				customerPointAmount: null,
+				type: 'customerTicketPointIsNotZero',
 				comments: null,
 				addtime: null,
 				userId: null,
