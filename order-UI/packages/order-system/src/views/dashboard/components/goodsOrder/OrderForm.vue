@@ -310,7 +310,7 @@ export default {
 							}
 						}, 0);
 						sums[index] = fix(sums[index]);
-						sums[index] += ' 元';
+						sums[index] += column.property === 'tonnage' ? ' 吨' : ' 元';
 					} else {
 						sums[index] = 'N/A';
 					}
