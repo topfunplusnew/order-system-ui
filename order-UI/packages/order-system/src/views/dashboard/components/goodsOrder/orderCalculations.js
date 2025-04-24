@@ -101,6 +101,8 @@ function calculateProfitNoTax(row) {
  * @param {boolean} isLand - 是否包含陆运
  */
 export function updateOrderRowCalculations(row, isSea, isLand) {
+	// 移除或注释掉以下数据预处理块，因为这可能干扰小数输入
+	/*
 	// 确保基础数据是数字类型，避免NaN错误
 	row.height = Number(row.height) || 0;
 	row.length = Number(row.length) || 0;
@@ -119,8 +121,9 @@ export function updateOrderRowCalculations(row, isSea, isLand) {
 	row.otherCost = Number(row.otherCost) || 0;
 	row.isIncludeTaxFactory = Number(row.isIncludeTaxFactory); // 确保是数字0或1
 	row.isIncludeTaxSale = Number(row.isIncludeTaxSale); // 确保是数字0或1
+	*/
 
-	// 按依赖顺序计算
+	// 按依赖顺序计算 - 计算函数内部会使用 Number() 进行转换
 	calculateTonnage(row); // 先算吨位和可能的卸货片数填充
 	calculatePaymentFactory(row); // 算厂家货款
 	calculatePayment(row); // 算总货款
