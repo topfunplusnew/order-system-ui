@@ -155,9 +155,7 @@
 			</div>
 			<div>
 				<el-button type="info" icon="el-icon-question" size="mini" @click="handleLearn">查看教程</el-button>
-        <el-button id="step1" icon="el-icon-download" size="mini" type="warning" @click="handleBackgroundDownload">
-          预先导出
-        </el-button>
+				<el-button id="step1" icon="el-icon-download" size="mini" type="warning" @click="handleBackgroundDownload">预先导出</el-button>
 				<el-button id="step2" type="primary" icon="el-icon-download" size="mini" @click="handleDownload">一键下载</el-button>
 				<!-- 修改这里，添加 el-popover -->
 				<el-popover placement="top" width="900" trigger="hover" popper-class="preview-popover">
@@ -178,9 +176,7 @@
 						</a-list>
 						<div v-if="fileList.length > 3" class="preview-footer">还有 {{ fileList.length - 3 }} 个文件，点击查看更多</div>
 					</div>
-          <el-button id="step3" slot="reference" icon="el-icon-folder" size="mini" type="success" @click="showFileList">
-            下载列表
-          </el-button>
+					<el-button id="step3" slot="reference" icon="el-icon-folder" size="mini" type="success" @click="showFileList">下载列表</el-button>
 				</el-popover>
 			</div>
 		</div>
@@ -248,11 +244,11 @@
 </template>
 
 <script>
-import {getDailyProfit, getDeliveryList} from '../api/system/statement';
-import {mixin_printHTML} from './dashboard/mixins/print';
-import {parseTime} from '@/utils/ruoyi';
-import {mapGetters} from 'vuex';
-import {deleteExport, downloadFileByName, getAllExportList, startExportAll} from '../api/system/oncedownload/index';
+import { getDailyProfit, getDeliveryList } from '../api/system/statement';
+import { mixin_printHTML } from './dashboard/mixins/print';
+import { parseTime } from '@/utils/ruoyi';
+import { mapGetters } from 'vuex';
+import { deleteExport, downloadFileByName, getAllExportList, startExportAll, syncExportAll } from '../api/system/oncedownload/index';
 
 export default {
 	name: 'Index',
@@ -339,23 +335,23 @@ export default {
 				{
 					target: '#step1',
 					header: {
-            title: '预先导出'
+						title: '预先导出'
 					},
-          content: `点击这个按钮,服务器会立刻开始导出数据并打包成excel,但不会下载到本地,稍后你可以在文件列表中查看到文件并下载,这样可以减少等待时间,推荐使用`
+					content: `点击这个按钮,服务器会立刻开始导出数据并打包成excel,但不会下载到本地,稍后你可以在文件列表中查看到文件并下载,这样可以减少等待时间,推荐使用`
 				},
 				{
 					target: '#step2',
 					header: {
 						title: '一键下载'
 					},
-          content: `点击这个按钮,服务器会立刻准备导出数据,并直接写入到当前电脑,稍后,你可以在浏览器的下载列表中查看到文件`
+					content: `点击这个按钮,服务器会立刻准备导出数据,并直接写入到当前电脑,稍后,你可以在浏览器的下载列表中查看到文件`
 				},
 				{
 					target: '#step3',
 					header: {
 						title: '文件列表'
 					},
-          content: `鼠标悬浮在按钮上可以查看最近的文件列表,点击按钮可以查看所有的文件列表,你可以在这里下载服务器预先导出的文件`
+					content: `鼠标悬浮在按钮上可以查看最近的文件列表,点击按钮可以查看所有的文件列表,你可以在这里下载服务器预先导出的文件`
 				}
 			],
 			tourCallBacks: {
@@ -407,16 +403,26 @@ export default {
 				confirmButtonText: '确定',
 				cancelButtonText: '取消',
 				inputType: 'date'
-			}).then(res => {
-				this.downLoadOnce(
-					'/system/allExport/export',
-					{
-						date: res.value,
-						exportEmptyData: exportEmptyData
-					},
-					`FullReport_${new Date().getTime()}.xlsx`
-				);
-			});
+			})
+				.then(res => {
+					// 添加校验
+					if (!res || !res.value) {
+						this.$message.error('请选择导出日期');
+						return;
+					}
+					this.downLoadOnce(
+						'system/allExport/export',
+						{
+							date: res.value,
+							exportEmptyData: exportEmptyData
+						},
+						`FullReport_${new Date().getTime()}.xlsx`
+					);
+				})
+				.catch(() => {
+					// 用户取消输入时，避免控制台报错
+					this.$message.info('已取消导出');
+				});
 		},
 		// 添加后台下载方法
 		handleBackgroundDownload() {
@@ -424,25 +430,35 @@ export default {
 				confirmButtonText: '确定',
 				cancelButtonText: '取消',
 				inputType: 'date'
-			}).then(res => {
-				this.$confirm({
-					title: '提示',
-					content: '是否导出空表(若不导出空表导出速率会更快)?',
-					okText: '是',
-					cancelText: '否',
-					onOk: () => {
-						this.startBackgroundExport(res.value, true);
-					},
-					onCancel: () => {
-						this.startBackgroundExport(res.value, false);
+			})
+				.then(res => {
+					// 添加校验
+					if (!res || !res.value) {
+						this.$message.error('请选择导出日期');
+						return;
 					}
+					this.$confirm({
+						title: '提示',
+						content: '是否导出空表(若不导出空表导出速率会更快)?',
+						okText: '是',
+						cancelText: '否',
+						onOk: () => {
+							this.startBackgroundExport(res.value, true);
+						},
+						onCancel: () => {
+							this.startBackgroundExport(res.value, false);
+						}
+					});
+				})
+				.catch(() => {
+					// 用户取消输入时，避免控制台报错
+					this.$message.info('已取消预先导出');
 				});
-			});
 		},
 
 		async startBackgroundExport(date, exportEmptyData) {
 			try {
-				const res = await startExportAll({ date, exportEmptyData });
+				const res = await syncExportAll(date, exportEmptyData);
 				if (res.code === 200) {
 					this.$message.success('后台导出任务已开始，请稍后在文件列表中查看');
 					// 3秒后刷新文件列表

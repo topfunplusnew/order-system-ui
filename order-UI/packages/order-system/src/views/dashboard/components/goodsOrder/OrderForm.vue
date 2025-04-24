@@ -1,5 +1,3 @@
-<!--订单表组件-->
-
 <script>
 import { listBankAccount } from '../../../../api/system/bankAccount';
 import { listCars } from '../../../../api/system/cars';
@@ -15,18 +13,17 @@ import { fix } from '../../../../api/tool/format';
 import SearchOption from '../../../../components/SearchOption.vue';
 import { parseTime } from '../../../../utils/ruoyi';
 import { mixin_form_fillInfo } from '../../mixins/order/form/form_fillInfo';
+import { updateOrderRowCalculations } from './orderCalculations'; // 导入新的计算函数
 
 export default {
 	name: 'OrderForm',
 	components: { SearchOption },
 	mixins: [mixin_form_fillInfo],
 	props: {
-		// 父组件传递的订单id，主要用于当修改订单信息时 抓取服务器数据 然后自动填充到表单中
 		orderId: {
 			type: String,
 			default: ''
 		},
-		// 确认按钮字样
 		submitInfo: {
 			type: String,
 			default: '提交'
@@ -52,20 +49,15 @@ export default {
 					}
 				]
 			},
-			// 2025/1/14 订单货物列表
 			orderdetailList: [],
 			checkedOrderdetail: [],
-			// 控制订单详情是否可编辑
 			isEditingDetails: false,
-			// 海运还是陆运
 			isLand: false,
 			isSea: false,
 			orderNums: 0,
 			querySupplier: null,
 			queryLevel: null,
 			queryStore: null,
-
-			// 查询组
 			queryItemsCompany: {
 				queryList: [
 					{
@@ -154,7 +146,7 @@ export default {
 		orderId: {
 			handler(val) {
 				this.resetOrderInfo();
-				this.isEditingDetails = false; // 重置编辑状态
+				this.isEditingDetails = false;
 				this.orderId && this.getGoodsOrderInfo(val);
 			}
 		},
@@ -175,7 +167,7 @@ export default {
 	},
 	created() {
 		this.resetOrderInfo();
-		this.isEditingDetails = false; // 初始化编辑状态
+		this.isEditingDetails = false;
 		this.orderId && this.getGoodsOrderInfo(this.orderId);
 	},
 	methods: {
@@ -191,62 +183,70 @@ export default {
 		getGoodsOrderInfo(id) {
 			getGoodsOrder(id).then(response => {
 				this.orderInfo = response.data;
-				this.isLand = response.data.landFreight ? true : false;
-				this.isSea = response.data.seaFreight ? true : false;
-				this.orderdetailList = response.data.orderDetailList;
+				this.isLand = !!response.data.landCarNo; // 根据是否有车牌判断
+				this.isSea = !!response.data.seaCarNo; // 根据是否有柜号判断
+				this.orderdetailList = response.data.orderDetailList || [];
+				// 对加载的数据进行计算
+				this.orderdetailList.forEach(row => {
+					this.$nextTick(() => {
+						// 确保DOM更新后再计算，虽然这里主要是数据计算
+						updateOrderRowCalculations(row, this.isSea, this.isLand);
+					});
+				});
 			});
 		},
-		// --- 2025/1/14 添加订单详情
 		handleAddOrderdetail() {
-			let obj = {};
-			obj.orderDate = new Date();
-			obj.supplier = '';
-			obj.supplierID = '';
-			obj.customer = '';
-			obj.customerID = '';
-			obj.levelID = '';
-			obj.levelName = '';
-			obj.countingUnit = '片';
-			obj.height = '';
-			obj.length = '';
-			obj.width = '';
-			obj.piecesPerPack = '';
-			obj.pieces = '';
-			obj.packs = '';
-			obj.price = '';
-			obj.isIncludeTaxFactory = 0;
-			obj.sundryCost = '';
-			obj.paymentFactory = '';
-			obj.paymentUnload = '';
-			obj.isIncludeTaxSale = 0;
-			obj.payments = '';
-			obj.erro = '';
-			obj.tonnage = '';
-			obj.landFreightPrice = '';
-			obj.landFreight = '';
-			obj.seaFreight = '';
-			obj.freight = '';
-			obj.otherCost = '';
-			obj.profit = '';
-			obj.profitNoTax = '';
-			obj.actualPieces = '';
-			obj.paymentsWithSundry = '';
-			obj.additionalFees = '';
-			obj.storeHouseID = '';
-			obj.storeHouseName = '';
-			obj.storeID = '';
-			obj.logisticsProfit = '';
-			obj.customerCommission = '';
-			obj.factoryCommission = '';
-			obj.isAdjusted = 0;
-			obj.adjustOrderNo = '';
-			obj.adjustDate = '';
-			obj.factoryRebateAmount = '';
-			obj.factoryDiscountAmount = '';
-			obj.comments = '';
+			let obj = {
+				orderDate: new Date(),
+				supplier: '',
+				supplierID: '',
+				customer: '',
+				customerID: '',
+				levelID: '',
+				levelName: '',
+				countingUnit: '片',
+				height: '',
+				length: '',
+				width: '',
+				piecesPerPack: '',
+				pieces: '',
+				packs: '',
+				price: '',
+				isIncludeTaxFactory: 0,
+				sundryCost: '',
+				paymentFactory: '',
+				paymentUnload: '',
+				isIncludeTaxSale: 0,
+				payments: '',
+				erro: '',
+				tonnage: '',
+				landFreightPrice: '',
+				landFreight: '',
+				seaFreight: '',
+				freight: '',
+				otherCost: '',
+				profit: '',
+				profitNoTax: '',
+				actualPieces: '',
+				paymentsWithSundry: '',
+				additionalFees: '',
+				storeHouseID: '',
+				storeHouseName: '',
+				storeID: '',
+				logisticsProfit: '',
+				customerCommission: '',
+				factoryCommission: '',
+				isAdjusted: 0,
+				adjustOrderNo: '',
+				adjustDate: '',
+				factoryRebateAmount: '',
+				factoryDiscountAmount: '',
+				comments: ''
+			};
 			this.orderdetailList.push(obj);
+			// 新增行后，如果需要，可以立即进行一次计算（如果默认值需要计算结果）
+// updateOrderRowCalculations(obj, this.isSea, this.isLand);
 
-			// 添加完成后，在下一个DOM更新周期滚动到最左侧
 			this.$nextTick(() => {
 				if (this.$refs.orderdetail) {
 					const bodyWrapper = this.$refs.orderdetail.bodyWrapper;
@@ -256,8 +256,6 @@ export default {
 				}
 			});
 		},
-
-		// 筛选无剩余片数的库存
 		filterNoStockNumber(data) {
 			return new Promise(resolve => {
 				const res = data.filter(item => item.actualPieces > 0).sort((a, b) => b.actualPieces - a.actualPieces);
@@ -281,16 +279,7 @@ export default {
 		getSummary(param) {
 			const { columns, data } = param;
 			const sums = [];
-			const summaryColumns = [
-				'paymentFactory', // 出厂货款
-				'payments', // 总货款
-				'tonnage', // 吨位
-				'landFreight', // 陆运费
-				'seaFreight', // 海运费
-				'freight', // 总运费
-				'profit', // 利润
-				'profitNoTax' // 不含税利润
-			];
+			const summaryColumns = ['paymentFactory', 'payments', 'tonnage', 'landFreight', 'seaFreight', 'freight', 'profit', 'profitNoTax'];
 
 			columns.forEach((column, index) => {
 				if (index === 0) {
@@ -322,28 +311,20 @@ export default {
 		handleOrderdetailSelectionChange(selection) {
 			this.checkedOrderdetail = selection.map(item => item.index);
 		},
-
-		// 更新仓库的查询字段
 		handleUpdateQueryNameStore(value) {
 			this.queryStore = value;
 		},
-		// 更新供应商的查询字段
 		handleUpdateQuerySupplier(value) {
 			this.querySupplier = value;
 		},
 		handleUpdateQueryNameLevel(value) {
 			this.queryLevel = value;
 		},
-		// 填充货物信息中的供应商
 		handleCommitBackSupplier(scope, val) {
-			// 一个一个清除
-			// this.clearDetail(scope);
-			// 如果已经选择了仓库
 			scope.row.supplier = val.companyName;
 			scope.row.supplierID = val.id;
-			scope.row.currentType = 'supplier'; // 设置当前类型为供应商
+			scope.row.currentType = 'supplier';
 		},
-		// 仓库信息 从仓库发货
 		handleCommitBackInventory(scope, val) {
 			this.clearDetail(scope);
 			scope.row.storeID = val.id;
@@ -354,13 +335,12 @@ export default {
 			scope.row.width = val.width;
 			scope.row.levelID = val.levelID;
 			scope.row.levelName = val.levelName;
-			// 填充误差
 			scope.row.erro = val.erro;
-			scope.row.currentType = 'storeHouseName'; // 设置当前类型为仓库
+			scope.row.currentType = 'storeHouseName';
+			// 填充后重新计算
+			updateOrderRowCalculations(scope.row, this.isSea, this.isLand);
 		},
-		// 产品级别自动填充
 		handleCommitBackProductLevel(scope, val) {
-			// 这里用产品级别的吨位 填充了误差
 			scope.row.erro = val.tonnage;
 			scope.row.levelID = val.id;
 			scope.row.levelName = val.levelName;
@@ -368,117 +348,38 @@ export default {
 			scope.row.length = val.length;
 			scope.row.width = val.width;
 			scope.row.levelNo = val.levelNo;
+			// 填充后重新计算
+			updateOrderRowCalculations(scope.row, this.isSea, this.isLand);
 		},
-		// 重新计算总货款
-		recalculateSale(scope) {
-			this.calculatePayment(scope);
+		// 重新计算方法现在直接调用主计算函数
+		recalculateAll(scope) {
+			updateOrderRowCalculations(scope.row, this.isSea, this.isLand);
 		},
-		recalculateFactory(scope) {
-			this.calculatePaymentFactory(scope);
-		},
-		calculatePacks(scope) {
-			// const res = scope.row.packs * scope.row.piecesPerPack;
-			// scope.row.actualPieces = scope.row.pieces = res;
-			// 计算吨位
-			scope.row.tonnage = fix(((Number(scope.row.height) - Number(scope.row.erro)) * scope.row.length * scope.row.width * scope.row.pieces) / 1000000 / 20 / 20);
-			// 自动填写卸货片数
-			scope.row.actualPieces = scope.row.pieces;
-			if (scope.row.paymentFactory > 0) {
-				this.calculatePaymentFactory(scope);
-			}
-		},
-		calculatePaymentFactory(scope) {
-			if (scope.row.isIncludeTaxFactory === 0) {
-				scope.row.paymentFactory = fix(((scope.row.length * scope.row.width * scope.row.pieces) / 1000000) * scope.row.price + Number(scope.row.sundryCost));
-			} else {
-				scope.row.paymentFactory = fix((scope.row.length * scope.row.width * scope.row.pieces * scope.row.price) / 1000000 + Number(scope.row.sundryCost));
-			}
-		},
-		calculatePrice(scope) {
-			// 计算出厂货款
-			this.calculatePaymentFactory(scope);
-			// 计算利润
-			scope.row.profit = fix(scope.row.payments - scope.row.paymentFactory - scope.row.landFreight - scope.row.seaFreight);
-
-			// 计算不含税利润
-			function calculateProfitNoTax() {
-				if (scope.row.isIncludeTaxFactory === 0 && scope.row.isIncludeTaxSale === 0) {
-					return fix(scope.row.payments - scope.row.paymentFactory - scope.row.landFreight - scope.row.seaFreight - scope.row.otherCost);
-				} else if (scope.row.isIncludeTaxFactory === 1 && scope.row.isIncludeTaxSale === 0) {
-					return fix(scope.row.payments - scope.row.paymentFactory / 1.075 - scope.row.landFreight - scope.row.seaFreight - scope.row.otherCost);
-				} else if (scope.row.isIncludeTaxFactory === 0 && scope.row.isIncludeTaxSale === 1) {
-					return fix(scope.row.payments / 1.075 - scope.row.paymentFactory - scope.row.landFreight - scope.row.seaFreight - scope.row.otherCost);
-				} else {
-					return fix(
-						scope.row.payments -
-							scope.row.paymentFactory -
-							(scope.row.landFreight + scope.row.seaFreight) * 1.075 -
-							(((scope.row.height * scope.row.length * scope.row.width * scope.row.pieces) / 1000000 / 20) * 0.5 - scope.row.otherCost)
-					);
-				}
-			}
-
-			scope.row.profitNoTax = calculateProfitNoTax();
-		},
-		calculatePayment(scope) {
-			function calcu() {
-				if (scope.row.isIncludeTaxFactory === 0 && scope.row.isIncludeTaxSale === 0) {
-					scope.row.payments = fix(((scope.row.length * scope.row.width * scope.row.actualPieces) / 1000000) * scope.row.paymentUnload + Number(scope.row.paymentsWithSundry));
-				} else {
-					scope.row.payments = fix((scope.row.length * scope.row.width * scope.row.actualPieces * scope.row.paymentUnload) / 1000000 + Number(scope.row.paymentsWithSundry));
-				}
-			}
-
-			if (scope.row.payments > 0) {
-				calcu();
-				this.calculatePrice(scope);
-			} else {
-				calcu();
-			}
-		},
-		calculateLandFreight(scope) {
-			scope.row.landFreight = fix(Number(scope.row.tonnage) * Number(scope.row.landFreightPrice) + Number(scope.row.additionalFees));
-			this.calculateFreight(scope);
-		},
-		calculateFreight(scope) {
-			scope.row.freight = fix(Number(scope.row.landFreight) + (this.isSea ? Number(scope.row.seaFreight) : 0));
-
-			this.calculatePrice(scope);
-		},
-		// 设置当前绑定类型
 		setCurrentType(row, type) {
 			row.currentType = type;
 		},
-		// ---
-
-		// 提交订单
-		// TODO 点击确定 调用的是新增接口 拿到返回的订单对象,然后用一个状态去确定当前编辑的订单是不是新增过了,新增过了给true,然后每次点击新增订单,把这个状态请回 false
 		handleProcess(that) {
 			return new Promise((resolve, reject) => {
-				// 如果子项为空 不允许新增
 				if (this.orderdetailList.length === 0) {
 					this.$message.error('请添加货物信息');
-					reject('请添加货物信息'); // 使用 reject 中断 Promise 链
+					reject('请添加货物信息');
 					return;
 				}
-				// 如果正在编辑详情，提示先保存
 				if (this.isEditingDetails) {
 					this.$message.error('请先保存订单详情');
-					reject('请先保存订单详情'); // 使用 reject 中断 Promise 链
+					reject('请先保存订单详情');
 					return;
 				}
-				// 如果isSea为真但是不填写海运信息 或者 isLand为真 但是不填写陆运信息
 				if (this.isSea && !this.orderInfo.seaCarID && !this.orderInfo.seaCarNo) {
 					this.$message.error('请填写完整的海运信息!');
-					reject('请填写完整的海运信息!'); // 使用 reject 中断 Promise 链
+					reject('请填写完整的海运信息!');
 					return;
 				}
 				if (this.isLand && !this.orderInfo.landCarID && !this.orderInfo.landCarNo) {
 					this.$message.error('请填写完整的陆运信息!');
-					reject('请填写完整的陆运信息!'); // 使用 reject 中断 Promise 链
+					reject('请填写完整的陆运信息!');
 					return;
 				}
-				// 如果是新增订单
 				if (!this.orderId) {
 					this.orderInfo.orderDetailList = this.orderdetailList;
 					const updateOrderItem = item => {
@@ -487,7 +388,6 @@ export default {
 						item.orderDate = parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}');
 					};
 					this.orderdetailList.forEach(item => updateOrderItem(item));
-					// 添加订单
 					addGoodsOrder({ ...this.orderInfo, PaymentState: '' }).then(() => {
 						this.resetOrderInfo();
 						this.isSea = false;
@@ -513,7 +413,7 @@ export default {
 						PaymentState: '',
 						remark: sessionStorage.getItem('order-edit-reason')
 					}).then(() => {
-						this.resetOrderInfo(); // 清空订单列表基础信息
+						this.resetOrderInfo();
 						this.$message({
 							message: '修改成功',
 							type: 'success'
@@ -527,14 +427,12 @@ export default {
 				}
 			});
 		},
-		// 取消添加订单
 		handleReject() {
 			this.isSea = false;
 			this.isLand = false;
-			this.isEditingDetails = false; // 重置编辑状态
+			this.isEditingDetails = false;
 			this.resetOrderInfo();
 		},
-		// 信息重置
 		resetOrderInfo() {
 			this.orderInfo = {
 				orderID: '',
@@ -560,7 +458,7 @@ export default {
 				isSea: '',
 				isLand: ''
 			};
-			this.isEditingDetails = false; // 重置编辑状态
+			this.isEditingDetails = false;
 			this.orderdetailList = [];
 		},
 		clearDetail(scope) {
@@ -610,25 +508,21 @@ export default {
 			scope.row.factoryDiscountAmount = '';
 			scope.row.comments = '';
 		},
-		// 重置陆运费
 		resetSeaCarInfo() {
 			this.orderInfo.seaCarID = '';
 			this.orderInfo.seaCarNo = '';
 			this.orderInfo.seaDriverName = '';
 			this.orderInfo.seaDriverTel = '';
 		},
-		// 重置海运费
 		resetLandCarInfo() {
 			this.orderInfo.landCarID = '';
 			this.orderInfo.landCarNo = '';
 			this.orderInfo.landDriverName = '';
 			this.orderInfo.landDriverTel = '';
 		},
-		// 切换编辑状态
 		toggleEditDetails(editState) {
 			this.isEditingDetails = editState;
 			if (!editState) {
-				// 可选：在保存时进行一些验证或处理
 				this.$message.success('订单详情已锁定');
 			} else {
 				this.$message.info('订单详情已解锁，可以编辑');
@@ -643,7 +537,6 @@ export default {
 
 <template>
 	<div>
-		<!--    订单基本信息-->
 		<el-form :inline="true" :model="orderInfo" label-width="80px" :rules="orderRules">
 			<el-alert title="对于禁用的输入框只需点击旁边搜索按钮搜索对应信息，确认后即可自动填写!" type="warning"></el-alert>
 			<br />
@@ -693,7 +586,6 @@ export default {
 					<el-checkbox v-model="isLand">陆运</el-checkbox>
 					<el-checkbox v-model="isSea">海运</el-checkbox>
 				</el-form-item>
-				<!--      陆运-->
 				<el-row v-if="isLand" style="margin: 2px 0">
 					<el-form-item label="车牌">
 						<el-row>
@@ -701,7 +593,6 @@ export default {
 								<el-input disabled v-model="orderInfo.landCarNo" type="text" size="mini" placeholder="请选择陆运车牌" style="width: 120px" />
 							</el-col>
 							<el-col :span="4">
-								<!--搜索银行卡信息-->
 								<SearchOption
 									title="陆运信息"
 									:limit-info="{ carType: '陆运' }"
@@ -757,13 +648,10 @@ export default {
 						</el-row>
 					</el-form-item>
 				</el-row>
-				<!--      海运-->
 				<el-row v-if="isSea" style="margin: 2px 0">
-					<!--   车牌修改为柜号 且自己输入 不提供自动填充 -->
 					<el-form-item label="柜号(填写)">
 						<el-input v-model="orderInfo.seaCarNo" type="text" size="mini" placeholder="请输入柜号" style="width: 120px" />
 					</el-form-item>
-					<!--  原为海运司机 现改为海运公司-->
 					<el-form-item label="海运公司">
 						<el-row>
 							<el-col :span="20">
@@ -799,7 +687,6 @@ export default {
 			</el-card>
 		</el-form>
 		<br />
-		<!--   todo 货物信息 可以添加多个货物信息-->
 		<el-card class="box-card" shadow="hover">
 			<div>
 				<el-row :gutter="10" class="mb8">
@@ -816,8 +703,6 @@ export default {
 						<el-button size="mini" type="success" @click="toggleEditDetails(false)" :disabled="!isEditingDetails">保存</el-button>
 					</el-col>
 				</el-row>
-
-				<!--        订单货物-->
 				<el-table
 					border
 					size="mini"
@@ -881,7 +766,6 @@ export default {
 											<el-table-column label="仓库名称" align="center" prop="storeHouseName" show-overflow-tooltip />
 											<el-table-column label="剩余量" align="center" prop="actualPieces" show-overflow-tooltip />
 											<el-table-column label="入库时间" align="center" prop="storeDate" show-overflow-tooltip />
-											<el-table-column label="供应商" align="center" prop="supplier" show-overflow-tooltip />
 											<el-table-column label="供应商" align="center" prop="supplier" show-overflow-tooltip />
 											<el-table-column label="计量单位" align="center" prop="countingUnit" show-overflow-tooltip />
 											<el-table-column label="厚度" align="center" prop="height" show-overflow-tooltip />
@@ -965,40 +849,38 @@ export default {
 					</el-table-column>
 					<el-table-column label="每包片数" prop="piecesPerPack" width="90">
 						<template #default="scope">
-							<el-input size="mini" v-model="scope.row.piecesPerPack" placeholder="请输入每包片数" :disabled="!isEditingDetails" />
+							<el-input size="mini" v-model.number="scope.row.piecesPerPack" placeholder="请输入每包片数" :disabled="!isEditingDetails" />
 						</template>
 					</el-table-column>
 					<el-table-column label="包数" prop="packs" width="90">
 						<template #default="scope">
 							<el-input
 								size="mini"
-								v-model.lazy="scope.row.packs"
+								v-model.number.lazy="scope.row.packs"
 								:placeholder="scope.row.piecesPerPack <= 0 ? '请先输入每包片数' : '请输入包数'"
 								:disabled="!isEditingDetails || scope.row.piecesPerPack <= 0"
 							/>
 						</template>
 					</el-table-column>
-
 					<el-table-column label="出厂片数" prop="pieces" width="90">
 						<template #default="scope">
-							<el-input size="mini" v-model="scope.row.pieces" placeholder="请输入出厂片数" @input="() => calculatePacks(scope)" :disabled="!isEditingDetails" />
+							<el-input size="mini" v-model.number="scope.row.pieces" placeholder="请输入出厂片数" @input="() => recalculateAll(scope)" :disabled="!isEditingDetails" />
 						</template>
 					</el-table-column>
-
 					<el-table-column label="出厂单价" prop="price" width="90">
 						<template #default="scope">
 							<el-input
 								size="mini"
 								v-model="scope.row.price"
-								@input="scope.row.sundryCost >= 0 ? calculatePrice(scope) : ''"
+								@input="() => recalculateAll(scope)"
 								:placeholder="scope.row.pieces <= 0 ? '请先完善出厂片数' : '请输入出厂单价'"
-								:disabled="!isEditingDetails || scope.row.pieces <= 0"
+								:disabled="!isEditingDetails || !scope.row.pieces"
 							/>
 						</template>
 					</el-table-column>
 					<el-table-column label="出厂是否含税" prop="isIncludeTaxFactory" width="90">
 						<template #default="scope">
-							<el-radio-group v-model="scope.row.isIncludeTaxFactory" size="mini" @change="() => recalculateFactory(scope)" :disabled="!isEditingDetails">
+							<el-radio-group v-model="scope.row.isIncludeTaxFactory" size="mini" @change="() => recalculateAll(scope)" :disabled="!isEditingDetails">
 								<el-radio :label="1">是</el-radio>
 								<el-radio :label="0">否</el-radio>
 							</el-radio-group>
@@ -1009,36 +891,30 @@ export default {
 							<el-input
 								size="mini"
 								v-model.lazy="scope.row.sundryCost"
-								@input="() => calculatePrice(scope)"
+								@input="() => recalculateAll(scope)"
 								:placeholder="scope.row.price <= 0 ? '请先完善出厂单价' : '请输入杂费'"
-								:disabled="!isEditingDetails || scope.row.price <= 0"
+								:disabled="!isEditingDetails || !scope.row.price"
 							/>
 						</template>
 					</el-table-column>
 					<el-table-column label="出厂货款" prop="paymentFactory" width="90">
 						<template #default="scope">
-							<el-input size="mini" v-model="scope.row.paymentFactory" placeholder="请输入出厂货款" disabled />
+							<el-input size="mini" v-model="scope.row.paymentFactory" placeholder="自动计算" disabled />
 						</template>
 					</el-table-column>
 					<el-table-column label="卸货片数" prop="actualPieces" width="90">
 						<template #default="scope">
-							<el-input size="mini" v-model="scope.row.actualPieces" placeholder="请输入卸货片数" :disabled="!isEditingDetails" />
+							<el-input size="mini" v-model.number="scope.row.actualPieces" placeholder="请输入卸货片数" @input="() => recalculateAll(scope)" :disabled="!isEditingDetails" />
 						</template>
 					</el-table-column>
 					<el-table-column label="卸货价" prop="paymentUnload" width="90">
 						<template #default="scope">
-							<el-input
-								size="mini"
-								v-model.lazy="scope.row.paymentUnload"
-								placeholder="请输入卸货价"
-								@input="scope.row.paymentsWithSundry >= 0 ? calculatePayment(scope) : ''"
-								:disabled="!isEditingDetails"
-							/>
+							<el-input size="mini" v-model.lazy="scope.row.paymentUnload" placeholder="请输入卸货价" @input="() => recalculateAll(scope)" :disabled="!isEditingDetails" />
 						</template>
 					</el-table-column>
 					<el-table-column label="销售是否含税" prop="isIncludeTaxSale" width="90">
 						<template #default="scope">
-							<el-radio-group v-model="scope.row.isIncludeTaxSale" size="mini" @change="() => recalculateSale(scope)" :disabled="!isEditingDetails">
+							<el-radio-group v-model="scope.row.isIncludeTaxSale" size="mini" @change="() => recalculateAll(scope)" :disabled="!isEditingDetails">
 								<el-radio :label="1">是</el-radio>
 								<el-radio :label="0">否</el-radio>
 							</el-radio-group>
@@ -1049,80 +925,76 @@ export default {
 							<el-input
 								size="mini"
 								v-model.lazy="scope.row.paymentsWithSundry"
-								@input="() => calculatePayment(scope)"
-								:disabled="!isEditingDetails || scope.row.paymentUnload <= 0"
+								@input="() => recalculateAll(scope)"
+								:disabled="!isEditingDetails || !scope.row.paymentUnload"
 								:placeholder="scope.row.paymentUnload <= 0 ? '请先完善卸货价' : '请输入总货款杂费'"
 							/>
 						</template>
 					</el-table-column>
 					<el-table-column label="总货款" prop="payments" width="90">
 						<template #default="scope">
-							<el-input size="mini" v-model="scope.row.payments" placeholder="请输入总货款" disabled />
+							<el-input size="mini" v-model="scope.row.payments" placeholder="自动计算" disabled />
 						</template>
 					</el-table-column>
 					<el-table-column label="误差" prop="erro" width="150">
 						<template #default="scope">
-							<el-input size="mini" v-model="scope.row.erro" placeholder="请输入误差" disabled />
+							<!-- 误差通常由产品级别带出，如果允许手动输入则需要触发计算 -->
+							<el-input size="mini" v-model="scope.row.erro" placeholder="请输入误差" @input="() => recalculateAll(scope)" :disabled="!isEditingDetails" />
 						</template>
 					</el-table-column>
 					<el-table-column label="吨位" prop="tonnage" width="90">
 						<template #default="scope">
-							<el-input size="mini" v-model="scope.row.tonnage" placeholder="请输入吨位" disabled />
+							<el-input size="mini" v-model="scope.row.tonnage" placeholder="自动计算" disabled />
 						</template>
 					</el-table-column>
 					<el-table-column label="陆运费单价" prop="landFreightPrice" width="150" v-if="isLand">
 						<template #default="scope">
-							<el-input
-								size="mini"
-								v-model.lazy="scope.row.landFreightPrice"
-								@input="() => (scope.row.additionalFees >= 0 ? calculateLandFreight(scope) : '')"
-								placeholder="请输入陆运费单价"
-								:disabled="!isEditingDetails"
-							/>
+							<el-input size="mini" v-model.lazy="scope.row.landFreightPrice" @input="() => recalculateAll(scope)" placeholder="请输入陆运费单价" :disabled="!isEditingDetails" />
 						</template>
 					</el-table-column>
-					<el-table-column label="加费" prop="additionalFees" width="90">
+					<el-table-column label="加费" prop="additionalFees" width="90" v-if="isLand">
 						<template #default="scope">
 							<el-input
 								size="mini"
 								v-model.lazy="scope.row.additionalFees"
-								@input="() => calculateLandFreight(scope)"
-								:placeholder="scope.row.landFreightPrice <= 0 ? '请先完善陆运费单价' : '请输入加费'"
-								:disabled="!isEditingDetails || scope.row.landFreightPrice <= 0"
+								@input="() => recalculateAll(scope)"
+								:placeholder="!scope.row.landFreightPrice ? '请先完善陆运费单价' : '请输入加费'"
+								:disabled="!isEditingDetails"
 							/>
 						</template>
 					</el-table-column>
-					<el-table-column label="陆运费" prop="landFreight" width="90" v-if="isLand" disabled>
+					<el-table-column label="陆运费" prop="landFreight" width="90" v-if="isLand">
 						<template #default="scope">
-							<el-input size="mini" v-model="scope.row.landFreight" placeholder="请输入陆运费" disabled />
+							<el-input size="mini" v-model="scope.row.landFreight" placeholder="自动计算" disabled />
 						</template>
 					</el-table-column>
 					<el-table-column label="海运费" prop="seaFreight" width="90" v-if="isSea">
 						<template #default="scope">
-							<el-input size="mini" v-model.lazy="scope.row.seaFreight" @input="() => calculateFreight(scope)" placeholder="请输入海运费" :disabled="!isEditingDetails" />
+							<el-input size="mini" v-model.lazy="scope.row.seaFreight" @input="() => recalculateAll(scope)" placeholder="请输入海运费" :disabled="!isEditingDetails" />
 						</template>
 					</el-table-column>
 
 					<el-table-column label="总运费" prop="freight" width="90">
 						<template #default="scope">
-							<el-input size="mini" v-model="scope.row.freight" placeholder="请完善运费信息" disabled />
+							<el-input size="mini" v-model="scope.row.freight" placeholder="自动计算" disabled />
 						</template>
 					</el-table-column>
 					<el-table-column label="其他费用" prop="otherCost" width="90">
 						<template #default="scope">
-							<el-input size="mini" v-model.lazy="scope.row.otherCost" placeholder="请输入其他费用" @input="() => calculatePrice(scope)" :disabled="!isEditingDetails" />
+							<el-input size="mini" v-model.lazy="scope.row.otherCost" placeholder="请输入其他费用" @input="() => recalculateAll(scope)" :disabled="!isEditingDetails" />
 						</template>
 					</el-table-column>
 					<el-table-column label="利润" prop="profit" width="90">
 						<template #default="scope">
-							<el-input size="mini" v-model="scope.row.profit" placeholder="请输入利润" disabled />
+							<el-input size="mini" v-model="scope.row.profit" placeholder="自动计算" disabled />
 						</template>
 					</el-table-column>
 					<el-table-column label="不含税利润" prop="profitNoTax" width="90">
 						<template #default="scope">
-							<el-input size="mini" v-model="scope.row.profitNoTax" placeholder="请输入不含税利润" disabled />
+							<el-input size="mini" v-model="scope.row.profitNoTax" placeholder="自动计算" disabled />
 						</template>
 					</el-table-column>
+
 					<el-table-column label="物流利润" prop="logisticsProfit" width="90">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.logisticsProfit" placeholder="请输入物流利润" :disabled="!isEditingDetails" />
@@ -1138,7 +1010,6 @@ export default {
 							<el-input size="mini" v-model="scope.row.factoryCommission" placeholder="请输入佣金" :disabled="!isEditingDetails" />
 						</template>
 					</el-table-column>
-					<!--          降价金额-->
 					<el-table-column label="计提厂家返利金额" prop="factoryRebateAmount" width="90">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.factoryRebateAmount" placeholder="请输入计提厂家返利金额" :disabled="!isEditingDetails" />
@@ -1165,28 +1036,26 @@ export default {
 	box-sizing: border-box;
 }
 
-/* 增加深度选择器修改Element UI的滚动条样式 */
 ::v-deep .el-table__body-wrapper::-webkit-scrollbar {
-	width: 12px; /* 垂直滚动条宽度 */
-	height: 22px; /* 水平滚动条高度 */
+	width: 12px;
+	height: 22px;
 }
 
 ::v-deep .el-table__body-wrapper::-webkit-scrollbar-thumb {
-	background-color: #909399; /* 滚动条滑块颜色 */
+	background-color: #909399;
 	border-radius: 2px;
 	border: 2px solid #f2f6fc;
 }
 
 ::v-deep .el-table__body-wrapper::-webkit-scrollbar-thumb:hover {
-	background-color: #606266; /* 鼠标悬停时滚动条滑块颜色 */
+	background-color: #606266;
 }
 
 ::v-deep .el-table__body-wrapper::-webkit-scrollbar-track {
-	background-color: #f2f6fc; /* 滚动条轨道颜色 */
+	background-color: #f2f6fc;
 	border-radius: 6px;
 }
 
-/* 同样适用于整个页面的滚动条 */
 ::-webkit-scrollbar {
 	width: 12px;
 	height: 22px;
