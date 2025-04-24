@@ -220,20 +220,20 @@ export function download(url, params, filename, config, isShowConfig = false) {
 export function onceDownload(url, params, filename, config) {
 	// 先获取是否可以下载
 	getDownLoadStatus().then(status => {
+		console.log(status);
+
 		if (status) {
 			downLoadFile(url, params, filename, config);
-		} else {
+		} else if (status === false) {
 			Message.success('文件正在正常下载中，请勿重复下载!');
+		} else {
+			Message.error('下载文件出现错误，请联系管理员！');
 		}
 	});
 }
 
 async function downLoadFile(url, params, filename, config) {
 	const { data } = await getDownLoadProgress();
-	if (data.NowProgress !== 0) {
-		await resetDownLoadProgress();
-		return;
-	}
 	await store.dispatch('downloadOnce/setPercent', 0);
 	let progress = data.NowProgress; // 初始化进度
 	const maxProgress = data.MaxProgress; // 假进度条的最大值，留出2%等待真实下载完成
