@@ -248,14 +248,19 @@ export default {
 			});
 		},
 		handleReCheck(row) {
-			this.$modal.confirm('是否取消审核').then(() => {
-				auditGoodsOrder({
-					id: row.id,
-					isaudit: false
-				}).then(() => {
-					this.$modal.msgSuccess('取消审核成功');
-					this.getList();
-				});
+			this.$confirm({
+				title: '是否取消审核',
+				okText: '确定',
+				cancelText: '取消',
+				onOk: () => {
+					auditGoodsOrder({
+						id: row.id,
+						isaudit: false
+					}).then(() => {
+						this.$message.success('取消审核成功');
+						this.getList();
+					});
+				}
 			});
 		},
 		// 表格的导出
