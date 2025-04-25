@@ -1,5 +1,6 @@
 import { getDownLoadProgress } from '@/api/system/onceDownload';
 import { Message, MessageBox } from 'element-ui';
+import { fix } from '../../api/tool/format';
 
 const state = {
 	percent: 0
@@ -14,7 +15,7 @@ const actions = {
 	async setPercent({ commit }, data) {
 		const { data: value } = await getDownLoadProgress();
 		Message.success(value.message);
-		const percent = (value.NowProgress / value.MaxProgress) * 100;
+		const percent = fix(value.NowProgress / value.MaxProgress, 1) * 100;
 		if (value) {
 			commit('SET_PERCENT', percent);
 		}

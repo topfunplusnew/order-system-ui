@@ -523,9 +523,9 @@ export default {
 		toggleEditDetails(editState) {
 			this.isEditingDetails = editState;
 			if (!editState) {
-				this.$message.success('订单详情已锁定');
+				this.$message.success('当前状态下订单无法编辑,请先点击编辑按钮!');
 			} else {
-				this.$message.info('订单详情已解锁，可以编辑');
+				this.$message.info('正在编辑订单信息!');
 			}
 		},
 		close() {

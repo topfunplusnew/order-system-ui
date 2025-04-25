@@ -47,8 +47,10 @@
 
 		<!-- 表格区域 -->
 		<el-table id="educe-table" :data="tableData" border style="width: 100%" v-loading="loading" size="mini">
-			<el-table-column prop="operateDate" label="日期"></el-table-column>
-			<el-table-column prop="payNo" label="欠款明细">
+			<el-table-column prop="date" label="日期"></el-table-column>
+
+			<!--      借方列表-->
+			<el-table-column label="欠款明细">
 				<template slot-scope="scope">
 					<div v-for="(item, index) in scope.row.lenderList" :key="index">
 						<span style="color: red; margin-right: 6px">[{{ moduleNames[item.tableName] }}]</span>
@@ -57,6 +59,8 @@
 					</div>
 				</template>
 			</el-table-column>
+
+			<!--      借方总款-->
 			<el-table-column prop="lender" label="借方(客户提货+买票点)">
 				<template slot-scope="scope">
 					<span>
@@ -64,12 +68,16 @@
 					</span>
 				</template>
 			</el-table-column>
+
+			<!--      贷方总款-->
 			<el-table-column prop="borrower" label="贷方(收客户款)">
 				<template slot-scope="scope">
 					<span style="margin-right: 10px">{{ scope.row.borrower }}</span>
 					<i class="el-icon-s-order" style="cursor: pointer" @click="handleCheckBorrowerDetailList(scope.row)"></i>
 				</template>
 			</el-table-column>
+
+			<!--      余额本币-->
 			<el-table-column prop="moneyAmountLocal" label="余额本币">
 				<template slot-scope="scope">
 					<span :class="{ negative: scope.row.moneyAmountLocal < 0 }">{{ fix(scope.row.moneyAmountLocal) }}</span>
@@ -88,7 +96,7 @@
 
 		<el-dialog title="明细信息" :visible.sync="detailVisible" width="900px" append-to-body>
 			<el-table :data="detailList" border style="width: 100%" v-loading="detailLoading" size="mini" :summary-method="getSummaries" show-summary>
-				<el-table-column prop="operateDate" label="日期"></el-table-column>
+				<el-table-column prop="date" label="日期"></el-table-column>
 				<el-table-column prop="payNo" label="凭证号"></el-table-column>
 				<el-table-column prop="lender" label="借方(客户提货+买票点)"></el-table-column>
 				<el-table-column prop="borrower" label="贷方(收客户款)"></el-table-column>
@@ -254,7 +262,23 @@ export default {
 					this.loading = false;
 					return;
 				}
-				// 如果是数组类型
+
+				function calculateLenderAndBorrower(dayData) {
+					const { itemTotalLender, itemTotalBorrower } = dayData.reduce(
+						(acc, customerDetail) => {
+							const amount = Number(customerDetail.moneyAmount);
+							if (amount > 0) {
+								acc.itemTotalLender += amount;
+							} else {
+								acc.itemTotalBorrower += amount;
+							}
+							return acc;
+						},
+						{ itemTotalLender: 0, itemTotalBorrower: 0 } // 初始值
+					);
+					return [itemTotalLender, itemTotalBorrower];
+				}
+
 				if (Array.isArray(res.data)) {
 					if (res.data.length <= 0) {
 						this.$message.warning('未查询到相关数据');
@@ -262,77 +286,47 @@ export default {
 						return;
 					}
 					try {
-						// 上年结转的余额
-						let lastMoney = Number(lastYearDetail.moneyAmount);
-						// 累计金额
 						let nowMoney = Number(0);
-						// 累计借方和贷方
-						let lenderDetailList = [],
-							borrowerDetailList = [];
 						let sourceData = _.cloneDeep(res.data);
-						// 根据精确到天的日期 进行分组
 						sourceData = _.groupBy(sourceData, item => {
 							return item.operateDate.match(/^(\d{4}-\d{2}-\d{2})/)[1];
 						});
-						// 先处理借贷方的合并和收集
+						let dayData, itemTotalBorrower, itemTotalLender;
 						for (let key in sourceData) {
-							// 拿到每一个日期的数据 每一个日期对应的数据是一个数组
-							let dayData = _.cloneDeep(sourceData[key]);
-							// 对每一个日期下的数组数据中的每一项 进行一个借贷的计算
-							const { itemTotalLender, itemTotalBorrower } = dayData.reduce(
-								(acc, customerDetail) => {
-									const amount = Number(customerDetail.moneyAmount);
-									if (amount > 0) {
-										acc.itemTotalLender += amount;
-									} else {
-										acc.itemTotalBorrower += amount;
-									}
+							dayData = _.cloneDeep(sourceData[key]);
+							[itemTotalLender, itemTotalBorrower] = calculateLenderAndBorrower(dayData);
+						}
+						this.tableData = Object.keys(sourceData).map(date => {
+							const item = _.cloneDeep(sourceData[date]);
+							if (Array.isArray(item)) {
+								nowMoney = item.reduce((acc, curr) => {
+									acc += Number(curr.moneyAmount);
 									return acc;
-								},
-								{ itemTotalLender: 0, itemTotalBorrower: 0 } // 初始值
-							);
-
-							// 拿到汇总账
-							this.tableData = dayData.map(item => {
-								console.log(item);
-								// 金额累计计算
-								nowMoney = Number(lastMoney) + Number(item.moneyAmount);
-								lastMoney = nowMoney;
-
-								const mapped = {
-									operateDate: item.operateDate,
-									payNo: item.payNo,
-									// 借贷钱数总和
+								}, 0);
+								const condition = detail => {
+									const lender = detail.moneyAmount > 0 ? Math.abs(detail.moneyAmount) : 0;
+									const borrower = detail.moneyAmount < 0 ? Math.abs(detail.moneyAmount) : 0;
+									return {
+										date: detail.operateDate,
+										payNo: detail.payNo,
+										lender: fix(lender),
+										borrower: fix(borrower),
+										tableName: detail.tableName,
+										moneyAmountLocal: fix(detail.moneyAmount)
+									};
+								};
+								const lenderList = item.map(condition).filter(detail => detail.moneyAmountLocal > 0);
+								const borrowerList = item.map(condition).filter(detail => detail.moneyAmountLocal < 0);
+								return {
+									date: date,
 									lender: itemTotalLender,
 									borrower: itemTotalBorrower,
-									// 余额本币
 									moneyAmountLocal: fix(nowMoney),
-									// 模块名
-									tableName: item.tableName
+									lenderList,
+									borrowerList
 								};
-
-								// 借方小项
-								const lenderItem = {
-									...mapped,
-									lender: fix(item.moneyAmount) > 0 ? fix(item.moneyAmount) : 0
-								};
-								lenderDetailList.push(lenderItem);
-								//
-								const borrowerItem = {
-									...mapped,
-									borrower: fix(item.moneyAmount) < 0 ? fix(item.moneyAmount) : 0
-								};
-								borrowerDetailList.push(borrowerItem);
-								return {
-									...mapped,
-									// 借贷明细列表
-									lenderList: lenderDetailList,
-									borrowerList: borrowerDetailList
-								};
-							});
-
-							console.log(`tableData`, this.tableData);
-						}
+							}
+						});
 					} catch (err) {
 						this.$message.error('计算错误:', err);
 					}
