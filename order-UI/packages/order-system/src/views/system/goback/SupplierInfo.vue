@@ -48,7 +48,7 @@
 		<!-- 表格区域 -->
 		<el-table id="educe-table" :data="tableData" border style="width: 100%" v-loading="loading" size="mini">
 			<el-table-column prop="operateDate" label="日期"></el-table-column>
-			<el-table-column prop="payNo" label="欠款明细">
+			<el-table-column label="欠款明细">
 				<template slot-scope="scope">
 					<div v-for="(item, index) in scope.row.lenderList" :key="index">
 						<span style="color: red; margin-right: 6px">[{{ moduleNames[item.tableName] }}]</span>
@@ -262,22 +262,18 @@ export default {
 					// 辅助函数：计算某天数据的借方和贷方总额
 					function calculateLenderAndBorrower(dayData) {
 						const { itemTotalLender, itemTotalBorrower } = dayData.reduce(
-							(acc, detail) => {
-								const amount = Number(detail.moneyAmount);
-								// 供应商逻辑：贷方为正（我们欠供应商），借方为负（供应商还我们或我们付给供应商）
+							(acc, customerDetail) => {
+								const amount = Number(customerDetail.moneyAmount);
 								if (amount > 0) {
-									// 贷方增加
-									acc.itemTotalBorrower += amount;
+									acc.itemTotalLender += amount;
 								} else {
-									// 借方增加 (金额为负)
-									acc.itemTotalLender += amount; // 加负数
+									acc.itemTotalBorrower += amount;
 								}
 								return acc;
 							},
 							{ itemTotalLender: 0, itemTotalBorrower: 0 } // 初始值
 						);
-						// 返回绝对值，因为表格显示的是发生额大小
-						return [Math.abs(itemTotalLender), Math.abs(itemTotalBorrower)];
+						return [itemTotalLender, itemTotalBorrower];
 					}
 
 					if (Array.isArray(res.data)) {
@@ -287,52 +283,46 @@ export default {
 							return;
 						}
 						try {
+							let nowMoney = Number(0);
 							// 上年结转的余额 (供应商：正数表示我们欠供应商，负数表示供应商欠我们)
 							let currentBalance = Number(lastYearDetail.moneyAmount || 0);
 							let sourceData = _.cloneDeep(res.data);
-
 							// 按日期分组
 							sourceData = _.groupBy(sourceData, item => {
 								return item.operateDate.match(/^(\d{4}-\d{2}-\d{2})/)[1];
 							});
-
+							let dayData, itemTotalBorrower, itemTotalLender;
+							for (let key in sourceData) {
+								dayData = _.cloneDeep(sourceData[key]);
+								[itemTotalLender, itemTotalBorrower] = calculateLenderAndBorrower(dayData);
+							}
 							this.tableData = Object.keys(sourceData).map(date => {
-								const dayDetails = _.cloneDeep(sourceData[date]); // 当天所有明细
-
-								// 计算当天的借贷总额
-								const [dailyLenderTotal, dailyBorrowerTotal] = calculateLenderAndBorrower(dayDetails);
-
-								// 计算当天结束后的余额
-								const dailyNetChange = dayDetails.reduce((sum, detail) => sum + Number(detail.moneyAmount), 0);
-								currentBalance += dailyNetChange; // 更新累计余额
-
+								const item = _.cloneDeep(sourceData[date]);
+								nowMoney = item.reduce((acc, curr) => {
+									acc += Number(curr.moneyAmount);
+									return acc;
+								}, 0);
 								// 准备当天借方和贷方明细列表 (用于弹窗)
 								const condition = detail => {
-									const amount = Number(detail.moneyAmount);
-									// 供应商逻辑调整：
-									const lenderAmount = amount < 0 ? Math.abs(amount) : 0; // 借方发生额（我们付款）
-									const borrowerAmount = amount > 0 ? amount : 0; // 贷方发生额（我们收货）
+									const lender = detail.moneyAmount > 0 ? Math.abs(detail.moneyAmount) : 0;
+									const borrower = detail.moneyAmount < 0 ? Math.abs(detail.moneyAmount) : 0;
 									return {
 										date: detail.operateDate,
 										payNo: detail.payNo,
-										lender: fix(lenderAmount), // 借方显示
-										borrower: fix(borrowerAmount), // 贷方显示
+										lender: fix(lender),
+										borrower: fix(borrower),
 										tableName: detail.tableName,
-										moneyAmountLocal: fix(amount), // 原始金额变化
-										// 添加id，用于点击查询详情
-										id: detail.id
+										moneyAmountLocal: fix(detail.moneyAmount)
 									};
 								};
-								// 供应商：借方列表是我们付款或对方退款等减少我们欠款的操作 (moneyAmount < 0)
-								const lenderList = dayDetails.filter(d => Number(d.moneyAmount) < 0).map(condition);
-								// 供应商：贷方列表是我们收货或对方开票等增加我们欠款的操作 (moneyAmount > 0)
-								const borrowerList = dayDetails.filter(d => Number(d.moneyAmount) > 0).map(condition);
+								const lenderList = item.map(condition).filter(d => Number(d.moneyAmountLocal) > 0);
+								const borrowerList = item.map(condition).filter(d => Number(d.moneyAmountLocal) < 0);
 
 								return {
 									operateDate: date, // 日期列使用分组的key
 									payNo: '', // 主表该列现在显示明细，留空或移除
-									lender: fix(dailyLenderTotal), // 当日总借方发生额
-									borrower: fix(dailyBorrowerTotal), // 当日总贷方发生额
+									lender: fix(itemTotalLender), // 当日总借方发生额
+									borrower: fix(itemTotalBorrower), // 当日总贷方发生额
 									moneyAmountLocal: fix(currentBalance), // 当日结束余额
 									lenderList, // 借方明细列表 (弹窗用)
 									borrowerList // 贷方明细列表 (弹窗用)

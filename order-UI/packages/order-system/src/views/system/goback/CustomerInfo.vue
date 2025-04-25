@@ -63,16 +63,14 @@
 			<!--      借方总款-->
 			<el-table-column prop="lender" label="借方(客户提货+买票点)">
 				<template slot-scope="scope">
-					<span>
-						{{ scope.row.lender }}
-					</span>
+					<span>{{ Math.abs(scope.row.lender) }}</span>
 				</template>
 			</el-table-column>
 
 			<!--      贷方总款-->
 			<el-table-column prop="borrower" label="贷方(收客户款)">
 				<template slot-scope="scope">
-					<span style="margin-right: 10px">{{ scope.row.borrower }}</span>
+					<span style="margin-right: 10px">{{ Math.abs(scope.row.borrower) }}</span>
 					<i class="el-icon-s-order" style="cursor: pointer" @click="handleCheckBorrowerDetailList(scope.row)"></i>
 				</template>
 			</el-table-column>
@@ -315,8 +313,10 @@ export default {
 										moneyAmountLocal: fix(detail.moneyAmount)
 									};
 								};
-								const lenderList = item.map(condition).filter(detail => detail.moneyAmountLocal > 0);
-								const borrowerList = item.map(condition).filter(detail => detail.moneyAmountLocal < 0);
+								const lenderList = item.map(condition).filter(detail => Number(detail.moneyAmountLocal) > 0);
+								const borrowerList = item.map(condition).filter(detail => Number(detail.moneyAmountLocal) < 0);
+
+								console.log(lenderList, borrowerList);
 								return {
 									date: date,
 									lender: itemTotalLender,
