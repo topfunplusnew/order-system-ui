@@ -900,20 +900,6 @@ export default {
 			});
 		});
 	},
-	isLand: {
-		handler(val) {
-			if (val === false) {
-				this.resetLandCarInfo();
-			}
-		}
-	},
-	isSea: {
-		handler(val) {
-			if (val === false) {
-				this.resetSeaCarInfo();
-			}
-		}
-	},
 	methods: {
 		listStoreHouse,
 		listInventory,
@@ -941,16 +927,9 @@ export default {
 			// 处理每一行，关闭编辑状态并更新计算
 			rows.forEach(r => {
 				if (r.isEditing) {
-					// 先计算再尝试保存
 					updateInventoryRowCalculations(r, this.isSea, this.isLand);
-					// 标记为非编辑状态，保存成功后确认，失败则回滚
-					// r.isEditing = false; // 暂时注释，在API调用成功后设置
 				}
 			});
-			// 深拷贝并过滤掉仍在编辑的行 (理论上调用此方法时rows都应尝试保存)
-			// const saveDetails = _.cloneDeep(rows).filter(item => !item.isEditing);
-
-			// 构造新的库存主表信息 (包含所有子项，无论是否修改)
 			const newInventoryInfo = {
 				...this.form, // 使用当前表单的主信息
 				inventoryDetailList: _.cloneDeep(this.inventoryDetailList) // 包含所有子项
@@ -978,9 +957,8 @@ export default {
 					this.$message.success(successMessage);
 					// 如果是新增，更新主表ID和数据
 					if (!this.form.id && res.data && res.data.id) {
-						this.form.id = res.data.id; // 更新主表ID，后续保存变为更新操作
-						// 可能需要更新其他返回的主表信息
-						// this.form = { ...this.form, ...res.data }; // 合并返回的数据，注意不要覆盖子列表
+						// TODO  更新主表ID，后续保存变为更新操作
+						this.form.id = res.data.id;
 					}
 					this.getList(); // 刷新列表
 				})
@@ -1263,7 +1241,6 @@ export default {
 					isEditing: false, // 初始为非编辑状态
 					hasError: false // 初始无错误
 				}));
-
 				// 对加载的数据进行计算
 				this.inventoryDetailList.forEach(detailRow => {
 					this.$nextTick(() => {
@@ -1285,20 +1262,15 @@ export default {
 						this.$message.error('当前库存信息中有未保存的项,请先保存或取消编辑后再提交!');
 						return;
 					}
-
 					if (this.inventoryDetailList.length === 0) {
 						this.$message.error('请添加库存明细');
 						return;
 					}
-
-					// 确保主表信息与子表计算结果一致
 					this.form.inventoryDetailList = _.cloneDeep(this.inventoryDetailList);
 					this.form.allLandFreight = this.isLand ? this.inventoryDetailList.reduce((prev, curr) => fix(Number(prev) + Number(curr.landFreight || 0)), 0) : 0;
 					this.form.allSeaFreight = this.isSea ? this.inventoryDetailList.reduce((prev, curr) => fix(Number(prev) + Number(curr.seaFreight || 0)), 0) : 0;
-
 					const apiCall = this.form.id ? updateInventoryMain : addInventoryMain;
 					const successMessage = this.form.id ? '修改成功' : '新增成功';
-
 					apiCall(this.form)
 						.then(() => {
 							this.$modal.msgSuccess(successMessage);
