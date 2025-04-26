@@ -239,67 +239,6 @@ export default {
 				});
 			});
 		},
-		// 添加订单详情时，初始化isEditing属性为false
-		handleAddOrderdetail() {
-			let obj = {
-				orderDate: new Date(),
-				supplier: '',
-				supplierID: '',
-				customer: '',
-				customerID: '',
-				levelID: '',
-				levelName: '',
-				countingUnit: '片',
-				height: '',
-				length: '',
-				width: '',
-				piecesPerPack: '',
-				pieces: '',
-				packs: '',
-				price: '',
-				isIncludeTaxFactory: 0,
-				sundryCost: '',
-				paymentFactory: '',
-				paymentUnload: '',
-				isIncludeTaxSale: 0,
-				payments: '',
-				erro: '',
-				tonnage: '',
-				landFreightPrice: '',
-				landFreight: '',
-				seaFreight: '',
-				freight: '',
-				otherCost: '',
-				profit: '',
-				profitNoTax: '',
-				actualPieces: '',
-				paymentsWithSundry: '',
-				additionalFees: '',
-				storeHouseID: '',
-				storeHouseName: '',
-				storeID: '',
-				logisticsProfit: '',
-				customerCommission: '',
-				factoryCommission: '',
-				isAdjusted: 0,
-				adjustOrderNo: '',
-				adjustDate: '',
-				factoryRebateAmount: '',
-				factoryDiscountAmount: '',
-				comments: '',
-				isEditing: false // 默认不处于编辑状态
-			};
-			this.orderdetailList.push(obj);
-			this.$nextTick(() => {
-				if (this.$refs.orderdetail) {
-					const bodyWrapper = this.$refs.orderdetail.bodyWrapper;
-					if (bodyWrapper) {
-						bodyWrapper.scrollLeft = 0;
-					}
-				}
-			});
-		},
-
 		// 编辑某一行
 		handleRowEdit(row) {
 			// 先将所有行设置为不可编辑
@@ -319,7 +258,6 @@ export default {
 			updateOrderRowCalculations(row, this.isSea, this.isLand);
 			this.$message.success('该条记录已保存');
 		},
-
 		handleAddOrderdetail() {
 			let obj = {
 				orderDate: new Date(),
@@ -660,7 +598,6 @@ export default {
 		},
 		toggleEditDetails(editState) {
 			this.isEditingDetails = editState;
-
 			// 将所有行的编辑状态设置为全局状态
 			this.orderdetailList.forEach(item => {
 				item.isEditing = editState;
@@ -895,7 +832,7 @@ export default {
 										@commitBack="value => handleCommitBackSupplier(scope, value)"
 										@update:queryName="handleUpdateQuerySupplier"
 										@click="setCurrentType(scope.row, 'supplier')"
-										:disabled="!scope.row.isEditing"
+										:disable="!scope.row.isEditing"
 									>
 										<template #table-columns>
 											<el-table-column label="公司名称" align="center" prop="companyName" />
@@ -920,7 +857,7 @@ export default {
 										@update:queryName="handleUpdateQueryNameStore"
 										:queryItems="queryItemsStoreHouse"
 										@click="setCurrentType(scope.row, 'storeHouseName')"
-										:disabled="!scope.row.isEditing"
+										:disable="!scope.row.isEditing"
 									>
 										<template #table-columns>
 											<el-table-column label="级别名称" align="center" prop="levelName" show-overflow-tooltip />
@@ -970,7 +907,7 @@ export default {
 									@update:queryName="handleUpdateQueryNameLevel"
 									@commitBack="value => handleCommitBackProductLevel(scope, value)"
 									:query-items="queryItemsOrder"
-									:disabled="!scope.row.isEditing"
+									:disable="!scope.row.isEditing"
 								>
 									<template #table-columns>
 										<el-table-column label="级别编码" align="center" prop="levelNo" />

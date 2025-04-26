@@ -262,7 +262,7 @@
 		<!--    付款申请-->
 		<el-dialog :close-on-click-modal="false" :show-close="false" title="付款申请" :visible.sync="applyDialogVisible" width="45%">
 			<keep-alive>
-				<ApplyPayment :table-name="TableName.LEND_MONEY" :t-i-d="tid" :need-money="needMoney" :need-info="needInfo" @changeOpen="changeOpen" />
+				<ApplyPayment :table-name="TableName.LEND_MONEY" :t-i-d="tid" :need-money="needMoney" :need-info="needInfo" @changeOpen="changeOpen" :money-input-disabled="false" />
 			</keep-alive>
 		</el-dialog>
 	</div>
@@ -538,7 +538,7 @@ export default {
 		// 付款申请
 		applyForPayment(row) {
 			this.tid = row.id;
-			this.needMoney = row.moneyAmount;
+			// this.needMoney = row.moneyAmount;
 			this.needInfo = {
 				bankNo: row.targetBankNo,
 				acountsName: row.targetAcountsName,
