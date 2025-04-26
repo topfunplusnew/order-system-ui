@@ -642,6 +642,7 @@ import { mixin_printHTML } from '../../dashboard/mixins/print';
 import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import INVENTORY from '@/components/NeedToShow/INVENTORY.vue';
+import { parseTime } from '@/utils/ruoyi';
 
 export default {
 	name: 'InventoryMain',
@@ -1085,7 +1086,7 @@ export default {
 				id: null,
 				storeHouseid: null,
 				storeHouseName: null,
-				storeDate: new Date(),
+				storeDate: parseTime(new Date()),
 				landCarID: null,
 				landCarNo: null,
 				landDriverTel: null,
