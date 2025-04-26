@@ -267,6 +267,9 @@ export default {
 				...this.orderInfo,
 				orderDetailList: saveDetails
 			};
+			if (this.isEditingOrder.id) {
+				newOrderInfo.id = this.isEditingOrder.id;
+			}
 			this.addOrUpdateOrderDetail(newOrderInfo, rows);
 		},
 		// 优化添加或者修改订单函数，添加错误处理
@@ -286,7 +289,7 @@ export default {
 						this.$message.success('该行订单详情信息已修改并保存!');
 					})
 					.catch(error => {
-						currentRows.forEach((row) => {
+						currentRows.forEach(row => {
 							// 使用Vue的响应式方法确保UI更新
 							this.$set(row, 'isEditing', true);
 							this.$set(row, 'hasError', true); // 添加错误标记
@@ -305,10 +308,10 @@ export default {
 						});
 						this.$message.success('该行订单详情信息已添加并保存!');
 						// 设置当前正在编辑的订单是哪条订单
-						this.setIsEditingOrder(_.cloneDeep(res.data), true);
+						this.setIsEditingOrder(res.data, true);
 					})
 					.catch(error => {
-						currentRows.forEach((row) => {
+						currentRows.forEach(row => {
 							// 使用Vue的响应式方法确保UI更新
 							this.$set(row, 'isEditing', true);
 							this.$set(row, 'hasError', true); // 添加错误标记
@@ -1246,9 +1249,15 @@ export default {
 
 /* 为出错行添加闪烁动画效果提高可见性 */
 @keyframes errorPulse {
-	0% { background-color: rgba(245, 108, 108, 0.1); }
-	50% { background-color: rgba(245, 108, 108, 0.2); }
-	100% { background-color: rgba(245, 108, 108, 0.1); }
+	0% {
+		background-color: rgba(245, 108, 108, 0.1);
+	}
+	50% {
+		background-color: rgba(245, 108, 108, 0.2);
+	}
+	100% {
+		background-color: rgba(245, 108, 108, 0.1);
+	}
 }
 
 ::v-deep .error-row {
