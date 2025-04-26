@@ -62,9 +62,9 @@
 			<el-table-column v-if="columns[5].visible" label="客户公司名称" align="center" prop="customer" show-overflow-tooltip />
 			<el-table-column v-if="columns[6].visible" label="订单信息" align="center" prop="isOrderTax" width="180" show-overflow-tooltip>
 				<template slot-scope="scope">
-					<el-row v-if="scope.row.isOrderTax === 0">无关联订单</el-row>
-					<el-row v-else>
-						<el-button size="mini" type="text" @click="checkOrderInfo(scope.row)">查看订单信息</el-button>
+					<!--					<el-row v-if="scope.row.isOrderTax === 0">无关联订单</el-row>-->
+					<el-row>
+						<el-button size="mini" type="text" @click="checkOrderInfo(scope.row)" :disabled="!scope.row.ordersNo">查看订单信息</el-button>
 					</el-row>
 				</template>
 			</el-table-column>
@@ -315,13 +315,6 @@ export default {
 			queryGoodsOrder: '',
 			// 表单校验
 			rules: {
-				ordersNo: [
-					{
-						required: true,
-						message: '请选择关联订单',
-						trigger: 'blur'
-					}
-				],
 				invoiceAmount: [
 					{
 						required: true,
