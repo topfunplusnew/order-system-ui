@@ -528,7 +528,7 @@ export default {
 						this.orderInfo.orderDetailList = _.cloneDeep(this.orderdetailList);
 						this.orderInfo = excludeParams(this.orderInfo, this.$exclude);
 						const json = _.cloneDeep(this.orderInfo);
-						if (!this.orderId) {
+						if (!this.isEditingOrder.id) {
 							addGoodsOrder(json).then(resolve).catch(reject);
 						} else {
 							json.remark = sessionStorage.getItem('order-edit-reason');
@@ -880,7 +880,7 @@ export default {
 					ref="orderdetail"
 				>
 					<el-table-column type="selection" width="90" align="center" :selectable="() => isEditingDetails" />
-					<el-table-column label="序号" align="center" prop="index" width="50" />
+					<el-table-column label="序号" align="center" type="index" width="50" />
 
 					<!-- 新增行操作列，放在前面方便操作 -->
 					<el-table-column label="行操作" align="center" width="100">
