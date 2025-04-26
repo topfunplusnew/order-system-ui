@@ -402,14 +402,13 @@
           </el-table-column> -->
 					<el-table-column label="每包片数" prop="piecesPerPack" width="150">
 						<template #default="scope">
-							<el-input size="mini" type="number" v-model="scope.row.piecesPerPack" @input="() => (scope.row.packs >= 0 ? calculatePacks(scope) : '')" placeholder="请输入每包片数" />
+							<el-input size="mini" v-model="scope.row.piecesPerPack" @input="() => (scope.row.packs >= 0 ? calculatePacks(scope) : '')" placeholder="请输入每包片数" />
 						</template>
 					</el-table-column>
 					<el-table-column label="包数" prop="packs" width="150">
 						<template #default="scope">
 							<el-input
 								size="mini"
-								type="number"
 								@input="() => calculatePacks(scope)"
 								v-model.lazy="scope.row.packs"
 								:placeholder="scope.row.piecesPerPack <= 0 ? '请先输入每包片数' : '请输入包数'"
@@ -420,7 +419,7 @@
 
 					<el-table-column label="出厂片数" prop="pieces" width="150">
 						<template #default="scope">
-							<el-input type="number" size="mini" v-model="scope.row.pieces" placeholder="请输入出厂片数" @input="() => calculatePacks(scope)" />
+							<el-input size="mini" v-model="scope.row.pieces" placeholder="请输入出厂片数" @input="() => calculatePacks(scope)" />
 						</template>
 					</el-table-column>
 
@@ -428,7 +427,6 @@
 						<template #default="scope">
 							<el-input
 								size="mini"
-								type="number"
 								v-model="scope.row.price"
 								@input="scope.row.sundryCost >= 0 ? calculatePrice(scope) : ''"
 								:placeholder="scope.row.pieces <= 0 ? '请先完善出厂片数' : '请输入出厂单价'"
@@ -448,7 +446,6 @@
 						<template #default="scope">
 							<el-input
 								size="mini"
-								type="number"
 								v-model.lazy="scope.row.sundryCost"
 								@input="() => calculatePrice(scope)"
 								:placeholder="scope.row.price <= 0 ? '请先完善出厂单价' : '请输入杂费'"
@@ -458,7 +455,7 @@
 					</el-table-column>
 					<el-table-column label="出厂货款" prop="paymentFactory" width="150">
 						<template #default="scope">
-							<el-input size="mini" type="number" v-model="scope.row.paymentFactory" placeholder="请输入出厂货款" disabled />
+							<el-input size="mini" v-model="scope.row.paymentFactory" placeholder="请输入出厂货款" disabled />
 						</template>
 					</el-table-column>
 
@@ -470,13 +467,7 @@
 					</el-table-column>
 					<el-table-column label="存货价" prop="paymentUnload" width="150">
 						<template #default="scope">
-							<el-input
-								size="mini"
-								type="number"
-								v-model.lazy="scope.row.paymentUnload"
-								placeholder="请输入存货价"
-								@input="scope.row.paymentsWithSundry >= 0 ? calculatePayment(scope) : ''"
-							/>
+							<el-input size="mini" v-model.lazy="scope.row.paymentUnload" placeholder="请输入存货价" @input="scope.row.paymentsWithSundry >= 0 ? calculatePayment(scope) : ''" />
 						</template>
 					</el-table-column>
 					<el-table-column label="库存是否含税" prop="isIncludeTaxSale" width="150">
@@ -501,7 +492,7 @@
 					</el-table-column>
 					<el-table-column label="库存金额" prop="payments" width="150">
 						<template #default="scope">
-							<el-input size="mini" type="number" v-model="scope.row.payments" placeholder="请输入库存金额" disabled />
+							<el-input size="mini" v-model="scope.row.payments" placeholder="请输入库存金额" disabled />
 						</template>
 					</el-table-column>
 					<el-table-column label="误差" prop="erro" width="150">

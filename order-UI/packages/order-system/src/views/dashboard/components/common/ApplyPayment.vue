@@ -277,6 +277,7 @@ import { listCompany } from '../../../../api/system/company';
 import { mixin_payment_fill } from '../../mixins/apply_payment/payment_fill';
 import { isNull } from '../../../../main';
 import { mixin_receive_money_subject } from '../../mixins/receivemoney/receive_money_subject';
+import { parseTime } from '@/utils/ruoyi';
 
 export default {
 	name: 'ApplyPayment',
@@ -294,7 +295,7 @@ export default {
 			form: {
 				tID: null,
 				tableName: null,
-				fundsDate: new Date(),
+				fundsDate: parseTime(new Date()),
 				payType: null,
 				moneyAmount: null,
 				otherAcountsName: null,
@@ -466,7 +467,7 @@ export default {
 				id: null,
 				tableName: null,
 				tID: null,
-				fundsDate: new Date(),
+				fundsDate: parseTime(new Date()),
 				payType: null,
 				moneyAmount: null,
 				otherAcountsName: null,

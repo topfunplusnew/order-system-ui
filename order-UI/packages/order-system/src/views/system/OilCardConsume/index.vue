@@ -324,7 +324,7 @@ export default {
 				id: null,
 				bTripId: null,
 				oilCardNo: null,
-				useDate: new Date(),
+				useDate: parseTime(new Date()),
 				carNo: null,
 				startCardSurplus: null,
 				refuelingNumber: null,
