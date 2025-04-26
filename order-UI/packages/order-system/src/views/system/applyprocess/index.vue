@@ -20,6 +20,7 @@ import _ from 'lodash';
 import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import { mixin_tour } from '@/views/dashboard/mixins/tour';
+import PAYMENT_APPLY_INFO from '@/components/NeedToShow/PAYMENT_APPLY_INFO.vue';
 
 export default {
 	name: 'ApplyProcess',
@@ -349,6 +350,29 @@ export default {
 				});
 			}
 		},
+		handleCheck(item) {
+			// 查看付款申请详细
+			if (!item.id) {
+				this.$message.error('付款申请信息不存在');
+				return;
+			}
+			getPaymentApply(item.id).then(res => {
+				if (!res.data) {
+					this.$message.error('付款申请信息不存在');
+					return;
+				}
+				const paymentApplyInfo = res.data;
+				this.openDialog(
+					PAYMENT_APPLY_INFO,
+					'付款申请信息',
+					'650px',
+					{
+						needToShowInfo: paymentApplyInfo
+					},
+					false
+				);
+			});
+		},
 		// 提交付款申请信息 此时会将状态改为审核中
 		submitReApplyInfo(paymentApplyInfo) {
 			const { id } = paymentApplyInfo;
@@ -571,7 +595,7 @@ export default {
 						<a-list item-layout="horizontal" :data-source="alreadyApplyList" :pagination="pagination">
 							<a-list-item slot="renderItem" slot-scope="item, index">
 								<a slot="actions" @click="reApply(item, true)">修改填写</a>
-								<a slot="actions" @click="reApply(item, false)">重新填写</a>
+								<a slot="actions" @click="handleCheck(item)">查看详情</a>
 								<a slot="actions" @click="submitReApplyInfo(item)">提交</a>
 								<a-list-item-meta :description="'提交时间:' + item.addtime">
 									<span slot="title">{{ item.reason }}</span>

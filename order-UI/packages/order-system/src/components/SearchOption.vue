@@ -150,7 +150,7 @@ export default {
 <template>
 	<div>
 		<!--    按钮-->
-		<el-button size="mini" :icon="icon" type="primary" @click="handleCallBack"></el-button>
+		<el-button size="mini" :icon="icon" type="primary" @click="handleCallBack" :disabled="disable"></el-button>
 		<!--    弹窗-->
 		<el-dialog :close-on-click-modal="false" :title="title" :visible.sync="dialogVisible" destroy-on-close width="65%" append-to-body>
 			<!--      弹出的表格内容-->
@@ -167,7 +167,7 @@ export default {
 							</el-select>
 						</el-form-item>
 						<el-form-item>
-							<el-button type="primary" size="mini" @click="handleSearchInfo">搜索</el-button>
+							<el-button type="primary" size="mini" @click="handleSearchInfo" :disabled="disable">搜索</el-button>
 						</el-form-item>
 					</el-form>
 				</div>

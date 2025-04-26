@@ -89,7 +89,8 @@ export default {
 			},
 			orderdetailList: [],
 			checkedOrderdetail: [],
-			isEditingDetails: false,
+			isEditingDetails: false, // 保留全局编辑状态用于添加/删除行操作
+			isEditingBasicInfo: true, // 基本信息编辑状态
 			isLand: false,
 			isSea: false,
 			orderNums: 0,
@@ -223,7 +224,12 @@ export default {
 				this.orderInfo = response.data;
 				this.isLand = !!response.data.landCarNo; // 根据是否有车牌判断
 				this.isSea = !!response.data.seaCarNo; // 根据是否有柜号判断
-				this.orderdetailList = response.data.orderDetailList || [];
+
+				// 初始化订单详情列表，为每一项添加isEditing属性
+				this.orderdetailList = (response.data.orderDetailList || []).map(item => {
+					return { ...item, isEditing: false };
+				});
+
 				// 对加载的数据进行计算
 				this.orderdetailList.forEach(row => {
 					this.$nextTick(() => {
@@ -233,6 +239,7 @@ export default {
 				});
 			});
 		},
+		// 添加订单详情时，初始化isEditing属性为false
 		handleAddOrderdetail() {
 			let obj = {
 				orderDate: new Date(),
@@ -279,7 +286,88 @@ export default {
 				adjustDate: '',
 				factoryRebateAmount: '',
 				factoryDiscountAmount: '',
-				comments: ''
+				comments: '',
+				isEditing: false // 默认不处于编辑状态
+			};
+			this.orderdetailList.push(obj);
+			this.$nextTick(() => {
+				if (this.$refs.orderdetail) {
+					const bodyWrapper = this.$refs.orderdetail.bodyWrapper;
+					if (bodyWrapper) {
+						bodyWrapper.scrollLeft = 0;
+					}
+				}
+			});
+		},
+
+		// 编辑某一行
+		handleRowEdit(row) {
+			// 先将所有行设置为不可编辑
+			this.orderdetailList.forEach(item => {
+				item.isEditing = false;
+			});
+			// 设置当前行为可编辑
+			row.isEditing = true;
+			this.$message.info('正在编辑该条记录');
+		},
+
+		// 保存某一行
+		handleRowSave(row) {
+			// 执行保存逻辑，可以在这里添加表单验证
+			row.isEditing = false;
+			// 重新计算该行的数据
+			updateOrderRowCalculations(row, this.isSea, this.isLand);
+			this.$message.success('该条记录已保存');
+		},
+
+		handleAddOrderdetail() {
+			let obj = {
+				orderDate: new Date(),
+				supplier: '',
+				supplierID: '',
+				customer: '',
+				customerID: '',
+				levelID: '',
+				levelName: '',
+				countingUnit: '片',
+				height: '',
+				length: '',
+				width: '',
+				piecesPerPack: '',
+				pieces: '',
+				packs: '',
+				price: '',
+				isIncludeTaxFactory: 0,
+				sundryCost: '',
+				paymentFactory: '',
+				paymentUnload: '',
+				isIncludeTaxSale: 0,
+				payments: '',
+				erro: '',
+				tonnage: '',
+				landFreightPrice: '',
+				landFreight: '',
+				seaFreight: '',
+				freight: '',
+				otherCost: '',
+				profit: '',
+				profitNoTax: '',
+				actualPieces: '',
+				paymentsWithSundry: '',
+				additionalFees: '',
+				storeHouseID: '',
+				storeHouseName: '',
+				storeID: '',
+				logisticsProfit: '',
+				customerCommission: '',
+				factoryCommission: '',
+				isAdjusted: 0,
+				adjustOrderNo: '',
+				adjustDate: '',
+				factoryRebateAmount: '',
+				factoryDiscountAmount: '',
+				comments: '',
+				isEditing: false // 默认不处于编辑状态
 			};
 			this.orderdetailList.push(obj);
 			this.$nextTick(() => {
@@ -572,10 +660,16 @@ export default {
 		},
 		toggleEditDetails(editState) {
 			this.isEditingDetails = editState;
+
+			// 将所有行的编辑状态设置为全局状态
+			this.orderdetailList.forEach(item => {
+				item.isEditing = editState;
+			});
+
 			if (!editState) {
-				this.$message.success('当前状态下订单无法编辑,请先点击编辑按钮!');
+				this.$message.success('所有订单详情已保存，当前状态下不可编辑');
 			} else {
-				this.$message.info('正在编辑订单信息!');
+				this.$message.info('已进入批量编辑模式，可以修改所有订单信息');
 			}
 		},
 		close() {
@@ -587,7 +681,7 @@ export default {
 
 <template>
 	<div>
-		<!-- 给 el-form 添加 ref -->
+		<!-- 基本信息表单部分不变 -->
 		<el-form :inline="true" :model="orderInfo" label-width="80px" :rules="orderRules" ref="orderForm">
 			<el-alert title="对于禁用的输入框只需点击旁边搜索按钮搜索对应信息，确认后即可自动填写!" type="warning"></el-alert>
 			<br />
@@ -742,6 +836,8 @@ export default {
 			</el-card>
 		</el-form>
 		<br />
+
+		<!--    订单详情的填写-->
 		<el-card class="box-card" shadow="hover" size="mini">
 			<div>
 				<el-row :gutter="10" class="mb8">
@@ -752,12 +848,14 @@ export default {
 						<el-button size="mini" type="danger" @click="handleDeleteOrderdetail" :disabled="!isEditingDetails || checkedOrderdetail.length === 0">删除</el-button>
 					</el-col>
 					<el-col :span="1.5">
-						<el-button size="mini" type="warning" @click="toggleEditDetails(true)" :disabled="isEditingDetails">编辑</el-button>
+						<el-button size="mini" type="warning" @click="toggleEditDetails(true)" :disabled="isEditingDetails">批量编辑</el-button>
 					</el-col>
 					<el-col :span="1.5">
-						<el-button size="mini" type="success" @click="toggleEditDetails(false)" :disabled="!isEditingDetails">保存</el-button>
+						<el-button size="mini" type="success" @click="toggleEditDetails(false)" :disabled="!isEditingDetails">批量保存</el-button>
 					</el-col>
 				</el-row>
+
+				<!--        订单详情表格-->
 				<el-table
 					border
 					size="mini"
@@ -770,6 +868,15 @@ export default {
 				>
 					<el-table-column type="selection" width="90" align="center" :selectable="() => isEditingDetails" />
 					<el-table-column label="序号" align="center" prop="index" width="50" />
+
+					<!-- 新增行操作列，放在前面方便操作 -->
+					<el-table-column label="行操作" align="center" width="100">
+						<template slot-scope="scope">
+							<el-button v-if="!scope.row.isEditing" size="mini" type="warning" icon="el-icon-edit" @click="handleRowEdit(scope.row)">编辑</el-button>
+							<el-button v-else size="mini" type="success" icon="el-icon-check" @click="handleRowSave(scope.row)">保存</el-button>
+						</template>
+					</el-table-column>
+
 					<el-table-column label="供应商/仓库" width="200">
 						<template #default="scope">
 							<el-row>
@@ -788,7 +895,7 @@ export default {
 										@commitBack="value => handleCommitBackSupplier(scope, value)"
 										@update:queryName="handleUpdateQuerySupplier"
 										@click="setCurrentType(scope.row, 'supplier')"
-										:disabled="!isEditingDetails"
+										:disabled="!scope.row.isEditing"
 									>
 										<template #table-columns>
 											<el-table-column label="公司名称" align="center" prop="companyName" />
@@ -813,7 +920,7 @@ export default {
 										@update:queryName="handleUpdateQueryNameStore"
 										:queryItems="queryItemsStoreHouse"
 										@click="setCurrentType(scope.row, 'storeHouseName')"
-										:disabled="!isEditingDetails"
+										:disabled="!scope.row.isEditing"
 									>
 										<template #table-columns>
 											<el-table-column label="级别名称" align="center" prop="levelName" show-overflow-tooltip />
@@ -863,7 +970,7 @@ export default {
 									@update:queryName="handleUpdateQueryNameLevel"
 									@commitBack="value => handleCommitBackProductLevel(scope, value)"
 									:query-items="queryItemsOrder"
-									:disabled="!isEditingDetails"
+									:disabled="!scope.row.isEditing"
 								>
 									<template #table-columns>
 										<el-table-column label="级别编码" align="center" prop="levelNo" />
@@ -881,7 +988,7 @@ export default {
 					</el-table-column>
 					<el-table-column label="计量单位" prop="countingUnit" width="100">
 						<template #default="scope">
-							<el-radio-group v-model="scope.row.countingUnit" size="mini" :disabled="!isEditingDetails">
+							<el-radio-group v-model="scope.row.countingUnit" size="mini" :disabled="!scope.row.isEditing">
 								<el-radio label="片">片数</el-radio>
 								<el-radio label="其他">其他</el-radio>
 							</el-radio-group>
@@ -904,7 +1011,7 @@ export default {
 					</el-table-column>
 					<el-table-column label="每包片数" prop="piecesPerPack" width="90">
 						<template #default="scope">
-							<el-input size="mini" v-model.number="scope.row.piecesPerPack" placeholder="请输入每包片数" :disabled="!isEditingDetails" />
+							<el-input size="mini" v-model.number="scope.row.piecesPerPack" placeholder="请输入每包片数" :disabled="!scope.row.isEditing" />
 						</template>
 					</el-table-column>
 					<el-table-column label="包数" prop="packs" width="90">
@@ -913,7 +1020,7 @@ export default {
 								size="mini"
 								v-model.number.lazy="scope.row.packs"
 								:placeholder="scope.row.piecesPerPack <= 0 ? '请先输入每包片数' : '请输入包数'"
-								:disabled="!isEditingDetails || scope.row.piecesPerPack <= 0"
+								:disabled="!scope.row.isEditing || scope.row.piecesPerPack <= 0"
 							/>
 						</template>
 					</el-table-column>
@@ -923,9 +1030,9 @@ export default {
 								size="mini"
 								v-model.lazy="scope.row.pieces"
 								placeholder="请输入出厂片数"
-								@change="() => handlePiecesChange(scope)"  
+								@change="() => handlePiecesChange(scope)"
 								@input="() => recalculateAll(scope)"
-								:disabled="!isEditingDetails"
+								:disabled="!scope.row.isEditing"
 							/>
 						</template>
 					</el-table-column>
@@ -936,13 +1043,13 @@ export default {
 								v-model="scope.row.price"
 								@input="() => recalculateAll(scope)"
 								:placeholder="scope.row.pieces <= 0 ? '请先完善出厂片数' : '请输入出厂单价'"
-								:disabled="!isEditingDetails || !scope.row.pieces"
+								:disabled="!scope.row.isEditing || !scope.row.pieces"
 							/>
 						</template>
 					</el-table-column>
 					<el-table-column label="出厂是否含税" prop="isIncludeTaxFactory" width="90">
 						<template #default="scope">
-							<el-radio-group v-model="scope.row.isIncludeTaxFactory" size="mini" @change="() => recalculateAll(scope)" :disabled="!isEditingDetails">
+							<el-radio-group v-model="scope.row.isIncludeTaxFactory" size="mini" @change="() => recalculateAll(scope)" :disabled="!scope.row.isEditing">
 								<el-radio :label="1">是</el-radio>
 								<el-radio :label="0">否</el-radio>
 							</el-radio-group>
@@ -955,7 +1062,7 @@ export default {
 								v-model.lazy="scope.row.sundryCost"
 								@input="() => recalculateAll(scope)"
 								:placeholder="scope.row.price <= 0 ? '请先完善出厂单价' : '请输入杂费'"
-								:disabled="!isEditingDetails || !scope.row.price"
+								:disabled="!scope.row.isEditing || !scope.row.price"
 							/>
 						</template>
 					</el-table-column>
@@ -966,17 +1073,17 @@ export default {
 					</el-table-column>
 					<el-table-column label="卸货片数" prop="actualPieces" width="90">
 						<template #default="scope">
-							<el-input size="mini" v-model="scope.row.actualPieces" placeholder="请输入卸货片数" @input="() => recalculateAll(scope)" :disabled="!isEditingDetails" />
+							<el-input size="mini" v-model="scope.row.actualPieces" placeholder="请输入卸货片数" @input="() => recalculateAll(scope)" :disabled="!scope.row.isEditing" />
 						</template>
 					</el-table-column>
 					<el-table-column label="卸货价" prop="paymentUnload" width="90">
 						<template #default="scope">
-							<el-input size="mini" v-model.lazy="scope.row.paymentUnload" placeholder="请输入卸货价" @input="() => recalculateAll(scope)" :disabled="!isEditingDetails" />
+							<el-input size="mini" v-model.lazy="scope.row.paymentUnload" placeholder="请输入卸货价" @input="() => recalculateAll(scope)" :disabled="!scope.row.isEditing" />
 						</template>
 					</el-table-column>
 					<el-table-column label="销售是否含税" prop="isIncludeTaxSale" width="90">
 						<template #default="scope">
-							<el-radio-group v-model="scope.row.isIncludeTaxSale" size="mini" @change="() => recalculateAll(scope)" :disabled="!isEditingDetails">
+							<el-radio-group v-model="scope.row.isIncludeTaxSale" size="mini" @change="() => recalculateAll(scope)" :disabled="!scope.row.isEditing">
 								<el-radio :label="1">是</el-radio>
 								<el-radio :label="0">否</el-radio>
 							</el-radio-group>
@@ -988,7 +1095,7 @@ export default {
 								size="mini"
 								v-model.lazy="scope.row.paymentsWithSundry"
 								@input="() => recalculateAll(scope)"
-								:disabled="!isEditingDetails || !scope.row.paymentUnload"
+								:disabled="!scope.row.isEditing || !scope.row.paymentUnload"
 								:placeholder="scope.row.paymentUnload <= 0 ? '请先完善卸货价' : '请输入总货款杂费'"
 							/>
 						</template>
@@ -1001,7 +1108,7 @@ export default {
 					<el-table-column label="误差" prop="erro" width="150">
 						<template #default="scope">
 							<!-- 误差通常由产品级别带出，如果允许手动输入则需要触发计算 -->
-							<el-input size="mini" v-model="scope.row.erro" placeholder="请输入误差" @input="() => recalculateAll(scope)" :disabled="!isEditingDetails" />
+							<el-input size="mini" v-model="scope.row.erro" placeholder="请输入误差" @input="() => recalculateAll(scope)" :disabled="!scope.row.isEditing" />
 						</template>
 					</el-table-column>
 					<el-table-column label="吨位" prop="tonnage" width="90">
@@ -1011,7 +1118,7 @@ export default {
 					</el-table-column>
 					<el-table-column label="陆运费单价" prop="landFreightPrice" width="150" v-if="isLand">
 						<template #default="scope">
-							<el-input size="mini" v-model.lazy="scope.row.landFreightPrice" @input="() => recalculateAll(scope)" placeholder="请输入陆运费单价" :disabled="!isEditingDetails" />
+							<el-input size="mini" v-model.lazy="scope.row.landFreightPrice" @input="() => recalculateAll(scope)" placeholder="请输入陆运费单价" :disabled="!scope.row.isEditing" />
 						</template>
 					</el-table-column>
 					<el-table-column label="加费" prop="additionalFees" width="90" v-if="isLand">
@@ -1021,7 +1128,7 @@ export default {
 								v-model.lazy="scope.row.additionalFees"
 								@input="() => recalculateAll(scope)"
 								:placeholder="!scope.row.landFreightPrice ? '请先完善陆运费单价' : '请输入加费'"
-								:disabled="!isEditingDetails"
+								:disabled="!scope.row.isEditing"
 							/>
 						</template>
 					</el-table-column>
@@ -1032,7 +1139,7 @@ export default {
 					</el-table-column>
 					<el-table-column label="海运费" prop="seaFreight" width="90" v-if="isSea">
 						<template #default="scope">
-							<el-input size="mini" v-model.lazy="scope.row.seaFreight" @input="() => recalculateAll(scope)" placeholder="请输入海运费" :disabled="!isEditingDetails" />
+							<el-input size="mini" v-model.lazy="scope.row.seaFreight" @input="() => recalculateAll(scope)" placeholder="请输入海运费" :disabled="!scope.row.isEditing" />
 						</template>
 					</el-table-column>
 
@@ -1043,7 +1150,7 @@ export default {
 					</el-table-column>
 					<el-table-column label="其他费用" prop="otherCost" width="90">
 						<template #default="scope">
-							<el-input size="mini" v-model.lazy="scope.row.otherCost" placeholder="请输入其他费用" @input="() => recalculateAll(scope)" :disabled="!isEditingDetails" />
+							<el-input size="mini" v-model.lazy="scope.row.otherCost" placeholder="请输入其他费用" @input="() => recalculateAll(scope)" :disabled="!scope.row.isEditing" />
 						</template>
 					</el-table-column>
 					<el-table-column label="利润" prop="profit" width="90">
@@ -1059,32 +1166,32 @@ export default {
 
 					<el-table-column label="物流利润" prop="logisticsProfit" width="90">
 						<template #default="scope">
-							<el-input size="mini" v-model="scope.row.logisticsProfit" placeholder="请输入物流利润" :disabled="!isEditingDetails" />
+							<el-input size="mini" v-model="scope.row.logisticsProfit" placeholder="请输入物流利润" :disabled="!scope.row.isEditing" />
 						</template>
 					</el-table-column>
 					<el-table-column label="客户佣金" prop="customerCommission" width="90">
 						<template #default="scope">
-							<el-input size="mini" v-model="scope.row.customerCommission" placeholder="请输入佣金" :disabled="!isEditingDetails" />
+							<el-input size="mini" v-model="scope.row.customerCommission" placeholder="请输入佣金" :disabled="!scope.row.isEditing" />
 						</template>
 					</el-table-column>
 					<el-table-column label="厂家佣金" prop="factoryCommission" width="90">
 						<template #default="scope">
-							<el-input size="mini" v-model="scope.row.factoryCommission" placeholder="请输入佣金" :disabled="!isEditingDetails" />
+							<el-input size="mini" v-model="scope.row.factoryCommission" placeholder="请输入佣金" :disabled="!scope.row.isEditing" />
 						</template>
 					</el-table-column>
 					<el-table-column label="计提厂家返利金额" prop="factoryRebateAmount" width="90">
 						<template #default="scope">
-							<el-input size="mini" v-model="scope.row.factoryRebateAmount" placeholder="请输入计提厂家返利金额" :disabled="!isEditingDetails" />
+							<el-input size="mini" v-model="scope.row.factoryRebateAmount" placeholder="请输入计提厂家返利金额" :disabled="!scope.row.isEditing" />
 						</template>
 					</el-table-column>
 					<el-table-column label="计提厂家降价金额" prop="factoryDiscountAmount" width="90">
 						<template #default="scope">
-							<el-input size="mini" v-model="scope.row.factoryDiscountAmount" placeholder="请输入计提厂家降价金额" :disabled="!isEditingDetails" />
+							<el-input size="mini" v-model="scope.row.factoryDiscountAmount" placeholder="请输入计提厂家降价金额" :disabled="!scope.row.isEditing" />
 						</template>
 					</el-table-column>
 					<el-table-column label="备注" prop="comments" width="90">
 						<template #default="scope">
-							<el-input size="mini" v-model="scope.row.comments" placeholder="请输入备注" :disabled="!isEditingDetails" />
+							<el-input size="mini" v-model="scope.row.comments" placeholder="请输入备注" :disabled="!scope.row.isEditing" />
 						</template>
 					</el-table-column>
 				</el-table>
