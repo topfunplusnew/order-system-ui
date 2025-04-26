@@ -22,12 +22,12 @@ export default {
 	mixins: [mixin_form_fillInfo],
 	props: {
 		orderId: {
-			type: String,
-			default: ''
+			type: Number,
+			default: () => null
 		},
 		submitInfo: {
 			type: String,
-			default: '提交'
+			default: () => '提交'
 		}
 	},
 	data() {
@@ -183,34 +183,13 @@ export default {
 			// 当前是编辑订单还是添加订单 编辑订单此值非空,添加订单为空
 			isEditingOrder: {
 				id: '',
-				state: false
+				state: false,
+				currentEditingOrderInfo: {}
 			}
 		};
 	},
-	watch: {
-		orderId: {
-			handler(val) {
-				this.resetOrderInfo();
-				this.isEditingDetails = false;
-				this.orderId && this.getGoodsOrderInfo(val);
-			}
-		},
-		isLand: {
-			handler(val) {
-				if (val === false) {
-					this.resetLandCarInfo();
-				}
-			}
-		},
-		isSea: {
-			handler(val) {
-				if (val === false) {
-					this.resetSeaCarInfo();
-				}
-			}
-		}
-	},
 	created() {
+		console.log(`OrderForm created`);
 		this.resetOrderInfo();
 		this.isEditingDetails = false;
 		this.orderId && this.getGoodsOrderInfo(this.orderId);
@@ -228,21 +207,35 @@ export default {
 		getGoodsOrderInfo(id) {
 			getGoodsOrder(id).then(response => {
 				this.orderInfo = response.data;
-				this.isLand = !!response.data.landCarNo; // 根据是否有车牌判断
-				this.isSea = !!response.data.seaCarNo; // 根据是否有柜号判断
+				if (!response.data) {
+					this.$message.error('查询数据时出错,未找到该行id对应的订单');
+					return;
+				}
+				this.isLand = !!response.data.landCarNo;
+				this.isSea = !!response.data.seaCarNo;
+				const orderInfo = _.cloneDeep(response.data);
+				// 设置正在编辑态
+				this.setIsEditingOrder(orderInfo, false);
 
-				// 初始化订单详情列表，为每一项添加isEditing属性
-				this.orderdetailList = (response.data.orderDetailList || []).map(item => {
-					return { ...item, isEditing: false };
-				});
-
-				// 对加载的数据进行计算
-				this.orderdetailList.forEach(row => {
-					this.$nextTick(() => {
-						// 确保DOM更新后再计算，虽然这里主要是数据计算
-						updateOrderRowCalculations(row, this.isSea, this.isLand);
+				// 对订单明细信息进行处理
+				if (orderInfo.orderDetailList && Array.isArray(orderInfo.orderDetailList)) {
+					const detailList = _.cloneDeep(orderInfo.orderDetailList) || [];
+					if (!detailList.length || detailList.length === 0) {
+						this.$message.error('未查询到该订单的明细信息');
+						return;
+					}
+					this.orderdetailList = detailList.map(item => {
+						return { ...item, isEditing: false };
 					});
-				});
+
+					// 对加载的数据进行计算
+					this.orderdetailList.forEach(row => {
+						this.$nextTick(() => {
+							// 确保DOM更新后再计算，虽然这里主要是数据计算
+							updateOrderRowCalculations(row, this.isSea, this.isLand);
+						});
+					});
+				}
 			});
 		},
 		// 编辑某一行
@@ -258,27 +251,32 @@ export default {
 
 		// 修改保存行逻辑，保存row的引用以便后续使用
 		handleRowSave(row) {
-			// 执行保存逻辑，可以在这里添加表单验证
-			row.isEditing = false;
-			// 重新计算该行的数据
-			updateOrderRowCalculations(row, this.isSea, this.isLand);
-			let saveDetails = _.cloneDeep(this.orderdetailList).filter(item => !item.isEditing);
-			// 填充订单的必要信息
-			saveDetails = this.fillOrderDetailInfo(saveDetails);
+			// 统一处理输入，确保 rows 是数组
+			const rows = Array.isArray(row) ? row : [row] || this.orderdetailList;
+			// 处理每一行，关闭编辑状态并更新计算
+			rows.forEach(r => {
+				if (r.isEditing) {
+					r.isEditing = false;
+					updateOrderRowCalculations(r, this.isSea, this.isLand);
+				}
+			});
+			// 深拷贝并过滤掉仍在编辑的行
+			const saveDetails = this.fillOrderDetailInfo(_.cloneDeep(this.orderdetailList).filter(item => !item.isEditing));
+			// 构造新的订单信息
 			const newOrderInfo = {
 				...this.orderInfo,
 				orderDetailList: saveDetails
 			};
-			// 添加或者修改订单行
+			// 添加或更新订单行
 			this.addOrUpdateOrderDetail(newOrderInfo, row);
 		},
-
 		// 优化添加或者修改订单函数
 		addOrUpdateOrderDetail(newOrderInfo, row) {
 			// 保存row的引用，避免在Promise链中丢失
 			const currentRow = row;
 			const rowIndex = this.orderdetailList.findIndex(item => item === currentRow);
 
+			// 判断是否为编辑订单
 			if (this.isEditingOrder.state) {
 				updateGoodsOrder(newOrderInfo)
 					.then(res => {
@@ -293,6 +291,8 @@ export default {
 				addGoodsOrder(newOrderInfo)
 					.then(res => {
 						this.$message.success('该行订单详情信息已添加并保存!');
+						// 设置当前正在编辑的订单是哪条订单
+						this.setIsEditingOrder(_.cloneDeep(res.data), true);
 					})
 					.catch(error => {
 						// 使用Vue的响应式方法确保UI更新
@@ -300,6 +300,20 @@ export default {
 						this.$message.error('保存失败，请重试: ' + (error.message || '未知错误'));
 					});
 			}
+		},
+		// 设置当前编辑状态
+		setIsEditingOrder(response, flag = true) {
+			this.isEditingOrder.id = response.id;
+			this.isEditingOrder.state = flag;
+			this.isEditingOrder.currentEditingOrderInfo = response;
+		},
+		// 清除编辑订单相关信息
+		clearOrderInfo() {
+			this.isEditingOrder = {
+				id: '',
+				state: false,
+				currentEditingOrderInfo: {}
+			};
 		},
 		handleAddOrderdetail() {
 			let obj = {
@@ -483,17 +497,22 @@ export default {
 			this.$refs.orderForm.validate(valid => {
 				if (valid) {
 					if (this.orderdetailList.length === 0) {
-						this.$message.error('请添加货物信息');
+						this.$message.error('请添加货物信息!');
 						return;
 					}
 					if (this.isEditingDetails) {
-						this.$message.error('请先保存订单详情');
+						this.$message.error('当前订单信息中有未保存的项,请检查后再提交!!');
+						return;
+					}
+					// 检查是否有没有保存的项
+					if (this.orderdetailList.some(item => item.isEditing)) {
+						this.$message.error('当前订单信息中有未保存的项,请检查后再提交!');
 						return;
 					}
 					new Promise((resolve, reject) => {
-						this.orderInfo.orderDetailList = _.cloneDeep(this.orderdetailList);
 						// 填充订单详情信息
 						this.orderdetailList = this.fillOrderDetailInfo();
+						this.orderInfo.orderDetailList = _.cloneDeep(this.orderdetailList);
 						this.orderInfo = excludeParams(this.orderInfo, this.$exclude);
 						const json = _.cloneDeep(this.orderInfo);
 						if (!this.orderId) {
@@ -510,12 +529,12 @@ export default {
 							this.isSea = false;
 							this.isLand = false;
 							const message = this.orderId ? '修改成功' : '添加成功';
-							this.$message({ message, type: 'success' });
+							this.$message.success(message);
 							sessionStorage.removeItem('order-edit-reason');
 							that.dialogVisible = false;
 						})
 						.catch(error => {
-							console.error('提交订单失败:', error);
+							this.$message.error('提交订单失败:' + error);
 						});
 				} else {
 					this.$message.error('请检查表单必填项!');
@@ -635,6 +654,8 @@ export default {
 			this.isEditingDetails = editState;
 			if (!editState) {
 				this.$message.success('所有订单详情已保存，当前状态下不可编辑');
+				// 所有全部保存
+				this.handleRowSave();
 			} else {
 				this.$message.info('已进入批量编辑模式，可以修改所有订单信息');
 			}
@@ -818,7 +839,7 @@ export default {
 						<el-button size="mini" type="warning" @click="toggleEditDetails(true)" :disabled="isEditingDetails">编辑子项</el-button>
 					</el-col>
 					<el-col :span="1.5">
-						<el-button size="mini" type="success" @click="toggleEditDetails(false)" :disabled="!isEditingDetails">批量保存</el-button>
+						<el-button size="mini" type="success" @click="toggleEditDetails(false)" :disabled="!isEditingDetails">全部保存</el-button>
 					</el-col>
 				</el-row>
 

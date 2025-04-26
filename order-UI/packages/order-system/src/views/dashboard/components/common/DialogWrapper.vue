@@ -13,7 +13,6 @@
 		@close="handleClose"
 	>
 		<component :is="currentComponent" ref="dynamicComponent" v-bind="dialogProps" />
-
 		<!-- 底部操作按钮 -->
 		<template #footer>
 			<el-button @click="handleClose">关闭</el-button>
