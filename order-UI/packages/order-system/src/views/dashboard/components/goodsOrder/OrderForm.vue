@@ -241,9 +241,9 @@ export default {
 		// 编辑某一行
 		handleRowEdit(row) {
 			// 先将所有行设置为不可编辑
-			this.orderdetailList.forEach(item => {
-				item.isEditing = false;
-			});
+			// this.orderdetailList.forEach(item => {
+			// 	item.isEditing = false;
+			// });
 			// 设置当前行为可编辑
 			row.isEditing = true;
 			this.$message.info('正在编辑该条记录');
@@ -252,7 +252,7 @@ export default {
 		// 修改保存行逻辑，保存row的引用以便后续使用
 		handleRowSave(row) {
 			// 统一处理输入，确保 rows 是数组
-			const rows = Array.isArray(row) ? row : [row] || this.orderdetailList;
+			const rows = Array.isArray(row) ? row : [row];
 			// 处理每一行，关闭编辑状态并更新计算
 			rows.forEach(r => {
 				if (r.isEditing) {
@@ -261,7 +261,7 @@ export default {
 				}
 			});
 			// 深拷贝并过滤掉仍在编辑的行
-			const saveDetails = this.fillOrderDetailInfo(_.cloneDeep(this.orderdetailList).filter(item => !item.isEditing));
+			const saveDetails = this.fillOrderDetailInfo(_.cloneDeep(rows).filter(item => !item.isEditing));
 			// 构造新的订单信息
 			const newOrderInfo = {
 				...this.orderInfo,
@@ -655,7 +655,7 @@ export default {
 			if (!editState) {
 				this.$message.success('所有订单详情已保存，当前状态下不可编辑');
 				// 所有全部保存
-				this.handleRowSave();
+				this.handleRowSave(this.orderdetailList);
 			} else {
 				this.$message.info('已进入批量编辑模式，可以修改所有订单信息');
 			}
