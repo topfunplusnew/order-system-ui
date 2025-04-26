@@ -238,14 +238,14 @@ export default {
 				}
 			});
 		},
-		// 编辑某一行
+		// 编辑某一行时清除错误状态
 		handleRowEdit(row) {
-			// 先将所有行设置为不可编辑
-			// this.orderdetailList.forEach(item => {
-			// 	item.isEditing = false;
-			// });
 			// 设置当前行为可编辑
 			row.isEditing = true;
+			// 清除错误状态
+			if (row.hasError) {
+				row.hasError = false;
+			}
 			this.$message.info('正在编辑该条记录');
 		},
 
@@ -269,7 +269,7 @@ export default {
 			};
 			this.addOrUpdateOrderDetail(newOrderInfo, rows);
 		},
-		// 优化添加或者修改订单函数
+		// 优化添加或者修改订单函数，添加错误处理
 		addOrUpdateOrderDetail(newOrderInfo, rows) {
 			// 保存row的引用，避免在Promise链中丢失
 			const currentRows = rows;
@@ -277,12 +277,19 @@ export default {
 			if (this.isEditingOrder.state) {
 				updateGoodsOrder(newOrderInfo)
 					.then(res => {
+						// 成功后清除可能的错误标记
+						currentRows.forEach(row => {
+							if (row.hasError) {
+								this.$set(row, 'hasError', false);
+							}
+						});
 						this.$message.success('该行订单详情信息已修改并保存!');
 					})
 					.catch(error => {
-						currentRows.forEach((item, rowIndex) => {
+						currentRows.forEach((row) => {
 							// 使用Vue的响应式方法确保UI更新
-							this.$set(this.orderdetailList[rowIndex], 'isEditing', true);
+							this.$set(row, 'isEditing', true);
+							this.$set(row, 'hasError', true); // 添加错误标记
 						});
 						this.$message.error('保存失败，请重新编辑: ' + (error.message || '未知错误'));
 						this.isEditingDetails = true;
@@ -290,14 +297,21 @@ export default {
 			} else {
 				addGoodsOrder(newOrderInfo)
 					.then(res => {
+						// 成功后清除可能的错误标记
+						currentRows.forEach(row => {
+							if (row.hasError) {
+								this.$set(row, 'hasError', false);
+							}
+						});
 						this.$message.success('该行订单详情信息已添加并保存!');
 						// 设置当前正在编辑的订单是哪条订单
 						this.setIsEditingOrder(_.cloneDeep(res.data), true);
 					})
 					.catch(error => {
-						currentRows.forEach((item, rowIndex) => {
+						currentRows.forEach((row) => {
 							// 使用Vue的响应式方法确保UI更新
-							this.$set(this.orderdetailList[rowIndex], 'isEditing', true);
+							this.$set(row, 'isEditing', true);
+							this.$set(row, 'hasError', true); // 添加错误标记
 						});
 						this.$message.error('保存失败，请重新编辑: ' + (error.message || '未知错误'));
 						this.isEditingDetails = true;
@@ -649,17 +663,30 @@ export default {
 				this.$refs.orderForm.clearValidate(['landCarNo', 'fleet']);
 			}
 		},
+		// 切换编辑模式时处理错误状态
 		toggleEditDetails(editState) {
 			this.isEditingDetails = editState;
-			if (!editState) {
+			if (editState) {
+				// 进入编辑模式时清除所有错误标记
+				this.orderdetailList.forEach(row => {
+					if (row.hasError) {
+						this.$set(row, 'hasError', false);
+					}
+				});
+				this.$message.info('已进入批量编辑模式，可以修改所有订单信息');
+			} else {
 				// 所有全部保存
 				this.handleRowSave(this.orderdetailList);
-			} else {
-				this.$message.info('已进入批量编辑模式，可以修改所有订单信息');
 			}
 		},
-		close() {
-			this.$emit('close');
+		// 添加新方法：根据行是否处于编辑状态设置行的类名
+		getRowClassName({ row }) {
+			if (row.hasError) {
+				return 'error-row';
+			} else if (row.isEditing) {
+				return 'editing-row';
+			}
+			return '';
 		}
 	}
 };
@@ -848,7 +875,7 @@ export default {
 					:data="orderdetailList"
 					show-summary
 					:summary-method="getSummary"
-					:row-class-name="rowOrderdetailIndex"
+					:row-class-name="getRowClassName"
 					@selection-change="handleOrderdetailSelectionChange"
 					ref="orderdetail"
 				>
@@ -1189,6 +1216,43 @@ export default {
 <style scoped>
 * {
 	box-sizing: border-box;
+}
+
+/* 保留编辑行样式 */
+::v-deep .editing-row {
+	background-color: rgba(121, 246, 164, 0.1);
+}
+
+::v-deep .editing-row td:first-child {
+	border-left: 4px solid #63f697 !important;
+}
+
+::v-deep .editing-row:hover {
+	box-shadow: 0 0 8px rgba(121, 246, 164, 0.8);
+}
+
+/* 添加错误行样式 */
+::v-deep .error-row {
+	background-color: rgba(245, 108, 108, 0.1);
+}
+
+::v-deep .error-row td:first-child {
+	border-left: 4px solid #f56c6c !important;
+}
+
+::v-deep .error-row:hover {
+	box-shadow: 0 0 8px rgba(245, 108, 108, 0.8);
+}
+
+/* 为出错行添加闪烁动画效果提高可见性 */
+@keyframes errorPulse {
+	0% { background-color: rgba(245, 108, 108, 0.1); }
+	50% { background-color: rgba(245, 108, 108, 0.2); }
+	100% { background-color: rgba(245, 108, 108, 0.1); }
+}
+
+::v-deep .error-row {
+	animation: errorPulse 2s infinite;
 }
 
 ::v-deep .el-table__body-wrapper::-webkit-scrollbar {
