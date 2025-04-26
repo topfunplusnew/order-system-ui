@@ -267,15 +267,12 @@ export default {
 				...this.orderInfo,
 				orderDetailList: saveDetails
 			};
-			// 添加或更新订单行
-			this.addOrUpdateOrderDetail(newOrderInfo, row);
+			this.addOrUpdateOrderDetail(newOrderInfo, rows);
 		},
 		// 优化添加或者修改订单函数
-		addOrUpdateOrderDetail(newOrderInfo, row) {
+		addOrUpdateOrderDetail(newOrderInfo, rows) {
 			// 保存row的引用，避免在Promise链中丢失
-			const currentRow = row;
-			const rowIndex = this.orderdetailList.findIndex(item => item === currentRow);
-
+			const currentRows = rows;
 			// 判断是否为编辑订单
 			if (this.isEditingOrder.state) {
 				updateGoodsOrder(newOrderInfo)
@@ -283,9 +280,12 @@ export default {
 						this.$message.success('该行订单详情信息已修改并保存!');
 					})
 					.catch(error => {
-						// 使用Vue的响应式方法确保UI更新
-						this.$set(this.orderdetailList[rowIndex], 'isEditing', true);
-						this.$message.error('保存失败，请重试: ' + (error.message || '未知错误'));
+						currentRows.forEach((item, rowIndex) => {
+							// 使用Vue的响应式方法确保UI更新
+							this.$set(this.orderdetailList[rowIndex], 'isEditing', true);
+						});
+						this.$message.error('保存失败，请重新编辑: ' + (error.message || '未知错误'));
+						this.isEditingDetails = true;
 					});
 			} else {
 				addGoodsOrder(newOrderInfo)
@@ -295,9 +295,12 @@ export default {
 						this.setIsEditingOrder(_.cloneDeep(res.data), true);
 					})
 					.catch(error => {
-						// 使用Vue的响应式方法确保UI更新
-						this.$set(this.orderdetailList[rowIndex], 'isEditing', true);
-						this.$message.error('保存失败，请重试: ' + (error.message || '未知错误'));
+						currentRows.forEach((item, rowIndex) => {
+							// 使用Vue的响应式方法确保UI更新
+							this.$set(this.orderdetailList[rowIndex], 'isEditing', true);
+						});
+						this.$message.error('保存失败，请重新编辑: ' + (error.message || '未知错误'));
+						this.isEditingDetails = true;
 					});
 			}
 		},
@@ -500,10 +503,6 @@ export default {
 						this.$message.error('请添加货物信息!');
 						return;
 					}
-					if (this.isEditingDetails) {
-						this.$message.error('当前订单信息中有未保存的项,请检查后再提交!!');
-						return;
-					}
 					// 检查是否有没有保存的项
 					if (this.orderdetailList.some(item => item.isEditing)) {
 						this.$message.error('当前订单信息中有未保存的项,请检查后再提交!');
@@ -653,7 +652,6 @@ export default {
 		toggleEditDetails(editState) {
 			this.isEditingDetails = editState;
 			if (!editState) {
-				this.$message.success('所有订单详情已保存，当前状态下不可编辑');
 				// 所有全部保存
 				this.handleRowSave(this.orderdetailList);
 			} else {
@@ -860,7 +858,7 @@ export default {
 					<!-- 新增行操作列，放在前面方便操作 -->
 					<el-table-column label="行操作" align="center" width="100">
 						<template slot-scope="scope">
-							<el-button v-if="!scope.row.isEditing" size="mini" type="warning" icon="el-icon-edit" @click="handleRowEdit(scope.row)">编辑</el-button>
+							<el-button v-if="!scope.row.isEditing" :disabled="!isEditingDetails" size="mini" type="warning" icon="el-icon-edit" @click="handleRowEdit(scope.row)">编辑</el-button>
 							<el-button v-else size="mini" type="success" icon="el-icon-check" @click="handleRowSave(scope.row)">保存</el-button>
 						</template>
 					</el-table-column>
