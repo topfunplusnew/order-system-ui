@@ -292,9 +292,14 @@ export default {
 								return item.operateDate.match(/^(\d{4}-\d{2}-\d{2})/)[1];
 							});
 							let dayData, itemTotalBorrower, itemTotalLender;
-							for (let key in sourceData) {
-								dayData = _.cloneDeep(sourceData[key]);
+							let map = {};
+							for (let date in sourceData) {
+								dayData = _.cloneDeep(sourceData[date]);
 								[itemTotalLender, itemTotalBorrower] = calculateLenderAndBorrower(dayData);
+								map[date] = {
+									lender: fix(itemTotalLender),
+									borrower: fix(itemTotalBorrower)
+								};
 							}
 							this.tableData = Object.keys(sourceData).map(date => {
 								const item = _.cloneDeep(sourceData[date]);
@@ -321,8 +326,8 @@ export default {
 								return {
 									operateDate: date, // 日期列使用分组的key
 									payNo: '', // 主表该列现在显示明细，留空或移除
-									lender: fix(itemTotalLender), // 当日总借方发生额
-									borrower: fix(itemTotalBorrower), // 当日总贷方发生额
+									lender: map[date].lender,
+									borrower: map[date].borrower,
 									moneyAmountLocal: fix(currentBalance), // 当日结束余额
 									lenderList, // 借方明细列表 (弹窗用)
 									borrowerList // 贷方明细列表 (弹窗用)

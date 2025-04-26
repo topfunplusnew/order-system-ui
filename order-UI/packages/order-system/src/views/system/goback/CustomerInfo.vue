@@ -290,10 +290,16 @@ export default {
 							return item.operateDate.match(/^(\d{4}-\d{2}-\d{2})/)[1];
 						});
 						let dayData, itemTotalBorrower, itemTotalLender;
-						for (let key in sourceData) {
-							dayData = _.cloneDeep(sourceData[key]);
+						let map = {};
+						for (let date in sourceData) {
+							dayData = _.cloneDeep(sourceData[date]);
 							[itemTotalLender, itemTotalBorrower] = calculateLenderAndBorrower(dayData);
+							map[date] = {
+								lender: fix(itemTotalLender),
+								borrower: fix(itemTotalBorrower)
+							};
 						}
+						// 维护表格数据
 						this.tableData = Object.keys(sourceData).map(date => {
 							const item = _.cloneDeep(sourceData[date]);
 							if (Array.isArray(item)) {
@@ -315,12 +321,10 @@ export default {
 								};
 								const lenderList = item.map(condition).filter(detail => Number(detail.moneyAmountLocal) > 0);
 								const borrowerList = item.map(condition).filter(detail => Number(detail.moneyAmountLocal) < 0);
-
-								console.log(lenderList, borrowerList);
 								return {
 									date: date,
-									lender: itemTotalLender,
-									borrower: itemTotalBorrower,
+									lender: map[date].lender,
+									borrower: map[date].borrower,
 									moneyAmountLocal: fix(nowMoney),
 									lenderList,
 									borrowerList
