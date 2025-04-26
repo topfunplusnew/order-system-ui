@@ -264,7 +264,7 @@ export default {
 			});
 		},
 		handleReCheck(row) {
-			this.$confirm({
+			this.$antdconfirm({
 				title: '是否取消审核',
 				okText: '确定',
 				cancelText: '取消',

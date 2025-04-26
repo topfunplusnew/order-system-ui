@@ -351,15 +351,25 @@ export default {
 		},
 		handleDelete(row) {
 			if (row.id) {
-				this.$confirm('是否确认删除佣金信息?', '提示', {
-					confirmButtonText: '确定',
-					cancelButtonText: '取消',
-					type: 'warning'
-				}).then(() => {
-					deleteCommission(row.id).then(() => {
-						this.$message.success('删除成功');
-						this.getList();
-					});
+				this.$confirm({
+					title: '提示',
+					content: '是否确认删除佣金信息?',
+					okText: '确定',
+					cancelText: '取消',
+					type: 'warning',
+					zIndex: 2600,
+					onOk: async () => {
+						try {
+							await deleteCommission(row.id);
+							this.$message.success('删除成功');
+							this.getList();
+						} catch {
+							this.$message.error('删除失败，请重试');
+						}
+					},
+					onCancel: () => {
+						this.$message.info('已取消删除操作');
+					}
 				});
 			} else {
 				this.$message.warning('此信息由订单产生，由于未生成相关佣金信息，不可删除!');

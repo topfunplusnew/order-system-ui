@@ -86,6 +86,7 @@ Vue.prototype.$log = new Logger({
 // 一键下载
 Vue.prototype.downLoadOnce = onceDownload;
 
+Vue.prototype.$antdconfirm = Vue.prototype.$confirm;
 // 使用: this.form = excludeParams(this.form, this.$exclude)  api/tool/exclude.js
 Vue.prototype.$exclude = [
 	'addtime',

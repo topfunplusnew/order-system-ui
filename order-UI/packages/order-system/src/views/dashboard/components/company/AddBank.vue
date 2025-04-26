@@ -52,12 +52,19 @@ export default {
 		// 选择某张银行卡
 		chooseThisBankAccount(row) {
 			console.log('银行卡信息', row);
-			this.$confirm('确定要绑定这张银行卡吗?', '提示', {
-				confirmButtonText: '确定',
-				cancelButtonText: '取消',
-				type: 'warning'
-			}).then(() => {
-				this.updateBankAccount(row);
+			this.$confirm({
+				title: '提示',
+				content: '确定要绑定这张银行卡吗?',
+				okText: '确定',
+				cancelText: '取消',
+				type: 'warning',
+				zIndex: 2600,
+				onOk: () => {
+					this.updateBankAccount(row);
+				},
+				onCancel: () => {
+					this.$message.info('已取消绑定操作');
+				}
 			});
 		},
 		// 为某个公司绑定银行卡 本质上是修改银行卡中的信息 修改companyId和companyName

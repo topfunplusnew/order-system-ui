@@ -529,12 +529,24 @@ export default {
 		},
 		// 已经还够了 在点击提示已经还够
 		handleGiveEnoughBackMoney(row) {
-			this.$confirm('已经还够了金额,是否继续还款?', '提示', {
-				confirmButtonText: '确定',
-				cancelButtonText: '取消',
-				type: 'warning'
-			}).then(() => {
-				this.handleGiveBackMoney(row);
+			this.$confirm({
+				title: '提示',
+				content: '已经还够了金额,是否继续还款?',
+				okText: '确定',
+				cancelText: '取消',
+				type: 'warning',
+				zIndex: 2600,
+				onOk: async () => {
+					try {
+						await this.handleGiveBackMoney(row);
+						this.$message.success('还款操作成功');
+					} catch {
+						this.$message.error('还款操作失败，请重试');
+					}
+				},
+				onCancel: () => {
+					this.$message.info('已取消继续还款');
+				}
 			});
 		},
 		// 添加还款信息

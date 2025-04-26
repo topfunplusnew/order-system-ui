@@ -640,16 +640,21 @@ export default {
 					acountsType: '供应商'
 				}).then(res => {
 					if (res.rows.length === 0) {
-						this.$confirm('您还没有设置银行卡信息，是否前往设置?', '提示', {
-							confirmButtonText: '确定',
-							cancelButtonText: '取消',
-							type: 'warning'
-						})
-							.then(() => {
+						this.$confirm({
+							title: '提示',
+							content: '您还没有设置银行卡信息，是否前往设置?',
+							okText: '确定',
+							cancelText: '取消',
+							type: 'warning',
+							zIndex: 2600,
+							onOk: () => {
 								this.dialogFormVisible = false;
 								this.$router.push('/baseInfo/bankaccount');
-							})
-							.catch(() => {});
+							},
+							onCancel: () => {
+								this.$message.info('已取消前往设置');
+							}
+						});
 					} else {
 						this.addDefaultCardVisible = true;
 					}

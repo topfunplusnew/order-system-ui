@@ -102,19 +102,29 @@ export default {
 			} catch (err) {
 				this.$message.error('请先填写申请信息!');
 			}
-			this.$confirm('确定批量申请吗？', '提示', {
-				confirmButtonText: '确定',
-				cancelButtonText: '取消',
-				type: 'warning'
-			}).then(() => {
-				const data = {
-					...this.applications[0],
-					tableName: TableName.ORDERCOMMISION
-				};
-				addPaymentApply(data).then(res => {
-					this.$message.success('一键申请成功');
-					that.dialogVisible = false;
-				});
+			this.$confirm({
+				title: '提示',
+				content: '确定批量申请吗？',
+				okText: '确定',
+				cancelText: '取消',
+				type: 'warning',
+				zIndex: 2600,
+				onOk: async () => {
+					try {
+						const data = {
+							...this.applications[0],
+							tableName: TableName.ORDERCOMMISION
+						};
+						await addPaymentApply(data);
+						this.$message.success('一键申请成功');
+						this.dialogVisible = false;
+					} catch {
+						this.$message.error('申请失败，请重试');
+					}
+				},
+				onCancel: () => {
+					this.$message.info('已取消批量申请');
+				}
 			});
 		},
 		handleReject() {}

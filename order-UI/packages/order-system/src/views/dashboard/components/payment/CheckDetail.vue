@@ -20,19 +20,25 @@ export default {
 				return;
 			}
 			getCars(row.companyId).then(res => {
-				// 点击确认后跳转到订单运费界面 携带搜索参数
-				this.$confirm(`是否查看司机名称为${res.data.driver}的运费详情?`, '提示', {
-					confirmButtonText: '确定',
-					cancelButtonText: '取消',
-					type: 'warning'
-				}).then(() => {
-					this.$router.push({
-						path: '/freight/applyfreight',
-						query: {
-							fundsDate: row.fundsDate,
-							driverId: res.data.id
-						}
-					});
+				this.$confirm({
+					title: '提示',
+					content: `是否查看司机名称为${res.data.driver}的运费详情?`,
+					okText: '确定',
+					cancelText: '取消',
+					type: 'warning',
+					zIndex: 2600,
+					onOk: () => {
+						this.$router.push({
+							path: '/freight/applyfreight',
+							query: {
+								fundsDate: row.fundsDate,
+								driverId: res.data.id
+							}
+						});
+					},
+					onCancel: () => {
+						this.$message.info('已取消查看运费详情');
+					}
 				});
 			});
 		}

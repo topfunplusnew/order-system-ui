@@ -897,7 +897,7 @@ export default {
 		},
 		/** 派车审核操作 */
 		handleAudit(row) {
-			this.$confirm({
+			this.$antdconfirm({
 				title: '请选择审核结果',
 				content: '点击确定按钮后，将执行审核操作',
 				okText: '审核通过',

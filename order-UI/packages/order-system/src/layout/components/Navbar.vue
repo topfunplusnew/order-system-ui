@@ -78,17 +78,27 @@ export default {
 			this.$store.dispatch('app/toggleSideBar');
 		},
 		async logout() {
-			this.$confirm('确定注销并退出系统吗？', '提示', {
-				confirmButtonText: '确定',
-				cancelButtonText: '取消',
-				type: 'warning'
-			})
-				.then(() => {
-					this.$store.dispatch('LogOut').then(() => {
-						location.href = '/index';
-					});
-				})
-				.catch(() => {});
+			this.$confirm({
+				title: '提示',
+				content: '确定注销并退出系统吗？',
+				okText: '确定',
+				cancelText: '取消',
+				type: 'warning',
+				zIndex: 2600,
+				onOk: () => {
+					this.$store
+						.dispatch('LogOut')
+						.then(() => {
+							location.href = '/index';
+						})
+						.catch(() => {
+							this.$message.error('注销失败，请重试');
+						});
+				},
+				onCancel: () => {
+					this.$message.info('已取消注销操作');
+				}
+			});
 		}
 	}
 };

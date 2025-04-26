@@ -833,20 +833,25 @@ export default {
 			});
 		},
 		handleCheck(row) {
-			// 弹出确认和取消
-			this.$confirm('是否审核该信息?', '提示', {
-				confirmButtonText: '确定',
-				cancelButtonText: '取消',
-				type: 'warning'
-			}).then(() => {
-				// 修改审核状态
-				auditInventory({ id: row.id, isaudit: true }).then(() => {
-					this.$message({
-						type: 'success',
-						message: '操作成功~!'
-					});
-					this.getList();
-				});
+			this.$confirm({
+				title: '提示',
+				content: '是否审核该信息?',
+				okText: '确定',
+				cancelText: '取消',
+				type: 'warning',
+				zIndex: 2600,
+				onOk: async () => {
+					try {
+						await auditInventory({ id: row.id, isaudit: true });
+						this.$message.success('操作成功~!');
+						this.getList();
+					} catch {
+						this.$message.error('审核失败，请重试');
+					}
+				},
+				onCancel: () => {
+					this.$message.info('已取消审核操作');
+				}
 			});
 		},
 		handleReCheck(row) {

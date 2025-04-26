@@ -111,59 +111,63 @@ export var mixin_order_freight_payment = {
 		submitFreightOnce() {
 			this.$refs.freightPaymentOnceForm.validate(valid => {
 				if (valid) {
-					this.$confirm('确定一键付运费吗?', '提示', {
-						confirmButtonText: '确定',
-						cancelButtonText: '取消',
-						type: 'warning'
-					}).then(() => {
-						// 填充我方信息
-						this.batchPaymentList.forEach(item => {
-							Object.assign(item, {
-								...this.freightSelfOnceInfo,
-								payType: this.freightSelfOnceInfo.payType.join('-')
+					this.$confirm({
+						title: '提示',
+						content: '确定一键付运费吗?',
+						okText: '确定',
+						cancelText: '取消',
+						type: 'warning',
+						zIndex: 2600,
+						onOk: () => {
+							this.batchPaymentList.forEach(item => {
+								Object.assign(item, {
+									...this.freightSelfOnceInfo,
+									payType: this.freightSelfOnceInfo.payType.join('-')
+								});
 							});
-						});
-						// 合并计算数据
-						const result = [];
-						const map = new Map();
-						this.batchPaymentList.forEach(item => {
-							// 提取 driverId 和其他字段
-							const { companyId, ...rest } = item;
-							if (!map.has(companyId)) {
-								// 如果该 driverId 不存在，新增一个对象
-								map.set(companyId, {
-									...rest,
-									extraInfo: {
-										sourceInfos: [
-											{
-												tableName: TableName.ORDER_FREIGHT,
-												tableId: item.tID
-											}
-										]
-									}
-								});
-							} else {
-								// 如果存在，更新 driverIds
-								const existing = map.get(companyId);
-								existing.extraInfo.sourceInfos.push({
-									tableName: TableName.ORDER_FREIGHT,
-									tableId: item.tID
-								});
-								// 累计金额
-								existing.moneyAmount = (Number(existing.moneyAmount) + Number(item.moneyAmount)).toFixed(3);
-							}
-						});
-						map.forEach(value => {
-							result.push(value);
-						});
 
-						// 批量添加付款信息
-						batchPayment(result).then(() => {
-							this.$message.success('一键运费付款成功');
-							this.resetFreightSelfOnceInfo();
-							this.freightOnceVisible = false;
-							this.getList();
-						});
+							const result = [];
+							const map = new Map();
+							this.batchPaymentList.forEach(item => {
+								const { companyId, ...rest } = item;
+								if (!map.has(companyId)) {
+									map.set(companyId, {
+										...rest,
+										extraInfo: {
+											sourceInfos: [
+												{
+													tableName: TableName.ORDER_FREIGHT,
+													tableId: item.tID
+												}
+											]
+										}
+									});
+								} else {
+									const existing = map.get(companyId);
+									existing.extraInfo.sourceInfos.push({
+										tableName: TableName.ORDER_FREIGHT,
+										tableId: item.tID
+									});
+									existing.moneyAmount = (Number(existing.moneyAmount) + Number(item.moneyAmount)).toFixed(3);
+								}
+							});
+							map.forEach(value => {
+								result.push(value);
+							});
+							batchPayment(result)
+								.then(() => {
+									this.$message.success('一键运费付款成功');
+									this.resetFreightSelfOnceInfo();
+									this.freightOnceVisible = false;
+									this.getList();
+								})
+								.catch(() => {
+									this.$message.error('付款失败，请重试');
+								});
+						},
+						onCancel: () => {
+							this.$message.info('已取消操作');
+						}
 					});
 				}
 			});

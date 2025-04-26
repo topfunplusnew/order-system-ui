@@ -102,17 +102,21 @@ export default {
 		// 删除某个文件
 		handleDeleteFile(value) {
 			// 弹出确认框 先确认是否要删除
-			this.$confirm('是否要删除该文件?', '系统提示', {
-				confirmButtonText: '确定',
-				cancelButtonText: '取消',
-				type: 'warning'
-			}).then(() => {
-				// 筛选掉方法
-				const files = this.checkFileList.filter(item => item !== value);
-				const newPath = files.length === 0 ? '' : files.join('|');
-
-				// 调用传入的业务接口 修改数据
-				this.$emit('needToUpdate', newPath);
+			this.$confirm({
+				title: '系统提示',
+				content: '是否要删除该文件?',
+				okText: '确定',
+				cancelText: '取消',
+				type: 'warning',
+				zIndex: 2600,
+				onOk: () => {
+					const files = this.checkFileList.filter(item => item !== value);
+					const newPath = files.length === 0 ? '' : files.join('|');
+					this.$emit('needToUpdate', newPath);
+				},
+				onCancel: () => {
+					this.$message.info('已取消删除操作');
+				}
 			});
 		}
 	}

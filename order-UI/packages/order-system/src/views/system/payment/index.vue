@@ -861,18 +861,27 @@ export default {
 				this.chooseBankDialogVisible = true;
 				return;
 			}
-			this.$confirm('是否付款?', '提示', {
-				confirmButtonText: '是',
-				cancelButtonText: '否',
-				type: 'success'
-			}).then(() => {
-				// 只需要更新状态
-				updatePayment({ ...row, paymentState: '已支付' }).then(res => {
-					this.$modal.msgSuccess(res.msg);
-					this.reset();
-					this.getList();
-					// todo 付款没有修改 承兑的逻辑没有从收款信息迁移过来
-				});
+			this.$confirm({
+				title: '提示',
+				content: '是否付款?',
+				okText: '是',
+				cancelText: '否',
+				type: 'success',
+				zIndex: 2600,
+				onOk: async () => {
+					try {
+						const res = await updatePayment({ ...row, paymentState: '已支付' });
+						this.$message.success(res.msg || '付款成功');
+						this.reset();
+						this.getList();
+						// TODO: 付款没有修改，承兑的逻辑没有从收款信息迁移过来
+					} catch {
+						this.$message.error('付款失败，请重试');
+					}
+				},
+				onCancel: () => {
+					this.$message.info('已取消付款操作');
+				}
 			});
 		},
 		// 付款处理 用户在弹出的弹窗点击确定

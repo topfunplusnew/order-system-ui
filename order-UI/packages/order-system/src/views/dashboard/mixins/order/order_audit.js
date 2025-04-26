@@ -16,6 +16,7 @@ export var mixin_order_audit = {
 				content: '是否审核该信息?',
 				okText: '确定',
 				cancelText: '取消',
+				zIndex: 2600,
 				onOk: () => {
 					// 修改审核状态
 					auditGoodsOrder({ id: row.id, isaudit: true }).then(res => {

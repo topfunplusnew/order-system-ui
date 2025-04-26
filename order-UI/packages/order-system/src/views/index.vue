@@ -385,7 +385,7 @@ export default {
 	methods: {
 		// 一键下载
 		handleDownload() {
-			this.$confirm({
+			this.$antdconfirm({
 				title: '提示',
 				content: '是否导出空表(若不导出空表导出速率会更快)?',
 				okText: '是',
@@ -437,7 +437,7 @@ export default {
 						this.$message.error('请选择导出日期');
 						return;
 					}
-					this.$confirm({
+					this.$antdconfirm({
 						title: '提示',
 						content: '是否导出空表(若不导出空表导出速率会更快)?',
 						okText: '是',
@@ -549,7 +549,7 @@ export default {
 			}
 		},
 		async deleteFile(file) {
-			this.$confirm({
+			this.$antdconfirm({
 				title: '确认删除',
 				content: `是否确认删除文件 "${file.fileName}"？`,
 				okText: '确认',

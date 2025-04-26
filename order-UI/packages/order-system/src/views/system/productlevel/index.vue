@@ -526,18 +526,25 @@ export default {
 		},
 		// 删除分类 row.dictCode
 		handleDeteleLevel(row) {
-			this.$confirm('是否要删除该分类?', '提示', {
-				confirmButtonText: '确定',
-				cancelButtonText: '取消',
-				type: 'warning'
-			}).then(() => {
-				delData(row.dictCode).then(() => {
-					this.$message({
-						type: 'success',
-						message: '删除成功!'
-					});
-				});
-				this.getList();
+			this.$confirm({
+				title: '提示',
+				content: '是否要删除该分类?',
+				okText: '确定',
+				cancelText: '取消',
+				type: 'warning',
+				zIndex: 2600,
+				onOk: async () => {
+					try {
+						await delData(row.dictCode);
+						this.$message.success('删除成功!');
+						this.getList();
+					} catch {
+						this.$message.error('删除失败，请重试');
+					}
+				},
+				onCancel: () => {
+					this.$message.info('已取消删除操作');
+				}
 			});
 		},
 
