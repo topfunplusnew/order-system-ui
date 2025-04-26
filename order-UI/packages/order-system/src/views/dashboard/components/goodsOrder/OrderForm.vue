@@ -30,9 +30,47 @@ export default {
 		}
 	},
 	data() {
+		// 自定义校验器：当选择陆运时，车队必填 (已存在)
+		const validateFleet = (rule, value, callback) => {
+			if (this.isLand && !this.orderInfo.fleet) {
+				callback(new Error('选择陆运时，请选择车队'));
+			} else {
+				callback();
+			}
+		};
+		// 自定义校验器：当选择陆运时，必须选择车牌信息
+		const validateLandCar = (rule, value, callback) => {
+			if (this.isLand && !this.orderInfo.landCarNo) {
+				callback(new Error('选择陆运时，请选择车牌信息'));
+			} else {
+				callback();
+			}
+		};
+		// 自定义校验器：当选择海运时，柜号必填
+		const validateSeaCarNo = (rule, value, callback) => {
+			if (this.isSea && !value) {
+				callback(new Error('选择海运时，柜号不能为空'));
+			} else {
+				callback();
+			}
+		};
+		// 自定义校验器：当选择海运时，海运公司必填
+		const validateSeaDriverName = (rule, value, callback) => {
+			if (this.isSea && !this.orderInfo.seaDriverName) {
+				callback(new Error('选择海运时，请选择海运公司信息'));
+			} else {
+				callback();
+			}
+		};
+
 		return {
 			orderInfo: {},
 			orderRules: {
+				// 添加或更新校验规则
+				fleet: [{ validator: validateFleet, trigger: 'blur' }], // 触发改为 change
+				landCarNo: [{ validator: validateLandCar, trigger: 'change' }], // 添加陆运车牌校验
+				seaCarNo: [{ validator: validateSeaCarNo, trigger: 'blur' }], // 添加海运柜号校验
+				seaDriverName: [{ validator: validateSeaDriverName, trigger: 'change' }], // 添加海运公司校验
 				orderDate: [
 					{
 						required: true,
@@ -244,9 +282,6 @@ export default {
 				comments: ''
 			};
 			this.orderdetailList.push(obj);
-			// 新增行后，如果需要，可以立即进行一次计算（如果默认值需要计算结果）
-// updateOrderRowCalculations(obj, this.isSea, this.isLand);
-
 			this.$nextTick(() => {
 				if (this.$refs.orderdetail) {
 					const bodyWrapper = this.$refs.orderdetail.bodyWrapper;
@@ -255,6 +290,13 @@ export default {
 					}
 				}
 			});
+		},
+		// 处理出厂片数变化，自动填充卸货片数
+		handlePiecesChange(scope) {
+			// 将出厂片数的值赋给卸货片数
+			scope.row.actualPieces = scope.row.pieces;
+			// 触发重新计算
+			this.recalculateAll(scope);
 		},
 		filterNoStockNumber(data) {
 			return new Promise(resolve => {
@@ -359,71 +401,64 @@ export default {
 			row.currentType = type;
 		},
 		handleProcess(that) {
-			return new Promise((resolve, reject) => {
-				if (this.orderdetailList.length === 0) {
-					this.$message.error('请添加货物信息');
-					reject('请添加货物信息');
-					return;
-				}
-				if (this.isEditingDetails) {
-					this.$message.error('请先保存订单详情');
-					reject('请先保存订单详情');
-					return;
-				}
-				if (this.isSea && !this.orderInfo.seaCarID && !this.orderInfo.seaCarNo) {
-					this.$message.error('请填写完整的海运信息!');
-					reject('请填写完整的海运信息!');
-					return;
-				}
-				if (this.isLand && !this.orderInfo.landCarID && !this.orderInfo.landCarNo) {
-					this.$message.error('请填写完整的陆运信息!');
-					reject('请填写完整的陆运信息!');
-					return;
-				}
-				if (!this.orderId) {
-					this.orderInfo.orderDetailList = this.orderdetailList;
-					const updateOrderItem = item => {
-						item.customerID = this.orderInfo.customerID;
-						item.customer = this.orderInfo.customer;
-						item.orderDate = parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}');
-					};
-					this.orderdetailList.forEach(item => updateOrderItem(item));
-					addGoodsOrder({ ...this.orderInfo, PaymentState: '' }).then(() => {
-						this.resetOrderInfo();
-						this.isSea = false;
-						this.isLand = false;
-						this.$message({
-							message: '添加成功',
-							type: 'success'
+			this.$refs.orderForm.validate(valid => {
+				if (valid) {
+					if (this.orderdetailList.length === 0) {
+						this.$message.error('请添加货物信息');
+						return;
+					}
+					if (this.isEditingDetails) {
+						this.$message.error('请先保存订单详情');
+						return;
+					}
+					new Promise((resolve, reject) => {
+						if (!this.orderId) {
+							this.orderInfo.orderDetailList = this.orderdetailList;
+							const updateOrderItem = item => {
+								item.customerID = this.orderInfo.customerID;
+								item.customer = this.orderInfo.customer;
+								item.orderDate = parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}');
+							};
+							this.orderdetailList.forEach(item => updateOrderItem(item));
+							addGoodsOrder({ ...this.orderInfo, PaymentState: '' })
+								.then(resolve)
+								.catch(reject);
+						} else {
+							this.orderInfo.orderDetailList = this.orderdetailList;
+							const formatOrderItem = () => ({
+								customerID: this.orderInfo.customerID,
+								customer: this.orderInfo.customer,
+								orderDate: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}')
+							});
+							this.orderdetailList.forEach(item => Object.assign(item, formatOrderItem()));
+							this.orderInfo = excludeParams(this.orderInfo, this.$exclude);
+							updateGoodsOrder({
+								...this.orderInfo,
+								PaymentState: '',
+								remark: sessionStorage.getItem('order-edit-reason')
+							})
+								.then(resolve)
+								.catch(reject);
+						}
+					})
+						.then(() => {
+							this.resetOrderInfo();
+							this.isSea = false;
+							this.isLand = false;
+							this.$message({
+								message: this.orderId ? '修改成功' : '添加成功',
+								type: 'success'
+							});
+							sessionStorage.removeItem('order-edit-reason');
+							that.dialogVisible = false;
+						})
+						.catch(error => {
+							console.error('提交订单失败:', error);
 						});
-						that.dialogVisible = false;
-						resolve();
-					});
 				} else {
-					this.orderInfo.orderDetailList = this.orderdetailList;
-					const formatOrderItem = () => ({
-						customerID: this.orderInfo.customerID,
-						customer: this.orderInfo.customer,
-						orderDate: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}')
-					});
-					this.orderdetailList.forEach(item => Object.assign(item, formatOrderItem()));
-					this.orderInfo = excludeParams(this.orderInfo, this.$exclude);
-					updateGoodsOrder({
-						...this.orderInfo,
-						PaymentState: '',
-						remark: sessionStorage.getItem('order-edit-reason')
-					}).then(() => {
-						this.resetOrderInfo();
-						this.$message({
-							message: '修改成功',
-							type: 'success'
-						});
-						sessionStorage.removeItem('order-edit-reason');
-						this.isSea = false;
-						this.isLand = false;
-						that.dialogVisible = false;
-						resolve();
-					});
+					console.log('error submit!!');
+					this.$message.error('请检查表单必填项!');
+					return false;
 				}
 			});
 		},
@@ -455,11 +490,15 @@ export default {
 				seaCarNo: '',
 				seaDriverName: '',
 				seaDriverTel: '',
-				isSea: '',
-				isLand: ''
+				comments: '' // 确保备注也被重置
 			};
 			this.isEditingDetails = false;
 			this.orderdetailList = [];
+			// 重置表单校验状态
+			if (this.$refs.orderForm) {
+				this.$refs.orderForm.resetFields();
+				this.$refs.orderForm.clearValidate();
+			}
 		},
 		clearDetail(scope) {
 			scope.row.orderDate = new Date();
@@ -513,12 +552,23 @@ export default {
 			this.orderInfo.seaCarNo = '';
 			this.orderInfo.seaDriverName = '';
 			this.orderInfo.seaDriverTel = '';
+			// 清除校验状态
+			if (this.$refs.orderForm) {
+				this.$refs.orderForm.clearValidate(['seaCarNo', 'seaDriverName']);
+			}
 		},
 		resetLandCarInfo() {
 			this.orderInfo.landCarID = '';
 			this.orderInfo.landCarNo = '';
 			this.orderInfo.landDriverName = '';
 			this.orderInfo.landDriverTel = '';
+			this.orderInfo.landBankName = ''; // 添加重置
+			this.orderInfo.landBankNo = ''; // 添加重置
+			this.orderInfo.fleet = ''; // 添加重置
+			// 清除校验状态
+			if (this.$refs.orderForm) {
+				this.$refs.orderForm.clearValidate(['landCarNo', 'fleet']);
+			}
 		},
 		toggleEditDetails(editState) {
 			this.isEditingDetails = editState;
@@ -537,10 +587,11 @@ export default {
 
 <template>
 	<div>
-		<el-form :inline="true" :model="orderInfo" label-width="80px" :rules="orderRules">
+		<!-- 给 el-form 添加 ref -->
+		<el-form :inline="true" :model="orderInfo" label-width="80px" :rules="orderRules" ref="orderForm">
 			<el-alert title="对于禁用的输入框只需点击旁边搜索按钮搜索对应信息，确认后即可自动填写!" type="warning"></el-alert>
 			<br />
-			<el-card class="box-card" shadow="hover">
+			<el-card class="box-card" shadow="hover" size="mini">
 				<div slot="header" class="clearfix">
 					<el-button type="text" style="color: #156fb2" icon="el-icon-notebook-2">订单基本信息</el-button>
 				</div>
@@ -587,7 +638,8 @@ export default {
 					<el-checkbox v-model="isSea">海运</el-checkbox>
 				</el-form-item>
 				<el-row v-if="isLand" style="margin: 2px 0">
-					<el-form-item label="车牌">
+					<!-- 确认 prop="landCarNo" -->
+					<el-form-item label="车牌" prop="landCarNo">
 						<el-row>
 							<el-col :span="20">
 								<el-input disabled v-model="orderInfo.landCarNo" type="text" size="mini" placeholder="请选择陆运车牌" style="width: 120px" />
@@ -615,16 +667,17 @@ export default {
 							</el-col>
 						</el-row>
 					</el-form-item>
-					<el-form-item label="司机">
+					<el-form-item label="司机" props="landDriverName">
 						<el-input disabled v-model="orderInfo.landDriverName" type="text" size="mini" placeholder="请选择车牌" style="width: 130px" />
 					</el-form-item>
-					<el-form-item label="电话">
+					<el-form-item label="电话" props="landDriverTel">
 						<el-input disabled v-model="orderInfo.landDriverTel" type="text" size="mini" placeholder="请选择车牌" style="width: 120px" />
 					</el-form-item>
-					<el-form-item label="车队">
+					<!-- 确认 prop="fleet" -->
+					<el-form-item label="车队" prop="fleet">
 						<el-row>
 							<el-col :span="12">
-								<el-input disabled v-model="orderInfo.fleet" type="text" size="mini" placeholder="请选择车队" />
+								<el-input v-model="orderInfo.fleet" type="text" size="mini" placeholder="请选择车队" />
 							</el-col>
 							<el-col :span="4">
 								<SearchOption
@@ -649,10 +702,12 @@ export default {
 					</el-form-item>
 				</el-row>
 				<el-row v-if="isSea" style="margin: 2px 0">
-					<el-form-item label="柜号(填写)">
+					<!-- 添加 prop="seaCarNo" -->
+					<el-form-item label="柜号(填写)" prop="seaCarNo">
 						<el-input v-model="orderInfo.seaCarNo" type="text" size="mini" placeholder="请输入柜号" style="width: 120px" />
 					</el-form-item>
-					<el-form-item label="海运公司">
+					<!-- 添加 prop="seaDriverName" -->
+					<el-form-item label="海运公司" prop="seaDriverName">
 						<el-row>
 							<el-col :span="20">
 								<el-input disabled v-model="orderInfo.seaDriverName" type="text" size="mini" placeholder="请选择" style="width: 130px" />
@@ -687,7 +742,7 @@ export default {
 			</el-card>
 		</el-form>
 		<br />
-		<el-card class="box-card" shadow="hover">
+		<el-card class="box-card" shadow="hover" size="mini">
 			<div>
 				<el-row :gutter="10" class="mb8">
 					<el-col :span="1.5">
@@ -864,7 +919,14 @@ export default {
 					</el-table-column>
 					<el-table-column label="出厂片数" prop="pieces" width="90">
 						<template #default="scope">
-							<el-input size="mini" v-model.number="scope.row.pieces" placeholder="请输入出厂片数" @input="() => recalculateAll(scope)" :disabled="!isEditingDetails" />
+							<el-input
+								size="mini"
+								v-model.lazy="scope.row.pieces"
+								placeholder="请输入出厂片数"
+								@change="() => handlePiecesChange(scope)"  
+								@input="() => recalculateAll(scope)"
+								:disabled="!isEditingDetails"
+							/>
 						</template>
 					</el-table-column>
 					<el-table-column label="出厂单价" prop="price" width="90">
@@ -904,7 +966,7 @@ export default {
 					</el-table-column>
 					<el-table-column label="卸货片数" prop="actualPieces" width="90">
 						<template #default="scope">
-							<el-input size="mini" v-model.number="scope.row.actualPieces" placeholder="请输入卸货片数" @input="() => recalculateAll(scope)" :disabled="!isEditingDetails" />
+							<el-input size="mini" v-model="scope.row.actualPieces" placeholder="请输入卸货片数" @input="() => recalculateAll(scope)" :disabled="!isEditingDetails" />
 						</template>
 					</el-table-column>
 					<el-table-column label="卸货价" prop="paymentUnload" width="90">

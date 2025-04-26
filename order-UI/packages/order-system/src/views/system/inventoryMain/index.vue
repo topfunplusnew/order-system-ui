@@ -165,7 +165,7 @@
 					<el-checkbox v-model="isSea">海运</el-checkbox>
 				</el-form-item>
 				<el-row v-if="isLand" style="margin: 3px 0">
-					<el-form-item label="车牌">
+					<el-form-item label="车牌" prop="landCarNo">
 						<el-row>
 							<el-col :span="20">
 								<el-input disabled v-model="form.landCarNo" type="text" size="mini" placeholder="请选择" style="width: 120px" />
@@ -206,10 +206,10 @@
 						<el-input disabled v-model="form.landBankName" type="text" size="mini" placeholder="请选择" style="width: 120px" />
 					</el-form-item>
 					<!-- 添加车队 -->
-					<el-form-item label="车队">
+					<el-form-item label="车队" prop="fleet">
 						<el-row>
 							<el-col :span="12">
-								<el-input disabled v-model="form.fleet" type="text" size="mini" placeholder="请输入车队" />
+								<el-input v-model="form.fleet" type="text" size="mini" placeholder="请选择车队" />
 							</el-col>
 							<el-col :span="4">
 								<SearchOption
@@ -235,8 +235,7 @@
 				</el-row>
 				<!--      海运-->
 				<el-row v-if="isSea" style="margin: 3px 0">
-					<!--   车牌修改为柜号 且自己输入 不提供自动填充 -->
-					<el-form-item label="柜号">
+					<el-form-item label="柜号" prop="seaCarNo">
 						<el-row>
 							<el-col :span="20">
 								<el-input v-model="form.seaCarNo" type="text" size="mini" placeholder="请输入柜号" style="width: 120px" />
@@ -263,16 +262,16 @@
 						</el-row>
 					</el-form-item>
 					<!--          todo 原为海运司机 现改为海运公司-->
-					<el-form-item label="海运公司">
+					<el-form-item label="海运公司" prop="seaDriverName">
 						<el-input v-model="form.seaDriverName" type="text" size="mini" placeholder="请输入海运公司" style="width: 130px" />
 					</el-form-item>
-					<el-form-item label="电话">
+					<el-form-item label="电话" prop="seaDriverTel">
 						<el-input v-model="form.seaDriverTel" type="text" size="mini" placeholder="请输入电话" style="width: 120px" />
 					</el-form-item>
-					<el-form-item label="银行卡号">
+					<el-form-item label="银行卡号" prop="seaBankNo">
 						<el-input v-model="form.seaBankNo" type="text" size="mini" placeholder="请输入海运银行卡号" style="width: 120px" />
 					</el-form-item>
-					<el-form-item label="开户行">
+					<el-form-item label="开户行" prop="seaBankName">
 						<el-input v-model="form.seaBankName" type="text" size="mini" placeholder="请输入海运开户行" style="width: 120px" />
 					</el-form-item>
 				</el-row>
@@ -419,7 +418,7 @@
 
 					<el-table-column label="出厂片数" prop="pieces" width="150">
 						<template #default="scope">
-							<el-input size="mini" v-model="scope.row.pieces" placeholder="请输入出厂片数" @input="() => calculatePacks(scope)" />
+							<el-input size="mini" v-model="scope.row.pieces" placeholder="请输入出厂片数" @input="() => calculatePacks(scope)" @change="handlePiecesChange" />
 						</template>
 					</el-table-column>
 
@@ -568,6 +567,7 @@
 					<!--							<el-input size="mini" v-model="scope.row.customerCommission" placeholder="请输入客户佣金" />-->
 					<!--						</template>-->
 					<!--					</el-table-column>-->
+
 					<!--          添加厂家佣金 -->
 					<el-table-column label="厂家佣金" prop="factoryCommission" width="150">
 						<template #default="scope">
@@ -640,6 +640,65 @@ export default {
 	components: { DialogWrapper, SearchOption, CheckFiles, StateTag },
 	mixins: [_fill, mixin_checkfile, mixin_printHTML, common_dialog],
 	data() {
+		// 自定义校验器：当选择陆运时，车队必填
+		const validateFleet = (rule, value, callback) => {
+			if (this.isLand && !value) {
+				// 修改提示信息以反映需要选择
+				callback(new Error('选择陆运时，请选择车队'));
+			} else {
+				callback();
+			}
+		};
+		// 自定义校验器：当选择陆运时，必须选择车牌信息
+		const validateLandCar = (rule, value, callback) => {
+			if (this.isLand && !value) {
+				callback(new Error('选择陆运时，请选择车牌信息'));
+			} else {
+				callback();
+			}
+		};
+
+		// 自定义校验器：当选择海运时，柜号必填
+		const validateSeaCarNo = (rule, value, callback) => {
+			if (this.isSea && !value) {
+				callback(new Error('选择海运时，柜号不能为空'));
+			} else {
+				callback();
+			}
+		};
+		// 自定义校验器：当选择海运时，海运公司必填
+		const validateSeaDriverName = (rule, value, callback) => {
+			if (this.isSea && !value) {
+				callback(new Error('选择海运时，海运公司不能为空'));
+			} else {
+				callback();
+			}
+		};
+		// 自定义校验器：当选择海运时，电话必填
+		const validateSeaDriverTel = (rule, value, callback) => {
+			if (this.isSea && !value) {
+				callback(new Error('选择海运时，电话不能为空'));
+			} else {
+				callback();
+			}
+		};
+		// 自定义校验器：当选择海运时，银行卡号必填
+		const validateSeaBankNo = (rule, value, callback) => {
+			if (this.isSea && !value) {
+				callback(new Error('选择海运时，银行卡号不能为空'));
+			} else {
+				callback();
+			}
+		};
+		// 自定义校验器：当选择海运时，开户行必填
+		const validateSeaBankName = (rule, value, callback) => {
+			if (this.isSea && !value) {
+				callback(new Error('选择海运时，开户行不能为空'));
+			} else {
+				callback();
+			}
+		};
+
 		return {
 			// 遮罩层
 			loading: true,
@@ -712,7 +771,19 @@ export default {
 				{ key: 18, label: '操作', visible: true }
 			],
 			// 表单校验
-			rules: {},
+			rules: {
+				storeHouseName: [{ required: true, message: '仓库名称不能为空', trigger: 'blur' }],
+				storeDate: [{ required: true, message: '入库日期不能为空', trigger: 'change' }],
+				goodsCompany: [{ required: true, message: '货物来源公司不能为空', trigger: 'blur' }],
+				fleet: [{ validator: validateFleet, trigger: 'blur' }],
+				landCarNo: [{ validator: validateLandCar, trigger: 'change' }],
+				// 添加海运相关校验规则
+				seaCarNo: [{ validator: validateSeaCarNo, trigger: 'blur' }],
+				seaDriverName: [{ validator: validateSeaDriverName, trigger: 'blur' }],
+				seaDriverTel: [{ validator: validateSeaDriverTel, trigger: 'blur' }],
+				seaBankNo: [{ validator: validateSeaBankNo, trigger: 'blur' }],
+				seaBankName: [{ validator: validateSeaBankName, trigger: 'blur' }]
+			},
 			storeList: [],
 			// 树表的数据结构
 			defaultProps: {
@@ -817,13 +888,16 @@ export default {
 		handleCommitUpload(val) {
 			this.form.receiveProof = val;
 		},
-		handleNodeClick(data) {
-			this.loading = true;
-			listInventoryMain({ storeHouseName: data.label }).then(res => {
-				this.inventoryMainList = res.rows;
-				this.loading = false;
-			});
+		handlePiecesChange(value) {
+			console.log(`value`, value);
 		},
+		// handleNodeClick(data) {
+		// 	this.loading = true;
+		// 	listInventoryMain({ storeHouseName: data.label }).then(res => {
+		// 		this.inventoryMainList = res.rows;
+		// 		this.loading = false;
+		// 	});
+		// },
 		handleCheck(row) {
 			this.$confirm({
 				title: '提示',
@@ -995,65 +1069,28 @@ export default {
 		// END
 		handleCommitBackFleet(val) {
 			this.form.fleet = val.fname;
+			// 手动触发 fleet 字段的校验
+			this.$refs.form.validateField('fleet');
 		},
-		// 车队的自动填充
-		handleChangeFleet(val) {
-			this.queryFleet = val;
+		// 在 handleCommitBackCar 中手动触发 landCarNo 字段的校验
+		handleCommitBackCar(val) {
+			this.form.landCarID = val.id;
+			this.form.landCarNo = val.carNo;
+			this.form.landDriverName = val.driver;
+			this.form.landDriverTel = val.tel;
+			this.form.landBankNo = val.bankNo;
+			this.form.landBankName = val.bankName;
+			// 手动触发 landCarNo 字段的校验
+			this.$nextTick(() => {
+				this.$refs.form.validateField('landCarNo');
+			});
 		},
-		// 设置当前绑定类型
-		setCurrentType(row, type) {
-			row.currentType = type;
-		},
-		clearDetail(scope) {
-			scope.row.stockNumber = '';
-			scope.row.supplier = '';
-			scope.row.supplierId = '';
-			scope.row.levelID = '';
-			scope.row.levelName = '';
-			scope.row.countingUnit = '片';
-			scope.row.height = '';
-			scope.row.length = '';
-			scope.row.width = '';
-			scope.row.pieces = '';
-			scope.row.piecesPerPack = '';
-			scope.row.packs = '';
-			scope.row.price = '';
-			scope.row.isIncludeTaxFactory = 0;
-			scope.row.sundryCost = '';
-			scope.row.paymentFactory = '';
-			scope.row.paymentUnload = '';
-			scope.row.isIncludeTaxSale = 0;
-			scope.row.payments = '';
-			scope.row.erro = '';
-			scope.row.tonnage = '';
-			scope.row.landFreightPrice = '';
-			scope.row.landFreight = '';
-			scope.row.seaFreight = '';
-			scope.row.freight = '';
-			scope.row.otherCost = '';
-			scope.row.profit = '';
-			scope.row.profitNoTax = '';
-			// scope.row.actualPieces = '';
-			scope.row.paymentsWithSundry = '';
-			scope.row.additionalFees = '';
-			scope.row.rebate = '';
-			scope.row.customerCommission = '';
-			scope.row.comments = '';
-		},
-
-		// 重置陆运费
-		resetSeaCarInfo() {
-			this.form.seaCarID = '';
-			this.form.seaCarNo = '';
-			this.form.seaDriverName = '';
-			this.form.seaDriverTel = '';
-		},
-		// 重置海运费
-		resetLandCarInfo() {
-			this.form.landCarID = '';
-			this.form.landCarNo = '';
-			this.form.landDriverName = '';
-			this.form.landDriverTel = '';
+		handleNodeClick(data) {
+			this.loading = true;
+			listInventoryMain({ storeHouseName: data.label }).then(res => {
+				this.inventoryMainList = res.rows;
+				this.loading = false;
+			});
 		},
 		/** 查询库存库存主表列表 */
 		getList() {
@@ -1082,11 +1119,15 @@ export default {
 				landCarNo: null,
 				landDriverTel: null,
 				landDriverName: null,
+				landBankNo: null,
+				landBankName: null,
 				fleet: null,
 				seaCarID: null,
 				seaCarNo: null,
 				seaDriverTel: null,
 				seaDriverName: null,
+				seaBankNo: null, // 确保重置时包含
+				seaBankName: null, // 确保重置时包含
 				addtime: null,
 				userId: null,
 				UserName: null,
@@ -1096,10 +1137,14 @@ export default {
 				exWareHoustId: null,
 				goodsCompany: null,
 				allLandFreight: null,
-				allSeaFreight: null
+				allSeaFreight: null,
+				receiveProof: null // 确保附件字段也被重置
 			};
 			this.inventoryDetailList = [];
-			this.resetForm('form');
+			if (this.$refs.form) {
+				this.$refs.form.resetFields();
+				this.$refs.form.clearValidate();
+			}
 		},
 		/** 搜索按钮操作 */
 		handleQuery() {

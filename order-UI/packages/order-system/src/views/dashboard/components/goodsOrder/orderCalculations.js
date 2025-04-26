@@ -7,10 +7,6 @@ import { fix } from '../../../../api/tool/format';
  */
 function calculateTonnage(row) {
 	row.tonnage = fix(((Number(row.height) - Number(row.erro)) * Number(row.length) * Number(row.width) * Number(row.pieces)) / 1000000 / 20 / 20);
-	// 吨位计算后，如果卸货片数为空或等于出厂片数，则自动填充卸货片数
-	if (!row.actualPieces || Number(row.actualPieces) === Number(row.pieces)) {
-		row.actualPieces = row.pieces;
-	}
 }
 
 /**
@@ -103,25 +99,25 @@ function calculateProfitNoTax(row) {
 export function updateOrderRowCalculations(row, isSea, isLand) {
 	// 移除或注释掉以下数据预处理块，因为这可能干扰小数输入
 	/*
-	// 确保基础数据是数字类型，避免NaN错误
-	row.height = Number(row.height) || 0;
-	row.length = Number(row.length) || 0;
-	row.width = Number(row.width) || 0;
-	row.pieces = Number(row.pieces) || 0;
-	row.erro = Number(row.erro) || 0;
-	row.price = Number(row.price) || 0;
-	row.sundryCost = Number(row.sundryCost) || 0;
-	// 如果卸货片数为空，先尝试使用出厂片数填充，再转数字
-	row.actualPieces = Number(row.actualPieces || row.pieces) || 0;
-	row.paymentUnload = Number(row.paymentUnload) || 0;
-	row.paymentsWithSundry = Number(row.paymentsWithSundry) || 0;
-	row.landFreightPrice = Number(row.landFreightPrice) || 0;
-	row.additionalFees = Number(row.additionalFees) || 0;
-	row.seaFreight = Number(row.seaFreight) || 0;
-	row.otherCost = Number(row.otherCost) || 0;
-	row.isIncludeTaxFactory = Number(row.isIncludeTaxFactory); // 确保是数字0或1
-	row.isIncludeTaxSale = Number(row.isIncludeTaxSale); // 确保是数字0或1
-	*/
+    // 确保基础数据是数字类型，避免NaN错误
+    row.height = Number(row.height) || 0;
+    row.length = Number(row.length) || 0;
+    row.width = Number(row.width) || 0;
+    row.pieces = Number(row.pieces) || 0;
+    row.erro = Number(row.erro) || 0;
+    row.price = Number(row.price) || 0;
+    row.sundryCost = Number(row.sundryCost) || 0;
+    // 如果卸货片数为空，先尝试使用出厂片数填充，再转数字
+    row.actualPieces = Number(row.actualPieces || row.pieces) || 0;
+    row.paymentUnload = Number(row.paymentUnload) || 0;
+    row.paymentsWithSundry = Number(row.paymentsWithSundry) || 0;
+    row.landFreightPrice = Number(row.landFreightPrice) || 0;
+    row.additionalFees = Number(row.additionalFees) || 0;
+    row.seaFreight = Number(row.seaFreight) || 0;
+    row.otherCost = Number(row.otherCost) || 0;
+    row.isIncludeTaxFactory = Number(row.isIncludeTaxFactory); // 确保是数字0或1
+    row.isIncludeTaxSale = Number(row.isIncludeTaxSale); // 确保是数字0或1
+    */
 
 	// 按依赖顺序计算 - 计算函数内部会使用 Number() 进行转换
 	calculateTonnage(row); // 先算吨位和可能的卸货片数填充
