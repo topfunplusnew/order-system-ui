@@ -3,17 +3,14 @@
 		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
 			<el-form-item label="类型" prop="acountsType">
 				<el-select v-model="queryParams.acountsType" placeholder="请选择">
-					<el-option v-for="item in options" :key="item.value" :label="item.label"
-						:value="item.value"></el-option>
+					<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
 				</el-select>
 			</el-form-item>
 			<el-form-item label="开户名" prop="acountsName">
-				<el-input v-model="queryParams.acountsName" placeholder="请输入开户名" clearable
-					@keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.acountsName" placeholder="请输入开户名" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="银行账号" prop="bankNo">
-				<el-input v-model="queryParams.bankNo" placeholder="请输入银行账号" clearable
-					@keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.bankNo" placeholder="请输入银行账号" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -25,8 +22,7 @@
 				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
 			</el-col>
 			<el-col :span="1.5">
-				<el-button v-hasPermi="['system:bankaccount:add']" type="danger" size="mini"
-					@click="handleAdd">新增银行卡信息</el-button>
+				<el-button v-hasPermi="['system:bankaccount:add']" type="danger" size="mini" @click="handleAdd">新增银行卡信息</el-button>
 			</el-col>
 			<el-col :span="1.5">
 				<BankAccountChangeDash />
@@ -39,19 +35,28 @@
 				</template>
 				<template #export>
 					<el-col :span="1.5">
-						<el-button v-hasPermi="['system:bankaccount:export']" plain icon="el-icon-folder-opened"
-							size="mini" @click="handleExport"></el-button>
+						<el-button v-hasPermi="['system:bankaccount:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
 					</el-col>
 				</template>
 			</right-toolbar>
 		</el-row>
 
 		<!-- 打印内容 -->
-		<el-table id="printBox" v-loading="loading" v-horizontal-scroll="'always'" border :data="bankAccountList"
-			height="450px" size="mini" :cell-style="() => {
-				return { padding: '.5px' };
-			}
-				" @selection-change="handleSelectionChange">
+		<el-table
+			id="printBox"
+			v-loading="loading"
+			v-horizontal-scroll="'always'"
+			border
+			:data="bankAccountList"
+			height="450px"
+			size="mini"
+			:cell-style="
+				() => {
+					return { padding: '.5px' };
+				}
+			"
+			@selection-change="handleSelectionChange"
+		>
 			<el-table-column v-if="columns[0].visible" label="绑定状态" align="center">
 				<template slot-scope="scope">
 					<span v-if="scope.row.companyId === 0" style="color: #138fe1">己方公司银行卡</span>
@@ -68,7 +73,7 @@
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[3].visible" label="显示名称" align="center" prop="displayName" />
-			<el-table-column v-if="columns[7].visible" label="公司名称" align="center" prop="companyName" />
+			<el-table-column v-if="columns[7].visible" label="公司名称/车牌号" align="center" prop="companyName" />
 			<el-table-column v-if="columns[4].visible" label="开户名称" align="center" prop="acountsName" />
 			<el-table-column v-if="columns[5].visible" label="银行账号" align="center" prop="bankNo" />
 			<el-table-column v-if="columns[6].visible" label="开户行" align="center" prop="bankName" />
@@ -91,27 +96,21 @@
 			<el-table-column label="行操作" align="center" class-name="small-padding fixed-width">
 				<template slot-scope="scope">
 					<el-row>
-						<el-button v-hasPermi="['system:bankaccount:edit']" size="mini" type="primary"
-							@click="handleUpdate(scope.row)">编辑</el-button>
-						<el-button v-hasPermi="['system:bankaccount:remove']" size="mini" type="danger"
-							@click="handleDelete(scope.row)">删除</el-button>
+						<el-button v-hasPermi="['system:bankaccount:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">编辑</el-button>
+						<el-button v-hasPermi="['system:bankaccount:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
 					</el-row>
 				</template>
 			</el-table-column>
 		</el-table>
-		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum"
-			:limit.sync="queryParams.pageSize" @pagination="getList" />
+		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改银行账号对话框 -->
-		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px"
-			append-to-body>
-			<el-form ref="form" :model="form" :rules="rules" label-width="120px" @keyup.enter.native="submitForm"
-				@submit.native.prevent="submitForm">
+		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
+			<el-form ref="form" :model="form" :rules="rules" label-width="120px" @keyup.enter.native="submitForm" @submit.native.prevent="submitForm">
 				<!--        选择账号类型 分为：司机、公司、己方公司等等-->
 				<el-form-item label="账号类型" prop="acountsType">
 					<el-select v-model="form.acountsType" placeholder="请选择账号类型">
-						<el-option v-for="item in options" :key="item.value" :label="item.label"
-							:value="item.value"></el-option>
+						<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
 					</el-select>
 				</el-form-item>
 				<!--        如果选择了己方公司 还要选择一个公私户类型-->
@@ -123,61 +122,67 @@
 						</el-form-item>
 					</el-row>
 				</div>
-				<!--        填写开户名-->
-				<el-form-item label="开户名" prop="acountsName">
-					<!--          如果是司机 那么就选择-->
-					<el-row v-if="form.acountsType === PUBLIC_DICT_TYPE.DRIVER">
+				<!--  如果是司机 要选择车牌号 -->
+				<el-form-item label="车牌号" prop="companyName" v-if="form.acountsType === PUBLIC_DICT_TYPE.DRIVER">
+					<el-row>
 						<el-col :span="20">
-							<el-input disabled v-model="form.acountsName" placeholder="请选择" />
+							<el-input v-model="form.companyName" placeholder="请输入车牌号" />
 						</el-col>
 						<el-col :span="4">
-							<el-tooltip content="选择已经添加过的账户" placement="top">
-								<SearchOption :limit-info="{}" :get-data="listCars" query-info="carNo"
-									query-label="车牌查找" :query-name="queryBankAccount"
-									@update:queryName="handleUpdateBankAccount"
-									@commitBack="handleCommitBackBankAccount">
-									<template #table-columns>
-										<el-table-column label="司机" align="center" prop="driver" />
-										<el-table-column label="车牌号" align="center" prop="carNo" />
-										<el-table-column label="司机电话" align="center" prop="tel" />
-										<el-table-column label="开户名" align="center" prop="acountsName" />
-										<el-table-column label="账号" align="center" prop="bankNo" />
-										<el-table-column label="开户行" align="center" prop="bankName" />
-										<el-table-column label="运输方式" align="center" prop="carType" />
-									</template>
-								</SearchOption>
-							</el-tooltip>
+							<SearchOption
+								:limit-info="{}"
+								:get-data="listCars"
+								query-info="carNo"
+								query-label="车牌查找"
+								:query-name="queryBankAccount"
+								@update:queryName="handleUpdateBankAccount"
+								@commitBack="handleCommitBackBankAccount"
+							>
+								<template #table-columns>
+									<el-table-column label="司机" align="center" prop="driver" />
+									<el-table-column label="车牌号" align="center" prop="carNo" />
+									<el-table-column label="司机电话" align="center" prop="tel" />
+									<el-table-column label="开户名" align="center" prop="acountsName" />
+									<el-table-column label="账号" align="center" prop="bankNo" />
+									<el-table-column label="开户行" align="center" prop="bankName" />
+									<el-table-column label="运输方式" align="center" prop="carType" />
+								</template>
+							</SearchOption>
 						</el-col>
 					</el-row>
-
-					<!--          如果不是司机 直接填写开户名-->
-					<el-row v-else>
+				</el-form-item>
+				<!--          如果不是司机 直接填写开户名-->
+				<el-form-item prop="acountsName" label="户名" v-else>
+					<el-row>
 						<el-input v-model="form.acountsName" placeholder="请输入开户名" />
 					</el-row>
 				</el-form-item>
 				<!--          车牌-->
-				<el-form-item label="车牌号" prop="companyName" v-if="form.acountsType === PUBLIC_DICT_TYPE.DRIVER">
+				<el-form-item label="户名" prop="acountsName" v-if="form.acountsType === PUBLIC_DICT_TYPE.DRIVER">
 					<el-row>
-						<el-input v-model="form.companyName" placeholder="请输入车牌" disabled />
+						<el-input v-model="form.acountsName" placeholder="请输入司机户名" />
 					</el-row>
 				</el-form-item>
 				<el-form-item v-if="isNeed" :label="showLabel" prop="companyName">
 					<el-row>
 						<el-col :span="10">
-							<el-input disabled v-model="form.companyName" placeholder="请选择" />
+							<el-input v-model="form.companyName" placeholder="请输入" />
 						</el-col>
 						<!-- 我方员工信息搜索-->
 						<el-col v-if="form.acountsType === '员工'" :span="2">
-							<el-tooltip class="item" effect="dark" content="若未找到员工可能是您权限不够,请设置权限后再做选择"
-								placement="top-start">
-								<SearchOption :limit-info="{}" :get-data="listUser" query-label="姓名"
-									:query-name="queryUser" query-info="trueName" @commitBack="handleCommitBackUser"
-									@update:queryName="handleQueryUser">
+							<el-tooltip class="item" effect="dark" content="若未找到员工可能是您权限不够,请设置权限后再做选择" placement="top-start">
+								<SearchOption
+									:limit-info="{}"
+									:get-data="listUser"
+									query-label="姓名"
+									:query-name="queryUser"
+									query-info="trueName"
+									@commitBack="handleCommitBackUser"
+									@update:queryName="handleQueryUser"
+								>
 									<template #table-columns>
-										<el-table-column key="nickName" label="员工" align="center" prop="trueName"
-											:show-overflow-tooltip="true" />
-										<el-table-column key="deptName" label="岗位" align="center" prop="postName"
-											:show-overflow-tooltip="true" />
+										<el-table-column key="nickName" label="员工" align="center" prop="trueName" :show-overflow-tooltip="true" />
+										<el-table-column key="deptName" label="岗位" align="center" prop="postName" :show-overflow-tooltip="true" />
 										<el-table-column label="手机号码" align="center" prop="phonenumber" width="120" />
 										<el-table-column label="就职状态" align="center" prop="state" width="120" />
 										<el-table-column label="入职时间" align="center" prop="startDate" width="120" />
@@ -185,26 +190,28 @@
 										<el-table-column label="性别" align="center" prop="sex" width="120" />
 										<el-table-column label="出生日期" align="center" prop="birthday" width="120" />
 										<el-table-column label="民族" align="center" prop="nation" width="120" />
-										<el-table-column label="政治面貌" align="center" prop="politicalStatus"
-											width="120" />
+										<el-table-column label="政治面貌" align="center" prop="politicalStatus" width="120" />
 										<el-table-column label="婚姻状况" align="center" prop="maritalStatus" width="120" />
-										<el-table-column label="户籍地址" align="center" prop="domicileAddress"
-											width="120" />
-										<el-table-column label="居住地址" align="center" prop="residentialAddress"
-											width="120" />
-										<el-table-column label="紧急联系人" align="center" prop="relationPerson"
-											width="120" />
-										<el-table-column label="紧急联系人电话" align="center" prop="relationPersonTel"
-											width="120" />
+										<el-table-column label="户籍地址" align="center" prop="domicileAddress" width="120" />
+										<el-table-column label="居住地址" align="center" prop="residentialAddress" width="120" />
+										<el-table-column label="紧急联系人" align="center" prop="relationPerson" width="120" />
+										<el-table-column label="紧急联系人电话" align="center" prop="relationPersonTel" width="120" />
 									</template>
 								</SearchOption>
 							</el-tooltip>
 						</el-col>
 						<!-- 供应商信息搜索-->
 						<el-col v-if="form.acountsType === PUBLIC_DICT_TYPE.SUPPLIER" :span="2">
-							<SearchOption title="供应商信息" :limit-info="{ companyType: '供应商' }" :get-data="listCompany"
-								@commitBack="handleCommitBackCompanyGive" @update:queryName="handleQueryCompanyGive"
-								query-info="companyName" query-label="公司名称" :query-name="queryCompanyGive">
+							<SearchOption
+								title="供应商信息"
+								:limit-info="{ companyType: '供应商' }"
+								:get-data="listCompany"
+								@commitBack="handleCommitBackCompanyGive"
+								@update:queryName="handleQueryCompanyGive"
+								query-info="companyName"
+								query-label="公司名称"
+								:query-name="queryCompanyGive"
+							>
 								<template #table-columns>
 									<el-table-column label="供应商" align="center" prop="companyName" />
 									<el-table-column label="地址" align="center" prop="address" />
@@ -213,9 +220,16 @@
 						</el-col>
 						<!-- 客户信息搜索-->
 						<el-col v-if="form.acountsType === PUBLIC_DICT_TYPE.CUSTOMER" :span="2">
-							<SearchOption title="客户信息" :limit-info="{ companyType: '客户' }" :get-data="listCompany"
-								@commitBack="handleCommitBackCompany" @update:queryName="handleQueryCompany"
-								query-info="companyName" query-label="公司名称" :query-name="queryCompany">
+							<SearchOption
+								title="客户信息"
+								:limit-info="{ companyType: '客户' }"
+								:get-data="listCompany"
+								@commitBack="handleCommitBackCompany"
+								@update:queryName="handleQueryCompany"
+								query-info="companyName"
+								query-label="公司名称"
+								:query-name="queryCompany"
+							>
 								<template #table-columns>
 									<el-table-column label="客户" align="center" prop="companyName" />
 									<el-table-column label="老板姓名" align="center" prop="leader" />
@@ -245,16 +259,13 @@
 		</el-dialog>
 
 		<!--    银行卡流水-->
-		<el-dialog :close-on-click-modal="false" :show-close="false" title="银行卡流水"
-			:visible.sync="bankChangeDialogVisible" width="850px" append-to-body>
+		<el-dialog :close-on-click-modal="false" :show-close="false" title="银行卡流水" :visible.sync="bankChangeDialogVisible" width="850px" append-to-body>
 			<el-row>
 				<div>
 					<el-form :model="bankAcountQuery" label-width="80px">
 						<el-col :span="6">
 							<el-form-item label="日期" prop="operateDate">
-								<el-date-picker v-model="bankAcountQuery.operateDate" type="datetime"
-									value-format="yyyy-MM-dd HH:mm:ss" placeholder="日期" size="mini"
-									style="width: 140px" />
+								<el-date-picker v-model="bankAcountQuery.operateDate" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="日期" size="mini" style="width: 140px" />
 							</el-form-item>
 						</el-col>
 						<el-col :span="6">
@@ -270,9 +281,13 @@
 					<el-table-column prop="changeType" label="变动类型"></el-table-column>
 					<el-table-column prop="moneyAmount" label="金额"></el-table-column>
 				</el-table>
-				<pagination v-show="bankAcountTotal > 0" :total="bankAcountTotal"
+				<pagination
+					v-show="bankAcountTotal > 0"
+					:total="bankAcountTotal"
 					:page.sync="bankAcountQuery.bankAcountTotalPageNum"
-					:limit.sync="bankAcountQuery.bankAcountTotalPageSize" @pagination="getBankAcountChangeList" />
+					:limit.sync="bankAcountQuery.bankAcountTotalPageSize"
+					@pagination="getBankAcountChangeList"
+				/>
 			</el-row>
 			<div slot="footer" class="dialog-footer">
 				<el-button type="primary" @click="submitBankChange">确 定</el-button>
@@ -566,7 +581,7 @@ export default {
 		},
 		// 搜索银行卡信息
 		handleCommitBackBankAccount(val) {
-			this.form.acountsName = val.acountsName;
+			// this.form.acountsName = val.acountsName;
 			this.form.companyId = val.id;
 			this.form.companyType = '司机';
 			// 司机信息公司默认给的是司机
@@ -716,7 +731,7 @@ export default {
 					this.getList();
 					this.$modal.msgSuccess('删除成功');
 				})
-				.catch(() => { });
+				.catch(() => {});
 		},
 		/** 导出按钮操作 */
 		handleExport() {
