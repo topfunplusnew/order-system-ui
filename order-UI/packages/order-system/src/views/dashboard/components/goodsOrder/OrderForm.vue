@@ -308,7 +308,7 @@ export default {
 						});
 						this.$message.success('该行订单详情信息已添加并保存!');
 						// 设置当前正在编辑的订单是哪条订单
-						this.setIsEditingOrder(res.data, true);
+						this.setIsEditingOrder(_.cloneDeep(res.data), true);
 					})
 					.catch(error => {
 						currentRows.forEach(row => {
@@ -323,6 +323,7 @@ export default {
 		},
 		// 设置当前编辑状态
 		setIsEditingOrder(response, flag = true) {
+			console.log(`设置订单信息:`, response);
 			this.isEditingOrder.id = response.id;
 			this.isEditingOrder.state = flag;
 			this.isEditingOrder.currentEditingOrderInfo = response;
@@ -532,6 +533,7 @@ export default {
 						this.orderInfo = excludeParams(this.orderInfo, this.$exclude);
 						const json = _.cloneDeep(this.orderInfo);
 						if (!this.isEditingOrder.id) {
+							json.id = this.isEditingOrder.id;
 							addGoodsOrder(json).then(resolve).catch(reject);
 						} else {
 							json.remark = sessionStorage.getItem('order-edit-reason');
