@@ -533,9 +533,9 @@ export default {
 						this.orderInfo = excludeParams(this.orderInfo, this.$exclude);
 						const json = _.cloneDeep(this.orderInfo);
 						if (!this.isEditingOrder.id) {
-							json.id = this.isEditingOrder.id;
 							addGoodsOrder(json).then(resolve).catch(reject);
 						} else {
+							json.id = this.isEditingOrder.id;
 							json.remark = sessionStorage.getItem('order-edit-reason');
 							updateGoodsOrder(json).then(resolve).catch(reject);
 						}
