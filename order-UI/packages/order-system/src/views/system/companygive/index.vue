@@ -303,7 +303,7 @@ import { INFO_TYPE, isUsed } from '../../../api/system/isUsed';
 import AddBankAccounts from '../../dashboard/components/company/AddBankAccounts.vue';
 
 export default {
-	name: 'Company',
+	name: 'CompanyGive',
 	components: { AddBankAccounts },
 	data() {
 		return {
