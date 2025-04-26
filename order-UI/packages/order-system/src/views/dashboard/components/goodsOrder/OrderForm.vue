@@ -13,7 +13,8 @@ import { fix } from '../../../../api/tool/format';
 import SearchOption from '../../../../components/SearchOption.vue';
 import { parseTime } from '../../../../utils/ruoyi';
 import { mixin_form_fillInfo } from '../../mixins/order/form/form_fillInfo';
-import { updateOrderRowCalculations } from './orderCalculations'; // 导入新的计算函数
+import { updateOrderRowCalculations } from './orderCalculations';
+import _ from 'lodash'; // 导入新的计算函数
 
 export default {
 	name: 'OrderForm',
@@ -178,6 +179,11 @@ export default {
 						value: ''
 					}
 				]
+			},
+			// 当前是编辑订单还是添加订单 编辑订单此值非空,添加订单为空
+			isEditingOrder: {
+				id: '',
+				state: false
 			}
 		};
 	},
@@ -250,17 +256,54 @@ export default {
 			this.$message.info('正在编辑该条记录');
 		},
 
-		// 保存某一行
+		// 修改保存行逻辑，保存row的引用以便后续使用
 		handleRowSave(row) {
 			// 执行保存逻辑，可以在这里添加表单验证
 			row.isEditing = false;
 			// 重新计算该行的数据
 			updateOrderRowCalculations(row, this.isSea, this.isLand);
-			this.$message.success('该条记录已保存');
+			let saveDetails = _.cloneDeep(this.orderdetailList).filter(item => !item.isEditing);
+			// 填充订单的必要信息
+			saveDetails = this.fillOrderDetailInfo(saveDetails);
+			const newOrderInfo = {
+				...this.orderInfo,
+				orderDetailList: saveDetails
+			};
+			// 添加或者修改订单行
+			this.addOrUpdateOrderDetail(newOrderInfo, row);
+		},
+
+		// 优化添加或者修改订单函数
+		addOrUpdateOrderDetail(newOrderInfo, row) {
+			// 保存row的引用，避免在Promise链中丢失
+			const currentRow = row;
+			const rowIndex = this.orderdetailList.findIndex(item => item === currentRow);
+
+			if (this.isEditingOrder.state) {
+				updateGoodsOrder(newOrderInfo)
+					.then(res => {
+						this.$message.success('该行订单详情信息已修改并保存!');
+					})
+					.catch(error => {
+						// 使用Vue的响应式方法确保UI更新
+						this.$set(this.orderdetailList[rowIndex], 'isEditing', true);
+						this.$message.error('保存失败，请重试: ' + (error.message || '未知错误'));
+					});
+			} else {
+				addGoodsOrder(newOrderInfo)
+					.then(res => {
+						this.$message.success('该行订单详情信息已添加并保存!');
+					})
+					.catch(error => {
+						// 使用Vue的响应式方法确保UI更新
+						this.$set(this.orderdetailList[rowIndex], 'isEditing', true);
+						this.$message.error('保存失败，请重试: ' + (error.message || '未知错误'));
+					});
+			}
 		},
 		handleAddOrderdetail() {
 			let obj = {
-				orderDate: new Date(),
+				orderDate: parseTime(new Date()),
 				supplier: '',
 				supplierID: '',
 				customer: '',
@@ -305,7 +348,7 @@ export default {
 				factoryRebateAmount: '',
 				factoryDiscountAmount: '',
 				comments: '',
-				isEditing: false // 默认不处于编辑状态
+				isEditing: true // 默认不处于编辑状态
 			};
 			this.orderdetailList.push(obj);
 			this.$nextTick(() => {
@@ -426,6 +469,16 @@ export default {
 		setCurrentType(row, type) {
 			row.currentType = type;
 		},
+		// 填充订单相关必要信息
+		fillOrderDetailInfo(detailList = this.orderdetailList) {
+			const formatOrderItem = () => ({
+				customerID: this.orderInfo.customerID,
+				customer: this.orderInfo.customer,
+				orderDate: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}')
+			});
+			return _.cloneDeep(detailList).map(item => Object.assign(item, formatOrderItem()));
+		},
+		// 弹窗点击确定
 		handleProcess(that) {
 			this.$refs.orderForm.validate(valid => {
 				if (valid) {
@@ -438,43 +491,26 @@ export default {
 						return;
 					}
 					new Promise((resolve, reject) => {
+						this.orderInfo.orderDetailList = _.cloneDeep(this.orderdetailList);
+						// 填充订单详情信息
+						this.orderdetailList = this.fillOrderDetailInfo();
+						this.orderInfo = excludeParams(this.orderInfo, this.$exclude);
+						const json = _.cloneDeep(this.orderInfo);
 						if (!this.orderId) {
-							this.orderInfo.orderDetailList = this.orderdetailList;
-							const updateOrderItem = item => {
-								item.customerID = this.orderInfo.customerID;
-								item.customer = this.orderInfo.customer;
-								item.orderDate = parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}');
-							};
-							this.orderdetailList.forEach(item => updateOrderItem(item));
-							addGoodsOrder({ ...this.orderInfo, PaymentState: '' })
-								.then(resolve)
-								.catch(reject);
+							addGoodsOrder(json).then(resolve).catch(reject);
 						} else {
-							this.orderInfo.orderDetailList = this.orderdetailList;
-							const formatOrderItem = () => ({
-								customerID: this.orderInfo.customerID,
-								customer: this.orderInfo.customer,
-								orderDate: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}')
-							});
-							this.orderdetailList.forEach(item => Object.assign(item, formatOrderItem()));
-							this.orderInfo = excludeParams(this.orderInfo, this.$exclude);
-							updateGoodsOrder({
-								...this.orderInfo,
-								PaymentState: '',
-								remark: sessionStorage.getItem('order-edit-reason')
-							})
-								.then(resolve)
-								.catch(reject);
+							json.remark = sessionStorage.getItem('order-edit-reason');
+							updateGoodsOrder(json).then(resolve).catch(reject);
 						}
 					})
 						.then(() => {
+							// 清除订单状态
 							this.resetOrderInfo();
+							// 清除陆运和海运的状态
 							this.isSea = false;
 							this.isLand = false;
-							this.$message({
-								message: this.orderId ? '修改成功' : '添加成功',
-								type: 'success'
-							});
+							const message = this.orderId ? '修改成功' : '添加成功';
+							this.$message({ message, type: 'success' });
 							sessionStorage.removeItem('order-edit-reason');
 							that.dialogVisible = false;
 						})
@@ -482,7 +518,6 @@ export default {
 							console.error('提交订单失败:', error);
 						});
 				} else {
-					console.log('error submit!!');
 					this.$message.error('请检查表单必填项!');
 					return false;
 				}
@@ -598,11 +633,6 @@ export default {
 		},
 		toggleEditDetails(editState) {
 			this.isEditingDetails = editState;
-			// 将所有行的编辑状态设置为全局状态
-			this.orderdetailList.forEach(item => {
-				item.isEditing = editState;
-			});
-
 			if (!editState) {
 				this.$message.success('所有订单详情已保存，当前状态下不可编辑');
 			} else {
@@ -785,7 +815,7 @@ export default {
 						<el-button size="mini" type="danger" @click="handleDeleteOrderdetail" :disabled="!isEditingDetails || checkedOrderdetail.length === 0">删除</el-button>
 					</el-col>
 					<el-col :span="1.5">
-						<el-button size="mini" type="warning" @click="toggleEditDetails(true)" :disabled="isEditingDetails">批量编辑</el-button>
+						<el-button size="mini" type="warning" @click="toggleEditDetails(true)" :disabled="isEditingDetails">编辑子项</el-button>
 					</el-col>
 					<el-col :span="1.5">
 						<el-button size="mini" type="success" @click="toggleEditDetails(false)" :disabled="!isEditingDetails">批量保存</el-button>

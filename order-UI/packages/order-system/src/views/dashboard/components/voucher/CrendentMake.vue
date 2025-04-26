@@ -126,6 +126,7 @@ import SubjectOption from '../../../../components/SubjectOption.vue';
 import { mapGetters } from 'vuex';
 import { fix, numToChineseUppercase } from '../../../../api/tool/format';
 import { addVoucherBatch } from '../../../../api/system/voucher';
+import { parseTime } from '@/utils/ruoyi';
 
 export default {
 	name: 'CrendentMake',
@@ -142,7 +143,7 @@ export default {
 		return {
 			voucher: {
 				voucherNo: '1001',
-				vDate: new Date(),
+				vDate: parseTime(new Date()),
 				makeUser: ''
 			},
 			list: [{}],
