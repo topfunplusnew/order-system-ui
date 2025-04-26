@@ -253,7 +253,7 @@
 		</el-form>
 		<div slot="footer" class="dialog-footer" style="text-align: center">
 			<el-tooltip class="item" effect="dark" content="提交信息至服务器" placement="top-start">
-				<el-button type="primary" @click="submitForm" v-if="!isOtherButtonDisabled">提交申请</el-button>
+				<el-button type="primary" @click="submitForm" v-if="!isOtherButtonDisabled">提交到申请列表</el-button>
 			</el-tooltip>
 			<el-tooltip class="item" effect="dark" content="可以将填写的信息暂存下来,但不提交,下次打开可继续填写" placement="top-start">
 				<el-button @click="close" v-if="!isOtherButtonDisabled">关闭并暂存</el-button>

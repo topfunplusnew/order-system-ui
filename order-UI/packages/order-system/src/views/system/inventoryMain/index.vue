@@ -634,6 +634,7 @@ import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import INVENTORY from '@/components/NeedToShow/INVENTORY.vue';
 import { parseTime } from '@/utils/ruoyi';
+import { updateInventoryRowCalculations } from './inventoryCalculations'; // 导入新的计算函数
 
 export default {
 	name: 'InventoryMain',
@@ -888,16 +889,12 @@ export default {
 		handleCommitUpload(val) {
 			this.form.receiveProof = val;
 		},
-		handlePiecesChange(value) {
-			console.log(`value`, value);
+		handlePiecesChange(scope) {
+			// 将出厂片数的值赋给实际片数
+			scope.row.stockNumber = scope.row.pieces;
+			// 触发重新计算
+			this.recalculateAll(scope);
 		},
-		// handleNodeClick(data) {
-		// 	this.loading = true;
-		// 	listInventoryMain({ storeHouseName: data.label }).then(res => {
-		// 		this.inventoryMainList = res.rows;
-		// 		this.loading = false;
-		// 	});
-		// },
 		handleCheck(row) {
 			this.$confirm({
 				title: '提示',
@@ -989,84 +986,42 @@ export default {
 			scope.row.length = val.length;
 			scope.row.width = val.width;
 			scope.row.levelNo = val.levelNo;
+
+			// 填充后重新计算
+			this.recalculateAll(scope);
 		},
-		// BEGIN
-		// 重新计算库存金额
+		// 使用抽离出的计算函数的工具方法
+		recalculateAll(scope) {
+			updateInventoryRowCalculations(scope.row, this.isSea, this.isLand);
+		},
+		// 重新计算库存金额 - 现在调用核心计算函数
 		recalculateSale(scope) {
-			this.calculatePayment(scope);
+			this.recalculateAll(scope);
 		},
 		recalculateFactory(scope) {
-			this.calculatePaymentFactory(scope);
+			this.recalculateAll(scope);
 		},
 		calculatePacks(scope) {
-			// const res = scope.row.packs * scope.row.piecesPerPack;
-			// scope.row.actualPieces = scope.row.pieces = res;
-			// 计算吨位
-			scope.row.tonnage = fix(((Number(scope.row.height) - Number(scope.row.erro)) * scope.row.length * scope.row.width * scope.row.pieces) / 1000000 / 20 / 20);
-			if (scope.row.paymentFactory > 0) {
-				this.calculatePaymentFactory(scope);
-			}
+			// 触发全部重新计算
+			this.recalculateAll(scope);
 		},
-		calculatePaymentFactory(scope) {
-			if (scope.row.isIncludeTaxFactory === 0) {
-				scope.row.paymentFactory = fix(((scope.row.length * scope.row.width * scope.row.pieces) / 1000000) * scope.row.price + Number(scope.row.sundryCost));
-			} else {
-				scope.row.paymentFactory = fix((scope.row.length * scope.row.width * scope.row.pieces * scope.row.price) / 1000000 + Number(scope.row.sundryCost));
-			}
+		// 以下计算方法移除，直接使用 recalculateAll
+		calculatePaymentFactory: function () {
+			this.recalculateAll.apply(this, arguments);
 		},
-		calculatePrice(scope) {
-			// 计算出厂货款
-			this.calculatePaymentFactory(scope);
-			// 计算利润
-			scope.row.profit = fix(scope.row.payments - scope.row.paymentFactory - scope.row.landFreight - scope.row.seaFreight);
-
-			// 计算不含税利润
-			function calculateProfitNoTax() {
-				if (scope.row.isIncludeTaxFactory === 0 && scope.row.isIncludeTaxSale === 0) {
-					return fix(scope.row.payments - scope.row.paymentFactory - scope.row.landFreight - scope.row.seaFreight - scope.row.otherCost);
-				} else if (scope.row.isIncludeTaxFactory === 1 && scope.row.isIncludeTaxSale === 0) {
-					return fix(scope.row.payments - scope.row.paymentFactory / 1.075 - scope.row.landFreight - scope.row.seaFreight - scope.row.otherCost);
-				} else if (scope.row.isIncludeTaxFactory === 0 && scope.row.isIncludeTaxSale === 1) {
-					return fix(scope.row.payments / 1.075 - scope.row.paymentFactory - scope.row.landFreight - scope.row.seaFreight - scope.row.otherCost);
-				} else {
-					return fix(
-						scope.row.payments -
-							scope.row.paymentFactory -
-							(scope.row.landFreight + scope.row.seaFreight) * 1.075 -
-							(((scope.row.height * scope.row.length * scope.row.width * scope.row.pieces) / 1000000 / 20) * 0.5 - scope.row.otherCost)
-					);
-				}
-			}
-
-			scope.row.profitNoTax = calculateProfitNoTax();
+		calculatePrice: function () {
+			this.recalculateAll.apply(this, arguments);
 		},
-		calculatePayment(scope) {
-			function calcu() {
-				if (scope.row.isIncludeTaxFactory === 0 && scope.row.isIncludeTaxSale === 0) {
-					scope.row.payments = fix(((scope.row.length * scope.row.width * scope.row.pieces) / 1000000) * scope.row.paymentUnload + Number(scope.row.paymentsWithSundry));
-				} else {
-					scope.row.payments = fix((scope.row.length * scope.row.width * scope.row.pieces * scope.row.paymentUnload) / 1000000 + Number(scope.row.paymentsWithSundry));
-				}
-			}
-
-			if (scope.row.payments > 0) {
-				calcu();
-				this.calculatePrice(scope);
-			} else {
-				calcu();
-			}
+		calculatePayment: function () {
+			this.recalculateAll.apply(this, arguments);
 		},
-		calculateLandFreight(scope) {
-			scope.row.landFreight = fix(Number(scope.row.tonnage) * Number(scope.row.landFreightPrice) + Number(scope.row.additionalFees));
-			this.calculateFreight(scope);
+		calculateLandFreight: function () {
+			this.recalculateAll.apply(this, arguments);
 		},
-		calculateFreight(scope) {
-			scope.row.freight = fix(Number(scope.row.landFreight) + (this.isSea ? Number(scope.row.seaFreight) : 0));
-
-			this.calculatePrice(scope);
+		calculateFreight: function () {
+			this.recalculateAll.apply(this, arguments);
 		},
 
-		// END
 		handleCommitBackFleet(val) {
 			this.form.fleet = val.fname;
 			// 手动触发 fleet 字段的校验
