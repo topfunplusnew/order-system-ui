@@ -285,6 +285,7 @@ export default {
 								return item.operateDate.match(/^(\d{4}-\d{2}-\d{2})/)[1];
 							});
 							let dayData, itemTotalBorrower, itemTotalLender;
+							let map = {};
 							for (let date in sourceData) {
 								dayData = _.cloneDeep(sourceData[date]);
 								[itemTotalLender, itemTotalBorrower] = calculateLenderAndBorrower(dayData);
