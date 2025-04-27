@@ -5,7 +5,7 @@ import { listCompany } from '../../../../api/system/company';
 import { listFleet } from '../../../../api/system/fleet';
 import { listDetail } from '../../../../api/system/detail';
 import { listExitInventory } from '../../../../api/system/inventoryMain';
-import { addGoodsOrder, getGoodsOrder, updateGoodsOrder } from '../../../../api/system/goodsOrder';
+import { addGoodsOrder, auditGoodsOrder, getGoodsOrder, updateGoodsOrder } from '../../../../api/system/goodsOrder';
 import { listInventory } from '../../../../api/system/inventory';
 import { listProductLevel } from '../../../../api/system/productLevel';
 import { excludeParams } from '../../../../api/tool/exclude';
@@ -250,7 +250,7 @@ export default {
 		},
 
 		// 修改保存行逻辑，保存row的引用以便后续使用
-		handleRowSave(row) {
+		handleRowSave(row, resolve = null, reject = null) {
 			// 统一处理输入，确保 rows 是数组
 			const rows = Array.isArray(row) ? row : [row];
 			// 处理每一行，关闭编辑状态并更新计算
@@ -270,14 +270,13 @@ export default {
 			if (this.isEditingOrder.id) {
 				newOrderInfo.id = this.isEditingOrder.id;
 			}
-			this.addOrUpdateOrderDetail(newOrderInfo, rows);
+			this.addOrUpdateOrderDetail(newOrderInfo, rows, resolve, reject);
 		},
 		// 优化添加或者修改订单函数，添加错误处理
-		addOrUpdateOrderDetail(newOrderInfo, rows) {
+		addOrUpdateOrderDetail(newOrderInfo, rows, resolve = null, reject = null) {
 			// 保存row的引用，避免在Promise链中丢失
 			const currentRows = rows;
-			// 判断是否为编辑订单
-			if (this.isEditingOrder.state) {
+			if (this.isEditingOrder.id) {
 				updateGoodsOrder(newOrderInfo)
 					.then(res => {
 						// 成功后清除可能的错误标记
@@ -287,6 +286,7 @@ export default {
 							}
 						});
 						this.$message.success('该行订单详情信息已修改并保存!');
+						resolve && resolve();
 					})
 					.catch(error => {
 						currentRows.forEach(row => {
@@ -296,6 +296,7 @@ export default {
 						});
 						this.$message.error('保存失败，请重新编辑: ' + (error.message || '未知错误'));
 						this.isEditingDetails = true;
+						reject && reject();
 					});
 			} else {
 				addGoodsOrder(newOrderInfo)
@@ -306,18 +307,23 @@ export default {
 								this.$set(row, 'hasError', false);
 							}
 						});
-						this.$message.success('该行订单详情信息已添加并保存!');
-						// 设置当前正在编辑的订单是哪条订单
-						this.setIsEditingOrder(_.cloneDeep(res.data), true);
+						const orderInfo = _.cloneDeep(res.data);
+						this.$nextTick(() => {
+							Object.assign(this.orderInfo, orderInfo);
+							this.$message.success('该行订单详情信息已添加并保存!');
+							// 设置当前正在编辑的订单是哪条订单
+							this.setIsEditingOrder(_.cloneDeep(res.data), true);
+							resolve && resolve();
+						});
 					})
 					.catch(error => {
 						currentRows.forEach(row => {
-							// 使用Vue的响应式方法确保UI更新
 							this.$set(row, 'isEditing', true);
-							this.$set(row, 'hasError', true); // 添加错误标记
+							this.$set(row, 'hasError', true);
 						});
 						this.$message.error('保存失败，请重新编辑: ' + (error.message || '未知错误'));
 						this.isEditingDetails = true;
+						reject && reject();
 					});
 			}
 		},
@@ -328,16 +334,10 @@ export default {
 			this.isEditingOrder.state = flag;
 			this.isEditingOrder.currentEditingOrderInfo = response;
 		},
-		// 清除编辑订单相关信息
-		clearOrderInfo() {
-			this.isEditingOrder = {
-				id: '',
-				state: false,
-				currentEditingOrderInfo: {}
-			};
-		},
 		handleAddOrderdetail() {
 			let obj = {
+				// 添加唯一索引
+				index: this.orderdetailList.length + 1,
 				orderDate: parseTime(new Date()),
 				supplier: '',
 				supplierID: '',
@@ -414,13 +414,11 @@ export default {
 			} else {
 				const orderdetails = this.orderdetailList;
 				const checkedOrderdetails = this.checkedOrderdetail;
+				console.log(`checked:`, orderdetails, checkedOrderdetails);
 				this.orderdetailList = orderdetails.filter(function (item) {
 					return checkedOrderdetails.indexOf(item.index) === -1;
 				});
 			}
-		},
-		rowOrderdetailIndex({ row, rowIndex }) {
-			row.index = rowIndex + 1;
 		},
 		getSummary(param) {
 			const { columns, data } = param;
@@ -455,7 +453,9 @@ export default {
 			return sums;
 		},
 		handleOrderdetailSelectionChange(selection) {
+			console.log(selection);
 			this.checkedOrderdetail = selection.map(item => item.index);
+			console.log(`selection index`, this.checkedOrderdetail);
 		},
 		handleUpdateQueryNameStore(value) {
 			this.queryStore = value;
@@ -513,6 +513,30 @@ export default {
 			});
 			return _.cloneDeep(detailList).map(item => Object.assign(item, formatOrderItem()));
 		},
+		submitOrder(resolve, reject) {
+			this.orderdetailList = this.fillOrderDetailInfo();
+			this.orderInfo.orderDetailList = _.cloneDeep(this.orderdetailList);
+			this.orderInfo = excludeParams(this.orderInfo, this.$exclude);
+			const json = _.cloneDeep(this.orderInfo);
+			if (!this.isEditingOrder.id) {
+				addGoodsOrder(json).then(resolve).catch(reject);
+			} else {
+				json.remark = sessionStorage.getItem('order-edit-reason');
+				updateGoodsOrder(json).then(resolve).catch(reject);
+			}
+		},
+		reset(that) {
+			// 清除订单状态
+			this.resetOrderInfo();
+			// 清除陆运和海运的状态
+			this.isSea = false;
+			this.isLand = false;
+			const message = this.orderId ? '修改成功' : '添加成功';
+			this.$message.success(message);
+			sessionStorage.removeItem('order-edit-reason');
+			this.setIsEditingOrder(null, false);
+			that.dialogVisible = false;
+		},
 		// 弹窗点击确定
 		handleProcess(that) {
 			this.$refs.orderForm.validate(valid => {
@@ -523,37 +547,27 @@ export default {
 					}
 					// 检查是否有没有保存的项
 					if (this.orderdetailList.some(item => item.isEditing)) {
-						this.$message.error('当前订单信息中有未保存的项,请检查后再提交!');
-						return;
-					}
-					new Promise((resolve, reject) => {
-						// 填充订单详情信息
-						this.orderdetailList = this.fillOrderDetailInfo();
-						this.orderInfo.orderDetailList = _.cloneDeep(this.orderdetailList);
-						this.orderInfo = excludeParams(this.orderInfo, this.$exclude);
-						const json = _.cloneDeep(this.orderInfo);
-						if (!this.isEditingOrder.id) {
-							addGoodsOrder(json).then(resolve).catch(reject);
-						} else {
-							json.id = this.isEditingOrder.id;
-							json.remark = sessionStorage.getItem('order-edit-reason');
-							updateGoodsOrder(json).then(resolve).catch(reject);
-						}
-					})
-						.then(() => {
-							// 清除订单状态
-							this.resetOrderInfo();
-							// 清除陆运和海运的状态
-							this.isSea = false;
-							this.isLand = false;
-							const message = this.orderId ? '修改成功' : '添加成功';
-							this.$message.success(message);
-							sessionStorage.removeItem('order-edit-reason');
-							that.dialogVisible = false;
-						})
-						.catch(error => {
-							this.$message.error('提交订单失败:' + error);
+						this.$antdconfirm({
+							title: '当前订单信息中有未保存的项,是否保存并提交?',
+							okText: '是',
+							cancelText: '否',
+							zIndex: 2660,
+							onOk: () => {
+								new Promise((resolve, reject) => {
+									this.handleRowSave(this.orderdetailList, resolve, reject);
+								}).then(() => {
+									this.reset(that);
+								});
+							}
 						});
+					} else {
+						new Promise((resolve, reject) => {
+							// 填充订单详情信息
+							this.submitOrder(resolve, reject);
+						}).then(() => {
+							this.reset(that);
+						});
+					}
 				} else {
 					this.$message.error('请检查表单必填项!');
 					return false;
