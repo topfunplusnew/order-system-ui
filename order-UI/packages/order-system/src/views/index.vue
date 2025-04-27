@@ -323,13 +323,15 @@ export default {
 			fileListVisible: false,
 			fileListLoading: false, // 添加文件列表加载状态
 			fileList: [], // 修改为空数组，由接口获取
-			fileListQuery: {
-				pageNum: 1,
-				pageSize: 10
-			},
 			fileSearchForm: {
 				startTime: formatDateTime(weekAgo),
-				endTime: formatDateTime(today)
+				endTime: formatDateTime(
+					(() => {
+						const tomorrow = new Date();
+						tomorrow.setDate(tomorrow.getDate() + 1);
+						return tomorrow;
+					})()
+				)
 			},
 			tourSteps: [
 				{
@@ -601,7 +603,7 @@ export default {
 		async getFileList() {
 			this.fileListLoading = true;
 			try {
-				const res = await getAllExportList(this.fileListQuery);
+				const res = await getAllExportList(this.fileSearchForm);
 				if (res.code === 200) {
 					this.fileList = res.data;
 				}
