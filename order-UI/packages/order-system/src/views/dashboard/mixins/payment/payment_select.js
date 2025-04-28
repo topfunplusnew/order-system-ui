@@ -22,6 +22,10 @@ export var mixin_payment_select = {
 				{
 					value: '对外付款',
 					label: '对外付款'
+				},
+				{
+					value: '支付费用',
+					label: '支付费用'
 				}
 			],
 			value: '客户'

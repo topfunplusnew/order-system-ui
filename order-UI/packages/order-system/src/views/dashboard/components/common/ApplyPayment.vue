@@ -329,7 +329,8 @@ export default {
 				{ value: '供应商', label: '供应商' },
 				{ value: '司机', label: '司机' },
 				{ value: '员工', label: '员工' },
-				{ value: '对外付款', label: '对外付款' }
+				{ value: '对外付款', label: '对外付款' },
+				{ value: '支付费用', label: '支付费用' }
 			],
 			value: '', // 对方类型
 			queryOther: '', // 其他搜索参数
