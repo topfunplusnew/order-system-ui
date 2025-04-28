@@ -51,7 +51,7 @@ function calculateLandFreight(row) {
  */
 function calculateTotalFreight(row, isSea) {
 	// 总运费 = 陆运费 + 海运费(如果有)
-	row.freight = fix(Number(row.landFreight) + (isSea ? Number(row.seaFreight) : 0));
+	row.freight = fix(Number(row.landFreight) + (isSea ? Number(row.seaFreight) : 0)) + Number(row.additionalFees);
 }
 
 /**

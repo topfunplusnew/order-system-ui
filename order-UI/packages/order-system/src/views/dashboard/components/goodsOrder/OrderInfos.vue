@@ -46,9 +46,9 @@ export default {
 			<el-descriptions-item label="审核状态">
 				{{ formatValue(orderInfo.checkState) }}
 			</el-descriptions-item>
-			<el-descriptions-item label="打款状态">
-				{{ formatValue(orderInfo.paymentState) }}
-			</el-descriptions-item>
+			<!--			<el-descriptions-item label="打款状态">-->
+			<!--				{{ formatValue(orderInfo.paymentState) }}-->
+			<!--			</el-descriptions-item>-->
 			<el-descriptions-item label="开票状态">
 				{{ formatValue(orderInfo.invoiceState) }}
 			</el-descriptions-item>

@@ -593,6 +593,7 @@ export default {
 					</template>
 					<a-anchor>
 						<a-list item-layout="horizontal" :data-source="alreadyApplyList" :pagination="pagination">
+							<!--  eslint-disable-next-line-->
 							<a-list-item slot="renderItem" slot-scope="item, index">
 								<a slot="actions" @click="reApply(item, true)">修改填写</a>
 								<a slot="actions" @click="handleCheck(item)">查看详情</a>

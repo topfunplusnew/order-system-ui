@@ -154,9 +154,9 @@
 				<el-descriptions-item label="海运公司">
 					{{ orderDetailInfo.seaDriverName || '-' }}
 				</el-descriptions-item>
-				<el-descriptions-item label="打款状态">
-					{{ orderDetailInfo.PaymentState || '-' }}
-				</el-descriptions-item>
+				<!--				<el-descriptions-item label="打款状态">-->
+				<!--					{{ orderDetailInfo.PaymentState || '-' }}-->
+				<!--				</el-descriptions-item>-->
 				<el-descriptions-item label="陆运银行户名">
 					{{ orderDetailInfo.landBankName || '-' }}
 				</el-descriptions-item>

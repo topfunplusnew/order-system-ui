@@ -146,13 +146,13 @@
 									<el-table-column show-overflow-tooltip label="车队" align="center" prop="fleet" />
 									<el-table-column show-overflow-tooltip label="审核状态" align="center" prop="checkState" width="120" />
 									<el-table-column show-overflow-tooltip label="开票状态" align="center" prop="invoiceState" width="120px" />
-									<el-table-column show-overflow-tooltip label="打款状态" align="center" prop="paymentState">
-										<template slot-scope="scope">
-											<el-tag disable-transitions>
-												{{ scope.row.paymentState }}
-											</el-tag>
-										</template>
-									</el-table-column>
+									<!--									<el-table-column show-overflow-tooltip label="打款状态" align="center" prop="paymentState">-->
+									<!--										<template slot-scope="scope">-->
+									<!--											<el-tag disable-transitions>-->
+									<!--												{{ scope.row.paymentState }}-->
+									<!--											</el-tag>-->
+									<!--										</template>-->
+									<!--									</el-table-column>-->
 									<el-table-column show-overflow-tooltip label="备注" align="center" prop="comments" />
 								</template>
 							</SearchOption>

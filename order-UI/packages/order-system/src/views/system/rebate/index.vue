@@ -353,7 +353,7 @@
 				<el-table-column show-overflow-tooltip label="车队" align="center" prop="fleet" />
 				<el-table-column show-overflow-tooltip label="审核状态" align="center" prop="checkState" width="120"></el-table-column>
 				<el-table-column show-overflow-tooltip label="开票状态" align="center" prop="invoiceState" width="120px"></el-table-column>
-				<el-table-column show-overflow-tooltip label="打款状态" align="center" prop="paymentState" width="120px"></el-table-column>
+				<!--				<el-table-column show-overflow-tooltip label="打款状态" align="center" prop="paymentState" width="120px"></el-table-column>-->
 				<el-table-column show-overflow-tooltip label="备注" align="center" prop="comments" />
 			</el-table>
 			<pagination v-show="orderTotal > 0" :total="orderTotal" :page.sync="queryOrderParams.pageNum" :limit.sync="queryOrderParams.pageSize" @pagination="selectOrderItem" />
