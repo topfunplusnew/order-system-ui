@@ -10,7 +10,7 @@ export default {
 	props: {
 		orderInfo: {
 			type: Object,
-			default: function () { }
+			default: function () {}
 		}
 	},
 	data() {
@@ -44,7 +44,6 @@ export default {
 		getCustomerSubjectDetailSomeDay(query).then(res => {
 			this.moneyAmount = res.data.moneyAmount;
 			console.log(res);
-
 		});
 	},
 	mounted() {

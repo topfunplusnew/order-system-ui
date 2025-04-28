@@ -285,6 +285,7 @@ export default {
 					}
 					try {
 						let nowMoney = Number(0);
+						let currentBalance = Number(lastYearDetail.moneyAmount || 0);
 						let sourceData = _.cloneDeep(res.data);
 						sourceData = _.groupBy(sourceData, item => {
 							return item.operateDate.match(/^(\d{4}-\d{2}-\d{2})/)[1];

@@ -122,7 +122,7 @@ export default {
 			tableData: [],
 			companyName: null,
 			rules: {
-				endTime: [{ required: true, message: '请选择时间', trigger: 'blur' }],
+				endTime: [{ required: true, message: '请选择时间', trigger: 'blur' }]
 			}
 		};
 	},

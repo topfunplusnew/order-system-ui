@@ -9,12 +9,10 @@
 		<hr color="#e6e6e6" />
 		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
 			<el-form-item label="开始时间" prop="beginTime">
-				<el-date-picker v-model="queryParams.params.beginTime" type="date" placeholder="请选择开始时间"
-					value-format="yyyy-MM-dd"></el-date-picker>
+				<el-date-picker v-model="queryParams.params.beginTime" type="date" placeholder="请选择开始时间" value-format="yyyy-MM-dd"></el-date-picker>
 			</el-form-item>
 			<el-form-item label="结束时间" prop="endTime">
-				<el-date-picker v-model="queryParams.params.endTime" type="date" placeholder="请选择结束时间"
-					value-format="yyyy-MM-dd"></el-date-picker>
+				<el-date-picker v-model="queryParams.params.endTime" type="date" placeholder="请选择结束时间" value-format="yyyy-MM-dd"></el-date-picker>
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -36,62 +34,68 @@
 				<!--        导出-->
 				<template #export>
 					<el-col :span="1.5">
-						<el-button v-hasPermi="['system:company:export']" plain icon="el-icon-folder-opened" size="mini"
-							@click="handleExport"></el-button>
+						<el-button v-hasPermi="['system:company:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
 					</el-col>
 				</template>
 			</right-toolbar>
 		</el-row>
 
 		<!--    数据表格 主要是借出款记录-->
-		<el-table id="printBox" v-loading="loading" v-horizontal-scroll="'always'" border :data="lendMoneyList"
-			size="mini" :cell-style="() => {
+		<el-table
+			id="printBox"
+			v-loading="loading"
+			v-horizontal-scroll="'always'"
+			border
+			:data="lendMoneyList"
+			size="mini"
+			:cell-style="
+				() => {
 					return { padding: '1.5px' };
 				}
-				">
+			"
+		>
 			<el-table-column v-if="columns[0].visible" label="借款人" align="center" prop="target" width="110" />
 			<el-table-column v-if="columns[1].visible" label="对象类型" align="center" prop="targetType" width="110" />
 			<el-table-column v-if="columns[2].visible" label="借入金额" align="center" prop="moneyAmount" width="110" />
 			<el-table-column v-if="columns[3].visible" label="对方收借款账号" align="center" prop="targetBankNo" width="160" />
-			<el-table-column v-if="columns[4].visible" label="对方户名" align="center" prop="targetAcountsName"
-				width="160" />
+			<el-table-column v-if="columns[4].visible" label="对方户名" align="center" prop="targetAcountsName" width="160" />
 			<el-table-column v-if="columns[5].visible" label="对方开户行" align="center" prop="targetBankName" width="160" />
-			<el-table-column v-if="columns[6].visible" label="我方支付借款账户名称" align="center" prop="selfAcountsName"
-				width="140" />
-			<el-table-column v-if="columns[7].visible" label="我方支付借款开户行" align="center" prop="selfBankName"
-				width="160" />
+			<el-table-column v-if="columns[6].visible" label="我方支付借款账户名称" align="center" prop="selfAcountsName" width="140" />
+			<el-table-column v-if="columns[7].visible" label="我方支付借款开户行" align="center" prop="selfBankName" width="160" />
 			<el-table-column v-if="columns[8].visible" label="我方付款账号" align="center" prop="selfBankNo" width="160" />
-			<el-table-column v-if="columns[9].visible" label="支付员工/外面公司在我公司借款时间" align="center" prop="futuresDate"
-				width="160" />
+			<el-table-column v-if="columns[9].visible" label="支付员工/外面公司在我公司借款时间" align="center" prop="futuresDate" width="160" />
 			<el-table-column v-if="columns[10].visible" label="借款事由" align="center" prop="reason" width="160" />
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="240" fixed="right">
 				<template slot-scope="scope">
 					<el-button size="mini" type="text" @click="checkDetail(scope.row)">查看历史收回</el-button>
-					<el-button v-if="scope.row.checkState === '未申请'" size="mini" type="text"
-						@click="applyForPayment(scope.row)">申请付款</el-button>
+					<el-button v-if="scope.row.checkState === '未申请'" size="mini" type="text" @click="applyForPayment(scope.row)">申请付款</el-button>
 					<el-button v-if="scope.row.checkState === '审核中'" size="mini" type="warning" disabled>审核中</el-button>
-					<el-button v-hasPermi="['system:lendmoney:remove']" size="mini" type="text"
-						@click="handleGetBackMoney(scope.row)">收回资金</el-button>
-					<el-button v-hasPermi="['system:lendmoney:edit']" size="mini" type="primary"
-						@click="handleUpdate(scope.row)">修改</el-button>
-					<el-button v-hasPermi="['system:lendmoney:remove']" size="mini" type="danger"
-						@click="handleDelete(scope.row)">删除</el-button>
+					<el-button v-hasPermi="['system:lendmoney:remove']" size="mini" type="text" @click="handleGetBackMoney(scope.row)">收回资金</el-button>
+					<el-button v-hasPermi="['system:lendmoney:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
+					<el-button v-hasPermi="['system:lendmoney:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
 
 		<!--    分页-->
 
-		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum"
-			:limit.sync="queryParams.pageSize" @pagination="getList" />
+		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!--    查看历史收回-->
 		<InfoDialog title="历史还款记录" :visible.sync="dialogHistoryVisible" :width="'620px'">
 			<template #info>
-				<el-table v-if="recoverMoneyList.length !== 0" :data="recoverMoneyList" size="mini" :cell-style="() => {
-						return { padding: '2px' };
-					}
-					" border :span-method="mergeCells">
+				<el-table
+					v-if="recoverMoneyList.length !== 0"
+					:data="recoverMoneyList"
+					size="mini"
+					:cell-style="
+						() => {
+							return { padding: '2px' };
+						}
+					"
+					border
+					:span-method="mergeCells"
+				>
 					<el-table-column prop="" width="180">
 						<template #default="scope">
 							<span v-if="scope.$index === 0">借出资金收回</span>
@@ -100,32 +104,25 @@
 					<el-table-column prop="recoverDate" label="时间" width="180"></el-table-column>
 					<el-table-column prop="moneyAmount" label="收回金额"></el-table-column>
 					<!--          操作列-->
-					<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="240"
-						fixed="right">
+					<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="240" fixed="right">
 						<template slot-scope="scope">
-							<el-button size="mini" type="primary" @click="handleUpdateRecoverMoney(scope.row)"
-								v-hasPermi="['system:recovermoney:edit']">修改</el-button>
-							<el-button v-hasPermi="['system:recovermoney:remove']" size="mini" type="danger"
-								@click="handleDeleteRecoverMoney(scope.row)">删除</el-button>
+							<el-button size="mini" type="primary" @click="handleUpdateRecoverMoney(scope.row)" v-hasPermi="['system:recovermoney:edit']">修改</el-button>
+							<el-button v-hasPermi="['system:recovermoney:remove']" size="mini" type="danger" @click="handleDeleteRecoverMoney(scope.row)">删除</el-button>
 						</template>
 					</el-table-column>
 				</el-table>
-				<pagination v-show="detailTotal > 0" :total="detailTotal" :page.sync="queryRepaymentParams.pageNum"
-					:limit.sync="queryRepaymentParams.pageSize" @pagination="getRepaymentMoneyList" />
+				<pagination v-show="detailTotal > 0" :total="detailTotal" :page.sync="queryRepaymentParams.pageNum" :limit.sync="queryRepaymentParams.pageSize" @pagination="getRepaymentMoneyList" />
 			</template>
 		</InfoDialog>
 
 		<!--    导出弹窗-->
-		<el-dialog :close-on-click-modal="false" :show-close="false" title="请选择导出时间段" :visible.sync="dialogVisible"
-			width="30%">
+		<el-dialog :close-on-click-modal="false" :show-close="false" title="请选择导出时间段" :visible.sync="dialogVisible" width="30%">
 			<el-form ref="queryForm" :model="queryParams" size="mini" label-width="68px">
 				<el-form-item label="开始时间" prop="beginTime">
-					<el-date-picker v-model="queryParams.beginTime" type="date" placeholder="选择时间"
-						value-format="yyyy-MM-dd" size="mini"></el-date-picker>
+					<el-date-picker v-model="queryParams.beginTime" type="date" placeholder="选择时间" value-format="yyyy-MM-dd" size="mini"></el-date-picker>
 				</el-form-item>
 				<el-form-item label="结束时间" prop="endTime">
-					<el-date-picker v-model="queryParams.endTime" type="date" placeholder="选择时间"
-						value-format="yyyy-MM-dd" size="mini"></el-date-picker>
+					<el-date-picker v-model="queryParams.endTime" type="date" placeholder="选择时间" value-format="yyyy-MM-dd" size="mini"></el-date-picker>
 				</el-form-item>
 			</el-form>
 			<span slot="footer" class="dialog-footer">
@@ -135,8 +132,7 @@
 		</el-dialog>
 
 		<!--    收回资金的弹窗-->
-		<el-dialog :close-on-click-modal="false" :show-close="false" title="收回资金操作" :visible.sync="giveRecoverMoneyShow"
-			width="40%" append-to-body>
+		<el-dialog :close-on-click-modal="false" :show-close="false" title="收回资金操作" :visible.sync="giveRecoverMoneyShow" width="40%" append-to-body>
 			<el-row>
 				<el-form :model="recoverMoneyEntity" label-width="120" :rules="receiveRules">
 					<el-form-item label="收回账户" prop="acountsName">
@@ -145,10 +141,16 @@
 								<el-input v-model="recoverMoneyEntity.acountsName" placeholder="请输入收回账户" />
 							</el-col>
 							<el-col :span="4">
-								<SearchOption :get-data="listBankAccount" icon="el-icon-search"
-									:limit-info="{ acountsType: '己方公司' }" query-label="户名查找" query-info="acountsName"
-									:query-name="queryBank" @commitBack="handleCommitBackBankAcountForm"
-									@update:queryName="handleUpdateQueryBankAcountForm">
+								<SearchOption
+									:get-data="listBankAccount"
+									icon="el-icon-search"
+									:limit-info="{ acountsType: '己方公司' }"
+									query-label="户名查找"
+									query-info="acountsName"
+									:query-name="queryBank"
+									@commitBack="handleCommitBackBankAcountForm"
+									@update:queryName="handleUpdateQueryBankAcountForm"
+								>
 									<template #table-columns>
 										<el-table-column label="账户类型" align="center" prop="acountsType" />
 										<el-table-column label="显示名称" align="center" prop="displayName" />
@@ -167,8 +169,7 @@
 						<el-input v-model="recoverMoneyEntity.moneyAmount" placeholder="请输入收回金额" />
 					</el-form-item>
 					<el-form-item label="收回日期" prop="payDate">
-						<el-date-picker v-model="recoverMoneyEntity.recoverDate" type="datetime" placeholder="请选择收回日期"
-							value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+						<el-date-picker v-model="recoverMoneyEntity.recoverDate" type="datetime" placeholder="请选择收回日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 					</el-form-item>
 					<el-form-item label="备注信息" prop="comments">
 						<el-input v-model="recoverMoneyEntity.comments" placeholder="请输入备注信息" />
@@ -182,22 +183,18 @@
 		</el-dialog>
 
 		<!--    付款申请-->
-		<el-dialog :close-on-click-modal="false" :show-close="false" title="付款申请" :visible.sync="applyDialogVisible"
-			width="45%">
+		<el-dialog :close-on-click-modal="false" :show-close="false" title="付款申请" :visible.sync="applyDialogVisible" width="45%">
 			<keep-alive>
-				<ApplyPayment :table-name="TableName.LEND_MONEY" :t-i-d="tid" :need-money="needMoney"
-					:need-info="needInfo" @changeOpen="changeOpen" />
+				<ApplyPayment :table-name="TableName.LEND_MONEY" :t-i-d="tid" :need-money="needMoney" :need-info="needInfo" @changeOpen="changeOpen" />
 			</keep-alive>
 		</el-dialog>
 
-		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="1000px"
-			append-to-body>
+		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="1000px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="160px">
 				<el-row>
 					<el-col :span="12">
 						<el-form-item label="支付时间" prop="futuresDate">
-							<el-date-picker v-model="form.futuresDate" type="datetime" placeholder="请选择支付时间"
-								value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+							<el-date-picker v-model="form.futuresDate" type="datetime" placeholder="请选择支付时间" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 						</el-form-item>
 						<el-form-item label="金额" prop="moneyAmount">
 							<el-input v-model="form.moneyAmount" placeholder="请输入保证金金额" />
@@ -211,15 +208,21 @@
 									<el-input disabled v-model="form.targetAcountsName" placeholder="请选择" />
 								</el-col>
 								<el-col :span="3">
-									<SearchOption title="对方账户" :get-data="listBankAccount" icon="el-icon-search"
+									<SearchOption
+										title="对方账户"
+										:get-data="listBankAccount"
+										icon="el-icon-search"
 										:limit-info="{
 											acountsType: form.targetType
-										}" query-label="户名查找" query-info="acountsName" :query-name="queryBank" @commitBack="handleCommitBack"
-										@update:queryName="handleUpdateQueryName">
+										}"
+										query-label="户名查找"
+										query-info="acountsName"
+										:query-name="queryBank"
+										@commitBack="handleCommitBack"
+										@update:queryName="handleUpdateQueryName"
+									>
 										<template #table-columns>
-											<el-table-column
-												:label="form.targetType === '其他' || form.targetType === '员工' ? '名称' : form.targetType"
-												align="center" prop="acountsName" />
+											<el-table-column :label="form.targetType === '其他' || form.targetType === '员工' ? '名称' : form.targetType" align="center" prop="acountsName" />
 											<el-table-column label="开户行" align="center" prop="bankName" />
 											<el-table-column label="开户名" align="center" prop="acountsName" />
 											<el-table-column label="账号" align="center" prop="bankNo" />
@@ -242,10 +245,18 @@
 									<el-input disabled v-model="form.selfAcountsName" placeholder="请选择" />
 								</el-col>
 								<el-col :span="3">
-									<SearchOption :get-data="listBankAccount" icon="el-icon-search" :limit-info="{
-										acountsType: '己方公司'
-									}" query-label="户名查找" query-info="acountsName" :query-name="queryBank" @commitBack="handleCommitBackSelf"
-										@update:queryName="handleUpdateQueryName">
+									<SearchOption
+										:get-data="listBankAccount"
+										icon="el-icon-search"
+										:limit-info="{
+											acountsType: '己方公司'
+										}"
+										query-label="户名查找"
+										query-info="acountsName"
+										:query-name="queryBank"
+										@commitBack="handleCommitBackSelf"
+										@update:queryName="handleUpdateQueryName"
+									>
 										<template #table-columns>
 											<el-table-column label="账户类型" align="center" prop="acountsType" />
 											<el-table-column label="显示名称" align="center" prop="displayName" />
@@ -279,8 +290,7 @@
 		</el-dialog>
 
 		<!--    修改记录的修改-->
-		<el-dialog :close-on-click-modal="false" :show-close="false" :title="recoverMoneyTitle"
-			:visible.sync="recoverMoneyOpen" width="500px" append-to-body>
+		<el-dialog :close-on-click-modal="false" :show-close="false" :title="recoverMoneyTitle" :visible.sync="recoverMoneyOpen" width="500px" append-to-body>
 			<el-form ref="recover_form" :model="recoverMoneyForm" :rules="recoverMoneyRules" label-width="80px">
 				<el-form-item label="收回金额" prop="moneyAmount">
 					<el-input v-model="recoverMoneyForm.moneyAmount" placeholder="请输入收回金额" />
@@ -316,7 +326,6 @@ import { excludeParams } from '@/api/tool/exclude';
 import { ReceiveType, TableName } from '@/api/tool/enums';
 import SearchOption from '@/components/SearchOption.vue';
 import ApplyPayment from '@/views/dashboard/components/common/ApplyPayment.vue';
-import BankType from '@/views/dashboard/components/common/BankType.vue';
 
 import { listBankAccount } from '@/api/system/bankAccount';
 import { mixin_reviveMoney } from '@/views/dashboard/mixins/receive';
@@ -329,7 +338,7 @@ export default {
 			return TableName;
 		}
 	},
-	components: { BankType, ApplyPayment, SearchOption, InfoDialog },
+	components: { ApplyPayment, SearchOption, InfoDialog },
 	dicts: ['order_target_type'],
 	mixins: [mixin_printHTML, mixin_reviveMoney],
 	data() {

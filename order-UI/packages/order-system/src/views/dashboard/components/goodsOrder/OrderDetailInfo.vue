@@ -141,12 +141,21 @@ export default {
 			</el-col>
 		</el-row>
 		<el-row>
-			<el-table id="printBox" border :data="orderDetailInfoList" max-height="700" :cell-style="() => {
-				return { padding: '.5px' };
-			}
-				" size="mini" show-summary :summary-method="getSummaries">
-				<el-table-column v-if="!ban" label="操作" align="center" class-name="small-padding fixed-width"
-					width="170px" fixed="left">
+			<el-table
+				id="printBox"
+				border
+				:data="orderDetailInfoList"
+				max-height="700"
+				:cell-style="
+					() => {
+						return { padding: '.5px' };
+					}
+				"
+				size="mini"
+				show-summary
+				:summary-method="getSummaries"
+			>
+				<el-table-column v-if="!ban" label="操作" align="center" class-name="small-padding fixed-width" width="170px" fixed="left">
 					<template slot-scope="scope">
 						<el-button size="mini" type="warning" @click="handleMoneyBack(scope.row)">货物返利</el-button>
 					</template>
@@ -204,12 +213,10 @@ export default {
 		</el-row>
 
 		<!--    返利回扣-->
-		<el-dialog :close-on-click-modal="false" title="添加返利信息" :visible.sync="addMoneyBackVisible" width="40%"
-			append-to-body>
+		<el-dialog :close-on-click-modal="false" title="添加返利信息" :visible.sync="addMoneyBackVisible" width="40%" append-to-body>
 			<el-form :model="moneyBackInfo" label-width="80px">
 				<el-form-item label="日期" prop="rebateDate">
-					<el-date-picker v-model="moneyBackInfo.rebateDate" type="datetime" placeholder="选择日期"
-						value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+					<el-date-picker v-model="moneyBackInfo.rebateDate" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 				</el-form-item>
 				<el-form-item label="金额" prop="rebate">
 					<el-input v-model="moneyBackInfo.rebate" placeholder="请输入金额" />
@@ -220,8 +227,7 @@ export default {
 							<el-input v-model="moneyBackInfo.supplier" placeholder="请输入供应商" />
 						</el-col>
 						<el-col :span="3">
-							<SearchOption :get-data="listCompany" :limit-info="{ companyType: '供应商' }"
-								@commitBack="handleCommitCompany">
+							<SearchOption :get-data="listCompany" :limit-info="{ companyType: '供应商' }" @commitBack="handleCommitCompany">
 								<template #table-columns>
 									<el-table-column label="公司名称" align="center" prop="companyName" />
 									<el-table-column label="老板姓名" align="center" prop="leader" />
@@ -235,8 +241,7 @@ export default {
 				</el-form-item>
 				<el-form-item label="返利方式" prop="rebateMethod">
 					<el-select v-model="moneyBackInfo.rebateMethod" default-first-option placeholder="请选择返利方式">
-						<el-option v-for="item in rebateMethods" :key="item.dictValue" :label="item.dictLabel"
-							:value="item.dictLabel"></el-option>
+						<el-option v-for="item in rebateMethods" :key="item.dictValue" :label="item.dictLabel" :value="item.dictLabel"></el-option>
 					</el-select>
 				</el-form-item>
 				<el-form-item label="返利原因" prop="rebateReason">

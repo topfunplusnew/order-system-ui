@@ -1,11 +1,9 @@
 <!-- 加油卡管理，要分开管理 分为加油卡主卡和加油卡副卡-->
 <template>
 	<div class="app-container">
-		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true"
-			label-width="120px">
+		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="120px">
 			<el-form-item label="加油卡卡号" prop="oilCardNo">
-				<el-input v-model="queryParams.oilCardNo" placeholder="请输入加油卡卡号" clearable
-					@keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.oilCardNo" placeholder="请输入加油卡卡号" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -18,8 +16,7 @@
 				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
 			</el-col>
 			<el-col :span="1.5">
-				<el-button v-hasPermi="['system:oilcard:add']" type="primary" size="mini"
-					@click="handleAdd">新增加油卡信息</el-button>
+				<el-button v-hasPermi="['system:oilcard:add']" type="primary" size="mini" @click="handleAdd">新增加油卡信息</el-button>
 			</el-col>
 			<!--      加油卡充值功能-->
 			<el-col :span="1.5">
@@ -39,8 +36,7 @@
 				<!--        导出-->
 				<template #export>
 					<el-col :span="1.5">
-						<el-button v-hasPermi="['system:oilcard:export']" plain icon="el-icon-folder-opened" size="mini"
-							@click="handleExport"></el-button>
+						<el-button v-hasPermi="['system:oilcard:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
 					</el-col>
 				</template>
 			</right-toolbar>
@@ -48,46 +44,38 @@
 		<el-row>
 			<el-tabs v-model="activeName" @tab-click="handleClick">
 				<el-tab-pane lazy label="加油卡主卡管理" name="first">
-					<el-table id="printBox" v-loading="loading" v-horizontal-scroll="'always'" size="mini" border
-						:data="mainOilCardList" @selection-change="handleSelectionChange">
+					<el-table id="printBox" v-loading="loading" v-horizontal-scroll="'always'" size="mini" border :data="mainOilCardList" @selection-change="handleSelectionChange">
 						<el-table-column v-if="columns[0].visible" label="加油卡卡号" align="center" prop="oilCardNo" />
 						<el-table-column v-if="columns[1].visible" label="当前金额" align="center" prop="moneyAmount" />
 						<el-table-column v-if="columns[2].visible" label="备注" align="center" prop="comments" />
 						<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
 							<template slot-scope="scope">
 								<el-button size="mini" type="text" @click="handleCheck(scope.row)">查看明细</el-button>
-								<el-button v-hasPermi="['system:oilcard:edit']" size="mini" type="primary"
-									@click="handleUpdate(scope.row)">编辑</el-button>
-								<el-button v-hasPermi="['system:oilcard:remove']" size="mini" type="danger"
-									@click="handleDelete(scope.row)">删除</el-button>
+								<el-button v-hasPermi="['system:oilcard:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">编辑</el-button>
+								<el-button v-hasPermi="['system:oilcard:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
 							</template>
 						</el-table-column>
 					</el-table>
 					<!--分页-->
-					<pagination v-show="MainTotal > 0" :total="MainTotal" :page.sync="queryParams.pageNum"
-						:limit.sync="queryParams.pageSize" @pagination="getList()" />
+					<pagination v-show="MainTotal > 0" :total="MainTotal" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList()" />
 					<br />
 					<!--          加个换行,不然分页下部分缺失-->
 				</el-tab-pane>
 				<el-tab-pane lazy label="加油卡副卡管理" name="second">
-					<el-table id="printBox" v-loading="loading" v-horizontal-scroll="'always'" border size="mini"
-						:data="subCardList" @selection-change="handleSelectionChange">
+					<el-table id="printBox" v-loading="loading" v-horizontal-scroll="'always'" border size="mini" :data="subCardList" @selection-change="handleSelectionChange">
 						<el-table-column v-if="columns[0].visible" label="加油卡卡号" align="center" prop="oilCardNo" />
 						<el-table-column v-if="columns[1].visible" label="可用金额" align="center" prop="moneyAmount" />
 						<el-table-column label="待圈存金额" align="center" prop="virtualMoneyAmount" />
 						<el-table-column v-if="columns[2].visible" label="备注" align="center" prop="comments" />
 						<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
 							<template slot-scope="scope">
-								<el-button v-hasPermi="['system:oilcard:edit']" size="mini" type="primary"
-									@click="handleUpdate(scope.row)">编辑</el-button>
-								<el-button v-hasPermi="['system:oilcard:remove']" size="mini" type="danger"
-									@click="handleDelete(scope.row)">删除</el-button>
+								<el-button v-hasPermi="['system:oilcard:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">编辑</el-button>
+								<el-button v-hasPermi="['system:oilcard:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
 							</template>
 						</el-table-column>
 					</el-table>
 					<!--分页-->
-					<pagination v-show="SubTotal > 0" :total="SubTotal" :page.sync="queryParams.pageNum"
-						:limit.sync="queryParams.pageSize" @pagination="getList" />
+					<pagination v-show="SubTotal > 0" :total="SubTotal" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 					<br />
 					<!--          加个换行,不然分页下部分缺失-->
 				</el-tab-pane>
@@ -95,10 +83,8 @@
 		</el-row>
 
 		<!-- 添加或修改加油卡信息对话框 -->
-		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px"
-			append-to-body>
-			<el-form ref="form" :model="form" :rules="rules" label-width="120px" @keyup.enter.native="submitForm"
-				size="mini" @submit.native.prevent="submitForm">
+		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
+			<el-form ref="form" :model="form" :rules="rules" label-width="120px" @keyup.enter.native="submitForm" size="mini" @submit.native.prevent="submitForm">
 				<el-form-item label="加油卡卡号" prop="oilCardNo">
 					<el-input v-model="form.oilCardNo" placeholder="请输入加油卡卡号" />
 				</el-form-item>
@@ -123,20 +109,25 @@
 		</el-dialog>
 
 		<!--    加油卡充值弹窗-->
-		<el-dialog :close-on-click-modal="false" :show-close="false" title="加油卡充值" :visible.sync="moneyDialogVisible"
-			width="500px" append-to-body>
-			<el-form :model="moneyInfo" :rules="moneyRules" label-width="120px" @keyup.enter.native="submitMoney"
-				@submit.native.prevent="submitMoney" ref="moneyFormRef" size="mini">
+		<el-dialog :close-on-click-modal="false" :show-close="false" title="加油卡充值" :visible.sync="moneyDialogVisible" width="500px" append-to-body>
+			<el-form :model="moneyInfo" :rules="moneyRules" label-width="120px" @keyup.enter.native="submitMoney" @submit.native.prevent="submitMoney" ref="moneyFormRef" size="mini">
 				<el-form-item label="加油卡卡号" prop="oilCardNo">
 					<el-row>
 						<el-col :span="10">
 							<el-input v-model="moneyInfo.oilCardNo" placeholder="请输入加油卡卡号" />
 						</el-col>
 						<el-col :span="3">
-							<SearchOption :get-data="listOilCard" title="选择加油卡" icon="el-icon-search"
-								:limit-info="{ oilType: '主卡' }" @commitBack="handleCommitBack"
-								@update:queryName="handleUpdateQueryName" :query-name="queryCard" query-info="oilCardNo"
-								query-label="加油卡卡号">
+							<SearchOption
+								:get-data="listOilCard"
+								title="选择加油卡"
+								icon="el-icon-search"
+								:limit-info="{ oilType: '主卡' }"
+								@commitBack="handleCommitBack"
+								@update:queryName="handleUpdateQueryName"
+								:query-name="queryCard"
+								query-info="oilCardNo"
+								query-label="加油卡卡号"
+							>
 								<template #table-columns>
 									<el-table-column prop="oilCardNo" label="加油卡卡号" />
 									<el-table-column prop="moneyAmount" label="加油卡余额" />
@@ -147,8 +138,7 @@
 				</el-form-item>
 				<el-form-item label="请选择充值方式" prop="rechargeType">
 					<el-select v-model="moneyInfo.rechargeType" placeholder="请选择充值方式">
-						<el-option v-for="item in options" :key="item.value" :label="item.label"
-							:value="item.value"></el-option>
+						<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
 					</el-select>
 				</el-form-item>
 				<el-form-item label="请输入充值金额" prop="rechargeMoney">
@@ -162,9 +152,15 @@
 						<el-input v-model="moneyInfo.acountsName" placeholder="请输入银行开户名" />
 					</el-col>
 					<el-col :span="4">
-						<SearchOption :limit-info="{ acountsType: '己方公司' }" :get-data="listBankAccount"
-							:query-name="queryBankAcount" query-label="户名查找" query-info="acountsName"
-							@commitBack="handleCommitBackBankAcount" @update:queryName="handleUpdateQueryBankAcount">
+						<SearchOption
+							:limit-info="{ acountsType: '己方公司' }"
+							:get-data="listBankAccount"
+							:query-name="queryBankAcount"
+							query-label="户名查找"
+							query-info="acountsName"
+							@commitBack="handleCommitBackBankAcount"
+							@update:queryName="handleUpdateQueryBankAcount"
+						>
 							<template #table-columns>
 								<el-table-column label="账户类型" align="center" prop="acountsType" />
 								<el-table-column label="显示名称" align="center" prop="displayName" />
@@ -190,24 +186,35 @@
 		</el-dialog>
 
 		<!--    加油卡操作功能-->
-		<el-dialog :close-on-click-modal="false" :show-close="false" title="加油卡操作" :visible.sync="optionVisible"
-			width="500px" append-to-body>
-			<el-form ref="oilCardForm" :model="oilCardOption" :rules="optionRules" label-width="120px" size="mini"
-				@keyup.enter.native="submitOilCardOption" @submit.native.prevent="submitOilCardOption">
+		<el-dialog :close-on-click-modal="false" :show-close="false" title="加油卡操作" :visible.sync="optionVisible" width="500px" append-to-body>
+			<el-form
+				ref="oilCardForm"
+				:model="oilCardOption"
+				:rules="optionRules"
+				label-width="120px"
+				size="mini"
+				@keyup.enter.native="submitOilCardOption"
+				@submit.native.prevent="submitOilCardOption"
+			>
 				<el-form-item label="消费类型" prop="type">
 					<el-radio v-model="oilCardOption.type" :label="OilCardOptionType.MAIN_TO_SUB">主卡分配</el-radio>
 					<el-radio v-model="oilCardOption.type" :label="OilCardOptionType.SUB_TO_SUB">副卡圈存</el-radio>
 				</el-form-item>
-				<el-form-item label="主加油卡卡号" prop="oilMainCardNo"
-					v-if="oilCardOption.type === OilCardOptionType.MAIN_TO_SUB">
+				<el-form-item label="主加油卡卡号" prop="oilMainCardNo" v-if="oilCardOption.type === OilCardOptionType.MAIN_TO_SUB">
 					<el-row>
 						<el-col :span="10">
 							<el-input disabled v-model="oilCardOption.oilMainCardNo" placeholder="请选择" />
 						</el-col>
 						<el-col :span="4">
-							<SearchOption :get-data="listOilCard" query-info="oilCardNo" :query-name="queryOilCard"
-								query-label="油卡账号查询" :limit-info="{ oilType: '主卡' }"
-								@commitBack="handleCommitBackOilCard" @update:queryName="handleCommitBackQueryOilCard">
+							<SearchOption
+								:get-data="listOilCard"
+								query-info="oilCardNo"
+								:query-name="queryOilCard"
+								query-label="油卡账号查询"
+								:limit-info="{ oilType: '主卡' }"
+								@commitBack="handleCommitBackOilCard"
+								@update:queryName="handleCommitBackQueryOilCard"
+							>
 								<template #table-columns>
 									<el-table-column label="加油卡卡号" align="center" prop="oilCardNo" />
 									<el-table-column label="当前金额" align="center" prop="moneyAmount" />
@@ -222,10 +229,15 @@
 							<el-input disabled v-model="oilCardOption.oilSecondCardNo" placeholder="请选择" />
 						</el-col>
 						<el-col :span="4">
-							<SearchOption :get-data="listOilCard" query-info="oilCardNo" :query-name="queryOilCardOther"
-								query-label="油卡账号查询" :limit-info="{ oilType: '副卡' }"
+							<SearchOption
+								:get-data="listOilCard"
+								query-info="oilCardNo"
+								:query-name="queryOilCardOther"
+								query-label="油卡账号查询"
+								:limit-info="{ oilType: '副卡' }"
 								@commitBack="handleCommitBackOilCardOther"
-								@update:queryName="handleCommitBackQueryOilCardOther">
+								@update:queryName="handleCommitBackQueryOilCardOther"
+							>
 								<template #table-columns>
 									<el-table-column label="加油卡卡号" align="center" prop="oilCardNo" />
 									<el-table-column label="当前金额" align="center" prop="moneyAmount" />
@@ -235,10 +247,8 @@
 					</el-row>
 				</el-form-item>
 
-				<el-form-item :label="oilCardOption.type === OilCardOptionType.MAIN_TO_SUB ? `分配金额` : `圈存金额`"
-					prop="rechargeMoney">
-					<el-input v-model="oilCardOption.rechargeMoney"
-						:placeholder="oilCardOption.type === OilCardOptionType.MAIN_TO_SUB ? `请输入分配金额` : `请输入圈存金额`" />
+				<el-form-item :label="oilCardOption.type === OilCardOptionType.MAIN_TO_SUB ? `分配金额` : `圈存金额`" prop="rechargeMoney">
+					<el-input v-model="oilCardOption.rechargeMoney" :placeholder="oilCardOption.type === OilCardOptionType.MAIN_TO_SUB ? `请输入分配金额` : `请输入圈存金额`" />
 				</el-form-item>
 				<!--        <el-form-item label="充值人员姓名" prop="rechargeName">-->
 				<!--          <el-input v-model="form.rechargeName" placeholder="请输入充值人员姓名"/>-->
@@ -254,10 +264,16 @@
 		</el-dialog>
 
 		<div v-if="currentComponent">
-			<DialogWrapper :current-component="currentComponent" :dialog-visible="dialogVisible"
-				:dialog-props="dialogProps" :dialog-title="dialogTitle" :dialog-width="dialogWidth"
-				@update:dialogVisible="args => (dialogVisible = false)" @close="handleCloseDialog"
-				@confirm="handleDialogConfirm" />
+			<DialogWrapper
+				:current-component="currentComponent"
+				:dialog-visible="dialogVisible"
+				:dialog-props="dialogProps"
+				:dialog-title="dialogTitle"
+				:dialog-width="dialogWidth"
+				@update:dialogVisible="args => (dialogVisible = false)"
+				@close="handleCloseDialog"
+				@confirm="handleDialogConfirm"
+			/>
 		</div>
 	</div>
 </template>
@@ -760,7 +776,7 @@ export default {
 					this.getList();
 					this.$modal.msgSuccess('删除成功');
 				})
-				.catch(() => { });
+				.catch(() => {});
 		},
 		/** 导出按钮操作 */
 		handleExport() {

@@ -98,14 +98,13 @@
 import { getSupplierSubjectSummary } from '@/api/system/statement';
 import { getTimeOffset } from '@/utils/order';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
-import SupplierDetail from '@/views/system/Statement/components/SupplierDetail.vue';
 import { parseTime } from '../../../utils/ruoyi';
 
 import { getConfigValue } from './data/config_get';
 
 export default {
 	name: 'CustomerSummary',
-	components: { SupplierDetail },
+	components: {},
 	dicts: ['order_target_type'],
 	mixins: [mixin_printHTML],
 	data() {

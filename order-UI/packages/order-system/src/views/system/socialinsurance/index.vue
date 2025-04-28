@@ -298,7 +298,8 @@
 					<em>点击上传</em>
 				</div>
 				<div class="el-upload__tip text-center" slot="tip">
-					<el-checkbox v-model="upload.updateSupport" />是否更新已经存在的数据
+					<el-checkbox v-model="upload.updateSupport" />
+					是否更新已经存在的数据
 					<span>仅允许导入xls、xlsx格式文件。</span>
 				</div>
 			</el-upload>
@@ -311,7 +312,16 @@
 </template>
 
 <script>
-import { addSocialInsurance, batchAddSocialInsurance, delSocialInsurance, getSocialInsurance, listSocialInsurance, updateSocialInsurance, importData, importTemplate } from '@/api/system/socialInsurance';
+import {
+	addSocialInsurance,
+	batchAddSocialInsurance,
+	delSocialInsurance,
+	getSocialInsurance,
+	listSocialInsurance,
+	updateSocialInsurance,
+	importData,
+	importTemplate
+} from '@/api/system/socialInsurance';
 import { excludeParams } from '@/api/tool/exclude';
 
 export default {
@@ -621,7 +631,7 @@ export default {
 				// 是否更新已经存在的用户数据
 				updateSupport: false,
 				// 设置上传的请求头部
-				headers: { Authorization: "Bearer " + this.$store.getters.token },
+				headers: { Authorization: 'Bearer ' + this.$store.getters.token },
 				// 上传的url
 				url: process.env.VUE_APP_BASE_API + '/system/socialInsurance/importData'
 			}
@@ -895,7 +905,7 @@ export default {
 				link.download = '社保基金数据导入模板.xlsx';
 				link.click();
 				window.URL.revokeObjectURL(link.href);
-			})
+			});
 		},
 		// 文件上传中处理
 		handleFileUploadProgress(event, file, fileList) {
@@ -906,7 +916,7 @@ export default {
 			this.upload.open = false;
 			this.upload.isUploading = false;
 			this.$refs.upload.clearFiles();
-			
+
 			// 使用 HTML 方式展示消息
 			this.$msgbox({
 				title: '提示',
@@ -920,17 +930,17 @@ export default {
 		// 提交上传文件
 		submitFileForm() {
 			this.$refs.upload.submit();
-		},
+		}
 	}
-}
+};
 </script>
 
 <style scoped>
 .el-upload__tip {
-  line-height: 20px;
-  margin-top: 10px;
+	line-height: 20px;
+	margin-top: 10px;
 }
 .el-upload__tip .el-checkbox {
-  margin-right: 5px;
+	margin-right: 5px;
 }
 </style>

@@ -60,8 +60,7 @@
 						<el-button type="primary" size="mini" @click="handleAddType">1-添加科目类型</el-button>
 					</el-col>
 					<el-col :span="1.5">
-						<el-button v-hasPermi="['system:subject:add']" type="danger" size="mini"
-							@click="handleAdd">2-添加科目信息</el-button>
+						<el-button v-hasPermi="['system:subject:add']" type="danger" size="mini" @click="handleAdd">2-添加科目信息</el-button>
 					</el-col>
 					<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
 						<!--    打印    -->
@@ -74,11 +73,19 @@
 				</el-row>
 
 				<!--        表格-->
-				<el-table v-if="refreshTable" v-loading="loading" border :data="subjectList" row-key="id"
-					:default-expand-all="isExpandAll" :tree-props="{
+				<el-table
+					v-if="refreshTable"
+					v-loading="loading"
+					border
+					:data="subjectList"
+					row-key="id"
+					:default-expand-all="isExpandAll"
+					:tree-props="{
 						children: 'children',
 						hasChildren: 'hasChildren'
-					}" size="mini">
+					}"
+					size="mini"
+				>
 					<el-table-column v-if="columns[0].visible" label="科目名称" prop="title" />
 					<el-table-column v-if="columns[1].visible" label="科目编码" align="center" prop="subjectNo" />
 					<el-table-column label="排序" prop="orderNum" width="120"></el-table-column>
@@ -87,25 +94,19 @@
 					<el-table-column v-if="columns[2].visible" label="备注" align="center" prop="remark" />
 					<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
 						<template slot-scope="scope">
-							<el-button v-hasPermi="['system:subject:edit']" size="mini"
-								@click="handleUpdate(scope.row)">修改</el-button>
-							<el-button v-hasPermi="['system:subject:add']" size="mini" type="primary"
-								@click="handleAdd(scope.row)">新增</el-button>
-							<el-button v-hasPermi="['system:subject:remove']" size="mini" type="danger"
-								@click="handleDelete(scope.row)">删除</el-button>
+							<el-button v-hasPermi="['system:subject:edit']" size="mini" @click="handleUpdate(scope.row)">修改</el-button>
+							<el-button v-hasPermi="['system:subject:add']" size="mini" type="primary" @click="handleAdd(scope.row)">新增</el-button>
+							<el-button v-hasPermi="['system:subject:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
 						</template>
 					</el-table-column>
 				</el-table>
 			</el-col>
 		</el-row>
 		<!-- 添加或修改科目对话框 -->
-		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px"
-			append-to-body>
-			<el-form ref="form" :model="form" :rules="rules" label-width="80px" @keyup.enter.native="submitForm"
-				@submit.native.prevent="submitForm">
+		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
+			<el-form ref="form" :model="form" :rules="rules" label-width="80px" @keyup.enter.native="submitForm" @submit.native.prevent="submitForm">
 				<el-form-item label="父级ID" prop="parentId">
-					<treeselect v-model="form.parentId" :options="subjectOptions" :normalizer="normalizer"
-						placeholder="请选择父级ID" />
+					<treeselect v-model="form.parentId" :options="subjectOptions" :normalizer="normalizer" placeholder="请选择父级ID" />
 				</el-form-item>
 				<!--				<el-form-item label="分类名称" prop="type">-->
 				<!--					&lt;!&ndash;          <el-input v-model="form.type" placeholder="请输入分类名称"/>&ndash;&gt;-->
@@ -133,14 +134,11 @@
 		</el-dialog>
 
 		<!--    添加科目分类的弹窗-->
-		<el-dialog :close-on-click-modal="false" :show-close="false" title="添加科目分类" :visible.sync="openType"
-			width="500px" append-to-body>
-			<el-form ref="formBodyType" :model="formType" :rules="typeRules" label-width="80px"
-				@keyup.enter.native="submitFormType" @submit.native.prevent="submitFormType">
+		<el-dialog :close-on-click-modal="false" :show-close="false" title="添加科目分类" :visible.sync="openType" width="500px" append-to-body>
+			<el-form ref="formBodyType" :model="formType" :rules="typeRules" label-width="80px" @keyup.enter.native="submitFormType" @submit.native.prevent="submitFormType">
 				<el-form-item label="科目分类" prop="type">
 					<el-select v-model="formType.type" placeholder="请选择">
-						<el-option v-for="item in options" :key="item.value" :label="item.label"
-							:value="item.value"></el-option>
+						<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
 					</el-select>
 				</el-form-item>
 				<el-form-item label="科目编号" prop="subjectNo">
@@ -467,7 +465,7 @@ export default {
 					this.getList();
 					this.$modal.msgSuccess('删除成功');
 				})
-				.catch(() => { });
+				.catch(() => {});
 		}
 	}
 };

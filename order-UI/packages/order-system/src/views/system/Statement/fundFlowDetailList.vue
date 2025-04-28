@@ -114,7 +114,7 @@
 			</el-table-column>
 			<el-table-column prop="moneyAmount" label="贷" align="right" show-overflow-tooltip>
 				<template #default="{ row }">
-					<span>{{ row.moneyAmount < 0 ? row.moneyAmount : '' }}</span>
+					<span>{{ row.moneyAmount > 0 ? '' : row.moneyAmount }}</span>
 				</template>
 			</el-table-column>
 			<el-table-column label="方向" align="right" show-overflow-tooltip>
@@ -244,8 +244,8 @@ export default {
 			if (!this.query.startTime || !this.query.endTime) {
 				this.$message.warning('请选择开始日期和结束日期');
 				return;
-				}
-			
+			}
+
 			// 添加日期校验逻辑
 			const startDate = new Date(this.query.startTime);
 			const endDate = new Date(this.query.endTime);
@@ -253,7 +253,7 @@ export default {
 				this.$message.warning('结束日期不能早于开始日期');
 				return;
 			}
-			
+
 			this.loading = true;
 			// 先查询上年指定时间结转
 			const query = {
