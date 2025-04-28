@@ -325,7 +325,7 @@ export default {
 									date: date,
 									lender: map[date].lender,
 									borrower: map[date].borrower,
-									moneyAmountLocal: fix(nowMoney),
+									moneyAmountLocal: fix(currentBalance - nowMoney),
 									lenderList,
 									borrowerList
 								};

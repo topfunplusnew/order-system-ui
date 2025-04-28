@@ -323,7 +323,7 @@ export default {
 									payNo: '', // 主表该列现在显示明细，留空或移除
 									lender: map[date].lender,
 									borrower: map[date].borrower,
-									moneyAmountLocal: fix(currentBalance), // 当日结束余额
+									moneyAmountLocal: fix(currentBalance - nowMoney), // 当日结束余额
 									lenderList, // 借方明细列表 (弹窗用)
 									borrowerList // 贷方明细列表 (弹窗用)
 								};
