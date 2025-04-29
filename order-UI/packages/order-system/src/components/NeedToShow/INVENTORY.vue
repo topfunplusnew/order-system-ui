@@ -1,4 +1,6 @@
 <script>
+import { fix_2 } from '../../api/tool/format';
+
 export default {
 	name: 'INVENTORY',
 	props: {
@@ -9,7 +11,37 @@ export default {
 	},
 	methods: {
 		handleProcess() {},
-		handleReject() {}
+		handleReject() {},
+		getSummaries(param) {
+			const { columns, data } = param;
+			const sums = [];
+			columns.forEach((column, index) => {
+				if (index === 0) {
+					sums[index] = '合计';
+					return;
+				}
+				const includes = [14, 19, 21, 24, 26, 28];
+				if (!data || data.length === 0) return;
+				const values = data.map(item => Number(item[column.property]));
+				if (!values.every(value => isNaN(value))) {
+					// 包含的计算
+					if (includes.includes(index)) {
+						sums[index] = values.reduce((prev, curr) => {
+							const value = Number(curr);
+							if (!isNaN(value)) {
+								return prev + curr;
+							} else {
+								return prev;
+							}
+						}, 0);
+						sums[index] = fix_2(sums[index]);
+						sums[index] += '';
+					}
+				}
+			});
+
+			return sums;
+		}
 	}
 };
 </script>
@@ -43,38 +75,65 @@ export default {
 			</el-descriptions>
 
 			<!--      库存个体信息-->
-			<el-table :data="needToShowInfo.inventoryDetailList" stripe style="width: 100%">
+			<el-table
+				:data="needToShowInfo.inventoryDetailList"
+				:cell-style="
+					() => {
+						return { padding: '.5px' };
+					}
+				"
+				size="mini"
+				show-summary
+				:summary-method="getSummaries"
+				stripe
+				style="width: 100%"
+			>
 				<el-table-column prop="storeHouseName" label="仓库名称" width="150" />
 				<el-table-column prop="storeDate" label="入库日期" width="180">
 					<template #default="scope">{{ new Date(scope.row.storeDate).toLocaleDateString() }}</template>
 				</el-table-column>
 				<el-table-column prop="supplier" label="供应商" width="150" />
-				<el-table-column prop="levelName" label="等级名称" width="200" />
-				<el-table-column prop="stockNumber" label="库存数量" width="120">
-					<template #default="scope">{{ scope.row.stockNumber }} {{ scope.row.countingUnit }}</template>
-				</el-table-column>
-				<el-table-column prop="price" label="单价" width="120">
-					<template #default="scope">{{ scope.row.price }} 元</template>
-				</el-table-column>
-				<el-table-column prop="landFreight" label="陆运费" width="120">
-					<template #default="scope">{{ scope.row.landFreight || '0' }} 元</template>
-				</el-table-column>
-				<el-table-column prop="seaFreight" label="海运费" width="120">
-					<template #default="scope">{{ scope.row.seaFreight || '0' }} 元</template>
-				</el-table-column>
-				<el-table-column prop="profit" label="利润" width="150">
-					<template #default="scope">{{ scope.row.profit || '0' }} 元</template>
-				</el-table-column>
-				<el-table-column prop="factoryCommission" label="厂家佣金" width="150">
-					<template #default="scope">
-						<el-tag size="small">{{ scope.row.factoryCommission || '无' }}</el-tag>
+				<el-table-column label="级别名称" align="center" prop="levelName" show-overflow-tooltip />
+				<el-table-column label="计量单位" align="center" prop="countingUnit" show-overflow-tooltip />
+				<el-table-column label="厚度" align="center" prop="height" show-overflow-tooltip />
+				<el-table-column label="长度" align="center" prop="length" show-overflow-tooltip />
+				<el-table-column label="宽度" align="center" prop="width" show-overflow-tooltip />
+				<el-table-column label="每包片数" align="center" prop="piecesPerPack" show-overflow-tooltip />
+				<el-table-column label="包数" align="center" prop="packs" show-overflow-tooltip />
+				<el-table-column label="出厂片数" align="center" prop="pieces" show-overflow-tooltip />
+				<el-table-column label="出厂单价" align="center" prop="price" show-overflow-tooltip />
+				<el-table-column label="出厂是否含税" align="center" prop="isIncludeTaxFactory" show-overflow-tooltip>
+					<template slot-scope="scope">
+						<el-tag disable-transitions>{{ scope.row.isIncludeTaxFactory === 0 ? '否' : '是' }}</el-tag>
 					</template>
 				</el-table-column>
-				<el-table-column prop="comments" label="备注" width="150">
-					<template #default="scope">
-						<el-tag size="small">{{ scope.row.comments || '无' }}</el-tag>
+				<el-table-column label="杂费" align="center" prop="sundryCost" show-overflow-tooltip />
+				<el-table-column label="出厂货款" align="center" prop="paymentFactory" show-overflow-tooltip />
+				<el-table-column label="卸货片数" align="center" prop="actualPieces" show-overflow-tooltip />
+				<el-table-column label="卸货价" align="center" prop="paymentUnload" show-overflow-tooltip />
+				<el-table-column label="销售是否含税" align="center" prop="isIncludeTaxSale" show-overflow-tooltip>
+					<template slot-scope="scope">
+						<el-tag disable-transitions>{{ scope.row.isIncludeTaxSale === 0 ? '否' : '是' }}</el-tag>
 					</template>
 				</el-table-column>
+				<el-table-column label="总货款杂费" align="center" prop="paymentsWithSundry" show-overflow-tooltip />
+				<el-table-column label="总货款" align="center" prop="payments" show-overflow-tooltip />
+				<el-table-column label="误差" align="center" prop="erro" show-overflow-tooltip />
+				<el-table-column label="吨位" align="center" prop="tonnage" show-overflow-tooltip />
+				<el-table-column label="陆运费单价" align="center" prop="landFreightPrice" show-overflow-tooltip />
+				<el-table-column label="加费" align="center" prop="additionalFees" show-overflow-tooltip />
+				<el-table-column label="陆运费" align="center" prop="landFreight" show-overflow-tooltip />
+				<el-table-column label="海运费" align="center" prop="seaFreight" show-overflow-tooltip />
+				<el-table-column label="总运费" align="center" prop="freight" show-overflow-tooltip />
+				<el-table-column label="其他费用" align="center" prop="otherCost" show-overflow-tooltip />
+				<el-table-column label="利润" align="center" prop="profit" show-overflow-tooltip />
+				<el-table-column label="不含税利润" align="center" prop="profitNoTax" show-overflow-tooltip />
+				<el-table-column label="备注" align="center" prop="comments" show-overflow-tooltip />
+				<el-table-column label="物流利润" align="center" prop="logisticsProfit" show-overflow-tooltip />
+				<el-table-column label="客户佣金" align="center" prop="customerCommission" show-overflow-tooltip />
+				<el-table-column label="厂家佣金" align="center" prop="factoryCommission" show-overflow-tooltip />
+				<el-table-column label="计提厂家返利金额" align="center" prop="factoryRebateAmount" show-overflow-tooltip />
+				<el-table-column label="计提厂家降价金额" align="center" prop="factoryDiscountAmount" show-overflow-tooltip />
 			</el-table>
 		</el-card>
 	</div>

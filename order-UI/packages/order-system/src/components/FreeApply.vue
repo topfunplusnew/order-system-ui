@@ -199,11 +199,8 @@ export default {
 			});
 		},
 		handleCommitBackBankAccount(val) {
-			this.bankAccountForm.acountsName = val.acountsName || '';
 			this.bankAccountForm.companyId = val.id;
 			this.bankAccountForm.companyName = val.carNo;
-			this.bankAccountForm.bankNo = val.bankNo || '';
-			this.bankAccountForm.bankName = val.bankName || '';
 		},
 		handleUpdateBankAccount(val) {
 			this.queryBankAccount = val;
@@ -265,13 +262,13 @@ export default {
 
 		<el-dialog title="快速添加司机银行卡信息" :visible.sync="addBankAccountDialogVisible" width="500px" append-to-body :close-on-click-modal="false">
 			<el-form ref="bankAccountFormRef" :model="bankAccountForm" :rules="bankAccountRules" label-width="120px">
-				<el-form-item label="开户名" prop="acountsName">
+				<el-form-item label="车牌" prop="acountsName">
 					<el-row>
 						<el-col :span="20">
-							<el-input v-model="bankAccountForm.acountsName" placeholder="请通过右侧按钮选择车辆" />
+							<el-input disabled v-model="bankAccountForm.companyName" placeholder="选择车辆后自动填充" />
 						</el-col>
 						<el-col :span="4">
-							<el-tooltip content="选择车辆以绑定银行卡" placement="top">
+							<el-tooltip content="选择车辆" placement="top">
 								<SearchOption
 									:limit-info="{}"
 									:get-data="listCars"
@@ -295,8 +292,8 @@ export default {
 						</el-col>
 					</el-row>
 				</el-form-item>
-				<el-form-item label="车牌号" prop="companyName">
-					<el-input v-model="bankAccountForm.companyName" placeholder="选择车辆后自动填充" disabled />
+				<el-form-item label="户名" prop="companyName">
+					<el-input v-model="bankAccountForm.acountsName" placeholder="请输入户名" />
 				</el-form-item>
 				<el-form-item label="银行账号" prop="bankNo">
 					<el-input v-model="bankAccountForm.bankNo" placeholder="请输入银行账号" />
