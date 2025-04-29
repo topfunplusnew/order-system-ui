@@ -388,13 +388,13 @@ export default {
 						trigger: 'blur'
 					}
 				],
-				address: [
-					{
-						required: true,
-						message: '公司地址不能为空',
-						trigger: 'blur'
-					}
-				],
+				// address: [
+				// 	{
+				// 		required: true,
+				// 		message: '公司地址不能为空',
+				// 		trigger: 'blur'
+				// 	}
+				// ],
 				// salesman: [
 				// 	{ required: true, message: '录入员不能为空', trigger: 'blur' }
 				// ],

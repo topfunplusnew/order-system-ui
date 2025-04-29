@@ -1,6 +1,6 @@
 // 运费一键申请
 import { batchPayment } from '../../../../api/system/payment';
-import { TableName } from '../../../../api/tool/enums';
+import { BankAcceptanceType, TableName } from '../../../../api/tool/enums';
 import { parseTime } from '../../../../utils/ruoyi';
 
 export var mixin_order_freight_payment = {
@@ -110,9 +110,9 @@ export var mixin_order_freight_payment = {
 		// 一键付运费
 		submitFreightOnce() {
 			this.$refs.freightPaymentOnceForm.validate(valid => {
-				// 要求只能为现金
-				this.freightSelfOnceInfo.selfBankCardType = '银行活期存款';
-				this.freightSelfOnceInfo.otherBankCardType = '银行活期存款';
+				// TODO 这里写死了 要求只能为现金
+				this.freightSelfOnceInfo.selfBankCardType = BankAcceptanceType.BANK_CASH;
+				this.freightSelfOnceInfo.otherBankCardType = BankAcceptanceType.BANK_CASH;
 				if (valid) {
 					this.$confirm({
 						title: '提示',
