@@ -1226,6 +1226,23 @@ export default {
 			this.open = true;
 			this.title = '添加库存';
 		},
+    handleCheckInventory(row) {
+      if (!row.id) {
+        this.$message.error('该行信息有误!');
+        return;
+      }
+      getInventoryMain(row.id).then(response => {
+        this.openDialog(
+            INVENTORY,
+            '库存信息',
+            '800px',
+            {
+              needToShowInfo: response.data
+            },
+            false
+        );
+      });
+    },
 		/** 修改按钮操作 */
 		handleUpdate(row) {
 			this.reset();
