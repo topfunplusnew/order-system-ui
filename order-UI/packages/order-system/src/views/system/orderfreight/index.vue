@@ -267,12 +267,12 @@
 							<el-form-item label="支付类型" prop="payType">
 								<el-cascader v-model="freightSelfOnceInfo.payType" :options="paymentTypeTree" :props="props" />
 							</el-form-item>
-							<el-form-item label="对方账号类型" prop="otherBankCardType">
-								<BankType v-if="freightOnceVisible" @updateSelectedType="handleBankTypeOther" />
-							</el-form-item>
-							<el-form-item label="我方账号类型" prop="selfBankCardType">
-								<BankType v-if="freightOnceVisible" @updateSelectedType="handleBankTypeSelf" />
-							</el-form-item>
+							<!--							<el-form-item label="对方账号类型" prop="otherBankCardType">-->
+							<!--								<BankType v-if="freightOnceVisible" @updateSelectedType="handleBankTypeOther" />-->
+							<!--							</el-form-item>-->
+							<!--							<el-form-item label="我方账号类型" prop="selfBankCardType">-->
+							<!--								<BankType v-if="freightOnceVisible" @updateSelectedType="handleBankTypeSelf" />-->
+							<!--							</el-form-item>-->
 							<el-form-item label="我方户名" prop="selfAcountsName">
 								<el-row>
 									<el-col :span="10">
