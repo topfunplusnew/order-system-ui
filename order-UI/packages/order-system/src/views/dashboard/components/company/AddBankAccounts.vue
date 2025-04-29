@@ -60,13 +60,13 @@ export default {
 						trigger: 'blur'
 					}
 				],
-				bankName: [
-					{
-						required: true,
-						message: '开户行不能为空',
-						trigger: 'blur'
-					}
-				],
+				// bankName: [
+				// 	{
+				// 		required: true,
+				// 		message: '开户行不能为空',
+				// 		trigger: 'blur'
+				// 	}
+				// ],
 				acountsName: [
 					{
 						required: true,
