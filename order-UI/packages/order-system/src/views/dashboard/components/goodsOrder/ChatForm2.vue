@@ -3,6 +3,7 @@ import { fix, numToChineseUppercase } from '../../../../api/tool/format';
 import { listOrderDetailByOrderNos } from '@/api/system/orderDetail';
 import { parseTime } from '../../../../utils/ruoyi';
 import { getCustomerSubjectDetailSomeDay } from '@/api/system/statement';
+
 export default {
 	name: 'ChatForm2',
 	props: {
@@ -21,7 +22,7 @@ export default {
 	computed: {
 		// 合计欠款
 		totalPayments() {
-			return Number(this.orderInfo.allPayments) + Number(this.moneyAmount);
+			return Number(this.moneyAmount) - Number(this.orderInfo.allPayments);
 		}
 	},
 	created() {

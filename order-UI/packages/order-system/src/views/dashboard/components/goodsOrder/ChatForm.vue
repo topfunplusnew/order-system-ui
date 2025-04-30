@@ -5,6 +5,7 @@ import { getCustomerSubjectDetailSomeDay } from '@/api/system/statement';
 import { parseTime } from '@/utils/ruoyi';
 import { listOrderDetailByOrderNos } from '@/api/system/orderDetail';
 import { fix } from '../../../../api/tool/format';
+
 export default {
 	name: 'ChatForm',
 	props: {
@@ -23,7 +24,7 @@ export default {
 	computed: {
 		// 货款合计
 		totalPayments() {
-			return Number(this.orderInfo.allPayments) + Number(this.moneyAmount);
+			return Number(this.moneyAmount) - Number(this.orderInfo.allPayments);
 		}
 	},
 	created() {
