@@ -303,10 +303,9 @@ export default {
 							}
 							this.tableData = Object.keys(sourceData).map(date => {
 								const item = _.cloneDeep(sourceData[date]);
-								nowMoney = item.reduce((acc, curr) => {
-									acc += Number(curr.moneyAmount);
-									return acc;
-								}, 0);
+								for (let i = 0; i < item.length; i++) {
+									nowMoney += Number(item[i].moneyAmount);
+								}
 								// 准备当天借方和贷方明细列表 (用于弹窗)
 								const condition = detail => {
 									const lender = detail.moneyAmount > 0 ? Math.abs(detail.moneyAmount) : 0;
@@ -329,7 +328,7 @@ export default {
 									payNo: '', // 主表该列现在显示明细，留空或移除
 									lender: map[date].lender,
 									borrower: map[date].borrower,
-									moneyAmountLocal: fix(currentBalance - nowMoney), // 当日结束余额
+									moneyAmountLocal: fix(Number(currentBalance) + Number(nowMoney)),
 									lenderList, // 借方明细列表 (弹窗用)
 									borrowerList // 贷方明细列表 (弹窗用)
 								};

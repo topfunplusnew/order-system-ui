@@ -78,7 +78,7 @@
 			<!--      余额本币-->
 			<el-table-column prop="moneyAmountLocal" label="余额本币">
 				<template slot-scope="scope">
-					<span :class="{ negative: scope.row.moneyAmountLocal < 0 }">{{ fix(scope.row.moneyAmountLocal) }}</span>
+					<span :class="{ negative: scope.row.moneyAmountLocal < 0 }">{{ scope.row.moneyAmountLocal }}</span>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -304,10 +304,9 @@ export default {
 						this.tableData = Object.keys(sourceData).map(date => {
 							const item = _.cloneDeep(sourceData[date]);
 							if (Array.isArray(item)) {
-								nowMoney = item.reduce((acc, curr) => {
-									acc += Number(curr.moneyAmount);
-									return acc;
-								}, 0);
+								for (let i = 0; i < item.length; i++) {
+									nowMoney += Number(item[i].moneyAmount);
+								}
 								const condition = detail => {
 									const lender = detail.moneyAmount > 0 ? Math.abs(detail.moneyAmount) : 0;
 									const borrower = detail.moneyAmount < 0 ? Math.abs(detail.moneyAmount) : 0;
@@ -326,7 +325,7 @@ export default {
 									date: date,
 									lender: map[date].lender,
 									borrower: map[date].borrower,
-									moneyAmountLocal: fix(currentBalance - nowMoney),
+									moneyAmountLocal: fix(Number(currentBalance) + Number(nowMoney)),
 									lenderList,
 									borrowerList
 								};
