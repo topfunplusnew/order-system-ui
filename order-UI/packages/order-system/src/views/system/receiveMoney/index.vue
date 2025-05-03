@@ -214,6 +214,9 @@
 						<el-form-item label="对方银行账户类型" v-if="value !== '对外付款'">
 							<BankType :option-baned="true" :baned="true" :select-type="form.otherBankCardType" @updateSelectedType="changeOtherBankType" />
 						</el-form-item>
+						<el-form-item label="对方开户名" prop="otherAcountsName" v-if="value !== '对外付款'">
+							<el-input disabled v-model="form.otherAcountsName" placeholder="请选择" />
+						</el-form-item>
 						<el-form-item label="对方账号" prop="otherBankNo" v-if="value !== '对外付款'">
 							<el-col :span="10">
 								<el-input disabled v-model="form.otherBankNo" placeholder="请选择" />
@@ -241,9 +244,6 @@
 						</el-form-item>
 						<el-form-item label="对方开户行" prop="otherBankName" v-if="value !== '对外付款'">
 							<el-input disabled v-model="form.otherBankName" placeholder="请选择" />
-						</el-form-item>
-						<el-form-item label="对方开户名" prop="otherAcountsName" v-if="value !== '对外付款'">
-							<el-input disabled v-model="form.otherAcountsName" placeholder="请选择" />
 						</el-form-item>
 						<el-form-item label="银行卡流水编号" prop="transactionHistory">
 							<el-input v-model="form.transactionHistory" placeholder="请输入银行卡流水编号" />

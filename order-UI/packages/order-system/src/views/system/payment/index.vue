@@ -255,7 +255,7 @@
 				<!--        下面的操作是 客户id  配合 银行卡信息进行付款.-->
 				<!--      选择供应商-->
 				<el-row v-if="value === PAYMENT_TYPES.SUPPLIER">
-					<el-form-item label="供应商名称" prop="otherAcountsName">
+					<el-form-item label="对方户名(供应商)" prop="otherAcountsName">
 						<el-row>
 							<el-col :span="10">
 								<!--                <el-input v-model="form.otherAcountsName" placeholder="请输入对方户名"/>-->
@@ -292,7 +292,7 @@
 				</el-row>
 				<!--      选择客户-->
 				<el-row v-if="value === PAYMENT_TYPES.CUSTOMER">
-					<el-form-item label="对方公司" prop="companyName">
+					<el-form-item label="对方户名(客户)" prop="companyName">
 						<el-row>
 							<el-col :span="10">
 								<!--                <el-input v-model="form.otherAcountsName" placeholder="请输入对方户名"/>-->
@@ -329,7 +329,7 @@
 				</el-row>
 				<!--      选择司机-->
 				<el-row v-if="value === PAYMENT_TYPES.DRIVER">
-					<el-form-item label="司机名称" prop="companyName">
+					<el-form-item label="对方户名(司机)" prop="companyName">
 						<el-row>
 							<el-col :span="10">
 								<!--                <el-input v-model="form.otherAcountsName" placeholder="请输入对方户名"/>-->

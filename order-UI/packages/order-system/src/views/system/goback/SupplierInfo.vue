@@ -322,7 +322,6 @@ export default {
 								const lenderList = item.map(condition).filter(d => Number(d.moneyAmountLocal) > 0);
 								const borrowerList = item.map(condition).filter(d => Number(d.moneyAmountLocal) < 0);
 
-								console.log(`lenderList,borrowerList`, lenderList, borrowerList);
 								return {
 									operateDate: date, // 日期列使用分组的key
 									payNo: '', // 主表该列现在显示明细，留空或移除
