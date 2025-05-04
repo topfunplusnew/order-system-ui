@@ -60,7 +60,28 @@
 			<el-table-column v-if="columns[6].visible" label="票点" align="center" prop="ticketPoint" show-overflow-tooltip />
 			<el-table-column v-if="columns[7].visible" label="票点金额" align="center" prop="ticketPointAmount" show-overflow-tooltip>
 				<template #default="scope">
-					{{ scope.row.ticketPointAmount | changeNumber(changeLength) }}
+					{{ scope.row.ticketPointAmount }}
+				</template>
+			</el-table-column>
+			<!-- 新增 extraInfo 属性展示 -->
+			<el-table-column v-if="columns[11].visible" label="实际开票金额" align="center" show-overflow-tooltip>
+				<template #default="scope">
+					{{ scope.row.extraInfo && scope.row.extraInfo.actualInvoiceAmount }}
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[12].visible" label="实际开票时间" align="center" show-overflow-tooltip>
+				<template #default="scope">
+					{{ scope.row.extraInfo && scope.row.extraInfo.actualInvoiceTime }}
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[13].visible" label="当月欠票金额" align="center" show-overflow-tooltip>
+				<template #default="scope">
+					{{ scope.row.extraInfo && scope.row.extraInfo.currentMonthOweInvoiceAmount }}
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[14].visible" label="额外备注" align="center" show-overflow-tooltip>
+				<template #default="scope">
+					{{ scope.row.extraInfo && scope.row.extraInfo.comment }}
 				</template>
 			</el-table-column>
 			<!-- 现在不显示 -->
@@ -89,9 +110,10 @@
 					<CheckFiles :path="scope.row.invoiceAttachments" @needToUpdate="value => handleUpdateFilePath(value, scope.row, 'invoiceAttachments', getInvoiceIn(), updateInvoiceIn())" />
 				</template>
 			</el-table-column>
-			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="140px">
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="180px">
 				<template slot-scope="scope">
 					<el-button size="mini" type="text" @click="handleCheck(scope.row)">查看</el-button>
+					<el-button size="mini" type="text" @click="handleAddExtraInfo(scope.row)">补充信息</el-button>
 					<el-button v-hasPermi="['system:invoicein:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
 					<el-button v-hasPermi="['system:invoicein:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
 				</template>
@@ -172,6 +194,28 @@
 			</div>
 		</el-dialog>
 
+		<!-- 补充信息对话框 -->
+		<el-dialog :title="'补充发票信息'" :visible.sync="extraInfoDialogVisible" width="500px" append-to-body>
+			<el-form ref="extraInfoForm" :model="currentExtraInfo" :rules="extraInfoRules" label-width="120px">
+				<el-form-item label="实际开票金额" prop="actualInvoiceAmount">
+					<el-input v-model="currentExtraInfo.actualInvoiceAmount" placeholder="请输入实际开票金额"></el-input>
+				</el-form-item>
+				<el-form-item label="实际开票时间" prop="actualInvoiceTime">
+					<el-date-picker v-model="currentExtraInfo.actualInvoiceTime" type="datetime" placeholder="请选择实际开票时间" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+				</el-form-item>
+				<el-form-item label="当月欠票金额" prop="currentMonthOweInvoiceAmount">
+					<el-input v-model="currentExtraInfo.currentMonthOweInvoiceAmount" placeholder="请输入当月欠票金额"></el-input>
+				</el-form-item>
+				<el-form-item label="备注" prop="comment">
+					<el-input v-model="currentExtraInfo.comment" type="textarea" placeholder="请输入备注信息（选填）"></el-input>
+				</el-form-item>
+			</el-form>
+			<div slot="footer" class="dialog-footer">
+				<el-button type="primary" @click="saveExtraInfo">确 定</el-button>
+				<el-button @click="extraInfoDialogVisible = false">取 消</el-button>
+			</div>
+		</el-dialog>
+
 		<!--    添加付款申请-->
 		<el-dialog :close-on-click-modal="false" :show-close="false" title="付款申请" :visible.sync="PaymentApplyInfoVisible" append-to-body>
 			<ApplyPayment :table-name="TableName.INVOICE_IN" :t-i-d="tID" :need-money="needMoney" :need-info="{}" @changeOpen="changePaymentApplyInfoVisible" />
@@ -209,7 +253,7 @@ import { getGoodsOrder } from '@/api/system/goodsOrder';
 import OrderInfos from '@/views/dashboard/components/goodsOrder/OrderInfos.vue';
 import CheckFiles from '../../../components/CheckFiles.vue';
 import reLength from '../../dashboard/mixins/reLength';
-import { getInvoiceIn, updateInvoiceIn } from '../../../api/system/invoiceIn';
+import { getInvoiceIn, updateInvoiceIn, updateInvoiceInExtra } from '../../../api/system/invoiceIn';
 import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfile';
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
 import { parseTime } from '@/utils/ruoyi';
@@ -222,6 +266,19 @@ export default {
 	components: { DialogWrapper, CheckFiles, OrderInfos, ApplyPayment, SearchOption },
 	mixins: [mixin_printHTML, reLength, mixin_checkfile, common_dialog],
 	data() {
+		// 金额格式验证（最多两位小数）
+		const validateAmount = (rule, value, callback) => {
+			if (value === '' || value === null || value === undefined) {
+				callback(new Error('请输入金额'));
+			} else {
+				const reg = /^(\d+)(\.\d{1,2})?$/;
+				if (!reg.test(value)) {
+					callback(new Error('金额格式不正确，最多两位小数'));
+				} else {
+					callback();
+				}
+			}
+		};
 		return {
 			// 遮罩层
 			loading: true,
@@ -336,7 +393,12 @@ export default {
 				{ key: 7, label: `票点金额`, visible: true },
 				{ key: 8, label: `订单信息`, visible: true },
 				{ key: 9, label: `审核状态`, visible: true },
-				{ key: 10, label: `备注`, visible: true }
+				{ key: 10, label: `备注`, visible: true },
+				// 新增的 extraInfo 相关列
+				{ key: 11, label: `实际开票金额`, visible: true },
+				{ key: 12, label: `实际开票时间`, visible: true },
+				{ key: 13, label: `当月欠票金额`, visible: true },
+				{ key: 14, label: `额外备注`, visible: true }
 			],
 
 			// 公司类型
@@ -357,7 +419,25 @@ export default {
 			// 付款申请
 			PaymentApplyInfoVisible: false,
 			tID: '',
-			needMoney: 0
+			needMoney: 0,
+			// 补充信息对话框
+			extraInfoDialogVisible: false,
+			currentExtraInfo: {},
+			currentRow: null,
+			extraInfoRules: {
+				actualInvoiceAmount: [
+					{ required: true, message: '请输入实际开票金额', trigger: 'blur' },
+					{ validator: validateAmount, trigger: 'blur' }
+				],
+				actualInvoiceTime: [
+					{ required: true, message: '请选择实际开票时间', trigger: 'blur' }
+				],
+				currentMonthOweInvoiceAmount: [
+					{ required: true, message: '请输入当月欠票金额', trigger: 'blur' },
+					{ validator: validateAmount, trigger: 'blur' }
+				]
+				// 备注字段不需要验证，因为是可选的
+			}
 		};
 	},
 	computed: {
@@ -542,10 +622,7 @@ export default {
 					});
 				})
 				.catch(() => {
-					this.$message({
-						type: 'warning',
-						message: '请先输入编辑原因!'
-					});
+					this.$message.error('请先输入编辑原因');
 				});
 		}, // 银行回执
 		handleCommitUpload(val) {
@@ -607,6 +684,42 @@ export default {
 				},
 				`invoiceIn_${new Date().getTime()}.xlsx`
 			);
+		},
+
+		/** 补充信息操作 */
+		handleAddExtraInfo(row) {
+			this.currentRow = row;
+			// 确保extraInfo存在
+			this.currentExtraInfo = row.extraInfo
+				? { ...row.extraInfo }
+				: {
+						actualInvoiceAmount: null,
+						actualInvoiceTime: null,
+						currentMonthOweInvoiceAmount: null,
+						comment: null
+				  };
+			this.extraInfoDialogVisible = true;
+		},
+
+		/** 保存补充信息 */
+		saveExtraInfo() {
+			this.$refs['extraInfoForm'].validate(valid => {
+				if (valid) {
+					if (this.currentRow) {
+						updateInvoiceInExtra(this.currentRow.id, this.currentExtraInfo)
+							.then(() => {
+								this.$modal.msgSuccess('补充信息更新成功');
+								this.extraInfoDialogVisible = false;
+								this.getList();
+							})
+							.catch(error => {
+								this.$modal.msgError('更新失败: ' + error);
+							});
+					}
+				} else {
+					return false;
+				}
+			});
 		}
 	}
 };

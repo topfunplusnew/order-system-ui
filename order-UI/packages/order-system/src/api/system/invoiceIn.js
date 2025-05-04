@@ -42,3 +42,12 @@ export function delInvoiceIn(id) {
 		method: 'delete'
 	});
 }
+
+// 补充发票买入的额外信息
+export function updateInvoiceInExtra(id, data) {
+	return request({
+		url: '/system/invoiceIn/extraInfo/'+ id,
+		method: 'put',
+		data: data
+	});
+}
