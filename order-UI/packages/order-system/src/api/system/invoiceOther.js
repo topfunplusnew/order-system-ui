@@ -42,3 +42,12 @@ export function delInvoiceOther(id) {
 		method: 'delete'
 	});
 }
+
+// 更新商家直接给客户开发票的额外信息
+export function updateInvoiceOtherExtra(id, extraInfo) {
+	return request({
+		url: '/system/invoiceOther/extraInfo/' + id,
+		method: 'put',
+		data: extraInfo
+	});
+}

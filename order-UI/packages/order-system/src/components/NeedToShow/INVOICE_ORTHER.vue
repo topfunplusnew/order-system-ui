@@ -5,6 +5,10 @@ export default {
 		needToShowInfo: {
 			type: Object
 		}
+	},
+	methods: {
+		handleProcess() {},
+		handleReject() {}
 	}
 };
 </script>
@@ -25,6 +29,18 @@ export default {
 				<el-descriptions-item label="备注">
 					<el-tag size="small">{{ needToShowInfo.comments || '无' }}</el-tag>
 				</el-descriptions-item>
+
+				<!-- 添加 extraInfo 相关信息展示 -->
+			<el-descriptions-item label="实际开票金额">
+				{{ needToShowInfo.extraInfo && needToShowInfo.extraInfo.actualInvoiceAmount }}
+			</el-descriptions-item>
+			<el-descriptions-item label="实际开票时间">
+				{{ needToShowInfo.extraInfo && needToShowInfo.extraInfo.actualInvoiceTime }}
+			</el-descriptions-item>
+			<el-descriptions-item label="当月欠票金额">
+				{{ needToShowInfo.extraInfo && needToShowInfo.extraInfo.currentMonthOweInvoiceAmount }}
+			</el-descriptions-item>
+			<el-descriptions-item label="备注">{{ needToShowInfo.extraInfo && needToShowInfo.extraInfo.comment }}</el-descriptions-item>
 			</el-descriptions>
 		</el-card>
 	</div>
