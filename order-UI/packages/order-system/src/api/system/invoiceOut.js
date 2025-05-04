@@ -42,3 +42,12 @@ export function delInvoiceOut(id) {
 		method: 'delete'
 	});
 }
+
+// 更新发票卖出信息的额外信息
+export function updateInvoiceOutExtra(id, extraInfo) {
+	return request({
+		url: '/system/invoiceOut/extraInfo/' + id,
+		method: 'put',
+		data: extraInfo
+	});
+}
