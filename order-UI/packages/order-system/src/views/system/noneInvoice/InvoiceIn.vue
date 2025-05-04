@@ -89,8 +89,9 @@
 					<CheckFiles :path="scope.row.invoiceAttachments" @needToUpdate="value => handleUpdateFilePath(value, scope.row, 'invoiceAttachments', getInvoiceIn(), updateInvoiceIn())" />
 				</template>
 			</el-table-column>
-			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="140px">
 				<template slot-scope="scope">
+					<el-button size="mini" type="text" @click="handleCheck(scope.row)">查看</el-button>
 					<el-button v-hasPermi="['system:invoicein:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
 					<el-button v-hasPermi="['system:invoicein:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
 				</template>
@@ -102,7 +103,11 @@
 		<!-- 添加或修改发票购入信息对话框 -->
 		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="700px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="150px">
-				<el-form-item label="开票日期" prop="invoiceDate">
+				<!--        新增开票日期 需要单独的接口来进行新增操作-->
+				<el-form-item label="开票日期" prop="extraInfo.actualInvoiceTime">
+					<el-date-picker v-model="form.extraInfo.actualInvoiceTime" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss" />
+				</el-form-item>
+				<el-form-item label="日期" prop="invoiceDate">
 					<el-date-picker v-model="form.invoiceDate" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss" />
 				</el-form-item>
 				<el-form-item label="我方收票主体" prop="invoiceObject">
@@ -175,6 +180,19 @@
 		<el-dialog :close-on-click-modal="false" :show-close="true" title="查看订单信息" :visible.sync="checkOrderInfoVisible" width="70%" append-to-body>
 			<OrderInfos :order-info="orderInfo" />
 		</el-dialog>
+
+		<div v-if="currentComponent">
+			<DialogWrapper
+				:current-component="currentComponent"
+				:dialog-visible="dialogVisible"
+				:dialog-props="dialogProps"
+				:dialog-title="dialogTitle"
+				:dialog-width="dialogWidth"
+				@update:dialogVisible="args => (dialogVisible = false)"
+				@close="handleCloseDialog"
+				@confirm="handleDialogConfirm"
+			/>
+		</div>
 	</div>
 </template>
 
@@ -194,11 +212,15 @@ import reLength from '../../dashboard/mixins/reLength';
 import { getInvoiceIn, updateInvoiceIn } from '../../../api/system/invoiceIn';
 import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfile';
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
+import { parseTime } from '@/utils/ruoyi';
+import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
+import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
+import INVOICE_IN from '@/components/NeedToShow/INVOICE_IN.vue';
 
 export default {
 	name: 'NoneInvoiceIn',
-	components: { CheckFiles, OrderInfos, ApplyPayment, SearchOption },
-	mixins: [mixin_printHTML, reLength, mixin_checkfile],
+	components: { DialogWrapper, CheckFiles, OrderInfos, ApplyPayment, SearchOption },
+	mixins: [mixin_printHTML, reLength, mixin_checkfile, common_dialog],
 	data() {
 		return {
 			// 遮罩层
@@ -245,10 +267,17 @@ export default {
 			checkOrderInfoVisible: false,
 			// 表单校验
 			rules: {
-				invoiceDate: [
+				'extraInfo.actualInvoiceTime': [
 					{
 						required: true,
 						message: '请选择开票日期',
+						trigger: 'blur'
+					}
+				],
+				invoiceDate: [
+					{
+						required: true,
+						message: '请选择日期',
 						trigger: 'blur'
 					}
 				],
@@ -361,6 +390,7 @@ export default {
 		}
 	},
 	created() {
+		this.reset();
 		this.getList();
 		if (localStorage.getItem('none-invoicein-columns') === 'null' || !localStorage.getItem('none-invoicein-columns')) {
 			// 设置localStorage
@@ -418,7 +448,7 @@ export default {
 		reset() {
 			this.form = {
 				id: null,
-				invoiceDate: null,
+				invoiceDate: parseTime(new Date()),
 				invoiceObject: null,
 				invoiceAmount: null,
 				companyType: null,
@@ -433,7 +463,14 @@ export default {
 				userId: null,
 				UserName: null,
 				updateTime: null,
-				delFlag: null
+				delFlag: null,
+				// 额外信息
+				extraInfo: {
+					actualInvoiceAmount: null,
+					actualInvoiceTime: null,
+					currentMonthOweInvoiceAmount: null,
+					comment: null
+				}
 			};
 			this.resetForm('form');
 		},
@@ -459,7 +496,28 @@ export default {
 			this.open = true;
 			this.title = '添加发票购入信息';
 		},
-
+		// 查看改行的发票信息
+		handleCheck(row) {
+			if (!row.id) {
+				this.$message.error('改行数据有误!');
+				return;
+			}
+			getInvoiceIn(row.id).then(res => {
+				if (!res.data) {
+					this.$message.error('暂无该条数据');
+					return;
+				}
+				this.openDialog(
+					INVOICE_IN,
+					'发票信息',
+					'900px',
+					{
+						needToShowInfo: res.data
+					},
+					true
+				);
+			});
+		},
 		handleUpdate(row) {
 			this.$prompt('请输入编辑原因', '提示', {
 				confirmButtonText: '确定',
