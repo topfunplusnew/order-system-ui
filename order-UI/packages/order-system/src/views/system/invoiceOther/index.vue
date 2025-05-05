@@ -166,11 +166,14 @@
 								</SearchOption>
 							</el-col>
 						</el-form-item>
-						<el-form-item label="开票日期" prop="invoiceDate">
+						<el-form-item label="日期" prop="invoiceDate">
 							<el-date-picker v-model="form.invoiceDate" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 						</el-form-item>
-						<el-form-item label="实际开票日期" prop="extraInfo.actualInvoiceTime">
+						<el-form-item label="开票日期" prop="extraInfo.actualInvoiceTime">
 							<el-date-picker v-model="form.extraInfo.actualInvoiceTime" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+						</el-form-item>
+						<el-form-item label="开票金额" prop="invoiceAmount">
+							<el-input v-model="form.invoiceAmount" placeholder="请输入开票金额" />
 						</el-form-item>
 						<el-form-item label="供应商公司名称" prop="Supplier">
 							<el-col :span="20">
@@ -197,17 +200,15 @@
 								</SearchOption>
 							</el-col>
 						</el-form-item>
-						<el-form-item label="开票金额" prop="invoiceAmount">
-							<el-input v-model="form.invoiceAmount" placeholder="请输入开票金额" />
-						</el-form-item>
+
 						<el-form-item label="供应商票点" prop="supplierTicketPoint">
 							<el-input v-model="form.supplierTicketPoint" placeholder="请输入供应商票点" />
 						</el-form-item>
-					</el-col>
-					<el-col :span="12">
 						<el-form-item label="供应商票点金额" prop="supplierPointAmount">
 							<el-input disabled v-model="form.supplierPointAmount" placeholder="请输入供应商票点金额" />
 						</el-form-item>
+					</el-col>
+					<el-col :span="12">
 						<el-form-item label="客户公司名称" prop="customer">
 							<el-col :span="20">
 								<el-input disabled v-model="form.customer" placeholder="请选择" />
@@ -231,6 +232,12 @@
 									</template>
 								</SearchOption>
 							</el-col>
+						</el-form-item>
+						<el-form-item label="客户票点" prop="customerTicketPoint">
+							<el-input v-model="form.customerTicketPoint" placeholder="请输入客户票点" />
+						</el-form-item>
+						<el-form-item label="客户票点金额" prop="customerPointAmount">
+							<el-input disabled v-model="form.customerPointAmount" placeholder="自动计算客户票点金额" />
 						</el-form-item>
 						<el-form-item label="票据单位名称" prop="invoiceCompanyName">
 							<el-input v-model="form.invoiceCompanyName" placeholder="请输入票据单位名称" />
