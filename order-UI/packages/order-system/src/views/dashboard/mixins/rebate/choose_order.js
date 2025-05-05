@@ -1,8 +1,6 @@
-// 添加返利回扣时选择订单的逻辑
-import { addDateRange } from '../../../../utils/ruoyi';
-import { noPageListRebate } from '../../../../api/system/Rebate';
 import { getGoodsOrder, listGoodsOrder } from '../../../../api/system/goodsOrder';
 import { fix } from '../../../../api/tool/format';
+import { listOrderDetail } from '@/api/system/orderDetail';
 
 export var mixin_choose_order = {
 	data() {
@@ -14,7 +12,10 @@ export var mixin_choose_order = {
 			// 选择供应商出来的搜索
 			queryParamsSupplier: {
 				supplier: '',
-				dateRange: []
+				params: {
+					beginTime: null,
+					endTime: null
+				}
 			},
 			// 供应商筛选  供应商列表名称 可以通过list拿
 			nameFilters: [],
@@ -30,6 +31,7 @@ export var mixin_choose_order = {
 			orderBySupplierVisible: false,
 			// 筛选的订单详情列表
 			needToSelectOrderDetailList: [],
+			orderDetailTotal: 0,
 			orderGoodsListVisible: false
 		};
 	},
@@ -51,17 +53,29 @@ export var mixin_choose_order = {
 		handleCommitCompany(val) {
 			this.queryParamsSupplier.supplier = val.companyName;
 		},
-		// todo 不分页的获取返利列表
-		getDetailBySupperNoPage(query) {
+		getDetailBySupper(query) {
+			const qs = {
+				...query,
+				supplier: this.queryParamsSupplier.supplier,
+				params: {
+					beginTime: this.queryParamsSupplier.params.beginTime,
+					endTime: this.queryParamsSupplier.params.endTime
+				}
+			};
 			// 点击选择供应商和时间段后 查询列表 然后弹出选择货物详情
-			noPageListRebate(query).then(res => {
+			listOrderDetail(qs).then(res => {
+				if (!res.rows) {
+					this.$message.info('暂时没有数据');
+					return;
+				}
 				this.needToSelectOrderDetailList = res.rows;
 				this.orderGoodsListVisible = true;
+				this.orderDetailTotal = res.total;
 			});
 		},
 		// 确认选择供应商
 		handleCommitSupplier() {
-			this.getDetailBySupperNoPage(this.queryParamsSupplier);
+			this.getDetailBySupper(this.queryParamsSupplier);
 		},
 		// 2. 直接选择订单
 		// 点击选择订单弹出的订单列表页选择某个订单 需要自动填充信息

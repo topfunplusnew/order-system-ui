@@ -47,7 +47,7 @@
 			<el-table-column v-if="columns[0].visible" label="id" align="center" prop="id" show-overflow-tooltip />
 			<el-table-column v-if="columns[1].visible" label="贷款来源" align="center" prop="origin" show-overflow-tooltip />
 			<el-table-column v-if="columns[2].visible" label="借入金额" align="center" prop="moneyAmount" show-overflow-tooltip />
-			<el-table-column v-if="columns[3].visible" label="付息金额" align="center" prop="ratio" show-overflow-tooltip />
+			<el-table-column v-if="columns[3].visible" label="贷款利率" align="center" prop="ratio" show-overflow-tooltip />
 			<el-table-column v-if="columns[4].visible" label="贷款发放日期" align="center" prop="loanDate" show-overflow-tooltip />
 			<el-table-column v-if="columns[5].visible" label="贷款年限" align="center" prop="loanDuring" show-overflow-tooltip />
 			<el-table-column v-if="columns[6].visible" label="抵押担保" align="center" prop="mortgageGuarantee" show-overflow-tooltip />

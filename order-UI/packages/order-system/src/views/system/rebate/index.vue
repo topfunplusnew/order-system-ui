@@ -121,7 +121,7 @@
 		<!-- todo 添加或修改返利回扣对话框 -->
 		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="800px" append-to-body>
 			<el-row>
-				<el-form ref="form" :model="form" :rules="rules" label-width="120px">
+				<el-form ref="form" :model="form" :rules="rules" label-width="150px">
 					<el-row>
 						<el-col :span="12">
 							<!-- 系数输入框 -->
@@ -161,6 +161,8 @@
 							</el-form-item>
 
 							<!-- 供应商 -->
+						</el-col>
+						<el-col :span="12">
 							<el-form-item label="请选择供应商" prop="supplier">
 								<el-row>
 									<el-col :span="15">
@@ -187,7 +189,6 @@
 									</el-col>
 								</el-row>
 							</el-form-item>
-
 							<!-- 重箱值 -->
 							<el-form-item label="重箱值" prop="weightBox" v-if="areaOrWeightBox === 1">
 								<el-input v-model="form.weightBox" placeholder="根据订单自动计算" disabled />
@@ -201,9 +202,6 @@
 							<el-form-item label="金额" prop="rebate">
 								<el-input v-model="form.rebate" placeholder="请输入金额" :disabled="!form.unitPrice" />
 							</el-form-item>
-						</el-col>
-
-						<el-col :span="12">
 							<!-- 返利原因 -->
 							<el-form-item label="返利原因" prop="rebateReason">
 								<el-input v-model="form.rebateReason" placeholder="请输入返利原因" :disabled="!form.unitPrice" />
@@ -399,7 +397,7 @@
 											@commitBack="handleCommitCompany"
 										>
 											<template #table-columns>
-												<el-table-column label="公司名称" align="center" prop="companyName" />
+												<el-table-column label="供应商" align="center" prop="companyName" />
 												<el-table-column label="老板姓名" align="center" prop="leader" />
 												<el-table-column label="老板电话" align="center" prop="leaderTel" />
 												<el-table-column label="开户行" align="center" prop="bankName" />
@@ -409,8 +407,11 @@
 									</el-col>
 								</el-row>
 							</el-form-item>
-							<el-form-item label="时间">
-								<el-date-picker v-model="queryParamsSupplier.orderDate" type="date" placeholder="选择订单货物时间" value-format="yyyy-MM-dd"></el-date-picker>
+							<el-form-item label="开始时间">
+								<el-date-picker v-model="queryParamsSupplier.params.beginTime" type="date" placeholder="选择时间" value-format="yyyy-MM-dd"></el-date-picker>
+							</el-form-item>
+							<el-form-item label="结束时间">
+								<el-date-picker v-model="queryParamsSupplier.params.endTime" type="date" placeholder="选择时间" value-format="yyyy-MM-dd"></el-date-picker>
 							</el-form-item>
 						</el-form>
 					</el-row>
@@ -424,7 +425,12 @@
 		<!--    订单货物列表-->
 		<InfoDialog title="根据供应商所选货物列表" :visible.sync="orderGoodsListVisible" @update:visible="orderGoodsListVisible = false">
 			<template #info>
-				<OrderDetailList :order-detail-list="needToSelectOrderDetailList" @handleSelect="handleSelectOrderDetailChange" @handleQuery="value => getDetailBySupperNoPage(value)" />
+				<OrderDetailList
+					:order-detail-list="needToSelectOrderDetailList"
+					:total="orderDetailTotal"
+					@handleSelect="handleSelectOrderDetailChange"
+					@handleQuery="value => getDetailBySupper(value)"
+				/>
 			</template>
 		</InfoDialog>
 	</div>

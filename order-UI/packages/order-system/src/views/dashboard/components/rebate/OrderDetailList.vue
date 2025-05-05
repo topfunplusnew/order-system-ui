@@ -7,13 +7,20 @@ export default {
 		orderDetailList: {
 			type: Array,
 			default: () => []
+		},
+		total: {
+			type: Number,
+			default: 0
 		}
 	},
 	data() {
 		return {
 			loading: false,
 			selectedList: [],
-			queryParams: {}
+			queryParams: {
+				pageNum: 1,
+				pageSize: 10
+			}
 		};
 	},
 	computed: {
@@ -100,6 +107,8 @@ export default {
 			<!-- 其他列保持类似 -->
 			<el-table-column label="佣金" align="center" prop="customerCommission" min-width="90" />
 		</el-table>
+
+		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="handleQuery" />
 	</div>
 </template>
 
