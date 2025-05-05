@@ -372,10 +372,10 @@
 						</el-row>
 					</el-form-item>
 				</el-row>
-				<el-form-item label="对方银行账户类型" v-if="value !== '支付费用'">
+				<el-form-item label="对方银行账户类型" v-if="value !== PAYMENT_TARGET_TYPE.PAYMENT_FEE">
 					<BankType :option-baned="true" :baned="true" :select-type="form.otherBankCardType" @updateSelectedType="changeOtherBankType" />
 				</el-form-item>
-				<el-form-item label="对方账号" prop="otherBankNo" v-if="value !== '支付费用'">
+				<el-form-item label="对方账号" prop="otherBankNo" v-if="value !== PAYMENT_TARGET_TYPE.PAYMENT_FEE">
 					<el-row>
 						<el-col :span="14">
 							<el-input disabled v-model="form.otherBankNo" placeholder="请选择" />
@@ -504,7 +504,7 @@ import CheckDetail from '../../dashboard/components/payment/CheckDetail.vue';
 import BankType from '@/views/dashboard/components/common/BankType.vue';
 import { mixin_bankType } from '../../dashboard/mixins/common/common_bankType';
 import StateTag from '@/views/dashboard/components/common/StateTag.vue';
-import { BankAcceptanceType } from '../../../api/tool/enums';
+import { BankAcceptanceType, PAYMENT_TARGET_TYPE } from '../../../api/tool/enums';
 import CheckFiles from '@/components/CheckFiles.vue';
 import { mixin_checkfile } from '@/views/dashboard/mixins/checkfiles/mixin_checkfile';
 import _ from 'lodash';
@@ -688,6 +688,9 @@ export default {
 		};
 	},
 	computed: {
+		PAYMENT_TARGET_TYPE() {
+			return PAYMENT_TARGET_TYPE;
+		},
 		BankAcceptanceType() {
 			return BankAcceptanceType;
 		},

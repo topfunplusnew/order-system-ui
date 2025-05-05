@@ -283,7 +283,8 @@
 			<keep-alive>
 				<ApplyPayment
 					:extra-information="{
-						__customizeSubjectName: this.customizeSubjectName
+						__customizeSubjectName: this.customizeSubjectName,
+						__isPayment: true
 					}"
 					:table-name="TableName.LEND_MONEY"
 					:t-i-d="tid"

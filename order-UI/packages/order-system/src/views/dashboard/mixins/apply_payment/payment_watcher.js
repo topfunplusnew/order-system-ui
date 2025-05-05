@@ -1,4 +1,5 @@
 import { listBankAccount } from '../../../../api/system/bankAccount';
+import { PAYMENT_TARGET_TYPE } from '@/api/tool/enums';
 
 export var mixin_payment_watcher = {
 	data: function () {
@@ -44,7 +45,6 @@ export var mixin_payment_watcher = {
 		// 监听银行卡的变化 如果传入的银行卡信息有变化 就自动填充
 		'needInfo.bankNo': {
 			handler(val) {
-				console.log('银行卡信息变化', val);
 				// 如果传入的银行卡是空的就直接返回
 				if (val === undefined) {
 					if (this.isOtherButtonDisabled) {
@@ -64,8 +64,6 @@ export var mixin_payment_watcher = {
 					bankName: this.needInfo.bankName,
 					acountsName: this.needInfo.acountsName
 				};
-
-				console.log(`search`, search);
 				listBankAccount(search).then(res => {
 					// 如果没有查到 那么就提示 并且清空数据
 					if (res.rows.length === 0) {
@@ -92,7 +90,6 @@ export var mixin_payment_watcher = {
 		// 检测整个对象
 		needInfo: {
 			handler(val) {
-				console.log('watcher needInfo', val);
 				if (JSON.stringify(this.needInfo) !== '{}') {
 					this.fillFreightInfo();
 				} else {
@@ -142,6 +139,12 @@ export var mixin_payment_watcher = {
 		extraInformation: {
 			handler(val) {
 				console.log('extraInformation', val);
+				// 监听是否是付款 如果是 那么表单中某些字段要展示
+				if (val.__isPayment) {
+					this.isPayment = val.__isPayment;
+					// 对方类型为支付费用
+					this.value = PAYMENT_TARGET_TYPE.PAYMENT_FEE;
+				}
 				if (val.__companyType) {
 					this.form.companyType = val.__companyType;
 					this.value = val.__companyType;

@@ -1,32 +1,11 @@
 import { listSubject } from '../../../../api/system/subject';
 import { listBankAccount } from '../../../../api/system/bankAccount';
-import { TableName } from '../../../../api/tool/enums';
+import { PaymentOptions, TableName } from '../../../../api/tool/enums';
 
 export var mixin_payment_apply = {
 	data: function () {
 		return {
-			options: [
-				{
-					value: '客户',
-					label: '客户'
-				},
-				{
-					value: '供应商',
-					label: '供应商'
-				},
-				{
-					value: '司机',
-					label: '司机'
-				},
-				{
-					value: '员工',
-					label: '员工'
-				},
-				{
-					value: '支付费用',
-					label: '支付费用'
-				}
-			],
+			options: PaymentOptions,
 			value: '客户'
 		};
 	},

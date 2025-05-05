@@ -265,7 +265,8 @@
 			<keep-alive>
 				<ApplyPayment
 					:extra-information="{
-						__customizeSubjectName: this.customizeSubjectName
+						__customizeSubjectName: this.customizeSubjectName,
+						__isPayment: true
 					}"
 					:table-name="TableName.LEND_MONEY"
 					:t-i-d="tid"
@@ -296,7 +297,7 @@ import { mixin_printHTML } from '../../dashboard/mixins/print';
 import { ReceiveType } from '../../../api/tool/enums';
 import { getConfigKey } from '@/api/system/config';
 import { getSubjectLevelTree } from '@/api/system/subject';
-import _ from "lodash";
+import _ from 'lodash';
 
 export default {
 	name: 'DepositSelf',

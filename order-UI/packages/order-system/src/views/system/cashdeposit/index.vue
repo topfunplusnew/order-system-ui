@@ -281,7 +281,8 @@
 			<keep-alive>
 				<ApplyPayment
 					:extra-information="{
-						__customizeSubjectName: this.customizeSubjectName
+						__customizeSubjectName: this.customizeSubjectName,
+						__isPayment: true
 					}"
 					:table-name="TableName.LEND_MONEY"
 					:t-i-d="tid"
@@ -336,7 +337,7 @@ import { ReceiveType } from '../../../api/tool/enums';
 import InfoDialog from '@/components/InfoDialog.vue';
 import { getSubjectLevelTree } from '@/api/system/subject';
 import { getConfigKey } from '@/api/system/config';
-import _ from "lodash";
+import _ from 'lodash';
 
 export default {
 	name: 'CashDeposit',

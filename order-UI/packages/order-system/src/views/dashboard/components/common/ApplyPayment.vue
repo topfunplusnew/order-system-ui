@@ -12,14 +12,66 @@
 			<el-form-item label="金额" prop="moneyAmount">
 				<el-input v-model="form.moneyAmount" placeholder="请输入金额" :disabled="inputDisabled && moneyInputDisabled" />
 			</el-form-item>
+
+			<!--      只有当为付款的时候 才会展示付款信息-->
+			<template v-show="isPayment">
+				<el-form-item label="我方银行账户类型">
+					<BankType
+						:bill-type="BankAcceptanceType.PAY_TYPE.PAYMENT"
+						:select-type="form.selfBankCardType"
+						@updateSelectedType="changeSelfBankType"
+						@updateBankAcceptance="value => (form.params.bankacceptance = value)"
+					/>
+				</el-form-item>
+				<!--        对方信息-->
+				<el-form-item label="我方户名" prop="selfAcountsName">
+					<el-row>
+						<el-col :span="10">
+							<el-input disabled v-model="form.selfAcountsName" placeholder="请选择" />
+						</el-col>
+						<el-col :span="3">
+							<SearchOption
+								:limit-info="{ acountsType: '己方公司' }"
+								:get-data="listBankAccount"
+								icon="el-icon-search"
+								query-label="户名查找"
+								query-info="acountsName"
+								:query-name="queryBank"
+								@commitBack="handleCommitBackSelfBank"
+								@update:queryName="
+									val => {
+										queryBank = val;
+									}
+								"
+							>
+								<template #table-columns>
+									<el-table-column label="账号类型" align="center" prop="acountsType" />
+									<el-table-column label="显示名称" align="center" prop="displayName" />
+									<el-table-column label="开户行" align="center" prop="bankName" />
+									<el-table-column label="开户名" align="center" prop="acountsName" />
+									<el-table-column label="账号" align="center" prop="bankNo" />
+								</template>
+							</SearchOption>
+						</el-col>
+					</el-row>
+				</el-form-item>
+				<el-form-item label="我方账号" prop="selfBankNo">
+					<el-input disabled v-model="form.selfBankNo" placeholder="请选择" />
+				</el-form-item>
+				<el-form-item label="我方开户行" prop="selfBankName">
+					<el-input disabled v-model="form.selfBankName" placeholder="请选择" />
+				</el-form-item>
+			</template>
+
 			<el-form-item label="对方类型(请确认)">
 				<el-select v-model="value" placeholder="请选择" @change="handleOpponentTypeChange">
-					<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+					<!--      当选择了付款的时候 对方类型为 支付费用  并且禁用-->
+					<el-option :disabled="isPayment" v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
 				</el-select>
 				<span style="color: #1c84c6; font-size: 12px">请注意选择正确的对方公司类型!</span>
 			</el-form-item>
 
-			<el-form-item v-if="value !== '员工' && value !== '支付费用'" label="对方公司" prop="companyName">
+			<el-form-item v-if="value !== '员工' && value !== PAYMENT_TARGET_TYPE.PAYMENT_FEE" label="对方公司" prop="companyName">
 				<el-row>
 					<el-col :span="14">
 						<el-input disabled v-model="form.companyName" placeholder="请选择" />
@@ -252,13 +304,19 @@
 			</el-form-item>
 		</el-form>
 		<div slot="footer" class="dialog-footer" style="text-align: center">
-			<el-tooltip class="item" effect="dark" content="提交信息至服务器" placement="top-start">
-				<el-button type="primary" @click="submitForm" v-if="!isOtherButtonDisabled">提交到申请列表</el-button>
-			</el-tooltip>
-			<el-tooltip class="item" effect="dark" content="可以将填写的信息暂存下来,但不提交,下次打开可继续填写" placement="top-start">
-				<el-button @click="close" v-if="!isOtherButtonDisabled">关闭并暂存</el-button>
-			</el-tooltip>
-			<el-button @click="clear" v-if="!isOtherButtonDisabled">取消填写</el-button>
+			<template v-if="isPayment">
+				<el-button type="primary" @click="submitForm">确认付款</el-button>
+				<el-button @click="clear">取消</el-button>
+			</template>
+			<template v-else>
+				<el-tooltip class="item" effect="dark" content="提交信息至服务器" placement="top-start">
+					<el-button type="primary" @click="submitForm" v-if="!isOtherButtonDisabled">提交到申请列表</el-button>
+				</el-tooltip>
+				<el-tooltip class="item" effect="dark" content="可以将填写的信息暂存下来,但不提交,下次打开可继续填写" placement="top-start">
+					<el-button @click="close" v-if="!isOtherButtonDisabled">关闭并暂存</el-button>
+				</el-tooltip>
+				<el-button @click="clear" v-if="!isOtherButtonDisabled">取消填写</el-button>
+			</template>
 		</div>
 	</div>
 </template>
@@ -277,11 +335,52 @@ import { mixin_payment_fill } from '../../mixins/apply_payment/payment_fill';
 import { isNull } from '../../../../main';
 import { mixin_receive_money_subject } from '../../mixins/receivemoney/receive_money_subject';
 import { parseTime } from '@/utils/ruoyi';
+import BankType from '@/views/dashboard/components/common/BankType.vue';
+import { BankAcceptanceType, PAYMENT_TARGET_TYPE } from '@/api/tool/enums';
+import { mixin_bankType } from '@/views/dashboard/mixins/common/common_bankType';
+import { addPayment } from '@/api/system/payment';
+import _ from 'lodash';
+import { mixin_paymentindex_fill } from '@/views/system/payment/paymentFill';
 
 export default {
 	name: 'ApplyPayment',
-	components: { SearchOption },
-	mixins: [mixin_payment_apply, mixin_payment_level, mixin_payment_watcher, mixin_payment_fill, mixin_receive_money_subject],
+	computed: {
+		BankAcceptanceType() {
+			return BankAcceptanceType;
+		},
+		PAYMENT_TARGET_TYPE() {
+			return PAYMENT_TARGET_TYPE;
+		},
+		rules() {
+			// 基础校验规则 - 两种场景都需要的校验
+			const baseRules = {
+				fundsDate: [{ required: true, message: '付款日期不能为空', trigger: 'blur' }],
+				moneyAmount: [{ required: true, message: '付款金额不能为空', trigger: 'blur' }]
+			};
+
+			// 付款场景特有的校验规则
+			if (this.isPayment) {
+				return {
+					...baseRules,
+					selfAcountsName: [{ required: true, message: '我方户名不能为空', trigger: 'change' }],
+					selfBankNo: [{ required: true, message: '我方账号不能为空', trigger: 'change' }],
+					selfBankName: [{ required: true, message: '我方开户行不能为空', trigger: 'change' }]
+				};
+			}
+
+			// 付款申请场景的校验规则
+			else {
+				return {
+					...baseRules,
+					reason: [{ required: true, message: '付款事由不能为空', trigger: 'blur' }],
+					// 根据对方类型动态添加校验
+					...this.getOpponentTypeRules()
+				};
+			}
+		}
+	},
+	components: { BankType, SearchOption },
+	mixins: [mixin_payment_apply, mixin_payment_level, mixin_payment_watcher, mixin_payment_fill, mixin_receive_money_subject, mixin_bankType],
 	data() {
 		return {
 			// 遮罩层
@@ -297,6 +396,15 @@ export default {
 				fundsDate: parseTime(new Date()),
 				payType: null,
 				moneyAmount: null,
+				// 银行卡类型
+				selfBankCardType: null,
+				otherBankCardType: null,
+				// 己方银行卡信息
+				selfAcountsName: null,
+				selfBankNo: null,
+				selfBankName: null,
+				selfBankID: null,
+				// 对方银行卡信息
 				otherAcountsName: null,
 				otherBankNo: null,
 				otherBankName: null,
@@ -309,12 +417,6 @@ export default {
 				applyPersonID: null,
 				checkState: null,
 				comments: null
-			},
-			// 表单校验
-			rules: {
-				fundsDate: [{ required: true, message: '付款日期不能为空', trigger: 'blur' }],
-				moneyAmount: [{ required: true, message: '付款金额不能为空', trigger: 'blur' }],
-				reason: [{ required: true, message: '付款事由不能为空', trigger: 'blur' }]
 			},
 			// 禁用输入框
 			inputDisabled: false,
@@ -332,7 +434,11 @@ export default {
 			],
 			value: '', // 对方类型
 			queryOther: '', // 其他搜索参数
-			queryCompany: '' // 公司搜索参数
+			queryCompany: '', // 公司搜索参数
+
+			// 区分付款与付款申请的字段
+			isPayment: false,
+			queryBank: null
 		};
 	},
 	watch: {
@@ -383,37 +489,101 @@ export default {
 			this.form.otherBankNo = row.bankNo;
 			this.form.otherBankName = row.bankName;
 		},
+		// 自动填充我方信息
+		handleCommitBackSelfBank(val) {
+			this.form.selfBankName = val.bankName;
+			this.form.selfAcountsName = val.acountsName;
+			this.form.selfBankNo = val.bankNo;
+			this.form.selfBankID = val.id;
+		},
+		// 根据对方类型返回相应的校验规则
+		getOpponentTypeRules() {
+			if (!this.value || this.value === PAYMENT_TARGET_TYPE.PAYMENT_FEE) {
+				return {};
+			}
+
+			// 如果选择了对方类型且不是支付费用，则需要校验对方公司
+			const rules = {
+				companyName: [{ required: true, message: '对方公司不能为空', trigger: 'change' }]
+			};
+
+			// 如果是客户、供应商、司机或员工，则需要校验银行账号信息
+			if (['客户', '供应商', '司机', '员工'].includes(this.value) && !this.bankInputDisabled) {
+				rules.otherBankNo = [{ required: true, message: '对方账号不能为空', trigger: 'change' }];
+				rules.otherBankName = [{ required: true, message: '对方开户行不能为空', trigger: 'change' }];
+			}
+
+			return rules;
+		},
 		// 正常付款申请
 		submitForm() {
+			// 只抽取付款信息所需要的字段
 			this.$refs['form'].validate(valid => {
 				if (valid) {
-					// 如果是多个付款审核 需要把信息返回给父组件进行使用 这种情况只有不在弹窗中才会使用其他情况没有
-					if (this.isMulti) {
-						this.$message.success('付款申请提交成功');
-						this.$emit('getApplyPayment', this.form);
-						this.$emit('changeOpen');
+					const form = _.cloneDeep(this.form);
+					if (this.isPayment) {
+						this.handlePayment(form);
 						return;
 					}
-					// 添加付款类型
-					if (!this.form.payType) {
-						this.$modal.msgError('请选择付款类型');
-						return;
-					}
-					excludeParams(this.form, this.$exclude);
-					this.form.tableName = this.tableName;
-					this.form.tID = this.tID;
-					this.form.checkState = ''; // 审核状态赋空
-					this.form.companyType = this.value;
-					const payType = this.form.payType.join('-');
-					const body = { ...this.form, payType: payType };
-					addPaymentApply(body).then(() => {
-						this.$modal.msgSuccess('付款申请添加成功');
-						this.reset();
-						// 提交成功后删除本地的缓存
-						this.clearForm();
-						this.$emit('changeOpen');
-					});
+					this.handlePaymentApply(form);
 				}
+			});
+		},
+		handlePaymentApply(form) {
+			// 如果是多个付款审核 需要把信息返回给父组件进行使用 这种情况只有不在弹窗中才会使用其他情况没有
+			if (this.isMulti) {
+				this.$message.success('付款申请提交成功');
+				this.$emit('getApplyPayment', form);
+				this.$emit('changeOpen');
+				return;
+			}
+			// 添加付款类型
+			if (!form.payType) {
+				this.$modal.msgError('请选择付款类型');
+				return;
+			}
+			excludeParams(form, this.$exclude);
+			form.tableName = this.tableName;
+			form.tID = this.tID;
+			form.checkState = ''; // 审核状态赋空
+			form.companyType = this.value;
+			const payType = form.payType.join('-');
+			const body = { ...form, payType: payType };
+			addPaymentApply(body).then(() => {
+				this.$modal.msgSuccess('付款申请添加成功');
+				this.reset();
+				// 提交成功后删除本地的缓存
+				this.clearForm();
+				this.$emit('changeOpen');
+			});
+		},
+		// 如果是付款 付款的逻辑
+		handlePayment(form) {
+			if (!form.payType) {
+				this.$modal.msgError('请选择付款类型');
+				return;
+			}
+			const payType = form.payType.join('-');
+			const json = {
+				fundsDate: form.fundsDate,
+				payType: payType,
+				tableName: this.tableName,
+				moneyAmount: form.moneyAmount,
+				selfAcountsName: form.selfAcountsName,
+				selfBankNo: form.selfBankNo,
+				selfBankName: form.selfBankName,
+				selfBankID: form.selfBankID,
+				companyType: PAYMENT_TARGET_TYPE.PAYMENT_FEE,
+				comments: form.comments,
+				selfBankCardType: form.selfBankCardType,
+				params: {
+					bankacceptance: form.params.bankacceptance
+				}
+			};
+			addPayment(json).then(res => {
+				this.$message.success('付款成功');
+				this.reset();
+				this.$emit('changeOpen');
 			});
 		},
 		// 提交到数据库 但是状态是待提交 这个是当付款填写表单在弹窗中的时候
@@ -466,6 +636,14 @@ export default {
 				fundsDate: parseTime(new Date()),
 				payType: null,
 				moneyAmount: null,
+				// 银行卡类型
+				selfBankCardType: null,
+				otherBankCardType: null,
+				// 我方银行卡信息
+				selfBankNo: null,
+				selfBankName: null,
+				selfAcountsName: null,
+				// 对方银行卡类型
 				otherAcountsName: null,
 				otherBankNo: null,
 				otherBankName: null,
@@ -477,13 +655,7 @@ export default {
 				applyPerson: null,
 				applyPersonID: null,
 				checkState: null,
-				comments: null,
-				addtime: null,
-				userId: null,
-				UserName: null,
-				updateTime: null,
-				delFlag: null,
-				submitflag: null
+				comments: null
 			};
 			this.value = ''; // 重置对方类型
 			this.currentSort = { levelOne: '', levelTwo: '' };
@@ -505,10 +677,8 @@ export default {
 			try {
 				localStorage.removeItem(this.localStorageKey);
 				localStorage.removeItem('paymentApplyFormOpponentType');
-				this.$message.success('已清除上次填写的数据');
 			} catch (error) {
 				console.error('清除表单信息失败', error);
-				this.$message.error('清除表单信息失败');
 			}
 		},
 		// 从 localStorage 加载表单数据

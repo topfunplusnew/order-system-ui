@@ -163,7 +163,7 @@
 
 					<!--        第二列-->
 					<el-col :span="12">
-						<el-form-item v-if="value !== '支付费用'" :label="value === '司机' ? '司机' : '对方公司'" prop="companyName">
+						<el-form-item v-if="value !== PAYMENT_TARGET_TYPE.PAYMENT_FEE" :label="value === '司机' ? '司机' : '对方公司'" prop="companyName">
 							<el-row>
 								<el-col :span="14">
 									<el-input disabled v-model="form.companyName" placeholder="请选择" />
@@ -211,7 +211,7 @@
 								</el-col>
 							</el-row>
 						</el-form-item>
-						<el-form-item label="对方银行账户类型" v-if="value !== '支付费用'">
+						<el-form-item label="对方银行账户类型" v-if="value !== PAYMENT_TARGET_TYPE.PAYMENT_FEE">
 							<BankType :option-baned="true" :baned="true" :select-type="form.otherBankCardType" @updateSelectedType="changeOtherBankType" />
 						</el-form-item>
 						<el-form-item label="对方开户名" prop="otherAcountsName" v-if="value !== '支付费用'">
@@ -271,7 +271,7 @@ import SearchOption from '@/components/SearchOption.vue';
 import { listBankAccount } from '@/api/system/bankAccount';
 import { excludeParams } from '@/api/tool/exclude';
 import { addReason } from '@/api/system/user';
-import { BankAcceptanceType, TableName } from '@/api/tool/enums';
+import { BankAcceptanceType, PAYMENT_TARGET_TYPE, TableName } from '@/api/tool/enums';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
 import CheckFiles from '../../../components/CheckFiles.vue';
 
@@ -289,6 +289,9 @@ import { parseTime } from '@/utils/ruoyi';
 export default {
 	name: 'ReceiveMoney',
 	computed: {
+		PAYMENT_TARGET_TYPE() {
+			return PAYMENT_TARGET_TYPE;
+		},
 		BankAcceptanceType() {
 			return BankAcceptanceType;
 		}

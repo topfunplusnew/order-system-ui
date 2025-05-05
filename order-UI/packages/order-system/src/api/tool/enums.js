@@ -192,6 +192,14 @@ export const PaymentOptions = Object.freeze([
 	}
 ]);
 
+// 对方支付类型
+export const PAYMENT_TARGET_TYPE = Object.freeze({
+	CUSTOMER: '客户',
+	SUPPLIER: '供应商',
+	DRIVER: '司机',
+	PAYMENT_FEE: '支付费用'
+});
+
 export const BankAcceptanceType = Object.freeze({
 	BANK_CASH: '银行活期存款',
 	ACCEPTANCE: '承兑',
