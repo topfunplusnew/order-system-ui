@@ -259,7 +259,6 @@
 				<el-button @click="close" v-if="!isOtherButtonDisabled">关闭并暂存</el-button>
 			</el-tooltip>
 			<el-button @click="clear" v-if="!isOtherButtonDisabled">取消填写</el-button>
-			<!--			<el-button @click="saveForm">保存</el-button>-->
 		</div>
 	</div>
 </template>
@@ -349,9 +348,6 @@ export default {
 	},
 	mounted() {
 		this.loadForm();
-	},
-	beforeUnmount() {
-		this.saveForm();
 	},
 	methods: {
 		isNull,

@@ -50,3 +50,11 @@ export function getSubjectLevel(no) {
 		method: 'get'
 	});
 }
+
+// 获取一个产品级别的树形结构
+export function getSubjectLevelTree(no) {
+	return request({
+		url: '/system/subject/subjecttree/' + no,
+		method: 'get'
+	});
+}

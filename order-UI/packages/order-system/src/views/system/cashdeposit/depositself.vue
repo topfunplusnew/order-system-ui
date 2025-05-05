@@ -89,7 +89,7 @@
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="230px" fixed="right">
 				<template slot-scope="scope">
 					<el-row>
-						<el-button v-if="scope.row.checkState === '未申请'" size="mini" type="text" @click="applyForPayment(scope.row)">申请付款</el-button>
+						<el-button v-if="scope.row.checkState === '未申请'" size="mini" type="text" @click="applyForPayment(scope.row)">坏账损失</el-button>
 						<el-button v-if="scope.row.checkState === '审核中'" size="mini" type="warning" disabled>审核中</el-button>
 						<el-button v-hasPermi="['system:lendmoney:remove']" size="mini" type="text" @click="handleGetBackMoney(scope.row)">收回资金</el-button>
 						<el-button v-hasPermi="['system:lendmoney:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
@@ -260,10 +260,20 @@
 			</el-row>
 		</el-dialog>
 
-		<!--    付款申请-->
-		<el-dialog :close-on-click-modal="false" :show-close="false" title="付款申请" :visible.sync="applyDialogVisible" width="45%">
+		<!--    坏账损失-->
+		<el-dialog :close-on-click-modal="false" :show-close="false" title="坏账损失" :visible.sync="applyDialogVisible" width="45%">
 			<keep-alive>
-				<ApplyPayment :table-name="TableName.LEND_MONEY" :t-i-d="tid" :need-money="needMoney" :need-info="needInfo" @changeOpen="changeOpen" :money-input-disabled="false" />
+				<ApplyPayment
+					:extra-information="{
+						__customizeSubjectName: this.customizeSubjectName
+					}"
+					:table-name="TableName.LEND_MONEY"
+					:t-i-d="tid"
+					:need-money="needMoney"
+					:need-info="needInfo"
+					@changeOpen="changeOpen"
+					:money-input-disabled="false"
+				/>
 			</keep-alive>
 		</el-dialog>
 	</div>
@@ -284,6 +294,9 @@ import { parseTime } from '../../../utils/ruoyi';
 import { mixin_reviveMoney } from '../../dashboard/mixins/receive';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
 import { ReceiveType } from '../../../api/tool/enums';
+import { getConfigKey } from '@/api/system/config';
+import { getSubjectLevelTree } from '@/api/system/subject';
+import _ from "lodash";
 
 export default {
 	name: 'DepositSelf',
@@ -520,7 +533,9 @@ export default {
 			applyDialogVisible: false,
 			tid: '',
 			needMoney: 0,
-			needInfo: {}
+			needInfo: {},
+
+			customizeSubjectName: null
 		};
 	},
 	created() {
@@ -537,7 +552,7 @@ export default {
 	methods: {
 		listCompany,
 		listBankAccount,
-		// 付款申请
+		// 坏账损失
 		applyForPayment(row) {
 			this.tid = row.id;
 			// this.needMoney = row.moneyAmount;
@@ -546,7 +561,32 @@ export default {
 				acountsName: row.targetAcountsName,
 				bankName: row.targetBankName
 			};
-			this.applyDialogVisible = true;
+			this.fillBadDebtLoss();
+		},
+		// 补充坏账损失类型
+		fillBadDebtLoss() {
+			getConfigKey('bad_debt_loss_id').then(configValue => {
+				if (!configValue || !configValue.msg) {
+					this.$message.error('系统bad_debt_loss_id配置错误');
+					return;
+				}
+				getSubjectLevelTree(configValue.msg).then(res => {
+					if (!res.data) {
+						this.$message.error('未找到科目信息');
+						return;
+					}
+					if (!Array.isArray(res.data)) {
+						this.$message.error('未找到科目信息');
+						return;
+					}
+					this.customizeSubjectName = _.cloneDeep(res.data)
+						.reverse()
+						.map(item => {
+							return item.title;
+						});
+					this.applyDialogVisible = true;
+				});
+			});
 		},
 		// 点击收回资金按钮
 		handleGetBackMoney(row) {

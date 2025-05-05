@@ -149,6 +149,9 @@ export var mixin_payment_watcher = {
 				if (val.__referenceId) {
 					this.form.id = val.__referenceId;
 				}
+				if (val.__customizeSubjectName) {
+					this.form.payType = val.__customizeSubjectName;
+				}
 			},
 			deep: true,
 			immediate: true
