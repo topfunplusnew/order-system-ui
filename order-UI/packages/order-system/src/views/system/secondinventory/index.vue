@@ -230,7 +230,9 @@
 						<el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAddInventoryDetail" :disabled="!isEditingDetails">添加</el-button>
 					</el-col>
 					<el-col :span="1.5">
-						<el-button type="danger" icon="el-icon-delete" size="mini" @click="handleDeleteInventoryDetail" :disabled="!isEditingDetails || checkedInventoryDetail.length === 0">删除</el-button>
+						<el-button type="danger" icon="el-icon-delete" size="mini" @click="handleDeleteInventoryDetail" :disabled="!isEditingDetails || checkedInventoryDetail.length === 0">
+							删除
+						</el-button>
 					</el-col>
 					<el-col :span="1.5">
 						<el-button size="mini" type="warning" @click="toggleEditDetails(true)" :disabled="isEditingDetails">编辑子项</el-button>
@@ -458,13 +460,7 @@
 					</el-table-column>
 					<el-table-column label="陆运费单价" prop="landFreightPrice" width="150" v-if="isLand">
 						<template #default="scope">
-							<el-input
-								size="mini"
-								v-model.lazy="scope.row.landFreightPrice"
-								@input="() => recalculateAll(scope)"
-								placeholder="请输入陆运费单价"
-								:disabled="!scope.row.isEditing"
-							/>
+							<el-input size="mini" v-model.lazy="scope.row.landFreightPrice" @input="() => recalculateAll(scope)" placeholder="请输入陆运费单价" :disabled="!scope.row.isEditing" />
 						</template>
 					</el-table-column>
 					<el-table-column label="加费" prop="additionalFees" width="150">
@@ -1070,9 +1066,12 @@ export default {
 			this.$refs['secondForm'].validate(valid => {
 				if (valid) {
 					if (this.inventoryDetailList.some(item => item.isEditing)) {
-						this.$modal.confirm('有未保存的库存项，是否继续提交?').then(() => {
-							this.doSubmitSecond();
-						}).catch(() => {});
+						this.$modal
+							.confirm('有未保存的库存项，是否继续提交?')
+							.then(() => {
+								this.doSubmitSecond();
+							})
+							.catch(() => {});
 					} else {
 						this.doSubmitSecond();
 					}
@@ -1085,14 +1084,16 @@ export default {
 			this.secondForm.allSeaFreight = this.isSea ? this.inventoryDetailList.reduce((prev, curr) => Number(prev) + Number(curr.seaFreight || 0), 0) : 0;
 			const apiCall = this.secondForm.id ? updateInventoryMain : addInventoryMain;
 			const successMessage = this.secondForm.id ? '修改成功' : '新增成功';
-			apiCall(this.secondForm).then(() => {
-				this.$modal.msgSuccess(successMessage);
-				this.secondInventoryVisible = false;
-				this.getList();
-				this.resetSecond();
-			}).catch(error => {
-				this.$message.error('提交失败: ' + (error.message || '未知错误'));
-			});
+			apiCall(this.secondForm)
+				.then(() => {
+					this.$modal.msgSuccess(successMessage);
+					this.secondInventoryVisible = false;
+					this.getList();
+					this.resetSecond();
+				})
+				.catch(error => {
+					this.$message.error('提交失败: ' + (error.message || '未知错误'));
+				});
 		},
 		resetSecond() {
 			this.isSea = false;
@@ -1245,9 +1246,7 @@ export default {
 				} else if (row.isIncludeTaxFactory === 0 && row.isIncludeTaxSale === 1) {
 					row.profitNoTax = fix(row.payments / 1.075 - row.paymentFactory - Number(row.landFreight || 0) - Number(row.seaFreight || 0) - Number(row.otherCost || 0));
 				} else {
-					row.profitNoTax = fix(
-						row.payments / 1.075 - row.paymentFactory / 1.075 - Number(row.landFreight || 0) - Number(row.seaFreight || 0) - Number(row.otherCost || 0)
-					);
+					row.profitNoTax = fix(row.payments / 1.075 - row.paymentFactory / 1.075 - Number(row.landFreight || 0) - Number(row.seaFreight || 0) - Number(row.otherCost || 0));
 				}
 			}
 		},

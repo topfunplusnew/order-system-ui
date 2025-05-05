@@ -19,7 +19,7 @@
 				<span style="color: #1c84c6; font-size: 12px">请注意选择正确的对方公司类型!</span>
 			</el-form-item>
 
-			<el-form-item v-if="value !== '员工' && value !== '对外付款'" label="对方公司" prop="companyName">
+			<el-form-item v-if="value !== '员工' && value !== '支付费用'" label="对方公司" prop="companyName">
 				<el-row>
 					<el-col :span="14">
 						<el-input disabled v-model="form.companyName" placeholder="请选择" />
@@ -329,7 +329,6 @@ export default {
 				{ value: '供应商', label: '供应商' },
 				{ value: '司机', label: '司机' },
 				{ value: '员工', label: '员工' },
-				{ value: '对外付款', label: '对外付款' },
 				{ value: '支付费用', label: '支付费用' }
 			],
 			value: '', // 对方类型

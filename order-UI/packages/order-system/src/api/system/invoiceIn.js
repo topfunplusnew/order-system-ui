@@ -46,7 +46,7 @@ export function delInvoiceIn(id) {
 // 补充发票买入的额外信息
 export function updateInvoiceInExtra(id, data) {
 	return request({
-		url: '/system/invoiceIn/extraInfo/'+ id,
+		url: '/system/invoiceIn/extraInfo/' + id,
 		method: 'put',
 		data: data
 	});

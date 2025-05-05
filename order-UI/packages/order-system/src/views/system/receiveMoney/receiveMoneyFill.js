@@ -23,8 +23,8 @@ export var mixin_receive_money_fill = {
 					label: '司机'
 				},
 				{
-					value: '对外付款',
-					label: '对外付款'
+					value: '支付费用',
+					label: '支付费用'
 				}
 			],
 			value: '客户'

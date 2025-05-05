@@ -372,10 +372,10 @@
 						</el-row>
 					</el-form-item>
 				</el-row>
-				<el-form-item label="对方银行账户类型" v-if="value !== '对外付款'">
+				<el-form-item label="对方银行账户类型" v-if="value !== '支付费用'">
 					<BankType :option-baned="true" :baned="true" :select-type="form.otherBankCardType" @updateSelectedType="changeOtherBankType" />
 				</el-form-item>
-				<el-form-item label="对方账号" prop="otherBankNo" v-if="value !== '对外付款'">
+				<el-form-item label="对方账号" prop="otherBankNo" v-if="value !== '支付费用'">
 					<el-row>
 						<el-col :span="14">
 							<el-input disabled v-model="form.otherBankNo" placeholder="请选择" />
@@ -401,7 +401,7 @@
 						</el-col>
 					</el-row>
 				</el-form-item>
-				<el-form-item label="对方开户行" prop="otherBankName" v-if="value !== '对外付款'">
+				<el-form-item label="对方开户行" prop="otherBankName" v-if="value !== '支付费用'">
 					<el-input disabled v-model="form.otherBankName" placeholder="请选择" />
 				</el-form-item>
 				<el-form-item label="附件" prop="attachment">

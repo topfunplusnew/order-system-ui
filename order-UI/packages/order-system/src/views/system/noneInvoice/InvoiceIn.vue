@@ -51,7 +51,7 @@
 			@header-dragend="changeColWidth"
 			@selection-change="handleSelectionChange"
 		>
-			<el-table-column v-if="columns[0].visible" label="开票日期" align="center" prop="invoiceDate" show-overflow-tooltip />
+			<el-table-column v-if="columns[0].visible" label="日期" align="center" prop="invoiceDate" show-overflow-tooltip />
 			<el-table-column v-if="columns[1].visible" label="我方收票主体" align="center" prop="invoiceObject" show-overflow-tooltip width="100px" />
 			<el-table-column v-if="columns[2].visible" label="开票金额" align="center" prop="invoiceAmount" show-overflow-tooltip />
 			<el-table-column v-if="columns[3].visible" label="对方公司类别" align="center" prop="companyType" width="100px" show-overflow-tooltip />
@@ -69,7 +69,7 @@
 					{{ scope.row.extraInfo && scope.row.extraInfo.actualInvoiceAmount }}
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[12].visible" label="实际开票时间" align="center" show-overflow-tooltip>
+			<el-table-column v-if="columns[12].visible" label="开票时间" align="center" show-overflow-tooltip>
 				<template #default="scope">
 					{{ scope.row.extraInfo && scope.row.extraInfo.actualInvoiceTime }}
 				</template>
@@ -429,9 +429,7 @@ export default {
 					{ required: true, message: '请输入实际开票金额', trigger: 'blur' },
 					{ validator: validateAmount, trigger: 'blur' }
 				],
-				actualInvoiceTime: [
-					{ required: true, message: '请选择实际开票时间', trigger: 'blur' }
-				],
+				actualInvoiceTime: [{ required: true, message: '请选择实际开票时间', trigger: 'blur' }],
 				currentMonthOweInvoiceAmount: [
 					{ required: true, message: '请输入当月欠票金额', trigger: 'blur' },
 					{ validator: validateAmount, trigger: 'blur' }

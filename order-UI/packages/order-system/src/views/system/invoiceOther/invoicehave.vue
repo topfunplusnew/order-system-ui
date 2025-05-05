@@ -50,7 +50,7 @@
 			@header-dragend="changeColWidth"
 			@selection-change="handleSelectionChange"
 		>
-			<el-table-column v-if="columns[0].visible" label="开票日期" align="center" prop="invoiceDate" show-overflow-tooltip />
+			<el-table-column v-if="columns[0].visible" label="日期" align="center" prop="invoiceDate" show-overflow-tooltip />
 			<el-table-column v-if="columns[1].visible" label="开票金额" align="center" prop="invoiceAmount" show-overflow-tooltip />
 			<el-table-column v-if="columns[2].visible" label="供应商票点" align="center" prop="supplierTicketPoint" show-overflow-tooltip />
 			<el-table-column v-if="columns[3].visible" label="供应商票点金额" align="center" prop="supplierPointAmount" show-overflow-tooltip>
@@ -67,7 +67,7 @@
 					{{ scope.row.extraInfo && scope.row.extraInfo.actualInvoiceAmount }}
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[9].visible" label="实际开票时间" align="center" show-overflow-tooltip>
+			<el-table-column v-if="columns[9].visible" label="开票时间" align="center" show-overflow-tooltip>
 				<template #default="scope">
 					{{ scope.row.extraInfo && scope.row.extraInfo.actualInvoiceTime }}
 				</template>
@@ -408,13 +408,6 @@ export default {
 					{
 						required: true,
 						message: '请输入供应商票点金额',
-						trigger: 'blur'
-					}
-				],
-				invoiceDate: [
-					{
-						required: true,
-						message: '请选择开票日期',
 						trigger: 'blur'
 					}
 				],
