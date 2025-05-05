@@ -681,34 +681,42 @@ export default {
 		},
 		/** 修改按钮操作 */
 		handleUpdate(row) {
-			this.$prompt('请输入编辑原因', '提示', {
-				confirmButtonText: '确定',
-				cancelButtonText: '取消',
-				type: 'warning'
-			})
-				.then(({ value }) => {
-					addReason({
-						reason: value,
-						tableName: TableName.INVENTORY,
-						tid: row.id,
-						modifyTime: this.modifyTime
-					}).then(() => {
-						this.$message.success('提交成功');
-						this.reset();
-						const id = row.id || this.ids;
-						getInventory(id).then(response => {
-							this.form = response.data;
-							this.open = true;
-							this.title = '修改库存';
-						});
-					});
-				})
-				.catch(() => {
-					this.$message({
-						type: 'warning',
-						message: '请先输入编辑原因!'
-					});
-				});
+			// this.$prompt('请输入编辑原因', '提示', {
+			// 	confirmButtonText: '确定',
+			// 	cancelButtonText: '取消',
+			// 	type: 'warning'
+			// })
+			// 	.then(({ value }) => {
+			// 		addReason({
+			// 			reason: value,
+			// 			tableName: TableName.INVENTORY,
+			// 			tid: row.id,
+			// 			modifyTime: this.modifyTime
+			// 		}).then(() => {
+			// 			this.$message.success('提交成功');
+			// 			this.reset();
+			// 			const id = row.id || this.ids;
+			// 			getInventory(id).then(response => {
+			// 				this.form = response.data;
+			// 				this.open = true;
+			// 				this.title = '修改库存';
+			// 			});
+			// 		});
+			// 	})
+			// 	.catch(() => {
+			// 		this.$message({
+			// 			type: 'warning',
+			// 			message: '请先输入编辑原因!'
+			// 		});
+			// 	});
+
+			this.reset();
+			const id = row.id || this.ids;
+			getInventory(id).then(response => {
+				this.form = response.data;
+				this.open = true;
+				this.title = '修改库存';
+			});
 		},
 		/** 提交按钮 */
 		submitForm() {

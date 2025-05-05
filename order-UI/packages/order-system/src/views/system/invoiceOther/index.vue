@@ -607,34 +607,41 @@ export default {
 			this.title = '添加商家直接给客户开发票';
 		},
 		handleUpdate(row) {
-			this.$prompt('请输入编辑原因', '提示', {
-				confirmButtonText: '确定',
-				cancelButtonText: '取消',
-				type: 'warning'
-			})
-				.then(({ value }) => {
-					addReason({
-						reason: value,
-						tableName: TableName.INVOICE_OTHER,
-						tid: row.id,
-						modifyTime: this.modifyTime
-					}).then(() => {
-						this.$message.success('提交成功');
-						this.reset();
-						const id = row.id || this.ids;
-						getInvoiceOther(id).then(response => {
-							this.form = response.data;
-							this.open = true;
-							this.title = '修改商家直接给客户开发票';
-						});
-					});
-				})
-				.catch(() => {
-					this.$message({
-						type: 'warning',
-						message: '请先输入编辑原因!'
-					});
-				});
+			// this.$prompt('请输入编辑原因', '提示', {
+			// 	confirmButtonText: '确定',
+			// 	cancelButtonText: '取消',
+			// 	type: 'warning'
+			// })
+			// 	.then(({ value }) => {
+			// 		addReason({
+			// 			reason: value,
+			// 			tableName: TableName.INVOICE_OTHER,
+			// 			tid: row.id,
+			// 			modifyTime: this.modifyTime
+			// 		}).then(() => {
+			// 			this.$message.success('提交成功');
+			// 			this.reset();
+			// 			const id = row.id || this.ids;
+			// 			getInvoiceOther(id).then(response => {
+			// 				this.form = response.data;
+			// 				this.open = true;
+			// 				this.title = '修改商家直接给客户开发票';
+			// 			});
+			// 		});
+			// 	})
+			// 	.catch(() => {
+			// 		this.$message({
+			// 			type: 'warning',
+			// 			message: '请先输入编辑原因!'
+			// 		});
+			// 	});
+			this.reset();
+			const id = row.id || this.ids;
+			getInvoiceOther(id).then(response => {
+				this.form = response.data;
+				this.open = true;
+				this.title = '修改商家直接给客户开发票';
+			});
 		},
 		submitForm() {
 			this.$refs['form'].validate(valid => {

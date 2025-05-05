@@ -245,34 +245,42 @@ export default {
     },*/
 		/** 修改按钮操作 */
 		handleUpdateRecoverMoney(row) {
-			this.$prompt('请输入编辑原因', '提示', {
-				confirmButtonText: '确定',
-				cancelButtonText: '取消',
-				type: 'warning'
-			})
-				.then(({ value }) => {
-					addReason({
-						reason: value,
-						tableName: TableName.RECOVER_MONEY,
-						tid: row.id,
-						modifyTime: this.modifyTime
-					}).then(res => {
-						this.$message.success('提交成功');
-						this.reset();
-						const id = row.id || this.ids;
-						getRecoverMoney(id).then(response => {
-							this.form = response.data;
-							this.open = true;
-							this.title = '修改借出款收回信息';
-						});
-					});
-				})
-				.catch(() => {
-					this.$message({
-						type: 'warning',
-						message: '请先输入编辑原因!'
-					});
-				});
+			// this.$prompt('请输入编辑原因', '提示', {
+			// 	confirmButtonText: '确定',
+			// 	cancelButtonText: '取消',
+			// 	type: 'warning'
+			// })
+			// 	.then(({ value }) => {
+			// 		addReason({
+			// 			reason: value,
+			// 			tableName: TableName.RECOVER_MONEY,
+			// 			tid: row.id,
+			// 			modifyTime: this.modifyTime
+			// 		}).then(res => {
+			// 			this.$message.success('提交成功');
+			// 			this.reset();
+			// 			const id = row.id || this.ids;
+			// 			getRecoverMoney(id).then(response => {
+			// 				this.form = response.data;
+			// 				this.open = true;
+			// 				this.title = '修改借出款收回信息';
+			// 			});
+			// 		});
+			// 	})
+			// 	.catch(() => {
+			// 		this.$message({
+			// 			type: 'warning',
+			// 			message: '请先输入编辑原因!'
+			// 		});
+			// 	});
+
+			this.reset();
+			const id = row.id || this.ids;
+			getRecoverMoney(id).then(response => {
+				this.form = response.data;
+				this.open = true;
+				this.title = '修改借出款收回信息';
+			});
 		},
 		/** 提交按钮 */
 		submitForm() {

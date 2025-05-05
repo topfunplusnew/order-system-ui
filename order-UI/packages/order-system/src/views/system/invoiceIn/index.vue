@@ -469,34 +469,41 @@ export default {
 		},
 
 		handleUpdate(row) {
-			this.$prompt('请输入编辑原因', '提示', {
-				confirmButtonText: '确定',
-				cancelButtonText: '取消',
-				type: 'warning'
-			})
-				.then(({ value }) => {
-					addReason({
-						reason: value,
-						tableName: TableName.INVOICE_IN,
-						tid: row.id,
-						modifyTime: this.modifyTime
-					}).then(() => {
-						this.$message.success('提交成功');
-						this.reset();
-						const id = row.id || this.ids;
-						getInvoiceIn(id).then(response => {
-							this.form = response.data;
-							this.open = true;
-							this.title = '修改发票购入信息';
-						});
-					});
-				})
-				.catch(() => {
-					this.$message({
-						type: 'warning',
-						message: '请先输入编辑原因!'
-					});
-				});
+			// this.$prompt('请输入编辑原因', '提示', {
+			// 	confirmButtonText: '确定',
+			// 	cancelButtonText: '取消',
+			// 	type: 'warning'
+			// })
+			// 	.then(({ value }) => {
+			// 		addReason({
+			// 			reason: value,
+			// 			tableName: TableName.INVOICE_IN,
+			// 			tid: row.id,
+			// 			modifyTime: this.modifyTime
+			// 		}).then(() => {
+			// 			this.$message.success('提交成功');
+			// 			this.reset();
+			// 			const id = row.id || this.ids;
+			// 			getInvoiceIn(id).then(response => {
+			// 				this.form = response.data;
+			// 				this.open = true;
+			// 				this.title = '修改发票购入信息';
+			// 			});
+			// 		});
+			// 	})
+			// 	.catch(() => {
+			// 		this.$message({
+			// 			type: 'warning',
+			// 			message: '请先输入编辑原因!'
+			// 		});
+			// 	});
+			this.reset();
+			const id = row.id || this.ids;
+			getInvoiceIn(id).then(response => {
+				this.form = response.data;
+				this.open = true;
+				this.title = '修改发票购入信息';
+			});
 		}, // 银行回执
 		handleCommitUpload(val) {
 			this.form.paymentReceipts = val;
