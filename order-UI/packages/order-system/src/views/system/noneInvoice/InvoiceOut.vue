@@ -111,7 +111,10 @@
 		<!-- 添加或修改发票卖出信息对话框 -->
 		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="700px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="150px">
-				<el-form-item label="开票日期" prop="invoiceDate">
+				<el-form-item label="开票日期" prop="extraInfo.actualInvoiceTime">
+					<el-date-picker v-model="form.extraInfo.actualInvoiceTime" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+				</el-form-item>
+				<el-form-item label="日期" prop="invoiceDate">
 					<el-date-picker v-model="form.invoiceDate" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 				</el-form-item>
 				<el-form-item label="我方收票主体" prop="invoiceObject">
@@ -417,6 +420,7 @@ export default {
 		}
 	},
 	created() {
+		this.reset();
 		this.getList();
 		if (localStorage.getItem('inone-invoiceout-columns') === 'null' || !localStorage.getItem('inone-invoiceout-columns')) {
 			// 设置localStorage

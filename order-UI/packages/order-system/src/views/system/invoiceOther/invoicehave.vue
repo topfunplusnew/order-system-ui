@@ -116,65 +116,71 @@
 		<!-- 添加或修改商家直接给客户开发票对话框 -->
 		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" append-to-body width="800px">
 			<el-row>
-				<el-form ref="form" :model="form" :rules="rules" label-width="120px">
+				<el-form ref="form" :model="form" :rules="rules" label-width="140px">
 					<!--        订单编号应该是选择某个订单 然后自动填充-->
-					<el-form-item label="订单ID" prop="ordersNo">
-						<el-col :span="20">
-							<!--              <el-input v-model="form.ordersNo" placeholder="请选择关联订单"/>-->
-							<el-input v-model="form.orderIDS" disabled placeholder="请选择关联订单" />
-						</el-col>
-						<el-col :span="4">
-							<SearchOption
-								:limit-info="{}"
-								:get-data="listGoodsOrder"
-								query-info="customer"
-								query-label="客户名称"
-								:query-name="queryGoodsOrder"
-								@update:queryName="handleUpdateGoodsOrder"
-								@commitBack="handleCommitBackGoodsOrder"
-							>
-								<template #table-columns>
-									<el-table-column show-overflow-tooltip label="ID" align="center" prop="id" fixed="left" />
-									<el-table-column show-overflow-tooltip label="日期" align="center" prop="orderDate" fixed="left" />
-									<el-table-column show-overflow-tooltip label="客户" align="center" prop="customer" fixed="left" />
-									<el-table-column show-overflow-tooltip label="供应商" align="center" prop="supplierNames" fixed="left" />
-									<el-table-column label="订单编号" align="center" prop="ordersNo" width="200px" />
-									<el-table-column show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo" />
-									<el-table-column show-overflow-tooltip label="陆运司机电话" align="center" prop="landDriverTel" width="100px" />
-									<el-table-column show-overflow-tooltip label="陆地司机姓名" align="center" prop="landDriverName" width="100px" />
-									<el-table-column show-overflow-tooltip label="柜号" align="center" prop="seaCarNo">
-										<template #default="scope">
-											{{ !scope.row.seaCarNo ? '无' : scope.row.seaCarNo }}
-										</template>
-									</el-table-column>
-									<el-table-column show-overflow-tooltip label="海运司机电话" align="center" prop="seaDriverTel" width="100px">
-										<template #default="scope">
-											{{ !scope.row.seaDriverTel ? '无' : scope.row.seaDriverTel }}
-										</template>
-									</el-table-column>
-									<el-table-column show-overflow-tooltip label="海运公司" align="center" prop="seaDriverName" width="100px">
-										<template #default="scope">
-											{{ !scope.row.seaDriverName ? '无' : scope.row.seaDriverTel }}
-										</template>
-									</el-table-column>
-									<el-table-column show-overflow-tooltip label="销售经理" align="center" prop="saleManager" />
-									<el-table-column show-overflow-tooltip label="车队" align="center" prop="fleet" />
-									<el-table-column show-overflow-tooltip label="审核状态" align="center" prop="checkState" width="120"></el-table-column>
-									<el-table-column show-overflow-tooltip label="开票状态" align="center" prop="invoiceState" width="120px"></el-table-column>
-									<!--									<el-table-column show-overflow-tooltip label="打款状态" align="center" prop="paymentState">-->
-									<!--										<template slot-scope="scope">-->
-									<!--											<el-tag disable-transitions>-->
-									<!--												{{ scope.row.paymentState }}-->
-									<!--											</el-tag>-->
-									<!--										</template>-->
-									<!--									</el-table-column>-->
-
-									<el-table-column show-overflow-tooltip label="备注" align="center" prop="comments" />
-								</template>
-							</SearchOption>
-						</el-col>
-					</el-form-item>
 					<el-col :span="12">
+						<el-form-item label="订单ID" prop="ordersNo">
+							<el-col :span="20">
+								<!--              <el-input v-model="form.ordersNo" placeholder="请选择关联订单"/>-->
+								<el-input v-model="form.orderIDS" disabled placeholder="请选择关联订单" />
+							</el-col>
+							<el-col :span="4">
+								<SearchOption
+									:limit-info="{}"
+									:get-data="listGoodsOrder"
+									query-info="customer"
+									query-label="客户名称"
+									:query-name="queryGoodsOrder"
+									@update:queryName="handleUpdateGoodsOrder"
+									@commitBack="handleCommitBackGoodsOrder"
+								>
+									<template #table-columns>
+										<el-table-column show-overflow-tooltip label="ID" align="center" prop="id" fixed="left" />
+										<el-table-column show-overflow-tooltip label="日期" align="center" prop="orderDate" fixed="left" />
+										<el-table-column show-overflow-tooltip label="客户" align="center" prop="customer" fixed="left" />
+										<el-table-column show-overflow-tooltip label="供应商" align="center" prop="supplierNames" fixed="left" />
+										<el-table-column label="订单编号" align="center" prop="ordersNo" width="200px" />
+										<el-table-column show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo" />
+										<el-table-column show-overflow-tooltip label="陆运司机电话" align="center" prop="landDriverTel" width="100px" />
+										<el-table-column show-overflow-tooltip label="陆地司机姓名" align="center" prop="landDriverName" width="100px" />
+										<el-table-column show-overflow-tooltip label="柜号" align="center" prop="seaCarNo">
+											<template #default="scope">
+												{{ !scope.row.seaCarNo ? '无' : scope.row.seaCarNo }}
+											</template>
+										</el-table-column>
+										<el-table-column show-overflow-tooltip label="海运司机电话" align="center" prop="seaDriverTel" width="100px">
+											<template #default="scope">
+												{{ !scope.row.seaDriverTel ? '无' : scope.row.seaDriverTel }}
+											</template>
+										</el-table-column>
+										<el-table-column show-overflow-tooltip label="海运公司" align="center" prop="seaDriverName" width="100px">
+											<template #default="scope">
+												{{ !scope.row.seaDriverName ? '无' : scope.row.seaDriverTel }}
+											</template>
+										</el-table-column>
+										<el-table-column show-overflow-tooltip label="销售经理" align="center" prop="saleManager" />
+										<el-table-column show-overflow-tooltip label="车队" align="center" prop="fleet" />
+										<el-table-column show-overflow-tooltip label="审核状态" align="center" prop="checkState" width="120"></el-table-column>
+										<el-table-column show-overflow-tooltip label="开票状态" align="center" prop="invoiceState" width="120px"></el-table-column>
+										<!--									<el-table-column show-overflow-tooltip label="打款状态" align="center" prop="paymentState">-->
+										<!--										<template slot-scope="scope">-->
+										<!--											<el-tag disable-transitions>-->
+										<!--												{{ scope.row.paymentState }}-->
+										<!--											</el-tag>-->
+										<!--										</template>-->
+										<!--									</el-table-column>-->
+
+										<el-table-column show-overflow-tooltip label="备注" align="center" prop="comments" />
+									</template>
+								</SearchOption>
+							</el-col>
+						</el-form-item>
+						<el-form-item label="日期" prop="invoiceDate">
+							<el-date-picker v-model="form.invoiceDate" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+						</el-form-item>
+						<el-form-item label="开票日期" prop="invoiceDate">
+							<el-date-picker v-model="form.extraInfo.actualInvoiceTime" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+						</el-form-item>
 						<el-form-item label="供应商公司名称" prop="Supplier">
 							<el-col :span="20">
 								<el-input disabled v-model="form.Supplier" placeholder="请选择" />
@@ -206,14 +212,11 @@
 						<el-form-item label="供应商票点" prop="supplierTicketPoint">
 							<el-input v-model="form.supplierTicketPoint" placeholder="请输入供应商票点" />
 						</el-form-item>
+					</el-col>
+					<el-col :span="12">
 						<el-form-item label="供应商票点金额" prop="supplierPointAmount">
 							<el-input disabled v-model="form.supplierPointAmount" placeholder="请输入供应商票点金额" />
 						</el-form-item>
-						<el-form-item label="开票日期" prop="invoiceDate">
-							<el-date-picker v-model="form.invoiceDate" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
-						</el-form-item>
-					</el-col>
-					<el-col :span="12">
 						<el-form-item label="客户公司名称" prop="customer">
 							<el-col :span="20">
 								<el-input disabled v-model="form.customer" placeholder="请选择" />
@@ -486,6 +489,7 @@ export default {
 		}
 	},
 	created() {
+		this.reset();
 		this.getList();
 		if (localStorage.getItem('invoiceother-have-columns') === 'null' || !localStorage.getItem('invoiceother-have-columns')) {
 			// 设置localStorage
