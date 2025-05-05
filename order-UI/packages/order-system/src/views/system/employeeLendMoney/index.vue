@@ -57,6 +57,7 @@
 			<el-table-column v-if="columns[0].visible" label="借款人" align="center" prop="target" width="110" />
 			<el-table-column v-if="columns[1].visible" label="对象类型" align="center" prop="targetType" width="110" />
 			<el-table-column v-if="columns[2].visible" label="借出金额" align="center" prop="moneyAmount" width="110" />
+			<el-table-column v-if="columns[11].visible" label="未收回金额" align="center" prop="unrecoveredAmount" width="110" />
 			<el-table-column v-if="columns[3].visible" label="对方收借款账号" align="center" prop="targetBankNo" width="160" />
 			<el-table-column v-if="columns[4].visible" label="对方户名" align="center" prop="targetAcountsName" width="160" />
 			<el-table-column v-if="columns[5].visible" label="对方开户行" align="center" prop="targetBankName" width="160" />
@@ -384,6 +385,12 @@ export default {
 					key: 2,
 					label: '借入金额',
 					prop: 'moneyAmount',
+					visible: true
+				},
+				{
+					key: 11,
+					label: '未收回金额',
+					prop: 'unrecoveredAmount',
 					visible: true
 				},
 				{

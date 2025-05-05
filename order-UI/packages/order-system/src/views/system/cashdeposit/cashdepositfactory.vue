@@ -73,6 +73,7 @@
 
 			<!-- 保证金金额 -->
 			<el-table-column v-if="columns[3].visible" label="保证金金额" align="center" prop="moneyAmount" width="110" show-overflow-tooltip />
+			<el-table-column v-if="columns[12].visible" label="未收回金额" align="center" prop="unrecoveredAmount" width="110" show-overflow-tooltip />
 
 			<!-- 对方账户 -->
 			<el-table-column v-if="columns[4].visible" label="对方账户" align="center" prop="targetAcountsName" width="110" show-overflow-tooltip />
@@ -448,7 +449,13 @@ export default {
 				{ key: 8, label: '我方账号', visible: true },
 				{ key: 9, label: '我方开户行', visible: true },
 				{ key: 10, label: '支付厂家保证金时间', visible: true },
-				{ key: 11, label: '事由', visible: true }
+				{ key: 11, label: '事由', visible: true },
+				{
+					key: 12,
+					label: '未收回金额',
+					prop: 'unrecoveredAmount',
+					visible: true
+				}
 			],
 
 			// 员工、客户、供应商、其他

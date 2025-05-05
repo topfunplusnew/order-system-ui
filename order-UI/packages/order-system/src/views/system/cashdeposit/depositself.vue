@@ -66,6 +66,7 @@
 			<el-table-column v-if="columns[2].visible" :label="columns[2].label" :prop="columns[2].prop" align="center" width="110" show-overflow-tooltip />
 
 			<el-table-column v-if="columns[3].visible" :label="columns[3].label" :prop="columns[3].prop" align="center" width="110" show-overflow-tooltip />
+			<el-table-column v-if="columns[12].visible" :label="columns[3].label" :prop="columns[3].prop" align="center" width="110" show-overflow-tooltip />
 
 			<el-table-column v-if="columns[4].visible" :label="columns[4].label" :prop="columns[4].prop" align="center" width="110" show-overflow-tooltip />
 
@@ -482,7 +483,8 @@ export default {
 					prop: 'futuresDate',
 					visible: true
 				},
-				{ key: 11, label: '事由', prop: 'reason', visible: true }
+				{ key: 11, label: '事由', prop: 'reason', visible: true },
+				{ key: 12, label: '未收回金额', prop: 'unrecoveredAmount', visible: true }
 			],
 
 			// 员工、客户、供应商、其他
