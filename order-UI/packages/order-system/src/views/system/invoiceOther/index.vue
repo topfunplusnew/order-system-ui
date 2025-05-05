@@ -102,7 +102,7 @@
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[10].visible" label="备注" align="center" prop="comments" />
-			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="240px">
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="240px" fixed="right">
 				<template slot-scope="scope">
 					<el-button size="mini" type="text" @click="handleCheck(scope.row)">查看</el-button>
 					<el-button size="mini" type="text" @click="handleAddExtraInfo(scope.row)">补充信息</el-button>
@@ -283,6 +283,19 @@
 		<el-dialog :close-on-click-modal="false" :show-close="true" title="查看订单信息" :visible.sync="checkOrderInfoVisible" width="70%" append-to-body>
 			<OrderInfos :order-info="orderInfo" />
 		</el-dialog>
+
+		<div v-if="currentComponent">
+			<DialogWrapper
+				:current-component="currentComponent"
+				:dialog-visible="dialogVisible"
+				:dialog-props="dialogProps"
+				:dialog-title="dialogTitle"
+				:dialog-width="dialogWidth"
+				@update:dialogVisible="args => (dialogVisible = false)"
+				@close="handleCloseDialog"
+				@confirm="handleDialogConfirm"
+			/>
+		</div>
 	</div>
 </template>
 
