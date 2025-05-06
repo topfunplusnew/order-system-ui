@@ -282,13 +282,39 @@
 				/>
 			</keep-alive>
 		</el-dialog>
+		
+		<InfoDialog title="历史还款记录" :visible.sync="dialogHistoryVisible" :width="'620px'">
+			<template #info>
+				<el-table
+					v-if="tableData.length !== 0"
+					:data="tableData"
+					size="mini"
+					:cell-style="
+						() => {
+							return { padding: '2px' };
+						}
+					"
+					border
+					:span-method="mergeCells"
+				>
+					<el-table-column prop="" width="180">
+						<template #default="scope">
+							<span v-if="scope.$index === 0">押金收回</span>
+						</template>
+					</el-table-column>
+					<el-table-column prop="recoverDate" label="时间" width="180"></el-table-column>
+					<el-table-column prop="moneyAmount" label="收回金额"></el-table-column>
+				</el-table>
+				<pagination v-show="detailTotal > 0" :total="detailTotal" :page.sync="queryRepaymentParams.pageNum" :limit.sync="queryRepaymentParams.pageSize" @pagination="getRepaymentMoneyList" />
+			</template>
+		</InfoDialog>
 	</div>
 </template>
 
 <script>
 import { addLendMoney, delLendMoney, getLendMoney, listLendMoney, updateLendMoney } from '@/api/system/lendMoney';
 import { mapGetters } from 'vuex';
-import { addRecoverMoney } from '@/api/system/recoverMoney';
+import { addRecoverMoney, listRecoverMoney } from '@/api/system/recoverMoney';
 import SearchOption from '@/components/SearchOption.vue';
 import { listBankAccount } from '@/api/system/bankAccount';
 import { listCompany } from '@/api/system/company';
@@ -304,10 +330,11 @@ import { getConfigKey } from '@/api/system/config';
 import { getSubjectLevelTree } from '@/api/system/subject';
 import _ from 'lodash';
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
+import InfoDialog from '@/components/InfoDialog.vue';
 
 export default {
 	name: 'DepositSelf',
-	components: { ApplyPayment, SearchOption },
+	components: { ApplyPayment, SearchOption, InfoDialog },
 	mixins: [mixin_reviveMoney, mixin_printHTML],
 	dicts: ['order_target_type'],
 	data() {
@@ -542,7 +569,15 @@ export default {
 			needMoney: 0,
 			needInfo: {},
 
-			customizeSubjectName: null
+			customizeSubjectName: null,
+			// 查看历史收回记录相关
+			detailTotal: 0,
+			queryRepaymentParams: {
+				pageNum: 1,
+				pageSize: 10
+			},
+			dialogHistoryVisible: false,
+			tableData: []
 		};
 	},
 	created() {
@@ -580,6 +615,22 @@ export default {
 					this.dialogHistoryVisible = true;
 				}
 			});
+		},
+		mergeCells({ row, column, rowIndex, columnIndex }) {
+			if (columnIndex === 0) {
+				// 合并第一列 "押金收回"
+				if (rowIndex === 0) {
+					return {
+						rowspan: this.tableData.length,
+						colspan: 1
+					};
+				} else {
+					return {
+						rowspan: 0,
+						colspan: 0
+					};
+				}
+			}
 		},
 		// 坏账损失
 		applyForPayment(row) {
