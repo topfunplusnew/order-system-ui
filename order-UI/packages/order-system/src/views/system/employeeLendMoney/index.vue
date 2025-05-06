@@ -69,8 +69,8 @@
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="240" fixed="right">
 				<template slot-scope="scope">
 					<el-button size="mini" type="text" @click="checkDetail(scope.row)">查看历史收回</el-button>
-					<el-button v-if="scope.row.checkState === '未申请'" size="mini" type="text" @click="applyForPayment(scope.row)">申请付款</el-button>
-					<el-button v-if="scope.row.checkState === '审核中'" size="mini" type="warning" disabled>审核中</el-button>
+					<!-- <el-button v-if="scope.row.checkState === '未申请'" size="mini" type="text" @click="applyForPayment(scope.row)">申请付款</el-button> -->
+					<!-- <el-button v-if="scope.row.checkState === '审核中'" size="mini" type="warning" disabled>审核中</el-button> -->
 					<el-button v-hasPermi="['system:lendmoney:remove']" size="mini" type="text" @click="handleGetBackMoney(scope.row)">收回资金</el-button>
 					<el-button v-hasPermi="['system:lendmoney:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
 					<el-button v-hasPermi="['system:lendmoney:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>

@@ -882,7 +882,7 @@ export default {
 		listCompany,
 		listProductLevel,
 		handleCommitUpload(val) {
-			this.form.receiveProof = val;
+			this.secondForm.receiveProof = val;
 		},
 		checkInvoInfo(row) {
 			getDetail(row.storeID).then(res => {
@@ -1007,29 +1007,12 @@ export default {
 			// 调用统一的库存计算函数
 			updateInventoryRowCalculations(scope.row, this.isSea, this.isLand);
 		},
-		calculatePacks(scope) {
-			// 计算出厂片数并更新
-			scope.row.actualPieces = scope.row.pieces = scope.row.packs * scope.row.piecesPerPack;
-			// 更新所有计算值
-			updateInventoryRowCalculations(scope.row, this.isSea, this.isLand);
-		},
-		calculatePaymentFactory(scope) {
-			updateInventoryRowCalculations(scope.row, this.isSea, this.isLand);
-		},
-		calculatePrice(scope) {
-			updateInventoryRowCalculations(scope.row, this.isSea, this.isLand);
-		},
 		calculatePayment(scope) {
 			updateInventoryRowCalculations(scope.row, this.isSea, this.isLand);
 		},
-		calculateLandFreight(scope) {
-			updateInventoryRowCalculations(scope.row, this.isSea, this.isLand);
-		},
-		calculateFreight(scope) {
-			updateInventoryRowCalculations(scope.row, this.isSea, this.isLand);
-		},
+
 		handleCommitBackFleet(val) {
-			this.form.fleet = val.fname;
+			this.secondForm.fleet = val.fname;
 		},
 		handleChangeFleet(val) {
 			this.queryFleet = val;
@@ -1073,21 +1056,6 @@ export default {
 			scope.row.factoryCommission = '';
 			scope.row.comments = '';
 			scope.row.manuallyEditedPieces = false;
-		},
-		resetSeaCarInfo() {
-			this.form.seaCarID = '';
-			this.form.seaCarNo = '';
-			this.form.seaDriverName = '';
-			this.form.seaDriverTel = '';
-		},
-		resetLandCarInfo() {
-			this.form.landCarID = '';
-			this.form.landCarNo = '';
-			this.form.landDriverName = '';
-			this.form.landDriverTel = '';
-		},
-		rowInventoryDetailIndex({ row, rowIndex }) {
-			row.index = rowIndex + 1;
 		},
 		handleAddInventoryDetail() {
 			let obj = {
