@@ -222,9 +222,6 @@
 						<el-input v-model="secondForm.seaBankName" type="text" size="mini" placeholder="请输入海运开户行" style="width: 120px" />
 					</el-form-item>
 				</el-row>
-				<br />
-
-				<el-divider content-position="center">货物信息</el-divider>
 				<el-row :gutter="10" class="mb8">
 					<el-col :span="1.5">
 						<el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAddInventoryDetail" :disabled="!isEditingDetails">添加</el-button>
@@ -262,10 +259,24 @@
 					<el-table-column label="供应商" width="200">
 						<template #default="scope">
 							<el-row>
-								<el-col :span="18">
-									<el-input size="mini" v-model="scope.row.supplier" placeholder="请输入供应商" :disabled="!scope.row.isEditing" />
+								<el-col :span="14">
+									<el-input size="mini" v-model="scope.row.supplier" placeholder="请输入供应商" :disabled="!scope.row.isEditing || selfButtonDisabled" />
 								</el-col>
-								<el-col :span="6">
+								<el-col>
+									<el-button
+										type="warning"
+										@click="
+											() => {
+												scope.row.supplier = PUBLIC_DICT_TYPE.SELF_COMPANY;
+												scope.row.supplierId = 0;
+												selfButtonDisabled = true;
+											}
+										"
+									>
+										己方公司
+									</el-button>
+								</el-col>
+								<el-col :span="5">
 									<SearchOption
 										:get-data="listCompany"
 										icon="el-icon-user"
@@ -276,7 +287,7 @@
 										@commitBack="value => handleCommitBackSupplier(scope, value)"
 										@update:queryName="handleUpdateQuerySupplier"
 										@click="setCurrentType(scope.row, 'supplier')"
-										:disable="!scope.row.isEditing"
+										:disable="!scope.row.isEditing || selfButtonDisabled"
 									>
 										<template #table-columns>
 											<el-table-column label="供应商名称" align="center" prop="companyName" />
@@ -635,9 +646,15 @@ import { fix } from '../../../api/tool/format';
 import SearchOption from '../../../components/SearchOption.vue';
 import { _fill } from './fill';
 import { updateInventoryMain, addInventoryMain } from '../../../api/system/inventoryMain';
+import { PUBLIC_DICT_TYPE } from '@/utils/order';
 
 export default {
 	name: 'SecondInventory',
+	computed: {
+		PUBLIC_DICT_TYPE() {
+			return PUBLIC_DICT_TYPE;
+		}
+	},
 	components: { SearchOption },
 	mixins: [_fill],
 	data() {
@@ -754,7 +771,8 @@ export default {
 					}
 				],
 				seaBankName: [{ required: true, message: '请输入开户行', trigger: 'blur' }]
-			}
+			},
+			selfButtonDisabled: false
 		};
 	},
 	watch: {
@@ -814,9 +832,9 @@ export default {
 					countingUnit: '片'
 				};
 				this.inventoryDetailList.push(detailItem);
+				this.title = '二次入库';
 				this.secondInventoryVisible = true;
 				this.isEditingDetails = true;
-				this.title = '二次入库';
 			});
 		},
 		getSummary(param) {
@@ -891,6 +909,7 @@ export default {
 		calculatePrice(scope) {
 			this.calculatePaymentFactory(scope);
 			scope.row.profit = fix(scope.row.payments - scope.row.paymentFactory - scope.row.landFreight - scope.row.seaFreight);
+
 			function calculateProfitNoTax() {
 				if (scope.row.isIncludeTaxFactory === 0 && scope.row.isIncludeTaxSale === 0) {
 					return fix(scope.row.payments - scope.row.paymentFactory - scope.row.landFreight - scope.row.seaFreight - scope.row.otherCost);
@@ -909,6 +928,7 @@ export default {
 					);
 				}
 			}
+
 			scope.row.profitNoTax = calculateProfitNoTax();
 		},
 		calculatePayment(scope) {
@@ -919,6 +939,7 @@ export default {
 					scope.row.payments = fix((scope.row.length * scope.row.width * scope.row.actualPieces * scope.row.paymentUnload) / 1000000 + Number(scope.row.paymentsWithSundry));
 				}
 			}
+
 			if (scope.row.payments > 0) {
 				calcu();
 				this.calculatePrice(scope);
@@ -1364,21 +1385,27 @@ export default {
 ::v-deep .editing-row {
 	background-color: rgba(121, 246, 164, 0.1) !important;
 }
+
 ::v-deep .editing-row td:first-child {
 	border-left: 4px solid #63f697 !important;
 }
+
 ::v-deep .editing-row:hover > td {
 	background-color: rgba(121, 246, 164, 0.15) !important;
 }
+
 ::v-deep .error-row {
 	background-color: rgba(245, 108, 108, 0.1) !important;
 }
+
 ::v-deep .error-row td:first-child {
 	border-left: 4px solid #f56c6c !important;
 }
+
 ::v-deep .error-row:hover > td {
 	background-color: rgba(245, 108, 108, 0.15) !important;
 }
+
 @keyframes errorPulse {
 	0% {
 		background-color: rgba(245, 108, 108, 0.1);
@@ -1390,9 +1417,11 @@ export default {
 		background-color: rgba(245, 108, 108, 0.1);
 	}
 }
+
 ::v-deep .error-row td {
 	animation: errorPulse 2s infinite;
 }
+
 ::v-deep .error-row:hover td {
 	animation: none;
 	background-color: rgba(245, 108, 108, 0.15) !important;

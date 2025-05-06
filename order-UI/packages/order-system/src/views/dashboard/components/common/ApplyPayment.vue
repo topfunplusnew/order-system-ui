@@ -340,19 +340,18 @@ import { listBankAccount } from '@/api/system/bankAccount';
 import { mixin_payment_apply } from '../../mixins/apply_payment/payment_apply';
 import { mixin_payment_level } from '../../mixins/apply_payment/payment_level';
 import { mixin_payment_watcher } from '../../mixins/apply_payment/payment_watcher';
-
 import { listCompany } from '../../../../api/system/company';
 import { mixin_payment_fill } from '../../mixins/apply_payment/payment_fill';
 import { isNull } from '../../../../main';
 import { mixin_receive_money_subject } from '../../mixins/receivemoney/receive_money_subject';
 import { parseTime } from '@/utils/ruoyi';
-import BankType from '@/views/dashboard/components/common/BankType.vue';
 import { BankAcceptanceType, PAYMENT_TARGET_TYPE } from '@/api/tool/enums';
 import { mixin_bankType } from '@/views/dashboard/mixins/common/common_bankType';
 import { addBadBetPayment, addPayment } from '@/api/system/payment';
 import _ from 'lodash';
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
 import { getRecoverMoney } from '@/api/system/recoverMoney';
+import { getLendMoney } from '@/api/system/lendMoney';
 
 export default {
 	name: 'ApplyPayment',
@@ -394,7 +393,7 @@ export default {
 			}
 		}
 	},
-	components: { BankType, SearchOption },
+	components: { SearchOption },
 	mixins: [mixin_payment_apply, mixin_payment_level, mixin_payment_watcher, mixin_payment_fill, mixin_receive_money_subject, mixin_bankType],
 	data() {
 		return {
@@ -588,18 +587,25 @@ export default {
 			form.payType = form.payType.join('-');
 			_.set(json, 'params.paymentInfo', {});
 			// 坏账信息 先获取 资金收回信息 然后添加付款信息
-			getRecoverMoney(tid).then(recoverMoneyInfo => {
-				if (!recoverMoneyInfo.data) {
+			getLendMoney(tid).then(lendMoneyInfo => {
+				if (!lendMoneyInfo.data) {
 					this.$message.error('查询对应借款信息时出现错误');
 					return;
 				}
-				Object.assign(json, recoverMoneyInfo.data);
+				Object.assign(json, {
+					futuresNO: lendMoneyInfo.data.futuresNO,
+					moneyAmount: lendMoneyInfo.data.moneyAmount,
+					recoverDate: parseTime(new Date()),
+					acountsName: lendMoneyInfo.data.targetAcountsName,
+					bankNo: lendMoneyInfo.data.targetBankNo,
+					comments: lendMoneyInfo.data.comments
+				});
 				Object.assign(json.params.paymentInfo, {
 					...form,
-					selfAcountsName: recoverMoneyInfo.data.selfAcountsName,
-					selfBankName: recoverMoneyInfo.data.selfBankName,
-					selfBankNo: recoverMoneyInfo.data.selfBankNo,
-					selfBankID: recoverMoneyInfo.data.selfBankID
+					selfAcountsName: lendMoneyInfo.data.selfAcountsName,
+					selfBankName: lendMoneyInfo.data.selfBankName,
+					selfBankNo: lendMoneyInfo.data.selfBankNo,
+					selfBankID: lendMoneyInfo.data.selfBankID
 				});
 				// 填充我方银行卡信息
 				addBadBetPayment(json).then(res => {
