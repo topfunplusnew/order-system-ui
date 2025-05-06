@@ -1447,4 +1447,20 @@ export default {
 	animation: none;
 	background-color: rgba(245, 108, 108, 0.15) !important;
 }
+
+/* 添加滚动条样式 */
+::v-deep .el-table__body-wrapper::-webkit-scrollbar {
+	width: 14px;
+	height: 14px;
+}
+
+::v-deep .el-table__body-wrapper::-webkit-scrollbar-thumb {
+	border-radius: 2px;
+	background-color: rgba(0, 0, 0, 0.5);
+}
+
+::v-deep .el-table__body-wrapper::-webkit-scrollbar-track {
+	border-radius: 2px;
+	background-color: rgba(0, 0, 0, 0.1);
+}
 </style>

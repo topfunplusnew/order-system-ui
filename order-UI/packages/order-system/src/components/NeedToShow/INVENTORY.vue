@@ -49,26 +49,24 @@ export default {
 <template>
 	<div class="inventory-container">
 		<el-card class="inventory-card">
-			<el-descriptions title="库存信息" border :column="3" :labelStyle="{ width: '150px' }">
-				<el-descriptions-item label="供应商">{{ needToShowInfo.supplier || '-' }}</el-descriptions-item>
-				<el-descriptions-item label="平均运费单价">{{ needToShowInfo.allFreightPrice || '0' }} 元</el-descriptions-item>
-				<el-descriptions-item label="子项陆运费之和">{{ needToShowInfo.allLandFreight || '0' }} 元</el-descriptions-item>
-				<el-descriptions-item label="子项海运费之和">{{ needToShowInfo.allSeaFreight || '0' }} 元</el-descriptions-item>
-				<el-descriptions-item label="子项吨位之和">{{ needToShowInfo.allTonnage || '0' }} 吨</el-descriptions-item>
-				<el-descriptions-item label="审核状态">{{ needToShowInfo.checkState || '-' }}</el-descriptions-item>
-				<el-descriptions-item label="审核人编号">{{ needToShowInfo.checkUserId || '-' }}</el-descriptions-item>
-				<el-descriptions-item label="车队">{{ needToShowInfo.fleet || '-' }}</el-descriptions-item>
-				<el-descriptions-item label="货物来源公司">{{ needToShowInfo.goodsCompany || '-' }}</el-descriptions-item>
-				<el-descriptions-item label="陆运银行账号">{{ needToShowInfo.landBankNo || '-' }}</el-descriptions-item>
-				<el-descriptions-item label="陆运车牌">{{ needToShowInfo.landCarNo || '-' }}</el-descriptions-item>
-				<el-descriptions-item label="陆地司机姓名">{{ needToShowInfo.landDriverName || '-' }}</el-descriptions-item>
-				<el-descriptions-item label="陆运司机电话">{{ needToShowInfo.landDriverTel || '-' }}</el-descriptions-item>
+			<el-descriptions size="mini" border :column="3" :labelStyle="{ width: '150px' }">
 				<el-descriptions-item label="入库日期">
 					{{ needToShowInfo.storeDate ? new Date(needToShowInfo.storeDate).toLocaleDateString() : '-' }}
 				</el-descriptions-item>
 				<el-descriptions-item label="仓库名称">{{ needToShowInfo.storeHouseName || '-' }}</el-descriptions-item>
-				<el-descriptions-item label="库存数量">{{ needToShowInfo.stockNumber || '0' }} 片</el-descriptions-item>
-				<el-descriptions-item label="单价">{{ needToShowInfo.price || '0' }} 元</el-descriptions-item>
+				<el-descriptions-item label="入库片数">{{ needToShowInfo.stockNumber || '0' }} 片</el-descriptions-item>
+				<el-descriptions-item label="剩余片数">{{ needToShowInfo.actualPieces || '0' }} 片</el-descriptions-item>
+				<el-descriptions-item label="审核状态">{{ needToShowInfo.checkState || '-' }}</el-descriptions-item>
+				<el-descriptions-item label="车队">{{ needToShowInfo.fleet || '-' }}</el-descriptions-item>
+				<el-descriptions-item label="陆运银行账号">{{ needToShowInfo.landBankNo || '-' }}</el-descriptions-item>
+				<el-descriptions-item label="陆运车牌">{{ needToShowInfo.landCarNo || '-' }}</el-descriptions-item>
+				<el-descriptions-item label="陆地司机姓名">{{ needToShowInfo.landDriverName || '-' }}</el-descriptions-item>
+				<el-descriptions-item label="陆运司机电话">{{ needToShowInfo.landDriverTel || '-' }}</el-descriptions-item>
+				<el-descriptions-item label="海运银行账号">{{ needToShowInfo.seaBankNo || '-' }}</el-descriptions-item>
+				<el-descriptions-item label="柜号">{{ needToShowInfo.seaCarNo || '-' }}</el-descriptions-item>
+				<el-descriptions-item label="海运公司">{{ needToShowInfo.seaDriverName || '-' }}</el-descriptions-item>
+				<el-descriptions-item label="海运公司电话">{{ needToShowInfo.seaDriverTel || '-' }}</el-descriptions-item>
+				<el-descriptions-item label="库存单价">{{ needToShowInfo.price || '0' }} 元</el-descriptions-item>
 				<el-descriptions-item label="备注">
 					<el-tag size="small">{{ needToShowInfo.comments || '无' }}</el-tag>
 				</el-descriptions-item>
@@ -88,10 +86,6 @@ export default {
 				stripe
 				style="width: 100%"
 			>
-				<el-table-column prop="storeHouseName" label="仓库名称" width="150" />
-				<el-table-column prop="storeDate" label="入库日期" width="180">
-					<template #default="scope">{{ new Date(scope.row.storeDate).toLocaleDateString() }}</template>
-				</el-table-column>
 				<el-table-column prop="supplier" label="供应商" width="150" />
 				<el-table-column label="级别名称" align="center" prop="levelName" show-overflow-tooltip />
 				<el-table-column label="计量单位" align="center" prop="countingUnit" show-overflow-tooltip />
@@ -109,15 +103,13 @@ export default {
 				</el-table-column>
 				<el-table-column label="杂费" align="center" prop="sundryCost" show-overflow-tooltip />
 				<el-table-column label="出厂货款" align="center" prop="paymentFactory" show-overflow-tooltip />
-				<el-table-column label="卸货片数" align="center" prop="actualPieces" show-overflow-tooltip />
-				<el-table-column label="卸货价" align="center" prop="paymentUnload" show-overflow-tooltip />
-				<el-table-column label="销售是否含税" align="center" prop="isIncludeTaxSale" show-overflow-tooltip>
+				<el-table-column label="存货价" align="center" prop="paymentUnload" show-overflow-tooltip />
+				<el-table-column label="库存是否含税" align="center" prop="isIncludeTaxSale" show-overflow-tooltip>
 					<template slot-scope="scope">
 						<el-tag disable-transitions>{{ scope.row.isIncludeTaxSale === 0 ? '否' : '是' }}</el-tag>
 					</template>
 				</el-table-column>
-				<el-table-column label="总货款杂费" align="center" prop="paymentsWithSundry" show-overflow-tooltip />
-				<el-table-column label="总货款" align="center" prop="payments" show-overflow-tooltip />
+				<el-table-column label="库存金额" align="center" prop="payments" show-overflow-tooltip />
 				<el-table-column label="误差" align="center" prop="erro" show-overflow-tooltip />
 				<el-table-column label="吨位" align="center" prop="tonnage" show-overflow-tooltip />
 				<el-table-column label="陆运费单价" align="center" prop="landFreightPrice" show-overflow-tooltip />
@@ -142,12 +134,10 @@ export default {
 <style scoped lang="scss">
 .inventory-container {
 	padding: 20px;
-	background-color: #f5f7fa;
 }
 
 .inventory-card {
 	border-radius: 8px;
-	box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
 }
 
 .el-descriptions-item__label {

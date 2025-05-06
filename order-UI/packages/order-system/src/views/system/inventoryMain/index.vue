@@ -1255,7 +1255,7 @@ export default {
 				this.openDialog(
 					INVENTORY,
 					'库存信息',
-					'800px',
+					'1300px',
 					{
 						needToShowInfo: response.data
 					},
@@ -1273,7 +1273,7 @@ export default {
 				this.isLand = !!response.data.landCarNo; // 使用主表信息判断
 
 				// 确保设置 transportMode 字段以通过校验
-				this.form.transportMode = (this.isLand || this.isSea) ? 'selected' : '';
+				this.form.transportMode = this.isLand || this.isSea ? 'selected' : '';
 
 				// 初始化子项的编辑状态
 				this.inventoryDetailList = response.data.inventoryDetailList.map(item => ({
@@ -1506,7 +1506,7 @@ export default {
 
 /* 添加运输方式错误样式 */
 .transport-error {
-	color: #F56C6C;
+	color: #f56c6c;
 	margin-left: 10px;
 	font-size: 12px;
 }
