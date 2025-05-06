@@ -483,6 +483,8 @@ export default {
 			scope.row.levelName = val.levelName;
 			scope.row.erro = val.erro;
 			scope.row.currentType = 'storeHouseName';
+			// 填充出厂单价
+			scope.row.price = val.price;
 			// 填充后重新计算
 			updateOrderRowCalculations(scope.row, this.isSea, this.isLand);
 		},
@@ -955,31 +957,20 @@ export default {
 										:disable="!scope.row.isEditing"
 									>
 										<template #table-columns>
-											<el-table-column label="级别名称" align="center" prop="levelName" show-overflow-tooltip />
-											<el-table-column label="级别编码" align="center" prop="levelID" show-overflow-tooltip />
 											<el-table-column label="仓库名称" align="center" prop="storeHouseName" show-overflow-tooltip />
-											<el-table-column label="剩余量" align="center" prop="actualPieces" show-overflow-tooltip />
-											<el-table-column label="入库时间" align="center" prop="storeDate" show-overflow-tooltip />
-											<el-table-column label="供应商" align="center" prop="supplier" show-overflow-tooltip />
+											<el-table-column label="级别名称" align="center" prop="levelName" show-overflow-tooltip />
 											<el-table-column label="计量单位" align="center" prop="countingUnit" show-overflow-tooltip />
 											<el-table-column label="厚度" align="center" prop="height" show-overflow-tooltip />
 											<el-table-column label="长度" align="center" prop="length" show-overflow-tooltip />
 											<el-table-column label="宽度" align="center" prop="width" show-overflow-tooltip />
-											<el-table-column label="片数" align="center" prop="pieces" show-overflow-tooltip />
-											<el-table-column label="每包片数" align="center" prop="piecesPerPack" show-overflow-tooltip />
-											<el-table-column label="包数" align="center" prop="packs" show-overflow-tooltip />
-											<el-table-column label="出厂单价" align="center" prop="price" show-overflow-tooltip />
-											<el-table-column label="是否含税" align="center" prop="isIncludeTaxFactory" show-overflow-tooltip />
-											<el-table-column label="杂费" align="center" prop="sundryCost" show-overflow-tooltip />
+											<el-table-column label="剩余量" align="center" prop="actualPieces" show-overflow-tooltip />
 											<el-table-column label="出厂货款" align="center" prop="paymentFactory" show-overflow-tooltip />
-											<el-table-column label="卸货价" align="center" prop="paymentUnload" show-overflow-tooltip />
-											<el-table-column label="销售是否含税" align="center" prop="isIncludeTaxSale" show-overflow-tooltip />
-											<el-table-column label="总货款" align="center" prop="payments" show-overflow-tooltip />
-											<el-table-column label="误差" align="center" prop="erro" show-overflow-tooltip />
-											<el-table-column label="吨位" align="center" prop="tonnage" show-overflow-tooltip />
-											<el-table-column label="陆运费单价" align="center" prop="landFreightPrice" show-overflow-tooltip />
-											<el-table-column label="陆运费" align="center" prop="landFreight" show-overflow-tooltip />
-											<el-table-column label="海运费" align="center" prop="seaFreight" show-overflow-tooltip />
+											<el-table-column label="库存价格" align="center" prop="payments" show-overflow-tooltip />
+											<el-table-column label="库存金额" align="center" show-overflow-tooltip>
+												<template #default="scope">
+													{{ fix(Number(scope.row.actualPieces * scope.row.price)) }}
+												</template>
+											</el-table-column>
 										</template>
 									</SearchOption>
 								</el-col>

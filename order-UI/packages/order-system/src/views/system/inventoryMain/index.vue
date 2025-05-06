@@ -491,8 +491,7 @@
 							<el-input size="mini" v-model="scope.row.paymentFactory" placeholder="自动计算" disabled />
 						</template>
 					</el-table-column>
-
-					<el-table-column label="库存量" prop="stockNumber" width="150">
+					<el-table-column label="入库量" prop="stockNumber" width="150">
 						<template #default="scope">
 							<!-- 添加 disabled 属性 -->
 							<el-input size="mini" v-model="scope.row.stockNumber" placeholder="入库时片数" :disabled="!scope.row.isEditing" />

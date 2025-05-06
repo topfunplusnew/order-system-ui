@@ -71,7 +71,6 @@
 							{{ scope.row.isIncludeTaxFactory === 0 ? '否' : '是' }}
 						</template>
 					</el-table-column>
-					<el-table-column v-if="columns[15].visible" label="杂费" align="center" prop="sundryCost" width="150" />
 					<el-table-column v-if="columns[16].visible" label="出厂货款" align="center" prop="paymentFactory" width="150" />
 					<el-table-column v-if="columns[17].visible" label="卸货价" align="center" prop="paymentUnload" width="150" />
 					<el-table-column v-if="columns[18].visible" label="销售是否含税" align="center" prop="isIncludeTaxSale" width="150">
@@ -206,9 +205,9 @@
 							<el-radio v-model="form.isIncludeTaxFactory" :label="1">是</el-radio>
 							<el-radio v-model="form.isIncludeTaxFactory" :label="0">否</el-radio>
 						</el-form-item>
-						<el-form-item label="杂费" prop="sundryCost">
-							<el-input v-model="form.sundryCost" placeholder="请输入杂费" />
-						</el-form-item>
+						<!--						<el-form-item label="杂费" prop="sundryCost">-->
+						<!--							<el-input v-model="form.sundryCost" placeholder="请输入杂费" />-->
+						<!--						</el-form-item>-->
 						<el-form-item label="出厂货款" prop="paymentFactory">
 							<el-input v-model="form.paymentFactory" placeholder="请输入出厂货款" />
 						</el-form-item>

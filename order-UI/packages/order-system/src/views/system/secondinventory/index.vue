@@ -361,21 +361,16 @@
 							<el-input size="mini" v-model="scope.row.width" placeholder="请选择产品级别" disabled />
 						</template>
 					</el-table-column>
-					<el-table-column label="库存量" prop="stockNumber" width="150">
-						<template #default="scope">
-							<el-input size="mini" v-model.lazy="scope.row.stockNumber" @change="() => updateActualPieces(scope)" placeholder="入库时片数" :disabled="!scope.row.isEditing" />
-						</template>
-					</el-table-column>
 					<el-table-column label="每包片数" prop="piecesPerPack" width="150">
 						<template #default="scope">
-							<el-input size="mini" type="number" v-model="scope.row.piecesPerPack" @input="() => recalculateAll(scope)" placeholder="请输入每包片数" :disabled="!scope.row.isEditing" />
+							<el-input size="mini"   v-model="scope.row.piecesPerPack" @input="() => recalculateAll(scope)" placeholder="请输入每包片数" :disabled="!scope.row.isEditing" />
 						</template>
 					</el-table-column>
 					<el-table-column label="包数" prop="packs" width="150">
 						<template #default="scope">
 							<el-input
 								size="mini"
-								type="number"
+								 
 								@input="() => recalculateAll(scope)"
 								v-model.lazy="scope.row.packs"
 								:placeholder="scope.row.piecesPerPack <= 0 ? '请先输入每包片数' : '请输入包数'"
@@ -385,14 +380,14 @@
 					</el-table-column>
 					<el-table-column label="出厂片数" prop="pieces" width="150">
 						<template #default="scope">
-							<el-input type="number" size="mini" v-model="scope.row.pieces" @input="() => recalculateAll(scope)" placeholder="请输入出厂片数" :disabled="!scope.row.isEditing" />
+							<el-input   size="mini" v-model="scope.row.pieces" @input="(val) => handlePiecesChange(scope, val)" placeholder="请输入出厂片数" :disabled="!scope.row.isEditing" />
 						</template>
 					</el-table-column>
 					<el-table-column label="出厂单价" prop="price" width="150">
 						<template #default="scope">
 							<el-input
 								size="mini"
-								type="number"
+								 
 								v-model="scope.row.price"
 								@input="() => recalculateAll(scope)"
 								:placeholder="scope.row.pieces <= 0 ? '请先完善出厂片数' : '请输入出厂单价'"
@@ -412,7 +407,7 @@
 						<template #default="scope">
 							<el-input
 								size="mini"
-								type="number"
+								 
 								v-model.lazy="scope.row.sundryCost"
 								@input="() => recalculateAll(scope)"
 								:placeholder="scope.row.price <= 0 ? '请先完善出厂单价' : '请输入杂费'"
@@ -422,27 +417,27 @@
 					</el-table-column>
 					<el-table-column label="出厂货款" prop="paymentFactory" width="150">
 						<template #default="scope">
-							<el-input size="mini" type="number" v-model="scope.row.paymentFactory" placeholder="自动计算" disabled />
+							<el-input size="mini"   v-model="scope.row.paymentFactory" placeholder="自动计算" disabled />
 						</template>
 					</el-table-column>
-					<el-table-column label="实际片数" prop="actualPieces" width="150">
+					<el-table-column label="二次入库片数" prop="actualPieces" width="150">
 						<template #default="scope">
-							<el-input size="mini" v-model="scope.row.actualPieces" placeholder="仓库还剩余片数" disabled />
+							<el-input size="mini" v-model="scope.row.actualPieces" placeholder="请输入二次入库片数" disabled />
 						</template>
 					</el-table-column>
-					<el-table-column label="卸货价" prop="paymentUnload" width="150">
+					<el-table-column label="存货价" prop="paymentUnload" width="150">
 						<template #default="scope">
 							<el-input
 								size="mini"
-								type="number"
+								 
 								v-model.lazy="scope.row.paymentUnload"
-								placeholder="请输入卸货价"
+								placeholder="请输入存货价"
 								@input="() => recalculateAll(scope)"
 								:disabled="!scope.row.isEditing"
 							/>
 						</template>
 					</el-table-column>
-					<el-table-column label="销售是否含税" prop="isIncludeTaxSale" width="150">
+					<el-table-column label="库存是否含税" prop="isIncludeTaxSale" width="150">
 						<template #default="scope">
 							<el-radio-group v-model="scope.row.isIncludeTaxSale" size="mini" @change="() => recalculateAll(scope)" :disabled="!scope.row.isEditing">
 								<el-radio :label="1">是</el-radio>
@@ -450,20 +445,9 @@
 							</el-radio-group>
 						</template>
 					</el-table-column>
-					<el-table-column label="总货款杂费" prop="paymentsWithSundry" width="150">
+					<el-table-column label="库存金额" prop="payments" width="150">
 						<template #default="scope">
-							<el-input
-								size="mini"
-								v-model.lazy="scope.row.paymentsWithSundry"
-								@input="() => recalculateAll(scope)"
-								:disabled="!scope.row.isEditing || scope.row.paymentUnload <= 0"
-								:placeholder="scope.row.paymentUnload <= 0 ? '请先完善卸货价' : '请输入总货款杂费'"
-							/>
-						</template>
-					</el-table-column>
-					<el-table-column label="总货款" prop="payments" width="150">
-						<template #default="scope">
-							<el-input size="mini" type="number" v-model="scope.row.payments" placeholder="自动计算" disabled />
+							<el-input size="mini"   v-model="scope.row.payments" placeholder="自动计算" disabled />
 						</template>
 					</el-table-column>
 					<el-table-column label="误差" prop="erro" width="150">
@@ -839,26 +823,57 @@ export default {
 			});
 		},
 		secondInventory(row) {
+			this.inventoryDetailList = [];
 			getDetail(row.storeID).then(res => {
 				if (!res.data) {
 					this.$message.error('该货物没有库存信息');
 					return;
 				}
 				const detailItem = {
-					supplier: res.data.supplier,
-					supplierId: res.data.supplierId,
-					levelName: res.data.levelName,
-					levelID: res.data.levelID,
-					height: res.data.height,
-					length: res.data.length,
-					width: res.data.width,
-					erro: res.data.erro,
-					tonnage: res.data.tonnage,
-					isEditing: true,
-					hasError: false,
-					countingUnit: '片'
+					row: {
+						supplier: res.data.supplier,
+						supplierId: res.data.supplierId,
+						levelName: res.data.levelName,
+						levelID: res.data.levelID,
+						height: res.data.height,
+						length: res.data.length,
+						width: res.data.width,
+						erro: res.data.erro,
+						tonnage: res.data.tonnage,
+						price: row.inventoryDetail.price,
+						pieces: row.outAmount,
+						isEditing: true,
+						hasError: false,
+						countingUnit: '片',
+						payments: '',
+						manuallyEditedPieces: true, // 标记为已手动设置，避免被自动计算覆盖
+
+						stockNumber: '',
+						piecesPerPack: '',
+						packs: '',
+						isIncludeTaxFactory: res.data.isIncludeTaxFactory,
+						sundryCost: '',
+						paymentFactory: '',
+						paymentUnload: res.data.paymentUnload,
+						isIncludeTaxSale: res.data.isIncludeTaxSale,
+						landFreightPrice: '',
+						landFreight: '',
+						seaFreight: '',
+						freight: '',
+						otherCost: '',
+						profit: '',
+						profitNoTax: '',
+						actualPieces: res.data.actualPieces,
+						paymentsWithSundry: res.data.paymentsWithSundry,
+						additionalFees: '',
+						factoryCommission: '',
+						factoryRebateAmount: '',
+						factoryDiscountAmount: '',
+						comments: ''
+					}
 				};
-				this.inventoryDetailList.push(detailItem);
+				this.calculatePayment(detailItem);
+				this.inventoryDetailList.push(detailItem.row);
 				this.title = '二次入库';
 				this.secondInventoryVisible = true;
 				this.isEditingDetails = true;
@@ -1026,6 +1041,7 @@ export default {
 			scope.row.rebate = '';
 			scope.row.factoryCommission = '';
 			scope.row.comments = '';
+			scope.row.manuallyEditedPieces = false;
 		},
 		resetSeaCarInfo() {
 			this.form.seaCarID = '';
@@ -1080,7 +1096,8 @@ export default {
 				factoryDiscountAmount: '',
 				comments: '',
 				isEditing: true,
-				hasError: false
+				hasError: false,
+				manuallyEditedPieces: false
 			};
 			this.inventoryDetailList.push(obj);
 			this.$nextTick(() => {
@@ -1255,9 +1272,13 @@ export default {
 			scope.row.actualPieces = scope.row.stockNumber;
 			this.recalculateAll(scope);
 		},
+		handlePiecesChange(scope, val) {
+			scope.row.manuallyEditedPieces = true;
+			this.recalculateAll(scope);
+		},
 		recalculateAll(scope) {
 			const row = scope.row;
-			if (row.piecesPerPack > 0 && row.packs > 0) {
+			if (row.piecesPerPack > 0 && row.packs > 0 && !row.manuallyEditedPieces) {
 				row.pieces = fix(row.piecesPerPack * row.packs);
 				if (!row.stockNumber) {
 					row.stockNumber = row.pieces;
