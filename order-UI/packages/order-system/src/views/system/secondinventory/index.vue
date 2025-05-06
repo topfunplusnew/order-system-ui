@@ -363,14 +363,13 @@
 					</el-table-column>
 					<el-table-column label="每包片数" prop="piecesPerPack" width="150">
 						<template #default="scope">
-							<el-input size="mini"   v-model="scope.row.piecesPerPack" @input="() => recalculateAll(scope)" placeholder="请输入每包片数" :disabled="!scope.row.isEditing" />
+							<el-input size="mini" v-model="scope.row.piecesPerPack" @input="() => recalculateAll(scope)" placeholder="请输入每包片数" :disabled="!scope.row.isEditing" />
 						</template>
 					</el-table-column>
 					<el-table-column label="包数" prop="packs" width="150">
 						<template #default="scope">
 							<el-input
 								size="mini"
-								 
 								@input="() => recalculateAll(scope)"
 								v-model.lazy="scope.row.packs"
 								:placeholder="scope.row.piecesPerPack <= 0 ? '请先输入每包片数' : '请输入包数'"
@@ -380,14 +379,13 @@
 					</el-table-column>
 					<el-table-column label="出厂片数" prop="pieces" width="150">
 						<template #default="scope">
-							<el-input   size="mini" v-model="scope.row.pieces" @input="(val) => handlePiecesChange(scope, val)" placeholder="请输入出厂片数" :disabled="!scope.row.isEditing" />
+							<el-input size="mini" v-model="scope.row.pieces" @input="val => handlePiecesChange(scope, val)" placeholder="请输入出厂片数" :disabled="!scope.row.isEditing" />
 						</template>
 					</el-table-column>
 					<el-table-column label="出厂单价" prop="price" width="150">
 						<template #default="scope">
 							<el-input
 								size="mini"
-								 
 								v-model="scope.row.price"
 								@input="() => recalculateAll(scope)"
 								:placeholder="scope.row.pieces <= 0 ? '请先完善出厂片数' : '请输入出厂单价'"
@@ -407,7 +405,6 @@
 						<template #default="scope">
 							<el-input
 								size="mini"
-								 
 								v-model.lazy="scope.row.sundryCost"
 								@input="() => recalculateAll(scope)"
 								:placeholder="scope.row.price <= 0 ? '请先完善出厂单价' : '请输入杂费'"
@@ -417,7 +414,7 @@
 					</el-table-column>
 					<el-table-column label="出厂货款" prop="paymentFactory" width="150">
 						<template #default="scope">
-							<el-input size="mini"   v-model="scope.row.paymentFactory" placeholder="自动计算" disabled />
+							<el-input size="mini" v-model="scope.row.paymentFactory" placeholder="自动计算" disabled />
 						</template>
 					</el-table-column>
 					<el-table-column label="二次入库片数" prop="actualPieces" width="150">
@@ -427,14 +424,7 @@
 					</el-table-column>
 					<el-table-column label="存货价" prop="paymentUnload" width="150">
 						<template #default="scope">
-							<el-input
-								size="mini"
-								 
-								v-model.lazy="scope.row.paymentUnload"
-								placeholder="请输入存货价"
-								@input="() => recalculateAll(scope)"
-								:disabled="!scope.row.isEditing"
-							/>
+							<el-input size="mini" v-model.lazy="scope.row.paymentUnload" placeholder="请输入存货价" @input="() => recalculateAll(scope)" :disabled="!scope.row.isEditing" />
 						</template>
 					</el-table-column>
 					<el-table-column label="库存是否含税" prop="isIncludeTaxSale" width="150">
@@ -447,7 +437,7 @@
 					</el-table-column>
 					<el-table-column label="库存金额" prop="payments" width="150">
 						<template #default="scope">
-							<el-input size="mini"   v-model="scope.row.payments" placeholder="自动计算" disabled />
+							<el-input size="mini" v-model="scope.row.payments" placeholder="自动计算" disabled />
 						</template>
 					</el-table-column>
 					<el-table-column label="误差" prop="erro" width="150">
@@ -640,6 +630,9 @@ import SearchOption from '../../../components/SearchOption.vue';
 import { _fill } from './fill';
 import { updateInventoryMain, addInventoryMain } from '../../../api/system/inventoryMain';
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
+// 导入库存计算工具函数
+import { updateInventoryRowCalculations } from '../inventoryMain/inventoryCalculations';
+import { parseTime } from '@/utils/ruoyi';
 
 export default {
 	name: 'SecondInventory',
@@ -824,6 +817,9 @@ export default {
 		},
 		secondInventory(row) {
 			this.inventoryDetailList = [];
+			this.resetSecond();
+      // 填充仓库
+			this.secondForm.storeHouseName = row.storeHouseName;
 			getDetail(row.storeID).then(res => {
 				if (!res.data) {
 					this.$message.error('该货物没有库存信息');
@@ -928,74 +924,30 @@ export default {
 			scope.row.width = val.width;
 			scope.row.levelNo = val.levelNo;
 		},
-		recalculateSale(scope) {
-			this.calculatePayment(scope);
-		},
-		recalculateFactory(scope) {
-			this.calculatePaymentFactory(scope);
+		recalculateAll(scope) {
+			// 调用统一的库存计算函数
+			updateInventoryRowCalculations(scope.row, this.isSea, this.isLand);
 		},
 		calculatePacks(scope) {
-			const res = scope.row.packs * scope.row.piecesPerPack;
-			scope.row.actualPieces = scope.row.pieces = res;
-			scope.row.tonnage = fix(((Number(scope.row.height) - Number(scope.row.erro)) * scope.row.length * scope.row.width * scope.row.pieces) / 1000000 / 20 / 20);
-			if (scope.row.paymentFactory > 0) {
-				this.calculatePaymentFactory(scope);
-			}
+			// 计算出厂片数并更新
+			scope.row.actualPieces = scope.row.pieces = scope.row.packs * scope.row.piecesPerPack;
+			// 更新所有计算值
+			updateInventoryRowCalculations(scope.row, this.isSea, this.isLand);
 		},
 		calculatePaymentFactory(scope) {
-			scope.row.paymentFactory =
-				scope.row.isIncludeTaxFactory === 0
-					? fix((scope.row.length * scope.row.width * scope.row.pieces) / (1000000 * scope.row.price) + Number(scope.row.sundryCost))
-					: fix((scope.row.length * scope.row.width * scope.row.pieces * scope.row.price) / (1000000 + scope.row.sundryCost));
+			updateInventoryRowCalculations(scope.row, this.isSea, this.isLand);
 		},
 		calculatePrice(scope) {
-			this.calculatePaymentFactory(scope);
-			scope.row.profit = fix(scope.row.payments - scope.row.paymentFactory - scope.row.landFreight - scope.row.seaFreight);
-
-			function calculateProfitNoTax() {
-				if (scope.row.isIncludeTaxFactory === 0 && scope.row.isIncludeTaxSale === 0) {
-					return fix(scope.row.payments - scope.row.paymentFactory - scope.row.landFreight - scope.row.seaFreight - scope.row.otherCost);
-				} else if (scope.row.isIncludeTaxFactory === 1 && scope.row.isIncludeTaxSale === 0) {
-					return fix(scope.row.payments - scope.row.paymentFactory / 1.075 - scope.row.landFreight - scope.row.seaFreight - scope.row.otherCost);
-				} else if (scope.row.isIncludeTaxFactory === 0 && scope.row.isIncludeTaxSale === 1) {
-					return fix(scope.row.payments / 1.075 - scope.row.paymentFactory - scope.row.landFreight - scope.row.seaFreight - scope.row.otherCost);
-				} else {
-					return fix(
-						scope.row.payments -
-							scope.row.paymentFactory -
-							scope.row.landFreight * 1.075 -
-							scope.row.seaFreight -
-							((scope.row.height * scope.row.length * scope.row.width * scope.row.pieces) / 1000000 / 20) * 0.5 -
-							scope.row.otherCost
-					);
-				}
-			}
-
-			scope.row.profitNoTax = calculateProfitNoTax();
+			updateInventoryRowCalculations(scope.row, this.isSea, this.isLand);
 		},
 		calculatePayment(scope) {
-			function calcu() {
-				if (scope.row.isIncludeTaxFactory === 1 && scope.row.isIncludeTaxSale === 0) {
-					scope.row.payments = fix((scope.row.length * scope.row.width * scope.row.actualPieces) / (1000000 * scope.row.paymentUnload) + Number(scope.row.paymentsWithSundry));
-				} else {
-					scope.row.payments = fix((scope.row.length * scope.row.width * scope.row.actualPieces * scope.row.paymentUnload) / 1000000 + Number(scope.row.paymentsWithSundry));
-				}
-			}
-
-			if (scope.row.payments > 0) {
-				calcu();
-				this.calculatePrice(scope);
-			} else {
-				calcu();
-			}
+			updateInventoryRowCalculations(scope.row, this.isSea, this.isLand);
 		},
 		calculateLandFreight(scope) {
-			scope.row.landFreight = fix(Number(scope.row.tonnage) * Number(scope.row.landFreightPrice) + Number(scope.row.additionalFees));
-			this.calculateFreight(scope);
+			updateInventoryRowCalculations(scope.row, this.isSea, this.isLand);
 		},
 		calculateFreight(scope) {
-			scope.row.freight = fix(Number(scope.row.landFreight) + (this.isSea ? Number(scope.row.seaFreight) : 0));
-			this.calculatePrice(scope);
+			updateInventoryRowCalculations(scope.row, this.isSea, this.isLand);
 		},
 		handleCommitBackFleet(val) {
 			this.form.fleet = val.fname;
@@ -1167,7 +1119,7 @@ export default {
 				id: null,
 				storeHouseid: null,
 				storeHouseName: null,
-				storeDate: null,
+				storeDate: parseTime(new Date()),
 				landCarID: null,
 				landCarNo: null,
 				landDriverTel: null,
@@ -1274,50 +1226,8 @@ export default {
 		},
 		handlePiecesChange(scope, val) {
 			scope.row.manuallyEditedPieces = true;
-			this.recalculateAll(scope);
-		},
-		recalculateAll(scope) {
-			const row = scope.row;
-			if (row.piecesPerPack > 0 && row.packs > 0 && !row.manuallyEditedPieces) {
-				row.pieces = fix(row.piecesPerPack * row.packs);
-				if (!row.stockNumber) {
-					row.stockNumber = row.pieces;
-				}
-				row.actualPieces = row.stockNumber;
-			}
-			if (row.height && row.length && row.width && row.pieces) {
-				row.tonnage = fix(((Number(row.height) - Number(row.erro || 0)) * row.length * row.width * row.pieces) / 1000000 / 20 / 20);
-			}
-			if (row.length && row.width && row.pieces && row.price) {
-				if (row.isIncludeTaxFactory === 0) {
-					row.paymentFactory = fix((row.length * row.width * row.pieces) / (1000000 * row.price) + Number(row.sundryCost || 0));
-				} else {
-					row.paymentFactory = fix((row.length * row.width * row.pieces * row.price) / (1000000 + row.sundryCost || 0));
-				}
-			}
-			if (row.length && row.width && row.actualPieces && row.paymentUnload) {
-				if (row.isIncludeTaxSale === 0) {
-					row.payments = fix((row.length * row.width * row.actualPieces) / (1000000 * row.paymentUnload) + Number(row.paymentsWithSundry || 0));
-				} else {
-					row.payments = fix((row.length * row.width * row.actualPieces * row.paymentUnload) / 1000000 + Number(row.paymentsWithSundry || 0));
-				}
-			}
-			if (this.isLand && row.tonnage && row.landFreightPrice) {
-				row.landFreight = fix(Number(row.tonnage) * Number(row.landFreightPrice) + Number(row.additionalFees || 0));
-			}
-			row.freight = fix(Number(row.landFreight || 0) + Number(row.seaFreight || 0));
-			if (row.payments && row.paymentFactory) {
-				row.profit = fix(row.payments - row.paymentFactory - Number(row.landFreight || 0) - Number(row.seaFreight || 0) - Number(row.otherCost || 0));
-				if (row.isIncludeTaxFactory === 0 && row.isIncludeTaxSale === 0) {
-					row.profitNoTax = fix(row.payments - row.paymentFactory - Number(row.landFreight || 0) - Number(row.seaFreight || 0) - Number(row.otherCost || 0));
-				} else if (row.isIncludeTaxFactory === 1 && row.isIncludeTaxSale === 0) {
-					row.profitNoTax = fix(row.payments - row.paymentFactory / 1.075 - Number(row.landFreight || 0) - Number(row.seaFreight || 0) - Number(row.otherCost || 0));
-				} else if (row.isIncludeTaxFactory === 0 && row.isIncludeTaxSale === 1) {
-					row.profitNoTax = fix(row.payments / 1.075 - row.paymentFactory - Number(row.landFreight || 0) - Number(row.seaFreight || 0) - Number(row.otherCost || 0));
-				} else {
-					row.profitNoTax = fix(row.payments / 1.075 - row.paymentFactory / 1.075 - Number(row.landFreight || 0) - Number(row.seaFreight || 0) - Number(row.otherCost || 0));
-				}
-			}
+			// 使用统一计算函数
+			updateInventoryRowCalculations(scope.row, this.isSea, this.isLand);
 		},
 		getList() {
 			this.loading = true;
