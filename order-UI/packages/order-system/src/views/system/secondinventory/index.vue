@@ -281,8 +281,7 @@
 												}
 											}
 										"
-									>
-									</el-button>
+									></el-button>
 								</el-col>
 								<el-col :span="5">
 									<SearchOption
@@ -789,20 +788,17 @@ export default {
 					content: '点击此按钮可以快速选择本公司作为供应商。再次点击可以取消选择。'
 				}
 			],
-			tourOptions: {
-				useKeyboardNavigation: true,
-				labels: {
-					next: '下一步',
-					prev: '上一步',
-					done: '完成'
+			tourCallBacks: {
+				onFinish: () => {
+					localStorage.setItem('second-inventory-tour', 'true');
 				}
 			},
-			tourCallBacks: {
-				onStart: () => {
-					console.log('Tour started');
-				},
-				onEnd: () => {
-					console.log('Tour ended');
+			tourOptions: {
+				labels: {
+					buttonSkip: '跳过教程',
+					buttonPrevious: '上一步',
+					buttonNext: '下一步',
+					buttonStop: '完成'
 				}
 			}
 		};
@@ -823,7 +819,9 @@ export default {
 			this.columns = JSON.parse(localStorage.getItem('secondinventory-columns'));
 		}
 	},
-
+	mounted() {
+		this.handleSelfButtonTour();
+	},
 	methods: {
 		listStoreHouse,
 		listCars,
@@ -1410,7 +1408,9 @@ export default {
 			);
 		},
 		handleSelfButtonTour() {
-			this.$refs.selfButtonTour.start();
+			if (!localStorage.getItem('second-inventory-tour')) {
+				this.$tours['selfButtonTour'].start();
+			}
 		}
 	}
 };

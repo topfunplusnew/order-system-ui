@@ -584,7 +584,7 @@ export default {
 			const json = {},
 				tid = _.cloneDeep(this.tID);
 
-			form.payType = form.payType.join('-');
+			const payType = form.payType.join('-');
 			_.set(json, 'params.paymentInfo', {});
 			// 坏账信息 先获取 资金收回信息 然后添加付款信息
 			getLendMoney(tid).then(lendMoneyInfo => {
@@ -603,7 +603,9 @@ export default {
 				});
 				// 组装付款信息
 				Object.assign(json.params.paymentInfo, {
-					...form,
+					fundsDate: parseTime(new Date()),
+					payType: payType,
+					moneyAmount: form.moneyAmount,
 					selfAcountsName: lendMoneyInfo.data.selfAcountsName,
 					selfBankName: lendMoneyInfo.data.selfBankName,
 					selfBankNo: lendMoneyInfo.data.selfBankNo,
