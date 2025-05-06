@@ -8,8 +8,8 @@
 			<el-form-item label="结束时间" prop="endTime">
 				<el-date-picker v-model="queryParams.params.endTime" type="datetime" placeholder="请选择结束时间" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 			</el-form-item>
-			<el-form-item label="对象类型" prop="targetType">
-				<el-select v-model="queryParams.targetType" placeholder="请选择对象类型">
+			<el-form-item label="对方类型" prop="targetType">
+				<el-select v-model="queryParams.targetType" placeholder="请选择对方类型">
 					<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
 				</el-select>
 			</el-form-item>
@@ -65,11 +65,11 @@
 				</template>
 			</el-table-column>
 
-			<!-- 对象 -->
-			<el-table-column v-if="columns[2].visible" label="对象" align="center" prop="target" width="110" show-overflow-tooltip />
+			<!-- 公司名称 -->
+			<el-table-column v-if="columns[2].visible" label="公司名称" align="center" prop="target" width="110" show-overflow-tooltip />
 
-			<!-- 对象类型 -->
-			<el-table-column v-if="columns[1].visible" label="对象类型" align="center" prop="targetType" width="110" show-overflow-tooltip />
+			<!-- 对方类型 -->
+			<el-table-column v-if="columns[1].visible" label="对方类型" align="center" prop="targetType" width="110" show-overflow-tooltip />
 
 			<!-- 保证金金额 -->
 			<el-table-column v-if="columns[3].visible" label="保证金金额" align="center" prop="moneyAmount" width="110" show-overflow-tooltip />
@@ -132,18 +132,18 @@
 						<el-form-item label="保证金金额" prop="moneyAmount">
 							<el-input v-model="form.moneyAmount" placeholder="请输入保证金金额" />
 						</el-form-item>
-						<el-form-item label="对象" prop="target">
-							<el-input v-model="form.target" placeholder="请输入对象(员工姓名、公司名称)" />
+						<el-form-item label="公司名称" prop="target">
+							<el-input v-model="form.target" placeholder="请输入公司名称" />
 						</el-form-item>
-						<el-form-item label="对象类型" prop="targetType">
-							<el-select v-model="form.targetType" placeholder="请选择对象类型">
+						<el-form-item label="对方类型" prop="targetType">
+							<el-select v-model="form.targetType" placeholder="请选择对方类型">
 								<el-option v-for="dict in dict.type.order_target_type" :key="dict.value" :label="dict.label" :value="dict.value"></el-option>
 							</el-select>
 						</el-form-item>
 						<el-form-item label="对方账户" prop="targetAcountsName">
 							<el-row>
 								<el-col :span="10">
-									<el-input v-model="form.targetAcountsName" placeholder="请输入对方账户" />
+									<el-input disabled v-model="form.targetAcountsName" placeholder="请选择对方账户" />
 								</el-col>
 								<el-col :span="3">
 									<SearchOption
@@ -170,17 +170,17 @@
 							</el-row>
 						</el-form-item>
 						<el-form-item label="对方账号" prop="targetBankNo">
-							<el-input v-model="form.targetBankNo" placeholder="请输入对方账号" />
+							<el-input disabled v-model="form.targetBankNo" placeholder="请选择对方账号" />
 						</el-form-item>
 						<el-form-item label="对方开户行" prop="targetBankName">
-							<el-input v-model="form.targetBankName" placeholder="请输入对方开户行" />
+							<el-input disabled v-model="form.targetBankName" placeholder="请选择对方开户行" />
 						</el-form-item>
 					</el-col>
 					<el-col :span="12">
 						<el-form-item label="我方支付账户" prop="selfAcountsName">
 							<el-row>
 								<el-col :span="10">
-									<el-input v-model="form.selfAcountsName" placeholder="请输入我方支付账户" />
+									<el-input disabled v-model="form.selfAcountsName" placeholder="请选择我方支付账户" />
 								</el-col>
 								<el-col :span="3">
 									<SearchOption
@@ -207,10 +207,10 @@
 							</el-row>
 						</el-form-item>
 						<el-form-item label="我方账号" prop="selfBankNo">
-							<el-input v-model="form.selfBankNo" placeholder="请输入我方账号" />
+							<el-input disabled v-model="form.selfBankNo" placeholder="请选择我方账号" />
 						</el-form-item>
 						<el-form-item label="我方开户行" prop="selfBankName">
-							<el-input v-model="form.selfBankName" placeholder="请输入我方开户行" />
+							<el-input disabled v-model="form.selfBankName" placeholder="请选择我方开户行" />
 						</el-form-item>
 						<el-form-item label="事由" prop="reason">
 							<el-input v-model="form.reason" placeholder="请输入事由" />
@@ -315,6 +315,7 @@ import { getSubjectLevelTree } from '@/api/system/subject';
 import { getConfigValue } from '@/views/system/Statement/data/config_get';
 import _ from 'lodash';
 import { getConfigKey } from '@/api/system/config';
+import { PUBLIC_DICT_TYPE } from '@/utils/order';
 
 export default {
 	name: 'CashDepositFactory',
@@ -380,12 +381,12 @@ export default {
 				targetType: [
 					{
 						required: true,
-						message: '对象类型不能为空',
+						message: '对方类型不能为空',
 						trigger: 'blur'
 					}
 				],
 
-				target: [{ required: true, message: '对象不能为空', trigger: 'blur' }],
+				target: [{ required: true, message: '公司名称不能为空', trigger: 'blur' }],
 
 				moneyAmount: [
 					{
@@ -410,15 +411,6 @@ export default {
 						trigger: 'blur'
 					}
 				],
-
-				targetBankName: [
-					{
-						required: true,
-						message: '对方银行不能为空',
-						trigger: 'blur'
-					}
-				],
-
 				selfAcountsName: [
 					{
 						required: true,
@@ -454,8 +446,8 @@ export default {
 			},
 			columns: [
 				{ key: 0, label: '厂家保证金公司', visible: true },
-				{ key: 1, label: '对象类型', visible: true },
-				{ key: 2, label: '对象', visible: true },
+				{ key: 1, label: '对方类型', visible: true },
+				{ key: 2, label: '公司名称', visible: true },
 				{ key: 3, label: '保证金金额', visible: true },
 				{ key: 4, label: '对方账户', visible: true },
 				{ key: 5, label: '对方账号', visible: true },
@@ -700,6 +692,7 @@ export default {
 		handleAdd() {
 			this.reset();
 			this.open = true;
+			this.form.targetType = PUBLIC_DICT_TYPE.SUPPLIER;
 			this.title = '添加向外部借出款信息';
 		},
 		/** 修改按钮操作 */
