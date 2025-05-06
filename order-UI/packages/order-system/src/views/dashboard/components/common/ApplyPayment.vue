@@ -597,8 +597,8 @@ export default {
 					futuresNO: lendMoneyInfo.data.futuresNO,
 					moneyAmount: lendMoneyInfo.data.moneyAmount,
 					recoverDate: parseTime(new Date()),
-					acountsName: lendMoneyInfo.data.targetAcountsName,
-					bankNo: lendMoneyInfo.data.targetBankNo,
+					acountsName: lendMoneyInfo.data.selfAcountsName,
+					bankNo: lendMoneyInfo.data.selfBankNo,
 					comments: lendMoneyInfo.data.comments
 				});
 				// 组装付款信息

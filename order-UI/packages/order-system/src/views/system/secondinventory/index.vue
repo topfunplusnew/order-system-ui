@@ -819,9 +819,6 @@ export default {
 			this.columns = JSON.parse(localStorage.getItem('secondinventory-columns'));
 		}
 	},
-	mounted() {
-		this.handleSelfButtonTour();
-	},
 	methods: {
 		listStoreHouse,
 		listCars,
