@@ -214,7 +214,7 @@
 						<el-form-item label="对方银行账户类型" v-if="value !== PAYMENT_TARGET_TYPE.PAYMENT_FEE">
 							<BankType :option-baned="true" :baned="true" :select-type="form.otherBankCardType" @updateSelectedType="changeOtherBankType" />
 						</el-form-item>
-						<el-form-item label="对方开户名" prop="otherAcountsName" v-if="value !== '支付费用'">
+						<el-form-item label="对方户名" prop="otherAcountsName" v-if="value !== '支付费用'">
 							<el-input disabled v-model="form.otherAcountsName" placeholder="请选择" />
 						</el-form-item>
 						<el-form-item label="对方账号" prop="otherBankNo" v-if="value !== '支付费用'">
