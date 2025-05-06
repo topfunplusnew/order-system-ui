@@ -97,7 +97,7 @@ export default {
 			orderNums: 0,
 			querySupplier: null,
 			queryLevel: null,
-			queryStore: null,
+			queryLevel: null,
 			queryItemsCompany: {
 				queryList: [
 					{
@@ -145,37 +145,63 @@ export default {
 				queryList: [
 					{
 						id: 1,
-						label: '厚度',
-						prop: 'height',
+						label: '仓库名称',
+						prop: 'storeHouseName',
 						type: 'input',
+						extraInfo: {
+							__isParams: true
+						},
 						value: ''
 					},
 					{
 						id: 2,
-						label: '宽度',
-						prop: 'width',
+						label: '厚度',
+						prop: 'height',
 						type: 'input',
+						extraInfo: {
+							__isParams: false
+						},
 						value: ''
 					},
 					{
 						id: 3,
-						label: '长度',
-						prop: 'length',
+						label: '宽度',
+						prop: 'width',
 						type: 'input',
+						extraInfo: {
+							__isParams: false
+						},
 						value: ''
 					},
 					{
 						id: 4,
-						label: '分类名称',
-						prop: 'levelName',
+						label: '长度',
+						prop: 'length',
 						type: 'input',
+						extraInfo: {
+							__isParams: false
+						},
 						value: ''
 					},
 					{
 						id: 5,
-						label: '入库时间',
-						prop: 'storeDate',
+						label: '分类名称',
+						prop: 'levelName',
 						type: 'input',
+						extraInfo: {
+							__isParams: false
+						},
+						value: ''
+					},
+					{
+						id: 6,
+						label: '入库时间范围',
+						prop: 'main_storeDate_startTime&main_storeDate_endTime',
+						type: 'date-range-picker',
+						extraInfo: {
+							__isParams: true,
+							__isMultiple: true
+						},
 						value: ''
 					}
 				]
@@ -196,13 +222,11 @@ export default {
 	},
 	methods: {
 		fix,
-		listInventory,
 		listFleet,
 		listCars,
 		listBankAccount,
 		listCompany,
 		listProductLevel,
-		listDetail,
 		listExitInventory,
 		getGoodsOrderInfo(id) {
 			getGoodsOrder(id).then(response => {
@@ -458,7 +482,7 @@ export default {
 			console.log(`selection index`, this.checkedOrderdetail);
 		},
 		handleUpdateQueryNameStore(value) {
-			this.queryStore = value;
+			this.queryLevel = value;
 		},
 		handleUpdateQuerySupplier(value) {
 			this.querySupplier = value;
@@ -946,9 +970,9 @@ export default {
 										:get-data="listExitInventory"
 										icon="el-icon-s-home"
 										:limit-info="{}"
-										query-label="仓库名称"
-										query-info="storeHouseName"
-										:query-name="queryStore"
+										query-label="级别名称"
+										query-info="levelName"
+										:query-name="queryLevel"
 										:additional-limit-info="tableData => filterNoStockNumber(tableData)"
 										@commitBack="value => handleCommitBackInventory(scope, value)"
 										@update:queryName="handleUpdateQueryNameStore"

@@ -160,7 +160,7 @@
 					<file-upload @input="handleCommitUpload" />
 				</el-form-item>
 				<br />
-				<el-form-item label="运输方式" prop="transportMode">
+				<el-form-item label="运输方式" prop="transportMode" required>
 					<el-checkbox v-model="isLand" @change="updateTransportMode">陆运</el-checkbox>
 					<el-checkbox v-model="isSea" @change="updateTransportMode">海运</el-checkbox>
 					<!-- <span v-if="!isLand && !isSea" class="transport-error">请至少选择一种运输方式</span> -->

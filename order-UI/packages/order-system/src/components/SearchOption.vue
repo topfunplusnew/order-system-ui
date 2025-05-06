@@ -21,6 +21,7 @@
 <!--特别注意 针对某些特殊情况 可以补充字段-->
 <script>
 import { mixin_search_option } from '../views/dashboard/mixins/search_option/serch_option';
+import _ from 'lodash';
 
 export default {
 	name: 'SearchOption',
@@ -127,10 +128,30 @@ export default {
 		},
 		// 条件查询
 		handleSearchInfo() {
+			_.set(this.limitInfo, 'params', {});
 			if (this.queryItems.queryList.length > 0) {
-				this.queryItems.queryList.forEach(item => {
-					this.limitInfo[item.prop] = item.value;
-				});
+				for (let item of this.queryItems.queryList) {
+					const queryItem = _.cloneDeep(item);
+					// 如果是params的查询参数
+					if (queryItem && queryItem?.extraInfo.__isParams) {
+						// 如果是复合数据 如时间范围
+						if (queryItem && queryItem?.extraInfo.__isMultiple) {
+							const mutilMeta = (queryItem.prop + '').split('&');
+							console.log(`queryItem.prop`, queryItem.prop);
+							if (!Array.isArray(mutilMeta)) {
+								throw new Error('组件内部错误,请检查复合查询参数是否正确');
+							}
+							mutilMeta.forEach((meta, index) => {
+								this.limitInfo.params[meta] = Array.isArray(queryItem.value) && queryItem.value[index];
+							});
+							continue;
+						}
+						// 如果不是 直接添加
+						this.limitInfo.params[queryItem.prop] = queryItem.value;
+						continue;
+					}
+					this.limitInfo[queryItem.prop] = queryItem.value;
+				}
 			}
 			this.limitInfo[this.queryInfo] = this.query;
 			const query = {
@@ -161,10 +182,29 @@ export default {
 							<el-input v-model="query" type="text" placeholder="请输入" size="mini" clearable></el-input>
 						</el-form-item>
 						<el-form-item v-for="item in queryItems.queryList" :label="item.label" :prop="item.prop" :key="item.id">
-							<el-input v-if="item.type === 'input'" v-model="item.value" placeholder="请输入" size="mini" clearable></el-input>
-							<el-select v-else-if="item.type === 'select'" v-model="item.value" size="mini" placeholder="请选择" clearable>
-								<el-option v-for="option in item.options" :key="option.value" :label="option.label" :value="option.value"></el-option>
-							</el-select>
+							<template v-if="item.type === 'input'">
+								<el-input v-model="item.value" placeholder="请输入" size="mini" clearable></el-input>
+							</template>
+							<template v-else-if="item.type === 'select'">
+								<el-select v-model="item.value" size="mini" placeholder="请选择" clearable>
+									<el-option v-for="option in item.options" :key="option.value" :label="option.label" :value="option.value"></el-option>
+								</el-select>
+							</template>
+							<template v-else-if="item.type === 'date-picker'">
+								<el-date-picker v-model="item.value" type="date" value-format="yyyy-MM-dd" placeholder="选择日期" size="mini" clearable></el-date-picker>
+							</template>
+							<template v-else-if="item.type === 'date-range-picker'">
+								<el-date-picker
+									v-model="item.value"
+									type="daterange"
+									range-separator="至"
+									start-placeholder="开始日期"
+									end-placeholder="结束日期"
+									value-format="yyyy-MM-dd"
+									size="mini"
+									clearable
+								></el-date-picker>
+							</template>
 						</el-form-item>
 						<el-form-item>
 							<el-button type="primary" size="mini" @click="handleSearchInfo" :disabled="disable">搜索</el-button>
