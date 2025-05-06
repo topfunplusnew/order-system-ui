@@ -345,7 +345,7 @@ import { mixin_payment_fill } from '../../mixins/apply_payment/payment_fill';
 import { isNull } from '../../../../main';
 import { mixin_receive_money_subject } from '../../mixins/receivemoney/receive_money_subject';
 import { parseTime } from '@/utils/ruoyi';
-import { BankAcceptanceType, PAYMENT_TARGET_TYPE } from '@/api/tool/enums';
+import { BankAcceptanceType, PAYMENT_TARGET_TYPE, TableName } from '@/api/tool/enums';
 import { mixin_bankType } from '@/views/dashboard/mixins/common/common_bankType';
 import { addBadBetPayment, addPayment } from '@/api/system/payment';
 import _ from 'lodash';
@@ -592,6 +592,7 @@ export default {
 					this.$message.error('查询对应借款信息时出现错误');
 					return;
 				}
+				// 组装收回信息
 				Object.assign(json, {
 					futuresNO: lendMoneyInfo.data.futuresNO,
 					moneyAmount: lendMoneyInfo.data.moneyAmount,
@@ -600,12 +601,21 @@ export default {
 					bankNo: lendMoneyInfo.data.targetBankNo,
 					comments: lendMoneyInfo.data.comments
 				});
+				// 组装付款信息
 				Object.assign(json.params.paymentInfo, {
 					...form,
 					selfAcountsName: lendMoneyInfo.data.selfAcountsName,
 					selfBankName: lendMoneyInfo.data.selfBankName,
 					selfBankNo: lendMoneyInfo.data.selfBankNo,
-					selfBankID: lendMoneyInfo.data.selfBankID
+					selfBankID: lendMoneyInfo.data.selfBankID,
+					// 表名和id
+					tableName: TableName.RECOVER_MONEY,
+					tID: tid,
+					// 银行卡类型
+					selfBankCardType: BankAcceptanceType.BANK_CASH,
+					otherBankCardType: BankAcceptanceType.BANK_CASH,
+					// 公司类型
+					companyType: PAYMENT_TARGET_TYPE.PAYMENT_FEE
 				});
 				// 填充我方银行卡信息
 				addBadBetPayment(json).then(res => {
