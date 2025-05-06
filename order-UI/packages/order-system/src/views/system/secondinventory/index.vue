@@ -256,24 +256,32 @@
 							<el-button v-else size="mini" type="success" icon="el-icon-check" @click="handleRowSave(scope.row)">保存</el-button>
 						</template>
 					</el-table-column>
-					<el-table-column label="供应商" width="200">
+					<el-table-column label="供应商" width="220">
 						<template #default="scope">
 							<el-row>
 								<el-col :span="14">
 									<el-input size="mini" v-model="scope.row.supplier" placeholder="请输入供应商" :disabled="!scope.row.isEditing || selfButtonDisabled" />
 								</el-col>
-								<el-col>
+								<el-col :span="5">
 									<el-button
-										type="warning"
+										id="selfButton"
+										:type="selfButtonDisabled ? 'danger' : 'success'"
+										size="mini"
+										icon="el-icon-school"
 										@click="
 											() => {
-												scope.row.supplier = PUBLIC_DICT_TYPE.SELF_COMPANY;
-												scope.row.supplierId = 0;
-												selfButtonDisabled = true;
+												if (!selfButtonDisabled) {
+													scope.row.supplier = PUBLIC_DICT_TYPE.SELF_COMPANY;
+													scope.row.supplierId = 0;
+													selfButtonDisabled = true;
+												} else {
+													scope.row.supplier = '';
+													scope.row.supplierId = '';
+													selfButtonDisabled = false;
+												}
 											}
 										"
 									>
-										己方公司
 									</el-button>
 								</el-col>
 								<el-col :span="5">
@@ -630,6 +638,8 @@
 				</el-descriptions-item>
 			</el-descriptions>
 		</el-dialog>
+
+		<v-tour name="selfButtonTour" :steps="selfButtonTourSteps" :options="tourOptions" :callbacks="tourCallBacks"></v-tour>
 	</div>
 </template>
 
@@ -772,7 +782,29 @@ export default {
 				],
 				seaBankName: [{ required: true, message: '请输入开户行', trigger: 'blur' }]
 			},
-			selfButtonDisabled: false
+			selfButtonDisabled: false,
+			selfButtonTourSteps: [
+				{
+					target: '#selfButton',
+					content: '点击此按钮可以快速选择本公司作为供应商。再次点击可以取消选择。'
+				}
+			],
+			tourOptions: {
+				useKeyboardNavigation: true,
+				labels: {
+					next: '下一步',
+					prev: '上一步',
+					done: '完成'
+				}
+			},
+			tourCallBacks: {
+				onStart: () => {
+					console.log('Tour started');
+				},
+				onEnd: () => {
+					console.log('Tour ended');
+				}
+			}
 		};
 	},
 	watch: {
@@ -1376,6 +1408,9 @@ export default {
 				},
 				`exWarehouse_${new Date().getTime()}.xlsx`
 			);
+		},
+		handleSelfButtonTour() {
+			this.$refs.selfButtonTour.start();
 		}
 	}
 };

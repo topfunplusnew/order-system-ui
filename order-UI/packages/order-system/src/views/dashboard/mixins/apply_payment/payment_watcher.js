@@ -45,44 +45,46 @@ export var mixin_payment_watcher = {
 		// 监听银行卡的变化 如果传入的银行卡信息有变化 就自动填充
 		'needInfo.bankNo': {
 			handler(val) {
-				// 如果传入的银行卡是空的就直接返回
-				if (val === undefined) {
-					if (this.isOtherButtonDisabled) {
-						this.$notification.open({
-							message: '未找到对应的银行卡信息',
-							description: '该付款申请信息中的银行卡信息不存在,可能被删除或填写错误!',
-							onClick: () => {
-								console.log('Notification Clicked!');
-							}
-						});
+				if (!this.isPayment) {
+					// 如果传入的银行卡是空的就直接返回
+					if (val === undefined) {
+						if (this.isOtherButtonDisabled) {
+							this.$notification.open({
+								message: '未找到对应的银行卡信息',
+								description: '该付款申请信息中的银行卡信息不存在,可能被删除或填写错误!',
+								onClick: () => {
+									console.log('Notification Clicked!');
+								}
+							});
+						}
+						return;
 					}
-					return;
+					// 否则去查询银行卡数据
+					const search = {
+						bankNo: this.needInfo.bankNo,
+						bankName: this.needInfo.bankName,
+						acountsName: this.needInfo.acountsName
+					};
+					listBankAccount(search).then(res => {
+						// 如果没有查到 那么就提示 并且清空数据
+						if (res.rows.length === 0) {
+							this.$notification['error']({
+								message: '未找到对应的银行卡信息',
+								description: '该付款申请信息中的银行卡信息不存在,可能被删除或填写错误!',
+								onClick: () => {
+									console.log('Notification Clicked!');
+								}
+							});
+							this.form.otherAcountsName = '';
+							this.form.otherBankNo = '';
+							this.form.otherBankName = '';
+						} else {
+							this.form.otherAcountsName = res.rows[0].acountsName;
+							this.form.otherBankNo = res.rows[0].bankNo;
+							this.form.otherBankName = res.rows[0].bankName;
+						}
+					});
 				}
-				// 否则去查询银行卡数据
-				const search = {
-					bankNo: this.needInfo.bankNo,
-					bankName: this.needInfo.bankName,
-					acountsName: this.needInfo.acountsName
-				};
-				listBankAccount(search).then(res => {
-					// 如果没有查到 那么就提示 并且清空数据
-					if (res.rows.length === 0) {
-						this.$notification['error']({
-							message: '未找到对应的银行卡信息',
-							description: '该付款申请信息中的银行卡信息不存在,可能被删除或填写错误!',
-							onClick: () => {
-								console.log('Notification Clicked!');
-							}
-						});
-						this.form.otherAcountsName = '';
-						this.form.otherBankNo = '';
-						this.form.otherBankName = '';
-					} else {
-						this.form.otherAcountsName = res.rows[0].acountsName;
-						this.form.otherBankNo = res.rows[0].bankNo;
-						this.form.otherBankName = res.rows[0].bankName;
-					}
-				});
 			},
 			deep: true,
 			immediate: true
