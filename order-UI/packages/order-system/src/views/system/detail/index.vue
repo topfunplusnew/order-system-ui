@@ -88,46 +88,45 @@
 					<!--			<el-table-column type="selection" width="55" align="center" />-->
 
 					<!-- 手写每一列，使用 v-if 判断列的可见性 -->
-					<el-table-column v-if="columns[0].visible" label="ID" align="center" prop="id" />
-					<el-table-column v-if="columns[1].visible" label="库存量" align="center" prop="stockNumber" />
-					<el-table-column v-if="columns[2].visible" label="剩余量" align="center" prop="actualPieces" />
-					<el-table-column v-if="columns[3].visible" label="供应商" align="center" prop="supplier" />
-					<el-table-column v-if="columns[4].visible" label="级别编码" align="center" prop="levelID" />
-					<el-table-column v-if="columns[5].visible" label="级别名称" align="center" prop="levelName" />
-					<el-table-column v-if="columns[6].visible" label="计量单位" align="center" prop="countingUnit" />
-					<el-table-column v-if="columns[7].visible" label="厚度" align="center" prop="height" />
-					<el-table-column v-if="columns[8].visible" label="长度" align="center" prop="length" />
-					<el-table-column v-if="columns[9].visible" label="宽度" align="center" prop="width" />
-					<el-table-column v-if="columns[10].visible" label="出厂片数" align="center" prop="pieces" />
-					<el-table-column v-if="columns[11].visible" label="每包片数" align="center" prop="piecesPerPack" />
-					<el-table-column v-if="columns[12].visible" label="包数" align="center" prop="packs" />
-					<el-table-column v-if="columns[13].visible" label="出厂单价" align="center" prop="price" />
-					<el-table-column v-if="columns[14].visible" label="出厂是否含税" align="center" prop="isIncludeTaxFactory" />
-					<el-table-column v-if="columns[15].visible" label="杂费" align="center" prop="sundryCost" />
-					<el-table-column v-if="columns[16].visible" label="出厂货款" align="center" prop="paymentFactory" />
-					<el-table-column v-if="columns[17].visible" label="卸货价" align="center" prop="paymentUnload" />
-					<el-table-column v-if="columns[18].visible" label="销售是否含税" align="center" prop="isIncludeTaxSale" />
-					<el-table-column v-if="columns[19].visible" label="总货款" align="center" prop="payments" />
-					<el-table-column v-if="columns[20].visible" label="误差" align="center" prop="erro" />
-					<el-table-column v-if="columns[21].visible" label="吨位" align="center" prop="tonnage" />
-					<el-table-column v-if="columns[22].visible" label="陆运费单价" align="center" prop="landFreightPrice" />
-					<el-table-column v-if="columns[23].visible" label="陆运费" align="center" prop="landFreight" />
-					<el-table-column v-if="columns[24].visible" label="海运费" align="center" prop="seaFreight" />
-					<el-table-column v-if="columns[25].visible" label="运费" align="center" prop="freight" />
-					<el-table-column v-if="columns[26].visible" label="其他费用" align="center" prop="otherCost" />
-					<el-table-column v-if="columns[27].visible" label="利润" align="center" prop="profit" />
-					<el-table-column v-if="columns[28].visible" label="不含税利润" align="center" prop="profitNoTax" />
-					<el-table-column v-if="columns[29].visible" label="实际片数" align="center" prop="actualPieces" />
-					<el-table-column v-if="columns[30].visible" label="总货款杂费" align="center" prop="paymentsWithSundry" />
-					<el-table-column v-if="columns[31].visible" label="加费" align="center" prop="additionalFees" />
-					<el-table-column v-if="columns[32].visible" label="返利金额" align="center" prop="rebate" />
-					<el-table-column v-if="columns[33].visible" label="厂家佣金" align="center" prop="factoryCommission" />
-					<el-table-column v-if="columns[34].visible" label="备注" align="center" prop="comments" />
-					<!-- 操作列 -->
-					<el-table-column v-if="columns[35].visible" label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="120px">
+					<el-table-column v-if="columns[0].visible" label="ID" align="center" prop="id" show-overflow-tooltip />
+					<el-table-column v-if="columns[1].visible" label="入库片数" align="center" prop="stockNumber" show-overflow-tooltip />
+					<el-table-column v-if="columns[2].visible" label="入库时间" align="center" prop="storeDate" show-overflow-tooltip />
+					<el-table-column v-if="columns[3].visible" label="剩余量" align="center" prop="actualPieces" show-overflow-tooltip />
+					<el-table-column v-if="columns[4].visible" label="供应商" align="center" prop="supplier" show-overflow-tooltip />
+					<el-table-column v-if="columns[5].visible" label="级别编码" align="center" prop="levelID" show-overflow-tooltip />
+					<el-table-column v-if="columns[6].visible" label="计量单位" align="center" prop="countingUnit" show-overflow-tooltip />
+					<el-table-column v-if="columns[7].visible" label="厚度" align="center" prop="height" show-overflow-tooltip />
+					<el-table-column v-if="columns[8].visible" label="长度" align="center" prop="length" show-overflow-tooltip />
+					<el-table-column v-if="columns[9].visible" label="宽度" align="center" prop="width" show-overflow-tooltip />
+					<el-table-column v-if="columns[10].visible" label="每包片数" align="center" prop="piecesPerPack" show-overflow-tooltip />
+					<el-table-column v-if="columns[11].visible" label="包数" align="center" prop="packs" show-overflow-tooltip />
+					<el-table-column v-if="columns[12].visible" label="存货价" align="center" prop="paymentUnload" show-overflow-tooltip />
+					<el-table-column
+						v-if="columns[13].visible"
+						label="库存是否含税"
+						align="center"
+						prop="isIncludeTaxSale"
+						show-overflow-tooltip
+					>
 						<template #default="scope">
-							<el-button size="mini" type="text" @click="secondryInventoryOut(scope.row)">加工后出库</el-button>
-							<el-button size="mini" type="text" @click="afterbreakInventoryOut(scope.row)">破损后出库</el-button>
+							<span>{{ scope.row.isIncludeTaxSale === 1 ? '含税' : '不含税' }}</span>
+						</template>
+					</el-table-column>
+					<el-table-column v-if="columns[14].visible" label="入库金额" align="center" prop="payments" show-overflow-tooltip />
+					<el-table-column v-if="columns[15].visible" label="误差" align="center" prop="erro" show-overflow-tooltip />
+					<el-table-column v-if="columns[16].visible" label="吨位" align="center" prop="tonnage" show-overflow-tooltip />
+					<!-- 操作列 -->
+					<el-table-column v-if="columns[17].visible" label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="120px">
+						<template #default="scope">
+							<el-dropdown trigger="hover">
+								<span class="el-dropdown-link">
+									操作<i class="el-icon-arrow-down el-icon--right"></i>
+								</span>
+								<el-dropdown-menu slot="dropdown">
+									<el-dropdown-item @click.native="secondryInventoryOut(scope.row)">加工后出库</el-dropdown-item>
+									<el-dropdown-item @click.native="afterbreakInventoryOut(scope.row)">破损后出库</el-dropdown-item>
+								</el-dropdown-menu>
+							</el-dropdown>
 						</template>
 					</el-table-column>
 				</el-table>
@@ -381,116 +380,23 @@ export default {
 			form: {},
 			columns: [
 				{ key: 0, label: 'ID', prop: 'id', visible: true },
-				{ key: 1, label: '库存量', prop: 'stockNumber', visible: true },
-				{
-					key: 2,
-					label: '剩余量',
-					prop: 'actualPieces',
-					visible: true
-				},
-				{ key: 3, label: '供应商', prop: 'supplier', visible: true },
-				{ key: 4, label: '级别编码', prop: 'levelID', visible: true },
-				{ key: 5, label: '级别名称', prop: 'levelName', visible: true },
-				{
-					key: 6,
-					label: '计量单位',
-					prop: 'countingUnit',
-					visible: true
-				},
+				{ key: 1, label: '入库片数', prop: 'stockNumber', visible: true },
+				{ key: 2, label: '入库时间', prop: 'storeDate', visible: true },
+				{ key: 3, label: '剩余量', prop: 'actualPieces', visible: true },
+				{ key: 4, label: '供应商', prop: 'supplier', visible: true },
+				{ key: 5, label: '级别编码', prop: 'levelID', visible: true },
+				{ key: 6, label: '计量单位', prop: 'countingUnit', visible: true },
 				{ key: 7, label: '厚度', prop: 'height', visible: true },
 				{ key: 8, label: '长度', prop: 'length', visible: true },
 				{ key: 9, label: '宽度', prop: 'width', visible: true },
-				{ key: 10, label: '出厂片数', prop: 'pieces', visible: true },
-				{
-					key: 11,
-					label: '每包片数',
-					prop: 'piecesPerPack',
-					visible: true
-				},
-				{ key: 12, label: '包数', prop: 'packs', visible: true },
-				{ key: 13, label: '出厂单价', prop: 'price', visible: true },
-				{
-					key: 14,
-					label: '出厂是否含税',
-					prop: 'isIncludeTaxFactory',
-					visible: true
-				},
-				{ key: 15, label: '杂费', prop: 'sundryCost', visible: true },
-				{
-					key: 16,
-					label: '出厂货款',
-					prop: 'paymentFactory',
-					visible: true
-				},
-				{
-					key: 17,
-					label: '卸货价',
-					prop: 'paymentUnload',
-					visible: true
-				},
-				{
-					key: 18,
-					label: '销售是否含税',
-					prop: 'isIncludeTaxSale',
-					visible: true
-				},
-				{ key: 19, label: '总货款', prop: 'payments', visible: true },
-				{ key: 20, label: '误差', prop: 'erro', visible: true },
-				{ key: 21, label: '吨位', prop: 'tonnage', visible: true },
-				{
-					key: 22,
-					label: '陆运费单价',
-					prop: 'landFreightPrice',
-					visible: true
-				},
-				{
-					key: 23,
-					label: '陆运费',
-					prop: 'landFreight',
-					visible: true
-				},
-				{ key: 24, label: '海运费', prop: 'seaFreight', visible: true },
-				{ key: 25, label: '运费', prop: 'freight', visible: true },
-				{
-					key: 26,
-					label: '其他费用',
-					prop: 'otherCost',
-					visible: true
-				},
-				{ key: 27, label: '利润', prop: 'profit', visible: true },
-				{
-					key: 28,
-					label: '不含税利润',
-					prop: 'profitNoTax',
-					visible: true
-				},
-				{
-					key: 29,
-					label: '实际片数',
-					prop: 'actualPieces',
-					visible: true
-				},
-				{
-					key: 30,
-					label: '总货款杂费',
-					prop: 'paymentsWithSundry',
-					visible: true
-				},
-				{
-					key: 31,
-					label: '加费',
-					prop: 'additionalFees',
-					visible: true
-				},
-				{ key: 32, label: '返利金额', prop: 'rebate', visible: true },
-				{
-					key: 33,
-					label: '厂家佣金',
-					prop: 'factoryCommission',
-					visible: true
-				},
-				{ key: 34, label: '备注', prop: 'comments', visible: true },
-				{ key: 35, label: '操作', prop: 'action', visible: true } // 操作列
+				{ key: 10, label: '每包片数', prop: 'piecesPerPack', visible: true },
+				{ key: 11, label: '包数', prop: 'packs', visible: true },
+				{ key: 12, label: '存货价', prop: 'paymentUnload', visible: true },
+				{ key: 13, label: '库存是否含税', prop: 'isIncludeTaxSale', visible: true },
+				{ key: 14, label: '入库金额', prop: 'payments', visible: true },
+				{ key: 15, label: '误差', prop: 'erro', visible: true },
+				{ key: 16, label: '吨位', prop: 'tonnage', visible: true },
+				{ key: 17, label: '操作', prop: 'action', visible: true } // 操作列
 			],
 			// 表单校验
 			rules: {
