@@ -38,13 +38,25 @@
 		<el-table id="printBox" v-horizontal-scroll="'always'" v-loading="loading" border :data="exWarehouseList" size="mini" @selection-change="handleSelectionChange">
 			<el-table-column v-if="columns[0].visible" label="仓库名称" align="center" prop="storeHouseName" />
 			<el-table-column v-if="columns[1].visible" label="出库日期" align="center" prop="outDate" />
-			<el-table-column v-if="columns[2].visible" label="出库量" align="center" prop="outAmount" />
-			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+			<el-table-column v-if="columns[2].visible" label="产品级别" align="center" prop="inventoryDetail.levelName" />
+			<el-table-column v-if="columns[3].visible" label="厚度" align="center" prop="inventoryDetail.height" />
+			<el-table-column v-if="columns[4].visible" label="长度" align="center" prop="inventoryDetail.length" />
+			<el-table-column v-if="columns[5].visible" label="宽度" align="center" prop="inventoryDetail.width" />
+			<el-table-column v-if="columns[6].visible" label="存货价" align="center" prop="inventoryDetail.paymentUnload" />
+			<el-table-column v-if="columns[7].visible" label="出库量" align="center" prop="outAmount" />
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="80">
 				<template slot-scope="scope">
-					<el-button v-hasPermi="['system:secondinventory:add']" size="mini" type="text" @click="secondInventory(scope.row)">二次入库</el-button>
-					<el-button v-hasPermi="['system:secondinventory:list']" size="mini" type="text" @click="checkInvoInfo(scope.row)">查看库存信息</el-button>
-					<el-button v-hasPermi="['system:secondinventory:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
-					<el-button v-hasPermi="['system:secondinventory:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
+					<el-dropdown trigger="hover">
+						<span class="el-dropdown-link">
+							操作<i class="el-icon-arrow-down el-icon--right"></i>
+						</span>
+						<el-dropdown-menu slot="dropdown">
+							<el-dropdown-item v-hasPermi="['system:secondinventory:add']" @click.native="secondInventory(scope.row)">二次入库</el-dropdown-item>
+							<el-dropdown-item v-hasPermi="['system:secondinventory:list']" @click.native="checkInvoInfo(scope.row)">查看库存信息</el-dropdown-item>
+							<el-dropdown-item v-hasPermi="['system:secondinventory:edit']" @click.native="handleUpdate(scope.row)">修改</el-dropdown-item>
+							<el-dropdown-item v-hasPermi="['system:secondinventory:remove']" @click.native="handleDelete(scope.row)">删除</el-dropdown-item>
+						</el-dropdown-menu>
+					</el-dropdown>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -737,7 +749,12 @@ export default {
 			columns: [
 				{ key: 0, label: `仓库名称`, visible: true },
 				{ key: 1, label: `出库日期`, visible: true },
-				{ key: 2, label: `出库量`, visible: true }
+				{ key: 2, label: `产品级别`, visible: true },
+				{ key: 3, label: `厚度`, visible: true },
+				{ key: 4, label: `长度`, visible: true },
+				{ key: 5, label: `宽度`, visible: true },
+				{ key: 6, label: `存货价`, visible: true },
+				{ key: 7, label: `出库量`, visible: true }
 			],
 			inventoryInfoVisible: false,
 			isLand: false,
