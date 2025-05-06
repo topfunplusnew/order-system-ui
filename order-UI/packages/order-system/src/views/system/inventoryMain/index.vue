@@ -160,9 +160,10 @@
 					<file-upload @input="handleCommitUpload" />
 				</el-form-item>
 				<br />
-				<el-form-item label="运输方式">
-					<el-checkbox v-model="isLand">陆运</el-checkbox>
-					<el-checkbox v-model="isSea">海运</el-checkbox>
+				<el-form-item label="运输方式" prop="transportMode">
+					<el-checkbox v-model="isLand" @change="updateTransportMode">陆运</el-checkbox>
+					<el-checkbox v-model="isSea" @change="updateTransportMode">海运</el-checkbox>
+					<!-- <span v-if="!isLand && !isSea" class="transport-error">请至少选择一种运输方式</span> -->
 				</el-form-item>
 				<el-row v-if="isLand" style="margin: 3px 0">
 					<el-form-item label="车牌" prop="landCarNo">
@@ -513,18 +514,18 @@
 						</template>
 					</el-table-column>
 
-					<el-table-column label="库存杂费" prop="paymentsWithSundry" width="150">
-						<template #default="scope">
-							<!-- 添加 disabled 属性 -->
-							<el-input
-								size="mini"
-								v-model.lazy="scope.row.paymentsWithSundry"
-								@input="() => recalculateAll(scope)"
-								:disabled="!scope.row.isEditing || !scope.row.paymentUnload"
-								:placeholder="scope.row.paymentUnload <= 0 ? '请先完善存货价' : '请输入库存杂费'"
-							/>
-						</template>
-					</el-table-column>
+					<!--					<el-table-column label="库存杂费" prop="paymentsWithSundry" width="150">-->
+					<!--						<template #default="scope">-->
+					<!--							&lt;!&ndash; 添加 disabled 属性 &ndash;&gt;-->
+					<!--							<el-input-->
+					<!--								size="mini"-->
+					<!--								v-model.lazy="scope.row.paymentsWithSundry"-->
+					<!--								@input="() => recalculateAll(scope)"-->
+					<!--								:disabled="!scope.row.isEditing || !scope.row.paymentUnload"-->
+					<!--								:placeholder="scope.row.paymentUnload <= 0 ? '请先完善存货价' : '请输入库存杂费'"-->
+					<!--							/>-->
+					<!--						</template>-->
+					<!--					</el-table-column>-->
 					<el-table-column label="库存金额" prop="payments" width="150">
 						<template #default="scope">
 							<!-- 添加 disabled 属性 -->
@@ -739,6 +740,15 @@ export default {
 			}
 		};
 
+		// 自定义校验器：确保至少选择一种运输方式
+		const validateTransportMode = (rule, value, callback) => {
+			if (!this.isLand && !this.isSea) {
+				callback(new Error('请至少选择一种运输方式'));
+			} else {
+				callback();
+			}
+		};
+
 		return {
 			// 遮罩层
 			loading: true,
@@ -819,7 +829,9 @@ export default {
 				seaDriverName: [{ validator: validateSeaDriverName, trigger: 'blur' }],
 				seaDriverTel: [{ validator: validateSeaDriverTel, trigger: 'blur' }],
 				seaBankNo: [{ validator: validateSeaBankNo, trigger: 'blur' }],
-				seaBankName: [{ validator: validateSeaBankName, trigger: 'blur' }]
+				seaBankName: [{ validator: validateSeaBankName, trigger: 'blur' }],
+				// 添加运输方式校验规则
+				transportMode: [{ validator: validateTransportMode, trigger: 'change' }]
 			},
 			storeList: [],
 			// 树表的数据结构
@@ -910,6 +922,14 @@ export default {
 		updateInventoryMain, // 确保已引入
 		handleCommitUpload(val) {
 			this.form.receiveProof = val;
+		},
+		updateTransportMode() {
+			this.form.transportMode = this.isLand || this.isSea ? 'selected' : '';
+			this.$nextTick(() => {
+				if (this.$refs.form) {
+					this.$refs.form.validateField('transportMode');
+				}
+			});
 		},
 		handleRowEdit(row) {
 			// 设置当前行为可编辑
@@ -1178,7 +1198,8 @@ export default {
 				goodsCompany: null,
 				allLandFreight: null,
 				allSeaFreight: null,
-				receiveProof: null
+				receiveProof: null,
+				transportMode: '' // 重置运输方式校验字段
 			};
 			this.inventoryDetailList = [];
 			this.isEditingDetails = false; // 重置编辑状态
@@ -1251,6 +1272,9 @@ export default {
 				this.isSea = !!response.data.seaCarNo; // 使用主表信息判断
 				this.isLand = !!response.data.landCarNo; // 使用主表信息判断
 
+				// 确保设置 transportMode 字段以通过校验
+				this.form.transportMode = (this.isLand || this.isSea) ? 'selected' : '';
+
 				// 初始化子项的编辑状态
 				this.inventoryDetailList = response.data.inventoryDetailList.map(item => ({
 					...item,
@@ -1271,8 +1295,21 @@ export default {
 		},
 		/** 提交按钮 */
 		submitForm() {
+			// 强制再次校验运输方式
+			if (!this.isLand && !this.isSea) {
+				this.form.transportMode = ''; // 确保值为空触发校验
+				this.$refs.form.validateField('transportMode');
+				return; // 阻止继续提交
+			}
+
 			this.$refs['form'].validate(valid => {
 				if (valid) {
+					// 再次确认运输方式已选择
+					if (!this.isLand && !this.isSea) {
+						this.$message.error('请至少选择一种运输方式');
+						return;
+					}
+
 					// 检查是否有未保存的子项
 					if (this.inventoryDetailList.some(item => item.isEditing)) {
 						this.$message.error('当前库存信息中有未保存的项,请先保存或取消编辑后再提交!');
@@ -1465,6 +1502,13 @@ export default {
 ::v-deep .error-row:hover td {
 	animation: none; /* 悬停时停止动画 */
 	background-color: rgba(245, 108, 108, 0.15) !important;
+}
+
+/* 添加运输方式错误样式 */
+.transport-error {
+	color: #F56C6C;
+	margin-left: 10px;
+	font-size: 12px;
 }
 
 /* 滚动条样式 (保留) */

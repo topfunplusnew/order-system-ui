@@ -89,6 +89,7 @@
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="230px" fixed="right">
 				<template slot-scope="scope">
 					<el-row>
+						<el-button size="mini" type="text" @click="checkDetail(scope.row)">查看历史收回</el-button>
 						<el-button v-if="scope.row.checkState === '未申请'" size="mini" type="text" @click="applyForPayment(scope.row)">坏账损失</el-button>
 						<el-button v-if="scope.row.checkState === '审核中'" size="mini" type="warning" disabled>审核中</el-button>
 						<el-button v-hasPermi="['system:lendmoney:remove']" size="mini" type="text" @click="handleGetBackMoney(scope.row)">收回资金</el-button>
@@ -561,6 +562,25 @@ export default {
 	methods: {
 		listCompany,
 		listBankAccount,
+		checkDetail(row) {
+			this.getRepaymentMoneyList(row);
+		},
+		getRepaymentMoneyList(row) {
+			// 查询
+			listRecoverMoney({
+				futuresNO: row.futuresNO,
+				...this.queryRepaymentParams
+			}).then(res => {
+				this.tableData = res.rows;
+				this.detailTotal = res.total;
+				if (res.rows.length === 0) {
+					this.$message.error('暂无数据');
+				} else {
+					this.$message.success('查询成功');
+					this.dialogHistoryVisible = true;
+				}
+			});
+		},
 		// 坏账损失
 		applyForPayment(row) {
 			this.tid = row.id;
