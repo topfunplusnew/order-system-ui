@@ -338,9 +338,8 @@ import { parseTime } from '@/utils/ruoyi';
 import BankType from '@/views/dashboard/components/common/BankType.vue';
 import { BankAcceptanceType, PAYMENT_TARGET_TYPE } from '@/api/tool/enums';
 import { mixin_bankType } from '@/views/dashboard/mixins/common/common_bankType';
-import { addPayment } from '@/api/system/payment';
+import { addBadBetPayment, addPayment } from '@/api/system/payment';
 import _ from 'lodash';
-import { mixin_paymentindex_fill } from '@/views/system/payment/paymentFill';
 
 export default {
 	name: 'ApplyPayment',
@@ -580,7 +579,7 @@ export default {
 					bankacceptance: form.params.bankacceptance
 				}
 			};
-			addPayment(json).then(res => {
+			addBadBetPayment(json).then(res => {
 				this.$message.success('付款成功');
 				this.reset();
 				this.$emit('changeOpen');

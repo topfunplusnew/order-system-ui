@@ -60,3 +60,12 @@ export function getPaymentByPayNO(id) {
 		method: 'get'
 	});
 }
+
+// 添加坏账
+export function addBadBetPayment(data) {
+	return request({
+		url: '/system/recoverMoney/badDebt',
+		method: 'post',
+		data: data
+	});
+}
