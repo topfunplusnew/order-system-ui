@@ -101,13 +101,7 @@
 					<el-table-column v-if="columns[10].visible" label="每包片数" align="center" prop="piecesPerPack" show-overflow-tooltip />
 					<el-table-column v-if="columns[11].visible" label="包数" align="center" prop="packs" show-overflow-tooltip />
 					<el-table-column v-if="columns[12].visible" label="存货价" align="center" prop="paymentUnload" show-overflow-tooltip />
-					<el-table-column
-						v-if="columns[13].visible"
-						label="库存是否含税"
-						align="center"
-						prop="isIncludeTaxSale"
-						show-overflow-tooltip
-					>
+					<el-table-column v-if="columns[13].visible" label="库存是否含税" align="center" prop="isIncludeTaxSale" show-overflow-tooltip>
 						<template #default="scope">
 							<span>{{ scope.row.isIncludeTaxSale === 1 ? '含税' : '不含税' }}</span>
 						</template>
@@ -120,7 +114,8 @@
 						<template #default="scope">
 							<el-dropdown trigger="hover">
 								<span class="el-dropdown-link">
-									操作<i class="el-icon-arrow-down el-icon--right"></i>
+									操作
+									<i class="el-icon-arrow-down el-icon--right"></i>
 								</span>
 								<el-dropdown-menu slot="dropdown">
 									<el-dropdown-item @click.native="secondryInventoryOut(scope.row)">加工后出库</el-dropdown-item>

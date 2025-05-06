@@ -1,25 +1,6 @@
 <template>
 	<div class="app-container">
 		<el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" label-width="100px" class="search-form">
-			<!-- 后端不支持这两个字段的搜索 已删除 -->
-			<!-- <el-form-item label="仓库名称" prop="storeHouseName">
-        <el-input
-          v-model="queryParams.storeHouseName"
-          placeholder="请输入仓库名称"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="入库日期" prop="storeDate">
-        <el-date-picker
-          v-model="queryParams.storeDate"
-          type="date"
-          value-format="yyyy-MM-dd"
-          placeholder="选择入库日期"
-          clearable
-          @change="handleQuery"
-        />
-      </el-form-item> -->
 			<el-form-item label="级别名称" prop="levelName">
 				<el-input v-model="queryParams.levelName" placeholder="请输入级别名称" clearable />
 			</el-form-item>
@@ -41,7 +22,6 @@
 			<el-form-item label="厚度" prop="length">
 				<el-input v-model="queryParams.length" placeholder="请输入厚度" clearable />
 			</el-form-item>
-
 			<el-form-item label="供应商" prop="supplier">
 				<el-input v-model="queryParams.supplier" placeholder="请输入供应商" value-format="yyyy-MM-dd" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
@@ -51,51 +31,45 @@
 			</el-form-item>
 		</el-form>
 
-		<el-row :gutter="20" v-if="Object.keys(categorizedInventory).length !== 0">
-			<el-col :span="8" v-for="(items, category) in categorizedInventory" :key="category">
-				<el-card :body-style="{ padding: '10px' }" shadow="hover" class="category-card">
-					<div class="card-header">
-						<strong>{{ items[0].levelName }}</strong>
-						<el-button type="text" size="mini" class="change-log-button" @click="openChangeLog(category)">查看变动记录</el-button>
-					</div>
-					<div class="card-content">
-						<el-table :data="paginatedData[category]" size="mini" border stripe>
-							<el-table-column label="级别名称" prop="levelName" align="center" show-overflow-tooltip />
-							<el-table-column label="剩余量" prop="totalRemaining" align="center" />
-							<el-table-column label="级别编码" prop="levelNo" align="center" />
-							<el-table-column label="总出库量" prop="totalStockOut" align="center" />
-							<el-table-column label="总入库量" prop="totalStockIn" align="center" />
-							<el-table-column label="价格" prop="price" align="center" />
-							<el-table-column label="类别编号" prop="categoryNo" align="center" />
-							<el-table-column label="类别名称" prop="categoryName" align="center" />
-							<el-table-column label="长度" prop="length" align="center" />
-							<el-table-column label="宽度" prop="width" align="center" />
-							<el-table-column label="吨位" prop="tonnage" align="center" />
-							<el-table-column label="厚度" prop="height" align="center" />
-						</el-table>
-						<el-pagination
-							:current-page.sync="pagination[category].currentPage"
-							:page-size="pagination[category].pageSize"
-							:total="items.length"
-							layout="prev, pager, next"
-							@current-change="handlePageChange(category)"
-						/>
-					</div>
-				</el-card>
-			</el-col>
-		</el-row>
-		<el-row v-else>
-			<el-col :span="24">
-				<el-empty description="暂无数据" />
-			</el-col>
-		</el-row>
+		<div class="inventory-table-container">
+			<el-table v-if="inventoryMainList.length > 0" :data="inventoryMainList" size="mini" border stripe>
+				<el-table-column label="级别名称" prop="levelName" align="center" show-overflow-tooltip />
+				<el-table-column label="级别编码" prop="levelNo" align="center" />
+				<el-table-column label="厚度" prop="height" align="center" />
+				<el-table-column label="长度" prop="length" align="center" />
+				<el-table-column label="宽度" prop="width" align="center" />
+				<el-table-column label="价格" prop="price" align="center" />
+				<el-table-column label="吨位" prop="tonnage" align="center" />
+				<el-table-column label="总入库量" prop="totalStockIn" align="center" />
+				<el-table-column label="总出库量" prop="totalStockOut" align="center" />
+				<el-table-column label="剩余量" prop="totalRemaining" align="center" />
+				<el-table-column label="类别名称" prop="categoryName" align="center" />
+				<el-table-column label="类别编号" prop="categoryNo" align="center" />
+				<el-table-column label="操作" width="120" align="center">
+					<template slot-scope="scope">
+						<el-button type="text" size="mini" @click="openChangeLog(scope.row)">查看变动记录</el-button>
+					</template>
+				</el-table-column>
+			</el-table>
+			<el-empty v-else description="暂无数据" />
+
+			<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getSummary" />
+		</div>
+
 		<el-dialog title="变动记录" :visible.sync="changeLogVisible" width="50%" class="change-log-dialog">
-			<el-table :data="changeLogData" size="mini" border stripe>
+			<el-table :data="changeLogData" size="mini" border stripe v-loading="changeLogLoading">
 				<el-table-column label="日期" prop="date" align="center" />
 				<el-table-column label="变动数量" prop="change_amount" align="center" />
 				<el-table-column label="剩余库存" prop="remaining_stock" align="center" />
-				<!-- <el-table-column label="表名" prop="tableName" align="center" /> -->
 			</el-table>
+			<pagination
+				v-show="changeLogTotal > 0"
+				:total="changeLogTotal"
+				:page.sync="changeLogQueryParams.pageNum"
+				:limit.sync="changeLogQueryParams.pageSize"
+				@pagination="getChangeLogData"
+				class="change-log-pagination"
+			/>
 		</el-dialog>
 	</div>
 </template>
@@ -104,12 +78,16 @@
 import { listInventoryMain } from '@/api/system/inventoryMain';
 import { inventorySummary } from '../../../api/system/statement';
 import { listInventoryDetails } from '../../../api/system/inventoryMain';
+import Pagination from '@/components/Pagination';
 
 export default {
 	name: 'InventoryTotal',
+	components: { Pagination },
 	data() {
 		return {
 			queryParams: {
+				pageNum: 1,
+				pageSize: 10,
 				storeHouseName: '',
 				storeDate: '',
 				supplier: '',
@@ -121,86 +99,77 @@ export default {
 				width: '',
 				length: ''
 			},
+			// 变动记录查询参数
+			changeLogQueryParams: {
+				pageNum: 1,
+				pageSize: 10,
+				startDate: '',
+				endDate: '',
+				levelID: ''
+			},
 			inventoryMainList: [],
-			categorizedInventory: {},
 			changeLogVisible: false,
 			changeLogData: [],
-			pagination: {},
-			paginatedData: {}
+			changeLogLoading: false,
+			changeLogTotal: 0,
+			total: 0,
+			loading: false,
+			currentItem: null
 		};
 	},
 	created() {
 		this.getSummary();
 	},
 	methods: {
-		getInventoryData() {
-			listInventoryMain({
-				pageNum: 1,
-				pageSize: 1000,
-				...this.queryParams
-			}).then(response => {
-				this.inventoryMainList = response.rows;
-				this.categorizeInventory();
-			});
-		},
 		getSummary() {
+			this.loading = true;
 			inventorySummary(this.queryParams).then(response => {
-				this.inventoryMainList = response.data;
-				this.categorizeInventory();
+				this.inventoryMainList = response.rows;
+				this.total = response.total;
+				this.loading = false;
 			});
-		},
-		categorizeInventory() {
-			this.categorizedInventory = this.inventoryMainList.reduce((acc, item) => {
-				const category = item.levelID || '未分类';
-				if (!acc[category]) {
-					acc[category] = [];
-				}
-				acc[category].push(item);
-				return acc;
-			}, {});
-
-			this.initializePagination();
-		},
-		initializePagination() {
-			Object.keys(this.categorizedInventory).forEach(category => {
-				this.$set(this.pagination, category, {
-					currentPage: 1,
-					pageSize: 10
-				});
-				this.updatePaginatedData(category);
-			});
-		},
-		updatePaginatedData(category) {
-			const { currentPage, pageSize } = this.pagination[category];
-			const start = (currentPage - 1) * pageSize;
-			const end = start + pageSize;
-			this.$set(this.paginatedData, category, this.categorizedInventory[category].slice(start, end));
-		},
-		handlePageChange(category) {
-			this.updatePaginatedData(category);
 		},
 		handleQuery() {
+			this.queryParams.pageNum = 1;
 			this.getSummary();
 		},
 		resetQuery() {
 			this.queryParams = {
+				pageNum: 1,
+				pageSize: 10,
 				storeHouseName: '',
 				storeDate: '',
-				supplier: ''
+				supplier: '',
+				levelName: '',
+				levelNo: '',
+				categoryNo: '',
+				categoryName: '',
+				height: '',
+				width: '',
+				length: ''
 			};
 			this.handleQuery();
 		},
-		openChangeLog(category) {
+		openChangeLog(row) {
+			this.currentItem = row;
 			this.$datePicker().then(({ beginTime, endTime }) => {
-				const query = {
+				this.changeLogQueryParams = {
+					pageNum: 1,
+					pageSize: 10,
 					startDate: beginTime,
 					endDate: endTime,
-					levelID: category
+					levelID: row.levelID
 				};
-				listInventoryDetails(query).then(response => {
-					this.changeLogData = response.data;
-					this.changeLogVisible = true;
-				});
+				this.getChangeLogData();
+				this.changeLogVisible = true;
+			});
+		},
+		getChangeLogData() {
+			this.changeLogLoading = true;
+			listInventoryDetails(this.changeLogQueryParams).then(response => {
+				this.changeLogData = response.data;
+				this.changeLogTotal = response.total || this.changeLogData.length;
+				this.changeLogLoading = false;
 			});
 		}
 	}
@@ -220,38 +189,16 @@ export default {
 	box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
-.category-card {
-	margin-bottom: 20px;
-	border-radius: 10px;
-	transition: transform 0.3s, box-shadow 0.3s;
+.inventory-table-container {
+	background-color: #fff;
+	padding: 15px;
+	border-radius: 8px;
 	box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
-.category-card:hover {
-	transform: translateY(-5px);
-	box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.15);
-}
-
-.card-header {
-	font-size: 18px;
-	font-weight: bold;
-	margin-bottom: 10px;
-	text-align: center;
-	color: #409eff;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-}
-
-.card-content {
-	font-size: 14px;
-	line-height: 1.5;
-	margin-bottom: 10px;
-}
-
-.change-log-button {
-	color: #409eff;
-	font-size: 12px;
+.pagination {
+	margin-top: 15px;
+	text-align: right;
 }
 
 .change-log-dialog .el-dialog__header {
@@ -261,6 +208,11 @@ export default {
 
 .change-log-dialog .el-dialog__body {
 	padding: 20px;
+}
+
+.change-log-pagination {
+	margin-top: 15px;
+	text-align: right;
 }
 
 .el-table th,
