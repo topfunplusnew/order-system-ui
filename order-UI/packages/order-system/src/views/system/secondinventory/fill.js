@@ -1,4 +1,4 @@
-// 这是订单表单的填充相关的逻辑混入，目的是为了避免OrderForm中的代码过于冗余
+// 这是订单表单的填充相关的逻辑混入，目的是为了避免OrdersecondForm中的代码过于冗余
 
 export var _fill = {
 	data: function () {
@@ -16,17 +16,17 @@ export var _fill = {
 	},
 	methods: {
 		handleCommitBackInventory(val) {
-			this.form.storeHouseid = val.id;
-			this.form.storeHouseName = val.storeHouseName;
+			this.secondForm.storeHouseid = val.id;
+			this.secondForm.storeHouseName = val.storeHouseName;
 		},
 		handleUpdateQueryNameStore(value) {
 			this.queryStore = value;
 		},
 		// 客户搜索的自动填充
 		handleCommitBackCompany(val) {
-			this.form.customerID = val.id;
-			this.form.customer = val.companyName;
-			this.form.saleManager = val.salesManager;
+			this.secondForm.customerID = val.id;
+			this.secondForm.customer = val.companyName;
+			this.secondForm.saleManager = val.salesManager;
 		},
 		handleUpdateCompanyName(val) {
 			this.queryCompanyName = val;
@@ -37,26 +37,26 @@ export var _fill = {
 			this.queryLandCar = val;
 		},
 		handleCommitBackCar(val) {
-			this.form.landCarID = val.id;
+			this.secondForm.landCarID = val.id;
 			// 与上面填充客户信息同理
-			this.form.landCarNo = val.carNo;
-			this.form.landDriverName = val.driver;
-			this.form.landDriverTel = val.tel;
+			this.secondForm.landCarNo = val.carNo;
+			this.secondForm.landDriverName = val.driver;
+			this.secondForm.landDriverTel = val.tel;
 			// 填充银行信息
-			this.form.landBankName = val.bankName;
-			this.form.landBankNo = val.bankNo;
+			this.secondForm.landBankName = val.bankName;
+			this.secondForm.landBankNo = val.bankNo;
 		},
 		// 海运车牌的填充
 		handleChangeSeaCar(val) {
 			this.querySeaCars = val;
 		},
 		handleCommitBackSeaCar(val) {
-			this.form.seaCarID = val.id;
-			this.form.seaDriverName = val.driver;
-			this.form.seaDriverTel = val.tel;
+			this.secondForm.seaCarID = val.id;
+			this.secondForm.seaDriverName = val.driver;
+			this.secondForm.seaDriverTel = val.tel;
 			// 填充银行信息
-			this.form.seaBankName = val.bankName;
-			this.form.seaBankNo = val.bankNo;
+			this.secondForm.seaBankName = val.bankName;
+			this.secondForm.seaBankNo = val.bankNo;
 		}
 	}
 };

@@ -112,15 +112,16 @@
 					<file-upload @input="handleCommitUpload" />
 				</el-form-item>
 				<br />
-				<el-form-item label="运输方式">
+				<el-form-item label="运输方式" required>
 					<el-checkbox v-model="isLand">陆运</el-checkbox>
 					<el-checkbox v-model="isSea">海运</el-checkbox>
+					<div v-if="transportError" class="el-form-item__error">请至少选择一种运输方式</div>
 				</el-form-item>
 				<el-row v-if="isLand" style="margin: 20px 0">
-					<el-form-item label="车牌">
+					<el-form-item label="车牌" prop="landCarNo">
 						<el-row>
 							<el-col :span="20">
-								<el-input v-model="secondForm.landCarNo" type="text" size="mini" placeholder="请输入陆运车牌" style="width: 120px" />
+								<el-input disabled v-model="secondForm.landCarNo" type="text" size="mini" placeholder="请输入陆运车牌" style="width: 120px" />
 							</el-col>
 							<el-col :span="4">
 								<SearchOption
@@ -145,21 +146,21 @@
 						</el-row>
 					</el-form-item>
 					<el-form-item label="司机">
-						<el-input v-model="secondForm.landDriverName" type="text" size="mini" placeholder="请输入陆运司机姓名" style="width: 130px" />
+						<el-input disabled v-model="secondForm.landDriverName" type="text" size="mini" placeholder="请输入陆运司机姓名" style="width: 130px" />
 					</el-form-item>
 					<el-form-item label="电话">
-						<el-input v-model="secondForm.landDriverTel" type="text" size="mini" placeholder="请输入陆运司机电话" style="width: 120px" />
+						<el-input disabled v-model="secondForm.landDriverTel" type="text" size="mini" placeholder="请输入陆运司机电话" style="width: 120px" />
 					</el-form-item>
 					<el-form-item label="银行卡号">
-						<el-input v-model="secondForm.landBankNo" type="text" size="mini" placeholder="请输入陆运银行卡号" style="width: 120px" />
+						<el-input disabled v-model="secondForm.landBankNo" type="text" size="mini" placeholder="请输入陆运银行卡号" style="width: 120px" />
 					</el-form-item>
 					<el-form-item label="开户行">
-						<el-input v-model="secondForm.landBankName" type="text" size="mini" placeholder="请输入陆运开户行" style="width: 120px" />
+						<el-input disabled v-model="secondForm.landBankName" type="text" size="mini" placeholder="请输入陆运开户行" style="width: 120px" />
 					</el-form-item>
-					<el-form-item label="车队">
+					<el-form-item label="车队" prop="fleet">
 						<el-row>
 							<el-col :span="12">
-								<el-input v-model="secondForm.fleet" type="text" size="mini" placeholder="请输入车队" />
+								<el-input disabled v-model="secondForm.fleet" type="text" size="mini" placeholder="请输入车队" />
 							</el-col>
 							<el-col :span="4">
 								<SearchOption
@@ -183,7 +184,7 @@
 					</el-form-item>
 				</el-row>
 				<el-row v-if="isSea" style="margin: 10px 0">
-					<el-form-item label="柜号">
+					<el-form-item label="柜号" prop="seaCarNo">
 						<el-row>
 							<el-col :span="20">
 								<el-input v-model="secondForm.seaCarNo" type="text" size="mini" placeholder="请输入柜号" style="width: 120px" />
@@ -199,9 +200,9 @@
 									@update:queryName="handleChangeSeaCar"
 								>
 									<template #table-columns>
-										<el-table-column label="车牌" align="center" prop="carNo" />
-										<el-table-column label="司机" align="center" prop="driver" />
-										<el-table-column label="司机电话" align="center" prop="tel" />
+										<el-table-column label="柜号" align="center" prop="carNo" />
+										<el-table-column label="海运公司" align="center" prop="driver" />
+										<el-table-column label="电话" align="center" prop="tel" />
 										<el-table-column label="开户名" align="center" prop="acountsName" />
 										<el-table-column label="账号" align="center" prop="bankNo" />
 									</template>
@@ -209,17 +210,17 @@
 							</el-col>
 						</el-row>
 					</el-form-item>
-					<el-form-item label="海运公司">
-						<el-input v-model="secondForm.seaDriverName" type="text" size="mini" placeholder="请输入海运公司" style="width: 130px" />
+					<el-form-item label="海运公司" prop="seaDriverName">
+						<el-input disabled v-model="secondForm.seaDriverName" type="text" size="mini" placeholder="请输入海运公司" style="width: 130px" />
 					</el-form-item>
 					<el-form-item label="电话">
-						<el-input v-model="secondForm.seaDriverTel" type="text" size="mini" placeholder="请输入电话" style="width: 120px" />
+						<el-input disabled v-model="secondForm.seaDriverTel" type="text" size="mini" placeholder="请输入电话" style="width: 120px" />
 					</el-form-item>
 					<el-form-item label="银行卡号">
-						<el-input v-model="secondForm.seaBankNo" type="text" size="mini" placeholder="请输入海运银行卡号" style="width: 120px" />
+						<el-input disabled v-model="secondForm.seaBankNo" type="text" size="mini" placeholder="请输入海运银行卡号" style="width: 120px" />
 					</el-form-item>
 					<el-form-item label="开户行">
-						<el-input v-model="secondForm.seaBankName" type="text" size="mini" placeholder="请输入海运开户行" style="width: 120px" />
+						<el-input disabled v-model="secondForm.seaBankName" type="text" size="mini" placeholder="请输入海运开户行" style="width: 120px" />
 					</el-form-item>
 				</el-row>
 				<el-row :gutter="10" class="mb8">
@@ -644,6 +645,69 @@ export default {
 	components: { SearchOption },
 	mixins: [_fill],
 	data() {
+		// 自定义校验器：仓库名称必填
+		const validateStoreHouseName = (rule, value, callback) => {
+			if (!value) {
+				callback(new Error('请选择仓库名称'));
+			} else {
+				callback();
+			}
+		};
+
+		// 自定义校验器：入库日期必填
+		const validateStoreDate = (rule, value, callback) => {
+			if (!value) {
+				callback(new Error('请选择入库日期'));
+			} else {
+				callback();
+			}
+		};
+
+		// 自定义校验器：货物来源必填
+		const validateGoodsCompany = (rule, value, callback) => {
+			if (!value) {
+				callback(new Error('请输入货物来源公司'));
+			} else {
+				callback();
+			}
+		};
+
+		// 自定义校验器：当选择陆运时，车队必填
+		const validateFleet = (rule, value, callback) => {
+			if (this.isLand && !this.secondForm.fleet) {
+				callback(new Error('选择陆运时，请选择车队'));
+			} else {
+				callback();
+			}
+		};
+
+		// 自定义校验器：当选择陆运时，必须选择车牌信息
+		const validateLandCarNo = (rule, value, callback) => {
+			if (this.isLand && !this.secondForm.landCarNo) {
+				callback(new Error('选择陆运时，请选择车牌信息'));
+			} else {
+				callback();
+			}
+		};
+
+		// 自定义校验器：当选择海运时，柜号必填
+		const validateSeaCarNo = (rule, value, callback) => {
+			if (this.isSea && !value) {
+				callback(new Error('选择海运时，柜号不能为空'));
+			} else {
+				callback();
+			}
+		};
+
+		// 自定义校验器：当选择海运时，海运公司必填
+		const validateSeaDriverName = (rule, value, callback) => {
+			if (this.isSea && !this.secondForm.seaDriverName) {
+				callback(new Error('选择海运时，请选择海运公司信息'));
+			} else {
+				callback();
+			}
+		};
+
 		return {
 			loading: true,
 			ids: [],
@@ -734,28 +798,15 @@ export default {
 			},
 			secondForm: {},
 			secondRules: {
-				seaCarNo: [{ required: true, message: '请输入柜号', trigger: 'blur' }],
-				seaDriverName: [
-					{
-						required: true,
-						message: '请输入司机姓名',
-						trigger: 'blur'
-					}
-				],
-				seaDriverTel: [
-					{
-						required: true,
-						message: '请输入司机电话',
-						trigger: 'blur'
-					}
-				],
-				seaBankNo: [
-					{
-						required: true,
-						message: '请输入银行卡号',
-						trigger: 'blur'
-					}
-				],
+				storeHouseName: [{ required: true, validator: validateStoreHouseName, trigger: 'blur' }],
+				storeDate: [{ required: true, validator: validateStoreDate, trigger: 'blur' }],
+				goodsCompany: [{ required: true, validator: validateGoodsCompany, trigger: 'blur' }],
+				fleet: [{ validator: validateFleet, trigger: 'change' }],
+				landCarNo: [{ validator: validateLandCarNo, trigger: 'change' }],
+				seaCarNo: [{ validator: validateSeaCarNo, trigger: 'blur' }],
+				seaDriverName: [{ validator: validateSeaDriverName, trigger: 'change' }],
+				seaDriverTel: [{ required: true, message: '请输入司机电话', trigger: 'blur' }],
+				seaBankNo: [{ required: true, message: '请输入银行卡号', trigger: 'blur' }],
 				seaBankName: [{ required: true, message: '请输入开户行', trigger: 'blur' }]
 			},
 			selfButtonDisabled: false,
@@ -777,7 +828,8 @@ export default {
 					buttonNext: '下一步',
 					buttonStop: '完成'
 				}
-			}
+			},
+			transportError: false
 		};
 	},
 	watch: {
@@ -786,6 +838,16 @@ export default {
 				localStorage.setItem('secondinventory-columns', JSON.stringify(newVal));
 			},
 			deep: true
+		},
+		isLand(val) {
+			if (val && this.transportError) {
+				this.transportError = false;
+			}
+		},
+		isSea(val) {
+			if (val && this.transportError) {
+				this.transportError = false;
+			}
 		}
 	},
 	created() {
@@ -818,7 +880,7 @@ export default {
 		secondInventory(row) {
 			this.inventoryDetailList = [];
 			this.resetSecond();
-      // 填充仓库
+			// 填充仓库
 			this.secondForm.storeHouseName = row.storeHouseName;
 			getDetail(row.storeID).then(res => {
 				if (!res.data) {
@@ -1080,6 +1142,13 @@ export default {
 			this.resetSecond();
 		},
 		submitSecond() {
+			// 检查是否至少选择了一种运输方式
+			if (!this.isLand && !this.isSea) {
+				this.transportError = true;
+				this.$message.error('请至少选择一种运输方式');
+				return;
+			}
+
 			this.$refs['secondForm'].validate(valid => {
 				if (valid) {
 					if (this.inventoryDetailList.some(item => item.isEditing)) {
@@ -1092,6 +1161,9 @@ export default {
 					} else {
 						this.doSubmitSecond();
 					}
+				} else {
+					this.$message.error('请检查表单必填项!');
+					return false;
 				}
 			});
 		},
@@ -1115,6 +1187,7 @@ export default {
 		resetSecond() {
 			this.isSea = false;
 			this.isLand = false;
+			this.transportError = false; // 重置错误状态
 			this.secondForm = {
 				id: null,
 				storeHouseid: null,
