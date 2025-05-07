@@ -23,7 +23,11 @@ export var mixin_payment_subject = {
 	methods: {
 		makeTree() {
 			// 找到根节点 通过筛选出parentId为0的元素
-			this.paymentTypeTree = this.paymentTypeOptions.filter(item => item.parentId === 0);
+			this.paymentTypeTree = this.paymentTypeOptions
+				.filter(item => item.parentId === 0)
+				.sort((a, b) => {
+					return a.orderNum - b.orderNum;
+				});
 			// 循环每一个根节点，找他们的子节点
 			this.paymentTypeTree.forEach(root => {
 				this.findChildren(root);

@@ -1,4 +1,5 @@
 import { listSubject } from '../../../../api/system/subject';
+import _ from 'lodash';
 
 // 通用的构造树形节点的混入
 export var mixin_receive_money_subject = {
@@ -16,7 +17,7 @@ export var mixin_receive_money_subject = {
 	created() {
 		// 查询科目列表
 		listSubject().then(res => {
-			this.paymentTypeOptions = res.data;
+			this.paymentTypeOptions = _.cloneDeep(res.data);
 			this.makeTree();
 		});
 	},
@@ -24,7 +25,11 @@ export var mixin_receive_money_subject = {
 	methods: {
 		makeTree() {
 			// 找到根节点 通过筛选出parentId为0的元素
-			this.paymentTypeTree = this.paymentTypeOptions.filter(item => item.parentId === 0);
+			this.paymentTypeTree = this.paymentTypeOptions
+				.filter(item => item.parentId === 0)
+				.sort((a, b) => {
+					return a.orderNum - b.orderNum;
+				});
 			// 循环每一个根节点，找他们的子节点
 			this.paymentTypeTree.forEach(root => {
 				this.findChildren(root);
@@ -41,8 +46,6 @@ export var mixin_receive_money_subject = {
 			if (parent.children.length === 0) {
 				delete parent.children;
 			}
-		},
-		// 选中某一个节点
-		handleChange() {}
+		}
 	}
 };
