@@ -36,22 +36,35 @@
 		</el-row>
 
 		<el-table id="printBox" v-horizontal-scroll="'always'" v-loading="loading" border :data="exWarehouseList" size="mini" @selection-change="handleSelectionChange">
+			<el-table-column label="二次入库状态" align="center">
+				<template slot-scope="scope">
+					<el-tag v-if="scope.row.targetInventoryDetail && scope.row.targetInventoryDetail.id" type="success">已入库</el-tag>
+					<el-tag v-else type="info">未入库</el-tag>
+				</template>
+			</el-table-column>
 			<el-table-column v-if="columns[0].visible" label="仓库名称" align="center" prop="storeHouseName" />
 			<el-table-column v-if="columns[1].visible" label="出库日期" align="center" prop="outDate" />
-			<el-table-column v-if="columns[2].visible" label="产品级别" align="center" prop="inventoryDetail.levelName" />
-			<el-table-column v-if="columns[3].visible" label="厚度" align="center" prop="inventoryDetail.height" />
-			<el-table-column v-if="columns[4].visible" label="长度" align="center" prop="inventoryDetail.length" />
-			<el-table-column v-if="columns[5].visible" label="宽度" align="center" prop="inventoryDetail.width" />
-			<el-table-column v-if="columns[6].visible" label="存货价" align="center" prop="inventoryDetail.paymentUnload" />
+			<el-table-column v-if="columns[2].visible" label="产品级别" align="center" prop="sourceInventoryDetail.levelName" />
+			<el-table-column v-if="columns[3].visible" label="厚度" align="center" prop="sourceInventoryDetail.height" />
+			<el-table-column v-if="columns[4].visible" label="长度" align="center" prop="sourceInventoryDetail.length" />
+			<el-table-column v-if="columns[5].visible" label="宽度" align="center" prop="sourceInventoryDetail.width" />
+			<el-table-column v-if="columns[6].visible" label="存货价" align="center" prop="sourceInventoryDetail.paymentUnload" />
 			<el-table-column v-if="columns[7].visible" label="出库量" align="center" prop="outAmount" />
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="80">
 				<template slot-scope="scope">
 					<el-dropdown trigger="hover">
 						<span class="el-dropdown-link">
-							操作<i class="el-icon-arrow-down el-icon--right"></i>
+							操作
+							<i class="el-icon-arrow-down el-icon--right"></i>
 						</span>
 						<el-dropdown-menu slot="dropdown">
-							<el-dropdown-item v-hasPermi="['system:secondinventory:add']" @click.native="secondInventory(scope.row)">二次入库</el-dropdown-item>
+							<el-dropdown-item
+								:disabled="scope.row.targetInventoryDetail && scope.row.targetInventoryDetail.id"
+								v-hasPermi="['system:secondinventory:add']"
+								@click.native="secondInventory(scope.row)"
+							>
+								二次入库
+							</el-dropdown-item>
 							<el-dropdown-item v-hasPermi="['system:secondinventory:list']" @click.native="checkInvoInfo(scope.row)">查看库存信息</el-dropdown-item>
 							<el-dropdown-item v-hasPermi="['system:secondinventory:edit']" @click.native="handleUpdate(scope.row)">修改</el-dropdown-item>
 							<el-dropdown-item v-hasPermi="['system:secondinventory:remove']" @click.native="handleDelete(scope.row)">删除</el-dropdown-item>
@@ -646,10 +659,15 @@ import { PUBLIC_DICT_TYPE } from '@/utils/order';
 // 导入库存计算工具函数
 import { updateInventoryRowCalculations } from '../inventoryMain/inventoryCalculations';
 import { parseTime } from '@/utils/ruoyi';
+import _ from 'lodash';
 
 export default {
 	name: 'SecondInventory',
 	computed: {
+		/**
+		 * @description: 使 PUBLIC_DICT_TYPE 可以在模板中使用
+		 * @return {object} PUBLIC_DICT_TYPE 常量对象
+		 */
 		PUBLIC_DICT_TYPE() {
 			return PUBLIC_DICT_TYPE;
 		}
@@ -850,23 +868,38 @@ export default {
 		};
 	},
 	watch: {
+		/**
+		 * @description: 监听列配置的变化，并将其保存到 localStorage
+		 * @param {Array} newVal 新的列配置
+		 */
 		columns: {
 			handler: function (newVal) {
 				localStorage.setItem('secondinventory-columns', JSON.stringify(newVal));
 			},
 			deep: true
 		},
+		/**
+		 * @description: 监听陆运选择状态，如果选择陆运且存在运输错误提示，则清除错误提示
+		 * @param {boolean} val 陆运是否被选择
+		 */
 		isLand(val) {
 			if (val && this.transportError) {
 				this.transportError = false;
 			}
 		},
+		/**
+		 * @description: 监听海运选择状态，如果选择海运且存在运输错误提示，则清除错误提示
+		 * @param {boolean} val 海运是否被选择
+		 */
 		isSea(val) {
 			if (val && this.transportError) {
 				this.transportError = false;
 			}
 		}
 	},
+	/**
+	 * @description: Vue 组件创建时的钩子函数，用于获取列表数据和初始化列配置
+	 */
 	created() {
 		this.getList();
 		if (localStorage.getItem('secondinventory-columns') === 'null' || !localStorage.getItem('secondinventory-columns')) {
@@ -881,9 +914,17 @@ export default {
 		listFleet,
 		listCompany,
 		listProductLevel,
+		/**
+		 * @description: 处理文件上传后的回调，更新表单中的收货凭证字段
+		 * @param {string} val 上传组件返回的文件信息或路径
+		 */
 		handleCommitUpload(val) {
 			this.secondForm.receiveProof = val;
 		},
+		/**
+		 * @description: 查看指定出库记录的库存详细信息
+		 * @param {object} row 当前行的数据对象，包含 storeID
+		 */
 		checkInvoInfo(row) {
 			getDetail(row.storeID).then(res => {
 				if (!res.data) {
@@ -894,11 +935,21 @@ export default {
 				this.inventoryInfoVisible = true;
 			});
 		},
+		/**
+		 * @description: 打开二次入库弹窗并填充初始数据
+		 * @param {object} row 当前行的数据对象，包含出库信息和库存详情
+		 */
 		secondInventory(row) {
 			this.inventoryDetailList = [];
 			this.resetSecond();
-			// 填充仓库
-			this.secondForm.storeHouseName = row.storeHouseName;
+			if (!row.sourceInventoryDetail) {
+				this.$message.error('该行数据有误!');
+				return;
+			}
+			// 填充来源仓库为本条出库信息的仓库
+			this.secondForm.goodsCompany = row.storeHouseName;
+			// 设置主表的出库ID信息
+			this.secondForm.exWareHoustId = row.id;
 			getDetail(row.storeID).then(res => {
 				if (!res.data) {
 					this.$message.error('该货物没有库存信息');
@@ -915,14 +966,14 @@ export default {
 						width: res.data.width,
 						erro: res.data.erro,
 						tonnage: res.data.tonnage,
-						price: row.inventoryDetail.price,
+						price: row.sourceInventoryDetail.price,
 						pieces: row.outAmount,
 						isEditing: true,
 						hasError: false,
 						countingUnit: '片',
 						payments: '',
 						manuallyEditedPieces: true, // 标记为已手动设置，避免被自动计算覆盖
-
+						exWareHoustId: row.id, // 添加出库id
 						stockNumber: '',
 						piecesPerPack: '',
 						packs: '',
@@ -954,6 +1005,11 @@ export default {
 				this.isEditingDetails = true;
 			});
 		},
+		/**
+		 * @description: 计算表格的合计行数据
+		 * @param {object} param Element UI 表格传递的参数，包含列配置和数据
+		 * @return {Array} 计算得到的合计行数据数组
+		 */
 		getSummary(param) {
 			const { columns, data } = param;
 			const exclude = [16, 19, 23, 24, 25, 28];
@@ -983,17 +1039,35 @@ export default {
 			});
 			return sums;
 		},
+		/**
+		 * @description: 更新供应商查询关键字
+		 * @param {string} value 新的查询关键字
+		 */
 		handleUpdateQuerySupplier(value) {
 			this.querySupplier = value;
 		},
+		/**
+		 * @description: 更新产品级别查询关键字
+		 * @param {string} value 新的查询关键字
+		 */
 		handleUpdateQueryNameLevel(value) {
 			this.queryLevel = value;
 		},
+		/**
+		 * @description: 处理供应商选择后的回调，更新行数据中的供应商信息
+		 * @param {object} scope 当前行的作用域对象
+		 * @param {object} val SearchOption 组件返回的选中供应商对象
+		 */
 		handleCommitBackSupplier(scope, val) {
 			this.clearDetail(scope);
 			scope.row.supplier = val.companyName;
 			scope.row.supplierId = val.id;
 		},
+		/**
+		 * @description: 处理产品级别选择后的回调，更新行数据中的产品级别相关信息
+		 * @param {object} scope 当前行的作用域对象
+		 * @param {object} val SearchOption 组件返回的选中产品级别对象
+		 */
 		handleCommitBackProductLevel(scope, val) {
 			scope.row.erro = val.tonnage;
 			scope.row.levelID = val.id;
@@ -1003,23 +1077,47 @@ export default {
 			scope.row.width = val.width;
 			scope.row.levelNo = val.levelNo;
 		},
+		/**
+		 * @description: 重新计算当前行库存详情的所有相关数值
+		 * @param {object} scope 当前行的作用域对象
+		 */
 		recalculateAll(scope) {
 			// 调用统一的库存计算函数
 			updateInventoryRowCalculations(scope.row, this.isSea, this.isLand);
 		},
+		/**
+		 * @description: 计算当前行库存详情的货款等相关数值 (目前与 recalculateAll 功能重复，可考虑合并)
+		 * @param {object} scope 当前行的作用域对象
+		 */
 		calculatePayment(scope) {
 			updateInventoryRowCalculations(scope.row, this.isSea, this.isLand);
 		},
-
+		/**
+		 * @description: 处理车队选择后的回调，更新表单中的车队名称
+		 * @param {object} val SearchOption 组件返回的选中车队对象
+		 */
 		handleCommitBackFleet(val) {
 			this.secondForm.fleet = val.fname;
 		},
+		/**
+		 * @description: 更新车队查询关键字
+		 * @param {string} val 新的查询关键字
+		 */
 		handleChangeFleet(val) {
 			this.queryFleet = val;
 		},
+		/**
+		 * @description: 设置当前操作的类型 (例如：'supplier')，用于 SearchOption 组件
+		 * @param {object} row 当前行的数据对象
+		 * @param {string} type 操作类型
+		 */
 		setCurrentType(row, type) {
 			row.currentType = type;
 		},
+		/**
+		 * @description: 清空指定行库存详情的各项数据
+		 * @param {object} scope 当前行的作用域对象
+		 */
 		clearDetail(scope) {
 			scope.row.stockNumber = '';
 			scope.row.supplier = '';
@@ -1057,6 +1155,9 @@ export default {
 			scope.row.comments = '';
 			scope.row.manuallyEditedPieces = false;
 		},
+		/**
+		 * @description: 重置二次入库表单的各项数据到初始状态
+		 */
 		// 添加重置二次入库表单的方法
 		resetSecond() {
 			this.isSea = false;
@@ -1100,7 +1201,11 @@ export default {
 				this.$refs.secondForm.resetFields();
 			}
 		},
-
+		/**
+		 * @description: 获取表格行的类名，用于标记错误行或编辑中的行
+		 * @param {object} param Element UI 表格传递的参数，包含当前行数据
+		 * @return {string} 行的类名
+		 */
 		// 添加获取行类名的方法
 		getRowClassName({ row }) {
 			if (row.hasError) {
@@ -1110,7 +1215,9 @@ export default {
 			}
 			return '';
 		},
-
+		/**
+		 * @description: 添加一条新的库存详情记录到列表中
+		 */
 		handleAddInventoryDetail() {
 			let obj = {
 				stockNumber: '',
@@ -1162,34 +1269,45 @@ export default {
 				}
 			});
 		},
+		/**
+		 * @description: 处理库存详情表格的选择项变化事件
+		 * @param {Array} selection 当前选中的行对象数组
+		 */
 		handleInventoryDetailSelectionChange(selection) {
 			// 直接存储选中的行对象引用，而不是索引
 			this.checkedInventoryDetail = selection;
 		},
+		/**
+		 * @description: 删除选中的库存详情记录
+		 */
 		handleDeleteInventoryDetail() {
 			if (this.checkedInventoryDetail.length === 0) {
 				this.$modal.msgError('请先选择要删除的库存子数据');
 			} else {
 				// 使用对象引用进行过滤，保留未被选中的项
-				this.inventoryDetailList = this.inventoryDetailList.filter(
-					item => !this.checkedInventoryDetail.includes(item)
-				);
-				
+				this.inventoryDetailList = this.inventoryDetailList.filter(item => !this.checkedInventoryDetail.includes(item));
+
 				// 清空选中项
 				this.checkedInventoryDetail = [];
-				
+
 				// 清除表格的选中状态
 				if (this.$refs.inventoryDetail) {
 					this.$refs.inventoryDetail.clearSelection();
 				}
-				
+
 				this.$message.success('删除成功');
 			}
 		},
+		/**
+		 * @description: 取消二次入库操作，关闭弹窗并重置表单
+		 */
 		cancelSecond() {
 			this.secondInventoryVisible = false;
 			this.resetSecond();
 		},
+		/**
+		 * @description: 提交二次入库表单，进行数据校验和API调用
+		 */
 		submitSecond() {
 			// 检查是否至少选择了一种运输方式
 			if (!this.isLand && !this.isSea) {
@@ -1197,7 +1315,7 @@ export default {
 				this.$message.error('请至少选择一种运输方式');
 				return;
 			}
-			
+
 			// 检查是否有库存详情数据
 			if (this.inventoryDetailList.length === 0) {
 				this.$message.error('请添加至少一条库存详情');
@@ -1213,7 +1331,7 @@ export default {
 							.confirm('有未保存的库存项，是否先保存后再提交?')
 							.then(() => {
 								// 先保存所有编辑状态的行
-								this.$modal.loading("正在保存...");
+								this.$modal.loading('正在保存...');
 								this.handleRowSave(this.inventoryDetailList.filter(item => item.isEditing))
 									.then(() => {
 										this.$modal.closeLoading();
@@ -1239,6 +1357,9 @@ export default {
 				}
 			});
 		},
+		/**
+		 * @description: 执行二次入库表单的实际提交操作
+		 */
 		doSubmitSecond() {
 			// 最终检查所有行的数据有效性
 			let hasInvalidRow = false;
@@ -1251,20 +1372,20 @@ export default {
 					// 不立即返回，继续检查所有行以显示所有错误
 				}
 			}
-			
+
 			if (hasInvalidRow) {
 				this.$message.error('请修正表单中的错误后再提交');
 				return;
 			}
-			
+
 			this.secondForm.inventoryDetailList = JSON.parse(JSON.stringify(this.inventoryDetailList));
 			this.secondForm.allLandFreight = this.isLand ? this.inventoryDetailList.reduce((prev, curr) => Number(prev) + Number(curr.landFreight || 0), 0) : 0;
 			this.secondForm.allSeaFreight = this.isSea ? this.inventoryDetailList.reduce((prev, curr) => Number(prev) + Number(curr.seaFreight || 0), 0) : 0;
-			
-			this.$modal.loading("正在提交...");
+
+			this.$modal.loading('正在提交...');
 			const apiCall = this.secondForm.id ? updateInventoryMain : addInventoryMain;
 			const successMessage = this.secondForm.id ? '修改成功' : '新增成功';
-			
+
 			apiCall(this.secondForm)
 				.then(() => {
 					this.$modal.closeLoading();
@@ -1278,6 +1399,10 @@ export default {
 					this.$message.error('提交失败: ' + (error.message || '未知错误'));
 				});
 		},
+		/**
+		 * @description: 处理库存详情表格中行的编辑操作，将行设置为编辑状态
+		 * @param {object} row 当前行的数据对象
+		 */
 		handleRowEdit(row) {
 			this.$set(row, 'isEditing', true);
 			if (row.hasError) {
@@ -1285,6 +1410,11 @@ export default {
 			}
 			this.$message.info('正在编辑该条记录');
 		},
+		/**
+		 * @description: 校验单条库存详情行的数据有效性
+		 * @param {object} row 当前行的数据对象
+		 * @return {object} 校验结果，包含 valid (boolean) 和 message (string)
+		 */
 		validateInventoryRow(row) {
 			if (!row.supplier) {
 				return { valid: false, message: '供应商不能为空' };
@@ -1319,6 +1449,11 @@ export default {
 			}
 			return { valid: true };
 		},
+		/**
+		 * @description: 保存库存详情表格中正在编辑的行数据
+		 * @param {object|Array} row 当前行的数据对象或包含多个行对象的数组
+		 * @return {Promise} 一个 Promise 对象，在保存成功或失败时 resolve 或 reject
+		 */
 		handleRowSave(row) {
 			return new Promise((resolve, reject) => {
 				const rows = Array.isArray(row) ? row : [row];
@@ -1339,32 +1474,49 @@ export default {
 				});
 				const newInventoryInfo = {
 					...this.secondForm,
-					inventoryDetailList: JSON.parse(JSON.stringify(this.inventoryDetailList))
+					inventoryDetailList: _.cloneDeep(this.inventoryDetailList)
 				};
 				newInventoryInfo.allLandFreight = this.isLand ? this.inventoryDetailList.reduce((prev, curr) => Number(prev) + Number(curr.landFreight || 0), 0) : 0;
 				newInventoryInfo.allSeaFreight = this.isSea ? this.inventoryDetailList.reduce((prev, curr) => Number(prev) + Number(curr.seaFreight || 0), 0) : 0;
 				this.saveInventoryDetails(newInventoryInfo, rows, resolve, reject);
 			});
 		},
+		/**
+		 * @description: 保存库存详情数据到后端
+		 * @param {object} newInventoryInfo 包含主表单和库存详情列表的对象
+		 * @param {Array} rows 当前操作的行对象数组
+		 * @param {Function} resolve Promise 的 resolve 函数
+		 * @param {Function} reject Promise 的 reject 函数
+		 */
 		saveInventoryDetails(newInventoryInfo, rows, resolve, reject) {
 			const currentRows = rows;
+			// 检查是否已有ID来决定是新增还是修改
 			const apiCall = newInventoryInfo.id ? updateInventoryMain : addInventoryMain;
 			const successMessage = newInventoryInfo.id ? '库存详情已修改并保存!' : '库存详情已添加并保存!';
+
+			this.$modal.loading('正在保存...');
 			apiCall(newInventoryInfo)
 				.then(res => {
+					this.$modal.closeLoading();
 					currentRows.forEach(row => {
 						this.$set(row, 'isEditing', false);
 						if (row.hasError) {
 							this.$set(row, 'hasError', false);
 						}
 					});
-					this.$message.success(successMessage);
+					// 如果是新增，保存返回的ID到表单中，确保后续操作为修改
 					if (!newInventoryInfo.id && res.data && res.data.id) {
 						this.secondForm.id = res.data.id;
+						// 更新所有明细项的主表ID关联
+						this.inventoryDetailList.forEach(item => {
+							item.inventoryId = res.data.id;
+						});
+						this.$message.success(successMessage);
 					}
 					resolve && resolve(res);
 				})
 				.catch(error => {
+					this.$modal.closeLoading();
 					currentRows.forEach(row => {
 						this.$set(row, 'isEditing', true);
 						this.$set(row, 'hasError', true);
@@ -1374,6 +1526,10 @@ export default {
 					reject && reject(error);
 				});
 		},
+		/**
+		 * @description: 切换库存详情的批量编辑状态或保存所有编辑中的项
+		 * @param {boolean} editState true 表示进入编辑模式，false 表示保存并退出编辑模式
+		 */
 		toggleEditDetails(editState) {
 			if (editState) {
 				this.isEditingDetails = true;
@@ -1386,7 +1542,7 @@ export default {
 			} else {
 				const rowsToSave = this.inventoryDetailList.filter(row => row.isEditing);
 				if (rowsToSave.length > 0) {
-					this.$modal.loading("正在保存...");
+					this.$modal.loading('正在保存...');
 					this.handleRowSave(rowsToSave)
 						.then(() => {
 							this.$modal.closeLoading();
@@ -1395,7 +1551,7 @@ export default {
 						})
 						.catch(() => {
 							this.$modal.closeLoading();
-							this.isEditingDetails = true; 
+							this.isEditingDetails = true;
 						});
 				} else {
 					this.isEditingDetails = false;
@@ -1403,14 +1559,26 @@ export default {
 				}
 			}
 		},
+		/**
+		 * @description: 更新实际入库片数 (通常由库存编号变化触发，目前未使用)
+		 * @param {object} scope 当前行的作用域对象
+		 */
 		updateActualPieces(scope) {
 			scope.row.actualPieces = scope.row.stockNumber;
 			this.recalculateAll(scope);
 		},
+		/**
+		 * @description: 处理出厂片数输入变化事件，标记为手动编辑并重新计算
+		 * @param {object} scope 当前行的作用域对象
+		 * @param {string|number} val 输入的出厂片数值
+		 */
 		handlePiecesChange(scope, val) {
 			scope.row.manuallyEditedPieces = true;
 			updateInventoryRowCalculations(scope.row, this.isSea, this.isLand);
 		},
+		/**
+		 * @description: 获取出库列表数据
+		 */
 		getList() {
 			this.loading = true;
 			listExWarehouse(this.queryParams).then(response => {
@@ -1419,10 +1587,16 @@ export default {
 				this.loading = false;
 			});
 		},
+		/**
+		 * @description: 取消添加或修改出库操作，关闭弹窗并重置表单
+		 */
 		cancel() {
 			this.open = false;
 			this.reset();
 		},
+		/**
+		 * @description: 重置添加/修改出库表单的各项数据到初始状态
+		 */
 		reset() {
 			this.form = {
 				id: null,
@@ -1440,19 +1614,32 @@ export default {
 			};
 			this.resetForm('form');
 		},
+		/**
+		 * @description: 处理搜索操作，重新获取列表数据
+		 */
 		handleQuery() {
 			this.queryParams.pageNum = 1;
 			this.getList();
 		},
+		/**
+		 * @description: 重置搜索表单并重新获取列表数据
+		 */
 		resetQuery() {
 			this.resetForm('queryForm');
 			this.handleQuery();
 		},
+		/**
+		 * @description: 处理表格选择项变化事件 (主出库列表)
+		 * @param {Array} selection 当前选中的行对象数组
+		 */
 		handleSelectionChange(selection) {
 			this.ids = selection.map(item => item.id);
 			this.single = selection.length !== 1;
 			this.multiple = !selection.length;
 		},
+		/**
+		 * @description: 打印当前表格内容
+		 */
 		printHTML() {
 			this.$print({
 				printable: 'printBox',
@@ -1460,11 +1647,18 @@ export default {
 				targetStyles: ['*']
 			});
 		},
+		/**
+		 * @description: 打开添加出库对话框
+		 */
 		handleAdd() {
 			this.reset();
 			this.open = true;
 			this.title = '添加出库';
 		},
+		/**
+		 * @description: 打开修改出库对话框并加载数据
+		 * @param {object} row 当前行的数据对象
+		 */
 		handleUpdate(row) {
 			this.reset();
 			const id = row.id || this.ids;
@@ -1474,6 +1668,9 @@ export default {
 				this.title = '修改出库';
 			});
 		},
+		/**
+		 * @description: 提交添加或修改出库表单
+		 */
 		submitForm() {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
@@ -1495,6 +1692,10 @@ export default {
 				}
 			});
 		},
+		/**
+		 * @description: 删除指定的出库记录
+		 * @param {object} row 当前行的数据对象 (如果从行操作触发)
+		 */
 		handleDelete(row) {
 			const ids = row.id || this.ids;
 			this.$modal
@@ -1508,6 +1709,9 @@ export default {
 				})
 				.catch(() => {});
 		},
+		/**
+		 * @description: 导出出库列表数据为 Excel 文件
+		 */
 		handleExport() {
 			this.download(
 				'system/exWarehouse/export',
@@ -1517,6 +1721,9 @@ export default {
 				`exWarehouse_${new Date().getTime()}.xlsx`
 			);
 		},
+		/**
+		 * @description: 处理“本公司”按钮的引导提示
+		 */
 		handleSelfButtonTour() {
 			if (!localStorage.getItem('second-inventory-tour')) {
 				this.$tours['selfButtonTour'].start();

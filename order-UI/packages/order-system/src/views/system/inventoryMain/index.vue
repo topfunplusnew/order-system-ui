@@ -885,15 +885,26 @@ export default {
 		};
 	},
 	computed: {
-		// 添加计算属性检查是否有子项
+		/**
+		 * @description: 计算属性，检查库存详情列表是否有子项。
+		 * @returns {boolean} 如果 inventoryDetailList 存在且长度大于0，则返回 true，否则返回 false。
+		 */
 		hasInventoryDetails() {
 			return this.inventoryDetailList && this.inventoryDetailList.length > 0;
 		},
-		// 检查是否有任何行正在编辑
+		/**
+		 * @description: 计算属性，检查库存详情列表中是否有任何行正在编辑。
+		 * @returns {boolean} 如果 inventoryDetailList 中有任何行的 isEditing 为 true，则返回 true，否则返回 false。
+		 */
 		hasEditingRows() {
 			return this.inventoryDetailList && this.inventoryDetailList.some(row => row.isEditing);
 		}
 	},
+	/**
+	 * @description: Vue 组件创建时的钩子函数。
+	 *              调用 getList 方法获取库存主列表数据。
+	 *              调用 listStoreHouse API 获取仓库列表，并格式化为树形结构数据。
+	 */
 	created() {
 		this.getList();
 		// 抓取左侧仓库信息
@@ -915,9 +926,18 @@ export default {
 		listCompany,
 		getInventoryMain, // 确保已引入
 		updateInventoryMain, // 确保已引入
+		/**
+		 * @description: 处理文件上传组件的回调，将上传的文件路径赋值给表单的 receiveProof 字段。
+		 * @param {string} val - 上传组件返回的文件路径或信息。
+		 */
 		handleCommitUpload(val) {
 			this.form.receiveProof = val;
 		},
+		/**
+		 * @description: 更新运输方式选择状态。
+		 *              根据 isLand 和 isSea 的状态更新 form.transportMode，用于表单校验。
+		 *              在下一个 tick 中触发表单字段的校验。
+		 */
 		updateTransportMode() {
 			this.form.transportMode = this.isLand || this.isSea ? 'selected' : '';
 			this.$nextTick(() => {
@@ -926,6 +946,13 @@ export default {
 				}
 			});
 		},
+		/**
+		 * @description: 处理库存详情表格中行的编辑操作。
+		 *              将指定行设置为编辑状态 (isEditing = true)。
+		 *              如果行存在错误标记 (hasError = true)，则清除错误标记。
+		 *              显示提示信息。
+		 * @param {object} row - 当前操作的行数据对象。
+		 */
 		handleRowEdit(row) {
 			// 设置当前行为可编辑
 			this.$set(row, 'isEditing', true);
@@ -935,6 +962,15 @@ export default {
 			}
 			this.$message.info('正在编辑该条记录');
 		},
+		/**
+		 * @description: 保存库存详情表格中正在编辑的行数据。
+		 *              将编辑状态的行设置为非编辑状态。
+		 *              调用 updateInventoryRowCalculations 重新计算相关数值。
+		 *              构造包含主表单信息和所有子项的 newInventoryInfo 对象。
+		 *              计算总运费等主表信息。
+		 *              调用 addOrUpdateInventoryDetail 方法将数据持久化到后端。
+		 * @param {object|Array<object>} row - 当前操作的行数据对象或行数据对象数组。
+		 */
 		handleRowSave(row) {
 			// 统一处理输入，确保 rows 是数组
 			const rows = Array.isArray(row) ? row : [row];
@@ -955,6 +991,15 @@ export default {
 
 			this.addOrUpdateInventoryDetail(newInventoryInfo, rows); // 传入原始rows用于状态更新
 		},
+		/**
+		 * @description: 添加或更新库存详情数据到后端。
+		 *              根据主表单是否存在 id 判断是新增还是更新操作。
+		 *              调用相应的 API (addInventoryMain 或 updateInventoryMain)。
+		 *              成功后，更新行的编辑状态和错误状态，显示成功消息，如果是新增则更新主表 ID，并刷新列表。
+		 *              失败后，保持行的编辑状态并标记错误，显示错误消息。
+		 * @param {object} newInventoryInfo - 包含主表单和库存详情列表的对象。
+		 * @param {Array<object>} rows - 当前操作的行对象数组。
+		 */
 		addOrUpdateInventoryDetail(newInventoryInfo, rows) {
 			const currentRows = rows; // 保存引用
 			const apiCall = this.form.id ? updateInventoryMain : addInventoryMain;
@@ -984,6 +1029,12 @@ export default {
 					this.$message.error(errorMessage + (error.message || '未知错误'));
 				});
 		},
+		/**
+		 * @description: 切换库存详情的批量编辑状态。
+		 *              如果 editState 为 true，则进入批量编辑模式，将所有子项设置为可编辑状态，并清除错误标记。
+		 *              如果 editState 为 false，则退出批量编辑模式，保存所有正在编辑的行。
+		 * @param {boolean} editState - true 表示进入编辑模式，false 表示保存并退出编辑模式。
+		 */
 		toggleEditDetails(editState) {
 			this.isEditingDetails = editState;
 			if (editState) {
@@ -1004,6 +1055,11 @@ export default {
 				}
 			}
 		},
+		/**
+		 * @description: 获取表格行的类名，用于标记错误行或编辑中的行。
+		 * @param {object} param - Element UI 表格传递的参数，包含当前行数据 { row }。
+		 * @returns {string} 行的 CSS 类名 ('error-row', 'editing-row', 或空字符串)。
+		 */
 		getRowClassName({ row }) {
 			if (row.hasError) {
 				return 'error-row';
@@ -1012,12 +1068,25 @@ export default {
 			}
 			return '';
 		},
+		/**
+		 * @description: 处理出厂片数输入变化事件。
+		 *              将出厂片数 (pieces) 的值赋给实际入库片数 (stockNumber)。
+		 *              调用 recalculateAll 方法重新计算相关数值。
+		 * @param {object} scope - 当前行的作用域对象。
+		 */
 		handlePiecesChange(scope) {
 			// 将出厂片数的值赋给实际片数
 			scope.row.stockNumber = scope.row.pieces;
 			// 触发重新计算
 			this.recalculateAll(scope);
 		},
+		/**
+		 * @description: 根据每包片数和包数计算总出厂片数和入库量。
+		 *              如果每包片数和包数都大于0，则计算 pieces = piecesPerPack * packs。
+		 *              设置 stockNumber 等于计算出的 pieces。
+		 *              调用 recalculateAll 方法重新计算相关数值。
+		 * @param {object} row - 当前操作的行数据对象。
+		 */
 		calculatePieces(row) {
 			if (row.piecesPerPack > 0 && row.packs > 0) {
 				// 计算出厂片数
@@ -1028,6 +1097,12 @@ export default {
 				this.recalculateAll({ row });
 			}
 		},
+		/**
+		 * @description: 处理库存主记录的审核操作。
+		 *              弹出确认框，用户确认后调用 auditInventory API 将记录标记为已审核。
+		 *              成功后刷新列表，失败则提示错误。
+		 * @param {object} row - 当前操作的行数据对象。
+		 */
 		handleCheck(row) {
 			this.$confirm({
 				title: '提示',
@@ -1050,6 +1125,12 @@ export default {
 				}
 			});
 		},
+		/**
+		 * @description: 处理库存主记录的取消审核操作。
+		 *              弹出确认框，用户确认后调用 auditInventory API 将记录标记为未审核。
+		 *              成功后刷新列表。
+		 * @param {object} row - 当前操作的行数据对象。
+		 */
 		handleReCheck(row) {
 			this.$modal.confirm('是否取消审核').then(() => {
 				auditInventory({
@@ -1061,6 +1142,13 @@ export default {
 				});
 			});
 		},
+		/**
+		 * @description: 计算表格的合计行数据。
+		 *              针对指定的列 (paymentFactory, payments, tonnage, landFreight, seaFreight, freight, profit, profitNoTax) 进行合计。
+		 *              使用 fix 方法格式化合计结果。
+		 * @param {object} param - Element UI 表格传递的参数，包含列配置 { columns } 和数据 { data }。
+		 * @returns {Array<string|number>} 计算得到的合计行数据数组。
+		 */
 		getSummary(param) {
 			const { columns, data } = param;
 			const sums = [];
@@ -1093,21 +1181,40 @@ export default {
 
 			return sums;
 		},
-		// 更新供应商的查询字段
+		/**
+		 * @description: 更新供应商搜索组件的查询关键字。
+		 * @param {string} value - 新的查询关键字。
+		 */
 		handleUpdateQuerySupplier(value) {
 			this.querySupplier = value;
 		},
+		/**
+		 * @description: 更新产品级别搜索组件的查询关键字。
+		 * @param {string} value - 新的查询关键字。
+		 */
 		handleUpdateQueryNameLevel(value) {
 			this.queryLevel = value;
 		},
-		// 填充货物信息中的供应商
+		/**
+		 * @description: 处理供应商选择后的回调，更新行数据中的供应商信息。
+		 *              调用 clearDetail 清空相关字段。
+		 *              设置 scope.row.supplier 和 scope.row.supplierId。
+		 * @param {object} scope - 当前行的作用域对象。
+		 * @param {object} val - SearchOption 组件返回的选中供应商对象。
+		 */
 		handleCommitBackSupplier(scope, val) {
 			console.log(val);
 			this.clearDetail(scope);
 			scope.row.supplier = val.companyName;
 			scope.row.supplierId = val.id;
 		},
-		// 产品级别自动填充
+		/**
+		 * @description: 处理产品级别选择后的回调，更新行数据中的产品级别相关信息。
+		 *              设置 scope.row 中的 erro, levelID, levelName, height, length, width, levelNo。
+		 *              调用 recalculateAll 重新计算相关数值。
+		 * @param {object} scope - 当前行的作用域对象。
+		 * @param {object} val - SearchOption 组件返回的选中产品级别对象。
+		 */
 		handleCommitBackProductLevel(scope, val) {
 			scope.row.erro = val.tonnage;
 			scope.row.levelID = val.id;
@@ -1120,19 +1227,34 @@ export default {
 			// 填充后重新计算
 			this.recalculateAll(scope); // 确保调用 recalculateAll
 		},
-		// 使用抽离出的计算函数的工具方法
+		/**
+		 * @description: 重新计算当前行库存详情的所有相关数值。
+		 *              在 Vue 的 nextTick 中执行 updateInventoryRowCalculations，以确保数据绑定更新后再计算。
+		 * @param {object} scope - 当前行的作用域对象。
+		 */
 		recalculateAll(scope) {
 			// 确保在 nextTick 中执行，以允许 Vue 更新 DOM/数据绑定
 			this.$nextTick(() => {
 				updateInventoryRowCalculations(scope.row, this.isSea, this.isLand);
 			});
 		},
+		/**
+		 * @description: 处理车队选择后的回调，更新表单中的车队名称。
+		 *              设置 this.form.fleet。
+		 *              手动触发表单字段 'fleet' 的校验。
+		 * @param {object} val - SearchOption 组件返回的选中车队对象。
+		 */
 		handleCommitBackFleet(val) {
 			this.form.fleet = val.fname;
 			// 手动触发 fleet 字段的校验
 			this.$refs.form.validateField('fleet');
 		},
-		// 在 handleCommitBackCar 中手动触发 landCarNo 字段的校验
+		/**
+		 * @description: 处理陆运车辆选择后的回调，更新表单中的陆运车辆相关信息。
+		 *              设置 this.form 中的 landCarID, landCarNo, landDriverName, landDriverTel, landBankNo, landBankName。
+		 *              在 Vue 的 nextTick 中手动触发表单字段 'landCarNo' 的校验。
+		 * @param {object} val - SearchOption 组件返回的选中车辆对象。
+		 */
 		handleCommitBackCar(val) {
 			this.form.landCarID = val.id;
 			this.form.landCarNo = val.carNo;
@@ -1145,6 +1267,11 @@ export default {
 				this.$refs.form.validateField('landCarNo');
 			});
 		},
+		/**
+		 * @description: 处理左侧仓库树节点的点击事件。
+		 *              根据点击的仓库名称 (data.label) 筛选并显示对应的库存主列表数据。
+		 * @param {object} data - 被点击的树节点数据对象。
+		 */
 		handleNodeClick(data) {
 			this.loading = true;
 			listInventoryMain({ storeHouseName: data.label }).then(res => {
@@ -1152,7 +1279,12 @@ export default {
 				this.loading = false;
 			});
 		},
-		/** 查询库存库存主表列表 */
+		/**
+		 * @description: 获取库存主列表数据。
+		 *              设置 loading 状态为 true。
+		 *              调用 listInventoryMain API，并传入 queryParams。
+		 *              成功后更新 inventoryMainList 和 total，设置 loading 状态为 false。
+		 */
 		getList() {
 			this.loading = true;
 			listInventoryMain(this.queryParams).then(response => {
@@ -1161,13 +1293,25 @@ export default {
 				this.loading = false;
 			});
 		},
-		// 取消按钮
+		/**
+		 * @description: 取消添加或修改库存操作。
+		 *              关闭弹窗 (this.open = false)。
+		 *              调用 reset 方法重置表单。
+		 *              重置全局编辑状态 (this.isEditingDetails = false)。
+		 */
 		cancel() {
 			this.open = false;
 			this.reset();
 			this.isEditingDetails = false; // 重置编辑状态
 		},
-		// 表单重置
+		/**
+		 * @description: 重置表单数据到初始状态。
+		 *              重置 isSea, isLand 状态。
+		 *              重置 this.form 对象中的各个字段。
+		 *              清空 inventoryDetailList。
+		 *              重置 isEditingDetails 状态。
+		 *              如果表单引用存在，则调用其 resetFields 和 clearValidate 方法。
+		 */
 		reset() {
 			this.isSea = false;
 			this.isLand = false;
@@ -1209,7 +1353,12 @@ export default {
 				this.$refs.form.clearValidate();
 			}
 		},
-		// 清除子项详情 (如果需要)
+		/**
+		 * @description: 清空指定行库存详情的各项数据。
+		 *              (目前主要在 handleCommitBackSupplier/ProductLevel 中直接设置，此方法可用于特定场景)
+		 *              重置行内字段，并调用 recalculateAll 重新计算。
+		 * @param {object} scope - 当前行的作用域对象。
+		 */
 		clearDetail(scope) {
 			// 可以保留此方法用于特定场景，或者在 handleCommitBackSupplier/ProductLevel 中直接设置
 			// 注意：清除时可能需要重置 isEditing 和 hasError 状态
@@ -1221,32 +1370,60 @@ export default {
 			Object.assign(scope.row, defaultRow);
 			this.recalculateAll(scope); // 清除后重新计算
 		},
-		// 设置当前类型 (用于供应商/仓库切换显示)
+		/**
+		 * @description: 设置当前操作的类型 (例如：'supplier', 'warehouse')，用于 SearchOption 组件的上下文。
+		 * @param {object} row - 当前行的数据对象。
+		 * @param {string} type - 操作类型。
+		 */
 		setCurrentType(row, type) {
 			this.$set(row, 'currentType', type);
 		},
-		/** 搜索按钮操作 */
+		/**
+		 * @description: 处理搜索按钮操作。
+		 *              设置 queryParams.pageNum 为 1。
+		 *              调用 getList 方法重新获取列表数据。
+		 */
 		handleQuery() {
 			this.queryParams.pageNum = 1;
 			this.getList();
 		},
-		/** 重置按钮操作 */
+		/**
+		 * @description: 处理重置搜索按钮操作。
+		 *              调用 resetForm 方法重置搜索表单。
+		 *              调用 handleQuery 方法重新获取列表数据。
+		 */
 		resetQuery() {
 			this.resetForm('queryForm');
 			this.handleQuery();
 		},
-		// 多选框选中数据
+		/**
+		 * @description: 处理主列表表格选择项变化事件。
+		 *              更新 ids 数组，以及 single 和 multiple 状态。
+		 * @param {Array<object>} selection - 当前选中的行对象数组。
+		 */
 		handleSelectionChange(selection) {
 			this.ids = selection.map(item => item.id);
 			this.single = selection.length !== 1;
 			this.multiple = !selection.length;
 		},
-		/** 新增按钮操作 */
+		/**
+		 * @description: 处理新增库存按钮操作。
+		 *              调用 reset 方法重置表单。
+		 *              打开弹窗 (this.open = true)。
+		 *              设置弹窗标题为 '添加库存'。
+		 */
 		handleAdd() {
 			this.reset();
 			this.open = true;
 			this.title = '添加库存';
 		},
+		/**
+		 * @description: 处理查看库存详情按钮操作。
+		 *              如果行 ID 不存在，则提示错误。
+		 *              调用 getInventoryMain API 获取完整的库存信息。
+		 *              成功后，使用 common_dialog mixin 中的 openDialog 方法打开库存详情弹窗。
+		 * @param {object} row - 当前操作的行数据对象。
+		 */
 		handleCheckInventory(row) {
 			if (!row.id) {
 				this.$message.error('该行信息有误!');
@@ -1264,7 +1441,17 @@ export default {
 				);
 			});
 		},
-		/** 修改按钮操作 */
+		/**
+		 * @description: 处理修改库存按钮操作。
+		 *              调用 reset 方法重置表单。
+		 *              获取要修改的记录 ID (来自行数据或多选)。
+		 *              调用 getInventoryMain API 获取库存主表及其子项数据。
+		 *              成功后，填充 this.form，并根据返回数据设置 isSea 和 isLand 状态。
+		 *              初始化 inventoryDetailList，并为每个子项设置 isEditing 和 hasError 状态。
+		 *              对加载的子项数据进行一次初始计算。
+		 *              打开弹窗，设置标题，并重置全局编辑状态。
+		 * @param {object} row - 当前操作的行数据对象。
+		 */
 		handleUpdate(row) {
 			this.reset();
 			const id = row.id || this.ids;
@@ -1294,7 +1481,18 @@ export default {
 				this.isEditingDetails = false; // 初始不进入全局编辑模式
 			});
 		},
-		/** 提交按钮 */
+		/**
+		 * @description: 提交添加或修改库存表单。
+		 *              强制校验运输方式。
+		 *              触发表单校验 (this.$refs['form'].validate)。
+		 *              校验通过后，再次确认运输方式已选择。
+		 *              检查是否有未保存的子项或子项列表为空。
+		 *              深拷贝 inventoryDetailList 到 this.form.inventoryDetailList。
+		 *              计算总陆运费和总海运费。
+		 *              根据 this.form.id 判断是新增还是更新，调用相应的 API。
+		 *              成功后显示成功消息，关闭弹窗，刷新列表，重置编辑状态。
+		 *              失败则显示错误消息。
+		 */
 		submitForm() {
 			// 强制再次校验运输方式
 			if (!this.isLand && !this.isSea) {
@@ -1340,7 +1538,13 @@ export default {
 				}
 			});
 		},
-		/** 删除按钮操作 */
+		/**
+		 * @description: 处理删除库存主表记录按钮操作。
+		 *              获取要删除的记录 ID (来自行数据或多选)。
+		 *              弹出确认框，用户确认后调用 delInventoryMain API 删除数据。
+		 *              成功后刷新列表并显示成功消息。
+		 * @param {object} row - 当前操作的行数据对象。
+		 */
 		handleDelete(row) {
 			const ids = row.id || this.ids;
 			this.$modal
@@ -1354,11 +1558,19 @@ export default {
 				})
 				.catch(() => {});
 		},
-		/** 库存子序号 */
+		/**
+		 * @description: 为库存子表行提供序号。
+		 * @param {object} param - Element UI 表格传递的参数，包含当前行数据 { row } 和行索引 { rowIndex }。
+		 */
 		rowInventoryDetailIndex({ row, rowIndex }) {
 			row.index = rowIndex + 1;
 		},
-		/** 库存子添加按钮操作 */
+		/**
+		 * @description: 处理添加库存子项按钮操作。
+		 *              创建一个包含默认值的子项对象 obj，并设置 isEditing 为 true。
+		 *              将 obj添加到 inventoryDetailList。
+		 *              在 Vue 的 nextTick 中，如果子表引用存在，则滚动到表格底部。
+		 */
 		handleAddInventoryDetail() {
 			let obj = {
 				stockNumber: '',
@@ -1409,7 +1621,13 @@ export default {
 				}
 			});
 		},
-		/** 库存子删除按钮操作 */
+		/**
+		 * @description: 处理删除库存子项按钮操作。
+		 *              如果 checkedInventoryDetail 为空，则提示用户先选择。
+		 *              否则，根据 checkedInventoryDetail 中的索引过滤 inventoryDetailList，移除选中的行。
+		 *              清空 checkedInventoryDetail，并清除表格的选中状态。
+		 *              显示删除成功消息。
+		 */
 		handleDeleteInventoryDetail() {
 			if (this.checkedInventoryDetail.length == 0) {
 				this.$modal.msgError('请先选择要删除的库存子数据');
@@ -1429,12 +1647,19 @@ export default {
 				// 注意：如果需要立即持久化删除，需要调用API更新主表
 			}
 		},
-		/** 复选框选中数据 */
+		/**
+		 * @description: 处理库存子表选择项变化事件。
+		 *              更新 checkedInventoryDetail 数组，存储选中行的索引 (从1开始)。
+		 * @param {Array<object>} selection - 当前选中的行对象数组。
+		 */
 		handleInventoryDetailSelectionChange(selection) {
 			// 更新选中的行的索引列表 (注意 index 是从1开始的)
 			this.checkedInventoryDetail = selection.map(item => this.inventoryDetailList.findIndex(listItem => listItem === item) + 1);
 		},
-		/** 导出按钮操作 */
+		/**
+		 * @description: 处理导出库存主列表数据按钮操作。
+		 *              调用 download 方法，请求 'system/inventoryMain/export' 接口导出数据。
+		 */
 		handleExport() {
 			this.download(
 				'system/inventoryMain/export',
