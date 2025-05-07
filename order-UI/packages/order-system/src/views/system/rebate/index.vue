@@ -289,7 +289,7 @@
 							<el-table-column label="其他费用" align="center" prop="otherCost" />
 							<el-table-column label="利润" align="center" prop="profit" />
 							<el-table-column label="不含税利润" align="center" prop="profitNoTax" />
-							<el-table-column label="实际片数" align="center" prop="actualPieces" />
+							<el-table-column label="卸货片数" align="center" prop="actualPieces" />
 							<el-table-column label="总货款杂费" align="center" prop="paymentsWithSundry" />
 							<el-table-column label="加费" align="center" prop="additionalFees" />
 							<el-table-column label="仓库名称" align="center" prop="storeHouseName" />

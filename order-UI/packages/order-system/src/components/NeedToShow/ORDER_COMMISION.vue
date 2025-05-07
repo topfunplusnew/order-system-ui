@@ -6,6 +6,10 @@ export default {
 			type: Object,
 			required: true
 		}
+	},
+	methods: {
+		handleProcess() {},
+		handleReject() {}
 	}
 };
 </script>
@@ -13,7 +17,6 @@ export default {
 <template>
 	<div>
 		<el-descriptions title="佣金信息">
-			<el-descriptions-item label="订单号">{{ needToShowInfo.ordersNo }}</el-descriptions-item>
 			<el-descriptions-item label="订单日期">{{ needToShowInfo.orderDate }}</el-descriptions-item>
 			<el-descriptions-item label="公司名称">{{ needToShowInfo.companyName }}</el-descriptions-item>
 			<el-descriptions-item label="等级名称">{{ needToShowInfo.levelName }}</el-descriptions-item>
@@ -23,8 +26,8 @@ export default {
 			<el-descriptions-item label="宽度">{{ needToShowInfo.width }}</el-descriptions-item>
 			<el-descriptions-item label="每包片数">{{ needToShowInfo.piecesPerPack }}</el-descriptions-item>
 			<el-descriptions-item label="包数">{{ needToShowInfo.packs }}</el-descriptions-item>
-			<el-descriptions-item label="实际片数">{{ needToShowInfo.actualPieces }}</el-descriptions-item>
-			<el-descriptions-item label="卸货付款">{{ needToShowInfo.paymentUnload }}</el-descriptions-item>
+			<el-descriptions-item label="卸货片数">{{ needToShowInfo.actualPieces }}</el-descriptions-item>
+			<el-descriptions-item label="卸货价">{{ needToShowInfo.paymentUnload }}</el-descriptions-item>
 			<el-descriptions-item label="销售是否含税">{{ needToShowInfo.isIncludeTaxSale === 0 ? '否' : '是' }}</el-descriptions-item>
 			<el-descriptions-item label="杂费">{{ needToShowInfo.sundryCost }}</el-descriptions-item>
 			<el-descriptions-item label="付款金额">{{ needToShowInfo.payments }}</el-descriptions-item>

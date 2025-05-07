@@ -220,7 +220,7 @@
 				<el-form-item label="不含税利润" prop="profitNoTax">
 					<el-input v-model="form.profitNoTax" placeholder="请输入不含税利润" />
 				</el-form-item>
-				<el-form-item label="实际片数" prop="actualPieces">
+				<el-form-item label="卸货片数" prop="actualPieces">
 					<el-input v-model="form.actualPieces" placeholder="用来记录仓库还剩余的个数" />
 				</el-form-item>
 				<el-form-item label="总货款杂费" prop="paymentsWithSundry">
@@ -240,9 +240,6 @@
 				</el-form-item>
 				<el-form-item label="二次入库对应的出库id" prop="exWareHoustId">
 					<el-input v-model="form.exWareHoustId" placeholder="请输入二次入库对应的出库id" />
-				</el-form-item>
-				<el-form-item label="删除标记" prop="delFlag">
-					<el-input v-model="form.delFlag" placeholder="请输入删除标记" />
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">

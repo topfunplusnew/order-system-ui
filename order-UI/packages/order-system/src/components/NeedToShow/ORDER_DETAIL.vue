@@ -5,6 +5,10 @@ export default {
 		needToShowInfo: {
 			type: Object
 		}
+	},
+	methods: {
+		handleProcess() {},
+		handleReject() {}
 	}
 };
 </script>
@@ -41,7 +45,7 @@ export default {
 				<el-descriptions-item label="其他费用">{{ needToShowInfo.otherCost }} 元</el-descriptions-item>
 				<el-descriptions-item label="利润">{{ needToShowInfo.profit }} 元</el-descriptions-item>
 				<el-descriptions-item label="未税利润">{{ needToShowInfo.profitNoTax }} 元</el-descriptions-item>
-				<el-descriptions-item label="实际片数">{{ needToShowInfo.actualPieces }}</el-descriptions-item>
+				<el-descriptions-item label="卸货片数">{{ needToShowInfo.actualPieces }}</el-descriptions-item>
 				<el-descriptions-item label="支付含杂费">{{ needToShowInfo.paymentsWithSundry }} 元</el-descriptions-item>
 				<el-descriptions-item label="附加费用">{{ needToShowInfo.additionalFees }} 元</el-descriptions-item>
 				<el-descriptions-item label="仓库名称">{{ needToShowInfo.storeHouseName || '无' }}</el-descriptions-item>

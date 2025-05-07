@@ -13,7 +13,7 @@ import { mixin_payment_select, PAYMENT_TYPES } from '@/views/dashboard/mixins/pa
 import { listCompany } from '@/api/system/company';
 import { listBankAccount } from '@/api/system/bankAccount';
 import CheckFiles from '@/components/CheckFiles.vue';
-import { TableName, AuditCheckState, getTagColor } from '@/api/tool/enums';
+import { TableName, AuditCheckState, getTagColor, PAYMENT_APPLY_STATE } from '@/api/tool/enums';
 import { listCars } from '@/api/system/cars';
 import ApplyPayment from '@/views/dashboard/components/common/ApplyPayment.vue';
 import _ from 'lodash';
@@ -21,10 +21,12 @@ import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import { mixin_tour } from '@/views/dashboard/mixins/tour';
 import PAYMENT_APPLY_INFO from '@/components/NeedToShow/PAYMENT_APPLY_INFO.vue';
+import StateTag from '@/views/dashboard/components/common/StateTag.vue';
 
 export default {
 	name: 'ApplyProcess',
 	components: {
+		StateTag,
 		DialogWrapper,
 		ApplyPayment,
 		CheckFiles,
@@ -254,8 +256,16 @@ export default {
 			this.$tours['paymentApplyTour'].start();
 			localStorage.setItem('applyprocess-tour', 'true');
 		}
+
+		// 监听 payment-apply-unaudit-list-update 事件
+		this.$bus.$on('payment-apply-unaudit-list-update', () => {
+			this.getUnProcessedAuditList();
+		});
 	},
 	computed: {
+		PAYMENT_APPLY_STATE() {
+			return PAYMENT_APPLY_STATE;
+		},
 		TableName() {
 			return TableName;
 		},
@@ -648,7 +658,18 @@ export default {
 				</el-table-column>
 				<el-table-column label="审核状态" fixed="right" align="center">
 					<template slot-scope="scope">
-						<el-tag :type="scope.row.checkState === '通过' ? 'success' : scope.row.checkState === '未通过' ? 'danger' : 'primary'">
+						<el-tag
+							:type="
+								{
+									[PAYMENT_APPLY_STATE.V2.PENDING]: 'warning',
+									[PAYMENT_APPLY_STATE.V2.ING]: 'info',
+									[PAYMENT_APPLY_STATE.V2.PASS]: 'success',
+									[PAYMENT_APPLY_STATE.V2.NOT_PASS]: 'danger',
+									[PAYMENT_APPLY_STATE.V2.REJECT]: 'danger',
+									[PAYMENT_APPLY_STATE.V2.VOID]: 'default'
+								}[scope.row.checkState]
+							"
+						>
 							{{ scope.row.checkState }}
 						</el-tag>
 					</template>

@@ -36,7 +36,8 @@
 				<template slot-scope="scope">
 					<el-dropdown trigger="hover">
 						<span class="el-dropdown-link">
-							操作<i class="el-icon-arrow-down el-icon--right"></i>
+							操作
+							<i class="el-icon-arrow-down el-icon--right"></i>
 						</span>
 						<el-dropdown-menu slot="dropdown">
 							<el-dropdown-item v-hasPermi="['system:secondinventory:list']" @click.native="checkInvoInfo(scope.row)">查看库存信息</el-dropdown-item>
@@ -396,23 +397,23 @@
 							<el-input size="mini" type="number" v-model="scope.row.paymentFactory" placeholder="请输入出厂货款" disabled />
 						</template>
 					</el-table-column>
-					<el-table-column label="实际片数" prop="actualPieces" width="150">
-						<template #default="scope">
-							<el-input size="mini" v-model="scope.row.actualPieces" placeholder="仓库还剩余片数" disabled />
-						</template>
-					</el-table-column>
-					<el-table-column label="卸货价" prop="paymentUnload" width="150">
+					<!--					<el-table-column label="实际片数" prop="actualPieces" width="150">-->
+					<!--						<template #default="scope">-->
+					<!--							<el-input size="mini" v-model="scope.row.actualPieces" placeholder="仓库还剩余片数" disabled />-->
+					<!--						</template>-->
+					<!--					</el-table-column>-->
+					<el-table-column label="存货价" prop="paymentUnload" width="150">
 						<template #default="scope">
 							<el-input
 								size="mini"
 								type="number"
 								v-model.lazy="scope.row.paymentUnload"
-								placeholder="请输入卸货价"
+								placeholder="请输入存货价"
 								@input="scope.row.paymentsWithSundry > 0 ? calculatePayment(scope) : ''"
 							/>
 						</template>
 					</el-table-column>
-					<el-table-column label="销售是否含税" prop="isIncludeTaxSale" width="150">
+					<el-table-column label="库存是否含税" prop="isIncludeTaxSale" width="150">
 						<template #default="scope">
 							<el-radio-group v-model="scope.row.isIncludeTaxSale" size="mini" @change="() => recalculateSale(scope)">
 								<el-radio :label="1">是</el-radio>
@@ -421,17 +422,6 @@
 						</template>
 					</el-table-column>
 
-					<el-table-column label="总货款杂费" prop="paymentsWithSundry" width="150">
-						<template #default="scope">
-							<el-input
-								size="mini"
-								v-model.lazy="scope.row.paymentsWithSundry"
-								@input="() => calculatePayment(scope)"
-								:disabled="scope.row.paymentUnload <= 0"
-								:placeholder="scope.row.paymentUnload <= 0 ? '请先完善卸货价' : '请输入总货款杂费'"
-							/>
-						</template>
-					</el-table-column>
 					<el-table-column label="总货款" prop="payments" width="150">
 						<template #default="scope">
 							<el-input size="mini" type="number" v-model="scope.row.payments" placeholder="请输入总货款" disabled />

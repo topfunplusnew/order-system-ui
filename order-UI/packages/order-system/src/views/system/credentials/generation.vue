@@ -308,7 +308,7 @@ export default {
 							<el-table-column label="其他费用" align="center" prop="otherCost" width="150" />
 							<el-table-column label="利润" align="center" prop="profit" width="150" />
 							<el-table-column label="不含税利润" align="center" prop="profitNoTax" width="150" />
-							<el-table-column label="实际片数" align="center" prop="actualPieces" width="150" />
+							<el-table-column label="卸货片数" align="center" prop="actualPieces" width="150" />
 							<el-table-column label="总货款杂费" align="center" prop="paymentsWithSundry" width="150" />
 							<el-table-column label="加费" align="center" prop="additionalFees" width="150" />
 							<el-table-column label="返利金额" align="center" prop="rebate" width="150" />

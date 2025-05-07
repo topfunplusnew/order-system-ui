@@ -151,10 +151,20 @@ export const PaymentState = [
 
 // 付款申请状态
 export const PAYMENT_APPLY_STATE = {
-	CHECKED: '未支付',
-	UNAPPLIED: '未申请',
-	CHECKING: '审核中',
-	PAID: '已支付'
+	V1: {
+		CHECKED: '未支付',
+		UNAPPLIED: '未申请',
+		CHECKING: '审核中',
+		PAID: '已支付'
+	},
+	V2: {
+		PENDING: '待提交',
+		ING: '审核中',
+		PASS: '通过',
+		NOT_PASS: '未通过',
+		REJECT: '驳回',
+		VOID: '作废'
+	}
 };
 
 // 运费来源

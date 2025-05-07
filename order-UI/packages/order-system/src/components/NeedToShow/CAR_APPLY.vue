@@ -5,6 +5,10 @@ export default {
 		needToShowInfo: {
 			type: Object
 		}
+	},
+	methods: {
+		handleProcess() {},
+		handleReject() {}
 	}
 };
 </script>

@@ -49,7 +49,7 @@ export default {
 <template>
 	<div class="inventory-container">
 		<el-card class="inventory-card">
-			<el-descriptions size="mini" border :column="3" :labelStyle="{ width: '150px' }">
+			<el-descriptions title="库存信息" size="mini" border :column="3" :labelStyle="{ width: '150px' }">
 				<el-descriptions-item label="入库日期">
 					{{ needToShowInfo.storeDate ? new Date(needToShowInfo.storeDate).toLocaleDateString() : '-' }}
 				</el-descriptions-item>
@@ -70,6 +70,11 @@ export default {
 				</el-descriptions-item>
 			</el-descriptions>
 
+			<el-row>
+				<el-col :span="8">
+					<span style="font-weight: bolder">库存货物详情列表</span>
+				</el-col>
+			</el-row>
 			<!--      库存个体信息-->
 			<el-table
 				:data="needToShowInfo.inventoryDetailList"

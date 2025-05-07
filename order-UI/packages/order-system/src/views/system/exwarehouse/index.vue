@@ -264,7 +264,7 @@
 				<el-descriptions-item label="出厂支付">
 					{{ inventoryInfo.paymentFactory }}
 				</el-descriptions-item>
-				<el-descriptions-item label="卸货费">
+				<el-descriptions-item label="卸货价">
 					{{ inventoryInfo.paymentUnload }}
 				</el-descriptions-item>
 				<el-descriptions-item label="是否含税销售">
@@ -318,7 +318,7 @@
 				<el-descriptions-item label="未税利润">
 					{{ inventoryInfo.profitNoTax }}
 				</el-descriptions-item>
-				<el-descriptions-item label="实际片数">
+				<el-descriptions-item label="卸货片数">
 					{{ inventoryInfo.actualPieces }}
 				</el-descriptions-item>
 				<el-descriptions-item label="含杂费总支付">

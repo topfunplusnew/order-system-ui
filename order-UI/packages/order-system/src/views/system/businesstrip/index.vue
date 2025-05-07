@@ -84,8 +84,14 @@
 			<!--			</el-table-column>-->
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="260px" fixed="right">
 				<template slot-scope="scope">
-					<el-button :disabled="scope.row.checkState !== PAYMENT_APPLY_STATE.UNAPPLIED" size="mini" type="text" @click="applyForPayment(scope.row)">发起付款申请</el-button>
-					<el-button :disabled="scope.row.checkState === PAYMENT_APPLY_STATE.CHECKED" v-hasPermi="['system:businesstrip:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">
+					<el-button :disabled="scope.row.checkState !== PAYMENT_APPLY_STATE.V1.UNAPPLIED" size="mini" type="text" @click="applyForPayment(scope.row)">发起付款申请</el-button>
+					<el-button
+						:disabled="scope.row.checkState === PAYMENT_APPLY_STATE.V1.CHECKED"
+						v-hasPermi="['system:businesstrip:edit']"
+						size="mini"
+						type="primary"
+						@click="handleUpdate(scope.row)"
+					>
 						修改
 					</el-button>
 					<el-button v-hasPermi="['system:businesstrip:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>

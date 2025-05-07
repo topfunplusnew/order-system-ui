@@ -11,6 +11,10 @@ export default {
 		detailList() {
 			return this.needToShowInfo.actualReceivedDetails.detailList || [];
 		}
+	},
+	methods: {
+		handleProcess() {},
+		handleReject() {}
 	}
 };
 </script>

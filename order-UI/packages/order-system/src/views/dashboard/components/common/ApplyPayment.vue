@@ -359,9 +359,6 @@ export default {
 		PUBLIC_DICT_TYPE() {
 			return PUBLIC_DICT_TYPE;
 		},
-		BankAcceptanceType() {
-			return BankAcceptanceType;
-		},
 		PAYMENT_TARGET_TYPE() {
 			return PAYMENT_TARGET_TYPE;
 		},
@@ -401,8 +398,6 @@ export default {
 			loading: true,
 			// 总条数
 			total: 0,
-			// 付款信息表格数据
-			paymentApplyList: [],
 			// 表单参数
 			form: {
 				tID: null,
@@ -476,14 +471,6 @@ export default {
 		// 上传的回调函数
 		handleCommitUpload(val) {
 			this.form.attachment = val;
-		},
-		getList() {
-			this.loading = true;
-			listPaymentApply(this.queryParams).then(response => {
-				this.paymentApplyList = response.rows;
-				this.total = response.total;
-				this.loading = false;
-			});
 		},
 		handleOpponentTypeChange(value) {
 			// 当对方类型改变时，触发相应的逻辑，例如清空某些字段
@@ -628,7 +615,7 @@ export default {
 			});
 		},
 		// 提交到数据库 但是状态是待提交 这个是当付款填写表单在弹窗中的时候
-		submitAndUpdate() {
+		submitAndUpdate(that) {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
 					if (this.form.id != null) {
@@ -651,6 +638,9 @@ export default {
 						updatePaymentApply(body).then(() => {
 							this.$modal.msgSuccess('付款申请保存成功,点击提交并审核可提交信息至审核流程');
 							this.reset();
+							that.dialogVisible = false;
+							// 发布一个事件 提醒更新
+							this.$bus.$emit('payment-apply-unaudit-list-update');
 						});
 					} else {
 						this.$message.error('系统错误:付款时没有主键');
@@ -738,8 +728,8 @@ export default {
 				console.error('加载表单信息失败', error);
 			}
 		},
-		handleProcess() {
-			this.submitAndUpdate();
+		handleProcess(that) {
+			this.submitAndUpdate(that);
 		},
 		handleReject() {}
 	}
