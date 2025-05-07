@@ -214,6 +214,16 @@ export default {
 			}
 		};
 	},
+	computed: {
+		// 添加计算属性检查是否有子项
+		hasOrderDetails() {
+			return this.orderdetailList && this.orderdetailList.length > 0;
+		},
+		// 检查是否有任何行正在编辑
+		hasEditingRows() {
+			return this.orderdetailList && this.orderdetailList.some(row => row.isEditing);
+		}
+	},
 	created() {
 		console.log(`OrderForm created`);
 		this.resetOrderInfo();
@@ -265,10 +275,10 @@ export default {
 		// 编辑某一行时清除错误状态
 		handleRowEdit(row) {
 			// 设置当前行为可编辑
-			row.isEditing = true;
+			this.$set(row, 'isEditing', true);
 			// 清除错误状态
 			if (row.hasError) {
-				row.hasError = false;
+				this.$set(row, 'hasError', false);
 			}
 			this.$message.info('正在编辑该条记录');
 		},
@@ -280,7 +290,7 @@ export default {
 			// 处理每一行，关闭编辑状态并更新计算
 			rows.forEach(r => {
 				if (r.isEditing) {
-					r.isEditing = false;
+					this.$set(r, 'isEditing', false);
 					updateOrderRowCalculations(r, this.isSea, this.isLand);
 				}
 			});
@@ -710,18 +720,21 @@ export default {
 		},
 		// 切换编辑模式时处理错误状态
 		toggleEditDetails(editState) {
-			this.isEditingDetails = editState;
 			if (editState) {
-				// 进入编辑模式时清除所有错误标记
+				// 进入编辑模式，设置所有行为可编辑状态
 				this.orderdetailList.forEach(row => {
+					this.$set(row, 'isEditing', true);
 					if (row.hasError) {
 						this.$set(row, 'hasError', false);
 					}
 				});
 				this.$message.info('已进入批量编辑模式，可以修改所有订单信息');
 			} else {
-				// 所有全部保存
-				this.handleRowSave(this.orderdetailList);
+				// 退出编辑模式，保存所有行
+				// 如果有正在编辑的行，全部设置为不可编辑
+				if (this.hasEditingRows) {
+					this.handleRowSave(this.orderdetailList);
+				}
 			}
 		},
 		// 添加新方法：根据行是否处于编辑状态设置行的类名
@@ -911,16 +924,20 @@ export default {
 			<div>
 				<el-row :gutter="10" class="mb8">
 					<el-col :span="1.5">
-						<el-button size="mini" type="primary" @click="handleAddOrderdetail" :disabled="!isEditingDetails">添加</el-button>
+						<!-- 添加按钮 - 始终可用 -->
+						<el-button size="mini" type="primary" @click="handleAddOrderdetail">添加</el-button>
 					</el-col>
 					<el-col :span="1.5">
-						<el-button size="mini" type="danger" @click="handleDeleteOrderdetail" :disabled="!isEditingDetails || checkedOrderdetail.length === 0">删除</el-button>
+						<!-- 删除按钮 - 只有选中项时可用 -->
+						<el-button size="mini" type="danger" @click="handleDeleteOrderdetail" :disabled="checkedOrderdetail.length === 0">删除</el-button>
 					</el-col>
 					<el-col :span="1.5">
-						<el-button size="mini" type="warning" @click="toggleEditDetails(true)" :disabled="isEditingDetails">编辑子项</el-button>
+						<!-- 编辑子项按钮 - 有子项且没有行处于编辑状态时可用 -->
+						<el-button size="mini" type="warning" @click="toggleEditDetails(true)" :disabled="!hasOrderDetails || hasEditingRows">编辑子项</el-button>
 					</el-col>
 					<el-col :span="1.5">
-						<el-button size="mini" type="success" @click="toggleEditDetails(false)" :disabled="!isEditingDetails">全部保存</el-button>
+						<!-- 全部保存按钮 - 有行处于编辑状态时可用 -->
+						<el-button size="mini" type="success" @click="toggleEditDetails(false)" :disabled="!hasEditingRows">全部保存</el-button>
 					</el-col>
 				</el-row>
 
@@ -935,13 +952,13 @@ export default {
 					@selection-change="handleOrderdetailSelectionChange"
 					ref="orderdetail"
 				>
-					<el-table-column type="selection" width="90" align="center" :selectable="() => isEditingDetails" />
+					<el-table-column type="selection" width="90" align="center" :selectable="() => true" />
 					<el-table-column label="序号" align="center" type="index" width="50" />
 
 					<!-- 新增行操作列，放在前面方便操作 -->
 					<el-table-column label="行操作" align="center" width="100">
 						<template slot-scope="scope">
-							<el-button v-if="!scope.row.isEditing" :disabled="!isEditingDetails" size="mini" type="warning" icon="el-icon-edit" @click="handleRowEdit(scope.row)">编辑</el-button>
+							<el-button v-if="!scope.row.isEditing" size="mini" type="warning" icon="el-icon-edit" @click="handleRowEdit(scope.row)">编辑</el-button>
 							<el-button v-else size="mini" type="success" icon="el-icon-check" @click="handleRowSave(scope.row)">保存</el-button>
 						</template>
 					</el-table-column>
