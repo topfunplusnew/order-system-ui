@@ -732,6 +732,17 @@ export default {
 				return 'editing-row';
 			}
 			return '';
+		},
+		// 添加新方法：计算出厂片数
+		calculatePieces(row) {
+			if (row.piecesPerPack > 0 && row.packs > 0) {
+				// 计算出厂片数
+				row.pieces = (row.piecesPerPack * row.packs).toString();
+				// 设置卸货片数等于出厂片数
+				row.actualPieces = row.pieces;
+				// 触发重新计算
+				this.recalculateAll({ row });
+			}
 		}
 	}
 };
@@ -1058,7 +1069,7 @@ export default {
 					</el-table-column>
 					<el-table-column label="每包片数" prop="piecesPerPack" width="90">
 						<template #default="scope">
-							<el-input size="mini" v-model.number="scope.row.piecesPerPack" placeholder="请输入每包片数" :disabled="!scope.row.isEditing" />
+							<el-input size="mini" v-model.number="scope.row.piecesPerPack" placeholder="请输入每包片数" :disabled="!scope.row.isEditing" @input="() => calculatePieces(scope.row)" />
 						</template>
 					</el-table-column>
 					<el-table-column label="包数" prop="packs" width="90">
@@ -1068,6 +1079,7 @@ export default {
 								v-model.number.lazy="scope.row.packs"
 								:placeholder="scope.row.piecesPerPack <= 0 ? '请先输入每包片数' : '请输入包数'"
 								:disabled="!scope.row.isEditing || scope.row.piecesPerPack <= 0"
+								@input="() => calculatePieces(scope.row)"
 							/>
 						</template>
 					</el-table-column>

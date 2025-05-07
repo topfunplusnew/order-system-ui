@@ -422,26 +422,23 @@
 					</el-table-column>
 					<el-table-column label="每包片数" prop="piecesPerPack" width="150">
 						<template #default="scope">
-							<!-- 添加 disabled 属性 -->
-							<el-input size="mini" v-model="scope.row.piecesPerPack" @input="() => recalculateAll(scope)" placeholder="请输入每包片数" :disabled="!scope.row.isEditing" />
+							<el-input size="mini" v-model="scope.row.piecesPerPack" placeholder="请输入每包片数" :disabled="!scope.row.isEditing" @input="() => calculatePieces(scope.row)" />
 						</template>
 					</el-table-column>
 					<el-table-column label="包数" prop="packs" width="150">
 						<template #default="scope">
-							<!-- 添加 disabled 属性 -->
 							<el-input
 								size="mini"
-								@input="() => recalculateAll(scope)"
 								v-model.lazy="scope.row.packs"
 								:placeholder="scope.row.piecesPerPack <= 0 ? '请先输入每包片数' : '请输入包数'"
 								:disabled="!scope.row.isEditing || scope.row.piecesPerPack <= 0"
+								@input="() => calculatePieces(scope.row)"
 							/>
 						</template>
 					</el-table-column>
 
 					<el-table-column label="出厂片数" prop="pieces" width="150">
 						<template #default="scope">
-							<!-- 添加 disabled 属性 -->
 							<el-input
 								size="mini"
 								v-model="scope.row.pieces"
@@ -1023,6 +1020,16 @@ export default {
 			scope.row.stockNumber = scope.row.pieces;
 			// 触发重新计算
 			this.recalculateAll(scope);
+		},
+		calculatePieces(row) {
+			if (row.piecesPerPack > 0 && row.packs > 0) {
+				// 计算出厂片数
+				row.pieces = (row.piecesPerPack * row.packs).toString();
+				// 设置入库量等于出厂片数
+				row.stockNumber = row.pieces;
+				// 触发重新计算
+				this.recalculateAll({ row });
+			}
 		},
 		handleCheck(row) {
 			this.$confirm({
