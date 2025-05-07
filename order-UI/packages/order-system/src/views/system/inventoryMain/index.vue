@@ -281,22 +281,22 @@
 				<el-divider content-position="center">货物信息</el-divider>
 				<el-row :gutter="10" class="mb8">
 					<el-col :span="1.5">
-						<!-- 添加按钮：仅在编辑模式下可用 -->
-						<el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAddInventoryDetail" :disabled="!isEditingDetails">添加</el-button>
+						<!-- 添加按钮：始终可用 -->
+						<el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAddInventoryDetail">添加</el-button>
 					</el-col>
 					<el-col :span="1.5">
-						<!-- 删除按钮：仅在编辑模式且有选中项时可用 -->
-						<el-button type="danger" icon="el-icon-delete" size="mini" @click="handleDeleteInventoryDetail" :disabled="!isEditingDetails || checkedInventoryDetail.length === 0">
+						<!-- 删除按钮：仅在选中项时可用 -->
+						<el-button type="danger" icon="el-icon-delete" size="mini" @click="handleDeleteInventoryDetail" :disabled="checkedInventoryDetail.length === 0">
 							删除
 						</el-button>
 					</el-col>
-					<!-- 新增：编辑子项按钮 -->
+					<!-- 编辑子项按钮：有子项且没有行处于编辑状态时可用 -->
 					<el-col :span="1.5">
-						<el-button size="mini" type="warning" @click="toggleEditDetails(true)" :disabled="isEditingDetails">编辑子项</el-button>
+						<el-button size="mini" type="warning" @click="toggleEditDetails(true)" :disabled="!hasInventoryDetails || hasEditingRows">编辑子项</el-button>
 					</el-col>
-					<!-- 新增：全部保存按钮 -->
+					<!-- 全部保存按钮：有行处于编辑状态时可用 -->
 					<el-col :span="1.5">
-						<el-button size="mini" type="success" @click="toggleEditDetails(false)" :disabled="!isEditingDetails">全部保存</el-button>
+						<el-button size="mini" type="success" @click="toggleEditDetails(false)" :disabled="!hasEditingRows">全部保存</el-button>
 					</el-col>
 				</el-row>
 
@@ -310,8 +310,8 @@
 					@selection-change="handleInventoryDetailSelectionChange"
 					ref="inventoryDetail"
 				>
-					<!-- 选择列：仅在编辑模式下可选 -->
-					<el-table-column type="selection" width="50" align="center" :selectable="() => isEditingDetails" />
+					<!-- 选择列：始终可选 -->
+					<el-table-column type="selection" width="50" align="center" :selectable="() => true" />
 					<el-table-column label="序号" align="center" type="index" width="50" />
 
 					<!-- 新增：行操作列 -->
@@ -511,18 +511,6 @@
 						</template>
 					</el-table-column>
 
-					<!--					<el-table-column label="库存杂费" prop="paymentsWithSundry" width="150">-->
-					<!--						<template #default="scope">-->
-					<!--							&lt;!&ndash; 添加 disabled 属性 &ndash;&gt;-->
-					<!--							<el-input-->
-					<!--								size="mini"-->
-					<!--								v-model.lazy="scope.row.paymentsWithSundry"-->
-					<!--								@input="() => recalculateAll(scope)"-->
-					<!--								:disabled="!scope.row.isEditing || !scope.row.paymentUnload"-->
-					<!--								:placeholder="scope.row.paymentUnload <= 0 ? '请先完善存货价' : '请输入库存杂费'"-->
-					<!--							/>-->
-					<!--						</template>-->
-					<!--					</el-table-column>-->
 					<el-table-column label="库存金额" prop="payments" width="150">
 						<template #default="scope">
 							<!-- 添加 disabled 属性 -->
@@ -896,6 +884,16 @@ export default {
 			}
 		};
 	},
+	computed: {
+		// 添加计算属性检查是否有子项
+		hasInventoryDetails() {
+			return this.inventoryDetailList && this.inventoryDetailList.length > 0;
+		},
+		// 检查是否有任何行正在编辑
+		hasEditingRows() {
+			return this.inventoryDetailList && this.inventoryDetailList.some(row => row.isEditing);
+		}
+	},
 	created() {
 		this.getList();
 		// 抓取左侧仓库信息
@@ -943,6 +941,7 @@ export default {
 			// 处理每一行，关闭编辑状态并更新计算
 			rows.forEach(r => {
 				if (r.isEditing) {
+					this.$set(r, 'isEditing', false); // 使用 $set 确保响应式更新
 					updateInventoryRowCalculations(r, this.isSea, this.isLand);
 				}
 			});
@@ -973,7 +972,6 @@ export default {
 					this.$message.success(successMessage);
 					// 如果是新增，更新主表ID和数据
 					if (!this.form.id && res.data && res.data.id) {
-						// TODO  更新主表ID，后续保存变为更新操作
 						this.form.id = res.data.id;
 					}
 					this.getList(); // 刷新列表
@@ -984,26 +982,25 @@ export default {
 						this.$set(row, 'hasError', true); // 添加错误标记
 					});
 					this.$message.error(errorMessage + (error.message || '未知错误'));
-					// this.isEditingDetails = true; // 保持全局编辑状态
 				});
 		},
 		toggleEditDetails(editState) {
 			this.isEditingDetails = editState;
 			if (editState) {
-				// 进入编辑模式时清除所有错误标记
+				// 进入编辑模式，设置所有行为可编辑状态
 				this.inventoryDetailList.forEach(row => {
+					this.$set(row, 'isEditing', true);
 					if (row.hasError) {
 						this.$set(row, 'hasError', false);
 					}
 				});
 				this.$message.info('已进入批量编辑模式，可以修改所有库存信息');
 			} else {
-				// 退出编辑模式时，保存所有正在编辑的行
-				const rowsToSave = this.inventoryDetailList.filter(row => row.isEditing);
-				if (rowsToSave.length > 0) {
-					this.handleRowSave(rowsToSave); // 调用批量保存
+				// 退出编辑模式，保存所有正在编辑的行
+				if (this.hasEditingRows) {
+					this.handleRowSave(this.inventoryDetailList.filter(row => row.isEditing));
 				} else {
-					this.$message.info('没有需要保存的更改。');
+					this.$message.info('没有需要保存的更改');
 				}
 			}
 		},

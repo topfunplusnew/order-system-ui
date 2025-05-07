@@ -1109,17 +1109,27 @@ export default {
 			});
 		},
 		handleInventoryDetailSelectionChange(selection) {
-			this.checkedInventoryDetail = selection.map(item => item.index);
+			// 直接存储选中的行对象引用，而不是索引
+			this.checkedInventoryDetail = selection;
 		},
 		handleDeleteInventoryDetail() {
-			if (this.checkedInventoryDetail.length == 0) {
+			if (this.checkedInventoryDetail.length === 0) {
 				this.$modal.msgError('请先选择要删除的库存子数据');
 			} else {
-				const inventoryDetailList = this.inventoryDetailList;
-				const checkedInventoryDetail = this.checkedInventoryDetail;
-				this.inventoryDetailList = inventoryDetailList.filter(function (item) {
-					return checkedInventoryDetail.indexOf(item.index) == -1;
-				});
+				// 使用对象引用进行过滤，保留未被选中的项
+				this.inventoryDetailList = this.inventoryDetailList.filter(
+					item => !this.checkedInventoryDetail.includes(item)
+				);
+				
+				// 清空选中项
+				this.checkedInventoryDetail = [];
+				
+				// 清除表格的选中状态
+				if (this.$refs.inventoryDetail) {
+					this.$refs.inventoryDetail.clearSelection();
+				}
+				
+				this.$message.success('删除成功');
 			}
 		},
 		cancelSecond() {
