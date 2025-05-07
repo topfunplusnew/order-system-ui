@@ -432,7 +432,7 @@
 					</el-table-column>
 					<el-table-column label="二次入库片数" prop="actualPieces" width="150">
 						<template #default="scope">
-							<el-input size="mini" v-model="scope.row.actualPieces" placeholder="请输入二次入库片数" disabled />
+							<el-input size="mini" v-model="scope.row.actualPieces" placeholder="请输入二次入库片数" />
 						</template>
 					</el-table-column>
 					<el-table-column label="存货价" prop="paymentUnload" width="150">
