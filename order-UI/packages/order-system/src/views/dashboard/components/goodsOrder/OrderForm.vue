@@ -3,10 +3,8 @@ import { listBankAccount } from '../../../../api/system/bankAccount';
 import { listCars } from '../../../../api/system/cars';
 import { listCompany } from '../../../../api/system/company';
 import { listFleet } from '../../../../api/system/fleet';
-import { listDetail } from '../../../../api/system/detail';
 import { listExitInventory } from '../../../../api/system/inventoryMain';
-import { addGoodsOrder, auditGoodsOrder, getGoodsOrder, updateGoodsOrder } from '../../../../api/system/goodsOrder';
-import { listInventory } from '../../../../api/system/inventory';
+import { addGoodsOrder, getGoodsOrder, updateGoodsOrder } from '../../../../api/system/goodsOrder';
 import { listProductLevel } from '../../../../api/system/productLevel';
 import { excludeParams } from '../../../../api/tool/exclude';
 import { fix } from '../../../../api/tool/format';
@@ -231,13 +229,24 @@ export default {
 		this.orderId && this.getGoodsOrderInfo(this.orderId);
 	},
 	methods: {
+		/** 修复数字精度问题 */
 		fix,
+		/** 获取车队列表 */
 		listFleet,
+		/** 获取车辆列表 */
 		listCars,
+		/** 获取银行账户列表 */
 		listBankAccount,
+		/** 获取公司列表 */
 		listCompany,
+		/** 获取产品级别列表 */
 		listProductLevel,
+		/** 获取出库库存列表 */
 		listExitInventory,
+		/**
+		 * 根据订单ID获取订单信息
+		 * @param {Number} id - 订单ID
+		 */
 		getGoodsOrderInfo(id) {
 			getGoodsOrder(id).then(response => {
 				this.orderInfo = response.data;
@@ -272,7 +281,10 @@ export default {
 				}
 			});
 		},
-		// 编辑某一行时清除错误状态
+		/**
+		 * 处理行编辑事件
+		 * @param {Object} row - 当前编辑的行数据
+		 */
 		handleRowEdit(row) {
 			// 设置当前行为可编辑
 			this.$set(row, 'isEditing', true);
@@ -283,7 +295,12 @@ export default {
 			this.$message.info('正在编辑该条记录');
 		},
 
-		// 修改保存行逻辑，保存row的引用以便后续使用
+		/**
+		 * 处理行保存事件
+		 * @param {Object|Array} row - 当前保存的行数据或行数据数组
+		 * @param {Function} [resolve=null] - Promise resolve回调
+		 * @param {Function} [reject=null] - Promise reject回调
+		 */
 		handleRowSave(row, resolve = null, reject = null) {
 			// 统一处理输入，确保 rows 是数组
 			const rows = Array.isArray(row) ? row : [row];
@@ -306,7 +323,13 @@ export default {
 			}
 			this.addOrUpdateOrderDetail(newOrderInfo, rows, resolve, reject);
 		},
-		// 优化添加或者修改订单函数，添加错误处理
+		/**
+		 * 添加或更新订单详情
+		 * @param {Object} newOrderInfo - 新的订单信息
+		 * @param {Array} rows - 相关的行数据
+		 * @param {Function} [resolve=null] - Promise resolve回调
+		 * @param {Function} [reject=null] - Promise reject回调
+		 */
 		addOrUpdateOrderDetail(newOrderInfo, rows, resolve = null, reject = null) {
 			// 保存row的引用，避免在Promise链中丢失
 			const currentRows = rows;
@@ -361,13 +384,18 @@ export default {
 					});
 			}
 		},
-		// 设置当前编辑状态
+		/**
+		 * 设置当前正在编辑的订单信息和状态
+		 * @param {Object} response - 订单信息响应数据
+		 * @param {boolean} [flag=true] - 编辑状态标志
+		 */
 		setIsEditingOrder(response, flag = true) {
 			console.log(`设置订单信息:`, response);
 			this.isEditingOrder.id = response.id;
 			this.isEditingOrder.state = flag;
 			this.isEditingOrder.currentEditingOrderInfo = response;
 		},
+		/** 添加新的订单详情行 */
 		handleAddOrderdetail() {
 			let obj = {
 				// 添加唯一索引
@@ -429,19 +457,28 @@ export default {
 				}
 			});
 		},
-		// 处理出厂片数变化，自动填充卸货片数
+		/**
+		 * 处理出厂片数变化，自动填充卸货片数并重新计算
+		 * @param {Object} scope - 表格行作用域对象
+		 */
 		handlePiecesChange(scope) {
 			// 将出厂片数的值赋给卸货片数
 			scope.row.actualPieces = scope.row.pieces;
 			// 触发重新计算
 			this.recalculateAll(scope);
 		},
+		/**
+		 * 过滤掉库存数量为0或以下的库存条目，并按库存数量降序排序
+		 * @param {Array} data - 原始库存数据列表
+		 * @returns {Promise<Array>} 过滤和排序后的库存数据列表
+		 */
 		filterNoStockNumber(data) {
 			return new Promise(resolve => {
 				const res = data.filter(item => item.actualPieces > 0).sort((a, b) => b.actualPieces - a.actualPieces);
 				resolve(res);
 			});
 		},
+		/** 删除选中的订单详情行 */
 		handleDeleteOrderdetail() {
 			if (this.checkedOrderdetail.length === 0) {
 				this.$message.error('请先选择要删除的订单详情数据');
@@ -454,6 +491,11 @@ export default {
 				});
 			}
 		},
+		/**
+		 * 计算表格合计行数据
+		 * @param {Object} param - 表格合计参数，包含columns和data
+		 * @returns {Array} 合计行数据数组
+		 */
 		getSummary(param) {
 			const { columns, data } = param;
 			const sums = [];
@@ -486,25 +528,51 @@ export default {
 
 			return sums;
 		},
+		/**
+		 * 处理订单详情表格选择项变化事件
+		 * @param {Array} selection - 当前选中的行数据数组
+		 */
 		handleOrderdetailSelectionChange(selection) {
 			console.log(selection);
 			this.checkedOrderdetail = selection.map(item => item.index);
 			console.log(`selection index`, this.checkedOrderdetail);
 		},
+		/**
+		 * 更新仓库查询名称
+		 * @param {String} value - 查询值
+		 */
 		handleUpdateQueryNameStore(value) {
 			this.queryLevel = value;
 		},
+		/**
+		 * 更新供应商查询名称
+		 * @param {String} value - 查询值
+		 */
 		handleUpdateQuerySupplier(value) {
 			this.querySupplier = value;
 		},
+		/**
+		 * 更新级别查询名称
+		 * @param {String} value - 查询值
+		 */
 		handleUpdateQueryNameLevel(value) {
 			this.queryLevel = value;
 		},
+		/**
+		 * 处理供应商信息选择回调
+		 * @param {Object} scope - 表格行作用域对象
+		 * @param {Object} val - 选择的供应商信息
+		 */
 		handleCommitBackSupplier(scope, val) {
 			scope.row.supplier = val.companyName;
 			scope.row.supplierID = val.id;
 			scope.row.currentType = 'supplier';
 		},
+		/**
+		 * 处理库存信息选择回调
+		 * @param {Object} scope - 表格行作用域对象
+		 * @param {Object} val - 选择的库存信息
+		 */
 		handleCommitBackInventory(scope, val) {
 			this.clearDetail(scope);
 			scope.row.storeID = val.id;
@@ -522,6 +590,11 @@ export default {
 			// 填充后重新计算
 			updateOrderRowCalculations(scope.row, this.isSea, this.isLand);
 		},
+		/**
+		 * 处理产品级别信息选择回调
+		 * @param {Object} scope - 表格行作用域对象
+		 * @param {Object} val - 选择的产品级别信息
+		 */
 		handleCommitBackProductLevel(scope, val) {
 			scope.row.erro = val.tonnage;
 			scope.row.levelID = val.id;
@@ -533,14 +606,26 @@ export default {
 			// 填充后重新计算
 			updateOrderRowCalculations(scope.row, this.isSea, this.isLand);
 		},
-		// 重新计算方法现在直接调用主计算函数
+		/**
+		 * 重新计算指定行的所有相关数据
+		 * @param {Object} scope - 表格行作用域对象
+		 */
 		recalculateAll(scope) {
 			updateOrderRowCalculations(scope.row, this.isSea, this.isLand);
 		},
+		/**
+		 * 设置当前行输入框的类型（供应商或仓库）
+		 * @param {Object} row - 当前行数据
+		 * @param {String} type - 类型字符串 ('supplier' 或 'storeHouseName')
+		 */
 		setCurrentType(row, type) {
 			row.currentType = type;
 		},
-		// 填充订单相关必要信息
+		/**
+		 * 填充订单详情列表中的必要订单信息
+		 * @param {Array} [detailList=this.orderdetailList] - 订单详情列表
+		 * @returns {Array} 填充信息后的订单详情列表
+		 */
 		fillOrderDetailInfo(detailList = this.orderdetailList) {
 			const formatOrderItem = () => ({
 				customerID: this.orderInfo.customerID,
@@ -549,6 +634,11 @@ export default {
 			});
 			return _.cloneDeep(detailList).map(item => Object.assign(item, formatOrderItem()));
 		},
+		/**
+		 * 提交订单（添加或更新）
+		 * @param {Function} resolve - Promise resolve回调
+		 * @param {Function} reject - Promise reject回调
+		 */
 		submitOrder(resolve, reject) {
 			this.orderdetailList = this.fillOrderDetailInfo();
 			this.orderInfo.orderDetailList = _.cloneDeep(this.orderdetailList);
@@ -561,6 +651,10 @@ export default {
 				updateGoodsOrder(json).then(resolve).catch(reject);
 			}
 		},
+		/**
+		 * 重置表单和相关状态
+		 * @param {Object} that - 父组件实例（通常是弹窗组件）
+		 */
 		reset(that) {
 			// 清除订单状态
 			this.resetOrderInfo();
@@ -573,7 +667,10 @@ export default {
 			this.setIsEditingOrder(null, false);
 			that.dialogVisible = false;
 		},
-		// 弹窗点击确定
+		/**
+		 * 处理弹窗确认事件（提交订单）
+		 * @param {Object} that - 父组件实例（通常是弹窗组件）
+		 */
 		handleProcess(that) {
 			this.$refs.orderForm.validate(valid => {
 				if (valid) {
@@ -610,12 +707,14 @@ export default {
 				}
 			});
 		},
+		/** 处理弹窗取消或关闭事件，重置部分状态 */
 		handleReject() {
 			this.isSea = false;
 			this.isLand = false;
 			this.isEditingDetails = false;
 			this.resetOrderInfo();
 		},
+		/** 重置订单基本信息和订单详情列表 */
 		resetOrderInfo() {
 			this.orderInfo = {
 				orderID: '',
@@ -648,6 +747,10 @@ export default {
 				this.$refs.orderForm.clearValidate();
 			}
 		},
+		/**
+		 * 清空指定订单详情行的内容
+		 * @param {Object} scope - 表格行作用域对象
+		 */
 		clearDetail(scope) {
 			scope.row.orderDate = new Date();
 			scope.row.supplier = '';
@@ -695,6 +798,7 @@ export default {
 			scope.row.factoryDiscountAmount = '';
 			scope.row.comments = '';
 		},
+		/** 重置海运车辆相关信息并清除校验状态 */
 		resetSeaCarInfo() {
 			this.orderInfo.seaCarID = '';
 			this.orderInfo.seaCarNo = '';
@@ -705,6 +809,7 @@ export default {
 				this.$refs.orderForm.clearValidate(['seaCarNo', 'seaDriverName']);
 			}
 		},
+		/** 重置陆运车辆相关信息并清除校验状态 */
 		resetLandCarInfo() {
 			this.orderInfo.landCarID = '';
 			this.orderInfo.landCarNo = '';
@@ -718,7 +823,10 @@ export default {
 				this.$refs.orderForm.clearValidate(['landCarNo', 'fleet']);
 			}
 		},
-		// 切换编辑模式时处理错误状态
+		/**
+		 * 切换订单详情的批量编辑模式
+		 * @param {boolean} editState - true表示进入编辑模式，false表示退出并保存
+		 */
 		toggleEditDetails(editState) {
 			if (editState) {
 				// 进入编辑模式，设置所有行为可编辑状态
@@ -737,7 +845,12 @@ export default {
 				}
 			}
 		},
-		// 添加新方法：根据行是否处于编辑状态设置行的类名
+		/**
+		 * 根据行状态（错误、编辑中）获取行类名
+		 * @param {Object} params - 表格行参数对象
+		 * @param {Object} params.row - 当前行数据
+		 * @returns {String} 行类名
+		 */
 		getRowClassName({ row }) {
 			if (row.hasError) {
 				return 'error-row';
@@ -746,7 +859,10 @@ export default {
 			}
 			return '';
 		},
-		// 添加新方法：计算出厂片数
+		/**
+		 * 根据每包片数和包数计算总出厂片数，并自动填充卸货片数
+		 * @param {Object} row - 当前行数据
+		 */
 		calculatePieces(row) {
 			if (row.piecesPerPack > 0 && row.packs > 0) {
 				// 计算出厂片数
