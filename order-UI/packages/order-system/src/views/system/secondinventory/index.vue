@@ -1057,6 +1057,60 @@ export default {
 			scope.row.comments = '';
 			scope.row.manuallyEditedPieces = false;
 		},
+		// 添加重置二次入库表单的方法
+		resetSecond() {
+			this.isSea = false;
+			this.isLand = false;
+			this.transportError = false; // 重置错误状态
+			this.selfButtonDisabled = false; // 重置本公司按钮状态
+			this.secondForm = {
+				id: null,
+				storeHouseid: null,
+				storeHouseName: null,
+				storeDate: parseTime(new Date()),
+				landCarID: null,
+				landCarNo: null,
+				landDriverTel: null,
+				landDriverName: null,
+				landBankName: null,
+				landBankNo: null,
+				fleet: null,
+				seaCarID: null,
+				seaCarNo: null,
+				seaDriverTel: null,
+				seaDriverName: null,
+				seaBankName: null,
+				seaBankNo: null,
+				addtime: null,
+				userId: null,
+				UserName: null,
+				updateTime: null,
+				delFlag: null,
+				showFlag: null,
+				exWareHoustId: null,
+				goodsCompany: null,
+				allLandFreight: null,
+				allSeaFreight: null,
+				receiveProof: null
+			};
+			this.inventoryDetailList = [];
+			this.isEditingDetails = false;
+			this.checkedInventoryDetail = [];
+			if (this.$refs.secondForm) {
+				this.$refs.secondForm.resetFields();
+			}
+		},
+
+		// 添加获取行类名的方法
+		getRowClassName({ row }) {
+			if (row.hasError) {
+				return 'error-row';
+			} else if (row.isEditing) {
+				return 'editing-row';
+			}
+			return '';
+		},
+
 		handleAddInventoryDetail() {
 			let obj = {
 				stockNumber: '',
@@ -1143,17 +1197,40 @@ export default {
 				this.$message.error('请至少选择一种运输方式');
 				return;
 			}
+			
+			// 检查是否有库存详情数据
+			if (this.inventoryDetailList.length === 0) {
+				this.$message.error('请添加至少一条库存详情');
+				return;
+			}
 
 			this.$refs['secondForm'].validate(valid => {
 				if (valid) {
-					if (this.inventoryDetailList.some(item => item.isEditing)) {
+					// 检查是否有未保存的编辑项
+					const hasEditingRows = this.inventoryDetailList.some(item => item.isEditing);
+					if (hasEditingRows) {
 						this.$modal
-							.confirm('有未保存的库存项，是否继续提交?')
+							.confirm('有未保存的库存项，是否先保存后再提交?')
 							.then(() => {
-								this.doSubmitSecond();
+								// 先保存所有编辑状态的行
+								this.$modal.loading("正在保存...");
+								this.handleRowSave(this.inventoryDetailList.filter(item => item.isEditing))
+									.then(() => {
+										this.$modal.closeLoading();
+										// 保存成功后提交整个表单
+										this.doSubmitSecond();
+									})
+									.catch(() => {
+										this.$modal.closeLoading();
+										// 保存失败时不提交表单，让用户修复错误
+									});
 							})
-							.catch(() => {});
+							.catch(() => {
+								// 用户选择不先保存，直接提交
+								this.doSubmitSecond();
+							});
 					} else {
+						// 没有编辑状态的行，直接提交
 						this.doSubmitSecond();
 					}
 				} else {
@@ -1163,82 +1240,43 @@ export default {
 			});
 		},
 		doSubmitSecond() {
+			// 最终检查所有行的数据有效性
+			let hasInvalidRow = false;
+			for (const row of this.inventoryDetailList) {
+				const validationResult = this.validateInventoryRow(row);
+				if (!validationResult.valid) {
+					this.$set(row, 'hasError', true);
+					this.$message.error(`行 "${row.levelName || '未命名'}" 验证失败: ${validationResult.message}`);
+					hasInvalidRow = true;
+					// 不立即返回，继续检查所有行以显示所有错误
+				}
+			}
+			
+			if (hasInvalidRow) {
+				this.$message.error('请修正表单中的错误后再提交');
+				return;
+			}
+			
 			this.secondForm.inventoryDetailList = JSON.parse(JSON.stringify(this.inventoryDetailList));
 			this.secondForm.allLandFreight = this.isLand ? this.inventoryDetailList.reduce((prev, curr) => Number(prev) + Number(curr.landFreight || 0), 0) : 0;
 			this.secondForm.allSeaFreight = this.isSea ? this.inventoryDetailList.reduce((prev, curr) => Number(prev) + Number(curr.seaFreight || 0), 0) : 0;
+			
+			this.$modal.loading("正在提交...");
 			const apiCall = this.secondForm.id ? updateInventoryMain : addInventoryMain;
 			const successMessage = this.secondForm.id ? '修改成功' : '新增成功';
+			
 			apiCall(this.secondForm)
 				.then(() => {
+					this.$modal.closeLoading();
 					this.$modal.msgSuccess(successMessage);
 					this.secondInventoryVisible = false;
 					this.getList();
 					this.resetSecond();
 				})
 				.catch(error => {
+					this.$modal.closeLoading();
 					this.$message.error('提交失败: ' + (error.message || '未知错误'));
 				});
-		},
-		resetSecond() {
-			this.isSea = false;
-			this.isLand = false;
-			this.transportError = false; // 重置错误状态
-			this.secondForm = {
-				id: null,
-				storeHouseid: null,
-				storeHouseName: null,
-				storeDate: parseTime(new Date()),
-				landCarID: null,
-				landCarNo: null,
-				landDriverTel: null,
-				landDriverName: null,
-				fleet: null,
-				seaCarID: null,
-				seaCarNo: null,
-				seaDriverTel: null,
-				seaDriverName: null,
-				addtime: null,
-				userId: null,
-				UserName: null,
-				updateTime: null,
-				delFlag: null,
-				showFlag: null,
-				exWareHoustId: null,
-				goodsCompany: null,
-				allLandFreight: null,
-				allSeaFreight: null
-			};
-			this.inventoryDetailList = [];
-			this.isEditingDetails = false;
-			if (this.$refs.secondForm) {
-				this.$refs.secondForm.resetFields();
-			}
-		},
-		toggleEditDetails(editState) {
-			this.isEditingDetails = editState;
-			if (editState) {
-				this.inventoryDetailList.forEach(row => {
-					if (row.hasError) {
-						this.$set(row, 'hasError', false);
-					}
-				});
-				this.$message.info('已进入批量编辑模式，可以修改所有库存信息');
-			} else {
-				const rowsToSave = this.inventoryDetailList.filter(row => row.isEditing);
-				if (rowsToSave.length > 0) {
-					this.handleRowSave(rowsToSave);
-				} else {
-					this.$message.info('没有需要保存的更改。');
-				}
-			}
-		},
-		getRowClassName({ row }) {
-			if (row.hasError) {
-				return 'error-row';
-			} else if (row.isEditing) {
-				return 'editing-row';
-			}
-			return '';
 		},
 		handleRowEdit(row) {
 			this.$set(row, 'isEditing', true);
@@ -1247,26 +1285,71 @@ export default {
 			}
 			this.$message.info('正在编辑该条记录');
 		},
-		handleRowSave(row) {
-			const rows = Array.isArray(row) ? row : [row];
-			rows.forEach(r => {
-				if (r.isEditing) {
-					this.recalculateAll({ row: r });
+		validateInventoryRow(row) {
+			if (!row.supplier) {
+				return { valid: false, message: '供应商不能为空' };
+			}
+			if (!row.levelName) {
+				return { valid: false, message: '级别名称不能为空' };
+			}
+			if (!row.height || !row.length || !row.width) {
+				return { valid: false, message: '产品尺寸信息(长/宽/高)不完整，请选择正确的产品级别' };
+			}
+			if (!row.pieces || isNaN(Number(row.pieces)) || Number(row.pieces) <= 0) {
+				return { valid: false, message: '出厂片数必须是有效的正数' };
+			}
+			if (!row.price || isNaN(Number(row.price)) || Number(row.price) < 0) {
+				return { valid: false, message: '出厂单价必须是有效的非负数字' };
+			}
+			if (!row.paymentUnload || isNaN(Number(row.paymentUnload)) || Number(row.paymentUnload) < 0) {
+				return { valid: false, message: '存货价必须是有效的非负数字' };
+			}
+			if (!row.actualPieces || isNaN(Number(row.actualPieces)) || Number(row.actualPieces) <= 0) {
+				return { valid: false, message: '二次入库片数必须是有效的正数' };
+			}
+			if (this.isLand && row.landFreightPrice) {
+				if (isNaN(Number(row.landFreightPrice)) || Number(row.landFreightPrice) < 0) {
+					return { valid: false, message: '陆运费单价必须是有效的非负数字' };
 				}
-			});
-			const newInventoryInfo = {
-				...this.secondForm,
-				inventoryDetailList: JSON.parse(JSON.stringify(this.inventoryDetailList))
-			};
-			newInventoryInfo.allLandFreight = this.isLand ? this.inventoryDetailList.reduce((prev, curr) => Number(prev) + Number(curr.landFreight || 0), 0) : 0;
-			newInventoryInfo.allSeaFreight = this.isSea ? this.inventoryDetailList.reduce((prev, curr) => Number(prev) + Number(curr.seaFreight || 0), 0) : 0;
-			this.saveInventoryDetails(newInventoryInfo, rows);
+			}
+			if (this.isSea && row.seaFreight) {
+				if (isNaN(Number(row.seaFreight)) || Number(row.seaFreight) < 0) {
+					return { valid: false, message: '海运费必须是有效的非负数字' };
+				}
+			}
+			return { valid: true };
 		},
-		saveInventoryDetails(newInventoryInfo, rows) {
+		handleRowSave(row) {
+			return new Promise((resolve, reject) => {
+				const rows = Array.isArray(row) ? row : [row];
+				for (const r of rows) {
+					if (!r.isEditing) continue;
+					const validationResult = this.validateInventoryRow(r);
+					if (!validationResult.valid) {
+						this.$set(r, 'hasError', true);
+						this.$message.error(`行 "${r.levelName || '未命名'}" 验证失败: ${validationResult.message}`);
+						reject(new Error(validationResult.message));
+						return;
+					}
+				}
+				rows.forEach(r => {
+					if (r.isEditing) {
+						this.recalculateAll({ row: r });
+					}
+				});
+				const newInventoryInfo = {
+					...this.secondForm,
+					inventoryDetailList: JSON.parse(JSON.stringify(this.inventoryDetailList))
+				};
+				newInventoryInfo.allLandFreight = this.isLand ? this.inventoryDetailList.reduce((prev, curr) => Number(prev) + Number(curr.landFreight || 0), 0) : 0;
+				newInventoryInfo.allSeaFreight = this.isSea ? this.inventoryDetailList.reduce((prev, curr) => Number(prev) + Number(curr.seaFreight || 0), 0) : 0;
+				this.saveInventoryDetails(newInventoryInfo, rows, resolve, reject);
+			});
+		},
+		saveInventoryDetails(newInventoryInfo, rows, resolve, reject) {
 			const currentRows = rows;
 			const apiCall = newInventoryInfo.id ? updateInventoryMain : addInventoryMain;
 			const successMessage = newInventoryInfo.id ? '库存详情已修改并保存!' : '库存详情已添加并保存!';
-			const errorMessage = '保存失败，请重新编辑: ';
 			apiCall(newInventoryInfo)
 				.then(res => {
 					currentRows.forEach(row => {
@@ -1279,14 +1362,46 @@ export default {
 					if (!newInventoryInfo.id && res.data && res.data.id) {
 						this.secondForm.id = res.data.id;
 					}
+					resolve && resolve(res);
 				})
 				.catch(error => {
 					currentRows.forEach(row => {
 						this.$set(row, 'isEditing', true);
 						this.$set(row, 'hasError', true);
 					});
-					this.$message.error(errorMessage + (error.message || '未知错误'));
+					const errorMsg = error.message || '未知错误';
+					this.$message.error(`保存失败，请重新编辑: ${errorMsg}`);
+					reject && reject(error);
 				});
+		},
+		toggleEditDetails(editState) {
+			if (editState) {
+				this.isEditingDetails = true;
+				this.inventoryDetailList.forEach(row => {
+					if (row.hasError) {
+						this.$set(row, 'hasError', false);
+					}
+				});
+				this.$message.info('已进入批量编辑模式，可以修改所有库存信息');
+			} else {
+				const rowsToSave = this.inventoryDetailList.filter(row => row.isEditing);
+				if (rowsToSave.length > 0) {
+					this.$modal.loading("正在保存...");
+					this.handleRowSave(rowsToSave)
+						.then(() => {
+							this.$modal.closeLoading();
+							this.$message.success('所有修改已保存');
+							this.isEditingDetails = false;
+						})
+						.catch(() => {
+							this.$modal.closeLoading();
+							this.isEditingDetails = true; 
+						});
+				} else {
+					this.isEditingDetails = false;
+					this.$message.info('没有需要保存的更改。');
+				}
+			}
 		},
 		updateActualPieces(scope) {
 			scope.row.actualPieces = scope.row.stockNumber;
@@ -1294,7 +1409,6 @@ export default {
 		},
 		handlePiecesChange(scope, val) {
 			scope.row.manuallyEditedPieces = true;
-			// 使用统一计算函数
 			updateInventoryRowCalculations(scope.row, this.isSea, this.isLand);
 		},
 		getList() {
