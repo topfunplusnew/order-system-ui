@@ -1059,34 +1059,31 @@ export default {
 		},
 		getSummary(param) {
 			const { columns, data } = param;
-			// 定义需要合计的列的 prop 属性名
-			const summedProps = ['payments', 'paymentFactory', 'tonnage', 'profit', 'otherCost', 'freight', 'factoryCommission'];
 			const sums = [];
+			const summaryColumns = ['paymentFactory', 'payments', 'tonnage', 'landFreight', 'seaFreight', 'freight', 'profit', 'profitNoTax'];
+
 			columns.forEach((column, index) => {
 				if (index === 0) {
 					sums[index] = '合计';
 					return;
 				}
-				// 检查当前列的 prop 是否在需要合计的列表中
-				if (summedProps.includes(column.property)) {
+
+				if (summaryColumns.includes(column.property)) {
 					const values = data.map(item => Number(item[column.property]));
 					if (!values.every(value => isNaN(value))) {
 						sums[index] = values.reduce((prev, curr) => {
 							const value = Number(curr);
 							if (!isNaN(value)) {
-								// 使用 fix 函数确保精度
-								return fix(prev + value);
+								return prev + curr;
 							} else {
 								return prev;
 							}
 						}, 0);
-						// 对最终结果应用 fix
 						sums[index] = fix(sums[index]);
+						sums[index] += column.property === 'tonnage' ? ' 吨' : ' 元';
 					} else {
 						sums[index] = 'N/A';
 					}
-				} else {
-					sums[index] = ''; // 不需要合计的列显示为空
 				}
 			});
 

@@ -54,8 +54,6 @@ export default {
 					{{ needToShowInfo.storeDate ? new Date(needToShowInfo.storeDate).toLocaleDateString() : '-' }}
 				</el-descriptions-item>
 				<el-descriptions-item label="仓库名称">{{ needToShowInfo.storeHouseName || '-' }}</el-descriptions-item>
-				<el-descriptions-item label="入库片数">{{ needToShowInfo.stockNumber || '0' }} 片</el-descriptions-item>
-				<el-descriptions-item label="剩余片数">{{ needToShowInfo.actualPieces || '0' }} 片</el-descriptions-item>
 				<el-descriptions-item label="审核状态">{{ needToShowInfo.checkState || '-' }}</el-descriptions-item>
 				<el-descriptions-item label="车队">{{ needToShowInfo.fleet || '-' }}</el-descriptions-item>
 				<el-descriptions-item label="陆运银行账号">{{ needToShowInfo.landBankNo || '-' }}</el-descriptions-item>
@@ -104,6 +102,7 @@ export default {
 				<el-table-column label="杂费" align="center" prop="sundryCost" show-overflow-tooltip />
 				<el-table-column label="出厂货款" align="center" prop="paymentFactory" show-overflow-tooltip />
 				<el-table-column label="存货价" align="center" prop="paymentUnload" show-overflow-tooltip />
+				<el-table-column label="入库片数" align="center" prop="stockNumber" show-overflow-tooltip />
 				<el-table-column label="库存是否含税" align="center" prop="isIncludeTaxSale" show-overflow-tooltip>
 					<template slot-scope="scope">
 						<el-tag disable-transitions>{{ scope.row.isIncludeTaxSale === 0 ? '否' : '是' }}</el-tag>
