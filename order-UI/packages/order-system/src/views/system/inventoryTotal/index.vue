@@ -59,7 +59,16 @@
 		<el-dialog title="变动记录" :visible.sync="changeLogVisible" width="50%" class="change-log-dialog">
 			<el-table :data="changeLogData" size="mini" border stripe v-loading="changeLogLoading">
 				<el-table-column label="日期" prop="date" align="center" />
-				<el-table-column label="变动数量" prop="change_amount" align="center" />
+				<el-table-column label="变动类型" align="center">
+					<template slot-scope="scope">
+						{{ scope.row.change_amount > 0 ? '入库' : '出库' }}
+					</template>
+				</el-table-column>
+				<el-table-column label="变动数量" prop="change_amount" align="center">
+					<template slot-scope="scope">
+						{{ Math.abs(scope.row.change_amount) }}
+					</template>
+				</el-table-column>
 				<el-table-column label="剩余库存" prop="remaining_stock" align="center" />
 			</el-table>
 			<pagination
