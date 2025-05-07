@@ -35,7 +35,11 @@ export var mixin_payment_subject = {
 		},
 		findChildren(parent) {
 			// 对传入根节点的子数组进行操作
-			parent.children = this.paymentTypeOptions.filter(item => item.parentId === parent.id);
+			parent.children = this.paymentTypeOptions
+				.filter(item => item.parentId === parent.id)
+				.sort((a, b) => {
+					return a.orderNum - b.orderNum;
+				});
 			parent.children.forEach(child => {
 				this.findChildren(child); // 递归处理子节点
 			});
