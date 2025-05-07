@@ -105,12 +105,12 @@
 					<el-table-column prop="recoverDate" label="时间" width="180"></el-table-column>
 					<el-table-column prop="moneyAmount" label="收回金额"></el-table-column>
 					<!--          操作列-->
-					<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="240" fixed="right">
-						<template slot-scope="scope">
-							<el-button size="mini" type="primary" @click="handleUpdateRecoverMoney(scope.row)" v-hasPermi="['system:recovermoney:edit']">修改</el-button>
-							<el-button v-hasPermi="['system:recovermoney:remove']" size="mini" type="danger" @click="handleDeleteRecoverMoney(scope.row)">删除</el-button>
-						</template>
-					</el-table-column>
+					<!--					<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="240" fixed="right">-->
+					<!--						<template slot-scope="scope">-->
+					<!--							<el-button size="mini" type="primary" @click="handleUpdateRecoverMoney(scope.row)" v-hasPermi="['system:recovermoney:edit']">修改</el-button>-->
+					<!--							<el-button v-hasPermi="['system:recovermoney:remove']" size="mini" type="danger" @click="handleDeleteRecoverMoney(scope.row)">删除</el-button>-->
+					<!--						</template>-->
+					<!--					</el-table-column>-->
 				</el-table>
 				<pagination v-show="detailTotal > 0" :total="detailTotal" :page.sync="queryRepaymentParams.pageNum" :limit.sync="queryRepaymentParams.pageSize" @pagination="getRepaymentMoneyList" />
 			</template>
