@@ -94,7 +94,11 @@
 			<el-table-column v-if="columns[5].visible" label="返利原因" align="center" prop="rebateReason" show-overflow-tooltip />
 
 			<!-- 返利方式 -->
-			<el-table-column v-if="columns[6].visible" label="返利方式" align="center" prop="rebateMethod" show-overflow-tooltip />
+			<el-table-column v-if="columns[6].visible" label="返利方式" align="center" prop="rebateMethod" show-overflow-tooltip>
+				<template slot-scope="scope">
+					{{ scope.row.rebateMethod == 2 ? '面积' : '重箱' }}
+				</template>
+			</el-table-column>
 
 			<!-- 备注 -->
 			<el-table-column v-if="columns[7].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
@@ -131,7 +135,17 @@
 
 							<!--              需要进行选择 是面积值还是重箱值-->
 							<el-form-item label="返利方式" prop="rebateMethod">
-								<el-select v-model="form.rebateMethod" placeholder="请选择" :disabled="!form.unitPrice" @change="() => (form.rebate > 0 ? submitSelectOrderDetail() : '')">
+								<el-select
+									v-model="form.rebateMethod"
+									placeholder="请选择"
+									:disabled="!form.unitPrice"
+									@change="
+										() => {
+											form.rebate > 0 ? submitSelectOrderDetail() : '';
+											areaOrWeightBox = form.rebateMethod;
+										}
+									"
+								>
 									<el-option label="重箱" value="重箱" />
 									<el-option label="面积" value="面积" />
 								</el-select>
@@ -190,11 +204,11 @@
 								</el-row>
 							</el-form-item>
 							<!-- 重箱值 -->
-							<el-form-item label="重箱值" prop="weightBox" v-if="areaOrWeightBox === 1">
+							<el-form-item label="重箱值" prop="weightBox" v-if="areaOrWeightBox === RebateType.Weight">
 								<el-input v-model="form.weightBox" placeholder="根据订单自动计算" disabled />
 							</el-form-item>
 							<!-- 面积值 -->
-							<el-form-item label="面积值" prop="area" v-if="areaOrWeightBox === 2">
+							<el-form-item label="面积值" prop="area" v-if="areaOrWeightBox === RebateType.Square">
 								<el-input v-model="form.area" placeholder="根据订单自动计算" disabled />
 							</el-form-item>
 
@@ -456,6 +470,7 @@ import { mixin_bankType } from '../../dashboard/mixins/common/common_bankType';
 import { getUuid } from '../../../utils/trash/utils';
 import { parseTime } from '../../../utils/ruoyi';
 import QuerySearchBar from '../../dashboard/components/goodsOrder/QuerySearchBar.vue';
+import _ from 'lodash';
 
 export default {
 	name: 'Rebate',
@@ -642,10 +657,13 @@ export default {
 			selectOrdersList: [],
 
 			// 选择重箱还是面积
-			areaOrWeightBox: 1
+			areaOrWeightBox: RebateType.Weight
 		};
 	},
 	computed: {
+		RebateType() {
+			return RebateType;
+		},
 		TableName() {
 			return TableName;
 		}
@@ -695,14 +713,19 @@ export default {
 					})
 						.then(({ value: date }) => {
 							getRebate(row.id).then(res => {
-								let rebate = res.data.actualReceivedDetails;
+								if (!res.data) {
+									this.$message.error('暂无该条数据');
+									return;
+								}
 								let item = {
 									uuid: getUuid(),
 									actualReceived: Number(value),
 									actualReceivedDate: parseTime(new Date(date))
 								};
-								let body = JSON.parse(JSON.stringify(row));
-								if (rebate === null) {
+								let body = _.cloneDeep(row);
+
+								let rebate = res.data.actualReceivedDetails;
+								if (!rebate || !rebate.detailList) {
 									let actualReceivedDetails = {
 										detailList: []
 									};
@@ -716,6 +739,7 @@ export default {
 								}
 								updateRebate(body).then(() => {
 									this.$modal.msgSuccess('返利成功');
+									this.getList();
 								});
 							});
 						})

@@ -1,6 +1,7 @@
 import { getGoodsOrder, listGoodsOrder } from '../../../../api/system/goodsOrder';
 import { fix } from '../../../../api/tool/format';
 import { listOrderDetail } from '@/api/system/orderDetail';
+import { RebateType } from '@/api/tool/enums';
 
 export var mixin_choose_order = {
 	data() {
@@ -153,7 +154,7 @@ export var mixin_choose_order = {
 				this.form.orderDetailIds.push(item.id);
 			});
 			// 判断一下是重箱还是面积
-			if (this.form.rebateMethod === 1) {
+			if (this.form.rebateMethod === RebateType.Weight) {
 				this.form.weightBox = result.weightBox || 0;
 			} else {
 				this.form.area = result.area || 0;
