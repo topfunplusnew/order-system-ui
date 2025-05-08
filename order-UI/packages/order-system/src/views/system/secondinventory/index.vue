@@ -43,6 +43,8 @@
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[0].visible" label="仓库名称" align="center" prop="storeHouseName" />
+			<!--      outDirection 出库方向 有可能是客户名称 有可能是破损出库 或者 二次加工-->
+			<el-table-column v-if="columns[0].visible" label="出库方向" align="center" prop="outDirection" />
 			<el-table-column v-if="columns[1].visible" label="出库日期" align="center" prop="outDate" />
 			<el-table-column v-if="columns[2].visible" label="产品级别" align="center" prop="sourceInventoryDetail.levelName" />
 			<el-table-column v-if="columns[3].visible" label="厚度" align="center" prop="sourceInventoryDetail.height" />
@@ -102,7 +104,7 @@
 		</el-dialog>
 
 		<!--    二次入库的弹窗-->
-		<el-dialog :title="title" :visible.sync="secondInventoryVisible" width="1200px" append-to-body :close-on-click-modal="false">
+		<el-dialog :title="title" :visible.sync="secondInventoryVisible" width="1200px" append-to-body :close-on-click-modal="false" v-dialogDrag dialogDragWidth dialogDragHeight>
 			<el-form ref="secondForm" :model="secondForm" :rules="secondRules" label-width="80px" :inline="true">
 				<el-form-item label="仓库名称" prop="storeHouseName">
 					<el-col :span="16">

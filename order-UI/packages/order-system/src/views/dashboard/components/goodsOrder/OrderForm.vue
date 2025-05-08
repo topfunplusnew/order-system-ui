@@ -133,7 +133,7 @@ export default {
 					{
 						id: 4,
 						label: '分类名称',
-						prop: 'levelName',
+						prop: 'categoryName',
 						type: 'input',
 						value: ''
 					}

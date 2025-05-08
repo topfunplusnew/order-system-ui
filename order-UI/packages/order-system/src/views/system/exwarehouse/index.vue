@@ -61,21 +61,30 @@
 		>
 			<el-table-column v-if="columns[0].visible" label="仓库名称" align="center" prop="storeHouseName" />
 			<el-table-column v-if="columns[1].visible" label="出库日期" align="center" prop="outDate" />
-			<el-table-column v-if="columns[2].visible" label="产品级别" align="center" prop="inventoryDetail.levelName" />
-			<el-table-column v-if="columns[3].visible" label="厚度" align="center" prop="inventoryDetail.height" />
-			<el-table-column v-if="columns[4].visible" label="长度" align="center" prop="inventoryDetail.length" />
-			<el-table-column v-if="columns[5].visible" label="宽度" align="center" prop="inventoryDetail.width" />
-			<el-table-column v-if="columns[6].visible" label="存货价" align="center" prop="inventoryDetail.paymentUnload" />
+			<el-table-column v-if="columns[2].visible" label="产品级别" align="center" prop="sourceInventoryDetail.levelName" />
+			<el-table-column v-if="columns[3].visible" label="厚度" align="center" prop="sourceInventoryDetail.height" />
+			<el-table-column v-if="columns[4].visible" label="长度" align="center" prop="sourceInventoryDetail.length" />
+			<el-table-column v-if="columns[5].visible" label="宽度" align="center" prop="sourceInventoryDetail.width" />
+			<el-table-column v-if="columns[6].visible" label="存货价" align="center" prop="sourceInventoryDetail.paymentUnload" />
 			<el-table-column v-if="columns[7].visible" label="出库量" align="center" prop="outAmount" />
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="80">
 				<template slot-scope="scope">
 					<el-dropdown trigger="hover">
 						<span class="el-dropdown-link">
-							操作<i class="el-icon-arrow-down el-icon--right"></i>
+							操作
+							<i class="el-icon-arrow-down el-icon--right"></i>
 						</span>
 						<el-dropdown-menu slot="dropdown">
-							<el-dropdown-item :disabled="scope.row.ordersNo === '二次加工' || scope.row.ordersNo === '货物破损'" @click.native="scope.row.ordersNo !== '二次加工' && scope.row.ordersNo !== '货物破损' && checkOrderInfo(scope.row)">
-								<el-tooltip class="item" effect="dark" :content="scope.row.ordersNo === '二次加工' || scope.row.ordersNo === '货物破损' ? '特殊货物无法查看' : '查看订单信息'" placement="top-start">
+							<el-dropdown-item
+								:disabled="scope.row.ordersNo === '二次加工' || scope.row.ordersNo === '货物破损'"
+								@click.native="scope.row.ordersNo !== '二次加工' && scope.row.ordersNo !== '货物破损' && checkOrderInfo(scope.row)"
+							>
+								<el-tooltip
+									class="item"
+									effect="dark"
+									:content="scope.row.ordersNo === '二次加工' || scope.row.ordersNo === '货物破损' ? '特殊货物无法查看' : '查看订单信息'"
+									placement="top-start"
+								>
 									<span>查看订单信息</span>
 								</el-tooltip>
 							</el-dropdown-item>

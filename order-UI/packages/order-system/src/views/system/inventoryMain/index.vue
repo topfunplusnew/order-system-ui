@@ -125,7 +125,7 @@
 		</el-col>
 
 		<!-- 添加或修改库存库存主表对话框 -->
-		<el-dialog :title="title" :visible.sync="open" width="1200px" append-to-body :close-on-click-modal="false">
+		<el-dialog :title="title" :visible.sync="open" width="1200px" append-to-body :close-on-click-modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight>
 			<el-form ref="form" :model="form" :rules="rules" label-width="80px" :inline="true">
 				<el-form-item label="仓库名称" prop="storeHouseName">
 					<el-col :span="16">

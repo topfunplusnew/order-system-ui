@@ -21,8 +21,8 @@ module.exports = {
 		open: true,
 		proxy: {
 			[process.env.VUE_APP_BASE_API]: {
-				target: `http://223.254.129.240:60035`,
-				// target: `http://223.254.129.240:60036`,
+				// target: `http://223.254.129.240:60035`,
+				target: `http://223.254.129.240:60036`,
 				// target: `http://192.168.110.65:8080`,
 				// target: 'http://192.168.1.34:8080',
 				// target: `http://211.64.39.202:60035/`,

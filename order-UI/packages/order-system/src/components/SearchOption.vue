@@ -133,7 +133,7 @@ export default {
 				for (let item of this.queryItems.queryList) {
 					const queryItem = _.cloneDeep(item);
 					// 如果是params的查询参数
-					if (queryItem && queryItem?.extraInfo.__isParams) {
+					if (queryItem && queryItem?.extraInfo && queryItem?.extraInfo?.__isParams) {
 						// 如果是复合数据 如时间范围
 						if (queryItem && queryItem?.extraInfo.__isMultiple) {
 							const mutilMeta = (queryItem.prop + '').split('&');
@@ -142,7 +142,7 @@ export default {
 								throw new Error('组件内部错误,请检查复合查询参数是否正确');
 							}
 							mutilMeta.forEach((meta, index) => {
-								this.limitInfo.params[meta] = Array.isArray(queryItem.value) && queryItem.value[index];
+								this.limitInfo.params[meta] = Array.isArray(queryItem.value) ? queryItem.value[index] : '';
 							});
 							continue;
 						}
