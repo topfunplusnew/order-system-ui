@@ -50,9 +50,8 @@
 							<span style="color: #f56c6c; font-weight: bold">{{ scope.row.outDirection }}[客户]</span>
 						</el-tooltip>
 					</span>
-					<span v-else>
-						{{ scope.row.outDirection }}
-					</span>
+					<span v-else-if="scope.row.outDirection && scope.row.outDirection === '二次加工'">二次入库出库</span>
+					<span v-else>存货毁损</span>
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[2].visible" label="出库日期" align="center" prop="outDate" />

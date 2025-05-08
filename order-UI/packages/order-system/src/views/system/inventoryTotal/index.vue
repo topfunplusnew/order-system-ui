@@ -33,6 +33,7 @@
 
 		<div class="inventory-table-container">
 			<el-table v-if="inventoryMainList.length > 0" :data="inventoryMainList" size="mini" border stripe>
+				<el-table-column label="仓库名称" prop="storeHouseName" align="center" show-overflow-tooltip />
 				<el-table-column label="级别名称" prop="levelName" align="center" show-overflow-tooltip />
 				<el-table-column label="级别编码" prop="levelNo" align="center" />
 				<el-table-column label="厚度" prop="height" align="center" />
@@ -56,20 +57,36 @@
 			<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getSummary" />
 		</div>
 
-		<el-dialog title="变动记录" :visible.sync="changeLogVisible" width="50%" class="change-log-dialog">
+		<el-dialog title="变动记录" :visible.sync="changeLogVisible" width="1000px" class="change-log-dialog" v-dialogDrag v-dialogDragWidth v-dialogDragHeight>
+			<!-- 新增明细标题行 -->
+			<div style="margin-bottom: 10px; font-weight: bold;">
+				<span style="margin-right: 100px;">库存明细</span>
+				<span>{{ currentItem && currentItem.storeHouseName ? currentItem.storeHouseName : '' }}</span>
+			</div>
 			<el-table :data="changeLogData" size="mini" border stripe v-loading="changeLogLoading">
-				<el-table-column label="日期" prop="date" align="center" />
-				<el-table-column label="变动类型" align="center">
+				<el-table-column label="类别" align="center">
 					<template slot-scope="scope">
 						{{ scope.row.change_amount > 0 ? '入库' : '出库' }}
 					</template>
 				</el-table-column>
-				<el-table-column label="变动数量" prop="change_amount" align="center">
+				<el-table-column label="来源方向" prop="source" align="center" />
+				<el-table-column label="级别名称" prop="levelName" align="center" />
+				<el-table-column label="厚度" prop="height" align="center" />
+				<el-table-column label="长度" prop="length" align="center" />
+				<el-table-column label="宽度" prop="width" align="center" />
+				<el-table-column label="每包片数" prop="piecesPerPack" align="center" />
+				<el-table-column label="包数" prop="packs" align="center" />
+				<el-table-column label="变动片数" align="center">
 					<template slot-scope="scope">
 						{{ Math.abs(scope.row.change_amount) }}
 					</template>
 				</el-table-column>
 				<el-table-column label="剩余库存" prop="remaining_stock" align="center" />
+				<el-table-column label="库存金额" align="center">
+					<template slot-scope="scope">
+						{{ (Math.abs(scope.row.change_amount) * (currentItem && currentItem.price ? currentItem.price : 0)).toFixed(2) }}
+					</template>
+				</el-table-column>
 			</el-table>
 			<pagination
 				v-show="changeLogTotal > 0"
