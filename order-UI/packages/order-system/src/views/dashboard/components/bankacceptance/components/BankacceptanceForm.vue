@@ -310,6 +310,9 @@ export default {
 						<el-form-item :label="`${this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT ? '被背书人类型' : '背书人类型'}`" prop="reason">
 							<el-radio v-model="type" label="客户">客户</el-radio>
 							<el-radio v-model="type" label="供应商">供应商</el-radio>
+							<template v-if="this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT">
+								<el-radio v-model="type" label="己方公司">己方公司</el-radio>
+							</template>
 						</el-form-item>
 						<el-form-item :label="`${this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT ? '被背书人' : '背书人'}`" prop="endorserName">
 							<el-row>

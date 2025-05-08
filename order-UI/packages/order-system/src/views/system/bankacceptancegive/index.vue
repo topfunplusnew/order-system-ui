@@ -99,6 +99,7 @@
 						<el-form-item label="被背书人类型" prop="reason">
 							<el-radio v-model="type" label="客户">客户</el-radio>
 							<el-radio v-model="type" label="供应商">供应商</el-radio>
+							<el-radio v-model="type" label="己方公司">己方公司</el-radio>
 						</el-form-item>
 						<el-form-item label="被背书人" prop="endorserName">
 							<!--							<el-input v-model="form.endorser" placeholder="请输入背书人" />-->
