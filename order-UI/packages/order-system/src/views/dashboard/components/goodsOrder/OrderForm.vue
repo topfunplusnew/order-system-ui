@@ -390,8 +390,9 @@ export default {
 		 * @param {boolean} [flag=true] - 编辑状态标志
 		 */
 		setIsEditingOrder(response, flag = true) {
-			console.log(`设置订单信息:`, response);
-			this.isEditingOrder.id = response.id;
+			if (response != null) {
+				this.isEditingOrder.id = response.id;
+			}
 			this.isEditingOrder.state = flag;
 			this.isEditingOrder.currentEditingOrderInfo = response;
 		},
@@ -661,11 +662,11 @@ export default {
 			// 清除陆运和海运的状态
 			this.isSea = false;
 			this.isLand = false;
-			const message = this.orderId ? '修改成功' : '添加成功';
+			const message = this.orderId ? '修改成功' : '保存成功';
 			this.$message.success(message);
 			sessionStorage.removeItem('order-edit-reason');
-			this.setIsEditingOrder(null, false);
 			that.dialogVisible = false;
+			// this.setIsEditingOrder(null, false);
 		},
 		/**
 		 * 处理弹窗确认事件（提交订单）

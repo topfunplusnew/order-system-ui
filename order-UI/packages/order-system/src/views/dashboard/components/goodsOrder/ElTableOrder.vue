@@ -426,7 +426,7 @@ export default {
 						<el-row v-if="scope.row.smailOrderDetails">
 							<span v-for="(item, index) in getSupplierNames(scope.row.smailOrderDetails)" :key="index">
 								<span class="invoice" @click="updateOrderItemVisibleSupplierInvoice(scope.row, item.supplierID)">
-									{{ item.supplier }}
+									{{ item.supplier || '-' }}
 								</span>
 							</span>
 						</el-row>

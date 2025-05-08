@@ -170,7 +170,7 @@
 								</el-col>
 							</el-row>
 						</el-form-item>
-						<el-form-item label="我方收票日期" prop="billDate">
+						<el-form-item label="票据交易日期" prop="billDate">
 							<el-date-picker v-model="form.billDate" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 						</el-form-item>
 						<el-form-item label="出票日期" prop="issueDate">

@@ -83,7 +83,7 @@
 				</div>
 			</el-col>
 			<el-col :span="20">
-				<el-table id="printBox" size="mini" v-loading="loading" :data="detailList" @selection-change="handleSelectionChange">
+				<el-table border id="printBox" size="mini" v-loading="loading" :data="detailList" @selection-change="handleSelectionChange">
 					<!-- 多选框列 -->
 					<!--			<el-table-column type="selection" width="55" align="center" />-->
 
@@ -611,3 +611,17 @@ export default {
 	}
 };
 </script>
+
+<style scoped>
+/* 提高 el-table 横向滚动条的高度 */
+::v-deep .el-table__body-wrapper::-webkit-scrollbar {
+  height: 16px; /* 默认是6px，改为16px更高 */
+}
+::v-deep .el-table__body-wrapper::-webkit-scrollbar-thumb {
+  border-radius: 2px;
+  background: #848383;
+}
+::v-deep .el-table__body-wrapper::-webkit-scrollbar-track {
+  background: #e3e2e2;
+}
+</style>

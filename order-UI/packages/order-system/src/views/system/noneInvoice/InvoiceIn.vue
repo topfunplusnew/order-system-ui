@@ -324,13 +324,6 @@ export default {
 			checkOrderInfoVisible: false,
 			// 表单校验
 			rules: {
-				'extraInfo.actualInvoiceTime': [
-					{
-						required: true,
-						message: '请选择开票日期',
-						trigger: 'blur'
-					}
-				],
 				invoiceDate: [
 					{
 						required: true,
