@@ -36,7 +36,7 @@
 					<span v-else>存货毁损</span>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[2].visible" label="出库日期" align="center" prop="outDate" />
+			<el-table-column v-if="columns[2].visible" label="变动日期(出库)" align="center" prop="outDate" />
 			<el-table-column v-if="columns[3].visible" label="产品级别" align="center" prop="sourceInventoryDetail.levelName" />
 			<el-table-column v-if="columns[4].visible" label="厚度" align="center" prop="sourceInventoryDetail.height" />
 			<el-table-column v-if="columns[5].visible" label="长度" align="center" prop="sourceInventoryDetail.length" />

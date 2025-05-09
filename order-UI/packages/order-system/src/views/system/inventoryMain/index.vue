@@ -65,7 +65,7 @@
 
 				<el-table-column v-if="columns[1].visible" label="仓库名称" align="center" prop="storeHouseName" width="150" />
 
-				<el-table-column v-if="columns[2].visible" label="入库日期" align="center" prop="storeDate" width="150" />
+				<el-table-column v-if="columns[2].visible" label="变动日期(入库)" align="center" prop="storeDate" width="150" />
 
 				<el-table-column v-if="columns[3].visible" label="货物来源公司" align="center" prop="goodsCompany" width="180" />
 

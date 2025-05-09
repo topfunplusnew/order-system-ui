@@ -90,7 +90,7 @@
 					<!-- 手写每一列，使用 v-if 判断列的可见性 -->
 					<el-table-column v-if="columns[0].visible" label="ID" align="center" prop="id" show-overflow-tooltip />
 					<el-table-column v-if="columns[1].visible" label="入库片数" align="center" prop="stockNumber" show-overflow-tooltip />
-					<el-table-column v-if="columns[2].visible" label="入库时间" align="center" prop="storeDate" show-overflow-tooltip />
+					<el-table-column v-if="columns[2].visible" label="变动日期(入库)" align="center" prop="storeDate" show-overflow-tooltip />
 					<el-table-column v-if="columns[3].visible" label="剩余量" align="center" prop="actualPieces" show-overflow-tooltip />
 					<el-table-column v-if="columns[4].visible" label="供应商" align="center" prop="supplier" show-overflow-tooltip />
 					<el-table-column v-if="columns[5].visible" label="级别编码" align="center" prop="levelID" show-overflow-tooltip />
