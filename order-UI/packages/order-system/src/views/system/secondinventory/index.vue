@@ -88,29 +88,23 @@
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改出库对话框 -->
-		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
-			<el-form ref="form" :model="form" :rules="rules" label-width="80px">
-				<!--        <el-form-item label="订单编号" prop="ordersNo">-->
-				<!--          <el-input v-model="form.ordersNo" placeholder="请输入订单编号"/>-->
-				<!--        </el-form-item>-->
-				<el-form-item label="仓库名称" prop="storeHouseName">
-					<el-input v-model="form.storeHouseName" placeholder="请输入仓库名称" />
-				</el-form-item>
-				<!--        <el-form-item label="仓库存储的货物ID" prop="storeID">-->
-				<!--          <el-input v-model="form.storeID" placeholder="请输入仓库存储的货物ID"/>-->
-				<!--        </el-form-item>-->
-				<el-form-item label="出库日期" prop="outDate">
-					<el-date-picker v-model="form.outDate" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
-				</el-form-item>
-				<el-form-item label="出库量" prop="outAmount">
-					<el-input v-model="form.outAmount" placeholder="请输入出库量" />
-				</el-form-item>
-			</el-form>
-			<div slot="footer" class="dialog-footer">
-				<el-button type="primary" @click="submitForm">确 定</el-button>
-				<el-button @click="cancel">取 消</el-button>
-			</div>
-		</el-dialog>
+		<!--		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>-->
+		<!--			<el-form ref="form" :model="form" :rules="rules" label-width="80px">-->
+		<!--				<el-form-item label="仓库名称" prop="storeHouseName">-->
+		<!--					<el-input v-model="form.storeHouseName" placeholder="请输入仓库名称" />-->
+		<!--				</el-form-item>-->
+		<!--				<el-form-item label="出库日期" prop="outDate">-->
+		<!--					<el-date-picker v-model="form.outDate" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>-->
+		<!--				</el-form-item>-->
+		<!--				<el-form-item label="出库量" prop="outAmount">-->
+		<!--					<el-input v-model="form.outAmount" placeholder="请输入出库量" />-->
+		<!--				</el-form-item>-->
+		<!--			</el-form>-->
+		<!--			<div slot="footer" class="dialog-footer">-->
+		<!--				<el-button type="primary" @click="submitForm">确 定</el-button>-->
+		<!--				<el-button @click="cancel">取 消</el-button>-->
+		<!--			</div>-->
+		<!--		</el-dialog>-->
 
 		<!--    二次入库的弹窗-->
 		<el-dialog :title="title" :visible.sync="secondInventoryVisible" width="1200px" append-to-body :close-on-click-modal="false" v-dialogDrag dialogDragWidth dialogDragHeight>
@@ -962,6 +956,8 @@ export default {
 			this.secondForm.goodsCompany = row.storeHouseName;
 			// 设置主表的出库ID信息
 			this.secondForm.exWareHoustId = row.id;
+
+			// TODO
 			getDetail(row.storeID).then(res => {
 				if (!res.data) {
 					this.$message.error('该货物没有库存信息');
@@ -992,7 +988,6 @@ export default {
 						isIncludeTaxFactory: res.data.isIncludeTaxFactory,
 						sundryCost: '',
 						paymentFactory: '',
-						paymentUnload: res.data.paymentUnload,
 						isIncludeTaxSale: res.data.isIncludeTaxSale,
 						landFreightPrice: '',
 						landFreight: '',
@@ -1001,7 +996,9 @@ export default {
 						otherCost: '',
 						profit: '',
 						profitNoTax: '',
-						actualPieces: res.data.actualPieces,
+						// 二次入库的原货物的二次入库片数为0,存货价为0
+						actualPieces: 0,
+						paymentUnload: 0,
 						paymentsWithSundry: res.data.paymentsWithSundry,
 						additionalFees: '',
 						factoryCommission: '',
