@@ -91,7 +91,7 @@
 						<span>级别编码</span>
 					</el-row>
 					<el-row>
-						<el-input v-model="tempCategoryInfo.levelNo" placeholder="请输入级别编码" @input="validateLevelNo"></el-input>
+						<el-input disabled v-model="tempCategoryInfo.levelNo" placeholder="请输入级别编码" @input="validateLevelNo"></el-input>
 					</el-row>
 				</el-col>
 				<el-col :span="12">
@@ -145,7 +145,7 @@
 					</el-select>
 				</el-form-item>
 				<el-form-item label="分类编号" prop="categoryNo">
-					<el-input v-model="addCategoryModel.categoryNo" placeholder="请输入分类编号" />
+					<el-input v-model="addCategoryModel.categoryNo" placeholder="请输入分类编号" @input="handleInputTrim($event, 'addCategoryModel', 'categoryNo')" />
 				</el-form-item>
 				<el-form-item label="级别编码" prop="levelNo">
 					<el-input v-model="addCategoryModel.levelNo" placeholder="请输入级别编码" @input="handleInputTrim($event, 'addCategoryModel', 'levelNo')"></el-input>
