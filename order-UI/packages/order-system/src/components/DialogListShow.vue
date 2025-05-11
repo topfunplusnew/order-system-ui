@@ -4,13 +4,7 @@
 			<el-row>
 				<el-table :data="showInfoList" :loading="loading" height="450px" size="mini" :cell-style="cellStyle">
 					<template #append>
-						<AddBankAccounts
-							:company-info="{
-								...queryObject,
-								companyName: '司机'
-							}"
-							@callGetList="handleChangeBank"
-						/>
+						<AddBankAccounts :company-info="queryObject" @callGetList="handleChangeBank" />
 					</template>
 					<slot name="column"></slot>
 				</el-table>

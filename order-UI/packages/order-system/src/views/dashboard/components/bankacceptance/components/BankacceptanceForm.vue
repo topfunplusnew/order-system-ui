@@ -233,9 +233,11 @@ export default {
 				const obj = _.cloneDeep(res.data);
 				// 填充三个时间
 				this.$nextTick(() => {
-					this.form.billDate = obj.billDate;
+					// 我方收票日期改为了票据日期,并且不再自动填充 文件15修改
+					// this.form.billDate = obj.billDate;
 					this.form.issueDate = obj.issueDate;
 					this.form.dueDate = obj.dueDate;
+					this.form.billAccount = obj.billAccount;
 				});
 			});
 		},
