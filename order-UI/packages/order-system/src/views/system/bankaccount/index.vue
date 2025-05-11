@@ -7,10 +7,10 @@
 				</el-select>
 			</el-form-item>
 			<el-form-item label="开户名" prop="acountsName">
-				<el-input v-model="queryParams.acountsName" placeholder="请输入开户名" clearable @keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.acountsName" placeholder="请输入开户名" clearable @keyup.enter.native="handleQuery" @input="handleInputTrim($event, 'queryParams', 'acountsName')" />
 			</el-form-item>
 			<el-form-item label="银行账号" prop="bankNo">
-				<el-input v-model="queryParams.bankNo" placeholder="请输入银行账号" clearable @keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.bankNo" placeholder="请输入银行账号" clearable @keyup.enter.native="handleQuery" @input="handleInputTrim($event, 'queryParams', 'bankNo')" />
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -126,42 +126,40 @@
 				<el-form-item label="车牌号" prop="companyName" v-if="form.acountsType === PUBLIC_DICT_TYPE.DRIVER">
 					<el-row>
 						<el-col :span="20">
-							<el-input v-model="form.companyName" placeholder="请输入车牌号" />
+							<el-input v-model="form.companyName" placeholder="请输入车牌号" @input="handleInputTrim($event, 'form', 'companyName')" />
 						</el-col>
-						<el-col :span="4">
-							<SearchOption
-								:limit-info="{}"
-								:get-data="listCars"
-								query-info="carNo"
-								query-label="车牌查找"
-								:query-name="queryBankAccount"
-								@update:queryName="handleUpdateBankAccount"
-								@commitBack="handleCommitBackBankAccount"
-							>
-								<template #table-columns>
-									<el-table-column label="司机" align="center" prop="driver" />
-									<el-table-column label="车牌号" align="center" prop="carNo" />
-									<el-table-column label="司机电话" align="center" prop="tel" />
-									<el-table-column label="开户名" align="center" prop="acountsName" />
-									<el-table-column label="账号" align="center" prop="bankNo" />
-									<el-table-column label="开户行" align="center" prop="bankName" />
-									<el-table-column label="运输方式" align="center" prop="carType" />
-								</template>
-							</SearchOption>
-						</el-col>
+						<SearchOption
+							:limit-info="{}"
+							:get-data="listCars"
+							query-info="carNo"
+							query-label="车牌查找"
+							:query-name="queryBankAccount"
+							@update:queryName="handleUpdateBankAccount"
+							@commitBack="handleCommitBackBankAccount"
+						>
+							<template #table-columns>
+								<el-table-column label="司机" align="center" prop="driver" />
+								<el-table-column label="车牌号" align="center" prop="carNo" />
+								<el-table-column label="司机电话" align="center" prop="tel" />
+								<el-table-column label="开户名" align="center" prop="acountsName" />
+								<el-table-column label="账号" align="center" prop="bankNo" />
+								<el-table-column label="开户行" align="center" prop="bankName" />
+								<el-table-column label="运输方式" align="center" prop="carType" />
+							</template>
+						</SearchOption>
 					</el-row>
 				</el-form-item>
 
 				<!--          车牌-->
 				<el-form-item label="户名" prop="acountsName" v-if="form.acountsType === PUBLIC_DICT_TYPE.DRIVER">
 					<el-row>
-						<el-input v-model="form.acountsName" placeholder="请输入司机户名" />
+						<el-input v-model="form.acountsName" placeholder="请输入司机户名" @input="handleInputTrim($event, 'form', 'acountsName')" />
 					</el-row>
 				</el-form-item>
 				<el-form-item v-if="isNeed" :label="showLabel" prop="companyName">
 					<el-row>
 						<el-col :span="10">
-							<el-input v-model="form.companyName" placeholder="请输入" />
+							<el-input v-model="form.companyName" placeholder="请输入" @input="handleInputTrim($event, 'form', 'companyName')" />
 						</el-col>
 						<!-- 我方员工信息搜索-->
 						<el-col v-if="form.acountsType === '员工'" :span="2">
@@ -238,19 +236,19 @@
 				<!--          如果不是司机 直接填写开户名-->
 				<el-form-item prop="acountsName" label="户名" v-else>
 					<el-row>
-						<el-input v-model="form.acountsName" placeholder="请输入开户名" />
+						<el-input v-model="form.acountsName" placeholder="请输入开户名" @input="handleInputTrim($event, 'form', 'acountsName')" />
 					</el-row>
 				</el-form-item>
 				<el-form-item label="银行账号" prop="bankNo">
-					<el-input v-model="form.bankNo" placeholder="请输入银行账号" />
+					<el-input v-model="form.bankNo" placeholder="请输入银行账号" @input="handleInputTrim($event, 'form', 'bankNo')" />
 				</el-form-item>
 				<el-form-item label="开户行" prop="bankName">
-					<el-input v-model="form.bankName" placeholder="请输入开户行" />
+					<el-input v-model="form.bankName" placeholder="请输入开户行" @input="handleInputTrim($event, 'form', 'bankName')" />
 				</el-form-item>
 
 				<!--        显示名称 只有己方公司才会区分-->
 				<el-form-item v-if="form.acountsType === PUBLIC_DICT_TYPE.SELF_COMPANY" label="显示名称" prop="displayName">
-					<el-input v-model="form.displayName" placeholder="请输入显示名称" />
+					<el-input v-model="form.displayName" placeholder="请输入显示名称" @input="handleInputTrim($event, 'form', 'displayName')" />
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -521,6 +519,12 @@ export default {
 		}
 	},
 	methods: {
+		// 处理输入框禁止输入空格
+		handleInputTrim(val, obj, prop) {
+			if (val.indexOf(' ') !== -1) {
+				this[obj][prop] = val.replace(/\s+/g, '');
+			}
+		},
 		listUser,
 		listCars,
 		listBankAccount,

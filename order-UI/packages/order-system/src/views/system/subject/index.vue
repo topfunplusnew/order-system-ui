@@ -108,23 +108,17 @@
 				<el-form-item label="父级ID" prop="parentId">
 					<treeselect v-model="form.parentId" :options="subjectOptions" :normalizer="normalizer" placeholder="请选择父级ID" />
 				</el-form-item>
-				<!--				<el-form-item label="分类名称" prop="type">-->
-				<!--					&lt;!&ndash;          <el-input v-model="form.type" placeholder="请输入分类名称"/>&ndash;&gt;-->
-				<!--					<el-select v-model="form.type" placeholder="请选择">-->
-				<!--						<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>-->
-				<!--					</el-select>-->
-				<!--				</el-form-item>-->
 				<el-form-item label="科目名称" prop="title">
-					<el-input v-model="form.title" placeholder="请输入科目名称" />
+					<el-input v-model="form.title" placeholder="请输入科目名称" @input="handleInputTrim($event, 'form', 'title')" />
 				</el-form-item>
 				<el-form-item label="排序" prop="orderNum">
-					<el-input v-model="form.orderNum" placeholder="请输入排序" />
+					<el-input v-model="form.orderNum" placeholder="请输入排序" @input="handleInputTrim($event, 'form', 'orderNum')" />
 				</el-form-item>
 				<el-form-item label="编号" prop="subjectNo">
-					<el-input v-model="form.subjectNo" placeholder="请输入编号" />
+					<el-input v-model="form.subjectNo" placeholder="请输入编号" @input="handleInputTrim($event, 'form', 'subjectNo')" />
 				</el-form-item>
 				<el-form-item label="备注" prop="remark">
-					<el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
+					<el-input v-model="form.remark" type="textarea" placeholder="请输入内容" @input="handleInputTrim($event, 'form', 'remark')" />
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -142,10 +136,10 @@
 					</el-select>
 				</el-form-item>
 				<el-form-item label="科目编号" prop="subjectNo">
-					<el-input v-model="formType.subjectNo" type="textarea" placeholder="请输入科目编号" />
+					<el-input v-model="formType.subjectNo" type="textarea" placeholder="请输入科目编号" @input="handleInputTrim($event, 'formType', 'subjectNo')" />
 				</el-form-item>
 				<el-form-item label="备注" prop="remark">
-					<el-input v-model="formType.remark" type="textarea" placeholder="请输入备注" />
+					<el-input v-model="formType.remark" type="textarea" placeholder="请输入备注" @input="handleInputTrim($event, 'formType', 'remark')" />
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -311,6 +305,12 @@ export default {
 		});
 	},
 	methods: {
+		// 处理输入框禁止输入空格
+		handleInputTrim(val, obj, prop) {
+			if (val.indexOf(' ') !== -1) {
+				this[obj][prop] = val.replace(/\s+/g, '');
+			}
+		},
 		orderNumSort(list) {
 			list.sort((a, b) => a.orderNum - b.orderNum);
 			list.forEach(item => {

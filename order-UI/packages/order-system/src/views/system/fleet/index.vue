@@ -2,16 +2,16 @@
 	<div class="app-container">
 		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="80px">
 			<el-form-item label="车队名称" prop="fname">
-				<el-input v-model="queryParams.fname" placeholder="请输入车队名称" clearable @keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.fname" placeholder="请输入车队名称" clearable @keyup.enter.native="handleQuery" @input="handleInputTrim($event, 'queryParams', 'fname')" />
 			</el-form-item>
 			<el-form-item label="车队经理" prop="fleader">
-				<el-input v-model="queryParams.fleader" placeholder="请输入车队经理" clearable @keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.fleader" placeholder="请输入车队经理" clearable @keyup.enter.native="handleQuery" @input="handleInputTrim($event, 'queryParams', 'fleader')" />
 			</el-form-item>
 			<el-form-item label="经理电话" prop="tel">
-				<el-input v-model="queryParams.tel" placeholder="请输入车队经理电话" clearable @keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.tel" placeholder="请输入车队经理电话" clearable @keyup.enter.native="handleQuery" @input="handleInputTrim($event, 'queryParams', 'tel')" />
 			</el-form-item>
 			<el-form-item label="地址" prop="address">
-				<el-input v-model="queryParams.address" placeholder="请输入地址" clearable @keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.address" placeholder="请输入地址" clearable @keyup.enter.native="handleQuery" @input="handleInputTrim($event, 'queryParams', 'address')" />
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -64,16 +64,16 @@
 		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="120px" @keyup.enter.native="submitForm" @submit.native.prevent="submitForm" size="mini">
 				<el-form-item label="车队名称" prop="fname">
-					<el-input v-model="form.fname" placeholder="请输入车队名称" />
+					<el-input v-model="form.fname" placeholder="请输入车队名称" @input="handleInputTrim($event, 'form', 'fname')" />
 				</el-form-item>
 				<el-form-item label="车队经理" prop="fleader">
-					<el-input v-model="form.fleader" placeholder="请输入车队经理" />
+					<el-input v-model="form.fleader" placeholder="请输入车队经理" @input="handleInputTrim($event, 'form', 'fleader')" />
 				</el-form-item>
 				<el-form-item label="车队经理电话" prop="tel">
-					<el-input v-model="form.tel" placeholder="请输入车队经理电话" />
+					<el-input v-model="form.tel" placeholder="请输入车队经理电话" @input="handleInputTrim($event, 'form', 'tel')" />
 				</el-form-item>
 				<el-form-item label="地址" prop="address">
-					<el-input v-model="form.address" placeholder="请输入地址" />
+					<el-input v-model="form.address" placeholder="请输入地址" @input="handleInputTrim($event, 'form', 'address')" />
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -163,6 +163,12 @@ export default {
 		}
 	},
 	methods: {
+		// 处理输入框禁止输入空格
+		handleInputTrim(val, obj, prop) {
+			if (val.indexOf(' ') !== -1) {
+				this[obj][prop] = val.replace(/\s+/g, '');
+			}
+		},
 		/* 打印信息*/
 		printHTML() {
 			this.$print({

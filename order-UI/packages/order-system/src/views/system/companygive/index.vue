@@ -2,10 +2,10 @@
 	<div class="app-container">
 		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="100px">
 			<el-form-item label="供应商名称" prop="companyName">
-				<el-input v-model="queryParams.companyName" placeholder="请输入供应商名称" clearable @keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.companyName" placeholder="请输入供应商名称" clearable @keyup.enter.native="handleQuery" @input="handleInputTrim($event, 'queryParams', 'companyName')" />
 			</el-form-item>
 			<el-form-item label="联系人" prop="relationName">
-				<el-input v-model="queryParams.relationName" placeholder="请输入联系人名称" clearable @keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.relationName" placeholder="请输入联系人名称" clearable @keyup.enter.native="handleQuery" @input="handleInputTrim($event, 'queryParams', 'relationName')" />
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -71,22 +71,19 @@
 				<el-row :gutter="4">
 					<el-col :span="12">
 						<el-form-item label="供应商名称" prop="companyName">
-							<el-input v-model="form.companyName" placeholder="请输入供应商名称" />
+							<el-input v-model="form.companyName" placeholder="请输入供应商名称" @input="handleInputTrim($event, 'form', 'companyName')" />
 						</el-form-item>
 						<el-form-item label="供应商电话" prop="relationTel">
-							<el-input v-model="form.relationTel" placeholder="请输入联系人电话" />
+							<el-input v-model="form.relationTel" placeholder="请输入联系人电话" @input="handleInputTrim($event, 'form', 'relationTel')" />
 						</el-form-item>
 						<el-form-item label="联系人" prop="relationName">
-							<el-input v-model="form.relationName" placeholder="请输入联系人" />
+							<el-input v-model="form.relationName" placeholder="请输入联系人" @input="handleInputTrim($event, 'form', 'relationName')" />
 						</el-form-item>
 						<el-form-item label="老板姓名" prop="leader">
-							<el-input v-model="form.leader" placeholder="请输入老板姓名" />
+							<el-input v-model="form.leader" placeholder="请输入老板姓名" @input="handleInputTrim($event, 'form', 'leader')" />
 						</el-form-item>
-						<!--						<el-form-item label="录入员" prop="salesman">-->
-						<!--							<el-input v-model="form.salesman" placeholder="请输入录入员" />-->
-						<!--						</el-form-item>-->
 						<el-form-item label="老板电话" prop="leaderTel">
-							<el-input v-model="form.leaderTel" placeholder="请输入联系人电话" />
+							<el-input v-model="form.leaderTel" placeholder="请输入联系人电话" @input="handleInputTrim($event, 'form', 'leaderTel')" />
 						</el-form-item>
 					</el-col>
 					<el-col :span="12">
@@ -101,13 +98,13 @@
 							</el-select>
 						</el-form-item>
 						<el-form-item label="乡镇" prop="county">
-							<el-input v-model="form.county" placeholder="请输入乡镇" />
+							<el-input v-model="form.county" placeholder="请输入乡镇" @input="handleInputTrim($event, 'form', 'county')" />
 						</el-form-item>
 						<el-form-item label="地址" prop="address">
-							<el-input v-model="form.address" placeholder="请输入地址" />
+							<el-input v-model="form.address" placeholder="请输入地址" @input="handleInputTrim($event, 'form', 'address')" />
 						</el-form-item>
 						<el-form-item label="备注" prop="comments">
-							<el-input v-model="form.comments" placeholder="请输入备注" />
+							<el-input v-model="form.comments" placeholder="请输入备注" @input="handleInputTrim($event, 'form', 'comments')" />
 						</el-form-item>
 					</el-col>
 				</el-row>
@@ -128,51 +125,10 @@
 				</el-row>
 			</el-form>
 			<br />
-			<!-- <el-divider>默认银行卡信息</el-divider>
-      <el-row>
-        <el-row>
-          <el-row v-if="defaultBankCardInfo.not !== true">
-            <el-descriptions>
-              <el-descriptions-item label="户名">
-                {{ defaultBankCardInfo.acountsName }}
-              </el-descriptions-item>
-              <el-descriptions-item label="开户行">
-                {{ defaultBankCardInfo.bankName }}
-              </el-descriptions-item>
-              <el-descriptions-item label="银行卡号">
-                {{ defaultBankCardInfo.bankNo }}
-              </el-descriptions-item>
-              <el-descriptions-item label="余额">
-                <el-tag size="mini">{{ defaultBankCardInfo.amount }}</el-tag>
-              </el-descriptions-item>
-            </el-descriptions>
-          </el-row>
-          <el-row v-else>
-            <el-descriptions>
-              <el-descriptions-item label="户名">暂无</el-descriptions-item>
-              <el-descriptions-item label="开户行">暂无</el-descriptions-item>
-              <el-descriptions-item label="银行卡号">暂无</el-descriptions-item>
-              <el-descriptions-item label="余额">
-                <el-tag size="mini">暂无</el-tag>
-              </el-descriptions-item>
-              <el-descriptions-item>
-                <el-button
-                  size="mini"
-                  type="primary"
-                  @click="addDefaultCard($event)"
-                >
-                  添加默认银行卡
-                </el-button>
-              </el-descriptions-item>
-            </el-descriptions>
-          </el-row>
-        </el-row>
-      </el-row> -->
 			<el-divider>已绑定银行卡</el-divider>
 			<el-row>
 				<el-table v-loading="loading" :data="singleInfo" @selection-change="handleSelectionChange">
 					<template #append>
-						<!--            <AddBank :company-info="currentInfo" @changeBankOpen="handleChangeBank"/>-->
 						<AddBankAccounts :company-info="currentInfo" @callGetList="handleChangeBank" />
 					</template>
 					<el-table-column label="序号" align="center" prop="id" />
@@ -184,13 +140,6 @@
 							<el-button v-hasPermi="['system:companygive:remove']" size="mini" @click="handleDeleteBankaccount(scope.row)">
 								<i class="el-icon-delete"></i>
 							</el-button>
-							<!-- <el-button
-                v-hasPermi="['system:companygive:edit']"
-                size="mini"
-                @click="addDefaultCard(scope.row)"
-              >
-                设置为默认
-              </el-button> -->
 						</template>
 					</el-table-column>
 				</el-table>
@@ -213,7 +162,7 @@
 						</el-col>
 						<el-col :span="8">
 							<el-form-item label="账户名" :label-width="formLabelWidth">
-								<el-input v-model="queryBankInfo.acountsName" autocomplete="off"></el-input>
+								<el-input v-model="queryBankInfo.acountsName" autocomplete="off" @input="handleInputTrim($event, 'queryBankInfo', 'acountsName')"></el-input>
 							</el-form-item>
 						</el-col>
 						<el-col :span="3">
@@ -247,17 +196,17 @@
 				<el-row :gutter="4">
 					<el-col :span="8">
 						<el-form-item label="供应商名称" :label-width="formLabelWidth">
-							<el-input v-model="queryParams.relationName" autocomplete="off"></el-input>
+							<el-input v-model="queryParams.relationName" autocomplete="off" @input="handleInputTrim($event, 'queryParams', 'relationName')"></el-input>
 						</el-form-item>
 					</el-col>
 					<el-col :span="8">
 						<el-form-item label="银行账号" :label-width="formLabelWidth">
-							<el-input v-model="queryParams.bankNo" autocomplete="off"></el-input>
+							<el-input v-model="queryParams.bankNo" autocomplete="off" @input="handleInputTrim($event, 'queryParams', 'bankNo')"></el-input>
 						</el-form-item>
 					</el-col>
 					<el-col :span="8">
 						<el-form-item label="户名" :label-width="formLabelWidth">
-							<el-input v-model="queryParams.acountsName" autocomplete="off"></el-input>
+							<el-input v-model="queryParams.acountsName" autocomplete="off" @input="handleInputTrim($event, 'queryParams', 'acountsName')"></el-input>
 						</el-form-item>
 					</el-col>
 					<el-col>
@@ -377,22 +326,6 @@ export default {
 						trigger: 'blur'
 					}
 				],
-				// address: [
-				// 	{
-				// 		required: true,
-				// 		message: '公司地址不能为空',
-				// 		trigger: 'blur'
-				// 	}
-				// ],
-				// salesman: [
-				// 	{ required: true, message: '录入员不能为空', trigger: 'blur' }
-				// ],
-				// leader: [
-				// 	{ required: true, message: '老板姓名不能为空', trigger: 'blur' }
-				// ],
-				// leaderTel: [
-				// 	{ required: true, message: '老板电话不能为空', trigger: 'blur' }
-				// ],
 				salesManager: [
 					{
 						required: true,
@@ -414,7 +347,6 @@ export default {
 						trigger: 'blur'
 					}
 				]
-				// county: [{ required: true, message: '乡镇不能为空', trigger: 'blur' }]
 			},
 			columns: [
 				{ key: 0, label: `供应商`, visible: true },
@@ -525,6 +457,12 @@ export default {
 			});
 	},
 	methods: {
+		// 处理输入框禁止输入空格
+		handleInputTrim(val, obj, prop) {
+			if (val.indexOf(' ') !== -1) {
+				this[obj][prop] = val.replace(/\s+/g, '');
+			}
+		},
 		// 城市变化
 		changeProvince(e) {
 			this.province = e;
@@ -569,17 +507,6 @@ export default {
 				// 打开弹窗
 				this.dialogFormVisible = true;
 			});
-			// 查询供应商的默认银行卡信息
-			// listBankAccount({ acountsType: '供应商默认', companyId: row.id }).then(
-			//   (res) => {
-			//     if (res.rows.length > 0) {
-			//       this.defaultBankCardInfo = res.rows[0]
-			//     } else {
-			//       this.defaultBankCardInfo.not = true
-			//     }
-			//     this.dialogFormVisible = true
-			//   }
-			// )
 		},
 		// 查询已经绑定的银行卡信息
 		getBankList() {

@@ -3,11 +3,10 @@
 	<div class="app-container">
 		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="120px">
 			<el-form-item label="加油卡卡号" prop="oilCardNo">
-				<el-input v-model="queryParams.oilCardNo" placeholder="请输入加油卡卡号" clearable @keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.oilCardNo" placeholder="请输入加油卡卡号" clearable @keyup.enter.native="handleQuery" @input="handleInputTrim($event, 'queryParams', 'oilCardNo')" />
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-				<!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
 			</el-form-item>
 		</el-form>
 
@@ -18,7 +17,6 @@
 			<el-col :span="1.5">
 				<el-button v-hasPermi="['system:oilcard:add']" type="primary" size="mini" @click="handleAdd">新增加油卡信息</el-button>
 			</el-col>
-			<!--      加油卡充值功能-->
 			<el-col :span="1.5">
 				<el-button type="danger" size="mini" @click="handleMoney">加油卡充值</el-button>
 			</el-col>
@@ -28,12 +26,9 @@
 			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
 				<template #print>
 					<el-col :span="1.5">
-						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML">
-							<!--              v-hasPermi="['system:oilcard:export']"-->
-						</el-button>
+						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
 					</el-col>
 				</template>
-				<!--        导出-->
 				<template #export>
 					<el-col :span="1.5">
 						<el-button v-hasPermi="['system:oilcard:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
@@ -56,10 +51,8 @@
 							</template>
 						</el-table-column>
 					</el-table>
-					<!--分页-->
 					<pagination v-show="MainTotal > 0" :total="MainTotal" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList()" />
 					<br />
-					<!--          加个换行,不然分页下部分缺失-->
 				</el-tab-pane>
 				<el-tab-pane lazy label="加油卡副卡管理" name="second">
 					<el-table id="printBox" v-loading="loading" v-horizontal-scroll="'always'" border size="mini" :data="subCardList" @selection-change="handleSelectionChange">
@@ -74,10 +67,8 @@
 							</template>
 						</el-table-column>
 					</el-table>
-					<!--分页-->
 					<pagination v-show="SubTotal > 0" :total="SubTotal" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 					<br />
-					<!--          加个换行,不然分页下部分缺失-->
 				</el-tab-pane>
 			</el-tabs>
 		</el-row>
@@ -86,20 +77,14 @@
 		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="120px" @keyup.enter.native="submitForm" size="mini" @submit.native.prevent="submitForm">
 				<el-form-item label="加油卡卡号" prop="oilCardNo">
-					<el-input v-model="form.oilCardNo" placeholder="请输入加油卡卡号" />
+					<el-input v-model="form.oilCardNo" placeholder="请输入加油卡卡号" @input="handleInputTrim($event, 'form', 'oilCardNo')" />
 				</el-form-item>
 				<el-form-item label="加油卡类别" prop="oilType">
 					<el-radio v-model="form.oilType" label="主卡">主卡</el-radio>
 					<el-radio v-model="form.oilType" label="副卡">副卡</el-radio>
 				</el-form-item>
-				<!-- <el-form-item label="加油卡金额" prop="moneyAmount">
-          <el-input
-            v-model="form.moneyAmount"
-            placeholder="请输入使用加油卡金额"
-          />
-        </el-form-item> -->
 				<el-form-item label="备注" prop="comments">
-					<el-input v-model="form.comments" placeholder="请输入使用备注" />
+					<el-input v-model="form.comments" placeholder="请输入使用备注" @input="handleInputTrim($event, 'form', 'comments')" />
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -114,7 +99,7 @@
 				<el-form-item label="加油卡卡号" prop="oilCardNo">
 					<el-row>
 						<el-col :span="10">
-							<el-input v-model="moneyInfo.oilCardNo" placeholder="请输入加油卡卡号" />
+							<el-input v-model="moneyInfo.oilCardNo" placeholder="请输入加油卡卡号" @input="handleInputTrim($event, 'moneyInfo', 'oilCardNo')" />
 						</el-col>
 						<el-col :span="3">
 							<SearchOption
@@ -142,14 +127,14 @@
 					</el-select>
 				</el-form-item>
 				<el-form-item label="请输入充值金额" prop="rechargeMoney">
-					<el-input v-model="moneyInfo.rechargeMoney" placeholder="请输入充值金额" />
+					<el-input v-model="moneyInfo.rechargeMoney" placeholder="请输入充值金额" @input="handleInputTrim($event, 'moneyInfo', 'rechargeMoney')" />
 				</el-form-item>
 				<el-form-item label="姓名" prop="rechargeName">
 					<el-input v-model="moneyInfo.rechargeName" disabled placeholder="请输入姓名" />
 				</el-form-item>
 				<el-form-item v-if="moneyInfo.rechargeType === '银行卡'" label="银行开户名" prop="acountsName">
 					<el-col :span="10">
-						<el-input v-model="moneyInfo.acountsName" placeholder="请输入银行开户名" />
+						<el-input v-model="moneyInfo.acountsName" placeholder="请输入银行开户名" @input="handleInputTrim($event, 'moneyInfo', 'acountsName')" />
 					</el-col>
 					<el-col :span="4">
 						<SearchOption
@@ -173,7 +158,7 @@
 					</el-col>
 				</el-form-item>
 				<el-form-item v-if="moneyInfo.rechargeType === '银行卡'" label="银行账号" prop="bankNo">
-					<el-input v-model="moneyInfo.bankNo" placeholder="请输入银行账号" />
+					<el-input v-model="moneyInfo.bankNo" placeholder="请输入银行账号" @input="handleInputTrim($event, 'moneyInfo', 'bankNo')" />
 				</el-form-item>
 				<el-form-item label="附件" prop="bankName">
 					<file-upload @input="handleUpload" />
@@ -248,13 +233,10 @@
 				</el-form-item>
 
 				<el-form-item :label="oilCardOption.type === OilCardOptionType.MAIN_TO_SUB ? `分配金额` : `圈存金额`" prop="rechargeMoney">
-					<el-input v-model="oilCardOption.rechargeMoney" :placeholder="oilCardOption.type === OilCardOptionType.MAIN_TO_SUB ? `请输入分配金额` : `请输入圈存金额`" />
+					<el-input v-model="oilCardOption.rechargeMoney" :placeholder="oilCardOption.type === OilCardOptionType.MAIN_TO_SUB ? `请输入分配金额` : `请输入圈存金额`" @input="handleInputTrim($event, 'oilCardOption', 'rechargeMoney')" />
 				</el-form-item>
-				<!--        <el-form-item label="充值人员姓名" prop="rechargeName">-->
-				<!--          <el-input v-model="form.rechargeName" placeholder="请输入充值人员姓名"/>-->
-				<!--        </el-form-item>-->
 				<el-form-item label="备注" prop="comments">
-					<el-input v-model="oilCardOption.comments" placeholder="请输入备注" />
+					<el-input v-model="oilCardOption.comments" placeholder="请输入备注" @input="handleInputTrim($event, 'oilCardOption', 'comments')" />
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -299,27 +281,17 @@ export default {
 	mixins: [common_dialog],
 	data() {
 		return {
-			// 遮罩层
 			loading: true,
-			// 选中数组
 			ids: [],
-			// 非单个禁用
 			single: true,
-			// 非多个禁用
 			multiple: true,
-			// 显示搜索条件
 			showSearch: true,
-			// 总条数
 			MainTotal: 0,
 			SubTotal: 0,
-			// 加油卡信息表格数据
 			mainOilCardList: [],
 			subCardList: [],
-			// 弹出层标题
 			title: '',
-			// 是否显示弹出层
 			open: false,
-			// 查询参数
 			queryParams: {
 				pageNum: 1,
 				pageSize: 10,
@@ -343,11 +315,9 @@ export default {
 				UserName: null,
 				delFlag: null
 			},
-			// 表单参数
 			form: {
 				rechargeName: ''
 			},
-			// 表单校验
 			rules: {
 				oilCardNo: [
 					{
@@ -377,10 +347,7 @@ export default {
 				{ key: 2, label: `备注`, visible: true }
 			],
 			queryCard: null,
-
-			// 加油卡充值界面的弹窗
 			moneyDialogVisible: false,
-			// 加油卡信息
 			moneyInfo: {
 				oilCardNo: '',
 				rechargeType: '',
@@ -404,8 +371,6 @@ export default {
 				}
 			],
 			queryBankAcount: '',
-
-			// 2025-2-18 新增 油卡操作 功能
 			oilCardOption: {},
 			optionVisible: false,
 			queryOilCard: '',
@@ -438,7 +403,6 @@ export default {
 						message: '请输入充值金额',
 						trigger: 'blur'
 					},
-					// 金额校验
 					{
 						validator: (rule, value, callback) => {
 							if (!/^\d+(\.\d{1,2})?$/.test(value)) {
@@ -472,7 +436,6 @@ export default {
 						message: '请输入充值金额',
 						trigger: 'blur'
 					},
-					// 金额校验
 					{
 						validator: (rule, value, callback) => {
 							if (!/^\d+(\.\d{1,2})?$/.test(value)) {
@@ -501,7 +464,6 @@ export default {
 		},
 		...mapGetters(['trueName'])
 	},
-	// 展示与隐藏
 	watch: {
 		columns: {
 			handler: function (newVal) {
@@ -516,13 +478,17 @@ export default {
 	created() {
 		this.getList();
 		if (localStorage.getItem('oilcard-columns') === 'null' || !localStorage.getItem('oilcard-columns')) {
-			// 设置localStorage
 			localStorage.setItem('oilcard-columns', JSON.stringify(this.columns));
 		} else {
 			this.columns = JSON.parse(localStorage.getItem('oilcard-columns'));
 		}
 	},
 	methods: {
+		handleInputTrim(val, obj, prop) {
+			if (val.indexOf(' ') !== -1) {
+				this[obj][prop] = val.replace(/\s+/g, '');
+			}
+		},
 		listBankAccount,
 		listOilCard,
 		handleCommitBackBankAcount(val) {
@@ -535,21 +501,18 @@ export default {
 		handleUpdateQueryName(val) {
 			this.queryCard = val;
 		},
-		// 2025-2-18 新增 油卡操作 功能
 		handleCommitBackOilCard(val) {
 			this.oilCardOption.oilMainCardNo = val.oilCardNo;
 		},
 		handleCommitBackQueryOilCard(val) {
 			this.queryOilCard = val;
 		},
-		// 副卡
 		handleCommitBackOilCardOther(val) {
 			this.oilCardOption.oilSecondCardNo = val.oilCardNo;
 		},
 		handleCommitBackQueryOilCardOther(val) {
 			this.queryOilCardOther = val;
 		},
-		// 上传
 		handleUpload(val) {
 			this.moneyInfo.attachment = val;
 		},
@@ -559,7 +522,6 @@ export default {
 			} else {
 			}
 		},
-		// 加油卡充值
 		handleMoney() {
 			this.moneyInfo.rechargeName = this.trueName;
 			this.moneyDialogVisible = true;
@@ -571,7 +533,6 @@ export default {
 		submitOilCardOption() {
 			this.$refs['oilCardForm'].validate(valid => {
 				if (valid) {
-					// 如果第一张卡为空 并且选择的类型是圈存
 					if (!this.oilCardOption.oilMainCardNo && this.oilCardOption.type === OilCardOptionType.SUB_TO_SUB) {
 						this.oilCardOption.oilMainCardNo = this.oilCardOption.oilSecondCardNo;
 					}
@@ -595,11 +556,9 @@ export default {
 			this.optionVisible = false;
 			this.resetOption();
 		},
-		// 确认银行卡充值
 		submitMoney() {
 			this.$refs['moneyFormRef'].validate(valid => {
 				if (valid) {
-					// 添加
 					addOilRecharge(this.moneyInfo).then(() => {
 						this.$message.success('油卡充值信息新增成功，请前往出差管理/加油卡充值记录查看');
 						this.moneyDialogVisible = false;
@@ -608,20 +567,16 @@ export default {
 			});
 		},
 		handleCommitBack(val) {
-			// 自动填充加油卡信息
 			this.moneyInfo.oilCardNo = val.oilCardNo;
 		},
-		/** 查询加油卡信息列表 */
 		getList() {
 			this.loading = true;
-			// 先获取主卡信息
 			this.queryParams.oilType = '主卡';
 			listOilCard(this.queryParams).then(response => {
 				this.mainOilCardList = response.rows;
 				this.MainTotal = response.total;
 				this.loading = false;
 			});
-			// 再获取副卡信息
 			this.queryParams.oilType = '副卡';
 			listOilCard(this.queryParams).then(response => {
 				this.subCardList = response.rows;
@@ -629,12 +584,10 @@ export default {
 				this.loading = false;
 			});
 		},
-		// 取消按钮
 		cancel() {
 			this.open = false;
 			this.reset();
 		},
-		// 表单重置
 		reset() {
 			this.form = {
 				id: null,
@@ -669,7 +622,6 @@ export default {
 				rechargeMoney: null,
 				rechargeDate: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
 				rechargeName: null,
-				// 2025-2-17 油卡消费类型 1：主卡分配 2.副卡圈存
 				type: OilCardOptionType.MAIN_TO_SUB,
 				comments: null,
 				addtime: null,
@@ -680,37 +632,31 @@ export default {
 			};
 			this.resetForm('oilCardOption');
 		},
-		// 打印按钮操作
 		printHTML() {
 			this.$print({
 				printable: 'printBox',
 				type: 'html',
-				targetStyles: ['*'] // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
+				targetStyles: ['*']
 			});
 		},
-		/** 搜索按钮操作 */
 		handleQuery() {
 			this.queryParams.pageNum = 1;
 			this.getList();
 		},
-		/** 重置按钮操作 */
 		resetQuery() {
 			this.resetForm('queryForm');
 			this.handleQuery();
 		},
-		// 多选框选中数据
 		handleSelectionChange(selection) {
 			this.ids = selection.map(item => item.id);
 			this.single = selection.length !== 1;
 			this.multiple = !selection.length;
 		},
-		/** 新增按钮操作 */
 		handleAdd() {
 			this.reset();
 			this.open = true;
 			this.title = '添加加油卡信息';
 		},
-		// 查看明细
 		handleCheck(row) {
 			this.$datePicker().then(({ beginTime, endTime }) => {
 				const body = {
@@ -732,7 +678,6 @@ export default {
 				});
 			});
 		},
-		/** 修改按钮操作 */
 		handleUpdate(row) {
 			this.reset();
 			const id = row.id || this.ids;
@@ -742,7 +687,6 @@ export default {
 				this.title = '修改加油卡信息';
 			});
 		},
-		/** 提交按钮 */
 		submitForm() {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
@@ -764,7 +708,6 @@ export default {
 				}
 			});
 		},
-		/** 删除按钮操作 */
 		handleDelete(row) {
 			const ids = row.id || this.ids;
 			this.$modal
@@ -778,7 +721,6 @@ export default {
 				})
 				.catch(() => {});
 		},
-		/** 导出按钮操作 */
 		handleExport() {
 			this.download(
 				'system/oilCard/export',

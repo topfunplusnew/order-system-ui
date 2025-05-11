@@ -2,10 +2,10 @@
 	<div class="app-container">
 		<el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="68px">
 			<el-form-item label="车辆型号" prop="model">
-				<el-input v-model="queryParams.model" placeholder="请输入车辆型号" clearable @keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.model" placeholder="请输入车辆型号" clearable @keyup.enter.native="handleQuery" @input="handleInputTrim($event, 'queryParams', 'model')" />
 			</el-form-item>
 			<el-form-item label="车牌号" prop="licensePlate">
-				<el-input v-model="queryParams.licensePlate" placeholder="请输入车牌号" clearable @keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.licensePlate" placeholder="请输入车牌号" clearable @keyup.enter.native="handleQuery" @input="handleInputTrim($event, 'queryParams', 'licensePlate')" />
 			</el-form-item>
 			<el-form-item label="购买时间" prop="purchaseDate">
 				<el-date-picker clearable v-model="queryParams.purchaseDate" type="date" value-format="yyyy-MM-dd" placeholder="请选择购买时间"></el-date-picker>
@@ -116,28 +116,28 @@
 		<el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="80px" @keyup.enter.native="submitForm" @submit.native.prevent="submitForm" size="mini">
 				<el-form-item label="车辆型号" prop="model">
-					<el-input v-model="form.model" placeholder="请输入车辆型号" />
+					<el-input v-model="form.model" placeholder="请输入车辆型号" @input="handleInputTrim($event, 'form', 'model')" />
 				</el-form-item>
 				<el-form-item label="车牌号" prop="licensePlate">
-					<el-input v-model="form.licensePlate" placeholder="请输入车牌号" />
+					<el-input v-model="form.licensePlate" placeholder="请输入车牌号" @input="handleInputTrim($event, 'form', 'licensePlate')" />
 				</el-form-item>
 				<el-form-item label="购买时间" prop="purchaseDate">
 					<el-date-picker clearable v-model="form.purchaseDate" type="date" value-format="yyyy-MM-dd" placeholder="请选择购买时间"></el-date-picker>
 				</el-form-item>
 				<el-form-item label="行驶里程" prop="mileage">
-					<el-input v-model="form.mileage" placeholder="请输入行驶里程" />
+					<el-input v-model="form.mileage" placeholder="请输入行驶里程" @input="handleInputTrim($event, 'form', 'mileage')" />
 				</el-form-item>
 				<el-form-item label="保养金额" prop="maintenanceCost">
-					<el-input v-model="form.maintenanceCost" placeholder="请输入保养金额" />
+					<el-input v-model="form.maintenanceCost" placeholder="请输入保养金额" @input="handleInputTrim($event, 'form', 'maintenanceCost')" />
 				</el-form-item>
 				<el-form-item label="保养日期" prop="maintenanceDate">
 					<el-date-picker clearable v-model="form.maintenanceDate" type="date" value-format="yyyy-MM-dd" placeholder="请选择保养日期"></el-date-picker>
 				</el-form-item>
 				<el-form-item label="保险金额" prop="insuranceCost">
-					<el-input v-model="form.insuranceCost" placeholder="请输入保险金额" />
+					<el-input v-model="form.insuranceCost" placeholder="请输入保险金额" @input="handleInputTrim($event, 'form', 'insuranceCost')" />
 				</el-form-item>
 				<el-form-item label="备注" prop="notes">
-					<el-input v-model="form.notes" type="textarea" placeholder="请输入内容" />
+					<el-input v-model="form.notes" type="textarea" placeholder="请输入内容" @input="handleInputTrim($event, 'form', 'notes')" />
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -309,6 +309,12 @@ export default {
 		this.getList();
 	},
 	methods: {
+		// 处理输入框禁止输入空格
+		handleInputTrim(val, obj, prop) {
+			if (val.indexOf(' ') !== -1) {
+				this[obj][prop] = val.replace(/\s+/g, '');
+			}
+		},
 		parseTime,
 		getToken,
 		// 上传成功回调

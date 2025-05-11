@@ -2,7 +2,7 @@
 	<div class="app-container">
 		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
 			<el-form-item label="车牌" prop="carNo">
-				<el-input v-model="queryParams.carNo" placeholder="请输入车牌" clearable @keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.carNo" placeholder="请输入车牌" clearable @keyup.enter.native="handleQuery" @input="handleInputTrim($event, 'queryParams', 'carNo')" />
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" size="mini" @click="handleQuery">搜索</el-button>
@@ -69,15 +69,15 @@
 
 				<!--        陆运司机名称或者 海运公司-->
 				<el-form-item label="司机/海运公司" prop="driver">
-					<el-input v-model="form.driver" placeholder="请输入司机/海运公司" />
+					<el-input v-model="form.driver" placeholder="请输入司机/海运公司" @input="handleInputTrim($event, 'form', 'driver')" />
 				</el-form-item>
 				<el-form-item label="司机电话" prop="tel">
-					<el-input v-model="form.tel" placeholder="请输入司机电话" />
+					<el-input v-model="form.tel" placeholder="请输入司机电话" @input="handleInputTrim($event, 'form', 'tel')" />
 				</el-form-item>
 				<el-form-item label="开户行" prop="bankName">
 					<el-row>
 						<el-col :span="10">
-							<el-input v-model="form.bankName" placeholder="请输入开户行" />
+							<el-input v-model="form.bankName" placeholder="请输入开户行" @input="handleInputTrim($event, 'form', 'bankName')" />
 						</el-col>
 						<el-col :span="3">
 							<SearchOption
@@ -105,10 +105,10 @@
 					</el-row>
 				</el-form-item>
 				<el-form-item label="开户名" prop="acountsName">
-					<el-input v-model="form.acountsName" placeholder="请输入开户名" />
+					<el-input v-model="form.acountsName" placeholder="请输入开户名" @input="handleInputTrim($event, 'form', 'acountsName')" />
 				</el-form-item>
 				<el-form-item label="账号" prop="bankNo">
-					<el-input v-model="form.bankNo" placeholder="请输入账号" />
+					<el-input v-model="form.bankNo" placeholder="请输入账号" @input="handleInputTrim($event, 'form', 'bankNo')" />
 				</el-form-item>
 				<el-form-item label="账号类型" prop="acountsType">
 					<el-radio v-model="form.acountsType" label="1">收款</el-radio>
@@ -273,6 +273,12 @@ export default {
 		}
 	},
 	methods: {
+		// 处理输入框禁止输入空格
+		handleInputTrim(val, obj, prop) {
+			if (val.indexOf(' ') !== -1) {
+				this[obj][prop] = val.replace(/\s+/g, '');
+			}
+		},
 		listBankAccount,
 		handleCommitBack(val) {
 			this.form.bankName = val.bankName;

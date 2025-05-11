@@ -2,10 +2,10 @@
 	<div class="app-container">
 		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
 			<el-form-item label="仓库名称" prop="storeHouseName">
-				<el-input v-model="queryParams.storeHouseName" placeholder="请输入仓库名称" clearable @keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.storeHouseName" placeholder="请输入仓库名称" clearable @keyup.enter.native="handleQuery" @input="handleInputTrim($event, 'queryParams', 'storeHouseName')" />
 			</el-form-item>
 			<el-form-item label="地址" prop="address">
-				<el-input v-model="queryParams.address" placeholder="请输入地址" clearable @keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.address" placeholder="请输入地址" clearable @keyup.enter.native="handleQuery" @input="handleInputTrim($event, 'queryParams', 'address')" />
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -49,10 +49,10 @@
 		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
 			<el-form size="mini" ref="form" :model="form" :rules="rules" label-width="80px" @keyup.enter.native.prevent="submitForm" @submit.native.prevent="submitForm">
 				<el-form-item label="仓库名称" prop="storeHouseName">
-					<el-input v-model="form.storeHouseName" placeholder="请输入仓库名称" />
+					<el-input v-model="form.storeHouseName" placeholder="请输入仓库名称" @input="handleInputTrim($event, 'form', 'storeHouseName')" />
 				</el-form-item>
 				<el-form-item label="地址" prop="address">
-					<el-input v-model="form.address" placeholder="请输入地址" />
+					<el-input v-model="form.address" placeholder="请输入地址" @input="handleInputTrim($event, 'form', 'address')" />
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -135,6 +135,12 @@ export default {
 		}
 	},
 	methods: {
+		// 处理输入框禁止输入空格
+		handleInputTrim(val, obj, prop) {
+			if (val.indexOf(' ') !== -1) {
+				this[obj][prop] = val.replace(/\s+/g, '');
+			}
+		},
 		/* 打印信息*/
 		printHTML() {
 			this.$print({

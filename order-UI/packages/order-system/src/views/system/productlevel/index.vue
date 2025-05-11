@@ -2,10 +2,10 @@
 	<div class="app-container">
 		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
 			<el-form-item label="分类名称" prop="categoryName">
-				<el-input v-model="queryParams.categoryName" placeholder="请输入分类名称" clearable />
+				<el-input v-model="queryParams.categoryName" placeholder="请输入分类名称" clearable @input="handleInputTrim($event, 'queryParams', 'categoryName')" />
 			</el-form-item>
 			<el-form-item label="级别名称" prop="levelName">
-				<el-input v-model="queryParams.levelName" placeholder="请输入级别名称" clearable />
+				<el-input v-model="queryParams.levelName" placeholder="请输入级别名称" clearable @input="handleInputTrim($event, 'queryParams', 'levelName')" />
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -99,7 +99,7 @@
 						<span>分类名称</span>
 					</el-row>
 					<el-row>
-						<el-input v-model="tempCategoryInfo.categoryName" placeholder="请输入分类名称"></el-input>
+						<el-input v-model="tempCategoryInfo.categoryName" placeholder="请输入分类名称" @input="handleInputTrim($event, 'tempCategoryInfo', 'categoryName')"></el-input>
 					</el-row>
 				</el-col>
 			</el-row>
@@ -148,22 +148,22 @@
 					<el-input v-model="addCategoryModel.categoryNo" placeholder="请输入分类编号" />
 				</el-form-item>
 				<el-form-item label="级别编码" prop="levelNo">
-					<el-input v-model="addCategoryModel.levelNo" placeholder="请输入级别编码"></el-input>
+					<el-input v-model="addCategoryModel.levelNo" placeholder="请输入级别编码" @input="handleInputTrim($event, 'addCategoryModel', 'levelNo')"></el-input>
 				</el-form-item>
 				<el-form-item label="级别名称" prop="levelName">
-					<el-input v-model="addCategoryModel.levelName" placeholder="请输入级别名称"></el-input>
+					<el-input v-model="addCategoryModel.levelName" placeholder="请输入级别名称" @input="handleInputTrim($event, 'addCategoryModel', 'levelName')"></el-input>
 				</el-form-item>
 				<el-form-item label="厚度" prop="height">
-					<el-input v-model="addCategoryModel.height" placeholder="请输入厚度"></el-input>
+					<el-input v-model="addCategoryModel.height" placeholder="请输入厚度" @input="handleInputTrim($event, 'addCategoryModel', 'height')"></el-input>
 				</el-form-item>
 				<el-form-item label="长度" prop="length">
-					<el-input v-model="addCategoryModel.length" placeholder="请输入长度"></el-input>
+					<el-input v-model="addCategoryModel.length" placeholder="请输入长度" @input="handleInputTrim($event, 'addCategoryModel', 'length')"></el-input>
 				</el-form-item>
 				<el-form-item label="宽度" prop="width">
-					<el-input v-model="addCategoryModel.width" placeholder="请输入宽度"></el-input>
+					<el-input v-model="addCategoryModel.width" placeholder="请输入宽度" @input="handleInputTrim($event, 'addCategoryModel', 'width')"></el-input>
 				</el-form-item>
 				<el-form-item label="吨位差" prop="tonnage">
-					<el-input v-model="addCategoryModel.tonnage" placeholder="请输入吨位差"></el-input>
+					<el-input v-model="addCategoryModel.tonnage" placeholder="请输入吨位差" @input="handleInputTrim($event, 'addCategoryModel', 'tonnage')"></el-input>
 				</el-form-item>
 			</el-form>
 			<span slot="footer" class="dialog-footer">
@@ -176,10 +176,10 @@
 		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="80px" @keyup.enter.native="submitForm">
 				<el-form-item label="级别编码" prop="levelNo">
-					<el-input v-model="form.levelNo" placeholder="请输入支付类型" />
+					<el-input v-model="form.levelNo" placeholder="请输入支付类型" @input="handleInputTrim($event, 'form', 'levelNo')" />
 				</el-form-item>
 				<el-form-item label="级别名称" prop="levelName">
-					<el-input v-model="form.levelName" placeholder="请输入级别名称" />
+					<el-input v-model="form.levelName" placeholder="请输入级别名称" @input="handleInputTrim($event, 'form', 'levelName')" />
 				</el-form-item>
 				<el-form-item label="分类编号" prop="tableName">
 					<el-input v-model="form.categoryNo" placeholder="请输入分类编号" @input="validateFormCategory" />
@@ -190,16 +190,16 @@
 					</el-select>
 				</el-form-item>
 				<el-form-item label="厚度" prop="height">
-					<el-input v-model="form.height" placeholder="请输入厚度" />
+					<el-input v-model="form.height" placeholder="请输入厚度" @input="handleInputTrim($event, 'form', 'height')" />
 				</el-form-item>
 				<el-form-item label="宽度" prop="width">
-					<el-input v-model="form.width" placeholder="请输入宽度" />
+					<el-input v-model="form.width" placeholder="请输入宽度" @input="handleInputTrim($event, 'form', 'width')" />
 				</el-form-item>
 				<el-form-item label="长度" prop="length">
-					<el-input v-model="form.length" placeholder="请输入长度" />
+					<el-input v-model="form.length" placeholder="请输入长度" @input="handleInputTrim($event, 'form', 'length')" />
 				</el-form-item>
 				<el-form-item label="吨位差" prop="tonnage">
-					<el-input v-model="form.tonnage" placeholder="请输入吨位差" />
+					<el-input v-model="form.tonnage" placeholder="请输入吨位差" @input="handleInputTrim($event, 'form', 'tonnage')" />
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -398,6 +398,12 @@ export default {
 		}
 	},
 	methods: {
+		// 处理输入框禁止输入空格
+		handleInputTrim(val, obj, prop) {
+			if (val.indexOf(' ') !== -1) {
+				this[obj][prop] = val.replace(/\s+/g, '');
+			}
+		},
 		// 监听产品分类变化 自动填充分类编码 查询各个分类的最大级别数，然后+1后存储
 		handleChangeLevelNo(newVal) {
 			if (newVal) {

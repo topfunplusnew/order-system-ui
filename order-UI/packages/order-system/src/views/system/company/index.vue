@@ -252,7 +252,7 @@
 						<el-col :span="8">
 							<el-form-item label="账号类型" :label-width="formLabelWidth">
 								<el-select v-model="queryBankInfo.acountsType" placeholder="请选择">
-									<el-option v-for="item in acountsTypeList" :key="item.value" :label="item.label" :value="item.value"></el-option>
+								<el-option v-for="item in acountsTypeList" :key="item.value" :label="item.label" :value="item.value"></el-option>
 								</el-select>
 							</el-form-item>
 						</el-col>
