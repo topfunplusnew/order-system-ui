@@ -151,12 +151,7 @@
 						</el-col>
 					</el-row>
 				</el-form-item>
-				<!--          如果不是司机 直接填写开户名-->
-				<el-form-item prop="acountsName" label="户名" v-else>
-					<el-row>
-						<el-input v-model="form.acountsName" placeholder="请输入开户名" />
-					</el-row>
-				</el-form-item>
+
 				<!--          车牌-->
 				<el-form-item label="户名" prop="acountsName" v-if="form.acountsType === PUBLIC_DICT_TYPE.DRIVER">
 					<el-row>
@@ -238,6 +233,12 @@
 								</template>
 							</SearchOption>
 						</el-col>
+					</el-row>
+				</el-form-item>
+				<!--          如果不是司机 直接填写开户名-->
+				<el-form-item prop="acountsName" label="户名" v-else>
+					<el-row>
+						<el-input v-model="form.acountsName" placeholder="请输入开户名" />
 					</el-row>
 				</el-form-item>
 				<el-form-item label="银行账号" prop="bankNo">

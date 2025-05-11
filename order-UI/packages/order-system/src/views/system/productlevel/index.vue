@@ -504,6 +504,7 @@ export default {
 				this.addDictInfo.dictLabel = this.tempCategoryInfo.categoryName;
 				this.addDictInfo.dictValue = this.tempCategoryInfo.levelNo;
 				this.addDictInfo.dictCode = this.tempCategoryInfo.dictCode;
+				this.addDictInfo.dictSort = this.tempCategoryInfo.dictCode;
 				updateData(this.addDictInfo).then(() => {
 					this.$message.success('修改成功~');
 					this.getList();

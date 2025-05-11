@@ -167,13 +167,20 @@ export default {
 		<div class="add-bank-account">
 			<el-button v-hasPermi="['system:company:add']" type="text" size="mini" icon="el-icon-plus" @click="handleAddBankAccount">新增银行卡信息</el-button>
 		</div>
-		<el-dialog title="提示" :visible.sync="dialogVisible" width="30%" append-to-body>
+		<el-dialog title="提示" :visible.sync="dialogVisible" width="30%" append-to-body :close-on-click-modal="false" :close-on-press-escape="false">
 			<div>
 				<el-form ref="form" :model="form" :rules="rules" label-width="120px">
 					<el-form-item label="账号类型" prop="acountsType">
 						<el-select v-model="form.acountsType" placeholder="请选择账号类型">
 							<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
 						</el-select>
+					</el-form-item>
+					<el-form-item label="公司名称" prop="companyName">
+						<el-row>
+							<el-col :span="10">
+								<el-input v-model="form.companyName" placeholder="请输入公司名称" />
+							</el-col>
+						</el-row>
 					</el-form-item>
 					<el-form-item label="户名" prop="acountsName">
 						<!--          如果是司机 那么就选择-->
@@ -184,13 +191,6 @@ export default {
 						</el-row>
 						<el-row v-else>
 							<el-input v-model="form.acountsName" placeholder="请输入户名" />
-						</el-row>
-					</el-form-item>
-					<el-form-item label="公司名称" prop="companyName">
-						<el-row>
-							<el-col :span="10">
-								<el-input v-model="form.companyName" placeholder="请输入公司名称" />
-							</el-col>
 						</el-row>
 					</el-form-item>
 					<el-form-item label="银行账号" prop="bankNo">

@@ -2,10 +2,10 @@
 	<div class="app-container">
 		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px" class="form-container">
 			<el-form-item label="客户名称" prop="companyName">
-				<el-input v-model="queryParams.companyName" placeholder="请输入客户名称" clearable @keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.companyName" placeholder="请输入客户名称" clearable @keyup.enter.native="handleQuery" @input="handleInputTrim($event, 'queryParams', 'companyName')" />
 			</el-form-item>
 			<el-form-item label="联系人" prop="relationName">
-				<el-input v-model="queryParams.relationName" placeholder="请输入联系人名称" clearable @keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.relationName" placeholder="请输入联系人名称" clearable @keyup.enter.native="handleQuery" @input="handleInputTrim($event, 'queryParams', 'relationName')" />
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -78,30 +78,24 @@
 				<el-row :gutter="4">
 					<el-col :span="12">
 						<el-form-item label="客户名称" prop="companyName">
-							<el-input v-model="form.companyName" placeholder="请输入客户名称" />
+							<el-input v-model="form.companyName" placeholder="请输入客户名称" @input="handleInputTrim($event, 'form', 'companyName')" />
 						</el-form-item>
 						<el-form-item label="联系人" prop="relationName">
-							<el-input v-model="form.relationName" placeholder="请输入联系人名称" />
+							<el-input v-model="form.relationName" placeholder="请输入联系人名称" @input="handleInputTrim($event, 'form', 'relationName')" />
 						</el-form-item>
 						<el-form-item label="联系人电话" prop="relationTel">
-							<el-input v-model="form.relationTel" placeholder="请输入联系人电话" />
+							<el-input v-model="form.relationTel" placeholder="请输入联系人电话" @input="handleInputTrim($event, 'form', 'relationTel')" />
 						</el-form-item>
 						<el-form-item label="老板姓名" prop="leader">
-							<el-input v-model="form.leader" placeholder="请输入老板姓名" />
+							<el-input v-model="form.leader" placeholder="请输入老板姓名" @input="handleInputTrim($event, 'form', 'leader')" />
 						</el-form-item>
 						<el-form-item label="老板联系方式" prop="leaderTel">
-							<el-input v-model="form.leaderTel" placeholder="请输入老板联系方式" />
+							<el-input v-model="form.leaderTel" placeholder="请输入老板联系方式" @input="handleInputTrim($event, 'form', 'leaderTel')" />
 						</el-form-item>
-						<!--						<el-form-item label="录入员" prop="salesman">-->
-						<!--							<el-input-->
-						<!--								v-model="form.salesman"-->
-						<!--								placeholder="请输入录入员名称"-->
-						<!--							/>-->
-						<!--						</el-form-item>-->
 					</el-col>
 					<el-col :span="12">
 						<el-form-item label="销售经理" prop="salesManager">
-							<el-input v-model="form.salesManager" placeholder="请输入销售经理" />
+							<el-input v-model="form.salesManager" placeholder="请输入销售经理" @input="handleInputTrim($event, 'form', 'salesManager')" />
 						</el-form-item>
 						<el-form-item label="省" prop="province">
 							<!--          <el-input v-model="form.province" placeholder="请输入省"/>-->
@@ -116,13 +110,13 @@
 							</el-select>
 						</el-form-item>
 						<el-form-item label="乡镇" prop="county">
-							<el-input v-model="form.county" placeholder="请输入乡镇" />
+							<el-input v-model="form.county" placeholder="请输入乡镇" @input="handleInputTrim($event, 'form', 'county')" />
 						</el-form-item>
 						<el-form-item label="地址" prop="address">
-							<el-input v-model="form.address" placeholder="请输入地址" />
+							<el-input v-model="form.address" placeholder="请输入地址" @input="handleInputTrim($event, 'form', 'address')" />
 						</el-form-item>
 						<el-form-item label="备注" prop="comments">
-							<el-input v-model="form.comments" placeholder="请输入备注" />
+							<el-input v-model="form.comments" placeholder="请输入备注" @input="handleInputTrim($event, 'form', 'comments')" />
 						</el-form-item>
 					</el-col>
 				</el-row>
@@ -139,12 +133,12 @@
 				<el-row :gutter="4">
 					<el-col :span="8">
 						<el-form-item label="客户名称" :label-width="formLabelWidth">
-							<el-input v-model="queryParams.relationName" autocomplete="off"></el-input>
+							<el-input v-model="queryParams.relationName" autocomplete="off" @input="handleInputTrim($event, 'queryParams', 'relationName')"></el-input>
 						</el-form-item>
 					</el-col>
 					<el-col :span="8">
 						<el-form-item label="银行卡号" :label-width="formLabelWidth">
-							<el-input v-model="queryParams.bankNo" autocomplete="off"></el-input>
+							<el-input v-model="queryParams.bankNo" autocomplete="off" @input="handleInputTrim($event, 'queryParams', 'bankNo')"></el-input>
 						</el-form-item>
 					</el-col>
 					<el-col :span="3">
@@ -229,7 +223,7 @@
 					<el-table-column label="户名" align="center" prop="acountsName" />
 					<el-table-column label="银行卡号" align="center" prop="bankNo" />
 					<el-table-column label="银行卡余额" align="center" prop="amount" />
-					<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="180">
+					<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="180">
 						<template slot-scope="scope">
 							<el-button v-hasPermi="['system:company:remove']" size="mini" @click="handleDeleteBankaccount(scope.row)">
 								<i class="el-icon-delete"></i>
@@ -264,7 +258,7 @@
 						</el-col>
 						<el-col :span="8">
 							<el-form-item label="账户名" :label-width="formLabelWidth">
-								<el-input v-model="queryBankInfo.acountsName" autocomplete="off"></el-input>
+								<el-input v-model="queryBankInfo.acountsName" autocomplete="off" @input="handleInputTrim($event, 'queryBankInfo', 'acountsName')"></el-input>
 							</el-form-item>
 						</el-col>
 						<el-col :span="3">
@@ -837,6 +831,12 @@ export default {
 				},
 				`company_${new Date().getTime()}.xlsx`
 			);
+		},
+		// 处理输入框禁止输入空格
+		handleInputTrim(val, obj, prop) {
+			if (val.indexOf(' ') !== -1) {
+				this[obj][prop] = val.replace(/\s+/g, '');
+			}
 		}
 	}
 };
