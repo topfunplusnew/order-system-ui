@@ -1004,7 +1004,9 @@ export default {
 						factoryCommission: '',
 						factoryRebateAmount: '',
 						factoryDiscountAmount: '',
-						comments: ''
+						comments: '',
+						// 后续根据这个字段 把这条信息删除 不需要添加到数据库
+						shouldDel: true
 					}
 				};
 				this.calculatePayment(detailItem);
@@ -1481,9 +1483,10 @@ export default {
 						this.recalculateAll({ row: r });
 					}
 				});
+				// 删除仅做展示的项
 				const newInventoryInfo = {
 					...this.secondForm,
-					inventoryDetailList: _.cloneDeep(this.inventoryDetailList)
+					inventoryDetailList: _.cloneDeep(this.inventoryDetailList.filter(item => !item.shouldDel))
 				};
 				newInventoryInfo.allLandFreight = this.isLand ? this.inventoryDetailList.reduce((prev, curr) => Number(prev) + Number(curr.landFreight || 0), 0) : 0;
 				newInventoryInfo.allSeaFreight = this.isSea ? this.inventoryDetailList.reduce((prev, curr) => Number(prev) + Number(curr.seaFreight || 0), 0) : 0;
@@ -1729,14 +1732,6 @@ export default {
 				},
 				`exWarehouse_${new Date().getTime()}.xlsx`
 			);
-		},
-		/**
-		 * @description: 处理“本公司”按钮的引导提示
-		 */
-		handleSelfButtonTour() {
-			if (!localStorage.getItem('second-inventory-tour')) {
-				this.$tours['selfButtonTour'].start();
-			}
 		}
 	}
 };
