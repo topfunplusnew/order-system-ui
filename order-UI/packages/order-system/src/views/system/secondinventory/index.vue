@@ -1443,7 +1443,7 @@ export default {
 			if (isNaN(Number(row.paymentUnload)) || Number(row.paymentUnload) < 0) {
 				return { valid: false, message: '存货价必须是有效的非负数字' };
 			}
-			if (isNaN(Number(row.actualPieces)) || Number(row.actualPieces) <= 0) {
+			if (isNaN(Number(row.actualPieces)) || Number(row.actualPieces) < 0) {
 				return { valid: false, message: '二次入库片数必须是有效的正数' };
 			}
 			if (this.isLand && row.landFreightPrice) {
