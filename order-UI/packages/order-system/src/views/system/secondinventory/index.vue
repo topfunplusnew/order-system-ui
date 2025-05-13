@@ -1440,10 +1440,10 @@ export default {
 			if (!row.price || isNaN(Number(row.price)) || Number(row.price) < 0) {
 				return { valid: false, message: '出厂单价必须是有效的非负数字' };
 			}
-			if (!row.paymentUnload || isNaN(Number(row.paymentUnload)) || Number(row.paymentUnload) < 0) {
+			if (isNaN(Number(row.paymentUnload)) || Number(row.paymentUnload) < 0) {
 				return { valid: false, message: '存货价必须是有效的非负数字' };
 			}
-			if (!row.actualPieces || isNaN(Number(row.actualPieces)) || Number(row.actualPieces) <= 0) {
+			if (isNaN(Number(row.actualPieces)) || Number(row.actualPieces) <= 0) {
 				return { valid: false, message: '二次入库片数必须是有效的正数' };
 			}
 			if (this.isLand && row.landFreightPrice) {
