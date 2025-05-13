@@ -306,8 +306,14 @@ export default {
 							<el-input v-model="form.billNo" placeholder="请输入票据号码" @blur="getBankAcceptanceDate" />
 						</el-form-item>
 						<el-form-item :label="`${this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT ? '背书' : '收票'}事由`" prop="reason">
-							<el-radio v-model="form.reason" label="购买">购买</el-radio>
-							<el-radio v-model="form.reason" label="客户付款">客户付款</el-radio>
+							<template v-if="BankAcceptanceType.PAY_TYPE.PAYMENT">
+								<el-radio v-model="form.reason" label="购买">购买</el-radio>
+								<el-radio v-model="form.reason" label="客户付款">客户付款</el-radio>
+							</template>
+							<template v-else>
+								<el-radio v-model="form.reason" label="出卖">出卖</el-radio>
+								<el-radio v-model="form.reason" label="支付货款">支付货款</el-radio>
+							</template>
 						</el-form-item>
 						<el-form-item :label="`${this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT ? '被背书人类型' : '背书人类型'}`" prop="reason">
 							<el-radio v-model="type" label="客户">客户</el-radio>

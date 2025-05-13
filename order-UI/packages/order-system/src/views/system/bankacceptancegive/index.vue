@@ -93,8 +93,8 @@
 							<el-input v-model="form.billNo" placeholder="请输入票据号码" @input="getBankAcceptanceDate" />
 						</el-form-item>
 						<el-form-item label="背书事由" prop="reason">
-							<el-radio v-model="form.reason" label="购买">购买</el-radio>
-							<el-radio v-model="form.reason" label="客户付款">客户付款</el-radio>
+							<el-radio v-model="form.reason" label="出卖">出卖</el-radio>
+							<el-radio v-model="form.reason" label="支付货款">支付货款</el-radio>
 						</el-form-item>
 						<el-form-item label="被背书人类型" prop="reason">
 							<el-radio v-model="type" label="客户">客户</el-radio>

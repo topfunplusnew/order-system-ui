@@ -132,7 +132,7 @@
 				</el-form-item>
 				<el-divider>
 					<el-icon class="el-icon-circle-plus" />
-					收入方信息
+          资金流出
 				</el-divider>
 
 				<!--        2025-2-28 新增转账账户-->
@@ -285,7 +285,7 @@
 
 				<el-divider>
 					<el-icon class="el-icon-remove" />
-					支付方信息
+          资金流入
 				</el-divider>
 				<el-form-item label="目标账户" v-if="cashType === CASH_TYPE.TRANSFER">
 					<el-row>
