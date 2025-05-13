@@ -1393,6 +1393,12 @@ export default {
 			this.$modal.loading('正在提交...');
 			const apiCall = this.secondForm.id ? updateInventoryMain : addInventoryMain;
 			const successMessage = this.secondForm.id ? '修改成功' : '新增成功';
+
+			// 如果没有货物信息 要提醒用户
+			if (!this.secondForm.inventoryDetailList.length) {
+				this.$modal.msgError('请添加货物信息');
+				return;
+			}
 			// 调用新增或者修改接口
 			apiCall(this.secondForm)
 				.then(() => {
