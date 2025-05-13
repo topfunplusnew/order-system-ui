@@ -1326,13 +1326,11 @@ export default {
 				this.$message.error('请至少选择一种运输方式');
 				return;
 			}
-
 			// 检查是否有库存详情数据
 			if (this.inventoryDetailList.length === 0) {
 				this.$message.error('请添加至少一条库存详情');
 				return;
 			}
-
 			this.$refs['secondForm'].validate(valid => {
 				if (valid) {
 					// 检查是否有未保存的编辑项
@@ -1343,7 +1341,8 @@ export default {
 							.then(() => {
 								// 先保存所有编辑状态的行
 								this.$modal.loading('正在保存...');
-								this.handleRowSave(this.inventoryDetailList.filter(item => item.isEditing))
+								const dataList = this.inventoryDetailList.filter(item => item.isEditing);
+								this.handleRowSave(dataList)
 									.then(() => {
 										this.$modal.closeLoading();
 										// 保存成功后提交整个表单
@@ -1383,20 +1382,18 @@ export default {
 					// 不立即返回，继续检查所有行以显示所有错误
 				}
 			}
-
 			if (hasInvalidRow) {
 				this.$message.error('请修正表单中的错误后再提交');
 				return;
 			}
-
-			this.secondForm.inventoryDetailList = JSON.parse(JSON.stringify(this.inventoryDetailList));
+			// 筛选掉不需要进行处理的列
+			this.secondForm.inventoryDetailList = _.cloneDeep(this.inventoryDetailList.filter(item => !item.shouldDel));
 			this.secondForm.allLandFreight = this.isLand ? this.inventoryDetailList.reduce((prev, curr) => Number(prev) + Number(curr.landFreight || 0), 0) : 0;
 			this.secondForm.allSeaFreight = this.isSea ? this.inventoryDetailList.reduce((prev, curr) => Number(prev) + Number(curr.seaFreight || 0), 0) : 0;
-
 			this.$modal.loading('正在提交...');
 			const apiCall = this.secondForm.id ? updateInventoryMain : addInventoryMain;
 			const successMessage = this.secondForm.id ? '修改成功' : '新增成功';
-
+			// 调用新增或者修改接口
 			apiCall(this.secondForm)
 				.then(() => {
 					this.$modal.closeLoading();
