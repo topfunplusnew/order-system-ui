@@ -52,22 +52,22 @@
 			height="480px"
 			@selection-change="handleSelectionChange"
 		>
-			<el-table-column v-if="columns[0].visible" label="ID" align="center" prop="id" width="120" show-overflow-tooltip />
 			<el-table-column v-if="columns[1].visible" label="票据号码" align="center" prop="billNo" width="120" show-overflow-tooltip />
 			<el-table-column v-if="columns[2].visible" label="出票日期" align="center" prop="issueDate" width="120" show-overflow-tooltip />
 			<el-table-column v-if="columns[3].visible" label="到期日期" align="center" prop="dueDate" width="120" show-overflow-tooltip />
 			<el-table-column v-if="columns[4].visible" label="我方承兑账户" align="center" prop="billAccount" width="120" show-overflow-tooltip />
 			<el-table-column v-if="columns[5].visible" label="票据交易日期" align="center" prop="billDate" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[6].visible" label="收票事由" align="center" prop="incomeReason" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[20].visible" label="分类" align="center" prop="billType" width="120" show-overflow-tooltip />
 			<el-table-column v-if="columns[7].visible" label="票据种类" align="center" prop="billCategory" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[8].visible" label="背书人" align="center" prop="incomeEndorserName" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[6].visible" label="收票事由" align="center" prop="incomeReason" width="120" show-overflow-tooltip />
 			<el-table-column v-if="columns[9].visible" label="收入票据来源" align="center" prop="incomeOrigin" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[8].visible" label="背书人" align="center" prop="incomeEndorserName" width="120" show-overflow-tooltip />
 			<el-table-column v-if="columns[10].visible" label="收入票据金额" align="center" prop="incomeBillAmount" width="120" show-overflow-tooltip />
 			<el-table-column v-if="columns[11].visible" label="收入贴息点数" align="center" prop="incomeInDiscountPoints" width="120" show-overflow-tooltip />
 			<el-table-column v-if="columns[12].visible" label="收入贴息金额" align="center" prop="incomeInDiscountAmount" width="120" show-overflow-tooltip />
 			<el-table-column v-if="columns[13].visible" label="背书事由" align="center" prop="expenseReason" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[15].visible" label="支出票据去向" align="center" prop="expenseOrigin" width="120" show-overflow-tooltip />
 			<el-table-column v-if="columns[14].visible" label="被背书人" align="center" prop="expenseEndorserName" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[15].visible" label="支出票据来源" align="center" prop="expenseOrigin" width="120" show-overflow-tooltip />
 			<el-table-column v-if="columns[16].visible" label="支出票据金额" align="center" prop="expenseBillAmount" width="120" show-overflow-tooltip />
 			<el-table-column v-if="columns[17].visible" label="支出贴息点数" align="center" prop="expenseInDiscountPoints" width="120" show-overflow-tooltip />
 			<el-table-column v-if="columns[18].visible" label="支出贴息金额" align="center" prop="expenseInDiscountAmount" width="120" show-overflow-tooltip />
@@ -117,7 +117,7 @@
 					<el-table-column label="收入贴息金额" align="center" prop="incomeInDiscountAmount" width="120" show-overflow-tooltip />
 					<el-table-column label="背书是由" align="center" prop="expenseReason" width="120" show-overflow-tooltip />
 					<el-table-column label="被背书人" align="center" prop="expenseEndorserName" width="120" show-overflow-tooltip />
-					<el-table-column label="支出票据来源" align="center" prop="expenseOrigin" width="120" show-overflow-tooltip />
+					<el-table-column label="支出票据去向" align="center" prop="expenseOrigin" width="120" show-overflow-tooltip />
 					<el-table-column label="支出票据金额" align="center" prop="expenseBillAmount" width="120" show-overflow-tooltip />
 					<el-table-column label="支出贴息点数" align="center" prop="expenseInDiscountPoints" width="120" show-overflow-tooltip />
 					<el-table-column label="支出贴息金额" align="center" prop="expenseInDiscountAmount" width="120" show-overflow-tooltip />
@@ -207,11 +207,12 @@ export default {
 				{ key: 12, label: `收入贴息金额`, visible: true },
 				{ key: 13, label: `背书事由`, visible: true },
 				{ key: 14, label: `被背书人`, visible: true },
-				{ key: 15, label: `支出票据来源`, visible: true },
+				{ key: 15, label: `支出票据去向`, visible: true },
 				{ key: 16, label: `支出票据金额`, visible: true },
 				{ key: 17, label: `支出贴息点数`, visible: true },
 				{ key: 18, label: `支出贴息金额`, visible: true },
-				{ key: 19, label: `备注`, visible: true }
+				{ key: 19, label: `备注`, visible: true },
+				{ key: 20, label: `分类`, visible: true }
 			],
 			// 表单参数
 			form: {},
