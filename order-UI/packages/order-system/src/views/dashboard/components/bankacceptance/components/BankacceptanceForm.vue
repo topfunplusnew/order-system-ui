@@ -26,6 +26,11 @@ export default {
 		billType: {
 			type: String,
 			default: '收入'
+		},
+		// 是否为内部转账
+		isInternalTransfer: {
+			type: Boolean,
+			default: false
 		}
 	},
 	data() {
@@ -167,8 +172,8 @@ export default {
 				]
 			},
 			queryBank: '',
-			// 背书人类型 默认为客户
-			type: '客户',
+			// 背书人类型 默认为客户，内部转账时为己方公司
+			type: this.isInternalTransfer ? '己方公司' : '客户',
 			// 搜索客户
 			companyName: ''
 		};
@@ -195,6 +200,15 @@ export default {
 				this.$emit('assign', value);
 			},
 			deep: true,
+			immediate: true
+		},
+		isInternalTransfer: {
+			handler(val) {
+				if (val) {
+					// 内部转账时默认设置为己方公司
+					this.type = '己方公司';
+				}
+			},
 			immediate: true
 		}
 	},
@@ -306,27 +320,39 @@ export default {
 							<el-input v-model="form.billNo" placeholder="请输入票据号码" @blur="getBankAcceptanceDate" />
 						</el-form-item>
 						<el-form-item :label="`${this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT ? '背书' : '收票'}事由`" prop="reason">
-							<template v-if="BankAcceptanceType.PAY_TYPE.PAYMENT">
-								<el-radio v-model="form.reason" label="购买">购买</el-radio>
-								<el-radio v-model="form.reason" label="客户付款">客户付款</el-radio>
+							<template v-if="isInternalTransfer">
+								<!-- 内部转账场景下的选项 -->
+								<el-radio v-model="form.reason" label="内部转账">内部转账</el-radio>
+								<el-radio v-model="form.reason" label="其他">其他</el-radio>
 							</template>
 							<template v-else>
-								<el-radio v-model="form.reason" label="出卖">出卖</el-radio>
-								<el-radio v-model="form.reason" label="支付货款">支付货款</el-radio>
+								<template v-if="BankAcceptanceType.PAY_TYPE.PAYMENT">
+									<el-radio v-model="form.reason" label="购买">购买</el-radio>
+									<el-radio v-model="form.reason" label="客户付款">客户付款</el-radio>
+								</template>
+								<template v-else>
+									<el-radio v-model="form.reason" label="出卖">出卖</el-radio>
+									<el-radio v-model="form.reason" label="支付货款">支付货款</el-radio>
+								</template>
 							</template>
 						</el-form-item>
 						<el-form-item :label="`${this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT ? '被背书人类型' : '背书人类型'}`" prop="reason">
-							<el-radio v-model="type" label="客户">客户</el-radio>
-							<el-radio v-model="type" label="供应商">供应商</el-radio>
-							<template v-if="this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT">
-								<el-radio v-model="type" label="己方公司">己方公司</el-radio>
+							<template v-if="isInternalTransfer">
+								<!-- 内部转账场景下不可更改背书人类型 -->
+								<el-radio v-model="type" label="己方公司" disabled>己方公司</el-radio>
+							</template>
+							<template v-else>
+								<el-radio v-model="type" label="客户">客户</el-radio>
+								<el-radio v-model="type" label="供应商">供应商</el-radio>
+								<template v-if="this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT">
+									<el-radio v-model="type" label="己方公司">己方公司</el-radio>
+								</template>
 							</template>
 						</el-form-item>
 						<el-form-item :label="`${this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT ? '被背书人' : '背书人'}`" prop="endorserName">
 							<el-row>
 								<el-col :span="20">
-									<!--                  v-model="form.endorser"-->
-									<el-input disabled :placeholder="`请输入${this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT ? '被背书人' : '背书人'}`" v-model="form.endorserName" />
+									<el-input :disabled="isInternalTransfer || !isInternalTransfer" :placeholder="`请输入${this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT ? '被背书人' : '背书人'}`" v-model="form.endorserName" />
 								</el-col>
 								<el-col :span="4">
 									<!-- 选择的是客户或者供应商名称-->

@@ -8,7 +8,7 @@
 
 		<el-button v-if="flag" type="warning" @click="drawer = true">重新填写</el-button>
 		<el-drawer ref="drawer" title="承兑信息填写" :visible.sync="drawer" direction="rtl" :before-close="handleClose" :append-to-body="true" size="55%">
-			<BankacceptanceForm :bankacceptance-info="bankacceptanceInfo" @submitForm="handleSubmit" @cancel="() => (drawer = false)" @assign="handleAssign" :bill-type="billType" />
+			<BankacceptanceForm :bankacceptance-info="bankacceptanceInfo" @submitForm="handleSubmit" @cancel="() => (drawer = false)" @assign="handleAssign" :bill-type="billType" :is-internal-transfer="isInternalTransfer" />
 		</el-drawer>
 	</div>
 </template>
@@ -42,6 +42,11 @@ export default {
 		billType: {
 			type: String,
 			default: '收入'
+		},
+		// 是否为内部转账
+		isInternalTransfer: {
+			type: Boolean,
+			default: false
 		}
 	},
 	data() {
