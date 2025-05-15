@@ -285,5 +285,6 @@ export const APPLY_FREIGHT_SOURCE_TYPE = {
 // 支出或者收入类型的枚举
 export const PayType = Object.freeze({
 	PAYMENT: '支出',
-	RECEIVE: '收入'
+	RECEIVE: '收入',
+	TRANSFOR: '内部转账'
 });

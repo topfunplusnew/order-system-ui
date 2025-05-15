@@ -188,6 +188,9 @@ export default {
 		},
 		bankacceptanceInfo: {
 			handler(value) {
+				if (!value) {
+					return;
+				}
 				// 如果是修改,那么就填充value
 				if (value.id) {
 					this.$nextTick(() => {
@@ -261,12 +264,20 @@ export default {
 					if (this.form.id != null) {
 						this.form.billType = this.billType;
 						this.form = excludeParams(this.form, this.$exclude);
+						// 在localStorage中保存已填写承兑信息的标记
+						localStorage.setItem('bankAcceptanceFilled', JSON.stringify(this.form));
+						localStorage.setItem('bankAcceptanceFilledTime', new Date().getTime());
+
 						this.$emit('submitForm', this.form, () => {
 							this.reset();
 						});
 					} else {
 						this.form.billType = this.billType;
 						this.form = excludeParams(this.form, this.$exclude);
+						// 在localStorage中保存已填写承兑信息的标记
+						localStorage.setItem('bankAcceptanceFilled', JSON.stringify(this.form));
+						localStorage.setItem('bankAcceptanceFilledTime', new Date().getTime());
+
 						this.$emit('submitForm', this.form, () => {
 							this.reset();
 						});
@@ -305,6 +316,8 @@ export default {
 				delFlag: null
 			};
 			this.resetForm('form');
+			// 通知已重置
+			this.$emit('resetForm');
 		}
 	}
 };
@@ -352,7 +365,11 @@ export default {
 						<el-form-item :label="`${this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT ? '被背书人' : '背书人'}`" prop="endorserName">
 							<el-row>
 								<el-col :span="20">
-									<el-input :disabled="isInternalTransfer || !isInternalTransfer" :placeholder="`请输入${this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT ? '被背书人' : '背书人'}`" v-model="form.endorserName" />
+									<el-input
+										:disabled="isInternalTransfer || !isInternalTransfer"
+										:placeholder="`请输入${this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT ? '被背书人' : '背书人'}`"
+										v-model="form.endorserName"
+									/>
 								</el-col>
 								<el-col :span="4">
 									<!-- 选择的是客户或者供应商名称-->

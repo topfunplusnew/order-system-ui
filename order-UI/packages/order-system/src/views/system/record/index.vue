@@ -121,7 +121,7 @@
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改现金记账对话框  cashType 用于分别管理冲抵类型 : 冲抵货款 或者 冲抵第三方开票-->
-		<el-dialog :title="title" :visible.sync="open" width="700px" append-to-body>
+		<el-dialog :title="title" :visible.sync="open" width="700px" append-to-body @close="handleDialogClose">
 			<el-form ref="form" :model="form" :rules="rules" label-width="150px">
 				<!--        目前支持两种类型 一种是冲抵货款 一种是冲抵第三方开票-->
 				<el-form-item label="冲抵类型">
@@ -263,7 +263,13 @@
 					<!--          选择收入账户类型-->
 					<el-form-item label="收入账户类型">
 						<!-- 选择银行卡类型的组件 -->
-						<BankType @updateSelectedType="changeSelfBankType" @updateBankAcceptance="value => (form.params.bankacceptance = value)" :bill-type="PayType.RECEIVE" :is-internal-transfer="cashType === CASH_TYPE.TRANSFER" />
+						<BankType
+							@updateSelectedType="changeSelfBankType"
+							@updateBankAcceptance="value => (form.params.bankacceptance = value)"
+							:bill-type="PayType.TRANSFOR"
+							:is-internal-transfer="cashType === CASH_TYPE.TRANSFER"
+							:form-id="`income-${form.id || 'new'}`"
+						/>
 					</el-form-item>
 					<el-form-item :label="source">
 						<el-row>
@@ -421,7 +427,12 @@
 				<div v-if="cashType === CASH_TYPE.TRANSFER">
 					<!--          选择支出账户类型-->
 					<el-form-item label="支出账户类型">
-						<BankType :baned="true" @updateSelectedType="changeOtherBankType" :bill-type="PayType.PAYMENT" :is-internal-transfer="cashType === CASH_TYPE.TRANSFER" />
+						<BankType
+							@updateSelectedType="changeOtherBankType"
+							:bill-type="PayType.TRANSFOR"
+							:is-internal-transfer="cashType === CASH_TYPE.TRANSFER"
+							:form-id="`expense-${form.id || 'new'}`"
+						/>
 					</el-form-item>
 					<!--        2.选择去-->
 					<el-form-item :label="target">
@@ -745,6 +756,7 @@ export default {
 			this.open = false;
 			this.reset();
 			this.$refs.uploadFile.clearFileList();
+			this.clearAcceptanceFillStatus();
 		},
 		// 表单重置
 		reset() {
@@ -796,6 +808,7 @@ export default {
 		/** 新增按钮操作 */
 		handleAdd() {
 			this.reset();
+			this.clearAcceptanceFillStatus(); // 清理所有承兑相关状态
 			this.open = true;
 			this.title = '添加冲抵款';
 		},
@@ -854,8 +867,10 @@ export default {
 				// 判断是修改还是新增
 				if (this.form.id != null) {
 					this.updateRecordInfo();
+					this.$bus.$emit('changeFlag', false);
 				} else {
 					this.addRecordInfo();
+					this.$bus.$emit('changeFlag', false);
 				}
 			});
 		},
@@ -918,6 +933,9 @@ export default {
 			this.getList();
 			this.$refs.uploadFile.clearFileList();
 
+			// 无论是哪种情况，都清除承兑信息状态
+			this.clearAcceptanceFillStatus();
+
 			if (resetForm) this.reset();
 			if (resetEachInfo) this.resetEachInfo();
 		},
@@ -945,6 +963,36 @@ export default {
 				},
 				`record_${new Date().getTime()}.xlsx`
 			);
+		},
+		// 关闭表单时清除localStorage中的承兑信息填写状态
+		clearAcceptanceFillStatus() {
+			// 清除所有与承兑相关的状态
+			localStorage.removeItem('bankAcceptanceFilled');
+			localStorage.removeItem('bankAcceptanceFilledTime');
+			localStorage.removeItem('sharedBankAcceptanceFilled');
+
+			// 清除特定实例的状态
+			localStorage.removeItem(`bankAcceptanceFilled_income-${this.form.id || 'new'}`);
+			localStorage.removeItem(`bankAcceptanceFilled_expense-${this.form.id || 'new'}`);
+
+			// 清除可能存在的其他相关状态
+			Object.keys(localStorage).forEach(key => {
+				if (key.startsWith('bankAcceptanceFilled_') || key.includes('BankAcceptance')) {
+					localStorage.removeItem(key);
+				}
+			});
+
+			console.log('所有承兑相关状态已清除');
+		},
+
+		// 确保对话框关闭时也清理状态
+		handleDialogClose() {
+			this.clearAcceptanceFillStatus();
+		},
+
+		// 在组件销毁时也清理状态
+		beforeDestroy() {
+			this.clearAcceptanceFillStatus();
 		}
 	}
 };
