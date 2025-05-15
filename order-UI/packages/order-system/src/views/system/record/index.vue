@@ -909,18 +909,6 @@ export default {
 			// 填充转账类型表
 			this.form.referenceTableName = CASH_TYPE.TRANSFER;
 			this.form.referenceTableId = -1;
-			// // 组装转账信息
-			// const transferBody = {
-			// 	fromBankNo: this.eachInfo.source,
-			// 	toBankNo: this.eachInfo.target,
-			// 	money: this.form.amount,
-			// 	selfBankCardType: this.form.selfBankCardType,
-			// 	otherBankCardType: this.form.otherBankCardType
-			// };
-			// 2025-2-28 不在需要前端添加转账信息
-			// transfer(transferBody).then(() => {
-			// 	// 添加现金记账
-			// });
 			addRecord(this.form).then(() => {
 				this.onSuccess('新增成功', true, true);
 			});
@@ -981,8 +969,6 @@ export default {
 					localStorage.removeItem(key);
 				}
 			});
-
-			console.log('所有承兑相关状态已清除');
 		},
 
 		// 确保对话框关闭时也清理状态

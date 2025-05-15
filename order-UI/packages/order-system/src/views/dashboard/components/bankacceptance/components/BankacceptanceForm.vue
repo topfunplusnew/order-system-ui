@@ -8,10 +8,14 @@ import { excludeParams } from '@/api/tool/exclude';
 import { BankAcceptanceType, PaymentState } from '@/api/tool/enums';
 import { getMinIdByBillNo } from '@/api/system/bankAcceptance';
 import _ from 'lodash';
+import { PUBLIC_DICT_TYPE } from '@/utils/order';
 
 export default {
 	name: 'BankacceptanceForm',
 	computed: {
+		PUBLIC_DICT_TYPE() {
+			return PUBLIC_DICT_TYPE;
+		},
 		BankAcceptanceType() {
 			return BankAcceptanceType;
 		}
@@ -357,9 +361,6 @@ export default {
 							<template v-else>
 								<el-radio v-model="type" label="客户">客户</el-radio>
 								<el-radio v-model="type" label="供应商">供应商</el-radio>
-								<template v-if="this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT">
-									<el-radio v-model="type" label="己方公司">己方公司</el-radio>
-								</template>
 							</template>
 						</el-form-item>
 						<el-form-item :label="`${this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT ? '被背书人' : '背书人'}`" prop="endorserName">
@@ -372,30 +373,62 @@ export default {
 									/>
 								</el-col>
 								<el-col :span="4">
-									<!-- 选择的是客户或者供应商名称-->
-									<SearchOption
-										:limit-info="{ companyType: type }"
-										:get-data="listCompany"
-										query-info="companyName"
-										query-label="公司名称"
-										:query-name="companyName"
-										@update:queryName="value => (companyName = value)"
-										@commitBack="
-											value => {
-												form.endorserName = value.companyName;
-												form.origin = value.companyType;
-												form.endorser = value.id;
-											}
-										"
-									>
-										<template #table-columns>
-											<el-table-column :label="type" align="center" prop="companyName" />
-											<el-table-column label="老板姓名" align="center" prop="leader" />
-											<el-table-column label="老板电话" align="center" prop="leaderTel" />
-											<el-table-column label="区域" align="center" prop="region" />
-											<el-table-column label="销售经理" align="center" prop="salesManager" />
-										</template>
-									</SearchOption>
+									<!--    如果是内部转账,那么就选择的是己方公司-->
+									<template v-if="isInternalTransfer">
+										<SearchOption
+											title="我方账户"
+											:get-data="listBankAccount"
+											icon="el-icon-search"
+											:limit-info="{
+												acountsType: PUBLIC_DICT_TYPE.SELF_COMPANY
+											}"
+											query-label="户名查找"
+											query-info="acountsName"
+											:query-name="companyName"
+											@commitBack="
+												value => {
+													// 这里给的户名
+													form.endorserName = value.acountsName;
+													form.origin = PUBLIC_DICT_TYPE.SELF_COMPANY;
+													form.endorser = value.id;
+												}
+											"
+											@update:queryName="() => value => (companyName = value)"
+										>
+											<template #table-columns>
+												<el-table-column :label="form.targetType === '其他' || form.targetType === '员工' ? '名称' : form.targetType" align="center" prop="acountsName" />
+												<el-table-column label="开户行" align="center" prop="bankName" />
+												<el-table-column label="开户名" align="center" prop="acountsName" />
+												<el-table-column label="账号" align="center" prop="bankNo" />
+											</template>
+										</SearchOption>
+									</template>
+									<template v-else>
+										<!-- 选择的是客户或者供应商名称-->
+										<SearchOption
+											:limit-info="{ companyType: type }"
+											:get-data="listCompany"
+											query-info="companyName"
+											query-label="公司名称"
+											:query-name="companyName"
+											@update:queryName="value => (companyName = value)"
+											@commitBack="
+												value => {
+													form.endorserName = value.companyName;
+													form.origin = value.companyType;
+													form.endorser = value.id;
+												}
+											"
+										>
+											<template #table-columns>
+												<el-table-column :label="type" align="center" prop="companyName" />
+												<el-table-column label="老板姓名" align="center" prop="leader" />
+												<el-table-column label="老板电话" align="center" prop="leaderTel" />
+												<el-table-column label="区域" align="center" prop="region" />
+												<el-table-column label="销售经理" align="center" prop="salesManager" />
+											</template>
+										</SearchOption>
+									</template>
 								</el-col>
 							</el-row>
 						</el-form-item>

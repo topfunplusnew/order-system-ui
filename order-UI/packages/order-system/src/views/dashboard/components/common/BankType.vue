@@ -141,7 +141,6 @@ export default {
 				const json = localStorage.getItem(this.bankAcceptanceFilledKey);
 				this.filledAcceptanceInfo = JSON.parse(JSON.stringify(json));
 
-				console.log(this.filledAcceptanceInfo, typeof this.filledAcceptanceInfo);
 				// 检查是否已经填写过承兑信息
 				if (this.filledAcceptanceInfo) {
 					// 如果已经填写过，询问是否重新填写
