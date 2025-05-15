@@ -261,17 +261,16 @@
 		<el-dialog :close-on-click-modal="false" :show-close="false" title="银行卡流水" :visible.sync="bankChangeDialogVisible" width="850px" append-to-body>
 			<el-row>
 				<div>
-					<el-form :model="bankAcountQuery" label-width="80px">
-						<el-col :span="6">
-							<el-form-item label="日期" prop="operateDate">
-								<el-date-picker v-model="bankAcountQuery.operateDate" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="日期" size="mini" style="width: 140px" />
-							</el-form-item>
-						</el-col>
-						<el-col :span="6">
-							<el-form-item>
-								<el-button type="primary" size="mini" @click="getBankAcountChangeList">搜索</el-button>
-							</el-form-item>
-						</el-col>
+					<el-form :model="bankAcountQuery" label-width="80px" :inline="true">
+						<el-form-item label="开始日期" prop="params.operateDateStartTime">
+							<el-date-picker v-model="bankAcountQuery.params.operateDateStartTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="日期" size="mini" />
+						</el-form-item>
+						<el-form-item label="结束日期" prop="params.operateDateEndTime">
+							<el-date-picker v-model="bankAcountQuery.params.operateDateEndTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="日期" size="mini" />
+						</el-form-item>
+						<el-form-item>
+							<el-button type="primary" size="mini" @click="getBankAcountChangeList">搜索</el-button>
+						</el-form-item>
 					</el-form>
 				</div>
 				<el-table :data="bankChangeList" style="width: 100%">
@@ -465,7 +464,10 @@ export default {
 			bankAcountQuery: {
 				bankAcountTotalPageNum: 1,
 				bankAcountTotalPageSize: 10,
-				operateDate: null
+				params: {
+					operateDateEndTime: null,
+					operateDateStartTime: null
+				}
 			},
 			bankAcountTotal: 0,
 			// 用户搜索字段

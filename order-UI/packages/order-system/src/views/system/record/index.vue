@@ -911,19 +911,16 @@ export default {
 			this.form.referenceTableId = -1;
 			addRecord(this.form).then(() => {
 				this.onSuccess('新增成功', true, true);
+				// 清除承兑信息状态
+				this.clearAcceptanceFillStatus();
 			});
 		},
-
 		// 公共成功处理逻辑
 		onSuccess(message, resetForm = false, resetEachInfo = false) {
 			this.$modal.msgSuccess(message);
 			this.open = false;
 			this.getList();
 			this.$refs.uploadFile.clearFileList();
-
-			// 无论是哪种情况，都清除承兑信息状态
-			this.clearAcceptanceFillStatus();
-
 			if (resetForm) this.reset();
 			if (resetEachInfo) this.resetEachInfo();
 		},
@@ -958,11 +955,9 @@ export default {
 			localStorage.removeItem('bankAcceptanceFilled');
 			localStorage.removeItem('bankAcceptanceFilledTime');
 			localStorage.removeItem('sharedBankAcceptanceFilled');
-
 			// 清除特定实例的状态
 			localStorage.removeItem(`bankAcceptanceFilled_income-${this.form.id || 'new'}`);
 			localStorage.removeItem(`bankAcceptanceFilled_expense-${this.form.id || 'new'}`);
-
 			// 清除可能存在的其他相关状态
 			Object.keys(localStorage).forEach(key => {
 				if (key.startsWith('bankAcceptanceFilled_') || key.includes('BankAcceptance')) {

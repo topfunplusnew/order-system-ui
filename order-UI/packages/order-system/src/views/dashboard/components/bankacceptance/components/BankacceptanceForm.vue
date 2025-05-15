@@ -268,23 +268,21 @@ export default {
 					if (this.form.id != null) {
 						this.form.billType = this.billType;
 						this.form = excludeParams(this.form, this.$exclude);
+						console.log(`表单`, this.form);
 						// 在localStorage中保存已填写承兑信息的标记
 						localStorage.setItem('bankAcceptanceFilled', JSON.stringify(this.form));
 						localStorage.setItem('bankAcceptanceFilledTime', new Date().getTime());
-
-						this.$emit('submitForm', this.form, () => {
-							this.reset();
-						});
+						this.$emit('submitForm', this.form);
+						this.reset();
 					} else {
 						this.form.billType = this.billType;
 						this.form = excludeParams(this.form, this.$exclude);
+						console.log(`表单`, this.form);
 						// 在localStorage中保存已填写承兑信息的标记
 						localStorage.setItem('bankAcceptanceFilled', JSON.stringify(this.form));
 						localStorage.setItem('bankAcceptanceFilledTime', new Date().getTime());
-
-						this.$emit('submitForm', this.form, () => {
-							this.reset();
-						});
+						this.$emit('submitForm', this.form);
+						this.reset();
 					}
 				}
 			});

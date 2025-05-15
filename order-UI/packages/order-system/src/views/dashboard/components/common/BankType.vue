@@ -170,6 +170,7 @@ export default {
 		},
 		// 右侧滑窗的提交逻辑
 		handleSubmit(value) {
+			console.log(`承兑信息:`, value);
 			// 新扔一个emit 给父组件用
 			this.$emit('updateBankAcceptance', value);
 			this.flag = true;
