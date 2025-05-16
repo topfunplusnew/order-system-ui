@@ -47,6 +47,10 @@
 }
 
 // to fixed https://github.com/ElemeFE/element/issues/2461
+.el-dialog__wrapper {
+  pointer-events: none !important;
+}
+
 .el-dialog {
   transform: none;
   left: 0;
@@ -54,6 +58,8 @@
   margin: 0 auto;
   background: #f3f3f3;
   border-radius: 4px;
+
+  pointer-events: auto !important;
 }
 
 .el-dialog > .el-dialog__body {

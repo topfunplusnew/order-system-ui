@@ -80,17 +80,17 @@
 
 		<!-- 添加或修改客户、供应商信息对话框 -->
 		<el-dialog
-			:model="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
+			:modal="false"
+			:append-to-body="true"
 			:close-on-click-modal="false"
 			:show-close="false"
 			:title="title"
 			:visible.sync="open"
 			width="600px"
-			append-to-body
-			class="dialog-container"
+			class="non-blocking-dialog dialog-container"
+			v-dialogDrag
+			v-dialogDragWidth
+			v-dialogDragHeight
 		>
 			<el-form ref="form" :model="form" :rules="rules" label-width="110px" @submit.native.prevent="submitForm" @keyup.enter.native="submitForm">
 				<el-row :gutter="4">
@@ -145,18 +145,71 @@
 			</div>
 		</el-dialog>
 
-		<!--    账号搜索-->
+		<!--    银行信息-->
 		<el-dialog
-			:model="false"
+			:modal="false"
+			:append-to-body="true"
+			:close-on-click-modal="false"
+			:show-close="false"
+			title="操作银行卡"
+			:visible.sync="dialogBankInfoVisible"
+			width="60%"
+			class="non-blocking-dialog dialog-container"
 			v-dialogDrag
 			v-dialogDragWidth
 			v-dialogDragHeight
+		>
+			<el-form :model="queryBankInfo">
+				<el-row :gutter="4">
+					<el-col :span="8">
+						<el-form-item label="账号类型" :label-width="formLabelWidth">
+							<el-select v-model="queryBankInfo.acountsType" placeholder="请选择">
+								<el-option v-for="item in acountsTypeList" :key="item.value" :label="item.label" :value="item.value"></el-option>
+							</el-select>
+						</el-form-item>
+					</el-col>
+					<el-col :span="8">
+						<el-form-item label="账户名" :label-width="formLabelWidth">
+							<el-input v-model="queryBankInfo.acountsName" autocomplete="off" @input="handleInputTrim($event, 'queryBankInfo', 'acountsName')"></el-input>
+						</el-form-item>
+					</el-col>
+					<el-col :span="3">
+						<el-button type="primary" @click="handleSearchBankInfo">搜索</el-button>
+					</el-col>
+				</el-row>
+			</el-form>
+			<el-row>
+				<el-table v-loading="loading" :data="bankInfo" class="table-container">
+					<el-table-column label="银行卡号" align="center" prop="bankNo" />
+					<el-table-column label="账户类型" align="center" prop="acountsType" />
+					<el-table-column label="账户名" align="center" prop="acountsName" />
+					<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="180">
+						<template slot-scope="scope">
+							<el-button type="danger" @click="addThisBankInfo(scope.row)">添加该银行卡</el-button>
+						</template>
+					</el-table-column>
+				</el-table>
+			</el-row>
+			<div slot="footer" class="dialog-footer">
+				<el-button @click="dialogBankInfoVisible = false">取 消</el-button>
+				<el-button type="primary" @click="dialogBankInfoVisible = false">确 定</el-button>
+			</div>
+			<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
+		</el-dialog>
+
+		<!--    账号搜索-->
+		<el-dialog
+			:modal="false"
+			:append-to-body="true"
 			:close-on-click-modal="false"
 			:show-close="true"
 			title="账号搜索"
 			:visible.sync="dialogFormSearchVisible"
 			width="60%"
-			class="dialog-container"
+			class="non-blocking-dialog dialog-container"
+			v-dialogDrag
+			v-dialogDragWidth
+			v-dialogDragHeight
 		>
 			<el-form :model="queryParams">
 				<el-row :gutter="4">
@@ -191,14 +244,15 @@
 		<!--    搜索已绑定的银行卡信息-->
 		<el-dialog
 			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
+			:append-to-body="true"
 			:close-on-click-modal="false"
 			:show-close="false"
 			title="银行卡号"
 			:visible.sync="dialogFormVisible"
-			class="dialog-container"
+			class="non-blocking-dialog dialog-container"
+			v-dialogDrag
+			v-dialogDragWidth
+			v-dialogDragHeight
 		>
 			<el-form :model="currentInfo">
 				<el-row :gutter="4" style="text-align: center">
@@ -242,17 +296,19 @@
 			</div>
 			<pagination v-show="bankTotal > 0" :total="bankTotal" :page.sync="bankPageNum" :limit.sync="bankPageSize" @pagination="getBankList" />
 
-			<!--    银行信息-->
+			<!--    银行信息 (嵌套弹窗)-->
 			<el-dialog
-				v-dialogDrag
-				v-dialogDragWidth
-				v-dialogDragHeight
+				:modal="false"
+				:append-to-body="true"
 				:close-on-click-modal="false"
 				:show-close="false"
 				title="操作银行卡"
 				:visible.sync="dialogBankInfoVisible"
 				width="60%"
-				class="dialog-container"
+				class="non-blocking-dialog dialog-container"
+				v-dialogDrag
+				v-dialogDragWidth
+				v-dialogDragHeight
 			>
 				<el-form :model="queryBankInfo">
 					<el-row :gutter="4">
@@ -294,17 +350,17 @@
 		</el-dialog>
 
 		<el-dialog
-			:model="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
+			:modal="false"
+			:append-to-body="true"
 			:close-on-click-modal="false"
 			:show-close="false"
 			title="设置默认银行卡"
 			:visible.sync="addDefaultCardVisible"
 			width="500px"
-			append-to-body
-			class="dialog-container"
+			class="non-blocking-dialog dialog-container"
+			v-dialogDrag
+			v-dialogDragWidth
+			v-dialogDragHeight
 		>
 			<el-table v-loading="loading" v-horizontal-scroll="'always'" border :data="singleInfo" height="300px" @selection-change="handleSelectionChange" class="table-container">
 				<el-table-column label="账户类型" align="center" prop="acountsType" />
@@ -873,5 +929,24 @@ export default {
 	background-color: #fff;
 	border-radius: 5px;
 	padding: 10px;
+}
+
+/* 添加新的样式，确保弹窗不会捕获点击事件 */
+:deep(.non-blocking-dialog) {
+  pointer-events: auto;
+}
+
+:deep(.el-dialog__wrapper) {
+  pointer-events: none;
+}
+
+:deep(.el-dialog) {
+  pointer-events: auto;
+  background-color: #fff;
+  box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+}
+
+:deep(.el-overlay) {
+  pointer-events: none !important;
 }
 </style>
