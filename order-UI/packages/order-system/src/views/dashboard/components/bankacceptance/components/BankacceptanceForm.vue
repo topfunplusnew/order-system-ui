@@ -195,6 +195,7 @@ export default {
 				if (!value) {
 					return;
 				}
+				console.log(`传递的value`, value);
 				// 如果是修改,那么就填充value
 				if (value.id) {
 					this.$nextTick(() => {
@@ -206,8 +207,7 @@ export default {
 				// 提交给父组件BankType 触发提交时间
 				this.$emit('assign', value);
 			},
-			deep: true,
-			immediate: true
+			deep: true
 		},
 		isInternalTransfer: {
 			handler(val) {
@@ -235,8 +235,7 @@ export default {
 		listCompany,
 		// 获取票据信息
 		getBankAcceptanceDate(e) {
-			if (!e) return;
-			const inputValue = e.target.value;
+			const inputValue = _.cloneDeep(e);
 			if (!inputValue) {
 				this.$message.error('票据号码为空,填充失败');
 				return;
@@ -272,7 +271,7 @@ export default {
 						// 在localStorage中保存已填写承兑信息的标记
 						localStorage.setItem('bankAcceptanceFilled', JSON.stringify(this.form));
 						localStorage.setItem('bankAcceptanceFilledTime', new Date().getTime());
-						this.$emit('submitForm', this.form);
+						this.$emit('submitForm', _.cloneDeep(this.form));
 						this.reset();
 					} else {
 						this.form.billType = this.billType;
@@ -281,7 +280,7 @@ export default {
 						// 在localStorage中保存已填写承兑信息的标记
 						localStorage.setItem('bankAcceptanceFilled', JSON.stringify(this.form));
 						localStorage.setItem('bankAcceptanceFilledTime', new Date().getTime());
-						this.$emit('submitForm', this.form);
+						this.$emit('submitForm', _.cloneDeep(this.form));
 						this.reset();
 					}
 				}

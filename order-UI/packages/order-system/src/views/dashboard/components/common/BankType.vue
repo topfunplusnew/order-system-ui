@@ -172,7 +172,7 @@ export default {
 		handleSubmit(value) {
 			console.log(`承兑信息:`, value);
 			// 新扔一个emit 给父组件用
-			this.$emit('updateBankAcceptance', value);
+			this.$emit('updateBankAcceptance', _.cloneDeep(value));
 			this.flag = true;
 			this.drawer = false;
 			this.bankacceptanceInfo = value;

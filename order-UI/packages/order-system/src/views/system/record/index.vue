@@ -265,7 +265,11 @@
 						<!-- 选择银行卡类型的组件 -->
 						<BankType
 							@updateSelectedType="changeSelfBankType"
-							@updateBankAcceptance="value => (form.params.bankacceptance = value)"
+							@updateBankAcceptance="
+								value => {
+									form.params.bankacceptance = value;
+								}
+							"
 							:bill-type="PayType.TRANSFOR"
 							:is-internal-transfer="cashType === CASH_TYPE.TRANSFER"
 							:form-id="`income-${form.id || 'new'}`"
@@ -429,6 +433,11 @@
 					<el-form-item label="支出账户类型">
 						<BankType
 							@updateSelectedType="changeOtherBankType"
+							@updateBankAcceptance="
+								value => {
+									form.params.bankacceptance = value;
+								}
+							"
 							:bill-type="PayType.TRANSFOR"
 							:is-internal-transfer="cashType === CASH_TYPE.TRANSFER"
 							:form-id="`expense-${form.id || 'new'}`"
