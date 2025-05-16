@@ -129,7 +129,7 @@
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改礼品出库信息对话框 -->
-		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="title" :visible.sync="open" width="500px" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :title="title" :visible.sync="open" width="500px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="80px">
 				<el-form-item label="出库日期" prop="outDate">
 					<el-date-picker v-model="form.outDate" clearable type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="请选择出库日期"></el-date-picker>

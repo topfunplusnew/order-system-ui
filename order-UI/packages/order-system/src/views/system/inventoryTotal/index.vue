@@ -57,7 +57,7 @@
 			<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getSummary" />
 		</div>
 
-		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="变动记录" :visible.sync="changeLogVisible" width="1000px" class="change-log-dialog">
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  title="变动记录" :visible.sync="changeLogVisible" width="1000px" class="change-log-dialog">
 			<!-- 新增明细标题行 -->
 			<div style="margin-bottom: 10px; font-weight: bold">
 				<span style="margin-right: 100px">库存明细</span>

@@ -146,7 +146,7 @@ export default {
 		</div>
 
 		<!--    文件列表-->
-		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="文件列表(最多上传五个文件)" :visible.sync="dialogVisible" width="620px" append-to-body :close-on-click-modal="false" :close-on-press-escape="false">
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  title="文件列表(最多上传五个文件)" :visible.sync="dialogVisible" width="620px" append-to-body :close-on-click-modal="false" :close-on-press-escape="false">
 			<h3>附件列表</h3>
 			<div class="file-list">
 				<!--        上传过的文件列表-->

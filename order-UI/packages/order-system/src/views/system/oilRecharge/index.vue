@@ -78,7 +78,7 @@
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改加油卡充值信息对话框 -->
-		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="80px">
 				<el-form-item label="加油卡卡号" prop="oilCardNo">
 					<el-row>
@@ -123,7 +123,7 @@
 		</el-dialog>
 
 		<!--    加油卡付款申请-->
-		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="加油卡付款申请" :visible.sync="paymentApplyVisible" width="500px">
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" title="加油卡付款申请" :visible.sync="paymentApplyVisible" width="500px">
 			<OilApply :need-money="needMoney" :table-name="TableName.OIL_RECHARGE" :t-i-d="tid" @changeOpen="resetApplyPaymentInfo" />
 		</el-dialog>
 	</div>

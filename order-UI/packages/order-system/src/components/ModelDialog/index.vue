@@ -1,5 +1,5 @@
 <template>
-	<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :visible.sync="visible" :title="title" width="600px" :close-on-click-modal="false">
+	<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :visible.sync="visible" :title="title" width="600px" :close-on-click-modal="false">
 		<div v-if="type === 'object'">
 			<div v-for="(value, key) in data" :key="key" class="data-row">
 				<strong>{{ labels[key] || key }}</strong>

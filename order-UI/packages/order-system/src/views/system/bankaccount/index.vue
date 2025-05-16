@@ -105,7 +105,7 @@
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改银行账号对话框 -->
-		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="120px" @keyup.enter.native="submitForm" @submit.native.prevent="submitForm">
 				<!--        选择账号类型 分为：司机、公司、己方公司等等-->
 				<el-form-item label="账号类型" prop="acountsType">
@@ -258,7 +258,7 @@
 		</el-dialog>
 
 		<!--    银行卡流水-->
-		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="银行卡流水" :visible.sync="bankChangeDialogVisible" width="850px" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" title="银行卡流水" :visible.sync="bankChangeDialogVisible" width="850px" append-to-body>
 			<el-row>
 				<div>
 					<el-form :model="bankAcountQuery" label-width="80px" :inline="true">

@@ -37,7 +37,7 @@
 			<!--        <el-button size="mini" circle icon="el-icon-refresh" @click="refresh()"/>-->
 			<!--      </el-tooltip>-->
 		</el-row>
-		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :title="title" :visible.sync="open" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :title="title" :visible.sync="open" append-to-body>
 			<el-transfer v-model="value" :titles="['显示', '隐藏']" :data="columns" @change="dataChange"></el-transfer>
 		</el-dialog>
 	</div>

@@ -100,7 +100,7 @@
 
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
-		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="请选择导出时间段" :visible.sync="dialogVisible" width="30%">
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" title="请选择导出时间段" :visible.sync="dialogVisible" width="30%">
 			<el-form ref="queryForm" :model="queryParams" size="mini" label-width="68px">
 				<el-form-item label="开始时间" prop="beginTime">
 					<el-date-picker v-model="queryParams.beginTime" type="date" placeholder="选择时间" value-format="yyyy-MM-dd" size="mini"></el-date-picker>
@@ -116,7 +116,7 @@
 		</el-dialog>
 
 		<!--    2025-2-24 新增 增删改查-->
-		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="社保基金" :visible.sync="open" append-to-body width="80%">
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" title="社保基金" :visible.sync="open" append-to-body width="80%">
 			<el-row>
 				<el-col :span="1.5">
 					<el-button type="primary" size="mini" @click="addSocialInsure">添加人员社保基金信息</el-button>
@@ -173,7 +173,7 @@
 		</el-dialog>
 
 		<!--    添加个体信息-->
-		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="社保基金人员个体信息" :visible.sync="addSocialDialogVisible" width="85%" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" title="社保基金人员个体信息" :visible.sync="addSocialDialogVisible" width="85%" append-to-body>
 			<el-row>
 				<el-form ref="form" :model="form" :rules="rules" label-width="140px">
 					<el-col :span="8">

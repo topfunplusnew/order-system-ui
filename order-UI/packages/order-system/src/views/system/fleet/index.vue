@@ -61,7 +61,7 @@
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改车队对话框 -->
-		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="120px" @keyup.enter.native="submitForm" @submit.native.prevent="submitForm" size="mini">
 				<el-form-item label="车队名称" prop="fname">
 					<el-input v-model="form.fname" placeholder="请输入车队名称" @input="handleInputTrim($event, 'form', 'fname')" />

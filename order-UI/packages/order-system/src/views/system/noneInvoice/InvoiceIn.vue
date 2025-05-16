@@ -123,7 +123,7 @@
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改发票购入信息对话框 -->
-		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="700px" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="700px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="150px">
 				<!--        新增开票日期 需要单独的接口来进行新增操作-->
 				<el-form-item label="开票日期" prop="extraInfo.actualInvoiceTime">
@@ -195,7 +195,7 @@
 		</el-dialog>
 
 		<!-- 补充信息对话框 -->
-		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="'补充发票信息'" :visible.sync="extraInfoDialogVisible" width="500px" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :title="'补充发票信息'" :visible.sync="extraInfoDialogVisible" width="500px" append-to-body>
 			<el-form ref="extraInfoForm" :model="currentExtraInfo" :rules="extraInfoRules" label-width="120px">
 				<el-form-item label="实际开票金额" prop="actualInvoiceAmount">
 					<el-input v-model="currentExtraInfo.actualInvoiceAmount" placeholder="请输入实际开票金额"></el-input>
@@ -217,11 +217,11 @@
 		</el-dialog>
 
 		<!--    添加付款申请-->
-		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="付款申请" :visible.sync="PaymentApplyInfoVisible" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" title="付款申请" :visible.sync="PaymentApplyInfoVisible" append-to-body>
 			<ApplyPayment :table-name="TableName.INVOICE_IN" :t-i-d="tID" :need-money="needMoney" :need-info="{}" @changeOpen="changePaymentApplyInfoVisible" />
 		</el-dialog>
 
-		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="true" title="查看订单信息" :visible.sync="checkOrderInfoVisible" width="70%" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="true" title="查看订单信息" :visible.sync="checkOrderInfoVisible" width="70%" append-to-body>
 			<OrderInfos :order-info="orderInfo" />
 		</el-dialog>
 

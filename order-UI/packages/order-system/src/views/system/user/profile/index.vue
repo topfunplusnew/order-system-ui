@@ -120,7 +120,7 @@
 			</el-col>
 		</el-row>
 
-		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="修改个人信息" :visible.sync="open" width="80%" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" title="修改个人信息" :visible.sync="open" width="80%" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="80px">
 				<el-row :gutter="10">
 					<el-col :span="6">

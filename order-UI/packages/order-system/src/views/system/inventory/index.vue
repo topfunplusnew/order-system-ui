@@ -115,7 +115,7 @@
 <!--		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />-->
 
 <!--		&lt;!&ndash; 添加或修改库存对话框 &ndash;&gt;-->
-<!--		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="1300px" append-to-body>-->
+<!--		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="1300px" append-to-body>-->
 <!--			<el-form ref="form" :model="form" :rules="rules" label-width="120px">-->
 <!--				<el-row>-->
 <!--					<el-col :span="6">-->
@@ -339,7 +339,7 @@
 <!--		</div>-->
 
 <!--		&lt;!&ndash;    二次出库&ndash;&gt;-->
-<!--		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="二次出库" :visible.sync="secondInvoiceInVisible" width="30%" append-to-body>-->
+<!--		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" title="二次出库" :visible.sync="secondInvoiceInVisible" width="30%" append-to-body>-->
 <!--			<div slot="footer" class="dialog-footer">-->
 <!--				<el-row :gutter="5">-->
 <!--					<el-col :span="8">-->
@@ -356,7 +356,7 @@
 <!--		</el-dialog>-->
 
 <!--		&lt;!&ndash;    货物破损出库&ndash;&gt;-->
-<!--		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="货物破损出库" :visible.sync="breakInvoiceInVisible" width="30%" append-to-body>-->
+<!--		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" title="货物破损出库" :visible.sync="breakInvoiceInVisible" width="30%" append-to-body>-->
 <!--			<div slot="footer" class="dialog-footer">-->
 <!--				<el-row :gutter="5">-->
 <!--					<el-col :span="8">-->

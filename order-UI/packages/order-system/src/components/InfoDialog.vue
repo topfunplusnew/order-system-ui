@@ -30,7 +30,7 @@ export default {
 <template>
 	<div>
 		<keep-alive>
-			<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" v-bind="$attrs" :title="title" :width="width" append-to-body v-on="$listeners" @open="onOpen">
+			<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" v-bind="$attrs" :title="title" :width="width" append-to-body v-on="$listeners" @open="onOpen">
 				<!--      slot只是一个占位符 实际上还是在index.vue中作为子组件 所以可以直接在slot代表的组件中定义回调-->
 				<slot name="info"></slot>
 			</el-dialog>

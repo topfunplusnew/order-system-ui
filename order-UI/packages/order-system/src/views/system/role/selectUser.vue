@@ -1,6 +1,6 @@
 <template>
 	<!-- 授权用户 -->
-	<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="选择用户" :visible.sync="visible" width="800px" top="5vh" append-to-body>
+	<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" title="选择用户" :visible.sync="visible" width="800px" top="5vh" append-to-body>
 		<el-form ref="queryForm" :model="queryParams" size="mini" :inline="true">
 			<el-form-item label="用户名称" prop="userName">
 				<el-input v-model="queryParams.userName" placeholder="请输入用户名称" clearable @keyup.enter.native="handleQuery" />

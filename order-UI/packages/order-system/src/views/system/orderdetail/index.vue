@@ -112,7 +112,7 @@
 <!--		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />-->
 
 <!--		&lt;!&ndash; 添加或修改订单详情对话框 &ndash;&gt;-->
-<!--		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>-->
+<!--		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>-->
 <!--			<el-form ref="form" :model="form" :rules="rules" label-width="80px">-->
 <!--				<el-form-item label="订单编号" prop="ordersNo">-->
 <!--					<el-input v-model="form.ordersNo" placeholder="请输入订单编号" />-->
@@ -260,7 +260,7 @@
 <!--		</el-dialog>-->
 
 <!--		&lt;!&ndash;    点击查看某个订单的弹窗   &ndash;&gt;-->
-<!--		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="查看订单信息" :visible.sync="checkOrderVisible" width="30%">-->
+<!--		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" title="查看订单信息" :visible.sync="checkOrderVisible" width="30%">-->
 <!--			<el-descriptions title="订单信息" :column="1" border>-->
 <!--				<el-descriptions-item label="id">{{ orderDetailInfo.id }}</el-descriptions-item>-->
 <!--				<el-descriptions-item label="日期">{{ orderDetailInfo.orderDate }}</el-descriptions-item>-->
@@ -317,7 +317,7 @@
 <!--		</el-dialog>-->
 
 <!--		&lt;!&ndash;    点击调整单的弹窗&ndash;&gt;-->
-<!--		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="提示" :visible.sync="handleOrderVisible" width="30%">-->
+<!--		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" title="提示" :visible.sync="handleOrderVisible" width="30%">-->
 <!--			<span>点击调整单的弹窗</span>-->
 <!--			<span slot="footer" class="dialog-footer">-->
 <!--				<el-button @click="handleOrderVisible = false">取 消</el-button>-->
@@ -326,7 +326,7 @@
 <!--		</el-dialog>-->
 
 <!--		&lt;!&ndash;    点击发货单1的弹窗&ndash;&gt;-->
-<!--		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="提示" :visible.sync="Order1Visible" width="30%">-->
+<!--		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" title="提示" :visible.sync="Order1Visible" width="30%">-->
 <!--			<span>点击发货单1的弹窗</span>-->
 <!--			<span slot="footer" class="dialog-footer">-->
 <!--				<el-button @click="Order1Visible = false">取 消</el-button>-->
@@ -335,7 +335,7 @@
 <!--		</el-dialog>-->
 
 <!--		&lt;!&ndash;    点击发货单2的弹窗&ndash;&gt;-->
-<!--		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="提示" :visible.sync="Order2Visible" width="30%">-->
+<!--		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" title="提示" :visible.sync="Order2Visible" width="30%">-->
 <!--			<span>点击发货单2的弹窗</span>-->
 <!--			<span slot="footer" class="dialog-footer">-->
 <!--				<el-button @click="Order2Visible = false">取 消</el-button>-->
@@ -344,7 +344,7 @@
 <!--		</el-dialog>-->
 
 <!--		&lt;!&ndash;    点击发货单3的弹窗&ndash;&gt;-->
-<!--		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="提示" :visible.sync="Order3Visible" width="30%">-->
+<!--		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" title="提示" :visible.sync="Order3Visible" width="30%">-->
 <!--			<span>点击发货单3的弹窗</span>-->
 <!--			<span slot="footer" class="dialog-footer">-->
 <!--				<el-button @click="Order3Visible = false">取 消</el-button>-->
@@ -353,7 +353,7 @@
 <!--		</el-dialog>-->
 
 <!--		&lt;!&ndash;    上传附件的弹窗&ndash;&gt;-->
-<!--		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="提示" :visible.sync="handleUploadVisible" width="30%">-->
+<!--		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" title="提示" :visible.sync="handleUploadVisible" width="30%">-->
 <!--			<span>上传附件的弹窗</span>-->
 <!--			<span slot="footer" class="dialog-footer">-->
 <!--				<el-button @click="handleUploadVisible = false">取 消</el-button>-->
@@ -362,7 +362,7 @@
 <!--		</el-dialog>-->
 
 <!--		&lt;!&ndash;    上传收到条的弹窗&ndash;&gt;-->
-<!--		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="提示" :visible.sync="handleCommitVisible" width="30%">-->
+<!--		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" title="提示" :visible.sync="handleCommitVisible" width="30%">-->
 <!--			<span>上传收到条的弹窗</span>-->
 <!--			<span slot="footer" class="dialog-footer">-->
 <!--				<el-button @click="handleCommitVisible = false">取 消</el-button>-->

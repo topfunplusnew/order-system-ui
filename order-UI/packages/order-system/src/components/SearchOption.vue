@@ -173,7 +173,7 @@ export default {
 		<!--    按钮-->
 		<el-button size="mini" :icon="icon" type="primary" @click="handleCallBack" :disabled="disable"></el-button>
 		<!--    弹窗-->
-		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :title="title" :visible.sync="dialogVisible" destroy-on-close width="65%" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :title="title" :visible.sync="dialogVisible" destroy-on-close width="65%" append-to-body>
 			<!--      弹出的表格内容-->
 			<el-row>
 				<div>

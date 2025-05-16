@@ -5,7 +5,13 @@
 				<el-input v-model="queryParams.companyName" placeholder="请输入客户名称" clearable @keyup.enter.native="handleQuery" @input="handleInputTrim($event, 'queryParams', 'companyName')" />
 			</el-form-item>
 			<el-form-item label="联系人" prop="relationName">
-				<el-input v-model="queryParams.relationName" placeholder="请输入联系人名称" clearable @keyup.enter.native="handleQuery" @input="handleInputTrim($event, 'queryParams', 'relationName')" />
+				<el-input
+					v-model="queryParams.relationName"
+					placeholder="请输入联系人名称"
+					clearable
+					@keyup.enter.native="handleQuery"
+					@input="handleInputTrim($event, 'queryParams', 'relationName')"
+				/>
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -73,7 +79,19 @@
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改客户、供应商信息对话框 -->
-		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="54%" append-to-body class="dialog-container">
+		<el-dialog
+			:model="false"
+			v-dialogDrag
+			v-dialogDragWidth
+			v-dialogDragHeight
+			:close-on-click-modal="false"
+			:show-close="false"
+			:title="title"
+			:visible.sync="open"
+			width="600px"
+			append-to-body
+			class="dialog-container"
+		>
 			<el-form ref="form" :model="form" :rules="rules" label-width="110px" @submit.native.prevent="submitForm" @keyup.enter.native="submitForm">
 				<el-row :gutter="4">
 					<el-col :span="12">
@@ -128,7 +146,18 @@
 		</el-dialog>
 
 		<!--    账号搜索-->
-		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="true" title="账号搜索" :visible.sync="dialogFormSearchVisible" width="60%" class="dialog-container">
+		<el-dialog
+			:model="false"
+			v-dialogDrag
+			v-dialogDragWidth
+			v-dialogDragHeight
+			:close-on-click-modal="false"
+			:show-close="true"
+			title="账号搜索"
+			:visible.sync="dialogFormSearchVisible"
+			width="60%"
+			class="dialog-container"
+		>
 			<el-form :model="queryParams">
 				<el-row :gutter="4">
 					<el-col :span="8">
@@ -160,7 +189,17 @@
 		</el-dialog>
 
 		<!--    搜索已绑定的银行卡信息-->
-		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="银行卡号" :visible.sync="dialogFormVisible" class="dialog-container">
+		<el-dialog
+			:modal="false"
+			v-dialogDrag
+			v-dialogDragWidth
+			v-dialogDragHeight
+			:close-on-click-modal="false"
+			:show-close="false"
+			title="银行卡号"
+			:visible.sync="dialogFormVisible"
+			class="dialog-container"
+		>
 			<el-form :model="currentInfo">
 				<el-row :gutter="4" style="text-align: center">
 					<span style="font-weight: bolder; font-size: 18px">
@@ -169,48 +208,6 @@
 				</el-row>
 			</el-form>
 			<br />
-
-			<!-- <el-divider>默认银行卡信息</el-divider> -->
-			<!-- <el-row>
-        <el-row>
-          <el-row v-if="defaultBankCardInfo.not !== true">
-            <br />
-            <el-descriptions>
-              <el-descriptions-item label="户名">
-                {{ defaultBankCardInfo.acountsName }}
-              </el-descriptions-item>
-              <el-descriptions-item label="开户行">
-                {{ defaultBankCardInfo.bankName }}
-              </el-descriptions-item>
-              <el-descriptions-item label="银行卡号">
-                {{ defaultBankCardInfo.bankNo }}
-              </el-descriptions-item>
-              <el-descriptions-item label="余额">
-                <el-tag size="mini">{{ defaultBankCardInfo.amount }}</el-tag>
-              </el-descriptions-item>
-            </el-descriptions>
-          </el-row>
-          <el-row v-else>
-            <el-descriptions>
-              <el-descriptions-item label=" 户名">暂无</el-descriptions-item>
-              <el-descriptions-item label="开户行">暂无</el-descriptions-item>
-              <el-descriptions-item label="银行卡号">暂无</el-descriptions-item>
-              <el-descriptions-item label="余额">
-                <el-tag size="mini">暂无</el-tag>
-              </el-descriptions-item>
-              <el-descriptions-item>
-                <el-button
-                  size="mini"
-                  type="primary"
-                  @click="addDefaultCard($event)"
-                >
-                  添加默认银行卡
-                </el-button>
-              </el-descriptions-item>
-            </el-descriptions>
-          </el-row>
-        </el-row>
-      </el-row> -->
 			<el-divider>已绑定银行卡</el-divider>
 			<!--      客户的银行卡列表  应查询已经绑定的银行卡-->
 			<el-row>
@@ -246,13 +243,23 @@
 			<pagination v-show="bankTotal > 0" :total="bankTotal" :page.sync="bankPageNum" :limit.sync="bankPageSize" @pagination="getBankList" />
 
 			<!--    银行信息-->
-			<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="操作银行卡" :visible.sync="dialogBankInfoVisible" width="60%" class="dialog-container">
+			<el-dialog
+				v-dialogDrag
+				v-dialogDragWidth
+				v-dialogDragHeight
+				:close-on-click-modal="false"
+				:show-close="false"
+				title="操作银行卡"
+				:visible.sync="dialogBankInfoVisible"
+				width="60%"
+				class="dialog-container"
+			>
 				<el-form :model="queryBankInfo">
 					<el-row :gutter="4">
 						<el-col :span="8">
 							<el-form-item label="账号类型" :label-width="formLabelWidth">
 								<el-select v-model="queryBankInfo.acountsType" placeholder="请选择">
-								<el-option v-for="item in acountsTypeList" :key="item.value" :label="item.label" :value="item.value"></el-option>
+									<el-option v-for="item in acountsTypeList" :key="item.value" :label="item.label" :value="item.value"></el-option>
 								</el-select>
 							</el-form-item>
 						</el-col>
@@ -286,7 +293,19 @@
 			</el-dialog>
 		</el-dialog>
 
-		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="设置默认银行卡" :visible.sync="addDefaultCardVisible" width="500px" append-to-body class="dialog-container">
+		<el-dialog
+			:model="false"
+			v-dialogDrag
+			v-dialogDragWidth
+			v-dialogDragHeight
+			:close-on-click-modal="false"
+			:show-close="false"
+			title="设置默认银行卡"
+			:visible.sync="addDefaultCardVisible"
+			width="500px"
+			append-to-body
+			class="dialog-container"
+		>
 			<el-table v-loading="loading" v-horizontal-scroll="'always'" border :data="singleInfo" height="300px" @selection-change="handleSelectionChange" class="table-container">
 				<el-table-column label="账户类型" align="center" prop="acountsType" />
 				<el-table-column label="开户名称(户名)" align="center" prop="acountsName" />

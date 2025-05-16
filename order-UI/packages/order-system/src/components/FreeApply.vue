@@ -260,7 +260,7 @@ export default {
 			</el-form-item>
 		</el-form>
 
-		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="快速添加司机银行卡信息" :visible.sync="addBankAccountDialogVisible" width="500px" append-to-body :close-on-click-modal="false">
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  title="快速添加司机银行卡信息" :visible.sync="addBankAccountDialogVisible" width="500px" append-to-body :close-on-click-modal="false">
 			<el-form ref="bankAccountFormRef" :model="bankAccountForm" :rules="bankAccountRules" label-width="120px">
 				<el-form-item label="车牌" prop="acountsName">
 					<el-row>

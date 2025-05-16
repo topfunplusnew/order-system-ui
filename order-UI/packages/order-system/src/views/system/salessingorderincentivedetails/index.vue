@@ -119,7 +119,7 @@
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改唱单制对话框 -->
-		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="title" :visible.sync="open" width="800px" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :title="title" :visible.sync="open" width="800px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="150px">
 				<el-row>
 					<el-col :span="12">

@@ -132,7 +132,7 @@
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改走访记录对话框 -->
-		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="70%" append-to-body fullscreen>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="70%" append-to-body fullscreen>
 			<el-form ref="form" :model="form" :rules="rules" label-width="80px">
 				<el-col :span="8">
 					<el-form-item label="走访日期" prop="visitDate">

@@ -153,7 +153,7 @@ export default {
 				</el-row>
 			</el-row>
 		</div>
-		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="请选择导出时间" :visible.sync="dialogVisible" width="400px">
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" title="请选择导出时间" :visible.sync="dialogVisible" width="400px">
 			<el-form ref="queryForm" :model="queryParams" size="mini" label-width="68px">
 				<el-form-item label="导出时间" prop="endTime">
 					<el-date-picker v-model="queryParams.endTime" type="date" placeholder="选择时间" value-format="yyyy-MM-dd" size="mini"></el-date-picker>

@@ -213,7 +213,7 @@ export default {
 		</el-row>
 
 		<!--    返利回扣-->
-		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" title="添加返利信息" :visible.sync="addMoneyBackVisible" width="40%" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" title="添加返利信息" :visible.sync="addMoneyBackVisible" width="40%" append-to-body>
 			<el-form :model="moneyBackInfo" label-width="80px">
 				<el-form-item label="日期" prop="rebateDate">
 					<el-date-picker v-model="moneyBackInfo.rebateDate" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>

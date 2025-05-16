@@ -103,7 +103,7 @@
 			</el-col>
 		</el-row>
 		<!-- 添加或修改科目对话框 -->
-		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="80px" @keyup.enter.native="submitForm" @submit.native.prevent="submitForm">
 				<el-form-item label="父级ID" prop="parentId">
 					<treeselect v-model="form.parentId" :options="subjectOptions" :normalizer="normalizer" placeholder="请选择父级ID" />
@@ -128,7 +128,7 @@
 		</el-dialog>
 
 		<!--    添加科目分类的弹窗-->
-		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="添加科目分类" :visible.sync="openType" width="500px" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" title="添加科目分类" :visible.sync="openType" width="500px" append-to-body>
 			<el-form ref="formBodyType" :model="formType" :rules="typeRules" label-width="80px" @keyup.enter.native="submitFormType" @submit.native.prevent="submitFormType">
 				<el-form-item label="科目分类" prop="type">
 					<el-select v-model="formType.type" placeholder="请选择">

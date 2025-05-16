@@ -131,7 +131,7 @@
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改库存子对话框 -->
-		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="title" :visible.sync="open" width="500px" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :title="title" :visible.sync="open" width="500px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="80px">
 				<el-form-item label="主表ID，关联inventory_main表的id" prop="mainId">
 					<el-input v-model="form.mainId" placeholder="请输入主表ID，关联inventory_main表的id" />
@@ -249,7 +249,7 @@
 		</el-dialog>
 
 		<!-- 二次出库对话框 -->
-		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="二次出库" :visible.sync="secondInvoiceInVisible" width="30%" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" title="二次出库" :visible.sync="secondInvoiceInVisible" width="30%" append-to-body>
 			<div slot="footer" class="dialog-footer">
 				<el-row :gutter="5">
 					<el-col :span="8">
@@ -265,7 +265,7 @@
 			</div>
 		</el-dialog>
 		<!-- 货物破损出库对话框 -->
-		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="货物破损出库" :visible.sync="breakInvoiceInVisible" width="30%" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" title="货物破损出库" :visible.sync="breakInvoiceInVisible" width="30%" append-to-body>
 			<div slot="footer" class="dialog-footer">
 				<el-row :gutter="5">
 					<el-col :span="8">

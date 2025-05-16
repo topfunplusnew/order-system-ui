@@ -372,7 +372,7 @@ export default {
 
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
-		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="'附件查看'" :visible.sync="attachmentDialogVisible" width="50%" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :title="'附件查看'" :visible.sync="attachmentDialogVisible" width="50%" append-to-body>
 			<el-carousel :interval="5000" type="card" height="400px" v-if="imageAttachments.length">
 				<el-carousel-item v-for="(item, index) in imageAttachments" :key="index">
 					<img :src="item" alt="附件" style="width: 100%; height: 100%" />

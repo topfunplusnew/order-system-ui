@@ -103,7 +103,7 @@ export default {
 			</el-descriptions>
 		</el-card>
 		<!--    对应信息的弹窗-->
-		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="信息" :visible.sync="infoVisible" width="900px" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  title="信息" :visible.sync="infoVisible" width="900px" append-to-body>
 			<component :is="Components" :need-to-show-info="needToShowInfo" />
 		</el-dialog>
 	</div>

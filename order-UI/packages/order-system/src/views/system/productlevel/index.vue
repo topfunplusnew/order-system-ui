@@ -84,7 +84,7 @@
 
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 		<!--    添加产品分类的弹窗-->
-		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="添加产品分类" :visible.sync="addCategoryOpen" width="600px">
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" title="添加产品分类" :visible.sync="addCategoryOpen" width="600px">
 			<el-row>
 				<el-col :span="12">
 					<el-row>
@@ -136,7 +136,7 @@
 		</el-dialog>
 
 		<!--    添加产品级别的弹窗-->
-		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="添加产品级别" :visible.sync="addProductLevelOpen" width="600px">
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" title="添加产品级别" :visible.sync="addProductLevelOpen" width="600px">
 			<!--      添加产品级别的表单-->
 			<el-form ref="productForm" :model="addCategoryModel" size="mini" label-width="120px" :rules="rules" @keyup.enter.native="submitAddLevel" @submit.native.prevent="submitAddLevel">
 				<el-form-item label="分类" prop="categoryName">
@@ -173,7 +173,7 @@
 		</el-dialog>
 
 		<!-- 添加或修改产品级别对话框 -->
-		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="80px" @keyup.enter.native="submitForm">
 				<el-form-item label="级别编码" prop="levelNo">
 					<el-input v-model="form.levelNo" placeholder="请输入支付类型" @input="handleInputTrim($event, 'form', 'levelNo')" />
