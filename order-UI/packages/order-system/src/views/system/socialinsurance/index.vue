@@ -106,7 +106,7 @@
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改社保基金对话框 -->
-		<el-dialog :close-on-click-modal="false" :show-close="false" title="社保基金" :visible.sync="open" append-to-body width="80%">
+		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="社保基金" :visible.sync="open" append-to-body width="80%">
 			<el-row>
 				<el-col :span="1.5">
 					<el-button type="primary" size="mini" @click="addSocialInsure">添加人员社保基金信息</el-button>
@@ -163,7 +163,7 @@
 		</el-dialog>
 
 		<!--    添加社保基金人员个体信息-->
-		<el-dialog :close-on-click-modal="false" :show-close="false" title="社保基金人员个体信息" :visible.sync="addSocialDialogVisible" width="85%" append-to-body>
+		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="社保基金人员个体信息" :visible.sync="addSocialDialogVisible" width="85%" append-to-body>
 			<el-row>
 				<el-form ref="form" :model="form" :rules="rules" label-width="140px">
 					<el-col :span="8">
@@ -279,7 +279,7 @@
 		</el-dialog>
 
 		<!-- 添加导入对话框 -->
-		<el-dialog :title="upload.title" :visible.sync="upload.open" width="400px" append-to-body>
+		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="upload.title" :visible.sync="upload.open" width="400px" append-to-body>
 			<el-upload
 				ref="upload"
 				:limit="1"

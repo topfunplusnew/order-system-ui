@@ -192,7 +192,7 @@
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" z />
 
 		<!--     添加或修改付款信息对话框 -->
-		<el-dialog :close-on-click-modal="false" :show-close="false" title="付款处理" :visible.sync="open" width="650px" append-to-body>
+		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="付款处理" :visible.sync="open" width="650px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="140px">
 				<el-form-item label="日期" prop="fundsDate">
 					<el-date-picker v-model="form.fundsDate" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
@@ -418,7 +418,7 @@
 		</el-dialog>
 
 		<!--    选择银行卡的页面-->
-		<el-dialog title="请选择付款银行卡" :visible.sync="chooseBankDialogVisible" width="600px">
+		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="请选择付款银行卡" :visible.sync="chooseBankDialogVisible" width="600px">
 			<div>
 				<el-form :model="chooseInfo" label-width="150px">
 					<el-form-item label="对方银行账户类型" prop="selfBankNo">
@@ -479,7 +479,7 @@
 				<el-button type="primary" @click="handlePayment">确 定</el-button>
 			</span>
 		</el-dialog>
-		<el-dialog title="信息" :visible.sync="infoVisible" width="900px" append-to-body>
+		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="信息" :visible.sync="infoVisible" width="900px" append-to-body>
 			<component :is="Components" :need-to-show-info="needToShowInfo" />
 		</el-dialog>
 	</div>

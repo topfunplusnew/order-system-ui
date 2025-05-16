@@ -257,7 +257,7 @@ export default {
 
 		<!--    批量开票的弹窗-->
 		<div>
-			<el-dialog title="批量开票" fullscreen :visible.sync="invoiceAllVisible" append-to-body>
+			<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="批量开票" fullscreen :visible.sync="invoiceAllVisible" append-to-body>
 				<el-row :gutter="12" class="invoice-container">
 					<!-- 左侧区域 -->
 					<el-col :span="8" :sm="24" :md="8" class="left-section">

@@ -114,7 +114,7 @@ export default {
 		</div>
 
 		<!--    对应信息的弹窗-->
-		<el-dialog title="信息" :visible.sync="infoVisible" width="900px" append-to-body>
+		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="信息" :visible.sync="infoVisible" width="900px" append-to-body>
 			<component :is="Components" :need-to-show-info="needToShowInfo" />
 		</el-dialog>
 	</div>

@@ -4,7 +4,7 @@
 		<el-button size="mini" type="success" @click="handleImport">银行卡资金对账</el-button>
 
 		<!-- 导入Excel弹窗 -->
-		<el-dialog :visible.sync="importDialogVisible" title="导入Excel表格" @close="handleImportDialogClose">
+		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :visible.sync="importDialogVisible" title="导入Excel表格" @close="handleImportDialogClose">
 			<div class="dialog-content">
 				<p>请上传银行明细相关excel文件，excel文件中每一个sheet为一个银行卡的明细</p>
 				<el-button type="primary" @click="downloadTemplate" size="mini">下载excel模板</el-button>
@@ -26,7 +26,7 @@
 		</el-dialog>
 
 		<!-- 选择Sheet弹窗 -->
-		<el-dialog :visible.sync="sheetDialogVisible" title="选择银行卡(sheet表)">
+		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :visible.sync="sheetDialogVisible" title="选择银行卡(sheet表)">
 			<div class="dialog-content">
 				<p>sheet中为银行卡的明细，请选择银行卡明细进行对账</p>
 				<div class="sheet-select-container">
@@ -39,7 +39,7 @@
 		</el-dialog>
 
 		<!-- 展示Sheet数据弹窗 -->
-		<el-dialog :visible.sync="dataDialogVisible" title="Sheet数据" fullscreen>
+		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :visible.sync="dataDialogVisible" title="Sheet数据" fullscreen>
 			<div class="sheet-data-container">
 				<div class="left-panel">
 					<h3>

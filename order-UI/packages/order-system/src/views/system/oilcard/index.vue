@@ -74,7 +74,7 @@
 		</el-row>
 
 		<!-- 添加或修改加油卡信息对话框 -->
-		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
+		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="120px" @keyup.enter.native="submitForm" size="mini" @submit.native.prevent="submitForm">
 				<el-form-item label="加油卡卡号" prop="oilCardNo">
 					<el-input v-model="form.oilCardNo" placeholder="请输入加油卡卡号" @input="handleInputTrim($event, 'form', 'oilCardNo')" />
@@ -94,7 +94,7 @@
 		</el-dialog>
 
 		<!--    加油卡充值弹窗-->
-		<el-dialog :close-on-click-modal="false" :show-close="false" title="加油卡充值" :visible.sync="moneyDialogVisible" width="500px" append-to-body>
+		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="加油卡充值" :visible.sync="moneyDialogVisible" width="500px" append-to-body>
 			<el-form :model="moneyInfo" :rules="moneyRules" label-width="120px" @keyup.enter.native="submitMoney" @submit.native.prevent="submitMoney" ref="moneyFormRef" size="mini">
 				<el-form-item label="加油卡卡号" prop="oilCardNo">
 					<el-row>
@@ -171,7 +171,7 @@
 		</el-dialog>
 
 		<!--    加油卡操作功能-->
-		<el-dialog :close-on-click-modal="false" :show-close="false" title="加油卡操作" :visible.sync="optionVisible" width="500px" append-to-body>
+		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="加油卡操作" :visible.sync="optionVisible" width="500px" append-to-body>
 			<el-form
 				ref="oilCardForm"
 				:model="oilCardOption"

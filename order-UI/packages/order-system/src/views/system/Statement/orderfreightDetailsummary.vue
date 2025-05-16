@@ -120,7 +120,7 @@
 
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
-		<el-dialog :close-on-click-modal="false" :show-close="false" title="请选择导出时间段" :visible.sync="dialogVisible" width="500px">
+		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="请选择导出时间段" :visible.sync="dialogVisible" width="500px">
 			<el-form ref="queryForm" :model="queryParams" size="mini" label-width="68px">
 				<el-form-item label="车牌" prop="carNo">
 					<el-input v-model="queryParams.carNo" placeholder="请输入车牌号" />

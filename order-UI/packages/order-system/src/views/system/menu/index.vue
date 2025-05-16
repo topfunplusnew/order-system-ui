@@ -55,7 +55,7 @@
 		</el-table>
 
 		<!-- 添加或修改菜单对话框 -->
-		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="680px" append-to-body>
+		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="680px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="100px">
 				<el-row>
 					<el-col :span="24">

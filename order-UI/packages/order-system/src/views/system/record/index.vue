@@ -121,7 +121,7 @@
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改现金记账对话框  cashType 用于分别管理冲抵类型 : 冲抵货款 或者 冲抵第三方开票-->
-		<el-dialog :title="title" :visible.sync="open" width="700px" append-to-body @close="handleDialogClose">
+		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="title" :visible.sync="open" width="700px" append-to-body @close="handleDialogClose">
 			<el-form ref="form" :model="form" :rules="rules" label-width="150px">
 				<!--        目前支持两种类型 一种是冲抵货款 一种是冲抵第三方开票-->
 				<el-form-item label="冲抵类型">
@@ -505,7 +505,7 @@
 		</el-dialog>
 
 		<!--    查看附件列表的组件-->
-		<el-dialog :close-on-click-modal="false" :show-close="false" title="查看附件" :visible.sync="checkAttachmentVisible" width="48%">
+		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="查看附件" :visible.sync="checkAttachmentVisible" width="48%">
 			<el-row v-for="(item, index) in checkFileList" :key="index">
 				<el-button type="text" icon="el-icon-document" @click="checkFileItem(item)">
 					{{ item }}

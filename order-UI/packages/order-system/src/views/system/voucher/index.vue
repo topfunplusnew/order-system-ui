@@ -94,7 +94,7 @@
 			</template>
 		</InfoDialog>
 		<!-- 添加或修改凭证对话框 -->
-		<!--    <el-dialog :title="title" :visible.sync="open" width="800px" append-to-body>-->
+		<!--    <el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="title" :visible.sync="open" width="800px" append-to-body>-->
 		<!--      <el-form ref="form" :model="form" :rules="rules" label-width="120px">-->
 		<!--        <el-form-item label="制单人" prop="makeUser">-->
 		<!--          <el-input v-model="form.makeUser" placeholder="请输入制单人"/>-->

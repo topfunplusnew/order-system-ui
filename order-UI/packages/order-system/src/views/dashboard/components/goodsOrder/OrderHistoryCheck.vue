@@ -1,5 +1,5 @@
 <template>
-	<el-dialog :show-close="false" :close-on-click-modal="false" :close-on-press-escape="false" title="订单历史对比信息" :visible.sync="checkHistoryOrderVisible" width="1100px">
+	<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :show-close="false" :close-on-click-modal="false" :close-on-press-escape="false" title="订单历史对比信息" :visible.sync="checkHistoryOrderVisible" width="1100px">
 		<el-row>
 			<el-col :span="18" :offset="3">
 				<el-timeline>

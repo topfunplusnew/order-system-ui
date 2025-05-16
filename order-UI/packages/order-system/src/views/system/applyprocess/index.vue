@@ -687,7 +687,7 @@ export default {
 		<!--    固定的锚点-->
 
 		<!--    查看付款信息的详细信息-->
-		<el-dialog :close-on-click-modal="false" :show-close="false" title="付款信息详细" :visible.sync="checkInfoDialogVisible" width="50%">
+		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="付款信息详细" :visible.sync="checkInfoDialogVisible" width="50%">
 			<el-descriptions title="付款信息明细">
 				<el-descriptions-item label="申请人">
 					{{ checkPaymentInfo.applyPerson }}
@@ -727,7 +727,7 @@ export default {
 		</el-dialog>
 
 		<!--      审核流程步骤图信息  -->
-		<el-dialog :close-on-click-modal="false" :show-close="false" :visible.sync="checkApplyInfoDialogVisible" title="审核流程多项信息" width="58%">
+		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :visible.sync="checkApplyInfoDialogVisible" title="审核流程多项信息" width="58%">
 			<el-collapse v-model="activeNames" @change="handleChangeApplyItem">
 				<el-collapse-item name="1">
 					<template #title>
@@ -749,7 +749,7 @@ export default {
 		</el-dialog>
 
 		<!--   2025-2-17 新增付款功能-->
-		<el-dialog :close-on-click-modal="false" :show-close="false" title="付款处理" :visible.sync="open" width="650px" append-to-body>
+		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="付款处理" :visible.sync="open" width="650px" append-to-body>
 			<keep-alive>
 				<ApplyPayment :table-name="TableName.DAILY" :t-i-d="tID" :need-money="needMoney" :need-info="{}" @changeOpen="changePaymentApplyInfoVisible" :money-input-disabled="false" />
 			</keep-alive>

@@ -167,7 +167,7 @@ export default {
 		<div class="add-bank-account">
 			<el-button v-hasPermi="['system:company:add']" type="text" size="mini" icon="el-icon-plus" @click="handleAddBankAccount">新增银行卡信息</el-button>
 		</div>
-		<el-dialog title="提示" :visible.sync="dialogVisible" width="30%" append-to-body :close-on-click-modal="false" :close-on-press-escape="false">
+		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="提示" :visible.sync="dialogVisible" width="30%" append-to-body :close-on-click-modal="false" :close-on-press-escape="false">
 			<div>
 				<el-form ref="form" :model="form" :rules="rules" label-width="120px">
 					<el-form-item label="账号类型" prop="acountsType">

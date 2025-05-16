@@ -114,7 +114,7 @@
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改商家直接给客户开发票对话框 -->
-		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" append-to-body width="800px">
+		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" append-to-body width="800px">
 			<el-row>
 				<el-form ref="form" :model="form" :rules="rules" label-width="140px">
 					<!--        订单编号应该是选择某个订单 然后自动填充-->
@@ -265,7 +265,7 @@
 		</el-dialog>
 
 		<!-- 补充信息对话框 -->
-		<el-dialog :title="'补充发票信息'" :visible.sync="extraInfoDialogVisible" width="500px" append-to-body>
+		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="'补充发票信息'" :visible.sync="extraInfoDialogVisible" width="500px" append-to-body>
 			<el-form ref="extraInfoForm" :model="currentExtraInfo" :rules="extraInfoRules" label-width="120px">
 				<el-form-item label="实际开票金额" prop="actualInvoiceAmount">
 					<el-input v-model="currentExtraInfo.actualInvoiceAmount" placeholder="请输入实际开票金额"></el-input>
@@ -286,7 +286,7 @@
 			</div>
 		</el-dialog>
 
-		<el-dialog :close-on-click-modal="false" :show-close="true" title="查看订单信息" :visible.sync="checkOrderInfoVisible" width="70%" append-to-body>
+		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="true" title="查看订单信息" :visible.sync="checkOrderInfoVisible" width="70%" append-to-body>
 			<OrderInfos :order-info="orderInfo" />
 		</el-dialog>
 

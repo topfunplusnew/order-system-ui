@@ -118,7 +118,7 @@
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改向外部借出款信息对话框 -->
-		<el-dialog :close-on-click-modal="false" :show-close="false" title="添加期货保证金" :visible.sync="open" width="50%" append-to-body>
+		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="添加期货保证金" :visible.sync="open" width="50%" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="160px">
 				<el-row>
 					<el-col :span="12">
@@ -226,7 +226,7 @@
 		</el-dialog>
 
 		<!--    回收弹窗-->
-		<el-dialog :close-on-click-modal="false" :show-close="false" title="收回资金操作" :visible.sync="giveRecoverMoneyShow" width="40%" append-to-body>
+		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="收回资金操作" :visible.sync="giveRecoverMoneyShow" width="40%" append-to-body>
 			<el-row>
 				<el-form :model="recoverMoneyEntity" label-width="120">
 					<el-form-item label="收回账户" prop="acountsName">
@@ -277,7 +277,7 @@
 		</el-dialog>
 
 		<!--    付款申请-->
-		<el-dialog :close-on-click-modal="false" :show-close="false" title="付款申请" :visible.sync="applyDialogVisible" width="45%">
+		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="付款申请" :visible.sync="applyDialogVisible" width="45%">
 			<keep-alive>
 				<ApplyPayment
 					:extra-information="{

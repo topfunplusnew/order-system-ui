@@ -66,7 +66,7 @@
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改供应商、供应商信息对话框 -->
-		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="54%" append-to-body>
+		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="54%" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="120px" @keyup.enter.native="submitForm">
 				<el-row :gutter="4">
 					<el-col :span="12">
@@ -116,7 +116,7 @@
 		</el-dialog>
 
 		<!--    银行卡-->
-		<el-dialog :close-on-click-modal="false" :show-close="false" title="银行卡号" :visible.sync="dialogFormVisible">
+		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="银行卡号" :visible.sync="dialogFormVisible">
 			<el-form :model="currentInfo">
 				<el-row :gutter="4" style="text-align: center">
 					<span style="font-weight: bolder; font-size: 18px">
@@ -150,7 +150,7 @@
 			</div>
 			<pagination v-show="bankTotal > 0" :total="bankTotal" :page.sync="bankPageNum" :limit.sync="bankPageSize" @pagination="getBankList" />
 
-			<el-dialog :close-on-click-modal="false" :show-close="false" title="操作银行卡" :visible.sync="dialogBankInfoVisible" append-to-body>
+			<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="操作银行卡" :visible.sync="dialogBankInfoVisible" append-to-body>
 				<el-form :model="queryBankInfo">
 					<el-row :gutter="4">
 						<el-col :span="8">
@@ -191,7 +191,7 @@
 		</el-dialog>
 
 		<!--    账号搜索-->
-		<el-dialog :close-on-click-modal="false" :show-close="true" title="账号搜索" :visible.sync="dialogFormSearchVisible">
+		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="true" title="账号搜索" :visible.sync="dialogFormSearchVisible">
 			<el-form :model="queryParams">
 				<el-row :gutter="4">
 					<el-col :span="8">
@@ -227,7 +227,7 @@
 			<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 		</el-dialog>
 
-		<el-dialog :close-on-click-modal="false" :show-close="false" title="设置默认银行卡" :visible.sync="addDefaultCardVisible" width="500px" append-to-body>
+		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="设置默认银行卡" :visible.sync="addDefaultCardVisible" width="500px" append-to-body>
 			<el-table v-loading="loading" v-horizontal-scroll="'always'" border :data="singleInfo" height="300px" @selection-change="handleSelectionChange">
 				<el-table-column label="账户类型" align="center" prop="acountsType" />
 				<el-table-column label="开户名称(户名)" align="center" prop="acountsName" />

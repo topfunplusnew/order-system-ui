@@ -37,7 +37,7 @@ export default {
 
 <template>
 	<div>
-		<el-dialog :visible.sync="visible" title="选择日期" width="350px" @close="handleClose">
+		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :visible.sync="visible" title="选择日期" width="350px" @close="handleClose">
 			<el-row style="text-align: center">
 				<el-date-picker v-model="beginTime" type="datetime" placeholder="开始日期" value-format="yyyy-MM-dd HH:mm:ss" style="margin-bottom: 10px" />
 			</el-row>

@@ -91,7 +91,7 @@ export default {
 			<el-button size="mini" type="primary" @click="handleAdd">添加银行卡</el-button>
 		</div>
 
-		<el-dialog title="选择需要绑定的银行卡" :visible.sync="dialogFormVisible" append-to-body width="58%">
+		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="选择需要绑定的银行卡" :visible.sync="dialogFormVisible" append-to-body width="58%">
 			<div slot="title">
 				<div style="display: flex; justify-content: space-between">
 					<div>

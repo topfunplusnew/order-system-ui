@@ -21,7 +21,7 @@ export default {
 	<div>
 		<el-button type="text" size="mini" @click="handleCheckBankAccountMoney">我方银行卡余额</el-button>
 
-		<el-dialog title="提示" :visible.sync="dialogVisible" width="880px">
+		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="提示" :visible.sync="dialogVisible" width="880px">
 			<span>这是一段信息</span>
 			<span slot="footer" class="dialog-footer">
 				<el-button @click="dialogVisible = false">取 消</el-button>

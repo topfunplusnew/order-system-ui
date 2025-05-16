@@ -46,7 +46,7 @@
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改库房对话框 -->
-		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
+		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
 			<el-form size="mini" ref="form" :model="form" :rules="rules" label-width="80px" @keyup.enter.native.prevent="submitForm" @submit.native.prevent="submitForm">
 				<el-form-item label="仓库名称" prop="storeHouseName">
 					<el-input v-model="form.storeHouseName" placeholder="请输入仓库名称" @input="handleInputTrim($event, 'form', 'storeHouseName')" />

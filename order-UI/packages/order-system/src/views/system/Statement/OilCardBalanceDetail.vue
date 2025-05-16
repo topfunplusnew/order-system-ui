@@ -110,7 +110,7 @@
 		</div>
 
 		<!-- 弹窗展示 -->
-		<el-dialog title="明细信息" :visible.sync="detailDialogVisible" width="900px">
+		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="明细信息" :visible.sync="detailDialogVisible" width="900px">
 			<component :is="component" :need-to-show-info="needToShowInfo" />
 			<span slot="footer" class="dialog-footer">
 				<el-button @click="detailDialogVisible = false">关闭</el-button>

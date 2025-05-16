@@ -58,7 +58,7 @@ export default {
 		</div>
 
 		<!--		查看开票信息的弹窗-->
-		<el-dialog title="开票信息" :visible.sync="visible" width="550px" append-to-body>
+		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="开票信息" :visible.sync="visible" width="550px" append-to-body>
 			<el-descriptions title="开票信息" size="mini">
 				<el-descriptions-item label="公司名称">
 					<EllipsisText :title="invoice.companyName" />
