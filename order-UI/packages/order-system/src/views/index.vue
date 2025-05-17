@@ -300,7 +300,7 @@ export default {
 
 		// const ip = `https://223.254.129.240:60036/ws`;
 		// const ip = window.location.hostname + [process.env.VUE_APP_BASE_API];
-		const ip = `ui.xuni.rocks` + [process.env.VUE_APP_BASE_API] + '/ws';
+		const ip = [process.env.VUE_APP_BASE_API] + '/ws';
 		// 连接到后端 WebSocket
 		const socket = new SockJS(ip);
 		const stompClient = Stomp.over(socket);
