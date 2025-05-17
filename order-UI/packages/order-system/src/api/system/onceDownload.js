@@ -10,10 +10,10 @@ export function getDownLoadStatus() {
 				method: 'GET'
 			})
 			.then(res => {
-				if (res.data) {
-					resolve(res.data);
-				}
-				reject(res.data);
+				resolve(res.data);
+			})
+			.catch(err => {
+				reject(err);
 			});
 	});
 }

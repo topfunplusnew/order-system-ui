@@ -1,6 +1,3 @@
-import { getDownLoadProgress } from '@/api/system/onceDownload';
-import { fix } from '../../api/tool/format';
-
 const state = {
 	percent: 0
 };
@@ -23,7 +20,7 @@ const actions = {
 				return;
 			}
 		}
-		
+
 		// 当没有传入有效数据时，默认为0（重置）
 		commit('SET_PERCENT', 0);
 	}
