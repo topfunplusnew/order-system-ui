@@ -402,41 +402,11 @@ export default {
 		if (!localStorage.getItem('download-list-tour')) {
 			this.$tours['downloadListTour'].start();
 		}
-
+		// 将stompClient保存到window对象，供request.js使用
 		this.stompClient.connect(
 			{},
 			() => {
-				// 将stompClient保存到window对象，供request.js使用
 				window.stompClient = this.stompClient;
-
-				// 订阅消息
-				this.stompClient.subscribe('/topic/exportevent', message => {
-					try {
-						const messageData = JSON.parse(message.body);
-						console.log('收到WebSocket消息:', messageData);
-
-						// 改进消息类型匹配，增加容错性
-						const messageType = messageData.type ? messageData.type.toLowerCase() : '';
-						if ((messageType.includes('process') || messageType.includes('progress')) && messageData.data) {
-							// 获取实际进度数据
-							const progress = messageData.data.NowProgress || 0;
-							const maxProgress = messageData.data.MaxProgress || 100;
-
-							// 计算百分比
-							const percent = Math.round((progress / maxProgress) * 100);
-
-							// 确保进度值有效且大于0，这样进度条就会显示
-							this.$store.dispatch('downloadOnce/setPercent', Math.max(1, Math.min(99, percent)));
-
-							// 更新下载消息
-							if (messageData.data.message) {
-								this.downloadMessage = messageData.data.message;
-							}
-						}
-					} catch (error) {
-						console.error('处理WebSocket消息失败:', error);
-					}
-				});
 			},
 			error => {
 				console.error('WebSocket连接失败:', error);

@@ -254,10 +254,12 @@ export function onceDownload(url, params, filename, config) {
 	// 先获取是否可以下载
 	getDownLoadStatus().then(status => {
 		if (status) {
+			// 只有当允许下载时，才进行连接WebSocket并下载
 			downLoadFile(url, params, filename, config);
 			return;
 		} else if (status === false) {
-			Message.success('文件正在正常下载中，请勿重复下载!');
+			Message.error('当前正在有用户进行文件下载中!');
+			// 不允许下载时，不建立WebSocket连接
 			return;
 		} else {
 			Message.error('下载文件出现错误，请联系管理员！');
@@ -297,6 +299,7 @@ async function downLoadFile(url, params, filename, config) {
 		}
 	}, 500);
 
+	// 只有在stompClient存在且已连接的情况下才订阅进度消息
 	if (stompClient && stompClient.connected) {
 		// 订阅下载进度通知
 		subscriptionId = stompClient.subscribe('/topic/exportevent', message => {
@@ -343,7 +346,7 @@ async function downLoadFile(url, params, filename, config) {
 			}
 		});
 	} else {
-		Message.warning('WebSocket连接未建立，将使用模拟进度');
+		Message.warning('WebSocket连接未建立!');
 	}
 
 	let elNotificationComponent;
