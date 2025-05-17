@@ -150,8 +150,15 @@
 			</el-col>
 		</el-row>
 		<div class="fixed-footer">
-			<div v-if="downloadProgress !== 0">
-				<el-progress :percentage="downloadProgress"></el-progress>
+			<div v-if="downloadProgress !== 0" class="progress-container">
+				<div class="progress-message" v-if="downloadMessage">{{ downloadMessage }}</div>
+				<el-progress 
+        :percentage="downloadProgress"
+        :stroke-width="20"
+        :status="downloadProgress === 100 ? 'success' : ''"
+        class="wave-progress"
+        :class="{'is-downloading': downloadProgress > 0 && downloadProgress < 100}"
+      ></el-progress>
 			</div>
 			<div>
 				<el-button type="info" icon="el-icon-question" size="mini" @click="handleLearn">查看教程</el-button>
@@ -231,7 +238,7 @@
 				</a-list-item>
 			</a-list>
 		</a-modal>
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  title="一键下载" :visible.sync="dialogVisible" width="30%" :before-close="handleClose">
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="一键下载" :visible.sync="dialogVisible" width="30%" :before-close="handleClose">
 			<span>这是一段信息</span>
 			<span slot="footer" class="dialog-footer">
 				<el-button @click="dialogVisible = false">取 消</el-button>
@@ -249,6 +256,8 @@ import { mixin_printHTML } from './dashboard/mixins/print';
 import { parseTime } from '@/utils/ruoyi';
 import { mapGetters } from 'vuex';
 import { deleteExport, downloadFileByName, getAllExportList, startExportAll, syncExportAll } from '../api/system/oncedownload/index';
+import SockJS from 'sockjs-client';
+import Stomp from 'webstomp-client';
 
 export default {
 	name: 'Index',
@@ -286,7 +295,14 @@ export default {
 			return `${y}-${m}-${d} 00:00:00`;
 		}
 
+		const ip = `http://223.254.129.240:60036/ws`;
+		// 连接到后端 WebSocket
+		const socket = new SockJS(ip);
+		const stompClient = Stomp.over(socket);
+
 		return {
+			socket,
+			stompClient,
 			loading: false,
 			queryParams: {
 				startTime: formatDate(startTime),
@@ -368,7 +384,8 @@ export default {
 					buttonNext: '下一步',
 					buttonStop: '完成'
 				}
-			}
+			},
+			downloadMessage: '', // 新增下载消息状态
 		};
 	},
 	created() {
@@ -380,7 +397,48 @@ export default {
 		if (!localStorage.getItem('download-list-tour')) {
 			this.$tours['downloadListTour'].start();
 		}
+
+		this.stompClient.connect({}, () => {
+			// 将stompClient保存到window对象，供request.js使用
+			window.stompClient = this.stompClient;
+			
+			// 订阅消息
+			this.stompClient.subscribe('/topic/exportevent', message => {
+				try {
+					const messageData = JSON.parse(message.body);
+					console.log('收到消息:', messageData);
+					
+					// 如果是进度类型消息，直接更新进度
+					if (messageData.type === 'process' && messageData.data) {
+						const progress = messageData.data.NowProgress;
+						const maxProgress = messageData.data.MaxProgress;
+						const percent = Math.round((progress / maxProgress) * 100);
+						this.$store.dispatch('downloadOnce/setPercent', percent);
+            
+            // 更新下载消息
+            if (messageData.data.message) {
+              this.downloadMessage = messageData.data.message;
+            }
+					}
+				} catch (error) {
+					console.error('处理WebSocket消息失败:', error);
+				}
+			});
+		}, error => {
+			console.error('WebSocket连接失败:', error);
+		});
 	},
+  watch: {
+    // 监听下载进度，当进度为0或100时清除消息
+    downloadProgress(val) {
+      if (val === 0 || val === 100) {
+        // 延迟清除消息，让用户有时间看到100%的状态
+        setTimeout(() => {
+          this.downloadMessage = '';
+        }, 3000);
+      }
+    }
+  },
 	computed: {
 		...mapGetters(['downloadProgress'])
 	},
@@ -855,5 +913,66 @@ export default {
 		padding: 8px 12px;
 		border-bottom: 1px solid #f0f0f0;
 	}
+}
+
+// 进度条样式优化
+.progress-container {
+  margin-bottom: 12px;
+  
+  .progress-message {
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: #606266;
+    text-align: left;
+  }
+}
+
+// 添加进度条波纹动画
+.wave-progress {
+  position: relative;
+  overflow: hidden;
+  
+  &.is-downloading {
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        90deg, 
+        rgba(255, 255, 255, 0) 0%, 
+        rgba(255, 255, 255, 0.5) 50%, 
+        rgba(255, 255, 255, 0) 100%
+      );
+      z-index: 1;
+      animation: wave 2s infinite linear;
+    }
+  }
+}
+
+@keyframes wave {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+// 让波纹效果更明显
+:deep(.el-progress-bar__inner) {
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+:deep(.el-progress-bar__outer) {
+  border-radius: 10px;
+}
+
+:deep(.el-progress-bar__inner) {
+  border-radius: 10px;
 }
 </style>

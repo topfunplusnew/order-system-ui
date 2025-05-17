@@ -1,5 +1,4 @@
 import { getDownLoadProgress } from '@/api/system/onceDownload';
-import { Message, MessageBox } from 'element-ui';
 import { fix } from '../../api/tool/format';
 
 const state = {
@@ -12,16 +11,15 @@ const mutations = {
 };
 
 const actions = {
-	async setPercent({ commit }, data) {
-		const { data: value } = await getDownLoadProgress();
-		Message.success(value.message);
-		const percent = fix(value.NowProgress / value.MaxProgress, 1) * 100;
-		if (value) {
-			commit('SET_PERCENT', percent);
-		}
-		if (data) {
+	setPercent({ commit }, data) {
+		// 如果传入直接的进度值，直接使用它
+		if (data !== undefined) {
 			commit('SET_PERCENT', data);
+			return;
 		}
+		
+		// 当没有传入数据时，默认为0（重置）
+		commit('SET_PERCENT', 0);
 	}
 };
 

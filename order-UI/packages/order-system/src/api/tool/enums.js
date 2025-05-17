@@ -288,3 +288,9 @@ export const PayType = Object.freeze({
 	RECEIVE: '收入',
 	TRANSFOR: '内部转账'
 });
+
+// websocket 状态枚举
+export const DOWNLOAD_STATUS_WS = Object.freeze({
+	PROGRESS: 'process',
+	STATUS: 'status'
+});
