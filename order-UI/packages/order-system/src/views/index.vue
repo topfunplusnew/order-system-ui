@@ -157,7 +157,10 @@
         :stroke-width="20"
         :status="downloadProgress === 100 ? 'success' : ''"
         class="wave-progress"
-        :class="{'is-downloading': downloadProgress > 0 && downloadProgress < 100}"
+        :class="{
+          'is-downloading': downloadProgress > 0 && downloadProgress < 100,
+          'is-finished': downloadProgress === 100
+        }"
       ></el-progress>
 			</div>
 			<div>
@@ -454,32 +457,35 @@ export default {
 			this.$antdconfirm({
 				title: '提示',
 				content: '是否导出空表(若不导出空表导出速率会更快)?',
-				okText: '是',
-				cancelText: '否',
+				okText: '否',
+				cancelText: '是',
 				onOk: () => {
-					this.handleOption(true);
+					this.handleOption();
 				},
 				onCancel: () => {
-					this.handleOption();
+					this.handleOption(true);
 				}
 			});
 		},
 		handleOption(exportEmptyData = false) {
+			const now = new Date();
+			const yyyy = now.getFullYear();
+			const mm = String(now.getMonth() + 1).padStart(2, '0');
+			const dd = String(now.getDate()).padStart(2, '0');
+			const defaultDate = `${yyyy}-${mm}-${dd}`;
 			this.$prompt('请选择导出日期', '提示', {
 				confirmButtonText: '确定',
 				cancelButtonText: '取消',
-				inputType: 'date'
+				inputType: 'date',
+				inputValue: defaultDate
 			})
 				.then(res => {
 					// 添加校验
-					if (!res || !res.value) {
-						this.$message.error('请选择导出日期');
-						return;
-					}
+					const exportDate = (res && res.value) ? res.value : defaultDate;
 					this.downLoadOnce(
 						'system/allExport/export',
 						{
-							date: res.value,
+							date: exportDate,
 							exportEmptyData: exportEmptyData
 						},
 						`FullReport_${new Date().getTime()}.xlsx`
@@ -492,27 +498,30 @@ export default {
 		},
 		// 添加后台下载方法
 		handleBackgroundDownload() {
+			const now = new Date();
+			const yyyy = now.getFullYear();
+			const mm = String(now.getMonth() + 1).padStart(2, '0');
+			const dd = String(now.getDate()).padStart(2, '0');
+			const defaultDate = `${yyyy}-${mm}-${dd}`;
 			this.$prompt('请选择导出日期', '提示', {
 				confirmButtonText: '确定',
 				cancelButtonText: '取消',
-				inputType: 'date'
+				inputType: 'date',
+				inputValue: defaultDate
 			})
 				.then(res => {
 					// 添加校验
-					if (!res || !res.value) {
-						this.$message.error('请选择导出日期');
-						return;
-					}
+					const exportDate = (res && res.value) ? res.value : defaultDate;
 					this.$antdconfirm({
 						title: '提示',
 						content: '是否导出空表(若不导出空表导出速率会更快)?',
-						okText: '是',
-						cancelText: '否',
+						okText: '否',
+						cancelText: '是',
 						onOk: () => {
-							this.startBackgroundExport(res.value, true);
+							this.startBackgroundExport(exportDate, false);
 						},
 						onCancel: () => {
-							this.startBackgroundExport(res.value, false);
+							this.startBackgroundExport(exportDate, true);
 						}
 					});
 				})
@@ -925,7 +934,11 @@ export default {
 .progress-container {
   margin-bottom: 12px;
   opacity: 1;
-  transition: opacity 0.3s ease, height 0.3s ease, margin 0.3s ease;
+  transition: opacity 0.4s ease, height 0.4s ease, margin 0.4s ease;
+  border-radius: 12px;
+  padding: 10px;
+  background-color: rgba(245, 247, 250, 0.8);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
   
   &.hide-progress {
     opacity: 0;
@@ -935,10 +948,13 @@ export default {
   }
   
   .progress-message {
-    margin-bottom: 5px;
+    margin-bottom: 8px;
     font-size: 14px;
-    color: #606266;
-    text-align: left;
+    color: #409EFF;
+    text-align: center;
+    font-weight: 500;
+    text-shadow: 0 0 2px rgba(64, 158, 255, 0.1);
+    transition: all 0.3s;
   }
 }
 
@@ -946,6 +962,7 @@ export default {
 .wave-progress {
   position: relative;
   overflow: hidden;
+  margin: 0 5px;
   
   &.is-downloading {
     &::before {
@@ -958,11 +975,19 @@ export default {
       background: linear-gradient(
         90deg, 
         rgba(255, 255, 255, 0) 0%, 
-        rgba(255, 255, 255, 0.5) 50%, 
+        rgba(255, 255, 255, 0.6) 50%, 
         rgba(255, 255, 255, 0) 100%
       );
       z-index: 1;
-      animation: wave 2s infinite linear;
+      animation: wave 1.5s infinite cubic-bezier(0.45, 0.05, 0.55, 0.95);
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+  }
+
+  // 添加完成动画
+  &.is-finished {
+    .el-progress-bar__inner {
+      animation: pulse 0.6s ease-out;
     }
   }
 }
@@ -972,22 +997,62 @@ export default {
     left: -100%;
   }
   100% {
-    left: 100%;
+    left: 150%;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.02);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
   }
 }
 
 // 让波纹效果更明显
 :deep(.el-progress-bar__inner) {
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.34, 1.61, 0.7, 1);
   position: relative;
   overflow: hidden;
+  background: linear-gradient(90deg, #409EFF, #67C23A);
+  box-shadow: 0 0 6px rgba(64, 158, 255, 0.4);
+  
+  &.is-success {
+    background: linear-gradient(90deg, #67C23A, #87d068);
+    box-shadow: 0 0 8px rgba(103, 194, 58, 0.5);
+  }
+  
+  &.is-warning {
+    background: linear-gradient(90deg, #E6A23C, #f5cb23);
+  }
+  
+  &.is-exception {
+    background: linear-gradient(90deg, #F56C6C, #ff9b9b);
+  }
 }
 
 :deep(.el-progress-bar__outer) {
   border-radius: 10px;
+  background-color: #ebeef5;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  height: 16px !important;  /* 设置更高的进度条 */
 }
 
 :deep(.el-progress-bar__inner) {
   border-radius: 10px;
+}
+
+:deep(.el-progress__text) {
+  font-size: 14px !important;
+  font-weight: 600;
+  color: #606266;
 }
 </style>
