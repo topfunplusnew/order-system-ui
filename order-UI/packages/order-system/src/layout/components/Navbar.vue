@@ -78,7 +78,7 @@ export default {
 			this.$store.dispatch('app/toggleSideBar');
 		},
 		async logout() {
-			this.$confirm({
+			this.$antdconfirm({
 				title: '提示',
 				content: '确定注销并退出系统吗？',
 				okText: '确定',
