@@ -114,7 +114,7 @@ export var mixin_order_freight_payment = {
 				this.freightSelfOnceInfo.selfBankCardType = BankAcceptanceType.BANK_CASH;
 				this.freightSelfOnceInfo.otherBankCardType = BankAcceptanceType.BANK_CASH;
 				if (valid) {
-					this.$confirm({
+					this.$antdconfirm({
 						title: '提示',
 						content: '确定一键付运费吗?',
 						okText: '确定',
