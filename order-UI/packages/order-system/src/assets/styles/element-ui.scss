@@ -51,21 +51,57 @@
   pointer-events: none !important;
 }
 
+//.el-dialog {
+//  transform: none;
+//  left: 0;
+//  position: relative;
+//  margin: 0 auto;
+//  background: #f3f3f3;
+//  border-radius: 4px;
+//
+//  pointer-events: auto !important;
+//}
+//
+//.el-dialog > .el-dialog__body {
+//  border-top: 1px solid #e9e9e9;
+//  border-bottom: 1px solid #e9e9e9;
+//}
 .el-dialog {
+  margin: 20px auto;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
   transform: none;
   left: 0;
   position: relative;
-  margin: 0 auto;
-  background: #f3f3f3;
-  border-radius: 4px;
-
   pointer-events: auto !important;
 }
 
-.el-dialog > .el-dialog__body {
-  border-top: 1px solid #e9e9e9;
-  border-bottom: 1px solid #e9e9e9;
+.el-dialog > .el-dialog__header {
+  padding: 20px 25px 10px;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.05);
 }
+
+.el-dialog > .el-dialog__title {
+  font-size: 1.25em;
+  color: #333333;
+  font-weight: 600;
+}
+
+.el-dialog > .el-dialog__body {
+  padding: 20px 25px;
+  border-top: none;
+  border-bottom: none;
+  color: #555555;
+  line-height: 1.6;
+}
+
+.el-dialog > .el-dialog__footer {
+  padding: 10px 25px 20px;
+  border-top: none;
+  text-align: right;
+}
+
 
 // refine element ui upload
 .upload-container {

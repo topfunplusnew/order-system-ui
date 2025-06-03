@@ -58,6 +58,10 @@ export var mixin_order_freight_payment = {
 				// 累加
 				this.total_freight += Number(item.moneyAmount);
 			});
+			if (filteredList.length === 0) {
+				this.$message.warning('当前没有未支付付款信息');
+				return;
+			}
 			// 合并展示数据
 			this.selectedList = this.mergeFreight(filteredList);
 			// 打开运费付款页面
@@ -86,7 +90,6 @@ export var mixin_order_freight_payment = {
 		},
 		// 将orderFreight对象转换为Payment对象
 		convertOrderFreightToPayment(orderFreight) {
-			console.log(`driverId`, orderFreight.driverId);
 			return {
 				// 构建对方信息
 				fundsDate: parseTime(new Date()),
