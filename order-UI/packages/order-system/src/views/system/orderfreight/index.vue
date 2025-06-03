@@ -115,7 +115,7 @@
 
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="80px">
 				<el-form-item label="金额" prop="moneyAmount">
 					<el-input v-model="form.moneyAmount" placeholder="请输入金额" />
@@ -267,12 +267,6 @@
 							<el-form-item label="支付类型" prop="payType">
 								<el-cascader v-model="freightSelfOnceInfo.payType" :options="paymentTypeTree" :props="props" />
 							</el-form-item>
-							<!--							<el-form-item label="对方账号类型" prop="otherBankCardType">-->
-							<!--								<BankType v-if="freightOnceVisible" @updateSelectedType="handleBankTypeOther" />-->
-							<!--							</el-form-item>-->
-							<!--							<el-form-item label="我方账号类型" prop="selfBankCardType">-->
-							<!--								<BankType v-if="freightOnceVisible" @updateSelectedType="handleBankTypeSelf" />-->
-							<!--							</el-form-item>-->
 							<el-form-item label="我方户名" prop="selfAcountsName">
 								<el-row>
 									<el-col :span="10">
@@ -330,7 +324,18 @@
 		</InfoDialog>
 
 		<!--    created第一次传递的props，然后监听后来props的变化-->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" title="运费付款申请" :visible.sync="applyPaymentVisible" width="500px" append-to-body>
+		<el-dialog
+			:modal="false"
+			v-dialogDrag
+			v-dialogDragWidth
+			v-dialogDragHeight
+			:close-on-click-modal="false"
+			:show-close="false"
+			title="运费付款申请"
+			:visible.sync="applyPaymentVisible"
+			width="500px"
+			append-to-body
+		>
 			<keep-alive>
 				<ApplyPayment :table-name="TableName.ORDER_FREIGHT" :t-i-d="tID" :need-info="needInfo" :need-money="freight" @changeOpen="changeOpen" />
 			</keep-alive>

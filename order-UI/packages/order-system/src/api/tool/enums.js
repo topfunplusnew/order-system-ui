@@ -149,6 +149,11 @@ export const PaymentState = [
 	}
 ];
 
+export const PAYMENT_STATE = {
+	PAID: '已支付',
+	UNPAID: '未支付'
+};
+
 // 付款申请状态
 export const PAYMENT_APPLY_STATE = {
 	V1: {

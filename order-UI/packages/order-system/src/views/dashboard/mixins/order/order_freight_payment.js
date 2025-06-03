@@ -1,7 +1,8 @@
 // 运费一键申请
 import { batchPayment } from '../../../../api/system/payment';
-import { BankAcceptanceType, TableName } from '../../../../api/tool/enums';
+import { BankAcceptanceType, PAYMENT_APPLY_STATE, PAYMENT_STATE, PaymentState, TableName } from '../../../../api/tool/enums';
 import { parseTime } from '../../../../utils/ruoyi';
+import _ from 'lodash';
 
 export var mixin_order_freight_payment = {
 	data: function () {
@@ -46,8 +47,9 @@ export var mixin_order_freight_payment = {
 			this.resetFreightSelfOnceInfo();
 			// 初始化为0
 			this.total_freight = 0;
+			const filteredList = _.cloneDeep(this.selectedList.filter(item => item.paymentState === PAYMENT_STATE.UNPAID));
 			// 遍历选择的数组
-			this.selectedList.forEach(item => {
+			filteredList.forEach(item => {
 				item = this.convertOrderFreightToPayment(item);
 				// 填充对方的银行类型
 				item.otherBankCardType = this.freightSelfOnceInfo.otherBankCardType;
@@ -56,9 +58,8 @@ export var mixin_order_freight_payment = {
 				// 累加
 				this.total_freight += Number(item.moneyAmount);
 			});
-
 			// 合并展示数据
-			this.selectedList = this.mergeFreight(this.selectedList);
+			this.selectedList = this.mergeFreight(filteredList);
 			// 打开运费付款页面
 			this.freightOnceVisible = true;
 		},
@@ -85,6 +86,7 @@ export var mixin_order_freight_payment = {
 		},
 		// 将orderFreight对象转换为Payment对象
 		convertOrderFreightToPayment(orderFreight) {
+			console.log(`driverId`, orderFreight.driverId);
 			return {
 				// 构建对方信息
 				fundsDate: parseTime(new Date()),
@@ -135,7 +137,7 @@ export var mixin_order_freight_payment = {
 								const { companyId, ...rest } = item;
 								if (!map.has(companyId)) {
 									map.set(companyId, {
-										...rest,
+										...item,
 										extraInfo: {
 											sourceInfos: [
 												{

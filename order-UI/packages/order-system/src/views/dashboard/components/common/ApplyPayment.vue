@@ -570,7 +570,6 @@ export default {
 			}
 			const json = {},
 				tid = _.cloneDeep(this.tID);
-
 			const payType = form.payType.join('-');
 			_.set(json, 'params.paymentInfo', {});
 			// 坏账信息 先获取 资金收回信息 然后添加付款信息
