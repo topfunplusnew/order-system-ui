@@ -15,6 +15,7 @@ export default {
 		const sty = dragDom.currentStyle || window.getComputedStyle(dragDom, null);
 		dragDom.style.position = 'absolute';
 		dragDom.style.marginTop = 0;
+
 		let width = dragDom.style.width;
 		if (width.includes('%')) {
 			width = +document.body.clientWidth * (+width.replace(/%/g, '') / 100);
@@ -22,6 +23,7 @@ export default {
 			width = +width.replace(/\px/g, '');
 		}
 		dragDom.style.left = `${(document.body.clientWidth - width) / 2}px`;
+
 		// 鼠标按下事件
 		dialogHeaderEl.onmousedown = e => {
 			// 鼠标按下，计算当前元素距离可视区的距离 (鼠标点击位置距离可视窗口的距离)
@@ -46,8 +48,22 @@ export default {
 				const l = e.clientX - disX;
 				const t = e.clientY - disY;
 
-				const finallyL = l + styL;
-				const finallyT = t + styT;
+				let finallyL = l + styL;
+				let finallyT = t + styT;
+
+				// --- Collision detection for top edge ---
+				// If the dialog's top edge is above the window's top edge (0),
+				// set it to 0 to prevent it from going out of bounds.
+				if (finallyT < 0) {
+					finallyT = 0;
+				}
+				// You can add more collision detection here for other edges if needed
+				// For example, for the bottom edge:
+				// const clientHeight = document.body.clientHeight;
+				// const dialogHeight = dragDom.clientHeight; // Get the actual height of the dialog
+				// if (finallyT + dialogHeight > clientHeight) {
+				//     finallyT = clientHeight - dialogHeight;
+				// }
 
 				// 移动当前元素
 				dragDom.style.left = `${finallyL}px`;
