@@ -1,5 +1,12 @@
 import { fix } from '../../../api/tool/format';
+import { formatCalculationResult } from '../../../utils/precision';
 
+/**
+ * 安全减法，确保结果不为负
+ * @param {number} base - 被减数
+ * @param {number} subtractor - 减数
+ * @returns {number} - 差值
+ */
 function safeSubtract(base, subtractor) {
 	const result = Number(base) - Number(subtractor);
 	return result < 0 ? 0 : result;
@@ -124,17 +131,72 @@ function calculateProfitNoTax(row) {
  * 更新库存行项目的所有计算值
  */
 export function updateInventoryRowCalculations(row, isSea, isLand) {
+	// 计算吨位
 	calculateTonnage(row);
+	// 计算出厂货款
 	calculatePaymentFactory(row);
+	// 计算库存金额
 	calculatePayment(row);
 
 	if (isLand) {
+		// 计算陆运费
 		calculateLandFreight(row);
 	} else {
 		row.landFreight = 0;
 	}
 
+	// 计算总运费
 	calculateTotalFreight(row, isSea);
+	// 计算利润
 	calculateProfit(row);
+	// 计算不含税利润
 	calculateProfitNoTax(row);
+
+	// 计算出厂货款 (保持4位小数精度计算，但结果格式化为2位)
+	if (row.pieces && row.price) {
+		const factoryPayment = Number(row.pieces) * Number(row.price) + Number(row.sundryCost || 0);
+		row.paymentFactory = formatCalculationResult(factoryPayment);
+	}
+
+	// 计算库存金额 (2位小数)
+	if (row.stockNumber && row.paymentUnload) {
+		const payments = Number(row.stockNumber) * Number(row.paymentUnload);
+		row.payments = formatCalculationResult(payments);
+	}
+
+	// 计算吨位 (2位小数)
+	if (row.height && row.length && row.width && row.stockNumber && row.erro) {
+		const tonnage = (Number(row.height) * Number(row.length) * Number(row.width) * Number(row.stockNumber) * Number(row.erro)) / 1000000;
+		row.tonnage = formatCalculationResult(tonnage);
+	}
+
+	// 计算陆运费 (2位小数)
+	if (isLand && row.landFreightPrice && row.tonnage) {
+		const landFreight = Number(row.landFreightPrice) * Number(row.tonnage) + Number(row.additionalFees || 0);
+		row.landFreight = formatCalculationResult(landFreight);
+	}
+
+	// 计算总运费 (2位小数)
+	const totalFreight = Number(row.landFreight || 0) + Number(row.seaFreight || 0);
+	row.freight = formatCalculationResult(totalFreight);
+
+	// 计算利润 (2位小数)
+	if (row.payments && row.paymentFactory) {
+		const profit = Number(row.payments) - Number(row.paymentFactory) - Number(row.freight || 0) - Number(row.otherCost || 0);
+		row.profit = formatCalculationResult(profit);
+	}
+
+	// 计算不含税利润 (2位小数)
+	if (row.profit) {
+		let profitNoTax = Number(row.profit);
+		// 如果销售含税，则除以1.13
+		if (row.isIncludeTaxSale === 1) {
+			profitNoTax = profitNoTax / 1.13;
+		}
+		// 如果出厂不含税，则需要调整
+		if (row.isIncludeTaxFactory === 0) {
+			// 调整计算逻辑
+		}
+		row.profitNoTax = formatCalculationResult(profitNoTax);
+	}
 }

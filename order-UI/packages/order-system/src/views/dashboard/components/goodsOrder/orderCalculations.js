@@ -1,4 +1,5 @@
 import { fix } from '../../../../api/tool/format';
+import { formatCalculationResult } from '../../../../utils/precision';
 
 /**
  * 计算吨位
@@ -131,4 +132,48 @@ export function updateOrderRowCalculations(row, isSea, isLand) {
 	calculateTotalFreight(row, isSea); // 算总运费
 	calculateProfit(row); // 算利润
 	calculateProfitNoTax(row); // 算不含税利润
+
+	// 计算出厂货款 (2位小数)
+	if (row.pieces && row.price) {
+		const factoryPayment = Number(row.pieces) * Number(row.price) + Number(row.sundryCost || 0);
+		row.paymentFactory = formatCalculationResult(factoryPayment);
+	}
+
+	// 计算总货款 (2位小数)
+	if (row.actualPieces && row.paymentUnload) {
+		const payments = Number(row.actualPieces) * Number(row.paymentUnload) + Number(row.paymentsWithSundry || 0);
+		row.payments = formatCalculationResult(payments);
+	}
+
+	// 计算吨位 (2位小数)
+	if (row.height && row.length && row.width && row.actualPieces && row.erro) {
+		const tonnage = (Number(row.height) * Number(row.length) * Number(row.width) * Number(row.actualPieces) * Number(row.erro)) / 1000000;
+		row.tonnage = formatCalculationResult(tonnage);
+	}
+
+	// 计算陆运费 (2位小数)
+	if (isLand && row.landFreightPrice && row.tonnage) {
+		const landFreight = Number(row.landFreightPrice) * Number(row.tonnage) + Number(row.additionalFees || 0);
+		row.landFreight = formatCalculationResult(landFreight);
+	}
+
+	// 计算总运费 (2位小数)
+	const totalFreight = Number(row.landFreight || 0) + Number(row.seaFreight || 0);
+	row.freight = formatCalculationResult(totalFreight);
+
+	// 计算利润 (2位小数)
+	if (row.payments && row.paymentFactory) {
+		const profit = Number(row.payments) - Number(row.paymentFactory) - Number(row.freight || 0) - Number(row.otherCost || 0);
+		row.profit = formatCalculationResult(profit);
+	}
+
+	// 计算不含税利润 (2位小数)
+	if (row.profit) {
+		let profitNoTax = Number(row.profit);
+		// 如果销售含税，则除以1.13
+		if (row.isIncludeTaxSale === 1) {
+			profitNoTax = profitNoTax / 1.13;
+		}
+		row.profitNoTax = formatCalculationResult(profitNoTax);
+	}
 }

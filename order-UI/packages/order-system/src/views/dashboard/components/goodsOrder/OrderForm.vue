@@ -873,6 +873,17 @@ export default {
 				// 触发重新计算
 				this.recalculateAll({ row });
 			}
+		},
+		/**
+		 * 格式化价格输入，控制小数位数
+		 * @param {Object} row - 当前行数据
+		 * @param {String} field - 字段名
+		 * @param {Number} precision - 小数位数
+		 */
+		formatPriceInput(row, field, precision) {
+			if (row[field] && !isNaN(row[field])) {
+				row[field] = parseFloat(row[field]).toFixed(precision);
+			}
 		}
 	}
 };
@@ -1237,6 +1248,7 @@ export default {
 								@input="() => recalculateAll(scope)"
 								:placeholder="scope.row.pieces <= 0 ? '请先完善出厂片数' : '请输入出厂单价'"
 								:disabled="!scope.row.isEditing || !scope.row.pieces"
+								@blur="() => formatPriceInput(scope.row, 'price', 4)"
 							/>
 						</template>
 					</el-table-column>
@@ -1256,6 +1268,7 @@ export default {
 								@input="() => recalculateAll(scope)"
 								:placeholder="scope.row.price <= 0 ? '请先完善出厂单价' : '请输入杂费'"
 								:disabled="!scope.row.isEditing || !scope.row.price"
+								@blur="() => formatPriceInput(scope.row, 'sundryCost', 2)"
 							/>
 						</template>
 					</el-table-column>
@@ -1271,7 +1284,14 @@ export default {
 					</el-table-column>
 					<el-table-column label="卸货价" prop="paymentUnload" width="90">
 						<template #default="scope">
-							<el-input size="mini" v-model.lazy="scope.row.paymentUnload" placeholder="请输入卸货价" @input="() => recalculateAll(scope)" :disabled="!scope.row.isEditing" />
+							<el-input 
+								size="mini" 
+								v-model.lazy="scope.row.paymentUnload" 
+								placeholder="请输入卸货价" 
+								@input="() => recalculateAll(scope)" 
+								:disabled="!scope.row.isEditing"
+								@blur="() => formatPriceInput(scope.row, 'paymentUnload', 4)"
+							/>
 						</template>
 					</el-table-column>
 					<el-table-column label="销售是否含税" prop="isIncludeTaxSale" width="90">
@@ -1290,6 +1310,7 @@ export default {
 								@input="() => recalculateAll(scope)"
 								:disabled="!scope.row.isEditing || !scope.row.paymentUnload"
 								:placeholder="scope.row.paymentUnload <= 0 ? '请先完善卸货价' : '请输入总货款杂费'"
+								@blur="() => formatPriceInput(scope.row, 'paymentsWithSundry', 2)"
 							/>
 						</template>
 					</el-table-column>
@@ -1311,7 +1332,14 @@ export default {
 					</el-table-column>
 					<el-table-column label="陆运费单价" prop="landFreightPrice" width="150" v-if="isLand">
 						<template #default="scope">
-							<el-input size="mini" v-model.lazy="scope.row.landFreightPrice" @input="() => recalculateAll(scope)" placeholder="请输入陆运费单价" :disabled="!scope.row.isEditing" />
+							<el-input 
+								size="mini" 
+								v-model.lazy="scope.row.landFreightPrice" 
+								@input="() => recalculateAll(scope)" 
+								placeholder="请输入陆运费单价" 
+								:disabled="!scope.row.isEditing"
+								@blur="() => formatPriceInput(scope.row, 'landFreightPrice', 2)"
+							/>
 						</template>
 					</el-table-column>
 					<el-table-column label="加费" prop="additionalFees" width="90" v-if="isLand">
@@ -1322,6 +1350,7 @@ export default {
 								@input="() => recalculateAll(scope)"
 								:placeholder="!scope.row.landFreightPrice ? '请先完善陆运费单价' : '请输入加费'"
 								:disabled="!scope.row.isEditing"
+								@blur="() => formatPriceInput(scope.row, 'additionalFees', 2)"
 							/>
 						</template>
 					</el-table-column>
@@ -1332,7 +1361,14 @@ export default {
 					</el-table-column>
 					<el-table-column label="海运费" prop="seaFreight" width="90" v-if="isSea">
 						<template #default="scope">
-							<el-input size="mini" v-model.lazy="scope.row.seaFreight" @input="() => recalculateAll(scope)" placeholder="请输入海运费" :disabled="!scope.row.isEditing" />
+							<el-input 
+								size="mini" 
+								v-model.lazy="scope.row.seaFreight" 
+								@input="() => recalculateAll(scope)" 
+								placeholder="请输入海运费" 
+								:disabled="!scope.row.isEditing"
+								@blur="() => formatPriceInput(scope.row, 'seaFreight', 2)"
+							/>
 						</template>
 					</el-table-column>
 
@@ -1343,7 +1379,14 @@ export default {
 					</el-table-column>
 					<el-table-column label="其他费用" prop="otherCost" width="90">
 						<template #default="scope">
-							<el-input size="mini" v-model.lazy="scope.row.otherCost" placeholder="请输入其他费用" @input="() => recalculateAll(scope)" :disabled="!scope.row.isEditing" />
+							<el-input 
+								size="mini" 
+								v-model.lazy="scope.row.otherCost" 
+								placeholder="请输入其他费用" 
+								@input="() => recalculateAll(scope)" 
+								:disabled="!scope.row.isEditing"
+								@blur="() => formatPriceInput(scope.row, 'otherCost', 2)"
+							/>
 						</template>
 					</el-table-column>
 					<el-table-column label="利润" prop="profit" width="90">
@@ -1356,30 +1399,59 @@ export default {
 							<el-input size="mini" v-model="scope.row.profitNoTax" placeholder="自动计算" disabled />
 						</template>
 					</el-table-column>
-
 					<el-table-column label="物流利润" prop="logisticsProfit" width="90">
 						<template #default="scope">
-							<el-input size="mini" v-model="scope.row.logisticsProfit" placeholder="请输入物流利润" :disabled="!scope.row.isEditing" />
+							<el-input 
+								size="mini" 
+								v-model="scope.row.logisticsProfit" 
+								placeholder="请输入物流利润" 
+								:disabled="!scope.row.isEditing"
+								@blur="() => formatPriceInput(scope.row, 'logisticsProfit', 2)"
+							/>
 						</template>
 					</el-table-column>
 					<el-table-column label="客户佣金" prop="customerCommission" width="90">
 						<template #default="scope">
-							<el-input size="mini" v-model="scope.row.customerCommission" placeholder="请输入佣金" :disabled="!scope.row.isEditing" />
+							<el-input 
+								size="mini" 
+								v-model="scope.row.customerCommission" 
+								placeholder="请输入佣金" 
+								:disabled="!scope.row.isEditing"
+								@blur="() => formatPriceInput(scope.row, 'customerCommission', 2)"
+							/>
 						</template>
 					</el-table-column>
 					<el-table-column label="厂家佣金" prop="factoryCommission" width="90">
 						<template #default="scope">
-							<el-input size="mini" v-model="scope.row.factoryCommission" placeholder="请输入佣金" :disabled="!scope.row.isEditing" />
+							<el-input 
+								size="mini" 
+								v-model="scope.row.factoryCommission" 
+								placeholder="请输入佣金" 
+								:disabled="!scope.row.isEditing"
+								@blur="() => formatPriceInput(scope.row, 'factoryCommission', 2)"
+							/>
 						</template>
 					</el-table-column>
 					<el-table-column label="计提厂家返利金额" prop="factoryRebateAmount" width="90">
 						<template #default="scope">
-							<el-input size="mini" v-model="scope.row.factoryRebateAmount" placeholder="请输入计提厂家返利金额" :disabled="!scope.row.isEditing" />
+							<el-input 
+								size="mini" 
+								v-model="scope.row.factoryRebateAmount" 
+								placeholder="请输入计提厂家返利金额" 
+								:disabled="!scope.row.isEditing"
+								@blur="() => formatPriceInput(scope.row, 'factoryRebateAmount', 2)"
+							/>
 						</template>
 					</el-table-column>
 					<el-table-column label="计提厂家降价金额" prop="factoryDiscountAmount" width="90">
 						<template #default="scope">
-							<el-input size="mini" v-model="scope.row.factoryDiscountAmount" placeholder="请输入计提厂家降价金额" :disabled="!scope.row.isEditing" />
+							<el-input 
+								size="mini" 
+								v-model="scope.row.factoryDiscountAmount" 
+								placeholder="请输入计提厂家降价金额" 
+								:disabled="!scope.row.isEditing"
+								@blur="() => formatPriceInput(scope.row, 'factoryDiscountAmount', 2)"
+							/>
 						</template>
 					</el-table-column>
 					<el-table-column label="备注" prop="comments" width="90">

@@ -450,13 +450,13 @@
 
 					<el-table-column label="出厂单价" prop="price" width="150">
 						<template #default="scope">
-							<!-- 添加 disabled 属性 -->
 							<el-input
 								size="mini"
 								v-model="scope.row.price"
 								@input="() => recalculateAll(scope)"
 								:placeholder="scope.row.pieces <= 0 ? '请先完善出厂片数' : '请输入出厂单价'"
 								:disabled="!scope.row.isEditing || !scope.row.pieces"
+								@blur="() => formatPriceInput(scope.row, 'price', 4)"
 							/>
 						</template>
 					</el-table-column>
@@ -471,19 +471,18 @@
 					</el-table-column>
 					<el-table-column label="杂费" prop="sundryCost" width="150">
 						<template #default="scope">
-							<!-- 添加 disabled 属性 -->
 							<el-input
 								size="mini"
 								v-model.lazy="scope.row.sundryCost"
 								@input="() => recalculateAll(scope)"
 								:placeholder="scope.row.price <= 0 ? '请先完善出厂单价' : '请输入杂费'"
 								:disabled="!scope.row.isEditing || !scope.row.price"
+								@blur="() => formatPriceInput(scope.row, 'sundryCost', 2)"
 							/>
 						</template>
 					</el-table-column>
 					<el-table-column label="出厂货款" prop="paymentFactory" width="150">
 						<template #default="scope">
-							<!-- 添加 disabled 属性 -->
 							<el-input size="mini" v-model="scope.row.paymentFactory" placeholder="自动计算" disabled />
 						</template>
 					</el-table-column>
@@ -495,8 +494,14 @@
 					</el-table-column>
 					<el-table-column label="存货价" prop="paymentUnload" width="150">
 						<template #default="scope">
-							<!-- 添加 disabled 属性 -->
-							<el-input size="mini" v-model.lazy="scope.row.paymentUnload" placeholder="请输入存货价" @input="() => recalculateAll(scope)" :disabled="!scope.row.isEditing" />
+							<el-input 
+								size="mini" 
+								v-model.lazy="scope.row.paymentUnload" 
+								placeholder="请输入存货价" 
+								@input="() => recalculateAll(scope)" 
+								:disabled="!scope.row.isEditing"
+								@blur="() => formatPriceInput(scope.row, 'paymentUnload', 4)"
+							/>
 						</template>
 					</el-table-column>
 					<el-table-column label="库存是否含税" prop="isIncludeTaxSale" width="150">
@@ -511,7 +516,6 @@
 
 					<el-table-column label="库存金额" prop="payments" width="150">
 						<template #default="scope">
-							<!-- 添加 disabled 属性 -->
 							<el-input size="mini" v-model="scope.row.payments" placeholder="自动计算" disabled />
 						</template>
 					</el-table-column>
@@ -529,19 +533,25 @@
 					</el-table-column>
 					<el-table-column label="陆运费单价" prop="landFreightPrice" width="150" v-if="isLand">
 						<template #default="scope">
-							<!-- 添加 disabled 属性 -->
-							<el-input size="mini" v-model.lazy="scope.row.landFreightPrice" @input="() => recalculateAll(scope)" placeholder="请输入陆运费单价" :disabled="!scope.row.isEditing" />
+							<el-input 
+								size="mini" 
+								v-model.lazy="scope.row.landFreightPrice" 
+								@input="() => recalculateAll(scope)" 
+								placeholder="请输入陆运费单价" 
+								:disabled="!scope.row.isEditing"
+								@blur="() => formatPriceInput(scope.row, 'landFreightPrice', 2)"
+							/>
 						</template>
 					</el-table-column>
 					<el-table-column label="加费" prop="additionalFees" width="150">
 						<template #default="scope">
-							<!-- 添加 disabled 属性 -->
 							<el-input
 								size="mini"
 								v-model.lazy="scope.row.additionalFees"
 								@input="() => recalculateAll(scope)"
 								:placeholder="!scope.row.landFreightPrice ? '请先完善陆运费单价' : '请输入加费'"
 								:disabled="!scope.row.isEditing"
+								@blur="() => formatPriceInput(scope.row, 'additionalFees', 2)"
 							/>
 						</template>
 					</el-table-column>
@@ -553,8 +563,14 @@
 					</el-table-column>
 					<el-table-column label="海运费" prop="seaFreight" width="150" v-if="isSea">
 						<template #default="scope">
-							<!-- 添加 disabled 属性 -->
-							<el-input size="mini" v-model.lazy="scope.row.seaFreight" @input="() => recalculateAll(scope)" placeholder="请输入海运费" :disabled="!scope.row.isEditing" />
+							<el-input 
+								size="mini" 
+								v-model.lazy="scope.row.seaFreight" 
+								@input="() => recalculateAll(scope)" 
+								placeholder="请输入海运费" 
+								:disabled="!scope.row.isEditing"
+								@blur="() => formatPriceInput(scope.row, 'seaFreight', 2)"
+							/>
 						</template>
 					</el-table-column>
 
@@ -566,44 +582,68 @@
 					</el-table-column>
 					<el-table-column label="其他费用" prop="otherCost" width="150">
 						<template #default="scope">
-							<!-- 添加 disabled 属性 -->
-							<el-input size="mini" v-model.lazy="scope.row.otherCost" placeholder="请输入其他费用" @input="() => recalculateAll(scope)" :disabled="!scope.row.isEditing" />
+							<el-input 
+								size="mini" 
+								v-model.lazy="scope.row.otherCost" 
+								placeholder="请输入其他费用" 
+								@input="() => recalculateAll(scope)" 
+								:disabled="!scope.row.isEditing"
+								@blur="() => formatPriceInput(scope.row, 'otherCost', 2)"
+							/>
 						</template>
 					</el-table-column>
 					<el-table-column label="利润" prop="profit" width="150">
 						<template #default="scope">
-							<!-- 添加 disabled 属性 -->
 							<el-input size="mini" v-model="scope.row.profit" placeholder="自动计算" disabled />
 						</template>
 					</el-table-column>
 					<el-table-column label="不含税利润" prop="profitNoTax" width="150">
 						<template #default="scope">
-							<!-- 添加 disabled 属性 -->
 							<el-input size="mini" v-model="scope.row.profitNoTax" placeholder="自动计算" disabled />
 						</template>
 					</el-table-column>
 					<el-table-column label="物流利润" prop="logisticsProfit" width="150">
 						<template #default="scope">
-							<!-- 添加 disabled 属性 -->
-							<el-input size="mini" v-model="scope.row.logisticsProfit" placeholder="请输入物流利润" :disabled="!scope.row.isEditing" />
+							<el-input 
+								size="mini" 
+								v-model="scope.row.logisticsProfit" 
+								placeholder="请输入物流利润" 
+								:disabled="!scope.row.isEditing"
+								@blur="() => formatPriceInput(scope.row, 'logisticsProfit', 2)"
+							/>
 						</template>
 					</el-table-column>
 					<el-table-column label="厂家佣金" prop="factoryCommission" width="150">
 						<template #default="scope">
-							<!-- 添加 disabled 属性 -->
-							<el-input size="mini" v-model="scope.row.factoryCommission" placeholder="请输入厂家佣金" :disabled="!scope.row.isEditing" />
+							<el-input 
+								size="mini" 
+								v-model="scope.row.factoryCommission" 
+								placeholder="请输入厂家佣金" 
+								:disabled="!scope.row.isEditing"
+								@blur="() => formatPriceInput(scope.row, 'factoryCommission', 2)"
+							/>
 						</template>
 					</el-table-column>
 					<el-table-column label="计提厂家返利金额" prop="factoryRebateAmount" width="150">
 						<template #default="scope">
-							<!-- 添加 disabled 属性 -->
-							<el-input size="mini" v-model="scope.row.factoryRebateAmount" placeholder="请输入计提厂家返利金额" :disabled="!scope.row.isEditing" />
+							<el-input 
+								size="mini" 
+								v-model="scope.row.factoryRebateAmount" 
+								placeholder="请输入计提厂家返利金额" 
+								:disabled="!scope.row.isEditing"
+								@blur="() => formatPriceInput(scope.row, 'factoryRebateAmount', 2)"
+							/>
 						</template>
 					</el-table-column>
 					<el-table-column label="计提厂家降价金额" prop="factoryDiscountAmount" width="150">
 						<template #default="scope">
-							<!-- 添加 disabled 属性 -->
-							<el-input size="mini" v-model="scope.row.factoryDiscountAmount" placeholder="请输入计提厂家降价金额" :disabled="!scope.row.isEditing" />
+							<el-input 
+								size="mini" 
+								v-model="scope.row.factoryDiscountAmount" 
+								placeholder="请输入计提厂家降价金额" 
+								:disabled="!scope.row.isEditing"
+								@blur="() => formatPriceInput(scope.row, 'factoryDiscountAmount', 2)"
+							/>
 						</template>
 					</el-table-column>
 
@@ -993,8 +1033,8 @@ export default {
 		 * @description: 添加或更新库存详情数据到后端。
 		 *              根据主表单是否存在 id 判断是新增还是更新操作。
 		 *              调用相应的 API (addInventoryMain 或 updateInventoryMain)。
-		 *              成功后，更新行的编辑状态和错误状态，显示成功消息，如果是新增则更新主表 ID，并刷新列表。
-		 *              失败后，保持行的编辑状态并标记错误，显示错误消息。
+		 *              成功后，更新行的编辑状态和错误状态，显示成功消息，如果是新增則更新主表 ID，并刷新列表。
+		 *              失败后，保持行的编辑状态並標記錯誤，顯示錯誤消息。
 		 * @param {object} newInventoryInfo - 包含主表单和库存详情列表的对象。
 		 * @param {Array<object>} rows - 当前操作的行对象数组。
 		 */
@@ -1411,7 +1451,7 @@ export default {
 		 * @description: 处理新增库存按钮操作。
 		 *              调用 reset 方法重置表单。
 		 *              打开弹窗 (this.open = true)。
-		 *              设置弹窗标题为 '添加库存'。
+		 *              设置弹窗 标题为 '添加库存'。
 		 */
 		handleAdd() {
 			this.reset();
@@ -1669,7 +1709,18 @@ export default {
 				},
 				`inventoryMain_${new Date().getTime()}.xlsx`
 			);
-		}
+		},
+		/**
+		 * @description: 格式化价格输入，控制小数位数
+		 * @param {object} row - 当前行数据
+		 * @param {string} field - 字段名
+		 * @param {number} precision - 小数位数
+		 */
+		formatPriceInput(row, field, precision) {
+			if (row[field] && !isNaN(row[field])) {
+				row[field] = parseFloat(row[field]).toFixed(precision);
+			}
+		},
 	}
 };
 </script>

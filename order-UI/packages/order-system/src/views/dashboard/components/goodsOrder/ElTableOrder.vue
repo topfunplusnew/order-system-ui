@@ -486,7 +486,7 @@ export default {
 					</template>
 				</el-table-column>
 				<el-table-column v-if="columns[19].visible" show-overflow-tooltip label="是否可编辑" align="center" prop="isedit" width="100px">
-					<template slot-scope="scope">
+					<template #default="scope">
 						<StateTag :state-title="scope.row.isedit === 0 ? '否' : '是'" :state-mapper="{ 0: '否', 2: '是' }" />
 					</template>
 				</el-table-column>
