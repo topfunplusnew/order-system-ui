@@ -93,7 +93,7 @@
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改收款信息对话框 -->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="1200px" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="1200px" append-to-body>
 			<div style="height: 530px">
 				<el-form ref="form" :model="form" :rules="rules" label-width="150px">
 					<!--        第一列-->
@@ -224,7 +224,7 @@
 							<el-col :span="3">
 								<SearchOption
 									:get-data="listBankAccount"
-									title="客户银行卡信息"
+									title="银行卡信息"
 									icon="el-icon-search"
 									query-label="户名查找"
 									query-info="acountsName"
@@ -232,6 +232,10 @@
 									:limit-info="{ acountsType: value }"
 									@update:queryName="handleUpdateQueryNameCustomer"
 									@commitBack="handleCallBackCompany"
+									:extra-params="{
+										companyId: form.companyId,
+										companyType: value
+									}"
 								>
 									<template #table-columns>
 										<el-table-column label="账户类型" align="center" prop="acountsType" />

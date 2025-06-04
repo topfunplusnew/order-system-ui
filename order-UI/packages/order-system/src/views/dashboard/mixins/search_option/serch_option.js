@@ -32,6 +32,10 @@ export var mixin_search_option = {
 				pageNum: this.pageNum,
 				pageSize: this.pageSize
 			};
+			// 判断一下 如果额外的请求参数不为空
+			if (this.extraParams != null) {
+				Object.assign(data, this.extraParams);
+			}
 			// 调用获取数据的函数，并传入分页参数
 			this.getData(data)
 				.then(res => {

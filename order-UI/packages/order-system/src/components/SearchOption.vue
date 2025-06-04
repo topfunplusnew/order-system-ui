@@ -55,7 +55,6 @@ export default {
 			type: Boolean,
 			default: false
 		},
-
 		// 搜索项集合
 		queryItems: {
 			type: Object,
@@ -69,6 +68,13 @@ export default {
 		isPage: {
 			type: Boolean,
 			default: true
+		},
+		// 额外的查询参数信息
+		extraParams: {
+			type: Object,
+			default: () => {
+				return null;
+			}
 		}
 	},
 	data() {
@@ -157,7 +163,10 @@ export default {
 			const query = {
 				...this.limitInfo
 			};
-
+			// 判断一下 如果额外的请求参数不为空
+			if (this.extraParams != null) {
+				Object.assign(query, this.extraParams);
+			}
 			this.getData(query).then(res => {
 				this.total = res.total;
 				this.tableData = res.rows;
