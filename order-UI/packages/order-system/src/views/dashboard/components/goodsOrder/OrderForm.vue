@@ -12,7 +12,7 @@ import SearchOption from '../../../../components/SearchOption.vue';
 import { parseTime } from '../../../../utils/ruoyi';
 import { mixin_form_fillInfo } from '../../mixins/order/form/form_fillInfo';
 import { updateOrderRowCalculations } from './orderCalculations';
-import _ from 'lodash'; // 导入新的计算函数
+import _ from 'lodash';
 
 export default {
 	name: 'OrderForm',
@@ -94,7 +94,6 @@ export default {
 			isSea: false,
 			orderNums: 0,
 			querySupplier: null,
-			queryLevel: null,
 			queryLevel: null,
 			queryItemsCompany: {
 				queryList: [
@@ -1284,11 +1283,11 @@ export default {
 					</el-table-column>
 					<el-table-column label="卸货价" prop="paymentUnload" width="90">
 						<template #default="scope">
-							<el-input 
-								size="mini" 
-								v-model.lazy="scope.row.paymentUnload" 
-								placeholder="请输入卸货价" 
-								@input="() => recalculateAll(scope)" 
+							<el-input
+								size="mini"
+								v-model.lazy="scope.row.paymentUnload"
+								placeholder="请输入卸货价"
+								@input="() => recalculateAll(scope)"
 								:disabled="!scope.row.isEditing"
 								@blur="() => formatPriceInput(scope.row, 'paymentUnload', 4)"
 							/>
@@ -1332,11 +1331,11 @@ export default {
 					</el-table-column>
 					<el-table-column label="陆运费单价" prop="landFreightPrice" width="150" v-if="isLand">
 						<template #default="scope">
-							<el-input 
-								size="mini" 
-								v-model.lazy="scope.row.landFreightPrice" 
-								@input="() => recalculateAll(scope)" 
-								placeholder="请输入陆运费单价" 
+							<el-input
+								size="mini"
+								v-model.lazy="scope.row.landFreightPrice"
+								@input="() => recalculateAll(scope)"
+								placeholder="请输入陆运费单价"
 								:disabled="!scope.row.isEditing"
 								@blur="() => formatPriceInput(scope.row, 'landFreightPrice', 2)"
 							/>
@@ -1361,11 +1360,11 @@ export default {
 					</el-table-column>
 					<el-table-column label="海运费" prop="seaFreight" width="90" v-if="isSea">
 						<template #default="scope">
-							<el-input 
-								size="mini" 
-								v-model.lazy="scope.row.seaFreight" 
-								@input="() => recalculateAll(scope)" 
-								placeholder="请输入海运费" 
+							<el-input
+								size="mini"
+								v-model.lazy="scope.row.seaFreight"
+								@input="() => recalculateAll(scope)"
+								placeholder="请输入海运费"
 								:disabled="!scope.row.isEditing"
 								@blur="() => formatPriceInput(scope.row, 'seaFreight', 2)"
 							/>
@@ -1379,11 +1378,11 @@ export default {
 					</el-table-column>
 					<el-table-column label="其他费用" prop="otherCost" width="90">
 						<template #default="scope">
-							<el-input 
-								size="mini" 
-								v-model.lazy="scope.row.otherCost" 
-								placeholder="请输入其他费用" 
-								@input="() => recalculateAll(scope)" 
+							<el-input
+								size="mini"
+								v-model.lazy="scope.row.otherCost"
+								placeholder="请输入其他费用"
+								@input="() => recalculateAll(scope)"
 								:disabled="!scope.row.isEditing"
 								@blur="() => formatPriceInput(scope.row, 'otherCost', 2)"
 							/>
@@ -1401,10 +1400,10 @@ export default {
 					</el-table-column>
 					<el-table-column label="物流利润" prop="logisticsProfit" width="90">
 						<template #default="scope">
-							<el-input 
-								size="mini" 
-								v-model="scope.row.logisticsProfit" 
-								placeholder="请输入物流利润" 
+							<el-input
+								size="mini"
+								v-model="scope.row.logisticsProfit"
+								placeholder="请输入物流利润"
 								:disabled="!scope.row.isEditing"
 								@blur="() => formatPriceInput(scope.row, 'logisticsProfit', 2)"
 							/>
@@ -1412,10 +1411,10 @@ export default {
 					</el-table-column>
 					<el-table-column label="客户佣金" prop="customerCommission" width="90">
 						<template #default="scope">
-							<el-input 
-								size="mini" 
-								v-model="scope.row.customerCommission" 
-								placeholder="请输入佣金" 
+							<el-input
+								size="mini"
+								v-model="scope.row.customerCommission"
+								placeholder="请输入佣金"
 								:disabled="!scope.row.isEditing"
 								@blur="() => formatPriceInput(scope.row, 'customerCommission', 2)"
 							/>
@@ -1423,10 +1422,10 @@ export default {
 					</el-table-column>
 					<el-table-column label="厂家佣金" prop="factoryCommission" width="90">
 						<template #default="scope">
-							<el-input 
-								size="mini" 
-								v-model="scope.row.factoryCommission" 
-								placeholder="请输入佣金" 
+							<el-input
+								size="mini"
+								v-model="scope.row.factoryCommission"
+								placeholder="请输入佣金"
 								:disabled="!scope.row.isEditing"
 								@blur="() => formatPriceInput(scope.row, 'factoryCommission', 2)"
 							/>
@@ -1434,10 +1433,10 @@ export default {
 					</el-table-column>
 					<el-table-column label="计提厂家返利金额" prop="factoryRebateAmount" width="90">
 						<template #default="scope">
-							<el-input 
-								size="mini" 
-								v-model="scope.row.factoryRebateAmount" 
-								placeholder="请输入计提厂家返利金额" 
+							<el-input
+								size="mini"
+								v-model="scope.row.factoryRebateAmount"
+								placeholder="请输入计提厂家返利金额"
 								:disabled="!scope.row.isEditing"
 								@blur="() => formatPriceInput(scope.row, 'factoryRebateAmount', 2)"
 							/>
@@ -1445,10 +1444,10 @@ export default {
 					</el-table-column>
 					<el-table-column label="计提厂家降价金额" prop="factoryDiscountAmount" width="90">
 						<template #default="scope">
-							<el-input 
-								size="mini" 
-								v-model="scope.row.factoryDiscountAmount" 
-								placeholder="请输入计提厂家降价金额" 
+							<el-input
+								size="mini"
+								v-model="scope.row.factoryDiscountAmount"
+								placeholder="请输入计提厂家降价金额"
 								:disabled="!scope.row.isEditing"
 								@blur="() => formatPriceInput(scope.row, 'factoryDiscountAmount', 2)"
 							/>

@@ -5,6 +5,7 @@ import { getCustomerSubjectDetailSomeDay } from '@/api/system/statement';
 import { parseTime } from '@/utils/ruoyi';
 import { listOrderDetailByOrderNos } from '@/api/system/orderDetail';
 import { fix } from '../../../../api/tool/format';
+import { formatTime } from 'jest-util';
 
 export default {
 	name: 'ChatForm',
@@ -51,6 +52,7 @@ export default {
 		console.log(this.currentOrderInfo);
 	},
 	methods: {
+		formatTime,
 		fix,
 		numToChineseUppercase,
 		printHTML() {
@@ -74,13 +76,13 @@ export default {
 
 			<div class="invoice-header">
 				<div>客户：{{ orderInfo.customer }}</div>
-				<div>日期：{{ orderInfo.orderDate }}</div>
+				<div>日期：{{ formatTime(orderInfo.orderDate, 'yyyy-MM-dd') }}</div>
 			</div>
 
 			<table>
 				<thead>
 					<tr>
-						<th>日期</th>
+						<!--						<th>日期</th>-->
 						<th>等级</th>
 						<th>厚度(mm)</th>
 						<th colspan="2">规格</th>
@@ -96,7 +98,7 @@ export default {
 				<tbody>
 					<template v-if="orderInfo.smailOrderDetails.length > 0">
 						<tr v-for="item in itemList" :key="item.ordersNo">
-							<td>{{ item.orderDate }}</td>
+							<!--							<td>{{ item.orderDate }}</td>-->
 							<td>{{ item.levelName }}</td>
 							<td>{{ item.height }}</td>
 							<td>{{ item.length }}</td>
