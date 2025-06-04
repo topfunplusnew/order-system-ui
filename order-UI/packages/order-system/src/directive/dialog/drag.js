@@ -1,79 +1,125 @@
-/**
- * v-dialogDrag 弹窗拖拽
- * Copyright (c) 2019 ruoyi
- */
-
 export default {
 	bind(el, binding) {
 		const value = binding.value;
-		if (value == false) return;
-		// 获取拖拽内容头部
+		if (value === false) return;
+
 		const dialogHeaderEl = el.querySelector('.el-dialog__header');
 		const dragDom = el.querySelector('.el-dialog');
-		dialogHeaderEl.style.cursor = 'move';
-		// 获取原有属性 ie dom元素.currentStyle 火狐谷歌 window.getComputedStyle(dom元素, null);
-		const sty = dragDom.currentStyle || window.getComputedStyle(dragDom, null);
-		dragDom.style.position = 'absolute';
-		dragDom.style.marginTop = 0;
 
-		let width = dragDom.style.width;
-		if (width.includes('%')) {
-			width = +document.body.clientWidth * (+width.replace(/%/g, '') / 100);
-		} else {
-			width = +width.replace(/\px/g, '');
+		if (!dialogHeaderEl || !dragDom) {
+			return;
 		}
-		dragDom.style.left = `${(document.body.clientWidth - width) / 2}px`;
 
-		// 鼠标按下事件
+		dialogHeaderEl.style.cursor = 'move';
+		dragDom.style.position = 'absolute';
+		dragDom.style.marginTop = '0px';
+
+		const setInitialPosition = () => {
+			let width = dragDom.style.width;
+			if (width.includes('%')) {
+				width = +document.body.clientWidth * (parseFloat(width) / 100);
+			} else {
+				width = parseFloat(width);
+			}
+			if (isNaN(width) || width <= 0) {
+				width = dragDom.offsetWidth;
+			}
+			dragDom.style.left = `${(document.body.clientWidth - width) / 2}px`;
+		};
+		setInitialPosition();
+
+		let isDragging = false;
+
+		const onMouseMove = function (e) {
+			if (!isDragging) return;
+
+			const { disX, disY, styL, styT } = dialogHeaderEl._dragData;
+
+			const l = e.clientX - disX;
+			const t = e.clientY - disY;
+
+			let finallyL = l + styL;
+			let finallyT = t + styT;
+
+			if (finallyT < 0) {
+				finallyT = 0;
+			}
+
+			const clientWidth = document.body.clientWidth;
+			const dialogWidth = dragDom.offsetWidth;
+			if (finallyL + dialogWidth > clientWidth) {
+				finallyL = clientWidth - dialogWidth;
+			}
+
+			const clientHeight = document.body.clientHeight;
+			const dialogHeight = dragDom.offsetHeight;
+			if (finallyT + dialogHeight > clientHeight) {
+				finallyT = clientHeight - dialogHeight;
+			}
+
+			dragDom.style.left = `${finallyL}px`;
+			dragDom.style.top = `${finallyT}px`;
+		};
+
+		const onMouseUp = function () {
+			isDragging = false;
+			document.removeEventListener('mousemove', onMouseMove);
+			document.removeEventListener('mouseup', onMouseUp);
+		};
+
 		dialogHeaderEl.onmousedown = e => {
-			// 鼠标按下，计算当前元素距离可视区的距离 (鼠标点击位置距离可视窗口的距离)
+			isDragging = true;
 			const disX = e.clientX - dialogHeaderEl.offsetLeft;
 			const disY = e.clientY - dialogHeaderEl.offsetTop;
 
-			// 获取到的值带px 正则匹配替换
+			const sty = dragDom.currentStyle || window.getComputedStyle(dragDom, null);
 			let styL, styT;
 
-			// 注意在ie中 第一次获取到的值为组件自带50% 移动之后赋值为px
 			if (sty.left.includes('%')) {
-				styL = +document.body.clientWidth * (+sty.left.replace(/%/g, '') / 100);
-				styT = +document.body.clientHeight * (+sty.top.replace(/%/g, '') / 100);
+				styL = +document.body.clientWidth * (parseFloat(sty.left) / 100);
 			} else {
-				styL = +sty.left.replace(/\px/g, '');
-				styT = +sty.top.replace(/\px/g, '');
+				styL = parseFloat(sty.left);
 			}
 
-			// 鼠标拖拽事件
-			document.onmousemove = function (e) {
-				// 通过事件委托，计算移动的距离 （开始拖拽至结束拖拽的距离）
-				const l = e.clientX - disX;
-				const t = e.clientY - disY;
+			if (sty.top.includes('%')) {
+				styT = +document.body.clientHeight * (parseFloat(sty.top) / 100);
+			} else {
+				styT = parseFloat(sty.top);
+			}
 
-				let finallyL = l + styL;
-				let finallyT = t + styT;
+			dialogHeaderEl._dragData = { disX, disY, styL, styT };
 
-				// --- Collision detection for top edge ---
-				// If the dialog's top edge is above the window's top edge (0),
-				// set it to 0 to prevent it from going out of bounds.
-				if (finallyT < 0) {
-					finallyT = 0;
-				}
-				// You can add more collision detection here for other edges if needed
-				// For example, for the bottom edge:
-				// const clientHeight = document.body.clientHeight;
-				// const dialogHeight = dragDom.clientHeight; // Get the actual height of the dialog
-				// if (finallyT + dialogHeight > clientHeight) {
-				//     finallyT = clientHeight - dialogHeight;
-				// }
-
-				// 移动当前元素
-				dragDom.style.left = `${finallyL}px`;
-				dragDom.style.top = `${finallyT}px`;
-			};
-
-			document.onmouseup = function () {
-				document.onmousemove = null;
-				document.onmouseup = null;
-			};
+			document.addEventListener('mousemove', onMouseMove);
+			document.addEventListener('mouseup', onMouseUp);
 		};
+
+		el._dragMouseUp = onMouseUp;
+		el._dragMouseMove = onMouseMove;
+
+		const onWindowResize = () => {
+			setInitialPosition();
+		};
+		window.addEventListener('resize', onWindowResize);
+		el._dragWindowResize = onWindowResize;
+	},
+	unbind(el) {
+		const dialogHeaderEl = el.querySelector('.el-dialog__header');
+		if (dialogHeaderEl) {
+			dialogHeaderEl.onmousedown = null;
+		}
+
+		if (el._dragMouseMove) {
+			document.removeEventListener('mousemove', el._dragMouseMove);
+		}
+		if (el._dragMouseUp) {
+			document.removeEventListener('mouseup', el._dragMouseUp);
+		}
+		if (el._dragWindowResize) {
+			window.removeEventListener('resize', el._dragWindowResize);
+		}
+
+		if (dialogHeaderEl && dialogHeaderEl._dragData) {
+			delete dialogHeaderEl._dragData;
+		}
 	}
 };

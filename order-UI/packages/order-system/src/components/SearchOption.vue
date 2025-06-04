@@ -173,7 +173,7 @@ export default {
 		<!--    按钮-->
 		<el-button size="mini" :icon="icon" type="primary" @click="handleCallBack" :disabled="disable"></el-button>
 		<!--    弹窗-->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :title="title" :visible.sync="dialogVisible" destroy-on-close width="65%" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :title="title" :visible.sync="dialogVisible" width="65%">
 			<!--      弹出的表格内容-->
 			<el-row>
 				<div>
@@ -213,13 +213,12 @@ export default {
 				</div>
 
 				<!--        列表页-->
-				<el-table :key="tableData.length" v-loading="loading" :data="tableData" size="mini">
+				<el-table size="mini" :key="tableData.length" v-loading="loading" :data="tableData">
 					<slot name="table-columns" :tableData="tableData"></slot>
-
 					<!--          点击确认的地方-->
 					<el-table-column fixed="right" label="操作" width="100">
 						<template slot-scope="scope">
-							<el-button type="danger" size="small" :disabled="disable" @click="commitSomeThing(scope.row)">确认</el-button>
+							<el-button type="danger" size="mini" :disabled="disable" @click="commitSomeThing(scope.row)">确认</el-button>
 						</template>
 					</el-table-column>
 				</el-table>
@@ -234,30 +233,49 @@ export default {
 </template>
 
 <style scoped lang="scss">
-.el-button {
+.el-form {
 	margin-bottom: 10px;
-}
 
-.el-dialog {
-	.dialog-footer {
-		text-align: right;
+	.el-form-item {
+		margin-right: 15px;
+		margin-bottom: 10px;
 	}
 }
 
-.el-form {
-	margin-bottom: 20px;
-}
-
-.el-form-item {
-	margin-right: 20px;
-}
-
 .el-table {
-	margin-top: 20px;
+	margin-top: 10px;
+	font-size: 13px;
+
+	::v-deep .el-table__header th {
+		padding: 8px 0;
+	}
+
+	::v-deep .el-table__body td {
+		padding: 8px 0;
+	}
 }
 
 .pagination {
-	margin-top: 20px;
+	margin-top: 10px;
 	text-align: right;
+
+	::v-deep .el-pagination__total,
+	::v-deep .el-pagination__jump {
+		font-size: 13px;
+	}
+
+	::v-deep .el-pager li {
+		min-width: 24px;
+		height: 24px;
+		line-height: 24px;
+		font-size: 13px;
+	}
+
+	::v-deep .btn-prev,
+	::v-deep .btn-next {
+		min-width: 24px;
+		height: 24px;
+		line-height: 24px;
+	}
 }
 </style>
