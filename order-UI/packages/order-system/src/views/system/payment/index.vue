@@ -217,9 +217,9 @@
 				</el-form-item>
 				<el-form-item label="我方银行账户类型">
 					<banktype
-						:bill-type="bankacceptancetype.pay_type.payment"
-						:select-type="form.selfbankcardtype"
-						@updateselectedtype="changeselfbanktype"
+						:bill-type="BankAcceptanceType.PAY_TYPE.payment"
+						:select-type="form.selfBankCardType"
+						@updateselectedtype="changeSelfBankType"
 						@updatebankacceptance="value => (form.params.bankacceptance = value)"
 					/>
 				</el-form-item>
