@@ -5,7 +5,7 @@ import { getCustomerSubjectDetailSomeDay } from '@/api/system/statement';
 import { parseTime } from '@/utils/ruoyi';
 import { listOrderDetailByOrderNos } from '@/api/system/orderDetail';
 import { fix } from '../../../../api/tool/format';
-import { formatTime } from 'jest-util';
+import { formatTime } from '@/utils';
 
 export default {
 	name: 'ChatForm',
