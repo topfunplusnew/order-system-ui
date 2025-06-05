@@ -45,7 +45,6 @@ export default {
 		// 查询客户余额
 		getCustomerSubjectDetailSomeDay(query).then(res => {
 			this.moneyAmount = res.data.moneyAmount;
-			console.log(res);
 		});
 	},
 	mounted() {
@@ -109,38 +108,34 @@ export default {
 							<td>
 								{{ item.isIncludeTaxFactory === 0 ? '否' : '是' }}
 							</td>
-							<td>{{ item.otherCost }}</td>
+							<td>{{ item.paymentsWithSundry }}</td>
 							<td>{{ item.payments }}</td>
 							<td>{{ orderInfo.landCarNo }}</td>
 						</tr>
 					</template>
 					<!--  这里是货物的列表 要根据订单货物的列表来渲染-->
 					<tr>
-						<td />
-						<td style="text-align: left">货款</td>
+						<td style="text-align: center">货款</td>
 						<td colspan="8" />
 						<td>{{ fix(orderInfo.allPayments) }}</td>
 						<td />
 					</tr>
 					<tr>
-						<td />
-						<td style="text-align: left">余款</td>
+						<td style="text-align: center">余款</td>
 						<td colspan="8" />
 						<td>{{ fix(moneyAmount) }}</td>
 						<td />
 					</tr>
 					<tr>
-						<td />
 						<!-- 货款 + 余额-->
-						<td style="text-align: left">货款合计</td>
+						<td style="text-align: center">货款合计</td>
 						<td colspan="8" />
 						<td>{{ fix(totalPayments) }}</td>
 						<td />
 					</tr>
 					<tr>
-						<td />
 						<!--          合计只有一个大写-->
-						<td style="text-align: left">合计</td>
+						<td style="text-align: center">合计</td>
 						<td colspan="8">大写：{{ numToChineseUppercase(totalPayments) }}</td>
 						<td />
 						<td />

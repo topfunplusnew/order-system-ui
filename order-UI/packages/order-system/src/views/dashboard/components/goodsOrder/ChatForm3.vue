@@ -101,7 +101,7 @@ export default {
 							<td>
 								{{ item.isIncludeTaxFactory === 0 ? '否' : '是' }}
 							</td>
-							<td>{{ item.otherCost }}</td>
+							<td>{{ item.paymentsWithSundry }}</td>
 							<td>{{ item.payments }}</td>
 						</tr>
 					</template>
