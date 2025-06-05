@@ -400,6 +400,10 @@
 								query-info="acountsName"
 								@commitBack="handleCommitBackBankAcount"
 								@update:queryName="handleUpdateQueryBankAcount"
+								:extra-params="{
+									companyId: form.companyId,
+									companyType: value
+								}"
 							>
 								<template #table-columns>
 									<el-table-column label="账户类型" align="center" prop="acountsType" />
