@@ -7,6 +7,7 @@ import { listCompany } from '@/api/system/company';
 import { listBankAccount } from '@/api/system/bankAccount';
 import { getDicts } from '../../../../api/system/dict/data';
 import { fix_2 } from '../../../../api/tool/format';
+
 export default {
 	name: 'OrderDetailInfo',
 	components: { SearchOption },
@@ -179,7 +180,7 @@ export default {
 				<el-table-column label="出厂单价" align="center" prop="price" show-overflow-tooltip />
 				<el-table-column label="出厂是否含税" align="center" prop="isIncludeTaxFactory" show-overflow-tooltip>
 					<template slot-scope="scope">
-						<el-tag disable-transitions>{{ scope.row.isIncludeTaxFactory === 0 ? '否' : '是' }}</el-tag>
+						<el-tag disable-transitions>{{ scope.row.isIncludeTaxFactory == 0 ? '否' : '是' }}</el-tag>
 					</template>
 				</el-table-column>
 				<el-table-column label="杂费" align="center" prop="sundryCost" show-overflow-tooltip />
@@ -188,7 +189,7 @@ export default {
 				<el-table-column label="卸货价" align="center" prop="paymentUnload" show-overflow-tooltip />
 				<el-table-column label="销售是否含税" align="center" prop="isIncludeTaxSale" show-overflow-tooltip>
 					<template slot-scope="scope">
-						<el-tag disable-transitions>{{ scope.row.isIncludeTaxSale === 0 ? '否' : '是' }}</el-tag>
+						<el-tag disable-transitions>{{ scope.row.isIncludeTaxSale == 0 ? '否' : '是' }}</el-tag>
 					</template>
 				</el-table-column>
 				<el-table-column label="总货款杂费" align="center" prop="paymentsWithSundry" show-overflow-tooltip />
@@ -213,7 +214,7 @@ export default {
 		</el-row>
 
 		<!--    返利回扣-->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" title="添加返利信息" :visible.sync="addMoneyBackVisible" width="40%" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" title="添加返利信息" :visible.sync="addMoneyBackVisible" width="40%" append-to-body>
 			<el-form :model="moneyBackInfo" label-width="80px">
 				<el-form-item label="日期" prop="rebateDate">
 					<el-date-picker v-model="moneyBackInfo.rebateDate" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>

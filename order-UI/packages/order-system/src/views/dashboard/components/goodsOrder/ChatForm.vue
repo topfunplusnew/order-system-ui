@@ -106,7 +106,7 @@ export default {
 							<td>{{ item.packs }}</td>
 							<td>{{ item.price }}</td>
 							<td>
-								{{ item.isIncludeTaxFactory === 0 ? '否' : '是' }}
+								{{ item.isIncludeTaxSale === 0 ? '否' : '是' }}
 							</td>
 							<td>{{ item.paymentsWithSundry }}</td>
 							<td>{{ item.payments }}</td>
