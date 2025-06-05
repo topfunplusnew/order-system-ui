@@ -90,8 +90,6 @@ function calculateProfit(row) {
 	const payments = Number(row.payments);
 	const paymentFactory = Number(row.paymentFactory);
 	const freight = Number(row.freight);
-
-	// If (payments - paymentFactory - freight) is negative, profit will be 0
 	row.profit = fix_2(safeSubtract(payments, paymentFactory + freight));
 }
 
@@ -120,7 +118,7 @@ function calculateProfitNoTax(row) {
 		const width = Number(row.width);
 		const pieces = Number(row.pieces);
 		const specialCost = ((height * length * width * pieces) / 1000000 / 20) * 0.5;
-		calculatedProfitNoTax = safeSubtract(numPayments / taxRate, numPaymentFactory / taxRate + numFreight + specialCost + numOtherCost);
+		calculatedProfitNoTax = safeSubtract(numPayments, numPaymentFactory + numFreight * taxRate + specialCost + numOtherCost);
 	} else {
 		calculatedProfitNoTax = 0;
 	}

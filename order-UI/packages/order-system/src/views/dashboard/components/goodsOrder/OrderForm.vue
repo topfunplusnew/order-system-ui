@@ -881,7 +881,7 @@ export default {
 		 */
 		formatPriceInput(row, field, precision) {
 			if (row[field] && !isNaN(row[field])) {
-				row[field] = parseFloat(row[field]).toFixed(precision);
+				row[field] = Number(row[field]).toFixed(precision);
 			}
 		}
 	}

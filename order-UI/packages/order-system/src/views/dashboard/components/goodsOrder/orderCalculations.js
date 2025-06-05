@@ -52,6 +52,7 @@ function calculateTotalFreight(row, isSea) {
  * @param {object} row - 订单详情行数据
  */
 function calculateProfit(row) {
+	console.log(`利润`, row);
 	row.profit = fix_2(Number(row.payments) - Number(row.paymentFactory) - Number(row.freight));
 }
 
@@ -62,9 +63,13 @@ function calculateProfit(row) {
 function calculateProfitNoTax(row) {
 	const { payments, paymentFactory, freight, otherCost, isIncludeTaxFactory, isIncludeTaxSale, height, length, width, pieces } = row;
 	const taxRate = 1.075;
+	// 总货款
 	const numPayments = Number(payments);
+	// 出厂货款
 	const numPaymentFactory = Number(paymentFactory);
+	// 运费
 	const numFreight = Number(freight);
+	// 其他费用
 	const numOtherCost = Number(otherCost);
 	const numHeight = Number(height);
 	const numLength = Number(length);
@@ -72,22 +77,24 @@ function calculateProfitNoTax(row) {
 	const numPieces = Number(pieces);
 
 	// 根据厂家和客户是否含税，匹配四种情况
-	if (isIncludeTaxFactory == 0 && isIncludeTaxSale == 0) {
+	if (isIncludeTaxFactory === 0 && isIncludeTaxSale === 0) {
 		// Case 1 (否, 否): 总货款 - 出厂货款 - 总运费 - 其他费用
 		row.profitNoTax = fix_2(numPayments - numPaymentFactory - numFreight - numOtherCost);
-	} else if (isIncludeTaxFactory == 1 && isIncludeTaxSale == 0) {
+	} else if (isIncludeTaxFactory === 1 && isIncludeTaxSale === 0) {
 		// Case 2 (是, 否): 总货款 - (出厂货款 / 1.075) - 总运费 - 其他费用
 		row.profitNoTax = fix_2(numPayments - numPaymentFactory / taxRate - numFreight - numOtherCost);
-	} else if (isIncludeTaxFactory == 0 && isIncludeTaxSale == 1) {
+	} else if (isIncludeTaxFactory === 0 && isIncludeTaxSale === 1) {
 		// Case 3 (否, 是): (总货款 / 1.075) - 出厂货款 - 总运费 - 其他费用
 		row.profitNoTax = fix_2(numPayments / taxRate - numPaymentFactory - numFreight - numOtherCost);
-	} else if (isIncludeTaxFactory == 1 && isIncludeTaxSale == 1) {
-		// Case 4 (是, 是): (总货款 / 1.075) - (出厂货款 / 1.075) - 总运费 - (厚度 * 长度 * 宽度 * 出厂片数 / 1000000 / 20 * 0.5) - 其他费用
+	} else if (isIncludeTaxFactory === 1 && isIncludeTaxSale === 1) {
+		// Case 4 (是, 是): (总货款 - 出厂货款 - 总运费 * 1.075 - (厚度 * 长度 * 宽度 * 出厂片数 / 1000000 / 20 * 0.5) - 其他费用
 		const specialCost = ((numHeight * numLength * numWidth * numPieces) / 1000000 / 20) * 0.5;
-		row.profitNoTax = fix_2(numPayments / taxRate - numPaymentFactory / taxRate - numFreight - specialCost - numOtherCost);
+		row.profitNoTax = fix_2(numPayments - numPaymentFactory - numFreight - specialCost - numOtherCost);
 	} else {
 		row.profitNoTax = 0; // 异常情况返回0
 	}
+
+	console.log(`不含税利润`, row.profitNoTax);
 }
 
 /**
