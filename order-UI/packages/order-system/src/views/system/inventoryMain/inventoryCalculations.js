@@ -1,4 +1,4 @@
-import { fix } from '../../../api/tool/format';
+import { fix, fix_2 } from '../../../api/tool/format';
 import { formatCalculationResult } from '../../../utils/precision';
 
 /**
@@ -38,9 +38,9 @@ function calculatePaymentFactory(row) {
 	const sundryCost = Number(row.sundryCost);
 
 	if (row.isIncludeTaxFactory === 0) {
-		row.paymentFactory = fix(((length * width * pieces) / 1000000) * price + sundryCost);
+		row.paymentFactory = fix_2(((length * width * pieces) / 1000000) * price + sundryCost);
 	} else {
-		row.paymentFactory = fix((length * width * pieces * price) / 1000000 + sundryCost);
+		row.paymentFactory = fix_2((length * width * pieces * price) / 1000000 + sundryCost);
 	}
 }
 
@@ -55,9 +55,9 @@ function calculatePayment(row) {
 	const paymentsWithSundry = Number(row.paymentsWithSundry);
 
 	if (row.isIncludeTaxFactory === 0 && row.isIncludeTaxSale === 0) {
-		row.payments = fix(((length * width * pieces) / 1000000) * paymentUnload + paymentsWithSundry);
+		row.payments = fix_2(((length * width * pieces) / 1000000) * paymentUnload + paymentsWithSundry);
 	} else {
-		row.payments = fix((length * width * pieces * paymentUnload) / 1000000 + paymentsWithSundry);
+		row.payments = fix_2((length * width * pieces * paymentUnload) / 1000000 + paymentsWithSundry);
 	}
 }
 
@@ -69,7 +69,7 @@ function calculateLandFreight(row) {
 	const landFreightPrice = Number(row.landFreightPrice);
 	const additionalFees = Number(row.additionalFees);
 
-	row.landFreight = fix(tonnage * landFreightPrice + additionalFees);
+	row.landFreight = fix_2(tonnage * landFreightPrice + additionalFees);
 }
 
 /**
@@ -80,7 +80,7 @@ function calculateTotalFreight(row, isSea) {
 	const seaFreight = Number(row.seaFreight);
 	const additionalFees = Number(row.additionalFees);
 
-	row.freight = fix(landFreight + (isSea ? seaFreight : 0) + additionalFees);
+	row.freight = fix_2(landFreight + (isSea ? seaFreight : 0) + additionalFees);
 }
 
 /**
@@ -92,7 +92,7 @@ function calculateProfit(row) {
 	const freight = Number(row.freight);
 
 	// If (payments - paymentFactory - freight) is negative, profit will be 0
-	row.profit = fix(safeSubtract(payments, paymentFactory + freight));
+	row.profit = fix_2(safeSubtract(payments, paymentFactory + freight));
 }
 
 /**
@@ -124,7 +124,7 @@ function calculateProfitNoTax(row) {
 	} else {
 		calculatedProfitNoTax = 0;
 	}
-	row.profitNoTax = fix(calculatedProfitNoTax);
+	row.profitNoTax = fix_2(calculatedProfitNoTax);
 }
 
 /**
@@ -151,52 +151,4 @@ export function updateInventoryRowCalculations(row, isSea, isLand) {
 	calculateProfit(row);
 	// 计算不含税利润
 	calculateProfitNoTax(row);
-
-	// 计算出厂货款 (保持4位小数精度计算，但结果格式化为2位)
-	if (row.pieces && row.price) {
-		const factoryPayment = Number(row.pieces) * Number(row.price) + Number(row.sundryCost || 0);
-		row.paymentFactory = formatCalculationResult(factoryPayment);
-	}
-
-	// 计算库存金额 (2位小数)
-	if (row.stockNumber && row.paymentUnload) {
-		const payments = Number(row.stockNumber) * Number(row.paymentUnload);
-		row.payments = formatCalculationResult(payments);
-	}
-
-	// 计算吨位 (2位小数)
-	if (row.height && row.length && row.width && row.stockNumber && row.erro) {
-		const tonnage = (Number(row.height) * Number(row.length) * Number(row.width) * Number(row.stockNumber) * Number(row.erro)) / 1000000;
-		row.tonnage = formatCalculationResult(tonnage);
-	}
-
-	// 计算陆运费 (2位小数)
-	if (isLand && row.landFreightPrice && row.tonnage) {
-		const landFreight = Number(row.landFreightPrice) * Number(row.tonnage) + Number(row.additionalFees || 0);
-		row.landFreight = formatCalculationResult(landFreight);
-	}
-
-	// 计算总运费 (2位小数)
-	const totalFreight = Number(row.landFreight || 0) + Number(row.seaFreight || 0);
-	row.freight = formatCalculationResult(totalFreight);
-
-	// 计算利润 (2位小数)
-	if (row.payments && row.paymentFactory) {
-		const profit = Number(row.payments) - Number(row.paymentFactory) - Number(row.freight || 0) - Number(row.otherCost || 0);
-		row.profit = formatCalculationResult(profit);
-	}
-
-	// 计算不含税利润 (2位小数)
-	if (row.profit) {
-		let profitNoTax = Number(row.profit);
-		// 如果销售含税，则除以1.13
-		if (row.isIncludeTaxSale === 1) {
-			profitNoTax = profitNoTax / 1.13;
-		}
-		// 如果出厂不含税，则需要调整
-		if (row.isIncludeTaxFactory === 0) {
-			// 调整计算逻辑
-		}
-		row.profitNoTax = formatCalculationResult(profitNoTax);
-	}
 }
