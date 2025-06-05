@@ -1,5 +1,4 @@
-import { fix } from '../../../../api/tool/format';
-import { formatCalculationResult } from '../../../../utils/precision';
+import { fix, fix_2 } from '../../../../api/tool/format';
 
 /**
  * 计算吨位
@@ -16,7 +15,7 @@ function calculateTonnage(row) {
  * @param {object} row - 订单详情行数据
  */
 function calculatePaymentFactory(row) {
-	row.paymentFactory = fix(((Number(row.length) * Number(row.width) * Number(row.pieces)) / 1000000) * Number(row.price) + Number(row.sundryCost));
+	row.paymentFactory = fix_2(((Number(row.length) * Number(row.width) * Number(row.pieces)) / 1000000) * Number(row.price) + Number(row.sundryCost));
 }
 
 /**
@@ -25,7 +24,7 @@ function calculatePaymentFactory(row) {
  * @param {object} row - 订单详情行数据
  */
 function calculatePayment(row) {
-	row.payments = fix(((Number(row.length) * Number(row.width) * Number(row.actualPieces)) / 1000000) * Number(row.paymentUnload) + Number(row.paymentsWithSundry));
+	row.payments = fix_2(((Number(row.length) * Number(row.width) * Number(row.actualPieces)) / 1000000) * Number(row.paymentUnload) + Number(row.paymentsWithSundry));
 }
 
 /**
@@ -34,7 +33,7 @@ function calculatePayment(row) {
  * @param {object} row - 订单详情行数据
  */
 function calculateLandFreight(row) {
-	row.landFreight = fix(Number(row.tonnage) * Number(row.landFreightPrice) + Number(row.additionalFees));
+	row.landFreight = fix_2(Number(row.tonnage) * Number(row.landFreightPrice) + Number(row.additionalFees));
 }
 
 /**
@@ -44,7 +43,7 @@ function calculateLandFreight(row) {
  */
 function calculateTotalFreight(row, isSea) {
 	// 总运费 = 陆运费 + 海运费(如果有)
-	row.freight = fix(Number(row.landFreight) + (isSea ? Number(row.seaFreight) : 0));
+	row.freight = fix_2(Number(row.landFreight) + (isSea ? Number(row.seaFreight) : 0));
 }
 
 /**
@@ -53,7 +52,7 @@ function calculateTotalFreight(row, isSea) {
  * @param {object} row - 订单详情行数据
  */
 function calculateProfit(row) {
-	row.profit = fix(Number(row.payments) - Number(row.paymentFactory) - Number(row.freight));
+	row.profit = fix_2(Number(row.payments) - Number(row.paymentFactory) - Number(row.freight));
 }
 
 /**
@@ -75,17 +74,17 @@ function calculateProfitNoTax(row) {
 	// 根据厂家和客户是否含税，匹配四种情况
 	if (isIncludeTaxFactory == 0 && isIncludeTaxSale == 0) {
 		// Case 1 (否, 否): 总货款 - 出厂货款 - 总运费 - 其他费用
-		row.profitNoTax = fix(numPayments - numPaymentFactory - numFreight - numOtherCost);
+		row.profitNoTax = fix_2(numPayments - numPaymentFactory - numFreight - numOtherCost);
 	} else if (isIncludeTaxFactory == 1 && isIncludeTaxSale == 0) {
 		// Case 2 (是, 否): 总货款 - (出厂货款 / 1.075) - 总运费 - 其他费用
-		row.profitNoTax = fix(numPayments - numPaymentFactory / taxRate - numFreight - numOtherCost);
+		row.profitNoTax = fix_2(numPayments - numPaymentFactory / taxRate - numFreight - numOtherCost);
 	} else if (isIncludeTaxFactory == 0 && isIncludeTaxSale == 1) {
 		// Case 3 (否, 是): (总货款 / 1.075) - 出厂货款 - 总运费 - 其他费用
-		row.profitNoTax = fix(numPayments / taxRate - numPaymentFactory - numFreight - numOtherCost);
+		row.profitNoTax = fix_2(numPayments / taxRate - numPaymentFactory - numFreight - numOtherCost);
 	} else if (isIncludeTaxFactory == 1 && isIncludeTaxSale == 1) {
 		// Case 4 (是, 是): (总货款 / 1.075) - (出厂货款 / 1.075) - 总运费 - (厚度 * 长度 * 宽度 * 出厂片数 / 1000000 / 20 * 0.5) - 其他费用
 		const specialCost = ((numHeight * numLength * numWidth * numPieces) / 1000000 / 20) * 0.5;
-		row.profitNoTax = fix(numPayments / taxRate - numPaymentFactory / taxRate - numFreight - specialCost - numOtherCost);
+		row.profitNoTax = fix_2(numPayments / taxRate - numPaymentFactory / taxRate - numFreight - specialCost - numOtherCost);
 	} else {
 		row.profitNoTax = 0; // 异常情况返回0
 	}
@@ -98,28 +97,6 @@ function calculateProfitNoTax(row) {
  * @param {boolean} isLand - 是否包含陆运
  */
 export function updateOrderRowCalculations(row, isSea, isLand) {
-	// 移除或注释掉以下数据预处理块，因为这可能干扰小数输入
-	/*
-    // 确保基础数据是数字类型，避免NaN错误
-    row.height = Number(row.height) || 0;
-    row.length = Number(row.length) || 0;
-    row.width = Number(row.width) || 0;
-    row.pieces = Number(row.pieces) || 0;
-    row.erro = Number(row.erro) || 0;
-    row.price = Number(row.price) || 0;
-    row.sundryCost = Number(row.sundryCost) || 0;
-    // 如果卸货片数为空，先尝试使用出厂片数填充，再转数字
-    row.actualPieces = Number(row.actualPieces || row.pieces) || 0;
-    row.paymentUnload = Number(row.paymentUnload) || 0;
-    row.paymentsWithSundry = Number(row.paymentsWithSundry) || 0;
-    row.landFreightPrice = Number(row.landFreightPrice) || 0;
-    row.additionalFees = Number(row.additionalFees) || 0;
-    row.seaFreight = Number(row.seaFreight) || 0;
-    row.otherCost = Number(row.otherCost) || 0;
-    row.isIncludeTaxFactory = Number(row.isIncludeTaxFactory); // 确保是数字0或1
-    row.isIncludeTaxSale = Number(row.isIncludeTaxSale); // 确保是数字0或1
-    */
-
 	// 按依赖顺序计算 - 计算函数内部会使用 Number() 进行转换
 	calculateTonnage(row); // 先算吨位和可能的卸货片数填充
 	calculatePaymentFactory(row); // 算厂家货款
@@ -132,48 +109,4 @@ export function updateOrderRowCalculations(row, isSea, isLand) {
 	calculateTotalFreight(row, isSea); // 算总运费
 	calculateProfit(row); // 算利润
 	calculateProfitNoTax(row); // 算不含税利润
-
-	// 计算出厂货款 (2位小数)
-	if (row.pieces && row.price) {
-		const factoryPayment = Number(row.pieces) * Number(row.price) + Number(row.sundryCost || 0);
-		row.paymentFactory = formatCalculationResult(factoryPayment);
-	}
-
-	// 计算总货款 (2位小数)
-	if (row.actualPieces && row.paymentUnload) {
-		const payments = Number(row.actualPieces) * Number(row.paymentUnload) + Number(row.paymentsWithSundry || 0);
-		row.payments = formatCalculationResult(payments);
-	}
-
-	// 计算吨位 (2位小数)
-	if (row.height && row.length && row.width && row.actualPieces && row.erro) {
-		const tonnage = (Number(row.height) * Number(row.length) * Number(row.width) * Number(row.actualPieces) * Number(row.erro)) / 1000000;
-		row.tonnage = formatCalculationResult(tonnage);
-	}
-
-	// 计算陆运费 (2位小数)
-	if (isLand && row.landFreightPrice && row.tonnage) {
-		const landFreight = Number(row.landFreightPrice) * Number(row.tonnage) + Number(row.additionalFees || 0);
-		row.landFreight = formatCalculationResult(landFreight);
-	}
-
-	// 计算总运费 (2位小数)
-	const totalFreight = Number(row.landFreight || 0) + Number(row.seaFreight || 0);
-	row.freight = formatCalculationResult(totalFreight);
-
-	// 计算利润 (2位小数)
-	if (row.payments && row.paymentFactory) {
-		const profit = Number(row.payments) - Number(row.paymentFactory) - Number(row.freight || 0) - Number(row.otherCost || 0);
-		row.profit = formatCalculationResult(profit);
-	}
-
-	// 计算不含税利润 (2位小数)
-	if (row.profit) {
-		let profitNoTax = Number(row.profit);
-		// 如果销售含税，则除以1.13
-		if (row.isIncludeTaxSale === 1) {
-			profitNoTax = profitNoTax / 1.13;
-		}
-		row.profitNoTax = formatCalculationResult(profitNoTax);
-	}
 }
