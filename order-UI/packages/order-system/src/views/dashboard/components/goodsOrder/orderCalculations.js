@@ -89,7 +89,7 @@ function calculateProfitNoTax(row) {
 	} else if (isIncludeTaxFactory === 1 && isIncludeTaxSale === 1) {
 		// Case 4 (是, 是): (总货款 - 出厂货款 - 总运费 * 1.075 - (厚度 * 长度 * 宽度 * 出厂片数 / 1000000 / 20 * 0.5) - 其他费用
 		const specialCost = ((numHeight * numLength * numWidth * numPieces) / 1000000 / 20) * 0.5;
-		row.profitNoTax = fix_2(numPayments - numPaymentFactory - numFreight - specialCost - numOtherCost);
+		row.profitNoTax = fix_2(numPayments - numPaymentFactory - numFreight * taxRate - specialCost - numOtherCost);
 	} else {
 		row.profitNoTax = 0; // 异常情况返回0
 	}
