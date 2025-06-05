@@ -124,7 +124,7 @@ export default {
 					</tr>
 					<tr>
 						<td />
-						<td style="text-align: left">余额</td>
+						<td style="text-align: left">余款</td>
 						<td colspan="8" />
 						<td>{{ fix(moneyAmount) }}</td>
 						<td />

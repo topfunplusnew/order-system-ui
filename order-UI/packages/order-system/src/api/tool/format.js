@@ -25,13 +25,17 @@ export const fix_2 = value => {
 
 // 金钱转大写
 export function numToChineseUppercase(n) {
-	if (n === 0) return '零元整'; // 特殊处理 0 元
+	// 处理负数
+	const isNegative = n < 0;
+	const absN = Math.abs(n); // 取绝对值进行处理
+
+	if (absN === 0) return '零元整'; // 特殊处理 0 元
 
 	const units = ['', '拾', '佰', '仟']; // 每4位内的单位
 	const sections = ['', '万', '亿', '万亿']; // 每节对应的单位
 	const numbers = '零壹贰叁肆伍陆柒捌玖'; // 数字对应的中文
 
-	let [integerPart, decimalPart] = String(n).split('.'); // 拆分整数和小数部分
+	let [integerPart, decimalPart] = String(absN).split('.'); // 拆分整数和小数部分
 	const result = []; // 最终结果
 
 	// 将每个四位一组的数字转换为中文
@@ -85,8 +89,9 @@ export function numToChineseUppercase(n) {
 		if (fen > 0) decimalResult += numbers[fen] + '分';
 	}
 
-	// 如果没有小数部分，则补上“整”
-	return chineseNumber + '元' + (decimalResult || '整');
+	// 组合最终结果，负数前加"负"
+	const finalResult = chineseNumber + '元' + (decimalResult || '整');
+	return isNegative ? '负' + finalResult : finalResult;
 }
 
 //需要提取日期中的年月日部分，然后将同一天的数据的 value 相加
