@@ -52,7 +52,7 @@ export default {
 		// 选择某张银行卡
 		chooseThisBankAccount(row) {
 			console.log('银行卡信息', row);
-			this.$confirm({
+			this.$antdconfirm({
 				title: '提示',
 				content: '确定要绑定这张银行卡吗?',
 				okText: '确定',

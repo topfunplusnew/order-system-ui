@@ -90,7 +90,7 @@ export default {
 			if (hasLandFreight || hasSeaFreight) {
 				// 如果同时包含陆运和海运，提示用户选择
 				if (hasLandFreight && hasSeaFreight) {
-					this.$confirm({
+					this.$antdconfirm({
 						title: '填充运输信息',
 						content: '此订单同时包含陆运和海运，请选择填充',
 						okText: '海运',

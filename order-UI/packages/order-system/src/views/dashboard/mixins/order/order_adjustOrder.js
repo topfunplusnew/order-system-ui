@@ -15,7 +15,7 @@ export var mixin_order_adjustOrder = {
 	methods: {
 		// 点击调整单的弹窗
 		handleOrderItemInfo(row) {
-			this.$confirm({
+			this.$antdconfirm({
 				title: '提示',
 				content: '是否将该订单设置为调整单',
 				okText: '确定',

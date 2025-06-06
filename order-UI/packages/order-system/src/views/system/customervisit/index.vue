@@ -467,7 +467,7 @@ export default {
 		handleCheck(row) {
 			console.log(row);
 			// 弹出确认和取消
-			this.$confirm({
+			this.$antdconfirm({
 				title: '提示',
 				content: '是否审核该信息?',
 				okText: '确定',

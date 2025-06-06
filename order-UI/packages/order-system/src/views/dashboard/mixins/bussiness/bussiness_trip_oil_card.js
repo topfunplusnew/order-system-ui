@@ -34,7 +34,7 @@
 // 			}).then(res => {
 // 				// 如果余额不足 要进行充值
 // 				if (res.data.error === '油卡余额不足') {
-// 					this.$confirm('油卡余额不足,是否充值?', '提示', {
+// 					this.$antdconfirm('油卡余额不足,是否充值?', '提示', {
 // 						confirmButtonText: '是',
 // 						cancelButtonText: '否',
 // 						type: 'warning'

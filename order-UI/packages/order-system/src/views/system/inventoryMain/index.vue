@@ -1144,7 +1144,7 @@ export default {
 		 * @param {object} row - 当前操作的行数据对象。
 		 */
 		handleCheck(row) {
-			this.$confirm({
+			this.$antdconfirm({
 				title: '提示',
 				content: '是否审核该信息?',
 				okText: '确定',

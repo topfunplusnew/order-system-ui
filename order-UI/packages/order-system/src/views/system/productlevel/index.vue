@@ -533,7 +533,7 @@ export default {
 		},
 		// 删除分类 row.dictCode
 		handleDeteleLevel(row) {
-			this.$confirm({
+			this.$antdconfirm({
 				title: '提示',
 				content: '是否要删除该分类?',
 				okText: '确定',

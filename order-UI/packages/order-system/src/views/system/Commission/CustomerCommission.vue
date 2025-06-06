@@ -351,7 +351,7 @@ export default {
 		},
 		handleDelete(row) {
 			if (row.id) {
-				this.$confirm({
+				this.$antdconfirm({
 					title: '提示',
 					content: '是否确认删除佣金信息?',
 					okText: '确定',

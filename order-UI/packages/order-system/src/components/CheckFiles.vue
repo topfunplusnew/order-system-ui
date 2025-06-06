@@ -102,7 +102,7 @@ export default {
 		// 删除某个文件
 		handleDeleteFile(value) {
 			// 弹出确认框 先确认是否要删除
-			this.$confirm({
+			this.$antconfirm({
 				title: '系统提示',
 				content: '是否要删除该文件?',
 				okText: '确定',

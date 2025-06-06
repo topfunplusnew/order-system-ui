@@ -20,7 +20,7 @@ export default {
 				return;
 			}
 			getCars(row.companyId).then(res => {
-				this.$confirm({
+				this.$antdconfirm({
 					title: '提示',
 					content: `是否查看司机名称为${res.data.driver}的运费详情?`,
 					okText: '确定',

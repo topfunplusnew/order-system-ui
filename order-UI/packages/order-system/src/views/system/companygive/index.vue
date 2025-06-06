@@ -567,7 +567,7 @@ export default {
 					acountsType: '供应商'
 				}).then(res => {
 					if (res.rows.length === 0) {
-						this.$confirm({
+						this.$antdconfirm({
 							title: '提示',
 							content: '您还没有设置银行卡信息，是否前往设置?',
 							okText: '确定',

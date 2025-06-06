@@ -529,7 +529,7 @@ export default {
 		},
 		// 已经还够了 在点击提示已经还够
 		handleGiveEnoughBackMoney(row) {
-			this.$confirm({
+			this.$antdconfirm({
 				title: '提示',
 				content: '已经还够了金额,是否继续还款?',
 				okText: '确定',

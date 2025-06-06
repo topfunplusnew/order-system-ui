@@ -102,7 +102,7 @@ export default {
 			} catch (err) {
 				this.$message.error('请先填写申请信息!');
 			}
-			this.$confirm({
+			this.$antdconfirm({
 				title: '提示',
 				content: '确定批量申请吗？',
 				okText: '确定',

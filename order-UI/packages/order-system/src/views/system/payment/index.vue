@@ -879,7 +879,7 @@ export default {
 				this.chooseBankDialogVisible = true;
 				return;
 			}
-			this.$confirm({
+			this.$antdconfirm({
 				title: '提示',
 				content: '是否付款?',
 				okText: '是',
