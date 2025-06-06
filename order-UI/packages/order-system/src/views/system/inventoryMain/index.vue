@@ -456,7 +456,7 @@
 								@input="() => recalculateAll(scope)"
 								:placeholder="scope.row.pieces <= 0 ? '请先完善出厂片数' : '请输入出厂单价'"
 								:disabled="!scope.row.isEditing || !scope.row.pieces"
-								@blur="() => formatPriceInput(scope.row, 'price', 4)"
+								@blur="() => formatPriceInput(scope.row, 'price', 4, false)"
 							/>
 						</template>
 					</el-table-column>
@@ -500,7 +500,7 @@
 								placeholder="请输入存货价"
 								@input="() => recalculateAll(scope)"
 								:disabled="!scope.row.isEditing"
-								@blur="() => formatPriceInput(scope.row, 'paymentUnload', 4)"
+								@blur="() => formatPriceInput(scope.row, 'paymentUnload', 4, false)"
 							/>
 						</template>
 					</el-table-column>
@@ -1717,10 +1717,18 @@ export default {
 		 * @param {object} row - 当前行数据
 		 * @param {string} field - 字段名
 		 * @param {number} precision - 小数位数
+		 * @param {boolean} control - 是否控制输入
 		 */
-		formatPriceInput(row, field, precision) {
-			if (row[field] && !isNaN(row[field])) {
-				row[field] = parseFloat(row[field]).toFixed(precision);
+		formatPriceInput(row, field, precision, control = true) {
+			if (control) {
+				if (row[field] && !isNaN(row[field])) {
+					row[field] = Number(row[field]).toFixed(precision);
+				}
+			} else {
+				// 如果小数位不超过四位 那么不做处理 如果超过四位 需要精确到四位
+				if (this.getDecimalPlaces(row[field]) > 4) {
+					row[field] = parseFloat(row[field]).toFixed(4);
+				}
 			}
 		}
 	}
