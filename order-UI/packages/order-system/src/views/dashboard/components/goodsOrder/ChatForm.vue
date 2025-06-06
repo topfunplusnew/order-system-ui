@@ -25,7 +25,7 @@ export default {
 	computed: {
 		// 货款合计
 		totalPayments() {
-			return Number(this.moneyAmount) + Number(this.orderInfo.allPayments);
+			return Number(this.moneyAmount) - Number(this.orderInfo.allPayments);
 		}
 	},
 	created() {
@@ -123,14 +123,14 @@ export default {
 					<tr>
 						<td style="text-align: center">余款</td>
 						<td colspan="8" />
-						<td>{{ fix(moneyAmount) }}</td>
+						<td>{{ fix(totalPayments) }}</td>
 						<td />
 					</tr>
 					<tr>
 						<!-- 货款 + 余额-->
 						<td style="text-align: center">货款合计</td>
 						<td colspan="8" />
-						<td>{{ fix(totalPayments) }}</td>
+						<td>{{ fix(moneyAmount) }}</td>
 						<td />
 					</tr>
 					<tr>

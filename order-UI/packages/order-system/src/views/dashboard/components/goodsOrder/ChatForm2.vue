@@ -22,7 +22,7 @@ export default {
 	computed: {
 		// 合计欠款
 		totalPayments() {
-			return Number(this.moneyAmount) + Number(this.orderInfo.allPayments);
+			return Number(this.moneyAmount) - Number(this.orderInfo.allPayments);
 		}
 	},
 	created() {
@@ -113,12 +113,12 @@ export default {
 					<tr>
 						<td style="text-align: left">欠款</td>
 						<td colspan="5" style="text-align: left">大写:{{ numToChineseUppercase(moneyAmount || 0) }}</td>
-						<td>{{ fix(moneyAmount) || 0 }}</td>
+						<td>{{ fix(totalPayments) || 0 }}</td>
 					</tr>
 					<tr>
 						<td style="text-align: left">合计欠款</td>
 						<td colspan="5" style="text-align: left">大写:{{ numToChineseUppercase(totalPayments) }}</td>
-						<td>{{ fix(totalPayments) || 0 }}</td>
+						<td>{{ fix(moneyAmount) || 0 }}</td>
 					</tr>
 					<tr>
 						<td colspan="7" style="text-align: left">

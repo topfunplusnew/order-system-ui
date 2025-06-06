@@ -22,7 +22,7 @@ export default {
 	computed: {
 		// 合计欠款
 		totalPayments() {
-			return Number(this.moneyAmount) + Number(this.orderInfo.allPayments);
+			return Number(this.moneyAmount) - Number(this.orderInfo.allPayments);
 		}
 	},
 	created() {
@@ -35,8 +35,13 @@ export default {
 			this.itemList = res.rows;
 		});
 		// 查询客户余额 指定时间结转 日期为当前时间
+		const currentDateTime = new Date(this.currentOrderInfo.orderDate);
+		// 获取下一天的凌晨时间
+		const nextDayMidnight = new Date(currentDateTime);
+		nextDayMidnight.setDate(currentDateTime.getDate() + 1);
+		nextDayMidnight.setHours(0, 0, 0, 0); // 设置时间为午夜
 		const query = {
-			beginTime: parseTime(new Date()),
+			beginTime: parseTime(nextDayMidnight),
 			companyId: this.currentOrderInfo.customerID
 		};
 		// 查询客户余额
@@ -113,12 +118,12 @@ export default {
 					<tr>
 						<td style="text-align: left">欠款</td>
 						<td colspan="5" style="text-align: left">大写:{{ numToChineseUppercase(moneyAmount || 0) }}</td>
-						<td>{{ fix(moneyAmount) || 0 }}</td>
+						<td>{{ fix(totalPayments) || 0 }}</td>
 					</tr>
 					<tr>
 						<td style="text-align: left">合计欠款</td>
 						<td colspan="5" style="text-align: left">大写:{{ numToChineseUppercase(totalPayments) }}</td>
-						<td>{{ fix(totalPayments) || 0 }}</td>
+						<td>{{ fix(moneyAmount) || 0 }}</td>
 					</tr>
 					<tr>
 						<td colspan="7" style="text-align: left">
