@@ -22,7 +22,7 @@ export default {
 	computed: {
 		// 合计欠款
 		totalPayments() {
-			return Number(this.moneyAmount) - Number(this.orderInfo.allPayments);
+			return Number(this.moneyAmount) + Number(this.orderInfo.allPayments);
 		}
 	},
 	created() {

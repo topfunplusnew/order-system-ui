@@ -25,7 +25,7 @@ export default {
 	computed: {
 		// 货款合计
 		totalPayments() {
-			return Number(this.moneyAmount) - Number(this.orderInfo.allPayments);
+			return Number(this.moneyAmount) + Number(this.orderInfo.allPayments);
 		}
 	},
 	created() {
