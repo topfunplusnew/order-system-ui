@@ -274,6 +274,7 @@
 					<el-form-item label="收入账户类型">
 						<!-- 选择银行卡类型的组件 -->
 						<BankType
+							ref="selectBankType"
 							@updateSelectedType="changeSelfBankType"
 							@updateBankAcceptance="
 								value => {
@@ -799,6 +800,7 @@ export default {
 			this.$refs.uploadFile.clearFileList();
 			this.clearAcceptanceFillStatus();
 			this.$bus.$emit('changeFlag', false);
+			this.$refs.selectBankType.localSelectType = null;
 		},
 		// 表单重置
 		reset() {
@@ -914,6 +916,7 @@ export default {
 					this.addRecordInfo();
 					this.$bus.$emit('changeFlag', false);
 				}
+				this.$refs.selectBankType.localSelectType = null;
 			});
 		},
 

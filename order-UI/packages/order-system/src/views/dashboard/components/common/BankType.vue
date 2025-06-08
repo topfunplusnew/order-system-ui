@@ -97,9 +97,6 @@ export default {
 	watch: {
 		selectType(newVal) {
 			this.localSelectType = newVal;
-		},
-		localSelectType(newVal) {
-			this.$emit('updateSelectedType', newVal);
 		}
 	},
 	methods: {
