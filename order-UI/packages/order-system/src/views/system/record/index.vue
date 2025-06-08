@@ -99,15 +99,22 @@
 			<!-- 8. 支出方公司类型 -->
 			<el-table-column v-if="columns[9].visible" label="支出方公司类型" align="center" prop="targetCompanyType" show-overflow-tooltip />
 
+			<el-table-column v-if="columns[12].visible" label="账户类型" align="center" show-overflow-tooltip>
+				<template slot-scope="scope">
+					<div>
+						{{ handleDisplayType(scope.row.bankacceptanceId, scope.row.referenceTableName) }}
+					</div>
+				</template>
+			</el-table-column>
 			<!-- 9. 附件 -->
 			<el-table-column v-if="columns[10].visible" label="附件" align="center" prop="attachment">
 				<template #default="scope">
 					<CheckFiles :path="scope.row.attachment" @needToUpdate="value => handleUpdateFilePath(value, scope.row, 'attachment', getRecord, updateRecord)" />
 				</template>
 			</el-table-column>
+			<el-table-column v-if="columns[11].visible" label="备注" align="center" prop="remarks" show-overflow-tooltip />
 
 			<!-- 10. 备注 -->
-			<el-table-column v-if="columns[11].visible" label="备注" align="center" prop="remarks" show-overflow-tooltip />
 
 			<!-- 操作列 -->
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -647,9 +654,9 @@ export default {
 					visible: true
 				},
 				{ key: 10, label: '附件', prop: 'attachment', visible: true },
-				{ key: 11, label: '备注', prop: 'comments', visible: true }
+				{ key: 11, label: '备注', prop: 'comments', visible: true },
+				{ key: 12, label: '账户类型', prop: 'comments', visible: true }
 			],
-
 			// 表单校验
 			rules: {
 				transactionTime: [
@@ -762,6 +769,15 @@ export default {
 		parseTime,
 		updateRecord,
 		getRecord,
+		//referenceTableName为 transfor的时候才进行判断,当bankacceptanceId为空,显示为银行活期存款,如果不为空 那么就是承兑类型
+		handleDisplayType(bankacceptanceId, referenceTableName) {
+			if (referenceTableName === CASH_TYPE.TRANSFER) {
+				if (bankacceptanceId === null || bankacceptanceId === '') {
+					return '银行活期存款';
+				}
+				return '承兑';
+			}
+		},
 		/** 查询现金记账列表 */
 		getList() {
 			this.loading = true;
@@ -782,6 +798,7 @@ export default {
 			this.reset();
 			this.$refs.uploadFile.clearFileList();
 			this.clearAcceptanceFillStatus();
+			this.$bus.$emit('changeFlag', false);
 		},
 		// 表单重置
 		reset() {
