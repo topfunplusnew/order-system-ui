@@ -217,6 +217,7 @@
 				</el-form-item>
 				<el-form-item label="我方银行账户类型">
 					<BankType
+						ref="selectedBankType"
 						:bill-type="BankAcceptanceType.PAY_TYPE.PAYMENT"
 						:select-type="form.selfBankCardType"
 						@updateSelectedType="changeSelfBankType"
@@ -384,7 +385,7 @@
 					</el-form-item>
 				</el-row>
 				<el-form-item label="对方银行账户类型" v-if="value !== PAYMENT_TARGET_TYPE.PAYMENT_FEE">
-					<BankType :option-baned="true" :baned="true" :select-type="form.otherBankCardType" @updateSelectedType="changeOtherBankType" />
+					<BankType ref="selectedBankType" :option-baned="true" :baned="true" :select-type="form.otherBankCardType" @updateSelectedType="changeOtherBankType" />
 				</el-form-item>
 				<el-form-item label="对方账号" prop="otherBankNo" v-if="value !== PAYMENT_TARGET_TYPE.PAYMENT_FEE">
 					<el-row>
@@ -775,6 +776,7 @@ export default {
 			this.open = false;
 			this.$refs.fileUploader.clearFileList();
 			this.$bus.$emit('changeFlag', false);
+			this.$refs.selectedBankType.localSelectType = null;
 			this.reset();
 		},
 		// 表单重置

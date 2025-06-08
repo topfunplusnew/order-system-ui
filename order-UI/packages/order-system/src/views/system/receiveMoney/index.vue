@@ -110,6 +110,7 @@
 						<!--  对方银行卡的消费类型 (承兑户或者现金户)-->
 						<el-form-item label="我方银行账户类型">
 							<BankType
+								ref="selectedBankType"
 								:bill-type="BankAcceptanceType.PAY_TYPE.RECEIVE"
 								:select-type="form.selfBankCardType"
 								@updateSelectedType="changeSelfBankType"
@@ -212,7 +213,7 @@
 							</el-row>
 						</el-form-item>
 						<el-form-item label="对方银行账户类型" v-if="value !== PAYMENT_TARGET_TYPE.PAYMENT_FEE">
-							<BankType :option-baned="true" :baned="true" :select-type="form.otherBankCardType" @updateSelectedType="changeOtherBankType" />
+							<BankType ref="selectedBankType" :option-baned="true" :baned="true" :select-type="form.otherBankCardType" @updateSelectedType="changeOtherBankType" />
 						</el-form-item>
 						<el-form-item label="对方户名" prop="otherAcountsName" v-if="value !== '支付费用'">
 							<el-input disabled v-model="form.otherAcountsName" placeholder="请选择" />
@@ -472,6 +473,7 @@ export default {
 			this.open = false;
 			this.$bus.$emit('changeFlag', false);
 			this.reset();
+			this.$refs.selectedBankType.localSelectType = null;
 		},
 		// 表单重置
 		reset() {
@@ -533,47 +535,6 @@ export default {
 		},
 		/** 修改按钮操作 */
 		handleUpdate(row) {
-			// this.$prompt('请输入编辑原因', '提示', {
-			// 	confirmButtonText: '确定',
-			// 	cancelButtonText: '取消',
-			// 	type: 'warning'
-			// }).then(({ value }) => {
-			// 	addReason({
-			// 		reason: value,
-			// 		tableName: TableName.RECEIVE_MONEY,
-			// 		tid: row.id,
-			// 		modifyTime: this.modifyTime
-			// 	}).then(() => {
-			// 		this.$message.success('提交成功');
-			// 		this.reset();
-			// 		const id = row.id || this.ids;
-			// 		getReceiveMoney(id).then(response => {
-			// 			this.form = response.data;
-			// 			this.$bus.$emit('changeFlag', response.data.bankacceptanceId > 0 ? response.data.bankacceptanceId : false);
-			// 			this.form.receiveType = response.data.receiveType.split('-');
-			// 			// 处理银行账户类型
-			// 			let flag = false;
-			// 			if (!response.data.bankacceptanceId) {
-			// 				this.$message.warning('该收款信息无凭证相关信息');
-			// 				flag = true;
-			// 			}
-			// 			if (!flag) {
-			// 				getBankAcceptance(response.data.bankacceptanceId).then(result => {
-			// 					if (!result.data) {
-			// 						this.$message.error('获取凭证数据失败:该行数据存储了凭证ID但没有查询到该ID对应的相关数据');
-			// 						return;
-			// 					}
-			// 					this.$nextTick(() => {
-			// 						this.form.params.bankacceptance = result.data;
-			// 					});
-			// 				});
-			// 			}
-			// 			this.open = true;
-			// 			this.title = '修改收款信息';
-			// 		});
-			// 	});
-			// });
-
 			this.reset();
 			const id = row.id || this.ids;
 			getReceiveMoney(id).then(response => {
