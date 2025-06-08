@@ -61,10 +61,10 @@
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改外部车辆信息对话框 -->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="120px" @keyup.enter.native="submitForm" @submit.native.prevent="submitForm">
 				<el-form-item label="车牌/柜号" prop="carNo">
-					<el-input v-model="form.carNo" placeholder="请输入车牌/柜号" @input="handleCheckInput" />
+					<el-input v-model="form.carNo" placeholder="请输入车牌/柜号" @input="handleCheckInput" @blur="handleCheckIsExits" />
 				</el-form-item>
 
 				<!--        陆运司机名称或者 海运公司-->
@@ -141,12 +141,14 @@
 </template>
 
 <script>
-import { listCars, getCars, delCars, addCars, updateCars } from '@/api/system/cars';
+import { listCars, getCars, delCars, addCars, updateCars, checkCarsIsExit } from '@/api/system/cars';
 import { excludeParams } from '@/api/tool/exclude';
 import SearchOption from '../../../components/SearchOption.vue';
 import { listBankAccount } from '../../../api/system/bankAccount';
 import DialogListShow from '../../../components/DialogListShow.vue';
 import { INFO_TYPE, isUsed } from '../../../api/system/isUsed';
+import { checkCustomerIsExit, updateCompany } from '@/api/system/company';
+import _ from 'lodash';
 
 export default {
 	name: 'Cars',
@@ -307,6 +309,27 @@ export default {
 			// 3. 更新表单数据
 			this.form.carNo = cleanedValue;
 		},
+		handleCheckIsExits() {
+			if (this.form.carNo) {
+				const exitId = _.cloneDeep(this.form.id);
+				// 如果id不为空,说明为修改,修改时传入id,后端返回true 说明唯一 可以修改 如果返回false,那么后端有问题
+				if (exitId) {
+					checkCarsIsExit(this.form.carNo, exitId).then(res => {
+						if (!res.data) {
+							this.$message.error(`检查时出现错误 车牌/柜号 ${this.form.carNo} 已存在,但数据返回为不存在!`);
+							this.form.carNo = '';
+						}
+					});
+				} else {
+					checkCarsIsExit(this.form.carNo, null).then(res => {
+						if (!res.data) {
+							this.$message.error(`车牌/柜号 ${this.form.carNo} 已存在,请修改单据信息`);
+							this.form.carNo = '';
+						}
+					});
+				}
+			}
+		},
 		/** 查询外部车辆信息列表 */
 		getList() {
 			this.loading = true;
@@ -386,17 +409,29 @@ export default {
 				if (valid) {
 					if (this.form.id != null) {
 						this.form = excludeParams(this.form, this.$exclude);
-						updateCars(this.form).then(response => {
-							this.$modal.msgSuccess('修改成功');
-							this.open = false;
-							this.getList();
+						checkCarsIsExit(this.form.carNo, this.form.id).then(res => {
+							if (res.data) {
+								updateCars(this.form).then(response => {
+									this.$modal.msgSuccess('修改成功');
+									this.open = false;
+									this.getList();
+								});
+							} else {
+								this.$message.error('修改时出现错误:该行ID已存在车牌/柜号信息,但数据返回不存在');
+							}
 						});
 					} else {
-						addCars(this.form).then(response => {
-							this.form = excludeParams(this.form, this.$exclude);
-							this.$modal.msgSuccess('新增成功');
-							this.open = false;
-							this.getList();
+						checkCarsIsExit(this.form.carNo, null).then(res => {
+							if (!res.data) {
+								this.$message.error('车牌/柜号信息已存在');
+								return;
+							}
+							addCars(this.form).then(response => {
+								this.form = excludeParams(this.form, this.$exclude);
+								this.$modal.msgSuccess('新增成功');
+								this.open = false;
+								this.getList();
+							});
 						});
 					}
 				}

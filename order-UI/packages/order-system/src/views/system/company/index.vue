@@ -96,7 +96,7 @@
 				<el-row :gutter="4">
 					<el-col :span="12">
 						<el-form-item label="客户名称" prop="companyName">
-							<el-input v-model="form.companyName" placeholder="请输入客户名称" @input="handleInputTrim($event, 'form', 'companyName')" />
+							<el-input v-model="form.companyName" placeholder="请输入客户名称" @input="handleInputTrim($event, 'form', 'companyName')" @blur="handleCheckIsExits" />
 						</el-form-item>
 						<el-form-item label="联系人" prop="relationName">
 							<el-input v-model="form.relationName" placeholder="请输入联系人名称" @input="handleInputTrim($event, 'form', 'relationName')" />
@@ -380,10 +380,12 @@
 
 <script>
 import { delBankAccount, listBankAccount, setDefault } from '@/api/system/bankAccount';
-import { addCompany, delCompany, getCompany, listCompany, updateCompany } from '@/api/system/company';
+import { addCompany, checkCustomerIsExit, checkSupplierIsExit, delCompany, getCompany, listCompany, updateCompany } from '@/api/system/company';
 import { excludeParams } from '@/api/tool/exclude';
 import { INFO_TYPE, isUsed } from '../../../api/system/isUsed';
 import AddBankAccounts from '../../dashboard/components/company/AddBankAccounts.vue';
+import { checkCarsIsExit } from '@/api/system/cars';
+import _ from 'lodash';
 
 export default {
 	name: 'Company',
@@ -648,17 +650,6 @@ export default {
 				// 打开弹窗
 				this.dialogFormVisible = true;
 			});
-			// 查询客户的默认银行卡信息
-			// listBankAccount({ acountsType: '客户默认', companyId: row.id }).then(
-			//   (res) => {
-			//     if (res.rows.length > 0) {
-			//       this.defaultBankCardInfo = res.rows[0]
-			//     } else {
-			//       this.defaultBankCardInfo.not = true
-			//     }
-			//     this.dialogFormVisible = true
-			//   }
-			// )
 		},
 		// 查询已经绑定的银行卡信息
 		getBankList() {
@@ -764,6 +755,27 @@ export default {
 				targetStyles: ['*'] // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
 			});
 		},
+		// 检测是否已经存在
+		handleCheckIsExits() {
+			if (this.form.companyName) {
+				const exitId = _.cloneDeep(this.form.id);
+				if (exitId) {
+					checkCustomerIsExit(this.form.companyName, exitId).then(res => {
+						if (!res.data) {
+							this.$message.error(`检查时出现错误 ${this.form.companyName} 已存在,,但数据返回为不存在!`);
+							this.form.companyName = '';
+						}
+					});
+				} else {
+					checkCustomerIsExit(this.form.companyName, null).then(res => {
+						if (!res.data) {
+							this.$message.error(`客户 ${this.form.companyName} 已存在,请修改单据信息`);
+							this.form.companyName = '';
+						}
+					});
+				}
+			}
+		},
 		/** 查询客户、供应商信息列表 */
 		getList() {
 			this.loading = true;
@@ -846,17 +858,31 @@ export default {
 				if (valid) {
 					if (this.form.id != null) {
 						this.form = excludeParams(this.form, this.$exclude);
-						updateCompany(this.form).then(() => {
-							this.$modal.msgSuccess('修改成功');
-							this.open = false;
-							this.getList();
+						checkCustomerIsExit(this.form.companyName, this.form.id).then(res => {
+							// 当传入id时,如果返回true 表示已经存在 这时候可以修改
+							if (res.data) {
+								updateCompany(this.form).then(() => {
+									this.$modal.msgSuccess('修改成功');
+									this.open = false;
+									this.getList();
+								});
+							} else {
+								this.$message.error('修改时出现错误:该行ID已存在客户信息,但数据返回不存在');
+							}
 						});
 					} else {
 						this.form = excludeParams(this.form, this.$exclude);
-						addCompany(this.form).then(() => {
-							this.$modal.msgSuccess('新增成功');
-							this.open = false;
-							this.getList();
+						// 添加客户信息之前 先校验客户是否已经存在
+						checkCustomerIsExit(this.form.companyName, null).then(res => {
+							if (!res.data) {
+								this.$message.error('客户已存在,不允许新增!');
+								return;
+							}
+							addCompany(this.form).then(() => {
+								this.$modal.msgSuccess('新增成功');
+								this.open = false;
+								this.getList();
+							});
 						});
 					}
 				}
@@ -933,20 +959,20 @@ export default {
 
 /* 添加新的样式，确保弹窗不会捕获点击事件 */
 :deep(.non-blocking-dialog) {
-  pointer-events: auto;
+	pointer-events: auto;
 }
 
 :deep(.el-dialog__wrapper) {
-  pointer-events: none;
+	pointer-events: none;
 }
 
 :deep(.el-dialog) {
-  pointer-events: auto;
-  background-color: #fff;
-  box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+	pointer-events: auto;
+	background-color: #fff;
+	box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
 :deep(.el-overlay) {
-  pointer-events: none !important;
+	pointer-events: none !important;
 }
 </style>

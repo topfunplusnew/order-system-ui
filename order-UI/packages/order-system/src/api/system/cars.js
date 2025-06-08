@@ -1,5 +1,17 @@
 import request from '@/utils/request';
 
+// 校验外部车辆是否已经存在
+export function checkCarsIsExit(companyName, companyId) {
+	return request({
+		url: '/system/cars/checkCarNoUnique',
+		method: 'get',
+		params: {
+			carNo: companyName,
+			companyId: companyId
+		}
+	});
+}
+
 // 查询外部车辆信息列表
 export function listCars(query) {
 	return request({
