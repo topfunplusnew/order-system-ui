@@ -87,7 +87,7 @@
 			<el-table-column v-if="columns[12].visible" label="账户类型" align="center" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<div>
-						{{ handleDisplayType(scope.row.sourceBankAcceptanceId, scope.row.targetBankAcceptanceId, scope.row.referenceTableName) }}
+						{{ handleDisplayType(row, scope.row.referenceTableName) }}
 					</div>
 				</template>
 			</el-table-column>
@@ -348,7 +348,6 @@
 						<el-radio v-model="form.targetCompanyType" label="客户">客户</el-radio>
 						<el-radio v-model="form.targetCompanyType" label="供应商">供应商</el-radio>
 						<el-radio v-model="form.targetCompanyType" label="司机">司机</el-radio>
-						<!--						<el-radio v-model="form.targetCompanyType" label="己方公司">己方公司</el-radio>-->
 					</el-form-item>
 					<el-form-item label="支出方">
 						<el-row>
@@ -529,7 +528,7 @@ import { listCars } from '@/api/system/cars';
 import { addRecord, delRecord, listRecord } from '@/api/system/record';
 import BankType from '@/views/dashboard/components/common/BankType.vue';
 import { mixin_bankType } from '@/views/dashboard/mixins/common/common_bankType';
-import { listBankAccount, transfer } from '../../../api/system/bankAccount';
+import { listBankAccount } from '../../../api/system/bankAccount';
 import { listCompany } from '../../../api/system/company';
 import { getRecord, updateRecord } from '../../../api/system/record';
 import { PayType, TableName } from '../../../api/tool/enums';
@@ -756,11 +755,20 @@ export default {
 		updateRecord,
 		getRecord,
 		//referenceTableName为 transfor的时候才进行判断,显示为银行活期存款,如果不为空 那么就是承兑类型
-		handleDisplayType(sourceBankAcceptanceId, targetBankAcceptanceId, referenceTableName) {
+		handleDisplayType(row, referenceTableName) {
+			const sourceBankAcceptanceId = row.sourceBankAcceptanceId,
+				targetBankAcceptanceId = row.targetBankAcceptanceId;
 			if (referenceTableName === CASH_TYPE.TRANSFER) {
+				// 如果sourceBankAcceptanceId和targetBankAcceptanceId都为空，则返回"银行活期存款"
 				if (!sourceBankAcceptanceId && !targetBankAcceptanceId) {
 					return '银行活期存款';
 				}
+				// 如果己方银行卡类型和对方不想同,那么就是 "银承互转"
+				if (row.selfBankCardType !== row.otherBankCardType) {
+					return '银承互转';
+				}
+
+				// 其他情况为承兑
 				return '承兑';
 			}
 		},
@@ -768,7 +776,7 @@ export default {
 		getList() {
 			this.loading = true;
 			this.queryParams.params = {};
-			if (this.dateRange != null && this.dateRange != '') {
+			if (this.dateRange != null && this.dateRange !== '') {
 				this.queryParams.params['beginTransactionTime'] = this.dateRange[0];
 				this.queryParams.params['endTransactionTime'] = this.dateRange[1];
 			}
