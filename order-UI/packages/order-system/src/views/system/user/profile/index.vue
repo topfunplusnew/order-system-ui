@@ -1,10 +1,10 @@
 <template>
 	<div class="app-container">
 		<el-row>
-			<el-col :xs="24" :sm="6" :md="4" :lg="2">
-				<el-avatar shape="square" :size="80" :src="user.avatar" style="margin-top: 10px"></el-avatar>
-				<el-button type="primary" style="margin-top: 10px" size="mini">更换头像</el-button>
-			</el-col>
+			<!--			<el-col :xs="24" :sm="6" :md="4" :lg="2">-->
+			<!--				<el-avatar shape="square" :size="80" :src="user.avatar" style="margin-top: 10px"></el-avatar>-->
+			<!--				<el-button type="primary" style="margin-top: 10px" size="mini">更换头像</el-button>-->
+			<!--			</el-col>-->
 			<el-col :xs="24" :sm="18" :md="10" :lg="10">
 				<div class="block">
 					<el-descriptions border>
@@ -120,7 +120,18 @@
 			</el-col>
 		</el-row>
 
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" title="修改个人信息" :visible.sync="open" width="80%" append-to-body>
+		<el-dialog
+			:modal="false"
+			v-dialogDrag
+			v-dialogDragWidth
+			v-dialogDragHeight
+			:close-on-click-modal="false"
+			:show-close="false"
+			title="修改个人信息"
+			:visible.sync="open"
+			width="80%"
+			append-to-body
+		>
 			<el-form ref="form" :model="form" :rules="rules" label-width="80px">
 				<el-row :gutter="10">
 					<el-col :span="6">
