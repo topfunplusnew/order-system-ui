@@ -257,7 +257,7 @@
 					<el-form-item label="收入账户类型">
 						<!-- 选择银行卡类型的组件 -->
 						<BankType
-							ref="selectBankType"
+							ref="selfSelectBankType"
 							@updateSelectedType="changeSelfBankType"
 							@updateBankAcceptance="
 								value => {
@@ -429,6 +429,7 @@
 					<!--          选择支出账户类型-->
 					<el-form-item label="支出账户类型">
 						<BankType
+							ref="otherSelectBankType"
 							@updateSelectedType="changeOtherBankType"
 							@updateBankAcceptance="
 								value => {
@@ -784,7 +785,8 @@ export default {
 			this.$refs.uploadFile.clearFileList();
 			this.clearAcceptanceFillStatus();
 			this.$bus.$emit('changeFlag', false);
-			this.$refs.selectBankType.localSelectType = null;
+			this.$refs.otherSelectBankType.localSelectType = null;
+			this.$refs.selfSelectBankType.localSelectType = null;
 		},
 		// 表单重置
 		reset() {
@@ -855,8 +857,6 @@ export default {
 		handleAddRecord(id) {
 			getRecord(id).then(response => {
 				const data = response.data;
-				console.log(data);
-
 				this.form = data;
 				this.cashType = data.referenceTableName;
 				this.$nextTick(() => {
@@ -883,6 +883,9 @@ export default {
 						// 填充转账账户和目标账户
 						this.form.sourceBankNo = data.sourceBankNo;
 						this.form.targetBankNo = data.targetBankNo;
+						// 填充己方和对方银行卡类型
+						this.$refs.selfSelectBankType.localSelectType = data.selfBankCardType;
+						this.$refs.otherSelectBankType.localSelectType = data.otherBankCardType;
 					}
 				});
 
@@ -904,7 +907,8 @@ export default {
 					this.addRecordInfo();
 					this.$bus.$emit('changeFlag', false);
 				}
-				this.$refs.selectBankType.localSelectType = null;
+				this.$refs.selfSelectBankType.localSelectType = null;
+				this.$refs.otherSelectBankType.localSelectType = null;
 			});
 		},
 
