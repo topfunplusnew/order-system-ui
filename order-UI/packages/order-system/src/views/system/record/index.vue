@@ -87,7 +87,7 @@
 			<el-table-column v-if="columns[12].visible" label="账户类型" align="center" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<div>
-						{{ handleDisplayType(row, scope.row.referenceTableName) }}
+						{{ handleDisplayType(scope.row, scope.row.referenceTableName) }}
 					</div>
 				</template>
 			</el-table-column>
