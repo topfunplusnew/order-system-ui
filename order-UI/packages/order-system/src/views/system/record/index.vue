@@ -87,7 +87,7 @@
 			<el-table-column v-if="columns[12].visible" label="账户类型" align="center" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<div>
-						{{ handleDisplayType(scope.row.sourceBankNo, scope.row.targetBankNo, scope.row.referenceTableName) }}
+						{{ handleDisplayType(scope.row.sourceBankAcceptanceId, scope.row.targetBankAcceptanceId, scope.row.referenceTableName) }}
 					</div>
 				</template>
 			</el-table-column>
@@ -755,9 +755,9 @@ export default {
 		updateRecord,
 		getRecord,
 		//referenceTableName为 transfor的时候才进行判断,显示为银行活期存款,如果不为空 那么就是承兑类型
-		handleDisplayType(sourceBankNo, targetBankNo, referenceTableName) {
+		handleDisplayType(sourceBankAcceptanceId, targetBankAcceptanceId, referenceTableName) {
 			if (referenceTableName === CASH_TYPE.TRANSFER) {
-				if (!sourceBankNo && !targetBankNo) {
+				if (!sourceBankAcceptanceId && !targetBankAcceptanceId) {
 					return '银行活期存款';
 				}
 				return '承兑';
