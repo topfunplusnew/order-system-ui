@@ -900,6 +900,17 @@ export default {
 				if (!valid) return;
 				// 提取公共逻辑
 				this.form = excludeParams(this.form, this.$exclude);
+				// 判断 如果两个己方银行卡账户类型和对方不一样
+				const selfType = this.$refs.selfSelectBankType.localSelectType;
+				const otherType = this.$refs.otherSelectBankType.localSelectType;
+				if (selfType !== otherType) {
+					if (selfType === BankAcceptanceType.ACCEPTANCE) {
+						this.form.params.bankacceptance.billType = PayType.RECEIVE;
+					}
+					if (otherType === BankAcceptanceType.ACCEPTANCE) {
+						this.form.params.bankacceptance.billType = PayType.PAYMENT;
+					}
+				}
 				// 判断是修改还是新增
 				if (this.form.id != null) {
 					this.updateRecordInfo();
