@@ -855,6 +855,7 @@ export default {
 		handleAddRecord(id) {
 			getRecord(id).then(response => {
 				const data = response.data;
+				console.log(data);
 
 				this.form = data;
 				this.cashType = data.referenceTableName;
@@ -879,6 +880,9 @@ export default {
 						// 如果是内部转账
 						this.form.sourceCompanyType = PUBLIC_DICT_TYPE.SELF_COMPANY;
 						this.form.targetCompanyType = PUBLIC_DICT_TYPE.SELF_COMPANY;
+						// 填充转账账户和目标账户
+						this.form.sourceBankNo = data.sourceBankNo;
+						this.form.targetBankNo = data.targetBankNo;
 					}
 				});
 
