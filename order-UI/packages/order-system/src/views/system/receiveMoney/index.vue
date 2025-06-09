@@ -110,7 +110,7 @@
 						<!--  对方银行卡的消费类型 (承兑户或者现金户)-->
 						<el-form-item label="我方银行账户类型">
 							<BankType
-								ref="selectedBankType"
+								ref="selfSelfSelectedBankType"
 								:bill-type="BankAcceptanceType.PAY_TYPE.RECEIVE"
 								:select-type="form.selfBankCardType"
 								@updateSelectedType="changeSelfBankType"
@@ -213,7 +213,7 @@
 							</el-row>
 						</el-form-item>
 						<el-form-item label="对方银行账户类型" v-if="value !== PAYMENT_TARGET_TYPE.PAYMENT_FEE">
-							<BankType ref="selectedBankType" :option-baned="true" :baned="true" :select-type="form.otherBankCardType" @updateSelectedType="changeOtherBankType" />
+							<BankType ref="otherSelfSelectedBankType" :option-baned="true" :baned="true" :select-type="form.otherBankCardType" @updateSelectedType="changeOtherBankType" />
 						</el-form-item>
 						<el-form-item label="对方户名" prop="otherAcountsName" v-if="value !== '支付费用'">
 							<el-input disabled v-model="form.otherAcountsName" placeholder="请选择" />
@@ -473,7 +473,8 @@ export default {
 			this.open = false;
 			this.$bus.$emit('changeFlag', false);
 			this.reset();
-			this.$refs.selectedBankType.localSelectType = null;
+			this.$refs.selfSelfSelectedBankType.localSelectType = null;
+			this.$refs.otherSelfSelectedBankType.localSelectType = null;
 		},
 		// 表单重置
 		reset() {
@@ -543,6 +544,8 @@ export default {
 					return;
 				}
 				this.form = response.data;
+				this.$refs.selfSelfSelectedBankType = response.data.selfBankCardType;
+				this.$refs.otherOtherSelectedBankType = response.data.otherBankCardType;
 				this.$bus.$emit('changeFlag', response.data.bankacceptanceId > 0 ? response.data.bankacceptanceId : false);
 				this.form.receiveType = response.data.receiveType.split('-');
 				// 处理银行账户类型
@@ -597,20 +600,18 @@ export default {
 					if (this.form.id != null) {
 						updateReceiveMoney(this.form).then(() => {
 							this.$modal.msgSuccess('修改成功');
-							this.open = false;
-							this.clearFiles();
-							this.getList();
-							this.$bus.$emit('changeFlag', false);
 						});
 					} else {
 						addReceiveMoney(this.form).then(() => {
 							this.$modal.msgSuccess('新增成功');
-							this.open = false;
-							this.clearFiles();
-							this.getList();
-							this.$bus.$emit('changeFlag', false);
 						});
 					}
+					this.open = false;
+					this.getList();
+					this.clearFiles();
+					this.$bus.$emit('changeFlag', false);
+					this.$refs.selfSelfSelectedBankType.localSelectType = null;
+					this.$refs.otherSelfSelectedBankType.localSelectType = null;
 				}
 			});
 		},
