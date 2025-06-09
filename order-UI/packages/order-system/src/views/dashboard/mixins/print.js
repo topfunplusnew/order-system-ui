@@ -21,9 +21,11 @@ export var mixin_printHTML = {
       <body>${printContent}</body>
     </html>
   `);
-			newWindow.document.close();
-			newWindow.print();
-			newWindow.close();
+			setTimeout(() => {
+				newWindow.document.close();
+				newWindow.print();
+				newWindow.close();
+			}, 2000);
 		}
 	}
 };
