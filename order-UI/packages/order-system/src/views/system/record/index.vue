@@ -531,7 +531,7 @@ import { mixin_bankType } from '@/views/dashboard/mixins/common/common_bankType'
 import { listBankAccount } from '../../../api/system/bankAccount';
 import { listCompany } from '../../../api/system/company';
 import { getRecord, updateRecord } from '../../../api/system/record';
-import { PayType, TableName } from '../../../api/tool/enums';
+import { BankAcceptanceType, PayType, TableName } from '../../../api/tool/enums';
 import { excludeParams } from '../../../api/tool/exclude';
 import CheckFiles from '../../../components/CheckFiles.vue';
 import SearchOption from '../../../components/SearchOption.vue';
@@ -542,6 +542,7 @@ import { mixin_printHTML } from '../../dashboard/mixins/print';
 import { mixin_record_uploadFiles } from '../../dashboard/mixins/record/record_upload';
 import { CASH_TYPE } from './constrant';
 import { mixin_record_fill } from './recordFill';
+import BANK_ACCEPTANCE from '@/components/NeedToShow/BANK_ACCEPTANCE.vue';
 
 export default {
 	name: 'Record',
@@ -756,20 +757,12 @@ export default {
 		getRecord,
 		//referenceTableName为 transfor的时候才进行判断,显示为银行活期存款,如果不为空 那么就是承兑类型
 		handleDisplayType(row, referenceTableName) {
-			const sourceBankAcceptanceId = row.sourceBankAcceptanceId,
-				targetBankAcceptanceId = row.targetBankAcceptanceId;
 			if (referenceTableName === CASH_TYPE.TRANSFER) {
-				// 如果sourceBankAcceptanceId和targetBankAcceptanceId都为空，则返回"银行活期存款"
-				if (!sourceBankAcceptanceId && !targetBankAcceptanceId) {
-					return '银行活期存款';
-				}
-				// 如果己方银行卡类型和对方不想同,那么就是 "银承互转"
 				if (row.selfBankCardType !== row.otherBankCardType) {
 					return '银承互转';
 				}
-
-				// 其他情况为承兑
-				return '承兑';
+				if (row.selfBankCardType === BankAcceptanceType.ACCEPTANCE) return '承兑';
+				if (row.selfBankCardType === BankAcceptanceType.BANK_CASH) return '银行活期存款';
 			}
 		},
 		/** 查询现金记账列表 */
