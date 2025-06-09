@@ -905,10 +905,10 @@ export default {
 				const otherType = this.$refs.otherSelectBankType.localSelectType;
 				if (selfType !== otherType) {
 					if (selfType === BankAcceptanceType.ACCEPTANCE) {
-						this.form.params.bankacceptance.billType = PayType.RECEIVE;
+						this.form.params.bankacceptance.billType = PayType.PAYMENT;
 					}
 					if (otherType === BankAcceptanceType.ACCEPTANCE) {
-						this.form.params.bankacceptance.billType = PayType.PAYMENT;
+						this.form.params.bankacceptance.billType = PayType.RECEIVE;
 					}
 				}
 				// 判断是修改还是新增
