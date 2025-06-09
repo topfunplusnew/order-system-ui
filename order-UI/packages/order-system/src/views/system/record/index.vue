@@ -66,55 +66,38 @@
 		>
 			<el-table-column type="selection" width="55" align="center" />
 
-			<!-- 1. id -->
 			<el-table-column v-if="columns[0].visible" label="id" align="center" prop="id" />
-
-			<!-- 2. 交易时间 -->
 			<el-table-column v-if="columns[1].visible" label="交易时间" align="center" prop="transactionTime" width="180">
 				<template slot-scope="scope">
 					<span>{{ parseTime(scope.row.transactionTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
 				</template>
 			</el-table-column>
-
-			<!-- 3. 金额 -->
+			<el-table-column v-if="columns[3].visible" label="收入方/资金流出方" align="center" prop="sourceCompanyName" show-overflow-tooltip />
+			<el-table-column v-if="columns[5].visible" label="来源方公司类型" align="center" prop="sourceCompanyType" show-overflow-tooltip />
+			<el-table-column v-if="columns[7].visible" label="资金流出账号" align="center" prop="sourceBankNo" show-overflow-tooltip />
 			<el-table-column v-if="columns[2].visible" label="金额" align="center" prop="amount" />
-
-			<!-- 4. 收入方 -->
-			<el-table-column v-if="columns[3].visible" label="收入方" align="center" prop="sourceCompanyName" show-overflow-tooltip />
-			<el-table-column v-if="columns[4].visible" label="收入账户" align="center" prop="targetBankNo" show-overflow-tooltip />
-
-			<!-- 5. 收入方公司类型 -->
-			<el-table-column v-if="columns[5].visible" label="收入方公司类型" align="center" prop="sourceCompanyType" show-overflow-tooltip />
-
-			<!-- 6. 支出方 -->
-			<el-table-column v-if="columns[6].visible" label="支出方" align="center" prop="targetCompanyName" show-overflow-tooltip />
-			<el-table-column v-if="columns[7].visible" label="转账账户" align="center" prop="sourceBankNo" show-overflow-tooltip />
-			<!-- 7. 冲抵类型 -->
+			<el-table-column v-if="columns[9].visible" label="目标公司类型" align="center" prop="targetCompanyType" show-overflow-tooltip />
+			<el-table-column v-if="columns[6].visible" label="支出方/资金流入方" align="center" prop="targetCompanyName" show-overflow-tooltip />
+			<el-table-column v-if="columns[4].visible" label="资金流入账号" align="center" prop="targetBankNo" show-overflow-tooltip />
 			<el-table-column v-if="columns[8].visible" label="冲抵类型" align="center" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<span>{{ scope.row.referenceTableName === 'offsetting' ? '冲抵货款' : '内部转账' }}</span>
 				</template>
 			</el-table-column>
-
-			<!-- 8. 支出方公司类型 -->
-			<el-table-column v-if="columns[9].visible" label="支出方公司类型" align="center" prop="targetCompanyType" show-overflow-tooltip />
-
 			<el-table-column v-if="columns[12].visible" label="账户类型" align="center" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<div>
-						{{ handleDisplayType(scope.row.bankacceptanceId, scope.row.referenceTableName) }}
+						{{ handleDisplayType(scope.row.sourceBankNo, scope.row.targetBankNo, scope.row.referenceTableName) }}
 					</div>
 				</template>
 			</el-table-column>
-			<!-- 9. 附件 -->
 			<el-table-column v-if="columns[10].visible" label="附件" align="center" prop="attachment">
 				<template #default="scope">
 					<CheckFiles :path="scope.row.attachment" @needToUpdate="value => handleUpdateFilePath(value, scope.row, 'attachment', getRecord, updateRecord)" />
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[11].visible" label="备注" align="center" prop="remarks" show-overflow-tooltip />
-
-			<!-- 10. 备注 -->
+			<el-table-column v-if="columns[13].visible" label="操作人员姓名" align="center" prop="userName" show-overflow-tooltip />
 
 			<!-- 操作列 -->
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -656,7 +639,8 @@ export default {
 				},
 				{ key: 10, label: '附件', prop: 'attachment', visible: true },
 				{ key: 11, label: '备注', prop: 'comments', visible: true },
-				{ key: 12, label: '账户类型', prop: 'comments', visible: true }
+				{ key: 12, label: '账户类型', prop: 'comments', visible: true },
+				{ key: 13, label: '操作人员类型', prop: 'comments', visible: true }
 			],
 			// 表单校验
 			rules: {
@@ -770,10 +754,10 @@ export default {
 		parseTime,
 		updateRecord,
 		getRecord,
-		//referenceTableName为 transfor的时候才进行判断,当bankacceptanceId为空,显示为银行活期存款,如果不为空 那么就是承兑类型
-		handleDisplayType(bankacceptanceId, referenceTableName) {
+		//referenceTableName为 transfor的时候才进行判断,显示为银行活期存款,如果不为空 那么就是承兑类型
+		handleDisplayType(sourceBankNo, targetBankNo, referenceTableName) {
 			if (referenceTableName === CASH_TYPE.TRANSFER) {
-				if (bankacceptanceId === null || bankacceptanceId === '') {
+				if (!sourceBankNo && !targetBankNo) {
 					return '银行活期存款';
 				}
 				return '承兑';
