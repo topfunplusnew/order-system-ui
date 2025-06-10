@@ -66,10 +66,6 @@ export var mixin_receive_money_fill = {
 			this.form.companyName = val.companyName;
 			this.form.companyId = val.id;
 			this.form.companyType = val.companyType === '供应商' ? 2 : 1;
-			// 联动搜索
-			this.$nextTick(() => {
-				this.queryCustomerBank = this.form.companyName;
-			});
 		},
 		// 填充司机的信息 如果选择的对方类型是司机的话
 		handleCommitBackCar(val) {
