@@ -83,7 +83,31 @@
 						<el-col :span="14">
 							<el-input disabled v-model="form.companyName" placeholder="请选择" />
 						</el-col>
-						<el-col :span="4">
+						<el-col :span="3" v-if="value === PUBLIC_DICT_TYPE.DRIVER">
+							<SearchOption
+								:limit-info="{}"
+								:get-data="listCars"
+								query-label="车牌"
+								query-info="carNo"
+								:query-name="queryCars"
+								@commitBack="
+									value => {
+										form.companyName = value.carNo;
+										form.companyId = value.id;
+									}
+								"
+								@update:queryName="value => (queryCars = value)"
+							>
+								<template #table-columns>
+									<el-table-column label="车牌" align="center" prop="carNo" />
+									<el-table-column label="司机" align="center" prop="driver" />
+									<el-table-column label="司机电话" align="center" prop="tel" />
+									<el-table-column label="开户名" align="center" prop="acountsName" />
+									<el-table-column label="账号" align="center" prop="bankNo" />
+								</template>
+							</SearchOption>
+						</el-col>
+						<el-col :span="4" v-else>
 							<SearchOption
 								:limit-info="{ companyType: value }"
 								:get-data="listCompany"
@@ -352,6 +376,7 @@ import _ from 'lodash';
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
 import { getRecoverMoney } from '@/api/system/recoverMoney';
 import { getLendMoney } from '@/api/system/lendMoney';
+import { listCars } from '@/api/system/cars';
 
 export default {
 	name: 'ApplyPayment',
@@ -446,7 +471,8 @@ export default {
 
 			// 区分付款与付款申请的字段
 			isPayment: false,
-			queryBank: null
+			queryBank: null,
+			queryCars: null
 		};
 	},
 	watch: {
@@ -464,6 +490,7 @@ export default {
 		this.loadForm();
 	},
 	methods: {
+		listCars,
 		isNull,
 		listCompany,
 		listBankAccount,
