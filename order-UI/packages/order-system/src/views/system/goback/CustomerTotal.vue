@@ -181,7 +181,7 @@ export default {
 					{
 						needToShowInfo: res.data || res.rows[0]
 					},
-					false
+					true
 				);
 			});
 		}

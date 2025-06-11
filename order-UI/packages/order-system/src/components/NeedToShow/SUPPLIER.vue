@@ -18,7 +18,7 @@
 			<el-description-item label="市县">{{ needToShowInfo.city }}</el-description-item>
 			<el-description-item label="乡镇">{{ needToShowInfo.county }}</el-description-item>
 			<el-description-item label="备注">{{ needToShowInfo.comments }}</el-description-item>
-			<el-description-item label="区域">{{ needToShowInfo.province + needToShowInfo.city + needToShowInfo.county }}</el-description-item>
+			<el-description-item label="区域">{{ needToShowInfo.region }}</el-description-item>
 		</el-description>
 	</div>
 </template>

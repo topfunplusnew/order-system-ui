@@ -33,7 +33,7 @@ export default {
 			<el-descriptions-item label="市县">{{ needToShowInfo.city }}</el-descriptions-item>
 			<el-descriptions-item label="乡镇">{{ needToShowInfo.county }}</el-descriptions-item>
 			<el-descriptions-item label="备注">{{ needToShowInfo.comments }}</el-descriptions-item>
-			<el-descriptions-item label="区域">{{ needToShowInfo.province + needToShowInfo.city + needToShowInfo.county }}</el-descriptions-item>
+			<el-descriptions-item label="区域">{{ needToShowInfo.region }}</el-descriptions-item>
 		</el-descriptions>
 	</div>
 </template>
