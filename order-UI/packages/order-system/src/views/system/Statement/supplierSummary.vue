@@ -83,7 +83,7 @@
 			</el-table-column>
 			<el-table-column v-if="columns[10].visible" show-overflow-tooltip label="期末余额" align="center" prop="endingBalance" width="140">
 				<template slot-scope="scope">
-					{{ Math.abs(scope.row.endingBalance) }}
+					{{ formatBalance(Math.abs(scope.row.endingBalance)) }}
 				</template>
 			</el-table-column>
 			<!-- 操作列 -->
@@ -105,6 +105,7 @@ import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import { parseTime } from '../../../utils/ruoyi';
 
 import { getConfigValue } from './data/config_get';
+import { formatBalance } from '../../../utils/trash/utils';
 
 export default {
 	name: 'CustomerSummary',
@@ -151,6 +152,7 @@ export default {
 		this.getList();
 	},
 	methods: {
+		formatBalance,
 		/** 查询向外部借出款信息列表 */
 		async getList() {
 			// 获取供应商科目余额汇总表数据 填充到表格中

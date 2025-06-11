@@ -105,7 +105,11 @@
 			</el-table-column>
 
 			<!-- 期末余额 -->
-			<el-table-column v-if="columns[8].visible" label="期末余额" align="center" prop="endingBalance" width="160" />
+			<el-table-column v-if="columns[8].visible" label="期末余额" align="center" prop="endingBalance" width="160">
+				<template slot-scope="scope">
+					{{ formatBalance(scope.row.endingBalance) }}
+				</template>
+			</el-table-column>
 
 			<!-- 录入员 -->
 			<el-table-column v-if="columns[9].visible" label="录入员" align="center" prop="salesman" width="160" />
@@ -120,7 +124,17 @@
 
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" title="请选择导出时间段" :visible.sync="dialogVisible" width="500px">
+		<el-dialog
+			:modal="false"
+			v-dialogDrag
+			v-dialogDragWidth
+			v-dialogDragHeight
+			:close-on-click-modal="false"
+			:show-close="false"
+			title="请选择导出时间段"
+			:visible.sync="dialogVisible"
+			width="500px"
+		>
 			<el-form ref="queryForm" :model="queryParams" size="mini" label-width="68px">
 				<el-form-item label="车牌" prop="carNo">
 					<el-input v-model="queryParams.carNo" placeholder="请输入车牌号" />
@@ -150,6 +164,7 @@ import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import { getFreightSubjectDetailSummary, getFreightSubjectDetailSummarySomeDay, getOrderFreightDetailSummary } from '../../../api/system/statement';
 import { parseTime } from '../../../utils/ruoyi';
 import { fix } from 'order-system/src/api/tool/format';
+import { formatBalance } from '../../../utils/trash/utils';
 
 export default {
 	name: 'LendMoney',
@@ -216,6 +231,7 @@ export default {
 		this.getList();
 	},
 	methods: {
+		formatBalance,
 		fix,
 		/** 查询向外部借出款信息列表 */
 		getList() {

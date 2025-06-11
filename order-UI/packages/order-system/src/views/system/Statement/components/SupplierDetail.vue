@@ -25,6 +25,7 @@ import SearchOption from '@/components/SearchOption.vue';
 import { parseTime } from '@/utils/ruoyi';
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
 import { listCompany } from '@/api/system/company';
+import { formatBalance } from '../../../../utils/trash/utils';
 
 export default {
 	name: 'SupplierDetail',
@@ -59,6 +60,8 @@ export default {
 	},
 
 	methods: {
+    fix_2,
+		formatBalance,
 		listCompany,
 		handleCheck() {
 			// 清除一下状态
@@ -316,7 +319,11 @@ export default {
 					</template>
 				</el-table-column>
 
-				<el-table-column show-overflow-tooltip label="余额本币" align="center" prop="moneyAmountLocal" width="140" />
+				<el-table-column show-overflow-tooltip label="余额本币" align="center" prop="moneyAmountLocal" width="140">
+					<template slot-scope="scope">
+						{{ formatBalance(scope.row.moneyAmountLocal) }}
+					</template>
+				</el-table-column>
 				<el-table-column show-overflow-tooltip label="我方收款户名" align="center" prop="selfAccountsName" width="140" />
 				<el-table-column show-overflow-tooltip label="我方银行账号" align="center" prop="selfBankNo" width="140" />
 				<el-table-column show-overflow-tooltip label="我方开户行地址" align="center" prop="selfBankName" width="140" />
