@@ -7,7 +7,7 @@ export function checkCustomerIsExit(companyName, companyId) {
 		method: 'get',
 		params: {
 			companyName: companyName,
-			companyId: companyId
+			id: companyId
 		}
 	});
 }
@@ -19,7 +19,7 @@ export function checkSupplierIsExit(companyName, companyId) {
 		method: 'get',
 		params: {
 			companyName: companyName,
-			companyId: companyId
+			id: companyId
 		}
 	});
 }

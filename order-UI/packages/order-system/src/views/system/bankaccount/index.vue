@@ -105,7 +105,7 @@
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改银行账号对话框 -->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="120px" @keyup.enter.native="submitForm" @submit.native.prevent="submitForm">
 				<!--        选择账号类型 分为：司机、公司、己方公司等等-->
 				<el-form-item label="账号类型" prop="acountsType">
@@ -163,35 +163,36 @@
 						</el-col>
 						<!-- 我方员工信息搜索-->
 						<el-col v-if="form.acountsType === '员工'" :span="2">
+							<SearchOption
+								:limit-info="{}"
+								:get-data="listUser"
+								query-label="姓名"
+								:query-name="queryUser"
+								query-info="trueName"
+								@commitBack="handleCommitBackUser"
+								@update:queryName="handleQueryUser"
+							>
+								<template #table-columns>
+									<el-table-column key="nickName" label="员工" align="center" prop="trueName" :show-overflow-tooltip="true" />
+									<el-table-column key="deptName" label="岗位" align="center" prop="postName" :show-overflow-tooltip="true" />
+									<el-table-column label="手机号码" align="center" prop="phonenumber" width="120" />
+									<el-table-column label="就职状态" align="center" prop="state" width="120" />
+									<el-table-column label="入职时间" align="center" prop="startDate" width="120" />
+									<el-table-column label="身份证号码" align="center" prop="iDCard" width="120" />
+									<el-table-column label="性别" align="center" prop="sex" width="120" />
+									<el-table-column label="出生日期" align="center" prop="birthday" width="120" />
+									<el-table-column label="民族" align="center" prop="nation" width="120" />
+									<el-table-column label="政治面貌" align="center" prop="politicalStatus" width="120" />
+									<el-table-column label="婚姻状况" align="center" prop="maritalStatus" width="120" />
+									<el-table-column label="户籍地址" align="center" prop="domicileAddress" width="120" />
+									<el-table-column label="居住地址" align="center" prop="residentialAddress" width="120" />
+									<el-table-column label="紧急联系人" align="center" prop="relationPerson" width="120" />
+									<el-table-column label="紧急联系人电话" align="center" prop="relationPersonTel" width="120" />
+								</template>
+							</SearchOption>
 							<el-tooltip class="item" effect="dark" content="若未找到员工可能是您权限不够,请设置权限后再做选择" placement="top-start">
-								<SearchOption
-									:limit-info="{}"
-									:get-data="listUser"
-									query-label="姓名"
-									:query-name="queryUser"
-									query-info="trueName"
-									@commitBack="handleCommitBackUser"
-									@update:queryName="handleQueryUser"
-								>
-									<template #table-columns>
-										<el-table-column key="nickName" label="员工" align="center" prop="trueName" :show-overflow-tooltip="true" />
-										<el-table-column key="deptName" label="岗位" align="center" prop="postName" :show-overflow-tooltip="true" />
-										<el-table-column label="手机号码" align="center" prop="phonenumber" width="120" />
-										<el-table-column label="就职状态" align="center" prop="state" width="120" />
-										<el-table-column label="入职时间" align="center" prop="startDate" width="120" />
-										<el-table-column label="身份证号码" align="center" prop="iDCard" width="120" />
-										<el-table-column label="性别" align="center" prop="sex" width="120" />
-										<el-table-column label="出生日期" align="center" prop="birthday" width="120" />
-										<el-table-column label="民族" align="center" prop="nation" width="120" />
-										<el-table-column label="政治面貌" align="center" prop="politicalStatus" width="120" />
-										<el-table-column label="婚姻状况" align="center" prop="maritalStatus" width="120" />
-										<el-table-column label="户籍地址" align="center" prop="domicileAddress" width="120" />
-										<el-table-column label="居住地址" align="center" prop="residentialAddress" width="120" />
-										<el-table-column label="紧急联系人" align="center" prop="relationPerson" width="120" />
-										<el-table-column label="紧急联系人电话" align="center" prop="relationPersonTel" width="120" />
-									</template>
-								</SearchOption>
-							</el-tooltip>
+                <
+              </el-tooltip>
 						</el-col>
 						<!-- 供应商信息搜索-->
 						<el-col v-if="form.acountsType === PUBLIC_DICT_TYPE.SUPPLIER" :span="2">
@@ -258,7 +259,18 @@
 		</el-dialog>
 
 		<!--    银行卡流水-->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" title="银行卡流水" :visible.sync="bankChangeDialogVisible" width="850px" append-to-body>
+		<el-dialog
+			:modal="false"
+			v-dialogDrag
+			v-dialogDragWidth
+			v-dialogDragHeight
+			:close-on-click-modal="false"
+			:show-close="false"
+			title="银行卡流水"
+			:visible.sync="bankChangeDialogVisible"
+			width="850px"
+			append-to-body
+		>
 			<el-row>
 				<div>
 					<el-form :model="bankAcountQuery" label-width="80px" :inline="true">

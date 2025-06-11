@@ -7,7 +7,7 @@ export function checkCarsIsExit(companyName, companyId) {
 		method: 'get',
 		params: {
 			carNo: companyName,
-			companyId: companyId
+			id: companyId
 		}
 	});
 }
