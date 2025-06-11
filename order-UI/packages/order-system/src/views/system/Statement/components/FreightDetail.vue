@@ -81,7 +81,7 @@ export default {
 					// 查询明细账之前 要先查询上年结转的余额本币填充
 					const body = {
 						beginTime: query.beginTime,
-						companyId: query.companyId
+						carId: query.companyId
 					};
 					// 查询司机账户指定时间结转
 					getFreightSubjectDetailSummarySomeDay(body).then(res => {
