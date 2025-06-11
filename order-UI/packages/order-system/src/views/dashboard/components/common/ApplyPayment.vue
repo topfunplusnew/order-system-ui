@@ -378,7 +378,6 @@ export default {
 					selfBankName: [{ required: true, message: '我方开户行不能为空', trigger: 'change' }]
 				};
 			}
-
 			// 付款申请场景的校验规则
 			else {
 				return {
@@ -490,30 +489,19 @@ export default {
 			this.form.otherBankNo = row.bankNo;
 			this.form.otherBankName = row.bankName;
 		},
-		// 自动填充我方信息
-		handleCommitBackSelfBank(val) {
-			this.form.selfBankName = val.bankName;
-			this.form.selfAcountsName = val.acountsName;
-			this.form.selfBankNo = val.bankNo;
-			this.form.selfBankID = val.id;
-		},
 		// 根据对方类型返回相应的校验规则
 		getOpponentTypeRules() {
 			if (!this.value || this.value === PAYMENT_TARGET_TYPE.PAYMENT_FEE) {
 				return {};
 			}
-
 			// 如果选择了对方类型且不是支付费用，则需要校验对方公司
 			const rules = {
 				companyName: [{ required: true, message: '对方公司不能为空', trigger: 'change' }]
 			};
-
 			// 如果是客户、供应商、司机或员工，则需要校验银行账号信息
 			if (['客户', '供应商', '司机', '员工'].includes(this.value) && !this.bankInputDisabled) {
 				rules.otherBankNo = [{ required: true, message: '对方账号不能为空', trigger: 'change' }];
-				rules.otherBankName = [{ required: true, message: '对方开户行不能为空', trigger: 'change' }];
 			}
-
 			return rules;
 		},
 		// 正常付款申请

@@ -2,7 +2,6 @@
 当前账号需要审核的流程 审核的过程调用修改接口-->
 <script>
 import { getPaymentApply, listPaymentApply, submitPaymentApply } from '@/api/system/paymentApply';
-import { listAuditInfoGroup } from '@/api/system/auditInfo';
 import StepInfo from '@/views/dashboard/components/applyProcess/StepInfo.vue';
 import { mapGetters } from 'vuex';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
@@ -13,20 +12,17 @@ import { mixin_payment_select, PAYMENT_TYPES } from '@/views/dashboard/mixins/pa
 import { listCompany } from '@/api/system/company';
 import { listBankAccount } from '@/api/system/bankAccount';
 import CheckFiles from '@/components/CheckFiles.vue';
-import { TableName, AuditCheckState, getTagColor, PAYMENT_APPLY_STATE } from '@/api/tool/enums';
+import { TableName, getTagColor, PAYMENT_APPLY_STATE } from '@/api/tool/enums';
 import { listCars } from '@/api/system/cars';
 import ApplyPayment from '@/views/dashboard/components/common/ApplyPayment.vue';
 import _ from 'lodash';
 import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
-import { mixin_tour } from '@/views/dashboard/mixins/tour';
 import PAYMENT_APPLY_INFO from '@/components/NeedToShow/PAYMENT_APPLY_INFO.vue';
-import StateTag from '@/views/dashboard/components/common/StateTag.vue';
 
 export default {
 	name: 'ApplyProcess',
 	components: {
-		StateTag,
 		DialogWrapper,
 		ApplyPayment,
 		CheckFiles,
@@ -687,7 +683,17 @@ export default {
 		<!--    固定的锚点-->
 
 		<!--    查看付款信息的详细信息-->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" title="付款信息详细" :visible.sync="checkInfoDialogVisible" width="50%">
+		<el-dialog
+			:modal="false"
+			v-dialogDrag
+			v-dialogDragWidth
+			v-dialogDragHeight
+			:close-on-click-modal="false"
+			:show-close="false"
+			title="付款信息详细"
+			:visible.sync="checkInfoDialogVisible"
+			width="50%"
+		>
 			<el-descriptions title="付款信息明细">
 				<el-descriptions-item label="申请人">
 					{{ checkPaymentInfo.applyPerson }}
@@ -727,7 +733,17 @@ export default {
 		</el-dialog>
 
 		<!--      审核流程步骤图信息  -->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" :visible.sync="checkApplyInfoDialogVisible" title="审核流程多项信息" width="58%">
+		<el-dialog
+			:modal="false"
+			v-dialogDrag
+			v-dialogDragWidth
+			v-dialogDragHeight
+			:close-on-click-modal="false"
+			:show-close="false"
+			:visible.sync="checkApplyInfoDialogVisible"
+			title="审核流程多项信息"
+			width="58%"
+		>
 			<el-collapse v-model="activeNames" @change="handleChangeApplyItem">
 				<el-collapse-item name="1">
 					<template #title>
@@ -749,7 +765,18 @@ export default {
 		</el-dialog>
 
 		<!--   2025-2-17 新增付款功能-->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" title="付款处理" :visible.sync="open" width="650px" append-to-body>
+		<el-dialog
+			:modal="false"
+			v-dialogDrag
+			v-dialogDragWidth
+			v-dialogDragHeight
+			:close-on-click-modal="false"
+			:show-close="false"
+			title="付款处理"
+			:visible.sync="open"
+			width="650px"
+			append-to-body
+		>
 			<keep-alive>
 				<ApplyPayment :table-name="TableName.DAILY" :t-i-d="tID" :need-money="needMoney" :need-info="{}" @changeOpen="changePaymentApplyInfoVisible" :money-input-disabled="false" />
 			</keep-alive>
