@@ -14,7 +14,7 @@ import REBATE from '@/components/NeedToShow/REBATE.vue';
 import { getFunction } from '@/utils/order/mapper';
 import TotalTag from '@/views/system/Statement/components/TotalTag.vue';
 import { ReportType } from '../../../../api/tool/enums';
-import { fix } from '../../../../api/tool/format';
+import { fix, fix_2 } from '../../../../api/tool/format';
 import { getConfigValue } from '../data/config_get';
 import BANK_ACCEPTANCE from '@/components/NeedToShow/BANK_ACCEPTANCE.vue';
 import INVENTORYDETAILVue from '../../../../components/NeedToShow/INVENTORYDETAIL.vue';
@@ -98,7 +98,7 @@ export default {
 						this.tableData.push({
 							...lastYearDetail,
 							summary: '上年结转',
-							moneyAmountLocal: lastYearDetail.moneyAmount,
+							moneyAmountLocal: fix_2(lastYearDetail.moneyAmount),
 							subjectNo: configValue,
 							subjectName: subjectName
 						});
@@ -142,7 +142,7 @@ export default {
 						if (item.summary) {
 							return {
 								...item,
-								moneyAmountLocal: fix(nowMoney),
+								moneyAmountLocal: fix_2(nowMoney),
 								subjectNo: config.configValue,
 								subjectName: config.subjectName
 							};
@@ -151,7 +151,7 @@ export default {
 								...item,
 								// 如果没有摘要 就加上对应的摘要
 								summary: ReportType.SUPPLIER[item.tableName],
-								moneyAmountLocal: fix(nowMoney),
+								moneyAmountLocal: fix_2(nowMoney),
 								subjectNo: config.configValue,
 								subjectName: config.subjectName
 							};
@@ -163,7 +163,6 @@ export default {
 					this.dialogVisible = true;
 				} catch (err) {
 					this.$message.error(err);
-					return;
 				}
 			});
 		},
@@ -325,7 +324,7 @@ export default {
 		</el-card>
 
 		<!--    对应信息的弹窗-->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  title="信息" :visible.sync="infoVisible" width="900px" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="信息" :visible.sync="infoVisible" width="900px" append-to-body>
 			<component :is="Components" :need-to-show-info="needToShowInfo" />
 		</el-dialog>
 	</div>
