@@ -34,6 +34,12 @@
 						</el-col>
 					</el-row>
 				</el-form-item>
+				<el-form-item label="类型：" prop="creditType">
+					<el-select clearable v-model="searchForm.creditType" placeholder="请选择类型" size="mini" style="width: 100px">
+						<el-option label="借" value="借"></el-option>
+						<el-option label="贷" value="贷"></el-option>
+					</el-select>
+				</el-form-item>
 				<el-form-item label="余额：" prop="balanceCompare">
 					<el-select clearable v-model="searchForm.balanceCompare" placeholder="请选择" style="width: 80px" size="mini">
 						<el-option label="≥" value="ge"></el-option>
@@ -42,8 +48,9 @@
 					</el-select>
 				</el-form-item>
 				<el-form-item prop="balanceValue">
-					<el-input clearable v-model="searchForm.balanceValue" placeholder="请输入余额" size="mini" style="width: 120px; margin-left: 5px"></el-input>
+					<el-input clearable v-model="searchForm.balanceValue" placeholder="请输入余额" size="mini" style="width: 120px; margin-left: 5px" @blur="validateBalance"></el-input>
 				</el-form-item>
+
 				<el-form-item>
 					<el-button type="primary" @click="getList" size="mini">查询</el-button>
 					<el-button @click="reset" size="mini">刷新</el-button>
@@ -58,7 +65,9 @@
 			<el-table-column prop="companyName" label="客户"></el-table-column>
 			<el-table-column prop="moneyAmount" label="余额">
 				<template slot-scope="scope">
-					<span :class="{ negative: scope.row.moneyAmount < 0 }">{{ scope.row.moneyAmount }}</span>
+					<span :class="{ negative: scope.row.moneyAmount < 0 }">
+						{{ scope.row.moneyAmount > 0 ? '[借] ' + scope.row.moneyAmount : '[贷] ' + Math.abs(scope.row.moneyAmount) }}
+					</span>
 				</template>
 			</el-table-column>
 			<el-table-column prop="lastOrderTime" label="最后一次交易日期"></el-table-column>
@@ -117,12 +126,25 @@ export default {
 				customer: null,
 				companyId: '',
 				balanceCompare: '',
-				balanceValue: ''
+				balanceValue: '',
+				creditType: ''
 			},
 			tableData: [],
 			companyName: null,
 			rules: {
-				endTime: [{ required: true, message: '请选择时间', trigger: 'blur' }]
+				endTime: [{ required: true, message: '请选择时间', trigger: 'blur' }],
+				balanceValue: [
+					{
+						validator: (rule, value, callback) => {
+							if (value && parseFloat(value) < 0) {
+								callback(new Error('余额不能为负数'));
+							} else {
+								callback();
+							}
+						},
+						trigger: 'blur'
+					}
+				]
 			}
 		};
 	},
@@ -156,7 +178,8 @@ export default {
 				customer: null,
 				companyId: '',
 				balanceCompare: '',
-				balanceValue: ''
+				balanceValue: '',
+				creditType: ''
 			});
 			this.tableData = [];
 		},
@@ -166,6 +189,9 @@ export default {
 		},
 		handleUpdateCompanyName(value) {
 			this.companyName = value;
+		},
+		validateBalance() {
+			this.$refs.form.validateField('balanceValue');
 		},
 		// 查看客户信息
 		handleViewCustomerInfo(id) {
