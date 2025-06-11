@@ -80,7 +80,9 @@
 			<!--      余额本币-->
 			<el-table-column prop="moneyAmountLocal" label="余额本币">
 				<template slot-scope="scope">
-					<span :class="{ negative: scope.row.moneyAmountLocal < 0 }">{{ scope.row.moneyAmountLocal }}</span>
+					<span :class="{ negative: scope.row.moneyAmountLocal < 0 }">
+						{{ formatBalance(scope.row.moneyAmountLocal) }}
+					</span>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -119,7 +121,7 @@ import { listCompany } from '@/api/system/company';
 import { common_excel } from '@/views/dashboard/mixins/common/common_excel';
 import { getConfigValue } from '@/views/system/Statement/data/config_get';
 import { getCustomerSubjectDetailSomeDay, getCustomerSubjectDetailSummary } from '@/api/system/statement';
-import { aggregateByDay, fix } from '@/api/tool/format';
+import {aggregateByDay, fix, fix_2} from '@/api/tool/format';
 import { getFunction } from '@/utils/order/mapper';
 import { moduleNames, TableName } from '@/api/tool/enums';
 import GOODS_ORDER from '@/components/NeedToShow/GOODS_ORDER.vue';
@@ -136,6 +138,7 @@ import RECEIVE_MONEY from '@/components/NeedToShow/RECEIVE_MONEY.vue';
 import BALANCEACCOUNT from '@/components/NeedToShow/BALANCEACCOUNT.vue';
 import _ from 'lodash';
 import { TypeUtils } from '@/views/dashboard/backuplog';
+import { formatBalance } from '@/utils/trash/utils';
 
 export default {
 	name: 'CustomerInfo',
@@ -183,6 +186,7 @@ export default {
 		}
 	},
 	methods: {
+		formatBalance,
 		fix,
 		listCompany,
 		// 查询方法
@@ -318,7 +322,7 @@ export default {
 										lender: fix(lender),
 										borrower: fix(borrower),
 										tableName: detail.tableName,
-										moneyAmountLocal: fix(detail.moneyAmount)
+										moneyAmountLocal: fix_2(detail.moneyAmount)
 									};
 								};
 								const lenderList = item.map(condition).filter(detail => Number(detail.moneyAmountLocal) > 0);
@@ -328,7 +332,7 @@ export default {
 									date: date,
 									lender: map[date].lender,
 									borrower: map[date].borrower,
-									moneyAmountLocal: fix(Number(currentBalance) + Number(nowMoney)),
+									moneyAmountLocal: fix_2(Number(currentBalance) + Number(nowMoney)),
 									lenderList,
 									borrowerList
 								};

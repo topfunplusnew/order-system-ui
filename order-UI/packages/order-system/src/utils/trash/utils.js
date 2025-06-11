@@ -40,3 +40,11 @@ export function debounce(func, delay) {
 		}, delay);
 	};
 }
+
+// 格式化余额显示 - 根据正负显示借贷
+export function formatBalance(amount) {
+	if (amount === 0) {
+		return '0';
+	}
+	return amount > 0 ? '[借] ' + amount : '[贷] ' + Math.abs(amount);
+}

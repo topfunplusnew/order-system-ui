@@ -34,6 +34,12 @@
 						</el-col>
 					</el-row>
 				</el-form-item>
+				<el-form-item label="类型：" prop="creditType">
+					<el-select clearable v-model="searchForm.creditType" placeholder="请选择类型" size="mini" style="width: 100px">
+						<el-option label="借" value="借"></el-option>
+						<el-option label="贷" value="贷"></el-option>
+					</el-select>
+				</el-form-item>
 				<el-form-item label="余额：" prop="balanceCompare">
 					<el-select clearable v-model="searchForm.balanceCompare" placeholder="请选择" style="width: 80px" size="mini">
 						<el-option label="≥" value="ge"></el-option>
@@ -42,7 +48,7 @@
 					</el-select>
 				</el-form-item>
 				<el-form-item prop="balanceValue">
-					<el-input clearable v-model="searchForm.balanceValue" placeholder="请输入余额" size="mini" style="width: 120px; margin-left: 5px"></el-input>
+					<el-input clearable v-model="searchForm.balanceValue" placeholder="请输入余额" size="mini" style="width: 120px; margin-left: 5px" @blur="validateBalance"></el-input>
 				</el-form-item>
 				<el-form-item>
 					<el-button type="primary" @click="getList" size="mini">查询</el-button>
@@ -58,7 +64,9 @@
 			<el-table-column prop="companyName" label="供应商"></el-table-column>
 			<el-table-column prop="moneyAmount" label="余额">
 				<template slot-scope="scope">
-					<span :class="{ negative: scope.row.moneyAmount < 0 }">{{ scope.row.moneyAmount }}</span>
+					<span :class="{ negative: scope.row.moneyAmount < 0 }">
+						{{ formatBalance(scope.row.moneyAmount) }}
+					</span>
 				</template>
 			</el-table-column>
 			<el-table-column label="查看供应商信息" align="center">
@@ -95,6 +103,7 @@ import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 import COMPANY from '@/components/NeedToShow/COMPANY.vue';
 import { common_excel } from '@/views/dashboard/mixins/common/common_excel';
+import { formatBalance } from '@/utils/trash/utils';
 
 export default {
 	name: 'SUPPLIERTotal',
@@ -116,12 +125,25 @@ export default {
 				supplier: null,
 				companyId: '',
 				balanceCompare: '',
-				balanceValue: ''
+				balanceValue: '',
+				creditType: ''
 			},
 			tableData: [],
 			companyName: null,
 			rules: {
-				endTime: [{ required: true, message: '请选择时间', trigger: 'blur' }]
+				endTime: [{ required: true, message: '请选择时间', trigger: 'blur' }],
+				balanceValue: [
+					{
+						validator: (rule, value, callback) => {
+							if (value && parseFloat(value) < 0) {
+								callback(new Error('余额不能为负数'));
+							} else {
+								callback();
+							}
+						},
+						trigger: 'blur'
+					}
+				]
 			}
 		};
 	},
@@ -129,6 +151,7 @@ export default {
 		this.getList();
 	},
 	methods: {
+		formatBalance,
 		listCompany,
 		// 查询方法
 		getList() {
@@ -155,7 +178,8 @@ export default {
 				supplier: null,
 				companyId: '',
 				balanceCompare: '',
-				balanceValue: ''
+				balanceValue: '',
+				creditType: ''
 			});
 			this.tableData = [];
 		},
@@ -183,6 +207,9 @@ export default {
 					false
 				);
 			});
+		},
+		validateBalance() {
+			this.$refs.form.validateField('balanceValue');
 		}
 	}
 };

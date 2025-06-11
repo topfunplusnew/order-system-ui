@@ -66,7 +66,7 @@
 			<el-table-column prop="moneyAmount" label="余额">
 				<template slot-scope="scope">
 					<span :class="{ negative: scope.row.moneyAmount < 0 }">
-						{{ scope.row.moneyAmount > 0 ? '[借] ' + scope.row.moneyAmount : '[贷] ' + Math.abs(scope.row.moneyAmount) }}
+						{{ formatBalance(scope.row.moneyAmount) }}
 					</span>
 				</template>
 			</el-table-column>
@@ -105,6 +105,7 @@ import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 import COMPANY from '@/components/NeedToShow/COMPANY.vue';
 import { common_excel } from '@/views/dashboard/mixins/common/common_excel';
+import { formatBalance } from '@/utils/trash/utils';
 
 export default {
 	name: 'CustomerTotal',
