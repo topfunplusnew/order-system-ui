@@ -73,7 +73,7 @@
 			</el-table-column>
 			<el-table-column prop="moneyAmountLocal" label="余额本币">
 				<template slot-scope="scope">
-					<span :class="{ negative: scope.row.moneyAmountLocal < 0 }">{{ scope.row.moneyAmountLocal }}</span>
+					<span :class="{ negative: scope.row.moneyAmountLocal < 0 }">{{ formatBalance(scope.row.moneyAmountLocal) }}</span>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -124,6 +124,7 @@ import { common_excel } from '@/views/dashboard/mixins/common/common_excel';
 import ORDER_DETAIL from '@/components/NeedToShow/ORDER_DETAIL.vue';
 import { listCars } from '@/api/system/cars';
 import _ from 'lodash';
+import {formatBalance} from "../../../utils/trash/utils";
 
 export default {
 	name: 'FreightInfo',
@@ -162,6 +163,7 @@ export default {
 		};
 	},
 	methods: {
+    formatBalance,
 		listCars,
 		listVehicles,
 		// 查询方法
