@@ -48,6 +48,7 @@
 		<!-- 表格区域 -->
 		<el-table id="educe-table" :data="tableData" border style="width: 100%" v-loading="loading" size="mini">
 			<el-table-column prop="operateDate" label="日期"></el-table-column>
+			<el-table-column label="供应商名称" width="150" prop="supplierName"></el-table-column>
 			<el-table-column label="欠款明细">
 				<template slot-scope="scope">
 					<div v-for="(item, index) in scope.row.lenderList" :key="index">
@@ -82,11 +83,11 @@
 			<pagination v-show="total > 0" :total="total" :current-page.sync="searchForm.pageNum" :page-size.sync="searchForm.pageSize" @pagination="getList" />
 		</div>
 
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  title="信息" :visible.sync="infoVisible" width="900px" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="信息" :visible.sync="infoVisible" width="900px" append-to-body>
 			<component :is="Components" :need-to-show-info="needToShowInfo" />
 		</el-dialog>
 
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  title="明细信息" :visible.sync="detailVisible" width="900px" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="明细信息" :visible.sync="detailVisible" width="900px" append-to-body>
 			<el-table :data="detailList" border style="width: 100%" v-loading="loading" size="mini" :summary-method="getSummaries" show-summary>
 				<el-table-column prop="operateDate" label="日期"></el-table-column>
 				<el-table-column prop="payNo" label="凭证号"></el-table-column>
@@ -323,6 +324,7 @@ export default {
 								const borrowerList = item.map(condition).filter(d => Number(d.moneyAmountLocal) < 0);
 
 								return {
+									supplierName: _.cloneDeep(this.searchForm.supplier),
 									operateDate: date, // 日期列使用分组的key
 									payNo: '', // 主表该列现在显示明细，留空或移除
 									lender: map[date].lender,

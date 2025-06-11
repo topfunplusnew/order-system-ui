@@ -49,6 +49,8 @@
 		<el-table id="educe-table" :data="tableData" border style="width: 100%" v-loading="loading" size="mini">
 			<el-table-column prop="date" label="日期"></el-table-column>
 
+			<el-table-column label="客户名称" width="150" prop="customerName"></el-table-column>
+
 			<!--      借方列表-->
 			<el-table-column label="欠款明细">
 				<template slot-scope="scope">
@@ -88,11 +90,11 @@
 			<pagination v-show="total > 0" :total="total" :current-page.sync="searchForm.pageNum" :page-size.sync="searchForm.pageSize" @pagination="getList" />
 		</div>
 
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  title="信息" :visible.sync="infoVisible" width="900px" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="信息" :visible.sync="infoVisible" width="900px" append-to-body>
 			<component :is="Components" :need-to-show-info="needToShowInfo" />
 		</el-dialog>
 
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  title="明细信息" :visible.sync="detailVisible" width="900px" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="明细信息" :visible.sync="detailVisible" width="900px" append-to-body>
 			<el-table :data="detailList" border style="width: 100%" v-loading="detailLoading" size="mini" :summary-method="getSummaries" show-summary>
 				<el-table-column prop="date" label="日期"></el-table-column>
 				<el-table-column prop="payNo" label="凭证号"></el-table-column>
@@ -322,6 +324,7 @@ export default {
 								const lenderList = item.map(condition).filter(detail => Number(detail.moneyAmountLocal) > 0);
 								const borrowerList = item.map(condition).filter(detail => Number(detail.moneyAmountLocal) < 0);
 								return {
+									customerName: _.cloneDeep(this.searchForm.customer),
 									date: date,
 									lender: map[date].lender,
 									borrower: map[date].borrower,
