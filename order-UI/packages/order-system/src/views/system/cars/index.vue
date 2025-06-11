@@ -316,15 +316,13 @@ export default {
 				if (exitId) {
 					checkCarsIsExit(this.form.carNo, exitId).then(res => {
 						if (!res.data) {
-							this.$message.error(`检查时出现错误 车牌/柜号 ${this.form.carNo} 已存在,但数据返回为不存在!`);
-							this.form.carNo = '';
+							this.$message.error(`检查时出现错误 车牌/柜号 ${this.form.carNo} 已存在!`);
 						}
 					});
 				} else {
 					checkCarsIsExit(this.form.carNo, null).then(res => {
 						if (!res.data) {
 							this.$message.error(`车牌/柜号 ${this.form.carNo} 已存在,请修改单据信息`);
-							this.form.carNo = '';
 						}
 					});
 				}

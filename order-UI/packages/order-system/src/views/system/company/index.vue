@@ -762,15 +762,13 @@ export default {
 				if (exitId) {
 					checkCustomerIsExit(this.form.companyName, exitId).then(res => {
 						if (!res.data) {
-							this.$message.error(`检查时出现错误 ${this.form.companyName} 已存在,,但数据返回为不存在!`);
-							this.form.companyName = '';
+							this.$message.error(`检查时出现错误 ${this.form.companyName} 已存在!`);
 						}
 					});
 				} else {
 					checkCustomerIsExit(this.form.companyName, null).then(res => {
 						if (!res.data) {
 							this.$message.error(`客户 ${this.form.companyName} 已存在,请修改单据信息`);
-							this.form.companyName = '';
 						}
 					});
 				}

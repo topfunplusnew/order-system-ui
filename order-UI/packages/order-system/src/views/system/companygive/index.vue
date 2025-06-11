@@ -654,15 +654,13 @@ export default {
 				if (exitId) {
 					checkSupplierIsExit(this.form.companyName, exitId).then(res => {
 						if (!res.data) {
-							this.$message.error(`检查时出现错误 ${this.form.companyName} 已存在,但数据返回为不存在!`);
-							this.form.companyName = '';
+							this.$message.error(`检查时出现错误 ${this.form.companyName} 已存在!`);
 						}
 					});
 				} else {
 					checkSupplierIsExit(this.form.companyName, null).then(res => {
 						if (!res.data) {
 							this.$message.error(`供应商 ${this.form.companyName} 已存在,请修改单据信息`);
-							this.form.companyName = '';
 						}
 					});
 				}
