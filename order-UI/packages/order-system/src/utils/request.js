@@ -347,6 +347,8 @@ async function downLoadFile(url, params, filename, config) {
 		});
 	} else {
 		Message.warning('WebSocket连接未建立!');
+		store.dispatch('downloadOnce/setPercent', 0);
+		return;
 	}
 
 	let elNotificationComponent;
