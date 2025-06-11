@@ -81,7 +81,11 @@
 					{{ Number(scope.row.endingBalance) !== 0 ? (Number(scope.row.endingBalance) > 0 ? '借方' : '贷方') : '平' }}
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[10].visible" show-overflow-tooltip label="期末余额" align="center" prop="endingBalance" width="140" />
+			<el-table-column v-if="columns[10].visible" show-overflow-tooltip label="期末余额" align="center" prop="endingBalance" width="140">
+				<template slot-scope="scope">
+					{{ Math.abs(scope.row.endingBalance) }}
+				</template>
+			</el-table-column>
 			<!-- 操作列 -->
 			<!--			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">-->
 			<!--				<template slot-scope="scope">-->

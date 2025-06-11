@@ -73,7 +73,9 @@
 			</el-table-column>
 			<el-table-column prop="moneyAmountLocal" label="余额本币">
 				<template slot-scope="scope">
-					<span :class="{ negative: scope.row.moneyAmountLocal < 0 }">{{ fix(scope.row.moneyAmountLocal) }}</span>
+					<span :class="{ negative: scope.row.moneyAmountLocal < 0 }">
+						{{ formatBalance(scope.row.moneyAmountLocal) }}
+					</span>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -127,6 +129,7 @@ import RECEIVE_MONEY from '@/components/NeedToShow/RECEIVE_MONEY.vue';
 import INVENTORYDETAIL from '@/components/NeedToShow/INVENTORYDETAIL.vue';
 import ORDER_DETAIL from '@/components/NeedToShow/ORDER_DETAIL.vue';
 import BALANCEACCOUNT from '@/components/NeedToShow/BALANCEACCOUNT.vue';
+import { formatBalance } from '@/utils/trash/utils';
 import _ from 'lodash';
 
 export default {
@@ -175,6 +178,7 @@ export default {
 		}
 	},
 	methods: {
+		formatBalance,
 		fix,
 		listCompany,
 		// 查询方法
