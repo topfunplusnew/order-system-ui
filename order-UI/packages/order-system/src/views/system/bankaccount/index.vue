@@ -162,7 +162,7 @@
 							<el-input v-model="form.companyName" placeholder="请输入" @input="handleInputTrim($event, 'form', 'companyName')" />
 						</el-col>
 						<!-- 我方员工信息搜索-->
-						<el-col v-if="form.acountsType === '员工'" :span="2">
+						<el-col v-if="form.acountsType === PUBLIC_DICT_TYPE.EMPLOYEE" :span="4">
 							<SearchOption
 								:limit-info="{}"
 								:get-data="listUser"
@@ -190,9 +190,11 @@
 									<el-table-column label="紧急联系人电话" align="center" prop="relationPersonTel" width="120" />
 								</template>
 							</SearchOption>
+						</el-col>
+						<el-col :span="2" v-if="form.acountsType === PUBLIC_DICT_TYPE.EMPLOYEE">
 							<el-tooltip class="item" effect="dark" content="若未找到员工可能是您权限不够,请设置权限后再做选择" placement="top-start">
-                <
-              </el-tooltip>
+								<el-icon class="el-icon-warning" style="color: red" />
+							</el-tooltip>
 						</el-col>
 						<!-- 供应商信息搜索-->
 						<el-col v-if="form.acountsType === PUBLIC_DICT_TYPE.SUPPLIER" :span="2">
