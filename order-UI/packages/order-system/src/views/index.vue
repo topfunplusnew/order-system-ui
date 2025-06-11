@@ -410,6 +410,8 @@ export default {
 			},
 			error => {
 				console.error('WebSocket连接失败:', error);
+				// 连接失败时清除进度条样式
+				this.downloadProgress = 0;
 			}
 		);
 	},
