@@ -72,13 +72,16 @@
 			<template v-if="!isPayment">
 				<el-form-item label="对方类型(请确认)">
 					<el-select v-model="value" placeholder="请选择" @change="handleOpponentTypeChange">
-						<!--      当选择了付款的时候 对方类型为 支付费用  并且禁用-->
 						<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
 					</el-select>
 					<span style="color: #1c84c6; font-size: 12px">请注意选择正确的对方公司类型!</span>
 				</el-form-item>
 
-				<el-form-item v-if="value !== PUBLIC_DICT_TYPE.EMPLOYEE && value !== PAYMENT_TARGET_TYPE.PAYMENT_FEE" label="对方公司" prop="companyName">
+				<el-form-item
+					v-if="value !== PUBLIC_DICT_TYPE.EMPLOYEE && value !== PAYMENT_TARGET_TYPE.PAYMENT_FEE"
+					:label="value === PUBLIC_DICT_TYPE.DRIVER ? '司机' : '对方公司'"
+					prop="companyName"
+				>
 					<el-row>
 						<el-col :span="14">
 							<el-input disabled v-model="form.companyName" placeholder="请选择" />
@@ -149,6 +152,10 @@
 									:query-name="queryCompany"
 									@commitBack="handleCommitBack"
 									@update:queryName="handleUpdateQueryName"
+									:extra-params="{
+										acountsType: PUBLIC_DICT_TYPE.CUSTOMER,
+										companyId: form.companyId
+									}"
 								>
 									<template #table-columns>
 										<el-table-column label="公司名称" align="center" prop="companyName">
@@ -196,6 +203,10 @@
 									:query-name="queryCompany"
 									@commitBack="handleCommitBack"
 									@update:queryName="handleUpdateQueryName"
+									:extra-params="{
+										acountsType: PUBLIC_DICT_TYPE.SUPPLIER,
+										companyId: form.companyId
+									}"
 								>
 									<template #table-columns>
 										<el-table-column label="公司名称" align="center" prop="companyName">
@@ -244,6 +255,10 @@
 									:query-name="queryCompany"
 									@commitBack="handleCommitBack"
 									@update:queryName="handleUpdateQueryName"
+									:extra-params="{
+										acountsType: PUBLIC_DICT_TYPE.DRIVER,
+										companyId: form.companyId
+									}"
 								>
 									<template #table-columns>
 										<el-table-column label="司机名称" align="center" prop="companyName">

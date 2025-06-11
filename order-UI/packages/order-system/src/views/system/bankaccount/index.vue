@@ -237,7 +237,7 @@
 					</el-row>
 				</el-form-item>
 				<!--          如果不是司机 直接填写开户名-->
-				<el-form-item prop="acountsName" label="户名" v-else>
+				<el-form-item prop="acountsName" label="户名" v-if="form.acountsType !== PUBLIC_DICT_TYPE.DRIVER">
 					<el-row>
 						<el-input v-model="form.acountsName" placeholder="请输入开户名" @input="handleInputTrim($event, 'form', 'acountsName')" />
 					</el-row>
