@@ -6,7 +6,7 @@ import errorCode from '@/utils/errorCode';
 import { tansParams, blobValidate } from '@/utils/ruoyi';
 import cache from '@/plugins/cache';
 import { saveAs } from 'file-saver';
-import { getDownLoadStatus } from '@/api/system/onceDownload';
+import { getDownLoadStatus, resetDownLoadProgress } from '@/api/system/onceDownload';
 
 let downloadLoadingInstance;
 // 是否显示重新登录
@@ -355,7 +355,7 @@ async function downLoadFile(url, params, filename, config) {
 		elNotificationComponent = Notification({
 			title: '下载卡顿提醒',
 			dangerouslyUseHTMLString: true,
-			message: '<button>下载卡住了?点此重新下载</button>',
+			message: '<button>下载卡住了?点此重置服务端</button>',
 			duration: 500000,
 			type: 'warning',
 			onClick: () => {
@@ -363,7 +363,10 @@ async function downLoadFile(url, params, filename, config) {
 				if (subscriptionId) {
 					subscriptionId.unsubscribe();
 				}
-				downLoadFile(url, params, filename, config);
+				resetDownLoadProgress();
+				// downLoadFile(url, params, filename, config);
+				Message.success('已重置服务端,请重新点击一键下载!');
+				store.dispatch('downloadOnce/setPercent', 0);
 			}
 		});
 	}, 3000);
