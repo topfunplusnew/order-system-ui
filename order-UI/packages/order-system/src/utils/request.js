@@ -256,14 +256,11 @@ export function onceDownload(url, params, filename, config) {
 		if (status) {
 			// 只有当允许下载时，才进行连接WebSocket并下载
 			downLoadFile(url, params, filename, config);
-			return;
 		} else if (status === false) {
 			Message.error('当前正在有用户进行文件下载中!');
 			// 不允许下载时，不建立WebSocket连接
-			return;
 		} else {
 			Message.error('下载文件出现错误，请联系管理员！');
-			return;
 		}
 	});
 }
@@ -343,6 +340,8 @@ async function downLoadFile(url, params, filename, config) {
 				}
 			} catch (error) {
 				console.error('处理WebSocket消息出错:', error);
+				subscriptionId.unsubscribe();
+				store.dispatch('downloadOnce/setPercent', 0);
 			}
 		});
 	} else {
@@ -427,14 +426,8 @@ async function downLoadFile(url, params, filename, config) {
 			}
 			console.error(r);
 			Message.error('下载文件出现错误，请联系管理员！');
-
-			// 错误时也设置进度为100然后延迟重置
-			store.dispatch('downloadOnce/setPercent', 100);
-
 			// 添加3秒后重置进度条为0（即使出错也重置）
-			setTimeout(() => {
-				store.dispatch('downloadOnce/setPercent', 0);
-			}, 3000);
+			store.dispatch('downloadOnce/setPercent', 0);
 		});
 }
 
