@@ -52,7 +52,7 @@
 						</span>
 						<el-dropdown-menu slot="dropdown">
 							<el-dropdown-item v-hasPermi="['system:secondinventory:list']" @click.native="checkInvoInfo(scope.row)">查看库存信息</el-dropdown-item>
-							<el-dropdown-item v-hasPermi="['system:secondinventory:edit']" @click.native="handleUpdate(scope.row)">修改</el-dropdown-item>
+							<!--							<el-dropdown-item v-hasPermi="['system:secondinventory:edit']" @click.native="handleUpdate(scope.row)">修改</el-dropdown-item>-->
 							<el-dropdown-item v-hasPermi="['system:secondinventory:remove']" @click.native="handleDelete(scope.row)">删除</el-dropdown-item>
 						</el-dropdown-menu>
 					</el-dropdown>
@@ -63,7 +63,7 @@
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改出库对话框 -->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="80px">
 				<el-form-item label="仓库名称" prop="storeHouseName">
 					<el-input v-model="form.storeHouseName" placeholder="请输入仓库名称" />
@@ -82,7 +82,7 @@
 		</el-dialog>
 
 		<!--    破损后入库的弹窗-->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :title="title" :visible.sync="secondInventoryVisible" width="1200px" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="title" :visible.sync="secondInventoryVisible" width="1200px" append-to-body>
 			<el-form ref="secondForm" :model="secondForm" :rules="secondRules" label-width="80px" :inline="true">
 				<el-form-item label="仓库名称" prop="storeHouseName">
 					<el-col :span="16">
@@ -536,7 +536,18 @@
 			</div>
 		</el-dialog>
 
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="true" title="库存信息" :visible.sync="inventoryInfoVisible" width="900px" append-to-body>
+		<el-dialog
+			:modal="false"
+			v-dialogDrag
+			v-dialogDragWidth
+			v-dialogDragHeight
+			:close-on-click-modal="false"
+			:show-close="true"
+			title="库存信息"
+			:visible.sync="inventoryInfoVisible"
+			width="900px"
+			append-to-body
+		>
 			<el-descriptions title="库存详情" border size="mini">
 				<el-descriptions-item label="陆地车号">
 					{{ inventoryInfo.landCarNo }}
