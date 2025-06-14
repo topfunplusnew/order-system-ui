@@ -77,7 +77,6 @@
 								二次入库
 							</el-dropdown-item>
 							<el-dropdown-item v-hasPermi="['system:secondinventory:list']" @click.native="checkInvoInfo(scope.row)">查看库存信息</el-dropdown-item>
-							<!--							<el-dropdown-item v-hasPermi="['system:secondinventory:edit']" @click.native="handleUpdate(scope.row)">修改</el-dropdown-item>-->
 							<el-dropdown-item v-hasPermi="['system:secondinventory:remove']" @click.native="handleDelete(scope.row)">删除</el-dropdown-item>
 						</el-dropdown-menu>
 					</el-dropdown>
@@ -87,26 +86,6 @@
 
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
-		<!-- 添加或修改出库对话框 -->
-		<!--		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>-->
-		<!--			<el-form ref="form" :model="form" :rules="rules" label-width="80px">-->
-		<!--				<el-form-item label="仓库名称" prop="storeHouseName">-->
-		<!--					<el-input v-model="form.storeHouseName" placeholder="请输入仓库名称" />-->
-		<!--				</el-form-item>-->
-		<!--				<el-form-item label="出库日期" prop="outDate">-->
-		<!--					<el-date-picker v-model="form.outDate" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>-->
-		<!--				</el-form-item>-->
-		<!--				<el-form-item label="出库量" prop="outAmount">-->
-		<!--					<el-input v-model="form.outAmount" placeholder="请输入出库量" />-->
-		<!--				</el-form-item>-->
-		<!--			</el-form>-->
-		<!--			<div slot="footer" class="dialog-footer">-->
-		<!--				<el-button type="primary" @click="submitForm">确 定</el-button>-->
-		<!--				<el-button @click="cancel">取 消</el-button>-->
-		<!--			</div>-->
-		<!--		</el-dialog>-->
-
-		<!--    二次入库的弹窗-->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="title" :visible.sync="secondInventoryVisible" width="1200px" append-to-body :close-on-click-modal="false">
 			<el-form ref="secondForm" :model="secondForm" :rules="secondRules" label-width="80px" :inline="true">
 				<el-form-item label="仓库名称" prop="storeHouseName">
@@ -280,10 +259,19 @@
 					ref="inventoryDetail"
 				>
 					<el-table-column type="selection" width="50" align="center" :selectable="() => isEditingDetails" />
-					<el-table-column label="序号" align="center" type="index" width="50" />
+					<el-table-column label="序号" align="center" type="index" width="50" fixed="left" />
 					<el-table-column label="行操作" align="center" width="100" fixed="left">
 						<template slot-scope="scope">
-							<el-button v-if="!scope.row.isEditing" :disabled="!isEditingDetails" size="mini" type="warning" icon="el-icon-edit" @click="handleRowEdit(scope.row)">编辑</el-button>
+							<el-button
+								v-if="scope.row.shouldDel || !scope.row.isEditing"
+								:disabled="!isEditingDetails"
+								size="mini"
+								type="warning"
+								icon="el-icon-edit"
+								@click="handleRowEdit(scope.row)"
+							>
+								编辑
+							</el-button>
 							<el-button v-else size="mini" type="success" icon="el-icon-check" @click="handleRowSave(scope.row)">保存</el-button>
 						</template>
 					</el-table-column>
@@ -291,24 +279,29 @@
 						<template #default="scope">
 							<el-row>
 								<el-col :span="14">
-									<el-input size="mini" v-model="scope.row.supplier" placeholder="请输入供应商" :disabled="!scope.row.isEditing || selfButtonDisabled" />
+									<el-input
+										size="mini"
+										v-model="scope.row.supplier"
+										placeholder="请输入供应商"
+										:disabled="scope.row.shouldDel || !scope.row.isEditing || scope.row.selfButtonDisabled"
+									/>
 								</el-col>
 								<el-col :span="5">
 									<el-button
 										id="selfButton"
-										:type="selfButtonDisabled ? 'danger' : 'success'"
+										:type="scope.row.selfButtonDisabled ? 'danger' : 'success'"
 										size="mini"
 										icon="el-icon-school"
 										@click="
 											() => {
-												if (!selfButtonDisabled) {
+												if (!scope.row.selfButtonDisabled) {
 													scope.row.supplier = PUBLIC_DICT_TYPE.SELF_COMPANY;
 													scope.row.supplierId = 0;
-													selfButtonDisabled = true;
+													scope.row.selfButtonDisabled = true;
 												} else {
 													scope.row.supplier = '';
 													scope.row.supplierId = '';
-													selfButtonDisabled = false;
+													scope.row.selfButtonDisabled = false;
 												}
 											}
 										"
@@ -325,7 +318,7 @@
 										@commitBack="value => handleCommitBackSupplier(scope, value)"
 										@update:queryName="handleUpdateQuerySupplier"
 										@click="setCurrentType(scope.row, 'supplier')"
-										:disable="!scope.row.isEditing || selfButtonDisabled"
+										:disable="scope.row.shouldDel || !scope.row.isEditing || scope.row.selfButtonDisabled"
 									>
 										<template #table-columns>
 											<el-table-column label="供应商名称" align="center" prop="companyName" />
@@ -340,7 +333,7 @@
 					<el-table-column label="级别名称" prop="levelName" width="150">
 						<template #default="scope">
 							<el-col :span="16">
-								<el-input size="mini" v-model="scope.row.levelName" placeholder="请输入级别名称" :disabled="!scope.row.isEditing" />
+								<el-input size="mini" v-model="scope.row.levelName" placeholder="请输入级别名称" :disabled="scope.row.shouldDel || !scope.row.isEditing" />
 							</el-col>
 							<el-col :span="8">
 								<SearchOption
@@ -353,7 +346,7 @@
 									@update:queryName="handleUpdateQueryNameLevel"
 									@commitBack="value => handleCommitBackProductLevel(scope, value)"
 									:query-items="queryItemsOrder"
-									:disable="!scope.row.isEditing"
+									:disable="scope.row.shouldDel || !scope.row.isEditing"
 								>
 									<template #table-columns>
 										<el-table-column label="级别编码" align="center" prop="levelNo" />
@@ -371,7 +364,7 @@
 					</el-table-column>
 					<el-table-column label="计量单位" prop="countingUnit" width="150">
 						<template #default="scope">
-							<el-radio-group v-model="scope.row.countingUnit" size="mini" :disabled="!scope.row.isEditing">
+							<el-radio-group v-model="scope.row.countingUnit" size="mini" :disabled="scope.row.shouldDel || !scope.row.isEditing">
 								<el-radio label="片">片数</el-radio>
 								<el-radio label="其他">其他</el-radio>
 							</el-radio-group>
@@ -394,7 +387,13 @@
 					</el-table-column>
 					<el-table-column label="每包片数" prop="piecesPerPack" width="150">
 						<template #default="scope">
-							<el-input size="mini" v-model="scope.row.piecesPerPack" @input="() => recalculateAll(scope)" placeholder="请输入每包片数" :disabled="!scope.row.isEditing" />
+							<el-input
+								size="mini"
+								v-model="scope.row.piecesPerPack"
+								@input="() => recalculateAll(scope)"
+								placeholder="请输入每包片数"
+								:disabled="scope.row.shouldDel || !scope.row.isEditing"
+							/>
 						</template>
 					</el-table-column>
 					<el-table-column label="包数" prop="packs" width="150">
@@ -404,13 +403,19 @@
 								@input="() => recalculateAll(scope)"
 								v-model.lazy="scope.row.packs"
 								:placeholder="scope.row.piecesPerPack <= 0 ? '请先输入每包片数' : '请输入包数'"
-								:disabled="!scope.row.isEditing || scope.row.piecesPerPack <= 0"
+								:disabled="scope.row.shouldDel || !scope.row.isEditing || scope.row.piecesPerPack <= 0"
 							/>
 						</template>
 					</el-table-column>
 					<el-table-column label="出厂片数" prop="pieces" width="150">
 						<template #default="scope">
-							<el-input size="mini" v-model="scope.row.pieces" @input="val => handlePiecesChange(scope, val)" placeholder="请输入出厂片数" :disabled="!scope.row.isEditing" />
+							<el-input
+								size="mini"
+								v-model="scope.row.pieces"
+								@input="val => handlePiecesChange(scope, val)"
+								placeholder="请输入出厂片数"
+								:disabled="scope.row.shouldDel || !scope.row.isEditing"
+							/>
 						</template>
 					</el-table-column>
 					<el-table-column label="出厂单价" prop="price" width="150">
@@ -420,14 +425,14 @@
 								v-model="scope.row.price"
 								@input="() => recalculateAll(scope)"
 								:placeholder="scope.row.pieces <= 0 ? '请先完善出厂片数' : '请输入出厂单价'"
-								:disabled="!scope.row.isEditing || scope.row.pieces <= 0"
+								:disabled="scope.row.shouldDel || !scope.row.isEditing || scope.row.pieces <= 0"
 								@blur="() => formatPriceInput(scope.row, 'price', 4, false)"
 							/>
 						</template>
 					</el-table-column>
 					<el-table-column label="出厂是否含税" prop="isIncludeTaxFactory" width="150">
 						<template #default="scope">
-							<el-radio-group v-model="scope.row.isIncludeTaxFactory" size="mini" @change="() => recalculateAll(scope)" :disabled="!scope.row.isEditing">
+							<el-radio-group v-model="scope.row.isIncludeTaxFactory" size="mini" @change="() => recalculateAll(scope)" :disabled="scope.row.shouldDel || !scope.row.isEditing">
 								<el-radio :label="1">是</el-radio>
 								<el-radio :label="0">否</el-radio>
 							</el-radio-group>
@@ -440,7 +445,7 @@
 								v-model.lazy="scope.row.sundryCost"
 								@input="() => recalculateAll(scope)"
 								:placeholder="scope.row.price <= 0 ? '请先完善出厂单价' : '请输入杂费'"
-								:disabled="!scope.row.isEditing || scope.row.price <= 0"
+								:disabled="scope.row.shouldDel || !scope.row.isEditing || scope.row.price <= 0"
 								@blur="() => formatPriceInput(scope.row, 'sundryCost', 2)"
 							/>
 						</template>
@@ -452,7 +457,7 @@
 					</el-table-column>
 					<el-table-column label="二次入库片数" prop="actualPieces" width="150">
 						<template #default="scope">
-							<el-input size="mini" v-model="scope.row.actualPieces" placeholder="请输入二次入库片数" />
+							<el-input size="mini" v-model="scope.row.actualPieces" placeholder="请输入二次入库片数" :disabled="scope.row.shouldDel" />
 						</template>
 					</el-table-column>
 					<el-table-column label="存货价" prop="paymentUnload" width="150">
@@ -462,14 +467,14 @@
 								v-model.lazy="scope.row.paymentUnload"
 								placeholder="请输入存货价"
 								@input="() => recalculateAll(scope)"
-								:disabled="!scope.row.isEditing"
+								:disabled="scope.row.shouldDel || !scope.row.isEditing"
 								@blur="() => formatPriceInput(scope.row, 'paymentUnload', 4, false)"
 							/>
 						</template>
 					</el-table-column>
 					<el-table-column label="库存是否含税" prop="isIncludeTaxSale" width="150">
 						<template #default="scope">
-							<el-radio-group v-model="scope.row.isIncludeTaxSale" size="mini" @change="() => recalculateAll(scope)" :disabled="!scope.row.isEditing">
+							<el-radio-group v-model="scope.row.isIncludeTaxSale" size="mini" @change="() => recalculateAll(scope)" :disabled="scope.row.shouldDel || !scope.row.isEditing">
 								<el-radio :label="1">是</el-radio>
 								<el-radio :label="0">否</el-radio>
 							</el-radio-group>
@@ -497,7 +502,7 @@
 								v-model.lazy="scope.row.landFreightPrice"
 								@input="() => recalculateAll(scope)"
 								placeholder="请输入陆运费单价"
-								:disabled="!scope.row.isEditing"
+								:disabled="scope.row.shouldDel || !scope.row.isEditing"
 								@blur="() => formatPriceInput(scope.row, 'landFreightPrice', 2)"
 							/>
 						</template>
@@ -509,7 +514,7 @@
 								v-model.lazy="scope.row.additionalFees"
 								@input="() => recalculateAll(scope)"
 								:placeholder="scope.row.landFreightPrice <= 0 ? '请先完善陆运费单价' : '请输入加费'"
-								:disabled="!scope.row.isEditing"
+								:disabled="scope.row.shouldDel || !scope.row.isEditing"
 								@blur="() => formatPriceInput(scope.row, 'additionalFees', 2)"
 							/>
 						</template>
@@ -526,7 +531,7 @@
 								v-model.lazy="scope.row.seaFreight"
 								@input="() => recalculateAll(scope)"
 								placeholder="请输入海运费"
-								:disabled="!scope.row.isEditing"
+								:disabled="scope.row.shouldDel || !scope.row.isEditing"
 								@blur="() => formatPriceInput(scope.row, 'seaFreight', 2)"
 							/>
 						</template>
@@ -543,7 +548,7 @@
 								v-model.lazy="scope.row.otherCost"
 								placeholder="请输入其他费用"
 								@input="() => recalculateAll(scope)"
-								:disabled="!scope.row.isEditing"
+								:disabled="scope.row.shouldDel || !scope.row.isEditing"
 								@blur="() => formatPriceInput(scope.row, 'otherCost', 2)"
 							/>
 						</template>
@@ -564,7 +569,7 @@
 								size="mini"
 								v-model="scope.row.logisticsProfit"
 								placeholder="请输入物流利润"
-								:disabled="!scope.row.isEditing"
+								:disabled="scope.row.shouldDel || !scope.row.isEditing"
 								@blur="() => formatPriceInput(scope.row, 'logisticsProfit', 2)"
 							/>
 						</template>
@@ -575,7 +580,7 @@
 								size="mini"
 								v-model="scope.row.factoryCommission"
 								placeholder="请输入厂家佣金"
-								:disabled="!scope.row.isEditing"
+								:disabled="scope.row.shouldDel || !scope.row.isEditing"
 								@blur="() => formatPriceInput(scope.row, 'factoryCommission', 2)"
 							/>
 						</template>
@@ -586,7 +591,7 @@
 								size="mini"
 								v-model="scope.row.factoryRebateAmount"
 								placeholder="请输入计提厂家返利金额"
-								:disabled="!scope.row.isEditing"
+								:disabled="scope.row.shouldDel || !scope.row.isEditing"
 								@blur="() => formatPriceInput(scope.row, 'factoryRebateAmount', 2)"
 							/>
 						</template>
@@ -597,14 +602,14 @@
 								size="mini"
 								v-model="scope.row.factoryDiscountAmount"
 								placeholder="请输入计提厂家降价金额"
-								:disabled="!scope.row.isEditing"
+								:disabled="scope.row.shouldDel || !scope.row.isEditing"
 								@blur="() => formatPriceInput(scope.row, 'factoryDiscountAmount', 2)"
 							/>
 						</template>
 					</el-table-column>
 					<el-table-column label="备注" prop="comments" width="150">
 						<template #default="scope">
-							<el-input size="mini" v-model="scope.row.comments" placeholder="请输入备注" :disabled="!scope.row.isEditing" />
+							<el-input size="mini" v-model="scope.row.comments" placeholder="请输入备注" :disabled="scope.row.shouldDel || !scope.row.isEditing" />
 						</template>
 					</el-table-column>
 				</el-table>
@@ -916,7 +921,6 @@ export default {
 				seaBankNo: [{ required: true, message: '请输入银行卡号', trigger: 'blur' }],
 				seaBankName: [{ required: true, message: '请输入开户行', trigger: 'blur' }]
 			},
-			selfButtonDisabled: false,
 			selfButtonTourSteps: [
 				{
 					target: '#selfButton',
@@ -1022,8 +1026,6 @@ export default {
 			this.secondForm.goodsCompany = row.storeHouseName;
 			// 设置主表的出库ID信息
 			this.secondForm.exWareHoustId = row.id;
-
-			// TODO
 			getDetail(row.storeID).then(res => {
 				if (!res.data) {
 					this.$message.error('该货物没有库存信息');
@@ -1031,7 +1033,7 @@ export default {
 				}
 				const detailItem = {
 					row: {
-						supplier: res.data.supplier,
+						supplier: PUBLIC_DICT_TYPE.SELF_COMPANY,
 						supplierId: res.data.supplierId,
 						levelName: res.data.levelName,
 						levelID: res.data.levelID,
@@ -1040,7 +1042,7 @@ export default {
 						width: res.data.width,
 						erro: res.data.erro,
 						tonnage: res.data.tonnage,
-						price: row.sourceInventoryDetail.price,
+						price: res.data.paymentUnload,
 						pieces: row.outAmount,
 						isEditing: true,
 						hasError: false,
@@ -1071,8 +1073,9 @@ export default {
 						factoryRebateAmount: '',
 						factoryDiscountAmount: '',
 						comments: '',
-						// 后续根据这个字段 把这条信息删除 不需要添加到数据库
-						shouldDel: true
+						// 后续根据这个字段 把这条信息删除 不需要添加到数据库 也可以根据这个字段禁用不让用户输入
+						shouldDel: true,
+						selfButtonDisabled: true
 					}
 				};
 				this.calculatePayment(detailItem);
@@ -1240,7 +1243,6 @@ export default {
 			this.isSea = false;
 			this.isLand = false;
 			this.transportError = false; // 重置错误状态
-			this.selfButtonDisabled = false; // 重置本公司按钮状态
 			this.secondForm = {
 				id: null,
 				storeHouseid: null,
@@ -1334,7 +1336,8 @@ export default {
 				comments: '',
 				isEditing: true,
 				hasError: false,
-				manuallyEditedPieces: false
+				manuallyEditedPieces: false,
+				selfButtonDisabled: false
 			};
 			this.inventoryDetailList.push(obj);
 			this.$nextTick(() => {
@@ -1736,19 +1739,6 @@ export default {
 			this.open = true;
 			this.title = '添加出库';
 		},
-		// 修改二次入库的信息
-		// handleUpdate(row) {
-		// 	this.reset();
-		// 	const id = row.id || this.ids;
-		// 	getInventoryMain(id).then(response => {
-		// 		this.form = response.data;
-		// 		this.open = true;
-		// 		this.title = '修改二次入库信息';
-		// 	});
-		// },
-		/**
-		 * @description: 提交添加或修改出库表单
-		 */
 		submitForm() {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
