@@ -77,7 +77,7 @@
 								二次入库
 							</el-dropdown-item>
 							<el-dropdown-item v-hasPermi="['system:secondinventory:list']" @click.native="checkInvoInfo(scope.row)">查看库存信息</el-dropdown-item>
-							<el-dropdown-item v-hasPermi="['system:secondinventory:edit']" @click.native="handleUpdate(scope.row)">修改</el-dropdown-item>
+							<!--							<el-dropdown-item v-hasPermi="['system:secondinventory:edit']" @click.native="handleUpdate(scope.row)">修改</el-dropdown-item>-->
 							<el-dropdown-item v-hasPermi="['system:secondinventory:remove']" @click.native="handleDelete(scope.row)">删除</el-dropdown-item>
 						</el-dropdown-menu>
 					</el-dropdown>
@@ -725,7 +725,7 @@ import { listProductLevel } from '../../../api/system/productLevel';
 import { fix } from '../../../api/tool/format';
 import SearchOption from '../../../components/SearchOption.vue';
 import { _fill } from './fill';
-import { updateInventoryMain, addInventoryMain } from '../../../api/system/inventoryMain';
+import { updateInventoryMain, addInventoryMain, getInventoryMain } from '../../../api/system/inventoryMain';
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
 // 导入库存计算工具函数
 import { updateInventoryRowCalculations } from '../inventoryMain/inventoryCalculations';
@@ -1736,19 +1736,16 @@ export default {
 			this.open = true;
 			this.title = '添加出库';
 		},
-		/**
-		 * @description: 打开修改出库对话框并加载数据
-		 * @param {object} row 当前行的数据对象
-		 */
-		handleUpdate(row) {
-			this.reset();
-			const id = row.id || this.ids;
-			getExWarehouse(id).then(response => {
-				this.form = response.data;
-				this.open = true;
-				this.title = '修改出库';
-			});
-		},
+		// 修改二次入库的信息
+		// handleUpdate(row) {
+		// 	this.reset();
+		// 	const id = row.id || this.ids;
+		// 	getInventoryMain(id).then(response => {
+		// 		this.form = response.data;
+		// 		this.open = true;
+		// 		this.title = '修改二次入库信息';
+		// 	});
+		// },
 		/**
 		 * @description: 提交添加或修改出库表单
 		 */
