@@ -5,7 +5,7 @@ export default {
 </script>
 
 <template>
-	<div>≤‚ ‘</div>
+	<div>≤‚ ‘123123123</div>
 </template>
 
 <style scoped lang="scss"></style>
