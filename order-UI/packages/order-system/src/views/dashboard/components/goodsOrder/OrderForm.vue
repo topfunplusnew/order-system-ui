@@ -1164,13 +1164,8 @@ export default {
 											<el-table-column label="长度" align="center" prop="length" show-overflow-tooltip />
 											<el-table-column label="宽度" align="center" prop="width" show-overflow-tooltip />
 											<el-table-column label="剩余量" align="center" prop="actualPieces" show-overflow-tooltip />
-											<el-table-column label="出厂货款" align="center" prop="paymentFactory" show-overflow-tooltip />
-											<el-table-column label="库存价格" align="center" prop="price" show-overflow-tooltip />
-											<el-table-column label="库存金额" align="center" show-overflow-tooltip>
-												<template #default="scope">
-													{{ fix(Number(scope.row.actualPieces * scope.row.price)) }}
-												</template>
-											</el-table-column>
+											<el-table-column label="存货价" align="center" prop="paymentUnload" show-overflow-tooltip />
+											<el-table-column label="库存金额" align="center" prop="payments" show-overflow-tooltip />
 										</template>
 									</SearchOption>
 								</el-col>
