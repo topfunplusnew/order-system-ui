@@ -247,8 +247,8 @@
 					ref="inventoryDetail"
 				>
 					<el-table-column type="selection" width="50" align="center" :selectable="() => isEditingDetails" />
-					<el-table-column label="序号" align="center" type="index" width="50" fixed="left" />
-					<el-table-column label="行操作" align="center" width="100" fixed="left">
+					<el-table-column label="序号" align="center" type="index" width="50" />
+					<el-table-column label="行操作" align="center" width="100">
 						<template slot-scope="scope">
 							<el-button
 								v-if="scope.row.shouldDel || !scope.row.isEditing"
@@ -1150,15 +1150,23 @@ export default {
 		 * @param {object} scope 当前行的作用域对象
 		 */
 		recalculateAll(scope) {
+			// 对于二次入库的时候 需要特殊处理 含税金额需要再减去一个其他费用，放在额外对象中
+			const extraOptions = {
+				isSecondInventory: true
+			};
 			// 调用统一的库存计算函数
-			updateInventoryRowCalculations(scope.row, this.isSea, this.isLand);
+			updateInventoryRowCalculations(scope.row, this.isSea, this.isLand, extraOptions);
 		},
 		/**
 		 * @description: 计算当前行库存详情的货款等相关数值 (目前与 recalculateAll 功能重复，可考虑合并)
 		 * @param {object} scope 当前行的作用域对象
 		 */
 		calculatePayment(scope) {
-			updateInventoryRowCalculations(scope.row, this.isSea, this.isLand);
+			// 对于二次入库的时候 需要特殊处理 含税金额需要再减去一个其他费用，放在额外对象中
+			const extraOptions = {
+				isSecondInventory: true
+			};
+			updateInventoryRowCalculations(scope.row, this.isSea, this.isLand, extraOptions);
 		},
 		/**
 		 * @description: 处理车队选择后的回调，更新表单中的车队名称
@@ -1315,7 +1323,6 @@ export default {
 				otherCost: '',
 				profit: '',
 				profitNoTax: '',
-				stockNumber: '',
 				paymentsWithSundry: '',
 				additionalFees: '',
 				factoryCommission: '',
@@ -1626,21 +1633,17 @@ export default {
 			}
 		},
 		/**
-		 * @description: 更新实际入库片数 (通常由库存编号变化触发，目前未使用)
-		 * @param {object} scope 当前行的作用域对象
-		 */
-		updateActualPieces(scope) {
-			scope.row.actualPieces = scope.row.stockNumber;
-			this.recalculateAll(scope);
-		},
-		/**
 		 * @description: 处理出厂片数输入变化事件，标记为手动编辑并重新计算
 		 * @param {object} scope 当前行的作用域对象
 		 * @param {string|number} val 输入的出厂片数值
 		 */
 		handlePiecesChange(scope, val) {
 			scope.row.manuallyEditedPieces = true;
-			updateInventoryRowCalculations(scope.row, this.isSea, this.isLand);
+			// 对于二次入库的时候 需要特殊处理 含税金额需要再减去一个其他费用，放在额外对象中
+			const extraOptions = {
+				isSecondInventory: true
+			};
+			updateInventoryRowCalculations(scope.row, this.isSea, this.isLand, extraOptions);
 		},
 		/**
 		 * @description: 获取出库列表数据

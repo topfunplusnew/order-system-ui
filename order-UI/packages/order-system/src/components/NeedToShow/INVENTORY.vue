@@ -64,7 +64,6 @@ export default {
 				<el-descriptions-item label="柜号">{{ needToShowInfo.seaCarNo || '-' }}</el-descriptions-item>
 				<el-descriptions-item label="海运公司">{{ needToShowInfo.seaDriverName || '-' }}</el-descriptions-item>
 				<el-descriptions-item label="海运公司电话">{{ needToShowInfo.seaDriverTel || '-' }}</el-descriptions-item>
-				<el-descriptions-item label="库存单价">{{ needToShowInfo.price || '0' }} 元</el-descriptions-item>
 				<el-descriptions-item label="备注">
 					<el-tag size="small">{{ needToShowInfo.comments || '无' }}</el-tag>
 				</el-descriptions-item>

@@ -54,48 +54,54 @@
 			"
 			@selection-change="handleSelectionChange"
 		>
-			<el-table-column v-if="columns[0].visible" :label="columns[0].label" :prop="columns[0].prop" align="center" width="130" show-overflow-tooltip>
+			<el-table-column v-if="columns[0].visible" :label="columns[0].label" :prop="columns[0].prop" align="center" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<span v-if="scope.row.futuresMarginCompany">{{ scope.row.futuresMarginCompany }}</span>
 					<span v-else>无押金公司</span>
 				</template>
 			</el-table-column>
 
-			<el-table-column v-if="columns[1].visible" :label="columns[1].label" :prop="columns[1].prop" align="center" width="110" show-overflow-tooltip />
+			<el-table-column v-if="columns[1].visible" :label="columns[1].label" :prop="columns[1].prop" align="center" show-overflow-tooltip />
 
-			<el-table-column v-if="columns[2].visible" :label="columns[2].label" :prop="columns[2].prop" align="center" width="110" show-overflow-tooltip />
+			<el-table-column v-if="columns[2].visible" :label="columns[2].label" :prop="columns[2].prop" align="center" show-overflow-tooltip />
 
-			<el-table-column v-if="columns[3].visible" :label="columns[3].label" :prop="columns[3].prop" align="center" width="110" show-overflow-tooltip />
-			<el-table-column v-if="columns[12].visible" :label="columns[3].label" :prop="columns[3].prop" align="center" width="110" show-overflow-tooltip />
+			<el-table-column v-if="columns[3].visible" :label="columns[3].label" :prop="columns[3].prop" align="center" show-overflow-tooltip />
+			<el-table-column v-if="columns[12].visible" :label="columns[3].label" :prop="columns[3].prop" align="center" show-overflow-tooltip />
 
-			<el-table-column v-if="columns[4].visible" :label="columns[4].label" :prop="columns[4].prop" align="center" width="110" show-overflow-tooltip />
+			<el-table-column v-if="columns[4].visible" :label="columns[4].label" :prop="columns[4].prop" align="center" show-overflow-tooltip />
 
-			<el-table-column v-if="columns[5].visible" :label="columns[5].label" :prop="columns[5].prop" align="center" width="160" show-overflow-tooltip />
+			<el-table-column v-if="columns[5].visible" :label="columns[5].label" :prop="columns[5].prop" align="center" show-overflow-tooltip />
 
-			<el-table-column v-if="columns[6].visible" :label="columns[6].label" :prop="columns[6].prop" align="center" width="110" show-overflow-tooltip />
+			<el-table-column v-if="columns[6].visible" :label="columns[6].label" :prop="columns[6].prop" align="center" show-overflow-tooltip />
 
-			<el-table-column v-if="columns[7].visible" :label="columns[7].label" :prop="columns[7].prop" align="center" width="160" show-overflow-tooltip />
+			<el-table-column v-if="columns[7].visible" :label="columns[7].label" :prop="columns[7].prop" align="center" show-overflow-tooltip />
 
-			<el-table-column v-if="columns[8].visible" :label="columns[8].label" :prop="columns[8].prop" align="center" width="110" show-overflow-tooltip />
+			<el-table-column v-if="columns[8].visible" :label="columns[8].label" :prop="columns[8].prop" align="center" show-overflow-tooltip />
 
-			<el-table-column v-if="columns[9].visible" :label="columns[9].label" :prop="columns[9].prop" align="center" width="110" show-overflow-tooltip />
+			<el-table-column v-if="columns[9].visible" :label="columns[9].label" :prop="columns[9].prop" align="center" show-overflow-tooltip />
 
-			<el-table-column v-if="columns[10].visible" :label="columns[10].label" :prop="columns[10].prop" align="center" width="110" show-overflow-tooltip />
+			<el-table-column v-if="columns[10].visible" :label="columns[10].label" :prop="columns[10].prop" align="center" show-overflow-tooltip />
 
-			<el-table-column v-if="columns[11].visible" :label="columns[11].label" :prop="columns[11].prop" align="center" width="110" show-overflow-tooltip />
+			<el-table-column v-if="columns[11].visible" :label="columns[11].label" :prop="columns[11].prop" align="center" show-overflow-tooltip />
 
-			<el-table-column label="备注" align="center" prop="comments" width="110" show-overflow-tooltip />
+			<el-table-column label="备注" align="center" prop="comments" show-overflow-tooltip />
 
-			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="230px" fixed="right">
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
 				<template slot-scope="scope">
-					<el-row>
-						<el-button size="mini" type="text" @click="checkDetail(scope.row)">查看历史收回</el-button>
-						<el-button v-if="scope.row.checkState === '未申请'" size="mini" type="text" @click="applyForPayment(scope.row)">坏账损失</el-button>
-						<el-button v-if="scope.row.checkState === '审核中'" size="mini" type="warning" disabled>审核中</el-button>
-						<el-button v-hasPermi="['system:lendmoney:remove']" size="mini" type="text" @click="handleGetBackMoney(scope.row)">收回资金</el-button>
-						<el-button v-hasPermi="['system:lendmoney:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
-						<el-button v-hasPermi="['system:lendmoney:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
-					</el-row>
+					<el-dropdown trigger="click">
+						<el-button size="mini" type="text">
+							操作
+							<i class="el-icon-arrow-down el-icon--right"></i>
+						</el-button>
+						<el-dropdown-menu slot="dropdown">
+							<el-dropdown-item @click.native="checkDetail(scope.row)">查看历史收回</el-dropdown-item>
+							<el-dropdown-item v-if="scope.row.checkState === '未申请'" @click.native="applyForPayment(scope.row)">坏账损失</el-dropdown-item>
+							<el-dropdown-item v-hasPermi="['system:lendmoney:remove']" @click.native="handleGetBackMoney(scope.row)">收回资金</el-dropdown-item>
+							<el-dropdown-item v-hasPermi="['system:lendmoney:edit']" @click.native="handleUpdate(scope.row)">修改</el-dropdown-item>
+							<el-dropdown-item v-hasPermi="['system:lendmoney:remove']" @click.native="handleDelete(scope.row)" style="color: red">删除</el-dropdown-item>
+						</el-dropdown-menu>
+					</el-dropdown>
+					<el-button v-if="scope.row.checkState === '审核中'" size="mini" type="warning" disabled style="margin-left: 8px">审核中</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -103,7 +109,7 @@
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改向外部借出款信息对话框 -->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" title="添加押金" :visible.sync="open" width="50%" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="添加押金" :visible.sync="open" width="50%" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="160px">
 				<el-row>
 					<el-col :span="12">
@@ -215,7 +221,18 @@
 		</el-dialog>
 
 		<!--    回收弹窗-->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" title="收回资金操作" :visible.sync="giveRecoverMoneyShow" width="40%" append-to-body>
+		<el-dialog
+			:modal="false"
+			v-dialogDrag
+			v-dialogDragWidth
+			v-dialogDragHeight
+			:close-on-click-modal="false"
+			:show-close="false"
+			title="收回资金操作"
+			:visible.sync="giveRecoverMoneyShow"
+			width="40%"
+			append-to-body
+		>
 			<el-row>
 				<el-form :model="recoverMoneyEntity" label-width="120">
 					<el-form-item label="收回账户" prop="acountsName">
@@ -266,7 +283,7 @@
 		</el-dialog>
 
 		<!--    坏账损失-->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" title="坏账损失" :visible.sync="applyDialogVisible" width="45%">
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="坏账损失" :visible.sync="applyDialogVisible" width="45%">
 			<keep-alive>
 				<ApplyPayment
 					:extra-information="{
@@ -282,7 +299,7 @@
 				/>
 			</keep-alive>
 		</el-dialog>
-		
+
 		<InfoDialog title="历史还款记录" :visible.sync="dialogHistoryVisible" :width="'620px'">
 			<template #info>
 				<el-table

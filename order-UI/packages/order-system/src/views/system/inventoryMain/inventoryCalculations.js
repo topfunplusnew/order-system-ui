@@ -1,5 +1,40 @@
 import { fix, fix_2 } from '../../../api/tool/format';
-import { formatCalculationResult } from '../../../utils/precision';
+
+/**
+ * 计算逻辑说明（根据出厂/销售是否含税的不同组合）：
+ *
+ * 1. 出厂含税：否，销售含税：否
+ *    1) 出厂货款 = 长度 * 宽度 * 出厂片数 / 1000000 * 出厂单价 + 杂费
+ *    2) 总货款   = 长度 * 宽度 * 卸货片数 / 1000000 * 卸货单价 + 杂费
+ *    3) 吨位     = (厚度 - 误差) * 长度 * 宽度 * 出厂片数 / 1000000 / 20 / 20
+ *    4) 运费     = 吨位 * 运费单价 + 加费
+ *    5) 利润     = 总货款 - 出厂货款 - 运费
+ *    6) 不含税利润 = 总货款 - 出厂货款 - 运费 - 其他费用
+ *
+ * 2. 出厂含税：是，销售含税：否
+ *    1) 出厂货款 = 长度 * 宽度 * 出厂片数 / 1000000 * 出厂单价 + 杂费
+ *    2) 总货款   = 长度 * 宽度 * 卸货片数 / 1000000 * 卸货单价 + 杂费
+ *    3) 吨位     = (厚度 - 误差) * 长度 * 宽度 * 出厂片数 / 1000000 / 20 / 20
+ *    4) 运费     = 吨位 * 运费单价 + 加费
+ *    5) 利润     = 总货款 - 出厂货款 - 运费
+ *    6) 不含税利润 = 总货款 - (出厂货款 / 1.075) - 运费 - 其他费用
+ *
+ * 3. 出厂含税：否，销售含税：是
+ *    1) 出厂货款 = 长度 * 宽度 * 出厂片数 / 1000000 * 出厂单价 + 杂费
+ *    2) 总货款   = 长度 * 宽度 * 卸货片数 / 1000000 * 卸货单价 + 杂费
+ *    3) 吨位     = (厚度 - 误差) * 长度 * 宽度 * 出厂片数 / 1000000 / 20 / 20
+ *    4) 运费     = 吨位 * 运费单价 + 加费
+ *    5) 利润     = 总货款 - 出厂货款 - 运费
+ *    6) 不含税利润 = (总货款 / 1.075) - 出厂货款 - 运费 - 其他费用
+ *
+ * 4. 出厂含税：是，销售含税：是
+ *    1) 出厂货款 = 长度 * 宽度 * 出厂片数 / 1000000 * 出厂单价 + 杂费
+ *    2) 总货款   = 长度 * 宽度 * 卸货片数 / 1000000 * 卸货单价 + 杂费
+ *    3) 吨位     = (厚度 - 误差) * 长度 * 宽度 * 出厂片数 / 1000000 / 20 / 20
+ *    4) 运费     = 吨位 * 运费单价 + 加费
+ *    5) 利润     = 总货款 - 出厂货款 - 运费 （对于二次入库有问题 ，需要减去其他费用 ）
+ *    6) 不含税利润 = 总货款 - 出厂货款 - (运费 * 1.075) - (厚度 * 长度 * 宽度 * 出厂片数 / 1000000 / 20 * 0.5) - 其他费用
+ */
 
 /**
  * 安全减法，确保结果不为负
@@ -94,6 +129,17 @@ function calculateProfit(row) {
 }
 
 /**
+ * 针对二次入库的特殊处理 需要减去其他费用
+ */
+function calculateProfitOfSecondInventory(row) {
+	const payments = Number(row.payments);
+	const paymentFactory = Number(row.paymentFactory);
+	const freight = Number(row.freight);
+	const otherCost = Number(row.otherCost || 0);
+	row.profit = fix_2(safeSubtract(payments, paymentFactory + freight + otherCost));
+}
+
+/**
  * 计算不含税利润 (根据含税状态区分)
  */
 function calculateProfitNoTax(row) {
@@ -128,7 +174,8 @@ function calculateProfitNoTax(row) {
 /**
  * 更新库存行项目的所有计算值
  */
-export function updateInventoryRowCalculations(row, isSea, isLand) {
+export function updateInventoryRowCalculations(row, isSea, isLand, extraOptions = {}) {
+	const { isSecondInventory = false } = extraOptions;
 	// 计算吨位
 	calculateTonnage(row);
 	// 计算出厂货款
@@ -145,8 +192,15 @@ export function updateInventoryRowCalculations(row, isSea, isLand) {
 
 	// 计算总运费
 	calculateTotalFreight(row, isSea);
-	// 计算利润
-	calculateProfit(row);
+
+	// 针对二次入库进行特殊处理
+	if (isSecondInventory) {
+		calculateProfitOfSecondInventory(row);
+	} else {
+		// 计算利润
+		calculateProfit(row);
+	}
+
 	// 计算不含税利润
 	calculateProfitNoTax(row);
 }

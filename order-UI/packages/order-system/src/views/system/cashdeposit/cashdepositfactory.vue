@@ -56,7 +56,7 @@
 			@selection-change="handleSelectionChange"
 		>
 			<!-- 厂家保证金公司 -->
-			<el-table-column v-if="columns[0].visible" label="厂家保证金公司" align="center" prop="futuresMarginCompany" width="130" show-overflow-tooltip>
+			<el-table-column v-if="columns[0].visible" label="厂家保证金公司" align="center" prop="futuresMarginCompany" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<span v-if="scope.row.futuresMarginCompany !== '' && scope.row.futuresMarginCompany !== null">
 						{{ scope.row.futuresMarginCompany }}
@@ -66,53 +66,59 @@
 			</el-table-column>
 
 			<!-- 公司名称 -->
-			<el-table-column v-if="columns[2].visible" label="公司名称" align="center" prop="target" width="110" show-overflow-tooltip />
+			<el-table-column v-if="columns[2].visible" label="公司名称" align="center" prop="target" show-overflow-tooltip />
 
 			<!-- 对方类型 -->
-			<el-table-column v-if="columns[1].visible" label="对方类型" align="center" prop="targetType" width="110" show-overflow-tooltip />
+			<el-table-column v-if="columns[1].visible" label="对方类型" align="center" prop="targetType" show-overflow-tooltip />
 
 			<!-- 保证金金额 -->
-			<el-table-column v-if="columns[3].visible" label="保证金金额" align="center" prop="moneyAmount" width="110" show-overflow-tooltip />
-			<el-table-column v-if="columns[12].visible" label="未收回金额" align="center" prop="unrecoveredAmount" width="110" show-overflow-tooltip />
+			<el-table-column v-if="columns[3].visible" label="保证金金额" align="center" prop="moneyAmount" show-overflow-tooltip />
+			<el-table-column v-if="columns[12].visible" label="未收回金额" align="center" prop="unrecoveredAmount" show-overflow-tooltip />
 
 			<!-- 对方账户 -->
-			<el-table-column v-if="columns[4].visible" label="对方账户" align="center" prop="targetAcountsName" width="110" show-overflow-tooltip />
+			<el-table-column v-if="columns[4].visible" label="对方账户" align="center" prop="targetAcountsName" show-overflow-tooltip />
 
 			<!-- 对方账号 -->
-			<el-table-column v-if="columns[5].visible" label="对方账号" align="center" prop="targetBankNo" width="160" show-overflow-tooltip />
+			<el-table-column v-if="columns[5].visible" label="对方账号" align="center" prop="targetBankNo" show-overflow-tooltip />
 
 			<!-- 对方开户行 -->
-			<el-table-column v-if="columns[6].visible" label="对方开户行" align="center" prop="targetBankName" width="110" show-overflow-tooltip />
+			<el-table-column v-if="columns[6].visible" label="对方开户行" align="center" prop="targetBankName" show-overflow-tooltip />
 
 			<!-- 我方支付账户 -->
-			<el-table-column v-if="columns[7].visible" label="我方支付账户" align="center" prop="selfAcountsName" width="160" show-overflow-tooltip />
+			<el-table-column v-if="columns[7].visible" label="我方支付账户" align="center" prop="selfAcountsName" show-overflow-tooltip />
 
 			<!-- 我方账号 -->
-			<el-table-column v-if="columns[8].visible" label="我方账号" align="center" prop="selfBankNo" width="110" show-overflow-tooltip />
+			<el-table-column v-if="columns[8].visible" label="我方账号" align="center" prop="selfBankNo" show-overflow-tooltip />
 
 			<!-- 我方开户行 -->
-			<el-table-column v-if="columns[9].visible" label="我方开户行" align="center" prop="selfBankName" width="110" show-overflow-tooltip />
+			<el-table-column v-if="columns[9].visible" label="我方开户行" align="center" prop="selfBankName" show-overflow-tooltip />
 
 			<!-- 支付厂家保证金时间 -->
-			<el-table-column v-if="columns[10].visible" label="支付厂家保证金时间" align="center" prop="futuresDate" width="110" show-overflow-tooltip />
+			<el-table-column v-if="columns[10].visible" label="支付厂家保证金时间" align="center" prop="futuresDate" show-overflow-tooltip />
 
 			<!-- 事由 -->
-			<el-table-column v-if="columns[11].visible" label="事由" align="center" prop="reason" width="110" show-overflow-tooltip />
+			<el-table-column v-if="columns[11].visible" label="事由" align="center" prop="reason" show-overflow-tooltip />
 
 			<!-- 备注 -->
-			<el-table-column label="备注" align="center" prop="comments" width="110" show-overflow-tooltip />
+			<el-table-column label="备注" align="center" prop="comments" show-overflow-tooltip />
 
 			<!-- 操作列 -->
-			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="230px" fixed="right">
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
 				<template slot-scope="scope">
-					<el-row>
-						<el-button size="mini" type="text" @click="checkDetail(scope.row)">查看历史收回</el-button>
-						<el-button v-if="scope.row.checkState === '未申请'" size="mini" type="text" @click="applyForPayment(scope.row)">坏账损失</el-button>
-						<el-button v-if="scope.row.checkState === '审核中'" size="mini" type="warning" disabled>审核中</el-button>
-						<el-button v-hasPermi="['system:lendmoney:remove']" size="mini" type="text" @click="handleGetBackMoney(scope.row)">收回资金</el-button>
-						<el-button v-hasPermi="['system:lendmoney:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
-						<el-button v-hasPermi="['system:lendmoney:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
-					</el-row>
+					<el-dropdown trigger="click">
+						<el-button size="mini" type="text">
+							操作
+							<i class="el-icon-arrow-down el-icon--right"></i>
+						</el-button>
+						<el-dropdown-menu slot="dropdown">
+							<el-dropdown-item @click.native="checkDetail(scope.row)">查看历史收回</el-dropdown-item>
+							<el-dropdown-item v-if="scope.row.checkState === '未申请'" @click.native="applyForPayment(scope.row)">坏账损失</el-dropdown-item>
+							<el-dropdown-item v-hasPermi="['system:lendmoney:remove']" @click.native="handleGetBackMoney(scope.row)">收回资金</el-dropdown-item>
+							<el-dropdown-item v-hasPermi="['system:lendmoney:edit']" @click.native="handleUpdate(scope.row)">修改</el-dropdown-item>
+							<el-dropdown-item v-hasPermi="['system:lendmoney:remove']" @click.native="handleDelete(scope.row)" style="color: red">删除</el-dropdown-item>
+						</el-dropdown-menu>
+					</el-dropdown>
+					<el-button v-if="scope.row.checkState === '审核中'" size="mini" type="warning" disabled style="margin-left: 8px">审核中</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -120,7 +126,18 @@
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改向外部借出款信息对话框 -->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" title="添加厂家保证金" :visible.sync="open" width="50%" append-to-body>
+		<el-dialog
+			:modal="false"
+			v-dialogDrag
+			v-dialogDragWidth
+			v-dialogDragHeight
+			:close-on-click-modal="false"
+			:show-close="false"
+			title="添加厂家保证金"
+			:visible.sync="open"
+			width="50%"
+			append-to-body
+		>
 			<el-form ref="form" :model="form" :rules="rules" label-width="160px">
 				<el-row>
 					<el-col :span="12">
@@ -229,7 +246,18 @@
 		</el-dialog>
 
 		<!--    回收弹窗-->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" title="收回资金操作" :visible.sync="giveRecoverMoneyShow" width="40%" append-to-body>
+		<el-dialog
+			:modal="false"
+			v-dialogDrag
+			v-dialogDragWidth
+			v-dialogDragHeight
+			:close-on-click-modal="false"
+			:show-close="false"
+			title="收回资金操作"
+			:visible.sync="giveRecoverMoneyShow"
+			width="40%"
+			append-to-body
+		>
 			<el-row>
 				<el-form :model="recoverMoneyEntity" label-width="120">
 					<el-form-item label="收回账户" prop="acountsName">
@@ -280,7 +308,7 @@
 		</el-dialog>
 
 		<!--    坏账损失-->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" title="坏账损失" :visible.sync="applyDialogVisible" width="45%">
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="坏账损失" :visible.sync="applyDialogVisible" width="45%">
 			<keep-alive>
 				<ApplyPayment
 					:extra-information="{
@@ -328,7 +356,7 @@
 <script>
 import { addLendMoney, delLendMoney, getLendMoney, listLendMoney, updateLendMoney } from '@/api/system/lendMoney';
 import { mapGetters } from 'vuex';
-import {addRecoverMoney, listRecoverMoney} from '@/api/system/recoverMoney';
+import { addRecoverMoney, listRecoverMoney } from '@/api/system/recoverMoney';
 import SearchOption from '@/components/SearchOption.vue';
 import { listBankAccount } from '@/api/system/bankAccount';
 import { listCompany } from '@/api/system/company';
