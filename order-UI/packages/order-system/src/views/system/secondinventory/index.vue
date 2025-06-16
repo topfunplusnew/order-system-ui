@@ -455,9 +455,9 @@
 							<el-input size="mini" v-model="scope.row.paymentFactory" placeholder="自动计算" disabled />
 						</template>
 					</el-table-column>
-					<el-table-column label="二次入库片数" prop="actualPieces" width="150">
+					<el-table-column label="二次入库片数" prop="stockNumber" width="150">
 						<template #default="scope">
-							<el-input size="mini" v-model="scope.row.actualPieces" placeholder="请输入二次入库片数" :disabled="scope.row.shouldDel" />
+							<el-input size="mini" v-model="scope.row.stockNumber" placeholder="请输入二次入库片数" :disabled="scope.row.shouldDel" />
 						</template>
 					</el-table-column>
 					<el-table-column label="存货价" prop="paymentUnload" width="150">
@@ -615,8 +615,8 @@
 				</el-table>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
-				<el-button type="primary" @click="submitSecond">确 定</el-button>
-				<el-button @click="cancelSecond">取 消</el-button>
+				<el-button type="primary" @click="submitSecond">提交二次入库</el-button>
+				<el-button @click="cancelSecond">取消二次入库</el-button>
 			</div>
 		</el-dialog>
 
@@ -1026,6 +1026,7 @@ export default {
 			this.secondForm.goodsCompany = row.storeHouseName;
 			// 设置主表的出库ID信息
 			this.secondForm.exWareHoustId = row.id;
+
 			getDetail(row.storeID).then(res => {
 				if (!res.data) {
 					this.$message.error('该货物没有库存信息');
@@ -1050,7 +1051,7 @@ export default {
 						payments: '',
 						manuallyEditedPieces: true, // 标记为已手动设置，避免被自动计算覆盖
 						exWareHoustId: row.id, // 添加出库id
-						stockNumber: '',
+						stockNumber: 0,
 						piecesPerPack: '',
 						packs: '',
 						isIncludeTaxFactory: res.data.isIncludeTaxFactory,
@@ -1065,7 +1066,6 @@ export default {
 						profit: '',
 						profitNoTax: '',
 						// 二次入库的原货物的二次入库片数为0,存货价为0
-						actualPieces: 0,
 						paymentUnload: 0,
 						paymentsWithSundry: res.data.paymentsWithSundry,
 						additionalFees: '',
@@ -1227,7 +1227,7 @@ export default {
 			scope.row.otherCost = '';
 			scope.row.profit = '';
 			scope.row.profitNoTax = '';
-			scope.row.actualPieces = '';
+			scope.row.stockNumber = '';
 			scope.row.paymentsWithSundry = '';
 			scope.row.additionalFees = '';
 			scope.row.rebate = '';
@@ -1327,7 +1327,7 @@ export default {
 				otherCost: '',
 				profit: '',
 				profitNoTax: '',
-				actualPieces: '',
+				stockNumber: '',
 				paymentsWithSundry: '',
 				additionalFees: '',
 				factoryCommission: '',
@@ -1401,39 +1401,42 @@ export default {
 				return;
 			}
 			this.$refs['secondForm'].validate(valid => {
-				if (valid) {
-					// 检查是否有未保存的编辑项
-					const hasEditingRows = this.inventoryDetailList.some(item => item.isEditing);
-					if (hasEditingRows) {
-						this.$modal
-							.confirm('有未保存的库存项，是否先保存后再提交?')
-							.then(() => {
-								// 先保存所有编辑状态的行
-								this.$modal.loading('正在保存...');
-								const dataList = this.inventoryDetailList.filter(item => item.isEditing);
-								this.handleRowSave(dataList)
-									.then(() => {
-										this.$modal.closeLoading();
-										// 保存成功后提交整个表单
-										this.doSubmitSecond();
-									})
-									.catch(() => {
-										this.$modal.closeLoading();
-										// 保存失败时不提交表单，让用户修复错误
-									});
-							})
-							.catch(() => {
-								// 用户选择不先保存，直接提交
-								this.doSubmitSecond();
-							});
-					} else {
-						// 没有编辑状态的行，直接提交
-						this.doSubmitSecond();
-					}
-				} else {
+				if (!valid) {
 					this.$message.error('请检查表单必填项!');
-					return false;
+					return;
 				}
+				// 检查是否有未保存的编辑项
+				const hasEditingRows = this.inventoryDetailList.some(item => item.isEditing);
+				if (!hasEditingRows) {
+					// 没有编辑状态的行，直接提交
+					this.doSubmitSecond();
+					return;
+				}
+				this.inventoryDetailList.forEach(item => {
+					item.exWareHoustId = this.secondForm.exWareHoustId;
+				});
+
+				this.$antdconfirm({
+					title: '二次入库提示',
+					content: '有未保存的库存项，是否先保存后再提交?',
+					okText: '是',
+					cancelText: '否',
+					type: 'warning',
+					zIndex: 2600,
+					onOk: () => {
+						const dataList = this.inventoryDetailList.filter(item => item.isEditing);
+						this.handleRowSave(dataList).then(() => {
+							// 保存成功后提交整个表单
+							this.doSubmitSecond();
+							this.resetSecond();
+						});
+					},
+					onCancel: () => {
+						// 用户选择不先保存，直接提交
+						this.doSubmitSecond();
+						this.resetSecond();
+					}
+				});
 			});
 		},
 		/**
@@ -1459,7 +1462,6 @@ export default {
 			this.secondForm.inventoryDetailList = _.cloneDeep(this.inventoryDetailList.filter(item => !item.shouldDel));
 			this.secondForm.allLandFreight = this.isLand ? this.inventoryDetailList.reduce((prev, curr) => Number(prev) + Number(curr.landFreight || 0), 0) : 0;
 			this.secondForm.allSeaFreight = this.isSea ? this.inventoryDetailList.reduce((prev, curr) => Number(prev) + Number(curr.seaFreight || 0), 0) : 0;
-			this.$modal.loading('正在提交...');
 			const apiCall = this.secondForm.id ? updateInventoryMain : addInventoryMain;
 			const successMessage = this.secondForm.id ? '修改成功' : '新增成功';
 
@@ -1471,14 +1473,12 @@ export default {
 			// 调用新增或者修改接口
 			apiCall(this.secondForm)
 				.then(() => {
-					this.$modal.closeLoading();
 					this.$modal.msgSuccess(successMessage);
 					this.secondInventoryVisible = false;
 					this.getList();
 					this.resetSecond();
 				})
 				.catch(error => {
-					this.$modal.closeLoading();
 					this.$message.error('提交失败: ' + (error.message || '未知错误'));
 				});
 		},
@@ -1517,7 +1517,7 @@ export default {
 			if (isNaN(Number(row.paymentUnload)) || Number(row.paymentUnload) < 0) {
 				return { valid: false, message: '存货价必须是有效的非负数字' };
 			}
-			if (isNaN(Number(row.actualPieces)) || Number(row.actualPieces) < 0) {
+			if (isNaN(Number(row.stockNumber)) || Number(row.stockNumber) < 0) {
 				return { valid: false, message: '二次入库片数必须是有效的正数' };
 			}
 			if (this.isLand && row.landFreightPrice) {
@@ -1578,10 +1578,8 @@ export default {
 			const apiCall = newInventoryInfo.id ? updateInventoryMain : addInventoryMain;
 			const successMessage = newInventoryInfo.id ? '库存详情已修改并保存!' : '库存详情已添加并保存!';
 
-			this.$modal.loading('正在保存...');
 			apiCall(newInventoryInfo)
 				.then(res => {
-					this.$modal.closeLoading();
 					currentRows.forEach(row => {
 						this.$set(row, 'isEditing', false);
 						if (row.hasError) {
@@ -1600,7 +1598,6 @@ export default {
 					resolve && resolve(res);
 				})
 				.catch(error => {
-					this.$modal.closeLoading();
 					currentRows.forEach(row => {
 						this.$set(row, 'isEditing', true);
 						this.$set(row, 'hasError', true);
@@ -1626,15 +1623,12 @@ export default {
 			} else {
 				const rowsToSave = this.inventoryDetailList.filter(row => row.isEditing);
 				if (rowsToSave.length > 0) {
-					this.$modal.loading('正在保存...');
 					this.handleRowSave(rowsToSave)
 						.then(() => {
-							this.$modal.closeLoading();
 							this.$message.success('所有修改已保存');
 							this.isEditingDetails = false;
 						})
 						.catch(() => {
-							this.$modal.closeLoading();
 							this.isEditingDetails = true;
 						});
 				} else {
@@ -1805,65 +1799,42 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+// 编辑行样式
 ::v-deep .editing-row {
-	background-color: rgba(121, 246, 164, 0.1) !important;
+	td:first-child {
+		border-left: 4px solid #63f697 !important;
+	}
 }
 
-::v-deep .editing-row td:first-child {
-	border-left: 4px solid #63f697 !important;
-}
-
-::v-deep .editing-row:hover > td {
-	background-color: rgba(121, 246, 164, 0.15) !important;
-}
-
+// 错误行样式
 ::v-deep .error-row {
-	background-color: rgba(245, 108, 108, 0.1) !important;
-}
-
-::v-deep .error-row td:first-child {
-	border-left: 4px solid #f56c6c !important;
-}
-
-::v-deep .error-row:hover > td {
-	background-color: rgba(245, 108, 108, 0.15) !important;
-}
-
-@keyframes errorPulse {
-	0% {
-		background-color: rgba(245, 108, 108, 0.1);
+	td:first-child {
+		border-left: 4px solid #f56c6c !important;
 	}
-	50% {
-		background-color: rgba(245, 108, 108, 0.2);
+
+	td {
+		animation: errorPulse 2s infinite;
 	}
-	100% {
-		background-color: rgba(245, 108, 108, 0.1);
+
+	&:hover td {
+		animation: none;
 	}
 }
 
-::v-deep .error-row td {
-	animation: errorPulse 2s infinite;
-}
-
-::v-deep .error-row:hover td {
-	animation: none;
-	background-color: rgba(245, 108, 108, 0.15) !important;
-}
-
-/* 添加滚动条样式 */
-::v-deep .el-table__body-wrapper::-webkit-scrollbar {
-	width: 14px;
-	height: 14px;
-}
-
-::v-deep .el-table__body-wrapper::-webkit-scrollbar-thumb {
-	border-radius: 2px;
-	background-color: rgba(0, 0, 0, 0.5);
-}
-
-::v-deep .el-table__body-wrapper::-webkit-scrollbar-track {
-	border-radius: 2px;
-	background-color: rgba(0, 0, 0, 0.1);
+// 滚动条样式
+::v-deep .el-table__body-wrapper {
+	&::-webkit-scrollbar {
+		width: 14px;
+		height: 14px;
+	}
+	&::-webkit-scrollbar-thumb {
+		border-radius: 2px;
+		background-color: rgba(0, 0, 0, 0.5);
+	}
+	&::-webkit-scrollbar-track {
+		border-radius: 2px;
+		background-color: rgba(0, 0, 0, 0.1);
+	}
 }
 </style>

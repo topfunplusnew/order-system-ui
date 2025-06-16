@@ -21,16 +21,9 @@ module.exports = {
 		open: true,
 		proxy: {
 			[process.env.VUE_APP_BASE_API]: {
+				// target: `http://223.254.129.240:60036`,
+				target: `http://123.57.37.74:60036/`,
 				// target: `http://223.254.129.240:60035`,
-				target: `http://223.254.129.240:60036`,
-				// target: `http://192.168.110.65:8080`,
-				// target: 'http://192.168.1.34:8080',
-				// target: `http://211.64.39.202:60035/`,
-				// target: `https://bak202.xuni.rocks`,
-				// target: 'http://24.233.1.45:8080',
-				// target: 'http://localhost:8080',
-				// target: 'http://172.20.193.200:8080',
-				// target: `http://192.168.1.191:8080`,
 				changeOrigin: true,
 				pathRewrite: {
 					['^' + process.env.VUE_APP_BASE_API]: ''

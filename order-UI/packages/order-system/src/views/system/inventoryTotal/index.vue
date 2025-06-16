@@ -1,6 +1,10 @@
 <template>
 	<div class="app-container">
 		<el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" label-width="100px" class="search-form">
+			<!-- TODO 库存名称 -->
+			<el-form-item label="仓库名称" prop="storeHouseName">
+				<el-input v-model="queryParams.storeHouseName" placeholder="请输入仓库名称" clearable />
+			</el-form-item>
 			<el-form-item label="级别名称" prop="levelName">
 				<el-input v-model="queryParams.levelName" placeholder="请输入级别名称" clearable />
 			</el-form-item>
@@ -40,6 +44,13 @@
 				<el-table-column label="长度" prop="length" align="center" />
 				<el-table-column label="宽度" prop="width" align="center" />
 				<el-table-column label="价格" prop="price" align="center" />
+				<!-- TODO 初始入库日期 等待后端确定 -->
+				<el-table-column label="初始入库日期" prop="firstInDate" align="center" />
+				<el-table-column label="剩余库存金额" align="center">
+					<template slot-scope="scope">
+						{{ (Number(scope.row.length) * Number(scope.row.width) * Number(scope.row.price) * Number(scope.row.totalRemaining) * 0.000001).toFixed(2) }}
+					</template>
+				</el-table-column>
 				<el-table-column label="吨位" prop="tonnage" align="center" />
 				<el-table-column label="总入库量" prop="totalStockIn" align="center" />
 				<el-table-column label="总出库量" prop="totalStockOut" align="center" />
@@ -57,7 +68,7 @@
 			<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getSummary" />
 		</div>
 
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  title="变动记录" :visible.sync="changeLogVisible" width="1000px" class="change-log-dialog">
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="变动记录" :visible.sync="changeLogVisible" width="1000px" class="change-log-dialog">
 			<!-- 新增明细标题行 -->
 			<div style="margin-bottom: 10px; font-weight: bold">
 				<span style="margin-right: 100px">库存明细</span>
