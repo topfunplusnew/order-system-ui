@@ -131,7 +131,7 @@
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改库存子对话框 -->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :title="title" :visible.sync="open" width="500px" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="title" :visible.sync="open" width="500px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="80px">
 				<el-form-item label="主表ID，关联inventory_main表的id" prop="mainId">
 					<el-input v-model="form.mainId" placeholder="请输入主表ID，关联inventory_main表的id" />
@@ -249,7 +249,18 @@
 		</el-dialog>
 
 		<!-- 二次出库对话框 -->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" title="二次出库" :visible.sync="secondInvoiceInVisible" width="30%" append-to-body>
+		<el-dialog
+			:modal="false"
+			v-dialogDrag
+			v-dialogDragWidth
+			v-dialogDragHeight
+			:close-on-click-modal="false"
+			:show-close="false"
+			title="二次出库"
+			:visible.sync="secondInvoiceInVisible"
+			width="30%"
+			append-to-body
+		>
 			<div slot="footer" class="dialog-footer">
 				<el-row :gutter="5">
 					<el-col :span="8">
@@ -265,7 +276,18 @@
 			</div>
 		</el-dialog>
 		<!-- 货物破损出库对话框 -->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" title="货物破损出库" :visible.sync="breakInvoiceInVisible" width="30%" append-to-body>
+		<el-dialog
+			:modal="false"
+			v-dialogDrag
+			v-dialogDragWidth
+			v-dialogDragHeight
+			:close-on-click-modal="false"
+			:show-close="false"
+			title="货物破损出库"
+			:visible.sync="breakInvoiceInVisible"
+			width="30%"
+			append-to-body
+		>
 			<div slot="footer" class="dialog-footer">
 				<el-row :gutter="5">
 					<el-col :span="8">
@@ -408,12 +430,32 @@ export default {
 			breakInfo: {}
 		};
 	},
+	watch: {
+		/**
+		 * @description: 监听列配置的变化，并将其保存到 localStorage
+		 * @param {Array} newVal 新的列配置
+		 */
+		columns: {
+			handler: function (newVal) {
+				localStorage.setItem('detail-columns', JSON.stringify(newVal));
+			},
+			deep: true
+		}
+	},
 	created() {
 		this.getList();
 		this.fetchStore();
+		this.storeDisplayColumns();
 	},
 	methods: {
 		listStoreHouse,
+		storeDisplayColumns() {
+			if (localStorage.getItem('detail-columns') === 'null' || !localStorage.getItem('detail-columns')) {
+				localStorage.setItem('detail-columns', JSON.stringify(this.columns));
+			} else {
+				this.columns = JSON.parse(localStorage.getItem('detail-columns'));
+			}
+		},
 		fetchStore() {
 			listStoreHouse().then(res => {
 				this.storeList = res.rows.map(item => {
@@ -615,13 +657,13 @@ export default {
 <style scoped>
 /* 提高 el-table 横向滚动条的高度 */
 ::v-deep .el-table__body-wrapper::-webkit-scrollbar {
-  height: 16px; /* 默认是6px，改为16px更高 */
+	height: 16px; /* 默认是6px，改为16px更高 */
 }
 ::v-deep .el-table__body-wrapper::-webkit-scrollbar-thumb {
-  border-radius: 2px;
-  background: #848383;
+	border-radius: 2px;
+	background: #848383;
 }
 ::v-deep .el-table__body-wrapper::-webkit-scrollbar-track {
-  background: #e3e2e2;
+	background: #e3e2e2;
 }
 </style>
