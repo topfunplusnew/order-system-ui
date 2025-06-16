@@ -20,18 +20,6 @@
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
 					</el-col>
 				</template>
-				<!-- 后端说导出不要了 -->
-				<!-- <template #export>
-          <el-col :span="1.5">
-            <el-button
-              v-hasPermi="['system:secondinventory:export']"
-              plain
-              icon="el-icon-folder-opened"
-              size="mini"
-              @click="handleExport"
-            ></el-button>
-          </el-col>
-        </template> -->
 			</right-toolbar>
 		</el-row>
 
@@ -1803,14 +1791,14 @@ export default {
 // 编辑行样式
 ::v-deep .editing-row {
 	td:first-child {
-		border-left: 4px solid #63f697 !important;
+		border-left: 9px solid #63f697 !important;
 	}
 }
 
 // 错误行样式
 ::v-deep .error-row {
 	td:first-child {
-		border-left: 4px solid #f56c6c !important;
+		border-left: 9px solid #f56c6c !important;
 	}
 
 	td {

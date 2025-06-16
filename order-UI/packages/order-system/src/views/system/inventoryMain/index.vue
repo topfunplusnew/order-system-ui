@@ -1736,82 +1736,46 @@ export default {
 </script>
 
 <style scoped>
-.el-table .el-button {
-	margin: 0 5px;
+.el-table {
+	.el-button {
+		margin: 0 5px;
+	}
 }
 
-/* 新增：编辑行样式 */
 ::v-deep .editing-row {
-	background-color: rgba(121, 246, 164, 0.1) !important; /* 提高优先级 */
+	td:first-child {
+		border-left: 9px solid #63f697 !important;
+	}
 }
 
-::v-deep .editing-row td:first-child {
-	border-left: 4px solid #63f697 !important;
-}
-
-::v-deep .editing-row:hover > td {
-	/* 应用到td上避免覆盖 */
-	background-color: rgba(121, 246, 164, 0.15) !important; /* 悬停时稍微加深 */
-}
-
-/* 新增：错误行样式 */
 ::v-deep .error-row {
-	background-color: rgba(245, 108, 108, 0.1) !important; /* 提高优先级 */
-}
-
-::v-deep .error-row td:first-child {
-	border-left: 4px solid #f56c6c !important;
-}
-
-::v-deep .error-row:hover > td {
-	/* 应用到td上避免覆盖 */
-	background-color: rgba(245, 108, 108, 0.15) !important; /* 悬停时稍微加深 */
-}
-
-/* 新增：为出错行添加闪烁动画效果提高可见性 */
-@keyframes errorPulse {
-	0% {
-		background-color: rgba(245, 108, 108, 0.1);
+	td:first-child {
+		border-left: 9px solid #f56c6c !important;
 	}
-	50% {
-		background-color: rgba(245, 108, 108, 0.2);
-	}
-	100% {
-		background-color: rgba(245, 108, 108, 0.1);
+
+	td {
+		animation: errorPulse 2s infinite;
 	}
 }
 
-/* 应用动画到错误行的td，避免干扰其他样式 */
-::v-deep .error-row td {
-	animation: errorPulse 2s infinite;
-}
-
-/* 确保动画不会覆盖悬停效果 */
-::v-deep .error-row:hover td {
-	animation: none; /* 悬停时停止动画 */
-	background-color: rgba(245, 108, 108, 0.15) !important;
-}
-
-/* 添加运输方式错误样式 */
 .transport-error {
 	color: #f56c6c;
 	margin-left: 10px;
 	font-size: 12px;
 }
 
-/* 滚动条样式 (保留) */
-::v-deep .el-table__body-wrapper::-webkit-scrollbar {
-	width: 14px;
-	height: 14px;
-}
-
-::v-deep .el-table__body-wrapper::-webkit-scrollbar-thumb {
-	border-radius: 2px;
-	background-color: rgba(0, 0, 0, 0.5);
-}
-
-::v-deep .el-table__body-wrapper::-webkit-scrollbar-track {
-	border-radius: 2px;
-	background-color: rgba(0, 0, 0, 0.1);
+::v-deep .el-table__body-wrapper {
+	&::-webkit-scrollbar {
+		width: 14px;
+		height: 14px;
+	}
+	&::-webkit-scrollbar-thumb {
+		border-radius: 2px;
+		background-color: rgba(0, 0, 0, 0.5);
+	}
+	&::-webkit-scrollbar-track {
+		border-radius: 2px;
+		background-color: rgba(0, 0, 0, 0.1);
+	}
 }
 </style>

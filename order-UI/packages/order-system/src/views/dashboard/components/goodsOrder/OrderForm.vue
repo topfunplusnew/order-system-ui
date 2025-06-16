@@ -1485,89 +1485,68 @@ export default {
 	</div>
 </template>
 
-<style scoped>
-* {
-	box-sizing: border-box;
-}
-
+<style scoped lang="scss">
 /* 保留编辑行样式 */
+// 编辑行样式
 ::v-deep .editing-row {
 	background-color: rgba(121, 246, 164, 0.1);
+
+	td:first-child {
+		border-left: 9px solid #63f697 !important;
+	}
+
+	&:hover {
+		box-shadow: 0 0 8px rgba(121, 246, 164, 0.8);
+	}
 }
 
-::v-deep .editing-row td:first-child {
-	border-left: 4px solid #63f697 !important;
-}
-
-::v-deep .editing-row:hover {
-	box-shadow: 0 0 8px rgba(121, 246, 164, 0.8);
-}
-
-/* 添加错误行样式 */
+// 错误行样式
 ::v-deep .error-row {
 	background-color: rgba(245, 108, 108, 0.1);
-}
-
-::v-deep .error-row td:first-child {
-	border-left: 4px solid #f56c6c !important;
-}
-
-::v-deep .error-row:hover {
-	box-shadow: 0 0 8px rgba(245, 108, 108, 0.8);
-}
-
-/* 为出错行添加闪烁动画效果提高可见性 */
-@keyframes errorPulse {
-	0% {
-		background-color: rgba(245, 108, 108, 0.1);
-	}
-	50% {
-		background-color: rgba(245, 108, 108, 0.2);
-	}
-	100% {
-		background-color: rgba(245, 108, 108, 0.1);
-	}
-}
-
-::v-deep .error-row {
 	animation: errorPulse 2s infinite;
+
+	td:first-child {
+		border-left: 9px solid #f56c6c !important;
+	}
+
+	&:hover {
+		box-shadow: 0 0 8px rgba(245, 108, 108, 0.8);
+	}
 }
 
-::v-deep .el-table__body-wrapper::-webkit-scrollbar {
-	width: 12px;
-	height: 22px;
+// 表格滚动条样式
+::v-deep .el-table__body-wrapper {
+	&::-webkit-scrollbar {
+		width: 12px;
+		height: 22px;
+	}
+	&::-webkit-scrollbar-thumb {
+		background-color: #909399;
+		border-radius: 2px;
+		border: 2px solid #f2f6fc;
+		&:hover {
+			background-color: #606266;
+		}
+	}
+	&::-webkit-scrollbar-track {
+		background-color: #f2f6fc;
+		border-radius: 6px;
+	}
 }
 
-::v-deep .el-table__body-wrapper::-webkit-scrollbar-thumb {
-	background-color: #909399;
-	border-radius: 2px;
-	border: 2px solid #f2f6fc;
-}
-
-::v-deep .el-table__body-wrapper::-webkit-scrollbar-thumb:hover {
-	background-color: #606266;
-}
-
-::v-deep .el-table__body-wrapper::-webkit-scrollbar-track {
-	background-color: #f2f6fc;
-	border-radius: 6px;
-}
-
+// 全局滚动条样式
 ::-webkit-scrollbar {
 	width: 12px;
 	height: 22px;
 }
-
 ::-webkit-scrollbar-thumb {
 	background-color: #909399;
 	border-radius: 6px;
 	border: 2px solid #f2f6fc;
+	&:hover {
+		background-color: #606266;
+	}
 }
-
-::-webkit-scrollbar-thumb:hover {
-	background-color: #606266;
-}
-
 ::-webkit-scrollbar-track {
 	background-color: #f2f6fc;
 	border-radius: 6px;
