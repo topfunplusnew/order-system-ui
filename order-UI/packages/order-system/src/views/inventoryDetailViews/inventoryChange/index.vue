@@ -182,6 +182,7 @@ export default {
 			this.currentDetail = item;
 			this.currentDetailType = type;
 			if (type === 'IN') {
+				console.log('入库明细', item);
 				// 入库明细，调用 getInventoryMain
 				const res = await getInventoryMain(item.detailId);
 				if (!res.data) {
