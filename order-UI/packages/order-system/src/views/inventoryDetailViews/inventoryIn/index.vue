@@ -19,7 +19,7 @@
 			</el-form-item>
 
 			<el-form-item>
-				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery" v-hasPermi="['system:inventoryStatistics:inStatistics']">搜索</el-button>
 				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
 			</el-form-item>
 		</el-form>
@@ -27,7 +27,7 @@
 		<el-row :gutter="10" class="mb8">
 			<!-- 只保留导出按钮和右侧工具栏 -->
 			<el-col :span="1.5">
-				<el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport" v-hasPermi="['system:inventoryMain:export']">导出</el-button>
+				<el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport" v-hasPermi="['system:inventoryStatistics:exportIn']">导出</el-button>
 			</el-col>
 			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList"></right-toolbar>
 		</el-row>

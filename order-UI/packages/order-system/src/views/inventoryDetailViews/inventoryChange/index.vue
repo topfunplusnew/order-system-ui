@@ -13,7 +13,7 @@
 					<el-input v-model="searchForm.warehouseName" placeholder="请输入仓库名称" clearable size="mini"></el-input>
 				</el-form-item>
 				<el-form-item>
-					<el-button type="primary" @click="getList" size="mini">查询</el-button>
+					<el-button type="primary" @click="getList" size="mini" v-hasPermi="['system:inventoryStatistics:warehouseFund']">查询</el-button>
 					<el-button @click="reset" size="mini">重置</el-button>
 				</el-form-item>
 			</el-form>
@@ -22,7 +22,7 @@
 			<right-toolbar @queryTable="getList">
 				<template #export>
 					<el-col :span="1.5">
-						<el-button v-hasPermi="['system:goodsorder:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport" />
+						<el-button v-hasPermi="['system:inventoryStatistics:exportWarehouse']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport" />
 					</el-col>
 				</template>
 			</right-toolbar>
