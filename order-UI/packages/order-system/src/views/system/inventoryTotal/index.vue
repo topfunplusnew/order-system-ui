@@ -1,10 +1,6 @@
 <template>
 	<div class="app-container">
 		<el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" label-width="100px" class="search-form">
-			<!-- TODO 库存名称 -->
-			<el-form-item label="仓库名称" prop="storeHouseName">
-				<el-input v-model="queryParams.storeHouseName" placeholder="请输入仓库名称" clearable />
-			</el-form-item>
 			<el-form-item label="级别名称" prop="levelName">
 				<el-input v-model="queryParams.levelName" placeholder="请输入级别名称" clearable />
 			</el-form-item>
@@ -26,15 +22,23 @@
 			<el-form-item label="厚度" prop="length">
 				<el-input v-model="queryParams.length" placeholder="请输入厚度" clearable />
 			</el-form-item>
-			<el-form-item label="供应商" prop="supplier">
-				<el-input v-model="queryParams.supplier" placeholder="请输入供应商" value-format="yyyy-MM-dd" clearable @keyup.enter.native="handleQuery" />
+			<el-form-item label="仓库名称" prop="storeHouseName">
+				<el-input v-model="queryParams.storeHouseName" placeholder="请输入仓库名称" clearable />
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
 				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
 			</el-form-item>
 		</el-form>
-
+		<el-row>
+			<right-toolbar :show-search.sync="showSearch" :columns="columns" @queryTable="getList">
+				<template #export>
+					<el-col :span="1.5">
+						<el-button v-hasPermi="['system:invoiceother:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport" />
+					</el-col>
+				</template>
+			</right-toolbar>
+		</el-row>
 		<div class="inventory-table-container">
 			<el-table v-if="inventoryMainList.length > 0" :data="inventoryMainList" size="mini" border stripe>
 				<el-table-column label="仓库名称" prop="storeHouseName" align="center" show-overflow-tooltip />
@@ -44,13 +48,8 @@
 				<el-table-column label="长度" prop="length" align="center" />
 				<el-table-column label="宽度" prop="width" align="center" />
 				<el-table-column label="价格" prop="price" align="center" />
-				<!-- TODO 初始入库日期 等待后端确定 -->
-				<el-table-column label="初始入库日期" prop="firstInDate" align="center" />
-				<el-table-column label="剩余库存金额" align="center">
-					<template slot-scope="scope">
-						{{ (Number(scope.row.length) * Number(scope.row.width) * Number(scope.row.price) * Number(scope.row.totalRemaining) * 0.000001).toFixed(2) }}
-					</template>
-				</el-table-column>
+				<el-table-column label="初始入库日期" prop="firstStoreDate" align="center" />
+				<el-table-column label="剩余库存金额" align="remainingAmount"></el-table-column>
 				<el-table-column label="吨位" prop="tonnage" align="center" />
 				<el-table-column label="总入库量" prop="totalStockIn" align="center" />
 				<el-table-column label="总出库量" prop="totalStockOut" align="center" />
@@ -158,6 +157,15 @@ export default {
 		this.getSummary();
 	},
 	methods: {
+		handleExport() {
+			this.download(
+				'/system/inventoryMain/totalStock/export',
+				{
+					...this.queryParams
+				},
+				`库存台账-${new Date().getTime()}.xlsx`
+			);
+		},
 		getSummary() {
 			this.loading = true;
 			inventorySummary(this.queryParams).then(response => {
