@@ -8,41 +8,48 @@ export default {
 		}
 	},
 	methods: {
-		handleProcess() {},
-		handleReject() {}
+		handleProcess() {
+			// 处理逻辑
+		},
+		handleReject() {
+			// 拒绝逻辑
+		}
 	}
 };
 </script>
 
 <template>
 	<div class="inventory-detail">
-		<el-card shadow="hover" class="card-container">
-			<el-descriptions title="库存详细信息" :column="3" border>
+		<el-card shadow="hover" size="mini" class="card-container">
+			<el-descriptions title="库存详细信息" size="mini" :column="3" border>
 				<el-descriptions-item label="供应商">{{ needToShowInfo.supplier || '暂无数据' }}</el-descriptions-item>
-				<el-descriptions-item label="添加时间">{{ needToShowInfo.addtime || '暂无数据' }}</el-descriptions-item>
-				<el-descriptions-item label="子项陆运费之和">{{ needToShowInfo.allLandFreight || '0' }} 元</el-descriptions-item>
-				<el-descriptions-item label="子项海运费之和">{{ needToShowInfo.allSeaFreight || '0' }} 元</el-descriptions-item>
-				<el-descriptions-item label="子项吨位之和">{{ needToShowInfo.allTonnage || '0' }} 吨</el-descriptions-item>
-				<el-descriptions-item label="审核状态">{{ needToShowInfo.checkState || '未审核' }}</el-descriptions-item>
-				<el-descriptions-item label="车队">{{ needToShowInfo.fleet || '暂无数据' }}</el-descriptions-item>
-				<el-descriptions-item label="货物来源公司">{{ needToShowInfo.goodsCompany || '暂无数据' }}</el-descriptions-item>
-				<el-descriptions-item label="陆运车牌">{{ needToShowInfo.landCarNo || '暂无数据' }}</el-descriptions-item>
-				<el-descriptions-item label="陆地司机">
-					{{ needToShowInfo.landDriverName || '暂无数据' }} /
-					{{ needToShowInfo.landDriverTel || '暂无电话' }}
-				</el-descriptions-item>
-				<el-descriptions-item label="海运车牌">{{ needToShowInfo.seaCarNo || '暂无数据' }}</el-descriptions-item>
-				<el-descriptions-item label="海运司机">
-					{{ needToShowInfo.seaDriverName || '暂无数据' }} /
-					{{ needToShowInfo.seaDriverTel || '暂无电话' }}
-				</el-descriptions-item>
 				<el-descriptions-item label="入库日期">
-					{{ needToShowInfo.storeDate ? new Date(needToShowInfo.storeDate).toLocaleDateString() : '暂无日期' }}
+					{{ needToShowInfo.storeDate ? new Date(needToShowInfo.storeDate).toLocaleString() : '暂无日期' }}
 				</el-descriptions-item>
 				<el-descriptions-item label="仓库">{{ needToShowInfo.storeHouseName || '暂无数据' }}</el-descriptions-item>
-				<el-descriptions-item label="库存数量">{{ needToShowInfo.stockNumber || '0' }} 片</el-descriptions-item>
+				<el-descriptions-item label="级别名称">{{ needToShowInfo.levelName || '暂无数据' }}</el-descriptions-item>
+				<el-descriptions-item label="计量单位">{{ needToShowInfo.countingUnit || '暂无数据' }}</el-descriptions-item>
+				<el-descriptions-item label="长度">{{ needToShowInfo.length || '0' }}</el-descriptions-item>
+				<el-descriptions-item label="宽度">{{ needToShowInfo.width || '0' }}</el-descriptions-item>
+				<el-descriptions-item label="厚度">{{ needToShowInfo.height || '0' }}</el-descriptions-item>
+				<el-descriptions-item label="总片数">{{ needToShowInfo.pieces || '0' }} 片</el-descriptions-item>
+				<el-descriptions-item label="每包片数">{{ needToShowInfo.piecesPerPack || '0' }} 片</el-descriptions-item>
+				<el-descriptions-item label="包数">{{ needToShowInfo.packs || '0' }}</el-descriptions-item>
+				<el-descriptions-item label="入库时片数">{{ needToShowInfo.stockNumber || '0' }} 片</el-descriptions-item>
+				<el-descriptions-item label="库存">{{ needToShowInfo.actualPieces || '0' }} 片</el-descriptions-item>
+				<el-descriptions-item label="吨位">{{ needToShowInfo.tonnage || '0' }} 吨</el-descriptions-item>
 				<el-descriptions-item label="单价">{{ needToShowInfo.price || '0' }} 元</el-descriptions-item>
+				<el-descriptions-item label="出厂货款">{{ needToShowInfo.paymentFactory || '0' }} 元</el-descriptions-item>
+				<el-descriptions-item label="存货价">{{ needToShowInfo.paymentUnload || '0' }} 元</el-descriptions-item>
+				<el-descriptions-item label="陆运单价">{{ needToShowInfo.landFreightPrice || '0' }} 元</el-descriptions-item>
+				<el-descriptions-item label="陆运费">{{ needToShowInfo.landFreight || '0' }} 元</el-descriptions-item>
+				<el-descriptions-item label="海运费">{{ needToShowInfo.seaFreight || '0' }} 元</el-descriptions-item>
+				<el-descriptions-item label="杂费">{{ needToShowInfo.sundryCost || '0' }} 元</el-descriptions-item>
+				<el-descriptions-item label="其他费用">{{ needToShowInfo.otherCost || '0' }} 元</el-descriptions-item>
+				<el-descriptions-item label="总运费">{{ needToShowInfo.freight || '0' }} 元</el-descriptions-item>
+				<el-descriptions-item label="库存金额">{{ needToShowInfo.payments || '0' }} 元</el-descriptions-item>
 				<el-descriptions-item label="利润">{{ needToShowInfo.profit || '0' }} 元</el-descriptions-item>
+				<el-descriptions-item label="不含税利润">{{ needToShowInfo.profitNoTax || '0' }} 元</el-descriptions-item>
 				<el-descriptions-item label="备注">
 					<el-tag size="small">{{ needToShowInfo.comments || '无' }}</el-tag>
 				</el-descriptions-item>

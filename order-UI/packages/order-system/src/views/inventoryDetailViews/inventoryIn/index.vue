@@ -81,8 +81,9 @@
 </template>
 
 <script>
+import _ from 'lodash';
 import { listInStatistics } from '../../../api/inventory/index';
-
+import { fix_2 } from '../../../api/tool/format';
 export default {
 	name: 'InventoryIn',
 	data() {
@@ -187,7 +188,12 @@ export default {
 				inType: this.queryParams.inType
 			};
 			listInStatistics(params).then(response => {
-				this.inventoryList = response.rows;
+				this.inventoryList = _.cloneDeep(response.rows).map(item => {
+					return {
+						...item,
+						inAmount: fix_2(item.inAmount)
+					};
+				});
 				this.total = response.total;
 				this.loading = false;
 			});
