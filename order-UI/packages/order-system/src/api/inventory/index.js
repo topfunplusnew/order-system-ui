@@ -51,3 +51,29 @@ export function exportOutStatistics(query) {
 		params: query
 	});
 }
+
+/**
+ * 库存变动明细
+ * @param {Object} query 请求参数
+ * @returns {Promise}
+ */
+export function inventoryChangeDetails(query) {
+	return request({
+		url: '/system/inventoryStatistics/warehouseFundChange',
+		method: 'get',
+		params: query
+	});
+}
+
+/**
+ * 库存变动导出
+ * @param {Object} query 请求参数
+ * @returns {Promise}
+ */
+export function inventoryChangeDetailsExport(query) {
+	return request({
+		url: '/system/inventoryStatistics/exportWarehouseFundChange',
+		method: 'post',
+		params: query
+	});
+}

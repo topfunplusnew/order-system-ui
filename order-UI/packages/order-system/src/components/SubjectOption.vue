@@ -69,7 +69,7 @@ export default {
 <template>
 	<div>
 		<el-button type="primary" size="mini" icon="el-icon-search" @click="getDataList"></el-button>
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  title="选择科目类型" :visible.sync="dialogVisible" width="300px" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="选择科目类型" :visible.sync="dialogVisible" width="300px" append-to-body>
 			<el-tree :data="paymentTypeTree" :props="props" @node-click="handleNodeClick"></el-tree>
 			<span slot="footer" class="dialog-footer">
 				<el-button @click="dialogVisible = false">取 消</el-button>

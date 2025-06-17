@@ -1,17 +1,17 @@
 /* 强制禁用弹窗阻止背景点击的行为 */
 .el-dialog__wrapper {
-  pointer-events: none !important;
+	pointer-events: none !important;
 }
 
 .el-dialog {
-  pointer-events: auto !important;
+	pointer-events: auto !important;
 }
 
 .el-overlay {
-  pointer-events: none !important;
-  background-color: rgba(0, 0, 0, 0.1) !important; /* 轻微背景暗化以区分弹窗 */
+	pointer-events: none !important;
+	background-color: rgba(0, 0, 0, 0.1) !important; /* 轻微背景暗化以区分弹窗 */
 }
 
 .el-dialog__header {
-  cursor: move;
+	cursor: move;
 }

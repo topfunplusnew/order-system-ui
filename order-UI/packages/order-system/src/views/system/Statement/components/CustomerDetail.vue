@@ -14,7 +14,7 @@ import REBATE from '@/components/NeedToShow/REBATE.vue';
 import { getFunction } from '@/utils/order/mapper';
 import TotalTag from '@/views/system/Statement/components/TotalTag.vue';
 import { ReportType } from '../../../../api/tool/enums';
-import {fix, fix_2} from '../../../../api/tool/format';
+import { fix, fix_2 } from '../../../../api/tool/format';
 import { getConfigValue } from '../data/config_get';
 import BANK_ACCEPTANCE from '@/components/NeedToShow/BANK_ACCEPTANCE.vue';
 import ORDER_FREIGHTVue from '../../../../components/NeedToShow/ORDER_FREIGHT.vue';
@@ -58,7 +58,7 @@ export default {
 	},
 
 	methods: {
-    fix_2,
+		fix_2,
 		formatBalance,
 		listCompany,
 		// 查看明细 点击的时候 先让用户输入时间 然后拿该行数据的companyId查询该客户的明细账

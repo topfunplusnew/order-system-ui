@@ -1,6 +1,17 @@
 <template>
 	<div>
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" v-bind="$attrs" title="选择审核人员" v-on="$listeners" @open="onOpen">
+		<el-dialog
+			:modal="false"
+			v-dialogDrag
+			v-dialogDragWidth
+			v-dialogDragHeight
+			:close-on-click-modal="false"
+			:show-close="false"
+			v-bind="$attrs"
+			title="选择审核人员"
+			v-on="$listeners"
+			@open="onOpen"
+		>
 			<el-row>
 				<el-col :span="6">
 					<Fonts content="请选择部门" />

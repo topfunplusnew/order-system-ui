@@ -201,7 +201,17 @@ export default {
 				</el-timeline>
 
 				<!-- 审核页面 checkPaymentApplyDialogVisible-->
-				<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" title="流程审核" :visible.sync="checkPaymentApplyDialogVisible" width="65%" append-to-body>
+				<el-dialog
+					:modal="false"
+					v-dialogDrag
+					v-dialogDragWidth
+					v-dialogDragHeight
+					:close-on-click-modal="false"
+					title="流程审核"
+					:visible.sync="checkPaymentApplyDialogVisible"
+					width="65%"
+					append-to-body
+				>
 					<!--   需要展示的对应的表信息-->
 					<CheckApply :payment-apply-info="currentCheckPaymentApply" :check-apply-info="checkApplyInfo" @update:isCheckState="handleUpdateCheckState">
 						<template #additional>

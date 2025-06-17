@@ -1,5 +1,5 @@
 <template>
-	<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" title="提示" :visible.sync="handleCommitVisible" width="450px">
+	<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="提示" :visible.sync="handleCommitVisible" width="450px">
 		<el-upload class="upload-demo" drag :action="uploadFileUrl" multiple show-file-list :headers="headers" :file-list="fileList" :before-upload="beforeUpload">
 			<i class="el-icon-upload"></i>
 			<div class="el-upload__text">

@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" v-bind="$attrs" :title="title" v-on="$listeners" @open="onOpen">
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" v-bind="$attrs" :title="title" v-on="$listeners" @open="onOpen">
 			<el-row>
 				<el-table :data="showInfoList" :loading="loading" height="450px" size="mini" :cell-style="cellStyle">
 					<template #append>

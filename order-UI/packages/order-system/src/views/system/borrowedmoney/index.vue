@@ -67,7 +67,7 @@
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改从外部借款信息对话框 -->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="60%" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="60%" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="150px">
 				<el-row>
 					<el-col :span="12">
@@ -142,7 +142,7 @@
 		</el-dialog>
 
 		<!--    点击还款的弹框-->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" title="还款操作" :visible.sync="giveBackMoneyShow" width="500px">
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="还款操作" :visible.sync="giveBackMoneyShow" width="500px">
 			<el-row>
 				<el-form ref="form" :model="moneyBackInfo" label-width="140px" :rules="borrowedMoneyRules">
 					<el-form-item label="还款金额" prop="moneyAmount">

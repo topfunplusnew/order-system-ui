@@ -1,5 +1,9 @@
 <template>
-	<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight
+	<el-dialog
+		:modal="false"
+		v-dialogDrag
+		v-dialogDragWidth
+		v-dialogDragHeight
 		v-el-drag-dialog
 		v-el-relen-dialog
 		v-if="dialogVisible"

@@ -153,7 +153,7 @@ export default {
 		this.getList();
 	},
 	methods: {
-    formatBalance,
+		formatBalance,
 		listCompany,
 		// 查询方法
 		getList() {

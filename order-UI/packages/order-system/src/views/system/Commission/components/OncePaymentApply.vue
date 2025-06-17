@@ -19,7 +19,18 @@
 			</el-table>
 		</el-card>
 
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" title="付款申请" :visible.sync="applyDialogVisible" width="45%" append-to-body>
+		<el-dialog
+			:modal="false"
+			v-dialogDrag
+			v-dialogDragWidth
+			v-dialogDragHeight
+			:close-on-click-modal="false"
+			:show-close="false"
+			title="付款申请"
+			:visible.sync="applyDialogVisible"
+			width="45%"
+			append-to-body
+		>
 			<keep-alive>
 				<ApplyPayment
 					:money-input-disabled="false"

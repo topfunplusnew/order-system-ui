@@ -1,5 +1,5 @@
 <template>
-	<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" title="原订单信息" :visible.sync="checkReviousOrderInfoVisible" width="1100px">
+	<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" title="原订单信息" :visible.sync="checkReviousOrderInfoVisible" width="1100px">
 		<el-row>
 			<OrderInfos :order-info="previousOrderInfo" />
 		</el-row>

@@ -90,7 +90,7 @@
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改角色配置对话框 -->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="100px">
 				<el-form-item label="角色名称" prop="roleName">
 					<el-input v-model="form.roleName" placeholder="请输入角色名称" />
@@ -138,7 +138,18 @@
 		</el-dialog>
 
 		<!-- 分配角色数据权限对话框 -->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="openDataScope" width="30%" append-to-body>
+		<el-dialog
+			:modal="false"
+			v-dialogDrag
+			v-dialogDragWidth
+			v-dialogDragHeight
+			:close-on-click-modal="false"
+			:show-close="false"
+			:title="title"
+			:visible.sync="openDataScope"
+			width="30%"
+			append-to-body
+		>
 			<el-form :model="form" label-width="140px">
 				<el-form-item label="角色名称">
 					<el-input v-model="form.roleName" :disabled="true" />

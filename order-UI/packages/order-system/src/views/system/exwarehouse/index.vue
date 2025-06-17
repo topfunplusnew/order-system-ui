@@ -109,7 +109,7 @@
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改出库对话框 -->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="80px">
 				<!--        <el-form-item label="订单编号" prop="ordersNo">-->
 				<!--          <el-input v-model="form.ordersNo" placeholder="请输入订单编号"/>-->
@@ -137,7 +137,17 @@
 		</el-dialog>
 
 		<!--    查看订单详情信息-->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" title="查看订单信息" :visible.sync="checkOrderVisible" width="900px">
+		<el-dialog
+			:modal="false"
+			v-dialogDrag
+			v-dialogDragWidth
+			v-dialogDragHeight
+			:close-on-click-modal="false"
+			:show-close="false"
+			title="查看订单信息"
+			:visible.sync="checkOrderVisible"
+			width="900px"
+		>
 			<el-descriptions title="订单信息" :column="3" border size="mini">
 				<el-descriptions-item label="id">
 					{{ orderDetailInfo.id || '-' }}
@@ -231,7 +241,17 @@
 		</el-dialog>
 
 		<!--    库存信息-->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" title="查看库存信息" :visible.sync="checkInventoryVisible" width="900px">
+		<el-dialog
+			:modal="false"
+			v-dialogDrag
+			v-dialogDragWidth
+			v-dialogDragHeight
+			:close-on-click-modal="false"
+			:show-close="false"
+			title="查看库存信息"
+			:visible.sync="checkInventoryVisible"
+			width="900px"
+		>
 			<el-descriptions title="库存详情" border size="mini">
 				<el-descriptions-item label="备注">
 					{{ inventoryInfo.remark || '-' }}

@@ -88,7 +88,18 @@
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 操作日志详细 -->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" title="操作日志详细" :visible.sync="open" width="800px" append-to-body>
+		<el-dialog
+			:modal="false"
+			v-dialogDrag
+			v-dialogDragWidth
+			v-dialogDragHeight
+			:close-on-click-modal="false"
+			:show-close="false"
+			title="操作日志详细"
+			:visible.sync="open"
+			width="800px"
+			append-to-body
+		>
 			<el-form ref="form" :model="form" label-width="100px" size="mini">
 				<el-row>
 					<el-col :span="12">

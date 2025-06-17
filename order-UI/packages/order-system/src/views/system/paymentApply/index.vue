@@ -156,7 +156,18 @@
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 2.添加或修改付款信息对话框 -->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" title="付款申请" :visible.sync="open" width="500px" append-to-body>
+		<el-dialog
+			:modal="false"
+			v-dialogDrag
+			v-dialogDragWidth
+			v-dialogDragHeight
+			:close-on-click-modal="false"
+			:show-close="false"
+			title="付款申请"
+			:visible.sync="open"
+			width="500px"
+			append-to-body
+		>
 			<el-form ref="form" :model="form" :rules="rules" label-width="80px">
 				<!--        表名要自动填充 手动添加无需-->
 				<!--        <el-form-item label="对应的表名" prop="tableName">-->
@@ -251,7 +262,7 @@
 		</el-dialog>
 
 		<!--    查看-->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" title="查看信息" :visible.sync="checkVisible" width="30%">
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="查看信息" :visible.sync="checkVisible" width="30%">
 			<NeedToShowInfo :need-to-show-info="needToShowInfo" :table-name-to-prop="tableName" />
 			<span slot="footer" class="dialog-footer">
 				<el-button @click="checkVisible = false">取 消</el-button>

@@ -124,7 +124,7 @@ import { common_excel } from '@/views/dashboard/mixins/common/common_excel';
 import ORDER_DETAIL from '@/components/NeedToShow/ORDER_DETAIL.vue';
 import { listCars } from '@/api/system/cars';
 import _ from 'lodash';
-import {formatBalance} from "../../../utils/trash/utils";
+import { formatBalance } from '../../../utils/trash/utils';
 
 export default {
 	name: 'FreightInfo',
@@ -163,7 +163,7 @@ export default {
 		};
 	},
 	methods: {
-    formatBalance,
+		formatBalance,
 		listCars,
 		listVehicles,
 		// 查询方法

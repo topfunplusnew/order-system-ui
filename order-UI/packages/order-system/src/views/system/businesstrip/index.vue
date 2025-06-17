@@ -102,7 +102,7 @@
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改出差对话框 -->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="1000px">
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="1000px">
 			<StepsForm :active="active" title-one="基本信息登记" title-two="报销信息" title-info="请按照步骤填写出差信息">
 				<!--         第一步骤 填写出差基本信息 保存出差基本信息-->
 				<template #step-one>
@@ -251,14 +251,24 @@
 		</el-dialog>
 
 		<!--    付款申请弹窗-->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" title="提示" :visible.sync="applyForPaymentDialogVisible" width="60%">
+		<el-dialog
+			:modal="false"
+			v-dialogDrag
+			v-dialogDragWidth
+			v-dialogDragHeight
+			:close-on-click-modal="false"
+			:show-close="false"
+			title="提示"
+			:visible.sync="applyForPaymentDialogVisible"
+			width="60%"
+		>
 			<keep-alive>
 				<ApplyPayment :table-name="TableName.BUSINESS_TRIP" :t-i-d="tID" :need-info="{}" :need-money="needMoney" @changeOpen="changePaymentApplyInfoVisible" />
 			</keep-alive>
 		</el-dialog>
 
 		<!-- 修改未审核通过车辆列表弹窗 -->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :visible.sync="notPassedCarDialogVisible" title="未审核通过的车辆" width="80%" height="600px">
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :visible.sync="notPassedCarDialogVisible" title="未审核通过的车辆" width="80%" height="600px">
 			<el-table :data="notPassedCarList" border>
 				<el-table-column label="申请人" prop="applyUser" />
 				<el-table-column label="车牌号" prop="carNo" />

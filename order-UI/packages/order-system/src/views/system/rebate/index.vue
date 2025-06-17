@@ -123,7 +123,7 @@
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- todo 添加或修改返利回扣对话框 -->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="800px" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="800px" append-to-body>
 			<el-row>
 				<el-form ref="form" :model="form" :rules="rules" label-width="150px">
 					<el-row>
@@ -236,7 +236,7 @@
 		</el-dialog>
 
 		<!--    选择订单详情 点击返利货物后面的选择订单打开的弹窗 -->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="true" title="订单选择" :visible.sync="orderDialogVisible" width="65%">
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="true" title="订单选择" :visible.sync="orderDialogVisible" width="65%">
 			<el-row>
 				<el-button type="primary" size="mini" @click="selectBySupplier">根据供应商选择</el-button>
 				<el-button type="primary" size="mini" @click="selectOrderItem">选择订单</el-button>
@@ -316,7 +316,7 @@
 		</el-dialog>
 
 		<!--    两种方式中点击第二种直接选择订单进行返利-->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :close-on-click-modal="false" :show-close="true" title="选择订单" :visible.sync="orderSelectVisible" width="70%">
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="true" title="选择订单" :visible.sync="orderSelectVisible" width="70%">
 			<QuerySearchBar @updateQuery="handleGetQueryParams" />
 			<el-table
 				v-loading="loading"

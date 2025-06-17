@@ -113,7 +113,7 @@
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改车辆信息对话框 -->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :title="title" :visible.sync="open" width="500px" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="title" :visible.sync="open" width="500px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="80px" @keyup.enter.native="submitForm" @submit.native.prevent="submitForm" size="mini">
 				<el-form-item label="车辆型号" prop="model">
 					<el-input v-model="form.model" placeholder="请输入车辆型号" @input="handleInputTrim($event, 'form', 'model')" />
@@ -147,7 +147,7 @@
 		</el-dialog>
 
 		<!-- 查看附件对话框 -->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :title="'查看附件'" :visible.sync="attachmentsDialogVisible" width="600px" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="'查看附件'" :visible.sync="attachmentsDialogVisible" width="600px" append-to-body>
 			<h3>图片附件</h3>
 			<el-carousel v-if="imageAttachments.length" :interval="5000" type="card" height="400px">
 				<el-carousel-item v-for="(item, index) in imageAttachments" :key="index">
@@ -164,7 +164,7 @@
 		</el-dialog>
 
 		<!-- 附件上传对话框 -->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight  :title="'附件上传'" :visible.sync="uploadDialogVisible" width="600px" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="'附件上传'" :visible.sync="uploadDialogVisible" width="600px" append-to-body>
 			<el-upload
 				class="upload-demo"
 				:action="uploadFileUrl"

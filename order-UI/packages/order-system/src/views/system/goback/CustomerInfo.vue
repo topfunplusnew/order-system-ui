@@ -121,7 +121,7 @@ import { listCompany } from '@/api/system/company';
 import { common_excel } from '@/views/dashboard/mixins/common/common_excel';
 import { getConfigValue } from '@/views/system/Statement/data/config_get';
 import { getCustomerSubjectDetailSomeDay, getCustomerSubjectDetailSummary } from '@/api/system/statement';
-import {aggregateByDay, fix, fix_2} from '@/api/tool/format';
+import { aggregateByDay, fix, fix_2 } from '@/api/tool/format';
 import { getFunction } from '@/utils/order/mapper';
 import { moduleNames, TableName } from '@/api/tool/enums';
 import GOODS_ORDER from '@/components/NeedToShow/GOODS_ORDER.vue';

@@ -60,7 +60,7 @@ export default {
 	},
 
 	methods: {
-    fix_2,
+		fix_2,
 		formatBalance,
 		listCompany,
 		handleCheck() {
