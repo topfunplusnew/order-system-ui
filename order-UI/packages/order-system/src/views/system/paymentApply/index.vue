@@ -396,7 +396,7 @@ export default {
 		} else {
 			this.columns = JSON.parse(localStorage.getItem('paymentapply-columns'));
 		}
-		listSubject().then(res => {
+		listSubject({}, true).then(res => {
 			this.subjectTree = this.handleTree(res.data, 'id', 'parentId');
 			this.OneLevelOption = this.subjectTree;
 		});

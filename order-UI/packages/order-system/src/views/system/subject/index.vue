@@ -47,6 +47,13 @@
 					<el-table-column v-if="columns[0].visible" label="科目名称" prop="title" />
 					<el-table-column v-if="columns[1].visible" label="科目编码" align="center" prop="subjectNo" />
 					<el-table-column label="排序" prop="orderNum" width="120"></el-table-column>
+					<!-- 新增是否禁用列 -->
+					<el-table-column label="是否禁用" prop="STATUS" align="center" width="100">
+						<template slot-scope="scope">
+							<span v-if="scope.row.STATUS === YES_OR_NO.YES">是</span>
+							<span v-else>否</span>
+						</template>
+					</el-table-column>
 					<!--					<el-table-column v-if="columns[2].visible" label="科目类别" align="center" prop="type" />-->
 					<!--          <el-table-column label="父级ID" align="center" prop="parentId" v-if="columns[3].visible"/>-->
 					<el-table-column v-if="columns[2].visible" label="备注" align="center" prop="remark" />
@@ -74,6 +81,12 @@
 				</el-form-item>
 				<el-form-item label="编号" prop="subjectNo">
 					<el-input v-model="form.subjectNo" placeholder="请输入编号" @input="handleInputTrim($event, 'form', 'subjectNo')" />
+				</el-form-item>
+				<el-form-item label="是否禁用" prop="STATUS">
+					<el-radio-group v-model="form.STATUS">
+						<el-radio :label="YES_OR_NO.NO">否</el-radio>
+						<el-radio :label="YES_OR_NO.YES">是</el-radio>
+					</el-radio-group>
 				</el-form-item>
 				<el-form-item label="备注" prop="remark">
 					<el-input v-model="form.remark" type="textarea" placeholder="请输入内容" @input="handleInputTrim($event, 'form', 'remark')" />
@@ -124,6 +137,8 @@ import { listSubject, getSubject, delSubject, addSubject, updateSubject } from '
 import Treeselect from '@riophae/vue-treeselect';
 import '@riophae/vue-treeselect/dist/vue-treeselect.css';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
+import { YES_OR_NO } from '@/api/tool/enums';
+import { Modal } from 'ant-design-vue'; // 引入antd Modal
 
 export default {
 	name: 'Subject',
@@ -160,7 +175,7 @@ export default {
 				STATUS: null
 			},
 			// 表单参数
-			form: { type: '' },
+			form: { type: '', STATUS: 0 }, // 默认否
 			titleOptions: [],
 			columns: [
 				{ key: 0, label: `科目名称`, visible: true },
@@ -177,7 +192,8 @@ export default {
 						trigger: 'blur'
 					}
 				],
-				subjectNo: [{ required: true, message: '编号不能为空', trigger: 'blur' }]
+				subjectNo: [{ required: true, message: '编号不能为空', trigger: 'blur' }],
+				STATUS: [{ required: true, message: '请选择是否禁用', trigger: 'change' }] // 新增校验
 			},
 			typeRules: {
 				type: [
@@ -224,6 +240,9 @@ export default {
 		// 利用computed做中间层
 		formId() {
 			return this.form.parentId;
+		},
+		YES_OR_NO() {
+			return YES_OR_NO;
 		}
 	},
 	watch: {
@@ -244,7 +263,7 @@ export default {
 						this.form.subjectNo = response.data.subjectNo;
 					});
 					// val是id 然后再拿id去查找该元素的子元素个数 用来拼接
-					listSubject({ id: val }).then(response => {
+					listSubject({ id: val }, false).then(response => {
 						// 查询该id下的子元素数组
 						const filters = response.data.filter(item => {
 							return item.parentId === val;
@@ -263,9 +282,8 @@ export default {
 		} else {
 			this.columns = JSON.parse(localStorage.getItem('subject-columns'));
 		}
-
 		// 获取科目分类列表
-		listSubject().then(response => {
+		listSubject({}, false).then(response => {
 			this.titleOptions = [];
 			const data = { id: 0, title: '科目根信息', children: [] };
 			data.children = this.handleTree(response.data, 'id', 'parentId');
@@ -295,7 +313,7 @@ export default {
 		/** 查询科目列表 */
 		getList() {
 			this.loading = true;
-			listSubject(this.queryParams).then(response => {
+			listSubject(this.queryParams, false).then(response => {
 				// children:[]
 				this.subjectList = this.handleTree(response.data, 'id', 'parentId');
 				this.orderNumSort(this.subjectList);
@@ -315,7 +333,7 @@ export default {
 		},
 		/** 查询科目下拉树结构 */
 		getTreeselect() {
-			listSubject().then(response => {
+			listSubject({}, false).then(response => {
 				this.subjectOptions = [];
 				const data = { id: 0, title: '科目根信息', children: [] };
 				data.children = this.handleTree(response.data, 'id', 'parentId');
@@ -338,7 +356,7 @@ export default {
 				subjectNo: null,
 				parentId: null,
 				orderNum: null,
-				STATUS: null,
+				STATUS: 0, // 默认否
 				createBy: null,
 				createTime: null,
 				updateBy: null,
@@ -378,15 +396,24 @@ export default {
 		},
 		/** 修改按钮操作 */
 		handleUpdate(row) {
-			this.reset();
-			this.getTreeselect();
-			if (row != null) {
-				this.form.parentId = row.parentId;
-			}
-			getSubject(row.id).then(response => {
-				this.form = response.data;
-				this.open = true;
-				this.title = '修改科目';
+			Modal.confirm({
+				title: '操作提示',
+				content: '修改科目可能会影响系统数据完整性，若该科目已被引用，修改可能导致系统损坏。是否继续？',
+				okText: '是',
+				cancelText: '否',
+				onOk: () => {
+					this.reset();
+					this.getTreeselect();
+					if (row != null) {
+						this.form.parentId = row.parentId;
+					}
+					getSubject(row.id).then(response => {
+						this.form = response.data;
+						this.open = true;
+						this.title = '修改科目';
+					});
+				},
+				onCancel: () => {}
 			});
 		},
 		/** 提交按钮 */
@@ -425,16 +452,25 @@ export default {
 		},
 		/** 删除按钮操作 */
 		handleDelete(row) {
-			this.$modal
-				.confirm('是否确认删除科目编号为"' + row.id + '"的数据项？')
-				.then(function () {
-					return delSubject(row.id);
-				})
-				.then(() => {
-					this.getList();
-					this.$modal.msgSuccess('删除成功');
-				})
-				.catch(() => {});
+			Modal.confirm({
+				title: '操作提示',
+				content: '删除科目可能会影响系统数据完整性，若该科目已被引用，删除可能导致系统损坏。是否继续？',
+				okText: '是',
+				cancelText: '否',
+				onOk: () => {
+					this.$modal
+						.confirm('是否确认删除科目编号为"' + row.id + '"的数据项？')
+						.then(function () {
+							return delSubject(row.id);
+						})
+						.then(() => {
+							this.getList();
+							this.$modal.msgSuccess('删除成功');
+						})
+						.catch(() => {});
+				},
+				onCancel: () => {}
+			});
 		}
 	}
 };

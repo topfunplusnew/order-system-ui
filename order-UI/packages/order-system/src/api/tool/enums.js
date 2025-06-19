@@ -1,3 +1,8 @@
+export const YES_OR_NO = Object.freeze({
+	YES: 1,
+	NO: 0
+});
+
 // 系统常用枚举类
 
 export const TableName = Object.freeze({

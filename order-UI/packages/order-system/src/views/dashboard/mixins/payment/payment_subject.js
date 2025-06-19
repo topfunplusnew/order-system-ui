@@ -14,7 +14,7 @@ export var mixin_payment_subject = {
 	},
 	created() {
 		// 查询科目列表
-		listSubject().then(res => {
+		listSubject({}, true).then(res => {
 			this.paymentTypeOptions = res.data;
 			this.makeTree();
 		});

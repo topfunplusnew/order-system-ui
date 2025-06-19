@@ -375,7 +375,7 @@
 </template>
 
 <script>
-import { listPaymentApply, addPaymentApply, updatePaymentApply } from '@/api/system/paymentApply';
+import { addPaymentApply, updatePaymentApply } from '@/api/system/paymentApply';
 import { excludeParams } from '@/api/tool/exclude';
 import SearchOption from '@/components/SearchOption.vue';
 import { listBankAccount } from '@/api/system/bankAccount';
@@ -387,13 +387,11 @@ import { mixin_payment_fill } from '../../mixins/apply_payment/payment_fill';
 import { isNull } from '../../../../main';
 import { mixin_receive_money_subject } from '../../mixins/receivemoney/receive_money_subject';
 import { parseTime } from '@/utils/ruoyi';
-import { BankAcceptanceType, PAYMENT_TARGET_TYPE, TableName } from '@/api/tool/enums';
+import { PAYMENT_TARGET_TYPE } from '@/api/tool/enums';
 import { mixin_bankType } from '@/views/dashboard/mixins/common/common_bankType';
-import { addBadBetPayment, addPayment } from '@/api/system/payment';
+import { addBadBetPayment } from '@/api/system/payment';
 import _ from 'lodash';
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
-import { getRecoverMoney } from '@/api/system/recoverMoney';
-import { getLendMoney } from '@/api/system/lendMoney';
 import { listCars } from '@/api/system/cars';
 
 export default {

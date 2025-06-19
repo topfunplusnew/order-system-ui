@@ -11,7 +11,7 @@ export var mixin_payment_apply = {
 	},
 	created() {
 		// 查询科目信息
-		listSubject().then(res => {
+		listSubject({}, true).then(res => {
 			this.subjectTree = this.handleTree(res.data, 'id', 'parentId');
 			this.OneLevelOption = this.subjectTree;
 		});

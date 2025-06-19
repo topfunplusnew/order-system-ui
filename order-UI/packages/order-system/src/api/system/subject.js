@@ -1,11 +1,15 @@
 import request from '@/utils/request';
-
+import { YES_OR_NO } from '@/api/tool/enums';
 // 查询科目列表
-export function listSubject(query) {
+export function listSubject(query, isFilterBan = true) {
 	return request({
 		url: '/system/subject/list',
 		method: 'get',
-		params: query
+		params: {
+			...query,
+			// STATUS: isFilterBan ? YES_OR_NO.YES : undefined
+			STATUS: isFilterBan ? YES_OR_NO.YES : YES_OR_NO.NO
+		}
 	});
 }
 

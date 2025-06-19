@@ -18,7 +18,7 @@ export default {
 	},
 	methods: {
 		getDataList() {
-			listSubject().then(res => {
+			listSubject({}, true).then(res => {
 				this.paymentTypeOptions = res.data;
 				this.makeTree();
 			});

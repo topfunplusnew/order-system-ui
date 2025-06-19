@@ -661,32 +661,7 @@ export default {
 				acountsName: row.targetAcountsName,
 				bankName: row.targetBankName
 			};
-			this.fillBadDebtLoss();
-		},
-		// 补充坏账损失类型
-		fillBadDebtLoss() {
-			getConfigKey('bad_debt_loss_id').then(configValue => {
-				if (!configValue || !configValue.msg) {
-					this.$message.error('系统bad_debt_loss_id配置错误');
-					return;
-				}
-				getSubjectLevelTree(configValue.msg).then(res => {
-					if (!res.data) {
-						this.$message.error('未找到科目信息');
-						return;
-					}
-					if (!Array.isArray(res.data)) {
-						this.$message.error('未找到科目信息');
-						return;
-					}
-					this.customizeSubjectName = _.cloneDeep(res.data)
-						.reverse()
-						.map(item => {
-							return item.title;
-						});
-					this.applyDialogVisible = true;
-				});
-			});
+			this.applyDialogVisible = true;
 		},
 		// 点击收回资金按钮
 		handleGetBackMoney(row) {

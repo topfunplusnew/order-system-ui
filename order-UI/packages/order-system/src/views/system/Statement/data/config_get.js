@@ -22,7 +22,7 @@ export async function getConfigValue(key) {
 		const body = { subjectNo: configValue };
 
 		// 查询科目
-		const subjectRes = await listSubject(body);
+		const subjectRes = await listSubject(body, true);
 		const result = subjectRes.data || subjectRes.rows;
 		const total = subjectRes.total;
 

@@ -54,19 +54,19 @@
 				}
 			"
 		>
-			<el-table-column v-if="columns[0].visible" label="借款人" align="center" prop="target" width="110" />
-			<el-table-column v-if="columns[1].visible" label="对象类型" align="center" prop="targetType" width="110" />
-			<el-table-column v-if="columns[2].visible" label="借出金额" align="center" prop="moneyAmount" width="110" />
-			<el-table-column v-if="columns[11].visible" label="未收回金额" align="center" prop="unrecoveredAmount" width="110" />
-			<el-table-column v-if="columns[3].visible" label="对方收借款账号" align="center" prop="targetBankNo" width="160" />
-			<el-table-column v-if="columns[4].visible" label="对方户名" align="center" prop="targetAcountsName" width="160" />
-			<el-table-column v-if="columns[5].visible" label="对方开户行" align="center" prop="targetBankName" width="160" />
-			<el-table-column v-if="columns[6].visible" label="我方支付借款账户名称" align="center" prop="selfAcountsName" width="140" />
-			<el-table-column v-if="columns[7].visible" label="我方支付借款开户行" align="center" prop="selfBankName" width="160" />
-			<el-table-column v-if="columns[8].visible" label="我方付款账号" align="center" prop="selfBankNo" width="160" />
-			<el-table-column v-if="columns[9].visible" label="支付员工/外面公司在我公司借款时间" align="center" prop="futuresDate" width="160" />
-			<el-table-column v-if="columns[10].visible" label="借款事由" align="center" prop="reason" width="160" />
-			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="240" fixed="right">
+			<el-table-column v-if="columns[0].visible" label="借款人" align="center" prop="target" show-overflow-tooltip />
+			<el-table-column v-if="columns[1].visible" label="对象类型" align="center" prop="targetType" show-overflow-tooltip />
+			<el-table-column v-if="columns[2].visible" label="借出金额" align="center" prop="moneyAmount" show-overflow-tooltip />
+			<el-table-column v-if="columns[11].visible" label="未收回金额" align="center" prop="unrecoveredAmount" show-overflow-tooltip />
+			<el-table-column v-if="columns[3].visible" label="对方收借款账号" align="center" prop="targetBankNo" show-overflow-tooltip />
+			<el-table-column v-if="columns[4].visible" label="对方户名" align="center" prop="targetAcountsName" show-overflow-tooltip />
+			<el-table-column v-if="columns[5].visible" label="对方开户行" align="center" prop="targetBankName" show-overflow-tooltip />
+			<el-table-column v-if="columns[6].visible" label="我方支付借款账户名称" align="center" prop="selfAcountsName" show-overflow-tooltip />
+			<el-table-column v-if="columns[7].visible" label="我方支付借款开户行" align="center" prop="selfBankName" show-overflow-tooltip />
+			<el-table-column v-if="columns[8].visible" label="我方付款账号" align="center" prop="selfBankNo" show-overflow-tooltip />
+			<el-table-column v-if="columns[9].visible" label="支付员工/外面公司在我公司借款时间" align="center" prop="futuresDate" show-overflow-tooltip />
+			<el-table-column v-if="columns[10].visible" label="借款事由" align="center" prop="reason" show-overflow-tooltip />
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
 				<template slot-scope="scope">
 					<el-dropdown trigger="click">
 						<el-button size="mini" type="text">
@@ -382,7 +382,7 @@ import ApplyPayment from '@/views/dashboard/components/common/ApplyPayment.vue';
 
 import { listBankAccount } from '@/api/system/bankAccount';
 import { mixin_reviveMoney } from '@/views/dashboard/mixins/receive';
-import { addReason } from '@/api/system/user';
+import { PUBLIC_DICT_TYPE } from '@/utils/order';
 import { getSubjectLevelTree } from '@/api/system/subject';
 import { getConfigKey } from '@/api/system/config';
 import _ from 'lodash';
@@ -392,6 +392,9 @@ export default {
 	computed: {
 		TableName() {
 			return TableName;
+		},
+		PUBLIC_DICT_TYPE() {
+			return PUBLIC_DICT_TYPE;
 		}
 	},
 	components: { ApplyPayment, SearchOption, InfoDialog },
@@ -741,32 +744,9 @@ export default {
 				bankName: row.targetBankName
 			};
 			this.currentFuturesNO = row.futuresNO;
-			this.fillBadDebtLoss();
+			this.applyDialogVisible = true;
 		},
-		fillBadDebtLoss() {
-			getConfigKey('bad_debt_loss_id').then(configValue => {
-				if (!configValue || !configValue.msg) {
-					this.$message.error('系统bad_debt_loss_id配置错误');
-					return;
-				}
-				getSubjectLevelTree(configValue.msg).then(res => {
-					if (!res.data) {
-						this.$message.error('未找到科目信息');
-						return;
-					}
-					if (!Array.isArray(res.data)) {
-						this.$message.error('未找到科目信息');
-						return;
-					}
-					this.customizeSubjectName = _.cloneDeep(res.data)
-						.reverse()
-						.map(item => {
-							return item.title;
-						});
-					this.applyDialogVisible = true;
-				});
-			});
-		},
+
 		// 点击收回资金按钮
 		handleGetBackMoney(row) {
 			// 初始化表的信息
@@ -852,22 +832,16 @@ export default {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
 					if (this.form.id != null) {
-						this.form.delFlag = null;
-						this.form.addtime = null;
-						this.form.updateTime = null;
-						this.form.userId = null;
 						this.form = excludeParams(this.form, this.$exclude);
+						this.form.targetType = PUBLIC_DICT_TYPE.EMPLOYEE;
 						updateLendMoney(this.form).then(response => {
 							this.$modal.msgSuccess('修改成功');
 							this.open = false;
 							this.getList();
 						});
 					} else {
-						this.form.delFlag = null;
-						this.form.addtime = null;
-						this.form.updateTime = null;
-						this.form.userId = null;
 						this.form = excludeParams(this.form, this.$exclude);
+						this.form.targetType = PUBLIC_DICT_TYPE.EMPLOYEE;
 						addLendMoney(this.form).then(response => {
 							this.$modal.msgSuccess('新增成功');
 							this.open = false;
@@ -994,35 +968,6 @@ export default {
 		},
 		// 收回资金弹窗内的修改
 		handleUpdateRecoverMoney(row) {
-			// this.$prompt('请输入编辑原因', '提示', {
-			// 	confirmButtonText: '确定',
-			// 	cancelButtonText: '取消',
-			// 	type: 'warning'
-			// })
-			// 	.then(({ value }) => {
-			// 		addReason({
-			// 			reason: value,
-			// 			tableName: TableName.RECOVER_MONEY,
-			// 			tid: row.id,
-			// 			modifyTime: this.modifyTime
-			// 		}).then(res => {
-			// 			this.$message.success('提交成功');
-			// 			this.resetRecoverMoneyForm();
-			// 			const id = row.id || this.ids;
-			// 			getRecoverMoney(id).then(response => {
-			// 				this.recoverMoneyForm = response.data;
-			// 				this.recoverMoneyOpen = true;
-			// 				this.recoverMoneyTitle = '修改借出款收回信息';
-			// 			});
-			// 		});
-			// 	})
-			// 	.catch(() => {
-			// 		this.$message({
-			// 			type: 'warning',
-			// 			message: '请先输入编辑原因!'
-			// 		});
-			// 	});
-
 			this.resetRecoverMoneyForm();
 			const id = row.id || this.ids;
 			getRecoverMoney(id).then(response => {

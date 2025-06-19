@@ -16,7 +16,7 @@ export var mixin_receive_money_subject = {
 	},
 	created() {
 		// 查询科目列表
-		listSubject().then(res => {
+		listSubject({}, true).then(res => {
 			this.paymentTypeOptions = _.cloneDeep(res.data);
 			this.makeTree();
 		});
