@@ -288,7 +288,8 @@
 				<ApplyPayment
 					:extra-information="{
 						__customizeSubjectName: this.customizeSubjectName,
-						__isPayment: true
+						__isPayment: true,
+						__futuresNO: this.currentFuturesNO
 					}"
 					:table-name="TableName.LEND_MONEY"
 					:t-i-d="tid"
@@ -356,6 +357,7 @@ export default {
 	dicts: ['order_target_type'],
 	data() {
 		return {
+			currentFuturesNO: null,
 			// 遮罩层
 			loading: true,
 			// 选中数组
@@ -652,6 +654,7 @@ export default {
 		// 坏账损失
 		applyForPayment(row) {
 			this.tid = row.id;
+			this.currentFuturesNO = row.futuresNO;
 			// this.needMoney = row.moneyAmount;
 			this.needInfo = {
 				bankNo: row.targetBankNo,

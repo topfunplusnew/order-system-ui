@@ -1,52 +1,9 @@
+<!-- TODO 默认搜索全部非停用科目 但科目页面显示所有的
+所有都显示警告，如果不想用调用修改禁用，修改可以禁用 -->
+
 <template>
 	<div class="app-container">
-		<!--    <el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="68px">-->
-		<!--      <el-form-item label="科目名称" prop="title">-->
-		<!--        <el-input-->
-		<!--          v-model="queryParams.title"-->
-		<!--          placeholder="请输入科目名称"-->
-		<!--          clearable-->
-		<!--          @keyup.enter.native="handleQuery"-->
-		<!--        />-->
-		<!--      </el-form-item>-->
-		<!--      <el-form-item label="编号" prop="subjectNo">-->
-		<!--        <el-input-->
-		<!--          v-model="queryParams.subjectNo"-->
-		<!--          placeholder="请输入编号"-->
-		<!--          clearable-->
-		<!--          @keyup.enter.native="handleQuery"-->
-		<!--        />-->
-		<!--      </el-form-item>-->
-		<!--      <el-form-item label="父级ID" prop="parentId">-->
-		<!--        <el-input-->
-		<!--          v-model="queryParams.parentId"-->
-		<!--          placeholder="请输入父级ID"-->
-		<!--          clearable-->
-		<!--          @keyup.enter.native="handleQuery"-->
-		<!--        />-->
-		<!--      </el-form-item>-->
-		<!--      <el-form-item>-->
-		<!--        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>-->
-		<!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
-		<!--      </el-form-item>-->
-		<!--    </el-form>-->
-
-		<!--   main-->
 		<el-row>
-			<!--      树控组件-->
-			<!--      <el-col :span="4">-->
-			<!--        &lt;!&ndash;        data => :data&ndash;&gt;-->
-			<!--        <el-tree :data="subjectList" :props="defaultProps"-->
-			<!--                 @node-click="handleNodeClick">-->
-			<!--                 <span class="custom-tree-node" slot-scope="{ node, data }">-->
-			<!--                   <span><i v-if="!data.children" class="el-icon-document-remove"></i>-->
-			<!--                     <i v-else class="el-icon-circle-plus-outline"></i>-->
-			<!--                     {{ data.subjectNo }} {{ data.title }}-->
-			<!--                   </span>-->
-			<!--                 </span>-->
-			<!--        </el-tree>-->
-			<!--      </el-col>-->
-
 			<!--      表格-->
 			<el-col :span="24">
 				<el-row :gutter="10" class="mb8">

@@ -4,13 +4,16 @@
 			<el-form-item label="日期" prop="fundsDate">
 				<el-date-picker v-model="form.fundsDate" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="选择日期" />
 			</el-form-item>
-			<el-form-item label="支付类型" prop="payType">
-				<el-row :gutter="5">
-					<el-col :span="12">
-						<el-cascader :disabled="isPayment" v-model="form.payType" :options="paymentTypeTree" :props="props" />
-					</el-col>
-				</el-row>
-			</el-form-item>
+			<!-- 只有当付款申请的时候才会填写该字段，类型后端填充 -->
+			<template v-if="!isPayment">
+				<el-form-item label="支付类型" prop="payType">
+					<el-row :gutter="5">
+						<el-col :span="12">
+							<el-cascader :disabled="isPayment" v-model="form.payType" :options="paymentTypeTree" :props="props" />
+						</el-col>
+					</el-row>
+				</el-form-item>
+			</template>
 			<el-form-item label="金额" prop="moneyAmount">
 				<el-row :gutter="5">
 					<el-col :span="12">
@@ -18,57 +21,59 @@
 					</el-col>
 				</el-row>
 			</el-form-item>
+			<!-- 新加 当付款 为 坏账损失的时候 需要选择这两个字段 -->
+			<template v-if="isPayment">
+				<el-form-item label="我方户名" prop="selfAcountsName">
+					<el-col :span="10">
+						<el-input disabled v-model="form.selfAcountsName" placeholder="请选择" />
+					</el-col>
+					<!-- TODO -->
+					<el-col :span="3">
+						<SearchOption
+							:get-data="listBankAccount"
+							icon="el-icon-search"
+							:limit-info="{ acountsType: PUBLIC_DICT_TYPE.SELF_COMPANY }"
+							query-label="银行卡查找"
+							query-info="bankNo"
+							:query-name="querySelfCompany"
+							@commitBack="
+								value => {
+									form.selfAcountsName = value.acountsName;
+									form.selfBankNo = value.bankNo;
+								}
+							"
+							@update:queryName="value => (querySelfCompany = value)"
+						>
+							<template #table-columns>
+								<el-table-column label="公司名称" align="center" prop="companyName">
+									<template #default="scope">
+										{{ isNull(scope.row.companyName) }}
+									</template>
+								</el-table-column>
+								<el-table-column label="开户行" align="center" prop="bankName">
+									<template #default="scope">
+										{{ isNull(scope.row.bankName) }}
+									</template>
+								</el-table-column>
+								<el-table-column label="开户名" align="center" prop="acountsName">
+									<template #default="scope">
+										{{ isNull(scope.row.acountsName) }}
+									</template>
+								</el-table-column>
+								<el-table-column label="账号" align="center" prop="bankNo">
+									<template #default="scope">
+										{{ isNull(scope.row.bankNo) }}
+									</template>
+								</el-table-column>
+							</template>
+						</SearchOption>
+					</el-col>
+				</el-form-item>
 
-			<!--      只有当为付款的时候 才会展示付款信息-->
-			<!--			<template v-show="isPayment">-->
-			<!--				<el-form-item label="我方银行账户类型">-->
-			<!--					<BankType-->
-			<!--						:bill-type="BankAcceptanceType.PAY_TYPE.PAYMENT"-->
-			<!--						:select-type="form.selfBankCardType"-->
-			<!--						@updateSelectedType="changeSelfBankType"-->
-			<!--						@updateBankAcceptance="value => (form.params.bankacceptance = value)"-->
-			<!--					/>-->
-			<!--				</el-form-item>-->
-			<!--				&lt;!&ndash;        对方信息&ndash;&gt;-->
-			<!--				<el-form-item label="我方户名" prop="selfAcountsName">-->
-			<!--					<el-row>-->
-			<!--						<el-col :span="10">-->
-			<!--							<el-input disabled v-model="form.selfAcountsName" placeholder="请选择" />-->
-			<!--						</el-col>-->
-			<!--						<el-col :span="3">-->
-			<!--							<SearchOption-->
-			<!--								:limit-info="{ acountsType: PUBLIC_DICT_TYPE.SELF_COMPANY }"-->
-			<!--								:get-data="listBankAccount"-->
-			<!--								icon="el-icon-search"-->
-			<!--								query-label="户名查找"-->
-			<!--								query-info="acountsName"-->
-			<!--								:query-name="queryBank"-->
-			<!--								@commitBack="handleCommitBackSelfBank"-->
-			<!--								@update:queryName="-->
-			<!--									val => {-->
-			<!--										queryBank = val;-->
-			<!--									}-->
-			<!--								"-->
-			<!--							>-->
-			<!--								<template #table-columns>-->
-			<!--									<el-table-column label="账号类型" align="center" prop="acountsType" />-->
-			<!--									<el-table-column label="显示名称" align="center" prop="displayName" />-->
-			<!--									<el-table-column label="开户行" align="center" prop="bankName" />-->
-			<!--									<el-table-column label="开户名" align="center" prop="acountsName" />-->
-			<!--									<el-table-column label="账号" align="center" prop="bankNo" />-->
-			<!--								</template>-->
-			<!--							</SearchOption>-->
-			<!--						</el-col>-->
-			<!--					</el-row>-->
-			<!--				</el-form-item>-->
-			<!--				<el-form-item label="我方账号" prop="selfBankNo">-->
-			<!--					<el-input disabled v-model="form.selfBankNo" placeholder="请选择" />-->
-			<!--				</el-form-item>-->
-			<!--				<el-form-item label="我方开户行" prop="selfBankName">-->
-			<!--					<el-input disabled v-model="form.selfBankName" placeholder="请选择" />-->
-			<!--				</el-form-item>-->
-			<!--			</template>-->
-
+				<el-form-item label="我方账号" prop="selfBankNo">
+					<el-input disabled v-model="form.selfBankNo" placeholder="请选择" />
+				</el-form-item>
+			</template>
 			<template v-if="!isPayment">
 				<el-form-item label="对方类型(请确认)">
 					<el-select v-model="value" placeholder="请选择" @change="handleOpponentTypeChange">
@@ -338,17 +343,16 @@
 						<el-input v-model="form.otherBankName" placeholder="请输入对方开户行" disabled />
 					</el-form-item>
 				</el-row>
-
 				<el-form-item label="付款原因" prop="reason">
 					<el-input v-model="form.reason" type="textarea" placeholder="请输入内容" />
 				</el-form-item>
 				<el-form-item label="附件" prop="attachment">
 					<file-upload @input="handleCommitUpload" />
 				</el-form-item>
-				<el-form-item label="备注" prop="comments">
-					<el-input v-model="form.comments" placeholder="请输入备注" />
-				</el-form-item>
 			</template>
+			<el-form-item label="备注" prop="comments">
+				<el-input v-model="form.comments" placeholder="请输入备注" />
+			</el-form-item>
 		</el-form>
 		<div slot="footer" class="dialog-footer" style="text-align: center">
 			<!--      当类型为付款时,添加坏账损失信息-->
@@ -356,7 +360,6 @@
 				<el-button type="primary" @click="submitForm">确认付款</el-button>
 				<el-button @click="clear">取消</el-button>
 			</template>
-
 			<!--      当类型为付款申请的时候 正常添加付款申请-->
 			<template v-else>
 				<el-tooltip class="item" effect="dark" content="提交信息至服务器" placement="top-start">
@@ -483,7 +486,7 @@ export default {
 			value: '', // 对方类型
 			queryOther: '', // 其他搜索参数
 			queryCompany: '', // 公司搜索参数
-
+			querySelfCompany: '', // 我方公司银行卡搜索参数
 			// 区分付款与付款申请的字段
 			isPayment: false,
 			queryBank: null,
@@ -590,57 +593,27 @@ export default {
 		},
 		// 如果是付款 付款的逻辑
 		handlePayment(form) {
-			if (!form.payType) {
-				this.$modal.msgError('请选择付款类型');
-				return;
-			}
-			if (!this.tID) {
-				console.error('付款申请 tid 为空');
-				return;
-			}
-			const json = {},
-				tid = _.cloneDeep(this.tID);
-			const payType = form.payType.join('-');
-			_.set(json, 'params.paymentInfo', {});
-			// 坏账信息 先获取 资金收回信息 然后添加付款信息
-			getLendMoney(tid).then(lendMoneyInfo => {
-				if (!lendMoneyInfo.data) {
-					this.$message.error('查询对应借款信息时出现错误');
-					return;
-				}
-				// 组装收回信息
-				Object.assign(json, {
-					futuresNO: lendMoneyInfo.data.futuresNO,
-					moneyAmount: lendMoneyInfo.data.moneyAmount,
-					recoverDate: parseTime(new Date()),
-					acountsName: lendMoneyInfo.data.selfAcountsName,
-					bankNo: lendMoneyInfo.data.selfBankNo,
-					comments: lendMoneyInfo.data.comments
-				});
-				// 组装付款信息
-				Object.assign(json.params.paymentInfo, {
-					fundsDate: parseTime(new Date()),
-					payType: payType,
-					moneyAmount: form.moneyAmount,
-					selfAcountsName: lendMoneyInfo.data.selfAcountsName,
-					selfBankName: lendMoneyInfo.data.selfBankName,
-					selfBankNo: lendMoneyInfo.data.selfBankNo,
-					selfBankID: lendMoneyInfo.data.selfBankID,
-					// 表名和id
-					tableName: TableName.RECOVER_MONEY,
-					tID: tid,
-					// 银行卡类型
-					selfBankCardType: BankAcceptanceType.BANK_CASH,
-					otherBankCardType: BankAcceptanceType.BANK_CASH,
-					// 公司类型
-					companyType: PAYMENT_TARGET_TYPE.PAYMENT_FEE
-				});
-				// 填充我方银行卡信息
-				addBadBetPayment(json).then(res => {
-					this.$message.success('付款成功');
-					this.reset();
-					this.$emit('changeOpen');
-				});
+			const formData = form;
+			const json = {
+				moneyAmount: null,
+				recoverDate: null,
+				comments: null
+			};
+			const futuresNO = this.extraInformation.__futuresNO;
+			// 组装收回信息
+			Object.assign(json, {
+				futuresNO: futuresNO,
+				moneyAmount: formData.moneyAmount,
+				recoverDate: formData.fundsDate,
+				acountsName: formData.selfAcountsName,
+				bankNo: formData.selfBankNo,
+				comments: formData.comments
+			});
+			// 填充我方银行卡信息
+			addBadBetPayment(json).then(res => {
+				this.$message.success('付款成功');
+				this.reset();
+				this.$emit('changeOpen');
 			});
 		},
 		// 提交到数据库 但是状态是待提交 这个是当付款填写表单在弹窗中的时候

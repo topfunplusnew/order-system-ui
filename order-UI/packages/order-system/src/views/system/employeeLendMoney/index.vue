@@ -68,12 +68,20 @@
 			<el-table-column v-if="columns[10].visible" label="借款事由" align="center" prop="reason" width="160" />
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="240" fixed="right">
 				<template slot-scope="scope">
-					<el-button size="mini" type="text" @click="checkDetail(scope.row)">查看历史收回</el-button>
-					<!-- <el-button v-if="scope.row.checkState === '未申请'" size="mini" type="text" @click="applyForPayment(scope.row)">申请付款</el-button> -->
-					<!-- <el-button v-if="scope.row.checkState === '审核中'" size="mini" type="warning" disabled>审核中</el-button> -->
-					<el-button v-hasPermi="['system:lendmoney:remove']" size="mini" type="text" @click="handleGetBackMoney(scope.row)">收回资金</el-button>
-					<el-button v-hasPermi="['system:lendmoney:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
-					<el-button v-hasPermi="['system:lendmoney:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
+					<el-dropdown trigger="click">
+						<el-button size="mini" type="text">
+							操作
+							<i class="el-icon-arrow-down el-icon--right"></i>
+						</el-button>
+						<el-dropdown-menu slot="dropdown">
+							<el-dropdown-item @click.native="checkDetail(scope.row)">查看历史收回</el-dropdown-item>
+							<el-dropdown-item v-if="scope.row.checkState === '未申请'" @click.native="applyForPayment(scope.row)">坏账损失</el-dropdown-item>
+							<el-dropdown-item v-hasPermi="['system:lendmoney:remove']" @click.native="handleGetBackMoney(scope.row)">收回资金</el-dropdown-item>
+							<el-dropdown-item v-hasPermi="['system:lendmoney:edit']" @click.native="handleUpdate(scope.row)">修改</el-dropdown-item>
+							<el-dropdown-item v-hasPermi="['system:lendmoney:remove']" @click.native="handleDelete(scope.row)" style="color: red">删除</el-dropdown-item>
+						</el-dropdown-menu>
+					</el-dropdown>
+					<el-button v-if="scope.row.checkState === '审核中'" size="mini" type="warning" disabled style="margin-left: 8px">审核中</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -207,7 +215,19 @@
 		<!--    付款申请-->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="付款申请" :visible.sync="applyDialogVisible" width="45%">
 			<keep-alive>
-				<ApplyPayment :table-name="TableName.LEND_MONEY" :t-i-d="tid" :need-money="needMoney" :need-info="needInfo" @changeOpen="changeOpen" />
+				<ApplyPayment
+					:extra-information="{
+						__customizeSubjectName: this.customizeSubjectName,
+						__isPayment: true,
+						__futuresNO: this.currentFuturesNO
+					}"
+					:table-name="TableName.LEND_MONEY"
+					:t-i-d="tid"
+					:need-money="needMoney"
+					:need-info="needInfo"
+					@changeOpen="changeOpen"
+					:money-input-disabled="false"
+				/>
 			</keep-alive>
 		</el-dialog>
 
@@ -363,6 +383,9 @@ import ApplyPayment from '@/views/dashboard/components/common/ApplyPayment.vue';
 import { listBankAccount } from '@/api/system/bankAccount';
 import { mixin_reviveMoney } from '@/views/dashboard/mixins/receive';
 import { addReason } from '@/api/system/user';
+import { getSubjectLevelTree } from '@/api/system/subject';
+import { getConfigKey } from '@/api/system/config';
+import _ from 'lodash';
 
 export default {
 	name: 'EmployeeLendMoney',
@@ -596,6 +619,8 @@ export default {
 			tid: '',
 			needMoney: 0,
 			needInfo: {},
+			customizeSubjectName: null,
+			currentFuturesNO: null,
 			queryBank: null,
 			receiveRules: {
 				acountsName: [
@@ -715,7 +740,32 @@ export default {
 				acountsName: row.targetAcountsName,
 				bankName: row.targetBankName
 			};
-			this.applyDialogVisible = true;
+			this.currentFuturesNO = row.futuresNO;
+			this.fillBadDebtLoss();
+		},
+		fillBadDebtLoss() {
+			getConfigKey('bad_debt_loss_id').then(configValue => {
+				if (!configValue || !configValue.msg) {
+					this.$message.error('系统bad_debt_loss_id配置错误');
+					return;
+				}
+				getSubjectLevelTree(configValue.msg).then(res => {
+					if (!res.data) {
+						this.$message.error('未找到科目信息');
+						return;
+					}
+					if (!Array.isArray(res.data)) {
+						this.$message.error('未找到科目信息');
+						return;
+					}
+					this.customizeSubjectName = _.cloneDeep(res.data)
+						.reverse()
+						.map(item => {
+							return item.title;
+						});
+					this.applyDialogVisible = true;
+				});
+			});
 		},
 		// 点击收回资金按钮
 		handleGetBackMoney(row) {

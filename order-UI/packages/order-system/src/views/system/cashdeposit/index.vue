@@ -310,7 +310,8 @@
 				<ApplyPayment
 					:extra-information="{
 						__customizeSubjectName: this.customizeSubjectName,
-						__isPayment: true
+						__isPayment: true,
+						__futuresNO: this.currentFuturesNO
 					}"
 					:table-name="TableName.LEND_MONEY"
 					:t-i-d="tid"
@@ -374,6 +375,8 @@ export default {
 	dicts: ['order_target_type'],
 	data() {
 		return {
+			// 当前编号
+			currentFuturesNO: null,
 			// 遮罩层
 			loading: true,
 			// 选中数组
@@ -630,6 +633,7 @@ export default {
 				acountsName: row.targetAcountsName,
 				bankName: row.targetBankName
 			};
+			this.currentFuturesNO = row.futuresNO;
 			this.fillBadDebtLoss();
 		},
 		// 补充坏账损失类型
