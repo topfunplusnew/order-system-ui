@@ -7,8 +7,7 @@ export function listSubject(query, isFilterBan = true) {
 		method: 'get',
 		params: {
 			...query,
-			// STATUS: isFilterBan ? YES_OR_NO.YES : undefined
-			STATUS: isFilterBan ? YES_OR_NO.YES : YES_OR_NO.NO
+			STATUS: isFilterBan ? YES_OR_NO.YES : undefined
 		}
 	});
 }

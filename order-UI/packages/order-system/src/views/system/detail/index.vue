@@ -84,16 +84,12 @@
 			</el-col>
 			<el-col :span="20">
 				<el-table border id="printBox" size="mini" v-loading="loading" :data="detailList" @selection-change="handleSelectionChange">
-					<!-- 多选框列 -->
-					<!--			<el-table-column type="selection" width="55" align="center" />-->
-
 					<!-- 手写每一列，使用 v-if 判断列的可见性 -->
 					<el-table-column v-if="columns[0].visible" label="ID" align="center" prop="id" show-overflow-tooltip />
-					<el-table-column v-if="columns[1].visible" label="入库片数" align="center" prop="stockNumber" show-overflow-tooltip />
 					<el-table-column v-if="columns[2].visible" label="变动日期(入库)" align="center" prop="storeDate" show-overflow-tooltip />
+					<el-table-column v-if="columns[1].visible" label="入库片数" align="center" prop="stockNumber" show-overflow-tooltip />
 					<el-table-column v-if="columns[3].visible" label="剩余量" align="center" prop="actualPieces" show-overflow-tooltip />
 					<el-table-column v-if="columns[4].visible" label="供应商" align="center" prop="supplier" show-overflow-tooltip />
-					<el-table-column v-if="columns[5].visible" label="级别编码" align="center" prop="levelID" show-overflow-tooltip />
 					<el-table-column v-if="columns[6].visible" label="计量单位" align="center" prop="countingUnit" show-overflow-tooltip />
 					<el-table-column v-if="columns[7].visible" label="厚度" align="center" prop="height" show-overflow-tooltip />
 					<el-table-column v-if="columns[8].visible" label="长度" align="center" prop="length" show-overflow-tooltip />
@@ -398,19 +394,18 @@ export default {
 				{ key: 2, label: '入库时间', prop: 'storeDate', visible: true },
 				{ key: 3, label: '剩余量', prop: 'actualPieces', visible: true },
 				{ key: 4, label: '供应商', prop: 'supplier', visible: true },
-				{ key: 5, label: '级别编码', prop: 'levelID', visible: true },
-				{ key: 6, label: '计量单位', prop: 'countingUnit', visible: true },
-				{ key: 7, label: '厚度', prop: 'height', visible: true },
-				{ key: 8, label: '长度', prop: 'length', visible: true },
-				{ key: 9, label: '宽度', prop: 'width', visible: true },
-				{ key: 10, label: '每包片数', prop: 'piecesPerPack', visible: true },
-				{ key: 11, label: '包数', prop: 'packs', visible: true },
-				{ key: 12, label: '存货价', prop: 'paymentUnload', visible: true },
-				{ key: 13, label: '库存是否含税', prop: 'isIncludeTaxSale', visible: true },
-				{ key: 14, label: '入库金额', prop: 'payments', visible: true },
-				{ key: 15, label: '误差', prop: 'erro', visible: true },
-				{ key: 16, label: '吨位', prop: 'tonnage', visible: true },
-				{ key: 17, label: '操作', prop: 'action', visible: true } // 操作列
+				{ key: 5, label: '计量单位', prop: 'countingUnit', visible: true },
+				{ key: 6, label: '厚度', prop: 'height', visible: true },
+				{ key: 7, label: '长度', prop: 'length', visible: true },
+				{ key: 8, label: '宽度', prop: 'width', visible: true },
+				{ key: 9, label: '每包片数', prop: 'piecesPerPack', visible: true },
+				{ key: 10, label: '包数', prop: 'packs', visible: true },
+				{ key: 11, label: '存货价', prop: 'paymentUnload', visible: true },
+				{ key: 12, label: '库存是否含税', prop: 'isIncludeTaxSale', visible: true },
+				{ key: 13, label: '入库金额', prop: 'payments', visible: true },
+				{ key: 14, label: '误差', prop: 'erro', visible: true },
+				{ key: 15, label: '吨位', prop: 'tonnage', visible: true },
+				{ key: 16, label: '操作', prop: 'action', visible: true } // 操作列
 			],
 			// 表单校验
 			rules: {

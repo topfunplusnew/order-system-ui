@@ -43,6 +43,20 @@
 			<el-table-column v-if="columns[6].visible" label="宽度" align="center" prop="sourceInventoryDetail.width" />
 			<el-table-column v-if="columns[7].visible" label="存货价" align="center" prop="sourceInventoryDetail.paymentUnload" />
 			<el-table-column v-if="columns[8].visible" label="出库量" align="center" prop="outAmount" />
+			<!-- 新增毁损金额列 -->
+			<el-table-column v-if="columns[9].visible" label="毁损金额" align="center">
+				<template slot-scope="scope">
+					{{
+						(
+							(scope.row.sourceInventoryDetail.length || 0) *
+							(scope.row.sourceInventoryDetail.width || 0) *
+							(scope.row.sourceInventoryDetail.paymentUnload || 0) *
+							(scope.row.outAmount || 0) *
+							0.000001
+						).toFixed(2)
+					}}
+				</template>
+			</el-table-column>
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="80">
 				<template slot-scope="scope">
 					<el-dropdown trigger="hover">
@@ -686,7 +700,8 @@ export default {
 				{ key: 5, label: `长度`, visible: true },
 				{ key: 6, label: `宽度`, visible: true },
 				{ key: 7, label: `存货价`, visible: true },
-				{ key: 8, label: `出库量`, visible: true }
+				{ key: 8, label: `出库量`, visible: true },
+				{ key: 9, label: `毁损金额`, visible: true } // 新增
 			],
 			inventoryInfoVisible: false,
 			isLand: false,
