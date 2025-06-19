@@ -398,7 +398,7 @@ export default {
 		handleUpdate(row) {
 			Modal.confirm({
 				title: '操作提示',
-				content: '修改科目可能会影响系统数据完整性，若该科目已被引用，修改可能导致系统损坏。是否继续？',
+				content: '修改科目可能会影响系统数据完整性，若该科目已被引用，修改可能导致系统故障。是否继续？',
 				okText: '是',
 				cancelText: '否',
 				onOk: () => {
@@ -454,7 +454,7 @@ export default {
 		handleDelete(row) {
 			Modal.confirm({
 				title: '操作提示',
-				content: '删除科目可能会影响系统数据完整性，若该科目已被引用，删除可能导致系统损坏。是否继续？',
+				content: '删除科目可能会影响系统数据完整性，若该科目已被引用，删除可能导致系统故障。是否继续？',
 				okText: '是',
 				cancelText: '否',
 				onOk: () => {
