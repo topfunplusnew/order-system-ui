@@ -285,7 +285,6 @@ async function downLoadFile(url, params, filename, config) {
 		subscriptionId = stompClient.subscribe('/topic/exportevent', message => {
 			try {
 				const messageData = JSON.parse(message.body);
-
 				// 匹配消息类型，增加容错性
 				const messageType = messageData.type ? messageData.type.toLowerCase() : '';
 				if (messageType.includes('process') || messageType.includes('progress')) {
@@ -315,7 +314,15 @@ async function downLoadFile(url, params, filename, config) {
 			}
 		});
 	} else {
-		Message.warning('WebSocket连接未建立!');
+		Message.warning('WebSocket连接未建立正在尝试重新链接...');
+		stompClient.connect(
+			{},
+			() => {},
+			error => {
+				Message.warning('WebSocket连接失败!', error);
+			}
+		);
+
 		await store.dispatch('downloadOnce/setPercent', 0);
 		return;
 	}
