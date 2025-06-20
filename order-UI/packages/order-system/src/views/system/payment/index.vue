@@ -156,6 +156,18 @@
 					<CheckFiles :path="scope.row.attachment" :needToUpdate="value => handleUpdateFilePath(value, scope.row, 'attachment', getPayment, updatePayment)" :is-upload="false" />
 				</template>
 			</el-table-column>
+			<!-- 新增银行卡流水编号列 -->
+			<el-table-column label="银行卡流水编号" align="center" prop="transactionHistory" width="120" v-if="columns[15] && columns[15].visible" show-overflow-tooltip />
+			<!-- 新增银行卡流水附件列 -->
+			<el-table-column label="银行卡流水附件" align="center" prop="transactionHistoryAttachment" width="120" v-if="columns[16] && columns[16].visible" fixed="right">
+				<template #default="scope">
+					<CheckFiles
+						:path="scope.row.transactionHistoryAttachment"
+						:needToUpdate="value => handleUpdateFilePath(value, scope.row, 'transactionHistoryAttachment', getPayment, updatePayment)"
+						:is-upload="false"
+					/>
+				</template>
+			</el-table-column>
 			<el-table-column label="复核状态" align="center" class-name="small-padding fixed-width" width="80" fixed="right">
 				<template slot-scope="scope">
 					<el-switch
@@ -423,6 +435,14 @@
 				<el-form-item label="附件" prop="attachment">
 					<file-upload ref="fileUploader" @input="handleCommitUpload" />
 				</el-form-item>
+				<!-- 新增银行卡流水编号 -->
+				<el-form-item label="银行卡流水编号" prop="transactionHistory">
+					<el-input v-model="form.transactionHistory" placeholder="请输入银行卡流水编号" />
+				</el-form-item>
+				<!-- 新增银行卡流水附件 -->
+				<el-form-item label="银行卡流水附件" prop="transactionHistoryAttachment">
+					<file-upload ref="fileUploaderTransaction" @input="handleCommitUploadTransaction" />
+				</el-form-item>
 				<el-form-item label="备注" prop="comments">
 					<el-input v-model="form.comments" placeholder="请输入备注" />
 				</el-form-item>
@@ -663,7 +683,10 @@ export default {
 				{ key: 11, label: `对方公司`, visible: true },
 				{ key: 12, label: `对方公司类型`, visible: true },
 				{ key: 13, label: `备注`, visible: true },
-				{ key: 14, label: `附件`, visible: true }
+				{ key: 14, label: `附件`, visible: true },
+				// 新增银行卡流水编号和附件列
+				{ key: 15, label: `银行卡流水编号`, visible: true },
+				{ key: 16, label: `银行卡流水附件`, visible: true }
 			],
 			// 顶部筛选框
 			queryPayment: {},
@@ -752,6 +775,10 @@ export default {
 		handleCommitUpload(value) {
 			this.form.attachment = value;
 		},
+		// 新增银行卡流水附件上传处理
+		handleCommitUploadTransaction(value) {
+			this.form.transactionHistoryAttachment = value;
+		},
 		// 选择我方银行账户类型
 		changeCustomSelfBankType(value) {
 			this.chooseInfo.otherBankCardType = value;
@@ -807,6 +834,9 @@ export default {
 				UserName: null,
 				updateTime: null,
 				delFlag: null,
+				// 新增银行卡流水编号和附件
+				transactionHistory: null,
+				transactionHistoryAttachment: null,
 				params: {
 					bankacceptance: null
 				}
@@ -951,13 +981,10 @@ export default {
 					}
 					this.form.payType = this.form.payType.join('-');
 					if (this.form.id != null) {
-						// 同上 付款没有更新的操作 这里的逻辑没有与承兑挂钩 只是单纯修改支付状态
 						this.form.paymentState = '已支付';
-						// 修改支付状态 这里逻辑上是支付 实际是修改
 						updatePayment(this.form).then(() => {
 							this.$modal.msgSuccess('支付成功~');
 						});
-						// 新增操作
 					} else {
 						this.form.companyType = this.value;
 						addPayment(this.form).then(() => {
@@ -968,6 +995,10 @@ export default {
 					this.open = false;
 					this.getList();
 					this.$refs.fileUploader.clearFileList();
+					// 新增清除银行卡流水附件
+					if (this.$refs.fileUploaderTransaction) {
+						this.$refs.fileUploaderTransaction.clearFileList();
+					}
 					this.$refs.selfSelectedBankType.localSelectType = null;
 					this.$refs.otherSelectedBankType.localSelectType = null;
 				}
