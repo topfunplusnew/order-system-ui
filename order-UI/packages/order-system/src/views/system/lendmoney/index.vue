@@ -292,7 +292,11 @@
 						<BankType
 							:bill-type="BankAcceptanceType.PAY_TYPE.RECEIVE"
 							:select-type="recoverMoneyEntity.selfBankCardType"
-							@updateSelectedType="changeCustomSelfBankType"
+							@updateSelectedType="
+								value => {
+									recoverMoneyEntity.selfBankCardType = value;
+								}
+							"
 							@updateBankAcceptance="value => (form.params.bankacceptance = value)"
 						/>
 					</el-form-item>
@@ -608,10 +612,6 @@ export default {
 				bankName: row.targetBankName
 			};
 			this.applyDialogVisible = true;
-		},
-		// 修改对方账户类型
-		changeCustomSelfBankType(value) {
-			this.recoverMoneyEntity.selfBankCardType = value;
 		},
 		changeOpen() {
 			this.needMoney = 0;
