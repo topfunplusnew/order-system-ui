@@ -255,7 +255,7 @@
 										:get-data="listBankAccount"
 										icon="el-icon-search"
 										:limit-info="{
-											acountsType: form.targetType
+											acountsType: PUBLIC_DICT_TYPE.EMPLOYEE
 										}"
 										query-label="户名查找"
 										query-info="acountsName"
@@ -264,7 +264,7 @@
 										@update:queryName="handleUpdateQueryName"
 									>
 										<template #table-columns>
-											<el-table-column :label="form.targetType === '其他' || form.targetType === '员工' ? '名称' : form.targetType" align="center" prop="acountsName" />
+											<el-table-column label="员工户名" align="center" prop="acountsName" />
 											<el-table-column label="开户行" align="center" prop="bankName" />
 											<el-table-column label="开户名" align="center" prop="acountsName" />
 											<el-table-column label="账号" align="center" prop="bankNo" />
