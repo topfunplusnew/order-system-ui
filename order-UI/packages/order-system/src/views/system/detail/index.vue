@@ -16,7 +16,7 @@
 							:query-name="queryStoreHouseName"
 							@commitBack="
 								value => {
-									queryParams.params.detail_exWareHoustId = value.id;
+									queryParams.params.main_storeHouseid = value.id;
 									storeHouseName = value.storeHouseName;
 								}
 							"
@@ -86,10 +86,11 @@
 				<el-table border id="printBox" size="mini" v-loading="loading" :data="detailList" @selection-change="handleSelectionChange">
 					<!-- 手写每一列，使用 v-if 判断列的可见性 -->
 					<el-table-column v-if="columns[0].visible" label="ID" align="center" prop="id" show-overflow-tooltip />
-					<el-table-column v-if="columns[2].visible" label="变动日期(入库)" align="center" prop="storeDate" show-overflow-tooltip />
-					<el-table-column v-if="columns[1].visible" label="入库片数" align="center" prop="stockNumber" show-overflow-tooltip />
-					<el-table-column v-if="columns[3].visible" label="剩余量" align="center" prop="actualPieces" show-overflow-tooltip />
-					<el-table-column v-if="columns[4].visible" label="供应商" align="center" prop="supplier" show-overflow-tooltip />
+					<el-table-column v-if="columns[1].visible" label="变动日期(入库)" align="center" prop="storeDate" show-overflow-tooltip />
+					<el-table-column v-if="columns[2].visible" label="仓库名称" align="center" prop="storeHouseName" show-overflow-tooltip />
+					<el-table-column v-if="columns[3].visible" label="入库片数" align="center" prop="stockNumber" show-overflow-tooltip />
+					<el-table-column v-if="columns[4].visible" label="剩余量" align="center" prop="actualPieces" show-overflow-tooltip />
+					<el-table-column v-if="columns[5].visible" label="供应商" align="center" prop="supplier" show-overflow-tooltip />
 					<el-table-column v-if="columns[6].visible" label="计量单位" align="center" prop="countingUnit" show-overflow-tooltip />
 					<el-table-column v-if="columns[7].visible" label="厚度" align="center" prop="height" show-overflow-tooltip />
 					<el-table-column v-if="columns[8].visible" label="长度" align="center" prop="length" show-overflow-tooltip />
@@ -106,7 +107,7 @@
 					<el-table-column v-if="columns[15].visible" label="误差" align="center" prop="erro" show-overflow-tooltip />
 					<el-table-column v-if="columns[16].visible" label="吨位" align="center" prop="tonnage" show-overflow-tooltip />
 					<!-- 操作列 -->
-					<el-table-column v-if="columns[17].visible" label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="120px">
+					<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="120px">
 						<template #default="scope">
 							<el-dropdown trigger="hover">
 								<span class="el-dropdown-link">
@@ -125,6 +126,124 @@
 		</el-row>
 
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
+
+		<!-- 添加或修改库存子对话框 -->
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="title" :visible.sync="open" width="500px" append-to-body>
+			<el-form ref="form" :model="form" :rules="rules" label-width="80px">
+				<el-form-item label="主表ID，关联inventory_main表的id" prop="mainId">
+					<el-input v-model="form.mainId" placeholder="请输入主表ID，关联inventory_main表的id" />
+				</el-form-item>
+				<el-form-item label="库存量(片数)(用来记录入库时的个数)" prop="stockNumber">
+					<el-input v-model="form.stockNumber" placeholder="请输入库存量(片数)(用来记录入库时的个数)" />
+				</el-form-item>
+				<el-form-item label="供应商" prop="supplier">
+					<el-input v-model="form.supplier" placeholder="请输入供应商" />
+				</el-form-item>
+				<el-form-item label="供应商ID" prop="supplierId">
+					<el-input v-model="form.supplierId" placeholder="请输入供应商ID" />
+				</el-form-item>
+				<el-form-item label="级别编码" prop="levelID">
+					<el-input v-model="form.levelID" placeholder="请输入级别编码" />
+				</el-form-item>
+				<el-form-item label="级别名称" prop="levelName">
+					<el-input v-model="form.levelName" placeholder="请输入级别名称" />
+				</el-form-item>
+				<el-form-item label="计量单位" prop="countingUnit">
+					<el-input v-model="form.countingUnit" placeholder="请输入计量单位" />
+				</el-form-item>
+				<el-form-item label="厚度" prop="height">
+					<el-input v-model="form.height" placeholder="请输入厚度" />
+				</el-form-item>
+				<el-form-item label="长度" prop="length">
+					<el-input v-model="form.length" placeholder="请输入长度" />
+				</el-form-item>
+				<el-form-item label="宽度" prop="width">
+					<el-input v-model="form.width" placeholder="请输入宽度" />
+				</el-form-item>
+				<el-form-item label="出厂片数" prop="pieces">
+					<el-input v-model="form.pieces" placeholder="请输入出厂片数" />
+				</el-form-item>
+				<el-form-item label="每包片数" prop="piecesPerPack">
+					<el-input v-model="form.piecesPerPack" placeholder="请输入每包片数" />
+				</el-form-item>
+				<el-form-item label="包数" prop="packs">
+					<el-input v-model="form.packs" placeholder="请输入包数" />
+				</el-form-item>
+				<el-form-item label="出厂单价" prop="price">
+					<el-input v-model="form.price" placeholder="请输入出厂单价" />
+				</el-form-item>
+				<el-form-item label="出厂是否含税" prop="isIncludeTaxFactory">
+					<el-input v-model="form.isIncludeTaxFactory" placeholder="请输入出厂是否含税" />
+				</el-form-item>
+				<el-form-item label="杂费" prop="sundryCost">
+					<el-input v-model="form.sundryCost" placeholder="请输入杂费" />
+				</el-form-item>
+				<el-form-item label="出厂货款" prop="paymentFactory">
+					<el-input v-model="form.paymentFactory" placeholder="请输入出厂货款" />
+				</el-form-item>
+				<el-form-item label="卸货价" prop="paymentUnload">
+					<el-input v-model="form.paymentUnload" placeholder="请输入卸货价" />
+				</el-form-item>
+				<el-form-item label="销售是否含税" prop="isIncludeTaxSale">
+					<el-input v-model="form.isIncludeTaxSale" placeholder="请输入销售是否含税" />
+				</el-form-item>
+				<el-form-item label="总货款" prop="payments">
+					<el-input v-model="form.payments" placeholder="请输入总货款" />
+				</el-form-item>
+				<el-form-item label="误差" prop="erro">
+					<el-input v-model="form.erro" placeholder="请输入误差" />
+				</el-form-item>
+				<el-form-item label="吨位" prop="tonnage">
+					<el-input v-model="form.tonnage" placeholder="请输入吨位" />
+				</el-form-item>
+				<el-form-item label="陆运费单价" prop="landFreightPrice">
+					<el-input v-model="form.landFreightPrice" placeholder="请输入陆运费单价" />
+				</el-form-item>
+				<el-form-item label="陆运费" prop="landFreight">
+					<el-input v-model="form.landFreight" placeholder="请输入陆运费" />
+				</el-form-item>
+				<el-form-item label="海运费" prop="seaFreight">
+					<el-input v-model="form.seaFreight" placeholder="请输入海运费" />
+				</el-form-item>
+				<el-form-item label="运费" prop="freight">
+					<el-input v-model="form.freight" placeholder="请输入运费" />
+				</el-form-item>
+				<el-form-item label="其他费用" prop="otherCost">
+					<el-input v-model="form.otherCost" placeholder="请输入其他费用" />
+				</el-form-item>
+				<el-form-item label="利润" prop="profit">
+					<el-input v-model="form.profit" placeholder="请输入利润" />
+				</el-form-item>
+				<el-form-item label="不含税利润" prop="profitNoTax">
+					<el-input v-model="form.profitNoTax" placeholder="请输入不含税利润" />
+				</el-form-item>
+				<el-form-item label="卸货片数" prop="actualPieces">
+					<el-input v-model="form.actualPieces" placeholder="用来记录仓库还剩余的个数" />
+				</el-form-item>
+				<el-form-item label="总货款杂费" prop="paymentsWithSundry">
+					<el-input v-model="form.paymentsWithSundry" placeholder="请输入总货款杂费" />
+				</el-form-item>
+				<el-form-item label="加费" prop="additionalFees">
+					<el-input v-model="form.additionalFees" placeholder="请输入加费" />
+				</el-form-item>
+				<el-form-item label="返利金额" prop="rebate">
+					<el-input v-model="form.rebate" placeholder="请输入返利金额" />
+				</el-form-item>
+				<el-form-item label="厂家佣金" prop="factoryCommission">
+					<el-input v-model="form.factoryCommission" placeholder="请输入厂家佣金" />
+				</el-form-item>
+				<el-form-item label="备注" prop="comments">
+					<el-input v-model="form.comments" placeholder="请输入备注" />
+				</el-form-item>
+				<el-form-item label="二次入库对应的出库id" prop="exWareHoustId">
+					<el-input v-model="form.exWareHoustId" placeholder="请输入二次入库对应的出库id" />
+				</el-form-item>
+			</el-form>
+			<div slot="footer" class="dialog-footer">
+				<el-button type="primary" @click="submitForm">确 定</el-button>
+				<el-button @click="cancel">取 消</el-button>
+			</div>
+		</el-dialog>
 
 		<!-- 二次出库对话框 -->
 		<el-dialog
@@ -263,7 +382,7 @@ export default {
 				exWareHoustId: null,
 				delFlag: null,
 				params: {
-					detail_exWareHoustId: null,
+					main_storeHouseid: null,
 					main_storeDate_startTime: null,
 					main_storeDate_endTime: null
 				}
@@ -272,22 +391,22 @@ export default {
 			form: {},
 			columns: [
 				{ key: 0, label: 'ID', prop: 'id', visible: true },
-				{ key: 1, label: '入库片数', prop: 'stockNumber', visible: true },
-				{ key: 2, label: '入库时间', prop: 'storeDate', visible: true },
-				{ key: 3, label: '剩余量', prop: 'actualPieces', visible: true },
-				{ key: 4, label: '供应商', prop: 'supplier', visible: true },
-				{ key: 5, label: '计量单位', prop: 'countingUnit', visible: true },
-				{ key: 6, label: '厚度', prop: 'height', visible: true },
-				{ key: 7, label: '长度', prop: 'length', visible: true },
-				{ key: 8, label: '宽度', prop: 'width', visible: true },
-				{ key: 9, label: '每包片数', prop: 'piecesPerPack', visible: true },
-				{ key: 10, label: '包数', prop: 'packs', visible: true },
-				{ key: 11, label: '存货价', prop: 'paymentUnload', visible: true },
-				{ key: 12, label: '库存是否含税', prop: 'isIncludeTaxSale', visible: true },
-				{ key: 13, label: '入库金额', prop: 'payments', visible: true },
-				{ key: 14, label: '误差', prop: 'erro', visible: true },
-				{ key: 15, label: '吨位', prop: 'tonnage', visible: true },
-				{ key: 16, label: '操作', prop: 'action', visible: true } // 操作列
+				{ key: 1, label: '变动日期(入库)', prop: 'storeDate', visible: true },
+				{ key: 2, label: '仓库名称', prop: 'storeHouseName', visible: true },
+				{ key: 3, label: '入库片数', prop: 'stockNumber', visible: true },
+				{ key: 4, label: '剩余量', prop: 'actualPieces', visible: true },
+				{ key: 5, label: '供应商', prop: 'supplier', visible: true },
+				{ key: 6, label: '计量单位', prop: 'countingUnit', visible: true },
+				{ key: 7, label: '厚度', prop: 'height', visible: true },
+				{ key: 8, label: '长度', prop: 'length', visible: true },
+				{ key: 9, label: '宽度', prop: 'width', visible: true },
+				{ key: 10, label: '每包片数', prop: 'piecesPerPack', visible: true },
+				{ key: 11, label: '包数', prop: 'packs', visible: true },
+				{ key: 12, label: '存货价', prop: 'paymentUnload', visible: true },
+				{ key: 13, label: '库存是否含税', prop: 'isIncludeTaxSale', visible: true },
+				{ key: 14, label: '入库金额', prop: 'payments', visible: true },
+				{ key: 15, label: '误差', prop: 'erro', visible: true },
+				{ key: 16, label: '吨位', prop: 'tonnage', visible: true }
 			],
 			// 表单校验
 			rules: {
@@ -349,11 +468,10 @@ export default {
 			this.loading = true;
 			listDetail({
 				params: {
-					detail_exWareHoustId: data.id
+					main_storeHouseid: data.id
 				}
 			}).then(res => {
-				this.$message.success(`成功获取到 [${data.label}] 的货物信息!`);
-				this.inventoryMainList = res.rows;
+				this.detailList = res.rows;
 				this.loading = false;
 			});
 		},
