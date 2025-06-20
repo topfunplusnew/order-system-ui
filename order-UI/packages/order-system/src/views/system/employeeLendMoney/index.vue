@@ -567,14 +567,6 @@ export default {
 					}
 				],
 
-				targetBankName: [
-					{
-						required: true,
-						message: '对方银行不能为空',
-						trigger: 'blur'
-					}
-				],
-
 				selfAcountsName: [
 					{
 						required: true,
