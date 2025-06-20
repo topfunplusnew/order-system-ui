@@ -342,6 +342,7 @@ async function downLoadFile(url, params, filename, config) {
 				console.error('处理WebSocket消息出错:', error);
 				subscriptionId.unsubscribe();
 				store.dispatch('downloadOnce/setPercent', 0);
+				return;
 			}
 		});
 	} else {

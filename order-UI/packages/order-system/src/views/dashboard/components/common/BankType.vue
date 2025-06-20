@@ -25,7 +25,7 @@ import BankacceptanceForm from '@/views/dashboard/components/bankacceptance/comp
 import { BankAcceptanceType } from '@/api/tool/enums';
 import { getBankAcceptance } from '@/api/system/bankAcceptance';
 import { MessageBox } from 'element-ui'; // 引入 ElementUI 的 MessageBox 组件
-
+import _ from 'lodash';
 export default {
 	name: 'BankType',
 	components: { BankacceptanceForm },
@@ -167,7 +167,6 @@ export default {
 		},
 		// 右侧滑窗的提交逻辑
 		handleSubmit(value) {
-			console.log(`承兑信息:`, value);
 			// 新扔一个emit 给父组件用
 			this.$emit('updateBankAcceptance', _.cloneDeep(value));
 			this.flag = true;

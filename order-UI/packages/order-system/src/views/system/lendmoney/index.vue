@@ -288,6 +288,7 @@
 						</el-row>
 					</el-form-item>
 					<el-form-item label="我方银行账户类型">
+						<!-- TODO -->
 						<BankType
 							:bill-type="BankAcceptanceType.PAY_TYPE.RECEIVE"
 							:select-type="recoverMoneyEntity.selfBankCardType"

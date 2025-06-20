@@ -244,6 +244,14 @@
 						<el-form-item label="对象" prop="target">
 							<el-input v-model="form.target" placeholder="请输入对象(员工姓名、公司名称)" />
 						</el-form-item>
+						<!-- 新增对方类型选择 -->
+						<el-form-item label="对方类型" prop="targetType">
+							<el-select v-model="form.targetType" placeholder="请选择对方类型">
+								<el-option :label="'员工'" :value="PUBLIC_DICT_TYPE.EMPLOYEE"></el-option>
+								<el-option :label="'供应商'" :value="PUBLIC_DICT_TYPE.SUPPLIER"></el-option>
+								<el-option :label="'客户'" :value="PUBLIC_DICT_TYPE.CUSTOMER"></el-option>
+							</el-select>
+						</el-form-item>
 						<el-form-item label="对方账户" prop="targetAcountsName">
 							<el-row>
 								<el-col :span="10">
@@ -818,22 +826,22 @@ export default {
 			this.reset();
 			this.open = true;
 			this.title = '添加向外部借出款信息';
+			// 默认对方类型可选，若需要默认值可加如下行
+			this.form.targetType = this.PUBLIC_DICT_TYPE.EMPLOYEE;
 		},
 		/** 提交按钮 */
 		submitForm() {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
+					this.form = excludeParams(this.form, this.$exclude);
+					// 不再写死 targetType，直接用表单选择的
 					if (this.form.id != null) {
-						this.form = excludeParams(this.form, this.$exclude);
-						this.form.targetType = PUBLIC_DICT_TYPE.EMPLOYEE;
 						updateLendMoney(this.form).then(response => {
 							this.$modal.msgSuccess('修改成功');
 							this.open = false;
 							this.getList();
 						});
 					} else {
-						this.form = excludeParams(this.form, this.$exclude);
-						this.form.targetType = PUBLIC_DICT_TYPE.EMPLOYEE;
 						addLendMoney(this.form).then(response => {
 							this.$modal.msgSuccess('新增成功');
 							this.open = false;

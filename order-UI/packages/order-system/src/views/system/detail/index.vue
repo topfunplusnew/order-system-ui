@@ -16,7 +16,7 @@
 							:query-name="queryStoreHouseName"
 							@commitBack="
 								value => {
-									queryParams.params.main_storeHouseName = value.id;
+									queryParams.params.main_storeHouseid = value.id;
 									storeHouseName = value.storeHouseName;
 								}
 							"
@@ -381,7 +381,7 @@ export default {
 				exWareHoustId: null,
 				delFlag: null,
 				params: {
-					main_storeHouseName: null,
+					main_storeHouseid: null,
 					main_storeDate_startTime: null,
 					main_storeDate_endTime: null
 				}
@@ -467,7 +467,7 @@ export default {
 			this.loading = true;
 			listDetail({
 				params: {
-					main_storeHouseName: data.id
+					main_storeHouseid: data.id
 				}
 			}).then(res => {
 				this.$message.success(`成功获取到 [${data.label}] 的货物信息!`);
