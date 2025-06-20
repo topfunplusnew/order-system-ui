@@ -129,6 +129,9 @@ export default {
 		},
 		// 传递给父组件 然后更新父组件的 selectedType 值
 		handleEmitType(value) {
+			// 每次切换都需要清空承兑的填写状态
+			this.clearAcceptanceFillStatus();
+			this.$emit('updateBankAcceptance', {});
 			this.$emit('updateSelectedType', value);
 			if (BankAcceptanceType.ACCEPTANCE === value) {
 				// 如果选择了承兑类型
