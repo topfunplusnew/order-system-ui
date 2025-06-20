@@ -136,7 +136,7 @@
 					</el-form>
 				</el-row>
 				<el-row>
-					<el-table height="130" :empty-text="' '" :data="dailyProfit">
+					<el-table height="130" :empty-text="' '" :data="[dailyProfit]">
 						<el-table-column :label="`￥${moneyAmount}`" align="center">
 							<el-table-column prop="dailyProfit" label="利润总额">
 								<el-table-column prop="dailyExpense" label="费用合计"></el-table-column>
@@ -155,7 +155,7 @@
 				<el-progress
 					:percentage="downloadProgress"
 					:stroke-width="20"
-					:status="downloadProgress === 100 ? 'success' : ''"
+					:status="downloadProgress === 100 ? 'success' : 'warning'"
 					class="wave-progress"
 					:class="{
 						'is-downloading': downloadProgress > 0 && downloadProgress < 100,
@@ -164,6 +164,7 @@
 				></el-progress>
 			</div>
 			<div>
+				<el-button type="primary" size="mini" icon="el-icon-document" @click="logDialogVisible = true">下载日志</el-button>
 				<el-button type="info" icon="el-icon-question" size="mini" @click="handleLearn">查看教程</el-button>
 				<el-button id="step1" icon="el-icon-download" size="mini" type="warning" @click="handleBackgroundDownload">预先导出</el-button>
 				<el-button id="step2" type="primary" icon="el-icon-download" size="mini" @click="handleDownload">一键下载</el-button>
@@ -250,6 +251,18 @@
 		</el-dialog>
 		<!-- 添加漫游组件 -->
 		<v-tour name="downloadListTour" :steps="tourSteps" :options="tourOptions" :callbacks="tourCallBacks"></v-tour>
+
+		<!-- 下载日志弹窗 -->
+		<el-dialog title="下载日志(该日志信息为实时日志并非后台下载)" :visible.sync="logDialogVisible" width="600px" :modal="false" class="download-log-dialog" :close-on-click-modal="false">
+			<div class="log-scroll-area">
+				<ul>
+					<li v-for="(msg, idx) in downloadLogList" :key="idx">{{ msg }}</li>
+				</ul>
+			</div>
+			<span slot="footer" class="dialog-footer">
+				<el-button @click="logDialogVisible = false">关闭</el-button>
+			</span>
+		</el-dialog>
 	</div>
 </template>
 
@@ -390,7 +403,8 @@ export default {
 					buttonStop: '完成'
 				}
 			},
-			downloadMessage: '' // 新增下载消息状态
+			logDialogVisible: false, // 新增日志弹窗可见性
+			downloadLogList: [] // 新增：日志数组
 		};
 	},
 	created() {
@@ -425,10 +439,35 @@ export default {
 					this.downloadMessage = '';
 				}, 3000);
 			}
+		},
+		downloadMessage(val) {
+			console.log('监听数据', val);
+			// 新增：追加日志到数组
+			if (val) {
+				this.downloadLogList.push(val);
+			}
+			// 自动滚动到底部
+			this.$nextTick(() => {
+				const logScrollArea = this.$el.querySelector('.log-scroll-area');
+				if (logScrollArea) {
+					logScrollArea.scrollTop = logScrollArea.scrollHeight;
+				}
+			});
+		},
+		logDialogVisible(val) {
+			// 打开弹窗时自动滚动到底部
+			if (val) {
+				this.$nextTick(() => {
+					const logScrollArea = this.$el.querySelector('.log-scroll-area');
+					if (logScrollArea) {
+						logScrollArea.scrollTop = logScrollArea.scrollHeight;
+					}
+				});
+			}
 		}
 	},
 	computed: {
-		...mapGetters(['downloadProgress'])
+		...mapGetters(['downloadProgress', 'downloadMessage'])
 	},
 	methods: {
 		// 一键下载
@@ -446,6 +485,8 @@ export default {
 				}
 			});
 		},
+
+		// 一键下载
 		handleOption(exportEmptyData = false) {
 			const now = new Date();
 			const yyyy = now.getFullYear();
@@ -1028,5 +1069,38 @@ export default {
 	font-size: 14px !important;
 	font-weight: 600;
 	color: #606266;
+}
+
+/* 下载日志弹窗样式 */
+.download-log-dialog {
+	.log-scroll-area {
+		background: #111;
+		color: #b7e1ff;
+		font-family: 'Fira Mono', 'Consolas', 'Menlo', monospace;
+		font-size: 13px;
+		padding: 12px;
+		border-radius: 6px;
+		height: 320px;
+		overflow-y: auto;
+		white-space: pre-wrap;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+		ul {
+			list-style: none;
+			padding: 0;
+			margin: 0;
+		}
+		li {
+			white-space: pre-wrap;
+			word-break: break-all;
+			margin-bottom: 2px;
+		}
+	}
+}
+
+/* 可选：让pre标签自动滚动到底部 */
+.download-log-dialog .log-scroll-area pre {
+	margin: 0;
+	white-space: pre-wrap;
+	word-break: break-all;
 }
 </style>

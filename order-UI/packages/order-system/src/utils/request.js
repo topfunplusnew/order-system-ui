@@ -249,7 +249,7 @@ export function download(url, params, filename, config, isShowConfig = false) {
 		});
 }
 
-// 一键下载的方法
+// 一键下载的方法 点击下载后先校验一下是否可以下载
 export function onceDownload(url, params, filename, config) {
 	// 先获取是否可以下载
 	getDownLoadStatus().then(status => {
@@ -265,6 +265,7 @@ export function onceDownload(url, params, filename, config) {
 	});
 }
 
+// TODO
 async function downLoadFile(url, params, filename, config) {
 	// 重置进度条为0，确保立即显示进度条
 	await store.dispatch('downloadOnce/setPercent', 1); // 从1%开始，让用户立即看到进度
@@ -274,27 +275,9 @@ async function downLoadFile(url, params, filename, config) {
 	let actualMaxProgress = 100;
 	let lastProgressUpdate = Date.now();
 
-	// 模拟进度的增长速度控制
-	let simulatedProgress = 1;
-	let progressGrowthPaused = false;
-
 	// 获取WebSocket客户端
 	let stompClient = window.stompClient;
 	let subscriptionId = null;
-
-	// 平滑增长进度的定时器
-	const progressInterval = setInterval(() => {
-		const now = Date.now();
-		// 如果超过3秒没有收到新的进度更新，且进度还没到80%，则继续增长模拟进度
-		if (!progressGrowthPaused && now - lastProgressUpdate > 3000 && simulatedProgress < 80) {
-			// 根据当前进度动态调整增长速度，越接近80%增长越慢
-			const increment = 0.3 * (1 - simulatedProgress / 80);
-			simulatedProgress += increment;
-			// 确保不超过80%（留给实际完成进度）
-			simulatedProgress = Math.min(80, simulatedProgress);
-			store.dispatch('downloadOnce/setPercent', Math.round(simulatedProgress));
-		}
-	}, 500);
 
 	// 只有在stompClient存在且已连接的情况下才订阅进度消息
 	if (stompClient && stompClient.connected) {
@@ -310,32 +293,18 @@ async function downLoadFile(url, params, filename, config) {
 					if (messageData.data) {
 						// 更新最后一次收到进度的时间
 						lastProgressUpdate = Date.now();
-
 						// 获取实际进度
 						actualProgress = messageData.data.NowProgress || 0;
 						actualMaxProgress = messageData.data.MaxProgress || 100;
-
-						// 根据实际进度判断是否暂停模拟进度增长
-						if (actualProgress / actualMaxProgress > 0.8) {
-							progressGrowthPaused = true;
-						}
-
+						const downloadMessage = messageData.data.message || '正在下载...';
+						console.log(`下载进度: ${actualProgress}/${actualMaxProgress} - ${downloadMessage}`);
 						// 计算百分比进度
 						let percent = Math.round((actualProgress / actualMaxProgress) * 100);
-
 						// 确保进度至少为1%，且不超过99%（留1%给完成时设置为100%）
 						percent = Math.max(1, Math.min(99, percent));
-
-						// 更新模拟进度为实际进度
-						simulatedProgress = percent;
-
-						// 更新store中的进度
+						// 更新store中的进度 和 消息
 						store.dispatch('downloadOnce/setPercent', percent);
-
-						// 显示当前操作的消息提示（限制频率，避免消息过多）
-						if (messageData.data.message && percent % 10 === 0) {
-							Message({ message: messageData.data.message, type: 'info', duration: 2000 });
-						}
+						store.dispatch('downloadOnce/setMessage', downloadMessage);
 					}
 				}
 			} catch (error) {
@@ -370,7 +339,7 @@ async function downLoadFile(url, params, filename, config) {
 				store.dispatch('downloadOnce/setPercent', 0);
 			}
 		});
-	}, 3000);
+	}, 1000 * 60 * 3);
 
 	// 发送下载请求
 	return service
@@ -386,9 +355,6 @@ async function downLoadFile(url, params, filename, config) {
 			...config
 		})
 		.then(async data => {
-			// 停止进度增长定时器
-			clearInterval(progressInterval);
-
 			// 清理资源
 			if (subscriptionId) {
 				subscriptionId.unsubscribe();
@@ -421,9 +387,6 @@ async function downLoadFile(url, params, filename, config) {
 			}, 3000);
 		})
 		.catch(r => {
-			// 停止进度增长定时器
-			clearInterval(progressInterval);
-
 			// 清理资源
 			if (subscriptionId) {
 				subscriptionId.unsubscribe();

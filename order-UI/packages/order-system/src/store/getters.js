@@ -62,6 +62,7 @@ const getters = {
 	companyList: state => state.excel.companyList,
 
 	// 下载进度
-	downloadProgress: state => state.downloadOnce.percent
+	downloadProgress: state => state.downloadOnce.percent,
+	downloadMessage: state => state.downloadOnce.message
 };
 export default getters;

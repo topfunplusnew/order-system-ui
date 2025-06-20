@@ -1,9 +1,13 @@
 const state = {
-	percent: 0
+	percent: 0,
+	message: ''
 };
 const mutations = {
 	SET_PERCENT(state, percent) {
 		state.percent = percent;
+	},
+	SET_MESSAGE(state, message) {
+		state.message = message;
 	}
 };
 
@@ -23,6 +27,9 @@ const actions = {
 
 		// 当没有传入有效数据时，默认为0（重置）
 		commit('SET_PERCENT', 0);
+	},
+	setMessage({ commit }, data) {
+		commit('SET_MESSAGE', data);
 	}
 };
 
