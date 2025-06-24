@@ -63,10 +63,13 @@
 		<!-- 添加或修改外部车辆信息对话框 -->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="120px" @keyup.enter.native="submitForm" @submit.native.prevent="submitForm">
+				<el-form-item label="运输类型" prop="carType">
+					<el-radio v-model="form.carType" label="陆运">陆运</el-radio>
+					<el-radio v-model="form.carType" label="海运">海运</el-radio>
+				</el-form-item>
 				<el-form-item label="车牌/柜号" prop="carNo">
 					<el-input v-model="form.carNo" placeholder="请输入车牌/柜号" @input="handleCheckInput" @blur="handleCheckIsExits" />
 				</el-form-item>
-
 				<!--        陆运司机名称或者 海运公司-->
 				<el-form-item label="司机/海运公司" prop="driver">
 					<el-input v-model="form.driver" placeholder="请输入司机/海运公司" @input="handleInputTrim($event, 'form', 'driver')" />
@@ -113,11 +116,6 @@
 				<el-form-item label="账号类型" prop="acountsType">
 					<el-radio v-model="form.acountsType" label="1">收款</el-radio>
 					<el-radio v-model="form.acountsType" label="2">付款</el-radio>
-				</el-form-item>
-
-				<el-form-item label="运输类型" prop="carType">
-					<el-radio v-model="form.carType" label="陆运">陆运</el-radio>
-					<el-radio v-model="form.carType" label="海运">海运</el-radio>
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -181,6 +179,7 @@ export default {
 				delFlag: null
 			},
 			form: {},
+			carType: null,
 			rules: {
 				carNo: [
 					{
@@ -189,13 +188,20 @@ export default {
 						trigger: 'blur'
 					},
 					{
-						validator(rule, value, callback) {
-							if (value.length > 8) {
-								callback(new Error('车牌号不能超过8个字符'));
+						validator: (rule, value, callback) => {
+							if (!value) {
+								callback();
+								return;
+							}
+							const maxLength = this.form.carType === '陆运' ? 8 : 11;
+							const typeName = this.form.carType === '陆运' ? '车牌' : '柜号';
+							if (value.length > maxLength) {
+								callback(new Error(`${typeName}长度不能超过${maxLength}位`));
 							} else {
 								callback();
 							}
-						}
+						},
+						trigger: ['blur', 'change']
 					}
 				],
 				driver: [
@@ -306,7 +312,16 @@ export default {
 			let cleanedValue = value.replace(/\s+/g, '');
 			// 2. 将字母转为大写（包括"鲁A"这类前缀）
 			cleanedValue = cleanedValue.toUpperCase();
-			// 3. 更新表单数据
+
+			// 3. 根据运输类型限制长度
+			const maxLength = this.form.carType === '陆运' ? 8 : 11;
+			if (cleanedValue.length > maxLength) {
+				const typeName = this.form.carType === '陆运' ? '车牌' : '柜号';
+				this.$message.warning(`${typeName}长度不能超过${maxLength}位`);
+				cleanedValue = cleanedValue.substring(0, maxLength);
+			}
+
+			// 4. 更新表单数据
 			this.form.carNo = cleanedValue;
 		},
 		handleCheckIsExits() {
@@ -405,6 +420,14 @@ export default {
 		submitForm() {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
+					// 提交前再次校验车牌/柜号长度
+					const maxLength = this.form.carType === '陆运' ? 8 : 11;
+					const typeName = this.form.carType === '陆运' ? '车牌' : '柜号';
+					if (this.form.carNo && this.form.carNo.length > maxLength) {
+						this.$message.error(`${typeName}长度不能超过${maxLength}位`);
+						return;
+					}
+
 					if (this.form.id != null) {
 						this.form = excludeParams(this.form, this.$exclude);
 						checkCarsIsExit(this.form.carNo, this.form.id).then(res => {
