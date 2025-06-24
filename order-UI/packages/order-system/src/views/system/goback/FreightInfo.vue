@@ -106,7 +106,7 @@
 
 <script>
 import { getFreightSubjectDetailSummary, getFreightSubjectDetailSummarySomeDay } from '@/api/system/statement';
-import { aggregateByDay, fix } from '@/api/tool/format';
+import { fix_2, fix } from '@/api/tool/format';
 import { getFunction } from '@/utils/order/mapper';
 import { moduleNames, TableName } from '@/api/tool/enums';
 import GOODS_ORDER from '@/components/NeedToShow/GOODS_ORDER.vue';
@@ -239,6 +239,8 @@ export default {
 			this.handleSearch(row);
 		},
 		handleCheckBorrowerDetailList(row) {
+			console.log(`row`, row);
+
 			this.detailList = row.borrowerList;
 			this.detailVisible = true;
 		},
@@ -302,22 +304,25 @@ export default {
 								}
 								// 准备当天借方和贷方明细列表 (用于弹窗)
 								const condition = detail => {
-									const lender = detail.moneyAmount > 0 ? Math.abs(detail.moneyAmountLocal) : 0;
-									const borrower = detail.moneyAmount < 0 ? Math.abs(detail.moneyAmountLocal) : 0;
+									const lender = detail.moneyAmount > 0 ? Math.abs(detail.moneyAmount) : 0;
+									const borrower = detail.moneyAmount < 0 ? Math.abs(detail.moneyAmount) : 0;
 									return {
 										date: detail.operateDate,
 										payNo: detail.payNo,
 										lender: fix(lender),
 										borrower: fix(borrower),
 										tableName: detail.tableName,
-										moneyAmountLocal: fix(detail.moneyAmount)
+										moneyAmountLocal: fix_2(detail.moneyAmount)
 									};
 								};
-								// 运费：借方列表是应收运费增加的操作 (moneyAmount > 0)
-								const lenderList = item.map(condition).filter(d => Number(d.moneyAmount) > 0);
-								// 运费：贷方列表是实收运费或冲减的操作 (moneyAmount < 0)
-								const borrowerList = item.map(condition).filter(d => Number(d.moneyAmount) < 0);
 
+								// console.log(`item`, item);
+								// const lenderList = item.map(condition).filter(d => Number(d.moneyAmount) > 0);
+								// const borrowerList = item.map(condition).filter(d => Number(d.moneyAmount) < 0);
+								// 运费：借方列表是应收运费增加的操作 (moneyAmount > 0)
+								const lenderList = item.map(condition).filter(detail => Number(detail.moneyAmountLocal) > 0);
+								// 运费：贷方列表是实收运费或冲减的操作 (moneyAmount < 0)
+								const borrowerList = item.map(condition).filter(detail => Number(detail.moneyAmountLocal) < 0);
 								return {
 									operateDate: date, // 日期列使用分组的key
 									payNo: '', // 主表该列现在显示明细，留空或移除
