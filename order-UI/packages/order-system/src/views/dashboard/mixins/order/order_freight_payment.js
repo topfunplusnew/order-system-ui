@@ -111,6 +111,7 @@ export var mixin_order_freight_payment = {
 			this.freightSelfOnceInfo.selfAcountsName = val.acountsName;
 			this.freightSelfOnceInfo.selfBankNo = val.bankNo;
 			this.freightSelfOnceInfo.selfBankName = val.bankName;
+			this.freightSelfOnceInfo.selfBankID = val.id;
 		},
 		// 一键付运费
 		submitFreightOnce() {
@@ -190,6 +191,7 @@ export var mixin_order_freight_payment = {
 				selfAcountsName: null,
 				selfBankNo: null,
 				selfBankName: null,
+				selfBankID: null,
 				// 我方银行账户类型
 				selfBankCardType: null,
 				// 对方银行账户类型
