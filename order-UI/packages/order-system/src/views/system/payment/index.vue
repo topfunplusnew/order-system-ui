@@ -773,6 +773,8 @@ export default {
 		listBankAccount,
 		listCompany,
 		handleCommitUpload(value) {
+			console.log(value);
+
 			this.form.attachment = value;
 		},
 		// 新增银行卡流水附件上传处理
