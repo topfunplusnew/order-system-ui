@@ -67,15 +67,15 @@
 					<el-radio v-model="form.carType" label="陆运">陆运</el-radio>
 					<el-radio v-model="form.carType" label="海运">海运</el-radio>
 				</el-form-item>
-				<el-form-item label="车牌/柜号" prop="carNo">
-					<el-input v-model="form.carNo" placeholder="请输入车牌/柜号" @input="handleCheckInput" @blur="handleCheckIsExits" />
+				<el-form-item v-if="form.carType === '陆运'" label="车牌" prop="carNo">
+					<el-input v-model="form.carNo" placeholder="请输入车牌" @input="handleCheckInput" @blur="handleCheckIsExits" />
 				</el-form-item>
 				<!--        陆运司机名称或者 海运公司-->
-				<el-form-item label="司机/海运公司" prop="driver">
-					<el-input v-model="form.driver" placeholder="请输入司机/海运公司" @input="handleInputTrim($event, 'form', 'driver')" />
+				<el-form-item :label="form.carType === '陆运' ? '司机' : '海运公司'" prop="driver">
+					<el-input v-model="form.driver" :placeholder="form.carType === '陆运' ? '请输入司机' : '请输入海运公司'" @input="handleInputTrim($event, 'form', 'driver')" />
 				</el-form-item>
-				<el-form-item label="司机电话" prop="tel">
-					<el-input v-model="form.tel" placeholder="请输入司机电话" @input="handleInputTrim($event, 'form', 'tel')" />
+				<el-form-item :label="form.carType === '陆运' ? '司机电话' : '联系电话'" prop="tel">
+					<el-input v-model="form.tel" :placeholder="form.carType === '陆运' ? '请输入司机电话' : '请输入联系电话'" @input="handleInputTrim($event, 'form', 'tel')" />
 				</el-form-item>
 				<el-form-item label="开户行" prop="bankName">
 					<el-row>
@@ -183,20 +183,19 @@ export default {
 			rules: {
 				carNo: [
 					{
-						required: true,
-						message: '车牌号不能为空',
-						trigger: 'blur'
-					},
-					{
 						validator: (rule, value, callback) => {
-							if (!value) {
-								callback();
-								return;
-							}
-							const maxLength = this.form.carType === '陆运' ? 8 : 11;
-							const typeName = this.form.carType === '陆运' ? '车牌' : '柜号';
-							if (value.length > maxLength) {
-								callback(new Error(`${typeName}长度不能超过${maxLength}位`));
+							// 只有在陆运类型时才验证车牌号
+							if (this.form.carType === '陆运') {
+								if (!value) {
+									callback(new Error('车牌号不能为空'));
+									return;
+								}
+								const maxLength = 8;
+								if (value.length > maxLength) {
+									callback(new Error(`车牌长度不能超过${maxLength}位`));
+								} else {
+									callback();
+								}
 							} else {
 								callback();
 							}
@@ -207,14 +206,28 @@ export default {
 				driver: [
 					{
 						required: true,
-						message: '司机姓名不能为空',
+						validator: (rule, value, callback) => {
+							const fieldName = this.form.carType === '陆运' ? '司机姓名' : '海运公司';
+							if (!value) {
+								callback(new Error(`${fieldName}不能为空`));
+							} else {
+								callback();
+							}
+						},
 						trigger: 'blur'
 					}
 				],
 				tel: [
 					{
 						required: true,
-						message: '司机电话不能为空',
+						validator: (rule, value, callback) => {
+							const fieldName = this.form.carType === '陆运' ? '司机电话' : '联系电话';
+							if (!value) {
+								callback(new Error(`${fieldName}不能为空`));
+							} else {
+								callback();
+							}
+						},
 						trigger: 'blur'
 					}
 				],
@@ -270,6 +283,14 @@ export default {
 				localStorage.setItem('car-columns', JSON.stringify(newVal));
 			},
 			deep: true
+		},
+		'form.carType': {
+			handler: function (newVal) {
+				// 当选择海运时，清空车牌号字段
+				if (newVal === '海运') {
+					this.form.carNo = null;
+				}
+			}
 		}
 	},
 	created() {
@@ -308,16 +329,20 @@ export default {
 			this.driverBankAccout = true;
 		},
 		handleCheckInput(value) {
+			// 只有陆运类型才处理车牌号输入
+			if (this.form.carType !== '陆运') {
+				return;
+			}
+			
 			// 1. 清除所有空格
 			let cleanedValue = value.replace(/\s+/g, '');
 			// 2. 将字母转为大写（包括"鲁A"这类前缀）
 			cleanedValue = cleanedValue.toUpperCase();
 
-			// 3. 根据运输类型限制长度
-			const maxLength = this.form.carType === '陆运' ? 8 : 11;
+			// 3. 限制车牌长度
+			const maxLength = 8;
 			if (cleanedValue.length > maxLength) {
-				const typeName = this.form.carType === '陆运' ? '车牌' : '柜号';
-				this.$message.warning(`${typeName}长度不能超过${maxLength}位`);
+				this.$message.warning(`车牌长度不能超过${maxLength}位`);
 				cleanedValue = cleanedValue.substring(0, maxLength);
 			}
 
@@ -325,19 +350,20 @@ export default {
 			this.form.carNo = cleanedValue;
 		},
 		handleCheckIsExits() {
-			if (this.form.carNo) {
+			// 只有陆运类型且有车牌号时才检查
+			if (this.form.carType === '陆运' && this.form.carNo) {
 				const exitId = _.cloneDeep(this.form.id);
 				// 如果id不为空,说明为修改,修改时传入id,后端返回true 说明唯一 可以修改 如果返回false,那么后端有问题
 				if (exitId) {
 					checkCarsIsExit(this.form.carNo, exitId).then(res => {
 						if (!res.data) {
-							this.$message.error(`检查时出现错误 车牌/柜号 ${this.form.carNo} 已存在!`);
+							this.$message.error(`检查时出现错误 车牌 ${this.form.carNo} 已存在!`);
 						}
 					});
 				} else {
 					checkCarsIsExit(this.form.carNo, null).then(res => {
 						if (!res.data) {
-							this.$message.error(`车牌/柜号 ${this.form.carNo} 已存在,请修改单据信息`);
+							this.$message.error(`车牌 ${this.form.carNo} 已存在,请修改单据信息`);
 						}
 					});
 				}
@@ -416,44 +442,74 @@ export default {
 			});
 		},
 		/** 提交按钮 */
-		// /** 提交按钮 */
 		submitForm() {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
-					// 提交前再次校验车牌/柜号长度
-					const maxLength = this.form.carType === '陆运' ? 8 : 11;
-					const typeName = this.form.carType === '陆运' ? '车牌' : '柜号';
-					if (this.form.carNo && this.form.carNo.length > maxLength) {
-						this.$message.error(`${typeName}长度不能超过${maxLength}位`);
-						return;
+					// 提交前再次校验车牌/柜号长度（仅对陆运）
+					if (this.form.carType === '陆运') {
+						const maxLength = 8;
+						if (this.form.carNo && this.form.carNo.length > maxLength) {
+							this.$message.error(`车牌长度不能超过${maxLength}位`);
+							return;
+						}
+					}
+
+					// 创建提交数据的副本
+					let submitData = { ...this.form };
+					
+					// 如果是海运类型，移除车牌号字段
+					if (this.form.carType === '海运') {
+						delete submitData.carNo;
 					}
 
 					if (this.form.id != null) {
-						this.form = excludeParams(this.form, this.$exclude);
-						checkCarsIsExit(this.form.carNo, this.form.id).then(res => {
-							if (res.data) {
-								updateCars(this.form).then(response => {
-									this.$modal.msgSuccess('修改成功');
+						submitData = excludeParams(submitData, this.$exclude);
+						
+						// 对于陆运类型才检查车牌号是否存在
+						if (this.form.carType === '陆运') {
+							checkCarsIsExit(this.form.carNo, this.form.id).then(res => {
+								if (res.data) {
+									updateCars(submitData).then(response => {
+										this.$modal.msgSuccess('修改成功');
+										this.open = false;
+										this.getList();
+									});
+								} else {
+									this.$message.error('修改时出现错误:该行ID已存在车牌信息,但数据返回不存在');
+								}
+							});
+						} else {
+							// 海运类型直接提交
+							updateCars(submitData).then(response => {
+								this.$modal.msgSuccess('修改成功');
+								this.open = false;
+								this.getList();
+							});
+						}
+					} else {
+						// 对于陆运类型才检查车牌号是否存在
+						if (this.form.carType === '陆运') {
+							checkCarsIsExit(this.form.carNo, null).then(res => {
+								if (!res.data) {
+									this.$message.error('车牌信息已存在');
+									return;
+								}
+								addCars(submitData).then(response => {
+									submitData = excludeParams(submitData, this.$exclude);
+									this.$modal.msgSuccess('新增成功');
 									this.open = false;
 									this.getList();
 								});
-							} else {
-								this.$message.error('修改时出现错误:该行ID已存在车牌/柜号信息,但数据返回不存在');
-							}
-						});
-					} else {
-						checkCarsIsExit(this.form.carNo, null).then(res => {
-							if (!res.data) {
-								this.$message.error('车牌/柜号信息已存在');
-								return;
-							}
-							addCars(this.form).then(response => {
-								this.form = excludeParams(this.form, this.$exclude);
+							});
+						} else {
+							// 海运类型直接提交
+							addCars(submitData).then(response => {
+								submitData = excludeParams(submitData, this.$exclude);
 								this.$modal.msgSuccess('新增成功');
 								this.open = false;
 								this.getList();
 							});
-						});
+						}
 					}
 				}
 			});
