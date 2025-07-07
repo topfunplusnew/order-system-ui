@@ -6,16 +6,19 @@ export default {
 	props: {
 		row: {
 			type: Object,
+			default: () => ({}),
 			required: true
 		},
 		field: {
 			type: String,
+			default: '',
 			required: true
 		}
 	},
 	computed: {
 		value() {
-			return this.row[this.field];
+			let value = this.row[this.field];
+			return value ? this.row[value] : '';
 		}
 	}
 };

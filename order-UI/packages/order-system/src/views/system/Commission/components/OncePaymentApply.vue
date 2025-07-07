@@ -8,7 +8,7 @@
 				</div>
 			</div>
 
-			<el-table :data="applications" style="width: 100%" size="mini">
+			<el-table :data="localApplications" style="width: 100%" size="mini">
 				<el-table-column fixed prop="fundsDate" label="日期" width="150" show-overflow-tooltip></el-table-column>
 				<el-table-column prop="payType" label="支付类型" width="150" show-overflow-tooltip></el-table-column>
 				<el-table-column prop="moneyAmount" label="金额" width="120" show-overflow-tooltip></el-table-column>
@@ -53,6 +53,7 @@ import { TableName } from '@/api/tool/enums';
 import ApplyPayment from '@/views/dashboard/components/common/ApplyPayment.vue';
 import { mixin_checkfile } from '@/views/dashboard/mixins/checkfiles/mixin_checkfile';
 import { addPaymentApply } from '@/api/system/paymentApply';
+import DynamicField from '../../../../components/DynamicField.vue';
 
 export default {
 	name: 'OncePaymentApply',
@@ -80,36 +81,51 @@ export default {
 			]
 		}
 	},
-	components: { ApplyPayment },
+	components: { ApplyPayment, DynamicField },
 	data() {
 		return {
 			applyDialogVisible: false,
 			tid: null,
 			needMoney: 0,
 			needInfo: {},
-			currentId: null
+			currentId: null,
+			localApplications: [] // 添加本地数据副本
 		};
+	},
+	watch: {
+		applications: {
+			handler(newVal) {
+				this.localApplications = JSON.parse(JSON.stringify(newVal)); // 深拷贝
+			},
+			immediate: true,
+			deep: true
+		}
 	},
 	created() {
 		console.log('application:', this.applications);
+		console.log('localApplications:', this.localApplications);
 	},
+
 	methods: {
 		handleApprove() {
 			this.applyDialogVisible = true;
 		},
 		// 这里需要把审核组件的信息提交到列表里
 		handleCommitApplyInfo(value) {
-			this.applications.forEach(item => {
-				Object.assign(item, value);
+			this.$nextTick(() => {
+				this.localApplications.forEach(item => {
+					Object.assign(item, value);
+				});
+				this.$message.success('申请信息已更新');
 			});
 		},
 		handleProcess(that) {
-			if (this.applications.length === 0) {
+			if (this.localApplications.length === 0) {
 				this.$message.error('申请列表为空!');
 				return;
 			}
 			try {
-				this.applications.forEach(item => (item.payType = item.payType.join('-')));
+				this.localApplications.forEach(item => (item.payType = item.payType.join('-')));
 			} catch (err) {
 				this.$message.error('请先填写申请信息!');
 			}
@@ -123,7 +139,7 @@ export default {
 				onOk: async () => {
 					try {
 						const data = {
-							...this.applications[0],
+							...this.localApplications[0],
 							tableName: TableName.ORDERCOMMISION
 						};
 						await addPaymentApply(data);
@@ -142,9 +158,3 @@ export default {
 	}
 };
 </script>
-
-<style scoped>
-.box-card {
-	margin: 20px;
-}
-</style>

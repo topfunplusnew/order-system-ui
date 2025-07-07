@@ -3,17 +3,17 @@ import { parseTime } from '@/utils/ruoyi';
 export class PaymentApply {
 	constructor({
 		fundsDate = parseTime(new Date()),
-		payType = '未选择类型',
+		payType = '',
 		moneyAmount = 0,
-		otherAcountsName = '无',
-		otherBankNo = '无',
-		companyName = '无',
+		otherAcountsName = '',
+		otherBankNo = '',
+		companyName = '',
 		companyId = null,
-		companyType = '无',
-		reason = '无',
-		applyPerson = '无',
-		applyPersonID = '无',
-		comments = '无备注',
+		companyType = '',
+		reason = '',
+		applyPerson = '',
+		applyPersonID = '',
+		comments = '',
 		extraInfo = null
 	} = {}) {
 		this.fundsDate = fundsDate;

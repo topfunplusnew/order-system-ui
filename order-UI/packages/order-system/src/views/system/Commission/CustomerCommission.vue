@@ -151,6 +151,7 @@ import CommissionsForm from '@/views/system/Commission/components/CommissionsFor
 import ApplyPayment from '@/views/dashboard/components/common/ApplyPayment.vue';
 import OncePaymentApply from '@/views/system/Commission/components/OncePaymentApply.vue';
 import { ExtraInfo, PaymentApply, SourceInfo } from '@/types/payment';
+import _ from 'lodash';
 
 export default {
 	name: 'CUSTOMERCommission',
@@ -235,7 +236,8 @@ export default {
 			],
 			PaymentApplyInfoVisible: false,
 			tID: null,
-			needMoney: null
+			needMoney: null,
+			applications: []
 		};
 	},
 	watch: {
@@ -254,6 +256,7 @@ export default {
 			this.columns = JSON.parse(localStorage.getItem('customer-commission-columns'));
 		}
 	},
+
 	methods: {
 		handleOnceApply() {
 			let extra = new ExtraInfo({ sourceInfos: [] });
@@ -265,7 +268,7 @@ export default {
 				extra.pushSourceInfo(s);
 			});
 
-			let applications = this.selections.map(item => {
+			this.applications = _.cloneDeep(this.selections).map(item => {
 				return new PaymentApply({
 					moneyAmount: item.commissionAmount,
 					extraInfo: extra,
@@ -279,7 +282,7 @@ export default {
 				'申请列表',
 				'1100px',
 				{
-					applications
+					applications: this.applications
 				},
 				false
 			);
