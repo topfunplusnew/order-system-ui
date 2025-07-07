@@ -24,10 +24,6 @@ export default {
 			type: Number,
 			default: 0
 		},
-		differenceReason: {
-			type: String,
-			default: null
-		},
 		body: {
 			type: Object,
 			default: () => {}
@@ -52,8 +48,7 @@ export default {
 				type: this.type,
 				commissionUnitPrice: '',
 				otherPaymentAmount: '',
-				orderDetailId: this.orderDetailId ? this.orderDetailId : '',
-				difference_reason: null
+				orderDetailId: this.orderDetailId ? this.orderDetailId : ''
 			},
 			queryOrder: null,
 			rules: {
@@ -73,9 +68,7 @@ export default {
 		handleProcess(that) {
 			this.$refs.commissionForm.validate(valid => {
 				if (valid) {
-					// 这里要判断是新增还是修改 如果是修改 还需要额外添加一个字段difference_reason
 					if (this.id) {
-						this.form.difference_reason = this.differenceReason;
 						updateCommission(this.form).then(res => {
 							this.$message.success('修改成功');
 							that.dialogVisible = false;
@@ -116,8 +109,7 @@ export default {
 				type: this.type,
 				commissionUnitPrice: '',
 				otherPaymentAmount: '',
-				orderDetailId: this.orderDetailId ? this.orderDetailId : '',
-				difference_reason: null
+				orderDetailId: this.orderDetailId ? this.orderDetailId : ''
 			};
 		}
 	}

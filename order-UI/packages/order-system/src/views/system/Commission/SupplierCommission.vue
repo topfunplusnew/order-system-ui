@@ -94,7 +94,14 @@
 			<el-table-column v-if="columns[22].visible" show-overflow-tooltip label="实际厂家佣金" align="center" prop="actualCustomerCommission" width="100" />
 			<el-table-column v-if="columns[23].visible" show-overflow-tooltip label="支付日期" align="center" prop="fundDate" width="100" />
 			<el-table-column v-if="columns[24].visible" show-overflow-tooltip label="差异" align="center" prop="difference" width="100" />
-			<el-table-column v-if="columns[25].visible" show-overflow-tooltip label="差异原因" align="center" prop="differenceReason" width="100" />
+			<el-table-column v-if="columns[25].visible" show-overflow-tooltip label="差异原因" align="center" prop="differenceReason" width="150">
+				<template slot-scope="scope">
+					<el-button v-if="scope.row.difference && scope.row.difference !== 0" size="mini" type="text" @click="handleDifferenceReason(scope.row)">
+						{{ scope.row.differenceReason || '填写差异原因' }}
+					</el-button>
+					<span v-else>-</span>
+				</template>
+			</el-table-column>
 			<!--      加一列操作列-->
 			<el-table-column show-overflow-tooltip label="操作" align="center" width="230" fixed="right">
 				<template slot-scope="scope">
@@ -141,7 +148,7 @@
 
 <script>
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
-import { deleteCommission, getCommission, listCommission } from '@/api/commission';
+import { deleteCommission, getCommission, listCommission, updateDifferenceReason } from '@/api/commission';
 import { CommissionType, TableName } from '@/api/tool/enums';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
@@ -410,6 +417,29 @@ export default {
 			this.needMoney = 0;
 			this.PaymentApplyInfoVisible = false;
 			this.getList();
+		},
+		// 处理差异原因
+		handleDifferenceReason(row) {
+			this.$prompt('请输入差异原因', '填写差异原因', {
+				confirmButtonText: '确定',
+				cancelButtonText: '取消',
+				inputPattern: /\S/,
+				inputErrorMessage: '差异原因不能为空',
+				inputValue: row.differenceReason || ''
+			})
+				.then(({ value }) => {
+					updateDifferenceReason(row.id, value)
+						.then(() => {
+							this.$message.success('差异原因更新成功');
+							this.getList(); // 刷新列表
+						})
+						.catch(() => {
+							this.$message.error('差异原因更新失败');
+						});
+				})
+				.catch(() => {
+					// 用户取消
+				});
 		}
 	}
 };

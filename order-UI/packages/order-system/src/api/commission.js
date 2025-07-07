@@ -43,3 +43,14 @@ export function deleteCommission(id) {
 		method: 'delete'
 	});
 }
+
+// 填写差异原因
+export function updateDifferenceReason(id, differenceReason) {
+	return service.request({
+		url: `/system/ordercommission/reason/${id}`,
+		method: 'put',
+		params: {
+			differenceReason
+		}
+	});
+}
