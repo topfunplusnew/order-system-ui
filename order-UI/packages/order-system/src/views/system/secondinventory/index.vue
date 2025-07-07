@@ -757,15 +757,6 @@ export default {
 			}
 		};
 
-		// 自定义校验器：货物来源必填
-		const validateGoodsCompany = (rule, value, callback) => {
-			if (!value) {
-				callback(new Error('请输入货物来源公司'));
-			} else {
-				callback();
-			}
-		};
-
 		// 自定义校验器：当选择陆运时，车队必填
 		const validateFleet = (rule, value, callback) => {
 			if (this.isLand && !this.secondForm.fleet) {
@@ -900,7 +891,6 @@ export default {
 			secondRules: {
 				storeHouseName: [{ required: true, validator: validateStoreHouseName, trigger: 'blur' }],
 				storeDate: [{ required: true, validator: validateStoreDate, trigger: 'blur' }],
-				goodsCompany: [{ required: true, validator: validateGoodsCompany, trigger: 'blur' }],
 				fleet: [{ validator: validateFleet, trigger: 'change' }],
 				landCarNo: [{ validator: validateLandCarNo, trigger: 'change' }],
 				seaCarNo: [{ validator: validateSeaCarNo, trigger: 'blur' }],

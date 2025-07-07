@@ -844,7 +844,6 @@ export default {
 			rules: {
 				storeHouseName: [{ required: true, message: '仓库名称不能为空', trigger: 'blur' }],
 				storeDate: [{ required: true, message: '入库日期不能为空', trigger: 'change' }],
-				goodsCompany: [{ required: true, message: '货物来源公司不能为空', trigger: 'blur' }],
 				fleet: [{ validator: validateFleet, trigger: 'blur' }],
 				landCarNo: [{ validator: validateLandCar, trigger: 'change' }],
 				// 添加海运相关校验规则
