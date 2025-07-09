@@ -388,8 +388,8 @@
 						<template #default="scope">
 							<el-input
 								size="mini"
-								@input="() => recalculateAll(scope)"
-								v-model.lazy="scope.row.packs"
+								@input="val => handlePiecesInput(scope.row, 'packs', val, () => recalculateAll(scope))"
+								v-model="scope.row.packs"
 								:placeholder="scope.row.piecesPerPack <= 0 ? '请先输入每包片数' : '请输入包数'"
 								:disabled="scope.row.shouldDel || !scope.row.isEditing || scope.row.piecesPerPack <= 0"
 							/>

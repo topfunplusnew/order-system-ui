@@ -427,10 +427,10 @@
 						<template #default="scope">
 							<el-input
 								size="mini"
-								v-model.lazy="scope.row.packs"
+								v-model="scope.row.packs"
 								:placeholder="scope.row.piecesPerPack <= 0 ? '请先输入每包片数' : '请输入包数'"
 								:disabled="!scope.row.isEditing || scope.row.piecesPerPack <= 0"
-								@input="() => calculatePieces(scope.row)"
+								@input="val => handlePiecesInput(scope.row, 'packs', val, () => calculatePieces(scope.row))"
 							/>
 						</template>
 					</el-table-column>
@@ -1118,6 +1118,29 @@ export default {
 			scope.row.stockNumber = scope.row.pieces;
 			// 触发重新计算
 			this.recalculateAll(scope);
+		},
+		/**
+		 * @description: 格式化片数值，最多保留两位小数
+		 * @param {number} value 需要格式化的数值
+		 * @returns {string} 格式化后的字符串
+		 */
+		formatPiecesValue(value) {
+			if (value === null || value === undefined || value === '') {
+				return '';
+			}
+			
+			const num = Number(value);
+			if (isNaN(num)) {
+				return '';
+			}
+			
+			// 如果是整数，直接返回整数字符串
+			if (num % 1 === 0) {
+				return num.toString();
+			}
+			
+			// 否则最多保留两位小数，去掉末尾的0
+			return parseFloat(num.toFixed(2)).toString();
 		},
 		/**
 		 * @description: 根据每包片数和包数计算总出厂片数和入库量。
