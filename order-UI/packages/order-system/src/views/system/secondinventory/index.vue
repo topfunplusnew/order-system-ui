@@ -378,7 +378,7 @@
 							<el-input
 								size="mini"
 								v-model="scope.row.piecesPerPack"
-								@input="() => recalculateAll(scope)"
+								@input="val => handlePiecesInput(scope.row, 'piecesPerPack', val, () => recalculateAll(scope))"
 								placeholder="请输入每包片数"
 								:disabled="scope.row.shouldDel || !scope.row.isEditing"
 							/>
@@ -400,7 +400,7 @@
 							<el-input
 								size="mini"
 								v-model="scope.row.pieces"
-								@input="val => handlePiecesChange(scope, val)"
+								@input="val => handlePiecesInput(scope.row, 'pieces', val, val => handlePiecesChange(scope, val))"
 								placeholder="请输入出厂片数"
 								:disabled="scope.row.shouldDel || !scope.row.isEditing"
 							/>
@@ -1028,7 +1028,7 @@ export default {
 						countingUnit: '片',
 						payments: '',
 						manuallyEditedPieces: true, // 标记为已手动设置，避免被自动计算覆盖
-						exWareHoustId: row.id, // 添加出库id
+					
 						stockNumber: 0,
 						piecesPerPack: '',
 						packs: '',
@@ -1588,6 +1588,7 @@ export default {
 						this.$set(row, 'hasError', true);
 					});
 					const errorMsg = error.message || '未知错误';
+
 					this.$message.error(`保存失败，请重新编辑: ${errorMsg}`);
 					reject && reject(error);
 				});
@@ -1634,6 +1635,36 @@ export default {
 				isSecondInventory: true
 			};
 			updateInventoryRowCalculations(scope.row, this.isSea, this.isLand, extraOptions);
+		},
+		/**
+		 * @description: 处理片数输入，限制最多两位小数
+		 * @param {object} row 当前行数据
+		 * @param {string} field 字段名
+		 * @param {string} value 输入值
+		 * @param {function} callback 回调函数
+		 */
+		handlePiecesInput(row, field, value, callback) {
+			// 允许输入数字和小数点
+			let sanitizedValue = value.replace(/[^\d.]/g, '');
+			
+			// 只允许一个小数点
+			const parts = sanitizedValue.split('.');
+			if (parts.length > 2) {
+				sanitizedValue = parts[0] + '.' + parts.slice(1).join('');
+			}
+			
+			// 限制小数点后最多2位
+			if (parts.length === 2 && parts[1].length > 2) {
+				sanitizedValue = parts[0] + '.' + parts[1].slice(0, 2);
+			}
+			
+			// 更新行数据
+			row[field] = sanitizedValue;
+			
+			// 执行回调函数
+			if (callback) {
+				callback();
+			}
 		},
 		/**
 		 * @description: 获取出库列表数据

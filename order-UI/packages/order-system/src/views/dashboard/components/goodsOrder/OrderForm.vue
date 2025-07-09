@@ -904,7 +904,37 @@ export default {
 			}
 			// 返回小数点后的字符长度
 			return strNum.length - dotIndex - 1;
-		}
+		},
+		/**
+		 * @description: 处理片数输入，限制最多两位小数
+		 * @param {object} row 当前行数据
+		 * @param {string} field 字段名
+		 * @param {string} value 输入值
+		 * @param {function} callback 回调函数
+		 */
+		handlePiecesInput(row, field, value, callback) {
+			// 允许输入数字和小数点
+			let sanitizedValue = value.replace(/[^\d.]/g, '');
+			
+			// 只允许一个小数点
+			const parts = sanitizedValue.split('.');
+			if (parts.length > 2) {
+				sanitizedValue = parts[0] + '.' + parts.slice(1).join('');
+			}
+			
+			// 限制小数点后最多2位
+			if (parts.length === 2 && parts[1].length > 2) {
+				sanitizedValue = parts[0] + '.' + parts[1].slice(0, 2);
+			}
+			
+			// 更新行数据
+			row[field] = sanitizedValue;
+			
+			// 执行回调函数
+			if (callback) {
+				callback();
+			}
+		},
 	}
 };
 </script>
@@ -1229,7 +1259,7 @@ export default {
 					</el-table-column>
 					<el-table-column label="每包片数" prop="piecesPerPack" width="90">
 						<template #default="scope">
-							<el-input size="mini" v-model.number="scope.row.piecesPerPack" placeholder="请输入每包片数" :disabled="!scope.row.isEditing" @input="() => calculatePieces(scope.row)" />
+							<el-input size="mini" v-model="scope.row.piecesPerPack" placeholder="请输入每包片数" :disabled="!scope.row.isEditing" @input="val => handlePiecesInput(scope.row, 'piecesPerPack', val, () => calculatePieces(scope.row))" />
 						</template>
 					</el-table-column>
 					<el-table-column label="包数" prop="packs" width="90">
@@ -1247,10 +1277,10 @@ export default {
 						<template #default="scope">
 							<el-input
 								size="mini"
-								v-model.lazy="scope.row.pieces"
+								v-model="scope.row.pieces"
 								placeholder="请输入出厂片数"
 								@change="() => handlePiecesChange(scope)"
-								@input="() => recalculateAll(scope)"
+								@input="val => handlePiecesInput(scope.row, 'pieces', val, () => recalculateAll(scope))"
 								:disabled="!scope.row.isEditing"
 							/>
 						</template>

@@ -420,7 +420,7 @@
 					</el-table-column>
 					<el-table-column label="每包片数" prop="piecesPerPack" width="150">
 						<template #default="scope">
-							<el-input size="mini" v-model="scope.row.piecesPerPack" placeholder="请输入每包片数" :disabled="!scope.row.isEditing" @input="() => calculatePieces(scope.row)" />
+							<el-input size="mini" v-model="scope.row.piecesPerPack" placeholder="请输入每包片数" :disabled="!scope.row.isEditing" @input="val => handlePiecesInput(scope.row, 'piecesPerPack', val, () => calculatePieces(scope.row))" />
 						</template>
 					</el-table-column>
 					<el-table-column label="包数" prop="packs" width="150">
@@ -441,7 +441,7 @@
 								size="mini"
 								v-model="scope.row.pieces"
 								placeholder="请输入出厂片数"
-								@input="() => recalculateAll(scope)"
+								@input="val => handlePiecesInput(scope.row, 'pieces', val, () => recalculateAll(scope))"
 								@change="() => handlePiecesChange(scope)"
 								:disabled="!scope.row.isEditing"
 							/>
@@ -1129,7 +1129,9 @@ export default {
 		calculatePieces(row) {
 			if (row.piecesPerPack > 0 && row.packs > 0) {
 				// 计算出厂片数
-				row.pieces = (row.piecesPerPack * row.packs).toString();
+				const result = row.piecesPerPack * row.packs;
+				// 格式化为最多两位小数
+				row.pieces = this.formatPiecesValue(result);
 				// 设置入库量等于出厂片数
 				row.stockNumber = row.pieces;
 				// 触发重新计算
@@ -1728,6 +1730,36 @@ export default {
 				if (this.getDecimalPlaces(row[field]) > 4) {
 					row[field] = parseFloat(row[field]).toFixed(4);
 				}
+			}
+		},
+		/**
+		 * @description: 处理片数输入，限制最多两位小数
+		 * @param {object} row 当前行数据
+		 * @param {string} field 字段名
+		 * @param {string} value 输入值
+		 * @param {function} callback 回调函数
+		 */
+		handlePiecesInput(row, field, value, callback) {
+			// 允许输入数字和小数点
+			let sanitizedValue = value.replace(/[^\d.]/g, '');
+			
+			// 只允许一个小数点
+			const parts = sanitizedValue.split('.');
+			if (parts.length > 2) {
+				sanitizedValue = parts[0] + '.' + parts.slice(1).join('');
+			}
+			
+			// 限制小数点后最多2位
+			if (parts.length === 2 && parts[1].length > 2) {
+				sanitizedValue = parts[0] + '.' + parts[1].slice(0, 2);
+			}
+			
+			// 更新行数据
+			row[field] = sanitizedValue;
+			
+			// 执行回调函数
+			if (callback) {
+				callback();
 			}
 		}
 	}
