@@ -422,12 +422,18 @@ export var mixin_credentials_generation_orderlist = {
 			if (list.length === 0) {
 				return;
 			}
-			return list.map(item => {
-				return {
-					supplier: item.supplier,
-					supplierID: item.supplierID
-				};
+			// 使用 Map 根据 supplierID 去重
+			const supplierMap = new Map();
+			list.forEach(item => {
+				if (item.supplierID && !supplierMap.has(item.supplierID)) {
+					supplierMap.set(item.supplierID, {
+						supplier: item.supplier,
+						supplierID: item.supplierID
+					});
+				}
 			});
+			// 返回去重后的数组
+			return Array.from(supplierMap.values());
 		}
 	}
 };
