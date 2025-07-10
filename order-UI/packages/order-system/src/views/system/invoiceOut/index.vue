@@ -16,9 +16,10 @@
 		</el-form>
 
 		<el-row :gutter="10" class="mb8">
-			<el-col :span="1.5">
+			<!-- 20250710 振龙要求删除 -->
+			<!-- <el-col :span="1.5">
 				<el-button v-hasPermi="['system:invoiceout:add']" type="danger" size="mini" @click="handleAdd">新增发票卖出信息</el-button>
-			</el-col>
+			</el-col> -->
 			<el-col :span="1.5">
 				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
 			</el-col>
