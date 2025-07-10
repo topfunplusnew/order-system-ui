@@ -4,32 +4,32 @@ import { fix, fix_2 } from '../../../api/tool/format';
  * 计算逻辑说明（根据出厂/销售是否含税的不同组合）：
  *
  * 1. 出厂含税：否，销售含税：否
- *    1) 出厂货款 = 长度 * 宽度 * 出厂片数 / 1000000 * 出厂单价 + 杂费
- *    2) 总货款   = 长度 * 宽度 * 卸货片数 / 1000000 * 卸货单价 + 杂费
+ *    1) 出厂货款 = 长度 * 宽度 * 出厂片数 * 出厂单价 + 杂费
+ *    2) 总货款   = 长度 * 宽度 * 卸货片数 * 卸货单价 + 杂费
  *    3) 吨位     = (厚度 - 误差) * 长度 * 宽度 * 出厂片数 / 1000000 / 20 / 20
  *    4) 运费     = 吨位 * 运费单价 + 加费
  *    5) 利润     = 总货款 - 出厂货款 - 运费
  *    6) 不含税利润 = 总货款 - 出厂货款 - 运费 - 其他费用
  *
  * 2. 出厂含税：是，销售含税：否
- *    1) 出厂货款 = 长度 * 宽度 * 出厂片数 / 1000000 * 出厂单价 + 杂费
- *    2) 总货款   = 长度 * 宽度 * 卸货片数 / 1000000 * 卸货单价 + 杂费
+ *    1) 出厂货款 = 长度 * 宽度 * 出厂片数 * 出厂单价 + 杂费
+ *    2) 总货款   = 长度 * 宽度 * 卸货片数 * 卸货单价 + 杂费
  *    3) 吨位     = (厚度 - 误差) * 长度 * 宽度 * 出厂片数 / 1000000 / 20 / 20
  *    4) 运费     = 吨位 * 运费单价 + 加费
  *    5) 利润     = 总货款 - 出厂货款 - 运费
  *    6) 不含税利润 = 总货款 - (出厂货款 / 1.075) - 运费 - 其他费用
  *
  * 3. 出厂含税：否，销售含税：是
- *    1) 出厂货款 = 长度 * 宽度 * 出厂片数 / 1000000 * 出厂单价 + 杂费
- *    2) 总货款   = 长度 * 宽度 * 卸货片数 / 1000000 * 卸货单价 + 杂费
+ *    1) 出厂货款 = 长度 * 宽度 * 出厂片数 * 出厂单价 + 杂费
+ *    2) 总货款   = 长度 * 宽度 * 卸货片数 * 卸货单价 + 杂费
  *    3) 吨位     = (厚度 - 误差) * 长度 * 宽度 * 出厂片数 / 1000000 / 20 / 20
  *    4) 运费     = 吨位 * 运费单价 + 加费
  *    5) 利润     = 总货款 - 出厂货款 - 运费
  *    6) 不含税利润 = (总货款 / 1.075) - 出厂货款 - 运费 - 其他费用
  *
  * 4. 出厂含税：是，销售含税：是
- *    1) 出厂货款 = 长度 * 宽度 * 出厂片数 / 1000000 * 出厂单价 + 杂费
- *    2) 总货款   = 长度 * 宽度 * 卸货片数 / 1000000 * 卸货单价 + 杂费
+ *    1) 出厂货款 = 长度 * 宽度 * 出厂片数 * 出厂单价 + 杂费
+ *    2) 总货款   = 长度 * 宽度 * 卸货片数 * 卸货单价 + 杂费
  *    3) 吨位     = (厚度 - 误差) * 长度 * 宽度 * 出厂片数 / 1000000 / 20 / 20
  *    4) 运费     = 吨位 * 运费单价 + 加费
  *    5) 利润     = 总货款 - 出厂货款 - 运费 （对于二次入库有问题 ，需要减去其他费用 ）
@@ -73,9 +73,9 @@ function calculatePaymentFactory(row) {
 	const sundryCost = Number(row.sundryCost);
 
 	if (row.isIncludeTaxFactory === 0) {
-		row.paymentFactory = fix_2(((length * width * pieces) / 1000000) * price + sundryCost);
+		row.paymentFactory = fix_2((length * width * pieces) * price + sundryCost);
 	} else {
-		row.paymentFactory = fix_2((length * width * pieces * price) / 1000000 + sundryCost);
+		row.paymentFactory = fix_2((length * width * pieces * price) + sundryCost);
 	}
 }
 
@@ -90,9 +90,9 @@ function calculatePayment(row) {
 	const paymentsWithSundry = Number(row.paymentsWithSundry);
 
 	if (row.isIncludeTaxFactory === 0 && row.isIncludeTaxSale === 0) {
-		row.payments = fix_2(((length * width * pieces) / 1000000) * paymentUnload + paymentsWithSundry);
+		row.payments = fix_2((length * width * pieces) * paymentUnload + paymentsWithSundry);
 	} else {
-		row.payments = fix_2((length * width * pieces * paymentUnload) / 1000000 + paymentsWithSundry);
+		row.payments = fix_2((length * width * pieces * paymentUnload) + paymentsWithSundry);
 	}
 }
 

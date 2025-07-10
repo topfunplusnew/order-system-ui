@@ -11,20 +11,20 @@ function calculateTonnage(row) {
 
 /**
  * 计算出厂货款
- * 规则: 长度 * 宽度 * 出厂片数 / 1000000 * 出厂单价 + 杂费
+ * 规则: 长度 * 宽度 * 出厂片数 * 出厂单价 + 杂费
  * @param {object} row - 订单详情行数据
  */
 function calculatePaymentFactory(row) {
-	row.paymentFactory = fix_2(((Number(row.length) * Number(row.width) * Number(row.pieces)) / 1000000) * Number(row.price) + Number(row.sundryCost));
+	row.paymentFactory = fix_2((Number(row.length) * Number(row.width) * Number(row.pieces)) * Number(row.price) + Number(row.sundryCost));
 }
 
 /**
  * 计算总货款
- * 规则: 长度 * 宽度 * 卸货片数 / 1000000 * 卸货单价 + 总货款杂费
+ * 规则: 长度 * 宽度 * 卸货片数 * 卸货单价 + 总货款杂费
  * @param {object} row - 订单详情行数据
  */
 function calculatePayment(row) {
-	row.payments = fix_2(((Number(row.length) * Number(row.width) * Number(row.actualPieces)) / 1000000) * Number(row.paymentUnload) + Number(row.paymentsWithSundry));
+	row.payments = fix_2((Number(row.length) * Number(row.width) * Number(row.actualPieces)) * Number(row.paymentUnload) + Number(row.paymentsWithSundry));
 }
 
 /**
