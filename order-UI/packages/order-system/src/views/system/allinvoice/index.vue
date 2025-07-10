@@ -22,7 +22,6 @@
 			<el-col :span="1.5">
 				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
 			</el-col>
-			<ExcelImport />
 			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
 				<template #print>
 					<el-col :span="1.5">
@@ -141,12 +140,11 @@
 import { listInvoiceAll } from '@/api/system/allInvoice';
 import { addInvoiceIn, delInvoiceIn, updateInvoiceIn } from '@/api/system/invoiceIn';
 import { TableName } from '@/api/tool/enums';
-import ExcelImport from '@/views/dashboard/components/common/ExcelImport.vue';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 
 export default {
 	name: 'AllInvoice',
-	components: { ExcelImport },
+	components: {},
 	mixins: [mixin_printHTML],
 	data() {
 		return {

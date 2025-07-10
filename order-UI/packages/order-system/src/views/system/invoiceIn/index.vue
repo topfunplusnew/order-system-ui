@@ -21,6 +21,7 @@
 			<el-col :span="1.5">
 				<el-button size="mini" @click="resetQuery">刷新</el-button>
 			</el-col>
+			<ExcelImport />
 			<right-toolbar :show-search.sync="showSearch" :columns="columns" @queryTable="getList">
 				<template #print>
 					<el-col :span="1.5">
@@ -224,10 +225,11 @@ import reLength from '../../dashboard/mixins/reLength';
 import { getInvoiceIn, updateInvoiceIn } from '../../../api/system/invoiceIn';
 import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfile';
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
+import ExcelImport from '@/views/dashboard/components/common/ExcelImport.vue';
 
 export default {
 	name: 'InvoiceIn',
-	components: { CheckFiles, OrderInfos, ApplyPayment, SearchOption },
+	components: { CheckFiles, OrderInfos, ApplyPayment, SearchOption, ExcelImport },
 	mixins: [mixin_printHTML, reLength, mixin_checkfile],
 	data() {
 		return {

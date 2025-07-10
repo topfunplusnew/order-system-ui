@@ -23,6 +23,7 @@
 			<el-col :span="1.5">
 				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
 			</el-col>
+			<ExcelImport />
 			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
 				<template #print>
 					<el-col :span="1.5">
@@ -195,10 +196,11 @@ import CheckFiles from '../../../components/CheckFiles.vue';
 import reLength from '../../dashboard/mixins/reLength';
 import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfile';
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
+import ExcelImport from '@/views/dashboard/components/common/ExcelImport.vue';
 
 export default {
 	name: 'InvoiceOut',
-	components: { CheckFiles, OrderInfos, SearchOption },
+	components: { CheckFiles, OrderInfos, SearchOption, ExcelImport },
 	mixins: [mixin_printHTML, reLength, mixin_checkfile],
 	data() {
 		return {
