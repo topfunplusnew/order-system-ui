@@ -11,20 +11,48 @@ function calculateTonnage(row) {
 
 /**
  * 计算出厂货款
- * 规则: 长度 * 宽度 * 出厂片数 / 1000000 * 出厂单价 + 杂费
+ * 规则: 
+ * - 当计量单位为"片"时: 长度 * 宽度 * 出厂片数 / 1000000 * 出厂单价 + 杂费
+ * - 当计量单位为"其他"时: 长度 * 宽度 * 出厂片数 * 出厂单价 + 杂费
  * @param {object} row - 订单详情行数据
  */
 function calculatePaymentFactory(row) {
-	row.paymentFactory = fix_2(((Number(row.length) * Number(row.width) * Number(row.pieces)) / 1000000) * Number(row.price) + Number(row.sundryCost));
+	const length = Number(row.length);
+	const width = Number(row.width);
+	const pieces = Number(row.pieces);
+	const price = Number(row.price);
+	const sundryCost = Number(row.sundryCost);
+	
+	if (row.countingUnit === '其他') {
+		// 计量单位为"其他"时，不除以1000000
+		row.paymentFactory = fix_2((length * width * pieces) * price + sundryCost);
+	} else {
+		// 计量单位为"片"时，除以1000000（原来的逻辑）
+		row.paymentFactory = fix_2(((length * width * pieces) / 1000000) * price + sundryCost);
+	}
 }
 
 /**
  * 计算总货款
- * 规则: 长度 * 宽度 * 卸货片数 / 1000000 * 卸货单价 + 总货款杂费
+ * 规则: 
+ * - 当计量单位为"片"时: 长度 * 宽度 * 卸货片数 / 1000000 * 卸货单价 + 总货款杂费
+ * - 当计量单位为"其他"时: 长度 * 宽度 * 卸货片数 * 卸货单价 + 总货款杂费
  * @param {object} row - 订单详情行数据
  */
 function calculatePayment(row) {
-	row.payments = fix_2(((Number(row.length) * Number(row.width) * Number(row.actualPieces)) / 1000000) * Number(row.paymentUnload) + Number(row.paymentsWithSundry));
+	const length = Number(row.length);
+	const width = Number(row.width);
+	const actualPieces = Number(row.actualPieces);
+	const paymentUnload = Number(row.paymentUnload);
+	const paymentsWithSundry = Number(row.paymentsWithSundry);
+	
+	if (row.countingUnit === '其他') {
+		// 计量单位为"其他"时，不除以1000000
+		row.payments = fix_2((length * width * actualPieces) * paymentUnload + paymentsWithSundry);
+	} else {
+		// 计量单位为"片"时，除以1000000（原来的逻辑）
+		row.payments = fix_2(((length * width * actualPieces) / 1000000) * paymentUnload + paymentsWithSundry);
+	}
 }
 
 /**
