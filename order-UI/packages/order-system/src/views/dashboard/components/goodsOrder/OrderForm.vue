@@ -1261,7 +1261,7 @@ export default {
 					</el-table-column>
 					<el-table-column label="计量单位" prop="countingUnit" width="100">
 						<template #default="scope">
-							<el-radio-group v-model="scope.row.countingUnit" size="mini" :disabled="!scope.row.isEditing">
+							<el-radio-group v-model="scope.row.countingUnit" size="mini" :disabled="!scope.row.isEditing" @change="() => recalculateAll(scope)">
 								<el-radio label="片">片数</el-radio>
 								<el-radio label="其他">其他</el-radio>
 							</el-radio-group>
