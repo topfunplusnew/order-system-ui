@@ -213,10 +213,10 @@
 			:show-close="false"
 			title="付款处理"
 			:visible.sync="open"
-			width="900px"
+			width="1000px"
 			append-to-body
 		>
-			<el-form ref="form" :model="form" :rules="rules" label-width="120px">
+			<el-form ref="form" :model="form" :rules="rules" label-width="140px">
 				<el-row :gutter="20">
 					<el-col :span="12">
 						<el-form-item label="日期" prop="fundsDate">

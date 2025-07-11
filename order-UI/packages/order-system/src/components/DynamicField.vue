@@ -17,8 +17,7 @@ export default {
 	},
 	computed: {
 		value() {
-			let value = this.row[this.field];
-			return value ? this.row[value] : '';
+			return this.row[this.field];
 		}
 	}
 };
