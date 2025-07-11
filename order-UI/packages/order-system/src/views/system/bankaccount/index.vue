@@ -316,16 +316,17 @@ import { listCompany } from '@/api/system/company';
 import SearchOption from '@/components/SearchOption.vue';
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
-import { listBankAccount } from '../../../api/system/bankAccount';
-import { listCars } from '../../../api/system/cars';
-import { listUser } from '../../../api/system/user';
-import { excludeParams } from '../../../api/tool/exclude';
+import keepAliveDialog from '@/views/dashboard/mixins/keepAliveDialog';
 import BankAccountChangeDash from '../Statement/bankAccountChangeDash.vue';
+import { listUser } from '@/api/system/user';
+import { listCars } from '@/api/system/cars';
+import { excludeParams } from '@/api/tool/exclude';
+import { listBankAccount } from '../../../api/system/bankAccount';
 
 export default {
 	name: 'BankAccount',
 	components: { SearchOption, BankAccountChangeDash },
-	mixins: [mixin_printHTML],
+	mixins: [mixin_printHTML, keepAliveDialog],
 	data() {
 		return {
 			loading: true,
@@ -526,7 +527,6 @@ export default {
 			this.columns = JSON.parse(localStorage.getItem('bankaccount-columns'));
 		}
 	},
-
 	filters: {
 		// values 为被筛选的数据 prop为自定义传入的属性
 		handleArray(values, prop) {

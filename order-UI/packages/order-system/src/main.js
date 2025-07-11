@@ -57,6 +57,7 @@ import 'ant-design-vue/dist/antd.css';
 // 漫游组件
 import 'vue-tour/dist/vue-tour.css';
 import VueTour from 'vue-tour';
+import keepAliveDialog from '@/views/dashboard/mixins/keepAliveDialog';
 
 message.config({
 	top: '10px',
@@ -179,6 +180,9 @@ Vue.prototype.$datePicker = function () {
 import VueCompositionAPI from '@vue/composition-api';
 
 Vue.use(VueCompositionAPI);
+// 全局注册 keepAliveDialog 混入，使 system 目录下组件自动应用
+Vue.mixin(keepAliveDialog);
+
 export const isNull = val => {
 	return !val ? '暂无' : val;
 };
