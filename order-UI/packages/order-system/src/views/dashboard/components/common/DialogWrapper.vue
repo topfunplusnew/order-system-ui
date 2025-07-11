@@ -16,7 +16,7 @@
 		:destroy-on-close="true"
 		@close="handleClose"
 	>
-		<component :is="currentComponent" ref="dynamicComponent" v-bind="dialogProps" />
+		<component :is="currentComponent" :key="dialogKey" ref="dynamicComponent" v-bind="dialogProps" />
 		<!-- 底部操作按钮 -->
 		<template #footer>
 			<el-button @click="handleClose">关闭</el-button>
@@ -67,6 +67,20 @@ export default {
 	directives: {
 		elDragDialog,
 		elRelenDialog
+	},
+	data() {
+		return {
+			// 用于强制重新创建动态组件
+			dialogKey: 0
+		};
+	},
+	watch: {
+		dialogVisible(val) {
+			if (val) {
+				// 每次打开弹窗，更新 key
+				this.dialogKey++;
+			}
+		}
 	},
 
 	// 监听事件
