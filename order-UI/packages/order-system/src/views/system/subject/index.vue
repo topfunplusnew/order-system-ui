@@ -84,8 +84,8 @@
 				</el-form-item>
 				<el-form-item label="是否禁用" prop="STATUS">
 					<el-radio-group v-model="form.STATUS">
-						<el-radio :label="YES_OR_NO.NO">否</el-radio>
-						<el-radio :label="YES_OR_NO.YES">是</el-radio>
+						<el-radio :label="YES_OR_NO.YES">否</el-radio>
+						<el-radio :label="YES_OR_NO.NO">是</el-radio>
 					</el-radio-group>
 				</el-form-item>
 				<el-form-item label="备注" prop="remark">
