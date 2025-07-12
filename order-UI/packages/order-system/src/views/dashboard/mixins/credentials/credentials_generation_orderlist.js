@@ -419,6 +419,8 @@ export var mixin_credentials_generation_orderlist = {
 		},
 		// 获取供应商列表
 		getSupplierNames(list) {
+			console.log(list);
+			
 			if (list.length === 0) {
 				return;
 			}

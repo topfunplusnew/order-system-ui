@@ -91,15 +91,23 @@ export var mixin_order_base = {
 		},
 		// 获取供应商的名称列表 主要用于表格的供应商列表的展示
 		getSupplierNames(list) {
+			console.log(list);
+
 			if (list.length === 0) {
 				return;
 			}
-			return list.map(item => {
-				return {
-					supplier: item.supplier,
-					supplierID: item.supplierID
-				};
+			// 使用 Map 根据 supplierID 去重
+			const supplierMap = new Map();
+			list.forEach(item => {
+				if (item.supplierID && !supplierMap.has(item.supplierID)) {
+					supplierMap.set(item.supplierID, {
+						supplier: item.supplier,
+						supplierID: item.supplierID
+					});
+				}
 			});
+			// 返回去重后的数组
+			return Array.from(supplierMap.values());
 		},
 		// 休眠函数
 		sleep(ms) {
