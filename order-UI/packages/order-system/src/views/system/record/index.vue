@@ -900,17 +900,6 @@ export default {
 				if (!valid) return;
 				// 提取公共逻辑
 				this.form = excludeParams(this.form, this.$exclude);
-				// 判断 如果两个己方银行卡账户类型和对方不一样
-				const selfType = this.$refs.selfSelectBankType.localSelectType;
-				const otherType = this.$refs.otherSelectBankType.localSelectType;
-				if (selfType !== otherType) {
-					if (selfType === BankAcceptanceType.ACCEPTANCE) {
-						this.form.params.bankacceptance.billType = PayType.PAYMENT;
-					}
-					if (otherType === BankAcceptanceType.ACCEPTANCE) {
-						this.form.params.bankacceptance.billType = PayType.RECEIVE;
-					}
-				}
 				// 判断是修改还是新增
 				if (this.form.id != null) {
 					this.updateRecordInfo();
@@ -919,8 +908,6 @@ export default {
 					this.addRecordInfo();
 					this.$bus.$emit('changeFlag', false);
 				}
-				this.$refs.selfSelectBankType.localSelectType = null;
-				this.$refs.otherSelectBankType.localSelectType = null;
 			});
 		},
 
@@ -944,7 +931,6 @@ export default {
 		handleOffsetting() {
 			this.form.referenceTableName = TableName.OFFSETTING;
 			this.form.referenceTableId = -1;
-
 			addRecord(this.form).then(() => {
 				this.onSuccess('新增成功', true);
 			});
@@ -952,6 +938,16 @@ export default {
 
 		// 处理内部转账逻辑
 		handleTransfer() {
+			const selfType = this.$refs.selfSelectBankType.localSelectType;
+			const otherType = this.$refs.otherSelectBankType.localSelectType;
+			if (selfType !== otherType) {
+				if (selfType === BankAcceptanceType.ACCEPTANCE) {
+					this.form.params.bankacceptance.billType = PayType.PAYMENT;
+				}
+				if (otherType === BankAcceptanceType.ACCEPTANCE) {
+					this.form.params.bankacceptance.billType = PayType.RECEIVE;
+				}
+			}
 			// 填充表单的公司类型和转账相关信息
 			this.form.sourceCompanyType = PUBLIC_DICT_TYPE.SELF_COMPANY;
 			this.form.targetCompanyType = PUBLIC_DICT_TYPE.SELF_COMPANY;
@@ -962,6 +958,8 @@ export default {
 				this.onSuccess('新增成功', true, true);
 				// 清除承兑信息状态
 				this.clearAcceptanceFillStatus();
+				this.$refs.selfSelectBankType.localSelectType = null;
+				this.$refs.otherSelectBankType.localSelectType = null;
 			});
 		},
 		// 公共成功处理逻辑

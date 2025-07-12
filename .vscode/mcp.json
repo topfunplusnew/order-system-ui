@@ -1,0 +1,25 @@
+{
+    "inputs": [
+        {
+            "type": "promptString",
+            "id": "perplexity-key",
+            "description": "Perplexity API Key",
+            "password": true
+        }
+    ],
+    "servers": {
+        "API 文档": {
+            "command": "cmd",
+            "args": [
+                "/c",
+                "npx",
+                "-y",
+                "apifox-mcp-server@latest",
+                "--project=4903004"
+            ],
+            "env": {
+                "APIFOX_ACCESS_TOKEN": "APS-qZLwHy51jHm4jsHgZ0qhJuFt1EKIhUbL"
+            }
+        }
+    }
+}

@@ -1,32 +1,32 @@
 import request from '@/utils/request';
 
-// 查询通用附件列表
-export function listAttachments(query) {
-	return request({
-		url: '/system/attachments/list',
-		method: 'get',
-		params: query
-	});
-}
+// 新增通用附件（文件上传）
+export function addAttachments(file, params = {}) {
+	const formData = new FormData();
+	formData.append('file', file);
 
-// 查询通用附件详细
-export function getAttachments(id) {
-	return request({
-		url: '/system/attachments/' + id,
-		method: 'get'
-	});
-}
+	// 构建查询参数
+	const queryParams = new URLSearchParams();
+	if (params.flag) {
+		queryParams.append('flag', params.flag);
+	}
+	if (params.extraInfo) {
+		queryParams.append('extraInfo', JSON.stringify(params.extraInfo));
+	}
 
-// 新增通用附件
-export function addAttachments(data) {
+	const url = queryParams.toString() ? `/system/attachments?${queryParams.toString()}` : '/system/attachments';
+
 	return request({
-		url: '/system/attachments',
+		url: url,
 		method: 'post',
-		data: data
+		data: formData,
+		headers: {
+			'Content-Type': 'multipart/form-data'
+		}
 	});
 }
 
-// 修改通用附件
+// 更新附件信息
 export function updateAttachments(data) {
 	return request({
 		url: '/system/attachments',
@@ -35,10 +35,27 @@ export function updateAttachments(data) {
 	});
 }
 
-// 删除通用附件
-export function delAttachments(id) {
+// 删除附件
+export function deleteAttachments(id) {
 	return request({
-		url: '/system/attachments/' + id,
+		url: `/system/attachments/${id}`,
 		method: 'delete'
+	});
+}
+
+// 获取附件列表
+export function getAttachmentsList(params) {
+	return request({
+		url: '/system/attachments',
+		method: 'get',
+		params: params
+	});
+}
+
+// 获取附件详情
+export function getAttachments(id) {
+	return request({
+		url: `/system/attachments/${id}`,
+		method: 'get'
 	});
 }
