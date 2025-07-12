@@ -27,6 +27,7 @@
 		<el-row>
 			<el-button size="mini" icon="el-icon-refresh" @click="refresh">刷新</el-button>
 			<el-button :disabled="selections.length <= 0" size="mini" type="success" icon="el-icon-s-claim" @click="handleOnceApply">一键申请</el-button>
+			<el-button :disabled="batchFillDisabled" size="mini" type="primary" icon="el-icon-edit" @click="handleBatchFill">批量填写佣金</el-button>
 		</el-row>
 		<el-row :gutter="10" class="mb8">
 			<right-toolbar :columns="columns" @queryTable="getList">
@@ -60,6 +61,16 @@
 			@selection-change="handleSelectionChange"
 		>
 			<el-table-column type="selection" width="55" align="center" :selectable="(row, index) => row.id !== null" />
+			<el-table-column label="批量佣金" width="80" align="center">
+				<template slot-scope="scope">
+					<el-checkbox 
+						v-if="scope.row.id === null" 
+						v-model="scope.row.batchSelected" 
+						@change="handleBatchSelectionChange"
+					></el-checkbox>
+					<span v-else>-</span>
+				</template>
+			</el-table-column>
 			<el-table-column v-if="columns[0].visible" show-overflow-tooltip label="订单日期" align="center" prop="orderDate" width="140" />
 			<el-table-column show-overflow-tooltip label="佣金来源" align="center" prop="source">
 				<template slot-scope="scope">
@@ -143,12 +154,53 @@
 				<ApplyPayment :money-input-disabled="false" :table-name="TableName.ORDERCOMMISION" :t-i-d="tID" :need-money="needMoney" :need-info="{}" @changeOpen="changePaymentApplyInfoVisible" />
 			</keep-alive>
 		</el-dialog>
+
+		<!--    批量填写佣金-->
+		<el-dialog
+			:modal="false"
+			v-dialogDrag
+			v-dialogDragWidth
+			v-dialogDragHeight
+			:close-on-click-modal="false"
+			title="批量填写佣金信息"
+			:visible.sync="batchFillVisible"
+			width="500px"
+		>
+			<el-form ref="batchForm" :model="batchForm" :rules="batchRules" label-width="140px">
+				<el-form-item label="佣金单价" prop="commissionUnitPrice">
+					<el-input v-model="batchForm.commissionUnitPrice" placeholder="请输入佣金单价" type="number" step="0.01" />
+				</el-form-item>
+				<el-form-item label="其他付款金额" prop="otherPaymentAmount">
+					<el-input v-model="batchForm.otherPaymentAmount" placeholder="请输入其他付款金额" type="number" step="0.01" />
+				</el-form-item>
+				<el-form-item label="差异原因" prop="difference_reason">
+					<el-input v-model="batchForm.difference_reason" placeholder="请输入差异原因" type="textarea" :rows="3" />
+				</el-form-item>
+				<el-form-item label="额外信息">
+					<el-row :gutter="10">
+						<el-col :span="8">
+							<el-input v-model="batchForm.extraInfo.var" placeholder="变量" />
+						</el-col>
+						<el-col :span="8">
+							<el-input v-model="batchForm.extraInfo.rebate" placeholder="折扣" />
+						</el-col>
+						<el-col :span="8">
+							<el-input v-model="batchForm.extraInfo.period" placeholder="周期" />
+						</el-col>
+					</el-row>
+				</el-form-item>
+			</el-form>
+			<div slot="footer" class="dialog-footer">
+				<el-button @click="batchFillVisible = false">取 消</el-button>
+				<el-button type="primary" @click="submitBatchFill" :loading="batchSubmitting">确认填写</el-button>
+			</div>
+		</el-dialog>
 	</div>
 </template>
 
 <script>
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
-import { deleteCommission, getCommission, listCommission, updateDifferenceReason } from '@/api/commission';
+import { deleteCommission, getCommission, listCommission, updateDifferenceReason, batchAddCommission } from '@/api/commission';
 import { CommissionType, TableName } from '@/api/tool/enums';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
@@ -162,6 +214,15 @@ export default {
 	computed: {
 		TableName() {
 			return TableName;
+		},
+		// 批量填写按钮是否禁用
+		batchFillDisabled() {
+			// 只有选中了批量佣金勾选框的行才能批量填写
+			return !this.tableData.some(row => row.batchSelected === true);
+		},
+		// 获取批量选中的行
+		batchSelectedRows() {
+			return this.tableData.filter(row => row.batchSelected === true);
 		}
 	},
 	components: { ApplyPayment, DialogWrapper },
@@ -240,7 +301,30 @@ export default {
 			],
 			PaymentApplyInfoVisible: false,
 			tID: null,
-			needMoney: null
+			needMoney: null,
+			// 批量填写相关
+			batchFillVisible: false,
+			batchSubmitting: false,
+			batchForm: {
+				commissionUnitPrice: '',
+				otherPaymentAmount: '',
+				difference_reason: '',
+				extraInfo: {
+					var: '',
+					rebate: '',
+					period: ''
+				}
+			},
+			batchRules: {
+				commissionUnitPrice: [
+					{ required: true, message: '请输入佣金单价', trigger: 'blur' },
+					{ pattern: /^\d+(\.\d{1,3})?$/, message: '佣金单价格式不正确', trigger: 'blur' }
+				],
+				otherPaymentAmount: [
+					{ required: true, message: '请输入其他付款金额', trigger: 'blur' },
+					{ pattern: /^\d+(\.\d{1,3})?$/, message: '其他付款金额格式不正确', trigger: 'blur' }
+				]
+			}
 		};
 	},
 	watch: {
@@ -313,7 +397,11 @@ export default {
 			this.loading = true;
 			try {
 				const response = await listCommission(this.queryParams, CommissionType.SUPPLIER);
-				this.tableData = response.rows;
+				// 为每行数据添加批量选择字段
+				this.tableData = response.rows.map(row => ({
+					...row,
+					batchSelected: false
+				}));
 				this.total = response.total;
 			} catch (error) {
 				console.error('获取数据失败', error);
@@ -325,6 +413,11 @@ export default {
 		handleSelectionChange(selection) {
 			this.selectedRow = selection.length > 0 ? selection[0] : null;
 			this.selections = selection;
+		},
+		// 处理批量勾选变化
+		handleBatchSelectionChange() {
+			// 这个方法可以用来处理勾选状态变化的逻辑，目前只需要触发计算属性更新
+			this.$forceUpdate();
 		},
 		handleAdd(source) {
 			this.openDialog(
@@ -440,6 +533,79 @@ export default {
 				.catch(() => {
 					// 用户取消
 				});
+		},
+		// 批量填写佣金
+		handleBatchFill() {
+			// 获取批量选中的行
+			const eligibleRows = this.batchSelectedRows;
+			if (eligibleRows.length === 0) {
+				this.$message.warning('请先勾选需要批量填写佣金信息的行');
+				return;
+			}
+			// 重置表单
+			this.resetBatchForm();
+			this.batchFillVisible = true;
+		},
+		// 重置批量填写表单
+		resetBatchForm() {
+			this.batchForm = {
+				commissionUnitPrice: '',
+				otherPaymentAmount: '',
+				difference_reason: '',
+				extraInfo: {
+					var: '',
+					rebate: '',
+					period: ''
+				}
+			};
+			this.$nextTick(() => {
+				if (this.$refs.batchForm) {
+					this.$refs.batchForm.clearValidate();
+				}
+			});
+		},
+		// 提交批量填写
+		submitBatchFill() {
+			this.$refs.batchForm.validate(async (valid) => {
+				if (!valid) {
+					return;
+				}
+
+				// 获取批量选中的行
+				const eligibleRows = this.batchSelectedRows;
+				
+				if (eligibleRows.length === 0) {
+					this.$message.warning('没有可填写的佣金信息');
+					return;
+				}
+
+				// 构建批量请求数据
+				const batchData = eligibleRows.map(row => ({
+					type: CommissionType.SUPPLIER,
+					orderDetailId: row.orderDetailId,
+					commissionUnitPrice: parseFloat(this.batchForm.commissionUnitPrice),
+					otherPaymentAmount: parseFloat(this.batchForm.otherPaymentAmount),
+					difference_reason: this.batchForm.difference_reason,
+					extraInfo: {
+						var: this.batchForm.extraInfo.var,
+						rebate: this.batchForm.extraInfo.rebate,
+						period: this.batchForm.extraInfo.period
+					}
+				}));
+
+				this.batchSubmitting = true;
+				try {
+					await batchAddCommission(batchData);
+					this.$message.success(`成功批量填写了 ${batchData.length} 条佣金信息`);
+					this.batchFillVisible = false;
+					this.getList(); // 刷新列表
+				} catch (error) {
+					this.$message.error('批量填写佣金信息失败，请重试');
+					console.error('批量填写佣金信息失败:', error);
+				} finally {
+					this.batchSubmitting = false;
+				}
+			});
 		}
 	}
 };
