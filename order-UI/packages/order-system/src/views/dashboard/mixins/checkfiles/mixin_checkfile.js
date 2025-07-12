@@ -59,7 +59,7 @@ export var mixin_checkfile = {
 				onUpdate(data).then(() => {
 					this.$message.success('操作成功！');
 					// 通知事件总线，关闭文件选择弹窗
-					this.$bus.$emit('changeFileVisible', false);
+					// this.$bus.$emit('changeFileVisible', false);
 					// 刷新数据列表
 					this.getList();
 				});

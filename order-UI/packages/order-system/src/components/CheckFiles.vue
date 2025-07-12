@@ -119,7 +119,7 @@ export default {
 		// 删除某个文件
 		handleDeleteFile(attachment) {
 			// 弹出确认框 先确认是否要删除
-			this.$antconfirm({
+			this.$antdconfirm({
 				title: '系统提示',
 				content: `是否要删除文件"${attachment.fileName}"?`,
 				okText: '确定',
@@ -199,7 +199,7 @@ export default {
 			<h3>附件列表</h3>
 			<div class="file-list">
 				<!--上传过的文件列表-->
-				<FileItems v-for="(item, index) in checkFileList" :key="item.id || index" :file-name="item.fileName" :file-path="item.filePath" @handleFile="() => handleDeleteFile(item)" />
+				<FileItems v-for="(item, index) in checkFileList" :key="item.id || index" :fileItem="item" @handleFile="handleDeleteFile" />
 				<!--支持上传-->
 				<FileShowItem @handleFile="handleAddFile" v-if="isUpload" />
 			</div>

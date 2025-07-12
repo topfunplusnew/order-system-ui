@@ -13,9 +13,10 @@ export default {
 		TextIcon: () => import('@/views/dashboard/components/icons/TextIcon.vue')
 	},
 	props: {
-		fileName: {
-			type: String,
-			default: '无名称'
+		// 完整的文件对象
+		fileItem: {
+			type: Object,
+			required: true
 		}
 	},
 	data() {
@@ -23,7 +24,10 @@ export default {
 	},
 	computed: {
 		_fileName() {
-			return this.fileName;
+			return this.fileItem?.fileName || '无名称';
+		},
+		_filePath() {
+			return this.fileItem?.filePath || '';
 		},
 		currentIcon() {
 			// 文件后缀与组件的映射关系
@@ -45,13 +49,16 @@ export default {
 	},
 	methods: {
 		// 点击某一个文件
-		handleCheckFile(item) {
-			window.open(process.env.VUE_APP_BASE_API + item);
+		handleCheckFile() {
+			if (this._filePath) {
+				window.open(process.env.VUE_APP_BASE_API + this._filePath);
+			}
 		},
 
 		// 点击删除文件
 		handleDeleteFile() {
-			this.$emit('handleFile', this.fileName);
+			// 传递完整的文件对象给父组件
+			this.$emit('handleFile', this.fileItem);
 		}
 	}
 };
@@ -65,7 +72,7 @@ export default {
 			</div>
 			<div class="file-icon">
 				<component :is="currentIcon" v-if="currentIcon"></component>
-				<div class="file-name" @click="handleCheckFile(fileName)">{{ _fileName }}...</div>
+				<div class="file-name" @click="handleCheckFile">{{ _fileName }}...</div>
 			</div>
 		</div>
 	</div>
