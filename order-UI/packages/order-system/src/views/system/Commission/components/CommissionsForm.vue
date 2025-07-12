@@ -127,7 +127,7 @@ export default {
 <template>
 	<div>
 		<el-form ref="commissionForm" :model="form" :rules="rules" label-width="140px">
-			<el-form-item label="订单编号">
+			<!-- <el-form-item label="订单编号">
 				<el-col :span="20">
 					<el-input v-model="form.orderDetailId" placeholder="请输入内容" disabled />
 				</el-col>
@@ -168,7 +168,6 @@ export default {
 								</template>
 							</el-table-column>
 							<el-table-column show-overflow-tooltip label="陆运费" align="center" prop="landFreight" width="100px" />
-							<!--      原为海运车牌号-->
 							<el-table-column show-overflow-tooltip label="海运柜号" align="center" prop="seaCarNo">
 								<template #default="scope">
 									{{ !scope.row.seaCarNo ? '无' : scope.row.seaCarNo }}
@@ -179,7 +178,6 @@ export default {
 									{{ !scope.row.seaDriverTel ? '无' : scope.row.seaDriverTel }}
 								</template>
 							</el-table-column>
-							<!--      原为海运司机姓名-->
 							<el-table-column show-overflow-tooltip label="海运公司" align="center" prop="seaDriverName" width="100px">
 								<template #default="scope">
 									{{ !scope.row.seaDriverName ? '无' : scope.row.seaDriverTel }}
@@ -190,7 +188,7 @@ export default {
 						</template>
 					</SearchOption>
 				</el-col>
-			</el-form-item>
+			</el-form-item> -->
 			<el-form-item label="佣金单价" prop="commissionUnitPrice">
 				<el-input v-model="form.commissionUnitPrice" placeholder="请输入内容" />
 			</el-form-item>
