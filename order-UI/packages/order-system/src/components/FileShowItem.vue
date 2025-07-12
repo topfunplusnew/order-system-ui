@@ -8,12 +8,12 @@ export default {
 	data() {
 		return {
 			fileList: [],
-			baseUrl: process.env.VUE_APP_BASE_API + '/common/upload',
 			headers: {
 				Authorization: 'Bearer ' + getToken()
 			},
 			progress: null,
-			text: '点击上传'
+			text: '点击上传',
+			uploading: false
 		};
 	},
 	watch: {
@@ -24,35 +24,52 @@ export default {
 		}
 	},
 	methods: {
-		handleUpload({ file, onProgress }) {
-			this.progress = null;
-			const formData = new FormData();
-			formData.append('file', file);
+		async handleUpload({ file, onProgress }) {
+			if (this.uploading) return;
 
-			// 使用 axios 发起上传请求
-			// eslint-disable-next-line no-undef
-			axios
-				.post(this.baseUrl, formData, {
-					headers: this.headers,
-					onUploadProgress: progressEvent => {
-						if (progressEvent.lengthComputable) {
-							// 计算上传进度并传递给 onProgress 回调
-							const progress = Math.round((progressEvent.loaded / progressEvent.total) * 100);
-							onProgress({ percent: progress });
-						}
+			this.uploading = true;
+			this.progress = 0;
+			this.text = '选择中...';
+
+			try {
+				// 模拟进度更新
+				const progressInterval = setInterval(() => {
+					if (this.progress < 90) {
+						this.progress += 10;
+						onProgress({ percent: this.progress });
 					}
-					// 文件上传成功
-				})
-				.then(response => {
-					this.text = '继续上传';
-					this.$refs.upload.clearFiles();
-					// 上传成功 通知父组件修改状态
-					this.$emit('handleFile', response.data.fileName);
-					// 文件上传失败
-				})
-				.catch(err => {
-					this.$message.error(err.message);
-				});
+				}, 50);
+
+				// 模拟选择过程
+				setTimeout(() => {
+					// 清除进度模拟
+					clearInterval(progressInterval);
+
+					// 完成进度
+					this.progress = 100;
+					onProgress({ percent: 100 });
+
+					// 延迟一下显示完成状态
+					setTimeout(() => {
+						this.text = '继续上传';
+						this.progress = null;
+						this.uploading = false;
+						this.$refs.upload.clearFiles();
+
+						// 只传递文件对象给父组件，由父组件负责实际上传
+						this.$emit('handleFile', file);
+					}, 300);
+				}, 500);
+			} catch (error) {
+				console.error('文件选择失败:', error);
+				this.$message.error('文件选择失败: ' + (error.message || '未知错误'));
+
+				// 重置状态
+				this.text = '点击上传';
+				this.progress = null;
+				this.uploading = false;
+				this.$refs.upload.clearFiles();
+			}
 		},
 		// 处理上传进度
 		handleProgress(event) {
@@ -72,14 +89,14 @@ export default {
 				<el-upload
 					ref="upload"
 					class="upload-demo"
-					:action="baseUrl"
-					:headers="headers"
+					action="#"
 					:show-file-list="false"
 					multiple
 					:http-request="handleUpload"
 					:limit="1"
 					:file-list="fileList"
 					:on-progress="handleProgress"
+					:disabled="uploading"
 				>
 					<el-button size="small" type="text">{{ text }}</el-button>
 				</el-upload>
@@ -88,7 +105,7 @@ export default {
 			<!-- 自定义的上传进度显示 -->
 			<div v-if="progress !== null" class="upload-progress-container">
 				<div class="progress-bar" :style="{ width: progress + '%' }"></div>
-				<span>{{ progress }}%</span>
+				<span class="progress-text">{{ progress }}%</span>
 			</div>
 		</div>
 	</div>
@@ -108,6 +125,7 @@ export default {
 	box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
 	text-align: center;
 	transition: background 0.3s, box-shadow 0.3s, transform 0.2s;
+	position: relative;
 
 	&:hover {
 		cursor: pointer;
@@ -128,6 +146,35 @@ export default {
 		white-space: nowrap;
 		overflow: hidden;
 		max-width: 80px;
+	}
+}
+
+// 上传进度样式
+.upload-progress-container {
+	position: absolute;
+	bottom: 8px;
+	left: 8px;
+	right: 8px;
+	background: rgba(255, 255, 255, 0.9);
+	border-radius: 8px;
+	padding: 4px;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+
+	.progress-bar {
+		flex: 1;
+		height: 4px;
+		background: #409eff;
+		border-radius: 2px;
+		transition: width 0.3s ease;
+	}
+
+	.progress-text {
+		font-size: 10px;
+		color: #409eff;
+		font-weight: bold;
+		min-width: 25px;
 	}
 }
 </style>

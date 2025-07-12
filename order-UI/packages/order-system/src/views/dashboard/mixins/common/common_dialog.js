@@ -5,6 +5,11 @@ import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue
  * 通用弹窗混入：动态创建 DialogWrapper 实例，每次打开都是新实例
  */
 export var common_dialog = {
+	data() {
+		return {
+			currentComponent: null,
+		}
+	},
 	methods: {
 		openDialog(component, title, width = '50%', props = {}, closeConfirm = false) {
 			const DialogConstructor = Vue.extend(DialogWrapper);

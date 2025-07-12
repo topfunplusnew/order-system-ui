@@ -2,6 +2,7 @@
 <!-- 如果一个列需要展示文件 那么就可以用这个组件-->
 <script>
 import { check_file } from '../views/dashboard/mixins/utils/check_file';
+import { addAttachments, deleteAttachments } from '@/api/system/attachments';
 import FileItems from './FileItems.vue';
 import FileShowItem from './FileShowItem.vue';
 
@@ -10,43 +11,47 @@ export default {
 	components: { FileShowItem, FileItems },
 	mixins: [check_file],
 	props: {
-		// 文件的地址url字段
-		path: {
-			type: String,
-			default: ''
+		// 附件数组
+		attachmentList: {
+			type: Array,
+			default: () => []
 		},
+		// 是否允许上传
 		isUpload: {
 			type: Boolean,
 			default: true
+		},
+		// 上传文件时的标识flag
+		flag: {
+			type: String,
+			default: ''
+		},
+		// 额外信息
+		extraInfo: {
+			type: Object,
+			default: () => ({})
 		}
 	},
 	data() {
 		return {
-			// 检查的文件列表
+			// 检查的文件列表（现在是附件对象数组）
 			checkFileList: [],
 			dialogVisible: false,
 			// 是否正在上传文件的标志位
-			isUploading: false,
-
-			// 最大文件个数限制
-			maxFileNum: 5
+			isUploading: false
 		};
 	},
 	computed: {
 		// 过滤出来图片 给模板使用
 		imgList() {
-			// todo 这里有问题 报错undefied
-			// 不一定只有jpg格式的 可能还有png格式
-			const type = ['.jpeg', '.jpg', '.png', '.svg'];
-			// 根据文件名称的后缀来判断
-			return this.checkFileList.filter(el => {
-				if (!el) return false;
-				return type.some(item => item === el.slice(el.lastIndexOf('.')));
-			});
-		},
-		// 不大于五个附件返回true
-		isFull() {
-			return this.checkFileList.length < this.maxFileNum;
+			const imageTypes = ['.jpeg', '.jpg', '.png', '.svg', '.gif', '.bmp', '.webp'];
+			return this.checkFileList
+				.filter(item => {
+					if (!item || !item.filePath) return false;
+					const suffix = item.fileSuffix ? `.${item.fileSuffix.toLowerCase()}` : '';
+					return imageTypes.includes(suffix);
+				})
+				.map(item => item.filePath);
 		}
 	},
 	mounted() {
@@ -60,71 +65,83 @@ export default {
 		});
 	},
 	methods: {
+		showImgSrc(item) {
+			return process.env.VUE_APP_BASE_API + item;
+		},
 		// 查看文件列表
-		checkFiles(path) {
+		checkFiles(attachmentList) {
 			this.checkFileList = [];
-			// 如果path有值 才能分隔 没有值就是本身
-			if (path) {
-				this.checkFileList = path.split('|').filter(item => item !== '');
+			if (attachmentList && attachmentList.length > 0) {
+				this.checkFileList = [...attachmentList];
 			}
 			// 查看文件时不是上传模式
 			this.isUploading = false;
 			this.dialogVisible = true;
 		},
 		// 上传附件
-		uploadFile(path) {
-			// fileList即为已经上传的文件列表
+		uploadFile(attachmentList) {
 			this.checkFileList = [];
-			if (path) {
-				this.checkFileList = path.split('|').filter(item => item !== '');
+			if (attachmentList && attachmentList.length > 0) {
+				this.checkFileList = [...attachmentList];
 			}
 			// 设置上传标志位
 			this.isUploading = true;
 			this.dialogVisible = true;
 		},
 		// 添加某个文件
-		handleAddFile(value) {
-			// 这里如果选择了不合适的文件 会返回undefined
-			if (!value) {
+		async handleAddFile(file) {
+			if (!file) {
 				this.$message.error('上传的文件格式有误!');
 				return;
 			}
-			let newPath = null;
-			// 如果长度大于等于5 不得上传
-			if (this.checkFileList.length >= this.maxFileNum) {
-				this.$message.error('最多只能上传' + this.maxFileNum + '个文件');
-			} else {
-				// 立即添加到列表中，让用户能看到上传的文件
-				this.checkFileList.push(value);
-				
-				// 如果是第一个文件，需要拼接一个|
-				if (this.checkFileList.length === 1) {
-					newPath = value + '|';
-				} else {
-					newPath = this.checkFileList.join('|');
-				}
 
-				// 调用传入的业务接口 修改数据
-				this.$emit('needToUpdate', newPath);
-				
-				// 显示成功消息
-				this.$message.success('文件上传成功！');
+			try {
+				// 显示上传中状态
+				this.$message.info('文件上传中，请稍候...');
+				// 调用API上传文件
+				const response = await addAttachments(file, {
+					flag: this.flag,
+					extraInfo: this.extraInfo
+				});
+				if (response.code === 200 && response.data) {
+					// 上传成功，添加到列表中
+					this.checkFileList.push(response.data);
+					// 触发更新事件，传递新的附件列表
+					this.$emit('needToUpdate', [...this.checkFileList]);
+				} else {
+					throw new Error(response.msg || '上传失败');
+				}
+			} catch (error) {
+				console.error('文件上传失败:', error);
+				this.$message.error('文件上传失败: ' + (error.message || '未知错误'));
 			}
 		},
 		// 删除某个文件
-		handleDeleteFile(value) {
+		handleDeleteFile(attachment) {
 			// 弹出确认框 先确认是否要删除
 			this.$antconfirm({
 				title: '系统提示',
-				content: '是否要删除该文件?',
+				content: `是否要删除文件"${attachment.fileName}"?`,
 				okText: '确定',
 				cancelText: '取消',
 				type: 'warning',
 				zIndex: 2600,
-				onOk: () => {
-					const files = this.checkFileList.filter(item => item !== value);
-					const newPath = files.length === 0 ? '' : files.join('|');
-					this.$emit('needToUpdate', newPath);
+				onOk: async () => {
+					try {
+						// 调用API删除文件
+						await deleteAttachments(attachment.id);
+
+						// 从列表中移除
+						this.checkFileList = this.checkFileList.filter(item => item.id !== attachment.id);
+
+						// 触发更新事件
+						this.$emit('needToUpdate', [...this.checkFileList]);
+
+						this.$message.success('文件删除成功！');
+					} catch (error) {
+						console.error('文件删除失败:', error);
+						this.$message.error('文件删除失败: ' + (error.message || '未知错误'));
+					}
 				},
 				onCancel: () => {
 					this.$message.info('已取消删除操作');
@@ -151,11 +168,11 @@ export default {
 				</span>
 				<el-dropdown-menu slot="dropdown">
 					<el-dropdown-item>
-						<el-button size="mini" type="text" v-if="isUpload" @click="uploadFile(path)">上传附件</el-button>
+						<el-button size="mini" type="text" v-if="isUpload" @click="uploadFile(attachmentList)">上传附件</el-button>
 					</el-dropdown-item>
 					<el-dropdown-item>
-						<div v-if="path">
-							<el-button size="mini" type="text" @click="checkFiles(path)">查看附件</el-button>
+						<div v-if="attachmentList && attachmentList.length > 0">
+							<el-button size="mini" type="text" @click="checkFiles(attachmentList)">查看附件</el-button>
 						</div>
 						<div v-else>无附件</div>
 					</el-dropdown-item>
@@ -169,9 +186,10 @@ export default {
 			v-dialogDrag
 			v-dialogDragWidth
 			v-dialogDragHeight
-			title="文件列表(最多上传五个文件)"
+			title="文件列表"
 			:visible.sync="dialogVisible"
 			width="620px"
+			height="650px"
 			append-to-body
 			:close-on-click-modal="false"
 			:close-on-press-escape="false"
@@ -180,10 +198,10 @@ export default {
 		>
 			<h3>附件列表</h3>
 			<div class="file-list">
-				<!--        上传过的文件列表-->
-				<FileItems v-if="path" v-for="(item, index) in checkFileList" :key="index" :file-name="item" @handleFile="handleDeleteFile" />
-				<!--        支持上传-->
-				<FileShowItem @handleFile="handleAddFile" v-if="isFull && isUpload" />
+				<!--上传过的文件列表-->
+				<FileItems v-for="(item, index) in checkFileList" :key="item.id || index" :file-name="item.fileName" :file-path="item.filePath" @handleFile="() => handleDeleteFile(item)" />
+				<!--支持上传-->
+				<FileShowItem @handleFile="handleAddFile" v-if="isUpload" />
 			</div>
 
 			<h3>附件图片预览</h3>
@@ -191,7 +209,7 @@ export default {
 				<div class="img-list">
 					<!--        只渲染checkFileList中的图片-->
 					<div class="img-wrapper">
-						<img v-for="(item, index) in imgList" :key="index" :src="item" alt="该附件无图片/图片无法查看" class="preview-img" />
+						<img v-for="(item, index) in imgList" :key="index" :src="showImgSrc(item)" alt="该附件无图片/图片无法查看" class="preview-img" />
 					</div>
 				</div>
 			</div>
@@ -206,16 +224,23 @@ export default {
 <style scoped lang="scss">
 // 弹窗样式优化
 ::v-deep .check-files-dialog {
-	max-height: 87vh !important;
-	
+	height: 650px !important;
+	max-height: none !important;
+
 	.el-dialog {
-		max-height: 85vh !important;
+		height: 650px !important;
+		max-height: none !important;
 		display: flex !important;
 		flex-direction: column !important;
-		margin-top: 5vh !important;
-		margin-bottom: 5vh !important;
+		margin-top: calc(50vh - 325px) !important;
+		margin-bottom: 0 !important;
 	}
-	
+
+	.el-dialog__header {
+		flex-shrink: 0 !important;
+		padding: 20px 20px 10px !important;
+	}
+
 	.el-dialog__body {
 		flex: 1 !important;
 		overflow: hidden !important;
@@ -223,11 +248,12 @@ export default {
 		display: flex !important;
 		flex-direction: column !important;
 		min-height: 0 !important;
+		height: calc(650px - 120px) !important; /* 总高度减去头部和底部 */
 	}
-	
+
 	.el-dialog__footer {
 		flex-shrink: 0 !important;
-		padding: 10px 20px 15px !important;
+		padding: 10px 20px 20px !important;
 	}
 }
 
@@ -265,8 +291,8 @@ export default {
 	border: 1px solid #e6e6e6;
 	border-radius: 8px;
 	background: #f9f9f9;
-	min-height: 200px;
-	max-height: 400px;
+	min-height: 180px;
+	max-height: 250px;
 
 	// 美化滚动条
 	&::-webkit-scrollbar {
@@ -316,7 +342,7 @@ export default {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	height: 200px;
+	height: 180px;
 	color: #999;
 	font-size: 14px;
 }

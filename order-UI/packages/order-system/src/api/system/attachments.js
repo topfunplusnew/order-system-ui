@@ -51,11 +51,3 @@ export function getAttachmentsList(params) {
 		params: params
 	});
 }
-
-// 获取附件详情
-export function getAttachments(id) {
-	return request({
-		url: `/system/attachments/${id}`,
-		method: 'get'
-	});
-}

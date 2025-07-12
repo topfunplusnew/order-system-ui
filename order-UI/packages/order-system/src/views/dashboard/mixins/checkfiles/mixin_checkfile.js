@@ -1,5 +1,5 @@
 import { excludeParams } from '../../../../api/tool/exclude'; // 导入 excludeParams 方法
-
+import _ from 'lodash';
 /**
  * 用法示例：
  * <el-table-column
@@ -37,23 +37,23 @@ export var mixin_checkfile = {
 		 * @param {Function} onGet - 获取文件记录的接口方法，需返回 Promise
 		 * @param {Function} onUpdate - 更新文件记录的接口方法，需返回 Promise
 		 */
-		handleUpdateFilePath(value, row, prop, onGet, onUpdate) {
-			console.log('onGet, onUpdate', onGet, onUpdate);
-
+		handleUpdateFilePath(value, row, onGet, onUpdate) {
 			// 检查 onGet 和 onUpdate 是否为函数
 			if (typeof onGet !== 'function' || typeof onUpdate !== 'function') {
 				this.$message.error('组件内部错误！请检查传入的参数类型。');
 				return;
 			}
-
 			// 调用 onGet 方法获取文件记录
 			onGet(row.id).then(res => {
+				const deepData = _.cloneDeep(res.data);
 				// 将获取的记录与新的字段值组合
 				let data = {
-					...res.data,
-					[prop]: value
+					...deepData,
+					params: {
+						...deepData.params,
+						attachmentIds: value.map(item => item.id)
+					}
 				};
-
 				data = excludeParams(data, this.$exclude);
 				// 调用 onUpdate 方法更新文件记录
 				onUpdate(data).then(() => {

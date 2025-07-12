@@ -46,7 +46,7 @@ export default {
 	methods: {
 		// 点击某一个文件
 		handleCheckFile(item) {
-			window.open(item);
+			window.open(process.env.VUE_APP_BASE_API + item);
 		},
 
 		// 点击删除文件
