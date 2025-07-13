@@ -161,7 +161,7 @@
 					<el-input size="mini" v-model="form.goodsCompany" placeholder="请输入货物来源公司(本部或者海盛)" />
 				</el-form-item>
 				<el-form-item label="附件">
-					<file-upload @input="handleCommitUpload" />
+					<UploadFilesButton ref="attachmentUploader" flag="receiveProof" :extra-info="{ moduleType: 'inventoryMain', formId: form.id }" @files-updated="handleAttachmentFilesUpdated" />
 				</el-form-item>
 				<br />
 				<el-form-item label="运输方式" prop="transportMode" required>
@@ -696,6 +696,7 @@ import { listProductLevel } from '../../../api/system/productLevel';
 import { listStoreHouse } from '../../../api/system/StoreHouse';
 import { fix } from '../../../api/tool/format';
 import SearchOption from '../../../components/SearchOption.vue';
+import UploadFilesButton from '@/components/UploadFilesButton';
 import { _fill } from './fill';
 import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfile';
 import CheckFiles from '../../../components/CheckFiles.vue';
@@ -711,7 +712,7 @@ import { updateInventoryRowCalculations } from './inventoryCalculations'; // 确
 
 export default {
 	name: 'InventoryMain',
-	components: { DialogWrapper, SearchOption, CheckFiles, StateTag },
+	components: { DialogWrapper, SearchOption, CheckFiles, UploadFilesButton, StateTag },
 	mixins: [_fill, mixin_checkfile, mixin_printHTML, common_dialog],
 	data() {
 		// 自定义校验器：当选择陆运时，车队必填
@@ -975,6 +976,20 @@ export default {
 		listCompany,
 		getInventoryMain, // 确保已引入
 		updateInventoryMain, // 确保已引入
+		// 附件更新处理
+		handleAttachmentFilesUpdated(uploadParams) {
+			// uploadParams 结构: { params: { attachmentIds: [1, 2, 3] } }
+			if (!this.form.params) {
+				this.$set(this.form, 'params', {});
+			}
+			
+			// 直接设置 attachmentIds
+			if (uploadParams && uploadParams.params && uploadParams.params.attachmentIds) {
+				this.$set(this.form.params, 'attachmentIds', uploadParams.params.attachmentIds);
+			} else {
+				this.$set(this.form.params, 'attachmentIds', []);
+			}
+		},
 		/**
 		 * @description: 处理文件上传组件的回调，将上传的文件路径赋值给表单的 receiveProof 字段。
 		 * @param {string} val - 上传组件返回的文件路径或信息。
@@ -1377,6 +1392,10 @@ export default {
 		 *              重置全局编辑状态 (this.isEditingDetails = false)。
 		 */
 		cancel() {
+			// 清空附件上传组件
+			if (this.$refs.attachmentUploader) {
+				this.$refs['attachmentUploader'].clearUploadedFiles();
+			}
 			this.open = false;
 			this.reset();
 			this.isEditingDetails = false; // 重置编辑状态
@@ -1600,12 +1619,21 @@ export default {
 					this.form.allSeaFreight = this.isSea ? this.inventoryDetailList.reduce((prev, curr) => fix(Number(prev) + Number(curr.seaFreight || 0)), 0) : 0;
 					const apiCall = this.form.id ? updateInventoryMain : addInventoryMain;
 					const successMessage = this.form.id ? '修改成功' : '新增成功';
-					apiCall(this.form)
+					apiCall({
+						...this.form,
+						params: {
+							attachmentIds: this.form.params?.attachmentIds || []
+						}
+					})
 						.then(() => {
 							this.$modal.msgSuccess(successMessage);
 							this.open = false;
 							this.getList();
 							this.isEditingDetails = false; // 关闭弹窗时重置编辑状态
+							// 清空附件上传组件
+							if (this.$refs.attachmentUploader) {
+								this.$refs.attachmentUploader.clearUploadedFiles();
+							}
 						})
 						.catch(error => {
 							this.$message.error('提交失败: ' + (error.message || '未知错误'));
@@ -1764,6 +1792,17 @@ export default {
 					row[field] = parseFloat(row[field]).toFixed(4);
 				}
 			}
+		},
+		/**
+		 * @description: 获取数字的小数位数
+		 * @param {number|string} num 数字
+		 * @returns {number} 小数位数
+		 */
+		getDecimalPlaces(num) {
+			if (!num || isNaN(num)) return 0;
+			const str = String(num);
+			if (str.indexOf('.') === -1) return 0;
+			return str.split('.')[1].length;
 		},
 		/**
 		 * @description: 处理片数输入，限制最多两位小数

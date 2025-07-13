@@ -185,7 +185,12 @@
 					<el-input v-model="form.endCardSurplus" placeholder="请输入加油卡余额" />
 				</el-form-item>
 				<el-form-item label="加油小票附件" prop="attachmentOiladd">
-					<FileUpload v-model="form.attachmentOiladd" :limit="1" :fileSize="10" :fileType="['png', 'jpg', 'jpeg', 'pdf']" />
+					<UploadFilesButton 
+						ref="attachmentUpload" 
+						flag="attachmentOiladd" 
+						:extra-info="{ moduleType: 'oilCardConsume', formId: form.id }" 
+						@files-updated="handleAttachmentFilesUpdated" 
+					/>
 				</el-form-item>
 				<el-form-item label="备注" prop="comments">
 					<el-input v-model="form.comments" placeholder="请输入备注" />
@@ -205,6 +210,7 @@ import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import CheckFiles from '@/components/CheckFiles.vue';
 import { mixin_checkfile } from '@/views/dashboard/mixins/checkfiles/mixin_checkfile';
 import FileUpload from '@/components/FileUpload/index.vue';
+import UploadFilesButton from '@/components/UploadFilesButton';
 import SearchOption from '@/components/SearchOption.vue';
 import { listOilCard } from '@/api/system/oilCard';
 import { parseTime } from '../../../utils/ruoyi';
@@ -214,7 +220,8 @@ export default {
 	components: {
 		SearchOption,
 		CheckFiles,
-		FileUpload
+		FileUpload,
+		UploadFilesButton
 	},
 	mixins: [mixin_printHTML, mixin_checkfile],
 	data() {
@@ -313,6 +320,20 @@ export default {
 		listOilCard,
 		updateOilCardConsume,
 		getOilCardConsume,
+		// 附件更新处理
+		handleAttachmentFilesUpdated(uploadParams) {
+			// uploadParams 结构: { params: { attachmentIds: [1, 2, 3] } }
+			if (!this.form.params) {
+				this.$set(this.form, 'params', {});
+			}
+			
+			// 直接设置 attachmentIds
+			if (uploadParams && uploadParams.params && uploadParams.params.attachmentIds) {
+				this.$set(this.form.params, 'attachmentIds', uploadParams.params.attachmentIds);
+			} else {
+				this.$set(this.form.params, 'attachmentIds', []);
+			}
+		},
 		/** 查询加油卡消费信息列表 */
 		getList() {
 			this.loading = true;

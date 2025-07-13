@@ -234,7 +234,7 @@
 								:bill-type="BankAcceptanceType.PAY_TYPE.PAYMENT"
 								:select-type="form.selfBankCardType"
 								@updateSelectedType="changeSelfBankType"
-								@updateBankAcceptance="value => (form.params.bankacceptance = value)"
+								@updateBankAcceptance="value => (form.bankacceptance = value)"
 							/>
 						</el-form-item>
 					</el-col>
@@ -477,7 +477,7 @@
 						</el-form-item>
 					</el-col>
 					<el-col :span="12">
-						<el-form-item label="银行卡流水附件" prop="transactionHistoryAttachmentList">
+						<el-form-item label="银行卡流水附件" prop="chooseInfo.params.attachmentIds">
 							<UploadFilesButton
 								ref="transactionHistoryUpload"
 								flag="transactionHistoryAttachmentList"
@@ -490,7 +490,7 @@
 
 				<el-row :gutter="20">
 					<el-col :span="12">
-						<el-form-item label="附件" prop="attachmentList">
+						<el-form-item label="附件" prop="form.params.attachmentIds">
 							<UploadFilesButton ref="attachmentUpload" flag="attachments" :extra-info="{ moduleType: 'payment', formId: form.id }" @files-updated="handleAttachmentFilesUpdated" />
 						</el-form-item>
 					</el-col>
@@ -516,7 +516,7 @@
 							:bill-type="BankAcceptanceType.PAY_TYPE.PAYMENT"
 							:select-type="chooseInfo.otherBankCardType"
 							@updateSelectedType="changeCustomSelfBankType"
-							@updateBankAcceptance="value => (chooseInfo.params.bankacceptance = value)"
+							@updateBankAcceptance="value => (chooseInfo.bankacceptance = value)"
 						/>
 					</el-form-item>
 					<el-form-item label="我方银行账户类型" prop="selfBankNo">
@@ -526,7 +526,7 @@
 							:bill-type="BankAcceptanceType.PAY_TYPE.PAYMENT"
 							:select-type="chooseInfo.selfBankCardType"
 							@updateSelectedType="changeCustomSelfBankType"
-							@updateBankAcceptance="value => (chooseInfo.params.bankacceptance = value)"
+							@updateBankAcceptance="value => (chooseInfo.bankacceptance = value)"
 						/>
 					</el-form-item>
 					<el-form-item label="我方户名" prop="selfAcountsName">
@@ -829,16 +829,16 @@ export default {
 		listBankAccount,
 		listCompany,
 		// 处理附件文件更新
-		handleAttachmentFilesUpdated(params) {
-			console.log('附件文件更新:', params);
-			// 将附件参数合并到表单中
-			this.form = { ...this.form, ...params };
+		handleAttachmentFilesUpdated(uploadParams) {
+			if (uploadParams && uploadParams.params && uploadParams.params.attachmentIds) {
+				this.form.params.attachmentIds = uploadParams.params.attachmentIds;
+			}
 		},
 		// 处理银行卡流水附件文件更新
-		handleTransactionHistoryFilesUpdated(params) {
-			console.log('银行卡流水附件文件更新:', params);
-			// 将银行卡流水附件参数合并到表单中
-			this.form = { ...this.form, ...params };
+		handleTransactionHistoryFilesUpdated(uploadParams) {
+			if (uploadParams && uploadParams.params && uploadParams.params.attachmentIds) {
+				this.chooseInfo.params.attachmentIds = uploadParams.params.attachmentIds;
+			}
 		},
 		handleCommitUpload(value) {
 			console.log(value);
@@ -914,9 +914,8 @@ export default {
 				delFlag: null,
 				// 新增银行卡流水编号和附件
 				transactionHistory: null,
-				attachmentList: [],
+				bankacceptance: null,
 				params: {
-					bankacceptance: null,
 					attachmentIds: []
 				}
 			};
@@ -952,8 +951,9 @@ export default {
 				UserName: null,
 				updateTime: null,
 				delFlag: null,
+				bankacceptance: null,
 				params: {
-					bankacceptance: null
+					attachmentIds: []
 				}
 			};
 		},
@@ -1020,7 +1020,8 @@ export default {
 				// 深克隆防止出现引用问题
 				this.chooseInfo = _.cloneDeep(row);
 				// 初始化承兑对象
-				this.chooseInfo.params = { bankacceptance: null };
+				this.chooseInfo.bankacceptance = null;
+				this.chooseInfo.params = { attachmentIds: [] };
 				this.chooseBankDialogVisible = true;
 				return;
 			}

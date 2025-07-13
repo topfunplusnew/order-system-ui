@@ -172,7 +172,13 @@
 					<el-input v-model="moneyInfo.bankNo" placeholder="请输入银行账号" @input="handleInputTrim($event, 'moneyInfo', 'bankNo')" />
 				</el-form-item>
 				<el-form-item label="附件" prop="bankName">
-					<file-upload @input="handleUpload" />
+					<UploadFilesButton 
+						ref="attachmentUploader"
+						:table-name="'oilcard'"
+						:record-id="moneyInfo.id"
+						:attachment-type="'附件'"
+						@files-updated="handleAttachmentFilesUpdated"
+					/>
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -289,6 +295,7 @@
 <script>
 import { listOilCard, getOilCard, delOilCard, addOilCard, updateOilCard } from '@/api/system/oilCard';
 import SearchOption from '@/components/SearchOption.vue';
+import UploadFilesButton from '@/components/UploadFilesButton';
 import { excludeParams } from '@/api/tool/exclude';
 import { listBankAccount } from '@/api/system/bankAccount';
 import { addOilRecharge } from '@/api/system/oilRecharge';
@@ -303,7 +310,7 @@ import { addOilCardFundTransfer, updateOilCardFundTransfer } from '@/api/system/
 
 export default {
 	name: 'OilCard',
-	components: { DialogWrapper, SearchOption },
+	components: { DialogWrapper, SearchOption, UploadFilesButton },
 	mixins: [common_dialog],
 	data() {
 		return {
@@ -510,6 +517,20 @@ export default {
 		}
 	},
 	methods: {
+		// 附件更新处理
+		handleAttachmentFilesUpdated(uploadParams) {
+			// uploadParams 结构: { params: { attachmentIds: [1, 2, 3] } }
+			if (!this.moneyInfo.params) {
+				this.$set(this.moneyInfo, 'params', {});
+			}
+			
+			// 直接设置 attachmentIds
+			if (uploadParams && uploadParams.params && uploadParams.params.attachmentIds) {
+				this.$set(this.moneyInfo.params, 'attachmentIds', uploadParams.params.attachmentIds);
+			} else {
+				this.$set(this.moneyInfo.params, 'attachmentIds', []);
+			}
+		},
 		handleInputTrim(val, obj, prop) {
 			if (val.indexOf(' ') !== -1) {
 				this[obj][prop] = val.replace(/\s+/g, '');
@@ -585,9 +606,18 @@ export default {
 		submitMoney() {
 			this.$refs['moneyFormRef'].validate(valid => {
 				if (valid) {
-					addOilRecharge(this.moneyInfo).then(() => {
+					addOilRecharge({
+						...this.moneyInfo,
+						params: {
+							attachmentIds: this.moneyInfo.params?.attachmentIds || []
+						}
+					}).then(() => {
 						this.$message.success('油卡充值信息新增成功，请前往出差管理/加油卡充值记录查看');
 						this.moneyDialogVisible = false;
+						// 清空附件上传组件
+						if (this.$refs.attachmentUploader) {
+							this.$refs.attachmentUploader.clearUploadedFiles();
+						}
 					});
 				}
 			});

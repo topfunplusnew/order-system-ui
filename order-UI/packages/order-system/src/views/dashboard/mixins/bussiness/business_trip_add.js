@@ -36,7 +36,7 @@ export var mixin_business_trip_add = {
 			const handleSuccess = message => {
 				this.$message.success(message);
 				this.active++;
-				this.$refs.uploadFile?.clearFileList();
+				this.$refs.uploadFile?.clearUploadedFiles();
 				this.reset();
 				this.open = false;
 				this.getList();

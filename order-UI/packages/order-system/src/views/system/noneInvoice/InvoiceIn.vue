@@ -197,10 +197,15 @@
 					<el-input v-model="invoiceAmount" placeholder="请输入票点金额" />
 				</el-form-item>
 				<el-form-item label="银行回执附件">
-					<file-upload ref="fileUploader1" @input="handleCommitUpload" />
+					<UploadFilesButton ref="receiptUploader" flag="paymentReceipts" :extra-info="{ moduleType: 'noneInvoiceIn', formId: form.id }" @files-updated="handleReceiptFilesUpdated" />
 				</el-form-item>
 				<el-form-item label="发票单">
-					<file-upload ref="fileUploader2" @input="handleCommitUploadInvoiceAttachments" />
+					<UploadFilesButton
+						ref="attachmentUploader"
+						flag="invoiceAttachments"
+						:extra-info="{ moduleType: 'noneInvoiceIn', formId: form.id }"
+						@files-updated="handleAttachmentFilesUpdated"
+					/>
 				</el-form-item>
 				<el-form-item label="备注" prop="comments">
 					<el-input v-model="form.comments" placeholder="请输入备注" />
@@ -291,6 +296,7 @@ import { addReason } from '@/api/system/user';
 import { getGoodsOrder } from '@/api/system/goodsOrder';
 import OrderInfos from '@/views/dashboard/components/goodsOrder/OrderInfos.vue';
 import CheckFiles from '../../../components/CheckFiles.vue';
+import UploadFilesButton from '@/components/UploadFilesButton';
 import reLength from '../../dashboard/mixins/reLength';
 import { getInvoiceIn, updateInvoiceIn, updateInvoiceInExtra } from '../../../api/system/invoiceIn';
 import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfile';
@@ -302,7 +308,7 @@ import INVOICE_IN from '@/components/NeedToShow/INVOICE_IN.vue';
 
 export default {
 	name: 'NoneInvoiceIn',
-	components: { DialogWrapper, CheckFiles, OrderInfos, ApplyPayment, SearchOption },
+	components: { DialogWrapper, CheckFiles, UploadFilesButton, OrderInfos, ApplyPayment, SearchOption },
 	mixins: [mixin_printHTML, reLength, mixin_checkfile, common_dialog],
 	data() {
 		// 金额格式验证（最多两位小数）
@@ -513,6 +519,34 @@ export default {
 		updateInvoiceIn,
 		getInvoiceIn,
 		listCompany,
+		// 银行回执附件更新处理
+		handleReceiptFilesUpdated(uploadParams) {
+			// uploadParams 结构: { params: { attachmentIds: [1, 2, 3] } }
+			if (!this.form.paymentReceiptParams) {
+				this.$set(this.form, 'paymentReceiptParams', {});
+			}
+			
+			// 直接设置 attachmentIds
+			if (uploadParams && uploadParams.params && uploadParams.params.attachmentIds) {
+				this.$set(this.form.paymentReceiptParams, 'attachmentIds', uploadParams.params.attachmentIds);
+			} else {
+				this.$set(this.form.paymentReceiptParams, 'attachmentIds', []);
+			}
+		},
+		// 发票单附件更新处理
+		handleAttachmentFilesUpdated(uploadParams) {
+			// uploadParams 结构: { params: { attachmentIds: [1, 2, 3] } }
+			if (!this.form.invoiceAttachmentParams) {
+				this.$set(this.form, 'invoiceAttachmentParams', {});
+			}
+			
+			// 直接设置 attachmentIds
+			if (uploadParams && uploadParams.params && uploadParams.params.attachmentIds) {
+				this.$set(this.form.invoiceAttachmentParams, 'attachmentIds', uploadParams.params.attachmentIds);
+			} else {
+				this.$set(this.form.invoiceAttachmentParams, 'attachmentIds', []);
+			}
+		},
 		/** 查询发票购入信息列表 */
 		getList() {
 			this.loading = true;
@@ -544,10 +578,10 @@ export default {
 		},
 		// 取消按钮
 		cancel() {
-			this.open = false;
 			// 清空两个上传附件显示的文件列表
-			this.$refs.fileUploader1.clearFileList();
-			this.$refs.fileUploader2.clearFileList();
+			this.$refs.fileUploader1.clearUploadedFiles();
+			this.$refs.fileUploader2.clearUploadedFiles();
+			this.open = false;
 			this.reset();
 		},
 		// 表单重置
@@ -672,22 +706,32 @@ export default {
 				if (valid) {
 					if (this.form.id != null) {
 						this.form = excludeParams(this.form, this.$exclude);
-						updateInvoiceIn(this.form).then(() => {
+						updateInvoiceIn({
+							...this.form,
+							params: {
+								attachmentIds: this.form.params?.attachmentIds || []
+							}
+						}).then(() => {
 							this.$modal.msgSuccess('修改成功');
 							this.open = false;
 							// 清空两个上传附件显示的文件列表
-							this.$refs.fileUploader1.clearFileList();
-							this.$refs.fileUploader2.clearFileList();
+							this.$refs.receiptUploader.clearUploadedFiles();
+							this.$refs.attachmentUploader.clearUploadedFiles();
 							this.getList();
 						});
 					} else {
 						this.form = excludeParams(this.form, this.$exclude);
-						addInvoiceIn(this.form).then(() => {
+						addInvoiceIn({
+							...this.form,
+							params: {
+								attachmentIds: this.form.params?.attachmentIds || []
+							}
+						}).then(() => {
 							this.$modal.msgSuccess('新增成功');
 							this.open = false;
 							// 清空两个上传附件显示的文件列表
-							this.$refs.fileUploader1.clearFileList();
-							this.$refs.fileUploader2.clearFileList();
+							this.$refs.receiptUploader.clearUploadedFiles();
+							this.$refs.attachmentUploader.clearUploadedFiles();
 							this.getList();
 						});
 					}

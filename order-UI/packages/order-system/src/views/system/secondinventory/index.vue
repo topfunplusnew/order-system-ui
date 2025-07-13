@@ -106,7 +106,13 @@
 					<el-input size="mini" v-model="secondForm.goodsCompany" placeholder="请输入货物来源公司(本部或者海盛)" />
 				</el-form-item>
 				<el-form-item label="附件">
-					<file-upload @input="handleCommitUpload" />
+					<UploadFilesButton 
+						ref="attachmentUploader"
+						:table-name="'secondinventory'"
+						:record-id="secondForm.id"
+						:attachment-type="'附件'"
+						@files-updated="handleAttachmentFilesUpdated"
+					/>
 				</el-form-item>
 				<br />
 				<el-form-item label="运输方式" required>
@@ -717,6 +723,7 @@ import { listCompany } from '../../../api/system/company';
 import { listProductLevel } from '../../../api/system/productLevel';
 import { fix } from '../../../api/tool/format';
 import SearchOption from '../../../components/SearchOption.vue';
+import UploadFilesButton from '@/components/UploadFilesButton';
 import { _fill } from './fill';
 import { updateInventoryMain, addInventoryMain, getInventoryMain } from '../../../api/system/inventoryMain';
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
@@ -736,7 +743,7 @@ export default {
 			return PUBLIC_DICT_TYPE;
 		}
 	},
-	components: { SearchOption },
+	components: { SearchOption, UploadFilesButton },
 	mixins: [_fill],
 	data() {
 		// 自定义校验器：仓库名称必填
@@ -968,6 +975,20 @@ export default {
 		listFleet,
 		listCompany,
 		listProductLevel,
+		// 附件更新处理
+		handleAttachmentFilesUpdated(uploadParams) {
+			// uploadParams 结构: { params: { attachmentIds: [1, 2, 3] } }
+			if (!this.secondForm.params) {
+				this.$set(this.secondForm, 'params', {});
+			}
+			
+			// 直接设置 attachmentIds
+			if (uploadParams && uploadParams.params && uploadParams.params.attachmentIds) {
+				this.$set(this.secondForm.params, 'attachmentIds', uploadParams.params.attachmentIds);
+			} else {
+				this.$set(this.secondForm.params, 'attachmentIds', []);
+			}
+		},
 		/**
 		 * @description: 处理文件上传后的回调，更新表单中的收货凭证字段
 		 * @param {string} val 上传组件返回的文件信息或路径
@@ -1456,12 +1477,21 @@ export default {
 				return;
 			}
 			// 调用新增或者修改接口
-			apiCall(this.secondForm)
+			apiCall({
+				...this.secondForm,
+				params: {
+					attachmentIds: this.secondForm.params?.attachmentIds || []
+				}
+			})
 				.then(() => {
 					this.$modal.msgSuccess(successMessage);
 					this.secondInventoryVisible = false;
 					this.getList();
 					this.resetSecond();
+					// 清空附件上传组件
+					if (this.$refs.attachmentUploader) {
+						this.$refs.attachmentUploader.clearUploadedFiles();
+					}
 				})
 				.catch(error => {
 					this.$message.error('提交失败: ' + (error.message || '未知错误'));

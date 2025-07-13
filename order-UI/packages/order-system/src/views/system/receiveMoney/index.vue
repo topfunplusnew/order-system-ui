@@ -115,7 +115,7 @@
 								:bill-type="BankAcceptanceType.PAY_TYPE.RECEIVE"
 								:select-type="form.selfBankCardType"
 								@updateSelectedType="changeSelfBankType"
-								@updateBankAcceptance="value => (form.params.bankacceptance = value)"
+								@updateBankAcceptance="value => (form.bankacceptance = value)"
 							/>
 						</el-form-item>
 						<el-form-item label="我方户名" prop="selfAcountsName">
@@ -254,11 +254,12 @@
 						<el-form-item label="银行卡流水编号" prop="transactionHistory">
 							<el-input v-model="form.transactionHistory" placeholder="请输入银行卡流水编号" />
 						</el-form-item>
-						<el-form-item label="银行卡流水编号附件" prop="attachmentList">
-							<CheckFiles 
-								:attachmentList="form.attachmentList" 
-								@needToUpdate="value => form.attachmentList = value" 
+						<el-form-item label="银行卡流水编号附件" prop="params.attachmentIds">
+							<UploadFilesButton
+								ref="attachmentUploader"
 								flag="transactionHistoryAttachment"
+								:extra-info="{ moduleType: 'receiveMoney', formId: form.id }"
+								@files-updated="handleAttachmentFilesUpdated"
 							/>
 						</el-form-item>
 						<el-form-item label="备注" prop="comments">
@@ -284,6 +285,7 @@ import { addReason } from '@/api/system/user';
 import { BankAcceptanceType, PAYMENT_TARGET_TYPE, TableName } from '@/api/tool/enums';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
 import CheckFiles from '../../../components/CheckFiles.vue';
+import UploadFilesButton from '@/components/UploadFilesButton';
 
 import { listCompany } from '../../../api/system/company';
 import { mixin_receive_money_fill } from './receiveMoneyFill';
@@ -306,7 +308,7 @@ export default {
 			return BankAcceptanceType;
 		}
 	},
-	components: { BankType, CheckFiles, SearchOption },
+	components: { BankType, CheckFiles, UploadFilesButton, SearchOption },
 	mixins: [mixin_printHTML, mixin_receive_money_fill, mixin_checkfile, mixin_bankType, mixin_receive_money_subject],
 	data() {
 		return {
@@ -451,6 +453,11 @@ export default {
 		}
 	},
 	methods: {
+		handleAttachmentFilesUpdated(uploadParams) {
+			if (uploadParams && uploadParams.params && uploadParams.params.attachmentIds) {
+				this.form.params.attachmentIds = uploadParams.params.attachmentIds;
+			}
+		},
 		listCars,
 		listCompany,
 		listBankAccount,
@@ -507,12 +514,16 @@ export default {
 				UserName: null,
 				updateTime: null,
 				delFlag: null,
-				attachmentList: [],
+				bankacceptance: null,
 				params: {
-					bankacceptance: null
+					attachmentIds: []
 				}
 			};
 			this.resetForm('form');
+			// 清除上传组件状态
+			if (this.$refs.attachmentUploader) {
+				this.$refs.attachmentUploader.clearUploadedFiles();
+			}
 		},
 		/** 搜索按钮操作 */
 		handleQuery() {
@@ -563,7 +574,7 @@ export default {
 							return;
 						}
 						this.$nextTick(() => {
-							this.form.params.bankacceptance = result.data;
+							this.form.bankacceptance = result.data;
 						});
 					});
 				}

@@ -261,10 +261,20 @@
 							<el-input v-model="form.invoiceCompanyName" placeholder="请输入票据单位名称" />
 						</el-form-item>
 						<el-form-item label="银行回执附件">
-							<file-upload ref="fileUploader1" @input="handleCommitUpload" />
+							<UploadFilesButton 
+								ref="paymentReceiptsUpload" 
+								flag="paymentReceipts" 
+								:extra-info="{ moduleType: 'invoiceOther', formId: form.id }" 
+								@files-updated="handlePaymentReceiptsFilesUpdated" 
+							/>
 						</el-form-item>
 						<el-form-item label="发票单">
-							<file-upload ref="fileUploader2" @input="handleCommitUploadInvoiceAttachments" />
+							<UploadFilesButton 
+								ref="invoiceAttachmentsUpload" 
+								flag="invoiceAttachments" 
+								:extra-info="{ moduleType: 'invoiceOther', formId: form.id }" 
+								@files-updated="handleInvoiceAttachmentsFilesUpdated" 
+							/>
 						</el-form-item>
 						<el-form-item label="备注" prop="comments">
 							<el-input v-model="form.comments" placeholder="请输入备注" />
@@ -339,6 +349,7 @@ import { listGoodsOrder } from '@/api/system/goodsOrder';
 import { addDateRange } from '@/utils/ruoyi';
 import OrderInfos from '../../dashboard/components/goodsOrder/OrderInfos.vue';
 import CheckFiles from '../../../components/CheckFiles.vue';
+import UploadFilesButton from '@/components/UploadFilesButton';
 import { fix } from '../../../api/tool/format';
 import reLength from '../../dashboard/mixins/reLength';
 import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfile';
@@ -349,7 +360,7 @@ import INVOICE_ORTHER from '@/components/NeedToShow/INVOICE_ORTHER.vue';
 
 export default {
 	name: 'InvoiceOther',
-	components: { DialogWrapper, CheckFiles, OrderInfos, SearchOption },
+	components: { DialogWrapper, CheckFiles, UploadFilesButton, OrderInfos, SearchOption },
 	mixins: [mixin_printHTML, reLength, mixin_checkfile, common_dialog],
 	data() {
 		const validateAmount = (rule, value, callback) => {
@@ -565,11 +576,11 @@ export default {
 				this.checkOrderInfoVisible = true;
 			});
 		},
-		handleCommitUpload(val) {
-			this.form.paymentReceipts = val;
+		handlePaymentReceiptsFilesUpdated(params) {
+			this.form.paymentReceiptsParams = params;
 		},
-		handleCommitUploadInvoiceAttachments(val) {
-			this.form.invoiceAttachments = val;
+		handleInvoiceAttachmentsFilesUpdated(params) {
+			this.form.invoiceAttachmentsParams = params;
 		},
 		getList() {
 			this.loading = true;
@@ -581,8 +592,13 @@ export default {
 		},
 		cancel() {
 			this.open = false;
-			this.$refs.fileUploader1.clearFileList();
-			this.$refs.fileUploader2.clearFileList();
+			// 清理 UploadFilesButton 组件状态
+			if (this.$refs.paymentReceiptsUpload) {
+				this.$refs.paymentReceiptsUpload.clearUploadedFiles();
+			}
+			if (this.$refs.invoiceAttachmentsUpload) {
+				this.$refs.invoiceAttachmentsUpload.clearUploadedFiles();
+			}
 			this.reset();
 		},
 		reset() {
@@ -675,20 +691,44 @@ export default {
 		submitForm() {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
+					// 获取附件上传参数
+					if (this.$refs.paymentReceiptsUpload) {
+						const paymentReceiptsParams = this.$refs.paymentReceiptsUpload.getUploadParams();
+						if (paymentReceiptsParams && paymentReceiptsParams.params) {
+							this.form.params = { ...this.form.params, ...paymentReceiptsParams.params };
+						}
+					}
+					if (this.$refs.invoiceAttachmentsUpload) {
+						const invoiceAttachmentsParams = this.$refs.invoiceAttachmentsUpload.getUploadParams();
+						if (invoiceAttachmentsParams && invoiceAttachmentsParams.params) {
+							this.form.params = { ...this.form.params, ...invoiceAttachmentsParams.params };
+						}
+					}
+
 					if (this.form.id != null) {
 						updateInvoiceOther(this.form).then(() => {
 							this.$modal.msgSuccess('修改成功');
 							this.open = false;
-							this.$refs.fileUploader1.clearFileList();
-							this.$refs.fileUploader2.clearFileList();
+							// 清理 UploadFilesButton 状态
+							if (this.$refs.paymentReceiptsUpload) {
+								this.$refs.paymentReceiptsUpload.clearUploadedFiles();
+							}
+							if (this.$refs.invoiceAttachmentsUpload) {
+								this.$refs.invoiceAttachmentsUpload.clearUploadedFiles();
+							}
 							this.getList();
 						});
 					} else {
 						addInvoiceOther(this.form).then(() => {
 							this.$modal.msgSuccess('新增成功');
 							this.open = false;
-							this.$refs.fileUploader1.clearFileList();
-							this.$refs.fileUploader2.clearFileList();
+							// 清理 UploadFilesButton 状态
+							if (this.$refs.paymentReceiptsUpload) {
+								this.$refs.paymentReceiptsUpload.clearUploadedFiles();
+							}
+							if (this.$refs.invoiceAttachmentsUpload) {
+								this.$refs.invoiceAttachmentsUpload.clearUploadedFiles();
+							}
 							this.getList();
 						});
 					}

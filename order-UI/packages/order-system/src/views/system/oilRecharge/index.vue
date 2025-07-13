@@ -1,6 +1,13 @@
 <template>
 	<div class="app-container">
-		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="85px">
+		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini"				<el-form-item label="附件" prop="attachment">
+					<UploadFilesButton 
+						ref="attachmentUpload" 
+						flag="attachment" 
+						:extra-info="{ moduleType: 'oilRecharge', formId: form.id }" 
+						@files-updated="handleAttachmentFilesUpdated" 
+					/>
+				</el-form-item>nline="true" label-width="85px">
 			<el-form-item label="加油卡卡号" prop="oilCardNo">
 				<el-input v-model="queryParams.oilCardNo" placeholder="请输入加油卡卡号" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
@@ -162,6 +169,7 @@ import { parseTime } from '../../../utils/ruoyi';
 import { excludeParams } from '@/api/tool/exclude';
 import OilApply from '@/views/dashboard/components/oilCard/OilApply.vue';
 import CheckFiles from '@/components/CheckFiles.vue';
+import UploadFilesButton from '@/components/UploadFilesButton';
 import { getOilRecharge, updateOilRecharge } from '../../../api/system/oilRecharge';
 import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfile';
 import { mixin_oil_recharge_fill } from './oilRechargeFill';
@@ -174,7 +182,7 @@ export default {
 		},
 		...mapGetters(['trueName'])
 	},
-	components: { CheckFiles, OilApply, SearchOption },
+	components: { CheckFiles, UploadFilesButton, OilApply, SearchOption },
 	mixins: [mixin_printHTML, mixin_oil_recharge_fill, mixin_checkfile],
 	data() {
 		return {
@@ -303,8 +311,8 @@ export default {
 			this.needInfo = row;
 			this.paymentApplyVisible = true;
 		},
-		handleUpload(val) {
-			this.form.attachment = val;
+		handleAttachmentFilesUpdated(params) {
+			this.form.attachmentParams = params;
 		},
 		// 重置传递给子组件的状态
 		resetApplyPaymentInfo() {
@@ -326,7 +334,10 @@ export default {
 		// 取消按钮
 		cancel() {
 			this.open = false;
-			this.$refs.uploadFile.clearFileList();
+			// 清理 UploadFilesButton 组件状态
+			if (this.$refs.attachmentUpload) {
+				this.$refs.attachmentUpload.clearUploadedFiles();
+			}
 			this.reset();
 		},
 		// 表单重置
@@ -389,12 +400,23 @@ export default {
 		submitForm() {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
+					// 获取附件上传参数
+					if (this.$refs.attachmentUpload) {
+						const attachmentParams = this.$refs.attachmentUpload.getUploadParams();
+						if (attachmentParams && attachmentParams.params) {
+							this.form.params = { ...this.form.params, ...attachmentParams.params };
+						}
+					}
+
 					if (this.form.id != null) {
 						this.form = excludeParams(this.form, this.$exclude);
 						updateOilRecharge(this.form).then(() => {
 							this.$modal.msgSuccess('修改成功');
 							this.open = false;
-							this.$refs.uploadFile.clearFileList();
+							// 清理 UploadFilesButton 状态
+							if (this.$refs.attachmentUpload) {
+								this.$refs.attachmentUpload.clearUploadedFiles();
+							}
 							this.getList();
 						});
 					} else {
@@ -402,7 +424,10 @@ export default {
 						addOilRecharge(this.form).then(() => {
 							this.$modal.msgSuccess('新增成功');
 							this.open = false;
-							this.$refs.uploadFile.clearFileList();
+							// 清理 UploadFilesButton 状态
+							if (this.$refs.attachmentUpload) {
+								this.$refs.attachmentUpload.clearUploadedFiles();
+							}
 							this.getList();
 						});
 					}

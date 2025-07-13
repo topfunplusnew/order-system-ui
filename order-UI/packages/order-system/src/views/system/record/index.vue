@@ -270,7 +270,7 @@
 							@updateSelectedType="changeSelfBankType"
 							@updateBankAcceptance="
 								value => {
-									form.params.bankacceptance = value;
+									form.bankacceptance = value;
 								}
 							"
 							:bill-type="PayType.TRANSFOR"
@@ -441,7 +441,7 @@
 							@updateSelectedType="changeOtherBankType"
 							@updateBankAcceptance="
 								value => {
-									form.params.bankacceptance = value;
+									form.bankacceptance = value;
 								}
 							"
 							:bill-type="PayType.TRANSFOR"
@@ -495,7 +495,12 @@
 					</el-row>
 				</el-form-item>
 				<el-form-item label="附件" prop="attachment">
-					<file-upload ref="uploadFile" @input="handleCommitUpload" />
+					<UploadFilesButton 
+						ref="attachmentUpload" 
+						flag="attachment" 
+						:extra-info="{ moduleType: 'record', formId: form.id }" 
+						@files-updated="handleAttachmentFilesUpdated" 
+					/>
 				</el-form-item>
 				<el-form-item label="交易时间" prop="transactionTime">
 					<el-date-picker v-model="form.transactionTime" clearable type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="请选择交易时间" />
@@ -543,6 +548,7 @@ import { getRecord, updateRecord } from '../../../api/system/record';
 import { BankAcceptanceType, PayType, TableName } from '../../../api/tool/enums';
 import { excludeParams } from '../../../api/tool/exclude';
 import CheckFiles from '../../../components/CheckFiles.vue';
+import UploadFilesButton from '@/components/UploadFilesButton';
 import SearchOption from '../../../components/SearchOption.vue';
 import { PUBLIC_DICT_TYPE } from '../../../utils/order';
 import { parseTime } from '../../../utils/ruoyi';
@@ -555,7 +561,7 @@ import BANK_ACCEPTANCE from '@/components/NeedToShow/BANK_ACCEPTANCE.vue';
 
 export default {
 	name: 'Record',
-	components: { BankType, CheckFiles, SearchOption },
+	components: { BankType, CheckFiles, UploadFilesButton, SearchOption },
 	mixins: [
 		// 公共打印混入
 		mixin_printHTML,
@@ -764,6 +770,12 @@ export default {
 		parseTime,
 		updateRecord,
 		getRecord,
+		// 处理附件文件更新
+		handleAttachmentFilesUpdated(uploadParams) {
+			if (uploadParams && uploadParams.params && uploadParams.params.attachmentIds) {
+				this.form.params.attachmentIds = uploadParams.params.attachmentIds;
+			}
+		},
 		//referenceTableName为 transfor的时候才进行判断,显示为银行活期存款,如果不为空 那么就是承兑类型
 		handleDisplayType(row, referenceTableName) {
 			if (referenceTableName === CASH_TYPE.TRANSFER) {
@@ -792,7 +804,10 @@ export default {
 		cancel() {
 			this.open = false;
 			this.reset();
-			this.$refs.uploadFile.clearFileList();
+			// 清理 UploadFilesButton 组件状态
+			if (this.$refs.attachmentUpload) {
+				this.$refs.attachmentUpload.clearUploadedFiles();
+			}
 			this.clearAcceptanceFillStatus();
 			this.$bus.$emit('changeFlag', false);
 			this.$refs.otherSelectBankType.localSelectType = null;
@@ -819,8 +834,9 @@ export default {
 				// 2025-2-28 新增转账账户
 				sourceBankNo: null,
 				targetBankNo: null,
+				bankacceptance: null,
 				params: {
-					bankacceptance: null
+					attachmentIds: []
 				}
 			};
 			// 把展示字段给赋值为null
@@ -907,6 +923,15 @@ export default {
 		submitForm() {
 			this.$refs['form'].validate(valid => {
 				if (!valid) return;
+				
+				// 获取附件上传参数
+				if (this.$refs.attachmentUpload) {
+					const attachmentParams = this.$refs.attachmentUpload.getUploadParams();
+					if (attachmentParams && attachmentParams.params) {
+						this.form.params = { ...this.form.params, ...attachmentParams.params };
+					}
+				}
+				
 				// 提取公共逻辑
 				this.form = excludeParams(this.form, this.$exclude);
 				// 判断是修改还是新增
@@ -951,10 +976,10 @@ export default {
 			const otherType = this.$refs.otherSelectBankType.localSelectType;
 			if (selfType !== otherType) {
 				if (selfType === BankAcceptanceType.ACCEPTANCE) {
-					this.form.params.bankacceptance.billType = PayType.PAYMENT;
+					this.form.bankacceptance.billType = PayType.PAYMENT;
 				}
 				if (otherType === BankAcceptanceType.ACCEPTANCE) {
-					this.form.params.bankacceptance.billType = PayType.RECEIVE;
+					this.form.bankacceptance.billType = PayType.RECEIVE;
 				}
 			}
 			// 填充表单的公司类型和转账相关信息
@@ -976,7 +1001,10 @@ export default {
 			this.$modal.msgSuccess(message);
 			this.open = false;
 			this.getList();
-			this.$refs.uploadFile.clearFileList();
+			// 清理 UploadFilesButton 组件状态
+			if (this.$refs.attachmentUpload) {
+				this.$refs.attachmentUpload.clearUploadedFiles();
+			}
 			if (resetForm) this.reset();
 			if (resetEachInfo) this.resetEachInfo();
 		},

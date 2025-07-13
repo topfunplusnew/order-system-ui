@@ -56,7 +56,7 @@ export default {
 							this.form = excludeParams(this.form, this.$exclude);
 							updateOilRecharge(this.form).then(() => {
 								that.dialogVisible = false;
-								this.$refs.uploadFile.clearFileList();
+								this.$refs.uploadFile.clearUploadedFiles();
 								this.$modal.msgSuccess('修改成功');
 								resolve();
 							});
@@ -64,7 +64,7 @@ export default {
 							this.form = excludeParams(this.form, this.$exclude);
 							addOilRecharge(this.form).then(() => {
 								that.dialogVisible = false;
-								this.$refs.uploadFile.clearFileList();
+								this.$refs.uploadFile.clearUploadedFiles();
 								this.$modal.msgSuccess('新增成功');
 								resolve();
 							});
