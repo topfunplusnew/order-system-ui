@@ -51,7 +51,7 @@ export var mixin_checkfile = {
 					...deepData,
 					params: {
 						...deepData.params,
-						attachmentIds: value.map(item => item.id)
+						attachmentIds: [...value.map(item => item.id), ...deepData.attachmentList.map(item => item.id) || []],
 					}
 				};
 				data = excludeParams(data, this.$exclude);

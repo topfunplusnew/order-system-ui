@@ -478,7 +478,7 @@ export default {
 				<el-table-column v-if="columns[17].visible" show-overflow-tooltip label="附件" align="center" prop="path" width="150px">
 					<template slot-scope="scope">
 						<div v-if="Array.isArray(scope.row.attachmentList)">
-							<CheckFiles :attachmentList="scope.row.attachmentList" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getGoodsOrder, updateGoodsOrder)" />
+							<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'path'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getGoodsOrder, updateGoodsOrder)" />
 						</div>
 						<div v-else>
 							<el-tag type="danger">加载错误</el-tag>
@@ -487,7 +487,16 @@ export default {
 				</el-table-column>
 				<el-table-column v-if="columns[18].visible" show-overflow-tooltip label="收到条附件路径" align="center" prop="receiveProof" width="150px">
 					<template #default="scope">
-						<CheckFiles :path="scope.row.receiveProof" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getGoodsOrder, updateGoodsOrder)" />
+						<div v-if="Array.isArray(scope.row.attachmentList)">
+							<CheckFiles
+								:attachmentList="scope.row.attachmentList"
+								:flag="'receiveProof'"
+								@needToUpdate="value => handleUpdateFilePath(value, scope.row, getGoodsOrder, updateGoodsOrder)"
+							/>
+						</div>
+						<div v-else>
+							<el-tag type="danger">加载错误</el-tag>
+						</div>
 					</template>
 				</el-table-column>
 				<el-table-column v-if="columns[19].visible" show-overflow-tooltip label="是否可编辑" align="center" prop="isedit" width="100px">

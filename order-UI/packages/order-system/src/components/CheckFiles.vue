@@ -72,7 +72,7 @@ export default {
 		checkFiles(attachmentList) {
 			this.checkFileList = [];
 			if (attachmentList && attachmentList.length > 0) {
-				this.checkFileList = [...attachmentList];
+				this.checkFileList = [...attachmentList].filter(item => item.flag === this.flag);
 			}
 			// 查看文件时不是上传模式
 			this.isUploading = false;
@@ -82,7 +82,7 @@ export default {
 		uploadFile(attachmentList) {
 			this.checkFileList = [];
 			if (attachmentList && attachmentList.length > 0) {
-				this.checkFileList = [...attachmentList];
+				this.checkFileList = [...attachmentList].filter(item => item.flag === this.flag);
 			}
 			// 设置上传标志位
 			this.isUploading = true;
