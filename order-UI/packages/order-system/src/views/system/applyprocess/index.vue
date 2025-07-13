@@ -644,7 +644,17 @@ export default {
 				<el-table-column v-if="columns[7].visible" prop="comments" label="备注" width="120" show-overflow-tooltip></el-table-column>
 				<el-table-column v-if="columns[8].visible" prop="comments" label="附件" width="120" show-overflow-tooltip>
 					<template #default="scope">
-						<CheckFiles :path="scope.row.attachment" :is-upload="false"></CheckFiles>
+						<div v-if="Array.isArray(scope.row.attachmentList)">
+							<CheckFiles
+								:attachmentList="scope.row.attachmentList"
+								:flag="'attachment'"
+								:is-upload="false"
+								@needToUpdate="value => handleUpdateFilePath(value, scope.row, getPaymentApply, updatePaymentApply)"
+							/>
+						</div>
+						<div v-else>
+							<el-tag type="danger">加载错误</el-tag>
+						</div>
 					</template>
 				</el-table-column>
 				<el-table-column label="操作">

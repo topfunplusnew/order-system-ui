@@ -233,8 +233,8 @@
 							<el-form-item label="备注" prop="comments">
 								<el-input v-model="form.comments" placeholder="请输入备注" />
 							</el-form-item>
-							<el-form-item label="附件路径" prop="path">
-								<file-upload @input="handleFileUploadCarApply" />
+							<el-form-item label="附件" prop="attachmentList">
+								<CheckFiles :attachmentList.sync="form.attachmentList" @needToUpdate="handleFormAttachmentUpdate" />
 							</el-form-item>
 						</el-col>
 					</el-row>
@@ -429,7 +429,6 @@ import { listDept } from '@/api/system/dept';
 import '@riophae/vue-treeselect/dist/vue-treeselect.css';
 import CheckFiles from '../../../components/CheckFiles.vue';
 import { getCarApply, updateCarApply } from '../../../api/system/carApply';
-import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfile';
 import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import { listVehicles } from '../../../api/system/vehicles';
@@ -439,7 +438,7 @@ import { parseTime } from 'order-system/src/utils/ruoyi';
 export default {
 	name: 'CarApply',
 	components: { DialogWrapper, CheckFiles, Treeselect, SearchOption },
-	mixins: [mixin_printHTML, common_dialog, mixin_businesstrip_car_apply, mixin_checkfile],
+	mixins: [mixin_printHTML, common_dialog, mixin_businesstrip_car_apply],
 	data() {
 		return {
 			// 遮罩层
@@ -699,11 +698,33 @@ export default {
 	methods: {
 		parseTime,
 		listVehicles,
-		updateCarApply() {
-			return updateCarApply;
+		/**
+		 * 更新表单中的附件列表
+		 * @param {Array} newAttachmentList - 最新的附件列表
+		 */
+		handleAttachmentUpdate(newAttachmentList) {
+			this.form.attachmentList = newAttachmentList;
 		},
-		getCarApply() {
-			return getCarApply;
+		/**
+		 * 处理表格中附件的更新
+		 * @param {Array} attachments - 最新的附件对象数组
+		 * @param {Object} row - 当前行数据
+		 */
+		handleUpdateAttachments(attachments, row) {
+			const attachmentIds = attachments.map(item => item.id);
+			getCarApply(row.id).then(res => {
+				const data = {
+					...res.data,
+					params: {
+						...res.data.params,
+						attachmentIds: attachmentIds
+					}
+				};
+				updateCarApply(data).then(() => {
+					this.$modal.msgSuccess('附件更新成功');
+					this.getList();
+				});
+			});
 		},
 		listOilCard,
 		listData,
@@ -812,7 +833,7 @@ export default {
 				UserName: null,
 				updateTime: null,
 				delFlag: null,
-				path: null
+				attachmentList: []
 			};
 			this.resetForm('form');
 		},
@@ -845,6 +866,8 @@ export default {
 			const id = row.id || this.ids;
 			getCarApply(id).then(response => {
 				this.form = response.data;
+				// 确保 attachmentList 是一个数组
+				this.form.attachmentList = response.data.attachmentList || [];
 				this.oilCardConsumeList = response.data.oilCardConsumes;
 				this.open = true;
 				this.title = '修改车辆使用申请';
@@ -854,15 +877,21 @@ export default {
 		submitForm() {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
+					// 将附件ID列表添加到参数中
+					const params = {
+						attachmentIds: this.form.attachmentList.map(item => item.id)
+					};
+					const data = { ...this.form, params: params };
+
 					if (this.form.id != null) {
-						updateCarApply(excludeParams(this.form, this.$exclude)).then(() => {
+						updateCarApply(excludeParams(data, this.$exclude)).then(() => {
 							this.$modal.msgSuccess('修改成功');
 							this.open = false;
 							this.getList();
 						});
 					} else {
 						this.form.oilCardConsumes = this.oilCardConsumeList;
-						addCarApply(excludeParams(this.form, this.$exclude)).then(() => {
+						addCarApply(excludeParams(data, this.$exclude)).then(() => {
 							this.$modal.msgSuccess('新增成功');
 							this.open = false;
 							this.getList();

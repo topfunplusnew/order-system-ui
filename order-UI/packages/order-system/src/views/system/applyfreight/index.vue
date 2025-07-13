@@ -9,11 +9,13 @@ import GOODS_ORDER from '@/components/NeedToShow/GOODS_ORDER.vue';
 import { APPLY_FREIGHT_SOURCE_TYPE } from '@/api/tool/enums';
 import { getInventoryMain } from '@/api/system/inventoryMain';
 import INVENTORY from '@/components/NeedToShow/INVENTORY.vue';
+import CheckFiles from '@/components/CheckFiles.vue';
+import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfile';
 
 export default {
 	name: 'ApplyFreight',
-	components: { DialogWrapper },
-	mixins: [mixin_order_freeApply, common_dialog, mixin_printHTML],
+	components: { DialogWrapper, CheckFiles },
+	mixins: [mixin_order_freeApply, common_dialog, mixin_printHTML, mixin_checkfile],
 	data() {
 		const today = new Date();
 		const oneMonthAgo = new Date();
@@ -354,7 +356,12 @@ export default {
 			<!-- 收到条 -->
 			<el-table-column v-if="columns[15].visible" show-overflow-tooltip label="收到条" align="center">
 				<template #default="scope">
-					<el-button type="text" size="mini" @click="viewAttachments(scope.row.receiveProof)">附件查看</el-button>
+					<CheckFiles
+						:attachmentList="scope.row.attachmentList"
+						:flag="'receiveProof'"
+						:is-upload="false"
+						@needToUpdate="value => handleUpdateFilePath(value, scope.row, getOrderFreight, updateOrderFreight)"
+					/>
 				</template>
 			</el-table-column>
 

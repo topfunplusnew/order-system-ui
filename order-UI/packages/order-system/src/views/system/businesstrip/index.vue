@@ -52,9 +52,9 @@
 			<el-table-column v-if="columns[2].visible" label="部门" align="center" prop="deptName" />
 			<el-table-column v-if="columns[3].visible" label="出差时间" align="center" prop="starttime" />
 			<el-table-column v-if="columns[4].visible" label="出差结束时间" align="center" prop="endtime" />
-			<el-table-column v-if="columns[5].visible" label="附件" align="center" prop="attachmentPath">
+			<el-table-column v-if="columns[5].visible" label="附件" align="center" prop="attachmentList">
 				<template #default="scope">
-					<CheckFiles :path="scope.row.attachmentPath" @needToUpdate="value => handleUpdateFilePath(value, scope.row, 'attachmentPath', getBusinessTrip, updateBusinessTrip)" />
+					<CheckFiles :attachment-list="scope.row.attachmentList" flag="attachmentList" @needToUpdate="value => handleUpdateAttachments(value, scope.row)" />
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[6].visible" label="是否已报销" align="center" prop="isReimburse">
@@ -129,8 +129,8 @@
 							</el-form-item>
 						</el-col>
 						<el-col :span="12">
-							<el-form-item label="附件地址" prop="attachmentPath">
-								<file-upload ref="uploadFile" @input="handleCommitUpload" />
+							<el-form-item label="附件" prop="attachmentList">
+								<CheckFiles :attachment-list="form.attachmentList" @needToUpdate="handleAttachmentUpdate" />
 							</el-form-item>
 							<el-form-item label="备注" prop="comments">
 								<el-input v-model="form.comments" type="textarea" placeholder="请输入内容" />
@@ -299,7 +299,14 @@
 </template>
 
 <script>
-import { delBusinessTrip, getBusinessTrip, updateBusinessTrip, listBusinessTrip, getCarApplyAuditStatus } from '@/api/system/BusinessTrip';
+import {
+	delBusinessTrip,
+	getBusinessTrip,
+	updateBusinessTrip,
+	listBusinessTrip,
+	getCarApplyAuditStatus,
+	addBusinessTrip
+} from '@/api/system/BusinessTrip';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import { mapGetters } from 'vuex';
 import ApplyPayment from '@/views/dashboard/components/common/ApplyPayment.vue';
@@ -338,7 +345,7 @@ export default {
 		ApplyPayment,
 		Treeselect
 	},
-	mixins: [mixin_printHTML, mixin_common_upload, common_dialog, mixin_business_trip_add, mixin_business_trip_update, mixin_business_trip_car_apply, mixin_checkfile],
+	mixins: [mixin_printHTML, common_dialog, mixin_business_trip_add, mixin_business_trip_update, mixin_business_trip_car_apply],
 	data() {
 		return {
 			loading: true,
@@ -495,8 +502,34 @@ export default {
 	},
 	methods: {
 		listCarApply,
-		updateBusinessTrip,
-		getBusinessTrip,
+		/**
+		 * 更新表单中的附件列表
+		 * @param {Array} newAttachmentList - 最新的附件列表
+		 */
+		handleAttachmentUpdate(newAttachmentList) {
+			this.form.attachmentList = newAttachmentList;
+		},
+		/**
+		 * 处理表格中附件的更新
+		 * @param {Array} attachments - 最新的附件对象数组
+		 * @param {Object} row - 当前行数据
+		 */
+		handleUpdateAttachments(attachments, row) {
+			const attachmentIds = attachments.map(item => item.id);
+			getBusinessTrip(row.id).then(res => {
+				const data = {
+					...res.data,
+					params: {
+						...res.data.params,
+						attachmentIds: attachmentIds
+					}
+				};
+				updateBusinessTrip(data).then(() => {
+					this.$modal.msgSuccess('附件更新成功');
+					this.getList();
+				});
+			});
+		},
 		listBankAccount,
 		// 转换部门树形结构
 		normalizer(node) {
@@ -671,7 +704,6 @@ export default {
 		cancel() {
 			this.open = false;
 			this.reset();
-			this.$refs.uploadFile.clearFileList();
 		},
 		// 出差信息表单重置
 		reset() {
@@ -683,7 +715,7 @@ export default {
 				personnel: null,
 				starttime: null,
 				endtime: null,
-				attachmentPath: null,
+				attachmentList: [],
 				isReimburse: null,
 				comments: null,
 				addtime: null,

@@ -102,12 +102,30 @@
 			<el-table-column v-if="columns[10].visible" label="备注" align="center" prop="comments" />
 			<el-table-column label="银行回执单" align="center" prop="paymentReceipts">
 				<template #default="scope">
-					<CheckFiles :path="scope.row.paymentReceipts" @needToUpdate="value => handleUpdateFilePath(value, scope.row, 'paymentReceipts', getInvoiceIn(), updateInvoiceIn())" />
+					<div v-if="Array.isArray(scope.row.attachmentList)">
+						<CheckFiles
+							:attachmentList="scope.row.attachmentList"
+							:flag="'paymentReceipts'"
+							@needToUpdate="value => handleUpdateFilePath(value, scope.row, getInvoiceIn, updateInvoiceIn)"
+						/>
+					</div>
+					<div v-else>
+						<el-tag type="danger">加载错误</el-tag>
+					</div>
 				</template>
 			</el-table-column>
 			<el-table-column label="发票单" align="center" prop="invoiceAttachments">
 				<template #default="scope">
-					<CheckFiles :path="scope.row.invoiceAttachments" @needToUpdate="value => handleUpdateFilePath(value, scope.row, 'invoiceAttachments', getInvoiceIn(), updateInvoiceIn())" />
+					<div v-if="Array.isArray(scope.row.attachmentList)">
+						<CheckFiles
+							:attachmentList="scope.row.attachmentList"
+							:flag="'invoiceAttachments'"
+							@needToUpdate="value => handleUpdateFilePath(value, scope.row, getInvoiceIn, updateInvoiceIn)"
+						/>
+					</div>
+					<div v-else>
+						<el-tag type="danger">加载错误</el-tag>
+					</div>
 				</template>
 			</el-table-column>
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="180px">
@@ -492,12 +510,8 @@ export default {
 		}
 	},
 	methods: {
-		updateInvoiceIn() {
-			return updateInvoiceIn;
-		},
-		getInvoiceIn() {
-			return getInvoiceIn;
-		},
+		updateInvoiceIn,
+		getInvoiceIn,
 		listCompany,
 		/** 查询发票购入信息列表 */
 		getList() {

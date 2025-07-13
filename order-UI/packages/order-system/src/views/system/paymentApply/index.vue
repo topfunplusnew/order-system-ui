@@ -122,16 +122,14 @@
 			<!--      <el-table-column label="对方公司ID" align="center" prop="companyId"/>-->
 			<el-table-column v-if="columns[7].visible" label="对方公司类型" align="center" prop="companyType" />
 			<el-table-column v-if="columns[8].visible" label="付款原因" align="center" prop="reason" />
-			<el-table-column v-if="columns[9].visible" label="附件" align="center" prop="attachment">
+			<el-table-column v-if="columns[9].visible" label="附件" align="center" prop="attachmentList">
 				<template #default="scope">
-					<img v-if="isPic(scope.row.attachment)" :src="scope.row.attachment" alt="" style="width: 100%; height: 100%" />
-					<span v-else-if="scope.row.attachment === '' || scope.row.attachment === null">无附件</span>
-					<span v-else>
-						文件不支持预览，请手动下载:
-						<a style="color: red" :href="scope.row.attachment">
-							{{ scope.row.attachment }}
-						</a>
-					</span>
+					<CheckFiles 
+						:attachmentList="scope.row.attachmentList" 
+						@needToUpdate="value => handleUpdateFilePath(value, scope.row, getPaymentApply, updatePaymentApply)" 
+						:is-upload="false" 
+						flag="paymentApplyAttachments"
+					/>
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[10].visible" label="申请人" align="center" prop="applyPerson" />
@@ -237,8 +235,12 @@
 				</el-form-item>
 
 				<!--        文件-->
-				<el-form-item label="附件" prop="attachment">
-					<file-upload @input="handleCommitUpload" />
+				<el-form-item label="附件" prop="attachmentList">
+					<CheckFiles 
+						:attachmentList="form.attachmentList" 
+						@needToUpdate="value => form.attachmentList = value" 
+						flag="paymentApplyAttachments"
+					/>
 				</el-form-item>
 
 				<!--        发起付款人的信息-->
@@ -284,10 +286,13 @@ import { TableName } from '@/api/tool/enums';
 import { getOrderFreight } from '@/api/system/orderFreight';
 import { getBorrowedMoney } from '@/api/system/borrowedMoney';
 import { findFileExtension } from '@/utils/trash/utils';
+import CheckFiles from '@/components/CheckFiles.vue';
+import { mixin_checkfile } from '@/views/dashboard/mixins/checkfiles/mixin_checkfile';
 
 export default {
 	name: 'PaymentApply',
-	components: { NeedToShowInfo, SearchOption },
+	components: { CheckFiles, NeedToShowInfo, SearchOption },
+	mixins: [mixin_checkfile],
 	data() {
 		return {
 			// 遮罩层
@@ -324,7 +329,7 @@ export default {
 				companyId: null,
 				companyType: null,
 				reason: null,
-				attachment: null,
+				attachmentList: [],
 				applyPerson: null,
 				applyPersonID: null,
 				checkState: null,
@@ -438,10 +443,6 @@ export default {
 			this.form.otherAcountsName = val.acountsName;
 			this.form.companyType = val.companyType;
 		},
-		// 上传的回调函数
-		handleCommitUpload(val) {
-			this.form.attachment = val;
-		},
 		printHTML() {
 			this.$print({
 				printable: 'printBox',
@@ -511,7 +512,7 @@ export default {
 				companyId: null,
 				companyType: null,
 				reason: null,
-				attachment: null,
+				attachmentList: [],
 				applyPerson: null,
 				applyPersonID: null,
 				checkState: null,

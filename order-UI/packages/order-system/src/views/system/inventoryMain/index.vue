@@ -106,9 +106,13 @@
 
 				<el-table-column v-if="columns[16].visible" label="子项海运费之和" align="center" prop="allSeaFreight" width="150" />
 
-				<el-table-column v-if="columns[17].visible" label="收到条附件路径" align="center" prop="allSeaFreight" width="150" fixed="right">
+				<el-table-column v-if="columns[17].visible" label="收到条附件" align="center" prop="attachmentList" width="150" fixed="right">
 					<template slot-scope="scope">
-						<check-files :path="scope.row.receiveProof" @needToUpdate="value => handleUpdateFilePath(value, scope.row, 'receiveProof', getInventoryMain, updateInventoryMain)" />
+						<CheckFiles
+							:attachmentList="scope.row.attachmentList"
+							@needToUpdate="value => handleUpdateFilePath(value, scope.row, getInventoryMain, updateInventoryMain)"
+							flag="receiveProof"
+						/>
 					</template>
 				</el-table-column>
 

@@ -93,7 +93,16 @@
 			</el-table-column>
 			<el-table-column v-if="columns[10].visible" label="附件" align="center" prop="attachment">
 				<template #default="scope">
-					<CheckFiles :path="scope.row.attachment" @needToUpdate="value => handleUpdateFilePath(value, scope.row, 'attachment', getRecord, updateRecord)" />
+					<div v-if="Array.isArray(scope.row.attachmentList)">
+						<CheckFiles
+							:attachmentList="scope.row.attachmentList"
+							:flag="'attachment'"
+							@needToUpdate="value => handleUpdateFilePath(value, scope.row, getRecord, updateRecord)"
+						/>
+					</div>
+					<div v-else>
+						<el-tag type="danger">加载错误</el-tag>
+					</div>
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[11].visible" label="备注" align="center" prop="remarks" show-overflow-tooltip />

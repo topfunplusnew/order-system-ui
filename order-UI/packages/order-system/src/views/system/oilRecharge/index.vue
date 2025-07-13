@@ -60,7 +60,17 @@
 			<el-table-column v-if="columns[7].visible" label="充值人员姓名" align="center" prop="rechargeName" />
 			<el-table-column v-if="columns[8].visible" label="充值附件" align="center" prop="attachment">
 				<template #default="scope">
-					<CheckFiles :is-upload="false" :path="scope.row.attachment" @needToUpdate="value => handleUpdateFilePath(value, scope.row, 'attachment', getOilRecharge(), updateOilRecharge())" />
+					<div v-if="Array.isArray(scope.row.attachmentList)">
+						<CheckFiles
+							:attachmentList="scope.row.attachmentList"
+							:flag="'attachment'"
+							:is-upload="false"
+							@needToUpdate="value => handleUpdateFilePath(value, scope.row, getOilRecharge, updateOilRecharge)"
+						/>
+					</div>
+					<div v-else>
+						<el-tag type="danger">加载错误</el-tag>
+					</div>
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[9].visible" label="备注" align="center" prop="comments" />

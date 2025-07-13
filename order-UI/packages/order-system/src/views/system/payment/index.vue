@@ -240,7 +240,6 @@
 					</el-col>
 				</el-row>
 
-				<!--        对方信息-->
 				<el-row :gutter="20">
 					<el-col :span="12">
 						<el-form-item label="我方户名" prop="selfAcountsName">
@@ -293,7 +292,6 @@
 					</el-col>
 				</el-row>
 
-				<!--        下面的操作是 客户id  配合 银行卡信息进行付款.-->
 				<!--      选择供应商-->
 				<el-row v-if="value === PAYMENT_TYPES.SUPPLIER" :gutter="20">
 					<el-col :span="12">
@@ -332,7 +330,9 @@
 						</el-form-item>
 					</el-col>
 					<el-col :span="12">
-						<!-- 预留给其他字段或空白 -->
+						<el-form-item label="对方银行账户类型">
+							<BankType ref="otherSelectedBankType" :option-baned="true" :baned="true" :select-type="form.otherBankCardType" @updateSelectedType="changeOtherBankType" />
+						</el-form-item>
 					</el-col>
 				</el-row>
 				<!--      选择客户-->
@@ -373,7 +373,9 @@
 						</el-form-item>
 					</el-col>
 					<el-col :span="12">
-						<!-- 预留给其他字段或空白 -->
+						<el-form-item label="对方银行账户类型">
+							<BankType ref="otherSelectedBankType" :option-baned="true" :baned="true" :select-type="form.otherBankCardType" @updateSelectedType="changeOtherBankType" />
+						</el-form-item>
 					</el-col>
 				</el-row>
 				<!--      选择司机-->
@@ -422,16 +424,13 @@
 						</el-form-item>
 					</el-col>
 					<el-col :span="12">
-						<!-- 预留给其他字段或空白 -->
-					</el-col>
-				</el-row>
-
-				<el-row :gutter="20" v-if="value !== PAYMENT_TARGET_TYPE.PAYMENT_FEE">
-					<el-col :span="12">
 						<el-form-item label="对方银行账户类型">
 							<BankType ref="otherSelectedBankType" :option-baned="true" :baned="true" :select-type="form.otherBankCardType" @updateSelectedType="changeOtherBankType" />
 						</el-form-item>
 					</el-col>
+				</el-row>
+
+				<el-row :gutter="20" v-if="value !== PAYMENT_TARGET_TYPE.PAYMENT_FEE">
 					<el-col :span="12">
 						<el-form-item label="对方账号" prop="otherBankNo">
 							<el-row>
@@ -464,17 +463,9 @@
 							</el-row>
 						</el-form-item>
 					</el-col>
-				</el-row>
-
-				<el-row :gutter="20">
 					<el-col :span="12">
 						<el-form-item label="对方开户行" prop="otherBankName" v-if="value !== '支付费用'">
 							<el-input disabled v-model="form.otherBankName" placeholder="请选择" />
-						</el-form-item>
-					</el-col>
-					<el-col :span="12">
-						<el-form-item label="附件" prop="attachmentList">
-							<CheckFiles :attachmentList="form.attachmentList" @needToUpdate="value => (form.attachmentList = value)" flag="attachments" />
 						</el-form-item>
 					</el-col>
 				</el-row>
@@ -487,13 +478,23 @@
 					</el-col>
 					<el-col :span="12">
 						<el-form-item label="银行卡流水附件" prop="transactionHistoryAttachmentList">
-							<CheckFiles :attachmentList="form.attachmentList" @needToUpdate="value => (form.attachmentList = value)" flag="transactionHistoryAttachmentList" />
+							<UploadFilesButton
+								ref="transactionHistoryUpload"
+								flag="transactionHistoryAttachmentList"
+								:extra-info="{ moduleType: 'payment', formId: form.id }"
+								@files-updated="handleTransactionHistoryFilesUpdated"
+							/>
 						</el-form-item>
 					</el-col>
 				</el-row>
 
 				<el-row :gutter="20">
-					<el-col :span="24">
+					<el-col :span="12">
+						<el-form-item label="附件" prop="attachmentList">
+							<UploadFilesButton ref="attachmentUpload" flag="attachments" :extra-info="{ moduleType: 'payment', formId: form.id }" @files-updated="handleAttachmentFilesUpdated" />
+						</el-form-item>
+					</el-col>
+					<el-col :span="12">
 						<el-form-item label="备注" prop="comments">
 							<el-input v-model="form.comments" placeholder="请输入备注" />
 						</el-form-item>
@@ -597,10 +598,12 @@ import { BankAcceptanceType, PAYMENT_TARGET_TYPE } from '../../../api/tool/enums
 import CheckFiles from '@/components/CheckFiles.vue';
 import { mixin_checkfile } from '@/views/dashboard/mixins/checkfiles/mixin_checkfile';
 import _ from 'lodash';
+import UploadFilesButton from '@/components/UploadFilesButton';
 
 export default {
 	name: 'Payment',
 	components: {
+		UploadFilesButton,
 		CheckFiles,
 		StateTag,
 		BankType,
@@ -825,6 +828,18 @@ export default {
 		listCars,
 		listBankAccount,
 		listCompany,
+		// 处理附件文件更新
+		handleAttachmentFilesUpdated(params) {
+			console.log('附件文件更新:', params);
+			// 将附件参数合并到表单中
+			this.form = { ...this.form, ...params };
+		},
+		// 处理银行卡流水附件文件更新
+		handleTransactionHistoryFilesUpdated(params) {
+			console.log('银行卡流水附件文件更新:', params);
+			// 将银行卡流水附件参数合并到表单中
+			this.form = { ...this.form, ...params };
+		},
 		handleCommitUpload(value) {
 			console.log(value);
 
@@ -854,8 +869,20 @@ export default {
 		cancel() {
 			this.open = false;
 			this.$bus.$emit('changeFlag', false);
-			this.$refs.selfSelectedBankType.localSelectType = null;
-			this.$refs.otherSelectedBankType.localSelectType = null;
+			if (this.$refs.selfSelectedBankType) {
+				this.$refs.selfSelectedBankType.localSelectType = null;
+			}
+			if (this.$refs.otherSelectedBankType) {
+				this.$refs.otherSelectedBankType.localSelectType = null;
+			}
+			// 清除附件上传状态
+			if (this.$refs.attachmentUpload) {
+				this.$refs.attachmentUpload.clearUploadedFiles();
+			}
+			// 清除银行卡流水附件上传状态
+			if (this.$refs.transactionHistoryUpload) {
+				this.$refs.transactionHistoryUpload.clearUploadedFiles();
+			}
 			this.reset();
 		},
 		// 表单重置
@@ -889,7 +916,8 @@ export default {
 				transactionHistory: null,
 				attachmentList: [],
 				params: {
-					bankacceptance: null
+					bankacceptance: null,
+					attachmentIds: []
 				}
 			};
 			this.resetForm('form');
@@ -1055,6 +1083,17 @@ export default {
 							return;
 						}
 					}
+					// 获取当前附件参数
+					if (this.$refs.attachmentUpload) {
+						const attachmentParams = this.$refs.attachmentUpload.getUploadParams();
+						this.form = { ...this.form, ...attachmentParams };
+					}
+					// 获取银行卡流水附件参数
+					if (this.$refs.transactionHistoryUpload) {
+						const transactionHistoryParams = this.$refs.transactionHistoryUpload.getUploadParams();
+						this.form = { ...this.form, ...transactionHistoryParams };
+					}
+
 					// 去除无用的参数
 					this.form = excludeParams(this.form, this.$exclude);
 					// 对结果进行特殊处理 如果是字符串 就把响应式赋值为空，然后重新选择 如果是数组 ，那么不会进入这个判断
@@ -1071,6 +1110,14 @@ export default {
 							.then(response => {
 								this.$modal.msgSuccess('修改成功');
 								this.open = false;
+								// 清除附件上传状态
+								if (this.$refs.attachmentUpload) {
+									this.$refs.attachmentUpload.clearUploadedFiles();
+								}
+								// 清除银行卡流水附件上传状态
+								if (this.$refs.transactionHistoryUpload) {
+									this.$refs.transactionHistoryUpload.clearUploadedFiles();
+								}
 								// 由于返回了新的id，需要刷新列表并保持选中状态
 								this.getList().then(() => {
 									// 如果需要保持选中状态，可以根据返回的新id来处理
@@ -1090,6 +1137,14 @@ export default {
 							this.$modal.msgSuccess('新增成功');
 							this.$bus.$emit('changeFlag', false);
 							this.open = false;
+							// 清除附件上传状态
+							if (this.$refs.attachmentUpload) {
+								this.$refs.attachmentUpload.clearUploadedFiles();
+							}
+							// 清除银行卡流水附件上传状态
+							if (this.$refs.transactionHistoryUpload) {
+								this.$refs.transactionHistoryUpload.clearUploadedFiles();
+							}
 							this.getList();
 						});
 					}

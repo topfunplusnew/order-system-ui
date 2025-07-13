@@ -73,12 +73,13 @@
 			<el-table-column v-if="columns[8].visible" label="对方开户行" align="center" prop="otherBankName" width="165" show-overflow-tooltip />
 			<el-table-column label="备注" align="center" prop="comments" width="165" />
 			<el-table-column label="银行卡流水编号" align="center" prop="transactionHistory" width="165" />
-			<el-table-column label="银行卡流水附件" align="center" prop="transactionHistoryAttachment" width="165" fixed="right">
+			<el-table-column label="银行卡流水附件" align="center" prop="attachmentList" width="165" fixed="right">
 				<template slot-scope="scope">
 					<!-- 这是封装的一个通用组件 可以直接传入url 组件效果为一个按钮 点击后可以查看附件-->
 					<CheckFiles
-						:path="scope.row.transactionHistoryAttachment"
-						@needToUpdate="value => handleUpdateFilePath(value, scope.row, 'transactionHistoryAttachment', getReceiveMoney(), updateReceiveMoney())"
+						:attachmentList="scope.row.attachmentList"
+						@needToUpdate="value => handleUpdateFilePath(value, scope.row, getReceiveMoney(), updateReceiveMoney())"
+						flag="transactionHistoryAttachment"
 					/>
 				</template>
 			</el-table-column>
@@ -253,8 +254,12 @@
 						<el-form-item label="银行卡流水编号" prop="transactionHistory">
 							<el-input v-model="form.transactionHistory" placeholder="请输入银行卡流水编号" />
 						</el-form-item>
-						<el-form-item label="银行卡流水编号附件" prop="transactionHistoryAttachment">
-							<file-upload ref="fileUploader" @input="handleCommitUpload" />
+						<el-form-item label="银行卡流水编号附件" prop="attachmentList">
+							<CheckFiles 
+								:attachmentList="form.attachmentList" 
+								@needToUpdate="value => form.attachmentList = value" 
+								flag="transactionHistoryAttachment"
+							/>
 						</el-form-item>
 						<el-form-item label="备注" prop="comments">
 							<el-input v-model="form.comments" placeholder="请输入备注" />
@@ -455,10 +460,6 @@ export default {
 		getReceiveMoney() {
 			return getReceiveMoney;
 		},
-		// 银行卡附件上传
-		handleCommitUpload(val) {
-			this.form.transactionHistoryAttachment = val;
-		},
 		/** 查询收款信息列表 */
 		getList() {
 			this.loading = true;
@@ -506,6 +507,7 @@ export default {
 				UserName: null,
 				updateTime: null,
 				delFlag: null,
+				attachmentList: [],
 				params: {
 					bankacceptance: null
 				}
@@ -628,10 +630,6 @@ export default {
 					this.$modal.msgSuccess('删除成功');
 				})
 				.catch(() => {});
-		},
-		// 清除文件
-		clearFiles() {
-			this.$refs.fileUploader.clearFileList();
 		},
 		/** 导出按钮操作 */
 		handleExport() {

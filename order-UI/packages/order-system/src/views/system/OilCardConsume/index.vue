@@ -63,7 +63,16 @@
 			<!--                       width="300px"/>-->
 			<el-table-column v-if="columns[10].visible" label="加油小票附件" align="center" prop="attachmentOiladd">
 				<template #default="scope">
-					<CheckFiles :path="scope.row.attachmentOiladd" @needToUpdate="value => handleUpdateFilePath(value, scope.row, 'attachmentOiladd', getOilCardConsume, updateOilCardConsume)" />
+					<div v-if="Array.isArray(scope.row.attachmentList)">
+						<CheckFiles
+							:attachmentList="scope.row.attachmentList"
+							:flag="'attachmentOiladd'"
+							@needToUpdate="value => handleUpdateFilePath(value, scope.row, getOilCardConsume, updateOilCardConsume)"
+						/>
+					</div>
+					<div v-else>
+						<el-tag type="danger">加载错误</el-tag>
+					</div>
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[11].visible" label="备注" align="center" prop="comments" />
