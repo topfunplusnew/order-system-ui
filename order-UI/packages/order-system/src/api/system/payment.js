@@ -35,6 +35,15 @@ export function updatePayment(data) {
 	});
 }
 
+// 编辑付款信息（模拟）
+export function updatePaymentSimulate(data) {
+	return request({
+		url: '/system/payment/updateSimulate',
+		method: 'put',
+		data: data
+	});
+}
+
 // 删除付款信息
 export function delPayment(id) {
 	return request({

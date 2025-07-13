@@ -73,6 +73,8 @@ export default {
 			this.checkFileList = [];
 			if (attachmentList && attachmentList.length > 0) {
 				this.checkFileList = [...attachmentList].filter(item => item.flag === this.flag);
+			} else {
+				this.checkFileList = [];
 			}
 			// 查看文件时不是上传模式
 			this.isUploading = false;
@@ -83,6 +85,8 @@ export default {
 			this.checkFileList = [];
 			if (attachmentList && attachmentList.length > 0) {
 				this.checkFileList = [...attachmentList].filter(item => item.flag === this.flag);
+			} else {
+				this.checkFileList = [];
 			}
 			// 设置上传标志位
 			this.isUploading = true;
@@ -199,7 +203,12 @@ export default {
 			<h3>附件列表</h3>
 			<div class="file-list">
 				<!--上传过的文件列表-->
-				<FileItems v-for="(item, index) in checkFileList" :key="item.id || index" :fileItem="item" @handleFile="handleDeleteFile" />
+				<template v-if="checkFileList.length > 0">
+					<FileItems v-for="(item, index) in checkFileList" :key="item.id || index" :fileItem="item" @handleFile="handleDeleteFile" />
+				</template>
+				<template v-else>
+					<div style="width: 100%; text-align: center; color: #999; padding: 40px 0">暂无附件</div>
+				</template>
 				<!--支持上传-->
 				<FileShowItem @handleFile="handleAddFile" v-if="isUpload" />
 			</div>

@@ -151,20 +151,21 @@
 			</el-table-column>
 
 			<el-table-column label="备注" align="center" prop="comments" width="120" v-if="columns[13].visible" show-overflow-tooltip />
-			<el-table-column label="附件" align="center" prop="attachment" width="120" v-if="columns[14].visible" show-overflow-tooltip>
+			<el-table-column label="附件" align="center" prop="attachmentList" width="120" v-if="columns[14].visible" show-overflow-tooltip>
 				<template #default="scope">
-					<CheckFiles :path="scope.row.attachment" :needToUpdate="value => handleUpdateFilePath(value, scope.row, 'attachment', getPayment, updatePayment)" :is-upload="false" />
+					<CheckFiles :attachmentList="scope.row.attachmentList" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getPayment, updatePayment)" flag="attachments" />
 				</template>
 			</el-table-column>
 			<!-- 新增银行卡流水编号列 -->
 			<el-table-column label="银行卡流水编号" align="center" prop="transactionHistory" width="120" v-if="columns[15] && columns[15].visible" show-overflow-tooltip />
 			<!-- 新增银行卡流水附件列 -->
-			<el-table-column label="银行卡流水附件" align="center" prop="transactionHistoryAttachment" width="120" v-if="columns[16] && columns[16].visible" fixed="right">
+			<el-table-column label="银行卡流水附件" align="center" prop="transactionHistoryAttachmentList" width="120" v-if="columns[16] && columns[16].visible" fixed="right">
 				<template #default="scope">
 					<CheckFiles
-						:path="scope.row.transactionHistoryAttachment"
-						:needToUpdate="value => handleUpdateFilePath(value, scope.row, 'transactionHistoryAttachment', getPayment, updatePayment)"
+						:attachmentList="scope.row.attachmentList"
+						@needToUpdate="value => handleUpdateFilePath(value, scope.row, getPayment, updatePayment)"
 						:is-upload="false"
+						flag="transactionHistoryAttachmentList"
 					/>
 				</template>
 			</el-table-column>
@@ -179,11 +180,12 @@
 					></el-switch>
 				</template>
 			</el-table-column>
-			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="150" fixed="right">
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="200" fixed="right">
 				<template slot-scope="scope">
 					<el-button v-if="scope.row.paymentState === '未支付'" v-hasPermi="['system:payment:edit']" size="mini" type="text" @click="handlePaymentRow(scope.row)">付款</el-button>
 					<el-button v-else-if="scope.row.paymentState === '已支付'" v-hasPermi="['system:payment:edit']" size="mini" disabled type="success">已付款</el-button>
 					<el-button v-else size="mini" disabled type="warning">申请中</el-button>
+					<el-button v-hasPermi="['system:payment:edit']" size="mini" type="primary" @click="handleEdit(scope.row)">编辑</el-button>
 					<el-button v-hasPermi="['system:payment:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
@@ -204,18 +206,7 @@
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" z />
 
 		<!--     添加或修改付款信息对话框 -->
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="付款处理"
-			:visible.sync="open"
-			width="1000px"
-			append-to-body
-		>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="1000px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="140px">
 				<el-row :gutter="20">
 					<el-col :span="12">
@@ -482,8 +473,8 @@
 						</el-form-item>
 					</el-col>
 					<el-col :span="12">
-						<el-form-item label="附件" prop="attachment">
-							<file-upload ref="fileUploader" @input="handleCommitUpload" />
+						<el-form-item label="附件" prop="attachmentList">
+							<CheckFiles :attachmentList="form.attachmentList" @needToUpdate="value => (form.attachmentList = value)" flag="attachments" />
 						</el-form-item>
 					</el-col>
 				</el-row>
@@ -495,8 +486,8 @@
 						</el-form-item>
 					</el-col>
 					<el-col :span="12">
-						<el-form-item label="银行卡流水附件" prop="transactionHistoryAttachment">
-							<file-upload ref="fileUploaderTransaction" @input="handleCommitUploadTransaction" />
+						<el-form-item label="银行卡流水附件" prop="transactionHistoryAttachmentList">
+							<CheckFiles :attachmentList="form.attachmentList" @needToUpdate="value => (form.attachmentList = value)" flag="transactionHistoryAttachmentList" />
 						</el-form-item>
 					</el-col>
 				</el-row>
@@ -510,7 +501,7 @@
 				</el-row>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
-				<el-button type="primary" @click="submitForm">确认付款</el-button>
+				<el-button type="primary" @click="submitForm">{{ form.id != null ? '确 定' : '确认付款' }}</el-button>
 				<el-button @click="cancel">取 消</el-button>
 			</div>
 		</el-dialog>
@@ -584,7 +575,7 @@
 </template>
 
 <script>
-import { listPayment, delPayment, addPayment, updatePayment, getPayment } from '@/api/system/payment';
+import { listPayment, delPayment, addPayment, updatePayment, updatePaymentSimulate, getPayment } from '@/api/system/payment';
 import SearchOption from '@/components/SearchOption.vue';
 import { listCompany } from '@/api/system/company';
 import { excludeParams } from '@/api/tool/exclude';
@@ -839,10 +830,6 @@ export default {
 
 			this.form.attachment = value;
 		},
-		// 新增银行卡流水附件上传处理
-		handleCommitUploadTransaction(value) {
-			this.form.transactionHistoryAttachment = value;
-		},
 		// 选择我方银行账户类型
 		changeCustomSelfBankType(value) {
 			this.chooseInfo.otherBankCardType = value;
@@ -856,16 +843,16 @@ export default {
 				this.queryParams.payType = this.queryParams.payType.join('-');
 			}
 			// 查询
-			listPayment(addDateRange(this.queryParams, this.dateRange, 'payment')).then(response => {
+			return listPayment(addDateRange(this.queryParams, this.dateRange, 'payment')).then(response => {
 				this.paymentList = response.rows;
 				this.total = response.total;
 				this.loading = false;
+				return response;
 			});
 		},
 		// 取消按钮
 		cancel() {
 			this.open = false;
-			this.$refs.fileUploader.clearFileList();
 			this.$bus.$emit('changeFlag', false);
 			this.$refs.selfSelectedBankType.localSelectType = null;
 			this.$refs.otherSelectedBankType.localSelectType = null;
@@ -900,7 +887,7 @@ export default {
 				delFlag: null,
 				// 新增银行卡流水编号和附件
 				transactionHistory: null,
-				transactionHistoryAttachment: null,
+				attachmentList: [],
 				params: {
 					bankacceptance: null
 				}
@@ -963,6 +950,39 @@ export default {
 			this.reset();
 			this.open = true;
 			this.title = '添加付款信息';
+		},
+		/** 编辑按钮操作 */
+		handleEdit(row) {
+			this.reset();
+			const id = row.id || this.ids;
+			getPayment(id).then(response => {
+				this.form = response.data;
+				// 设置级联选择器的值
+				if (this.form.payType) {
+					this.form.payType = this.form.payType.split('-');
+				}
+				// 设置银行账户类型
+				if (this.form.selfBankCardType) {
+					this.$nextTick(() => {
+						if (this.$refs.selfSelectedBankType) {
+							this.$refs.selfSelectedBankType.localSelectType = this.form.selfBankCardType;
+						}
+					});
+				}
+				if (this.form.otherBankCardType) {
+					this.$nextTick(() => {
+						if (this.$refs.otherSelectedBankType) {
+							this.$refs.otherSelectedBankType.localSelectType = this.form.otherBankCardType;
+						}
+					});
+				}
+				// 设置对方类型
+				if (this.form.companyType) {
+					this.value = this.form.companyType;
+				}
+				this.open = true;
+				this.title = '修改付款信息';
+			});
 		},
 		// 付款的操作
 		handlePaymentRow(row) {
@@ -1045,26 +1065,41 @@ export default {
 					}
 					this.form.payType = this.form.payType.join('-');
 					if (this.form.id != null) {
-						this.form.paymentState = '已支付';
-						updatePayment(this.form).then(() => {
-							this.$modal.msgSuccess('支付成功~');
-						});
+						// 编辑操作，使用新的编辑接口
+						const originalId = this.form.id;
+						updatePaymentSimulate(this.form)
+							.then(response => {
+								this.$modal.msgSuccess('修改成功');
+								this.open = false;
+								// 由于返回了新的id，需要刷新列表并保持选中状态
+								this.getList().then(() => {
+									// 如果需要保持选中状态，可以根据返回的新id来处理
+									if (response.data && response.data.id) {
+										// 可以根据需要添加选中逻辑
+									}
+								});
+							})
+							.catch(() => {
+								// 如果编辑失败，保持原有id
+								this.form.id = originalId;
+							});
 					} else {
+						// 新增操作
 						this.form.companyType = this.value;
 						addPayment(this.form).then(() => {
 							this.$modal.msgSuccess('新增成功');
 							this.$bus.$emit('changeFlag', false);
+							this.open = false;
+							this.getList();
 						});
 					}
-					this.open = false;
-					this.getList();
-					this.$refs.fileUploader.clearFileList();
-					// 新增清除银行卡流水附件
-					if (this.$refs.fileUploaderTransaction) {
-						this.$refs.fileUploaderTransaction.clearFileList();
+					// 重置银行类型选择器
+					if (this.$refs.selfSelectedBankType) {
+						this.$refs.selfSelectedBankType.localSelectType = null;
 					}
-					this.$refs.selfSelectedBankType.localSelectType = null;
-					this.$refs.otherSelectedBankType.localSelectType = null;
+					if (this.$refs.otherSelectedBankType) {
+						this.$refs.otherSelectedBankType.localSelectType = null;
+					}
 				}
 			});
 		},

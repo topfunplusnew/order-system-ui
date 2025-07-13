@@ -46,12 +46,15 @@ export var mixin_checkfile = {
 			// 调用 onGet 方法获取文件记录
 			onGet(row.id).then(res => {
 				const deepData = _.cloneDeep(res.data);
+				const extingFile = deepData?.attachmentList.map(item => item.id) || [];
+				const set = new Set([...value.map(item => item.id), ...extingFile]);
+				const updatedFiles = [...set]
 				// 将获取的记录与新的字段值组合
 				let data = {
 					...deepData,
 					params: {
 						...deepData.params,
-						attachmentIds: [...value.map(item => item.id), ...deepData.attachmentList.map(item => item.id) || []],
+						attachmentIds: updatedFiles,
 					}
 				};
 				data = excludeParams(data, this.$exclude);
