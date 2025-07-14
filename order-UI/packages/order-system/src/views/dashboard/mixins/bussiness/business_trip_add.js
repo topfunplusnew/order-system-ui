@@ -45,9 +45,19 @@ export var mixin_business_trip_add = {
 			// 保存报销信息
 			this.form.tripReimbursementList = this.tripReimbursementList;
 
+			// 统一的附件处理：确保 params 对象存在并包含附件ID
+			const formData = { ...this.form };
+			if (!formData.params) {
+				formData.params = {};
+			}
+			// 如果通过上传组件已设置了 attachmentIds，则保持；否则从 attachmentList 获取
+			if (!formData.params.attachmentIds && this.form.attachmentList) {
+				formData.params.attachmentIds = this.form.attachmentList.map(item => item.id);
+			}
+
 			// 编辑逻辑
 			if (isEdit) {
-				updateBusinessTrip(excludeParams(this.form, this.$exclude))
+				updateBusinessTrip(excludeParams(formData, this.$exclude))
 					.then(() => {
 						if (useCar) {
 							const body = {
@@ -66,7 +76,7 @@ export var mixin_business_trip_add = {
 					});
 			} else {
 				// 新增逻辑
-				addBusinessTrip({ ...this.form, UUID: this.UUID })
+				addBusinessTrip({ ...formData, UUID: this.UUID })
 					.then(res => {
 						if (useCar) {
 							const body = {

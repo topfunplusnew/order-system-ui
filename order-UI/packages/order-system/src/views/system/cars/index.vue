@@ -333,7 +333,7 @@ export default {
 			if (this.form.carType !== '陆运') {
 				return;
 			}
-			
+
 			// 1. 清除所有空格
 			let cleanedValue = value.replace(/\s+/g, '');
 			// 2. 将字母转为大写（包括"鲁A"这类前缀）
@@ -456,7 +456,7 @@ export default {
 
 					// 创建提交数据的副本
 					let submitData = { ...this.form };
-					
+
 					// 如果是海运类型，移除车牌号字段
 					if (this.form.carType === '海运') {
 						delete submitData.carNo;
@@ -464,7 +464,7 @@ export default {
 
 					if (this.form.id != null) {
 						submitData = excludeParams(submitData, this.$exclude);
-						
+
 						// 对于陆运类型才检查车牌号是否存在
 						if (this.form.carType === '陆运') {
 							checkCarsIsExit(this.form.carNo, this.form.id).then(res => {

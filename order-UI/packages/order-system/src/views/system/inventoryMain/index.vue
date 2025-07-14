@@ -111,7 +111,7 @@
 						<CheckFiles
 							:attachmentList="scope.row.attachmentList"
 							@needToUpdate="value => handleUpdateFilePath(value, scope.row, getInventoryMain, updateInventoryMain)"
-							flag="receiveProof"
+							flag="attachmentList"
 						/>
 					</template>
 				</el-table-column>
@@ -161,7 +161,7 @@
 					<el-input size="mini" v-model="form.goodsCompany" placeholder="请输入货物来源公司(本部或者海盛)" />
 				</el-form-item>
 				<el-form-item label="附件">
-					<UploadFilesButton ref="attachmentUploader" flag="receiveProof" :extra-info="{ moduleType: 'inventoryMain', formId: form.id }" @files-updated="handleAttachmentFilesUpdated" />
+					<UploadFilesButton ref="attachmentUploader" flag="attachmentList" :extra-info="{ moduleType: 'inventoryMain', formId: form.id }" @files-updated="handleAttachmentFilesUpdated" />
 				</el-form-item>
 				<br />
 				<el-form-item label="运输方式" prop="transportMode" required>
@@ -696,7 +696,7 @@ import { listProductLevel } from '../../../api/system/productLevel';
 import { listStoreHouse } from '../../../api/system/StoreHouse';
 import { fix } from '../../../api/tool/format';
 import SearchOption from '../../../components/SearchOption.vue';
-import UploadFilesButton from '@/components/UploadFilesButton';
+import UploadFilesButton from '@/components/UploadFilesButton/index.vue';
 import { _fill } from './fill';
 import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfile';
 import CheckFiles from '../../../components/CheckFiles.vue';
@@ -982,7 +982,7 @@ export default {
 			if (!this.form.params) {
 				this.$set(this.form, 'params', {});
 			}
-			
+
 			// 直接设置 attachmentIds
 			if (uploadParams && uploadParams.params && uploadParams.params.attachmentIds) {
 				this.$set(this.form.params, 'attachmentIds', uploadParams.params.attachmentIds);

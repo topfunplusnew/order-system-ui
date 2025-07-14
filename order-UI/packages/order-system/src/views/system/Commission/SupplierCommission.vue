@@ -63,11 +63,7 @@
 			<el-table-column type="selection" width="55" align="center" :selectable="(row, index) => row.id !== null" />
 			<el-table-column label="批量佣金" width="80" align="center">
 				<template slot-scope="scope">
-					<el-checkbox 
-						v-if="scope.row.id === null" 
-						v-model="scope.row.batchSelected" 
-						@change="handleBatchSelectionChange"
-					></el-checkbox>
+					<el-checkbox v-if="scope.row.id === null" v-model="scope.row.batchSelected" @change="handleBatchSelectionChange"></el-checkbox>
 					<span v-else>-</span>
 				</template>
 			</el-table-column>
@@ -156,16 +152,7 @@
 		</el-dialog>
 
 		<!--    批量填写佣金-->
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			title="批量填写佣金信息"
-			:visible.sync="batchFillVisible"
-			width="500px"
-		>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" title="批量填写佣金信息" :visible.sync="batchFillVisible" width="500px">
 			<el-form ref="batchForm" :model="batchForm" :rules="batchRules" label-width="140px">
 				<el-form-item label="佣金单价" prop="commissionUnitPrice">
 					<el-input v-model="batchForm.commissionUnitPrice" placeholder="请输入佣金单价" type="number" step="0.01" />
@@ -566,14 +553,14 @@ export default {
 		},
 		// 提交批量填写
 		submitBatchFill() {
-			this.$refs.batchForm.validate(async (valid) => {
+			this.$refs.batchForm.validate(async valid => {
 				if (!valid) {
 					return;
 				}
 
 				// 获取批量选中的行
 				const eligibleRows = this.batchSelectedRows;
-				
+
 				if (eligibleRows.length === 0) {
 					this.$message.warning('没有可填写的佣金信息');
 					return;

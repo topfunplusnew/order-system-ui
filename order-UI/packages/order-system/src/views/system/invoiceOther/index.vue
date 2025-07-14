@@ -91,12 +91,12 @@
 					</el-row>
 				</template>
 			</el-table-column>
-			<el-table-column label="银行回执单" align="center" prop="paymentReceipts">
+			<el-table-column label="银行回执单" align="center" prop="attachmentList">
 				<template #default="scope">
 					<div v-if="Array.isArray(scope.row.attachmentList)">
 						<CheckFiles
 							:attachmentList="scope.row.attachmentList"
-							:flag="'paymentReceipts'"
+							:flag="'attachmentList'"
 							@needToUpdate="value => handleUpdateFilePath(value, scope.row, getInvoiceOther, updateInvoiceOther)"
 						/>
 					</div>
@@ -105,12 +105,12 @@
 					</div>
 				</template>
 			</el-table-column>
-			<el-table-column label="发票单" align="center" prop="invoiceAttachments">
+			<el-table-column label="发票单" align="center" prop="attachmentList">
 				<template #default="scope">
 					<div v-if="Array.isArray(scope.row.attachmentList)">
 						<CheckFiles
 							:attachmentList="scope.row.attachmentList"
-							:flag="'invoiceAttachments'"
+							:flag="'invoiceAttachmentList'"
 							@needToUpdate="value => handleUpdateFilePath(value, scope.row, getInvoiceOther, updateInvoiceOther)"
 						/>
 					</div>
@@ -261,19 +261,19 @@
 							<el-input v-model="form.invoiceCompanyName" placeholder="请输入票据单位名称" />
 						</el-form-item>
 						<el-form-item label="银行回执附件">
-							<UploadFilesButton 
-								ref="paymentReceiptsUpload" 
-								flag="paymentReceipts" 
-								:extra-info="{ moduleType: 'invoiceOther', formId: form.id }" 
-								@files-updated="handlePaymentReceiptsFilesUpdated" 
+							<UploadFilesButton
+								ref="paymentReceiptsUpload"
+								flag="attachmentList"
+								:extra-info="{ moduleType: 'invoiceOther', formId: form.id }"
+								@filesUpdated="handleAttachmentFilesUpdated"
 							/>
 						</el-form-item>
 						<el-form-item label="发票单">
-							<UploadFilesButton 
-								ref="invoiceAttachmentsUpload" 
-								flag="invoiceAttachments" 
-								:extra-info="{ moduleType: 'invoiceOther', formId: form.id }" 
-								@files-updated="handleInvoiceAttachmentsFilesUpdated" 
+							<UploadFilesButton
+								ref="invoiceAttachmentsUpload"
+								flag="attachmentList"
+								:extra-info="{ moduleType: 'invoiceOther', formId: form.id }"
+								@filesUpdated="handleAttachmentFilesUpdated"
 							/>
 						</el-form-item>
 						<el-form-item label="备注" prop="comments">
@@ -349,7 +349,7 @@ import { listGoodsOrder } from '@/api/system/goodsOrder';
 import { addDateRange } from '@/utils/ruoyi';
 import OrderInfos from '../../dashboard/components/goodsOrder/OrderInfos.vue';
 import CheckFiles from '../../../components/CheckFiles.vue';
-import UploadFilesButton from '@/components/UploadFilesButton';
+import UploadFilesButton from '@/components/UploadFilesButton/index.vue';
 import { fix } from '../../../api/tool/format';
 import reLength from '../../dashboard/mixins/reLength';
 import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfile';
@@ -576,11 +576,11 @@ export default {
 				this.checkOrderInfoVisible = true;
 			});
 		},
-		handlePaymentReceiptsFilesUpdated(params) {
-			this.form.paymentReceiptsParams = params;
-		},
-		handleInvoiceAttachmentsFilesUpdated(params) {
-			this.form.invoiceAttachmentsParams = params;
+		// 统一附件更新处理
+		handleAttachmentFilesUpdated(files) {
+			if (this.form && this.form.params) {
+				this.form.params.attachmentIds = files.map(file => file.id);
+			}
 		},
 		getList() {
 			this.loading = true;
@@ -629,6 +629,9 @@ export default {
 					actualInvoiceTime: null,
 					currentMonthOweInvoiceAmount: null,
 					comment: null
+				},
+				params: {
+					attachmentIds: []
 				}
 			};
 			this.resetForm('form');
@@ -691,6 +694,19 @@ export default {
 		submitForm() {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
+					// 保存当前附件ID用于错误回滚
+					const originalAttachmentIds = this.$store.getters.attachmentIds ? [...this.$store.getters.attachmentIds] : [];
+
+					// 去重附件ID
+					const uniqueAttachmentIds = [...new Set(originalAttachmentIds)];
+					if (uniqueAttachmentIds.length !== originalAttachmentIds.length) {
+						// 清空并重新添加去重后的ID
+						this.$store.commit('CLEAR_ATTACHMENT_IDS');
+						uniqueAttachmentIds.forEach(id => {
+							this.$store.commit('ADD_ATTACHMENT_ID', id);
+						});
+					}
+
 					// 获取附件上传参数
 					if (this.$refs.paymentReceiptsUpload) {
 						const paymentReceiptsParams = this.$refs.paymentReceiptsUpload.getUploadParams();
@@ -706,31 +722,51 @@ export default {
 					}
 
 					if (this.form.id != null) {
-						updateInvoiceOther(this.form).then(() => {
-							this.$modal.msgSuccess('修改成功');
-							this.open = false;
-							// 清理 UploadFilesButton 状态
-							if (this.$refs.paymentReceiptsUpload) {
-								this.$refs.paymentReceiptsUpload.clearUploadedFiles();
-							}
-							if (this.$refs.invoiceAttachmentsUpload) {
-								this.$refs.invoiceAttachmentsUpload.clearUploadedFiles();
-							}
-							this.getList();
-						});
+						updateInvoiceOther(this.form)
+							.then(() => {
+								this.$modal.msgSuccess('修改成功');
+								this.open = false;
+								// 清理 UploadFilesButton 状态
+								if (this.$refs.paymentReceiptsUpload) {
+									this.$refs.paymentReceiptsUpload.clearUploadedFiles();
+								}
+								if (this.$refs.invoiceAttachmentsUpload) {
+									this.$refs.invoiceAttachmentsUpload.clearUploadedFiles();
+								}
+								this.getList();
+							})
+							.catch(error => {
+								console.error('修改商家开票失败:', error);
+								// 回滚附件ID到原始状态
+								this.$store.commit('CLEAR_ATTACHMENT_IDS');
+								originalAttachmentIds.forEach(id => {
+									this.$store.commit('ADD_ATTACHMENT_ID', id);
+								});
+								this.$message.error('修改失败，请重试');
+							});
 					} else {
-						addInvoiceOther(this.form).then(() => {
-							this.$modal.msgSuccess('新增成功');
-							this.open = false;
-							// 清理 UploadFilesButton 状态
-							if (this.$refs.paymentReceiptsUpload) {
-								this.$refs.paymentReceiptsUpload.clearUploadedFiles();
-							}
-							if (this.$refs.invoiceAttachmentsUpload) {
-								this.$refs.invoiceAttachmentsUpload.clearUploadedFiles();
-							}
-							this.getList();
-						});
+						addInvoiceOther(this.form)
+							.then(() => {
+								this.$modal.msgSuccess('新增成功');
+								this.open = false;
+								// 清理 UploadFilesButton 状态
+								if (this.$refs.paymentReceiptsUpload) {
+									this.$refs.paymentReceiptsUpload.clearUploadedFiles();
+								}
+								if (this.$refs.invoiceAttachmentsUpload) {
+									this.$refs.invoiceAttachmentsUpload.clearUploadedFiles();
+								}
+								this.getList();
+							})
+							.catch(error => {
+								console.error('新增商家开票失败:', error);
+								// 回滚附件ID到原始状态
+								this.$store.commit('CLEAR_ATTACHMENT_IDS');
+								originalAttachmentIds.forEach(id => {
+									this.$store.commit('ADD_ATTACHMENT_ID', id);
+								});
+								this.$message.error('新增失败，请重试');
+							});
 					}
 				}
 			});

@@ -172,13 +172,7 @@
 					<el-input v-model="moneyInfo.bankNo" placeholder="请输入银行账号" @input="handleInputTrim($event, 'moneyInfo', 'bankNo')" />
 				</el-form-item>
 				<el-form-item label="附件" prop="bankName">
-					<UploadFilesButton 
-						ref="attachmentUploader"
-						:table-name="'oilcard'"
-						:record-id="moneyInfo.id"
-						:attachment-type="'附件'"
-						@files-updated="handleAttachmentFilesUpdated"
-					/>
+					<UploadFilesButton ref="attachmentUploader" :table-name="'oilcard'" :record-id="moneyInfo.id" :attachment-type="'附件'" @files-updated="handleAttachmentFilesUpdated" />
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -295,7 +289,7 @@
 <script>
 import { listOilCard, getOilCard, delOilCard, addOilCard, updateOilCard } from '@/api/system/oilCard';
 import SearchOption from '@/components/SearchOption.vue';
-import UploadFilesButton from '@/components/UploadFilesButton';
+import UploadFilesButton from '@/components/UploadFilesButton/index.vue';
 import { excludeParams } from '@/api/tool/exclude';
 import { listBankAccount } from '@/api/system/bankAccount';
 import { addOilRecharge } from '@/api/system/oilRecharge';
@@ -523,7 +517,7 @@ export default {
 			if (!this.moneyInfo.params) {
 				this.$set(this.moneyInfo, 'params', {});
 			}
-			
+
 			// 直接设置 attachmentIds
 			if (uploadParams && uploadParams.params && uploadParams.params.attachmentIds) {
 				this.$set(this.moneyInfo.params, 'attachmentIds', uploadParams.params.attachmentIds);

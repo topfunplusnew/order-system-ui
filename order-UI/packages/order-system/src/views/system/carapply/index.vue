@@ -91,9 +91,14 @@
 			<el-table-column v-if="columns[26].visible" label="现金加油金额" align="center" prop="cashRefueling" show-overflow-tooltip />
 			<el-table-column v-if="columns[27].visible" label="派车人" align="center" prop="dispatchPerson" show-overflow-tooltip />
 			<el-table-column v-if="columns[28].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
-			<el-table-column v-if="columns[29].visible" label="附件路径" align="center" prop="path">
+			<el-table-column v-if="columns[29].visible" label="附件" align="center" prop="attachmentList">
 				<template slot-scope="scope">
-					<CheckFiles :path="scope.row.path" @needToUpdate="value => handleUpdateFilePath(value, scope.row, 'path', getCarApply(), updateCarApply())" />
+					<div v-if="Array.isArray(scope.row.attachmentList)">
+						<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'attachments'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getCarApply, updateCarApply)" />
+					</div>
+					<div v-else>
+						<el-tag type="danger">加载错误</el-tag>
+					</div>
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[30].visible" label="审核状态" align="center" prop="auditState" width="120px">
@@ -234,7 +239,7 @@
 								<el-input v-model="form.comments" placeholder="请输入备注" />
 							</el-form-item>
 							<el-form-item label="附件" prop="attachmentList">
-								<CheckFiles :attachmentList.sync="form.attachmentList" @needToUpdate="handleFormAttachmentUpdate" />
+								<UploadFilesButton flag="attachments" @filesUpdated="handleAttachmentFilesUpdated" :attachment-list="form.attachmentList || []" />
 							</el-form-item>
 						</el-col>
 					</el-row>
@@ -428,6 +433,7 @@ import Treeselect from '@riophae/vue-treeselect';
 import { listDept } from '@/api/system/dept';
 import '@riophae/vue-treeselect/dist/vue-treeselect.css';
 import CheckFiles from '../../../components/CheckFiles.vue';
+import UploadFilesButton from '../../../components/UploadFilesButton/index.vue';
 import { getCarApply, updateCarApply } from '../../../api/system/carApply';
 import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
@@ -437,7 +443,7 @@ import { parseTime } from 'order-system/src/utils/ruoyi';
 
 export default {
 	name: 'CarApply',
-	components: { DialogWrapper, CheckFiles, Treeselect, SearchOption },
+	components: { DialogWrapper, CheckFiles, UploadFilesButton, Treeselect, SearchOption },
 	mixins: [mixin_printHTML, common_dialog, mixin_businesstrip_car_apply],
 	data() {
 		return {
@@ -868,6 +874,14 @@ export default {
 				this.form = response.data;
 				// 确保 attachmentList 是一个数组
 				this.form.attachmentList = response.data.attachmentList || [];
+				// 确保 params 对象存在，用于统一附件处理
+				if (!this.form.params) {
+					this.form.params = {};
+				}
+				// 如果有现有附件，设置到 params.attachmentIds
+				if (this.form.attachmentList.length > 0) {
+					this.form.params.attachmentIds = this.form.attachmentList.map(item => item.id);
+				}
 				this.oilCardConsumeList = response.data.oilCardConsumes;
 				this.open = true;
 				this.title = '修改车辆使用申请';
@@ -877,11 +891,18 @@ export default {
 		submitForm() {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
-					// 将附件ID列表添加到参数中
-					const params = {
-						attachmentIds: this.form.attachmentList.map(item => item.id)
-					};
-					const data = { ...this.form, params: params };
+					// 统一的附件处理：使用 params.attachmentIds 数组
+					const data = { ...this.form };
+
+					// 确保 params 对象存在并包含附件ID
+					if (!data.params) {
+						data.params = {};
+					}
+
+					// 如果通过上传组件已设置了 attachmentIds，则保持；否则从 attachmentList 获取
+					if (!data.params.attachmentIds && this.form.attachmentList) {
+						data.params.attachmentIds = this.form.attachmentList.map(item => item.id);
+					}
 
 					if (this.form.id != null) {
 						updateCarApply(excludeParams(data, this.$exclude)).then(() => {
@@ -959,6 +980,32 @@ export default {
 							});
 					});
 				}
+			});
+		},
+		// 统一附件处理方法
+		handleAttachmentFilesUpdated(uploadParams) {
+			if (uploadParams && uploadParams.params && uploadParams.params.attachmentIds) {
+				// 确保 form.params 对象存在
+				if (!this.form.params) {
+					this.form.params = {};
+				}
+				// 直接使用上传组件返回的统一附件ID数组
+				this.form.params.attachmentIds = uploadParams.params.attachmentIds;
+			}
+		},
+		// 处理表格行附件更新
+		handleUpdateFilePath(attachments, row, onGet, onUpdate) {
+			onGet(row.id).then(res => {
+				const data = {
+					...res.data,
+					params: {
+						...res.data.params,
+						attachmentIds: attachments.map(item => item.id)
+					}
+				};
+				onUpdate(data).then(() => {
+					this.getList();
+				});
 			});
 		}
 	}

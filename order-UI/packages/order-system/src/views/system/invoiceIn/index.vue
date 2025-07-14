@@ -178,22 +178,23 @@
 				</el-form-item>
 				<el-form-item label="票点金额" prop="ticketPointAmount">
 					<el-input v-model="invoiceAmount" placeholder="请输入票点金额" />
-				</el-form-item>						<el-form-item label="银行回执附件">
-							<UploadFilesButton 
-								ref="paymentReceiptsUpload" 
-								flag="paymentReceipts" 
-								:extra-info="{ moduleType: 'invoiceIn', formId: form.id }" 
-								@files-updated="handlePaymentReceiptsFilesUpdated" 
-							/>
-						</el-form-item>
-						<el-form-item label="发票单">
-							<UploadFilesButton 
-								ref="invoiceAttachmentsUpload" 
-								flag="invoiceAttachments" 
-								:extra-info="{ moduleType: 'invoiceIn', formId: form.id }" 
-								@files-updated="handleInvoiceAttachmentsFilesUpdated" 
-							/>
-						</el-form-item>
+				</el-form-item>
+				<el-form-item label="银行回执附件">
+					<UploadFilesButton
+						ref="paymentReceiptsUpload"
+						flag="paymentReceipts"
+						:extra-info="{ moduleType: 'invoiceIn', formId: form.id }"
+						@files-updated="handlePaymentReceiptsFilesUpdated"
+					/>
+				</el-form-item>
+				<el-form-item label="发票单">
+					<UploadFilesButton
+						ref="invoiceAttachmentsUpload"
+						flag="invoiceAttachments"
+						:extra-info="{ moduleType: 'invoiceIn', formId: form.id }"
+						@files-updated="handleInvoiceAttachmentsFilesUpdated"
+					/>
+				</el-form-item>
 				<el-form-item label="备注" prop="comments">
 					<el-input v-model="form.comments" placeholder="请输入备注" />
 				</el-form-item>
@@ -248,7 +249,7 @@ import { addReason } from '@/api/system/user';
 import { getGoodsOrder } from '@/api/system/goodsOrder';
 import OrderInfos from '@/views/dashboard/components/goodsOrder/OrderInfos.vue';
 import CheckFiles from '../../../components/CheckFiles.vue';
-import UploadFilesButton from '@/components/UploadFilesButton';
+import UploadFilesButton from '@/components/UploadFilesButton/index.vue';
 import reLength from '../../dashboard/mixins/reLength';
 import { getInvoiceIn, updateInvoiceIn } from '../../../api/system/invoiceIn';
 import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfile';
@@ -572,19 +573,20 @@ export default {
 		/** 提交按钮 */
 		submitForm() {
 			this.$refs['form'].validate(valid => {
-				if (valid) {				// 获取附件上传参数
-				if (this.$refs.paymentReceiptsUpload) {
-					const paymentReceiptsParams = this.$refs.paymentReceiptsUpload.getUploadParams();
-					if (paymentReceiptsParams && paymentReceiptsParams.params) {
-						this.form.params = { ...this.form.params, ...paymentReceiptsParams.params };
+				if (valid) {
+					// 获取附件上传参数
+					if (this.$refs.paymentReceiptsUpload) {
+						const paymentReceiptsParams = this.$refs.paymentReceiptsUpload.getUploadParams();
+						if (paymentReceiptsParams && paymentReceiptsParams.params) {
+							this.form.params = { ...this.form.params, ...paymentReceiptsParams.params };
+						}
 					}
-				}
-				if (this.$refs.invoiceAttachmentsUpload) {
-					const invoiceAttachmentsParams = this.$refs.invoiceAttachmentsUpload.getUploadParams();
-					if (invoiceAttachmentsParams && invoiceAttachmentsParams.params) {
-						this.form.params = { ...this.form.params, ...invoiceAttachmentsParams.params };
+					if (this.$refs.invoiceAttachmentsUpload) {
+						const invoiceAttachmentsParams = this.$refs.invoiceAttachmentsUpload.getUploadParams();
+						if (invoiceAttachmentsParams && invoiceAttachmentsParams.params) {
+							this.form.params = { ...this.form.params, ...invoiceAttachmentsParams.params };
+						}
 					}
-				}
 
 					if (this.form.id != null) {
 						this.form = excludeParams(this.form, this.$exclude);

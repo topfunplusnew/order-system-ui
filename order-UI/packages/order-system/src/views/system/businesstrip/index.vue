@@ -130,7 +130,7 @@
 						</el-col>
 						<el-col :span="12">
 							<el-form-item label="附件" prop="attachmentList">
-								<CheckFiles :attachment-list="form.attachmentList" @needToUpdate="handleAttachmentUpdate" />
+								<UploadFilesButton flag="attachments" @filesUpdated="handleAttachmentFilesUpdated" :attachment-list="form.attachmentList || []" />
 							</el-form-item>
 							<el-form-item label="备注" prop="comments">
 								<el-input v-model="form.comments" type="textarea" placeholder="请输入内容" />
@@ -299,14 +299,7 @@
 </template>
 
 <script>
-import {
-	delBusinessTrip,
-	getBusinessTrip,
-	updateBusinessTrip,
-	listBusinessTrip,
-	getCarApplyAuditStatus,
-	addBusinessTrip
-} from '@/api/system/BusinessTrip';
+import { delBusinessTrip, getBusinessTrip, updateBusinessTrip, listBusinessTrip, getCarApplyAuditStatus, addBusinessTrip } from '@/api/system/BusinessTrip';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import { mapGetters } from 'vuex';
 import ApplyPayment from '@/views/dashboard/components/common/ApplyPayment.vue';
@@ -322,6 +315,7 @@ import { listDept } from '@/api/system/dept';
 import '@riophae/vue-treeselect/dist/vue-treeselect.css';
 import Treeselect from '@riophae/vue-treeselect';
 import CheckFiles from '@/components/CheckFiles.vue';
+import UploadFilesButton from '@/components/UploadFilesButton/index.vue';
 import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfile';
 import StateTag from '@/views/dashboard/components/common/StateTag.vue';
 import { listCarApply } from '../../../api/system/carApply';
@@ -340,6 +334,7 @@ export default {
 		SearchOption,
 		StateTag,
 		CheckFiles,
+		UploadFilesButton,
 		SubjectOption,
 		StepsForm,
 		ApplyPayment,
@@ -503,11 +498,18 @@ export default {
 	methods: {
 		listCarApply,
 		/**
-		 * 更新表单中的附件列表
-		 * @param {Array} newAttachmentList - 最新的附件列表
+		 * 统一附件处理方法
+		 * @param {Object} uploadParams - 上传组件返回的参数
 		 */
-		handleAttachmentUpdate(newAttachmentList) {
-			this.form.attachmentList = newAttachmentList;
+		handleAttachmentFilesUpdated(uploadParams) {
+			if (uploadParams && uploadParams.params && uploadParams.params.attachmentIds) {
+				// 确保 form.params 对象存在
+				if (!this.form.params) {
+					this.form.params = {};
+				}
+				// 直接使用上传组件返回的统一附件ID数组
+				this.form.params.attachmentIds = uploadParams.params.attachmentIds;
+			}
 		},
 		/**
 		 * 处理表格中附件的更新

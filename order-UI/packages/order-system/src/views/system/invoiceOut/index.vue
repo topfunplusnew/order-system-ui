@@ -67,12 +67,12 @@
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[9].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
-			<el-table-column label="银行回执单" align="center" prop="paymentReceipts">
+			<el-table-column label="银行回执单" align="center" prop="attachmentList">
 				<template #default="scope">
 					<div v-if="Array.isArray(scope.row.attachmentList)">
 						<CheckFiles
 							:attachmentList="scope.row.attachmentList"
-							:flag="'paymentReceipts'"
+							:flag="'attachmentList'"
 							@needToUpdate="value => handleUpdateFilePath(value, scope.row, getInvoiceOut, updateInvoiceOut)"
 						/>
 					</div>
@@ -81,12 +81,12 @@
 					</div>
 				</template>
 			</el-table-column>
-			<el-table-column label="发票单" align="center" prop="invoiceAttachments">
+			<el-table-column label="发票单" align="center" prop="attachmentList">
 				<template #default="scope">
 					<div v-if="Array.isArray(scope.row.attachmentList)">
 						<CheckFiles
 							:attachmentList="scope.row.attachmentList"
-							:flag="'invoiceAttachments'"
+							:flag="'attachmentList'"
 							@needToUpdate="value => handleUpdateFilePath(value, scope.row, getInvoiceOut, updateInvoiceOut)"
 						/>
 					</div>
@@ -163,22 +163,13 @@
 				</el-form-item>
 				<el-form-item label="票点金额" prop="ticketPointAmount">
 					<el-input v-model="invoiceAmount" placeholder="请输入票点金额" />
-				</el-form-item>						<el-form-item label="银行回执附件">
-							<UploadFilesButton 
-								ref="paymentReceiptsUpload" 
-								flag="paymentReceipts" 
-								:extra-info="{ moduleType: 'invoiceOut', formId: form.id }" 
-								@files-updated="handlePaymentReceiptsFilesUpdated" 
-							/>
-						</el-form-item>
-						<el-form-item label="发票单">
-							<UploadFilesButton 
-								ref="invoiceAttachmentsUpload" 
-								flag="invoiceAttachments" 
-								:extra-info="{ moduleType: 'invoiceOut', formId: form.id }" 
-								@files-updated="handleInvoiceAttachmentsFilesUpdated" 
-							/>
-						</el-form-item>
+				</el-form-item>
+				<el-form-item label="银行回执附件">
+					<UploadFilesButton ref="paymentReceiptsUpload" flag="attachmentList" :extra-info="{ moduleType: 'invoiceOut', formId: form.id }" @filesUpdated="handleAttachmentFilesUpdated" />
+				</el-form-item>
+				<el-form-item label="发票单">
+					<UploadFilesButton ref="invoiceAttachmentsUpload" flag="attachmentList" :extra-info="{ moduleType: 'invoiceOut', formId: form.id }" @filesUpdated="handleAttachmentFilesUpdated" />
+				</el-form-item>
 				<el-form-item label="备注" prop="comments">
 					<el-input v-model="form.comments" placeholder="请输入备注" />
 				</el-form-item>
@@ -220,7 +211,7 @@ import { addReason } from '@/api/system/user';
 import { TableName } from '@/api/tool/enums';
 import { addDateRange } from '@/utils/ruoyi';
 import CheckFiles from '../../../components/CheckFiles.vue';
-import UploadFilesButton from '@/components/UploadFilesButton';
+import UploadFilesButton from '@/components/UploadFilesButton/index.vue';
 import reLength from '../../dashboard/mixins/reLength';
 import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfile';
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
@@ -246,6 +237,11 @@ export default {
 			total: 0,
 			// 发票卖出信息表格数据
 			invoiceOutList: [],
+
+			// 分别跟踪不同类型的附件ID
+			paymentReceiptIds: [], // 银行回执附件
+			invoiceAttachmentIds: [], // 发票单附件
+
 			// 弹出层标题
 			title: '',
 			// 是否显示弹出层
@@ -394,6 +390,12 @@ export default {
 		updateInvoiceOut,
 		getInvoiceOut,
 		listCompany,
+		// 统一附件更新处理
+		handleAttachmentFilesUpdated(files) {
+			if (this.form && this.form.params) {
+				this.form.params.attachmentIds = files.map(file => file.id);
+			}
+		},
 		// 自动填充函数
 		handleUpdateCompanyName(val) {
 			this.companyName = val;
@@ -452,7 +454,10 @@ export default {
 				userId: null,
 				UserName: null,
 				updateTime: null,
-				delFlag: null
+				delFlag: null,
+				params: {
+					attachmentIds: []
+				}
 			};
 			this.resetForm('form');
 		},
@@ -515,14 +520,6 @@ export default {
 				this.open = true;
 				this.title = '修改发票卖出信息';
 			});
-		},
-		// 银行回执附件处理
-		handlePaymentReceiptsFilesUpdated(params) {
-			this.form.paymentReceiptsParams = params;
-		},
-		// 发票单附件处理
-		handleInvoiceAttachmentsFilesUpdated(params) {
-			this.form.invoiceAttachmentsParams = params;
 		},
 		/** 提交按钮 */
 		submitForm() {

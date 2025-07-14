@@ -106,13 +106,7 @@
 					<el-input size="mini" v-model="secondForm.goodsCompany" placeholder="请输入货物来源公司(本部或者海盛)" />
 				</el-form-item>
 				<el-form-item label="附件">
-					<UploadFilesButton 
-						ref="attachmentUploader"
-						:table-name="'secondinventory'"
-						:record-id="secondForm.id"
-						:attachment-type="'附件'"
-						@files-updated="handleAttachmentFilesUpdated"
-					/>
+					<UploadFilesButton ref="attachmentUploader" :table-name="'secondinventory'" :record-id="secondForm.id" :attachment-type="'附件'" @files-updated="handleAttachmentFilesUpdated" />
 				</el-form-item>
 				<br />
 				<el-form-item label="运输方式" required>
@@ -723,7 +717,7 @@ import { listCompany } from '../../../api/system/company';
 import { listProductLevel } from '../../../api/system/productLevel';
 import { fix } from '../../../api/tool/format';
 import SearchOption from '../../../components/SearchOption.vue';
-import UploadFilesButton from '@/components/UploadFilesButton';
+import UploadFilesButton from '@/components/UploadFilesButton/index.vue';
 import { _fill } from './fill';
 import { updateInventoryMain, addInventoryMain, getInventoryMain } from '../../../api/system/inventoryMain';
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
@@ -981,7 +975,7 @@ export default {
 			if (!this.secondForm.params) {
 				this.$set(this.secondForm, 'params', {});
 			}
-			
+
 			// 直接设置 attachmentIds
 			if (uploadParams && uploadParams.params && uploadParams.params.attachmentIds) {
 				this.$set(this.secondForm.params, 'attachmentIds', uploadParams.params.attachmentIds);
@@ -1049,7 +1043,7 @@ export default {
 						countingUnit: '片',
 						payments: '',
 						manuallyEditedPieces: true, // 标记为已手动设置，避免被自动计算覆盖
-					
+
 						stockNumber: 0,
 						piecesPerPack: '',
 						packs: '',
@@ -1676,21 +1670,21 @@ export default {
 		handlePiecesInput(row, field, value, callback) {
 			// 允许输入数字和小数点
 			let sanitizedValue = value.replace(/[^\d.]/g, '');
-			
+
 			// 只允许一个小数点
 			const parts = sanitizedValue.split('.');
 			if (parts.length > 2) {
 				sanitizedValue = parts[0] + '.' + parts.slice(1).join('');
 			}
-			
+
 			// 限制小数点后最多2位
 			if (parts.length === 2 && parts[1].length > 2) {
 				sanitizedValue = parts[0] + '.' + parts[1].slice(0, 2);
 			}
-			
+
 			// 更新行数据
 			row[field] = sanitizedValue;
-			
+
 			// 执行回调函数
 			if (callback) {
 				callback();

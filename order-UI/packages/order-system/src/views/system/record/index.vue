@@ -94,11 +94,7 @@
 			<el-table-column v-if="columns[10].visible" label="附件" align="center" prop="attachment">
 				<template #default="scope">
 					<div v-if="Array.isArray(scope.row.attachmentList)">
-						<CheckFiles
-							:attachmentList="scope.row.attachmentList"
-							:flag="'attachment'"
-							@needToUpdate="value => handleUpdateFilePath(value, scope.row, getRecord, updateRecord)"
-						/>
+						<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'attachment'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getRecord, updateRecord)" />
 					</div>
 					<div v-else>
 						<el-tag type="danger">加载错误</el-tag>
@@ -495,12 +491,7 @@
 					</el-row>
 				</el-form-item>
 				<el-form-item label="附件" prop="attachment">
-					<UploadFilesButton 
-						ref="attachmentUpload" 
-						flag="attachment" 
-						:extra-info="{ moduleType: 'record', formId: form.id }" 
-						@files-updated="handleAttachmentFilesUpdated" 
-					/>
+					<UploadFilesButton ref="attachmentUpload" flag="attachment" :extra-info="{ moduleType: 'record', formId: form.id }" @files-updated="handleAttachmentFilesUpdated" />
 				</el-form-item>
 				<el-form-item label="交易时间" prop="transactionTime">
 					<el-date-picker v-model="form.transactionTime" clearable type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="请选择交易时间" />
@@ -548,7 +539,7 @@ import { getRecord, updateRecord } from '../../../api/system/record';
 import { BankAcceptanceType, PayType, TableName } from '../../../api/tool/enums';
 import { excludeParams } from '../../../api/tool/exclude';
 import CheckFiles from '../../../components/CheckFiles.vue';
-import UploadFilesButton from '@/components/UploadFilesButton';
+import UploadFilesButton from '@/components/UploadFilesButton/index.vue';
 import SearchOption from '../../../components/SearchOption.vue';
 import { PUBLIC_DICT_TYPE } from '../../../utils/order';
 import { parseTime } from '../../../utils/ruoyi';
@@ -923,7 +914,20 @@ export default {
 		submitForm() {
 			this.$refs['form'].validate(valid => {
 				if (!valid) return;
-				
+
+				// 保存当前附件ID用于错误回滚
+				const originalAttachmentIds = this.$store.getters.attachmentIds ? [...this.$store.getters.attachmentIds] : [];
+
+				// 去重附件ID
+				const uniqueAttachmentIds = [...new Set(originalAttachmentIds)];
+				if (uniqueAttachmentIds.length !== originalAttachmentIds.length) {
+					// 清空并重新添加去重后的ID
+					this.$store.commit('CLEAR_ATTACHMENT_IDS');
+					uniqueAttachmentIds.forEach(id => {
+						this.$store.commit('ADD_ATTACHMENT_ID', id);
+					});
+				}
+
 				// 获取附件上传参数
 				if (this.$refs.attachmentUpload) {
 					const attachmentParams = this.$refs.attachmentUpload.getUploadParams();
@@ -931,47 +935,67 @@ export default {
 						this.form.params = { ...this.form.params, ...attachmentParams.params };
 					}
 				}
-				
+
 				// 提取公共逻辑
 				this.form = excludeParams(this.form, this.$exclude);
 				// 判断是修改还是新增
 				if (this.form.id != null) {
-					this.updateRecordInfo();
+					this.updateRecordInfo(originalAttachmentIds);
 					this.$bus.$emit('changeFlag', false);
 				} else {
-					this.addRecordInfo();
+					this.addRecordInfo(originalAttachmentIds);
 					this.$bus.$emit('changeFlag', false);
 				}
 			});
 		},
 
 		// 修改记录
-		updateRecordInfo() {
-			updateRecord(this.form).then(() => {
-				this.onSuccess('修改成功');
-			});
+		updateRecordInfo(originalAttachmentIds) {
+			updateRecord(this.form)
+				.then(() => {
+					this.onSuccess('修改成功');
+				})
+				.catch(error => {
+					console.error('修改记录失败:', error);
+					// 回滚附件ID到原始状态
+					this.$store.commit('CLEAR_ATTACHMENT_IDS');
+					originalAttachmentIds.forEach(id => {
+						this.$store.commit('ADD_ATTACHMENT_ID', id);
+					});
+					this.$message.error('修改失败，请重试');
+				});
 		},
 
 		// 新增记录
-		addRecordInfo() {
+		addRecordInfo(originalAttachmentIds) {
 			if (this.cashType === CASH_TYPE.OFF_SETTING) {
-				this.handleOffsetting();
+				this.handleOffsetting(originalAttachmentIds);
 			} else {
-				this.handleTransfer();
+				this.handleTransfer(originalAttachmentIds);
 			}
 		},
 
 		// 处理冲抵货款逻辑
-		handleOffsetting() {
+		handleOffsetting(originalAttachmentIds) {
 			this.form.referenceTableName = TableName.OFFSETTING;
 			this.form.referenceTableId = -1;
-			addRecord(this.form).then(() => {
-				this.onSuccess('新增成功', true);
-			});
+			addRecord(this.form)
+				.then(() => {
+					this.onSuccess('新增成功', true);
+				})
+				.catch(error => {
+					console.error('新增冲抵记录失败:', error);
+					// 回滚附件ID到原始状态
+					this.$store.commit('CLEAR_ATTACHMENT_IDS');
+					originalAttachmentIds.forEach(id => {
+						this.$store.commit('ADD_ATTACHMENT_ID', id);
+					});
+					this.$message.error('新增失败，请重试');
+				});
 		},
 
 		// 处理内部转账逻辑
-		handleTransfer() {
+		handleTransfer(originalAttachmentIds) {
 			const selfType = this.$refs.selfSelectBankType.localSelectType;
 			const otherType = this.$refs.otherSelectBankType.localSelectType;
 			if (selfType !== otherType) {
@@ -988,13 +1012,23 @@ export default {
 			// 填充转账类型表
 			this.form.referenceTableName = CASH_TYPE.TRANSFER;
 			this.form.referenceTableId = -1;
-			addRecord(this.form).then(() => {
-				this.onSuccess('新增成功', true, true);
-				// 清除承兑信息状态
-				this.clearAcceptanceFillStatus();
-				this.$refs.selfSelectBankType.localSelectType = null;
-				this.$refs.otherSelectBankType.localSelectType = null;
-			});
+			addRecord(this.form)
+				.then(() => {
+					this.onSuccess('新增成功', true, true);
+					// 清除承兑信息状态
+					this.clearAcceptanceFillStatus();
+					this.$refs.selfSelectBankType.localSelectType = null;
+					this.$refs.otherSelectBankType.localSelectType = null;
+				})
+				.catch(error => {
+					console.error('新增转账记录失败:', error);
+					// 回滚附件ID到原始状态
+					this.$store.commit('CLEAR_ATTACHMENT_IDS');
+					originalAttachmentIds.forEach(id => {
+						this.$store.commit('ADD_ATTACHMENT_ID', id);
+					});
+					this.$message.error('新增失败，请重试');
+				});
 		},
 		// 公共成功处理逻辑
 		onSuccess(message, resetForm = false, resetEachInfo = false) {

@@ -21,8 +21,8 @@
 			<el-form-item label="付款类型" prop="payType">
 				<el-cascader v-model="queryParams.payType" :options="paymentTypeTree" :props="props" @change="handleChange"></el-cascader>
 			</el-form-item>
-			<el-form-item label="户名" prop="selfBankName">
-				<el-input v-model="queryParams.selfBankName" placeholder="请输入我方户名" clearable class="w-85px" @keyup.enter.native="handleQuery" />
+			<el-form-item label="我方户名" prop="selfAcountsName">
+				<el-input v-model="queryParams.selfAcountsName" placeholder="请输入我方户名" clearable class="w-85px" @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="对方银行卡号" prop="selfBankID">
 				<el-input v-model="queryParams.otherBankNo" placeholder="请输入对方银行卡号" clearable class="w-85px" @keyup.enter.native="handleQuery" />
@@ -1084,6 +1084,20 @@ export default {
 							return;
 						}
 					}
+
+					// 保存当前附件ID用于错误回滚
+					const originalAttachmentIds = this.$store.getters.attachmentIds ? [...this.$store.getters.attachmentIds] : [];
+
+					// 去重附件ID
+					const uniqueAttachmentIds = [...new Set(originalAttachmentIds)];
+					if (uniqueAttachmentIds.length !== originalAttachmentIds.length) {
+						// 清空并重新添加去重后的ID
+						this.$store.commit('CLEAR_ATTACHMENT_IDS');
+						uniqueAttachmentIds.forEach(id => {
+							this.$store.commit('ADD_ATTACHMENT_ID', id);
+						});
+					}
+
 					// 获取当前附件参数
 					if (this.$refs.attachmentUpload) {
 						const attachmentParams = this.$refs.attachmentUpload.getUploadParams();
@@ -1126,35 +1140,59 @@ export default {
 										// 可以根据需要添加选中逻辑
 									}
 								});
+								// 重置银行类型选择器
+								if (this.$refs.selfSelectedBankType) {
+									this.$refs.selfSelectedBankType.localSelectType = null;
+								}
+								if (this.$refs.otherSelectedBankType) {
+									this.$refs.otherSelectedBankType.localSelectType = null;
+								}
 							})
-							.catch(() => {
+							.catch(error => {
+								console.error('修改付款记录失败:', error);
 								// 如果编辑失败，保持原有id
 								this.form.id = originalId;
+								// 回滚附件ID到原始状态
+								this.$store.commit('CLEAR_ATTACHMENT_IDS');
+								originalAttachmentIds.forEach(id => {
+									this.$store.commit('ADD_ATTACHMENT_ID', id);
+								});
+								this.$message.error('修改失败，请重试');
 							});
 					} else {
 						// 新增操作
 						this.form.companyType = this.value;
-						addPayment(this.form).then(() => {
-							this.$modal.msgSuccess('新增成功');
-							this.$bus.$emit('changeFlag', false);
-							this.open = false;
-							// 清除附件上传状态
-							if (this.$refs.attachmentUpload) {
-								this.$refs.attachmentUpload.clearUploadedFiles();
-							}
-							// 清除银行卡流水附件上传状态
-							if (this.$refs.transactionHistoryUpload) {
-								this.$refs.transactionHistoryUpload.clearUploadedFiles();
-							}
-							this.getList();
-						});
-					}
-					// 重置银行类型选择器
-					if (this.$refs.selfSelectedBankType) {
-						this.$refs.selfSelectedBankType.localSelectType = null;
-					}
-					if (this.$refs.otherSelectedBankType) {
-						this.$refs.otherSelectedBankType.localSelectType = null;
+						addPayment(this.form)
+							.then(() => {
+								this.$modal.msgSuccess('新增成功');
+								this.$bus.$emit('changeFlag', false);
+								this.open = false;
+								// 清除附件上传状态
+								if (this.$refs.attachmentUpload) {
+									this.$refs.attachmentUpload.clearUploadedFiles();
+								}
+								// 清除银行卡流水附件上传状态
+								if (this.$refs.transactionHistoryUpload) {
+									this.$refs.transactionHistoryUpload.clearUploadedFiles();
+								}
+								this.getList();
+								// 重置银行类型选择器
+								if (this.$refs.selfSelectedBankType) {
+									this.$refs.selfSelectedBankType.localSelectType = null;
+								}
+								if (this.$refs.otherSelectedBankType) {
+									this.$refs.otherSelectedBankType.localSelectType = null;
+								}
+							})
+							.catch(error => {
+								console.error('新增付款记录失败:', error);
+								// 回滚附件ID到原始状态
+								this.$store.commit('CLEAR_ATTACHMENT_IDS');
+								originalAttachmentIds.forEach(id => {
+									this.$store.commit('ADD_ATTACHMENT_ID', id);
+								});
+								this.$message.error('新增失败，请重试');
+							});
 					}
 				}
 			});

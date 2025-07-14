@@ -1,13 +1,6 @@
 <template>
 	<div class="app-container">
-		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini"				<el-form-item label="附件" prop="attachment">
-					<UploadFilesButton 
-						ref="attachmentUpload" 
-						flag="attachment" 
-						:extra-info="{ moduleType: 'oilRecharge', formId: form.id }" 
-						@files-updated="handleAttachmentFilesUpdated" 
-					/>
-				</el-form-item>nline="true" label-width="85px">
+		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini">
 			<el-form-item label="加油卡卡号" prop="oilCardNo">
 				<el-input v-model="queryParams.oilCardNo" placeholder="请输入加油卡卡号" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
@@ -127,7 +120,7 @@
 					<el-input v-model="form.rechargeName" disabled placeholder="请输入充值人员姓名" />
 				</el-form-item>
 				<el-form-item label="充值附件" prop="attachment">
-					<file-upload ref="uploadFile" @input="handleUpload" />
+					<UploadFilesButton ref="attachmentUpload" flag="attachment" :extra-info="{ moduleType: 'oilRecharge', formId: form.id }" @files-updated="handleAttachmentFilesUpdated" />
 				</el-form-item>
 				<el-form-item label="备注" prop="comments">
 					<el-input v-model="form.comments" placeholder="请输入备注" />
@@ -169,7 +162,7 @@ import { parseTime } from '../../../utils/ruoyi';
 import { excludeParams } from '@/api/tool/exclude';
 import OilApply from '@/views/dashboard/components/oilCard/OilApply.vue';
 import CheckFiles from '@/components/CheckFiles.vue';
-import UploadFilesButton from '@/components/UploadFilesButton';
+import UploadFilesButton from '@/components/UploadFilesButton/index.vue';
 import { getOilRecharge, updateOilRecharge } from '../../../api/system/oilRecharge';
 import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfile';
 import { mixin_oil_recharge_fill } from './oilRechargeFill';
@@ -400,6 +393,19 @@ export default {
 		submitForm() {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
+					// 保存当前附件ID用于错误回滚
+					const originalAttachmentIds = this.$store.getters.attachmentIds ? [...this.$store.getters.attachmentIds] : [];
+
+					// 去重附件ID
+					const uniqueAttachmentIds = [...new Set(originalAttachmentIds)];
+					if (uniqueAttachmentIds.length !== originalAttachmentIds.length) {
+						// 清空并重新添加去重后的ID
+						this.$store.commit('CLEAR_ATTACHMENT_IDS');
+						uniqueAttachmentIds.forEach(id => {
+							this.$store.commit('ADD_ATTACHMENT_ID', id);
+						});
+					}
+
 					// 获取附件上传参数
 					if (this.$refs.attachmentUpload) {
 						const attachmentParams = this.$refs.attachmentUpload.getUploadParams();
@@ -410,26 +416,46 @@ export default {
 
 					if (this.form.id != null) {
 						this.form = excludeParams(this.form, this.$exclude);
-						updateOilRecharge(this.form).then(() => {
-							this.$modal.msgSuccess('修改成功');
-							this.open = false;
-							// 清理 UploadFilesButton 状态
-							if (this.$refs.attachmentUpload) {
-								this.$refs.attachmentUpload.clearUploadedFiles();
-							}
-							this.getList();
-						});
+						updateOilRecharge(this.form)
+							.then(() => {
+								this.$modal.msgSuccess('修改成功');
+								this.open = false;
+								// 清理 UploadFilesButton 状态
+								if (this.$refs.attachmentUpload) {
+									this.$refs.attachmentUpload.clearUploadedFiles();
+								}
+								this.getList();
+							})
+							.catch(error => {
+								console.error('修改油卡充值失败:', error);
+								// 回滚附件ID到原始状态
+								this.$store.commit('CLEAR_ATTACHMENT_IDS');
+								originalAttachmentIds.forEach(id => {
+									this.$store.commit('ADD_ATTACHMENT_ID', id);
+								});
+								this.$message.error('修改失败，请重试');
+							});
 					} else {
 						this.form = excludeParams(this.form, this.$exclude);
-						addOilRecharge(this.form).then(() => {
-							this.$modal.msgSuccess('新增成功');
-							this.open = false;
-							// 清理 UploadFilesButton 状态
-							if (this.$refs.attachmentUpload) {
-								this.$refs.attachmentUpload.clearUploadedFiles();
-							}
-							this.getList();
-						});
+						addOilRecharge(this.form)
+							.then(() => {
+								this.$modal.msgSuccess('新增成功');
+								this.open = false;
+								// 清理 UploadFilesButton 状态
+								if (this.$refs.attachmentUpload) {
+									this.$refs.attachmentUpload.clearUploadedFiles();
+								}
+								this.getList();
+							})
+							.catch(error => {
+								console.error('新增油卡充值失败:', error);
+								// 回滚附件ID到原始状态
+								this.$store.commit('CLEAR_ATTACHMENT_IDS');
+								originalAttachmentIds.forEach(id => {
+									this.$store.commit('ADD_ATTACHMENT_ID', id);
+								});
+								this.$message.error('新增失败，请重试');
+							});
 					}
 				}
 			});

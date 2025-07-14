@@ -6,6 +6,8 @@ UploadFilesButton 文件上传组件
 - 上传成功后返回指定格式的参数对象：{ params: { attachmentIds: [] } }
 - 提供文件列表查看、图片预览、文件下载和删除功能
 - 支持状态清除，适用于表单重置场景
+- 使用 Vuex 全局附件 ID 池管理，所有组件共享全局状态
+- 自动触发 files-updated 事件，返回标准格式的 params
 
 基本使用：
 <UploadFilesButton 
@@ -32,7 +34,7 @@ Props:
 - extraInfo: Object - 上传时的额外信息（默认{}）
 
 事件:
-- files-updated: 文件列表更新时触发，参数: { params: { attachmentIds: [] } }
+- files-updated: 文件列表更新时自动触发，参数: { params: { attachmentIds: [] } }
 
 方法:
 - clearUploadedFiles(): 清除所有已上传文件的状态（表单关闭时调用）
@@ -50,6 +52,12 @@ methods: {
     this.$refs.uploadButton.clearUploadedFiles();
   }
 }
+
+技术特性:
+- 基于 Vuex 的全局附件 ID 池，确保数据一致性
+- 上传成功后自动将文件 ID 添加到全局池中
+- 自动状态同步，emit 标准格式的 params 对象
+- 组件维护本地文件信息用于展示，Vuex 只维护 ID 池
 -->
 
 <template>
@@ -167,7 +175,8 @@ export default {
 			dialogVisible: false,
 			imagePreviewVisible: false,
 			currentPreviewImage: null,
-			uploadedFiles: [] // 存储已上传的文件信息
+			// 本地文件列表，用于展示文件信息
+			uploadedFiles: []
 		};
 	},
 	computed: {
@@ -176,13 +185,20 @@ export default {
 			const imageTypes = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'];
 			return this.uploadedFiles.filter(file => imageTypes.includes((file.fileSuffix || '').toLowerCase()));
 		},
-		// 生成 params 对象
+		// 获取标准格式的 params 对象（从 Vuex 全局状态获取）
 		params() {
-			return {
-				params: {
-					attachmentIds: this.uploadedFiles.map(file => file.id)
-				}
-			};
+			return this.$store.getters['attachments/getParams'];
+		}
+	},
+	watch: {
+		// 监听 Vuex 中的全局附件 ID 变化，自动触发 files-updated 事件
+		'$store.state.attachments.attachmentIds': {
+			handler() {
+				this.$nextTick(() => {
+					this.$emit('files-updated', this.params);
+				});
+			},
+			deep: true
 		}
 	},
 	methods: {
@@ -217,8 +233,10 @@ export default {
 					await this.uploadSingleFile(file);
 				}
 				this.$message.success(`成功上传 ${files.length} 个文件`);
-				// 触发更新事件，传递 params 对象
-				this.$emit('files-updated', this.params);
+				// 在下一个 tick 中触发更新事件，确保 Vuex 状态已更新
+				this.$nextTick(() => {
+					this.$emit('files-updated', this.params);
+				});
 			} catch (error) {
 				console.error('文件上传失败:', error);
 				this.$message.error('文件上传失败: ' + (error.message || '未知错误'));
@@ -236,10 +254,11 @@ export default {
 					flag: this.flag,
 					extraInfo: this.extraInfo
 				});
-
 				if (response.code === 200 && response.data) {
-					// 将上传成功的文件信息添加到列表中
+					// 将文件信息添加到本地列表用于展示
 					this.uploadedFiles.push(response.data);
+					// 将文件 ID 添加到 Vuex 全局池
+					this.$store.dispatch('attachments/addAttachmentId', response.data.id);
 				} else {
 					throw new Error(response.msg || '上传失败');
 				}
@@ -262,11 +281,14 @@ export default {
 				type: 'warning'
 			})
 				.then(() => {
-					this.uploadedFiles.splice(index, 1);
+					const file = this.uploadedFiles[index];
+					if (file && file.id) {
+						// 从本地列表移除文件
+						this.uploadedFiles.splice(index, 1);
+						// 从 Vuex 全局池移除文件 ID
+						this.$store.dispatch('attachments/removeAttachmentId', file.id);
+					}
 					this.$message.success('文件已移除');
-
-					// 触发更新事件
-					this.$emit('files-updated', this.params);
 				})
 				.catch(() => {
 					// 用户取消
@@ -281,11 +303,15 @@ export default {
 				type: 'warning'
 			})
 				.then(() => {
+					// 从 Vuex 全局池移除当前组件的所有文件 ID
+					this.uploadedFiles.forEach(file => {
+						if (file.id) {
+							this.$store.dispatch('attachments/removeAttachmentId', file.id);
+						}
+					});
+					// 清空本地文件列表
 					this.uploadedFiles = [];
 					this.$message.success('已清空所有文件');
-
-					// 触发更新事件
-					this.$emit('files-updated', this.params);
 				})
 				.catch(() => {
 					// 用户取消
@@ -294,6 +320,13 @@ export default {
 
 		// 清除上传状态（对外暴露的方法）
 		clearUploadedFiles() {
+			// 从 Vuex 全局池移除当前组件的所有文件 ID
+			this.uploadedFiles.forEach(file => {
+				if (file.id) {
+					this.$store.dispatch('attachments/removeAttachmentId', file.id);
+				}
+			});
+			// 清空本地文件列表和对话框状态
 			this.uploadedFiles = [];
 			this.dialogVisible = false;
 			this.imagePreviewVisible = false;

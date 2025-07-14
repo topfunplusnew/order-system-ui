@@ -14,6 +14,18 @@ export var mixin_business_trip_update = {
 			// 拿到该行id对应的出差信息
 			getBusinessTrip(id).then(response => {
 				this.form = response.data;
+
+				// 确保附件数据正确加载
+				this.form.attachmentList = response.data.attachmentList || [];
+				// 确保 params 对象存在，用于统一附件处理
+				if (!this.form.params) {
+					this.form.params = {};
+				}
+				// 如果有现有附件，设置到 params.attachmentIds
+				if (this.form.attachmentList.length > 0) {
+					this.form.params.attachmentIds = this.form.attachmentList.map(item => item.id);
+				}
+
 				// 查询该出差id下的用车信息
 				listCarApply({ bTripId: id }).then(res => {
 					if (res.rows.length === 0) {

@@ -74,7 +74,7 @@ function calculatePaymentFactory(row) {
 
 	if (row.countingUnit === '其他') {
 		// 计量单位为"其他"时，不除以1000000
-		row.paymentFactory = fix_2((length * width * pieces) * price + sundryCost);
+		row.paymentFactory = fix_2(length * width * pieces * price + sundryCost);
 	} else {
 		// 计量单位为"片"时，除以1000000（原来的逻辑）
 		if (row.isIncludeTaxFactory === 0) {
@@ -97,7 +97,7 @@ function calculatePayment(row) {
 
 	if (row.countingUnit === '其他') {
 		// 计量单位为"其他"时，不除以1000000
-		row.payments = fix_2((length * width * pieces) * paymentUnload + paymentsWithSundry);
+		row.payments = fix_2(length * width * pieces * paymentUnload + paymentsWithSundry);
 	} else {
 		// 计量单位为"片"时，除以1000000（原来的逻辑）
 		if (row.isIncludeTaxFactory === 0 && row.isIncludeTaxSale === 0) {

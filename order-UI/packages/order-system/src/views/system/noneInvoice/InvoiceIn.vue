@@ -296,7 +296,7 @@ import { addReason } from '@/api/system/user';
 import { getGoodsOrder } from '@/api/system/goodsOrder';
 import OrderInfos from '@/views/dashboard/components/goodsOrder/OrderInfos.vue';
 import CheckFiles from '../../../components/CheckFiles.vue';
-import UploadFilesButton from '@/components/UploadFilesButton';
+import UploadFilesButton from '@/components/UploadFilesButton/index.vue';
 import reLength from '../../dashboard/mixins/reLength';
 import { getInvoiceIn, updateInvoiceIn, updateInvoiceInExtra } from '../../../api/system/invoiceIn';
 import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfile';
@@ -339,6 +339,11 @@ export default {
 			total: 0,
 			// 发票购入信息表格数据
 			invoiceInList: [],
+
+			// 分别跟踪不同类型的附件ID
+			paymentReceiptIds: [], // 银行回执附件
+			invoiceAttachmentIds: [], // 发票单附件
+
 			// 弹出层标题
 			title: '',
 			// 是否显示弹出层
@@ -521,31 +526,29 @@ export default {
 		listCompany,
 		// 银行回执附件更新处理
 		handleReceiptFilesUpdated(uploadParams) {
-			// uploadParams 结构: { params: { attachmentIds: [1, 2, 3] } }
-			if (!this.form.paymentReceiptParams) {
-				this.$set(this.form, 'paymentReceiptParams', {});
-			}
-			
-			// 直接设置 attachmentIds
 			if (uploadParams && uploadParams.params && uploadParams.params.attachmentIds) {
-				this.$set(this.form.paymentReceiptParams, 'attachmentIds', uploadParams.params.attachmentIds);
-			} else {
-				this.$set(this.form.paymentReceiptParams, 'attachmentIds', []);
+				// 存储银行回执附件ID
+				this.paymentReceiptIds = uploadParams.params.attachmentIds;
+				this.updateAllAttachmentIds();
 			}
 		},
 		// 发票单附件更新处理
 		handleAttachmentFilesUpdated(uploadParams) {
-			// uploadParams 结构: { params: { attachmentIds: [1, 2, 3] } }
-			if (!this.form.invoiceAttachmentParams) {
-				this.$set(this.form, 'invoiceAttachmentParams', {});
-			}
-			
-			// 直接设置 attachmentIds
 			if (uploadParams && uploadParams.params && uploadParams.params.attachmentIds) {
-				this.$set(this.form.invoiceAttachmentParams, 'attachmentIds', uploadParams.params.attachmentIds);
-			} else {
-				this.$set(this.form.invoiceAttachmentParams, 'attachmentIds', []);
+				// 存储发票单附件ID
+				this.invoiceAttachmentIds = uploadParams.params.attachmentIds;
+				this.updateAllAttachmentIds();
 			}
+		},
+		// 更新所有附件ID到params.attachmentIds
+		updateAllAttachmentIds() {
+			if (!this.form.params) {
+				this.$set(this.form, 'params', { attachmentIds: [] });
+			}
+			// 合并所有类型的附件ID
+			const allIds = [...(this.paymentReceiptIds || []), ...(this.invoiceAttachmentIds || [])];
+			// 去重
+			this.form.params.attachmentIds = [...new Set(allIds)];
 		},
 		/** 查询发票购入信息列表 */
 		getList() {
@@ -613,6 +616,9 @@ export default {
 				}
 			};
 			this.resetForm('form');
+			// 重置附件数组
+			this.paymentReceiptIds = [];
+			this.invoiceAttachmentIds = [];
 		},
 		/** 搜索按钮操作 */
 		handleQuery() {

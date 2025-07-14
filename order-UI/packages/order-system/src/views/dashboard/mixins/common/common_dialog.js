@@ -7,8 +7,8 @@ import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue
 export var common_dialog = {
 	data() {
 		return {
-			currentComponent: null,
-		}
+			currentComponent: null
+		};
 	},
 	methods: {
 		openDialog(component, title, width = '50%', props = {}, closeConfirm = false) {

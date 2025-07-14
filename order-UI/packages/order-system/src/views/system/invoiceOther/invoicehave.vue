@@ -265,10 +265,20 @@
 						</el-form-item>
 						<!-- 银行回执单附件-->
 						<el-form-item label="银行回执附件">
-							<file-upload ref="fileUploader1" @input="handleCommitUpload" />
+							<UploadFilesButton
+								ref="paymentReceiptsUpload"
+								flag="paymentReceipts"
+								:extra-info="{ moduleType: 'invoiceOtherHave', formId: form.id }"
+								@files-updated="handlePaymentReceiptsUpdated"
+							/>
 						</el-form-item>
 						<el-form-item label="发票单">
-							<file-upload ref="fileUploader2" @input="handleCommitUploadInvoiceAttachments" />
+							<UploadFilesButton
+								ref="invoiceAttachmentsUpload"
+								flag="invoiceAttachments"
+								:extra-info="{ moduleType: 'invoiceOtherHave', formId: form.id }"
+								@files-updated="handleInvoiceAttachmentsUpdated"
+							/>
 						</el-form-item>
 						<el-form-item label="备注" prop="comments">
 							<el-input v-model="form.comments" placeholder="请输入备注" />
@@ -347,6 +357,7 @@ import OrderInfos from '../../dashboard/components/goodsOrder/OrderInfos.vue';
 import { fix } from '../../../api/tool/format';
 import reLength from '../../dashboard/mixins/reLength';
 import CheckFiles from '../../../components/CheckFiles.vue';
+import UploadFilesButton from '@/components/UploadFilesButton/index.vue';
 import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfile';
 import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
@@ -354,7 +365,7 @@ import INVOICE_ORTHER from '@/components/NeedToShow/INVOICE_ORTHER.vue';
 
 export default {
 	name: 'InvoiceOtherHave',
-	components: { DialogWrapper, CheckFiles, OrderInfos, SearchOption },
+	components: { DialogWrapper, CheckFiles, UploadFilesButton, OrderInfos, SearchOption },
 	mixins: [mixin_printHTML, reLength, mixin_checkfile, common_dialog],
 	data() {
 		// 金额格式验证（最多两位小数）
@@ -532,13 +543,22 @@ export default {
 		listCompany,
 		getInvoiceOther,
 		updateInvoiceOther,
-		// 银行回执
-		handleCommitUpload(val) {
-			this.form.paymentReceipts = val;
+		// 银行回执附件上传处理
+		handlePaymentReceiptsUpdated(params) {
+			// 将附件 ID 同步到表单的 params 中
+			if (!this.form.params) {
+				this.form.params = { attachmentIds: [] };
+			}
+			this.form.params.attachmentIds = params.params.attachmentIds;
 		},
-		// 发票单
-		handleCommitUploadInvoiceAttachments(val) {
-			this.form.invoiceAttachments = val;
+		// 发票单附件上传处理
+		handleInvoiceAttachmentsUpdated(params) {
+			// 对于发票单，也同样处理到 params 中
+			if (!this.form.params) {
+				this.form.params = { attachmentIds: [] };
+			}
+			// 合并两种类型的附件 ID（如果需要分别处理，可以用不同的字段）
+			this.form.params.attachmentIds = [...this.form.params.attachmentIds, ...params.params.attachmentIds];
 		},
 		// 自动填充的方法
 		handleUpdateCompanyName(val) {
@@ -582,6 +602,13 @@ export default {
 		// 取消按钮
 		cancel() {
 			this.open = false;
+			// 清理 UploadFilesButton 组件状态
+			if (this.$refs.paymentReceiptsUpload) {
+				this.$refs.paymentReceiptsUpload.clearUploadedFiles();
+			}
+			if (this.$refs.invoiceAttachmentsUpload) {
+				this.$refs.invoiceAttachmentsUpload.clearUploadedFiles();
+			}
 			this.reset();
 		},
 		// 表单重置
@@ -614,6 +641,9 @@ export default {
 					actualInvoiceTime: null,
 					currentMonthOweInvoiceAmount: null,
 					comment: null
+				},
+				params: {
+					attachmentIds: []
 				}
 			};
 			this.resetForm('form');
@@ -684,20 +714,67 @@ export default {
 		submitForm() {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
-					if (this.form.id != null) {
-						updateInvoiceOther(this.form).then(response => {
-							this.$modal.msgSuccess('修改成功');
-							this.open = false;
-							this.getList();
-						});
-					} else {
-						this.form.customerTicketPoint = 0;
-						addInvoiceOther(this.form).then(response => {
-							this.$modal.msgSuccess('新增成功');
-							this.open = false;
-							this.getList();
-						});
+					// 保存提交前的原始附件 ID 列表，用于错误回滚
+					const originalAttachmentIds = this.form.params ? [...this.form.params.attachmentIds] : [];
+
+					// 获取附件上传参数
+					if (this.$refs.paymentReceiptsUpload) {
+						const paymentParams = this.$refs.paymentReceiptsUpload.getUploadParams();
+						if (!this.form.params) {
+							this.form.params = { attachmentIds: [] };
+						}
+						this.form.params.attachmentIds = [...this.form.params.attachmentIds, ...paymentParams.params.attachmentIds];
 					}
+					if (this.$refs.invoiceAttachmentsUpload) {
+						const invoiceParams = this.$refs.invoiceAttachmentsUpload.getUploadParams();
+						if (!this.form.params) {
+							this.form.params = { attachmentIds: [] };
+						}
+						this.form.params.attachmentIds = [...this.form.params.attachmentIds, ...invoiceParams.params.attachmentIds];
+					}
+
+					// 对附件 ID 进行去重处理
+					if (this.form.params && this.form.params.attachmentIds) {
+						this.form.params.attachmentIds = [...new Set(this.form.params.attachmentIds)];
+					}
+
+					const submitPromise =
+						this.form.id != null
+							? updateInvoiceOther(this.form)
+							: (() => {
+									this.form.customerTicketPoint = 0;
+									return addInvoiceOther(this.form);
+							  })();
+
+					submitPromise
+						.then(response => {
+							this.$modal.msgSuccess(this.form.id != null ? '修改成功' : '新增成功');
+							this.open = false;
+							this.getList();
+							// 提交成功后清理上传组件状态
+							if (this.$refs.paymentReceiptsUpload) {
+								this.$refs.paymentReceiptsUpload.clearUploadedFiles();
+							}
+							if (this.$refs.invoiceAttachmentsUpload) {
+								this.$refs.invoiceAttachmentsUpload.clearUploadedFiles();
+							}
+						})
+						.catch(error => {
+							// 提交失败时，恢复原始的附件 ID 列表
+							if (this.form.params) {
+								this.form.params.attachmentIds = originalAttachmentIds;
+							}
+
+							// 从全局 Vuex 池中移除本次添加的文件 ID
+							const currentIds = this.form.params ? this.form.params.attachmentIds : [];
+							const addedIds = currentIds.filter(id => !originalAttachmentIds.includes(id));
+							addedIds.forEach(id => {
+								this.$store.dispatch('attachments/removeAttachmentId', id);
+							});
+
+							console.error('提交失败:', error);
+							this.$modal.msgError('提交失败: ' + (error.message || error.msg || '未知错误'));
+						});
 				}
 			});
 		},

@@ -124,11 +124,11 @@
 			<el-table-column v-if="columns[8].visible" label="付款原因" align="center" prop="reason" />
 			<el-table-column v-if="columns[9].visible" label="附件" align="center" prop="attachmentList">
 				<template #default="scope">
-					<CheckFiles 
-						:attachmentList="scope.row.attachmentList" 
-						@needToUpdate="value => handleUpdateFilePath(value, scope.row, getPaymentApply, updatePaymentApply)" 
-						:is-upload="false" 
-						flag="paymentApplyAttachments"
+					<CheckFiles
+						:attachmentList="scope.row.attachmentList"
+						@needToUpdate="value => handleUpdateFilePath(value, scope.row, getPaymentApply, updatePaymentApply)"
+						:is-upload="false"
+						flag="attachmentList"
 					/>
 				</template>
 			</el-table-column>
@@ -236,11 +236,7 @@
 
 				<!--        文件-->
 				<el-form-item label="附件" prop="attachmentList">
-					<CheckFiles 
-						:attachmentList="form.attachmentList" 
-						@needToUpdate="value => form.attachmentList = value" 
-						flag="paymentApplyAttachments"
-					/>
+					<UploadFilesButton flag="attachmentList" @filesUpdated="handleAttachmentFilesUpdated" :attachment-list="form.attachmentList || []" />
 				</el-form-item>
 
 				<!--        发起付款人的信息-->
@@ -287,11 +283,12 @@ import { getOrderFreight } from '@/api/system/orderFreight';
 import { getBorrowedMoney } from '@/api/system/borrowedMoney';
 import { findFileExtension } from '@/utils/trash/utils';
 import CheckFiles from '@/components/CheckFiles.vue';
+import UploadFilesButton from '@/components/UploadFilesButton/index.vue';
 import { mixin_checkfile } from '@/views/dashboard/mixins/checkfiles/mixin_checkfile';
 
 export default {
 	name: 'PaymentApply',
-	components: { CheckFiles, NeedToShowInfo, SearchOption },
+	components: { CheckFiles, UploadFilesButton, NeedToShowInfo, SearchOption },
 	mixins: [mixin_checkfile],
 	data() {
 		return {
@@ -522,9 +519,18 @@ export default {
 				UserName: null,
 				updateTime: null,
 				delFlag: null,
-				submitflag: null
+				submitflag: null,
+				params: {
+					attachmentIds: []
+				}
 			};
 			this.resetForm('form');
+		},
+		// 附件更新处理
+		handleAttachmentFilesUpdated(files) {
+			if (this.form && this.form.params) {
+				this.form.params.attachmentIds = files.map(file => file.id);
+			}
 		},
 		/** 搜索按钮操作 */
 		handleQuery() {
@@ -562,22 +568,55 @@ export default {
 		submitForm() {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
+					// 保存当前附件ID用于错误回滚
+					const originalAttachmentIds = this.$store.getters.attachmentIds ? [...this.$store.getters.attachmentIds] : [];
+
+					// 去重附件ID
+					const uniqueAttachmentIds = [...new Set(originalAttachmentIds)];
+					if (uniqueAttachmentIds.length !== originalAttachmentIds.length) {
+						// 清空并重新添加去重后的ID
+						this.$store.commit('CLEAR_ATTACHMENT_IDS');
+						uniqueAttachmentIds.forEach(id => {
+							this.$store.commit('ADD_ATTACHMENT_ID', id);
+						});
+					}
+
 					if (this.form.id != null) {
 						// 排除不必要字段
 						excludeParams(this, this.$exclude);
-						updatePaymentApply(this.form).then(response => {
-							this.$modal.msgSuccess('修改成功');
-							this.open = false;
-							this.getList();
-						});
+						updatePaymentApply(this.form)
+							.then(response => {
+								this.$modal.msgSuccess('修改成功');
+								this.open = false;
+								this.getList();
+							})
+							.catch(error => {
+								console.error('修改付款申请失败:', error);
+								// 回滚附件ID到原始状态
+								this.$store.commit('CLEAR_ATTACHMENT_IDS');
+								originalAttachmentIds.forEach(id => {
+									this.$store.commit('ADD_ATTACHMENT_ID', id);
+								});
+								this.$message.error('修改失败，请重试');
+							});
 					} else {
 						excludeParams(this, this.$exclude);
 						this.form.payType = this.fullLevel;
-						addPaymentApply(this.form).then(response => {
-							this.$modal.msgSuccess('新增成功');
-							this.open = false;
-							this.getList();
-						});
+						addPaymentApply(this.form)
+							.then(response => {
+								this.$modal.msgSuccess('新增成功');
+								this.open = false;
+								this.getList();
+							})
+							.catch(error => {
+								console.error('新增付款申请失败:', error);
+								// 回滚附件ID到原始状态
+								this.$store.commit('CLEAR_ATTACHMENT_IDS');
+								originalAttachmentIds.forEach(id => {
+									this.$store.commit('ADD_ATTACHMENT_ID', id);
+								});
+								this.$message.error('新增失败，请重试');
+							});
 					}
 				}
 			});

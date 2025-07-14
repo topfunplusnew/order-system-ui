@@ -254,7 +254,7 @@
 						<el-form-item label="银行卡流水编号" prop="transactionHistory">
 							<el-input v-model="form.transactionHistory" placeholder="请输入银行卡流水编号" />
 						</el-form-item>
-						<el-form-item label="银行卡流水编号附件" prop="params.attachmentIds">
+						<el-form-item label="银行卡流水编号附件">
 							<UploadFilesButton
 								ref="attachmentUploader"
 								flag="transactionHistoryAttachment"
@@ -285,7 +285,7 @@ import { addReason } from '@/api/system/user';
 import { BankAcceptanceType, PAYMENT_TARGET_TYPE, TableName } from '@/api/tool/enums';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
 import CheckFiles from '../../../components/CheckFiles.vue';
-import UploadFilesButton from '@/components/UploadFilesButton';
+import UploadFilesButton from '@/components/UploadFilesButton/index.vue';
 
 import { listCompany } from '../../../api/system/company';
 import { mixin_receive_money_fill } from './receiveMoneyFill';
@@ -455,6 +455,11 @@ export default {
 	methods: {
 		handleAttachmentFilesUpdated(uploadParams) {
 			if (uploadParams && uploadParams.params && uploadParams.params.attachmentIds) {
+				// 确保 form.params 对象存在
+				if (!this.form.params) {
+					this.form.params = {};
+				}
+				// 直接使用上传组件返回的统一附件ID数组
 				this.form.params.attachmentIds = uploadParams.params.attachmentIds;
 			}
 		},
@@ -481,8 +486,13 @@ export default {
 			this.open = false;
 			this.$bus.$emit('changeFlag', false);
 			this.reset();
-			this.$refs.selfSelfSelectedBankType.localSelectType = null;
-			this.$refs.otherSelfSelectedBankType.localSelectType = null;
+			// 安全地清除组件引用
+			if (this.$refs.selfSelfSelectedBankType) {
+				this.$refs.selfSelfSelectedBankType.localSelectType = null;
+			}
+			if (this.$refs.otherSelfSelectedBankType) {
+				this.$refs.otherSelfSelectedBankType.localSelectType = null;
+			}
 		},
 		// 表单重置
 		reset() {
@@ -519,7 +529,10 @@ export default {
 					attachmentIds: []
 				}
 			};
-			this.resetForm('form');
+			// 安全地重置表单，避免引用错误
+			if (this.$refs.form) {
+				this.resetForm('form');
+			}
 			// 清除上传组件状态
 			if (this.$refs.attachmentUploader) {
 				this.$refs.attachmentUploader.clearUploadedFiles();
@@ -556,7 +569,19 @@ export default {
 					this.$message.error('获取收款信息失败');
 					return;
 				}
-				this.form = response.data;
+				// 保留表单结构，特别是 params.attachmentIds
+				this.form = {
+					...response.data,
+					params: {
+						attachmentIds: response.data.attachmentList ? response.data.attachmentList.map(item => item.id) : []
+					}
+				};
+				// 通知上传组件当前的附件列表
+				this.$nextTick(() => {
+					if (this.$refs.attachmentUploader && response.data.attachmentList) {
+						this.$refs.attachmentUploader.initializeWithFiles(response.data.attachmentList);
+					}
+				});
 				this.$refs.selfSelfSelectedBankType = response.data.selfBankCardType;
 				this.$refs.otherOtherSelectedBankType = response.data.otherBankCardType;
 				this.$bus.$emit('changeFlag', response.data.bankacceptanceId > 0 ? response.data.bankacceptanceId : false);
@@ -602,6 +627,20 @@ export default {
 							return;
 						}
 					}
+
+					// 保存当前附件ID用于错误回滚
+					const originalAttachmentIds = this.$store.getters.attachmentIds ? [...this.$store.getters.attachmentIds] : [];
+
+					// 去重附件ID
+					const uniqueAttachmentIds = [...new Set(originalAttachmentIds)];
+					if (uniqueAttachmentIds.length !== originalAttachmentIds.length) {
+						// 清空并重新添加去重后的ID
+						this.$store.commit('CLEAR_ATTACHMENT_IDS');
+						uniqueAttachmentIds.forEach(id => {
+							this.$store.commit('ADD_ATTACHMENT_ID', id);
+						});
+					}
+
 					this.form = excludeParams(this.form, this.$exclude);
 					// 对结果进行特殊处理
 					if (typeof this.form.receiveType === 'string') {
@@ -610,21 +649,61 @@ export default {
 						return;
 					}
 					this.form.receiveType = this.form.receiveType.join('-');
+
 					if (this.form.id != null) {
-						updateReceiveMoney(this.form).then(() => {
-							this.$modal.msgSuccess('修改成功');
-						});
+						updateReceiveMoney(this.form)
+							.then(() => {
+								this.$modal.msgSuccess('修改成功');
+								this.open = false;
+								this.getList();
+								this.$bus.$emit('changeFlag', false);
+								// 清理上传组件
+								if (this.$refs.attachmentUploader) {
+									this.$refs.attachmentUploader.clearUploadedFiles();
+								}
+							})
+							.catch(error => {
+								console.error('修改收款记录失败:', error);
+								// 回滚附件ID到原始状态
+								this.$store.commit('CLEAR_ATTACHMENT_IDS');
+								originalAttachmentIds.forEach(id => {
+									this.$store.commit('ADD_ATTACHMENT_ID', id);
+								});
+								this.$message.error('修改失败，请重试');
+							});
 					} else {
-						addReceiveMoney(this.form).then(() => {
-							this.$modal.msgSuccess('新增成功');
-						});
+						addReceiveMoney(this.form)
+							.then(() => {
+								this.$modal.msgSuccess('新增成功');
+								this.open = false;
+								this.getList();
+								this.$bus.$emit('changeFlag', false);
+								// 清理上传组件
+								if (this.$refs.attachmentUploader) {
+									this.$refs.attachmentUploader.clearUploadedFiles();
+								}
+							})
+							.catch(error => {
+								console.error('新增收款记录失败:', error);
+								// 回滚附件ID到原始状态
+								this.$store.commit('CLEAR_ATTACHMENT_IDS');
+								originalAttachmentIds.forEach(id => {
+									this.$store.commit('ADD_ATTACHMENT_ID', id);
+								});
+								this.$message.error('新增失败，请重试');
+							});
 					}
-					this.open = false;
-					this.getList();
-					this.clearFiles();
-					this.$bus.$emit('changeFlag', false);
-					this.$refs.selfSelfSelectedBankType.localSelectType = null;
-					this.$refs.otherSelfSelectedBankType.localSelectType = null;
+					// 安全地清除组件引用
+					if (this.$refs.selfSelfSelectedBankType) {
+						this.$refs.selfSelfSelectedBankType.localSelectType = null;
+					}
+					if (this.$refs.otherSelfSelectedBankType) {
+						this.$refs.otherSelfSelectedBankType.localSelectType = null;
+					}
+					// 清理上传组件
+					if (this.$refs.attachmentUploader) {
+						this.$refs.attachmentUploader.clearUploadedFiles();
+					}
 				}
 			});
 		},

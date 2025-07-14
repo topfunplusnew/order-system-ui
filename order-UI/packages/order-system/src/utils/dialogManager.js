@@ -23,7 +23,7 @@ class DialogManager {
 		if (!this.routeDialogStates.has(routePath)) {
 			this.routeDialogStates.set(routePath, new Map());
 		}
-		
+
 		this.routeDialogStates.get(routePath).set(dialogId, {
 			component: dialogComponent,
 			visible: false,
@@ -110,7 +110,7 @@ class DialogManager {
 	hideDialog(component) {
 		// 通用的隐藏方法，适配不同的弹窗属性名
 		const dialogProps = ['dialogVisible', 'visible', 'open', 'show'];
-		
+
 		for (const prop of dialogProps) {
 			if (component.hasOwnProperty(prop)) {
 				component[prop] = false;
@@ -126,7 +126,7 @@ class DialogManager {
 	showDialog(component) {
 		// 通用的显示方法，适配不同的弹窗属性名
 		const dialogProps = ['dialogVisible', 'visible', 'open', 'show'];
-		
+
 		for (const prop of dialogProps) {
 			if (component.hasOwnProperty(prop)) {
 				component[prop] = true;
@@ -144,7 +144,7 @@ class DialogManager {
 		if (fromRoute && fromRoute !== toRoute) {
 			this.hideDialogsOnRouteLeave(fromRoute);
 		}
-		
+
 		if (toRoute) {
 			this.currentRoute = toRoute;
 			// 延迟恢复，确保路由切换完成

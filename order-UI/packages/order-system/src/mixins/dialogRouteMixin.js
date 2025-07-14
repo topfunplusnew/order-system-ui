@@ -61,7 +61,7 @@ export const dialogRouteMixin = {
 		 * @param {string} dialogId - 弹窗ID
 		 */
 		watchDialogProperty(property, routePath, dialogId) {
-			this.$watch(property, (newValue) => {
+			this.$watch(property, newValue => {
 				dialogManager.updateDialogState(routePath, dialogId, newValue);
 			});
 		},
