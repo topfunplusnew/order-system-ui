@@ -468,7 +468,7 @@ export default {
 				<!--      原为海运司机姓名-->
 				<el-table-column v-if="columns[12].visible" show-overflow-tooltip label="海运公司" align="center" prop="seaDriverName" width="100px">
 					<template #default="scope">
-						{{ !scope.row.seaDriverName ? '无' : scope.row.seaDriverTel }}
+						{{ !scope.row.seaDriverName ? '无' : scope.row.seaDriverName }}
 					</template>
 				</el-table-column>
 				<el-table-column v-if="columns[13].visible" show-overflow-tooltip label="海运费" align="center" prop="seaFreight" width="100px" />
