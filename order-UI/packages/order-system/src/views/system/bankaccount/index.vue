@@ -72,7 +72,7 @@
 					<span v-else>未区分</span>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[3].visible" label="显示名称" align="center" prop="displayName" />
+			<el-table-column v-if="columns[3].visible" label="我方公司" align="center" prop="displayName" />
 			<el-table-column v-if="columns[7].visible" label="公司名称/车牌号" align="center" prop="companyName" />
 			<el-table-column v-if="columns[4].visible" label="开户名称" align="center" prop="acountsName" />
 			<el-table-column v-if="columns[5].visible" label="银行账号" align="center" prop="bankNo" />
@@ -249,9 +249,9 @@
 					<el-input v-model="form.bankName" placeholder="请输入开户行" @input="handleInputTrim($event, 'form', 'bankName')" />
 				</el-form-item>
 
-				<!--        显示名称 只有己方公司才会区分-->
-				<el-form-item v-if="form.acountsType === PUBLIC_DICT_TYPE.SELF_COMPANY" label="显示名称" prop="displayName">
-					<el-input v-model="form.displayName" placeholder="请输入显示名称" @input="handleInputTrim($event, 'form', 'displayName')" />
+				<!--        我方公司 只有己方公司才会区分-->
+				<el-form-item v-if="form.acountsType === PUBLIC_DICT_TYPE.SELF_COMPANY" label="我方公司" prop="displayName">
+					<el-input v-model="form.displayName" placeholder="请输入我方公司" @input="handleInputTrim($event, 'form', 'displayName')" />
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -454,7 +454,7 @@ export default {
 				{ key: 0, label: `绑定状态`, visible: true },
 				{ key: 1, label: `账户类型`, visible: true },
 				{ key: 2, label: `公私户类型`, visible: true },
-				{ key: 3, label: `显示名称`, visible: true },
+				{ key: 3, label: `我方公司`, visible: true },
 				{ key: 4, label: `开户名称`, visible: true },
 				{ key: 5, label: `银行账号`, visible: true },
 				{ key: 6, label: `开户行`, visible: true },

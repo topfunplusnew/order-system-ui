@@ -194,28 +194,23 @@
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" z />
 
 		<!--     添加或修改付款信息对话框 -->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="1000px" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="1200px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="140px">
-				<el-row :gutter="20">
+				<el-row :gutter="40">
+					<!-- 左列 -->
 					<el-col :span="12">
 						<el-form-item label="日期" prop="fundsDate">
 							<el-date-picker v-model="form.fundsDate" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 						</el-form-item>
-					</el-col>
-					<el-col :span="12">
+
 						<el-form-item label="付款类型" prop="payType">
 							<el-cascader v-model="form.payType" :options="paymentTypeTree" :props="props" @change="handleChange"></el-cascader>
 						</el-form-item>
-					</el-col>
-				</el-row>
 
-				<el-row :gutter="20">
-					<el-col :span="12">
 						<el-form-item label="金额" prop="moneyAmount">
 							<el-input v-model="form.moneyAmount" placeholder="请输入金额" />
 						</el-form-item>
-					</el-col>
-					<el-col :span="12">
+
 						<el-form-item label="我方银行账户类型">
 							<BankType
 								ref="selfSelectedBankType"
@@ -225,11 +220,7 @@
 								@updateBankAcceptance="value => (form.bankacceptance = value)"
 							/>
 						</el-form-item>
-					</el-col>
-				</el-row>
 
-				<el-row :gutter="20">
-					<el-col :span="12">
 						<el-form-item label="我方户名" prop="selfAcountsName">
 							<el-row>
 								<el-col :span="16">
@@ -257,33 +248,17 @@
 								</el-col>
 							</el-row>
 						</el-form-item>
-					</el-col>
-					<el-col :span="12">
+
 						<el-form-item label="我方账号" prop="selfBankNo">
 							<el-input disabled v-model="form.selfBankNo" placeholder="请选择" />
 						</el-form-item>
-					</el-col>
-				</el-row>
 
-				<el-row :gutter="20">
-					<el-col :span="12">
 						<el-form-item label="我方开户行" prop="selfBankName">
 							<el-input disabled v-model="form.selfBankName" placeholder="请选择" />
 						</el-form-item>
-					</el-col>
-					<el-col :span="12">
-						<el-form-item label="对方类型">
-							<el-select v-model="value" placeholder="请选择">
-								<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
-							</el-select>
-						</el-form-item>
-					</el-col>
-				</el-row>
 
-				<!--      选择供应商-->
-				<el-row v-if="value === PAYMENT_TYPES.SUPPLIER" :gutter="20">
-					<el-col :span="12">
-						<el-form-item label="对方户名(供应商)" prop="otherAcountsName">
+						<!-- 选择供应商 -->
+						<el-form-item v-if="value === PAYMENT_TYPES.SUPPLIER" label="对方户名(供应商)" prop="otherAcountsName">
 							<el-row>
 								<el-col :span="16">
 									<el-input disabled v-model="form.companyName" placeholder="请选择" />
@@ -316,17 +291,9 @@
 								</el-col>
 							</el-row>
 						</el-form-item>
-					</el-col>
-					<el-col :span="12">
-						<el-form-item label="对方银行账户类型">
-							<BankType ref="otherSelectedBankType" :option-baned="true" :baned="true" :select-type="form.otherBankCardType" @updateSelectedType="changeOtherBankType" />
-						</el-form-item>
-					</el-col>
-				</el-row>
-				<!--      选择客户-->
-				<el-row v-if="value === PAYMENT_TYPES.CUSTOMER" :gutter="20">
-					<el-col :span="12">
-						<el-form-item label="对方户名(客户)" prop="companyName">
+
+						<!-- 选择客户 -->
+						<el-form-item v-if="value === PAYMENT_TYPES.CUSTOMER" label="对方户名(客户)" prop="companyName">
 							<el-row>
 								<el-col :span="16">
 									<el-input disabled v-model="form.companyName" placeholder="请选择" />
@@ -359,17 +326,9 @@
 								</el-col>
 							</el-row>
 						</el-form-item>
-					</el-col>
-					<el-col :span="12">
-						<el-form-item label="对方银行账户类型">
-							<BankType ref="otherSelectedBankType" :option-baned="true" :baned="true" :select-type="form.otherBankCardType" @updateSelectedType="changeOtherBankType" />
-						</el-form-item>
-					</el-col>
-				</el-row>
-				<!--      选择司机-->
-				<el-row v-if="value === PAYMENT_TYPES.DRIVER" :gutter="20">
-					<el-col :span="12">
-						<el-form-item label="对方户名(司机)" prop="companyName">
+
+						<!-- 选择司机 -->
+						<el-form-item v-if="value === PAYMENT_TYPES.DRIVER" label="对方户名(司机)" prop="companyName">
 							<el-row>
 								<el-col :span="16">
 									<el-input disabled v-model="form.companyName" placeholder="请选择" />
@@ -410,17 +369,8 @@
 								</el-col>
 							</el-row>
 						</el-form-item>
-					</el-col>
-					<el-col :span="12">
-						<el-form-item label="对方银行账户类型">
-							<BankType ref="otherSelectedBankType" :option-baned="true" :baned="true" :select-type="form.otherBankCardType" @updateSelectedType="changeOtherBankType" />
-						</el-form-item>
-					</el-col>
-				</el-row>
 
-				<el-row :gutter="20" v-if="value !== PAYMENT_TARGET_TYPE.PAYMENT_FEE">
-					<el-col :span="12">
-						<el-form-item label="对方账号" prop="otherBankNo">
+						<el-form-item v-if="value !== PAYMENT_TARGET_TYPE.PAYMENT_FEE" label="对方账号" prop="otherBankNo">
 							<el-row>
 								<el-col :span="16">
 									<el-input disabled v-model="form.otherBankNo" placeholder="请选择" />
@@ -451,20 +401,38 @@
 							</el-row>
 						</el-form-item>
 					</el-col>
+
+					<!-- 右列 -->
 					<el-col :span="12">
-						<el-form-item label="对方开户行" prop="otherBankName" v-if="value !== '支付费用'">
+						<el-form-item label="对方类型">
+							<el-select v-model="value" placeholder="请选择">
+								<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
+							</el-select>
+						</el-form-item>
+
+						<el-form-item v-if="value === PAYMENT_TYPES.SUPPLIER" label="对方银行账户类型">
+							<BankType ref="otherSelectedBankType" :option-baned="true" :baned="true" :select-type="form.otherBankCardType" @updateSelectedType="changeOtherBankType" />
+						</el-form-item>
+
+						<el-form-item v-if="value === PAYMENT_TYPES.CUSTOMER" label="对方银行账户类型">
+							<BankType ref="otherSelectedBankType" :option-baned="true" :baned="true" :select-type="form.otherBankCardType" @updateSelectedType="changeOtherBankType" />
+						</el-form-item>
+
+						<el-form-item v-if="value === PAYMENT_TYPES.DRIVER" label="对方银行账户类型">
+							<BankType ref="otherSelectedBankType" :option-baned="true" :baned="true" :select-type="form.otherBankCardType" @updateSelectedType="changeOtherBankType" />
+						</el-form-item>
+
+						<el-form-item v-if="value !== PAYMENT_TARGET_TYPE.PAYMENT_FEE && value !== '支付费用'" label="对方开户行" prop="otherBankName">
 							<el-input disabled v-model="form.otherBankName" placeholder="请选择" />
 						</el-form-item>
-					</el-col>
-				</el-row>
 
-				<el-row :gutter="20">
-					<el-col :span="12">
+						<el-form-item label="附件" prop="attachmentIds">
+							<UploadFilesButton ref="attachmentUpload" flag="attachments" :extra-info="{ moduleType: 'payment', formId: form.id }" @files-updated="handleAttachmentFilesUpdated" />
+						</el-form-item>
+
 						<el-form-item label="银行卡流水编号" prop="transactionHistory">
 							<el-input v-model="form.transactionHistory" placeholder="请输入银行卡流水编号" />
 						</el-form-item>
-					</el-col>
-					<el-col :span="12">
 						<el-form-item label="银行卡流水附件" prop="attachmentIds">
 							<UploadFilesButton
 								ref="transactionHistoryUpload"
@@ -473,16 +441,7 @@
 								@files-updated="handleTransactionHistoryFilesUpdated"
 							/>
 						</el-form-item>
-					</el-col>
-				</el-row>
 
-				<el-row :gutter="20">
-					<el-col :span="12">
-						<el-form-item label="附件" prop="attachmentIds">
-							<UploadFilesButton ref="attachmentUpload" flag="attachments" :extra-info="{ moduleType: 'payment', formId: form.id }" @files-updated="handleAttachmentFilesUpdated" />
-						</el-form-item>
-					</el-col>
-					<el-col :span="12">
 						<el-form-item label="备注" prop="comments">
 							<el-input v-model="form.comments" placeholder="请输入备注" />
 						</el-form-item>

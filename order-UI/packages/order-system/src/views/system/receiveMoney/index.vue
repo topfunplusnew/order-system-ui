@@ -1,18 +1,31 @@
 <template>
 	<div class="app-container">
 		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="100px">
-			<el-form-item label="开始日期" prop="fundsDate">
-				<el-date-picker v-model="queryParams.startTime" type="datetime" placeholder="请选择日期" value-format="yyyy-MM-dd HH:mm:ss" class="w-85px" />
+			<el-form-item label="时间段" prop="dateRange">
+				<el-date-picker
+					v-model="queryParams.dateRange"
+					type="datetimerange"
+					range-separator="至"
+					start-placeholder="开始日期"
+					end-placeholder="结束日期"
+					value-format="yyyy-MM-dd HH:mm:ss"
+					style="width: 300px"
+				/>
 			</el-form-item>
-			<el-form-item label="结束日期" prop="fundsDate">
-				<el-date-picker v-model="queryParams.endTime" type="datetime" placeholder="请选择日期" value-format="yyyy-MM-dd HH:mm:ss" class="w-85px" />
+			<el-form-item label="支付类型" prop="receiveType">
+				<el-input v-model="queryParams.receiveType" placeholder="请输入支付类型" clearable style="width: 150px" @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="我方户名" prop="selfAcountsName">
-				<el-input v-model="queryParams.selfAcountsName" placeholder="请输入我方户名" clearable class="w-85px" @keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.selfAcountsName" placeholder="请输入我方户名" clearable style="width: 150px" @keyup.enter.native="handleQuery" />
 			</el-form-item>
-
 			<el-form-item label="对方户名" prop="otherAcountsName">
-				<el-input v-model="queryParams.otherAcountsName" placeholder="请输入对方户名" clearable class="w-85px" @keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.otherAcountsName" placeholder="请输入对方户名" clearable style="width: 150px" @keyup.enter.native="handleQuery" />
+			</el-form-item>
+			<el-form-item label="对方公司" prop="companyName">
+				<el-input v-model="queryParams.companyName" placeholder="请输入对方公司" clearable style="width: 150px" @keyup.enter.native="handleQuery" />
+			</el-form-item>
+			<el-form-item label="备注" prop="comments">
+				<el-input v-model="queryParams.comments" placeholder="请输入备注" clearable style="width: 150px" @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -354,7 +367,10 @@ export default {
 				addtime: null,
 				userId: null,
 				UserName: null,
-				delFlag: null
+				delFlag: null,
+				dateRange: null,
+				startTime: null,
+				endTime: null
 			},
 			// 表单参数
 			form: {},
@@ -475,7 +491,16 @@ export default {
 		/** 查询收款信息列表 */
 		getList() {
 			this.loading = true;
-			listReceiveMoney(this.queryParams).then(response => {
+			// 处理时间段参数
+			const params = { ...this.queryParams };
+			if (params.dateRange && params.dateRange.length === 2) {
+				params.startTime = params.dateRange[0];
+				params.endTime = params.dateRange[1];
+			}
+			// 删除dateRange参数，避免传递给后端
+			delete params.dateRange;
+
+			listReceiveMoney(params).then(response => {
 				this.receiveMoneyList = response.rows;
 				this.total = response.total;
 				this.loading = false;
@@ -724,13 +749,16 @@ export default {
 		},
 		/** 导出按钮操作 */
 		handleExport() {
-			this.download(
-				'system/receiveMoney/export',
-				{
-					...this.queryParams
-				},
-				`receiveMoney_${new Date().getTime()}.xlsx`
-			);
+			// 处理时间段参数
+			const params = { ...this.queryParams };
+			if (params.dateRange && params.dateRange.length === 2) {
+				params.startTime = params.dateRange[0];
+				params.endTime = params.dateRange[1];
+			}
+			// 删除dateRange参数，避免传递给后端
+			delete params.dateRange;
+
+			this.download('system/receiveMoney/export', params, `receiveMoney_${new Date().getTime()}.xlsx`);
 		}
 	}
 };
