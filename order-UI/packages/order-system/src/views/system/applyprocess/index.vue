@@ -793,17 +793,7 @@ export default {
 		</el-dialog>
 
 		<div v-if="currentComponent">
-			<DialogWrapper
-				:current-component="currentComponent"
-				:dialog-visible="dialogVisible"
-				:dialog-props="dialogProps"
-				:dialog-title="dialogTitle"
-				:dialog-width="dialogWidth"
-				:close-confirm="closeConfirm"
-				@update:dialogVisible="args => (dialogVisible = false)"
-				@close="handleCloseDialog"
-				@confirm="handleDialogConfirm"
-			/>
+			<DialogWrapper :current-component="currentComponent" :dialog-visible="dialogVisible" />
 		</div>
 
 		<!--    漫游组件-->

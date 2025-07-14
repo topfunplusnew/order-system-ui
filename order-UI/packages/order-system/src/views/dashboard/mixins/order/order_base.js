@@ -91,8 +91,6 @@ export var mixin_order_base = {
 		},
 		// 获取供应商的名称列表 主要用于表格的供应商列表的展示
 		getSupplierNames(list) {
-			console.log(list);
-
 			if (list.length === 0) {
 				return;
 			}

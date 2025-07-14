@@ -101,16 +101,7 @@ export default {
 		</el-card>
 
 		<div v-if="currentComponent">
-			<DialogWrapper
-				:current-component="currentComponent"
-				:dialog-visible="dialogVisible"
-				:dialog-props="dialogProps"
-				:dialog-title="dialogTitle"
-				:dialog-width="dialogWidth"
-				@update:dialogVisible="args => (dialogVisible = false)"
-				@close="handleCloseDialog"
-				@confirm="handleDialogConfirm"
-			/>
+			<DialogWrapper :current-component="currentComponent" :dialog-visible="dialogVisible" />
 		</div>
 
 		<!--    对应信息的弹窗-->

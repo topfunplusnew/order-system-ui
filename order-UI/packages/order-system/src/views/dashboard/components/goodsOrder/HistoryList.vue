@@ -51,17 +51,7 @@ export default {
 		<el-button style="margin-left: 5px" size="mini" type="text" @click="checkHistoryList(row)">记录查看</el-button>
 
 		<div v-if="currentComponent">
-			<DialogWrapper
-				:current-component="currentComponent"
-				:dialog-visible="dialogVisible"
-				:dialog-props="dialogProps"
-				:dialog-title="dialogTitle"
-				:dialog-width="dialogWidth"
-				:close-confirm="true"
-				@update:dialogVisible="args => (dialogVisible = false)"
-				@close="handleCloseDialog"
-				@confirm="handleDialogConfirm"
-			/>
+			<DialogWrapper :current-component="currentComponent" :dialog-visible="dialogVisible" />
 		</div>
 	</div>
 </template>

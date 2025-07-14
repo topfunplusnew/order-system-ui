@@ -136,16 +136,7 @@ export default {
 	<div>
 		<!--    通用弹窗 配合common_dialogs 使用-->
 		<div v-if="currentComponent">
-			<DialogWrapper
-				:current-component="currentComponent"
-				:dialog-visible="dialogVisible"
-				:dialog-props="dialogProps"
-				:dialog-title="dialogTitle"
-				:dialog-width="dialogWidth"
-				@update:dialogVisible="args => (dialogVisible = false)"
-				@close="handleCloseDialog"
-				@confirm="handleDialogConfirm"
-			/>
+			<DialogWrapper :current-component="currentComponent" :dialog-visible="dialogVisible" />
 		</div>
 		<el-table
 			:data="list"

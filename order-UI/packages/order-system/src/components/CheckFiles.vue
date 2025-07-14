@@ -197,7 +197,7 @@ export default {
 			append-to-body
 			:close-on-click-modal="false"
 			:close-on-press-escape="false"
-			custom-class="check-files-dialog"
+			custom-class="check-files-dialog" 
 			@close="isUploading = false"
 		>
 			<h3>附件列表</h3>

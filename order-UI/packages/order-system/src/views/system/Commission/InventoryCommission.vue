@@ -103,16 +103,7 @@
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<div v-if="currentComponent">
-			<DialogWrapper
-				:current-component="currentComponent"
-				:dialog-visible="dialogVisible"
-				:dialog-props="dialogProps"
-				:dialog-title="dialogTitle"
-				:dialog-width="dialogWidth"
-				@update:dialogVisible="args => (dialogVisible = false)"
-				@close="handleCloseDialog"
-				@confirm="handleDialogConfirm"
-			/>
+			<DialogWrapper :current-component="currentComponent" :dialog-visible="dialogVisible" />
 		</div>
 
 		<!--    申请付款-->
