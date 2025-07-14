@@ -114,7 +114,7 @@ export default {
 				{ key: 17, label: '附件', visible: true },
 				{ key: 18, label: '收到条附件', visible: true },
 				{ key: 19, label: '是否可编辑', visible: true },
-				{ key: 20, label: '客户是否开票', visible: true },
+				{ key: 20, label: '客户是否含税', visible: true },
 				{ key: 21, label: '供应商是否开票', visible: true },
 				{ key: 22, label: '备注', visible: true }
 			]
@@ -435,6 +435,20 @@ export default {
 						</el-row>
 					</template>
 				</el-table-column>
+				<el-table-column v-if="columns[20].visible" show-overflow-tooltip label="客户是否含税" align="center" prop="customerTaxIncluded" width="120">
+					<template #default="scope">
+						<el-row>
+							<el-row v-if="hasInvoice(scope.row, PUBLIC_DICT_TYPE.CUSTOMER)">
+								<el-row>
+									<el-button type="text" size="mini" @click="updateOrderItemVisibleCustomerInvoice(scope.row)">含税</el-button>
+								</el-row>
+							</el-row>
+							<el-row v-else>
+								<StateTag :state-title="`不含税`" :state-mapper="{ 3: '不含税' }" />
+							</el-row>
+						</el-row>
+					</template>
+				</el-table-column>
 				<el-table-column v-if="columns[5].visible" show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo" />
 				<el-table-column v-if="columns[6].visible" show-overflow-tooltip label="陆运司机电话" align="center" prop="landDriverTel" width="100px" />
 				<el-table-column v-if="columns[7].visible" show-overflow-tooltip label="陆地司机姓名" align="center" prop="landDriverName" width="100px" />
@@ -495,30 +509,16 @@ export default {
 					</template>
 				</el-table-column>
 				<!--      客户供应商是否开票-->
-				<el-table-column v-if="columns[20].visible" show-overflow-tooltip label="客户是否含税" align="center" width="150px">
-					<template #default="scope">
-						<el-row>
-							<el-row v-if="hasInvoice(scope.row, PUBLIC_DICT_TYPE.CUSTOMER)">
-								<el-row>
-									<el-button type="text" size="mini" @click="updateOrderItemVisibleCustomerInvoice(scope.row)">开票</el-button>
-								</el-row>
-							</el-row>
-							<el-row v-else>
-								<StateTag :state-title="`无开票`" :state-mapper="{ 3: '无开票' }" />
-							</el-row>
-						</el-row>
-					</template>
-				</el-table-column>
 				<el-table-column v-if="columns[21].visible" show-overflow-tooltip label="供应商是否含税" align="center" width="120px">
 					<template #default="scope">
 						<el-row>
 							<el-row v-if="hasInvoice(scope.row, PUBLIC_DICT_TYPE.SUPPLIER)">
 								<el-row>
-									<el-button type="text" size="mini" @click="updateOrderItemVisibleSupplierInvoice(scope.row)">开票</el-button>
+									<el-button type="text" size="mini" @click="updateOrderItemVisibleSupplierInvoice(scope.row)">含税</el-button>
 								</el-row>
 							</el-row>
 							<el-row v-else>
-								<StateTag :state-title="`无开票`" :state-mapper="{ 3: '无开票' }" />
+								<StateTag :state-title="`不含税`" :state-mapper="{ 3: '不含税' }" />
 							</el-row>
 						</el-row>
 					</template>

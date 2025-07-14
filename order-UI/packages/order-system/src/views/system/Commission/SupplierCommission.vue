@@ -74,6 +74,7 @@
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[1].visible" show-overflow-tooltip label="厂家名称" align="center" prop="companyName" width="140" />
+			<el-table-column v-if="columns[26].visible" show-overflow-tooltip label="车牌号" align="center" prop="landCarNo" width="140" />
 			<el-table-column v-if="columns[2].visible" show-overflow-tooltip label="产品名称" align="center" prop="levelName" width="140" />
 			<el-table-column v-if="columns[3].visible" show-overflow-tooltip label="单位" align="center" prop="countingUnit" width="100" />
 			<el-table-column v-if="columns[4].visible" show-overflow-tooltip label="高度" align="center" prop="height" width="100" />
@@ -94,10 +95,10 @@
 			<el-table-column v-if="columns[15].visible" show-overflow-tooltip label="不含税利润" align="center" prop="profitNoTax" width="100" />
 			<el-table-column v-if="columns[16].visible" show-overflow-tooltip label="备注" align="center" prop="comments" width="140" />
 			<el-table-column v-if="columns[17].visible" show-overflow-tooltip label="面积" align="center" prop="area" width="100" />
+			<el-table-column v-if="columns[21].visible" show-overflow-tooltip label="订单计提佣金" align="center" prop="commissionAmount" width="100" />
 			<el-table-column v-if="columns[18].visible" show-overflow-tooltip label="佣金单价" align="center" prop="commissionUnitPrice" width="100" />
-			<el-table-column v-if="columns[19].visible" show-overflow-tooltip label="已验证佣金" align="center" prop="verifiedCommission" width="100" />
 			<el-table-column v-if="columns[20].visible" show-overflow-tooltip label="其他付款金额" align="center" prop="otherPaymentAmount" width="100" />
-			<el-table-column v-if="columns[21].visible" show-overflow-tooltip label="应付佣金金额" align="center" prop="commissionAmount" width="100" />
+			<el-table-column v-if="columns[19].visible" show-overflow-tooltip label="已验证佣金" align="center" prop="verifiedCommission" width="100" />
 			<el-table-column v-if="columns[22].visible" show-overflow-tooltip label="实际厂家佣金" align="center" prop="actualCustomerCommission" width="100" />
 			<el-table-column v-if="columns[23].visible" show-overflow-tooltip label="支付日期" align="center" prop="fundDate" width="100" />
 			<el-table-column v-if="columns[24].visible" show-overflow-tooltip label="差异" align="center" prop="difference" width="100" />
@@ -222,6 +223,7 @@ export default {
 			columns: [
 				{ key: 0, label: '订单日期', visible: true },
 				{ key: 1, label: '厂家名称', visible: true },
+				{ key: 26, label: '车牌号', visible: true },
 				{ key: 2, label: '产品名称', visible: true },
 				{ key: 3, label: '单位', visible: true },
 				{ key: 4, label: '高度', visible: true },
@@ -238,10 +240,10 @@ export default {
 				{ key: 15, label: '不含税利润', visible: true },
 				{ key: 16, label: '备注', visible: true },
 				{ key: 17, label: '面积', visible: true },
+				{ key: 21, label: '订单计提佣金', visible: true },
 				{ key: 18, label: '佣金单价', visible: true },
-				{ key: 19, label: '已验证佣金', visible: true },
 				{ key: 20, label: '其他付款金额', visible: true },
-				{ key: 21, label: '应付佣金金额', visible: true },
+				{ key: 19, label: '已验证佣金', visible: true },
 				{ key: 22, label: '实际厂家佣金', visible: true },
 				{ key: 23, label: '支付日期', visible: true },
 				{ key: 24, label: '差异', visible: true },

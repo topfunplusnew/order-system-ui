@@ -5,7 +5,6 @@
 		v-dialogDrag
 		v-dialogDragWidth
 		v-dialogDragHeight
-		v-el-drag-dialog
 		v-el-relen-dialog
 		:title="dialogTitle"
 		:visible.sync="internalVisible"

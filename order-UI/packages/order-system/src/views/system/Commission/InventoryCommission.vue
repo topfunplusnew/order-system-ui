@@ -85,7 +85,7 @@
 			<el-table-column show-overflow-tooltip label="佣金单价" align="center" prop="commissionUnitPrice" width="100" />
 			<el-table-column show-overflow-tooltip label="已验证佣金" align="center" prop="verifiedCommission" width="100" />
 			<el-table-column show-overflow-tooltip label="其他付款金额" align="center" prop="otherPaymentAmount" width="100" />
-			<el-table-column show-overflow-tooltip label="应付佣金金额" align="center" prop="commissionAmount" width="100" />
+			<el-table-column show-overflow-tooltip label="订单计提佣金" align="center" prop="commissionAmount" width="100" />
 			<el-table-column show-overflow-tooltip label="实际库存厂家佣金" align="center" prop="actualCustomerCommission" width="100" />
 			<el-table-column show-overflow-tooltip label="支付日期" align="center" prop="fundDate" width="100" />
 			<el-table-column show-overflow-tooltip label="差异" align="center" prop="difference" width="100" />
