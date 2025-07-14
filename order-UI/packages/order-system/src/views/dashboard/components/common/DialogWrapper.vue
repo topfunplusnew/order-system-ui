@@ -98,7 +98,22 @@ export default {
 		}
 	},
 
-	// 监听事件
+	mounted() {
+		// 确保弹窗加载后的拖拽优化
+		this.$nextTick(() => {
+			const dialogEl = this.$el.querySelector('.el-dialog');
+			if (dialogEl) {
+				// 防止弹窗内容区域的拖拽事件冒泡影响
+				dialogEl.addEventListener('dragstart', e => {
+					e.preventDefault();
+				});
+
+				// 优化选择体验
+				dialogEl.style.cssText += ';-webkit-touch-callout: none;-webkit-tap-highlight-color: transparent;';
+			}
+		});
+	},
+	// 声明组件emit的事件
 	emits: ['update:dialogVisible', 'confirm', 'close'],
 	methods: {
 		// 保存组件状态
@@ -109,7 +124,7 @@ export default {
 				this.componentStates[this.currentComponent] = componentData;
 			}
 		},
-		
+
 		// 恢复组件状态
 		restoreComponentState() {
 			if (this.$refs.dynamicComponent && this.componentStates[this.currentComponent]) {
@@ -118,13 +133,13 @@ export default {
 				Object.assign(this.$refs.dynamicComponent.$data, savedState);
 			}
 		},
-		
+
 		// 隐藏弹窗（用于keep-alive场景）
 		hideDialog() {
 			this.saveComponentState();
 			this.internalVisible = false;
 		},
-		
+
 		// 显示弹窗（用于keep-alive场景）
 		showDialog() {
 			this.internalVisible = true;
@@ -132,7 +147,7 @@ export default {
 				this.restoreComponentState();
 			});
 		},
-		
+
 		// 关闭弹窗
 		handleClose() {
 			// 执行函数 这个函数 要求每一个业务组件都要实现
@@ -157,3 +172,57 @@ export default {
 	}
 };
 </script>
+
+<style scoped>
+/* 去除文字选中样式，优化拖拽体验 */
+.el-dialog {
+	user-select: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+}
+
+/* 恢复弹窗内容区域的文字选中功能 */
+.el-dialog__body {
+	user-select: text;
+	-webkit-user-select: text;
+	-moz-user-select: text;
+	-ms-user-select: text;
+}
+
+/* 输入框、文本域等表单元素恢复选中功能 */
+.el-dialog__body input,
+.el-dialog__body textarea,
+.el-dialog__body .el-input__inner,
+.el-dialog__body .el-textarea__inner {
+	user-select: text;
+	-webkit-user-select: text;
+	-moz-user-select: text;
+	-ms-user-select: text;
+}
+
+/* 标题栏拖拽优化 */
+.el-dialog__header {
+	cursor: move;
+	user-select: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+}
+
+/* 底部按钮区域 */
+.el-dialog__footer {
+	user-select: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+}
+
+/* 防止在拖拽时选中文本 */
+.el-dialog__wrapper {
+	user-select: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+}
+</style>
