@@ -17,6 +17,7 @@ import paymentApply from '@/store/modules/paymentApply';
 import trash from '@/store/modules/trash';
 import excel from '@/store/modules/excel';
 import downloadOnce from '@/store/modules/downloadOnce';
+import attachments from '@/store/modules/attachments';
 
 Vue.use(Vuex);
 
@@ -43,7 +44,9 @@ const store = new Vuex.Store({
 		excel,
 		// 出差
 		// bussinessTrip: () => import('./modules/bussinessTrip')
-		downloadOnce
+		downloadOnce,
+		// 附件管理
+		attachments
 	},
 	getters
 });

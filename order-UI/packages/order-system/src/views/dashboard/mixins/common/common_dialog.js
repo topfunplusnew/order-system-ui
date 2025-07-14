@@ -14,6 +14,7 @@ export var common_dialog = {
 		openDialog(component, title, width = '50%', props = {}, closeConfirm = false) {
 			const DialogConstructor = Vue.extend(DialogWrapper);
 			const instance = new DialogConstructor({
+				store: this.$store,
 				propsData: {
 					currentComponent: component,
 					dialogVisible: true,

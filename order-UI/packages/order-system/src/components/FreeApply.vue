@@ -72,10 +72,10 @@ export default {
 		};
 	},
 	computed: {
-		...mapGetters(['trueName']),
 		PUBLIC_DICT_TYPE() {
 			return PUBLIC_DICT_TYPE;
-		}
+		},
+		...mapGetters(['trueName'])
 	},
 	watch: {
 		orderInfo: {
