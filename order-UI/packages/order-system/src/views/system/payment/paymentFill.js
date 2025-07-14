@@ -1,16 +1,11 @@
 // payment/index.vue所需的付款
-
+import { PAYMENT_TARGET_TYPE } from '../../../api/tool/enums'
 export var mixin_paymentindex_fill = {
 	data: function () {
 		return {
 			// bank搜索
 			queryBank: '',
-			// 供应商搜索
-			queryOtherSupplier: '',
-			// 客户搜索
-			queryOtherCustomer: '',
-			// 司机搜索
-			queryOtherDriver: '',
+			companyName: '',
 			// 银行卡选择搜索
 			queryChoose: '',
 
@@ -32,19 +27,13 @@ export var mixin_paymentindex_fill = {
 			this.chooseInfo.selfAcountsName = val.acountsName;
 			this.chooseInfo.selfBankNo = val.bankNo;
 		},
-		// 填充供应商信息
-		handleCommitBackOtherSupplier(val) {
-			this.form.companyName = val.companyName;
-			this.form.companyId = val.id;
-		},
-		// 自动填充客户信息
-		handleCommitBackOther(val) {
-			this.form.companyName = val.companyName;
-			this.form.companyId = val.id;
-		},
-		// 补充司机信息
-		handleCommitBackOtherCars(val) {
-			this.form.companyName = val.driver;
+		// 填充对方公司信息
+		handleCommitBackCompany(val) {
+			if (this.value !== PAYMENT_TARGET_TYPE.DRIVER) {
+				this.form.companyName = val.companyName;
+			} else {
+				this.form.companyName = val.driver;
+			}
 			this.form.companyId = val.id;
 		},
 		// 填充对方新信息
@@ -63,14 +52,6 @@ export var mixin_paymentindex_fill = {
 		handleUpdateQueryName(val) {
 			this.queryBank = val;
 		},
-		handleUpdateQueryNameOtherSupplier(val) {
-			this.queryOtherSupplier = val;
-		},
-		handleUpdateQueryNameOtherCustomer(val) {
-			this.queryOtherCustomer = val;
-		},
-		handleUpdateQueryNameOtherDriver(val) {
-			this.queryOtherDriver = val;
-		}
+
 	}
 };
