@@ -1439,7 +1439,6 @@ export default {
 				goodsCompany: null,
 				allLandFreight: null,
 				allSeaFreight: null,
-				receiveProof: null,
 				transportMode: '' // 重置运输方式校验字段
 			};
 			this.inventoryDetailList = [];

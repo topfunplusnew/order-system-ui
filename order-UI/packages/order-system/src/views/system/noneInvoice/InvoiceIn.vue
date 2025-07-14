@@ -582,8 +582,8 @@ export default {
 		// 取消按钮
 		cancel() {
 			// 清空两个上传附件显示的文件列表
-			this.$refs.fileUploader1.clearUploadedFiles();
-			this.$refs.fileUploader2.clearUploadedFiles();
+			this.$refs.receiptUploader.clearUploadedFiles();
+			this.$refs.attachmentUploader.clearUploadedFiles();
 			this.open = false;
 			this.reset();
 		},

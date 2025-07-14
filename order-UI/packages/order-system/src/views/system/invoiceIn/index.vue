@@ -498,7 +498,10 @@ export default {
 				userId: null,
 				UserName: null,
 				updateTime: null,
-				delFlag: null
+				delFlag: null,
+				params: {
+					attachmentIds: []
+				}
 			};
 			this.resetForm('form');
 		},

@@ -357,7 +357,6 @@ export default {
 				refuelingMoney: null,
 				rechargeMoney: null,
 				endCardSurplus: null,
-				attachmentOiladd: null,
 				comments: null,
 				addtime: null,
 				userId: null,

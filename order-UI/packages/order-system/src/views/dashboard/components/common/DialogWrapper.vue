@@ -6,7 +6,6 @@
 		v-dialogDragHeight
 		v-el-drag-dialog
 		v-el-relen-dialog
-		v-if="dialogVisible"
 		:title="dialogTitle"
 		:visible.sync="dialogVisible"
 		:width="dialogWidth"

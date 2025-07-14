@@ -524,6 +524,7 @@ export default {
 				UserName: null,
 				updateTime: null,
 				delFlag: null,
+				transactionHistory: null,
 				bankacceptance: null,
 				params: {
 					attachmentIds: []

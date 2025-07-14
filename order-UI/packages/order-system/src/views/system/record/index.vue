@@ -814,7 +814,6 @@ export default {
 				amount: null,
 				referenceTableId: null,
 				referenceTableName: null,
-				attachment: null,
 				remarks: null,
 				// 收入方与支付方的公司类型
 				sourceCompanyType: '客户',

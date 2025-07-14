@@ -345,7 +345,6 @@ export default {
 				acountsName: null,
 				bankNo: null,
 				rechargeName: null,
-				attachment: null,
 				comments: null,
 				addtime: null,
 				userId: null,

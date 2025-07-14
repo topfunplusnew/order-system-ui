@@ -189,18 +189,6 @@
 					<el-button v-hasPermi="['system:payment:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
-
-			<!-- <el-table-column
-        label="运费信息"
-        align="center"
-        class-name="small-padding fixed-width"
-        width="150"
-        fixed="right"
-      >
-        <template slot-scope="scope">
-          <CheckDetail :row="scope.row" />
-        </template>
-      </el-table-column> -->
 		</el-table>
 
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" z />
@@ -477,7 +465,7 @@
 						</el-form-item>
 					</el-col>
 					<el-col :span="12">
-						<el-form-item label="银行卡流水附件" prop="chooseInfo.params.attachmentIds">
+						<el-form-item label="银行卡流水附件" prop="attachmentIds">
 							<UploadFilesButton
 								ref="transactionHistoryUpload"
 								flag="transactionHistoryAttachmentList"
@@ -490,7 +478,7 @@
 
 				<el-row :gutter="20">
 					<el-col :span="12">
-						<el-form-item label="附件" prop="form.params.attachmentIds">
+						<el-form-item label="附件" prop="attachmentIds">
 							<UploadFilesButton ref="attachmentUpload" flag="attachments" :extra-info="{ moduleType: 'payment', formId: form.id }" @files-updated="handleAttachmentFilesUpdated" />
 						</el-form-item>
 					</el-col>
@@ -912,7 +900,6 @@ export default {
 				UserName: null,
 				updateTime: null,
 				delFlag: null,
-				// 新增银行卡流水编号和附件
 				transactionHistory: null,
 				bankacceptance: null,
 				params: {
