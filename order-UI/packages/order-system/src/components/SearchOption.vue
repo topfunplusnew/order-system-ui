@@ -98,6 +98,14 @@ export default {
 			get() {
 				return this.queryName;
 			}
+		},
+		computedQueryItems: {
+			set(val) {
+				this.$emit('update:queryItems', val);
+			},
+			get() {
+				return this.queryItems;
+			}
 		}
 	},
 	watch: {
@@ -135,8 +143,8 @@ export default {
 		// 条件查询
 		handleSearchInfo() {
 			_.set(this.limitInfo, 'params', {});
-			if (this.queryItems.queryList.length > 0) {
-				for (let item of this.queryItems.queryList) {
+			if (this.computedQueryItems.queryList.length > 0) {
+				for (let item of this.computedQueryItems.queryList) {
 					const queryItem = _.cloneDeep(item);
 					// 如果是params的查询参数
 					if (queryItem && queryItem?.extraInfo && queryItem?.extraInfo?.__isParams) {
@@ -172,6 +180,20 @@ export default {
 				this.tableData = res.rows;
 				this.loading = false;
 			});
+		},
+		handleCancel() {
+			this.dialogVisible = false;
+			this.query = '';
+			Object.keys(this.computedQueryItems.queryList).forEach(key => {
+				this.computedQueryItems.queryList[key].value = '';
+			});
+		},
+		handleSubmit() {
+			this.dialogVisible = false;
+			this.query = '';
+			Object.keys(this.computedQueryItems.queryList).forEach(key => {
+				this.computedQueryItems.queryList[key].value = '';
+			});
 		}
 	}
 };
@@ -186,11 +208,11 @@ export default {
 			<!--      弹出的表格内容-->
 			<el-row>
 				<div>
-					<el-form ref="queryForm" :model="queryItems" size="mini" :inline="true" label-width="100px">
+					<el-form ref="queryForm" :model="computedQueryItems" size="mini" :inline="true" label-width="100px">
 						<el-form-item :label="queryLabel">
 							<el-input v-model="query" type="text" placeholder="请输入" size="mini" clearable></el-input>
 						</el-form-item>
-						<el-form-item v-for="item in queryItems.queryList" :label="item.label" :prop="item.prop" :key="item.id">
+						<el-form-item v-for="item in computedQueryItems.queryList" :label="item.label" :prop="item.prop" :key="item.id">
 							<template v-if="item.type === 'input'">
 								<el-input v-model="item.value" placeholder="请输入" size="mini" clearable></el-input>
 							</template>
@@ -234,8 +256,8 @@ export default {
 				<pagination v-if="isPage" v-show="total > 0" :total="total" :page.sync="pageNum" :limit.sync="pageSize" @pagination="getList" />
 			</el-row>
 			<span slot="footer" class="dialog-footer">
-				<el-button @click="dialogVisible = false">取 消</el-button>
-				<el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+				<el-button @click="handleCancel">取 消</el-button>
+				<el-button type="primary" @click="handleSubmit">确 定</el-button>
 			</span>
 		</el-dialog>
 	</div>
