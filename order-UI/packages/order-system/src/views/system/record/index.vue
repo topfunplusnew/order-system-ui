@@ -72,26 +72,28 @@
 					<span>{{ parseTime(scope.row.transactionTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[3].visible" label="收入方/资金流出方" align="center" prop="sourceCompanyName" show-overflow-tooltip />
-			<el-table-column v-if="columns[5].visible" label="来源方公司类型" align="center" prop="sourceCompanyType" show-overflow-tooltip />
+			<el-table-column v-if="columns[3].visible" label="支出方/资金流出方" align="center" prop="sourceCompanyName" show-overflow-tooltip />
+			<el-table-column v-if="columns[5].visible" label="支出方公司类型" align="center" prop="sourceCompanyType" show-overflow-tooltip />
+			<el-table-column v-if="columns[8].visible" label="资金流出户名" align="center" prop="sourceAccountName" show-overflow-tooltip />
 			<el-table-column v-if="columns[7].visible" label="资金流出账号" align="center" prop="sourceBankNo" show-overflow-tooltip />
 			<el-table-column v-if="columns[2].visible" label="金额" align="center" prop="amount" />
-			<el-table-column v-if="columns[9].visible" label="目标公司类型" align="center" prop="targetCompanyType" show-overflow-tooltip />
-			<el-table-column v-if="columns[6].visible" label="支出方/资金流入方" align="center" prop="targetCompanyName" show-overflow-tooltip />
+			<el-table-column v-if="columns[10].visible" label="收入公司类型" align="center" prop="targetCompanyType" show-overflow-tooltip />
+			<el-table-column v-if="columns[6].visible" label="收入方/资金流入方" align="center" prop="targetCompanyName" show-overflow-tooltip />
+			<el-table-column v-if="columns[11].visible" label="资金流入户名" align="center" prop="targetAccountName" show-overflow-tooltip />
 			<el-table-column v-if="columns[4].visible" label="资金流入账号" align="center" prop="targetBankNo" show-overflow-tooltip />
-			<el-table-column v-if="columns[8].visible" label="冲抵类型" align="center" show-overflow-tooltip>
+			<el-table-column v-if="columns[9].visible" label="冲抵类型" align="center" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<span>{{ scope.row.referenceTableName === 'offsetting' ? '冲抵货款' : '内部转账' }}</span>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[12].visible" label="账户类型" align="center" show-overflow-tooltip>
+			<el-table-column v-if="columns[14].visible" label="账户类型" align="center" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<div>
 						{{ handleDisplayType(scope.row, scope.row.referenceTableName) }}
 					</div>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[10].visible" label="附件" align="center" prop="attachment">
+			<el-table-column v-if="columns[12].visible" label="附件" align="center" prop="attachment">
 				<template #default="scope">
 					<div v-if="Array.isArray(scope.row.attachmentList)">
 						<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'attachment'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getRecord, updateRecord)" />
@@ -101,8 +103,8 @@
 					</div>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[11].visible" label="备注" align="center" prop="remarks" show-overflow-tooltip />
-			<el-table-column v-if="columns[13].visible" label="操作人员姓名" align="center" prop="userName" show-overflow-tooltip />
+			<el-table-column v-if="columns[13].visible" label="备注" align="center" prop="remarks" show-overflow-tooltip />
+			<el-table-column v-if="columns[15].visible" label="操作人员姓名" align="center" prop="userName" show-overflow-tooltip />
 
 			<!-- 操作列 -->
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -116,7 +118,7 @@
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改现金记账对话框  cashType 用于分别管理冲抵类型 : 冲抵货款 或者 冲抵第三方开票-->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="title" :visible.sync="open" width="700px" append-to-body @close="handleDialogClose">
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="title" :visible.sync="open" width="1000px" append-to-body @close="handleDialogClose">
 			<el-form ref="form" :model="form" :rules="rules" label-width="150px">
 				<!--        目前支持两种类型 一种是冲抵货款 一种是冲抵第三方开票-->
 				<el-form-item label="冲抵类型">
@@ -125,11 +127,10 @@
 						<el-radio v-model="cashType" label="transfer">内部转账</el-radio>
 					</el-row>
 				</el-form-item>
-				<el-divider>
+				<el-divider v-if="CASH_TYPE.TRANSFER === cashType">
 					<div>
 						<el-icon class="el-icon-circle-plus" />
-						<span v-if="CASH_TYPE.TRANSFER === cashType">资金流出</span>
-						<span v-else>收入方信息</span>
+						<span>资金流出</span>
 					</div>
 				</el-divider>
 
@@ -170,33 +171,171 @@
 				</el-form-item>
 
 				<!--        如果是冲抵货款 还需要选择一个公司 -->
-				<el-row v-if="cashType === CASH_TYPE.OFF_SETTING">
-					<el-form-item label="收入方类型">
-						<el-radio v-model="form.sourceCompanyType" label="客户">客户</el-radio>
-						<el-radio v-model="form.sourceCompanyType" label="供应商">供应商</el-radio>
-						<el-radio v-model="form.sourceCompanyType" label="司机">司机</el-radio>
+				<el-row v-if="cashType === CASH_TYPE.OFF_SETTING" :gutter="20">
+					<!-- 左侧：支出方信息 -->
+					<el-col :span="12">
+						<el-divider>
+							<div>
+								<el-icon class="el-icon-remove" />
+								<span>支出方信息</span>
+							</div>
+						</el-divider>
 
-						<!--            2025年5月14号振龙要求删除己方公司-->
-						<!--						<el-radio v-model="form.sourceCompanyType" label="己方公司">己方公司</el-radio>-->
-					</el-form-item>
-					<el-form-item label="收入方">
-						<el-row>
-							<el-col :span="14">
-								<el-input disabled v-model="sourceName" type="text" placeholder="请选择" />
-							</el-col>
+						<el-form-item label="支出方类型" label-width="120px">
+							<el-radio v-model="form.sourceCompanyType" label="客户">客户</el-radio>
+							<el-radio v-model="form.sourceCompanyType" label="供应商">供应商</el-radio>
+							<el-radio v-model="form.sourceCompanyType" label="司机">司机</el-radio>
+						</el-form-item>
 
-							<!--              根据不同类型选择不同的 但是后来振龙说 选两次太麻烦, 所以去除-->
-							<template v-if="cashType === CASH_TYPE.OFF_SETTING">
-								<!--              如果是司机-->
-								<el-col v-if="form.sourceCompanyType === PUBLIC_DICT_TYPE.DRIVER" :span="4">
+						<el-form-item label="支出方" label-width="120px">
+							<el-row>
+								<el-col :span="16">
+									<el-input disabled v-model="sourceName" type="text" placeholder="请选择" />
+								</el-col>
+								<!--               如果是司机-->
+								<el-col v-if="form.sourceCompanyType === '司机'" :span="8">
 									<SearchOption
 										:limit-info="{}"
 										:get-data="listCars"
 										query-info="driver"
 										query-label="司机姓名"
-										:query-name="queryDriver"
-										@update:queryName="handleUpdateDriver"
-										@commitBack="handleCommitBackDriver"
+										:query-name="querySourceDriver"
+										@update:queryName="handleUpdateSourceDriver"
+										@commitBack="handleCommitBackSourceDriver"
+									>
+										<template #table-columns>
+											<el-table-column label="司机姓名" align="center" prop="driver" />
+											<el-table-column label="司机电话" align="center" prop="tel" />
+											<el-table-column label="账号类型" align="center" prop="acountsType" />
+											<el-table-column label="运输类型" align="center" prop="carType" />
+										</template>
+									</SearchOption>
+								</el-col>
+								<!--              如果是己方公司-->
+								<el-col v-else-if="form.sourceCompanyType === '己方公司'" :span="8">
+									<SearchOption
+										:limit-info="{
+											acountsType: form.sourceCompanyType
+										}"
+										:get-data="listBankAccount"
+										query-info="acountsName"
+										query-label="户名查找"
+										:query-name="querySourceSelfAccount"
+										@update:queryName="handleUpdateSourceSelfAccount"
+										@commitBack="handleCommitBackSourceSelfAccount"
+									>
+										<template #table-columns>
+											<el-table-column label="账户类型" align="center" prop="acountsType" />
+											<el-table-column label="显示名称" align="center" prop="displayName" />
+											<el-table-column label="开户名称(户名)" align="center" prop="acountsName" />
+											<el-table-column label="账号(银行账号)" align="center" prop="bankNo" />
+											<el-table-column label="开户行" align="center" prop="bankName" />
+											<el-table-column label="公司名称" align="center" prop="companyName" />
+										</template>
+									</SearchOption>
+								</el-col>
+								<!--            其他-->
+								<el-col v-else :span="8">
+									<SearchOption
+										:limit-info="{
+											companyType: form.sourceCompanyType
+										}"
+										:get-data="listCompany"
+										query-info="companyName"
+										query-label="公司名称"
+										:query-name="querySourceCompanyName"
+										@update:queryName="handleUpdateSourceCompanyName"
+										@commitBack="handleCommitBackSourceCompany"
+									>
+										<template #table-columns>
+											<el-table-column label="公司名称" align="center" prop="companyName" />
+											<el-table-column label="公司类型" align="center" prop="companyType" />
+											<el-table-column label="老板姓名" align="center" prop="leader" />
+											<el-table-column label="老板电话" align="center" prop="leaderTel" />
+											<el-table-column label="区域" align="center" prop="region" />
+											<el-table-column label="销售经理" align="center" prop="salesManager" />
+										</template>
+									</SearchOption>
+								</el-col>
+							</el-row>
+						</el-form-item>
+
+						<!-- 支出方支付类型 -->
+						<el-form-item label="支付类型" prop="sourcePaymentType" label-width="120px">
+							<el-cascader v-model="form.sourcePaymentType" :options="paymentTypeTree" :props="props" @change="handleChange" placeholder="请选择支出方支付类型"></el-cascader>
+						</el-form-item>
+
+						<!-- 支出方户名 -->
+						<el-form-item label="户名" prop="sourceAccountName" label-width="120px">
+							<el-row>
+								<el-col :span="16">
+									<el-input v-model="form.sourceAccountName" placeholder="请输入支出方户名" disabled />
+								</el-col>
+								<el-col :span="8">
+									<SearchOption
+										:limit-info="{ acountsType: form.sourceCompanyType }"
+										:get-data="listBankAccount"
+										query-info="acountsName"
+										query-label="户名查找"
+										:query-name="querySourceBankAccount"
+										@update:queryName="handleUpdateQuerySourceBankAccount"
+										@commitBack="handleCommitBackSourceBankAccount"
+									>
+										<template #table-columns>
+											<el-table-column label="账户类型" align="center" prop="acountsType" />
+											<el-table-column label="显示名称" align="center" prop="displayName" />
+											<el-table-column label="开户名称(户名)" align="center" prop="acountsName" />
+											<el-table-column label="账号(银行账号)" align="center" prop="bankNo" />
+											<el-table-column label="开户行" align="center" prop="bankName" />
+											<el-table-column label="公司名称" align="center" prop="companyName" />
+										</template>
+									</SearchOption>
+								</el-col>
+							</el-row>
+						</el-form-item>
+
+						<!-- 支出方账号 -->
+						<el-form-item label="账号" prop="sourceBankNo" label-width="120px">
+							<el-input v-model="form.sourceBankNo" placeholder="请输入支出方账号" disabled />
+						</el-form-item>
+
+						<!-- 支出方开户行 -->
+						<el-form-item label="开户行" prop="sourceBankName" label-width="120px">
+							<el-input v-model="form.sourceBankName" placeholder="请输入支出方开户行" disabled />
+						</el-form-item>
+					</el-col>
+
+					<!-- 右侧：收入方信息 -->
+					<el-col :span="12">
+						<el-divider>
+							<div>
+								<el-icon class="el-icon-circle-plus" />
+								<span>收入方信息</span>
+							</div>
+						</el-divider>
+
+						<el-form-item label="收入方类型" label-width="120px">
+							<el-radio v-model="form.targetCompanyType" label="客户">客户</el-radio>
+							<el-radio v-model="form.targetCompanyType" label="供应商">供应商</el-radio>
+							<el-radio v-model="form.targetCompanyType" label="司机">司机</el-radio>
+						</el-form-item>
+
+						<el-form-item label="收入方" label-width="120px">
+							<el-row>
+								<el-col :span="16">
+									<el-input disabled v-model="targetName" type="text" placeholder="请选择" />
+								</el-col>
+								<!--              根据不同类型选择不同的 但是后来振龙说 选两次太麻烦, 所以去除-->
+								<!--              如果是司机-->
+								<el-col v-if="form.targetCompanyType === PUBLIC_DICT_TYPE.DRIVER" :span="8">
+									<SearchOption
+										:limit-info="{}"
+										:get-data="listCars"
+										query-info="driver"
+										query-label="司机姓名"
+										:query-name="queryTargetDriver"
+										@update:queryName="handleUpdateTargetDriver"
+										@commitBack="handleCommitBackTargetDriver"
 									>
 										<template #table-columns>
 											<el-table-column label="司机姓名" align="center" prop="driver" />
@@ -206,17 +345,17 @@
 									</SearchOption>
 								</el-col>
 								<!--              如果是己方公司 -->
-								<el-col v-if="form.sourceCompanyType === PUBLIC_DICT_TYPE.SELF_COMPANY" :span="4">
+								<el-col v-if="form.targetCompanyType === PUBLIC_DICT_TYPE.SELF_COMPANY" :span="8">
 									<SearchOption
 										:limit-info="{
-											acountsType: form.sourceCompanyType
+											acountsType: form.targetCompanyType
 										}"
 										:get-data="listBankAccount"
 										query-info="acountsName"
 										query-label="户名查找"
-										:query-name="querySelfAccount"
-										@update:queryName="handleUpdateSelfAccount"
-										@commitBack="handleCommitBackSelfAccount"
+										:query-name="queryTargetSelfAccount"
+										@update:queryName="handleUpdateTargetSelfAccount"
+										@commitBack="handleCommitBackTargetSelfAccount"
 									>
 										<template #table-columns>
 											<el-table-column label="账户类型" align="center" prop="acountsType" />
@@ -229,17 +368,17 @@
 									</SearchOption>
 								</el-col>
 								<!--              如果是其他-->
-								<el-col v-if="form.sourceCompanyType !== '司机' && form.sourceCompanyType !== '己方公司'" :span="4">
+								<el-col v-if="form.targetCompanyType !== '司机' && form.targetCompanyType !== '己方公司'" :span="8">
 									<SearchOption
 										:limit-info="{
-											companyType: form.sourceCompanyType
+											companyType: form.targetCompanyType
 										}"
 										:get-data="listCompany"
 										query-info="companyName"
 										query-label="公司名称"
-										:query-name="queryCompanyName"
-										@update:queryName="handleUpdateCompanyNameGet"
-										@commitBack="handleCommitBackCompanyGet"
+										:query-name="queryTargetCompanyName"
+										@update:queryName="handleUpdateTargetCompanyName"
+										@commitBack="handleCommitBackTargetCompany"
 									>
 										<template #table-columns>
 											<el-table-column label="公司名称" align="center" prop="companyName" />
@@ -251,9 +390,53 @@
 										</template>
 									</SearchOption>
 								</el-col>
-							</template>
-						</el-row>
-					</el-form-item>
+							</el-row>
+						</el-form-item>
+
+						<!-- 收入方支付类型 -->
+						<el-form-item label="支付类型" prop="targetPaymentType" label-width="120px">
+							<el-cascader v-model="form.targetPaymentType" :options="paymentTypeTree" :props="props" @change="handleChange" placeholder="请选择收入方支付类型"></el-cascader>
+						</el-form-item>
+
+						<!-- 收入方户名 -->
+						<el-form-item label="户名" prop="targetAccountName" label-width="120px">
+							<el-row>
+								<el-col :span="16">
+									<el-input v-model="form.targetAccountName" placeholder="请输入收入方户名" disabled />
+								</el-col>
+								<el-col :span="8">
+									<SearchOption
+										:limit-info="{ acountsType: form.targetCompanyType }"
+										:get-data="listBankAccount"
+										query-info="acountsName"
+										query-label="户名查找"
+										:query-name="queryTargetBankAccount"
+										@update:queryName="handleUpdateQueryTargetBankAccount"
+										@commitBack="handleCommitBackTargetBankAccount"
+									>
+										<template #table-columns>
+											<el-table-column label="账户类型" align="center" prop="acountsType" />
+											<el-table-column label="显示名称" align="center" prop="displayName" />
+											<el-table-column label="开户名称(户名)" align="center" prop="acountsName" />
+											<el-table-column label="账号(银行账号)" align="center" prop="bankNo" />
+											<el-table-column label="开户行" align="center" prop="bankName" />
+											<el-table-column label="公司名称" align="center" prop="companyName" />
+										</template>
+									</SearchOption>
+								</el-col>
+							</el-row>
+						</el-form-item>
+
+						<!-- 收入方账号 -->
+						<el-form-item label="账号" prop="targetBankNo" label-width="120px">
+							<el-input v-model="form.targetBankNo" placeholder="请输入收入方账号" disabled />
+						</el-form-item>
+
+						<!-- 收入方开户行 -->
+						<el-form-item label="开户行" prop="targetBankName" label-width="120px">
+							<el-input v-model="form.targetBankName" placeholder="请输入收入方开户行" disabled />
+						</el-form-item>
+					</el-col>
 				</el-row>
 
 				<!--        1.选择原 只有在内部转账的情况下才会展示-->
@@ -306,11 +489,10 @@
 					</el-form-item>
 				</div>
 
-				<el-divider>
+				<el-divider v-if="CASH_TYPE.TRANSFER === cashType">
 					<div>
 						<el-icon class="el-icon-remove" />
-						<span v-if="CASH_TYPE.TRANSFER === cashType">资金流入</span>
-						<span v-else>支出方信息</span>
+						<span>资金流入</span>
 					</div>
 				</el-divider>
 				<el-form-item label="目标账户" v-if="cashType === CASH_TYPE.TRANSFER">
@@ -347,88 +529,6 @@
 						</el-col>
 					</el-row>
 				</el-form-item>
-				<!--        如果是冲抵货款 才要选择对方的公司类型 而如果是其他类型 不需要选择 直接填充-->
-				<el-row v-if="cashType === CASH_TYPE.OFF_SETTING">
-					<el-form-item label="支出方类型">
-						<el-radio v-model="form.targetCompanyType" label="客户">客户</el-radio>
-						<el-radio v-model="form.targetCompanyType" label="供应商">供应商</el-radio>
-						<el-radio v-model="form.targetCompanyType" label="司机">司机</el-radio>
-					</el-form-item>
-					<el-form-item label="支出方">
-						<el-row>
-							<el-col :span="14">
-								<el-input disabled v-model="targetName" type="text" placeholder="请选择" />
-							</el-col>
-							<template v-if="cashType === CASH_TYPE.OFF_SETTING">
-								<!--               如果是司机-->
-								<el-col v-if="form.targetCompanyType === '司机'" :span="4">
-									<SearchOption
-										:limit-info="{}"
-										:get-data="listCars"
-										query-info="driver"
-										query-label="司机姓名"
-										:query-name="queryDriver"
-										@update:queryName="handleUpdateDriver"
-										@commitBack="handleCommitBackDriver"
-									>
-										<template #table-columns>
-											<el-table-column label="司机姓名" align="center" prop="driver" />
-											<el-table-column label="司机电话" align="center" prop="tel" />
-											<el-table-column label="账号类型" align="center" prop="acountsType" />
-											<el-table-column label="运输类型" align="center" prop="carType" />
-										</template>
-									</SearchOption>
-								</el-col>
-								<!--              如果是己方公司-->
-								<el-col v-else-if="form.targetCompanyType === '己方公司'" :span="4">
-									<SearchOption
-										:limit-info="{
-											acountsType: form.targetCompanyType
-										}"
-										:get-data="listBankAccount"
-										query-info="acountsName"
-										query-label="户名查找"
-										:query-name="querySelfAccount"
-										@update:queryName="handleUpdateSelfAccount"
-										@commitBack="handleCommitBackSelfAccount"
-									>
-										<template #table-columns>
-											<el-table-column label="账户类型" align="center" prop="acountsType" />
-											<el-table-column label="显示名称" align="center" prop="displayName" />
-											<el-table-column label="开户名称(户名)" align="center" prop="acountsName" />
-											<el-table-column label="账号(银行账号)" align="center" prop="bankNo" />
-											<el-table-column label="开户行" align="center" prop="bankName" />
-											<el-table-column label="公司名称" align="center" prop="companyName" />
-										</template>
-									</SearchOption>
-								</el-col>
-								<!--            其他-->
-								<el-col v-else :span="4">
-									<SearchOption
-										:limit-info="{
-											companyType: form.targetCompanyType
-										}"
-										:get-data="listCompany"
-										query-info="companyName"
-										query-label="公司名称"
-										:query-name="queryCompanyName"
-										@update:queryName="handleUpdateCompanyNamePay"
-										@commitBack="handleCommitBackCompanyPay"
-									>
-										<template #table-columns>
-											<el-table-column label="公司名称" align="center" prop="companyName" />
-											<el-table-column label="公司类型" align="center" prop="companyType" />
-											<el-table-column label="老板姓名" align="center" prop="leader" />
-											<el-table-column label="老板电话" align="center" prop="leaderTel" />
-											<el-table-column label="区域" align="center" prop="region" />
-											<el-table-column label="销售经理" align="center" prop="salesManager" />
-										</template>
-									</SearchOption>
-								</el-col>
-							</template>
-						</el-row>
-					</el-form-item>
-				</el-row>
 				<div v-if="cashType === CASH_TYPE.TRANSFER">
 					<!--          选择支出账户类型-->
 					<el-form-item label="支出账户类型">
@@ -546,6 +646,7 @@ import { parseTime } from '../../../utils/ruoyi';
 import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfile';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
 import { mixin_record_uploadFiles } from '../../dashboard/mixins/record/record_upload';
+import { mixin_payment_subject } from '../../dashboard/mixins/payment/payment_subject';
 import { CASH_TYPE } from './constrant';
 import { mixin_record_fill } from './recordFill';
 import BANK_ACCEPTANCE from '@/components/NeedToShow/BANK_ACCEPTANCE.vue';
@@ -563,7 +664,9 @@ export default {
 		// 通用文件上传下载混入
 		mixin_checkfile,
 		// 通用银行卡类型选择混入
-		mixin_bankType
+		mixin_bankType,
+		// 支付类型选择混入
+		mixin_payment_subject
 	],
 	data() {
 		return {
@@ -632,22 +735,24 @@ export default {
 					visible: true
 				},
 				{ key: 7, label: '转账账户', prop: 'sourceBankNo', visible: true },
+				{ key: 8, label: '资金流出户名', prop: 'sourceAccountName', visible: true },
 				{
-					key: 8,
+					key: 9,
 					label: '冲抵类型',
 					prop: 'offsetType',
 					visible: true
 				},
 				{
-					key: 9,
+					key: 10,
 					label: '支出方公司类型',
 					prop: 'expenseCompanyType',
 					visible: true
 				},
-				{ key: 10, label: '附件', prop: 'attachment', visible: true },
-				{ key: 11, label: '备注', prop: 'comments', visible: true },
-				{ key: 12, label: '账户类型', prop: 'comments', visible: true },
-				{ key: 13, label: '操作人员类型', prop: 'comments', visible: true }
+				{ key: 11, label: '资金流入户名', prop: 'targetAccountName', visible: true },
+				{ key: 12, label: '附件', prop: 'attachment', visible: true },
+				{ key: 13, label: '备注', prop: 'comments', visible: true },
+				{ key: 14, label: '账户类型', prop: 'comments', visible: true },
+				{ key: 15, label: '操作人员类型', prop: 'comments', visible: true }
 			],
 			// 表单校验
 			rules: {
@@ -693,7 +798,19 @@ export default {
 			cashType: CASH_TYPE.OFF_SETTING,
 
 			// 新增的字段
-			querySourceBankNo: null
+			querySourceBankNo: null,
+			// 新增银行账户查询变量
+			querySourceBankAccount: null,
+			queryTargetBankAccount: null,
+			// 司机查询变量 - 分别为支出方和收入方
+			querySourceDriver: null,
+			queryTargetDriver: null,
+			// 公司查询变量 - 分别为支出方和收入方
+			querySourceCompanyName: null,
+			queryTargetCompanyName: null,
+			// 己方公司查询变量 - 分别为支出方和收入方
+			querySourceSelfAccount: null,
+			queryTargetSelfAccount: null
 		};
 	},
 	// 计算属性
@@ -711,7 +828,7 @@ export default {
 		/**
 		 * 显示的去
 		 * 冲抵货款的时候就是收入方金额
-		 * 内部转账的时候显示收入方 并且要显示填充搜索按钮
+		 * 内部转账的时候显示目标账号 并且要显示填充搜索按钮
 		 */
 		target() {
 			// 如果是冲抵货款 那么就是用货款来去冲抵金额
@@ -719,21 +836,21 @@ export default {
 				return '支出方金额';
 			}
 			if (this.cashType === CASH_TYPE.TRANSFER) {
-				return '支出方';
+				return '目标账号';
 			}
 			return '支出';
 		},
 		/**
 		 * 显示的源
 		 * 冲抵货款的时候就是支出方金额
-		 * 内部转账的时候显示支出方 并且要显示填充搜索按钮
+		 * 内部转账的时候显示转账账号 并且要显示填充搜索按钮
 		 */
 		source() {
 			if (this.cashType === CASH_TYPE.OFF_SETTING) {
 				return '收入方金额';
 			}
 			if (this.cashType === CASH_TYPE.TRANSFER) {
-				return '收入方';
+				return '转账账号';
 			}
 
 			return '收入';
@@ -766,6 +883,72 @@ export default {
 			if (uploadParams && uploadParams.params && uploadParams.params.attachmentIds) {
 				this.form.params.attachmentIds = uploadParams.params.attachmentIds;
 			}
+		},
+		// 收入方银行账户查询相关函数
+		handleUpdateQuerySourceBankAccount(value) {
+			this.querySourceBankAccount = value;
+		},
+		handleCommitBackSourceBankAccount(value) {
+			this.form.sourceAccountName = value.acountsName;
+			this.form.sourceBankNo = value.bankNo;
+			this.form.sourceBankName = value.bankName;
+		},
+		// 支出方银行账户查询相关函数
+		handleUpdateQueryTargetBankAccount(value) {
+			this.queryTargetBankAccount = value;
+		},
+		handleCommitBackTargetBankAccount(value) {
+			this.form.targetAccountName = value.acountsName;
+			this.form.targetBankNo = value.bankNo;
+			this.form.targetBankName = value.bankName;
+		},
+		// 支出方司机查询相关函数
+		handleUpdateSourceDriver(value) {
+			this.querySourceDriver = value;
+		},
+		handleCommitBackSourceDriver(value) {
+			this.sourceName = value.driver;
+			this.form.sourceId = value.id;
+		},
+		// 收入方司机查询相关函数
+		handleUpdateTargetDriver(value) {
+			this.queryTargetDriver = value;
+		},
+		handleCommitBackTargetDriver(value) {
+			this.targetName = value.driver;
+			this.form.targetId = value.id;
+		},
+		// 支出方公司查询相关函数
+		handleUpdateSourceCompanyName(value) {
+			this.querySourceCompanyName = value;
+		},
+		handleCommitBackSourceCompany(value) {
+			this.sourceName = value.companyName;
+			this.form.sourceId = value.id;
+		},
+		// 收入方公司查询相关函数
+		handleUpdateTargetCompanyName(value) {
+			this.queryTargetCompanyName = value;
+		},
+		handleCommitBackTargetCompany(value) {
+			this.targetName = value.companyName;
+			this.form.targetId = value.id;
+		},
+		// 支出方己方公司查询相关函数
+		handleUpdateSourceSelfAccount(value) {
+			this.querySourceSelfAccount = value;
+		},
+		handleCommitBackSourceSelfAccount(value) {
+			this.sourceName = value.acountsName;
+			this.form.sourceId = value.id;
+		},
+		// 收入方己方公司查询相关函数
+		handleUpdateTargetSelfAccount(value) {
+			this.queryTargetSelfAccount = value;
+		},
+		handleCommitBackTargetSelfAccount(value) {
+			this.targetName = value.acountsName;
+			this.form.targetId = value.id;
 		},
 		//referenceTableName为 transfor的时候才进行判断,显示为银行活期存款,如果不为空 那么就是承兑类型
 		handleDisplayType(row, referenceTableName) {
@@ -823,7 +1006,16 @@ export default {
 				otherBankType: null,
 				// 2025-2-28 新增转账账户
 				sourceBankNo: null,
+				// 支出方额外字段 - 用于冲抵货款时的支付详细信息
 				targetBankNo: null,
+				// 收入方支付详细信息
+				sourcePaymentType: null,
+				sourceAccountName: null,
+				sourceBankName: null,
+				// 支出方支付详细信息
+				targetPaymentType: null,
+				targetAccountName: null,
+				targetBankName: null,
 				bankacceptance: null,
 				params: {
 					attachmentIds: []
@@ -875,6 +1067,17 @@ export default {
 				const data = response.data;
 				this.form = data;
 				this.cashType = data.referenceTableName;
+
+				// 处理收入方支付类型 - 将字符串转换为数组
+				if (this.form.sourcePaymentType && typeof this.form.sourcePaymentType === 'string') {
+					this.form.sourcePaymentType = this.form.sourcePaymentType.split('-');
+				}
+
+				// 处理支出方支付类型 - 将字符串转换为数组
+				if (this.form.targetPaymentType && typeof this.form.targetPaymentType === 'string') {
+					this.form.targetPaymentType = this.form.targetPaymentType.split('-');
+				}
+
 				this.$nextTick(() => {
 					// 公共字段填充逻辑
 					this.sourceName = data.sourceCompanyName;
@@ -933,6 +1136,16 @@ export default {
 					if (attachmentParams && attachmentParams.params) {
 						this.form.params = { ...this.form.params, ...attachmentParams.params };
 					}
+				}
+
+				// 处理收入方支付类型 - 将数组转换为以短横线分隔的字符串
+				if (this.form.sourcePaymentType && Array.isArray(this.form.sourcePaymentType)) {
+					this.form.sourcePaymentType = this.form.sourcePaymentType.join('-');
+				}
+
+				// 处理支出方支付类型 - 将数组转换为以短横线分隔的字符串
+				if (this.form.targetPaymentType && Array.isArray(this.form.targetPaymentType)) {
+					this.form.targetPaymentType = this.form.targetPaymentType.join('-');
 				}
 
 				// 提取公共逻辑
