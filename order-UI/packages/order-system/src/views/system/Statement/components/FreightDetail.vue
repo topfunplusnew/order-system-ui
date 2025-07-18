@@ -167,15 +167,21 @@ export default {
 		},
 		// 查询对应的信息 通过拿表名和id  对应两个字段为tableName payNo
 		handleSearch(row) {
+			console.log(`检查明细`, this.needToShowInfo);
+			let fillTableName = null;
 			// 拿到表名和id
-			const { tableName, payNo } = row;
-			if (!tableName || !payNo) {
-				this.$message.warning('该行数据有误:模块名或者凭证号不存在');
+			const { tableName, payNO: payNo } = this.needToShowInfo;
+			fillTableName = tableName;
+			if (!payNo) {
+				this.$message.warning('该行数据有误:该模块凭证号不存在');
 				return;
 			}
+			if (!fillTableName) {
+				fillTableName = TableName.PAYMENT;
+			}
 			// 根据tableName动态获取某个JS模块
-			if (tableName && payNo) {
-				getFunction(tableName)(payNo).then(res => {
+			if (fillTableName && payNo) {
+				getFunction(fillTableName)(payNo).then(res => {
 					if (!res.data) {
 						this.$message.warning('查询该模块条件下，暂无详细数据');
 						return;
