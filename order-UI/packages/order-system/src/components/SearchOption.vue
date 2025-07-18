@@ -138,6 +138,10 @@ export default {
 		// 点击确认
 		commitSomeThing(row) {
 			this.$emit('commitBack', row);
+			this.query = '';
+			Object.keys(this.computedQueryItems.queryList).forEach(key => {
+				this.computedQueryItems.queryList[key].value = '';
+			});
 			this.dialogVisible = false;
 		},
 		// 条件查询
