@@ -31,7 +31,7 @@ export default {
 		handleCheck(row) {
 			// 拿到表名和id
 			const { tableName, payNo } = this.needToShowInfo;
-			if (!tableName || !payNo) {
+			if (!payNo) {
 				this.$message.warning('该行数据有误:模块名或者凭证号不存在');
 				return;
 			}

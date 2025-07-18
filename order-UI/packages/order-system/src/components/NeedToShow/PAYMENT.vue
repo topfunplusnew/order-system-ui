@@ -33,10 +33,11 @@ export default {
 	},
 	methods: {
 		handleCheck(row) {
+			console.log(`检查明细`, this.needToShowInfo);
 			// 拿到表名和id
 			const { tableName, payNo } = this.needToShowInfo;
-			if (!tableName || !payNo) {
-				this.$message.warning('该行数据有误:模块名或者凭证号不存在');
+			if (!payNo) {
+				this.$message.warning('该行数据有误:该模块凭证号不存在');
 				return;
 			}
 			// 根据tableName动态获取某个JS模块
