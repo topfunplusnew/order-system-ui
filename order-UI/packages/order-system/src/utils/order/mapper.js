@@ -34,6 +34,7 @@ import { getStoreHouse } from '../../api/system/StoreHouse';
 import { TableName } from '../../api/tool/enums';
 import { getGenTable } from '../../api/tool/gen';
 import { getRecord } from '@/api/system/record';
+import { getPaymentApply } from '@/api/system/paymentApply';
 import CARS from '@/components/NeedToShow/CARS.vue';
 import BORROWMONEY from '@/components/NeedToShow/BORROWMONEY.vue';
 import ORDER_FREIGHT from '@/components/NeedToShow/ORDER_FREIGHT.vue';
@@ -135,6 +136,10 @@ export function getFunction(tableName) {
 			return getStoreHouse;
 		case TableName.BANK_ACCEPTANCE:
 			return getBankAcceptance;
+
+		// 如果是daily 查询付款申请表
+		case TableName.DAILY:
+			return getPaymentApply;
 	}
 }
 
