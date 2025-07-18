@@ -33,7 +33,19 @@ export default {
 	},
 	methods: {
 		handleCheck(row) {
-			const { tableName: fillTableName = TableName.PAYMENT, tID: tid = this.needToShowInfo.id } = this.needToShowInfo;
+			let fillTableName = TableName.PAYMENT;
+			let tid = this.needToShowInfo.id;
+			const { tableName, tID } = this.needToShowInfo;
+			if (!tableName && !tID) {
+				this.$message.warning('当前付款信息不牵扯任何其他模块，无详细信息');
+				return;
+			}
+			if (tableName) {
+				fillTableName = tableName;
+			}
+			if (tID) {
+				tid = tID;
+			}
 			// 根据tableName动态获取某个JS模块
 			getFunction(fillTableName)(tid).then(res => {
 				if (!res.data) {
@@ -82,15 +94,38 @@ export default {
 				<span>付款信息</span>
 				<el-button type="text" @click="handleCheck" style="float: right">查看详细</el-button>
 			</div>
-			<el-descriptions>
-				<el-descriptions-item label="所属公司">{{ needToShowInfo.companyName }}</el-descriptions-item>
+			<el-descriptions :column="3" border>
+				<el-descriptions-item label="付款编号">{{ needToShowInfo.payNO }}</el-descriptions-item>
+				<el-descriptions-item label="所属公司">{{ needToShowInfo.companyName || '暂无' }}</el-descriptions-item>
+				<el-descriptions-item label="公司类型">{{ needToShowInfo.companyType }}</el-descriptions-item>
 				<el-descriptions-item label="资金日期">{{ needToShowInfo.fundsDate }}</el-descriptions-item>
 				<el-descriptions-item label="付款类型">{{ needToShowInfo.payType }}</el-descriptions-item>
-				<el-descriptions-item label="金额">{{ needToShowInfo.moneyAmount }} 元</el-descriptions-item>
-				<el-descriptions-item label="付款状态">{{ needToShowInfo.paymentState }}</el-descriptions-item>
-				<el-descriptions-item label="审核状态">{{ needToShowInfo.auditState }}</el-descriptions-item>
-				<el-descriptions-item label="备注">
-					<el-tag size="small">{{ needToShowInfo.comments }}</el-tag>
+				<el-descriptions-item label="金额" label-class-name="money-label">
+					<span style="color: #E6A23C; font-weight: bold;">{{ needToShowInfo.moneyAmount }} 元</span>
+				</el-descriptions-item>
+				<el-descriptions-item label="付款状态">
+					<el-tag :type="needToShowInfo.paymentState === '已支付' ? 'success' : 'warning'">
+						{{ needToShowInfo.paymentState }}
+					</el-tag>
+				</el-descriptions-item>
+				<el-descriptions-item label="审核状态">
+					<el-tag v-if="needToShowInfo.auditState" :type="needToShowInfo.auditState === '已审核' ? 'success' : 'info'">
+						{{ needToShowInfo.auditState }}
+					</el-tag>
+					<span v-else>暂无</span>
+				</el-descriptions-item>
+				<el-descriptions-item label="自方银行卡类型">{{ needToShowInfo.selfBankCardType || '暂无' }}</el-descriptions-item>
+				<el-descriptions-item label="自方户名">{{ needToShowInfo.selfAcountsName || '暂无' }}</el-descriptions-item>
+				<el-descriptions-item label="自方银行账号">{{ needToShowInfo.selfBankNo || '暂无' }}</el-descriptions-item>
+				<el-descriptions-item label="自方开户行">{{ needToShowInfo.selfBankName || '暂无' }}</el-descriptions-item>
+				<el-descriptions-item label="对方银行卡类型">{{ needToShowInfo.otherBankCardType || '暂无' }}</el-descriptions-item>
+				<el-descriptions-item label="对方户名">{{ needToShowInfo.otherAcountsName || '暂无' }}</el-descriptions-item>
+				<el-descriptions-item label="对方银行账号">{{ needToShowInfo.otherBankNo || '暂无' }}</el-descriptions-item>
+				<el-descriptions-item label="对方开户行">{{ needToShowInfo.otherBankName || '暂无' }}</el-descriptions-item>
+				<el-descriptions-item label="操作人员">{{ needToShowInfo.userName }}</el-descriptions-item>
+				<el-descriptions-item label="备注" :span="3">
+					<el-tag v-if="needToShowInfo.comments" size="small" type="info">{{ needToShowInfo.comments }}</el-tag>
+					<span v-else>暂无备注</span>
 				</el-descriptions-item>
 			</el-descriptions>
 		</el-card>
@@ -106,4 +141,31 @@ export default {
 	</div>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.money-label {
+	font-weight: bold;
+}
+
+:deep(.el-descriptions__label) {
+	font-weight: 600;
+	color: #606266;
+}
+
+:deep(.el-descriptions__content) {
+	color: #303133;
+}
+
+.el-card {
+	margin-bottom: 20px;
+}
+
+.clearfix:before,
+.clearfix:after {
+	display: table;
+	content: "";
+}
+
+.clearfix:after {
+	clear: both;
+}
+</style>

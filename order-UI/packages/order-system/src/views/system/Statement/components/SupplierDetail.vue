@@ -171,7 +171,6 @@ export default {
 		},
 		// 查询对应的信息 通过拿表名和id  对应两个字段为tableName payNo
 		handleSearch(row) {
-			console.log(row);
 			// 拿到表名和id
 			const { tableName, payNo } = row;
 			if (!tableName || !payNo) {
