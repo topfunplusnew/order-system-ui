@@ -43,7 +43,7 @@ export default {
 				// 填充数据
 				this.needToShowInfo = res.data;
 				// 根据对应表名渲染对应的展示组件
-				this.Components = this.getComponents(tableName);
+				this.Components = this.getComponents(fillTableName);
 				if (this.Components == null) {
 					this.$message.warning('组件渲染有误');
 					return;

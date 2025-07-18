@@ -355,9 +355,14 @@ export default {
 			this.detailVisible = true;
 		},
 		handleSearch(row) {
-			const { tableName: fillTableName = TableName.PAYMENT, tID: tid = this.needToShowInfo.id } = this.needToShowInfo;
+			// 拿到表名和id
+			const { tableName, payNo } = row;
+			if (!tableName || !payNo) {
+				this.$message.warning('该行数据有误:模块名或者凭证号不存在');
+				return;
+			}
 			// 根据tableName动态获取某个JS模块
-			getFunction(fillTableName)(tid).then(res => {
+			getFunction(tableName)(payNo).then(res => {
 				if (!res.data) {
 					this.$message.warning('查询该模块条件下，暂无详细数据');
 					return;
@@ -377,6 +382,9 @@ export default {
 		},
 		// 根据对应的表名渲染对应的组件
 		getComponents(tableName) {
+			if (tableName == null) {
+				return PAYMENT;
+			}
 			const components = {
 				[TableName.GOODS_ORDER]: GOODS_ORDER,
 				// 付款

@@ -171,11 +171,15 @@ export default {
 		},
 		// 查询对应的信息 通过拿表名和id  对应两个字段为tableName payNo
 		handleSearch(row) {
-			console.log(`检查明细`, this.needToShowInfo);
-			// 解构获取表名和ID，优先使用 tID，其次使用 id
-			const { tableName: fillTableName = TableName.PAYMENT, tID: tid = this.needToShowInfo.id } = this.needToShowInfo;
+			console.log(row);
+			// 拿到表名和id
+			const { tableName, payNo } = row;
+			if (!tableName || !payNo) {
+				this.$message.warning('该行数据有误:模块名或者凭证号不存在');
+				return;
+			}
 			// 根据tableName动态获取某个JS模块
-			getFunction(fillTableName)(tid).then(res => {
+			getFunction(tableName)(payNo).then(res => {
 				// 填充数据
 				this.needToShowInfo = res.data;
 				// 根据对应表名渲染对应的展示组件

@@ -352,9 +352,14 @@ export default {
 				});
 		},
 		handleSearch(row) {
-			const { tableName: fillTableName = TableName.PAYMENT, tID: tid = this.needToShowInfo.id } = this.needToShowInfo;
+			// 拿到表名和id
+			const { tableName, payNo } = row;
+			if (!tableName || !payNo) {
+				this.$message.warning('该行数据有误:模块名或者凭证号不存在');
+				return;
+			}
 			// 根据tableName动态获取某个JS模块
-			getFunction(fillTableName)(tid).then(res => {
+			getFunction(tableName)(payNo).then(res => {
 				if (!res.data) {
 					this.$message.warning('查询该模块条件下，暂无详细数据');
 					return;
