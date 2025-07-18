@@ -186,18 +186,18 @@ export default {
 			});
 		},
 		handleCancel() {
-			this.dialogVisible = false;
 			this.query = '';
 			Object.keys(this.computedQueryItems.queryList).forEach(key => {
 				this.computedQueryItems.queryList[key].value = '';
 			});
+			this.dialogVisible = false;
 		},
 		handleSubmit() {
-			this.dialogVisible = false;
 			this.query = '';
 			Object.keys(this.computedQueryItems.queryList).forEach(key => {
 				this.computedQueryItems.queryList[key].value = '';
 			});
+			this.dialogVisible = false;
 		}
 	}
 };
