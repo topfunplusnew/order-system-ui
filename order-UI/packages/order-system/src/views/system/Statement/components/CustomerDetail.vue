@@ -25,10 +25,12 @@ import { parseTime } from '@/utils/ruoyi';
 import { listCompany } from '@/api/system/company';
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
 import { formatBalance } from '@/utils/trash/utils';
+import { common_excel } from '@/views/dashboard/mixins/common/common_excel';
 
 export default {
 	name: 'CustomerDetail',
 	components: { SearchOption, TotalTag },
+	mixins: [common_excel],
 	data() {
 		return {
 			searchForm: {
@@ -226,6 +228,14 @@ export default {
 			getCustomerFiveParams(companyId).then(res => {
 				this.tags = res.data || null;
 			});
+		},
+		// 导出Excel
+		handleExport() {
+			if (!this.tableData || this.tableData.length === 0) {
+				this.$message.warning('请先搜索数据后再导出');
+				return;
+			}
+			this.excelExport(['点击查询对应信息'], '客户科目明细表');
 		}
 	}
 };
@@ -269,6 +279,7 @@ export default {
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleCheck">搜索</el-button>
+				<el-button type="success" icon="el-icon-folder-opened" size="mini" @click="handleExport">导出Excel</el-button>
 			</el-form-item>
 		</el-form>
 		<TotalTag :tags="tags" />

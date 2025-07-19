@@ -80,8 +80,7 @@ export function listOrderDetailByOrderNos(query) {
 // 根据订单明细id查询主表所有信息
 export function getOrderMainByDetailId(id) {
 	return request({
-		// TODO 这个地址到时候换一下
-		url: '/system/orderDetail/getOrderMainByDetailId/' + id,
+		url: '/system/goodsOrder/detail/' + id,
 		method: 'get'
 	});
 }

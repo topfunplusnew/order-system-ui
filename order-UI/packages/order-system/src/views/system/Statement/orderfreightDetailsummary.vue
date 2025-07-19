@@ -33,18 +33,11 @@
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML" />
 					</el-col>
 				</template>
-				<!-- 后端说把导出扣了 -->
-				<!-- <template #export>
-          <el-col :span="1.5">
-            <el-button
-              v-hasPermi="['system:company:export']"
-              plain
-              icon="el-icon-folder-opened"
-              size="mini"
-              @click="handleExport"
-            />
-          </el-col>
-        </template> -->
+				<template #export>
+					<el-col :span="1.5">
+						<el-button plain icon="el-icon-folder-opened" size="mini" @click="handleExport">导出Excel</el-button>
+					</el-col>
+				</template>
 			</right-toolbar>
 		</el-row>
 
@@ -165,12 +158,13 @@ import { getFreightSubjectDetailSummary, getFreightSubjectDetailSummarySomeDay, 
 import { parseTime } from '../../../utils/ruoyi';
 import { fix } from 'order-system/src/api/tool/format';
 import { formatBalance } from '../../../utils/trash/utils';
+import { common_excel } from '@/views/dashboard/mixins/common/common_excel';
 
 export default {
 	name: 'LendMoney',
 	components: {},
 	dicts: ['order_target_type'],
-	mixins: [mixin_printHTML],
+	mixins: [mixin_printHTML, common_excel],
 	data() {
 		return {
 			// 遮罩层
@@ -303,7 +297,7 @@ export default {
 		},
 		/** 导出按钮操作 */
 		handleExport() {
-			this.dialogVisible = true;
+			this.excelExport(['查看详情'], '运费科目汇总账');
 		}
 	}
 };

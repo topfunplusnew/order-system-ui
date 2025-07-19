@@ -70,7 +70,11 @@
 					</span>
 				</template>
 			</el-table-column>
-			<el-table-column prop="lastOrderTime" label="最后一次交易日期"></el-table-column>
+			<el-table-column prop="lastOrderTime" label="最后一次交易日期">
+				<template slot-scope="scope">
+					{{ scope.row.lastOrderTime ? scope.row.lastOrderTime.slice(0, 10) : '' }}
+				</template>
+			</el-table-column>
 			<el-table-column label="查看客户信息" align="center">
 				<template slot-scope="scope">
 					<el-link :underline="false" type="primary" @click="handleViewCustomerInfo(scope.row.companyId)">查看</el-link>

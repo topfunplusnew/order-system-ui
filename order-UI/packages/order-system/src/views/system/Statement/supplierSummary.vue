@@ -31,18 +31,11 @@
 					</el-col>
 				</template>
 
-				<!-- 后端说把导出扣了 -->
-				<!-- <template #export>
-          <el-col :span="1.5">
-            <el-button
-              v-hasPermi="['system:company:export']"
-              plain
-              icon="el-icon-folder-opened"
-              size="mini"
-              @click="handleExport"
-            />
-          </el-col>
-        </template> -->
+				<template #export>
+					<el-col :span="1.5">
+						<el-button plain icon="el-icon-folder-opened" size="mini" @click="handleExport">导出Excel</el-button>
+					</el-col>
+				</template>
 			</right-toolbar>
 		</el-row>
 
@@ -106,12 +99,13 @@ import { parseTime } from '../../../utils/ruoyi';
 
 import { getConfigValue } from './data/config_get';
 import { formatBalance } from '../../../utils/trash/utils';
+import { common_excel } from '@/views/dashboard/mixins/common/common_excel';
 
 export default {
 	name: 'CustomerSummary',
 	components: {},
 	dicts: ['order_target_type'],
-	mixins: [mixin_printHTML],
+	mixins: [mixin_printHTML, common_excel],
 	data() {
 		return {
 			// 遮罩层
@@ -195,17 +189,7 @@ export default {
 			this.getList();
 		},
 		handleExport() {
-			this.$datePicker().then(({ beginTime, endTime }) => {
-				this.queryParams.beginTime = beginTime;
-				this.queryParams.endTime = endTime;
-				this.download(
-					'statistics/export/supplierSummary',
-					{
-						...this.queryParams
-					},
-					`供应商科目余额汇总表_${parseTime(new Date().getTime())}.xlsx`
-				);
-			});
+			this.excelExport(['查看详情'], '供应商科目余额汇总表');
 		}
 	}
 };
