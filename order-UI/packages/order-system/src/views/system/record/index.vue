@@ -72,28 +72,23 @@
 					<span>{{ parseTime(scope.row.transactionTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[3].visible" label="支出方/资金流出方" align="center" prop="sourceCompanyName" show-overflow-tooltip />
-			<el-table-column v-if="columns[5].visible" label="支出方公司类型" align="center" prop="sourceCompanyType" show-overflow-tooltip />
-			<el-table-column v-if="columns[8].visible" label="资金流出户名" align="center" prop="sourceAccountName" show-overflow-tooltip />
-			<el-table-column v-if="columns[7].visible" label="资金流出账号" align="center" prop="sourceBankNo" show-overflow-tooltip />
-			<el-table-column v-if="columns[2].visible" label="金额" align="center" prop="amount" />
-			<el-table-column v-if="columns[10].visible" label="收入公司类型" align="center" prop="targetCompanyType" show-overflow-tooltip />
-			<el-table-column v-if="columns[6].visible" label="收入方/资金流入方" align="center" prop="targetCompanyName" show-overflow-tooltip />
-			<el-table-column v-if="columns[11].visible" label="资金流入户名" align="center" prop="targetAccountName" show-overflow-tooltip />
-			<el-table-column v-if="columns[4].visible" label="资金流入账号" align="center" prop="targetBankNo" show-overflow-tooltip />
-			<el-table-column v-if="columns[9].visible" label="冲抵类型" align="center" show-overflow-tooltip>
+			<el-table-column v-if="columns[2].visible" label="支出方支付类型" align="center" prop="sourcePaymentType" show-overflow-tooltip />
+			<el-table-column v-if="columns[3].visible" label="金额" align="center" prop="amount" />
+			<el-table-column v-if="columns[4].visible" label="收入方/资金流入方" align="center" prop="targetCompanyName" show-overflow-tooltip />
+			<el-table-column v-if="columns[5].visible" label="资金流入账号" align="center" prop="targetBankNo" show-overflow-tooltip />
+			<el-table-column v-if="columns[6].visible" label="收入公司类型" align="center" prop="targetCompanyType" show-overflow-tooltip />
+			<el-table-column v-if="columns[7].visible" label="收入方支付类型" align="center" prop="targetPaymentType" show-overflow-tooltip />
+			<el-table-column v-if="columns[8].visible" label="支出方/资金流出方" align="center" prop="sourceCompanyName" show-overflow-tooltip />
+			<el-table-column v-if="columns[9].visible" label="资金流出账号" align="center" prop="sourceBankNo" show-overflow-tooltip />
+			<el-table-column v-if="columns[10].visible" label="资金流出户名" align="center" prop="sourceAccountName" show-overflow-tooltip />
+			<el-table-column v-if="columns[11].visible" label="冲抵类型" align="center" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<span>{{ scope.row.referenceTableName === 'offsetting' ? '冲抵货款' : '内部转账' }}</span>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[14].visible" label="账户类型" align="center" show-overflow-tooltip>
-				<template slot-scope="scope">
-					<div>
-						{{ handleDisplayType(scope.row, scope.row.referenceTableName) }}
-					</div>
-				</template>
-			</el-table-column>
-			<el-table-column v-if="columns[12].visible" label="附件" align="center" prop="attachment">
+			<el-table-column v-if="columns[12].visible" label="支出方公司类型" align="center" prop="sourceCompanyType" show-overflow-tooltip />
+			<el-table-column v-if="columns[13].visible" label="资金流入户名" align="center" prop="targetAccountName" show-overflow-tooltip />
+			<el-table-column v-if="columns[14].visible" label="附件" align="center" prop="attachment">
 				<template #default="scope">
 					<div v-if="Array.isArray(scope.row.attachmentList)">
 						<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'attachment'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getRecord, updateRecord)" />
@@ -103,8 +98,15 @@
 					</div>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[13].visible" label="备注" align="center" prop="remarks" show-overflow-tooltip />
-			<el-table-column v-if="columns[15].visible" label="操作人员姓名" align="center" prop="userName" show-overflow-tooltip />
+			<el-table-column v-if="columns[15].visible" label="备注" align="center" prop="remarks" show-overflow-tooltip />
+			<el-table-column v-if="columns[16].visible" label="账户类型" align="center" show-overflow-tooltip>
+				<template slot-scope="scope">
+					<div>
+						{{ handleDisplayType(scope.row, scope.row.referenceTableName) }}
+					</div>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[17].visible" label="操作人员姓名" align="center" prop="userName" show-overflow-tooltip />
 
 			<!-- 操作列 -->
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -133,6 +135,15 @@
 						<span>资金流出</span>
 					</div>
 				</el-divider>
+
+				<!-- 资金流出方支付类型 -->
+				<el-form-item label="资金流出方支付类型" prop="sourcePaymentType" v-if="cashType === CASH_TYPE.TRANSFER">
+					<el-row>
+						<el-col :span="14">
+							<el-input v-model="sourcePaymentTypeDisplay" placeholder="内部往来支出" disabled />
+						</el-col>
+					</el-row>
+				</el-form-item>
 
 				<!--        2025-2-28 新增转账账户-->
 				<el-form-item label="转账账户" v-if="cashType === CASH_TYPE.TRANSFER">
@@ -185,6 +196,11 @@
 							<el-radio v-model="form.sourceCompanyType" label="客户">客户</el-radio>
 							<el-radio v-model="form.sourceCompanyType" label="供应商">供应商</el-radio>
 							<el-radio v-model="form.sourceCompanyType" label="司机">司机</el-radio>
+						</el-form-item>
+
+						<!-- 支出方支付类型 -->
+						<el-form-item label="支付类型" prop="sourcePaymentType" label-width="120px">
+							<el-cascader v-model="form.sourcePaymentType" :options="paymentTypeTree" :props="props" @change="handleChange" placeholder="请选择支出方支付类型"></el-cascader>
 						</el-form-item>
 
 						<el-form-item label="支出方" label-width="120px">
@@ -260,11 +276,6 @@
 							</el-row>
 						</el-form-item>
 
-						<!-- 支出方支付类型 -->
-						<el-form-item label="支付类型" prop="sourcePaymentType" label-width="120px">
-							<el-cascader v-model="form.sourcePaymentType" :options="paymentTypeTree" :props="props" @change="handleChange" placeholder="请选择支出方支付类型"></el-cascader>
-						</el-form-item>
-
 						<!-- 支出方户名 -->
 						<el-form-item label="户名" prop="sourceAccountName" label-width="120px">
 							<el-row>
@@ -273,7 +284,10 @@
 								</el-col>
 								<el-col :span="8">
 									<SearchOption
-										:limit-info="{ acountsType: form.sourceCompanyType }"
+										:limit-info="{
+											acountsType: form.sourceCompanyType,
+											acountsName: sourceName
+										}"
 										:get-data="listBankAccount"
 										query-info="acountsName"
 										query-label="户名查找"
@@ -318,6 +332,11 @@
 							<el-radio v-model="form.targetCompanyType" label="客户">客户</el-radio>
 							<el-radio v-model="form.targetCompanyType" label="供应商">供应商</el-radio>
 							<el-radio v-model="form.targetCompanyType" label="司机">司机</el-radio>
+						</el-form-item>
+
+						<!-- 收入方支付类型 -->
+						<el-form-item label="支付类型" prop="targetPaymentType" label-width="120px">
+							<el-cascader v-model="form.targetPaymentType" :options="paymentTypeTree" :props="props" @change="handleChange" placeholder="请选择收入方支付类型"></el-cascader>
 						</el-form-item>
 
 						<el-form-item label="收入方" label-width="120px">
@@ -393,11 +412,6 @@
 							</el-row>
 						</el-form-item>
 
-						<!-- 收入方支付类型 -->
-						<el-form-item label="支付类型" prop="targetPaymentType" label-width="120px">
-							<el-cascader v-model="form.targetPaymentType" :options="paymentTypeTree" :props="props" @change="handleChange" placeholder="请选择收入方支付类型"></el-cascader>
-						</el-form-item>
-
 						<!-- 收入方户名 -->
 						<el-form-item label="户名" prop="targetAccountName" label-width="120px">
 							<el-row>
@@ -406,7 +420,10 @@
 								</el-col>
 								<el-col :span="8">
 									<SearchOption
-										:limit-info="{ acountsType: form.targetCompanyType }"
+										:limit-info="{
+											acountsType: form.targetCompanyType,
+											acountsName: targetName
+										}"
 										:get-data="listBankAccount"
 										query-info="acountsName"
 										query-label="户名查找"
@@ -495,6 +512,16 @@
 						<span>资金流入</span>
 					</div>
 				</el-divider>
+
+				<!-- 资金流入方支付类型 -->
+				<el-form-item label="资金流入方支付类型" prop="targetPaymentType" v-if="cashType === CASH_TYPE.TRANSFER">
+					<el-row>
+						<el-col :span="14">
+							<el-input v-model="targetPaymentTypeDisplay" placeholder="内部往来收入" disabled />
+						</el-col>
+					</el-row>
+				</el-form-item>
+
 				<el-form-item label="目标账户" v-if="cashType === CASH_TYPE.TRANSFER">
 					<el-row>
 						<el-col :span="14">
@@ -719,40 +746,42 @@ export default {
 					prop: 'transactionTime',
 					visible: true
 				},
-				{ key: 2, label: '金额', prop: 'amount', visible: true },
-				{ key: 3, label: '收入方', prop: 'incomeParty', visible: true },
-				{ key: 4, label: '收入账户', prop: 'targetBankNo', visible: true },
+				{ key: 2, label: '支出方支付类型', prop: 'sourcePaymentType', visible: true },
+				{ key: 3, label: '金额', prop: 'amount', visible: true },
+				{ key: 4, label: '收入方', prop: 'incomeParty', visible: true },
+				{ key: 5, label: '收入账户', prop: 'targetBankNo', visible: true },
 				{
-					key: 5,
+					key: 6,
 					label: '收入方公司类型',
 					prop: 'incomeCompanyType',
 					visible: true
 				},
+				{ key: 7, label: '收入方支付类型', prop: 'targetPaymentType', visible: true },
 				{
-					key: 6,
+					key: 8,
 					label: '支出方',
 					prop: 'expenseParty',
 					visible: true
 				},
-				{ key: 7, label: '转账账户', prop: 'sourceBankNo', visible: true },
-				{ key: 8, label: '资金流出户名', prop: 'sourceAccountName', visible: true },
+				{ key: 9, label: '转账账户', prop: 'sourceBankNo', visible: true },
+				{ key: 10, label: '资金流出户名', prop: 'sourceAccountName', visible: true },
 				{
-					key: 9,
+					key: 11,
 					label: '冲抵类型',
 					prop: 'offsetType',
 					visible: true
 				},
 				{
-					key: 10,
+					key: 12,
 					label: '支出方公司类型',
 					prop: 'expenseCompanyType',
 					visible: true
 				},
-				{ key: 11, label: '资金流入户名', prop: 'targetAccountName', visible: true },
-				{ key: 12, label: '附件', prop: 'attachment', visible: true },
-				{ key: 13, label: '备注', prop: 'comments', visible: true },
-				{ key: 14, label: '账户类型', prop: 'comments', visible: true },
-				{ key: 15, label: '操作人员类型', prop: 'comments', visible: true }
+				{ key: 13, label: '资金流入户名', prop: 'targetAccountName', visible: true },
+				{ key: 14, label: '附件', prop: 'attachment', visible: true },
+				{ key: 15, label: '备注', prop: 'comments', visible: true },
+				{ key: 16, label: '账户类型', prop: 'comments', visible: true },
+				{ key: 17, label: '操作人员类型', prop: 'comments', visible: true }
 			],
 			// 表单校验
 			rules: {
@@ -810,7 +839,10 @@ export default {
 			queryTargetCompanyName: null,
 			// 己方公司查询变量 - 分别为支出方和收入方
 			querySourceSelfAccount: null,
-			queryTargetSelfAccount: null
+			queryTargetSelfAccount: null,
+			// 内部转账支付类型显示字段
+			sourcePaymentTypeDisplay: '内部往来支出',
+			targetPaymentTypeDisplay: '内部往来收入'
 		};
 	},
 	// 计算属性
@@ -862,8 +894,15 @@ export default {
 			 * 只要冲抵类型改变那么就是要重新赋值表单
 			 * @param val
 			 */
-			handler() {
+			handler(newVal) {
 				this.reset();
+				// 如果选择内部转账，设置支付类型
+				if (newVal === CASH_TYPE.TRANSFER) {
+					this.$nextTick(() => {
+						this.form.sourcePaymentType = '内部往来支出';
+						this.form.targetPaymentType = '内部往来收入';
+					});
+				}
 			},
 			immediate: true
 		}
@@ -1068,14 +1107,18 @@ export default {
 				this.form = data;
 				this.cashType = data.referenceTableName;
 
-				// 处理收入方支付类型 - 将字符串转换为数组
-				if (this.form.sourcePaymentType && typeof this.form.sourcePaymentType === 'string') {
-					this.form.sourcePaymentType = this.form.sourcePaymentType.split('-');
-				}
-
-				// 处理支出方支付类型 - 将字符串转换为数组
-				if (this.form.targetPaymentType && typeof this.form.targetPaymentType === 'string') {
-					this.form.targetPaymentType = this.form.targetPaymentType.split('-');
+				// 根据冲抵类型处理支付类型
+				if (this.cashType === CASH_TYPE.OFF_SETTING) {
+					// 冲抵货款：将字符串转换为数组（用于级联选择器）
+					if (this.form.sourcePaymentType && typeof this.form.sourcePaymentType === 'string') {
+						this.form.sourcePaymentType = this.form.sourcePaymentType.split('-');
+					}
+					if (this.form.targetPaymentType && typeof this.form.targetPaymentType === 'string') {
+						this.form.targetPaymentType = this.form.targetPaymentType.split('-');
+					}
+				} else if (this.cashType === CASH_TYPE.TRANSFER) {
+					// 内部转账：保持字符串格式，不进行转换
+					// 支付类型已经是固定的"内部往来支出"和"内部往来收入"
 				}
 
 				this.$nextTick(() => {
