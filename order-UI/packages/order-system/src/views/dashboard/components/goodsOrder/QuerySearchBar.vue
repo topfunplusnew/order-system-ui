@@ -97,13 +97,21 @@ export default {
 			this.queryParams.pageNum = 1;
 			this.queryParams.pageSize = 50;
 
+			// 创建查询参数的副本，避免修改原始数据
+			const queryData = { ...this.queryParams };
+
 			// 处理一下时间 客户要求开始时间和结束时间都是同一天 前端拼接零点和二十四点
-			if (this.queryParams.orderDateStart && this.queryParams.orderDateEnd) {
-				this.queryParams.orderDateStart = this.queryParams.orderDateStart + ' 00:00:00';
-				this.queryParams.orderDateEnd = this.queryParams.orderDateEnd + ' 23:59:59';
+			if (queryData.orderDateStart && queryData.orderDateEnd) {
+				// 检查长度，yyyy-MM-dd 格式长度为10，如果长度超过10说明已经拼接过时间
+				if (queryData.orderDateStart.length === 10) {
+					queryData.orderDateStart = queryData.orderDateStart + ' 00:00:00';
+				}
+				if (queryData.orderDateEnd.length === 10) {
+					queryData.orderDateEnd = queryData.orderDateEnd + ' 23:59:59';
+				}
 			}
 			// 提交
-			this.$emit('updateQuery', this.queryParams);
+			this.$emit('updateQuery', queryData);
 		},
 		/** 重置按钮操作 */
 		resetQuery() {
