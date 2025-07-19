@@ -58,16 +58,16 @@
 					</div>
 				</template>
 			</el-table-column>
-			<el-table-column prop="lender" label="借方发生额">
+			<el-table-column prop="lender" label="借方（司机欠款减少）">
 				<template slot-scope="scope">
 					<span>
-						{{ scope.row.lender }}
+						{{ Math.abs(scope.row.lender) }}
 					</span>
 				</template>
 			</el-table-column>
-			<el-table-column prop="borrower" label="贷方发生额">
+			<el-table-column prop="borrower" label="贷方（司机欠款增加）">
 				<template slot-scope="scope">
-					<span style="margin-right: 10px">{{ scope.row.borrower }}</span>
+					<span style="margin-right: 10px">{{ Math.abs(scope.row.borrower) }}</span>
 					<i class="el-icon-s-order" style="cursor: pointer" @click="handleCheckBorrowerDetailList(scope.row)"></i>
 				</template>
 			</el-table-column>

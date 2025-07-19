@@ -58,14 +58,14 @@
 					</div>
 				</template>
 			</el-table-column>
-			<el-table-column prop="lender" label="借方(付供应商货款)">
+			<el-table-column prop="lender" label="借方(供应商欠款减少)">
 				<template slot-scope="scope">
 					<span>
 						{{ Math.abs(scope.row.lender) }}
 					</span>
 				</template>
 			</el-table-column>
-			<el-table-column prop="borrower" label="贷方(我方提货+买票点)">
+			<el-table-column prop="borrower" label="贷方(供应商欠款增加)">
 				<template slot-scope="scope">
 					<span style="margin-right: 10px">{{ Math.abs(scope.row.borrower) }}</span>
 					<i class="el-icon-s-order" style="cursor: pointer" @click="handleCheckBorrowerDetailList(scope.row)"></i>
@@ -93,8 +93,8 @@
 			<el-table :data="detailList" border style="width: 100%" v-loading="loading" size="mini" :summary-method="getSummaries" show-summary>
 				<el-table-column prop="operateDate" label="日期"></el-table-column>
 				<el-table-column prop="payNo" label="凭证号"></el-table-column>
-				<el-table-column prop="lender" label="借方(客户提货+买票点)"></el-table-column>
-				<el-table-column prop="borrower" label="贷方(收客户款)"></el-table-column>
+				<el-table-column prop="lender" label="借方(供应商欠款减少)"></el-table-column>
+				<el-table-column prop="borrower" label="贷方(供应商欠款增加)"></el-table-column>
 				<el-table-column prop="moneyAmountLocal" label="余额本币"></el-table-column>
 				<el-table-column label="查看明细">
 					<template slot-scope="scope">
@@ -389,8 +389,8 @@ export default {
 			const components = {
 				// 订单
 				[TableName.GOODS_ORDER]: GOODS_ORDER,
-				// 货物
-				[TableName.ORDER_DETAIL]: ORDER_DETAIL,
+				// 货物 TODO 这里等后端接口完善之后再做 如果是订单明细 用id去查主表
+				[TableName.ORDER_DETAIL]: GOODS_ORDER,
 				// 付款
 				[TableName.PAYMENT]: PAYMENT,
 				// 收款

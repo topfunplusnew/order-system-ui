@@ -137,6 +137,18 @@ export default {
 		},
 		handleQuery() {
 			this.queryParams.pageNum = 1;
+
+			// 处理一下时间 客户要求开始时间和结束时间都是同一天 前端拼接零点和二十四点
+			if (this.queryParams.startDate && this.queryParams.endDate) {
+				// 检查长度，yyyy-MM-dd 格式长度为10，如果长度超过10说明已经拼接过时间
+				if (this.queryParams.startDate.length === 10) {
+					this.queryParams.startDate = this.queryParams.startDate + ' 00:00:00';
+				}
+				if (this.queryParams.endDate.length === 10) {
+					this.queryParams.endDate = this.queryParams.endDate + ' 23:59:59';
+				}
+			}
+
 			this.getList();
 		},
 		resetQuery() {

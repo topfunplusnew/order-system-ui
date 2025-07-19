@@ -63,14 +63,14 @@
 			</el-table-column>
 
 			<!--      借方总款-->
-			<el-table-column prop="lender" label="借方(客户提货+买票点)">
+			<el-table-column prop="lender" label="借方（客户欠款增加）">
 				<template slot-scope="scope">
 					<span>{{ Math.abs(scope.row.lender) }}</span>
 				</template>
 			</el-table-column>
 
 			<!--      贷方总款-->
-			<el-table-column prop="borrower" label="贷方(收客户款)">
+			<el-table-column prop="borrower" label="贷方（客户欠款减少）">
 				<template slot-scope="scope">
 					<span style="margin-right: 10px">{{ Math.abs(scope.row.borrower) }}</span>
 					<i class="el-icon-s-order" style="cursor: pointer" @click="handleCheckBorrowerDetailList(scope.row)"></i>
@@ -100,8 +100,8 @@
 			<el-table :data="detailList" border style="width: 100%" v-loading="detailLoading" size="mini" :summary-method="getSummaries" show-summary>
 				<el-table-column prop="date" label="日期"></el-table-column>
 				<el-table-column prop="payNo" label="凭证号"></el-table-column>
-				<el-table-column prop="lender" label="借方(客户提货+买票点)"></el-table-column>
-				<el-table-column prop="borrower" label="贷方(收客户款)"></el-table-column>
+				<el-table-column prop="lender" label="借方(客户欠款增加)"></el-table-column>
+				<el-table-column prop="borrower" label="贷方(客户欠款减少)"></el-table-column>
 				<el-table-column prop="moneyAmountLocal" label="余额本币"></el-table-column>
 				<!--        添加查看列-->
 				<el-table-column label="查看明细">
