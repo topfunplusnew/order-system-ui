@@ -87,12 +87,13 @@ export default {
 				{ key: 1, label: `支付类型`, visible: true },
 				{ key: 2, label: `金额`, visible: true },
 				{ key: 3, label: `对方账号`, visible: true },
-				{ key: 4, label: `对方公司`, visible: true },
-				{ key: 5, label: `付款原因`, visible: true },
-				{ key: 6, label: `申请人`, visible: true },
-				{ key: 7, label: `备注`, visible: true },
-				{ key: 8, label: `附件`, visible: true },
-				{ key: 9, label: `审核流程`, visible: true }
+				{ key: 4, label: `对方户名`, visible: true },
+				{ key: 5, label: `对方公司`, visible: true },
+				{ key: 6, label: `付款原因`, visible: true },
+				{ key: 7, label: `申请人`, visible: true },
+				{ key: 8, label: `备注`, visible: true },
+				{ key: 9, label: `附件`, visible: true },
+				{ key: 10, label: `审核流程`, visible: true }
 			],
 			// 查看付款信息的
 			checkInfoDialogVisible: false,
@@ -638,11 +639,12 @@ export default {
 				<el-table-column v-if="columns[1].visible" prop="payType" label="支付类型" width="150" show-overflow-tooltip></el-table-column>
 				<el-table-column v-if="columns[2].visible" prop="moneyAmount" label="金额" width="120" show-overflow-tooltip></el-table-column>
 				<el-table-column v-if="columns[3].visible" prop="otherBankNo" label="对方账号" width="300" show-overflow-tooltip></el-table-column>
-				<el-table-column v-if="columns[4].visible" prop="companyName" label="对方公司" width="120" show-overflow-tooltip></el-table-column>
-				<el-table-column v-if="columns[5].visible" prop="reason" label="付款原因" width="120" show-overflow-tooltip></el-table-column>
-				<el-table-column v-if="columns[6].visible" prop="applyPerson" label="申请人" width="120" show-overflow-tooltip></el-table-column>
-				<el-table-column v-if="columns[7].visible" prop="comments" label="备注" width="120" show-overflow-tooltip></el-table-column>
-				<el-table-column v-if="columns[8].visible" prop="comments" label="附件" width="120" show-overflow-tooltip>
+				<el-table-column v-if="columns[4].visible" prop="otherAcountsName" label="对方户名" width="200" show-overflow-tooltip></el-table-column>
+				<el-table-column v-if="columns[5].visible" prop="companyName" label="对方公司" width="120" show-overflow-tooltip></el-table-column>
+				<el-table-column v-if="columns[6].visible" prop="reason" label="付款原因" width="120" show-overflow-tooltip></el-table-column>
+				<el-table-column v-if="columns[7].visible" prop="applyPerson" label="申请人" width="120" show-overflow-tooltip></el-table-column>
+				<el-table-column v-if="columns[8].visible" prop="comments" label="备注" width="120" show-overflow-tooltip></el-table-column>
+				<el-table-column v-if="columns[9].visible" prop="comments" label="附件" width="120" show-overflow-tooltip>
 					<template #default="scope">
 						<div v-if="Array.isArray(scope.row.attachmentList)">
 							<CheckFiles
@@ -680,7 +682,7 @@ export default {
 						</el-tag>
 					</template>
 				</el-table-column>
-				<el-table-column v-if="columns[9].visible" fixed="right" label="审核流程" show-overflow-tooltip align="center">
+				<el-table-column v-if="columns[10].visible" fixed="right" label="审核流程" show-overflow-tooltip align="center">
 					<template slot-scope="scope">
 						<el-button type="text" size="mini" @click="handleCheckApplyInfo(scope.row)">查看</el-button>
 					</template>

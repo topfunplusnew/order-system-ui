@@ -5,7 +5,6 @@ import { getCustomerSubjectDetailSomeDay } from '@/api/system/statement';
 import { parseTime } from '@/utils/ruoyi';
 import { listOrderDetailByOrderNos } from '@/api/system/orderDetail';
 import { fix } from '../../../../api/tool/format';
-import { formatTime } from '@/utils';
 
 export default {
 	name: 'ChatForm',
@@ -51,7 +50,6 @@ export default {
 		console.log(this.currentOrderInfo);
 	},
 	methods: {
-		formatTime,
 		fix,
 		numToChineseUppercase,
 		printHTML() {
@@ -74,8 +72,8 @@ export default {
 			<div class="invoice-title">销货发货单</div>
 
 			<div class="invoice-header">
-				<div>客户：{{ orderInfo.customer }}</div>
-				<div>日期：{{ formatTime(orderInfo.orderDate, 'yyyy-MM-dd') }}</div>
+				<div>客户：{{ currentOrderInfo.customer }}</div>
+				<div>日期：{{ parseTime(currentOrderInfo.orderDate, '{y}-{m}-{d}') }}</div>
 			</div>
 
 			<table>
@@ -95,7 +93,7 @@ export default {
 					</tr>
 				</thead>
 				<tbody>
-					<template v-if="orderInfo.smailOrderDetails.length > 0">
+					<template v-if="currentOrderInfo.smailOrderDetails.length > 0">
 						<tr v-for="item in itemList" :key="item.ordersNo">
 							<!--							<td>{{ item.orderDate }}</td>-->
 							<td>{{ item.levelName }}</td>
@@ -110,33 +108,33 @@ export default {
 							</td>
 							<td>{{ item.paymentsWithSundry }}</td>
 							<td>{{ item.payments }}</td>
-							<td>{{ orderInfo.landCarNo }}</td>
+							<td>{{ currentOrderInfo.landCarNo }}</td>
 						</tr>
 					</template>
 					<!--  这里是货物的列表 要根据订单货物的列表来渲染-->
 					<tr>
 						<td style="text-align: center">货款</td>
 						<td colspan="8" />
-						<td>{{ fix(orderInfo.allPayments) }}</td>
+						<td>{{ (currentOrderInfo.allPayments || 0).toFixed(2) }}</td>
 						<td />
 					</tr>
 					<tr>
 						<td style="text-align: center">余款</td>
 						<td colspan="8" />
-						<td>{{ fix(totalPayments) }}</td>
+						<td>{{ (totalPayments || 0).toFixed(2) }}</td>
 						<td />
 					</tr>
 					<tr>
 						<!-- 货款 + 余额-->
 						<td style="text-align: center">货款合计</td>
 						<td colspan="8" />
-						<td>{{ fix(moneyAmount) }}</td>
+						<td>{{ (moneyAmount || 0).toFixed(2) }}</td>
 						<td />
 					</tr>
 					<tr>
 						<!--          合计只有一个大写-->
 						<td style="text-align: center">合计</td>
-						<td colspan="8">大写：{{ numToChineseUppercase(totalPayments) }}</td>
+						<td colspan="8">大写：{{ numToChineseUppercase(moneyAmount) }}</td>
 						<td />
 						<td />
 					</tr>

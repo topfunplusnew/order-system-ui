@@ -27,7 +27,6 @@
 					<el-col :span="10">
 						<el-input disabled v-model="form.selfAcountsName" placeholder="请选择" />
 					</el-col>
-					<!-- TODO -->
 					<el-col :span="3">
 						<SearchOption
 							:get-data="listBankAccount"
@@ -142,6 +141,9 @@
 				</el-form-item>
 
 				<el-row v-if="value === PUBLIC_DICT_TYPE.CUSTOMER">
+					<el-form-item label="对方户名" prop="otherAcountsName">
+						<el-input v-model="form.otherAcountsName" placeholder="请输入对方户名" />
+					</el-form-item>
 					<el-form-item label="对方账号(客户)" prop="otherBankNo">
 						<el-row>
 							<el-col :span="14">
@@ -151,7 +153,10 @@
 								<SearchOption
 									:get-data="listBankAccount"
 									icon="el-icon-search"
-									:limit-info="{ acountsType: PUBLIC_DICT_TYPE.CUSTOMER }"
+									:limit-info="{
+										acountsType: PUBLIC_DICT_TYPE.CUSTOMER,
+										acountsName: form.otherAcountsName
+									}"
 									query-label="银行卡查找"
 									query-info="bankNo"
 									:query-name="queryCompany"
@@ -193,6 +198,9 @@
 					</el-form-item>
 				</el-row>
 				<el-row v-if="value === PUBLIC_DICT_TYPE.SUPPLIER">
+					<el-form-item label="对方户名" prop="otherAcountsName">
+						<el-input v-model="form.otherAcountsName" placeholder="请输入对方户名" />
+					</el-form-item>
 					<el-form-item label="对方账号(供应商)" prop="otherBankNo">
 						<el-row>
 							<el-col :span="14">
@@ -202,7 +210,10 @@
 								<SearchOption
 									:get-data="listBankAccount"
 									icon="el-icon-search"
-									:limit-info="{ acountsType: PUBLIC_DICT_TYPE.SUPPLIER }"
+									:limit-info="{
+										acountsType: PUBLIC_DICT_TYPE.SUPPLIER,
+										acountsName: form.otherAcountsName
+									}"
 									query-label="银行卡查找"
 									query-info="bankNo"
 									:query-name="queryCompany"
@@ -245,6 +256,9 @@
 					</el-form-item>
 				</el-row>
 				<el-row v-if="value === PUBLIC_DICT_TYPE.DRIVER">
+					<el-form-item label="对方户名" prop="otherAcountsName">
+						<el-input v-model="form.otherAcountsName" placeholder="请输入对方户名" />
+					</el-form-item>
 					<el-form-item label="对方账号(司机)" prop="otherBankNo">
 						<el-row>
 							<el-col :span="14">
@@ -254,7 +268,10 @@
 								<SearchOption
 									:get-data="listBankAccount"
 									icon="el-icon-search"
-									:limit-info="{ acountsType: PUBLIC_DICT_TYPE.DRIVER }"
+									:limit-info="{
+										acountsType: PUBLIC_DICT_TYPE.DRIVER,
+										acountsName: form.otherAcountsName
+									}"
 									query-label="银行卡查找"
 									query-info="bankNo"
 									:query-name="queryCompany"
@@ -297,6 +314,9 @@
 				</el-row>
 
 				<el-row v-if="value === PUBLIC_DICT_TYPE.EMPLOYEE">
+					<el-form-item label="对方户名" prop="otherAcountsName">
+						<el-input v-model="form.otherAcountsName" placeholder="请输入对方户名" />
+					</el-form-item>
 					<el-form-item label="对方账号(员工)" prop="otherBankNo">
 						<el-row>
 							<el-col :span="14">
@@ -306,7 +326,10 @@
 								<SearchOption
 									:get-data="listBankAccount"
 									icon="el-icon-search"
-									:limit-info="{ acountsType: PUBLIC_DICT_TYPE.EMPLOYEE }"
+									:limit-info="{
+										acountsType: PUBLIC_DICT_TYPE.EMPLOYEE,
+										acountsName: form.otherAcountsName
+									}"
 									query-label="银行卡查找"
 									query-info="bankNo"
 									:query-name="queryCompany"
@@ -499,6 +522,7 @@ export default {
 				this.form.companyId = null;
 				this.form.otherBankNo = null;
 				this.form.otherBankName = null;
+				this.form.otherAcountsName = null;
 			}
 		}
 	},
@@ -531,6 +555,7 @@ export default {
 		handleCommitBack(row) {
 			this.form.otherBankNo = row.bankNo;
 			this.form.otherBankName = row.bankName;
+			// 不再自动填充对方户名，保持用户手动输入的值
 		},
 		// 根据对方类型返回相应的校验规则
 		getOpponentTypeRules() {
