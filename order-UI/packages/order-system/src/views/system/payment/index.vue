@@ -242,7 +242,7 @@
 									>
 										<template #table-columns>
 											<el-table-column label="账号类型" align="center" prop="acountsType" />
-											<el-table-column label="显示名称" align="center" prop="displayName" />
+											<el-table-column label="己方公司" align="center" prop="displayName" />
 											<el-table-column label="开户行" align="center" prop="bankName" />
 											<el-table-column label="开户名" align="center" prop="acountsName" />
 											<el-table-column label="账号" align="center" prop="bankNo" />
@@ -258,11 +258,6 @@
 
 						<el-form-item label="我方开户行" prop="selfBankName">
 							<el-input disabled v-model="form.selfBankName" placeholder="请选择" />
-						</el-form-item>
-
-						<!-- 选择供应商 -->
-						<el-form-item label="户名" prop="otherAcountsName">
-							<el-input disabled v-model="form.otherAcountsName" placeholder="请选择" />
 						</el-form-item>
 
 						<el-form-item v-if="value !== PAYMENT_TARGET_TYPE.PAYMENT_FEE" label="对方账号" prop="otherBankNo">
@@ -352,6 +347,11 @@
 
 						<el-form-item label="对方银行账户类型">
 							<BankType ref="otherSelectedBankType" :option-baned="true" :baned="true" :select-type="form.otherBankCardType" @updateSelectedType="changeOtherBankType" />
+						</el-form-item>
+
+						<!-- 选择供应商 -->
+						<el-form-item label="户名" prop="otherAcountsName">
+							<el-input disabled v-model="form.otherAcountsName" placeholder="请选择" />
 						</el-form-item>
 
 						<el-form-item v-if="value !== PAYMENT_TARGET_TYPE.PAYMENT_FEE && value !== '支付费用'" label="对方开户行" prop="otherBankName">

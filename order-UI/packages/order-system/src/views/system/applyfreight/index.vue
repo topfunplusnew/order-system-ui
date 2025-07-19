@@ -24,8 +24,8 @@ export default {
 		oneMonthLater.setMonth(today.getMonth() + 1);
 		return {
 			queryParams: {
-				startDate: this.formatDate(oneMonthAgo),
-				endDate: this.formatDate(oneMonthLater),
+				startDate: null,
+				endDate: null,
 				payDate: '',
 				fleet: '',
 				carNo: '',

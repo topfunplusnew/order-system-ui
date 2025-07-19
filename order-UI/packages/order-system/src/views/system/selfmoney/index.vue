@@ -16,8 +16,8 @@
 			<el-form-item label="银行账号" prop="bankNo">
 				<el-input v-model="queryParams.bankNo" placeholder="请输入银行账号" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
-			<el-form-item label="显示名称" prop="displayName">
-				<el-input v-model="queryParams.displayName" placeholder="请输入显示名称" clearable @keyup.enter.native="handleQuery" />
+			<el-form-item label="己方公司" prop="displayName">
+				<el-input v-model="queryParams.displayName" placeholder="请输入己方公司" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -58,6 +58,8 @@
 				}
 			"
 		>
+			<el-table-column v-if="columns[1].visible" label="己方公司" align="center" prop="displayName" show-overflow-tooltip />
+			<el-table-column v-if="columns[2].visible" label="开户名称" align="center" prop="acountsName" show-overflow-tooltip />
 			<el-table-column v-if="columns[0].visible" label="银行账号" align="center" prop="bankNo" show-overflow-tooltip>
 				<template #default="scope">
 					<div>
@@ -66,8 +68,6 @@
 					</div>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[1].visible" label="显示名称" align="center" prop="displayName" show-overflow-tooltip />
-			<el-table-column v-if="columns[2].visible" label="开户名称" align="center" prop="acountsName" show-overflow-tooltip />
 			<el-table-column v-if="columns[3].visible" label="开户行" align="center" prop="bankName" show-overflow-tooltip />
 			<el-table-column v-if="columns[4].visible" label="余额" align="center" prop="sumMoney" show-overflow-tooltip />
 		</el-table>
@@ -109,7 +109,7 @@ export default {
 			},
 			columns: [
 				{ key: 0, label: `银行账号`, visible: true },
-				{ key: 1, label: `显示名称`, visible: true },
+				{ key: 1, label: `己方公司`, visible: true },
 				{ key: 2, label: `开户名称`, visible: true },
 				{ key: 3, label: `开户行`, visible: true },
 				{ key: 4, label: `余额`, visible: true }

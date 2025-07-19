@@ -68,6 +68,7 @@
 			"
 			@selection-change="handleSelectionChange"
 		>
+			<el-table-column label="ID" align="center" prop="id" width="140" show-overflow-tooltip />
 			<el-table-column v-if="columns[0].visible" label="日期" align="center" prop="fundsDate" width="140" show-overflow-tooltip />
 			<el-table-column v-if="columns[1].visible" label="支付类型" align="center" prop="receiveType" width="165" show-overflow-tooltip />
 			<el-table-column v-if="columns[9].visible" label="对方公司" align="center" prop="companyName" width="165" show-overflow-tooltip />
@@ -153,7 +154,7 @@
 									>
 										<template #table-columns>
 											<el-table-column label="账户类型" align="center" prop="acountsType" />
-											<el-table-column label="显示名称" align="center" prop="displayName" />
+											<el-table-column label="己方公司" align="center" prop="displayName" />
 											<el-table-column label="开户名称(户名)" align="center" prop="acountsName" />
 											<el-table-column label="账号(银行账号)" align="center" prop="bankNo" />
 											<el-table-column label="开户行" align="center" prop="bankName" />

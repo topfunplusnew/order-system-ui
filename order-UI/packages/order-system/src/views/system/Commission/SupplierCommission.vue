@@ -53,6 +53,7 @@
 			border
 			:data="tableData"
 			size="mini"
+			:height="600"
 			:cell-style="
 				() => {
 					return { padding: '1.5px' };
@@ -82,15 +83,15 @@
 			<el-table-column v-if="columns[6].visible" show-overflow-tooltip label="宽度" align="center" prop="width" width="100" />
 			<el-table-column v-if="columns[7].visible" show-overflow-tooltip label="每包片数" align="center" prop="piecesPerPack" width="100" />
 			<el-table-column v-if="columns[8].visible" show-overflow-tooltip label="包数" align="center" prop="packs" width="100" />
-			<el-table-column v-if="columns[9].visible" show-overflow-tooltip label="卸货片数" align="center" prop="actualPieces" width="100" />
-			<el-table-column v-if="columns[10].visible" show-overflow-tooltip label="卸货费用" align="center" prop="paymentUnload" width="100" />
+			<el-table-column v-if="columns[9].visible" show-overflow-tooltip label="出厂片数" align="center" prop="pieces" width="100" />
+			<el-table-column v-if="columns[10].visible" show-overflow-tooltip label="卸货价" align="center" prop="paymentUnload" width="100" />
 			<el-table-column v-if="columns[11].visible" show-overflow-tooltip label="含税销售" align="center" prop="isIncludeTaxSale" width="100">
 				<template slot-scope="scope">
 					{{ scope.row.isIncludeTaxSale ? '含税' : '不含税' }}
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[12].visible" show-overflow-tooltip label="杂费" align="center" prop="sundryCost" width="100" />
-			<el-table-column v-if="columns[13].visible" show-overflow-tooltip label="付款金额" align="center" prop="payments" width="100" />
+			<el-table-column v-if="columns[13].visible" show-overflow-tooltip label="总货款" align="center" prop="payments" width="100" />
 			<el-table-column v-if="columns[14].visible" show-overflow-tooltip label="利润" align="center" prop="profit" width="100" />
 			<el-table-column v-if="columns[15].visible" show-overflow-tooltip label="不含税利润" align="center" prop="profitNoTax" width="100" />
 			<el-table-column v-if="columns[16].visible" show-overflow-tooltip label="备注" align="center" prop="comments" width="140" />
@@ -231,11 +232,11 @@ export default {
 				{ key: 6, label: '宽度', visible: true },
 				{ key: 7, label: '每包片数', visible: true },
 				{ key: 8, label: '包数', visible: true },
-				{ key: 9, label: '卸货片数', visible: true },
-				{ key: 10, label: '卸货费用', visible: true },
+				{ key: 9, label: '出厂片数', visible: true },
+				{ key: 10, label: '卸货价', visible: true },
 				{ key: 11, label: '含税销售', visible: true },
 				{ key: 12, label: '杂费', visible: true },
-				{ key: 13, label: '付款金额', visible: true },
+				{ key: 13, label: '总货款', visible: true },
 				{ key: 14, label: '利润', visible: true },
 				{ key: 15, label: '不含税利润', visible: true },
 				{ key: 16, label: '备注', visible: true },
@@ -590,3 +591,30 @@ export default {
 	}
 };
 </script>
+
+<style scoped>
+/* 增加表格滚动条的高度 */
+::v-deep .el-table__body-wrapper::-webkit-scrollbar {
+	height: 12px !important;
+}
+
+::v-deep .el-table__body-wrapper::-webkit-scrollbar-track {
+	background: #f1f1f1 !important;
+	border-radius: 6px !important;
+}
+
+::v-deep .el-table__body-wrapper::-webkit-scrollbar-thumb {
+	background: #c1c1c1 !important;
+	border-radius: 6px !important;
+}
+
+::v-deep .el-table__body-wrapper::-webkit-scrollbar-thumb:hover {
+	background: #a8a8a8 !important;
+}
+
+/* 水平滚动条样式 */
+::v-deep .el-table .el-table__body-wrapper {
+	scrollbar-width: thick;
+	scrollbar-color: #c1c1c1 #f1f1f1;
+}
+</style>
