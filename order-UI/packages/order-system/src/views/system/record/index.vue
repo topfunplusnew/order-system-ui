@@ -466,7 +466,7 @@
 							@updateSelectedType="changeSelfBankType"
 							@updateBankAcceptance="
 								value => {
-									form.bankacceptance = value;
+									form.params.bankacceptance = value;
 								}
 							"
 							:bill-type="PayType.TRANSFOR"
@@ -564,7 +564,7 @@
 							@updateSelectedType="changeOtherBankType"
 							@updateBankAcceptance="
 								value => {
-									form.bankacceptance = value;
+									form.params.bankacceptance = value;
 								}
 							"
 							:bill-type="PayType.TRANSFOR"
