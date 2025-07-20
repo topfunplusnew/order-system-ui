@@ -390,7 +390,7 @@ export default {
 													form.endorser = value.id;
 												}
 											"
-											@update:queryName="() => value => (companyName = value)"
+											@update:queryName="value => (companyName = value)"
 										>
 											<template #table-columns>
 												<el-table-column :label="form.targetType === '其他' || form.targetType === '员工' ? '名称' : form.targetType" align="center" prop="acountsName" />

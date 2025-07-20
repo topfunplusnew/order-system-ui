@@ -48,7 +48,6 @@
 			v-horizontal-scroll="'always'"
 			border
 			:data="bankAccountList"
-			height="450px"
 			size="mini"
 			:cell-style="
 				() => {
