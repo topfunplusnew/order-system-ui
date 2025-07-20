@@ -262,7 +262,7 @@ export default {
 									:get-data="listGoodsOrder"
 									query-label="ID搜索"
 									:query-name="queryOrder"
-									query-info="ordersNo"
+									query-info="id"
 									@update:queryName="updateQueryOrder"
 									@commitBack="handleCommitBackOrder"
 								>
@@ -271,7 +271,11 @@ export default {
 										<el-table-column show-overflow-tooltip label="日期" align="center" prop="orderDate" fixed="left" />
 										<el-table-column show-overflow-tooltip label="客户" align="center" prop="customer" fixed="left" />
 										<el-table-column show-overflow-tooltip label="供应商" align="center" prop="supplierNames" fixed="left" />
-										<el-table-column show-overflow-tooltip label="是否调整过" align="center" prop="isAdjusted" />
+										<el-table-column show-overflow-tooltip label="是否调整过" align="center" prop="isAdjusted">
+											<template #default="scope">
+												{{ scope.row.isAdjusted ? '是' : '否' }}
+											</template>
+										</el-table-column>
 										<el-table-column show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo" />
 										<el-table-column show-overflow-tooltip label="陆运司机电话" align="center" prop="landDriverTel" width="100px" />
 										<el-table-column show-overflow-tooltip label="陆地司机姓名" align="center" prop="landDriverName" width="100px" />
