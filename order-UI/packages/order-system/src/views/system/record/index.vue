@@ -1055,8 +1055,8 @@ export default {
 				targetPaymentType: null,
 				targetAccountName: null,
 				targetBankName: null,
-				bankacceptance: null,
 				params: {
+					bankacceptance: null,
 					attachmentIds: []
 				}
 			};
@@ -1254,11 +1254,15 @@ export default {
 			const selfType = this.$refs.selfSelectBankType.localSelectType;
 			const otherType = this.$refs.otherSelectBankType.localSelectType;
 			if (selfType !== otherType) {
+				// 确保 bankacceptance 对象存在
+				if (!this.form.params.bankacceptance) {
+					this.form.params.bankacceptance = {};
+				}
 				if (selfType === BankAcceptanceType.ACCEPTANCE) {
-					this.form.bankacceptance.billType = PayType.PAYMENT;
+					this.form.params.bankacceptance.billType = PayType.PAYMENT;
 				}
 				if (otherType === BankAcceptanceType.ACCEPTANCE) {
-					this.form.bankacceptance.billType = PayType.RECEIVE;
+					this.form.params.bankacceptance.billType = PayType.RECEIVE;
 				}
 			}
 			// 填充表单的公司类型和转账相关信息
