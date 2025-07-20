@@ -245,7 +245,7 @@
 				<el-form-item label="银行账号" prop="bankNo">
 					<el-input v-model="form.bankNo" placeholder="请输入银行账号" @input="handleInputTrim($event, 'form', 'bankNo')" />
 				</el-form-item>
-				<el-form-item :label="'开户行'" :prop="form.acountsType === PUBLIC_DICT_TYPE.SELF_COMPANY ? 'bankNameRequired' : 'bankName'">
+				<el-form-item label="开户行" prop="bankName">
 					<el-input v-model="form.bankName" placeholder="请输入开户行" @input="handleInputTrim($event, 'form', 'bankName')" />
 				</el-form-item>
 
@@ -421,10 +421,20 @@ export default {
 						trigger: 'blur'
 					}
 				],
-				bankNameRequired: [
+				bankName: [
 					{
-						required: true,
-						message: '开户行不能为空',
+						validator: (rule, value, callback) => {
+							// 只有当账户类型为己方公司时，开户行才是必填的
+							if (this.form.acountsType === this.PUBLIC_DICT_TYPE.SELF_COMPANY) {
+								if (!value || value.trim() === '') {
+									callback(new Error('开户行不能为空'));
+								} else {
+									callback();
+								}
+							} else {
+								callback();
+							}
+						},
 						trigger: 'blur'
 					}
 				]
