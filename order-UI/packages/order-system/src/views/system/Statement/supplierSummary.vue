@@ -33,7 +33,7 @@
 
 				<template #export>
 					<el-col :span="1.5">
-						<el-button plain icon="el-icon-folder-opened" size="mini" @click="handleExport">导出Excel</el-button>
+						<!-- <el-button plain icon="el-icon-folder-opened" size="mini" @click="handleExport">导出Excel</el-button> -->
 					</el-col>
 				</template>
 			</right-toolbar>
@@ -188,9 +188,9 @@ export default {
 		refresh() {
 			this.getList();
 		},
-		handleExport() {
-			this.excelExport(['查看详情'], '供应商科目余额汇总表');
-		}
+		// handleExport() {
+		// 	this.excelExport(['查看详情'], '供应商科目余额汇总表');
+		// }
 	}
 };
 </script>

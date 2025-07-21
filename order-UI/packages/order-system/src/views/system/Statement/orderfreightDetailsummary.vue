@@ -35,7 +35,7 @@
 				</template>
 				<template #export>
 					<el-col :span="1.5">
-						<el-button plain icon="el-icon-folder-opened" size="mini" @click="handleExport">导出Excel</el-button>
+						<!-- <el-button plain icon="el-icon-folder-opened" size="mini" @click="handleExport">导出Excel</el-button> -->
 					</el-col>
 				</template>
 			</right-toolbar>
@@ -296,9 +296,9 @@ export default {
 			this.dialogVisible = false;
 		},
 		/** 导出按钮操作 */
-		handleExport() {
-			this.excelExport(['查看详情'], '运费科目汇总账');
-		}
+		// handleExport() {
+		// 	this.excelExport(['查看详情'], '运费科目汇总账');
+		// }
 	}
 };
 </script>
