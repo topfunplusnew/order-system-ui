@@ -198,6 +198,10 @@
 				<el-form-item label="备注" prop="comments">
 					<el-input v-model="form.comments" placeholder="请输入备注" />
 				</el-form-item>
+				<!-- 修改原因字段，只在修改时显示 -->
+				<el-form-item v-if="form.id != null" label="修改原因" prop="editReason">
+					<el-input v-model="form.editReason" placeholder="请输入修改原因" type="textarea" :rows="3" />
+				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
 				<el-button type="primary" @click="submitForm">确 定</el-button>
@@ -349,7 +353,24 @@ export default {
 						trigger: 'blur'
 					}
 				],
-				comments: [{ required: true, message: '请输入备注', trigger: 'blur' }]
+				comments: [{ required: true, message: '请输入备注', trigger: 'blur' }],
+				editReason: [
+					{
+						validator: (rule, value, callback) => {
+							// 只有在修改时（form.id不为null）才需要验证修改原因
+							if (this.form.id != null) {
+								if (!value || value.trim() === '') {
+									callback(new Error('修改时必须填写修改原因'));
+								} else {
+									callback();
+								}
+							} else {
+								callback();
+							}
+						},
+						trigger: 'blur'
+					}
+				]
 			},
 			columns: [
 				{ key: 0, label: `开票日期`, visible: true },
@@ -494,6 +515,7 @@ export default {
 				ticketPointAmount: null,
 				isOrderTax: -1,
 				comments: null,
+				editReason: null, // 添加修改原因字段
 				addtime: null,
 				userId: null,
 				UserName: null,
@@ -591,9 +613,19 @@ export default {
 						}
 					}
 
+					// 创建提交数据的副本
+					const submitData = { ...this.form };
+					
 					if (this.form.id != null) {
-						this.form = excludeParams(this.form, this.$exclude);
-						updateInvoiceIn(this.form).then(() => {
+						// 修改时，确保包含修改原因
+						if (!submitData.editReason || submitData.editReason.trim() === '') {
+							this.$message.error('修改时必须填写修改原因');
+							return;
+						}
+						submitData.editReason = this.form.editReason;
+						
+						const finalData = excludeParams(submitData, this.$exclude);
+						updateInvoiceIn(finalData).then(() => {
 							this.$modal.msgSuccess('修改成功');
 							this.open = false;
 							// 清理 UploadFilesButton 状态
@@ -606,8 +638,11 @@ export default {
 							this.getList();
 						});
 					} else {
-						this.form = excludeParams(this.form, this.$exclude);
-						addInvoiceIn(this.form).then(() => {
+						// 新增时，移除修改原因字段
+						delete submitData.editReason;
+						
+						const finalData = excludeParams(submitData, this.$exclude);
+						addInvoiceIn(finalData).then(() => {
 							this.$modal.msgSuccess('新增成功');
 							this.open = false;
 							// 清理 UploadFilesButton 状态

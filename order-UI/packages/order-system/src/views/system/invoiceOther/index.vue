@@ -279,6 +279,10 @@
 						<el-form-item label="备注" prop="comments">
 							<el-input v-model="form.comments" placeholder="请输入备注" />
 						</el-form-item>
+						<!-- 修改原因字段，只在修改时显示 -->
+						<el-form-item v-if="form.id != null" label="修改原因" prop="editReason">
+							<el-input v-model="form.editReason" placeholder="请输入修改原因" type="textarea" :rows="3" />
+						</el-form-item>
 					</el-col>
 				</el-form>
 			</el-row>
@@ -473,6 +477,23 @@ export default {
 						message: '请选择开票日期',
 						trigger: 'blur'
 					}
+				],
+				editReason: [
+					{
+						validator: (rule, value, callback) => {
+							// 只有在修改时（form.id不为null）才需要验证修改原因
+							if (this.form.id != null) {
+								if (!value || value.trim() === '') {
+									callback(new Error('修改时必须填写修改原因'));
+								} else {
+									callback();
+								}
+							} else {
+								callback();
+							}
+						},
+						trigger: 'blur'
+					}
 				]
 			},
 			columns: [
@@ -610,6 +631,7 @@ export default {
 				customerPointAmount: null,
 				type: 'customerTicketPointIsNotZero',
 				comments: null,
+				editReason: null, // 添加修改原因字段
 				addtime: null,
 				userId: null,
 				UserName: null,
@@ -712,8 +734,18 @@ export default {
 						}
 					}
 
+					// 创建提交数据的副本
+					const submitData = { ...this.form };
+
 					if (this.form.id != null) {
-						updateInvoiceOther(this.form)
+						// 修改时，确保包含修改原因
+						if (!submitData.editReason || submitData.editReason.trim() === '') {
+							this.$message.error('修改时必须填写修改原因');
+							return;
+						}
+						submitData.editReason = this.form.editReason;
+						
+						updateInvoiceOther(submitData)
 							.then(() => {
 								this.$modal.msgSuccess('修改成功');
 								this.open = false;
@@ -736,7 +768,10 @@ export default {
 								this.$message.error('修改失败，请重试');
 							});
 					} else {
-						addInvoiceOther(this.form)
+						// 新增时，移除修改原因字段
+						delete submitData.editReason;
+						
+						addInvoiceOther(submitData)
 							.then(() => {
 								this.$modal.msgSuccess('新增成功');
 								this.open = false;
