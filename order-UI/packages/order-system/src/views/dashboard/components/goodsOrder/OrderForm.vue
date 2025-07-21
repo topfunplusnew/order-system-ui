@@ -62,6 +62,15 @@ export default {
 			}
 		};
 
+		// 动态校验器：修改原因
+		const validateEditReason = (rule, value, callback) => {
+			if (this.orderId != null && !value) {
+				callback(new Error('修改原因不能为空'));
+			} else {
+				callback();
+			}
+		};
+
 		return {
 			orderInfo: {},
 			orderRules: {
@@ -70,6 +79,7 @@ export default {
 				landCarNo: [{ validator: validateLandCar, trigger: 'change' }], // 添加陆运车牌校验
 				seaCarNo: [{ validator: validateSeaCarNo, trigger: 'blur' }], // 添加海运柜号校验
 				seaDriverName: [{ validator: validateSeaDriverName, trigger: 'change' }], // 添加海运公司校验
+				editReason: [{ validator: validateEditReason, trigger: 'blur' }],
 				orderDate: [
 					{
 						required: true,
@@ -320,7 +330,9 @@ export default {
 			if (this.isEditingOrder.id) {
 				newOrderInfo.id = this.isEditingOrder.id;
 			}
-			this.addOrUpdateOrderDetail(newOrderInfo, rows, resolve, reject);
+			// 排除editReason字段
+			const submitData = excludeParams(newOrderInfo, ['editReason']);
+			this.addOrUpdateOrderDetail(submitData, rows, resolve, reject);
 		},
 		/**
 		 * 添加或更新订单详情
@@ -642,12 +654,16 @@ export default {
 		submitOrder(resolve, reject) {
 			this.orderdetailList = this.fillOrderDetailInfo();
 			this.orderInfo.orderDetailList = _.cloneDeep(this.orderdetailList);
-			this.orderInfo = excludeParams(this.orderInfo, this.$exclude);
-			const json = _.cloneDeep(this.orderInfo);
+			this.orderInfo  = excludeParams(this.orderInfo, this.$exclude);
+			let json = _.cloneDeep(this.orderInfo);
 			if (!this.isEditingOrder.id) {
+				delete json.editReason; // 添加订单时不需要编辑原因
 				addGoodsOrder(json).then(resolve).catch(reject);
 			} else {
-				json.remark = sessionStorage.getItem('order-edit-reason');
+				// 如果是修改操作且有修改原因，将其添加到remark字段
+				if (this.orderInfo.editReason) {
+					json.editReason = this.orderInfo.editReason;
+				}
 				updateGoodsOrder(json).then(resolve).catch(reject);
 			}
 		},
@@ -663,7 +679,6 @@ export default {
 			this.isLand = false;
 			const message = this.orderId ? '修改成功' : '保存成功';
 			this.$message.success(message);
-			sessionStorage.removeItem('order-edit-reason');
 			that.dialogVisible = false;
 			// this.setIsEditingOrder(null, false);
 		},
@@ -737,6 +752,7 @@ export default {
 				seaCarNo: '',
 				seaDriverName: '',
 				seaDriverTel: '',
+				editReason: '',
 				comments: '' // 确保备注也被重置
 			};
 			this.isEditingDetails = false;
@@ -1011,6 +1027,9 @@ export default {
 				</el-form-item>
 				<el-form-item label="备注" prop="comments">
 					<el-input v-model="orderInfo.comments" type="text" size="mini" placeholder="请输入备注" />
+				</el-form-item>
+				<el-form-item v-if="orderId != null" label="修改原因" prop="editReason">
+					<el-input v-model="orderInfo.editReason" type="textarea" :rows="2" size="mini" placeholder="请输入修改原因" />
 				</el-form-item>
 				<el-form-item label="运输方式">
 					<el-checkbox v-model="isLand">陆运</el-checkbox>
