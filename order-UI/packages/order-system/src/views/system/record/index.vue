@@ -626,6 +626,10 @@
 				<el-form-item label="备注" prop="remarks">
 					<el-input v-model="form.remarks" placeholder="请输入备注" />
 				</el-form-item>
+				<!-- 修改原因字段，只在修改时显示 -->
+				<el-form-item v-if="form.id != null" label="修改原因" prop="editReason">
+					<el-input v-model="form.editReason" placeholder="请输入修改原因" type="textarea" :rows="3" />
+				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
 				<el-button type="primary" @click="submitForm">确 定</el-button>
@@ -818,6 +822,23 @@ export default {
 					{
 						required: true,
 						message: '对应表名不能为空',
+						trigger: 'blur'
+					}
+				],
+				editReason: [
+					{
+						validator: (rule, value, callback) => {
+							// 只有在修改时（form.id不为null）才需要验证修改原因
+							if (this.form.id != null) {
+								if (!value || value.trim() === '') {
+									callback(new Error('修改时必须填写修改原因'));
+								} else {
+									callback();
+								}
+							} else {
+								callback();
+							}
+						},
 						trigger: 'blur'
 					}
 				]
@@ -1037,6 +1058,7 @@ export default {
 				referenceTableId: null,
 				referenceTableName: null,
 				remarks: null,
+				editReason: null, // 添加修改原因字段
 				// 收入方与支付方的公司类型
 				sourceCompanyType: '客户',
 				targetCompanyType: '客户',
@@ -1193,20 +1215,33 @@ export default {
 
 				// 提取公共逻辑
 				this.form = excludeParams(this.form, this.$exclude);
+				
+				// 创建提交数据的副本
+				const submitData = { ...this.form };
+				
 				// 判断是修改还是新增
 				if (this.form.id != null) {
-					this.updateRecordInfo(originalAttachmentIds);
+					// 修改时，确保包含修改原因
+					if (!submitData.editReason || submitData.editReason.trim() === '') {
+						this.$message.error('修改时必须填写修改原因');
+						return;
+					}
+					submitData.editReason = this.form.editReason;
+					this.updateRecordInfo(originalAttachmentIds, submitData);
 					this.$bus.$emit('changeFlag', false);
 				} else {
-					this.addRecordInfo(originalAttachmentIds);
+					// 新增时，移除修改原因字段
+					delete submitData.editReason;
+					this.addRecordInfo(originalAttachmentIds, submitData);
 					this.$bus.$emit('changeFlag', false);
 				}
 			});
 		},
 
 		// 修改记录
-		updateRecordInfo(originalAttachmentIds) {
-			updateRecord(this.form)
+		updateRecordInfo(originalAttachmentIds, submitData = null) {
+			const dataToUpdate = submitData || this.form;
+			updateRecord(dataToUpdate)
 				.then(() => {
 					this.onSuccess('修改成功');
 				})
@@ -1222,19 +1257,21 @@ export default {
 		},
 
 		// 新增记录
-		addRecordInfo(originalAttachmentIds) {
+		addRecordInfo(originalAttachmentIds, submitData = null) {
+			const dataToAdd = submitData || this.form;
 			if (this.cashType === CASH_TYPE.OFF_SETTING) {
-				this.handleOffsetting(originalAttachmentIds);
+				this.handleOffsetting(originalAttachmentIds, dataToAdd);
 			} else {
-				this.handleTransfer(originalAttachmentIds);
+				this.handleTransfer(originalAttachmentIds, dataToAdd);
 			}
 		},
 
 		// 处理冲抵货款逻辑
-		handleOffsetting(originalAttachmentIds) {
-			this.form.referenceTableName = TableName.OFFSETTING;
-			this.form.referenceTableId = -1;
-			addRecord(this.form)
+		handleOffsetting(originalAttachmentIds, dataToAdd = null) {
+			const formData = dataToAdd || this.form;
+			formData.referenceTableName = TableName.OFFSETTING;
+			formData.referenceTableId = -1;
+			addRecord(formData)
 				.then(() => {
 					this.onSuccess('新增成功', true);
 				})
@@ -1250,28 +1287,29 @@ export default {
 		},
 
 		// 处理内部转账逻辑
-		handleTransfer(originalAttachmentIds) {
+		handleTransfer(originalAttachmentIds, dataToAdd = null) {
+			const formData = dataToAdd || this.form;
 			const selfType = this.$refs.selfSelectBankType.localSelectType;
 			const otherType = this.$refs.otherSelectBankType.localSelectType;
 			if (selfType !== otherType) {
 				// 确保 bankacceptance 对象存在
-				if (!this.form.params.bankacceptance) {
-					this.form.params.bankacceptance = {};
+				if (!formData.params.bankacceptance) {
+					formData.params.bankacceptance = {};
 				}
 				if (selfType === BankAcceptanceType.ACCEPTANCE) {
-					this.form.params.bankacceptance.billType = PayType.PAYMENT;
+					formData.params.bankacceptance.billType = PayType.PAYMENT;
 				}
 				if (otherType === BankAcceptanceType.ACCEPTANCE) {
-					this.form.params.bankacceptance.billType = PayType.RECEIVE;
+					formData.params.bankacceptance.billType = PayType.RECEIVE;
 				}
 			}
 			// 填充表单的公司类型和转账相关信息
-			this.form.sourceCompanyType = PUBLIC_DICT_TYPE.SELF_COMPANY;
-			this.form.targetCompanyType = PUBLIC_DICT_TYPE.SELF_COMPANY;
+			formData.sourceCompanyType = PUBLIC_DICT_TYPE.SELF_COMPANY;
+			formData.targetCompanyType = PUBLIC_DICT_TYPE.SELF_COMPANY;
 			// 填充转账类型表
-			this.form.referenceTableName = CASH_TYPE.TRANSFER;
-			this.form.referenceTableId = -1;
-			addRecord(this.form)
+			formData.referenceTableName = CASH_TYPE.TRANSFER;
+			formData.referenceTableId = -1;
+			addRecord(formData)
 				.then(() => {
 					this.onSuccess('新增成功', true, true);
 					// 清除承兑信息状态
