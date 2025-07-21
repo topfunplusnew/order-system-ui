@@ -23,18 +23,24 @@ export default {
 				otherAcountsName: [
 					{
 						required: true,
-						message: '请输入对方户名',
+						message: '请输入对方户名或点击搜索选择',
 						trigger: 'blur'
 					}
 				],
 				otherBankNo: [
 					{
 						required: true,
-						message: '请输入对方账号',
+						message: '请输入对方账号或点击搜索选择',
 						trigger: 'blur'
 					}
 				],
-
+				otherBankName: [
+					{
+						required: true,
+						message: '请输入对方开户行或点击搜索选择',
+						trigger: 'blur'
+					}
+				],
 				applyDate: [
 					{
 						required: true,
@@ -55,7 +61,8 @@ export default {
 			queryCompany: '',
 			queryFleet: '',
 			queryCars: '',
-			queryOrder: ''
+			queryOrder: '',
+			queryBankAccount: '' // 新增银行账户搜索字段
 		};
 	},
 	methods: {
@@ -122,12 +129,7 @@ export default {
 			}
 		},
 		handleFillLandInfo(val) {
-			// 填充银行卡信息 todo 这里的银行卡户名 填写的是司机的名称 后续是否需要修改?
-			this.form.otherAcountsName = val.landDriverName;
-			this.form.otherBankNo = val.landBankNo;
-			this.form.otherBankName = val.landBankName;
-
-			// 填充司机信息
+			// 只填充司机信息，不填充银行信息
 			this.form.driverName = val.landDriverName;
 			this.form.carNo = val.landCarNo;
 			this.form.fleet = val.fleet;
@@ -140,12 +142,7 @@ export default {
 		},
 		// 填充海运费
 		handleFillSeaInfo(val) {
-			// 填充银行卡信息 todo 这里的银行卡户名 填写的是司机的名称 后续是否需要修改?
-			this.form.otherAcountsName = val.seaDriverName;
-			this.form.otherBankNo = val.seaBankNo;
-			this.form.otherBankName = val.seaBankName;
-
-			// 填充司机信息
+			// 只填充司机信息，不填充银行信息
 			this.form.driverName = val.seaDriverName;
 			this.form.carNo = val.seaCarNo;
 			this.form.fleet = '无';
@@ -165,6 +162,12 @@ export default {
 			this.form.otherAcountsName = val.acountsName;
 			this.form.companyType = val.companyType;
 		},
+		// 银行账户搜索回调 - 专门用于对方户名搜索
+		handleCommitBackBankAccount(val) {
+			this.form.otherBankNo = val.bankNo;
+			this.form.otherBankName = val.bankName;
+			this.form.otherAcountsName = val.acountsName;
+		},
 		handleCommitBackCars(val) {
 			this.form.carNo = val.dictLabel;
 		},
@@ -180,6 +183,10 @@ export default {
 		},
 		updateQueryFleet(val) {
 			this.queryFleet = val;
+		},
+		// 银行账户搜索相关函数
+		updateQueryBankAccount(val) {
+			this.queryBankAccount = val;
 		},
 		// 提交表单信息
 		submitForm() {
@@ -308,104 +315,54 @@ export default {
 					<el-form-item label="金额" prop="moneyAmount">
 						<el-input v-model="form.moneyAmount" placeholder="请输入金额" />
 					</el-form-item>
-					<el-form-item label="对方户名" prop="otherAcountsName">
-						<el-row>
-							<el-col :span="10">
-								<el-input disabled v-model="form.otherAcountsName" placeholder="请选择订单填充" />
-							</el-col>
-							<!-- <el-col :span="3">
-                <SearchOption
-                  :get-data="listBankAccount"
-                  icon="el-icon-search"
-                  :limit-info="{}"
-                  query-label="户名查找"
-                  query-info="acountsName"
-                  :query-name="queryCompany"
-                  @commitBack="handleCommitBack"
-                  @update:queryName="handleUpdateQueryName"
-                >
-                  <template #table-columns>
-                    <el-table-column
-                      label="公司名称"
-                      align="center"
-                      prop="companyName"
-                    />
-                    <el-table-column
-                      label="公司类型"
-                      align="center"
-                      prop="companyType"
-                    />
-                    <el-table-column
-                      label="开户行"
-                      align="center"
-                      prop="bankName"
-                    />
-                    <el-table-column
-                      label="开户名"
-                      align="center"
-                      prop="acountsName"
-                    />
-                    <el-table-column
-                      label="账号"
-                      align="center"
-                      prop="bankNo"
-                    />
-                  </template>
-                </SearchOption>
-              </el-col> -->
-						</el-row>
-					</el-form-item>
-					<el-form-item label="对方账号" prop="otherBankNo">
-						<el-input disabled v-model="form.otherBankNo" placeholder="请选择订单填充" />
-					</el-form-item>
-					<el-form-item label="对方开户行" prop="otherBankName">
-						<el-input disabled v-model="form.otherBankName" placeholder="请选择订单填充" />
-					</el-form-item>
-					<!--          下面这些可以通过选择订单 然后自动补齐-->
-					<el-form-item label="司机姓名" prop="driverName">
-						<el-input disabled v-model="form.driverName" placeholder="请选择订单填充" />
-					</el-form-item>
 					<el-form-item label="车牌号/柜号" prop="carNo">
 						<el-row>
 							<el-col :span="20">
 								<el-input disabled v-model="form.carNo" placeholder="请选择订单填充" />
 							</el-col>
-							<!-- <el-col :span="4">
-                <SearchOption
-                  :limit-info="{ dictType: 'order_cars' }"
-                  :get-data="listData"
-                  query-label="车牌搜索"
-                  :query-name="queryCars"
-                  query-info="dictLabel"
-                  @update:queryName="updateQueryCars"
-                  @commitBack="handleCommitBackCars"
-                >
-                  <template #table-columns>
-                    <el-table-column label="车牌" prop="dictLabel" />
-                  </template>
-                </SearchOption>
-              </el-col> -->
 						</el-row>
+					</el-form-item>
+					<el-form-item label="对方户名" prop="otherAcountsName">
+						<el-row>
+							<el-col :span="16">
+								<el-input v-model="form.otherAcountsName" placeholder="请输入对方户名或点击搜索" />
+							</el-col>
+							<el-col :span="4">
+								<SearchOption
+									:get-data="listBankAccount"
+									icon="el-icon-search"
+									:limit-info="{}"
+									query-label="户名查找"
+									query-info="acountsName"
+									:query-name="queryBankAccount"
+									@commitBack="handleCommitBackBankAccount"
+									@update:queryName="updateQueryBankAccount"
+								>
+									<template #table-columns>
+										<el-table-column label="公司名称" align="center" prop="companyName" />
+										<el-table-column label="公司类型" align="center" prop="companyType" />
+										<el-table-column label="开户行" align="center" prop="bankName" />
+										<el-table-column label="开户名" align="center" prop="acountsName" />
+										<el-table-column label="账号" align="center" prop="bankNo" />
+									</template>
+								</SearchOption>
+							</el-col>
+						</el-row>
+					</el-form-item>
+					<el-form-item label="对方账号" prop="otherBankNo">
+						<el-input v-model="form.otherBankNo" placeholder="请输入对方账号或点击上方搜索自动填充" />
+					</el-form-item>
+					<el-form-item label="对方开户行" prop="otherBankName">
+						<el-input v-model="form.otherBankName" placeholder="请输入对方开户行或点击上方搜索自动填充" />
+					</el-form-item>
+					<!--          下面这些可以通过选择订单 然后自动补齐-->
+					<el-form-item label="司机姓名" prop="driverName">
+						<el-input disabled v-model="form.driverName" placeholder="请选择订单填充" />
 					</el-form-item>
 					<el-form-item label="车队" prop="fleet">
 						<el-col :span="20">
 							<el-input disabled v-model="form.fleet" placeholder="请选择订单填充" />
 						</el-col>
-						<!-- <el-col :span="4">
-              <SearchOption
-                :limit-info="{}"
-                :get-data="listFleet"
-                query-label="车队名称搜索"
-                :query-name="queryFleet"
-                query-info="fname"
-                @update:queryName="updateQueryFleet"
-                @commitBack="handleCommitBackFleet"
-              >
-                <template #table-columns>
-                  <el-table-column label="车队名称" prop="fname" />
-                </template>
-              </SearchOption>
-            </el-col> -->
 					</el-form-item>
 					<el-form-item label="申请日期" prop="applyDate">
 						<el-date-picker v-model="form.applyDate" type="datetime" placeholder="请选择申请日期" value-format="yyyy-MM-dd HH:mm:ss" />
