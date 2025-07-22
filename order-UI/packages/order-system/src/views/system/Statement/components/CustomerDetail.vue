@@ -231,11 +231,22 @@ export default {
 		},
 		// 导出Excel
 		handleExport() {
-			if (!this.tableData || this.tableData.length === 0) {
-				this.$message.warning('请先搜索数据后再导出');
+			if (!this.searchForm.companyId) {
+				this.$message.warning('请先选择客户');
 				return;
 			}
-			this.excelExport(['点击查询对应信息'], '客户科目明细表');
+			// 选择导出时间范围
+			this.$datePicker().then(res => {
+				this.download(
+					'statistics/export/customerBalanceDetails',
+					{
+						beginTime: res.beginTime + ' 00:00:00',
+						endTime: res.endTime + ' 23:59:59',
+						companyId: this.searchForm.companyId
+					},
+					`客户科目明细表_${parseTime(new Date().getTime())}.xlsx`
+				);
+			});
 		}
 	}
 };

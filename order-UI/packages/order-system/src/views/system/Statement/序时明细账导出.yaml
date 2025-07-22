@@ -1,0 +1,288 @@
+openapi: 3.0.1
+info:
+  title: 订单系统
+  description: ''
+  version: 1.0.0
+tags: []
+paths:
+  /statistics/export/customerBalanceSummary:
+    post:
+      summary: 导出序时明细账-客户余额汇总账
+      deprecated: false
+      description: ''
+      tags: []
+      parameters:
+        - name: beginTime
+          in: query
+          description: 开始时间，精确到时分秒，格式：yyyy-MM-dd
+          required: true
+          example: '2024-06-01'
+          schema:
+            type: string
+        - name: endTime
+          in: query
+          description: 结束时间，精确到时分秒，格式：yyyy-MM-dd
+          required: true
+          example: '2025-07-22'
+          schema:
+            type: string
+        - name: companyName
+          in: query
+          description: 公司名称，可选
+          required: false
+          example: 淄博天一建设
+          schema:
+            type: string
+        - name: Authorization
+          in: header
+          description: ''
+          example: dev-mode-admin-token-2025
+          schema:
+            type: string
+            default: dev-mode-admin-token-2025
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+          headers: {}
+      security:
+        - bearer: []
+  /statistics/export/supplierBalanceSummary:
+    post:
+      summary: 导出序时明细账-供应商余额汇总账
+      deprecated: false
+      description: ''
+      tags: []
+      parameters:
+        - name: beginTime
+          in: query
+          description: 开始时间，精确到时分秒，格式：yyyy-MM-dd
+          required: true
+          example: '2024-06-01'
+          schema:
+            type: string
+        - name: endTime
+          in: query
+          description: 结束时间，精确到时分秒，格式：yyyy-MM-dd
+          required: true
+          example: '2025-07-22'
+          schema:
+            type: string
+        - name: companyName
+          in: query
+          description: 公司名称，可选
+          required: false
+          schema:
+            type: string
+        - name: Authorization
+          in: header
+          description: ''
+          example: dev-mode-admin-token-2025
+          schema:
+            type: string
+            default: dev-mode-admin-token-2025
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+          headers: {}
+      security:
+        - bearer: []
+  /statistics/export/freightDetails:
+    post:
+      summary: 导出序时明细账-运费余额汇总账
+      deprecated: false
+      description: ''
+      tags: []
+      parameters:
+        - name: beginTime
+          in: query
+          description: 开始时间，精确到时分秒，格式：yyyy-MM-dd
+          required: true
+          example: '2024-06-01'
+          schema:
+            type: string
+        - name: endTime
+          in: query
+          description: 结束时间，精确到时分秒，格式：yyyy-MM-dd
+          required: true
+          example: '2025-07-22'
+          schema:
+            type: string
+        - name: carNo
+          in: query
+          description: 车牌号，可选
+          required: false
+          schema:
+            type: string
+        - name: Authorization
+          in: header
+          description: ''
+          example: dev-mode-admin-token-2025
+          schema:
+            type: string
+            default: dev-mode-admin-token-2025
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+          headers: {}
+      security:
+        - bearer: []
+  /statistics/export/customerBalanceDetails:
+    post:
+      summary: 导出序时明细账-客户余额明细账
+      deprecated: false
+      description: ''
+      tags: []
+      parameters:
+        - name: beginTime
+          in: query
+          description: 开始时间，精确到时分秒，格式：yyyy-MM-dd HH:mm:ss
+          required: true
+          example: '2024-06-01 00:00:00'
+          schema:
+            type: string
+        - name: endTime
+          in: query
+          description: 结束时间，精确到时分秒，格式：yyyy-MM-dd HH:mm:ss
+          required: true
+          example: '2025-08-01 00:00:00'
+          schema:
+            type: string
+        - name: companyId
+          in: query
+          description: 公司ID
+          required: true
+          example: 86
+          schema:
+            type: integer
+        - name: Authorization
+          in: header
+          description: ''
+          example: dev-mode-admin-token-2025
+          schema:
+            type: string
+            default: dev-mode-admin-token-2025
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+          headers: {}
+      security:
+        - bearer: []
+  /statistics/export/supplierBalanceDetails:
+    post:
+      summary: 导出序时明细账-供应商余额明细账
+      deprecated: false
+      description: ''
+      tags: []
+      parameters:
+        - name: beginTime
+          in: query
+          description: 开始时间，精确到时分秒，格式：yyyy-MM-dd HH:mm:ss
+          required: true
+          example: '2024-06-01 00:00:00'
+          schema:
+            type: string
+        - name: endTime
+          in: query
+          description: 结束时间，精确到时分秒，格式：yyyy-MM-dd HH:mm:ss
+          required: true
+          example: '2024-08-01 00:00:00'
+          schema:
+            type: string
+        - name: companyId
+          in: query
+          description: 公司ID
+          required: true
+          example: 86
+          schema:
+            type: integer
+        - name: Authorization
+          in: header
+          description: ''
+          example: dev-mode-admin-token-2025
+          schema:
+            type: string
+            default: dev-mode-admin-token-2025
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+          headers: {}
+      security:
+        - bearer: []
+  /statistics/export/freightBalanceDetails:
+    post:
+      summary: 导出序时明细账-运费余额明细账
+      deprecated: false
+      description: ''
+      tags: []
+      parameters:
+        - name: beginTime
+          in: query
+          description: 开始时间，精确到时分秒，格式：yyyy-MM-dd HH:mm:ss
+          required: true
+          example: ''
+          schema:
+            type: string
+        - name: endTime
+          in: query
+          description: 结束时间，精确到时分秒，格式：yyyy-MM-dd HH:mm:ss
+          required: true
+          schema:
+            type: string
+        - name: carId
+          in: query
+          description: 车辆ID，可选
+          required: true
+          schema:
+            type: integer
+        - name: Authorization
+          in: header
+          description: ''
+          example: dev-mode-admin-token-2025
+          schema:
+            type: string
+            default: dev-mode-admin-token-2025
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+          headers: {}
+      security:
+        - bearer: []
+components:
+  schemas: {}
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+servers: []
+security:
+  - bearer: []

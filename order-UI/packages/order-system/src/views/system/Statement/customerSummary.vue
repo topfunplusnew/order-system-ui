@@ -32,7 +32,7 @@
 
 				<template #export>
 					<el-col :span="1.5">
-						<!-- <el-button plain icon="el-icon-folder-opened" size="mini" @click="handleExport">导出Excel</el-button> -->
+						<el-button plain icon="el-icon-folder-opened" size="mini" @click="handleExport">导出Excel</el-button>
 					</el-col>
 				</template>
 			</right-toolbar>
@@ -200,9 +200,17 @@ export default {
 			);
 		},
 		// 导出
-		// handleExport() {
-		// 	this.excelExport(['查看详情'], '客户科目余额汇总表');
-		// }
+		handleExport() {
+			this.download(
+				'statistics/export/customerBalanceSummary',
+				{
+					beginTime: this.queryParams.beginTime,
+					endTime: this.queryParams.endTime,
+					companyName: this.queryParams.companyName
+				},
+				`客户科目余额汇总表_${parseTime(new Date().getTime())}.xlsx`
+			);
+		}
 	}
 };
 </script>

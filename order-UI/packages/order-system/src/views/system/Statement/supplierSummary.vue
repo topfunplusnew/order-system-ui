@@ -33,7 +33,7 @@
 
 				<template #export>
 					<el-col :span="1.5">
-						<!-- <el-button plain icon="el-icon-folder-opened" size="mini" @click="handleExport">导出Excel</el-button> -->
+						<el-button plain icon="el-icon-folder-opened" size="mini" @click="handleExport">导出Excel</el-button>
 					</el-col>
 				</template>
 			</right-toolbar>
@@ -188,9 +188,17 @@ export default {
 		refresh() {
 			this.getList();
 		},
-		// handleExport() {
-		// 	this.excelExport(['查看详情'], '供应商科目余额汇总表');
-		// }
+		handleExport() {
+			this.download(
+				'statistics/export/supplierBalanceSummary',
+				{
+					beginTime: this.queryParams.beginTime,
+					endTime: this.queryParams.endTime,
+					companyName: this.queryParams.companyName
+				},
+				`供应商科目余额汇总表_${parseTime(new Date().getTime())}.xlsx`
+			);
+		}
 	}
 };
 </script>

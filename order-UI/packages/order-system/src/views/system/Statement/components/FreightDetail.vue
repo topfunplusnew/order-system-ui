@@ -214,13 +214,24 @@ export default {
 			return components[tableName] || null; // 默认返回 null，如果没有匹配的 tableName
 		},
 		// 导出Excel
-		// handleExport() {
-		// 	if (!this.tableData || this.tableData.length === 0) {
-		// 		this.$message.warning('请先搜索数据后再导出');
-		// 		return;
-		// 	}
-		// 	this.excelExport(['点击查询对应信息'], '司机科目明细表');
-		// }
+		handleExport() {
+			if (!this.searchForm.driverId) {
+				this.$message.warning('请先选择车牌');
+				return;
+			}
+			// 选择导出时间范围
+			this.$datePicker().then(res => {
+				this.download(
+					'statistics/export/freightBalanceDetails',
+					{
+						beginTime: res.beginTime + ' 00:00:00',
+						endTime: res.endTime + ' 23:59:59',
+						carId: this.searchForm.driverId
+					},
+					`司机科目明细表_${parseTime(new Date().getTime())}.xlsx`
+				);
+			});
+		}
 	}
 };
 </script>
@@ -263,7 +274,7 @@ export default {
 				</el-form-item>
 				<el-form-item>
 					<el-button type="primary" icon="el-icon-search" size="mini" @click="handleCheck">搜索</el-button>
-					<!-- <el-button type="success" icon="el-icon-folder-opened" size="mini" @click="handleExport">导出Excel</el-button> -->
+					<el-button type="success" icon="el-icon-folder-opened" size="mini" @click="handleExport">导出Excel</el-button>
 				</el-form-item>
 			</el-form>
 			<!--      司机的结转数据-->
