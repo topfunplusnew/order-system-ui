@@ -798,6 +798,8 @@ export default {
 				tableName: null,
 				tID: null,
 				moneyAmount: null,
+				selfBankCardType: null,
+				otherBankCardType: null,
 				selfAcountsName: null,
 				selfBankNo: null,
 				selfBankName: null,
@@ -811,6 +813,53 @@ export default {
 				companyType: null,
 				comments: null,
 				editReason: null, // 添加修改原因字段
+				addtime: null,
+				userId: null,
+				UserName: null,
+				updateTime: null,
+				delFlag: null,
+				transactionHistory: null,
+				bankacceptance: null,
+				params: {
+					attachmentIds: [],
+					bankacceptance: null
+				}
+			};
+			this.resetForm('form');
+		},
+		// 部分重置 - 保留银行账户类型和付款类型
+		partialReset() {
+			// 保存原始的payType，如果是字符串格式则转换为数组格式以便级联选择器使用
+			let preservedPayType = this.form.payType;
+			if (typeof preservedPayType === 'string' && preservedPayType) {
+				preservedPayType = preservedPayType.split('-');
+			}
+			const preservedSelfBankCardType = this.form.selfBankCardType;
+			const preservedOtherBankCardType = this.form.otherBankCardType;
+			
+			this.form = {
+				id: null,
+				payNO: null,
+				fundsDate: parseTime(new Date()),
+				payType: preservedPayType,
+				tableName: null,
+				tID: null,
+				moneyAmount: null,
+				selfBankCardType: preservedSelfBankCardType,
+				otherBankCardType: preservedOtherBankCardType,
+				selfAcountsName: null,
+				selfBankNo: null,
+				selfBankName: null,
+				selfBankID: null,
+				otherAcountsName: null,
+				otherBankNo: null,
+				otherBankName: null,
+				paymentState: null,
+				companyName: null,
+				companyId: null,
+				companyType: null,
+				comments: null,
+				editReason: null,
 				addtime: null,
 				userId: null,
 				UserName: null,
@@ -1046,32 +1095,38 @@ export default {
 						}
 					}
 
-					// 去除无用的参数
-					this.form = excludeParams(this.form, this.$exclude);
-					// 对结果进行特殊处理 如果是字符串 就把响应式赋值为空，然后重新选择 如果是数组 ，那么不会进入这个判断
-					if (typeof this.form.payType === 'string') {
-						this.form.payType = null;
+					// 创建提交数据的深克隆，避免修改原始响应式数据
+					let submitData = JSON.parse(JSON.stringify(this.form));
+					
+					// 对提交数据进行处理，不影响页面显示
+					submitData = excludeParams(submitData, this.$exclude);
+					
+					// 对结果进行特殊处理 - 只处理提交数据
+					if (typeof submitData.payType === 'string') {
 						this.$message.warning('请选择付款类型');
 						return;
 					}
-					this.form.payType = this.form.payType.join('-');
 					
-					// 创建提交数据的副本
-					const submitData = { ...this.form };
+					// 将数组格式转换为字符串格式用于提交
+					if (Array.isArray(submitData.payType)) {
+						submitData.payType = submitData.payType.join('-');
+					}
 					
-					if (this.form.id != null) {
+					if (submitData.id != null) {
 						// 修改时，确保包含修改原因
 						if (!submitData.editReason || submitData.editReason.trim() === '') {
 							this.$message.error('修改时必须填写修改原因');
 							return;
 						}
-						submitData.editReason = this.form.editReason;
+						// submitData.editReason 已经在深克隆中包含了
 						
 						// 编辑操作，使用新的编辑接口
 						const originalId = submitData.id;
 						updatePaymentSimulate(submitData)
 							.then(response => {
 								this.$modal.msgSuccess('修改成功');
+								// 先部分重置表单，保留关键字段
+								this.partialReset();
 								this.open = false;
 								// 清除附件上传状态
 								if (this.$refs.attachmentUpload) {
@@ -1088,13 +1143,6 @@ export default {
 										// 可以根据需要添加选中逻辑
 									}
 								});
-								// 重置银行类型选择器
-								if (this.$refs.selfSelectedBankType) {
-									this.$refs.selfSelectedBankType.localSelectType = null;
-								}
-								if (this.$refs.otherSelectedBankType) {
-									this.$refs.otherSelectedBankType.localSelectType = null;
-								}
 							})
 							.catch(error => {
 								console.error('修改付款记录失败:', error);
@@ -1117,6 +1165,8 @@ export default {
 							.then(() => {
 								this.$modal.msgSuccess('新增成功');
 								this.$bus.$emit('changeFlag', false);
+								// 先部分重置表单，保留关键字段
+								this.partialReset();
 								this.open = false;
 								// 清除附件上传状态
 								if (this.$refs.attachmentUpload) {
@@ -1127,13 +1177,6 @@ export default {
 									this.$refs.transactionHistoryUpload.clearUploadedFiles();
 								}
 								this.getList();
-								// 重置银行类型选择器
-								if (this.$refs.selfSelectedBankType) {
-									this.$refs.selfSelectedBankType.localSelectType = null;
-								}
-								if (this.$refs.otherSelectedBankType) {
-									this.$refs.otherSelectedBankType.localSelectType = null;
-								}
 							})
 							.catch(error => {
 								console.error('新增付款记录失败:', error);

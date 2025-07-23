@@ -590,6 +590,60 @@ export default {
 				this.$refs.attachmentUploader.clearUploadedFiles();
 			}
 		},
+		// 部分重置 - 保留银行账户类型和收款类型
+		partialReset() {
+			// 保存原始的receiveType，如果是字符串格式则转换为数组格式以便级联选择器使用
+			let preservedReceiveType = this.form.receiveType;
+			if (typeof preservedReceiveType === 'string' && preservedReceiveType) {
+				preservedReceiveType = preservedReceiveType.split('-');
+			}
+			const preservedSelfBankCardType = this.form.selfBankCardType;
+			const preservedOtherBankCardType = this.form.otherBankCardType;
+			
+			this.form = {
+				id: null,
+				receiveNO: null,
+				fundsDate: parseTime(new Date()),
+				receiveType: preservedReceiveType,
+				tableName: null,
+				tID: null,
+				moneyAmount: null,
+				// 我方银行卡的账户类型
+				selfBankCardType: preservedSelfBankCardType,
+				selfAcountsName: null,
+				selfBankNo: null,
+				selfBankName: null,
+				selfBankID: null,
+				// 对方银行卡账户的类型
+				otherBankCardType: preservedOtherBankCardType,
+				otherAcountsName: null,
+				otherBankNo: null,
+				otherBankName: null,
+				companyName: null,
+				companyId: null,
+				companyType: null,
+				comments: null,
+				editReason: null,
+				addtime: null,
+				userId: null,
+				UserName: null,
+				updateTime: null,
+				delFlag: null,
+				transactionHistory: null,
+				params: {
+					attachmentIds: [],
+					bankacceptance: null
+				}
+			};
+			// 安全地重置表单，避免引用错误
+			if (this.$refs.form) {
+				this.resetForm('form');
+			}
+			// 清除上传组件状态
+			if (this.$refs.attachmentUploader) {
+				this.$refs.attachmentUploader.clearUploadedFiles();
+			}
+		},
 		/** 搜索按钮操作 */
 		handleQuery() {
 			this.queryParams.pageNum = 1;
@@ -720,29 +774,36 @@ export default {
 						}
 					}
 
-					this.form = excludeParams(this.form, this.$exclude);
-					// 对结果进行特殊处理
-					if (typeof this.form.receiveType === 'string') {
-						this.form.receiveType = null;
+					// 创建提交数据的深克隆，避免修改原始响应式数据
+					let submitData = JSON.parse(JSON.stringify(this.form));
+					
+					// 对提交数据进行处理，不影响页面显示
+					submitData = excludeParams(submitData, this.$exclude);
+					
+					// 对结果进行特殊处理 - 只处理提交数据
+					if (typeof submitData.receiveType === 'string') {
 						this.$message.warning('请选择收款类型');
 						return;
 					}
-					this.form.receiveType = this.form.receiveType.join('-');
+					
+					// 将数组格式转换为字符串格式用于提交
+					if (Array.isArray(submitData.receiveType)) {
+						submitData.receiveType = submitData.receiveType.join('-');
+					}
 
-					// 创建提交数据的副本
-					const submitData = { ...this.form };
-
-					if (this.form.id != null) {
+					if (submitData.id != null) {
 						// 修改时，确保包含修改原因
 						if (!submitData.editReason || submitData.editReason.trim() === '') {
 							this.$message.error('修改时必须填写修改原因');
 							return;
 						}
-						submitData.editReason = this.form.editReason;
+						// submitData.editReason 已经在深克隆中包含了
 						
 						updateReceiveMoney(submitData)
 							.then(() => {
 								this.$modal.msgSuccess('修改成功');
+								// 先部分重置表单，保留关键字段
+								this.partialReset();
 								this.open = false;
 								this.getList();
 								this.$bus.$emit('changeFlag', false);
@@ -767,6 +828,8 @@ export default {
 						addReceiveMoney(submitData)
 							.then(() => {
 								this.$modal.msgSuccess('新增成功');
+								// 先部分重置表单，保留关键字段
+								this.partialReset();
 								this.open = false;
 								this.getList();
 								this.$bus.$emit('changeFlag', false);
@@ -784,13 +847,6 @@ export default {
 								});
 								this.$message.error('新增失败，请重试');
 							});
-					}
-					// 安全地清除组件引用
-					if (this.$refs.selfSelfSelectedBankType) {
-						this.$refs.selfSelfSelectedBankType.localSelectType = null;
-					}
-					if (this.$refs.otherSelfSelectedBankType) {
-						this.$refs.otherSelfSelectedBankType.localSelectType = null;
 					}
 					// 清理上传组件
 					if (this.$refs.attachmentUploader) {
