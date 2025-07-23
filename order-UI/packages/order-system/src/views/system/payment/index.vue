@@ -260,40 +260,6 @@
 							<el-input disabled v-model="form.selfBankName" placeholder="请选择" />
 						</el-form-item>
 
-						<el-form-item v-if="value !== PAYMENT_TARGET_TYPE.PAYMENT_FEE" label="对方账号" prop="otherBankNo">
-							<el-row>
-								<el-col :span="16">
-									<el-input disabled v-model="form.otherBankNo" placeholder="请选择" />
-								</el-col>
-								<el-col :span="8">
-									<SearchOption
-										:limit-info="{ acountsType: value }"
-										:get-data="listBankAccount"
-										:query-name="queryBankAcount"
-										query-label="户名查找"
-										query-info="acountsName"
-										@commitBack="handleCommitBackBankAcount"
-										@update:queryName="handleUpdateQueryBankAcount"
-										:extra-params="{
-											companyId: form.companyId,
-											companyType: value
-										}"
-									>
-										<template #table-columns>
-											<el-table-column label="账户类型" align="center" prop="acountsType" />
-											<el-table-column label="公司名称" align="center" prop="companyName" />
-											<el-table-column label="户名" align="center" prop="acountsName" />
-											<el-table-column label="账号(银行账号)" align="center" prop="bankNo" />
-											<el-table-column label="开户行" align="center" prop="bankName" />
-										</template>
-									</SearchOption>
-								</el-col>
-							</el-row>
-						</el-form-item>
-					</el-col>
-
-					<!-- 右列 -->
-					<el-col :span="12">
 						<el-form-item label="对方类型">
 							<el-select v-model="value" placeholder="请选择">
 								<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
@@ -344,14 +310,50 @@
 								</el-col>
 							</el-row>
 						</el-form-item>
+					</el-col>
+
+					<!-- 右列 -->
+					<el-col :span="12">
+						
 
 						<el-form-item label="对方银行账户类型">
 							<BankType ref="otherSelectedBankType" :option-baned="true" :baned="true" :select-type="form.otherBankCardType" @updateSelectedType="changeOtherBankType" />
 						</el-form-item>
 
 						<!-- 选择供应商 -->
-						<el-form-item label="户名" prop="otherAcountsName">
+						<el-form-item label="对方户名" prop="otherAcountsName">
 							<el-input disabled v-model="form.otherAcountsName" placeholder="请选择" />
+						</el-form-item>
+
+						<el-form-item v-if="value !== PAYMENT_TARGET_TYPE.PAYMENT_FEE" label="对方账号" prop="otherBankNo">
+							<el-row>
+								<el-col :span="16">
+									<el-input disabled v-model="form.otherBankNo" placeholder="请选择" />
+								</el-col>
+								<el-col :span="8">
+									<SearchOption
+										:limit-info="{ acountsType: value }"
+										:get-data="listBankAccount"
+										:query-name="queryBankAcount"
+										query-label="户名查找"
+										query-info="acountsName"
+										@commitBack="handleCommitBackBankAcount"
+										@update:queryName="handleUpdateQueryBankAcount"
+										:extra-params="{
+											companyId: form.companyId,
+											companyType: value
+										}"
+									>
+										<template #table-columns>
+											<el-table-column label="账户类型" align="center" prop="acountsType" />
+											<el-table-column label="公司名称" align="center" prop="companyName" />
+											<el-table-column label="户名" align="center" prop="acountsName" />
+											<el-table-column label="账号(银行账号)" align="center" prop="bankNo" />
+											<el-table-column label="开户行" align="center" prop="bankName" />
+										</template>
+									</SearchOption>
+								</el-col>
+							</el-row>
 						</el-form-item>
 
 						<el-form-item v-if="value !== PAYMENT_TARGET_TYPE.PAYMENT_FEE && value !== '支付费用'" label="对方开户行" prop="otherBankName">
