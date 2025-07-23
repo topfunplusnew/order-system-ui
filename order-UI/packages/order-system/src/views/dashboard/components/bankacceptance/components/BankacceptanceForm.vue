@@ -203,7 +203,10 @@ export default {
 						this.$message.success('自动填充填写成功');
 					});
 				}
-				this.getBankAcceptanceDate(value.billNo);
+				// 只有当 billNo 存在时才调用 getBankAcceptanceDate
+				if (value.billNo) {
+					this.getBankAcceptanceDate(value.billNo);
+				}
 				// 提交给父组件BankType 触发提交时间
 				this.$emit('assign', value);
 			},
@@ -235,8 +238,25 @@ export default {
 		listCompany,
 		// 获取票据信息
 		getBankAcceptanceDate(e) {
-			const inputValue = _.cloneDeep(e.target.value);
-			console.log (e)
+			let inputValue;
+			
+			// 处理两种调用方式：
+			// 1. 从事件对象中获取值 (模板中的 @blur 事件)
+			// 2. 直接传入字符串值 (watch 中的直接调用)
+			if (typeof e === 'string') {
+				// 直接传入的字符串
+				inputValue = e;
+			} else if (e && e.target && e.target.value !== undefined) {
+				// 事件对象
+				inputValue = _.cloneDeep(e.target.value);
+			} else {
+				// 无效的参数
+				console.warn('getBankAcceptanceDate 收到无效参数:', e);
+				return;
+			}
+			
+			console.log('getBankAcceptanceDate inputValue:', inputValue);
+			
 			if (!inputValue) {
 				this.$message.error('票据号码为空,填充失败');
 				return;

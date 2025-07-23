@@ -220,7 +220,7 @@
 								:bill-type="BankAcceptanceType.PAY_TYPE.PAYMENT"
 								:select-type="form.selfBankCardType"
 								@updateSelectedType="changeSelfBankType"
-								@updateBankAcceptance="value => (form.bankacceptance = value)"
+								@updateBankAcceptance="value => (form.params.bankacceptance = value)"
 							/>
 						</el-form-item>
 
@@ -477,7 +477,7 @@ import CheckDetail from '../../dashboard/components/payment/CheckDetail.vue';
 import BankType from '@/views/dashboard/components/common/BankType.vue';
 import { mixin_bankType } from '../../dashboard/mixins/common/common_bankType';
 import StateTag from '@/views/dashboard/components/common/StateTag.vue';
-import { BankAcceptanceType, PAYMENT_TARGET_TYPE } from '../../../api/tool/enums';
+import { BankAcceptanceType, PayType, PAYMENT_TARGET_TYPE } from '../../../api/tool/enums';
 import CheckFiles from '@/components/CheckFiles.vue';
 import { mixin_checkfile } from '@/views/dashboard/mixins/checkfiles/mixin_checkfile';
 import _ from 'lodash';
@@ -714,6 +714,7 @@ export default {
 	},
 	created() {
 		this.getList();
+		this.reset();
 		if (localStorage.getItem('payment-columns') === 'null' || !localStorage.getItem('payment-columns')) {
 			// 设置localStorage
 			localStorage.setItem('payment-columns', JSON.stringify(this.columns));
@@ -816,7 +817,8 @@ export default {
 				transactionHistory: null,
 				bankacceptance: null,
 				params: {
-					attachmentIds: []
+					attachmentIds: [],
+					bankacceptance: null
 				}
 			};
 			this.resetForm('form');
@@ -851,9 +853,9 @@ export default {
 				UserName: null,
 				updateTime: null,
 				delFlag: null,
-				bankacceptance: null,
 				params: {
-					attachmentIds: []
+					attachmentIds: [],
+					bankacceptance: {}
 				}
 			};
 		},
@@ -885,6 +887,18 @@ export default {
 			const id = row.id || this.ids;
 			getPayment(id).then(response => {
 				this.form = response.data;
+				// 确保params结构完整，避免BankacceptanceForm错误
+				if (!this.form.params) {
+					this.form.params = {};
+				}
+				// 保留原有的bankacceptance数据，如果没有则设为null
+				if (!this.form.params.bankacceptance) {
+					this.form.params.bankacceptance = null;
+				}
+				// 确保attachmentIds存在
+				if (!this.form.params.attachmentIds) {
+					this.form.params.attachmentIds = [];
+				}
 				// 设置级联选择器的值
 				if (this.form.payType) {
 					this.form.payType = this.form.payType.split('-');
@@ -1007,6 +1021,27 @@ export default {
 					if (this.$refs.transactionHistoryUpload) {
 						const transactionHistoryParams = this.$refs.transactionHistoryUpload.getUploadParams();
 						this.form = { ...this.form, ...transactionHistoryParams };
+					}
+
+					// 处理承兑逻辑
+					const selfType = this.$refs.selfSelectedBankType?.localSelectType;
+					const otherType = this.$refs.otherSelectedBankType?.localSelectType;
+					if (selfType && otherType && selfType !== otherType) {
+						if (!this.form.params) {
+							this.form.params = {};
+						}
+						if (!this.form.params.bankacceptance) {
+							this.form.params.bankacceptance = {};
+						}
+						// 只有在没有设置billType时才设置，避免覆盖用户的选择
+						if (!this.form.params.bankacceptance.billType) {
+							if (selfType === BankAcceptanceType.ACCEPTANCE) {
+								this.form.params.bankacceptance.billType = PayType.PAYMENT;
+							}
+							if (otherType === BankAcceptanceType.ACCEPTANCE) {
+								this.form.params.bankacceptance.billType = PayType.RECEIVE;
+							}
+						}
 					}
 
 					// 去除无用的参数

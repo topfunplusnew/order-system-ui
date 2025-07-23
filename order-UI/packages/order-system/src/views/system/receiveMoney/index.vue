@@ -129,7 +129,7 @@
 								:bill-type="BankAcceptanceType.PAY_TYPE.RECEIVE"
 								:select-type="form.selfBankCardType"
 								@updateSelectedType="changeSelfBankType"
-								@updateBankAcceptance="value => (form.bankacceptance = value)"
+								@updateBankAcceptance="value => (form.params.bankacceptance = value)"
 							/>
 						</el-form-item>
 						<el-form-item label="我方户名" prop="selfAcountsName">
@@ -300,7 +300,7 @@ import SearchOption from '@/components/SearchOption.vue';
 import { listBankAccount } from '@/api/system/bankAccount';
 import { excludeParams } from '@/api/tool/exclude';
 import { addReason } from '@/api/system/user';
-import { BankAcceptanceType, PAYMENT_TARGET_TYPE, TableName } from '@/api/tool/enums';
+import { BankAcceptanceType, PayType, PAYMENT_TARGET_TYPE, TableName } from '@/api/tool/enums';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
 import CheckFiles from '../../../components/CheckFiles.vue';
 import UploadFilesButton from '@/components/UploadFilesButton/index.vue';
@@ -378,7 +378,9 @@ export default {
 				endTime: null
 			},
 			// 表单参数
-			form: {},
+			form: {
+				
+			},
 			// 表单校验
 			rules: {
 				fundsDate: [{ required: true, message: '日期不能为空', trigger: 'blur' }],
@@ -480,6 +482,7 @@ export default {
 		}
 	},
 	created() {
+		this.reset();
 		// 查询列表
 		this.getList();
 		// 获取本地显示隐藏列的存储 以便于下一次用户打开的时候读取喜好
@@ -573,9 +576,9 @@ export default {
 				updateTime: null,
 				delFlag: null,
 				transactionHistory: null,
-				bankacceptance: null,
 				params: {
-					attachmentIds: []
+					attachmentIds: [],
+					bankacceptance: null
 				}
 			};
 			// 安全地重置表单，避免引用错误
@@ -618,11 +621,13 @@ export default {
 					this.$message.error('获取收款信息失败');
 					return;
 				}
-				// 保留表单结构，特别是 params.attachmentIds
+				// 保留表单结构，特别是 params.attachmentIds 和 params.bankacceptance
 				this.form = {
 					...response.data,
 					params: {
-						attachmentIds: response.data.attachmentList ? response.data.attachmentList.map(item => item.id) : []
+						...response.data.params,
+						attachmentIds: response.data.attachmentList ? response.data.attachmentList.map(item => item.id) : [],
+						bankacceptance: response.data.params?.bankacceptance || null
 					}
 				};
 				// 通知上传组件当前的附件列表
@@ -640,15 +645,19 @@ export default {
 				if (!response.data.bankacceptanceId) {
 					this.$message.warning('该收款信息无凭证相关信息');
 					flag = true;
+					// 确保bankacceptance有默认值，避免BankacceptanceForm错误
+					this.form.params.bankacceptance = null;
 				}
 				if (!flag) {
 					getBankAcceptance(response.data.bankacceptanceId).then(result => {
 						if (!result.data) {
 							this.$message.error('获取凭证数据失败:该行数据存储了凭证ID但没有查询到该ID对应的相关数据');
+							// 设置为null避免undefined错误
+							this.form.params.bankacceptance = null;
 							return;
 						}
 						this.$nextTick(() => {
-							this.form.bankacceptance = result.data;
+							this.form.params.bankacceptance = result.data;
 						});
 					});
 				}
@@ -688,6 +697,27 @@ export default {
 						uniqueAttachmentIds.forEach(id => {
 							this.$store.commit('ADD_ATTACHMENT_ID', id);
 						});
+					}
+
+					// 处理承兑逻辑
+					const selfType = this.$refs.selfSelfSelectedBankType?.localSelectType;
+					const otherType = this.$refs.otherSelfSelectedBankType?.localSelectType;
+					if (selfType && otherType && selfType !== otherType) {
+						if (!this.form.params) {
+							this.form.params = {};
+						}
+						if (!this.form.params.bankacceptance) {
+							this.form.params.bankacceptance = {};
+						}
+						// 只有在没有设置billType时才设置，避免覆盖用户的选择
+						if (!this.form.params.bankacceptance.billType) {
+							if (selfType === BankAcceptanceType.ACCEPTANCE) {
+								this.form.params.bankacceptance.billType = PayType.PAYMENT;
+							}
+							if (otherType === BankAcceptanceType.ACCEPTANCE) {
+								this.form.params.bankacceptance.billType = PayType.RECEIVE;
+							}
+						}
 					}
 
 					this.form = excludeParams(this.form, this.$exclude);
