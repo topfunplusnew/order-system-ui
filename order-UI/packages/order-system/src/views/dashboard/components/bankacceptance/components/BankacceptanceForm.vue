@@ -342,12 +342,12 @@ export default {
 							</template>
 							<template v-else>
 								<template v-if="this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT">
-									<el-radio v-model="form.reason" label="购买">购买</el-radio>
-									<el-radio v-model="form.reason" label="客户付款">客户付款</el-radio>
+									<el-radio v-model="form.reason" label="出售">出售</el-radio>
+									<el-radio v-model="form.reason" label="对外付款">对外付款</el-radio>
 								</template>
 								<template v-if="this.billType === BankAcceptanceType.PAY_TYPE.RECEIVE">
-									<el-radio v-model="form.reason" label="出卖">出卖</el-radio>
-									<el-radio v-model="form.reason" label="支付货款">支付货款</el-radio>
+									<el-radio v-model="form.reason" label="购买">购买</el-radio>
+									<el-radio v-model="form.reason" label="客户付款">客户付款</el-radio>
 								</template>
 							</template>
 						</el-form-item>
