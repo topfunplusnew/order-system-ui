@@ -235,7 +235,8 @@ export default {
 		listCompany,
 		// 获取票据信息
 		getBankAcceptanceDate(e) {
-			const inputValue = _.cloneDeep(e);
+			const inputValue = _.cloneDeep(e.target.value);
+			console.log (e)
 			if (!inputValue) {
 				this.$message.error('票据号码为空,填充失败');
 				return;
@@ -340,11 +341,11 @@ export default {
 								<el-radio v-model="form.reason" label="其他">其他</el-radio>
 							</template>
 							<template v-else>
-								<template v-if="BankAcceptanceType.PAY_TYPE.PAYMENT">
+								<template v-if="this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT">
 									<el-radio v-model="form.reason" label="购买">购买</el-radio>
 									<el-radio v-model="form.reason" label="客户付款">客户付款</el-radio>
 								</template>
-								<template v-else>
+								<template v-if="this.billType === BankAcceptanceType.PAY_TYPE.RECEIVE">
 									<el-radio v-model="form.reason" label="出卖">出卖</el-radio>
 									<el-radio v-model="form.reason" label="支付货款">支付货款</el-radio>
 								</template>
