@@ -6,7 +6,7 @@
 			<el-option v-for="item in dict.type.order_bank_card_type_nodel" :key="item.value" :label="item.label" :value="item.value" />
 		</el-select>
 
-		<el-button v-if="flag" type="warning" @click="handleReopenDrawer">重新填写</el-button>
+		<el-button v-if="flag" type="primary" @click="handleReopenDrawer">修改</el-button>
 		<el-drawer ref="drawer" title="承兑信息填写" :visible.sync="drawer" direction="rtl" :before-close="handleClose" :append-to-body="true" size="55%">
 			<BankacceptanceForm
 				:bankacceptance-info="bankacceptanceInfo"
@@ -102,35 +102,38 @@ export default {
 	methods: {
 		// 设置已填写承兑信息状态
 		setAcceptanceFilled() {
-			// 同时保存承兑信息到localStorage
-			localStorage.setItem(this.bankAcceptanceFilledKey, JSON.stringify(this.bankacceptanceInfo));
+			// 同时保存承兑信息到sessionStorage
+			sessionStorage.setItem(this.bankAcceptanceFilledKey, JSON.stringify(this.bankacceptanceInfo));
 		},
 		// 清除承兑信息填写状态
 		clearAcceptanceFillStatus() {
-			localStorage.removeItem(this.bankAcceptanceFilledKey);
+			sessionStorage.removeItem(this.bankAcceptanceFilledKey);
 		},
 		// 清除所有共享状态
 		clearAllAcceptanceStatus() {
-			localStorage.removeItem(this.bankAcceptanceFilledKey);
+			sessionStorage.removeItem(this.bankAcceptanceFilledKey);
 		},
-		// 重新打开抽屉的处理方法
+		// 修改承兑信息的处理方法
 		handleReopenDrawer() {
-			MessageBox.confirm('您确定要重新填写承兑信息吗？', '提示', {
-				confirmButtonText: '确定',
-				cancelButtonText: '取消',
-				type: 'warning'
-			})
-				.then(() => {
-					this.drawer = true;
-				})
-				.catch(() => {
-					// 取消操作
-				});
+			// 在打开抽屉前，确保承兑信息已经加载
+			const json = sessionStorage.getItem(this.bankAcceptanceFilledKey);
+			if (json) {
+				try {
+					this.bankacceptanceInfo = JSON.parse(json);
+					console.log('修改模式加载承兑信息:', this.bankacceptanceInfo);
+				} catch (error) {
+					console.error('解析承兑信息失败:', error);
+				}
+			}
+			// 直接打开抽屉进行修改
+			this.drawer = true;
 		},
 		// 传递给父组件 然后更新父组件的 selectedType 值
 		handleEmitType(value) {
-			// 每次切换都需要清空承兑的填写状态
-			this.clearAcceptanceFillStatus();
+			// 重要：只有当不是承兑类型时才清空承兑的填写状态
+			if (value !== BankAcceptanceType.ACCEPTANCE) {
+				this.clearAcceptanceFillStatus();
+			}
 			this.$emit('updateBankAcceptance', null);
 			this.$emit('updateSelectedType', value);
 			if (BankAcceptanceType.ACCEPTANCE === value) {
@@ -138,30 +141,23 @@ export default {
 				if (this.baned) {
 					return;
 				}
-				const json = localStorage.getItem(this.bankAcceptanceFilledKey);
-				this.filledAcceptanceInfo = JSON.parse(JSON.stringify(json));
-
+				const json = sessionStorage.getItem(this.bankAcceptanceFilledKey);
+				console.log('从sessionStorage获取数据:', json);
+				
 				// 检查是否已经填写过承兑信息
-				if (this.filledAcceptanceInfo) {
-					// 如果已经填写过，询问是否重新填写
-					MessageBox.confirm('您已经填写过承兑信息，是否重新填写？', '提示', {
-						confirmButtonText: '确定',
-						cancelButtonText: '取消',
-						type: 'warning'
-					})
-						.then(() => {
-							// 用户确认，打开抽屉
-							this.drawer = true;
-						})
-						.catch(() => {
-							if (typeof this.filledAcceptanceInfo === 'string') {
-								// 取消操作 使用已经保存的
-								this.bankacceptanceInfo = JSON.parse(this.filledAcceptanceInfo);
-								return;
-							}
-							// 取消操作 使用已经保存的
-							this.bankacceptanceInfo = this.filledAcceptanceInfo;
-						});
+				if (json) {
+					try {
+						// 从sessionStorage恢复已保存的承兑信息
+						this.bankacceptanceInfo = JSON.parse(json);
+						this.flag = true;
+						console.log('恢复的承兑信息:', this.bankacceptanceInfo);
+						// 通知父组件已有承兑信息
+						this.$emit('updateBankAcceptance', _.cloneDeep(this.bankacceptanceInfo));
+					} catch (error) {
+						console.error('解析承兑信息失败:', error);
+						// 解析失败时直接打开抽屉
+						this.drawer = true;
+					}
 				} else {
 					// 未填写过，直接打开抽屉
 					this.drawer = true;
@@ -175,8 +171,10 @@ export default {
 			this.flag = true;
 			this.drawer = false;
 			this.bankacceptanceInfo = value;
+			// 保存数据到sessionStorage
 			this.setAcceptanceFilled();
-			this.$message.success('承兑信息填写成功');
+			console.log('承兑信息已保存到sessionStorage:', value);
+			this.$message.success('承兑信息保存成功');
 		},
 		// 抽屉关闭的逻辑
 		handleClose(done) {
@@ -187,8 +185,8 @@ export default {
 		}
 	},
 	beforeDestroy() {
-		// 组件销毁时清除当前组件的localStorage
-		localStorage.removeItem(this.bankAcceptanceFilledKey);
+		// 组件销毁时清除当前组件的sessionStorage
+		sessionStorage.removeItem(this.bankAcceptanceFilledKey);
 	}
 };
 </script>

@@ -1364,9 +1364,9 @@ export default {
 				`record_${new Date().getTime()}.xlsx`
 			);
 		},
-		// 关闭表单时清除localStorage中的承兑信息填写状态
+		// 关闭表单时清除localStorage和sessionStorage中的承兑信息填写状态
 		clearAcceptanceFillStatus() {
-			// 清除所有与承兑相关的状态
+			// 清除localStorage中所有与承兑相关的状态
 			localStorage.removeItem('bankAcceptanceFilled');
 			localStorage.removeItem('bankAcceptanceFilledTime');
 			localStorage.removeItem('sharedBankAcceptanceFilled');
@@ -1377,6 +1377,20 @@ export default {
 			Object.keys(localStorage).forEach(key => {
 				if (key.startsWith('bankAcceptanceFilled_') || key.includes('BankAcceptance')) {
 					localStorage.removeItem(key);
+				}
+			});
+			
+			// 同时清除sessionStorage中的承兑信息
+			sessionStorage.removeItem('bankAcceptanceFilled');
+			sessionStorage.removeItem('bankAcceptanceFilledTime');
+			sessionStorage.removeItem('sharedBankAcceptanceFilled');
+			// 清除特定实例的状态
+			sessionStorage.removeItem(`bankAcceptanceFilled_income-${this.form.id || 'new'}`);
+			sessionStorage.removeItem(`bankAcceptanceFilled_expense-${this.form.id || 'new'}`);
+			// 清除可能存在的其他相关状态
+			Object.keys(sessionStorage).forEach(key => {
+				if (key.startsWith('bankAcceptanceFilled_') || key.includes('BankAcceptance')) {
+					sessionStorage.removeItem(key);
 				}
 			});
 		},

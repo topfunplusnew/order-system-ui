@@ -196,17 +196,22 @@ export default {
 					return;
 				}
 				console.log(`传递的value`, value);
-				// 如果是修改,那么就填充value
-				if (value.id) {
+				
+				// 填充承兑信息数据（不再依赖id字段）
+				if (value && typeof value === 'object') {
 					this.$nextTick(() => {
-						Object.assign(this.form, value);
-						this.$message.success('自动填充填写成功');
+						// 使用深拷贝避免引用问题
+						const formData = _.cloneDeep(value);
+						Object.assign(this.form, formData);
+						this.$message.success('承兑信息加载成功');
 					});
 				}
-				// 只有当 billNo 存在时才调用 getBankAcceptanceDate
-				if (value.billNo) {
+				
+				// 只有当 billNo 存在且不是编辑模式时才调用 getBankAcceptanceDate
+				if (value.billNo && !value.id) {
 					this.getBankAcceptanceDate(value.billNo);
 				}
+				
 				// 提交给父组件BankType 触发提交时间
 				this.$emit('assign', value);
 			},
@@ -285,25 +290,17 @@ export default {
 		submitForm() {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
-					if (this.form.id != null) {
-						this.form.billType = this.billType;
-						this.form = excludeParams(this.form, this.$exclude);
-						console.log(`表单`, this.form);
-						// 在localStorage中保存已填写承兑信息的标记
-						localStorage.setItem('bankAcceptanceFilled', JSON.stringify(this.form));
-						localStorage.setItem('bankAcceptanceFilledTime', new Date().getTime());
-						this.$emit('submitForm', _.cloneDeep(this.form));
-						this.reset();
-					} else {
-						this.form.billType = this.billType;
-						this.form = excludeParams(this.form, this.$exclude);
-						console.log(`表单`, this.form);
-						// 在localStorage中保存已填写承兑信息的标记
-						localStorage.setItem('bankAcceptanceFilled', JSON.stringify(this.form));
-						localStorage.setItem('bankAcceptanceFilledTime', new Date().getTime());
-						this.$emit('submitForm', _.cloneDeep(this.form));
-						this.reset();
-					}
+					this.form.billType = this.billType;
+					this.form = excludeParams(this.form, this.$exclude);
+					console.log(`表单`, this.form);
+					
+					// 保存到sessionStorage而不是localStorage
+					const storageKey = 'bankAcceptanceFilled';
+					sessionStorage.setItem(storageKey, JSON.stringify(this.form));
+					sessionStorage.setItem('bankAcceptanceFilledTime', new Date().getTime());
+					
+					this.$emit('submitForm', _.cloneDeep(this.form));
+					this.reset();
 				}
 			});
 		},
