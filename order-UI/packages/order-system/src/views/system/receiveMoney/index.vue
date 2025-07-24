@@ -99,13 +99,32 @@
 			</el-table-column>
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="150">
 				<template slot-scope="scope">
-					<el-button v-hasPermi="['system:receivemoney:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
-					<el-button v-hasPermi="['system:receivemoney:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
+					<el-dropdown @command="command => handleCommand(command, scope.row)">
+						<el-button type="primary" size="mini">
+							操作
+							<i class="el-icon-arrow-down el-icon--right"></i>
+						</el-button>
+						<el-dropdown-menu slot="dropdown">
+							<el-dropdown-item v-hasPermi="['system:receivemoney:edit']" command="edit">修改</el-dropdown-item>
+							<el-dropdown-item v-hasPermi="['system:receivemoney:remove']" command="delete" divided>删除</el-dropdown-item>
+							<el-dropdown-item command="viewEditReason">查看修改原因</el-dropdown-item>
+						</el-dropdown-menu>
+					</el-dropdown>
 				</template>
 			</el-table-column>
 		</el-table>
 
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
+
+		<!-- 查看修改原因弹窗 -->
+		<el-dialog title="查看修改原因" :visible.sync="editReasonDialogVisible" width="800px" append-to-body>
+			<el-table :data="editReasonList" style="width: 100%">
+				<el-table-column prop="addtime" label="修改时间" />
+				<el-table-column prop="reason" label="修改原因" />
+				<el-table-column prop="userName" label="修改人" />
+			</el-table>
+			<pagination v-show="editReasonTotal > 0" :total="editReasonTotal" :page.sync="editReasonQueryParams.pageNum" :limit.sync="editReasonQueryParams.pageSize" @pagination="getEditReasonList" />
+		</el-dialog>
 
 		<!-- 添加或修改收款信息对话框 -->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="1200px" append-to-body>
@@ -279,10 +298,6 @@
 						<el-form-item label="备注" prop="comments">
 							<el-input v-model="form.comments" placeholder="请输入备注" />
 						</el-form-item>
-						<!-- 修改原因字段，只在修改时显示 -->
-						<el-form-item v-if="form.id != null" label="修改原因" prop="editReason">
-							<el-input v-model="form.editReason" placeholder="请输入修改原因" type="textarea" :rows="3" />
-						</el-form-item>
 					</el-col>
 				</el-form>
 			</div>
@@ -296,6 +311,7 @@
 
 <script>
 import { addReceiveMoney, delReceiveMoney, listReceiveMoney } from '@/api/system/receiveMoney';
+import { listTableEditMessage } from '@/api/system/tableEditMessage';
 import SearchOption from '@/components/SearchOption.vue';
 import { listBankAccount } from '@/api/system/bankAccount';
 import { excludeParams } from '@/api/tool/exclude';
@@ -378,9 +394,7 @@ export default {
 				endTime: null
 			},
 			// 表单参数
-			form: {
-				
-			},
+			form: {},
 			// 表单校验
 			rules: {
 				fundsDate: [{ required: true, message: '日期不能为空', trigger: 'blur' }],
@@ -436,23 +450,6 @@ export default {
 						message: '对方账号不能为空',
 						trigger: 'blur'
 					}
-				],
-				editReason: [
-					{
-						validator: (rule, value, callback) => {
-							// 只有在修改时（form.id不为null）才需要验证修改原因
-							if (this.form.id != null) {
-								if (!value || value.trim() === '') {
-									callback(new Error('修改时必须填写修改原因'));
-								} else {
-									callback();
-								}
-							} else {
-								callback();
-							}
-						},
-						trigger: 'blur'
-					}
 				]
 			},
 			columns: [
@@ -469,7 +466,17 @@ export default {
 				{ key: 10, label: `对方公司类型`, visible: true }
 			],
 			// 银行卡查询
-			bankQuery: ''
+			bankQuery: '',
+			// 查看修改原因相关
+			editReasonDialogVisible: false,
+			editReasonList: [],
+			editReasonTotal: 0,
+			editReasonQueryParams: {
+				pageNum: 1,
+				pageSize: 10,
+				tableName: TableName.RECEIVE_MONEY,
+				tid: null
+			}
 		};
 	},
 	// 展示与隐藏
@@ -494,6 +501,34 @@ export default {
 		}
 	},
 	methods: {
+		// 下拉菜单命令处理
+		handleCommand(command, row) {
+			switch (command) {
+				case 'edit':
+					this.handleUpdate(row);
+					break;
+				case 'delete':
+					this.handleDelete(row);
+					break;
+				case 'viewEditReason':
+					this.handleViewEditReason(row);
+					break;
+			}
+		},
+		// 查看修改原因
+		handleViewEditReason(row) {
+			this.editReasonQueryParams.tid = row.id;
+			this.editReasonQueryParams.pageNum = 1;
+			this.getEditReasonList();
+			this.editReasonDialogVisible = true;
+		},
+		// 获取修改原因列表
+		getEditReasonList() {
+			listTableEditMessage(this.editReasonQueryParams).then(response => {
+				this.editReasonList = response.rows;
+				this.editReasonTotal = response.total;
+			});
+		},
 		handleAttachmentFilesUpdated(uploadParams) {
 			if (uploadParams && uploadParams.params && uploadParams.params.attachmentIds) {
 				// 确保 form.params 对象存在
@@ -569,7 +604,6 @@ export default {
 				companyId: null,
 				companyType: null,
 				comments: null,
-				editReason: null, // 添加修改原因字段
 				addtime: null,
 				userId: null,
 				UserName: null,
@@ -599,7 +633,7 @@ export default {
 			}
 			const preservedSelfBankCardType = this.form.selfBankCardType;
 			const preservedOtherBankCardType = this.form.otherBankCardType;
-			
+
 			this.form = {
 				id: null,
 				receiveNO: null,
@@ -623,7 +657,6 @@ export default {
 				companyId: null,
 				companyType: null,
 				comments: null,
-				editReason: null,
 				addtime: null,
 				userId: null,
 				UserName: null,
@@ -667,57 +700,81 @@ export default {
 			this.title = '添加收款信息';
 		},
 		/** 修改按钮操作 */
+		/** 修改按钮操作 */
 		handleUpdate(row) {
-			this.reset();
-			const id = row.id || this.ids;
-			getReceiveMoney(id).then(response => {
-				if (!response.data) {
-					this.$message.error('获取收款信息失败');
-					return;
-				}
-				// 保留表单结构，特别是 params.attachmentIds 和 params.bankacceptance
-				this.form = {
-					...response.data,
-					params: {
-						...response.data.params,
-						attachmentIds: response.data.attachmentList ? response.data.attachmentList.map(item => item.id) : [],
-						bankacceptance: response.data.params?.bankacceptance || null
+			this.$prompt('请输入修改原因', '提示', {
+				confirmButtonText: '确定',
+				cancelButtonText: '取消',
+				inputType: 'textarea',
+				inputPlaceholder: '请输入修改原因',
+				inputValidator: value => {
+					if (!value || value.trim() === '') {
+						return '修改原因不能为空';
 					}
-				};
-				// 通知上传组件当前的附件列表
-				this.$nextTick(() => {
-					if (this.$refs.attachmentUploader && response.data.attachmentList) {
-						this.$refs.attachmentUploader.initializeWithFiles(response.data.attachmentList);
-					}
-				});
-				this.$refs.selfSelfSelectedBankType = response.data.selfBankCardType;
-				this.$refs.otherOtherSelectedBankType = response.data.otherBankCardType;
-				this.$bus.$emit('changeFlag', response.data.bankacceptanceId > 0 ? response.data.bankacceptanceId : false);
-				this.form.receiveType = response.data.receiveType.split('-');
-				// 处理银行账户类型
-				let flag = false;
-				if (!response.data.bankacceptanceId) {
-					this.$message.warning('该收款信息无凭证相关信息');
-					flag = true;
-					// 确保bankacceptance有默认值，避免BankacceptanceForm错误
-					this.form.params.bankacceptance = null;
+					return true;
 				}
-				if (!flag) {
-					getBankAcceptance(response.data.bankacceptanceId).then(result => {
-						if (!result.data) {
-							this.$message.error('获取凭证数据失败:该行数据存储了凭证ID但没有查询到该ID对应的相关数据');
-							// 设置为null避免undefined错误
-							this.form.params.bankacceptance = null;
+			})
+				.then(({ value }) => {
+					// 将修改原因存储到sessionStorage
+					sessionStorage.setItem('editReason_receiveMoney', value);
+
+					this.reset();
+					const id = row.id || this.ids;
+					getReceiveMoney(id).then(response => {
+						if (!response.data) {
+							this.$message.error('获取收款信息失败');
 							return;
 						}
+						// 保留表单结构，特别是 params.attachmentIds 和 params.bankacceptance
+						this.form = {
+							...response.data,
+							params: {
+								...response.data.params,
+								attachmentIds: response.data.attachmentList ? response.data.attachmentList.map(item => item.id) : [],
+								bankacceptance: response.data.params?.bankacceptance || null
+							}
+						};
+						// 通知上传组件当前的附件列表
 						this.$nextTick(() => {
-							this.form.params.bankacceptance = result.data;
+							if (this.$refs.attachmentUploader && response.data.attachmentList) {
+								this.$refs.attachmentUploader.initializeWithFiles(response.data.attachmentList);
+							}
 						});
+						this.$refs.selfSelfSelectedBankType = response.data.selfBankCardType;
+						this.$refs.otherOtherSelectedBankType = response.data.otherBankCardType;
+						this.$bus.$emit('changeFlag', response.data.bankacceptanceId > 0 ? response.data.bankacceptanceId : false);
+						this.form.receiveType = response.data.receiveType.split('-');
+						// 处理银行账户类型
+						let flag = false;
+						if (!response.data.bankacceptanceId) {
+							this.$message.warning('该收款信息无凭证相关信息');
+							flag = true;
+							// 确保bankacceptance有默认值，避免BankacceptanceForm错误
+							this.form.params.bankacceptance = null;
+						}
+						if (!flag) {
+							getBankAcceptance(response.data.bankacceptanceId).then(result => {
+								if (!result.data) {
+									this.$message.error('获取凭证数据失败:该行数据存储了凭证ID但没有查询到该ID对应的相关数据');
+									// 设置为null避免undefined错误
+									this.form.params.bankacceptance = null;
+									return;
+								}
+								this.$nextTick(() => {
+									this.form.params.bankacceptance = result.data;
+								});
+							});
+						}
+						this.open = true;
+						this.title = '修改收款信息';
 					});
-				}
-				this.open = true;
-				this.title = '修改收款信息';
-			});
+				})
+				.catch(() => {
+					this.$message({
+						type: 'info',
+						message: '已取消修改'
+					});
+				});
 		},
 
 		/** 提交按钮 */
@@ -776,16 +833,24 @@ export default {
 
 					// 创建提交数据的深克隆，避免修改原始响应式数据
 					let submitData = JSON.parse(JSON.stringify(this.form));
-					
+
+					// 如果是修改操作，添加修改原因
+					if (submitData.id != null) {
+						const editReason = sessionStorage.getItem('editReason_receiveMoney');
+						if (editReason) {
+							submitData.editReason = editReason;
+						}
+					}
+
 					// 对提交数据进行处理，不影响页面显示
 					submitData = excludeParams(submitData, this.$exclude);
-					
+
 					// 对结果进行特殊处理 - 只处理提交数据
 					if (typeof submitData.receiveType === 'string') {
 						this.$message.warning('请选择收款类型');
 						return;
 					}
-					
+
 					// 将数组格式转换为字符串格式用于提交
 					if (Array.isArray(submitData.receiveType)) {
 						submitData.receiveType = submitData.receiveType.join('-');
@@ -798,10 +863,12 @@ export default {
 							return;
 						}
 						// submitData.editReason 已经在深克隆中包含了
-						
+
 						updateReceiveMoney(submitData)
 							.then(() => {
 								this.$modal.msgSuccess('修改成功');
+								// 清理修改原因的sessionStorage
+								sessionStorage.removeItem('editReason_receiveMoney');
 								// 先部分重置表单，保留关键字段
 								this.partialReset();
 								this.open = false;
@@ -824,7 +891,7 @@ export default {
 					} else {
 						// 新增时，移除修改原因字段
 						delete submitData.editReason;
-						
+
 						addReceiveMoney(submitData)
 							.then(() => {
 								this.$modal.msgSuccess('新增成功');
