@@ -6,8 +6,15 @@
 			</el-form-item>
 			<el-form-item label="票据单位名称" prop="invoiceCompanyName">
 				<el-input v-model="queryParams.invoiceCompanyName" placeholder="请输入票据单位名称" clearable @keyup.enter.native="handleQuery" />
-			</el-form-item>
-			<el-form-item>
+			</el-form-item>				SupplierID: null,
+				customer: null,
+				CustomerID: null,
+				invoiceCompanyName: null,
+				customerTicketPoint: null,
+				customerPointAmount: null,
+				type: 'customerTicketPointIsNotZero',
+				comments: null,
+				addtime: null,orm-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
 			</el-form-item>
 		</el-form>
@@ -119,12 +126,20 @@
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[7].visible" label="备注" align="center" prop="comments" />
-			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="240px" fixed="right">
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="120px" fixed="right">
 				<template slot-scope="scope">
-					<el-button size="mini" type="text" @click="handleCheck(scope.row)">查看</el-button>
-					<el-button size="mini" type="text" @click="handleAddExtraInfo(scope.row)">补充信息</el-button>
-					<el-button v-hasPermi="['system:invoiceother:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
-					<el-button v-hasPermi="['system:invoiceother:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
+					<el-dropdown @command="(command) => handleCommand(command, scope.row)">
+						<el-button type="primary" size="mini">
+							操作<i class="el-icon-arrow-down el-icon--right"></i>
+						</el-button>
+						<el-dropdown-menu slot="dropdown">
+							<el-dropdown-item command="view">查看</el-dropdown-item>
+							<el-dropdown-item command="addExtra">补充信息</el-dropdown-item>
+							<el-dropdown-item v-hasPermi="['system:invoiceother:edit']" command="edit">修改</el-dropdown-item>
+							<el-dropdown-item v-hasPermi="['system:invoiceother:remove']" command="delete" divided>删除</el-dropdown-item>
+							<el-dropdown-item command="viewEditReason">查看修改原因</el-dropdown-item>
+						</el-dropdown-menu>
+					</el-dropdown>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -283,10 +298,6 @@
 						<el-form-item label="备注" prop="comments">
 							<el-input v-model="form.comments" placeholder="请输入备注" />
 						</el-form-item>
-						<!-- 修改原因字段，只在修改时显示 -->
-						<el-form-item v-if="form.id != null" label="修改原因" prop="editReason">
-							<el-input v-model="form.editReason" placeholder="请输入修改原因" type="textarea" :rows="3" />
-						</el-form-item>
 					</el-col>
 				</el-form>
 			</el-row>
@@ -336,11 +347,28 @@
 		<div v-if="currentComponent">
 			<DialogWrapper :current-component="currentComponent" :dialog-visible="dialogVisible" />
 		</div>
+
+		<!-- 查看修改原因弹窗 -->
+		<el-dialog title="查看修改原因" :visible.sync="editReasonDialogVisible" width="800px" append-to-body>
+			<el-table :data="editReasonList" style="width: 100%">
+				<el-table-column prop="reason" label="修改原因" />
+				<el-table-column prop="userName" label="修改人" />
+				<el-table-column prop="addtime" label="修改时间" />
+			</el-table>
+			<pagination 
+				v-show="editReasonTotal > 0" 
+				:total="editReasonTotal" 
+				:page.sync="editReasonQueryParams.pageNum" 
+				:limit.sync="editReasonQueryParams.pageSize" 
+				@pagination="getEditReasonList" 
+			/>
+		</el-dialog>
 	</div>
 </template>
 
 <script>
 import { listInvoiceOther, delInvoiceOther, addInvoiceOther, getInvoiceOther, updateInvoiceOther, updateInvoiceOtherExtra } from '@/api/system/invoiceOther';
+import { listTableEditMessage } from '@/api/system/tableEditMessage';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import { addReason } from '@/api/system/user';
 import { TableName } from '@/api/tool/enums';
@@ -469,23 +497,6 @@ export default {
 						message: '请输入票据单位名称',
 						trigger: 'blur'
 					}
-				],
-				editReason: [
-					{
-						validator: (rule, value, callback) => {
-							// 只有在修改时（form.id不为null）才需要验证修改原因
-							if (this.form.id != null) {
-								if (!value || value.trim() === '') {
-									callback(new Error('修改时必须填写修改原因'));
-								} else {
-									callback();
-								}
-							} else {
-								callback();
-							}
-						},
-						trigger: 'blur'
-					}
 				]
 			},
 			columns: [
@@ -520,6 +531,16 @@ export default {
 					{ validator: validateAmount, trigger: 'blur' }
 				]
 				// 备注字段不需要验证，因为是可选的
+			},
+			// 查看修改原因相关
+			editReasonDialogVisible: false,
+			editReasonList: [],
+			editReasonTotal: 0,
+			editReasonQueryParams: {
+				pageNum: 1,
+				pageSize: 10,
+				tableName: TableName.INVOICE_OTHER,
+				tid: null
 			}
 		};
 	},
@@ -555,6 +576,40 @@ export default {
 		listCompany,
 		getInvoiceOther,
 		updateInvoiceOther,
+		// 下拉菜单命令处理
+		handleCommand(command, row) {
+			switch (command) {
+				case 'view':
+					this.handleCheck(row);
+					break;
+				case 'addExtra':
+					this.handleAddExtraInfo(row);
+					break;
+				case 'edit':
+					this.handleUpdate(row);
+					break;
+				case 'delete':
+					this.handleDelete(row);
+					break;
+				case 'viewEditReason':
+					this.handleViewEditReason(row);
+					break;
+			}
+		},
+		// 查看修改原因
+		handleViewEditReason(row) {
+			this.editReasonQueryParams.tid = row.id;
+			this.editReasonQueryParams.pageNum = 1;
+			this.getEditReasonList();
+			this.editReasonDialogVisible = true;
+		},
+		// 获取修改原因列表
+		getEditReasonList() {
+			listTableEditMessage(this.editReasonQueryParams).then(response => {
+				this.editReasonList = response.rows;
+				this.editReasonTotal = response.total;
+			});
+		},
 		// 银行回执附件上传处理
 		handlePaymentReceiptsUpdated(params) {
 			// 将附件 ID 同步到表单的 params 中
@@ -686,42 +741,35 @@ export default {
 
 		/** 修改按钮操作 */
 		handleUpdate(row) {
-			// this.$prompt('请输入编辑原因', '提示', {
-			// 	confirmButtonText: '确定',
-			// 	cancelButtonText: '取消',
-			// 	type: 'warning'
-			// })
-			// 	.then(({ value }) => {
-			// 		addReason({
-			// 			reason: value,
-			// 			tableName: TableName.INVOICE_OTHER,
-			// 			tid: row.id,
-			// 			modifyTime: this.modifyTime
-			// 		}).then(res => {
-			// 			this.$message.success('提交成功');
-			// 			this.reset();
-			// 			const id = row.id || this.ids;
-			// 			getInvoiceOther(id).then(response => {
-			// 				this.form = response.data;
-			// 				this.open = true;
-			// 				this.title = '修改商家直接给客户开发票';
-			// 			});
-			// 		});
-			// 	})
-			// 	.catch(() => {
-			// 		this.$message({
-			// 			type: 'warning',
-			// 			message: '请先输入编辑原因!'
-			// 		});
-			// 	});
-
-			this.reset();
-			const id = row.id || this.ids;
-			getInvoiceOther(id).then(response => {
-				this.form = response.data;
-				this.open = true;
-				this.title = '修改商家直接给客户开发票';
+			this.$prompt('请输入修改原因', '提示', {
+				confirmButtonText: '确定',
+				cancelButtonText: '取消',
+				inputType: 'textarea',
+				inputPlaceholder: '请输入修改原因',
+				inputValidator: (value) => {
+					if (!value || value.trim() === '') {
+						return '修改原因不能为空';
+					}
+					return true;
+				}
+			}).then(({ value }) => {
+				// 将修改原因存储到sessionStorage
+				sessionStorage.setItem('editReason_invoiceOther_have', value);
+				
+				this.reset();
+				const id = row.id || this.ids;
+				getInvoiceOther(id).then(response => {
+					this.form = response.data;
+					this.open = true;
+					this.title = '修改商家直接给客户开发票';
+				});
+			}).catch(() => {
+				this.$message({
+					type: 'info',
+					message: '已取消修改'
+				});
 			});
+		},
 		},
 		/** 提交按钮 */
 		submitForm() {
@@ -885,5 +933,5 @@ export default {
 			});
 		}
 	}
-};
+
 </script>

@@ -128,12 +128,20 @@
 					</div>
 				</template>
 			</el-table-column>
-			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="180px">
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="120px">
 				<template slot-scope="scope">
-					<el-button size="mini" type="text" @click="handleCheck(scope.row)">查看</el-button>
-					<el-button size="mini" type="text" @click="handleAddExtraInfo(scope.row)">补充信息</el-button>
-					<el-button v-hasPermi="['system:invoicein:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
-					<el-button v-hasPermi="['system:invoicein:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
+					<el-dropdown @command="(command) => handleCommand(command, scope.row)">
+						<el-button type="primary" size="mini">
+							操作<i class="el-icon-arrow-down el-icon--right"></i>
+						</el-button>
+						<el-dropdown-menu slot="dropdown">
+							<el-dropdown-item command="view">查看</el-dropdown-item>
+							<el-dropdown-item command="addExtra">补充信息</el-dropdown-item>
+							<el-dropdown-item v-hasPermi="['system:invoicein:edit']" command="edit">修改</el-dropdown-item>
+							<el-dropdown-item v-hasPermi="['system:invoicein:remove']" command="delete" divided>删除</el-dropdown-item>
+							<el-dropdown-item command="viewEditReason">查看修改原因</el-dropdown-item>
+						</el-dropdown-menu>
+					</el-dropdown>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -210,10 +218,6 @@
 				<el-form-item label="备注" prop="comments">
 					<el-input v-model="form.comments" placeholder="请输入备注" />
 				</el-form-item>
-				<!-- 修改原因字段，只在修改时显示 -->
-				<el-form-item v-if="form.id != null" label="修改原因" prop="editReason">
-					<el-input v-model="form.editReason" placeholder="请输入修改原因" type="textarea" :rows="3" />
-				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
 				<el-button type="primary" @click="submitForm">确 定</el-button>
@@ -276,11 +280,29 @@
 		<div v-if="currentComponent">
 			<DialogWrapper :current-component="currentComponent" :dialog-visible="dialogVisible" />
 		</div>
+
+		<!-- 查看修改原因弹窗 -->
+		<el-dialog title="查看修改原因" :visible.sync="editReasonDialogVisible" width="800px" append-to-body>
+			<el-table :data="editReasonList" style="width: 100%">
+				<el-table-column prop="reason" label="修改原因" />
+				<el-table-column prop="userName" label="修改人" />
+				<el-table-column prop="addtime" label="修改时间" />
+			</el-table>
+			<pagination 
+				v-show="editReasonTotal > 0" 
+				:total="editReasonTotal" 
+				:page.sync="editReasonQueryParams.pageNum" 
+				:limit.sync="editReasonQueryParams.pageSize" 
+				@pagination="getEditReasonList" 
+			/>
+		</el-dialog>
 	</div>
 </template>
 
 <script>
 import { listInvoiceIn, delInvoiceIn, addInvoiceIn } from '@/api/system/invoiceIn';
+import { listTableEditMessage } from '@/api/system/tableEditMessage';
+import { TableName } from '@/api/tool/enums';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import SearchOption from '@/components/SearchOption.vue';
 import { listCompany } from '@/api/system/company';
@@ -364,9 +386,7 @@ export default {
 				delFlag: null
 			},
 			// 表单参数
-			form: {
-				editReason: null // 添加修改原因字段
-			},
+			form: {},
 			orderInfo: {},
 			checkOrderInfoVisible: false,
 			// 表单校验
@@ -418,19 +438,6 @@ export default {
 					{
 						required: true,
 						message: '请输入票点金额',
-						trigger: 'blur'
-					}
-				],
-				// 只有在修改时（form.id不为null）才需要验证修改原因
-				editReason: [
-					{
-						validator: (rule, value, callback) => {
-							if (this.form.id != null && (!value || value.trim() === '')) {
-								callback(new Error('修改时必须填写修改原因'));
-							} else {
-								callback();
-							}
-						},
 						trigger: 'blur'
 					}
 				]
@@ -488,6 +495,16 @@ export default {
 					{ validator: validateAmount, trigger: 'blur' }
 				]
 				// 备注字段不需要验证，因为是可选的
+			},
+			// 查看修改原因相关
+			editReasonDialogVisible: false,
+			editReasonList: [],
+			editReasonTotal: 0,
+			editReasonQueryParams: {
+				pageNum: 1,
+				pageSize: 10,
+				tableName: TableName.INVOICE_IN,
+				tid: null
 			}
 		};
 	},
@@ -534,6 +551,40 @@ export default {
 		updateInvoiceIn,
 		getInvoiceIn,
 		listCompany,
+		// 下拉菜单命令处理
+		handleCommand(command, row) {
+			switch (command) {
+				case 'view':
+					this.handleCheck(row);
+					break;
+				case 'addExtra':
+					this.handleAddExtraInfo(row);
+					break;
+				case 'edit':
+					this.handleUpdate(row);
+					break;
+				case 'delete':
+					this.handleDelete(row);
+					break;
+				case 'viewEditReason':
+					this.handleViewEditReason(row);
+					break;
+			}
+		},
+		// 查看修改原因
+		handleViewEditReason(row) {
+			this.editReasonQueryParams.tid = row.id;
+			this.editReasonQueryParams.pageNum = 1;
+			this.getEditReasonList();
+			this.editReasonDialogVisible = true;
+		},
+		// 获取修改原因列表
+		getEditReasonList() {
+			listTableEditMessage(this.editReasonQueryParams).then(response => {
+				this.editReasonList = response.rows;
+				this.editReasonTotal = response.total;
+			});
+		},
 		// 银行回执附件更新处理
 		handleReceiptFilesUpdated(uploadParams) {
 			if (uploadParams && uploadParams.params && uploadParams.params.attachmentIds) {
@@ -595,6 +646,8 @@ export default {
 			this.$refs.receiptUploader.clearUploadedFiles();
 			this.$refs.attachmentUploader.clearUploadedFiles();
 			this.open = false;
+			// 清空sessionStorage中的修改原因
+			sessionStorage.removeItem('editReason_invoiceIn');
 			this.reset();
 		},
 		// 表单重置
@@ -617,7 +670,6 @@ export default {
 				UserName: null,
 				updateTime: null,
 				delFlag: null,
-				editReason: null, // 重置修改原因
 				// 额外信息
 				extraInfo: {
 					actualInvoiceAmount: null,
@@ -676,13 +728,30 @@ export default {
 			});
 		},
 		handleUpdate(row) {
-			this.reset();
-			const id = row.id || this.ids;
-			getInvoiceIn(id).then(response => {
-				this.form = response.data;
-				this.form.editReason = null; // 打开编辑时清空修改原因
-				this.open = true;
-				this.title = '修改发票购入信息';
+			this.$prompt('请输入修改原因', '提示', {
+				confirmButtonText: '确定',
+				cancelButtonText: '取消',
+				inputType: 'textarea',
+				inputPlaceholder: '请输入修改原因',
+				inputValidator: (value) => {
+					if (!value || value.trim() === '') {
+						return '修改原因不能为空';
+					}
+					return true;
+				},
+				inputErrorMessage: '修改原因不能为空'
+			}).then(({ value }) => {
+				// 将修改原因保存到sessionStorage
+				sessionStorage.setItem('editReason_invoiceIn', value);
+				this.reset();
+				const id = row.id || this.ids;
+				getInvoiceIn(id).then(response => {
+					this.form = response.data;
+					this.open = true;
+					this.title = '修改发票购入信息';
+				});
+			}).catch(() => {
+				this.$message.info('已取消修改');
 			});
 		}, // 银行回执
 		handleCommitUpload(val) {
@@ -697,12 +766,14 @@ export default {
 		submitForm() {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
-					// 编辑时校验修改原因
-					if (this.form.id != null && (!this.form.editReason || this.form.editReason.trim() === '')) {
-						this.$message.error('修改时必须填写修改原因');
-						return;
-					}
 					if (this.form.id != null) {
+						// 编辑时，从sessionStorage获取修改原因
+						const editReason = sessionStorage.getItem('editReason_invoiceIn');
+						if (!editReason || editReason.trim() === '') {
+							this.$message.error('修改原因丢失，请重新进入编辑');
+							return;
+						}
+						this.form.editReason = editReason;
 						this.form = excludeParams(this.form, this.$exclude);
 						updateInvoiceIn({
 							...this.form,
@@ -712,14 +783,17 @@ export default {
 						}).then(() => {
 							this.$modal.msgSuccess('修改成功');
 							this.open = false;
+							// 清空sessionStorage中的修改原因
+							sessionStorage.removeItem('editReason_invoiceIn');
 							// 清空两个上传附件显示的文件列表
 							this.$refs.receiptUploader.clearUploadedFiles();
 							this.$refs.attachmentUploader.clearUploadedFiles();
 							this.getList();
+						}).catch(() => {
+							// 修改失败时不清空sessionStorage，用户可以重试
 						});
 					} else {
-						// 新增时，移除修改原因字段
-						delete this.form.editReason;
+						// 新增时，不需要修改原因
 						this.form = excludeParams(this.form, this.$exclude);
 						addInvoiceIn({
 							...this.form,
