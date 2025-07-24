@@ -210,6 +210,10 @@
 				<el-form-item label="备注" prop="comments">
 					<el-input v-model="form.comments" placeholder="请输入备注" />
 				</el-form-item>
+				<!-- 修改原因字段，只在修改时显示 -->
+				<el-form-item v-if="form.id != null" label="修改原因" prop="editReason">
+					<el-input v-model="form.editReason" placeholder="请输入修改原因" type="textarea" :rows="3" />
+				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
 				<el-button type="primary" @click="submitForm">确 定</el-button>
@@ -360,7 +364,9 @@ export default {
 				delFlag: null
 			},
 			// 表单参数
-			form: {},
+			form: {
+				editReason: null // 添加修改原因字段
+			},
 			orderInfo: {},
 			checkOrderInfoVisible: false,
 			// 表单校验
@@ -412,6 +418,19 @@ export default {
 					{
 						required: true,
 						message: '请输入票点金额',
+						trigger: 'blur'
+					}
+				],
+				// 只有在修改时（form.id不为null）才需要验证修改原因
+				editReason: [
+					{
+						validator: (rule, value, callback) => {
+							if (this.form.id != null && (!value || value.trim() === '')) {
+								callback(new Error('修改时必须填写修改原因'));
+							} else {
+								callback();
+							}
+						},
 						trigger: 'blur'
 					}
 				]
@@ -598,6 +617,7 @@ export default {
 				UserName: null,
 				updateTime: null,
 				delFlag: null,
+				editReason: null, // 重置修改原因
 				// 额外信息
 				extraInfo: {
 					actualInvoiceAmount: null,
@@ -656,35 +676,11 @@ export default {
 			});
 		},
 		handleUpdate(row) {
-			// this.$prompt('请输入编辑原因', '提示', {
-			// 	confirmButtonText: '确定',
-			// 	cancelButtonText: '取消',
-			// 	type: 'warning'
-			// })
-			// 	.then(({ value }) => {
-			// 		addReason({
-			// 			reason: value,
-			// 			tableName: TableName.INVOICE_IN,
-			// 			tid: row.id,
-			// 			modifyTime: this.modifyTime
-			// 		}).then(() => {
-			// 			this.$message.success('提交成功');
-			// 			this.reset();
-			// 			const id = row.id || this.ids;
-			// 			getInvoiceIn(id).then(response => {
-			// 				this.form = response.data;
-			// 				this.open = true;
-			// 				this.title = '修改发票购入信息';
-			// 			});
-			// 		});
-			// 	})
-			// 	.catch(() => {
-			// 		this.$message.error('请先输入编辑原因');
-			// 	});
 			this.reset();
 			const id = row.id || this.ids;
 			getInvoiceIn(id).then(response => {
 				this.form = response.data;
+				this.form.editReason = null; // 打开编辑时清空修改原因
 				this.open = true;
 				this.title = '修改发票购入信息';
 			});
@@ -701,6 +697,11 @@ export default {
 		submitForm() {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
+					// 编辑时校验修改原因
+					if (this.form.id != null && (!this.form.editReason || this.form.editReason.trim() === '')) {
+						this.$message.error('修改时必须填写修改原因');
+						return;
+					}
 					if (this.form.id != null) {
 						this.form = excludeParams(this.form, this.$exclude);
 						updateInvoiceIn({
@@ -717,6 +718,8 @@ export default {
 							this.getList();
 						});
 					} else {
+						// 新增时，移除修改原因字段
+						delete this.form.editReason;
 						this.form = excludeParams(this.form, this.$exclude);
 						addInvoiceIn({
 							...this.form,
