@@ -66,6 +66,7 @@
 							query.bankCardType = value;
 						}
 					"
+					:baned="true"
 				/>
 			</el-form-item>
 			<el-form-item label="对象名称：">
