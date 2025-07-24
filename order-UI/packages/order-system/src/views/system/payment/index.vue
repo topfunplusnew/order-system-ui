@@ -717,8 +717,8 @@ export default {
 		}
 	},
 	created() {
-		this.getList();
 		this.reset();
+		this.getList();
 		if (localStorage.getItem('payment-columns') === 'null' || !localStorage.getItem('payment-columns')) {
 			// 设置localStorage
 			localStorage.setItem('payment-columns', JSON.stringify(this.columns));
@@ -767,6 +767,11 @@ export default {
 		// 处理附件文件更新
 		handleAttachmentFilesUpdated(uploadParams) {
 			if (uploadParams && uploadParams.params && uploadParams.params.attachmentIds) {
+				// 确保 form.params 对象存在
+				if (!this.form.params) {
+					this.form.params = {};
+				}
+				// 直接使用上传组件返回的统一附件ID数组
 				this.form.params.attachmentIds = uploadParams.params.attachmentIds;
 			}
 		},
@@ -849,7 +854,6 @@ export default {
 				updateTime: null,
 				delFlag: null,
 				transactionHistory: null,
-				bankacceptance: null,
 				params: {
 					attachmentIds: [],
 					bankacceptance: null
@@ -1143,17 +1147,6 @@ export default {
 						uniqueAttachmentIds.forEach(id => {
 							this.$store.commit('ADD_ATTACHMENT_ID', id);
 						});
-					}
-
-					// 获取当前附件参数
-					if (this.$refs.attachmentUpload) {
-						const attachmentParams = this.$refs.attachmentUpload.getUploadParams();
-						this.form = { ...this.form, ...attachmentParams };
-					}
-					// 获取银行卡流水附件参数
-					if (this.$refs.transactionHistoryUpload) {
-						const transactionHistoryParams = this.$refs.transactionHistoryUpload.getUploadParams();
-						this.form = { ...this.form, ...transactionHistoryParams };
 					}
 
 					// 处理承兑逻辑

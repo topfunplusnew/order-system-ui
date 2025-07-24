@@ -143,7 +143,7 @@ export default {
 				}
 				const json = sessionStorage.getItem(this.bankAcceptanceFilledKey);
 				console.log('从sessionStorage获取数据:', json);
-				
+
 				// 检查是否已经填写过承兑信息
 				if (json) {
 					try {
