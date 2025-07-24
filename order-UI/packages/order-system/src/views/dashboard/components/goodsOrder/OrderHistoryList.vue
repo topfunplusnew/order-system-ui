@@ -9,6 +9,7 @@ export default {
 			}
 		}
 	},
+
 	data() {
 		return {};
 	},
@@ -76,8 +77,23 @@ export default {
 				</template>
 			</el-table-column>
 			<el-table-column show-overflow-tooltip label="备注" align="center" prop="comments" />
-			<el-table-column show-overflow-tooltip label="修改时间" align="center" prop="updateTime" />
-			<el-table-column show-overflow-tooltip label="修改原因" align="center" prop="remark" />
+			<el-table-column show-overflow-tooltip label="修改时间" align="center" prop="updateTime">
+				<template #default="scope">
+					{{ scope.row.tableEditMessage.modifyTime }}
+				</template>
+			</el-table-column>
+
+			<el-table-column show-overflow-tooltip label="修改原因" align="center">
+				<template #default="scope">
+					{{ scope.row.tableEditMessage.reason }}
+				</template>
+			</el-table-column>
+
+			<el-table-column show-overflow-tooltip label="修改人" align="center">
+				<template #default="scope">
+					{{ scope.row.tableEditMessage.userName }}
+				</template>
+			</el-table-column>
 		</el-table>
 	</div>
 </template>

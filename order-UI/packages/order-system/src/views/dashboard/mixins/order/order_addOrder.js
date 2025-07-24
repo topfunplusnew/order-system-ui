@@ -31,17 +31,40 @@ export var mixin_order_add = {
 		},
 		// 修改订单的操作
 		handleUpdate(row) {
-			// 直接打开弹窗，修改原因在表单中填写
-			this.openDialog(
-				OrderForm,
-				'修改订单',
-				'1300px',
-				{
-					orderId: row.id,
-					submitInfo: '修改订单'
-				},
-				false
-			);
+			this.$prompt('请输入修改原因', '提示', {
+				confirmButtonText: '确定',
+				cancelButtonText: '取消',
+				inputType: 'textarea',
+				inputPlaceholder: '请输入修改原因',
+				inputValidator: value => {
+					if (!value || value.trim() === '') {
+						return '修改原因不能为空';
+					}
+					return true;
+				}
+			})
+				.then(({ value }) => {
+					// 将修改原因存储到sessionStorage
+					sessionStorage.setItem('goodsorder-edit-reason', value);
+					
+					// 打开OrderForm弹窗
+					this.openDialog(
+						OrderForm,
+						'修改订单',
+						'1300px',
+						{
+							orderId: row.id,
+							submitInfo: '修改订单'
+						},
+						false
+					);
+				})
+				.catch(() => {
+					this.$message({
+						type: 'info',
+						message: '已取消修改'
+					});
+				});
 		}
 	}
 };
