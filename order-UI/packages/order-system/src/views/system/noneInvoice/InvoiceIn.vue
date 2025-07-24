@@ -130,9 +130,10 @@
 			</el-table-column>
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="120px">
 				<template slot-scope="scope">
-					<el-dropdown @command="(command) => handleCommand(command, scope.row)">
+					<el-dropdown @command="command => handleCommand(command, scope.row)">
 						<el-button type="primary" size="mini">
-							操作<i class="el-icon-arrow-down el-icon--right"></i>
+							操作
+							<i class="el-icon-arrow-down el-icon--right"></i>
 						</el-button>
 						<el-dropdown-menu slot="dropdown">
 							<el-dropdown-item command="view">查看</el-dropdown-item>
@@ -284,17 +285,11 @@
 		<!-- 查看修改原因弹窗 -->
 		<el-dialog title="查看修改原因" :visible.sync="editReasonDialogVisible" width="800px" append-to-body>
 			<el-table :data="editReasonList" style="width: 100%">
+				<el-table-column prop="addtime" label="修改时间" />
 				<el-table-column prop="reason" label="修改原因" />
 				<el-table-column prop="userName" label="修改人" />
-				<el-table-column prop="addtime" label="修改时间" />
 			</el-table>
-			<pagination 
-				v-show="editReasonTotal > 0" 
-				:total="editReasonTotal" 
-				:page.sync="editReasonQueryParams.pageNum" 
-				:limit.sync="editReasonQueryParams.pageSize" 
-				@pagination="getEditReasonList" 
-			/>
+			<pagination v-show="editReasonTotal > 0" :total="editReasonTotal" :page.sync="editReasonQueryParams.pageNum" :limit.sync="editReasonQueryParams.pageSize" @pagination="getEditReasonList" />
 		</el-dialog>
 	</div>
 </template>
@@ -307,10 +302,7 @@ import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import SearchOption from '@/components/SearchOption.vue';
 import { listCompany } from '@/api/system/company';
 import ApplyPayment from '@/views/dashboard/components/common/ApplyPayment.vue';
-import { TableName } from '@/api/tool/enums';
 import { excludeParams } from '@/api/tool/exclude';
-import { addReason } from '@/api/system/user';
-import { getGoodsOrder } from '@/api/system/goodsOrder';
 import OrderInfos from '@/views/dashboard/components/goodsOrder/OrderInfos.vue';
 import CheckFiles from '../../../components/CheckFiles.vue';
 import UploadFilesButton from '@/components/UploadFilesButton/index.vue';
@@ -733,26 +725,28 @@ export default {
 				cancelButtonText: '取消',
 				inputType: 'textarea',
 				inputPlaceholder: '请输入修改原因',
-				inputValidator: (value) => {
+				inputValidator: value => {
 					if (!value || value.trim() === '') {
 						return '修改原因不能为空';
 					}
 					return true;
 				},
 				inputErrorMessage: '修改原因不能为空'
-			}).then(({ value }) => {
-				// 将修改原因保存到sessionStorage
-				sessionStorage.setItem('editReason_invoiceIn', value);
-				this.reset();
-				const id = row.id || this.ids;
-				getInvoiceIn(id).then(response => {
-					this.form = response.data;
-					this.open = true;
-					this.title = '修改发票购入信息';
+			})
+				.then(({ value }) => {
+					// 将修改原因保存到sessionStorage
+					sessionStorage.setItem('editReason_invoiceIn', value);
+					this.reset();
+					const id = row.id || this.ids;
+					getInvoiceIn(id).then(response => {
+						this.form = response.data;
+						this.open = true;
+						this.title = '修改发票购入信息';
+					});
+				})
+				.catch(() => {
+					this.$message.info('已取消修改');
 				});
-			}).catch(() => {
-				this.$message.info('已取消修改');
-			});
 		}, // 银行回执
 		handleCommitUpload(val) {
 			this.form.paymentReceipts = val;
@@ -780,18 +774,20 @@ export default {
 							params: {
 								attachmentIds: this.form.params?.attachmentIds || []
 							}
-						}).then(() => {
-							this.$modal.msgSuccess('修改成功');
-							this.open = false;
-							// 清空sessionStorage中的修改原因
-							sessionStorage.removeItem('editReason_invoiceIn');
-							// 清空两个上传附件显示的文件列表
-							this.$refs.receiptUploader.clearUploadedFiles();
-							this.$refs.attachmentUploader.clearUploadedFiles();
-							this.getList();
-						}).catch(() => {
-							// 修改失败时不清空sessionStorage，用户可以重试
-						});
+						})
+							.then(() => {
+								this.$modal.msgSuccess('修改成功');
+								this.open = false;
+								// 清空sessionStorage中的修改原因
+								sessionStorage.removeItem('editReason_invoiceIn');
+								// 清空两个上传附件显示的文件列表
+								this.$refs.receiptUploader.clearUploadedFiles();
+								this.$refs.attachmentUploader.clearUploadedFiles();
+								this.getList();
+							})
+							.catch(() => {
+								// 修改失败时不清空sessionStorage，用户可以重试
+							});
 					} else {
 						// 新增时，不需要修改原因
 						this.form = excludeParams(this.form, this.$exclude);

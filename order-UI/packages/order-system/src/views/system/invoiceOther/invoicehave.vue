@@ -6,15 +6,8 @@
 			</el-form-item>
 			<el-form-item label="票据单位名称" prop="invoiceCompanyName">
 				<el-input v-model="queryParams.invoiceCompanyName" placeholder="请输入票据单位名称" clearable @keyup.enter.native="handleQuery" />
-			</el-form-item>				SupplierID: null,
-				customer: null,
-				CustomerID: null,
-				invoiceCompanyName: null,
-				customerTicketPoint: null,
-				customerPointAmount: null,
-				type: 'customerTicketPointIsNotZero',
-				comments: null,
-				addtime: null,orm-item>
+			</el-form-item>
+			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
 			</el-form-item>
 		</el-form>
@@ -128,9 +121,10 @@
 			<el-table-column v-if="columns[7].visible" label="备注" align="center" prop="comments" />
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="120px" fixed="right">
 				<template slot-scope="scope">
-					<el-dropdown @command="(command) => handleCommand(command, scope.row)">
+					<el-dropdown @command="command => handleCommand(command, scope.row)">
 						<el-button type="primary" size="mini">
-							操作<i class="el-icon-arrow-down el-icon--right"></i>
+							操作
+							<i class="el-icon-arrow-down el-icon--right"></i>
 						</el-button>
 						<el-dropdown-menu slot="dropdown">
 							<el-dropdown-item command="view">查看</el-dropdown-item>
@@ -351,17 +345,11 @@
 		<!-- 查看修改原因弹窗 -->
 		<el-dialog title="查看修改原因" :visible.sync="editReasonDialogVisible" width="800px" append-to-body>
 			<el-table :data="editReasonList" style="width: 100%">
+				<el-table-column prop="addtime" label="修改时间" />
 				<el-table-column prop="reason" label="修改原因" />
 				<el-table-column prop="userName" label="修改人" />
-				<el-table-column prop="addtime" label="修改时间" />
 			</el-table>
-			<pagination 
-				v-show="editReasonTotal > 0" 
-				:total="editReasonTotal" 
-				:page.sync="editReasonQueryParams.pageNum" 
-				:limit.sync="editReasonQueryParams.pageSize" 
-				@pagination="getEditReasonList" 
-			/>
+			<pagination v-show="editReasonTotal > 0" :total="editReasonTotal" :page.sync="editReasonQueryParams.pageNum" :limit.sync="editReasonQueryParams.pageSize" @pagination="getEditReasonList" />
 		</el-dialog>
 	</div>
 </template>
@@ -733,6 +721,7 @@ export default {
 			this.multiple = !selection.length;
 		},
 		/** 新增按钮操作 */
+		/** 新增按钮操作 */
 		handleAdd() {
 			this.reset();
 			this.open = true;
@@ -746,30 +735,31 @@ export default {
 				cancelButtonText: '取消',
 				inputType: 'textarea',
 				inputPlaceholder: '请输入修改原因',
-				inputValidator: (value) => {
+				inputValidator: value => {
 					if (!value || value.trim() === '') {
 						return '修改原因不能为空';
 					}
 					return true;
 				}
-			}).then(({ value }) => {
-				// 将修改原因存储到sessionStorage
-				sessionStorage.setItem('editReason_invoiceOther_have', value);
-				
-				this.reset();
-				const id = row.id || this.ids;
-				getInvoiceOther(id).then(response => {
-					this.form = response.data;
-					this.open = true;
-					this.title = '修改商家直接给客户开发票';
+			})
+				.then(({ value }) => {
+					// 将修改原因存储到sessionStorage
+					sessionStorage.setItem('editReason_invoiceOther_have', value);
+
+					this.reset();
+					const id = row.id || this.ids;
+					getInvoiceOther(id).then(response => {
+						this.form = response.data;
+						this.open = true;
+						this.title = '修改商家直接给客户开发票';
+					});
+				})
+				.catch(() => {
+					this.$message({
+						type: 'info',
+						message: '已取消修改'
+					});
 				});
-			}).catch(() => {
-				this.$message({
-					type: 'info',
-					message: '已取消修改'
-				});
-			});
-		},
 		},
 		/** 提交按钮 */
 		submitForm() {
@@ -799,29 +789,34 @@ export default {
 						this.form.params.attachmentIds = [...new Set(this.form.params.attachmentIds)];
 					}
 
-					// 创建提交数据的副本
-					const submitData = { ...this.form };
+				// 创建提交数据的副本
+				const submitData = { ...this.form };
 
-					if (this.form.id != null) {
-						// 修改时，确保包含修改原因
-						if (!submitData.editReason || submitData.editReason.trim() === '') {
-							this.$message.error('修改时必须填写修改原因');
-							return;
-						}
-						submitData.editReason = this.form.editReason;
-					} else {
-						// 新增时，移除修改原因字段
-						delete submitData.editReason;
-						submitData.customerTicketPoint = 0;
+				if (this.form.id != null) {
+					// 修改时，从sessionStorage获取修改原因
+					const editReason = sessionStorage.getItem('editReason_invoiceOther_have');
+					if (!editReason || editReason.trim() === '') {
+						this.$message.error('修改原因丢失，请重新进入编辑');
+						return;
 					}
+					submitData.editReason = editReason;
+				} else {
+					// 新增时，移除修改原因字段
+					delete submitData.editReason;
+					submitData.customerTicketPoint = 0;
+				}
 
-					const submitPromise = this.form.id != null ? updateInvoiceOther(submitData) : addInvoiceOther(submitData);
+				const submitPromise = this.form.id != null ? updateInvoiceOther(submitData) : addInvoiceOther(submitData);
 
 					submitPromise
 						.then(response => {
 							this.$modal.msgSuccess(this.form.id != null ? '修改成功' : '新增成功');
 							this.open = false;
 							this.getList();
+							// 清除sessionStorage中的修改原因
+							if (this.form.id != null) {
+								sessionStorage.removeItem('editReason_invoiceOther_have');
+							}
 							// 提交成功后清理上传组件状态
 							if (this.$refs.paymentReceiptsUpload) {
 								this.$refs.paymentReceiptsUpload.clearUploadedFiles();
@@ -933,5 +928,5 @@ export default {
 			});
 		}
 	}
-
+};
 </script>

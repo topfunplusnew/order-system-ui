@@ -207,9 +207,9 @@
 		<!-- 查看修改原因弹窗 -->
 		<el-dialog title="查看修改原因" :visible.sync="editReasonDialogVisible" width="800px" append-to-body>
 			<el-table :data="editReasonList" style="width: 100%">
+				<el-table-column prop="addtime" label="修改时间" />
 				<el-table-column prop="reason" label="修改原因" />
 				<el-table-column prop="userName" label="修改人" />
-				<el-table-column prop="addtime" label="修改时间" />
 			</el-table>
 			<pagination 
 				v-show="editReasonTotal > 0" 
