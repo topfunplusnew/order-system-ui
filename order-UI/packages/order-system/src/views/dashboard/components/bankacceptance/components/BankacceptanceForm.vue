@@ -196,7 +196,7 @@ export default {
 					return;
 				}
 				console.log(`传递的value`, value);
-				
+
 				// 填充承兑信息数据（不再依赖id字段）
 				if (value && typeof value === 'object') {
 					this.$nextTick(() => {
@@ -206,12 +206,12 @@ export default {
 						this.$message.success('承兑信息加载成功');
 					});
 				}
-				
+
 				// 只有当 billNo 存在且不是编辑模式时才调用 getBankAcceptanceDate
 				if (value.billNo && !value.id) {
 					this.getBankAcceptanceDate(value.billNo);
 				}
-				
+
 				// 提交给父组件BankType 触发提交时间
 				this.$emit('assign', value);
 			},
@@ -244,7 +244,7 @@ export default {
 		// 获取票据信息
 		getBankAcceptanceDate(e) {
 			let inputValue;
-			
+
 			// 处理两种调用方式：
 			// 1. 从事件对象中获取值 (模板中的 @blur 事件)
 			// 2. 直接传入字符串值 (watch 中的直接调用)
@@ -259,9 +259,9 @@ export default {
 				console.warn('getBankAcceptanceDate 收到无效参数:', e);
 				return;
 			}
-			
+
 			console.log('getBankAcceptanceDate inputValue:', inputValue);
-			
+
 			if (!inputValue) {
 				this.$message.error('票据号码为空,填充失败');
 				return;
@@ -293,12 +293,12 @@ export default {
 					this.form.billType = this.billType;
 					this.form = excludeParams(this.form, this.$exclude);
 					console.log(`表单`, this.form);
-					
+
 					// 保存到sessionStorage而不是localStorage
 					const storageKey = 'bankAcceptanceFilled';
 					sessionStorage.setItem(storageKey, JSON.stringify(this.form));
 					sessionStorage.setItem('bankAcceptanceFilledTime', new Date().getTime());
-					
+
 					this.$emit('submitForm', _.cloneDeep(this.form));
 					this.reset();
 				}

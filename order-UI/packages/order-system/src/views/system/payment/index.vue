@@ -212,13 +212,7 @@
 				<el-table-column prop="reason" label="修改原因" />
 				<el-table-column prop="userName" label="修改人" />
 			</el-table>
-			<pagination 
-				v-show="editReasonTotal > 0" 
-				:total="editReasonTotal" 
-				:page.sync="editReasonQueryParams.pageNum" 
-				:limit.sync="editReasonQueryParams.pageSize" 
-				@pagination="getEditReasonList" 
-			/>
+			<pagination v-show="editReasonTotal > 0" :total="editReasonTotal" :page.sync="editReasonQueryParams.pageNum" :limit.sync="editReasonQueryParams.pageSize" @pagination="getEditReasonList" />
 		</el-dialog>
 
 		<!--     添加或修改付款信息对话框 -->
@@ -339,8 +333,6 @@
 
 					<!-- 右列 -->
 					<el-col :span="12">
-						
-
 						<el-form-item label="对方银行账户类型">
 							<BankType ref="otherSelectedBankType" :option-baned="true" :baned="true" :select-type="form.otherBankCardType" @updateSelectedType="changeOtherBankType" />
 						</el-form-item>
@@ -507,6 +499,7 @@ import CheckFiles from '@/components/CheckFiles.vue';
 import { mixin_checkfile } from '@/views/dashboard/mixins/checkfiles/mixin_checkfile';
 import _ from 'lodash';
 import UploadFilesButton from '@/components/UploadFilesButton';
+import { getBankAcceptance } from '../../../api/system/bankAcceptance';
 
 export default {
 	name: 'Payment',
@@ -784,8 +777,6 @@ export default {
 			}
 		},
 		handleCommitUpload(value) {
-			console.log(value);
-
 			this.form.attachment = value;
 		},
 		// 选择我方银行账户类型
@@ -875,7 +866,7 @@ export default {
 			}
 			const preservedSelfBankCardType = this.form.selfBankCardType;
 			const preservedOtherBankCardType = this.form.otherBankCardType;
-			
+
 			this.form = {
 				id: null,
 				payNO: null,
@@ -991,19 +982,25 @@ export default {
 					this.reset();
 					const id = row.id || this.ids;
 					getPayment(id).then(response => {
-						this.form = response.data;
-						// 确保params结构完整，避免BankacceptanceForm错误
-						if (!this.form.params) {
-							this.form.params = {};
+						if (!response.data) {
+							this.$message.error('获取付款信息失败');
+							return;
 						}
-						// 保留原有的bankacceptance数据，如果没有则设为null
-						if (!this.form.params.bankacceptance) {
-							this.form.params.bankacceptance = null;
-						}
-						// 确保attachmentIds存在
-						if (!this.form.params.attachmentIds) {
-							this.form.params.attachmentIds = [];
-						}
+						// 保留表单结构，特别是 params.attachmentIds 和 params.bankacceptance
+						this.form = {
+							...response.data,
+							params: {
+								...response.data.params,
+								attachmentIds: response.data.attachmentList ? response.data.attachmentList.map(item => item.id) : [],
+								bankacceptance: response.data.params?.bankacceptance || null
+							}
+						};
+						// 通知上传组件当前的附件列表
+						this.$nextTick(() => {
+							if (this.$refs.attachmentUpload && response.data.attachmentList) {
+								this.$refs.attachmentUpload.initializeWithFiles(response.data.attachmentList);
+							}
+						});
 						// 设置级联选择器的值
 						if (this.form.payType) {
 							this.form.payType = this.form.payType.split('-');
@@ -1027,6 +1024,30 @@ export default {
 						if (this.form.companyType) {
 							this.value = this.form.companyType;
 						}
+
+						// 处理承兑信息
+						this.$bus.$emit('changeFlag', response.data.bankacceptanceId > 0 ? response.data.bankacceptanceId : false);
+						let flag = false;
+						if (!response.data.bankacceptanceId) {
+							this.$message.warning('该付款信息无凭证相关信息');
+							flag = true;
+							// 确保bankacceptance有默认值，避免BankacceptanceForm错误
+							this.form.params.bankacceptance = null;
+						}
+						if (!flag) {
+							getBankAcceptance(response.data.bankacceptanceId).then(result => {
+								if (!result.data) {
+									this.$message.error('获取凭证数据失败:该行数据存储了凭证ID但没有查询到该ID对应的相关数据');
+									// 设置为null避免undefined错误
+									this.form.params.bankacceptance = null;
+									return;
+								}
+								this.$nextTick(() => {
+									this.form.params.bankacceptance = result.data;
+								});
+							});
+						}
+
 						this.open = true;
 						this.title = '修改付款信息';
 					});
@@ -1158,7 +1179,7 @@ export default {
 
 					// 创建提交数据的深克隆，避免修改原始响应式数据
 					let submitData = JSON.parse(JSON.stringify(this.form));
-					
+
 					// 如果是修改操作，添加修改原因
 					if (submitData.id != null) {
 						const editReason = sessionStorage.getItem('editReason_payment');
@@ -1166,21 +1187,21 @@ export default {
 							submitData.editReason = editReason;
 						}
 					}
-					
+
 					// 对提交数据进行处理，不影响页面显示
 					submitData = excludeParams(submitData, this.$exclude);
-					
+
 					// 对结果进行特殊处理 - 只处理提交数据
 					if (typeof submitData.payType === 'string') {
 						this.$message.warning('请选择付款类型');
 						return;
 					}
-					
+
 					// 将数组格式转换为字符串格式用于提交
 					if (Array.isArray(submitData.payType)) {
 						submitData.payType = submitData.payType.join('-');
 					}
-					
+
 					if (submitData.id != null) {
 						// 修改时，确保包含修改原因
 						if (!submitData.editReason || submitData.editReason.trim() === '') {
@@ -1188,7 +1209,7 @@ export default {
 							return;
 						}
 						// submitData.editReason 已经在深克隆中包含了
-						
+
 						// 编辑操作，使用新的编辑接口
 						const originalId = submitData.id;
 						updatePaymentSimulate(submitData)
@@ -1229,7 +1250,7 @@ export default {
 					} else {
 						// 新增时，移除修改原因字段
 						delete submitData.editReason;
-						
+
 						// 新增操作
 						submitData.companyType = this.value;
 						addPayment(submitData)

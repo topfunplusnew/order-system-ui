@@ -111,13 +111,32 @@
 			<!-- 操作列 -->
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
 				<template slot-scope="scope">
-					<el-button v-hasPermi="['system:record:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
-					<el-button v-hasPermi="['system:record:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
+					<el-dropdown @command="command => handleCommand(command, scope.row)">
+						<el-button type="primary" size="mini">
+							操作
+							<i class="el-icon-arrow-down el-icon--right"></i>
+						</el-button>
+						<el-dropdown-menu slot="dropdown">
+							<el-dropdown-item v-hasPermi="['system:record:edit']" command="edit">修改</el-dropdown-item>
+							<el-dropdown-item v-hasPermi="['system:record:remove']" command="delete" divided>删除</el-dropdown-item>
+							<el-dropdown-item command="viewEditReason">查看修改原因</el-dropdown-item>
+						</el-dropdown-menu>
+					</el-dropdown>
 				</template>
 			</el-table-column>
 		</el-table>
 
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
+
+		<!-- 查看修改原因弹窗 -->
+		<el-dialog title="查看修改原因" :visible.sync="editReasonDialogVisible" width="800px" append-to-body>
+			<el-table :data="editReasonList" style="width: 100%">
+				<el-table-column prop="addtime" label="修改时间" />
+				<el-table-column prop="reason" label="修改原因" />
+				<el-table-column prop="userName" label="修改人" />
+			</el-table>
+			<pagination v-show="editReasonTotal > 0" :total="editReasonTotal" :page.sync="editReasonQueryParams.pageNum" :limit.sync="editReasonQueryParams.pageSize" @pagination="getEditReasonList" />
+		</el-dialog>
 
 		<!-- 添加或修改现金记账对话框  cashType 用于分别管理冲抵类型 : 冲抵货款 或者 冲抵第三方开票-->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="title" :visible.sync="open" width="1000px" append-to-body @close="handleDialogClose">
@@ -626,10 +645,6 @@
 				<el-form-item label="备注" prop="remarks">
 					<el-input v-model="form.remarks" placeholder="请输入备注" />
 				</el-form-item>
-				<!-- 修改原因字段，只在修改时显示 -->
-				<el-form-item v-if="form.id != null" label="修改原因" prop="editReason">
-					<el-input v-model="form.editReason" placeholder="请输入修改原因" type="textarea" :rows="3" />
-				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
 				<el-button type="primary" @click="submitForm">确 定</el-button>
@@ -662,6 +677,7 @@
 <script>
 import { listCars } from '@/api/system/cars';
 import { addRecord, delRecord, listRecord } from '@/api/system/record';
+import { listTableEditMessage } from '@/api/system/tableEditMessage';
 import BankType from '@/views/dashboard/components/common/BankType.vue';
 import { mixin_bankType } from '@/views/dashboard/mixins/common/common_bankType';
 import { listBankAccount } from '../../../api/system/bankAccount';
@@ -681,6 +697,7 @@ import { mixin_payment_subject } from '../../dashboard/mixins/payment/payment_su
 import { CASH_TYPE } from './constrant';
 import { mixin_record_fill } from './recordFill';
 import BANK_ACCEPTANCE from '@/components/NeedToShow/BANK_ACCEPTANCE.vue';
+import { getBankAcceptance } from '../../../api/system/bankAcceptance';
 
 export default {
 	name: 'Record',
@@ -824,23 +841,6 @@ export default {
 						message: '对应表名不能为空',
 						trigger: 'blur'
 					}
-				],
-				editReason: [
-					{
-						validator: (rule, value, callback) => {
-							// 只有在修改时（form.id不为null）才需要验证修改原因
-							if (this.form.id != null) {
-								if (!value || value.trim() === '') {
-									callback(new Error('修改时必须填写修改原因'));
-								} else {
-									callback();
-								}
-							} else {
-								callback();
-							}
-						},
-						trigger: 'blur'
-					}
 				]
 			},
 
@@ -863,7 +863,17 @@ export default {
 			queryTargetSelfAccount: null,
 			// 内部转账支付类型显示字段
 			sourcePaymentTypeDisplay: '内部往来支出',
-			targetPaymentTypeDisplay: '内部往来收入'
+			targetPaymentTypeDisplay: '内部往来收入',
+			// 查看修改原因相关
+			editReasonDialogVisible: false,
+			editReasonList: [],
+			editReasonTotal: 0,
+			editReasonQueryParams: {
+				pageNum: 1,
+				pageSize: 10,
+				tableName: TableName.RECORD,
+				tid: null
+			}
 		};
 	},
 	// 计算属性
@@ -938,6 +948,34 @@ export default {
 		parseTime,
 		updateRecord,
 		getRecord,
+		// 下拉菜单命令处理
+		handleCommand(command, row) {
+			switch (command) {
+				case 'edit':
+					this.handleUpdate(row);
+					break;
+				case 'delete':
+					this.handleDelete(row);
+					break;
+				case 'viewEditReason':
+					this.handleViewEditReason(row);
+					break;
+			}
+		},
+		// 查看修改原因
+		handleViewEditReason(row) {
+			this.editReasonQueryParams.tid = row.id;
+			this.editReasonQueryParams.pageNum = 1;
+			this.getEditReasonList();
+			this.editReasonDialogVisible = true;
+		},
+		// 获取修改原因列表
+		getEditReasonList() {
+			listTableEditMessage(this.editReasonQueryParams).then(response => {
+				this.editReasonList = response.rows;
+				this.editReasonTotal = response.total;
+			});
+		},
 		// 处理附件文件更新
 		handleAttachmentFilesUpdated(uploadParams) {
 			if (uploadParams && uploadParams.params && uploadParams.params.attachmentIds) {
@@ -1058,7 +1096,6 @@ export default {
 				referenceTableId: null,
 				referenceTableName: null,
 				remarks: null,
-				editReason: null, // 添加修改原因字段
 				// 收入方与支付方的公司类型
 				sourceCompanyType: '客户',
 				targetCompanyType: '客户',
@@ -1113,11 +1150,34 @@ export default {
 		},
 		// 修改操作
 		handleUpdate(row) {
-			// 根据类型赋值
-			this.reset();
-			const id = row.id || this.ids;
-			// 添加现金记账记录
-			this.handleAddRecord(id);
+			this.$prompt('请输入修改原因', '提示', {
+				confirmButtonText: '确定',
+				cancelButtonText: '取消',
+				inputType: 'textarea',
+				inputPlaceholder: '请输入修改原因',
+				inputValidator: value => {
+					if (!value || value.trim() === '') {
+						return '修改原因不能为空';
+					}
+					return true;
+				}
+			})
+				.then(({ value }) => {
+					// 将修改原因存储到sessionStorage
+					sessionStorage.setItem('editReason_record', value);
+
+					// 根据类型赋值
+					this.reset();
+					const id = row.id || this.ids;
+					// 添加现金记账记录
+					this.handleAddRecord(id);
+				})
+				.catch(() => {
+					this.$message({
+						type: 'info',
+						message: '已取消修改'
+					});
+				});
 		},
 		/**
 		 * 添加现金记账记录
@@ -1170,6 +1230,25 @@ export default {
 						// 填充己方和对方银行卡类型
 						this.$refs.selfSelectBankType.localSelectType = data.selfBankCardType;
 						this.$refs.otherSelectBankType.localSelectType = data.otherBankCardType;
+
+						// 处理承兑信息
+						if (data.bankacceptanceId) {
+							getBankAcceptance(data.bankacceptanceId).then(result => {
+								if (!result.data) {
+									this.$message.error('获取承兑票据信息失败');
+									return;
+								}
+								this.$nextTick(() => {
+									this.form.params = this.form.params || {};
+									this.form.params.bankacceptance = result.data;
+								});
+							});
+							this.$bus.$emit('changeFlag', data.bankacceptanceId);
+						} else {
+							// 确保无承兑信息时清空相关字段
+							this.form.params = this.form.params || {};
+							this.form.params.bankacceptance = null;
+						}
 					}
 				});
 
@@ -1215,18 +1294,23 @@ export default {
 
 				// 提取公共逻辑
 				this.form = excludeParams(this.form, this.$exclude);
-				
+
 				// 创建提交数据的副本
 				const submitData = { ...this.form };
-				
+
 				// 判断是修改还是新增
 				if (this.form.id != null) {
+					// 如果是修改操作，添加修改原因
+					const editReason = sessionStorage.getItem('editReason_record');
+					if (editReason) {
+						submitData.editReason = editReason;
+					}
+
 					// 修改时，确保包含修改原因
 					if (!submitData.editReason || submitData.editReason.trim() === '') {
 						this.$message.error('修改时必须填写修改原因');
 						return;
 					}
-					submitData.editReason = this.form.editReason;
 					this.updateRecordInfo(originalAttachmentIds, submitData);
 					this.$bus.$emit('changeFlag', false);
 				} else {
@@ -1243,6 +1327,8 @@ export default {
 			const dataToUpdate = submitData || this.form;
 			updateRecord(dataToUpdate)
 				.then(() => {
+					// 清理修改原因的sessionStorage
+					sessionStorage.removeItem('editReason_record');
 					this.onSuccess('修改成功');
 				})
 				.catch(error => {
@@ -1379,7 +1465,7 @@ export default {
 					localStorage.removeItem(key);
 				}
 			});
-			
+
 			// 同时清除sessionStorage中的承兑信息
 			sessionStorage.removeItem('bankAcceptanceFilled');
 			sessionStorage.removeItem('bankAcceptanceFilledTime');
