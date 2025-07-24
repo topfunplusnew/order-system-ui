@@ -594,13 +594,6 @@ export default {
 						trigger: 'blur'
 					}
 				],
-				otherAcountsName: [
-					{
-						required: true,
-						message: '请输入对方户名',
-						trigger: 'blur'
-					}
-				],
 				otherBankNo: [
 					{
 						required: true,
