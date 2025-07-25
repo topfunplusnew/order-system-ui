@@ -505,3 +505,15 @@ export function findFundFlowBalanceInLocalCurrencyAtDate(query) {
 		params: query
 	});
 }
+
+/**
+ * 获取可选择的时间下拉列表
+ * @param {string} backupDate - 备份日期
+ * @returns
+ */
+export function getTargetDates(backupDate) {
+	return request({
+		url: `/system/allmoneybacklog/targetDates/${backupDate}`,
+		method: 'get'
+	});
+}

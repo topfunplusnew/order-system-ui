@@ -1,5 +1,5 @@
 <script>
-import { getBackupInfoV1, getMoneyChangeSummaryByDate } from '@/api/system/statement';
+import { getBackupInfoV1, getMoneyChangeSummaryByDate, getTargetDates } from '@/api/system/statement';
 import { fix } from 'order-system/src/api/tool/format';
 import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
@@ -33,7 +33,11 @@ export default {
 
 			// 表格上方查询日期
 			targetLeftDate: null,
-			targetRightDate: null
+			targetRightDate: null,
+			
+			// 可选择的时间下拉列表
+			availableDates: [],
+			isLoadingDates: false
 		};
 	},
 	computed: {
@@ -46,56 +50,36 @@ export default {
 	},
 	methods: {
 		fix,
+		// 顶部日期选择变化时的处理
+		async handleTopDateChange(value) {
+			if (value) {
+				try {
+					this.isLoadingDates = true;
+					const response = await getTargetDates(value);
+					this.availableDates = response.data || [];
+					// 清空之前选择的左侧和右侧时间
+					this.targetLeftDate = null;
+					this.targetRightDate = null;
+				} catch (error) {
+					this.$message.error('获取可选时间列表失败');
+					console.error('获取可选时间列表失败:', error);
+				} finally {
+					this.isLoadingDates = false;
+				}
+			} else {
+				// 如果清空了顶部时间，也清空下拉选项和选择的时间
+				this.availableDates = [];
+				this.targetLeftDate = null;
+				this.targetRightDate = null;
+			}
+		},
 		// 对左侧时间的校验逻辑
 		changeLeftDate(value) {
-			if (!this.changeForm.endTime) {
-				this.$message.error('请先选择顶部搜索时间！');
-				this.targetLeftDate = null;
-				return;
-			}
-			// 这里选择的时候 如果顶部的时间没选择的话 不允许选择 如果顶部选择了 那么不能小于顶部时间
-			if (value && value < this.changeForm.endTime) {
-				this.$message({
-					message: '左侧时间不能小于顶部搜索框时间',
-					type: 'error'
-				});
-				this.targetLeftDate = null;
-				return;
-			}
-			// 不能选择今天
-			if (isToday(value)) {
-				this.$message({
-					message: '不能选择今天',
-					type: 'error'
-				});
-				this.targetLeftDate = null;
-			}
+			// 下拉选择，无需复杂校验
 		},
 		// 表格右侧时间的校验逻辑
 		changeRightDate(value) {
-			// 如果没有选择左侧时间  那么就提示不行
-			if (!this.targetLeftDate) {
-				this.$message.error('请先选择左侧搜索时间！');
-				this.targetRightDate = null;
-				return;
-			}
-			// 如果选择的时间小于左侧的时间 那么就提示不行
-			if (value && value < this.targetLeftDate) {
-				this.$message({
-					message: '右侧时间不能小于左侧时间',
-					type: 'error'
-				});
-				this.targetRightDate = null;
-				return;
-			}
-			// 不能选择今天
-			if (isToday(value)) {
-				this.$message({
-					message: '不能选择今天',
-					type: 'error'
-				});
-				this.targetRightDate = null;
-			}
+			// 下拉选择，无需复杂校验
 		},
 		// 搜索
 		async handleChangeSearch() {
@@ -385,7 +369,13 @@ export default {
 		<div class="container">
 			<el-form :inline="true" :model="changeForm" class="search-form">
 				<el-form-item label="日期查询">
-					<el-date-picker v-model="changeForm.endTime" type="date" value-format="yyyy-MM-dd" placeholder="选择日期"></el-date-picker>
+					<el-date-picker 
+						v-model="changeForm.endTime" 
+						type="date" 
+						value-format="yyyy-MM-dd" 
+						placeholder="选择日期"
+						@change="handleTopDateChange"
+					></el-date-picker>
 				</el-form-item>
 				<el-form-item>
 					<el-button :disabled="!changeForm.endTime || !targetLeftDate || !targetRightDate" type="primary" @click="handleChangeSearch">搜索</el-button>
@@ -393,7 +383,7 @@ export default {
 			</el-form>
 
 			<el-row>
-				<el-alert title="标记为黄色的数据代表有差异，可点击查看模块详细数据变动" type="warning"></el-alert>
+				<el-alert title="请先选择顶部日期，然后从下拉框中选择两个表格的时间。标记为黄色的数据代表有差异，可点击查看模块详细数据变动" type="warning"></el-alert>
 			</el-row>
 			<br />
 			<!-- 表格 -->
@@ -402,15 +392,22 @@ export default {
 					<!--          日期选择框-->
 					<el-row>
 						<el-col :span="20">
-							<el-date-picker
-								size="mini"
+							<el-select
 								v-model="targetLeftDate"
-								type="date"
-								value-format="yyyy-MM-dd"
-								placeholder="选择当日截取查询日期,默认为顶部搜索框的时间"
+								placeholder="选择当日截取查询日期"
 								style="width: 100%"
+								size="mini"
+								:disabled="!availableDates.length"
+								:loading="isLoadingDates"
 								@change="changeLeftDate"
-							></el-date-picker>
+							>
+								<el-option
+									v-for="date in availableDates"
+									:key="date"
+									:label="date"
+									:value="date"
+								></el-option>
+							</el-select>
 						</el-col>
 					</el-row>
 					<br />
@@ -453,15 +450,22 @@ export default {
 				<el-col :span="12">
 					<el-row>
 						<el-col :span="20">
-							<el-date-picker
-								size="mini"
+							<el-select
 								v-model="targetRightDate"
-								type="date"
-								value-format="yyyy-MM-dd"
-								placeholder="选择数据固定后日期,默认为顶部搜索框的时间"
+								placeholder="选择数据固定后日期"
 								style="width: 100%"
+								size="mini"
+								:disabled="!availableDates.length"
+								:loading="isLoadingDates"
 								@change="changeRightDate"
-							></el-date-picker>
+							>
+								<el-option
+									v-for="date in availableDates"
+									:key="date"
+									:label="date"
+									:value="date"
+								></el-option>
+							</el-select>
 						</el-col>
 					</el-row>
 					<br />
