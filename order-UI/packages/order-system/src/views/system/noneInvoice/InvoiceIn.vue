@@ -2,11 +2,16 @@
 	<div class="app-container">
 		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
 			<!--      时间查询-->
-			<el-form-item label="开票开始日期" prop="beginTime">
-				<el-date-picker v-model="queryParams.beginTime" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss" />
-			</el-form-item>
-			<el-form-item label="开票结束日期" prop="endTime">
-				<el-date-picker v-model="queryParams.endTime" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss" />
+			<el-form-item label="日期范围" prop="dateRange">
+				<el-date-picker
+					v-model="dateRange"
+					type="datetimerange"
+					range-separator="至"
+					start-placeholder="开始日期"
+					end-placeholder="结束日期"
+					value-format="yyyy-MM-dd HH:mm:ss"
+					@change="handleDateRangeChange"
+				/>
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -51,6 +56,7 @@
 			@header-dragend="changeColWidth"
 			@selection-change="handleSelectionChange"
 		>
+			<el-table-column label="ID" align="center" type="index" show-overflow-tooltip />
 			<el-table-column v-if="columns[0].visible" label="日期" align="center" prop="invoiceDate" show-overflow-tooltip />
 			<el-table-column v-if="columns[1].visible" label="我方收票主体" align="center" prop="invoiceObject" show-overflow-tooltip width="100px" />
 			<el-table-column v-if="columns[2].visible" label="开票金额" align="center" prop="invoiceAmount" show-overflow-tooltip />
@@ -285,7 +291,8 @@
 		<!-- 查看修改原因弹窗 -->
 		<el-dialog title="查看修改原因" :visible.sync="editReasonDialogVisible" width="800px" append-to-body>
 			<el-table :data="editReasonList" style="width: 100%">
-				<el-table-column prop="addtime" label="修改时间" />a
+				<el-table-column prop="addtime" label="修改时间" />
+				a
 				<el-table-column prop="reason" label="修改原因" />
 				<el-table-column prop="userName" label="修改人" />
 			</el-table>
@@ -348,6 +355,8 @@ export default {
 			total: 0,
 			// 发票购入信息表格数据
 			invoiceInList: [],
+			// 日期范围
+			dateRange: [],
 
 			// 分别跟踪不同类型的附件ID
 			paymentReceiptIds: [], // 银行回执附件
@@ -683,7 +692,20 @@ export default {
 		/** 重置按钮操作 */
 		resetQuery() {
 			this.resetForm('queryForm');
+			this.dateRange = [];
+			this.queryParams.beginTime = null;
+			this.queryParams.endTime = null;
 			this.handleQuery();
+		},
+		// 处理日期范围变化
+		handleDateRangeChange(dateRange) {
+			if (dateRange && dateRange.length === 2) {
+				this.queryParams.beginTime = dateRange[0];
+				this.queryParams.endTime = dateRange[1];
+			} else {
+				this.queryParams.beginTime = null;
+				this.queryParams.endTime = null;
+			}
 		},
 		// 多选框选中数据
 		handleSelectionChange(selection) {
