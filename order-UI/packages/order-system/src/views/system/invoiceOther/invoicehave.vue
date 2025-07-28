@@ -2,10 +2,28 @@
 	<div class="app-container">
 		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
 			<el-form-item label="开票日期" prop="invoiceDate">
-				<el-date-picker v-model="dateRange" style="width: 240px" value-format="yyyy-MM-dd HH:mm:ss" type="daterange" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
+				<el-date-picker
+					v-model="dateRange"
+					type="daterange"
+					start-placeholder="开始日期"
+					end-placeholder="结束日期"
+					range-separator="至"
+					value-format="yyyy-MM-dd"
+					unlink-panels
+					style="width: 240px"
+				/>
 			</el-form-item>
-			<el-form-item label="票据单位名称" prop="invoiceCompanyName">
-				<el-input v-model="queryParams.invoiceCompanyName" placeholder="请输入票据单位名称" clearable @keyup.enter.native="handleQuery" />
+			<el-form-item label="开票单位" prop="invoiceCompanyName">
+				<el-input v-model="queryParams.invoiceCompanyName" placeholder="请输入开票单位" clearable @keyup.enter.native="handleQuery" />
+			</el-form-item>
+			<el-form-item label="对方名称" prop="mixCompanyName">
+				<el-input v-model="queryParams.params.mixCompanyName" placeholder="可搜索供应商或客户名称" clearable @keyup.enter.native="handleQuery" />
+			</el-form-item>
+			<el-form-item label="开票状态" prop="isInvoiced">
+				<el-select v-model="queryParams.params.isInvoiced" placeholder="请选择开票状态" clearable style="width: 150px">
+					<el-option label="已开票" value="true" />
+					<el-option label="未开票" value="false" />
+				</el-select>
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -50,6 +68,8 @@
 			@header-dragend="changeColWidth"
 			@selection-change="handleSelectionChange"
 		>
+			<el-table-column type="index" label="ID" width="60" align="center" />
+			<el-table-column v-if="columns[4].visible" label="供应商公司名称" align="center" prop="Supplier" show-overflow-tooltip />
 			<el-table-column v-if="columns[0].visible" label="日期" align="center" prop="invoiceDate" show-overflow-tooltip />
 			<el-table-column v-if="columns[1].visible" label="开票金额" align="center" prop="invoiceAmount" show-overflow-tooltip />
 			<el-table-column v-if="columns[2].visible" label="供应商票点" align="center" prop="supplierTicketPoint" show-overflow-tooltip />
@@ -58,8 +78,8 @@
 					{{ scope.row.supplierPointAmount | changeNumber(changeLength) }}
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[4].visible" label="供应商公司名称" align="center" prop="Supplier" show-overflow-tooltip />
-			<el-table-column v-if="columns[5].visible" label="客户公司名称" align="center" prop="customer" show-overflow-tooltip />
+			<el-table-column v-if="columns[5].visible" label="客户名称" align="center" prop="customer" show-overflow-tooltip />
+			<el-table-column v-if="columns[12].visible" label="开票单位" align="center" prop="invoiceCompanyName" show-overflow-tooltip />
 
 			<!-- 新增 extraInfo 属性展示 -->
 			<el-table-column v-if="columns[8].visible" label="实际开票金额" align="center" show-overflow-tooltip>
@@ -119,8 +139,9 @@
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[7].visible" label="备注" align="center" prop="comments" />
-			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="120px" fixed="right">
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="180px" fixed="right">
 				<template slot-scope="scope">
+					<el-button size="mini" type="text" @click="handleAddExtraInfo(scope.row)">补充信息</el-button>
 					<el-dropdown @command="command => handleCommand(command, scope.row)">
 						<el-button type="primary" size="mini">
 							操作
@@ -128,7 +149,6 @@
 						</el-button>
 						<el-dropdown-menu slot="dropdown">
 							<el-dropdown-item command="view">查看</el-dropdown-item>
-							<el-dropdown-item command="addExtra">补充信息</el-dropdown-item>
 							<el-dropdown-item v-hasPermi="['system:invoiceother:edit']" command="edit">修改</el-dropdown-item>
 							<el-dropdown-item v-hasPermi="['system:invoiceother:remove']" command="delete" divided>删除</el-dropdown-item>
 							<el-dropdown-item command="viewEditReason">查看修改原因</el-dropdown-item>
@@ -205,9 +225,7 @@
 						<el-form-item label="日期" prop="invoiceDate">
 							<el-date-picker v-model="form.invoiceDate" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 						</el-form-item>
-						<el-form-item label="开票日期" prop="invoiceDate">
-							<el-date-picker v-model="form.extraInfo.actualInvoiceTime" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
-						</el-form-item>
+
 						<el-form-item label="供应商公司名称" prop="Supplier">
 							<el-col :span="20">
 								<el-input disabled v-model="form.Supplier" placeholder="请选择" />
@@ -239,12 +257,12 @@
 						<el-form-item label="供应商票点" prop="supplierTicketPoint">
 							<el-input v-model="form.supplierTicketPoint" placeholder="请输入供应商票点" />
 						</el-form-item>
-					</el-col>
-					<el-col :span="12">
 						<el-form-item label="供应商票点金额" prop="supplierPointAmount">
 							<el-input disabled v-model="form.supplierPointAmount" placeholder="请输入供应商票点金额" />
 						</el-form-item>
-						<el-form-item label="客户公司名称" prop="customer">
+					</el-col>
+					<el-col :span="12">
+						<el-form-item label="客户名称" prop="customer">
 							<el-col :span="20">
 								<el-input disabled v-model="form.customer" placeholder="请选择" />
 							</el-col>
@@ -259,11 +277,10 @@
 									@commitBack="handleCommitBackCompanyCustomer"
 								>
 									<template #table-columns>
-										<el-table-column label="客户" align="center" prop="relationName" />
+										<el-table-column label="客户" align="center" prop="companyName" />
 										<el-table-column label="老板姓名" align="center" prop="leader" />
 										<el-table-column label="老板电话" align="center" prop="leaderTel" />
 										<el-table-column label="区域" align="center" prop="region" />
-										<el-table-column label="公司名称" align="center" prop="companyName" />
 										<el-table-column label="销售经理" align="center" prop="salesManager" />
 									</template>
 								</SearchOption>
@@ -271,6 +288,9 @@
 						</el-form-item>
 						<el-form-item label="票据单位名称" prop="invoiceCompanyName">
 							<el-input v-model="form.invoiceCompanyName" placeholder="请输入票据单位名称" />
+						</el-form-item>
+						<el-form-item label="开票日期" prop="invoiceDate">
+							<el-date-picker v-model="form.extraInfo.actualInvoiceTime" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 						</el-form-item>
 						<!-- 银行回执单附件-->
 						<el-form-item label="银行回执附件">
@@ -435,7 +455,11 @@ export default {
 				addtime: null,
 				userId: null,
 				UserName: null,
-				delFlag: null
+				delFlag: null,
+				params: {
+					mixCompanyName: null,
+					isInvoiced: null
+				}
 			},
 			// 表单参数
 			form: {},
@@ -475,7 +499,7 @@ export default {
 				customer: [
 					{
 						required: true,
-						message: '请输入客户公司名称',
+						message: '请输入客户名称',
 						trigger: 'blur'
 					}
 				],
@@ -493,14 +517,15 @@ export default {
 				{ key: 2, label: `供应商票点`, visible: true },
 				{ key: 3, label: `供应商票点金额`, visible: true },
 				{ key: 4, label: `供应商公司名称`, visible: true },
-				{ key: 5, label: `客户公司名称`, visible: true },
+				{ key: 5, label: `客户名称`, visible: true },
 				{ key: 6, label: `订单信息`, visible: true },
 				{ key: 7, label: `备注`, visible: true },
 				// 新增的 extraInfo 相关列
 				{ key: 8, label: `实际开票金额`, visible: true },
 				{ key: 9, label: `实际开票时间`, visible: true },
 				{ key: 10, label: `当月欠票金额`, visible: true },
-				{ key: 11, label: `额外备注`, visible: true }
+				{ key: 11, label: `额外备注`, visible: true },
+				{ key: 12, label: `开票单位`, visible: true }
 			],
 			checkOrderInfoVisible: false,
 			orderInfo: {},
@@ -569,9 +594,6 @@ export default {
 			switch (command) {
 				case 'view':
 					this.handleCheck(row);
-					break;
-				case 'addExtra':
-					this.handleAddExtraInfo(row);
 					break;
 				case 'edit':
 					this.handleUpdate(row);
@@ -710,8 +732,13 @@ export default {
 			this.getList();
 		},
 		/** 重置按钮操作 */
+		/** 重置按钮操作 */
 		resetQuery() {
 			this.resetForm('queryForm');
+			this.dateRange = [];
+			this.queryParams.invoiceCompanyName = null;
+			this.queryParams.params.mixCompanyName = null;
+			this.queryParams.params.isInvoiced = null;
 			this.handleQuery();
 		},
 		// 多选框选中数据
@@ -789,24 +816,24 @@ export default {
 						this.form.params.attachmentIds = [...new Set(this.form.params.attachmentIds)];
 					}
 
-				// 创建提交数据的副本
-				const submitData = { ...this.form };
+					// 创建提交数据的副本
+					const submitData = { ...this.form };
 
-				if (this.form.id != null) {
-					// 修改时，从sessionStorage获取修改原因
-					const editReason = sessionStorage.getItem('editReason_invoiceOther_have');
-					if (!editReason || editReason.trim() === '') {
-						this.$message.error('修改原因丢失，请重新进入编辑');
-						return;
+					if (this.form.id != null) {
+						// 修改时，从sessionStorage获取修改原因
+						const editReason = sessionStorage.getItem('editReason_invoiceOther_have');
+						if (!editReason || editReason.trim() === '') {
+							this.$message.error('修改原因丢失，请重新进入编辑');
+							return;
+						}
+						submitData.editReason = editReason;
+					} else {
+						// 新增时，移除修改原因字段
+						delete submitData.editReason;
+						submitData.customerTicketPoint = 0;
 					}
-					submitData.editReason = editReason;
-				} else {
-					// 新增时，移除修改原因字段
-					delete submitData.editReason;
-					submitData.customerTicketPoint = 0;
-				}
 
-				const submitPromise = this.form.id != null ? updateInvoiceOther(submitData) : addInvoiceOther(submitData);
+					const submitPromise = this.form.id != null ? updateInvoiceOther(submitData) : addInvoiceOther(submitData);
 
 					submitPromise
 						.then(response => {

@@ -13,6 +13,19 @@
 					@change="handleDateRangeChange"
 				/>
 			</el-form-item>
+			<el-form-item label="对方公司" prop="companyName">
+				<el-input v-model="queryParams.companyName" placeholder="请输入对方公司名称" clearable />
+			</el-form-item>
+			<el-form-item label="开票单位" prop="invoiceCompanyName">
+				<el-input v-model="queryParams.invoiceCompanyName" placeholder="请输入票据单位名称" clearable />
+			</el-form-item>
+			<el-form-item label="是否已开发票" prop="isInvoiced">
+				<el-select v-model="queryParams.params.isInvoiced" placeholder="请选择" clearable>
+					<el-option label="全部" value="" />
+					<el-option label="已开发票" value="true" />
+					<el-option label="未开发票" value="false" />
+				</el-select>
+			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
 			</el-form-item>
@@ -134,8 +147,9 @@
 					</div>
 				</template>
 			</el-table-column>
-			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="120px">
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="180px">
 				<template slot-scope="scope">
+					<el-button type="text" size="mini" @click="handleAddExtraInfo(scope.row)">补充信息</el-button>
 					<el-dropdown @command="command => handleCommand(command, scope.row)">
 						<el-button type="primary" size="mini">
 							操作
@@ -143,7 +157,6 @@
 						</el-button>
 						<el-dropdown-menu slot="dropdown">
 							<el-dropdown-item command="view">查看</el-dropdown-item>
-							<el-dropdown-item command="addExtra">补充信息</el-dropdown-item>
 							<el-dropdown-item v-hasPermi="['system:invoicein:edit']" command="edit">修改</el-dropdown-item>
 							<el-dropdown-item v-hasPermi="['system:invoicein:remove']" command="delete" divided>删除</el-dropdown-item>
 							<el-dropdown-item command="viewEditReason">查看修改原因</el-dropdown-item>
@@ -158,10 +171,6 @@
 		<!-- 添加或修改发票购入信息对话框 -->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="700px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="150px">
-				<!--        新增开票日期 需要单独的接口来进行新增操作-->
-				<el-form-item label="开票日期" prop="extraInfo.actualInvoiceTime">
-					<el-date-picker v-model="form.extraInfo.actualInvoiceTime" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss" />
-				</el-form-item>
 				<el-form-item label="日期" prop="invoiceDate">
 					<el-date-picker v-model="form.invoiceDate" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss" />
 				</el-form-item>
@@ -210,6 +219,10 @@
 				</el-form-item>
 				<el-form-item label="票点金额" prop="ticketPointAmount">
 					<el-input v-model="invoiceAmount" placeholder="请输入票点金额" />
+				</el-form-item>
+				<!--        新增开票日期 需要单独的接口来进行新增操作-->
+				<el-form-item label="开票日期" prop="extraInfo.actualInvoiceTime">
+					<el-date-picker v-model="form.extraInfo.actualInvoiceTime" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss" />
 				</el-form-item>
 				<el-form-item label="银行回执附件">
 					<UploadFilesButton ref="receiptUploader" flag="paymentReceipts" :extra-info="{ moduleType: 'noneInvoiceIn', formId: form.id }" @files-updated="handleReceiptFilesUpdated" />
@@ -384,7 +397,12 @@ export default {
 				addtime: null,
 				userId: null,
 				UserName: null,
-				delFlag: null
+				delFlag: null,
+				beginTime: null,
+				endTime: null,
+				params: {
+					isInvoiced: null
+				}
 			},
 			// 表单参数
 			form: {},
@@ -558,9 +576,6 @@ export default {
 				case 'view':
 					this.handleCheck(row);
 					break;
-				case 'addExtra':
-					this.handleAddExtraInfo(row);
-					break;
 				case 'edit':
 					this.handleUpdate(row);
 					break;
@@ -695,6 +710,9 @@ export default {
 			this.dateRange = [];
 			this.queryParams.beginTime = null;
 			this.queryParams.endTime = null;
+			this.queryParams.companyName = null;
+			this.queryParams.invoiceCompanyName = null;
+			this.queryParams.params.isInvoiced = null;
 			this.handleQuery();
 		},
 		// 处理日期范围变化
