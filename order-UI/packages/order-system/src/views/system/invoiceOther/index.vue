@@ -157,53 +157,6 @@
 			<el-row>
 				<el-form ref="form" :model="form" :rules="rules" label-width="140px">
 					<el-col :span="12">
-						<el-form-item label="关联订单ID" prop="ordersNo">
-							<el-col :span="20">
-								<el-input v-model="form.orderIDS" disabled placeholder="请选择关联订单" />
-							</el-col>
-							<el-col :span="4">
-								<SearchOption
-									:limit-info="{}"
-									:get-data="listGoodsOrder"
-									query-info="customer"
-									query-label="客户名称"
-									:query-name="queryGoodsOrder"
-									@update:queryName="handleUpdateGoodsOrder"
-									@commitBack="handleCommitBackGoodsOrder"
-								>
-									<template #table-columns>
-										<el-table-column show-overflow-tooltip label="ID" align="center" prop="id" fixed="left" />
-										<el-table-column show-overflow-tooltip label="日期" align="center" prop="orderDate" fixed="left" />
-										<el-table-column show-overflow-tooltip label="客户" align="center" prop="customer" fixed="left" />
-										<el-table-column show-overflow-tooltip label="供应商" align="center" prop="supplierNames" fixed="left" />
-										<el-table-column show-overflow-tooltip label="是否调整过" align="center" prop="isAdjusted" />
-										<el-table-column show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo" />
-										<el-table-column show-overflow-tooltip label="陆运司机电话" align="center" prop="landDriverTel" width="100px" />
-										<el-table-column show-overflow-tooltip label="陆地司机姓名" align="center" prop="landDriverName" width="100px" />
-										<el-table-column show-overflow-tooltip label="柜号" align="center" prop="seaCarNo">
-											<template #default="scope">
-												{{ !scope.row.seaCarNo ? '无' : scope.row.seaCarNo }}
-											</template>
-										</el-table-column>
-										<el-table-column show-overflow-tooltip label="海运司机电话" align="center" prop="seaDriverTel" width="100px">
-											<template #default="scope">
-												{{ !scope.row.seaDriverTel ? '无' : scope.row.seaDriverTel }}
-											</template>
-										</el-table-column>
-										<el-table-column show-overflow-tooltip label="海运公司" align="center" prop="seaDriverName" width="100px">
-											<template #default="scope">
-												{{ !scope.row.seaDriverName ? '无' : scope.row.seaDriverTel }}
-											</template>
-										</el-table-column>
-										<el-table-column show-overflow-tooltip label="销售经理" align="center" prop="saleManager" />
-										<el-table-column show-overflow-tooltip label="车队" align="center" prop="fleet" />
-										<el-table-column show-overflow-tooltip label="审核状态" align="center" prop="checkState" width="120" />
-										<el-table-column show-overflow-tooltip label="开票状态" align="center" prop="invoiceState" width="120px" />
-										<el-table-column show-overflow-tooltip label="备注" align="center" prop="comments" />
-									</template>
-								</SearchOption>
-							</el-col>
-						</el-form-item>
 						<el-form-item label="日期" prop="invoiceDate">
 							<el-date-picker v-model="form.invoiceDate" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 						</el-form-item>
@@ -328,21 +281,6 @@
 				<el-button @click="extraInfoDialogVisible = false">取 消</el-button>
 			</div>
 		</el-dialog>
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="true"
-			title="查看订单信息"
-			:visible.sync="checkOrderInfoVisible"
-			width="70%"
-			append-to-body
-		>
-			<OrderInfos :order-info="orderInfo" />
-		</el-dialog>
-
 		<div v-if="currentComponent">
 			<DialogWrapper :current-component="currentComponent" :dialog-visible="dialogVisible" />
 		</div>
@@ -367,9 +305,7 @@ import { addReason } from '@/api/system/user';
 import { TableName } from '@/api/tool/enums';
 import SearchOption from '@/components/SearchOption.vue';
 import { listCompany } from '@/api/system/company';
-import { listGoodsOrder } from '@/api/system/goodsOrder';
 import { addDateRange } from '@/utils/ruoyi';
-import OrderInfos from '../../dashboard/components/goodsOrder/OrderInfos.vue';
 import CheckFiles from '../../../components/CheckFiles.vue';
 import UploadFilesButton from '@/components/UploadFilesButton/index.vue';
 import { fix } from '../../../api/tool/format';
@@ -382,7 +318,7 @@ import INVOICE_ORTHER from '@/components/NeedToShow/INVOICE_ORTHER.vue';
 
 export default {
 	name: 'InvoiceOther',
-	components: { DialogWrapper, CheckFiles, UploadFilesButton, OrderInfos, SearchOption },
+	components: { DialogWrapper, CheckFiles, UploadFilesButton, SearchOption },
 	mixins: [mixin_printHTML, reLength, mixin_checkfile, common_dialog],
 	data() {
 		const validateAmount = (rule, value, callback) => {
@@ -411,7 +347,6 @@ export default {
 			queryParams: {
 				pageNum: 1,
 				pageSize: 10,
-				ordersNo: null,
 				invoiceDate: null,
 				invoiceAmount: null,
 				supplierTicketPoint: null,
@@ -437,15 +372,7 @@ export default {
 			form: {},
 			queryCompanyName: '',
 			queryCompanyCustomerName: '',
-			queryGoodsOrder: '',
 			rules: {
-				ordersNo: [
-					{
-						required: true,
-						message: '请选择关联订单',
-						trigger: 'blur'
-					}
-				],
 				invoiceAmount: [
 					{
 						required: true,
@@ -527,8 +454,6 @@ export default {
 				{ key: 13, label: `当月欠票金额`, visible: true },
 				{ key: 14, label: `额外备注`, visible: true }
 			],
-			checkOrderInfoVisible: false,
-			orderInfo: {},
 			extraInfoDialogVisible: false,
 			currentExtraInfo: {},
 			currentRow: null,
@@ -583,7 +508,6 @@ export default {
 	methods: {
 		updateInvoiceOther,
 		getInvoiceOther,
-		listGoodsOrder,
 		listCompany,
 		// 下拉菜单命令处理
 		handleCommand(command, row) {
@@ -630,19 +554,6 @@ export default {
 		handleUpdateCompanyCustomerName(val) {
 			this.queryCompanyCustomerName = val;
 		},
-		handleUpdateGoodsOrder(val) {
-			this.queryGoodsOrder = val;
-		},
-		handleCommitBackGoodsOrder(val) {
-			this.form.ordersNo = val.ordersNo;
-			this.form.orderIDS = val.id;
-		},
-		checkOrderInfo(row) {
-			listGoodsOrder({ ordersNo: row.ordersNo }).then(res => {
-				this.orderInfo = res.rows[0];
-				this.checkOrderInfoVisible = true;
-			});
-		},
 		// 统一附件更新处理
 		handleAttachmentFilesUpdated(files) {
 			if (this.form && this.form.params) {
@@ -673,8 +584,6 @@ export default {
 		reset() {
 			this.form = {
 				id: null,
-				ordersNo: null,
-				orderIDS: null,
 				invoiceDate: null,
 				invoiceAmount: null,
 				supplierTicketPoint: null,
