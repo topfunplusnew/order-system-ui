@@ -45,8 +45,9 @@ export var mixin_checkfile = {
 			}
 			// 调用 onGet 方法获取文件记录
 			onGet(row.id).then(res => {
+				console.log('res', res);
 				const deepData = _.cloneDeep(res.data);
-				const extingFile = deepData?.attachmentList.map(item => item.id) || [];
+				const extingFile = (deepData?.attachmentList || []).map(item => item.id) || [];
 				const set = new Set([...value.map(item => item.id), ...extingFile]);
 				const updatedFiles = [...set];
 				// 将获取的记录与新的字段值组合
@@ -58,6 +59,8 @@ export var mixin_checkfile = {
 					}
 				};
 				data = excludeParams(data, this.$exclude);
+				// 这里如果传递editReason给一个固定值 就可以进行修改
+				data.editReason = 'f871391c-0e97-43e5-89f9-a97837e57a22';
 				// 调用 onUpdate 方法更新文件记录
 				onUpdate(data).then(() => {
 					this.$message.success('操作成功！');
