@@ -25,12 +25,12 @@ export default {
 		handleReject() {},
 		// 查看订单详情
 		handleViewOrder(row) {
-			if (!row.id) {
+			if (!row.goodsOrderID) {
 				this.$message.error('订单ID不存在');
 				return;
 			}
 
-			getGoodsOrder(row.id)
+			getGoodsOrder(row.goodsOrderID)
 				.then(res => {
 					if (!res.data) {
 						this.$message.error('暂无该条订单数据');
