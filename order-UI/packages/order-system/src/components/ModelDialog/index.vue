@@ -68,7 +68,10 @@ export default {
 			const { columns, data } = param;
 			const sums = [];
 			columns.forEach((column, index) => {
-				if (this.needToTotal.includes(index)) {
+				if (index === 0) {
+					// 第一列显示"合计"
+					sums[index] = '合计';
+				} else if (this.needToTotal.includes(index)) {
 					const values = data.map(item => Number(item[column.property]));
 					if (!values.every(isNaN)) {
 						sums[index] = values.reduce((prev, curr) => {
@@ -82,6 +85,8 @@ export default {
 					} else {
 						sums[index] = '';
 					}
+				} else {
+					sums[index] = '';
 				}
 			});
 			return sums;
