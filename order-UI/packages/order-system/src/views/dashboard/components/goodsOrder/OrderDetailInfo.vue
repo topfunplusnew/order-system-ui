@@ -57,7 +57,10 @@ export default {
 					sums[index] = '合计';
 					return;
 				}
-				const includes = [14, 19, 21, 24, 26, 28];
+				// 根据是否显示操作列来调整索引
+				// ban=false时(有操作列): 杂费14, 总货款杂费19, 总货款21, 陆运费24, 总运费26, 利润28, 不含税利润29
+				// ban=true时(无操作列): 杂费13, 总货款杂费18, 总货款20, 陆运费23, 总运费25, 利润27, 不含税利润28
+				const includes = this.ban ? [13, 18, 20, 23, 25, 27, 28] : [14, 19, 21, 24, 26, 28, 29];
 				if (!data || data.length === 0) return;
 				const values = data.map(item => Number(item[column.property]));
 				if (!values.every(value => isNaN(value))) {
