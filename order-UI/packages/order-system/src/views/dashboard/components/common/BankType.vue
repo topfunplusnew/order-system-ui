@@ -60,6 +60,11 @@ export default {
 		formId: {
 			type: String,
 			default: () => `bank-type-${Date.now()}`
+		},
+		// 接收父组件传递的承兑信息
+		externalBankacceptanceInfo: {
+			type: Object,
+			default: () => ({})
 		}
 	},
 	data() {
@@ -97,6 +102,18 @@ export default {
 	watch: {
 		selectType(newVal) {
 			this.localSelectType = newVal;
+		},
+		// 监听父组件传递的承兑信息变化
+		externalBankacceptanceInfo: {
+			handler(newVal) {
+				// 如果有承兑信息且不是空对象，应该显示修改按钮
+				if (newVal && Object.keys(newVal).length > 0) {
+					this.bankacceptanceInfo = { ...newVal };
+					this.flag = true;
+				}
+			},
+			deep: true,
+			immediate: true
 		}
 	},
 	methods: {

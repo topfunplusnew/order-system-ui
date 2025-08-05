@@ -147,6 +147,7 @@
 								ref="selfSelfSelectedBankType"
 								:bill-type="BankAcceptanceType.PAY_TYPE.RECEIVE"
 								:select-type="form.selfBankCardType"
+								:external-bankacceptance-info="form.params.bankacceptance"
 								@updateSelectedType="changeSelfBankType"
 								@updateBankAcceptance="value => (form.params.bankacceptance = value)"
 							/>
@@ -742,7 +743,7 @@ export default {
 						});
 						this.$refs.selfSelfSelectedBankType = response.data.selfBankCardType;
 						this.$refs.otherOtherSelectedBankType = response.data.otherBankCardType;
-						this.$bus.$emit('changeFlag', response.data.bankacceptanceId > 0 ? response.data.bankacceptanceId : false);
+						this.$bus.$emit('changeFlag', response.data.bankacceptanceId !== null ? response.data.bankacceptanceId : false);
 						this.form.receiveType = response.data.receiveType.split('-');
 						// 处理银行账户类型
 						let flag = false;
