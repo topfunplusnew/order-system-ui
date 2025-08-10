@@ -212,8 +212,10 @@ export default {
 					this.getBankAcceptanceDate(value.billNo);
 				}
 
-				// 提交给父组件BankType 触发提交时间
-				this.$emit('assign', value);
+				// 只在非编辑模式下触发 assign 事件，避免无限循环
+				if (!value.id) {
+					this.$emit('assign', value);
+				}
 			},
 			deep: true
 		},
@@ -291,6 +293,12 @@ export default {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
 					this.form.billType = this.billType;
+					
+					// 在内部转账场景下，确保收票事由为内部转账
+					if (this.isInternalTransfer) {
+						this.form.reason = '内部转账';
+					}
+					
 					this.form = excludeParams(this.form, this.$exclude);
 					console.log(`表单`, this.form);
 
@@ -317,8 +325,8 @@ export default {
 				billAccount: null,
 				billDate: null,
 				billType: this.billType,
-				// 收票是由默认为购买
-				reason: '购买',
+				// 内部转账时默认为内部转账，其他情况收票时默认为购买
+				reason: this.isInternalTransfer ? '内部转账' : '购买',
 				billAmount: null,
 				inDiscountPoints: null,
 				inDiscountAmount: null,

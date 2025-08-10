@@ -2,21 +2,16 @@
 	<div class="app-container">
 		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
 			<el-form-item label="交易时间">
-				<el-date-picker
-					v-model="dateRange"
-					style="width: 240px"
-					value-format="yyyy-MM-dd HH:mm:ss"
-					type="daterange"
-					range-separator="-"
-					start-placeholder="开始日期"
-					end-placeholder="结束日期"
-				/>
+				<el-date-picker v-model="dateRange" style="width: 240px" value-format="yyyy-MM-dd HH:mm:ss" type="daterange"
+					range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期" />
 			</el-form-item>
 			<el-form-item label="收入方" prop="sourceCompanyName">
-				<el-input v-model="queryParams.sourceCompanyName" placeholder="请输入收入方公司名称" clearable @keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.sourceCompanyName" placeholder="请输入收入方公司名称" clearable
+					@keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="支出方" prop="targetCompanyName">
-				<el-input v-model="queryParams.targetCompanyName" placeholder="请输入收入方公司名称" clearable @keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.targetCompanyName" placeholder="请输入收入方公司名称" clearable
+					@keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="备注" prop="remarks">
 				<el-input v-model="queryParams.remarks" placeholder="请输入备注" clearable @keyup.enter.native="handleQuery" />
@@ -26,15 +21,17 @@
 				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
 			</el-form-item>
 		</el-form>
-
+	
 		<el-row :gutter="10" class="mb8">
 			<el-col :span="1.5">
-				<el-button v-hasPermi="['system:record:add']" type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd">新增</el-button>
+				<el-button v-hasPermi="['system:record:add']" type="primary" plain icon="el-icon-plus" size="mini"
+					@click="handleAdd">新增</el-button>
 			</el-col>
 			<el-col :span="1.5">
-				<el-button v-hasPermi="['system:record:remove']" type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete">删除</el-button>
+				<el-button v-hasPermi="['system:record:remove']" type="danger" plain icon="el-icon-delete" size="mini"
+					:disabled="multiple" @click="handleDelete">删除</el-button>
 			</el-col>
-
+	
 			<right-toolbar :columns="columns" @queryTable="getList">
 				<template #print>
 					<el-col :span="1.5">
@@ -44,54 +41,58 @@
 				<!--        导出-->
 				<template #export>
 					<el-col :span="1.5">
-						<el-button v-hasPermi="['system:payment:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport" />
+						<el-button v-hasPermi="['system:payment:export']" plain icon="el-icon-folder-opened" size="mini"
+							@click="handleExport" />
 					</el-col>
 				</template>
 			</right-toolbar>
 		</el-row>
-
-		<el-table
-			id="printBox"
-			v-loading="loading"
-			v-horizontal-scroll="'always'"
-			:data="recordList"
-			size="mini"
-			border
+	
+		<el-table id="printBox" v-loading="loading" v-horizontal-scroll="'always'" :data="recordList" size="mini" border
 			:cell-style="
-				() => {
-					return { padding: '1.5px' };
-				}
-			"
-			@selection-change="handleSelectionChange"
-		>
+										() => {
+											return { padding: '1.5px' };
+										}
+									" @selection-change="handleSelectionChange">
 			<el-table-column type="selection" width="55" align="center" />
-
+	
 			<el-table-column v-if="columns[0].visible" label="id" align="center" prop="id" />
 			<el-table-column v-if="columns[1].visible" label="交易时间" align="center" prop="transactionTime" width="180">
 				<template slot-scope="scope">
 					<span>{{ parseTime(scope.row.transactionTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[2].visible" label="支出方支付类型" align="center" prop="sourcePaymentType" show-overflow-tooltip />
+			<el-table-column v-if="columns[2].visible" label="支出方支付类型" align="center" prop="sourcePaymentType"
+				show-overflow-tooltip />
 			<el-table-column v-if="columns[3].visible" label="金额" align="center" prop="amount" />
-			<el-table-column v-if="columns[4].visible" label="收入方/资金流入方" align="center" prop="targetCompanyName" show-overflow-tooltip />
-			<el-table-column v-if="columns[5].visible" label="资金流入账号" align="center" prop="targetBankNo" show-overflow-tooltip />
-			<el-table-column v-if="columns[6].visible" label="收入公司类型" align="center" prop="targetCompanyType" show-overflow-tooltip />
-			<el-table-column v-if="columns[7].visible" label="收入方支付类型" align="center" prop="targetPaymentType" show-overflow-tooltip />
-			<el-table-column v-if="columns[8].visible" label="支出方/资金流出方" align="center" prop="sourceCompanyName" show-overflow-tooltip />
-			<el-table-column v-if="columns[9].visible" label="资金流出账号" align="center" prop="sourceBankNo" show-overflow-tooltip />
-			<el-table-column v-if="columns[10].visible" label="资金流出户名" align="center" prop="sourceAccountName" show-overflow-tooltip />
+			<el-table-column v-if="columns[4].visible" label="收入方/资金流入方" align="center" prop="targetCompanyName"
+				show-overflow-tooltip />
+			<el-table-column v-if="columns[5].visible" label="资金流入账号" align="center" prop="targetBankNo"
+				show-overflow-tooltip />
+			<el-table-column v-if="columns[6].visible" label="收入公司类型" align="center" prop="targetCompanyType"
+				show-overflow-tooltip />
+			<el-table-column v-if="columns[7].visible" label="收入方支付类型" align="center" prop="targetPaymentType"
+				show-overflow-tooltip />
+			<el-table-column v-if="columns[8].visible" label="支出方/资金流出方" align="center" prop="sourceCompanyName"
+				show-overflow-tooltip />
+			<el-table-column v-if="columns[9].visible" label="资金流出账号" align="center" prop="sourceBankNo"
+				show-overflow-tooltip />
+			<el-table-column v-if="columns[10].visible" label="资金流出户名" align="center" prop="sourceAccountName"
+				show-overflow-tooltip />
 			<el-table-column v-if="columns[11].visible" label="冲抵类型" align="center" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<span>{{ scope.row.referenceTableName === 'offsetting' ? '冲抵货款' : '内部转账' }}</span>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[12].visible" label="支出方公司类型" align="center" prop="sourceCompanyType" show-overflow-tooltip />
-			<el-table-column v-if="columns[13].visible" label="资金流入户名" align="center" prop="targetAccountName" show-overflow-tooltip />
+			<el-table-column v-if="columns[12].visible" label="支出方公司类型" align="center" prop="sourceCompanyType"
+				show-overflow-tooltip />
+			<el-table-column v-if="columns[13].visible" label="资金流入户名" align="center" prop="targetAccountName"
+				show-overflow-tooltip />
 			<el-table-column v-if="columns[14].visible" label="附件" align="center" prop="attachment">
 				<template #default="scope">
 					<div v-if="Array.isArray(scope.row.attachmentList)">
-						<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'attachment'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getRecord, updateRecord)" />
+						<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'attachment'"
+							@needToUpdate="value => handleUpdateFilePath(value, scope.row, getRecord, updateRecord)" />
 					</div>
 					<div v-else>
 						<el-tag type="danger">加载错误</el-tag>
@@ -106,8 +107,9 @@
 					</div>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[17].visible" label="操作人员姓名" align="center" prop="userName" show-overflow-tooltip />
-
+			<el-table-column v-if="columns[17].visible" label="操作人员姓名" align="center" prop="userName"
+				show-overflow-tooltip />
+	
 			<!-- 操作列 -->
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
 				<template slot-scope="scope">
@@ -118,16 +120,18 @@
 						</el-button>
 						<el-dropdown-menu slot="dropdown">
 							<el-dropdown-item v-hasPermi="['system:record:edit']" command="edit">修改</el-dropdown-item>
-							<el-dropdown-item v-hasPermi="['system:record:remove']" command="delete" divided>删除</el-dropdown-item>
+							<el-dropdown-item v-hasPermi="['system:record:remove']" command="delete"
+								divided>删除</el-dropdown-item>
 							<el-dropdown-item command="viewEditReason">查看修改原因</el-dropdown-item>
 						</el-dropdown-menu>
 					</el-dropdown>
 				</template>
 			</el-table-column>
 		</el-table>
-
-		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
-
+	
+		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize"
+			@pagination="getList" />
+	
 		<!-- 查看修改原因弹窗 -->
 		<el-dialog title="查看修改原因" :visible.sync="editReasonDialogVisible" width="800px" append-to-body>
 			<el-table :data="editReasonList" style="width: 100%">
@@ -135,11 +139,13 @@
 				<el-table-column prop="reason" label="修改原因" />
 				<el-table-column prop="userName" label="修改人" />
 			</el-table>
-			<pagination v-show="editReasonTotal > 0" :total="editReasonTotal" :page.sync="editReasonQueryParams.pageNum" :limit.sync="editReasonQueryParams.pageSize" @pagination="getEditReasonList" />
+			<pagination v-show="editReasonTotal > 0" :total="editReasonTotal" :page.sync="editReasonQueryParams.pageNum"
+				:limit.sync="editReasonQueryParams.pageSize" @pagination="getEditReasonList" />
 		</el-dialog>
-
+	
 		<!-- 添加或修改现金记账对话框  cashType 用于分别管理冲抵类型 : 冲抵货款 或者 冲抵第三方开票-->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="title" :visible.sync="open" width="1000px" append-to-body @close="handleDialogClose">
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="title" :visible.sync="open"
+			width="1000px" append-to-body @close="handleDialogClose">
 			<el-form ref="form" :model="form" :rules="rules" label-width="150px">
 				<!--        目前支持两种类型 一种是冲抵货款 一种是冲抵第三方开票-->
 				<el-form-item label="冲抵类型">
@@ -154,7 +160,7 @@
 						<span>资金流出</span>
 					</div>
 				</el-divider>
-
+	
 				<!-- 资金流出方支付类型 -->
 				<el-form-item label="资金流出方支付类型" prop="sourcePaymentType" v-if="cashType === CASH_TYPE.TRANSFER">
 					<el-row>
@@ -163,7 +169,7 @@
 						</el-col>
 					</el-row>
 				</el-form-item>
-
+	
 				<!--        2025-2-28 新增转账账户-->
 				<el-form-item label="转账账户" v-if="cashType === CASH_TYPE.TRANSFER">
 					<el-row>
@@ -171,21 +177,15 @@
 							<el-input v-model="form.sourceBankNo" disabled placeholder="请选择转账账户"></el-input>
 						</el-col>
 						<el-col :span="4">
-							<SearchOption
-								:get-data="listBankAccount"
-								:limit-info="{ acountsType: PUBLIC_DICT_TYPE.SELF_COMPANY }"
-								query-info="acountsName"
-								:query-name="querySourceBankNo"
-								query-label="户名"
-								@commitBack="
-									value => {
-										form.sourceBankNo = value.bankNo;
-										sourceName = value.acountsName;
-										form.sourceId = value.id;
-									}
-								"
-								@update:queryName="value => (querySourceBankNo = value)"
-							>
+							<SearchOption :get-data="listBankAccount"
+								:limit-info="{ acountsType: PUBLIC_DICT_TYPE.SELF_COMPANY }" query-info="acountsName"
+								:query-name="querySourceBankNo" query-label="户名" @commitBack="
+															value => {
+																form.sourceBankNo = value.bankNo;
+																sourceName = value.acountsName;
+																form.sourceId = value.id;
+															}
+														" @update:queryName="value => (querySourceBankNo = value)">
 								<template #table-columns>
 									<el-table-column label="账户类型" align="center" prop="acountsType" width="200" />
 									<el-table-column label="己方公司" align="center" prop="displayName" />
@@ -199,7 +199,7 @@
 						</el-col>
 					</el-row>
 				</el-form-item>
-
+	
 				<!--        如果是冲抵货款 还需要选择一个公司 -->
 				<el-row v-if="cashType === CASH_TYPE.OFF_SETTING" :gutter="20">
 					<!-- 左侧：支出方信息 -->
@@ -210,18 +210,19 @@
 								<span>支出方信息</span>
 							</div>
 						</el-divider>
-
+	
 						<el-form-item label="支出方类型" label-width="120px">
 							<el-radio v-model="form.sourceCompanyType" label="客户">客户</el-radio>
 							<el-radio v-model="form.sourceCompanyType" label="供应商">供应商</el-radio>
 							<el-radio v-model="form.sourceCompanyType" label="司机">司机</el-radio>
 						</el-form-item>
-
+	
 						<!-- 支出方支付类型 -->
 						<el-form-item label="支付类型" prop="sourcePaymentType" label-width="120px">
-							<el-cascader v-model="form.sourcePaymentType" :options="paymentTypeTree" :props="props" @change="handleChange" placeholder="请选择支出方支付类型"></el-cascader>
+							<el-cascader v-model="form.sourcePaymentType" :options="paymentTypeTree" :props="props"
+								@change="handleChange" placeholder="请选择支出方支付类型"></el-cascader>
 						</el-form-item>
-
+	
 						<el-form-item label="支出方" label-width="120px">
 							<el-row>
 								<el-col :span="16">
@@ -229,15 +230,10 @@
 								</el-col>
 								<!--               如果是司机-->
 								<el-col v-if="form.sourceCompanyType === '司机'" :span="8">
-									<SearchOption
-										:limit-info="{}"
-										:get-data="listCars"
-										query-info="driver"
-										query-label="司机姓名"
-										:query-name="querySourceDriver"
+									<SearchOption :limit-info="{}" :get-data="listCars" query-info="driver"
+										query-label="司机姓名" :query-name="querySourceDriver"
 										@update:queryName="handleUpdateSourceDriver"
-										@commitBack="handleCommitBackSourceDriver"
-									>
+										@commitBack="handleCommitBackSourceDriver">
 										<template #table-columns>
 											<el-table-column label="司机姓名" align="center" prop="driver" />
 											<el-table-column label="司机电话" align="center" prop="tel" />
@@ -248,17 +244,12 @@
 								</el-col>
 								<!--              如果是己方公司-->
 								<el-col v-else-if="form.sourceCompanyType === '己方公司'" :span="8">
-									<SearchOption
-										:limit-info="{
-											acountsType: form.sourceCompanyType
-										}"
-										:get-data="listBankAccount"
-										query-info="acountsName"
-										query-label="户名查找"
+									<SearchOption :limit-info="{
+																	acountsType: form.sourceCompanyType
+																}" :get-data="listBankAccount" query-info="acountsName" query-label="户名查找"
 										:query-name="querySourceSelfAccount"
 										@update:queryName="handleUpdateSourceSelfAccount"
-										@commitBack="handleCommitBackSourceSelfAccount"
-									>
+										@commitBack="handleCommitBackSourceSelfAccount">
 										<template #table-columns>
 											<el-table-column label="账户类型" align="center" prop="acountsType" />
 											<el-table-column label="己方公司" align="center" prop="displayName" />
@@ -271,17 +262,12 @@
 								</el-col>
 								<!--            其他-->
 								<el-col v-else :span="8">
-									<SearchOption
-										:limit-info="{
-											companyType: form.sourceCompanyType
-										}"
-										:get-data="listCompany"
-										query-info="companyName"
-										query-label="公司名称"
+									<SearchOption :limit-info="{
+																	companyType: form.sourceCompanyType
+																}" :get-data="listCompany" query-info="companyName" query-label="公司名称"
 										:query-name="querySourceCompanyName"
 										@update:queryName="handleUpdateSourceCompanyName"
-										@commitBack="handleCommitBackSourceCompany"
-									>
+										@commitBack="handleCommitBackSourceCompany">
 										<template #table-columns>
 											<el-table-column label="公司名称" align="center" prop="companyName" />
 											<el-table-column label="公司类型" align="center" prop="companyType" />
@@ -294,7 +280,7 @@
 								</el-col>
 							</el-row>
 						</el-form-item>
-
+	
 						<!-- 支出方户名 -->
 						<el-form-item label="户名" prop="sourceAccountName" label-width="120px">
 							<el-row>
@@ -302,18 +288,13 @@
 									<el-input v-model="form.sourceAccountName" placeholder="请输入支出方户名" disabled />
 								</el-col>
 								<el-col :span="8">
-									<SearchOption
-										:limit-info="{
-											acountsType: form.sourceCompanyType,
-											acountsName: sourceName
-										}"
-										:get-data="listBankAccount"
-										query-info="acountsName"
-										query-label="户名查找"
+									<SearchOption :limit-info="{
+																	acountsType: form.sourceCompanyType,
+																	acountsName: sourceName
+																}" :get-data="listBankAccount" query-info="acountsName" query-label="户名查找"
 										:query-name="querySourceBankAccount"
 										@update:queryName="handleUpdateQuerySourceBankAccount"
-										@commitBack="handleCommitBackSourceBankAccount"
-									>
+										@commitBack="handleCommitBackSourceBankAccount">
 										<template #table-columns>
 											<el-table-column label="账户类型" align="center" prop="acountsType" />
 											<el-table-column label="己方公司" align="center" prop="displayName" />
@@ -326,18 +307,18 @@
 								</el-col>
 							</el-row>
 						</el-form-item>
-
+	
 						<!-- 支出方账号 -->
 						<el-form-item label="账号" prop="sourceBankNo" label-width="120px">
 							<el-input v-model="form.sourceBankNo" placeholder="请输入支出方账号" disabled />
 						</el-form-item>
-
+	
 						<!-- 支出方开户行 -->
 						<el-form-item label="开户行" prop="sourceBankName" label-width="120px">
 							<el-input v-model="form.sourceBankName" placeholder="请输入支出方开户行" disabled />
 						</el-form-item>
 					</el-col>
-
+	
 					<!-- 右侧：收入方信息 -->
 					<el-col :span="12">
 						<el-divider>
@@ -346,18 +327,19 @@
 								<span>收入方信息</span>
 							</div>
 						</el-divider>
-
+	
 						<el-form-item label="收入方类型" label-width="120px">
 							<el-radio v-model="form.targetCompanyType" label="客户">客户</el-radio>
 							<el-radio v-model="form.targetCompanyType" label="供应商">供应商</el-radio>
 							<el-radio v-model="form.targetCompanyType" label="司机">司机</el-radio>
 						</el-form-item>
-
+	
 						<!-- 收入方支付类型 -->
 						<el-form-item label="支付类型" prop="targetPaymentType" label-width="120px">
-							<el-cascader v-model="form.targetPaymentType" :options="paymentTypeTree" :props="props" @change="handleChange" placeholder="请选择收入方支付类型"></el-cascader>
+							<el-cascader v-model="form.targetPaymentType" :options="paymentTypeTree" :props="props"
+								@change="handleChange" placeholder="请选择收入方支付类型"></el-cascader>
 						</el-form-item>
-
+	
 						<el-form-item label="收入方" label-width="120px">
 							<el-row>
 								<el-col :span="16">
@@ -366,15 +348,10 @@
 								<!--              根据不同类型选择不同的 但是后来振龙说 选两次太麻烦, 所以去除-->
 								<!--              如果是司机-->
 								<el-col v-if="form.targetCompanyType === PUBLIC_DICT_TYPE.DRIVER" :span="8">
-									<SearchOption
-										:limit-info="{}"
-										:get-data="listCars"
-										query-info="driver"
-										query-label="司机姓名"
-										:query-name="queryTargetDriver"
+									<SearchOption :limit-info="{}" :get-data="listCars" query-info="driver"
+										query-label="司机姓名" :query-name="queryTargetDriver"
 										@update:queryName="handleUpdateTargetDriver"
-										@commitBack="handleCommitBackTargetDriver"
-									>
+										@commitBack="handleCommitBackTargetDriver">
 										<template #table-columns>
 											<el-table-column label="司机姓名" align="center" prop="driver" />
 											<el-table-column label="司机电话" align="center" prop="tel" />
@@ -384,17 +361,12 @@
 								</el-col>
 								<!--              如果是己方公司 -->
 								<el-col v-if="form.targetCompanyType === PUBLIC_DICT_TYPE.SELF_COMPANY" :span="8">
-									<SearchOption
-										:limit-info="{
-											acountsType: form.targetCompanyType
-										}"
-										:get-data="listBankAccount"
-										query-info="acountsName"
-										query-label="户名查找"
+									<SearchOption :limit-info="{
+																	acountsType: form.targetCompanyType
+																}" :get-data="listBankAccount" query-info="acountsName" query-label="户名查找"
 										:query-name="queryTargetSelfAccount"
 										@update:queryName="handleUpdateTargetSelfAccount"
-										@commitBack="handleCommitBackTargetSelfAccount"
-									>
+										@commitBack="handleCommitBackTargetSelfAccount">
 										<template #table-columns>
 											<el-table-column label="账户类型" align="center" prop="acountsType" />
 											<el-table-column label="己方公司" align="center" prop="displayName" />
@@ -406,18 +378,14 @@
 									</SearchOption>
 								</el-col>
 								<!--              如果是其他-->
-								<el-col v-if="form.targetCompanyType !== '司机' && form.targetCompanyType !== '己方公司'" :span="8">
-									<SearchOption
-										:limit-info="{
-											companyType: form.targetCompanyType
-										}"
-										:get-data="listCompany"
-										query-info="companyName"
-										query-label="公司名称"
+								<el-col v-if="form.targetCompanyType !== '司机' && form.targetCompanyType !== '己方公司'"
+									:span="8">
+									<SearchOption :limit-info="{
+																	companyType: form.targetCompanyType
+																}" :get-data="listCompany" query-info="companyName" query-label="公司名称"
 										:query-name="queryTargetCompanyName"
 										@update:queryName="handleUpdateTargetCompanyName"
-										@commitBack="handleCommitBackTargetCompany"
-									>
+										@commitBack="handleCommitBackTargetCompany">
 										<template #table-columns>
 											<el-table-column label="公司名称" align="center" prop="companyName" />
 											<el-table-column label="公司类型" align="center" prop="companyType" />
@@ -430,7 +398,7 @@
 								</el-col>
 							</el-row>
 						</el-form-item>
-
+	
 						<!-- 收入方户名 -->
 						<el-form-item label="户名" prop="targetAccountName" label-width="120px">
 							<el-row>
@@ -438,18 +406,13 @@
 									<el-input v-model="form.targetAccountName" placeholder="请输入收入方户名" disabled />
 								</el-col>
 								<el-col :span="8">
-									<SearchOption
-										:limit-info="{
-											acountsType: form.targetCompanyType,
-											acountsName: targetName
-										}"
-										:get-data="listBankAccount"
-										query-info="acountsName"
-										query-label="户名查找"
+									<SearchOption :limit-info="{
+																	acountsType: form.targetCompanyType,
+																	acountsName: targetName
+																}" :get-data="listBankAccount" query-info="acountsName" query-label="户名查找"
 										:query-name="queryTargetBankAccount"
 										@update:queryName="handleUpdateQueryTargetBankAccount"
-										@commitBack="handleCommitBackTargetBankAccount"
-									>
+										@commitBack="handleCommitBackTargetBankAccount">
 										<template #table-columns>
 											<el-table-column label="账户类型" align="center" prop="acountsType" />
 											<el-table-column label="己方公司" align="center" prop="displayName" />
@@ -462,36 +425,29 @@
 								</el-col>
 							</el-row>
 						</el-form-item>
-
+	
 						<!-- 收入方账号 -->
 						<el-form-item label="账号" prop="targetBankNo" label-width="120px">
 							<el-input v-model="form.targetBankNo" placeholder="请输入收入方账号" disabled />
 						</el-form-item>
-
+	
 						<!-- 收入方开户行 -->
 						<el-form-item label="开户行" prop="targetBankName" label-width="120px">
 							<el-input v-model="form.targetBankName" placeholder="请输入收入方开户行" disabled />
 						</el-form-item>
 					</el-col>
 				</el-row>
-
+	
 				<!--        1.选择原 只有在内部转账的情况下才会展示-->
 				<div v-if="cashType === CASH_TYPE.TRANSFER">
 					<!--          选择收入账户类型-->
 					<el-form-item label="收入账户类型">
 						<!-- 选择银行卡类型的组件 -->
-						<BankType
-							ref="selfSelectBankType"
-							@updateSelectedType="changeSelfBankType"
-							@updateBankAcceptance="
-								value => {
-									form.params.bankacceptance = value;
-								}
-							"
-							:bill-type="PayType.TRANSFOR"
+						<BankType ref="selfSelectBankType" @updateSelectedType="changeSelfBankType"
+							@updateBankAcceptance="handleSelfBankAcceptanceUpdate" :bill-type="PayType.TRANSFOR"
 							:is-internal-transfer="cashType === CASH_TYPE.TRANSFER"
-							:form-id="`income-${form.id || 'new'}`"
-						/>
+							:external-bankacceptance-info="form.params.bankacceptance"
+							:form-id="`income-${form.id || 'new'}`" />
 					</el-form-item>
 					<el-form-item :label="source">
 						<el-row>
@@ -500,15 +456,10 @@
 							</el-col>
 							<template v-if="cashType === CASH_TYPE.OFF_SETTING">
 								<el-col :span="3">
-									<SearchOption
-										:get-data="listBankAccount"
+									<SearchOption :get-data="listBankAccount"
 										:limit-info="{ acountsType: PUBLIC_DICT_TYPE.SELF_COMPANY }"
-										query-info="acountsName"
-										:query-name="querySupplier"
-										query-label="户名"
-										@commitBack="handleCommitCompanySupplier"
-										@update:queryName="updateQuerySupplier"
-									>
+										query-info="acountsName" :query-name="querySupplier" query-label="户名"
+										@commitBack="handleCommitCompanySupplier" @update:queryName="updateQuerySupplier">
 										<template #table-columns>
 											<el-table-column label="账户类型" align="center" prop="acountsType" width="200" />
 											<el-table-column label="己方公司" align="center" prop="displayName" />
@@ -524,14 +475,14 @@
 						</el-row>
 					</el-form-item>
 				</div>
-
+	
 				<el-divider v-if="CASH_TYPE.TRANSFER === cashType">
 					<div>
 						<el-icon class="el-icon-remove" />
 						<span>资金流入</span>
 					</div>
 				</el-divider>
-
+	
 				<!-- 资金流入方支付类型 -->
 				<el-form-item label="资金流入方支付类型" prop="targetPaymentType" v-if="cashType === CASH_TYPE.TRANSFER">
 					<el-row>
@@ -540,28 +491,22 @@
 						</el-col>
 					</el-row>
 				</el-form-item>
-
+	
 				<el-form-item label="目标账户" v-if="cashType === CASH_TYPE.TRANSFER">
 					<el-row>
 						<el-col :span="14">
 							<el-input v-model="form.targetBankNo" disabled placeholder="请选择目标账户"></el-input>
 						</el-col>
 						<el-col :span="4">
-							<SearchOption
-								:get-data="listBankAccount"
-								:limit-info="{ acountsType: PUBLIC_DICT_TYPE.SELF_COMPANY }"
-								query-info="acountsName"
-								:query-name="querySourceBankNo"
-								query-label="户名"
-								@commitBack="
-									value => {
-										form.targetBankNo = value.bankNo;
-										targetName = value.acountsName;
-										form.targetId = value.id;
-									}
-								"
-								@update:queryName="value => (querySourceBankNo = value)"
-							>
+							<SearchOption :get-data="listBankAccount"
+								:limit-info="{ acountsType: PUBLIC_DICT_TYPE.SELF_COMPANY }" query-info="acountsName"
+								:query-name="querySourceBankNo" query-label="户名" @commitBack="
+															value => {
+																form.targetBankNo = value.bankNo;
+																targetName = value.acountsName;
+																form.targetId = value.id;
+															}
+														" @update:queryName="value => (querySourceBankNo = value)">
 								<template #table-columns>
 									<el-table-column label="账户类型" align="center" prop="acountsType" width="200" />
 									<el-table-column label="己方公司" align="center" prop="displayName" />
@@ -578,18 +523,11 @@
 				<div v-if="cashType === CASH_TYPE.TRANSFER">
 					<!--          选择支出账户类型-->
 					<el-form-item label="支出账户类型">
-						<BankType
-							ref="otherSelectBankType"
-							@updateSelectedType="changeOtherBankType"
-							@updateBankAcceptance="
-								value => {
-									form.params.bankacceptance = value;
-								}
-							"
-							:bill-type="PayType.TRANSFOR"
+						<BankType ref="otherSelectBankType" @updateSelectedType="changeOtherBankType"
+							@updateBankAcceptance="handleOtherBankAcceptanceUpdate" :bill-type="PayType.TRANSFOR"
 							:is-internal-transfer="cashType === CASH_TYPE.TRANSFER"
-							:form-id="`expense-${form.id || 'new'}`"
-						/>
+							:external-bankacceptance-info="form.params.bankacceptance"
+							:form-id="`expense-${form.id || 'new'}`" />
 					</el-form-item>
 					<!--        2.选择去-->
 					<el-form-item :label="target">
@@ -599,15 +537,10 @@
 							</el-col>
 							<template v-if="cashType === CASH_TYPE.OFF_SETTING">
 								<el-col :span="3">
-									<SearchOption
-										:get-data="listBankAccount"
+									<SearchOption :get-data="listBankAccount"
 										:limit-info="{ acountsType: PUBLIC_DICT_TYPE.SELF_COMPANY }"
-										query-info="acountsName"
-										:query-name="queryCustomer"
-										query-label="户名"
-										@commitBack="handleCommitCompanyCustomer"
-										@update:queryName="updateQueryCustomer"
-									>
+										query-info="acountsName" :query-name="queryCustomer" query-label="户名"
+										@commitBack="handleCommitCompanyCustomer" @update:queryName="updateQueryCustomer">
 										<template #table-columns>
 											<el-table-column label="账户类型" align="center" prop="acountsType" width="200" />
 											<el-table-column label="己方公司" align="center" prop="displayName" />
@@ -623,7 +556,7 @@
 						</el-row>
 					</el-form-item>
 				</div>
-
+	
 				<el-divider>
 					<el-icon class="el-icon-edit" />
 					基本信息
@@ -632,15 +565,19 @@
 				<el-form-item :label="cashType === CASH_TYPE.TRANSFER ? '转账金额' : '冲抵金额'" prop="amount">
 					<el-row>
 						<el-col :span="14">
-							<el-input v-model="form.amount" :placeholder="cashType === CASH_TYPE.TRANSFER ? '转账金额' : '冲抵金额'" type="number" />
+							<el-input v-model="form.amount" :placeholder="cashType === CASH_TYPE.TRANSFER ? '转账金额' : '冲抵金额'"
+								type="number" />
 						</el-col>
 					</el-row>
 				</el-form-item>
 				<el-form-item label="附件" prop="attachment">
-					<UploadFilesButton ref="attachmentUpload" flag="attachment" :extra-info="{ moduleType: 'record', formId: form.id }" @files-updated="handleAttachmentFilesUpdated" />
+					<UploadFilesButton ref="attachmentUpload" flag="attachment"
+						:extra-info="{ moduleType: 'record', formId: form.id }"
+						@files-updated="handleAttachmentFilesUpdated" />
 				</el-form-item>
 				<el-form-item label="交易时间" prop="transactionTime">
-					<el-date-picker v-model="form.transactionTime" clearable type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="请选择交易时间" />
+					<el-date-picker v-model="form.transactionTime" clearable type="datetime"
+						value-format="yyyy-MM-dd HH:mm:ss" placeholder="请选择交易时间" />
 				</el-form-item>
 				<el-form-item label="备注" prop="remarks">
 					<el-input v-model="form.remarks" placeholder="请输入备注" />
@@ -651,19 +588,10 @@
 				<el-button @click="cancel">取 消</el-button>
 			</div>
 		</el-dialog>
-
+	
 		<!--    查看附件列表的组件-->
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="查看附件"
-			:visible.sync="checkAttachmentVisible"
-			width="48%"
-		>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false"
+			:show-close="false" title="查看附件" :visible.sync="checkAttachmentVisible" width="48%">
 			<el-row v-for="(item, index) in checkFileList" :key="index">
 				<el-button type="text" icon="el-icon-document" @click="checkFileItem(item)">
 					{{ item }}
@@ -700,796 +628,830 @@ import BANK_ACCEPTANCE from '@/components/NeedToShow/BANK_ACCEPTANCE.vue';
 import { getBankAcceptance } from '../../../api/system/bankAcceptance';
 
 export default {
-	name: 'Record',
-	components: { BankType, CheckFiles, UploadFilesButton, SearchOption },
-	mixins: [
-		// 公共打印混入
-		mixin_printHTML,
-		// 填充相关混入
-		mixin_record_fill,
-		// 上传文件相关
-		mixin_record_uploadFiles,
-		// 通用文件上传下载混入
-		mixin_checkfile,
-		// 通用银行卡类型选择混入
-		mixin_bankType,
-		// 支付类型选择混入
-		mixin_payment_subject
-	],
-	data() {
-		return {
-			// 遮罩层
-			loading: true,
-			// 选中数组
-			ids: [],
-			// 非单个禁用
-			single: true,
-			// 非多个禁用
-			multiple: true,
-			// 显示搜索条件
-			showSearch: true,
-			// 总条数
-			total: 0,
-			// 现金记账表格数据
-			recordList: [],
-			// 弹出层标题
-			title: '',
-			// 是否显示弹出层
-			open: false,
-			// 删除标记时间范围
-			dateRange: [],
-			// 查询参数
-			queryParams: {
-				pageNum: 1,
-				pageSize: 10,
-				transactionTime: null,
-				supplierId: null,
-				customerId: null,
-				amount: null,
-				referenceTableId: null,
-				referenceTableName: null,
-				attachment: null,
-				remarks: null,
-				addtime: null,
-				userId: null,
-				UserName: null,
-				delFlag: null,
-				sourceCompanyName: null,
-				targetCompanyName: null
-			},
-			// 表单参数
-			form: {},
-			columns: [
-				{ key: 0, label: 'ID', prop: 'id', visible: true },
-				{
-					key: 1,
-					label: '交易时间',
-					prop: 'transactionTime',
-					visible: true
-				},
-				{ key: 2, label: '支出方支付类型', prop: 'sourcePaymentType', visible: true },
-				{ key: 3, label: '金额', prop: 'amount', visible: true },
-				{ key: 4, label: '收入方', prop: 'incomeParty', visible: true },
-				{ key: 5, label: '收入账户', prop: 'targetBankNo', visible: true },
-				{
-					key: 6,
-					label: '收入方公司类型',
-					prop: 'incomeCompanyType',
-					visible: true
-				},
-				{ key: 7, label: '收入方支付类型', prop: 'targetPaymentType', visible: true },
-				{
-					key: 8,
-					label: '支出方',
-					prop: 'expenseParty',
-					visible: true
-				},
-				{ key: 9, label: '转账账户', prop: 'sourceBankNo', visible: true },
-				{ key: 10, label: '资金流出户名', prop: 'sourceAccountName', visible: true },
-				{
-					key: 11,
-					label: '冲抵类型',
-					prop: 'offsetType',
-					visible: true
-				},
-				{
-					key: 12,
-					label: '支出方公司类型',
-					prop: 'expenseCompanyType',
-					visible: true
-				},
-				{ key: 13, label: '资金流入户名', prop: 'targetAccountName', visible: true },
-				{ key: 14, label: '附件', prop: 'attachment', visible: true },
-				{ key: 15, label: '备注', prop: 'comments', visible: true },
-				{ key: 16, label: '账户类型', prop: 'comments', visible: true },
-				{ key: 17, label: '操作人员类型', prop: 'comments', visible: true }
-			],
-			// 表单校验
-			rules: {
-				transactionTime: [
-					{
-						required: true,
-						message: '交易时间不能为空',
-						trigger: 'blur'
-					}
-				],
-				supplierId: [
-					{
-						required: true,
-						message: '供应商id(或者说来源方)不能为空',
-						trigger: 'blur'
-					}
-				],
-				customerId: [
-					{
-						required: true,
-						message: '客户id(或者说目的地)不能为空',
-						trigger: 'blur'
-					}
-				],
-				amount: [{ required: true, message: '金额不能为空', trigger: 'blur' }],
-				referenceTableId: [
-					{
-						required: true,
-						message: '对应表id不能为空',
-						trigger: 'blur'
-					}
-				],
-				referenceTableName: [
-					{
-						required: true,
-						message: '对应表名不能为空',
-						trigger: 'blur'
-					}
-				]
-			},
+  name: 'Record',
+  components: { BankType, CheckFiles, UploadFilesButton, SearchOption },
+  mixins: [
+    // 公共打印混入
+    mixin_printHTML,
+    // 填充相关混入
+    mixin_record_fill,
+    // 上传文件相关
+    mixin_record_uploadFiles,
+    // 通用文件上传下载混入
+    mixin_checkfile,
+    // 通用银行卡类型选择混入
+    mixin_bankType,
+    // 支付类型选择混入
+    mixin_payment_subject
+  ],
+  data() {
+    return {
+      // 遮罩层
+      loading: true,
+      // 选中数组
+      ids: [],
+      // 非单个禁用
+      single: true,
+      // 非多个禁用
+      multiple: true,
+      // 显示搜索条件
+      showSearch: true,
+      // 总条数
+      total: 0,
+      // 现金记账表格数据
+      recordList: [],
+      // 弹出层标题
+      title: '',
+      // 是否显示弹出层
+      open: false,
+      // 删除标记时间范围
+      dateRange: [],
+      // 查询参数
+      queryParams: {
+        pageNum: 1,
+        pageSize: 10,
+        transactionTime: null,
+        supplierId: null,
+        customerId: null,
+        amount: null,
+        referenceTableId: null,
+        referenceTableName: null,
+        attachment: null,
+        remarks: null,
+        addtime: null,
+        userId: null,
+        UserName: null,
+        delFlag: null,
+        sourceCompanyName: null,
+        targetCompanyName: null
+      },
+      // 表单参数
+      form: {},
+      columns: [
+        { key: 0, label: 'ID', prop: 'id', visible: true },
+        {
+          key: 1,
+          label: '交易时间',
+          prop: 'transactionTime',
+          visible: true
+        },
+        { key: 2, label: '支出方支付类型', prop: 'sourcePaymentType', visible: true },
+        { key: 3, label: '金额', prop: 'amount', visible: true },
+        { key: 4, label: '收入方', prop: 'incomeParty', visible: true },
+        { key: 5, label: '收入账户', prop: 'targetBankNo', visible: true },
+        {
+          key: 6,
+          label: '收入方公司类型',
+          prop: 'incomeCompanyType',
+          visible: true
+        },
+        { key: 7, label: '收入方支付类型', prop: 'targetPaymentType', visible: true },
+        {
+          key: 8,
+          label: '支出方',
+          prop: 'expenseParty',
+          visible: true
+        },
+        { key: 9, label: '转账账户', prop: 'sourceBankNo', visible: true },
+        { key: 10, label: '资金流出户名', prop: 'sourceAccountName', visible: true },
+        {
+          key: 11,
+          label: '冲抵类型',
+          prop: 'offsetType',
+          visible: true
+        },
+        {
+          key: 12,
+          label: '支出方公司类型',
+          prop: 'expenseCompanyType',
+          visible: true
+        },
+        { key: 13, label: '资金流入户名', prop: 'targetAccountName', visible: true },
+        { key: 14, label: '附件', prop: 'attachment', visible: true },
+        { key: 15, label: '备注', prop: 'comments', visible: true },
+        { key: 16, label: '账户类型', prop: 'comments', visible: true },
+        { key: 17, label: '操作人员类型', prop: 'comments', visible: true }
+      ],
+      // 表单校验
+      rules: {
+        transactionTime: [
+          {
+            required: true,
+            message: '交易时间不能为空',
+            trigger: 'blur'
+          }
+        ],
+        supplierId: [
+          {
+            required: true,
+            message: '供应商id(或者说来源方)不能为空',
+            trigger: 'blur'
+          }
+        ],
+        customerId: [
+          {
+            required: true,
+            message: '客户id(或者说目的地)不能为空',
+            trigger: 'blur'
+          }
+        ],
+        amount: [{ required: true, message: '金额不能为空', trigger: 'blur' }],
+        referenceTableId: [
+          {
+            required: true,
+            message: '对应表id不能为空',
+            trigger: 'blur'
+          }
+        ],
+        referenceTableName: [
+          {
+            required: true,
+            message: '对应表名不能为空',
+            trigger: 'blur'
+          }
+        ]
+      },
 
-			// 冲抵类型 默认为冲抵货款
-			cashType: CASH_TYPE.OFF_SETTING,
+      // 冲抵类型 默认为冲抵货款
+      cashType: CASH_TYPE.OFF_SETTING,
 
-			// 新增的字段
-			querySourceBankNo: null,
-			// 新增银行账户查询变量
-			querySourceBankAccount: null,
-			queryTargetBankAccount: null,
-			// 司机查询变量 - 分别为支出方和收入方
-			querySourceDriver: null,
-			queryTargetDriver: null,
-			// 公司查询变量 - 分别为支出方和收入方
-			querySourceCompanyName: null,
-			queryTargetCompanyName: null,
-			// 己方公司查询变量 - 分别为支出方和收入方
-			querySourceSelfAccount: null,
-			queryTargetSelfAccount: null,
-			// 内部转账支付类型显示字段
-			sourcePaymentTypeDisplay: '内部往来支出',
-			targetPaymentTypeDisplay: '内部往来收入',
-			// 查看修改原因相关
-			editReasonDialogVisible: false,
-			editReasonList: [],
-			editReasonTotal: 0,
-			editReasonQueryParams: {
-				pageNum: 1,
-				pageSize: 10,
-				tableName: TableName.RECORD,
-				tid: null
-			}
-		};
-	},
-	// 计算属性
-	computed: {
-		PayType() {
-			return PayType;
-		},
-		PUBLIC_DICT_TYPE() {
-			return PUBLIC_DICT_TYPE;
-		},
-		CASH_TYPE() {
-			return CASH_TYPE;
-		},
+      // 新增的字段
+      querySourceBankNo: null,
+      // 新增银行账户查询变量
+      querySourceBankAccount: null,
+      queryTargetBankAccount: null,
+      // 司机查询变量 - 分别为支出方和收入方
+      querySourceDriver: null,
+      queryTargetDriver: null,
+      // 公司查询变量 - 分别为支出方和收入方
+      querySourceCompanyName: null,
+      queryTargetCompanyName: null,
+      // 己方公司查询变量 - 分别为支出方和收入方
+      querySourceSelfAccount: null,
+      queryTargetSelfAccount: null,
+      // 内部转账支付类型显示字段
+      sourcePaymentTypeDisplay: '内部往来支出',
+      targetPaymentTypeDisplay: '内部往来收入',
+      // 查看修改原因相关
+      editReasonDialogVisible: false,
+      editReasonList: [],
+      editReasonTotal: 0,
+      editReasonQueryParams: {
+        pageNum: 1,
+        pageSize: 10,
+        tableName: TableName.RECORD,
+        tid: null
+      }
+    };
+  },
+  // 计算属性
+  computed: {
+    PayType() {
+      return PayType;
+    },
+    PUBLIC_DICT_TYPE() {
+      return PUBLIC_DICT_TYPE;
+    },
+    CASH_TYPE() {
+      return CASH_TYPE;
+    },
 
-		/**
-		 * 显示的去
-		 * 冲抵货款的时候就是收入方金额
-		 * 内部转账的时候显示目标账号 并且要显示填充搜索按钮
-		 */
-		target() {
-			// 如果是冲抵货款 那么就是用货款来去冲抵金额
-			if (this.cashType === CASH_TYPE.OFF_SETTING) {
-				return '支出方金额';
-			}
-			if (this.cashType === CASH_TYPE.TRANSFER) {
-				return '目标账号';
-			}
-			return '支出';
-		},
-		/**
-		 * 显示的源
-		 * 冲抵货款的时候就是支出方金额
-		 * 内部转账的时候显示转账账号 并且要显示填充搜索按钮
-		 */
-		source() {
-			if (this.cashType === CASH_TYPE.OFF_SETTING) {
-				return '收入方金额';
-			}
-			if (this.cashType === CASH_TYPE.TRANSFER) {
-				return '转账账号';
-			}
+    /**
+     * 显示的去
+     * 冲抵货款的时候就是收入方金额
+     * 内部转账的时候显示目标账号 并且要显示填充搜索按钮
+     */
+    target() {
+      // 如果是冲抵货款 那么就是用货款来去冲抵金额
+      if (this.cashType === CASH_TYPE.OFF_SETTING) {
+        return '支出方金额';
+      }
+      if (this.cashType === CASH_TYPE.TRANSFER) {
+        return '目标账号';
+      }
+      return '支出';
+    },
+    /**
+     * 显示的源
+     * 冲抵货款的时候就是支出方金额
+     * 内部转账的时候显示转账账号 并且要显示填充搜索按钮
+     */
+    source() {
+      if (this.cashType === CASH_TYPE.OFF_SETTING) {
+        return '收入方金额';
+      }
+      if (this.cashType === CASH_TYPE.TRANSFER) {
+        return '转账账号';
+      }
 
-			return '收入';
-		}
-	},
-	watch: {
-		cashType: {
-			/**
-			 * 只要冲抵类型改变那么就是要重新赋值表单
-			 * @param val
-			 */
-			handler(newVal) {
-				this.reset();
-				// 如果选择内部转账，设置支付类型
-				if (newVal === CASH_TYPE.TRANSFER) {
-					this.$nextTick(() => {
-						this.form.sourcePaymentType = '内部往来支出';
-						this.form.targetPaymentType = '内部往来收入';
-					});
-				}
-			},
-			immediate: true
-		}
-	},
-	created() {
-		this.getList();
-	},
-	methods: {
-		listCars,
-		listBankAccount,
-		listCompany,
-		parseTime,
-		updateRecord,
-		getRecord,
-		// 下拉菜单命令处理
-		handleCommand(command, row) {
-			switch (command) {
-				case 'edit':
-					this.handleUpdate(row);
-					break;
-				case 'delete':
-					this.handleDelete(row);
-					break;
-				case 'viewEditReason':
-					this.handleViewEditReason(row);
-					break;
-			}
-		},
-		// 查看修改原因
-		handleViewEditReason(row) {
-			this.editReasonQueryParams.tid = row.id;
-			this.editReasonQueryParams.pageNum = 1;
-			this.getEditReasonList();
-			this.editReasonDialogVisible = true;
-		},
-		// 获取修改原因列表
-		getEditReasonList() {
-			listTableEditMessage(this.editReasonQueryParams).then(response => {
-				this.editReasonList = response.rows;
-				this.editReasonTotal = response.total;
-			});
-		},
-		// 处理附件文件更新
-		handleAttachmentFilesUpdated(uploadParams) {
-			if (uploadParams && uploadParams.params && uploadParams.params.attachmentIds) {
-				this.form.params.attachmentIds = uploadParams.params.attachmentIds;
-			}
-		},
-		// 收入方银行账户查询相关函数
-		handleUpdateQuerySourceBankAccount(value) {
-			this.querySourceBankAccount = value;
-		},
-		handleCommitBackSourceBankAccount(value) {
-			this.form.sourceAccountName = value.acountsName;
-			this.form.sourceBankNo = value.bankNo;
-			this.form.sourceBankName = value.bankName;
-		},
-		// 支出方银行账户查询相关函数
-		handleUpdateQueryTargetBankAccount(value) {
-			this.queryTargetBankAccount = value;
-		},
-		handleCommitBackTargetBankAccount(value) {
-			this.form.targetAccountName = value.acountsName;
-			this.form.targetBankNo = value.bankNo;
-			this.form.targetBankName = value.bankName;
-		},
-		// 支出方司机查询相关函数
-		handleUpdateSourceDriver(value) {
-			this.querySourceDriver = value;
-		},
-		handleCommitBackSourceDriver(value) {
-			this.sourceName = value.driver;
-			this.form.sourceId = value.id;
-		},
-		// 收入方司机查询相关函数
-		handleUpdateTargetDriver(value) {
-			this.queryTargetDriver = value;
-		},
-		handleCommitBackTargetDriver(value) {
-			this.targetName = value.driver;
-			this.form.targetId = value.id;
-		},
-		// 支出方公司查询相关函数
-		handleUpdateSourceCompanyName(value) {
-			this.querySourceCompanyName = value;
-		},
-		handleCommitBackSourceCompany(value) {
-			this.sourceName = value.companyName;
-			this.form.sourceId = value.id;
-		},
-		// 收入方公司查询相关函数
-		handleUpdateTargetCompanyName(value) {
-			this.queryTargetCompanyName = value;
-		},
-		handleCommitBackTargetCompany(value) {
-			this.targetName = value.companyName;
-			this.form.targetId = value.id;
-		},
-		// 支出方己方公司查询相关函数
-		handleUpdateSourceSelfAccount(value) {
-			this.querySourceSelfAccount = value;
-		},
-		handleCommitBackSourceSelfAccount(value) {
-			this.sourceName = value.acountsName;
-			this.form.sourceId = value.id;
-		},
-		// 收入方己方公司查询相关函数
-		handleUpdateTargetSelfAccount(value) {
-			this.queryTargetSelfAccount = value;
-		},
-		handleCommitBackTargetSelfAccount(value) {
-			this.targetName = value.acountsName;
-			this.form.targetId = value.id;
-		},
-		//referenceTableName为 transfor的时候才进行判断,显示为银行活期存款,如果不为空 那么就是承兑类型
-		handleDisplayType(row, referenceTableName) {
-			if (referenceTableName === CASH_TYPE.TRANSFER) {
-				if (row.selfBankCardType !== row.otherBankCardType) {
-					return '银承互转';
-				}
-				if (row.selfBankCardType === BankAcceptanceType.ACCEPTANCE) return '承兑';
-				if (row.selfBankCardType === BankAcceptanceType.BANK_CASH) return '银行活期存款';
-			}
-		},
-		/** 查询现金记账列表 */
-		getList() {
-			this.loading = true;
-			this.queryParams.params = {};
-			if (this.dateRange != null && this.dateRange !== '') {
-				this.queryParams.params['beginTransactionTime'] = this.dateRange[0];
-				this.queryParams.params['endTransactionTime'] = this.dateRange[1];
-			}
-			listRecord(this.queryParams).then(response => {
-				this.recordList = response.rows;
-				this.total = response.total;
-				this.loading = false;
-			});
-		},
-		// 取消按钮
-		cancel() {
-			this.open = false;
-			this.reset();
-			// 清理 UploadFilesButton 组件状态
-			if (this.$refs.attachmentUpload) {
-				this.$refs.attachmentUpload.clearUploadedFiles();
-			}
-			this.clearAcceptanceFillStatus();
-			this.$bus.$emit('changeFlag', false);
-			this.$refs.otherSelectBankType.localSelectType = null;
-			this.$refs.selfSelectBankType.localSelectType = null;
-		},
-		// 表单重置
-		reset() {
-			this.form = {
-				id: null,
-				transactionTime: parseTime(new Date()),
-				sourceId: null,
-				targetId: null,
-				amount: null,
-				referenceTableId: null,
-				referenceTableName: null,
-				remarks: null,
-				// 收入方与支付方的公司类型
-				sourceCompanyType: '客户',
-				targetCompanyType: '客户',
-				// 收入方与支付方的银行卡账户类型
-				selfBankCardType: null,
-				otherBankType: null,
-				// 2025-2-28 新增转账账户
-				sourceBankNo: null,
-				// 支出方额外字段 - 用于冲抵货款时的支付详细信息
-				targetBankNo: null,
-				// 收入方支付详细信息
-				sourcePaymentType: null,
-				sourceAccountName: null,
-				sourceBankName: null,
-				// 支出方支付详细信息
-				targetPaymentType: null,
-				targetAccountName: null,
-				targetBankName: null,
-				params: {
-					bankacceptance: null,
-					attachmentIds: []
-				}
-			};
-			// 把展示字段给赋值为null
-			this.sourceName = null;
-			this.targetName = null;
-			this.resetForm('form');
-		},
-		/** 搜索按钮操作 */
-		handleQuery() {
-			this.queryParams.pageNum = 1;
-			this.getList();
-		},
-		/** 重置按钮操作 */
-		resetQuery() {
-			this.dateRange = [];
-			this.resetForm('queryForm');
-			this.handleQuery();
-		},
-		// 多选框选中数据
-		handleSelectionChange(selection) {
-			this.ids = selection.map(item => item.id);
-			this.single = selection.length !== 1;
-			this.multiple = !selection.length;
-		},
-		/** 新增按钮操作 */
-		handleAdd() {
-			this.reset();
-			this.clearAcceptanceFillStatus(); // 清理所有承兑相关状态
-			this.open = true;
-			this.title = '添加冲抵款';
-		},
-		// 修改操作
-		handleUpdate(row) {
-			this.$prompt('请输入修改原因', '提示', {
-				confirmButtonText: '确定',
-				cancelButtonText: '取消',
-				inputType: 'textarea',
-				inputPlaceholder: '请输入修改原因',
-				inputValidator: value => {
-					if (!value || value.trim() === '') {
-						return '修改原因不能为空';
-					}
-					return true;
-				}
-			})
-				.then(({ value }) => {
-					// 将修改原因存储到sessionStorage
-					sessionStorage.setItem('editReason_record', value);
+      return '收入';
+    }
+  },
+  watch: {
+    cashType: {
+      /**
+       * 只要冲抵类型改变那么就是要重新赋值表单
+       * @param val
+       */
+      handler(newVal) {
+        this.reset();
+        // reset 方法中已经根据 cashType 设置了正确的支付类型，这里不需要再次设置
+      },
+      immediate: true
+    }
+  },
+  created() {
+    this.getList();
+  },
+  methods: {
+    listCars,
+    listBankAccount,
+    listCompany,
+    parseTime,
+    updateRecord,
+    getRecord,
+    // 下拉菜单命令处理
+    handleCommand(command, row) {
+      switch (command) {
+        case 'edit':
+          this.handleUpdate(row);
+          break;
+        case 'delete':
+          this.handleDelete(row);
+          break;
+        case 'viewEditReason':
+          this.handleViewEditReason(row);
+          break;
+      }
+    },
+    // 查看修改原因
+    handleViewEditReason(row) {
+      this.editReasonQueryParams.tid = row.id;
+      this.editReasonQueryParams.pageNum = 1;
+      this.getEditReasonList();
+      this.editReasonDialogVisible = true;
+    },
+    // 获取修改原因列表
+    getEditReasonList() {
+      listTableEditMessage(this.editReasonQueryParams).then(response => {
+        this.editReasonList = response.rows;
+        this.editReasonTotal = response.total;
+      });
+    },
+    // 处理附件文件更新
+    handleAttachmentFilesUpdated(uploadParams) {
+      if (uploadParams && uploadParams.params && uploadParams.params.attachmentIds) {
+        this.form.params.attachmentIds = uploadParams.params.attachmentIds;
+      }
+    },
+    // 收入方银行账户查询相关函数
+    handleUpdateQuerySourceBankAccount(value) {
+      this.querySourceBankAccount = value;
+    },
+    handleCommitBackSourceBankAccount(value) {
+      this.form.sourceAccountName = value.acountsName;
+      this.form.sourceBankNo = value.bankNo;
+      this.form.sourceBankName = value.bankName;
+    },
+    // 支出方银行账户查询相关函数
+    handleUpdateQueryTargetBankAccount(value) {
+      this.queryTargetBankAccount = value;
+    },
+    handleCommitBackTargetBankAccount(value) {
+      this.form.targetAccountName = value.acountsName;
+      this.form.targetBankNo = value.bankNo;
+      this.form.targetBankName = value.bankName;
+    },
+    // 支出方司机查询相关函数
+    handleUpdateSourceDriver(value) {
+      this.querySourceDriver = value;
+    },
+    handleCommitBackSourceDriver(value) {
+      this.sourceName = value.driver;
+      this.form.sourceId = value.id;
+    },
+    // 收入方司机查询相关函数
+    handleUpdateTargetDriver(value) {
+      this.queryTargetDriver = value;
+    },
+    handleCommitBackTargetDriver(value) {
+      this.targetName = value.driver;
+      this.form.targetId = value.id;
+    },
+    // 支出方公司查询相关函数
+    handleUpdateSourceCompanyName(value) {
+      this.querySourceCompanyName = value;
+    },
+    handleCommitBackSourceCompany(value) {
+      this.sourceName = value.companyName;
+      this.form.sourceId = value.id;
+    },
+    // 收入方公司查询相关函数
+    handleUpdateTargetCompanyName(value) {
+      this.queryTargetCompanyName = value;
+    },
+    handleCommitBackTargetCompany(value) {
+      this.targetName = value.companyName;
+      this.form.targetId = value.id;
+    },
+    // 支出方己方公司查询相关函数
+    handleUpdateSourceSelfAccount(value) {
+      this.querySourceSelfAccount = value;
+    },
+    handleCommitBackSourceSelfAccount(value) {
+      this.sourceName = value.acountsName;
+      this.form.sourceId = value.id;
+    },
+    // 收入方己方公司查询相关函数
+    handleUpdateTargetSelfAccount(value) {
+      this.queryTargetSelfAccount = value;
+    },
+    handleCommitBackTargetSelfAccount(value) {
+      this.targetName = value.acountsName;
+      this.form.targetId = value.id;
+    },
+    //referenceTableName为 transfor的时候才进行判断,显示为银行活期存款,如果不为空 那么就是承兑类型
+    handleDisplayType(row, referenceTableName) {
+      if (referenceTableName === CASH_TYPE.TRANSFER) {
+        if (row.selfBankCardType !== row.otherBankCardType) {
+          return '银承互转';
+        }
+        if (row.selfBankCardType === BankAcceptanceType.ACCEPTANCE) return '承兑';
+        if (row.selfBankCardType === BankAcceptanceType.BANK_CASH) return '银行活期存款';
+      }
+    },
+    // 处理收入方银行账户类型的承兑信息更新
+    handleSelfBankAcceptanceUpdate(value) {
+      this.form.params.bankacceptance = value;
+      // 在内部转账模式下，保持支付类型不被清空
+      this.maintainInternalTransferPaymentTypes();
+    },
+    // 处理支出方银行账户类型的承兑信息更新
+    handleOtherBankAcceptanceUpdate(value) {
+      this.form.params.bankacceptance = value;
+      // 在内部转账模式下，保持支付类型不被清空
+      this.maintainInternalTransferPaymentTypes();
+    },
+    // 处理收入方银行类型变化
+    changeSelfBankType(value) {
+      this.form.selfBankCardType = value;
+      // 在内部转账模式下，确保支付类型不会被清空
+      this.maintainInternalTransferPaymentTypes();
+    },
+    // 处理支出方银行类型变化
+    changeOtherBankType(value) {
+      this.form.otherBankCardType = value;
+      // 在内部转账模式下，确保支付类型不会被清空
+      this.maintainInternalTransferPaymentTypes();
+    },
+    // 维护内部转账的支付类型
+    maintainInternalTransferPaymentTypes() {
+      if (this.cashType === CASH_TYPE.TRANSFER) {
+        this.$nextTick(() => {
+          if (!this.form.sourcePaymentType || this.form.sourcePaymentType === null) {
+            this.form.sourcePaymentType = '内部往来支出';
+          }
+          if (!this.form.targetPaymentType || this.form.targetPaymentType === null) {
+            this.form.targetPaymentType = '内部往来收入';
+          }
+        });
+      }
+    },
+    /** 查询现金记账列表 */
+    getList() {
+      this.loading = true;
+      this.queryParams.params = {};
+      if (this.dateRange != null && this.dateRange !== '') {
+        this.queryParams.params['beginTransactionTime'] = this.dateRange[0];
+        this.queryParams.params['endTransactionTime'] = this.dateRange[1];
+      }
+      listRecord(this.queryParams).then(response => {
+        this.recordList = response.rows;
+        this.total = response.total;
+        this.loading = false;
+      });
+    },
+    // 取消按钮
+    cancel() {
+      this.open = false;
+      this.reset();
+      // 清理 UploadFilesButton 组件状态
+      if (this.$refs.attachmentUpload) {
+        this.$refs.attachmentUpload.clearUploadedFiles();
+      }
+      this.clearAcceptanceFillStatus();
+      this.$bus.$emit('changeFlag', false);
+      this.$refs.otherSelectBankType.localSelectType = null;
+      this.$refs.selfSelectBankType.localSelectType = null;
+    },
+    // 表单重置
+    reset() {
+      // 保存当前的 cashType，因为重置后需要根据它来设置支付类型
+      const currentCashType = this.cashType;
 
-					// 根据类型赋值
-					this.reset();
-					const id = row.id || this.ids;
-					// 添加现金记账记录
-					this.handleAddRecord(id);
-				})
-				.catch(() => {
-					this.$message({
-						type: 'info',
-						message: '已取消修改'
-					});
-				});
-		},
-		/**
-		 * 添加现金记账记录
-		 * @param id 冲抵记录id
-		 */
-		handleAddRecord(id) {
-			getRecord(id).then(response => {
-				const data = response.data;
-				this.form = data;
-				this.cashType = data.referenceTableName;
+      this.form = {
+        id: null,
+        transactionTime: parseTime(new Date()),
+        sourceId: null,
+        targetId: null,
+        amount: null,
+        referenceTableId: null,
+        referenceTableName: null,
+        remarks: null,
+        // 收入方与支付方的公司类型
+        sourceCompanyType: '客户',
+        targetCompanyType: '客户',
+        // 收入方与支付方的银行卡账户类型
+        selfBankCardType: null,
+        otherBankType: null,
+        // 2025-2-28 新增转账账户
+        sourceBankNo: null,
+        // 支出方额外字段 - 用于冲抵货款时的支付详细信息
+        targetBankNo: null,
+        // 收入方支付详细信息
+        sourcePaymentType: currentCashType === CASH_TYPE.TRANSFER ? '内部往来支出' : null,
+        sourceAccountName: null,
+        sourceBankName: null,
+        // 支出方支付详细信息
+        targetPaymentType: currentCashType === CASH_TYPE.TRANSFER ? '内部往来收入' : null,
+        targetAccountName: null,
+        targetBankName: null,
+        params: {
+          bankacceptance: null,
+          attachmentIds: []
+        }
+      };
+      // 把展示字段给赋值为null
+      this.sourceName = null;
+      this.targetName = null;
+      this.resetForm('form');
+    },
+    /** 搜索按钮操作 */
+    handleQuery() {
+      this.queryParams.pageNum = 1;
+      this.getList();
+    },
+    /** 重置按钮操作 */
+    resetQuery() {
+      this.dateRange = [];
+      this.resetForm('queryForm');
+      this.handleQuery();
+    },
+    // 多选框选中数据
+    handleSelectionChange(selection) {
+      this.ids = selection.map(item => item.id);
+      this.single = selection.length !== 1;
+      this.multiple = !selection.length;
+    },
+    /** 新增按钮操作 */
+    handleAdd() {
+      this.reset();
+      this.clearAcceptanceFillStatus(); // 清理所有承兑相关状态
+      this.open = true;
+      this.title = '添加冲抵款';
+    },
+    // 修改操作
+    handleUpdate(row) {
+      this.$prompt('请输入修改原因', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        inputType: 'textarea',
+        inputPlaceholder: '请输入修改原因',
+        inputValidator: value => {
+          if (!value || value.trim() === '') {
+            return '修改原因不能为空';
+          }
+          return true;
+        }
+      })
+        .then(({ value }) => {
+          // 将修改原因存储到sessionStorage
+          sessionStorage.setItem('editReason_record', value);
 
-				// 根据冲抵类型处理支付类型
-				if (this.cashType === CASH_TYPE.OFF_SETTING) {
-					// 冲抵货款：将字符串转换为数组（用于级联选择器）
-					if (this.form.sourcePaymentType && typeof this.form.sourcePaymentType === 'string') {
-						this.form.sourcePaymentType = this.form.sourcePaymentType.split('-');
-					}
-					if (this.form.targetPaymentType && typeof this.form.targetPaymentType === 'string') {
-						this.form.targetPaymentType = this.form.targetPaymentType.split('-');
-					}
-				} else if (this.cashType === CASH_TYPE.TRANSFER) {
-					// 内部转账：保持字符串格式，不进行转换
-					// 支付类型已经是固定的"内部往来支出"和"内部往来收入"
-				}
+          // 根据类型赋值
+          this.reset();
+          const id = row.id || this.ids;
+          // 添加现金记账记录
+          this.handleAddRecord(id);
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消修改'
+          });
+        });
+    },
+    /**
+     * 添加现金记账记录
+     * @param id 冲抵记录id
+     */
+    handleAddRecord(id) {
+      getRecord(id).then(response => {
+        const data = response.data;
+        this.form = data;
+        this.cashType = data.referenceTableName;
 
-				this.$nextTick(() => {
-					// 公共字段填充逻辑
-					this.sourceName = data.sourceCompanyName;
-					this.targetName = data.targetCompanyName;
-					this.form.sourceId = data.sourceId;
-					this.form.targetId = data.targetId;
-					this.form.referenceTableName = data.referenceTableName;
-					this.form.referenceTableId = data.referenceTableId;
-					this.form.amount = data.amount;
-					this.form.transactionTime = data.transactionTime;
-					this.form.remarks = data.remarks;
+        // 根据冲抵类型处理支付类型
+        if (this.cashType === CASH_TYPE.OFF_SETTING) {
+          // 冲抵货款：将字符串转换为数组（用于级联选择器）
+          if (this.form.sourcePaymentType && typeof this.form.sourcePaymentType === 'string') {
+            this.form.sourcePaymentType = this.form.sourcePaymentType.split('-');
+          }
+          if (this.form.targetPaymentType && typeof this.form.targetPaymentType === 'string') {
+            this.form.targetPaymentType = this.form.targetPaymentType.split('-');
+          }
+        } else if (this.cashType === CASH_TYPE.TRANSFER) {
+          // 内部转账：保持字符串格式，不进行转换
+          // 支付类型已经是固定的"内部往来支出"和"内部往来收入"
+        }
 
-					// 根据冲抵类型填充特定字段
-					if (this.cashType === CASH_TYPE.OFF_SETTING) {
-						// 如果是冲抵货款
-						this.form.targetCompanyType = data.targetCompanyType;
-						this.form.sourceCompanyType = data.sourceCompanyType;
-					} else {
-						// 如果是内部转账
-						this.form.sourceCompanyType = PUBLIC_DICT_TYPE.SELF_COMPANY;
-						this.form.targetCompanyType = PUBLIC_DICT_TYPE.SELF_COMPANY;
-						// 填充转账账户和目标账户
-						this.form.sourceBankNo = data.sourceBankNo;
-						this.form.targetBankNo = data.targetBankNo;
-						// 填充己方和对方银行卡类型
-						this.$refs.selfSelectBankType.localSelectType = data.selfBankCardType;
-						this.$refs.otherSelectBankType.localSelectType = data.otherBankCardType;
+        this.$nextTick(() => {
+          // 公共字段填充逻辑
+          this.sourceName = data.sourceCompanyName;
+          this.targetName = data.targetCompanyName;
+          this.form.sourceId = data.sourceId;
+          this.form.targetId = data.targetId;
+          this.form.referenceTableName = data.referenceTableName;
+          this.form.referenceTableId = data.referenceTableId;
+          this.form.amount = data.amount;
+          this.form.transactionTime = data.transactionTime;
+          this.form.remarks = data.remarks;
 
-						// 处理承兑信息
-						if (data.bankacceptanceId) {
-							getBankAcceptance(data.bankacceptanceId).then(result => {
-								if (!result.data) {
-									this.$message.error('获取承兑票据信息失败');
-									return;
-								}
-								this.$nextTick(() => {
-									this.form.params = this.form.params || {};
-									this.form.params.bankacceptance = result.data;
-								});
-							});
-							this.$bus.$emit('changeFlag', data.bankacceptanceId);
-						} else {
-							// 确保无承兑信息时清空相关字段
-							this.form.params = this.form.params || {};
-							this.form.params.bankacceptance = null;
-						}
-					}
-				});
+          // 根据冲抵类型填充特定字段
+          if (this.cashType === CASH_TYPE.OFF_SETTING) {
+            // 如果是冲抵货款
+            this.form.targetCompanyType = data.targetCompanyType;
+            this.form.sourceCompanyType = data.sourceCompanyType;
+          } else {
+            // 如果是内部转账
+            this.form.sourceCompanyType = PUBLIC_DICT_TYPE.SELF_COMPANY;
+            this.form.targetCompanyType = PUBLIC_DICT_TYPE.SELF_COMPANY;
+            // 填充转账账户和目标账户
+            this.form.sourceBankNo = data.sourceBankNo;
+            this.form.targetBankNo = data.targetBankNo;
+            // 填充己方和对方银行卡类型
+            this.$refs.selfSelectBankType.localSelectType = data.selfBankCardType;
+            this.$refs.otherSelectBankType.localSelectType = data.otherBankCardType;
 
-				this.open = true;
-				this.title = '修改冲抵款';
-			});
-		},
-		/** 提交按钮 */
-		submitForm() {
-			this.$refs['form'].validate(valid => {
-				if (!valid) return;
+            // 处理承兑信息
+            if (data.bankacceptanceId) {
+              getBankAcceptance(data.bankacceptanceId).then(result => {
+                if (!result.data) {
+                  this.$message.error('获取承兑票据信息失败');
+                  return;
+                }
+                this.$nextTick(() => {
+                  this.form.params = this.form.params || {};
+                  this.form.params.bankacceptance = result.data;
+                });
+              });
+              this.$bus.$emit('changeFlag', data.bankacceptanceId);
+            } else {
+              // 确保无承兑信息时清空相关字段
+              this.form.params = this.form.params || {};
+              this.form.params.bankacceptance = null;
+            }
+          }
+        });
 
-				// 保存当前附件ID用于错误回滚
-				const originalAttachmentIds = this.$store.getters.attachmentIds ? [...this.$store.getters.attachmentIds] : [];
+        this.open = true;
+        this.title = '修改冲抵款';
+      });
+    },
+    /** 提交按钮 */
+    submitForm() {
+      this.$refs['form'].validate(valid => {
+        if (!valid) return;
 
-				// 去重附件ID
-				const uniqueAttachmentIds = [...new Set(originalAttachmentIds)];
-				if (uniqueAttachmentIds.length !== originalAttachmentIds.length) {
-					// 清空并重新添加去重后的ID
-					this.$store.commit('CLEAR_ATTACHMENT_IDS');
-					uniqueAttachmentIds.forEach(id => {
-						this.$store.commit('ADD_ATTACHMENT_ID', id);
-					});
-				}
+        // 保存当前附件ID用于错误回滚
+        const originalAttachmentIds = this.$store.getters.attachmentIds ? [...this.$store.getters.attachmentIds] : [];
 
-				// 获取附件上传参数
-				if (this.$refs.attachmentUpload) {
-					const attachmentParams = this.$refs.attachmentUpload.getUploadParams();
-					if (attachmentParams && attachmentParams.params) {
-						this.form.params = { ...this.form.params, ...attachmentParams.params };
-					}
-				}
+        // 去重附件ID
+        const uniqueAttachmentIds = [...new Set(originalAttachmentIds)];
+        if (uniqueAttachmentIds.length !== originalAttachmentIds.length) {
+          // 清空并重新添加去重后的ID
+          this.$store.commit('CLEAR_ATTACHMENT_IDS');
+          uniqueAttachmentIds.forEach(id => {
+            this.$store.commit('ADD_ATTACHMENT_ID', id);
+          });
+        }
 
-				// 处理收入方支付类型 - 将数组转换为以短横线分隔的字符串
-				if (this.form.sourcePaymentType && Array.isArray(this.form.sourcePaymentType)) {
-					this.form.sourcePaymentType = this.form.sourcePaymentType.join('-');
-				}
+        // 获取附件上传参数
+        if (this.$refs.attachmentUpload) {
+          const attachmentParams = this.$refs.attachmentUpload.getUploadParams();
+          if (attachmentParams && attachmentParams.params) {
+            this.form.params = { ...this.form.params, ...attachmentParams.params };
+          }
+        }
 
-				// 处理支出方支付类型 - 将数组转换为以短横线分隔的字符串
-				if (this.form.targetPaymentType && Array.isArray(this.form.targetPaymentType)) {
-					this.form.targetPaymentType = this.form.targetPaymentType.join('-');
-				}
+        // 处理收入方支付类型 - 将数组转换为以短横线分隔的字符串
+        if (this.form.sourcePaymentType && Array.isArray(this.form.sourcePaymentType)) {
+          this.form.sourcePaymentType = this.form.sourcePaymentType.join('-');
+        }
 
-				// 提取公共逻辑
-				this.form = excludeParams(this.form, this.$exclude);
+        // 处理支出方支付类型 - 将数组转换为以短横线分隔的字符串
+        if (this.form.targetPaymentType && Array.isArray(this.form.targetPaymentType)) {
+          this.form.targetPaymentType = this.form.targetPaymentType.join('-');
+        }
 
-				// 创建提交数据的副本
-				const submitData = { ...this.form };
+        // 提取公共逻辑
+        this.form = excludeParams(this.form, this.$exclude);
 
-				// 判断是修改还是新增
-				if (this.form.id != null) {
-					// 如果是修改操作，添加修改原因
-					const editReason = sessionStorage.getItem('editReason_record');
-					if (editReason) {
-						submitData.editReason = editReason;
-					}
+        // 创建提交数据的副本
+        const submitData = { ...this.form };
 
-					// 修改时，确保包含修改原因
-					if (!submitData.editReason || submitData.editReason.trim() === '') {
-						this.$message.error('修改时必须填写修改原因');
-						return;
-					}
-					this.updateRecordInfo(originalAttachmentIds, submitData);
-					this.$bus.$emit('changeFlag', false);
-				} else {
-					// 新增时，移除修改原因字段
-					delete submitData.editReason;
-					this.addRecordInfo(originalAttachmentIds, submitData);
-					this.$bus.$emit('changeFlag', false);
-				}
-			});
-		},
+        // 判断是修改还是新增
+        if (this.form.id != null) {
+          // 如果是修改操作，添加修改原因
+          const editReason = sessionStorage.getItem('editReason_record');
+          if (editReason) {
+            submitData.editReason = editReason;
+          }
 
-		// 修改记录
-		updateRecordInfo(originalAttachmentIds, submitData = null) {
-			const dataToUpdate = submitData || this.form;
-			updateRecord(dataToUpdate)
-				.then(() => {
-					// 清理修改原因的sessionStorage
-					sessionStorage.removeItem('editReason_record');
-					this.onSuccess('修改成功');
-				})
-				.catch(error => {
-					console.error('修改记录失败:', error);
-					// 回滚附件ID到原始状态
-					this.$store.commit('CLEAR_ATTACHMENT_IDS');
-					originalAttachmentIds.forEach(id => {
-						this.$store.commit('ADD_ATTACHMENT_ID', id);
-					});
-					this.$message.error('修改失败，请重试');
-				});
-		},
+          // 修改时，确保包含修改原因
+          if (!submitData.editReason || submitData.editReason.trim() === '') {
+            this.$message.error('修改时必须填写修改原因');
+            return;
+          }
+          this.updateRecordInfo(originalAttachmentIds, submitData);
+          this.$bus.$emit('changeFlag', false);
+        } else {
+          // 新增时，移除修改原因字段
+          delete submitData.editReason;
+          this.addRecordInfo(originalAttachmentIds, submitData);
+          this.$bus.$emit('changeFlag', false);
+        }
+      });
+    },
 
-		// 新增记录
-		addRecordInfo(originalAttachmentIds, submitData = null) {
-			const dataToAdd = submitData || this.form;
-			if (this.cashType === CASH_TYPE.OFF_SETTING) {
-				this.handleOffsetting(originalAttachmentIds, dataToAdd);
-			} else {
-				this.handleTransfer(originalAttachmentIds, dataToAdd);
-			}
-		},
+    // 修改记录
+    updateRecordInfo(originalAttachmentIds, submitData = null) {
+      const dataToUpdate = submitData || this.form;
+      updateRecord(dataToUpdate)
+        .then(() => {
+          // 清理修改原因的sessionStorage
+          sessionStorage.removeItem('editReason_record');
+          this.onSuccess('修改成功');
+        })
+        .catch(error => {
+          console.error('修改记录失败:', error);
+          // 回滚附件ID到原始状态
+          this.$store.commit('CLEAR_ATTACHMENT_IDS');
+          originalAttachmentIds.forEach(id => {
+            this.$store.commit('ADD_ATTACHMENT_ID', id);
+          });
+          this.$message.error('修改失败，请重试');
+        });
+    },
 
-		// 处理冲抵货款逻辑
-		handleOffsetting(originalAttachmentIds, dataToAdd = null) {
-			const formData = dataToAdd || this.form;
-			formData.referenceTableName = TableName.OFFSETTING;
-			formData.referenceTableId = -1;
-			addRecord(formData)
-				.then(() => {
-					this.onSuccess('新增成功', true);
-				})
-				.catch(error => {
-					console.error('新增冲抵记录失败:', error);
-					// 回滚附件ID到原始状态
-					this.$store.commit('CLEAR_ATTACHMENT_IDS');
-					originalAttachmentIds.forEach(id => {
-						this.$store.commit('ADD_ATTACHMENT_ID', id);
-					});
-					this.$message.error('新增失败，请重试');
-				});
-		},
+    // 新增记录
+    addRecordInfo(originalAttachmentIds, submitData = null) {
+      const dataToAdd = submitData || this.form;
+      if (this.cashType === CASH_TYPE.OFF_SETTING) {
+        this.handleOffsetting(originalAttachmentIds, dataToAdd);
+      } else {
+        this.handleTransfer(originalAttachmentIds, dataToAdd);
+      }
+    },
 
-		// 处理内部转账逻辑
-		handleTransfer(originalAttachmentIds, dataToAdd = null) {
-			const formData = dataToAdd || this.form;
-			const selfType = this.$refs.selfSelectBankType.localSelectType;
-			const otherType = this.$refs.otherSelectBankType.localSelectType;
-			if (selfType !== otherType) {
-				// 确保 bankacceptance 对象存在
-				if (!formData.params.bankacceptance) {
-					formData.params.bankacceptance = {};
-				}
-				if (selfType === BankAcceptanceType.ACCEPTANCE) {
-					formData.params.bankacceptance.billType = PayType.PAYMENT;
-				}
-				if (otherType === BankAcceptanceType.ACCEPTANCE) {
-					formData.params.bankacceptance.billType = PayType.RECEIVE;
-				}
-			}
-			// 填充表单的公司类型和转账相关信息
-			formData.sourceCompanyType = PUBLIC_DICT_TYPE.SELF_COMPANY;
-			formData.targetCompanyType = PUBLIC_DICT_TYPE.SELF_COMPANY;
-			// 填充转账类型表
-			formData.referenceTableName = CASH_TYPE.TRANSFER;
-			formData.referenceTableId = -1;
-			addRecord(formData)
-				.then(() => {
-					this.onSuccess('新增成功', true, true);
-					// 清除承兑信息状态
-					this.clearAcceptanceFillStatus();
-					this.$refs.selfSelectBankType.localSelectType = null;
-					this.$refs.otherSelectBankType.localSelectType = null;
-				})
-				.catch(error => {
-					console.error('新增转账记录失败:', error);
-					// 回滚附件ID到原始状态
-					this.$store.commit('CLEAR_ATTACHMENT_IDS');
-					originalAttachmentIds.forEach(id => {
-						this.$store.commit('ADD_ATTACHMENT_ID', id);
-					});
-					this.$message.error('新增失败，请重试');
-				});
-		},
-		// 公共成功处理逻辑
-		onSuccess(message, resetForm = false, resetEachInfo = false) {
-			this.$modal.msgSuccess(message);
-			this.open = false;
-			this.getList();
-			// 清理 UploadFilesButton 组件状态
-			if (this.$refs.attachmentUpload) {
-				this.$refs.attachmentUpload.clearUploadedFiles();
-			}
-			if (resetForm) this.reset();
-			if (resetEachInfo) this.resetEachInfo();
-		},
+    // 处理冲抵货款逻辑
+    handleOffsetting(originalAttachmentIds, dataToAdd = null) {
+      const formData = dataToAdd || this.form;
+      formData.referenceTableName = TableName.OFFSETTING;
+      formData.referenceTableId = -1;
+      addRecord(formData)
+        .then(() => {
+          this.onSuccess('新增成功', true);
+        })
+        .catch(error => {
+          console.error('新增冲抵记录失败:', error);
+          // 回滚附件ID到原始状态
+          this.$store.commit('CLEAR_ATTACHMENT_IDS');
+          originalAttachmentIds.forEach(id => {
+            this.$store.commit('ADD_ATTACHMENT_ID', id);
+          });
+          this.$message.error('新增失败，请重试');
+        });
+    },
 
-		/** 删除按钮操作 */
-		handleDelete(row) {
-			const ids = row.id || this.ids;
-			this.$modal
-				.confirm('是否确认删除现金记账编号为"' + ids + '"的数据项？')
-				.then(function () {
-					return delRecord(ids);
-				})
-				.then(() => {
-					this.getList();
-					this.$modal.msgSuccess('删除成功');
-				})
-				.catch(() => {});
-		},
-		/** 导出按钮操作 */
-		handleExport() {
-			this.download(
-				'system/record/export',
-				{
-					...this.queryParams
-				},
-				`record_${new Date().getTime()}.xlsx`
-			);
-		},
-		// 关闭表单时清除localStorage和sessionStorage中的承兑信息填写状态
-		clearAcceptanceFillStatus() {
-			// 清除localStorage中所有与承兑相关的状态
-			localStorage.removeItem('bankAcceptanceFilled');
-			localStorage.removeItem('bankAcceptanceFilledTime');
-			localStorage.removeItem('sharedBankAcceptanceFilled');
-			// 清除特定实例的状态
-			localStorage.removeItem(`bankAcceptanceFilled_income-${this.form.id || 'new'}`);
-			localStorage.removeItem(`bankAcceptanceFilled_expense-${this.form.id || 'new'}`);
-			// 清除可能存在的其他相关状态
-			Object.keys(localStorage).forEach(key => {
-				if (key.startsWith('bankAcceptanceFilled_') || key.includes('BankAcceptance')) {
-					localStorage.removeItem(key);
-				}
-			});
+    // 处理内部转账逻辑
+    handleTransfer(originalAttachmentIds, dataToAdd = null) {
+      const formData = dataToAdd || this.form;
+      const selfType = this.$refs.selfSelectBankType.localSelectType;
+      const otherType = this.$refs.otherSelectBankType.localSelectType;
+      if (selfType !== otherType) {
+        // 确保 bankacceptance 对象存在
+        if (!formData.params.bankacceptance) {
+          formData.params.bankacceptance = {};
+        }
+        if (selfType === BankAcceptanceType.ACCEPTANCE) {
+          formData.params.bankacceptance.billType = PayType.PAYMENT;
+        }
+        if (otherType === BankAcceptanceType.ACCEPTANCE) {
+          formData.params.bankacceptance.billType = PayType.RECEIVE;
+        }
+      }
+      // 填充表单的公司类型和转账相关信息
+      formData.sourceCompanyType = PUBLIC_DICT_TYPE.SELF_COMPANY;
+      formData.targetCompanyType = PUBLIC_DICT_TYPE.SELF_COMPANY;
+      // 填充转账类型表
+      formData.referenceTableName = CASH_TYPE.TRANSFER;
+      formData.referenceTableId = -1;
+      addRecord(formData)
+        .then(() => {
+          this.onSuccess('新增成功', true, true);
+          // 清除承兑信息状态
+          this.clearAcceptanceFillStatus();
+          this.$refs.selfSelectBankType.localSelectType = null;
+          this.$refs.otherSelectBankType.localSelectType = null;
+        })
+        .catch(error => {
+          console.error('新增转账记录失败:', error);
+          // 回滚附件ID到原始状态
+          this.$store.commit('CLEAR_ATTACHMENT_IDS');
+          originalAttachmentIds.forEach(id => {
+            this.$store.commit('ADD_ATTACHMENT_ID', id);
+          });
+          this.$message.error('新增失败，请重试');
+        });
+    },
+    // 公共成功处理逻辑
+    onSuccess(message, resetForm = false, resetEachInfo = false) {
+      this.$modal.msgSuccess(message);
+      this.open = false;
+      this.getList();
+      // 清理 UploadFilesButton 组件状态
+      if (this.$refs.attachmentUpload) {
+        this.$refs.attachmentUpload.clearUploadedFiles();
+      }
+      if (resetForm) this.reset();
+      if (resetEachInfo) this.resetEachInfo();
+    },
 
-			// 同时清除sessionStorage中的承兑信息
-			sessionStorage.removeItem('bankAcceptanceFilled');
-			sessionStorage.removeItem('bankAcceptanceFilledTime');
-			sessionStorage.removeItem('sharedBankAcceptanceFilled');
-			// 清除特定实例的状态
-			sessionStorage.removeItem(`bankAcceptanceFilled_income-${this.form.id || 'new'}`);
-			sessionStorage.removeItem(`bankAcceptanceFilled_expense-${this.form.id || 'new'}`);
-			// 清除可能存在的其他相关状态
-			Object.keys(sessionStorage).forEach(key => {
-				if (key.startsWith('bankAcceptanceFilled_') || key.includes('BankAcceptance')) {
-					sessionStorage.removeItem(key);
-				}
-			});
-		},
+    /** 删除按钮操作 */
+    handleDelete(row) {
+      const ids = row.id || this.ids;
+      this.$modal
+        .confirm('是否确认删除现金记账编号为"' + ids + '"的数据项？')
+        .then(function () {
+          return delRecord(ids);
+        })
+        .then(() => {
+          this.getList();
+          this.$modal.msgSuccess('删除成功');
+        })
+        .catch(() => { });
+    },
+    /** 导出按钮操作 */
+    handleExport() {
+      this.download(
+        'system/record/export',
+        {
+          ...this.queryParams
+        },
+        `record_${new Date().getTime()}.xlsx`
+      );
+    },
+    // 关闭表单时清除localStorage和sessionStorage中的承兑信息填写状态
+    clearAcceptanceFillStatus() {
+      // 清除localStorage中所有与承兑相关的状态
+      localStorage.removeItem('bankAcceptanceFilled');
+      localStorage.removeItem('bankAcceptanceFilledTime');
+      localStorage.removeItem('sharedBankAcceptanceFilled');
+      // 清除特定实例的状态
+      localStorage.removeItem(`bankAcceptanceFilled_income-${this.form.id || 'new'}`);
+      localStorage.removeItem(`bankAcceptanceFilled_expense-${this.form.id || 'new'}`);
+      // 清除可能存在的其他相关状态
+      Object.keys(localStorage).forEach(key => {
+        if (key.startsWith('bankAcceptanceFilled_') || key.includes('BankAcceptance')) {
+          localStorage.removeItem(key);
+        }
+      });
 
-		// 确保对话框关闭时也清理状态
-		handleDialogClose() {
-			this.clearAcceptanceFillStatus();
-		},
+      // 同时清除sessionStorage中的承兑信息
+      sessionStorage.removeItem('bankAcceptanceFilled');
+      sessionStorage.removeItem('bankAcceptanceFilledTime');
+      sessionStorage.removeItem('sharedBankAcceptanceFilled');
+      // 清除特定实例的状态
+      sessionStorage.removeItem(`bankAcceptanceFilled_income-${this.form.id || 'new'}`);
+      sessionStorage.removeItem(`bankAcceptanceFilled_expense-${this.form.id || 'new'}`);
+      // 清除可能存在的其他相关状态
+      Object.keys(sessionStorage).forEach(key => {
+        if (key.startsWith('bankAcceptanceFilled_') || key.includes('BankAcceptance')) {
+          sessionStorage.removeItem(key);
+        }
+      });
+    },
 
-		// 在组件销毁时也清理状态
-		beforeDestroy() {
-			this.clearAcceptanceFillStatus();
-		}
-	}
+    // 确保对话框关闭时也清理状态
+    handleDialogClose() {
+      this.clearAcceptanceFillStatus();
+    },
+
+    // 在组件销毁时也清理状态
+    beforeDestroy() {
+      this.clearAcceptanceFillStatus();
+    }
+  }
 };
 </script>
