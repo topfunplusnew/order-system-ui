@@ -110,6 +110,10 @@ export default {
             this.bankacceptanceInfo = { ...newVal };
             this.flag = true;
           }
+        } else {
+          // 如果承兑信息为空或null，隐藏修改按钮
+          this.flag = false;
+          this.bankacceptanceInfo = null;
         }
       },
       deep: true,
