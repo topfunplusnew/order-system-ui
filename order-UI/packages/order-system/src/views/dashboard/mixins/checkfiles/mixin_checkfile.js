@@ -1,3 +1,5 @@
+import { getBankAcceptance } from '../../../../api/system/bankAcceptance';
+import { TableName } from '../../../../api/tool/enums';
 import { excludeParams } from '../../../../api/tool/exclude'; // 导入 excludeParams 方法
 import _ from 'lodash';
 /**
@@ -44,8 +46,7 @@ export var mixin_checkfile = {
 				return;
 			}
 			// 调用 onGet 方法获取文件记录
-			onGet(row.id).then(res => {
-				console.log('res', res);
+			onGet(row.id).then(async (res) => {
 				const deepData = _.cloneDeep(res.data);
 				const extingFile = (deepData?.attachmentList || []).map(item => item.id) || [];
 				const set = new Set([...value.map(item => item.id), ...extingFile]);
@@ -58,18 +59,28 @@ export var mixin_checkfile = {
 						attachmentIds: updatedFiles
 					}
 				};
+				// 去除无用的属性
 				data = excludeParams(data, this.$exclude);
+				// 如果包含这个表名 并且在表的列表中 那么需要单独处理
+				if (`metaDataTableName` in deepData && this.isTableInList(deepData.metaDataTableName)) {
+					// 对于票据的单独处理
+					if (`bankacceptanceId` in deepData && deepData.bankacceptanceId) {
+						data.params.bankacceptance = _.cloneDeep(await getBankAcceptance(deepData.bankacceptanceId)).data;
+					}
+				}
 				// 这里如果传递editReason给一个固定值 就可以进行修改
 				data.editReason = 'f871391c-0e97-43e5-89f9-a97837e57a22';
 				// 调用 onUpdate 方法更新文件记录
 				onUpdate(data).then(() => {
 					this.$message.success('操作成功！');
-					// 通知事件总线，关闭文件选择弹窗
-					// this.$bus.$emit('changeFileVisible', false);
 					// 刷新数据列表
 					this.getList();
 				});
 			});
+		},
+		isTableInList(tableName) {
+			const tableList = [TableName.PAYMENT, TableName.RECEIVE_MONEY];
+			return tableList.includes(tableName);
 		}
 	}
 };
