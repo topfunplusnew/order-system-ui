@@ -120,7 +120,13 @@
 					<el-input v-model="form.rechargeName" disabled placeholder="请输入充值人员姓名" />
 				</el-form-item>
 				<el-form-item label="充值附件" prop="attachment">
-					<UploadFilesButton ref="attachmentUpload" flag="attachment" :extra-info="{ moduleType: 'oilRecharge', formId: form.id }" @files-updated="handleAttachmentFilesUpdated" />
+					<UploadFilesButton 
+						ref="attachmentUpload" 
+						flag="attachment" 
+						:initial-attachments="(form.params && form.params.attachments) || []" 
+						:extra-info="{ moduleType: 'oilRecharge', formId: form.id }" 
+						@files-updated="handleAttachmentFilesUpdated" 
+					/>
 				</el-form-item>
 				<el-form-item label="备注" prop="comments">
 					<el-input v-model="form.comments" placeholder="请输入备注" />
@@ -384,6 +390,21 @@ export default {
 			const id = row.id || this.ids;
 			getOilRecharge(id).then(response => {
 				this.form = response.data;
+				// 确保 params 对象存在
+				if (!this.form.params) {
+					this.form.params = {};
+				}
+				// 确保 attachmentIds 是数组
+				if (!Array.isArray(this.form.params.attachmentIds)) {
+					this.form.params.attachmentIds = [];
+				}
+				// 处理附件列表
+				if (this.form.attachmentList && Array.isArray(this.form.attachmentList)) {
+					this.form.params.attachments = this.form.attachmentList;
+					this.form.params.attachmentIds = this.form.attachmentList.map(item => item.id);
+				} else {
+					this.form.params.attachments = [];
+				}
 				this.open = true;
 				this.title = '修改加油卡充值信息';
 			});

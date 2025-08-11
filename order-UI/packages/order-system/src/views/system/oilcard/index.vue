@@ -172,7 +172,14 @@
 					<el-input v-model="moneyInfo.bankNo" placeholder="请输入银行账号" @input="handleInputTrim($event, 'moneyInfo', 'bankNo')" />
 				</el-form-item>
 				<el-form-item label="附件" prop="bankName">
-					<UploadFilesButton ref="attachmentUploader" :table-name="'oilcard'" :record-id="moneyInfo.id" :attachment-type="'附件'" @files-updated="handleAttachmentFilesUpdated" />
+					<UploadFilesButton 
+						ref="attachmentUploader" 
+						:table-name="'oilcard'" 
+						:record-id="moneyInfo.id" 
+						:attachment-type="'附件'" 
+						:initial-attachments="(form.params && form.params.attachments) || []" 
+						@files-updated="handleAttachmentFilesUpdated" 
+					/>
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">

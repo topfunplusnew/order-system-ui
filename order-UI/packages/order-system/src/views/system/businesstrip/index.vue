@@ -130,7 +130,7 @@
 						</el-col>
 						<el-col :span="12">
 							<el-form-item label="附件" prop="attachmentList">
-								<UploadFilesButton flag="attachments" @filesUpdated="handleAttachmentFilesUpdated" :attachment-list="form.attachmentList || []" />
+								<UploadFilesButton flag="attachments" @files-updated="handleAttachmentFilesUpdated" :initial-attachments="form.attachmentList || []" />
 							</el-form-item>
 							<el-form-item label="备注" prop="comments">
 								<el-input v-model="form.comments" type="textarea" placeholder="请输入内容" />
@@ -696,6 +696,10 @@ export default {
 		cancel() {
 			this.open = false;
 			this.reset();
+			// 清除上传组件状态
+			if (this.$refs.attachmentUpload) {
+				this.$refs.attachmentUpload.clearUploadedFiles();
+			}
 		},
 		// 出差信息表单重置
 		reset() {
@@ -714,11 +718,18 @@ export default {
 				userId: null,
 				UserName: null,
 				updateTime: null,
-				delFlag: null
+				delFlag: null,
+				params: {
+					attachmentIds: []
+				}
 			};
 			this.tripReimbursementList = [];
 			this.carsList = [];
 			this.resetForm('form');
+			// 清除上传组件状态
+			if (this.$refs.attachmentUpload) {
+				this.$refs.attachmentUpload.clearUploadedFiles();
+			}
 		},
 		/** 搜索按钮操作 */
 		handleQuery() {

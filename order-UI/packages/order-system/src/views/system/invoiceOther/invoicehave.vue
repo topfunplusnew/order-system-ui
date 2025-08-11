@@ -298,6 +298,7 @@
 								ref="paymentReceiptsUpload"
 								flag="paymentReceipts"
 								:extra-info="{ moduleType: 'invoiceOtherHave', formId: form.id }"
+								:initial-attachments="form.paymentReceiptsList || []"
 								@files-updated="handlePaymentReceiptsUpdated"
 							/>
 						</el-form-item>
@@ -306,6 +307,7 @@
 								ref="invoiceAttachmentsUpload"
 								flag="invoiceAttachments"
 								:extra-info="{ moduleType: 'invoiceOtherHave', formId: form.id }"
+								:initial-attachments="form.invoiceAttachmentsList || []"
 								@files-updated="handleInvoiceAttachmentsUpdated"
 							/>
 						</el-form-item>
@@ -777,6 +779,23 @@ export default {
 					const id = row.id || this.ids;
 					getInvoiceOther(id).then(response => {
 						this.form = response.data;
+						// 确保 params 对象存在
+						if (!this.form.params) {
+							this.form.params = {};
+						}
+						// 确保 attachmentIds 是数组
+						if (!Array.isArray(this.form.params.attachmentIds)) {
+							this.form.params.attachmentIds = [];
+						}
+						// 处理附件列表
+						if (this.form.attachmentList && Array.isArray(this.form.attachmentList)) {
+							this.form.paymentReceiptsList = this.form.attachmentList.filter(item => item.flag === 'paymentReceipts');
+							this.form.invoiceAttachmentsList = this.form.attachmentList.filter(item => item.flag === 'invoiceAttachments');
+							this.form.params.attachmentIds = this.form.attachmentList.map(item => item.id);
+						} else {
+							this.form.paymentReceiptsList = [];
+							this.form.invoiceAttachmentsList = [];
+						}
 						this.open = true;
 						this.title = '修改商家直接给客户开发票';
 					});

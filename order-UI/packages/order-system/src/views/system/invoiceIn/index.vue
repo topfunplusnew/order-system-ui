@@ -192,6 +192,7 @@
 						ref="paymentReceiptsUpload"
 						flag="paymentReceipts"
 						:extra-info="{ moduleType: 'invoiceIn', formId: form.id }"
+						:initial-attachments="form.paymentReceiptsList || []"
 						@files-updated="handlePaymentReceiptsFilesUpdated"
 					/>
 				</el-form-item>
@@ -200,6 +201,7 @@
 						ref="invoiceAttachmentsUpload"
 						flag="invoiceAttachments"
 						:extra-info="{ moduleType: 'invoiceIn', formId: form.id }"
+						:initial-attachments="form.invoiceAttachmentsList || []"
 						@files-updated="handleInvoiceAttachmentsFilesUpdated"
 					/>
 				</el-form-item>
@@ -612,7 +614,14 @@ export default {
 				this.reset();
 				const id = row.id || this.ids;
 				getInvoiceIn(id).then(response => {
-					this.form = response.data;
+					this.form = {
+						...response.data,
+						params: {
+							...response.data.params,
+							paymentReceiptsIds: response.data.paymentReceiptsList ? response.data.paymentReceiptsList.map(item => item.id) : [],
+							invoiceAttachmentsIds: response.data.invoiceAttachmentsList ? response.data.invoiceAttachmentsList.map(item => item.id) : []
+						}
+					};
 					this.open = true;
 					this.title = '修改发票购入信息';
 				});

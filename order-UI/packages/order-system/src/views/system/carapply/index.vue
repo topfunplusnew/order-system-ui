@@ -249,8 +249,8 @@
 								<el-input v-model="form.comments" placeholder="请输入备注" />
 							</el-form-item>
 							<el-form-item label="附件" prop="attachmentList">
-								<UploadFilesButton flag="attachments" @filesUpdated="handleAttachmentFilesUpdated"
-									:attachment-list="form.attachmentList || []" />
+								<UploadFilesButton flag="attachments" @files-updated="handleAttachmentFilesUpdated"
+									:initial-attachments="form.attachmentList || []" />
 							</el-form-item>
 						</el-col>
 					</el-row>
@@ -795,6 +795,10 @@ export default {
     cancel() {
       this.open = false;
       this.reset();
+      // 清除上传组件状态
+      if (this.$refs.attachmentUpload) {
+        this.$refs.attachmentUpload.clearUploadedFiles();
+      }
     },
     // 表单重置
     reset() {
@@ -840,9 +844,16 @@ export default {
         UserName: null,
         updateTime: null,
         delFlag: null,
-        attachmentList: []
+        attachmentList: [],
+        params: {
+          attachmentIds: []
+        }
       };
       this.resetForm('form');
+      // 清除上传组件状态
+      if (this.$refs.attachmentUpload) {
+        this.$refs.attachmentUpload.clearUploadedFiles();
+      }
     },
     /** 搜索按钮操作 */
     handleQuery() {
@@ -872,17 +883,15 @@ export default {
       this.reset();
       const id = row.id || this.ids;
       getCarApply(id).then(response => {
-        this.form = response.data;
+        this.form = {
+          ...response.data,
+          params: {
+            ...response.data.params,
+            attachmentIds: response.data.attachmentList ? response.data.attachmentList.map(item => item.id) : []
+          }
+        };
         // 确保 attachmentList 是一个数组
         this.form.attachmentList = response.data.attachmentList || [];
-        // 确保 params 对象存在，用于统一附件处理
-        if (!this.form.params) {
-          this.form.params = {};
-        }
-        // 如果有现有附件，设置到 params.attachmentIds
-        if (this.form.attachmentList.length > 0) {
-          this.form.params.attachmentIds = this.form.attachmentList.map(item => item.id);
-        }
         this.oilCardConsumeList = response.data.oilCardConsumes;
         this.open = true;
         this.title = '修改车辆使用申请';

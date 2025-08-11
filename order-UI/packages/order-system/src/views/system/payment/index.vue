@@ -54,10 +54,10 @@
         <el-button v-hasPermi="['system:payment:add']" type="danger" size="mini" @click="handleAdd">新增付款信息</el-button>
       </el-col>
       <!-- <el-col :span="1.5">
-          			        <el-button type="success" size="mini" @click="handleOnce">
-          			          一键付款
-          			        </el-button>
-          			      </el-col> -->
+            			        <el-button type="success" size="mini" @click="handleOnce">
+            			          一键付款
+            			        </el-button>
+            			      </el-col> -->
       <right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
         <template #print>
           <el-col :span="1.5">
@@ -76,10 +76,10 @@
   
     <el-table id="printBox" v-loading="loading" v-horizontal-scroll="'always'" :data="computedPaymentList" size="mini"
       border :cell-style="
-          							() => {
-          								return { padding: '1.5px' };
-          							}
-          						" @selection-change="handleSelectionChange" ref="paymentTable">
+            							() => {
+            								return { padding: '1.5px' };
+            							}
+            						" @selection-change="handleSelectionChange" ref="paymentTable">
       <!--			<el-table-column type="selection" width="55" />-->
       <el-table-column label="id" align="center" prop="id" v-if="columns[0].visible" />
       <el-table-column label="日期" align="center" prop="fundsDate" width="120" v-if="columns[1].visible"
@@ -338,9 +338,9 @@
                     :query-name="queryBankAcount" query-label="户名查找" query-info="acountsName"
                     @commitBack="handleCommitBackBankAcount" @update:queryName="handleUpdateQueryBankAcount"
                     :extra-params="{
-          														companyId: form.companyId,
-          														companyType: value
-          													}">
+            														companyId: form.companyId,
+            														companyType: value
+            													}">
                     <template #table-columns>
                       <el-table-column label="账户类型" align="center" prop="acountsType" />
                       <el-table-column label="公司名称" align="center" prop="companyName" />
@@ -360,11 +360,10 @@
   
             <el-form-item label="附件" prop="attachmentIds">
               <UploadFilesButton ref="attachmentUpload" flag="attachments"
-                :extra-info="{ moduleType: 'payment', formId: form.id }"
-                :initial-attachments="form.attachmentList || []"
+                :extra-info="{ moduleType: 'payment', formId: form.id }" :initial-attachments="form.attachmentList || []"
                 @files-updated="handleAttachmentFilesUpdated" />
             </el-form-item>
-
+  
             <el-form-item label="银行卡流水编号" prop="transactionHistory">
               <el-input v-model="form.transactionHistory" placeholder="请输入银行卡流水编号" />
             </el-form-item>
@@ -373,7 +372,7 @@
                 :extra-info="{ moduleType: 'payment', formId: form.id }"
                 :initial-attachments="form.transactionHistoryAttachmentList || []"
                 @files-updated="handleTransactionHistoryFilesUpdated" />
-            </el-form-item>            <el-form-item label="备注" prop="comments">
+            </el-form-item> <el-form-item label="备注" prop="comments">
               <el-input v-model="form.comments" placeholder="请输入备注" />
             </el-form-item>
           </el-col>

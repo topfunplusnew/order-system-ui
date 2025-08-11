@@ -161,7 +161,7 @@
 					<el-input size="mini" v-model="form.goodsCompany" placeholder="请输入货物来源公司(本部或者海盛)" />
 				</el-form-item>
 				<el-form-item label="附件">
-					<UploadFilesButton ref="attachmentUploader" flag="attachmentList" :extra-info="{ moduleType: 'inventoryMain', formId: form.id }" @files-updated="handleAttachmentFilesUpdated" />
+					<UploadFilesButton ref="attachmentUploader" flag="attachmentList" :extra-info="{ moduleType: 'inventoryMain', formId: form.id }" :initial-attachments="form.attachmentList || []" @files-updated="handleAttachmentFilesUpdated" />
 				</el-form-item>
 				<br />
 				<el-form-item label="运输方式" prop="transportMode" required>
@@ -969,16 +969,13 @@ export default {
 		updateInventoryMain, // 确保已引入
 		// 附件更新处理
 		handleAttachmentFilesUpdated(uploadParams) {
-			// uploadParams 结构: { params: { attachmentIds: [1, 2, 3] } }
-			if (!this.form.params) {
-				this.$set(this.form, 'params', {});
-			}
-
-			// 直接设置 attachmentIds
 			if (uploadParams && uploadParams.params && uploadParams.params.attachmentIds) {
-				this.$set(this.form.params, 'attachmentIds', uploadParams.params.attachmentIds);
-			} else {
-				this.$set(this.form.params, 'attachmentIds', []);
+				// 确保 form.params 对象存在
+				if (!this.form.params) {
+					this.form.params = {};
+				}
+				// 直接使用上传组件返回的统一附件ID数组
+				this.form.params.attachmentIds = uploadParams.params.attachmentIds;
 			}
 		},
 		/**
@@ -1385,7 +1382,7 @@ export default {
 		cancel() {
 			// 清空附件上传组件
 			if (this.$refs.attachmentUploader) {
-				this.$refs['attachmentUploader'].clearUploadedFiles();
+				this.$refs.attachmentUploader.clearUploadedFiles();
 			}
 			this.open = false;
 			this.reset();
@@ -1430,10 +1427,17 @@ export default {
 				goodsCompany: null,
 				allLandFreight: null,
 				allSeaFreight: null,
-				transportMode: '' // 重置运输方式校验字段
+				transportMode: '', // 重置运输方式校验字段
+				params: {
+					attachmentIds: []
+				}
 			};
 			this.inventoryDetailList = [];
 			this.isEditingDetails = false; // 重置编辑状态
+			// 清空附件上传组件
+			if (this.$refs.attachmentUploader) {
+				this.$refs.attachmentUploader.clearUploadedFiles();
+			}
 			if (this.$refs.form) {
 				this.$refs.form.resetFields();
 				this.$refs.form.clearValidate();
@@ -1542,7 +1546,13 @@ export default {
 			this.reset();
 			const id = row.id || this.ids;
 			getInventoryMain(id).then(response => {
-				this.form = response.data;
+				this.form = {
+					...response.data,
+					params: {
+						...response.data.params,
+						attachmentIds: response.data.attachmentList ? response.data.attachmentList.map(item => item.id) : []
+					}
+				};
 				this.isSea = !!response.data.seaCarNo; // 使用主表信息判断
 				this.isLand = !!response.data.landCarNo; // 使用主表信息判断
 

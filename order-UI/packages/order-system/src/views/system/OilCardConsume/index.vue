@@ -185,7 +185,7 @@
 					<el-input v-model="form.endCardSurplus" placeholder="请输入加油卡余额" />
 				</el-form-item>
 				<el-form-item label="加油小票附件" prop="attachmentOiladd">
-					<UploadFilesButton ref="attachmentUpload" flag="attachmentOiladd" :extra-info="{ moduleType: 'oilCardConsume', formId: form.id }" @files-updated="handleAttachmentFilesUpdated" />
+					<UploadFilesButton ref="attachmentUpload" flag="attachmentOiladd" :extra-info="{ moduleType: 'oilCardConsume', formId: form.id }" :initial-attachments="form.attachmentList || []" @files-updated="handleAttachmentFilesUpdated" />
 				</el-form-item>
 				<el-form-item label="备注" prop="comments">
 					<el-input v-model="form.comments" placeholder="请输入备注" />
@@ -317,16 +317,13 @@ export default {
 		getOilCardConsume,
 		// 附件更新处理
 		handleAttachmentFilesUpdated(uploadParams) {
-			// uploadParams 结构: { params: { attachmentIds: [1, 2, 3] } }
-			if (!this.form.params) {
-				this.$set(this.form, 'params', {});
-			}
-
-			// 直接设置 attachmentIds
 			if (uploadParams && uploadParams.params && uploadParams.params.attachmentIds) {
-				this.$set(this.form.params, 'attachmentIds', uploadParams.params.attachmentIds);
-			} else {
-				this.$set(this.form.params, 'attachmentIds', []);
+				// 确保 form.params 对象存在
+				if (!this.form.params) {
+					this.form.params = {};
+				}
+				// 直接使用上传组件返回的统一附件ID数组
+				this.form.params.attachmentIds = uploadParams.params.attachmentIds;
 			}
 		},
 		/** 查询加油卡消费信息列表 */
@@ -342,6 +339,10 @@ export default {
 		cancel() {
 			this.open = false;
 			this.reset();
+			// 清除上传组件状态
+			if (this.$refs.attachmentUpload) {
+				this.$refs.attachmentUpload.clearUploadedFiles();
+			}
 		},
 		// 表单重置
 		reset() {
@@ -362,9 +363,16 @@ export default {
 				userId: null,
 				UserName: null,
 				updateTime: null,
-				delFlag: null
+				delFlag: null,
+				params: {
+					attachmentIds: []
+				}
 			};
 			this.resetForm('form');
+			// 清除上传组件状态
+			if (this.$refs.attachmentUpload) {
+				this.$refs.attachmentUpload.clearUploadedFiles();
+			}
 		},
 		/** 搜索按钮操作 */
 		handleQuery() {
@@ -394,7 +402,13 @@ export default {
 			this.reset();
 			const id = row.id || this.ids;
 			getOilCardConsume(id).then(response => {
-				this.form = response.data;
+				this.form = {
+					...response.data,
+					params: {
+						...response.data.params,
+						attachmentIds: response.data.attachmentList ? response.data.attachmentList.map(item => item.id) : []
+					}
+				};
 				this.open = true;
 				this.title = '修改加油卡消费信息';
 			});

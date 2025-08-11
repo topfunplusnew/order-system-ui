@@ -173,10 +173,22 @@
 					<el-input v-model="invoiceAmount" placeholder="请输入票点金额" />
 				</el-form-item>
 				<el-form-item label="银行回执附件">
-					<UploadFilesButton ref="paymentReceiptsUpload" flag="attachmentList" :extra-info="{ moduleType: 'invoiceOut', formId: form.id }" @filesUpdated="handleAttachmentFilesUpdated" />
+					<UploadFilesButton 
+						ref="paymentReceiptsUpload" 
+						flag="attachmentList" 
+						:initial-attachments="(form.params && form.params.paymentReceiptsAttachments) || []" 
+						:extra-info="{ moduleType: 'invoiceOut', formId: form.id }" 
+						@files-updated="handleAttachmentFilesUpdated" 
+					/>
 				</el-form-item>
 				<el-form-item label="发票单">
-					<UploadFilesButton ref="invoiceAttachmentsUpload" flag="attachmentList" :extra-info="{ moduleType: 'invoiceOut', formId: form.id }" @filesUpdated="handleAttachmentFilesUpdated" />
+					<UploadFilesButton 
+						ref="invoiceAttachmentsUpload" 
+						flag="attachmentList" 
+						:initial-attachments="(form.params && form.params.invoiceAttachments) || []" 
+						:extra-info="{ moduleType: 'invoiceOut', formId: form.id }" 
+						@files-updated="handleAttachmentFilesUpdated" 
+					/>
 				</el-form-item>
 				<el-form-item label="备注" prop="comments">
 					<el-input v-model="form.comments" placeholder="请输入备注" />
@@ -569,6 +581,34 @@ export default {
 				const id = row.id || this.ids;
 				getInvoiceOut(id).then(response => {
 					this.form = response.data;
+					
+					// 处理附件列表，分别提取不同类型的附件
+					if (this.form.attachmentList && Array.isArray(this.form.attachmentList)) {
+						// 分别筛选出不同类型的附件
+						const paymentReceiptsAttachments = this.form.attachmentList.filter(item => item.flag === 'attachmentList');
+						const invoiceAttachments = this.form.attachmentList.filter(item => item.flag === 'attachmentList');
+						
+						// 确保 params 对象存在
+						if (!this.form.params) {
+							this.form.params = {};
+						}
+						
+						// 设置分类的附件数据（注意：invoiceOut 使用的都是 attachmentList flag）
+						this.form.params.paymentReceiptsAttachments = paymentReceiptsAttachments;
+						this.form.params.invoiceAttachments = invoiceAttachments;
+						
+						// 设置所有附件ID
+						this.form.params.attachmentIds = this.form.attachmentList.map(item => item.id);
+					} else {
+						// 确保 params 和 attachmentIds 是数组
+						if (!this.form.params) {
+							this.form.params = {};
+						}
+						this.form.params.attachmentIds = [];
+						this.form.params.paymentReceiptsAttachments = [];
+						this.form.params.invoiceAttachments = [];
+					}
+					
 					this.open = true;
 					this.title = '修改发票卖出信息';
 				});

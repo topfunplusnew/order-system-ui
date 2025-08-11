@@ -236,17 +236,19 @@
 						<el-form-item label="银行回执附件">
 							<UploadFilesButton
 								ref="paymentReceiptsUpload"
-								flag="attachmentList"
+								flag="paymentReceipts"
 								:extra-info="{ moduleType: 'invoiceOther', formId: form.id }"
-								@filesUpdated="handleAttachmentFilesUpdated"
+								:initial-attachments="(form.params && form.params.paymentReceipts) || []"
+								@files-updated="handleAttachmentFilesUpdated"
 							/>
 						</el-form-item>
 						<el-form-item label="发票单">
 							<UploadFilesButton
 								ref="invoiceAttachmentsUpload"
-								flag="attachmentList"
+								flag="invoiceAttachments"
 								:extra-info="{ moduleType: 'invoiceOther', formId: form.id }"
-								@filesUpdated="handleAttachmentFilesUpdated"
+								:initial-attachments="(form.params && form.params.invoiceAttachments) || []"
+								@files-updated="handleAttachmentFilesUpdated"
 							/>
 						</el-form-item>
 						<el-form-item label="备注" prop="comments">
@@ -555,9 +557,14 @@ export default {
 			this.queryCompanyCustomerName = val;
 		},
 		// 统一附件更新处理
-		handleAttachmentFilesUpdated(files) {
-			if (this.form && this.form.params) {
-				this.form.params.attachmentIds = files.map(file => file.id);
+		handleAttachmentFilesUpdated(uploadParams) {
+			if (uploadParams && uploadParams.params && uploadParams.params.attachmentIds) {
+				// 确保 form.params 对象存在
+				if (!this.form.params) {
+					this.form.params = {};
+				}
+				// 直接使用上传组件返回的统一附件ID数组
+				this.form.params.attachmentIds = uploadParams.params.attachmentIds;
 			}
 		},
 		getList() {
@@ -657,7 +664,15 @@ export default {
 					this.reset();
 					const id = row.id || this.ids;
 					getInvoiceOther(id).then(response => {
-						this.form = response.data;
+						this.form = {
+							...response.data,
+							params: {
+								...response.data.params,
+								attachmentIds: response.data.attachmentList ? response.data.attachmentList.map(item => item.id) : [],
+								paymentReceipts: response.data.attachmentList ? response.data.attachmentList.filter(item => item.flag === 'paymentReceipts') : [],
+								invoiceAttachments: response.data.attachmentList ? response.data.attachmentList.filter(item => item.flag === 'invoiceAttachments') : []
+							}
+						};
 						this.open = true;
 						this.title = '修改商家直接给客户开发票';
 					});

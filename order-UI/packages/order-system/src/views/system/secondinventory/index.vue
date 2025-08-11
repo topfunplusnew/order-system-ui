@@ -106,7 +106,14 @@
 					<el-input size="mini" v-model="secondForm.goodsCompany" placeholder="请输入货物来源公司(本部或者海盛)" />
 				</el-form-item>
 				<el-form-item label="附件">
-					<UploadFilesButton ref="attachmentUploader" :table-name="'secondinventory'" :record-id="secondForm.id" :attachment-type="'附件'" @files-updated="handleAttachmentFilesUpdated" />
+					<UploadFilesButton 
+						ref="attachmentUploader" 
+						:table-name="'secondinventory'" 
+						:record-id="secondForm.id" 
+						:attachment-type="'附件'" 
+						:initial-attachments="(secondForm.params && secondForm.params.attachments) || []" 
+						@files-updated="handleAttachmentFilesUpdated" 
+					/>
 				</el-form-item>
 				<br />
 				<el-form-item label="运输方式" required>
