@@ -79,7 +79,7 @@ export var mixin_checkfile = {
 			});
 		},
 		isTableInList(tableName) {
-			const tableList = [TableName.PAYMENT, TableName.RECEIVE_MONEY];
+			const tableList = [TableName.PAYMENT, TableName.RECEIVE_MONEY, TableName.CASH_RECORD];
 			return tableList.includes(tableName);
 		}
 	}
