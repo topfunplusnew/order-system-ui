@@ -57,10 +57,10 @@
 	
 		<el-table id="printBox" v-horizontal-scroll="'always'" v-loading="loading" border :data="receiveMoneyList"
 			size="mini" :cell-style="
-																												() => {
-																													return { padding: '1.5px' };
-																												}
-																											" @selection-change="handleSelectionChange">
+																														() => {
+																															return { padding: '1.5px' };
+																														}
+																													" @selection-change="handleSelectionChange">
 			<el-table-column label="ID" align="center" prop="id" width="140" show-overflow-tooltip />
 			<el-table-column v-if="columns[0].visible" label="日期" align="center" prop="fundsDate" width="140"
 				show-overflow-tooltip />
@@ -164,8 +164,8 @@
 								<el-col :span="3">
 									<SearchOption :get-data="listBankAccount" title="银行卡信息" icon="el-icon-search"
 										:limit-info="{
-																																			acountsType: '己方公司'
-																																		}" :query-name="bankQuery" query-info="acountsName" query-label="户名查询"
+																																					acountsType: '己方公司'
+																																				}" :query-name="bankQuery" query-info="acountsName" query-label="户名查询"
 										@commitBack="handleCallBack" @update:queryName="handleCommitBackBank">
 										<template #table-columns>
 											<el-table-column label="账户类型" align="center" prop="acountsType" />
@@ -248,9 +248,9 @@
 									query-label="户名查找" query-info="acountsName" :query-name="queryCustomerBank"
 									:limit-info="{ acountsType: value }" @update:queryName="handleUpdateQueryNameCustomer"
 									@commitBack="handleCallBackCompany" :extra-params="{
-																																		companyId: form.companyId,
-																																		companyType: value
-																																	}">
+																																				companyId: form.companyId,
+																																				companyType: value
+																																			}">
 									<template #table-columns>
 										<el-table-column label="账户类型" align="center" prop="acountsType" />
 										<el-table-column label="开户名称(户名)" align="center" prop="acountsName" />
@@ -269,6 +269,7 @@
 						<el-form-item label="银行卡流水编号附件">
 							<UploadFilesButton ref="attachmentUploader" flag="transactionHistoryAttachment"
 								:extra-info="{ moduleType: 'receiveMoney', formId: form.id }"
+								:initial-attachments="form.attachmentList || []"
 								@files-updated="handleAttachmentFilesUpdated" />
 						</el-form-item>
 						<el-form-item label="备注" prop="comments">
@@ -561,6 +562,10 @@ export default {
       if (this.$refs.otherSelectedBankType) {
         this.$refs.otherSelectedBankType.localSelectType = null;
       }
+      // 清除上传组件状态
+      if (this.$refs.attachmentUploader) {
+        this.$refs.attachmentUploader.clearUploadedFiles();
+      }
     },
     // 表单重置
     reset() {
@@ -727,7 +732,7 @@ export default {
             this.open = true;
             this.title = '修改收款信息';
 
-            // 使用 $nextTick 确保组件渲染完成后再设置银行账户类型
+            // 使用 $nextTick 确保组件渲染完成后再设置银行账户类型和附件列表
             this.$nextTick(() => {
               if (!flag) {
                 if (this.$refs[`selfSelectedBankType`] && response.data.selfBankCardType) {

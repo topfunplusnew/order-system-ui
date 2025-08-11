@@ -360,19 +360,20 @@
   
             <el-form-item label="附件" prop="attachmentIds">
               <UploadFilesButton ref="attachmentUpload" flag="attachments"
-                :extra-info="{ moduleType: 'payment', formId: form.id }" @files-updated="handleAttachmentFilesUpdated" />
+                :extra-info="{ moduleType: 'payment', formId: form.id }"
+                :initial-attachments="form.attachmentList || []"
+                @files-updated="handleAttachmentFilesUpdated" />
             </el-form-item>
-  
+
             <el-form-item label="银行卡流水编号" prop="transactionHistory">
               <el-input v-model="form.transactionHistory" placeholder="请输入银行卡流水编号" />
             </el-form-item>
             <el-form-item label="银行卡流水附件" prop="attachmentIds">
               <UploadFilesButton ref="transactionHistoryUpload" flag="transactionHistoryAttachmentList"
                 :extra-info="{ moduleType: 'payment', formId: form.id }"
+                :initial-attachments="form.transactionHistoryAttachmentList || []"
                 @files-updated="handleTransactionHistoryFilesUpdated" />
-            </el-form-item>
-  
-            <el-form-item label="备注" prop="comments">
+            </el-form-item>            <el-form-item label="备注" prop="comments">
               <el-input v-model="form.comments" placeholder="请输入备注" />
             </el-form-item>
           </el-col>
@@ -751,7 +752,12 @@ export default {
     // 处理银行卡流水附件文件更新
     handleTransactionHistoryFilesUpdated(uploadParams) {
       if (uploadParams && uploadParams.params && uploadParams.params.attachmentIds) {
-        this.chooseInfo.params.attachmentIds = uploadParams.params.attachmentIds;
+        // 确保 form.params 对象存在
+        if (!this.form.params) {
+          this.form.params = {};
+        }
+        // 将银行流水附件ID设置到表单的银行流水附件字段
+        this.form.params.transactionHistoryAttachmentIds = uploadParams.params.attachmentIds;
       }
     },
     handleCommitUpload(value) {
@@ -830,6 +836,7 @@ export default {
         transactionHistory: null,
         params: {
           attachmentIds: [],
+          transactionHistoryAttachmentIds: [],
           bankacceptance: null
         }
       };
@@ -887,6 +894,7 @@ export default {
         bankacceptance: null,
         params: {
           attachmentIds: [],
+          transactionHistoryAttachmentIds: [],
           bankacceptance: null
         }
       };
@@ -935,6 +943,7 @@ export default {
         delFlag: null,
         params: {
           attachmentIds: [],
+          transactionHistoryAttachmentIds: [],
           bankacceptance: {}
         }
       };
@@ -993,6 +1002,7 @@ export default {
               params: {
                 ...response.data.params,
                 attachmentIds: response.data.attachmentList ? response.data.attachmentList.map(item => item.id) : [],
+                transactionHistoryAttachmentIds: response.data.transactionHistoryAttachmentList ? response.data.transactionHistoryAttachmentList.map(item => item.id) : [],
                 bankacceptance: response.data.params?.bankacceptance || null
               }
             };
@@ -1033,11 +1043,6 @@ export default {
                     });
                   });
                 }
-              }
-
-              // 通知上传组件当前的附件列表
-              if (this.$refs.attachmentUpload && response.data.attachmentList) {
-                this.$refs.attachmentUpload.initializeWithFiles(response.data.attachmentList);
               }
 
               // 设置级联选择器的值
