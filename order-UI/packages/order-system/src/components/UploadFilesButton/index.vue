@@ -226,16 +226,18 @@ export default {
         return;
       }
 
-      // 清空当前的文件列表和Vuex状态
+      // 清空当前组件的文件列表
       this.uploadedFiles = [];
-      this.$store.dispatch('attachments/clearAttachmentIds');
 
-      // 设置初始附件
+      // 设置初始附件到组件本地
       this.uploadedFiles = [...attachments];
       const attachmentIds = attachments.map(file => file.id).filter(id => id);
 
+      // 将初始附件ID添加到全局池（不清空，避免覆盖其他组件的ID）
       if (attachmentIds.length > 0) {
-        this.$store.dispatch('attachments/setAttachmentIds', attachmentIds);
+        attachmentIds.forEach(id => {
+          this.$store.dispatch('attachments/addAttachmentId', id);
+        });
       }
     },
 

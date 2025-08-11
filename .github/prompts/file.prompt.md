@@ -25,3 +25,4 @@ payment/index.vue 和 receiveMoney/index.vue可以作为上传文件的示例，
 我有以下要求：
 1. 你首先就需要仔细的观察payment/index.vue对于UploadFilesButton的使用，并认真参考。
 2. 你需要将这种用法应用到其他需要上传文件的地方，比如receiveMoney/index.vue，确保在表格中点击修改按钮时，能够正确传递attachmentList字段给UploadFilesButton组件。
+3. 对于多种类型的附件，并不是在表单中通过传递不同的附件数组来实现，而是将不同的文件类型的id统一放在params的attachmentIds属性上

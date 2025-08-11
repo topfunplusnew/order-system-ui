@@ -612,7 +612,7 @@ export default {
 		handleReceiptFilesUpdated(uploadParams) {
 			if (uploadParams && uploadParams.params && uploadParams.params.attachmentIds) {
 				// 存储银行回执附件ID
-				this.paymentReceiptIds = uploadParams.params.attachmentIds;
+				this.paymentReceiptIds = [...uploadParams.params.attachmentIds];
 				this.updateAllAttachmentIds();
 			}
 		},
@@ -620,7 +620,7 @@ export default {
 		handleAttachmentFilesUpdated(uploadParams) {
 			if (uploadParams && uploadParams.params && uploadParams.params.attachmentIds) {
 				// 存储发票单附件ID
-				this.invoiceAttachmentIds = uploadParams.params.attachmentIds;
+				this.invoiceAttachmentIds = [...uploadParams.params.attachmentIds];
 				this.updateAllAttachmentIds();
 			}
 		},
@@ -835,6 +835,16 @@ export default {
 		submitForm() {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
+					// 创建提交数据的副本，排除不应该提交的数据
+					const submitData = { ...this.form };
+					
+					// 移除不应该提交给后端的字段
+					delete submitData.attachmentList;
+					if (submitData.params) {
+						delete submitData.params.paymentReceiptsAttachments;
+						delete submitData.params.invoiceAttachments;
+					}
+					
 					if (this.form.id != null) {
 						// 编辑时，从sessionStorage获取修改原因
 						const editReason = sessionStorage.getItem('editReason_invoiceIn');
@@ -842,10 +852,10 @@ export default {
 							this.$message.error('修改原因丢失，请重新进入编辑');
 							return;
 						}
-						this.form.editReason = editReason;
-						this.form = excludeParams(this.form, this.$exclude);
+						submitData.editReason = editReason;
+						const finalData = excludeParams(submitData, this.$exclude);
 						updateInvoiceIn({
-							...this.form,
+							...finalData,
 							params: {
 								attachmentIds: this.form.params?.attachmentIds || []
 							}
@@ -865,9 +875,9 @@ export default {
 							});
 					} else {
 						// 新增时，不需要修改原因
-						this.form = excludeParams(this.form, this.$exclude);
+						const finalData = excludeParams(submitData, this.$exclude);
 						addInvoiceIn({
-							...this.form,
+							...finalData,
 							params: {
 								attachmentIds: this.form.params?.attachmentIds || []
 							}

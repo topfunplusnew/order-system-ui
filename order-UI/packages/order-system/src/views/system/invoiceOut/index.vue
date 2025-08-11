@@ -175,19 +175,19 @@
 				<el-form-item label="银行回执附件">
 					<UploadFilesButton 
 						ref="paymentReceiptsUpload" 
-						flag="attachmentList" 
+						flag="paymentReceipts" 
 						:initial-attachments="(form.params && form.params.paymentReceiptsAttachments) || []" 
 						:extra-info="{ moduleType: 'invoiceOut', formId: form.id }" 
-						@files-updated="handleAttachmentFilesUpdated" 
+						@files-updated="handlePaymentReceiptsFilesUpdated" 
 					/>
 				</el-form-item>
 				<el-form-item label="发票单">
 					<UploadFilesButton 
 						ref="invoiceAttachmentsUpload" 
-						flag="attachmentList" 
+						flag="invoiceAttachments" 
 						:initial-attachments="(form.params && form.params.invoiceAttachments) || []" 
 						:extra-info="{ moduleType: 'invoiceOut', formId: form.id }" 
-						@files-updated="handleAttachmentFilesUpdated" 
+						@files-updated="handleInvoiceAttachmentsFilesUpdated" 
 					/>
 				</el-form-item>
 				<el-form-item label="备注" prop="comments">
@@ -466,10 +466,41 @@ export default {
 			});
 		},
 		// 统一附件更新处理
-		handleAttachmentFilesUpdated(files) {
-			if (this.form && this.form.params) {
-				this.form.params.attachmentIds = files.map(file => file.id);
+		// 银行回执附件更新处理
+		handlePaymentReceiptsFilesUpdated(uploadParams) {
+			if (uploadParams && uploadParams.params && uploadParams.params.attachmentIds) {
+				// 确保 form.params 对象存在
+				if (!this.form.params) {
+					this.form.params = {};
+				}
+				// 存储银行回执附件ID
+				this.form.params.paymentReceiptsAttachmentIds = [...uploadParams.params.attachmentIds];
+				this.updateAllAttachmentIds();
 			}
+		},
+		// 发票单附件更新处理
+		handleInvoiceAttachmentsFilesUpdated(uploadParams) {
+			if (uploadParams && uploadParams.params && uploadParams.params.attachmentIds) {
+				// 确保 form.params 对象存在
+				if (!this.form.params) {
+					this.form.params = {};
+				}
+				// 存储发票单附件ID
+				this.form.params.invoiceAttachmentsAttachmentIds = [...uploadParams.params.attachmentIds];
+				this.updateAllAttachmentIds();
+			}
+		},
+		// 更新所有附件ID到params.attachmentIds
+		updateAllAttachmentIds() {
+			if (!this.form.params) {
+				this.form.params = {};
+			}
+			// 合并所有类型的附件ID
+			const paymentIds = this.form.params.paymentReceiptsAttachmentIds || [];
+			const invoiceIds = this.form.params.invoiceAttachmentsAttachmentIds || [];
+			const allIds = [...paymentIds, ...invoiceIds];
+			// 去重
+			this.form.params.attachmentIds = [...new Set(allIds)];
 		},
 		// 自动填充函数
 		handleUpdateCompanyName(val) {
@@ -623,22 +654,17 @@ export default {
 		submitForm() {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
-					// 获取附件上传参数
-					if (this.$refs.paymentReceiptsUpload) {
-						const paymentReceiptsParams = this.$refs.paymentReceiptsUpload.getUploadParams();
-						if (paymentReceiptsParams && paymentReceiptsParams.params) {
-							this.form.params = { ...this.form.params, ...paymentReceiptsParams.params };
-						}
-					}
-					if (this.$refs.invoiceAttachmentsUpload) {
-						const invoiceAttachmentsParams = this.$refs.invoiceAttachmentsUpload.getUploadParams();
-						if (invoiceAttachmentsParams && invoiceAttachmentsParams.params) {
-							this.form.params = { ...this.form.params, ...invoiceAttachmentsParams.params };
-						}
-					}
-
-					// 创建提交数据的副本
+					// 创建提交数据的副本，排除不应该提交的数据
 					const submitData = { ...this.form };
+					
+					// 移除不应该提交给后端的字段
+					delete submitData.attachmentList;
+					if (submitData.params) {
+						delete submitData.params.paymentReceiptsAttachments;
+						delete submitData.params.invoiceAttachments;
+						delete submitData.params.paymentReceiptsAttachmentIds;
+						delete submitData.params.invoiceAttachmentsAttachmentIds;
+					}
 
 					if (this.form.id != null) {
 						// 编辑时，从sessionStorage获取修改原因
@@ -650,7 +676,12 @@ export default {
 						submitData.editReason = editReason;
 						
 						const finalData = excludeParams(submitData, this.$exclude);
-						updateInvoiceOut(finalData).then(() => {
+						updateInvoiceOut({
+							...finalData,
+							params: {
+								attachmentIds: this.form.params?.attachmentIds || []
+							}
+						}).then(() => {
 							this.$modal.msgSuccess('修改成功');
 							this.open = false;
 							// 清空sessionStorage中的修改原因
@@ -669,7 +700,12 @@ export default {
 					} else {
 						// 新增时，不需要修改原因
 						const finalData = excludeParams(submitData, this.$exclude);
-						addInvoiceOut(finalData).then(() => {
+						addInvoiceOut({
+							...finalData,
+							params: {
+								attachmentIds: this.form.params?.attachmentIds || []
+							}
+						}).then(() => {
 							this.$modal.msgSuccess('新增成功');
 							this.open = false;
 							// 清理 UploadFilesButton 状态
