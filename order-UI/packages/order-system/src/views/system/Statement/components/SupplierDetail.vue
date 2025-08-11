@@ -209,7 +209,7 @@ export default {
 				// 第三方发票
 				[TableName.INVOICE_OTHER]: INVOICE_ORTHER,
 				// 冲抵货款
-				[TableName.OFFSETTING]: OFFSETTING,
+				[TableName.CASH_RECORD]: OFFSETTING,
 				// 返利
 				[TableName.REBATE]: REBATE,
 				// 货款

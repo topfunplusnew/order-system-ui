@@ -394,7 +394,7 @@ export default {
 				[TableName.INVOICE_IN]: INVOICE_IN,
 				[TableName.INVOICE_OUT]: INVOICE_OUT,
 				[TableName.INVOICE_OTHER]: INVOICE_ORTHER,
-				[TableName.OFFSETTING]: OFFSETTING,
+				[TableName.CASH_RECORD]: OFFSETTING,
 				[TableName.REBATE]: REBATE,
 				[TableName.INVENTORMAIN]: INVENTORY,
 				// 需要前端在这两个明细表上进行适配bankacceptance

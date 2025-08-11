@@ -68,7 +68,7 @@ export function getFunction(tableName) {
 		case TableName.INVOICE_OTHER:
 			return getInvoiceOther;
 		// 冲抵货款 后来改为cash record
-		case TableName.OFFSETTING:
+		case TableName.CASH_RECORD:
 			return getRecord;
 		// 返利信息
 		case TableName.REBATE:

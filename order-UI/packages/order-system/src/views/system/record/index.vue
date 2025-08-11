@@ -1317,7 +1317,7 @@ export default {
     // 处理冲抵货款逻辑
     handleOffsetting(originalAttachmentIds, dataToAdd = null) {
       const formData = dataToAdd || this.form;
-      formData.referenceTableName = TableName.OFFSETTING;
+      formData.referenceTableName = TableName.CASH_RECORD;
       formData.referenceTableId = -1;
       addRecord(formData)
         .then(() => {

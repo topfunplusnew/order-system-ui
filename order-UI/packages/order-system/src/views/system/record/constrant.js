@@ -8,7 +8,7 @@ import { TableName } from '../../../api/tool/enums';
  * @reference cash_record:referenceTableName
  */
 export var CASH_TYPE = {
-	OFF_SETTING: TableName.OFFSETTING,
+	OFF_SETTING: TableName.CASH_RECORD,
 	INVOICE_OTHER: TableName.INVOICE_OTHER,
 	TRANSFER: 'transfer'
 };
