@@ -90,10 +90,17 @@ export var common_dialog = {
 
 			// 监听 confirm 事件
 			instance.$on('confirm', callback => {
-				Promise.resolve(callback(this)).finally(() => {
-					this._reallyCloseDialog(config.id);
-					this.getList && this.getList();
-				});
+				Promise.resolve(callback(this))
+					.then(() => {
+						// 只有在成功时才关闭弹窗和刷新列表
+						this._reallyCloseDialog(config.id);
+						this.getList && this.getList();
+					})
+					.catch((error) => {
+						// 失败时不关闭弹窗，只记录错误
+						console.error('弹窗确认操作失败:', error);
+						// 可以在这里添加全局错误处理逻辑
+					});
 			});
 		},
 		_closeDialog(configId) {
