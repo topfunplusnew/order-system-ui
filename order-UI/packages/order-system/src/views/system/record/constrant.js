@@ -3,12 +3,12 @@ import { TableName } from '../../../api/tool/enums';
 
 /**
  * 冲抵款类型
- * @type {{OFF_SETTING: string, INVOICE_OTHER: string, TRANSFER: string}}
+ * @type {{CASH_RECORD: string, INVOICE_OTHER: string, TRANSFER: string}}
  * @description 冲抵款类型
  * @reference cash_record:referenceTableName
  */
 export var CASH_TYPE = {
-	OFF_SETTING: TableName.CASH_RECORD,
+	CASH_RECORD: TableName.CASH_RECORD,
 	INVOICE_OTHER: TableName.INVOICE_OTHER,
 	TRANSFER: 'transfer'
 };

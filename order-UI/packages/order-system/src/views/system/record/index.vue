@@ -50,10 +50,10 @@
   
     <el-table id="printBox" v-loading="loading" v-horizontal-scroll="'always'" :data="recordList" size="mini" border
       :cell-style="
-      										() => {
-      											return { padding: '1.5px' };
-      										}
-      									" @selection-change="handleSelectionChange">
+              										() => {
+              											return { padding: '1.5px' };
+              										}
+              									" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
   
       <el-table-column v-if="columns[0].visible" label="id" align="center" prop="id" />
@@ -148,8 +148,9 @@
         <!--        目前支持两种类型 一种是冲抵货款 一种是冲抵第三方开票-->
         <el-form-item label="冲抵类型">
           <el-row>
-            <el-radio v-model="cashType" label="offsetting">冲抵货款</el-radio>
-            <el-radio v-model="cashType" label="transfer">内部转账</el-radio>
+            <!-- 2025-08-14 CASH_RECORD是指的冲抵货款，而不再是offsetting -->
+            <el-radio v-model="cashType" :label="CASH_TYPE.CASH_RECORD">冲抵货款</el-radio>
+            <el-radio v-model="cashType" :label="CASH_TYPE.TRANSFER">内部转账</el-radio>
           </el-row>
         </el-form-item>
         <el-divider v-if="CASH_TYPE.TRANSFER === cashType">
@@ -177,12 +178,12 @@
             <el-col :span="4">
               <SearchOption :get-data="listBankAccount" :limit-info="{ acountsType: PUBLIC_DICT_TYPE.SELF_COMPANY }"
                 query-info="acountsName" :query-name="querySourceBankNo" query-label="户名" @commitBack="
-      															value => {
-      																form.sourceBankNo = value.bankNo;
-      																sourceName = value.acountsName;
-      																form.sourceId = value.id;
-      															}
-      														" @update:queryName="value => (querySourceBankNo = value)">
+              															value => {
+              																form.sourceBankNo = value.bankNo;
+              																sourceName = value.acountsName;
+              																form.sourceId = value.id;
+              															}
+              														" @update:queryName="value => (querySourceBankNo = value)">
                 <template #table-columns>
                   <el-table-column label="账户类型" align="center" prop="acountsType" width="200" />
                   <el-table-column label="己方公司" align="center" prop="displayName" />
@@ -198,7 +199,7 @@
         </el-form-item>
   
         <!--        如果是冲抵货款 还需要选择一个公司 -->
-        <el-row v-if="cashType === CASH_TYPE.OFF_SETTING" :gutter="20">
+        <el-row v-if="cashType === CASH_TYPE.CASH_RECORD" :gutter="20">
           <!-- 左侧：支出方信息 -->
           <el-col :span="12">
             <el-divider>
@@ -241,8 +242,8 @@
                 <!--              如果是己方公司-->
                 <el-col v-else-if="form.sourceCompanyType === '己方公司'" :span="8">
                   <SearchOption :limit-info="{
-      																	acountsType: form.sourceCompanyType
-      																}" :get-data="listBankAccount" query-info="acountsName" query-label="户名查找"
+              																	acountsType: form.sourceCompanyType
+              																}" :get-data="listBankAccount" query-info="acountsName" query-label="户名查找"
                     :query-name="querySourceSelfAccount" @update:queryName="handleUpdateSourceSelfAccount"
                     @commitBack="handleCommitBackSourceSelfAccount">
                     <template #table-columns>
@@ -258,8 +259,8 @@
                 <!--            其他-->
                 <el-col v-else :span="8">
                   <SearchOption :limit-info="{
-      																	companyType: form.sourceCompanyType
-      																}" :get-data="listCompany" query-info="companyName" query-label="公司名称"
+              																	companyType: form.sourceCompanyType
+              																}" :get-data="listCompany" query-info="companyName" query-label="公司名称"
                     :query-name="querySourceCompanyName" @update:queryName="handleUpdateSourceCompanyName"
                     @commitBack="handleCommitBackSourceCompany">
                     <template #table-columns>
@@ -283,9 +284,9 @@
                 </el-col>
                 <el-col :span="8">
                   <SearchOption :limit-info="{
-      																	acountsType: form.sourceCompanyType,
-      																	acountsName: sourceName
-      																}" :get-data="listBankAccount" query-info="acountsName" query-label="户名查找"
+              																	acountsType: form.sourceCompanyType,
+              																	acountsName: sourceName
+              																}" :get-data="listBankAccount" query-info="acountsName" query-label="户名查找"
                     :query-name="querySourceBankAccount" @update:queryName="handleUpdateQuerySourceBankAccount"
                     @commitBack="handleCommitBackSourceBankAccount">
                     <template #table-columns>
@@ -354,8 +355,8 @@
                 <!--              如果是己方公司 -->
                 <el-col v-if="form.targetCompanyType === PUBLIC_DICT_TYPE.SELF_COMPANY" :span="8">
                   <SearchOption :limit-info="{
-      																	acountsType: form.targetCompanyType
-      																}" :get-data="listBankAccount" query-info="acountsName" query-label="户名查找"
+              																	acountsType: form.targetCompanyType
+              																}" :get-data="listBankAccount" query-info="acountsName" query-label="户名查找"
                     :query-name="queryTargetSelfAccount" @update:queryName="handleUpdateTargetSelfAccount"
                     @commitBack="handleCommitBackTargetSelfAccount">
                     <template #table-columns>
@@ -371,8 +372,8 @@
                 <!--              如果是其他-->
                 <el-col v-if="form.targetCompanyType !== '司机' && form.targetCompanyType !== '己方公司'" :span="8">
                   <SearchOption :limit-info="{
-      																	companyType: form.targetCompanyType
-      																}" :get-data="listCompany" query-info="companyName" query-label="公司名称"
+              																	companyType: form.targetCompanyType
+              																}" :get-data="listCompany" query-info="companyName" query-label="公司名称"
                     :query-name="queryTargetCompanyName" @update:queryName="handleUpdateTargetCompanyName"
                     @commitBack="handleCommitBackTargetCompany">
                     <template #table-columns>
@@ -396,9 +397,9 @@
                 </el-col>
                 <el-col :span="8">
                   <SearchOption :limit-info="{
-      																	acountsType: form.targetCompanyType,
-      																	acountsName: targetName
-      																}" :get-data="listBankAccount" query-info="acountsName" query-label="户名查找"
+              																	acountsType: form.targetCompanyType,
+              																	acountsName: targetName
+              																}" :get-data="listBankAccount" query-info="acountsName" query-label="户名查找"
                     :query-name="queryTargetBankAccount" @update:queryName="handleUpdateQueryTargetBankAccount"
                     @commitBack="handleCommitBackTargetBankAccount">
                     <template #table-columns>
@@ -441,7 +442,7 @@
               <el-col :span="14">
                 <el-input disabled v-model="sourceName" placeholder="请选择" />
               </el-col>
-              <template v-if="cashType === CASH_TYPE.OFF_SETTING">
+              <template v-if="cashType === CASH_TYPE.CASH_RECORD">
                 <el-col :span="3">
                   <SearchOption :get-data="listBankAccount" :limit-info="{ acountsType: PUBLIC_DICT_TYPE.SELF_COMPANY }"
                     query-info="acountsName" :query-name="querySupplier" query-label="户名"
@@ -486,12 +487,12 @@
             <el-col :span="4">
               <SearchOption :get-data="listBankAccount" :limit-info="{ acountsType: PUBLIC_DICT_TYPE.SELF_COMPANY }"
                 query-info="acountsName" :query-name="querySourceBankNo" query-label="户名" @commitBack="
-      															value => {
-      																form.targetBankNo = value.bankNo;
-      																targetName = value.acountsName;
-      																form.targetId = value.id;
-      															}
-      														" @update:queryName="value => (querySourceBankNo = value)">
+              															value => {
+              																form.targetBankNo = value.bankNo;
+              																targetName = value.acountsName;
+              																form.targetId = value.id;
+              															}
+              														" @update:queryName="value => (querySourceBankNo = value)">
                 <template #table-columns>
                   <el-table-column label="账户类型" align="center" prop="acountsType" width="200" />
                   <el-table-column label="己方公司" align="center" prop="displayName" />
@@ -519,7 +520,7 @@
               <el-col :span="14">
                 <el-input disabled v-model="targetName" placeholder="请选择" />
               </el-col>
-              <template v-if="cashType === CASH_TYPE.OFF_SETTING">
+              <template v-if="cashType === CASH_TYPE.CASH_RECORD">
                 <el-col :span="3">
                   <SearchOption :get-data="listBankAccount" :limit-info="{ acountsType: PUBLIC_DICT_TYPE.SELF_COMPANY }"
                     query-info="acountsName" :query-name="queryCustomer" query-label="户名"
@@ -756,7 +757,7 @@ export default {
       },
 
       // 冲抵类型 默认为冲抵货款
-      cashType: CASH_TYPE.OFF_SETTING,
+      cashType: CASH_TYPE.CASH_RECORD,
 
       // 新增的字段
       querySourceBankNo: null,
@@ -806,7 +807,7 @@ export default {
      */
     target() {
       // 如果是冲抵货款 那么就是用货款来去冲抵金额
-      if (this.cashType === CASH_TYPE.OFF_SETTING) {
+      if (this.cashType === CASH_TYPE.CASH_RECORD) {
         return '支出方金额';
       }
       if (this.cashType === CASH_TYPE.TRANSFER) {
@@ -820,7 +821,7 @@ export default {
      * 内部转账的时候显示转账账号 并且要显示填充搜索按钮
      */
     source() {
-      if (this.cashType === CASH_TYPE.OFF_SETTING) {
+      if (this.cashType === CASH_TYPE.CASH_RECORD) {
         return '收入方金额';
       }
       if (this.cashType === CASH_TYPE.TRANSFER) {
@@ -1150,7 +1151,7 @@ export default {
         this.cashType = data.referenceTableName;
 
         // 根据冲抵类型处理支付类型
-        if (this.cashType === CASH_TYPE.OFF_SETTING) {
+        if (this.cashType === CASH_TYPE.CASH_RECORD) {
           // 冲抵货款：将字符串转换为数组（用于级联选择器）
           if (this.form.sourcePaymentType && typeof this.form.sourcePaymentType === 'string') {
             this.form.sourcePaymentType = this.form.sourcePaymentType.split('-');
@@ -1176,7 +1177,7 @@ export default {
           this.form.remarks = data.remarks;
 
           // 根据冲抵类型填充特定字段
-          if (this.cashType === CASH_TYPE.OFF_SETTING) {
+          if (this.cashType === CASH_TYPE.CASH_RECORD) {
             // 如果是冲抵货款
             this.form.targetCompanyType = data.targetCompanyType;
             this.form.sourceCompanyType = data.sourceCompanyType;
@@ -1317,7 +1318,7 @@ export default {
     // 新增记录
     addRecordInfo(originalAttachmentIds, submitData = null) {
       const dataToAdd = submitData || this.form;
-      if (this.cashType === CASH_TYPE.OFF_SETTING) {
+      if (this.cashType === CASH_TYPE.CASH_RECORD) {
         this.handleOffsetting(originalAttachmentIds, dataToAdd);
       } else {
         this.handleTransfer(originalAttachmentIds, dataToAdd);
