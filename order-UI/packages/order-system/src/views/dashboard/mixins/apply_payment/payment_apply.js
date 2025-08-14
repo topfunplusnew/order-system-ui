@@ -71,47 +71,6 @@ export var mixin_payment_apply = {
 					});
 				}
 			}
-		},
-		// 填充银行卡数据
-		fillBankInfo() {
-			// 如果传入的不是空数据
-			if (JSON.stringify(this.needInfo) !== '{}') {
-				this.fillFreightInfo();
-				// 如果有银行卡信息自动填充 这里是通过三方确定 银行卡 银行账户名 开户行
-				const search = {
-					bankNo: this.needInfo.bankNo,
-					bankName: this.needInfo.bankName,
-					acountsName: this.needInfo.acountsName
-				};
-				// 查询银行卡信息
-				listBankAccount(search).then(res => {
-					// 如果没有查到银行卡信息 那么就提示
-					if (res.rows.length === 0) {
-						// 如果是弹窗的付款申请
-						if (this.isOtherButtonDisabled) {
-							this.$notification['error']({
-								message: '未找到对应的银行卡信息',
-								description: '该付款申请信息中的银行卡信息不存在,可能被删除或填写错误!',
-								onClick: () => {
-									console.log('Notification Clicked!');
-								}
-							});
-						}
-					} else {
-						this.form.otherAcountsName = res.rows[0].acountsName;
-						this.form.otherBankNo = res.rows[0].bankNo;
-						this.form.otherBankName = res.rows[0].bankName;
-					}
-				});
-			}
-		},
-		// 填充金额
-		fillMoney() {
-			// 如果传入的必须自动填充的金额大于等于0 则自动填充 且无法修改
-			if (this.needMoney >= 0) {
-				this.form.moneyAmount = this.needMoney;
-				this.inputDisabled = true;
-			}
 		}
 	}
 };

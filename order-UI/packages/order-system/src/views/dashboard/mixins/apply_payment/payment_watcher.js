@@ -42,58 +42,21 @@ export var mixin_payment_watcher = {
 		}
 	},
 	watch: {
-		// 监听银行卡的变化 如果传入的银行卡信息有变化 就自动填充
-		'needInfo.bankNo': {
+		'needInfo.companyName': {
 			handler(val) {
-				if (!this.isPayment) {
-					// 如果传入的银行卡是空的就直接返回
-					if (val === undefined) {
-						if (this.isOtherButtonDisabled) {
-							this.$notification.open({
-								message: '未找到对应的银行卡信息',
-								description: '该付款申请信息中的银行卡信息不存在,可能被删除或填写错误!',
-								onClick: () => {
-									console.log('Notification Clicked!');
-								}
-							});
-						}
-						return;
-					}
-					// 否则去查询银行卡数据
-					const search = {
-						bankNo: this.needInfo.bankNo,
-						bankName: this.needInfo.bankName,
-						acountsName: this.needInfo.acountsName
-					};
-					listBankAccount(search).then(res => {
-						// 如果没有查到 那么就提示 并且清空数据
-						if (res.rows.length === 0) {
-							this.$notification['error']({
-								message: '未找到对应的银行卡信息',
-								description: '该付款申请信息中的银行卡信息不存在,可能被删除或填写错误!',
-								onClick: () => {
-									console.log('Notification Clicked!');
-								}
-							});
-							this.form.otherAcountsName = '';
-							this.form.otherBankNo = '';
-							this.form.otherBankName = '';
-						} else {
-							this.form.otherAcountsName = res.rows[0].acountsName;
-							this.form.otherBankNo = res.rows[0].bankNo;
-							this.form.otherBankName = res.rows[0].bankName;
-						}
-					});
-				}
+				this.form.companyName = val;
 			},
 			deep: true,
 			immediate: true
 		},
-		// 检测整个对象
+		// 检测整个needInfo对象，统一处理银行卡信息填充
 		needInfo: {
-			handler(val) {
+			handler() {
 				if (JSON.stringify(this.needInfo) !== '{}') {
+					// 先填充运费信息
 					this.fillFreightInfo();
+					// 然后处理银行卡信息，避免重复触发
+					this.handleBankAccountInfo();
 				} else {
 					this.loadForm();
 				}
@@ -103,7 +66,7 @@ export var mixin_payment_watcher = {
 		},
 		// 监听传入的金额
 		needMoney: {
-			handler(val) {
+			handler() {
 				// 自动填充除了钱之外的信息
 				this.loadForm();
 				// 如果传入的必须自动填充的金额大于0 则自动填充 且无法修改
@@ -140,7 +103,6 @@ export var mixin_payment_watcher = {
 		// 监听额外信息
 		extraInformation: {
 			handler(val) {
-				console.log('extraInformation', val);
 				// 监听是否是付款 如果是 那么表单中某些字段要展示
 				if (val.__isPayment) {
 					this.isPayment = val.__isPayment;
@@ -162,5 +124,45 @@ export var mixin_payment_watcher = {
 			immediate: true
 		}
 	},
-	methods: {}
+	methods: {
+		// 处理银行卡信息填充，避免重复调用
+		handleBankAccountInfo() {
+			// 只有在非付款状态且有银行卡号时才查询
+			if (!this.isPayment && this.needInfo.bankNo) {
+				const search = {
+					bankNo: this.needInfo.bankNo,
+					companyName: this.needInfo.companyName,
+					companyId: this.needInfo.companyId
+				};
+				listBankAccount(search).then(res => {
+					// 如果没有查到 那么就提示 并且清空数据
+					if (res.rows.length === 0) {
+						Object.assign(this.form, {
+							otherAcountsName: '',
+							otherBankNo: '',
+							otherBankName: '',
+							selfAcountsName: '',
+							selfBankNo: '',
+							selfBankName: '',
+						});
+					} else {
+						// 如果是己方的银行卡 填充己方银行卡信息
+						if (this.needInfo.companyId === 0) {
+							Object.assign(this.form, {
+								selfAcountsName: res.rows[0].acountsName,
+								selfBankNo: res.rows[0].bankNo,
+								selfBankName: res.rows[0].bankName
+							});
+						} else {
+							Object.assign(this.form, {
+								otherAcountsName: res.rows[0].acountsName,
+								otherBankNo: res.rows[0].bankNo,
+								otherBankName: res.rows[0].bankName
+							});
+						}
+					}
+				});
+			}
+		}
+	}
 };
