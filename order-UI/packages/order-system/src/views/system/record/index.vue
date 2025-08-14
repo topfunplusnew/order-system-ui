@@ -50,10 +50,10 @@
   
     <el-table id="printBox" v-loading="loading" v-horizontal-scroll="'always'" :data="recordList" size="mini" border
       :cell-style="
-  										() => {
-  											return { padding: '1.5px' };
-  										}
-  									" @selection-change="handleSelectionChange">
+      										() => {
+      											return { padding: '1.5px' };
+      										}
+      									" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
   
       <el-table-column v-if="columns[0].visible" label="id" align="center" prop="id" />
@@ -177,12 +177,12 @@
             <el-col :span="4">
               <SearchOption :get-data="listBankAccount" :limit-info="{ acountsType: PUBLIC_DICT_TYPE.SELF_COMPANY }"
                 query-info="acountsName" :query-name="querySourceBankNo" query-label="户名" @commitBack="
-  															value => {
-  																form.sourceBankNo = value.bankNo;
-  																sourceName = value.acountsName;
-  																form.sourceId = value.id;
-  															}
-  														" @update:queryName="value => (querySourceBankNo = value)">
+      															value => {
+      																form.sourceBankNo = value.bankNo;
+      																sourceName = value.acountsName;
+      																form.sourceId = value.id;
+      															}
+      														" @update:queryName="value => (querySourceBankNo = value)">
                 <template #table-columns>
                   <el-table-column label="账户类型" align="center" prop="acountsType" width="200" />
                   <el-table-column label="己方公司" align="center" prop="displayName" />
@@ -241,8 +241,8 @@
                 <!--              如果是己方公司-->
                 <el-col v-else-if="form.sourceCompanyType === '己方公司'" :span="8">
                   <SearchOption :limit-info="{
-  																	acountsType: form.sourceCompanyType
-  																}" :get-data="listBankAccount" query-info="acountsName" query-label="户名查找"
+      																	acountsType: form.sourceCompanyType
+      																}" :get-data="listBankAccount" query-info="acountsName" query-label="户名查找"
                     :query-name="querySourceSelfAccount" @update:queryName="handleUpdateSourceSelfAccount"
                     @commitBack="handleCommitBackSourceSelfAccount">
                     <template #table-columns>
@@ -258,8 +258,8 @@
                 <!--            其他-->
                 <el-col v-else :span="8">
                   <SearchOption :limit-info="{
-  																	companyType: form.sourceCompanyType
-  																}" :get-data="listCompany" query-info="companyName" query-label="公司名称"
+      																	companyType: form.sourceCompanyType
+      																}" :get-data="listCompany" query-info="companyName" query-label="公司名称"
                     :query-name="querySourceCompanyName" @update:queryName="handleUpdateSourceCompanyName"
                     @commitBack="handleCommitBackSourceCompany">
                     <template #table-columns>
@@ -283,9 +283,9 @@
                 </el-col>
                 <el-col :span="8">
                   <SearchOption :limit-info="{
-  																	acountsType: form.sourceCompanyType,
-  																	acountsName: sourceName
-  																}" :get-data="listBankAccount" query-info="acountsName" query-label="户名查找"
+      																	acountsType: form.sourceCompanyType,
+      																	acountsName: sourceName
+      																}" :get-data="listBankAccount" query-info="acountsName" query-label="户名查找"
                     :query-name="querySourceBankAccount" @update:queryName="handleUpdateQuerySourceBankAccount"
                     @commitBack="handleCommitBackSourceBankAccount">
                     <template #table-columns>
@@ -354,8 +354,8 @@
                 <!--              如果是己方公司 -->
                 <el-col v-if="form.targetCompanyType === PUBLIC_DICT_TYPE.SELF_COMPANY" :span="8">
                   <SearchOption :limit-info="{
-  																	acountsType: form.targetCompanyType
-  																}" :get-data="listBankAccount" query-info="acountsName" query-label="户名查找"
+      																	acountsType: form.targetCompanyType
+      																}" :get-data="listBankAccount" query-info="acountsName" query-label="户名查找"
                     :query-name="queryTargetSelfAccount" @update:queryName="handleUpdateTargetSelfAccount"
                     @commitBack="handleCommitBackTargetSelfAccount">
                     <template #table-columns>
@@ -371,8 +371,8 @@
                 <!--              如果是其他-->
                 <el-col v-if="form.targetCompanyType !== '司机' && form.targetCompanyType !== '己方公司'" :span="8">
                   <SearchOption :limit-info="{
-  																	companyType: form.targetCompanyType
-  																}" :get-data="listCompany" query-info="companyName" query-label="公司名称"
+      																	companyType: form.targetCompanyType
+      																}" :get-data="listCompany" query-info="companyName" query-label="公司名称"
                     :query-name="queryTargetCompanyName" @update:queryName="handleUpdateTargetCompanyName"
                     @commitBack="handleCommitBackTargetCompany">
                     <template #table-columns>
@@ -396,9 +396,9 @@
                 </el-col>
                 <el-col :span="8">
                   <SearchOption :limit-info="{
-  																	acountsType: form.targetCompanyType,
-  																	acountsName: targetName
-  																}" :get-data="listBankAccount" query-info="acountsName" query-label="户名查找"
+      																	acountsType: form.targetCompanyType,
+      																	acountsName: targetName
+      																}" :get-data="listBankAccount" query-info="acountsName" query-label="户名查找"
                     :query-name="queryTargetBankAccount" @update:queryName="handleUpdateQueryTargetBankAccount"
                     @commitBack="handleCommitBackTargetBankAccount">
                     <template #table-columns>
@@ -486,12 +486,12 @@
             <el-col :span="4">
               <SearchOption :get-data="listBankAccount" :limit-info="{ acountsType: PUBLIC_DICT_TYPE.SELF_COMPANY }"
                 query-info="acountsName" :query-name="querySourceBankNo" query-label="户名" @commitBack="
-  															value => {
-  																form.targetBankNo = value.bankNo;
-  																targetName = value.acountsName;
-  																form.targetId = value.id;
-  															}
-  														" @update:queryName="value => (querySourceBankNo = value)">
+      															value => {
+      																form.targetBankNo = value.bankNo;
+      																targetName = value.acountsName;
+      																form.targetId = value.id;
+      															}
+      														" @update:queryName="value => (querySourceBankNo = value)">
                 <template #table-columns>
                   <el-table-column label="账户类型" align="center" prop="acountsType" width="200" />
                   <el-table-column label="己方公司" align="center" prop="displayName" />
@@ -554,13 +554,9 @@
           </el-row>
         </el-form-item>
         <el-form-item label="附件" prop="attachment">
-          <UploadFilesButton 
-            ref="attachmentUpload" 
-            flag="attachment"
-            :initial-attachments="(form.params && form.params.attachments) || []" 
-            :extra-info="{ moduleType: 'record', formId: form.id }"
-            @files-updated="handleAttachmentFilesUpdated" 
-          />
+          <UploadFilesButton ref="attachmentUpload" flag="attachment"
+            :initial-attachments="(form.params && form.params.attachments) || []"
+            :extra-info="{ moduleType: 'record', formId: form.id }" @files-updated="handleAttachmentFilesUpdated" />
         </el-form-item>
         <el-form-item label="交易时间" prop="transactionTime">
           <el-date-picker v-model="form.transactionTime" clearable type="datetime" value-format="yyyy-MM-dd HH:mm:ss"
@@ -1050,7 +1046,7 @@ export default {
         targetCompanyType: '客户',
         // 收入方与支付方的银行卡账户类型
         selfBankCardType: null,
-        otherBankType: null,
+        otherBankCardType: null,
         // 2025-2-28 新增转账账户
         sourceBankNo: null,
         // 支出方额外字段 - 用于冲抵货款时的支付详细信息
@@ -1195,6 +1191,10 @@ export default {
             this.$refs.selfSelectBankType.localSelectType = data.selfBankCardType;
             this.$refs.otherSelectBankType.localSelectType = data.otherBankCardType;
 
+            // 同步银行账户类型到form对象
+            this.form.selfBankCardType = data.selfBankCardType;
+            this.form.otherBankCardType = data.otherBankCardType;
+
             // 处理承兑信息
             if (data.bankacceptanceId) {
               getBankAcceptance(data.bankacceptanceId).then(result => {
@@ -1254,6 +1254,14 @@ export default {
         // 处理支出方支付类型 - 将数组转换为以短横线分隔的字符串
         if (this.form.targetPaymentType && Array.isArray(this.form.targetPaymentType)) {
           this.form.targetPaymentType = this.form.targetPaymentType.join('-');
+        }
+
+        // 确保银行账户类型从组件同步到form对象
+        if (this.$refs.selfSelectBankType && this.$refs.selfSelectBankType.localSelectType !== null) {
+          this.form.selfBankCardType = this.$refs.selfSelectBankType.localSelectType;
+        }
+        if (this.$refs.otherSelectBankType && this.$refs.otherSelectBankType.localSelectType !== null) {
+          this.form.otherBankCardType = this.$refs.otherSelectBankType.localSelectType;
         }
 
         // 提取公共逻辑
@@ -1339,8 +1347,15 @@ export default {
     // 处理内部转账逻辑
     handleTransfer(originalAttachmentIds, dataToAdd = null) {
       const formData = dataToAdd || this.form;
-      const selfType = this.$refs.selfSelectBankType.localSelectType;
-      const otherType = this.$refs.otherSelectBankType.localSelectType;
+
+      // 确保从组件获取最新的银行账户类型
+      const selfType = this.$refs.selfSelectBankType?.localSelectType || formData.selfBankCardType;
+      const otherType = this.$refs.otherSelectBankType?.localSelectType || formData.otherBankCardType;
+
+      // 更新formData中的银行账户类型
+      formData.selfBankCardType = selfType;
+      formData.otherBankCardType = otherType;
+
       if (selfType !== otherType) {
         // 确保 bankacceptance 对象存在
         if (!formData.params.bankacceptance) {
