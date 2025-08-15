@@ -596,41 +596,60 @@ export default {
 		},
 
 		handleUpdate(row) {
-			this.$prompt('请输入修改原因', '提示', {
-				confirmButtonText: '确定',
-				cancelButtonText: '取消',
-				inputType: 'textarea',
-				inputPlaceholder: '请输入修改原因',
-				inputValidator: (value) => {
-					if (!value || value.trim() === '') {
-						return '修改原因不能为空';
-					}
-					return true;
-				}
-			}).then(({ value }) => {
-				// 将修改原因存储到sessionStorage
-				sessionStorage.setItem('editReason_invoiceIn_main', value);
+			// 先获取发票购入详情，判断是否需要填写修改原因
+			const id = row.id || this.ids;
+			getInvoiceIn(id).then(response => {
+				const invoiceInData = response.data;
 				
-				this.reset();
-				const id = row.id || this.ids;
-				getInvoiceIn(id).then(response => {
-					this.form = {
-						...response.data,
-						params: {
-							...response.data.params,
-							paymentReceiptsIds: response.data.paymentReceiptsList ? response.data.paymentReceiptsList.map(item => item.id) : [],
-							invoiceAttachmentsIds: response.data.invoiceAttachmentsList ? response.data.invoiceAttachmentsList.map(item => item.id) : []
+				// 判断是否需要填写修改原因
+				if (invoiceInData && invoiceInData.shouldTrackEditReason === true) {
+					// 需要填写修改原因
+					this.$prompt('请输入修改原因', '提示', {
+						confirmButtonText: '确定',
+						cancelButtonText: '取消',
+						inputType: 'textarea',
+						inputPlaceholder: '请输入修改原因',
+						inputValidator: (value) => {
+							if (!value || value.trim() === '') {
+								return '修改原因不能为空';
+							}
+							return true;
 						}
-					};
-					this.open = true;
-					this.title = '修改发票购入信息';
-				});
-			}).catch(() => {
-				this.$message({
-					type: 'info',
-					message: '已取消修改'
-				});
+					}).then(({ value }) => {
+						// 将修改原因存储到sessionStorage
+						sessionStorage.setItem('editReason_invoiceIn_main', value);
+						
+						// 继续编辑操作
+						this.performInvoiceInEdit(invoiceInData);
+					}).catch(() => {
+						this.$message({
+							type: 'info',
+							message: '已取消修改'
+						});
+					});
+				} else {
+					// 不需要填写修改原因，直接进行编辑操作
+					this.performInvoiceInEdit(invoiceInData);
+				}
+			}).catch(error => {
+				console.error('获取发票购入详情失败:', error);
+				this.$message.error('获取发票购入详情失败');
 			});
+		},
+		
+		// 执行发票购入编辑操作的逻辑
+		performInvoiceInEdit(invoiceInData) {
+			this.reset();
+			this.form = {
+				...invoiceInData,
+				params: {
+					...invoiceInData.params,
+					paymentReceiptsIds: invoiceInData.paymentReceiptsList ? invoiceInData.paymentReceiptsList.map(item => item.id) : [],
+					invoiceAttachmentsIds: invoiceInData.invoiceAttachmentsList ? invoiceInData.invoiceAttachmentsList.map(item => item.id) : []
+				}
+			};
+			this.open = true;
+			this.title = '修改发票购入信息';
 		}, // 银行回执附件处理
 		handlePaymentReceiptsFilesUpdated(params) {
 			this.form.paymentReceiptsParams = params;

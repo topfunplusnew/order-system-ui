@@ -1096,34 +1096,52 @@ export default {
     },
     // 修改操作
     handleUpdate(row) {
-      this.$prompt('请输入修改原因', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        inputType: 'textarea',
-        inputPlaceholder: '请输入修改原因',
-        inputValidator: value => {
-          if (!value || value.trim() === '') {
-            return '修改原因不能为空';
-          }
-          return true;
-        }
-      })
-        .then(({ value }) => {
-          // 将修改原因存储到sessionStorage
-          sessionStorage.setItem('editReason_record', value);
+      // 先获取记录详情，判断是否需要填写修改原因
+      getRecord(row.id || this.ids).then(response => {
+        const recordData = response.data;
+        
+        // 判断是否需要填写修改原因
+        if (recordData && recordData.shouldTrackEditReason === true) {
+          // 需要填写修改原因
+          this.$prompt('请输入修改原因', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            inputType: 'textarea',
+            inputPlaceholder: '请输入修改原因',
+            inputValidator: value => {
+              if (!value || value.trim() === '') {
+                return '修改原因不能为空';
+              }
+              return true;
+            }
+          })
+            .then(({ value }) => {
+              // 将修改原因存储到sessionStorage
+              sessionStorage.setItem('editReason_record', value);
 
-          // 根据类型赋值
+              // 根据类型赋值
+              this.reset();
+              const id = row.id || this.ids;
+              // 添加现金记账记录
+              this.handleAddRecord(id);
+            })
+            .catch(() => {
+              this.$message({
+                type: 'info',
+                message: '已取消修改'
+              });
+            });
+        } else {
+          // 不需要填写修改原因，直接进行修改操作
           this.reset();
           const id = row.id || this.ids;
           // 添加现金记账记录
           this.handleAddRecord(id);
-        })
-        .catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消修改'
-          });
-        });
+        }
+      }).catch(error => {
+        console.error('获取记录详情失败:', error);
+        this.$message.error('获取记录详情失败');
+      });
     },
     /**
      * 添加现金记账记录

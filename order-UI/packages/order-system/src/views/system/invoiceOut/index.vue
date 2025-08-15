@@ -593,62 +593,81 @@ export default {
 		},
 		/** 修改按钮操作 */
 		handleUpdate(row) {
-			this.$prompt('请输入修改原因', '提示', {
-				confirmButtonText: '确定',
-				cancelButtonText: '取消',
-				inputType: 'textarea',
-				inputPlaceholder: '请输入修改原因',
-				inputValidator: (value) => {
-					if (!value || value.trim() === '') {
-						return '修改原因不能为空';
-					}
-					return true;
-				}
-			}).then(({ value }) => {
-				// 将修改原因存储到sessionStorage
-				sessionStorage.setItem('editReason_invoiceOut_main', value);
+			// 先获取发票卖出详情，判断是否需要填写修改原因
+			const id = row.id || this.ids;
+			getInvoiceOut(id).then(response => {
+				const invoiceOutData = response.data;
 				
-				this.reset();
-				const id = row.id || this.ids;
-				getInvoiceOut(id).then(response => {
-					this.form = response.data;
-					
-					// 处理附件列表，分别提取不同类型的附件
-					if (this.form.attachmentList && Array.isArray(this.form.attachmentList)) {
-						// 分别筛选出不同类型的附件
-						const paymentReceiptsAttachments = this.form.attachmentList.filter(item => item.flag === 'attachmentList');
-						const invoiceAttachments = this.form.attachmentList.filter(item => item.flag === 'attachmentList');
-						
-						// 确保 params 对象存在
-						if (!this.form.params) {
-							this.form.params = {};
+				// 判断是否需要填写修改原因
+				if (invoiceOutData && invoiceOutData.shouldTrackEditReason === true) {
+					// 需要填写修改原因
+					this.$prompt('请输入修改原因', '提示', {
+						confirmButtonText: '确定',
+						cancelButtonText: '取消',
+						inputType: 'textarea',
+						inputPlaceholder: '请输入修改原因',
+						inputValidator: (value) => {
+							if (!value || value.trim() === '') {
+								return '修改原因不能为空';
+							}
+							return true;
 						}
+					}).then(({ value }) => {
+						// 将修改原因存储到sessionStorage
+						sessionStorage.setItem('editReason_invoiceOut_main', value);
 						
-						// 设置分类的附件数据（注意：invoiceOut 使用的都是 attachmentList flag）
-						this.form.params.paymentReceiptsAttachments = paymentReceiptsAttachments;
-						this.form.params.invoiceAttachments = invoiceAttachments;
-						
-						// 设置所有附件ID
-						this.form.params.attachmentIds = this.form.attachmentList.map(item => item.id);
-					} else {
-						// 确保 params 和 attachmentIds 是数组
-						if (!this.form.params) {
-							this.form.params = {};
-						}
-						this.form.params.attachmentIds = [];
-						this.form.params.paymentReceiptsAttachments = [];
-						this.form.params.invoiceAttachments = [];
-					}
-					
-					this.open = true;
-					this.title = '修改发票卖出信息';
-				});
-			}).catch(() => {
-				this.$message({
-					type: 'info',
-					message: '已取消修改'
-				});
+						// 继续编辑操作
+						this.performInvoiceOutEdit(invoiceOutData);
+					}).catch(() => {
+						this.$message({
+							type: 'info',
+							message: '已取消修改'
+						});
+					});
+				} else {
+					// 不需要填写修改原因，直接进行编辑操作
+					this.performInvoiceOutEdit(invoiceOutData);
+				}
+			}).catch(error => {
+				console.error('获取发票卖出详情失败:', error);
+				this.$message.error('获取发票卖出详情失败');
 			});
+		},
+		
+		// 执行发票卖出编辑操作的逻辑
+		performInvoiceOutEdit(invoiceOutData) {
+			this.reset();
+			this.form = invoiceOutData;
+			
+			// 处理附件列表，分别提取不同类型的附件
+			if (this.form.attachmentList && Array.isArray(this.form.attachmentList)) {
+				// 分别筛选出不同类型的附件
+				const paymentReceiptsAttachments = this.form.attachmentList.filter(item => item.flag === 'attachmentList');
+				const invoiceAttachments = this.form.attachmentList.filter(item => item.flag === 'attachmentList');
+				
+				// 确保 params 对象存在
+				if (!this.form.params) {
+					this.form.params = {};
+				}
+				
+				// 设置分类的附件数据（注意：invoiceOut 使用的都是 attachmentList flag）
+				this.form.params.paymentReceiptsAttachments = paymentReceiptsAttachments;
+				this.form.params.invoiceAttachments = invoiceAttachments;
+				
+				// 设置所有附件ID
+				this.form.params.attachmentIds = this.form.attachmentList.map(item => item.id);
+			} else {
+				// 确保 params 和 attachmentIds 是数组
+				if (!this.form.params) {
+					this.form.params = {};
+				}
+				this.form.params.attachmentIds = [];
+				this.form.params.paymentReceiptsAttachments = [];
+				this.form.params.invoiceAttachments = [];
+			}
+			
+			this.open = true;
+			this.title = '修改发票卖出信息';
 		},
 		/** 提交按钮 */
 		submitForm() {

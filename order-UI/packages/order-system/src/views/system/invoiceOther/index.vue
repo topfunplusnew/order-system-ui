@@ -645,44 +645,63 @@ export default {
 			this.title = '添加商家直接给客户开发票';
 		},
 		handleUpdate(row) {
-			this.$prompt('请输入修改原因', '提示', {
-				confirmButtonText: '确定',
-				cancelButtonText: '取消',
-				inputType: 'textarea',
-				inputPlaceholder: '请输入修改原因',
-				inputValidator: value => {
-					if (!value || value.trim() === '') {
-						return '修改原因不能为空';
-					}
-					return true;
-				}
-			})
-				.then(({ value }) => {
-					// 将修改原因存储到sessionStorage
-					sessionStorage.setItem('editReason_invoiceOther_main', value);
-
-					this.reset();
-					const id = row.id || this.ids;
-					getInvoiceOther(id).then(response => {
-						this.form = {
-							...response.data,
-							params: {
-								...response.data.params,
-								attachmentIds: response.data.attachmentList ? response.data.attachmentList.map(item => item.id) : [],
-								paymentReceipts: response.data.attachmentList ? response.data.attachmentList.filter(item => item.flag === 'paymentReceipts') : [],
-								invoiceAttachments: response.data.attachmentList ? response.data.attachmentList.filter(item => item.flag === 'invoiceAttachments') : []
+			// 先获取发票详情，判断是否需要填写修改原因
+			const id = row.id || this.ids;
+			getInvoiceOther(id).then(response => {
+				const invoiceOtherData = response.data;
+				
+				// 判断是否需要填写修改原因
+				if (invoiceOtherData && invoiceOtherData.shouldTrackEditReason === true) {
+					// 需要填写修改原因
+					this.$prompt('请输入修改原因', '提示', {
+						confirmButtonText: '确定',
+						cancelButtonText: '取消',
+						inputType: 'textarea',
+						inputPlaceholder: '请输入修改原因',
+						inputValidator: value => {
+							if (!value || value.trim() === '') {
+								return '修改原因不能为空';
 							}
-						};
-						this.open = true;
-						this.title = '修改商家直接给客户开发票';
-					});
-				})
-				.catch(() => {
-					this.$message({
-						type: 'info',
-						message: '已取消修改'
-					});
-				});
+							return true;
+						}
+					})
+						.then(({ value }) => {
+							// 将修改原因存储到sessionStorage
+							sessionStorage.setItem('editReason_invoiceOther_main', value);
+
+							// 继续编辑操作
+							this.performInvoiceOtherEdit(invoiceOtherData);
+						})
+						.catch(() => {
+							this.$message({
+								type: 'info',
+								message: '已取消修改'
+							});
+						});
+				} else {
+					// 不需要填写修改原因，直接进行编辑操作
+					this.performInvoiceOtherEdit(invoiceOtherData);
+				}
+			}).catch(error => {
+				console.error('获取发票详情失败:', error);
+				this.$message.error('获取发票详情失败');
+			});
+		},
+		
+		// 执行发票编辑操作的逻辑
+		performInvoiceOtherEdit(invoiceOtherData) {
+			this.reset();
+			this.form = {
+				...invoiceOtherData,
+				params: {
+					...invoiceOtherData.params,
+					attachmentIds: invoiceOtherData.attachmentList ? invoiceOtherData.attachmentList.map(item => item.id) : [],
+					paymentReceipts: invoiceOtherData.attachmentList ? invoiceOtherData.attachmentList.filter(item => item.flag === 'paymentReceipts') : [],
+					invoiceAttachments: invoiceOtherData.attachmentList ? invoiceOtherData.attachmentList.filter(item => item.flag === 'invoiceAttachments') : []
+				}
+			};
+			this.open = true;
+			this.title = '修改商家直接给客户开发票';
 		},
 		submitForm() {
 			this.$refs['form'].validate(valid => {

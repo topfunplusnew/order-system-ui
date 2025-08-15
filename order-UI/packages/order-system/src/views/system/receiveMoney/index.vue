@@ -689,82 +689,104 @@ export default {
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
-      this.$prompt('请输入修改原因', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        inputType: 'textarea',
-        inputPlaceholder: '请输入修改原因',
-        inputValidator: value => {
-          if (!value || value.trim() === '') {
-            return '修改原因不能为空';
-          }
-          return true;
+      // 先获取收款详情，判断是否需要填写修改原因
+      const id = row.id || this.ids;
+      getReceiveMoney(id).then(response => {
+        if (!response.data) {
+          this.$message.error('获取收款信息失败');
+          return;
         }
-      })
-        .then(({ value }) => {
-          this.reset();
-          sessionStorage.setItem('editReason_receiveMoney', value);
-          const id = row.id || this.ids;
-          getReceiveMoney(id).then(response => {
-            if (!response.data) {
-              this.$message.error('获取收款信息失败');
-              return;
-            }
-            // 保留表单结构，特别是 params.attachmentIds 和 params.bankacceptance
-            this.form = {
-              ...response.data,
-              params: {
-                ...response.data.params,
-                attachmentIds: response.data.attachmentList ? response.data.attachmentList.map(item => item.id) : [],
-                bankacceptance: response.data.params?.bankacceptance || null
+
+        const receiveMoneyData = response.data;
+        
+        // 判断是否需要填写修改原因
+        if (receiveMoneyData && receiveMoneyData.shouldTrackEditReason === true) {
+          // 需要填写修改原因
+          this.$prompt('请输入修改原因', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            inputType: 'textarea',
+            inputPlaceholder: '请输入修改原因',
+            inputValidator: value => {
+              if (!value || value.trim() === '') {
+                return '修改原因不能为空';
               }
-            };
-            this.$bus.$emit('changeFlag', response.data.bankacceptanceId !== null ? response.data.bankacceptanceId : false);
-            this.form.receiveType = response.data.receiveType.split('-');
-            // 处理银行账户类型
-            let flag = false;
-            if (!response.data.bankacceptanceId) {
-              this.$message.warning('该收款信息无凭证相关信息');
-              flag = true;
-              this.form.params.bankacceptance = null;
+              return true;
             }
-
-            this.open = true;
-            this.title = '修改收款信息';
-
-            // 使用 $nextTick 确保组件渲染完成后再设置银行账户类型和附件列表
-            this.$nextTick(() => {
-              if (!flag) {
-                if (this.$refs[`selfSelectedBankType`] && response.data.selfBankCardType) {
-                  this.$refs.selfSelectedBankType.localSelectType = response.data.selfBankCardType;
-                }
-                if (this.$refs[`otherSelectedBankType`] && response.data.otherBankCardType) {
-                  this.$refs.otherSelectedBankType.localSelectType = response.data.otherBankCardType;
-                }
-
-                if (response.data.bankacceptanceId) {
-                  getBankAcceptance(response.data.bankacceptanceId).then(result => {
-                    if (!result.data) {
-                      this.$message.error('获取凭证数据失败:该行数据存储了凭证ID但没有查询到该ID对应的相关数据');
-                      // 设置为null避免undefined错误
-                      this.form.params.bankacceptance = null;
-                      return;
-                    }
-                    this.$nextTick(() => {
-                      this.form.params.bankacceptance = result.data;
-                    });
-                  });
-                }
-              }
+          })
+            .then(({ value }) => {
+              sessionStorage.setItem('editReason_receiveMoney', value);
+              
+              // 继续编辑操作
+              this.performReceiveMoneyEdit(receiveMoneyData);
+            })
+            .catch(() => {
+              this.$message({
+                type: 'info',
+                message: '已取消修改'
+              });
             });
-          });
-        })
-        .catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消修改'
-          });
-        });
+        } else {
+          // 不需要填写修改原因，直接进行编辑操作
+          this.performReceiveMoneyEdit(receiveMoneyData);
+        }
+      }).catch(error => {
+        console.error('获取收款详情失败:', error);
+        this.$message.error('获取收款详情失败');
+      });
+    },
+    
+    // 执行收款编辑操作的逻辑
+    performReceiveMoneyEdit(receiveMoneyData) {
+      this.reset();
+      
+      // 保留表单结构，特别是 params.attachmentIds 和 params.bankacceptance
+      this.form = {
+        ...receiveMoneyData,
+        params: {
+          ...receiveMoneyData.params,
+          attachmentIds: receiveMoneyData.attachmentList ? receiveMoneyData.attachmentList.map(item => item.id) : [],
+          bankacceptance: receiveMoneyData.params?.bankacceptance || null
+        }
+      };
+      this.$bus.$emit('changeFlag', receiveMoneyData.bankacceptanceId !== null ? receiveMoneyData.bankacceptanceId : false);
+      this.form.receiveType = receiveMoneyData.receiveType.split('-');
+      // 处理银行账户类型
+      let flag = false;
+      if (!receiveMoneyData.bankacceptanceId) {
+        this.$message.warning('该收款信息无凭证相关信息');
+        flag = true;
+        this.form.params.bankacceptance = null;
+      }
+
+      this.open = true;
+      this.title = '修改收款信息';
+
+      // 使用 $nextTick 确保组件渲染完成后再设置银行账户类型和附件列表
+      this.$nextTick(() => {
+        if (!flag) {
+          if (this.$refs[`selfSelectedBankType`] && receiveMoneyData.selfBankCardType) {
+            this.$refs.selfSelectedBankType.localSelectType = receiveMoneyData.selfBankCardType;
+          }
+          if (this.$refs[`otherSelectedBankType`] && receiveMoneyData.otherBankCardType) {
+            this.$refs.otherSelectedBankType.localSelectType = receiveMoneyData.otherBankCardType;
+          }
+
+          if (receiveMoneyData.bankacceptanceId) {
+            getBankAcceptance(receiveMoneyData.bankacceptanceId).then(result => {
+              if (!result.data) {
+                this.$message.error('获取凭证数据失败:该行数据存储了凭证ID但没有查询到该ID对应的相关数据');
+                // 设置为null避免undefined错误
+                this.form.params.bankacceptance = null;
+                return;
+              }
+              this.$nextTick(() => {
+                this.form.params.bankacceptance = result.data;
+              });
+            });
+          }
+        }
+      });
     },
 
     /** 提交按钮 */
