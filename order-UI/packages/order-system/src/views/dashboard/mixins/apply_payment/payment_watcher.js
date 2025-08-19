@@ -23,7 +23,7 @@ export var mixin_payment_watcher = {
 			type: Boolean,
 			default: true
 		},
-		// 是否为多个付款申请
+		// 是否为多个付款申请 这个情况下是给批量申请使用 目前使用的是佣金信息
 		isMulti: {
 			type: Boolean,
 			default: false
