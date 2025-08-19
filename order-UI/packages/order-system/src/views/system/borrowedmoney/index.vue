@@ -263,7 +263,7 @@ export default {
 			open: false,
 			queryParams: {
 				pageNum: 1,
-				pageSize: 10,
+				pageSize: 20,
 				loanNO: null,
 				origin: null,
 				moneyAmount: null,
@@ -450,7 +450,7 @@ export default {
 			// 点击查看历史还款
 			queryRepaymentParams: {
 				pageNum: 1,
-				pageSize: 10
+				pageSize: 20
 			},
 			tableData: [],
 			detailTotal: 0,

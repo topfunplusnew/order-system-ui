@@ -265,7 +265,7 @@ export default {
 			// 查询参数
 			queryParams: {
 				pageNum: 1,
-				pageSize: 10,
+				pageSize: 20,
 				levelNo: null,
 				levelName: null,
 				categoryNo: null,
@@ -383,7 +383,7 @@ export default {
 			// 分类
 			level_total: 0,
 			level_pageNum: 1,
-			level_pageSize: 10,
+			level_pageSize: 20,
 
 			// 最大的级别编码数
 			maxCategoryNo: null,

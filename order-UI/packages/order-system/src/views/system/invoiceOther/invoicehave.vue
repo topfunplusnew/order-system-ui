@@ -413,7 +413,7 @@ export default {
       // 查询参数
       queryParams: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: 20,
         ordersNo: null,
         invoiceDate: null,
         invoiceAmount: null,
@@ -529,7 +529,7 @@ export default {
       editReasonTotal: 0,
       editReasonQueryParams: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: 20,
         tableName: TableName.INVOICE_OTHER,
         tid: null
       }

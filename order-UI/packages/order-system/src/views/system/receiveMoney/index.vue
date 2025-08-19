@@ -344,7 +344,7 @@ export default {
       // 查询参数
       queryParams: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: 20,
         receiveNO: null,
         fundsDate: null,
         receiveType: null,
@@ -457,7 +457,7 @@ export default {
       editReasonTotal: 0,
       editReasonQueryParams: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: 20,
         tableName: TableName.RECEIVE_MONEY,
         tid: null
       }

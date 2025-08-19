@@ -243,7 +243,7 @@ export default {
 			detailTotal: 0,
 			queryRepaymentParams: {
 				pageNum: 1,
-				pageSize: 10
+				pageSize: 20
 			},
 			dialogHistoryVisible: false
 		};

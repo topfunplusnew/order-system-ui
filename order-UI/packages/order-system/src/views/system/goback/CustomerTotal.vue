@@ -115,7 +115,7 @@ export default {
 		return {
 			loading: false,
 			currentPage: 1,
-			pageSize: 10,
+			pageSize: 20,
 			total: 0,
 			searchForm: {
 				endTime: parseTime(new Date(), '{y}-{m}-{d}'),

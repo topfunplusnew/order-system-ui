@@ -813,7 +813,7 @@ export default {
 			open: false,
 			queryParams: {
 				pageNum: 1,
-				pageSize: 10,
+				pageSize: 20,
 				ordersNo: '二次加工',
 				storeHouseid: null,
 				storeHouseName: null,

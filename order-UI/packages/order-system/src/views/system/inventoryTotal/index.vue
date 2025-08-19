@@ -123,7 +123,7 @@ export default {
 		return {
 			queryParams: {
 				pageNum: 1,
-				pageSize: 10,
+				pageSize: 20,
 				storeHouseName: '',
 				storeDate: '',
 				supplier: '',
@@ -138,7 +138,7 @@ export default {
 			// 变动记录查询参数
 			changeLogQueryParams: {
 				pageNum: 1,
-				pageSize: 10,
+				pageSize: 20,
 				startDate: '',
 				endDate: '',
 				levelID: ''
@@ -181,7 +181,7 @@ export default {
 		resetQuery() {
 			this.queryParams = {
 				pageNum: 1,
-				pageSize: 10,
+				pageSize: 20,
 				storeHouseName: '',
 				storeDate: '',
 				supplier: '',
@@ -200,7 +200,7 @@ export default {
 			this.$datePicker().then(({ beginTime, endTime }) => {
 				this.changeLogQueryParams = {
 					pageNum: 1,
-					pageSize: 10,
+					pageSize: 20,
 					startDate: beginTime,
 					endDate: endTime,
 					levelID: row.levelID

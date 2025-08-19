@@ -157,7 +157,7 @@ export default {
 			queryParams: {
 				voucherNoPrefix: '',
 				pageNum: 1,
-				pageSize: 10,
+				pageSize: 20,
 				voucherNo: null,
 				vDate: null,
 				makeUser: null,

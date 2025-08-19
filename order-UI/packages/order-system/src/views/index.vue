@@ -326,7 +326,7 @@ export default {
 				startTime: formatDate(startTime),
 				endTime: formatDate(endTime),
 				pageNum: 1,
-				pageSize: 10
+				pageSize: 20
 			},
 			queryParamsHome: {
 				startTime: parseTime(new Date(), '{y}-{m}-{d}'),

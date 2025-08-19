@@ -98,7 +98,7 @@ export default {
 			// 查询参数
 			queryParams: {
 				pageNum: 1,
-				pageSize: 10,
+				pageSize: 20,
 				storeHouseName: null,
 				address: null,
 				delFlag: null

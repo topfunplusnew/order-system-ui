@@ -512,7 +512,7 @@ export default {
 				rebateEndTime: null,
 				rebateStartTime: null,
 				pageNum: 1,
-				pageSize: 10,
+				pageSize: 20,
 				ordersNo: null,
 				rebateDate: null,
 				rebate: null,
@@ -538,7 +538,7 @@ export default {
 			},
 			queryOrderParams: {
 				pageNum: 1,
-				pageSize: 10
+				pageSize: 20
 			},
 			// 表单参数
 			form: {},

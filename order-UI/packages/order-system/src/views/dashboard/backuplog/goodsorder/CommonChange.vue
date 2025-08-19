@@ -54,7 +54,7 @@ export default {
 		return {
 			activeNames: ['1'],
 			currentPage: 1, // 当前页码
-			pageSize: 10, // 每页显示数量
+			pageSize: 20, // 每页显示数量
 			totalPages: 1 // 总页数
 		};
 	},

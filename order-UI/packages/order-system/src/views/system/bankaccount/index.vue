@@ -342,7 +342,7 @@ export default {
 			open: false,
 			queryParams: {
 				pageNum: 1,
-				pageSize: 10,
+				pageSize: 20,
 				companyName: null,
 				companyId: null,
 				bankName: null,
@@ -356,7 +356,7 @@ export default {
 			// 查询供应商
 			queryParamsCompany: {
 				pageNum: 1,
-				pageSize: 10,
+				pageSize: 20,
 				companyName: null,
 				relationName: null,
 				relationTel: null,
@@ -494,7 +494,7 @@ export default {
 			currentBankNo: '',
 			bankAcountQuery: {
 				bankAcountTotalPageNum: 1,
-				bankAcountTotalPageSize: 10,
+				bankAcountTotalpageSize: 20,
 				params: {
 					operateDateEndTime: null,
 					operateDateStartTime: null

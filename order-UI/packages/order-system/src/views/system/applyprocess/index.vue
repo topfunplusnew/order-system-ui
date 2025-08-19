@@ -79,7 +79,7 @@ export default {
         onChange: page => {
           console.log(page);
         },
-        pageSize: 10
+        pageSize: 20
       },
       loading: false,
       columns: [
@@ -124,7 +124,7 @@ export default {
       allAuditInfoList: [],
       // 分页信息
       pageNum: 1,
-      pageSize: 10,
+      pageSize: 20,
       total: 0,
       // 付款审核
       addCheckApplyProcessVisible: false,

@@ -348,7 +348,7 @@ export default {
 			dateRange: [],
 			queryParams: {
 				pageNum: 1,
-				pageSize: 10,
+				pageSize: 20,
 				invoiceDate: null,
 				invoiceAmount: null,
 				supplierTicketPoint: null,
@@ -476,7 +476,7 @@ export default {
 			editReasonTotal: 0,
 			editReasonQueryParams: {
 				pageNum: 1,
-				pageSize: 10,
+				pageSize: 20,
 				tableName: TableName.INVOICE_OTHER,
 				tid: null
 			}

@@ -42,7 +42,7 @@ export default {
 			loading: false,
 			queryParams: {
 				pageNum: 1,
-				pageSize: 10
+				pageSize: 20
 			},
 			showInfoList: []
 		};

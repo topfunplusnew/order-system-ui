@@ -125,7 +125,7 @@ export default {
 				endDate: '',
 				warehouseName: '',
 				pageNum: 1,
-				pageSize: 10
+				pageSize: 20
 			},
 			tableData: [],
 			detailVisible: false,
@@ -165,7 +165,7 @@ export default {
 				endDate: '',
 				warehouseName: '',
 				pageNum: 1,
-				pageSize: 10
+				pageSize: 20
 			};
 			this.getList();
 		},

@@ -58,7 +58,7 @@ export default {
 				startDate: '',
 				endDate: '',
 				pageNum: 1,
-				pageSize: 10
+				pageSize: 20
 			}
 		};
 	},

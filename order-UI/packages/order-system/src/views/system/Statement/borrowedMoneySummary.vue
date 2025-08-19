@@ -176,7 +176,7 @@ export default {
 			// 点击查看历史还款
 			queryRepaymentParams: {
 				pageNum: 1,
-				pageSize: 10
+				pageSize: 20
 			},
 			// 表单校验
 			columns: [

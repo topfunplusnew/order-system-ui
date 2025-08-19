@@ -195,7 +195,7 @@ export default {
 			queryParams: {
 				companyName: '',
 				pageNum: 1,
-				pageSize: 10,
+				pageSize: 20,
 				params: {
 					showOrder: null,
 					isNoPay: null,
@@ -339,7 +339,7 @@ export default {
 			this.queryParams = {
 				companyName: '',
 				pageNum: 1,
-				pageSize: 10,
+				pageSize: 20,
 				params: {
 					showOrder: null,
 					isNoPay: null,

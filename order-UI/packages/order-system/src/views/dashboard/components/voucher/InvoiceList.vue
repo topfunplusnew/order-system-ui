@@ -20,7 +20,7 @@ export default {
 			loading: false,
 			queryParams: {
 				pageNum: 1,
-				pageSize: 10,
+				pageSize: 20,
 				invoiceDate: null,
 				invoiceObject: null,
 				invoiceAmount: null,

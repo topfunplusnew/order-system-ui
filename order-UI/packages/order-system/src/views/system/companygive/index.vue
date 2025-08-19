@@ -306,7 +306,7 @@ export default {
 			// 查询参数
 			queryParams: {
 				pageNum: 1,
-				pageSize: 10,
+				pageSize: 20,
 				companyName: null,
 				relationName: null,
 				relationTel: null,
@@ -442,7 +442,7 @@ export default {
 			// 默认银行卡列表的id
 			currentID: '',
 			bankTotal: 0,
-			bankPageSize: 10,
+			bankpageSize: 20,
 			bankPageNum: 1
 		};
 	},

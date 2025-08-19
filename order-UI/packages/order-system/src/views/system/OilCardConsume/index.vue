@@ -244,7 +244,7 @@ export default {
 				useDateEnd: '',
 				useDateStart: '',
 				pageNum: 1,
-				pageSize: 10,
+				pageSize: 20,
 				bTripId: null,
 				oilCardNo: null,
 				useDate: null,

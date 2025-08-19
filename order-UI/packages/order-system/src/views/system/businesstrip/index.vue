@@ -346,7 +346,7 @@ export default {
 			open: false,
 			queryParams: {
 				pageNum: 1,
-				pageSize: 10,
+				pageSize: 20,
 				employeeID: null,
 				employee: null,
 				personnel: null,

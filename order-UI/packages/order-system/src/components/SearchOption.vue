@@ -82,7 +82,7 @@ export default {
 			// 显示总行数
 			total: 0,
 			pageNum: 1,
-			pageSize: 10,
+			pageSize: 20,
 			dialogVisible: false,
 			// 加载效果
 			loading: false,

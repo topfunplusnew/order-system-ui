@@ -32,7 +32,7 @@ export default {
 				bankName: '',
 				paymentState: '',
 				pageNum: 1,
-				pageSize: 10
+				pageSize: 20
 			},
 			freightList: [],
 			loading: false,
@@ -166,7 +166,7 @@ export default {
 				bankName: '',
 				paymentState: '',
 				pageNum: 1,
-				pageSize: 10
+				pageSize: 20
 			};
 			this.handleQuery();
 		},

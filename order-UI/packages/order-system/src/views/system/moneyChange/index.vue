@@ -145,7 +145,7 @@ export default {
 			// 查询参数
 			queryParams: {
 				pageNum: 1,
-				pageSize: 10,
+				pageSize: 20,
 				// 时间范围
 				dateRange: [this.parseTime(new Date(new Date().setMonth(new Date().getMonth() - 1))), this.parseTime(new Date())],
 				originalInfoId: null,

@@ -24,7 +24,7 @@ export default {
 			tableData: [],
 			queryParams: {
 				pageNum: 1,
-				pageSize: 10,
+				pageSize: 20,
 				acountsName: null
 			},
 			total: 0

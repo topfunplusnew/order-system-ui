@@ -109,7 +109,7 @@ export default {
 			// 查询参数
 			queryParams: {
 				pageNum: 1,
-				pageSize: 10,
+				pageSize: 20,
 				startDate: '', // 开始日期
 				endDate: '', // 结束日期
 				storeHouseName: '', // 仓库名称

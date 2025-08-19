@@ -653,7 +653,7 @@ export default {
       // 查询参数
       queryParams: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: 20,
         transactionTime: null,
         supplierId: null,
         customerId: null,
@@ -782,7 +782,7 @@ export default {
       editReasonTotal: 0,
       editReasonQueryParams: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: 20,
         tableName: TableName.RECORD,
         tid: null
       }

@@ -234,7 +234,7 @@ export default {
 				issueDateStart: null,
 				issueDateEnd: null,
 				pageNum: 1,
-				pageSize: 10,
+				pageSize: 20,
 				operateDate: null,
 				billNo: null,
 				issueDate: null,

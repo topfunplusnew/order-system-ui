@@ -79,7 +79,7 @@ export default {
 			open: false,
 			queryParams: {
 				pageNum: 1,
-				pageSize: 10,
+				pageSize: 20,
 				carNo: null,
 				driver: null,
 				tel: null,

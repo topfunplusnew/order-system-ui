@@ -112,7 +112,7 @@ export default {
 			// 查询参数
 			queryParams: {
 				pageNum: 1,
-				pageSize: 10,
+				pageSize: 20,
 				fname: null,
 				fleader: null,
 				tel: null,

@@ -176,7 +176,7 @@ export default {
 			// 查询参数
 			queryParams: {
 				pageNum: 1,
-				pageSize: 10,
+				pageSize: 20,
 				OffsetNO: null,
 				operateDate: null,
 				operateType: null,
