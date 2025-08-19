@@ -463,7 +463,8 @@ export default {
 			this.download(
 				'system/ordercommission/export',
 				{
-					...this.queryParams
+					...this.queryParams,
+					type:0
 				},
 				`客户佣金_${new Date().getTime()}.xlsx`
 			);

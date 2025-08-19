@@ -482,7 +482,8 @@ export default {
 			this.download(
 				'system/ordercommission/export',
 				{
-					...this.queryParams
+					...this.queryParams,
+					type:1
 				},
 				`厂家佣金_${new Date().getTime()}.xlsx`
 			);
