@@ -156,19 +156,6 @@
 				<el-form-item label="差异原因" prop="difference_reason">
 					<el-input v-model="batchForm.difference_reason" placeholder="请输入差异原因" type="textarea" :rows="3" />
 				</el-form-item>
-				<el-form-item label="额外信息">
-					<el-row :gutter="10">
-						<el-col :span="8">
-							<el-input v-model="batchForm.extraInfo.var" placeholder="变量" />
-						</el-col>
-						<el-col :span="8">
-							<el-input v-model="batchForm.extraInfo.rebate" placeholder="折扣" />
-						</el-col>
-						<el-col :span="8">
-							<el-input v-model="batchForm.extraInfo.period" placeholder="周期" />
-						</el-col>
-					</el-row>
-				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
 				<el-button @click="batchFillVisible = false">取 消</el-button>
