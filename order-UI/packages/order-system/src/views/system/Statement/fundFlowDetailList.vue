@@ -250,12 +250,12 @@ export default {
 			// 先查询上年指定时间结转
 			const query = {
 				startTime: this.query.startTime,
-				ourBankNO: this.query.ourBankNO
+				ourBankNO: this.query.ourBankNO,
+				bankCardType: this.query.bankCardType
 			};
 			findFundFlowBalanceInLocalCurrencyAtDate(query).then(async response => {
 				if (response.code === 200) {
 					const lastYearData = response.data;
-					console.log(lastYearData);
 					if (!lastYearData) {
 						this.$message.error('查询上年结转数据失败');
 						return;
