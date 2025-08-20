@@ -7,6 +7,7 @@ import { tansParams, blobValidate } from '@/utils/ruoyi';
 import cache from '@/plugins/cache';
 import { saveAs } from 'file-saver';
 import { getDownLoadStatus, resetDownLoadProgress } from '@/api/system/onceDownload';
+import webSocketManager from '@/utils/websocket';
 
 let downloadLoadingInstance;
 // 是否显示重新登录
@@ -275,14 +276,13 @@ async function downLoadFile(url, params, filename, config) {
 	let actualMaxProgress = 100;
 	let lastProgressUpdate = Date.now();
 
-	// 获取WebSocket客户端
-	let stompClient = window.stompClient;
-	let subscriptionId = null;
+	let subscriptionInfo = null;
 
-	// 只有在stompClient存在且已连接的情况下才订阅进度消息
-	if (stompClient && stompClient.connected) {
-		// 订阅下载进度通知
-		subscriptionId = stompClient.subscribe('/topic/exportevent', message => {
+	// 检查WebSocket连接并订阅进度消息
+	const connectionStatus = webSocketManager.getConnectionStatus();
+	if (connectionStatus.isConnected) {
+		// 使用WebSocket管理器订阅消息
+		subscriptionInfo = webSocketManager.subscribe('/topic/exportevent', message => {
 			try {
 				const messageData = JSON.parse(message.body);
 				// 匹配消息类型，增加容错性
@@ -308,23 +308,17 @@ async function downLoadFile(url, params, filename, config) {
 				}
 			} catch (error) {
 				console.error('处理WebSocket消息出错:', error);
-				subscriptionId.unsubscribe();
+				if (subscriptionInfo) {
+					webSocketManager.unsubscribe(subscriptionInfo.id);
+					subscriptionInfo = null;
+				}
 				store.dispatch('downloadOnce/setPercent', 0);
-				return;
 			}
-		});
+		}, 'download_progress');
 	} else {
-		Message.warning('WebSocket连接未建立正在尝试重新链接...');
-		stompClient.connect(
-			{},
-			() => { },
-			error => {
-				Message.warning('WebSocket连接失败!', error);
-			}
-		);
-
-		await store.dispatch('downloadOnce/setPercent', 0);
-		return;
+		console.warn('WebSocket未连接，无法接收下载进度');
+		// 不再尝试重新连接，让用户知道WebSocket未连接
+		Message.warning('WebSocket连接断开，无法显示下载进度');
 	}
 
 	let elNotificationComponent;
@@ -337,8 +331,9 @@ async function downLoadFile(url, params, filename, config) {
 			type: 'warning',
 			onClick: () => {
 				// 取消订阅并重新下载
-				if (subscriptionId) {
-					subscriptionId.unsubscribe();
+				if (subscriptionInfo) {
+					webSocketManager.unsubscribe(subscriptionInfo.id);
+					subscriptionInfo = null;
 				}
 				resetDownLoadProgress();
 				Message.success('已重置服务端,请重新点击一键下载!');
@@ -357,8 +352,9 @@ async function downLoadFile(url, params, filename, config) {
 		})
 		.then(async data => {
 			// 清理资源
-			if (subscriptionId) {
-				subscriptionId.unsubscribe();
+			if (subscriptionInfo) {
+				webSocketManager.unsubscribe(subscriptionInfo.id);
+				subscriptionInfo = null;
 			}
 			clearTimeout(timeout);
 
@@ -389,9 +385,17 @@ async function downLoadFile(url, params, filename, config) {
 		})
 		.catch(r => {
 			// 清理资源
-			if (subscriptionId) {
-				subscriptionId.unsubscribe();
+			if (subscriptionInfo) {
+				webSocketManager.unsubscribe(subscriptionInfo.id);
+				subscriptionInfo = null;
 			}
+			clearTimeout(timeout);
+
+			// 关闭右上角提示
+			if (elNotificationComponent) {
+				elNotificationComponent.close();
+			}
+
 			console.error(r);
 			Message.error('下载文件出现错误，请联系管理员！');
 			// 添加3秒后重置进度条为0（即使出错也重置）
