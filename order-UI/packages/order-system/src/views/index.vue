@@ -501,14 +501,14 @@ export default {
 			})
 				.then(res => {
 					// 添加校验
-					const exportDate = res && res.value ? res.value : defaultDate;
+					const date = res && res.value ? res.value : defaultDate;
 					this.downLoadOnce(
 						'system/allExport/export',
 						{
-							date: exportDate,
+							date: date,
 							exportEmptyData: exportEmptyData
 						},
-						`FullReport_${new Date().getTime()}.xlsx`
+						`FullReport_${new Date().getTime()}.zip`
 					);
 				})
 				.catch(() => {

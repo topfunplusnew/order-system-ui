@@ -173,7 +173,8 @@ export const PAYMENT_APPLY_STATE = {
 		PASS: '通过',
 		NOT_PASS: '未通过',
 		REJECT: '驳回',
-		VOID: '作废'
+		VOID: '作废',
+		UN_APPLIED: '未申请',
 	}
 };
 

@@ -317,7 +317,7 @@ async function downLoadFile(url, params, filename, config) {
 		Message.warning('WebSocket连接未建立正在尝试重新链接...');
 		stompClient.connect(
 			{},
-			() => {},
+			() => { },
 			error => {
 				Message.warning('WebSocket连接失败!', error);
 			}
@@ -341,7 +341,6 @@ async function downLoadFile(url, params, filename, config) {
 					subscriptionId.unsubscribe();
 				}
 				resetDownLoadProgress();
-				// downLoadFile(url, params, filename, config);
 				Message.success('已重置服务端,请重新点击一键下载!');
 				store.dispatch('downloadOnce/setPercent', 0);
 			}
@@ -350,13 +349,8 @@ async function downLoadFile(url, params, filename, config) {
 
 	// 发送下载请求
 	return service
-		.post(url, params, {
-			transformRequest: [
-				params => {
-					return tansParams(params);
-				}
-			],
-			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+		.post(url + `?date=${params.date}&exportEmptyData=${params.exportEmptyData}`, null, {
+			// headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 			responseType: 'blob',
 			timeout: 600000, // 超时时间，默认600秒
 			...config
