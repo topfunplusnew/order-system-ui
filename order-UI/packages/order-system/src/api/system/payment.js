@@ -70,6 +70,17 @@ export function getPaymentByPayNO(id) {
 	});
 }
 
+/**
+ * 这个与上面接口有区别 需要改一下 只给报表使用
+ * @returns 
+ */
+export function getPaymentByNo(id) {
+	return request({
+		url: '/system/payment/' + id,
+		method: 'get'
+	});
+}
+
 // 添加坏账
 export function addBadBetPayment(data) {
 	return request({
