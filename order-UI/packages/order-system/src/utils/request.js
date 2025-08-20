@@ -250,19 +250,30 @@ export function download(url, params, filename, config, isShowConfig = false) {
 		});
 }
 
-// 一键下载的方法 点击下载后先校验一下是否可以下载
+// 一键下载的方法 点击下载后先校验一下是否可以下载，并建立WebSocket连接
 export function onceDownload(url, params, filename, config) {
 	// 先获取是否可以下载
 	getDownLoadStatus().then(status => {
 		if (status) {
-			// 只有当允许下载时，才进行连接WebSocket并下载
-			downLoadFile(url, params, filename, config);
+			// 只有当允许下载时，才建立WebSocket连接并下载
+			console.log('开始建立WebSocket连接用于一键下载...');
+			webSocketManager.connect().then(() => {
+				console.log('WebSocket连接成功，开始下载');
+				downLoadFile(url, params, filename, config);
+			}).catch(error => {
+				console.error('WebSocket连接失败:', error);
+				Message.error('WebSocket连接失败，但将继续下载（无进度显示）');
+				// 即使WebSocket连接失败也继续下载，只是没有进度显示
+				downLoadFile(url, params, filename, config);
+			});
 		} else if (status === false) {
 			Message.error('当前正在有用户进行文件下载中!');
-			// 不允许下载时，不建立WebSocket连接
 		} else {
 			Message.error('下载文件出现错误，请联系管理员！');
 		}
+	}).catch(error => {
+		console.error('检查下载状态失败:', error);
+		Message.error('检查下载状态失败，请联系管理员！');
 	});
 }
 
@@ -281,6 +292,7 @@ async function downLoadFile(url, params, filename, config) {
 	// 检查WebSocket连接并订阅进度消息
 	const connectionStatus = webSocketManager.getConnectionStatus();
 	if (connectionStatus.isConnected) {
+		console.log('WebSocket已连接，开始订阅下载进度消息');
 		// 使用WebSocket管理器订阅消息
 		subscriptionInfo = webSocketManager.subscribe('/topic/exportevent', message => {
 			try {
@@ -315,10 +327,13 @@ async function downLoadFile(url, params, filename, config) {
 				store.dispatch('downloadOnce/setPercent', 0);
 			}
 		}, 'download_progress');
+
+		if (!subscriptionInfo) {
+			console.warn('订阅下载进度消息失败');
+		}
 	} else {
-		console.warn('WebSocket未连接，无法接收下载进度');
-		// 不再尝试重新连接，让用户知道WebSocket未连接
-		Message.warning('WebSocket连接断开，无法显示下载进度');
+		console.warn('WebSocket未连接，将进行无进度显示的下载');
+		Message.info('WebSocket未连接，下载过程中无法显示进度');
 	}
 
 	let elNotificationComponent;
@@ -353,6 +368,7 @@ async function downLoadFile(url, params, filename, config) {
 		.then(async data => {
 			// 清理资源
 			if (subscriptionInfo) {
+				console.log('下载完成，取消WebSocket订阅');
 				webSocketManager.unsubscribe(subscriptionInfo.id);
 				subscriptionInfo = null;
 			}
@@ -378,29 +394,37 @@ async function downLoadFile(url, params, filename, config) {
 				Message.error(errMsg);
 			}
 
-			// 添加3秒后重置进度条为0
+			// 添加3秒后重置进度条为0，并断开WebSocket连接
 			setTimeout(() => {
 				store.dispatch('downloadOnce/setPercent', 0);
+				// 下载完成后断开WebSocket连接以释放资源
+				console.log('下载完成，断开WebSocket连接');
+				webSocketManager.disconnect();
 			}, 3000);
 		})
 		.catch(r => {
 			// 清理资源
 			if (subscriptionInfo) {
+				console.log('下载出错，取消WebSocket订阅');
 				webSocketManager.unsubscribe(subscriptionInfo.id);
 				subscriptionInfo = null;
 			}
 			clearTimeout(timeout);
-
+			
 			// 关闭右上角提示
 			if (elNotificationComponent) {
 				elNotificationComponent.close();
 			}
-
+			
 			console.error(r);
 			Message.error('下载文件出现错误，请联系管理员！');
-			// 添加3秒后重置进度条为0（即使出错也重置）
-			store.dispatch('downloadOnce/setPercent', 0);
+			
+			// 添加3秒后重置进度条为0，并断开WebSocket连接
+			setTimeout(() => {
+				store.dispatch('downloadOnce/setPercent', 0);
+				// 下载出错后也断开WebSocket连接
+				console.log('下载出错，断开WebSocket连接');
+				webSocketManager.disconnect();
+			}, 3000);
 		});
-}
-
-export default service;
+}export default service;

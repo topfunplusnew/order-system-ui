@@ -38,7 +38,7 @@ class WebSocketManager {
                 this.disconnect();
 
                 const url = this.getWebSocketUrl();
-                console.log('正在连接WebSocket:', url);
+                console.log('正在为下载任务连接WebSocket:', url);
 
                 this.socket = new SockJS(url);
                 this.stompClient = Stomp.over(this.socket);
@@ -53,7 +53,7 @@ class WebSocketManager {
                 this.stompClient.connect(
                     {},
                     () => {
-                        console.log('WebSocket连接成功');
+                        console.log('WebSocket连接成功，准备接收下载进度');
                         this.isConnected = true;
                         this.reconnectAttempts = 0;
 
@@ -71,8 +71,8 @@ class WebSocketManager {
                         this.isConnected = false;
                         this.connectPromise = null;
 
-                        // 安排重连
-                        this.scheduleReconnect();
+                        // 连接失败时不自动重连，让用户决定是否重试
+                        console.log('WebSocket连接失败，用户可以重新尝试下载');
 
                         reject(error);
                     }
@@ -83,13 +83,12 @@ class WebSocketManager {
                     console.log('WebSocket连接已关闭');
                     this.isConnected = false;
                     window.stompClient = null;
-                    this.scheduleReconnect();
+                    // 下载场景下连接关闭不需要自动重连
                 };
 
             } catch (error) {
                 console.error('初始化WebSocket连接失败:', error);
                 this.connectPromise = null;
-                this.scheduleReconnect();
                 reject(error);
             }
         });
@@ -100,10 +99,13 @@ class WebSocketManager {
     // 断开连接
     disconnect() {
         try {
+            console.log('开始断开WebSocket连接，清理资源...');
+
             // 清除所有订阅
-            this.subscriptions.forEach((subscription) => {
+            this.subscriptions.forEach((subscription, id) => {
                 if (subscription && typeof subscription.unsubscribe === 'function') {
                     subscription.unsubscribe();
+                    console.log(`取消订阅: ${id}`);
                 }
             });
             this.subscriptions.clear();
@@ -129,6 +131,8 @@ class WebSocketManager {
 
             // 清除重连定时器
             this.clearReconnectTimer();
+
+            console.log('WebSocket连接已完全清理');
 
         } catch (error) {
             console.error('断开WebSocket连接时出错:', error);

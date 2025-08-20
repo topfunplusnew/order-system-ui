@@ -45,8 +45,8 @@
 								background: '#f0f0f0',
 								color: '#333'
 							}" :cell-style="() => {
-									return { padding: '2px' };
-								}
+								return { padding: '2px' };
+							}
 								">
 							<el-table-column prop="index" label="序号" width="50" align="center"
 								type="index"></el-table-column>
@@ -405,11 +405,10 @@ export default {
 		if (!localStorage.getItem('download-list-tour')) {
 			this.$tours['downloadListTour'].start();
 		}
-		// 初始化WebSocket连接
-		this.initWebSocketConnection();
+		// 移除自动初始化WebSocket连接，只在需要时连接
 	},
 	beforeDestroy() {
-		// 页面销毁前清理WebSocket连接
+		// 页面销毁前清理WebSocket连接（如果存在的话）
 		this.disconnectWebSocket();
 	},
 	watch: {
@@ -710,16 +709,17 @@ export default {
 			this.$tours['downloadListTour'].start();
 		},
 
-		// WebSocket连接管理方法
-		initWebSocketConnection() {
-			// 使用WebSocket管理器
-			webSocketManager.connect().then(() => {
-				console.log('WebSocket连接成功');
+		// 只在需要时初始化WebSocket连接（用于一键下载）
+		initWebSocketForDownload() {
+			return webSocketManager.connect().then(() => {
+				console.log('WebSocket连接成功，准备开始下载');
 				this.isWebSocketConnected = true;
+				return true;
 			}).catch(error => {
 				console.error('WebSocket连接失败:', error);
 				this.isWebSocketConnected = false;
 				this.$store.dispatch('downloadOnce/setPercent', 0);
+				throw error;
 			});
 		},
 
