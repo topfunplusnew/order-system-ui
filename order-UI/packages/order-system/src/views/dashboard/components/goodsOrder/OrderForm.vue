@@ -603,8 +603,8 @@ export default {
       scope.row.levelName = val.levelName;
       scope.row.erro = val.erro;
       scope.row.currentType = 'storeHouseName';
-      // 填充出厂单价
-      scope.row.price = val.price;
+      // 填充出厂单价（库存为填充存货价）
+      scope.row.paymentUnload = val.paymentUnload;
       // 填充后重新计算
       updateOrderRowCalculations(scope.row, this.isSea, this.isLand);
     },
@@ -1193,7 +1193,7 @@ export default {
       </el-card>
     </el-form>
     <br />
-  
+
     <!--    订单详情的填写-->
     <el-card class="box-card" shadow="hover" size="mini">
       <div>
@@ -1218,13 +1218,13 @@ export default {
               :disabled="!hasEditingRows">全部保存</el-button>
           </el-col>
         </el-row>
-  
+
         <!--        订单详情表格-->
         <el-table border size="mini" :data="orderdetailList" show-summary :summary-method="getSummary"
           :row-class-name="getRowClassName" @selection-change="handleOrderdetailSelectionChange" ref="orderdetail">
           <el-table-column type="selection" width="90" align="center" :selectable="() => true" />
           <el-table-column label="序号" align="center" type="index" width="50" />
-  
+
           <!-- 新增行操作列，放在前面方便操作 -->
           <el-table-column label="行操作" align="center" width="100">
             <template slot-scope="scope">
@@ -1234,7 +1234,7 @@ export default {
                 @click="handleRowSave(scope.row)">保存</el-button>
             </template>
           </el-table-column>
-  
+
           <el-table-column label="供应商/仓库" width="200">
             <template #default="scope">
               <el-row>
@@ -1454,7 +1454,7 @@ export default {
                 @blur="() => formatPriceInput(scope.row, 'seaFreight', 2)" />
             </template>
           </el-table-column>
-  
+
           <el-table-column label="总运费" prop="freight" width="90">
             <template #default="scope">
               <el-input size="mini" v-model="scope.row.freight" placeholder="自动计算" disabled />
@@ -1504,7 +1504,8 @@ export default {
           <el-table-column label="计提厂家降价金额" prop="factoryDiscountAmount" width="90">
             <template #default="scope">
               <el-input size="mini" v-model="scope.row.factoryDiscountAmount" placeholder="请输入计提厂家降价金额"
-                :disabled="!scope.row.isEditing" @blur="() => formatPriceInput(scope.row, 'factoryDiscountAmount', 2)" />
+                :disabled="!scope.row.isEditing"
+                @blur="() => formatPriceInput(scope.row, 'factoryDiscountAmount', 2)" />
             </template>
           </el-table-column>
           <el-table-column label="备注" prop="comments" width="90">

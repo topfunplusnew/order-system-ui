@@ -20,15 +20,15 @@ function calculatePaymentFactory(row) {
 	const length = Number(row.length);
 	const width = Number(row.width);
 	const pieces = Number(row.pieces);
-	const price = Number(row.price);
+	const paymentUnload = Number(row.paymentUnload);
 	const sundryCost = Number(row.sundryCost);
 
 	if (row.countingUnit === '其他') {
 		// 计量单位为"其他"时，不除以1000000
-		row.paymentFactory = fix_2(length * width * pieces * price + sundryCost);
+		row.paymentFactory = fix_2(length * width * pieces * paymentUnload + sundryCost);
 	} else {
 		// 计量单位为"片"时，除以1000000（原来的逻辑）
-		row.paymentFactory = fix_2(((length * width * pieces) / 1000000) * price + sundryCost);
+		row.paymentFactory = fix_2(((length * width * pieces) / 1000000) * paymentUnload + sundryCost);
 	}
 }
 
