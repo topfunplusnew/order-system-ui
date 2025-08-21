@@ -1351,12 +1351,12 @@ export default {
                 :disabled="!scope.row.isEditing" />
             </template>
           </el-table-column>
-          <el-table-column label="出厂单价" prop="price" width="90">
+          <el-table-column label="出厂单价" prop="paymentUnload" width="90">
             <template #default="scope">
-              <el-input size="mini" v-model="scope.row.price" @input="() => recalculateAll(scope)"
+              <el-input size="mini" v-model="scope.row.paymentUnload" @input="() => recalculateAll(scope)"
                 :placeholder="scope.row.pieces <= 0 ? '请先完善出厂片数' : '请输入出厂单价'"
                 :disabled="!scope.row.isEditing || !scope.row.pieces"
-                @blur="() => formatPriceInput(scope.row, 'price', 4, false)" />
+                @blur="() => formatPriceInput(scope.row, 'paymentUnload', 4, false)" />
             </template>
           </el-table-column>
           <el-table-column label="出厂是否含税" prop="isIncludeTaxFactory" width="90">

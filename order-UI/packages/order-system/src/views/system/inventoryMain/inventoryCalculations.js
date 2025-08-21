@@ -43,8 +43,7 @@ import { fix, fix_2 } from '../../../api/tool/format';
  * @returns {number} - 差值
  */
 function safeSubtract(base, subtractor) {
-	const result = Number(base) - Number(subtractor);
-	return result < 0 ? 0 : result;
+	return Number(base) - Number(subtractor);
 }
 
 /**
@@ -56,8 +55,6 @@ function calculateTonnage(row) {
 	const length = Number(row.length);
 	const width = Number(row.width);
 	const pieces = Number(row.pieces);
-
-	// If (height - erro) is negative, tonnage will be 0
 	const effectiveHeight = safeSubtract(height, erro);
 	row.tonnage = fix((effectiveHeight * length * width * pieces) / 1000000 / 20 / 20);
 }
