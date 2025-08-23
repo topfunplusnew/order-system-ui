@@ -2,7 +2,8 @@
 	<div class="app-container">
 		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
 			<el-form-item label="车牌" prop="carNo">
-				<el-input v-model="queryParams.carNo" placeholder="请输入车牌" clearable @keyup.enter.native="handleQuery" @input="handleInputTrim($event, 'queryParams', 'carNo')" />
+				<el-input v-model="queryParams.carNo" placeholder="请输入车牌" clearable @keyup.enter.native="handleQuery"
+					@input="handleInputTrim($event, 'queryParams', 'carNo')" />
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" size="mini" @click="handleQuery">搜索</el-button>
@@ -13,7 +14,8 @@
 				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
 			</el-col>
 			<el-col :span="1.5">
-				<el-button v-hasPermi="['system:cars:add']" type="danger" size="mini" @click="handleAdd">添加车辆信息</el-button>
+				<el-button v-hasPermi="['system:cars:add']" type="danger" size="mini"
+					@click="handleAdd">添加车辆信息</el-button>
 			</el-col>
 			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
 				<template #print>
@@ -24,27 +26,18 @@
 				<!--        导出-->
 				<template #export>
 					<el-col :span="1.5">
-						<el-button v-hasPermi="['system:bankaccount:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
+						<el-button v-hasPermi="['system:bankaccount:export']" plain icon="el-icon-folder-opened"
+							size="mini" @click="handleExport"></el-button>
 					</el-col>
 				</template>
 			</right-toolbar>
 		</el-row>
 
-		<el-table
-			id="printBox"
-			v-loading="loading"
-			v-horizontal-scroll="'always'"
-			border
-			:data="carsList"
-			height="450px"
-			size="mini"
-			:cell-style="
-				() => {
+		<el-table id="printBox" v-loading="loading" v-horizontal-scroll="'always'" border :data="carsList"
+			height="450px" size="mini" :cell-style="() => {
 					return { padding: '.5px' };
 				}
-			"
-			@selection-change="handleSelectionChange"
-		>
+				" @selection-change="handleSelectionChange">
 			<el-table-column v-if="columns[0].visible" label="车牌/柜号" align="center" prop="carNo" />
 			<el-table-column v-if="columns[1].visible" label="司机姓名/海运公司" align="center" prop="driver" />
 			<el-table-column v-if="columns[2].visible" label="司机电话" align="center" prop="tel" />
@@ -52,51 +45,52 @@
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
 				<template slot-scope="scope">
 					<el-button size="mini" type="text" @click="checkBankInfo(scope.row)">查看银行卡</el-button>
-					<el-button v-hasPermi="['system:cars:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">编辑</el-button>
-					<el-button v-hasPermi="['system:cars:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
+					<el-button v-hasPermi="['system:cars:edit']" size="mini" type="primary"
+						@click="handleUpdate(scope.row)">编辑</el-button>
+					<el-button v-hasPermi="['system:cars:remove']" size="mini" type="danger"
+						@click="handleDelete(scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
 
-		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
+		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum"
+			:limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改外部车辆信息对话框 -->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
-			<el-form ref="form" :model="form" :rules="rules" label-width="120px" @keyup.enter.native="submitForm" @submit.native.prevent="submitForm">
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false"
+			:show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
+			<el-form ref="form" :model="form" :rules="rules" label-width="120px" @keyup.enter.native="submitForm"
+				@submit.native.prevent="submitForm">
 				<el-form-item label="运输类型" prop="carType">
 					<el-radio v-model="form.carType" label="陆运">陆运</el-radio>
 					<el-radio v-model="form.carType" label="海运">海运</el-radio>
 				</el-form-item>
 				<el-form-item v-if="form.carType === '陆运'" label="车牌" prop="carNo">
-					<el-input v-model="form.carNo" placeholder="请输入车牌" @input="handleCheckInput" @blur="handleCheckIsExits" />
+					<el-input v-model="form.carNo" placeholder="请输入车牌" @input="handleCheckInput"
+						@blur="handleCheckIsExits" />
 				</el-form-item>
 				<!--        陆运司机名称或者 海运公司-->
 				<el-form-item :label="form.carType === '陆运' ? '司机' : '海运公司'" prop="driver">
-					<el-input v-model="form.driver" :placeholder="form.carType === '陆运' ? '请输入司机' : '请输入海运公司'" @input="handleInputTrim($event, 'form', 'driver')" />
+					<el-input v-model="form.driver" :placeholder="form.carType === '陆运' ? '请输入司机' : '请输入海运公司'"
+						@input="handleInputTrim($event, 'form', 'driver')" />
 				</el-form-item>
 				<el-form-item :label="form.carType === '陆运' ? '司机电话' : '联系电话'" prop="tel">
-					<el-input v-model="form.tel" :placeholder="form.carType === '陆运' ? '请输入司机电话' : '请输入联系电话'" @input="handleInputTrim($event, 'form', 'tel')" />
+					<el-input v-model="form.tel" :placeholder="form.carType === '陆运' ? '请输入司机电话' : '请输入联系电话'"
+						@input="handleInputTrim($event, 'form', 'tel')" />
 				</el-form-item>
 				<el-form-item label="开户行" prop="bankName">
 					<el-row>
 						<el-col :span="10">
-							<el-input v-model="form.bankName" placeholder="请输入开户行" @input="handleInputTrim($event, 'form', 'bankName')" />
+							<el-input v-model="form.bankName" placeholder="请输入开户行"
+								@input="handleInputTrim($event, 'form', 'bankName')" />
 						</el-col>
 						<el-col :span="3">
-							<SearchOption
-								title="搜索未绑定的司机银行卡"
-								:limit-info="{
-									acountsType: '司机',
-									companyId: 0
-								}"
-								:get-data="listBankAccount"
-								icon="el-icon-search"
-								query-info="acountsName"
-								query-label="开户名查找"
-								:query-name="queryCars"
-								@commitBack="handleCommitBack"
-								@update:queryName="handleCommitQueryName"
-							>
+							<SearchOption title="搜索未绑定的司机银行卡" :limit-info="{
+								acountsType: '司机',
+								companyId: 0
+							}" :get-data="listBankAccount" icon="el-icon-search" query-info="acountsName" query-label="开户名查找"
+								:query-name="queryCars" @commitBack="handleCommitBack"
+								@update:queryName="handleCommitQueryName">
 								<template #table-columns>
 									<el-table-column label="账号类型" align="center" prop="acountsType" />
 									<el-table-column label="开户行" align="center" prop="bankName" />
@@ -108,10 +102,12 @@
 					</el-row>
 				</el-form-item>
 				<el-form-item label="开户名" prop="acountsName">
-					<el-input v-model="form.acountsName" placeholder="请输入开户名" @input="handleInputTrim($event, 'form', 'acountsName')" />
+					<el-input v-model="form.acountsName" placeholder="请输入开户名"
+						@input="handleInputTrim($event, 'form', 'acountsName')" />
 				</el-form-item>
 				<el-form-item label="账号" prop="bankNo">
-					<el-input v-model="form.bankNo" placeholder="请输入账号" @input="handleInputTrim($event, 'form', 'bankNo')" />
+					<el-input v-model="form.bankNo" placeholder="请输入账号"
+						@input="handleInputTrim($event, 'form', 'bankNo')" />
 				</el-form-item>
 				<el-form-item label="账号类型" prop="acountsType">
 					<el-radio v-model="form.acountsType" label="1">收款</el-radio>
@@ -126,7 +122,8 @@
 
 		<!--    查看银行卡组件-->
 		<keep-alive>
-			<DialogListShow :title="'司机银行卡信息'" :get-data="listBankAccount" :query-object="queryObject" :visible.sync="driverBankAccout">
+			<DialogListShow :title="'司机银行卡信息'" :get-data="listBankAccount" :query-object="queryObject"
+				:visible.sync="driverBankAccout">
 				<template #column>
 					<el-table-column label="账号类型" align="center" prop="acountsType" />
 					<el-table-column label="开户行" align="center" prop="bankName" />
@@ -193,9 +190,17 @@ export default {
 								const maxLength = 8;
 								if (value.length > maxLength) {
 									callback(new Error(`车牌长度不能超过${maxLength}位`));
-								} else {
-									callback();
+									return;
 								}
+
+								// 车牌号格式校验：省份简称（中文）+ 字母和数字
+								const platePattern = /^[\u4e00-\u9fa5]+[A-Za-z0-9]*$/;
+								if (!platePattern.test(value)) {
+									callback(new Error('车牌号格式不正确，应为省份简称（中文）+ 字母数字组合'));
+									return;
+								}
+
+								callback();
 							} else {
 								callback();
 							}
@@ -336,17 +341,33 @@ export default {
 
 			// 1. 清除所有空格
 			let cleanedValue = value.replace(/\s+/g, '');
-			// 2. 将字母转为大写（包括"鲁A"这类前缀）
+
+			// 2. 车牌号格式校验：省份简称（中文）+ 字母和数字
+			// 匹配模式：1个或多个中文字符 + 字母和数字的组合
+			const platePattern = /^[\u4e00-\u9fa5]+[A-Za-z0-9]*$/;
+
+			if (cleanedValue && !platePattern.test(cleanedValue)) {
+				// 提取有效字符：保留中文字符和字母数字
+				const validChars = cleanedValue.match(/[\u4e00-\u9fa5A-Za-z0-9]/g);
+				if (validChars) {
+					cleanedValue = validChars.join('');
+				} else {
+					cleanedValue = '';
+				}
+				this.$message.warning('车牌号只能包含省份简称（中文）和字母数字');
+			}
+
+			// 3. 将字母转为大写
 			cleanedValue = cleanedValue.toUpperCase();
 
-			// 3. 限制车牌长度
+			// 4. 限制车牌长度
 			const maxLength = 8;
 			if (cleanedValue.length > maxLength) {
 				this.$message.warning(`车牌长度不能超过${maxLength}位`);
 				cleanedValue = cleanedValue.substring(0, maxLength);
 			}
 
-			// 4. 更新表单数据
+			// 5. 更新表单数据
 			this.form.carNo = cleanedValue;
 		},
 		handleCheckIsExits() {
@@ -537,7 +558,7 @@ export default {
 									this.getList();
 									this.$modal.msgSuccess('删除成功');
 								})
-								.catch(() => {});
+								.catch(() => { });
 						} else {
 							delCars(ids).then(() => {
 								this.getList();
@@ -546,7 +567,7 @@ export default {
 						}
 					});
 				})
-				.catch(() => {});
+				.catch(() => { });
 		},
 		/** 导出按钮操作 */
 		handleExport() {
