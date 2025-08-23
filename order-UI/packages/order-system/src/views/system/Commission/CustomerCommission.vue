@@ -1,22 +1,24 @@
 <template>
 	<div class="app-container">
 		<el-form ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="130px">
-			<el-form-item label="开始时间" prop="beginTime">
-				<el-date-picker v-model="queryParams.params.startTime" type="date" placeholder="请选择开始时间" value-format="yyyy-MM-dd" clearable />
+			<el-form-item label="开始时间" prop="startTime">
+				<el-date-picker v-model="queryParams.startTime" type="date" placeholder="请选择开始时间"
+					value-format="yyyy-MM-dd" clearable />
 			</el-form-item>
 			<el-form-item label="结束时间" prop="endTime">
-				<el-date-picker v-model="queryParams.params.endTime" type="date" placeholder="请选择结束时间" value-format="yyyy-MM-dd" clearable />
+				<el-date-picker v-model="queryParams.endTime" type="date" placeholder="请选择结束时间"
+					value-format="yyyy-MM-dd" clearable />
 			</el-form-item>
 			<el-form-item label="客户名称" prop="companyName">
 				<el-input v-model="queryParams.companyName" placeholder="请输入客户名称" clearable />
 			</el-form-item>
-			<el-form-item label="支付状态" prop="companyName">
-				<el-select v-model="queryParams.params.isNoPay" placeholder="请选择">
+			<el-form-item label="支付状态" prop="isNoPay">
+				<el-select v-model="queryParams.isNoPay" placeholder="请选择">
 					<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
 				</el-select>
 			</el-form-item>
-			<el-form-item label="是否可支付" prop="companyName">
-				<el-select v-model="queryParams.params.isCanPay" placeholder="请选择">
+			<el-form-item label="是否可支付" prop="isCanPay">
+				<el-select v-model="queryParams.isCanPay" placeholder="请选择">
 					<el-option v-for="item in pay_options" :key="item.value" :label="item.label" :value="item.value" />
 				</el-select>
 			</el-form-item>
@@ -26,8 +28,10 @@
 		</el-form>
 		<el-row>
 			<el-button size="mini" icon="el-icon-refresh" @click="refresh">刷新</el-button>
-			<el-button :disabled="selections.length <= 0" size="mini" type="success" icon="el-icon-s-claim" @click="handleOnceApply">一键申请</el-button>
-			<el-button :disabled="batchFillDisabled" size="mini" type="primary" icon="el-icon-edit" @click="handleBatchFill">批量填写佣金</el-button>
+			<el-button :disabled="selections.length <= 0" size="mini" type="success" icon="el-icon-s-claim"
+				@click="handleOnceApply">一键申请</el-button>
+			<el-button :disabled="batchFillDisabled" size="mini" type="primary" icon="el-icon-edit"
+				@click="handleBatchFill">批量填写佣金</el-button>
 		</el-row>
 		<el-row :gutter="10" class="mb8">
 			<right-toolbar :columns="columns" @queryTable="getList">
@@ -45,62 +49,80 @@
 		</el-row>
 		<el-alert title="添加佣金信息后，方可进行付款申请操作!" type="warning"></el-alert>
 		<br />
-		<el-table
-			ref="multipleTable"
-			id="printBox"
-			v-loading="loading"
-			v-horizontal-scroll="'always'"
-			border
-			:data="tableData"
-			size="mini"
-			:height="600"
-			:cell-style="
-				() => {
-					return { padding: '1.5px' };
-				}
-			"
-			@selection-change="handleSelectionChange"
-		>
+		<el-table ref="multipleTable" id="printBox" v-loading="loading" v-horizontal-scroll="'always'" border
+			:data="tableData" size="mini" :height="600" :cell-style="() => {
+				return { padding: '1.5px' };
+			}
+				" @selection-change="handleSelectionChange">
 			<el-table-column type="selection" width="55" align="center" :selectable="(row, index) => row.id !== null" />
 			<el-table-column label="批量佣金填写" width="80" align="center">
 				<template slot-scope="scope">
-					<el-checkbox v-if="scope.row.id === null" v-model="scope.row.batchSelected" @change="handleBatchSelectionChange"></el-checkbox>
+					<el-checkbox v-if="scope.row.id === null" v-model="scope.row.batchSelected"
+						@change="handleBatchSelectionChange"></el-checkbox>
 					<span v-else>-</span>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[0].visible" show-overflow-tooltip label="订单日期" align="center" prop="orderDate" width="140" />
-			<el-table-column v-if="columns[1].visible" show-overflow-tooltip label="客户名称" align="center" prop="companyName" width="140" />
-			<el-table-column v-if="columns[26].visible" show-overflow-tooltip label="车牌号" align="center" prop="landCarNo" width="140" />
-			<el-table-column v-if="columns[2].visible" show-overflow-tooltip label="产品名称" align="center" prop="levelName" width="140" />
-			<el-table-column v-if="columns[3].visible" show-overflow-tooltip label="单位" align="center" prop="countingUnit" width="100" />
-			<el-table-column v-if="columns[4].visible" show-overflow-tooltip label="高度" align="center" prop="height" width="100" />
-			<el-table-column v-if="columns[5].visible" show-overflow-tooltip label="长度" align="center" prop="length" width="100" />
-			<el-table-column v-if="columns[6].visible" show-overflow-tooltip label="宽度" align="center" prop="width" width="100" />
-			<el-table-column v-if="columns[7].visible" show-overflow-tooltip label="每包片数" align="center" prop="piecesPerPack" width="100" />
-			<el-table-column v-if="columns[8].visible" show-overflow-tooltip label="包数" align="center" prop="packs" width="100" />
-			<el-table-column v-if="columns[9].visible" show-overflow-tooltip label="卸货片数" align="center" prop="actualPieces" width="100" />
-			<el-table-column v-if="columns[10].visible" show-overflow-tooltip label="卸货价" align="center" prop="paymentUnload" width="100" />
-			<el-table-column v-if="columns[11].visible" show-overflow-tooltip label="含税销售" align="center" prop="isIncludeTaxSale" width="100">
+			<el-table-column v-if="columns[0].visible" show-overflow-tooltip label="订单日期" align="center"
+				prop="orderDate" width="140" />
+			<el-table-column v-if="columns[1].visible" show-overflow-tooltip label="客户名称" align="center"
+				prop="companyName" width="140" />
+			<el-table-column v-if="columns[26].visible" show-overflow-tooltip label="车牌号" align="center"
+				prop="landCarNo" width="140" />
+			<el-table-column v-if="columns[2].visible" show-overflow-tooltip label="产品名称" align="center"
+				prop="levelName" width="140" />
+			<el-table-column v-if="columns[3].visible" show-overflow-tooltip label="单位" align="center"
+				prop="countingUnit" width="100" />
+			<el-table-column v-if="columns[4].visible" show-overflow-tooltip label="高度" align="center" prop="height"
+				width="100" />
+			<el-table-column v-if="columns[5].visible" show-overflow-tooltip label="长度" align="center" prop="length"
+				width="100" />
+			<el-table-column v-if="columns[6].visible" show-overflow-tooltip label="宽度" align="center" prop="width"
+				width="100" />
+			<el-table-column v-if="columns[7].visible" show-overflow-tooltip label="每包片数" align="center"
+				prop="piecesPerPack" width="100" />
+			<el-table-column v-if="columns[8].visible" show-overflow-tooltip label="包数" align="center" prop="packs"
+				width="100" />
+			<el-table-column v-if="columns[9].visible" show-overflow-tooltip label="卸货片数" align="center"
+				prop="actualPieces" width="100" />
+			<el-table-column v-if="columns[10].visible" show-overflow-tooltip label="卸货价" align="center"
+				prop="paymentUnload" width="100" />
+			<el-table-column v-if="columns[11].visible" show-overflow-tooltip label="含税销售" align="center"
+				prop="isIncludeTaxSale" width="100">
 				<template slot-scope="scope">
 					{{ scope.row.isIncludeTaxSale ? '含税' : '不含税' }}
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[12].visible" show-overflow-tooltip label="杂费" align="center" prop="sundryCost" width="100" />
-			<el-table-column v-if="columns[13].visible" show-overflow-tooltip label="总货款" align="center" prop="payments" width="100" />
-			<el-table-column v-if="columns[14].visible" show-overflow-tooltip label="利润" align="center" prop="profit" width="100" />
-			<el-table-column v-if="columns[15].visible" show-overflow-tooltip label="不含税利润" align="center" prop="profitNoTax" width="100" />
-			<el-table-column v-if="columns[16].visible" show-overflow-tooltip label="备注" align="center" prop="comments" width="140" />
-			<el-table-column v-if="columns[17].visible" show-overflow-tooltip label="面积" align="center" prop="area" width="100" />
-			<el-table-column v-if="columns[21].visible" show-overflow-tooltip label="订单计提佣金" align="center" prop="commissionAmount" width="100" />
-			<el-table-column v-if="columns[18].visible" show-overflow-tooltip label="佣金单价" align="center" prop="commissionUnitPrice" width="100" />
-			<el-table-column v-if="columns[20].visible" show-overflow-tooltip label="其他付款金额" align="center" prop="otherPaymentAmount" width="100" />
-			<el-table-column v-if="columns[19].visible" show-overflow-tooltip label="已验证佣金" align="center" prop="verifiedCommission" width="100" />
-			<el-table-column v-if="columns[22].visible" show-overflow-tooltip label="实际客户佣金" align="center" prop="actualCustomerCommission" width="100" />
-			<el-table-column v-if="columns[23].visible" show-overflow-tooltip label="支付日期" align="center" prop="fundDate" width="100" />
-			<el-table-column v-if="columns[24].visible" show-overflow-tooltip label="差异" align="center" prop="difference" width="100" />
-			<el-table-column v-if="columns[25].visible" show-overflow-tooltip label="差异原因" align="center" prop="differenceReason" width="150">
+			<el-table-column v-if="columns[12].visible" show-overflow-tooltip label="杂费" align="center"
+				prop="sundryCost" width="100" />
+			<el-table-column v-if="columns[13].visible" show-overflow-tooltip label="总货款" align="center" prop="payments"
+				width="100" />
+			<el-table-column v-if="columns[14].visible" show-overflow-tooltip label="利润" align="center" prop="profit"
+				width="100" />
+			<el-table-column v-if="columns[15].visible" show-overflow-tooltip label="不含税利润" align="center"
+				prop="profitNoTax" width="100" />
+			<el-table-column v-if="columns[16].visible" show-overflow-tooltip label="备注" align="center" prop="comments"
+				width="140" />
+			<el-table-column v-if="columns[17].visible" show-overflow-tooltip label="面积" align="center" prop="area"
+				width="100" />
+			<el-table-column v-if="columns[21].visible" show-overflow-tooltip label="订单计提佣金" align="center"
+				prop="commissionAmount" width="100" />
+			<el-table-column v-if="columns[18].visible" show-overflow-tooltip label="佣金单价" align="center"
+				prop="commissionUnitPrice" width="100" />
+			<el-table-column v-if="columns[20].visible" show-overflow-tooltip label="其他付款金额" align="center"
+				prop="otherPaymentAmount" width="100" />
+			<el-table-column v-if="columns[19].visible" show-overflow-tooltip label="已验证佣金" align="center"
+				prop="verifiedCommission" width="100" />
+			<el-table-column v-if="columns[22].visible" show-overflow-tooltip label="实际客户佣金" align="center"
+				prop="actualCustomerCommission" width="100" />
+			<el-table-column v-if="columns[23].visible" show-overflow-tooltip label="支付日期" align="center"
+				prop="fundDate" width="100" />
+			<el-table-column v-if="columns[24].visible" show-overflow-tooltip label="差异" align="center"
+				prop="difference" width="100" />
+			<el-table-column v-if="columns[25].visible" show-overflow-tooltip label="差异原因" align="center"
+				prop="differenceReason" width="150">
 				<template slot-scope="scope">
-					<el-button v-if="scope.row.difference && scope.row.difference !== 0" size="mini" type="text" @click="handleDifferenceReason(scope.row)">
+					<el-button v-if="scope.row.difference && scope.row.difference !== 0" size="mini" type="text"
+						@click="handleDifferenceReason(scope.row)">
 						{{ scope.row.differenceReason || '填写差异原因' }}
 					</el-button>
 					<span v-else></span>
@@ -109,44 +131,42 @@
 			<!--      加一列操作列-->
 			<el-table-column show-overflow-tooltip label="操作" align="center" width="230" fixed="right">
 				<template slot-scope="scope">
-					<el-button type="text" size="mini" @click="handleEdit(scope.row)">{{ scope.row.id ? '修改佣金信息' : '填写佣金信息' }}</el-button>
-					<el-button :disabled="scope.row.id === null" type="text" size="mini" @click="handleDelete(scope.row)">删除</el-button>
-					<el-button :disabled="scope.row.id === null" type="text" size="mini" @click="handleApplyPayment(scope.row)">申请付款</el-button>
+					<el-button type="text" size="mini" @click="handleEdit(scope.row)">{{ scope.row.id ? '修改佣金信息' :
+						'填写佣金信息' }}</el-button>
+					<el-button :disabled="scope.row.id === null" type="text" size="mini"
+						@click="handleDelete(scope.row)">删除</el-button>
+					<el-button :disabled="scope.row.id === null" type="text" size="mini"
+						@click="handleApplyPayment(scope.row)">申请付款</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
 
-		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
+		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum"
+			:limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<div v-if="currentComponent">
 			<DialogWrapper :current-component="currentComponent" :dialog-visible="dialogVisible" />
 		</div>
 
 		<!--    申请付款-->
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="付款申请"
-			:visible.sync="PaymentApplyInfoVisible"
-			width="45%"
-		>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false"
+			:show-close="false" title="付款申请" :visible.sync="PaymentApplyInfoVisible" width="45%">
 			<keep-alive>
-				<ApplyPayment :money-input-disabled="false" :table-name="TableName.ORDERCOMMISION" :t-i-d="tID" :need-money="needMoney" :need-info="{}" @changeOpen="changePaymentApplyInfoVisible" />
+				<ApplyPayment :money-input-disabled="false" :table-name="TableName.ORDERCOMMISION" :t-i-d="tID"
+					:need-money="needMoney" :need-info="{}" @changeOpen="changePaymentApplyInfoVisible" />
 			</keep-alive>
 		</el-dialog>
 
 		<!--    批量填写佣金-->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" title="批量填写佣金信息" :visible.sync="batchFillVisible" width="500px">
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false"
+			title="批量填写佣金信息" :visible.sync="batchFillVisible" width="500px">
 			<el-form ref="batchForm" :model="batchForm" :rules="batchRules" label-width="140px">
 				<el-form-item label="佣金单价" prop="commissionUnitPrice">
 					<el-input v-model="batchForm.commissionUnitPrice" placeholder="请输入佣金单价" type="number" step="0.01" />
 				</el-form-item>
 				<el-form-item label="其他付款金额" prop="otherPaymentAmount">
-					<el-input v-model="batchForm.otherPaymentAmount" placeholder="请输入其他付款金额" type="number" step="0.01" />
+					<el-input v-model="batchForm.otherPaymentAmount" placeholder="请输入其他付款金额" type="number"
+						step="0.01" />
 				</el-form-item>
 				<el-form-item label="差异原因" prop="difference_reason">
 					<el-input v-model="batchForm.difference_reason" placeholder="请输入差异原因" type="textarea" :rows="3" />
@@ -196,13 +216,11 @@ export default {
 				companyName: '',
 				pageNum: 1,
 				pageSize: 20,
-				params: {
-					showOrder: null,
-					isNoPay: null,
-					isCanPay: null,
-					startTime: null,
-					endTime: null
-				}
+				startTime: null,
+				endTime: null,
+				isNoPay: null,
+				isCanPay: null,
+				showOrder: null
 			},
 			columns: [
 				{ key: 0, label: '订单日期', visible: true },
@@ -245,21 +263,25 @@ export default {
 					label: '全部'
 				},
 				{
-					value: false,
-					label: '已付款'
-				},
-				{
 					value: true,
 					label: '未付款'
+				},
+				{
+					value: false,
+					label: '已付款'
 				}
 			],
 			pay_options: [
 				{
-					value: false,
-					label: '可支付'
+					value: '',
+					label: '全部'
 				},
 				{
 					value: true,
+					label: '可支付'
+				},
+				{
+					value: false,
 					label: '不可支付'
 				}
 			],
@@ -340,13 +362,11 @@ export default {
 				companyName: '',
 				pageNum: 1,
 				pageSize: 20,
-				params: {
-					showOrder: null,
-					isNoPay: null,
-					isCanPay: null,
-					startTime: null,
-					endTime: null
-				}
+				startTime: null,
+				endTime: null,
+				isNoPay: null,
+				isCanPay: null,
+				showOrder: null
 			};
 			this.getList();
 		},
@@ -358,7 +378,36 @@ export default {
 		async getList() {
 			this.loading = true;
 			try {
-				const response = await listCommission(this.queryParams, CommissionType.CUSTOMER);
+				// 构建符合后端API要求的查询参数
+				const queryParams = {
+					pageNum: this.queryParams.pageNum,
+					pageSize: this.queryParams.pageSize,
+					type: CommissionType.CUSTOMER,
+					params: {}
+				};
+				// 添加客户名称参数
+				if (this.queryParams.companyName) {
+					console.log(`queryParams:`, queryParams)
+					queryParams.companyName = this.queryParams.companyName.trim();
+				}
+				// 添加params参数
+				if (this.queryParams.startTime) {
+					queryParams.params.startTime = this.queryParams.startTime;
+				}
+				if (this.queryParams.endTime) {
+					queryParams.params.endTime = this.queryParams.endTime;
+				}
+				if (this.queryParams.isNoPay !== null && this.queryParams.isNoPay !== '') {
+					queryParams.params.isNoPay = this.queryParams.isNoPay;
+				}
+				if (this.queryParams.isCanPay !== null && this.queryParams.isCanPay !== '') {
+					queryParams.params.isCanPay = this.queryParams.isCanPay;
+				}
+				// showOrder: 平时查看给true，一键付款给false
+				queryParams.params.showOrder = true;
+				
+				console.log(this.queryParams);
+				const response = await listCommission(queryParams, CommissionType.CUSTOMER);
 				// 为每行数据添加批量选择字段
 				this.tableData = response.rows.map(row => ({
 					...row,
@@ -460,12 +509,38 @@ export default {
 		},
 		// 导出
 		handleExport() {
+			// 构建符合后端API要求的导出参数
+			const exportParams = {
+				pageNum: this.queryParams.pageNum,
+				pageSize: this.queryParams.pageSize,
+				type: 0, // 客户佣金类型
+				params: {}
+			};
+
+			// 添加客户名称参数
+			if (this.queryParams.companyName && this.queryParams.companyName.trim()) {
+				exportParams.companyName = this.queryParams.companyName.trim();
+			}
+
+			// 添加params参数
+			if (this.queryParams.startTime) {
+				exportParams.params.startTime = this.queryParams.startTime;
+			}
+			if (this.queryParams.endTime) {
+				exportParams.params.endTime = this.queryParams.endTime;
+			}
+			if (this.queryParams.isNoPay !== null && this.queryParams.isNoPay !== '') {
+				exportParams.params.isNoPay = this.queryParams.isNoPay;
+			}
+			if (this.queryParams.isCanPay !== null && this.queryParams.isCanPay !== '') {
+				exportParams.params.isCanPay = this.queryParams.isCanPay;
+			}
+			// showOrder: 平时查看给true
+			exportParams.params.showOrder = true;
+
 			this.download(
 				'system/ordercommission/export',
-				{
-					...this.queryParams,
-					type:0
-				},
+				exportParams,
 				`客户佣金_${new Date().getTime()}.xlsx`
 			);
 		},

@@ -6,17 +6,15 @@ import service from '@/utils/request';
  * @description 返回的结果中 id是空的数据说明没有佣金信息 可以新增，否则不可以 只能付款
  * @param {Object} query - 查询参数对象
  * @param {string|number} type - 佣金类型 (0: 厂家佣金, 1: 客户佣金)
- * @param {string} [companyName=''] - 公司名称，可选参数
  * @returns {Promise} 返回佣金列表的Promise对象
  */
-export function listCommission(query, type, companyName = '') {
+export function listCommission(query, type) {
 	return service.request({
 		url: '/system/ordercommission/list',
 		method: 'get',
 		params: {
 			...query,
-			type,
-			companyName
+			type
 		}
 	});
 }
