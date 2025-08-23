@@ -59,15 +59,16 @@
 			@selection-change="handleSelectionChange"
 			class="table-container"
 		>
-			<el-table-column v-if="columns[0].visible" label="客户名称" align="center" prop="companyName" show-overflow-tooltip />
-			<el-table-column v-if="columns[1].visible" label="老板姓名" align="center" prop="leader" show-overflow-tooltip />
-			<el-table-column v-if="columns[2].visible" label="老板电话" align="center" prop="leaderTel" show-overflow-tooltip />
-			<el-table-column v-if="columns[3].visible" label="区域" align="center" prop="region" show-overflow-tooltip />
-			<el-table-column v-if="columns[4].visible" label="联系人" align="center" prop="relationName" show-overflow-tooltip />
-			<el-table-column v-if="columns[5].visible" label="销售经理" align="center" prop="salesManager" show-overflow-tooltip />
-			<el-table-column v-if="columns[6].visible" label="地址" align="center" prop="address" show-overflow-tooltip />
-			<el-table-column v-if="columns[7].visible" label="电话" align="center" prop="relationTel" show-overflow-tooltip />
-			<el-table-column v-if="columns[8].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
+			<el-table-column v-if="columns[0].visible" label="ID" align="center" prop="id" show-overflow-tooltip width="80" />
+			<el-table-column v-if="columns[1].visible" label="客户名称" align="center" prop="companyName" show-overflow-tooltip />
+			<el-table-column v-if="columns[2].visible" label="老板姓名" align="center" prop="leader" show-overflow-tooltip />
+			<el-table-column v-if="columns[3].visible" label="老板电话" align="center" prop="leaderTel" show-overflow-tooltip />
+			<el-table-column v-if="columns[4].visible" label="区域" align="center" prop="region" show-overflow-tooltip />
+			<el-table-column v-if="columns[5].visible" label="联系人" align="center" prop="relationName" show-overflow-tooltip />
+			<el-table-column v-if="columns[6].visible" label="销售经理" align="center" prop="salesManager" show-overflow-tooltip />
+			<el-table-column v-if="columns[7].visible" label="地址" align="center" prop="address" show-overflow-tooltip />
+			<el-table-column v-if="columns[8].visible" label="电话" align="center" prop="relationTel" show-overflow-tooltip />
+			<el-table-column v-if="columns[9].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="200">
 				<template slot-scope="scope">
 					<el-button size="mini" type="text" @click="jumpBankNo(scope.row)">银行卡号</el-button>
@@ -499,15 +500,16 @@ export default {
 				// 移除county的单独校验规则，因为不是必选项
 			},
 			columns: [
-				{ key: 0, label: `客户`, visible: true },
-				{ key: 1, label: `老板姓名`, visible: true },
-				{ key: 2, label: `老板电话`, visible: true },
-				{ key: 3, label: `区域`, visible: true },
-				{ key: 4, label: `联系人`, visible: true },
-				{ key: 5, label: `销售经理`, visible: true },
-				{ key: 6, label: `地址`, visible: true },
-				{ key: 7, label: `电话`, visible: true },
-				{ key: 8, label: `备注`, visible: true }
+				{ key: 0, label: `ID`, visible: true },
+				{ key: 1, label: `客户`, visible: true },
+				{ key: 2, label: `老板姓名`, visible: true },
+				{ key: 3, label: `老板电话`, visible: true },
+				{ key: 4, label: `区域`, visible: true },
+				{ key: 5, label: `联系人`, visible: true },
+				{ key: 6, label: `销售经理`, visible: true },
+				{ key: 7, label: `地址`, visible: true },
+				{ key: 8, label: `电话`, visible: true },
+				{ key: 9, label: `备注`, visible: true }
 			],
 			dialogFormVisible: false, // 搜索已绑定的银行卡信息
 			dialogFormSearchVisible: false,

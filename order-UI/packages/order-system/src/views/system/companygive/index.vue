@@ -45,7 +45,7 @@
 			v-horizontal-scroll="'always'"
 			border
 			:data="companyList"
-			height="450px"
+			height="650px"
 			size="mini"
 			:cell-style="
 				() => {
@@ -54,12 +54,13 @@
 			"
 			@selection-change="handleSelectionChange"
 		>
-			<el-table-column v-if="columns[0].visible" label="供应商" align="center" prop="companyName" show-overflow-tooltip />
-			<el-table-column v-if="columns[1].visible" label="地址" align="center" prop="address" show-overflow-tooltip />
-			<el-table-column v-if="columns[2].visible" label="联系人" align="center" prop="relationName" show-overflow-tooltip />
-			<el-table-column v-if="columns[3].visible" label="老板电话" align="center" prop="leaderTel" show-overflow-tooltip />
-			<el-table-column v-if="columns[4].visible" label="电话" align="center" prop="relationTel" show-overflow-tooltip />
-			<el-table-column v-if="columns[5].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
+			<el-table-column v-if="columns[0].visible" label="ID" align="center" prop="id" show-overflow-tooltip width="80" />
+			<el-table-column v-if="columns[1].visible" label="供应商" align="center" prop="companyName" show-overflow-tooltip />
+			<el-table-column v-if="columns[2].visible" label="地址" align="center" prop="address" show-overflow-tooltip />
+			<el-table-column v-if="columns[3].visible" label="联系人" align="center" prop="relationName" show-overflow-tooltip />
+			<el-table-column v-if="columns[4].visible" label="老板电话" align="center" prop="leaderTel" show-overflow-tooltip />
+			<el-table-column v-if="columns[5].visible" label="电话" align="center" prop="relationTel" show-overflow-tooltip />
+			<el-table-column v-if="columns[6].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
 				<template slot-scope="scope">
 					<el-button size="mini" type="text" @click="jumpBankNo(scope.row)">银行卡号</el-button>
@@ -378,12 +379,13 @@ export default {
 				]
 			},
 			columns: [
-				{ key: 0, label: `供应商`, visible: true },
-				{ key: 1, label: `地址`, visible: true },
-				{ key: 2, label: `联系人`, visible: true },
-				{ key: 3, label: `老板电话`, visible: true },
-				{ key: 4, label: `电话`, visible: true },
-				{ key: 5, label: `备注`, visible: true }
+				{ key: 0, label: `ID`, visible: true },
+				{ key: 1, label: `供应商`, visible: true },
+				{ key: 2, label: `地址`, visible: true },
+				{ key: 3, label: `联系人`, visible: true },
+				{ key: 4, label: `老板电话`, visible: true },
+				{ key: 5, label: `电话`, visible: true },
+				{ key: 6, label: `备注`, visible: true }
 			],
 			dialogFormSearchVisible: false,
 			dialogFormVisible: false,
