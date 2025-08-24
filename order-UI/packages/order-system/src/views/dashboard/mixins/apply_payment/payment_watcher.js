@@ -143,7 +143,7 @@ export var mixin_payment_watcher = {
 							otherBankName: '',
 							selfAcountsName: '',
 							selfBankNo: '',
-							selfBankName: '',
+							selfBankName: ''
 						});
 					} else {
 						// 如果是己方的银行卡 填充己方银行卡信息

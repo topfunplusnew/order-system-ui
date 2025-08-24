@@ -119,9 +119,10 @@
 			</el-table-column>
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
 				<template slot-scope="scope">
-					<el-dropdown @command="(command) => handleCommand(command, scope.row)">
+					<el-dropdown @command="command => handleCommand(command, scope.row)">
 						<el-button type="primary" size="mini">
-							操作<i class="el-icon-arrow-down el-icon--right"></i>
+							操作
+							<i class="el-icon-arrow-down el-icon--right"></i>
 						</el-button>
 						<el-dropdown-menu slot="dropdown">
 							<el-dropdown-item v-hasPermi="['system:invoicein:edit']" command="edit">修改</el-dropdown-item>
@@ -252,13 +253,7 @@
 				<el-table-column prop="reason" label="修改原因" />
 				<el-table-column prop="userName" label="修改人" />
 			</el-table>
-			<pagination 
-				v-show="editReasonTotal > 0" 
-				:total="editReasonTotal" 
-				:page.sync="editReasonQueryParams.pageNum" 
-				:limit.sync="editReasonQueryParams.pageSize" 
-				@pagination="getEditReasonList" 
-			/>
+			<pagination v-show="editReasonTotal > 0" :total="editReasonTotal" :page.sync="editReasonQueryParams.pageNum" :limit.sync="editReasonQueryParams.pageSize" @pagination="getEditReasonList" />
 		</el-dialog>
 	</div>
 </template>
@@ -598,45 +593,49 @@ export default {
 		handleUpdate(row) {
 			// 先获取发票购入详情，判断是否需要填写修改原因
 			const id = row.id || this.ids;
-			getInvoiceIn(id).then(response => {
-				const invoiceInData = response.data;
-				
-				// 判断是否需要填写修改原因
-				if (invoiceInData && invoiceInData.shouldTrackEditReason === true) {
-					// 需要填写修改原因
-					this.$prompt('请输入修改原因', '提示', {
-						confirmButtonText: '确定',
-						cancelButtonText: '取消',
-						inputType: 'textarea',
-						inputPlaceholder: '请输入修改原因',
-						inputValidator: (value) => {
-							if (!value || value.trim() === '') {
-								return '修改原因不能为空';
+			getInvoiceIn(id)
+				.then(response => {
+					const invoiceInData = response.data;
+
+					// 判断是否需要填写修改原因
+					if (invoiceInData && invoiceInData.shouldTrackEditReason === true) {
+						// 需要填写修改原因
+						this.$prompt('请输入修改原因', '提示', {
+							confirmButtonText: '确定',
+							cancelButtonText: '取消',
+							inputType: 'textarea',
+							inputPlaceholder: '请输入修改原因',
+							inputValidator: value => {
+								if (!value || value.trim() === '') {
+									return '修改原因不能为空';
+								}
+								return true;
 							}
-							return true;
-						}
-					}).then(({ value }) => {
-						// 将修改原因存储到sessionStorage
-						sessionStorage.setItem('editReason_invoiceIn_main', value);
-						
-						// 继续编辑操作
+						})
+							.then(({ value }) => {
+								// 将修改原因存储到sessionStorage
+								sessionStorage.setItem('editReason_invoiceIn_main', value);
+
+								// 继续编辑操作
+								this.performInvoiceInEdit(invoiceInData);
+							})
+							.catch(() => {
+								this.$message({
+									type: 'info',
+									message: '已取消修改'
+								});
+							});
+					} else {
+						// 不需要填写修改原因，直接进行编辑操作
 						this.performInvoiceInEdit(invoiceInData);
-					}).catch(() => {
-						this.$message({
-							type: 'info',
-							message: '已取消修改'
-						});
-					});
-				} else {
-					// 不需要填写修改原因，直接进行编辑操作
-					this.performInvoiceInEdit(invoiceInData);
-				}
-			}).catch(error => {
-				console.error('获取发票购入详情失败:', error);
-				this.$message.error('获取发票购入详情失败');
-			});
+					}
+				})
+				.catch(error => {
+					console.error('获取发票购入详情失败:', error);
+					this.$message.error('获取发票购入详情失败');
+				});
 		},
-		
+
 		// 执行发票购入编辑操作的逻辑
 		performInvoiceInEdit(invoiceInData) {
 			this.reset();
@@ -679,7 +678,7 @@ export default {
 
 					// 创建提交数据的副本
 					const submitData = { ...this.form };
-					
+
 					if (this.form.id != null) {
 						// 编辑时，从sessionStorage获取修改原因
 						const editReason = sessionStorage.getItem('editReason_invoiceIn_main');
@@ -688,24 +687,26 @@ export default {
 							return;
 						}
 						submitData.editReason = editReason;
-						
+
 						const finalData = excludeParams(submitData, this.$exclude);
-						updateInvoiceIn(finalData).then(() => {
-							this.$modal.msgSuccess('修改成功');
-							this.open = false;
-							// 清空sessionStorage中的修改原因
-							sessionStorage.removeItem('editReason_invoiceIn_main');
-							// 清理 UploadFilesButton 状态
-							if (this.$refs.paymentReceiptsUpload) {
-								this.$refs.paymentReceiptsUpload.clearUploadedFiles();
-							}
-							if (this.$refs.invoiceAttachmentsUpload) {
-								this.$refs.invoiceAttachmentsUpload.clearUploadedFiles();
-							}
-							this.getList();
-						}).catch(() => {
-							// 修改失败时不清空sessionStorage，用户可以重试
-						});
+						updateInvoiceIn(finalData)
+							.then(() => {
+								this.$modal.msgSuccess('修改成功');
+								this.open = false;
+								// 清空sessionStorage中的修改原因
+								sessionStorage.removeItem('editReason_invoiceIn_main');
+								// 清理 UploadFilesButton 状态
+								if (this.$refs.paymentReceiptsUpload) {
+									this.$refs.paymentReceiptsUpload.clearUploadedFiles();
+								}
+								if (this.$refs.invoiceAttachmentsUpload) {
+									this.$refs.invoiceAttachmentsUpload.clearUploadedFiles();
+								}
+								this.getList();
+							})
+							.catch(() => {
+								// 修改失败时不清空sessionStorage，用户可以重试
+							});
 					} else {
 						// 新增时，不需要修改原因
 						const finalData = excludeParams(submitData, this.$exclude);

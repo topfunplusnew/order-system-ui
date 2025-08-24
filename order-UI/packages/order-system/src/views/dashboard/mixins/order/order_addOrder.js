@@ -33,63 +33,65 @@ export var mixin_order_add = {
 		// 修改订单的操作
 		handleUpdate(row) {
 			// 先获取订单详情，判断是否需要填写修改原因
-			getGoodsOrder(row.id).then(response => {
-				const orderData = response.data;
-				
-				// 判断是否需要填写修改原因
-				if (orderData && orderData.shouldTrackEditReason === true) {
-					// 需要填写修改原因
-					this.$prompt('请输入修改原因', '提示', {
-						confirmButtonText: '确定',
-						cancelButtonText: '取消',
-						inputType: 'textarea',
-						inputPlaceholder: '请输入修改原因',
-						inputValidator: value => {
-							if (!value || value.trim() === '') {
-								return '修改原因不能为空';
+			getGoodsOrder(row.id)
+				.then(response => {
+					const orderData = response.data;
+
+					// 判断是否需要填写修改原因
+					if (orderData && orderData.shouldTrackEditReason === true) {
+						// 需要填写修改原因
+						this.$prompt('请输入修改原因', '提示', {
+							confirmButtonText: '确定',
+							cancelButtonText: '取消',
+							inputType: 'textarea',
+							inputPlaceholder: '请输入修改原因',
+							inputValidator: value => {
+								if (!value || value.trim() === '') {
+									return '修改原因不能为空';
+								}
+								return true;
 							}
-							return true;
-						}
-					})
-						.then(({ value }) => {
-							// 将修改原因存储到sessionStorage
-							sessionStorage.setItem('goodsorder-edit-reason', value);
-							
-							// 打开OrderForm弹窗
-							this.openDialog(
-								OrderForm,
-								'修改订单',
-								'1300px',
-								{
-									orderId: row.id,
-									submitInfo: '修改订单'
-								},
-								false
-							);
 						})
-						.catch(() => {
-							this.$message({
-								type: 'info',
-								message: '已取消修改'
+							.then(({ value }) => {
+								// 将修改原因存储到sessionStorage
+								sessionStorage.setItem('goodsorder-edit-reason', value);
+
+								// 打开OrderForm弹窗
+								this.openDialog(
+									OrderForm,
+									'修改订单',
+									'1300px',
+									{
+										orderId: row.id,
+										submitInfo: '修改订单'
+									},
+									false
+								);
+							})
+							.catch(() => {
+								this.$message({
+									type: 'info',
+									message: '已取消修改'
+								});
 							});
-						});
-				} else {
-					// 不需要填写修改原因，直接打开弹窗
-					this.openDialog(
-						OrderForm,
-						'修改订单',
-						'1300px',
-						{
-							orderId: row.id,
-							submitInfo: '修改订单'
-						},
-						false
-					);
-				}
-			}).catch(error => {
-				console.error('获取订单详情失败:', error);
-				this.$message.error('获取订单详情失败');
-			});
+					} else {
+						// 不需要填写修改原因，直接打开弹窗
+						this.openDialog(
+							OrderForm,
+							'修改订单',
+							'1300px',
+							{
+								orderId: row.id,
+								submitInfo: '修改订单'
+							},
+							false
+						);
+					}
+				})
+				.catch(error => {
+					console.error('获取订单详情失败:', error);
+					this.$message.error('获取订单详情失败');
+				});
 		}
 	}
 };

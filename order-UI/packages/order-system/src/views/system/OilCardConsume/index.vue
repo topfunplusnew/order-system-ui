@@ -185,7 +185,13 @@
 					<el-input v-model="form.endCardSurplus" placeholder="请输入加油卡余额" />
 				</el-form-item>
 				<el-form-item label="加油小票附件" prop="attachmentOiladd">
-					<UploadFilesButton ref="attachmentUpload" flag="attachmentOiladd" :extra-info="{ moduleType: 'oilCardConsume', formId: form.id }" :initial-attachments="form.attachmentList || []" @files-updated="handleAttachmentFilesUpdated" />
+					<UploadFilesButton
+						ref="attachmentUpload"
+						flag="attachmentOiladd"
+						:extra-info="{ moduleType: 'oilCardConsume', formId: form.id }"
+						:initial-attachments="form.attachmentList || []"
+						@files-updated="handleAttachmentFilesUpdated"
+					/>
 				</el-form-item>
 				<el-form-item label="备注" prop="comments">
 					<el-input v-model="form.comments" placeholder="请输入备注" />

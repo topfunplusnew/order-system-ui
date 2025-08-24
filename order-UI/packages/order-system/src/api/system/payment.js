@@ -72,7 +72,7 @@ export function getPaymentByPayNO(id) {
 
 /**
  * 这个与上面接口有区别 需要改一下 只给报表使用
- * @returns 
+ * @returns
  */
 export function getPaymentByNo(id) {
 	return request({

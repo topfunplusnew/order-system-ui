@@ -9,13 +9,13 @@ export const common_excel = {
 				this._performExcelExport(unnecessaryColumns, fileName);
 			});
 		},
-		
+
 		_performExcelExport(unnecessaryColumns = [], fileName = 'table') {
 			// 尝试多个可能的表格ID
 			const possibleTableIds = ['#educe-table', '#printBox'];
 			let table = null;
 			let foundTableId = '';
-			
+
 			for (const id of possibleTableIds) {
 				table = document.querySelector(id);
 				if (table) {
@@ -24,13 +24,13 @@ export const common_excel = {
 					break;
 				}
 			}
-			
+
 			if (!table) {
 				console.error('未找到表格元素，尝试了以下ID:', possibleTableIds);
 				this.$message.error('未找到表格元素，无法导出');
 				return;
 			}
-			
+
 			// 检查表格是否有数据行
 			const dataRows = table.querySelectorAll('tr:not(:first-child)');
 			if (dataRows.length === 0) {

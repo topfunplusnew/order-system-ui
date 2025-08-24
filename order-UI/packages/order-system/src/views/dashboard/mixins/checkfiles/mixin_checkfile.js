@@ -46,7 +46,7 @@ export var mixin_checkfile = {
 				return;
 			}
 			// 调用 onGet 方法获取文件记录
-			onGet(row.id).then(async (res) => {
+			onGet(row.id).then(async res => {
 				const deepData = _.cloneDeep(res.data);
 				const extingFile = (deepData?.attachmentList || []).map(item => item.id) || [];
 				const set = new Set([...value.map(item => item.id), ...extingFile]);

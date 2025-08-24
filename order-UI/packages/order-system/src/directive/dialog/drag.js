@@ -124,11 +124,7 @@ export default {
 				const screenHeight = window.innerHeight;
 
 				// 检查顶部是否脱离视窗或者对话框大部分不可见
-				if (dialogRect.top < 0 ||
-					dialogRect.bottom < 50 ||
-					dialogRect.left + 50 < 0 ||
-					dialogRect.right - 50 > screenWidth) {
-
+				if (dialogRect.top < 0 || dialogRect.bottom < 50 || dialogRect.left + 50 < 0 || dialogRect.right - 50 > screenWidth) {
 					// 重新定位到屏幕中间
 					const centerX = (screenWidth - dragDom.offsetWidth) / 2;
 					const centerY = (screenHeight - dragDom.offsetHeight) / 2;

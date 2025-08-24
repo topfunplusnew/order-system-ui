@@ -120,12 +120,12 @@
 					<el-input v-model="form.rechargeName" disabled placeholder="请输入充值人员姓名" />
 				</el-form-item>
 				<el-form-item label="充值附件" prop="attachment">
-					<UploadFilesButton 
-						ref="attachmentUpload" 
-						flag="attachment" 
-						:initial-attachments="(form.params && form.params.attachments) || []" 
-						:extra-info="{ moduleType: 'oilRecharge', formId: form.id }" 
-						@files-updated="handleAttachmentFilesUpdated" 
+					<UploadFilesButton
+						ref="attachmentUpload"
+						flag="attachment"
+						:initial-attachments="(form.params && form.params.attachments) || []"
+						:extra-info="{ moduleType: 'oilRecharge', formId: form.id }"
+						@files-updated="handleAttachmentFilesUpdated"
 					/>
 				</el-form-item>
 				<el-form-item label="备注" prop="comments">

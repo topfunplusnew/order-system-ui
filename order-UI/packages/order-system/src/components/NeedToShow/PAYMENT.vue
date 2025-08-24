@@ -101,7 +101,7 @@ export default {
 				<el-descriptions-item label="资金日期">{{ needToShowInfo.fundsDate }}</el-descriptions-item>
 				<el-descriptions-item label="付款类型">{{ needToShowInfo.payType }}</el-descriptions-item>
 				<el-descriptions-item label="金额" label-class-name="money-label">
-					<span style="color: #E6A23C; font-weight: bold;">{{ needToShowInfo.moneyAmount }} 元</span>
+					<span style="color: #e6a23c; font-weight: bold">{{ needToShowInfo.moneyAmount }} 元</span>
 				</el-descriptions-item>
 				<el-descriptions-item label="付款状态">
 					<el-tag :type="needToShowInfo.paymentState === '已支付' ? 'success' : 'warning'">
@@ -162,7 +162,7 @@ export default {
 .clearfix:before,
 .clearfix:after {
 	display: table;
-	content: "";
+	content: '';
 }
 
 .clearfix:after {

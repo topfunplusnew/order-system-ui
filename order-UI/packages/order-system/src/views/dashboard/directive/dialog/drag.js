@@ -17,7 +17,7 @@ export default {
 		dialogHeaderEl.onmousedown = e => {
 			// 添加拖拽状态类，禁用全局文字选择
 			document.body.classList.add('dragging');
-			
+
 			// 添加拖拽时的阴影效果
 			dragDom.style.boxShadow = '0 12px 48px rgba(0, 0, 0, 0.25), 0 4px 16px rgba(0, 0, 0, 0.15)';
 			dragDom.style.transition = 'none'; // 禁用过渡效果，提高拖拽性能
@@ -58,11 +58,11 @@ export default {
 				// 获取当前窗口尺寸
 				const currentScreenWidth = window.innerWidth;
 				const currentScreenHeight = window.innerHeight;
-				
+
 				// 计算最终位置
 				const finalLeft = left + styL;
 				const finalTop = top + styT;
-				
+
 				// 更严格的边界处理
 				// 左边界：至少保留50px在屏幕内
 				if (finalLeft < -dragDomWidth + 50) {
@@ -72,7 +72,7 @@ export default {
 				else if (finalLeft > currentScreenWidth - 50) {
 					left = currentScreenWidth - 50 - styL;
 				}
-				
+
 				// 上边界：不能超出屏幕顶部
 				if (finalTop < 0) {
 					top = -styT;
@@ -92,33 +92,29 @@ export default {
 			document.onmouseup = function () {
 				// 移除拖拽状态类，恢复全局文字选择
 				document.body.classList.remove('dragging');
-				
+
 				// 恢复原始阴影效果
 				dragDom.style.boxShadow = '';
 				dragDom.style.transition = '';
-				
+
 				// 检查对话框是否脱离视窗，如果是则重新定位到屏幕中间
 				const dialogRect = dragDom.getBoundingClientRect();
 				const screenWidth = window.innerWidth;
 				const screenHeight = window.innerHeight;
-				
+
 				// 检查顶部是否脱离视窗或者对话框大部分不可见
-				if (dialogRect.top < 0 || 
-					dialogRect.bottom < 50 || 
-					dialogRect.left + 50 < 0 || 
-					dialogRect.right - 50 > screenWidth) {
-					
+				if (dialogRect.top < 0 || dialogRect.bottom < 50 || dialogRect.left + 50 < 0 || dialogRect.right - 50 > screenWidth) {
 					// 重新定位到屏幕中间
 					const centerX = (screenWidth - dragDom.offsetWidth) / 2;
 					const centerY = (screenHeight - dragDom.offsetHeight) / 2;
-					
+
 					// 添加平滑动画效果
 					dragDom.style.transition = 'all 0.3s ease-out';
 					dragDom.style.left = centerX + 'px';
 					dragDom.style.top = centerY + 'px';
 					dragDom.style.marginLeft = '0px';
 					dragDom.style.marginTop = '0px';
-					
+
 					// 动画结束后清除过渡效果
 					setTimeout(() => {
 						dragDom.style.transition = '';

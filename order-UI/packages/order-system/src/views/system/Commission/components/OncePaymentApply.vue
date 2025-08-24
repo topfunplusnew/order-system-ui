@@ -19,12 +19,29 @@
 			</el-table>
 		</el-card>
 
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false"
-			:show-close="false" title="付款申请" :visible.sync="applyDialogVisible" width="45%" append-to-body>
+		<el-dialog
+			:modal="false"
+			v-dialogDrag
+			v-dialogDragWidth
+			v-dialogDragHeight
+			:close-on-click-modal="false"
+			:show-close="false"
+			title="付款申请"
+			:visible.sync="applyDialogVisible"
+			width="45%"
+			append-to-body
+		>
 			<keep-alive>
-				<ApplyPayment :money-input-disabled="false" :table-name="TableName.ORDERCOMMISION" :t-i-d="tid"
-					:need-money="needMoney" :need-info="needInfo" @changeOpen="() => (applyDialogVisible = false)"
-					:is-multi="true" @getApplyPayment="handleCommitApplyInfo" />
+				<ApplyPayment
+					:money-input-disabled="false"
+					:table-name="TableName.ORDERCOMMISION"
+					:t-i-d="tid"
+					:need-money="needMoney"
+					:need-info="needInfo"
+					@changeOpen="() => (applyDialogVisible = false)"
+					:is-multi="true"
+					@getApplyPayment="handleCommitApplyInfo"
+				/>
 			</keep-alive>
 		</el-dialog>
 	</div>
@@ -90,7 +107,7 @@ export default {
 		},
 		// 这里需要把审核组件的信息提交到列表里
 		handleCommitApplyInfo(value) {
-			console.log(`付款申请审核信息`, value)
+			console.log(`付款申请审核信息`, value);
 			this.$nextTick(() => {
 				this.localApplications.forEach(item => {
 					Object.assign(item, value);
@@ -133,7 +150,7 @@ export default {
 				}
 			});
 		},
-		handleReject() { }
+		handleReject() {}
 	}
 };
 </script>

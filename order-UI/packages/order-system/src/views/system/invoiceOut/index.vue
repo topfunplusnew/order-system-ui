@@ -105,9 +105,10 @@
 			</el-table-column>
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
 				<template slot-scope="scope">
-					<el-dropdown @command="(command) => handleCommand(command, scope.row)">
+					<el-dropdown @command="command => handleCommand(command, scope.row)">
 						<el-button type="primary" size="mini">
-							操作<i class="el-icon-arrow-down el-icon--right"></i>
+							操作
+							<i class="el-icon-arrow-down el-icon--right"></i>
 						</el-button>
 						<el-dropdown-menu slot="dropdown">
 							<el-dropdown-item v-hasPermi="['system:invoiceout:edit']" command="edit">修改</el-dropdown-item>
@@ -173,21 +174,21 @@
 					<el-input v-model="invoiceAmount" placeholder="请输入票点金额" />
 				</el-form-item>
 				<el-form-item label="银行回执附件">
-					<UploadFilesButton 
-						ref="paymentReceiptsUpload" 
-						flag="paymentReceipts" 
-						:initial-attachments="(form.params && form.params.paymentReceiptsAttachments) || []" 
-						:extra-info="{ moduleType: 'invoiceOut', formId: form.id }" 
-						@files-updated="handlePaymentReceiptsFilesUpdated" 
+					<UploadFilesButton
+						ref="paymentReceiptsUpload"
+						flag="paymentReceipts"
+						:initial-attachments="(form.params && form.params.paymentReceiptsAttachments) || []"
+						:extra-info="{ moduleType: 'invoiceOut', formId: form.id }"
+						@files-updated="handlePaymentReceiptsFilesUpdated"
 					/>
 				</el-form-item>
 				<el-form-item label="发票单">
-					<UploadFilesButton 
-						ref="invoiceAttachmentsUpload" 
-						flag="invoiceAttachments" 
-						:initial-attachments="(form.params && form.params.invoiceAttachments) || []" 
-						:extra-info="{ moduleType: 'invoiceOut', formId: form.id }" 
-						@files-updated="handleInvoiceAttachmentsFilesUpdated" 
+					<UploadFilesButton
+						ref="invoiceAttachmentsUpload"
+						flag="invoiceAttachments"
+						:initial-attachments="(form.params && form.params.invoiceAttachments) || []"
+						:extra-info="{ moduleType: 'invoiceOut', formId: form.id }"
+						@files-updated="handleInvoiceAttachmentsFilesUpdated"
 					/>
 				</el-form-item>
 				<el-form-item label="备注" prop="comments">
@@ -223,13 +224,7 @@
 				<el-table-column prop="reason" label="修改原因" />
 				<el-table-column prop="userName" label="修改人" />
 			</el-table>
-			<pagination 
-				v-show="editReasonTotal > 0" 
-				:total="editReasonTotal" 
-				:page.sync="editReasonQueryParams.pageNum" 
-				:limit.sync="editReasonQueryParams.pageSize" 
-				@pagination="getEditReasonList" 
-			/>
+			<pagination v-show="editReasonTotal > 0" :total="editReasonTotal" :page.sync="editReasonQueryParams.pageNum" :limit.sync="editReasonQueryParams.pageSize" @pagination="getEditReasonList" />
 		</el-dialog>
 	</div>
 </template>
@@ -595,65 +590,69 @@ export default {
 		handleUpdate(row) {
 			// 先获取发票卖出详情，判断是否需要填写修改原因
 			const id = row.id || this.ids;
-			getInvoiceOut(id).then(response => {
-				const invoiceOutData = response.data;
-				
-				// 判断是否需要填写修改原因
-				if (invoiceOutData && invoiceOutData.shouldTrackEditReason === true) {
-					// 需要填写修改原因
-					this.$prompt('请输入修改原因', '提示', {
-						confirmButtonText: '确定',
-						cancelButtonText: '取消',
-						inputType: 'textarea',
-						inputPlaceholder: '请输入修改原因',
-						inputValidator: (value) => {
-							if (!value || value.trim() === '') {
-								return '修改原因不能为空';
+			getInvoiceOut(id)
+				.then(response => {
+					const invoiceOutData = response.data;
+
+					// 判断是否需要填写修改原因
+					if (invoiceOutData && invoiceOutData.shouldTrackEditReason === true) {
+						// 需要填写修改原因
+						this.$prompt('请输入修改原因', '提示', {
+							confirmButtonText: '确定',
+							cancelButtonText: '取消',
+							inputType: 'textarea',
+							inputPlaceholder: '请输入修改原因',
+							inputValidator: value => {
+								if (!value || value.trim() === '') {
+									return '修改原因不能为空';
+								}
+								return true;
 							}
-							return true;
-						}
-					}).then(({ value }) => {
-						// 将修改原因存储到sessionStorage
-						sessionStorage.setItem('editReason_invoiceOut_main', value);
-						
-						// 继续编辑操作
+						})
+							.then(({ value }) => {
+								// 将修改原因存储到sessionStorage
+								sessionStorage.setItem('editReason_invoiceOut_main', value);
+
+								// 继续编辑操作
+								this.performInvoiceOutEdit(invoiceOutData);
+							})
+							.catch(() => {
+								this.$message({
+									type: 'info',
+									message: '已取消修改'
+								});
+							});
+					} else {
+						// 不需要填写修改原因，直接进行编辑操作
 						this.performInvoiceOutEdit(invoiceOutData);
-					}).catch(() => {
-						this.$message({
-							type: 'info',
-							message: '已取消修改'
-						});
-					});
-				} else {
-					// 不需要填写修改原因，直接进行编辑操作
-					this.performInvoiceOutEdit(invoiceOutData);
-				}
-			}).catch(error => {
-				console.error('获取发票卖出详情失败:', error);
-				this.$message.error('获取发票卖出详情失败');
-			});
+					}
+				})
+				.catch(error => {
+					console.error('获取发票卖出详情失败:', error);
+					this.$message.error('获取发票卖出详情失败');
+				});
 		},
-		
+
 		// 执行发票卖出编辑操作的逻辑
 		performInvoiceOutEdit(invoiceOutData) {
 			this.reset();
 			this.form = invoiceOutData;
-			
+
 			// 处理附件列表，分别提取不同类型的附件
 			if (this.form.attachmentList && Array.isArray(this.form.attachmentList)) {
 				// 分别筛选出不同类型的附件
 				const paymentReceiptsAttachments = this.form.attachmentList.filter(item => item.flag === 'attachmentList');
 				const invoiceAttachments = this.form.attachmentList.filter(item => item.flag === 'attachmentList');
-				
+
 				// 确保 params 对象存在
 				if (!this.form.params) {
 					this.form.params = {};
 				}
-				
+
 				// 设置分类的附件数据（注意：invoiceOut 使用的都是 attachmentList flag）
 				this.form.params.paymentReceiptsAttachments = paymentReceiptsAttachments;
 				this.form.params.invoiceAttachments = invoiceAttachments;
-				
+
 				// 设置所有附件ID
 				this.form.params.attachmentIds = this.form.attachmentList.map(item => item.id);
 			} else {
@@ -665,7 +664,7 @@ export default {
 				this.form.params.paymentReceiptsAttachments = [];
 				this.form.params.invoiceAttachments = [];
 			}
-			
+
 			this.open = true;
 			this.title = '修改发票卖出信息';
 		},
@@ -675,7 +674,7 @@ export default {
 				if (valid) {
 					// 创建提交数据的副本，排除不应该提交的数据
 					const submitData = { ...this.form };
-					
+
 					// 移除不应该提交给后端的字段
 					delete submitData.attachmentList;
 					if (submitData.params) {
@@ -693,29 +692,31 @@ export default {
 							return;
 						}
 						submitData.editReason = editReason;
-						
+
 						const finalData = excludeParams(submitData, this.$exclude);
 						updateInvoiceOut({
 							...finalData,
 							params: {
 								attachmentIds: this.form.params?.attachmentIds || []
 							}
-						}).then(() => {
-							this.$modal.msgSuccess('修改成功');
-							this.open = false;
-							// 清空sessionStorage中的修改原因
-							sessionStorage.removeItem('editReason_invoiceOut_main');
-							// 清理 UploadFilesButton 状态
-							if (this.$refs.paymentReceiptsUpload) {
-								this.$refs.paymentReceiptsUpload.clearUploadedFiles();
-							}
-							if (this.$refs.invoiceAttachmentsUpload) {
-								this.$refs.invoiceAttachmentsUpload.clearUploadedFiles();
-							}
-							this.getList();
-						}).catch(() => {
-							// 修改失败时不清空sessionStorage，用户可以重试
-						});
+						})
+							.then(() => {
+								this.$modal.msgSuccess('修改成功');
+								this.open = false;
+								// 清空sessionStorage中的修改原因
+								sessionStorage.removeItem('editReason_invoiceOut_main');
+								// 清理 UploadFilesButton 状态
+								if (this.$refs.paymentReceiptsUpload) {
+									this.$refs.paymentReceiptsUpload.clearUploadedFiles();
+								}
+								if (this.$refs.invoiceAttachmentsUpload) {
+									this.$refs.invoiceAttachmentsUpload.clearUploadedFiles();
+								}
+								this.getList();
+							})
+							.catch(() => {
+								// 修改失败时不清空sessionStorage，用户可以重试
+							});
 					} else {
 						// 新增时，不需要修改原因
 						const finalData = excludeParams(submitData, this.$exclude);

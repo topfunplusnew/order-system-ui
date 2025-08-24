@@ -293,12 +293,12 @@ export default {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
 					this.form.billType = this.billType;
-					
+
 					// 在内部转账场景下，确保收票事由为内部转账
 					if (this.isInternalTransfer) {
 						this.form.reason = '内部转账';
 					}
-					
+
 					this.form = excludeParams(this.form, this.$exclude);
 					console.log(`表单`, this.form);
 

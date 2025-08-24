@@ -17,7 +17,7 @@ export var common_dialog = {
 	},
 	watch: {
 		dialogVisible(newVal) {
-			console.log(`弹窗状态变化: ${newVal}`)
+			console.log(`弹窗状态变化: ${newVal}`);
 		}
 	},
 	created() {
@@ -80,7 +80,7 @@ export var common_dialog = {
 			instance._configId = config.id;
 
 			document.body.appendChild(instance.$el);
-			this._dialogInstances.push(instance);			// 监听 close 事件
+			this._dialogInstances.push(instance); // 监听 close 事件
 			instance.$on('close', callback => {
 				Promise.resolve(callback(this)).finally(() => {
 					this._reallyCloseDialog(config.id);
@@ -96,7 +96,7 @@ export var common_dialog = {
 						this._reallyCloseDialog(config.id);
 						this.getList && this.getList();
 					})
-					.catch((error) => {
+					.catch(error => {
 						// 失败时不关闭弹窗，只记录错误
 						console.error('弹窗确认操作失败:', error);
 						// 可以在这里添加全局错误处理逻辑

@@ -34,7 +34,7 @@ export default {
 			// 表格上方查询日期
 			targetLeftDate: null,
 			targetRightDate: null,
-			
+
 			// 可选择的时间下拉列表
 			availableDates: [],
 			isLoadingDates: false
@@ -369,13 +369,7 @@ export default {
 		<div class="container">
 			<el-form :inline="true" :model="changeForm" class="search-form">
 				<el-form-item label="日期查询">
-					<el-date-picker 
-						v-model="changeForm.endTime" 
-						type="date" 
-						value-format="yyyy-MM-dd" 
-						placeholder="选择日期"
-						@change="handleTopDateChange"
-					></el-date-picker>
+					<el-date-picker v-model="changeForm.endTime" type="date" value-format="yyyy-MM-dd" placeholder="选择日期" @change="handleTopDateChange"></el-date-picker>
 				</el-form-item>
 				<el-form-item>
 					<el-button :disabled="!changeForm.endTime || !targetLeftDate || !targetRightDate" type="primary" @click="handleChangeSearch">搜索</el-button>
@@ -401,12 +395,7 @@ export default {
 								:loading="isLoadingDates"
 								@change="changeLeftDate"
 							>
-								<el-option
-									v-for="date in availableDates"
-									:key="date"
-									:label="date"
-									:value="date"
-								></el-option>
+								<el-option v-for="date in availableDates" :key="date" :label="date" :value="date"></el-option>
 							</el-select>
 						</el-col>
 					</el-row>
@@ -459,12 +448,7 @@ export default {
 								:loading="isLoadingDates"
 								@change="changeRightDate"
 							>
-								<el-option
-									v-for="date in availableDates"
-									:key="date"
-									:label="date"
-									:value="date"
-								></el-option>
+								<el-option v-for="date in availableDates" :key="date" :label="date" :value="date"></el-option>
 							</el-select>
 						</el-col>
 					</el-row>

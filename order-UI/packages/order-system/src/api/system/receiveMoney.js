@@ -53,8 +53,8 @@ export function getReceiveMoneyByReceiveNO(receiveNO) {
 
 /**
  * 这个与上面接口有区别 需要改一下 只给报表使用
- * @param {*} receiveNO 
- * @returns 
+ * @param {*} receiveNO
+ * @returns
  */
 export function getReceiveMoneyByPayNo(receiveNO) {
 	return request({

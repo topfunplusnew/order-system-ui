@@ -26,10 +26,8 @@ module.exports = {
 				parser: '@babel/eslint-parser'
 			},
 			rules: {
-				'no-console':
-					process.env.NODE_ENV === 'production' ? 'error' : 'off',
-				'no-debugger':
-					process.env.NODE_ENV === 'production' ? 'error' : 'off',
+				'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+				'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
 				'vue/multi-word-component-names': 'off', // 不校验组件名
 				'vue/no-multiple-template-root': 0, // 不需要使用根元素包裹template的内容
 				'vue/no-mutating-props': 0, //允许子元素通过v-model修改父元素传的props值

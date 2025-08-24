@@ -3,13 +3,19 @@
 		<!-- 查询条件部分 -->
 		<el-form :model="query" label-width="100px" class="query-form" :inline="true" size="mini">
 			<el-form-item label="开始日期：" prop="startTime">
-				<el-date-picker v-model="query.startTime" type="date" placeholder="选择开始日期" size="mini"
-					value-format="yyyy-MM-dd" :clearable="false"></el-date-picker>
+				<el-date-picker v-model="query.startTime" type="date" placeholder="选择开始日期" size="mini" value-format="yyyy-MM-dd" :clearable="false"></el-date-picker>
 			</el-form-item>
 			<el-form-item label="结束日期：" prop="endTime">
-				<el-date-picker v-model="query.endTime" type="date" placeholder="选择结束日期" size="mini"
-					value-format="yyyy-MM-dd" :clearable="false" :disabled="!query.startTime"
-					:picker-options="endTimePickerOptions"></el-date-picker>
+				<el-date-picker
+					v-model="query.endTime"
+					type="date"
+					placeholder="选择结束日期"
+					size="mini"
+					value-format="yyyy-MM-dd"
+					:clearable="false"
+					:disabled="!query.startTime"
+					:picker-options="endTimePickerOptions"
+				></el-date-picker>
 			</el-form-item>
 			<el-form-item label="我方卡号：" required>
 				<el-row>
@@ -17,10 +23,16 @@
 						<el-input v-model="query.ourBankNO" placeholder="请输入我方卡号" size="mini" disabled></el-input>
 					</el-col>
 					<el-col :span="4">
-						<SearchOption :get-data="listBankAccount" icon="el-icon-search"
-							:limit-info="{ acountsType: '己方公司' }" query-label="银行卡查找" query-info="bankNo"
-							:query-name="queryBank" @commitBack="value => (query.ourBankNO = value.bankNo)"
-							@update:queryName="value => (queryBank = value)">
+						<SearchOption
+							:get-data="listBankAccount"
+							icon="el-icon-search"
+							:limit-info="{ acountsType: '己方公司' }"
+							query-label="银行卡查找"
+							query-info="bankNo"
+							:query-name="queryBank"
+							@commitBack="value => (query.ourBankNO = value.bankNo)"
+							@update:queryName="value => (queryBank = value)"
+						>
 							<template #table-columns>
 								<el-table-column label="公司名称" align="center" prop="companyName">
 									<template #default="scope">
@@ -48,11 +60,14 @@
 				</el-row>
 			</el-form-item>
 			<el-form-item label="银行账户类型" required>
-				<BankType @updateSelectedType="
-					value => {
-						query.bankCardType = value;
-					}
-				" :baned="true" />
+				<BankType
+					@updateSelectedType="
+						value => {
+							query.bankCardType = value;
+						}
+					"
+					:baned="true"
+				/>
 			</el-form-item>
 			<el-form-item label="对象名称：">
 				<el-input v-model="query.otherName" placeholder="请输入对象名称" size="mini"></el-input>
@@ -67,8 +82,7 @@
 		</el-form>
 
 		<!-- 银行流水明细表格  正借负贷 -->
-		<el-table :data="statementData" border style="width: 100%" class="statement-table" size="mini"
-			v-loading="loading" element-loading-text="数据加载中...">
+		<el-table :data="statementData" border style="width: 100%" class="statement-table" size="mini" v-loading="loading" element-loading-text="数据加载中...">
 			<el-table-column prop="operateDate" label="月" show-overflow-tooltip>
 				<template slot-scope="{ row }">
 					{{ row.operateDate ? row.operateDate.substring(5, 7) : '' }}
@@ -88,8 +102,7 @@
 			<el-table-column prop="payNO" label="凭证号数" show-overflow-tooltip></el-table-column>
 			<el-table-column prop="changeType" label="类型(收款/付款)" show-overflow-tooltip></el-table-column>
 			<el-table-column prop="displayPayType" label="支付类型" show-overflow-tooltip></el-table-column>
-			<el-table-column prop="companyType" label="对象类型（客户/供应商/本公司/运费/票点/日常费用）"
-				show-overflow-tooltip></el-table-column>
+			<el-table-column prop="companyType" label="对象类型（客户/供应商/本公司/运费/票点/日常费用）" show-overflow-tooltip></el-table-column>
 			<el-table-column prop="otherCompanyName" label="对象名称" show-overflow-tooltip></el-table-column>
 			<el-table-column prop="otherAcountsName" label="对方户名（对方真实收付款名称）" show-overflow-tooltip></el-table-column>
 			<el-table-column prop="otherBankNO" label="对方银行账号" show-overflow-tooltip></el-table-column>

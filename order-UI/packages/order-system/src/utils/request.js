@@ -253,28 +253,33 @@ export function download(url, params, filename, config, isShowConfig = false) {
 // 一键下载的方法 点击下载后先校验一下是否可以下载，并建立WebSocket连接
 export function onceDownload(url, params, filename, config) {
 	// 先获取是否可以下载
-	getDownLoadStatus().then(status => {
-		if (status) {
-			// 只有当允许下载时，才建立WebSocket连接并下载
-			console.log('开始建立WebSocket连接用于一键下载...');
-			webSocketManager.connect().then(() => {
-				console.log('WebSocket连接成功，开始下载');
-				downLoadFile(url, params, filename, config);
-			}).catch(error => {
-				console.error('WebSocket连接失败:', error);
-				Message.error('WebSocket连接失败，但将继续下载（无进度显示）');
-				// 即使WebSocket连接失败也继续下载，只是没有进度显示
-				downLoadFile(url, params, filename, config);
-			});
-		} else if (status === false) {
-			Message.error('当前正在有用户进行文件下载中!');
-		} else {
-			Message.error('下载文件出现错误，请联系管理员！');
-		}
-	}).catch(error => {
-		console.error('检查下载状态失败:', error);
-		Message.error('检查下载状态失败，请联系管理员！');
-	});
+	getDownLoadStatus()
+		.then(status => {
+			if (status) {
+				// 只有当允许下载时，才建立WebSocket连接并下载
+				console.log('开始建立WebSocket连接用于一键下载...');
+				webSocketManager
+					.connect()
+					.then(() => {
+						console.log('WebSocket连接成功，开始下载');
+						downLoadFile(url, params, filename, config);
+					})
+					.catch(error => {
+						console.error('WebSocket连接失败:', error);
+						Message.error('WebSocket连接失败，但将继续下载（无进度显示）');
+						// 即使WebSocket连接失败也继续下载，只是没有进度显示
+						downLoadFile(url, params, filename, config);
+					});
+			} else if (status === false) {
+				Message.error('当前正在有用户进行文件下载中!');
+			} else {
+				Message.error('下载文件出现错误，请联系管理员！');
+			}
+		})
+		.catch(error => {
+			console.error('检查下载状态失败:', error);
+			Message.error('检查下载状态失败，请联系管理员！');
+		});
 }
 
 // TODO
@@ -294,39 +299,43 @@ async function downLoadFile(url, params, filename, config) {
 	if (connectionStatus.isConnected) {
 		console.log('WebSocket已连接，开始订阅下载进度消息');
 		// 使用WebSocket管理器订阅消息
-		subscriptionInfo = webSocketManager.subscribe('/topic/exportevent', message => {
-			try {
-				const messageData = JSON.parse(message.body);
-				// 匹配消息类型，增加容错性
-				const messageType = messageData.type ? messageData.type.toLowerCase() : '';
-				if (messageType.includes('process') || messageType.includes('progress')) {
-					// 更新进度信息
-					if (messageData.data) {
-						// 更新最后一次收到进度的时间
-						lastProgressUpdate = Date.now();
-						// 获取实际进度
-						actualProgress = messageData.data.NowProgress || 0;
-						actualMaxProgress = messageData.data.MaxProgress || 100;
-						const downloadMessage = messageData.data.message || '正在下载...';
-						console.log(`下载进度: ${actualProgress}/${actualMaxProgress} - ${downloadMessage}`);
-						// 计算百分比进度
-						let percent = Math.round((actualProgress / actualMaxProgress) * 100);
-						// 确保进度至少为1%，且不超过99%（留1%给完成时设置为100%）
-						percent = Math.max(1, Math.min(99, percent));
-						// 更新store中的进度 和 消息
-						store.dispatch('downloadOnce/setPercent', percent);
-						store.dispatch('downloadOnce/setMessage', downloadMessage);
+		subscriptionInfo = webSocketManager.subscribe(
+			'/topic/exportevent',
+			message => {
+				try {
+					const messageData = JSON.parse(message.body);
+					// 匹配消息类型，增加容错性
+					const messageType = messageData.type ? messageData.type.toLowerCase() : '';
+					if (messageType.includes('process') || messageType.includes('progress')) {
+						// 更新进度信息
+						if (messageData.data) {
+							// 更新最后一次收到进度的时间
+							lastProgressUpdate = Date.now();
+							// 获取实际进度
+							actualProgress = messageData.data.NowProgress || 0;
+							actualMaxProgress = messageData.data.MaxProgress || 100;
+							const downloadMessage = messageData.data.message || '正在下载...';
+							console.log(`下载进度: ${actualProgress}/${actualMaxProgress} - ${downloadMessage}`);
+							// 计算百分比进度
+							let percent = Math.round((actualProgress / actualMaxProgress) * 100);
+							// 确保进度至少为1%，且不超过99%（留1%给完成时设置为100%）
+							percent = Math.max(1, Math.min(99, percent));
+							// 更新store中的进度 和 消息
+							store.dispatch('downloadOnce/setPercent', percent);
+							store.dispatch('downloadOnce/setMessage', downloadMessage);
+						}
 					}
+				} catch (error) {
+					console.error('处理WebSocket消息出错:', error);
+					if (subscriptionInfo) {
+						webSocketManager.unsubscribe(subscriptionInfo.id);
+						subscriptionInfo = null;
+					}
+					store.dispatch('downloadOnce/setPercent', 0);
 				}
-			} catch (error) {
-				console.error('处理WebSocket消息出错:', error);
-				if (subscriptionInfo) {
-					webSocketManager.unsubscribe(subscriptionInfo.id);
-					subscriptionInfo = null;
-				}
-				store.dispatch('downloadOnce/setPercent', 0);
-			}
-		}, 'download_progress');
+			},
+			'download_progress'
+		);
 
 		if (!subscriptionInfo) {
 			console.warn('订阅下载进度消息失败');
@@ -410,15 +419,15 @@ async function downLoadFile(url, params, filename, config) {
 				subscriptionInfo = null;
 			}
 			clearTimeout(timeout);
-			
+
 			// 关闭右上角提示
 			if (elNotificationComponent) {
 				elNotificationComponent.close();
 			}
-			
+
 			console.error(r);
 			Message.error('下载文件出现错误，请联系管理员！');
-			
+
 			// 添加3秒后重置进度条为0，并断开WebSocket连接
 			setTimeout(() => {
 				store.dispatch('downloadOnce/setPercent', 0);
@@ -427,4 +436,5 @@ async function downLoadFile(url, params, filename, config) {
 				webSocketManager.disconnect();
 			}, 3000);
 		});
-}export default service;
+}
+export default service;

@@ -50,6 +50,6 @@ export var mixin_payment_subject = {
 			}
 		},
 		// 选中某一个节点
-		handleChange(value) { }
+		handleChange(value) {}
 	}
 };

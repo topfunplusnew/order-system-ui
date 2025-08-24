@@ -68,24 +68,30 @@ methods: {
 		<!-- 文件上传操作区域 -->
 		<div class="upload-container">
 			<!-- 主要上传按钮 -->
-			<el-button type="primary" size="mini" icon="el-icon-upload2" @click="triggerFileUpload" :loading="uploading"
-				class="upload-btn">上传附件</el-button>
-	
+			<el-button type="primary" size="mini" icon="el-icon-upload2" @click="triggerFileUpload" :loading="uploading" class="upload-btn">上传附件</el-button>
+
 			<!-- 查看已上传文件的图标按钮 -->
-			<el-button v-if="uploadedFiles.length > 0" type="text" size="mini" icon="el-icon-view"
-				@click="showUploadedFiles" class="view-btn" :title="`已上传 ${uploadedFiles.length} 个文件`">
+			<el-button v-if="uploadedFiles.length > 0" type="text" size="mini" icon="el-icon-view" @click="showUploadedFiles" class="view-btn" :title="`已上传 ${uploadedFiles.length} 个文件`">
 				({{ uploadedFiles.length }})
 			</el-button>
 		</div>
-	
+
 		<!-- 隐藏的文件输入框 -->
-		<input ref="fileInput" type="file" multiple style="display: none" @change="handleFileSelect"
-			:accept="acceptTypes" />
-	
+		<input ref="fileInput" type="file" multiple style="display: none" @change="handleFileSelect" :accept="acceptTypes" />
+
 		<!-- 文件列表查看对话框 -->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="已上传文件列表"
-			:visible.sync="dialogVisible" width="600px" append-to-body :close-on-click-modal="false"
-			custom-class="upload-files-dialog">
+		<el-dialog
+			:modal="false"
+			v-dialogDrag
+			v-dialogDragWidth
+			v-dialogDragHeight
+			title="已上传文件列表"
+			:visible.sync="dialogVisible"
+			width="600px"
+			append-to-body
+			:close-on-click-modal="false"
+			custom-class="upload-files-dialog"
+		>
 			<div class="file-list-container">
 				<div v-if="uploadedFiles.length > 0" class="file-grid">
 					<div v-for="(file, index) in uploadedFiles" :key="file.id" class="file-item">
@@ -98,10 +104,8 @@ methods: {
 							</div>
 						</div>
 						<div class="file-actions">
-							<el-button type="text" size="mini" icon="el-icon-download" @click="downloadFile(file)"
-								title="下载文件"></el-button>
-							<el-button type="text" size="mini" icon="el-icon-delete" @click="removeFile(index)"
-								style="color: #f56c6c" title="移除文件"></el-button>
+							<el-button type="text" size="mini" icon="el-icon-download" @click="downloadFile(file)" title="下载文件"></el-button>
+							<el-button type="text" size="mini" icon="el-icon-delete" @click="removeFile(index)" style="color: #f56c6c" title="移除文件"></el-button>
 						</div>
 					</div>
 				</div>
@@ -110,29 +114,27 @@ methods: {
 					<p>暂无上传文件</p>
 				</div>
 			</div>
-	
+
 			<!-- 图片预览区域 -->
 			<div v-if="imageFiles.length > 0" class="image-preview-section">
 				<h4>图片预览</h4>
 				<div class="image-grid">
 					<div v-for="(image, index) in imageFiles" :key="index" class="image-item">
-						<img :src="getImageUrl(image.filePath)" :alt="image.fileName" @click="previewImage(image)"
-							class="preview-thumbnail" />
+						<img :src="getImageUrl(image.filePath)" :alt="image.fileName" @click="previewImage(image)" class="preview-thumbnail" />
 					</div>
 				</div>
 			</div>
-	
+
 			<span slot="footer" class="dialog-footer">
 				<el-button @click="dialogVisible = false">关 闭</el-button>
 				<el-button type="danger" @click="clearAllFiles" v-if="uploadedFiles.length > 0">清空所有文件</el-button>
 			</span>
 		</el-dialog>
-	
+
 		<!-- 图片预览对话框 -->
 		<el-dialog title="图片预览" :visible.sync="imagePreviewVisible" width="80%" append-to-body>
 			<div class="image-preview-container">
-				<img v-if="currentPreviewImage" :src="getImageUrl(currentPreviewImage.filePath)"
-					:alt="currentPreviewImage.fileName" class="preview-image" />
+				<img v-if="currentPreviewImage" :src="getImageUrl(currentPreviewImage.filePath)" :alt="currentPreviewImage.fileName" class="preview-image" />
 			</div>
 		</el-dialog>
 	</div>
@@ -142,319 +144,319 @@ methods: {
 import { addAttachments } from '@/api/system/attachments';
 
 export default {
-  name: 'UploadFilesButton',
-  props: {
-    // 接受的文件类型
-    acceptTypes: {
-      type: String,
-      default: '*'
-    },
-    // 最大文件数量限制
-    maxFiles: {
-      type: Number,
-      default: 10
-    },
-    // 单个文件大小限制（MB）
-    maxFileSize: {
-      type: Number,
-      default: 10
-    },
-    // 上传标识
-    flag: {
-      type: String,
-      default: 'uploadButton'
-    },
-    // 额外信息
-    extraInfo: {
-      type: Object,
-      default: () => ({})
-    },
-    // 初始附件列表
-    initialAttachments: {
-      type: Array,
-      default: () => []
-    }
-  },
-  data() {
-    return {
-      uploading: false,
-      dialogVisible: false,
-      imagePreviewVisible: false,
-      currentPreviewImage: null,
-      // 本地文件列表，用于展示文件信息
-      uploadedFiles: []
-    };
-  },
-  computed: {
-    // 过滤出图片文件
-    imageFiles() {
-      const imageTypes = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'];
-      return this.uploadedFiles.filter(file => imageTypes.includes((file.fileSuffix || '').toLowerCase()));
-    },
-    // 获取标准格式的 params 对象（从 Vuex 全局状态获取）
-    params() {
-      return this.$store.getters['attachments/getParams'];
-    }
-  },
-  watch: {
-    // 监听 Vuex 中的全局附件 ID 变化，自动触发 files-updated 事件
-    '$store.state.attachments.attachmentIds': {
-      handler() {
-        this.$nextTick(() => {
-          this.$emit('files-updated', this.params);
-        });
-      },
-      deep: true
-    },
-    // 监听初始附件列表变化
-    initialAttachments: {
-      handler(newAttachments) {
-        this.initializeAttachments(newAttachments);
-      },
-      immediate: true,
-      deep: true
-    }
-  },
-  created() {
-    // 初始化附件列表
-    this.initializeAttachments(this.initialAttachments);
-  },
-  methods: {
-    // 初始化附件列表
-    initializeAttachments(attachments) {
-      if (!attachments || !Array.isArray(attachments) || attachments.length === 0) {
-        return;
-      }
+	name: 'UploadFilesButton',
+	props: {
+		// 接受的文件类型
+		acceptTypes: {
+			type: String,
+			default: '*'
+		},
+		// 最大文件数量限制
+		maxFiles: {
+			type: Number,
+			default: 10
+		},
+		// 单个文件大小限制（MB）
+		maxFileSize: {
+			type: Number,
+			default: 10
+		},
+		// 上传标识
+		flag: {
+			type: String,
+			default: 'uploadButton'
+		},
+		// 额外信息
+		extraInfo: {
+			type: Object,
+			default: () => ({})
+		},
+		// 初始附件列表
+		initialAttachments: {
+			type: Array,
+			default: () => []
+		}
+	},
+	data() {
+		return {
+			uploading: false,
+			dialogVisible: false,
+			imagePreviewVisible: false,
+			currentPreviewImage: null,
+			// 本地文件列表，用于展示文件信息
+			uploadedFiles: []
+		};
+	},
+	computed: {
+		// 过滤出图片文件
+		imageFiles() {
+			const imageTypes = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'];
+			return this.uploadedFiles.filter(file => imageTypes.includes((file.fileSuffix || '').toLowerCase()));
+		},
+		// 获取标准格式的 params 对象（从 Vuex 全局状态获取）
+		params() {
+			return this.$store.getters['attachments/getParams'];
+		}
+	},
+	watch: {
+		// 监听 Vuex 中的全局附件 ID 变化，自动触发 files-updated 事件
+		'$store.state.attachments.attachmentIds': {
+			handler() {
+				this.$nextTick(() => {
+					this.$emit('files-updated', this.params);
+				});
+			},
+			deep: true
+		},
+		// 监听初始附件列表变化
+		initialAttachments: {
+			handler(newAttachments) {
+				this.initializeAttachments(newAttachments);
+			},
+			immediate: true,
+			deep: true
+		}
+	},
+	created() {
+		// 初始化附件列表
+		this.initializeAttachments(this.initialAttachments);
+	},
+	methods: {
+		// 初始化附件列表
+		initializeAttachments(attachments) {
+			if (!attachments || !Array.isArray(attachments) || attachments.length === 0) {
+				return;
+			}
 
-      // 清空当前组件的文件列表
-      this.uploadedFiles = [];
+			// 清空当前组件的文件列表
+			this.uploadedFiles = [];
 
-      // 设置初始附件到组件本地
-      this.uploadedFiles = [...attachments];
-      const attachmentIds = attachments.map(file => file.id).filter(id => id);
+			// 设置初始附件到组件本地
+			this.uploadedFiles = [...attachments];
+			const attachmentIds = attachments.map(file => file.id).filter(id => id);
 
-      // 将初始附件ID添加到全局池（不清空，避免覆盖其他组件的ID）
-      if (attachmentIds.length > 0) {
-        attachmentIds.forEach(id => {
-          this.$store.dispatch('attachments/addAttachmentId', id);
-        });
-      }
-    },
+			// 将初始附件ID添加到全局池（不清空，避免覆盖其他组件的ID）
+			if (attachmentIds.length > 0) {
+				attachmentIds.forEach(id => {
+					this.$store.dispatch('attachments/addAttachmentId', id);
+				});
+			}
+		},
 
-    // 触发文件选择
-    triggerFileUpload() {
-      this.$refs.fileInput.click();
-    },
+		// 触发文件选择
+		triggerFileUpload() {
+			this.$refs.fileInput.click();
+		},
 
-    // 处理文件选择
-    async handleFileSelect(event) {
-      const files = Array.from(event.target.files);
-      if (files.length === 0) return;
+		// 处理文件选择
+		async handleFileSelect(event) {
+			const files = Array.from(event.target.files);
+			if (files.length === 0) return;
 
-      // 检查文件数量限制
-      if (this.uploadedFiles.length + files.length > this.maxFiles) {
-        this.$message.warning(`最多只能上传 ${this.maxFiles} 个文件`);
-        return;
-      }
+			// 检查文件数量限制
+			if (this.uploadedFiles.length + files.length > this.maxFiles) {
+				this.$message.warning(`最多只能上传 ${this.maxFiles} 个文件`);
+				return;
+			}
 
-      // 检查文件大小
-      const oversizeFiles = files.filter(file => file.size > this.maxFileSize * 1024 * 1024);
-      if (oversizeFiles.length > 0) {
-        this.$message.warning(`文件大小不能超过 ${this.maxFileSize}MB`);
-        return;
-      }
+			// 检查文件大小
+			const oversizeFiles = files.filter(file => file.size > this.maxFileSize * 1024 * 1024);
+			if (oversizeFiles.length > 0) {
+				this.$message.warning(`文件大小不能超过 ${this.maxFileSize}MB`);
+				return;
+			}
 
-      this.uploading = true;
+			this.uploading = true;
 
-      try {
-        // 逐个上传文件
-        for (const file of files) {
-          await this.uploadSingleFile(file);
-        }
-        this.$message.success(`成功上传 ${files.length} 个文件`);
-        // 在下一个 tick 中触发更新事件，确保 Vuex 状态已更新
-        this.$nextTick(() => {
-          this.$emit('files-updated', this.params);
-        });
-      } catch (error) {
-        console.error('文件上传失败:', error);
-        this.$message.error('文件上传失败: ' + (error.message || '未知错误'));
-      } finally {
-        this.uploading = false;
-        // 清空文件输入框
-        this.$refs.fileInput.value = '';
-      }
-    },
+			try {
+				// 逐个上传文件
+				for (const file of files) {
+					await this.uploadSingleFile(file);
+				}
+				this.$message.success(`成功上传 ${files.length} 个文件`);
+				// 在下一个 tick 中触发更新事件，确保 Vuex 状态已更新
+				this.$nextTick(() => {
+					this.$emit('files-updated', this.params);
+				});
+			} catch (error) {
+				console.error('文件上传失败:', error);
+				this.$message.error('文件上传失败: ' + (error.message || '未知错误'));
+			} finally {
+				this.uploading = false;
+				// 清空文件输入框
+				this.$refs.fileInput.value = '';
+			}
+		},
 
-    // 上传单个文件
-    async uploadSingleFile(file) {
-      try {
-        const response = await addAttachments(file, {
-          flag: this.flag,
-          extraInfo: this.extraInfo
-        });
-        if (response.code === 200 && response.data) {
-          // 将文件信息添加到本地列表用于展示
-          this.uploadedFiles.push(response.data);
-          // 将文件 ID 添加到 Vuex 全局池
-          this.$store.dispatch('attachments/addAttachmentId', response.data.id);
-        } else {
-          throw new Error(response.msg || '上传失败');
-        }
-      } catch (error) {
-        console.error(`文件 ${file.name} 上传失败:`, error);
-        throw error;
-      }
-    },
+		// 上传单个文件
+		async uploadSingleFile(file) {
+			try {
+				const response = await addAttachments(file, {
+					flag: this.flag,
+					extraInfo: this.extraInfo
+				});
+				if (response.code === 200 && response.data) {
+					// 将文件信息添加到本地列表用于展示
+					this.uploadedFiles.push(response.data);
+					// 将文件 ID 添加到 Vuex 全局池
+					this.$store.dispatch('attachments/addAttachmentId', response.data.id);
+				} else {
+					throw new Error(response.msg || '上传失败');
+				}
+			} catch (error) {
+				console.error(`文件 ${file.name} 上传失败:`, error);
+				throw error;
+			}
+		},
 
-    // 显示已上传文件列表
-    showUploadedFiles() {
-      this.dialogVisible = true;
-    },
+		// 显示已上传文件列表
+		showUploadedFiles() {
+			this.dialogVisible = true;
+		},
 
-    // 移除文件
-    removeFile(index) {
-      this.$confirm('确定要移除这个文件吗？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      })
-        .then(() => {
-          const file = this.uploadedFiles[index];
-          if (file && file.id) {
-            // 从本地列表移除文件
-            this.uploadedFiles.splice(index, 1);
-            // 从 Vuex 全局池移除文件 ID
-            this.$store.dispatch('attachments/removeAttachmentId', file.id);
-          }
-          this.$message.success('文件已移除');
-        })
-        .catch(() => {
-          // 用户取消
-        });
-    },
+		// 移除文件
+		removeFile(index) {
+			this.$confirm('确定要移除这个文件吗？', '提示', {
+				confirmButtonText: '确定',
+				cancelButtonText: '取消',
+				type: 'warning'
+			})
+				.then(() => {
+					const file = this.uploadedFiles[index];
+					if (file && file.id) {
+						// 从本地列表移除文件
+						this.uploadedFiles.splice(index, 1);
+						// 从 Vuex 全局池移除文件 ID
+						this.$store.dispatch('attachments/removeAttachmentId', file.id);
+					}
+					this.$message.success('文件已移除');
+				})
+				.catch(() => {
+					// 用户取消
+				});
+		},
 
-    // 清空所有文件
-    clearAllFiles() {
-      this.$confirm('确定要清空所有文件吗？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      })
-        .then(() => {
-          // 从 Vuex 全局池移除当前组件的所有文件 ID
-          this.uploadedFiles.forEach(file => {
-            if (file.id) {
-              this.$store.dispatch('attachments/removeAttachmentId', file.id);
-            }
-          });
-          // 清空本地文件列表
-          this.uploadedFiles = [];
-          this.$message.success('已清空所有文件');
-        })
-        .catch(() => {
-          // 用户取消
-        });
-    },
+		// 清空所有文件
+		clearAllFiles() {
+			this.$confirm('确定要清空所有文件吗？', '提示', {
+				confirmButtonText: '确定',
+				cancelButtonText: '取消',
+				type: 'warning'
+			})
+				.then(() => {
+					// 从 Vuex 全局池移除当前组件的所有文件 ID
+					this.uploadedFiles.forEach(file => {
+						if (file.id) {
+							this.$store.dispatch('attachments/removeAttachmentId', file.id);
+						}
+					});
+					// 清空本地文件列表
+					this.uploadedFiles = [];
+					this.$message.success('已清空所有文件');
+				})
+				.catch(() => {
+					// 用户取消
+				});
+		},
 
-    // 清除上传状态（对外暴露的方法）
-    clearUploadedFiles() {
-      // 从 Vuex 全局池移除当前组件的所有文件 ID
-      this.uploadedFiles.forEach(file => {
-        if (file.id) {
-          this.$store.dispatch('attachments/removeAttachmentId', file.id);
-        }
-      });
-      // 清空本地文件列表和对话框状态
-      this.uploadedFiles = [];
-      this.dialogVisible = false;
-      this.imagePreviewVisible = false;
-      this.currentPreviewImage = null;
-      // 清空Vuex状态
-      this.$store.dispatch('attachments/clearAttachmentIds');
-    },
+		// 清除上传状态（对外暴露的方法）
+		clearUploadedFiles() {
+			// 从 Vuex 全局池移除当前组件的所有文件 ID
+			this.uploadedFiles.forEach(file => {
+				if (file.id) {
+					this.$store.dispatch('attachments/removeAttachmentId', file.id);
+				}
+			});
+			// 清空本地文件列表和对话框状态
+			this.uploadedFiles = [];
+			this.dialogVisible = false;
+			this.imagePreviewVisible = false;
+			this.currentPreviewImage = null;
+			// 清空Vuex状态
+			this.$store.dispatch('attachments/clearAttachmentIds');
+		},
 
-    // 设置附件列表（对外暴露的方法）
-    setAttachments(attachments) {
-      this.initializeAttachments(attachments);
-    },
+		// 设置附件列表（对外暴露的方法）
+		setAttachments(attachments) {
+			this.initializeAttachments(attachments);
+		},
 
-    // 获取文件图标
-    getFileIcon(fileSuffix) {
-      const suffix = (fileSuffix || '').toLowerCase();
-      const iconMap = {
-        pdf: 'el-icon-document',
-        doc: 'el-icon-document',
-        docx: 'el-icon-document',
-        xls: 'el-icon-document',
-        xlsx: 'el-icon-document',
-        ppt: 'el-icon-document',
-        pptx: 'el-icon-document',
-        txt: 'el-icon-document',
-        jpg: 'el-icon-picture',
-        jpeg: 'el-icon-picture',
-        png: 'el-icon-picture',
-        gif: 'el-icon-picture',
-        bmp: 'el-icon-picture',
-        webp: 'el-icon-picture',
-        svg: 'el-icon-picture',
-        zip: 'el-icon-folder-opened',
-        rar: 'el-icon-folder-opened',
-        '7z': 'el-icon-folder-opened'
-      };
+		// 获取文件图标
+		getFileIcon(fileSuffix) {
+			const suffix = (fileSuffix || '').toLowerCase();
+			const iconMap = {
+				pdf: 'el-icon-document',
+				doc: 'el-icon-document',
+				docx: 'el-icon-document',
+				xls: 'el-icon-document',
+				xlsx: 'el-icon-document',
+				ppt: 'el-icon-document',
+				pptx: 'el-icon-document',
+				txt: 'el-icon-document',
+				jpg: 'el-icon-picture',
+				jpeg: 'el-icon-picture',
+				png: 'el-icon-picture',
+				gif: 'el-icon-picture',
+				bmp: 'el-icon-picture',
+				webp: 'el-icon-picture',
+				svg: 'el-icon-picture',
+				zip: 'el-icon-folder-opened',
+				rar: 'el-icon-folder-opened',
+				'7z': 'el-icon-folder-opened'
+			};
 
-      return iconMap[suffix] || 'el-icon-document';
-    },
+			return iconMap[suffix] || 'el-icon-document';
+		},
 
-    // 格式化文件大小
-    formatFileSize(size) {
-      if (!size) return '0 B';
+		// 格式化文件大小
+		formatFileSize(size) {
+			if (!size) return '0 B';
 
-      const units = ['B', 'KB', 'MB', 'GB'];
-      let index = 0;
-      let fileSize = size;
+			const units = ['B', 'KB', 'MB', 'GB'];
+			let index = 0;
+			let fileSize = size;
 
-      while (fileSize >= 1024 && index < units.length - 1) {
-        fileSize /= 1024;
-        index++;
-      }
+			while (fileSize >= 1024 && index < units.length - 1) {
+				fileSize /= 1024;
+				index++;
+			}
 
-      return `${fileSize.toFixed(1)} ${units[index]}`;
-    },
+			return `${fileSize.toFixed(1)} ${units[index]}`;
+		},
 
-    // 格式化时间
-    formatTime(timeString) {
-      if (!timeString) return '';
-      const date = new Date(timeString);
-      return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
-    },
+		// 格式化时间
+		formatTime(timeString) {
+			if (!timeString) return '';
+			const date = new Date(timeString);
+			return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+		},
 
-    // 获取图片URL
-    getImageUrl(filePath) {
-      return process.env.VUE_APP_BASE_API + filePath;
-    },
+		// 获取图片URL
+		getImageUrl(filePath) {
+			return process.env.VUE_APP_BASE_API + filePath;
+		},
 
-    // 预览图片
-    previewImage(image) {
-      this.currentPreviewImage = image;
-      this.imagePreviewVisible = true;
-    },
+		// 预览图片
+		previewImage(image) {
+			this.currentPreviewImage = image;
+			this.imagePreviewVisible = true;
+		},
 
-    // 下载文件
-    downloadFile(file) {
-      const link = document.createElement('a');
-      link.href = this.getImageUrl(file.filePath);
-      link.download = file.fileName;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    },
+		// 下载文件
+		downloadFile(file) {
+			const link = document.createElement('a');
+			link.href = this.getImageUrl(file.filePath);
+			link.download = file.fileName;
+			document.body.appendChild(link);
+			link.click();
+			document.body.removeChild(link);
+		},
 
-    // 获取当前上传的文件参数（对外暴露的方法）
-    getUploadParams() {
-      return this.params;
-    }
-  }
+		// 获取当前上传的文件参数（对外暴露的方法）
+		getUploadParams() {
+			return this.params;
+		}
+	}
 };
 </script>
 

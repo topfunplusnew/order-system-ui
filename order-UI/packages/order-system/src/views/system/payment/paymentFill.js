@@ -1,5 +1,5 @@
 // payment/index.vue所需的付款
-import { PAYMENT_TARGET_TYPE } from '../../../api/tool/enums'
+import { PAYMENT_TARGET_TYPE } from '../../../api/tool/enums';
 export var mixin_paymentindex_fill = {
 	data: function () {
 		return {
@@ -51,7 +51,6 @@ export var mixin_paymentindex_fill = {
 		},
 		handleUpdateQueryName(val) {
 			this.queryBank = val;
-		},
-
+		}
 	}
 };

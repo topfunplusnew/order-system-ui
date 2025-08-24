@@ -161,7 +161,13 @@
 					<el-input size="mini" v-model="form.goodsCompany" placeholder="请输入货物来源公司(本部或者海盛)" />
 				</el-form-item>
 				<el-form-item label="附件">
-					<UploadFilesButton ref="attachmentUploader" flag="attachmentList" :extra-info="{ moduleType: 'inventoryMain', formId: form.id }" :initial-attachments="form.attachmentList || []" @files-updated="handleAttachmentFilesUpdated" />
+					<UploadFilesButton
+						ref="attachmentUploader"
+						flag="attachmentList"
+						:extra-info="{ moduleType: 'inventoryMain', formId: form.id }"
+						:initial-attachments="form.attachmentList || []"
+						@files-updated="handleAttachmentFilesUpdated"
+					/>
 				</el-form-item>
 				<br />
 				<el-form-item label="运输方式" prop="transportMode" required>
