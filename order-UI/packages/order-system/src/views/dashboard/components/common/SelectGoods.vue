@@ -354,25 +354,11 @@ export default {
 
 		<!--    显示选择的公司 如果是客户 那么就是批量卖出 如果是供应商 那么就是批量买入-->
 		<!--    订单列表主体-->
-		<el-table
-			id="printBox"
-			v-loading="loading"
-			v-horizontal-scroll="'always'"
-			fit
-			ref="goodsTable"
-			border
-			:data="goodsOrderList"
-			virtual-scroll
-			max-height="400px"
-			height="400px"
-			size="mini"
-			:cell-style="
-				() => {
+		<el-table id="printBox" v-loading="loading" v-horizontal-scroll="'always'" fit ref="goodsTable" border
+			:data="goodsOrderList" virtual-scroll max-height="400px" height="400px" size="mini" :cell-style="() => {
 					return { padding: '2px' };
 				}
-			"
-			@selection-change="handleSelectionChange"
-		>
+				" @selection-change="handleSelectionChange">
 			<el-table-column type="selection" width="55" align="center" :selectable="selectable" />
 			<el-table-column v-if="type" show-overflow-tooltip :label="type + `已开票金额`" align="center" width="150px">
 				<template #default="scope">
@@ -381,11 +367,13 @@ export default {
 			</el-table-column>
 			<el-table-column show-overflow-tooltip label="日期" align="center" prop="orderDate" />
 			<el-table-column show-overflow-tooltip label="客户" align="center" prop="customer" />
-			<el-table-column show-overflow-tooltip label="供应商" align="center" prop="supplierNames" width="200"></el-table-column>
+			<el-table-column show-overflow-tooltip label="供应商" align="center" prop="supplierNames"
+				width="200"></el-table-column>
 			<el-table-column show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo" />
 			<el-table-column show-overflow-tooltip label="陆运司机电话" align="center" prop="landDriverTel" width="100px" />
 			<el-table-column show-overflow-tooltip label="陆地司机姓名" align="center" prop="landDriverName" width="100px" />
-			<el-table-column show-overflow-tooltip label="总货款" align="center" prop="allPayments" width="100px"></el-table-column>
+			<el-table-column show-overflow-tooltip label="总货款" align="center" prop="allPayments"
+				width="100px"></el-table-column>
 			<el-table-column show-overflow-tooltip label="陆运费" align="center" prop="landFreight" width="100px" />
 			<!--      原为海运车牌号-->
 			<el-table-column show-overflow-tooltip label="海运柜号" align="center" prop="seaCarNo">
@@ -408,14 +396,16 @@ export default {
 			<el-table-column show-overflow-tooltip label="销售经理" align="center" prop="saleManager" />
 			<el-table-column show-overflow-tooltip label="车队" align="center" prop="fleet" />
 			<el-table-column show-overflow-tooltip label="录入员" align="center" prop="userName" width="120px" />
-			<el-table-column show-overflow-tooltip label="审核状态" align="center" prop="checkState" width="120"></el-table-column>
+			<el-table-column show-overflow-tooltip label="审核状态" align="center" prop="checkState"
+				width="120"></el-table-column>
 			<!--			/>-->
 			<el-table-column show-overflow-tooltip label="客户是否开票" align="center" prop="customerIsInvoice" width="150px">
 				<template #default="scope">
 					{{ scope.row.customerIsInvoice === 1 ? '是' : '否' }}
 				</template>
 			</el-table-column>
-			<el-table-column show-overflow-tooltip label="供应商是否开票" align="center" prop="isSupplierInvoice" width="120px">
+			<el-table-column show-overflow-tooltip label="供应商是否开票" align="center" prop="isSupplierInvoice"
+				width="120px">
 				<template #default="scope">
 					{{ scope.row.isSupplierInvoice >= 1 ? '是' : '否' }}
 				</template>
@@ -423,7 +413,8 @@ export default {
 			<el-table-column show-overflow-tooltip label="备注" align="center" prop="comments" />
 		</el-table>
 		<!--    分页组件-->
-		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
+		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum"
+			:limit.sync="queryParams.pageSize" @pagination="getList" />
 	</div>
 </template>
 

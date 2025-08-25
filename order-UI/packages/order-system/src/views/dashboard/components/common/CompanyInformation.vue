@@ -20,44 +20,15 @@ export default {
 			}
 		}
 	},
-
-	// watch: {
-	// 	point: {
-	// 		handler(val) {
-	// 			// 清除之前的定时器
-	// 			clearTimeout(this.debounceTimer);
-	// 			// 设置新的定时器
-	// 			this.debounceTimer = setTimeout(() => {
-	// 				this.$store.dispatch('excel/setTicketPoint', val);
-	// 			}, this.timeOut); // 300ms 的防抖时间，可以根据需求调整
-	// 		},
-	// 		immediate: true
-	// 	}
-	// },
-	// computed: {
-	// 	point: {
-	// 		get() {
-	// 			return this.ticketPoint;
-	// 		},
-	// 		set(val) {
-	// 			this.$store.dispatch('excel/setTicketPoint', val);
-	// 		}
-	// 	},
-	// 	comments: {
-	// 		get() {
-	// 			return this.comment;
-	// 		},
-	// 		set(val) {
-	// 			this.$store.dispatch('excel/setComment', val);
-	// 		}
-	// 	},
-	// 	...mapGetters(['ticketPoint', 'comment'])
-	// },
 	data() {
 		return {
 			debounceTimer: null, // 存储防抖定时器
 			timeOut: 500
 		};
+	},
+	methods: {
+		handleProcess() { },
+		handleReject() { }
 	}
 };
 </script>
@@ -109,7 +80,7 @@ export default {
 	::v-deep .el-card__header {
 		padding: 12px 16px;
 		border-bottom: 1px solid #ebeef5;
-		
+
 		.card-header {
 			margin: 0;
 		}

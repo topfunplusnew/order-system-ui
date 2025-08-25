@@ -9,28 +9,6 @@ import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import ReadyList from '@/views/dashboard/components/common/ReadyList.vue';
 
-// 发票对象
-export class InvoiceObject {
-	constructor(invoiceDate, invoiceObject, invoiceAmount, companyType, companyName, companyID, invoiceCompanyName, ticketPoint, ticketPointAmount, isOrderTax, comments) {
-		this.invoiceDate = invoiceDate;
-		this.invoiceObject = invoiceObject;
-		this.invoiceAmount = invoiceAmount;
-		this.companyType = companyType;
-		this.companyName = companyName;
-		this.companyID = companyID;
-		this.invoiceCompanyName = invoiceCompanyName;
-		this.ticketPoint = ticketPoint;
-		this.ticketPointAmount = ticketPointAmount;
-		this.isOrderTax = isOrderTax;
-		this.comments = comments;
-		// 随机生成一个uuid
-		this.params = {
-			uuid: getUuid(),
-			tableName: this.companyType === PUBLIC_DICT_TYPE.CUSTOMER ? TableName.INVOICE_OUT : TableName.INVOICE_IN
-		};
-	}
-}
-
 export default {
 	name: 'InvoiceBody',
 	components: { DialogWrapper, InvoiceItem },
@@ -42,15 +20,12 @@ export default {
 			handler(val) {
 				// 判断是否长度大于0
 				typeof val === 'object' && val.length > 0 ? this.handleToggle(false) : this.handleToggle(true);
-
 				// 先清除上一次的状态
 				this.$store.dispatch('excel/clearSelectedInvoiceList');
-
 				// 对选择的每一个订单进行转换处理 把订单对象转为开票对象
 				const invoiceList = val.map(element => {
 					return this.handleTransform(element);
 				});
-
 				// 存储vuex
 				this.$store.dispatch('excel/setSelectedInvoiceList', invoiceList);
 			},
@@ -67,7 +42,10 @@ export default {
 			op_customer: true,
 			op_supplier: true,
 			// 供应商的id  只用作搜索
-			supplierId: null
+			supplierId: null,
+			// 票点信息
+			currentTicketPoint: 0,
+			currentTicketPointAmount: 0
 		};
 	},
 	computed: {
@@ -77,16 +55,50 @@ export default {
 		...mapGetters(['selectedInvoiceList', 'selectedOrder', 'ticketPoint', 'comment', 'invoiceAmount'])
 	},
 	methods: {
+		// 创建发票对象的工具函数
+		createInvoiceObject(params) {
+			const {
+				invoiceDate,
+				invoiceObject,
+				invoiceAmount,
+				companyType,
+				companyName,
+				companyID,
+				invoiceCompanyName,
+				ticketPoint = 0,
+				ticketPointAmount,
+				isOrderTax,
+				comments
+			} = params;
+
+			return {
+				invoiceDate,
+				invoiceObject,
+				invoiceAmount,
+				companyType,
+				companyName,
+				companyID,
+				invoiceCompanyName,
+				ticketPoint,
+				ticketPointAmount,
+				isOrderTax,
+				comments,
+				// 随机生成一个uuid和表名
+				params: {
+					uuid: getUuid(),
+					tableName: companyType === PUBLIC_DICT_TYPE.CUSTOMER ? TableName.INVOICE_OUT : TableName.INVOICE_IN
+				}
+			};
+		},
+
 		// 批量开发票
 		async handleInvoiceBatch() {
 			// 首先从vuex拿出数据
 			const invoiceList = this.$store.getters.selectedInvoiceList;
-
 			// 校验一下
 			if (invoiceList.length === 0) {
 				this.$message.warning('开票列表为空,请检查!');
 			}
-
 			// 弹出弹窗 让用户检查
 			this.handleCheckInvoice(invoiceList);
 		},
@@ -116,21 +128,27 @@ export default {
 		handleCustomer(orderItem) {
 			// 不存在id 返回null
 			if (!orderItem.customerID) return null;
-			// 客户
-			return new InvoiceObject(
-				parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
-				// 己方公司实体
-				sessionStorage.getItem('us'),
-				Number(orderItem.allPayments),
-				PUBLIC_DICT_TYPE.CUSTOMER,
-				orderItem.customer,
-				orderItem.customerID,
-				orderItem.customer,
-				0,
-				Number(orderItem.allPayments),
-				orderItem.id,
-				this.comment
-			);
+
+			const invoiceAmount = Number(orderItem.allPayments);
+			// 使用新的票点计算公式：票点金额 = 开票金额 / (1 + 票点) * 票点
+			const ticketPointAmount = this.currentTicketPoint > 0
+				? Number(((invoiceAmount / (1 + this.currentTicketPoint)) * this.currentTicketPoint).toFixed(2))
+				: 0;
+
+			// 创建客户发票对象
+			return this.createInvoiceObject({
+				invoiceDate: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
+				invoiceObject: sessionStorage.getItem('us'), // 己方公司实体
+				invoiceAmount: invoiceAmount,
+				companyType: PUBLIC_DICT_TYPE.CUSTOMER,
+				companyName: orderItem.customer,
+				companyID: orderItem.customerID,
+				invoiceCompanyName: orderItem.customer,
+				ticketPoint: this.currentTicketPoint,
+				ticketPointAmount: ticketPointAmount,
+				isOrderTax: orderItem.id,
+				comments: this.comment
+			});
 		},
 		// 对供应商进行处理
 		handleSupplier(orderItem) {
@@ -145,21 +163,27 @@ export default {
 
 			// 计算该供应商的出场货款
 			const paymentFactory = _suppliers.reduce((pre, cur) => pre + cur.paymentFactory, 0);
+			const invoiceAmount = Number(paymentFactory);
 
-			// 供应商
-			return new InvoiceObject(
-				parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
-				sessionStorage.getItem('us'),
-				Number(paymentFactory),
-				PUBLIC_DICT_TYPE.SUPPLIER,
-				_suppliers[0].supplier,
-				_suppliers[0].supplierID, // 供应商id
-				_suppliers[0].supplier,
-				0,
-				Number(paymentFactory),
-				orderItem.id,
-				this.comment
-			);
+			// 使用新的票点计算公式：票点金额 = 开票金额 / (1 + 票点) * 票点
+			const ticketPointAmount = this.currentTicketPoint > 0
+				? Number(((invoiceAmount / (1 + this.currentTicketPoint)) * this.currentTicketPoint).toFixed(2))
+				: 0;
+
+			// 创建供应商发票对象
+			return this.createInvoiceObject({
+				invoiceDate: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
+				invoiceObject: sessionStorage.getItem('us'),
+				invoiceAmount: invoiceAmount,
+				companyType: PUBLIC_DICT_TYPE.SUPPLIER,
+				companyName: _suppliers[0].supplier,
+				companyID: _suppliers[0].supplierID, // 供应商id
+				invoiceCompanyName: _suppliers[0].supplier,
+				ticketPoint: this.currentTicketPoint,
+				ticketPointAmount: ticketPointAmount,
+				isOrderTax: orderItem.id,
+				comments: this.comment
+			});
 		},
 		handleToggle(toggle) {
 			this.op_customer = toggle;
@@ -176,6 +200,9 @@ export default {
 			this.companyName = value.name;
 			this.invoiceType = value.type;
 			this.supplierId = value.id;
+			// 接收票点信息
+			this.currentTicketPoint = value.ticketPoint || 0;
+			this.currentTicketPointAmount = value.ticketPointAmount || 0;
 		});
 
 		this.$bus.$on('invoice-clear', () => {
@@ -188,6 +215,9 @@ export default {
 			this.companyName = null;
 			this.invoiceType = null;
 			this.supplierId = null;
+			// 清除票点信息
+			this.currentTicketPoint = 0;
+			this.currentTicketPointAmount = 0;
 		});
 	},
 	beforeDestroy() {
@@ -216,31 +246,19 @@ export default {
 						<span class="money">{{ invoiceAmount || '无' }}</span>
 					</div>
 				</div>
-				
+
 				<div class="invoice-list">
 					<InvoiceItem v-for="(item, index) in selectedInvoiceList" :key="index" :invoice="item" />
 				</div>
 
 				<!--    批量开票-->
 				<div class="options">
-					<el-button 
-						v-if="invoiceType === PUBLIC_DICT_TYPE.CUSTOMER" 
-						type="success" 
-						size="small" 
-						:disabled="op_customer" 
-						@click="handleInvoiceBatch"
-						class="invoice-button"
-					>
+					<el-button v-if="invoiceType === PUBLIC_DICT_TYPE.CUSTOMER" type="success" size="small"
+						:disabled="op_customer" @click="handleInvoiceBatch" class="invoice-button">
 						开具客户发票
 					</el-button>
-					<el-button 
-						v-if="invoiceType === PUBLIC_DICT_TYPE.SUPPLIER" 
-						type="success" 
-						size="small" 
-						:disabled="op_supplier" 
-						@click="handleInvoiceBatch"
-						class="invoice-button"
-					>
+					<el-button v-if="invoiceType === PUBLIC_DICT_TYPE.SUPPLIER" type="success" size="small"
+						:disabled="op_supplier" @click="handleInvoiceBatch" class="invoice-button">
 						开具供应商发票
 					</el-button>
 				</div>
@@ -277,7 +295,7 @@ export default {
 		padding: 12px 16px;
 		border-bottom: 1px solid #ebeef5;
 		flex-shrink: 0;
-		
+
 		.card-header {
 			margin: 0;
 		}
@@ -317,7 +335,7 @@ export default {
 	display: flex;
 	align-items: center;
 	margin-bottom: 8px;
-	
+
 	&:last-child {
 		margin-bottom: 0;
 	}
@@ -360,7 +378,7 @@ export default {
 	&::-webkit-scrollbar-thumb {
 		background: #dcdfe6;
 		border-radius: 3px;
-		
+
 		&:hover {
 			background: #c0c4cc;
 		}
@@ -385,12 +403,12 @@ export default {
 		font-size: 13px;
 		border-radius: 4px;
 		transition: all 0.3s ease;
-		
+
 		&:not(:disabled):hover {
 			transform: translateY(-1px);
 			box-shadow: 0 4px 12px rgba(103, 194, 58, 0.3);
 		}
-		
+
 		&:disabled {
 			cursor: not-allowed;
 			opacity: 0.6;
@@ -403,7 +421,7 @@ export default {
 	.info-section {
 		padding: 10px;
 	}
-	
+
 	.invoice-list {
 		min-height: 200px;
 	}
@@ -415,18 +433,18 @@ export default {
 			padding: 12px;
 		}
 	}
-	
+
 	.info-item {
 		flex-direction: column;
 		align-items: flex-start;
-		
+
 		.info-label {
 			min-width: auto;
 			margin-right: 0;
 			margin-bottom: 4px;
 		}
 	}
-	
+
 	.options {
 		.invoice-button {
 			min-width: 100px;
@@ -441,15 +459,15 @@ export default {
 		padding: 8px;
 		margin-bottom: 12px;
 	}
-	
+
 	.invoice-list {
 		margin-bottom: 12px;
 		min-height: 150px;
 	}
-	
+
 	.options {
 		padding: 8px 0;
-		
+
 		.invoice-button {
 			width: 100%;
 			max-width: 200px;

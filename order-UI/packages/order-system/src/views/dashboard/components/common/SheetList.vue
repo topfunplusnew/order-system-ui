@@ -6,8 +6,8 @@
 
 <script>
 import { getCompany } from '@/api/system/company';
-import CompanyInformation from '@/views/dashboard/components/common/CompanyInformation.vue';
 import CompanysList from '@/views/dashboard/components/common/CompanysList.vue';
+// import CompanyInformation from '@/views/dashboard/components/common/CompanyInformation.vue';
 import InvoiceBody from '@/views/dashboard/components/common/InvoiceBody.vue';
 import SelectGoods from '@/views/dashboard/components/common/SelectGoods.vue';
 import SheetItem from '@/views/dashboard/components/common/SheetItem.vue';
@@ -20,7 +20,7 @@ export default {
 	components: {
 		CompanysList,
 		InvoiceBody,
-		CompanyInformation,
+		// CompanyInformation,
 		SelectGoods,
 		SheetItem
 	},
@@ -68,14 +68,11 @@ export default {
 			// 清除购买方和销方的信息
 			this.handleClearPurchaseInfo();
 			this.handleClearSellerInfo();
-
 			let arr = [];
 			let purchaseMap = new Map();
 			let sellerMap = new Map();
-
 			// 读取excel的数据
 			const excelInfo = this.handleReadExcel();
-
 			// 需要销售方id 销售方的名称和类型 以及购买方id  购买方类型 和名称
 			for (let item of excelInfo[excelIndex]) {
 				if (item['销方ID'] && !/^\d+$/.test(item['销方ID'])) {
@@ -87,15 +84,12 @@ export default {
 
 			// 过滤掉arr中 属性全部为undefined的元素
 			arr = arr.filter(item => !Object.values(item).every(value => !value));
-			console.log(arr);
-
 			// 检查excel中是否有同时存在的
 			let ok = arr.every(item => this.purchaseHandler(item));
 			if (!ok) {
 				this.$message.error('存在订单中存在购买方和销方的信息，请检查');
 				return;
 			}
-
 			// 对数组每一个进行遍历 收集元素
 			arr.forEach(element => {
 				// 判断对方是否是购买方
@@ -108,24 +102,20 @@ export default {
 				const name = isPurchase ? element.purchaseName : element.sellerName;
 				// 购买方或销售方的 type
 				const type = isPurchase ? element.purchaseType : element.sellerType;
-
 				// 必然有一方是我方 对方如果是购买方 那么我方就是销售方 反之一样
 				const us = isPurchase ? element.sellerName : element.purchaseName;
 				// 确保 id 不为 undefined 或空值
 				if (id == null || id === '') {
 					return; // 跳过当前元素
 				}
-
 				// 唯一键
 				const _onlyKey = id + us;
 				// 获取当前 Map 中的记录，如果存在则累加总数，不存在则直接插入
 				const _existing = map.get(_onlyKey);
-
 				// 如果存在id 并且 我方名称不一样
 				if (_existing) {
 					_existing.total += element.total; // 累加 total
-
-					// 插入新的记录
+					_existing.ticketPointAmount += element.ticketPointAmount; // 累加票点金额
 				} else {
 					map.set(_onlyKey, {
 						id,
@@ -133,14 +123,14 @@ export default {
 						name,
 						// 己方公司名称
 						us,
-						total: element.total
+						total: element.total,
+						ticketPoint: element.ticketPoint,
+						ticketPointAmount: element.ticketPointAmount
 					});
 				}
 			});
-
 			this.purchaseTotalInfo = Array.from(purchaseMap.values());
 			this.sellerTotalInfo = Array.from(sellerMap.values());
-
 			// 暂存购买方和销方的信息
 			this.handleStorePurchaseInfo(this.purchaseTotalInfo);
 			this.handleStoreSellerInfo(this.sellerTotalInfo);
@@ -149,6 +139,14 @@ export default {
 		},
 		// 映射关系 这里可以自定义
 		mapperParams(item) {
+			const ticketPoint = Number(item['票点']) || 0; // 获取票点，默认为0
+			const totalAmount = Number(item['价税合计']) || 0; // 获取价税合计
+			
+			// 计算票点金额：票点金额 = 开票金额 / (1 + 票点) * 票点
+			const ticketPointAmount = totalAmount > 0 && ticketPoint > 0 
+				? (totalAmount / (1 + ticketPoint)) * ticketPoint 
+				: 0;
+			
 			return {
 				sellerId: item['销方ID'],
 				sellerName: item['销方名称'],
@@ -156,7 +154,9 @@ export default {
 				purchaseId: item['购买方ID'],
 				purchaseType: item['购买方类型'],
 				purchaseName: item['购买方名称'],
-				total: item['价税合计']
+				total: totalAmount,
+				ticketPoint: ticketPoint,
+				ticketPointAmount: Number(ticketPointAmount.toFixed(2)) // 保留两位小数
 			};
 		},
 		// 对公司进行校验
@@ -265,16 +265,11 @@ export default {
 						<!-- 左侧区域 -->
 						<el-col :xl="6" :lg="7" :md="8" :sm="24" :xs="24" class="column-section left-section">
 							<div class="section-wrapper">
-								<!-- 公司信息卡片 -->
-								<div class="company-info-section">
-									<CompanyInformation :company-info="companyInfo" />
-								</div>
-
-								<!-- 导入公司列表卡片 -->
-								<div class="company-list-section">
+								<!-- 公司列表卡片 - 占用整个左侧空间 -->
+								<div class="company-list-section-full">
 									<el-card class="full-height-card">
 										<div slot="header" class="card-header">
-											<span class="bold-text">导入公司列表</span>
+											<span class="bold-text">公司列表</span>
 										</div>
 										<!-- 搜索表单 -->
 										<el-form class="search-form">
@@ -411,6 +406,13 @@ export default {
 
 /* 左侧区域样式 */
 .left-section {
+	.company-list-section-full {
+		height: 100%;
+		display: flex;
+		flex-direction: column;
+	}
+
+	// 原来的样式保留以防需要回滚
 	.company-info-section {
 		margin-bottom: 16px;
 		flex-shrink: 0;
@@ -644,5 +646,36 @@ export default {
 .full-height-card,
 .company-lists {
 	transition: all 0.3s ease;
+}
+
+/* 新的公司列表全屏布局优化 */
+.company-list-section-full {
+	.company-lists {
+		// 增加表格的最大高度以适应更大的空间
+		max-height: calc(100vh - 300px);
+		
+		// 为每个公司列表分配更多空间
+		> div {
+			margin-bottom: 12px;
+			
+			&:last-child {
+				margin-bottom: 0;
+			}
+		}
+	}
+	
+	// 优化搜索表单的间距
+	.search-form {
+		margin-bottom: 16px;
+		border-bottom: 1px solid #ebeef5;
+		padding-bottom: 12px;
+	}
+	
+	// 优化分割线样式
+	.el-divider {
+		&:first-of-type {
+			margin-top: 8px;
+		}
+	}
 }
 </style>
