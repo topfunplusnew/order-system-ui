@@ -200,24 +200,50 @@ export default {
 </script>
 
 <template>
-	<div>
-		<el-card class="box-card">
-			<div slot="header" class="clearfix">
+	<div class="invoice-body-wrapper">
+		<el-card class="invoice-card">
+			<div slot="header" class="card-header">
 				<span class="bold-text">开票信息</span>
 			</div>
-			<div>{{ '公司名称：' + (companyName ? companyName : '无') }}</div>
-			<div>
-				剩余开票金额：
-				<span class="money">{{ invoiceAmount ? invoiceAmount : '无' }}</span>
-			</div>
-			<div class="invoice-list">
-				<InvoiceItem v-for="(item, index) in selectedInvoiceList" :key="index" :invoice="item" />
-			</div>
+			<div class="invoice-content">
+				<div class="info-section">
+					<div class="info-item">
+						<span class="info-label">公司名称：</span>
+						<span class="info-value">{{ companyName || '无' }}</span>
+					</div>
+					<div class="info-item">
+						<span class="info-label">剩余开票金额：</span>
+						<span class="money">{{ invoiceAmount || '无' }}</span>
+					</div>
+				</div>
+				
+				<div class="invoice-list">
+					<InvoiceItem v-for="(item, index) in selectedInvoiceList" :key="index" :invoice="item" />
+				</div>
 
-			<!--    批量开票-->
-			<div class="options">
-				<el-button v-if="invoiceType === PUBLIC_DICT_TYPE.CUSTOMER" type="success" size="mini" :disabled="op_customer" @click="handleInvoiceBatch">开具客户发票</el-button>
-				<el-button v-if="invoiceType === PUBLIC_DICT_TYPE.SUPPLIER" type="success" size="mini" :disabled="op_supplier" @click="handleInvoiceBatch">开具供应商发票</el-button>
+				<!--    批量开票-->
+				<div class="options">
+					<el-button 
+						v-if="invoiceType === PUBLIC_DICT_TYPE.CUSTOMER" 
+						type="success" 
+						size="small" 
+						:disabled="op_customer" 
+						@click="handleInvoiceBatch"
+						class="invoice-button"
+					>
+						开具客户发票
+					</el-button>
+					<el-button 
+						v-if="invoiceType === PUBLIC_DICT_TYPE.SUPPLIER" 
+						type="success" 
+						size="small" 
+						:disabled="op_supplier" 
+						@click="handleInvoiceBatch"
+						class="invoice-button"
+					>
+						开具供应商发票
+					</el-button>
+				</div>
 			</div>
 		</el-card>
 
@@ -229,27 +255,205 @@ export default {
 </template>
 
 <style scoped lang="scss">
-.bold-text {
-	font-weight: bold;
+.invoice-body-wrapper {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
 }
 
-.invoice-list {
-	height: 600px;
-	overflow-y: scroll;
+.invoice-card {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+	border: 1px solid #ebeef5;
+	border-radius: 6px;
+
+	&:hover {
+		box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.12);
+	}
+
+	::v-deep .el-card__header {
+		padding: 12px 16px;
+		border-bottom: 1px solid #ebeef5;
+		flex-shrink: 0;
+		
+		.card-header {
+			margin: 0;
+		}
+	}
+
+	::v-deep .el-card__body {
+		flex: 1;
+		padding: 16px;
+		overflow: hidden;
+		display: flex;
+		flex-direction: column;
+	}
+}
+
+.invoice-content {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+.bold-text {
+	font-weight: bold;
+	color: #161617;
+	font-size: 14px;
+}
+
+.info-section {
+	flex-shrink: 0;
+	margin-bottom: 16px;
+	padding: 12px;
+	background-color: #f8f9fa;
+	border-radius: 4px;
+	border-left: 4px solid #409eff;
+}
+
+.info-item {
+	display: flex;
+	align-items: center;
+	margin-bottom: 8px;
+	
+	&:last-child {
+		margin-bottom: 0;
+	}
+}
+
+.info-label {
+	font-size: 13px;
+	color: #606266;
+	min-width: 80px;
+	margin-right: 8px;
+}
+
+.info-value {
+	font-size: 13px;
+	color: #303133;
+	font-weight: 500;
 }
 
 .money {
-	color: red;
-	font-weight: bolder;
+	color: #e6a23c;
+	font-weight: bold;
+	font-size: 14px;
+}
+
+.invoice-list {
+	flex: 1;
+	overflow-y: auto;
+	min-height: 0;
+	margin-bottom: 16px;
+	border: 1px solid #ebeef5;
+	border-radius: 4px;
+	padding: 8px;
+	background-color: #fafbfc;
+
+	/* 美化滚动条 */
+	&::-webkit-scrollbar {
+		width: 6px;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		background: #dcdfe6;
+		border-radius: 3px;
+		
+		&:hover {
+			background: #c0c4cc;
+		}
+	}
+
+	&::-webkit-scrollbar-track {
+		background: transparent;
+	}
 }
 
 .options {
+	flex-shrink: 0;
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	padding: 12px 0;
+	border-top: 1px solid #ebeef5;
 
-	el-button {
-		margin-left: 10px;
+	.invoice-button {
+		min-width: 120px;
+		height: 36px;
+		font-size: 13px;
+		border-radius: 4px;
+		transition: all 0.3s ease;
+		
+		&:not(:disabled):hover {
+			transform: translateY(-1px);
+			box-shadow: 0 4px 12px rgba(103, 194, 58, 0.3);
+		}
+		
+		&:disabled {
+			cursor: not-allowed;
+			opacity: 0.6;
+		}
+	}
+}
+
+/* 响应式适配 */
+@media screen and (max-width: 1200px) {
+	.info-section {
+		padding: 10px;
+	}
+	
+	.invoice-list {
+		min-height: 200px;
+	}
+}
+
+@media screen and (max-width: 768px) {
+	.invoice-card {
+		::v-deep .el-card__body {
+			padding: 12px;
+		}
+	}
+	
+	.info-item {
+		flex-direction: column;
+		align-items: flex-start;
+		
+		.info-label {
+			min-width: auto;
+			margin-right: 0;
+			margin-bottom: 4px;
+		}
+	}
+	
+	.options {
+		.invoice-button {
+			min-width: 100px;
+			height: 32px;
+			font-size: 12px;
+		}
+	}
+}
+
+@media screen and (max-width: 480px) {
+	.info-section {
+		padding: 8px;
+		margin-bottom: 12px;
+	}
+	
+	.invoice-list {
+		margin-bottom: 12px;
+		min-height: 150px;
+	}
+	
+	.options {
+		padding: 8px 0;
+		
+		.invoice-button {
+			width: 100%;
+			max-width: 200px;
+		}
 	}
 }
 </style>

@@ -252,76 +252,102 @@ export default {
 		<!--    Excel Sheet的选择列表-->
 		<div class="sheet-container">
 			<!--      点击某一个sheet-->
-			<SheetItem v-for="(item, index) in sheetList" :key="item" :title="item" @click.native="handleInvoiceAll(item, index)" />
+			<SheetItem v-for="(item, index) in sheetList" :key="item" :title="item"
+				@click.native="handleInvoiceAll(item, index)" />
 		</div>
 
 		<!--    批量开票的弹窗-->
 		<div>
-			<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="批量开票" fullscreen :visible.sync="invoiceAllVisible" append-to-body>
-				<el-row :gutter="12" class="invoice-container">
-					<!-- 左侧区域 -->
-					<el-col :span="8" :sm="24" :md="8" class="left-section">
-						<div class="left-box">
-							<!-- 公司信息卡片 -->
-							<CompanyInformation :company-info="companyInfo" class="company-info-card" />
+			<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="批量开票" fullscreen
+				:visible.sync="invoiceAllVisible" append-to-body>
+				<div class="invoice-container">
+					<el-row :gutter="16" class="invoice-row">
+						<!-- 左侧区域 -->
+						<el-col :xl="6" :lg="7" :md="8" :sm="24" :xs="24" class="column-section left-section">
+							<div class="section-wrapper">
+								<!-- 公司信息卡片 -->
+								<div class="company-info-section">
+									<CompanyInformation :company-info="companyInfo" />
+								</div>
 
-							<!-- 导入公司列表卡片 -->
-							<div class="left-box-item">
-								<el-card class="box-card">
-									<div slot="header" class="clearfix">
-										<span class="bold-text">导入公司列表</span>
+								<!-- 导入公司列表卡片 -->
+								<div class="company-list-section">
+									<el-card class="full-height-card">
+										<div slot="header" class="card-header">
+											<span class="bold-text">导入公司列表</span>
+										</div>
+										<!-- 搜索表单 -->
+										<el-form class="search-form">
+											<el-row :gutter="8">
+												<el-col :span="12">
+													<el-form-item label="购买方" label-width="60px">
+														<el-input v-model="purchase" placeholder="购买方名称" size="mini"
+															clearable />
+													</el-form-item>
+												</el-col>
+												<el-col :span="12">
+													<el-form-item label="销方" label-width="40px">
+														<el-input v-model="seller" placeholder="销方名称" size="mini"
+															clearable />
+													</el-form-item>
+												</el-col>
+											</el-row>
+											<el-row>
+												<el-col :span="24">
+													<div class="button-group">
+														<el-button type="primary" size="mini"
+															@click="handleFilter">查询</el-button>
+														<el-button type="warning" size="mini"
+															@click="handleReset">重置</el-button>
+													</div>
+												</el-col>
+											</el-row>
+										</el-form>
+
+										<!-- 公司列表 -->
+										<div class="company-lists">
+											<el-divider>
+												<span class="bold-text">购买方信息</span>
+											</el-divider>
+											<CompanysList :company-total-info="purchaseTotalInfo"
+												@handleCheck="handleCheck" />
+											<el-divider>
+												<span class="bold-text">销方信息</span>
+											</el-divider>
+											<CompanysList :company-total-info="sellerTotalInfo"
+												@handleCheck="handleCheck" />
+										</div>
+									</el-card>
+								</div>
+							</div>
+						</el-col>
+
+						<!-- 中间区域 -->
+						<el-col :xl="12" :lg="11" :md="10" :sm="24" :xs="24" class="column-section middle-section">
+							<div class="section-wrapper">
+								<el-card class="full-height-card">
+									<div slot="header" class="card-header">
+										<span class="bold-text">订单列表(未开票)</span>
+										<el-button class="header-button" type="text"
+											@click="handleResetOrderList">重置筛选</el-button>
 									</div>
-									<!-- 搜索表单 -->
-									<el-form :inline="true" class="search-form">
-										<el-form-item label="购买方名称">
-											<el-input v-model="purchase" placeholder="请输入购买方名称" size="mini" clearable />
-										</el-form-item>
-										<el-form-item label="销方名称">
-											<el-input v-model="seller" placeholder="请输入销方名称" size="mini" clearable />
-										</el-form-item>
-										<el-form-item class="button-group">
-											<el-button type="primary" size="mini" @click="handleFilter">查询</el-button>
-											<el-button type="warning" size="mini" @click="handleReset">重置</el-button>
-										</el-form-item>
-									</el-form>
-
-									<!-- 公司列表 -->
-									<div class="pay-others">
-										<el-divider>
-											<span class="bold-text">购买方信息</span>
-										</el-divider>
-										<CompanysList :company-total-info="purchaseTotalInfo" @handleCheck="handleCheck" />
-										<el-divider>
-											<span class="bold-text">销方信息</span>
-										</el-divider>
-										<CompanysList :company-total-info="sellerTotalInfo" @handleCheck="handleCheck" />
+									<div class="select-goods-wrapper">
+										<SelectGoods />
 									</div>
 								</el-card>
 							</div>
-						</div>
-					</el-col>
+						</el-col>
 
-					<!-- 中间区域 -->
-					<el-col :span="12" :sm="24" :md="12" class="middle-section">
-						<el-card class="box-card">
-							<div slot="header" class="clearfix">
-								<span class="bold-text">订单列表(未开票)</span>
-								<el-button style="float: right; padding: 3px 0" type="text" @click="handleResetOrderList">重置筛选</el-button>
+						<!-- 右侧区域 -->
+						<el-col :xl="6" :lg="6" :md="6" :sm="24" :xs="24" class="column-section right-section">
+							<div class="section-wrapper">
+								<InvoiceBody />
 							</div>
-							<SelectGoods />
-						</el-card>
-					</el-col>
-
-					<!-- 右侧区域 -->
-					<el-col :span="4" :sm="24" :md="4" class="right-section">
-						<InvoiceBody />
-					</el-col>
-				</el-row>
+						</el-col>
+					</el-row>
+				</div>
 				<span slot="footer" class="dialog-footer">
 					<el-button @click="handleClose">关 闭</el-button>
-					<!--					<el-button type="primary" @click="invoiceAllVisible = false"-->
-					<!--						>确 定</el-button-->
-					<!--					>-->
 				</span>
 			</el-dialog>
 		</div>
@@ -333,6 +359,8 @@ export default {
 	display: flex;
 	flex-direction: row;
 	flex-wrap: wrap;
+	gap: 12px;
+	margin-bottom: 20px;
 }
 
 .bold-text {
@@ -351,68 +379,139 @@ export default {
 	line-height: 20px;
 }
 
-/*开票弹窗相关的样式*/
-.left-box {
+/* 开票弹窗相关的样式 */
+.invoice-container {
+	height: calc(100vh - 120px);
+	padding: 0 20px;
+	overflow: hidden;
+
+	.invoice-row {
+		height: 100%;
+		margin: 0;
+	}
+}
+
+.column-section {
+	padding-left: 8px !important;
+	padding-right: 8px !important;
+	height: 100%;
+
+	&.left-section,
+	&.middle-section,
+	&.right-section {
+		margin-bottom: 0;
+	}
+}
+
+.section-wrapper {
 	height: 100%;
 	display: flex;
 	flex-direction: column;
-	gap: 20px;
+}
 
-	.company-info-card {
+/* 左侧区域样式 */
+.left-section {
+	.company-info-section {
+		margin-bottom: 16px;
 		flex-shrink: 0;
 	}
 
-	.left-box-item {
+	.company-list-section {
 		flex: 1;
+		min-height: 0;
+	}
+}
+
+/* 中间和右侧区域样式 */
+.middle-section,
+.right-section {
+	.section-wrapper {
+		height: 100%;
+	}
+}
+
+/* 卡片通用样式 */
+.full-height-card {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+
+	::v-deep .el-card__header {
+		padding: 12px 16px;
+		border-bottom: 1px solid #ebeef5;
+		flex-shrink: 0;
+	}
+
+	::v-deep .el-card__body {
+		flex: 1;
+		padding: 16px;
 		overflow: hidden;
-
-		.box-card {
-			height: 100%;
-			display: flex;
-			flex-direction: column;
-
-			::v-deep .el-card__body {
-				flex: 1;
-				overflow: hidden;
-				display: flex;
-				flex-direction: column;
-			}
-		}
+		display: flex;
+		flex-direction: column;
 	}
 }
 
+/* 卡片头部样式 */
+.card-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+
+	.header-button {
+		padding: 3px 0;
+		font-size: 12px;
+	}
+}
+
+/* 搜索表单样式 */
 .search-form {
-	margin-bottom: 15px;
+	margin-bottom: 16px;
+	flex-shrink: 0;
 
-	@media screen and (max-width: 768px) {
-		.el-form-item {
-			display: block;
-			margin-right: 0;
-			margin-bottom: 10px;
+	.el-form-item {
+		margin-bottom: 12px;
+	}
 
-			.el-input {
-				width: 100%;
-			}
-		}
+	.el-form-item__label {
+		font-size: 12px;
+		color: #666;
+	}
 
-		.button-group {
-			text-align: right;
+	.button-group {
+		text-align: center;
+
+		.el-button {
+			margin: 0 4px;
 		}
 	}
 }
 
-.pay-others {
+/* 公司列表样式 */
+.company-lists {
 	flex: 1;
 	overflow-y: auto;
-	padding-right: 5px;
+	min-height: 0;
 
+	.el-divider {
+		margin: 16px 0 12px 0;
+
+		.el-divider__text {
+			background-color: #f5f7fa;
+		}
+	}
+
+	/* 美化滚动条 */
 	&::-webkit-scrollbar {
-		width: 4px;
+		width: 6px;
 	}
 
 	&::-webkit-scrollbar-thumb {
 		background: #dcdfe6;
-		border-radius: 2px;
+		border-radius: 3px;
+
+		&:hover {
+			background: #c0c4cc;
+		}
 	}
 
 	&::-webkit-scrollbar-track {
@@ -420,27 +519,130 @@ export default {
 	}
 }
 
-.box-card {
-	height: 100%;
+/* 订单选择组件包装 */
+.select-goods-wrapper {
+	flex: 1;
+	overflow: hidden;
+	min-height: 0;
+}
 
-	::v-deep .el-card__body {
-		height: calc(100% - 50px);
-		overflow-y: auto;
+/* 响应式布局 */
+@media screen and (max-width: 1200px) {
+	.invoice-container {
+		height: auto;
+		min-height: calc(100vh - 120px);
+
+		.invoice-row {
+			height: auto;
+		}
+	}
+
+	.column-section {
+		height: auto;
+		margin-bottom: 16px;
+
+		&:last-child {
+			margin-bottom: 0;
+		}
+	}
+
+	.section-wrapper {
+		height: auto;
+		min-height: 400px;
+	}
+
+	.company-lists {
+		max-height: 300px;
+	}
+
+	.select-goods-wrapper {
+		height: 400px;
 	}
 }
 
 @media screen and (max-width: 768px) {
 	.invoice-container {
-		height: auto;
-		overflow: visible;
+		padding: 0 12px;
 	}
 
-	.left-box {
-		gap: 10px;
+	.search-form {
+		.el-row {
+			margin-left: 0 !important;
+			margin-right: 0 !important;
+		}
+
+		.el-col {
+			padding-left: 4px !important;
+			padding-right: 4px !important;
+		}
 	}
 
-	.pay-others {
-		max-height: 300px;
+	.section-wrapper {
+		min-height: 350px;
 	}
+
+	.company-lists {
+		max-height: 250px;
+	}
+}
+
+@media screen and (max-width: 480px) {
+	.invoice-container {
+		padding: 0 8px;
+	}
+
+	.search-form {
+		.el-form-item__label {
+			width: 50px !important;
+		}
+
+		.el-row:first-child .el-col {
+			flex: 0 0 100%;
+			max-width: 100%;
+		}
+	}
+
+	.section-wrapper {
+		min-height: 300px;
+	}
+
+	.card-header {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 8px;
+
+		.header-button {
+			align-self: flex-end;
+		}
+	}
+}
+
+/* 弹窗底部按钮样式 */
+.dialog-footer {
+	text-align: center;
+	padding: 16px 0;
+	border-top: 1px solid #ebeef5;
+
+	.el-button {
+		min-width: 80px;
+	}
+}
+
+/* 优化卡片阴影和边框 */
+.full-height-card {
+	box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+	border: 1px solid #ebeef5;
+	border-radius: 6px;
+
+	&:hover {
+		box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.12);
+	}
+}
+
+/* 平滑过渡效果 */
+.section-wrapper,
+.full-height-card,
+.company-lists {
+	transition: all 0.3s ease;
 }
 </style>
