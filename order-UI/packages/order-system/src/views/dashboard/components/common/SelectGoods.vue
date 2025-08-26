@@ -397,8 +397,8 @@ export default {
 			<el-table-column show-overflow-tooltip label="车队" align="center" prop="fleet" />
 			<el-table-column show-overflow-tooltip label="录入员" align="center" prop="userName" width="120px" />
 			<el-table-column show-overflow-tooltip label="审核状态" align="center" prop="checkState"
-				width="120"></el-table-column>
-			<!--			/>-->
+				width="120">
+			</el-table-column>
 			<el-table-column show-overflow-tooltip label="客户是否开票" align="center" prop="customerIsInvoice" width="150px">
 				<template #default="scope">
 					{{ scope.row.customerIsInvoice === 1 ? '是' : '否' }}

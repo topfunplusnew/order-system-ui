@@ -1,5 +1,6 @@
 <template>
-	<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :visible.sync="visible" :title="title" width="600px" :close-on-click-modal="false">
+	<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :visible.sync="visible" :title="title"
+		width="600px" :close-on-click-modal="false">
 		<div v-if="type === 'object'">
 			<div v-for="(value, key) in data" :key="key" class="data-row">
 				<strong>{{ labels[key] || key }}</strong>
@@ -9,7 +10,9 @@
 
 		<div v-else-if="type === 'array'">
 			<el-table :data="items" style="width: 100%" show-summary :summary-method="getSummaries">
-				<el-table-column v-for="(item, index) in array" :prop="item.prop" :label="item.label" :key="index"></el-table-column>
+				<el-table-column type="index" label="ID"></el-table-column>
+				<el-table-column v-for="(item, index) in array" :prop="item.prop" :label="item.label"
+					:key="index"></el-table-column>
 			</el-table>
 		</div>
 

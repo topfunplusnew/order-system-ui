@@ -141,8 +141,8 @@ export var mixin_choose_order = {
 			// 计算重箱和面积的和
 			const result = this.goods.reduce(
 				(prev, next) => {
-					// 累加面积
-					prev.area += (next.height * next.width * next.pieces) / 1000000;
+					// 累加面积 - 修改计算公式为：长度*宽度*出场片数/1000000
+					prev.area += (next.length * next.width * next.pieces) / 1000000;
 					// 累加重箱
 					prev.weightBox += (next.height * next.length * next.width * next.pieces) / 1000000 / 20;
 					return prev;
