@@ -289,6 +289,19 @@ export default {
 				},
 				`goodsOrder_${new Date().getTime()}.xlsx`
 			);
+		},
+		// 订单列表 不分页的导出
+		handleExportNoPage() {
+			this.download(
+				'system/goodsOrder/export',
+				{
+					...this.queryParams,
+					isAdjusted: this.isAdjustOrder ? 1 : 0,
+					// 不分页的导出
+					noPage: true
+				},
+				`goodsOrder_${new Date().getTime()}.xlsx`
+			);
 		}
 	}
 };
@@ -311,19 +324,17 @@ export default {
 
 		<!--    订单历史记录查看-->
 		<div>
-			<OrderHistoryCheck
-				:check-history-order-visible="checkHistoryOrderVisible"
-				:order-history-info-list="orderHistoryInfoList"
-				:current-info="currentOrderItemInfo"
-				@close="closeOrderHistoryCheck"
-			/>
+			<OrderHistoryCheck :check-history-order-visible="checkHistoryOrderVisible"
+				:order-history-info-list="orderHistoryInfoList" :current-info="currentOrderItemInfo"
+				@close="closeOrderHistoryCheck" />
 		</div>
 
 		<!--    顶部按钮操作-->
 		<div style="padding: 10px">
 			<el-row :gutter="10" class="mb8">
 				<el-col v-if="!isAdjustOrder" :span="1.5">
-					<el-button v-hasPermi="['system:goodsorder:add']" type="danger" size="mini" @click="handleAdd">添加订单信息</el-button>
+					<el-button v-hasPermi="['system:goodsorder:add']" type="danger" size="mini"
+						@click="handleAdd">添加订单信息</el-button>
 				</el-col>
 			</el-row>
 		</div>
@@ -337,7 +348,14 @@ export default {
 				</template>
 				<template #export>
 					<el-col :span="1.5">
-						<el-button v-hasPermi="['system:goodsorder:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport" />
+						<el-button v-hasPermi="['system:goodsorder:export']" plain icon="el-icon-folder-opened"
+							size="mini" @click="handleExport">
+							分页导出
+						</el-button>
+						<el-button v-hasPermi="['system:goodsorder:export']" plain icon="el-icon-folder-opened"
+							size="mini" @click="handleExportNoPage">
+							全部导出
+						</el-button>
 					</el-col>
 				</template>
 			</right-toolbar>
@@ -345,25 +363,13 @@ export default {
 
 		<!--    订单表格 数据量较大-->
 		<div>
-			<el-table
-				id="printBox"
-				v-loading="loading"
-				v-horizontal-scroll="'always'"
-				:row-style="tableRowClassName"
-				fit
-				border
-				size="mini"
-				virtual-scroll
-				max-height="750"
-				:cell-style="
-					() => {
-						return { padding: '.7px' };
-					}
-				"
-				:data="goodsOrderList"
-				@header-dragend="changeColWidth"
-			>
-				<el-table-column label="行操作" align="center" class-name="small-padding fixed-width" width="142" fixed="left">
+			<el-table id="printBox" v-loading="loading" v-horizontal-scroll="'always'" :row-style="tableRowClassName"
+				fit border size="mini" virtual-scroll max-height="750" :cell-style="() => {
+					return { padding: '.7px' };
+				}
+					" :data="goodsOrderList" @header-dragend="changeColWidth">
+				<el-table-column label="行操作" align="center" class-name="small-padding fixed-width" width="142"
+					fixed="left">
 					<template slot-scope="scope">
 						<el-dropdown size="mini" @command="command => handleCommand(command, scope.row)">
 							<el-button size="mini" type="text">操作</el-button>
@@ -372,12 +378,9 @@ export default {
 									<el-button size="mini">查 看</el-button>
 								</el-dropdown-item>
 								<el-dropdown-item v-hasPermi="['system:goodsorder:edit']" command="handleUpdate">
-									<el-button
-										size="mini"
-										type="primary"
+									<el-button size="mini" type="primary"
 										:disabled="!scope.row.isedit || scope.row.isAdjust < 0 || isOrderExpired(scope.row.addtime)"
-										:title="isOrderExpired(scope.row.addtime) ? '订单已超过7天，无法修改' : ''"
-									>
+										:title="isOrderExpired(scope.row.addtime) ? '订单已超过7天，无法修改' : ''">
 										修 改
 									</el-button>
 								</el-dropdown-item>
@@ -398,24 +401,30 @@ export default {
 									<HistoryList :row="scope.row" />
 								</el-dropdown-item>
 								<el-dropdown-item>
-									<el-button style="margin-left: 5px" size="mini" type="text" @click="checkOrderHistory(scope.row)">历史对比</el-button>
+									<el-button style="margin-left: 5px" size="mini" type="text"
+										@click="checkOrderHistory(scope.row)">历史对比</el-button>
 								</el-dropdown-item>
 							</el-dropdown-menu>
 						</el-dropdown>
 					</template>
 				</el-table-column>
-				<el-table-column v-if="columns[0].visible" show-overflow-tooltip label="ID" align="center" prop="id" fixed="left" />
-				<el-table-column v-if="columns[1].visible" show-overflow-tooltip label="日期" align="center" prop="orderDate" fixed="left">
+				<el-table-column v-if="columns[0].visible" show-overflow-tooltip label="ID" align="center" prop="id"
+					fixed="left" />
+				<el-table-column v-if="columns[1].visible" show-overflow-tooltip label="日期" align="center"
+					prop="orderDate" fixed="left">
 					<template #default="scope">
 						<div>{{ parseTime(scope.row.orderDate, '{y}-{m}-{d}') }}</div>
 					</template>
 				</el-table-column>
-				<el-table-column v-if="columns[2].visible" show-overflow-tooltip label="客户" align="center" prop="customer" fixed="left" />
-				<el-table-column v-if="columns[3].visible" show-overflow-tooltip label="供应商" align="center" prop="supplierNames" fixed="left" width="200">
+				<el-table-column v-if="columns[2].visible" show-overflow-tooltip label="客户" align="center"
+					prop="customer" fixed="left" />
+				<el-table-column v-if="columns[3].visible" show-overflow-tooltip label="供应商" align="center"
+					prop="supplierNames" fixed="left" width="200">
 					<template #default="scope">
 						<el-row v-if="scope.row.smailOrderDetails">
 							<span v-for="(item, index) in getSupplierNames(scope.row.smailOrderDetails)" :key="index">
-								<span class="invoice" @click="updateOrderItemVisibleSupplierInvoice(scope.row, item.supplierID)">
+								<span class="invoice"
+									@click="updateOrderItemVisibleSupplierInvoice(scope.row, item.supplierID)">
 									{{ item.supplier || '-' }}
 								</span>
 							</span>
@@ -423,24 +432,29 @@ export default {
 						<template v-else>无</template>
 					</template>
 				</el-table-column>
-				<el-table-column v-if="columns[4].visible" show-overflow-tooltip label="审核状态" align="center" prop="checkState" width="120">
+				<el-table-column v-if="columns[4].visible" show-overflow-tooltip label="审核状态" align="center"
+					prop="checkState" width="120">
 					<template #default="scope">
 						<el-row v-if="scope.row.checkState === '已审核'">
-							<StateTag :state-title="scope.row.checkState" :state-mapper="{ 2: '已审核' }" @click.native="handleReCheck(scope.row)" style="cursor: pointer" />
+							<StateTag :state-title="scope.row.checkState" :state-mapper="{ 2: '已审核' }"
+								@click.native="handleReCheck(scope.row)" style="cursor: pointer" />
 						</el-row>
 						<el-row v-else>
 							<el-row>
-								<el-button v-hasPermi="['system:goodsorder:audit']" type="text" size="mini" @click="handleCheck(scope.row)">审核</el-button>
+								<el-button v-hasPermi="['system:goodsorder:audit']" type="text" size="mini"
+									@click="handleCheck(scope.row)">审核</el-button>
 							</el-row>
 						</el-row>
 					</template>
 				</el-table-column>
-				<el-table-column v-if="columns[20].visible" show-overflow-tooltip label="客户是否含税" align="center" prop="customerTaxIncluded" width="120">
+				<el-table-column v-if="columns[20].visible" show-overflow-tooltip label="客户是否含税" align="center"
+					prop="customerTaxIncluded" width="120">
 					<template #default="scope">
 						<el-row>
 							<el-row v-if="hasInvoice(scope.row, PUBLIC_DICT_TYPE.CUSTOMER)">
 								<el-row>
-									<el-button type="text" size="mini" @click="updateOrderItemVisibleCustomerInvoice(scope.row)">含税</el-button>
+									<el-button type="text" size="mini"
+										@click="updateOrderItemVisibleCustomerInvoice(scope.row)">含税</el-button>
 								</el-row>
 							</el-row>
 							<el-row v-else>
@@ -449,72 +463,88 @@ export default {
 						</el-row>
 					</template>
 				</el-table-column>
-				<el-table-column v-if="columns[5].visible" show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo" />
-				<el-table-column v-if="columns[6].visible" show-overflow-tooltip label="陆运司机电话" align="center" prop="landDriverTel" width="100px" />
-				<el-table-column v-if="columns[7].visible" show-overflow-tooltip label="陆地司机姓名" align="center" prop="landDriverName" width="100px" />
-				<el-table-column v-if="columns[8].visible" show-overflow-tooltip label="总货款" align="center" prop="allPayments" width="100px">
+				<el-table-column v-if="columns[5].visible" show-overflow-tooltip label="陆运车牌" align="center"
+					prop="landCarNo" />
+				<el-table-column v-if="columns[6].visible" show-overflow-tooltip label="陆运司机电话" align="center"
+					prop="landDriverTel" width="100px" />
+				<el-table-column v-if="columns[7].visible" show-overflow-tooltip label="陆地司机姓名" align="center"
+					prop="landDriverName" width="100px" />
+				<el-table-column v-if="columns[8].visible" show-overflow-tooltip label="总货款" align="center"
+					prop="allPayments" width="100px">
 					<template #default="scope">
 						{{ scope.row.allPayments | changeNumber(changeLength) }}
 					</template>
 				</el-table-column>
-				<el-table-column v-if="columns[9].visible" show-overflow-tooltip label="陆运费" align="center" prop="landFreight" width="100px" />
+				<el-table-column v-if="columns[9].visible" show-overflow-tooltip label="陆运费" align="center"
+					prop="landFreight" width="100px" />
 				<!--      原为海运车牌号-->
-				<el-table-column v-if="columns[10].visible" show-overflow-tooltip label="海运柜号" align="center" prop="seaCarNo">
+				<el-table-column v-if="columns[10].visible" show-overflow-tooltip label="海运柜号" align="center"
+					prop="seaCarNo">
 					<template #default="scope">
 						{{ !scope.row.seaCarNo ? '无' : scope.row.seaCarNo }}
 					</template>
 				</el-table-column>
-				<el-table-column v-if="columns[11].visible" show-overflow-tooltip label="海运司机电话" align="center" prop="seaDriverTel" width="100px">
+				<el-table-column v-if="columns[11].visible" show-overflow-tooltip label="海运司机电话" align="center"
+					prop="seaDriverTel" width="100px">
 					<template #default="scope">
 						{{ !scope.row.seaDriverTel ? '无' : scope.row.seaDriverTel }}
 					</template>
 				</el-table-column>
 				<!--      原为海运司机姓名-->
-				<el-table-column v-if="columns[12].visible" show-overflow-tooltip label="海运公司" align="center" prop="seaDriverName" width="100px">
+				<el-table-column v-if="columns[12].visible" show-overflow-tooltip label="海运公司" align="center"
+					prop="seaDriverName" width="100px">
 					<template #default="scope">
 						{{ !scope.row.seaDriverName ? '无' : scope.row.seaDriverName }}
 					</template>
 				</el-table-column>
-				<el-table-column v-if="columns[13].visible" show-overflow-tooltip label="海运费" align="center" prop="seaFreight" width="100px" />
-				<el-table-column v-if="columns[14].visible" show-overflow-tooltip label="销售经理" align="center" prop="saleManager" />
-				<el-table-column v-if="columns[15].visible" show-overflow-tooltip label="车队" align="center" prop="fleet" />
-				<el-table-column v-if="columns[16].visible" show-overflow-tooltip label="录入员" align="center" prop="userName" width="120px" />
-				<el-table-column v-if="columns[17].visible" show-overflow-tooltip label="附件" align="center" prop="path" width="150px">
+				<el-table-column v-if="columns[13].visible" show-overflow-tooltip label="海运费" align="center"
+					prop="seaFreight" width="100px" />
+				<el-table-column v-if="columns[14].visible" show-overflow-tooltip label="销售经理" align="center"
+					prop="saleManager" />
+				<el-table-column v-if="columns[15].visible" show-overflow-tooltip label="车队" align="center"
+					prop="fleet" />
+				<el-table-column v-if="columns[16].visible" show-overflow-tooltip label="录入员" align="center"
+					prop="userName" width="120px" />
+				<el-table-column v-if="columns[17].visible" show-overflow-tooltip label="附件" align="center" prop="path"
+					width="150px">
 					<template slot-scope="scope">
 						<div v-if="Array.isArray(scope.row.attachmentList)">
-							<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'path'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getGoodsOrder, updateGoodsOrder)" />
+							<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'path'"
+								@needToUpdate="value => handleUpdateFilePath(value, scope.row, getGoodsOrder, updateGoodsOrder)" />
 						</div>
 						<div v-else>
 							<el-tag type="danger">加载错误</el-tag>
 						</div>
 					</template>
 				</el-table-column>
-				<el-table-column v-if="columns[18].visible" show-overflow-tooltip label="收到条附件路径" align="center" prop="receiveProof" width="150px">
+				<el-table-column v-if="columns[18].visible" show-overflow-tooltip label="收到条附件路径" align="center"
+					prop="receiveProof" width="150px">
 					<template #default="scope">
 						<div v-if="Array.isArray(scope.row.attachmentList)">
-							<CheckFiles
-								:attachmentList="scope.row.attachmentList"
-								:flag="'receiveProof'"
-								@needToUpdate="value => handleUpdateFilePath(value, scope.row, getGoodsOrder, updateGoodsOrder)"
-							/>
+							<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'receiveProof'"
+								@needToUpdate="value => handleUpdateFilePath(value, scope.row, getGoodsOrder, updateGoodsOrder)" />
 						</div>
 						<div v-else>
 							<el-tag type="danger">加载错误</el-tag>
 						</div>
 					</template>
 				</el-table-column>
-				<el-table-column v-if="columns[19].visible" show-overflow-tooltip label="是否可编辑" align="center" prop="isedit" width="100px">
+				<el-table-column v-if="columns[19].visible" show-overflow-tooltip label="是否可编辑" align="center"
+					prop="isedit" width="100px">
 					<template slot-scope="scope">
-						<StateTag :state-title="scope.row.isedit === 0 ? '否' : '是'" :state-mapper="{ 0: '否', 2: '是' }" />
+						<StateTag :state-title="scope.row.isedit === 0 ? '否' : '是'"
+							:state-mapper="{ 0: '否', 2: '是' }" />
 					</template>
 				</el-table-column>
 				<!--      客户供应商是否开票-->
-				<el-table-column v-if="columns[21].visible" show-overflow-tooltip label="供应商是否含税" align="center" width="120px">
+				<el-table-column v-if="columns[21].visible" show-overflow-tooltip label="供应商是否含税" align="center"
+					width="120px">
 					<template #default="scope">
 						<el-row>
 							<el-row v-if="hasInvoice(scope.row, PUBLIC_DICT_TYPE.SUPPLIER)">
 								<el-row>
-									<el-button type="text" size="mini" @click="updateOrderItemVisibleSupplierInvoice(scope.row)">含税</el-button>
+									<el-button type="text" size="mini"
+										@click="updateOrderItemVisibleSupplierInvoice(scope.row)">含税</el-button>
 								</el-row>
 							</el-row>
 							<el-row v-else>
@@ -523,13 +553,18 @@ export default {
 						</el-row>
 					</template>
 				</el-table-column>
-				<el-table-column v-if="columns[22].visible" show-overflow-tooltip label="备注" align="center" prop="comments" />
+				<el-table-column v-if="columns[22].visible" show-overflow-tooltip label="备注" align="center"
+					prop="comments" />
 				<!--      右侧操作栏-->
-				<el-table-column show-overflow-tooltip label="订单操作" align="center" class-name="small-padding fixed-width" width="200px" fixed="right">
+				<el-table-column show-overflow-tooltip label="订单操作" align="center"
+					class-name="small-padding fixed-width" width="200px" fixed="right">
 					<template slot-scope="scope">
-						<el-button size="mini" type="text" :disabled="scope.row.isAdjusted !== 1" v-if="!isAdjustOrder" @click="handleCheckAdjust(scope.row)">查看调整单</el-button>
-						<el-button size="mini" type="text" :disabled="scope.row.isAdjusted === 1" @click="handleOrderItemInfo(scope.row)">调整单</el-button>
-						<el-button v-if="isAdjustOrder" size="mini" type="text" @click="handleCheckPrevious(scope.row)">查看原单据</el-button>
+						<el-button size="mini" type="text" :disabled="scope.row.isAdjusted !== 1" v-if="!isAdjustOrder"
+							@click="handleCheckAdjust(scope.row)">查看调整单</el-button>
+						<el-button size="mini" type="text" :disabled="scope.row.isAdjusted === 1"
+							@click="handleOrderItemInfo(scope.row)">调整单</el-button>
+						<el-button v-if="isAdjustOrder" size="mini" type="text"
+							@click="handleCheckPrevious(scope.row)">查看原单据</el-button>
 						<!--          发货单-->
 						<el-dropdown size="mini" type="text">
 							<el-button type="text" size="mini">
@@ -552,7 +587,8 @@ export default {
 				</el-table-column>
 			</el-table>
 			<!--    分页组件-->
-			<pagination v-if="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
+			<pagination v-if="total > 0" :total="total" :page.sync="queryParams.pageNum"
+				:limit.sync="queryParams.pageSize" @pagination="getList" />
 
 			<br />
 			<div v-if="isAdjustOrder">
@@ -563,13 +599,12 @@ export default {
 
 							<el-tooltip
 								content="负数单，表示该订单为调整订单A后，A订单产生的负数订单，数值与A订单为相反数调整一次意为订单A调整一次,产生的调整单B,记录此时该调整单B为一次调整;调整两次为，对调整单B进行调整，生成调整单C,记录该调整单C为二次调整,以此类推"
-								placement="bottom"
-								effect="light"
-							>
+								placement="bottom" effect="light">
 								<el-button style="float: right; padding: 3px 0" type="text">解释?</el-button>
 							</el-tooltip>
 						</div>
-						<el-alert title="订单列表点击调整单后，会在此生成调整单，不能对负数单进行调整，且负数单不可修改!" type="warning" style="margin-bottom: 10px" show-icon effect="light" />
+						<el-alert title="订单列表点击调整单后，会在此生成调整单，不能对负数单进行调整，且负数单不可修改!" type="warning"
+							style="margin-bottom: 10px" show-icon effect="light" />
 						<el-tag class="custom-tag">负数单</el-tag>
 						<el-tag type="info" class="tag-spacing">调整一次</el-tag>
 						<el-tag type="success" class="tag-spacing">调整两次</el-tag>
@@ -599,10 +634,14 @@ export default {
 }
 
 .custom-tag {
-	background-color: #ffffff !important; /* 背景颜色设为白色 */
-	border: 0.4px solid #aed3fa !important; /* 边框颜色自定义（这里用了蓝色） */
-	color: #a6a5a5 !important; /* 文本颜色与边框一致 */
-	font-weight: bold; /* 字体加粗 */
+	background-color: #ffffff !important;
+	/* 背景颜色设为白色 */
+	border: 0.4px solid #aed3fa !important;
+	/* 边框颜色自定义（这里用了蓝色） */
+	color: #a6a5a5 !important;
+	/* 文本颜色与边框一致 */
+	font-weight: bold;
+	/* 字体加粗 */
 	margin-right: 8px;
 }
 </style>
