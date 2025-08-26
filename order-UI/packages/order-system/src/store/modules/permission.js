@@ -11,7 +11,8 @@ const permission = {
 		addRoutes: [],
 		defaultRoutes: [],
 		topbarRouters: [],
-		sidebarRouters: []
+		sidebarRouters: [],
+		routesGenerated: false // 添加标识，防止重复生成路由
 	},
 	mutations: {
 		SET_ROUTES: (state, routes) => {
@@ -26,39 +27,113 @@ const permission = {
 		},
 		SET_SIDEBAR_ROUTERS: (state, routes) => {
 			state.sidebarRouters = routes;
+		},
+		SET_ROUTES_GENERATED: (state, status) => {
+			state.routesGenerated = status;
+		},
+		RESET_ROUTES: (state) => {
+			state.routes = [];
+			state.addRoutes = [];
+			state.defaultRoutes = [];
+			state.topbarRouters = [];
+			state.sidebarRouters = [];
+			state.routesGenerated = false;
 		}
 	},
 	actions: {
 		// 生成路由
-		GenerateRoutes({ commit }) {
+		GenerateRoutes({ commit, state }) {
 			return new Promise(resolve => {
+				// 如果路由已经生成过，直接返回
+				if (state.routesGenerated) {
+					console.log('[路由管理] 路由已存在，跳过重复生成');
+					resolve(state.addRoutes);
+					return;
+				}
+
 				// 向后端请求路由数据
 				getRouters().then(res => {
-					const sdata = JSON.parse(JSON.stringify(res.data));
-					const rdata = JSON.parse(JSON.stringify(res.data));
-					const sidebarRoutes = filterAsyncRouter(sdata);
-					const rewriteRoutes = filterAsyncRouter(rdata, false, true);
-					const asyncRoutes = filterDynamicRoutes(dynamicRoutes);
-					rewriteRoutes.push({
-						path: '*',
-						redirect: '/404',
-						hidden: true
-					});
-					router.addRoutes(asyncRoutes);
-					commit('SET_ROUTES', rewriteRoutes);
-					commit('SET_SIDEBAR_ROUTERS', constantRoutes.concat(sidebarRoutes));
-					commit('SET_DEFAULT_ROUTES', sidebarRoutes);
-					commit('SET_TOPBAR_ROUTES', sidebarRoutes);
-					resolve(rewriteRoutes);
+					try {
+						const sdata = JSON.parse(JSON.stringify(res.data));
+						const rdata = JSON.parse(JSON.stringify(res.data));
+						
+						// 过滤并转换路由
+						const sidebarRoutes = filterAsyncRouter(sdata);
+						const rewriteRoutes = filterAsyncRouter(rdata, false, true);
+						const asyncRoutes = filterDynamicRoutes(dynamicRoutes);
+						
+						// 添加404路由
+						rewriteRoutes.push({
+							path: '*',
+							redirect: '/404',
+							hidden: true
+						});
+
+						// 统一在这里添加所有路由，避免重复
+						const allRoutesToAdd = [...asyncRoutes, ...rewriteRoutes];
+						
+						// 清理现有路由名称，防止重复（Vue Router 3.x的限制）
+						const existingRouteNames = new Set();
+						router.options.routes.forEach(route => {
+							if (route.name) existingRouteNames.add(route.name);
+						});
+
+						// 过滤重复的路由
+						const filteredRoutes = allRoutesToAdd.filter(route => {
+							if (route.name && existingRouteNames.has(route.name)) {
+								console.warn(`[路由管理] 跳过重复路由: ${route.name}`);
+								return false;
+							}
+							if (route.name) existingRouteNames.add(route.name);
+							return true;
+						});
+
+						// 添加路由到router实例
+						router.addRoutes(filteredRoutes);
+						
+						// 提交到store
+						commit('SET_ROUTES', rewriteRoutes);
+						commit('SET_SIDEBAR_ROUTERS', constantRoutes.concat(sidebarRoutes));
+						commit('SET_DEFAULT_ROUTES', sidebarRoutes);
+						commit('SET_TOPBAR_ROUTES', sidebarRoutes);
+						commit('SET_ROUTES_GENERATED', true);
+						
+						console.log(`[路由管理] 成功添加 ${filteredRoutes.length} 个路由`);
+						resolve(rewriteRoutes);
+					} catch (error) {
+						console.error('[路由管理] 路由生成失败:', error);
+						resolve([]);
+					}
+				}).catch(error => {
+					console.error('[路由管理] 获取路由数据失败:', error);
+					resolve([]);
 				});
 			});
+		},
+		// 重置路由状态
+		ResetRoutes({ commit }) {
+			commit('RESET_ROUTES');
 		}
 	}
 };
 
 // 遍历后台传来的路由字符串，转换为组件对象
 function filterAsyncRouter(asyncRouterMap, lastRouter = false, type = false) {
+	// 用于记录已存在的路由名称，避免重复
+	const existingNames = new Set();
+	
 	return asyncRouterMap.filter(route => {
+		// 检查路由名称是否重复
+		if (route.name && existingNames.has(route.name)) {
+			console.warn(`[vue-router] 发现重复的路由名称: ${route.name}，已跳过`);
+			return false;
+		}
+		
+		// 记录路由名称
+		if (route.name) {
+			existingNames.add(route.name);
+		}
+		
 		if (type && route.children) {
 			route.children = filterChildren(route.children);
 		}

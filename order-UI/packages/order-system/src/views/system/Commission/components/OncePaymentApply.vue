@@ -19,29 +19,12 @@
 			</el-table>
 		</el-card>
 
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="付款申请"
-			:visible.sync="applyDialogVisible"
-			width="45%"
-			append-to-body
-		>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false"
+			:show-close="false" title="付款申请" :visible.sync="applyDialogVisible" width="45%" append-to-body>
 			<keep-alive>
-				<ApplyPayment
-					:money-input-disabled="false"
-					:table-name="TableName.ORDERCOMMISION"
-					:t-i-d="tid"
-					:need-money="needMoney"
-					:need-info="needInfo"
-					@changeOpen="() => (applyDialogVisible = false)"
-					:is-multi="true"
-					@getApplyPayment="handleCommitApplyInfo"
-				/>
+				<ApplyPayment :money-input-disabled="false" :table-name="TableName.ORDERCOMMISION" :t-i-d="tid"
+					:need-money="needMoney" :need-info="needInfo" @changeOpen="() => (applyDialogVisible = false)"
+					:is-multi="true" @getApplyPayment="handleCommitApplyInfo" />
 			</keep-alive>
 		</el-dialog>
 	</div>
@@ -54,6 +37,7 @@ import ApplyPayment from '@/views/dashboard/components/common/ApplyPayment.vue';
 import { mixin_checkfile } from '@/views/dashboard/mixins/checkfiles/mixin_checkfile';
 import { addPaymentApply } from '@/api/system/paymentApply';
 import DynamicField from '../../../../components/DynamicField.vue';
+import { mapGetters } from 'vuex/dist/vuex.common.js';
 
 export default {
 	name: 'OncePaymentApply',
@@ -61,7 +45,8 @@ export default {
 	computed: {
 		TableName() {
 			return TableName;
-		}
+		},
+		...mapGetters(['id', 'trueName'])
 	},
 	props: {
 		applications: {
@@ -120,11 +105,19 @@ export default {
 				this.$message.error('申请列表为空!');
 				return;
 			}
+
 			try {
-				this.localApplications.forEach(item => (item.payType = item.payType.join('-')));
+				// 处理payType数组转字符串
+				this.localApplications.forEach(item => {
+					if (Array.isArray(item.payType)) {
+						item.payType = item.payType.join('-');
+					}
+				});
 			} catch (err) {
 				this.$message.error('请先填写申请信息!');
+				return;
 			}
+
 			this.$antdconfirm({
 				title: '提示',
 				content: '确定批量申请吗？',
@@ -134,14 +127,54 @@ export default {
 				zIndex: 2600,
 				onOk: async () => {
 					try {
+						// 使用优化后的数据转换逻辑
+						const firstApplication = this.localApplications[0];
+						const currentTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
+						// 构建新的数据结构
 						const data = {
-							...this.localApplications[0],
-							tableName: TableName.ORDERCOMMISION
+							fundsDate: firstApplication.fundsDate || currentTime,
+							payType: firstApplication.payType || '',
+							moneyAmount: parseFloat(firstApplication.moneyAmount) || 0,
+							otherAccountsName: firstApplication.otherAcountsName || '', // 注意字段名变化
+							otherBankNo: firstApplication.otherBankNo || '',
+							otherBankName: firstApplication.otherBankName || '',
+							companyName: firstApplication.companyName || '',
+							companyId: firstApplication.companyId || null,
+							companyType: firstApplication.companyType || '',
+							reason: firstApplication.reason || '',
+							applyPerson: firstApplication.applyPerson || '',
+							applyPersonId: firstApplication.applyPersonID || null, // 注意字段名变化
+							comments: firstApplication.comments || '',
+							addTime: currentTime,
+							userId: this.id || '',
+							userName: this.trueName || '',
+							// 转换extraInfo为tableReferences
+							tableReferences: firstApplication.extraInfo && firstApplication.extraInfo.sourceInfos
+								? firstApplication.extraInfo.sourceInfos.map(source => ({
+									refTableName: source.tableName,
+									refTableId: source.tableId,
+									amount: parseFloat(firstApplication.moneyAmount) || 0
+								}))
+								: []
 						};
+
+						// 数据验证
+						if (!data.fundsDate || !data.moneyAmount || data.moneyAmount <= 0) {
+							this.$message.error('请完善申请信息！');
+							return;
+						}
+
+						if (data.tableReferences.length === 0) {
+							this.$message.error('申请数据异常，请重试！');
+							return;
+						}
+
 						await addPaymentApply(data);
 						this.$message.success('一键申请成功');
 						this.dialogVisible = false;
-					} catch {
+					} catch (error) {
+						console.error('申请失败:', error);
 						this.$message.error('申请失败，请重试');
 					}
 				},
@@ -150,7 +183,7 @@ export default {
 				}
 			});
 		},
-		handleReject() {}
+		handleReject() { }
 	}
 };
 </script>

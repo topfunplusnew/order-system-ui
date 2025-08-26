@@ -324,12 +324,34 @@ export default {
 				extra.pushSourceInfo(s);
 			});
 
+			// 计算总金额
+			const totalAmount = this.selections.reduce((sum, item) => {
+				return sum + (parseFloat(item.commissionAmount) || 0);
+			}, 0);
+
 			let applications = this.selections.map(item => {
 				return new PaymentApply({
-					moneyAmount: item.commissionAmount,
-					extraInfo: extra
+					moneyAmount: totalAmount, // 使用总金额而不是单个金额
+					extraInfo: extra,
+					tableName: TableName.ORDERCOMMISION, // 后端要求必须传递 否则会出问题
+					// 添加新结构需要的字段
+					fundsDate: new Date().toISOString().slice(0, 19).replace('T', ' '),
+					payType: '',
+					otherAcountsName: '',
+					otherBankNo: '',
+					otherBankName: '',
+					companyName: '',
+					companyId: null,
+					companyType: '',
+					reason: '供应商佣金支付申请',
+					applyPerson: '',
+					applyPersonID: null,
+					comments: ''
 				});
 			});
+
+			// 由于是批量申请，只需要一条申请记录
+			applications = [applications[0]];
 
 			// 打开弹窗
 			this.openDialog(

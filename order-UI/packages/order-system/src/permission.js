@@ -29,8 +29,8 @@ router.beforeEach((to, from, next) => {
 					.then(() => {
 						isRelogin.show = false;
 						store.dispatch('GenerateRoutes').then(accessRoutes => {
-							// 根据roles权限生成可访问的路由表
-							router.addRoutes(accessRoutes); // 动态添加可访问路由表
+							// 路由添加逻辑移到store中统一处理，这里不再重复添加
+							// 注意：路由已经在 GenerateRoutes action 中添加完成
 							next({ ...to, replace: true }); // hack方法 确保addRoutes已完成
 						});
 					})
