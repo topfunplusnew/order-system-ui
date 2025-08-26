@@ -350,11 +350,11 @@ export default {
 					<el-col :span="1.5">
 						<el-button v-hasPermi="['system:goodsorder:export']" plain icon="el-icon-folder-opened"
 							size="mini" @click="handleExport">
-							分页导出
+							导出订单目录
 						</el-button>
 						<el-button v-hasPermi="['system:goodsorder:export']" plain icon="el-icon-folder-opened"
 							size="mini" @click="handleExportNoPage">
-							全部导出
+							导出全部订单
 						</el-button>
 					</el-col>
 				</template>
