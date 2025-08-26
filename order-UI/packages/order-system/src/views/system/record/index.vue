@@ -478,8 +478,8 @@
 
 				<!--        1.选择原 只有在内部转账的情况下才会展示-->
 				<div v-if="cashType === CASH_TYPE.TRANSFER">
-					<!--          选择收入账户类型-->
-					<el-form-item label="收入账户类型">
+					<!--          选择支出账户类型-->
+					<el-form-item label="支出账户类型">
 						<!-- 选择银行卡类型的组件 -->
 						<BankType
 							ref="selfSelectBankType"
@@ -574,8 +574,8 @@
 					</el-row>
 				</el-form-item>
 				<div v-if="cashType === CASH_TYPE.TRANSFER">
-					<!--          选择支出账户类型-->
-					<el-form-item label="支出账户类型">
+					<!--          选择收入账户类型-->
+					<el-form-item label="收入账户类型">
 						<BankType
 							ref="otherSelectBankType"
 							@updateSelectedType="changeOtherBankType"
