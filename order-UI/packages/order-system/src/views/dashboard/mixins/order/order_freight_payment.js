@@ -1,6 +1,6 @@
 // 运费一键申请
 import { batchPayment } from '../../../../api/system/payment';
-import { BankAcceptanceType, PAYMENT_APPLY_STATE, PAYMENT_STATE, PaymentState, TableName } from '../../../../api/tool/enums';
+import { BankAcceptanceType, PAYMENT_APPLY_STATE, PaymentState, TableName } from '../../../../api/tool/enums';
 import { parseTime } from '../../../../utils/ruoyi';
 import _ from 'lodash';
 
@@ -29,7 +29,9 @@ export var mixin_order_freight_payment = {
 			let flag = false;
 			if (rows) {
 				rows.forEach(row => {
-					if (row.paymentState === '未支付') {
+					// 使用与customFreightStatusFn相同的判断逻辑
+					// 运费业务逻辑：没有payment对象或payment为null就是未支付
+					if (!row.payment || row.payment === null) {
 						this.$refs.multipleTable.toggleRowSelection(row);
 						flag = true;
 					}
@@ -47,7 +49,8 @@ export var mixin_order_freight_payment = {
 			this.resetFreightSelfOnceInfo();
 			// 初始化为0
 			this.total_freight = 0;
-			const filteredList = _.cloneDeep(this.selectedList.filter(item => item.paymentState === PAYMENT_STATE.UNPAID));
+			// 使用自定义判断逻辑：没有payment对象或payment为null就是未支付
+			const filteredList = _.cloneDeep(this.selectedList.filter(item => !item.payment || item.payment === null));
 			// 遍历选择的数组
 			filteredList.forEach(item => {
 				item = this.convertOrderFreightToPayment(item);
@@ -133,8 +136,6 @@ export var mixin_order_freight_payment = {
 
 							// 如果是多个司机，需要分别提交每个司机的付款
 							const submitPayments = Array.isArray(paymentData) ? paymentData : [paymentData];
-
-							// 使用Promise.all批量提交，确保所有付款都成功
 							batchPayment(submitPayments)
 								.then(() => {
 									this.$message.success('一键运费付款成功');
@@ -164,7 +165,6 @@ export var mixin_order_freight_payment = {
 			const driverMap = new Map();
 			this.batchPaymentList.forEach(item => {
 				const driverId = item.companyId;
-
 				if (!driverMap.has(driverId)) {
 					// 创建新的司机付款记录
 					driverMap.set(driverId, {
@@ -202,19 +202,12 @@ export var mixin_order_freight_payment = {
 						refTableId: item.tID,
 						amount: Number(item.moneyAmount)
 					});
-
-					// 合并备注信息
 					if (item.comments && existing.comments !== item.comments) {
 						existing.comments += `; ${item.comments}`;
 					}
 				}
 			});
-
-			// 转换为数组格式
 			const result = Array.from(driverMap.values());
-
-			// 新API期望单个对象格式，如果有多个司机需要分别调用
-			// 这里返回数组，让调用方处理多次提交的逻辑
 			return result;
 		},
 		// 重置

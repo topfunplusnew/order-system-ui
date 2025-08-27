@@ -154,6 +154,7 @@ export const PaymentState = [
 	}
 ];
 
+// 付款的支付状态
 export const PAYMENT_STATE = {
 	PAID: '已支付',
 	UNPAID: '未支付'
