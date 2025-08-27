@@ -263,7 +263,9 @@ export default {
 				addtime: null,
 				userId: null,
 				UserName: null,
-				delFlag: null
+				delFlag: null,
+				// 新增字段：区分是否是内部转账票据，支出票据默认为0（非内部转账）
+				isInternalTransfer: 0
 			},
 			columns: [
 				{ key: 0, label: `ID`, visible: true }, // 新增 ID

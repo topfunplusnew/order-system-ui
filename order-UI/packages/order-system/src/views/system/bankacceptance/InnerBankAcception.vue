@@ -240,7 +240,6 @@ export default {
 				dueDate: null,
 				billAccount: null,
 				billDate: null,
-				billType: '内部转账',
 				reason: null,
 				billAmount: null,
 				inDiscountPoints: null,
@@ -254,7 +253,9 @@ export default {
 				addtime: null,
 				userId: null,
 				UserName: null,
-				delFlag: null
+				delFlag: null,
+				// 新增字段：区分是否是内部转账票据，内部转账票据设置为1
+				isInternalTransfer: 1
 			},
 			columns: [
 				{ label: '操作日期', visible: true },
@@ -332,13 +333,6 @@ export default {
 						required: true,
 						message: '请选择我方承兑账户',
 						trigger: 'blur'
-					}
-				],
-				billType: [
-					{
-						required: true,
-						message: '请选择票据种类',
-						trigger: 'change'
 					}
 				],
 				billDate: [
@@ -502,7 +496,6 @@ export default {
 				dueDate: null,
 				billAccount: null,
 				billDate: null,
-				billType: '内部转账',
 				// 收票是由默认为购买
 				reason: '购买',
 				billAmount: null,

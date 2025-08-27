@@ -255,7 +255,9 @@ export default {
 				addtime: null,
 				userId: null,
 				UserName: null,
-				delFlag: null
+				delFlag: null,
+				// 新增字段：区分是否是内部转账票据，收入票据默认为0（非内部转账）
+				isInternalTransfer: 0
 			},
 			columns: [
 				{ label: '操作日期', visible: true },
