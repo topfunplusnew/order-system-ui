@@ -3,13 +3,11 @@
 		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true"
 			label-width="100px">
 			<el-row>
-				<el-form-item label="返利开始日期" prop="rebateStartTime">
-					<el-date-picker v-model="queryParams.rebateStartTime" type="datetime" placeholder="选择开始时间"
-						value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
-				</el-form-item>
-				<el-form-item label="返利结束日期" prop="rebateEndTime">
-					<el-date-picker v-model="queryParams.rebateEndTime" type="datetime" placeholder="选择开始时间"
-						value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+				<el-form-item label="计提返利时间段" prop="rebateDateRange">
+					<el-date-picker v-model="rebateDateRange" type="datetimerange" range-separator="至"
+						start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd HH:mm:ss"
+						style="width: 350px">
+					</el-date-picker>
 				</el-form-item>
 				<el-form-item label="供应商" prop="supplier">
 					<el-input v-model="queryParams.supplier" placeholder="请输入供应商" clearable
@@ -490,6 +488,8 @@ export default {
 			multiple: true,
 			// 供应商选择的时间段
 			dateRange: [],
+			// 计提返利时间段选择（前端使用，用于时间段组件绑定）
+			rebateDateRange: null,
 			// 显示搜索条件
 			showSearch: true,
 			// 总条数
@@ -899,11 +899,20 @@ export default {
 		},
 		/** 搜索按钮操作 */
 		handleQuery() {
+			// 处理时间段选择数据转换
+			if (this.rebateDateRange && this.rebateDateRange.length === 2) {
+				this.queryParams.rebateStartTime = this.rebateDateRange[0];
+				this.queryParams.rebateEndTime = this.rebateDateRange[1];
+			} else {
+				this.queryParams.rebateStartTime = null;
+				this.queryParams.rebateEndTime = null;
+			}
 			this.queryParams.pageNum = 1;
 			this.getList();
 		},
 		/** 重置按钮操作 */
 		resetQuery() {
+			this.rebateDateRange = null;
 			this.resetForm('queryForm');
 			this.handleQuery();
 		},
