@@ -3,7 +3,7 @@ import FreeApply from '@/components/FreeApply.vue';
 
 export const FREIGHT_TYPE = {
 	GOODS_ORDER: 'goodsorder',
-	INVENTORY: 'inventory'
+	INVENTORY: 'inventory_main'
 };
 
 export var mixin_freight_payment = {

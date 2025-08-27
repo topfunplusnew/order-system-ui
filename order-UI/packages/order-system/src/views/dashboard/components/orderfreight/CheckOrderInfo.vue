@@ -3,19 +3,21 @@ import OrderInfos from '../goodsOrder/OrderInfos.vue';
 import { checkOrderByOrderNo, getGoodsOrder } from '../../../../api/system/goodsOrder';
 import InfoDialog from '../../../../components/InfoDialog.vue';
 import OrderDetailInfo from '../goodsOrder/OrderDetailInfo.vue';
+import { FREIGHT_TYPE } from '../../mixins/freight/freight_payment';
+import { getInventoryMain } from '../../../../api/system/inventoryMain';
+import { common_dialog } from '../../mixins/common/common_dialog';
+import DialogWrapper from '../common/DialogWrapper.vue';
+import INVENTORYVue from '../../../../components/NeedToShow/INVENTORY.vue';
 
 export default {
 	name: 'CheckOrderInfo',
-	components: { OrderDetailInfo, InfoDialog, OrderInfos },
+	components: { OrderDetailInfo, InfoDialog, OrderInfos, DialogWrapper },
+	mixins: [common_dialog],
 	props: {
 		row: {
 			type: Object,
-			default: () => {}
+			default: () => { }
 		},
-		title: {
-			type: String,
-			default: '查看订单单据'
-		}
 	},
 	data() {
 		return {
@@ -25,18 +27,38 @@ export default {
 			adjustedOrderInfo: {},
 			visible: false,
 			// tab页
-			activeName: 'first'
+			activeName: 'first',
+
 		};
+	},
+	computed: {
+		title() {
+			return this.row.source === FREIGHT_TYPE.GOODS_ORDER ? '查看订单信息' : '查看库存信息'
+		}
 	},
 	methods: {
 		// 查看运费对应的订单单据信息
 		handleCheck(row) {
 			// 根据获取到的订单id获取订单详情
-			getGoodsOrder(row.ordersNo).then(res => {
-				this.orderInfo = res.data;
-				this.orderInfo.orderDetailList = res.data.orderDetailList;
-				this.visible = true;
-			});
+			if (row.source === FREIGHT_TYPE.GOODS_ORDER) {
+				getGoodsOrder(row.sourceId).then(res => {
+					this.orderInfo = res.data;
+					this.orderInfo.orderDetailList = res.data.orderDetailList;
+					this.visible = true;
+				});
+			} else {
+				getInventoryMain(row.sourceId).then(res => {
+					this.openDialog(
+						INVENTORYVue,
+						'库存信息',
+						'900px',
+						{
+							needToShowInfo: res.data
+						},
+						false
+					)
+				});
+			}
 		},
 		// 切换tab时候 要查询
 		handleClick(tab, event) {
@@ -53,7 +75,8 @@ export default {
 
 <template>
 	<div>
-		<el-button v-hasPermi="['system:freight:edit']" size="mini" type="text" @click="handleCheck(row)">{{ title }}</el-button>
+		<el-button v-hasPermi="['system:freight:edit']" size="mini" type="text" @click="handleCheck(row)">{{ title
+		}}</el-button>
 
 		<!--    弹窗-->
 		<InfoDialog :visible="visible" title="订单单据信息" :width="'980px'" @close="visible = false">
@@ -73,6 +96,10 @@ export default {
 				</el-tabs>
 			</template>
 		</InfoDialog>
+
+		<div v-if="currentComponent">
+			<DialogWrapper :current-component="currentComponent" :dialog-visible="dialogVisible" />
+		</div>
 	</div>
 </template>
 

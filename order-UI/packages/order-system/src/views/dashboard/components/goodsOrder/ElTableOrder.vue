@@ -146,16 +146,12 @@ export default {
 		// 计算订单是否超过7天
 		isOrderExpired(addtime) {
 			if (!addtime) return false;
-
 			const addDate = new Date(addtime);
 			const currentDate = new Date();
-
 			// 计算时间差（毫秒）
 			const timeDiff = currentDate.getTime() - addDate.getTime();
-
 			// 转换为天数（1天 = 24小时 * 60分钟 * 60秒 * 1000毫秒）
 			const daysDiff = timeDiff / (24 * 60 * 60 * 1000);
-
 			// 如果天数差大于等于7，返回true（已过期）
 			return daysDiff >= 7;
 		},
