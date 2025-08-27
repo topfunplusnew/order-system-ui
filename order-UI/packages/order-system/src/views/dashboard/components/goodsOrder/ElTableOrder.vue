@@ -24,6 +24,8 @@ import HistoryList from '@/views/dashboard/components/goodsOrder/HistoryList.vue
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
 import StateTag from '@/views/dashboard/components/common/StateTag.vue';
 import { auditGoodsOrder, listGoodsOrder } from '../../../../api/system/goodsOrder';
+// 前端Excel导出依赖
+import * as XLSX from 'xlsx';
 
 export default {
 	name: 'ElTableOrder',
@@ -279,16 +281,184 @@ export default {
 				}
 			});
 		},
-		// 表格的导出
+		// 表格的导出 - 前端Excel导出
 		handleExport() {
-			this.download(
-				'system/goodsOrder/export',
-				{
-					...this.queryParams,
-					isAdjusted: this.isAdjustOrder ? 1 : 0
-				},
-				`goodsOrder_${new Date().getTime()}.xlsx`
-			);
+			try {
+				// 开始导出提示
+				this.$message({
+					message: '正在生成Excel文件，请稍候...',
+					type: 'info'
+				});
+
+				// 生成Excel数据
+				const excelData = this.generateExcelData();
+
+				// 创建工作簿并下载
+				this.downloadExcel(excelData);
+
+				// 成功提示
+				this.$message({
+					message: 'Excel文件导出成功！',
+					type: 'success'
+				});
+			} catch (error) {
+				console.error('Excel导出失败:', error);
+				this.$message({
+					message: 'Excel导出失败，请重试',
+					type: 'error'
+				});
+			}
+		},
+
+		/**
+		 * 生成Excel数据
+		 * @returns {Object} 包含表头和数据的对象
+		 * 时间复杂度: O(n×m), 空间复杂度: O(n×m)
+		 */
+		generateExcelData() {
+			// 获取可见列配置
+			const visibleColumns = this.columns.filter(col => col.visible);
+
+			// 生成表头
+			const headers = visibleColumns.map(col => col.label);
+
+			// 生成数据行
+			const rows = this.goodsOrderList.map(row => {
+				return visibleColumns.map(col => {
+					return this.formatCellValue(row, col.key);
+				});
+			});
+
+			return {
+				headers,
+				rows
+			};
+		},
+
+		/**
+		 * 格式化单元格值
+		 * @param {Object} row - 行数据
+		 * @param {number} colKey - 列键值
+		 * @returns {string} 格式化后的值
+		 */
+		formatCellValue(row, colKey) {
+			switch (colKey) {
+				case 0: // ID
+					return row.id || '';
+				case 1: // 日期
+					return row.orderDate ? parseTime(row.orderDate, '{y}-{m}-{d}') : '';
+				case 2: // 客户
+					return row.customer || '';
+				case 3: // 供应商/仓库
+					return this.formatSupplierWarehouse(row);
+				case 4: // 审核状态
+					return row.checkState || '';
+				case 5: // 陆运车牌
+					return row.landCarNo || '';
+				case 6: // 陆运司机电话
+					return row.landDriverTel || '';
+				case 7: // 陆地司机姓名
+					return row.landDriverName || '';
+				case 8: // 总货款
+					return row.allPayments || '';
+				case 9: // 陆运费
+					return row.landFreight || '';
+				case 10: // 海运柜号
+					return row.seaCarNo || '无';
+				case 11: // 海运司机电话
+					return row.seaDriverTel || '无';
+				case 12: // 海运公司
+					return row.seaDriverName || '无';
+				case 13: // 海运费
+					return row.seaFreight || '';
+				case 14: // 销售经理
+					return row.saleManager || '';
+				case 15: // 车队
+					return row.fleet || '';
+				case 16: // 录入员
+					return row.userName || '';
+				case 17: // 附件
+					return this.formatAttachments(row.attachmentList, 'path');
+				case 18: // 收到条附件
+					return this.formatAttachments(row.attachmentList, 'receiveProof');
+				case 19: // 是否可编辑
+					return row.isedit === 0 ? '否' : '是';
+				case 20: // 客户是否含税
+					return this.hasInvoice(row, PUBLIC_DICT_TYPE.CUSTOMER) ? '含税' : '不含税';
+				case 21: // 供应商是否含税
+					return this.hasInvoice(row, PUBLIC_DICT_TYPE.SUPPLIER) ? '含税' : '不含税';
+				case 22: // 备注
+					return row.comments || '';
+				default:
+					return '';
+			}
+		},
+
+		/**
+		 * 格式化供应商/仓库信息
+		 * @param {Object} row - 行数据
+		 * @returns {string} 格式化后的字符串
+		 */
+		formatSupplierWarehouse(row) {
+			if (!row.smailOrderDetails) return '无';
+
+			const suppliers = this.getUniqueSuppliers(row.smailOrderDetails);
+			const warehouses = this.getUniqueWarehouses(row.smailOrderDetails);
+
+			const supplierNames = suppliers.map(s => s.supplier).join(', ');
+			const warehouseNames = warehouses.map(w => w.storeHouseName).join(', ');
+
+			if (supplierNames && warehouseNames) {
+				return `${supplierNames} | ${warehouseNames}`;
+			} else if (supplierNames) {
+				return supplierNames;
+			} else if (warehouseNames) {
+				return warehouseNames;
+			} else {
+				return '-';
+			}
+		},
+
+		/**
+		 * 格式化附件信息
+		 * @param {Array} attachmentList - 附件列表
+		 * @param {string} type - 附件类型
+		 * @returns {string} 格式化后的附件信息
+		 */
+		formatAttachments(attachmentList, type) {
+			if (!Array.isArray(attachmentList)) return '无';
+
+			const filteredAttachments = attachmentList.filter(item => item.flag === type);
+
+			if (filteredAttachments.length === 0) return '无';
+
+			return filteredAttachments.map(item => item.fileName || '附件').join(', ');
+		},
+
+		/**
+		 * 下载Excel文件
+		 * @param {Object} data - Excel数据
+		 */
+		downloadExcel(data) {
+			// 创建工作表数据
+			const worksheetData = [data.headers, ...data.rows];
+
+			// 创建工作表
+			const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+
+			// 设置列宽（可选优化）
+			const colWidths = data.headers.map(() => ({ wch: 15 }));
+			worksheet['!cols'] = colWidths;
+
+			// 创建工作簿
+			const workbook = XLSX.utils.book_new();
+			XLSX.utils.book_append_sheet(workbook, worksheet, '订单列表');
+
+			// 生成文件名
+			const fileName = `订单列表_${parseTime(new Date(), '{y}{m}{d}_{h}{i}{s}')}.xlsx`;
+
+			// 下载文件
+			XLSX.writeFile(workbook, fileName);
 		},
 		// 订单列表 不分页的导出
 		handleExportNoPage() {
