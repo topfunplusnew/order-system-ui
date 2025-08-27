@@ -116,7 +116,7 @@ export var mixin_order_freight_payment = {
 		// 一键付运费
 		submitFreightOnce() {
 			this.$refs.freightPaymentOnceForm.validate(valid => {
-				// TODO 这里写死了 要求只能为现金
+				// 这里写死了 要求只能为现金
 				this.freightSelfOnceInfo.selfBankCardType = BankAcceptanceType.BANK_CASH;
 				this.freightSelfOnceInfo.otherBankCardType = BankAcceptanceType.BANK_CASH;
 				if (valid) {
@@ -128,49 +128,22 @@ export var mixin_order_freight_payment = {
 						type: 'warning',
 						zIndex: 2600,
 						onOk: () => {
-							this.batchPaymentList.forEach(item => {
-								Object.assign(item, {
-									...this.freightSelfOnceInfo,
-									payType: this.freightSelfOnceInfo.payType.join('-')
-								});
-							});
+							// 转换为新的API数据结构
+							const paymentData = this.transformToNewPaymentStructure();
 
-							const result = [];
-							const map = new Map();
-							this.batchPaymentList.forEach(item => {
-								const { companyId, ...rest } = item;
-								if (!map.has(companyId)) {
-									map.set(companyId, {
-										...item,
-										extraInfo: {
-											sourceInfos: [
-												{
-													tableName: TableName.ORDER_FREIGHT,
-													tableId: item.tID
-												}
-											]
-										}
-									});
-								} else {
-									const existing = map.get(companyId);
-									existing.extraInfo.sourceInfos.push({
-										tableName: TableName.ORDER_FREIGHT,
-										tableId: item.tID
-									});
-									existing.moneyAmount = (Number(existing.moneyAmount) + Number(item.moneyAmount)).toFixed(3);
-								}
-							});
-							map.forEach(value => {
-								result.push(value);
-							});
-							batchPayment(result)
+							// 如果是多个司机，需要分别提交每个司机的付款
+							const submitPayments = Array.isArray(paymentData) ? paymentData : [paymentData];
+
+							// 使用Promise.all批量提交，确保所有付款都成功
+							batchPayment(submitPayments)
 								.then(() => {
 									this.$message.success('一键运费付款成功');
 									this.resetFreightSelfOnceInfo();
 									this.freightOnceVisible = false;
 									this.getList();
 								})
-								.catch(() => {
+								.catch(error => {
+									console.error('付款失败:', error);
 									this.$message.error('付款失败，请重试');
 								});
 						},
@@ -184,6 +157,65 @@ export var mixin_order_freight_payment = {
 		// 填充查询信息
 		handleCommitBackBank(val) {
 			this.bankQuery = val;
+		},
+		// 转换为新的API数据结构
+		transformToNewPaymentStructure() {
+			// 按司机分组合并运费信息
+			const driverMap = new Map();
+			this.batchPaymentList.forEach(item => {
+				const driverId = item.companyId;
+
+				if (!driverMap.has(driverId)) {
+					// 创建新的司机付款记录
+					driverMap.set(driverId, {
+						fundsDate: parseTime(new Date()),
+						payType: this.freightSelfOnceInfo.payType ? this.freightSelfOnceInfo.payType.join('-') : '运费-陆运',
+						moneyAmount: Number(item.moneyAmount),
+						selfAcountsName: this.freightSelfOnceInfo.selfAcountsName,
+						selfBankNo: this.freightSelfOnceInfo.selfBankNo,
+						selfBankName: this.freightSelfOnceInfo.selfBankName,
+						otherAcountsName: item.otherAcountsName,
+						otherBankNo: item.otherBankNo,
+						otherBankName: item.otherBankName,
+						companyName: item.companyName,
+						companyId: item.companyId,
+						companyType: item.companyType,
+						comments: item.comments || '支付订单运费',
+						userId: this.$store.getters.userId || 1,
+						UserName: this.$store.getters.name || '系统管理员',
+						selfBankCardType: this.freightSelfOnceInfo.selfBankCardType || BankAcceptanceType.BANK_CASH,
+						otherBankCardType: this.freightSelfOnceInfo.otherBankCardType || BankAcceptanceType.BANK_CASH,
+						tableReferences: [
+							{
+								refTableName: TableName.ORDER_FREIGHT,
+								refTableId: item.tID,
+								amount: Number(item.moneyAmount)
+							}
+						]
+					});
+				} else {
+					// 合并已存在司机的运费信息
+					const existing = driverMap.get(driverId);
+					existing.moneyAmount = Number((existing.moneyAmount + Number(item.moneyAmount)).toFixed(3));
+					existing.tableReferences.push({
+						refTableName: TableName.ORDER_FREIGHT,
+						refTableId: item.tID,
+						amount: Number(item.moneyAmount)
+					});
+
+					// 合并备注信息
+					if (item.comments && existing.comments !== item.comments) {
+						existing.comments += `; ${item.comments}`;
+					}
+				}
+			});
+
+			// 转换为数组格式
+			const result = Array.from(driverMap.values());
+
+			// 新API期望单个对象格式，如果有多个司机需要分别调用
+			// 这里返回数组，让调用方处理多次提交的逻辑
+			return result;
 		},
 		// 重置
 		resetFreightSelfOnceInfo() {
