@@ -91,22 +91,20 @@
 			<el-table-column v-if="columns[6].visible" label="返利原因" align="center" prop="rebateReason"
 				show-overflow-tooltip />
 
-			<!-- 收到返利日期 - 模拟字段 -->
+			<!-- 收到返利日期 -->
 			<el-table-column v-if="columns[7].visible" label="收到返利日期" align="center" prop="receivedRebateDate"
 				show-overflow-tooltip>
 				<template slot-scope="scope">
-					<!-- TODO: 后端字段待定，当前为模拟数据 -->
-					{{ scope.row.receivedRebateDate || '未收到' }}
+					{{ getEarliestReceivedDate(scope.row) }}
 				</template>
 			</el-table-column>
 
-			<!-- 收到返利金额 - 模拟字段 -->
+			<!-- 收到返利金额 -->
 			<el-table-column v-if="columns[8].visible" label="收到返利金额" align="center" prop="receivedRebateAmount"
 				show-overflow-tooltip>
 				<template slot-scope="scope">
-					<!-- TODO: 后端字段待定，当前为模拟数据 -->
-					<span v-if="scope.row.receivedRebateAmount" class="money">{{ scope.row.receivedRebateAmount
-					}}</span>
+					<span v-if="getTotalReceivedAmount(scope.row) > 0" class="money">{{
+						getTotalReceivedAmount(scope.row) }}</span>
 					<span v-else>未收到</span>
 				</template>
 			</el-table-column>
@@ -680,6 +678,29 @@ export default {
 		isNull,
 		listCompany,
 		listBankAccount,
+		// 获取最早的返利日期
+		getEarliestReceivedDate(row) {
+			if (!row.actualReceivedDetails || !row.actualReceivedDetails.detailList || row.actualReceivedDetails.detailList.length === 0) {
+				return '未收到';
+			}
+
+			const dates = row.actualReceivedDetails.detailList
+				.map(item => item.actualReceivedDate)
+				.filter(date => date) // 过滤空值
+				.sort(); // 字符串排序，日期格式 "yyyy-MM-dd HH:mm:ss" 可以直接排序
+
+			return dates.length > 0 ? dates[0] : '未收到';
+		},
+		// 计算返利金额总和
+		getTotalReceivedAmount(row) {
+			if (!row.actualReceivedDetails || !row.actualReceivedDetails.detailList || row.actualReceivedDetails.detailList.length === 0) {
+				return 0;
+			}
+
+			return row.actualReceivedDetails.detailList.reduce((total, item) => {
+				return total + (Number(item.actualReceived) || 0);
+			}, 0);
+		},
 		handleCommitBackCompanyGive(val) {
 			this.form.supplier = val.companyName;
 			this.form.supplierID = val.id;
@@ -734,7 +755,7 @@ export default {
 										uuid: getUuid(),
 										actualReceived: currentAmount,
 										actualReceivedDate: parseTime(new Date(date)),
-										remark: remark || null
+										comment: remark || null
 									};
 									let body = _.cloneDeep(row);
 
@@ -815,7 +836,7 @@ export default {
 							label: '实收日期'
 						},
 						{
-							prop: 'remark',
+							prop: 'comment',
 							label: '备注'
 						}
 					],
