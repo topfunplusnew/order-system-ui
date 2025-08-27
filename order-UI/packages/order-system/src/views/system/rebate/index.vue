@@ -1,10 +1,16 @@
 <template>
 	<div class="app-container">
 		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true"
-			label-width="100px">
+			label-width="120px">
 			<el-row>
 				<el-form-item label="计提返利时间段" prop="rebateDateRange">
 					<el-date-picker v-model="rebateDateRange" type="datetimerange" range-separator="至"
+						start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd HH:mm:ss"
+						style="width: 350px">
+					</el-date-picker>
+				</el-form-item>
+				<el-form-item label="收到返利时间段" prop="receivedRebateDateRange">
+					<el-date-picker v-model="receivedRebateDateRange" type="datetimerange" range-separator="至"
 						start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd HH:mm:ss"
 						style="width: 350px">
 					</el-date-picker>
@@ -13,8 +19,18 @@
 					<el-input v-model="queryParams.supplier" placeholder="请输入供应商" clearable
 						@keyup.enter.native="handleQuery" />
 				</el-form-item>
+			</el-row>
+			<el-row>
+				<el-form-item label="是否收到返利" prop="isReceivedRebate">
+					<el-select v-model="queryParams.isReceivedRebate" placeholder="请选择" clearable>
+						<el-option label="全部" value="" />
+						<el-option label="已收到" value="Y" />
+						<el-option label="未收到" value="N" />
+					</el-select>
+				</el-form-item>
 				<el-form-item>
 					<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+					<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
 				</el-form-item>
 			</el-row>
 		</el-form>
@@ -490,6 +506,8 @@ export default {
 			dateRange: [],
 			// 计提返利时间段选择（前端使用，用于时间段组件绑定）
 			rebateDateRange: null,
+			// 收到返利时间段选择（前端使用，用于时间段组件绑定）
+			receivedRebateDateRange: null,
 			// 显示搜索条件
 			showSearch: true,
 			// 总条数
@@ -504,8 +522,6 @@ export default {
 			open: false,
 			// 查询参数
 			queryParams: {
-				rebateEndTime: null,
-				rebateStartTime: null,
 				pageNum: 1,
 				pageSize: 20,
 				ordersNo: null,
@@ -524,8 +540,17 @@ export default {
 				userId: null,
 				UserName: null,
 				delFlag: null,
+				// 是否收到返利筛选框 Y/N
+				isReceivedRebate: null,
 				// 删除了不需要的级别名称、长度、宽度、厚度搜索参数
-				params: {}
+				params: {
+					// 计提返利时间参数移到params中
+					rebateStartTime: null,
+					rebateEndTime: null,
+					// 收到返利时间参数（精确到时分秒）
+					receivedRebateStartTime: null,
+					receivedRebateEndTime: null
+				}
 			},
 			queryOrderParams: {
 				pageNum: 1,
@@ -899,20 +924,31 @@ export default {
 		},
 		/** 搜索按钮操作 */
 		handleQuery() {
-			// 处理时间段选择数据转换
+			// 处理计提返利时间段选择数据转换（移到params中）
 			if (this.rebateDateRange && this.rebateDateRange.length === 2) {
-				this.queryParams.rebateStartTime = this.rebateDateRange[0];
-				this.queryParams.rebateEndTime = this.rebateDateRange[1];
+				this.queryParams.params.rebateStartTime = this.rebateDateRange[0];
+				this.queryParams.params.rebateEndTime = this.rebateDateRange[1];
 			} else {
-				this.queryParams.rebateStartTime = null;
-				this.queryParams.rebateEndTime = null;
+				this.queryParams.params.rebateStartTime = null;
+				this.queryParams.params.rebateEndTime = null;
 			}
+
+			// 处理收到返利时间段选择数据转换
+			if (this.receivedRebateDateRange && this.receivedRebateDateRange.length === 2) {
+				this.queryParams.params.receivedRebateStartTime = this.receivedRebateDateRange[0];
+				this.queryParams.params.receivedRebateEndTime = this.receivedRebateDateRange[1];
+			} else {
+				this.queryParams.params.receivedRebateStartTime = null;
+				this.queryParams.params.receivedRebateEndTime = null;
+			}
+
 			this.queryParams.pageNum = 1;
 			this.getList();
 		},
 		/** 重置按钮操作 */
 		resetQuery() {
 			this.rebateDateRange = null;
+			this.receivedRebateDateRange = null;
 			this.resetForm('queryForm');
 			this.handleQuery();
 		},

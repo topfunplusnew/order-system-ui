@@ -97,7 +97,7 @@ export default {
 				{ key: 0, label: 'ID', visible: true },
 				{ key: 1, label: '日期', visible: true },
 				{ key: 2, label: '客户', visible: true },
-				{ key: 3, label: '供应商', visible: true },
+				{ key: 3, label: '供应商/仓库', visible: true },
 				{ key: 4, label: '审核状态', visible: true },
 				{ key: 5, label: '陆运车牌', visible: true },
 				{ key: 6, label: '陆运司机电话', visible: true },
@@ -418,7 +418,7 @@ export default {
 				</el-table-column>
 				<el-table-column v-if="columns[2].visible" show-overflow-tooltip label="客户" align="center"
 					prop="customer" fixed="left" />
-				<el-table-column v-if="columns[3].visible" show-overflow-tooltip label="供应商" align="center"
+				<el-table-column v-if="columns[3].visible" show-overflow-tooltip label="供应商/仓库" align="center"
 					prop="supplierNames" fixed="left" width="200">
 					<template #default="scope">
 						<el-row v-if="scope.row.smailOrderDetails">
