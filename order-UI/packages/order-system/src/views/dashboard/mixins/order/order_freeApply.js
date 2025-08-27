@@ -33,7 +33,13 @@ export var mixin_order_freeApply = {
 					driverId: row.car_id,
 					carNo: res.data.carNo,
 					fleet: row.fleet,
-					source: source
+					source: source,
+					// 银行卡信息
+					accountInfo: {
+						bankNo: res.data.bankNo,
+						acountsName: res.data.acountsName,
+						bankName: res.data.bankName,
+					}
 				};
 				// 打开弹窗
 				this.openDialog(
@@ -73,7 +79,13 @@ export var mixin_order_freeApply = {
 					carNo: res.data.carNo,
 					fleet: row.fleet,
 					// 区分订单还是库存开的运费字段
-					source: source
+					source: source,
+					// 银行卡信息
+					accountInfo: {
+						bankNo: res.data.bankNo,
+						acountsName: res.data.acountsName,
+						bankName: res.data.bankName,
+					}
 				};
 				// 打开弹窗
 				this.openDialog(
