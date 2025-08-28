@@ -6,9 +6,9 @@ export var mixin_payment_watcher = {
 		return {};
 	},
 	props: {
-		// 关联表名
+		// 关联表名 - 已弃用，保留用于兼容性
 		tableName: '',
-		// 关联表的主键ID
+		// 关联表的主键ID - 已弃用，保留用于兼容性
 		tID: '',
 		// 需要自动填充的钱
 		needMoney: {
@@ -17,6 +17,11 @@ export var mixin_payment_watcher = {
 		// 需要自动填充的信息 包含 对方户名:acountsName 对方账号 bankNo 对方开户行 bankName 对方公司 companyName
 		needInfo: {
 			type: Object
+		},
+		// 表关联数组 - 新的付款申请结构
+		tableReferences: {
+			type: Array,
+			default: () => []
 		},
 		// 是否禁用金额输入框
 		moneyInputDisabled: {
@@ -138,7 +143,7 @@ export var mixin_payment_watcher = {
 					// 如果没有查到 那么就提示 并且清空数据
 					if (res.rows.length === 0) {
 						Object.assign(this.form, {
-							otherAcountsName: '',
+							otherAccountsName: '',
 							otherBankNo: '',
 							otherBankName: '',
 							selfAcountsName: '',
@@ -155,7 +160,7 @@ export var mixin_payment_watcher = {
 							});
 						} else {
 							Object.assign(this.form, {
-								otherAcountsName: res.rows[0].acountsName,
+								otherAccountsName: res.rows[0].acountsName,
 								otherBankNo: res.rows[0].bankNo,
 								otherBankName: res.rows[0].bankName
 							});

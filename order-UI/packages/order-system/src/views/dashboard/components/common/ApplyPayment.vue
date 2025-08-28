@@ -420,8 +420,10 @@ export default {
 			total: 0,
 			// 表单参数
 			form: {
+				// 废弃字段，保留用于兼容性
 				tID: null,
 				tableName: null,
+				// 新的核心字段
 				fundsDate: parseTime(new Date()),
 				payType: null,
 				moneyAmount: null,
@@ -433,20 +435,29 @@ export default {
 				selfBankNo: null,
 				selfBankName: null,
 				selfBankID: null,
-				// 对方银行卡信息
-				otherAcountsName: null,
+				// 对方银行卡信息（注意字段名修改）
+				otherAccountsName: null,
 				otherBankNo: null,
 				otherBankName: null,
 				companyName: null,
 				companyId: null,
 				companyType: null,
 				reason: null,
+				// 申请人信息
+				applyPerson: null,
+				applyPersonId: null, // 注意字段名修改
+				// 审核状态
+				checkState: null,
+				// 附件和备注
 				attachmentIds: null,
 				attachmentList: [],
-				applyPerson: null,
-				applyPersonID: null,
-				checkState: null,
-				comments: null
+				comments: null,
+				// 时间戳字段
+				addTime: null,
+				userId: null,
+				userName: null,
+				// 新增：表关联数组
+				tableReferences: []
 			},
 			// 禁用输入框
 			inputDisabled: false,
@@ -480,8 +491,31 @@ export default {
 				this.form.companyId = null;
 				this.form.otherBankNo = null;
 				this.form.otherBankName = null;
-				this.form.otherAcountsName = null;
+				this.form.otherAccountsName = null;
 			}
+		},
+		// 监听 tableReferences 变化，自动计算总金额
+		tableReferences: {
+			handler(newReferences) {
+				if (newReferences && newReferences.length > 0) {
+					// 构建表单的 tableReferences
+					this.form.tableReferences = newReferences.map(ref => ({
+						refTableName: ref.refTableName || ref.tableName, // 兼容旧字段名
+						refTableId: ref.refTableId || ref.tID, // 兼容旧字段名
+						amount: parseFloat(ref.amount) || 0
+					}));
+
+					// 如果没有手动设置金额，则自动计算总金额
+					if (!this.needMoney && this.form.tableReferences.length > 0) {
+						const totalAmount = this.form.tableReferences.reduce((sum, ref) => sum + ref.amount, 0);
+						if (totalAmount > 0) {
+							this.form.moneyAmount = totalAmount;
+						}
+					}
+				}
+			},
+			deep: true,
+			immediate: true
 		}
 	},
 	mounted() {
@@ -492,6 +526,81 @@ export default {
 		isNull,
 		listCompany,
 		listBankAccount,
+
+		/**
+		 * **业务架构设计：数据结构兼容性转换**
+		 * 
+		 * 将旧的单表关联模式转换为新的多表关联模式
+		 * 确保向后兼容性，同时支持新的 tableReferences 结构
+		 * 
+		 * **设计原则：**
+		 * 1. 兼容性优先：优先使用新结构，兼容旧结构
+		 * 2. 数据完整性：确保转换过程中不丢失关键信息
+		 * 3. 扩展性：为未来多表关联做好准备
+		 * 
+		 * **时间复杂度：** O(1) - 简单的对象构建
+		 * **空间复杂度：** O(1) - 创建固定大小的数组
+		 */
+		buildTableReferences() {
+			// 优先使用新的 tableReferences 结构
+			if (this.tableReferences && this.tableReferences.length > 0) {
+				return this.tableReferences.map(ref => ({
+					refTableName: ref.refTableName || ref.tableName,
+					refTableId: ref.refTableId || ref.tID || ref.id,
+					amount: parseFloat(ref.amount) || parseFloat(this.form.moneyAmount) || 0
+				}));
+			}
+
+			// 兼容旧的单表关联模式（如果传入了 tableName 和 tID）
+			if (this.tableName && this.tID) {
+				return [{
+					refTableName: this.tableName,
+					refTableId: this.tID,
+					amount: parseFloat(this.form.moneyAmount) || 0
+				}];
+			}
+
+			// 如果都没有，返回空数组
+			return [];
+		},
+
+		/**
+		 * **表单数据标准化处理**
+		 * 
+		 * 构建符合新API要求的表单数据结构
+		 * 处理字段名映射和数据格式转换
+		 */
+		buildFormData() {
+			const formData = {
+				fundsDate: this.form.fundsDate,
+				payType: Array.isArray(this.form.payType) ? this.form.payType.join('-') : this.form.payType,
+				moneyAmount: parseFloat(this.form.moneyAmount) || 0,
+				// 注意字段名的映射
+				otherAccountsName: this.form.otherAccountsName || this.form.otherAcountsName, // 兼容旧字段名
+				otherBankNo: this.form.otherBankNo,
+				otherBankName: this.form.otherBankName,
+				companyName: this.form.companyName,
+				companyId: this.form.companyId,
+				companyType: this.form.companyType || this.value,
+				reason: this.form.reason,
+				applyPerson: this.form.applyPerson,
+				applyPersonId: this.form.applyPersonId || this.form.applyPersonID, // 兼容旧字段名
+				comments: this.form.comments,
+				// 时间戳信息
+				addTime: this.form.addTime || parseTime(new Date()),
+				userId: this.form.userId,
+				userName: this.form.userName,
+				// 新的表关联结构
+				tableReferences: this.buildTableReferences()
+			};
+
+			// 添加附件信息
+			if (this.form.attachmentIds) {
+				formData.attachmentIds = this.form.attachmentIds;
+			}
+
+			return formData;
+		},
 		// 处理附件文件更新
 		handleAttachmentFilesUpdated(uploadParams) {
 			if (uploadParams && uploadParams.params && uploadParams.params.attachmentIds) {
@@ -551,28 +660,34 @@ export default {
 		handlePaymentApply(form) {
 			// 如果是多个付款审核 需要把信息返回给父组件进行使用 这种情况只有不在弹窗中才会使用其他情况没有
 			if (this.isMulti) {
-				form.tableName = this.tableName;
-				form.tID = this.tID;
-				form.checkState = ''; // 审核状态赋空
-				form.companyType = this.value;
+				const formData = this.buildFormData();
+				formData.checkState = ''; // 审核状态赋空
 				this.$message.success('付款申请提交成功');
-				this.$emit('getApplyPayment', form);
+				this.$emit('getApplyPayment', formData);
 				this.$emit('changeOpen');
 				return;
 			}
-			// 添加付款类型
+
+			// 添加付款类型校验
 			if (!form.payType) {
 				this.$modal.msgError('请选择付款类型');
 				return;
 			}
-			excludeParams(form, this.$exclude);
-			form.tableName = this.tableName;
-			form.tID = this.tID;
-			form.checkState = ''; // 审核状态赋空
-			form.companyType = this.value;
-			const payType = form.payType.join('-');
-			const body = { ...form, payType: payType };
-			addPaymentApply(body).then(() => {
+
+			// 构建新的表单数据结构
+			const formData = this.buildFormData();
+			formData.checkState = ''; // 审核状态赋空
+
+			// 数据验证
+			if (formData.tableReferences.length === 0) {
+				this.$modal.msgError('付款申请必须关联至少一个业务记录');
+				return;
+			}
+
+			// 排除不必要的参数
+			excludeParams(formData, this.$exclude);
+
+			addPaymentApply(formData).then(() => {
 				this.$modal.msgSuccess('付款申请添加成功');
 				this.reset();
 				// 提交成功后删除本地的缓存
@@ -620,13 +735,13 @@ export default {
 							this.$modal.msgError('请选择付款类型');
 							return;
 						}
-						this.form.companyType = this.extraInformation.__companyType;
-						// 填充对应表名和主键
-						this.form.tableName = this.tableName;
-						this.form.tID = this.tID;
-						const payType = this.form.payType.join('-');
-						const body = { ...this.form, payType: payType };
-						updatePaymentApply(body).then(() => {
+
+						// 构建表单数据
+						const formData = this.buildFormData();
+						formData.id = this.form.id;
+						formData.companyType = this.extraInformation.__companyType;
+
+						updatePaymentApply(formData).then(() => {
 							this.$modal.msgSuccess('付款申请保存成功,点击提交并审核可提交信息至审核流程');
 							this.reset();
 							that.dialogVisible = false;
@@ -656,9 +771,11 @@ export default {
 		// 表单重置
 		reset() {
 			this.form = {
+				// 废弃字段，保留用于兼容性
 				id: null,
 				tableName: null,
 				tID: null,
+				// 核心业务字段
 				fundsDate: parseTime(new Date()),
 				payType: null,
 				moneyAmount: null,
@@ -669,8 +786,8 @@ export default {
 				selfBankNo: null,
 				selfBankName: null,
 				selfAcountsName: null,
-				// 对方银行卡类型
-				otherAcountsName: null,
+				// 对方银行卡信息（统一字段名）
+				otherAccountsName: null,
 				otherBankNo: null,
 				otherBankName: null,
 				companyName: null,
@@ -679,10 +796,17 @@ export default {
 				reason: null,
 				attachmentIds: null,
 				attachmentList: [],
+				// 申请人信息
 				applyPerson: null,
-				applyPersonID: null,
+				applyPersonId: null,
 				checkState: null,
-				comments: null
+				comments: null,
+				// 时间戳字段
+				addTime: null,
+				userId: null,
+				userName: null,
+				// 新增字段
+				tableReferences: []
 			};
 			this.value = ''; // 重置对方类型
 			this.currentSort = { levelOne: '', levelTwo: '' };

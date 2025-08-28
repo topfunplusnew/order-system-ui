@@ -27,7 +27,7 @@ export var mixin_payment_fill = {
 			}
 			this.form.otherBankNo = val.bankNo;
 			this.form.otherBankName = val.bankName;
-			this.form.otherAcountsName = val.acountsName;
+			this.form.otherAccountsName = val.acountsName;
 		},
 		handleUpdateQueryName(val) {
 			this.queryCompany = val;

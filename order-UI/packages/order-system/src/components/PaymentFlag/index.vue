@@ -58,7 +58,7 @@ export default {
                     ...this.getCustomStyles(customResult.status)
                 };
             }
-            
+
             // 优先判断payment对象
             if (this.hasValidPayment) {
                 return this.getPaymentStatus();
@@ -69,7 +69,7 @@ export default {
                 return this.getPaymentApplyStatus();
             }
 
-            // 都不存在时的默认状态
+            // 都不存在时的默认状态（未申请）
             return this.getDefaultStatus();
         },
 
@@ -252,15 +252,16 @@ export default {
          * @returns {Object} 默认状态信息对象
          */
         getDefaultStatus() {
+            const v2States = PAYMENT_APPLY_STATE.V2;
             return {
-                text: '无状态',
+                text: '未申请',
                 type: 'info',
                 color: '#C0C4CC',
-                status: null,
-                statusType: 'unknown'
+                status: v2States.UN_APPLIED,
+                statusType: 'paymentApply'
             };
         },
-        
+
         /**
          * 获取自定义样式
          * @param {String} status 状态值

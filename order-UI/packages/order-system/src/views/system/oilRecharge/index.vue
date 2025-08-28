@@ -1,11 +1,13 @@
 <template>
 	<div class="app-container">
-		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini">
+		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true">
 			<el-form-item label="加油卡卡号" prop="oilCardNo">
-				<el-input v-model="queryParams.oilCardNo" placeholder="请输入加油卡卡号" clearable @keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.oilCardNo" placeholder="请输入加油卡卡号" clearable
+					@keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="充值时间" prop="rechargeDate">
-				<el-date-picker v-model="dateRange" style="width: 240px" value-format="yyyy-MM-dd HH:mm:ss" type="daterange" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
+				<el-date-picker v-model="dateRange" style="width: 240px" value-format="yyyy-MM-dd HH:mm:ss"
+					type="daterange" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -14,7 +16,8 @@
 
 		<el-row :gutter="10" class="mb8">
 			<el-col :span="1.5">
-				<el-button v-hasPermi="['system:oilrecharge:add']" type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd">新增加油卡充值信息</el-button>
+				<el-button v-hasPermi="['system:oilrecharge:add']" type="primary" plain icon="el-icon-plus" size="mini"
+					@click="handleAdd">新增加油卡充值信息</el-button>
 			</el-col>
 			<el-col :span="1.5">
 				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
@@ -28,28 +31,32 @@
 				<!--        导出-->
 				<template #export>
 					<el-col :span="1.5">
-						<el-button v-hasPermi="['system:oilrecharge:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
+						<el-button v-hasPermi="['system:oilrecharge:export']" plain icon="el-icon-folder-opened"
+							size="mini" @click="handleExport"></el-button>
 					</el-col>
 				</template>
 			</right-toolbar>
 		</el-row>
 
-		<el-table
-			id="printBox"
-			v-loading="loading"
-			v-horizontal-scroll="'always'"
-			border
-			:data="oilRechargeList"
-			size="mini"
-			:cell-style="
-				() => {
-					return { padding: '1.5px' };
-				}
-			"
-			@selection-change="handleSelectionChange"
-		>
+		<el-table id="printBox" v-loading="loading" v-horizontal-scroll="'always'" border :data="oilRechargeList"
+			size="mini" :cell-style="() => {
+				return { padding: '1.5px' };
+			}
+				" @selection-change="handleSelectionChange">
 			<el-table-column label="id" align="center" prop="id" />
-			<el-table-column v-if="columns[0].visible" label="审核状态" align="center" prop="checkState"></el-table-column>
+			<el-table-column v-if="columns[0].visible" label="审核状态" align="center" prop="checkState" width="160px">
+				<template slot-scope="scope">
+					<PaymentFlag :business-object="scope.row">
+						<template #extra="{ status, type }">
+							<!-- 根据状态展示操作按钮 -->
+							<el-button v-if="type === 'paymentApply' && status === '未申请'" size="mini" type="text"
+								@click="addPaymentApply(scope.row)">
+								申请付款
+							</el-button>
+						</template>
+					</PaymentFlag>
+				</template>
+			</el-table-column>
 			<!--      <el-table-column label="出差编号UUID" align="center" prop="bTripId"/>-->
 			<el-table-column v-if="columns[1].visible" label="加油卡卡号" align="center" prop="oilCardNo" />
 			<el-table-column v-if="columns[2].visible" label="充值类型" align="center" prop="rechargeType" />
@@ -61,12 +68,8 @@
 			<el-table-column v-if="columns[8].visible" label="充值附件" align="center" prop="attachment">
 				<template #default="scope">
 					<div v-if="Array.isArray(scope.row.attachmentList)">
-						<CheckFiles
-							:attachmentList="scope.row.attachmentList"
-							:flag="'attachment'"
-							:is-upload="false"
-							@needToUpdate="value => handleUpdateFilePath(value, scope.row, getOilRecharge, updateOilRecharge)"
-						/>
+						<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'attachment'" :is-upload="false"
+							@needToUpdate="value => handleUpdateFilePath(value, scope.row, getOilRecharge, updateOilRecharge)" />
 					</div>
 					<div v-else>
 						<el-tag type="danger">加载错误</el-tag>
@@ -74,21 +77,22 @@
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[9].visible" label="备注" align="center" prop="comments" />
-			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="150px">
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right"
+				width="150px">
 				<template slot-scope="scope">
-					<el-button v-if="scope.row.checkState === '未申请'" size="mini" type="text" @click="addPaymentApply(scope.row)">申请付款</el-button>
-					<el-button v-if="scope.row.checkState === '已支付'" size="mini" type="success" disabled>已支付</el-button>
-					<el-button v-if="scope.row.checkState === '未支付'" size="mini" type="danger" disabled>未支付</el-button>
 					<!--					<el-button v-hasPermi="['system:oilrecharge:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>-->
-					<el-button v-hasPermi="['system:oilrecharge:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
+					<el-button v-hasPermi="['system:oilrecharge:remove']" size="mini" type="danger"
+						@click="handleDelete(scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
 
-		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
+		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum"
+			:limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改加油卡充值信息对话框 -->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false"
+			:show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="80px">
 				<el-form-item label="加油卡卡号" prop="oilCardNo">
 					<el-row>
@@ -96,15 +100,9 @@
 							<el-input disabled v-model="form.oilCardNo" placeholder="请选择" />
 						</el-col>
 						<el-col :span="4">
-							<SearchOption
-								:get-data="listOilCard"
-								query-info="oilCardNo"
-								:query-name="queryOilCard"
-								query-label="油卡账号查询"
-								:limit-info="{ oilType: '主卡' }"
-								@commitBack="handleCommitBackOilCard"
-								@update:queryName="handleCommitBackQueryOilCard"
-							>
+							<SearchOption :get-data="listOilCard" query-info="oilCardNo" :query-name="queryOilCard"
+								query-label="油卡账号查询" :limit-info="{ oilType: '主卡' }"
+								@commitBack="handleCommitBackOilCard" @update:queryName="handleCommitBackQueryOilCard">
 								<template #table-columns>
 									<el-table-column label="加油卡卡号" align="center" prop="oilCardNo" />
 									<el-table-column label="当前金额" align="center" prop="moneyAmount" />
@@ -120,13 +118,10 @@
 					<el-input v-model="form.rechargeName" disabled placeholder="请输入充值人员姓名" />
 				</el-form-item>
 				<el-form-item label="充值附件" prop="attachment">
-					<UploadFilesButton
-						ref="attachmentUpload"
-						flag="attachment"
+					<UploadFilesButton ref="attachmentUpload" flag="attachment"
 						:initial-attachments="(form.params && form.params.attachments) || []"
 						:extra-info="{ moduleType: 'oilRecharge', formId: form.id }"
-						@files-updated="handleAttachmentFilesUpdated"
-					/>
+						@files-updated="handleAttachmentFilesUpdated" />
 				</el-form-item>
 				<el-form-item label="备注" prop="comments">
 					<el-input v-model="form.comments" placeholder="请输入备注" />
@@ -139,18 +134,10 @@
 		</el-dialog>
 
 		<!--    加油卡付款申请-->
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="加油卡付款申请"
-			:visible.sync="paymentApplyVisible"
-			width="500px"
-		>
-			<OilApply :need-money="needMoney" :table-name="TableName.OIL_RECHARGE" :t-i-d="tid" @changeOpen="resetApplyPaymentInfo" />
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false"
+			:show-close="false" title="加油卡付款申请" :visible.sync="paymentApplyVisible" width="500px">
+			<OilApply :need-money="needMoney" :table-name="TableName.OIL_RECHARGE" :t-i-d="tid"
+				@changeOpen="resetApplyPaymentInfo" />
 		</el-dialog>
 	</div>
 </template>
@@ -160,6 +147,7 @@ import { addOilRecharge, delOilRecharge, listOilRecharge } from '@/api/system/oi
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import { TableName } from '@/api/tool/enums';
 import SearchOption from '@/components/SearchOption.vue';
+import PaymentFlag from '@/components/PaymentFlag/index.vue';
 import { listOilCard } from '@/api/system/oilCard';
 import { listBankAccount } from '@/api/system/bankAccount';
 import { mapGetters } from 'vuex';
@@ -181,7 +169,7 @@ export default {
 		},
 		...mapGetters(['trueName'])
 	},
-	components: { CheckFiles, UploadFilesButton, OilApply, SearchOption },
+	components: { CheckFiles, UploadFilesButton, OilApply, SearchOption, PaymentFlag },
 	mixins: [mixin_printHTML, mixin_oil_recharge_fill, mixin_checkfile],
 	data() {
 		return {
@@ -295,6 +283,7 @@ export default {
 		this.resetQuery();
 	},
 	methods: {
+
 		updateOilRecharge() {
 			return updateOilRecharge;
 		},
@@ -492,7 +481,7 @@ export default {
 					this.getList();
 					this.$modal.msgSuccess('删除成功');
 				})
-				.catch(() => {});
+				.catch(() => { });
 		},
 		/** 导出按钮操作 */
 		handleExport() {
