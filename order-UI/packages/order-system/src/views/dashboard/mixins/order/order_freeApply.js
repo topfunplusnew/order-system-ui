@@ -25,7 +25,7 @@ export var mixin_order_freeApply = {
 				}
 				// 组装订单运费信息 我方银行卡信息弹窗自己选
 				const landFreightInfo = {
-					ordersNo: row.sourceId,
+					sourceId: row.sourceId,
 					freightType: row.transport_type === 'sea' ? '海运' : '陆运',
 					moneyAmount: row.freight,
 					paymentState: '申请中',
@@ -66,7 +66,7 @@ export var mixin_order_freeApply = {
 				}
 				// 组装海运费信息
 				const seaFreightInfo = {
-					ordersNo: row.sourceId,
+					sourceId: row.sourceId,
 					freightType: row.transport_type === 'sea' ? '海运' : '陆运',
 					moneyAmount: row.freight,
 					// 对方银行卡信息

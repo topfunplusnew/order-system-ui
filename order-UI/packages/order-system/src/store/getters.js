@@ -63,6 +63,15 @@ const getters = {
 
 	// 下载进度
 	downloadProgress: state => state.downloadOnce.percent,
-	downloadMessage: state => state.downloadOnce.message
+	downloadMessage: state => state.downloadOnce.message,
+
+	// 银行承兑双选择状态管理
+	bankAcceptanceDualSelectionState: state => state.bankAcceptance.dualSelectionState,
+	bankAcceptanceHasSelection: state => state.bankAcceptance.hasAcceptanceSelection,
+	bankAcceptanceBothSelected: state => state.bankAcceptance.dualSelectionState.source && state.bankAcceptance.dualSelectionState.target,
+	bankAcceptanceShouldShowDrawer: state => {
+		const dualState = state.bankAcceptance.dualSelectionState;
+		return !!(dualState.source && dualState.target && state.bankAcceptance.hasAcceptanceSelection);
+	}
 };
 export default getters;

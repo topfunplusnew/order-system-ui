@@ -18,6 +18,7 @@ import trash from '@/store/modules/trash';
 import excel from '@/store/modules/excel';
 import downloadOnce from '@/store/modules/downloadOnce';
 import attachments from '@/store/modules/attachments';
+import bankAcceptance from '@/store/modules/bankAcceptance';
 
 Vue.use(Vuex);
 
@@ -46,7 +47,9 @@ const store = new Vuex.Store({
 		// bussinessTrip: () => import('./modules/bussinessTrip')
 		downloadOnce,
 		// 附件管理
-		attachments
+		attachments,
+		// 银行承兑双选择状态管理
+		bankAcceptance
 	},
 	getters
 });
