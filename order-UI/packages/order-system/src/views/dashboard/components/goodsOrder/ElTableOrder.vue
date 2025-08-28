@@ -1,5 +1,7 @@
 <script>
 import { delGoodsOrder, getGoodsOrder, updateGoodsOrder } from '@/api/system/goodsOrder';
+import { listInvoiceOut } from '@/api/system/invoiceOut';
+import { listInvoiceIn } from '@/api/system/invoiceIn';
 import CheckFiles from '@/components/CheckFiles.vue';
 import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 import { mixin_checkfile } from '@/views/dashboard/mixins/checkfiles/mixin_checkfile';
@@ -95,6 +97,16 @@ export default {
 				pageNum: 1,
 				pageSize: 50
 			},
+			// 客户开票列表相关数据
+			customerInvoiceListVisible: false,
+			customerInvoiceList: [],
+			customerInvoiceListLoading: false,
+			currentOrderInfo: null, // 当前订单信息
+			// 供应商开票列表相关数据
+			supplierInvoiceListVisible: false,
+			supplierInvoiceList: [],
+			supplierInvoiceListLoading: false,
+			supplierInvoiceGroups: [], // 按供应商分组的开票记录
 			columns: [
 				{ key: 0, label: 'ID', visible: true },
 				{ key: 1, label: '日期', visible: true },
@@ -143,6 +155,178 @@ export default {
 		}
 	},
 	methods: {
+		// 获取客户开票列表
+		async getCustomerInvoiceList(orderId) {
+			this.customerInvoiceListLoading = true;
+			try {
+				const response = await listInvoiceOut({
+					noPage: true,
+					isOrderTax: orderId
+				});
+				if (response.code === 200) {
+					this.customerInvoiceList = response.rows || [];
+				} else {
+					this.$message.error(response.msg || '获取开票列表失败');
+					this.customerInvoiceList = [];
+				}
+			} catch (error) {
+				this.$message.error('获取开票列表失败');
+				this.customerInvoiceList = [];
+			} finally {
+				this.customerInvoiceListLoading = false;
+			}
+		},
+
+		// 显示客户开票列表弹窗
+		showCustomerInvoiceList(row) {
+			this.currentOrderInfo = row;
+			this.customerInvoiceListVisible = true;
+			this.getCustomerInvoiceList(row.id);
+		},
+
+		// 关闭客户开票列表弹窗
+		closeCustomerInvoiceList() {
+			this.customerInvoiceListVisible = false;
+			this.customerInvoiceList = [];
+			this.currentOrderInfo = null;
+		},
+
+		// 添加新的客户开票 - 打开原有的开票弹窗
+		handleAddCustomerInvoice() {
+			if (!this.currentOrderInfo) return;
+
+			// 调用原有的客户开票方法
+			this.updateOrderItemVisibleCustomerInvoice(this.currentOrderInfo);
+			// 关闭列表弹窗
+			this.closeCustomerInvoiceList();
+		},
+
+		// 计算累计开票金额
+		calculateAccumulatedInvoiceAmount(index) {
+			let accumulated = 0;
+			for (let i = 0; i <= index; i++) {
+				accumulated += Number(this.customerInvoiceList[i].invoiceAmount || 0);
+			}
+			return accumulated.toFixed(2);
+		},
+
+		// 获取开票记录行样式
+		getInvoiceRowClassName({ row, rowIndex }) {
+			// 可以根据开票状态等条件返回不同的样式类名
+			if (row.isInvoiced) {
+				return 'invoice-row-completed';
+			}
+			return 'invoice-row-pending';
+		},
+
+		// ==================== 供应商开票列表相关方法 ====================
+
+		// 获取供应商开票列表
+		async getSupplierInvoiceList(orderId) {
+			this.supplierInvoiceListLoading = true;
+			try {
+				const response = await listInvoiceIn({
+					noPage: true,
+					isOrderTax: orderId
+				});
+				if (response.code === 200) {
+					this.supplierInvoiceList = response.rows || [];
+					this.groupSupplierInvoicesByCompany();
+				} else {
+					this.$message.error(response.msg || '获取供应商开票列表失败');
+					this.supplierInvoiceList = [];
+					this.supplierInvoiceGroups = [];
+				}
+			} catch (error) {
+				this.$message.error('获取供应商开票列表失败');
+				this.supplierInvoiceList = [];
+				this.supplierInvoiceGroups = [];
+			} finally {
+				this.supplierInvoiceListLoading = false;
+			}
+		},
+
+		// 按供应商分组开票记录
+		groupSupplierInvoicesByCompany() {
+			const groups = {};
+
+			// 根据开票记录分组
+			this.supplierInvoiceList.forEach(invoice => {
+				const companyId = invoice.companyID;
+				if (!groups[companyId]) {
+					groups[companyId] = {
+						companyId: companyId,
+						companyName: invoice.companyName,
+						invoices: [],
+						totalInvoiceAmount: 0,
+						needInvoiceAmount: 0
+					};
+				}
+				groups[companyId].invoices.push(invoice);
+				groups[companyId].totalInvoiceAmount += Number(invoice.invoiceAmount || 0);
+			});
+
+			// 计算每个供应商的需开票金额（从订单详情中获取）
+			if (this.currentOrderInfo && this.currentOrderInfo.smailOrderDetails) {
+				this.currentOrderInfo.smailOrderDetails.forEach(detail => {
+					if (detail.supplierID && groups[detail.supplierID]) {
+						groups[detail.supplierID].needInvoiceAmount += Number(detail.paymentFactory || 0);
+					}
+				});
+			}
+
+			// 如果订单中有供应商但没有开票记录，也要创建分组
+			if (this.currentOrderInfo && this.currentOrderInfo.smailOrderDetails) {
+				this.currentOrderInfo.smailOrderDetails.forEach(detail => {
+					if (detail.supplierID && !groups[detail.supplierID] && detail.supplier) {
+						groups[detail.supplierID] = {
+							companyId: detail.supplierID,
+							companyName: detail.supplier,
+							invoices: [],
+							totalInvoiceAmount: 0,
+							needInvoiceAmount: Number(detail.paymentFactory || 0)
+						};
+					}
+				});
+			}
+
+			this.supplierInvoiceGroups = Object.values(groups);
+		},
+
+		// 显示供应商开票列表弹窗
+		showSupplierInvoiceList(row) {
+			this.currentOrderInfo = row;
+			this.supplierInvoiceListVisible = true;
+			this.getSupplierInvoiceList(row.id);
+		},
+
+		// 关闭供应商开票列表弹窗
+		closeSupplierInvoiceList() {
+			this.supplierInvoiceListVisible = false;
+			this.supplierInvoiceList = [];
+			this.supplierInvoiceGroups = [];
+			this.currentOrderInfo = null;
+		},
+
+		// 添加新的供应商开票
+		handleAddSupplierInvoice(supplierGroup) {
+			if (!this.currentOrderInfo) return;
+
+			// 调用原有的供应商开票方法
+			this.updateOrderItemVisibleSupplierInvoice(this.currentOrderInfo, supplierGroup.companyId);
+			// 关闭列表弹窗
+			this.closeSupplierInvoiceList();
+		},
+
+		// 计算供应商累计开票金额
+		calculateSupplierAccumulatedInvoiceAmount(invoices, index) {
+			let accumulated = 0;
+			for (let i = 0; i <= index; i++) {
+				accumulated += Number(invoices[i].invoiceAmount || 0);
+			}
+			return accumulated.toFixed(2);
+		},
+
 		// 计算订单是否超过7天
 		isOrderExpired(addtime) {
 			if (!addtime) return false;
@@ -692,7 +876,7 @@ export default {
 							<el-row v-if="hasInvoice(scope.row, PUBLIC_DICT_TYPE.CUSTOMER)">
 								<el-row>
 									<el-button type="text" size="mini"
-										@click="updateOrderItemVisibleCustomerInvoice(scope.row)">含税</el-button>
+										@click="showCustomerInvoiceList(scope.row)">含税</el-button>
 								</el-row>
 							</el-row>
 							<el-row v-else>
@@ -782,7 +966,7 @@ export default {
 							<el-row v-if="hasInvoice(scope.row, PUBLIC_DICT_TYPE.SUPPLIER)">
 								<el-row>
 									<el-button type="text" size="mini"
-										@click="updateOrderItemVisibleSupplierInvoice(scope.row)">含税</el-button>
+										@click="showSupplierInvoiceList(scope.row)">含税</el-button>
 								</el-row>
 							</el-row>
 							<el-row v-else>
@@ -852,10 +1036,590 @@ export default {
 				</el-row>
 			</div>
 		</div>
+
+		<!-- 客户开票列表弹窗 -->
+		<el-dialog title="客户开票记录" :visible.sync="customerInvoiceListVisible" width="70%"
+			:before-close="closeCustomerInvoiceList" class="invoice-list-dialog compact-dialog">
+			<div v-if="currentOrderInfo" class="invoice-dialog-content">
+				<!-- 订单信息卡片 -->
+				<el-card class="order-info-card" shadow="hover">
+					<div class="order-info-header">
+						<i class="el-icon-document-checked"></i>
+						<span class="order-title">订单信息</span>
+					</div>
+					<div class="order-info-content">
+						<div class="order-info-item">
+							<span class="info-label">订单ID:</span>
+							<span class="info-value order-id">#{{ currentOrderInfo.id }}</span>
+						</div>
+						<div class="order-info-item">
+							<span class="info-label">客户名称:</span>
+							<span class="info-value customer-name">{{ currentOrderInfo.customer }}</span>
+						</div>
+						<div class="order-info-item">
+							<span class="info-label">总货款:</span>
+							<span class="info-value total-amount">¥{{ Number(currentOrderInfo.allPayments ||
+								0).toLocaleString()
+							}}</span>
+						</div>
+					</div>
+				</el-card>
+
+				<!-- 操作按钮区域 -->
+				<div class="action-bar">
+					<div class="action-left">
+						<el-tag v-if="customerInvoiceList.length > 0" type="info" size="medium">
+							<i class="el-icon-tickets"></i>
+							已开票 {{ customerInvoiceList.length }} 次
+						</el-tag>
+					</div>
+					<div class="action-right">
+						<el-button type="primary" size="medium" @click="handleAddCustomerInvoice"
+							class="add-invoice-btn">
+							<i class="el-icon-plus"></i>
+							新增开票
+						</el-button>
+					</div>
+				</div>
+
+				<!-- 开票记录表格 -->
+				<div class="invoice-table-container">
+					<el-table v-loading="customerInvoiceListLoading" :data="customerInvoiceList" border stripe
+						class="invoice-table compact-table" size="small"
+						:header-cell-style="{ background: '#f8f9fa', color: '#495057', fontWeight: 600 }"
+						:row-class-name="getInvoiceRowClassName">
+
+						<el-table-column prop="orderDate" label="日期" align="center" width="100">
+							<template #default>
+								<div class="date-cell">
+									<i class="el-icon-date"></i>
+									{{ currentOrderInfo && currentOrderInfo.orderDate ?
+										parseTime(currentOrderInfo.orderDate, '{y}-{m}-{d}') : '-' }}
+								</div>
+							</template>
+						</el-table-column>
+
+						<el-table-column prop="companyName" label="客户名称" align="center" min-width="120">
+							<template #default="scope">
+								<div class="company-cell">
+									<i class="el-icon-office-building"></i>
+									{{ scope.row.companyName }}
+								</div>
+							</template>
+						</el-table-column>
+
+						<el-table-column prop="allPayments" label="需开票金额" align="center" width="110">
+							<template #default>
+								<div class="amount-cell need-amount">
+									<span class="currency-symbol">¥</span>
+									{{ Number(currentOrderInfo ? currentOrderInfo.allPayments : 0).toLocaleString() }}
+								</div>
+							</template>
+						</el-table-column>
+
+						<el-table-column prop="invoiceDate" label="开票时间" align="center" width="200">
+							<template #default="scope">
+								<div class="datetime-cell">
+									<i class="el-icon-time"></i>
+									{{ scope.row.invoiceDate ? parseTime(scope.row.invoiceDate, '{y}-{m}-{d} {h}:{i}') :
+									'-' }}
+								</div>
+							</template>
+						</el-table-column>
+
+						<el-table-column prop="invoiceAmount" label="开票金额" align="center" width="130">
+							<template #default="scope">
+								<div class="amount-cell invoiced-amount">
+									<span class="currency-symbol">¥</span>
+									{{ Number(scope.row.invoiceAmount || 0).toLocaleString() }}
+								</div>
+							</template>
+						</el-table-column>
+
+						<el-table-column label="累计开票金额" align="center" width="140">
+							<template #default="scope">
+								<div class="amount-cell accumulated-amount">
+									<span class="currency-symbol">¥</span>
+									{{ Number(calculateAccumulatedInvoiceAmount(scope.$index)).toLocaleString() }}
+								</div>
+							</template>
+						</el-table-column>
+					</el-table>
+				</div>
+			</div>
+		</el-dialog>
+
+		<!-- 供应商开票列表弹窗 -->
+		<el-dialog title="供应商开票记录" :visible.sync="supplierInvoiceListVisible" width="75%"
+			:before-close="closeSupplierInvoiceList" class="invoice-list-dialog supplier-invoice-dialog compact-dialog">
+			<div v-if="currentOrderInfo" class="invoice-dialog-content">
+				<!-- 订单信息卡片 -->
+				<el-card class="order-info-card" shadow="hover">
+					<div class="order-info-header">
+						<i class="el-icon-document-checked"></i>
+						<span class="order-title">订单信息</span>
+					</div>
+					<div class="order-info-content">
+						<div class="order-info-item">
+							<span class="info-label">订单ID:</span>
+							<span class="info-value order-id">{{ currentOrderInfo.id }}</span>
+						</div>
+						<div class="order-info-item">
+							<span class="info-label">供应商数量:</span>
+							<span class="info-value total-amount">{{ supplierInvoiceGroups.length }} 家</span>
+						</div>
+					</div>
+				</el-card>
+
+				<!-- 供应商开票记录分组展示 -->
+				<div v-if="supplierInvoiceGroups.length > 0" class="supplier-groups-container">
+					<div v-for="group in supplierInvoiceGroups" :key="group.companyId" class="supplier-group-card">
+
+						<!-- 供应商信息标题 -->
+						<div class="supplier-group-header">
+							<div class="supplier-info">
+								<i class="el-icon-office-building"></i>
+								<span class="supplier-name">{{ group.companyName }}</span>
+								<el-tag type="warning" size="small" style="margin-left: 10px;">
+									{{ group.invoices.length }} 条记录
+								</el-tag>
+							</div>
+							<div class="supplier-actions">
+								<el-button type="primary" size="small" @click="handleAddSupplierInvoice(group)">
+									<i class="el-icon-plus"></i>
+									新增开票
+								</el-button>
+							</div>
+						</div>
+
+						<!-- 该供应商的开票记录表格 -->
+						<div class="supplier-table-container">
+							<el-table :data="group.invoices" border stripe size="small" class="supplier-invoice-table"
+								:header-cell-style="{ background: '#f8f9fa', color: '#495057', fontWeight: 600 }">
+								<el-table-column prop="orderDate" label="日期" align="center" width="100">
+									<template #default>
+										<div class="date-cell">
+											<i class="el-icon-date"></i>
+											{{ currentOrderInfo && currentOrderInfo.orderDate ?
+												parseTime(currentOrderInfo.orderDate, '{y}-{m}-{d}') : '-' }}
+										</div>
+									</template>
+								</el-table-column>
+
+								<el-table-column prop="companyName" label="供应商名称" align="center" min-width="120">
+									<template #default="scope">
+										<div class="company-cell">
+											<i class="el-icon-office-building"></i>
+											{{ scope.row.companyName }}
+										</div>
+									</template>
+								</el-table-column>
+
+								<el-table-column label="需开票金额" align="center" width="130">
+									<template #default>
+										<div class="amount-cell need-amount">
+											<span class="currency-symbol">¥</span>
+											{{ Number(group.needInvoiceAmount).toLocaleString() }}
+										</div>
+									</template>
+								</el-table-column>
+
+								<el-table-column prop="invoiceDate" label="开票时间" align="center" width="200">
+									<template #default="scope">
+										<div class="datetime-cell">
+											<i class="el-icon-time"></i>
+											{{ scope.row.invoiceDate }}
+										</div>
+									</template>
+								</el-table-column>
+
+								<el-table-column prop="invoiceAmount" label="开票金额" align="center" width="130">
+									<template #default="scope">
+										<div class="amount-cell invoiced-amount">
+											<span class="currency-symbol">¥</span>
+											{{ Number(scope.row.invoiceAmount || 0).toLocaleString() }}
+										</div>
+									</template>
+								</el-table-column>
+
+								<el-table-column label="累计开票金额" align="center" width="140">
+									<template #default="scope">
+										<div class="amount-cell accumulated-amount">
+											<span class="currency-symbol">¥</span>
+											{{ Number(calculateSupplierAccumulatedInvoiceAmount(group.invoices,
+												scope.$index)).toLocaleString() }}
+										</div>
+									</template>
+								</el-table-column>
+							</el-table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</el-dialog>
 	</div>
 </template>
 
 <style scoped lang="scss">
+// 客户开票列表弹窗样式
+.invoice-list-dialog {
+	.invoice-dialog-content {
+		padding: 0;
+	}
+
+	.order-info-card {
+		margin-bottom: 20px;
+		border-radius: 8px;
+		border: 1px solid #e4e7ed;
+
+		.order-info-header {
+			display: flex;
+			align-items: center;
+			margin-bottom: 15px;
+			color: #409eff;
+
+			i {
+				font-size: 18px;
+				margin-right: 8px;
+			}
+
+			.order-title {
+				font-size: 16px;
+				font-weight: 600;
+			}
+		}
+
+		.order-info-content {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 20px;
+
+			.order-info-item {
+				display: flex;
+				align-items: center;
+				flex: 1;
+				min-width: 200px;
+
+				.info-label {
+					color: #606266;
+					font-weight: 500;
+					margin-right: 8px;
+					white-space: nowrap;
+				}
+
+				.info-value {
+					font-weight: 600;
+
+					&.order-id {
+						color: #409eff;
+					}
+
+					&.customer-name {
+						color: #67c23a;
+					}
+
+					&.total-amount {
+						color: #e6a23c;
+						font-size: 16px;
+					}
+				}
+			}
+		}
+	}
+
+	.action-bar {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 20px;
+
+		.action-left {
+			.el-tag {
+				font-size: 13px;
+
+				i {
+					margin-right: 5px;
+				}
+			}
+		}
+
+		.add-invoice-btn {
+			border-radius: 6px;
+			font-weight: 500;
+			box-shadow: 0 2px 4px rgba(64, 158, 255, 0.3);
+
+			&:hover {
+				box-shadow: 0 4px 8px rgba(64, 158, 255, 0.4);
+				transform: translateY(-1px);
+			}
+
+			i {
+				margin-right: 5px;
+			}
+		}
+	}
+
+	.invoice-table-container {
+		.invoice-table {
+			border-radius: 8px;
+			overflow: hidden;
+
+			.date-cell,
+			.datetime-cell,
+			.company-cell {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+
+				i {
+					margin-right: 6px;
+					color: #909399;
+				}
+			}
+
+			.amount-cell {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				font-weight: 600;
+
+				.currency-symbol {
+					margin-right: 2px;
+					color: #909399;
+				}
+
+				&.need-amount {
+					color: #e6a23c;
+				}
+
+				&.invoiced-amount {
+					color: #67c23a;
+				}
+
+				&.accumulated-amount {
+					color: #409eff;
+					font-size: 14px;
+				}
+			}
+		}
+
+		// 表格行样式
+		:deep(.invoice-row-completed) {
+			background-color: #f0f9ff !important;
+		}
+
+		:deep(.invoice-row-pending) {
+			background-color: #fffbf0 !important;
+		}
+	}
+
+	.empty-state {
+		text-align: center;
+		padding: 60px 20px;
+
+		.empty-content {
+			max-width: 300px;
+			margin: 0 auto;
+
+			.empty-icon {
+				font-size: 64px;
+				color: #c0c4cc;
+				margin-bottom: 20px;
+			}
+
+			.empty-title {
+				color: #303133;
+				font-size: 18px;
+				font-weight: 500;
+				margin: 0 0 10px 0;
+			}
+
+			.empty-description {
+				color: #909399;
+				font-size: 14px;
+				margin: 0 0 25px 0;
+				line-height: 1.5;
+			}
+
+			.empty-action-btn {
+				border-radius: 20px;
+				padding: 8px 20px;
+				font-size: 13px;
+				box-shadow: 0 2px 6px rgba(64, 158, 255, 0.3);
+
+				&:hover {
+					box-shadow: 0 4px 12px rgba(64, 158, 255, 0.4);
+					transform: translateY(-2px);
+				}
+
+				i {
+					margin-right: 5px;
+				}
+			}
+		}
+	}
+}
+
+// 供应商开票列表弹窗专属样式
+.supplier-invoice-dialog {
+	.supplier-groups-container {
+		.supplier-group-card {
+			margin-bottom: 25px;
+			border: 1px solid #e4e7ed;
+			border-radius: 8px;
+			overflow: hidden;
+			background: #fff;
+			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+			&:last-child {
+				margin-bottom: 0;
+			}
+
+			.supplier-group-header {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				padding: 15px 20px;
+				background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+				border-bottom: 1px solid #e4e7ed;
+
+				.supplier-info {
+					display: flex;
+					align-items: center;
+
+					i {
+						font-size: 18px;
+						color: #e6a23c;
+						margin-right: 8px;
+					}
+
+					.supplier-name {
+						font-size: 16px;
+						font-weight: 600;
+						color: #303133;
+					}
+				}
+
+				.supplier-actions {
+					.el-button {
+						border-radius: 6px;
+						font-size: 13px;
+						padding: 6px 12px;
+						box-shadow: 0 2px 4px rgba(230, 162, 60, 0.3);
+
+						&:hover {
+							box-shadow: 0 4px 8px rgba(230, 162, 60, 0.4);
+							transform: translateY(-1px);
+						}
+
+						i {
+							margin-right: 4px;
+						}
+					}
+				}
+			}
+
+			.supplier-table-container {
+				padding: 0;
+
+				.supplier-invoice-table {
+					border: none;
+					margin: 0;
+
+					:deep(.el-table__header) {
+						border-radius: 0;
+					}
+
+					.date-cell,
+					.datetime-cell,
+					.company-cell {
+						display: flex;
+						align-items: center;
+						justify-content: center;
+
+						i {
+							margin-right: 6px;
+							color: #909399;
+						}
+					}
+
+					.amount-cell {
+						display: flex;
+						align-items: center;
+						justify-content: center;
+						font-weight: 600;
+
+						.currency-symbol {
+							margin-right: 2px;
+							color: #909399;
+						}
+
+						&.need-amount {
+							color: #e6a23c;
+						}
+
+						&.invoiced-amount {
+							color: #67c23a;
+						}
+
+						&.accumulated-amount {
+							color: #409eff;
+							font-size: 14px;
+						}
+					}
+				}
+
+				.supplier-empty-state {
+					text-align: center;
+					padding: 30px 20px;
+					background: #fafafa;
+
+					.empty-content {
+						max-width: 250px;
+						margin: 0 auto;
+
+						.empty-icon {
+							font-size: 48px;
+							color: #d3d4d6;
+							margin-bottom: 15px;
+						}
+
+						.empty-title {
+							color: #606266;
+							font-size: 14px;
+							font-weight: 500;
+							margin: 0 0 8px 0;
+						}
+
+						.empty-description {
+							color: #909399;
+							font-size: 12px;
+							margin: 0 0 15px 0;
+							line-height: 1.4;
+						}
+
+						.empty-action-btn {
+							border-radius: 15px;
+							padding: 6px 15px;
+							font-size: 12px;
+							box-shadow: 0 2px 4px rgba(230, 162, 60, 0.3);
+
+							&:hover {
+								box-shadow: 0 4px 8px rgba(230, 162, 60, 0.4);
+								transform: translateY(-1px);
+							}
+
+							i {
+								margin-right: 4px;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
 // 供应商和仓库的容器
 .supplier-warehouse-container {
 	display: flex;
@@ -938,5 +1702,54 @@ export default {
 	font-weight: bold;
 	/* 字体加粗 */
 	margin-right: 8px;
+}
+
+// 紧凑型对话框样式
+::v-deep .compact-dialog {
+	.el-dialog__body {
+		padding: 15px;
+	}
+
+	.el-dialog__header {
+		padding: 15px 20px 10px;
+	}
+}
+
+// 紧凑型表格样式  
+::v-deep .compact-table {
+	.el-table__body-wrapper {
+		.el-table__row {
+			height: 40px;
+
+			td {
+				padding: 8px 0;
+				font-size: 13px;
+			}
+		}
+	}
+
+	.el-table__header-wrapper {
+		.el-table__header {
+			th {
+				padding: 8px 0;
+				font-size: 13px;
+				font-weight: 500;
+			}
+		}
+	}
+
+	.el-card {
+		margin-bottom: 15px;
+
+		.el-card__header {
+			padding: 12px 20px;
+			font-size: 14px;
+			font-weight: 500;
+		}
+
+		.el-card__body {
+			padding: 10px 20px 15px;
+		}
+	}
 }
 </style>
