@@ -151,7 +151,7 @@
 							</el-col>
 						</el-row>
 					</el-row>
-					<el-row>
+					<el-row v-if="useCar === '是'">
 						<el-table size="mini" :data="carsList" :row-class-name="rowCarsIndex"
 							@selection-change="handleCarsSelectionChange">
 							<el-table-column type="selection" width="90" align="center" />
