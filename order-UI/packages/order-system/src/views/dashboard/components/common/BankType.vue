@@ -952,7 +952,25 @@ export default {
 		submitAcceptanceForm() {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
-					this.form.billType = this.billType;
+					// **特殊业务规则处理：双承兑场景**
+					// 当支出账户类型和收入账户类型都是承兑时，billType 设置为 "收入"
+					// 注释：这是一个特殊情况，后端会根据此标识自动填充相关的承兑类型和处理逻辑
+					if (this.waitForBothSelection && this.bankAcceptanceBothSelected) {
+						const accountTypes = this.bankAcceptanceDualSelectionState;
+						if (accountTypes &&
+							accountTypes.source === BankAcceptanceType.ACCEPTANCE &&
+							accountTypes.target === BankAcceptanceType.ACCEPTANCE) {
+							// 双承兑特殊情况：设置为收入类型，后端会自动处理承兑转账逻辑
+							this.form.billType = '收入';
+							console.log('双承兑场景：billType已设置为收入，后端将自动处理承兑转账逻辑');
+						} else {
+							// 其他双选择场景：使用原有逻辑
+							this.form.billType = this.billType;
+						}
+					} else {
+						// 单选择场景：使用原有逻辑
+						this.form.billType = this.billType;
+					}
 
 					// 在内部转账场景下，确保收票事由为内部转账
 					if (this.isInternalTransfer) {
