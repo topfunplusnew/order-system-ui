@@ -12,7 +12,8 @@
 
 		<div class="button-container">
 			<!-- 修改按钮：当已填写承兑信息时显示 -->
-			<el-button v-if="showModifyButton" type="primary" size="small" @click="handleReopenDrawer">修改</el-button>
+			<el-button v-if="showModifyButton" type="primary" size="small"
+				@click="handleReopenDrawer">修改承兑信息</el-button>
 
 			<!-- 填写承兑信息按钮：当选择承兑类型但未填写信息时显示 -->
 			<el-button v-if="showFillButton" type="success" size="small"
