@@ -1406,7 +1406,7 @@ export default {
 		handleOffsetting(originalAttachmentIds, dataToAdd = null) {
 			const formData = dataToAdd || this.form;
 			formData.referenceTableName = TableName.CASH_RECORD;
-			formData.referenceTableId = -1;
+			formData.referenceTableId = 0;
 			addRecord(formData)
 				.then(() => {
 					// 只在成功时清空票据信息状态
@@ -1454,7 +1454,7 @@ export default {
 			formData.targetCompanyType = PUBLIC_DICT_TYPE.SELF_COMPANY;
 			// 填充转账类型表
 			formData.referenceTableName = CASH_TYPE.TRANSFER;
-			formData.referenceTableId = -1;
+			formData.referenceTableId = 0;
 			addRecord(formData)
 				.then(() => {
 					// 只在成功时清空票据信息状态和重置组件状态
