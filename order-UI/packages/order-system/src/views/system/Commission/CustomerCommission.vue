@@ -182,6 +182,44 @@
 				<el-button type="primary" @click="submitBatchFill" :loading="batchSubmitting">确认填写</el-button>
 			</div>
 		</el-dialog>
+
+		<!--    一键申请对话框-->
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false"
+			title="客户佣金一键申请" :visible.sync="onceApplyVisible" width="1100px">
+			<el-card class="box-card">
+				<div slot="header" class="clearfix">
+					<span>申请列表</span>
+					<div style="float: right">
+						<el-button size="small" type="primary" @click="handleApproveApply">统一填写申请</el-button>
+						<el-button size="small" type="success" @click="handleProcessApply">批量申请</el-button>
+					</div>
+				</div>
+
+				<el-table :data="localApplications" style="width: 100%" size="mini">
+					<el-table-column fixed prop="fundsDate" label="日期" width="150"
+						show-overflow-tooltip></el-table-column>
+					<el-table-column prop="payType" label="支付类型" width="150" show-overflow-tooltip></el-table-column>
+					<el-table-column prop="moneyAmount" label="金额" width="120" show-overflow-tooltip></el-table-column>
+					<el-table-column prop="otherBankNo" label="对方账号" width="300"
+						show-overflow-tooltip></el-table-column>
+					<el-table-column prop="companyName" label="对方公司" width="120"
+						show-overflow-tooltip></el-table-column>
+					<el-table-column prop="reason" label="付款原因" width="120" show-overflow-tooltip></el-table-column>
+					<el-table-column prop="comments" label="备注" width="120" show-overflow-tooltip></el-table-column>
+				</el-table>
+			</el-card>
+		</el-dialog>
+
+		<!--    申请信息填写对话框-->
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false"
+			:show-close="false" title="付款申请" :visible.sync="applyPaymentVisible" width="45%" append-to-body>
+			<keep-alive>
+				<ApplyPayment :money-input-disabled="false" :table-name="TableName.ORDERCOMMISION" :t-i-d="applyTid"
+					:need-money="applyNeedMoney" :need-info="applyNeedInfo"
+					@changeOpen="() => (applyPaymentVisible = false)" :is-multi="true"
+					@getApplyPayment="handleCommitApplyInfo" />
+			</keep-alive>
+		</el-dialog>
 	</div>
 </template>
 
@@ -193,10 +231,12 @@ import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 import CommissionsForm from '@/views/system/Commission/components/CommissionsForm.vue';
 import ApplyPayment from '@/views/dashboard/components/common/ApplyPayment.vue';
-import OncePaymentApply from '@/views/system/Commission/components/OncePaymentApply.vue';
 import { ExtraInfo, PaymentApply, SourceInfo } from '@/types/payment';
+import { addPaymentApply } from '@/api/system/paymentApply';
+import { mixin_checkfile } from '@/views/dashboard/mixins/checkfiles/mixin_checkfile';
 import _ from 'lodash';
 import PaymentFlag from '@/components/PaymentFlag';
+import { mapGetters } from 'vuex/dist/vuex.common.js';
 
 export default {
 	name: 'CUSTOMERCommission',
@@ -223,10 +263,11 @@ export default {
 					}
 				};
 			});
-		}
+		},
+		...mapGetters(['id', 'trueName'])
 	},
 	components: { ApplyPayment, DialogWrapper, PaymentFlag },
-	mixins: [mixin_printHTML, common_dialog],
+	mixins: [mixin_printHTML, common_dialog, mixin_checkfile],
 	data() {
 		return {
 			queryParams: {
@@ -307,6 +348,13 @@ export default {
 			tID: null,
 			needMoney: null,
 			applications: [],
+			// 一键申请相关数据
+			onceApplyVisible: false,
+			localApplications: [],
+			applyPaymentVisible: false,
+			applyTid: null,
+			applyNeedMoney: 0,
+			applyNeedInfo: {},
 			// 批量填写相关
 			batchFillVisible: false,
 			batchSubmitting: false,
@@ -346,6 +394,11 @@ export default {
 
 	methods: {
 		handleOnceApply() {
+			if (this.selections.length === 0) {
+				this.$message.warning('请先选择需要申请的记录');
+				return;
+			}
+
 			let extra = new ExtraInfo({ sourceInfos: [] });
 			this.selections.forEach(item => {
 				let s = new SourceInfo({
@@ -384,16 +437,9 @@ export default {
 			// 由于是批量申请，只需要一条申请记录
 			this.applications = [this.applications[0]];
 
-			// 打开弹窗
-			this.openDialog(
-				OncePaymentApply,
-				'申请列表',
-				'1100px',
-				{
-					applications: this.applications
-				},
-				false
-			);
+			// 深拷贝数据并显示申请列表对话框
+			this.localApplications = JSON.parse(JSON.stringify(this.applications));
+			this.onceApplyVisible = true;
 		},
 		// 刷新表格
 		refresh() {
@@ -667,6 +713,105 @@ export default {
 					console.error('批量填写佣金信息失败:', error);
 				} finally {
 					this.batchSubmitting = false;
+				}
+			});
+		},
+		// 一键申请相关方法
+		handleApproveApply() {
+			this.applyPaymentVisible = true;
+		},
+		// 处理申请信息提交
+		handleCommitApplyInfo(value) {
+			console.log(`付款申请审核信息`, value);
+			this.$nextTick(() => {
+				this.localApplications.forEach(item => {
+					Object.assign(item, value);
+				});
+				this.$message.success('申请信息已更新');
+			});
+		},
+		// 处理申请流程
+		handleProcessApply() {
+			if (this.localApplications.length === 0) {
+				this.$message.error('申请列表为空!');
+				return;
+			}
+
+			try {
+				// 处理payType数组转字符串
+				this.localApplications.forEach(item => {
+					if (Array.isArray(item.payType)) {
+						item.payType = item.payType.join('-');
+					}
+				});
+			} catch (err) {
+				this.$message.error('请先填写申请信息!');
+				return;
+			}
+
+			this.$antdconfirm({
+				title: '提示',
+				content: '确定批量申请吗？',
+				okText: '确定',
+				cancelText: '取消',
+				type: 'warning',
+				zIndex: 2600,
+				onOk: async () => {
+					try {
+						// 使用优化后的数据转换逻辑
+						const firstApplication = this.localApplications[0];
+						const currentTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
+						// 构建新的数据结构
+						const data = {
+							fundsDate: firstApplication.fundsDate || currentTime,
+							payType: firstApplication.payType || '',
+							moneyAmount: parseFloat(firstApplication.moneyAmount) || 0,
+							otherAccountsName: firstApplication.otherAcountsName || '', // 注意字段名变化
+							otherBankNo: firstApplication.otherBankNo || '',
+							otherBankName: firstApplication.otherBankName || '',
+							companyName: firstApplication.companyName || '',
+							companyId: firstApplication.companyId || null,
+							companyType: firstApplication.companyType || '',
+							reason: firstApplication.reason || '',
+							applyPerson: firstApplication.applyPerson || '',
+							applyPersonId: firstApplication.applyPersonID || null, // 注意字段名变化
+							comments: firstApplication.comments || '',
+							addTime: currentTime,
+							userId: this.id || '',
+							userName: this.trueName || '',
+							// 转换extraInfo为tableReferences
+							tableReferences: firstApplication.extraInfo && firstApplication.extraInfo.sourceInfos
+								? firstApplication.extraInfo.sourceInfos.map(source => ({
+									refTableName: source.tableName,
+									refTableId: source.tableId,
+									amount: parseFloat(firstApplication.moneyAmount) || 0
+								}))
+								: []
+						};
+
+						// 数据验证
+						if (!data.fundsDate || !data.moneyAmount || data.moneyAmount <= 0) {
+							this.$message.error('请完善申请信息！');
+							return;
+						}
+
+						if (data.tableReferences.length === 0) {
+							this.$message.error('申请数据异常，请重试！');
+							return;
+						}
+
+						await addPaymentApply(data);
+						this.$message.success('一键申请成功');
+						this.onceApplyVisible = false;
+						this.getList(); // 刷新列表
+					} catch (error) {
+						console.error('申请失败:', error);
+						this.$message.error('申请失败，请重试');
+					}
+				},
+				onCancel: () => {
+					this.$message.info('已取消批量申请');
 				}
 			});
 		}
