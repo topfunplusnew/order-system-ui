@@ -1051,6 +1051,17 @@ export default {
 				this.$refs.attachmentUpload.clearUploadedFiles();
 			}
 			this.clearAcceptanceFillStatus();
+
+			// **用户主动取消时，强制清空承兑信息（绕过错误保护机制）**
+			// 这里使用手动清空方法，因为用户主动取消意味着放弃当前操作
+			if (this.$refs.otherSelectBankType && this.$refs.otherSelectBankType.forceClearAcceptanceInfo) {
+				this.$refs.otherSelectBankType.forceClearAcceptanceInfo();
+			}
+			if (this.$refs.selfSelectBankType && this.$refs.selfSelectBankType.forceClearAcceptanceInfo) {
+				this.$refs.selfSelectBankType.forceClearAcceptanceInfo();
+			}
+
+			// **发送 changeFlag 事件进行最终清理**
 			this.$bus.$emit('changeFlag', false);
 
 			// **优化的状态重置：使用组件的重置方法**
@@ -1348,12 +1359,12 @@ export default {
 						return;
 					}
 					this.updateRecordInfo(originalAttachmentIds, submitData);
-					this.$bus.$emit('changeFlag', false);
+					// 只在成功时发送 changeFlag 事件，错误时在各自的 catch 块中处理
 				} else {
 					// 新增时，移除修改原因字段
 					delete submitData.editReason;
 					this.addRecordInfo(originalAttachmentIds, submitData);
-					this.$bus.$emit('changeFlag', false);
+					// 只在成功时发送 changeFlag 事件，错误时在各自的 catch 块中处理
 				}
 			});
 		},
@@ -1365,6 +1376,8 @@ export default {
 				.then(() => {
 					// 清理修改原因的sessionStorage
 					sessionStorage.removeItem('editReason_record');
+					// 只在成功时清空票据信息状态
+					this.$bus.$emit('changeFlag', false);
 					this.onSuccess('修改成功');
 				})
 				.catch(error => {
@@ -1374,6 +1387,7 @@ export default {
 					originalAttachmentIds.forEach(id => {
 						this.$store.commit('ADD_ATTACHMENT_ID', id);
 					});
+					// **关键修复：错误时不清空票据信息，保留用户已填写的承兑信息**
 					this.$message.error('修改失败，请重试');
 				});
 		},
@@ -1395,6 +1409,8 @@ export default {
 			formData.referenceTableId = -1;
 			addRecord(formData)
 				.then(() => {
+					// 只在成功时清空票据信息状态
+					this.$bus.$emit('changeFlag', false);
 					this.onSuccess('新增成功', true);
 				})
 				.catch(error => {
@@ -1404,6 +1420,7 @@ export default {
 					originalAttachmentIds.forEach(id => {
 						this.$store.commit('ADD_ATTACHMENT_ID', id);
 					});
+					// **关键修复：错误时不清空票据信息，保留用户已填写的承兑信息**
 					this.$message.error('新增失败，请重试');
 				});
 		},
@@ -1440,6 +1457,8 @@ export default {
 			formData.referenceTableId = -1;
 			addRecord(formData)
 				.then(() => {
+					// 只在成功时清空票据信息状态和重置组件状态
+					this.$bus.$emit('changeFlag', false);
 					this.onSuccess('新增成功', true, true);
 					// 清除承兑信息状态
 					this.clearAcceptanceFillStatus();
@@ -1453,6 +1472,8 @@ export default {
 					originalAttachmentIds.forEach(id => {
 						this.$store.commit('ADD_ATTACHMENT_ID', id);
 					});
+					// **关键修复：错误时不清空票据信息，保留用户已填写的承兑信息**
+					// 不调用 clearAcceptanceFillStatus() 和组件状态重置
 					this.$message.error('新增失败，请重试');
 				});
 		},

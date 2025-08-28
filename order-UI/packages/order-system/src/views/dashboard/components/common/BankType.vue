@@ -450,6 +450,11 @@ export default {
 			type: String,
 			default: '', // 'source' 或 'target'
 			validator: value => ['', 'source', 'target'].includes(value)
+		},
+		// 是否在出错时保护承兑信息不被清空（防止用户数据丢失）
+		protectOnError: {
+			type: Boolean,
+			default: true
 		}
 	},
 	data() {
@@ -619,14 +624,38 @@ export default {
 		}
 
 		// 传递过来的 只可能是数字 或者是false 如果是数字 就要拿取对应的承兑信息
+		// 增加状态保护机制：在启用错误保护模式时，避免意外清空用户已填写的承兑信息
 		this.$bus.$on('changeFlag', value => {
 			if (this.baned) {
 				this.flag = false;
 				return;
 			}
 			if (!value) {
+				// **关键改进：错误保护机制**
+				// 当 protectOnError 为 true 且当前有承兑信息时，询问用户是否清空
+				if (this.protectOnError && this.bankacceptanceInfo && Object.keys(this.bankacceptanceInfo).length > 0) {
+					// 检查承兑信息是否有有效内容（不仅仅是空对象）
+					const hasValidContent = this.bankacceptanceInfo.billNo ||
+						this.bankacceptanceInfo.billAmount ||
+						this.bankacceptanceInfo.billDate ||
+						this.bankacceptanceInfo.dueDate;
+
+					if (hasValidContent) {
+						console.log('BankType: 检测到已填写的承兑信息，启用错误保护模式');
+						// 在错误保护模式下，给用户一个友好的提示
+						this.$message({
+							message: '检测到您已填写的票据信息，已为您保留以防数据丢失',
+							type: 'info',
+							duration: 3000
+						});
+						// 在错误保护模式下，不自动清空承兑信息
+						// 这样可以避免因为网络错误或后端错误导致用户数据丢失
+						return;
+					}
+				}
+
 				this.flag = value;
-				// 清除填写状态
+				// 只有在非保护模式下或没有有效承兑信息时才清除状态
 				this.clearAcceptanceFillStatus();
 				return;
 			}
@@ -731,6 +760,16 @@ export default {
 			if (this.waitForBothSelection) {
 				this.resetDualSelection(this.formId);
 			}
+		},
+
+		// **新增：手动强制清空承兑信息的方法**
+		// 用于在确实需要清空承兑信息时调用，绕过错误保护机制
+		forceClearAcceptanceInfo() {
+			this.flag = false;
+			this.bankacceptanceInfo = {};
+			this.clearAcceptanceFillStatus();
+			this.resetAcceptanceForm();
+			console.log('BankType: 手动强制清空承兑信息');
 		},
 
 		// **新增：完整的组件状态重置方法**
