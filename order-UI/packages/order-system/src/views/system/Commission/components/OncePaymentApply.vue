@@ -20,11 +20,11 @@
 		</el-card>
 
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false"
-			:show-close="false" title="付款申请" :visible.sync="applyDialogVisible" width="45%" append-to-body>
+			:show-close="false" title="付款申请" :visible.sync="open" width="45%" append-to-body>
 			<keep-alive>
 				<ApplyPayment :money-input-disabled="false" :table-name="TableName.ORDERCOMMISION" :t-i-d="tid"
-					:need-money="needMoney" :need-info="needInfo" @changeOpen="() => (applyDialogVisible = false)"
-					:is-multi="true" @getApplyPayment="handleCommitApplyInfo" />
+					:need-money="needMoney" :need-info="needInfo" @changeOpen="() => (open = false)" :is-multi="true"
+					@getApplyPayment="handleCommitApplyInfo" />
 			</keep-alive>
 		</el-dialog>
 	</div>
@@ -69,7 +69,7 @@ export default {
 	components: { ApplyPayment, DynamicField },
 	data() {
 		return {
-			applyDialogVisible: false,
+			open: false,
 			tid: null,
 			needMoney: 0,
 			needInfo: {},
@@ -88,7 +88,7 @@ export default {
 	},
 	methods: {
 		handleApprove() {
-			this.applyDialogVisible = true;
+			this.open = true;
 		},
 		// 这里需要把审核组件的信息提交到列表里
 		handleCommitApplyInfo(value) {
