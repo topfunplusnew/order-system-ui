@@ -1052,14 +1052,24 @@ export default {
 			}
 			this.clearAcceptanceFillStatus();
 			this.$bus.$emit('changeFlag', false);
-			this.$refs.otherSelectBankType.localSelectType = null;
-			this.$refs.selfSelectBankType.localSelectType = null;
-			// 清除双选择状态
-			if (this.cashType === this.CASH_TYPE.TRANSFER) {
-				if (this.$refs.selfSelectBankType && this.$refs.selfSelectBankType.clearBothSelectionState) {
-					this.$refs.selfSelectBankType.clearBothSelectionState();
-				}
+
+			// **优化的状态重置：使用组件的重置方法**
+			if (this.$refs.otherSelectBankType && this.$refs.otherSelectBankType.resetComponentState) {
+				this.$refs.otherSelectBankType.resetComponentState();
 			}
+			if (this.$refs.selfSelectBankType && this.$refs.selfSelectBankType.resetComponentState) {
+				this.$refs.selfSelectBankType.resetComponentState();
+			}
+
+			// **Vuex全局状态清理：确保双选择状态彻底清除**
+			if (this.cashType === this.CASH_TYPE.TRANSFER) {
+				// 使用唯一的formId确保状态隔离
+				const formId = `internal-transfer-${this.form.id || Date.now()}`;
+				this.$store.dispatch('bankAcceptance/resetDualSelection', formId);
+			}
+
+			// **会话存储清理：防止跨弹窗状态污染**
+			sessionStorage.removeItem('bankAcceptanceFilled');
 		},
 		// 表单重置
 		reset() {

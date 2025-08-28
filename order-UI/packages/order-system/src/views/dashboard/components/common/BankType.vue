@@ -219,14 +219,22 @@ export default {
 		// **核心业务逻辑重构**
 		// 控制填写承兑信息按钮的显示
 		showFillButton() {
-			// 边界条件检查
 			if (this.baned || this.flag) {
+				return false;
+			}
+
+			// **边界保护：确保组件状态同步**
+			if (!this.localSelectType) {
+				// 如果没有选择类型，无论什么模式都不显示按钮
 				return false;
 			}
 
 			if (this.waitForBothSelection) {
 				// 双选择模式：需要Vuex状态管理
-				return this.bankAcceptanceShouldShowDrawer;
+				// 额外检查：避免Vuex状态与本地状态不同步
+				return this.bankAcceptanceShouldShowDrawer &&
+					(this.localSelectType === BankAcceptanceType.ACCEPTANCE ||
+						this.bankAcceptanceHasSelection);
 			} else {
 				// 单选择模式：直接检查当前选择
 				return this.localSelectType === BankAcceptanceType.ACCEPTANCE;
@@ -251,139 +259,114 @@ export default {
 		// 获取事由类型标签（背书事由 或 收票事由）
 		getEndorserTypeLabel() {
 			if (this.isInternalTransfer && this.waitForBothSelection && this.componentRole) {
-				// 内部转账场景下根据账户类型组合确定
-				const accountTypes = this.bankAcceptanceDualSelectionState;
-				if (accountTypes) {
-					const currentType = this.localSelectType;
-					const otherRole = this.componentRole === 'source' ? 'target' : 'source';
-					const otherType = accountTypes[otherRole];
-
-					// 根据业务逻辑判断
-					if (currentType === BankAcceptanceType.BANK_CASH && otherType === BankAcceptanceType.ACCEPTANCE) {
-						// A账户现金到A账户承兑 -> 收票
-						return '收票';
-					} else if (currentType === BankAcceptanceType.ACCEPTANCE && otherType === BankAcceptanceType.BANK_CASH) {
-						// B账户承兑到B账户现金 -> 背书
-						return '背书';
-					} else if (currentType === BankAcceptanceType.ACCEPTANCE && otherType === BankAcceptanceType.ACCEPTANCE) {
-						// C账户承兑到D账户承兑
-						return this.componentRole === 'source' ? '背书' : '收票';
-					}
+				// 内部转账场景：根据新的业务规则判断
+				if (this.isEndorserScenario) {
+					// 支出方银行活期存款 -> 收入方承兑：背书事由
+					return '背书';
+				} else {
+					// 其他所有情况：收票事由
+					return '收票';
 				}
-				// 默认根据角色
-				return this.componentRole === 'source' ? '背书' : '收票';
 			}
 			// 原有逻辑
 			return this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT ? '背书' : '收票';
 		},
+
 		// 获取动作类型（payment 或 receive）
 		getEndorserActionType() {
 			if (this.isInternalTransfer && this.waitForBothSelection && this.componentRole) {
-				// 内部转账场景下根据账户类型组合确定
-				const accountTypes = this.bankAcceptanceDualSelectionState;
-				if (accountTypes) {
-					const currentType = this.localSelectType;
-					const otherRole = this.componentRole === 'source' ? 'target' : 'source';
-					const otherType = accountTypes[otherRole];
-
-					// 根据业务逻辑判断
-					if (currentType === BankAcceptanceType.BANK_CASH && otherType === BankAcceptanceType.ACCEPTANCE) {
-						// A账户现金到A账户承兑 -> 收款
-						return 'receive';
-					} else if (currentType === BankAcceptanceType.ACCEPTANCE && otherType === BankAcceptanceType.BANK_CASH) {
-						// B账户承兑到B账户现金 -> 付款
-						return 'payment';
-					} else if (currentType === BankAcceptanceType.ACCEPTANCE && otherType === BankAcceptanceType.ACCEPTANCE) {
-						// C账户承兑到D账户承兑
-						return this.componentRole === 'source' ? 'payment' : 'receive';
-					}
+				// 内部转账场景：根据新的业务规则判断
+				if (this.isEndorserScenario) {
+					// 支出方银行活期存款 -> 收入方承兑：收款动作
+					return 'receive';
+				} else {
+					// 其他所有情况：付款动作
+					return 'payment';
 				}
-				// 默认根据角色
-				return this.componentRole === 'source' ? 'payment' : 'receive';
 			}
 			// 原有逻辑
 			return this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT ? 'payment' : 'receive';
 		},
+		// **核心业务逻辑抽象：判断是否为背书人场景**
+		// 时间复杂度：O(1) - 常数时间访问
+		// 空间复杂度：O(1) - 无额外空间消耗
+		isEndorserScenario() {
+			// **边界条件1：非内部转账双选择场景**
+			if (!this.isInternalTransfer || !this.waitForBothSelection || !this.componentRole) {
+				// 使用原有逻辑作为fallback
+				return this.billType !== BankAcceptanceType.PAY_TYPE.PAYMENT;
+			}
+
+			// **边界条件2：Vuex状态未初始化或无效**
+			const accountTypes = this.bankAcceptanceDualSelectionState;
+			if (!accountTypes || typeof accountTypes !== 'object') {
+				console.warn('BankType: Vuex状态未初始化，使用默认逻辑');
+				return false;
+			}
+
+			// **边界条件3：双方账户类型未完全选择**
+			if (!accountTypes.source || !accountTypes.target) {
+				// 未完全选择时，不展示任何背书相关信息，避免误导用户
+				return false;
+			}
+
+			// **边界条件4：账户类型值有效性检查**
+			const validAccountTypes = [BankAcceptanceType.BANK_CASH, BankAcceptanceType.ACCEPTANCE];
+			if (!validAccountTypes.includes(accountTypes.source) ||
+				!validAccountTypes.includes(accountTypes.target)) {
+				console.error('BankType: 无效的账户类型', accountTypes);
+				return false;
+			}
+
+			// **核心业务逻辑：只有支出方选择银行活期存款，收入方选择承兑时，才是背书人场景**
+			const isSourceBankCashAndTargetAcceptance =
+				accountTypes.source === BankAcceptanceType.BANK_CASH &&
+				accountTypes.target === BankAcceptanceType.ACCEPTANCE;
+
+			// **调试信息输出（开发环境）**
+			if (process.env.NODE_ENV === 'development') {
+				console.log('BankType: 背书人场景判断', {
+					accountTypes,
+					isEndorserScenario: isSourceBankCashAndTargetAcceptance,
+					componentRole: this.componentRole
+				});
+			}
+
+			return isSourceBankCashAndTargetAcceptance;
+		},
+
 		// 获取背书人类型标签（被背书人类型 或 背书人类型）
 		getEndorserPersonTypeLabel() {
-			if (this.isInternalTransfer && this.waitForBothSelection && this.componentRole) {
-				// 内部转账场景下根据账户类型组合确定
-				const accountTypes = this.bankAcceptanceDualSelectionState;
-				if (accountTypes) {
-					const currentType = this.localSelectType;
-					const otherRole = this.componentRole === 'source' ? 'target' : 'source';
-					const otherType = accountTypes[otherRole];
-
-					// 根据业务逻辑判断
-					if (currentType === BankAcceptanceType.BANK_CASH && otherType === BankAcceptanceType.ACCEPTANCE) {
-						// A账户现金到A账户承兑 -> 背书人类型
-						return '背书人类型';
-					} else if (currentType === BankAcceptanceType.ACCEPTANCE && otherType === BankAcceptanceType.BANK_CASH) {
-						// B账户承兑到B账户现金 -> 被背书人类型
-						return '被背书人类型';
-					} else if (currentType === BankAcceptanceType.ACCEPTANCE && otherType === BankAcceptanceType.ACCEPTANCE) {
-						// C账户承兑到D账户承兑
-						return this.componentRole === 'source' ? '被背书人类型' : '背书人类型';
-					}
-				}
-				// 默认根据角色
-				return this.componentRole === 'source' ? '被背书人类型' : '背书人类型';
+			if (this.isEndorserScenario) {
+				// 背书人场景
+				return '背书人类型';
+			} else {
+				// 被背书人场景（包含所有其他情况）
+				return '被背书人类型';
 			}
-			// 原有逻辑
-			return this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT ? '被背书人类型' : '背书人类型';
 		},
+
 		// 获取背书人标签（被背书人 或 背书人）
 		getEndorserPersonLabel() {
-			if (this.isInternalTransfer && this.waitForBothSelection && this.componentRole) {
-				// 内部转账场景下根据账户类型组合确定
-				const accountTypes = this.bankAcceptanceDualSelectionState;
-				if (accountTypes) {
-					const currentType = this.localSelectType;
-					const otherRole = this.componentRole === 'source' ? 'target' : 'source';
-					const otherType = accountTypes[otherRole];
-
-					// 根据业务逻辑判断
-					if (currentType === BankAcceptanceType.BANK_CASH && otherType === BankAcceptanceType.ACCEPTANCE) {
-						// A账户现金到A账户承兑 -> 背书人
-						return '背书人';
-					} else if (currentType === BankAcceptanceType.ACCEPTANCE && otherType === BankAcceptanceType.BANK_CASH) {
-						// B账户承兑到B账户现金 -> 被背书人
-						return '被背书人';
-					} else if (currentType === BankAcceptanceType.ACCEPTANCE && otherType === BankAcceptanceType.ACCEPTANCE) {
-						// C账户承兑到D账户承兑
-						return this.componentRole === 'source' ? '被背书人' : '背书人';
-					}
-				}
-				// 默认根据角色
-				return this.componentRole === 'source' ? '被背书人' : '背书人';
+			if (this.isEndorserScenario) {
+				// 背书人场景
+				return '背书人';
+			} else {
+				// 被背书人场景（包含所有其他情况）
+				return '被背书人';
 			}
-			// 原有逻辑
-			return this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT ? '被背书人' : '背书人';
 		},
 		// 获取金额方向标签（支出 或 收入）
 		getAmountDirectionLabel() {
 			if (this.isInternalTransfer && this.waitForBothSelection && this.componentRole) {
-				// 内部转账场景下根据账户类型组合确定
-				const accountTypes = this.bankAcceptanceDualSelectionState;
-				if (accountTypes) {
-					const currentType = this.localSelectType;
-					const otherRole = this.componentRole === 'source' ? 'target' : 'source';
-					const otherType = accountTypes[otherRole];
-
-					// 根据业务逻辑判断
-					if (currentType === BankAcceptanceType.BANK_CASH && otherType === BankAcceptanceType.ACCEPTANCE) {
-						// A账户现金到A账户承兑 -> 收入
-						return '收入';
-					} else if (currentType === BankAcceptanceType.ACCEPTANCE && otherType === BankAcceptanceType.BANK_CASH) {
-						// B账户承兑到B账户现金 -> 支出
-						return '支出';
-					} else if (currentType === BankAcceptanceType.ACCEPTANCE && otherType === BankAcceptanceType.ACCEPTANCE) {
-						// C账户承兑到D账户承兑
-						return this.componentRole === 'source' ? '支出' : '收入';
-					}
+				// 内部转账场景：根据新的业务规则判断
+				if (this.isEndorserScenario) {
+					// 支出方银行活期存款 -> 收入方承兑：收入
+					return '收入';
+				} else {
+					// 其他所有情况：支出
+					return '支出';
 				}
-				// 默认根据角色
-				return this.componentRole === 'source' ? '支出' : '收入';
 			}
 			// 原有逻辑
 			return this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT ? '支出' : '收入';
@@ -747,6 +730,34 @@ export default {
 			if (this.waitForBothSelection) {
 				this.resetDualSelection(this.formId);
 			}
+		},
+
+		// **新增：完整的组件状态重置方法**
+		resetComponentState() {
+			// 重置本地状态
+			this.localSelectType = null;
+			this.flag = false;
+			this.bankacceptanceInfo = {};
+			this.drawer = false;
+
+			// 重置表单数据
+			this.resetAcceptanceForm();
+
+			// 清除会话存储
+			this.clearAcceptanceFillStatus();
+
+			// 如果是双选择模式，清除对应的角色状态
+			if (this.waitForBothSelection && this.componentRole) {
+				this.clearRoleSelection({
+					role: this.componentRole,
+					formId: this.formId
+				});
+			}
+
+			console.log('BankType组件状态已完全重置', {
+				componentRole: this.componentRole,
+				formId: this.formId
+			});
 		},
 		// 修改承兑信息的处理方法
 		handleReopenDrawer() {

@@ -222,7 +222,7 @@
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false"
 			:show-close="false" title="收回资金操作" :visible.sync="giveRecoverMoneyShow" width="40%" append-to-body>
 			<el-row>
-				<el-form :model="recoverMoneyEntity" label-width="120">
+				<el-form :model="recoverMoneyEntity" :rules="recoverRules" ref="recoverForm" label-width="120">
 					<el-form-item label="收回账户" prop="acountsName">
 						<el-row>
 							<el-col :span="10">
@@ -395,7 +395,17 @@ export default {
 				moneyAmount: [
 					{
 						required: true,
-						message: '保证金金额不能为空',
+						message: '押金金额不能为空',
+						trigger: 'blur'
+					},
+					{
+						validator: (rule, value, callback) => {
+							if (!/^\d+(\.\d{1,2})?$/.test(value)) {
+								callback(new Error('押金金额只能为正数且小数点后最多两位'));
+							} else {
+								callback();
+							}
+						},
 						trigger: 'blur'
 					}
 				],
@@ -542,6 +552,26 @@ export default {
 					value: '其他'
 				}
 			],
+			// 收回资金校验规则
+			recoverRules: {
+				moneyAmount: [
+					{
+						required: true,
+						message: '收回金额不能为空',
+						trigger: 'blur'
+					},
+					{
+						validator: (rule, value, callback) => {
+							if (!/^\d+(\.\d{1,2})?$/.test(value)) {
+								callback(new Error('收回金额只能为正数且小数点后最多两位'));
+							} else {
+								callback();
+							}
+						},
+						trigger: 'blur'
+					}
+				]
+			},
 			// 收回资金弹窗
 			giveRecoverMoneyShow: false,
 			// 借出款收回信息实体
