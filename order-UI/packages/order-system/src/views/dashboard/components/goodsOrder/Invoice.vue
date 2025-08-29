@@ -1,9 +1,11 @@
 <template>
 	<div>
 		<el-row>
-			<el-form :model="form" label-width="110px" :rules="CheckRules.updateOrderItemVisibleTitleRules">
+			<el-form ref="invoiceForm" :model="form" label-width="110px"
+				:rules="CheckRules.updateOrderItemVisibleTitleRules">
 				<el-form-item label="开票日期" prop="invoiceDate">
-					<el-date-picker v-model="form.invoiceDate" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss" />
+					<el-date-picker v-model="form.invoiceDate" type="datetime" placeholder="选择日期"
+						value-format="yyyy-MM-dd HH:mm:ss" />
 				</el-form-item>
 				<el-form-item label="我方开票实体" prop="invoiceObject">
 					<el-input v-model="form.invoiceObject" placeholder="请输入我方开票实体" />
@@ -19,15 +21,12 @@
 						<el-col :span="2">
 							<SearchOption
 								:limit-info="form.domain === 1 ? { companyType: '客户' } : { companyType: '供应商' }"
-								:get-data="listCompany"
-								query-info="companyName"
-								query-label="公司名称"
-								:query-name="queryCompanyName"
-								@update:queryName="handleUpdateCompanyName"
-								@commitBack="handleCommitBackCompany"
-							>
+								:get-data="listCompany" query-info="companyName" query-label="公司名称"
+								:query-name="queryCompanyName" @update:queryName="handleUpdateCompanyName"
+								@commitBack="handleCommitBackCompany">
 								<template #table-columns>
-									<el-table-column :label="form.domain === 1 ? '客户' : '供应商'" align="center" prop="relationName">
+									<el-table-column :label="form.domain === 1 ? '客户' : '供应商'" align="center"
+										prop="relationName">
 										<el-table-column label="老板姓名" align="center" prop="leader" />
 										<el-table-column label="老板电话" align="center" prop="leaderTel" />
 										<el-table-column label="区域" align="center" prop="region" />
@@ -42,16 +41,6 @@
 				<el-form-item label="票据单位名称" prop="invoiceCompanyName">
 					<el-input v-model="form.invoiceCompanyName" placeholder="请输入票据单位名称" />
 				</el-form-item>
-				<!-- <el-form-item label="票点" prop="ticketPoint">
-					<el-input v-model="form.ticketPoint" placeholder="请输入票点" />
-				</el-form-item> -->
-				<!-- <el-form-item label="票点金额" prop="ticketPointAmount">
-					<el-input
-						v-model="form.ticketPointAmount"
-						placeholder="请输入票点金额"
-						disabled
-					/>
-				</el-form-item> -->
 				<el-form-item label="备注" prop="comments">
 					<el-input v-model="form.comments" placeholder="请输入备注" />
 				</el-form-item>
@@ -209,77 +198,98 @@ export default {
 		},
 		// 作为表单的子元素必须要重写该方法
 		handleProcess(that) {
-			// 去除参数
-			this.form = excludeParams(this.form, this.$exclude);
-			let total_out = 0,
-				total_in = 0;
-
+			// 先进行表单验证
 			return new Promise((resolve, reject) => {
-				// 客户开票 domain = 1
-				if (this.invoiceInfo.domain === 1) {
-					const query = {
-						id: this.invoiceInfo.isOrderTax,
-						companyType: PUBLIC_DICT_TYPE.CUSTOMER
-					};
-					// 先检查一下可不可以开票 即检查是否超过钱
-					checkOrderAllinvoice(query).then(res => {
-						if (!res.data) {
-							this.$message.error('检查开票时发现暂无数据');
-							return;
-						}
-						total_out = res.data.totalAmount || 0;
-						if (Number(this.form.invoiceAmount) + total_out > this.maxInvent) {
-							this.$message.error('累计开票金额超过总货款，请修改开票金额！');
-							this.resetMoney();
-							return;
-						}
-						// 组装开票实体
-						const body = {
-							...this.form,
-							...this.invoiceInfo
+				this.$refs.invoiceForm.validate((valid) => {
+					if (!valid) {
+						this.$message.error('请完善表单信息');
+						reject('表单验证失败');
+						return;
+					}
+
+					// 去除参数
+					this.form = excludeParams(this.form, this.$exclude);
+					let total_out = 0,
+						total_in = 0;
+
+					// 客户开票 domain = 1
+					if (this.invoiceInfo.domain === 1) {
+						const query = {
+							id: this.invoiceInfo.isOrderTax,
+							companyType: PUBLIC_DICT_TYPE.CUSTOMER
 						};
-						// 添加发票卖出
-						addInvoiceOut(body).then(() => {
-							this.resetOpenTitleInfo();
-							that.dialogVisible = false;
-							this.$message.success('客户开票成功~');
-							resolve();
+						// 先检查一下可不可以开票 即检查是否超过钱
+						checkOrderAllinvoice(query).then(res => {
+							if (!res.data) {
+								this.$message.error('检查开票时发现暂无数据');
+								reject('检查开票失败');
+								return;
+							}
+							total_out = res.data.totalAmount || 0;
+							if (Number(this.form.invoiceAmount) + total_out > this.maxInvent) {
+								this.$message.error('累计开票金额超过总货款，请修改开票金额！');
+								this.resetMoney();
+								reject('开票金额超限');
+								return;
+							}
+							// 组装开票实体
+							const body = {
+								...this.form,
+								...this.invoiceInfo
+							};
+							// 添加发票卖出
+							addInvoiceOut(body).then(() => {
+								this.resetOpenTitleInfo();
+								that.dialogVisible = false;
+								this.$message.success('客户开票成功~');
+								resolve();
+							}).catch((error) => {
+								reject(error);
+							});
+						}).catch((error) => {
+							reject(error);
 						});
-					});
-					// 供应商开票 domain = 2
-				} else {
-					const query = {
-						id: this.invoiceInfo.isOrderTax,
-						companyType: PUBLIC_DICT_TYPE.SUPPLIER
-					};
-					checkOrderAllinvoice(query).then(res => {
-						if (!res.data) {
-							this.$message.error('检查开票时发现暂无数据');
-							return;
-						}
-						total_in = res.data.totalAmount || 0;
-						if (Number(this.form.invoiceAmount) + total_in > this.maxInvent) {
-							this.$message.error('累计开票金额超过出厂货款，请修改开票金额！');
-							this.resetMoney();
-							return;
-						}
-						const body = {
-							...this.form,
-							...this.invoiceInfo
+						// 供应商开票 domain = 2
+					} else {
+						const query = {
+							id: this.invoiceInfo.isOrderTax,
+							companyType: PUBLIC_DICT_TYPE.SUPPLIER
 						};
-						// 添加发票买入
-						addInvoiceIn(body).then(() => {
-							this.resetOpenTitleInfo();
-							that.dialogVisible = false;
-							this.$message.success('供应商开票成功~');
-							resolve();
+						checkOrderAllinvoice(query).then(res => {
+							if (!res.data) {
+								this.$message.error('检查开票时发现暂无数据');
+								reject('检查开票失败');
+								return;
+							}
+							total_in = res.data.totalAmount || 0;
+							if (Number(this.form.invoiceAmount) + total_in > this.maxInvent) {
+								this.$message.error('累计开票金额超过出厂货款，请修改开票金额！');
+								this.resetMoney();
+								reject('开票金额超限');
+								return;
+							}
+							const body = {
+								...this.form,
+								...this.invoiceInfo
+							};
+							// 添加发票买入
+							addInvoiceIn(body).then(() => {
+								this.resetOpenTitleInfo();
+								that.dialogVisible = false;
+								this.$message.success('供应商开票成功~');
+								resolve();
+							}).catch((error) => {
+								reject(error);
+							});
+						}).catch((error) => {
+							reject(error);
 						});
-					});
-				}
+					}
+				});
 			});
 		},
 		// 重写关闭逻辑
-		handleReject() {},
+		handleReject() { },
 		resetMoney() {
 			this.form.invoiceAmount = 0;
 			this.form.ticketPoint = 0;

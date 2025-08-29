@@ -1024,7 +1024,7 @@ export default {
 						:header-cell-style="{ background: '#f8f9fa', color: '#495057', fontWeight: 600 }"
 						:row-class-name="getInvoiceRowClassName">
 
-						<el-table-column prop="orderDate" label="日期" align="center" width="100">
+						<el-table-column prop="orderDate" label="日期" align="center" width="170">
 							<template #default>
 								<div class="date-cell">
 									<i class="el-icon-date"></i>
@@ -1133,7 +1133,7 @@ export default {
 						<div class="supplier-table-container">
 							<el-table :data="group.invoices" border stripe size="small" class="supplier-invoice-table"
 								:header-cell-style="{ background: '#f8f9fa', color: '#495057', fontWeight: 600 }">
-								<el-table-column prop="orderDate" label="日期" align="center" width="100">
+								<el-table-column prop="orderDate" label="日期" align="center" width="170">
 									<template #default>
 										<div class="date-cell">
 											<i class="el-icon-date"></i>
