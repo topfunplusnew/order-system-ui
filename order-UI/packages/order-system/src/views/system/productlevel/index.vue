@@ -2,10 +2,12 @@
 	<div class="app-container">
 		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
 			<el-form-item label="分类名称" prop="categoryName">
-				<el-input v-model="queryParams.categoryName" placeholder="请输入分类名称" clearable @input="handleInputTrim($event, 'queryParams', 'categoryName')" />
+				<el-input v-model="queryParams.categoryName" placeholder="请输入分类名称" clearable
+					@input="handleInputTrim($event, 'queryParams', 'categoryName')" />
 			</el-form-item>
 			<el-form-item label="级别名称" prop="levelName">
-				<el-input v-model="queryParams.levelName" placeholder="请输入级别名称" clearable @input="handleInputTrim($event, 'queryParams', 'levelName')" />
+				<el-input v-model="queryParams.levelName" placeholder="请输入级别名称" clearable
+					@input="handleInputTrim($event, 'queryParams', 'levelName')" />
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -13,7 +15,8 @@
 		</el-form>
 		<el-row>
 			<el-col :span="5">
-				<el-tree :data="tempCategories" :props="defaultProps" :load="getCategoryList" @node-click="handleNodeClick">
+				<el-tree :data="tempCategories" :props="defaultProps" :load="getCategoryList"
+					@node-click="handleNodeClick">
 					<span slot-scope="{ data }" class="custom-tree-node">
 						<span>
 							<i class="el-icon-document-remove"></i>
@@ -22,7 +25,8 @@
 					</span>
 				</el-tree>
 				<div style="width: 450px">
-					<pagination v-show="category_total > 0" :total="category_total" :page.sync="category_pageNum" :limit.sync="category_pageSize" @pagination="getCategoryList" />
+					<pagination v-show="category_total > 0" :total="category_total" :page.sync="category_pageNum"
+						:limit.sync="category_pageSize" @pagination="getCategoryList" />
 				</div>
 			</el-col>
 			<el-col :span="19">
@@ -45,25 +49,17 @@
 						<!--        导出-->
 						<template #export>
 							<el-col :span="1.5">
-								<el-button v-hasPermi="['system:company:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
+								<el-button v-hasPermi="['system:company:export']" plain icon="el-icon-folder-opened"
+									size="mini" @click="handleExport"></el-button>
 							</el-col>
 						</template>
 					</right-toolbar>
 				</el-row>
-				<el-table
-					id="printBox"
-					v-horizontal-scroll="'always'"
-					v-loading="loading"
-					border
-					:data="productLevelList"
-					size="mini"
-					:cell-style="
-						() => {
-							return { padding: '.5px' };
-						}
-					"
-					@selection-change="handleSelectionChange"
-				>
+				<el-table id="printBox" v-horizontal-scroll="'always'" v-loading="loading" border
+					:data="productLevelList" size="mini" :cell-style="() => {
+						return { padding: '.5px' };
+					}
+						" @selection-change="handleSelectionChange">
 					<el-table-column v-if="columns[0].visible" label="级别编码" align="center" prop="levelNo" />
 					<el-table-column v-if="columns[1].visible" label="级别名称" align="center" prop="levelName" />
 					<el-table-column v-if="columns[2].visible" label="分类编号" align="center" prop="categoryNo" />
@@ -74,34 +70,29 @@
 					<el-table-column v-if="columns[7].visible" label="吨位差" align="center" prop="tonnage" />
 					<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
 						<template slot-scope="scope">
-							<el-button v-hasPermi="['system:productlevel:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
-							<el-button v-hasPermi="['system:productlevel:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
+							<el-button v-hasPermi="['system:productlevel:edit']" size="mini" type="primary"
+								@click="handleUpdate(scope.row)">修改</el-button>
+							<el-button v-hasPermi="['system:productlevel:remove']" size="mini" type="danger"
+								@click="handleDelete(scope.row)">删除</el-button>
 						</template>
 					</el-table-column>
 				</el-table>
 			</el-col>
 		</el-row>
 
-		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
+		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum"
+			:limit.sync="queryParams.pageSize" @pagination="getList" />
 		<!--    添加产品分类的弹窗-->
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="添加产品分类"
-			:visible.sync="addCategoryOpen"
-			width="600px"
-		>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false"
+			:show-close="false" title="添加产品分类" :visible.sync="addCategoryOpen" width="600px">
 			<el-row>
 				<el-col :span="12">
 					<el-row>
 						<span>级别编码</span>
 					</el-row>
 					<el-row>
-						<el-input disabled v-model="tempCategoryInfo.levelNo" placeholder="请输入级别编码" @input="validateLevelNo"></el-input>
+						<el-input disabled v-model="tempCategoryInfo.levelNo" placeholder="请输入级别编码"
+							@input="validateLevelNo"></el-input>
 					</el-row>
 				</el-col>
 				<el-col :span="12">
@@ -109,7 +100,8 @@
 						<span>分类名称</span>
 					</el-row>
 					<el-row>
-						<el-input v-model="tempCategoryInfo.categoryName" placeholder="请输入分类名称" @input="handleInputTrim($event, 'tempCategoryInfo', 'categoryName')"></el-input>
+						<el-input v-model="tempCategoryInfo.categoryName" placeholder="请输入分类名称"
+							@input="handleInputTrim($event, 'tempCategoryInfo', 'categoryName')"></el-input>
 					</el-row>
 				</el-col>
 			</el-row>
@@ -126,10 +118,12 @@
 						<template slot-scope="scope">
 							<el-row>
 								<el-col :span="5">
-									<el-button type="text" size="mini" @click="handleClickCategoryList(scope.row)">编辑</el-button>
+									<el-button type="text" size="mini"
+										@click="handleClickCategoryList(scope.row)">编辑</el-button>
 								</el-col>
 								<el-col :span="5">
-									<el-button type="text" size="mini" @click="handleDeteleLevel(scope.row)">删除分类</el-button>
+									<el-button type="text" size="mini"
+										@click="handleDeteleLevel(scope.row)">删除分类</el-button>
 								</el-col>
 							</el-row>
 						</template>
@@ -137,7 +131,8 @@
 				</el-table>
 
 				<!--        分页-->
-				<pagination v-show="level_total > 0" :total="level_total" :page.sync="level_pageNum" :limit.sync="level_pageSize" @pagination="getDictsData" />
+				<pagination v-show="level_total > 0" :total="level_total" :page.sync="level_pageNum"
+					:limit.sync="level_pageSize" @pagination="getDictsData" />
 			</el-row>
 			<span slot="footer" class="dialog-footer">
 				<el-button @click="cancelAddProductLevel">取 消</el-button>
@@ -146,44 +141,45 @@
 		</el-dialog>
 
 		<!--    添加产品级别的弹窗-->
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="添加产品级别"
-			:visible.sync="addProductLevelOpen"
-			width="600px"
-		>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false"
+			:show-close="false" title="添加产品级别" :visible.sync="addProductLevelVisible" width="600px">
 			<!--      添加产品级别的表单-->
-			<el-form ref="productForm" :model="addCategoryModel" size="mini" label-width="120px" :rules="rules" @keyup.enter.native="submitAddLevel" @submit.native.prevent="submitAddLevel">
+			<el-form ref="productForm" :model="addCategoryModel" size="mini" label-width="120px" :rules="rules"
+				@keyup.enter.native="submitAddLevel" @submit.native.prevent="submitAddLevel">
 				<el-form-item label="分类" prop="categoryName">
-					<el-select v-model="addCategoryModel.categoryName" placeholder="请选择分类名称" @change="handleChangeLevelNo">
-						<el-option v-for="item in dict.type.order_product_categories" :key="item.value" :label="item.label" :value="item.label"></el-option>
+					<el-select v-model="addCategoryModel.categoryName" placeholder="请选择分类名称"
+						@change="handleChangeLevelNo">
+						<el-option v-for="item in dict.type.order_product_categories" :key="item.value"
+							:label="item.label" :value="item.label"></el-option>
 					</el-select>
 				</el-form-item>
 				<el-form-item label="分类编号" prop="categoryNo">
-					<el-input v-model="addCategoryModel.categoryNo" placeholder="请输入分类编号" @input="handleInputTrim($event, 'addCategoryModel', 'categoryNo')" />
+					<el-input v-model="addCategoryModel.categoryNo" placeholder="请输入分类编号"
+						@input="handleInputTrim($event, 'addCategoryModel', 'categoryNo')" />
 				</el-form-item>
 				<el-form-item label="级别编码" prop="levelNo">
-					<el-input v-model="addCategoryModel.levelNo" placeholder="请输入级别编码" @input="handleInputTrim($event, 'addCategoryModel', 'levelNo')"></el-input>
+					<el-input v-model="addCategoryModel.levelNo" placeholder="请输入级别编码"
+						@input="handleInputTrim($event, 'addCategoryModel', 'levelNo')"></el-input>
 				</el-form-item>
 				<el-form-item label="级别名称" prop="levelName">
-					<el-input v-model="addCategoryModel.levelName" placeholder="请输入级别名称" @input="handleInputTrim($event, 'addCategoryModel', 'levelName')"></el-input>
+					<el-input v-model="addCategoryModel.levelName" placeholder="请输入级别名称"
+						@input="handleInputTrim($event, 'addCategoryModel', 'levelName')"></el-input>
 				</el-form-item>
 				<el-form-item label="厚度" prop="height">
-					<el-input v-model="addCategoryModel.height" placeholder="请输入厚度" @input="handleInputTrim($event, 'addCategoryModel', 'height')"></el-input>
+					<el-input v-model="addCategoryModel.height" placeholder="请输入厚度"
+						@input="handleNumberInput($event, 'addCategoryModel', 'height')"></el-input>
 				</el-form-item>
 				<el-form-item label="长度" prop="length">
-					<el-input v-model="addCategoryModel.length" placeholder="请输入长度" @input="handleInputTrim($event, 'addCategoryModel', 'length')"></el-input>
+					<el-input v-model="addCategoryModel.length" placeholder="请输入长度"
+						@input="handleNumberInput($event, 'addCategoryModel', 'length')"></el-input>
 				</el-form-item>
 				<el-form-item label="宽度" prop="width">
-					<el-input v-model="addCategoryModel.width" placeholder="请输入宽度" @input="handleInputTrim($event, 'addCategoryModel', 'width')"></el-input>
+					<el-input v-model="addCategoryModel.width" placeholder="请输入宽度"
+						@input="handleNumberInput($event, 'addCategoryModel', 'width')"></el-input>
 				</el-form-item>
 				<el-form-item label="吨位差" prop="tonnage">
-					<el-input v-model="addCategoryModel.tonnage" placeholder="请输入吨位差" @input="handleInputTrim($event, 'addCategoryModel', 'tonnage')"></el-input>
+					<el-input v-model="addCategoryModel.tonnage" placeholder="请输入吨位差"
+						@input="handleNumberInput($event, 'addCategoryModel', 'tonnage')"></el-input>
 				</el-form-item>
 			</el-form>
 			<span slot="footer" class="dialog-footer">
@@ -193,33 +189,41 @@
 		</el-dialog>
 
 		<!-- 添加或修改产品级别对话框 -->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false"
+			:show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="80px" @keyup.enter.native="submitForm">
 				<el-form-item label="级别编码" prop="levelNo">
-					<el-input v-model="form.levelNo" placeholder="请输入支付类型" @input="handleInputTrim($event, 'form', 'levelNo')" />
+					<el-input v-model="form.levelNo" placeholder="请输入支付类型"
+						@input="handleInputTrim($event, 'form', 'levelNo')" />
 				</el-form-item>
 				<el-form-item label="级别名称" prop="levelName">
-					<el-input v-model="form.levelName" placeholder="请输入级别名称" @input="handleInputTrim($event, 'form', 'levelName')" />
+					<el-input v-model="form.levelName" placeholder="请输入级别名称"
+						@input="handleInputTrim($event, 'form', 'levelName')" />
 				</el-form-item>
 				<el-form-item label="分类编号" prop="tableName">
 					<el-input v-model="form.categoryNo" placeholder="请输入分类编号" @input="validateFormCategory" />
 				</el-form-item>
 				<el-form-item label="分类名称" prop="categoryName">
 					<el-select v-model="form.categoryName" placeholder="请选择分类名称">
-						<el-option v-for="item in dict.type.order_product_categories" :key="item.value" :label="item.label" :value="item.label"></el-option>
+						<el-option v-for="item in dict.type.order_product_categories" :key="item.value"
+							:label="item.label" :value="item.label"></el-option>
 					</el-select>
 				</el-form-item>
 				<el-form-item label="厚度" prop="height">
-					<el-input v-model="form.height" placeholder="请输入厚度" @input="handleInputTrim($event, 'form', 'height')" />
+					<el-input v-model="form.height" placeholder="请输入厚度"
+						@input="handleNumberInput($event, 'form', 'height')" />
 				</el-form-item>
 				<el-form-item label="宽度" prop="width">
-					<el-input v-model="form.width" placeholder="请输入宽度" @input="handleInputTrim($event, 'form', 'width')" />
+					<el-input v-model="form.width" placeholder="请输入宽度"
+						@input="handleNumberInput($event, 'form', 'width')" />
 				</el-form-item>
 				<el-form-item label="长度" prop="length">
-					<el-input v-model="form.length" placeholder="请输入长度" @input="handleInputTrim($event, 'form', 'length')" />
+					<el-input v-model="form.length" placeholder="请输入长度"
+						@input="handleNumberInput($event, 'form', 'length')" />
 				</el-form-item>
 				<el-form-item label="吨位差" prop="tonnage">
-					<el-input v-model="form.tonnage" placeholder="请输入吨位差" @input="handleInputTrim($event, 'form', 'tonnage')" />
+					<el-input v-model="form.tonnage" placeholder="请输入吨位差"
+						@input="handleNumberInput($event, 'form', 'tonnage')" />
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -309,12 +313,22 @@ export default {
 						required: true,
 						message: '厚度不能为空',
 						trigger: 'blur'
+					},
+					{
+						pattern: /^-?(0|[1-9]\d*)(\.\d+)?$/,
+						message: '厚度必须是有效的数字',
+						trigger: 'blur'
 					}
 				],
 				length: [
 					{
 						required: true,
 						message: '长度不能为空',
+						trigger: 'blur'
+					},
+					{
+						pattern: /^-?(0|[1-9]\d*)(\.\d+)?$/,
+						message: '长度必须是有效的数字',
 						trigger: 'blur'
 					}
 				],
@@ -323,12 +337,22 @@ export default {
 						required: true,
 						message: '宽度不能为空',
 						trigger: 'blur'
+					},
+					{
+						pattern: /^-?(0|[1-9]\d*)(\.\d+)?$/,
+						message: '宽度必须是有效的数字',
+						trigger: 'blur'
 					}
 				],
 				tonnage: [
 					{
 						required: true,
 						message: '吨位差不能为空',
+						trigger: 'blur'
+					},
+					{
+						pattern: /^-?(0|[1-9]\d*)(\.\d+)?$/,
+						message: '吨位差必须是有效的数字',
 						trigger: 'blur'
 					}
 				]
@@ -358,7 +382,7 @@ export default {
 			// 添加产品分类的弹窗
 			addCategoryOpen: false,
 			// 添加产品级别的弹窗
-			addProductLevelOpen: false,
+			addProductLevelVisible: false,
 			// 弹窗中的分类列表 包含分类编码 分类名称
 			tempCategoryList: [],
 
@@ -423,6 +447,45 @@ export default {
 			if (val.indexOf(' ') !== -1) {
 				this[obj][prop] = val.replace(/\s+/g, '');
 			}
+		},
+		// 处理数字输入框，允许正数和小数
+		handleNumberInput(val, obj, prop) {
+			// 移除所有非数字、小数点和负号的字符
+			let cleanValue = val.replace(/[^\d.-]/g, '');
+
+			// 确保只有一个小数点
+			let parts = cleanValue.split('.');
+			if (parts.length > 2) {
+				cleanValue = parts[0] + '.' + parts.slice(1).join('');
+			}
+
+			// 确保只有一个负号，且在开头
+			if (cleanValue.includes('-')) {
+				let negativeCount = (cleanValue.match(/-/g) || []).length;
+				if (negativeCount > 1 || cleanValue.indexOf('-') !== 0) {
+					// 移除多余的负号或不在开头的负号
+					cleanValue = cleanValue.replace(/-/g, '');
+					if (val.charAt(0) === '-') {
+						cleanValue = '-' + cleanValue;
+					}
+				}
+			}
+
+			// 防止以小数点开头（除非前面有负号）
+			if (cleanValue.startsWith('.')) {
+				cleanValue = '0' + cleanValue;
+			} else if (cleanValue.startsWith('-.')) {
+				cleanValue = '-0' + cleanValue.substring(1);
+			}
+
+			// 防止以0开头但不是0.xx或-0.xx的情况
+			if (cleanValue.length > 1 && cleanValue.startsWith('0') && !cleanValue.startsWith('0.')) {
+				cleanValue = cleanValue.substring(1);
+			} else if (cleanValue.length > 2 && cleanValue.startsWith('-0') && !cleanValue.startsWith('-0.')) {
+				cleanValue = '-' + cleanValue.substring(2);
+			}
+
+			this[obj][prop] = cleanValue;
 		},
 		// 监听产品分类变化 自动填充分类编码 查询各个分类的最大级别数，然后+1后存储
 		handleChangeLevelNo(newVal) {
@@ -514,7 +577,7 @@ export default {
 		// 点击添加产品级别信息
 		handleAddProductLevel() {
 			this.getDictsValues();
-			this.addProductLevelOpen = true;
+			this.addProductLevelVisible = true;
 		},
 		// 点击编辑
 		handleClickCategoryList(row) {
@@ -636,7 +699,7 @@ export default {
 		},
 		cancelAddProductCategory() {
 			this.resetCategoryModel();
-			this.addProductLevelOpen = false;
+			this.addProductLevelVisible = false;
 		},
 		resetCategoryModel() {
 			this.addCategoryModel = {
@@ -744,7 +807,7 @@ export default {
 					this.getList();
 					this.$modal.msgSuccess('删除成功');
 				})
-				.catch(() => {});
+				.catch(() => { });
 		},
 		/** 导出按钮操作 */
 		handleExport() {
