@@ -54,7 +54,7 @@
 				return { padding: '.5px' };
 			}
 				" @selection-change="handleSelectionChange" @header-dragend="changeColWidth">
-			<el-table-column label="ID" align="center" type="index" show-overflow-tooltip />
+			<el-table-column label="ID" align="center" prop="id" show-overflow-tooltip />
 			<el-table-column v-if="columns[0].visible" label="日期" align="center" prop="invoiceDate"
 				show-overflow-tooltip />
 			<el-table-column v-if="columns[1].visible" label="我方开票主体" align="center" prop="invoiceObject"

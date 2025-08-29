@@ -178,7 +178,7 @@ export default {
         getPaymentApplyStatus() {
             const checkState = this.businessObject.paymentApply.checkState;
             const v2States = PAYMENT_APPLY_STATE.V2;
-
+            console.log(`checkState=>`, checkState)
             switch (checkState) {
                 case v2States.PENDING:
                     return {

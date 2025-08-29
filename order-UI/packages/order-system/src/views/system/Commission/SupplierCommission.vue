@@ -863,28 +863,4 @@ export default {
 </script>
 
 <style scoped>
-/* 增加表格滚动条的高度 */
-::v-deep .el-table__body-wrapper::-webkit-scrollbar {
-	height: 12px !important;
-}
-
-::v-deep .el-table__body-wrapper::-webkit-scrollbar-track {
-	background: #f1f1f1 !important;
-	border-radius: 6px !important;
-}
-
-::v-deep .el-table__body-wrapper::-webkit-scrollbar-thumb {
-	background: #c1c1c1 !important;
-	border-radius: 6px !important;
-}
-
-::v-deep .el-table__body-wrapper::-webkit-scrollbar-thumb:hover {
-	background: #a8a8a8 !important;
-}
-
-/* 水平滚动条样式 */
-::v-deep .el-table .el-table__body-wrapper {
-	scrollbar-width: thick;
-	scrollbar-color: #c1c1c1 #f1f1f1;
-}
 </style>

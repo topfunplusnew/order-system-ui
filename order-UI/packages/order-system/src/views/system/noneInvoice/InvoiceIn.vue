@@ -51,10 +51,10 @@
 
 		<el-table id="printBox" v-horizontal-scroll="'always'" v-loading="loading" border :data="invoiceInList" fit
 			size="mini" :cell-style="() => {
-					return { padding: '.5px' };
-				}
+				return { padding: '.5px' };
+			}
 				" @header-dragend="changeColWidth" @selection-change="handleSelectionChange">
-			<el-table-column label="ID" align="center" type="index" show-overflow-tooltip />
+			<el-table-column label="ID" align="center" prop="id" show-overflow-tooltip />
 			<el-table-column v-if="columns[0].visible" label="日期" align="center" prop="invoiceDate"
 				show-overflow-tooltip />
 			<el-table-column v-if="columns[1].visible" label="我方收票主体" align="center" prop="invoiceObject"
