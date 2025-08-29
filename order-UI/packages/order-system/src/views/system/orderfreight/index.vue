@@ -62,7 +62,7 @@
 				<!--        导出-->
 				<template #export>
 					<el-col :span="1.5">
-						<el-button v-hasPermi="['system:freight:export']" plain icon="el-icon-folder-opened" size="mini"
+						<el-button v-hasPermi="['system:orderfreight:export']" plain icon="el-icon-folder-opened" size="mini"
 							@click="handleExport" />
 					</el-col>
 				</template>
@@ -122,9 +122,9 @@
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="150">
 				<template slot-scope="scope">
 					<CheckOrderInfo :row="scope.row" />
-					<el-button v-if="scope.row.isedit" v-hasPermi="['system:freight:edit']" size="mini" type="primary"
-						@click="handleUpdate(scope.row)">修改</el-button>
-					<el-button v-hasPermi="['system:freight:remove']" size="mini" type="danger"
+					<el-button v-if="scope.row.isedit" v-hasPermi="['system:orderfreight:edit']" size="mini"
+						type="primary" @click="handleUpdate(scope.row)">修改</el-button>
+					<el-button v-hasPermi="['system:orderfreight:remove']" size="mini" type="danger"
 						@click="handleDelete(scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
