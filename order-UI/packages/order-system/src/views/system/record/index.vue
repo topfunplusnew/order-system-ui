@@ -1482,10 +1482,44 @@ export default {
 			this.$modal.msgSuccess(message);
 			this.open = false;
 			this.getList();
+
 			// 清理 UploadFilesButton 组件状态
 			if (this.$refs.attachmentUpload) {
 				this.$refs.attachmentUpload.clearUploadedFiles();
 			}
+
+			// 清理承兑相关状态
+			this.clearAcceptanceFillStatus();
+
+			// **参考 cancel 方法：强制清空承兑信息（绕过错误保护机制）**
+			if (this.$refs.otherSelectBankType && this.$refs.otherSelectBankType.forceClearAcceptanceInfo) {
+				this.$refs.otherSelectBankType.forceClearAcceptanceInfo();
+			}
+			if (this.$refs.selfSelectBankType && this.$refs.selfSelectBankType.forceClearAcceptanceInfo) {
+				this.$refs.selfSelectBankType.forceClearAcceptanceInfo();
+			}
+
+			// **发送 changeFlag 事件进行最终清理**
+			this.$bus.$emit('changeFlag', false);
+
+			// **优化的状态重置：使用组件的重置方法**
+			if (this.$refs.otherSelectBankType && this.$refs.otherSelectBankType.resetComponentState) {
+				this.$refs.otherSelectBankType.resetComponentState();
+			}
+			if (this.$refs.selfSelectBankType && this.$refs.selfSelectBankType.resetComponentState) {
+				this.$refs.selfSelectBankType.resetComponentState();
+			}
+
+			// **Vuex全局状态清理：确保双选择状态彻底清除**
+			if (this.cashType === this.CASH_TYPE.TRANSFER) {
+				// 使用唯一的formId确保状态隔离
+				const formId = `internal-transfer-${this.form.id || Date.now()}`;
+				this.$store.dispatch('bankAcceptance/resetDualSelection', formId);
+			}
+
+			// **会话存储清理：防止跨弹窗状态污染**
+			sessionStorage.removeItem('bankAcceptanceFilled');
+
 			if (resetForm) this.reset();
 			if (resetEachInfo) this.resetEachInfo();
 		},
@@ -1548,11 +1582,67 @@ export default {
 		// 确保对话框关闭时也清理状态
 		handleDialogClose() {
 			this.clearAcceptanceFillStatus();
+
+			// **参考 cancel 方法：强制清空承兑信息（绕过错误保护机制）**
+			if (this.$refs.otherSelectBankType && this.$refs.otherSelectBankType.forceClearAcceptanceInfo) {
+				this.$refs.otherSelectBankType.forceClearAcceptanceInfo();
+			}
+			if (this.$refs.selfSelectBankType && this.$refs.selfSelectBankType.forceClearAcceptanceInfo) {
+				this.$refs.selfSelectBankType.forceClearAcceptanceInfo();
+			}
+
+			// **发送 changeFlag 事件进行最终清理**
+			this.$bus.$emit('changeFlag', false);
+
+			// **优化的状态重置：使用组件的重置方法**
+			if (this.$refs.otherSelectBankType && this.$refs.otherSelectBankType.resetComponentState) {
+				this.$refs.otherSelectBankType.resetComponentState();
+			}
+			if (this.$refs.selfSelectBankType && this.$refs.selfSelectBankType.resetComponentState) {
+				this.$refs.selfSelectBankType.resetComponentState();
+			}
+
+			// **Vuex全局状态清理：确保双选择状态彻底清除**
+			if (this.cashType === this.CASH_TYPE.TRANSFER) {
+				const formId = `internal-transfer-${this.form.id || Date.now()}`;
+				this.$store.dispatch('bankAcceptance/resetDualSelection', formId);
+			}
+
+			// **会话存储清理：防止跨弹窗状态污染**
+			sessionStorage.removeItem('bankAcceptanceFilled');
 		},
 
 		// 在组件销毁时也清理状态
 		beforeDestroy() {
 			this.clearAcceptanceFillStatus();
+
+			// **参考 cancel 方法：强制清空承兑信息（绕过错误保护机制）**
+			if (this.$refs.otherSelectBankType && this.$refs.otherSelectBankType.forceClearAcceptanceInfo) {
+				this.$refs.otherSelectBankType.forceClearAcceptanceInfo();
+			}
+			if (this.$refs.selfSelectBankType && this.$refs.selfSelectBankType.forceClearAcceptanceInfo) {
+				this.$refs.selfSelectBankType.forceClearAcceptanceInfo();
+			}
+
+			// **发送 changeFlag 事件进行最终清理**
+			this.$bus.$emit('changeFlag', false);
+
+			// **优化的状态重置：使用组件的重置方法**
+			if (this.$refs.otherSelectBankType && this.$refs.otherSelectBankType.resetComponentState) {
+				this.$refs.otherSelectBankType.resetComponentState();
+			}
+			if (this.$refs.selfSelectBankType && this.$refs.selfSelectBankType.resetComponentState) {
+				this.$refs.selfSelectBankType.resetComponentState();
+			}
+
+			// **Vuex全局状态清理：确保双选择状态彻底清除**
+			if (this.cashType === this.CASH_TYPE.TRANSFER) {
+				const formId = `internal-transfer-${this.form.id || Date.now()}`;
+				this.$store.dispatch('bankAcceptance/resetDualSelection', formId);
+			}
+
+			// **会话存储清理：防止跨弹窗状态污染**
+			sessionStorage.removeItem('bankAcceptanceFilled');
 		}
 	}
 };
