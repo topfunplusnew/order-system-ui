@@ -57,8 +57,8 @@
 			<el-table-column type="selection" width="55" align="center" :selectable="(row, index) => row.id !== null" />
 			<el-table-column label="批量佣金" width="80" align="center">
 				<template slot-scope="scope">
-					<el-checkbox v-if="scope.row.id === null" v-model="scope.row.batchSelected"
-						@change="handleBatchSelectionChange"></el-checkbox>
+					<el-checkbox v-if="scope.row.id === null" :value="scope.row.batchSelected"
+						@input="handleBatchToggle(scope.row, $event)"></el-checkbox>
 					<span v-else>-</span>
 				</template>
 			</el-table-column>
@@ -250,7 +250,7 @@ export default {
 		},
 		// 批量填写按钮是否禁用
 		batchFillDisabled() {
-			// 只有选中了批量佣金勾选框的行才能批量填写
+			// 直接检查 tableData 中是否有选中的批量佣金行
 			return !this.tableData.some(row => row.batchSelected === true);
 		},
 		// 获取批量选中的行
@@ -521,8 +521,32 @@ export default {
 		},
 		// 处理批量勾选变化
 		handleBatchSelectionChange() {
-			// 这个方法可以用来处理勾选状态变化的逻辑，目前只需要触发计算属性更新
-			this.$forceUpdate();
+			// 手动触发计算属性更新，确保按钮状态正确响应
+			this.$nextTick(() => {
+				console.log('批量选中状态变化，当前选中数量:', this.batchSelectedRows.length);
+				console.log('batchFillDisabled 状态:', this.batchFillDisabled);
+				console.log('当前 tableData 中的 batchSelected 状态:', this.tableData.map(row => ({ 
+					orderDetailId: row.orderDetailId, 
+					batchSelected: row.batchSelected 
+				})));
+			});
+		},
+		// 处理批量勾选框状态变化
+		handleBatchToggle(row, value) {
+			console.log(`选中`, row, value)
+			
+			// 找到 tableData 中对应的行并修改，确保数据的一致性
+			const tableDataRow = this.tableData.find(item => 
+				item.orderDetailId === row.orderDetailId || 
+				(item.id && item.id === row.id)
+			);
+			
+			if (tableDataRow) {
+				// 使用 Vue.set 在 tableData 上设置响应性字段
+				this.$set(tableDataRow, 'batchSelected', value);
+			}
+			
+			this.handleBatchSelectionChange();
 		},
 		handleAdd(source) {
 			this.openDialog(
