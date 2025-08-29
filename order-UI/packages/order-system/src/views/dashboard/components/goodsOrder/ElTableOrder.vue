@@ -682,6 +682,8 @@ export default {
 				}
 			});
 
+			console.log(`供应商Map=>`, supplierMap);
+
 			// 返回去重后的数组（不可变）
 			return Array.from(supplierMap.values());
 		},
@@ -1038,8 +1040,10 @@ export default {
 		</div>
 
 		<!-- 客户开票列表弹窗 -->
-		<el-dialog title="客户开票记录" :visible.sync="customerInvoiceListVisible" width="70%"
-			:before-close="closeCustomerInvoiceList" class="invoice-list-dialog compact-dialog">
+		<el-dialog :modal="false" title="客户开票记录" :visible.sync="customerInvoiceListVisible" width="70%"
+			:before-close="closeCustomerInvoiceList" class="invoice-list-dialog compact-dialog" append-to-body
+			v-dialogDrag v-dialogDragWidth v-dialogDragHeight v-el-relen-dialog :close-on-click-modal="false"
+			:close-on-press-escape="false" :destroy-on-close="false">
 			<div v-if="currentOrderInfo" class="invoice-dialog-content">
 				<!-- 订单信息卡片 -->
 				<el-card class="order-info-card" shadow="hover">
@@ -1122,7 +1126,7 @@ export default {
 								<div class="datetime-cell">
 									<i class="el-icon-time"></i>
 									{{ scope.row.invoiceDate ? parseTime(scope.row.invoiceDate, '{y}-{m}-{d} {h}:{i}') :
-									'-' }}
+										'-' }}
 								</div>
 							</template>
 						</el-table-column>
@@ -1150,8 +1154,10 @@ export default {
 		</el-dialog>
 
 		<!-- 供应商开票列表弹窗 -->
-		<el-dialog title="供应商开票记录" :visible.sync="supplierInvoiceListVisible" width="75%"
-			:before-close="closeSupplierInvoiceList" class="invoice-list-dialog supplier-invoice-dialog compact-dialog">
+		<el-dialog :modal="false" title="供应商开票记录" :visible.sync="supplierInvoiceListVisible" width="75%"
+			:before-close="closeSupplierInvoiceList" class="invoice-list-dialog supplier-invoice-dialog compact-dialog"
+			append-to-body v-dialogDrag v-dialogDragWidth v-dialogDragHeight v-el-relen-dialog
+			:close-on-click-modal="false" :close-on-press-escape="false" :destroy-on-close="false">
 			<div v-if="currentOrderInfo" class="invoice-dialog-content">
 				<!-- 订单信息卡片 -->
 				<el-card class="order-info-card" shadow="hover">
