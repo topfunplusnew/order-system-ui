@@ -75,8 +75,9 @@ export default {
 
 <template>
 	<div>
-		<el-button v-hasPermi="['system:freight:edit']" size="mini" type="text" @click="handleCheck(row)">{{ title
-		}}</el-button>
+		<el-button v-hasPermi="['system:goodsorder:query', 'system:inventoryMain:query']" size="mini" type="text"
+			@click="handleCheck(row)">{{ title
+			}}</el-button>
 
 		<!--    弹窗-->
 		<InfoDialog :visible="visible" title="订单单据信息" :width="'980px'" @close="visible = false">
