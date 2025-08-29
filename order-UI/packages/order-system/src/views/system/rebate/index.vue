@@ -22,7 +22,7 @@
 			</el-row>
 			<el-row>
 				<el-form-item label="是否收到返利" prop="isReceivedRebate">
-					<el-select v-model="queryParams.isReceivedRebate" placeholder="请选择" clearable>
+					<el-select v-model="queryParams.params.isReceivedRebate" placeholder="请选择" clearable>
 						<el-option label="全部" value="" />
 						<el-option label="已收到" value="Y" />
 						<el-option label="未收到" value="N" />
@@ -540,8 +540,6 @@ export default {
 				userId: null,
 				UserName: null,
 				delFlag: null,
-				// 是否收到返利筛选框 Y/N
-				isReceivedRebate: null,
 				// 删除了不需要的级别名称、长度、宽度、厚度搜索参数
 				params: {
 					// 计提返利时间参数移到params中
@@ -549,7 +547,9 @@ export default {
 					rebateEndTime: null,
 					// 收到返利时间参数（精确到时分秒）
 					receivedRebateStartTime: null,
-					receivedRebateEndTime: null
+					receivedRebateEndTime: null,
+					// 是否收到返利筛选框 Y/N
+					isReceivedRebate: null
 				}
 			},
 			queryOrderParams: {

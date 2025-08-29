@@ -20,19 +20,19 @@
 						</el-col>
 						<el-col :span="2">
 							<SearchOption
-								:limit-info="form.domain === 1 ? { companyType: '客户' } : { companyType: '供应商' }"
+								:limit-info="invoiceInfo.domain === 1 ? { companyType: '客户' } : { companyType: '供应商' }"
 								:get-data="listCompany" query-info="companyName" query-label="公司名称"
 								:query-name="queryCompanyName" @update:queryName="handleUpdateCompanyName"
 								@commitBack="handleCommitBackCompany">
 								<template #table-columns>
-									<el-table-column :label="form.domain === 1 ? '客户' : '供应商'" align="center"
+									<el-table-column :label="invoiceInfo.domain === 1 ? '客户' : '供应商'" align="center"
 										prop="relationName">
-										<el-table-column label="老板姓名" align="center" prop="leader" />
-										<el-table-column label="老板电话" align="center" prop="leaderTel" />
-										<el-table-column label="区域" align="center" prop="region" />
-										<el-table-column label="公司名称" align="center" prop="companyName" />
-										<el-table-column label="销售经理" align="center" prop="salesManager" />
 									</el-table-column>
+									<el-table-column label="老板姓名" align="center" prop="leader" />
+									<el-table-column label="老板电话" align="center" prop="leaderTel" />
+									<el-table-column label="区域" align="center" prop="region" />
+									<el-table-column label="公司名称" align="center" prop="companyName" />
+									<el-table-column label="销售经理" align="center" prop="salesManager" />
 								</template>
 							</SearchOption>
 						</el-col>
