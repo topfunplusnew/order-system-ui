@@ -6,12 +6,7 @@ import { listGoodsOrder } from '../../../../api/system/goodsOrder';
 export var mixin_order_base = {
 	data: function () {
 		return {
-			// 订单的显示隐藏列
-
-			// 顶部条件搜索
 			queryOrderInfo: {},
-
-			// 用于字段与中文名称映射
 			mapper: {
 				orderDate: '订单日期',
 				supplier: '供应商名称',
@@ -77,13 +72,15 @@ export var mixin_order_base = {
 					...this.queryParams,
 					isAdjust: isAdjust
 				}).then(response => {
-					this.goodsOrderList = response.rows;
+					// 预处理订单数据，添加供应商和仓库的预处理信息
+					this.goodsOrderList = this.preprocessOrderData(response.rows);
 					this.total = response.total;
 					this.loading = false;
 				});
 			} else {
 				listGoodsOrder(this.queryParams).then(response => {
-					this.goodsOrderList = response.rows;
+					// 预处理订单数据，添加供应商和仓库的预处理信息
+					this.goodsOrderList = this.preprocessOrderData(response.rows);
 					this.total = response.total;
 					this.loading = false;
 				});
@@ -106,6 +103,99 @@ export var mixin_order_base = {
 			});
 			// 返回去重后的数组
 			return Array.from(supplierMap.values());
+		},
+		/**
+		 * 预处理订单数据，为每个订单添加预处理的供应商和仓库信息
+		 * 优化渲染性能，避免在模板中重复计算
+		 * @param {Array} orderList - 原始订单列表
+		 * @returns {Array} 处理后的订单列表
+		 * 时间复杂度: O(n×m), 空间复杂度: O(n×m)
+		 */
+		preprocessOrderData(orderList) {
+			if (!Array.isArray(orderList)) {
+				return [];
+			}
+
+			return orderList.map(order => {
+				// 深拷贝订单数据，避免修改原始数据
+				const processedOrder = { ...order };
+
+				// 预处理供应商和仓库信息
+				if (order.smailOrderDetails && Array.isArray(order.smailOrderDetails)) {
+					// 获取去重的供应商列表
+					processedOrder._uniqueSuppliers = this.getUniqueSuppliers(order.smailOrderDetails);
+					// 获取去重的仓库列表
+					processedOrder._uniqueWarehouses = this.getUniqueWarehouses(order.smailOrderDetails);
+				} else {
+					processedOrder._uniqueSuppliers = [];
+					processedOrder._uniqueWarehouses = [];
+				}
+
+				return processedOrder;
+			});
+		},
+		/**
+		 * 获取去重的供应商列表
+		 * @param {Array} smailOrderDetails - 订单详情数组
+		 * @returns {Array} 去重后的供应商列表
+		 * 时间复杂度: O(n), 空间复杂度: O(n)
+		 */
+		getUniqueSuppliers(smailOrderDetails) {
+			// 边界条件处理
+			if (!Array.isArray(smailOrderDetails) || smailOrderDetails.length === 0) {
+				return [];
+			}
+
+			// 使用 Map 进行去重，以 supplierID 为键
+			const supplierMap = new Map();
+
+			smailOrderDetails.forEach(item => {
+				// 只处理有效的供应商数据：supplierID 不为 null 且 supplier 不为空
+				if (item.supplierID && item.supplier && item.supplier.trim()) {
+					if (!supplierMap.has(item.supplierID)) {
+						// 创建不可变的供应商对象，包含原有的属性
+						supplierMap.set(item.supplierID, {
+							supplier: item.supplier.trim(),
+							supplierID: item.supplierID,
+							isIncludeTaxFactory: item.isIncludeTaxFactory
+						});
+					}
+				}
+			});
+
+			// 返回去重后的数组
+			return Array.from(supplierMap.values());
+		},
+		/**
+		 * 获取去重的仓库列表
+		 * @param {Array} smailOrderDetails - 订单详情数组
+		 * @returns {Array} 去重后的仓库列表
+		 * 时间复杂度: O(n), 空间复杂度: O(n)
+		 */
+		getUniqueWarehouses(smailOrderDetails) {
+			// 边界条件处理
+			if (!Array.isArray(smailOrderDetails) || smailOrderDetails.length === 0) {
+				return [];
+			}
+
+			// 使用 Map 进行去重，以 storeHouseID 为键
+			const warehouseMap = new Map();
+
+			smailOrderDetails.forEach(item => {
+				// 只处理有效的仓库数据：storeHouseID 不为 null 且 storeHouseName 不为空
+				if (item.storeHouseID && item.storeHouseName && item.storeHouseName.trim()) {
+					if (!warehouseMap.has(item.storeHouseID)) {
+						// 创建不可变的仓库对象
+						warehouseMap.set(item.storeHouseID, {
+							storeHouseName: item.storeHouseName.trim(),
+							storeHouseID: item.storeHouseID
+						});
+					}
+				}
+			});
+
+			// 返回去重后的数组
+			return Array.from(warehouseMap.values());
 		},
 		// 休眠函数
 		sleep(ms) {

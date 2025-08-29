@@ -72,8 +72,6 @@ export default {
 		mixin_order_uploadFiles,
 		// 发货单
 		mixin_order_deliverGoods,
-		// 运费申请
-		// mixin_order_freeApply,
 		// 订单历史记录查看
 		mixin_order_orderHistory
 	],
@@ -580,10 +578,9 @@ export default {
 		 * @returns {string} 格式化后的字符串
 		 */
 		formatSupplierWarehouse(row) {
-			if (!row.smailOrderDetails) return '无';
-
-			const suppliers = this.getUniqueSuppliers(row.smailOrderDetails);
-			const warehouses = this.getUniqueWarehouses(row.smailOrderDetails);
+			// 使用预处理的供应商和仓库数据
+			const suppliers = row._uniqueSuppliers || [];
+			const warehouses = row._uniqueWarehouses || [];
 
 			const supplierNames = suppliers.map(s => s.supplier).join(', ');
 			const warehouseNames = warehouses.map(w => w.storeHouseName).join(', ');
@@ -652,71 +649,6 @@ export default {
 				},
 				`goodsOrder_${new Date().getTime()}.xlsx`
 			);
-		},
-		/**
-		 * 获取去重的供应商列表
-		 * @param {Array} smailOrderDetails - 订单详情数组
-		 * @returns {Array} 去重后的供应商列表
-		 * 时间复杂度: O(n), 空间复杂度: O(n)
-		 */
-		getUniqueSuppliers(smailOrderDetails) {
-			// 边界条件处理
-			if (!Array.isArray(smailOrderDetails) || smailOrderDetails.length === 0) {
-				return [];
-			}
-
-			// 使用 Map 进行去重，以 supplierID 为键
-			const supplierMap = new Map();
-
-			smailOrderDetails.forEach(item => {
-				// 只处理有效的供应商数据：supplierID 不为 null 且 supplier 不为空
-				if (item.supplierID && item.supplier && item.supplier.trim()) {
-					if (!supplierMap.has(item.supplierID)) {
-						// 创建不可变的供应商对象
-						supplierMap.set(item.supplierID, {
-							supplier: item.supplier.trim(),
-							supplierID: item.supplierID,
-							isIncludeTaxFactory: item.isIncludeTaxFactory
-						});
-					}
-				}
-			});
-
-			console.log(`供应商Map=>`, supplierMap);
-
-			// 返回去重后的数组（不可变）
-			return Array.from(supplierMap.values());
-		},
-		/**
-		 * 获取去重的仓库列表
-		 * @param {Array} smailOrderDetails - 订单详情数组
-		 * @returns {Array} 去重后的仓库列表
-		 * 时间复杂度: O(n), 空间复杂度: O(n)
-		 */
-		getUniqueWarehouses(smailOrderDetails) {
-			// 边界条件处理
-			if (!Array.isArray(smailOrderDetails) || smailOrderDetails.length === 0) {
-				return [];
-			}
-
-			// 使用 Map 进行去重，以 storeHouseID 为键
-			const warehouseMap = new Map();
-
-			smailOrderDetails.forEach(item => {
-				// 只处理有效的仓库数据：storeHouseID 不为 null 且 storeHouseName 不为空
-				if (item.storeHouseID && item.storeHouseName && item.storeHouseName.trim()) {
-					if (!warehouseMap.has(item.storeHouseID)) {
-						// 创建不可变的仓库对象
-						warehouseMap.set(item.storeHouseID, {
-							storeHouseName: item.storeHouseName.trim(),
-							storeHouseID: item.storeHouseID
-						});
-					}
-				}
-			});
-
-			// 返回去重后的数组（不可变）
-			return Array.from(warehouseMap.values());
 		}
 	}
 };
@@ -836,24 +768,23 @@ export default {
 				<el-table-column v-if="columns[3].visible" show-overflow-tooltip label="供应商/仓库" align="center"
 					prop="supplierNames" fixed="left" width="200">
 					<template #default="scope">
-						<div v-if="scope.row.smailOrderDetails" class="supplier-warehouse-container">
-							<!-- 显示去重后的供应商列表 -->
-							<span v-for="supplier in getUniqueSuppliers(scope.row.smailOrderDetails)"
+						<div class="supplier-warehouse-container">
+							<!-- 显示预处理的供应商列表 -->
+							<span v-for="supplier in scope.row._uniqueSuppliers"
 								:key="`supplier-${supplier.supplierID}`" class="supplier-name"
 								@click="updateOrderItemVisibleSupplierInvoice(scope.row, supplier.supplierID)">
 								{{ supplier.supplier }}
 							</span>
-							<!-- 显示去重后的仓库列表 -->
-							<span v-for="warehouse in getUniqueWarehouses(scope.row.smailOrderDetails)"
+							<!-- 显示预处理的仓库列表 -->
+							<span v-for="warehouse in scope.row._uniqueWarehouses"
 								:key="`warehouse-${warehouse.storeHouseID}`" class="warehouse-name">
 								{{ warehouse.storeHouseName }}
 							</span>
 							<!-- 如果既没有供应商也没有仓库，显示横线 -->
 							<span
-								v-if="getUniqueSuppliers(scope.row.smailOrderDetails).length === 0 && getUniqueWarehouses(scope.row.smailOrderDetails).length === 0"
+								v-if="scope.row._uniqueSuppliers.length === 0 && scope.row._uniqueWarehouses.length === 0"
 								class="empty-item">-</span>
 						</div>
-						<template v-else>无</template>
 					</template>
 				</el-table-column>
 				<el-table-column v-if="columns[4].visible" show-overflow-tooltip label="审核状态" align="center"
