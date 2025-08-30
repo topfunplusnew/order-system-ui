@@ -61,6 +61,8 @@ export default {
             if (v === 0) return { type: 'info', text: '供应商未开票' };
             return null;
         },
+    },
+    methods: {
         handleProcess() { },
         handleReject() { }
     }
