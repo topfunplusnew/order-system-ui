@@ -48,7 +48,11 @@ export default {
 		PUBLIC_DICT_TYPE() {
 			return PUBLIC_DICT_TYPE;
 		},
-		...mapGetters(['selectedInvoiceList', 'selectedOrder', 'ticketPoint', 'comment', 'invoiceAmount'])
+		...mapGetters(['selectedInvoiceList', 'selectedOrder', 'ticketPoint', 'comment', 'invoiceAmount']),
+		// 是否已有生成的发票列表，用于控制“开具发票”按钮是否可用
+		hasGeneratedInvoices() {
+			return Array.isArray(this.selectedInvoiceList) && this.selectedInvoiceList.length > 0;
+		}
 	},
 	methods: {
 		// 创建发票对象的工具函数
@@ -122,57 +126,60 @@ export default {
 				}
 				for (let i = 0; i < templatePool.length; i++) {
 					const tpl = templatePool[i];
-					const tplAmount = b(tpl.total || 0);
+					let tplAmount = b(tpl.total || 0);
+					// 没有可用模板金额则跳过
+					if (this.math.equal(tplAmount, b(0))) continue;
 
-					// 如果模板金额大于等于当前订单剩余待开金额，则生成一张发票并标记订单完成
-					if (this.math.larger(tplAmount, remaining) || this.math.equal(tplAmount, remaining)) {
-						// 根据模板行判断 companyType/companyID/companyName：优先判断销方（sellerId），否则判断购买方（purchaseId）
-						let companyTypeConst = this.invoiceType || this.PUBLIC_DICT_TYPE.CUSTOMER;
-						let companyID = tpl.sellerId || tpl.purchaseId || null;
-						let companyName = tpl.sellerName || tpl.purchaseName || tpl.invoiceCompanyName || '未知';
-						if (tpl.sellerId && Number(tpl.sellerId) !== 0) {
-							// 销方为主
-							companyTypeConst = tpl.sellerType === '供应商' ? this.PUBLIC_DICT_TYPE.SUPPLIER : this.PUBLIC_DICT_TYPE.CUSTOMER;
-							companyID = tpl.sellerId;
-							companyName = tpl.sellerName || companyName;
-						} else if (tpl.purchaseId && Number(tpl.purchaseId) !== 0) {
-							// 购买方为主
-							companyTypeConst = tpl.purchaseType === '供应商' ? this.PUBLIC_DICT_TYPE.SUPPLIER : this.PUBLIC_DICT_TYPE.CUSTOMER;
-							companyID = tpl.purchaseId;
-							companyName = tpl.purchaseName || companyName;
-						}
-
-						// 生成发票对象
-						const invoice = this.createInvoiceObject({
-							invoiceDate: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
-							invoiceObject: sessionStorage.getItem('us'),
-							invoiceAmount: Number(this.math.format(remaining)),
-							companyType: companyTypeConst,
-							companyName: companyName,
-							companyID: companyID,
-							invoiceCompanyName: companyName,
-							ticketPoint: tpl.ticketPoint || tpl.ticketPointAmount || 0,
-							ticketPointAmount: Number(this.math.format(this.math.multiply(remaining, b(tpl.ticketPoint || 0)))),
-							isOrderTax: order.id,
-							comments: this.comment
-						});
-						resultInvoices.push(invoice);
-						orderFullyInvoiced = true;
-						// 标记此模板行已使用完毕（将其金额设为0），以免被重复使用
-						templatePool[i].total = 0;
-						break; // 当前订单完成，继续下一个订单
+					// 计算本次要使用的金额：used = min(tplAmount, remaining)
+					let used;
+					if (this.math.largerEq(tplAmount, remaining)) {
+						used = remaining;
 					} else {
-						// 模板金额小于订单剩余金额，则用模板金额抵扣订单剩余金额，并继续使用下一模板
-						remaining = this.math.subtract(remaining, tplAmount);
-						// 标记该模板已被消耗（设为0）
-						templatePool[i].total = 0;
-						// 如果 remaining 小于等于0，则订单开完
-						if (this.math.largerEq(b(0), remaining) || this.math.equal(remaining, b(0))) {
-							orderFullyInvoiced = true;
-							break;
-						}
-						// 否则继续下一个模板
+						used = tplAmount;
 					}
+
+					// 根据模板行判断 companyType/companyID/companyName：优先判断销方（sellerId），否则判断购买方（purchaseId）
+					let companyTypeConst = this.invoiceType || this.PUBLIC_DICT_TYPE.CUSTOMER;
+					let companyID = tpl.sellerId || tpl.purchaseId || null;
+					let companyName = tpl.sellerName || tpl.purchaseName || tpl.invoiceCompanyName || '未知';
+					if (tpl.sellerId && Number(tpl.sellerId) !== 0) {
+						companyTypeConst = tpl.sellerType === '供应商' ? this.PUBLIC_DICT_TYPE.SUPPLIER : this.PUBLIC_DICT_TYPE.CUSTOMER;
+						companyID = tpl.sellerId;
+						companyName = tpl.sellerName || companyName;
+					} else if (tpl.purchaseId && Number(tpl.purchaseId) !== 0) {
+						companyTypeConst = tpl.purchaseType === '供应商' ? this.PUBLIC_DICT_TYPE.SUPPLIER : this.PUBLIC_DICT_TYPE.CUSTOMER;
+						companyID = tpl.purchaseId;
+						companyName = tpl.purchaseName || companyName;
+					}
+
+					// 生成发票对象（本次使用的金额 used）
+					const invoice = this.createInvoiceObject({
+						invoiceDate: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
+						invoiceObject: sessionStorage.getItem('us'),
+						invoiceAmount: Number(this.math.format(used)),
+						companyType: companyTypeConst,
+						companyName: companyName,
+						companyID: companyID,
+						invoiceCompanyName: companyName,
+						ticketPoint: tpl.ticketPoint || tpl.ticketPointAmount || 0,
+						ticketPointAmount: Number(this.math.format(this.math.multiply(used, b(tpl.ticketPoint || 0)))),
+						isOrderTax: order.id,
+						comments: this.comment
+					});
+					resultInvoices.push(invoice);
+
+					// 更新订单剩余和模板剩余
+					remaining = this.math.subtract(remaining, used);
+					const tplRemainAfter = this.math.subtract(tplAmount, used);
+					// 将剩余模板金额写回 pool（转为普通数字），便于后续继续使用
+					templatePool[i].total = Number(this.math.format(tplRemainAfter));
+
+					// 如果订单已被完全抵扣，则结束当前订单的模板匹配
+					if (this.math.largerEq(b(0), remaining) || this.math.equal(remaining, b(0))) {
+						orderFullyInvoiced = true;
+						break;
+					}
+					// 否则继续使用下一个模板行
 				}
 
 				// 如果订单在模板循环后被标记为已开完，则继续下一个订单
@@ -334,10 +341,24 @@ export default {
 
 				<!--    批量开票-->
 				<div class="options">
-					<el-button v-if="invoiceType === PUBLIC_DICT_TYPE.CUSTOMER" type="success" size="small" :disabled="op_customer" @click="handleInvoiceBatch" class="invoice-button">
+					<el-button
+						v-if="invoiceType === PUBLIC_DICT_TYPE.CUSTOMER"
+						type="success"
+						size="small"
+						:disabled="op_customer || !hasGeneratedInvoices"
+						@click="handleInvoiceBatch"
+						class="invoice-button"
+					>
 						开具客户发票
 					</el-button>
-					<el-button v-if="invoiceType === PUBLIC_DICT_TYPE.SUPPLIER" type="success" size="small" :disabled="op_supplier" @click="handleInvoiceBatch" class="invoice-button">
+					<el-button
+						v-if="invoiceType === PUBLIC_DICT_TYPE.SUPPLIER"
+						type="success"
+						size="small"
+						:disabled="op_supplier || !hasGeneratedInvoices"
+						@click="handleInvoiceBatch"
+						class="invoice-button"
+					>
 						开具供应商发票
 					</el-button>
 				</div>
