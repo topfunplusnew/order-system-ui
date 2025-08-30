@@ -178,7 +178,7 @@ export default {
 		</div>
 
 		<!-- 公司列表表格 -->
-		<el-table :data="companyTotalInfo" :row-style="handleRowClassName" :cell-style="() => ({ padding: '2px' })" size="mini" style="width: 100%" height="100%" border>
+		<el-table :data="companyTotalInfo" :row-style="handleRowClassName" :cell-style="() => ({ padding: '2px' })" size="mini" style="width: 100%" border>
 			<!--多选框-->
 			<el-table-column prop="id" label="ID" width="60"></el-table-column>
 			<el-table-column prop="us" label="我方"></el-table-column>

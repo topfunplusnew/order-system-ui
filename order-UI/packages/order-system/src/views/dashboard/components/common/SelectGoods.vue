@@ -414,8 +414,6 @@ export default {
 			empty-text="暂无可开票订单（订单的可开票金额为0）"
 			:data="goodsOrderList"
 			virtual-scroll
-			max-height="400px"
-			height="400px"
 			size="mini"
 			:cell-style="
 				() => {
