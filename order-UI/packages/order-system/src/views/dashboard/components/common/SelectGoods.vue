@@ -103,11 +103,8 @@ export default {
 				}
 				const res = await getGoodsOrder(row.id);
 				const orderInfo = (res && (res.data || res)) || {};
-				// 兼容多种返回结构
 				let details = [];
-				if (Array.isArray(orderInfo.goodsOrderDetails)) details = orderInfo.goodsOrderDetails;
-
-				// 打开通用弹窗展示整单信息
+				if (Array.isArray(orderInfo.orderDetailList)) details = orderInfo.orderDetailList;
 				this.openDialog(
 					OrderDisplay,
 					`订单详情 - ${orderInfo.ordersNo || orderInfo.id || ''}`,
