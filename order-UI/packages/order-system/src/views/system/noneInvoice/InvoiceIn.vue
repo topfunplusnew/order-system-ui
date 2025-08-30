@@ -271,6 +271,7 @@
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false"
 			:show-close="true" title="查看订单信息" :visible.sync="checkOrderInfoVisible" width="70%" append-to-body>
 			<OrderInfos :order-info="orderInfo" />
+			<OrderDetailInfo :orderDetailInfoList="orderInfo.orderDetailInfoList"/>
 		</el-dialog>
 
 		<div v-if="currentComponent">
@@ -311,11 +312,13 @@ import { parseTime } from '@/utils/ruoyi';
 import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import INVOICE_IN from '@/components/NeedToShow/INVOICE_IN.vue';
+import OrderDetailInfo from '../../dashboard/components/goodsOrder/OrderDetailInfo.vue';
 
 export default {
 	name: 'NoneInvoiceIn',
 	components: { DialogWrapper, CheckFiles, UploadFilesButton, OrderInfos, ApplyPayment, SearchOption },
-	mixins: [mixin_printHTML, reLength, mixin_checkfile, common_dialog],
+	mixins: [mixin_printHTM,
+OrderDetailInfoL, reLength, mixin_checkfile, common_dialog],
 	data() {
 		// 金额格式验证（最多两位小数）
 		const validateAmount = (rule, value, callback) => {
