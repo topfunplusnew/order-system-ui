@@ -30,10 +30,6 @@ export default {
 					customers: { total: 0, count: 0 }
 				};
 			}
-		},
-		templateData: {
-			type: Array,
-			default: () => []
 		}
 	},
 	data() {
@@ -41,6 +37,18 @@ export default {
 			selectedRowId: null,
 			viewTemplateVisible: false
 		};
+	},
+	computed: {
+		// 从 Vuex 获取模板数据
+		purchaseTemplateData() {
+			return this.$store.state.excel.purchaseTemplateData || [];
+		},
+		sellerTemplateData() {
+			return this.$store.state.excel.sellerTemplateData || [];
+		},
+		selectedTemplateData() {
+			return this.side === 'purchase' ? this.purchaseTemplateData : this.sellerTemplateData;
+		}
 	},
 	mounted() {
 		// 重置行的样式
@@ -53,7 +61,7 @@ export default {
 	methods: {
 		openTemplateViewer() {
 			// 仅在有数据时打开
-			if (!this.templateData || this.templateData.length === 0) {
+			if (!this.selectedTemplateData || this.selectedTemplateData.length === 0) {
 				this.$message.info('暂无模板数据');
 				return;
 			}
@@ -143,7 +151,7 @@ export default {
 	}
 };
 </script>
-现在，当CompanyList中，点击某一个公司进行检索的时候，会在SelectGoods中筛选出 该公司的订单，然后现在在SelectGoods中添加一个按钮，为生成发票，逻辑暂时不实现，放在刷新按钮的右侧，并居右展示
+
 <template>
 	<div class="companies-list-wrapper">
 		<!-- 统计信息展示区域 -->
@@ -191,7 +199,7 @@ export default {
 
 		<!-- 查看模板数据弹窗 -->
 		<el-dialog :modal="false" title="模板数据预览" :visible.sync="viewTemplateVisible" width="800px" append-to-body>
-			<el-table :data="templateData" size="mini" height="400px" border>
+			<el-table :data="selectedTemplateData" size="mini" height="400px" border>
 				<el-table-column prop="sellerId" label="销方ID" width="90" />
 				<el-table-column prop="sellerName" label="销方名称" width="160" />
 				<el-table-column prop="sellerType" label="销方类型" width="90" />

@@ -60,10 +60,8 @@ export default {
 					suppliers: { total: 0, count: 0 }, // 供应商作为销方的统计
 					customers: { total: 0, count: 0 } // 客户作为销方的统计
 				}
-			},
+			}
 			// 模板数据（按对方身份拆分）
-			purchaseTemplateData: [],
-			sellerTemplateData: []
 		};
 	},
 	methods: {
@@ -142,9 +140,15 @@ export default {
 			this.purchaseTotalInfo = Array.from(purchaseMap.values());
 			this.sellerTotalInfo = Array.from(sellerMap.values());
 
-			// 保存模板原始数据，按对方身份拆分，供 CompanysList 查看
-			this.purchaseTemplateData = arr.filter(e => e && e.sellerId === 0);
-			this.sellerTemplateData = arr.filter(e => e && e.sellerId !== 0);
+			// 保存模板原始数据到 Vuex，按对方身份拆分
+			this.$store.dispatch(
+				'excel/setPurchaseTemplateData',
+				arr.filter(e => e && e.sellerId === 0)
+			);
+			this.$store.dispatch(
+				'excel/setSellerTemplateData',
+				arr.filter(e => e && e.sellerId !== 0)
+			);
 
 			// 计算统计信息
 			this.calculateStatistics(arr);
@@ -324,6 +328,9 @@ export default {
 			this.$store.dispatch('excel/clearTicketPoint');
 			// 清除备注
 			this.$store.dispatch('excel/clearComment');
+			// 清除模板数据
+			this.$store.dispatch('excel/clearPurchaseTemplateData');
+			this.$store.dispatch('excel/clearSellerTemplateData');
 			// 重置统计信息
 			this.statisticsInfo = {
 				purchaseStats: {
@@ -397,7 +404,6 @@ export default {
 												side="purchase"
 												:company-total-info="purchaseTotalInfo"
 												:statistics-info="statisticsInfo ? statisticsInfo.purchaseStats : { suppliers: { total: 0, count: 0 }, customers: { total: 0, count: 0 } }"
-												:template-data="purchaseTemplateData"
 												@handleCheck="handleCheck"
 											/>
 											<el-divider>
@@ -407,7 +413,6 @@ export default {
 												side="seller"
 												:company-total-info="sellerTotalInfo"
 												:statistics-info="statisticsInfo ? statisticsInfo.sellerStats : { suppliers: { total: 0, count: 0 }, customers: { total: 0, count: 0 } }"
-												:template-data="sellerTemplateData"
 												@handleCheck="handleCheck"
 											/>
 										</div>

@@ -16,7 +16,10 @@ const state = {
 	// 购买方临时信息存储 类型为数组
 	purchaseTempInfo: [],
 	// 卖家临时信息存储 类型为数组
-	sellerTempInfo: []
+	sellerTempInfo: [],
+	// 导入模板数据（按购买方/销方）
+	purchaseTemplateData: [],
+	sellerTemplateData: []
 };
 
 const mutations = {
@@ -50,9 +53,6 @@ const mutations = {
 	CLEAR_SELECTED_INVOICE_LIST: state => {
 		state.selectedInvoiceList = [];
 	},
-	// 修改其中某一个开票的值
-	// TODO
-	UPDATE_SOME_INVOICE_VALUE: (state, { index, value }) => {},
 	SET_INVOICE_AMOUNT: (state, data) => {
 		state.invoiceAmount = data;
 	},
@@ -96,6 +96,18 @@ const mutations = {
 	},
 	CLEAR_SELLER_TEMP_INFO: state => {
 		state.sellerTempInfo = [];
+	},
+	SET_PURCHASE_TEMPLATE: (state, data) => {
+		state.purchaseTemplateData = data;
+	},
+	CLEAR_PURCHASE_TEMPLATE: state => {
+		state.purchaseTemplateData = [];
+	},
+	SET_SELLER_TEMPLATE: (state, data) => {
+		state.sellerTemplateData = data;
+	},
+	CLEAR_SELLER_TEMPLATE: state => {
+		state.sellerTemplateData = [];
 	}
 };
 
@@ -149,7 +161,21 @@ const actions = {
 		commit('SET_SELLER_TEMP_INFO', data);
 	},
 	clearSellerTempInfo({ commit }) {
-		commit('CLEAR_SELLER_TEMP_INFO)');
+		commit('CLEAR_SELLER_TEMP_INFO');
+	},
+
+	// template data for purchase/seller (from imported excel)
+	setPurchaseTemplateData({ commit }, data) {
+		commit('SET_PURCHASE_TEMPLATE', data);
+	},
+	clearPurchaseTemplateData({ commit }) {
+		commit('CLEAR_PURCHASE_TEMPLATE');
+	},
+	setSellerTemplateData({ commit }, data) {
+		commit('SET_SELLER_TEMPLATE', data);
+	},
+	clearSellerTemplateData({ commit }) {
+		commit('CLEAR_SELLER_TEMPLATE');
 	}
 };
 

@@ -1,5 +1,6 @@
 <script>
 import InvoiceItem from '@/views/dashboard/components/common/InvoiceItem.vue';
+import { create, all } from 'mathjs';
 import { mapGetters } from 'vuex';
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
 import { parseTime } from '@/utils/ruoyi';
@@ -18,17 +19,8 @@ export default {
 		// 监听选择订单的变化
 		selectedOrder: {
 			handler(val) {
-				// 判断是否长度大于0
+				// 选择订单仅控制开关，不自动生成发票；生成发票由用户点击触发
 				typeof val === 'object' && val.length > 0 ? this.handleToggle(false) : this.handleToggle(true);
-				// 先清除上一次的状态
-				this.$store.dispatch('excel/clearSelectedInvoiceList');
-				// 对选择的每一个订单进行转换处理 把订单对象转为开票对象
-				const invoiceList = val
-					.map(element => this.handleTransform(element))
-					// 过滤掉转换失败产生的 null/undefined
-					.filter(item => item != null);
-				// 存储vuex
-				this.$store.dispatch('excel/setSelectedInvoiceList', invoiceList);
 			},
 			immediate: true,
 			deep: true
@@ -49,6 +41,9 @@ export default {
 			currentTicketPointAmount: 0
 		};
 	},
+	created() {
+		this.math = create(all, { number: 'BigNumber', precision: 64 });
+	},
 	computed: {
 		PUBLIC_DICT_TYPE() {
 			return PUBLIC_DICT_TYPE;
@@ -59,7 +54,6 @@ export default {
 		// 创建发票对象的工具函数
 		createInvoiceObject(params) {
 			const { invoiceDate, invoiceObject, invoiceAmount, companyType, companyName, companyID, invoiceCompanyName, ticketPoint = 0, ticketPointAmount, isOrderTax, comments } = params;
-
 			return {
 				invoiceDate,
 				invoiceObject,
@@ -82,14 +76,112 @@ export default {
 
 		// 批量开发票
 		async handleInvoiceBatch() {
-			// 首先从vuex拿出数据
-			const invoiceList = this.$store.getters.selectedInvoiceList;
-			// 校验一下
-			if (invoiceList.length === 0) {
+			// 保持旧行为：直接检查当前已经生成的发票列表
+			const invoiceList = this.$store.getters.selectedInvoiceList || [];
+			if (!invoiceList || invoiceList.length === 0) {
 				this.$message.warning('开票列表为空,请检查!');
+				return;
 			}
-			// 弹出弹窗 让用户检查
 			this.handleCheckInvoice(invoiceList);
+		},
+
+		// 生成发票：由 SelectGoods 的按钮触发
+		generateInvoicesByTemplates() {
+			// 获取当前选择订单
+			const orders = this.$store.getters.selectedOrder || [];
+			if (!orders || orders.length === 0) {
+				this.$message.warning('请先选择订单后再生成发票');
+				return;
+			}
+
+			// 读取并合并模板数据（购买方+销方）
+			const purchaseTemplates = this.$store.state.excel.purchaseTemplateData || [];
+			const sellerTemplates = this.$store.state.excel.sellerTemplateData || [];
+			const templates = purchaseTemplates.concat(sellerTemplates);
+			if (!templates || templates.length === 0) {
+				this.$message.warning('暂无模板数据，无法生成发票');
+				return;
+			}
+
+			// 深拷贝模板，避免修改原始 Vuex 数据
+			let templatePool = templates.map(t => ({ ...t }));
+
+			// 生成发票列表
+			const resultInvoices = [];
+
+			// 使用 mathjs BigNumber 做精确计算
+			const b = v => this.math.bignumber(v || 0);
+
+			for (let order of orders) {
+				// 每个订单的 remainingAmount 是订单的已开票金额(allPayments)
+				let remaining = b(order.allPayments - order.params.totalInvoiceAmount || 0);
+				let orderFullyInvoiced = false;
+				// 如果订单的剩余开票金额等于0
+				if (remaining === 0) {
+					continue; // 跳过该订单，继续下一个订单
+				}
+				for (let i = 0; i < templatePool.length; i++) {
+					const tpl = templatePool[i];
+					const tplAmount = b(tpl.total || 0);
+
+					// 如果模板金额大于等于当前订单剩余待开金额，则生成一张发票并标记订单完成
+					if (this.math.larger(tplAmount, remaining) || this.math.equal(tplAmount, remaining)) {
+						// 根据模板行判断 companyType/companyID/companyName：优先判断销方（sellerId），否则判断购买方（purchaseId）
+						let companyTypeConst = this.invoiceType || this.PUBLIC_DICT_TYPE.CUSTOMER;
+						let companyID = tpl.sellerId || tpl.purchaseId || null;
+						let companyName = tpl.sellerName || tpl.purchaseName || tpl.invoiceCompanyName || '未知';
+						if (tpl.sellerId && Number(tpl.sellerId) !== 0) {
+							// 销方为主
+							companyTypeConst = tpl.sellerType === '供应商' ? this.PUBLIC_DICT_TYPE.SUPPLIER : this.PUBLIC_DICT_TYPE.CUSTOMER;
+							companyID = tpl.sellerId;
+							companyName = tpl.sellerName || companyName;
+						} else if (tpl.purchaseId && Number(tpl.purchaseId) !== 0) {
+							// 购买方为主
+							companyTypeConst = tpl.purchaseType === '供应商' ? this.PUBLIC_DICT_TYPE.SUPPLIER : this.PUBLIC_DICT_TYPE.CUSTOMER;
+							companyID = tpl.purchaseId;
+							companyName = tpl.purchaseName || companyName;
+						}
+
+						// 生成发票对象
+						const invoice = this.createInvoiceObject({
+							invoiceDate: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
+							invoiceObject: sessionStorage.getItem('us'),
+							invoiceAmount: Number(this.math.format(remaining)),
+							companyType: companyTypeConst,
+							companyName: companyName,
+							companyID: companyID,
+							invoiceCompanyName: companyName,
+							ticketPoint: tpl.ticketPoint || tpl.ticketPointAmount || 0,
+							ticketPointAmount: Number(this.math.format(this.math.multiply(remaining, b(tpl.ticketPoint || 0)))),
+							isOrderTax: order.id,
+							comments: this.comment
+						});
+						resultInvoices.push(invoice);
+						orderFullyInvoiced = true;
+						// 标记此模板行已使用完毕（将其金额设为0），以免被重复使用
+						templatePool[i].total = 0;
+						break; // 当前订单完成，继续下一个订单
+					} else {
+						// 模板金额小于订单剩余金额，则用模板金额抵扣订单剩余金额，并继续使用下一模板
+						remaining = this.math.subtract(remaining, tplAmount);
+						// 标记该模板已被消耗（设为0）
+						templatePool[i].total = 0;
+						// 如果 remaining 小于等于0，则订单开完
+						if (this.math.largerEq(b(0), remaining) || this.math.equal(remaining, b(0))) {
+							orderFullyInvoiced = true;
+							break;
+						}
+						// 否则继续下一个模板
+					}
+				}
+
+				// 如果订单在模板循环后被标记为已开完，则继续下一个订单
+				if (orderFullyInvoiced) continue;
+			}
+
+			// 将生成的发票列表写入 Vuex，触发界面更新
+			this.$store.dispatch('excel/setSelectedInvoiceList', resultInvoices);
+			this.$message.success(`生成 ${resultInvoices.length} 条发票记录`);
 		},
 
 		// 校验
@@ -204,12 +296,16 @@ export default {
 			this.currentTicketPoint = 0;
 			this.currentTicketPointAmount = 0;
 		});
+
+		// 监听生成发票的触发（由 SelectGoods 发出）
+		this.$bus.$on('generate-invoice', this.generateInvoicesByTemplates);
 	},
 	beforeDestroy() {
 		// 清除事件监听 防止内存泄漏
 		this.$bus.$off('select-goods:update'); // 清理事件监听
 		this.$bus.$off('update-goods-order-company');
 		this.$bus.$off('invoice-clear');
+		this.$bus.$off('generate-invoice', this.generateInvoicesByTemplates);
 	}
 };
 </script>

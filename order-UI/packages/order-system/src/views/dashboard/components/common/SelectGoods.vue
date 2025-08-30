@@ -136,7 +136,18 @@ export default {
 			// 搜索
 			try {
 				const res = await listGoodsOrder(this.queryParams);
-				this.goodsOrderList = res.rows; // 更新数据
+				// 筛选出未开完的订单
+				this.goodsOrderList = res.rows
+					.map(row => {
+						// 计算剩余开票金额
+						const remainingInvoiceAmount = Number(row.allPayments) - Number(row.params.totalInvoiceAmount || 0);
+						// 只返回剩余开票金额大于0的订单
+						if (remainingInvoiceAmount > 0) {
+							return row;
+						}
+						return null;
+					})
+					.filter(row => row !== null);
 				this.total = res.total;
 			} catch (error) {
 				console.log('Failed to fetch goods order list:', error);
@@ -323,7 +334,8 @@ export default {
 
 		// 生成发票（占位，暂未实现）
 		generateInvoice() {
-			this.$message.info('生成发票逻辑暂未实现');
+			// 触发事件，由 InvoiceBody 去处理生成发票的逻辑
+			this.$bus.$emit('generate-invoice');
 		},
 		// 重置搜索条件
 		resetParams() {
@@ -399,6 +411,7 @@ export default {
 			fit
 			ref="goodsTable"
 			border
+			empty-text="暂无可开票订单（订单的可开票金额为0）"
 			:data="goodsOrderList"
 			virtual-scroll
 			max-height="400px"
@@ -417,9 +430,9 @@ export default {
 				</template>
 			</el-table-column>
 			<el-table-column type="selection" width="55" align="center" :selectable="selectable" />
-			<el-table-column v-if="type" show-overflow-tooltip :label="type + `已开票金额`" align="center" width="150px">
+			<el-table-column v-if="type" show-overflow-tooltip :label="type + `剩余开票金额`" align="center" width="150px">
 				<template #default="scope">
-					{{ scope.row.params.totalInvoiceAmount }}
+					{{ Number(scope.row.allPayments) - Number(scope.row.params.totalInvoiceAmount) }}
 				</template>
 			</el-table-column>
 			<el-table-column show-overflow-tooltip label="日期" align="center" prop="orderDate" />

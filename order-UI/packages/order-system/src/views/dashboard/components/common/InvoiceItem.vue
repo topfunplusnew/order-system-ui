@@ -62,8 +62,8 @@ export default {
 					<span class="company-name">{{ invoice.companyName || '未知公司' }}</span>
 				</div>
 				<div class="invoice-type">
-					<el-tag :type="invoice.companyType === 'CUSTOMER' ? 'success' : 'warning'" size="mini" effect="light">
-						{{ invoice.companyType === 'CUSTOMER' ? '客户' : '供应商' }}
+					<el-tag :type="invoice.companyType === '客户' ? 'success' : 'warning'" size="mini" effect="light">
+						{{ invoice.companyType }}
 					</el-tag>
 				</div>
 			</div>
@@ -103,7 +103,7 @@ export default {
 			</div>
 
 			<el-descriptions :column="2" size="medium" border>
-				<el-descriptions-item label="开票实体" :span="2">
+				<el-descriptions-item label="我方开票实体" :span="2">
 					<EllipsisText :title="invoice.invoiceObject" />
 				</el-descriptions-item>
 				<el-descriptions-item label="发票日期">
