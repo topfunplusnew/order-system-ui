@@ -8,7 +8,6 @@ import _ from 'lodash';
 export default {
 	name: 'CompanysList',
 	components: {
-		CompanyInformation,
 		DialogWrapper
 	},
 	mixins: [common_dialog],
@@ -135,18 +134,18 @@ export default {
 			<el-card class="statistics-card" shadow="never">
 				<div slot="header" class="statistics-header">
 					<i class="el-icon-s-data"></i>
-					<span>开票金额总和统计信息</span>
+					<span>统计</span>
 				</div>
 				<div class="statistics-content">
 					<div v-if="statisticsInfo.suppliers.count > 0" class="stat-item supplier-stat">
 						<span class="stat-label">供应商:</span>
 						<span class="stat-count">{{ statisticsInfo.suppliers.count }}家</span>
-						<span class="stat-amount">¥{{ statisticsInfo.suppliers.total.toLocaleString() }}</span>
+						<span class="stat-amount">累计价税合计：¥{{ statisticsInfo.suppliers.total }}</span>
 					</div>
 					<div v-if="statisticsInfo.customers.count > 0" class="stat-item customer-stat">
 						<span class="stat-label">客户:</span>
 						<span class="stat-count">{{ statisticsInfo.customers.count }}家</span>
-						<span class="stat-amount">¥{{ statisticsInfo.customers.total.toLocaleString() }}</span>
+						<span class="stat-amount">累计价税合计：¥{{ statisticsInfo.customers.total }}</span>
 					</div>
 				</div>
 			</el-card>
@@ -159,19 +158,9 @@ export default {
 			<el-table-column prop="us" label="我方"></el-table-column>
 			<el-table-column prop="name" label="对方公司"></el-table-column>
 			<el-table-column prop="type" label="类型" width="80"></el-table-column>
-			<el-table-column prop="total" label="金额" width="100">
+			<el-table-column prop="total" label="开票金额" width="100">
 				<template slot-scope="scope">
 					<span class="bold-text money">{{ scope.row.total }}</span>
-				</template>
-			</el-table-column>
-			<el-table-column prop="ticketPoint" label="票点" width="80">
-				<template slot-scope="scope">
-					<span class="ticket-point">{{ scope.row.ticketPoint || 0 }}</span>
-				</template>
-			</el-table-column>
-			<el-table-column prop="ticketPointAmount" label="票点金额" width="100">
-				<template slot-scope="scope">
-					<span class="bold-text ticket-amount">{{ scope.row.ticketPointAmount || 0 }}</span>
 				</template>
 			</el-table-column>
 			<el-table-column label="操作" width="120" fixed="right">

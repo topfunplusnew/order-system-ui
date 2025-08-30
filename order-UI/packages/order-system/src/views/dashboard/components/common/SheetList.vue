@@ -182,31 +182,53 @@ export default {
 				}
 			};
 
+			// 用唯一 ID 去重计数，避免同一公司被重复计数
+			const purchaseSupplierIds = new Set();
+			const purchaseCustomerIds = new Set();
+			const sellerSupplierIds = new Set();
+			const sellerCustomerIds = new Set();
+
 			dataArray.forEach(element => {
-				const amount = element.total || 0;
+				const amount = Number(element.total) || 0;
 
 				// 统计购买方（排除己方公司）
 				if (element.purchaseType && element.purchaseType !== '己方公司') {
+					const pid = element.purchaseId;
 					if (element.purchaseType === '供应商') {
 						this.statisticsInfo.purchaseStats.suppliers.total += amount;
-						this.statisticsInfo.purchaseStats.suppliers.count++;
+						if (pid !== undefined && pid !== null && pid !== '' && Number(pid) !== 0) {
+							purchaseSupplierIds.add(String(pid));
+						}
 					} else if (element.purchaseType === '客户') {
 						this.statisticsInfo.purchaseStats.customers.total += amount;
-						this.statisticsInfo.purchaseStats.customers.count++;
+						if (pid !== undefined && pid !== null && pid !== '' && Number(pid) !== 0) {
+							purchaseCustomerIds.add(String(pid));
+						}
 					}
 				}
 
 				// 统计销方（排除己方公司）
 				if (element.sellerType && element.sellerType !== '己方公司') {
+					const sid = element.sellerId;
 					if (element.sellerType === '供应商') {
 						this.statisticsInfo.sellerStats.suppliers.total += amount;
-						this.statisticsInfo.sellerStats.suppliers.count++;
+						if (sid !== undefined && sid !== null && sid !== '' && Number(sid) !== 0) {
+							sellerSupplierIds.add(String(sid));
+						}
 					} else if (element.sellerType === '客户') {
 						this.statisticsInfo.sellerStats.customers.total += amount;
-						this.statisticsInfo.sellerStats.customers.count++;
+						if (sid !== undefined && sid !== null && sid !== '' && Number(sid) !== 0) {
+							sellerCustomerIds.add(String(sid));
+						}
 					}
 				}
 			});
+
+			// 用去重后的 ID 数量作为 count
+			this.statisticsInfo.purchaseStats.suppliers.count = purchaseSupplierIds.size;
+			this.statisticsInfo.purchaseStats.customers.count = purchaseCustomerIds.size;
+			this.statisticsInfo.sellerStats.suppliers.count = sellerSupplierIds.size;
+			this.statisticsInfo.sellerStats.customers.count = sellerCustomerIds.size;
 
 			// 保留两位小数
 			this.statisticsInfo.purchaseStats.suppliers.total = Number(this.statisticsInfo.purchaseStats.suppliers.total.toFixed(2));

@@ -59,13 +59,12 @@ export default {
 		// 格式化公司类型
 		formattedCompanyType() {
 			const type = this.companyInfo.companyType;
-			return type === '客户' ? 'success' :
-				type === '供应商' ? 'warning' : 'info';
+			return type === '客户' ? 'success' : type === '供应商' ? 'warning' : 'info';
 		}
 	},
 	methods: {
-		handleProcess() { },
-		handleReject() { }
+		handleProcess() {},
+		handleReject() {}
 	}
 };
 </script>
@@ -153,8 +152,7 @@ export default {
 				</div>
 
 				<!-- 银行信息 -->
-				<div class="info-section"
-					v-if="companyInfo.bankName !== '暂无' || companyInfo.acountsName !== '暂无' || companyInfo.bankNo !== '暂无'">
+				<div class="info-section" v-if="companyInfo.bankName !== '暂无' || companyInfo.acountsName !== '暂无' || companyInfo.bankNo !== '暂无'">
 					<div class="section-title">
 						<i class="el-icon-credit-card"></i>
 						<span>银行信息</span>

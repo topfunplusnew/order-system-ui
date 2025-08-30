@@ -169,7 +169,7 @@ export var mixin_order_freight_payment = {
 					// 创建新的司机付款记录
 					driverMap.set(driverId, {
 						fundsDate: parseTime(new Date()),
-						payType: this.freightSelfOnceInfo.payType ? this.freightSelfOnceInfo.payType.join('-') : '运费-陆运',
+						payType: this.freightSelfOnceInfo.payType ? this.freightSelfOnceInfo.payType.join('-') : '',
 						moneyAmount: Number(item.moneyAmount),
 						selfAcountsName: this.freightSelfOnceInfo.selfAcountsName,
 						selfBankNo: this.freightSelfOnceInfo.selfBankNo,
@@ -180,11 +180,11 @@ export var mixin_order_freight_payment = {
 						companyName: item.companyName,
 						companyId: item.companyId,
 						companyType: item.companyType,
-						comments: item.comments || '支付订单运费',
-						userId: this.$store.getters.userId || 1,
-						UserName: this.$store.getters.name || '系统管理员',
-						selfBankCardType: this.freightSelfOnceInfo.selfBankCardType || BankAcceptanceType.BANK_CASH,
-						otherBankCardType: this.freightSelfOnceInfo.otherBankCardType || BankAcceptanceType.BANK_CASH,
+						comments: item.comments,
+						userId: this.$store.getters.userId,
+						UserName: this.$store.getters.name,
+						selfBankCardType: this.freightSelfOnceInfo.selfBankCardType,
+						otherBankCardType: this.freightSelfOnceInfo.otherBankCardType,
 						tableReferences: [
 							{
 								refTableName: TableName.ORDER_FREIGHT,

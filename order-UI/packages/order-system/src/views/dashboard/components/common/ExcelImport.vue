@@ -174,7 +174,7 @@ export default {
 				{ wch: 12 }, // 购买方类型
 				{ wch: 25 }, // 购买方名称
 				{ wch: 15 }, // 价税合计
-				{ wch: 10 }  // 票点
+				{ wch: 10 } // 票点
 			];
 			ws['!cols'] = colWidth;
 
@@ -213,14 +213,8 @@ export default {
 			<!-- 右侧操作按钮 -->
 			<div class="right-section">
 				<div class="action-buttons">
-					<el-button class="compact-btn download-btn" type="primary" icon="el-icon-download" size="small"
-						@click="downloadTemplate">
-						下载模板
-					</el-button>
-					<el-button class="compact-btn upload-btn" type="success" icon="el-icon-upload" size="small"
-						@click="handleUpload">
-						批量开票
-					</el-button>
+					<el-button class="compact-btn download-btn" type="primary" icon="el-icon-download" size="small" @click="downloadTemplate">下载模板</el-button>
+					<el-button class="compact-btn upload-btn" type="success" icon="el-icon-upload" size="small" @click="handleUpload">批量开票</el-button>
 					<input ref="fileInput" type="file" class="file-input-hidden" multiple @change="onChange" />
 				</div>
 			</div>
@@ -228,8 +222,16 @@ export default {
 
 		<!-- 批量开票弹窗 -->
 		<div>
-			<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="请选择该excel中的一个工作表后进行批量开票"
-				:visible.sync="dialogVisible" width="500px" class="sheet-select-dialog">
+			<el-dialog
+				:modal="false"
+				v-dialogDrag
+				v-dialogDragWidth
+				v-dialogDragHeight
+				title="请选择该excel中的一个工作表后进行批量开票"
+				:visible.sync="dialogVisible"
+				width="500px"
+				class="sheet-select-dialog"
+			>
 				<div class="dialog-content">
 					<div class="dialog-tip">
 						<i class="el-icon-info"></i>
@@ -572,7 +574,6 @@ export default {
 
 /* 动画效果 */
 @keyframes pulse {
-
 	0%,
 	100% {
 		opacity: 1;
