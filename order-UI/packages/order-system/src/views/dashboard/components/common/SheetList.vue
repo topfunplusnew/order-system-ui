@@ -60,7 +60,10 @@ export default {
 					suppliers: { total: 0, count: 0 }, // 供应商作为销方的统计
 					customers: { total: 0, count: 0 } // 客户作为销方的统计
 				}
-			}
+			},
+			// 模板数据（按对方身份拆分）
+			purchaseTemplateData: [],
+			sellerTemplateData: []
 		};
 	},
 	methods: {
@@ -138,6 +141,10 @@ export default {
 			});
 			this.purchaseTotalInfo = Array.from(purchaseMap.values());
 			this.sellerTotalInfo = Array.from(sellerMap.values());
+
+			// 保存模板原始数据，按对方身份拆分，供 CompanysList 查看
+			this.purchaseTemplateData = arr.filter(e => e && e.sellerId === 0);
+			this.sellerTemplateData = arr.filter(e => e && e.sellerId !== 0);
 
 			// 计算统计信息
 			this.calculateStatistics(arr);
@@ -387,16 +394,20 @@ export default {
 												<span class="bold-text">购买方信息</span>
 											</el-divider>
 											<CompanysList
+												side="purchase"
 												:company-total-info="purchaseTotalInfo"
 												:statistics-info="statisticsInfo ? statisticsInfo.purchaseStats : { suppliers: { total: 0, count: 0 }, customers: { total: 0, count: 0 } }"
+												:template-data="purchaseTemplateData"
 												@handleCheck="handleCheck"
 											/>
 											<el-divider>
 												<span class="bold-text">销方信息</span>
 											</el-divider>
 											<CompanysList
+												side="seller"
 												:company-total-info="sellerTotalInfo"
 												:statistics-info="statisticsInfo ? statisticsInfo.sellerStats : { suppliers: { total: 0, count: 0 }, customers: { total: 0, count: 0 } }"
+												:template-data="sellerTemplateData"
 												@handleCheck="handleCheck"
 											/>
 										</div>

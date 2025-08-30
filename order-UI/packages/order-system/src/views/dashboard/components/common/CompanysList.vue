@@ -12,6 +12,10 @@ export default {
 	},
 	mixins: [common_dialog],
 	props: {
+		side: {
+			type: String, // 'purchase' | 'seller'
+			default: 'purchase'
+		},
 		companyTotalInfo: {
 			type: Array,
 			default: () => {
@@ -26,11 +30,16 @@ export default {
 					customers: { total: 0, count: 0 }
 				};
 			}
+		},
+		templateData: {
+			type: Array,
+			default: () => []
 		}
 	},
 	data() {
 		return {
-			selectedRowId: null
+			selectedRowId: null,
+			viewTemplateVisible: false
 		};
 	},
 	mounted() {
@@ -42,6 +51,14 @@ export default {
 		this.$bus.$off('select-goods:update'); // 清理事件监听
 	},
 	methods: {
+		openTemplateViewer() {
+			// 仅在有数据时打开
+			if (!this.templateData || this.templateData.length === 0) {
+				this.$message.info('暂无模板数据');
+				return;
+			}
+			this.viewTemplateVisible = true;
+		},
 		handleCheck(row) {
 			const { id, type } = row;
 			getCompany(id, type).then(res => {
@@ -135,6 +152,7 @@ export default {
 				<div slot="header" class="statistics-header">
 					<i class="el-icon-s-data"></i>
 					<span>统计</span>
+					<el-button type="text" size="mini" @click="openTemplateViewer">查看模板数据（{{ side === 'purchase' ? '购买方' : '销方' }}）</el-button>
 				</div>
 				<div class="statistics-content">
 					<div v-if="statisticsInfo.suppliers.count > 0" class="stat-item supplier-stat">
@@ -170,6 +188,24 @@ export default {
 				</template>
 			</el-table-column>
 		</el-table>
+
+		<!-- 查看模板数据弹窗 -->
+		<el-dialog :modal="false" title="模板数据预览" :visible.sync="viewTemplateVisible" width="800px" append-to-body>
+			<el-table :data="templateData" size="mini" height="400px" border>
+				<el-table-column prop="sellerId" label="销方ID" width="90" />
+				<el-table-column prop="sellerName" label="销方名称" width="160" />
+				<el-table-column prop="sellerType" label="销方类型" width="90" />
+				<el-table-column prop="purchaseId" label="购买方ID" width="90" />
+				<el-table-column prop="purchaseName" label="购买方名称" width="160" />
+				<el-table-column prop="purchaseType" label="购买方类型" width="100" />
+				<el-table-column prop="total" label="价税合计" width="110" />
+				<el-table-column prop="ticketPoint" label="票点" width="80" />
+				<el-table-column prop="ticketPointAmount" label="票点金额" width="110" />
+			</el-table>
+			<span slot="footer" class="dialog-footer">
+				<el-button size="mini" @click="viewTemplateVisible = false">关闭</el-button>
+			</span>
+		</el-dialog>
 		<!--通用弹窗 配合common_dialog使用-->
 		<div v-if="currentComponent">
 			<DialogWrapper :current-component="currentComponent" :dialog-visible="dialogVisible" />
