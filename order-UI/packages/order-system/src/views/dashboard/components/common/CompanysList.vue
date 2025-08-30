@@ -143,7 +143,7 @@ export default {
 	}
 };
 </script>
-
+现在，当CompanyList中，点击某一个公司进行检索的时候，会在SelectGoods中筛选出 该公司的订单，然后现在在SelectGoods中添加一个按钮，为生成发票，逻辑暂时不实现，放在刷新按钮的右侧，并居右展示
 <template>
 	<div class="companies-list-wrapper">
 		<!-- 统计信息展示区域 -->

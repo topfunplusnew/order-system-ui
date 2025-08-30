@@ -320,6 +320,11 @@ export default {
 			this.resetParams();
 			this.getList();
 		},
+
+		// 生成发票（占位，暂未实现）
+		generateInvoice() {
+			this.$message.info('生成发票逻辑暂未实现');
+		},
 		// 重置搜索条件
 		resetParams() {
 			// 只选择未开票的订单
@@ -379,6 +384,11 @@ export default {
 		</div>
 
 		<QuerySearchBar :query-params="queryParams" @updateQuery="handleQuery" />
+
+		<!-- 操作按钮：刷新 + 生成发票（右对齐） -->
+		<div class="select-actions">
+			<el-button type="primary" size="mini" @click="generateInvoice">生成发票</el-button>
+		</div>
 
 		<!--    显示选择的公司 如果是客户 那么就是批量卖出 如果是供应商 那么就是批量买入-->
 		<!--    订单列表主体-->
@@ -459,4 +469,11 @@ export default {
 	</div>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.select-actions {
+	display: flex;
+	justify-content: flex-end; /* 右对齐 */
+	gap: 8px;
+	margin: 8px 0;
+}
+</style>
