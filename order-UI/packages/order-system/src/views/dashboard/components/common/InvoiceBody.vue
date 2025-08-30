@@ -107,8 +107,38 @@ export default {
 				return;
 			}
 
+			// 这部分逻辑是筛选公司 使用该公司模板数据
+			const selectedCompanyId = this.supplierId;
+			const preferInvoiceType = this.invoiceType; // PUBLIC_DICT_TYPE
+			const isCustomerTypeStr = s => {
+				if (!s) return false;
+				try {
+					const lower = String(s).toLowerCase();
+					return lower.includes('客户') || lower.includes('customer');
+				} catch (e) {
+					return false;
+				}
+			};
+
+			let filtered = templates;
+			if (selectedCompanyId) {
+				// 优先按销方 id 过滤；当偏好为 CUSTOMER 时，优先匹配 sellerType 为客户的模板
+				let sellerMatches = templates.filter(tpl => tpl && tpl.sellerId && String(tpl.sellerId) === String(selectedCompanyId));
+				if (sellerMatches.length > 0) {
+					if (preferInvoiceType === this.PUBLIC_DICT_TYPE.CUSTOMER) {
+						const customerSellerMatches = sellerMatches.filter(tpl => isCustomerTypeStr(tpl.sellerType));
+						if (customerSellerMatches.length > 0) sellerMatches = customerSellerMatches;
+					}
+					filtered = sellerMatches;
+				} else {
+					// 尝试按购买方 id 过滤
+					const purchaseMatches = templates.filter(tpl => tpl && tpl.purchaseId && String(tpl.purchaseId) === String(selectedCompanyId));
+					if (purchaseMatches.length > 0) filtered = purchaseMatches;
+				}
+			}
+
 			// 深拷贝模板，避免修改原始 Vuex 数据
-			let templatePool = templates.map(t => ({ ...t }));
+			let templatePool = filtered.map(t => ({ ...t }));
 
 			// 生成发票列表
 			const resultInvoices = [];
