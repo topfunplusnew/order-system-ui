@@ -19,7 +19,26 @@ export default {
 			visible: false,
 			form: {},
 			rules: {
-				moneyAmount: [{ required: true, message: '请输入金额', trigger: 'blur' }],
+				// 金额校验：必须为数值，最多两位小数，且大于 0
+				moneyAmount: [
+					{ required: true, message: '请输入金额', trigger: 'blur' },
+					{
+						validator: (rule, value, callback) => {
+							if (value === null || value === undefined || value === '') {
+								return callback(new Error('请输入金额'));
+							}
+							const str = String(value).trim();
+							if (!/^\d+(?:\.\d{1,2})?$/.test(str)) {
+								return callback(new Error('请输入有效金额，最多两位小数'));
+							}
+							if (Number(str) <= 0) {
+								return callback(new Error('金额必须大于 0'));
+							}
+							return callback();
+						},
+						trigger: 'blur'
+					}
+				],
 				otherAcountsName: [
 					{
 						required: true,
@@ -168,6 +187,24 @@ export default {
 			this.form.otherBankName = val.bankName;
 			this.form.otherAcountsName = val.acountsName;
 		},
+		// 金额输入过滤：保留数字和小数点，且最多两位小数
+		onMoneyInput(val) {
+			if (val === null || val === undefined) return;
+			let s = String(val);
+			// 删除非法字符（保留数字和小数点）
+			s = s.replace(/[^\d.]/g, '');
+			// 只允许一个小数点
+			s = s.replace(/(\.+)\./g, '$1');
+			// 限制两位小数
+			if (/^\d+\.\d{3,}$/.test(s)) {
+				s = s.replace(/^(\d+\.\d{2}).*$/, '$1');
+			}
+			// 去除前导多余的 0（保留 0 或 0.xx）
+			if (/^0\d+/.test(s)) {
+				s = s.replace(/^0+(?=\d)/, '0');
+			}
+			this.form.moneyAmount = s === '' ? null : Number(s);
+		},
 		handleCommitBackCars(val) {
 			this.form.carNo = val.dictLabel;
 		},
@@ -198,7 +235,10 @@ export default {
 					addOrderFreight(this.form).then(() => {
 						this.$modal.msgSuccess('新增成功');
 						this.visible = false;
-						this.getList();
+						// 发送事件通知父页面刷新数据
+						if (this.$bus && this.$bus.$emit) {
+							this.$bus.$emit('order-freight:refresh');
+						}
 					});
 				}
 			});
@@ -263,65 +303,57 @@ export default {
 								<span style="color: #1c84c6">选择订单自动填充相关信息</span>
 							</el-col>
 							<el-col :span="4">
-								<SearchOption title="订单信息" :limit-info="{}" :get-data="listGoodsOrder"
-									query-label="ID搜索" :query-name="queryOrder" query-info="id"
-									@update:queryName="updateQueryOrder" @commitBack="handleCommitBackOrder">
+								<SearchOption
+									title="订单信息"
+									:limit-info="{}"
+									:get-data="listGoodsOrder"
+									query-label="ID搜索"
+									:query-name="queryOrder"
+									query-info="id"
+									@update:queryName="updateQueryOrder"
+									@commitBack="handleCommitBackOrder"
+								>
 									<template #table-columns>
-										<el-table-column show-overflow-tooltip label="ID" align="center" prop="id"
-											fixed="left" />
-										<el-table-column show-overflow-tooltip label="日期" align="center"
-											prop="orderDate" fixed="left" />
-										<el-table-column show-overflow-tooltip label="客户" align="center" prop="customer"
-											fixed="left" />
-										<el-table-column show-overflow-tooltip label="供应商" align="center"
-											prop="supplierNames" fixed="left" />
-										<el-table-column show-overflow-tooltip label="是否调整过" align="center"
-											prop="isAdjusted">
+										<el-table-column show-overflow-tooltip label="ID" align="center" prop="id" fixed="left" />
+										<el-table-column show-overflow-tooltip label="日期" align="center" prop="orderDate" fixed="left" />
+										<el-table-column show-overflow-tooltip label="客户" align="center" prop="customer" fixed="left" />
+										<el-table-column show-overflow-tooltip label="供应商" align="center" prop="supplierNames" fixed="left" />
+										<el-table-column show-overflow-tooltip label="是否调整过" align="center" prop="isAdjusted">
 											<template #default="scope">
 												{{ scope.row.isAdjusted ? '是' : '否' }}
 											</template>
 										</el-table-column>
-										<el-table-column show-overflow-tooltip label="陆运车牌" align="center"
-											prop="landCarNo" />
-										<el-table-column show-overflow-tooltip label="陆运司机电话" align="center"
-											prop="landDriverTel" width="100px" />
-										<el-table-column show-overflow-tooltip label="陆地司机姓名" align="center"
-											prop="landDriverName" width="100px" />
-										<el-table-column show-overflow-tooltip label="柜号" align="center"
-											prop="seaCarNo">
+										<el-table-column show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo" />
+										<el-table-column show-overflow-tooltip label="陆运司机电话" align="center" prop="landDriverTel" width="100px" />
+										<el-table-column show-overflow-tooltip label="陆地司机姓名" align="center" prop="landDriverName" width="100px" />
+										<el-table-column show-overflow-tooltip label="柜号" align="center" prop="seaCarNo">
 											<template #default="scope">
 												{{ isNull(scope.row.seaCarNo) }}
 											</template>
 										</el-table-column>
-										<el-table-column show-overflow-tooltip label="海运司机电话" align="center"
-											prop="seaDriverTel">
+										<el-table-column show-overflow-tooltip label="海运司机电话" align="center" prop="seaDriverTel">
 											<template #default="scope">
 												{{ isNull(scope.row.seaDriverTel) }}
 											</template>
 										</el-table-column>
-										<el-table-column show-overflow-tooltip label="海运公司" align="center"
-											prop="seaDriverName" width="100px">
+										<el-table-column show-overflow-tooltip label="海运公司" align="center" prop="seaDriverName" width="100px">
 											<template #default="scope">
 												{{ isNull(scope.row.seaDriverTel) }}
 											</template>
 										</el-table-column>
-										<el-table-column show-overflow-tooltip label="销售经理" align="center"
-											prop="saleManager" />
+										<el-table-column show-overflow-tooltip label="销售经理" align="center" prop="saleManager" />
 										<el-table-column show-overflow-tooltip label="车队" align="center" prop="fleet" />
-										<el-table-column show-overflow-tooltip label="审核状态" align="center"
-											prop="checkState" width="120" />
-										<el-table-column show-overflow-tooltip label="开票状态" align="center"
-											prop="invoiceState" width="120px" />
+										<el-table-column show-overflow-tooltip label="审核状态" align="center" prop="checkState" width="120" />
+										<el-table-column show-overflow-tooltip label="开票状态" align="center" prop="invoiceState" width="120px" />
 										<!--										<el-table-column show-overflow-tooltip label="打款状态" align="center" prop="paymentState" width="120px" />-->
-										<el-table-column show-overflow-tooltip label="备注" align="center"
-											prop="comments" />
+										<el-table-column show-overflow-tooltip label="备注" align="center" prop="comments" />
 									</template>
 								</SearchOption>
 							</el-col>
 						</el-row>
 					</el-form-item>
 					<el-form-item label="金额" prop="moneyAmount">
-						<el-input v-model="form.moneyAmount" placeholder="请输入金额" />
+						<el-input v-model.number="form.moneyAmount" placeholder="请输入金额" @input="onMoneyInput" />
 					</el-form-item>
 					<el-form-item label="车牌号/柜号" prop="carNo">
 						<el-row>
@@ -336,10 +368,16 @@ export default {
 								<el-input v-model="form.otherAcountsName" placeholder="请输入对方户名或点击搜索" />
 							</el-col>
 							<el-col :span="4">
-								<SearchOption :get-data="listBankAccount" icon="el-icon-search" :limit-info="{}"
-									query-label="户名查找" query-info="acountsName" :query-name="queryBankAccount"
+								<SearchOption
+									:get-data="listBankAccount"
+									icon="el-icon-search"
+									:limit-info="{}"
+									query-label="户名查找"
+									query-info="acountsName"
+									:query-name="queryBankAccount"
 									@commitBack="handleCommitBackBankAccount"
-									@update:queryName="updateQueryBankAccount">
+									@update:queryName="updateQueryBankAccount"
+								>
 									<template #table-columns>
 										<el-table-column label="公司名称" align="center" prop="companyName" />
 										<el-table-column label="公司类型" align="center" prop="companyType" />
@@ -367,12 +405,10 @@ export default {
 						</el-col>
 					</el-form-item>
 					<el-form-item label="申请日期" prop="applyDate">
-						<el-date-picker v-model="form.applyDate" type="datetime" placeholder="请选择申请日期"
-							value-format="yyyy-MM-dd HH:mm:ss" />
+						<el-date-picker v-model="form.applyDate" type="datetime" placeholder="请选择申请日期" value-format="yyyy-MM-dd HH:mm:ss" />
 					</el-form-item>
 					<el-form-item label="付款日期" prop="payDate">
-						<el-date-picker v-model="form.payDate" type="datetime" placeholder="请选择付款日期"
-							value-format="yyyy-MM-dd HH:mm:ss" />
+						<el-date-picker v-model="form.payDate" type="datetime" placeholder="请选择付款日期" value-format="yyyy-MM-dd HH:mm:ss" />
 					</el-form-item>
 					<el-form-item label="备注" prop="comments">
 						<el-input v-model="form.comments" placeholder="请输入备注" />

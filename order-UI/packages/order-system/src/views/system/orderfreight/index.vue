@@ -546,6 +546,16 @@ export default {
 		if (Object.keys(this.$route.query).length) {
 			this.$router.replace({ path: this.$route.path });
 		}
+
+		// 监听来自 FillFreight 的刷新事件，收到后重新加载列表
+		if (this.$bus && this.$bus.$on) {
+			this.$bus.$on('order-freight:refresh', this.getList);
+		}
+	},
+	beforeDestroy() {
+		if (this.$bus && this.$bus.$off) {
+			this.$bus.$off('order-freight:refresh', this.getList);
+		}
 	},
 	methods: {
 		fix,
