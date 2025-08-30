@@ -1,11 +1,12 @@
 <script>
-import { listGoodsOrder } from '@/api/system/goodsOrder';
+import { listGoodsOrder, getGoodsOrder } from '@/api/system/goodsOrder';
 import QuerySearchBar from '@/views/dashboard/components/goodsOrder/QuerySearchBar.vue';
 import { OptionInvent, Options } from '@/views/dashboard/mixins/order/order_Invoice';
 import { mapGetters } from 'vuex';
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
 import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
+import OrderDisplay from '@/components/OrderDisplay/index.vue';
 
 export default {
 	name: 'SelectGoods',
@@ -93,6 +94,36 @@ export default {
 		this.$bus.$off('update-goods-order-company');
 	},
 	methods: {
+		// 查看订单详情（表头 + 明细）
+		async handleViewOrder(row) {
+			try {
+				if (!row || !row.id) {
+					this.$message.warning('无效的订单行');
+					return;
+				}
+				const res = await getGoodsOrder(row.id);
+				const orderInfo = (res && (res.data || res)) || {};
+				// 兼容多种返回结构
+				let details = [];
+				if (Array.isArray(orderInfo.goodsOrderDetails)) details = orderInfo.goodsOrderDetails;
+
+				// 打开通用弹窗展示整单信息
+				this.openDialog(
+					OrderDisplay,
+					`订单详情 - ${orderInfo.ordersNo || orderInfo.id || ''}`,
+					'90%',
+					{
+						orderInfo: orderInfo || {},
+						orderDetailInfoList: details || [],
+						ban: true
+					},
+					false
+				);
+			} catch (err) {
+				console.error('查看订单失败:', err);
+				this.$message.error('获取订单详情失败，请稍后重试');
+			}
+		},
 		// 获取订单列表
 		async getList() {
 			// 如果信号量有值
@@ -356,9 +387,14 @@ export default {
 		<!--    订单列表主体-->
 		<el-table id="printBox" v-loading="loading" v-horizontal-scroll="'always'" fit ref="goodsTable" border
 			:data="goodsOrderList" virtual-scroll max-height="400px" height="400px" size="mini" :cell-style="() => {
-					return { padding: '2px' };
-				}
+				return { padding: '2px' };
+			}
 				" @selection-change="handleSelectionChange">
+			<el-table-column label="操作" width="100" fixed="left" align="center">
+				<template #default="scope">
+					<el-button type="text" size="mini" @click.stop="handleViewOrder(scope.row)">查看</el-button>
+				</template>
+			</el-table-column>
 			<el-table-column type="selection" width="55" align="center" :selectable="selectable" />
 			<el-table-column v-if="type" show-overflow-tooltip :label="type + `已开票金额`" align="center" width="150px">
 				<template #default="scope">
@@ -396,8 +432,7 @@ export default {
 			<el-table-column show-overflow-tooltip label="销售经理" align="center" prop="saleManager" />
 			<el-table-column show-overflow-tooltip label="车队" align="center" prop="fleet" />
 			<el-table-column show-overflow-tooltip label="录入员" align="center" prop="userName" width="120px" />
-			<el-table-column show-overflow-tooltip label="审核状态" align="center" prop="checkState"
-				width="120">
+			<el-table-column show-overflow-tooltip label="审核状态" align="center" prop="checkState" width="120">
 			</el-table-column>
 			<el-table-column show-overflow-tooltip label="客户是否开票" align="center" prop="customerIsInvoice" width="150px">
 				<template #default="scope">

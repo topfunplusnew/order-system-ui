@@ -186,9 +186,9 @@
 			<el-table-column label="复核状态" align="center" class-name="small-padding fixed-width" width="80"
 				fixed="right">
 				<template slot-scope="scope">
-					<el-switch v-model="scope.row.auditState" v-hasPermi="['system:payment:audit']"
-						active-color="#13ce66" inactive-color="#ff4949"
-						@change="value => handlePaymentAudit(scope.row, value)"></el-switch>
+					<el-switch v-model="scope.row.auditState" v-hasPermi="['system:payment:audit']" :active-value="'1'"
+						:inactive-value="'0'" active-color="#13ce66" inactive-color="#ff4949"
+						@change="value => handlePaymentAudit(scope.row, value)" />
 				</template>
 			</el-table-column>
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="200" fixed="right">
@@ -545,7 +545,8 @@ export default {
 				addtime: null,
 				userId: null,
 				UserName: null,
-				delFlag: null
+				delFlag: null,
+				auditState: null
 			},
 			auditState_options: [
 				{ label: '未复核', value: '0' },
@@ -787,7 +788,16 @@ export default {
 			}
 			// 查询
 			return listPayment(addDateRange(this.queryParams, this.dateRange, 'payment')).then(response => {
-				this.paymentList = response.rows;
+				// 规范化 auditState：后端已复核为字符串 '1'，未复核为 null，这里统一为 '1' 或 '0'
+				const rows = Array.isArray(response.rows) ? response.rows : [];
+				rows.forEach(r => {
+					if (r && (r.auditState === null || r.auditState === undefined || r.auditState === '0' || r.auditState === 0 || r.auditState === false)) {
+						r.auditState = '0';
+					} else if (r && (r.auditState === '1' || r.auditState === 1 || r.auditState === true)) {
+						r.auditState = '1';
+					}
+				});
+				this.paymentList = rows;
 				this.total = response.total;
 				this.loading = false;
 				return response;
