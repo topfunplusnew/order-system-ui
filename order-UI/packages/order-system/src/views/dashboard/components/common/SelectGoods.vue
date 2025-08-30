@@ -107,7 +107,7 @@ export default {
 				if (Array.isArray(orderInfo.orderDetailList)) details = orderInfo.orderDetailList;
 				this.openDialog(
 					OrderDisplay,
-					`订单详情 - ${orderInfo.ordersNo || orderInfo.id || ''}`,
+					`订单信息查看`,
 					'90%',
 					{
 						orderInfo: orderInfo || {},
