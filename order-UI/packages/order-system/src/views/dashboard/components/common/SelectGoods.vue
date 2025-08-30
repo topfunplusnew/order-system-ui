@@ -390,7 +390,7 @@ export default {
 				return { padding: '2px' };
 			}
 				" @selection-change="handleSelectionChange">
-			<el-table-column label="操作" width="100" fixed="left" align="center">
+			<el-table-column label="操作" width="100" align="center">
 				<template #default="scope">
 					<el-button type="text" size="mini" @click.stop="handleViewOrder(scope.row)">查看</el-button>
 				</template>
