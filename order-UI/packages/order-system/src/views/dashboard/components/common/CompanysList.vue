@@ -92,7 +92,7 @@ export default {
 					false
 				);
 				this.$emit('handleCheck', row);
-			})
+			});
 		},
 		// 筛选右侧的订单 通过事件总线提醒
 		handleFilterOrders(row) {
@@ -120,8 +120,8 @@ export default {
 			}
 			return this.selectedRowId === row.id
 				? {
-					background: '#c5f695 !important'
-				}
+						background: '#c5f695 !important'
+				  }
 				: {}; // 返回高亮类名
 		}
 	}
@@ -153,8 +153,7 @@ export default {
 		</div>
 
 		<!-- 公司列表表格 -->
-		<el-table :data="companyTotalInfo" :row-style="handleRowClassName" :cell-style="() => ({ padding: '2px' })"
-			size="mini" style="width: 100%" height="100%" border>
+		<el-table :data="companyTotalInfo" :row-style="handleRowClassName" :cell-style="() => ({ padding: '2px' })" size="mini" style="width: 100%" height="100%" border>
 			<!--多选框-->
 			<el-table-column prop="id" label="ID" width="60"></el-table-column>
 			<el-table-column prop="us" label="我方"></el-table-column>

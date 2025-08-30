@@ -20,7 +20,7 @@ export default {
 	},
 	computed: {
 		amount() {
-			if (this.invoice === null) {
+			if (!this.invoice || Object.keys(this.invoice).length === 0) {
 				return '无';
 			}
 			return fix(this.invoice.ticketPointAmount);
@@ -37,7 +37,7 @@ export default {
 		}
 	},
 	mounted() {
-		console.log(this.invoice);
+		console.log('InvoiceItem mounted invoice:', this.invoice);
 	},
 	methods: {
 		fix,
@@ -62,8 +62,7 @@ export default {
 					<span class="company-name">{{ invoice.companyName || '未知公司' }}</span>
 				</div>
 				<div class="invoice-type">
-					<el-tag :type="invoice.companyType === 'CUSTOMER' ? 'success' : 'warning'" size="mini"
-						effect="light">
+					<el-tag :type="invoice.companyType === 'CUSTOMER' ? 'success' : 'warning'" size="mini" effect="light">
 						{{ invoice.companyType === 'CUSTOMER' ? '客户' : '供应商' }}
 					</el-tag>
 				</div>
@@ -87,16 +86,12 @@ export default {
 			</div>
 
 			<div class="invoice-actions">
-				<el-button type="text" size="mini" icon="el-icon-view" class="view-btn"
-					@click.stop="handleCheckInvoice">
-					查看详情
-				</el-button>
+				<el-button type="text" size="mini" icon="el-icon-view" class="view-btn" @click.stop="handleCheckInvoice">查看详情</el-button>
 			</div>
 		</div>
 
 		<!--		查看开票信息的弹窗-->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="开票信息详情"
-			:visible.sync="visible" width="600px" append-to-body class="invoice-detail-dialog">
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="开票信息详情" :visible.sync="visible" width="600px" append-to-body class="invoice-detail-dialog">
 			<div class="dialog-header">
 				<div class="company-detail">
 					<i class="el-icon-office-building"></i>

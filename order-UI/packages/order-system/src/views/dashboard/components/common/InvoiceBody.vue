@@ -23,9 +23,10 @@ export default {
 				// 先清除上一次的状态
 				this.$store.dispatch('excel/clearSelectedInvoiceList');
 				// 对选择的每一个订单进行转换处理 把订单对象转为开票对象
-				const invoiceList = val.map(element => {
-					return this.handleTransform(element);
-				});
+				const invoiceList = val
+					.map(element => this.handleTransform(element))
+					// 过滤掉转换失败产生的 null/undefined
+					.filter(item => item != null);
 				// 存储vuex
 				this.$store.dispatch('excel/setSelectedInvoiceList', invoiceList);
 			},
@@ -57,19 +58,7 @@ export default {
 	methods: {
 		// 创建发票对象的工具函数
 		createInvoiceObject(params) {
-			const {
-				invoiceDate,
-				invoiceObject,
-				invoiceAmount,
-				companyType,
-				companyName,
-				companyID,
-				invoiceCompanyName,
-				ticketPoint = 0,
-				ticketPointAmount,
-				isOrderTax,
-				comments
-			} = params;
+			const { invoiceDate, invoiceObject, invoiceAmount, companyType, companyName, companyID, invoiceCompanyName, ticketPoint = 0, ticketPointAmount, isOrderTax, comments } = params;
 
 			return {
 				invoiceDate,
@@ -131,9 +120,7 @@ export default {
 
 			const invoiceAmount = Number(orderItem.allPayments);
 			// 使用新的票点计算公式：票点金额 = 开票金额 / (1 + 票点) * 票点
-			const ticketPointAmount = this.currentTicketPoint > 0
-				? Number(((invoiceAmount / (1 + this.currentTicketPoint)) * this.currentTicketPoint).toFixed(2))
-				: 0;
+			const ticketPointAmount = this.currentTicketPoint > 0 ? Number(((invoiceAmount / (1 + this.currentTicketPoint)) * this.currentTicketPoint).toFixed(2)) : 0;
 
 			// 创建客户发票对象
 			return this.createInvoiceObject({
@@ -166,9 +153,7 @@ export default {
 			const invoiceAmount = Number(paymentFactory);
 
 			// 使用新的票点计算公式：票点金额 = 开票金额 / (1 + 票点) * 票点
-			const ticketPointAmount = this.currentTicketPoint > 0
-				? Number(((invoiceAmount / (1 + this.currentTicketPoint)) * this.currentTicketPoint).toFixed(2))
-				: 0;
+			const ticketPointAmount = this.currentTicketPoint > 0 ? Number(((invoiceAmount / (1 + this.currentTicketPoint)) * this.currentTicketPoint).toFixed(2)) : 0;
 
 			// 创建供应商发票对象
 			return this.createInvoiceObject({
@@ -253,12 +238,10 @@ export default {
 
 				<!--    批量开票-->
 				<div class="options">
-					<el-button v-if="invoiceType === PUBLIC_DICT_TYPE.CUSTOMER" type="success" size="small"
-						:disabled="op_customer" @click="handleInvoiceBatch" class="invoice-button">
+					<el-button v-if="invoiceType === PUBLIC_DICT_TYPE.CUSTOMER" type="success" size="small" :disabled="op_customer" @click="handleInvoiceBatch" class="invoice-button">
 						开具客户发票
 					</el-button>
-					<el-button v-if="invoiceType === PUBLIC_DICT_TYPE.SUPPLIER" type="success" size="small"
-						:disabled="op_supplier" @click="handleInvoiceBatch" class="invoice-button">
+					<el-button v-if="invoiceType === PUBLIC_DICT_TYPE.SUPPLIER" type="success" size="small" :disabled="op_supplier" @click="handleInvoiceBatch" class="invoice-button">
 						开具供应商发票
 					</el-button>
 				</div>

@@ -2,10 +2,7 @@ module.exports = {
 	parser: 'vue-eslint-parser', // 使用 vue-eslint-parser 解析 Vue 文件
 	parserOptions: {
 		parser: '@babel/eslint-parser', // 使用 Babel 解析器
-		requireConfigFile: false, // 不需要每个包单独配置 Babel 配置
-		babelOptions: {
-			configFile: './babel.config.js' // 引用根目录的 Babel 配置
-		}
+		requireConfigFile: false // 不需要每个包单独配置 Babel 配置
 	},
 	env: {
 		browser: true,
@@ -23,7 +20,8 @@ module.exports = {
 			],
 			parser: 'vue-eslint-parser', // 使用 vue-eslint-parser 解析 Vue 文件
 			parserOptions: {
-				parser: '@babel/eslint-parser'
+				parser: '@babel/eslint-parser',
+				requireConfigFile: false
 			},
 			rules: {
 				'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',

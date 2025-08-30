@@ -53,12 +53,12 @@ export default {
 				// 购买方统计
 				purchaseStats: {
 					suppliers: { total: 0, count: 0 }, // 供应商作为购买方的统计
-					customers: { total: 0, count: 0 }   // 客户作为购买方的统计
+					customers: { total: 0, count: 0 } // 客户作为购买方的统计
 				},
-				// 销方统计  
+				// 销方统计
 				sellerStats: {
 					suppliers: { total: 0, count: 0 }, // 供应商作为销方的统计
-					customers: { total: 0, count: 0 }   // 客户作为销方的统计
+					customers: { total: 0, count: 0 } // 客户作为销方的统计
 				}
 			}
 		};
@@ -154,9 +154,7 @@ export default {
 			const totalAmount = Number(item['价税合计']) || 0; // 获取价税合计
 
 			// 计算票点金额：票点金额 = 开票金额 / (1 + 票点) * 票点
-			const ticketPointAmount = totalAmount > 0 && ticketPoint > 0
-				? (totalAmount / (1 + ticketPoint)) * ticketPoint
-				: 0;
+			const ticketPointAmount = totalAmount > 0 && ticketPoint > 0 ? (totalAmount / (1 + ticketPoint)) * ticketPoint : 0;
 
 			return {
 				sellerId: item['销方ID'],
@@ -320,14 +318,12 @@ export default {
 		<!--    Excel Sheet的选择列表-->
 		<div class="sheet-container">
 			<!--      点击某一个sheet-->
-			<SheetItem v-for="(item, index) in sheetList" :key="item" :title="item"
-				@click.native="handleInvoiceAll(item, index)" />
+			<SheetItem v-for="(item, index) in sheetList" :key="item" :title="item" @click.native="handleInvoiceAll(item, index)" />
 		</div>
 
 		<!--    批量开票的弹窗-->
 		<div>
-			<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="批量开票" fullscreen
-				:visible.sync="invoiceAllVisible" append-to-body>
+			<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="批量开票" fullscreen :visible.sync="invoiceAllVisible" append-to-body>
 				<div class="invoice-container">
 					<el-row :gutter="16" class="invoice-row">
 						<!-- 左侧区域 -->
@@ -344,24 +340,20 @@ export default {
 											<el-row :gutter="8">
 												<el-col :span="12">
 													<el-form-item label="购买方" label-width="60px">
-														<el-input v-model="purchase" placeholder="购买方名称" size="mini"
-															clearable />
+														<el-input v-model="purchase" placeholder="购买方名称" size="mini" clearable />
 													</el-form-item>
 												</el-col>
 												<el-col :span="12">
 													<el-form-item label="销方" label-width="40px">
-														<el-input v-model="seller" placeholder="销方名称" size="mini"
-															clearable />
+														<el-input v-model="seller" placeholder="销方名称" size="mini" clearable />
 													</el-form-item>
 												</el-col>
 											</el-row>
 											<el-row>
 												<el-col :span="24">
 													<div class="button-group">
-														<el-button type="primary" size="mini"
-															@click="handleFilter">查询</el-button>
-														<el-button type="warning" size="mini"
-															@click="handleReset">重置</el-button>
+														<el-button type="primary" size="mini" @click="handleFilter">查询</el-button>
+														<el-button type="warning" size="mini" @click="handleReset">重置</el-button>
 													</div>
 												</el-col>
 											</el-row>
@@ -372,15 +364,19 @@ export default {
 											<el-divider>
 												<span class="bold-text">购买方信息</span>
 											</el-divider>
-											<CompanysList :company-total-info="purchaseTotalInfo"
+											<CompanysList
+												:company-total-info="purchaseTotalInfo"
 												:statistics-info="statisticsInfo ? statisticsInfo.purchaseStats : { suppliers: { total: 0, count: 0 }, customers: { total: 0, count: 0 } }"
-												@handleCheck="handleCheck" />
+												@handleCheck="handleCheck"
+											/>
 											<el-divider>
 												<span class="bold-text">销方信息</span>
 											</el-divider>
-											<CompanysList :company-total-info="sellerTotalInfo"
+											<CompanysList
+												:company-total-info="sellerTotalInfo"
 												:statistics-info="statisticsInfo ? statisticsInfo.sellerStats : { suppliers: { total: 0, count: 0 }, customers: { total: 0, count: 0 } }"
-												@handleCheck="handleCheck" />
+												@handleCheck="handleCheck"
+											/>
 										</div>
 									</el-card>
 								</div>
@@ -393,8 +389,7 @@ export default {
 								<el-card class="full-height-card">
 									<div slot="header" class="card-header">
 										<span class="bold-text">订单列表(未开票)</span>
-										<el-button class="header-button" type="text"
-											@click="handleResetOrderList">重置筛选</el-button>
+										<el-button class="header-button" type="text" @click="handleResetOrderList">重置筛选</el-button>
 									</div>
 									<div class="select-goods-wrapper">
 										<SelectGoods />
@@ -725,7 +720,7 @@ export default {
 		max-height: calc(100vh - 300px);
 
 		// 为每个公司列表分配更多空间
-		>div {
+		> div {
 			margin-bottom: 12px;
 
 			&:last-child {
