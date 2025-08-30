@@ -500,8 +500,8 @@ export default {
 				if (newReferences && newReferences.length > 0) {
 					// 构建表单的 tableReferences
 					this.form.tableReferences = newReferences.map(ref => ({
-						refTableName: ref.refTableName || ref.tableName, // 兼容旧字段名
-						refTableId: ref.refTableId || ref.tID, // 兼容旧字段名
+						refTableName: ref.refTableName || this.tableName, // 兼容旧字段名
+						refTableId: ref.refTableId || this.tID, // 兼容旧字段名
 						amount: parseFloat(ref.amount) || 0
 					}));
 
@@ -552,10 +552,10 @@ export default {
 			}
 
 			// 兼容旧的单表关联模式（如果传入了 tableName 和 tID）
-			if (this.tableName && this.tID) {
+			if (this.tableName || this.tID) {
 				return [{
 					refTableName: this.tableName,
-					refTableId: this.tID,
+					refTableId: this.tID || 0,
 					amount: parseFloat(this.form.moneyAmount) || 0
 				}];
 			}
