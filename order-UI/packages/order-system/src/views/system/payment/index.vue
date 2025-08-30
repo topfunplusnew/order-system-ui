@@ -80,10 +80,10 @@
 			</right-toolbar>
 		</el-row>
 
-		<el-table id="printBox" v-loading="loading" v-horizontal-scroll="'always'" :data="computedPaymentList"
-			size="mini" border :cell-style="() => {
-					return { padding: '1.5px' };
-				}
+		<el-table id="printBox" v-loading="loading" v-horizontal-scroll="'always'" :data="paymentList" size="mini"
+			border :cell-style="() => {
+				return { padding: '1.5px' };
+			}
 				" @selection-change="handleSelectionChange" ref="paymentTable">
 			<!--			<el-table-column type="selection" width="55" />-->
 			<el-table-column label="id" align="center" prop="id" v-if="columns[0].visible" />
@@ -156,8 +156,9 @@
 			<el-table-column label="支付状态" align="center" prop="paymentState" width="120" v-if="columns[10].visible"
 				show-overflow-tooltip>
 				<template #default="scope">
-					<PaymentFlag :business-object="scope.row" />
-				</template>
+					<el-tag
+						:type="scope.row.paymentState === '已支付' ? 'success' : (scope.row.paymentState === '未支付' ? 'info' : 'warning')"
+						size="mini">{{ scope.row.paymentState }}</el-tag> </template>
 			</el-table-column>
 
 			<el-table-column label="备注" align="center" prop="comments" width="120" v-if="columns[13].visible"
@@ -689,20 +690,6 @@ export default {
 		PAYMENT_TYPES() {
 			return PAYMENT_TYPES;
 		},
-
-		// 处理审核状态
-		computedPaymentList() {
-			return this.paymentList.map(item => {
-				return {
-					...item,
-					auditState: item.auditState === null ? false : item.auditState === '1',
-					// 构造 PaymentFlag 组件需要的业务对象结构
-					payment: {
-						paymentState: item.paymentState === '2' ? '已支付' : '未支付'
-					}
-				};
-			});
-		}
 	},
 	// 展示与隐藏
 	watch: {
