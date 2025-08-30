@@ -1,14 +1,18 @@
 <template>
 	<div class="app-container">
-		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
+		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true"
+			label-width="150px">
 			<el-form-item label="加油卡卡号" prop="oilCardNo">
-				<el-input v-model="queryParams.oilCardNo" placeholder="请输入加油卡卡号" clearable @keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.oilCardNo" placeholder="请输入加油卡卡号" clearable
+					@keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="使用加油卡开始时间" prop="useDateStart">
-				<el-date-picker v-model="queryParams.useDateStart" type="datetime" placeholder="选择使用加油卡时间" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+				<el-date-picker v-model="queryParams.useDateStart" type="datetime" placeholder="选择使用加油卡时间"
+					value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 			</el-form-item>
 			<el-form-item label="使用加油卡结束时间" prop="useDateEnd">
-				<el-date-picker v-model="queryParams.useDateEnd" type="datetime" placeholder="选择使用加油卡时间" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+				<el-date-picker v-model="queryParams.useDateEnd" type="datetime" placeholder="选择使用加油卡时间"
+					value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -19,7 +23,8 @@
 				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
 			</el-col>
 			<el-col :span="1.5">
-				<el-button type="primary" icon="el-icon-plus" size="mini" v-hasPermi="['system:oilcardconsume:add']" @click="handleAdd">新增</el-button>
+				<el-button type="primary" icon="el-icon-plus" size="mini" v-hasPermi="['system:oilcardconsume:add']"
+					@click="handleAdd">新增</el-button>
 			</el-col>
 			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
 				<template #print>
@@ -30,45 +35,43 @@
 				<!--        导出-->
 				<template #export>
 					<el-col :span="1.5">
-						<el-button v-hasPermi="['system:oilcardconsume:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
+						<el-button v-hasPermi="['system:oilcardconsume:export']" plain icon="el-icon-folder-opened"
+							size="mini" @click="handleExport"></el-button>
 					</el-col>
 				</template>
 			</right-toolbar>
 		</el-row>
-		<el-table
-			id="printBox"
-			v-loading="loading"
-			v-horizontal-scroll="'always'"
-			border
-			:data="OilCardConsumeList"
-			size="mini"
-			:cell-style="
-				() => {
-					return { padding: '1.5px' };
-				}
-			"
-			@selection-change="handleSelectionChange"
-		>
+		<el-table id="printBox" v-loading="loading" v-horizontal-scroll="'always'" border :data="OilCardConsumeList"
+			size="mini" :cell-style="() => {
+				return { padding: '1.5px' };
+			}
+				" @selection-change="handleSelectionChange">
 			<el-table-column v-if="columns[0].visible" label="id" align="center" prop="id" show-overflow-tooltip />
-			<el-table-column v-if="columns[1].visible" label="加油卡卡号" align="center" prop="oilCardNo" width="110" show-overflow-tooltip />
-			<el-table-column v-if="columns[2].visible" label="使用加油卡时间" align="center" prop="useDate" width="110" show-overflow-tooltip />
-			<el-table-column v-if="columns[3].visible" label="使用加油卡车辆车牌号" align="center" prop="carNo" width="110" show-overflow-tooltip />
-			<el-table-column v-if="columns[4].visible" label="期初余额" align="center" prop="startCardSurplus" width="110" show-overflow-tooltip />
-			<el-table-column v-if="columns[5].visible" label="加油量" align="center" prop="refuelingNumber" width="110" show-overflow-tooltip />
-			<el-table-column v-if="columns[6].visible" label="单价" align="center" prop="unitPrice" width="110" show-overflow-tooltip />
-			<el-table-column v-if="columns[7].visible" label="加油金额(元）" align="center" prop="refuelingMoney" width="110" show-overflow-tooltip />
-			<el-table-column v-if="columns[8].visible" label="充值金额(元）" align="center" prop="rechargeMoney" width="110" show-overflow-tooltip />
-			<el-table-column v-if="columns[9].visible" label="加油卡余额" align="center" prop="endCardSurplus" width="110" show-overflow-tooltip />
+			<el-table-column v-if="columns[1].visible" label="加油卡卡号" align="center" prop="oilCardNo" width="110"
+				show-overflow-tooltip />
+			<el-table-column v-if="columns[2].visible" label="使用加油卡时间" align="center" prop="useDate" width="110"
+				show-overflow-tooltip />
+			<el-table-column v-if="columns[3].visible" label="使用加油卡车辆车牌号" align="center" prop="carNo" width="110"
+				show-overflow-tooltip />
+			<el-table-column v-if="columns[4].visible" label="期初余额" align="center" prop="startCardSurplus" width="110"
+				show-overflow-tooltip />
+			<el-table-column v-if="columns[5].visible" label="加油量" align="center" prop="refuelingNumber" width="110"
+				show-overflow-tooltip />
+			<el-table-column v-if="columns[6].visible" label="单价" align="center" prop="unitPrice" width="110"
+				show-overflow-tooltip />
+			<el-table-column v-if="columns[7].visible" label="加油金额(元）" align="center" prop="refuelingMoney" width="110"
+				show-overflow-tooltip />
+			<el-table-column v-if="columns[8].visible" label="充值金额(元）" align="center" prop="rechargeMoney" width="110"
+				show-overflow-tooltip />
+			<el-table-column v-if="columns[9].visible" label="加油卡余额" align="center" prop="endCardSurplus" width="110"
+				show-overflow-tooltip />
 			<!--      <el-table-column label="加油小票附件" align="center" prop="attachmentOiladd" v-if="columns[10].visible"-->
 			<!--                       width="300px"/>-->
 			<el-table-column v-if="columns[10].visible" label="加油小票附件" align="center" prop="attachmentOiladd">
 				<template #default="scope">
 					<div v-if="Array.isArray(scope.row.attachmentList)">
-						<CheckFiles
-							:attachmentList="scope.row.attachmentList"
-							:flag="'attachmentOiladd'"
-							@needToUpdate="value => handleUpdateFilePath(value, scope.row, getOilCardConsume, updateOilCardConsume)"
-						/>
+						<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'attachmentOiladd'"
+							@needToUpdate="value => handleUpdateFilePath(value, scope.row, getOilCardConsume, updateOilCardConsume)" />
 					</div>
 					<div v-else>
 						<el-tag type="danger">加载错误</el-tag>
@@ -78,16 +81,20 @@
 			<el-table-column v-if="columns[11].visible" label="备注" align="center" prop="comments" />
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
 				<template slot-scope="scope">
-					<el-button v-hasPermi="['system:oilcardconsume:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
-					<el-button v-hasPermi="['system:oilcardconsume:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
+					<el-button v-hasPermi="['system:oilcardconsume:edit']" size="mini" type="primary"
+						@click="handleUpdate(scope.row)">修改</el-button>
+					<el-button v-hasPermi="['system:oilcardconsume:remove']" size="mini" type="danger"
+						@click="handleDelete(scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
 
-		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
+		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum"
+			:limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改加油卡消费信息对话框 -->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="700px" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false"
+			:show-close="false" :title="title" :visible.sync="open" width="700px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="130px">
 				<el-form-item label="加油卡卡号" prop="oilCardNo">
 					<el-row>
@@ -95,32 +102,26 @@
 							<el-input v-model="form.oilCardNo" placeholder="请输入加油卡卡号" />
 						</el-col>
 						<el-col :span="4">
-							<SearchOption
-								:limit-info="{}"
-								:get-data="listOilCard"
-								query-info="oilCardNo"
-								query-label="加油卡卡号"
-								:query-name="oilCardNoQuery"
-								@update:queryName="value => (oilCardNoQuery = value)"
-								@commitBack="
+							<SearchOption :limit-info="{}" :get-data="listOilCard" query-info="oilCardNo"
+								query-label="加油卡卡号" :query-name="oilCardNoQuery"
+								@update:queryName="value => (oilCardNoQuery = value)" @commitBack="
 									value => {
 										form.oilCardNo = value.oilCardNo;
 									}
-								"
-							>
+								">
 								<template #table-columns>
-									<el-table-column label="加油卡卡号1" align="center" prop="oilMainCardNo" />
-									<el-table-column label="加油卡卡号2" align="center" prop="oilSecondCardNo" />
-									<el-table-column label="消费类型" align="center" prop="rechargeMoney"></el-table-column>
-									<el-table-column label="操作金额" align="center" prop="rechargeMoney" />
-									<el-table-column label="操作时间" align="center" prop="rechargeDate" />
+									<el-table-column label="加油卡卡号" align="center" prop="oilCardNo" />
+									<el-table-column label="加油卡类型" align="center" prop="oilType" />
+									<el-table-column label="当前金额" align="center" prop="moneyAmount"></el-table-column>
+									<el-table-column label="待圈存金额" align="center" prop="virtualMoneyAmount" />
 								</template>
 							</SearchOption>
 						</el-col>
 					</el-row>
 				</el-form-item>
 				<el-form-item label="使用加油卡时间" prop="useDate">
-					<el-date-picker v-model="form.useDate" type="datetime" placeholder="选择使用加油卡时间" value-format="yyyy-MM-dd HH:mm:ss" />
+					<el-date-picker v-model="form.useDate" type="datetime" placeholder="选择使用加油卡时间"
+						value-format="yyyy-MM-dd HH:mm:ss" />
 				</el-form-item>
 				<el-form-item label="使用加油卡车辆车牌号" prop="carNo">
 					<el-row>
@@ -128,19 +129,13 @@
 							<el-input v-model="form.carNo" placeholder="请输入使用加油卡车辆车牌号" />
 						</el-col>
 						<el-col :span="4">
-							<SearchOption
-								:limit-info="{}"
-								:get-data="listOilCard"
-								query-info="licensePlate"
-								query-label="车牌号"
-								:query-name="carNo"
-								@update:queryName="value => (carNo = value)"
+							<SearchOption :limit-info="{}" :get-data="listVehicles" query-info="licensePlate"
+								query-label="车牌号" :query-name="carNo" @update:queryName="value => (carNo = value)"
 								@commitBack="
 									value => {
 										form.carNo = value.licensePlate;
 									}
-								"
-							>
+								">
 								<template #table-columns>
 									<el-table-column label="车辆型号" align="center" prop="model" />
 									<el-table-column label="车牌号" align="center" prop="licensePlate" />
@@ -162,11 +157,8 @@
 						</el-col>
 					</el-row>
 				</el-form-item>
-				<el-form-item
-					label=" 期初余额
-                  "
-					prop="startCardSurplus"
-				>
+				<el-form-item label=" 期初余额
+                  " prop="startCardSurplus">
 					<el-input v-model="form.startCardSurplus" placeholder="请输入期初余额" />
 				</el-form-item>
 				<el-form-item label="加油量" prop="refuelingNumber">
@@ -185,13 +177,10 @@
 					<el-input v-model="form.endCardSurplus" placeholder="请输入加油卡余额" />
 				</el-form-item>
 				<el-form-item label="加油小票附件" prop="attachmentOiladd">
-					<UploadFilesButton
-						ref="attachmentUpload"
-						flag="attachmentOiladd"
+					<UploadFilesButton ref="attachmentUpload" flag="attachmentOiladd"
 						:extra-info="{ moduleType: 'oilCardConsume', formId: form.id }"
 						:initial-attachments="form.attachmentList || []"
-						@files-updated="handleAttachmentFilesUpdated"
-					/>
+						@files-updated="handleAttachmentFilesUpdated" />
 				</el-form-item>
 				<el-form-item label="备注" prop="comments">
 					<el-input v-model="form.comments" placeholder="请输入备注" />
@@ -215,6 +204,7 @@ import UploadFilesButton from '@/components/UploadFilesButton/index.vue';
 import SearchOption from '@/components/SearchOption.vue';
 import { listOilCard } from '@/api/system/oilCard';
 import { parseTime } from '../../../utils/ruoyi';
+import { listVehicles } from '../../../api/system/vehicles';
 
 export default {
 	name: 'OilCardConsume',
@@ -321,6 +311,7 @@ export default {
 		listOilCard,
 		updateOilCardConsume,
 		getOilCardConsume,
+		listVehicles,
 		// 附件更新处理
 		handleAttachmentFilesUpdated(uploadParams) {
 			if (uploadParams && uploadParams.params && uploadParams.params.attachmentIds) {
@@ -451,7 +442,7 @@ export default {
 					this.getList();
 					this.$modal.msgSuccess('删除成功');
 				})
-				.catch(() => {});
+				.catch(() => { });
 		},
 		/** 导出按钮操作 */
 		handleExport() {
