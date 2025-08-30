@@ -180,12 +180,8 @@ export default {
 
 			// 将工作表添加到工作簿
 			utils.book_append_sheet(wb, ws, '开票模板');
-
 			// 下载文件
 			writeFile(wb, '批量开票模板.xlsx');
-
-			// 跳转下一步
-			this.currentStep = 2;
 		}
 	}
 };
@@ -221,20 +217,11 @@ export default {
 						@click="downloadTemplate">
 						下载模板
 					</el-button>
-
 					<el-button class="compact-btn upload-btn" type="success" icon="el-icon-upload" size="small"
-						:disabled="currentStep === 1" @click="handleUpload">
+						@click="handleUpload">
 						批量开票
 					</el-button>
-
 					<input ref="fileInput" type="file" class="file-input-hidden" multiple @change="onChange" />
-				</div>
-
-				<!-- 状态提示 -->
-				<div class="status-indicator">
-					<span class="status-text" :class="{ 'active': currentStep > 1 }">
-						{{ currentStep === 1 ? '请先下载模板' : '可以开始开票' }}
-					</span>
 				</div>
 			</div>
 		</div>

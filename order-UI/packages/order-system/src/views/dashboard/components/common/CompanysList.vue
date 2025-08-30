@@ -105,16 +105,6 @@ export default {
 					<span class="bold-text money">{{ scope.row.total }}</span>
 				</template>
 			</el-table-column>
-			<el-table-column prop="ticketPoint" label="票点" width="80">
-				<template slot-scope="scope">
-					<span class="ticket-point">{{ scope.row.ticketPoint || 0 }}</span>
-				</template>
-			</el-table-column>
-			<el-table-column prop="ticketPointAmount" label="票点金额" width="100">
-				<template slot-scope="scope">
-					<span class="bold-text ticket-amount">{{ scope.row.ticketPointAmount || 0 }}</span>
-				</template>
-			</el-table-column>
 			<el-table-column label="操作" width="120" fixed="right">
 				<template slot-scope="scope">
 					<el-button size="mini" type="text" @click="handleCheck(scope.row)">查看</el-button>
@@ -122,7 +112,6 @@ export default {
 				</template>
 			</el-table-column>
 		</el-table>
-
 		<!--通用弹窗 配合common_dialog使用-->
 		<div v-if="currentComponent">
 			<DialogWrapper :current-component="currentComponent" :dialog-visible="dialogVisible" />
