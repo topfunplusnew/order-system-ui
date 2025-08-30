@@ -1,9 +1,3 @@
-<!-- 批量开票的主要组件  -->
-
-<!-- 开票主要有 销方id  销方公司名称 销方类型  购买方id 购买方公司名称 购买方类型 -->
-
-<!-- 我方处于不同的位置 如果我方是销方，那么就选择订单 然后给购买方批量开票 -->
-
 <script>
 import { getCompany } from '@/api/system/company';
 import CompanysList from '@/views/dashboard/components/common/CompanysList.vue';
@@ -53,7 +47,20 @@ export default {
 			// 卖出方搜索字段
 			seller: null,
 			// 减去的金额
-			minusValue: 0
+			minusValue: 0,
+			// 统计信息
+			statisticsInfo: {
+				// 购买方统计
+				purchaseStats: {
+					suppliers: { total: 0, count: 0 }, // 供应商作为购买方的统计
+					customers: { total: 0, count: 0 }   // 客户作为购买方的统计
+				},
+				// 销方统计  
+				sellerStats: {
+					suppliers: { total: 0, count: 0 }, // 供应商作为销方的统计
+					customers: { total: 0, count: 0 }   // 客户作为销方的统计
+				}
+			}
 		};
 	},
 	methods: {
@@ -131,6 +138,10 @@ export default {
 			});
 			this.purchaseTotalInfo = Array.from(purchaseMap.values());
 			this.sellerTotalInfo = Array.from(sellerMap.values());
+
+			// 计算统计信息
+			this.calculateStatistics(arr);
+
 			// 暂存购买方和销方的信息
 			this.handleStorePurchaseInfo(this.purchaseTotalInfo);
 			this.handleStoreSellerInfo(this.sellerTotalInfo);
@@ -141,12 +152,12 @@ export default {
 		mapperParams(item) {
 			const ticketPoint = Number(item['票点']) || 0; // 获取票点，默认为0
 			const totalAmount = Number(item['价税合计']) || 0; // 获取价税合计
-			
+
 			// 计算票点金额：票点金额 = 开票金额 / (1 + 票点) * 票点
-			const ticketPointAmount = totalAmount > 0 && ticketPoint > 0 
-				? (totalAmount / (1 + ticketPoint)) * ticketPoint 
+			const ticketPointAmount = totalAmount > 0 && ticketPoint > 0
+				? (totalAmount / (1 + ticketPoint)) * ticketPoint
 				: 0;
-			
+
 			return {
 				sellerId: item['销方ID'],
 				sellerName: item['销方名称'],
@@ -158,6 +169,52 @@ export default {
 				ticketPoint: ticketPoint,
 				ticketPointAmount: Number(ticketPointAmount.toFixed(2)) // 保留两位小数
 			};
+		},
+		// 计算统计信息
+		calculateStatistics(dataArray) {
+			// 重置统计信息
+			this.statisticsInfo = {
+				purchaseStats: {
+					suppliers: { total: 0, count: 0 },
+					customers: { total: 0, count: 0 }
+				},
+				sellerStats: {
+					suppliers: { total: 0, count: 0 },
+					customers: { total: 0, count: 0 }
+				}
+			};
+
+			dataArray.forEach(element => {
+				const amount = element.total || 0;
+
+				// 统计购买方（排除己方公司）
+				if (element.purchaseType && element.purchaseType !== '己方公司') {
+					if (element.purchaseType === '供应商') {
+						this.statisticsInfo.purchaseStats.suppliers.total += amount;
+						this.statisticsInfo.purchaseStats.suppliers.count++;
+					} else if (element.purchaseType === '客户') {
+						this.statisticsInfo.purchaseStats.customers.total += amount;
+						this.statisticsInfo.purchaseStats.customers.count++;
+					}
+				}
+
+				// 统计销方（排除己方公司）
+				if (element.sellerType && element.sellerType !== '己方公司') {
+					if (element.sellerType === '供应商') {
+						this.statisticsInfo.sellerStats.suppliers.total += amount;
+						this.statisticsInfo.sellerStats.suppliers.count++;
+					} else if (element.sellerType === '客户') {
+						this.statisticsInfo.sellerStats.customers.total += amount;
+						this.statisticsInfo.sellerStats.customers.count++;
+					}
+				}
+			});
+
+			// 保留两位小数
+			this.statisticsInfo.purchaseStats.suppliers.total = Number(this.statisticsInfo.purchaseStats.suppliers.total.toFixed(2));
+			this.statisticsInfo.purchaseStats.customers.total = Number(this.statisticsInfo.purchaseStats.customers.total.toFixed(2));
+			this.statisticsInfo.sellerStats.suppliers.total = Number(this.statisticsInfo.sellerStats.suppliers.total.toFixed(2));
+			this.statisticsInfo.sellerStats.customers.total = Number(this.statisticsInfo.sellerStats.customers.total.toFixed(2));
 		},
 		// 对公司进行校验
 		purchaseHandler(item) {
@@ -240,6 +297,17 @@ export default {
 			this.$store.dispatch('excel/clearTicketPoint');
 			// 清除备注
 			this.$store.dispatch('excel/clearComment');
+			// 重置统计信息
+			this.statisticsInfo = {
+				purchaseStats: {
+					suppliers: { total: 0, count: 0 },
+					customers: { total: 0, count: 0 }
+				},
+				sellerStats: {
+					suppliers: { total: 0, count: 0 },
+					customers: { total: 0, count: 0 }
+				}
+			};
 			// 发布事件 组件中清除自己状态
 			this.$bus.$emit('invoice-clear');
 		}
@@ -305,11 +373,13 @@ export default {
 												<span class="bold-text">购买方信息</span>
 											</el-divider>
 											<CompanysList :company-total-info="purchaseTotalInfo"
+												:statistics-info="statisticsInfo ? statisticsInfo.purchaseStats : { suppliers: { total: 0, count: 0 }, customers: { total: 0, count: 0 } }"
 												@handleCheck="handleCheck" />
 											<el-divider>
 												<span class="bold-text">销方信息</span>
 											</el-divider>
 											<CompanysList :company-total-info="sellerTotalInfo"
+												:statistics-info="statisticsInfo ? statisticsInfo.sellerStats : { suppliers: { total: 0, count: 0 }, customers: { total: 0, count: 0 } }"
 												@handleCheck="handleCheck" />
 										</div>
 									</el-card>
@@ -653,24 +723,24 @@ export default {
 	.company-lists {
 		// 增加表格的最大高度以适应更大的空间
 		max-height: calc(100vh - 300px);
-		
+
 		// 为每个公司列表分配更多空间
-		> div {
+		>div {
 			margin-bottom: 12px;
-			
+
 			&:last-child {
 				margin-bottom: 0;
 			}
 		}
 	}
-	
+
 	// 优化搜索表单的间距
 	.search-form {
 		margin-bottom: 16px;
 		border-bottom: 1px solid #ebeef5;
 		padding-bottom: 12px;
 	}
-	
+
 	// 优化分割线样式
 	.el-divider {
 		&:first-of-type {

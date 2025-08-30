@@ -2,6 +2,8 @@
 import CompanyInformation from './CompanyInformation.vue';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
+import { getCompany } from '../../../../api/system/company';
+import _ from 'lodash';
 
 export default {
 	name: 'CompanysList',
@@ -15,6 +17,15 @@ export default {
 			type: Array,
 			default: () => {
 				return [];
+			}
+		},
+		statisticsInfo: {
+			type: Object,
+			default: () => {
+				return {
+					suppliers: { total: 0, count: 0 },
+					customers: { total: 0, count: 0 }
+				};
 			}
 		}
 	},
@@ -33,29 +44,55 @@ export default {
 	},
 	methods: {
 		handleCheck(row) {
-			// 构建公司信息数据
-			const companyInfo = {
-				companyName: row.name || '暂无',
-				companyType: row.type || '暂无',
-				leader: row.leader || '暂无',
-				region: row.region || '暂无',
-				leaderTel: row.leaderTel || '暂无',
-				comments: row.comments || '暂无',
-				supplierLoading: false
-			};
+			const { id, type } = row;
+			getCompany(id, type).then(res => {
+				const companyData = _.cloneDeep(res.data);
+				// 构建公司信息数据
+				const companyInfo = {
+					// 基础信息
+					companyName: companyData.companyName || '暂无',
+					companyType: companyData.companyType || type || '暂无',
 
-			// 使用 openDialog 方法打开公司信息弹窗
-			this.openDialog(
-				CompanyInformation,
-				`${row.type || '公司'}详细信息`,
-				'500px',
-				{
-					companyInfo: companyInfo
-				},
-				false
-			);
+					// 联系人信息
+					relationName: companyData.relationName || '暂无',
+					relationTel: companyData.relationTel || '暂无',
+					leader: companyData.leader || '暂无',
+					leaderTel: companyData.leaderTel || '暂无',
+					salesman: companyData.salesman || '暂无',
+					salesManager: companyData.salesManager || '暂无',
 
-			this.$emit('handleCheck', row);
+					// 地址信息
+					region: companyData.region || '暂无',
+					province: companyData.province || '暂无',
+					city: companyData.city || '暂无',
+					county: companyData.county || '暂无',
+					address: companyData.address || '暂无',
+
+					// 银行信息
+					bankName: companyData.bankName || '暂无',
+					acountsName: companyData.acountsName || '暂无',
+					bankNo: companyData.bankNo || '暂无',
+
+					// 其他信息
+					comments: companyData.comments || '暂无',
+					addtime: companyData.addtime || '暂无',
+					userName: companyData.userName || '暂无',
+
+					supplierLoading: false
+				};
+
+				// 使用 openDialog 方法打开公司信息弹窗
+				this.openDialog(
+					CompanyInformation,
+					`${companyData.companyName || '公司'}详细信息`,
+					'800px',
+					{
+						companyInfo: companyInfo
+					},
+					false
+				);
+				this.$emit('handleCheck', row);
+			})
 		},
 		// 筛选右侧的订单 通过事件总线提醒
 		handleFilterOrders(row) {
@@ -93,6 +130,29 @@ export default {
 
 <template>
 	<div class="companies-list-wrapper">
+		<!-- 统计信息展示区域 -->
+		<div v-if="statisticsInfo.suppliers.count > 0 || statisticsInfo.customers.count > 0" class="statistics-summary">
+			<el-card class="statistics-card" shadow="never">
+				<div slot="header" class="statistics-header">
+					<i class="el-icon-s-data"></i>
+					<span>开票金额总和统计信息</span>
+				</div>
+				<div class="statistics-content">
+					<div v-if="statisticsInfo.suppliers.count > 0" class="stat-item supplier-stat">
+						<span class="stat-label">供应商:</span>
+						<span class="stat-count">{{ statisticsInfo.suppliers.count }}家</span>
+						<span class="stat-amount">¥{{ statisticsInfo.suppliers.total.toLocaleString() }}</span>
+					</div>
+					<div v-if="statisticsInfo.customers.count > 0" class="stat-item customer-stat">
+						<span class="stat-label">客户:</span>
+						<span class="stat-count">{{ statisticsInfo.customers.count }}家</span>
+						<span class="stat-amount">¥{{ statisticsInfo.customers.total.toLocaleString() }}</span>
+					</div>
+				</div>
+			</el-card>
+		</div>
+
+		<!-- 公司列表表格 -->
 		<el-table :data="companyTotalInfo" :row-style="handleRowClassName" :cell-style="() => ({ padding: '2px' })"
 			size="mini" style="width: 100%" height="100%" border>
 			<!--多选框-->
@@ -103,6 +163,16 @@ export default {
 			<el-table-column prop="total" label="金额" width="100">
 				<template slot-scope="scope">
 					<span class="bold-text money">{{ scope.row.total }}</span>
+				</template>
+			</el-table-column>
+			<el-table-column prop="ticketPoint" label="票点" width="80">
+				<template slot-scope="scope">
+					<span class="ticket-point">{{ scope.row.ticketPoint || 0 }}</span>
+				</template>
+			</el-table-column>
+			<el-table-column prop="ticketPointAmount" label="票点金额" width="100">
+				<template slot-scope="scope">
+					<span class="bold-text ticket-amount">{{ scope.row.ticketPointAmount || 0 }}</span>
 				</template>
 			</el-table-column>
 			<el-table-column label="操作" width="120" fixed="right">
@@ -126,6 +196,83 @@ export default {
 	flex-direction: column;
 }
 
+/* 统计信息样式 */
+.statistics-summary {
+	margin-bottom: 12px;
+	flex-shrink: 0;
+}
+
+.statistics-card {
+	border-radius: 6px;
+	border: 1px solid #e4e7ed;
+
+	::v-deep .el-card__header {
+		padding: 8px 12px;
+		background: linear-gradient(135deg, #f8fbff 0%, #f0f7ff 100%);
+		border-bottom: 1px solid #e4e7ed;
+	}
+
+	::v-deep .el-card__body {
+		padding: 10px 12px;
+	}
+}
+
+.statistics-header {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	font-size: 12px;
+	font-weight: 600;
+	color: #409eff;
+
+	i {
+		font-size: 14px;
+	}
+}
+
+.statistics-content {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.stat-item {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 4px 8px;
+	border-radius: 4px;
+	font-size: 12px;
+	background: #f5f7fa;
+
+	.stat-label {
+		font-weight: 500;
+		color: #606266;
+		min-width: 50px;
+	}
+
+	.stat-count {
+		color: #909399;
+		font-size: 11px;
+		padding: 1px 6px;
+		background: #e4e7ed;
+		border-radius: 10px;
+	}
+
+	.stat-amount {
+		font-weight: bold;
+		margin-left: auto;
+	}
+
+	&.supplier-stat .stat-amount {
+		color: #e6a23c;
+	}
+
+	&.customer-stat .stat-amount {
+		color: #67c23a;
+	}
+}
+
 .highlight-row {
 	background-color: #c5f695 !important;
 	/* 设置选中行的背景颜色 */
@@ -134,6 +281,18 @@ export default {
 .money {
 	color: #ff0000;
 	font-weight: bold;
+}
+
+.ticket-point {
+	color: #409eff;
+	font-weight: bold;
+	font-size: 12px;
+}
+
+.ticket-amount {
+	color: #e6a23c;
+	font-weight: bold;
+	font-size: 12px;
 }
 
 .ticket-point {
@@ -184,6 +343,50 @@ export default {
 	.companies-list-wrapper {
 		.el-table {
 			font-size: 12px;
+		}
+	}
+
+	.statistics-content {
+		gap: 4px;
+	}
+
+	.stat-item {
+		padding: 3px 6px;
+		font-size: 11px;
+
+		.stat-label {
+			min-width: 45px;
+		}
+	}
+}
+
+@media screen and (max-width: 480px) {
+	.statistics-card {
+		::v-deep .el-card__header {
+			padding: 6px 10px;
+		}
+
+		::v-deep .el-card__body {
+			padding: 8px 10px;
+		}
+	}
+
+	.statistics-header {
+		font-size: 11px;
+
+		i {
+			font-size: 12px;
+		}
+	}
+
+	.stat-item {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 4px;
+
+		.stat-amount {
+			margin-left: 0;
+			align-self: flex-end;
 		}
 	}
 }
