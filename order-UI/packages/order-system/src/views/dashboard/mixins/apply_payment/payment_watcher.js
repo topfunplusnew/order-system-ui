@@ -44,6 +44,12 @@ export var mixin_payment_watcher = {
 			default: () => {
 				return {};
 			}
+		},
+		isDailyExpense:{
+			type: Number,
+			default: ()=>{
+				return 0;
+			}
 		}
 	},
 	watch: {

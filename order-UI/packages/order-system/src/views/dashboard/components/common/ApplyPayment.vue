@@ -550,6 +550,10 @@ export default {
 					amount: parseFloat(ref.amount) || parseFloat(this.form.moneyAmount) || 0
 				}));
 			}
+			// 如果是日常费用 关联表可以为空
+			if (this.isDailyExpense === 1){
+				return []
+			}
 
 			// 兼容旧的单表关联模式（如果传入了 tableName 和 tID）
 			if (this.tableName || this.tID) {

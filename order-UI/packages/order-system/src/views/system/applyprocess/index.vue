@@ -536,10 +536,12 @@ export default {
 	<div class="app-container">
 		<el-form ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="100px">
 			<el-form-item label="开始日期" prop="fundsDateBegin">
-				<el-date-picker clearable v-model="queryParams.fundsDateBegin" type="date" placeholder="开始日期" value-format="yyyy-MM-dd"></el-date-picker>
+				<el-date-picker clearable v-model="queryParams.fundsDateBegin" type="date" placeholder="开始日期"
+					value-format="yyyy-MM-dd"></el-date-picker>
 			</el-form-item>
 			<el-form-item label="结束日期" prop="fundsDateEnd">
-				<el-date-picker clearable v-model="queryParams.fundsDateEnd" type="date" placeholder="结束日期" value-format="yyyy-MM-dd"></el-date-picker>
+				<el-date-picker clearable v-model="queryParams.fundsDateEnd" type="date" placeholder="结束日期"
+					value-format="yyyy-MM-dd"></el-date-picker>
 			</el-form-item>
 			<el-form-item label="支付类型" prop="payType">
 				<el-input clearable v-model="queryParams.payType" placeholder="请输入支付类型"></el-input>
@@ -622,38 +624,34 @@ export default {
 
 		<!--    放置付款信息列表-->
 		<el-row>
-			<el-table
-				id="printBox"
-				v-loading="loading"
-				:data="paymentList"
-				border
-				:cell-style="
-					() => {
-						return { padding: '.5px' };
-					}
-				"
-				style="width: 100%"
-				size="mini"
-				align="center"
-			>
-				<el-table-column v-if="columns[0].visible" fixed prop="fundsDate" label="日期" width="150" show-overflow-tooltip></el-table-column>
-				<el-table-column v-if="columns[1].visible" prop="payType" label="支付类型" width="150" show-overflow-tooltip></el-table-column>
-				<el-table-column v-if="columns[2].visible" prop="moneyAmount" label="金额" width="120" show-overflow-tooltip></el-table-column>
-				<el-table-column v-if="columns[3].visible" prop="otherBankNo" label="对方账号" width="300" show-overflow-tooltip></el-table-column>
-				<el-table-column v-if="columns[4].visible" prop="otherAcountsName" label="对方户名" width="200" show-overflow-tooltip></el-table-column>
-				<el-table-column v-if="columns[5].visible" prop="companyName" label="对方公司" width="120" show-overflow-tooltip></el-table-column>
-				<el-table-column v-if="columns[6].visible" prop="reason" label="付款原因" width="120" show-overflow-tooltip></el-table-column>
-				<el-table-column v-if="columns[7].visible" prop="applyPerson" label="申请人" width="120" show-overflow-tooltip></el-table-column>
-				<el-table-column v-if="columns[8].visible" prop="comments" label="备注" width="120" show-overflow-tooltip></el-table-column>
+			<el-table id="printBox" v-loading="loading" :data="paymentList" border :cell-style="() => {
+					return { padding: '.5px' };
+				}
+				" style="width: 100%" size="mini" align="center">
+				<el-table-column v-if="columns[0].visible" fixed prop="fundsDate" label="日期" width="150"
+					show-overflow-tooltip></el-table-column>
+				<el-table-column v-if="columns[1].visible" prop="payType" label="支付类型" width="150"
+					show-overflow-tooltip></el-table-column>
+				<el-table-column v-if="columns[2].visible" prop="moneyAmount" label="金额" width="120"
+					show-overflow-tooltip></el-table-column>
+				<el-table-column v-if="columns[3].visible" prop="otherBankNo" label="对方账号" width="300"
+					show-overflow-tooltip></el-table-column>
+				<el-table-column v-if="columns[4].visible" prop="otherAcountsName" label="对方户名" width="200"
+					show-overflow-tooltip></el-table-column>
+				<el-table-column v-if="columns[5].visible" prop="companyName" label="对方公司" width="120"
+					show-overflow-tooltip></el-table-column>
+				<el-table-column v-if="columns[6].visible" prop="reason" label="付款原因" width="120"
+					show-overflow-tooltip></el-table-column>
+				<el-table-column v-if="columns[7].visible" prop="applyPerson" label="申请人" width="120"
+					show-overflow-tooltip></el-table-column>
+				<el-table-column v-if="columns[8].visible" prop="comments" label="备注" width="120"
+					show-overflow-tooltip></el-table-column>
 				<el-table-column v-if="columns[9].visible" prop="comments" label="附件" width="120" show-overflow-tooltip>
 					<template #default="scope">
 						<div v-if="Array.isArray(scope.row.attachmentList)">
-							<CheckFiles
-								:attachmentList="scope.row.attachmentList"
-								:flag="'attachment'"
+							<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'attachment'"
 								:is-upload="false"
-								@needToUpdate="value => handleUpdateFilePath(value, scope.row, getPaymentApply, updatePaymentApply)"
-							/>
+								@needToUpdate="value => handleUpdateFilePath(value, scope.row, getPaymentApply, updatePaymentApply)" />
 						</div>
 						<div v-else>
 							<el-tag type="danger">加载错误</el-tag>
@@ -667,46 +665,36 @@ export default {
 				</el-table-column>
 				<el-table-column label="审核状态" fixed="right" align="center">
 					<template slot-scope="scope">
-						<el-tag
-							:type="
-								{
-									[PAYMENT_APPLY_STATE.V2.PENDING]: 'warning',
-									[PAYMENT_APPLY_STATE.V2.ING]: 'info',
-									[PAYMENT_APPLY_STATE.V2.PASS]: 'success',
-									[PAYMENT_APPLY_STATE.V2.NOT_PASS]: 'danger',
-									[PAYMENT_APPLY_STATE.V2.REJECT]: 'danger',
-									[PAYMENT_APPLY_STATE.V2.VOID]: 'default'
-								}[scope.row.checkState]
-							"
-						>
+						<el-tag :type="{
+								[PAYMENT_APPLY_STATE.V2.PENDING]: 'warning',
+								[PAYMENT_APPLY_STATE.V2.ING]: 'info',
+								[PAYMENT_APPLY_STATE.V2.PASS]: 'success',
+								[PAYMENT_APPLY_STATE.V2.NOT_PASS]: 'danger',
+								[PAYMENT_APPLY_STATE.V2.REJECT]: 'danger',
+								[PAYMENT_APPLY_STATE.V2.VOID]: 'default'
+							}[scope.row.checkState]
+							">
 							{{ scope.row.checkState }}
 						</el-tag>
 					</template>
 				</el-table-column>
-				<el-table-column v-if="columns[10].visible" fixed="right" label="审核流程" show-overflow-tooltip align="center">
+				<el-table-column v-if="columns[10].visible" fixed="right" label="审核流程" show-overflow-tooltip
+					align="center">
 					<template slot-scope="scope">
 						<el-button type="text" size="mini" @click="handleCheckApplyInfo(scope.row)">查看</el-button>
 					</template>
 				</el-table-column>
 			</el-table>
 			<!--      分页-->
-			<pagination v-show="total > 0" :total="total" :page.sync="pageNum" :limit.sync="pageSize" @pagination="getAuditList" />
+			<pagination v-show="total > 0" :total="total" :page.sync="pageNum" :limit.sync="pageSize"
+				@pagination="getAuditList" />
 		</el-row>
 
 		<!--    固定的锚点-->
 
 		<!--    查看付款信息的详细信息-->
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="付款信息详细"
-			:visible.sync="checkInfoDialogVisible"
-			width="50%"
-		>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false"
+			:show-close="false" title="付款信息详细" :visible.sync="checkInfoDialogVisible" width="50%">
 			<el-descriptions title="付款信息明细">
 				<el-descriptions-item label="申请人">
 					{{ checkPaymentInfo.applyPerson }}
@@ -746,17 +734,8 @@ export default {
 		</el-dialog>
 
 		<!--      审核流程步骤图信息  -->
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="false"
-			:visible.sync="checkApplyInfoDialogVisible"
-			title="审核流程多项信息"
-			width="58%"
-		>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false"
+			:show-close="false" :visible.sync="checkApplyInfoDialogVisible" title="审核流程多项信息" width="58%">
 			<el-collapse v-model="activeNames" @change="handleChangeApplyItem">
 				<el-collapse-item name="1">
 					<template #title>
@@ -778,20 +757,11 @@ export default {
 		</el-dialog>
 
 		<!--   2025-2-17 新增付款功能-->
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="付款处理"
-			:visible.sync="open"
-			width="650px"
-			append-to-body
-		>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false"
+			:show-close="false" title="付款处理" :visible.sync="open" width="650px" append-to-body>
 			<keep-alive>
-				<ApplyPayment :table-name="TableName.DAILY" :t-i-d="tID" :need-money="needMoney" :need-info="{}" @changeOpen="changePaymentApplyInfoVisible" :money-input-disabled="false" />
+				<ApplyPayment :is-daily-expense="1" :need-money="needMoney" :need-info="{}"
+					@changeOpen="changePaymentApplyInfoVisible" :money-input-disabled="false" />
 			</keep-alive>
 		</el-dialog>
 
