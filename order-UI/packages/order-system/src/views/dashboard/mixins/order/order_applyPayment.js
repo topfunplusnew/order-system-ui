@@ -26,7 +26,3 @@ export var mixin_order_applyPayment = {
 	}
 };
 
-// <!--    订单打款申请  mixin_order_applyPayment -->
-// <OrderMoneyReceive :table-name="TableName" :handle-close-apply="handleCloseApply"
-// :need-money="needMoney"
-// :payment-apply-visible="paymentApplyVisible" :t-i-d="tID"/>
