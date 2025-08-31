@@ -2,16 +2,14 @@
 	<div class="app-container">
 		<el-form ref="form" :model="form" :rules="rules" label-width="120px">
 			<el-form-item label="日期" prop="fundsDate">
-				<el-date-picker v-model="form.fundsDate" type="datetime" value-format="yyyy-MM-dd HH:mm:ss"
-					placeholder="选择日期" />
+				<el-date-picker v-model="form.fundsDate" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="选择日期" />
 			</el-form-item>
 			<!-- 只有当付款申请的时候才会填写该字段，类型后端填充 -->
 			<template v-if="!isPayment">
 				<el-form-item label="支付类型" prop="payType">
 					<el-row :gutter="5">
 						<el-col :span="12">
-							<el-cascader :disabled="isPayment" v-model="form.payType" :options="paymentTypeTree"
-								:props="props" />
+							<el-cascader :disabled="isPayment" v-model="form.payType" :options="paymentTypeTree" :props="props" />
 						</el-col>
 					</el-row>
 				</el-form-item>
@@ -19,8 +17,7 @@
 			<el-form-item label="金额" prop="moneyAmount">
 				<el-row :gutter="5">
 					<el-col :span="12">
-						<el-input v-model="form.moneyAmount" placeholder="请输入金额"
-							:disabled="inputDisabled && moneyInputDisabled" />
+						<el-input v-model="form.moneyAmount" placeholder="请输入金额" :disabled="inputDisabled && moneyInputDisabled" />
 					</el-col>
 				</el-row>
 			</el-form-item>
@@ -31,14 +28,21 @@
 						<el-input disabled v-model="form.selfAcountsName" placeholder="请选择" />
 					</el-col>
 					<el-col :span="3">
-						<SearchOption :get-data="listBankAccount" icon="el-icon-search"
-							:limit-info="{ acountsType: PUBLIC_DICT_TYPE.SELF_COMPANY }" query-label="银行卡查找"
-							query-info="bankNo" :query-name="querySelfCompany" @commitBack="
+						<SearchOption
+							:get-data="listBankAccount"
+							icon="el-icon-search"
+							:limit-info="{ acountsType: PUBLIC_DICT_TYPE.SELF_COMPANY }"
+							query-label="银行卡查找"
+							query-info="bankNo"
+							:query-name="querySelfCompany"
+							@commitBack="
 								value => {
 									form.selfAcountsName = value.acountsName;
 									form.selfBankNo = value.bankNo;
 								}
-							" @update:queryName="value => (querySelfCompany = value)">
+							"
+							@update:queryName="value => (querySelfCompany = value)"
+						>
 							<template #table-columns>
 								<el-table-column label="公司名称" align="center" prop="companyName">
 									<template #default="scope">
@@ -77,20 +81,30 @@
 					<span style="color: #1c84c6; font-size: 12px">请注意选择正确的对方公司类型!</span>
 				</el-form-item>
 
-				<el-form-item v-if="value !== PUBLIC_DICT_TYPE.EMPLOYEE && value !== PAYMENT_TARGET_TYPE.PAYMENT_FEE"
-					:label="value === PUBLIC_DICT_TYPE.DRIVER ? '司机' : '对方公司'" prop="companyName">
+				<el-form-item
+					v-if="value !== PUBLIC_DICT_TYPE.EMPLOYEE && value !== PAYMENT_TARGET_TYPE.PAYMENT_FEE"
+					:label="value === PUBLIC_DICT_TYPE.DRIVER ? '司机' : '对方公司'"
+					prop="companyName"
+				>
 					<el-row>
 						<el-col :span="14">
 							<el-input disabled v-model="form.companyName" placeholder="请选择" />
 						</el-col>
 						<el-col :span="3" v-if="value === PUBLIC_DICT_TYPE.DRIVER">
-							<SearchOption :limit-info="{}" :get-data="listCars" query-label="车牌" query-info="carNo"
-								:query-name="queryCars" @commitBack="
+							<SearchOption
+								:limit-info="{}"
+								:get-data="listCars"
+								query-label="车牌"
+								query-info="carNo"
+								:query-name="queryCars"
+								@commitBack="
 									value => {
 										form.companyName = value.carNo;
 										form.companyId = value.id;
 									}
-								" @update:queryName="value => (queryCars = value)">
+								"
+								@update:queryName="value => (queryCars = value)"
+							>
 								<template #table-columns>
 									<el-table-column label="车牌" align="center" prop="carNo" />
 									<el-table-column label="司机" align="center" prop="driver" />
@@ -101,27 +115,25 @@
 							</SearchOption>
 						</el-col>
 						<el-col :span="4" v-else>
-							<SearchOption :limit-info="{ companyType: value }" :get-data="listCompany"
-								icon="el-icon-search" :query-label="value" query-info="companyName"
-								:query-name="queryOther" @update:queryName="handleUpdateQueryNameOther"
-								@commitBack="handleCommitBackOther">
+							<SearchOption
+								:limit-info="{ companyType: value }"
+								:get-data="listCompany"
+								icon="el-icon-search"
+								:query-label="value"
+								query-info="companyName"
+								:query-name="queryOther"
+								@update:queryName="handleUpdateQueryNameOther"
+								@commitBack="handleCommitBackOther"
+							>
 								<template #table-columns>
-									<el-table-column :label="`${value}名称`" align="center" prop="companyName" width="180"
-										show-overflow-tooltip />
-									<el-table-column label="老板姓名" align="center" prop="leader" width="180"
-										show-overflow-tooltip />
-									<el-table-column label="老板电话" align="center" prop="leaderTel" width="180"
-										show-overflow-tooltip />
-									<el-table-column label="区域" align="center" prop="region" width="180"
-										show-overflow-tooltip />
-									<el-table-column label="联系人" align="center" prop="relationName" width="180"
-										show-overflow-tooltip />
-									<el-table-column label="销售经理" align="center" prop="salesManager" width="180"
-										show-overflow-tooltip />
-									<el-table-column label="地址" align="center" prop="address" width="150"
-										show-overflow-tooltip />
-									<el-table-column label="电话" align="center" prop="relationTel" width="180"
-										show-overflow-tooltip />
+									<el-table-column :label="`${value}名称`" align="center" prop="companyName" width="180" show-overflow-tooltip />
+									<el-table-column label="老板姓名" align="center" prop="leader" width="180" show-overflow-tooltip />
+									<el-table-column label="老板电话" align="center" prop="leaderTel" width="180" show-overflow-tooltip />
+									<el-table-column label="区域" align="center" prop="region" width="180" show-overflow-tooltip />
+									<el-table-column label="联系人" align="center" prop="relationName" width="180" show-overflow-tooltip />
+									<el-table-column label="销售经理" align="center" prop="salesManager" width="180" show-overflow-tooltip />
+									<el-table-column label="地址" align="center" prop="address" width="150" show-overflow-tooltip />
+									<el-table-column label="电话" align="center" prop="relationTel" width="180" show-overflow-tooltip />
 								</template>
 							</SearchOption>
 						</el-col>
@@ -138,14 +150,23 @@
 								<el-input v-model="form.otherBankNo" placeholder="请选择" disabled />
 							</el-col>
 							<el-col v-if="bankInputDisabled === false" :span="3">
-								<SearchOption :get-data="listBankAccount" icon="el-icon-search" :limit-info="{
-									acountsType: PUBLIC_DICT_TYPE.CUSTOMER,
-									acountsName: form.otherAcountsName
-								}" query-label="银行卡查找" query-info="bankNo" :query-name="queryCompany" @commitBack="handleCommitBack"
-									@update:queryName="handleUpdateQueryName" :extra-params="{
+								<SearchOption
+									:get-data="listBankAccount"
+									icon="el-icon-search"
+									:limit-info="{
+										acountsType: PUBLIC_DICT_TYPE.CUSTOMER,
+										acountsName: form.otherAcountsName
+									}"
+									query-label="银行卡查找"
+									query-info="bankNo"
+									:query-name="queryCompany"
+									@commitBack="handleCommitBack"
+									@update:queryName="handleUpdateQueryName"
+									:extra-params="{
 										acountsType: PUBLIC_DICT_TYPE.CUSTOMER,
 										companyId: form.companyId
-									}">
+									}"
+								>
 									<template #table-columns>
 										<el-table-column label="公司名称" align="center" prop="companyName">
 											<template #default="scope">
@@ -186,14 +207,23 @@
 								<el-input v-model="form.otherBankNo" placeholder="请选择" disabled />
 							</el-col>
 							<el-col v-if="bankInputDisabled === false" :span="3">
-								<SearchOption :get-data="listBankAccount" icon="el-icon-search" :limit-info="{
-									acountsType: PUBLIC_DICT_TYPE.SUPPLIER,
-									acountsName: form.otherAcountsName
-								}" query-label="银行卡查找" query-info="bankNo" :query-name="queryCompany" @commitBack="handleCommitBack"
-									@update:queryName="handleUpdateQueryName" :extra-params="{
+								<SearchOption
+									:get-data="listBankAccount"
+									icon="el-icon-search"
+									:limit-info="{
+										acountsType: PUBLIC_DICT_TYPE.SUPPLIER,
+										acountsName: form.otherAcountsName
+									}"
+									query-label="银行卡查找"
+									query-info="bankNo"
+									:query-name="queryCompany"
+									@commitBack="handleCommitBack"
+									@update:queryName="handleUpdateQueryName"
+									:extra-params="{
 										acountsType: PUBLIC_DICT_TYPE.SUPPLIER,
 										companyId: form.companyId
-									}">
+									}"
+								>
 									<template #table-columns>
 										<el-table-column label="公司名称" align="center" prop="companyName">
 											<template #default="scope">
@@ -235,14 +265,23 @@
 								<el-input v-model="form.otherBankNo" placeholder="请选择" disabled />
 							</el-col>
 							<el-col v-if="bankInputDisabled === false" :span="3">
-								<SearchOption :get-data="listBankAccount" icon="el-icon-search" :limit-info="{
-									acountsType: PUBLIC_DICT_TYPE.DRIVER,
-									acountsName: form.otherAcountsName
-								}" query-label="银行卡查找" query-info="bankNo" :query-name="queryCompany" @commitBack="handleCommitBack"
-									@update:queryName="handleUpdateQueryName" :extra-params="{
+								<SearchOption
+									:get-data="listBankAccount"
+									icon="el-icon-search"
+									:limit-info="{
+										acountsType: PUBLIC_DICT_TYPE.DRIVER,
+										acountsName: form.otherAcountsName
+									}"
+									query-label="银行卡查找"
+									query-info="bankNo"
+									:query-name="queryCompany"
+									@commitBack="handleCommitBack"
+									@update:queryName="handleUpdateQueryName"
+									:extra-params="{
 										acountsType: PUBLIC_DICT_TYPE.DRIVER,
 										companyId: form.companyId
-									}">
+									}"
+								>
 									<template #table-columns>
 										<el-table-column label="司机名称" align="center" prop="companyName">
 											<template #default="scope">
@@ -284,11 +323,19 @@
 								<el-input v-model="form.otherBankNo" placeholder="请选择" disabled />
 							</el-col>
 							<el-col v-if="bankInputDisabled === false" :span="3">
-								<SearchOption :get-data="listBankAccount" icon="el-icon-search" :limit-info="{
-									acountsType: PUBLIC_DICT_TYPE.EMPLOYEE,
-									acountsName: form.otherAcountsName
-								}" query-label="银行卡查找" query-info="bankNo" :query-name="queryCompany" @commitBack="handleCommitBack"
-									@update:queryName="handleUpdateQueryName">
+								<SearchOption
+									:get-data="listBankAccount"
+									icon="el-icon-search"
+									:limit-info="{
+										acountsType: PUBLIC_DICT_TYPE.EMPLOYEE,
+										acountsName: form.otherAcountsName
+									}"
+									query-label="银行卡查找"
+									query-info="bankNo"
+									:query-name="queryCompany"
+									@commitBack="handleCommitBack"
+									@update:queryName="handleUpdateQueryName"
+								>
 									<template #table-columns>
 										<el-table-column label="员工名称" align="center" prop="companyName">
 											<template #default="scope">
@@ -323,10 +370,13 @@
 					<el-input v-model="form.reason" type="textarea" placeholder="请输入内容" />
 				</el-form-item>
 				<el-form-item label="附件" prop="attachmentIds">
-					<UploadFilesButton ref="attachmentUpload" flag="attachments"
+					<UploadFilesButton
+						ref="attachmentUpload"
+						flag="attachments"
 						:extra-info="{ moduleType: 'paymentApply', formId: form.id }"
 						:initial-attachments="form.attachmentList || []"
-						@files-updated="handleAttachmentFilesUpdated" />
+						@files-updated="handleAttachmentFilesUpdated"
+					/>
 				</el-form-item>
 			</template>
 			<el-form-item label="备注" prop="comments">
@@ -502,7 +552,7 @@ export default {
 					this.form.tableReferences = newReferences.map(ref => ({
 						refTableName: ref.refTableName || this.tableName, // 兼容旧字段名
 						refTableId: ref.refTableId || this.tID, // 兼容旧字段名
-						amount: parseFloat(ref.amount) || 0
+						amount: parseFloat(ref.amount) || null
 					}));
 
 					// 如果没有手动设置金额，则自动计算总金额
@@ -529,15 +579,15 @@ export default {
 
 		/**
 		 * **业务架构设计：数据结构兼容性转换**
-		 * 
+		 *
 		 * 将旧的单表关联模式转换为新的多表关联模式
 		 * 确保向后兼容性，同时支持新的 tableReferences 结构
-		 * 
+		 *
 		 * **设计原则：**
 		 * 1. 兼容性优先：优先使用新结构，兼容旧结构
 		 * 2. 数据完整性：确保转换过程中不丢失关键信息
 		 * 3. 扩展性：为未来多表关联做好准备
-		 * 
+		 *
 		 * **时间复杂度：** O(1) - 简单的对象构建
 		 * **空间复杂度：** O(1) - 创建固定大小的数组
 		 */
@@ -551,17 +601,19 @@ export default {
 				}));
 			}
 			// 如果是日常费用 关联表可以为空
-			if (this.isDailyExpense === 1){
-				return []
+			if (this.isDailyExpense === 1) {
+				return [];
 			}
 
 			// 兼容旧的单表关联模式（如果传入了 tableName 和 tID）
 			if (this.tableName || this.tID) {
-				return [{
-					refTableName: this.tableName,
-					refTableId: this.tID || 0,
-					amount: parseFloat(this.form.moneyAmount) || 0
-				}];
+				return [
+					{
+						refTableName: this.tableName,
+						refTableId: this.tID || null,
+						amount: parseFloat(this.form.moneyAmount) || null
+					}
+				];
 			}
 
 			// 如果都没有，返回空数组
@@ -570,7 +622,7 @@ export default {
 
 		/**
 		 * **表单数据标准化处理**
-		 * 
+		 *
 		 * 构建符合新API要求的表单数据结构
 		 * 处理字段名映射和数据格式转换
 		 */
@@ -578,7 +630,7 @@ export default {
 			const formData = {
 				fundsDate: this.form.fundsDate,
 				payType: Array.isArray(this.form.payType) ? this.form.payType.join('-') : this.form.payType,
-				moneyAmount: parseFloat(this.form.moneyAmount) || 0,
+				moneyAmount: parseFloat(this.form.moneyAmount) || null,
 				// 注意字段名的映射
 				otherAccountsName: this.form.otherAccountsName || this.form.otherAcountsName, // 兼容旧字段名
 				otherBankNo: this.form.otherBankNo,
@@ -588,7 +640,7 @@ export default {
 				companyType: this.form.companyType || this.value,
 				reason: this.form.reason,
 				applyPerson: this.form.applyPerson,
-				applyPersonId: this.form.applyPersonId || this.form.applyPersonID, // 兼容旧字段名
+				applyPersonId: this.form.applyPersonId || null,
 				comments: this.form.comments,
 				// 时间戳信息
 				addTime: this.form.addTime || parseTime(new Date()),
@@ -720,7 +772,7 @@ export default {
 			// 填充我方银行卡信息
 			addBadBetPayment(json).then(res => {
 				this.$message.success('付款成功');
-				this.reset();
+				this.clear();
 				this.$emit('changeOpen');
 			});
 		},
@@ -747,7 +799,7 @@ export default {
 
 						updatePaymentApply(formData).then(() => {
 							this.$modal.msgSuccess('付款申请保存成功,点击提交并审核可提交信息至审核流程');
-							this.reset();
+							this.clear();
 							that.dialogVisible = false;
 							// 发布一个事件 提醒更新
 							this.$bus.$emit('payment-apply-unaudit-list-update');
@@ -815,11 +867,6 @@ export default {
 			this.value = ''; // 重置对方类型
 			this.currentSort = { levelOne: '', levelTwo: '' };
 			this.resetForm('form');
-
-			// 清除上传组件状态
-			if (this.$refs.attachmentUpload) {
-				this.$refs.attachmentUpload.clearFiles();
-			}
 		},
 		// 保存表单数据到 localStorage
 		saveForm() {
@@ -860,7 +907,7 @@ export default {
 		handleProcess(that) {
 			this.submitAndUpdate(that);
 		},
-		handleReject() { }
+		handleReject() {}
 	}
 };
 </script>

@@ -206,6 +206,7 @@
 		>
 			<keep-alive>
 				<ApplyPayment
+					ref="applyPayment"
 					:money-input-disabled="false"
 					:table-name="TableName.ORDERCOMMISION"
 					:t-i-d="applyTid"
@@ -852,6 +853,7 @@ export default {
 						await addPaymentApply(data);
 						this.$message.success('一键申请成功');
 						this.onceApplyVisible = false;
+						this.$refs[`applyPayment`].reset();
 						this.getList(); // 刷新列表
 					} catch (error) {
 						console.error('申请失败:', error);
