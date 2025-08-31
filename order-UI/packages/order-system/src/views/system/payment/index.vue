@@ -1,47 +1,44 @@
 <template>
 	<div class="app-container">
-		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true"
-			label-width="120px">
+		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="120px">
 			<el-form-item label="付款时间">
-				<el-date-picker v-model="dateRange" style="width: 240px" value-format="yyyy-MM-dd HH:mm:ss"
-					type="daterange" range-separator="-" start-placeholder="开始日期"
-					end-placeholder="结束日期"></el-date-picker>
+				<el-date-picker
+					v-model="dateRange"
+					style="width: 240px"
+					value-format="yyyy-MM-dd HH:mm:ss"
+					type="daterange"
+					range-separator="-"
+					start-placeholder="开始日期"
+					end-placeholder="结束日期"
+				></el-date-picker>
 			</el-form-item>
 			<!--      客户还是供应商-->
 			<el-form-item label="对象类型" prop="companyType">
 				<el-select v-model="queryParams.companyType" placeholder="请选择对象类型" clearable>
-					<el-option v-for="item in options_companyType" :key="item.value" :label="item.label"
-						:value="item.value"></el-option>
+					<el-option v-for="item in options_companyType" :key="item.value" :label="item.label" :value="item.value"></el-option>
 				</el-select>
 			</el-form-item>
 			<el-form-item label="付款类型" prop="payType">
-				<el-cascader v-model="queryParams.payType" :options="paymentTypeTree" :props="props"
-					@change="handleChange"></el-cascader>
+				<el-cascader v-model="queryParams.payType" :options="paymentTypeTree" :props="props" @change="handleChange"></el-cascader>
 			</el-form-item>
 			<el-form-item label="我方户名" prop="selfAcountsName">
-				<el-input v-model="queryParams.selfAcountsName" placeholder="请输入我方户名" clearable
-					@keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.selfAcountsName" placeholder="请输入我方户名" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="对方公司" prop="companyName">
-				<el-input v-model="queryParams.companyName" placeholder="请输入对方公司" clearable
-					@keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.companyName" placeholder="请输入对方公司" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="对方户名" prop="otherAcountsName">
-				<el-input v-model="queryParams.otherAcountsName" placeholder="请输入对方户名" clearable
-					@keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.otherAcountsName" placeholder="请输入对方户名" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="对方银行卡号" prop="selfBankID">
-				<el-input v-model="queryParams.otherBankNo" placeholder="请输入对方银行卡号" clearable
-					@keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.otherBankNo" placeholder="请输入对方银行卡号" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="备注" prop="otherBankNo">
-				<el-input v-model="queryParams.comments" placeholder="请输入备注" clearable
-					@keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.comments" placeholder="请输入备注" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="复核状态" prop="auditState">
 				<el-select v-model="queryParams.auditState" placeholder="请选择复核状态" clearable>
-					<el-option v-for="item in auditState_options" :key="item.value" :label="item.label"
-						:value="item.value"></el-option>
+					<el-option v-for="item in auditState_options" :key="item.value" :label="item.label" :value="item.value"></el-option>
 				</el-select>
 			</el-form-item>
 			<el-form-item>
@@ -56,8 +53,7 @@
 			</el-col>
 			<!--      解开了新增付款信息-->
 			<el-col :span="1.5">
-				<el-button v-hasPermi="['system:payment:add']" type="danger" size="mini"
-					@click="handleAdd">新增付款信息</el-button>
+				<el-button v-hasPermi="['system:payment:add']" type="danger" size="mini" @click="handleAdd">新增付款信息</el-button>
 			</el-col>
 			<!-- <el-col :span="1.5">
             			        <el-button type="success" size="mini" @click="handleOnce">
@@ -73,122 +69,120 @@
 				<!--        导出-->
 				<template #export>
 					<el-col :span="1.5">
-						<el-button v-hasPermi="['system:payment:export']" plain icon="el-icon-folder-opened" size="mini"
-							@click="handleExport"></el-button>
+						<el-button v-hasPermi="['system:payment:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
 					</el-col>
 				</template>
 			</right-toolbar>
 		</el-row>
 
-		<el-table id="printBox" v-loading="loading" v-horizontal-scroll="'always'" :data="paymentList" size="mini"
-			border :cell-style="() => {
-				return { padding: '1.5px' };
-			}
-				" @selection-change="handleSelectionChange" ref="paymentTable">
+		<el-table
+			id="printBox"
+			v-loading="loading"
+			v-horizontal-scroll="'always'"
+			:data="paymentList"
+			size="mini"
+			border
+			:cell-style="
+				() => {
+					return { padding: '1.5px' };
+				}
+			"
+			@selection-change="handleSelectionChange"
+			ref="paymentTable"
+		>
 			<!--			<el-table-column type="selection" width="55" />-->
 			<el-table-column label="id" align="center" prop="id" v-if="columns[0].visible" />
-			<el-table-column label="日期" align="center" prop="fundsDate" width="120" v-if="columns[1].visible"
-				show-overflow-tooltip>
+			<el-table-column label="日期" align="center" prop="fundsDate" width="120" v-if="columns[1].visible" show-overflow-tooltip>
 				<template #default="scope">
 					<DynamicField :row="scope.row" field="fundsDate" />
 				</template>
 			</el-table-column>
-			<el-table-column label="支付类型" align="center" prop="payType" width="120" v-if="columns[2].visible"
-				show-overflow-tooltip>
+			<el-table-column label="支付类型" align="center" prop="payType" width="120" v-if="columns[2].visible" show-overflow-tooltip>
 				<template #default="scope">
 					<DynamicField :row="scope.row" field="payType" />
 				</template>
 			</el-table-column>
-			<el-table-column label="对方公司" align="center" prop="companyName" width="120" v-if="columns[11].visible"
-				show-overflow-tooltip>
+			<el-table-column label="对方公司" align="center" prop="companyName" width="120" v-if="columns[11].visible" show-overflow-tooltip>
 				<template #default="scope">
 					<DynamicField :row="scope.row" field="companyName" />
 				</template>
 			</el-table-column>
-			<el-table-column label="对方公司类型" align="center" prop="companyType" width="120" v-if="columns[12].visible"
-				show-overflow-tooltip>
+			<el-table-column label="对方公司类型" align="center" prop="companyType" width="120" v-if="columns[12].visible" show-overflow-tooltip>
 				<template #default="scope">
 					<DynamicField :row="scope.row" field="companyType" />
 				</template>
 			</el-table-column>
-			<el-table-column label="金额" align="center" prop="moneyAmount" width="120" v-if="columns[3].visible"
-				show-overflow-tooltip>
+			<el-table-column label="金额" align="center" prop="moneyAmount" width="120" v-if="columns[3].visible" show-overflow-tooltip>
 				<template #default="scope">
 					<DynamicField :row="scope.row" field="moneyAmount" />
 				</template>
 			</el-table-column>
-			<el-table-column label="我方户名" align="center" prop="selfAcountsName" width="120" v-if="columns[4].visible"
-				show-overflow-tooltip>
+			<el-table-column label="我方户名" align="center" prop="selfAcountsName" width="120" v-if="columns[4].visible" show-overflow-tooltip>
 				<template #default="scope">
 					<DynamicField :row="scope.row" field="selfAcountsName" />
 				</template>
 			</el-table-column>
-			<el-table-column label="我方账号" align="center" prop="selfBankNo" width="120" v-if="columns[5].visible"
-				show-overflow-tooltip>
+			<el-table-column label="我方账号" align="center" prop="selfBankNo" width="120" v-if="columns[5].visible" show-overflow-tooltip>
 				<template #default="scope">
 					<DynamicField :row="scope.row" field="selfBankNo" />
 				</template>
 			</el-table-column>
-			<el-table-column label="我方开户行" align="center" prop="selfBankName" width="120" v-if="columns[6].visible"
-				show-overflow-tooltip>
+			<el-table-column label="我方开户行" align="center" prop="selfBankName" width="120" v-if="columns[6].visible" show-overflow-tooltip>
 				<template #default="scope">
 					<DynamicField :row="scope.row" field="selfBankName" />
 				</template>
 			</el-table-column>
-			<el-table-column label="对方户名" align="center" prop="otherAcountsName" width="120" v-if="columns[7].visible"
-				show-overflow-tooltip>
+			<el-table-column label="对方户名" align="center" prop="otherAcountsName" width="120" v-if="columns[7].visible" show-overflow-tooltip>
 				<template #default="scope">
 					<DynamicField :row="scope.row" field="otherAcountsName" />
 				</template>
 			</el-table-column>
-			<el-table-column label="对方账号" align="center" prop="otherBankNo" width="120" v-if="columns[8].visible"
-				show-overflow-tooltip>
+			<el-table-column label="对方账号" align="center" prop="otherBankNo" width="120" v-if="columns[8].visible" show-overflow-tooltip>
 				<template #default="scope">
 					<DynamicField :row="scope.row" field="otherBankNo" />
 				</template>
 			</el-table-column>
-			<el-table-column label="对方开户行" align="center" prop="otherBankName" width="120" v-if="columns[9].visible"
-				show-overflow-tooltip>
+			<el-table-column label="对方开户行" align="center" prop="otherBankName" width="120" v-if="columns[9].visible" show-overflow-tooltip>
 				<template #default="scope">
 					<DynamicField :row="scope.row" field="otherBankName" />
 				</template>
 			</el-table-column>
-			<el-table-column label="支付状态" align="center" prop="paymentState" width="120" v-if="columns[10].visible"
-				show-overflow-tooltip>
+			<el-table-column label="支付状态" align="center" prop="paymentState" width="120" v-if="columns[10].visible" show-overflow-tooltip>
 				<template #default="scope">
-					<el-tag
-						:type="scope.row.paymentState === '已支付' ? 'success' : (scope.row.paymentState === '未支付' ? 'info' : 'warning')"
-						size="mini">{{ scope.row.paymentState }}</el-tag> </template>
+					<el-tag :type="scope.row.paymentState === '已支付' ? 'success' : scope.row.paymentState === '未支付' ? 'info' : 'warning'" size="mini">{{ scope.row.paymentState }}</el-tag>
+				</template>
 			</el-table-column>
 
-			<el-table-column label="备注" align="center" prop="comments" width="120" v-if="columns[13].visible"
-				show-overflow-tooltip />
-			<el-table-column label="附件" align="center" prop="attachmentList" width="120" v-if="columns[14].visible"
-				show-overflow-tooltip>
+			<el-table-column label="备注" align="center" prop="comments" width="120" v-if="columns[13].visible" show-overflow-tooltip />
+			<el-table-column label="附件" align="center" prop="attachmentList" width="120" v-if="columns[14].visible" show-overflow-tooltip>
 				<template #default="scope">
-					<CheckFiles :attachmentList="scope.row.attachmentList"
-						@needToUpdate="value => handleUpdateFilePath(value, scope.row, getPayment, updatePayment)"
-						flag="attachments" />
+					<CheckFiles :attachmentList="scope.row.attachmentList" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getPayment, updatePayment)" flag="attachments" />
 				</template>
 			</el-table-column>
 			<!-- 新增银行卡流水编号列 -->
-			<el-table-column label="银行卡流水编号" align="center" prop="transactionHistory" width="120"
-				v-if="columns[15] && columns[15].visible" show-overflow-tooltip />
+			<el-table-column label="银行卡流水编号" align="center" prop="transactionHistory" width="120" v-if="columns[15] && columns[15].visible" show-overflow-tooltip />
 			<!-- 新增银行卡流水附件列 -->
-			<el-table-column label="银行卡流水附件" align="center" prop="transactionHistoryAttachmentList" width="120"
-				v-if="columns[16] && columns[16].visible" fixed="right">
+			<el-table-column label="银行卡流水附件" align="center" prop="transactionHistoryAttachmentList" width="120" v-if="columns[16] && columns[16].visible" fixed="right">
 				<template #default="scope">
-					<CheckFiles :attachmentList="scope.row.attachmentList"
+					<CheckFiles
+						:attachmentList="scope.row.attachmentList"
 						@needToUpdate="value => handleUpdateFilePath(value, scope.row, getPayment, updatePayment)"
-						:is-upload="false" flag="transactionHistoryAttachmentList" />
+						:is-upload="false"
+						flag="transactionHistoryAttachmentList"
+					/>
 				</template>
 			</el-table-column>
-			<el-table-column label="复核状态" align="center" class-name="small-padding fixed-width" width="80"
-				fixed="right">
+			<el-table-column label="复核状态" align="center" class-name="small-padding fixed-width" width="80" fixed="right">
 				<template slot-scope="scope">
-					<el-switch v-model="scope.row.auditState" v-hasPermi="['system:payment:audit']" :active-value="'1'"
-						:inactive-value="'0'" active-color="#13ce66" inactive-color="#ff4949"
-						@change="value => handlePaymentAudit(scope.row, value)" />
+					<el-switch
+						v-model="scope.row.auditState"
+						v-hasPermi="['system:payment:audit']"
+						:active-value="'1'"
+						:inactive-value="'0'"
+						active-color="#13ce66"
+						inactive-color="#ff4949"
+						@change="value => handlePaymentAudit(scope.row, value)"
+					/>
 				</template>
 			</el-table-column>
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="200" fixed="right">
@@ -199,24 +193,19 @@
 							<i class="el-icon-arrow-down el-icon--right"></i>
 						</el-button>
 						<el-dropdown-menu slot="dropdown">
-							<el-dropdown-item v-if="scope.row.paymentState === '未支付'"
-								v-hasPermi="['system:payment:edit']" command="payment">付款</el-dropdown-item>
-							<el-dropdown-item v-else-if="scope.row.paymentState === '已支付'" disabled
-								command="paid">已付款</el-dropdown-item>
+							<el-dropdown-item v-if="scope.row.paymentState === '未支付'" v-hasPermi="['system:payment:edit']" command="payment">付款</el-dropdown-item>
+							<el-dropdown-item v-else-if="scope.row.paymentState === '已支付'" disabled command="paid">已付款</el-dropdown-item>
 							<el-dropdown-item v-else disabled command="applying">申请中</el-dropdown-item>
-							<el-dropdown-item v-hasPermi="['system:payment:edit']" command="edit"
-								divided>编辑</el-dropdown-item>
-							<el-dropdown-item v-hasPermi="['system:payment:remove']"
-								command="delete">删除</el-dropdown-item>
-							<el-dropdown-item command="viewEditReason">查看修改原因</el-dropdown-item>
+							<el-dropdown-item v-hasPermi="['system:payment:edit']" command="edit" divided>编辑</el-dropdown-item>
+							<el-dropdown-item v-hasPermi="['system:payment:remove']" command="delete">删除</el-dropdown-item>
+							<el-dropdown-item v-hasPermi="['system:tableeditmessage:list']" command="viewEditReason">查看修改原因</el-dropdown-item>
 						</el-dropdown-menu>
 					</el-dropdown>
 				</template>
 			</el-table-column>
 		</el-table>
 
-		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum"
-			:limit.sync="queryParams.pageSize" @pagination="getList" z />
+		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" z />
 
 		<!-- 查看修改原因弹窗 -->
 		<el-dialog title="查看修改原因" :visible.sync="editReasonDialogVisible" width="800px" append-to-body>
@@ -225,25 +214,21 @@
 				<el-table-column prop="reason" label="修改原因" />
 				<el-table-column prop="userName" label="修改人" />
 			</el-table>
-			<pagination v-show="editReasonTotal > 0" :total="editReasonTotal" :page.sync="editReasonQueryParams.pageNum"
-				:limit.sync="editReasonQueryParams.pageSize" @pagination="getEditReasonList" />
+			<pagination v-show="editReasonTotal > 0" :total="editReasonTotal" :page.sync="editReasonQueryParams.pageNum" :limit.sync="editReasonQueryParams.pageSize" @pagination="getEditReasonList" />
 		</el-dialog>
 
 		<!--     添加或修改付款信息对话框 -->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false"
-			:show-close="false" :title="title" :visible.sync="open" width="1200px" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="1200px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="140px">
 				<el-row :gutter="40">
 					<!-- 左列 -->
 					<el-col :span="12">
 						<el-form-item label="日期" prop="fundsDate">
-							<el-date-picker v-model="form.fundsDate" type="datetime" placeholder="选择日期"
-								value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+							<el-date-picker v-model="form.fundsDate" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 						</el-form-item>
 
 						<el-form-item label="付款类型" prop="payType">
-							<el-cascader v-model="form.payType" :options="paymentTypeTree" :props="props"
-								@change="handleChange"></el-cascader>
+							<el-cascader v-model="form.payType" :options="paymentTypeTree" :props="props" @change="handleChange"></el-cascader>
 						</el-form-item>
 
 						<el-form-item label="金额" prop="moneyAmount">
@@ -251,11 +236,14 @@
 						</el-form-item>
 
 						<el-form-item label="我方银行账户类型">
-							<BankType ref="selfSelectedBankType" :bill-type="BankAcceptanceType.PAY_TYPE.PAYMENT"
+							<BankType
+								ref="selfSelectedBankType"
+								:bill-type="BankAcceptanceType.PAY_TYPE.PAYMENT"
 								:select-type="form.selfBankCardType"
 								:external-bankacceptance-info="form.params.bankacceptance"
 								@updateSelectedType="changeSelfBankType"
-								@updateBankAcceptance="value => (form.params.bankacceptance = value)" />
+								@updateBankAcceptance="value => (form.params.bankacceptance = value)"
+							/>
 						</el-form-item>
 
 						<el-form-item label="我方户名" prop="selfAcountsName">
@@ -264,10 +252,16 @@
 									<el-input disabled v-model="form.selfAcountsName" placeholder="请选择" />
 								</el-col>
 								<el-col :span="8">
-									<SearchOption :limit-info="{ acountsType: '己方公司' }" :get-data="listBankAccount"
-										icon="el-icon-search" query-label="户名查找" query-info="acountsName"
-										:query-name="queryBank" @commitBack="handleCommitBack"
-										@update:queryName="handleUpdateQueryName">
+									<SearchOption
+										:limit-info="{ acountsType: '己方公司' }"
+										:get-data="listBankAccount"
+										icon="el-icon-search"
+										query-label="户名查找"
+										query-info="acountsName"
+										:query-name="queryBank"
+										@commitBack="handleCommitBack"
+										@update:queryName="handleUpdateQueryName"
+									>
 										<template #table-columns>
 											<el-table-column label="账号类型" align="center" prop="acountsType" />
 											<el-table-column label="己方公司" align="center" prop="displayName" />
@@ -290,8 +284,7 @@
 
 						<el-form-item label="对方类型">
 							<el-select v-model="value" placeholder="请选择">
-								<el-option v-for="item in options" :key="item.value" :label="item.label"
-									:value="item.value"></el-option>
+								<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
 							</el-select>
 						</el-form-item>
 
@@ -300,12 +293,16 @@
 								<el-col :span="10">
 									<el-input disabled v-model="form.companyName" placeholder="请选择" />
 								</el-col>
-								<el-col :span="2"
-									v-if="value === PAYMENT_TARGET_TYPE.CUSTOMER || value === PAYMENT_TARGET_TYPE.SUPPLIER">
-									<SearchOption :limit-info="{ companyType: value }" :get-data="listCompany"
-										:query-info="`companyName`" :query-label="`公司名称`" :query-name="companyName"
+								<el-col :span="2" v-if="value === PAYMENT_TARGET_TYPE.CUSTOMER || value === PAYMENT_TARGET_TYPE.SUPPLIER">
+									<SearchOption
+										:limit-info="{ companyType: value }"
+										:get-data="listCompany"
+										:query-info="`companyName`"
+										:query-label="`公司名称`"
+										:query-name="companyName"
 										@update:queryName="value => (companyName = value)"
-										@commitBack="handleCommitBackCompany">
+										@commitBack="handleCommitBackCompany"
+									>
 										<template #table-columns>
 											<el-table-column :label="value" align="center" prop="companyName" />
 											<el-table-column label="老板姓名" align="center" prop="leader" />
@@ -316,10 +313,15 @@
 									</SearchOption>
 								</el-col>
 								<el-col :span="2" v-if="value === PAYMENT_TARGET_TYPE.DRIVER">
-									<SearchOption :limit-info="{ companyType: value }" :get-data="listCars"
-										:query-info="`driver`" :query-label="`司机`" :query-name="companyName"
+									<SearchOption
+										:limit-info="{ companyType: value }"
+										:get-data="listCars"
+										:query-info="`driver`"
+										:query-label="`司机`"
+										:query-name="companyName"
 										@update:queryName="value => (companyName = value)"
-										@commitBack="handleCommitBackCompany">
+										@commitBack="handleCommitBackCompany"
+									>
 										<template #table-columns>
 											<el-table-column label="运输类型" align="center" prop="carType" />
 											<el-table-column label="车牌/柜号" align="center" prop="carNo" />
@@ -335,8 +337,7 @@
 					<!-- 右列 -->
 					<el-col :span="12">
 						<el-form-item label="对方银行账户类型">
-							<BankType ref="otherSelectedBankType" :option-baned="true" :baned="true"
-								:select-type="form.otherBankCardType" @updateSelectedType="changeOtherBankType" />
+							<BankType ref="otherSelectedBankType" :option-baned="true" :baned="true" :select-type="form.otherBankCardType" @updateSelectedType="changeOtherBankType" />
 						</el-form-item>
 
 						<!-- 选择供应商 -->
@@ -350,13 +351,19 @@
 									<el-input disabled v-model="form.otherBankNo" placeholder="请选择" />
 								</el-col>
 								<el-col :span="8">
-									<SearchOption :limit-info="{ acountsType: value }" :get-data="listBankAccount"
-										:query-name="queryBankAcount" query-label="户名查找" query-info="acountsName"
+									<SearchOption
+										:limit-info="{ acountsType: value }"
+										:get-data="listBankAccount"
+										:query-name="queryBankAcount"
+										query-label="户名查找"
+										query-info="acountsName"
 										@commitBack="handleCommitBackBankAcount"
-										@update:queryName="handleUpdateQueryBankAcount" :extra-params="{
+										@update:queryName="handleUpdateQueryBankAcount"
+										:extra-params="{
 											companyId: form.companyId,
 											companyType: value
-										}">
+										}"
+									>
 										<template #table-columns>
 											<el-table-column label="账户类型" align="center" prop="acountsType" />
 											<el-table-column label="公司名称" align="center" prop="companyName" />
@@ -369,26 +376,31 @@
 							</el-row>
 						</el-form-item>
 
-						<el-form-item v-if="value !== PAYMENT_TARGET_TYPE.PAYMENT_FEE && value !== '支付费用'" label="对方开户行"
-							prop="otherBankName">
+						<el-form-item v-if="value !== PAYMENT_TARGET_TYPE.PAYMENT_FEE && value !== '支付费用'" label="对方开户行" prop="otherBankName">
 							<el-input disabled v-model="form.otherBankName" placeholder="请选择" />
 						</el-form-item>
 
 						<el-form-item label="附件" prop="attachmentIds">
-							<UploadFilesButton ref="attachmentUpload" flag="attachments"
+							<UploadFilesButton
+								ref="attachmentUpload"
+								flag="attachments"
 								:extra-info="{ moduleType: 'payment', formId: form.id }"
 								:initial-attachments="form.attachmentList || []"
-								@files-updated="handleAttachmentFilesUpdated" />
+								@files-updated="handleAttachmentFilesUpdated"
+							/>
 						</el-form-item>
 
 						<el-form-item label="银行卡流水编号" prop="transactionHistory">
 							<el-input v-model="form.transactionHistory" placeholder="请输入银行卡流水编号" />
 						</el-form-item>
 						<el-form-item label="银行卡流水附件" prop="attachmentIds">
-							<UploadFilesButton ref="transactionHistoryUpload" flag="transactionHistoryAttachmentList"
+							<UploadFilesButton
+								ref="transactionHistoryUpload"
+								flag="transactionHistoryAttachmentList"
 								:extra-info="{ moduleType: 'payment', formId: form.id }"
 								:initial-attachments="form.transactionHistoryAttachmentList || []"
-								@files-updated="handleTransactionHistoryFilesUpdated" />
+								@files-updated="handleTransactionHistoryFilesUpdated"
+							/>
 						</el-form-item>
 						<el-form-item label="备注" prop="comments">
 							<el-input v-model="form.comments" placeholder="请输入备注" />
@@ -403,19 +415,26 @@
 		</el-dialog>
 
 		<!--    选择银行卡的页面-->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="请选择付款银行卡"
-			:visible.sync="chooseBankDialogVisible" width="600px">
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="请选择付款银行卡" :visible.sync="chooseBankDialogVisible" width="600px">
 			<div>
 				<el-form :model="chooseInfo" label-width="150px">
 					<el-form-item label="对方银行账户类型" prop="selfBankNo">
-						<BankType :bill-type="BankAcceptanceType.PAY_TYPE.PAYMENT"
-							:select-type="chooseInfo.otherBankCardType" @updateSelectedType="changeCustomSelfBankType"
-							@updateBankAcceptance="value => (chooseInfo.bankacceptance = value)" />
+						<BankType
+							:bill-type="BankAcceptanceType.PAY_TYPE.PAYMENT"
+							:select-type="chooseInfo.otherBankCardType"
+							@updateSelectedType="changeCustomSelfBankType"
+							@updateBankAcceptance="value => (chooseInfo.bankacceptance = value)"
+						/>
 					</el-form-item>
 					<el-form-item label="我方银行账户类型" prop="selfBankNo">
-						<BankType :option-baned="true" :baned="true" :bill-type="BankAcceptanceType.PAY_TYPE.PAYMENT"
-							:select-type="chooseInfo.selfBankCardType" @updateSelectedType="changeCustomSelfBankType"
-							@updateBankAcceptance="value => (chooseInfo.bankacceptance = value)" />
+						<BankType
+							:option-baned="true"
+							:baned="true"
+							:bill-type="BankAcceptanceType.PAY_TYPE.PAYMENT"
+							:select-type="chooseInfo.selfBankCardType"
+							@updateSelectedType="changeCustomSelfBankType"
+							@updateBankAcceptance="value => (chooseInfo.bankacceptance = value)"
+						/>
 					</el-form-item>
 					<el-form-item label="我方户名" prop="selfAcountsName">
 						<el-row>
@@ -423,10 +442,16 @@
 								<el-input v-model="chooseInfo.selfAcountsName" placeholder="请输入我方户名" />
 							</el-col>
 							<el-col :span="3">
-								<SearchOption :limit-info="{ acountsType: '己方公司' }" :get-data="listBankAccount"
-									icon="el-icon-search" query-label="户名查找" query-info="acountsName"
-									:query-name="queryChoose" @commitBack="handleCommitBackChoose"
-									@update:queryName="handleUpdateQueryChoose">
+								<SearchOption
+									:limit-info="{ acountsType: '己方公司' }"
+									:get-data="listBankAccount"
+									icon="el-icon-search"
+									query-label="户名查找"
+									query-info="acountsName"
+									:query-name="queryChoose"
+									@commitBack="handleCommitBackChoose"
+									@update:queryName="handleUpdateQueryChoose"
+								>
 									<template #table-columns>
 										<el-table-column label="账号类型" align="center" prop="acountsType" />
 										<el-table-column label="我方公司" align="center" prop="displayName" />
@@ -451,8 +476,7 @@
 				<el-button type="primary" @click="handlePayment">确 定</el-button>
 			</span>
 		</el-dialog>
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="信息"
-			:visible.sync="infoVisible" width="900px" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="信息" :visible.sync="infoVisible" width="900px" append-to-body>
 			<component :is="Components" :need-to-show-info="needToShowInfo" />
 		</el-dialog>
 	</div>
@@ -690,7 +714,7 @@ export default {
 		},
 		PAYMENT_TYPES() {
 			return PAYMENT_TYPES;
-		},
+		}
 	},
 	// 展示与隐藏
 	watch: {
@@ -1331,7 +1355,7 @@ export default {
 					this.getList();
 					this.$modal.msgSuccess('删除成功');
 				})
-				.catch(() => { });
+				.catch(() => {});
 		},
 		/** 导出按钮操作 */
 		handleExport() {

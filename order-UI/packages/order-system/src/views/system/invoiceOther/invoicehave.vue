@@ -151,7 +151,7 @@
 							<el-dropdown-item command="view">查看</el-dropdown-item>
 							<el-dropdown-item v-hasPermi="['system:invoiceother:edit']" command="edit">修改</el-dropdown-item>
 							<el-dropdown-item v-hasPermi="['system:invoiceother:remove']" command="delete" divided>删除</el-dropdown-item>
-							<el-dropdown-item command="viewEditReason">查看修改原因</el-dropdown-item>
+							<el-dropdown-item v-hasPermi="['system:tableeditmessage:list']" command="viewEditReason">查看修改原因</el-dropdown-item>
 						</el-dropdown-menu>
 					</el-dropdown>
 				</template>
