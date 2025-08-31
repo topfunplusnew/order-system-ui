@@ -1,4 +1,5 @@
 import { parseTime } from './ruoyi';
+import { getConfigKey } from '@/api/system/config';
 
 /**
  * 表格时间格式化
@@ -195,6 +196,71 @@ export function getTime(type) {
 	} else {
 		return new Date(new Date().toDateString());
 	}
+}
+
+/**
+ * 根据天数计算时间区间（结束时间为当前日期，精确到天）
+ * @param {number} days 从当前时间往前推多少天（非负整数）
+ * @returns {{startTime: string, endTime: string}} 返回开始时间和结束时间，格式为 "YYYY-MM-DD HH:mm:ss"
+ */
+export async function getDateRangeDays(days) {
+	const makeRange = d => {
+		const now = new Date();
+		const end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+		const startDate = new Date(end);
+		startDate.setDate(end.getDate() - d);
+		const start = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate(), 0, 0, 0);
+		return {
+			startTime: formatDate(start),
+			endTime: formatDate(end)
+		};
+	};
+
+	// 1) 优先使用显式传入的 days
+	if (days !== undefined && days !== null && String(days).trim() !== '') {
+		let d = Number(days);
+		if (!Number.isFinite(d) || isNaN(d) || d < 0) d = 0;
+		return makeRange(d);
+	}
+
+	// 2) 未传入 days：依赖系统配置决定
+	let res;
+	try {
+		res = await getConfigKey('order.time_default_write');
+	} catch (e) {
+		throw new Error('读取配置 order.time_default_write 失败: ' + (e && e.message ? e.message : e));
+	}
+
+	const val = res && (res.msg !== undefined ? res.msg : res);
+
+	// 禁用默认时间填写
+	if (val === 'N' || val === 'n' || val === false) {
+		return { startTime: null, endTime: null };
+	}
+
+	// 非法值直接抛错
+	if (!(val === 'Y' || val === 'y' || val === true)) {
+		throw new Error(`配置项 order.time_default_write 值非法，期望 'Y' 或 'N'，当前值：${val}`);
+	}
+
+	// 值为 Y，读取范围并校验
+	let rangeRes;
+	try {
+		rangeRes = await getConfigKey('order.time_default_write_range');
+	} catch (e) {
+		throw new Error('读取配置 order.time_default_write_range 失败: ' + (e && e.message ? e.message : e));
+	}
+
+	const rangeVal = rangeRes && (rangeRes.msg !== undefined ? rangeRes.msg : rangeRes);
+	const rn = Number(rangeVal);
+	if (!Number.isFinite(rn) || isNaN(rn)) {
+		throw new Error(`配置项 order.time_default_write_range 非法，期望为数字，当前值：${rangeVal}`);
+	}
+	if (rn < 0) {
+		throw new Error(`配置项 order.time_default_write_range 不能为负数，当前值：${rn}`);
+	}
+
+	return makeRange(rn);
 }
 
 /**

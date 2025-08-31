@@ -1,10 +1,15 @@
 <script>
 import EllipsisText from '@/views/dashboard/components/common/EllipsisText.vue';
 import { fix } from '../../../../api/tool/format';
+import { getGoodsOrder } from '@/api/system/goodsOrder';
+import OrderDisplay from '@/components/OrderDisplay/index.vue';
+import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
+import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 
 export default {
 	name: 'InvoiceItem',
 	components: { EllipsisText },
+	mixins: [common_dialog],
 	props: {
 		invoice: {
 			type: Object,
@@ -19,6 +24,12 @@ export default {
 		};
 	},
 	computed: {
+		// 可能的订单ID来源：orderId / sourceId / params.sourceId / params.orderId
+		invoiceOrderId() {
+			if (!this.invoice) return null;
+			return this.invoice.isOrderTax || null;
+		},
+
 		amount() {
 			if (!this.invoice || Object.keys(this.invoice).length === 0) {
 				return '无';
@@ -41,6 +52,35 @@ export default {
 	},
 	methods: {
 		fix,
+		// 打开并联查订单
+		openOrder(orderId) {
+			if (!orderId) {
+				this.$message.warn('无关联订单ID');
+				return;
+			}
+			getGoodsOrder(orderId)
+				.then(res => {
+					if (!res || !res.data) {
+						this.$message.error('获取订单信息失败');
+						return;
+					}
+					// 使用 openDialog 打开 OrderDisplay 组件查看订单详情
+					this.openDialog(
+						OrderDisplay,
+						'查看订单信息',
+						'700px',
+						{
+							orderInfo: res.data,
+							orderDetailInfoList: res.data.orderDetailList || []
+						},
+						false
+					);
+				})
+				.catch(err => {
+					console.error('getGoodsOrder error', err);
+					this.$message.error('查询订单失败');
+				});
+		},
 		handleCheckInvoice() {
 			this.$refs.invoiceItem.classList.add('active');
 			this.visible = true;
@@ -82,6 +122,10 @@ export default {
 						<span class="label">票点金额：</span>
 						<span class="value ticket-amount">{{ amount }}</span>
 					</div>
+					<div class="amount-item" v-if="invoice.isOrderTax">
+						<span class="label">对应订单ID：</span>
+						<span class="value ticket-amount">{{ invoice.isOrderTax }}</span>
+					</div>
 				</div>
 			</div>
 
@@ -119,6 +163,12 @@ export default {
 					<el-tag :type="invoice.companyType === 'CUSTOMER' ? 'success' : 'warning'" size="mini">
 						{{ invoice.companyType === 'CUSTOMER' ? '客户' : '供应商' }}
 					</el-tag>
+				</el-descriptions-item>
+				<el-descriptions-item label="对应订单">
+					<span v-if="invoiceOrderId">
+						<el-button type="text" size="mini" @click="openOrder(invoiceOrderId)">查看订单 {{ invoiceOrderId }}</el-button>
+					</span>
+					<span v-else>无</span>
 				</el-descriptions-item>
 				<el-descriptions-item label="票点" v-if="invoice.ticketPoint > 0">
 					<span class="ticket-info">{{ formattedTicketPoint }}</span>

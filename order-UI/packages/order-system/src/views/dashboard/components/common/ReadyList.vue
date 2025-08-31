@@ -65,6 +65,16 @@ export default {
 					// 发送时间 告诉订单列表重新加载
 					that.dialogVisible = false;
 					this.$bus.$emit('select-goods:update');
+					// 清理发票相关状态：清空已生成的发票列表和开票金额
+					if (this.$store && this.$store.dispatch) {
+						this.$store.dispatch('excel/clearSelectedInvoiceList');
+						this.$store.dispatch('excel/clearInvoiceAmount');
+					}
+					// 清理 sessionStorage 中可能的临时开票数据
+					sessionStorage.removeItem('invoiceAmount');
+					sessionStorage.removeItem('us');
+					// 广播一个统一的清理事件，InvoiceBody 等组件会监听并做局部清理
+					this.$bus.$emit('invoice-clear');
 					this.$message.success('本批开票成功');
 					resolve();
 				} else {

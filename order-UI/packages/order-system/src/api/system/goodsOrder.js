@@ -1,7 +1,11 @@
 import request from '@/utils/request';
+import { Message } from 'element-ui';
 
 // 查询订单列表
 export function listGoodsOrder(query) {
+	if (!query || !query.orderDateStart || !query.orderDateEnd) {
+		Message.warning('您没有选择时间，选择时间后可加速查询');
+	}
 	return request({
 		url: '/system/goodsOrder/list',
 		method: 'get',

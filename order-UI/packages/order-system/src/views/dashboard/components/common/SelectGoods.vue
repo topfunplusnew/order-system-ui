@@ -410,6 +410,7 @@ export default {
 			v-horizontal-scroll="'always'"
 			fit
 			ref="goodsTable"
+			max-height="700px"
 			border
 			empty-text="暂无可开票订单（订单的可开票金额为0）"
 			:data="goodsOrderList"
@@ -433,6 +434,7 @@ export default {
 					{{ Number(scope.row.allPayments) - Number(scope.row.params.totalInvoiceAmount) }}
 				</template>
 			</el-table-column>
+			<el-table-column show-overflow-tooltip label="ID" align="center" prop="id" />
 			<el-table-column show-overflow-tooltip label="日期" align="center" prop="orderDate" />
 			<el-table-column show-overflow-tooltip label="客户" align="center" prop="customer" />
 			<el-table-column show-overflow-tooltip label="供应商" align="center" prop="supplierNames" width="200"></el-table-column>

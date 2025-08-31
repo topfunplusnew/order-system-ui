@@ -68,10 +68,11 @@ export var mixin_order_base = {
 		getList() {
 			if (!this.queryParams.isAdjust) {
 				const isAdjust = this.isAdjustOrder ? -1 : 0;
-				listGoodsOrder({
+				const query = {
 					...this.queryParams,
 					isAdjust: isAdjust
-				}).then(response => {
+				};
+				listGoodsOrder(query).then(response => {
 					// 预处理订单数据，添加供应商和仓库的预处理信息
 					this.goodsOrderList = this.preprocessOrderData(response.rows);
 					this.total = response.total;
