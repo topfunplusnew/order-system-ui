@@ -10,7 +10,7 @@ import { Message } from 'element-ui';
  */
 export function listCommission(query, type) {
 	if (!query || !query.params.startTime || !query.params.endTime) {
-		Message.warning('您没有选择时间，选择时间后可加速查询');
+		Message.warning('选择时间后可加速查询');
 	}
 	return service.request({
 		url: '/system/ordercommission/list',

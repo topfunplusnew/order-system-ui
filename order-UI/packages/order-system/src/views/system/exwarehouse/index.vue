@@ -80,15 +80,7 @@
 			<el-table-column v-if="columns[8].visible" label="出库量" align="center" prop="outAmount" />
 			<el-table-column v-if="columns[9].visible" label="出库金额" align="center">
 				<template slot-scope="scope">
-					{{
-						(
-							(scope.row.sourceInventoryDetail.length || 0) *
-							(scope.row.sourceInventoryDetail.width || 0) *
-							(scope.row.sourceInventoryDetail.paymentUnload || 0) *
-							(scope.row.outAmount || 0) *
-							0.000001
-						).toFixed(2)
-					}}
+					{{ computedAmount(scope.row) }}
 				</template>
 			</el-table-column>
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="80">
@@ -121,15 +113,14 @@
 
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
+		<!-- 使用动态 DialogWrapper 展示订单详情 -->
+		<div v-if="currentComponent">
+			<DialogWrapper :current-component="currentComponent" :dialog-visible="dialogVisible" />
+		</div>
+
 		<!-- 添加或修改出库对话框 -->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="80px">
-				<!--        <el-form-item label="订单编号" prop="ordersNo">-->
-				<!--          <el-input v-model="form.ordersNo" placeholder="请输入订单编号"/>-->
-				<!--        </el-form-item>-->
-				<!--        <el-form-item label="仓库ID" prop="storeHouseid">-->
-				<!--          <el-input v-model="form.storeHouseid" placeholder="请输入仓库ID"/>-->
-				<!--        </el-form-item>-->
 				<el-form-item label="仓库名称" prop="storeHouseName">
 					<el-input v-model="form.storeHouseName" placeholder="请输入仓库名称" />
 				</el-form-item>
@@ -149,111 +140,6 @@
 			</div>
 		</el-dialog>
 
-		<!--    查看订单详情信息-->
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="查看订单信息"
-			:visible.sync="checkOrderVisible"
-			width="900px"
-		>
-			<el-descriptions title="订单信息" :column="3" border size="mini">
-				<el-descriptions-item label="id">
-					{{ orderDetailInfo.id || '-' }}
-				</el-descriptions-item>
-				<el-descriptions-item label="日期">
-					{{ orderDetailInfo.orderDate || '-' }}
-				</el-descriptions-item>
-				<el-descriptions-item label="客户">
-					{{ orderDetailInfo.customer || '-' }}
-				</el-descriptions-item>
-				<el-descriptions-item label="商家姓名">
-					{{ orderDetailInfo.supplierNames || '-' }}
-				</el-descriptions-item>
-				<el-descriptions-item label="车队">
-					{{ orderDetailInfo.fleet || '-' }}
-				</el-descriptions-item>
-				<el-descriptions-item label="审核状态">
-					<TagsItem :check-info="orderDetailInfo.checkState" checkValue="未审核" />
-				</el-descriptions-item>
-				<el-descriptions-item label="开票状态">
-					<TagsItem :check-info="orderDetailInfo.invoiceState" checkValue="未开票" />
-				</el-descriptions-item>
-				<el-descriptions-item label="附件">
-					{{ orderDetailInfo.path || '-' }}
-				</el-descriptions-item>
-				<el-descriptions-item label="陆运车牌">
-					{{ orderDetailInfo.landCarNo || '-' }}
-				</el-descriptions-item>
-				<el-descriptions-item label="陆运司机电话">
-					{{ orderDetailInfo.landDriverTel || '-' }}
-				</el-descriptions-item>
-				<el-descriptions-item label="陆运司机姓名">
-					{{ orderDetailInfo.landDriverName || '-' }}
-				</el-descriptions-item>
-				<el-descriptions-item label="柜号">
-					{{ orderDetailInfo.seaCarNo || '-' }}
-				</el-descriptions-item>
-				<el-descriptions-item label="海运司机电话">
-					{{ orderDetailInfo.seaDriverTel || '-' }}
-				</el-descriptions-item>
-				<el-descriptions-item label="海运公司">
-					{{ orderDetailInfo.seaDriverName || '-' }}
-				</el-descriptions-item>
-				<!--				<el-descriptions-item label="打款状态">-->
-				<!--					{{ orderDetailInfo.PaymentState || '-' }}-->
-				<!--				</el-descriptions-item>-->
-				<el-descriptions-item label="陆运银行户名">
-					{{ orderDetailInfo.landBankName || '-' }}
-				</el-descriptions-item>
-				<el-descriptions-item label="陆运银行账号">
-					{{ orderDetailInfo.landBankNo || '-' }}
-				</el-descriptions-item>
-				<el-descriptions-item label="海运银行户名">
-					{{ orderDetailInfo.seaBankName || '-' }}
-				</el-descriptions-item>
-				<el-descriptions-item label="海运银行账号">
-					{{ orderDetailInfo.seaBankNo || '-' }}
-				</el-descriptions-item>
-				<el-descriptions-item label="收到条附件">
-					{{ orderDetailInfo.receiveProof || '-' }}
-				</el-descriptions-item>
-				<el-descriptions-item label="是否被调整单">
-					<TagsItem :check-info="orderDetailInfo.isAdjusted" check-value="否" />
-				</el-descriptions-item>
-				<el-descriptions-item v-if="orderDetailInfo.isAdjusted" label="调整日期">
-					{{ orderDetailInfo.adjustDate }}
-				</el-descriptions-item>
-				<el-descriptions-item label="原订单编号">
-					{{ orderDetailInfo.adjustOrderid }}
-				</el-descriptions-item>
-				<el-descriptions-item label="是否可编辑">
-					<TagsItem :check-info="isOrNot(orderDetailInfo.isedit)" check-value="否" />
-				</el-descriptions-item>
-				<el-descriptions-item label="客户是否开票">
-					<TagsItem :check-info="isOrNot(orderDetailInfo.customerIsInvoice)" check-value="否" />
-				</el-descriptions-item>
-				<el-descriptions-item label="供应商是否开票">
-					<TagsItem :check-info="isOrNot(orderDetailInfo.customerIsInvoice)" check-value="否" />
-				</el-descriptions-item>
-				<el-descriptions-item label="陆运费">
-					{{ orderDetailInfo.landFreight }}
-				</el-descriptions-item>
-				<el-descriptions-item label="海运费">
-					{{ orderDetailInfo.seaFreight }}
-				</el-descriptions-item>
-			</el-descriptions>
-			<span slot="footer" class="dialog-footer">
-				<el-button @click="checkOrderVisible = false">取 消</el-button>
-				<el-button type="primary" @click="checkOrderVisible = false">确 定</el-button>
-			</span>
-		</el-dialog>
-
-		<!--    库存信息-->
 		<el-dialog
 			:modal="false"
 			v-dialogDrag
@@ -399,17 +285,23 @@
 </template>
 
 <script>
+/* eslint-disable */
 import { listExWarehouse, getExWarehouse, delExWarehouse, addExWarehouse, updateExWarehouse } from '@/api/system/exWarehouse';
 import { listGoodsOrder } from '@/api/system/goodsOrder';
-import TagsItem from '@/components/TagsItem/index.vue';
+import OrderDisplay from '@/components/OrderDisplay/index.vue';
+import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
+import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import { getInventory, listInventory } from '@/api/system/inventory';
 import { listConfig } from '@/api/system/config';
 import { addDateRange } from '@/utils/ruoyi';
 import { getDetail, listDetail } from '../../../api/system/detail';
+import { listOrderDetailByOrderNos } from '../../../api/system/orderDetail';
+import OrderDetailInfo from '../../dashboard/components/goodsOrder/OrderDetailInfo.vue';
 
 export default {
 	name: 'ExWarehouse',
-	components: { TagsItem },
+	components: { DialogWrapper },
+	mixins: [common_dialog],
 	data() {
 		return {
 			// 遮罩层
@@ -467,7 +359,10 @@ export default {
 			checkOrderVisible: false,
 			orderDetailInfo: {},
 			inventoryInfo: {},
-			checkInventoryVisible: false
+			checkInventoryVisible: false,
+			// 动态 dialog 状态
+			currentComponent: null,
+			dialogVisible: false
 		};
 	},
 	// 展示与隐藏
@@ -494,12 +389,26 @@ export default {
 		this.reset();
 	},
 	methods: {
+		computedAmount(row) {
+			const price = (row.sourceInventoryDetail && row.sourceInventoryDetail.paymentUnload) || 0;
+			const amount = row.outAmount || 0;
+			return (price * amount).toFixed(2);
+		},
 		checkOrderInfo(row) {
-			// 查询订单详情
-			listGoodsOrder({ ordersNo: row.ordersNo }).then(res => {
-				this.orderDetailInfo = res.rows[0];
-				this.checkOrderVisible = true;
-			});
+			// 使用动态弹窗显示订单详情
+			if (!row || !row.ordersNo) {
+				this.$message.warning('无效的订单号');
+				return;
+			}
+			listOrderDetailByOrderNos([row.ordersNo])
+				.then(res => {
+					const details = res.rows || [];
+					this.openDialog(OrderDetailInfo, '订单详情信息查看', '700px', { orderDetailInfoList: details, ban: true }, false);
+				})
+				.catch(err => {
+					console.error('获取订单详情失败:', err);
+					this.$message.error('获取订单详情失败，请稍后重试');
+				});
 		},
 
 		// 查看库存信息 查询当前行的库存信息

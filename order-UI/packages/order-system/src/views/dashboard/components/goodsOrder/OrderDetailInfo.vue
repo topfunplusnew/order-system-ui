@@ -14,11 +14,17 @@ export default {
 	components: { SearchOption },
 	props: {
 		orderDetailInfoList: {
-			type: Array
+			type: Array,
+			default: () => []
 		},
 		ban: {
 			type: Boolean,
 			default: false
+		}
+	},
+	computed: {
+		RebateType() {
+			return RebateType;
 		}
 	},
 	data() {
