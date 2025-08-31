@@ -608,6 +608,9 @@ export default {
 		TableName() {
 			return TableName;
 		},
+		PUBLIC_DICT_TYPE() {
+			return PUBLIC_DICT_TYPE;
+		},
 		...mapGetters(['tempLendMoneyList'])
 	},
 	methods: {
