@@ -21,14 +21,14 @@
 			<el-form-item label="付款类型" prop="payType">
 				<el-cascader v-model="queryParams.payType" :options="paymentTypeTree" :props="props" @change="handleChange"></el-cascader>
 			</el-form-item>
-			<el-form-item label="我方户名" prop="selfAcountsName">
-				<el-input v-model="queryParams.selfAcountsName" placeholder="请输入我方户名" clearable @keyup.enter.native="handleQuery" />
+			<el-form-item label="我方户名" prop="selfAccountsName">
+				<el-input v-model="queryParams.selfAccountsName" placeholder="请输入我方户名" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="对方公司" prop="companyName">
 				<el-input v-model="queryParams.companyName" placeholder="请输入对方公司" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
-			<el-form-item label="对方户名" prop="otherAcountsName">
-				<el-input v-model="queryParams.otherAcountsName" placeholder="请输入对方户名" clearable @keyup.enter.native="handleQuery" />
+			<el-form-item label="对方户名" prop="otherAccountsName">
+				<el-input v-model="queryParams.otherAccountsName" placeholder="请输入对方户名" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="对方银行卡号" prop="selfBankID">
 				<el-input v-model="queryParams.otherBankNo" placeholder="请输入对方银行卡号" clearable @keyup.enter.native="handleQuery" />
@@ -117,9 +117,9 @@
 					<DynamicField :row="scope.row" field="moneyAmount" />
 				</template>
 			</el-table-column>
-			<el-table-column label="我方户名" align="center" prop="selfAcountsName" width="120" v-if="columns[4].visible" show-overflow-tooltip>
+			<el-table-column label="我方户名" align="center" prop="selfAccountsName" width="120" v-if="columns[4].visible" show-overflow-tooltip>
 				<template #default="scope">
-					<DynamicField :row="scope.row" field="selfAcountsName" />
+					<DynamicField :row="scope.row" field="selfAccountsName" />
 				</template>
 			</el-table-column>
 			<el-table-column label="我方账号" align="center" prop="selfBankNo" width="120" v-if="columns[5].visible" show-overflow-tooltip>
@@ -132,9 +132,9 @@
 					<DynamicField :row="scope.row" field="selfBankName" />
 				</template>
 			</el-table-column>
-			<el-table-column label="对方户名" align="center" prop="otherAcountsName" width="120" v-if="columns[7].visible" show-overflow-tooltip>
+			<el-table-column label="对方户名" align="center" prop="otherAccountsName" width="120" v-if="columns[7].visible" show-overflow-tooltip>
 				<template #default="scope">
-					<DynamicField :row="scope.row" field="otherAcountsName" />
+					<DynamicField :row="scope.row" field="otherAccountsName" />
 				</template>
 			</el-table-column>
 			<el-table-column label="对方账号" align="center" prop="otherBankNo" width="120" v-if="columns[8].visible" show-overflow-tooltip>
@@ -246,10 +246,10 @@
 							/>
 						</el-form-item>
 
-						<el-form-item label="我方户名" prop="selfAcountsName">
+						<el-form-item label="我方户名" prop="selfAccountsName">
 							<el-row>
 								<el-col :span="16">
-									<el-input disabled v-model="form.selfAcountsName" placeholder="请选择" />
+									<el-input disabled v-model="form.selfAccountsName" placeholder="请选择" />
 								</el-col>
 								<el-col :span="8">
 									<SearchOption
@@ -341,8 +341,8 @@
 						</el-form-item>
 
 						<!-- 选择供应商 -->
-						<el-form-item label="对方户名" prop="otherAcountsName">
-							<el-input disabled v-model="form.otherAcountsName" placeholder="请选择" />
+						<el-form-item label="对方户名" prop="otherAccountsName">
+							<el-input disabled v-model="form.otherAccountsName" placeholder="请选择" />
 						</el-form-item>
 
 						<el-form-item v-if="value !== PAYMENT_TARGET_TYPE.PAYMENT_FEE" label="对方账号" prop="otherBankNo">
@@ -436,10 +436,10 @@
 							@updateBankAcceptance="value => (chooseInfo.bankacceptance = value)"
 						/>
 					</el-form-item>
-					<el-form-item label="我方户名" prop="selfAcountsName">
+					<el-form-item label="我方户名" prop="selfAccountsName">
 						<el-row>
 							<el-col :span="10">
-								<el-input v-model="chooseInfo.selfAcountsName" placeholder="请输入我方户名" />
+								<el-input v-model="chooseInfo.selfAccountsName" placeholder="请输入我方户名" />
 							</el-col>
 							<el-col :span="3">
 								<SearchOption
@@ -554,11 +554,11 @@ export default {
 				tableName: null,
 				tID: null,
 				moneyAmount: null,
-				selfAcountsName: null,
+				selfAccountsName: null,
 				selfBankNo: null,
 				selfBankName: null,
 				selfBankID: null,
-				otherAcountsName: null,
+				otherAccountsName: null,
 				otherBankNo: null,
 				otherBankName: null,
 				paymentState: null,
@@ -601,7 +601,7 @@ export default {
 						trigger: 'blur'
 					}
 				],
-				selfAcountsName: [
+				selfAccountsName: [
 					{
 						required: true,
 						message: '请输入我方户名',
@@ -860,11 +860,11 @@ export default {
 				moneyAmount: null,
 				selfBankCardType: null,
 				otherBankCardType: null,
-				selfAcountsName: null,
+				selfAccountsName: null,
 				selfBankNo: null,
 				selfBankName: null,
 				selfBankID: null,
-				otherAcountsName: null,
+				otherAccountsName: null,
 				otherBankNo: null,
 				otherBankName: null,
 				paymentState: null,
@@ -917,11 +917,11 @@ export default {
 				moneyAmount: null,
 				selfBankCardType: preservedSelfBankCardType,
 				otherBankCardType: preservedOtherBankCardType,
-				selfAcountsName: null,
+				selfAccountsName: null,
 				selfBankNo: null,
 				selfBankName: null,
 				selfBankID: null,
-				otherAcountsName: null,
+				otherAccountsName: null,
 				otherBankNo: null,
 				otherBankName: null,
 				paymentState: null,
@@ -968,11 +968,11 @@ export default {
 				selfBankCardType: null,
 				// 对方银行账户类型
 				otherBankCardType: null,
-				selfAcountsName: null,
+				selfAccountsName: null,
 				selfBankNo: null,
 				selfBankName: null,
 				selfBankID: null,
-				otherAcountsName: null,
+				otherAccountsName: null,
 				otherBankNo: null,
 				otherBankName: null,
 				paymentState: null,
