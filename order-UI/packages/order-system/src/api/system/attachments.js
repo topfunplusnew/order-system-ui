@@ -13,7 +13,7 @@ export function addAttachments(file, params = {}) {
 	if (params.extraInfo) {
 		queryParams.append('extraInfo', JSON.stringify(params.extraInfo));
 	}
-
+	// TODO 这里可能需要改成批量 等待后端
 	const url = queryParams.toString() ? `/system/attachments?${queryParams.toString()}` : '/system/attachments';
 
 	return request({

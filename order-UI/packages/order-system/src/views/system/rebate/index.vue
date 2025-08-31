@@ -1,23 +1,31 @@
 <template>
 	<div class="app-container">
-		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true"
-			label-width="120px">
+		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="120px">
 			<el-row>
 				<el-form-item label="计提返利时间段" prop="rebateDateRange">
-					<el-date-picker v-model="rebateDateRange" type="datetimerange" range-separator="至"
-						start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd HH:mm:ss"
-						style="width: 350px">
-					</el-date-picker>
+					<el-date-picker
+						v-model="rebateDateRange"
+						type="datetimerange"
+						range-separator="至"
+						start-placeholder="开始日期"
+						end-placeholder="结束日期"
+						value-format="yyyy-MM-dd HH:mm:ss"
+						style="width: 350px"
+					></el-date-picker>
 				</el-form-item>
 				<el-form-item label="收到返利时间段" prop="receivedRebateDateRange">
-					<el-date-picker v-model="receivedRebateDateRange" type="datetimerange" range-separator="至"
-						start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd HH:mm:ss"
-						style="width: 350px">
-					</el-date-picker>
+					<el-date-picker
+						v-model="receivedRebateDateRange"
+						type="datetimerange"
+						range-separator="至"
+						start-placeholder="开始日期"
+						end-placeholder="结束日期"
+						value-format="yyyy-MM-dd HH:mm:ss"
+						style="width: 350px"
+					></el-date-picker>
 				</el-form-item>
 				<el-form-item label="供应商" prop="supplier">
-					<el-input v-model="queryParams.supplier" placeholder="请输入供应商" clearable
-						@keyup.enter.native="handleQuery" />
+					<el-input v-model="queryParams.supplier" placeholder="请输入供应商" clearable @keyup.enter.native="handleQuery" />
 				</el-form-item>
 			</el-row>
 			<el-row>
@@ -41,8 +49,7 @@
 				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
 			</el-col>
 			<el-col :span="1.5">
-				<el-button v-hasPermi="['system:rebate:add']" type="danger" size="mini"
-					@click="handleAdd">新增供应商返利信息</el-button>
+				<el-button v-hasPermi="['system:rebate:add']" type="danger" size="mini" @click="handleAdd">新增供应商返利信息</el-button>
 			</el-col>
 			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
 				<template #print>
@@ -53,8 +60,7 @@
 				<!--        导出-->
 				<template #export>
 					<el-col :span="1.5">
-						<el-button v-hasPermi="['system:rebate:export']" plain icon="el-icon-folder-opened" size="mini"
-							@click="handleExport"></el-button>
+						<el-button v-hasPermi="['system:rebate:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
 					</el-col>
 				</template>
 				<!--        导出2-->
@@ -66,33 +72,38 @@
 			</right-toolbar>
 		</el-row>
 
-		<el-table id="printBox" v-horizontal-scroll="'always'" v-loading="loading" border :data="RebateList" size="mini"
-			:cell-style="() => {
-				return { padding: '.5px' };
-			}
-				" @selection-change="handleSelectionChange">
+		<el-table
+			id="printBox"
+			v-horizontal-scroll="'always'"
+			v-loading="loading"
+			border
+			:data="RebateList"
+			size="mini"
+			:cell-style="
+				() => {
+					return { padding: '.5px' };
+				}
+			"
+			@selection-change="handleSelectionChange"
+		>
 			<!-- 计提返利日期 -->
-			<el-table-column v-if="columns[0].visible" label="计提返利日期" align="center" prop="rebateDate"
-				show-overflow-tooltip />
+			<el-table-column v-if="columns[0].visible" label="计提返利日期" align="center" prop="rebateDate" show-overflow-tooltip />
 
 			<!-- 类型 -->
-			<el-table-column v-if="columns[1].visible" label="类型" align="center" prop="rebateType"
-				show-overflow-tooltip />
+			<el-table-column v-if="columns[1].visible" label="类型" align="center" prop="rebateType" show-overflow-tooltip />
 
 			<!-- 供应商 -->
 			<el-table-column v-if="columns[2].visible" label="供应商" align="center" prop="supplier" />
 
 			<!-- 返利方式 -->
-			<el-table-column v-if="columns[3].visible" label="返利方式" align="center" prop="rebateMethod"
-				show-overflow-tooltip>
+			<el-table-column v-if="columns[3].visible" label="返利方式" align="center" prop="rebateMethod" show-overflow-tooltip>
 				<template slot-scope="scope">
 					{{ scope.row.rebateMethod == 2 ? '面积' : '重箱' }}
 				</template>
 			</el-table-column>
 
 			<!-- （返利/降价）单价 -->
-			<el-table-column v-if="columns[4].visible" label="（返利/降价）单价" align="center" prop="unitPrice"
-				show-overflow-tooltip />
+			<el-table-column v-if="columns[4].visible" label="（返利/降价）单价" align="center" prop="unitPrice" show-overflow-tooltip />
 
 			<!-- 金额 -->
 			<el-table-column v-if="columns[5].visible" label="金额" align="center" prop="rebate" show-overflow-tooltip>
@@ -102,23 +113,19 @@
 			</el-table-column>
 
 			<!-- 返利原因 -->
-			<el-table-column v-if="columns[6].visible" label="返利原因" align="center" prop="rebateReason"
-				show-overflow-tooltip />
+			<el-table-column v-if="columns[6].visible" label="返利原因" align="center" prop="rebateReason" show-overflow-tooltip />
 
 			<!-- 收到返利日期 -->
-			<el-table-column v-if="columns[7].visible" label="收到返利日期" align="center" prop="receivedRebateDate"
-				show-overflow-tooltip>
+			<el-table-column v-if="columns[7].visible" label="收到返利日期" align="center" prop="receivedRebateDate" show-overflow-tooltip>
 				<template slot-scope="scope">
 					{{ getEarliestReceivedDate(scope.row) }}
 				</template>
 			</el-table-column>
 
 			<!-- 收到返利金额 -->
-			<el-table-column v-if="columns[8].visible" label="收到返利金额" align="center" prop="receivedRebateAmount"
-				show-overflow-tooltip>
+			<el-table-column v-if="columns[8].visible" label="收到返利金额" align="center" prop="receivedRebateAmount" show-overflow-tooltip>
 				<template slot-scope="scope">
-					<span v-if="getTotalReceivedAmount(scope.row) > 0" class="money">{{
-						getTotalReceivedAmount(scope.row) }}</span>
+					<span v-if="getTotalReceivedAmount(scope.row) > 0" class="money">{{ getTotalReceivedAmount(scope.row) }}</span>
 					<span v-else>未收到</span>
 				</template>
 			</el-table-column>
@@ -131,25 +138,19 @@
 			</el-table-column>
 
 			<!-- 操作 -->
-			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="150px"
-				fixed="right">
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="150px" fixed="right">
 				<template slot-scope="scope">
-					<el-button v-hasPermi="['system:rebate:edit']" size="mini" type="text"
-						@click="handleRebate(scope.row)">返利</el-button>
-					<el-button v-hasPermi="['system:rebate:edit']" size="mini" type="primary"
-						@click="handleUpdate(scope.row)">修改</el-button>
-					<el-button v-hasPermi="['system:rebate:remove']" size="mini" type="danger"
-						@click="handleDelete(scope.row)">删除</el-button>
+					<el-button v-hasPermi="['system:rebate:edit']" size="mini" type="text" @click="handleRebate(scope.row)">返利</el-button>
+					<el-button v-hasPermi="['system:rebate:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
+					<el-button v-hasPermi="['system:rebate:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
 
-		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum"
-			:limit.sync="queryParams.pageSize" @pagination="getList" />
+		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- todo 添加或修改返利回扣对话框 -->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false"
-			:show-close="false" :title="title" :visible.sync="open" width="800px" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="800px" append-to-body>
 			<el-row>
 				<el-form ref="form" :model="form" :rules="rules" label-width="150px">
 					<el-row>
@@ -161,13 +162,17 @@
 
 							<!--              需要进行选择 是面积值还是重箱值-->
 							<el-form-item label="返利方式" prop="rebateMethod">
-								<el-select v-model="form.rebateMethod" placeholder="请选择" :disabled="!form.unitPrice"
+								<el-select
+									v-model="form.rebateMethod"
+									placeholder="请选择"
+									:disabled="!form.unitPrice"
 									@change="
 										() => {
 											form.rebate > 0 ? submitSelectOrderDetail() : '';
 											areaOrWeightBox = form.rebateMethod;
 										}
-									">
+									"
+								>
 									<el-option label="重箱" value="重箱" />
 									<el-option label="面积" value="面积" />
 								</el-select>
@@ -175,29 +180,24 @@
 
 							<!-- 返利货物 -->
 							<el-form-item label="返利货物">
-								<el-button v-if="goods.length === 0" size="mini" :disabled="!form.unitPrice"
-									@click="orderDialogVisible = true">
+								<el-button v-if="goods.length === 0" size="mini" :disabled="!form.unitPrice" @click="orderDialogVisible = true">
 									{{ form.unitPrice ? `选择订单` : `请先输入系数后选择订单` }}
 								</el-button>
 								<el-row v-else>
-									<el-button size="mini" type="success" :disabled="!form.unitPrice"
-										@click="checkSelectedGoods">查看已选择货物</el-button>
-									<el-button size="mini" type="danger" :disabled="!form.unitPrice"
-										@click="refreshSelectedGoods">重新选择货物</el-button>
+									<el-button size="mini" type="success" :disabled="!form.unitPrice" @click="checkSelectedGoods">查看已选择货物</el-button>
+									<el-button size="mini" type="danger" :disabled="!form.unitPrice" @click="refreshSelectedGoods">重新选择货物</el-button>
 								</el-row>
 							</el-form-item>
 
 							<!-- 计提返利日期 -->
 							<el-form-item label="计提返利日期" prop="rebateDate">
-								<el-date-picker v-model="form.rebateDate" type="datetime" placeholder="计提返利日期"
-									value-format="yyyy-MM-dd HH:mm:ss" :disabled="!form.unitPrice" />
+								<el-date-picker v-model="form.rebateDate" type="datetime" placeholder="计提返利日期" value-format="yyyy-MM-dd HH:mm:ss" :disabled="!form.unitPrice" />
 							</el-form-item>
 
 							<!-- 类型 -->
 							<el-form-item label="类型" prop="rebateType">
 								<el-select v-model="form.rebateType" placeholder="请选择" :disabled="!form.unitPrice">
-									<el-option v-for="item in rebateTypes" :key="item.value" :label="item.label"
-										:value="item.value" />
+									<el-option v-for="item in rebateTypes" :key="item.value" :label="item.label" :value="item.value" />
 								</el-select>
 							</el-form-item>
 
@@ -210,11 +210,18 @@
 										<el-input v-model="form.supplier" disabled placeholder="请选择供应商" />
 									</el-col>
 									<el-col :span="4">
-										<SearchOption :limit-info="{
-											companyType: '供应商'
-										}" :get-data="listCompany" :query-name="queryCompanyGive" query-info="companyName" query-label="供应商查找"
+										<SearchOption
+											:limit-info="{
+												companyType: '供应商'
+											}"
+											:get-data="listCompany"
+											:query-name="queryCompanyGive"
+											query-info="companyName"
+											query-label="供应商查找"
 											@commitBack="handleCommitBackCompanyGive"
-											@update:queryName="handleQueryCompanyGive" :disabled="!form.unitPrice">
+											@update:queryName="handleQueryCompanyGive"
+											:disabled="!form.unitPrice"
+										>
 											<template #table-columns>
 												<el-table-column label="供应商" align="center" prop="companyName" />
 												<el-table-column label="地址" align="center" prop="address" />
@@ -238,8 +245,7 @@
 							</el-form-item>
 							<!-- 返利原因 -->
 							<el-form-item label="返利原因" prop="rebateReason">
-								<el-input v-model="form.rebateReason" placeholder="请输入返利原因"
-									:disabled="!form.unitPrice" />
+								<el-input v-model="form.rebateReason" placeholder="请输入返利原因" :disabled="!form.unitPrice" />
 							</el-form-item>
 
 							<!-- 备注 -->
@@ -257,8 +263,7 @@
 		</el-dialog>
 
 		<!--    选择订单详情 点击返利货物后面的选择订单打开的弹窗 -->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false"
-			:show-close="true" title="订单选择" :visible.sync="orderDialogVisible" width="65%">
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="true" title="订单选择" :visible.sync="orderDialogVisible" width="65%">
 			<el-row>
 				<el-button type="primary" size="mini" @click="selectBySupplier">根据供应商选择</el-button>
 				<el-button type="primary" size="mini" @click="selectOrderItem">选择订单</el-button>
@@ -275,18 +280,24 @@
 					</el-row>
 					<!-- 订单选择的货物-->
 					<el-row>
-						<el-button :disabled="goods.length === 0" type="success" size="mini"
-							@click="submitSelectOrderDetail">选择所选货物</el-button>
-						<el-table ref="multipleTable" border :data="orderDetailList" max-height="700" size="mini"
-							:cell-style="() => {
-								return { padding: '.5px' };
-							}
-								" @selection-change="handleSelectionChangeOrderDetail">
+						<el-button :disabled="goods.length === 0" type="success" size="mini" @click="submitSelectOrderDetail">选择所选货物</el-button>
+						<el-table
+							ref="multipleTable"
+							border
+							:data="orderDetailList"
+							max-height="700"
+							size="mini"
+							:cell-style="
+								() => {
+									return { padding: '.5px' };
+								}
+							"
+							@selection-change="handleSelectionChangeOrderDetail"
+						>
 							<el-table-column type="selection" width="55" align="center" fixed="left" />
 							<el-table-column label="订单日期" align="center" prop="orderDate" fixed="left" />
 							<el-table-column label="客户" align="center" prop="customer" />
-							<el-table-column label="供应商" align="center" prop="supplier" :filters="nameFilters"
-								:filter-method="filterName" filter-placement="bottom" filterable />
+							<el-table-column label="供应商" align="center" prop="supplier" :filters="nameFilters" :filter-method="filterName" filter-placement="bottom" filterable />
 							<el-table-column label="级别名称" align="center" prop="levelName" />
 							<el-table-column label="计量单位" align="center" prop="countingUnit" />
 							<el-table-column label="厚度" align="center" prop="height" />
@@ -298,8 +309,7 @@
 							<el-table-column label="出厂单价" align="center" prop="price" />
 							<el-table-column label="出厂是否含税" align="center" prop="isIncludeTaxFactory">
 								<template slot-scope="scope">
-									<el-tag disable-transitions>{{ scope.row.isIncludeTaxFactory === 0 ? '否' : '是'
-									}}</el-tag>
+									<el-tag disable-transitions>{{ scope.row.isIncludeTaxFactory === 0 ? '否' : '是' }}</el-tag>
 								</template>
 							</el-table-column>
 							<el-table-column label="杂费" align="center" prop="sundryCost" />
@@ -307,8 +317,7 @@
 							<el-table-column label="卸货价" align="center" prop="paymentUnload" />
 							<el-table-column label="销售是否含税" align="center" prop="isIncludeTaxSale">
 								<template slot-scope="scope">
-									<el-tag disable-transitions>{{ scope.row.isIncludeTaxSale === 0 ? '否' : '是'
-									}}</el-tag>
+									<el-tag disable-transitions>{{ scope.row.isIncludeTaxSale === 0 ? '否' : '是' }}</el-tag>
 								</template>
 							</el-table-column>
 							<el-table-column label="总货款" align="center" prop="payments" />
@@ -334,15 +343,23 @@
 		</el-dialog>
 
 		<!--    两种方式中点击第二种直接选择订单进行返利-->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false"
-			:show-close="true" title="选择订单" :visible.sync="orderSelectVisible" width="70%">
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="true" title="选择订单" :visible.sync="orderSelectVisible" width="70%">
 			<QuerySearchBar @updateQuery="handleGetQueryParams" />
-			<el-table v-loading="loading" fit border :data="selectOrdersList" max-height="750" size="mini" :cell-style="() => {
-				return { padding: '2px' };
-			}
-				" @selection-change="handleSelectionChangeOrders">
-				<el-table-column show-overflow-tooltip label="行操作" align="center" class-name="small-padding fixed-width"
-					width="200px" fixed="left">
+			<el-table
+				v-loading="loading"
+				fit
+				border
+				:data="selectOrdersList"
+				max-height="750"
+				size="mini"
+				:cell-style="
+					() => {
+						return { padding: '2px' };
+					}
+				"
+				@selection-change="handleSelectionChangeOrders"
+			>
+				<el-table-column show-overflow-tooltip label="行操作" align="center" class-name="small-padding fixed-width" width="200px" fixed="left">
 					<template slot-scope="scope">
 						<el-button size="mini" type="text" @click="handleSelectOrderItem(scope.row)">选择</el-button>
 						<el-button size="mini" type="text" @click="checkOrderInfo(scope.row)">查看订单</el-button>
@@ -354,10 +371,8 @@
 				<!--        供应商可筛选 多选-->
 				<el-table-column show-overflow-tooltip label="供应商" align="center" prop="supplierNames" fixed="left" />
 				<el-table-column show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo" />
-				<el-table-column show-overflow-tooltip label="陆运司机电话" align="center" prop="landDriverTel"
-					width="100px" />
-				<el-table-column show-overflow-tooltip label="陆地司机姓名" align="center" prop="landDriverName"
-					width="100px" />
+				<el-table-column show-overflow-tooltip label="陆运司机电话" align="center" prop="landDriverTel" width="100px" />
+				<el-table-column show-overflow-tooltip label="陆地司机姓名" align="center" prop="landDriverName" width="100px" />
 				<el-table-column show-overflow-tooltip label="柜号" align="center" prop="seaCarNo">
 					<template #default="scope">
 						{{ isNull(scope.row.seaCarNo) }}
@@ -375,15 +390,12 @@
 				</el-table-column>
 				<el-table-column show-overflow-tooltip label="销售经理" align="center" prop="saleManager" />
 				<el-table-column show-overflow-tooltip label="车队" align="center" prop="fleet" />
-				<el-table-column show-overflow-tooltip label="审核状态" align="center" prop="checkState"
-					width="120"></el-table-column>
-				<el-table-column show-overflow-tooltip label="开票状态" align="center" prop="invoiceState"
-					width="120px"></el-table-column>
+				<el-table-column show-overflow-tooltip label="审核状态" align="center" prop="checkState" width="120"></el-table-column>
+				<el-table-column show-overflow-tooltip label="开票状态" align="center" prop="invoiceState" width="120px"></el-table-column>
 				<!--				<el-table-column show-overflow-tooltip label="打款状态" align="center" prop="paymentState" width="120px"></el-table-column>-->
 				<el-table-column show-overflow-tooltip label="备注" align="center" prop="comments" />
 			</el-table>
-			<pagination v-show="orderTotal > 0" :total="orderTotal" :page.sync="queryOrderParams.pageNum"
-				:limit.sync="queryOrderParams.pageSize" @pagination="selectOrderItem" />
+			<pagination v-show="orderTotal > 0" :total="orderTotal" :page.sync="queryOrderParams.pageNum" :limit.sync="queryOrderParams.pageSize" @pagination="selectOrderItem" />
 		</el-dialog>
 
 		<!--    查看已经选择的货物-->
@@ -403,8 +415,7 @@
 		</InfoDialog>
 
 		<!--    根据供应商选择订单-->
-		<InfoDialog title="根据供应商选择订单" :visible.sync="orderBySupplierVisible"
-			@update:visible="orderBySupplierVisible = false" width="500px">
+		<InfoDialog title="根据供应商选择订单" :visible.sync="orderBySupplierVisible" @update:visible="orderBySupplierVisible = false" width="500px">
 			<template #info>
 				<div>
 					<el-row style="text-align: center">
@@ -415,11 +426,17 @@
 										<el-input v-model="queryParamsSupplier.supplier" placeholder="请输入供应商" />
 									</el-col>
 									<el-col :span="4">
-										<SearchOption :get-data="listCompany" :limit-info="{
-											companyType: '供应商'
-										}" :query-name="queryCompany" query-info="companyName" query-label="供应商查找"
+										<SearchOption
+											:get-data="listCompany"
+											:limit-info="{
+												companyType: '供应商'
+											}"
+											:query-name="queryCompany"
+											query-info="companyName"
+											query-label="供应商查找"
 											@update:queryName="value => (queryCompany = value)"
-											@commitBack="handleCommitCompany">
+											@commitBack="handleCommitCompany"
+										>
 											<template #table-columns>
 												<el-table-column label="供应商" align="center" prop="companyName" />
 												<el-table-column label="老板姓名" align="center" prop="leader" />
@@ -432,12 +449,10 @@
 								</el-row>
 							</el-form-item>
 							<el-form-item label="开始时间">
-								<el-date-picker v-model="queryParamsSupplier.params.beginTime" type="date"
-									placeholder="选择时间" value-format="yyyy-MM-dd"></el-date-picker>
+								<el-date-picker v-model="queryParamsSupplier.params.beginTime" type="date" placeholder="选择时间" value-format="yyyy-MM-dd"></el-date-picker>
 							</el-form-item>
 							<el-form-item label="结束时间">
-								<el-date-picker v-model="queryParamsSupplier.params.endTime" type="date"
-									placeholder="选择时间" value-format="yyyy-MM-dd"></el-date-picker>
+								<el-date-picker v-model="queryParamsSupplier.params.endTime" type="date" placeholder="选择时间" value-format="yyyy-MM-dd"></el-date-picker>
 							</el-form-item>
 						</el-form>
 					</el-row>
@@ -449,11 +464,14 @@
 		</InfoDialog>
 
 		<!--    订单货物列表-->
-		<InfoDialog title="根据供应商所选货物列表" :visible.sync="orderGoodsListVisible"
-			@update:visible="orderGoodsListVisible = false">
+		<InfoDialog title="根据供应商所选货物列表" :visible.sync="orderGoodsListVisible" @update:visible="orderGoodsListVisible = false">
 			<template #info>
-				<OrderDetailList :order-detail-list="needToSelectOrderDetailList" :total="orderDetailTotal"
-					@handleSelect="handleSelectOrderDetailChange" @handleQuery="value => getDetailBySupper(value)" />
+				<OrderDetailList
+					:order-detail-list="needToSelectOrderDetailList"
+					:total="orderDetailTotal"
+					@handleSelect="handleSelectOrderDetailChange"
+					@handleQuery="value => getDetailBySupper(value)"
+				/>
 			</template>
 		</InfoDialog>
 	</div>
@@ -817,7 +835,7 @@ export default {
 										confirmButtonText: '确定',
 										cancelButtonText: '取消',
 										inputType: 'textarea',
-										inputValidator: (val) => {
+										inputValidator: val => {
 											return val && val.trim().length > 0;
 										},
 										inputErrorMessage: '请输入备注原因'
@@ -1021,7 +1039,7 @@ export default {
 					this.getList();
 					this.$modal.msgSuccess('删除成功');
 				})
-				.catch(() => { });
+				.catch(() => {});
 		},
 		/** 导出按钮操作 */
 		handleExport() {

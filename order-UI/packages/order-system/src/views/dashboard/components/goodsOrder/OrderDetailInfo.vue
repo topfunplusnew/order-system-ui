@@ -5,8 +5,9 @@ import { addRebate } from '@/api/system/Rebate';
 import SearchOption from '@/components/SearchOption.vue';
 import { listCompany } from '@/api/system/company';
 import { listBankAccount } from '@/api/system/bankAccount';
-import { getDicts } from '../../../../api/system/dict/data';
+// 不再通过字典接口获取返利方式，使用硬编码选项
 import { fix_2 } from '../../../../api/tool/format';
+import { RebateType } from '@/api/tool/enums';
 
 export default {
 	name: 'OrderDetailInfo',
@@ -25,27 +26,36 @@ export default {
 			addMoneyBackVisible: false,
 			// 返利回扣信息
 			moneyBackInfo: {
-				orderDetailID: '',
+				// 后端期望的是 orderDetailIds 数组
+				orderDetailIds: [],
 				rebateDate: '',
+				// （返利/降价）单价
+				unitPrice: null,
+				// 最终金额
 				rebate: '',
-				rebateMethod: '',
+				// 使用 RebateType 常量（Weight / Square）
+				rebateMethod: RebateType.Weight,
+				// 供应商/账号信息
 				inAcountsName: '',
 				inBankNo: '',
 				supplier: '',
 				outAcountsName: '',
 				outBankNo: '',
 				rebateReason: '',
-				comments: ''
+				comments: '',
+				// 计算字段：面积 / 重箱
+				area: 0,
+				weightBox: 0
 			},
-			// 从字典中拿
-			rebateMethods: [],
+			// 硬编码的返利方式：重箱(Weight)、面积(Square)，值使用 RebateType
+			rebateMethods: [
+				{ dictValue: RebateType.Weight, dictLabel: '重箱' },
+				{ dictValue: RebateType.Square, dictLabel: '面积' }
+			],
 			loading: false
 		};
 	},
-	created() {
-		// 拿取返利方式
-		this.listRebateMethods();
-	},
+	// 不再需要在 created 中请求字典，返利方式已硬编码
 	methods: {
 		listBankAccount,
 		listCompany,
@@ -82,12 +92,7 @@ export default {
 
 			return sums;
 		},
-		// 返利方式
-		listRebateMethods() {
-			getDicts('order_rebate_type').then(res => {
-				this.rebateMethods = res.data;
-			});
-		},
+
 		// 每一个组件必须要实现的方法
 		handleProcess(that) {
 			that.dialogVisible = false;
@@ -104,15 +109,31 @@ export default {
 			this.moneyBackInfo.supplierID = val.id;
 			this.moneyBackInfo.supplier = val.companyName;
 		},
-		// 返利回扣
+		// 返利回扣（从行创建）
 		handleMoneyBack(row) {
 			this.reset();
-			this.moneyBackInfo.orderDetailIds.push(row.id);
+			// 通过行确定订单明细 id
+			this.moneyBackInfo.orderDetailIds = [row.id];
+			// 按照 rebate/index.vue 的公式计算该行的面积与重箱
+			const area = (Number(row.length) * Number(row.width) * Number(row.pieces)) / 1000000 || 0;
+			const weightBox = (Number(row.height) * Number(row.length) * Number(row.width) * Number(row.pieces)) / 1000000 / 20 || 0;
+			this.moneyBackInfo.area = area;
+			this.moneyBackInfo.weightBox = weightBox;
+			// 默认选重箱（与主页面一致）
+			this.moneyBackInfo.rebateMethod = RebateType.Weight;
 			this.addMoneyBackVisible = true;
 		},
-		// 添加返利回扣信息
+		// 添加返利回扣信息（提交前计算金额并转换 rebateMethod）
 		addMoneyBackInfo() {
-			addRebate(this.moneyBackInfo).then(res => {
+			// 计算金额：根据选择的返利方式，使用面积或重箱乘以单价
+			const base = this.moneyBackInfo.rebateMethod === RebateType.Weight ? this.moneyBackInfo.weightBox : this.moneyBackInfo.area;
+			const unit = Number(this.moneyBackInfo.unitPrice) || 0;
+			this.moneyBackInfo.rebate = fix_2((base || 0) * unit);
+			// 不要直接修改组件使用的 rebateMethod（仍为 RebateType），为后端构造 payload 时转换为 1/2
+			const payload = Object.assign({}, this.moneyBackInfo, {
+				rebateMethod: this.moneyBackInfo.rebateMethod === RebateType.Weight ? 1 : 2
+			});
+			addRebate(payload).then(res => {
 				this.$message.success('添加成功~');
 				this.addMoneyBackVisible = false;
 			});
@@ -122,15 +143,18 @@ export default {
 			this.moneyBackInfo = {
 				orderDetailIds: [],
 				rebateDate: '',
+				unitPrice: null,
 				rebate: '',
-				rebateMethod: '',
+				rebateMethod: RebateType.Weight,
 				inAcountsName: '',
 				inBankNo: '',
 				supplier: '',
 				outAcountsName: '',
 				outBankNo: '',
 				rebateReason: '',
-				comments: ''
+				comments: '',
+				area: 0,
+				weightBox: 0
 			};
 		}
 	}
@@ -222,6 +246,10 @@ export default {
 				<el-form-item label="日期" prop="rebateDate">
 					<el-date-picker v-model="moneyBackInfo.rebateDate" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 				</el-form-item>
+				<!-- （返利/降价）单价 -->
+				<el-form-item label="（返利/降价）单价" prop="unitPrice">
+					<el-input v-model="moneyBackInfo.unitPrice" placeholder="请输入（返利/降价）单价" />
+				</el-form-item>
 				<el-form-item label="金额" prop="rebate">
 					<el-input v-model="moneyBackInfo.rebate" placeholder="请输入金额" />
 				</el-form-item>
@@ -245,8 +273,16 @@ export default {
 				</el-form-item>
 				<el-form-item label="返利方式" prop="rebateMethod">
 					<el-select v-model="moneyBackInfo.rebateMethod" default-first-option placeholder="请选择返利方式">
-						<el-option v-for="item in rebateMethods" :key="item.dictValue" :label="item.dictLabel" :value="item.dictLabel"></el-option>
+						<el-option v-for="item in rebateMethods" :key="item.dictValue" :label="item.dictLabel" :value="item.dictValue"></el-option>
 					</el-select>
+				</el-form-item>
+				<!-- 重箱值 -->
+				<el-form-item label="重箱值" prop="weightBox" v-if="moneyBackInfo.rebateMethod === RebateType.Weight">
+					<el-input v-model="moneyBackInfo.weightBox" placeholder="根据订单自动计算" disabled />
+				</el-form-item>
+				<!-- 面积值 -->
+				<el-form-item label="面积值" prop="area" v-if="moneyBackInfo.rebateMethod === RebateType.Square">
+					<el-input v-model="moneyBackInfo.area" placeholder="根据订单自动计算" disabled />
 				</el-form-item>
 				<el-form-item label="返利原因" prop="rebateReason">
 					<el-input v-model="moneyBackInfo.rebateReason" placeholder="请输入返利原因" />

@@ -61,7 +61,7 @@
 			"
 			@selection-change="handleSelectionChange"
 		>
-			<el-table-column type="selection" width="55" align="center" :selectable="(row, _) => row.id !== null" />
+			<el-table-column type="selection" width="55" align="center" :selectable="(row, _) => row.id !== null && isPaymentUnApplied(row)" />
 			<el-table-column label="批量佣金填写" width="80" align="center">
 				<template slot-scope="scope">
 					<el-checkbox v-if="scope.row.id === null" :value="scope.row.batchSelected" @input="handleBatchToggle(scope.row, $event)"></el-checkbox>
@@ -218,7 +218,7 @@
 <script>
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import { deleteCommission, getCommission, listCommission, updateDifferenceReason, batchAddCommission } from '@/api/commission';
-import { CommissionType, TableName } from '@/api/tool/enums';
+import { CommissionType, TableName, PAYMENT_APPLY_STATE } from '@/api/tool/enums';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 import CommissionsForm from '@/views/system/Commission/components/CommissionsForm.vue';
@@ -539,6 +539,23 @@ export default {
 			}
 
 			this.handleBatchSelectionChange();
+		},
+
+		// 判断行是否处于“未申请”状态（仅当未申请时复选框可选）
+		isPaymentUnApplied(row) {
+			// 1. 优先检查 paymentApply.checkState
+			if (row && row.paymentApply && row.paymentApply.checkState !== undefined && row.paymentApply.checkState !== null) {
+				return row.paymentApply.checkState === PAYMENT_APPLY_STATE.V2.UN_APPLIED;
+			}
+
+			// 2. 若没有 paymentApply，检查 payment.paymentState（已支付则不可申请）
+			if (row && row.payment && row.payment.paymentState !== undefined && row.payment.paymentState !== null) {
+				// 这里 PaymentFlag 的 getPaymentStatus 返回字符串常量或枚举
+				return row.payment.paymentState !== '已支付' && row.payment.paymentState !== 'PAID';
+			}
+
+			// 3. 默认认为未申请（以便可选）
+			return true;
 		},
 		handleAdd(source) {
 			this.openDialog(
