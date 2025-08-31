@@ -70,12 +70,15 @@ export default {
 		},
 		// 查看文件列表
 		checkFiles(attachmentList) {
+			console.log(attachmentList);
 			this.checkFileList = [];
 			if (attachmentList && attachmentList.length > 0) {
 				this.checkFileList = [...attachmentList].filter(item => item.flag === this.flag);
 			} else {
 				this.checkFileList = [];
 			}
+
+			console.log(this.checkFileList);
 			// 查看文件时不是上传模式
 			this.isUploading = false;
 			this.dialogVisible = true;

@@ -141,7 +141,7 @@ methods: {
 </template>
 
 <script>
-import { addAttachments } from '@/api/system/attachments';
+import { addAttachments, addAttachmentsBatch } from '@/api/system/attachments';
 
 export default {
 	name: 'UploadFilesButton',
@@ -266,18 +266,65 @@ export default {
 				return;
 			}
 
-			this.uploading = true;
+			// 校验重名（包括后缀）：禁止选中文件内部有重名，或与已上传文件重名
+			const selectedNames = files.map(f => (f.name || '').trim());
+			// 选中文件内部重复
+			const dupInSelected = selectedNames.filter((name, idx, arr) => name && arr.indexOf(name) !== idx);
+			if (dupInSelected.length > 0) {
+				this.$message.warning(`选中文件中存在重名文件：${[...new Set(dupInSelected)].join(', ')}`);
+				this.$refs.fileInput.value = '';
+				return;
+			}
+			// 与已上传文件重复 (uploadedFiles 中使用 fileName 字段)
+			const existingNames = new Set(this.uploadedFiles.map(f => (f.fileName || f.name || '').trim()));
+			const dupWithExisting = selectedNames.filter(name => existingNames.has(name));
+			if (dupWithExisting.length > 0) {
+				this.$message.warning(`存在与已上传文件同名的文件：${[...new Set(dupWithExisting)].join(', ')}`);
+				this.$refs.fileInput.value = '';
+				return;
+			}
 
+			this.uploading = true;
+			console.log(this.flag);
 			try {
-				// 逐个上传文件
-				for (const file of files) {
-					await this.uploadSingleFile(file);
-				}
-				this.$message.success(`成功上传 ${files.length} 个文件`);
-				// 在下一个 tick 中触发更新事件，确保 Vuex 状态已更新
-				this.$nextTick(() => {
-					this.$emit('files-updated', this.params);
+				// 构建按文件名映射的 params 元数据
+				const paramsMap = {};
+				files.forEach(file => {
+					const ext = (file.name || '').split('.').pop() || '';
+					paramsMap[file.name] = {
+						flag: this.flag,
+						remark: file.name,
+						extraInfo: Object.assign({}, this.extraInfo || {}, {
+							fileType: ext.toLowerCase(),
+							uploadTime: new Date().toISOString()
+						})
+					};
 				});
+
+				console.log(paramsMap);
+
+				// 使用批量接口上传
+				const response = await addAttachmentsBatch(files, paramsMap);
+				if (response && response.code === 200 && response.data) {
+					let uploaded = [];
+					if (Array.isArray(response.data)) uploaded = response.data;
+					else if (typeof response.data === 'object') uploaded = Object.values(response.data);
+
+					// 更新本地列表和 Vuex 全局池
+					uploaded.forEach(item => {
+						if (item) {
+							this.uploadedFiles.push(item);
+							if (item.id) this.$store.dispatch('attachments/addAttachmentId', item.id);
+						}
+					});
+
+					this.$message.success(`成功上传 ${uploaded.length} 个文件`);
+					this.$nextTick(() => {
+						this.$emit('files-updated', this.params);
+					});
+				} else {
+					throw new Error((response && response.msg) || '上传失败');
+				}
 			} catch (error) {
 				console.error('文件上传失败:', error);
 				this.$message.error('文件上传失败: ' + (error.message || '未知错误'));
