@@ -1,6 +1,6 @@
 // 厂家佣金和客户佣金
 import service from '@/utils/request';
-
+import { Message } from 'element-ui';
 /**
  * 查询佣金信息列表
  * @description 返回的结果中 id是空的数据说明没有佣金信息 可以新增，否则不可以 只能付款
@@ -9,6 +9,9 @@ import service from '@/utils/request';
  * @returns {Promise} 返回佣金列表的Promise对象
  */
 export function listCommission(query, type) {
+	if (!query || !query.params.startTime || !query.params.endTime) {
+		Message.warning('您没有选择时间，选择时间后可加速查询');
+	}
 	return service.request({
 		url: '/system/ordercommission/list',
 		method: 'get',
