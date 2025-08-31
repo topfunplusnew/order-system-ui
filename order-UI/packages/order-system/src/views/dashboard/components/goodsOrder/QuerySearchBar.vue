@@ -111,14 +111,15 @@ export default {
 		// 挂载时尝试读取默认时间范围并填充表单（若配置允许）
 		try {
 			const range = await getDateRangeDays();
+			let query = null;
 			if (range && range.startTime !== null && range.endTime !== null) {
 				// date-picker 使用 yyyy-MM-dd 格式，截取日期部分
 				this.queryParams.orderDateStart = String(range.startTime).substring(0, 10);
 				this.queryParams.orderDateEnd = String(range.endTime).substring(0, 10);
-				const query = _.cloneDeep(this.queryParams);
+				query = _.cloneDeep(this.queryParams);
 				this.formatOrderDateRange(query);
-				this.$emit('updateQuery', query);
 			}
+			this.$emit('updateQuery', query);
 		} catch (e) {
 			// 配置读取异常不影响页面，其它逻辑继续
 			console.error('获取默认时间范围失败：', e && e.message ? e.message : e);

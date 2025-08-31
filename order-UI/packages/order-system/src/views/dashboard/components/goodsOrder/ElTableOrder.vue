@@ -387,7 +387,9 @@ export default {
 		},
 		// 处理顶部搜索框
 		handleGetQueryParams(value) {
-			this.queryParams = value;
+			if (value) {
+				this.queryParams = value;
+			}
 			this.getList();
 		},
 		// 删除某一个订单
