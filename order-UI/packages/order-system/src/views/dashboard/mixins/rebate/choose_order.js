@@ -37,12 +37,14 @@ export var mixin_choose_order = {
 		};
 	},
 	methods: {
+		handleOpenSelectOrder() {
+			this.orderSelectVisible = true;
+		},
 		// 点击选择订单
 		selectOrderItem() {
 			listGoodsOrder(this.queryOrderParams).then(res => {
 				this.selectOrdersList = res.rows;
 				this.orderTotal = res.total;
-				this.orderSelectVisible = true;
 			});
 		},
 		// 两种方式 一种是直接选订单 另一种是先选供应商 再选订单

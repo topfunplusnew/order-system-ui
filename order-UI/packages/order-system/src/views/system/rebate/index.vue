@@ -266,7 +266,7 @@
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="true" title="订单选择" :visible.sync="orderDialogVisible" width="65%">
 			<el-row>
 				<el-button type="primary" size="mini" @click="selectBySupplier">根据供应商选择</el-button>
-				<el-button type="primary" size="mini" @click="selectOrderItem">选择订单</el-button>
+				<el-button type="primary" size="mini" @click="handleOpenSelectOrder">选择订单</el-button>
 			</el-row>
 			<hr />
 			<el-row>
@@ -481,7 +481,6 @@
 import { listRebate, getRebate, delRebate, addRebate, updateRebate } from '@/api/system/Rebate';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import { RebateType, TableName } from '@/api/tool/enums';
-import { listGoodsOrder } from '@/api/system/goodsOrder';
 import OrderInfos from '@/views/dashboard/components/goodsOrder/OrderInfos.vue';
 import OrderDetailInfo from '@/views/dashboard/components/goodsOrder/OrderDetailInfo.vue';
 import { listBankAccount } from '@/api/system/bankAccount';
@@ -674,9 +673,6 @@ export default {
 				{ key: 7, label: `收到返利日期`, visible: true },
 				{ key: 8, label: `收到返利金额`, visible: true }
 			],
-
-			// 订单列表 级联
-			orderList: [],
 			// 订单详情列表 级联
 			orderDetailList: [],
 			orderDialogVisible: false,
@@ -706,10 +702,6 @@ export default {
 	watch: {},
 	created() {
 		this.getList();
-		// 获取订单列表 级联选择
-		listGoodsOrder().then(res => {
-			this.orderList = res.rows;
-		});
 		if (localStorage.getItem('rebate-columns') === 'null' || !localStorage.getItem('rebate-columns')) {
 			// 设置localStorage
 			localStorage.setItem('rebate-columns', JSON.stringify(this.columns));
