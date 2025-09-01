@@ -168,7 +168,7 @@ export default {
 
 		/**
 		 * **业务架构设计：数据结构兼容性转换**
-		 * 
+		 *
 		 * 将旧的单表关联模式转换为新的多表关联模式
 		 * 专门为油卡充值业务定制的转换逻辑
 		 */
@@ -184,11 +184,13 @@ export default {
 
 			// 兼容旧的单表关联模式
 			if (this.tableName && this.tID) {
-				return [{
-					refTableName: this.tableName,
-					refTableId: this.tID,
-					amount: parseFloat(this.form.moneyAmount) || 0
-				}];
+				return [
+					{
+						refTableName: this.tableName,
+						refTableId: this.tID,
+						amount: parseFloat(this.form.moneyAmount) || 0
+					}
+				];
 			}
 
 			return [];
@@ -196,7 +198,7 @@ export default {
 
 		/**
 		 * **表单数据标准化处理**
-		 * 
+		 *
 		 * 构建符合新API要求的表单数据结构
 		 * 油卡充值业务的数据映射和格式转换
 		 */
@@ -342,12 +344,10 @@ export default {
 		<div class="app-container">
 			<el-form ref="form" :model="form" :rules="rules" label-width="120px">
 				<el-form-item label="日期" prop="fundsDate">
-					<el-date-picker v-model="form.fundsDate" type="datetime" value-format="yyyy-MM-dd HH:mm:ss"
-						placeholder="选择日期"></el-date-picker>
+					<el-date-picker v-model="form.fundsDate" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="选择日期"></el-date-picker>
 				</el-form-item>
 				<el-form-item label="支付类型" prop="payType">
-					<el-cascader v-model="form.payType" :options="paymentTypeTree" :props="props"
-						@change="handleChange"></el-cascader>
+					<el-cascader v-model="form.payType" :options="paymentTypeTree" :props="props" @change="handleChange"></el-cascader>
 				</el-form-item>
 				<el-form-item label="金额" prop="moneyAmount">
 					<el-input v-model="form.moneyAmount" placeholder="请输入金额" :disabled="inputDisabled" />
@@ -356,10 +356,13 @@ export default {
 					<el-input v-model="form.reason" type="textarea" placeholder="请输入内容" />
 				</el-form-item>
 				<el-form-item label="附件" prop="attachmentIds">
-					<UploadFilesButton ref="attachmentUpload" flag="attachment"
+					<UploadFilesButton
+						ref="attachmentUpload"
+						flag="attachment"
 						:initial-attachments="(form.params && form.params.attachments) || []"
 						:extra-info="{ moduleType: 'oilRecharge', formId: form.id }"
-						@files-updated="handleCommitUpload" />
+						@files-updated="handleCommitUpload"
+					/>
 				</el-form-item>
 				<el-form-item label="备注" prop="comments">
 					<el-input v-model="form.comments" placeholder="请输入备注" />

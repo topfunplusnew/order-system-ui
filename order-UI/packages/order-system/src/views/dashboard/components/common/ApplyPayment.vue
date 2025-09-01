@@ -23,9 +23,9 @@
 			</el-form-item>
 			<!-- 新加 当付款 为 坏账损失的时候 需要选择这两个字段 -->
 			<template v-if="isPayment">
-				<el-form-item label="我方户名" prop="selfAcountsName">
+				<el-form-item label="我方户名" prop="selfAccountsName">
 					<el-col :span="10">
-						<el-input disabled v-model="form.selfAcountsName" placeholder="请选择" />
+						<el-input disabled v-model="form.selfAccountsName" placeholder="请选择" />
 					</el-col>
 					<el-col :span="3">
 						<SearchOption
@@ -37,7 +37,7 @@
 							:query-name="querySelfCompany"
 							@commitBack="
 								value => {
-									form.selfAcountsName = value.acountsName;
+									form.selfAccountsName = value.acountsName;
 									form.selfBankNo = value.bankNo;
 								}
 							"
@@ -141,8 +141,8 @@
 				</el-form-item>
 
 				<el-row v-if="value === PUBLIC_DICT_TYPE.CUSTOMER">
-					<el-form-item label="对方户名" prop="otherAcountsName">
-						<el-input v-model="form.otherAcountsName" placeholder="请输入对方户名" />
+					<el-form-item label="对方户名" prop="otherAccountsName">
+						<el-input v-model="form.otherAccountsName" placeholder="请输入对方户名" />
 					</el-form-item>
 					<el-form-item label="对方账号(客户)" prop="otherBankNo">
 						<el-row>
@@ -155,7 +155,7 @@
 									icon="el-icon-search"
 									:limit-info="{
 										acountsType: PUBLIC_DICT_TYPE.CUSTOMER,
-										acountsName: form.otherAcountsName
+										acountsName: form.otherAccountsName
 									}"
 									query-label="银行卡查找"
 									query-info="bankNo"
@@ -198,8 +198,8 @@
 					</el-form-item>
 				</el-row>
 				<el-row v-if="value === PUBLIC_DICT_TYPE.SUPPLIER">
-					<el-form-item label="对方户名" prop="otherAcountsName">
-						<el-input v-model="form.otherAcountsName" placeholder="请输入对方户名" />
+					<el-form-item label="对方户名" prop="otherAccountsName">
+						<el-input v-model="form.otherAccountsName" placeholder="请输入对方户名" />
 					</el-form-item>
 					<el-form-item label="对方账号(供应商)" prop="otherBankNo">
 						<el-row>
@@ -212,7 +212,7 @@
 									icon="el-icon-search"
 									:limit-info="{
 										acountsType: PUBLIC_DICT_TYPE.SUPPLIER,
-										acountsName: form.otherAcountsName
+										acountsName: form.otherAccountsName
 									}"
 									query-label="银行卡查找"
 									query-info="bankNo"
@@ -256,8 +256,8 @@
 					</el-form-item>
 				</el-row>
 				<el-row v-if="value === PUBLIC_DICT_TYPE.DRIVER">
-					<el-form-item label="对方户名" prop="otherAcountsName">
-						<el-input v-model="form.otherAcountsName" placeholder="请输入对方户名" />
+					<el-form-item label="对方户名" prop="otherAccountsName">
+						<el-input v-model="form.otherAccountsName" placeholder="请输入对方户名" />
 					</el-form-item>
 					<el-form-item label="对方账号(司机)" prop="otherBankNo">
 						<el-row>
@@ -270,7 +270,7 @@
 									icon="el-icon-search"
 									:limit-info="{
 										acountsType: PUBLIC_DICT_TYPE.DRIVER,
-										acountsName: form.otherAcountsName
+										acountsName: form.otherAccountsName
 									}"
 									query-label="银行卡查找"
 									query-info="bankNo"
@@ -314,8 +314,8 @@
 				</el-row>
 
 				<el-row v-if="value === PUBLIC_DICT_TYPE.EMPLOYEE">
-					<el-form-item label="对方户名" prop="otherAcountsName">
-						<el-input v-model="form.otherAcountsName" placeholder="请输入对方户名" />
+					<el-form-item label="对方户名" prop="otherAccountsName">
+						<el-input v-model="form.otherAccountsName" placeholder="请输入对方户名" />
 					</el-form-item>
 					<el-form-item label="对方账号(员工)" prop="otherBankNo">
 						<el-row>
@@ -328,7 +328,7 @@
 									icon="el-icon-search"
 									:limit-info="{
 										acountsType: PUBLIC_DICT_TYPE.EMPLOYEE,
-										acountsName: form.otherAcountsName
+										acountsName: form.otherAccountsName
 									}"
 									query-label="银行卡查找"
 									query-info="bankNo"
@@ -443,7 +443,7 @@ export default {
 			if (this.isPayment) {
 				return {
 					...baseRules,
-					selfAcountsName: [{ required: true, message: '我方户名不能为空', trigger: 'change' }],
+					selfAccountsName: [{ required: true, message: '我方户名不能为空', trigger: 'change' }],
 					selfBankNo: [{ required: true, message: '我方账号不能为空', trigger: 'change' }],
 					selfBankName: [{ required: true, message: '我方开户行不能为空', trigger: 'change' }]
 				};
@@ -480,7 +480,7 @@ export default {
 				selfBankCardType: null,
 				otherBankCardType: null,
 				// 己方银行卡信息
-				selfAcountsName: null,
+				selfAccountsName: null,
 				selfBankNo: null,
 				selfBankName: null,
 				selfBankID: null,
@@ -631,7 +631,7 @@ export default {
 				payType: Array.isArray(this.form.payType) ? this.form.payType.join('-') : null,
 				moneyAmount: parseFloat(this.form.moneyAmount) || null,
 				// 注意字段名的映射
-				otherAccountsName: this.form.otherAccountsName || this.form.otherAcountsName, // 兼容旧字段名
+				otherAccountsName: this.form.otherAccountsName || this.form.otherAccountsName, // 兼容旧字段名
 				otherBankNo: this.form.otherBankNo,
 				otherBankName: this.form.otherBankName,
 				companyName: this.form.companyName,
@@ -680,7 +680,7 @@ export default {
 			this.form.otherBankNo = row.bankNo;
 			this.form.otherBankName = row.bankName;
 			// 不再自动填充对方户名，保持用户手动输入的值
-			this.form.otherAcountsName = row.acountsName;
+			this.form.otherAccountsName = row.acountsName;
 		},
 		// 根据对方类型返回相应的校验规则
 		getOpponentTypeRules() {
@@ -764,7 +764,7 @@ export default {
 				futuresNO: futuresNO,
 				moneyAmount: formData.moneyAmount,
 				recoverDate: formData.fundsDate,
-				acountsName: formData.selfAcountsName,
+				acountsName: formData.selfAccountsName,
 				bankNo: formData.selfBankNo,
 				comments: formData.comments
 			});
@@ -840,7 +840,7 @@ export default {
 				// 我方银行卡信息
 				selfBankNo: null,
 				selfBankName: null,
-				selfAcountsName: null,
+				selfAccountsName: null,
 				// 对方银行卡信息（统一字段名）
 				otherAccountsName: null,
 				otherBankNo: null,
