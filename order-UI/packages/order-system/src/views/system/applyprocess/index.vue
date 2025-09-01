@@ -601,8 +601,9 @@ export default {
 			<el-col :span="1.5" style="position: fixed; bottom: 20px; right: 20px; z-index: 100">
 				<el-popover placement="top-start" trigger="hover" width="1000" title="待提交或已驳回的付款申请">
 					<template #reference>
-						<el-button type="success" circle style="width: 40px; height: 40px" id="step-3">
+						<el-button type="success" size="mini" id="step-3">
 							<a-icon type="unordered-list" />
+							<span style="margin-left: 6px">查看待提交/驳回的申请</span>
 						</el-button>
 					</template>
 					<a-anchor>

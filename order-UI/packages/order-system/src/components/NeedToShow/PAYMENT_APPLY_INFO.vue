@@ -50,7 +50,7 @@ export default {
 				<el-descriptions-item label="收款银行">{{ needToShowInfo.otherBankName }}</el-descriptions-item>
 				<el-descriptions-item label="收款账号">{{ needToShowInfo.otherBankNo }}</el-descriptions-item>
 				<el-descriptions-item label="申请人">{{ needToShowInfo.userName }}</el-descriptions-item>
-				<el-descriptions-item label="申请时间">{{ formatDate(needToShowInfo.addtime) }}</el-descriptions-item>
+				<el-descriptions-item label="申请时间">{{ formatDate(needToShowInfo.addTime) }}</el-descriptions-item>
 				<el-descriptions-item label="审核状态">{{ needToShowInfo.checkState }}</el-descriptions-item>
 				<el-descriptions-item label="原因">{{ needToShowInfo.reason || '无' }}</el-descriptions-item>
 				<el-descriptions-item label="备注">{{ needToShowInfo.comments || '无' }}</el-descriptions-item>
