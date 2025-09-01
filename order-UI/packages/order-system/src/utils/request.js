@@ -218,7 +218,7 @@ export function download(url, params, filename, config, isShowConfig = false) {
 		.post(url, params, {
 			transformRequest: [
 				params => {
-					return tansParams(params);
+					return params ? tansParams(params) : null;
 				}
 			],
 			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },

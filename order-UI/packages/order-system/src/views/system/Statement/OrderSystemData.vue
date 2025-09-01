@@ -70,18 +70,12 @@ export default {
 			});
 		},
 		handleExport() {
-			this.$prompt('请选择返利日期', '提示', {
+			this.$prompt('请选择日期', '提示', {
 				confirmButtonText: '确定',
 				cancelButtonText: '取消',
 				inputType: 'date'
 			}).then(({ value: date }) => {
-				this.download(
-					'statistics/getSystemMultiDimensionData',
-					{
-						date: date
-					},
-					`数据统计_${new Date().getTime()}.xlsx`
-				);
+				this.download('/statistics/export/getSystemMultiDimensionData?date=' + date, null, `数据统计_${new Date().getTime()}.xlsx`);
 			});
 		}
 	}
