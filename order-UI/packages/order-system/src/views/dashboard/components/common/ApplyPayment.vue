@@ -734,7 +734,7 @@ export default {
 			formData.checkState = ''; // 审核状态赋空
 
 			// 数据验证
-			if (formData.tableReferences.length === 0) {
+			if (this.isDailyExpense !== 1 && formData.tableReferences.length === 0) {
 				this.$modal.msgError('付款申请必须关联至少一个业务记录');
 				return;
 			}

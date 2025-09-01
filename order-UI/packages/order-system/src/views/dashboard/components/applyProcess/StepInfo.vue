@@ -5,10 +5,13 @@ import NeedToShowInfo from '@/components/NeedToShowInfo.vue';
 import { TableComponentsTools } from '@/utils/order/mapper';
 import { AuditCheckState, getTagColor } from '@/api/tool/enums';
 import { isEmpty } from '../../../../utils';
+import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
+import USER_INFO from '@/components/NeedToShow/USER_INFO.vue';
 
 export default {
 	name: 'StepInfo',
 	components: { NeedToShowInfo, CheckApply },
+	mixins: [common_dialog],
 	props: {
 		processInfo: {
 			type: Array,
@@ -55,6 +58,12 @@ export default {
 	},
 	methods: {
 		isEmpty,
+		// 打开用户信息
+		openUser(uid) {
+			if (!uid) return;
+			// 复用全局对话框工具
+			this.openDialog(USER_INFO, '用户信息', '520px', { userId: uid }, false);
+		},
 		findUserIdIndex(userId, arr) {
 			if (userId === undefined || userId === null || userId === '') {
 				return false;
@@ -78,6 +87,13 @@ export default {
 			} else {
 				return true; // 未通过 则禁用按钮
 			}
+		},
+		// 卡片样式：通过=水印；其他非进行中=置灰
+		cardClass(item) {
+			return {
+				'card--passed': item.checkState === '通过',
+				'card--disabled': item.checkState !== '审核中' && item.checkState !== '通过'
+			};
 		},
 		// 标签
 		isTag(state) {
@@ -144,16 +160,33 @@ export default {
 				<span style="font-weight: bolder; font-size: 16px; line-height: 100px">审核进度:</span>
 			</el-col>
 			<el-col :span="18">
-				<el-steps :active="currentStep" finish-status="success" style="margin-top: 20px">
+				<el-steps :active="currentStep" finish-status="success" process-status="process" style="margin-top: 20px">
 					<!--      循环-->
-					<el-step v-for="(item, index) in processInfo" :key="index" :status="item.checkState === '通过' ? 'success' : 'error'">
+					<el-step v-for="(item, index) in processInfo" :key="index" :status="item.checkState === '通过' ? 'success' : item.checkState === '审核中' ? 'process' : 'error'">
 						<template #title>
-							<span style="font-weight: bolder">
+							<span class="step-title">
 								{{ item.flowname }}
 							</span>
 						</template>
 						<template #description>
-							<span style="font-weight: bolder">审核意见:{{ processAuditInfo(item) }}</span>
+							<div class="step-desc">
+								<span>审核意见：</span>
+								<span class="desc-content">{{ processAuditInfo(item) }}</span>
+								<a-tag size="small" :color="isTag(item.checkState)" style="margin-left: 6px">{{ item.checkState || '待审核' }}</a-tag>
+								<div class="auditors-line">
+									<span class="label">审核人员：</span>
+									<el-tag
+										v-for="uid in item.auditauthority ? item.auditauthority.split(',') : []"
+										:key="uid"
+										size="mini"
+										type="info"
+										style="margin-right: 6px; cursor: pointer"
+										@click="openUser(uid)"
+									>
+										{{ uid }}
+									</el-tag>
+								</div>
+							</div>
 						</template>
 					</el-step>
 				</el-steps>
@@ -168,10 +201,12 @@ export default {
 			<el-col :span="18">
 				<el-timeline>
 					<el-timeline-item v-for="(item, index) in processInfo" :key="index" :timestamp="item.addtime" placement="top">
-						<el-card :class="{ shadow: isDisable(item) }">
+						<el-card :class="cardClass(item)" class="audit-card">
+							<!-- 通过水印层 -->
+							<div v-if="item.checkState === '通过'" class="pass-watermark">已通过</div>
 							<el-row>
 								<el-col :span="18">
-									<h2>{{ isEmpty(item.flowname) }}</h2>
+									<h2 class="audit-title">{{ isEmpty(item.flowname) }}</h2>
 									<p>
 										<span>审核结果:</span>
 										<a-tag :color="isTag(item.checkState)">{{ isEmpty(item.checkState) }}</a-tag>
@@ -183,6 +218,19 @@ export default {
 										<span v-else>
 											<a-tag :color="isTag(item.checkState)">待审核</a-tag>
 										</span>
+									</p>
+									<p>
+										<span>审核人员:</span>
+										<el-tag
+											v-for="uid in item.auditauthority ? item.auditauthority.split(',') : []"
+											:key="uid"
+											size="mini"
+											type="info"
+											style="margin-right: 6px; cursor: pointer"
+											@click="openUser(uid)"
+										>
+											{{ uid }}
+										</el-tag>
 									</p>
 									<p>
 										<span>审核时间:</span>
@@ -252,5 +300,55 @@ export default {
 .payment-title {
 	font-weight: bold;
 	color: red;
+}
+
+/* 步骤标题/描述美化 */
+.step-title {
+	font-weight: 600;
+	font-size: 14px;
+}
+.step-desc {
+	font-size: 12px;
+	color: #666;
+}
+.step-desc .desc-content {
+	color: #333;
+}
+/* 增大垂直步骤间距 */
+::v-deep .el-steps.is-vertical .el-step.is-vertical:not(:last-child) .el-step__line {
+	height: 40px;
+}
+::v-deep .el-steps.is-vertical .el-step__main {
+	padding-bottom: 14px;
+}
+
+/* 审核卡片样式 */
+.audit-card {
+	position: relative;
+	border-left: 4px solid #e6e6e6;
+	margin-bottom: 10px;
+}
+.card--passed {
+	border-left-color: #52c41a; /* 绿色 */
+	box-shadow: 0 0 0 1px rgba(82, 196, 26, 0.2) inset;
+}
+.card--disabled {
+	filter: grayscale(30%);
+	opacity: 0.7;
+}
+
+/* 已通过水印 */
+.pass-watermark {
+	position: absolute;
+	right: 16px;
+	top: 16px;
+	padding: 4px 8px;
+	background: rgba(82, 196, 26, 0.1);
+	color: #389e0d;
+	border: 1px dashed #52c41a;
+	border-radius: 4px;
+	font-weight: 600;
+	transform: rotate(-10deg);
+	pointer-events: none;
 }
 </style>

@@ -9,9 +9,22 @@
 			</el-col>
 		</el-row>
 		<el-row style="margin-top: 60px">
-			<el-steps :active="auditflowList.length" align-center>
-				<el-step v-for="(item, index) in auditflowList" :key="index" :title="item.flowname">
-					<template #description>审核人员编号:{{ item.auditauthority }}</template>
+			<el-steps :active="displayFlowList.length" direction="vertical">
+				<el-step v-for="(item, index) in displayFlowList" :key="item.id || index">
+					<template #icon>
+						<span class="af-step-index">{{ index + 1 }}</span>
+					</template>
+					<template #title>
+						<span class="af-flow-title">{{ item.flowname || '未命名步骤' }}</span>
+						<el-tag size="mini" type="success" effect="plain" style="margin-left: 8px">第 {{ item.step || index + 1 }} 步 / 共 {{ item.stepnum || displayFlowList.length }} 步</el-tag>
+					</template>
+					<template #description>
+						<div class="af-auditor-wrap">
+							<span class="af-label">审核人员：</span>
+							<el-tag v-for="uid in item.auditors" :key="uid" size="mini" type="info" style="margin-right: 6px; cursor: pointer" @click="openUser(uid)">{{ uid }}</el-tag>
+							<span v-if="!item.auditors || item.auditors.length === 0" class="af-placeholder">未设置</span>
+						</div>
+					</template>
 				</el-step>
 			</el-steps>
 		</el-row>
@@ -51,11 +64,13 @@ import { listAuditflow, updateAuditflow } from '@/api/system/auditflow';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import { mapGetters } from 'vuex';
 import AuditFlowInfo from './auditFlowInfo.vue';
+import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
+import USER_INFO from '@/components/NeedToShow/USER_INFO.vue';
 
 export default {
 	name: 'Auditflow',
 	components: { AuditFlowInfo },
-	mixins: [mixin_printHTML],
+	mixins: [mixin_printHTML, common_dialog],
 	data() {
 		return {
 			// 遮罩层
@@ -108,9 +123,21 @@ export default {
 		stepLength() {
 			return this.checkStepList.length;
 		},
-		...mapGetters(['checkStepList'])
+		...mapGetters(['checkStepList']),
+		// 展示用的流程（解析审计人员列表）
+		displayFlowList() {
+			return (this.auditflowList || []).map(item => ({
+				...item,
+				auditors: typeof item.auditauthority === 'string' && item.auditauthority.trim() !== '' ? item.auditauthority.split(',') : []
+			}));
+		}
 	},
 	methods: {
+		// 点击用户编号，打开用户信息
+		openUser(uid) {
+			if (!uid) return;
+			this.openDialog(USER_INFO, '用户信息', '520px', { userId: uid }, false);
+		},
 		// 添加审核流程
 		addCheckStateStep() {
 			this.checkStepList.push({
@@ -236,3 +263,42 @@ export default {
 	}
 };
 </script>
+
+<style scoped>
+.af-step-index {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 22px;
+	height: 22px;
+	border-radius: 50%;
+	background: #409eff;
+	color: #fff;
+	font-size: 12px;
+	font-weight: 600;
+	box-shadow: 0 0 0 2px #e6f2ff inset;
+}
+.af-flow-title {
+	font-weight: 600;
+	font-size: 14px;
+}
+.af-auditor-wrap {
+	margin-top: 10px;
+	font-size: 12px;
+	color: #666;
+}
+.af-label {
+	color: #999;
+	margin-right: 6px;
+}
+.af-placeholder {
+	color: #bbb;
+}
+/* 调整垂直步骤间距 */
+::v-deep .el-steps.is-vertical .el-step.is-vertical:not(:last-child) .el-step__line {
+	height: 42px;
+}
+::v-deep .el-steps.is-vertical .el-step__main {
+	padding-bottom: 16px;
+}
+</style>
