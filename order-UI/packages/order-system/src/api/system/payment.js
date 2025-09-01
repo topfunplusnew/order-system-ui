@@ -38,7 +38,7 @@ export function updatePayment(data) {
 // 编辑付款信息（模拟）
 export function updatePaymentSimulate(data) {
 	return request({
-		url: '/system/payment/updateSimulate',
+		url: '/system/payment',
 		method: 'put',
 		data: data
 	});
