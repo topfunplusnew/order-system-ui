@@ -308,6 +308,7 @@ export default {
 		// 修改已经提交的 待提交或者驳回的付款申请记录 isEdit=true时为修改原有信息
 		reApply(paymentApplyInfo, isEdit = true) {
 			const clonedPaymentApplyInfo = _.cloneDeep(paymentApplyInfo);
+			console.log(`clonedPaymentApplyInfo=>`, clonedPaymentApplyInfo);
 			// 需要自动填充的信息
 			this.needInfo = {
 				bankNo: clonedPaymentApplyInfo.otherBankNo,
@@ -315,7 +316,12 @@ export default {
 				bankName: clonedPaymentApplyInfo.otherBankName,
 				companyName: clonedPaymentApplyInfo.companyName,
 				companyType: clonedPaymentApplyInfo.companyType,
-				companyId: clonedPaymentApplyInfo.companyId
+				companyId: clonedPaymentApplyInfo.companyId,
+				payType: clonedPaymentApplyInfo.payType.split('-') || [],
+				attachmentIds: clonedPaymentApplyInfo.attachmentIds,
+				reason: clonedPaymentApplyInfo.reason,
+				comment: clonedPaymentApplyInfo.comment,
+				remark: clonedPaymentApplyInfo.remark
 			};
 			// 额外信息
 			this.extraInformation = {
@@ -600,21 +606,39 @@ export default {
 						</el-button>
 					</template>
 					<a-anchor>
-						<a-list item-layout="horizontal" :data-source="alreadyApplyList" :pagination="pagination">
-							<!--  eslint-disable-next-line-->
-							<a-list-item slot="renderItem" slot-scope="item, index">
-								<a slot="actions" @click="reApply(item, true)">修改填写</a>
-								<a slot="actions" @click="handleCheck(item)">查看详情</a>
-								<a slot="actions" @click="submitReApplyInfo(item)">提交</a>
-								<a-list-item-meta :description="'提交时间:' + item.addtime">
-									<span slot="title">{{ item.reason }}</span>
-								</a-list-item-meta>
+						<div class="apply-list-scroll">
+							<a-list item-layout="horizontal" :data-source="alreadyApplyList" :pagination="pagination">
+								<!--  eslint-disable-next-line-->
+								<a-list-item slot="renderItem" slot-scope="item, index">
+									<a slot="actions" @click="reApply(item, true)">修改填写</a>
+									<a slot="actions" @click="handleCheck(item)">查看详情</a>
+									<a slot="actions" @click="submitReApplyInfo(item)">提交</a>
+									<a-list-item-meta>
+										<template slot="title">
+											<div class="apply-item-title">
+												<span class="apply-reason">{{ item.reason || '无原因' }}</span>
+												<a-tag color="blue" style="margin-left: 8px">{{ item.payType || '类型未知' }}</a-tag>
+												<a-tag color="red">￥{{ item.moneyAmount }}</a-tag>
+											</div>
+										</template>
+										<template slot="description">
+											<div class="apply-item-desc">
+												<div>提交时间：{{ item.addTime }}</div>
+												<div>申请人：{{ item.applyPerson }}</div>
+												<div>公司：{{ item.companyType }} - {{ item.companyName }}</div>
+												<div v-if="item.otherBankNo">对方账号：{{ item.otherBankNo }}</div>
+												<div v-else-if="item.otherAcountsName || item.otherAccountsName">对方户名：{{ item.otherAcountsName || item.otherAccountsName }}</div>
+												<div v-if="Array.isArray(item.attachmentList)">附件：{{ item.attachmentList.length }} 个</div>
+											</div>
+										</template>
+									</a-list-item-meta>
 
-								<div style="margin: 5px">
-									<a-tag :color="getTagColor(item.checkState)">{{ item.checkState }}</a-tag>
-								</div>
-							</a-list-item>
-						</a-list>
+									<div style="margin: 5px">
+										<a-tag :color="getTagColor(item.checkState)">{{ item.checkState }}</a-tag>
+									</div>
+								</a-list-item>
+							</a-list>
+						</div>
 					</a-anchor>
 				</el-popover>
 			</el-col>
@@ -808,5 +832,10 @@ export default {
 .text-bolder {
 	font-weight: bolder;
 	line-height: 35px;
+}
+
+.apply-list-scroll {
+	max-height: 500px;
+	overflow: auto;
 }
 </style>

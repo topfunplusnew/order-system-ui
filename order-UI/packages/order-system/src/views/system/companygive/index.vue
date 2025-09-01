@@ -33,7 +33,7 @@
 				</template>
 				<template #export>
 					<el-col :span="1.5">
-						<el-button v-hasPermi="['system:companygive:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
+						<el-button v-hasPermi="['system:company:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
 					</el-col>
 				</template>
 			</right-toolbar>
@@ -64,8 +64,8 @@
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
 				<template slot-scope="scope">
 					<el-button size="mini" type="text" @click="jumpBankNo(scope.row)">银行卡号</el-button>
-					<el-button v-hasPermi="['system:companygive:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">编辑</el-button>
-					<el-button v-hasPermi="['system:companygive:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
+					<el-button v-hasPermi="['system:company:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">编辑</el-button>
+					<el-button v-hasPermi="['system:company:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -144,7 +144,7 @@
 					<el-table-column label="银行卡余额" align="center" prop="amount" />
 					<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
 						<template slot-scope="scope">
-							<el-button v-hasPermi="['system:companygive:remove']" size="mini" @click="handleDeleteBankaccount(scope.row)">
+							<el-button v-hasPermi="['system:company:remove']" size="mini" @click="handleDeleteBankaccount(scope.row)">
 								<i class="el-icon-delete"></i>
 							</el-button>
 						</template>

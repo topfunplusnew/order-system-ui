@@ -409,7 +409,6 @@ import { excludeParams } from '@/api/tool/exclude';
 import SearchOption from '@/components/SearchOption.vue';
 import UploadFilesButton from '@/components/UploadFilesButton';
 import { listBankAccount } from '@/api/system/bankAccount';
-import { mixin_payment_apply } from '../../mixins/apply_payment/payment_apply';
 import { mixin_payment_level } from '../../mixins/apply_payment/payment_level';
 import { mixin_payment_watcher } from '../../mixins/apply_payment/payment_watcher';
 import { listCompany } from '../../../../api/system/company';
@@ -461,7 +460,7 @@ export default {
 		}
 	},
 	components: { SearchOption, UploadFilesButton },
-	mixins: [mixin_payment_apply, mixin_payment_level, mixin_payment_watcher, mixin_payment_fill, mixin_receive_money_subject, mixin_bankType],
+	mixins: [mixin_payment_level, mixin_payment_watcher, mixin_payment_fill, mixin_receive_money_subject, mixin_bankType],
 	data() {
 		return {
 			// 遮罩层
@@ -629,7 +628,7 @@ export default {
 		buildFormData() {
 			const formData = {
 				fundsDate: this.form.fundsDate,
-				payType: Array.isArray(this.form.payType) ? this.form.payType.join('-') : this.form.payType,
+				payType: Array.isArray(this.form.payType) ? this.form.payType.join('-') : null,
 				moneyAmount: parseFloat(this.form.moneyAmount) || null,
 				// 注意字段名的映射
 				otherAccountsName: this.form.otherAccountsName || this.form.otherAcountsName, // 兼容旧字段名
