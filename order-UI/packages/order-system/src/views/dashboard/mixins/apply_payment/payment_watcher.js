@@ -64,7 +64,7 @@ export var mixin_payment_watcher = {
 					Object.assign(this.form, {
 						payType: val.payType,
 						companyName: val.companyName,
-						attachmentIds: val.attachmentIds,
+						attachmentList: val.attachmentList,
 						comment: val.comment,
 						remark: val.remark,
 						reason: val.reason

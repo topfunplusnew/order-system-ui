@@ -318,7 +318,7 @@ export default {
 				companyType: clonedPaymentApplyInfo.companyType,
 				companyId: clonedPaymentApplyInfo.companyId,
 				payType: clonedPaymentApplyInfo.payType.split('-') || [],
-				attachmentIds: clonedPaymentApplyInfo.attachmentIds,
+				attachmentList: clonedPaymentApplyInfo.attachmentList,
 				reason: clonedPaymentApplyInfo.reason,
 				comment: clonedPaymentApplyInfo.comment,
 				remark: clonedPaymentApplyInfo.remark
