@@ -1,11 +1,20 @@
 <template>
 	<div class="app-container">
 		<el-form ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="130px">
-			<el-form-item label="开始时间" prop="startTime">
-				<el-date-picker v-model="queryParams.startTime" type="date" placeholder="请选择开始时间" value-format="yyyy-MM-dd" clearable />
-			</el-form-item>
-			<el-form-item label="结束时间" prop="endTime">
-				<el-date-picker v-model="queryParams.endTime" type="date" placeholder="请选择结束时间" value-format="yyyy-MM-dd" clearable />
+			<el-form-item label="时间范围">
+				<el-date-picker
+					v-model="dateRange"
+					type="daterange"
+					range-separator="至"
+					start-placeholder="开始日期"
+					end-placeholder="结束日期"
+					value-format="yyyy-MM-dd"
+					size="mini"
+					style="width: 280px"
+					unlink-panels
+					:clearable="true"
+					@change="onDateRangeChange"
+				/>
 			</el-form-item>
 			<el-form-item label="客户名称" prop="companyName">
 				<el-input v-model="queryParams.companyName" placeholder="请输入客户名称" clearable />
@@ -261,6 +270,7 @@ export default {
 	mixins: [mixin_printHTML, common_dialog, mixin_checkfile],
 	data() {
 		return {
+			dateRange: [],
 			queryParams: {
 				companyName: '',
 				pageNum: 1,
@@ -376,11 +386,15 @@ export default {
 	},
 	async created() {
 		// 尝试使用系统默认时间范围填充查询条件（只保留日期部分 yyyy-MM-dd）
+		this.dateRange = []; // Initialize dateRange
 		try {
 			const range = await getDateRangeDays();
 			if (range && range.startTime && range.endTime) {
-				this.queryParams.startTime = String(range.startTime).slice(0, 10);
-				this.queryParams.endTime = String(range.endTime).slice(0, 10);
+				const start = String(range.startTime).slice(0, 10);
+				const end = String(range.endTime).slice(0, 10);
+				this.dateRange = [start, end];
+				this.queryParams.startTime = start;
+				this.queryParams.endTime = end;
 			}
 		} catch (e) {
 			console.error('读取默认时间范围失败', e);
@@ -395,6 +409,16 @@ export default {
 	},
 
 	methods: {
+		onDateRangeChange(val) {
+			// 仅在选择完整时间段时触发搜索，清空不触发
+			if (Array.isArray(val) && val.length === 2) {
+				this.dateRange = val;
+				this.handleQuery();
+			} else {
+				this.dateRange = [];
+				// 不触发搜索
+			}
+		},
 		handleOnceApply() {
 			if (this.selections.length === 0) {
 				this.$message.warning('请先选择需要申请的记录');
@@ -455,6 +479,7 @@ export default {
 				isCanPay: null,
 				showOrder: null
 			};
+			this.dateRange = []; // Reset dateRange
 			this.getList();
 		},
 		// 查询数据
@@ -465,6 +490,14 @@ export default {
 		async getList() {
 			this.loading = true;
 			try {
+				// 将日期范围同步到查询参数
+				if (Array.isArray(this.dateRange) && this.dateRange.length === 2) {
+					this.queryParams.startTime = this.dateRange[0];
+					this.queryParams.endTime = this.dateRange[1];
+				} else {
+					this.queryParams.startTime = null;
+					this.queryParams.endTime = null;
+				}
 				// 构建符合后端API要求的查询参数
 				const queryParams = {
 					pageNum: this.queryParams.pageNum,

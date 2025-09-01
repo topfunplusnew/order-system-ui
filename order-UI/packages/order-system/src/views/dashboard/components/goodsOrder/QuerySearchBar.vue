@@ -1,11 +1,20 @@
 <template>
 	<div>
 		<el-form ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="110">
-			<el-form-item label="开始时间" prop="beginTime">
-				<el-date-picker v-model="queryParams.orderDateStart" type="date" placeholder="选择时间" value-format="yyyy-MM-dd" size="mini" style="width: 70%"></el-date-picker>
-			</el-form-item>
-			<el-form-item label="结束时间" prop="endTime">
-				<el-date-picker v-model="queryParams.orderDateEnd" type="date" placeholder="选择时间" value-format="yyyy-MM-dd" style="width: 70%" size="mini"></el-date-picker>
+			<el-form-item label="时间范围">
+				<el-date-picker
+					v-model="dateRange"
+					type="daterange"
+					range-separator="至"
+					start-placeholder="开始日期"
+					end-placeholder="结束日期"
+					value-format="yyyy-MM-dd"
+					size="mini"
+					style="width: 280px"
+					unlink-panels
+					:clearable="true"
+					@change="onDateRangeChange"
+				/>
 			</el-form-item>
 			<el-form-item label="客户名称" prop="customer">
 				<el-input v-model="queryParams.customer" placeholder="请输入客户名称" clearable size="mini" @keyup.enter.native="handleQuery"></el-input>
@@ -74,7 +83,6 @@
 import { OptionInvent, Options } from '@/views/dashboard/mixins/order/order_Invoice';
 import { getDateRangeDays } from '@/utils/index';
 import _ from 'lodash';
-import { create } from 'mathjs';
 
 export default {
 	name: 'QuerySearchBar',
@@ -86,6 +94,8 @@ export default {
 	},
 	data() {
 		return {
+			// 日期范围
+			dateRange: [],
 			// 选择框筛选
 			optionInvent: OptionInvent,
 			options: Options,
@@ -116,8 +126,11 @@ export default {
 			let query = null;
 			if (range && range.startTime !== null && range.endTime !== null) {
 				// date-picker 使用 yyyy-MM-dd 格式，截取日期部分
-				this.queryParams.orderDateStart = String(range.startTime).substring(0, 10);
-				this.queryParams.orderDateEnd = String(range.endTime).substring(0, 10);
+				const start = String(range.startTime).substring(0, 10);
+				const end = String(range.endTime).substring(0, 10);
+				this.dateRange = [start, end];
+				this.queryParams.orderDateStart = start;
+				this.queryParams.orderDateEnd = end;
 				query = _.cloneDeep(this.queryParams);
 				this.formatOrderDateRange(query);
 			}
@@ -135,10 +148,28 @@ export default {
 		OptionInvent() {
 			return OptionInvent;
 		},
+		onDateRangeChange(val) {
+			// 仅在选择完成时触发搜索；清空时不自动触发
+			if (Array.isArray(val) && val.length === 2) {
+				this.dateRange = val;
+				this.handleQuery();
+			} else {
+				this.dateRange = [];
+				// 不触发搜索
+			}
+		},
 		// 处理查询的方法
 		handleQuery() {
 			this.queryParams.pageNum = 1;
 			this.queryParams.pageSize = 50;
+			// 将 dateRange 写回开始/结束
+			if (Array.isArray(this.dateRange) && this.dateRange.length === 2) {
+				this.queryParams.orderDateStart = this.dateRange[0];
+				this.queryParams.orderDateEnd = this.dateRange[1];
+			} else {
+				this.queryParams.orderDateStart = null;
+				this.queryParams.orderDateEnd = null;
+			}
 			// 创建查询参数的副本，避免修改原始数据
 			const queryData = { ...this.queryParams };
 			this.formatOrderDateRange(queryData);
@@ -210,6 +241,7 @@ export default {
 					height: ''
 				}
 			};
+			this.dateRange = [];
 		}
 	}
 };
