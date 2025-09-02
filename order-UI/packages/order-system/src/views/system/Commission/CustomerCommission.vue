@@ -467,19 +467,21 @@ export default {
 			this.localApplications = JSON.parse(JSON.stringify(this.applications));
 			this.onceApplyVisible = true;
 		},
-		// 刷新表格
+		// 刷新表格（保留当前时间范围）
 		refresh() {
+			const range = Array.isArray(this.dateRange) ? this.dateRange : [];
+			const [start, end] = range.length === 2 ? range : [null, null];
 			this.queryParams = {
 				companyName: '',
 				pageNum: 1,
 				pageSize: 20,
-				startTime: null,
-				endTime: null,
+				startTime: start,
+				endTime: end,
 				isNoPay: null,
 				isCanPay: null,
 				showOrder: null
 			};
-			this.dateRange = []; // Reset dateRange
+			// 不清空 dateRange，保持组件显示
 			this.getList();
 		},
 		// 查询数据

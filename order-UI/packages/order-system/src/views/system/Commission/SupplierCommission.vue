@@ -478,8 +478,11 @@ export default {
 			this.localApplications = JSON.parse(JSON.stringify(applications));
 			this.onceApplyVisible = true;
 		},
-		// 刷新表格
+		// 刷新表格（保留当前时间范围）
 		refresh() {
+			const range = Array.isArray(this.dateRange) ? this.dateRange : [];
+			const [start, end] = range.length === 2 ? range : [null, null];
+			// 重置除时间外的其他筛选项
 			this.queryParams = {
 				companyName: '',
 				pageNum: 1,
@@ -487,10 +490,10 @@ export default {
 				showOrder: '',
 				isNoPay: '',
 				isCanPay: '',
-				startTime: null,
-				endTime: null
+				startTime: start,
+				endTime: end
 			};
-			this.dateRange = [];
+			// 保留 dateRange，不清空组件
 			this.getList();
 		},
 		// 查询数据z
