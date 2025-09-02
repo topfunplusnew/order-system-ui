@@ -1,6 +1,6 @@
 // 厂家佣金和客户佣金
 import service from '@/utils/request';
-import { Message } from 'element-ui';
+import { MessageBox } from 'element-ui';
 /**
  * 查询佣金信息列表
  * @description 返回的结果中 id是空的数据说明没有佣金信息 可以新增，否则不可以 只能付款
@@ -10,7 +10,14 @@ import { Message } from 'element-ui';
  */
 export function listCommission(query, type) {
 	if (!query || !query.params.startTime || !query.params.endTime) {
-		Message.warning('选择时间后可加速查询');
+		const KEY = 'HINT_COMMISSION_DATE_ONCE';
+		if (!sessionStorage.getItem(KEY)) {
+			MessageBox.alert('选择时间后可加速查询', '提示', {
+				confirmButtonText: '我知道了',
+				type: 'warning',
+				callback: () => sessionStorage.setItem(KEY, 'true')
+			});
+		}
 	}
 	return service.request({
 		url: '/system/ordercommission/list',
