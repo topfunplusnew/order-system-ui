@@ -91,7 +91,7 @@
 				</tr>
 				<tr>
 					<td :colspan="3" style="text-align: left; padding-left: 10px; height: 50px">合计：</td>
-					<td style="text-align: left; padding-left: 10px; height: 50px">大写合计:{{ numToChineseUppercase(totalBorrower + totalLender) }}</td>
+					<td style="text-align: left; padding-left: 10px; height: 50px">大写合计:{{ numToChineseUppercase(Number(totalBorrower) + Number(totalLender)) }}</td>
 					<td>
 						<table>
 							<tr>
