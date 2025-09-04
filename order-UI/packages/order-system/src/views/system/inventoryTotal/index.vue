@@ -49,7 +49,7 @@
 				<el-table-column label="宽度" prop="width" align="center" />
 				<el-table-column label="价格" prop="price" align="center" />
 				<el-table-column label="初始入库日期" prop="firstStoreDate" align="center" />
-				<el-table-column label="剩余库存金额" align="remainingAmount"></el-table-column>
+				<el-table-column label="剩余库存金额" prop="remainingAmount" align="center"></el-table-column>
 				<el-table-column label="吨位" prop="tonnage" align="center" />
 				<el-table-column label="总入库量" prop="totalStockIn" align="center" />
 				<el-table-column label="总出库量" prop="totalStockOut" align="center" />
