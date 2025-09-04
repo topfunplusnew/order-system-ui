@@ -674,12 +674,8 @@ export default {
 					label: '司机'
 				},
 				{
-					value: '个人',
-					label: '个人'
-				},
-				{
-					value: '其他',
-					label: '其他'
+					value: '支付费用',
+					label: '支付费用'
 				}
 			],
 			// 银行卡选择的弹窗
