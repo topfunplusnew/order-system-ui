@@ -15,6 +15,7 @@ export function paymentAudit(params) {
 export var mixin_payment_audit = {
 	methods: {
 		handlePaymentAudit(row, e) {
+			console.log(`e=>`, e);
 			const debouncedPaymentAudit = debounce(function (row, auditStatus) {
 				paymentAudit({ ...row, auditStatus }).then(() => {
 					const message = auditStatus === '1' ? '复核成功!' : '取消复核!';
@@ -27,11 +28,8 @@ export var mixin_payment_audit = {
 			}, 1000);
 			// 更新视图
 			row.auditStatus = e;
-			// 保存审核状态
-			let _auditState = e ? '1' : '0';
-
 			// 调用防抖后的函数，传递最新的 row 和 auditStatus
-			debouncedPaymentAudit.call(this, row, _auditState);
+			debouncedPaymentAudit.call(this, row, e);
 		}
 	}
 };
