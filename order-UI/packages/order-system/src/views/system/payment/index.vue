@@ -676,6 +676,10 @@ export default {
 				{
 					value: '支付费用',
 					label: '支付费用'
+				},
+				{
+					value: '员工',
+					label: '员工'
 				}
 			],
 			// 银行卡选择的弹窗
