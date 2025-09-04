@@ -1418,12 +1418,6 @@ export default {
 					if (editReason) {
 						submitData.editReason = editReason;
 					}
-
-					// 修改时，确保包含修改原因
-					if (!submitData.editReason || submitData.editReason.trim() === '') {
-						this.$message.error('修改时必须填写修改原因');
-						return;
-					}
 					this.updateRecordInfo(originalAttachmentIds, submitData);
 					// 只在成功时发送 changeFlag 事件，错误时在各自的 catch 块中处理
 				} else {

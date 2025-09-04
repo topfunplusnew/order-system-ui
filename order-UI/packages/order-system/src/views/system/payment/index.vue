@@ -1263,11 +1263,6 @@ export default {
 					}
 
 					if (submitData.id != null) {
-						// 修改时，确保包含修改原因
-						if (!submitData.editReason || submitData.editReason.trim() === '') {
-							this.$message.error('修改时必须填写修改原因');
-							return;
-						}
 						// submitData.editReason 已经在深克隆中包含了
 
 						// 编辑操作，使用新的编辑接口
