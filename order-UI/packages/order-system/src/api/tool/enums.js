@@ -27,7 +27,7 @@ export const TableName = Object.freeze({
 	INVOICE_OTHER: 'invoiceother',
 	INVOICE_OUT: 'invoiceout',
 	LEND_MONEY: 'lendmoney',
-	OFFSETTING: 'offsetting',
+	CASH_RECORD: 'cash_record',
 	OIL_CARD: 'oilcard',
 	OIL_CARD_CONSUME: 'oilcardconsume',
 	OIL_CARD_FUND_TRANSFER: 'oilcardfundtransfer',
@@ -47,7 +47,6 @@ export const TableName = Object.freeze({
 	INVENTORMAIN: 'inventory_main',
 	INVENTORDETAIL: 'inventory_detail',
 	DAILY: 'daily',
-	CASH_RECORD: 'cash_record',
 	ORDERCOMMISION: 'ordercommission'
 });
 
@@ -74,7 +73,7 @@ export const moduleNames = Object.freeze({
 	invoicein: '发票购入',
 	invoiceout: '发票售出',
 	invoiceother: '第三方发票',
-	offsetting: '冲抵货款',
+	cash_record: '冲抵货款',
 	oilcard: '油卡',
 	oilcardconsume: '油卡消费',
 	oilcardfundtransfer: '油卡资金转移',
@@ -101,7 +100,7 @@ export const ReportType = Object.freeze({
 		// 第三方开票 客户为发票买入
 		invoiceother: '发票购入',
 		goodsorder: '客户提货',
-		offsetting: '冲抵货款',
+		cash_record: '冲抵货款',
 		balanceaccounts: '平账',
 		bankacceptance: '商业票据'
 	},
@@ -113,7 +112,7 @@ export const ReportType = Object.freeze({
 		orderdetail: '从厂家进货',
 		// 第三方开票 客户为发票卖出
 		invoiceother: '发票售出',
-		offsetting: '冲抵货款',
+		cash_record: '冲抵货款',
 		inventory_detail: '商品入库',
 		rebate: '供应商返利',
 		balanceaccounts: '平账'
@@ -121,7 +120,7 @@ export const ReportType = Object.freeze({
 	// 运费
 	FREIGHT: {
 		goodsorder: '付运费',
-		offsetting: '冲抵货款',
+		cash_record: '冲抵货款',
 		inventory_main: '付运费',
 		orderfreight: '司机运费'
 	}
