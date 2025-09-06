@@ -181,7 +181,7 @@
 					<el-input v-model="form.invoiceAmount" placeholder="请输入开票金额" />
 				</el-form-item>
 				<el-form-item label="对方公司类型">
-					<el-select v-model="type" placeholder="请选择">
+					<el-select v-model="form.companyType" placeholder="请选择">
 						<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
 					</el-select>
 				</el-form-item>
@@ -192,7 +192,7 @@
 						</el-col>
 						<el-col :span="2">
 							<SearchOption
-								:limit-info="{ companyType: type }"
+								:limit-info="{ companyType: form.companyType }"
 								:get-data="listCompany"
 								query-info="companyName"
 								query-label="公司名称"
@@ -488,9 +488,6 @@ export default {
 				{ key: 13, label: `当月欠票金额`, visible: true },
 				{ key: 14, label: `额外备注`, visible: true }
 			],
-
-			// 公司类型
-			type: '',
 			// 公司名称
 			companyName: '',
 			// 选项
