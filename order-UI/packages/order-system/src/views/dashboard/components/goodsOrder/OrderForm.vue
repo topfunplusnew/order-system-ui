@@ -1457,7 +1457,7 @@ export default {
 								v-model.lazy="scope.row.sundryCost"
 								@input="() => recalculateAll(scope)"
 								:placeholder="scope.row.paymentUnload <= 0 ? '请先完善出厂单价' : '请输入杂费'"
-								:disabled="!scope.row.isEditing || !scope.row.paymentUnload"
+								:disabled="!scope.row.isEditing || !scope.row.price"
 								@blur="() => formatPriceInput(scope.row, 'sundryCost', 2)"
 							/>
 						</template>
