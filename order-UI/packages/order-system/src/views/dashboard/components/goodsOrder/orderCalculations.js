@@ -80,7 +80,6 @@ function calculateTotalFreight(row, isSea) {
  * @param {object} row - 订单详情行数据
  */
 function calculateProfit(row) {
-	console.log(`利润`, row);
 	row.profit = fix_2(Number(row.payments) - Number(row.paymentFactory) - Number(row.freight));
 }
 
