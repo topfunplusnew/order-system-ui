@@ -32,12 +32,12 @@ const mutations = {
 
 		// 设置激活的表单ID
 		state.activeFormId = formId;
-		
+
 		// 更新对应角色的账户类型
 		state.dualSelectionState[role] = accountType;
-		
+
 		// 重新计算是否有承兑选择
-		state.hasAcceptanceSelection = 
+		state.hasAcceptanceSelection =
 			state.dualSelectionState.source === BankAcceptanceType.ACCEPTANCE ||
 			state.dualSelectionState.target === BankAcceptanceType.ACCEPTANCE;
 
@@ -82,9 +82,9 @@ const mutations = {
 		}
 
 		state.dualSelectionState[role] = null;
-		
+
 		// 重新计算是否有承兑选择
-		state.hasAcceptanceSelection = 
+		state.hasAcceptanceSelection =
 			state.dualSelectionState.source === BankAcceptanceType.ACCEPTANCE ||
 			state.dualSelectionState.target === BankAcceptanceType.ACCEPTANCE;
 

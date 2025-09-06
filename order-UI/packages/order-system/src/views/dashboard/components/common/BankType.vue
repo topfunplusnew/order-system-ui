@@ -1,26 +1,21 @@
 <!-- 通用的银行卡账户类型填充 需要配合 mixin_bankType 使用 -->
 
 <template>
-	<div style="display: flex; align-items: center; gap: 4px;">
+	<div style="display: flex; align-items: center; gap: 4px">
 		<div class="select-container">
-			<el-select :disabled="optionBaned" v-model="localSelectType" placeholder="请选择账户类型" @change="handleEmitType"
-				style="width: 140px;">
-				<el-option v-for="item in dict.type.order_bank_card_type_nodel" :key="item.value" :label="item.label"
-					:value="item.value" />
+			<el-select :disabled="optionBaned" v-model="localSelectType" placeholder="请选择账户类型" @change="handleEmitType" style="width: 140px">
+				<el-option v-for="item in dict.type.order_bank_card_type_nodel" :key="item.value" :label="item.label" :value="item.value" />
 			</el-select>
 		</div>
 
 		<div class="button-container">
 			<!-- 修改按钮：当已填写承兑信息时显示 -->
-			<el-button v-if="showModifyButton" type="primary" size="small"
-				@click="handleReopenDrawer">修改承兑信息</el-button>
+			<el-button v-if="showModifyButton" type="primary" size="small" @click="handleReopenDrawer">修改承兑信息</el-button>
 
 			<!-- 填写承兑信息按钮：当选择承兑类型但未填写信息时显示 -->
-			<el-button v-if="showFillButton" type="success" size="small"
-				@click="handleFillAcceptance">填写承兑信息</el-button>
+			<el-button v-if="showFillButton" type="success" size="small" @click="handleFillAcceptance">填写承兑信息</el-button>
 		</div>
-		<el-drawer ref="drawer" title="承兑信息填写" :visible.sync="drawer" direction="rtl" :before-close="handleClose"
-			:append-to-body="true" size="55%">
+		<el-drawer ref="drawer" title="承兑信息填写" :visible.sync="drawer" direction="rtl" :before-close="handleClose" :append-to-body="true" size="55%">
 			<!-- 内嵌的承兑表单 -->
 			<div>
 				<div class="bank-body">
@@ -28,8 +23,7 @@
 						<el-row>
 							<el-col :span="12">
 								<el-form-item label="票据号码" prop="billNo">
-									<el-input v-model="form.billNo" placeholder="请输入票据号码"
-										@blur="getBankAcceptanceDate" />
+									<el-input v-model="form.billNo" placeholder="请输入票据号码" @blur="getBankAcceptanceDate" />
 								</el-form-item>
 								<el-form-item :label="`${getEndorserTypeLabel}事由`" prop="reason">
 									<template v-if="isInternalTransfer">
@@ -38,11 +32,13 @@
 										<el-radio v-model="form.reason" label="其他">其他</el-radio>
 									</template>
 									<template v-else>
-										<template v-if="getEndorserActionType === 'payment'">>
+										<template v-if="getEndorserActionType === 'payment'">
+											>
 											<el-radio v-model="form.reason" label="出售">出售</el-radio>
 											<el-radio v-model="form.reason" label="对外付款">对外付款</el-radio>
 										</template>
-										<template v-if="getEndorserActionType === 'receive'">>
+										<template v-if="getEndorserActionType === 'receive'">
+											>
 											<el-radio v-model="form.reason" label="购买">购买</el-radio>
 											<el-radio v-model="form.reason" label="客户付款">客户付款</el-radio>
 										</template>
@@ -61,55 +57,66 @@
 								<el-form-item :label="`${getEndorserPersonLabel}`" prop="endorserName">
 									<el-row>
 										<el-col :span="20">
-											<el-input :disabled="isInternalTransfer || !isInternalTransfer"
-												:placeholder="`请输入${getEndorserPersonLabel}`"
-												v-model="form.endorserName" />
+											<el-input :disabled="isInternalTransfer || !isInternalTransfer" :placeholder="`请输入${getEndorserPersonLabel}`" v-model="form.endorserName" />
 										</el-col>
 										<el-col :span="4">
 											<!--    如果是内部转账,那么就选择的是己方公司-->
 											<template v-if="isInternalTransfer">
-												<SearchOption title="我方账户" :get-data="listBankAccount"
-													icon="el-icon-search" :limit-info="{
+												<SearchOption
+													title="我方账户"
+													:get-data="listBankAccount"
+													icon="el-icon-search"
+													:limit-info="{
 														acountsType: PUBLIC_DICT_TYPE.SELF_COMPANY
-													}" query-label="户名查找" query-info="acountsName" :query-name="companyName" @commitBack="
+													}"
+													query-label="户名查找"
+													query-info="acountsName"
+													:query-name="companyName"
+													@commitBack="
 														value => {
 															// 这里给的户名
 															form.endorserName = value.acountsName;
 															form.origin = PUBLIC_DICT_TYPE.SELF_COMPANY;
 															form.endorser = value.id;
 														}
-													" @update:queryName="value => (companyName = value)">
+													"
+													@update:queryName="value => (companyName = value)"
+												>
 													<template #table-columns>
 														<el-table-column
 															:label="form.targetType === '其他' || form.targetType === '员工' ? '名称' : form.targetType"
-															align="center" prop="acountsName" />
+															align="center"
+															prop="acountsName"
+														/>
 														<el-table-column label="开户行" align="center" prop="bankName" />
-														<el-table-column label="开户名" align="center"
-															prop="acountsName" />
+														<el-table-column label="开户名" align="center" prop="acountsName" />
 														<el-table-column label="账号" align="center" prop="bankNo" />
 													</template>
 												</SearchOption>
 											</template>
 											<template v-else>
 												<!-- 选择的是客户或者供应商名称-->
-												<SearchOption :limit-info="{ companyType: type }"
-													:get-data="listCompany" query-info="companyName" query-label="公司名称"
+												<SearchOption
+													:limit-info="{ companyType: type }"
+													:get-data="listCompany"
+													query-info="companyName"
+													query-label="公司名称"
 													:query-name="companyName"
-													@update:queryName="value => (companyName = value)" @commitBack="
+													@update:queryName="value => (companyName = value)"
+													@commitBack="
 														value => {
 															form.endorserName = value.companyName;
 															form.origin = value.companyType;
 															form.endorser = value.id;
 														}
-													">
+													"
+												>
 													<template #table-columns>
-														<el-table-column :label="type" align="center"
-															prop="companyName" />
+														<el-table-column :label="type" align="center" prop="companyName" />
 														<el-table-column label="老板姓名" align="center" prop="leader" />
 														<el-table-column label="老板电话" align="center" prop="leaderTel" />
 														<el-table-column label="区域" align="center" prop="region" />
-														<el-table-column label="销售经理" align="center"
-															prop="salesManager" />
+														<el-table-column label="销售经理" align="center" prop="salesManager" />
 													</template>
 												</SearchOption>
 											</template>
@@ -137,17 +144,25 @@
 											<el-input disabled v-model="form.billAccount" placeholder="请输入我方承兑账户" />
 										</el-col>
 										<el-col :span="4">
-											<SearchOption :get-data="listBankAccount" :limit-info="{
-												acountsType: '己方公司'
-											}" title="我方承兑账户" query-label="户名查找" query-info="acountsName" :query-name="queryBank" @commitBack="
-												value => {
-													form.billAccount = value.acountsName;
-												}
-											" @update:queryName="value => (queryBank = value)">
+											<SearchOption
+												:get-data="listBankAccount"
+												:limit-info="{
+													acountsType: '己方公司'
+												}"
+												title="我方承兑账户"
+												query-label="户名查找"
+												query-info="acountsName"
+												:query-name="queryBank"
+												@commitBack="
+													value => {
+														form.billAccount = value.acountsName;
+													}
+												"
+												@update:queryName="value => (queryBank = value)"
+											>
 												<template #table-columns>
 													<el-table-column label="己方公司" align="center" prop="displayName" />
-													<el-table-column label="开户名称(户名)" align="center"
-														prop="acountsName" />
+													<el-table-column label="开户名称(户名)" align="center" prop="acountsName" />
 													<el-table-column label="账号(银行账号)" align="center" prop="bankNo" />
 													<el-table-column label="开户行" align="center" prop="bankName" />
 												</template>
@@ -156,16 +171,13 @@
 									</el-row>
 								</el-form-item>
 								<el-form-item label="票据交易日期" prop="billDate">
-									<el-date-picker v-model="form.billDate" type="datetime" placeholder="选择日期"
-										value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+									<el-date-picker v-model="form.billDate" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 								</el-form-item>
 								<el-form-item label="出票日期" prop="issueDate">
-									<el-date-picker v-model="form.issueDate" type="datetime" placeholder="选择日期"
-										value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+									<el-date-picker v-model="form.issueDate" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 								</el-form-item>
 								<el-form-item label="到期日期" prop="dueDate">
-									<el-date-picker v-model="form.dueDate" type="datetime" placeholder="选择日期"
-										value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+									<el-date-picker v-model="form.dueDate" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 								</el-form-item>
 								<el-form-item label="备注" prop="comments">
 									<el-input v-model="form.comments" placeholder="请输入备注" />
@@ -204,12 +216,7 @@ export default {
 	dicts: ['order_bank_card_type_nodel'],
 	computed: {
 		// Vuex getters 映射
-		...mapGetters([
-			'bankAcceptanceDualSelectionState',
-			'bankAcceptanceHasSelection',
-			'bankAcceptanceBothSelected',
-			'bankAcceptanceShouldShowDrawer'
-		]),
+		...mapGetters(['bankAcceptanceDualSelectionState', 'bankAcceptanceHasSelection', 'bankAcceptanceBothSelected', 'bankAcceptanceShouldShowDrawer']),
 		PUBLIC_DICT_TYPE() {
 			return PUBLIC_DICT_TYPE;
 		},
@@ -233,9 +240,7 @@ export default {
 			if (this.waitForBothSelection) {
 				// 双选择模式：需要Vuex状态管理
 				// 额外检查：避免Vuex状态与本地状态不同步
-				return this.bankAcceptanceShouldShowDrawer &&
-					(this.localSelectType === BankAcceptanceType.ACCEPTANCE ||
-						this.bankAcceptanceHasSelection);
+				return this.bankAcceptanceShouldShowDrawer && (this.localSelectType === BankAcceptanceType.ACCEPTANCE || this.bankAcceptanceHasSelection);
 			} else {
 				// 单选择模式：直接检查当前选择
 				return this.localSelectType === BankAcceptanceType.ACCEPTANCE;
@@ -313,16 +318,13 @@ export default {
 
 			// **边界条件4：账户类型值有效性检查**
 			const validAccountTypes = [BankAcceptanceType.BANK_CASH, BankAcceptanceType.ACCEPTANCE];
-			if (!validAccountTypes.includes(accountTypes.source) ||
-				!validAccountTypes.includes(accountTypes.target)) {
+			if (!validAccountTypes.includes(accountTypes.source) || !validAccountTypes.includes(accountTypes.target)) {
 				console.error('BankType: 无效的账户类型', accountTypes);
 				return false;
 			}
 
 			// **核心业务逻辑：只有支出方选择银行活期存款，收入方选择承兑时，才是背书人场景**
-			const isSourceBankCashAndTargetAcceptance =
-				accountTypes.source === BankAcceptanceType.BANK_CASH &&
-				accountTypes.target === BankAcceptanceType.ACCEPTANCE;
+			const isSourceBankCashAndTargetAcceptance = accountTypes.source === BankAcceptanceType.BANK_CASH && accountTypes.target === BankAcceptanceType.ACCEPTANCE;
 
 			// **调试信息输出（开发环境）**
 			if (process.env.NODE_ENV === 'development') {
@@ -394,7 +396,7 @@ export default {
 							// C付款，我方承兑账户是C
 							return 'current';
 						} else {
-							// D收款，我方承兑账户是D  
+							// D收款，我方承兑账户是D
 							return 'current';
 						}
 					}
@@ -635,10 +637,7 @@ export default {
 				// 当 protectOnError 为 true 且当前有承兑信息时，询问用户是否清空
 				if (this.protectOnError && this.bankacceptanceInfo && Object.keys(this.bankacceptanceInfo).length > 0) {
 					// 检查承兑信息是否有有效内容（不仅仅是空对象）
-					const hasValidContent = this.bankacceptanceInfo.billNo ||
-						this.bankacceptanceInfo.billAmount ||
-						this.bankacceptanceInfo.billDate ||
-						this.bankacceptanceInfo.dueDate;
+					const hasValidContent = this.bankacceptanceInfo.billNo || this.bankacceptanceInfo.billAmount || this.bankacceptanceInfo.billDate || this.bankacceptanceInfo.dueDate;
 
 					if (hasValidContent) {
 						console.log('BankType: 检测到已填写的承兑信息，启用错误保护模式');
@@ -704,7 +703,6 @@ export default {
 						// 使用深拷贝避免引用问题
 						const formData = _.cloneDeep(value);
 						Object.assign(this.form, formData);
-						this.$message.success('承兑信息加载成功');
 					});
 				}
 				// 只有当 billNo 存在且不是编辑模式时才调用 getBankAcceptanceDate
@@ -737,11 +735,7 @@ export default {
 	},
 	methods: {
 		// Vuex actions 映射
-		...mapActions('bankAcceptance', [
-			'setAccountTypeSelection',
-			'resetDualSelection',
-			'clearRoleSelection'
-		]),
+		...mapActions('bankAcceptance', ['setAccountTypeSelection', 'resetDualSelection', 'clearRoleSelection']),
 		listBankAccount,
 		listCompany,
 		// 设置已填写承兑信息状态
@@ -996,9 +990,7 @@ export default {
 					// 注释：这是一个特殊情况，后端会根据此标识自动填充相关的承兑类型和处理逻辑
 					if (this.waitForBothSelection && this.bankAcceptanceBothSelected) {
 						const accountTypes = this.bankAcceptanceDualSelectionState;
-						if (accountTypes &&
-							accountTypes.source === BankAcceptanceType.ACCEPTANCE &&
-							accountTypes.target === BankAcceptanceType.ACCEPTANCE) {
+						if (accountTypes && accountTypes.source === BankAcceptanceType.ACCEPTANCE && accountTypes.target === BankAcceptanceType.ACCEPTANCE) {
 							// 双承兑特殊情况：设置为收入类型，后端会自动处理承兑转账逻辑
 							this.form.billType = '收入';
 							console.log('双承兑场景：billType已设置为收入，后端将自动处理承兑转账逻辑');
@@ -1017,7 +1009,6 @@ export default {
 					}
 
 					this.form = excludeParams(this.form, this.$exclude);
-					// 保存到sessionStorage而不是localStorage
 					const storageKey = 'bankAcceptanceFilled';
 					sessionStorage.setItem(storageKey, JSON.stringify(this.form));
 					sessionStorage.setItem('bankAcceptanceFilledTime', new Date().getTime());
