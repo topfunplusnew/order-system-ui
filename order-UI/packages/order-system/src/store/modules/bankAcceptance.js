@@ -8,8 +8,8 @@ import { BankAcceptanceType } from '@/api/tool/enums';
 const state = {
 	// 双选择状态：记录支出方和收入方的账户类型选择
 	dualSelectionState: {
-		source: null,      // 支出方账户类型
-		target: null       // 收入方账户类型
+		source: null,
+		target: null
 	},
 	// 是否有任一方选择了承兑类型
 	hasAcceptanceSelection: false,
@@ -24,30 +24,18 @@ const mutations = {
 	 * @param {Object} payload - { role: 'source'|'target', accountType: string, formId: string }
 	 */
 	SET_ACCOUNT_TYPE_SELECTION(state, { role, accountType, formId }) {
+		console.log('SET_ACCOUNT_TYPE_SELECTION called with:', { role, accountType, formId });
 		// 边界条件检查
 		if (!['source', 'target'].includes(role)) {
-			console.error('Invalid role for account type selection:', role);
 			return;
 		}
-
 		// 设置激活的表单ID
 		state.activeFormId = formId;
-
 		// 更新对应角色的账户类型
 		state.dualSelectionState[role] = accountType;
-
 		// 重新计算是否有承兑选择
-		state.hasAcceptanceSelection =
-			state.dualSelectionState.source === BankAcceptanceType.ACCEPTANCE ||
-			state.dualSelectionState.target === BankAcceptanceType.ACCEPTANCE;
-
-		console.log('Vuex: 更新双选择状态', {
-			role,
-			accountType,
-			formId,
-			currentState: state.dualSelectionState,
-			hasAcceptanceSelection: state.hasAcceptanceSelection
-		});
+		state.hasAcceptanceSelection = state.dualSelectionState.source === BankAcceptanceType.ACCEPTANCE || state.dualSelectionState.target === BankAcceptanceType.ACCEPTANCE;
+		console.log(state);
 	},
 
 	/**
@@ -67,8 +55,6 @@ const mutations = {
 		};
 		state.hasAcceptanceSelection = false;
 		state.activeFormId = null;
-
-		console.log('Vuex: 重置双选择状态', { formId });
 	},
 
 	/**
@@ -84,11 +70,7 @@ const mutations = {
 		state.dualSelectionState[role] = null;
 
 		// 重新计算是否有承兑选择
-		state.hasAcceptanceSelection =
-			state.dualSelectionState.source === BankAcceptanceType.ACCEPTANCE ||
-			state.dualSelectionState.target === BankAcceptanceType.ACCEPTANCE;
-
-		console.log('Vuex: 清除角色选择', { role, formId, newState: state.dualSelectionState });
+		state.hasAcceptanceSelection = state.dualSelectionState.source === BankAcceptanceType.ACCEPTANCE || state.dualSelectionState.target === BankAcceptanceType.ACCEPTANCE;
 	}
 };
 

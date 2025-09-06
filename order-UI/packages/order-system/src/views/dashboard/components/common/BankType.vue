@@ -454,7 +454,6 @@ export default {
 				if (res.data) {
 					this.hasBankAcceptanceInfo = true;
 					this.bankacceptanceInfo = res.data;
-					console.log(this.bankacceptanceInfo);
 				}
 				this.flag = true;
 			});
@@ -497,7 +496,7 @@ export default {
 			}
 
 			if (this.waitForBothSelection) {
-				return this.bankAcceptanceShouldShowDrawer && (this.localSelectType === BankAcceptanceType.ACCEPTANCE || this.bankAcceptanceHasSelection);
+				return this.bankAcceptanceShouldShowDrawer && this.bankAcceptanceHasSelection;
 			} else {
 				return true;
 			}
@@ -686,7 +685,6 @@ export default {
 			}
 		},
 
-		// **双选择模式处理逻辑**
 		handleDualSelectionMode(value) {
 			// 更新 Vuex 状态
 			this.setAccountTypeSelection({
@@ -701,21 +699,16 @@ export default {
 					// 检查是否已有承兑信息
 					const json = sessionStorage.getItem(this.bankAcceptanceFilledKey);
 					if (json) {
-						try {
-							// 恢复已保存的承兑信息
-							this.bankacceptanceInfo = JSON.parse(json);
-							this.flag = true;
-							// 通知父组件已有承兑信息
-							this.$emit('updateBankAcceptance', _.cloneDeep(this.bankacceptanceInfo));
-						} catch (error) {
-							console.error('解析承兑信息失败:', error);
-						}
+						// 恢复已保存的承兑信息
+						this.bankacceptanceInfo = JSON.parse(json);
+						this.flag = true;
+						// 通知父组件已有承兑信息
+						this.$emit('updateBankAcceptance', _.cloneDeep(this.bankacceptanceInfo));
 					}
 				}
 			});
 		},
 
-		// **单选择模式处理逻辑**
 		handleSingleSelectionMode(value) {
 			// 单选择模式：选择承兑类型时的处理
 			if (BankAcceptanceType.ACCEPTANCE === value) {

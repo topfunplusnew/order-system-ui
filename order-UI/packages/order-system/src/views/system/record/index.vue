@@ -690,7 +690,7 @@ import { mixin_record_uploadFiles } from '../../dashboard/mixins/record/record_u
 import { mixin_payment_subject } from '../../dashboard/mixins/payment/payment_subject';
 import { CASH_TYPE } from './constrant';
 import { mixin_record_fill } from './recordFill';
-
+import { mapActions } from 'vuex';
 export default {
 	name: 'Record',
 	components: { BankType, CheckFiles, UploadFilesButton, SearchOption },
@@ -910,6 +910,8 @@ export default {
 		parseTime,
 		updateRecord,
 		getRecord,
+		// Vuex actions 映射
+		...mapActions('bankAcceptance', ['setAccountTypeSelection', 'resetDualSelection', 'clearRoleSelection']),
 		// 下拉菜单命令处理
 		handleCommand(command, row) {
 			switch (command) {
@@ -1616,6 +1618,15 @@ export default {
 					}
 					// 处理承兑信息
 					if (data.bankacceptanceId) {
+						// 设置己方账户类型和对方账户类型
+						this.setAccountTypeSelection({
+							role: 'source',
+							accountType: data.selfBankCardType
+						});
+						this.setAccountTypeSelection({
+							role: 'target',
+							accountType: data.otherBankCardType
+						});
 						this.$bus.$emit('changeFlag', data.bankacceptanceId);
 					}
 				}
