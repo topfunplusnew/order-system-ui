@@ -77,9 +77,6 @@ export default {
 			} else {
 				this.checkFileList = [];
 			}
-
-			console.log(this.checkFileList);
-			// 查看文件时不是上传模式
 			this.isUploading = false;
 			this.dialogVisible = true;
 		},
@@ -168,23 +165,23 @@ export default {
 <template>
 	<div>
 		<div>
-			<el-dropdown>
-				<span class="el-dropdown-link" style="color: orangered">
-					附件
-					<i class="el-icon-arrow-down el-icon--right"></i>
-				</span>
-				<el-dropdown-menu slot="dropdown">
-					<el-dropdown-item>
-						<el-button size="mini" type="text" v-if="isUpload" @click="uploadFile(attachmentList)">上传附件</el-button>
-					</el-dropdown-item>
-					<el-dropdown-item>
-						<div v-if="attachmentList && attachmentList.length > 0">
+			<span v-if="!attachmentList || attachmentList.length === 0" @click="uploadFile(attachmentList)">无附件</span>
+			<div v-else>
+				<el-dropdown>
+					<span class="el-dropdown-link" style="color: orangered">
+						附件
+						<i class="el-icon-arrow-down el-icon--right"></i>
+					</span>
+					<el-dropdown-menu slot="dropdown">
+						<el-dropdown-item>
+							<el-button size="mini" type="text" v-if="isUpload" @click="uploadFile(attachmentList)">上传附件</el-button>
+						</el-dropdown-item>
+						<el-dropdown-item>
 							<el-button size="mini" type="text" @click="checkFiles(attachmentList)">查看附件</el-button>
-						</div>
-						<div v-else>无附件</div>
-					</el-dropdown-item>
-				</el-dropdown-menu>
-			</el-dropdown>
+						</el-dropdown-item>
+					</el-dropdown-menu>
+				</el-dropdown>
+			</div>
 		</div>
 
 		<!--    文件列表-->

@@ -17,14 +17,14 @@ export var mixin_paymentindex_fill = {
 		// 自动填充我方信息
 		handleCommitBack(val) {
 			this.form.selfBankName = val.bankName;
-			this.form.selfAcountsName = val.acountsName;
+			this.form.selfAccountsName = val.acountsName;
 			this.form.selfBankNo = val.bankNo;
 			this.form.selfBankID = val.id;
 		},
 		// 选择我方银行卡
 		handleCommitBackChoose(val) {
 			this.chooseInfo.selfBankName = val.bankName;
-			this.chooseInfo.selfAcountsName = val.acountsName;
+			this.chooseInfo.selfAccountsName = val.acountsName;
 			this.chooseInfo.selfBankNo = val.bankNo;
 		},
 		// 填充对方公司信息
