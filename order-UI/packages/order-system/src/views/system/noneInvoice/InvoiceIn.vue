@@ -832,7 +832,6 @@ export default {
 						// 编辑时，从sessionStorage获取修改原因
 						const editReason = sessionStorage.getItem('editReason_invoiceIn');
 						if (!editReason || editReason.trim() === '') {
-							this.$message.error('修改原因丢失，请重新进入编辑');
 							return;
 						}
 						submitData.editReason = editReason;

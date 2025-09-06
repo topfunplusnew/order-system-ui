@@ -487,7 +487,6 @@
 							@updateBankAcceptance="handleSelfBankAcceptanceUpdate"
 							:bill-type="PayType.TRANSFOR"
 							:is-internal-transfer="cashType === CASH_TYPE.TRANSFER"
-							:external-bankacceptance-info="form.params.bankacceptance"
 							:form-id="`income-${form.id || 'new'}`"
 							:wait-for-both-selection="true"
 							:component-role="'source'"
@@ -531,8 +530,6 @@
 						<span>资金流入</span>
 					</div>
 				</el-divider>
-
-				<!-- 资金流入方支付类型 -->
 				<el-form-item label="资金流入方支付类型" prop="targetPaymentType" v-if="cashType === CASH_TYPE.TRANSFER">
 					<el-row>
 						<el-col :span="14">
@@ -540,7 +537,6 @@
 						</el-col>
 					</el-row>
 				</el-form-item>
-
 				<el-form-item label="目标账户" v-if="cashType === CASH_TYPE.TRANSFER">
 					<el-row>
 						<el-col :span="14">
@@ -576,7 +572,6 @@
 					</el-row>
 				</el-form-item>
 				<div v-if="cashType === CASH_TYPE.TRANSFER">
-					<!--          选择收入账户类型-->
 					<el-form-item label="收入账户类型">
 						<BankType
 							ref="otherSelectBankType"
@@ -584,13 +579,11 @@
 							@updateBankAcceptance="handleOtherBankAcceptanceUpdate"
 							:bill-type="PayType.TRANSFOR"
 							:is-internal-transfer="cashType === CASH_TYPE.TRANSFER"
-							:external-bankacceptance-info="form.params.bankacceptance"
 							:form-id="`expense-${form.id || 'new'}`"
 							:wait-for-both-selection="true"
 							:component-role="'target'"
 						/>
 					</el-form-item>
-					<!--        2.选择去-->
 					<el-form-item :label="target">
 						<el-row>
 							<el-col :span="14">
@@ -701,8 +694,6 @@ import { mixin_record_uploadFiles } from '../../dashboard/mixins/record/record_u
 import { mixin_payment_subject } from '../../dashboard/mixins/payment/payment_subject';
 import { CASH_TYPE } from './constrant';
 import { mixin_record_fill } from './recordFill';
-import BANK_ACCEPTANCE from '@/components/NeedToShow/BANK_ACCEPTANCE.vue';
-import { getBankAcceptance } from '../../../api/system/bankAcceptance';
 
 export default {
 	name: 'Record',
@@ -1220,7 +1211,6 @@ export default {
 			getRecord(row.id || this.ids)
 				.then(response => {
 					const recordData = response.data;
-
 					// 判断是否需要填写修改原因
 					if (recordData && recordData.shouldTrackEditReason === true) {
 						// 需要填写修改原因
@@ -1239,12 +1229,10 @@ export default {
 							.then(({ value }) => {
 								// 将修改原因存储到sessionStorage
 								sessionStorage.setItem('editReason_record', value);
-
 								// 根据类型赋值
 								this.reset();
-								const id = row.id || this.ids;
 								// 添加现金记账记录
-								this.handleAddRecord(id);
+								this.handleAddRecord(recordData);
 							})
 							.catch(() => {
 								this.$message({
@@ -1255,111 +1243,14 @@ export default {
 					} else {
 						// 不需要填写修改原因，直接进行修改操作
 						this.reset();
-						const id = row.id || this.ids;
 						// 添加现金记账记录
-						this.handleAddRecord(id);
+						this.handleAddRecord(recordData);
 					}
 				})
 				.catch(error => {
 					console.error('获取记录详情失败:', error);
 					this.$message.error('获取记录详情失败');
 				});
-		},
-		/**
-		 * 添加现金记账记录
-		 * @param id 冲抵记录id
-		 */
-		handleAddRecord(id) {
-			getRecord(id).then(response => {
-				const data = response.data;
-				this.form = data;
-				// 确保 params 对象存在
-				if (!this.form.params) {
-					this.form.params = {};
-				}
-				// 确保 attachmentIds 是数组
-				if (!Array.isArray(this.form.params.attachmentIds)) {
-					this.form.params.attachmentIds = [];
-				}
-				// 处理附件列表
-				if (this.form.attachmentList && Array.isArray(this.form.attachmentList)) {
-					this.form.params.attachments = this.form.attachmentList;
-					this.form.params.attachmentIds = this.form.attachmentList.map(item => item.id);
-				} else {
-					this.form.params.attachments = [];
-				}
-				this.cashType = data.referenceTableName;
-
-				// 根据冲抵类型处理支付类型
-				if (this.cashType === CASH_TYPE.CASH_RECORD) {
-					// 冲抵货款：将字符串转换为数组（用于级联选择器）
-					if (this.form.sourcePaymentType && typeof this.form.sourcePaymentType === 'string') {
-						this.form.sourcePaymentType = this.form.sourcePaymentType.split('-');
-					}
-					if (this.form.targetPaymentType && typeof this.form.targetPaymentType === 'string') {
-						this.form.targetPaymentType = this.form.targetPaymentType.split('-');
-					}
-				} else if (this.cashType === CASH_TYPE.TRANSFER) {
-					// 内部转账：保持字符串格式，不进行转换
-					// 支付类型已经是固定的"内部往来支出"和"内部往来收入"
-				}
-
-				this.$nextTick(() => {
-					// 公共字段填充逻辑
-					this.sourceName = data.sourceCompanyName;
-					this.targetName = data.targetCompanyName;
-					this.form.sourceId = data.sourceId;
-					this.form.targetId = data.targetId;
-					this.form.referenceTableName = data.referenceTableName;
-					this.form.referenceTableId = data.referenceTableId;
-					this.form.amount = data.amount;
-					this.form.transactionTime = data.transactionTime;
-					this.form.remarks = data.remarks;
-
-					// 根据冲抵类型填充特定字段
-					if (this.cashType === CASH_TYPE.CASH_RECORD) {
-						// 如果是冲抵货款
-						this.form.targetCompanyType = data.targetCompanyType;
-						this.form.sourceCompanyType = data.sourceCompanyType;
-					} else {
-						// 如果是内部转账
-						this.form.sourceCompanyType = PUBLIC_DICT_TYPE.SELF_COMPANY;
-						this.form.targetCompanyType = PUBLIC_DICT_TYPE.SELF_COMPANY;
-						// 填充转账账户和目标账户
-						this.form.sourceBankNo = data.sourceBankNo;
-						this.form.targetBankNo = data.targetBankNo;
-						// 填充己方和对方银行卡类型
-						this.$refs.selfSelectBankType.localSelectType = data.selfBankCardType;
-						this.$refs.otherSelectBankType.localSelectType = data.otherBankCardType;
-
-						// 同步银行账户类型到form对象
-						this.form.selfBankCardType = data.selfBankCardType;
-						this.form.otherBankCardType = data.otherBankCardType;
-
-						// 处理承兑信息
-						if (data.bankacceptanceId) {
-							getBankAcceptance(data.bankacceptanceId).then(result => {
-								if (!result.data) {
-									this.$message.error('获取承兑票据信息失败');
-									return;
-								}
-								this.$nextTick(() => {
-									this.form.params = this.form.params || {};
-									this.form.params.bankacceptance = result.data;
-								});
-							});
-							this.$bus.$emit('changeFlag', data.bankacceptanceId);
-						} else {
-							// 确保无承兑信息时清空相关字段
-							this.form.params = this.form.params || {};
-							this.form.params.bankacceptance = null;
-						}
-					}
-				});
-
-				this.open = true;
-				this.title = '修改冲抵款';
-			});
 		},
 		/** 提交按钮 */
 		submitForm() {
@@ -1617,13 +1508,6 @@ export default {
 			// 清除特定实例的状态
 			localStorage.removeItem(`bankAcceptanceFilled_income-${this.form.id || 'new'}`);
 			localStorage.removeItem(`bankAcceptanceFilled_expense-${this.form.id || 'new'}`);
-			// 清除可能存在的其他相关状态
-			Object.keys(localStorage).forEach(key => {
-				if (key.startsWith('bankAcceptanceFilled_') || key.includes('BankAcceptance')) {
-					localStorage.removeItem(key);
-				}
-			});
-
 			// 同时清除sessionStorage中的承兑信息
 			sessionStorage.removeItem('bankAcceptanceFilled');
 			sessionStorage.removeItem('bankAcceptanceFilledTime');
@@ -1631,12 +1515,6 @@ export default {
 			// 清除特定实例的状态
 			sessionStorage.removeItem(`bankAcceptanceFilled_income-${this.form.id || 'new'}`);
 			sessionStorage.removeItem(`bankAcceptanceFilled_expense-${this.form.id || 'new'}`);
-			// 清除可能存在的其他相关状态
-			Object.keys(sessionStorage).forEach(key => {
-				if (key.startsWith('bankAcceptanceFilled_') || key.includes('BankAcceptance')) {
-					sessionStorage.removeItem(key);
-				}
-			});
 		},
 
 		// 确保对话框关闭时也清理状态
@@ -1703,6 +1581,75 @@ export default {
 
 			// **会话存储清理：防止跨弹窗状态污染**
 			sessionStorage.removeItem('bankAcceptanceFilled');
+		},
+		/**
+		 * 添加现金记账记录
+		 * @param data 冲抵记录数据
+		 */
+		handleAddRecord(data) {
+			// 确保 params 对象存在
+			if (!this.form.params) {
+				this.form.params = {};
+			}
+			// 确保 attachmentIds 是数组
+			if (!Array.isArray(this.form.params.attachmentIds)) {
+				this.form.params.attachmentIds = [];
+			}
+			// 处理附件列表
+			if (this.form.attachmentList && Array.isArray(this.form.attachmentList)) {
+				this.form.params.attachmentIds = this.form.attachmentList.map(item => item.id);
+			}
+			this.cashType = data.referenceTableName;
+			// 根据冲抵类型处理支付类型
+			if (this.cashType === CASH_TYPE.CASH_RECORD) {
+				// 冲抵货款：将字符串转换为数组（用于级联选择器）
+				if (this.form.sourcePaymentType && typeof this.form.sourcePaymentType === 'string') {
+					this.form.sourcePaymentType = this.form.sourcePaymentType.split('-');
+				}
+				if (this.form.targetPaymentType && typeof this.form.targetPaymentType === 'string') {
+					this.form.targetPaymentType = this.form.targetPaymentType.split('-');
+				}
+			}
+			this.$nextTick(() => {
+				// 公共字段填充逻辑
+				this.sourceName = data.sourceCompanyName;
+				this.targetName = data.targetCompanyName;
+				this.form.sourceId = data.sourceId;
+				this.form.targetId = data.targetId;
+				this.form.referenceTableName = data.referenceTableName;
+				this.form.referenceTableId = data.referenceTableId;
+				this.form.amount = data.amount;
+				this.form.transactionTime = data.transactionTime;
+				this.form.remarks = data.remarks;
+				if (this.cashType === CASH_TYPE.CASH_RECORD) {
+					// 如果是冲抵货款
+					this.form.targetCompanyType = data.targetCompanyType;
+					this.form.sourceCompanyType = data.sourceCompanyType;
+				} else {
+					// 如果是内部转账
+					this.form.sourceCompanyType = PUBLIC_DICT_TYPE.SELF_COMPANY;
+					this.form.targetCompanyType = PUBLIC_DICT_TYPE.SELF_COMPANY;
+					// 填充转账账户和目标账户
+					this.form.sourceBankNo = data.sourceBankNo;
+					this.form.targetBankNo = data.targetBankNo;
+					// 填充己方和对方银行卡类型
+					this.$refs.selfSelectBankType.localSelectType = data.selfBankCardType;
+					this.$refs.otherSelectBankType.localSelectType = data.otherBankCardType;
+					// 同步银行账户类型到form对象
+					this.form.selfBankCardType = data.selfBankCardType;
+					this.form.otherBankCardType = data.otherBankCardType;
+					if (!data.bankacceptanceId) {
+						this.form.params = this.form.params || {};
+						this.form.params.bankacceptance = null;
+					}
+					// 处理承兑信息
+					if (data.bankacceptanceId) {
+						this.$bus.$emit('changeFlag', data.bankacceptanceId);
+					}
+				}
+			});
+			this.open = true;
+			this.title = '修改冲抵款';
 		}
 	}
 };

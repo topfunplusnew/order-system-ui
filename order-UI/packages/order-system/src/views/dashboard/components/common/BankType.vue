@@ -9,11 +9,10 @@
 		</div>
 
 		<div class="button-container">
-			<!-- 修改按钮：当已填写承兑信息时显示 -->
-			<el-button v-if="showModifyButton" type="primary" size="small" @click="handleReopenDrawer">修改承兑信息</el-button>
-
-			<!-- 填写承兑信息按钮：当选择承兑类型但未填写信息时显示 -->
-			<el-button v-if="showFillButton" type="success" size="small" @click="handleFillAcceptance">填写承兑信息</el-button>
+			<!-- 承兑信息按钮：根据是否已填写信息显示不同状态 -->
+			<el-button v-if="showAcceptanceButton" size="small" @click="handleAcceptanceInfo">
+				{{ acceptanceButtonText() }}
+			</el-button>
 		</div>
 		<el-drawer ref="drawer" title="承兑信息填写" :visible.sync="drawer" direction="rtl" :before-close="handleClose" :append-to-body="true" size="55%">
 			<!-- 内嵌的承兑表单 -->
@@ -25,7 +24,7 @@
 								<el-form-item label="票据号码" prop="billNo">
 									<el-input v-model="form.billNo" placeholder="请输入票据号码" @blur="getBankAcceptanceDate" />
 								</el-form-item>
-								<el-form-item :label="`${getEndorserTypeLabel}事由`" prop="reason">
+								<el-form-item :label="`${getEndorserTypeLabel()}事由`" prop="reason">
 									<template v-if="isInternalTransfer">
 										<!-- 内部转账场景下的选项 -->
 										<el-radio v-model="form.reason" label="内部转账">内部转账</el-radio>
@@ -44,7 +43,7 @@
 										</template>
 									</template>
 								</el-form-item>
-								<el-form-item :label="`${getEndorserPersonTypeLabel}`" prop="origin">
+								<el-form-item :label="`${getEndorserPersonTypeLabel()}`" prop="origin">
 									<template v-if="isInternalTransfer">
 										<!-- 内部转账场景下不可更改背书人类型 -->
 										<el-radio v-model="type" label="己方公司" disabled>己方公司</el-radio>
@@ -54,10 +53,10 @@
 										<el-radio v-model="type" label="供应商">供应商</el-radio>
 									</template>
 								</el-form-item>
-								<el-form-item :label="`${getEndorserPersonLabel}`" prop="endorserName">
+								<el-form-item :label="`${getEndorserPersonLabel()}`" prop="endorserName">
 									<el-row>
 										<el-col :span="20">
-											<el-input :disabled="isInternalTransfer || !isInternalTransfer" :placeholder="`请输入${getEndorserPersonLabel}`" v-model="form.endorserName" />
+											<el-input :disabled="isInternalTransfer || !isInternalTransfer" :placeholder="`请输入${getEndorserPersonLabel()}`" v-model="form.endorserName" />
 										</el-col>
 										<el-col :span="4">
 											<!--    如果是内部转账,那么就选择的是己方公司-->
@@ -123,13 +122,13 @@
 										</el-col>
 									</el-row>
 								</el-form-item>
-								<el-form-item :label="`${getAmountDirectionLabel}票据金额`" prop="billAmount">
+								<el-form-item :label="`${getAmountDirectionLabel()}票据金额`" prop="billAmount">
 									<el-input v-model="form.billAmount" placeholder="请输入票据金额" />
 								</el-form-item>
-								<el-form-item :label="`${getAmountDirectionLabel}贴息点数`" prop="inDiscountPoints">
+								<el-form-item :label="`${getAmountDirectionLabel()}贴息点数`" prop="inDiscountPoints">
 									<el-input v-model="form.inDiscountPoints" placeholder="请输入贴息点数" />
 								</el-form-item>
-								<el-form-item :label="`${getAmountDirectionLabel}贴息金额`" prop="inDiscountAmount">
+								<el-form-item :label="`${getAmountDirectionLabel()}贴息金额`" prop="inDiscountAmount">
 									<el-input disabled v-model="form.inDiscountAmount" placeholder="请输入贴息金额" />
 								</el-form-item>
 							</el-col>
@@ -222,188 +221,6 @@ export default {
 		},
 		BankAcceptanceType() {
 			return BankAcceptanceType;
-		},
-
-		// **核心业务逻辑重构**
-		// 控制填写承兑信息按钮的显示
-		showFillButton() {
-			if (this.baned || this.flag) {
-				return false;
-			}
-
-			// **边界保护：确保组件状态同步**
-			if (!this.localSelectType) {
-				// 如果没有选择类型，无论什么模式都不显示按钮
-				return false;
-			}
-
-			if (this.waitForBothSelection) {
-				// 双选择模式：需要Vuex状态管理
-				// 额外检查：避免Vuex状态与本地状态不同步
-				return this.bankAcceptanceShouldShowDrawer && (this.localSelectType === BankAcceptanceType.ACCEPTANCE || this.bankAcceptanceHasSelection);
-			} else {
-				// 单选择模式：直接检查当前选择
-				return this.localSelectType === BankAcceptanceType.ACCEPTANCE;
-			}
-		},
-
-		// 控制修改按钮的显示
-		showModifyButton() {
-			// 边界条件检查
-			if (!this.flag || !this.localSelectType) {
-				return false;
-			}
-
-			if (this.waitForBothSelection) {
-				// 双选择模式：需要有承兑选择且已填写信息
-				return this.bankAcceptanceHasSelection;
-			} else {
-				// 单选择模式：当前选择承兑类型且已填写信息
-				return this.localSelectType === BankAcceptanceType.ACCEPTANCE;
-			}
-		},
-		// 获取事由类型标签（背书事由 或 收票事由）
-		getEndorserTypeLabel() {
-			if (this.isInternalTransfer && this.waitForBothSelection && this.componentRole) {
-				// 内部转账场景：根据新的业务规则判断
-				if (this.isEndorserScenario) {
-					// 支出方银行活期存款 -> 收入方承兑：背书事由
-					return '背书';
-				} else {
-					// 其他所有情况：收票事由
-					return '收票';
-				}
-			}
-			// 原有逻辑
-			return this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT ? '背书' : '收票';
-		},
-
-		// 获取动作类型（payment 或 receive）
-		getEndorserActionType() {
-			if (this.isInternalTransfer && this.waitForBothSelection && this.componentRole) {
-				// 内部转账场景：根据新的业务规则判断
-				if (this.isEndorserScenario) {
-					// 支出方银行活期存款 -> 收入方承兑：收款动作
-					return 'receive';
-				} else {
-					// 其他所有情况：付款动作
-					return 'payment';
-				}
-			}
-			// 原有逻辑
-			return this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT ? 'payment' : 'receive';
-		},
-		// **核心业务逻辑抽象：判断是否为背书人场景**
-		// 时间复杂度：O(1) - 常数时间访问
-		// 空间复杂度：O(1) - 无额外空间消耗
-		isEndorserScenario() {
-			// **边界条件1：非内部转账双选择场景**
-			if (!this.isInternalTransfer || !this.waitForBothSelection || !this.componentRole) {
-				// 使用原有逻辑作为fallback
-				return this.billType !== BankAcceptanceType.PAY_TYPE.PAYMENT;
-			}
-
-			// **边界条件2：Vuex状态未初始化或无效**
-			const accountTypes = this.bankAcceptanceDualSelectionState;
-			if (!accountTypes || typeof accountTypes !== 'object') {
-				console.warn('BankType: Vuex状态未初始化，使用默认逻辑');
-				return false;
-			}
-
-			// **边界条件3：双方账户类型未完全选择**
-			if (!accountTypes.source || !accountTypes.target) {
-				// 未完全选择时，不展示任何背书相关信息，避免误导用户
-				return false;
-			}
-
-			// **边界条件4：账户类型值有效性检查**
-			const validAccountTypes = [BankAcceptanceType.BANK_CASH, BankAcceptanceType.ACCEPTANCE];
-			if (!validAccountTypes.includes(accountTypes.source) || !validAccountTypes.includes(accountTypes.target)) {
-				console.error('BankType: 无效的账户类型', accountTypes);
-				return false;
-			}
-
-			// **核心业务逻辑：只有支出方选择银行活期存款，收入方选择承兑时，才是背书人场景**
-			const isSourceBankCashAndTargetAcceptance = accountTypes.source === BankAcceptanceType.BANK_CASH && accountTypes.target === BankAcceptanceType.ACCEPTANCE;
-
-			// **调试信息输出（开发环境）**
-			if (process.env.NODE_ENV === 'development') {
-				console.log('BankType: 背书人场景判断', {
-					accountTypes,
-					isEndorserScenario: isSourceBankCashAndTargetAcceptance,
-					componentRole: this.componentRole
-				});
-			}
-
-			return isSourceBankCashAndTargetAcceptance;
-		},
-
-		// 获取背书人类型标签（被背书人类型 或 背书人类型）
-		getEndorserPersonTypeLabel() {
-			if (this.isEndorserScenario) {
-				// 背书人场景
-				return '背书人类型';
-			} else {
-				// 被背书人场景（包含所有其他情况）
-				return '被背书人类型';
-			}
-		},
-
-		// 获取背书人标签（被背书人 或 背书人）
-		getEndorserPersonLabel() {
-			if (this.isEndorserScenario) {
-				// 背书人场景
-				return '背书人';
-			} else {
-				// 被背书人场景（包含所有其他情况）
-				return '被背书人';
-			}
-		},
-		// 获取金额方向标签（支出 或 收入）
-		getAmountDirectionLabel() {
-			if (this.isInternalTransfer && this.waitForBothSelection && this.componentRole) {
-				// 内部转账场景：根据新的业务规则判断
-				if (this.isEndorserScenario) {
-					// 支出方银行活期存款 -> 收入方承兑：收入
-					return '收入';
-				} else {
-					// 其他所有情况：支出
-					return '支出';
-				}
-			}
-			// 原有逻辑
-			return this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT ? '支出' : '收入';
-		},
-		// 获取我方承兑账户的标识（用于确定应该显示哪个账户作为承兑账户）
-		getMyAcceptanceAccount() {
-			if (this.isInternalTransfer && this.waitForBothSelection && this.componentRole) {
-				const accountTypes = this.bankAcceptanceDualSelectionState;
-				if (accountTypes) {
-					const currentType = this.localSelectType;
-					const otherRole = this.componentRole === 'source' ? 'target' : 'source';
-					const otherType = accountTypes[otherRole];
-
-					// 根据业务逻辑判断我方承兑账户是哪个
-					if (currentType === BankAcceptanceType.BANK_CASH && otherType === BankAcceptanceType.ACCEPTANCE) {
-						// A账户现金到A账户承兑 -> 我方承兑账户是A账户
-						return 'current'; // 当前账户
-					} else if (currentType === BankAcceptanceType.ACCEPTANCE && otherType === BankAcceptanceType.BANK_CASH) {
-						// B账户承兑到B账户现金 -> 我方承兑账户是B账户
-						return 'current'; // 当前账户
-					} else if (currentType === BankAcceptanceType.ACCEPTANCE && otherType === BankAcceptanceType.ACCEPTANCE) {
-						// C账户承兑到D账户承兑 -> 根据角色确定
-						if (this.componentRole === 'source') {
-							// C付款，我方承兑账户是C
-							return 'current';
-						} else {
-							// D收款，我方承兑账户是D
-							return 'current';
-						}
-					}
-				}
-			}
-			// 默认返回当前账户
-			return 'current';
 		}
 	},
 	// 对于不需要选择的场景，设置optionBaned = true  banned= true
@@ -437,11 +254,6 @@ export default {
 			type: String,
 			default: () => `bank-type-${Date.now()}`
 		},
-		// 接收父组件传递的承兑信息
-		externalBankacceptanceInfo: {
-			type: Object,
-			default: () => ({})
-		},
 		// 是否需要等待业务全部选择（两个账户类型都选择承兑时才打开弹窗）
 		waitForBothSelection: {
 			type: Boolean,
@@ -466,6 +278,7 @@ export default {
 			drawer: false,
 			flag: false,
 			bankacceptanceInfo: {},
+			hasBankAcceptanceInfo: false,
 			// 统一存储键，用于检查是否已填写过承兑信息
 			bankAcceptanceFilledKey: 'bankAcceptanceFilled',
 			// 承兑表单数据
@@ -616,105 +429,40 @@ export default {
 	},
 	mounted() {
 		this.clearAllAcceptanceStatus();
-
-		// 初始化localSelectType的值
 		this.localSelectType = this.selectType;
-
-		// 根据内部转账状态设置默认的背书人类型
 		if (this.isInternalTransfer) {
 			this.type = '己方公司';
 		}
-
-		// 传递过来的 只可能是数字 或者是false 如果是数字 就要拿取对应的承兑信息
-		// 增加状态保护机制：在启用错误保护模式时，避免意外清空用户已填写的承兑信息
 		this.$bus.$on('changeFlag', value => {
 			if (this.baned) {
 				this.flag = false;
 				return;
 			}
 			if (!value) {
-				// **关键改进：错误保护机制**
-				// 当 protectOnError 为 true 且当前有承兑信息时，询问用户是否清空
 				if (this.protectOnError && this.bankacceptanceInfo && Object.keys(this.bankacceptanceInfo).length > 0) {
-					// 检查承兑信息是否有有效内容（不仅仅是空对象）
 					const hasValidContent = this.bankacceptanceInfo.billNo || this.bankacceptanceInfo.billAmount || this.bankacceptanceInfo.billDate || this.bankacceptanceInfo.dueDate;
-
 					if (hasValidContent) {
-						console.log('BankType: 检测到已填写的承兑信息，启用错误保护模式');
-						// 在错误保护模式下，给用户一个友好的提示
-						this.$message({
-							message: '检测到您已填写的票据信息，已为您保留以防数据丢失',
-							type: 'info',
-							duration: 3000
-						});
-						// 在错误保护模式下，不自动清空承兑信息
-						// 这样可以避免因为网络错误或后端错误导致用户数据丢失
 						return;
 					}
 				}
-
 				this.flag = value;
-				// 只有在非保护模式下或没有有效承兑信息时才清除状态
 				this.clearAcceptanceFillStatus();
 				return;
 			}
 			// 获取承兑信息
 			getBankAcceptance(value).then(res => {
-				this.bankacceptanceInfo = res.data;
+				if (res.data) {
+					this.hasBankAcceptanceInfo = true;
+					this.bankacceptanceInfo = res.data;
+					console.log(this.bankacceptanceInfo);
+				}
 				this.flag = true;
 			});
 		});
-
-		// 重置承兑表单
-		this.resetAcceptanceForm();
 	},
 	watch: {
 		selectType(newVal) {
 			this.localSelectType = newVal;
-		},
-		// 监听父组件传递的承兑信息变化
-		externalBankacceptanceInfo: {
-			handler(newVal) {
-				// 如果有承兑信息且不是空对象，应该显示修改按钮
-				if (newVal && Object.keys(newVal).length > 0) {
-					// 避免无限循环：只有当内容真正不同时才更新
-					if (JSON.stringify(this.bankacceptanceInfo) !== JSON.stringify(newVal)) {
-						this.bankacceptanceInfo = { ...newVal };
-						this.flag = true;
-					}
-				} else {
-					// 如果承兑信息为空或null，隐藏修改按钮
-					this.flag = false;
-					this.bankacceptanceInfo = null;
-				}
-			},
-			deep: true,
-			immediate: true
-		},
-		// 监听承兑信息变化并填充表单
-		bankacceptanceInfo: {
-			handler(value) {
-				if (!value) {
-					return;
-				}
-				// 填充承兑信息数据（不再依赖id字段）
-				if (value && typeof value === 'object') {
-					this.$nextTick(() => {
-						// 使用深拷贝避免引用问题
-						const formData = _.cloneDeep(value);
-						Object.assign(this.form, formData);
-					});
-				}
-				// 只有当 billNo 存在且不是编辑模式时才调用 getBankAcceptanceDate
-				if (value.billNo && !value.id) {
-					this.getBankAcceptanceDate(value.billNo);
-				}
-				// 只在非编辑模式下触发 assign 事件，避免无限循环
-				if (!value.id) {
-					this.handleAssign(value);
-				}
-			},
-			deep: true
 		},
 		isInternalTransfer: {
 			handler(val) {
@@ -725,7 +473,6 @@ export default {
 			},
 			immediate: true
 		},
-		// 贴息金额的自动计算
 		form: {
 			handler() {
 				this.form.inDiscountAmount = Number(this.form.billAmount * this.form.inDiscountPoints).toFixed(2);
@@ -738,9 +485,155 @@ export default {
 		...mapActions('bankAcceptance', ['setAccountTypeSelection', 'resetDualSelection', 'clearRoleSelection']),
 		listBankAccount,
 		listCompany,
+		// 控制承兑信息按钮的显示
+		showAcceptanceButton() {
+			if (this.baned || !this.localSelectType) {
+				return false;
+			}
+
+			// 如果不是承兑类型，不显示按钮
+			if (this.localSelectType !== BankAcceptanceType.ACCEPTANCE) {
+				return false;
+			}
+
+			if (this.waitForBothSelection) {
+				return this.bankAcceptanceShouldShowDrawer && (this.localSelectType === BankAcceptanceType.ACCEPTANCE || this.bankAcceptanceHasSelection);
+			} else {
+				return true;
+			}
+		},
+		// 承兑信息按钮文本
+		acceptanceButtonText() {
+			return this.flag && this.hasBankAcceptanceInfo ? '修改承兑信息' : '填写承兑信息';
+		},
+		// 统一的承兑信息处理方法
+		handleAcceptanceInfo() {
+			if (this.baned) {
+				return;
+			}
+			this.resetAcceptanceForm();
+			if (this.hasBankAcceptanceInfo) {
+				this.form = _.cloneDeep(this.bankacceptanceInfo);
+			}
+			this.drawer = true;
+		},
+		// 获取事由类型标签（背书事由 或 收票事由）
+		getEndorserTypeLabel() {
+			if (this.isInternalTransfer && this.waitForBothSelection && this.componentRole) {
+				// 内部转账场景：根据新的业务规则判断
+				if (this.isEndorserScenario) {
+					// 支出方银行活期存款 -> 收入方承兑：背书事由
+					return '背书';
+				} else {
+					// 其他所有情况：收票事由
+					return '收票';
+				}
+			}
+			// 原有逻辑
+			return this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT ? '背书' : '收票';
+		},
+
+		// 获取动作类型（payment 或 receive）
+		getEndorserActionType() {
+			if (this.isInternalTransfer && this.waitForBothSelection && this.componentRole) {
+				// 内部转账场景：根据新的业务规则判断
+				if (this.isEndorserScenario) {
+					// 支出方银行活期存款 -> 收入方承兑：收款动作
+					return 'receive';
+				} else {
+					// 其他所有情况：付款动作
+					return 'payment';
+				}
+			}
+			// 原有逻辑
+			return this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT ? 'payment' : 'receive';
+		},
+		isEndorserScenario() {
+			if (!this.isInternalTransfer || !this.waitForBothSelection || !this.componentRole) {
+				return this.billType !== BankAcceptanceType.PAY_TYPE.PAYMENT;
+			}
+			const accountTypes = this.bankAcceptanceDualSelectionState;
+			if (!accountTypes || typeof accountTypes !== 'object') {
+				return false;
+			}
+			if (!accountTypes.source || !accountTypes.target) {
+				return false;
+			}
+			const validAccountTypes = [BankAcceptanceType.BANK_CASH, BankAcceptanceType.ACCEPTANCE];
+			if (!validAccountTypes.includes(accountTypes.source) || !validAccountTypes.includes(accountTypes.target)) {
+				return false;
+			}
+			const isSourceBankCashAndTargetAcceptance = accountTypes.source === BankAcceptanceType.BANK_CASH && accountTypes.target === BankAcceptanceType.ACCEPTANCE;
+			return isSourceBankCashAndTargetAcceptance;
+		},
+
+		// 获取背书人类型标签（被背书人类型 或 背书人类型）
+		getEndorserPersonTypeLabel() {
+			if (this.isEndorserScenario) {
+				return '背书人类型';
+			} else {
+				return '被背书人类型';
+			}
+		},
+
+		// 获取背书人标签（被背书人 或 背书人）
+		getEndorserPersonLabel() {
+			if (this.isEndorserScenario) {
+				// 背书人场景
+				return '背书人';
+			} else {
+				// 被背书人场景（包含所有其他情况）
+				return '被背书人';
+			}
+		},
+		// 获取金额方向标签（支出 或 收入）
+		getAmountDirectionLabel() {
+			if (this.isInternalTransfer && this.waitForBothSelection && this.componentRole) {
+				// 内部转账场景：根据新的业务规则判断
+				if (this.isEndorserScenario) {
+					// 支出方银行活期存款 -> 收入方承兑：收入
+					return '收入';
+				} else {
+					// 其他所有情况：支出
+					return '支出';
+				}
+			}
+			// 原有逻辑
+			return this.billType === BankAcceptanceType.PAY_TYPE.PAYMENT ? '支出' : '收入';
+		},
+		// 获取我方承兑账户的标识（用于确定应该显示哪个账户作为承兑账户）
+		getMyAcceptanceAccount() {
+			if (this.isInternalTransfer && this.waitForBothSelection && this.componentRole) {
+				const accountTypes = this.bankAcceptanceDualSelectionState;
+				if (accountTypes) {
+					const currentType = this.localSelectType;
+					const otherRole = this.componentRole === 'source' ? 'target' : 'source';
+					const otherType = accountTypes[otherRole];
+
+					// 根据业务逻辑判断我方承兑账户是哪个
+					if (currentType === BankAcceptanceType.BANK_CASH && otherType === BankAcceptanceType.ACCEPTANCE) {
+						// A账户现金到A账户承兑 -> 我方承兑账户是A账户
+						return 'current'; // 当前账户
+					} else if (currentType === BankAcceptanceType.ACCEPTANCE && otherType === BankAcceptanceType.BANK_CASH) {
+						// B账户承兑到B账户现金 -> 我方承兑账户是B账户
+						return 'current'; // 当前账户
+					} else if (currentType === BankAcceptanceType.ACCEPTANCE && otherType === BankAcceptanceType.ACCEPTANCE) {
+						// C账户承兑到D账户承兑 -> 根据角色确定
+						if (this.componentRole === 'source') {
+							// C付款，我方承兑账户是C
+							return 'current';
+						} else {
+							// D收款，我方承兑账户是D
+							return 'current';
+						}
+					}
+				}
+			}
+			// 默认返回当前账户
+			return 'current';
+		},
 		// 设置已填写承兑信息状态
 		setAcceptanceFilled() {
-			// 同时保存承兑信息到sessionStorage
 			sessionStorage.setItem(this.bankAcceptanceFilledKey, JSON.stringify(this.bankacceptanceInfo));
 		},
 		// 清除承兑信息填写状态
@@ -755,17 +648,13 @@ export default {
 				this.resetDualSelection(this.formId);
 			}
 		},
-
-		// **新增：手动强制清空承兑信息的方法**
 		// 用于在确实需要清空承兑信息时调用，绕过错误保护机制
 		forceClearAcceptanceInfo() {
 			this.flag = false;
 			this.bankacceptanceInfo = {};
 			this.clearAcceptanceFillStatus();
 			this.resetAcceptanceForm();
-			console.log('BankType: 手动强制清空承兑信息');
 		},
-
 		// **新增：完整的组件状态重置方法**
 		resetComponentState() {
 			// 重置本地状态
@@ -773,13 +662,8 @@ export default {
 			this.flag = false;
 			this.bankacceptanceInfo = {};
 			this.drawer = false;
-
-			// 重置表单数据
 			this.resetAcceptanceForm();
-
-			// 清除会话存储
 			this.clearAcceptanceFillStatus();
-
 			// 如果是双选择模式，清除对应的角色状态
 			if (this.waitForBothSelection && this.componentRole) {
 				this.clearRoleSelection({
@@ -787,58 +671,17 @@ export default {
 					formId: this.formId
 				});
 			}
-
-			console.log('BankType组件状态已完全重置', {
-				componentRole: this.componentRole,
-				formId: this.formId
-			});
 		},
-		// 修改承兑信息的处理方法
-		handleReopenDrawer() {
-			// 在打开抽屉前，确保承兑信息已经加载
-			const json = sessionStorage.getItem(this.bankAcceptanceFilledKey);
-			if (json) {
-				try {
-					this.bankacceptanceInfo = JSON.parse(json);
-					console.log('修改模式加载承兑信息:', this.bankacceptanceInfo);
-				} catch (error) {
-					console.error('解析承兑信息失败:', error);
-				}
-			}
-			// 直接打开抽屉进行修改
-			this.drawer = true;
-		},
-		// 处理填写承兑信息按钮点击
-		handleFillAcceptance() {
-			if (this.baned) {
-				return;
-			}
-
-			// 重置表单为初始状态
-			this.resetAcceptanceForm();
-
-			// 直接打开抽屉进行填写
-			this.drawer = true;
-
-			console.log('开始填写承兑信息');
-		},
-		// **核心方法重构：处理账户类型选择变化**
 		handleEmitType(value) {
-			// 重要：只有当不是承兑类型时才清空承兑的填写状态
 			if (value !== BankAcceptanceType.ACCEPTANCE) {
 				this.clearAcceptanceFillStatus();
 			}
-
 			// 通知父组件更新
 			this.$emit('updateBankAcceptance', null);
 			this.$emit('updateSelectedType', value);
-
-			// **关键业务逻辑分支**
 			if (this.waitForBothSelection && this.componentRole) {
-				// 双选择模式：使用 Vuex 管理状态
 				this.handleDualSelectionMode(value);
 			} else {
-				// 单选择模式：传统逻辑
 				this.handleSingleSelectionMode(value);
 			}
 		},
@@ -852,12 +695,6 @@ export default {
 				formId: this.formId
 			});
 
-			console.log('双选择模式：更新角色选择', {
-				role: this.componentRole,
-				accountType: value,
-				vuexState: this.bankAcceptanceDualSelectionState
-			});
-
 			// 检查是否应该自动打开抽屉（基于 Vuex 计算属性）
 			this.$nextTick(() => {
 				if (this.bankAcceptanceShouldShowDrawer && !this.baned) {
@@ -868,15 +705,12 @@ export default {
 							// 恢复已保存的承兑信息
 							this.bankacceptanceInfo = JSON.parse(json);
 							this.flag = true;
-							console.log('双选择模式：恢复承兑信息', this.bankacceptanceInfo);
 							// 通知父组件已有承兑信息
 							this.$emit('updateBankAcceptance', _.cloneDeep(this.bankacceptanceInfo));
 						} catch (error) {
 							console.error('解析承兑信息失败:', error);
 						}
 					}
-					// 注意：双选择模式下不自动打开抽屉，由按钮控制
-					console.log('双选择模式：条件满足，等待用户点击按钮打开抽屉');
 				}
 			});
 		},
@@ -890,24 +724,14 @@ export default {
 				}
 
 				const json = sessionStorage.getItem(this.bankAcceptanceFilledKey);
-				console.log('单选择模式：从sessionStorage获取数据:', json);
-
 				// 检查是否已经填写过承兑信息
 				if (json) {
-					try {
-						// 从sessionStorage恢复已保存的承兑信息
-						this.bankacceptanceInfo = JSON.parse(json);
-						this.flag = true;
-						console.log('单选择模式：恢复的承兑信息:', this.bankacceptanceInfo);
-						// 通知父组件已有承兑信息
-						this.$emit('updateBankAcceptance', _.cloneDeep(this.bankacceptanceInfo));
-					} catch (error) {
-						console.error('解析承兑信息失败:', error);
-					}
+					// 从sessionStorage恢复已保存的承兑信息
+					this.bankacceptanceInfo = JSON.parse(json);
+					this.flag = true;
+					// 通知父组件已有承兑信息
+					this.$emit('updateBankAcceptance', _.cloneDeep(this.bankacceptanceInfo));
 				}
-
-				// 关键修复：单独使用场景下直接打开抽屉
-				console.log('单选择模式：选择承兑类型，直接打开抽屉');
 				this.drawer = true;
 			}
 		},
@@ -920,13 +744,10 @@ export default {
 			this.bankacceptanceInfo = value;
 			// 保存数据到sessionStorage
 			this.setAcceptanceFilled();
-			console.log('承兑信息已保存到sessionStorage:', value);
-
 			// 在内部转账场景下，设置默认的收票事由为内部转账
 			if (this.isInternalTransfer && value) {
 				value.reason = '内部转账';
 			}
-
 			this.$message.success('承兑信息保存成功');
 		},
 		// 抽屉关闭的逻辑
@@ -951,8 +772,6 @@ export default {
 				// 事件对象
 				inputValue = _.cloneDeep(e.target.value);
 			} else {
-				// 无效的参数
-				console.warn('getBankAcceptanceDate 收到无效参数:', e);
 				return;
 			}
 
@@ -973,8 +792,6 @@ export default {
 				const obj = _.cloneDeep(res.data);
 				// 填充三个时间
 				this.$nextTick(() => {
-					// 我方收票日期改为了票据日期,并且不再自动填充 文件15修改
-					// this.form.billDate = obj.billDate;
 					this.form.issueDate = obj.issueDate;
 					this.form.dueDate = obj.dueDate;
 					this.form.billAccount = obj.billAccount;
@@ -985,34 +802,23 @@ export default {
 		submitAcceptanceForm() {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
-					// **特殊业务规则处理：双承兑场景**
-					// 当支出账户类型和收入账户类型都是承兑时，billType 设置为 "收入"
-					// 注释：这是一个特殊情况，后端会根据此标识自动填充相关的承兑类型和处理逻辑
 					if (this.waitForBothSelection && this.bankAcceptanceBothSelected) {
 						const accountTypes = this.bankAcceptanceDualSelectionState;
 						if (accountTypes && accountTypes.source === BankAcceptanceType.ACCEPTANCE && accountTypes.target === BankAcceptanceType.ACCEPTANCE) {
-							// 双承兑特殊情况：设置为收入类型，后端会自动处理承兑转账逻辑
 							this.form.billType = '收入';
-							console.log('双承兑场景：billType已设置为收入，后端将自动处理承兑转账逻辑');
 						} else {
-							// 其他双选择场景：使用原有逻辑
 							this.form.billType = this.billType;
 						}
 					} else {
-						// 单选择场景：使用原有逻辑
 						this.form.billType = this.billType;
 					}
-
-					// 在内部转账场景下，确保收票事由为内部转账
 					if (this.isInternalTransfer) {
 						this.form.reason = '内部转账';
 					}
-
 					this.form = excludeParams(this.form, this.$exclude);
 					const storageKey = 'bankAcceptanceFilled';
 					sessionStorage.setItem(storageKey, JSON.stringify(this.form));
 					sessionStorage.setItem('bankAcceptanceFilledTime', new Date().getTime());
-
 					this.handleSubmit(_.cloneDeep(this.form));
 					this.resetAcceptanceForm();
 				}
