@@ -2,15 +2,7 @@
 	<div class="app-container">
 		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
 			<el-form-item label="交易时间">
-				<el-date-picker
-					v-model="dateRange"
-					style="width: 240px"
-					value-format="yyyy-MM-dd HH:mm:ss"
-					type="daterange"
-					range-separator="-"
-					start-placeholder="开始日期"
-					end-placeholder="结束日期"
-				/>
+				<el-date-picker v-model="dateRange" style="width: 240px" value-format="yyyy-MM-dd" type="daterange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期" />
 			</el-form-item>
 			<el-form-item label="收入方" prop="sourceCompanyName">
 				<el-input v-model="queryParams.sourceCompanyName" placeholder="请输入收入方公司名称" clearable @keyup.enter.native="handleQuery" />
