@@ -20,15 +20,15 @@ function calculatePaymentFactory(row) {
 	const length = Number(row.length);
 	const width = Number(row.width);
 	const pieces = Number(row.pieces);
-	const paymentUnload = Number(row.paymentUnload);
+	const price = Number(row.price);
 	const sundryCost = Number(row.sundryCost);
 
 	if (row.countingUnit === '其他') {
 		// 计量单位为"其他"时，不除以1000000
-		row.paymentFactory = fix_2(length * width * pieces * paymentUnload + sundryCost);
+		row.paymentFactory = fix_2(length * width * pieces * price + sundryCost);
 	} else {
 		// 计量单位为"片"时，除以1000000（原来的逻辑）
-		row.paymentFactory = fix_2(((length * width * pieces) / 1000000) * paymentUnload + sundryCost);
+		row.paymentFactory = fix_2(((length * width * pieces) / 1000000) * price + sundryCost);
 	}
 }
 
@@ -120,8 +120,6 @@ function calculateProfitNoTax(row) {
 	} else {
 		row.profitNoTax = 0; // 异常情况返回0
 	}
-
-	console.log(`不含税利润`, row.profitNoTax);
 }
 
 /**
