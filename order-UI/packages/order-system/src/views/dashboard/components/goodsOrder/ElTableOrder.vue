@@ -14,7 +14,6 @@ import { mixin_order_audit } from '@/views/dashboard/mixins/order/order_audit';
 import { mixin_order_base } from '@/views/dashboard/mixins/order/order_base';
 import { mixin_order_checkOrder } from '@/views/dashboard/mixins/order/order_checkOrder';
 import { mixin_order_deliverGoods } from '@/views/dashboard/mixins/order/order_deliverGoods';
-import { mixin_order_goodsItemInfo } from '@/views/dashboard/mixins/order/order_goodsItemInfo';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import reLength from '@/views/dashboard/mixins/reLength';
 import GOODS_ORDER from '../../../../components/NeedToShow/GOODS_ORDER.vue';
@@ -62,8 +61,6 @@ export default {
 		mixin_order_Invoice,
 		// 订单查看的功能
 		mixin_order_checkOrder,
-		// 查看订单的货物
-		mixin_order_goodsItemInfo,
 		// 订单的添加或者修改
 		mixin_order_add,
 		// 调整单功能
@@ -365,17 +362,9 @@ export default {
 		handleCommand(command, row) {
 			// 根据不同操作委派不同的方法
 			switch (command) {
-				// 查看订单详情
-				case 'checkOrderItemInfo':
-					this.checkOrderItemInfo(row);
-					break;
 				// 修改订单
 				case 'handleUpdate':
 					this.handleUpdate(row);
-					break;
-				// 查看货物
-				case 'handleCheckOrderDetailInfo':
-					this.handleCheckOrderDetailInfo(row);
 					break;
 				// 删除订单
 				case 'handleDelete':
@@ -725,12 +714,13 @@ export default {
 			>
 				<el-table-column label="行操作" align="center" class-name="small-padding fixed-width" width="142" fixed="left">
 					<template slot-scope="scope">
+						<!-- 查看按钮 -->
+						<el-button size="mini" type="text" @click="checkOrderItemInfo(scope.row)">查看</el-button>
+
+						<!-- 操作下拉菜单 -->
 						<el-dropdown size="mini" @command="command => handleCommand(command, scope.row)">
 							<el-button size="mini" type="text">操作</el-button>
 							<el-dropdown-menu slot="dropdown">
-								<el-dropdown-item command="checkOrderItemInfo">
-									<el-button size="mini">查 看</el-button>
-								</el-dropdown-item>
 								<el-dropdown-item v-hasPermi="['system:goodsorder:edit']" command="handleUpdate">
 									<el-button
 										size="mini"
@@ -741,16 +731,13 @@ export default {
 										修 改
 									</el-button>
 								</el-dropdown-item>
-								<el-dropdown-item command="handleCheckOrderDetailInfo">
-									<el-button size="mini" type="warning">货 物</el-button>
-								</el-dropdown-item>
 								<el-dropdown-item v-hasPermi="['system:goodsorder:remove']" command="handleDelete">
 									<el-button size="mini" type="danger">删 除</el-button>
 								</el-dropdown-item>
 							</el-dropdown-menu>
 						</el-dropdown>
-						<!--          禁用-->
 
+						<!-- 历史记录下拉菜单 -->
 						<el-dropdown size="mini">
 							<el-button size="mini" type="text">历史记录</el-button>
 							<el-dropdown-menu slot="dropdown">
