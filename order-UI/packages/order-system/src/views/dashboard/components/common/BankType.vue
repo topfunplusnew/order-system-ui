@@ -10,7 +10,7 @@
 
 		<div class="button-container">
 			<!-- 承兑信息按钮：根据是否已填写信息显示不同状态 -->
-			<el-button v-if="showAcceptanceButton" size="small" @click="handleAcceptanceInfo">
+			<el-button v-if="showAcceptanceButton()" size="small" @click="handleAcceptanceInfo">
 				{{ acceptanceButtonText() }}
 			</el-button>
 		</div>
@@ -492,7 +492,7 @@ export default {
 			}
 
 			// 如果不是承兑类型，不显示按钮
-			if (this.localSelectType !== BankAcceptanceType.ACCEPTANCE) {
+			if (!this.localSelectType || this.localSelectType !== BankAcceptanceType.ACCEPTANCE) {
 				return false;
 			}
 
