@@ -78,8 +78,8 @@
 				<el-form-item label="金额" prop="moneyAmount">
 					<el-input v-model="form.moneyAmount" placeholder="请输入金额" />
 				</el-form-item>
-				<el-form-item label="对方类型(请确认)">
-					<el-select v-model="value" placeholder="请选择">
+				<el-form-item label="对方公司类型(请确认)">
+					<el-select v-model="form.companyType" placeholder="请选择">
 						<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
 					</el-select>
 					<span style="color: #1c84c6; font-size: 12px">请注意选择正确的对方公司类型!</span>
@@ -90,7 +90,7 @@
 							<el-input v-model="form.companyName" placeholder="请输入对方公司" />
 						</el-col>
 						<SearchOption
-							:limit-info="{ companyType: value }"
+							:limit-info="{ companyType: form.companyType }"
 							:get-data="listCompany"
 							query-info="companyName"
 							query-label="公司名称"
@@ -99,7 +99,7 @@
 							@commitBack="handleCommitBackCompany"
 						>
 							<template #table-columns>
-								<el-table-column :label="value" align="center" prop="companyName" />
+								<el-table-column :label="form.companyType" align="center" prop="companyName" />
 								<el-table-column label="对方公司类型" align="center" prop="companyType" />
 								<el-table-column label="老板姓名" align="center" prop="leader" />
 								<el-table-column label="老板电话" align="center" prop="leaderTel" />
@@ -108,9 +108,6 @@
 							</template>
 						</SearchOption>
 					</el-row>
-				</el-form-item>
-				<el-form-item label="对方公司类型" prop="companyType">
-					<el-input v-model="form.companyType" type="text" placeholder="请输入对方公司类型"></el-input>
 				</el-form-item>
 				<el-form-item label="备注" prop="comments">
 					<el-input v-model="form.comments" placeholder="请输入备注" />
@@ -303,7 +300,6 @@ export default {
 			this.queryCompanyName = val;
 		},
 		handleCommitBackCompany(val) {
-			this.form.companyType = val.companyType;
 			this.form.companyName = val.companyName;
 			this.form.companyID = val.id;
 		},
@@ -311,7 +307,6 @@ export default {
 		commitCompanyInfo(row) {
 			this.form.companyName = row.companyName;
 			this.form.companyID = row.id;
-			this.form.companyType = row.companyType;
 			this.companyDialogVisible = false;
 		},
 		/* 打印信息*/
