@@ -1,49 +1,33 @@
-<script>
-export default {
-	name: 'BALANCEACCOUNT',
-	props: {
-		balanceData: {
-			type: Object,
-			default: () => ({})
-		}
-	},
-	methods: {
-		handleProcess() {},
-		handleReject() {}
-	}
-};
-</script>
-
 <template>
 	<div class="balance-account">
 		<el-card class="balance-card">
 			<el-descriptions title="结算账户详情" :column="2" border>
 				<el-descriptions-item label="操作日期">
-					{{ balanceData.operateDate || '暂无数据' }}
+					{{ needToShowInfo.operateDate || '暂无数据' }}
 				</el-descriptions-item>
 				<el-descriptions-item label="金额">
-					{{ balanceData.moneyAmount ? balanceData.moneyAmount + ' 元' : '暂无数据' }}
+					{{ needToShowInfo.moneyAmount ? needToShowInfo.moneyAmount + ' 元' : '暂无数据' }}
 				</el-descriptions-item>
 				<el-descriptions-item label="公司名称">
-					{{ balanceData.companyName || '暂无数据' }}
+					{{ needToShowInfo.companyName || '暂无数据' }}
 				</el-descriptions-item>
 				<el-descriptions-item label="公司ID">
-					{{ balanceData.companyID || '暂无数据' }}
+					{{ needToShowInfo.companyID || '暂无数据' }}
 				</el-descriptions-item>
 				<el-descriptions-item label="公司类型">
-					{{ formatCompanyType(balanceData.companyType) }}
+					{{ formatCompanyType(needToShowInfo.companyType) }}
 				</el-descriptions-item>
 				<el-descriptions-item label="备注">
-					{{ balanceData.comments || '暂无数据' }}
+					{{ needToShowInfo.comments || '暂无数据' }}
 				</el-descriptions-item>
 				<el-descriptions-item label="添加时间">
-					{{ balanceData.addtime || '暂无数据' }}
+					{{ needToShowInfo.addtime || '暂无数据' }}
 				</el-descriptions-item>
 				<el-descriptions-item label="用户ID">
-					{{ balanceData.userId || '暂无数据' }}
+					{{ needToShowInfo.userId || '暂无数据' }}
 				</el-descriptions-item>
 				<el-descriptions-item label="用户名">
-					{{ balanceData.userName || '暂无数据' }}
+					{{ needToShowInfo.userName || '暂无数据' }}
 				</el-descriptions-item>
 			</el-descriptions>
 		</el-card>
@@ -52,7 +36,16 @@ export default {
 
 <script>
 export default {
+	name: 'BALANCEACCOUNT',
+	props: {
+		needToShowInfo: {
+			type: Object,
+			default: () => ({})
+		}
+	},
 	methods: {
+		handleProcess() {},
+		handleReject() {},
 		formatCompanyType(type) {
 			switch (type) {
 				case 1:
