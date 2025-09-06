@@ -244,7 +244,7 @@ export default {
 					}, 0);
 					sums[index] += ' 元';
 				} else {
-					sums[index] = 'N/A';
+					sums[index] = '';
 				}
 			});
 
