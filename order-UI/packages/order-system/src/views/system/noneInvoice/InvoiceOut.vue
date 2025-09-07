@@ -176,7 +176,7 @@
 								@commitBack="handleCommitBackCompany"
 							>
 								<template #table-columns>
-									<el-table-column :label="type" align="center" prop="companyName" />
+									<el-table-column label="公司名称" align="center" prop="companyName" />
 									<el-table-column label="老板姓名" align="center" prop="leader" />
 									<el-table-column label="老板电话" align="center" prop="leaderTel" />
 									<el-table-column label="区域" align="center" prop="region" />
@@ -726,6 +726,7 @@ export default {
 		},
 		/** 提交按钮 */
 		submitForm() {
+			console.log(1111);
 			this.$refs['form'].validate(valid => {
 				if (valid) {
 					// 创建提交数据的副本，排除不应该提交的数据
