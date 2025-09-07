@@ -814,17 +814,12 @@ export default {
 					}
 					this.form.params.attachmentIds = [...allAttachmentIds];
 
-					console.log('submitForm - 从全局池获取的附件ID:', allAttachmentIds);
-
 					// 创建提交数据的副本
 					const submitData = { ...this.form };
 
 					if (this.form.id != null) {
 						// 修改时，从sessionStorage获取修改原因
 						const editReason = sessionStorage.getItem('editReason_invoiceOther_have');
-						if (!editReason || editReason.trim() === '') {
-							return;
-						}
 						submitData.editReason = editReason;
 					} else {
 						// 新增时，移除修改原因字段

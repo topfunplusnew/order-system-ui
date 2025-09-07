@@ -726,7 +726,6 @@ export default {
 		},
 		/** 提交按钮 */
 		submitForm() {
-			console.log(1111);
 			this.$refs['form'].validate(valid => {
 				if (valid) {
 					// 创建提交数据的副本，排除不应该提交的数据
@@ -742,9 +741,6 @@ export default {
 					if (this.form.id != null) {
 						// 编辑时，从sessionStorage获取修改原因
 						const editReason = sessionStorage.getItem('editReason_invoiceOut');
-						if (!editReason || editReason.trim() === '') {
-							return;
-						}
 						submitData.editReason = editReason;
 
 						const finalData = excludeParams(submitData, this.$exclude);

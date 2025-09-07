@@ -741,9 +741,6 @@ export default {
 					if (this.form.id != null) {
 						// 编辑时，从sessionStorage获取修改原因
 						const editReason = sessionStorage.getItem('editReason_invoiceOther_main');
-						if (!editReason || editReason.trim() === '') {
-							return;
-						}
 						submitData.editReason = editReason;
 
 						updateInvoiceOther(submitData)
