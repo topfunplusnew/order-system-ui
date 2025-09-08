@@ -288,7 +288,6 @@ export default {
 			// 获取付款申请信息
 			listPaymentApply(query, json).then(res => {
 				this.alreadyApplyList = res.rows;
-				this.$message.success(`成功获取待提交或已驳回的付款信息`);
 			});
 		},
 		// 获取所有付款申请列表
@@ -302,13 +301,11 @@ export default {
 			listPaymentApply(query, json).then(res => {
 				this.paymentList = res.rows;
 				this.total = res.total;
-				this.$message.success(`成功获取付款信息`);
 			});
 		},
 		// 修改已经提交的 待提交或者驳回的付款申请记录 isEdit=true时为修改原有信息
 		reApply(paymentApplyInfo, isEdit = true) {
 			const clonedPaymentApplyInfo = _.cloneDeep(paymentApplyInfo);
-			console.log(`clonedPaymentApplyInfo=>`, clonedPaymentApplyInfo);
 			// 需要自动填充的信息
 			this.needInfo = {
 				bankNo: clonedPaymentApplyInfo.otherBankNo,

@@ -575,21 +575,6 @@ export default {
 		isNull,
 		listCompany,
 		listBankAccount,
-
-		/**
-		 * **业务架构设计：数据结构兼容性转换**
-		 *
-		 * 将旧的单表关联模式转换为新的多表关联模式
-		 * 确保向后兼容性，同时支持新的 tableReferences 结构
-		 *
-		 * **设计原则：**
-		 * 1. 兼容性优先：优先使用新结构，兼容旧结构
-		 * 2. 数据完整性：确保转换过程中不丢失关键信息
-		 * 3. 扩展性：为未来多表关联做好准备
-		 *
-		 * **时间复杂度：** O(1) - 简单的对象构建
-		 * **空间复杂度：** O(1) - 创建固定大小的数组
-		 */
 		buildTableReferences() {
 			// 优先使用新的 tableReferences 结构
 			if (this.tableReferences && this.tableReferences.length > 0) {
@@ -661,10 +646,6 @@ export default {
 			if (uploadParams && uploadParams.params && uploadParams.params.attachmentIds) {
 				this.form.attachmentIds = uploadParams.params.attachmentIds;
 			}
-		},
-		handleOpponentTypeChange(value) {
-			// 当对方类型改变时，触发相应的逻辑，例如清空某些字段
-			console.log('对方类型 changed to:', value);
 		},
 		handleUpdateQueryNameOther(val) {
 			this.queryOther = val;
@@ -741,12 +722,15 @@ export default {
 
 			// 排除不必要的参数
 			excludeParams(formData, this.$exclude);
-
 			addPaymentApply(formData).then(() => {
 				this.$modal.msgSuccess('付款申请添加成功');
 				this.reset();
 				// 提交成功后删除本地的缓存
 				this.clearForm();
+				// 清除附件组件状态
+				if (this.$refs.attachmentUpload) {
+					this.$refs.attachmentUpload.clearUploadedFiles();
+				}
 				this.$emit('changeOpen');
 			});
 		},
@@ -771,6 +755,10 @@ export default {
 			// 填充我方银行卡信息
 			addBadBetPayment(json).then(res => {
 				this.$message.success('付款成功');
+				// 清除附件组件状态
+				if (this.$refs.attachmentUpload) {
+					this.$refs.attachmentUpload.clearUploadedFiles();
+				}
 				this.clear();
 				this.$emit('changeOpen');
 			});
@@ -798,6 +786,10 @@ export default {
 
 						updatePaymentApply(formData).then(() => {
 							this.$modal.msgSuccess('付款申请保存成功,点击提交并审核可提交信息至审核流程');
+							// 清除附件组件状态
+							if (this.$refs.attachmentUpload) {
+								this.$refs.attachmentUpload.clearUploadedFiles();
+							}
 							this.clear();
 							that.dialogVisible = false;
 							// 发布一个事件 提醒更新
@@ -819,7 +811,7 @@ export default {
 			this.clearForm();
 			// 清除上传组件状态
 			if (this.$refs.attachmentUpload) {
-				this.$refs.attachmentUpload.clearFiles();
+				this.$refs.attachmentUpload.clearUploadedFiles();
 			}
 			this.reset();
 		},

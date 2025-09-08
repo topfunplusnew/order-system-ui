@@ -10,7 +10,7 @@ export const companyConfig = {
 			label: 'ID',
 			width: 80,
 			align: 'center',
-			showOverflowTooltip: true,
+			showOverflowTooltip: false, // 禁用默认 tooltip，使用自定义 popover
 			autoWidth: false, // 固定宽度，不自适应
 			includeInForm: false, // ID不包含在表单中
 			formConfig: {
@@ -22,7 +22,7 @@ export const companyConfig = {
 			label: '客户名称',
 			width: 150,
 			align: 'center',
-			showOverflowTooltip: true,
+			showOverflowTooltip: false, // 禁用默认 tooltip，使用自定义 popover
 			autoWidth: true, // 开启自适应宽度
 			minWidth: 120, // 最小宽度
 			maxWidth: 300, // 最大宽度
@@ -43,7 +43,7 @@ export const companyConfig = {
 			label: '老板姓名',
 			width: 120,
 			align: 'center',
-			showOverflowTooltip: true,
+			showOverflowTooltip: false, // 禁用默认 tooltip，使用自定义 popover
 			autoWidth: true, // 开启自适应宽度
 			minWidth: 100,
 			maxWidth: 200,
@@ -64,7 +64,7 @@ export const companyConfig = {
 			label: '老板电话',
 			width: 120,
 			align: 'center',
-			showOverflowTooltip: true,
+			showOverflowTooltip: false, // 禁用默认 tooltip，使用自定义 popover
 			autoWidth: true, // 开启自适应宽度
 			minWidth: 110,
 			maxWidth: 160,
@@ -85,7 +85,7 @@ export const companyConfig = {
 			label: '区域',
 			width: 100,
 			align: 'center',
-			showOverflowTooltip: true,
+			showOverflowTooltip: false, // 禁用默认 tooltip，使用自定义 popover
 			autoWidth: true, // 开启自适应宽度
 			minWidth: 80,
 			maxWidth: 150,
@@ -167,7 +167,7 @@ export const companyConfig = {
 			label: '联系人',
 			width: 100,
 			align: 'center',
-			showOverflowTooltip: true,
+			showOverflowTooltip: false, // 禁用默认 tooltip，使用自定义 popover
 			autoWidth: true, // 开启自适应宽度
 			minWidth: 80,
 			maxWidth: 150,
@@ -188,7 +188,7 @@ export const companyConfig = {
 			label: '销售经理',
 			width: 120,
 			align: 'center',
-			showOverflowTooltip: true,
+			showOverflowTooltip: false, // 禁用默认 tooltip，使用自定义 popover
 			autoWidth: true, // 开启自适应宽度
 			minWidth: 100,
 			maxWidth: 180,
@@ -209,7 +209,7 @@ export const companyConfig = {
 			label: '地址',
 			width: 200,
 			align: 'center',
-			showOverflowTooltip: true,
+			showOverflowTooltip: false, // 禁用默认 tooltip，使用自定义 popover
 			autoWidth: true, // 开启自适应宽度
 			minWidth: 150,
 			maxWidth: 400,
@@ -231,7 +231,7 @@ export const companyConfig = {
 			label: '电话',
 			width: 120,
 			align: 'center',
-			showOverflowTooltip: true,
+			showOverflowTooltip: false, // 禁用默认 tooltip，使用自定义 popover
 			autoWidth: true, // 开启自适应宽度
 			minWidth: 110,
 			maxWidth: 160,
@@ -252,7 +252,7 @@ export const companyConfig = {
 			label: '备注',
 			width: 200,
 			align: 'center',
-			showOverflowTooltip: true,
+			showOverflowTooltip: false, // 禁用默认 tooltip，使用自定义 popover
 			autoWidth: true, // 开启自适应宽度
 			minWidth: 120,
 			maxWidth: 300,

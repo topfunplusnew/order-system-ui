@@ -49,14 +49,14 @@
 			@selection-change="handleSelectionChange"
 			class="table-container"
 		>
-			<el-table-column v-for="column in visibleColumns" :key="column.key" v-bind="getColumnProps(column)" />
-			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="200">
+			<CustomTableColumn v-for="column in visibleColumns" :key="column.key" v-bind="getColumnProps(column)" />
+			<CustomTableColumn label="操作" align="center" class-name="small-padding fixed-width" width="200">
 				<template slot-scope="scope">
 					<el-button size="mini" type="text" @click="jumpBankNo(scope.row)">银行卡号</el-button>
 					<el-button v-hasPermi="['system:company:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">编辑</el-button>
 					<el-button v-hasPermi="['system:company:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
 				</template>
-			</el-table-column>
+			</CustomTableColumn>
 		</el-table>
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 	</div>

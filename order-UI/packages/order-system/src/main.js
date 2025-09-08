@@ -61,6 +61,7 @@ import keepAliveDialog from '@/views/dashboard/mixins/keepAliveDialog';
 // 引入通用弹窗混入和组件
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
+import CustomTableColumn from '@/components/CustomTableColumn/index.vue';
 
 message.config({
 	top: '10px',
@@ -202,6 +203,8 @@ Vue.component('ImageUpload', ImageUpload);
 Vue.component('ImagePreview', ImagePreview);
 // 全局注册通用弹窗组件
 Vue.component('DialogWrapper', DialogWrapper);
+// 注册自定义elementui组件
+Vue.component('CustomTableColumn', CustomTableColumn);
 Vue.use(directive);
 Vue.use(plugins);
 Vue.use(VueMeta);
