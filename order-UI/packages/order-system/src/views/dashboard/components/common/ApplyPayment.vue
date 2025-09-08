@@ -1,6 +1,6 @@
 <template>
 	<div class="app-container">
-		<el-form ref="form" :model="form" :rules="rules" label-width="120px">
+		<el-form ref="form" :model="form" :rules="rules" label-width="130px">
 			<el-form-item label="日期" prop="fundsDate">
 				<el-date-picker v-model="form.fundsDate" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="选择日期" />
 			</el-form-item>
@@ -78,11 +78,11 @@
 					<el-select v-model="value" placeholder="请选择" @change="handleOpponentTypeChange">
 						<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
 					</el-select>
-					<span style="color: #1c84c6; font-size: 12px">请注意选择正确的对方公司类型!</span>
+					<span style="color: #1c84c6; font-size: 12px">请先注意选择正确的对方公司类型!</span>
 				</el-form-item>
 
 				<el-form-item
-					v-if="value !== PUBLIC_DICT_TYPE.EMPLOYEE && value !== PAYMENT_TARGET_TYPE.PAYMENT_FEE"
+					v-if="value && value !== PUBLIC_DICT_TYPE.EMPLOYEE && value !== PAYMENT_TARGET_TYPE.PAYMENT_FEE"
 					:label="value === PUBLIC_DICT_TYPE.DRIVER ? '司机' : '对方公司'"
 					prop="companyName"
 				>

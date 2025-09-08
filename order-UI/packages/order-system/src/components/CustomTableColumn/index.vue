@@ -1,7 +1,8 @@
 <template>
 	<!-- 外层就是 el-table-column，所有属性和事件透传 -->
 	<el-table-column v-bind="$attrs" v-on="$listeners">
-		<template v-slot="scope">
+		<!-- 只有非特殊类型才渲染自定义插槽内容 -->
+		<template v-if="!isSpecialType" v-slot="scope">
 			<!-- 如果有插槽内容，直接渲染插槽，支持 slot-scope 语法 -->
 			<slot v-if="$slots.default || $scopedSlots.default" v-bind="scope" :row="scope.row" :column="scope.column" :$index="scope.$index"></slot>
 			<!-- 否则处理文本内容的渲染逻辑 -->
@@ -15,6 +16,7 @@
 				/>
 			</template>
 		</template>
+		<!-- 特殊类型（selection、index、expand）不渲染插槽，保持 Element UI 原生行为 -->
 	</el-table-column>
 </template>
 
@@ -111,6 +113,12 @@ export default {
 	},
 
 	computed: {
+		// 判断是否是特殊类型列（selection、index、expand）
+		isSpecialType() {
+			const type = this.$attrs.type;
+			return ['selection', 'index', 'expand'].includes(type);
+		},
+
 		// 缓存当前列的属性，避免重复计算
 		currentColumnProp() {
 			return this.prop;
@@ -171,7 +179,6 @@ export default {
 		// 获取单元格文本内容
 		getCellText(scope) {
 			if (!this.prop) {
-				console.warn('CustomTableColumn: prop is required');
 				return '';
 			}
 			const text = scope.row[this.prop] || '';

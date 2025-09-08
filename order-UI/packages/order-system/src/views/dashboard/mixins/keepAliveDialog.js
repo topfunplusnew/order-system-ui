@@ -12,7 +12,6 @@ export default {
 		if (!this.$data.hasOwnProperty('open') && !this.$data.hasOwnProperty('dialogVisible') && !this._dialogConfigs) {
 			return;
 		}
-		console.log(`${this.$options.name} deactivated - 保存弹窗状态`);
 		// 确保缓存对象存在
 		if (!this._keepAliveStates) this._keepAliveStates = {};
 
@@ -22,7 +21,6 @@ export default {
 			// 判断布尔类型且命名以 Visible 或 visible 或 open 结尾
 			if (typeof val === 'boolean' && (key.endsWith('Visible') || key === 'open')) {
 				this._keepAliveStates[key] = val;
-				console.log(`保存弹窗状态: ${key} = ${val}`);
 				this[key] = false;
 			}
 		});
@@ -41,12 +39,9 @@ export default {
 		if (!this._keepAliveStates || Object.keys(this._keepAliveStates).length === 0) {
 			return;
 		}
-		console.log(`${this.$options.name} activated - 恢复弹窗状态`, this._keepAliveStates);
-
 		// 恢复普通的布尔弹窗状态
 		Object.entries(this._keepAliveStates).forEach(([key, val]) => {
 			if (key !== '_dynamicDialogs') {
-				console.log(`恢复弹窗状态: ${key} = ${val}`);
 				this[key] = val;
 			}
 		});
