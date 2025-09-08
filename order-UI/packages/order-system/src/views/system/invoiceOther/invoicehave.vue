@@ -286,8 +286,8 @@
 								</SearchOption>
 							</el-col>
 						</el-form-item>
-						<el-form-item label="票据单位名称" prop="invoiceCompanyName">
-							<el-input v-model="form.invoiceCompanyName" placeholder="请输入票据单位名称" />
+						<el-form-item label="客户开票名称" prop="invoiceCompanyName">
+							<el-input v-model="form.invoiceCompanyName" placeholder="请输入客户开票名称" />
 						</el-form-item>
 						<el-form-item label="开票日期" prop="invoiceDate">
 							<el-date-picker v-model="form.extraInfo.actualInvoiceTime" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
@@ -508,7 +508,7 @@ export default {
 				invoiceCompanyName: [
 					{
 						required: true,
-						message: '请输入票据单位名称',
+						message: '请输入客户开票名称',
 						trigger: 'blur'
 					}
 				]
