@@ -63,12 +63,6 @@
 						<el-button v-hasPermi="['system:rebate:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
 					</el-col>
 				</template>
-				<!--        导出2-->
-				<!--				<template #export2>-->
-				<!--					<el-col :span="1.5">-->
-				<!--						<el-button v-hasPermi="['system:rebate:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport2"></el-button>-->
-				<!--					</el-col>-->
-				<!--				</template>-->
 			</right-toolbar>
 		</el-row>
 
@@ -292,9 +286,10 @@
 									return { padding: '.5px' };
 								}
 							"
+							:row-class-name="getRowClassName"
 							@selection-change="handleSelectionChangeOrderDetail"
 						>
-							<el-table-column type="selection" width="55" align="center" fixed="left" />
+							<el-table-column type="selection" width="55" align="center" fixed="left" :selectable="checkSupplierSelectable" />
 							<el-table-column label="订单日期" align="center" prop="orderDate" fixed="left" />
 							<el-table-column label="客户" align="center" prop="customer" />
 							<el-table-column label="供应商" align="center" prop="supplier" :filters="nameFilters" :filter-method="filterName" filter-placement="bottom" filterable />
@@ -481,6 +476,7 @@
 import { listRebate, getRebate, delRebate, addRebate, updateRebate } from '@/api/system/Rebate';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import { RebateType, TableName } from '@/api/tool/enums';
+import { fix } from '@/api/tool/format';
 import OrderInfos from '@/views/dashboard/components/goodsOrder/OrderInfos.vue';
 import OrderDetailInfo from '@/views/dashboard/components/goodsOrder/OrderDetailInfo.vue';
 import { listBankAccount } from '@/api/system/bankAccount';
@@ -519,6 +515,8 @@ export default {
 			single: true,
 			// 非多个禁用
 			multiple: true,
+			// 当前选中的供应商（用于一致性检查）
+			currentSelectedSupplier: null,
 			// 供应商选择的时间段
 			dateRange: [],
 			// 计提返利时间段选择（前端使用，用于时间段组件绑定）
@@ -713,6 +711,120 @@ export default {
 		isNull,
 		listCompany,
 		listBankAccount,
+		// 为不同供应商的行添加样式
+		getRowClassName({ row, rowIndex }) {
+			// 如果有选中的供应商，且当前行的供应商不匹配，添加禁用样式
+			if (this.currentSelectedSupplier && row.supplier !== this.currentSelectedSupplier) {
+				return 'disabled-row';
+			}
+			return '';
+		},
+		// 供应商一致性检查 - 控制checkbox是否可选
+		checkSupplierSelectable(row, index) {
+			// 如果还没有选中任何货物，所有行都可选
+			if (!this.currentSelectedSupplier) {
+				return true;
+			}
+			// 如果已经选中了供应商，只有相同供应商的行才可选
+			return row.supplier === this.currentSelectedSupplier;
+		},
+		// 重写mixin中的多选某个货物方法，添加供应商一致性检查
+		handleSelectionChangeOrderDetail(selection) {
+			// 如果没有选中任何货物，清空当前供应商
+			if (selection.length === 0) {
+				this.currentSelectedSupplier = null;
+				this.goods = [];
+				return;
+			}
+
+			// 如果是第一次选择，设置当前供应商
+			if (!this.currentSelectedSupplier && selection.length > 0) {
+				this.currentSelectedSupplier = selection[0].supplier;
+			}
+
+			// 过滤出相同供应商的货物
+			const validSelection = selection.filter(item => item.supplier === this.currentSelectedSupplier);
+
+			// 如果过滤后的选择与原选择不同，说明有跨供应商选择，需要提示用户
+			if (validSelection.length !== selection.length) {
+				this.$message.warning(`只能选择供应商为"${this.currentSelectedSupplier}"的货物，已自动过滤其他供应商的货物`);
+
+				// 重新设置表格选择状态
+				this.$nextTick(() => {
+					this.$refs.multipleTable.clearSelection();
+					validSelection.forEach(row => {
+						this.$refs.multipleTable.toggleRowSelection(row, true);
+					});
+				});
+			}
+
+			this.goods = validSelection;
+		},
+		// 重写mixin中的清空已选择的货物方法，添加供应商状态重置
+		refreshSelectedGoods() {
+			this.goods = [];
+			this.form.orderDetailIds = [];
+			// 重置当前选中的供应商
+			this.currentSelectedSupplier = null;
+			// 调用mixin中的toggleSelection方法
+			if (this.$refs.multipleTable) {
+				this.$refs.multipleTable.clearSelection();
+			}
+		},
+		// 重写mixin中的确认选择货物方法，添加供应商自动填充功能
+		submitSelectOrderDetail() {
+			this.form.orderDetailIds = [];
+			if (!this.goods || this.goods.length <= 0) {
+				this.$message.info('请选择货物');
+				return;
+			}
+
+			// 自动填充供应商信息（基于已选择的货物）
+			if (this.goods.length > 0 && this.currentSelectedSupplier) {
+				this.form.supplier = this.currentSelectedSupplier;
+
+				// 尝试找到供应商ID（如果货物数据中包含supplierID）
+				const firstGood = this.goods[0];
+				if (firstGood.supplierID) {
+					this.form.supplierID = firstGood.supplierID;
+				}
+
+				this.$message.success(`已自动填充供应商：${this.currentSelectedSupplier}`);
+			}
+
+			// 计算重箱和面积的和
+			const result = this.goods.reduce(
+				(prev, next) => {
+					// 累加面积 - 修改计算公式为：长度*宽度*出场片数/1000000
+					prev.area += (next.length * next.width * next.pieces) / 1000000;
+					// 累加重箱
+					prev.weightBox += (next.height * next.length * next.width * next.pieces) / 1000000 / 20;
+					return prev;
+				},
+				{ area: 0, weightBox: 0 } // 初始值
+			);
+
+			// 推入id数组
+			this.goods.forEach(item => {
+				this.form.orderDetailIds.push(item.id);
+			});
+
+			// 判断一下是重箱还是面积
+			if (this.form.rebateMethod === this.RebateType.Weight) {
+				this.form.weightBox = result.weightBox || 0;
+			} else {
+				this.form.area = result.area || 0;
+			}
+
+			// 修复精度
+			this.form.rebate = fix((this.form.area || this.form.weightBox) * this.form.unitPrice);
+
+			// 关闭对话框
+			this.orderDialogVisible = false;
+
+			// 重置供应商选择状态
+			this.currentSelectedSupplier = null;
+		},
 		// 获取最早的返利日期
 		getEarliestReceivedDate(row) {
 			if (!row.actualReceivedDetails || !row.actualReceivedDetails.detailList || row.actualReceivedDetails.detailList.length === 0) {
@@ -930,6 +1042,8 @@ export default {
 				delFlag: null
 			};
 			this.goods = [];
+			// 重置当前选中的供应商
+			this.currentSelectedSupplier = null;
 			this.resetForm('form');
 		},
 		/** 搜索按钮操作 */
@@ -1080,6 +1194,22 @@ export default {
 		.money {
 			color: #e6a23c;
 			font-weight: bold;
+		}
+	}
+
+	// 禁用行样式 - 不同供应商的货物
+	.disabled-row {
+		background-color: #f5f7fa !important;
+		color: #c0c4cc !important;
+
+		td {
+			background-color: #f5f7fa !important;
+			color: #c0c4cc !important;
+		}
+
+		// 禁用状态下的文字透明度
+		.el-tag {
+			opacity: 0.6;
 		}
 	}
 }

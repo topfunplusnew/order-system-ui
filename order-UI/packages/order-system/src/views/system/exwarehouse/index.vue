@@ -390,9 +390,12 @@ export default {
 	},
 	methods: {
 		computedAmount(row) {
-			const price = (row.sourceInventoryDetail && row.sourceInventoryDetail.paymentUnload) || 0;
+			const length = (row.sourceInventoryDetail && row.sourceInventoryDetail.length) || 0;
+			const width = (row.sourceInventoryDetail && row.sourceInventoryDetail.width) || 0;
 			const amount = row.outAmount || 0;
-			return (price * amount).toFixed(2);
+			const price = (row.sourceInventoryDetail && row.sourceInventoryDetail.paymentUnload) || 0;
+			const result = (length / 1000) * (width / 1000) * amount * price;
+			return result.toFixed(2);
 		},
 		checkOrderInfo(row) {
 			// 使用动态弹窗显示订单详情
