@@ -76,6 +76,7 @@
 			<el-table-column v-if="columns[11].visible" label="支出方公司类型" align="center" prop="sourceCompanyType" show-overflow-tooltip />
 			<el-table-column v-if="columns[12].visible" label="支出方支付类型" align="center" prop="sourcePaymentType" show-overflow-tooltip />
 			<el-table-column v-if="columns[13].visible" label="收入方开户行" align="center" prop="targetBankName" show-overflow-tooltip />
+			<!-- TODO 这地方后续需要更正 只是一个类型 用来标识冲抵类型 -->
 			<el-table-column v-if="columns[14].visible" label="冲抵类型" align="center" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<span>{{ scope.row.referenceTableName === 'offsetting' ? '冲抵货款' : '内部转账' }}</span>

@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<el-form ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="110">
-			<el-form-item label="时间范围">
+			<el-form-item v-if="shouldShowField('dateRange')" label="时间范围">
 				<el-date-picker
 					v-model="dateRange"
 					type="daterange"
@@ -16,58 +16,58 @@
 					@change="onDateRangeChange"
 				/>
 			</el-form-item>
-			<el-form-item label="客户名称" prop="customer">
+			<el-form-item v-if="shouldShowField('customer')" label="客户名称" prop="customer">
 				<el-input v-model="queryParams.customer" placeholder="请输入客户名称" clearable size="mini" @keyup.enter.native="handleQuery"></el-input>
 			</el-form-item>
-			<el-form-item label="供应商" prop="supplierNames">
+			<el-form-item v-if="shouldShowField('supplierNames')" label="供应商" prop="supplierNames">
 				<el-input v-model="queryParams.params.supplierNames" placeholder="请输入供应商名称" clearable size="mini" @keyup.enter.native="handleQuery"></el-input>
 			</el-form-item>
-			<el-form-item label="司机名称" prop="landDriverName">
+			<el-form-item v-if="shouldShowField('landDriverName')" label="司机名称" prop="landDriverName">
 				<el-input v-model="queryParams.landDriverName" placeholder="请输入司机名称" clearable size="mini" @keyup.enter.native="handleQuery"></el-input>
 			</el-form-item>
-			<el-form-item label="车牌" prop="landCarNo">
+			<el-form-item v-if="shouldShowField('landCarNo')" label="车牌" prop="landCarNo">
 				<el-input v-model="queryParams.landCarNo" placeholder="请输入车牌" clearable size="mini" @keyup.enter.native="handleQuery"></el-input>
 			</el-form-item>
-			<el-form-item label="海运公司" prop="seaDriverName">
+			<el-form-item v-if="shouldShowField('seaDriverName')" label="海运公司" prop="seaDriverName">
 				<el-input v-model="queryParams.seaDriverName" placeholder="请输入海运公司" clearable size="mini" @keyup.enter.native="handleQuery"></el-input>
 			</el-form-item>
-			<el-form-item label="柜号" prop="seaCarNo">
+			<el-form-item v-if="shouldShowField('seaCarNo')" label="柜号" prop="seaCarNo">
 				<el-input v-model="queryParams.seaCarNo" placeholder="请输入柜号" clearable size="mini" @keyup.enter.native="handleQuery"></el-input>
 			</el-form-item>
-			<el-form-item label="车队名称" prop="fleet">
+			<el-form-item v-if="shouldShowField('fleet')" label="车队名称" prop="fleet">
 				<el-input v-model="queryParams.fleet" placeholder="请输入车队名称" clearable size="mini" @keyup.enter.native="handleQuery"></el-input>
 			</el-form-item>
-			<el-form-item label="录入员" prop="userName">
+			<el-form-item v-if="shouldShowField('userName')" label="录入员" prop="userName">
 				<el-input v-model="queryParams.userName" placeholder="请输入录入员" clearable size="mini" @keyup.enter.native="handleQuery"></el-input>
 			</el-form-item>
-			<el-form-item label="销售经理" prop="saleManager">
+			<el-form-item v-if="shouldShowField('saleManager')" label="销售经理" prop="saleManager">
 				<el-input v-model="queryParams.saleManager" placeholder="请输入车队名称" clearable size="mini" @keyup.enter.native="handleQuery"></el-input>
 			</el-form-item>
-			<el-form-item label="审核状态" prop="checkState">
+			<el-form-item v-if="shouldShowField('checkState')" label="审核状态" prop="checkState">
 				<el-select v-model="queryParams.checkState" placeholder="请选择" size="mini" clearable>
 					<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
 				</el-select>
 			</el-form-item>
-			<el-form-item label="供应商是否开票">
+			<el-form-item v-if="shouldShowField('isIncludeTaxFactory')" label="供应商是否开票">
 				<el-select v-model="queryParams.params.isIncludeTaxFactory" placeholder="请选择" size="mini" clearable>
 					<el-option v-for="item in OptionInvent()" :key="item.value" :label="item.label" :value="item.value"></el-option>
 				</el-select>
 			</el-form-item>
-			<el-form-item label="客户是否开票">
+			<el-form-item v-if="shouldShowField('isIncludeTaxSale')" label="客户是否开票">
 				<el-select v-model="queryParams.params.isIncludeTaxSale" placeholder="请选择" size="mini" clearable>
 					<el-option v-for="item in OptionInvent()" :key="item.value" :label="item.label" :value="item.value"></el-option>
 				</el-select>
 			</el-form-item>
-			<el-form-item label="级别名称" prop="levelName">
+			<el-form-item v-if="shouldShowField('levelName')" label="级别名称" prop="levelName">
 				<el-input v-model="queryParams.params.levelName" placeholder="请输入级别名称" clearable size="mini" @keyup.enter.native="handleQuery"></el-input>
 			</el-form-item>
-			<el-form-item label="长度" prop="length">
+			<el-form-item v-if="shouldShowField('length')" label="长度" prop="length">
 				<el-input v-model="queryParams.params.length" placeholder="请输入长度" clearable size="mini" @keyup.enter.native="handleQuery"></el-input>
 			</el-form-item>
-			<el-form-item label="宽度" prop="width">
+			<el-form-item v-if="shouldShowField('width')" label="宽度" prop="width">
 				<el-input v-model="queryParams.params.width" placeholder="请输入宽度" clearable size="mini" @keyup.enter.native="handleQuery"></el-input>
 			</el-form-item>
-			<el-form-item label="厚度" prop="height">
+			<el-form-item v-if="shouldShowField('height')" label="厚度" prop="height">
 				<el-input v-model="queryParams.params.height" placeholder="请输入厚度" clearable size="mini" @keyup.enter.native="handleQuery"></el-input>
 			</el-form-item>
 			<el-form-item>
@@ -90,6 +90,24 @@ export default {
 		isAdjust: {
 			type: Boolean,
 			default: false
+		},
+		// 可见字段配置数组 - 空数组表示显示所有字段
+		visibleFields: {
+			type: Array,
+			default: () => []
+		}
+	},
+	computed: {
+		// 检查字段是否应该显示 - 空数组表示显示所有字段
+		shouldShowField() {
+			return fieldName => {
+				// 如果 visibleFields 为空数组，显示所有字段
+				if (!this.visibleFields || this.visibleFields.length === 0) {
+					return true;
+				}
+				// 否则检查字段是否在可见列表中
+				return this.visibleFields.includes(fieldName);
+			};
 		}
 	},
 	data() {
@@ -213,7 +231,6 @@ export default {
 				seaDriverName: null,
 				checkUserId: null,
 				checkState: null,
-				// invoiceState: '未开票',
 				path: null,
 				PaymentState: null,
 				landBankName: null,

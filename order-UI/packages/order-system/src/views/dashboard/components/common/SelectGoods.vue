@@ -49,7 +49,17 @@ export default {
 			preOrderList: [],
 
 			// 左下角检索的信号量
-			checkFlag: null
+			checkFlag: null,
+
+			// 定义 QuerySearchBar 显示的字段 - 只显示选择订单时常用的搜索条件
+			searchBarFields: [
+				'dateRange', // 时间范围
+				'customer', // 客户名称
+				'supplierNames', // 供应商
+				'landDriverName', // 司机名称
+				'landCarNo', // 车牌
+				'checkState' // 审核状态
+			]
 		};
 	},
 	created() {
@@ -395,7 +405,7 @@ export default {
 			<DialogWrapper :current-component="currentComponent" :dialog-visible="dialogVisible" />
 		</div>
 
-		<QuerySearchBar :query-params="queryParams" @updateQuery="handleQuery" />
+		<QuerySearchBar :query-params="queryParams" :visible-fields="searchBarFields" @updateQuery="handleQuery" />
 
 		<!-- 操作按钮：刷新 + 生成发票（右对齐） -->
 		<div class="select-actions">
@@ -437,7 +447,7 @@ export default {
 			<el-table-column show-overflow-tooltip label="ID" align="center" prop="id" />
 			<el-table-column show-overflow-tooltip label="日期" align="center" prop="orderDate" />
 			<el-table-column show-overflow-tooltip label="客户" align="center" prop="customer" />
-			<el-table-column show-overflow-tooltip label="供应商" align="center" prop="supplierNames" width="200"></el-table-column>
+			<el-table-column show-overflow-tooltip label="供应商/仓库" align="center" prop="supplierNames" width="200"></el-table-column>
 			<el-table-column show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo" />
 			<el-table-column show-overflow-tooltip label="陆运司机电话" align="center" prop="landDriverTel" width="100px" />
 			<el-table-column show-overflow-tooltip label="陆地司机姓名" align="center" prop="landDriverName" width="100px" />

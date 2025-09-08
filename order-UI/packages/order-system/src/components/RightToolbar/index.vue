@@ -88,8 +88,33 @@ export default {
 				}
 			}
 		}
+		
+		// 确保所有列都有明确的 visible 属性
+		this.initializeColumnVisibility();
+	},
+	watch: {
+		// 监听 columns 变化，确保新传入的列配置正确初始化
+		columns: {
+			handler() {
+				this.initializeColumnVisibility();
+			},
+			immediate: true,
+			deep: true
+		}
 	},
 	methods: {
+		// 初始化列的可见性
+		initializeColumnVisibility() {
+			if (this.columns && Array.isArray(this.columns)) {
+				this.columns.forEach((column, index) => {
+					// 如果 visible 属性未定义，默认设置为 true
+					if (typeof column.visible === 'undefined') {
+						this.$set(column, 'visible', true);
+					}
+				});
+			}
+		},
+		
 		// 打印
 		handlePrint() {},
 		// 搜索

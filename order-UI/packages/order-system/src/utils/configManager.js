@@ -18,14 +18,15 @@ class ConfigManager {
 			.filter(col => {
 				// 默认包含在表格中，除非明确设置为false
 				const includeInTable = col.includeInTable !== false;
-				const visible = col.visible !== false;
-				return includeInTable && visible;
+				return includeInTable;
 			})
 			.map((col, index) => {
-				// 确保每个配置项都有唯一的 key
+				// 确保每个配置项都有唯一的 key 和默认的 visible 属性
 				return {
 					...col,
-					key: col.key || col.prop || `column-${index}`
+					key: col.key || col.prop || `column-${index}`,
+					// 默认所有列都可见，除非明确设置为false
+					visible: col.visible !== false
 				};
 			});
 	}
