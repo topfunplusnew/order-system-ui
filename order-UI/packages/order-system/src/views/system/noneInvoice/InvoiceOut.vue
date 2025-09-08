@@ -176,7 +176,7 @@
 								@commitBack="handleCommitBackCompany"
 							>
 								<template #table-columns>
-									<el-table-column :label="type" align="center" prop="companyName" />
+									<el-table-column label="公司名称" align="center" prop="companyName" />
 									<el-table-column label="老板姓名" align="center" prop="leader" />
 									<el-table-column label="老板电话" align="center" prop="leaderTel" />
 									<el-table-column label="区域" align="center" prop="region" />
@@ -741,9 +741,6 @@ export default {
 					if (this.form.id != null) {
 						// 编辑时，从sessionStorage获取修改原因
 						const editReason = sessionStorage.getItem('editReason_invoiceOut');
-						if (!editReason || editReason.trim() === '') {
-							return;
-						}
 						submitData.editReason = editReason;
 
 						const finalData = excludeParams(submitData, this.$exclude);

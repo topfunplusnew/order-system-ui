@@ -675,6 +675,8 @@ export default {
 		// 取消按钮
 		cancel() {
 			this.open = false;
+			// 清空sessionStorage中的修改原因
+			sessionStorage.removeItem('editReason_invoiceOther_have');
 			// 清理 UploadFilesButton 组件状态
 			if (this.$refs.paymentReceiptsUpload) {
 				this.$refs.paymentReceiptsUpload.clearUploadedFiles();
@@ -756,117 +758,163 @@ export default {
 
 		/** 修改按钮操作 */
 		handleUpdate(row) {
-			this.$prompt('请输入修改原因', '提示', {
-				confirmButtonText: '确定',
-				cancelButtonText: '取消',
-				inputType: 'textarea',
-				inputPlaceholder: '请输入修改原因',
-				inputValidator: value => {
-					if (!value || value.trim() === '') {
-						return '修改原因不能为空';
+			// 先获取发票详情，判断是否需要填写修改原因
+			const id = row.id || this.ids;
+			getInvoiceOther(id)
+				.then(response => {
+					const invoiceOtherData = response.data;
+
+					// 判断是否需要填写修改原因
+					if (invoiceOtherData && invoiceOtherData.shouldTrackEditReason === true) {
+						// 需要填写修改原因
+						this.$prompt('请输入修改原因', '提示', {
+							confirmButtonText: '确定',
+							cancelButtonText: '取消',
+							inputType: 'textarea',
+							inputPlaceholder: '请输入修改原因',
+							inputValidator: value => {
+								if (!value || value.trim() === '') {
+									return '修改原因不能为空';
+								}
+								return true;
+							},
+							inputErrorMessage: '修改原因不能为空'
+						})
+							.then(({ value }) => {
+								// 将修改原因存储到sessionStorage
+								sessionStorage.setItem('editReason_invoiceOther_have', value);
+
+								// 继续编辑操作
+								this.performInvoiceOtherEdit(invoiceOtherData);
+							})
+							.catch(() => {
+								this.$message({
+									type: 'info',
+									message: '已取消修改'
+								});
+							});
+					} else {
+						// 不需要填写修改原因，直接进行编辑操作
+						this.performInvoiceOtherEdit(invoiceOtherData);
 					}
-					return true;
-				}
-			})
-				.then(({ value }) => {
-					// 将修改原因存储到sessionStorage
-					sessionStorage.setItem('editReason_invoiceOther_have', value);
-
-					// 清空全局附件池，避免残留其他表单的附件ID
-					this.$store.dispatch('attachments/clearAttachmentIds');
-
-					this.reset();
-					const id = row.id || this.ids;
-					getInvoiceOther(id).then(response => {
-						this.form = response.data;
-						// 确保 params 对象存在
-						if (!this.form.params) {
-							this.form.params = {};
-						}
-						// 确保 attachmentIds 是数组
-						if (!Array.isArray(this.form.params.attachmentIds)) {
-							this.form.params.attachmentIds = [];
-						}
-						// 处理附件列表 - 统一放入params.attachmentIds
-						if (this.form.attachmentList && Array.isArray(this.form.attachmentList)) {
-							this.form.params.attachmentIds = this.form.attachmentList.map(item => item.id);
-						}
-						this.open = true;
-						this.title = '修改商家直接给客户开发票';
-					});
 				})
-				.catch(() => {
-					this.$message({
-						type: 'info',
-						message: '已取消修改'
-					});
+				.catch(error => {
+					console.error('获取发票详情失败:', error);
+					this.$message.error('获取发票详情失败');
 				});
+		},
+
+		// 执行发票编辑操作的逻辑
+		performInvoiceOtherEdit(invoiceOtherData) {
+			// 清空全局附件池，避免残留其他表单的附件ID
+			this.$store.dispatch('attachments/clearAttachmentIds');
+
+			this.reset();
+			this.form = {
+				...invoiceOtherData,
+				params: {
+					...invoiceOtherData.params,
+					attachmentIds: invoiceOtherData.attachmentList ? invoiceOtherData.attachmentList.map(item => item.id) : []
+				}
+			};
+
+			// 处理附件列表，分别提取不同类型的附件
+			if (this.form.attachmentList && Array.isArray(this.form.attachmentList)) {
+				// 将附件ID添加到全局池
+				this.form.attachmentList.forEach(attachment => {
+					this.$store.dispatch('attachments/addAttachmentId', attachment.id);
+				});
+			}
+
+			this.open = true;
+			this.title = '修改商家直接给客户开发票';
 		},
 		/** 提交按钮 */
 		submitForm() {
+			console.log('提交表单开始', this.form);
 			this.$refs['form'].validate(valid => {
+				console.log('表单验证结果:', valid);
 				if (valid) {
 					// 直接从Vuex全局池获取所有附件ID
 					const allAttachmentIds = this.$store.getters['attachments/getAttachmentIds'];
+					const originalAttachmentIds = allAttachmentIds ? [...allAttachmentIds] : [];
 
+					// 确保 form.params 存在
 					if (!this.form.params) {
 						this.form.params = {};
 					}
 					this.form.params.attachmentIds = [...allAttachmentIds];
 
-					console.log('submitForm - 从全局池获取的附件ID:', allAttachmentIds);
-
 					// 创建提交数据的副本
 					const submitData = { ...this.form };
 
+					// 移除不应该提交给后端的字段
+					delete submitData.attachmentList;
+
 					if (this.form.id != null) {
-						// 修改时，从sessionStorage获取修改原因
+						// 编辑时，从sessionStorage获取修改原因
 						const editReason = sessionStorage.getItem('editReason_invoiceOther_have');
 						if (!editReason || editReason.trim() === '') {
+							this.$message.error('修改原因不能为空');
 							return;
 						}
 						submitData.editReason = editReason;
+
+						console.log('修改数据:', submitData);
+						updateInvoiceOther(submitData)
+							.then(() => {
+								this.$modal.msgSuccess('修改成功');
+								this.open = false;
+								// 清空sessionStorage中的修改原因
+								sessionStorage.removeItem('editReason_invoiceOther_have');
+								// 清理 UploadFilesButton 状态
+								if (this.$refs.paymentReceiptsUpload) {
+									this.$refs.paymentReceiptsUpload.clearUploadedFiles();
+								}
+								if (this.$refs.invoiceAttachmentsUpload) {
+									this.$refs.invoiceAttachmentsUpload.clearUploadedFiles();
+								}
+								this.getList();
+							})
+							.catch(error => {
+								console.error('修改失败:', error);
+								// 修改失败时不清空sessionStorage，用户可以重试
+								// 回滚附件ID到原始状态
+								this.$store.dispatch('attachments/clearAttachmentIds');
+								originalAttachmentIds.forEach(id => {
+									this.$store.dispatch('attachments/addAttachmentId', id);
+								});
+								this.$message.error('修改失败: ' + (error.message || error.msg || '未知错误'));
+							});
 					} else {
-						// 新增时，移除修改原因字段
+						// 新增时，不需要修改原因
 						delete submitData.editReason;
 						submitData.customerTicketPoint = 0;
-					}
 
-					const submitPromise = this.form.id != null ? updateInvoiceOther(submitData) : addInvoiceOther(submitData);
-
-					submitPromise
-						.then(response => {
-							this.$modal.msgSuccess(this.form.id != null ? '修改成功' : '新增成功');
-							this.open = false;
-							this.getList();
-							// 清除sessionStorage中的修改原因
-							if (this.form.id != null) {
-								sessionStorage.removeItem('editReason_invoiceOther_have');
-							}
-							// 提交成功后清理上传组件状态
-							if (this.$refs.paymentReceiptsUpload) {
-								this.$refs.paymentReceiptsUpload.clearUploadedFiles();
-							}
-							if (this.$refs.invoiceAttachmentsUpload) {
-								this.$refs.invoiceAttachmentsUpload.clearUploadedFiles();
-							}
-						})
-						.catch(error => {
-							// 提交失败时，恢复原始的附件 ID 列表
-							if (this.form.params) {
-								this.form.params.attachmentIds = originalAttachmentIds;
-							}
-
-							// 从全局 Vuex 池中移除本次添加的文件 ID
-							const currentIds = this.form.params ? this.form.params.attachmentIds : [];
-							const addedIds = currentIds.filter(id => !originalAttachmentIds.includes(id));
-							addedIds.forEach(id => {
-								this.$store.dispatch('attachments/removeAttachmentId', id);
+						console.log('新增数据:', submitData);
+						addInvoiceOther(submitData)
+							.then(() => {
+								this.$modal.msgSuccess('新增成功');
+								this.open = false;
+								// 清理 UploadFilesButton 状态
+								if (this.$refs.paymentReceiptsUpload) {
+									this.$refs.paymentReceiptsUpload.clearUploadedFiles();
+								}
+								if (this.$refs.invoiceAttachmentsUpload) {
+									this.$refs.invoiceAttachmentsUpload.clearUploadedFiles();
+								}
+								this.getList();
+							})
+							.catch(error => {
+								console.error('新增失败:', error);
+								// 新增失败时，清理全局附件池
+								this.$store.dispatch('attachments/clearAttachmentIds');
+								this.$message.error('新增失败: ' + (error.message || error.msg || '未知错误'));
 							});
-
-							console.error('提交失败:', error);
-							this.$modal.msgError('提交失败: ' + (error.message || error.msg || '未知错误'));
-						});
+					}
+				} else {
+					console.log('表单验证失败');
+					this.$message.error('请检查表单填写是否正确');
 				}
 			});
 		},
