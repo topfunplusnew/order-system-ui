@@ -212,11 +212,11 @@
 				<el-form-item label="厚度" prop="height">
 					<el-input v-model="form.height" placeholder="请输入厚度" @input="handleNumberInput($event, 'form', 'height')" />
 				</el-form-item>
-				<el-form-item label="宽度" prop="width">
-					<el-input v-model="form.width" placeholder="请输入宽度" @input="handleNumberInput($event, 'form', 'width')" />
-				</el-form-item>
 				<el-form-item label="长度" prop="length">
 					<el-input v-model="form.length" placeholder="请输入长度" @input="handleNumberInput($event, 'form', 'length')" />
+				</el-form-item>
+				<el-form-item label="宽度" prop="width">
+					<el-input v-model="form.width" placeholder="请输入宽度" @input="handleNumberInput($event, 'form', 'width')" />
 				</el-form-item>
 				<el-form-item label="吨位差" prop="tonnage">
 					<el-input v-model="form.tonnage" placeholder="请输入吨位差" @input="handleNumberInput($event, 'form', 'tonnage')" />
