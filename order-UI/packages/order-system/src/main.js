@@ -58,6 +58,9 @@ import 'ant-design-vue/dist/antd.css';
 import 'vue-tour/dist/vue-tour.css';
 import VueTour from 'vue-tour';
 import keepAliveDialog from '@/views/dashboard/mixins/keepAliveDialog';
+// 引入通用弹窗混入和组件
+import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
+import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 
 message.config({
 	top: '10px',
@@ -182,6 +185,8 @@ import VueCompositionAPI from '@vue/composition-api';
 Vue.use(VueCompositionAPI);
 // 全局注册 keepAliveDialog 混入，使 system 目录下组件自动应用
 Vue.mixin(keepAliveDialog);
+// 全局注册通用弹窗混入
+Vue.mixin(common_dialog);
 
 export const isNull = val => {
 	return !val ? '暂无' : val;
@@ -195,6 +200,8 @@ Vue.component('Editor', Editor);
 Vue.component('FileUpload', FileUpload);
 Vue.component('ImageUpload', ImageUpload);
 Vue.component('ImagePreview', ImagePreview);
+// 全局注册通用弹窗组件
+Vue.component('DialogWrapper', DialogWrapper);
 Vue.use(directive);
 Vue.use(plugins);
 Vue.use(VueMeta);

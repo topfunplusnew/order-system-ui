@@ -25,4 +25,3 @@ export var mixin_order_applyPayment = {
 		}
 	}
 };
-

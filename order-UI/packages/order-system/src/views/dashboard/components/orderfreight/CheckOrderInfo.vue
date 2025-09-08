@@ -16,8 +16,8 @@ export default {
 	props: {
 		row: {
 			type: Object,
-			default: () => { }
-		},
+			default: () => {}
+		}
 	},
 	data() {
 		return {
@@ -27,13 +27,12 @@ export default {
 			adjustedOrderInfo: {},
 			visible: false,
 			// tab页
-			activeName: 'first',
-
+			activeName: 'first'
 		};
 	},
 	computed: {
 		title() {
-			return this.row.source === FREIGHT_TYPE.GOODS_ORDER ? '查看订单信息' : '查看库存信息'
+			return this.row.source === FREIGHT_TYPE.GOODS_ORDER ? '查看订单信息' : '查看库存信息';
 		}
 	},
 	methods: {
@@ -56,7 +55,7 @@ export default {
 							needToShowInfo: res.data
 						},
 						false
-					)
+					);
 				});
 			}
 		},
@@ -75,9 +74,7 @@ export default {
 
 <template>
 	<div>
-		<el-button v-hasPermi="['system:goodsorder:query', 'system:inventoryMain:query']" size="mini" type="text"
-			@click="handleCheck(row)">{{ title
-			}}</el-button>
+		<el-button v-hasPermi="['system:goodsorder:query', 'system:inventoryMain:query']" size="mini" type="text" @click="handleCheck(row)">{{ title }}</el-button>
 
 		<!--    弹窗-->
 		<InfoDialog :visible="visible" title="订单单据信息" :width="'980px'" @close="visible = false">

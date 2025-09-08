@@ -2,16 +2,13 @@
 	<div class="app-container">
 		<el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="68px">
 			<el-form-item label="车辆型号" prop="model">
-				<el-input v-model="queryParams.model" placeholder="请输入车辆型号" clearable @keyup.enter.native="handleQuery"
-					@input="handleInputTrim($event, 'queryParams', 'model')" />
+				<el-input v-model="queryParams.model" placeholder="请输入车辆型号" clearable @keyup.enter.native="handleQuery" @input="handleInputTrim($event, 'queryParams', 'model')" />
 			</el-form-item>
 			<el-form-item label="车牌号" prop="licensePlate">
-				<el-input v-model="queryParams.licensePlate" placeholder="请输入车牌号" clearable
-					@keyup.enter.native="handleQuery" @input="handleInputTrim($event, 'queryParams', 'licensePlate')" />
+				<el-input v-model="queryParams.licensePlate" placeholder="请输入车牌号" clearable @keyup.enter.native="handleQuery" @input="handleInputTrim($event, 'queryParams', 'licensePlate')" />
 			</el-form-item>
 			<el-form-item label="购买时间" prop="purchaseDate">
-				<el-date-picker clearable v-model="queryParams.purchaseDate" type="date" value-format="yyyy-MM-dd"
-					placeholder="请选择购买时间"></el-date-picker>
+				<el-date-picker clearable v-model="queryParams.purchaseDate" type="date" value-format="yyyy-MM-dd" placeholder="请选择购买时间"></el-date-picker>
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -21,20 +18,16 @@
 
 		<el-row :gutter="10" class="mb8">
 			<el-col :span="1.5">
-				<el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd"
-					v-hasPermi="['system:vehicles:add']">新增</el-button>
+				<el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd" v-hasPermi="['system:vehicles:add']">新增</el-button>
 			</el-col>
 			<el-col :span="1.5">
-				<el-button type="success" plain icon="el-icon-edit" size="mini" :disabled="single" @click="handleUpdate"
-					v-hasPermi="['system:vehicles:edit']">修改</el-button>
+				<el-button type="success" plain icon="el-icon-edit" size="mini" :disabled="single" @click="handleUpdate" v-hasPermi="['system:vehicles:edit']">修改</el-button>
 			</el-col>
 			<el-col :span="1.5">
-				<el-button type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple"
-					@click="handleDelete" v-hasPermi="['system:vehicles:remove']">删除</el-button>
+				<el-button type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete" v-hasPermi="['system:vehicles:remove']">删除</el-button>
 			</el-col>
 			<el-col :span="1.5">
-				<el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport"
-					v-hasPermi="['system:vehicles:export']">导出</el-button>
+				<el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport" v-hasPermi="['system:vehicles:export']">导出</el-button>
 			</el-col>
 			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
 				<template #print>
@@ -44,15 +37,13 @@
 				</template>
 				<template #export>
 					<el-col :span="1.5">
-						<el-button v-hasPermi="['system:bankaccount:export']" plain icon="el-icon-folder-opened"
-							size="mini" @click="handleExport"></el-button>
+						<el-button v-hasPermi="['system:bankaccount:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
 					</el-col>
 				</template>
 			</right-toolbar>
 		</el-row>
 
-		<el-table id="printBox" size="mini" v-loading="loading" :data="vehiclesList"
-			@selection-change="handleSelectionChange">
+		<el-table id="printBox" size="mini" v-loading="loading" :data="vehiclesList" @selection-change="handleSelectionChange">
 			<el-table-column type="selection" width="55" align="center" />
 			<el-table-column v-if="columns[0].visible" label="车辆型号" align="center" prop="model" />
 			<el-table-column v-if="columns[1].visible" label="车牌号" align="center" prop="licensePlate" />
@@ -72,62 +63,47 @@
 			<el-table-column v-if="columns[7].visible" label="备注" align="center" prop="notes" />
 			<el-table-column label="附件" align="center">
 				<template slot-scope="scope">
-					<el-button size="mini" type="primary" icon="el-icon-upload"
-						@click="handleUploadAttachments(scope.row)">附件上传</el-button>
+					<el-button size="mini" type="primary" icon="el-icon-upload" @click="handleUploadAttachments(scope.row)">附件上传</el-button>
 				</template>
 			</el-table-column>
 			<!--			<el-table-column label="扩展性保留字段" align="center" prop="extraInfo" />-->
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
 				<template slot-scope="scope">
-					<el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)"
-						v-hasPermi="['system:vehicles:edit']">修改</el-button>
-					<el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)"
-						v-hasPermi="['system:vehicles:remove']">删除</el-button>
-					<el-button size="mini" type="text" icon="el-icon-picture"
-						@click="handleViewAttachments(scope.row)">查看附件</el-button>
+					<el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)" v-hasPermi="['system:vehicles:edit']">修改</el-button>
+					<el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)" v-hasPermi="['system:vehicles:remove']">删除</el-button>
+					<el-button size="mini" type="text" icon="el-icon-picture" @click="handleViewAttachments(scope.row)">查看附件</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
 
-		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum"
-			:limit.sync="queryParams.pageSize" @pagination="getList" />
+		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改车辆信息对话框 -->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="title" :visible.sync="open"
-			width="500px" append-to-body>
-			<el-form ref="form" :model="form" :rules="rules" label-width="80px" @keyup.enter.native="submitForm"
-				@submit.native.prevent="submitForm" size="mini">
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="title" :visible.sync="open" width="500px" append-to-body>
+			<el-form ref="form" :model="form" :rules="rules" label-width="80px" @keyup.enter.native="submitForm" @submit.native.prevent="submitForm" size="mini">
 				<el-form-item label="车辆型号" prop="model">
-					<el-input v-model="form.model" placeholder="请输入车辆型号"
-						@input="handleInputTrim($event, 'form', 'model')" />
+					<el-input v-model="form.model" placeholder="请输入车辆型号" @input="handleInputTrim($event, 'form', 'model')" />
 				</el-form-item>
 				<el-form-item label="车牌号" prop="licensePlate">
-					<el-input v-model="form.licensePlate" placeholder="请输入车牌号"
-						@input="handleInputTrim($event, 'form', 'licensePlate')" />
+					<el-input v-model="form.licensePlate" placeholder="请输入车牌号" @input="handleInputTrim($event, 'form', 'licensePlate')" />
 				</el-form-item>
 				<el-form-item label="购买时间" prop="purchaseDate">
-					<el-date-picker clearable v-model="form.purchaseDate" type="date" value-format="yyyy-MM-dd"
-						placeholder="请选择购买时间"></el-date-picker>
+					<el-date-picker clearable v-model="form.purchaseDate" type="date" value-format="yyyy-MM-dd" placeholder="请选择购买时间"></el-date-picker>
 				</el-form-item>
 				<el-form-item label="行驶里程" prop="mileage">
-					<el-input v-model="form.mileage" placeholder="请输入行驶里程"
-						@input="handleNumberInput($event, 'form', 'mileage')" />
+					<el-input v-model="form.mileage" placeholder="请输入行驶里程" @input="handleNumberInput($event, 'form', 'mileage')" />
 				</el-form-item>
 				<el-form-item label="保养金额" prop="maintenanceCost">
-					<el-input v-model="form.maintenanceCost" placeholder="请输入保养金额"
-						@input="handleNumberInput($event, 'form', 'maintenanceCost')" />
+					<el-input v-model="form.maintenanceCost" placeholder="请输入保养金额" @input="handleNumberInput($event, 'form', 'maintenanceCost')" />
 				</el-form-item>
 				<el-form-item label="保养日期" prop="maintenanceDate">
-					<el-date-picker clearable v-model="form.maintenanceDate" type="date" value-format="yyyy-MM-dd"
-						placeholder="请选择保养日期"></el-date-picker>
+					<el-date-picker clearable v-model="form.maintenanceDate" type="date" value-format="yyyy-MM-dd" placeholder="请选择保养日期"></el-date-picker>
 				</el-form-item>
 				<el-form-item label="保险金额" prop="insuranceCost">
-					<el-input v-model="form.insuranceCost" placeholder="请输入保险金额"
-						@input="handleNumberInput($event, 'form', 'insuranceCost')" />
+					<el-input v-model="form.insuranceCost" placeholder="请输入保险金额" @input="handleNumberInput($event, 'form', 'insuranceCost')" />
 				</el-form-item>
 				<el-form-item label="备注" prop="notes">
-					<el-input v-model="form.notes" type="textarea" placeholder="请输入内容"
-						@input="handleInputTrim($event, 'form', 'notes')" />
+					<el-input v-model="form.notes" type="textarea" placeholder="请输入内容" @input="handleInputTrim($event, 'form', 'notes')" />
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -137,8 +113,7 @@
 		</el-dialog>
 
 		<!-- 查看附件对话框 -->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="'查看附件'"
-			:visible.sync="attachmentsDialogVisible" width="600px" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="'查看附件'" :visible.sync="attachmentsDialogVisible" width="600px" append-to-body>
 			<h3>图片附件</h3>
 			<el-carousel v-if="imageAttachments.length" :interval="5000" type="card" height="400px">
 				<el-carousel-item v-for="(item, index) in imageAttachments" :key="index">
@@ -155,12 +130,22 @@
 		</el-dialog>
 
 		<!-- 附件上传对话框 -->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="'附件上传'"
-			:visible.sync="uploadDialogVisible" width="600px" append-to-body>
-			<el-upload class="upload-demo" :action="uploadFileUrl" :headers="{
-				Authorization: 'Bearer ' + getToken()
-			}" list-type="picture-card" :on-success="handleUploadSuccess" :multiple="true" :file-list="fileList"
-				:auto-upload="true" :on-preview="handlePreview" :on-remove="handleRemove" :on-change="handleChange">
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="'附件上传'" :visible.sync="uploadDialogVisible" width="600px" append-to-body>
+			<el-upload
+				class="upload-demo"
+				:action="uploadFileUrl"
+				:headers="{
+					Authorization: 'Bearer ' + getToken()
+				}"
+				list-type="picture-card"
+				:on-success="handleUploadSuccess"
+				:multiple="true"
+				:file-list="fileList"
+				:auto-upload="true"
+				:on-preview="handlePreview"
+				:on-remove="handleRemove"
+				:on-change="handleChange"
+			>
 				<i class="el-icon-plus"></i>
 			</el-upload>
 			<el-button type="primary" @click="submitUpload">上传</el-button>
@@ -445,7 +430,7 @@ export default {
 					this.getList();
 					this.$modal.msgSuccess('删除成功');
 				})
-				.catch(() => { });
+				.catch(() => {});
 		},
 		/** 导出按钮操作 */
 		handleExport() {

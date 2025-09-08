@@ -2,7 +2,6 @@
 import { moduleNames, TableName } from 'order-system/src/api/tool/enums';
 import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
-import OrderChanging from '@/views/dashboard/backuplog/goodsorder/OrderChanging.vue';
 import { TypeUtils } from '@/views/dashboard/backuplog/index';
 import { filtersFunc } from '@/views/dashboard/backuplog/goodsorder';
 import CommonChange from '@/views/dashboard/backuplog/goodsorder/CommonChange.vue';

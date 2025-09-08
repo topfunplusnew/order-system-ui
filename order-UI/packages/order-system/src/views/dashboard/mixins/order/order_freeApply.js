@@ -38,7 +38,7 @@ export var mixin_order_freeApply = {
 					accountInfo: {
 						bankNo: res.data.bankNo,
 						acountsName: res.data.acountsName,
-						bankName: res.data.bankName,
+						bankName: res.data.bankName
 					}
 				};
 				// 打开弹窗
@@ -84,7 +84,7 @@ export var mixin_order_freeApply = {
 					accountInfo: {
 						bankNo: res.data.bankNo,
 						acountsName: res.data.acountsName,
-						bankName: res.data.bankName,
+						bankName: res.data.bankName
 					}
 				};
 				// 打开弹窗

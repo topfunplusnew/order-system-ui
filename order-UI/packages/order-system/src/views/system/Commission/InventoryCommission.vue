@@ -2,12 +2,10 @@
 	<div class="app-container">
 		<el-form ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="130px">
 			<el-form-item label="开始时间" prop="beginTime">
-				<el-date-picker v-model="queryParams.params.startTime" type="date" placeholder="请选择开始时间"
-					value-format="yyyy-MM-dd" clearable />
+				<el-date-picker v-model="queryParams.params.startTime" type="date" placeholder="请选择开始时间" value-format="yyyy-MM-dd" clearable />
 			</el-form-item>
 			<el-form-item label="结束时间" prop="endTime">
-				<el-date-picker v-model="queryParams.params.endTime" type="date" placeholder="请选择结束时间"
-					value-format="yyyy-MM-dd" clearable />
+				<el-date-picker v-model="queryParams.params.endTime" type="date" placeholder="请选择结束时间" value-format="yyyy-MM-dd" clearable />
 			</el-form-item>
 			<el-form-item label="厂家名称" prop="companyName">
 				<el-input v-model="queryParams.companyName" placeholder="请输入厂家名称" clearable />
@@ -28,8 +26,7 @@
 		</el-form>
 		<el-row>
 			<el-button size="mini" icon="el-icon-refresh" @click="refresh">刷新</el-button>
-			<el-button :disabled="selections.length <= 0" size="mini" type="success" icon="el-icon-s-claim"
-				@click="handleOnceApply">一键申请</el-button>
+			<el-button :disabled="selections.length <= 0" size="mini" type="success" icon="el-icon-s-claim" @click="handleOnceApply">一键申请</el-button>
 		</el-row>
 		<el-row :gutter="10" class="mb8">
 			<right-toolbar :columns="columns" @queryTable="getList">
@@ -47,11 +44,21 @@
 		</el-row>
 
 		<br />
-		<el-table ref="multipleTable" id="printBox" v-loading="loading" v-horizontal-scroll="'always'" border
-			:data="tableData" size="mini" :cell-style="() => {
+		<el-table
+			ref="multipleTable"
+			id="printBox"
+			v-loading="loading"
+			v-horizontal-scroll="'always'"
+			border
+			:data="tableData"
+			size="mini"
+			:cell-style="
+				() => {
 					return { padding: '1.5px' };
 				}
-				" @selection-change="handleSelectionChange">
+			"
+			@selection-change="handleSelectionChange"
+		>
 			<el-table-column type="selection" width="55" align="center" :selectable="(row, index) => row.id !== null" />
 			<el-table-column show-overflow-tooltip label="日期" align="center" prop="orderDate" width="140" />
 			<el-table-column show-overflow-tooltip label="厂家名称" align="center" prop="companyName" width="140" />
@@ -77,40 +84,42 @@
 			<el-table-column show-overflow-tooltip label="面积" align="center" prop="area" width="100" />
 			<el-table-column show-overflow-tooltip label="佣金单价" align="center" prop="commissionUnitPrice" width="100" />
 			<el-table-column show-overflow-tooltip label="已验证佣金" align="center" prop="verifiedCommission" width="100" />
-			<el-table-column show-overflow-tooltip label="其他付款金额" align="center" prop="otherPaymentAmount"
-				width="100" />
+			<el-table-column show-overflow-tooltip label="其他付款金额" align="center" prop="otherPaymentAmount" width="100" />
 			<el-table-column show-overflow-tooltip label="订单计提佣金" align="center" prop="commissionAmount" width="100" />
-			<el-table-column show-overflow-tooltip label="实际库存厂家佣金" align="center" prop="actualCustomerCommission"
-				width="100" />
+			<el-table-column show-overflow-tooltip label="实际库存厂家佣金" align="center" prop="actualCustomerCommission" width="100" />
 			<el-table-column show-overflow-tooltip label="支付日期" align="center" prop="fundDate" width="100" />
 			<el-table-column show-overflow-tooltip label="差异" align="center" prop="difference" width="100" />
 			<el-table-column show-overflow-tooltip label="差异原因" align="center" prop="differenceReason" width="100" />
 			<!--      加一列操作列-->
 			<el-table-column show-overflow-tooltip label="操作" align="center" width="230" fixed="right">
 				<template slot-scope="scope">
-					<el-button type="text" size="mini" @click="handleEdit(scope.row)">{{ scope.row.id ? '修改佣金信息' :
-						'填写佣金信息' }}</el-button>
-					<el-button :disabled="scope.row.id === null" type="text" size="mini"
-						@click="handleDelete(scope.row)">删除</el-button>
-					<el-button :disabled="scope.row.id === null" type="text" size="mini"
-						@click="handleApplyPayment(scope.row)">申请付款</el-button>
+					<el-button type="text" size="mini" @click="handleEdit(scope.row)">{{ scope.row.id ? '修改佣金信息' : '填写佣金信息' }}</el-button>
+					<el-button :disabled="scope.row.id === null" type="text" size="mini" @click="handleDelete(scope.row)">删除</el-button>
+					<el-button :disabled="scope.row.id === null" type="text" size="mini" @click="handleApplyPayment(scope.row)">申请付款</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
 
-		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum"
-			:limit.sync="queryParams.pageSize" @pagination="getList" />
+		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<div v-if="currentComponent">
 			<DialogWrapper :current-component="currentComponent" :dialog-visible="dialogVisible" />
 		</div>
 
 		<!--    申请付款-->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false"
-			:show-close="false" title="付款申请" :visible.sync="PaymentApplyInfoVisible" width="45%">
+		<el-dialog
+			:modal="false"
+			v-dialogDrag
+			v-dialogDragWidth
+			v-dialogDragHeight
+			:close-on-click-modal="false"
+			:show-close="false"
+			title="付款申请"
+			:visible.sync="PaymentApplyInfoVisible"
+			width="45%"
+		>
 			<keep-alive>
-				<ApplyPayment :money-input-disabled="false" :table-name="TableName.ORDERCOMMISION" :t-i-d="tID"
-					:need-money="needMoney" :need-info="{}" @changeOpen="changePaymentApplyInfoVisible" />
+				<ApplyPayment :money-input-disabled="false" :table-name="TableName.ORDERCOMMISION" :t-i-d="tID" :need-money="needMoney" :need-info="{}" @changeOpen="changePaymentApplyInfoVisible" />
 			</keep-alive>
 		</el-dialog>
 	</div>

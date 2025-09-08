@@ -7,18 +7,11 @@ import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue
 export var common_dialog = {
 	data() {
 		return {
-			currentComponent: null,
-			dialogVisible: false,
 			// 存储动态创建的弹窗实例
 			_dialogInstances: [],
 			// 存储弹窗配置，用于重新创建
 			_dialogConfigs: []
 		};
-	},
-	watch: {
-		dialogVisible(newVal) {
-			console.log(`弹窗状态变化: ${newVal}`);
-		}
 	},
 	created() {
 		// 确保数组在组件创建时就初始化

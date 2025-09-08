@@ -16,5 +16,5 @@ const node = process.execPath;
 const child = spawn(node, [mjsPath], { stdio: 'inherit' });
 
 child.on('close', code => {
- 	process.exit(code);
+	process.exit(code);
 });

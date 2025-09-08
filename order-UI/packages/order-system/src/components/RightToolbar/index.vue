@@ -19,23 +19,12 @@
 				<el-dropdown v-if="showColumnsType == 'checkbox'" trigger="click" :hide-on-click="false" style="padding-left: 12px">
 					<el-button size="mini" icon="el-icon-s-open" />
 					<el-dropdown-menu slot="dropdown">
-						<template v-for="item in columns">
-							<el-dropdown-item :key="item.key">
-								<el-checkbox :checked="item.visible" :label="item.label" @change="checkboxChange($event, item.label)" />
-							</el-dropdown-item>
-						</template>
+						<el-dropdown-item v-for="item in columns" :key="item.key || item.prop || item.label">
+							<el-checkbox :checked="item.visible" :label="item.label" @change="checkboxChange($event, item.label)" />
+						</el-dropdown-item>
 					</el-dropdown-menu>
 				</el-dropdown>
 			</el-tooltip>
-			<!--      显示与隐藏-->
-			<!--      <el-tooltip class="item" effect="dark" :content="showSearch ? '隐藏搜索' : '显示搜索'" placement="top"-->
-			<!--                  v-if="search">-->
-			<!--        <el-button size="mini" icon="el-icon-search" @click="toggleSearch()"/>-->
-			<!--      </el-tooltip>-->
-			<!--      刷新-->
-			<!--      <el-tooltip class="item" effect="dark" content="刷新" placement="top">-->
-			<!--        <el-button size="mini" circle icon="el-icon-refresh" @click="refresh()"/>-->
-			<!--      </el-tooltip>-->
 		</el-row>
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :title="title" :visible.sync="open" append-to-body>
 			<el-transfer v-model="value" :titles="['显示', '隐藏']" :data="columns" @change="dataChange"></el-transfer>
@@ -124,7 +113,17 @@ export default {
 		},
 		// 勾选
 		checkboxChange(event, label) {
-			this.columns.filter(item => item.label == label)[0].visible = event;
+			const columnIndex = this.columns.findIndex(item => item.label === label);
+			if (columnIndex !== -1) {
+				// 使用Vue.set确保响应式更新
+				this.$set(this.columns[columnIndex], 'visible', event);
+				// 通知父组件列配置已更改
+				this.$emit('column-change', {
+					index: columnIndex,
+					column: this.columns[columnIndex],
+					visible: event
+				});
+			}
 		}
 	}
 };

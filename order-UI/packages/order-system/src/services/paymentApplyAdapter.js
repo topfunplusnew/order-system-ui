@@ -67,7 +67,7 @@ function calculateAmountForReference(totalAmount, referenceCount) {
 	if (!totalAmount || !referenceCount || referenceCount <= 0) {
 		return 0;
 	}
-	
+
 	// 平均分配金额，保留两位小数
 	return Math.round((totalAmount / referenceCount) * 100) / 100;
 }
@@ -84,7 +84,7 @@ export function validatePaymentApplyData(data) {
 	if (!data.fundsDate) {
 		errors.push('资金日期不能为空');
 	}
-	
+
 	if (!data.moneyAmount || data.moneyAmount <= 0) {
 		errors.push('申请金额必须大于0');
 	}

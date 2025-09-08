@@ -44,11 +44,11 @@ export var mixin_order_Invoice = {
 		hasInvoice(row, type) {
 			return type === PUBLIC_DICT_TYPE.CUSTOMER
 				? row.smailOrderDetails.some(item => {
-					return item.isIncludeTaxSale === 1;
-				})
+						return item.isIncludeTaxSale === 1;
+				  })
 				: row.smailOrderDetails.some(item => {
-					return item.isIncludeTaxFactory === 1;
-				});
+						return item.isIncludeTaxFactory === 1;
+				  });
 		},
 		// 点击客户开票按钮 客户开票 最大开票金额为总货款
 		updateOrderItemVisibleCustomerInvoice(row) {

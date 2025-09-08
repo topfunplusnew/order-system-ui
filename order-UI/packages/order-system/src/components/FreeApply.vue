@@ -90,7 +90,7 @@ export default {
 		listCompany,
 		listCars,
 		getDriverAccountInfo() {
-			console.log(`自动填充:`, this.orderInfo)
+			console.log(`自动填充:`, this.orderInfo);
 			this.form.otherAcountsName = this.orderInfo.accountInfo.acountsName;
 			this.form.otherBankNo = this.orderInfo.accountInfo.bankNo;
 			this.form.otherBankName = this.orderInfo.accountInfo.bankName;
@@ -115,7 +115,7 @@ export default {
 				}
 			});
 		},
-		handleReject() { },
+		handleReject() {},
 		handleCommitBack(val) {
 			this.form.otherAcountsName = val.acountsName;
 			this.form.otherBankName = val.bankName;
@@ -196,11 +196,18 @@ export default {
 						<el-input disabled v-model="form.otherAcountsName" placeholder="请选择或添加" />
 					</el-col>
 					<el-col :span="4">
-						<SearchOption :limit-info="{
-							acountsType: '司机',
-							companyId: this.orderInfo.driverId
-						}" :get-data="listBankAccount" query-label="户名搜索" query-info="acountsName" :query-name="queryAcountsName"
-							@commitBack="handleCommitBack" @update:queryName="handleChange">
+						<SearchOption
+							:limit-info="{
+								acountsType: '司机',
+								companyId: this.orderInfo.driverId
+							}"
+							:get-data="listBankAccount"
+							query-label="户名搜索"
+							query-info="acountsName"
+							:query-name="queryAcountsName"
+							@commitBack="handleCommitBack"
+							@update:queryName="handleChange"
+						>
 							<template #table-columns>
 								<el-table-column label="车牌号" align="center" prop="companyName" />
 								<el-table-column label="开户行" align="center" prop="bankName" />
@@ -221,8 +228,7 @@ export default {
 				<el-input disabled v-model="form.otherBankName" placeholder="请选择" />
 			</el-form-item>
 			<el-form-item label="支付日期" prop="payDate">
-				<el-date-picker v-model="form.payDate" type="datetime" placeholder="选择日期"
-					value-format="yyyy-MM-dd HH:mm:ss" />
+				<el-date-picker v-model="form.payDate" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss" />
 			</el-form-item>
 			<el-form-item label="备注信息">
 				<el-input v-model="form.content" placeholder="请输入备注信息" />
@@ -232,8 +238,17 @@ export default {
 			</el-form-item>
 		</el-form>
 
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="快速添加司机银行卡信息"
-			:visible.sync="addBankAccountDialogVisible" width="500px" append-to-body :close-on-click-modal="false">
+		<el-dialog
+			:modal="false"
+			v-dialogDrag
+			v-dialogDragWidth
+			v-dialogDragHeight
+			title="快速添加司机银行卡信息"
+			:visible.sync="addBankAccountDialogVisible"
+			width="500px"
+			append-to-body
+			:close-on-click-modal="false"
+		>
 			<el-form ref="bankAccountFormRef" :model="bankAccountForm" :rules="bankAccountRules" label-width="120px">
 				<el-form-item label="车牌" prop="acountsName">
 					<el-row>
@@ -242,10 +257,15 @@ export default {
 						</el-col>
 						<el-col :span="4">
 							<el-tooltip content="选择车辆" placement="top">
-								<SearchOption :limit-info="{}" :get-data="listCars" query-info="carNo"
-									query-label="车牌查找" :query-name="queryBankAccount"
+								<SearchOption
+									:limit-info="{}"
+									:get-data="listCars"
+									query-info="carNo"
+									query-label="车牌查找"
+									:query-name="queryBankAccount"
 									@update:queryName="handleUpdateBankAccount"
-									@commitBack="handleCommitBackBankAccount">
+									@commitBack="handleCommitBackBankAccount"
+								>
 									<template #table-columns>
 										<el-table-column label="司机" align="center" prop="driver" />
 										<el-table-column label="车牌号" align="center" prop="carNo" />
