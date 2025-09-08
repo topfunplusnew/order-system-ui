@@ -70,69 +70,69 @@
 			"
 			@selection-change="handleSelectionChange"
 		>
-			<el-table-column type="selection" width="55" align="center" :selectable="(row, index) => row.id !== null && isPaymentUnApplied(row)" />
-			<el-table-column label="批量佣金" width="80" align="center">
+			<CustomTableColumn type="selection" width="55" align="center" :selectable="(row, index) => row.id !== null && isPaymentUnApplied(row)" />
+			<CustomTableColumn label="批量佣金" width="80" align="center">
 				<template slot-scope="scope">
 					<el-checkbox v-if="scope.row.id === null" :value="scope.row.batchSelected" @input="handleBatchToggle(scope.row, $event)"></el-checkbox>
 					<span v-else>-</span>
 				</template>
-			</el-table-column>
-			<el-table-column v-if="columns[0].visible" show-overflow-tooltip label="订单日期" align="center" prop="orderDate" width="140" />
-			<el-table-column show-overflow-tooltip label="佣金来源" align="center" prop="source">
+			</CustomTableColumn>
+			<CustomTableColumn v-if="columns[0].visible" show-overflow-tooltip label="订单日期" align="center" prop="orderDate" width="140" />
+			<CustomTableColumn show-overflow-tooltip label="佣金来源" align="center" prop="source">
 				<template slot-scope="scope">
 					{{ scope.row.source === TableName.ORDER_DETAIL ? '订单' : '库存' }}
 				</template>
-			</el-table-column>
-			<el-table-column v-if="columns[1].visible" show-overflow-tooltip label="厂家名称" align="center" prop="companyName" width="140" />
-			<el-table-column v-if="columns[2].visible" show-overflow-tooltip label="车牌号" align="center" prop="landCarNo" width="140" />
-			<el-table-column v-if="columns[3].visible" show-overflow-tooltip label="产品名称" align="center" prop="levelName" width="140" />
-			<el-table-column v-if="columns[4].visible" show-overflow-tooltip label="单位" align="center" prop="countingUnit" width="100" />
-			<el-table-column v-if="columns[5].visible" show-overflow-tooltip label="高度" align="center" prop="height" width="100" />
-			<el-table-column v-if="columns[6].visible" show-overflow-tooltip label="长度" align="center" prop="length" width="100" />
-			<el-table-column v-if="columns[7].visible" show-overflow-tooltip label="宽度" align="center" prop="width" width="100" />
-			<el-table-column v-if="columns[8].visible" show-overflow-tooltip label="每包片数" align="center" prop="piecesPerPack" width="100" />
-			<el-table-column v-if="columns[9].visible" show-overflow-tooltip label="包数" align="center" prop="packs" width="100" />
-			<el-table-column v-if="columns[10].visible" show-overflow-tooltip label="出厂片数" align="center" prop="pieces" width="100" />
-			<el-table-column v-if="columns[11].visible" show-overflow-tooltip label="卸货价" align="center" prop="paymentUnload" width="100" />
-			<el-table-column v-if="columns[12].visible" show-overflow-tooltip label="含税销售" align="center" prop="isIncludeTaxSale" width="100">
+			</CustomTableColumn>
+			<CustomTableColumn v-if="columns[1].visible" show-overflow-tooltip label="厂家名称" align="center" prop="companyName" width="140" />
+			<CustomTableColumn v-if="columns[2].visible" show-overflow-tooltip label="车牌号" align="center" prop="landCarNo" width="140" />
+			<CustomTableColumn v-if="columns[3].visible" show-overflow-tooltip label="产品名称" align="center" prop="levelName" width="140" />
+			<CustomTableColumn v-if="columns[4].visible" show-overflow-tooltip label="单位" align="center" prop="countingUnit" width="100" />
+			<CustomTableColumn v-if="columns[5].visible" show-overflow-tooltip label="高度" align="center" prop="height" width="100" />
+			<CustomTableColumn v-if="columns[6].visible" show-overflow-tooltip label="长度" align="center" prop="length" width="100" />
+			<CustomTableColumn v-if="columns[7].visible" show-overflow-tooltip label="宽度" align="center" prop="width" width="100" />
+			<CustomTableColumn v-if="columns[8].visible" show-overflow-tooltip label="每包片数" align="center" prop="piecesPerPack" width="100" />
+			<CustomTableColumn v-if="columns[9].visible" show-overflow-tooltip label="包数" align="center" prop="packs" width="100" />
+			<CustomTableColumn v-if="columns[10].visible" show-overflow-tooltip label="出厂片数" align="center" prop="pieces" width="100" />
+			<CustomTableColumn v-if="columns[11].visible" show-overflow-tooltip label="卸货价" align="center" prop="paymentUnload" width="100" />
+			<CustomTableColumn v-if="columns[12].visible" show-overflow-tooltip label="含税销售" align="center" prop="isIncludeTaxSale" width="100">
 				<template slot-scope="scope">
 					{{ scope.row.isIncludeTaxSale ? '含税' : '不含税' }}
 				</template>
-			</el-table-column>
-			<el-table-column v-if="columns[13].visible" show-overflow-tooltip label="杂费" align="center" prop="sundryCost" width="100" />
-			<el-table-column v-if="columns[14].visible" show-overflow-tooltip label="总货款" align="center" prop="payments" width="100" />
-			<el-table-column v-if="columns[15].visible" show-overflow-tooltip label="利润" align="center" prop="profit" width="100" />
-			<el-table-column v-if="columns[16].visible" show-overflow-tooltip label="不含税利润" align="center" prop="profitNoTax" width="100" />
-			<el-table-column v-if="columns[17].visible" show-overflow-tooltip label="备注" align="center" prop="comments" width="140" />
-			<el-table-column v-if="columns[18].visible" show-overflow-tooltip label="面积" align="center" prop="area" width="100" />
-			<el-table-column v-if="columns[19].visible" show-overflow-tooltip label="订单计提佣金" align="center" prop="commissionAmount" width="100" />
-			<el-table-column v-if="columns[20].visible" show-overflow-tooltip label="佣金单价" align="center" prop="commissionUnitPrice" width="100" />
-			<el-table-column v-if="columns[21].visible" show-overflow-tooltip label="其他付款金额" align="center" prop="otherPaymentAmount" width="100" />
-			<el-table-column v-if="columns[22].visible" show-overflow-tooltip label="已验证佣金" align="center" prop="verifiedCommission" width="100" />
-			<el-table-column v-if="columns[23].visible" show-overflow-tooltip label="实际厂家佣金" align="center" prop="actualCustomerCommission" width="100" />
-			<el-table-column v-if="columns[24].visible" show-overflow-tooltip label="支付日期" align="center" prop="fundDate" width="100" />
-			<el-table-column v-if="columns[25].visible" show-overflow-tooltip label="支付状态" align="center" width="120">
+			</CustomTableColumn>
+			<CustomTableColumn v-if="columns[13].visible" show-overflow-tooltip label="杂费" align="center" prop="sundryCost" width="100" />
+			<CustomTableColumn v-if="columns[14].visible" show-overflow-tooltip label="总货款" align="center" prop="payments" width="100" />
+			<CustomTableColumn v-if="columns[15].visible" show-overflow-tooltip label="利润" align="center" prop="profit" width="100" />
+			<CustomTableColumn v-if="columns[16].visible" show-overflow-tooltip label="不含税利润" align="center" prop="profitNoTax" width="100" />
+			<CustomTableColumn v-if="columns[17].visible" show-overflow-tooltip label="备注" align="center" prop="comments" width="140" />
+			<CustomTableColumn v-if="columns[18].visible" show-overflow-tooltip label="面积" align="center" prop="area" width="100" />
+			<CustomTableColumn v-if="columns[19].visible" show-overflow-tooltip label="订单计提佣金" align="center" prop="commissionAmount" width="100" />
+			<CustomTableColumn v-if="columns[20].visible" show-overflow-tooltip label="佣金单价" align="center" prop="commissionUnitPrice" width="100" />
+			<CustomTableColumn v-if="columns[21].visible" show-overflow-tooltip label="其他付款金额" align="center" prop="otherPaymentAmount" width="100" />
+			<CustomTableColumn v-if="columns[22].visible" show-overflow-tooltip label="已验证佣金" align="center" prop="verifiedCommission" width="100" />
+			<CustomTableColumn v-if="columns[23].visible" show-overflow-tooltip label="实际厂家佣金" align="center" prop="actualCustomerCommission" width="100" />
+			<CustomTableColumn v-if="columns[24].visible" show-overflow-tooltip label="支付日期" align="center" prop="fundDate" width="100" />
+			<CustomTableColumn v-if="columns[25].visible" show-overflow-tooltip label="支付状态" align="center" width="120">
 				<template slot-scope="scope">
 					<PaymentFlag :business-object="scope.row" />
 				</template>
-			</el-table-column>
-			<el-table-column v-if="columns[26].visible" show-overflow-tooltip label="差异" align="center" prop="difference" width="100" />
-			<el-table-column v-if="columns[27].visible" show-overflow-tooltip label="差异原因" align="center" prop="differenceReason" width="150">
+			</CustomTableColumn>
+			<CustomTableColumn v-if="columns[26].visible" show-overflow-tooltip label="差异" align="center" prop="difference" width="100" />
+			<CustomTableColumn v-if="columns[27].visible" show-overflow-tooltip label="差异原因" align="center" prop="differenceReason" width="150">
 				<template slot-scope="scope">
 					<el-button v-if="scope.row.difference && scope.row.difference !== 0" size="mini" type="text" @click="handleDifferenceReason(scope.row)">
 						{{ scope.row.differenceReason || '填写差异原因' }}
 					</el-button>
 					<span v-else>-</span>
 				</template>
-			</el-table-column>
+			</CustomTableColumn>
 			<!--      加一列操作列-->
-			<el-table-column show-overflow-tooltip label="操作" align="center" width="230" fixed="right">
+			<CustomTableColumn show-overflow-tooltip label="操作" align="center" width="230" fixed="right">
 				<template slot-scope="scope">
 					<el-button type="text" size="mini" @click="handleEdit(scope.row)">{{ scope.row.id ? '修改佣金信息' : '填写佣金信息' }}</el-button>
 					<el-button :disabled="scope.row.id === null" type="text" size="mini" @click="handleDelete(scope.row)">删除</el-button>
 					<el-button :disabled="scope.row.id === null" type="text" size="mini" @click="handleApplyPayment(scope.row)">申请付款</el-button>
 				</template>
-			</el-table-column>
+			</CustomTableColumn>
 		</el-table>
 
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
@@ -184,13 +184,13 @@
 				</div>
 
 				<el-table :data="localApplications" style="width: 100%" size="mini">
-					<el-table-column fixed prop="fundsDate" label="日期" width="150" show-overflow-tooltip></el-table-column>
-					<el-table-column prop="payType" label="支付类型" width="150" show-overflow-tooltip></el-table-column>
-					<el-table-column prop="moneyAmount" label="金额" width="120" show-overflow-tooltip></el-table-column>
-					<el-table-column prop="otherBankNo" label="对方账号" width="300" show-overflow-tooltip></el-table-column>
-					<el-table-column prop="companyName" label="对方公司" width="120" show-overflow-tooltip></el-table-column>
-					<el-table-column prop="reason" label="付款原因" width="120" show-overflow-tooltip></el-table-column>
-					<el-table-column prop="comments" label="备注" width="120" show-overflow-tooltip></el-table-column>
+					<CustomTableColumn fixed prop="fundsDate" label="日期" width="150" show-overflow-tooltip></CustomTableColumn>
+					<CustomTableColumn prop="payType" label="支付类型" width="150" show-overflow-tooltip></CustomTableColumn>
+					<CustomTableColumn prop="moneyAmount" label="金额" width="120" show-overflow-tooltip></CustomTableColumn>
+					<CustomTableColumn prop="otherBankNo" label="对方账号" width="300" show-overflow-tooltip></CustomTableColumn>
+					<CustomTableColumn prop="companyName" label="对方公司" width="120" show-overflow-tooltip></CustomTableColumn>
+					<CustomTableColumn prop="reason" label="付款原因" width="120" show-overflow-tooltip></CustomTableColumn>
+					<CustomTableColumn prop="comments" label="备注" width="120" show-overflow-tooltip></CustomTableColumn>
 				</el-table>
 			</el-card>
 		</el-dialog>

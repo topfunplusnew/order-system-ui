@@ -1,6 +1,6 @@
 <template>
 	<!-- 外层就是 el-table-column，所有属性和事件透传 -->
-	<el-table-column v-bind="$attrs" v-on="$listeners">
+	<el-table-column v-bind="filteredAttrs" v-on="$listeners">
 		<!-- 只有非特殊类型才渲染自定义插槽内容 -->
 		<template v-if="!isSpecialType" v-slot="scope">
 			<!-- 如果有插槽内容，直接渲染插槽，支持 slot-scope 语法 -->
@@ -127,6 +127,17 @@ export default {
 		// 缓存表格实例引用
 		tableInstance() {
 			return this.$parent;
+		},
+
+		// 过滤后的属性，移除 show-overflow-tooltip 避免 Element UI 默认提示
+		filteredAttrs() {
+			const { 'show-overflow-tooltip': showOverflowTooltip, ...otherAttrs } = this.$attrs;
+			return otherAttrs;
+		},
+
+		// 检查是否传递了 show-overflow-tooltip 属性
+		hasOverflowTooltip() {
+			return this.$attrs.hasOwnProperty('show-overflow-tooltip');
 		}
 	},
 
@@ -316,7 +327,6 @@ export default {
 
 				return null;
 			} catch (error) {
-				console.warn('Error getting actual text width:', error);
 				return null;
 			}
 		}, // 获取列的实际宽度 - 优化版本
@@ -379,6 +389,20 @@ export default {
 			// 如果强制指定了 mode
 			if (this.mode === 'tooltip' || this.mode === 'popover') {
 				return true;
+			}
+
+			// 如果父组件传递了 show-overflow-tooltip，也启用我们的自定义 popover
+			if (this.hasOverflowTooltip) {
+				// 使用实际宽度计算，而不是简单的字符长度
+				const columnWidth = this.getColumnWidth(scope);
+				if (columnWidth !== null) {
+					const textWidth = this.getTextWidth(text, scope);
+					return textWidth > columnWidth;
+				} else {
+					// 如果获取不到列宽，回退到字符长度判断
+					const textStr = String(text);
+					return textStr.length > this.autoThreshold;
+				}
 			}
 
 			// 创建缓存键
@@ -485,6 +509,8 @@ export default {
 	white-space: nowrap;
 	display: inline-block;
 	max-width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .cell-with-popover {
@@ -503,5 +529,31 @@ export default {
 	white-space: pre-wrap;
 	max-height: 300px;
 	overflow-y: auto;
+}
+
+/* 确保使用 CustomTableColumn 的列始终显示省略样式，而不是 Element UI 的默认 tooltip */
+.el-table .cell {
+	overflow: hidden !important;
+	text-overflow: ellipsis !important;
+	white-space: nowrap !important;
+}
+
+/* 强制覆盖 Element UI 的默认样式 */
+.el-table td .cell,
+.el-table th .cell {
+	overflow: hidden !important;
+	text-overflow: ellipsis !important;
+	white-space: nowrap !important;
+	max-width: 100% !important;
+}
+
+/* 确保我们的自定义单元格内容也有省略样式 */
+.el-table td .cell .cell-text,
+.el-table td .cell .ellipsis {
+	overflow: hidden !important;
+	text-overflow: ellipsis !important;
+	white-space: nowrap !important;
+	max-width: 100% !important;
+	display: block !important;
 }
 </style>

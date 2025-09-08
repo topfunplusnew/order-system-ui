@@ -71,7 +71,7 @@ import { tableColumnMixin } from '@/mixins/tableColumnMixin';
 import columnConfig from './base/columns';
 import CompanyForm from './base/CompanyForm.vue';
 import BankManage from './options/BankManage.vue';
-import { watch } from '@vue/composition-api';
+import { PUBLIC_DICT_TYPE } from '../../../api/tool/enums';
 
 export default {
 	name: 'Company',
@@ -100,7 +100,7 @@ export default {
 				acountsName: null,
 				bankNo: null,
 				surplusMoney: null,
-				companyType: '客户',
+				companyType: PUBLIC_DICT_TYPE.CUSTOMER,
 				salesman: null,
 				leader: null,
 				leaderTel: null,
@@ -136,7 +136,6 @@ export default {
 
 		// 处理列显隐变化
 		handleColumnChange(changeInfo) {
-			console.log('Column visibility changed:', changeInfo);
 			// 确保tableColumns数组中对应的列也被更新
 			if (changeInfo.index >= 0 && changeInfo.index < this.tableColumns.length) {
 				this.$set(this.tableColumns[changeInfo.index], 'visible', changeInfo.visible);
@@ -236,7 +235,7 @@ export default {
 		/** 修改按钮操作 */
 		handleUpdate(row) {
 			const id = row.id || this.ids;
-			getCompany(id, '客户').then(response => {
+			getCompany(id, PUBLIC_DICT_TYPE.CUSTOMER).then(response => {
 				this.openDialog(
 					CompanyForm,
 					'修改客户信息',
@@ -269,7 +268,7 @@ export default {
 							this.$modal
 								.confirm('系统检测该信息:"' + ids + '"的客户数据在系统中被使用，是否要继续删除?')
 								.then(function () {
-									return delCompany(ids, '客户');
+									return delCompany(ids, PUBLIC_DICT_TYPE.CUSTOMER);
 								})
 								.then(() => {
 									this.getList();
@@ -277,7 +276,7 @@ export default {
 								})
 								.catch(() => {});
 						} else {
-							delCompany(ids, '客户').then(() => {
+							delCompany(ids, PUBLIC_DICT_TYPE.CUSTOMER).then(() => {
 								this.getList();
 								this.$modal.msgSuccess('删除成功');
 							});
