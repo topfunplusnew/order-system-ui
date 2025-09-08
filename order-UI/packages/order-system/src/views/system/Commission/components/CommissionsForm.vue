@@ -1,12 +1,10 @@
 <script>
-import SearchOption from '@/components/SearchOption.vue';
 import { listGoodsOrder } from '@/api/system/goodsOrder';
 import { addCommission, updateCommission } from '@/api/commission';
 import reLength from '@/views/dashboard/mixins/reLength';
 
 export default {
 	name: 'CommissionsForm',
-	components: { SearchOption },
 	mixins: [reLength],
 	props: {
 		// 这个只有在修改的时候有值
@@ -54,10 +52,6 @@ export default {
 			rules: {
 				commissionUnitPrice: [
 					{ required: true, message: '佣金单价不能为空', trigger: 'blur' },
-					{ pattern: /^[0-9]+(.[0-9]{1,2})?$/, message: '请输入数字，且最多保留两位小数', trigger: 'blur' }
-				],
-				otherPaymentAmount: [
-					{ required: true, message: '其他方式金额不能为空', trigger: 'blur' },
 					{ pattern: /^[0-9]+(.[0-9]{1,2})?$/, message: '请输入数字，且最多保留两位小数', trigger: 'blur' }
 				]
 			}

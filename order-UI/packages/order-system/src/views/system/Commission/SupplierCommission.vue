@@ -136,11 +136,6 @@
 		</el-table>
 
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
-
-		<div v-if="currentComponent">
-			<DialogWrapper :current-component="currentComponent" :dialog-visible="dialogVisible" />
-		</div>
-
 		<!--    申请付款-->
 		<el-dialog
 			:modal="false"
@@ -235,7 +230,6 @@ import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import { deleteCommission, getCommission, listCommission, updateDifferenceReason, batchAddCommission } from '@/api/commission';
 import { CommissionType, TableName, PAYMENT_APPLY_STATE } from '@/api/tool/enums';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
-import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 import CommissionsForm from '@/views/system/Commission/components/CommissionsForm.vue';
 import ApplyPayment from '@/views/dashboard/components/common/ApplyPayment.vue';
 import { ExtraInfo, PaymentApply, SourceInfo } from '@/types/payment';
@@ -275,7 +269,7 @@ export default {
 		},
 		...mapGetters(['id', 'trueName'])
 	},
-	components: { ApplyPayment, DialogWrapper, PaymentFlag },
+	components: { ApplyPayment, PaymentFlag },
 	mixins: [mixin_printHTML, common_dialog, mixin_checkfile],
 	data() {
 		return {
@@ -381,10 +375,6 @@ export default {
 				commissionUnitPrice: [
 					{ required: true, message: '请输入佣金单价', trigger: 'blur' },
 					{ pattern: /^\d+(\.\d{1,3})?$/, message: '佣金单价格式不正确', trigger: 'blur' }
-				],
-				otherPaymentAmount: [
-					{ required: true, message: '请输入其他付款金额', trigger: 'blur' },
-					{ pattern: /^\d+(\.\d{1,3})?$/, message: '其他付款金额格式不正确', trigger: 'blur' }
 				]
 			}
 		};
