@@ -23,6 +23,9 @@
 			<el-col :span="1.5">
 				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
 			</el-col>
+			<el-col :span="1.5">
+				<el-button v-hasPermi="['system:invoiceout:remove']" type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete">批量删除</el-button>
+			</el-col>
 
 			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
 				<template #print>
@@ -56,6 +59,7 @@
 			@selection-change="handleSelectionChange"
 			@header-dragend="changeColWidth"
 		>
+			<el-table-column type="selection" width="50" align="center" />
 			<el-table-column v-if="columns[0].visible" label="开票日期" align="center" prop="invoiceDate" show-overflow-tooltip />
 			<el-table-column v-if="columns[1].visible" label="我方收票主体" align="center" prop="invoiceObject" show-overflow-tooltip />
 			<el-table-column v-if="columns[2].visible" label="开票金额" align="center" prop="invoiceAmount" show-overflow-tooltip />
@@ -743,12 +747,14 @@ export default {
 			});
 		},
 		/** 删除按钮操作 */
-		handleDelete(row) {
-			const ids = row.id || this.ids;
+		handleDelete() {
+			const invoiceIds = this.ids;
+			const confirmMsg = `是否确认删除选中的${invoiceIds.length}条发票卖出信息？`;
+
 			this.$modal
-				.confirm('是否确认删除发票卖出信息编号为"' + ids + '"的数据项？')
+				.confirm(confirmMsg)
 				.then(function () {
-					return delInvoiceOut(ids);
+					return delInvoiceOut(invoiceIds.join(','));
 				})
 				.then(() => {
 					this.getList();
