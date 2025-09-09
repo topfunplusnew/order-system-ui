@@ -1507,7 +1507,6 @@ export default {
 			if (row.hasError) {
 				this.$set(row, 'hasError', false);
 			}
-			this.$message.info('正在编辑该条记录');
 		},
 		/**
 		 * @description: 校验单条库存详情行的数据有效性

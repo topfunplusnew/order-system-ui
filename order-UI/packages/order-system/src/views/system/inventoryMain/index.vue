@@ -1018,7 +1018,6 @@ export default {
 			if (row.hasError) {
 				this.$set(row, 'hasError', false);
 			}
-			this.$message.info('正在编辑该条记录');
 		},
 		/**
 		 * @description: 保存库存详情表格中正在编辑的行数据。

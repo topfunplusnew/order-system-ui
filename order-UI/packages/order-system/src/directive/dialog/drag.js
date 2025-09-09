@@ -75,13 +75,13 @@ export default {
 				const finalTop = top + styT;
 
 				// 更严格的边界处理
-				// 左边界：至少保留50px在屏幕内
-				if (finalLeft < -dragDomWidth + 50) {
-					left = -dragDomWidth + 50 - styL;
+				// 左边界：至少保留500px在屏幕内
+				if (finalLeft < -dragDomWidth + 500) {
+					left = -dragDomWidth + 500 - styL;
 				}
-				// 右边界：至少保留50px在屏幕内
-				else if (finalLeft > currentScreenWidth - 50) {
-					left = currentScreenWidth - 50 - styL;
+				// 右边界：至少保留500px在屏幕内
+				else if (finalLeft > currentScreenWidth - 500) {
+					left = currentScreenWidth - 500 - styL;
 				}
 
 				// 上边界：不能超出屏幕顶部
@@ -122,9 +122,20 @@ export default {
 				const dialogRect = dragDom.getBoundingClientRect();
 				const screenWidth = window.innerWidth;
 				const screenHeight = window.innerHeight;
+				const dialogWidth = dragDom.offsetWidth;
+				const dialogHeight = dragDom.offsetHeight;
 
-				// 检查顶部是否脱离视窗或者对话框大部分不可见
-				if (dialogRect.top < 0 || dialogRect.bottom < 50 || dialogRect.left + 50 < 0 || dialogRect.right - 50 > screenWidth) {
+				// 检查是否需要重新定位：
+				// 1. 顶部完全脱离视窗
+				// 2. 底部只剩很少部分可见（少于50px）
+				// 3. 左侧消失一半以上
+				// 4. 右侧消失一半以上
+				const topOutOfBounds = dialogRect.top < 0;
+				const bottomOutOfBounds = dialogRect.bottom < 50;
+				const leftHalfHidden = dialogRect.right < screenWidth / 2 || dialogRect.left < -(dialogWidth / 2);
+				const rightHalfHidden = dialogRect.left > screenWidth / 2 || dialogRect.right > screenWidth + dialogWidth / 2;
+
+				if (topOutOfBounds || bottomOutOfBounds || leftHalfHidden || rightHalfHidden) {
 					// 重新定位到屏幕中间
 					const centerX = (screenWidth - dragDom.offsetWidth) / 2;
 					const centerY = (screenHeight - dragDom.offsetHeight) / 2;

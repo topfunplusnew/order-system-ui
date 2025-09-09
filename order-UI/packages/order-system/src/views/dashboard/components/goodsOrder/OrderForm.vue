@@ -291,7 +291,6 @@ export default {
 			if (row.hasError) {
 				this.$set(row, 'hasError', false);
 			}
-			this.$message.info('正在编辑该条记录');
 		},
 
 		/**
@@ -1083,7 +1082,6 @@ export default {
 	<div>
 		<!-- 基本信息表单部分不变 -->
 		<el-form :inline="true" :model="orderInfo" label-width="80px" :rules="orderRules" ref="orderForm">
-			<el-alert title="对于禁用的输入框只需点击旁边搜索按钮搜索对应信息，确认后即可自动填写!" type="warning"></el-alert>
 			<el-card class="box-card" shadow="hover" size="mini" style="margin-top: 10px">
 				<el-form-item label="订单日期" prop="orderDate">
 					<el-date-picker v-model="orderInfo.orderDate" size="mini" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss" style="width: 120px" />
