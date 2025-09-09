@@ -52,75 +52,118 @@
 			</right-toolbar>
 		</el-row>
 
-		<el-col :span="4">
-			<div class="tree-container" style="max-height: 400px; overflow-y: auto">
-				<el-tree :data="storeList" :props="defaultProps" @node-click="handleNodeClick" />
-			</div>
-		</el-col>
-		<el-col :span="20">
-			<el-table id="printBox" size="mini" v-loading="loading" :data="inventoryMainList" @selection-change="handleSelectionChange" stripe style="width: 100%; margin-bottom: 20px">
-				<CustomTableColumn type="selection" width="50" align="center" />
-				<CustomTableColumn v-if="columns[0].visible" label="ID" align="center" prop="id" width="80" />
-				<CustomTableColumn v-if="columns[1].visible" label="仓库名称" align="center" prop="storeHouseName" width="150" />
-				<CustomTableColumn v-if="columns[2].visible" label="变动日期(入库)" align="center" prop="storeDate" width="150" />
-				<CustomTableColumn v-if="columns[3].visible" label="供应商" align="center" prop="supplier" width="150">
-					<template #default="scope">
-						<div class="supplier-container">
-							<!-- 显示预处理的供应商列表 -->
-							<span v-for="supplier in scope.row._uniqueSuppliers" :key="`supplier-${supplier.supplierId}`" class="supplier-name">
-								{{ supplier.supplier }}
-							</span>
-							<!-- 如果没有供应商，显示横线 -->
-							<span v-if="scope.row._uniqueSuppliers.length === 0" class="empty-item">-</span>
+		<!-- 使用 DragDiv 组件替换原来的 el-col 布局 -->
+		<div style="height: 800px">
+			<DragDiv :initial-left-width="300" :min-left-width="200" :min-right-width="400" :divider-width="6" @drag-start="handleDragStart" @dragging="handleDragging" @drag-end="handleDragEnd">
+				<!-- 左侧：仓库树 -->
+				<template #left>
+					<div class="tree-container" style="height: 100%; padding: 10px; background: #fafafa; border: 1px solid #e6e6e6; display: flex; flex-direction: column">
+						<div style="margin-bottom: 10px; font-weight: bold; color: #333">仓库列表</div>
+						<div style="flex: 1; overflow-y: auto; margin-bottom: 10px">
+							<el-tree :data="storeList" :props="defaultProps" @node-click="handleNodeClick" />
 						</div>
-					</template>
-				</CustomTableColumn>
-				<CustomTableColumn v-if="columns[4].visible" label="货物来源公司" align="center" prop="goodsCompany" width="180" />
-				<CustomTableColumn v-if="columns[5].visible" label="审核状态" align="center" prop="checkState" width="150">
-					<template #default="scope">
-						<el-row v-if="scope.row.checkState === '已审核'">
-							<StateTag :state-title="scope.row.checkState" :state-mapper="{ 2: '已审核' }" @click.native="handleReCheck(scope.row)" style="cursor: pointer" />
-						</el-row>
-						<el-row v-else>
-							<el-row>
-								<el-button v-hasPermi="['system:inventoryMain:audit']" type="text" size="mini" @click="handleCheck(scope.row)">审核</el-button>
-							</el-row>
-						</el-row>
-					</template>
-				</CustomTableColumn>
-				<CustomTableColumn v-if="columns[6].visible" label="陆运车牌" align="center" prop="landCarNo" width="120" />
-				<CustomTableColumn v-if="columns[7].visible" label="陆运司机电话" align="center" prop="landDriverTel" width="150" />
-				<CustomTableColumn v-if="columns[8].visible" label="陆地司机姓名" align="center" prop="landDriverName" width="120" />
-				<CustomTableColumn v-if="columns[9].visible" label="陆运银行卡号" align="center" prop="landBankNo" width="120" />
-				<CustomTableColumn v-if="columns[10].visible" label="陆运银行户名" align="center" prop="landBankName" width="120" />
-				<CustomTableColumn v-if="columns[11].visible" label="柜号" align="center" prop="seaCarNo" width="120" />
-				<CustomTableColumn v-if="columns[12].visible" label="海运司机电话" align="center" prop="seaDriverTel" width="150" />
-				<CustomTableColumn v-if="columns[13].visible" label="海运公司" align="center" prop="seaDriverName" width="120" />
-				<CustomTableColumn v-if="columns[14].visible" label="海运银行卡号" align="center" prop="seaBankNo" width="120" />
-				<CustomTableColumn v-if="columns[15].visible" label="海运银行户名" align="center" prop="seaBankName" width="120" />
-				<CustomTableColumn v-if="columns[16].visible" label="子项陆运费之和" align="center" prop="allLandFreight" width="150" />
-				<CustomTableColumn v-if="columns[17].visible" label="子项海运费之和" align="center" prop="allSeaFreight" width="150" />
-				<CustomTableColumn v-if="columns[18].visible" label="收到条附件" align="center" prop="attachmentList" width="150" fixed="right">
-					<template slot-scope="scope">
-						<CheckFiles
-							:attachmentList="scope.row.attachmentList"
-							@needToUpdate="value => handleUpdateFilePath(value, scope.row, getInventoryMain, updateInventoryMain)"
-							flag="attachmentList"
+						<!-- 仓库分页组件 -->
+						<div style="padding: 5px 0; border-top: 1px solid #e6e6e6">
+							<el-pagination
+								small
+								background
+								layout="total, sizes, prev, pager, next"
+								:total="storeTotal"
+								:page-size="storePageParams.pageSize"
+								:current-page="storePageParams.pageNum"
+								:page-sizes="[20, 50, 100]"
+								@size-change="handleStoreSizeChange"
+								@current-change="handleStoreCurrentChange"
+								style="text-align: center"
+							/>
+						</div>
+					</div>
+				</template>
+
+				<!-- 右侧：数据表格 -->
+				<template #right>
+					<div style="height: 100%; display: flex; flex-direction: column">
+						<el-table
+							border
+							id="printBox"
+							size="mini"
+							v-loading="loading"
+							:data="inventoryMainList"
+							@selection-change="handleSelectionChange"
+							stripe
+							style="flex: 1; margin-bottom: 20px"
+							:height="'100%'"
+						>
+							<CustomTableColumn type="selection" width="50" align="center" />
+							<CustomTableColumn v-if="columns[0].visible" label="ID" align="center" prop="id" width="80" />
+							<CustomTableColumn v-if="columns[1].visible" label="仓库名称" align="center" prop="storeHouseName" width="150" />
+							<CustomTableColumn v-if="columns[2].visible" label="变动日期(入库)" align="center" prop="storeDate" width="150" />
+							<CustomTableColumn v-if="columns[3].visible" label="供应商" align="center" prop="supplier" width="150">
+								<template #default="scope">
+									<div class="supplier-container">
+										<!-- 显示预处理的供应商列表 -->
+										<span v-for="supplier in scope.row._uniqueSuppliers" :key="`supplier-${supplier.supplierId}`" class="supplier-name">
+											{{ supplier.supplier }}
+										</span>
+										<!-- 如果没有供应商，显示横线 -->
+										<span v-if="scope.row._uniqueSuppliers.length === 0" class="empty-item">-</span>
+									</div>
+								</template>
+							</CustomTableColumn>
+							<CustomTableColumn v-if="columns[4].visible" label="货物来源公司" align="center" prop="goodsCompany" width="180" />
+							<CustomTableColumn v-if="columns[5].visible" label="审核状态" align="center" prop="checkState" width="150">
+								<template #default="scope">
+									<el-row v-if="scope.row.checkState === '已审核'">
+										<StateTag :state-title="scope.row.checkState" :state-mapper="{ 2: '已审核' }" @click.native="handleReCheck(scope.row)" style="cursor: pointer" />
+									</el-row>
+									<el-row v-else>
+										<el-row>
+											<el-button v-hasPermi="['system:inventoryMain:audit']" type="text" size="mini" @click="handleCheck(scope.row)">审核</el-button>
+										</el-row>
+									</el-row>
+								</template>
+							</CustomTableColumn>
+							<CustomTableColumn v-if="columns[6].visible" label="陆运车牌" align="center" prop="landCarNo" width="120" />
+							<CustomTableColumn v-if="columns[7].visible" label="陆运司机电话" align="center" prop="landDriverTel" width="150" />
+							<CustomTableColumn v-if="columns[8].visible" label="陆地司机姓名" align="center" prop="landDriverName" width="120" />
+							<CustomTableColumn v-if="columns[9].visible" label="陆运银行卡号" align="center" prop="landBankNo" width="120" />
+							<CustomTableColumn v-if="columns[10].visible" label="陆运银行户名" align="center" prop="landBankName" width="120" />
+							<CustomTableColumn v-if="columns[11].visible" label="柜号" align="center" prop="seaCarNo" width="120" />
+							<CustomTableColumn v-if="columns[12].visible" label="海运司机电话" align="center" prop="seaDriverTel" width="150" />
+							<CustomTableColumn v-if="columns[13].visible" label="海运公司" align="center" prop="seaDriverName" width="120" />
+							<CustomTableColumn v-if="columns[14].visible" label="海运银行卡号" align="center" prop="seaBankNo" width="120" />
+							<CustomTableColumn v-if="columns[15].visible" label="海运银行户名" align="center" prop="seaBankName" width="120" />
+							<CustomTableColumn v-if="columns[16].visible" label="子项陆运费之和" align="center" prop="allLandFreight" width="150" />
+							<CustomTableColumn v-if="columns[17].visible" label="子项海运费之和" align="center" prop="allSeaFreight" width="150" />
+							<CustomTableColumn v-if="columns[18].visible" label="收到条附件" align="center" prop="attachmentList" width="150" fixed="right">
+								<template slot-scope="scope">
+									<CheckFiles
+										:attachmentList="scope.row.attachmentList"
+										@needToUpdate="value => handleUpdateFilePath(value, scope.row, getInventoryMain, updateInventoryMain)"
+										flag="attachmentList"
+									/>
+								</template>
+							</CustomTableColumn>
+							<CustomTableColumn v-if="columns[19].visible" label="操作" align="center" width="200" fixed="right">
+								<template slot-scope="scope">
+									<el-button size="mini" type="text" icon="el-icon-edit" @click="handleCheckInventory(scope.row)">查看</el-button>
+									<el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)" v-hasPermi="['system:inventoryMain:edit']">修改</el-button>
+									<el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)" v-hasPermi="['system:inventoryMain:remove']">删除</el-button>
+								</template>
+							</CustomTableColumn>
+						</el-table>
+						<pagination
+							v-show="total > 0"
+							:total="total"
+							:page.sync="queryParams.pageNum"
+							:limit.sync="queryParams.pageSize"
+							@pagination="getList"
+							style="margin-top: 10px; text-align: right"
 						/>
-					</template>
-				</CustomTableColumn>
-
-				<CustomTableColumn v-if="columns[19].visible" label="操作" align="center" width="180" fixed="right">
-					<template slot-scope="scope">
-						<el-button size="mini" type="text" icon="el-icon-edit" @click="handleCheckInventory(scope.row)">查看</el-button>
-						<el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)" v-hasPermi="['system:inventoryMain:edit']">修改</el-button>
-						<el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)" v-hasPermi="['system:inventoryMain:remove']">删除</el-button>
-					</template>
-				</CustomTableColumn>
-			</el-table>
-
-			<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
-		</el-col>
+					</div>
+				</template>
+			</DragDiv>
+		</div>
 
 		<!-- 添加或修改库存库存主表对话框 -->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="title" :visible.sync="open" width="1200px" append-to-body :close-on-click-modal="false">
@@ -700,10 +743,11 @@ import INVENTORY from '@/components/NeedToShow/INVENTORY.vue';
 import { parseTime } from '@/utils/ruoyi';
 import _ from 'lodash'; // 引入 lodash
 import { updateInventoryRowCalculations } from './inventoryCalculations'; // 确保导入
+import DragDiv from '@/components/DragDiv/index.vue';
 
 export default {
 	name: 'InventoryMain',
-	components: { DialogWrapper, SearchOption, CheckFiles, UploadFilesButton, StateTag },
+	components: { DialogWrapper, SearchOption, CheckFiles, UploadFilesButton, StateTag, DragDiv },
 	mixins: [_fill, mixin_checkfile, mixin_printHTML, common_dialog],
 	data() {
 		// 自定义校验器：当选择陆运时，车队必填
@@ -859,6 +903,12 @@ export default {
 				transportMode: [{ validator: validateTransportMode, trigger: 'change' }]
 			},
 			storeList: [],
+			// 仓库分页相关数据
+			storePageParams: {
+				pageNum: 1,
+				pageSize: 50
+			},
+			storeTotal: 0,
 			// 树表的数据结构
 			defaultProps: {
 				label: 'label'
@@ -950,16 +1000,60 @@ export default {
 	created() {
 		this.getList();
 		// 抓取左侧仓库信息
-		listStoreHouse().then(res => {
-			this.storeList = res.rows.map(item => {
-				return {
-					label: item.storeHouseName,
-					children: []
-				};
-			});
-		});
+		this.getStoreList();
 	},
 	methods: {
+		// DragDiv 事件处理方法
+		handleDragStart() {
+			// 拖拽开始时的处理逻辑
+		},
+		handleDragging(leftWidth, rightWidth) {
+			// 拖拽过程中的处理逻辑
+			// console.log('拖拽中:', leftWidth, rightWidth);
+		},
+		handleDragEnd(leftWidth, rightWidth) {
+			// 拖拽结束时的处理逻辑
+			// console.log('拖拽结束:', leftWidth, rightWidth);
+		},
+
+		/**
+		 * @description: 获取仓库列表数据（支持分页）
+		 */
+		getStoreList() {
+			const params = {
+				pageNum: this.storePageParams.pageNum,
+				pageSize: this.storePageParams.pageSize
+			};
+			listStoreHouse(params).then(res => {
+				this.storeList = res.rows.map(item => {
+					return {
+						label: item.storeHouseName,
+						children: []
+					};
+				});
+				this.storeTotal = res.total;
+			});
+		},
+
+		/**
+		 * @description: 仓库分页大小改变事件
+		 * @param {number} size 新的分页大小
+		 */
+		handleStoreSizeChange(size) {
+			this.storePageParams.pageSize = size;
+			this.storePageParams.pageNum = 1;
+			this.getStoreList();
+		},
+
+		/**
+		 * @description: 仓库当前页改变事件
+		 * @param {number} page 新的页码
+		 */
+		handleStoreCurrentChange(page) {
+			this.storePageParams.pageNum = page;
+			this.getStoreList();
+		},
+
 		/**
 		 * @description: 预处理库存主表数据，为供应商信息去重并优化渲染性能
 		 * @param {Array} inventoryMainList - 原始库存主表列表
