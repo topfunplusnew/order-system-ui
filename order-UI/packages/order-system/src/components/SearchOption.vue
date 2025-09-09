@@ -198,6 +198,14 @@ export default {
 				this.computedQueryItems.queryList[key].value = '';
 			});
 			this.dialogVisible = false;
+		},
+		// 点击清空按钮
+		handleClear() {
+			this.$emit('commitBack', {});
+			this.query = '';
+			Object.keys(this.computedQueryItems.queryList).forEach(key => {
+				this.computedQueryItems.queryList[key].value = '';
+			});
 		}
 	}
 };
@@ -205,8 +213,11 @@ export default {
 
 <template>
 	<div>
-		<!--    按钮-->
-		<el-button size="mini" :icon="icon" type="primary" @click="handleCallBack" :disabled="disable"></el-button>
+		<!--    按钮组 - 悬停显示清空按钮 -->
+		<div class="button-group">
+			<el-button size="mini" :icon="icon" type="primary" @click="handleCallBack" :disabled="disable" class="search-btn"></el-button>
+			<el-button size="mini" icon="el-icon-delete" type="danger" @click="handleClear" :disabled="disable" class="clear-btn"></el-button>
+		</div>
 		<!--    弹窗-->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :title="title" :visible.sync="dialogVisible" width="65%">
 			<!--      弹出的表格内容-->
@@ -265,6 +276,36 @@ export default {
 </template>
 
 <style scoped lang="scss">
+// 按钮组悬停效果
+.button-group {
+	display: inline-flex;
+	align-items: center;
+	gap: 0;
+
+	.search-btn {
+		flex-shrink: 0;
+		transition: all 0.3s ease;
+	}
+
+	.clear-btn {
+		opacity: 0;
+		visibility: hidden;
+		width: 0;
+		overflow: hidden;
+		transition: all 0.3s ease;
+		margin-left: 0;
+	}
+
+	&:hover {
+		.clear-btn {
+			opacity: 1;
+			visibility: visible;
+			width: auto;
+			margin-left: 8px;
+		}
+	}
+}
+
 .el-form {
 	margin-bottom: 10px;
 
