@@ -128,12 +128,12 @@ export default {
 				// 检查是否需要重新定位：
 				// 1. 顶部完全脱离视窗
 				// 2. 底部只剩很少部分可见（少于50px）
-				// 3. 左侧消失一半以上
-				// 4. 右侧消失一半以上
+				// 3. 左侧消失70%以上
+				// 4. 右侧消失70%以上
 				const topOutOfBounds = dialogRect.top < 0;
 				const bottomOutOfBounds = dialogRect.bottom < 50;
-				const leftHalfHidden = dialogRect.right < screenWidth / 2 || dialogRect.left < -(dialogWidth / 2);
-				const rightHalfHidden = dialogRect.left > screenWidth / 2 || dialogRect.right > screenWidth + dialogWidth / 2;
+				const leftHalfHidden = dialogRect.right < screenWidth * 0.3 || dialogRect.left < -(dialogWidth * 0.7);
+				const rightHalfHidden = dialogRect.left > screenWidth * 0.7 || dialogRect.right > screenWidth + dialogWidth * 0.7;
 
 				if (topOutOfBounds || bottomOutOfBounds || leftHalfHidden || rightHalfHidden) {
 					// 重新定位到屏幕中间
