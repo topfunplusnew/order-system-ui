@@ -59,17 +59,24 @@
 		</el-col>
 		<el-col :span="20">
 			<el-table id="printBox" size="mini" v-loading="loading" :data="inventoryMainList" @selection-change="handleSelectionChange" stripe style="width: 100%; margin-bottom: 20px">
-				<el-table-column type="selection" width="50" align="center" />
-
-				<el-table-column v-if="columns[0].visible" label="ID" align="center" prop="id" width="80" />
-
-				<el-table-column v-if="columns[1].visible" label="仓库名称" align="center" prop="storeHouseName" width="150" />
-
-				<el-table-column v-if="columns[2].visible" label="变动日期(入库)" align="center" prop="storeDate" width="150" />
-
-				<el-table-column v-if="columns[3].visible" label="货物来源公司" align="center" prop="goodsCompany" width="180" />
-
-				<el-table-column v-if="columns[4].visible" label="审核状态" align="center" prop="checkState" width="150">
+				<CustomTableColumn type="selection" width="50" align="center" />
+				<CustomTableColumn v-if="columns[0].visible" label="ID" align="center" prop="id" width="80" />
+				<CustomTableColumn v-if="columns[1].visible" label="仓库名称" align="center" prop="storeHouseName" width="150" />
+				<CustomTableColumn v-if="columns[2].visible" label="变动日期(入库)" align="center" prop="storeDate" width="150" />
+				<CustomTableColumn v-if="columns[3].visible" label="供应商" align="center" prop="supplier" width="150">
+					<template #default="scope">
+						<div class="supplier-container">
+							<!-- 显示预处理的供应商列表 -->
+							<span v-for="supplier in scope.row._uniqueSuppliers" :key="`supplier-${supplier.supplierId}`" class="supplier-name">
+								{{ supplier.supplier }}
+							</span>
+							<!-- 如果没有供应商，显示横线 -->
+							<span v-if="scope.row._uniqueSuppliers.length === 0" class="empty-item">-</span>
+						</div>
+					</template>
+				</CustomTableColumn>
+				<CustomTableColumn v-if="columns[4].visible" label="货物来源公司" align="center" prop="goodsCompany" width="180" />
+				<CustomTableColumn v-if="columns[5].visible" label="审核状态" align="center" prop="checkState" width="150">
 					<template #default="scope">
 						<el-row v-if="scope.row.checkState === '已审核'">
 							<StateTag :state-title="scope.row.checkState" :state-mapper="{ 2: '已审核' }" @click.native="handleReCheck(scope.row)" style="cursor: pointer" />
@@ -80,33 +87,20 @@
 							</el-row>
 						</el-row>
 					</template>
-				</el-table-column>
-
-				<el-table-column v-if="columns[5].visible" label="陆运车牌" align="center" prop="landCarNo" width="120" />
-
-				<el-table-column v-if="columns[6].visible" label="陆运司机电话" align="center" prop="landDriverTel" width="150" />
-
-				<el-table-column v-if="columns[7].visible" label="陆地司机姓名" align="center" prop="landDriverName" width="120" />
-
-				<el-table-column v-if="columns[8].visible" label="陆运银行卡号" align="center" prop="landBankNo" width="120" />
-
-				<el-table-column v-if="columns[9].visible" label="陆运银行户名" align="center" prop="landBankName" width="120" />
-
-				<el-table-column v-if="columns[10].visible" label="柜号" align="center" prop="seaCarNo" width="120" />
-
-				<el-table-column v-if="columns[11].visible" label="海运司机电话" align="center" prop="seaDriverTel" width="150" />
-
-				<el-table-column v-if="columns[12].visible" label="海运公司" align="center" prop="seaDriverName" width="120" />
-
-				<el-table-column v-if="columns[13].visible" label="海运银行卡号" align="center" prop="seaBankNo" width="120" />
-
-				<el-table-column v-if="columns[14].visible" label="海运银行户名" align="center" prop="seaBankName" width="120" />
-
-				<el-table-column v-if="columns[15].visible" label="子项陆运费之和" align="center" prop="allLandFreight" width="150" />
-
-				<el-table-column v-if="columns[16].visible" label="子项海运费之和" align="center" prop="allSeaFreight" width="150" />
-
-				<el-table-column v-if="columns[17].visible" label="收到条附件" align="center" prop="attachmentList" width="150" fixed="right">
+				</CustomTableColumn>
+				<CustomTableColumn v-if="columns[6].visible" label="陆运车牌" align="center" prop="landCarNo" width="120" />
+				<CustomTableColumn v-if="columns[7].visible" label="陆运司机电话" align="center" prop="landDriverTel" width="150" />
+				<CustomTableColumn v-if="columns[8].visible" label="陆地司机姓名" align="center" prop="landDriverName" width="120" />
+				<CustomTableColumn v-if="columns[9].visible" label="陆运银行卡号" align="center" prop="landBankNo" width="120" />
+				<CustomTableColumn v-if="columns[10].visible" label="陆运银行户名" align="center" prop="landBankName" width="120" />
+				<CustomTableColumn v-if="columns[11].visible" label="柜号" align="center" prop="seaCarNo" width="120" />
+				<CustomTableColumn v-if="columns[12].visible" label="海运司机电话" align="center" prop="seaDriverTel" width="150" />
+				<CustomTableColumn v-if="columns[13].visible" label="海运公司" align="center" prop="seaDriverName" width="120" />
+				<CustomTableColumn v-if="columns[14].visible" label="海运银行卡号" align="center" prop="seaBankNo" width="120" />
+				<CustomTableColumn v-if="columns[15].visible" label="海运银行户名" align="center" prop="seaBankName" width="120" />
+				<CustomTableColumn v-if="columns[16].visible" label="子项陆运费之和" align="center" prop="allLandFreight" width="150" />
+				<CustomTableColumn v-if="columns[17].visible" label="子项海运费之和" align="center" prop="allSeaFreight" width="150" />
+				<CustomTableColumn v-if="columns[18].visible" label="收到条附件" align="center" prop="attachmentList" width="150" fixed="right">
 					<template slot-scope="scope">
 						<CheckFiles
 							:attachmentList="scope.row.attachmentList"
@@ -114,15 +108,15 @@
 							flag="attachmentList"
 						/>
 					</template>
-				</el-table-column>
+				</CustomTableColumn>
 
-				<el-table-column v-if="columns[18].visible" label="操作" align="center" width="180" fixed="right">
+				<CustomTableColumn v-if="columns[19].visible" label="操作" align="center" width="180" fixed="right">
 					<template slot-scope="scope">
 						<el-button size="mini" type="text" icon="el-icon-edit" @click="handleCheckInventory(scope.row)">查看</el-button>
 						<el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)" v-hasPermi="['system:inventoryMain:edit']">修改</el-button>
 						<el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)" v-hasPermi="['system:inventoryMain:remove']">删除</el-button>
 					</template>
-				</el-table-column>
+				</CustomTableColumn>
 			</el-table>
 
 			<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
@@ -148,8 +142,8 @@
 							:is-page="false"
 						>
 							<template #table-columns>
-								<el-table-column label="仓库名称" align="center" prop="storeHouseName" />
-								<el-table-column label="地址" align="center" prop="address" />
+								<CustomTableColumn label="仓库名称" align="center" prop="storeHouseName" />
+								<CustomTableColumn label="地址" align="center" prop="address" />
 							</template>
 						</SearchOption>
 					</el-col>
@@ -193,12 +187,12 @@
 									@update:queryName="handleChangeCar"
 								>
 									<template #table-columns>
-										<el-table-column label="车牌" align="center" prop="carNo" />
-										<el-table-column label="司机" align="center" prop="driver" />
-										<el-table-column label="司机电话" align="center" prop="tel" />
-										<el-table-column label="开户名" align="center" prop="acountsName" />
-										<el-table-column label="账号" align="center" prop="bankNo" />
-										<el-table-column label="开户行" align="center" prop="bankName" />
+										<CustomTableColumn label="车牌" align="center" prop="carNo" />
+										<CustomTableColumn label="司机" align="center" prop="driver" />
+										<CustomTableColumn label="司机电话" align="center" prop="tel" />
+										<CustomTableColumn label="开户名" align="center" prop="acountsName" />
+										<CustomTableColumn label="账号" align="center" prop="bankNo" />
+										<CustomTableColumn label="开户行" align="center" prop="bankName" />
 									</template>
 								</SearchOption>
 							</el-col>
@@ -233,10 +227,10 @@
 									@update:queryName="handleChangeFleet"
 								>
 									<template #table-columns>
-										<el-table-column label="车队名称" align="center" prop="fname" />
-										<el-table-column label="车队经理" align="center" prop="fleader" />
-										<el-table-column label="车队经理电话" align="center" prop="tel" />
-										<el-table-column label="地址" align="center" prop="address" />
+										<CustomTableColumn label="车队名称" align="center" prop="fname" />
+										<CustomTableColumn label="车队经理" align="center" prop="fleader" />
+										<CustomTableColumn label="车队经理电话" align="center" prop="tel" />
+										<CustomTableColumn label="地址" align="center" prop="address" />
 									</template>
 								</SearchOption>
 							</el-col>
@@ -262,11 +256,11 @@
 									@update:queryName="handleChangeSeaCar"
 								>
 									<template #table-columns>
-										<el-table-column label="车牌" align="center" prop="carNo" />
-										<el-table-column label="司机" align="center" prop="driver" />
-										<el-table-column label="司机电话" align="center" prop="tel" />
-										<el-table-column label="开户名" align="center" prop="acountsName" />
-										<el-table-column label="账号" align="center" prop="bankNo" />
+										<CustomTableColumn label="车牌" align="center" prop="carNo" />
+										<CustomTableColumn label="司机" align="center" prop="driver" />
+										<CustomTableColumn label="司机电话" align="center" prop="tel" />
+										<CustomTableColumn label="开户名" align="center" prop="acountsName" />
+										<CustomTableColumn label="账号" align="center" prop="bankNo" />
 									</template>
 								</SearchOption>
 							</el-col>
@@ -319,18 +313,18 @@
 					ref="inventoryDetail"
 				>
 					<!-- 选择列：始终可选 -->
-					<el-table-column type="selection" width="50" align="center" :selectable="() => true" />
-					<el-table-column label="序号" align="center" type="index" width="50" />
+					<CustomTableColumn type="selection" width="50" align="center" :selectable="() => true" />
+					<CustomTableColumn label="序号" align="center" type="index" width="50" />
 
 					<!-- 新增：行操作列 -->
-					<el-table-column label="行操作" align="center" width="100" fixed="left">
+					<CustomTableColumn label="行操作" align="center" width="100" fixed="left">
 						<template slot-scope="scope">
 							<el-button v-if="!scope.row.isEditing" :disabled="!isEditingDetails" size="mini" type="warning" icon="el-icon-edit" @click="handleRowEdit(scope.row)">编辑</el-button>
 							<el-button v-else size="mini" type="success" icon="el-icon-check" @click="handleRowSave(scope.row)">保存</el-button>
 						</template>
-					</el-table-column>
+					</CustomTableColumn>
 
-					<el-table-column label="供应商" width="200">
+					<CustomTableColumn label="供应商" width="200">
 						<template #default="scope">
 							<el-row>
 								<!-- 动态绑定的 Input -->
@@ -356,19 +350,19 @@
 										:disable="!scope.row.isEditing"
 									>
 										<template #table-columns>
-											<el-table-column label="公司名称" align="center" prop="companyName" />
-											<el-table-column label="销售经理" align="center" prop="salesManager" />
-											<el-table-column label="联系人" align="center" prop="relationName" />
-											<el-table-column label="电话" align="center" prop="relationTel" />
-											<el-table-column label="地址" align="center" prop="address" />
+											<CustomTableColumn label="公司名称" align="center" prop="companyName" />
+											<CustomTableColumn label="销售经理" align="center" prop="salesManager" />
+											<CustomTableColumn label="联系人" align="center" prop="relationName" />
+											<CustomTableColumn label="电话" align="center" prop="relationTel" />
+											<CustomTableColumn label="地址" align="center" prop="address" />
 										</template>
 									</SearchOption>
 								</el-col>
 							</el-row>
 						</template>
-					</el-table-column>
+					</CustomTableColumn>
 
-					<el-table-column label="级别名称" prop="levelName" width="150">
+					<CustomTableColumn label="级别名称" prop="levelName" width="150">
 						<template #default="scope">
 							<el-col :span="16">
 								<!-- 添加 disabled 属性 -->
@@ -388,20 +382,20 @@
 									:disable="!scope.row.isEditing"
 								>
 									<template #table-columns>
-										<el-table-column label="级别编码" align="center" prop="levelNo" />
-										<el-table-column label="级别名称" align="center" prop="levelName" />
-										<el-table-column label="分类编号" align="center" prop="categoryNo" />
-										<el-table-column label="分类名称" align="center" prop="categoryName" />
-										<el-table-column label="厚度" align="center" prop="height" />
-										<el-table-column label="长度" align="center" prop="length" />
-										<el-table-column label="宽度" align="center" prop="width" />
-										<el-table-column label="误差" align="center" prop="tonnage" />
+										<CustomTableColumn label="级别编码" align="center" prop="levelNo" />
+										<CustomTableColumn label="级别名称" align="center" prop="levelName" />
+										<CustomTableColumn label="分类编号" align="center" prop="categoryNo" />
+										<CustomTableColumn label="分类名称" align="center" prop="categoryName" />
+										<CustomTableColumn label="厚度" align="center" prop="height" />
+										<CustomTableColumn label="长度" align="center" prop="length" />
+										<CustomTableColumn label="宽度" align="center" prop="width" />
+										<CustomTableColumn label="误差" align="center" prop="tonnage" />
 									</template>
 								</SearchOption>
 							</el-col>
 						</template>
-					</el-table-column>
-					<el-table-column label="计量单位" prop="countingUnit" width="150">
+					</CustomTableColumn>
+					<CustomTableColumn label="计量单位" prop="countingUnit" width="150">
 						<template #default="scope">
 							<!-- 添加 disabled 属性 -->
 							<el-radio-group v-model="scope.row.countingUnit" size="mini" :disabled="!scope.row.isEditing" @change="() => recalculateAll(scope)">
@@ -409,26 +403,26 @@
 								<el-radio label="其他">其他</el-radio>
 							</el-radio-group>
 						</template>
-					</el-table-column>
-					<el-table-column label="厚度" prop="height" width="150">
+					</CustomTableColumn>
+					<CustomTableColumn label="厚度" prop="height" width="150">
 						<template #default="scope">
 							<!-- 添加 disabled 属性 -->
 							<el-input size="mini" v-model="scope.row.height" placeholder="请选择产品级别" disabled />
 						</template>
-					</el-table-column>
-					<el-table-column label="长度" prop="length" width="150">
+					</CustomTableColumn>
+					<CustomTableColumn label="长度" prop="length" width="150">
 						<template #default="scope">
 							<!-- 添加 disabled 属性 -->
 							<el-input size="mini" v-model="scope.row.length" placeholder="请选择产品级别" disabled />
 						</template>
-					</el-table-column>
-					<el-table-column label="宽度" prop="width" width="150">
+					</CustomTableColumn>
+					<CustomTableColumn label="宽度" prop="width" width="150">
 						<template #default="scope">
 							<!-- 添加 disabled 属性 -->
 							<el-input size="mini" v-model="scope.row.width" placeholder="请选择产品级别" disabled />
 						</template>
-					</el-table-column>
-					<el-table-column label="每包片数" prop="piecesPerPack" width="150">
+					</CustomTableColumn>
+					<CustomTableColumn label="每包片数" prop="piecesPerPack" width="150">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -438,8 +432,8 @@
 								@input="val => handlePiecesInput(scope.row, 'piecesPerPack', val, () => calculatePieces(scope.row))"
 							/>
 						</template>
-					</el-table-column>
-					<el-table-column label="包数" prop="packs" width="150">
+					</CustomTableColumn>
+					<CustomTableColumn label="包数" prop="packs" width="150">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -449,9 +443,9 @@
 								@input="val => handlePiecesInput(scope.row, 'packs', val, () => calculatePieces(scope.row))"
 							/>
 						</template>
-					</el-table-column>
+					</CustomTableColumn>
 
-					<el-table-column label="出厂片数" prop="pieces" width="150">
+					<CustomTableColumn label="出厂片数" prop="pieces" width="150">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -462,9 +456,9 @@
 								:disabled="!scope.row.isEditing"
 							/>
 						</template>
-					</el-table-column>
+					</CustomTableColumn>
 
-					<el-table-column label="出厂单价" prop="price" width="150">
+					<CustomTableColumn label="出厂单价" prop="price" width="150">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -475,8 +469,8 @@
 								@blur="() => formatPriceInput(scope.row, 'price', 4, false)"
 							/>
 						</template>
-					</el-table-column>
-					<el-table-column label="出厂是否含税" prop="isIncludeTaxFactory" width="150">
+					</CustomTableColumn>
+					<CustomTableColumn label="出厂是否含税" prop="isIncludeTaxFactory" width="150">
 						<template #default="scope">
 							<!-- 添加 disabled 属性 -->
 							<el-radio-group v-model="scope.row.isIncludeTaxFactory" size="mini" @change="() => recalculateAll(scope)" :disabled="!scope.row.isEditing">
@@ -484,8 +478,8 @@
 								<el-radio :label="0">否</el-radio>
 							</el-radio-group>
 						</template>
-					</el-table-column>
-					<el-table-column label="杂费" prop="sundryCost" width="150">
+					</CustomTableColumn>
+					<CustomTableColumn label="杂费" prop="sundryCost" width="150">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -496,19 +490,19 @@
 								@blur="() => formatPriceInput(scope.row, 'sundryCost', 2)"
 							/>
 						</template>
-					</el-table-column>
-					<el-table-column label="出厂货款" prop="paymentFactory" width="150">
+					</CustomTableColumn>
+					<CustomTableColumn label="出厂货款" prop="paymentFactory" width="150">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.paymentFactory" placeholder="自动计算" disabled />
 						</template>
-					</el-table-column>
-					<el-table-column label="入库量" prop="stockNumber" width="150">
+					</CustomTableColumn>
+					<CustomTableColumn label="入库量" prop="stockNumber" width="150">
 						<template #default="scope">
 							<!-- 添加 disabled 属性 -->
 							<el-input size="mini" v-model="scope.row.stockNumber" placeholder="入库时片数" :disabled="!scope.row.isEditing" />
 						</template>
-					</el-table-column>
-					<el-table-column label="存货价" prop="paymentUnload" width="150">
+					</CustomTableColumn>
+					<CustomTableColumn label="存货价" prop="paymentUnload" width="150">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -519,8 +513,8 @@
 								@blur="() => formatPriceInput(scope.row, 'paymentUnload', 4, false)"
 							/>
 						</template>
-					</el-table-column>
-					<el-table-column label="库存是否含税" prop="isIncludeTaxSale" width="150">
+					</CustomTableColumn>
+					<CustomTableColumn label="库存是否含税" prop="isIncludeTaxSale" width="150">
 						<template #default="scope">
 							<!-- 添加 disabled 属性 -->
 							<el-radio-group v-model="scope.row.isIncludeTaxSale" size="mini" @change="() => recalculateAll(scope)" :disabled="!scope.row.isEditing">
@@ -528,26 +522,26 @@
 								<el-radio :label="0">否</el-radio>
 							</el-radio-group>
 						</template>
-					</el-table-column>
+					</CustomTableColumn>
 
-					<el-table-column label="库存金额" prop="payments" width="150">
+					<CustomTableColumn label="库存金额" prop="payments" width="150">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.payments" placeholder="自动计算" disabled />
 						</template>
-					</el-table-column>
-					<el-table-column label="误差" prop="erro" width="150">
+					</CustomTableColumn>
+					<CustomTableColumn label="误差" prop="erro" width="150">
 						<template #default="scope">
 							<!-- 添加 disabled 属性 -->
 							<el-input size="mini" v-model="scope.row.erro" placeholder="请输入误差" disabled />
 						</template>
-					</el-table-column>
-					<el-table-column label="吨位" prop="tonnage" width="150">
+					</CustomTableColumn>
+					<CustomTableColumn label="吨位" prop="tonnage" width="150">
 						<template #default="scope">
 							<!-- 添加 disabled 属性 -->
 							<el-input size="mini" v-model="scope.row.tonnage" placeholder="自动计算" disabled />
 						</template>
-					</el-table-column>
-					<el-table-column label="陆运费单价" prop="landFreightPrice" width="150" v-if="isLand">
+					</CustomTableColumn>
+					<CustomTableColumn label="陆运费单价" prop="landFreightPrice" width="150" v-if="isLand">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -558,8 +552,8 @@
 								@blur="() => formatPriceInput(scope.row, 'landFreightPrice', 2)"
 							/>
 						</template>
-					</el-table-column>
-					<el-table-column label="加费" prop="additionalFees" width="150">
+					</CustomTableColumn>
+					<CustomTableColumn label="加费" prop="additionalFees" width="150">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -570,14 +564,14 @@
 								@blur="() => formatPriceInput(scope.row, 'additionalFees', 2)"
 							/>
 						</template>
-					</el-table-column>
-					<el-table-column label="陆运费" prop="landFreight" width="150" v-if="isLand">
+					</CustomTableColumn>
+					<CustomTableColumn label="陆运费" prop="landFreight" width="150" v-if="isLand">
 						<template #default="scope">
 							<!-- 添加 disabled 属性 -->
 							<el-input size="mini" v-model="scope.row.landFreight" placeholder="自动计算" disabled />
 						</template>
-					</el-table-column>
-					<el-table-column label="海运费" prop="seaFreight" width="150" v-if="isSea">
+					</CustomTableColumn>
+					<CustomTableColumn label="海运费" prop="seaFreight" width="150" v-if="isSea">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -588,15 +582,15 @@
 								@blur="() => formatPriceInput(scope.row, 'seaFreight', 2)"
 							/>
 						</template>
-					</el-table-column>
+					</CustomTableColumn>
 
-					<el-table-column label="总运费" prop="freight" width="150">
+					<CustomTableColumn label="总运费" prop="freight" width="150">
 						<template #default="scope">
 							<!-- 添加 disabled 属性 -->
 							<el-input size="mini" v-model="scope.row.freight" placeholder="自动计算" disabled />
 						</template>
-					</el-table-column>
-					<el-table-column label="其他费用" prop="otherCost" width="150">
+					</CustomTableColumn>
+					<CustomTableColumn label="其他费用" prop="otherCost" width="150">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -607,18 +601,18 @@
 								@blur="() => formatPriceInput(scope.row, 'otherCost', 2)"
 							/>
 						</template>
-					</el-table-column>
-					<el-table-column label="利润" prop="profit" width="150">
+					</CustomTableColumn>
+					<CustomTableColumn label="利润" prop="profit" width="150">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.profit" placeholder="自动计算" disabled />
 						</template>
-					</el-table-column>
-					<el-table-column label="不含税利润" prop="profitNoTax" width="150">
+					</CustomTableColumn>
+					<CustomTableColumn label="不含税利润" prop="profitNoTax" width="150">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.profitNoTax" placeholder="自动计算" disabled />
 						</template>
-					</el-table-column>
-					<el-table-column label="物流利润" prop="logisticsProfit" width="150">
+					</CustomTableColumn>
+					<CustomTableColumn label="物流利润" prop="logisticsProfit" width="150">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -628,8 +622,8 @@
 								@blur="() => formatPriceInput(scope.row, 'logisticsProfit', 2)"
 							/>
 						</template>
-					</el-table-column>
-					<el-table-column label="厂家佣金" prop="factoryCommission" width="150">
+					</CustomTableColumn>
+					<CustomTableColumn label="厂家佣金" prop="factoryCommission" width="150">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -639,8 +633,8 @@
 								@blur="() => formatPriceInput(scope.row, 'factoryCommission', 2)"
 							/>
 						</template>
-					</el-table-column>
-					<el-table-column label="计提厂家返利金额" prop="factoryRebateAmount" width="150">
+					</CustomTableColumn>
+					<CustomTableColumn label="计提厂家返利金额" prop="factoryRebateAmount" width="150">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -650,8 +644,8 @@
 								@blur="() => formatPriceInput(scope.row, 'factoryRebateAmount', 2)"
 							/>
 						</template>
-					</el-table-column>
-					<el-table-column label="计提厂家降价金额" prop="factoryDiscountAmount" width="150">
+					</CustomTableColumn>
+					<CustomTableColumn label="计提厂家降价金额" prop="factoryDiscountAmount" width="150">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -661,14 +655,14 @@
 								@blur="() => formatPriceInput(scope.row, 'factoryDiscountAmount', 2)"
 							/>
 						</template>
-					</el-table-column>
+					</CustomTableColumn>
 
-					<el-table-column label="备注" prop="comments" width="150">
+					<CustomTableColumn label="备注" prop="comments" width="150">
 						<template #default="scope">
 							<!-- 添加 disabled 属性 -->
 							<el-input size="mini" v-model="scope.row.comments" placeholder="请输入备注" :disabled="!scope.row.isEditing" />
 						</template>
-					</el-table-column>
+					</CustomTableColumn>
 				</el-table>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -831,22 +825,23 @@ export default {
 				{ key: 0, label: 'ID', visible: true },
 				{ key: 1, label: '仓库名称', visible: true },
 				{ key: 2, label: '入库日期', visible: true },
-				{ key: 3, label: '货物来源公司', visible: true },
-				{ key: 4, label: '审核状态', visible: true },
-				{ key: 5, label: '陆运车牌', visible: true },
-				{ key: 6, label: '陆运司机电话', visible: true },
-				{ key: 7, label: '陆地司机姓名', visible: true },
-				{ key: 8, label: '陆运银行卡号', visible: true },
-				{ key: 9, label: '陆运银行户名', visible: true },
-				{ key: 10, label: '柜号', visible: true },
-				{ key: 11, label: '海运司机电话', visible: true },
-				{ key: 12, label: '海运公司', visible: true },
-				{ key: 13, label: '海运银行卡号', visible: true },
-				{ key: 14, label: '海运银行户名', visible: true },
-				{ key: 15, label: '子项陆运费之和', visible: true },
-				{ key: 16, label: '子项海运费之和', visible: true },
-				{ key: 17, label: '收到条附件路径', visible: true },
-				{ key: 18, label: '操作', visible: true }
+				{ key: 3, label: '供应商', visible: true },
+				{ key: 4, label: '货物来源公司', visible: true },
+				{ key: 5, label: '审核状态', visible: true },
+				{ key: 6, label: '陆运车牌', visible: true },
+				{ key: 7, label: '陆运司机电话', visible: true },
+				{ key: 8, label: '陆地司机姓名', visible: true },
+				{ key: 9, label: '陆运银行卡号', visible: true },
+				{ key: 10, label: '陆运银行户名', visible: true },
+				{ key: 11, label: '柜号', visible: true },
+				{ key: 12, label: '海运司机电话', visible: true },
+				{ key: 13, label: '海运公司', visible: true },
+				{ key: 14, label: '海运银行卡号', visible: true },
+				{ key: 15, label: '海运银行户名', visible: true },
+				{ key: 16, label: '子项陆运费之和', visible: true },
+				{ key: 17, label: '子项海运费之和', visible: true },
+				{ key: 18, label: '收到条附件路径', visible: true },
+				{ key: 19, label: '操作', visible: true }
 			],
 			// 表单校验
 			rules: {
@@ -965,6 +960,63 @@ export default {
 		});
 	},
 	methods: {
+		/**
+		 * @description: 预处理库存主表数据，为供应商信息去重并优化渲染性能
+		 * @param {Array} inventoryMainList - 原始库存主表列表
+		 * @returns {Array} 处理后的库存主表列表
+		 */
+		preprocessInventoryData(inventoryMainList) {
+			if (!Array.isArray(inventoryMainList)) {
+				return [];
+			}
+
+			return inventoryMainList.map(inventory => {
+				// 深拷贝库存数据，避免修改原始数据
+				const processedInventory = { ...inventory };
+
+				// 预处理供应商信息
+				if (inventory.inventoryDetailList && Array.isArray(inventory.inventoryDetailList)) {
+					// 获取去重的供应商列表
+					processedInventory._uniqueSuppliers = this.getUniqueSuppliers(inventory.inventoryDetailList);
+				} else {
+					processedInventory._uniqueSuppliers = [];
+				}
+
+				return processedInventory;
+			});
+		},
+
+		/**
+		 * @description: 获取去重的供应商列表
+		 * @param {Array} inventoryDetailList - 库存详情数组
+		 * @returns {Array} 去重后的供应商列表
+		 */
+		getUniqueSuppliers(inventoryDetailList) {
+			// 边界条件处理
+			if (!Array.isArray(inventoryDetailList) || inventoryDetailList.length === 0) {
+				return [];
+			}
+
+			// 使用 Map 进行去重，以 supplierId 为键
+			const supplierMap = new Map();
+
+			inventoryDetailList.forEach(item => {
+				// 只处理有效的供应商数据：supplierId 不为 null 且 supplier 不为空
+				if (item.supplierId && item.supplier && item.supplier.trim()) {
+					if (!supplierMap.has(item.supplierId)) {
+						// 创建不可变的供应商对象
+						supplierMap.set(item.supplierId, {
+							supplier: item.supplier.trim(),
+							supplierId: item.supplierId
+						});
+					}
+				}
+			});
+
+			// 返回去重后的数组
+			return Array.from(supplierMap.values());
+		},
+
 		listStoreHouse,
 		listInventory,
 		listCars,
@@ -1360,7 +1412,7 @@ export default {
 		handleNodeClick(data) {
 			this.loading = true;
 			listInventoryMain({ storeHouseName: data.label }).then(res => {
-				this.inventoryMainList = res.rows;
+				this.inventoryMainList = this.preprocessInventoryData(res.rows);
 				this.loading = false;
 			});
 		},
@@ -1373,7 +1425,7 @@ export default {
 		getList() {
 			this.loading = true;
 			listInventoryMain(this.queryParams).then(response => {
-				this.inventoryMainList = response.rows;
+				this.inventoryMainList = this.preprocessInventoryData(response.rows);
 				this.total = response.total;
 				this.loading = false;
 			});
@@ -1870,6 +1922,42 @@ export default {
 	color: #f56c6c;
 	margin-left: 10px;
 	font-size: 12px;
+}
+
+/* 供应商的容器 */
+.supplier-container {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-wrap: wrap;
+	gap: 4px;
+	line-height: 1.4;
+}
+
+.supplier-name {
+	color: #409eff; /* 蓝色表示供应商 */
+	cursor: pointer;
+	display: inline-block;
+	margin-right: 4px;
+	white-space: nowrap;
+	font-weight: 500;
+}
+
+.supplier-name:hover {
+	color: #df6565;
+	font-weight: bold;
+}
+
+.supplier-name:not(:last-of-type)::after {
+	content: ',';
+	margin-right: 4px;
+	color: #909399;
+}
+
+.empty-item {
+	color: #909399; /* 灰色表示空项 */
+	display: inline-block;
+	font-style: italic;
 }
 
 ::v-deep .el-table__body-wrapper {
