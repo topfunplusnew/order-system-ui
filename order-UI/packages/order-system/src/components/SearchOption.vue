@@ -294,6 +294,7 @@ export default {
 		overflow: hidden;
 		transition: all 0.3s ease;
 		margin-left: 0;
+		z-index: 999999;
 	}
 
 	&:hover {
@@ -301,7 +302,8 @@ export default {
 			opacity: 1;
 			visibility: visible;
 			width: auto;
-			margin-left: 8px;
+			margin-left: 4px;
+			z-index: 999999;
 		}
 	}
 }

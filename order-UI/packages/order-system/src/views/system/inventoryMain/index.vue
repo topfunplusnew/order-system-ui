@@ -166,7 +166,7 @@
 		</div>
 
 		<!-- 添加或修改库存库存主表对话框 -->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="title" :visible.sync="open" width="1200px" append-to-body :close-on-click-modal="false">
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="title" :visible.sync="open" width="1600px" append-to-body :close-on-click-modal="false">
 			<el-form ref="form" :model="form" :rules="rules" label-width="80px" :inline="true">
 				<el-form-item label="仓库名称" prop="storeHouseName">
 					<el-col :span="16">
@@ -347,6 +347,7 @@
 
 				<!--        与订单一致 -->
 				<el-table
+					border
 					size="mini"
 					:data="inventoryDetailList"
 					show-summary
@@ -355,29 +356,21 @@
 					@selection-change="handleInventoryDetailSelectionChange"
 					ref="inventoryDetail"
 				>
-					<!-- 选择列：始终可选 -->
 					<CustomTableColumn type="selection" width="50" align="center" :selectable="() => true" />
 					<CustomTableColumn label="序号" align="center" type="index" width="50" />
-
-					<!-- 新增：行操作列 -->
-					<CustomTableColumn label="行操作" align="center" width="100" fixed="left">
+					<CustomTableColumn label="行操作" align="center" width="100">
 						<template slot-scope="scope">
 							<el-button v-if="!scope.row.isEditing" :disabled="!isEditingDetails" size="mini" type="warning" icon="el-icon-edit" @click="handleRowEdit(scope.row)">编辑</el-button>
 							<el-button v-else size="mini" type="success" icon="el-icon-check" @click="handleRowSave(scope.row)">保存</el-button>
 						</template>
 					</CustomTableColumn>
-
-					<CustomTableColumn label="供应商" width="200">
+					<CustomTableColumn label="供应商" width="170">
 						<template #default="scope">
 							<el-row>
-								<!-- 动态绑定的 Input -->
-								<el-col :span="18">
-									<!-- 添加 disabled 属性 -->
+								<el-col :span="12">
 									<el-input disabled size="mini" v-model="scope.row.supplier" placeholder="请选择" />
 								</el-col>
-
-								<!-- 供应商按钮 -->
-								<el-col :span="6">
+								<el-col :span="4">
 									<SearchOption
 										title="供应商信息"
 										:get-data="listCompany"
@@ -407,7 +400,7 @@
 
 					<CustomTableColumn label="级别名称" prop="levelName" width="150">
 						<template #default="scope">
-							<el-col :span="16">
+							<el-col :span="12">
 								<!-- 添加 disabled 属性 -->
 								<el-input disabled size="mini" v-model="scope.row.levelName" placeholder="请选择" />
 							</el-col>
@@ -438,34 +431,34 @@
 							</el-col>
 						</template>
 					</CustomTableColumn>
-					<CustomTableColumn label="计量单位" prop="countingUnit" width="150">
+					<CustomTableColumn label="计量单位" prop="countingUnit" width="60" class-name="counting-unit-column">
 						<template #default="scope">
 							<!-- 添加 disabled 属性 -->
-							<el-radio-group v-model="scope.row.countingUnit" size="mini" :disabled="!scope.row.isEditing" @change="() => recalculateAll(scope)">
-								<el-radio label="片">片数</el-radio>
-								<el-radio label="其他">其他</el-radio>
+							<el-radio-group v-model="scope.row.countingUnit" size="mini" :disabled="!scope.row.isEditing" @change="() => recalculateAll(scope)" class="vertical-radio-group">
+								<el-radio label="片" class="vertical-radio">片数</el-radio>
+								<el-radio label="其他" class="vertical-radio">其他</el-radio>
 							</el-radio-group>
 						</template>
 					</CustomTableColumn>
-					<CustomTableColumn label="厚度" prop="height" width="150">
+					<CustomTableColumn label="厚度" prop="height" width="60">
 						<template #default="scope">
 							<!-- 添加 disabled 属性 -->
 							<el-input size="mini" v-model="scope.row.height" placeholder="请选择产品级别" disabled />
 						</template>
 					</CustomTableColumn>
-					<CustomTableColumn label="长度" prop="length" width="150">
+					<CustomTableColumn label="长度" prop="length" width="60">
 						<template #default="scope">
 							<!-- 添加 disabled 属性 -->
 							<el-input size="mini" v-model="scope.row.length" placeholder="请选择产品级别" disabled />
 						</template>
 					</CustomTableColumn>
-					<CustomTableColumn label="宽度" prop="width" width="150">
+					<CustomTableColumn label="宽度" prop="width" width="60">
 						<template #default="scope">
 							<!-- 添加 disabled 属性 -->
 							<el-input size="mini" v-model="scope.row.width" placeholder="请选择产品级别" disabled />
 						</template>
 					</CustomTableColumn>
-					<CustomTableColumn label="每包片数" prop="piecesPerPack" width="150">
+					<CustomTableColumn label="每包片数" prop="piecesPerPack" width="90">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -476,7 +469,7 @@
 							/>
 						</template>
 					</CustomTableColumn>
-					<CustomTableColumn label="包数" prop="packs" width="150">
+					<CustomTableColumn label="包数" prop="packs" width="90">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -488,7 +481,7 @@
 						</template>
 					</CustomTableColumn>
 
-					<CustomTableColumn label="出厂片数" prop="pieces" width="150">
+					<CustomTableColumn label="出厂片数" prop="pieces" width="90">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -501,7 +494,7 @@
 						</template>
 					</CustomTableColumn>
 
-					<CustomTableColumn label="出厂单价" prop="price" width="150">
+					<CustomTableColumn label="出厂单价" prop="price" width="90">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -513,16 +506,16 @@
 							/>
 						</template>
 					</CustomTableColumn>
-					<CustomTableColumn label="出厂是否含税" prop="isIncludeTaxFactory" width="150">
+					<CustomTableColumn label="是否含税" prop="isIncludeTaxFactory" width="60" class-name="tax-column">
 						<template #default="scope">
 							<!-- 添加 disabled 属性 -->
-							<el-radio-group v-model="scope.row.isIncludeTaxFactory" size="mini" @change="() => recalculateAll(scope)" :disabled="!scope.row.isEditing">
-								<el-radio :label="1">是</el-radio>
-								<el-radio :label="0">否</el-radio>
+							<el-radio-group v-model="scope.row.isIncludeTaxFactory" size="mini" @change="() => recalculateAll(scope)" :disabled="!scope.row.isEditing" class="vertical-tax-radio-group">
+								<el-radio :label="1" class="vertical-tax-radio">是</el-radio>
+								<el-radio :label="0" class="vertical-tax-radio">否</el-radio>
 							</el-radio-group>
 						</template>
 					</CustomTableColumn>
-					<CustomTableColumn label="杂费" prop="sundryCost" width="150">
+					<CustomTableColumn label="杂费" prop="sundryCost" width="60">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -534,18 +527,18 @@
 							/>
 						</template>
 					</CustomTableColumn>
-					<CustomTableColumn label="出厂货款" prop="paymentFactory" width="150">
+					<CustomTableColumn label="出厂货款" prop="paymentFactory" width="70">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.paymentFactory" placeholder="自动计算" disabled />
 						</template>
 					</CustomTableColumn>
-					<CustomTableColumn label="入库量" prop="stockNumber" width="150">
+					<CustomTableColumn label="入库量" prop="stockNumber" width="70">
 						<template #default="scope">
 							<!-- 添加 disabled 属性 -->
 							<el-input size="mini" v-model="scope.row.stockNumber" placeholder="入库时片数" :disabled="!scope.row.isEditing" />
 						</template>
 					</CustomTableColumn>
-					<CustomTableColumn label="存货价" prop="paymentUnload" width="150">
+					<CustomTableColumn label="存货价" prop="paymentUnload" width="70">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -557,34 +550,34 @@
 							/>
 						</template>
 					</CustomTableColumn>
-					<CustomTableColumn label="库存是否含税" prop="isIncludeTaxSale" width="150">
+					<CustomTableColumn label="是否含税" prop="isIncludeTaxSale" width="60" class-name="tax-column">
 						<template #default="scope">
 							<!-- 添加 disabled 属性 -->
-							<el-radio-group v-model="scope.row.isIncludeTaxSale" size="mini" @change="() => recalculateAll(scope)" :disabled="!scope.row.isEditing">
-								<el-radio :label="1">是</el-radio>
-								<el-radio :label="0">否</el-radio>
+							<el-radio-group v-model="scope.row.isIncludeTaxSale" size="mini" @change="() => recalculateAll(scope)" :disabled="!scope.row.isEditing" class="vertical-tax-radio-group">
+								<el-radio :label="1" class="vertical-tax-radio">是</el-radio>
+								<el-radio :label="0" class="vertical-tax-radio">否</el-radio>
 							</el-radio-group>
 						</template>
 					</CustomTableColumn>
 
-					<CustomTableColumn label="库存金额" prop="payments" width="150">
+					<CustomTableColumn label="库存金额" prop="payments" width="70">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.payments" placeholder="自动计算" disabled />
 						</template>
 					</CustomTableColumn>
-					<CustomTableColumn label="误差" prop="erro" width="150">
+					<CustomTableColumn label="误差" prop="erro" width="70">
 						<template #default="scope">
 							<!-- 添加 disabled 属性 -->
 							<el-input size="mini" v-model="scope.row.erro" placeholder="请输入误差" disabled />
 						</template>
 					</CustomTableColumn>
-					<CustomTableColumn label="吨位" prop="tonnage" width="150">
+					<CustomTableColumn label="吨位" prop="tonnage" width="70">
 						<template #default="scope">
 							<!-- 添加 disabled 属性 -->
 							<el-input size="mini" v-model="scope.row.tonnage" placeholder="自动计算" disabled />
 						</template>
 					</CustomTableColumn>
-					<CustomTableColumn label="陆运费单价" prop="landFreightPrice" width="150" v-if="isLand">
+					<CustomTableColumn label="陆运费单价" prop="landFreightPrice" width="90" v-if="isLand">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -596,7 +589,7 @@
 							/>
 						</template>
 					</CustomTableColumn>
-					<CustomTableColumn label="加费" prop="additionalFees" width="150">
+					<CustomTableColumn label="加费" prop="additionalFees" width="70">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -608,13 +601,13 @@
 							/>
 						</template>
 					</CustomTableColumn>
-					<CustomTableColumn label="陆运费" prop="landFreight" width="150" v-if="isLand">
+					<CustomTableColumn label="陆运费" prop="landFreight" width="70" v-if="isLand">
 						<template #default="scope">
 							<!-- 添加 disabled 属性 -->
 							<el-input size="mini" v-model="scope.row.landFreight" placeholder="自动计算" disabled />
 						</template>
 					</CustomTableColumn>
-					<CustomTableColumn label="海运费" prop="seaFreight" width="150" v-if="isSea">
+					<CustomTableColumn label="海运费" prop="seaFreight" width="70" v-if="isSea">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -627,13 +620,13 @@
 						</template>
 					</CustomTableColumn>
 
-					<CustomTableColumn label="总运费" prop="freight" width="150">
+					<CustomTableColumn label="总运费" prop="freight" width="70">
 						<template #default="scope">
 							<!-- 添加 disabled 属性 -->
 							<el-input size="mini" v-model="scope.row.freight" placeholder="自动计算" disabled />
 						</template>
 					</CustomTableColumn>
-					<CustomTableColumn label="其他费用" prop="otherCost" width="150">
+					<CustomTableColumn label="其他费用" prop="otherCost" width="80">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -645,17 +638,17 @@
 							/>
 						</template>
 					</CustomTableColumn>
-					<CustomTableColumn label="利润" prop="profit" width="150">
+					<CustomTableColumn label="利润" prop="profit" width="70">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.profit" placeholder="自动计算" disabled />
 						</template>
 					</CustomTableColumn>
-					<CustomTableColumn label="不含税利润" prop="profitNoTax" width="150">
+					<CustomTableColumn label="不含税利润" prop="profitNoTax" width="90">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.profitNoTax" placeholder="自动计算" disabled />
 						</template>
 					</CustomTableColumn>
-					<CustomTableColumn label="物流利润" prop="logisticsProfit" width="150">
+					<CustomTableColumn label="物流利润" prop="logisticsProfit" width="80">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -666,7 +659,7 @@
 							/>
 						</template>
 					</CustomTableColumn>
-					<CustomTableColumn label="厂家佣金" prop="factoryCommission" width="150">
+					<CustomTableColumn label="厂家佣金" prop="factoryCommission" width="80">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -677,7 +670,7 @@
 							/>
 						</template>
 					</CustomTableColumn>
-					<CustomTableColumn label="计提厂家返利金额" prop="factoryRebateAmount" width="150">
+					<CustomTableColumn label="计提厂家返利金额" prop="factoryRebateAmount" width="120">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -688,7 +681,7 @@
 							/>
 						</template>
 					</CustomTableColumn>
-					<CustomTableColumn label="计提厂家降价金额" prop="factoryDiscountAmount" width="150">
+					<CustomTableColumn label="计提厂家降价金额" prop="factoryDiscountAmount" width="120">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -2052,6 +2045,86 @@ export default {
 	color: #909399; /* 灰色表示空项 */
 	display: inline-block;
 	font-style: italic;
+}
+
+/* 计量单位列垂直布局样式 */
+::v-deep .counting-unit-column {
+	.cell {
+		padding: 2px 4px !important;
+		line-height: 1.1 !important;
+		white-space: normal !important;
+		overflow: visible !important;
+		height: auto !important;
+	}
+}
+
+::v-deep .vertical-radio-group {
+	display: flex !important;
+	flex-direction: column !important;
+	align-items: flex-start !important;
+	gap: 1px !important;
+	width: 100% !important;
+	margin: 0 !important;
+
+	.vertical-radio {
+		margin-right: 0 !important;
+		margin-bottom: 1px !important;
+		white-space: nowrap !important;
+		width: 100% !important;
+
+		.el-radio__label {
+			font-size: 11px !important;
+			padding-left: 4px !important;
+		}
+
+		.el-radio__input {
+			margin-right: 2px !important;
+		}
+
+		&:last-child {
+			margin-bottom: 0 !important;
+		}
+	}
+}
+
+/* 含税列垂直布局样式 */
+::v-deep .tax-column {
+	.cell {
+		padding: 2px 4px !important;
+		line-height: 1.1 !important;
+		white-space: normal !important;
+		overflow: visible !important;
+		height: auto !important;
+	}
+}
+
+::v-deep .vertical-tax-radio-group {
+	display: flex !important;
+	flex-direction: column !important;
+	align-items: flex-start !important;
+	gap: 1px !important;
+	width: 100% !important;
+	margin: 0 !important;
+
+	.vertical-tax-radio {
+		margin-right: 0 !important;
+		margin-bottom: 1px !important;
+		white-space: nowrap !important;
+		width: 100% !important;
+
+		.el-radio__label {
+			font-size: 11px !important;
+			padding-left: 4px !important;
+		}
+
+		.el-radio__input {
+			margin-right: 2px !important;
+		}
+
+		&:last-child {
+			margin-bottom: 0 !important;
+		}
+	}
 }
 
 ::v-deep .el-table__body-wrapper {

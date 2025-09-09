@@ -1235,24 +1235,18 @@ export default {
 			<div>
 				<el-row :gutter="10" class="mb8">
 					<el-col :span="1.5">
-						<!-- 添加按钮 - 始终可用 -->
 						<el-button size="mini" type="primary" @click="handleAddOrderdetail">添加</el-button>
 					</el-col>
 					<el-col :span="1.5">
-						<!-- 删除按钮 - 只有选中项时可用 -->
 						<el-button size="mini" type="danger" @click="handleDeleteOrderdetail" :disabled="checkedOrderdetail.length === 0">删除</el-button>
 					</el-col>
 					<el-col :span="1.5">
-						<!-- 编辑子项按钮 - 有子项且没有行处于编辑状态时可用 -->
 						<el-button size="mini" type="warning" @click="toggleEditDetails(true)" :disabled="!hasOrderDetails || hasEditingRows">编辑子项</el-button>
 					</el-col>
 					<el-col :span="1.5">
-						<!-- 全部保存按钮 - 有行处于编辑状态时可用 -->
 						<el-button size="mini" type="success" @click="toggleEditDetails(false)" :disabled="!hasEditingRows">全部保存</el-button>
 					</el-col>
 				</el-row>
-
-				<!--        订单详情表格-->
 				<el-table
 					border
 					size="mini"
@@ -1265,22 +1259,19 @@ export default {
 				>
 					<el-table-column type="selection" width="40" align="center" :selectable="() => true" />
 					<el-table-column label="序号" align="center" type="index" width="40" />
-
-					<!-- 新增行操作列，放在前面方便操作 -->
 					<el-table-column label="行操作" align="center" width="80">
 						<template slot-scope="scope">
 							<el-button v-if="!scope.row.isEditing" size="mini" type="warning" icon="el-icon-edit" @click="handleRowEdit(scope.row)">编辑</el-button>
 							<el-button v-else size="mini" type="success" icon="el-icon-check" @click="handleRowSave(scope.row)">保存</el-button>
 						</template>
 					</el-table-column>
-
-					<el-table-column label="供应商/仓库" width="100">
+					<el-table-column label="供应商/仓库" width="170">
 						<template #default="scope">
 							<el-row>
 								<el-col :span="12">
 									<el-input disabled size="mini" v-model="scope.row[scope.row.currentType || 'supplier']" placeholder="请输入供应商/仓库" />
 								</el-col>
-								<el-col :span="6">
+								<el-col :span="4">
 									<SearchOption
 										title="供应商信息"
 										:get-data="listCompany"
@@ -1303,7 +1294,7 @@ export default {
 										</template>
 									</SearchOption>
 								</el-col>
-								<el-col :span="6">
+								<el-col :span="4">
 									<SearchOption
 										title="库存信息"
 										:get-data="listExitInventory"
@@ -1335,7 +1326,7 @@ export default {
 							</el-row>
 						</template>
 					</el-table-column>
-					<el-table-column label="级别名称" prop="levelName" width="110">
+					<el-table-column label="级别名称" prop="levelName" width="150">
 						<template #default="scope">
 							<el-col :span="16">
 								<el-input disabled size="mini" v-model="scope.row.levelName" placeholder="请输入级别名称" />
