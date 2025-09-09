@@ -2,7 +2,7 @@
 	<div class="app-container">
 		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
 			<el-form-item label="申请开始日期" prop="applyDate">
-				<el-date-picker v-model="dateRange" style="width: 240px" value-format="yyyy-MM-dd HH:mm:ss" type="daterange" start-placeholder="开始日期" end-placeholder="结束日期" clearable />
+				<el-date-picker v-model="dateRange" style="width: 240px" value-format="yyyy-MM-dd" type="daterange" start-placeholder="开始日期" end-placeholder="结束日期" clearable />
 			</el-form-item>
 			<el-form-item label="支付日期" prop="payDate">
 				<el-date-picker v-model="queryParams.payDate" placeholder="请选择支付日期" style="width: 240px" value-format="yyyy-MM-dd" type="date" clearable />
