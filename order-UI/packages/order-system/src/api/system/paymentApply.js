@@ -48,7 +48,7 @@ export function delPaymentApply(id) {
 export function submitPaymentApply(id) {
 	return request({
 		url: '/system/paymentApply/submit',
-		method: 'get',
+		method: 'post',
 		params: {
 			paymentApplyId: id
 		}
