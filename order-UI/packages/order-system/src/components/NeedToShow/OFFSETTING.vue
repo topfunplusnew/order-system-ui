@@ -30,8 +30,12 @@ export default {
 			const date = new Date(dateString);
 			return date.toLocaleString(); // 格式化日期
 		},
-		handleReject() {},
-		handleProcess() {}
+		handleReject() {
+			return Promise.resolve();
+		},
+		handleProcess() {
+			return Promise.resolve();
+		}
 	}
 };
 </script>

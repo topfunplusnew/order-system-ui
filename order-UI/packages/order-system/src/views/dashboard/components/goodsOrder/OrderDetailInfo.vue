@@ -102,9 +102,10 @@ export default {
 		// 每一个组件必须要实现的方法
 		handleProcess(that) {
 			that.dialogVisible = false;
+			return Promise.resolve();
 		},
 		handleReject() {
-			console.log('order-detail-reject');
+			return Promise.resolve();
 		},
 		// 点击确认
 		handleCommitBankAccount(val) {

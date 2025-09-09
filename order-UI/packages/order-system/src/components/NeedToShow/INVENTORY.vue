@@ -10,8 +10,12 @@ export default {
 		}
 	},
 	methods: {
-		handleProcess() {},
-		handleReject() {},
+		handleProcess() {
+			return Promise.resolve();
+		},
+		handleReject() {
+			return Promise.resolve();
+		},
 		getSummaries(param) {
 			const { columns, data } = param;
 			const sums = [];

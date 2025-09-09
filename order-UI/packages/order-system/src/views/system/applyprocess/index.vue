@@ -563,7 +563,7 @@ export default {
 				<el-input clearable v-model="queryParams.reason" placeholder="请输入付款原因"></el-input>
 			</el-form-item>
 			<el-form-item label="审核状态" prop="checkState" id="step-1">
-				<el-select clearable v-model="queryParams.params.checkStateList" placeholder="请选择审核状态" multiple>
+				<el-select clearable v-model="queryParams.params.checkStateList" placeholder="请选择审核状态" multiple style="max-width: 220px" :collapse-tags="true" :collapse-tags-tooltip="true">
 					<el-option label="审核中" value="审核中"></el-option>
 					<el-option label="通过" value="通过"></el-option>
 					<el-option label="未通过" value="未通过"></el-option>

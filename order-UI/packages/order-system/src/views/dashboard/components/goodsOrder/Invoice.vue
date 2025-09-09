@@ -297,7 +297,9 @@ export default {
 			});
 		},
 		// 重写关闭逻辑
-		handleReject() {},
+		handleReject() {
+			return Promise.resolve();
+		},
 		resetMoney() {
 			this.form.invoiceAmount = 0;
 			this.form.ticketPoint = 0;

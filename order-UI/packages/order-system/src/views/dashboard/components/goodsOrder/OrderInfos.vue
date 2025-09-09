@@ -22,8 +22,11 @@ export default {
 		formatValue,
 		handleProcess(that) {
 			that.dialogVisible = false;
+			return Promise.resolve();
 		},
-		handleReject() {}
+		handleReject() {
+			return Promise.resolve();
+		}
 	}
 };
 </script>

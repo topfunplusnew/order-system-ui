@@ -38,7 +38,9 @@ export default {
 		handleProcess(that) {
 			that.dialogVisible = false;
 		},
-		handleReject() {}
+		handleReject() {
+			return Promise.resolve();
+		}
 	}
 };
 </script>

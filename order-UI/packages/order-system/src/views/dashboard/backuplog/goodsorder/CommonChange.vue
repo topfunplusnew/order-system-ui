@@ -255,8 +255,12 @@ export default {
 				}
 			});
 		},
-		handleProcess() {},
-		handleReject() {},
+		handleProcess() {
+			return Promise.resolve();
+		},
+		handleReject() {
+			return Promise.resolve();
+		},
 		// **新增：保存 JSON 数据方法**
 		saveJsonData() {
 			const jsonData = this.paginatedData; // 获取当前页展示的数据

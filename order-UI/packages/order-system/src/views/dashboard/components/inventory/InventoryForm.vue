@@ -42,9 +42,11 @@ export default {
 		listStoreHouse,
 		handleProcess() {
 			this.$refs.inventoryItem.handleProcess();
+			return Promise.resolve();
 		},
 		handleReject() {
 			this.$refs.inventoryItem.handleReject();
+			return Promise.resolve();
 		},
 		// 一堆的更新查找和确认 Query是更新查找值 Commit是更新当前库存对象的属性
 		handleUpdateQueryStoreHouseName(val) {

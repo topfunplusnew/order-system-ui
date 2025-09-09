@@ -44,8 +44,11 @@ export default {
 		// 每一个组件都要实现这么一个函数 这个函数用来执行相关的业务操作
 		handleProcess(that) {
 			that.dialogVisible = false;
+			return Promise.resolve();
 		},
-		handleReject() {}
+		handleReject() {
+			return Promise.resolve();
+		}
 	}
 };
 </script>

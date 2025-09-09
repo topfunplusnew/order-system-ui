@@ -80,8 +80,12 @@ export default {
 			};
 			return components[tableName] || null; // 默认返回 null，如果没有匹配的 tableName
 		},
-		handleProcess() {},
-		handleReject() {}
+		handleProcess() {
+			return Promise.resolve();
+		},
+		handleReject() {
+			return Promise.resolve();
+		}
 	}
 };
 </script>

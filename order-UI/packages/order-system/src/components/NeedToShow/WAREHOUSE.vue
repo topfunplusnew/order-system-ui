@@ -187,8 +187,12 @@ export default {
 			if (val === null || val === undefined || val === '') return '暂无数据';
 			return fix_2(val);
 		},
-		handleProcess() {},
-		handleReject() {}
+		handleProcess() {
+			return Promise.resolve();
+		},
+		handleReject() {
+			return Promise.resolve();
+		}
 	}
 };
 </script>

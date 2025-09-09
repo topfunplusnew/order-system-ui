@@ -14,7 +14,9 @@ export default {
 				resolve();
 			});
 		},
-		handleReject() {}
+		handleReject() {
+			return Promise.resolve();
+		}
 	}
 };
 </script>

@@ -27,8 +27,12 @@ export default {
 		formatDate(date) {
 			return date || 'N/A';
 		},
-		handleReject() {},
-		handleProcess() {}
+		handleReject() {
+			return Promise.resolve();
+		},
+		handleProcess() {
+			return Promise.resolve();
+		}
 	}
 };
 </script>

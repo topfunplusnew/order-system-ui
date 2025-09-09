@@ -10,9 +10,11 @@ export default {
 	methods: {
 		handleProcess() {
 			// 处理逻辑
+			return Promise.resolve();
 		},
 		handleReject() {
 			// 拒绝逻辑
+			return Promise.resolve();
 		}
 	}
 };

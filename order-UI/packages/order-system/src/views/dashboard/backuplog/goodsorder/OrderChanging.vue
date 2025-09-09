@@ -431,8 +431,12 @@ export default {
 			return isPerfectMatch;
 		},
 		handleChange() {},
-		handleProcess() {},
-		handleReject() {}
+		handleProcess() {
+			return Promise.resolve();
+		},
+		handleReject() {
+			return Promise.resolve();
+		}
 	}
 };
 </script>

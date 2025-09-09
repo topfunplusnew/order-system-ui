@@ -794,6 +794,7 @@ export default {
 							that.dialogVisible = false;
 							// 发布一个事件 提醒更新
 							this.$bus.$emit('payment-apply-unaudit-list-update');
+							return Promise.resolve();
 						});
 					} else {
 						this.$message.error('系统错误:付款时没有主键');
@@ -898,7 +899,9 @@ export default {
 		handleProcess(that) {
 			return this.submitAndUpdate(that);
 		},
-		handleReject() {}
+		handleReject() {
+			return Promise.resolve();
+		}
 	}
 };
 </script>

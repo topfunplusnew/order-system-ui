@@ -229,7 +229,9 @@ export default {
 				});
 			});
 		},
-		handleReject() {},
+		handleReject() {
+			return Promise.resolve();
+		},
 		resetInventory() {
 			this.orderItemInfo = {
 				orderDate: null,

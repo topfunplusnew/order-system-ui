@@ -123,7 +123,9 @@ export default {
 				}
 			});
 		},
-		handleReject() {},
+		handleReject() {
+			return Promise.resolve();
+		},
 		// 检查是否开成功了
 		checkInvoice(data) {
 			let result = {};

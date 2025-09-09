@@ -104,8 +104,12 @@ export default {
 		}
 	},
 	methods: {
-		handleProcess() {},
-		handleReject() {},
+		handleProcess() {
+			return Promise.resolve();
+		},
+		handleReject() {
+			return Promise.resolve();
+		},
 		// 初始化数据和计算汇总信息
 		initializeData(records) {
 			this.filteredRecords = [...records];

@@ -27,8 +27,12 @@ export default {
 		}
 	},
 	methods: {
-		handleProcess() {},
-		handleReject() {},
+		handleProcess() {
+			return Promise.resolve();
+		},
+		handleReject() {
+			return Promise.resolve();
+		},
 		// 查看订单详情
 		handleViewOrder(row) {
 			if (!row.goodsOrderID) {

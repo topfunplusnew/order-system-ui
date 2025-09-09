@@ -36,8 +36,12 @@ export default {
 			}
 		},
 		// 必须存在的方法（可空实现）
-		handleProcess() {},
-		handleReject() {}
+		handleProcess() {
+			return Promise.resolve();
+		},
+		handleReject() {
+			return Promise.resolve();
+		}
 	}
 };
 </script>

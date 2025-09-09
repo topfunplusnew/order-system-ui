@@ -78,8 +78,12 @@ export default {
 		}
 	},
 	methods: {
-		handleProcess() {},
-		handleReject() {},
+		handleProcess() {
+			return Promise.resolve();
+		},
+		handleReject() {
+			return Promise.resolve();
+		},
 		/**
 		 * 查询已经绑定的银行卡信息
 		 */

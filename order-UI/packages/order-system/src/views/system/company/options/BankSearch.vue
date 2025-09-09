@@ -75,8 +75,12 @@ export default {
 		};
 	},
 	methods: {
-		handleProcess() {},
-		handleReject() {},
+		handleProcess() {
+			return Promise.resolve();
+		},
+		handleReject() {
+			return Promise.resolve();
+		},
 		/**
 		 * 搜索银行卡信息
 		 */

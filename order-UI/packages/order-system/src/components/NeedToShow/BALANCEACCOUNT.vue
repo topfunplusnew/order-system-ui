@@ -44,8 +44,12 @@ export default {
 		}
 	},
 	methods: {
-		handleProcess() {},
-		handleReject() {},
+		handleProcess() {
+			return Promise.resolve();
+		},
+		handleReject() {
+			return Promise.resolve();
+		},
 		formatCompanyType(type) {
 			switch (type) {
 				case 1:

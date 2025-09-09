@@ -22,7 +22,7 @@ export var mixin_order_add = {
 			this.openDialog(
 				OrderForm,
 				'添加订单',
-				'1300px',
+				'1600px',
 				{
 					orderId: null,
 					submitInfo: '添加订单'
@@ -36,7 +36,6 @@ export var mixin_order_add = {
 			getGoodsOrder(row.id)
 				.then(response => {
 					const orderData = response.data;
-
 					// 判断是否需要填写修改原因
 					if (orderData && orderData.shouldTrackEditReason === true) {
 						// 需要填写修改原因
@@ -60,7 +59,7 @@ export var mixin_order_add = {
 								this.openDialog(
 									OrderForm,
 									'修改订单',
-									'1300px',
+									'1600px',
 									{
 										orderId: row.id,
 										submitInfo: '修改订单'
@@ -79,7 +78,7 @@ export var mixin_order_add = {
 						this.openDialog(
 							OrderForm,
 							'修改订单',
-							'1300px',
+							'1600px',
 							{
 								orderId: row.id,
 								submitInfo: '修改订单'
@@ -89,7 +88,6 @@ export var mixin_order_add = {
 					}
 				})
 				.catch(error => {
-					console.error('获取订单详情失败:', error);
 					this.$message.error('获取订单详情失败');
 				});
 		}

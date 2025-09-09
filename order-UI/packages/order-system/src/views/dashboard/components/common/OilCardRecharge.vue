@@ -73,7 +73,9 @@ export default {
 				}
 			});
 		},
-		handleReject() {},
+		handleReject() {
+			return Promise.resolve();
+		},
 		reset() {
 			this.form = {
 				id: null,
