@@ -281,6 +281,7 @@ export default {
 	display: inline-flex;
 	align-items: center;
 	gap: 0;
+	position: relative;
 
 	.search-btn {
 		flex-shrink: 0;
@@ -288,12 +289,12 @@ export default {
 	}
 
 	.clear-btn {
+		position: absolute;
+		left: 100%;
 		opacity: 0;
 		visibility: hidden;
-		width: 0;
-		overflow: hidden;
 		transition: all 0.3s ease;
-		margin-left: 0;
+		margin-left: 4px;
 		z-index: 999999;
 	}
 
@@ -301,8 +302,6 @@ export default {
 		.clear-btn {
 			opacity: 1;
 			visibility: visible;
-			width: auto;
-			margin-left: 4px;
 			z-index: 999999;
 		}
 	}
