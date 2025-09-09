@@ -23,7 +23,7 @@ export default {
 
 <template>
 	<div>
-		<el-descriptions title="车辆信息">
+		<el-descriptions title="车辆信息" :column="5" border size="mini">
 			<el-descriptions-item label="车牌号/柜号">
 				{{ needToShowInfo.carNo }}
 			</el-descriptions-item>
@@ -52,6 +52,9 @@ export default {
 			</el-descriptions-item>
 			<el-descriptions-item label="运输类型">
 				{{ needToShowInfo.carType }}
+			</el-descriptions-item>
+			<el-descriptions-item label="操作人员">
+				{{ needToShowInfo.userName || '暂无数据' }}
 			</el-descriptions-item>
 		</el-descriptions>
 	</div>

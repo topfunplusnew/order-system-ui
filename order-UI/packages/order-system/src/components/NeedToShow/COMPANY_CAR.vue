@@ -28,7 +28,7 @@ export default {
 <template>
 	<div>
 		<!-- 车辆信息 -->
-		<el-descriptions title="车辆信息" border>
+		<el-descriptions title="车辆信息" border :size="mini" :column="5">
 			<el-descriptions-item label="车辆型号">
 				{{ needToShowInfo.model }}
 			</el-descriptions-item>
@@ -49,6 +49,9 @@ export default {
 			</el-descriptions-item>
 			<el-descriptions-item label="保险金额">
 				{{ needToShowInfo.insuranceCost }}
+			</el-descriptions-item>
+			<el-descriptions-item label="操作人员">
+				{{ needToShowInfo.userName || '暂无数据' }}
 			</el-descriptions-item>
 		</el-descriptions>
 

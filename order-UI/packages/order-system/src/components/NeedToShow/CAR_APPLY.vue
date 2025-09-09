@@ -19,7 +19,7 @@ export default {
 
 <template>
 	<div>
-		<el-descriptions title="车辆使用申请信息">
+		<el-descriptions title="车辆使用申请信息" :column="5" border size="mini">
 			<el-descriptions-item label="申请时间">
 				{{ needToShowInfo.applyDate }}
 			</el-descriptions-item>
@@ -91,6 +91,9 @@ export default {
 			</el-descriptions-item>
 			<el-descriptions-item label="现金加油次数">
 				{{ needToShowInfo.cashRefuelingFrequency }}
+			</el-descriptions-item>
+			<el-descriptions-item label="操作人员">
+				{{ needToShowInfo.userName || '暂无数据' }}
 			</el-descriptions-item>
 		</el-descriptions>
 

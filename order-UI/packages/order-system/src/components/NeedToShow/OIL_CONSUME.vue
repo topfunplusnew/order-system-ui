@@ -19,7 +19,7 @@ export default {
 
 <template>
 	<div>
-		<el-descriptions title="加油卡消费信息">
+		<el-descriptions title="加油卡消费信息" :column="5" border size="mini">
 			<el-descriptions-item label="加油卡卡号">
 				{{ needToShowInfo.oilCardNo }}
 			</el-descriptions-item>
@@ -43,6 +43,9 @@ export default {
 			</el-descriptions-item>
 			<el-descriptions-item label="备注">
 				{{ needToShowInfo.comments }}
+			</el-descriptions-item>
+			<el-descriptions-item label="操作人员">
+				{{ needToShowInfo.userName || '暂无数据' }}
 			</el-descriptions-item>
 		</el-descriptions>
 	</div>

@@ -20,21 +20,21 @@ export default {
 </script>
 <template>
 	<div>
-		<el-descriptions title="借款信息">
-			<el-descriptions-item label="目标类型">
+		<el-descriptions title="借款信息" :column="5" border size="mini">
+			<el-descriptions-item label="对方类型">
 				{{ needToShowInfo.targetType }}
 			</el-descriptions-item>
-			<el-descriptions-item label="目标">
+			<el-descriptions-item label="对方">
 				{{ needToShowInfo.target }}
 			</el-descriptions-item>
 			<el-descriptions-item label="金额">{{ needToShowInfo.moneyAmount }} 元</el-descriptions-item>
-			<el-descriptions-item label="目标账户名">
+			<el-descriptions-item label="对方账户名">
 				{{ needToShowInfo.targetAcountsName }}
 			</el-descriptions-item>
-			<el-descriptions-item label="目标银行账号">
+			<el-descriptions-item label="对方银行账号">
 				{{ needToShowInfo.targetBankNo }}
 			</el-descriptions-item>
-			<el-descriptions-item label="目标开户银行">
+			<el-descriptions-item label="对方开户银行">
 				{{ needToShowInfo.targetBankName }}
 			</el-descriptions-item>
 			<el-descriptions-item label="本人账户名">
@@ -55,11 +55,11 @@ export default {
 			<el-descriptions-item label="备注">
 				{{ needToShowInfo.comments || '无' }}
 			</el-descriptions-item>
-			<el-descriptions-item label="添加时间">
-				{{ needToShowInfo.addtime }}
-			</el-descriptions-item>
 			<el-descriptions-item label="审核状态">
 				{{ needToShowInfo.checkState }}
+			</el-descriptions-item>
+			<el-descriptions-item label="操作人员">
+				{{ needToShowInfo.userName || '暂无数据' }}
 			</el-descriptions-item>
 		</el-descriptions>
 	</div>

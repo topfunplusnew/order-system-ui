@@ -20,10 +20,10 @@ export default {
 
 <template>
 	<div>
-		<el-descriptions title="佣金信息">
+		<el-descriptions title="佣金信息" :column="5" border size="mini">
 			<el-descriptions-item label="订单日期">{{ needToShowInfo.orderDate }}</el-descriptions-item>
 			<el-descriptions-item label="公司名称">{{ needToShowInfo.companyName }}</el-descriptions-item>
-			<el-descriptions-item label="等级名称">{{ needToShowInfo.levelName }}</el-descriptions-item>
+			<el-descriptions-item label="级别名称">{{ needToShowInfo.levelName }}</el-descriptions-item>
 			<el-descriptions-item label="计数单位">{{ needToShowInfo.countingUnit }}</el-descriptions-item>
 			<el-descriptions-item label="高度">{{ needToShowInfo.height }}</el-descriptions-item>
 			<el-descriptions-item label="长度">{{ needToShowInfo.length }}</el-descriptions-item>
@@ -48,6 +48,9 @@ export default {
 			<el-descriptions-item label="差异">{{ needToShowInfo.difference }}</el-descriptions-item>
 			<el-descriptions-item label="差异原因">{{ needToShowInfo.differenceReason }}</el-descriptions-item>
 			<el-descriptions-item label="其他账户名称">{{ needToShowInfo.otherAcountsName }}</el-descriptions-item>
+			<el-descriptions-item label="操作人员">
+				{{ needToShowInfo.userName || '暂无数据' }}
+			</el-descriptions-item>
 		</el-descriptions>
 	</div>
 </template>

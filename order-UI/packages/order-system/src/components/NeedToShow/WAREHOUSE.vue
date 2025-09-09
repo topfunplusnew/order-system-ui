@@ -1,7 +1,7 @@
 <template>
 	<div class="warehouse-detail">
 		<el-card class="warehouse-card" id="out-card" size="mini">
-			<el-descriptions title="出库详情" size="mini" :column="3" border>
+			<el-descriptions title="出库详情" size="mini" :column="5" border>
 				<el-descriptions-item label="仓库">
 					{{ formatValue(warehouseData.storeHouseName) }}
 				</el-descriptions-item>
@@ -17,9 +17,6 @@
 				<el-descriptions-item label="操作人">
 					{{ formatValue(warehouseData.userName) }}
 				</el-descriptions-item>
-				<el-descriptions-item label="添加时间">
-					{{ formatValue(warehouseData.addtime) }}
-				</el-descriptions-item>
 				<el-descriptions-item label="备注">
 					{{ formatValue(warehouseData.remark) }}
 				</el-descriptions-item>
@@ -28,13 +25,7 @@
 
 		<el-card class="warehouse-card" id="in-card" size="mini" v-if="warehouseData.sourceInventoryDetail">
 			<el-alert title="该入库信息为该出库信息详情的上游" type="info" show-icon class="mb-2" :closable="false" style="margin-bottom: 16px" />
-			<!-- <template slot="header">
-				<div style="display: flex; justify-content: space-between; align-items: center">
-					<span>出库关联入库信息</span>
-					<el-button type="text" size="mini" @click="showFlow = true">单据流向追溯</el-button>
-				</div>
-			</template> -->
-			<el-descriptions title="出库关联入库信息" size="mini" :column="3" border>
+			<el-descriptions title="出库关联入库信息" size="mini" :column="5" border>
 				<el-descriptions-item label="供应商">
 					{{ formatValue(warehouseData.sourceInventoryDetail.supplier) }}
 				</el-descriptions-item>
@@ -148,12 +139,6 @@
 				</el-descriptions-item>
 			</el-descriptions>
 		</el-card>
-
-		<!-- <el-dialog title="单据流向追溯" :visible.sync="showFlow" width="600px" append-to-body>
-			<div style="height: 220px">
-				<vue-super-flow :draggable="false" />
-			</div>
-		</el-dialog> -->
 	</div>
 </template>
 

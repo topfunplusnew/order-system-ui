@@ -20,7 +20,7 @@ export default {
 <template>
 	<div>
 		<el-card>
-			<el-descriptions title="发票信息">
+			<el-descriptions title="发票信息" :column="5" border size="mini">
 				<el-descriptions-item label="订单号">{{ needToShowInfo.ordersNo }}</el-descriptions-item>
 				<el-descriptions-item label="发票日期">{{ needToShowInfo.invoiceDate }}</el-descriptions-item>
 				<el-descriptions-item label="发票金额">{{ needToShowInfo.invoiceAmount }} 元</el-descriptions-item>
@@ -45,6 +45,9 @@ export default {
 					{{ needToShowInfo.extraInfo && needToShowInfo.extraInfo.currentMonthOweInvoiceAmount }}
 				</el-descriptions-item>
 				<el-descriptions-item label="备注">{{ needToShowInfo.extraInfo && needToShowInfo.extraInfo.comment }}</el-descriptions-item>
+				<el-descriptions-item label="操作人员">
+					{{ needToShowInfo.userName || '暂无数据' }}
+				</el-descriptions-item>
 			</el-descriptions>
 		</el-card>
 	</div>

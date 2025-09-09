@@ -52,8 +52,8 @@ export default {
 
 <template>
 	<div class="inventory-container">
-		<el-card class="inventory-card">
-			<el-descriptions title="库存信息" size="mini" border :column="3" :labelStyle="{ width: '150px' }">
+		<el-card class="inventory-card" shadow="hover" size="mini">
+			<el-descriptions title="库存信息" size="mini" border :column="5" :labelStyle="{ width: '150px' }">
 				<el-descriptions-item label="入库日期">
 					{{ needToShowInfo.storeDate ? new Date(needToShowInfo.storeDate).toLocaleDateString() : '-' }}
 				</el-descriptions-item>
@@ -68,6 +68,9 @@ export default {
 				<el-descriptions-item label="柜号">{{ needToShowInfo.seaCarNo || '-' }}</el-descriptions-item>
 				<el-descriptions-item label="海运公司">{{ needToShowInfo.seaDriverName || '-' }}</el-descriptions-item>
 				<el-descriptions-item label="海运公司电话">{{ needToShowInfo.seaDriverTel || '-' }}</el-descriptions-item>
+				<el-descriptions-item label="操作人员">
+					{{ needToShowInfo.userName || '暂无数据' }}
+				</el-descriptions-item>
 				<el-descriptions-item label="备注">
 					<el-tag size="small">{{ needToShowInfo.comments || '无' }}</el-tag>
 				</el-descriptions-item>

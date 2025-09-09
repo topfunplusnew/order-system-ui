@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<el-description :column="3" border size="mini">
+		<el-description :column="5" border size="mini">
 			<el-description-item label="名称">{{ needToShowInfo.companyName }}</el-description-item>
 			<el-description-item label="联系人">{{ needToShowInfo.relationName }}</el-description-item>
 			<el-description-item label="联系人电话">{{ needToShowInfo.relationTel }}</el-description-item>
@@ -18,7 +18,9 @@
 			<el-description-item label="市县">{{ needToShowInfo.city }}</el-description-item>
 			<el-description-item label="乡镇">{{ needToShowInfo.county }}</el-description-item>
 			<el-description-item label="备注">{{ needToShowInfo.comments }}</el-description-item>
-			<el-description-item label="区域">{{ needToShowInfo.region }}</el-description-item>
+			<el-descriptions-item label="操作人员">
+				{{ needToShowInfo.userName || '暂无数据' }}
+			</el-descriptions-item>
 		</el-description>
 	</div>
 </template>

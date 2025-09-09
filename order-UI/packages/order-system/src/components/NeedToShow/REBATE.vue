@@ -25,8 +25,8 @@ export default {
 
 <template>
 	<div class="rebate-container">
-		<el-card>
-			<el-descriptions title="返利信息" :column="2">
+		<el-card shadow="hover" size="mini">
+			<el-descriptions title="返利信息" :column="5" border size="mini">
 				<el-descriptions-item label="返利金额">{{ needToShowInfo.rebate }} 元</el-descriptions-item>
 				<el-descriptions-item label="返利日期">
 					{{ new Date(needToShowInfo.rebateDate).toLocaleString() }}
@@ -54,6 +54,9 @@ export default {
 				</el-descriptions-item>
 				<el-descriptions-item label="备注">
 					{{ needToShowInfo.comments || '无' }}
+				</el-descriptions-item>
+				<el-descriptions-item label="操作人员">
+					{{ needToShowInfo.userName || '暂无数据' }}
 				</el-descriptions-item>
 			</el-descriptions>
 			<el-divider></el-divider>

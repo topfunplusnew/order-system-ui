@@ -20,7 +20,7 @@ export default {
 
 <template>
 	<div>
-		<el-descriptions title="订单运费信息">
+		<el-descriptions title="订单运费信息" :column="5" border size="mini">
 			<el-descriptions-item label="运费类型">{{ needToShowInfo.freightType }}</el-descriptions-item>
 			<el-descriptions-item label="金额">{{ needToShowInfo.moneyAmount }}</el-descriptions-item>
 			<el-descriptions-item label="对方户名">{{ needToShowInfo.otherAcountsName }}</el-descriptions-item>
@@ -30,8 +30,10 @@ export default {
 			<el-descriptions-item label="司机姓名">{{ needToShowInfo.driverName }}</el-descriptions-item>
 			<el-descriptions-item label="车牌号">{{ needToShowInfo.carNo }}</el-descriptions-item>
 			<el-descriptions-item label="车队">{{ needToShowInfo.fleet }}</el-descriptions-item>
-			<!--      <el-descriptions-item label="付款人员姓名">{{ needToShowInfo.payUserName }}</el-descriptions-item>-->
 			<el-descriptions-item label="备注">{{ needToShowInfo.comments }}</el-descriptions-item>
+			<el-descriptions-item label="操作人员">
+				{{ needToShowInfo.userName || '暂无数据' }}
+			</el-descriptions-item>
 		</el-descriptions>
 	</div>
 </template>

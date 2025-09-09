@@ -22,7 +22,7 @@ export default {
 </script>
 <template>
 	<div>
-		<el-descriptions title="出差信息">
+		<el-descriptions title="出差信息" :column="5" border size="mini">
 			<el-descriptions-item label="员工姓名">
 				{{ needToShowInfo.employee }}
 			</el-descriptions-item>
@@ -38,16 +38,14 @@ export default {
 			<el-descriptions-item label="结束时间">
 				{{ needToShowInfo.endtime }}
 			</el-descriptions-item>
-			<el-descriptions-item label="是否报销">
-				<el-tag size="small">
-					{{ needToShowInfo.isReimburse === 1 ? '是' : '否' }}
-				</el-tag>
-			</el-descriptions-item>
 			<el-descriptions-item label="审核状态">
 				{{ needToShowInfo.checkState }}
 			</el-descriptions-item>
 			<el-descriptions-item label="备注">
 				{{ needToShowInfo.comments || '暂无备注' }}
+			</el-descriptions-item>
+			<el-descriptions-item label="操作人员">
+				{{ needToShowInfo.userName || '暂无数据' }}
 			</el-descriptions-item>
 		</el-descriptions>
 		<el-table :data="needToShowInfo.tripReimbursementList" style="width: 100%">

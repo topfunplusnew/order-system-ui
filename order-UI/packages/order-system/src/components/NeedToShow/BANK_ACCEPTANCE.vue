@@ -19,7 +19,7 @@ export default {
 
 <template>
 	<div>
-		<el-descriptions :column="3" size="mini">
+		<el-descriptions :column="5" size="mini" border>
 			<el-descriptions-item label="操作日期">{{ needToShowInfo.operateDate }}</el-descriptions-item>
 			<el-descriptions-item label="票据号">{{ needToShowInfo.billNo }}</el-descriptions-item>
 			<el-descriptions-item label="签发日期">{{ needToShowInfo.issueDate }}</el-descriptions-item>
@@ -37,6 +37,9 @@ export default {
 			<el-descriptions-item label="被背书人">{{ needToShowInfo.endorsee }}</el-descriptions-item>
 			<el-descriptions-item label="背书理由">{{ needToShowInfo.endorseReason }}</el-descriptions-item>
 			<el-descriptions-item label="备注">{{ needToShowInfo.comments }}</el-descriptions-item>
+			<el-descriptions-item label="操作人员">
+				{{ needToShowInfo.userName || '暂无数据' }}
+			</el-descriptions-item>
 		</el-descriptions>
 	</div>
 </template>

@@ -50,7 +50,7 @@ export default {
 	<div>
 		<el-skeleton :loading="loading" animated :rows="6">
 			<template #default>
-				<el-descriptions v-if="user" title="用户信息" :column="2" size="small" border>
+				<el-descriptions v-if="user" title="用户信息" :column="5" size="small" border>
 					<el-descriptions-item label="用户ID">{{ user.userId }}</el-descriptions-item>
 					<el-descriptions-item label="用户名">{{ user.userName }}</el-descriptions-item>
 					<el-descriptions-item label="真实姓名">{{ user.trueName }}</el-descriptions-item>
@@ -59,6 +59,9 @@ export default {
 					<el-descriptions-item label="邮箱">{{ user.email || '-' }}</el-descriptions-item>
 					<el-descriptions-item label="状态">{{ user.status === '0' ? '正常' : '停用' }}</el-descriptions-item>
 					<el-descriptions-item label="最近登录">{{ user.loginDate || '-' }}</el-descriptions-item>
+					<el-descriptions-item label="操作人员">
+						{{ needToShowInfo.userName || '暂无数据' }}
+					</el-descriptions-item>
 				</el-descriptions>
 
 				<div style="margin-top: 10px">

@@ -1,7 +1,7 @@
 <template>
 	<div class="balance-account">
-		<el-card class="balance-card">
-			<el-descriptions title="结算账户详情" :column="2" border>
+		<el-card class="balance-card" size="mini" shadow="hover">
+			<el-descriptions title="平账信息" :column="5" border>
 				<el-descriptions-item label="操作日期">
 					{{ needToShowInfo.operateDate || '暂无数据' }}
 				</el-descriptions-item>
@@ -11,22 +11,13 @@
 				<el-descriptions-item label="公司名称">
 					{{ needToShowInfo.companyName || '暂无数据' }}
 				</el-descriptions-item>
-				<el-descriptions-item label="公司ID">
-					{{ needToShowInfo.companyID || '暂无数据' }}
-				</el-descriptions-item>
 				<el-descriptions-item label="公司类型">
 					{{ formatCompanyType(needToShowInfo.companyType) }}
 				</el-descriptions-item>
 				<el-descriptions-item label="备注">
 					{{ needToShowInfo.comments || '暂无数据' }}
 				</el-descriptions-item>
-				<el-descriptions-item label="添加时间">
-					{{ needToShowInfo.addtime || '暂无数据' }}
-				</el-descriptions-item>
-				<el-descriptions-item label="用户ID">
-					{{ needToShowInfo.userId || '暂无数据' }}
-				</el-descriptions-item>
-				<el-descriptions-item label="用户名">
+				<el-descriptions-item label="操作人员">
 					{{ needToShowInfo.userName || '暂无数据' }}
 				</el-descriptions-item>
 			</el-descriptions>
