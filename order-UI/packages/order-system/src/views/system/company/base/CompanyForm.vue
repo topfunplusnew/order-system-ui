@@ -28,6 +28,7 @@ import DynamicForm from '@/components/DynamicForm';
 import { addCompany, checkCustomerIsExit, updateCompany } from '@/api/system/company';
 import { excludeParams } from '@/api/tool/exclude';
 import columnConfig from './columns';
+import { PUBLIC_DICT_TYPE } from '../../../../api/tool/enums';
 
 export default {
 	name: 'CompanyForm',
@@ -139,13 +140,6 @@ export default {
 				}
 			});
 		},
-
-		// 字段变化处理
-		handleFieldChange({ prop, value }) {
-			// 这里可以处理字段变化的副作用
-			console.log(`字段 ${prop} 变化为:`, value);
-		},
-
 		// 确认操作处理函数 - 弹窗系统要求的方法
 		async handleProcess() {
 			try {
@@ -157,8 +151,6 @@ export default {
 
 				// 2. 获取表单数据
 				const formData = this.$refs.dynamicForm.getFormData();
-				console.log('获取到的表单数据:', formData);
-
 				// 3. 根据编辑模式执行相应的业务逻辑
 				if (this.isEdit) {
 					await this.updateCompanyData(formData);
@@ -187,7 +179,9 @@ export default {
 
 		// 新增客户数据
 		async addCompanyData(formData) {
-			const data = excludeParams(formData);
+			let data = excludeParams(formData);
+			// 新增的类型为客户
+			data.companyType = PUBLIC_DICT_TYPE.CUSTOMER;
 			// 添加客户信息之前先校验客户是否已经存在
 			const checkResult = await checkCustomerIsExit(data.companyName, null);
 			if (!checkResult.data) {
