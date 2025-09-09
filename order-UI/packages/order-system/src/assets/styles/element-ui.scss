@@ -406,6 +406,14 @@
 	&.el-input .el-input__inner {
 		height: 24px !important;
 		line-height: 24px !important;
+		padding-right: 25px !important; // 为图标留出足够空间
+	}
+
+	// 修复日期选择器图标重叠问题
+	// 隐藏时间选择器的所有图标
+	.el-input__suffix,
+	.el-input__prefix {
+		display: none !important;
 	}
 
 	&.el-range-editor {
@@ -570,6 +578,14 @@
 	.el-input__inner {
 		height: 24px !important;
 		line-height: 24px !important;
+		padding-left: 8px !important; // 恢复正常左边距
+		padding-right: 8px !important; // 恢复正常右边距
+	}
+
+	// 隐藏时间选择器的所有图标
+	.el-input__suffix,
+	.el-input__prefix {
+		display: none !important;
 	}
 }
 

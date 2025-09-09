@@ -276,10 +276,10 @@
 				<div>
 					<el-form :model="bankAcountQuery" label-width="80px" :inline="true">
 						<el-form-item label="开始日期" prop="params.operateDateStartTime">
-							<el-date-picker v-model="bankAcountQuery.params.operateDateStartTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="日期" size="mini" />
+							<el-date-picker v-model="bankAcountQuery.params.operateDateStartTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" size="mini" />
 						</el-form-item>
 						<el-form-item label="结束日期" prop="params.operateDateEndTime">
-							<el-date-picker v-model="bankAcountQuery.params.operateDateEndTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="日期" size="mini" />
+							<el-date-picker v-model="bankAcountQuery.params.operateDateEndTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" size="mini" />
 						</el-form-item>
 						<el-form-item>
 							<el-button type="primary" size="mini" @click="getBankAcountChangeList">搜索</el-button>
