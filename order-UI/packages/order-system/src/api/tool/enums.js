@@ -321,3 +321,15 @@ export const DOWNLOAD_STATUS_WS = Object.freeze({
 	PROGRESS: 'process',
 	STATUS: 'status'
 });
+
+// 保证金和押金类型枚举
+export const DEPOSIT_TYPE = Object.freeze({
+	FACTORY_GUARANTEE: { value: '厂家保证金', label: '厂家保证金' },
+	REGULAR: { value: '押金', label: '押金' }
+});
+
+// 保证金和押金选项
+export const DEPOSIT_OPTIONS = Object.freeze([
+	{ label: DEPOSIT_TYPE.FACTORY_GUARANTEE.label, value: DEPOSIT_TYPE.FACTORY_GUARANTEE.value },
+	{ label: DEPOSIT_TYPE.REGULAR.label, value: DEPOSIT_TYPE.REGULAR.value }
+]);
