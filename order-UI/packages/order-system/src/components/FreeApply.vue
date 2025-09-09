@@ -19,7 +19,14 @@ export default {
 	data() {
 		return {
 			queryAcountsName: '',
-			form: {},
+			form: {
+				otherAcountsName: null,
+				otherBankNo: null,
+				otherBankName: null,
+				payDate: parseTime(new Date()),
+				comments: null,
+				content: null
+			},
 			rules: {
 				otherAcountsName: [
 					{
@@ -90,9 +97,11 @@ export default {
 		listCompany,
 		listCars,
 		getDriverAccountInfo() {
-			this.form.otherAcountsName = this.orderInfo.accountInfo.acountsName;
-			this.form.otherBankNo = this.orderInfo.accountInfo.bankNo;
-			this.form.otherBankName = this.orderInfo.accountInfo.bankName;
+			if (this.orderInfo && this.orderInfo.accountInfo) {
+				this.form.otherAcountsName = this.orderInfo.accountInfo.acountsName;
+				this.form.otherBankNo = this.orderInfo.accountInfo.bankNo;
+				this.form.otherBankName = this.orderInfo.accountInfo.bankName;
+			}
 		},
 		handleProcess(that) {
 			return new Promise((resolve, reject) => {
@@ -123,9 +132,11 @@ export default {
 			return Promise.resolve();
 		},
 		handleCommitBack(val) {
-			this.form.otherAcountsName = val.acountsName;
-			this.form.otherBankName = val.bankName;
-			this.form.otherBankNo = val.bankNo;
+			if (val && typeof val === 'object') {
+				this.$set(this.form, 'otherAcountsName', val.acountsName || '');
+				this.$set(this.form, 'otherBankName', val.bankName || '');
+				this.$set(this.form, 'otherBankNo', val.bankNo || '');
+			}
 		},
 		handleChange(val) {
 			this.queryAcountsName = val;
@@ -142,6 +153,11 @@ export default {
 		},
 		openAddBankAccountDialog() {
 			this.resetBankAccountForm();
+			// 自动填充司机的车牌和ID信息
+			if (this.orderInfo && this.orderInfo.carNo && this.orderInfo.driverId) {
+				this.bankAccountForm.companyName = this.orderInfo.carNo;
+				this.bankAccountForm.companyId = this.orderInfo.driverId;
+			}
 			this.addBankAccountDialogVisible = true;
 		},
 		cancelBankAccountForm() {
