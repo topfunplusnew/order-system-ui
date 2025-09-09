@@ -88,31 +88,21 @@ export default {
 
 <template>
 	<div>
-		<el-card>
+		<el-card size="mini" shadow="hover">
 			<!--      插槽 按钮-->
 			<div slot="header" class="clearfix">
 				<span>收款信息</span>
 				<el-button type="text" @click="handleCheck" style="float: right">查看详细</el-button>
 			</div>
-			<el-descriptions :column="3" border>
-				<el-descriptions-item label="收款编号">{{ needToShowInfo.receiveNO }}</el-descriptions-item>
-				<el-descriptions-item label="所属公司">{{ needToShowInfo.companyName || '暂无' }}</el-descriptions-item>
+			<el-descriptions :column="5" border size="mini">
 				<el-descriptions-item label="公司类型">{{ needToShowInfo.companyType }}</el-descriptions-item>
-				<el-descriptions-item label="资金日期">{{ needToShowInfo.fundsDate }}</el-descriptions-item>
-				<el-descriptions-item label="收款类型">{{ needToShowInfo.receiveType }}</el-descriptions-item>
+				<el-descriptions-item label="日期">{{ needToShowInfo.fundsDate }}</el-descriptions-item>
 				<el-descriptions-item label="金额" label-class-name="money-label">
 					<span style="color: #67c23a; font-weight: bold">{{ needToShowInfo.moneyAmount }} 元</span>
 				</el-descriptions-item>
-				<el-descriptions-item label="自方银行卡类型">{{ needToShowInfo.selfBankCardType || '暂无' }}</el-descriptions-item>
-				<el-descriptions-item label="自方户名">{{ needToShowInfo.selfAcountsName || '暂无' }}</el-descriptions-item>
-				<el-descriptions-item label="自方银行账号">{{ needToShowInfo.selfBankNo || '暂无' }}</el-descriptions-item>
-				<el-descriptions-item label="自方开户行">{{ needToShowInfo.selfBankName || '暂无' }}</el-descriptions-item>
-				<el-descriptions-item label="对方银行卡类型">{{ needToShowInfo.otherBankCardType || '暂无' }}</el-descriptions-item>
 				<el-descriptions-item label="对方户名">{{ needToShowInfo.otherAcountsName || '暂无' }}</el-descriptions-item>
-				<el-descriptions-item label="对方银行账号">{{ needToShowInfo.otherBankNo || '暂无' }}</el-descriptions-item>
-				<el-descriptions-item label="对方开户行">{{ needToShowInfo.otherBankName || '暂无' }}</el-descriptions-item>
-				<el-descriptions-item label="添加时间">{{ needToShowInfo.addtime }}</el-descriptions-item>
-				<el-descriptions-item label="备注" :span="3">
+				<el-descriptions-item label="操作人员">{{ needToShowInfo.userName }}</el-descriptions-item>
+				<el-descriptions-item label="备注">
 					<el-tag v-if="needToShowInfo.comments" size="small" type="success">{{ needToShowInfo.comments }}</el-tag>
 					<span v-else>暂无备注</span>
 				</el-descriptions-item>

@@ -1,6 +1,5 @@
 <script>
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
-import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 import { getFunction } from '@/utils/order/mapper';
 import { TableName } from '@/api/tool/enums';
 import GOODS_ORDER from '@/components/NeedToShow/GOODS_ORDER.vue';
@@ -15,7 +14,6 @@ import ORDER_FREIGHTVue from '@/components/NeedToShow/ORDER_FREIGHT.vue';
 
 export default {
 	name: 'PAYMENT',
-	components: { DialogWrapper },
 	mixins: [common_dialog],
 	props: {
 		needToShowInfo: {
@@ -32,7 +30,7 @@ export default {
 		};
 	},
 	methods: {
-		handleCheck(row) {
+		handleCheck() {
 			let fillTableName = TableName.PAYMENT;
 			let tid = this.needToShowInfo.id;
 			const { tableName, tID } = this.needToShowInfo;
@@ -92,18 +90,15 @@ export default {
 
 <template>
 	<div>
-		<el-card>
+		<el-card size="mini" shadow="hover">
 			<!--      插槽 按钮-->
 			<div slot="header" class="clearfix">
 				<span>付款信息</span>
 				<el-button type="text" @click="handleCheck" style="float: right">查看详细</el-button>
 			</div>
-			<el-descriptions :column="3" border>
-				<el-descriptions-item label="付款编号">{{ needToShowInfo.payNO }}</el-descriptions-item>
-				<el-descriptions-item label="所属公司">{{ needToShowInfo.companyName || '暂无' }}</el-descriptions-item>
+			<el-descriptions :column="3" border size="mini">
 				<el-descriptions-item label="公司类型">{{ needToShowInfo.companyType }}</el-descriptions-item>
-				<el-descriptions-item label="资金日期">{{ needToShowInfo.fundsDate }}</el-descriptions-item>
-				<el-descriptions-item label="付款类型">{{ needToShowInfo.payType }}</el-descriptions-item>
+				<el-descriptions-item label="日期">{{ needToShowInfo.fundsDate }}</el-descriptions-item>
 				<el-descriptions-item label="金额" label-class-name="money-label">
 					<span style="color: #e6a23c; font-weight: bold">{{ needToShowInfo.moneyAmount }} 元</span>
 				</el-descriptions-item>
@@ -118,11 +113,6 @@ export default {
 					</el-tag>
 					<span v-else>暂无</span>
 				</el-descriptions-item>
-				<el-descriptions-item label="自方银行卡类型">{{ needToShowInfo.selfBankCardType || '暂无' }}</el-descriptions-item>
-				<el-descriptions-item label="自方户名">{{ needToShowInfo.selfAcountsName || '暂无' }}</el-descriptions-item>
-				<el-descriptions-item label="自方银行账号">{{ needToShowInfo.selfBankNo || '暂无' }}</el-descriptions-item>
-				<el-descriptions-item label="自方开户行">{{ needToShowInfo.selfBankName || '暂无' }}</el-descriptions-item>
-				<el-descriptions-item label="对方银行卡类型">{{ needToShowInfo.otherBankCardType || '暂无' }}</el-descriptions-item>
 				<el-descriptions-item label="对方户名">{{ needToShowInfo.otherAcountsName || '暂无' }}</el-descriptions-item>
 				<el-descriptions-item label="对方银行账号">{{ needToShowInfo.otherBankNo || '暂无' }}</el-descriptions-item>
 				<el-descriptions-item label="对方开户行">{{ needToShowInfo.otherBankName || '暂无' }}</el-descriptions-item>
@@ -133,11 +123,6 @@ export default {
 				</el-descriptions-item>
 			</el-descriptions>
 		</el-card>
-
-		<div v-if="currentComponent">
-			<DialogWrapper :current-component="currentComponent" :dialog-visible="dialogVisible" />
-		</div>
-
 		<!--    对应信息的弹窗-->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="信息" :visible.sync="infoVisible" width="900px" append-to-body>
 			<component :is="Components" :need-to-show-info="needToShowInfo" />
