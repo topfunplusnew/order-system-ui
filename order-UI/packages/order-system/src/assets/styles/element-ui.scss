@@ -771,48 +771,193 @@
 	}
 }
 
-// 表格分页组件调整
+// 表格分页组件调整 - 优化布局和对齐
 .el-pagination {
 	font-size: 12px !important;
+	display: flex !important;
+	align-items: center !important;
+	justify-content: space-between !important;
+	flex-wrap: wrap !important;
+	gap: 8px !important;
 
-	.el-pagination__total,
-	.el-pagination__jump {
+	// 总条数显示
+	.el-pagination__total {
 		font-size: 12px !important;
+		color: #606266 !important;
+		margin-right: 8px !important;
+		order: 1 !important;
 	}
 
-	.el-pager li {
-		min-width: 24px !important;
-		height: 24px !important;
-		line-height: 24px !important;
-		font-size: 11px !important;
-		margin: 0 2px !important;
-	}
-
-	.btn-prev,
-	.btn-next {
-		min-width: 24px !important;
-		height: 24px !important;
-		line-height: 24px !important;
-		font-size: 11px !important;
-	}
-
+	// 每页显示条数选择器 - 左侧布局优化
 	.el-pagination__sizes {
+		order: 2 !important;
+		margin-right: auto !important;
+		display: flex !important;
+		align-items: center !important;
+
 		.el-select {
-			width: 80px !important;
+			width: 90px !important;
+			margin-left: 8px !important;
 
 			.el-input__inner {
 				height: 24px !important;
 				line-height: 24px !important;
 				font-size: 11px !important;
+				border-radius: 4px !important;
+				padding: 0 24px 0 8px !important;
+			}
+
+			.el-input__suffix {
+				right: 6px !important;
 			}
 		}
 	}
 
-	.el-pagination__jump {
-		.el-input__inner {
-			width: 32px !important;
+	// 页码按钮区域 - 中央布局优化
+	.el-pager {
+		order: 3 !important;
+		display: flex !important;
+		align-items: center !important;
+		margin: 0 16px !important;
+
+		li {
+			min-width: 24px !important;
 			height: 24px !important;
-			line-height: 24px !important;
+			line-height: 22px !important;
+			font-size: 11px !important;
+			margin: 0 1px !important;
+			border-radius: 3px !important;
+			border: 1px solid #dcdfe6 !important;
+			background-color: #fff !important;
+			cursor: pointer !important;
+			transition: all 0.2s ease !important;
+
+			&:hover {
+				background-color: #f5f7fa !important;
+				border-color: #c0c4cc !important;
+			}
+
+			&.active {
+				background-color: #409eff !important;
+				border-color: #409eff !important;
+				color: #fff !important;
+			}
+
+			&.more {
+				border: none !important;
+				background: transparent !important;
+
+				&:hover {
+					background: transparent !important;
+					color: #409eff !important;
+				}
+			}
+		}
+	}
+
+	// 上一页/下一页按钮
+	.btn-prev,
+	.btn-next {
+		min-width: 24px !important;
+		height: 24px !important;
+		line-height: 22px !important;
+		font-size: 11px !important;
+		border: 1px solid #dcdfe6 !important;
+		border-radius: 3px !important;
+		background-color: #fff !important;
+		cursor: pointer !important;
+		transition: all 0.2s ease !important;
+
+		&:hover:not(.disabled) {
+			background-color: #f5f7fa !important;
+			border-color: #c0c4cc !important;
+		}
+
+		&.disabled {
+			background-color: #f5f7fa !important;
+			border-color: #e4e7ed !important;
+			color: #c0c4cc !important;
+			cursor: not-allowed !important;
+		}
+	}
+
+	.btn-prev {
+		order: 2.5 !important;
+		margin-right: 4px !important;
+	}
+
+	.btn-next {
+		order: 3.5 !important;
+		margin-left: 4px !important;
+	}
+
+	// 跳转输入框 - 右侧布局优化
+	.el-pagination__jump {
+		order: 4 !important;
+		margin-left: auto !important;
+		display: flex !important;
+		align-items: center !important;
+		font-size: 12px !important;
+		color: #606266 !important;
+
+		.el-input {
+			width: 40px !important;
+			margin: 0 6px !important;
+
+			.el-input__inner {
+				width: 40px !important;
+				height: 24px !important;
+				line-height: 24px !important;
+				text-align: center !important;
+				padding: 0 4px !important;
+				font-size: 11px !important;
+				border-radius: 3px !important;
+			}
+		}
+	}
+
+	// 响应式布局优化
+	@media (max-width: 768px) {
+		flex-direction: column !important;
+		gap: 12px !important;
+
+		.el-pagination__sizes,
+		.el-pagination__jump {
+			margin: 0 !important;
+			order: initial !important;
+		}
+
+		.el-pager {
+			margin: 0 !important;
+			justify-content: center !important;
+			flex-wrap: wrap !important;
+		}
+	}
+
+	// 紧凑模式
+	&.is-background {
+		.el-pager li {
+			background-color: #f4f4f5 !important;
+			border: none !important;
+
+			&:hover {
+				background-color: #e6e8eb !important;
+			}
+
+			&.active {
+				background-color: #409eff !important;
+				color: #fff !important;
+			}
+		}
+
+		.btn-prev,
+		.btn-next {
+			background-color: #f4f4f5 !important;
+			border: none !important;
+
+			&:hover:not(.disabled) {
+				background-color: #e6e8eb !important;
+			}
 		}
 	}
 }

@@ -3,8 +3,6 @@
 		v-if="internalVisible"
 		:modal="false"
 		v-dialogDrag
-		v-dialogDragWidth
-		v-dialogDragHeight
 		v-el-relen-dialog
 		:title="dialogTitle"
 		:visible.sync="internalVisible"

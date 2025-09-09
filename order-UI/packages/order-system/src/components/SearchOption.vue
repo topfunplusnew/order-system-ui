@@ -246,16 +246,13 @@ export default {
 						</el-form-item>
 					</el-form>
 				</div>
-
-				<!--        列表页-->
 				<el-table size="mini" :key="tableData.length" v-loading="loading" :data="tableData">
-					<slot name="table-columns" :tableData="tableData"></slot>
-					<!--          点击确认的地方-->
-					<el-table-column fixed="right" label="操作" width="100">
+					<el-table-column label="操作" width="100">
 						<template slot-scope="scope">
 							<el-button type="danger" size="mini" :disabled="disable" @click="commitSomeThing(scope.row)">确认</el-button>
 						</template>
 					</el-table-column>
+					<slot name="table-columns" :tableData="tableData"></slot>
 				</el-table>
 				<pagination v-if="isPage" v-show="total > 0" :total="total" :page.sync="pageNum" :limit.sync="pageSize" @pagination="getList" />
 			</el-row>
