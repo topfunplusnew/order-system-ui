@@ -1,0 +1,3726 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "订单系统",
+    "description": "",
+    "version": "1.0.0"
+  },
+  "tags": [],
+  "paths": {
+    "/system/depositMoney/list": {
+      "get": {
+        "summary": "查询保证金收取信息列表（包含完整的主子表数据）",
+        "deprecated": false,
+        "description": "",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "depositCompany",
+            "in": "query",
+            "description": "保证金公司",
+            "required": false,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "保证金类型",
+            "required": false,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "targetType",
+            "in": "query",
+            "description": "对象类型(员工、客户、供应商、其他)",
+            "required": false,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "targetBankNoId",
+            "in": "query",
+            "description": "对象银行卡ID",
+            "required": false,
+            "example": 0,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "target",
+            "in": "query",
+            "description": "对象(员工姓名、公司名称)",
+            "required": false,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "moneyAmount",
+            "in": "query",
+            "description": "保证金金额",
+            "required": false,
+            "example": "",
+            "schema": {
+              "type": ""
+            }
+          },
+          {
+            "name": "unrefundedAmount",
+            "in": "query",
+            "description": "未退款金额",
+            "required": false,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "targetAccountsName",
+            "in": "query",
+            "description": "对方账户",
+            "required": false,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "targetBankNo",
+            "in": "query",
+            "description": "对方账号",
+            "required": false,
+            "example": "",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "targetBankName",
+            "in": "query",
+            "description": "对方开户行",
+            "required": false,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "selfAccountsName",
+            "in": "query",
+            "description": "我方收款账户",
+            "required": false,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "selfBankNo",
+            "in": "query",
+            "description": "我方账号",
+            "required": false,
+            "example": "",
+            "schema": {
+              "type": "string",
+              "pattern": "^(员工|客户|供应商|其他)$"
+            }
+          },
+          {
+            "name": "selfBankName",
+            "in": "query",
+            "description": "我方开户行",
+            "required": false,
+            "example": "",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "depositDate",
+            "in": "query",
+            "description": "收取保证金时间",
+            "required": false,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "reason",
+            "in": "query",
+            "description": "事由",
+            "required": false,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "comments",
+            "in": "query",
+            "description": "备注",
+            "required": false,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "addtime",
+            "in": "query",
+            "description": "添加时间",
+            "required": false,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "操作人员ID",
+            "required": false,
+            "example": 0,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "UserName",
+            "in": "query",
+            "description": "操作人员姓名",
+            "required": false,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "delFlag",
+            "in": "query",
+            "description": "删除标记",
+            "required": false,
+            "example": 0,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "checkState",
+            "in": "query",
+            "description": "额外字段",
+            "required": false,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "example": "dev-mode-admin-token-2025",
+            "schema": {
+              "type": "string",
+              "default": "dev-mode-admin-token-2025"
+            }
+          },
+          {
+            "name": "MLT",
+            "in": "header",
+            "description": "",
+            "example": "{{MLT}}",
+            "schema": {
+              "type": "string",
+              "default": "{{MLT}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TableDataInfo",
+                  "description": "表格分页数据对象"
+                },
+                "example": {
+                  "total": 0,
+                  "rows": [],
+                  "code": 0,
+                  "msg": ""
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/system/depositMoney/{id}": {
+      "get": {
+        "summary": "获取保证金收取信息详细信息（包含完整的主子表数据）",
+        "deprecated": false,
+        "description": "",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "example": "dev-mode-admin-token-2025",
+            "schema": {
+              "type": "string",
+              "default": "dev-mode-admin-token-2025"
+            }
+          },
+          {
+            "name": "MLT",
+            "in": "header",
+            "description": "",
+            "example": "{{MLT}}",
+            "schema": {
+              "type": "string",
+              "default": "{{MLT}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AjaxResult",
+                  "description": "操作消息提醒"
+                },
+                "example": {
+                  "": {}
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/system/depositMoney": {
+      "post": {
+        "summary": "新增保证金收取信息",
+        "deprecated": false,
+        "description": "",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "example": "dev-mode-admin-token-2025",
+            "schema": {
+              "type": "string",
+              "default": "dev-mode-admin-token-2025"
+            }
+          },
+          {
+            "name": "MLT",
+            "in": "header",
+            "description": "",
+            "example": "{{MLT}}",
+            "schema": {
+              "type": "string",
+              "default": "{{MLT}}"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DepositMoney",
+                "description": ""
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AjaxResult",
+                  "description": "操作消息提醒"
+                },
+                "example": {
+                  "": {}
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "put": {
+        "summary": "修改保证金收取信息",
+        "deprecated": false,
+        "description": "",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "example": "dev-mode-admin-token-2025",
+            "schema": {
+              "type": "string",
+              "default": "dev-mode-admin-token-2025"
+            }
+          },
+          {
+            "name": "MLT",
+            "in": "header",
+            "description": "",
+            "example": "{{MLT}}",
+            "schema": {
+              "type": "string",
+              "default": "{{MLT}}"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DepositMoney",
+                "description": ""
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AjaxResult",
+                  "description": "操作消息提醒"
+                },
+                "example": {
+                  "": {}
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/system/depositMoney/{ids}": {
+      "delete": {
+        "summary": "批量删除保证金收取信息",
+        "deprecated": false,
+        "description": "",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "ids",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "example": "dev-mode-admin-token-2025",
+            "schema": {
+              "type": "string",
+              "default": "dev-mode-admin-token-2025"
+            }
+          },
+          {
+            "name": "MLT",
+            "in": "header",
+            "description": "",
+            "example": "{{MLT}}",
+            "schema": {
+              "type": "string",
+              "default": "{{MLT}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AjaxResult",
+                  "description": "操作消息提醒"
+                },
+                "example": {
+                  "": {}
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/system/depositMoney/export": {
+      "post": {
+        "summary": "导出保证金收取信息列表",
+        "deprecated": false,
+        "description": "",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "createBy",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "createTime",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "updateBy",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "updateTime",
+            "in": "query",
+            "description": "更新时间",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "remark",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "params.key.key",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": ""
+            }
+          },
+          {
+            "name": "selfBankCardType",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "otherBankCardType",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "description": "id",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "depositCompany",
+            "in": "query",
+            "description": "保证金公司",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "保证金类型",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "targetType",
+            "in": "query",
+            "description": "对象类型(员工、客户、供应商、其他)",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^(员工|客户|供应商|其他)$"
+            }
+          },
+          {
+            "name": "targetBankNoId",
+            "in": "query",
+            "description": "对象银行卡ID",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "target",
+            "in": "query",
+            "description": "对象(员工姓名、公司名称)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "moneyAmount",
+            "in": "query",
+            "description": "保证金金额",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "unrefundedAmount",
+            "in": "query",
+            "description": "未退款金额",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "targetAccountsName",
+            "in": "query",
+            "description": "对方账户",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "targetBankNo",
+            "in": "query",
+            "description": "对方账号",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "targetBankName",
+            "in": "query",
+            "description": "对方开户行",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "selfAccountsName",
+            "in": "query",
+            "description": "我方收款账户",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "selfBankNo",
+            "in": "query",
+            "description": "我方账号",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "selfBankName",
+            "in": "query",
+            "description": "我方开户行",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositDate",
+            "in": "query",
+            "description": "收取保证金时间",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "reason",
+            "in": "query",
+            "description": "事由",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "comments",
+            "in": "query",
+            "description": "备注",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "addtime",
+            "in": "query",
+            "description": "添加时间",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "操作人员ID",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "UserName",
+            "in": "query",
+            "description": "操作人员姓名",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "delFlag",
+            "in": "query",
+            "description": "删除标记",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "depositRefundList[0].createBy",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].createTime",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].updateBy",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].updateTime",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].remark",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].params.key.key",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": ""
+            }
+          },
+          {
+            "name": "depositRefundList[0].selfBankCardType",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].otherBankCardType",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].id",
+            "in": "query",
+            "description": "id",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoneyId",
+            "in": "query",
+            "description": "保证金主表ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "depositRefundList[0].refundDate",
+            "in": "query",
+            "description": "退款日期",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].accountsName",
+            "in": "query",
+            "description": "退款账户",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].bankNo",
+            "in": "query",
+            "description": "退款账号",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].moneyAmount",
+            "in": "query",
+            "description": "退款金额",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].comments",
+            "in": "query",
+            "description": "备注",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].addtime",
+            "in": "query",
+            "description": "添加时间",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].userId",
+            "in": "query",
+            "description": "操作人员ID",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "depositRefundList[0].UserName",
+            "in": "query",
+            "description": "操作人员姓名",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].delFlag",
+            "in": "query",
+            "description": "删除标记",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "depositRefundList[0].badDebtFlag",
+            "in": "query",
+            "description": "坏账标记",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "depositRefundList[0].startTime",
+            "in": "query",
+            "description": "额外字段,开始时间",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].endTime",
+            "in": "query",
+            "description": "额外字段,结束时间",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.createBy",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.createTime",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.updateBy",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.updateTime",
+            "in": "query",
+            "description": "更新时间",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.remark",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.params.key.key",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": ""
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.selfBankCardType",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.otherBankCardType",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.id",
+            "in": "query",
+            "description": "id",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositCompany",
+            "in": "query",
+            "description": "保证金公司",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.type",
+            "in": "query",
+            "description": "保证金类型",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.targetType",
+            "in": "query",
+            "description": "对象类型(员工、客户、供应商、其他)",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^(员工|客户|供应商|其他)$"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.targetBankNoId",
+            "in": "query",
+            "description": "对象银行卡ID",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.target",
+            "in": "query",
+            "description": "对象(员工姓名、公司名称)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.moneyAmount",
+            "in": "query",
+            "description": "保证金金额",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.unrefundedAmount",
+            "in": "query",
+            "description": "未退款金额",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.targetAccountsName",
+            "in": "query",
+            "description": "对方账户",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.targetBankNo",
+            "in": "query",
+            "description": "对方账号",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.targetBankName",
+            "in": "query",
+            "description": "对方开户行",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.selfAccountsName",
+            "in": "query",
+            "description": "我方收款账户",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.selfBankNo",
+            "in": "query",
+            "description": "我方账号",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.selfBankName",
+            "in": "query",
+            "description": "我方开户行",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositDate",
+            "in": "query",
+            "description": "收取保证金时间",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.reason",
+            "in": "query",
+            "description": "事由",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.comments",
+            "in": "query",
+            "description": "备注",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.addtime",
+            "in": "query",
+            "description": "添加时间",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.userId",
+            "in": "query",
+            "description": "操作人员ID",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.UserName",
+            "in": "query",
+            "description": "操作人员姓名",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.delFlag",
+            "in": "query",
+            "description": "删除标记",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].createBy",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].createTime",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].updateBy",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].updateTime",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].remark",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].params.key.key",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": ""
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].selfBankCardType",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].otherBankCardType",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].id",
+            "in": "query",
+            "description": "id",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].depositMoneyId",
+            "in": "query",
+            "description": "保证金主表ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].refundDate",
+            "in": "query",
+            "description": "退款日期",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].accountsName",
+            "in": "query",
+            "description": "退款账户",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].bankNo",
+            "in": "query",
+            "description": "退款账号",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].moneyAmount",
+            "in": "query",
+            "description": "退款金额",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].comments",
+            "in": "query",
+            "description": "备注",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].addtime",
+            "in": "query",
+            "description": "添加时间",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].userId",
+            "in": "query",
+            "description": "操作人员ID",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].UserName",
+            "in": "query",
+            "description": "操作人员姓名",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].delFlag",
+            "in": "query",
+            "description": "删除标记",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].badDebtFlag",
+            "in": "query",
+            "description": "坏账标记",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].startTime",
+            "in": "query",
+            "description": "额外字段,开始时间",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].endTime",
+            "in": "query",
+            "description": "额外字段,结束时间",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].depositMoney.createBy",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].depositMoney.createTime",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].depositMoney.updateBy",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].depositMoney.updateTime",
+            "in": "query",
+            "description": "更新时间",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].depositMoney.remark",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].depositMoney.params.key.key",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": ""
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].depositMoney.selfBankCardType",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].depositMoney.otherBankCardType",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].depositMoney.id",
+            "in": "query",
+            "description": "id",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].depositMoney.depositCompany",
+            "in": "query",
+            "description": "保证金公司",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].depositMoney.type",
+            "in": "query",
+            "description": "保证金类型",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].depositMoney.targetType",
+            "in": "query",
+            "description": "对象类型(员工、客户、供应商、其他)",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^(员工|客户|供应商|其他)$"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].depositMoney.targetBankNoId",
+            "in": "query",
+            "description": "对象银行卡ID",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].depositMoney.target",
+            "in": "query",
+            "description": "对象(员工姓名、公司名称)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].depositMoney.moneyAmount",
+            "in": "query",
+            "description": "保证金金额",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].depositMoney.unrefundedAmount",
+            "in": "query",
+            "description": "未退款金额",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].depositMoney.targetAccountsName",
+            "in": "query",
+            "description": "对方账户",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].depositMoney.targetBankNo",
+            "in": "query",
+            "description": "对方账号",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].depositMoney.targetBankName",
+            "in": "query",
+            "description": "对方开户行",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].depositMoney.selfAccountsName",
+            "in": "query",
+            "description": "我方收款账户",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].depositMoney.selfBankNo",
+            "in": "query",
+            "description": "我方账号",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].depositMoney.selfBankName",
+            "in": "query",
+            "description": "我方开户行",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].depositMoney.depositDate",
+            "in": "query",
+            "description": "收取保证金时间",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].depositMoney.reason",
+            "in": "query",
+            "description": "事由",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].depositMoney.comments",
+            "in": "query",
+            "description": "备注",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].depositMoney.addtime",
+            "in": "query",
+            "description": "添加时间",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].depositMoney.userId",
+            "in": "query",
+            "description": "操作人员ID",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].depositMoney.UserName",
+            "in": "query",
+            "description": "操作人员姓名",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].depositMoney.delFlag",
+            "in": "query",
+            "description": "删除标记",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].depositMoney.depositRefundList[0]",
+            "in": "query",
+            "description": "保证金退款列表",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.depositRefundList[0].depositMoney.checkState",
+            "in": "query",
+            "description": "额外字段",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositRefundList[0].depositMoney.checkState",
+            "in": "query",
+            "description": "额外字段",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "checkState",
+            "in": "query",
+            "description": "额外字段",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "example": "dev-mode-admin-token-2025",
+            "schema": {
+              "type": "string",
+              "default": "dev-mode-admin-token-2025"
+            }
+          },
+          {
+            "name": "MLT",
+            "in": "header",
+            "description": "",
+            "example": "{{MLT}}",
+            "schema": {
+              "type": "string",
+              "default": "{{MLT}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/system/depositMoney/detail": {
+      "post": {
+        "summary": "新增保证金退款信息",
+        "deprecated": false,
+        "description": "",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "example": "dev-mode-admin-token-2025",
+            "schema": {
+              "type": "string",
+              "default": "dev-mode-admin-token-2025"
+            }
+          },
+          {
+            "name": "MLT",
+            "in": "header",
+            "description": "",
+            "example": "{{MLT}}",
+            "schema": {
+              "type": "string",
+              "default": "{{MLT}}"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DepositRefund",
+                "description": ""
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AjaxResult",
+                  "description": "操作消息提醒"
+                },
+                "example": {
+                  "": {}
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "put": {
+        "summary": "修改保证金退款信息",
+        "deprecated": false,
+        "description": "",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "example": "dev-mode-admin-token-2025",
+            "schema": {
+              "type": "string",
+              "default": "dev-mode-admin-token-2025"
+            }
+          },
+          {
+            "name": "MLT",
+            "in": "header",
+            "description": "",
+            "example": "{{MLT}}",
+            "schema": {
+              "type": "string",
+              "default": "{{MLT}}"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DepositRefund",
+                "description": ""
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AjaxResult",
+                  "description": "操作消息提醒"
+                },
+                "example": {
+                  "": {}
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/system/depositMoney/detail/{ids}": {
+      "delete": {
+        "summary": "批量删除保证金退款信息",
+        "deprecated": false,
+        "description": "",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "ids",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "example": "dev-mode-admin-token-2025",
+            "schema": {
+              "type": "string",
+              "default": "dev-mode-admin-token-2025"
+            }
+          },
+          {
+            "name": "MLT",
+            "in": "header",
+            "description": "",
+            "example": "{{MLT}}",
+            "schema": {
+              "type": "string",
+              "default": "{{MLT}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AjaxResult",
+                  "description": "操作消息提醒"
+                },
+                "example": {
+                  "": {}
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/system/depositMoney/detail/{id}": {
+      "get": {
+        "summary": "获取保证金退款信息详细信息",
+        "deprecated": false,
+        "description": "",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "example": "dev-mode-admin-token-2025",
+            "schema": {
+              "type": "string",
+              "default": "dev-mode-admin-token-2025"
+            }
+          },
+          {
+            "name": "MLT",
+            "in": "header",
+            "description": "",
+            "example": "{{MLT}}",
+            "schema": {
+              "type": "string",
+              "default": "{{MLT}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AjaxResult",
+                  "description": "操作消息提醒"
+                },
+                "example": {
+                  "": {}
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/system/depositMoney/byDetailId/{detailId}": {
+      "get": {
+        "summary": "根据子表ID获取完整的主子表信息（返回值和根据主表ID获取的一致）",
+        "deprecated": false,
+        "description": "",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "detailId",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "example": "dev-mode-admin-token-2025",
+            "schema": {
+              "type": "string",
+              "default": "dev-mode-admin-token-2025"
+            }
+          },
+          {
+            "name": "MLT",
+            "in": "header",
+            "description": "",
+            "example": "{{MLT}}",
+            "schema": {
+              "type": "string",
+              "default": "{{MLT}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AjaxResult",
+                  "description": "操作消息提醒"
+                },
+                "example": {
+                  "": {}
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/system/depositMoney/detail/list": {
+      "get": {
+        "summary": "查询保证金退款信息列表",
+        "deprecated": false,
+        "description": "",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "createBy",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "createTime",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "updateBy",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "updateTime",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "remark",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "params.key.key",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": ""
+            }
+          },
+          {
+            "name": "selfBankCardType",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "otherBankCardType",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "description": "id",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "depositMoneyId",
+            "in": "query",
+            "description": "保证金主表ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "refundDate",
+            "in": "query",
+            "description": "退款日期",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "accountsName",
+            "in": "query",
+            "description": "退款账户",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "bankNo",
+            "in": "query",
+            "description": "退款账号",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "moneyAmount",
+            "in": "query",
+            "description": "退款金额",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "comments",
+            "in": "query",
+            "description": "备注",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "addtime",
+            "in": "query",
+            "description": "添加时间",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "操作人员ID",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "UserName",
+            "in": "query",
+            "description": "操作人员姓名",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "delFlag",
+            "in": "query",
+            "description": "删除标记",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "badDebtFlag",
+            "in": "query",
+            "description": "坏账标记",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "startTime",
+            "in": "query",
+            "description": "额外字段,开始时间",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "endTime",
+            "in": "query",
+            "description": "额外字段,结束时间",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.createBy",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.createTime",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.updateBy",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.updateTime",
+            "in": "query",
+            "description": "更新时间",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.remark",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.params.key.key",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": ""
+            }
+          },
+          {
+            "name": "depositMoney.selfBankCardType",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.otherBankCardType",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.id",
+            "in": "query",
+            "description": "id",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "depositMoney.depositCompany",
+            "in": "query",
+            "description": "保证金公司",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.type",
+            "in": "query",
+            "description": "保证金类型",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.targetType",
+            "in": "query",
+            "description": "对象类型(员工、客户、供应商、其他)",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^(员工|客户|供应商|其他)$"
+            }
+          },
+          {
+            "name": "depositMoney.targetBankNoId",
+            "in": "query",
+            "description": "对象银行卡ID",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "depositMoney.target",
+            "in": "query",
+            "description": "对象(员工姓名、公司名称)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.moneyAmount",
+            "in": "query",
+            "description": "保证金金额",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.unrefundedAmount",
+            "in": "query",
+            "description": "未退款金额",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.targetAccountsName",
+            "in": "query",
+            "description": "对方账户",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.targetBankNo",
+            "in": "query",
+            "description": "对方账号",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.targetBankName",
+            "in": "query",
+            "description": "对方开户行",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.selfAccountsName",
+            "in": "query",
+            "description": "我方收款账户",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.selfBankNo",
+            "in": "query",
+            "description": "我方账号",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.selfBankName",
+            "in": "query",
+            "description": "我方开户行",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositDate",
+            "in": "query",
+            "description": "收取保证金时间",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.reason",
+            "in": "query",
+            "description": "事由",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.comments",
+            "in": "query",
+            "description": "备注",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.addtime",
+            "in": "query",
+            "description": "添加时间",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.userId",
+            "in": "query",
+            "description": "操作人员ID",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "depositMoney.UserName",
+            "in": "query",
+            "description": "操作人员姓名",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.delFlag",
+            "in": "query",
+            "description": "删除标记",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].createBy",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].createTime",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].updateBy",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].updateTime",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].remark",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].params.key.key",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": ""
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].selfBankCardType",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].otherBankCardType",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].id",
+            "in": "query",
+            "description": "id",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoneyId",
+            "in": "query",
+            "description": "保证金主表ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].refundDate",
+            "in": "query",
+            "description": "退款日期",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].accountsName",
+            "in": "query",
+            "description": "退款账户",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].bankNo",
+            "in": "query",
+            "description": "退款账号",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].moneyAmount",
+            "in": "query",
+            "description": "退款金额",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].comments",
+            "in": "query",
+            "description": "备注",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].addtime",
+            "in": "query",
+            "description": "添加时间",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].userId",
+            "in": "query",
+            "description": "操作人员ID",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].UserName",
+            "in": "query",
+            "description": "操作人员姓名",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].delFlag",
+            "in": "query",
+            "description": "删除标记",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].badDebtFlag",
+            "in": "query",
+            "description": "坏账标记",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].startTime",
+            "in": "query",
+            "description": "额外字段,开始时间",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].endTime",
+            "in": "query",
+            "description": "额外字段,结束时间",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.createBy",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.createTime",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.updateBy",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.updateTime",
+            "in": "query",
+            "description": "更新时间",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.remark",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.params.key.key",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": ""
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.selfBankCardType",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.otherBankCardType",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.id",
+            "in": "query",
+            "description": "id",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.depositCompany",
+            "in": "query",
+            "description": "保证金公司",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.type",
+            "in": "query",
+            "description": "保证金类型",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.targetType",
+            "in": "query",
+            "description": "对象类型(员工、客户、供应商、其他)",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^(员工|客户|供应商|其他)$"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.targetBankNoId",
+            "in": "query",
+            "description": "对象银行卡ID",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.target",
+            "in": "query",
+            "description": "对象(员工姓名、公司名称)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.moneyAmount",
+            "in": "query",
+            "description": "保证金金额",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.unrefundedAmount",
+            "in": "query",
+            "description": "未退款金额",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.targetAccountsName",
+            "in": "query",
+            "description": "对方账户",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.targetBankNo",
+            "in": "query",
+            "description": "对方账号",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.targetBankName",
+            "in": "query",
+            "description": "对方开户行",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.selfAccountsName",
+            "in": "query",
+            "description": "我方收款账户",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.selfBankNo",
+            "in": "query",
+            "description": "我方账号",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.selfBankName",
+            "in": "query",
+            "description": "我方开户行",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.depositDate",
+            "in": "query",
+            "description": "收取保证金时间",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.reason",
+            "in": "query",
+            "description": "事由",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.comments",
+            "in": "query",
+            "description": "备注",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.addtime",
+            "in": "query",
+            "description": "添加时间",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.userId",
+            "in": "query",
+            "description": "操作人员ID",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.UserName",
+            "in": "query",
+            "description": "操作人员姓名",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.delFlag",
+            "in": "query",
+            "description": "删除标记",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.depositRefundList[0].createBy",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.depositRefundList[0].createTime",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.depositRefundList[0].updateBy",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.depositRefundList[0].updateTime",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.depositRefundList[0].remark",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.depositRefundList[0].params.key.key",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": ""
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.depositRefundList[0].selfBankCardType",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.depositRefundList[0].otherBankCardType",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.depositRefundList[0].id",
+            "in": "query",
+            "description": "id",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.depositRefundList[0].depositMoneyId",
+            "in": "query",
+            "description": "保证金主表ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.depositRefundList[0].refundDate",
+            "in": "query",
+            "description": "退款日期",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.depositRefundList[0].accountsName",
+            "in": "query",
+            "description": "退款账户",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.depositRefundList[0].bankNo",
+            "in": "query",
+            "description": "退款账号",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.depositRefundList[0].moneyAmount",
+            "in": "query",
+            "description": "退款金额",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.depositRefundList[0].comments",
+            "in": "query",
+            "description": "备注",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.depositRefundList[0].addtime",
+            "in": "query",
+            "description": "添加时间",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.depositRefundList[0].userId",
+            "in": "query",
+            "description": "操作人员ID",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.depositRefundList[0].UserName",
+            "in": "query",
+            "description": "操作人员姓名",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.depositRefundList[0].delFlag",
+            "in": "query",
+            "description": "删除标记",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.depositRefundList[0].badDebtFlag",
+            "in": "query",
+            "description": "坏账标记",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.depositRefundList[0].startTime",
+            "in": "query",
+            "description": "额外字段,开始时间",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.depositRefundList[0].endTime",
+            "in": "query",
+            "description": "额外字段,结束时间",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.depositRefundList[0].depositMoney.key",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": ""
+            }
+          },
+          {
+            "name": "depositMoney.depositRefundList[0].depositMoney.checkState",
+            "in": "query",
+            "description": "额外字段",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depositMoney.checkState",
+            "in": "query",
+            "description": "额外字段",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "example": "dev-mode-admin-token-2025",
+            "schema": {
+              "type": "string",
+              "default": "dev-mode-admin-token-2025"
+            }
+          },
+          {
+            "name": "MLT",
+            "in": "header",
+            "description": "",
+            "example": "{{MLT}}",
+            "schema": {
+              "type": "string",
+              "default": "{{MLT}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TableDataInfo",
+                  "description": "表格分页数据对象"
+                },
+                "example": {
+                  "total": 0,
+                  "rows": [],
+                  "code": 0,
+                  "msg": ""
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/system/depositMoney/detail/byMainId/{depositMoneyId}": {
+      "get": {
+        "summary": "根据保证金主表ID查询退款列表",
+        "deprecated": false,
+        "description": "",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "depositMoneyId",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "example": "dev-mode-admin-token-2025",
+            "schema": {
+              "type": "string",
+              "default": "dev-mode-admin-token-2025"
+            }
+          },
+          {
+            "name": "MLT",
+            "in": "header",
+            "description": "",
+            "example": "{{MLT}}",
+            "schema": {
+              "type": "string",
+              "default": "{{MLT}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AjaxResult",
+                  "description": "操作消息提醒"
+                },
+                "example": {
+                  "": {}
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AjaxResult": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "object",
+            "properties": {}
+          }
+        }
+      },
+      "MapObject": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "$ref": "#/components/schemas/key"
+          }
+        }
+      },
+      "TableDataInfo": {
+        "type": "object",
+        "properties": {
+          "total": {
+            "type": "integer",
+            "description": "总记录数",
+            "format": "int64"
+          },
+          "rows": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {}
+            },
+            "description": "列表数据"
+          },
+          "code": {
+            "type": "integer",
+            "description": "消息状态码"
+          },
+          "msg": {
+            "type": "string",
+            "description": "消息内容"
+          }
+        }
+      },
+      "DepositMoney": {
+        "type": "object",
+        "properties": {
+          "createBy": {
+            "type": "string",
+            "description": ""
+          },
+          "createTime": {
+            "type": "string",
+            "description": ""
+          },
+          "updateBy": {
+            "type": "string",
+            "description": ""
+          },
+          "updateTime": {
+            "type": "string",
+            "description": "更新时间"
+          },
+          "remark": {
+            "type": "string",
+            "description": ""
+          },
+          "params": {
+            "$ref": "#/components/schemas/MapObject",
+            "description": ""
+          },
+          "selfBankCardType": {
+            "type": "string",
+            "description": ""
+          },
+          "otherBankCardType": {
+            "type": "string",
+            "description": ""
+          },
+          "id": {
+            "type": "integer",
+            "description": "id",
+            "format": "int64"
+          },
+          "depositCompany": {
+            "type": "string",
+            "description": "保证金公司",
+            "maxLength": 80
+          },
+          "type": {
+            "type": "string",
+            "description": "保证金类型",
+            "maxLength": 20
+          },
+          "targetType": {
+            "type": "string",
+            "description": "对象类型(员工、客户、供应商、其他)",
+            "pattern": "^(员工|客户|供应商|其他)$",
+            "maxLength": 50
+          },
+          "targetBankNoId": {
+            "type": "integer",
+            "description": "对象银行卡ID",
+            "format": "int64"
+          },
+          "target": {
+            "type": "string",
+            "description": "对象(员工姓名、公司名称)",
+            "maxLength": 50
+          },
+          "moneyAmount": {
+            "type": "number",
+            "description": "保证金金额"
+          },
+          "unrefundedAmount": {
+            "type": "number",
+            "description": "未退款金额"
+          },
+          "targetAccountsName": {
+            "type": "string",
+            "description": "对方账户",
+            "maxLength": 80
+          },
+          "targetBankNo": {
+            "type": "string",
+            "description": "对方账号",
+            "maxLength": 80
+          },
+          "targetBankName": {
+            "type": "string",
+            "description": "对方开户行",
+            "maxLength": 80
+          },
+          "selfAccountsName": {
+            "type": "string",
+            "description": "我方收款账户",
+            "maxLength": 80
+          },
+          "selfBankNo": {
+            "type": "string",
+            "description": "我方账号",
+            "maxLength": 80
+          },
+          "selfBankName": {
+            "type": "string",
+            "description": "我方开户行",
+            "maxLength": 80
+          },
+          "depositDate": {
+            "type": "string",
+            "description": "收取保证金时间"
+          },
+          "reason": {
+            "type": "string",
+            "description": "事由",
+            "maxLength": 200
+          },
+          "comments": {
+            "type": "string",
+            "description": "备注",
+            "maxLength": 200
+          },
+          "addtime": {
+            "type": "string",
+            "description": "添加时间"
+          },
+          "userId": {
+            "type": "integer",
+            "description": "操作人员ID",
+            "format": "int64"
+          },
+          "UserName": {
+            "type": "string",
+            "description": "操作人员姓名"
+          },
+          "delFlag": {
+            "type": "integer",
+            "description": "删除标记",
+            "format": "int64"
+          },
+          "depositRefundList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DepositRefund",
+              "description": "保证金退款信息对象 depositRefund"
+            },
+            "description": "保证金退款列表"
+          },
+          "checkState": {
+            "type": "string",
+            "description": "额外字段"
+          }
+        }
+      },
+      "DepositRefund": {
+        "type": "object",
+        "properties": {
+          "createBy": {
+            "type": "string",
+            "description": ""
+          },
+          "createTime": {
+            "type": "string",
+            "description": ""
+          },
+          "updateBy": {
+            "type": "string",
+            "description": ""
+          },
+          "updateTime": {
+            "type": "string",
+            "description": ""
+          },
+          "remark": {
+            "type": "string",
+            "description": ""
+          },
+          "params": {
+            "$ref": "#/components/schemas/MapObject",
+            "description": ""
+          },
+          "selfBankCardType": {
+            "type": "string",
+            "description": ""
+          },
+          "otherBankCardType": {
+            "type": "string",
+            "description": ""
+          },
+          "id": {
+            "type": "integer",
+            "description": "id",
+            "format": "int64"
+          },
+          "depositMoneyId": {
+            "type": "integer",
+            "description": "保证金主表ID",
+            "format": "int64"
+          },
+          "refundDate": {
+            "type": "string",
+            "description": "退款日期"
+          },
+          "accountsName": {
+            "type": "string",
+            "description": "退款账户",
+            "maxLength": 80
+          },
+          "bankNo": {
+            "type": "string",
+            "description": "退款账号",
+            "maxLength": 80
+          },
+          "moneyAmount": {
+            "type": "number",
+            "description": "退款金额"
+          },
+          "comments": {
+            "type": "string",
+            "description": "备注",
+            "maxLength": 200
+          },
+          "addtime": {
+            "type": "string",
+            "description": "添加时间"
+          },
+          "userId": {
+            "type": "integer",
+            "description": "操作人员ID",
+            "format": "int64"
+          },
+          "UserName": {
+            "type": "string",
+            "description": "操作人员姓名"
+          },
+          "delFlag": {
+            "type": "integer",
+            "description": "删除标记",
+            "format": "int64"
+          },
+          "badDebtFlag": {
+            "type": "integer",
+            "description": "坏账标记"
+          },
+          "startTime": {
+            "type": "string",
+            "description": "额外字段,开始时间"
+          },
+          "endTime": {
+            "type": "string",
+            "description": "额外字段,结束时间"
+          },
+          "depositMoney": {
+            "$ref": "#/components/schemas/DepositMoney",
+            "description": "对应的保证金信息"
+          }
+        },
+        "required": [
+          "depositMoneyId",
+          "refundDate"
+        ]
+      },
+      "key": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    "securitySchemes": {
+      "bearer": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  },
+  "servers": [],
+  "security": [
+    {
+      "bearer": []
+    }
+  ]
+}
