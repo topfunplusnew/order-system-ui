@@ -10,6 +10,15 @@ export function listPaymentApply(query, data) {
 	});
 }
 
+export function listMyPaymentApply(query, data) {
+	return request({
+		url: '/system/paymentApply/my-list',
+		method: 'post',
+		params: query,
+		data: data
+	});
+}
+
 // 查询付款信息详细
 export function getPaymentApply(id) {
 	return request({

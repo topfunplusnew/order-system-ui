@@ -19,6 +19,7 @@ import _ from 'lodash';
 import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import PAYMENT_APPLY_INFO from '@/components/NeedToShow/PAYMENT_APPLY_INFO.vue';
+import { listMyPaymentApply } from '../../../api/system/paymentApply';
 
 export default {
 	name: 'ApplyProcess',
@@ -286,7 +287,7 @@ export default {
 				}
 			};
 			// 获取付款申请信息
-			listPaymentApply(query, json).then(res => {
+			listMyPaymentApply(query, json).then(res => {
 				this.alreadyApplyList = res.rows;
 			});
 		},

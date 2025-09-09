@@ -1,22 +1,6 @@
 <template>
 	<div class="app-container">
 		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
-			<!--      <el-form-item label="对应的表名" prop="tableName">-->
-			<!--        <el-input-->
-			<!--          v-model="queryParams.tableName"-->
-			<!--          placeholder="请输入对应的表名"-->
-			<!--          clearable-->
-			<!--          @keyup.enter.native="handleQuery"-->
-			<!--        />-->
-			<!--      </el-form-item>-->
-			<!--      <el-form-item label="对应的表主键" prop="tID">-->
-			<!--        <el-input-->
-			<!--          v-model="queryParams.tID"-->
-			<!--          placeholder="请输入对应的表主键"-->
-			<!--          clearable-->
-			<!--          @keyup.enter.native="handleQuery"-->
-			<!--        />-->
-			<!--      </el-form-item>-->
 			<el-form-item label="日期" prop="fundsDate">
 				<el-input v-model="queryParams.fundsDate" placeholder="请输入日期" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
