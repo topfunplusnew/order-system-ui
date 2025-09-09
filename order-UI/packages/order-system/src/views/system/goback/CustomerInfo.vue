@@ -40,7 +40,7 @@
 				<el-form-item>
 					<el-button type="primary" @click="getList" size="mini">查询</el-button>
 					<el-button @click="reset" size="mini">刷新</el-button>
-					<el-button type="success" @click="excelExport(['欠款明细'])" size="mini">导出Excel</el-button>
+					<el-button type="success" @click="excelExport(['往来明细'])" size="mini">导出Excel</el-button>
 				</el-form-item>
 			</el-form>
 		</div>
@@ -52,7 +52,7 @@
 			<el-table-column label="客户名称" width="150" prop="customerName"></el-table-column>
 
 			<!--      借方列表-->
-			<el-table-column label="欠款明细">
+			<el-table-column label="往来明细">
 				<template slot-scope="scope">
 					<div v-for="(item, index) in scope.row.lenderList" :key="index">
 						<span style="color: red; margin-right: 6px">[{{ moduleNames[item.tableName] }}]</span>

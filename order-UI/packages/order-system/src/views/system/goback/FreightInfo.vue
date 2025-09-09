@@ -37,7 +37,7 @@
 				<el-form-item>
 					<el-button type="primary" @click="getList" size="mini">查询</el-button>
 					<el-button @click="reset" size="mini">刷新</el-button>
-					<el-button type="success" @click="excelExport(['欠款明细'])" size="mini">导出Excel</el-button>
+					<el-button type="success" @click="excelExport(['往来明细'])" size="mini">导出Excel</el-button>
 				</el-form-item>
 			</el-form>
 		</div>
@@ -45,11 +45,7 @@
 		<!-- 表格区域 -->
 		<el-table id="educe-table" :data="tableData" border style="width: 100%" v-loading="loading" size="mini">
 			<el-table-column prop="operateDate" label="日期"></el-table-column>
-			<el-table-column prop="payNo" label="欠款明细">
-				<!--				<template slot-scope="scope">-->
-				<!--					<el-button v-if="scope.row.payNo" type="text" size="mini" @click="handleSearch(scope.row)">点击查询对应信息</el-button>-->
-				<!--				</template>-->
-
+			<el-table-column prop="payNo" label="往来明细">
 				<template slot-scope="scope">
 					<div v-for="(item, index) in scope.row.lenderList" :key="index">
 						<span style="color: red; margin-right: 6px">[{{ moduleNames[item.tableName] }}]</span>
