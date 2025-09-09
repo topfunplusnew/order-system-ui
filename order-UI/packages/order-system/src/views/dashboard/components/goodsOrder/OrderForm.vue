@@ -783,6 +783,7 @@ export default {
 			// 清除sessionStorage中的修改原因
 			sessionStorage.removeItem('goodsorder-edit-reason');
 			this.resetOrderInfo();
+			return Promise.resolve();
 		},
 		/** 重置订单基本信息和订单详情列表 */
 		resetOrderInfo() {

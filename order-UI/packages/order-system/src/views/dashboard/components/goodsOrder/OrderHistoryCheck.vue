@@ -36,10 +36,6 @@
 			</el-col>
 		</el-row>
 
-		<div v-if="currentComponent">
-			<DialogWrapper :current-component="currentComponent" :dialog-visible="dialogVisible" />
-		</div>
-
 		<div slot="footer" class="dialog-footer">
 			<el-button @click="close">关 闭</el-button>
 		</div>
@@ -49,11 +45,10 @@
 import CodeDiff from 'vue-code-diff';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import GOODS_ORDER from '@/components/NeedToShow/GOODS_ORDER.vue';
-import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 
 export default {
 	name: 'OrderHistoryCheck',
-	components: { DialogWrapper, CodeDiff },
+	components: { CodeDiff },
 	mixins: [common_dialog],
 	props: {
 		checkHistoryOrderVisible: {

@@ -90,32 +90,38 @@ export default {
 		listCompany,
 		listCars,
 		getDriverAccountInfo() {
-			console.log(`自动填充:`, this.orderInfo);
 			this.form.otherAcountsName = this.orderInfo.accountInfo.acountsName;
 			this.form.otherBankNo = this.orderInfo.accountInfo.bankNo;
 			this.form.otherBankName = this.orderInfo.accountInfo.bankName;
 		},
 		handleProcess(that) {
-			this.$refs['form'].validate(isValid => {
-				if (isValid) {
-					const query = {
-						...this.form,
-						...this.orderInfo,
-						applyDate: parseTime(new Date()),
-						applyUserName: this.trueName
-					};
-					return new Promise((resolve, reject) => {
-						addOrderFreight(query).then(() => {
-							this.$message.success('操作成功');
-							this.reset();
-							that.dialogVisible = false;
-							resolve();
-						});
-					});
-				}
+			return new Promise((resolve, reject) => {
+				this.$refs['form'].validate(isValid => {
+					if (isValid) {
+						const query = {
+							...this.form,
+							...this.orderInfo,
+							applyDate: parseTime(new Date()),
+							applyUserName: this.trueName
+						};
+						addOrderFreight(query)
+							.then(() => {
+								that.dialogVisible = false;
+								this.$message.success('操作成功');
+								this.reset();
+								resolve();
+							})
+							.catch(error => {
+								this.$message.error('操作失败：' + (error.message || '未知错误'));
+								reject(error);
+							});
+					}
+				});
 			});
 		},
-		handleReject() {},
+		handleReject() {
+			return Promise.resolve();
+		},
 		handleCommitBack(val) {
 			this.form.otherAcountsName = val.acountsName;
 			this.form.otherBankName = val.bankName;

@@ -3,7 +3,6 @@ import { delGoodsOrder, getGoodsOrder, updateGoodsOrder } from '@/api/system/goo
 import { listInvoiceOut } from '@/api/system/invoiceOut';
 import { listInvoiceIn } from '@/api/system/invoiceIn';
 import CheckFiles from '@/components/CheckFiles.vue';
-import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 import { mixin_checkfile } from '@/views/dashboard/mixins/checkfiles/mixin_checkfile';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import { mixin_order_Invoice } from '@/views/dashboard/mixins/order/order_Invoice';
@@ -39,7 +38,6 @@ export default {
 		StateTag,
 		HistoryList,
 		OrderHistoryCheck,
-		DialogWrapper,
 		CheckFiles,
 		QuerySearchBar
 	},
@@ -651,11 +649,6 @@ export default {
 			</el-card>
 		</div>
 		<br />
-
-		<!--    通用弹窗 配合common_dialogs 使用-->
-		<div v-if="currentComponent">
-			<DialogWrapper :current-component="currentComponent" :dialog-visible="dialogVisible" />
-		</div>
 
 		<!--    订单历史记录查看-->
 		<div>

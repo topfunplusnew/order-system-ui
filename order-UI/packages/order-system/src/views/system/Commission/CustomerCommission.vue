@@ -690,7 +690,6 @@ export default {
 			}
 			// showOrder: 平时查看给true
 			exportParams.params.showOrder = true;
-
 			this.download('system/ordercommission/export', exportParams, `客户佣金_${new Date().getTime()}.xlsx`);
 		},
 		changePaymentApplyInfoVisible() {
@@ -876,7 +875,6 @@ export default {
 						this.$refs[`applyPayment`].reset();
 						this.getList(); // 刷新列表
 					} catch (error) {
-						console.error('申请失败:', error);
 						this.$message.error('申请失败，请重试');
 					}
 				},

@@ -896,7 +896,7 @@ export default {
 			}
 		},
 		handleProcess(that) {
-			this.submitAndUpdate(that);
+			return this.submitAndUpdate(that);
 		},
 		handleReject() {}
 	}
