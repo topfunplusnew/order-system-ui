@@ -750,7 +750,7 @@ export default {
 						<div>{{ parseTime(scope.row.orderDate, '{y}-{m}-{d}') }}</div>
 					</template>
 				</el-table-column>
-				<el-table-column v-if="columns[2].visible" show-overflow-tooltip label="客户" align="center" prop="customer" fixed="left" />
+				<el-table-column v-if="columns[2].visible" show-overflow-tooltip label="客户" align="center" prop="customer" fixed="left" width="100px" />
 				<el-table-column v-if="columns[3].visible" show-overflow-tooltip label="供应商/仓库" align="center" prop="supplierNames" fixed="left" width="200">
 					<template #default="scope">
 						<div class="supplier-warehouse-container">
@@ -798,7 +798,7 @@ export default {
 						</el-row>
 					</template>
 				</el-table-column>
-				<el-table-column v-if="columns[5].visible" show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo" />
+				<el-table-column v-if="columns[5].visible" show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo" width="100px" />
 				<el-table-column v-if="columns[6].visible" show-overflow-tooltip label="陆运司机电话" align="center" prop="landDriverTel" width="100px" />
 				<el-table-column v-if="columns[7].visible" show-overflow-tooltip label="陆地司机姓名" align="center" prop="landDriverName" width="100px" />
 				<el-table-column v-if="columns[8].visible" show-overflow-tooltip label="总货款" align="center" prop="allPayments" width="100px">
@@ -808,7 +808,7 @@ export default {
 				</el-table-column>
 				<el-table-column v-if="columns[9].visible" show-overflow-tooltip label="陆运费" align="center" prop="landFreight" width="100px" />
 				<!--      原为海运车牌号-->
-				<el-table-column v-if="columns[10].visible" show-overflow-tooltip label="海运柜号" align="center" prop="seaCarNo">
+				<el-table-column v-if="columns[10].visible" show-overflow-tooltip label="海运柜号" align="center" prop="seaCarNo" width="100px" >
 					<template #default="scope">
 						{{ !scope.row.seaCarNo ? '无' : scope.row.seaCarNo }}
 					</template>
@@ -825,8 +825,8 @@ export default {
 					</template>
 				</el-table-column>
 				<el-table-column v-if="columns[13].visible" show-overflow-tooltip label="海运费" align="center" prop="seaFreight" width="100px" />
-				<el-table-column v-if="columns[14].visible" show-overflow-tooltip label="销售经理" align="center" prop="saleManager" />
-				<el-table-column v-if="columns[15].visible" show-overflow-tooltip label="车队" align="center" prop="fleet" />
+				<el-table-column v-if="columns[14].visible" show-overflow-tooltip label="销售经理" align="center" prop="saleManager" width="100px" />
+				<el-table-column v-if="columns[15].visible" show-overflow-tooltip label="车队" align="center" prop="fleet" width="100px" />
 				<el-table-column v-if="columns[16].visible" show-overflow-tooltip label="录入员" align="center" prop="userName" width="120px" />
 				<el-table-column v-if="columns[17].visible" show-overflow-tooltip label="附件" align="center" prop="path" width="150px">
 					<template slot-scope="scope">
