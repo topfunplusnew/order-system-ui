@@ -155,7 +155,6 @@ export default {
 						// 如果是复合数据 如时间范围
 						if (queryItem && queryItem?.extraInfo.__isMultiple) {
 							const mutilMeta = (queryItem.prop + '').split('&');
-							console.log(`queryItem.prop`, queryItem.prop);
 							if (!Array.isArray(mutilMeta)) {
 								throw new Error('组件内部错误,请检查复合查询参数是否正确');
 							}

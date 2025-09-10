@@ -95,6 +95,7 @@ export default {
 			orderNums: 0,
 			querySupplier: null,
 			queryLevel: null,
+			queryStoreHouseName: null,
 			queryItemsCompany: {
 				queryList: [
 					{
@@ -142,8 +143,8 @@ export default {
 				queryList: [
 					{
 						id: 1,
-						label: '仓库名称',
-						prop: 'storeHouseName',
+						label: '级别名称',
+						prop: 'levelName',
 						type: 'input',
 						extraInfo: {
 							__isParams: true
@@ -162,8 +163,8 @@ export default {
 					},
 					{
 						id: 3,
-						label: '宽度',
-						prop: 'width',
+						label: '长度',
+						prop: 'length',
 						type: 'input',
 						extraInfo: {
 							__isParams: false
@@ -172,8 +173,8 @@ export default {
 					},
 					{
 						id: 4,
-						label: '长度',
-						prop: 'length',
+						label: '宽度',
+						prop: 'width',
 						type: 'input',
 						extraInfo: {
 							__isParams: false
@@ -189,18 +190,18 @@ export default {
 							__isParams: false
 						},
 						value: ''
-					},
-					{
-						id: 6,
-						label: '入库时间范围',
-						prop: 'main_storeDate_startTime&main_storeDate_endTime',
-						type: 'date-range-picker',
-						extraInfo: {
-							__isParams: true,
-							__isMultiple: true
-						},
-						value: ''
 					}
+					// {
+					// 	id: 6,
+					// 	label: '入库时间范围',
+					// 	prop: 'main_storeDate_startTime&main_storeDate_endTime',
+					// 	type: 'date-range-picker',
+					// 	extraInfo: {
+					// 		__isParams: true,
+					// 		__isMultiple: true
+					// 	},
+					// 	value: ''
+					// }
 				]
 			},
 			// 当前是编辑订单还是添加订单 编辑订单此值非空,添加订单为空
@@ -559,7 +560,7 @@ export default {
 		 * @param {String} value - 查询值
 		 */
 		handleUpdateQueryNameStore(value) {
-			this.queryLevel = value;
+			this.queryStoreHouseName = value;
 		},
 		/**
 		 * 更新供应商查询名称
@@ -1301,9 +1302,9 @@ export default {
 										:get-data="listExitInventory"
 										icon="el-icon-s-home"
 										:limit-info="{}"
-										query-label="级别名称"
-										query-info="levelName"
-										:query-name="queryLevel"
+										query-label="仓库名称"
+										query-info="storeHouseName"
+										:query-name="queryStoreHouseName"
 										:additional-limit-info="tableData => filterNoStockNumber(tableData)"
 										@commitBack="value => handleCommitBackInventory(scope, value)"
 										@update:queryName="handleUpdateQueryNameStore"
