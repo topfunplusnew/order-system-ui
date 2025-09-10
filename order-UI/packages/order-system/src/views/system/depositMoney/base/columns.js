@@ -136,13 +136,14 @@ export default {
 			width: 150,
 			showOverflowTooltip: true,
 			formConfig: {
-				type: 'bankSelect',
+				type: 'input',
 				show: true,
 				required: true,
 				placeholder: '请选择对方账户',
 				rules: validationRules.required,
 				col: { span: 12 },
 				order: 6,
+				readonly: true,
 				bankType: 'other'
 			}
 		},
@@ -188,13 +189,14 @@ export default {
 			width: 150,
 			showOverflowTooltip: true,
 			formConfig: {
-				type: 'bankSelect',
+				type: 'input',
 				show: true,
 				required: true,
 				placeholder: '请选择我方账户',
 				rules: validationRules.required,
 				col: { span: 12 },
 				order: 9,
+				readonly: true,
 				bankType: 'self'
 			}
 		},

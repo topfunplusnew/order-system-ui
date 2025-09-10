@@ -303,7 +303,6 @@ export default {
 			this.queryParams.pageNum = 1;
 			this.getList();
 		},
-		/** 重置按钮操作 */
 		resetQuery() {
 			this.resetForm('queryForm');
 			this.queryParams = {
@@ -329,11 +328,10 @@ export default {
 		handleAdd() {
 			// 使用配置管理器获取默认表单数据
 			const defaultForm = this.getDefaultFormData();
-
 			this.openDialog(
 				DepositMoneyForm,
 				'添加保证金收取信息',
-				'80%',
+				'600px',
 				{
 					formData: defaultForm,
 					isEdit: false,
@@ -349,7 +347,7 @@ export default {
 				this.openDialog(
 					DepositMoneyForm,
 					'修改保证金收取信息',
-					'80%',
+					'600px',
 					{
 						formData: response.data,
 						isEdit: true,

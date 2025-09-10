@@ -63,6 +63,16 @@
 						<!-- 日期选择器 -->
 						<el-date-picker v-else-if="config.formConfig.type === 'date'" v-model="form[config.prop]" type="date" :placeholder="config.formConfig.placeholder" style="width: 100%" />
 
+						<!-- 日期时间选择器 -->
+						<el-date-picker
+							v-else-if="config.formConfig.type === 'datetime'"
+							v-model="form[config.prop]"
+							type="datetime"
+							:placeholder="config.formConfig.placeholder"
+							value-format="yyyy-MM-dd HH:mm:ss"
+							style="width: 100%"
+						/>
+
 						<!-- 时间选择器 -->
 						<el-time-picker v-else-if="config.formConfig.type === 'time'" v-model="form[config.prop]" :placeholder="config.formConfig.placeholder" style="width: 100%" />
 
