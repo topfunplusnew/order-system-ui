@@ -34,6 +34,7 @@
 	},
 	"dependencies": {
 		"ant-design-vue": "^1.7.8",
+		"dayjs": "^1.11.18",
 		"file-saver": "^2.0.5",
 		"sockjs-client": "^1.6.1",
 		"vue-super-flow": "^1.4.0",

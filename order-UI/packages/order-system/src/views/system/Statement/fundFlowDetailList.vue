@@ -85,17 +85,17 @@
 		<el-table :data="statementData" border style="width: 100%" class="statement-table" size="mini" v-loading="loading" element-loading-text="数据加载中...">
 			<el-table-column prop="operateDate" label="月" show-overflow-tooltip>
 				<template slot-scope="{ row }">
-					{{ row.operateDate ? row.operateDate.substring(5, 7) : '' }}
+					{{ row.operateDate ? dayjs(row.operateDate).month() + 1 : '' }}
 				</template>
 			</el-table-column>
 			<el-table-column prop="operateDate" label="日" show-overflow-tooltip>
 				<template slot-scope="{ row }">
-					{{ row.operateDate ? row.operateDate.substring(8, 9) : '' }}
+					{{ row.operateDate ? dayjs(row.operateDate).date() : '' }}
 				</template>
 			</el-table-column>
 			<el-table-column prop="operateDate" label="时间" show-overflow-tooltip>
 				<template slot-scope="{ row }">
-					{{ row.operateDate ? row.operateDate.substring(11, 16) : '' }}
+					{{ row.operateDate ? dayjs(row.operateDate).format('HH:mm') : '' }}
 				</template>
 			</el-table-column>
 
@@ -135,10 +135,6 @@
 
 		<!-- 数据为空时的提示 -->
 		<el-empty v-if="!loading && statementData.length === 0" description="暂无数据"></el-empty>
-
-		<div v-if="currentComponent">
-			<DialogWrapper :current-component="currentComponent" :dialog-visible="dialogVisible" />
-		</div>
 	</div>
 </template>
 
@@ -147,7 +143,6 @@ import { findFundFlowBalanceInLocalCurrencyAtDate, getFundFlowDetailList } from 
 import { TableName } from '@/api/tool/enums';
 import { getReceiveMoneyByPayNo } from '@/api/system/receiveMoney';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
-import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 import RECEIVE_MONEY from '@/components/NeedToShow/RECEIVE_MONEY.vue';
 import { getRecord } from '@/api/system/record';
 import OFFSETTING from '@/components/NeedToShow/OFFSETTING.vue';
@@ -156,12 +151,14 @@ import PAYMENT from '@/components/NeedToShow/PAYMENT.vue';
 import SearchOption from '@/components/SearchOption.vue';
 import { listBankAccount } from '@/api/system/bankAccount';
 import BankType from '@/views/dashboard/components/common/BankType.vue';
+import dayjs from 'dayjs';
 
 export default {
-	components: { BankType, SearchOption, DialogWrapper },
+	components: { BankType, SearchOption },
 	mixins: [common_dialog],
 	data() {
 		return {
+			dayjs, // 将 dayjs 添加到 data 中，使其在模板中可用
 			queryBank: '',
 			query: {
 				startTime: '',
