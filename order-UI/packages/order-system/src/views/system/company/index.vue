@@ -124,11 +124,6 @@ export default {
 
 		this.getList();
 	},
-	watch: {
-		tableColumns(newVal) {
-			console.log('tableColumns changed:', newVal);
-		}
-	},
 	methods: {
 		getStorageKey() {
 			return 'company-columns';
