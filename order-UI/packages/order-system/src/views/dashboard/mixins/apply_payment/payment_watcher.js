@@ -156,7 +156,7 @@ export var mixin_payment_watcher = {
 			if (!this.isPayment && this.needInfo.bankNo) {
 				const search = {
 					bankNo: this.needInfo.bankNo,
-					companyName: this.needInfo.companyName,
+					companyType: this.needInfo.companyType,
 					companyId: this.needInfo.companyId
 				};
 				listBankAccount(search).then(res => {
