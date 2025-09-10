@@ -206,17 +206,17 @@ export default {
 						reject('表单验证失败');
 						return;
 					}
-
 					// 去除参数
 					this.form = excludeParams(this.form, this.$exclude);
 					let total_out = 0,
 						total_in = 0;
-
 					// 客户开票 domain = 1
 					if (this.invoiceInfo.domain === 1) {
 						const query = {
 							id: this.invoiceInfo.isOrderTax,
-							companyType: PUBLIC_DICT_TYPE.CUSTOMER
+							companyType: PUBLIC_DICT_TYPE.CUSTOMER,
+							// 后端需要传 companyId
+							companyId: this.companyID
 						};
 						// 先检查一下可不可以开票 即检查是否超过钱
 						checkOrderAllinvoice(query)
@@ -257,7 +257,9 @@ export default {
 					} else {
 						const query = {
 							id: this.invoiceInfo.isOrderTax,
-							companyType: PUBLIC_DICT_TYPE.SUPPLIER
+							companyType: PUBLIC_DICT_TYPE.SUPPLIER,
+							// 后端需要传 companyId
+							companyId: this.companyID
 						};
 						checkOrderAllinvoice(query)
 							.then(res => {
