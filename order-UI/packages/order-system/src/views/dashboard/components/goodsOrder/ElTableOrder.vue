@@ -548,9 +548,9 @@ export default {
 				case 19: // 是否可编辑
 					return row.isedit === 0 ? '否' : '是';
 				case 20: // 客户是否含税
-					return this.hasInvoice(row, PUBLIC_DICT_TYPE.CUSTOMER) ? '含税' : '不含税';
+					return this.hasInvoice(row, PUBLIC_DICT_TYPE.CUSTOMER) ? '是' : '否';
 				case 21: // 供应商是否含税
-					return this.hasInvoice(row, PUBLIC_DICT_TYPE.SUPPLIER) ? '含税' : '不含税';
+					return this.hasInvoice(row, PUBLIC_DICT_TYPE.SUPPLIER) ? '是' : '否';
 				case 22: // 备注
 					return row.comments || '';
 				default:
@@ -789,11 +789,11 @@ export default {
 						<el-row>
 							<el-row v-if="hasInvoice(scope.row, PUBLIC_DICT_TYPE.CUSTOMER)">
 								<el-row>
-									<el-button type="text" size="mini" @click="showCustomerInvoiceList(scope.row)">含税</el-button>
+									<el-button type="text" size="mini" @click="showCustomerInvoiceList(scope.row)">是</el-button>
 								</el-row>
 							</el-row>
 							<el-row v-else>
-								<StateTag :state-title="`不含税`" :state-mapper="{ 3: '不含税' }" />
+								<StateTag :state-title="`否`" :state-mapper="{ 3: '否' }" />
 							</el-row>
 						</el-row>
 					</template>
@@ -863,11 +863,11 @@ export default {
 						<el-row>
 							<el-row v-if="hasInvoice(scope.row, PUBLIC_DICT_TYPE.SUPPLIER)">
 								<el-row>
-									<el-button type="text" size="mini" @click="showSupplierInvoiceList(scope.row)">含税</el-button>
+									<el-button type="text" size="mini" @click="showSupplierInvoiceList(scope.row)">是</el-button>
 								</el-row>
 							</el-row>
 							<el-row v-else>
-								<StateTag :state-title="`不含税`" :state-mapper="{ 3: '不含税' }" />
+								<StateTag :state-title="`否`" :state-mapper="{ 3: '否' }" />
 							</el-row>
 						</el-row>
 					</template>

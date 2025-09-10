@@ -157,6 +157,7 @@ export var mixin_payment_watcher = {
 				const search = {
 					bankNo: this.needInfo.bankNo,
 					companyType: this.needInfo.companyType,
+					// 员工 companyId 怎么给？
 					companyId: this.needInfo.companyId
 				};
 				listBankAccount(search).then(res => {

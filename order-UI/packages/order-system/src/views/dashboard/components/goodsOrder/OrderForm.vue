@@ -603,7 +603,8 @@ export default {
 			scope.row.erro = val.erro;
 			scope.row.currentType = 'storeHouseName';
 			// 填充出厂单价（库存为填充存货价）
-			scope.row.paymentUnload = val.paymentUnload;
+			// TODO 这里改为填充出厂价格
+			scope.row.price = val.price;
 			// 填充后重新计算
 			updateOrderRowCalculations(scope.row, this.isSea, this.isLand);
 		},
