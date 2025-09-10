@@ -264,7 +264,6 @@ export default {
 		// 初始化配置管理器
 		this.configManager = createConfigManager(columnConfig);
 		this.tableColumns = this.configManager.getTableColumns();
-
 		this.getList();
 	},
 	methods: {

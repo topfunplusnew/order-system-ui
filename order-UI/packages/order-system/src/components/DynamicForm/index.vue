@@ -4,7 +4,7 @@
 			<!-- 多列布局：每列垂直排列表单项 -->
 			<el-col v-for="column in multiColumnConfig" :key="`column-${column.columnIndex}`" :span="column.span">
 				<div v-for="(config, configIndex) in column.items" :key="`${config.prop || 'field'}-${configIndex}`" class="form-item-wrapper">
-					<el-form-item :label="config.label" :prop="config.prop" :required="config.formConfig.required">
+					<el-form-item :label="config.label" :prop="config.prop">
 						<!-- 优先使用具名插槽 -->
 						<slot
 							v-if="$scopedSlots[config.prop]"
@@ -206,8 +206,6 @@ export default {
 
 			try {
 				this.form = this.configManager.generateFormData(data);
-				console.log('DynamicForm: 表单数据初始化完成', this.form);
-
 				// 在下一个tick中清除验证状态，防止初始化时显示错误信息
 				this.$nextTick(() => {
 					if (this.$refs.form) {
@@ -222,8 +220,8 @@ export default {
 		// 初始化验证规则
 		initRules() {
 			this.rules = {};
+			// 通过configManager获取配置的验证规则 configManager.js
 			const configRules = this.configManager.getFormRules();
-
 			Object.keys(configRules).forEach(prop => {
 				this.rules[prop] = this.processRules(configRules[prop]);
 			});
@@ -231,6 +229,15 @@ export default {
 
 		// 处理验证规则（将字符串验证器转换为函数）
 		processRules(rules) {
+			// 如果 rules 不是数组，直接返回（可能是单个规则对象）
+			if (!Array.isArray(rules)) {
+				// 如果是单个规则对象，将其包装成数组再处理
+				if (typeof rules === 'object' && rules !== null) {
+					return [rules];
+				}
+				return [];
+			}
+
 			return rules.map(rule => {
 				if (rule.validator && typeof rule.validator === 'string') {
 					// 查找内置验证器
