@@ -309,10 +309,13 @@ export default {
 
 .el-form {
 	margin-bottom: 10px;
+	display: flex;
+	flex-wrap: wrap;
 
 	.el-form-item {
 		margin-right: 15px;
 		margin-bottom: 10px;
+		flex: 0 0 auto;
 	}
 }
 
