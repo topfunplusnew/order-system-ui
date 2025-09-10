@@ -145,6 +145,19 @@ export default {
 		}
 	},
 	methods: {
+		// 统一行样式，保持固定列与主体区域行高一致
+		rowStyle({ row }) {
+			// 基础统一高度
+			const base = { height: '28px', lineHeight: '28px' };
+			if (row.isAdjust > 0 && this.isAdjustOrder) {
+				// 返回需要的背景色
+				if (row.isAdjust === 1) return { ...base, background: '#f0f0f0' };
+				if (row.isAdjust === 2) return { ...base, background: '#f0f9eb' };
+				if (row.isAdjust === 3) return { ...base, background: '#fdf6ec' };
+				return { ...base, background: '#ffcccc' };
+			}
+			return base;
+		},
 		// 获取客户开票列表
 		async getCustomerInvoiceList(orderId) {
 			this.customerInvoiceListLoading = true;
@@ -332,29 +345,9 @@ export default {
 		parseTime,
 		updateGoodsOrder,
 		getGoodsOrder,
-		// 给特定的某些行高亮颜色
-		tableRowClassName({ row }) {
-			if (row.isAdjust > 0 && this.isAdjustOrder) {
-				if (row.isAdjust === 1) {
-					return {
-						background: '#f0f0f0 !important'
-					};
-				} else if (row.isAdjust === 2) {
-					return {
-						background: '#f0f9eb !important'
-					};
-				} else if (row.isAdjust === 3) {
-					return {
-						background: '#fdf6ec !important'
-					};
-				} else {
-					return {
-						background: '#ffcccc !important'
-					};
-				}
-			} else {
-				return '';
-			}
+		// 兼容旧调用（若其他地方仍引用）
+		tableRowClassName() {
+			return {};
 		},
 		// 处理下拉菜单  使用的是事件委托
 		handleCommand(command, row) {
@@ -691,15 +684,14 @@ export default {
 				id="printBox"
 				v-loading="loading"
 				v-horizontal-scroll="'always'"
-				:row-style="tableRowClassName"
+				:row-style="rowStyle"
 				fit
 				border
 				size="mini"
-				virtual-scroll
 				max-height="750"
 				:cell-style="
 					() => {
-						return { padding: '.7px' };
+						return { padding: '.4px' };
 					}
 				"
 				:data="goodsOrderList"
@@ -1541,12 +1533,38 @@ export default {
 
 // 供应商和仓库的容器
 .supplier-warehouse-container {
-	display: flex;
+	display: inline-flex;
 	align-items: center;
-	justify-content: center;
-	flex-wrap: wrap;
+	justify-content: flex-start;
+	flex-wrap: nowrap; /* 避免换行导致高度不一致 */
 	gap: 4px;
-	line-height: 1.4;
+	max-width: 100%;
+	overflow: hidden;
+	line-height: 1.2;
+}
+
+::v-deep .el-table .cell {
+	/* 统一单元格行高，避免固定列与主体错位 */
+	white-space: nowrap !important;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	line-height: 28px !important;
+	height: 28px !important;
+}
+
+::v-deep .el-table__fixed,
+::v-deep .el-table__fixed-right {
+	/* 保证固定列同样的行高表现 */
+	.cell {
+		line-height: 28px !important;
+		height: 28px !important;
+	}
+}
+
+/* 压缩整体内边距，保持视觉紧凑且统一 */
+::v-deep .el-table td,
+::v-deep .el-table th {
+	padding: 0 6px !important;
 }
 
 .supplier-name {
