@@ -289,7 +289,7 @@
 				<el-table :data="bankChangeList" style="width: 100%">
 					<el-table-column prop="selfBankNo" label="我方账号" width="180"></el-table-column>
 					<el-table-column prop="operateDate" label="日期" width="180"></el-table-column>
-					<el-table-column prop="changeType" label="变动类型"></el-table-column>
+					<el-table-column prop="payType" label="支付类型"></el-table-column>
 					<el-table-column prop="moneyAmount" label="金额"></el-table-column>
 				</el-table>
 				<pagination

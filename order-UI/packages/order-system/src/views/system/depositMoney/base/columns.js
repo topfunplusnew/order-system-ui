@@ -11,7 +11,7 @@ export default {
 			key: 'id',
 			prop: 'id',
 			label: 'ID',
-			visible: false,
+			visible: true,
 			includeInForm: false,
 			width: 80
 		},
@@ -38,7 +38,7 @@ export default {
 			prop: 'type',
 			label: '保证金类型',
 			visible: true,
-			includeInForm: true,
+			includeInForm: false,
 			width: 120,
 			formConfig: {
 				type: 'select',

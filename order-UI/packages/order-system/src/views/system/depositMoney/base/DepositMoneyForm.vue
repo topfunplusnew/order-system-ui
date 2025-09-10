@@ -100,9 +100,6 @@ export default {
 	methods: {
 		// 字段变化处理
 		handleFieldChange({ prop, value }) {
-			// 这里可以处理字段变化的副作用
-			console.log(`字段 ${prop} 变化为:`, value);
-
 			// 当对象类型发生变化时，清空对方账户相关信息
 			if (prop === 'targetType') {
 				this.handleTargetTypeChange();
