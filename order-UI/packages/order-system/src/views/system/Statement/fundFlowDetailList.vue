@@ -27,8 +27,8 @@
 							:get-data="listBankAccount"
 							icon="el-icon-search"
 							:limit-info="{ acountsType: '己方公司' }"
-							query-label="银行卡查找"
-							query-info="bankNo"
+							query-label="户名查找"
+							query-info="acountsName"
 							:query-name="queryBank"
 							@commitBack="value => (query.ourBankNO = value.bankNo)"
 							@update:queryName="value => (queryBank = value)"
@@ -107,7 +107,6 @@
 			<el-table-column prop="otherAcountsName" label="对方户名（对方真实收付款名称）" show-overflow-tooltip></el-table-column>
 			<el-table-column prop="otherBankNO" label="对方银行账号" show-overflow-tooltip></el-table-column>
 			<el-table-column prop="changeType" label="摘要" show-overflow-tooltip></el-table-column>
-			<!--			<el-table-column prop="tableName" label="业务表名" show-overflow-tooltip></el-table-column>-->
 			<el-table-column prop="moneyAmount" label="借" align="right" show-overflow-tooltip>
 				<template #default="{ row }">
 					<span>{{ row.moneyAmount > 0 ? row.moneyAmount : '' }}</span>
