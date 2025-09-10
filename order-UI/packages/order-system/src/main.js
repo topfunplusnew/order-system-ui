@@ -62,6 +62,8 @@ import keepAliveDialog from '@/views/dashboard/mixins/keepAliveDialog';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 import CustomTableColumn from '@/components/CustomTableColumn/index.vue';
+// 引入列显隐控制混入
+import { columnVisibilityMixin } from '@/mixins/columnVisibilityMixin';
 
 message.config({
 	top: '10px',
@@ -188,6 +190,8 @@ Vue.use(VueCompositionAPI);
 Vue.mixin(keepAliveDialog);
 // 全局注册通用弹窗混入
 Vue.mixin(common_dialog);
+// 全局注册列显隐控制混入
+Vue.mixin(columnVisibilityMixin);
 
 export const isNull = val => {
 	return !val ? '暂无' : val;

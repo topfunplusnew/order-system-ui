@@ -129,14 +129,6 @@ export default {
 			return 'company-columns';
 		},
 
-		// 处理列显隐变化
-		handleColumnChange(changeInfo) {
-			// 确保tableColumns数组中对应的列也被更新
-			if (changeInfo.index >= 0 && changeInfo.index < this.tableColumns.length) {
-				this.$set(this.tableColumns[changeInfo.index], 'visible', changeInfo.visible);
-			}
-		},
-
 		cellStyle() {
 			return { padding: '.5px' };
 		},

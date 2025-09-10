@@ -2,14 +2,21 @@
  * 表格列处理混入
  * 提供统一的表格列配置处理能力
  * 基于 Vue 2 设计模式，遵循单一职责原则
+ * 注意：列显隐控制已迁移到 columnVisibilityMixin
  */
 export const tableColumnMixin = {
 	computed: {
 		/**
 		 * 获取可见的表格列
 		 * @returns {Array} 可见列配置数组
+		 * @deprecated 此计算属性已迁移到 columnVisibilityMixin，请使用全局混入
 		 */
 		visibleColumns() {
+			// 兼容性提示
+			if (process.env.NODE_ENV === 'development') {
+				console.warn('visibleColumns 计算属性已迁移到 columnVisibilityMixin，此方法将在未来版本中移除');
+			}
+
 			if (!this.configManager) {
 				console.warn('ConfigManager 未初始化，请在组件中正确设置 configManager');
 				return [];
@@ -26,20 +33,6 @@ export const tableColumnMixin = {
 	},
 
 	methods: {
-		/**
-		 * 获取列属性配置
-		 * 统一处理自适应宽度、属性清理等逻辑
-		 * @param {Object} column 列配置对象
-		 * @returns {Object} 处理后的列属性
-		 */
-		getColumnProps(column) {
-			if (!this.configManager) {
-				console.error('ConfigManager 未初始化，无法处理列属性');
-				return column;
-			}
-			return this.configManager.getColumnProps(column);
-		},
-
 		/**
 		 * 获取表格存储键名
 		 * 子组件需要重写此方法提供唯一的存储键

@@ -148,12 +148,6 @@ import DepositMoneyForm from './base/DepositMoneyForm.vue';
 export default {
 	name: 'DepositMoney',
 	mixins: [common_dialog, tableColumnMixin],
-	computed: {
-		/** 可见列 */
-		visibleColumns() {
-			return this.tableColumns.filter(column => column.visible);
-		}
-	},
 	data() {
 		return {
 			// 配置管理器
@@ -221,14 +215,6 @@ export default {
 	methods: {
 		getStorageKey() {
 			return 'depositMoney-columns';
-		},
-
-		// 处理列显隐变化
-		handleColumnChange(changeInfo) {
-			// 确保tableColumns数组中对应的列也被更新
-			if (changeInfo.index >= 0 && changeInfo.index < this.tableColumns.length) {
-				this.$set(this.tableColumns[changeInfo.index], 'visible', changeInfo.visible);
-			}
 		},
 
 		// 获取默认表单数据
@@ -434,16 +420,6 @@ export default {
 				badDebtFlag: '否'
 			};
 			this.resetForm('refundForm');
-		},
-		/** 获取表格列属性 */
-		getColumnProps(column) {
-			return {
-				prop: column.prop,
-				label: column.label,
-				align: column.align || 'center',
-				width: column.width,
-				showOverflowTooltip: column.showOverflowTooltip
-			};
 		}
 	}
 };
