@@ -315,6 +315,8 @@ export default {
 				companyName: clonedPaymentApplyInfo.companyName,
 				companyType: clonedPaymentApplyInfo.companyType,
 				companyId: clonedPaymentApplyInfo.companyId,
+				// 对于员工类型的时候 这个是有值的 其他时候没值
+				employeeId: clonedPaymentApplyInfo.companyId,
 				payType: clonedPaymentApplyInfo.payType.split('-') || [],
 				attachmentList: clonedPaymentApplyInfo.attachmentList,
 				reason: clonedPaymentApplyInfo.reason,

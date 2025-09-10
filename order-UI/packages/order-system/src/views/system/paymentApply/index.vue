@@ -4,14 +4,6 @@
 			<el-form-item label="日期" prop="fundsDate">
 				<el-input v-model="queryParams.fundsDate" placeholder="请输入日期" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
-			<!--      <el-form-item label="金额" prop="moneyAmount">-->
-			<!--        <el-input-->
-			<!--          v-model="queryParams.moneyAmount"-->
-			<!--          placeholder="请输入金额"-->
-			<!--          clearable-->
-			<!--          @keyup.enter.native="handleQuery"-->
-			<!--        />-->
-			<!--      </el-form-item>-->
 			<el-form-item label="对方户名" prop="otherAcountsName">
 				<el-input v-model="queryParams.otherAcountsName" placeholder="请输入对方户名" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
@@ -24,46 +16,6 @@
 			<el-form-item label="对方公司" prop="companyName">
 				<el-input v-model="queryParams.companyName" placeholder="请输入对方公司" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
-			<!--      <el-form-item label="对方公司ID" prop="companyId">-->
-			<!--        <el-input-->
-			<!--          v-model="queryParams.companyId"-->
-			<!--          placeholder="请输入对方公司ID"-->
-			<!--          clearable-->
-			<!--          @keyup.enter.native="handleQuery"-->
-			<!--        />-->
-			<!--      </el-form-item>-->
-			<!--      <el-form-item label="申请人" prop="applyPerson">-->
-			<!--        <el-input-->
-			<!--          v-model="queryParams.applyPerson"-->
-			<!--          placeholder="请输入申请人"-->
-			<!--          clearable-->
-			<!--          @keyup.enter.native="handleQuery"-->
-			<!--        />-->
-			<!--      </el-form-item>-->
-			<!--      <el-form-item label="申请人ID" prop="applyPersonID">-->
-			<!--        <el-input-->
-			<!--          v-model="queryParams.applyPersonID"-->
-			<!--          placeholder="请输入申请人ID"-->
-			<!--          clearable-->
-			<!--          @keyup.enter.native="handleQuery"-->
-			<!--        />-->
-			<!--      </el-form-item>-->
-			<!--      <el-form-item label="审核状态" prop="checkState">-->
-			<!--        <el-input-->
-			<!--          v-model="queryParams.checkState"-->
-			<!--          placeholder="请输入审核状态"-->
-			<!--          clearable-->
-			<!--          @keyup.enter.native="handleQuery"-->
-			<!--        />-->
-			<!--      </el-form-item>-->
-			<!--      <el-form-item label="备注" prop="comments">-->
-			<!--        <el-input-->
-			<!--          v-model="queryParams.comments"-->
-			<!--          placeholder="请输入备注"-->
-			<!--          clearable-->
-			<!--          @keyup.enter.native="handleQuery"-->
-			<!--        />-->
-			<!--      </el-form-item>-->
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
 				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -258,7 +210,6 @@
 import { listPaymentApply, getPaymentApply, delPaymentApply, addPaymentApply, updatePaymentApply } from '@/api/system/paymentApply';
 import { excludeParams } from '@/api/tool/exclude';
 import { listSubject } from '@/api/system/subject';
-import { formatDate } from '@/utils';
 import SearchOption from '@/components/SearchOption.vue';
 import { listCompany } from '@/api/system/company';
 import NeedToShowInfo from '@/components/NeedToShowInfo.vue';
