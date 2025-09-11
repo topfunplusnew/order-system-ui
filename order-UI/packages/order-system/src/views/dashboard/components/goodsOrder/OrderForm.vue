@@ -794,6 +794,7 @@ export default {
 				customerID: '',
 				customer: '',
 				saleManager: '',
+				userName: '',
 				orderDetailList: [],
 				fleet: '',
 				orderState: '',
@@ -1119,6 +1120,9 @@ export default {
 				</el-form-item>
 				<el-form-item label="销售经理" prop="saleManager">
 					<el-input v-model="orderInfo.saleManager" type="text" size="mini" placeholder="请输入销售经理名称" style="width: 110px" />
+				</el-form-item>
+				<el-form-item label="录入人员" prop="userName">
+					<el-input v-model="orderInfo.userName" type="text" size="mini" placeholder="请输入录入人员" style="width: 110px" />
 				</el-form-item>
 				<el-form-item label="备注" prop="comments">
 					<el-input v-model="orderInfo.comments" type="text" size="mini" placeholder="请输入备注" />

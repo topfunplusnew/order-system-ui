@@ -172,6 +172,7 @@
 					/>
 				</template>
 			</CustomTableColumn>
+			<CustomTableColumn label="录入人员" align="center" prop="userName" width="120" v-if="columns[17] && columns[17].visible" show-overflow-tooltip />
 			<CustomTableColumn label="复核状态" align="center" class-name="small-padding fixed-width" width="80" fixed="right">
 				<template slot-scope="scope">
 					<el-switch
@@ -401,6 +402,9 @@
 								:initial-attachments="form.transactionHistoryAttachmentList || []"
 								@files-updated="handleTransactionHistoryFilesUpdated"
 							/>
+						</el-form-item>
+						<el-form-item label="录入人员" prop="userName">
+							<el-input v-model="form.userName" placeholder="请输入录入人员" />
 						</el-form-item>
 						<el-form-item label="备注" prop="comments">
 							<el-input v-model="form.comments" placeholder="请输入备注" />
@@ -663,7 +667,8 @@ export default {
 				{ key: 14, label: `附件`, visible: true },
 				// 新增银行卡流水编号和附件列
 				{ key: 15, label: `银行卡流水编号`, visible: true },
-				{ key: 16, label: `银行卡流水附件`, visible: true }
+				{ key: 16, label: `银行卡流水附件`, visible: true },
+				{ key: 17, label: `录入人员`, visible: true }
 			],
 			// 顶部筛选框
 			queryPayment: {},

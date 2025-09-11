@@ -135,7 +135,8 @@
 							<CustomTableColumn v-if="columns[15].visible" label="海运银行户名" align="center" prop="seaBankName" width="120" />
 							<CustomTableColumn v-if="columns[16].visible" label="子项陆运费之和" align="center" prop="allLandFreight" width="150" />
 							<CustomTableColumn v-if="columns[17].visible" label="子项海运费之和" align="center" prop="allSeaFreight" />
-							<CustomTableColumn v-if="columns[18].visible" label="收到条附件" align="center" prop="attachmentList" width="150" fixed="right">
+							<CustomTableColumn v-if="columns[18].visible" label="录入人员" align="center" prop="userName" width="120" />
+							<CustomTableColumn v-if="columns[19].visible" label="收到条附件" align="center" prop="attachmentList" width="150" fixed="right">
 								<template slot-scope="scope">
 									<CheckFiles
 										:attachmentList="scope.row.attachmentList"
@@ -144,7 +145,7 @@
 									/>
 								</template>
 							</CustomTableColumn>
-							<CustomTableColumn v-if="columns[19].visible" label="操作" align="center" width="200" fixed="right">
+							<CustomTableColumn v-if="columns[20].visible" label="操作" align="center" width="200" fixed="right">
 								<template slot-scope="scope">
 									<el-button size="mini" type="text" icon="el-icon-edit" @click="handleCheckInventory(scope.row)">查看</el-button>
 									<el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)" v-hasPermi="['system:inventoryMain:edit']">修改</el-button>
@@ -196,6 +197,9 @@
 				</el-form-item>
 				<el-form-item label="货物来源" prop="goodsCompany">
 					<el-input size="mini" v-model="form.goodsCompany" placeholder="请输入货物来源公司(本部或者海盛)" />
+				</el-form-item>
+				<el-form-item label="录入人员" prop="userName">
+					<el-input size="mini" v-model="form.userName" placeholder="请输入录入人员" />
 				</el-form-item>
 				<el-form-item label="附件">
 					<UploadFilesButton
@@ -877,8 +881,9 @@ export default {
 				{ key: 15, label: '海运银行户名', visible: true },
 				{ key: 16, label: '子项陆运费之和', visible: true },
 				{ key: 17, label: '子项海运费之和', visible: true },
-				{ key: 18, label: '收到条附件路径', visible: true },
-				{ key: 19, label: '操作', visible: true }
+				{ key: 18, label: '录入人员', visible: true },
+				{ key: 19, label: '收到条附件路径', visible: true },
+				{ key: 20, label: '操作', visible: true }
 			],
 			// 表单校验
 			rules: {

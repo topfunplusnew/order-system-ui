@@ -87,6 +87,7 @@
 			<CustomTableColumn v-if="columns[8].visible" label="对方开户行" align="center" prop="otherBankName" width="165" show-overflow-tooltip />
 			<CustomTableColumn label="备注" align="center" prop="comments" width="165" />
 			<CustomTableColumn label="银行卡流水编号" align="center" prop="transactionHistory" width="165" />
+			<CustomTableColumn label="录入人员" align="center" prop="userName" width="120" />
 			<CustomTableColumn label="银行卡流水附件" align="center" prop="attachmentList" width="165" fixed="right">
 				<template slot-scope="scope">
 					<!-- 这是封装的一个通用组件 可以直接传入url 组件效果为一个按钮 点击后可以查看附件-->
@@ -300,6 +301,9 @@
 								style="width: 100%"
 							/>
 						</el-form-item>
+						<el-form-item label="录入人员" prop="userName">
+							<el-input v-model="form.userName" placeholder="请输入录入人员" style="width: 100%" />
+						</el-form-item>
 						<el-form-item label="备注" prop="comments">
 							<el-input v-model="form.comments" placeholder="请输入备注" style="width: 100%" />
 						</el-form-item>
@@ -489,7 +493,8 @@ export default {
 				{ key: 7, label: `对方账号`, visible: true },
 				{ key: 8, label: `对方开户行`, visible: true },
 				{ key: 9, label: `对方公司`, visible: true },
-				{ key: 10, label: `对方公司类型`, visible: true }
+				{ key: 10, label: `对方公司类型`, visible: true },
+				{ key: 11, label: `录入人员`, visible: true }
 			],
 			// 银行卡查询
 			bankQuery: '',
