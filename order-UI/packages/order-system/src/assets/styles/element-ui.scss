@@ -628,7 +628,8 @@
 
 // 全局表格组件调整 - 整体缩小
 .el-table {
-	font-size: 12px !important; // 表格整体字体缩小
+	font-size: 13px !important;
+	color: #000000 !important; // 表格字体颜色改为纯黑色
 
 	// 表格头部调整
 	.el-table__header-wrapper {
@@ -636,12 +637,14 @@
 			th {
 				height: 32px !important; // 从默认40px缩小到32px
 				padding: 6px 0 !important; // 从默认12px缩小到6px
-				font-size: 12px !important;
-				font-weight: 500 !important;
+				font-size: 13px !important;
+				color: #000000 !important; // 表头字体颜色改为纯黑色
+				font-weight: 600 !important;
 
 				.cell {
 					padding: 0 8px !important; // 从默认18px缩小到8px
 					line-height: 20px !important;
+					color: #000000 !important; // 表头单元格字体颜色改为纯黑色
 				}
 			}
 		}
@@ -653,11 +656,13 @@
 			td {
 				height: 30px !important; // 从默认48px缩小到30px
 				padding: 4px 0 !important; // 从默认12px缩小到4px
-				font-size: 12px !important;
+				font-size: 13px !important; // 表格内容字体大小改为11px
+				color: #000000 !important; // 表格内容字体颜色改为纯黑色
 
 				.cell {
 					padding: 0 8px !important; // 从默认18px缩小到8px
 					line-height: 22px !important;
+					color: #000000 !important; // 单元格字体颜色改为纯黑色
 				}
 			}
 		}
@@ -668,11 +673,15 @@
 		.el-table__header th {
 			height: 28px !important;
 			padding: 4px 0 !important;
+			font-size: 13px !important;
+			color: #000000 !important;
 		}
 
 		.el-table__body td {
 			height: 26px !important;
 			padding: 3px 0 !important;
+			font-size: 13px !important;
+			color: #000000 !important;
 		}
 	}
 
@@ -680,18 +689,24 @@
 		.el-table__header th {
 			height: 24px !important;
 			padding: 2px 0 !important;
+			font-size: 13px !important;
+			color: #000000 !important;
 
 			.cell {
 				padding: 0 6px !important;
+				color: #000000 !important;
 			}
 		}
 
 		.el-table__body td {
 			height: 22px !important;
 			padding: 2px 0 !important;
+			font-size: 13px !important;
+			color: #000000 !important;
 
 			.cell {
 				padding: 0 6px !important;
+				color: #000000 !important;
 			}
 		}
 	}
@@ -700,20 +715,26 @@
 		.el-table__header th {
 			height: 20px !important;
 			padding: 1px 0 !important;
+			font-size: 13px !important;
+			color: #000000 !important;
 
 			.cell {
 				padding: 0 4px !important;
-				font-size: 11px !important;
+				font-size: 13px !important;
+				color: #000000 !important;
 			}
 		}
 
 		.el-table__body td {
 			height: 18px !important;
 			padding: 1px 0 !important;
+			font-size: 13px !important;
+			color: #000000 !important;
 
 			.cell {
 				padding: 0 4px !important;
-				font-size: 11px !important;
+				font-size: 13px !important;
+				color: #000000 !important;
 			}
 		}
 	}
@@ -776,11 +797,13 @@
 			td {
 				height: 28px !important;
 				padding: 4px 0 !important;
-				font-size: 12px !important;
+				font-size: 14px !important;
+				color: #000000 !important;
 				font-weight: 500 !important;
 
 				.cell {
 					padding: 0 8px !important;
+					color: #000000 !important;
 				}
 			}
 		}
