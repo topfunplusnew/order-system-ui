@@ -1,7 +1,7 @@
 <template>
 	<div class="app-container">
 		<el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" label-width="100px" class="search-form">
-			<el-form-item label="级别名称" prop="levelName">
+			<el-form-item label="级别名" prop="levelName">
 				<el-input v-model="queryParams.levelName" placeholder="请输入级别名称" clearable />
 			</el-form-item>
 			<el-form-item label="级别编码" prop="levelNo">
@@ -42,13 +42,13 @@
 		<div class="inventory-table-container">
 			<el-table v-if="inventoryMainList.length > 0" :data="inventoryMainList" size="mini" border stripe>
 				<el-table-column label="仓库名称" prop="storeHouseName" align="center" show-overflow-tooltip />
-				<el-table-column label="级别名称" prop="levelName" align="center" show-overflow-tooltip />
+				<el-table-column label="级别名称" prop="levelName" align="center" width="150" show-overflow-tooltip />
 				<el-table-column label="级别编码" prop="levelNo" align="center" />
 				<el-table-column label="厚度" prop="height" align="center" />
 				<el-table-column label="长度" prop="length" align="center" />
 				<el-table-column label="宽度" prop="width" align="center" />
 				<el-table-column label="价格" prop="price" align="center" />
-				<el-table-column label="初始入库日期" prop="firstStoreDate" align="center" />
+				<el-table-column label="初始入库日期" prop="firstStoreDate" align="center" show-overflow-tooltip />
 				<el-table-column label="剩余库存金额" prop="remainingAmount" align="center">
 					<template #default="scope">
 						<div v-if="scope.row.remainingAmount">
@@ -89,7 +89,7 @@
 					</template>
 				</el-table-column>
 				<el-table-column label="来源方向" prop="source" align="center" />
-				<el-table-column label="级别名称" prop="levelName" align="center" />
+				<el-table-column label="级别名称" prop="levelName" align="center" width="150" />
 				<el-table-column label="厚度" prop="height" align="center" />
 				<el-table-column label="长度" prop="length" align="center" />
 				<el-table-column label="宽度" prop="width" align="center" />

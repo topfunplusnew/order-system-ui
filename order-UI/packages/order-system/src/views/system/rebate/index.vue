@@ -293,7 +293,7 @@
 							<el-table-column label="订单日期" align="center" prop="orderDate" fixed="left" />
 							<el-table-column label="客户" align="center" prop="customer" />
 							<el-table-column label="供应商" align="center" prop="supplier" :filters="nameFilters" :filter-method="filterName" filter-placement="bottom" filterable />
-							<el-table-column label="级别名称" align="center" prop="levelName" />
+							<el-table-column label="级别名称" align="center" prop="levelName" width="150" />
 							<el-table-column label="计量单位" align="center" prop="countingUnit" />
 							<el-table-column label="厚度" align="center" prop="height" />
 							<el-table-column label="长度" align="center" prop="length" />

@@ -321,8 +321,8 @@
 								>
 									<template #table-columns>
 										<el-table-column label="级别编码" align="center" prop="levelNo" />
-										<el-table-column label="级别名称" align="center" prop="levelName" />
-										<el-table-column label="分类编号" align="center" prop="categoryNo" />
+                    <el-table-column label="级别名称" align="center" prop="levelName" min-width="140"/>
+                    <el-table-column label="分类编号" align="center" prop="categoryNo" />
 										<el-table-column label="分类名称" align="center" prop="categoryName" />
 										<el-table-column label="厚度" align="center" prop="height" />
 										<el-table-column label="长度" align="center" prop="length" />
