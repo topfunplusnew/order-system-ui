@@ -187,7 +187,7 @@ export default {
 			if (value.id < 0) this.refresh();
 			// 什么都不选 就只getList
 			if (!value.id) this.refresh();
-
+			console.log('筛选订单，类型=>', value);
 			value.type === PUBLIC_DICT_TYPE.CUSTOMER ? this.handleCustomerFilter(value.id) : this.handleSupplierFilter(value.id);
 		},
 		// 对客户的筛选
@@ -221,7 +221,7 @@ export default {
 				// 赋值数据
 				this.queryParams.params.supplierId = companyId;
 				// 2025-2-13 订单搜索需要传入companyType
-				this.queryParams.params.BatchInsertInvoiceCompanyType = PUBLIC_DICT_TYPE.CUSTOMER;
+				this.queryParams.params.BatchInsertInvoiceCompanyType = PUBLIC_DICT_TYPE.SUPPLIER;
 				// 强制更新vue
 				await this.$nextTick();
 				// 获取列表

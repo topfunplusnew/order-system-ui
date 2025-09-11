@@ -120,9 +120,9 @@ export default {
 		},
 		// 筛选右侧的订单 通过事件总线提醒
 		handleFilterOrders(row) {
+			console.log('筛选订单', row);
 			// 先显示公司信息弹窗
 			this.handleCheck(row);
-
 			this.$bus.$emit('update-goods-order-company', row);
 			// 维护开票金额
 			this.$store.dispatch('excel/clearInvoiceAmount');
@@ -130,7 +130,6 @@ export default {
 			// 需要暂存我方实体
 			sessionStorage.setItem('us', row.us || '');
 			sessionStorage.setItem('invoiceAmount', row.total);
-
 			// 方便变颜色
 			this.selectedRowId = row.id;
 		},
