@@ -1,20 +1,19 @@
 <template>
 	<!-- 外层就是 el-table-column，所有属性和事件透传 -->
 	<el-table-column v-bind="filteredAttrs" v-on="$listeners">
-		<!-- 只有非特殊类型才渲染自定义插槽内容 -->
-		<template v-if="!isSpecialType" v-slot="scope">
-			<!-- 如果有插槽内容，直接渲染插槽，支持 slot-scope 语法 -->
-			<slot v-if="$slots.default || $scopedSlots.default" v-bind="scope" :row="scope.row" :column="scope.column" :$index="scope.$index"></slot>
-			<!-- 否则处理文本内容的渲染逻辑 -->
-			<template v-else>
-				<cell-content
-					:scope="scope"
-					:prop="currentColumnProp"
-					:should-show-popover="shouldShowPopoverByWidth(scope)"
-					:cell-text="getCellText(scope)"
-					:key="`${scope.$index}_${currentColumnProp}`"
-				/>
-			</template>
+		<!-- 如果有默认插槽内容，在作用域插槽内渲染（支持嵌套 CustomTableColumn 和传递 scope） -->
+		<template v-if="hasSlotContent" v-slot="scope">
+			<slot v-bind="scope" :row="scope.row" :column="scope.column" :$index="scope.$index"></slot>
+		</template>
+		<!-- 如果没有插槽内容，根据类型决定是否渲染自定义内容 -->
+		<template v-else-if="!isSpecialType" v-slot="scope">
+			<cell-content
+				:scope="scope"
+				:prop="currentColumnProp"
+				:should-show-popover="shouldShowPopoverByWidth(scope)"
+				:cell-text="getCellText(scope)"
+				:key="`${scope.$index}_${currentColumnProp}`"
+			/>
 		</template>
 		<!-- 特殊类型（selection、index、expand）不渲染插槽，保持 Element UI 原生行为 -->
 	</el-table-column>
@@ -113,6 +112,11 @@ export default {
 	},
 
 	computed: {
+		// 判断是否有插槽内容（支持嵌套）
+		hasSlotContent() {
+			return !!(this.$slots.default || this.$scopedSlots.default);
+		},
+
 		// 判断是否是特殊类型列（selection、index、expand）
 		isSpecialType() {
 			const type = this.$attrs.type;
@@ -137,7 +141,7 @@ export default {
 
 		// 检查是否传递了 show-overflow-tooltip 属性
 		hasOverflowTooltip() {
-			return this.$attrs.hasOwnProperty('show-overflow-tooltip');
+			return Object.prototype.hasOwnProperty.call(this.$attrs, 'show-overflow-tooltip');
 		}
 	},
 

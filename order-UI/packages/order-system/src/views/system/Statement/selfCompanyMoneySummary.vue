@@ -16,26 +16,40 @@
 		</el-row>
 		<el-row style="margin-top: 20px">
 			<el-col :span="24">
-				<el-table :data="tableData" border stripe size="mini">
+				<el-row :gutter="10" class="mb8">
+					<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="fetchData">
+						<template #print>
+							<el-col :span="1.5">
+								<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
+							</el-col>
+						</template>
+						<template #export>
+							<el-col :span="1.5">
+								<el-button plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
+							</el-col>
+						</template>
+					</right-toolbar>
+				</el-row>
+				<el-table id="printBox" :data="tableData" border stripe size="mini">
 					<el-table-column type="index" label="序号" width="50" />
-					<el-table-column prop="date" label="日期" />
-					<el-table-column prop="acountsName" label="户名" />
-					<el-table-column prop="bankNo" label="银行账号" />
-					<el-table-column prop="displayName" label="展示名称" />
-					<el-table-column prop="bankCardType" label="银行卡类别" />
-					<el-table-column label="资金日报部分">
+					<el-table-column v-if="columns[0].visible" prop="date" label="日期" />
+					<el-table-column v-if="columns[1].visible" prop="acountsName" label="户名" />
+					<el-table-column v-if="columns[2].visible" prop="bankNo" label="银行账号" />
+					<el-table-column v-if="columns[3].visible" prop="displayName" label="展示名称" />
+					<el-table-column v-if="columns[4].visible" prop="bankCardType" label="银行卡类别" />
+					<el-table-column v-if="columns[5].visible" label="资金日报部分">
 						<el-table-column prop="previousBalance" label="上日余额" />
 						<el-table-column prop="totalIncome" label="本日收款" />
 						<el-table-column prop="totalExpense" label="本日付款" />
 						<el-table-column prop="currentBalance" label="本日余额" />
 					</el-table-column>
-					<el-table-column label="资金月报部分">
+					<el-table-column v-if="columns[6].visible" label="资金月报部分">
 						<el-table-column prop="previousMonthBalance" label="上月余额" />
 						<el-table-column prop="monthlyIncome" label="本月收款" />
 						<el-table-column prop="monthlyExpense" label="本月付款" />
 						<el-table-column prop="monthlyBalance" label="本月余额" />
 					</el-table-column>
-					<el-table-column label="资金年报部分">
+					<el-table-column v-if="columns[7].visible" label="资金年报部分">
 						<el-table-column prop="previousYearBalance" label="上年余额" />
 						<el-table-column prop="yearlyIncome" label="本年收款" />
 						<el-table-column prop="yearlyExpense" label="本年付款" />
@@ -49,19 +63,49 @@
 
 <script>
 import { getTodaySelfCompanyMoneySummary } from '@/api/system/statement';
+import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 
 export default {
+	mixins: [mixin_printHTML],
 	data() {
 		const today = new Date();
 		const oneMonthAgo = new Date();
 		oneMonthAgo.setMonth(today.getMonth() - 1);
 		return {
+			showSearch: true,
 			queryParams: {
 				beginTime: this.formatDate(oneMonthAgo),
 				endTime: this.formatDate(today)
 			},
-			tableData: []
+			tableData: [],
+			// 隐藏列信息
+			columns: [
+				{ key: 0, label: `日期`, visible: true },
+				{ key: 1, label: `户名`, visible: true },
+				{ key: 2, label: `银行账号`, visible: true },
+				{ key: 3, label: `展示名称`, visible: true },
+				{ key: 4, label: `银行卡类别`, visible: true },
+				{ key: 5, label: `资金日报部分`, visible: true },
+				{ key: 6, label: `资金月报部分`, visible: true },
+				{ key: 7, label: `资金年报部分`, visible: true }
+			]
 		};
+	},
+	watch: {
+		columns: {
+			handler: function (newVal) {
+				localStorage.setItem('selfCompanyMoneySummary-columns', JSON.stringify(newVal));
+			},
+			deep: true
+		}
+	},
+	created() {
+		this.fetchData();
+		if (localStorage.getItem('selfCompanyMoneySummary-columns') === 'null' || !localStorage.getItem('selfCompanyMoneySummary-columns')) {
+			localStorage.setItem('selfCompanyMoneySummary-columns', JSON.stringify(this.columns));
+		} else {
+			this.columns = JSON.parse(localStorage.getItem('selfCompanyMoneySummary-columns'));
+		}
 	},
 	methods: {
 		formatDate(date) {
@@ -84,10 +128,18 @@ export default {
 			} else {
 				this.$message.error('获取数据失败');
 			}
+		},
+		/** 导出按钮操作 */
+		handleExport() {
+			// 使用模拟地址，因为后端还没有完善
+			this.download(
+				'system/selfCompanyMoneySummary/export',
+				{
+					...this.queryParams
+				},
+				`selfCompanyMoneySummary_${new Date().getTime()}.xlsx`
+			);
 		}
-	},
-	created() {
-		this.fetchData();
 	}
 };
 </script>
