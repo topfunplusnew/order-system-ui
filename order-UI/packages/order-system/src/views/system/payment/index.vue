@@ -336,16 +336,16 @@
 
 					<!-- 右列 -->
 					<el-col :span="form.companyType === PAYMENT_TARGET_TYPE.PAYMENT_FEE ? 24 : 12">
-						<el-form-item v-if="form.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE && form.companyType !== PUBLIC_DICT_TYPE.EMPLOYEE" label="对方银行账户类型">
+						<el-form-item v-if="form.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE" label="对方银行账户类型">
 							<BankType ref="otherSelectedBankType" :option-baned="true" :baned="true" :select-type="form.otherBankCardType" @updateSelectedType="changeOtherBankType" />
 						</el-form-item>
 
 						<!-- 选择供应商 -->
-						<el-form-item v-if="form.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE && form.companyType !== PUBLIC_DICT_TYPE.EMPLOYEE" label="对方户名" prop="otherAccountsName">
+						<el-form-item v-if="form.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE" label="对方户名" prop="otherAccountsName">
 							<el-input disabled v-model="form.otherAccountsName" placeholder="请选择" />
 						</el-form-item>
 
-						<el-form-item v-if="form.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE && form.companyType !== PUBLIC_DICT_TYPE.EMPLOYEE" label="对方账号" prop="otherBankNo">
+						<el-form-item v-if="form.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE" label="对方账号" prop="otherBankNo">
 							<el-row>
 								<el-col :span="16">
 									<el-input disabled v-model="form.otherBankNo" placeholder="请选择" />
@@ -376,7 +376,7 @@
 							</el-row>
 						</el-form-item>
 
-						<el-form-item v-if="form.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE && form.companyType !== PUBLIC_DICT_TYPE.EMPLOYEE" label="对方开户行" prop="otherBankName">
+						<el-form-item v-if="form.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE" label="对方开户行" prop="otherBankName">
 							<el-input disabled v-model="form.otherBankName" placeholder="请选择" />
 						</el-form-item>
 
@@ -728,11 +728,9 @@ export default {
 				this.form.otherBankNo = null;
 				this.form.otherBankName = null;
 			} else if (newVal === PUBLIC_DICT_TYPE.EMPLOYEE) {
+				// 员工类型只清空公司相关字段，保留银行卡字段
 				this.form.companyName = null;
 				this.form.companyId = null;
-				this.form.otherAccountsName = null;
-				this.form.otherBankNo = null;
-				this.form.otherBankName = null;
 			}
 		}
 	},

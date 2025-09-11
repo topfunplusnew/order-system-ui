@@ -244,7 +244,7 @@
 								</SearchOption>
 							</div>
 						</el-form-item>
-						<el-form-item label="对方银行账户类型" v-if="form.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE && form.companyType !== PUBLIC_DICT_TYPE.EMPLOYEE">
+						<el-form-item label="对方银行账户类型" v-if="form.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE">
 							<BankType
 								ref="otherSelectedBankType"
 								:option-baned="true"
@@ -254,10 +254,10 @@
 								style="width: 100%"
 							/>
 						</el-form-item>
-						<el-form-item label="对方户名" prop="otherAcountsName" v-if="form.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE && form.companyType !== PUBLIC_DICT_TYPE.EMPLOYEE">
+						<el-form-item label="对方户名" prop="otherAcountsName" v-if="form.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE">
 							<el-input disabled v-model="form.otherAcountsName" placeholder="请选择" style="width: 100%" />
 						</el-form-item>
-						<el-form-item label="对方账号" prop="otherBankNo" v-if="form.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE && form.companyType !== PUBLIC_DICT_TYPE.EMPLOYEE">
+						<el-form-item label="对方账号" prop="otherBankNo" v-if="form.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE">
 							<div style="width: 100%; display: flex">
 								<el-input disabled v-model="form.otherBankNo" placeholder="请选择" style="flex: 1; margin-right: 8px" />
 								<SearchOption
@@ -284,7 +284,7 @@
 								</SearchOption>
 							</div>
 						</el-form-item>
-						<el-form-item label="对方开户行" prop="otherBankName" v-if="form.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE && form.companyType !== PUBLIC_DICT_TYPE.EMPLOYEE">
+						<el-form-item label="对方开户行" prop="otherBankName" v-if="form.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE">
 							<el-input disabled v-model="form.otherBankName" placeholder="请选择" style="width: 100%" />
 						</el-form-item>
 						<el-form-item label="银行卡流水编号" prop="transactionHistory">
@@ -513,7 +513,7 @@ export default {
 			},
 			deep: true
 		},
-		// 监听对方类型 切换为支付费用或员工时清理右侧字段
+		// 监听对方类型 切换为支付费用时清理右侧字段，员工时只清理公司字段
 		'form.companyType'(newVal) {
 			if (newVal === PAYMENT_TARGET_TYPE.PAYMENT_FEE) {
 				this.form.companyName = null;
@@ -522,11 +522,9 @@ export default {
 				this.form.otherBankNo = null;
 				this.form.otherBankName = null;
 			} else if (newVal === PUBLIC_DICT_TYPE.EMPLOYEE) {
+				// 员工类型只清空公司相关字段，保留银行卡字段
 				this.form.companyName = null;
 				this.form.companyId = null;
-				this.form.otherAcountsName = null;
-				this.form.otherBankNo = null;
-				this.form.otherBankName = null;
 			}
 		}
 	},
