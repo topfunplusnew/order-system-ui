@@ -57,6 +57,12 @@
 			<el-form-item label="吨位" prop="tonnage">
 				<el-input v-model="queryParams.tonnage" placeholder="请输入吨位" clearable size="mini" @keyup.enter.native="handleQuery" />
 			</el-form-item>
+			<el-form-item label="剩余量" prop="actualPieces">
+				<el-input v-model="queryParams.actualPieces" placeholder="请输入剩余量" clearable size="mini" @keyup.enter.native="handleQuery" />
+			</el-form-item>
+			<el-form-item label="入库单价" prop="paymentUnload">
+				<el-input v-model="queryParams.paymentUnload" placeholder="请输入入库单价" clearable size="mini" @keyup.enter.native="handleQuery" />
+			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
 				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
