@@ -1,6 +1,5 @@
 <script>
 import { moduleNames, TableName } from 'order-system/src/api/tool/enums';
-import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import { TypeUtils } from '@/views/dashboard/backuplog/index';
 import { filtersFunc } from '@/views/dashboard/backuplog/goodsorder';
@@ -8,7 +7,6 @@ import CommonChange from '@/views/dashboard/backuplog/goodsorder/CommonChange.vu
 
 export default {
 	name: 'index',
-	components: { DialogWrapper },
 	mixins: [common_dialog],
 	computed: {
 		TableName() {
@@ -121,10 +119,6 @@ export default {
 					{{ moduleNames[item] }}
 				</li>
 			</ul>
-		</div>
-
-		<div v-if="currentComponent">
-			<DialogWrapper :current-component="currentComponent" :dialog-visible="dialogVisible" />
 		</div>
 	</div>
 </template>

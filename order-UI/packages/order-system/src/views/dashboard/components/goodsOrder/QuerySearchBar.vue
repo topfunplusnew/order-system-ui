@@ -58,7 +58,7 @@
 					<el-option v-for="item in OptionInvent()" :key="item.value" :label="item.label" :value="item.value"></el-option>
 				</el-select>
 			</el-form-item>
-			<el-form-item v-if="shouldShowField('levelName')" label="级别名称" prop="levelName" >
+			<el-form-item v-if="shouldShowField('levelName')" label="级别名称" prop="levelName">
 				<el-input v-model="queryParams.params.levelName" placeholder="请输入级别名称" clearable size="mini" @keyup.enter.native="handleQuery"></el-input>
 			</el-form-item>
 			<el-form-item v-if="shouldShowField('length')" label="长度" prop="length">

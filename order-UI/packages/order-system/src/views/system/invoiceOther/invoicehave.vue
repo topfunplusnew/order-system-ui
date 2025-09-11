@@ -36,9 +36,6 @@
 			<el-col :span="1.5">
 				<el-button v-hasPermi="['system:invoiceother:add']" type="danger" size="mini" @click="handleAdd">新增</el-button>
 			</el-col>
-			<!--      <el-col :span="1.5">
-			              <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
-			            </el-col>-->
 			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
 				<template #print>
 					<el-col :span="1.5">
@@ -173,7 +170,12 @@
 							</el-col>
 							<el-col :span="4">
 								<SearchOption
-									:limit-info="{}"
+									:limit-info="{
+										__params: {
+											isIncludeTaxFactory: 1,
+											isIncludeTaxSale: 1
+										}
+									}"
 									:get-data="listGoodsOrder"
 									query-info="customer"
 									query-label="客户名称"
@@ -209,14 +211,6 @@
 										<el-table-column show-overflow-tooltip label="车队" align="center" prop="fleet" />
 										<el-table-column show-overflow-tooltip label="审核状态" align="center" prop="checkState" width="120"></el-table-column>
 										<el-table-column show-overflow-tooltip label="开票状态" align="center" prop="invoiceState" width="120px"></el-table-column>
-										<!--									<el-table-column show-overflow-tooltip label="打款状态" align="center" prop="paymentState">-->
-										<!--										<template slot-scope="scope">-->
-										<!--											<el-tag disable-transitions>-->
-										<!--												{{ scope.row.paymentState }}-->
-										<!--											</el-tag>-->
-										<!--										</template>-->
-										<!--									</el-table-column>-->
-
 										<el-table-column show-overflow-tooltip label="备注" align="center" prop="comments" />
 									</template>
 								</SearchOption>
@@ -359,11 +353,6 @@
 		>
 			<OrderInfos :order-info="orderInfo" />
 		</el-dialog>
-
-		<div v-if="currentComponent">
-			<DialogWrapper :current-component="currentComponent" :dialog-visible="dialogVisible" />
-		</div>
-
 		<!-- 查看修改原因弹窗 -->
 		<el-dialog title="查看修改原因" :visible.sync="editReasonDialogVisible" width="800px" append-to-body>
 			<el-table :data="editReasonList" style="width: 100%">
@@ -380,7 +369,6 @@
 import { listInvoiceOther, delInvoiceOther, addInvoiceOther, getInvoiceOther, updateInvoiceOther, updateInvoiceOtherExtra } from '@/api/system/invoiceOther';
 import { listTableEditMessage } from '@/api/system/tableEditMessage';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
-import { addReason } from '@/api/system/user';
 import { TableName } from '@/api/tool/enums';
 import SearchOption from '@/components/SearchOption.vue';
 import { listCompany } from '@/api/system/company';
@@ -392,13 +380,12 @@ import reLength from '../../dashboard/mixins/reLength';
 import CheckFiles from '../../../components/CheckFiles.vue';
 import UploadFilesButton from '@/components/UploadFilesButton/index.vue';
 import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfile';
-import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import INVOICE_ORTHER from '@/components/NeedToShow/INVOICE_ORTHER.vue';
 
 export default {
 	name: 'InvoiceOtherHave',
-	components: { DialogWrapper, CheckFiles, UploadFilesButton, OrderInfos, SearchOption },
+	components: { CheckFiles, UploadFilesButton, OrderInfos, SearchOption },
 	mixins: [mixin_printHTML, reLength, mixin_checkfile, common_dialog],
 	data() {
 		// 金额格式验证（最多两位小数）

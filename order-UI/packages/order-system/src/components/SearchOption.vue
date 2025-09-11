@@ -106,6 +106,10 @@ export default {
 			get() {
 				return this.queryItems;
 			}
+		},
+		// 是否为params的限制信息
+		isParamsLimitInfo() {
+			return this.limitInfo && this.limitInfo.__params && Object.keys(this.limitInfo.__params).length > 0;
 		}
 	},
 	watch: {
@@ -131,6 +135,13 @@ export default {
 		handleCallBack() {
 			// 刷新状态
 			this.tableData = [];
+			// 初始化params属性
+			_.set(this.limitInfo, 'params', {});
+			// 这里需要加一个特殊逻辑 支持limitInfo传入放置于params的属性
+			if (this.isParamsLimitInfo) {
+				Object.assign(this.limitInfo.params, this.limitInfo.__params);
+				delete this.limitInfo.__params;
+			}
 			// 获取数据 渲染表格
 			this.getList();
 			this.dialogVisible = true;
@@ -146,7 +157,6 @@ export default {
 		},
 		// 条件查询
 		handleSearchInfo() {
-			_.set(this.limitInfo, 'params', {});
 			if (this.computedQueryItems.queryList.length > 0) {
 				for (let item of this.computedQueryItems.queryList) {
 					const queryItem = _.cloneDeep(item);
