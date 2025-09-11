@@ -46,9 +46,6 @@ export default {
 			this.moneyAmount = res.data.moneyAmount;
 		});
 	},
-	mounted() {
-		console.log(this.currentOrderInfo);
-	},
 	methods: {
 		fix,
 		numToChineseUppercase,
@@ -70,7 +67,6 @@ export default {
 		</el-row>
 		<div id="printBoxs" class="invoice-container">
 			<div class="invoice-title">销货发货单</div>
-
 			<div class="invoice-header">
 				<div>客户：{{ currentOrderInfo.customer }}</div>
 				<div>日期：{{ parseTime(currentOrderInfo.orderDate, '{y}-{m}-{d}') }}</div>
@@ -79,7 +75,6 @@ export default {
 			<table>
 				<thead>
 					<tr>
-						<!--						<th>日期</th>-->
 						<th>等级</th>
 						<th>厚度(mm)</th>
 						<th colspan="2">规格</th>
@@ -89,7 +84,8 @@ export default {
 						<th>是否含税价</th>
 						<th>其他费用</th>
 						<th>金额</th>
-						<th>车号</th>
+						<th>{{ currentOrderInfo.landCarNo ? `车号` : `柜号` }}</th>
+						<th v-if="!currentOrderInfo.landCarNo">{{ `海运公司` }}</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -108,7 +104,8 @@ export default {
 							</td>
 							<td>{{ item.paymentsWithSundry }}</td>
 							<td>{{ item.payments }}</td>
-							<td>{{ currentOrderInfo.landCarNo }}</td>
+							<td>{{ currentOrderInfo.landCarNo || currentOrderInfo.seaCarNo }}</td>
+							<td v-if="!currentOrderInfo.landCarNo">{{ currentOrderInfo.seaDriverName }}</td>
 						</tr>
 					</template>
 					<!--  这里是货物的列表 要根据订单货物的列表来渲染-->
