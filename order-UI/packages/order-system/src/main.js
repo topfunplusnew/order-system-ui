@@ -64,6 +64,9 @@ import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue
 import CustomTableColumn from '@/components/CustomTableColumn/index.vue';
 // 引入列显隐控制混入
 import { columnVisibilityMixin } from '@/mixins/columnVisibilityMixin';
+// 全局注册弹窗拖拽与位置重算指令
+import elDragDialog from '@/views/dashboard/directive/dialog/drugDialog';
+import elRelenDialog from '@/views/dashboard/directive/dialog/relenDialog';
 
 message.config({
 	top: '10px',
@@ -192,6 +195,9 @@ Vue.mixin(keepAliveDialog);
 Vue.mixin(common_dialog);
 // 全局注册列显隐控制混入
 Vue.mixin(columnVisibilityMixin);
+// 全局指令（若指令文件包含 install 则可直接 use；此处双保险显式注册）
+Vue.use(elDragDialog.install ? elDragDialog : { install: v => v.directive('el-drag-dialog', elDragDialog) });
+Vue.use(elRelenDialog.install ? elRelenDialog : { install: v => v.directive('el-relen-dialog', elRelenDialog) });
 
 export const isNull = val => {
 	return !val ? '暂无' : val;

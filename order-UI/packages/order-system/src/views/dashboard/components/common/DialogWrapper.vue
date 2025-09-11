@@ -26,10 +26,6 @@
 
 <script>
 import { Message } from 'element-ui';
-// 引入弹窗可拖动属性
-import elDragDialog from '../../directive/dialog/drugDialog';
-import elRelenDialog from '../../directive/dialog/relenDialog';
-
 export default {
 	props: {
 		// 弹窗是否可见
@@ -63,10 +59,7 @@ export default {
 			default: false
 		}
 	},
-	directives: {
-		elDragDialog,
-		elRelenDialog
-	},
+	// 局部 directives 已移除，依赖 main.js 全局注册
 	data() {
 		return {
 			// 用于强制重新创建动态组件

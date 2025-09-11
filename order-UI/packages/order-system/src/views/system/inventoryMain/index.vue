@@ -134,7 +134,7 @@
 							<CustomTableColumn v-if="columns[14].visible" label="海运银行卡号" align="center" prop="seaBankNo" width="120" />
 							<CustomTableColumn v-if="columns[15].visible" label="海运银行户名" align="center" prop="seaBankName" width="120" />
 							<CustomTableColumn v-if="columns[16].visible" label="子项陆运费之和" align="center" prop="allLandFreight" width="150" />
-							<CustomTableColumn v-if="columns[17].visible" label="子项海运费之和" align="center" prop="allSeaFreight" width="150" />
+							<CustomTableColumn v-if="columns[17].visible" label="子项海运费之和" align="center" prop="allSeaFreight" />
 							<CustomTableColumn v-if="columns[18].visible" label="收到条附件" align="center" prop="attachmentList" width="150" fixed="right">
 								<template slot-scope="scope">
 									<CheckFiles

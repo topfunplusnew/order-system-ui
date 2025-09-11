@@ -5,6 +5,10 @@ import { getToken } from '../utils/auth';
 
 export default {
 	name: 'FileShowItem',
+	props: {
+		// 样式变体：normal(默认/附件列表中显示)，empty(空状态居中展示用)
+		variant: { type: String, default: 'normal' }
+	},
 	data() {
 		return {
 			fileList: [],
@@ -81,7 +85,7 @@ export default {
 
 <template>
 	<div>
-		<div class="file-container">
+		<div :class="['file-container', variant === 'empty' ? 'file-container-empty' : '']">
 			<div class="file-icon">
 				<el-icon class="el-icon-plus"></el-icon>
 			</div>
@@ -146,6 +150,31 @@ export default {
 		white-space: nowrap;
 		overflow: hidden;
 		max-width: 80px;
+	}
+}
+
+/* 空状态样式变体 */
+.file-container-empty {
+	width: 180px;
+	height: 140px;
+	border-radius: 12px;
+	background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+	border: 2px dashed #c2cedb;
+	box-shadow: none;
+	margin: 0; /* 去掉左右空隙，保证居中美观 */
+	.file-icon {
+		font-size: 36px;
+		color: #409eff;
+		margin-bottom: 6px;
+	}
+	.file-name {
+		font-weight: 500;
+		font-size: 14px;
+		color: #409eff;
+	}
+	&:hover {
+		box-shadow: 0 6px 18px -2px rgba(64, 158, 255, 0.25), 0 0 0 2px rgba(64, 158, 255, 0.15);
+		transform: translateY(-2px);
 	}
 }
 

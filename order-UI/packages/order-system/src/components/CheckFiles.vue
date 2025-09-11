@@ -125,8 +125,7 @@ export default {
 		<el-dialog
 			:modal="false"
 			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
+			v-el-relen-dialog
 			title="文件列表"
 			:visible.sync="dialogVisible"
 			width="670px"
@@ -138,16 +137,20 @@ export default {
 			@close="isUploading = false"
 		>
 			<h3>附件列表</h3>
-			<div class="file-list">
+			<div class="file-list" :class="{ 'empty-list': checkFileList.length === 0 }">
 				<!--上传过的文件列表-->
 				<template v-if="checkFileList.length > 0">
 					<FileItems v-for="(item, index) in checkFileList" :key="item.id || index" :fileItem="item" @handleFile="handleDeleteFile" />
+					<!--支持上传 - 有附件时显示在列表最后-->
+					<FileShowItem @handleFile="handleAddFile" v-if="isUpload" variant="normal" />
 				</template>
 				<template v-else>
-					<div style="width: 100%; text-align: center; color: #999; padding: 40px 0">暂无附件</div>
+					<div class="empty-content">
+						<div class="empty-text">暂无附件</div>
+						<!--支持上传 - 无附件时显示在中央 使用空状态特有样式-->
+						<FileShowItem @handleFile="handleAddFile" v-if="isUpload" variant="empty" />
+					</div>
 				</template>
-				<!--支持上传-->
-				<FileShowItem @handleFile="handleAddFile" v-if="isUpload" />
 			</div>
 
 			<h3>附件图片预览</h3>
@@ -201,35 +204,6 @@ export default {
 		}
 	}
 }
-::v-deep .check-files-dialog {
-	height: 800px !important;
-	max-height: none !important;
-	.el-dialog {
-		height: 800px !important;
-		max-height: none !important;
-		display: flex !important;
-		flex-direction: column !important;
-		margin-top: calc(50vh - 400px) !important;
-		margin-bottom: 0 !important;
-	}
-	.el-dialog__header {
-		flex-shrink: 0 !important;
-		padding: 12px 16px 6px !important;
-	}
-	.el-dialog__body {
-		flex: 1 !important;
-		overflow: hidden !important; /* 由内部滚动容器控制 */
-		padding: 8px 16px 4px !important;
-		display: flex !important;
-		flex-direction: column !important;
-		min-height: 0 !important;
-		height: calc(800px - 120px) !important;
-	}
-	.el-dialog__footer {
-		flex-shrink: 0 !important;
-		padding: 6px 16px 12px !important;
-	}
-}
 
 .file-list {
 	display: flex;
@@ -241,11 +215,33 @@ export default {
 	border: 1px solid #ccc;
 	border-radius: 10px;
 	background: #fafafa;
-	margin-bottom: 8px;
-	flex: 0 0 auto;
-	min-height: 90px; /* 更紧凑 */
-	max-height: 140px;
-	overflow-y: auto;
+	/* 移除旧的 centered-upload，使用 FileShowItem 的 variant 实现 */
+}
+.centered-upload:hover {
+	border-color: #409eff;
+	background: #f0f8ff;
+	box-shadow: 0 6px 18px -2px rgba(64, 158, 255, 0.25), 0 0 0 2px rgba(64, 158, 255, 0.2);
+	transform: translateY(-2px);
+}
+.centered-upload:active {
+	transform: translateY(0);
+	box-shadow: 0 3px 10px -1px rgba(64, 158, 255, 0.3), 0 0 0 2px rgba(64, 158, 255, 0.25);
+}
+
+/* 适配深色模式（若以后支持） */
+@media (prefers-color-scheme: dark) {
+	.centered-upload {
+		background: linear-gradient(135deg, #2a3138 0%, #232a31 100%);
+		border-color: #44515e;
+		box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(120, 144, 156, 0.25) inset;
+	}
+	.centered-upload::before {
+		color: #d0d7df;
+	}
+	.centered-upload:hover {
+		background: #2f3c48;
+		border-color: #409eff;
+	}
 }
 
 .img-preview-container {
