@@ -661,16 +661,16 @@ export default {
 				size="mini"
 				align="center"
 			>
-				<el-table-column v-if="columns[0].visible" fixed prop="fundsDate" label="日期" width="150" show-overflow-tooltip></el-table-column>
-				<el-table-column v-if="columns[1].visible" prop="payType" label="支付类型" width="150" show-overflow-tooltip></el-table-column>
-				<el-table-column v-if="columns[2].visible" prop="moneyAmount" label="金额" width="120" show-overflow-tooltip></el-table-column>
-				<el-table-column v-if="columns[3].visible" prop="otherBankNo" label="对方账号" width="300" show-overflow-tooltip></el-table-column>
-				<el-table-column v-if="columns[4].visible" prop="otherAcountsName" label="对方户名" width="200" show-overflow-tooltip></el-table-column>
-				<el-table-column v-if="columns[5].visible" prop="companyName" label="对方公司" width="120" show-overflow-tooltip></el-table-column>
-				<el-table-column v-if="columns[6].visible" prop="reason" label="付款原因" width="120" show-overflow-tooltip></el-table-column>
-				<el-table-column v-if="columns[7].visible" prop="applyPerson" label="申请人" width="120" show-overflow-tooltip></el-table-column>
-				<el-table-column v-if="columns[8].visible" prop="comments" label="备注" width="120" show-overflow-tooltip></el-table-column>
-				<el-table-column v-if="columns[9].visible" prop="comments" label="附件" width="120" show-overflow-tooltip>
+				<CustomTableColumn v-if="columns[0].visible" prop="fundsDate" label="日期" width="150" show-overflow-tooltip></CustomTableColumn>
+				<CustomTableColumn v-if="columns[1].visible" prop="payType" label="支付类型" width="150" show-overflow-tooltip></CustomTableColumn>
+				<CustomTableColumn v-if="columns[2].visible" prop="moneyAmount" label="金额" width="120" show-overflow-tooltip></CustomTableColumn>
+				<CustomTableColumn v-if="columns[3].visible" prop="otherBankNo" label="对方账号" width="300" show-overflow-tooltip></CustomTableColumn>
+				<CustomTableColumn v-if="columns[4].visible" prop="otherAcountsName" label="对方户名" width="200" show-overflow-tooltip></CustomTableColumn>
+				<CustomTableColumn v-if="columns[5].visible" prop="companyName" label="对方公司" width="120" show-overflow-tooltip></CustomTableColumn>
+				<CustomTableColumn v-if="columns[6].visible" prop="reason" label="付款原因" width="120" show-overflow-tooltip></CustomTableColumn>
+				<CustomTableColumn v-if="columns[7].visible" prop="applyPerson" label="申请人" width="120" show-overflow-tooltip></CustomTableColumn>
+				<CustomTableColumn v-if="columns[8].visible" prop="comments" label="备注" width="120" show-overflow-tooltip></CustomTableColumn>
+				<CustomTableColumn v-if="columns[9].visible" prop="comments" label="附件" width="120" show-overflow-tooltip>
 					<template #default="scope">
 						<div v-if="Array.isArray(scope.row.attachmentList)">
 							<CheckFiles
@@ -684,13 +684,13 @@ export default {
 							<el-tag type="danger">加载错误</el-tag>
 						</div>
 					</template>
-				</el-table-column>
-				<el-table-column label="操作">
+				</CustomTableColumn>
+				<CustomTableColumn label="操作" fixed="right" width="100" align="center">
 					<template slot-scope="scope">
 						<el-button type="text" size="mini" @click="handleCheckInfo(scope.row)">查看</el-button>
 					</template>
-				</el-table-column>
-				<el-table-column label="审核状态" fixed="right" align="center">
+				</CustomTableColumn>
+				<CustomTableColumn label="审核状态" align="center" fixed="right">
 					<template slot-scope="scope">
 						<el-tag
 							:type="
@@ -707,12 +707,12 @@ export default {
 							{{ scope.row.checkState }}
 						</el-tag>
 					</template>
-				</el-table-column>
-				<el-table-column v-if="columns[10].visible" fixed="right" label="审核流程" show-overflow-tooltip align="center">
+				</CustomTableColumn>
+				<CustomTableColumn v-if="columns[10].visible" label="审核流程" show-overflow-tooltip align="center" fixed="right">
 					<template slot-scope="scope">
 						<el-button type="text" size="mini" @click="handleCheckApplyInfo(scope.row)">查看</el-button>
 					</template>
-				</el-table-column>
+				</CustomTableColumn>
 			</el-table>
 			<!--      分页-->
 			<pagination v-show="total > 0" :total="total" :page.sync="pageNum" :limit.sync="pageSize" @pagination="getAuditList" />

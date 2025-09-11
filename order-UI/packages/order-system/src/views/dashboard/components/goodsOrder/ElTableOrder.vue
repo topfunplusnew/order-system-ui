@@ -866,21 +866,19 @@ export default {
 				</CustomTableColumn>
 				<CustomTableColumn v-if="columns[22].visible" show-overflow-tooltip label="备注" align="center" prop="comments" />
 				<!--      右侧操作栏-->
-				<CustomTableColumn show-overflow-tooltip label="订单操作" align="center" class-name="small-padding fixed-width" width="200px" fixed="right">
+				<CustomTableColumn show-overflow-tooltip label="订单操作" align="center" class-name="small-padding fixed-width" width="300px" fixed="right">
 					<template slot-scope="scope">
 						<el-button size="mini" type="text" :disabled="scope.row.isAdjusted !== 1" v-if="!isAdjustOrder" @click="handleCheckAdjust(scope.row)">查看调整单</el-button>
 						<el-button size="mini" type="text" :disabled="scope.row.isAdjusted === 1" @click="handleOrderItemInfo(scope.row)">调整单</el-button>
 						<el-button v-if="isAdjustOrder" size="mini" type="text" @click="handleCheckPrevious(scope.row)">查看原单据</el-button>
-						<!--          发货单-->
-						<el-dropdown size="mini" type="text">
+						<!-- 发货单操作：单独展示发货单1 + 下拉中的发货单2/3 -->
+						<el-button size="mini" type="text" @click="handleOrder1(scope.row)">发货单1</el-button>
+						<el-dropdown size="mini" type="text" trigger="click">
 							<el-button type="text" size="mini">
 								发货单
 								<i class="el-icon-arrow-down el-icon--right" />
 							</el-button>
 							<el-dropdown-menu slot="dropdown">
-								<el-dropdown-item>
-									<el-button size="mini" type="text" @click="handleOrder1(scope.row)">发货单1</el-button>
-								</el-dropdown-item>
 								<el-dropdown-item>
 									<el-button size="mini" type="text" @click="handleOrder2(scope.row)">发货单2</el-button>
 								</el-dropdown-item>
