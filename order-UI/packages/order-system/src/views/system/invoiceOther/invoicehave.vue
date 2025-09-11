@@ -840,13 +840,7 @@ export default {
 
 					if (this.form.id != null) {
 						// 编辑时，从sessionStorage获取修改原因
-						const editReason = sessionStorage.getItem('editReason_invoiceOther_have');
-						if (!editReason || editReason.trim() === '') {
-							this.$message.error('修改原因不能为空');
-							return;
-						}
-						submitData.editReason = editReason;
-
+						submitData.editReason = sessionStorage.getItem('editReason_invoiceOther_have');
 						console.log('修改数据:', submitData);
 						updateInvoiceOther(submitData)
 							.then(() => {
