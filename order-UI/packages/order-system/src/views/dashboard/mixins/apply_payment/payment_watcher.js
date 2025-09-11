@@ -1,6 +1,6 @@
 import { listBankAccount } from '../../../../api/system/bankAccount';
 import { PAYMENT_TARGET_TYPE } from '@/api/tool/enums';
-import { PaymentOptions, TableName } from '../../../../api/tool/enums';
+import { PaymentOptions, PUBLIC_DICT_TYPE, TableName } from '../../../../api/tool/enums';
 import { listSubject } from '../../../../api/system/subject';
 export var mixin_payment_watcher = {
 	data: function () {
@@ -154,10 +154,15 @@ export var mixin_payment_watcher = {
 		handleBankAccountInfo() {
 			// 只有在非付款状态且有银行卡号时才查询
 			if (!this.isPayment && this.needInfo.bankNo) {
+				// 如果是员工类型 那么companyId就是userId
+				let companyId = this.needInfo.companyId;
+				if (this.needInfo.companyType === PUBLIC_DICT_TYPE.EMPLOYEE) {
+					companyId = this.needInfo.employeeId;
+				}
 				const search = {
 					bankNo: this.needInfo.bankNo,
-					companyName: this.needInfo.companyName,
-					companyId: this.needInfo.companyId
+					companyType: this.needInfo.companyType,
+					companyId: companyId
 				};
 				listBankAccount(search).then(res => {
 					// 如果没有查到 那么就提示 并且清空数据

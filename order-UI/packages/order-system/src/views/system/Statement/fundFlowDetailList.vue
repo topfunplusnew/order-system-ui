@@ -27,8 +27,8 @@
 							:get-data="listBankAccount"
 							icon="el-icon-search"
 							:limit-info="{ acountsType: '己方公司' }"
-							query-label="银行卡查找"
-							query-info="bankNo"
+							query-label="户名查找"
+							query-info="acountsName"
 							:query-name="queryBank"
 							@commitBack="value => (query.ourBankNO = value.bankNo)"
 							@update:queryName="value => (queryBank = value)"
@@ -85,17 +85,17 @@
 		<el-table :data="statementData" border style="width: 100%" class="statement-table" size="mini" v-loading="loading" element-loading-text="数据加载中...">
 			<el-table-column prop="operateDate" label="月" show-overflow-tooltip>
 				<template slot-scope="{ row }">
-					{{ row.operateDate ? row.operateDate.substring(5, 7) : '' }}
+					{{ row.operateDate ? dayjs(row.operateDate).month() + 1 : '' }}
 				</template>
 			</el-table-column>
 			<el-table-column prop="operateDate" label="日" show-overflow-tooltip>
 				<template slot-scope="{ row }">
-					{{ row.operateDate ? row.operateDate.substring(8, 9) : '' }}
+					{{ row.operateDate ? dayjs(row.operateDate).date() : '' }}
 				</template>
 			</el-table-column>
 			<el-table-column prop="operateDate" label="时间" show-overflow-tooltip>
 				<template slot-scope="{ row }">
-					{{ row.operateDate ? row.operateDate.substring(11, 16) : '' }}
+					{{ row.operateDate ? dayjs(row.operateDate).format('HH:mm') : '' }}
 				</template>
 			</el-table-column>
 
@@ -107,7 +107,6 @@
 			<el-table-column prop="otherAcountsName" label="对方户名（对方真实收付款名称）" show-overflow-tooltip></el-table-column>
 			<el-table-column prop="otherBankNO" label="对方银行账号" show-overflow-tooltip></el-table-column>
 			<el-table-column prop="changeType" label="摘要" show-overflow-tooltip></el-table-column>
-			<!--			<el-table-column prop="tableName" label="业务表名" show-overflow-tooltip></el-table-column>-->
 			<el-table-column prop="moneyAmount" label="借" align="right" show-overflow-tooltip>
 				<template #default="{ row }">
 					<span>{{ row.moneyAmount > 0 ? row.moneyAmount : '' }}</span>
@@ -135,10 +134,6 @@
 
 		<!-- 数据为空时的提示 -->
 		<el-empty v-if="!loading && statementData.length === 0" description="暂无数据"></el-empty>
-
-		<div v-if="currentComponent">
-			<DialogWrapper :current-component="currentComponent" :dialog-visible="dialogVisible" />
-		</div>
 	</div>
 </template>
 
@@ -147,7 +142,6 @@ import { findFundFlowBalanceInLocalCurrencyAtDate, getFundFlowDetailList } from 
 import { TableName } from '@/api/tool/enums';
 import { getReceiveMoneyByPayNo } from '@/api/system/receiveMoney';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
-import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 import RECEIVE_MONEY from '@/components/NeedToShow/RECEIVE_MONEY.vue';
 import { getRecord } from '@/api/system/record';
 import OFFSETTING from '@/components/NeedToShow/OFFSETTING.vue';
@@ -156,12 +150,14 @@ import PAYMENT from '@/components/NeedToShow/PAYMENT.vue';
 import SearchOption from '@/components/SearchOption.vue';
 import { listBankAccount } from '@/api/system/bankAccount';
 import BankType from '@/views/dashboard/components/common/BankType.vue';
+import dayjs from 'dayjs';
 
 export default {
-	components: { BankType, SearchOption, DialogWrapper },
+	components: { BankType, SearchOption },
 	mixins: [common_dialog],
 	data() {
 		return {
+			dayjs, // 将 dayjs 添加到 data 中，使其在模板中可用
 			queryBank: '',
 			query: {
 				startTime: '',

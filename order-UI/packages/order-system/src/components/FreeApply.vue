@@ -52,6 +52,8 @@ export default {
 			},
 			addBankAccountDialogVisible: false,
 			bankAccountForm: {},
+			// 司机的信息 主要是给自动填充使用 当添加司机银行卡之后
+			driverInfo: {},
 			bankAccountRules: {
 				bankNo: [
 					{
@@ -199,11 +201,14 @@ export default {
 					}
 					const formData = excludeParams(this.bankAccountForm, this.$exclude);
 					formData.companyType = PUBLIC_DICT_TYPE.DRIVER;
-
+					// 添加司机信息 并填充回表单
 					addBankAccount(formData).then(() => {
 						this.$modal.msgSuccess('新增司机银行卡成功');
+						// 直接把新增的银行卡信息回填到主表单
+						this.$set(this.form, 'otherAcountsName', this.bankAccountForm.acountsName || '');
+						this.$set(this.form, 'otherBankNo', this.bankAccountForm.bankNo || '');
+						this.$set(this.form, 'otherBankName', this.bankAccountForm.bankName || '');
 						this.addBankAccountDialogVisible = false;
-						this.getDriverAccountInfo();
 					});
 				}
 			});

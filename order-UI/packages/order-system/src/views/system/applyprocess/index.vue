@@ -178,7 +178,7 @@ export default {
 						trigger: 'blur'
 					}
 				],
-				otherAcountsName: [
+				otherAccountsName: [
 					{
 						required: true,
 						message: '请输入对方户名',
@@ -201,7 +201,7 @@ export default {
 				fundsDateBegin: '',
 				fundsDateEnd: '',
 				payType: '',
-				otherAcountsName: '',
+				otherAccountsName: '',
 				otherBankNo: '',
 				otherBankName: '',
 				companyName: '',
@@ -310,11 +310,13 @@ export default {
 			// 需要自动填充的信息
 			this.needInfo = {
 				bankNo: clonedPaymentApplyInfo.otherBankNo,
-				acountsName: clonedPaymentApplyInfo.otherAcountsName,
+				acountsName: clonedPaymentApplyInfo.otherAccountsName,
 				bankName: clonedPaymentApplyInfo.otherBankName,
 				companyName: clonedPaymentApplyInfo.companyName,
 				companyType: clonedPaymentApplyInfo.companyType,
 				companyId: clonedPaymentApplyInfo.companyId,
+				// 对于员工类型的时候 这个是有值的 其他时候没值
+				employeeId: clonedPaymentApplyInfo.companyId,
 				payType: clonedPaymentApplyInfo.payType.split('-') || [],
 				attachmentList: clonedPaymentApplyInfo.attachmentList,
 				reason: clonedPaymentApplyInfo.reason,
@@ -492,7 +494,7 @@ export default {
 				selfBankNo: null,
 				selfBankName: null,
 				selfBankID: null,
-				otherAcountsName: null,
+				otherAccountsName: null,
 				otherBankNo: null,
 				otherBankName: null,
 				paymentState: null,
@@ -514,7 +516,7 @@ export default {
 				fundsDateBegin: '',
 				fundsDateEnd: '',
 				payType: '',
-				otherAcountsName: '',
+				otherAccountsName: '',
 				otherBankNo: '',
 				otherBankName: '',
 				companyName: '',
@@ -548,8 +550,8 @@ export default {
 			<el-form-item label="支付类型" prop="payType">
 				<el-input clearable v-model="queryParams.payType" placeholder="请输入支付类型"></el-input>
 			</el-form-item>
-			<el-form-item label="对方户名" prop="otherAcountsName">
-				<el-input clearable v-model="queryParams.otherAcountsName" placeholder="请输入对方户名"></el-input>
+			<el-form-item label="对方户名" prop="otherAccountsName">
+				<el-input clearable v-model="queryParams.otherAccountsName" placeholder="请输入对方户名"></el-input>
 			</el-form-item>
 			<el-form-item label="对方账号" prop="otherBankNo">
 				<el-input clearable v-model="queryParams.otherBankNo" placeholder="请输入对方账号"></el-input>
@@ -626,7 +628,7 @@ export default {
 												<div>申请人：{{ item.applyPerson }}</div>
 												<div>公司：{{ item.companyType }} - {{ item.companyName }}</div>
 												<div v-if="item.otherBankNo">对方账号：{{ item.otherBankNo }}</div>
-												<div v-else-if="item.otherAcountsName || item.otherAccountsName">对方户名：{{ item.otherAcountsName || item.otherAccountsName }}</div>
+												<div v-else-if="item.otherAccountsName || item.otherAccountsName">对方户名：{{ item.otherAccountsName || item.otherAccountsName }}</div>
 												<div v-if="Array.isArray(item.attachmentList)">附件：{{ item.attachmentList.length }} 个</div>
 											</div>
 										</template>
@@ -659,16 +661,16 @@ export default {
 				size="mini"
 				align="center"
 			>
-				<el-table-column v-if="columns[0].visible" fixed prop="fundsDate" label="日期" width="150" show-overflow-tooltip></el-table-column>
-				<el-table-column v-if="columns[1].visible" prop="payType" label="支付类型" width="150" show-overflow-tooltip></el-table-column>
-				<el-table-column v-if="columns[2].visible" prop="moneyAmount" label="金额" width="120" show-overflow-tooltip></el-table-column>
-				<el-table-column v-if="columns[3].visible" prop="otherBankNo" label="对方账号" width="300" show-overflow-tooltip></el-table-column>
-				<el-table-column v-if="columns[4].visible" prop="otherAcountsName" label="对方户名" width="200" show-overflow-tooltip></el-table-column>
-				<el-table-column v-if="columns[5].visible" prop="companyName" label="对方公司" width="120" show-overflow-tooltip></el-table-column>
-				<el-table-column v-if="columns[6].visible" prop="reason" label="付款原因" width="120" show-overflow-tooltip></el-table-column>
-				<el-table-column v-if="columns[7].visible" prop="applyPerson" label="申请人" width="120" show-overflow-tooltip></el-table-column>
-				<el-table-column v-if="columns[8].visible" prop="comments" label="备注" width="120" show-overflow-tooltip></el-table-column>
-				<el-table-column v-if="columns[9].visible" prop="comments" label="附件" width="120" show-overflow-tooltip>
+				<CustomTableColumn v-if="columns[0].visible" prop="fundsDate" label="日期" width="150" show-overflow-tooltip></CustomTableColumn>
+				<CustomTableColumn v-if="columns[1].visible" prop="payType" label="支付类型" width="150" show-overflow-tooltip></CustomTableColumn>
+				<CustomTableColumn v-if="columns[2].visible" prop="moneyAmount" label="金额" width="120" show-overflow-tooltip></CustomTableColumn>
+				<CustomTableColumn v-if="columns[3].visible" prop="otherBankNo" label="对方账号" width="300" show-overflow-tooltip></CustomTableColumn>
+				<CustomTableColumn v-if="columns[4].visible" prop="otherAccountsName" label="对方户名" width="200" show-overflow-tooltip></CustomTableColumn>
+				<CustomTableColumn v-if="columns[5].visible" prop="companyName" label="对方公司" width="120" show-overflow-tooltip></CustomTableColumn>
+				<CustomTableColumn v-if="columns[6].visible" prop="reason" label="付款原因" width="120" show-overflow-tooltip></CustomTableColumn>
+				<CustomTableColumn v-if="columns[7].visible" prop="applyPerson" label="申请人" width="120" show-overflow-tooltip></CustomTableColumn>
+				<CustomTableColumn v-if="columns[8].visible" prop="comments" label="备注" width="120" show-overflow-tooltip></CustomTableColumn>
+				<CustomTableColumn v-if="columns[9].visible" prop="comments" label="附件" width="120" show-overflow-tooltip>
 					<template #default="scope">
 						<div v-if="Array.isArray(scope.row.attachmentList)">
 							<CheckFiles
@@ -682,13 +684,13 @@ export default {
 							<el-tag type="danger">加载错误</el-tag>
 						</div>
 					</template>
-				</el-table-column>
-				<el-table-column label="操作">
+				</CustomTableColumn>
+				<CustomTableColumn label="操作" fixed="right" width="100" align="center">
 					<template slot-scope="scope">
 						<el-button type="text" size="mini" @click="handleCheckInfo(scope.row)">查看</el-button>
 					</template>
-				</el-table-column>
-				<el-table-column label="审核状态" fixed="right" align="center">
+				</CustomTableColumn>
+				<CustomTableColumn label="审核状态" align="center" fixed="right">
 					<template slot-scope="scope">
 						<el-tag
 							:type="
@@ -705,12 +707,12 @@ export default {
 							{{ scope.row.checkState }}
 						</el-tag>
 					</template>
-				</el-table-column>
-				<el-table-column v-if="columns[10].visible" fixed="right" label="审核流程" show-overflow-tooltip align="center">
+				</CustomTableColumn>
+				<CustomTableColumn v-if="columns[10].visible" label="审核流程" show-overflow-tooltip align="center" fixed="right">
 					<template slot-scope="scope">
 						<el-button type="text" size="mini" @click="handleCheckApplyInfo(scope.row)">查看</el-button>
 					</template>
-				</el-table-column>
+				</CustomTableColumn>
 			</el-table>
 			<!--      分页-->
 			<pagination v-show="total > 0" :total="total" :page.sync="pageNum" :limit.sync="pageSize" @pagination="getAuditList" />
@@ -750,7 +752,7 @@ export default {
 					{{ checkPaymentInfo.fundsDate }}
 				</el-descriptions-item>
 				<el-descriptions-item label="对方账户名称">
-					{{ checkPaymentInfo.otherAcountsName }}
+					{{ checkPaymentInfo.otherAccountsName }}
 				</el-descriptions-item>
 				<el-descriptions-item label="对方银行卡号">
 					{{ checkPaymentInfo.otherBankNo }}

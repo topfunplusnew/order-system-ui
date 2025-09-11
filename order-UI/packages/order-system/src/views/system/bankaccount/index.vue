@@ -286,10 +286,10 @@
 						</el-form-item>
 					</el-form>
 				</div>
-				<el-table :data="bankChangeList" style="width: 100%">
+				<el-table :data="bankChangeList" style="width: 100%" :default-sort="bankChangeDefaultSort" @sort-change="handleBankChangeSortChange">
 					<el-table-column prop="selfBankNo" label="我方账号" width="180"></el-table-column>
-					<el-table-column prop="operateDate" label="日期" width="180"></el-table-column>
-					<el-table-column prop="changeType" label="变动类型"></el-table-column>
+					<el-table-column prop="operateDate" label="日期" width="180" sortable="custom" :sort-orders="['descending', 'ascending']"></el-table-column>
+					<el-table-column prop="payType" label="支付类型"></el-table-column>
 					<el-table-column prop="moneyAmount" label="金额"></el-table-column>
 				</el-table>
 				<pagination
@@ -492,6 +492,8 @@ export default {
 			bankChangeDialogVisible: false,
 			bankChangeList: [],
 			currentBankNo: '',
+			// 银行卡流水默认排序
+			bankChangeDefaultSort: { prop: 'operateDate', order: 'descending' },
 			bankAcountQuery: {
 				bankAcountTotalPageNum: 1,
 				bankAcountTotalpageSize: 20,
@@ -588,6 +590,12 @@ export default {
 				this.bankChangeList = res.rows;
 				this.bankAcountTotal = res.total;
 			});
+		},
+		/** 银行卡流水排序触发事件 */
+		handleBankChangeSortChange(column) {
+			this.bankAcountQuery.orderByColumn = column.prop;
+			this.bankAcountQuery.isAsc = column.order;
+			this.getBankAcountChangeList();
 		},
 		submitBankChange() {
 			this.bankChangeDialogVisible = false;

@@ -71,12 +71,23 @@
 			@selection-change="handleSelectionChange"
 		>
 			<CustomTableColumn type="selection" width="55" align="center" :selectable="(row, index) => row.id !== null && isPaymentUnApplied(row)" />
-			<CustomTableColumn label="批量佣金" width="80" align="center">
+			<el-table-column width="80" align="center" label="批量选择">
+				<template slot="header">
+					<el-checkbox 
+						v-model="selectAllBatch" 
+						:indeterminate="isBatchIndeterminate" 
+						@change="handleBatchSelectAll">
+					</el-checkbox>
+				</template>
 				<template slot-scope="scope">
-					<el-checkbox v-if="scope.row.id === null" :value="scope.row.batchSelected" @input="handleBatchToggle(scope.row, $event)"></el-checkbox>
+					<el-checkbox 
+						v-if="scope.row.id === null" 
+						:value="isBatchRowSelected(scope.row)" 
+						@change="handleBatchToggle(scope.row, $event)">
+					</el-checkbox>
 					<span v-else>-</span>
 				</template>
-			</CustomTableColumn>
+			</el-table-column>
 			<CustomTableColumn v-if="columns[0].visible" show-overflow-tooltip label="订单日期" align="center" prop="orderDate" width="140" />
 			<CustomTableColumn show-overflow-tooltip label="佣金来源" align="center" prop="source">
 				<template slot-scope="scope">
@@ -247,12 +258,22 @@ export default {
 		},
 		// 批量填写按钮是否禁用
 		batchFillDisabled() {
-			// 直接检查 tableData 中是否有选中的批量佣金行
-			return !this.tableData.some(row => row.batchSelected === true);
+			return this.batchSelections.length <= 0;
 		},
-		// 获取批量选中的行
-		batchSelectedRows() {
-			return this.tableData.filter(row => row.batchSelected === true);
+		// 获取可批量操作的行（id为null的行）
+		batchableRows() {
+			return this.tableData.filter(row => row.id === null);
+		},
+		// 是否全选
+		isAllBatchSelected() {
+			const batchableRows = this.batchableRows;
+			return batchableRows.length > 0 && batchableRows.every(row => this.isBatchRowSelected(row));
+		},
+		// 是否半选状态
+		isBatchIndeterminate() {
+			const batchableRows = this.batchableRows;
+			const selectedCount = batchableRows.filter(row => this.isBatchRowSelected(row)).length;
+			return selectedCount > 0 && selectedCount < batchableRows.length;
 		},
 		// 处理表格数据，构造 PaymentFlag 组件需要的业务对象结构
 		computedTableData() {
@@ -317,7 +338,9 @@ export default {
 			loading: false,
 			tableData: [],
 			selectedRow: null, // 当前选中的行
-			selections: [],
+			selections: [], // 第一列选中的行（用于一键申请）
+			batchSelections: [], // 第二列选中的行（用于批量填写佣金）
+			selectAllBatch: false, // 第二列全选状态
 			orderDetailId: null,
 			total: 0,
 			options: [
@@ -385,6 +408,12 @@ export default {
 				localStorage.setItem('supplier-commission-columns', JSON.stringify(newVal));
 			},
 			deep: true
+		},
+		isAllBatchSelected: {
+			handler(newVal) {
+				this.selectAllBatch = newVal;
+			},
+			immediate: true
 		}
 	},
 	async created() {
@@ -532,11 +561,7 @@ export default {
 
 				console.log(this.queryParams);
 				const response = await listCommission(queryParams, CommissionType.SUPPLIER);
-				// 为每行数据添加批量选择字段
-				this.tableData = response.rows.map(row => ({
-					...row,
-					batchSelected: false
-				}));
+				this.tableData = response.rows;
 				this.total = response.total;
 			} catch (error) {
 				console.error('获取数据失败', error);
@@ -549,34 +574,50 @@ export default {
 			this.selectedRow = selection.length > 0 ? selection[0] : null;
 			this.selections = selection;
 		},
-		// 处理批量勾选变化
-		handleBatchSelectionChange() {
-			// 手动触发计算属性更新，确保按钮状态正确响应
-			this.$nextTick(() => {
-				console.log('批量选中状态变化，当前选中数量:', this.batchSelectedRows.length);
-				console.log('batchFillDisabled 状态:', this.batchFillDisabled);
-				console.log(
-					'当前 tableData 中的 batchSelected 状态:',
-					this.tableData.map(row => ({
-						orderDetailId: row.orderDetailId,
-						batchSelected: row.batchSelected
-					}))
-				);
+		// 判断行是否被批量选中
+		isBatchRowSelected(row) {
+			return this.batchSelections.some(selected => {
+				// 使用 orderDetailId 作为唯一标识
+				return selected.orderDetailId === row.orderDetailId;
 			});
 		},
-		// 处理批量勾选框状态变化
+		// 处理单行的批量选择切换
 		handleBatchToggle(row, value) {
-			console.log(`选中`, row, value);
-
-			// 找到 tableData 中对应的行并修改，确保数据的一致性
-			const tableDataRow = this.tableData.find(item => item.orderDetailId === row.orderDetailId || (item.id && item.id === row.id));
-
-			if (tableDataRow) {
-				// 使用 Vue.set 在 tableData 上设置响应性字段
-				this.$set(tableDataRow, 'batchSelected', value);
+			if (value) {
+				// 选中：添加到 batchSelections
+				if (!this.isBatchRowSelected(row)) {
+					this.batchSelections.push(row);
+				}
+			} else {
+				// 取消选中：从 batchSelections 中移除
+				const index = this.batchSelections.findIndex(selected => selected.orderDetailId === row.orderDetailId);
+				if (index !== -1) {
+					this.batchSelections.splice(index, 1);
+				}
 			}
-
-			this.handleBatchSelectionChange();
+			console.log('批量选中状态变化，当前选中数量:', this.batchSelections.length);
+		},
+		// 处理全选/取消全选
+		handleBatchSelectAll(value) {
+			if (value) {
+				// 全选：将所有可批量操作的行添加到 batchSelections
+				const batchableRows = this.batchableRows;
+				batchableRows.forEach(row => {
+					if (!this.isBatchRowSelected(row)) {
+						this.batchSelections.push(row);
+					}
+				});
+			} else {
+				// 取消全选：移除所有可批量操作的行
+				const batchableRows = this.batchableRows;
+				batchableRows.forEach(row => {
+					const index = this.batchSelections.findIndex(selected => selected.orderDetailId === row.orderDetailId);
+					if (index !== -1) {
+						this.batchSelections.splice(index, 1);
+					}
+				});
+			}
+			console.log('批量选中状态变化，当前选中数量:', this.batchSelections.length);
 		},
 		handleAdd(source) {
 			this.openDialog(
@@ -719,9 +760,9 @@ export default {
 		// 批量填写佣金
 		handleBatchFill() {
 			// 获取批量选中的行
-			const eligibleRows = this.batchSelectedRows;
+			const eligibleRows = this.batchSelections;
 			if (eligibleRows.length === 0) {
-				this.$message.warning('请先勾选需要批量填写佣金信息的行');
+				this.$message.warning('请先选择需要批量填写佣金信息的行');
 				return;
 			}
 			// 重置表单
@@ -754,7 +795,7 @@ export default {
 				}
 
 				// 获取批量选中的行
-				const eligibleRows = this.batchSelectedRows;
+				const eligibleRows = this.batchSelections;
 
 				if (eligibleRows.length === 0) {
 					this.$message.warning('没有可填写的佣金信息');

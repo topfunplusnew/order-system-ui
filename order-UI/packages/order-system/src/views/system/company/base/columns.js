@@ -30,7 +30,6 @@ export const companyConfig = {
 			formConfig: {
 				show: true,
 				type: 'input',
-				required: true, // 必填项
 				order: 1,
 				sortIndex: 1, // 表单项排序索引
 				col: { span: 12 },
@@ -51,7 +50,6 @@ export const companyConfig = {
 			formConfig: {
 				show: true,
 				type: 'input',
-				required: false,
 				order: 2,
 				sortIndex: 2, // 表单项排序索引
 				col: { span: 12 },
@@ -72,7 +70,6 @@ export const companyConfig = {
 			formConfig: {
 				show: true,
 				type: 'input',
-				required: false,
 				order: 3,
 				sortIndex: 3, // 表单项排序索引
 				col: { span: 12 },
@@ -109,7 +106,6 @@ export const companyConfig = {
 			formConfig: {
 				show: true,
 				type: 'select',
-				required: true, // 必填项
 				order: 4.1,
 				sortIndex: 4, // 表单项排序索引
 				col: { span: 8 },
@@ -130,7 +126,6 @@ export const companyConfig = {
 			formConfig: {
 				show: true,
 				type: 'select',
-				required: true, // 必填项
 				order: 4.2,
 				sortIndex: 5, // 表单项排序索引
 				col: { span: 8 },
@@ -151,7 +146,6 @@ export const companyConfig = {
 			formConfig: {
 				show: true,
 				type: 'select',
-				required: false,
 				order: 4.3,
 				sortIndex: 6, // 表单项排序索引
 				col: { span: 8 },
@@ -175,7 +169,6 @@ export const companyConfig = {
 			formConfig: {
 				show: true,
 				type: 'input',
-				required: true, // 必填项
 				order: 5,
 				sortIndex: 7, // 表单项排序索引
 				col: { span: 12 },
@@ -196,7 +189,6 @@ export const companyConfig = {
 			formConfig: {
 				show: true,
 				type: 'input',
-				required: true, // 必填项
 				order: 6,
 				sortIndex: 8, // 表单项排序索引
 				col: { span: 12 },
@@ -217,7 +209,6 @@ export const companyConfig = {
 			formConfig: {
 				show: true,
 				type: 'textarea',
-				required: false,
 				order: 7,
 				sortIndex: 9, // 表单项排序索引
 				col: { span: 24 },
@@ -239,7 +230,6 @@ export const companyConfig = {
 			formConfig: {
 				show: true,
 				type: 'input',
-				required: true, // 必填项
 				order: 8,
 				sortIndex: 10, // 表单项排序索引
 				col: { span: 12 },
@@ -260,7 +250,6 @@ export const companyConfig = {
 			formConfig: {
 				show: true,
 				type: 'textarea',
-				required: false,
 				order: 9,
 				sortIndex: 11, // 表单项排序索引
 				col: { span: 24 },

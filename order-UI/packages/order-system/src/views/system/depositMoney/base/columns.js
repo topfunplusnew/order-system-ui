@@ -11,7 +11,7 @@ export default {
 			key: 'id',
 			prop: 'id',
 			label: 'ID',
-			visible: false,
+			visible: true,
 			includeInForm: false,
 			width: 80
 		},
@@ -26,33 +26,31 @@ export default {
 			formConfig: {
 				type: 'input',
 				show: true,
-				required: true,
 				placeholder: '请输入保证金公司',
 				rules: validationRules.required,
 				col: { span: 12 },
 				order: 1
 			}
 		},
-		{
-			key: 'type',
-			prop: 'type',
-			label: '保证金类型',
-			visible: true,
-			includeInForm: true,
-			width: 120,
-			formConfig: {
-				type: 'select',
-				show: true,
-				required: true,
-				placeholder: '请选择保证金类型',
-				rules: [{ required: true, message: '保证金类型不能为空', trigger: 'change' }],
-				options: DEPOSIT_OPTIONS,
-				optionLabel: 'label',
-				optionValue: 'value',
-				col: { span: 12 },
-				order: 2
-			}
-		},
+		// {
+		// 	key: 'type',
+		// 	prop: 'type',
+		// 	label: '保证金类型',
+		// 	visible: true,
+		// 	includeInForm: false,
+		// 	width: 120,
+		// 	formConfig: {
+		// 		type: 'select',
+		// 		show: true,
+		// 		placeholder: '请选择保证金类型',
+		// 		rules: [{ required: true, message: '保证金类型不能为空', trigger: 'change' }],
+		// 		options: DEPOSIT_OPTIONS,
+		// 		optionLabel: 'label',
+		// 		optionValue: 'value',
+		// 		col: { span: 12 },
+		// 		order: 2
+		// 	}
+		// },
 		{
 			key: 'targetType',
 			prop: 'targetType',
@@ -63,7 +61,6 @@ export default {
 			formConfig: {
 				type: 'select',
 				show: true,
-				required: true,
 				placeholder: '请选择对象类型',
 				rules: [{ required: true, message: '对象类型不能为空', trigger: 'change' }],
 				options: [
@@ -90,7 +87,6 @@ export default {
 			formConfig: {
 				type: 'input',
 				show: true,
-				required: true,
 				placeholder: '请输入对象名称',
 				rules: validationRules.required,
 				col: { span: 12 },
@@ -108,7 +104,6 @@ export default {
 			formConfig: {
 				type: 'input',
 				show: true,
-				required: true,
 				placeholder: '请输入保证金金额',
 				rules: [
 					{ required: true, message: '保证金金额不能为空', trigger: 'blur' },
@@ -136,13 +131,13 @@ export default {
 			width: 150,
 			showOverflowTooltip: true,
 			formConfig: {
-				type: 'bankSelect',
+				type: 'input',
 				show: true,
-				required: true,
 				placeholder: '请选择对方账户',
 				rules: validationRules.required,
 				col: { span: 12 },
 				order: 6,
+				readonly: true,
 				bankType: 'other'
 			}
 		},
@@ -188,13 +183,13 @@ export default {
 			width: 150,
 			showOverflowTooltip: true,
 			formConfig: {
-				type: 'bankSelect',
+				type: 'input',
 				show: true,
-				required: true,
 				placeholder: '请选择我方账户',
 				rules: validationRules.required,
 				col: { span: 12 },
 				order: 9,
+				readonly: true,
 				bankType: 'self'
 			}
 		},
@@ -241,7 +236,6 @@ export default {
 			formConfig: {
 				type: 'datetime',
 				show: true,
-				required: true,
 				placeholder: '请选择收取时间',
 				rules: [{ required: true, message: '收取时间不能为空', trigger: 'change' }],
 				col: { span: 12 },
@@ -259,7 +253,6 @@ export default {
 			formConfig: {
 				type: 'input',
 				show: true,
-				required: true,
 				placeholder: '请输入事由',
 				rules: validationRules.required,
 				col: { span: 12 },

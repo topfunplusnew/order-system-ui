@@ -650,6 +650,7 @@ export default {
 		handleUpdateQueryNameOther(val) {
 			this.queryOther = val;
 		},
+		// 选择对方公司的自动填充
 		handleCommitBackOther(row) {
 			this.form.companyName = row.companyName;
 			this.form.companyId = row.id;
@@ -660,7 +661,10 @@ export default {
 		handleCommitBack(row) {
 			this.form.otherBankNo = row.bankNo;
 			this.form.otherBankName = row.bankName;
-			// 不再自动填充对方户名，保持用户手动输入的值
+			// 如果是员工 则需要把 companyId 赋值为员工的 id
+			if (this.value === PUBLIC_DICT_TYPE.EMPLOYEE) {
+				this.form.companyId = row.companyId;
+			}
 			this.form.otherAccountsName = row.acountsName;
 		},
 		// 根据对方类型返回相应的校验规则

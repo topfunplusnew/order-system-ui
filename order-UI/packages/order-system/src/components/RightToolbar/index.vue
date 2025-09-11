@@ -88,7 +88,7 @@ export default {
 				}
 			}
 		}
-		
+
 		// 确保所有列都有明确的 visible 属性
 		this.initializeColumnVisibility();
 	},
@@ -114,7 +114,7 @@ export default {
 				});
 			}
 		},
-		
+
 		// 打印
 		handlePrint() {},
 		// 搜索

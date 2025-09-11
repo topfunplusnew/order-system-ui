@@ -129,8 +129,6 @@
 import {
 	listDepositMoney,
 	getDepositMoney,
-	addDepositMoney,
-	updateDepositMoney,
 	delDepositMoney,
 	exportDepositMoney,
 	addDepositRefund,
@@ -139,7 +137,6 @@ import {
 	getDepositRefund,
 	getDepositRefundByMainId
 } from '@/api/system/depositMoney';
-import { listBankAccount } from '@/api/system/bankAccount';
 import { DEPOSIT_OPTIONS } from '@/api/tool/enums';
 import { validateAmount } from '@/api/tool';
 import { createConfigManager } from '@/utils/configManager';
@@ -151,12 +148,6 @@ import DepositMoneyForm from './base/DepositMoneyForm.vue';
 export default {
 	name: 'DepositMoney',
 	mixins: [common_dialog, tableColumnMixin],
-	computed: {
-		/** 可见列 */
-		visibleColumns() {
-			return this.tableColumns.filter(column => column.visible);
-		}
-	},
 	data() {
 		return {
 			// 配置管理器
@@ -182,10 +173,6 @@ export default {
 			total: 0,
 			// 保证金收取信息表格数据
 			depositMoneyList: [],
-			// 弹出层标题
-			dialogTitle: '',
-			// 是否显示弹出层
-			open: false,
 			// 查询参数
 			queryParams: {
 				pageNum: 1,
@@ -198,44 +185,6 @@ export default {
 				reason: null,
 				comments: null
 			},
-			// 表单参数
-			form: {},
-			// 表单校验
-			rules: {
-				depositCompany: [{ required: true, message: '保证金公司不能为空', trigger: 'blur' }],
-				type: [{ required: true, message: '保证金类型不能为空', trigger: 'change' }],
-				targetType: [{ required: true, message: '对象类型不能为空', trigger: 'change' }],
-				target: [{ required: true, message: '对象名称不能为空', trigger: 'blur' }],
-				moneyAmount: [
-					{ required: true, message: '保证金金额不能为空', trigger: 'blur' },
-					{ validator: validateAmount, trigger: 'blur' }
-				],
-				targetAccountsName: [{ required: true, message: '对方账户不能为空', trigger: 'blur' }],
-				targetBankNo: [{ required: true, message: '对方账号不能为空', trigger: 'blur' }],
-				selfAccountsName: [{ required: true, message: '我方收款账户不能为空', trigger: 'blur' }],
-				selfBankNo: [{ required: true, message: '我方账号不能为空', trigger: 'blur' }],
-				depositDate: [{ required: true, message: '收取时间不能为空', trigger: 'change' }],
-				reason: [{ required: true, message: '事由不能为空', trigger: 'blur' }]
-			},
-			// 列显隐信息
-			columns: [
-				{ key: 0, label: '保证金公司', visible: true },
-				{ key: 1, label: '保证金类型', visible: true },
-				{ key: 2, label: '对象类型', visible: true },
-				{ key: 3, label: '对象名称', visible: true },
-				{ key: 4, label: '保证金金额', visible: true },
-				{ key: 5, label: '未退款金额', visible: true },
-				{ key: 6, label: '对方账户', visible: true },
-				{ key: 7, label: '对方账号', visible: true },
-				{ key: 8, label: '对方开户行', visible: true },
-				{ key: 9, label: '我方收款账户', visible: true },
-				{ key: 10, label: '我方账号', visible: true },
-				{ key: 11, label: '我方开户行', visible: true },
-				{ key: 12, label: '收取时间', visible: true },
-				{ key: 13, label: '事由', visible: true },
-				{ key: 14, label: '备注', visible: true },
-				{ key: 15, label: '操作人员', visible: true }
-			],
 			// 退款相关
 			refundDialogVisible: false,
 			refundFormVisible: false,
@@ -254,30 +203,18 @@ export default {
 					{ required: true, message: '退款金额不能为空', trigger: 'blur' },
 					{ validator: validateAmount, trigger: 'blur' }
 				]
-			},
-			// 搜索控件本地变量
-			queryBankOther: '',
-			queryBankSelf: ''
+			}
 		};
 	},
 	created() {
 		// 初始化配置管理器
 		this.configManager = createConfigManager(columnConfig);
 		this.tableColumns = this.configManager.getTableColumns();
-
 		this.getList();
 	},
 	methods: {
 		getStorageKey() {
 			return 'depositMoney-columns';
-		},
-
-		// 处理列显隐变化
-		handleColumnChange(changeInfo) {
-			// 确保tableColumns数组中对应的列也被更新
-			if (changeInfo.index >= 0 && changeInfo.index < this.tableColumns.length) {
-				this.$set(this.tableColumns[changeInfo.index], 'visible', changeInfo.visible);
-			}
 		},
 
 		// 获取默认表单数据
@@ -303,7 +240,6 @@ export default {
 			this.queryParams.pageNum = 1;
 			this.getList();
 		},
-		/** 重置按钮操作 */
 		resetQuery() {
 			this.resetForm('queryForm');
 			this.queryParams = {
@@ -329,11 +265,10 @@ export default {
 		handleAdd() {
 			// 使用配置管理器获取默认表单数据
 			const defaultForm = this.getDefaultFormData();
-
 			this.openDialog(
 				DepositMoneyForm,
 				'添加保证金收取信息',
-				'80%',
+				'600px',
 				{
 					formData: defaultForm,
 					isEdit: false,
@@ -346,10 +281,11 @@ export default {
 		handleUpdate(row) {
 			const id = row.id || this.ids;
 			getDepositMoney(id).then(response => {
+				// 因为混入了common_dialog，这里直接调用openDialog方法
 				this.openDialog(
 					DepositMoneyForm,
 					'修改保证金收取信息',
-					'80%',
+					'600px',
 					{
 						formData: response.data,
 						isEdit: true,
@@ -357,26 +293,6 @@ export default {
 					},
 					false
 				);
-			});
-		},
-		/** 提交按钮 */
-		submitForm() {
-			this.$refs['form'].validate(valid => {
-				if (valid) {
-					if (this.form.id != null) {
-						updateDepositMoney(this.form).then(response => {
-							this.$modal.msgSuccess('修改成功');
-							this.open = false;
-							this.getList();
-						});
-					} else {
-						addDepositMoney(this.form).then(response => {
-							this.$modal.msgSuccess('新增成功');
-							this.open = false;
-							this.getList();
-						});
-					}
-				}
 			});
 		},
 		/** 删除按钮操作 */
@@ -399,37 +315,6 @@ export default {
 				this.$download.excel(response, '保证金收取信息.xlsx');
 			});
 		},
-		/** 表单重置 */
-		reset() {
-			this.form = {
-				id: null,
-				depositCompany: null,
-				type: null,
-				targetType: null,
-				targetBankNoId: null,
-				target: null,
-				moneyAmount: null,
-				unrefundedAmount: null,
-				targetAccountsName: null,
-				targetBankNo: null,
-				targetBankName: null,
-				selfAccountsName: null,
-				selfBankNo: null,
-				selfBankName: null,
-				depositDate: null,
-				reason: null,
-				comments: null,
-				depositRefundList: []
-			};
-			this.resetForm('form');
-			this.queryBankOther = '';
-			this.queryBankSelf = '';
-		},
-		/** 取消按钮 */
-		cancel() {
-			this.open = false;
-			this.reset();
-		},
 		/** 日期范围选择处理 */
 		handleDateChange(dates) {
 			if (dates && dates.length === 2) {
@@ -439,26 +324,6 @@ export default {
 				this.queryParams.beginDepositDate = null;
 				this.queryParams.endDepositDate = null;
 			}
-		},
-		/** 对象类型变化处理 */
-		handleTargetTypeChange() {
-			// 清空相关字段
-			this.form.targetAccountsName = null;
-			this.form.targetBankNo = null;
-			this.form.targetBankName = null;
-			this.queryBankOther = '';
-		},
-		/** 对方账户选择回调 */
-		handleCommitBackOther(val) {
-			this.form.targetBankNo = val.bankNo;
-			this.form.targetBankName = val.bankName;
-			this.form.targetAccountsName = val.acountsName;
-		},
-		/** 我方账户选择回调 */
-		handleCommitBackSelf(val) {
-			this.form.selfBankNo = val.bankNo;
-			this.form.selfBankName = val.bankName;
-			this.form.selfAccountsName = val.acountsName;
 		},
 		/** 退款管理 */
 		handleRefund(row) {
@@ -555,23 +420,7 @@ export default {
 				badDebtFlag: '否'
 			};
 			this.resetForm('refundForm');
-		},
-		/** 列显隐控制 */
-		colVisible(index) {
-			return this.columns[index] && this.columns[index].visible;
-		},
-		/** 获取表格列属性 */
-		getColumnProps(column) {
-			return {
-				prop: column.prop,
-				label: column.label,
-				align: column.align || 'center',
-				width: column.width,
-				showOverflowTooltip: column.showOverflowTooltip
-			};
-		},
-		/** 银行账户搜索方法 */
-		listBankAccount
+		}
 	}
 };
 </script>
