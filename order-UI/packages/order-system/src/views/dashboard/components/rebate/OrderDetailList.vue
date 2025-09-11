@@ -57,7 +57,7 @@ export default {
 					<el-input v-model="queryParams.supplier" placeholder="请输入供应商名称"></el-input>
 				</el-form-item>
 				<el-form-item label="级别名称" prop="levelName">
-					<el-input v-model="queryParams.levelName" placeholder="请输入供应商名称"></el-input>
+					<el-input v-model="queryParams.levelName" placeholder="请输入级别名称"></el-input>
 				</el-form-item>
 			</el-row>
 			<el-form-item>
@@ -88,7 +88,7 @@ export default {
 			<el-table-column label="客户" align="center" prop="customer" min-width="120" />
 			<el-table-column label="供应商" align="center" prop="supplier" min-width="150" />
 			<el-table-column label="级别编码" align="center" prop="levelID" min-width="100" />
-			<el-table-column label="级别名称" align="center" prop="levelName" min-width="120" />
+			<el-table-column label="级别名称" align="center" prop="levelName" min-width="150" />
 			<el-table-column label="计量单位" align="center" prop="countingUnit" min-width="100" />
 			<el-table-column label="厚度" align="center" prop="height" min-width="80" />
 			<el-table-column label="长度" align="center" prop="length" min-width="80" />

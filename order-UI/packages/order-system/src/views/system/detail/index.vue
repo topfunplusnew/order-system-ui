@@ -42,7 +42,7 @@
 			<el-form-item label="级别编码" prop="levelID">
 				<el-input v-model="queryParams.levelID" placeholder="请输入级别编码" clearable size="mini" @keyup.enter.native="handleQuery" />
 			</el-form-item>
-			<el-form-item label="级别名称" prop="levelName">
+			<el-form-item label="级别名称" prop="levelName" width="150">
 				<el-input v-model="queryParams.levelName" placeholder="请输入级别名称" clearable size="mini" @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="厚度" prop="height">
