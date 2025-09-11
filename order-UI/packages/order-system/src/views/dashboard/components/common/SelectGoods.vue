@@ -433,7 +433,7 @@ export default {
 		>
 			<el-table-column label="操作" width="100" align="center">
 				<template #default="scope">
-					<el-button type="text" size="mini" @click.stop="handleViewOrder(scope.row)">查看</el-button>
+					<el-button type="text" size="mini" @click.stop="handleViewOrder(scope.row)">查222看</el-button>
 				</template>
 			</el-table-column>
 			<el-table-column type="selection" width="55" align="center" :selectable="selectable" />

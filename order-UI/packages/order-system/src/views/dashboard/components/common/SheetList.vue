@@ -607,12 +607,12 @@ export default {
 
 	/* 美化滚动条 */
 	&::-webkit-scrollbar {
-		width: 6px;
+		width: 16px;
 	}
 
 	&::-webkit-scrollbar-thumb {
 		background: #dcdfe6;
-		border-radius: 3px;
+		border-radius: 13px;
 
 		&:hover {
 			background: #c0c4cc;
@@ -621,6 +621,7 @@ export default {
 
 	&::-webkit-scrollbar-track {
 		background: transparent;
+		width: 10px;
 	}
 }
 
