@@ -2,22 +2,33 @@
 	<div class="app-container">
 		<!-- 筛选框 -->
 		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
+			<el-form-item label="开始时间" prop="endDate">
+				<el-date-picker
+					v-model="queryParams.endDate"
+					type="datetime"
+					placeholder="选择开始时间"
+					value-format="yyyy-MM-dd HH:mm:ss"
+					size="mini"
+					clearable
+					@change="handleQuery"
+				></el-date-picker>
+			</el-form-item>
 			<el-form-item label="账户类型">
-				<el-select v-model="queryParams.bankCardType" placeholder="账户类型" size="mini" clearable>
+				<el-select v-model="queryParams.bankCardType" placeholder="账户类型" size="mini" clearable @change="applyFrontendFilter">
 					<el-option v-for="item in typeOption" :key="item.value" :label="item.label" :value="item.value"></el-option>
 				</el-select>
 			</el-form-item>
 			<el-form-item label="开户名称" prop="acountsName">
-				<el-input v-model="queryParams.acountsName" placeholder="请输入开户名称" clearable @keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.acountsName" placeholder="请输入开户名称" clearable @keyup.enter.native="applyFrontendFilter" @input="applyFrontendFilter" />
 			</el-form-item>
 			<el-form-item label="开户行" prop="acountsName">
-				<el-input v-model="queryParams.bankName" placeholder="请输入开户行" clearable @keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.bankName" placeholder="请输入开户行" clearable @keyup.enter.native="applyFrontendFilter" @input="applyFrontendFilter" />
 			</el-form-item>
 			<el-form-item label="银行账号" prop="bankNo">
-				<el-input v-model="queryParams.bankNo" placeholder="请输入银行账号" clearable @keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.bankNo" placeholder="请输入银行账号" clearable @keyup.enter.native="applyFrontendFilter" @input="applyFrontendFilter" />
 			</el-form-item>
 			<el-form-item label="己方公司" prop="displayName">
-				<el-input v-model="queryParams.displayName" placeholder="请输入己方公司" clearable @keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.displayName" placeholder="请输入己方公司" clearable @keyup.enter.native="applyFrontendFilter" @input="applyFrontendFilter" />
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -83,6 +94,18 @@ export default {
 	name: 'SelfMoney',
 	mixins: [mixin_printHTML],
 	data() {
+		// 获取当前时间，格式化为 yyyy-MM-dd HH:mm:ss
+		const getCurrentDateTime = () => {
+			const now = new Date();
+			const year = now.getFullYear();
+			const month = String(now.getMonth() + 1).padStart(2, '0');
+			const day = String(now.getDate()).padStart(2, '0');
+			const hours = String(now.getHours()).padStart(2, '0');
+			const minutes = String(now.getMinutes()).padStart(2, '0');
+			const seconds = String(now.getSeconds()).padStart(2, '0');
+			return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+		};
+
 		return {
 			loading: true,
 			ids: [],
@@ -94,6 +117,8 @@ export default {
 			title: '',
 			open: false,
 			queryParams: {
+				endDate: getCurrentDateTime(), // 默认为当前时间
+				bankCardType: null,
 				bankName: null,
 				acountsName: null,
 				bankNo: null,
@@ -166,38 +191,67 @@ export default {
 		listCompany,
 		getList() {
 			this.loading = true;
-			listBankAccountSelf().then(response => {
+			// 构建API查询参数，只传递有值的参数
+			const apiParams = {};
+			if (this.queryParams.endDate) {
+				apiParams.endDate = this.queryParams.endDate;
+			}
+
+			listBankAccountSelf(apiParams).then(response => {
 				this.bankAccountList = response.data;
-				// 存储到本地
+				// 存储到本地，用于前端筛选
 				localStorage.setItem('bankAccountList', JSON.stringify(this.bankAccountList));
-				this.total = response.data.length;
+				// 应用前端筛选
+				this.applyFrontendFilter();
+				this.total = this.bankAccountList.length;
 				this.loading = false;
 			});
 		},
-		// 银行卡筛选
+		// 银行卡筛选 - 主要查询方法
 		handleQuery() {
-			// 每次重新刷新数组后筛选
-			this.bankAccountList = JSON.parse(localStorage.getItem('bankAccountList'));
-			// 如果queryParams都是空 那么就返回全部数据
-			const values = Object.values(this.queryParams);
+			// 当有endDate参数变化时，重新调用API获取数据
+			this.getList();
+		},
+		// 前端筛选方法 - 对已获取的数据进行筛选
+		applyFrontendFilter() {
+			// 从本地存储获取原始数据
+			const originalData = JSON.parse(localStorage.getItem('bankAccountList') || '[]');
 
-			// 对每一个参数进行判断
-			if (
-				values.every(item => {
-					return item === null || item === '';
-				})
-			) {
-				return this.bankAccountList;
+			// 构建前端筛选参数（排除endDate，因为它用于API查询）
+			const frontendParams = {
+				bankCardType: this.queryParams.bankCardType,
+				bankName: this.queryParams.bankName,
+				acountsName: this.queryParams.acountsName,
+				bankNo: this.queryParams.bankNo,
+				displayName: this.queryParams.displayName
+			};
+
+			// 检查是否有前端筛选条件
+			const hasFilterConditions = Object.values(frontendParams).some(value => value !== null && value !== '');
+
+			if (!hasFilterConditions) {
+				// 没有筛选条件，显示所有数据
+				this.bankAccountList = originalData;
+			} else {
+				// 应用前端筛选
+				this.bankAccountList = originalData.filter(item => this.handleFilter(item, frontendParams));
 			}
-			// 对银行卡列表进行筛选
-			this.bankAccountList = this.bankAccountList.filter(item => this.handleFilter(item));
 		},
 		// 筛选函数
-		handleFilter(item) {
+		handleFilter(item, filterParams = null) {
+			// 如果没有传入筛选参数，使用queryParams（排除endDate）
+			const params = filterParams || {
+				bankCardType: this.queryParams.bankCardType,
+				bankName: this.queryParams.bankName,
+				acountsName: this.queryParams.acountsName,
+				bankNo: this.queryParams.bankNo,
+				displayName: this.queryParams.displayName
+			};
+
 			let flag = true;
-			Object.keys(this.queryParams).forEach(key => {
-				if (item[key] && this.queryParams[key]) {
-					if (item[key].indexOf(this.queryParams[key]) === -1) {
+			Object.keys(params).forEach(key => {
+				if (item[key] && params[key]) {
+					if (item[key].indexOf(params[key]) === -1) {
 						flag = false;
 					}
 				}
@@ -206,9 +260,8 @@ export default {
 		},
 		/** 重置按钮操作 */
 		resetQuery() {
-			this.getList();
 			this.resetForm('queryForm');
-			this.handleQuery();
+			this.getList();
 		}
 	}
 };
