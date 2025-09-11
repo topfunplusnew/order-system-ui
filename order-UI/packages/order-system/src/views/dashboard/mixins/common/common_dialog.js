@@ -23,7 +23,7 @@ export var common_dialog = {
 		}
 	},
 	methods: {
-		openDialog(component, title, width = '50%', props = {}, closeConfirm = false) {
+		openDialog(component, title, width = '50%', props = {}, closeConfirm = false, isList = true) {
 			// 确保数组已初始化
 			if (!this._dialogConfigs) {
 				this._dialogConfigs = [];
@@ -42,7 +42,8 @@ export var common_dialog = {
 				width,
 				props,
 				closeConfirm,
-				visible: true
+				visible: true,
+				isList // 新增：保存是否需要调用getList的标志
 			};
 			this._dialogConfigs.push(dialogConfig);
 
@@ -77,7 +78,10 @@ export var common_dialog = {
 			instance.$on('close', callback => {
 				callback(this).finally(() => {
 					this._reallyCloseDialog(config.id);
-					this.getList && this.getList();
+					// 根据isList参数决定是否调用getList
+					if (config.isList && this.getList) {
+						this.getList();
+					}
 				});
 			});
 
@@ -87,7 +91,10 @@ export var common_dialog = {
 					.then(() => {
 						// 只有在成功时才关闭弹窗和刷新列表
 						this._reallyCloseDialog(config.id);
-						this.getList && this.getList();
+						// 根据isList参数决定是否调用getList
+						if (config.isList && this.getList) {
+							this.getList();
+						}
 					})
 					.catch(error => {
 						// 失败时不关闭弹窗
