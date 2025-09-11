@@ -455,6 +455,8 @@ export default {
 				if (res.data) {
 					this.hasBankAcceptanceInfo = true;
 					this.bankacceptanceInfo = res.data;
+					// 通知父组件更新状态
+					this.$emit('updateBankAcceptance', _.cloneDeep(this.bankacceptanceInfo));
 				}
 				this.flag = true;
 			});
@@ -467,7 +469,6 @@ export default {
 		isInternalTransfer: {
 			handler(val) {
 				if (val) {
-					// 内部转账时默认设置为己方公司
 					this.type = '己方公司';
 				}
 			},

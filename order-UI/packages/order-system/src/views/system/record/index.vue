@@ -1228,6 +1228,7 @@ export default {
 		},
 		/** 提交按钮 */
 		submitForm() {
+			console.log(`this.form=>`, this.form);
 			this.$refs['form'].validate(valid => {
 				if (!valid) return;
 
@@ -1585,6 +1586,8 @@ export default {
 				}
 			}
 			this.$nextTick(() => {
+				// 填充id 用于区分是新增还是修改
+				this.form.id = data.id;
 				// 公共字段填充逻辑
 				this.sourceName = data.sourceCompanyName;
 				this.targetName = data.targetCompanyName;
@@ -1612,10 +1615,6 @@ export default {
 					// 同步银行账户类型到form对象
 					this.form.selfBankCardType = data.selfBankCardType;
 					this.form.otherBankCardType = data.otherBankCardType;
-					if (!data.bankacceptanceId) {
-						this.form.params = this.form.params || {};
-						this.form.params.bankacceptance = null;
-					}
 					// 处理承兑信息
 					if (data.bankacceptanceId) {
 						// 设置己方账户类型和对方账户类型
