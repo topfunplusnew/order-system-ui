@@ -43,8 +43,7 @@ export default {
 			<div slot="header" class="clearfix">
 				<span>付款申请信息</span>
 			</div>
-			<el-descriptions :column="2" border>
-				<el-descriptions-item label="申请ID">{{ needToShowInfo.id }}</el-descriptions-item>
+			<el-descriptions :column="5" border>
 				<el-descriptions-item label="公司名称">{{ needToShowInfo.companyName }}</el-descriptions-item>
 				<el-descriptions-item label="公司类型">{{ needToShowInfo.companyType }}</el-descriptions-item>
 				<el-descriptions-item label="资金日期">{{ formatDate(needToShowInfo.fundsDate) }}</el-descriptions-item>

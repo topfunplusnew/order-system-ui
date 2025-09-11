@@ -178,7 +178,7 @@ export default {
 						trigger: 'blur'
 					}
 				],
-				otherAcountsName: [
+				otherAccountsName: [
 					{
 						required: true,
 						message: '请输入对方户名',
@@ -201,7 +201,7 @@ export default {
 				fundsDateBegin: '',
 				fundsDateEnd: '',
 				payType: '',
-				otherAcountsName: '',
+				otherAccountsName: '',
 				otherBankNo: '',
 				otherBankName: '',
 				companyName: '',
@@ -310,7 +310,7 @@ export default {
 			// 需要自动填充的信息
 			this.needInfo = {
 				bankNo: clonedPaymentApplyInfo.otherBankNo,
-				acountsName: clonedPaymentApplyInfo.otherAcountsName,
+				acountsName: clonedPaymentApplyInfo.otherAccountsName,
 				bankName: clonedPaymentApplyInfo.otherBankName,
 				companyName: clonedPaymentApplyInfo.companyName,
 				companyType: clonedPaymentApplyInfo.companyType,
@@ -494,7 +494,7 @@ export default {
 				selfBankNo: null,
 				selfBankName: null,
 				selfBankID: null,
-				otherAcountsName: null,
+				otherAccountsName: null,
 				otherBankNo: null,
 				otherBankName: null,
 				paymentState: null,
@@ -516,7 +516,7 @@ export default {
 				fundsDateBegin: '',
 				fundsDateEnd: '',
 				payType: '',
-				otherAcountsName: '',
+				otherAccountsName: '',
 				otherBankNo: '',
 				otherBankName: '',
 				companyName: '',
@@ -550,8 +550,8 @@ export default {
 			<el-form-item label="支付类型" prop="payType">
 				<el-input clearable v-model="queryParams.payType" placeholder="请输入支付类型"></el-input>
 			</el-form-item>
-			<el-form-item label="对方户名" prop="otherAcountsName">
-				<el-input clearable v-model="queryParams.otherAcountsName" placeholder="请输入对方户名"></el-input>
+			<el-form-item label="对方户名" prop="otherAccountsName">
+				<el-input clearable v-model="queryParams.otherAccountsName" placeholder="请输入对方户名"></el-input>
 			</el-form-item>
 			<el-form-item label="对方账号" prop="otherBankNo">
 				<el-input clearable v-model="queryParams.otherBankNo" placeholder="请输入对方账号"></el-input>
@@ -628,7 +628,7 @@ export default {
 												<div>申请人：{{ item.applyPerson }}</div>
 												<div>公司：{{ item.companyType }} - {{ item.companyName }}</div>
 												<div v-if="item.otherBankNo">对方账号：{{ item.otherBankNo }}</div>
-												<div v-else-if="item.otherAcountsName || item.otherAccountsName">对方户名：{{ item.otherAcountsName || item.otherAccountsName }}</div>
+												<div v-else-if="item.otherAccountsName || item.otherAccountsName">对方户名：{{ item.otherAccountsName || item.otherAccountsName }}</div>
 												<div v-if="Array.isArray(item.attachmentList)">附件：{{ item.attachmentList.length }} 个</div>
 											</div>
 										</template>
@@ -665,7 +665,7 @@ export default {
 				<CustomTableColumn v-if="columns[1].visible" prop="payType" label="支付类型" width="150" show-overflow-tooltip></CustomTableColumn>
 				<CustomTableColumn v-if="columns[2].visible" prop="moneyAmount" label="金额" width="120" show-overflow-tooltip></CustomTableColumn>
 				<CustomTableColumn v-if="columns[3].visible" prop="otherBankNo" label="对方账号" width="300" show-overflow-tooltip></CustomTableColumn>
-				<CustomTableColumn v-if="columns[4].visible" prop="otherAcountsName" label="对方户名" width="200" show-overflow-tooltip></CustomTableColumn>
+				<CustomTableColumn v-if="columns[4].visible" prop="otherAccountsName" label="对方户名" width="200" show-overflow-tooltip></CustomTableColumn>
 				<CustomTableColumn v-if="columns[5].visible" prop="companyName" label="对方公司" width="120" show-overflow-tooltip></CustomTableColumn>
 				<CustomTableColumn v-if="columns[6].visible" prop="reason" label="付款原因" width="120" show-overflow-tooltip></CustomTableColumn>
 				<CustomTableColumn v-if="columns[7].visible" prop="applyPerson" label="申请人" width="120" show-overflow-tooltip></CustomTableColumn>
@@ -752,7 +752,7 @@ export default {
 					{{ checkPaymentInfo.fundsDate }}
 				</el-descriptions-item>
 				<el-descriptions-item label="对方账户名称">
-					{{ checkPaymentInfo.otherAcountsName }}
+					{{ checkPaymentInfo.otherAccountsName }}
 				</el-descriptions-item>
 				<el-descriptions-item label="对方银行卡号">
 					{{ checkPaymentInfo.otherBankNo }}
