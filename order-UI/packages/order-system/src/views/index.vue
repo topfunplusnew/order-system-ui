@@ -68,7 +68,7 @@
 								}
 							"
 						>
-							<el-table-column prop="index" label="序号" width="50" align="center" type="index"></el-table-column>
+							<el-table-column label="序号" width="50" align="center" prop="id"></el-table-column>
 							<el-table-column v-if="columns[0].visible" prop="orderDate" label="日期" show-overflow-tooltip></el-table-column>
 							<el-table-column v-if="columns[1].visible" prop="companyName" label="客户" show-overflow-tooltip></el-table-column>
 							<el-table-column v-if="columns[2].visible" prop="salesman" label="业务员" show-overflow-tooltip></el-table-column>

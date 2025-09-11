@@ -55,20 +55,20 @@
 			@header-dragend="changeColWidth"
 			@selection-change="handleSelectionChange"
 		>
-			<el-table-column label="ID" align="center" type="index" show-overflow-tooltip />
+			<el-table-column label="ID" align="center" prop="id" show-overflow-tooltip />
 			<el-table-column v-if="columns[0].visible" label="日期" align="center" prop="invoiceDate" show-overflow-tooltip />
-			<el-table-column v-if="columns[4].visible" label="供应商公司名称" align="center" prop="Supplier" show-overflow-tooltip />
+			<el-table-column v-if="columns[4].visible" label="开票方公司名称" align="center" prop="Supplier" show-overflow-tooltip />
 			<el-table-column v-if="columns[1].visible" label="开票金额" align="center" prop="invoiceAmount" show-overflow-tooltip />
-			<el-table-column v-if="columns[2].visible" label="供应商票点" align="center" prop="supplierTicketPoint" show-overflow-tooltip />
-			<el-table-column v-if="columns[3].visible" label="供应商票点金额" align="center" prop="supplierPointAmount" show-overflow-tooltip>
+			<el-table-column v-if="columns[2].visible" label="开票方票点" align="center" prop="supplierTicketPoint" show-overflow-tooltip />
+			<el-table-column v-if="columns[3].visible" label="开票方票点金额" align="center" prop="supplierPointAmount" show-overflow-tooltip>
 				<template #default="scope">
 					{{ scope.row.supplierPointAmount | changeNumber(changeLength) }}
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[5].visible" label="客户公司名称" align="center" prop="customer" show-overflow-tooltip />
+			<el-table-column v-if="columns[5].visible" label="收票方公司名称" align="center" prop="customer" show-overflow-tooltip />
 			<el-table-column v-if="columns[6].visible" label="票据单位名称" align="center" prop="invoiceCompanyName" show-overflow-tooltip />
-			<el-table-column v-if="columns[7].visible" label="客户票点" align="center" prop="customerTicketPoint" show-overflow-tooltip />
-			<el-table-column v-if="columns[8].visible" label="客户票点金额" align="center" prop="customerPointAmount" show-overflow-tooltip>
+			<el-table-column v-if="columns[7].visible" label="收票方票点" align="center" prop="customerTicketPoint" show-overflow-tooltip />
+			<el-table-column v-if="columns[8].visible" label="收票方票点金额" align="center" prop="customerPointAmount" show-overflow-tooltip>
 				<template #default="scope">
 					{{ scope.row.customerPointAmount | changeNumber(changeLength) }}
 				</template>
@@ -164,13 +164,20 @@
 						<el-form-item label="开票金额" prop="invoiceAmount">
 							<el-input v-model="form.invoiceAmount" placeholder="请输入开票金额" />
 						</el-form-item>
-						<el-form-item label="供应商公司名称" prop="Supplier">
+						<!-- 开票方公司类型：只是一个名称标识，实际值可以为客户或供应商 -->
+						<el-form-item label="开票方公司类型" prop="supplierCompanyType">
+							<el-radio-group v-model="form.supplierCompanyType">
+								<el-radio :label="PUBLIC_DICT_TYPE.CUSTOMER">{{ PUBLIC_DICT_TYPE.CUSTOMER }}</el-radio>
+								<el-radio :label="PUBLIC_DICT_TYPE.SUPPLIER">{{ PUBLIC_DICT_TYPE.SUPPLIER }}</el-radio>
+							</el-radio-group>
+						</el-form-item>
+						<el-form-item label="开票方公司名称" prop="Supplier">
 							<el-col :span="20">
 								<el-input disabled v-model="form.Supplier" placeholder="请选择" />
 							</el-col>
 							<el-col :span="4">
 								<SearchOption
-									:limit-info="{ companyType: '供应商' }"
+									:limit-info="{ companyType: form.supplierCompanyType || PUBLIC_DICT_TYPE.SUPPLIER }"
 									:get-data="listCompany"
 									query-info="companyName"
 									query-label="公司名称"
@@ -179,7 +186,7 @@
 									@commitBack="handleCommitBackCompany"
 								>
 									<template #table-columns>
-										<el-table-column label="供应商" align="center" prop="companyName" />
+										<el-table-column :label="form.supplierCompanyType || '开票方'" align="center" prop="companyName" />
 										<el-table-column label="老板姓名" align="center" prop="leader" />
 										<el-table-column label="老板电话" align="center" prop="leaderTel" />
 										<el-table-column label="区域" align="center" prop="region" />
@@ -189,19 +196,26 @@
 							</el-col>
 						</el-form-item>
 
-						<el-form-item label="供应商票点" prop="supplierTicketPoint">
-							<el-input v-model="form.supplierTicketPoint" placeholder="请输入供应商票点" />
+						<el-form-item label="开票方票点" prop="supplierTicketPoint">
+							<el-input v-model="form.supplierTicketPoint" placeholder="请输入开票方票点" />
 						</el-form-item>
-						<el-form-item label="供应商票点金额" prop="supplierPointAmount">
-							<el-input disabled v-model="form.supplierPointAmount" placeholder="请输入供应商票点金额" />
+						<el-form-item label="开票方票点金额" prop="supplierPointAmount">
+							<el-input disabled v-model="form.supplierPointAmount" placeholder="请输入开票方票点金额" />
 						</el-form-item>
-						<el-form-item label="客户公司名称" prop="customer">
+						<!-- 收票方公司类型：只是一个名称标识，实际值可以为客户或供应商 -->
+						<el-form-item label="收票方公司类型" prop="customerCompanyType">
+							<el-radio-group v-model="form.customerCompanyType">
+								<el-radio :label="PUBLIC_DICT_TYPE.CUSTOMER">{{ PUBLIC_DICT_TYPE.CUSTOMER }}</el-radio>
+								<el-radio :label="PUBLIC_DICT_TYPE.SUPPLIER">{{ PUBLIC_DICT_TYPE.SUPPLIER }}</el-radio>
+							</el-radio-group>
+						</el-form-item>
+						<el-form-item label="收票方公司名称" prop="customer">
 							<el-col :span="20">
 								<el-input disabled v-model="form.customer" placeholder="请选择" />
 							</el-col>
 							<el-col :span="4">
 								<SearchOption
-									:limit-info="{ companyType: '客户' }"
+									:limit-info="{ companyType: form.customerCompanyType || PUBLIC_DICT_TYPE.CUSTOMER }"
 									:get-data="listCompany"
 									query-info="companyName"
 									query-label="公司名称"
@@ -210,7 +224,7 @@
 									@commitBack="handleCommitBackCompanyCustomer"
 								>
 									<template #table-columns>
-										<el-table-column label="客户" align="center" prop="companyName" />
+										<el-table-column :label="form.customerCompanyType || '收票方'" align="center" prop="companyName" />
 										<el-table-column label="老板姓名" align="center" prop="leader" />
 										<el-table-column label="老板电话" align="center" prop="leaderTel" />
 										<el-table-column label="区域" align="center" prop="region" />
@@ -221,11 +235,11 @@
 						</el-form-item>
 					</el-col>
 					<el-col :span="12">
-						<el-form-item label="客户票点" prop="customerTicketPoint">
-							<el-input v-model="form.customerTicketPoint" placeholder="请输入客户票点" />
+						<el-form-item label="收票方票点" prop="customerTicketPoint">
+							<el-input v-model="form.customerTicketPoint" placeholder="请输入收票方票点" />
 						</el-form-item>
-						<el-form-item label="客户票点金额" prop="customerPointAmount">
-							<el-input disabled v-model="form.customerPointAmount" placeholder="自动计算客户票点金额" />
+						<el-form-item label="收票方票点金额" prop="customerPointAmount">
+							<el-input disabled v-model="form.customerPointAmount" placeholder="自动计算收票方票点金额" />
 						</el-form-item>
 						<el-form-item label="票据单位名称" prop="invoiceCompanyName">
 							<el-input v-model="form.invoiceCompanyName" placeholder="请输入票据单位名称" />
@@ -304,7 +318,7 @@ import { listInvoiceOther, delInvoiceOther, addInvoiceOther, updateInvoiceOtherE
 import { listTableEditMessage } from '@/api/system/tableEditMessage';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import { addReason } from '@/api/system/user';
-import { TableName } from '@/api/tool/enums';
+import { TableName, PUBLIC_DICT_TYPE } from '@/api/tool/enums';
 import SearchOption from '@/components/SearchOption.vue';
 import { listCompany } from '@/api/system/company';
 import { addDateRange } from '@/utils/ruoyi';
@@ -336,6 +350,8 @@ export default {
 			}
 		};
 		return {
+			// 枚举常量，供模板使用
+			PUBLIC_DICT_TYPE,
 			loading: true,
 			ids: [],
 			single: true,
@@ -385,28 +401,28 @@ export default {
 				supplierTicketPoint: [
 					{
 						required: true,
-						message: '请输入供应商票点',
+						message: '请输入开票方票点',
 						trigger: 'blur'
 					}
 				],
 				supplierPointAmount: [
 					{
 						required: true,
-						message: '请输入供应商票点金额',
+						message: '请输入开票方票点金额',
 						trigger: 'blur'
 					}
 				],
 				Supplier: [
 					{
 						required: true,
-						message: '请输入供应商公司名称',
+						message: '请输入开票方公司名称',
 						trigger: 'blur'
 					}
 				],
 				customer: [
 					{
 						required: true,
-						message: '请输入客户公司名称',
+						message: '请输入收票方公司名称',
 						trigger: 'blur'
 					}
 				],
@@ -420,15 +436,29 @@ export default {
 				customerTicketPoint: [
 					{
 						required: true,
-						message: '请输入客户票点',
+						message: '请输入收票方票点',
 						trigger: 'blur'
 					}
 				],
 				customerPointAmount: [
 					{
 						required: true,
-						message: '请输入客户票点金额',
+						message: '请输入收票方票点金额',
 						trigger: 'blur'
+					}
+				],
+				supplierCompanyType: [
+					{
+						required: true,
+						message: '请选择开票方公司类型',
+						trigger: 'change'
+					}
+				],
+				customerCompanyType: [
+					{
+						required: true,
+						message: '请选择收票方公司类型',
+						trigger: 'change'
 					}
 				],
 				invoiceDate: [
@@ -442,13 +472,13 @@ export default {
 			columns: [
 				{ key: 0, label: `开票日期`, visible: true },
 				{ key: 1, label: `开票金额`, visible: true },
-				{ key: 2, label: `供应商票点`, visible: true },
-				{ key: 3, label: `供应商票点金额`, visible: true },
-				{ key: 4, label: `供应商公司名称`, visible: true },
-				{ key: 5, label: `客户公司名称`, visible: true },
+				{ key: 2, label: `开票方票点`, visible: true },
+				{ key: 3, label: `开票方票点金额`, visible: true },
+				{ key: 4, label: `开票方公司名称`, visible: true },
+				{ key: 5, label: `收票方公司名称`, visible: true },
 				{ key: 6, label: `票据单位名称`, visible: true },
-				{ key: 7, label: `客户票点`, visible: true },
-				{ key: 8, label: `客户票点金额`, visible: true },
+				{ key: 7, label: `收票方票点`, visible: true },
+				{ key: 8, label: `收票方票点金额`, visible: true },
 				{ key: 9, label: `是否订单对应`, visible: true },
 				{ key: 10, label: `备注`, visible: true },
 				{ key: 11, label: `实际开票金额`, visible: true },
@@ -599,6 +629,10 @@ export default {
 				SupplierID: null,
 				customer: null,
 				CustomerID: null,
+				// 开票方公司类型：只是一个名称标识，实际值可以为客户或供应商
+				supplierCompanyType: PUBLIC_DICT_TYPE.SUPPLIER,
+				// 收票方公司类型：只是一个名称标识，实际值可以为客户或供应商
+				customerCompanyType: PUBLIC_DICT_TYPE.CUSTOMER,
 				invoiceCompanyName: null,
 				customerTicketPoint: null,
 				customerPointAmount: null,

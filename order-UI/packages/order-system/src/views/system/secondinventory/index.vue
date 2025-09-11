@@ -254,7 +254,7 @@
 					ref="inventoryDetail"
 				>
 					<el-table-column type="selection" width="50" align="center" :selectable="() => isEditingDetails" />
-					<el-table-column label="序号" align="center" type="index" width="50" />
+					<el-table-column label="序号" align="center" prop="id" width="50" />
 					<el-table-column label="行操作" align="center" width="100">
 						<template slot-scope="scope">
 							<el-button
@@ -345,7 +345,7 @@
 								>
 									<template #table-columns>
 										<el-table-column label="级别编码" align="center" prop="levelNo" />
-                    <el-table-column label="级别名称" align="center" prop="levelName" width="140"/>
+										<el-table-column label="级别名称" align="center" prop="levelName" width="140" />
 										<el-table-column label="分类编号" align="center" prop="categoryNo" />
 										<el-table-column label="分类名称" align="center" prop="categoryName" />
 										<el-table-column label="厚度" align="center" prop="height" />

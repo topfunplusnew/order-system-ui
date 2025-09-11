@@ -65,7 +65,7 @@
 			@header-dragend="changeColWidth"
 			@selection-change="handleSelectionChange"
 		>
-			<el-table-column type="index" label="ID" width="60" align="center" />
+			<el-table-column prop="id" label="ID" width="60" align="center" />
 			<el-table-column v-if="columns[4].visible" label="供应商公司名称" align="center" prop="Supplier" show-overflow-tooltip />
 			<el-table-column v-if="columns[0].visible" label="日期" align="center" prop="invoiceDate" show-overflow-tooltip />
 			<el-table-column v-if="columns[1].visible" label="开票金额" align="center" prop="invoiceAmount" show-overflow-tooltip />

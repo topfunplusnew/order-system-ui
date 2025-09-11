@@ -361,7 +361,7 @@
 					ref="inventoryDetail"
 				>
 					<CustomTableColumn type="selection" width="50" align="center" :selectable="() => true" />
-					<CustomTableColumn label="序号" align="center" type="index" width="50" />
+					<CustomTableColumn label="序号" align="center" prop="id" width="50" />
 					<CustomTableColumn label="行操作" align="center" width="100">
 						<template slot-scope="scope">
 							<el-button v-if="!scope.row.isEditing" :disabled="!isEditingDetails" size="mini" type="warning" icon="el-icon-edit" @click="handleRowEdit(scope.row)">编辑</el-button>

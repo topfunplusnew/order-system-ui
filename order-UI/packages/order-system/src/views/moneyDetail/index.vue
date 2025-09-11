@@ -24,7 +24,7 @@
 		</el-row>
 
 		<el-table v-loading="loading" :data="moneyDetailList" border size="mini" style="margin-top: 10px">
-			<el-table-column label="序号" type="index" width="60" align="center" show-overflow-tooltip />
+			<el-table-column label="序号" prop="id" width="60" align="center" show-overflow-tooltip />
 			<el-table-column label="支付日期" prop="paymentDate" align="center" show-overflow-tooltip />
 			<el-table-column label="支付类型" prop="paymentType" align="center" show-overflow-tooltip />
 			<el-table-column label="支付金额" prop="paymentAmount" align="center" show-overflow-tooltip />
