@@ -208,6 +208,7 @@ import { getBankAcceptance, getMinIdByBillNo } from '@/api/system/bankAcceptance
 import _ from 'lodash';
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
 import { mapGetters, mapActions } from 'vuex';
+import dayjs from 'dayjs';
 
 export default {
 	name: 'BankType',
@@ -734,13 +735,11 @@ export default {
 			this.$emit('updateBankAcceptance', _.cloneDeep(value));
 			this.flag = true;
 			this.drawer = false;
+			// 标记有承兑信息
+			this.hasBankAcceptanceInfo = true;
 			this.bankacceptanceInfo = value;
 			// 保存数据到sessionStorage
 			this.setAcceptanceFilled();
-			// 在内部转账场景下，设置默认的收票事由为内部转账
-			if (this.isInternalTransfer && value) {
-				value.reason = '内部转账';
-			}
 			this.$message.success('承兑信息保存成功');
 		},
 		// 抽屉关闭的逻辑
@@ -826,7 +825,7 @@ export default {
 				issueDate: null,
 				dueDate: null,
 				billAccount: null,
-				billDate: null,
+				billDate: dayjs().format('YYYY-MM-DD HH:mm:ss'),
 				billType: this.billType,
 				// 内部转账时默认为内部转账，其他情况收票时默认为购买
 				reason: this.isInternalTransfer ? '内部转账' : '购买',

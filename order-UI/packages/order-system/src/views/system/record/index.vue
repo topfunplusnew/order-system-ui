@@ -135,7 +135,7 @@
 			<pagination v-show="editReasonTotal > 0" :total="editReasonTotal" :page.sync="editReasonQueryParams.pageNum" :limit.sync="editReasonQueryParams.pageSize" @pagination="getEditReasonList" />
 		</el-dialog>
 
-		<!-- 添加或修改现金记账对话框  cashType 用于分别管理冲抵类型 : 冲抵货款 或者 冲抵第三方开票-->
+		<!-- 添加现金记账对话框  cashType 用于分别管理冲抵类型 : 冲抵货款 或者 冲抵第三方开票-->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="title" :visible.sync="open" width="1000px" append-to-body @close="handleDialogClose">
 			<el-form ref="form" :model="form" :rules="rules" label-width="150px">
 				<!--        目前支持两种类型 一种是冲抵货款 一种是冲抵第三方开票-->
@@ -303,7 +303,7 @@
 									<SearchOption
 										:limit-info="{
 											acountsType: form.sourceCompanyType,
-											acountsName: sourceName
+											companyId: form.sourceId
 										}"
 										:get-data="listBankAccount"
 										query-info="acountsName"
@@ -361,8 +361,7 @@
 								<el-col :span="16">
 									<el-input disabled v-model="targetName" type="text" placeholder="请选择" />
 								</el-col>
-								<!--              根据不同类型选择不同的 但是后来振龙说 选两次太麻烦, 所以去除-->
-								<!--              如果是司机-->
+
 								<el-col v-if="form.targetCompanyType === PUBLIC_DICT_TYPE.DRIVER" :span="8">
 									<SearchOption
 										:limit-info="{}"
@@ -439,7 +438,7 @@
 									<SearchOption
 										:limit-info="{
 											acountsType: form.targetCompanyType,
-											acountsName: targetName
+											companyId: form.targetId
 										}"
 										:get-data="listBankAccount"
 										query-info="acountsName"

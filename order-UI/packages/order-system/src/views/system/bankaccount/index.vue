@@ -496,7 +496,10 @@ export default {
 			bankChangeDefaultSort: { prop: 'operateDate', order: 'descending' },
 			bankAcountQuery: {
 				bankAcountTotalPageNum: 1,
-				bankAcountTotalpageSize: 20,
+				bankAcountTotalPageSize: 20,
+				// 默认按日期降序
+				orderByColumn: 'operateDate',
+				isAsc: 'descending',
 				params: {
 					operateDateEndTime: null,
 					operateDateStartTime: null
@@ -573,7 +576,11 @@ export default {
 		checkBankChangeFlow(row) {
 			this.currentBankNo = row.bankNo;
 			// 查询该银行账号的变动流水
-			listBankAccountChange({ selfBankNo: row.bankNo }).then(res => {
+			listBankAccountChange({
+				selfBankNo: row.bankNo,
+				orderByColumn: this.bankAcountQuery.orderByColumn,
+				isAsc: this.bankAcountQuery.isAsc
+			}).then(res => {
 				this.bankChangeList = res.rows;
 				this.bankAcountTotal = res.total;
 				this.bankChangeDialogVisible = true;
@@ -581,11 +588,14 @@ export default {
 		},
 		// 分页的请求
 		getBankAcountChangeList() {
+			const { bankAcountTotalPageNum, bankAcountTotalPageSize, orderByColumn, isAsc, params } = this.bankAcountQuery;
 			listBankAccountChange({
 				selfBankNo: this.currentBankNo,
-				pageNum: this.bankAcountQuery.bankAcountTotalPageNum,
-				pageSize: this.bankAcountQuery.bankAcountTotalPageSize,
-				...this.bankAcountQuery
+				pageNum: bankAcountTotalPageNum,
+				pageSize: bankAcountTotalPageSize,
+				orderByColumn,
+				isAsc,
+				...params
 			}).then(res => {
 				this.bankChangeList = res.rows;
 				this.bankAcountTotal = res.total;
