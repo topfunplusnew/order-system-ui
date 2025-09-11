@@ -236,161 +236,6 @@
 							</el-form-item>
 						</el-col>
 					</el-row>
-					<!--					<div style="padding: 30px">-->
-					<!--						<el-row :gutter="10" class="mb8">-->
-					<!--							<el-col :span="1.5">-->
-					<!--								<el-button size="mini" type="primary" @click="handleAddOildetail">添加</el-button>-->
-					<!--							</el-col>-->
-					<!--							<el-col :span="1.5">-->
-					<!--								<el-button size="mini" type="danger" @click="handleDeleteOildetail">删除</el-button>-->
-					<!--							</el-col>-->
-					<!--						</el-row>-->
-
-					<!--						&lt;!&ndash;            油卡消费记录&ndash;&gt;-->
-					<!--						<el-table size="mini" :data="oilCardConsumeList" :row-class-name="rowOilCardIndex" @selection-change="handleOilCardSelectionChange" ref="oilCardTable">-->
-					<!--							<template #empty>-->
-					<!--								<span>当前无油卡消费记录,若有,请添加油卡消费记录</span>-->
-					<!--							</template>-->
-					<!--							&lt;!&ndash; 多选 &ndash;&gt;-->
-					<!--							<el-table-column type="selection" width="90" align="center" />-->
-					<!--							&lt;!&ndash; 序号 &ndash;&gt;-->
-					<!--							<el-table-column label="序号" align="center" prop="index" width="50" />-->
-
-					<!--							&lt;!&ndash; 加油卡卡号 &ndash;&gt;-->
-					<!--							<el-table-column label="加油卡卡号" prop="oilCardNo" width="200">-->
-					<!--								<template #default="scope">-->
-					<!--									<el-row>-->
-					<!--										<el-col :span="20">-->
-					<!--											<el-input disabled size="mini" v-model="scope.row.oilCardNo" placeholder="请选择" />-->
-					<!--										</el-col>-->
-					<!--										<el-col :span="4">-->
-					<!--											<SearchOption-->
-					<!--												:get-data="listOilCard"-->
-					<!--												query-info="oilCardNo"-->
-					<!--												:query-name="queryOilCard"-->
-					<!--												query-label="油卡账号查询"-->
-					<!--												:limit-info="{-->
-					<!--													oilType: '主卡'-->
-					<!--												}"-->
-					<!--												@commitBack="value => handleCommitBackOilCard(value, scope.row)"-->
-					<!--												@update:queryName="handleCommitBackQueryOilCard"-->
-					<!--												:query-items="queryItemsOilCard"-->
-					<!--											>-->
-					<!--												<template #table-columns>-->
-					<!--													<el-table-column label="加油卡卡号" align="center" prop="oilCardNo" />-->
-					<!--													<el-table-column label="当前金额" align="center" prop="moneyAmount" />-->
-					<!--												</template>-->
-					<!--											</SearchOption>-->
-					<!--										</el-col>-->
-					<!--									</el-row>-->
-					<!--								</template>-->
-					<!--							</el-table-column>-->
-
-					<!--							&lt;!&ndash; 使用加油卡时间 &ndash;&gt;-->
-					<!--							<el-table-column label="使用加油卡时间" prop="useDate" width="200">-->
-					<!--								<template #default="scope">-->
-					<!--									<el-date-picker size="mini" v-model="scope.row.useDate" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss" />-->
-					<!--								</template>-->
-					<!--							</el-table-column>-->
-
-					<!--							&lt;!&ndash; 使用加油卡车辆车牌号 &ndash;&gt;-->
-					<!--							<el-table-column label="车辆车牌号" prop="carNo" width="200">-->
-					<!--								<template #default="scope">-->
-					<!--									<el-row>-->
-					<!--										<el-col :span="20">-->
-					<!--											<el-input disabled size="mini" v-model="scope.row.carNo" placeholder="请选择" />-->
-					<!--										</el-col>-->
-					<!--										<el-col :span="4">-->
-					<!--											<SearchOption-->
-					<!--												:get-data="listVehicles"-->
-					<!--												query-info="licensePlate"-->
-					<!--												:query-name="queryCarNumber"-->
-					<!--												query-label="车牌号查询"-->
-					<!--												:limit-info="{}"-->
-					<!--												@commitBack="value => handleCommitCarNumber(value, scope.row)"-->
-					<!--												@update:queryName="handleCommitBackQueryCarNumber"-->
-					<!--											>-->
-					<!--												<template #table-columns>-->
-					<!--													<el-table-column label="车牌号" align="center" prop="licensePlate" />-->
-					<!--													<el-table-column label="购买时间" align="center" prop="purchaseDate" width="180">-->
-					<!--														<template slot-scope="scope">-->
-					<!--															<span>{{ parseTime(scope.row.purchaseDate, '{y}-{m}-{d}') }}</span>-->
-					<!--														</template>-->
-					<!--													</el-table-column>-->
-					<!--													<el-table-column label="行驶里程" align="center" prop="mileage" />-->
-					<!--													<el-table-column label="保养金额" align="center" prop="maintenanceCost" />-->
-					<!--													<el-table-column label="保养日期" align="center" prop="maintenanceDate" width="180">-->
-					<!--														<template slot-scope="scope">-->
-					<!--															<span>{{ parseTime(scope.row.maintenanceDate, '{y}-{m}-{d}') }}</span>-->
-					<!--														</template>-->
-					<!--													</el-table-column>-->
-					<!--												</template>-->
-					<!--											</SearchOption>-->
-					<!--										</el-col>-->
-					<!--									</el-row>-->
-					<!--								</template>-->
-					<!--							</el-table-column>-->
-
-					<!--							&lt;!&ndash; 期初余额 &ndash;&gt;-->
-					<!--							<el-table-column label="期初余额" prop="startCardSurplus" width="150">-->
-					<!--								<template #default="scope">-->
-					<!--									<el-input size="mini" v-model="scope.row.startCardSurplus" placeholder="请输入期初余额" />-->
-					<!--								</template>-->
-					<!--							</el-table-column>-->
-
-					<!--							&lt;!&ndash; 充值金额 &ndash;&gt;-->
-					<!--							<el-table-column label="充值金额" prop="rechargeMoney" width="200">-->
-					<!--								<template #default="scope">-->
-					<!--									<el-input size="mini" v-model="scope.row.rechargeMoney" placeholder="请输入充值金额" />-->
-					<!--								</template>-->
-					<!--							</el-table-column>-->
-
-					<!--							&lt;!&ndash; 加油量 &ndash;&gt;-->
-					<!--							<el-table-column label="加油量" prop="refuelingNumber" width="150">-->
-					<!--								<template #default="scope">-->
-					<!--									<el-input size="mini" v-model="scope.row.refuelingNumber" placeholder="请输入加油量" />-->
-					<!--								</template>-->
-					<!--							</el-table-column>-->
-
-					<!--							&lt;!&ndash; 单价 &ndash;&gt;-->
-					<!--							<el-table-column label="单价" prop="unitPrice" width="150">-->
-					<!--								<template #default="scope">-->
-					<!--									<el-input size="mini" v-model="scope.row.unitPrice" placeholder="请输入单价" />-->
-					<!--								</template>-->
-					<!--							</el-table-column>-->
-
-					<!--							&lt;!&ndash; 加油金额 &ndash;&gt;-->
-					<!--							<el-table-column label="加油金额(元)" prop="refuelingMoney" width="150">-->
-					<!--								<template #default="scope">-->
-					<!--									<el-input size="mini" v-model="scope.row.refuelingMoney" placeholder="请输入加油金额" />-->
-					<!--								</template>-->
-					<!--							</el-table-column>-->
-
-					<!--							&lt;!&ndash; 加油小票附件 &ndash;&gt;-->
-					<!--							<el-table-column label="小票附件" prop="attachmentOiladd" width="300">-->
-					<!--								<template #default="scope">-->
-					<!--									<el-row>-->
-					<!--										<el-col :span="12">-->
-					<!--											<el-input size="mini" v-model="scope.row.attachmentOiladd" placeholder="附件路径" disabled />-->
-					<!--										</el-col>-->
-					<!--										<el-col :span="6">-->
-					<!--											<file-upload @input="value => handleUpload(value, scope)" :is-show-name="false" />-->
-					<!--										</el-col>-->
-					<!--										<el-col v-if="scope.row.attachmentOiladd !== null && scope.row.attachmentOiladd !== ''" :span="6">-->
-					<!--											<el-button size="mini" @click="checkPath(scope.row.attachmentOiladd)">查看附件</el-button>-->
-					<!--										</el-col>-->
-					<!--									</el-row>-->
-					<!--								</template>-->
-					<!--							</el-table-column>-->
-
-					<!--							&lt;!&ndash; 备注 &ndash;&gt;-->
-					<!--							<el-table-column label="备注" prop="comments" width="200">-->
-					<!--								<template #default="scope">-->
-					<!--									<el-input size="mini" v-model="scope.row.comments" placeholder="请输入备注" />-->
-					<!--								</template>-->
-					<!--							</el-table-column>-->
-					<!--						</el-table>-->
-					<!--					</div>-->
 				</el-form>
 			</div>
 			<div slot="footer" class="dialog-footer">
@@ -398,11 +243,6 @@
 				<el-button @click="cancel">取 消</el-button>
 			</div>
 		</el-dialog>
-
-		<!--    通用的弹窗组件-->
-		<div v-if="currentComponent">
-			<DialogWrapper :current-component="currentComponent" :dialog-visible="dialogVisible" />
-		</div>
 	</div>
 </template>
 
@@ -419,7 +259,6 @@ import '@riophae/vue-treeselect/dist/vue-treeselect.css';
 import CheckFiles from '../../../components/CheckFiles.vue';
 import UploadFilesButton from '../../../components/UploadFilesButton/index.vue';
 import { getCarApply, updateCarApply } from '../../../api/system/carApply';
-import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import { listVehicles } from '../../../api/system/vehicles';
 import { excludeParams } from '../../../api/tool/exclude';
@@ -427,7 +266,7 @@ import { parseTime } from 'order-system/src/utils/ruoyi';
 
 export default {
 	name: 'CarApply',
-	components: { DialogWrapper, CheckFiles, UploadFilesButton, Treeselect, SearchOption },
+	components: { CheckFiles, UploadFilesButton, Treeselect, SearchOption },
 	mixins: [mixin_printHTML, common_dialog, mixin_businesstrip_car_apply],
 	data() {
 		return {

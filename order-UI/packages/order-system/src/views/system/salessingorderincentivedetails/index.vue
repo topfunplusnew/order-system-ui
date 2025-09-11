@@ -167,10 +167,6 @@
 				<el-button @click="cancel">取 消</el-button>
 			</div>
 		</el-dialog>
-
-		<div v-if="currentComponent">
-			<DialogWrapper :current-component="currentComponent" :dialog-visible="dialogVisible" />
-		</div>
 	</div>
 </template>
 
@@ -188,14 +184,12 @@ import Incent from '../../dashboard/components/incent/Incent.vue';
 import { parseTime } from '../../../utils/ruoyi';
 import { checkOrderByOrderNo, getGoodsOrder } from '@/api/system/goodsOrder';
 import _ from 'lodash';
-import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
-import COMPANY from '@/components/NeedToShow/COMPANY.vue';
 import GOODS_ORDER from '@/components/NeedToShow/GOODS_ORDER.vue';
 
 export default {
 	name: 'Salessingorderincentivedetails',
-	components: { DialogWrapper, Incent },
+	components: { Incent },
 	mixins: [mixin_printHTML, mixin_sing_order_fill, common_dialog],
 	data() {
 		return {

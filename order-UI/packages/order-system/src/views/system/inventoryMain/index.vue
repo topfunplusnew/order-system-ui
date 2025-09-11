@@ -710,10 +710,6 @@
 				<el-button @click="cancel">取 消</el-button>
 			</div>
 		</el-dialog>
-
-		<div v-if="currentComponent">
-			<DialogWrapper :current-component="currentComponent" :dialog-visible="dialogVisible" />
-		</div>
 	</div>
 </template>
 
@@ -734,7 +730,6 @@ import CheckFiles from '../../../components/CheckFiles.vue';
 import { auditInventory } from '../../../api/system/inventoryMain';
 import StateTag from '../../dashboard/components/common/StateTag.vue';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
-import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import INVENTORY from '@/components/NeedToShow/INVENTORY.vue';
 import { parseTime } from '@/utils/ruoyi';
@@ -744,7 +739,7 @@ import DragDiv from '@/components/DragDiv/index.vue';
 
 export default {
 	name: 'InventoryMain',
-	components: { DialogWrapper, SearchOption, CheckFiles, UploadFilesButton, StateTag, DragDiv },
+	components: { SearchOption, CheckFiles, UploadFilesButton, StateTag, DragDiv },
 	mixins: [_fill, mixin_checkfile, mixin_printHTML, common_dialog],
 	data() {
 		// 自定义校验器：当选择陆运时，车队必填

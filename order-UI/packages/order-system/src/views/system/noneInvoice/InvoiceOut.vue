@@ -247,11 +247,6 @@
 				<el-button @click="extraInfoDialogVisible = false">取 消</el-button>
 			</div>
 		</el-dialog>
-
-		<div v-if="currentComponent">
-			<DialogWrapper :current-component="currentComponent" :dialog-visible="dialogVisible" />
-		</div>
-
 		<!-- 查看修改原因弹窗 -->
 		<el-dialog title="查看修改原因" :visible.sync="editReasonDialogVisible" width="800px" append-to-body>
 			<el-table :data="editReasonList" style="width: 100%">
@@ -271,8 +266,6 @@ import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import { excludeParams } from '@/api/tool/exclude';
 import SearchOption from '@/components/SearchOption.vue';
 import { listCompany } from '@/api/system/company';
-import { getGoodsOrder } from '@/api/system/goodsOrder';
-import { addReason } from '@/api/system/user';
 import { TableName } from '@/api/tool/enums';
 import { addDateRange } from '@/utils/ruoyi';
 import CheckFiles from '../../../components/CheckFiles.vue';
@@ -280,13 +273,12 @@ import UploadFilesButton from '@/components/UploadFilesButton/index.vue';
 import reLength from '../../dashboard/mixins/reLength';
 import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfile';
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
-import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import INVOICE_OUT from '@/components/NeedToShow/INVOICE_OUT.vue';
 
 export default {
 	name: 'NoneInvoiceOut',
-	components: { DialogWrapper, CheckFiles, UploadFilesButton, SearchOption },
+	components: { CheckFiles, UploadFilesButton, SearchOption },
 	mixins: [mixin_printHTML, reLength, mixin_checkfile, common_dialog],
 	data() {
 		// 金额格式验证（最多两位小数）

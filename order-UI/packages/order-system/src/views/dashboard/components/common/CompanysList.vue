@@ -1,15 +1,11 @@
 <script>
 import CompanyInformation from './CompanyInformation.vue';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
-import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 import { getCompany } from '../../../../api/system/company';
 import _ from 'lodash';
 
 export default {
 	name: 'CompanysList',
-	components: {
-		DialogWrapper
-	},
 	mixins: [common_dialog],
 	props: {
 		side: {
@@ -213,10 +209,6 @@ export default {
 				<el-button size="mini" @click="viewTemplateVisible = false">关闭</el-button>
 			</span>
 		</el-dialog>
-		<!--通用弹窗 配合common_dialog使用-->
-		<div v-if="currentComponent">
-			<DialogWrapper :current-component="currentComponent" :dialog-visible="dialogVisible" />
-		</div>
 	</div>
 </template>
 

@@ -278,10 +278,6 @@
 				<el-button @click="cancelOilCardOption">取 消</el-button>
 			</div>
 		</el-dialog>
-
-		<div v-if="currentComponent">
-			<DialogWrapper :current-component="currentComponent" :dialog-visible="dialogVisible" />
-		</div>
 	</div>
 </template>
 
@@ -297,13 +293,12 @@ import { parseTime } from '@/utils/ruoyi';
 import { getOilCardDetailSummary } from '../../../api/system/statement';
 import OilCardDetail from '../Statement/OilCardDetail.vue';
 import { common_dialog } from '../../dashboard/mixins/common/common_dialog';
-import DialogWrapper from '../../dashboard/components/common/DialogWrapper.vue';
 import { OilCardOptionType } from '@/api/tool/enums';
-import { addOilCardFundTransfer, updateOilCardFundTransfer } from '@/api/system/oilCardFundTransfer';
+import { addOilCardFundTransfer } from '@/api/system/oilCardFundTransfer';
 
 export default {
 	name: 'OilCard',
-	components: { DialogWrapper, SearchOption, UploadFilesButton },
+	components: { SearchOption, UploadFilesButton },
 	mixins: [common_dialog],
 	data() {
 		return {

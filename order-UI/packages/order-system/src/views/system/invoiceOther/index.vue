@@ -297,10 +297,6 @@
 				<el-button @click="extraInfoDialogVisible = false">取 消</el-button>
 			</div>
 		</el-dialog>
-		<div v-if="currentComponent">
-			<DialogWrapper :current-component="currentComponent" :dialog-visible="dialogVisible" />
-		</div>
-
 		<!-- 查看修改原因弹窗 -->
 		<el-dialog title="查看修改原因" :visible.sync="editReasonDialogVisible" width="800px" append-to-body>
 			<el-table :data="editReasonList" style="width: 100%">
@@ -317,7 +313,6 @@
 import { listInvoiceOther, delInvoiceOther, addInvoiceOther, updateInvoiceOtherExtra } from '@/api/system/invoiceOther';
 import { listTableEditMessage } from '@/api/system/tableEditMessage';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
-import { addReason } from '@/api/system/user';
 import { TableName, PUBLIC_DICT_TYPE } from '@/api/tool/enums';
 import SearchOption from '@/components/SearchOption.vue';
 import { listCompany } from '@/api/system/company';
@@ -328,13 +323,12 @@ import { fix } from '../../../api/tool/format';
 import reLength from '../../dashboard/mixins/reLength';
 import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfile';
 import { getInvoiceOther, updateInvoiceOther } from '../../../api/system/invoiceOther';
-import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import INVOICE_ORTHER from '@/components/NeedToShow/INVOICE_ORTHER.vue';
 
 export default {
 	name: 'InvoiceOther',
-	components: { DialogWrapper, CheckFiles, UploadFilesButton, SearchOption },
+	components: { CheckFiles, UploadFilesButton, SearchOption },
 	mixins: [mixin_printHTML, reLength, mixin_checkfile, common_dialog],
 	data() {
 		const validateAmount = (rule, value, callback) => {

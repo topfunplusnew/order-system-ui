@@ -30,18 +30,6 @@
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
 					</el-col>
 				</template>
-				<!--    后端说导出不要了 删除了    导出-->
-				<!-- <template #export>
-          <el-col :span="1.5">
-            <el-button
-              v-hasPermi="['system:exwarehouse:export']"
-              plain
-              icon="el-icon-folder-opened"
-              size="mini"
-              @click="handleExport"
-            ></el-button>
-          </el-col>
-        </template> -->
 			</right-toolbar>
 		</el-row>
 
@@ -112,11 +100,6 @@
 		</el-table>
 
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
-
-		<!-- 使用动态 DialogWrapper 展示订单详情 -->
-		<div v-if="currentComponent">
-			<DialogWrapper :current-component="currentComponent" :dialog-visible="dialogVisible" />
-		</div>
 
 		<!-- 添加或修改出库对话框 -->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
@@ -287,20 +270,14 @@
 <script>
 /* eslint-disable */
 import { listExWarehouse, getExWarehouse, delExWarehouse, addExWarehouse, updateExWarehouse } from '@/api/system/exWarehouse';
-import { listGoodsOrder } from '@/api/system/goodsOrder';
-import OrderDisplay from '@/components/OrderDisplay/index.vue';
-import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
-import { getInventory, listInventory } from '@/api/system/inventory';
-import { listConfig } from '@/api/system/config';
 import { addDateRange } from '@/utils/ruoyi';
-import { getDetail, listDetail } from '../../../api/system/detail';
+import { getDetail } from '../../../api/system/detail';
 import { listOrderDetailByOrderNos } from '../../../api/system/orderDetail';
 import OrderDetailInfo from '../../dashboard/components/goodsOrder/OrderDetailInfo.vue';
 
 export default {
 	name: 'ExWarehouse',
-	components: { DialogWrapper },
 	mixins: [common_dialog],
 	data() {
 		return {
@@ -359,10 +336,7 @@ export default {
 			checkOrderVisible: false,
 			orderDetailInfo: {},
 			inventoryInfo: {},
-			checkInventoryVisible: false,
-			// 动态 dialog 状态
-			currentComponent: null,
-			dialogVisible: false
+			checkInventoryVisible: false
 		};
 	},
 	// 展示与隐藏

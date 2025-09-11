@@ -267,10 +267,6 @@
 				</el-table-column>
 			</el-table>
 		</el-dialog>
-
-		<div v-if="currentComponent">
-			<DialogWrapper :current-component="currentComponent" :dialog-visible="dialogVisible" />
-		</div>
 	</div>
 </template>
 
@@ -284,7 +280,6 @@ import { PAYMENT_APPLY_STATE, TableName } from '@/api/tool/enums';
 import { listBankAccount } from '@/api/system/bankAccount';
 import { mixin_business_trip_add } from '../../dashboard/mixins/bussiness/business_trip_add';
 import StepsForm from '../../dashboard/components/businessTrip/StepsForm.vue';
-import { mixin_common_upload } from '../../dashboard/mixins/common/common_upload';
 import { mixin_business_trip_update } from '../../dashboard/mixins/bussiness/business_trip_update';
 import { mixin_business_trip_car_apply } from '../../dashboard/mixins/bussiness/bussiness_trip_car_apply';
 import SubjectOption from '../../../components/SubjectOption.vue';
@@ -293,21 +288,16 @@ import '@riophae/vue-treeselect/dist/vue-treeselect.css';
 import Treeselect from '@riophae/vue-treeselect';
 import CheckFiles from '@/components/CheckFiles.vue';
 import UploadFilesButton from '@/components/UploadFilesButton/index.vue';
-import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfile';
 import StateTag from '@/views/dashboard/components/common/StateTag.vue';
 import { listCarApply } from '../../../api/system/carApply';
 import SearchOption from '../../../components/SearchOption.vue';
 import { common_dialog } from '../../dashboard/mixins/common/common_dialog';
-import DialogWrapper from '../../dashboard/components/common/DialogWrapper.vue';
-import CARS from '../../../components/NeedToShow/CARS.vue';
-import { listCars } from '../../../api/system/cars';
 import { listVehicles } from '@/api/system/vehicles';
 import COMPANY_CAR from '@/components/NeedToShow/COMPANY_CAR.vue';
 
 export default {
 	name: 'BusinessTrip',
 	components: {
-		DialogWrapper,
 		SearchOption,
 		StateTag,
 		CheckFiles,

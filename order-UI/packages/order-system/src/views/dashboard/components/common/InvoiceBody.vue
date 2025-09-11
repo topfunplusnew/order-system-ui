@@ -6,13 +6,12 @@ import { PUBLIC_DICT_TYPE } from '@/utils/order';
 import { parseTime } from '@/utils/ruoyi';
 import { getUuid } from '@/utils/trash/utils';
 import { TableName } from '@/api/tool/enums';
-import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import ReadyList from '@/views/dashboard/components/common/ReadyList.vue';
 
 export default {
 	name: 'InvoiceBody',
-	components: { DialogWrapper, InvoiceItem },
+	components: { InvoiceItem },
 	mixins: [common_dialog],
 	props: {},
 	watch: {
@@ -427,11 +426,6 @@ export default {
 				</div>
 			</div>
 		</el-card>
-
-		<!--    通用弹窗 配合common_dialogs 使用-->
-		<div v-if="currentComponent">
-			<DialogWrapper :current-component="currentComponent" :dialog-visible="dialogVisible" />
-		</div>
 	</div>
 </template>
 

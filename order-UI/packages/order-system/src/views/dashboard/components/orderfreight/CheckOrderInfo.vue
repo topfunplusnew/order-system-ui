@@ -1,17 +1,16 @@
 <script>
 import OrderInfos from '../goodsOrder/OrderInfos.vue';
-import { checkOrderByOrderNo, getGoodsOrder } from '../../../../api/system/goodsOrder';
+import { getGoodsOrder } from '../../../../api/system/goodsOrder';
 import InfoDialog from '../../../../components/InfoDialog.vue';
 import OrderDetailInfo from '../goodsOrder/OrderDetailInfo.vue';
 import { FREIGHT_TYPE } from '../../mixins/freight/freight_payment';
 import { getInventoryMain } from '../../../../api/system/inventoryMain';
 import { common_dialog } from '../../mixins/common/common_dialog';
-import DialogWrapper from '../common/DialogWrapper.vue';
 import INVENTORYVue from '../../../../components/NeedToShow/INVENTORY.vue';
 
 export default {
 	name: 'CheckOrderInfo',
-	components: { OrderDetailInfo, InfoDialog, OrderInfos, DialogWrapper },
+	components: { OrderDetailInfo, InfoDialog, OrderInfos },
 	mixins: [common_dialog],
 	props: {
 		row: {
@@ -94,10 +93,6 @@ export default {
 				</el-tabs>
 			</template>
 		</InfoDialog>
-
-		<div v-if="currentComponent">
-			<DialogWrapper :current-component="currentComponent" :dialog-visible="dialogVisible" />
-		</div>
 	</div>
 </template>
 

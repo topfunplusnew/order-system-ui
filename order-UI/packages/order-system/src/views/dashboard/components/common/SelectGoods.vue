@@ -4,13 +4,12 @@ import QuerySearchBar from '@/views/dashboard/components/goodsOrder/QuerySearchB
 import { OptionInvent, Options } from '@/views/dashboard/mixins/order/order_Invoice';
 import { mapGetters } from 'vuex';
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
-import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import OrderDisplay from '@/components/OrderDisplay/index.vue';
 
 export default {
 	name: 'SelectGoods',
-	components: { DialogWrapper, QuerySearchBar },
+	components: { QuerySearchBar },
 	mixins: [common_dialog],
 	computed: {
 		// 拿出需要的
@@ -398,19 +397,11 @@ export default {
 
 <template>
 	<div>
-		<!--    通用弹窗 配合common_dialogs 使用-->
-		<div v-if="currentComponent">
-			<DialogWrapper :current-component="currentComponent" :dialog-visible="dialogVisible" />
-		</div>
-
 		<QuerySearchBar :query-params="queryParams" :visible-fields="searchBarFields" @updateQuery="handleQuery" />
-
 		<!-- 操作按钮：刷新 + 生成发票（右对齐） -->
 		<div class="select-actions">
 			<el-button type="primary" size="mini" @click="generateInvoice">生成发票</el-button>
 		</div>
-
-		<!--    显示选择的公司 如果是客户 那么就是批量卖出 如果是供应商 那么就是批量买入-->
 		<!--    订单列表主体-->
 		<el-table
 			id="printBox"

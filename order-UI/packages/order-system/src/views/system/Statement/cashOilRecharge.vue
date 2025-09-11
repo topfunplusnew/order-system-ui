@@ -80,16 +80,11 @@
 				<b>{{ totalAmount.toFixed(2) }} 元</b>
 			</div>
 		</div>
-
-		<div v-if="currentComponent">
-			<DialogWrapper :current-component="currentComponent" :dialog-visible="dialogVisible" />
-		</div>
 	</div>
 </template>
 
 <script>
 import { cashOilCardSummary } from '../../../api/system/statement';
-import DialogWrapper from '../../dashboard/components/common/DialogWrapper.vue';
 import { common_dialog } from '../../dashboard/mixins/common/common_dialog';
 import { listVehicles } from '../../../api/system/vehicles';
 import COMPANY_CAR from '../../../components/NeedToShow/COMPANY_CAR.vue'; // 假设 API 函数路径
@@ -97,7 +92,6 @@ import { mixin_printHTML } from '../../dashboard/mixins/print';
 
 export default {
 	name: 'CashOilCardSummary',
-	components: { DialogWrapper },
 	mixins: [common_dialog, mixin_printHTML],
 	data() {
 		return {

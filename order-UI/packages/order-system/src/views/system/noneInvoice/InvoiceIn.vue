@@ -305,10 +305,6 @@
 			<OrderDetailInfo :orderDetailInfoList="orderInfo.orderDetailInfoList" />
 		</el-dialog>
 
-		<div v-if="currentComponent">
-			<DialogWrapper :current-component="currentComponent" :dialog-visible="dialogVisible" />
-		</div>
-
 		<!-- 查看修改原因弹窗 -->
 		<el-dialog title="查看修改原因" :visible.sync="editReasonDialogVisible" width="800px" append-to-body>
 			<el-table :data="editReasonList" style="width: 100%">
@@ -339,14 +335,13 @@ import { getInvoiceIn, updateInvoiceIn, updateInvoiceInExtra } from '../../../ap
 import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfile';
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
 import { parseTime } from '@/utils/ruoyi';
-import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import INVOICE_IN from '@/components/NeedToShow/INVOICE_IN.vue';
 import OrderDetailInfo from '../../dashboard/components/goodsOrder/OrderDetailInfo.vue';
 
 export default {
 	name: 'NoneInvoiceIn',
-	components: { DialogWrapper, CheckFiles, UploadFilesButton, OrderInfos, ApplyPayment, SearchOption },
+	components: { CheckFiles, UploadFilesButton, OrderInfos, ApplyPayment, SearchOption },
 	mixins: [mixin_printHTML, OrderDetailInfo, reLength, mixin_checkfile, common_dialog],
 	data() {
 		// 金额格式验证（最多两位小数）

@@ -1,16 +1,13 @@
 <script>
-import { getBackupInfoV1, getMoneyChangeSummaryByDate, getTargetDates } from '@/api/system/statement';
+import { getMoneyChangeSummaryByDate, getTargetDates } from '@/api/system/statement';
 import { fix } from 'order-system/src/api/tool/format';
-import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import ChooseModule from '@/views/dashboard/backuplog/ChooseModule.vue';
 import { TableName } from '@/api/tool/enums';
-import { isToday } from '@/views/dashboard/backuplog';
 import { getFundChangeDetail } from '@/api/system/sql';
 
 export default {
 	name: 'MoneyChangeTotalAmount',
-	components: { DialogWrapper },
 	mixins: [common_dialog],
 	data() {
 		return {
@@ -490,10 +487,6 @@ export default {
 					</el-table>
 				</el-col>
 			</el-row>
-		</div>
-
-		<div v-if="currentComponent">
-			<DialogWrapper :current-component="currentComponent" :dialog-visible="dialogVisible" />
 		</div>
 	</div>
 </template>

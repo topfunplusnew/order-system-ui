@@ -96,10 +96,6 @@
 				</el-table-column>
 			</el-table>
 		</el-dialog>
-
-		<div v-if="currentComponent">
-			<DialogWrapper :current-component="currentComponent" :dialog-visible="dialogVisible" />
-		</div>
 	</div>
 </template>
 
@@ -111,10 +107,9 @@ import Pagination from '@/components/Pagination';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import INVENTORYDETAIL from '@/components/NeedToShow/INVENTORYDETAIL.vue';
 import WAREHOUSE from '../../../components/NeedToShow/WAREHOUSE.vue';
-import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 export default {
 	name: 'DetailInventoryChange',
-	components: { Pagination, DialogWrapper },
+	components: { Pagination },
 	mixins: [common_dialog],
 	data() {
 		return {

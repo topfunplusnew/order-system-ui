@@ -16,7 +16,6 @@ import { TableName, getTagColor, PAYMENT_APPLY_STATE } from '@/api/tool/enums';
 import { listCars } from '@/api/system/cars';
 import ApplyPayment from '@/views/dashboard/components/common/ApplyPayment.vue';
 import _ from 'lodash';
-import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import PAYMENT_APPLY_INFO from '@/components/NeedToShow/PAYMENT_APPLY_INFO.vue';
 import { listMyPaymentApply } from '../../../api/system/paymentApply';
@@ -24,7 +23,6 @@ import { listMyPaymentApply } from '../../../api/system/paymentApply';
 export default {
 	name: 'ApplyProcess',
 	components: {
-		DialogWrapper,
 		ApplyPayment,
 		CheckFiles,
 		StepInfo
@@ -819,11 +817,6 @@ export default {
 				<ApplyPayment :is-daily-expense="1" :need-money="needMoney" :need-info="{}" @changeOpen="changePaymentApplyInfoVisible" :money-input-disabled="false" />
 			</keep-alive>
 		</el-dialog>
-
-		<div v-if="currentComponent">
-			<DialogWrapper :current-component="currentComponent" :dialog-visible="dialogVisible" />
-		</div>
-
 		<!--    漫游组件-->
 		<v-tour name="paymentApplyTour" :steps="tourSteps" :options="tourOptions" :callbacks="tourCallBacks"></v-tour>
 	</div>

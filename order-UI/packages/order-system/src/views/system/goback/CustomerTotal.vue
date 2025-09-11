@@ -81,12 +81,6 @@
 				</template>
 			</el-table-column>
 		</el-table>
-
-		<!-- 分页 -->
-		<!--		<pagination v-show="total > 0" :total="total" :current-page.sync="searchForm.pageNum" :page-size.sync="searchForm.pageSize" @pagination="getList" />-->
-		<div v-if="currentComponent">
-			<DialogWrapper :current-component="currentComponent" :dialog-visible="dialogVisible" />
-		</div>
 	</div>
 </template>
 
@@ -97,7 +91,6 @@ import SearchOption from '@/components/SearchOption.vue';
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
 import { getCompany, listCompany } from '@/api/system/company';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
-import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 import COMPANY from '@/components/NeedToShow/COMPANY.vue';
 import { common_excel } from '@/views/dashboard/mixins/common/common_excel';
 import { formatBalance } from '@/utils/trash/utils';
@@ -110,7 +103,7 @@ export default {
 			return PUBLIC_DICT_TYPE;
 		}
 	},
-	components: { DialogWrapper, SearchOption },
+	components: { SearchOption },
 	data() {
 		return {
 			loading: false,
