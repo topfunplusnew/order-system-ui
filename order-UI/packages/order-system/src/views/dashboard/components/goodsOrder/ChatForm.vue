@@ -85,7 +85,7 @@ export default {
 						<th>其他费用</th>
 						<th>金额</th>
 						<th>{{ currentOrderInfo.landCarNo ? `车号` : `柜号` }}</th>
-						<th v-if="!currentOrderInfo.landCarNo">{{ `海运公司` }}</th>
+						<th v-if="currentOrderInfo.seaCarNo">{{ `海运公司` }}</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -105,7 +105,7 @@ export default {
 							<td>{{ item.paymentsWithSundry }}</td>
 							<td>{{ item.payments }}</td>
 							<td>{{ currentOrderInfo.landCarNo || currentOrderInfo.seaCarNo }}</td>
-							<td v-if="!currentOrderInfo.landCarNo">{{ currentOrderInfo.seaDriverName }}</td>
+							<td v-if="currentOrderInfo.seaCarNo">{{ currentOrderInfo.seaDriverName }}</td>
 						</tr>
 					</template>
 					<!--  这里是货物的列表 要根据订单货物的列表来渲染-->
