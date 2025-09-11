@@ -17,7 +17,10 @@
 			<el-form-item label="金额" prop="moneyAmount">
 				<el-row :gutter="5">
 					<el-col :span="12">
-						<el-input v-model="form.moneyAmount" placeholder="请输入金额" :disabled="inputDisabled && moneyInputDisabled" />
+						<el-input v-model="form.moneyAmount" placeholder="请输入金额" :disabled="hasTableReferences" />
+					</el-col>
+					<el-col :span="12" v-if="hasTableReferences">
+						<span style="color: #909399; font-size: 12px; line-height: 32px">牵扯到其他模块，金额不可修改</span>
 					</el-col>
 				</el-row>
 			</el-form-item>
@@ -432,6 +435,10 @@ export default {
 		PAYMENT_TARGET_TYPE() {
 			return PAYMENT_TARGET_TYPE;
 		},
+		// 判断是否存在表关联数据，如果存在则金额不可修改
+		hasTableReferences() {
+			return this.tableReferences && this.tableReferences.length > 0;
+		},
 		rules() {
 			// 基础校验规则 - 两种场景都需要的校验
 			const baseRules = {
@@ -782,12 +789,10 @@ export default {
 							this.$modal.msgError('请选择付款类型');
 							return;
 						}
-
 						// 构建表单数据
 						const formData = this.buildFormData();
 						formData.id = this.form.id;
 						formData.companyType = this.extraInformation.__companyType;
-
 						updatePaymentApply(formData).then(() => {
 							this.$modal.msgSuccess('付款申请保存成功,点击提交并审核可提交信息至审核流程');
 							// 清除附件组件状态
