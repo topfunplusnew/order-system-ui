@@ -192,7 +192,6 @@ export default {
 		},
 		// 对客户的筛选
 		async handleCustomerFilter(companyId) {
-			console.log('检索的id:', companyId);
 			if (!companyId) {
 				this.$message.warning('非法id!');
 			}
@@ -215,13 +214,12 @@ export default {
 		},
 		// 对供应商的筛选
 		async handleSupplierFilter(companyId) {
-			console.log('检索的id:', companyId);
 			if (!companyId) {
 				this.$message.warning('非法id!');
 			}
 			try {
 				// 赋值数据
-				this.queryParams.params[`supplierId`] = companyId;
+				this.queryParams.params.supplierId = companyId;
 				// 2025-2-13 订单搜索需要传入companyType
 				this.queryParams.params.BatchInsertInvoiceCompanyType = PUBLIC_DICT_TYPE.CUSTOMER;
 				// 强制更新vue
