@@ -138,11 +138,11 @@ export default {
 				</tbody>
 			</table>
 
-			<div class="footer-note">
-				<p>注：</p>
-				<p>1.玻璃为易碎品，请当面验货（若遇破损、淋雨、气泡、结石等一切质量问题均由司当面解决，收货后出现问题由客户自负，我公司概不负责）。</p>
-				<p>2.此单据等同合同，收货方签字认可后具有法律效力。</p>
-				<p>3.若发生纠纷，双方同意由供货方所在地法院处理。</p>
+			<div class="footer-note" style="margin-top: 40px; padding: 20px 0; font-size: 16px; line-height: 2.5">
+				<p style="margin: 5px 0">注：</p>
+				<p style="margin: 5px 0">1.玻璃为易碎品，请当面验货（若遇破损、淋雨、气泡、结石等一切质量问题均由司当面解决，收货后出现问题由客户自负，我公司概不负责）。</p>
+				<p style="margin: 5px 0">2.此单据等同合同，收货方签字认可后具有法律效力。</p>
+				<p style="margin: 5px 0">3.若发生纠纷，双方同意由供货方所在地法院处理。</p>
 			</div>
 		</div>
 	</div>
