@@ -601,13 +601,15 @@ export default {
 		async downloadFile(file) {
 			try {
 				const res = await downloadFileByName(file.fileName);
-				// 处理文件下载响应
-				const blob = new Blob([res]);
+				// 处理文件下载响应，确保contentType为application/octet-stream
+				const blob = new Blob([res], { type: 'application/octet-stream' });
 				const url = window.URL.createObjectURL(blob);
 				const link = document.createElement('a');
 				link.href = url;
 				link.download = file.fileName;
+				document.body.appendChild(link);
 				link.click();
+				document.body.removeChild(link);
 				window.URL.revokeObjectURL(url);
 				this.$message.success(`下载成功: ${file.fileName}`);
 			} catch (error) {

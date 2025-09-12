@@ -32,7 +32,8 @@ export function downloadFileByName(fileName) {
 		method: 'get',
 		params: {
 			fileName
-		}
+		},
+		responseType: 'blob'
 	});
 }
 
