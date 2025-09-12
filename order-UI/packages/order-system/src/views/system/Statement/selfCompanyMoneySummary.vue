@@ -75,7 +75,6 @@ export default {
 		return {
 			showSearch: true,
 			queryParams: {
-				beginTime: this.formatDate(oneMonthAgo),
 				endTime: this.formatDate(today)
 			},
 			tableData: [],
@@ -133,13 +132,7 @@ export default {
 		/** 导出按钮操作 */
 		handleExport() {
 			// 使用模拟地址，因为后端还没有完善
-			this.download(
-				'system/selfCompanyMoneySummary/export',
-				{
-					...this.queryParams
-				},
-				`selfCompanyMoneySummary_${new Date().getTime()}.xlsx`
-			);
+			this.download('/statistics/export/todaySelfCompanyMoneySummary?endTime=' + this.queryParams.endTime, null, `selfCompanyMoneySummary_${new Date().getTime()}.xlsx`);
 		}
 	}
 };
