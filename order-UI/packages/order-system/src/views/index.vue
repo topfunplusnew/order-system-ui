@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div class="page-container">
 		<el-row style="margin: 35px 0" :gutter="40">
 			<!-- 标记1 -->
 			<el-col :span="12">
@@ -9,24 +9,12 @@
 					</el-col>
 					<el-form :inline="true" :model="queryParams">
 						<el-form-item label="开始时间">
-							<el-date-picker
-								v-model="queryParams.startTime"
-								type="datetime"
-								size="mini"
-								value-format="yyyy-MM-dd HH:mm:ss"
-								placeholder="开始日期"
-								class="responsive-date-picker"
-							></el-date-picker>
+							<el-date-picker v-model="queryParams.startTime" type="datetime" size="mini"
+								value-format="yyyy-MM-dd HH:mm:ss" placeholder="开始日期" class="responsive-date-picker"></el-date-picker>
 						</el-form-item>
 						<el-form-item label="结束时间">
-							<el-date-picker
-								v-model="queryParams.endTime"
-								type="datetime"
-								size="mini"
-								value-format="yyyy-MM-dd HH:mm:ss"
-								placeholder="结束日期"
-								class="responsive-date-picker"
-							></el-date-picker>
+							<el-date-picker v-model="queryParams.endTime" type="datetime" size="mini"
+								value-format="yyyy-MM-dd HH:mm:ss" placeholder="结束日期" class="responsive-date-picker"></el-date-picker>
 						</el-form-item>
 						<el-form-item>
 							<el-button type="primary" size="mini" @click="handleSearch">搜索</el-button>
@@ -44,41 +32,41 @@
 							<!--        导出-->
 							<template #export>
 								<el-col :span="1.5">
-									<el-button v-hasPermi="['system:bankaccount:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
+									<el-button v-hasPermi="['system:bankaccount:export']" plain icon="el-icon-folder-opened" size="mini"
+										@click="handleExport"></el-button>
 								</el-col>
 							</template>
 						</right-toolbar>
 						<!--        发货列表-->
-						<el-table
-							id="printBox"
-							size="mini"
-							:data="tableData"
-							max-height="500"
-							show-summary
-							border
-							style="width: 100%"
-							:loading="loading"
-							:header-cell-style="{
+						<el-table id="printBox" size="mini" :data="tableData" max-height="500" show-summary border
+							style="width: 100%" :loading="loading" :header-cell-style="{
 								background: '#f0f0f0',
 								color: '#333'
-							}"
-							:cell-style="
-								() => {
-									return { padding: '2px' };
-								}
-							"
-						>
+							}" :cell-style="() => {
+								return { padding: '2px' };
+							}
+								">
 							<el-table-column label="序号" width="50" align="center" prop="id"></el-table-column>
-							<el-table-column v-if="columns[0].visible" prop="orderDate" label="日期" show-overflow-tooltip></el-table-column>
-							<el-table-column v-if="columns[1].visible" prop="companyName" label="客户" show-overflow-tooltip></el-table-column>
-							<el-table-column v-if="columns[2].visible" prop="salesman" label="业务员" show-overflow-tooltip></el-table-column>
-							<el-table-column v-if="columns[3].visible" prop="arrears" label="欠款" show-overflow-tooltip></el-table-column>
-							<el-table-column v-if="columns[4].visible" prop="profit" label="含税利润" show-overflow-tooltip></el-table-column>
-							<el-table-column v-if="columns[5].visible" prop="profitNoTax" label="不含税利润" width="110" show-overflow-tooltip></el-table-column>
-							<el-table-column v-if="columns[6].visible" prop="payments" label="总货款" show-overflow-tooltip></el-table-column>
-							<el-table-column v-if="columns[7].visible" prop="paymentFactory" label="出厂货款" show-overflow-tooltip></el-table-column>
-							<el-table-column v-if="columns[8].visible" prop="tonnage" label="吨位" show-overflow-tooltip></el-table-column>
-							<el-table-column v-if="columns[9].visible" prop="clerk" label="内勤" show-overflow-tooltip></el-table-column>
+							<el-table-column v-if="columns[0].visible" prop="orderDate" label="日期"
+								show-overflow-tooltip></el-table-column>
+							<el-table-column v-if="columns[1].visible" prop="companyName" label="客户"
+								show-overflow-tooltip></el-table-column>
+							<el-table-column v-if="columns[2].visible" prop="salesman" label="业务员"
+								show-overflow-tooltip></el-table-column>
+							<el-table-column v-if="columns[3].visible" prop="arrears" label="欠款"
+								show-overflow-tooltip></el-table-column>
+							<el-table-column v-if="columns[4].visible" prop="profit" label="含税利润"
+								show-overflow-tooltip></el-table-column>
+							<el-table-column v-if="columns[5].visible" prop="profitNoTax" label="不含税利润" width="110"
+								show-overflow-tooltip></el-table-column>
+							<el-table-column v-if="columns[6].visible" prop="payments" label="总货款"
+								show-overflow-tooltip></el-table-column>
+							<el-table-column v-if="columns[7].visible" prop="paymentFactory" label="出厂货款"
+								show-overflow-tooltip></el-table-column>
+							<el-table-column v-if="columns[8].visible" prop="tonnage" label="吨位"
+								show-overflow-tooltip></el-table-column>
+							<el-table-column v-if="columns[9].visible" prop="clerk" label="内勤"
+								show-overflow-tooltip></el-table-column>
 							<el-table-column v-if="columns[10].visible" prop="landCarNo" label="陆运车牌" show-overflow-tooltip>
 								<template #default="scope">
 									<span v-if="scope.row.landCarNo !== null">
@@ -95,17 +83,13 @@
 									<span v-else>无</span>
 								</template>
 							</el-table-column>
-							<el-table-column v-if="columns[12].visible" prop="fleet" label="车队" show-overflow-tooltip></el-table-column>
-							<el-table-column v-if="columns[13].visible" prop="freight" label="运费" show-overflow-tooltip></el-table-column>
+							<el-table-column v-if="columns[12].visible" prop="fleet" label="车队"
+								show-overflow-tooltip></el-table-column>
+							<el-table-column v-if="columns[13].visible" prop="freight" label="运费"
+								show-overflow-tooltip></el-table-column>
 						</el-table>
-						<pagination
-							v-show="total > 0"
-							:total="total"
-							:page.sync="queryParams.pageNum"
-							:limit.sync="queryParams.pageSize"
-							@pagination="getList"
-							style="width: 100%; text-align: center"
-						/>
+						<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum"
+							:limit.sync="queryParams.pageSize" @pagination="getList" style="width: 100%; text-align: center" />
 					</el-col>
 				</el-row>
 			</el-col>
@@ -118,17 +102,12 @@
 					</el-col>
 					<el-form :inline="true" :model="queryParamsHome">
 						<el-form-item label="开始日期">
-							<el-date-picker
-								v-model="queryParamsHome.startTime"
-								type="date"
-								size="mini"
-								value-format="yyyy-MM-dd"
-								placeholder="开始日期"
-								class="responsive-date-picker"
-							></el-date-picker>
+							<el-date-picker v-model="queryParamsHome.startTime" type="date" size="mini" value-format="yyyy-MM-dd"
+								placeholder="开始日期" class="responsive-date-picker"></el-date-picker>
 						</el-form-item>
 						<el-form-item label="时间">
-							<el-date-picker v-model="queryParamsHome.endTime" type="date" size="mini" value-format="yyyy-MM-dd" placeholder="结束日期" class="responsive-date-picker"></el-date-picker>
+							<el-date-picker v-model="queryParamsHome.endTime" type="date" size="mini" value-format="yyyy-MM-dd"
+								placeholder="结束日期" class="responsive-date-picker"></el-date-picker>
 						</el-form-item>
 						<el-form-item>
 							<el-button type="primary" size="mini" @click="handleProfitSearch">搜索</el-button>
@@ -152,22 +131,19 @@
 		<div class="fixed-footer">
 			<div class="progress-container" :class="{ 'hide-progress': downloadProgress <= 0 }">
 				<div class="progress-message" v-if="downloadMessage">{{ downloadMessage }}</div>
-				<el-progress
-					:percentage="downloadProgress"
-					:stroke-width="20"
-					:status="downloadProgress === 100 ? 'success' : 'warning'"
-					class="wave-progress"
-					:class="{
+				<el-progress :percentage="downloadProgress" :stroke-width="20"
+					:status="downloadProgress === 100 ? 'success' : 'warning'" class="wave-progress" :class="{
 						'is-downloading': downloadProgress > 0 && downloadProgress < 100,
 						'is-finished': downloadProgress === 100
-					}"
-				></el-progress>
+					}"></el-progress>
 			</div>
 			<div>
 				<el-button type="primary" size="mini" icon="el-icon-document" @click="logDialogVisible = true">下载日志</el-button>
 				<el-button type="info" icon="el-icon-question" size="mini" @click="handleLearn">查看教程</el-button>
-				<el-button id="step1" icon="el-icon-download" size="mini" type="warning" @click="handleBackgroundDownload">预先导出</el-button>
-				<el-button id="step2" type="primary" icon="el-icon-download" size="mini" @click="handleDownload">一键下载</el-button>
+				<el-button id="step1" icon="el-icon-download" size="mini" type="warning"
+					@click="handleBackgroundDownload">预先导出</el-button>
+				<el-button id="step2" type="primary" icon="el-icon-download" size="mini"
+					@click="handleDownload">一键下载</el-button>
 				<!-- 修改这里，添加 el-popover -->
 				<el-popover placement="top" width="900" trigger="hover" popper-class="preview-popover">
 					<div class="preview-content">
@@ -187,13 +163,15 @@
 						</a-list>
 						<div v-if="fileList.length > 3" class="preview-footer">还有 {{ fileList.length - 3 }} 个文件，点击查看更多</div>
 					</div>
-					<el-button id="step3" slot="reference" icon="el-icon-folder" size="mini" type="success" @click="showFileList">下载列表</el-button>
+					<el-button id="step3" slot="reference" icon="el-icon-folder" size="mini" type="success"
+						@click="showFileList">下载列表</el-button>
 				</el-popover>
 			</div>
 		</div>
 
 		<!-- 添加文件列表弹窗 -->
-		<a-modal title="可下载文件列表" :visible="fileListVisible" @cancel="fileListVisible = false" :footer="null" :width="1000" :destroyOnClose="true" class="file-list-modal">
+		<a-modal title="可下载文件列表" :visible="fileListVisible" @cancel="fileListVisible = false" :footer="null" :width="1000"
+			:destroyOnClose="true" class="file-list-modal">
 			<div class="file-search-wrapper">
 				<div class="search-tip">
 					<a-alert type="warning" show-icon>
@@ -203,10 +181,12 @@
 				<div class="search-form">
 					<a-form layout="inline">
 						<a-form-item label="开始时间">
-							<el-date-picker v-model="fileSearchForm.startTime" type="datetime" size="small" value-format="yyyy-MM-dd HH:mm:ss" placeholder="开始时间"></el-date-picker>
+							<el-date-picker v-model="fileSearchForm.startTime" type="datetime" size="small"
+								value-format="yyyy-MM-dd HH:mm:ss" placeholder="开始时间"></el-date-picker>
 						</a-form-item>
 						<a-form-item label="结束时间">
-							<el-date-picker v-model="fileSearchForm.endTime" type="datetime" size="small" value-format="yyyy-MM-dd HH:mm:ss" placeholder="结束时间"></el-date-picker>
+							<el-date-picker v-model="fileSearchForm.endTime" type="datetime" size="small"
+								value-format="yyyy-MM-dd HH:mm:ss" placeholder="结束时间"></el-date-picker>
 						</a-form-item>
 						<a-form-item>
 							<a-button type="primary" :loading="fileListLoading" @click="handleFileSearch">搜索</a-button>
@@ -217,7 +197,8 @@
 			<div class="file-list-header">
 				<span class="title">共 {{ fileList.length }} 个文件</span>
 			</div>
-			<a-list :data-source="fileList" class="file-list" :loading="fileListLoading" style="max-height: 450px; overflow-y: scroll">
+			<a-list :data-source="fileList" class="file-list" :loading="fileListLoading"
+				style="max-height: 450px; overflow-y: scroll">
 				<a-list-item v-for="(item, index) in fileList" :key="index">
 					<a-row type="flex" justify="space-between" align="middle" style="width: 100%">
 						<a-col :span="12">
@@ -242,7 +223,8 @@
 				</a-list-item>
 			</a-list>
 		</a-modal>
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="一键下载" :visible.sync="dialogVisible" width="30%" :before-close="handleClose">
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="一键下载"
+			:visible.sync="dialogVisible" width="30%" :before-close="handleClose">
 			<span>这是一段信息</span>
 			<span slot="footer" class="dialog-footer">
 				<el-button @click="dialogVisible = false">取 消</el-button>
@@ -253,7 +235,8 @@
 		<v-tour name="downloadListTour" :steps="tourSteps" :options="tourOptions" :callbacks="tourCallBacks"></v-tour>
 
 		<!-- 下载日志弹窗 -->
-		<el-dialog title="下载日志(该日志信息为实时日志并非后台下载)" :visible.sync="logDialogVisible" width="600px" :modal="false" class="download-log-dialog" :close-on-click-modal="false">
+		<el-dialog title="下载日志(该日志信息为实时日志并非后台下载)" :visible.sync="logDialogVisible" width="600px" :modal="false"
+			class="download-log-dialog" :close-on-click-modal="false">
 			<div class="log-scroll-area">
 				<ul>
 					<li v-for="(msg, idx) in downloadLogList" :key="idx">{{ msg }}</li>
@@ -744,7 +727,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~element-ui/lib/theme-chalk/index.css';
+@import './index.vue.style.scss';
 
 .button-search {
 	line-height: 60px;
@@ -820,20 +803,44 @@ export default {
 }
 
 .fixed-footer {
-	border-radius: 10px;
+	border-radius: 10px 10px 0 0;
 	position: fixed;
 	bottom: 0;
-	left: 20%;
-	width: 80%;
-	background: #fff;
-	border-top: 1px solid #ddd;
-	padding: 10px 20px;
+	left: 0;
+	width: 100%;
+	background: rgba(255, 255, 255, 0.95);
+	backdrop-filter: blur(10px);
+	border-top: 1px solid rgba(221, 221, 221, 0.5);
+	padding: 10px 10px;
 	text-align: right;
 	z-index: 1000;
+	transition: all 0.3s ease;
+	box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
 
 	.el-button {
 		margin-left: 10px;
 	}
+
+	@media screen and (max-width: 768px) {
+		padding: 8px 8px;
+		text-align: center;
+
+		.el-button {
+			margin: 4px;
+			padding: 6px 10px;
+			font-size: 12px;
+		}
+	}
+
+	// 为底部工具栏上方的内容添加边距
+	&+* {
+		margin-bottom: 50px;
+	}
+}
+
+// 添加一个占位符来防止内容被footer遮挡
+.page-container {
+	padding-bottom: 80px;
 }
 
 .ant-list-item {
@@ -845,12 +852,12 @@ export default {
 }
 
 .file-list-modal {
-	> .ant-modal-body {
+	>.ant-modal-body {
 		height: 500px;
 		padding: 0;
 	}
 
-	> .ant-modal-content .ant-modal-body {
+	>.ant-modal-content .ant-modal-body {
 		display: flex;
 		flex-direction: column;
 	}
