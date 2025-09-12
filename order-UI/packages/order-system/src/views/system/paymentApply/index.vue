@@ -103,26 +103,16 @@
 			append-to-body
 		>
 			<el-form ref="form" :model="form" :rules="rules" label-width="80px">
-				<!--        表名要自动填充 手动添加无需-->
-				<!--        <el-form-item label="对应的表名" prop="tableName">-->
-				<!--          <el-input v-model="form.tableName" placeholder="请输入对应的表名"/>-->
-				<!--        </el-form-item>-->
-				<!--        <el-form-item label="对应的表主键" prop="tID">-->
-				<!--          <el-input v-model="form.tID" placeholder="请输入对应的表主键"/>-->
-				<!--        </el-form-item>-->
 				<el-form-item label="日期" prop="fundsDate">
 					<el-date-picker v-model="form.fundsDate" type="datetime" placeholder="选择日期"></el-date-picker>
 				</el-form-item>
 				<el-form-item label="支付类型" prop="payType">
-					<!--          <el-input v-model="form.receiveType" placeholder="请输入支付类型"/>-->
 					<el-row :gutter="5">
-						<!--            一级分类-->
 						<el-col :span="8">
 							<el-select v-model="currentSort.levelOne" placeholder="请选择一级分类" @change="handleSelectOneLevel">
 								<el-option v-for="item in OneLevelOption" :key="item.id" :label="item.title" :value="item.title"></el-option>
 							</el-select>
 						</el-col>
-						<!--            二级分类-->
 						<el-col :span="8">
 							<el-select v-model="currentSort.levelTwo" placeholder="请选择二级分类" @change="handleSelectTwoLevel">
 								<el-option v-for="item in TwoLevelOption" :key="item.id" :label="item.title" :value="item.title"></el-option>
@@ -162,29 +152,12 @@
 				<el-form-item label="对方公司" prop="companyName">
 					<el-input v-model="form.companyName" placeholder="请输入对方公司" />
 				</el-form-item>
-				<!--        <el-form-item label="对方公司ID" prop="companyId">-->
-				<!--          <el-input v-model="form.companyId" placeholder="请输入对方公司ID"/>-->
-				<!--        </el-form-item>-->
-
 				<el-form-item label="付款原因" prop="reason">
 					<el-input v-model="form.reason" type="textarea" placeholder="请输入内容" />
 				</el-form-item>
-
-				<!--        文件-->
 				<el-form-item label="附件" prop="attachmentList">
 					<UploadFilesButton flag="attachmentList" :initial-attachments="(form.params && form.params.attachments) || []" @files-updated="handleAttachmentFilesUpdated" />
 				</el-form-item>
-
-				<!--        发起付款人的信息-->
-				<!--        <el-form-item label="申请人" prop="applyPerson">-->
-				<!--          <el-input v-model="form.applyPerson" placeholder="请输入申请人"/>-->
-				<!--        </el-form-item>-->
-				<!--        <el-form-item label="申请人ID" prop="applyPersonID">-->
-				<!--          <el-input v-model="form.applyPersonID" placeholder="请输入申请人ID"/>-->
-				<!--        </el-form-item>-->
-				<!--        <el-form-item label="审核状态" prop="checkState">-->
-				<!--          <el-input v-model="form.checkState" placeholder="请输入审核状态"/>-->
-				<!--        </el-form-item>-->
 				<el-form-item label="备注" prop="comments">
 					<el-input v-model="form.comments" placeholder="请输入备注" />
 				</el-form-item>

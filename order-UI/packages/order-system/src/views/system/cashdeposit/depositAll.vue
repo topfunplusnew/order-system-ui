@@ -32,7 +32,19 @@
 			<el-col :span="2">
 				<el-button size="mini" type="danger" @click="handleAdd">添加厂家保证金</el-button>
 			</el-col>
-			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList" />
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
+				<template #print>
+					<el-col :span="1.5">
+						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
+					</el-col>
+				</template>
+				<!--        导出-->
+				<template #export>
+					<el-col :span="1.5">
+						<el-button v-hasPermi="['system:lendmoney:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
+					</el-col>
+				</template>
+			</right-toolbar>
 		</el-row>
 
 		<!-- 表格 -->
@@ -654,6 +666,16 @@ export default {
 					this.getList();
 				})
 				.catch(() => {});
+		},
+		/** 导出按钮操作 */
+		handleExport() {
+			this.download(
+				'system/lendMoney/export',
+				{
+					...this.queryParams
+				},
+				`lendMoney_${new Date().getTime()}.xlsx`
+			);
 		}
 	}
 };

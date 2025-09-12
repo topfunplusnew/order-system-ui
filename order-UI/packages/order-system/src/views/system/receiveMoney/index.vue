@@ -861,10 +861,6 @@ export default {
 						this.$message.warning('请选择收款类型');
 						return;
 					}
-					if (!this.form.selfBankCardType || !this.form.otherBankCardType) {
-						this.$message.warning('请选择银行账户类型,缺一不可!');
-						return;
-					}
 					if (this.form.selfBankCardType && this.form.otherBankCardType) {
 						if (this.form.selfBankCardType !== this.form.otherBankCardType) {
 							this.$message.warning('操作失败，无法进行承兑与活期存款或者相反的交易,类型需要保持一致');

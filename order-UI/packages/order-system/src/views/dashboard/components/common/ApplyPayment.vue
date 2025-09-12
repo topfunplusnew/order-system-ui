@@ -504,8 +504,9 @@ export default {
 				applyPersonId: null, // 注意字段名修改
 				// 审核状态
 				checkState: null,
-				// 附件和备注
-				attachmentIds: null,
+				// 附件ID数组
+				attachmentIds: [],
+				// 附件列表（用于初始化显示）
 				attachmentList: [],
 				comments: null,
 				// 时间戳字段
@@ -632,6 +633,8 @@ export default {
 				reason: this.form.reason,
 				applyPerson: this.form.applyPerson,
 				applyPersonId: this.form.applyPersonId || null,
+				// 附件ID数组
+				attachmentIds: this.form.attachmentIds || [],
 				comments: this.form.comments,
 				// 时间戳信息
 				addTime: this.form.addTime || parseTime(new Date()),
@@ -640,19 +643,12 @@ export default {
 				// 新的表关联结构
 				tableReferences: this.buildTableReferences()
 			};
-
-			// 添加附件信息
-			if (this.form.attachmentIds) {
-				formData.attachmentIds = this.form.attachmentIds;
-			}
-
 			return formData;
 		},
 		// 处理附件文件更新
 		handleAttachmentFilesUpdated(uploadParams) {
-			if (uploadParams && uploadParams.params && uploadParams.params.attachmentIds) {
-				this.form.attachmentIds = uploadParams.params.attachmentIds;
-			}
+			// 直接获取附件ID数组并赋值给form.attachmentIds
+			this.form.attachmentIds = uploadParams.params.attachmentIds || [];
 		},
 		handleUpdateQueryNameOther(val) {
 			this.queryOther = val;
@@ -851,7 +847,9 @@ export default {
 				companyId: null,
 				companyType: null,
 				reason: null,
-				attachmentIds: null,
+				// 附件ID数组
+				attachmentIds: [],
+				// 附件列表（用于初始化显示）
 				attachmentList: [],
 				// 申请人信息
 				applyPerson: null,

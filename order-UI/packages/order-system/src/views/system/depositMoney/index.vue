@@ -46,10 +46,19 @@
 			<el-col :span="1.5">
 				<el-button type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete">批量删除</el-button>
 			</el-col>
-			<el-col :span="1.5">
-				<el-button type="success" plain icon="el-icon-download" size="mini" @click="handleExport">导出</el-button>
-			</el-col>
-			<right-toolbar :showSearch.sync="showSearch" :columns="tableColumns" @queryTable="getList" @column-change="handleColumnChange"></right-toolbar>
+			<right-toolbar :showSearch.sync="showSearch" :columns="tableColumns" @queryTable="getList" @column-change="handleColumnChange">
+				<template #print>
+					<el-col :span="1.5">
+						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
+					</el-col>
+				</template>
+				<!--        导出-->
+				<template #export>
+					<el-col :span="1.5">
+						<el-button v-hasPermi="['system:depositMoney:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
+					</el-col>
+				</template>
+			</right-toolbar>
 		</el-row>
 
 		<!-- 表格 -->
@@ -166,6 +175,7 @@ import { validateAmount } from '@/api/tool';
 import { createConfigManager } from '@/utils/configManager';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import { tableColumnMixin } from '@/mixins/tableColumnMixin';
+import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import columnConfig from './base/columns.js';
 import DepositMoneyForm from './base/DepositMoneyForm.vue';
 import { listBankAccount } from '@/api/system/bankAccount';
@@ -176,7 +186,7 @@ export default {
 	components: {
 		SearchOption
 	},
-	mixins: [common_dialog, tableColumnMixin],
+	mixins: [common_dialog, tableColumnMixin, mixin_printHTML],
 	data() {
 		return {
 			// 配置管理器
@@ -356,9 +366,13 @@ export default {
 		},
 		/** 导出按钮操作 */
 		handleExport() {
-			exportDepositMoney(this.queryParams).then(response => {
-				this.$download.excel(response, '保证金收取信息.xlsx');
-			});
+			this.download(
+				'system/depositMoney/export',
+				{
+					...this.queryParams
+				},
+				`depositMoney_${new Date().getTime()}.xlsx`
+			);
 		},
 		/** 日期范围选择处理 */
 		handleDateChange(dates) {

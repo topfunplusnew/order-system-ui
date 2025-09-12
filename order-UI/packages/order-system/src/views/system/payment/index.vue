@@ -149,7 +149,9 @@
 			</CustomTableColumn>
 			<CustomTableColumn label="支付状态" align="center" prop="paymentState" width="120" v-if="columns[10].visible" show-overflow-tooltip>
 				<template #default="scope">
-					<el-tag :type="scope.row.paymentState === '已支付' ? 'success' : scope.row.paymentState === '未支付' ? 'info' : 'warning'" size="mini">{{ scope.row.paymentState }}</el-tag>
+					<el-tag :type="scope.row.paymentState === PAYMENT_STATE.PAID ? 'success' : scope.row.paymentState === PAYMENT_STATE.UNPAID ? 'info' : 'warning'" size="mini">
+						{{ scope.row.paymentState }}
+					</el-tag>
 				</template>
 			</CustomTableColumn>
 
@@ -194,10 +196,10 @@
 							<i class="el-icon-arrow-down el-icon--right"></i>
 						</el-button>
 						<el-dropdown-menu slot="dropdown">
-							<el-dropdown-item v-if="scope.row.paymentState === '未支付'" v-hasPermi="['system:payment:edit']" command="payment">付款</el-dropdown-item>
-							<el-dropdown-item v-else-if="scope.row.paymentState === '已支付'" disabled command="paid">已付款</el-dropdown-item>
+							<el-dropdown-item v-if="scope.row.paymentState === PAYMENT_STATE.UNPAID" v-hasPermi="['system:payment:edit']" command="payment">付款</el-dropdown-item>
+							<el-dropdown-item v-else-if="scope.row.paymentState === PAYMENT_STATE.PAID" disabled command="paid">已付款</el-dropdown-item>
 							<el-dropdown-item v-else disabled command="applying">申请中</el-dropdown-item>
-							<el-dropdown-item v-hasPermi="['system:payment:edit']" command="edit" divided>编辑</el-dropdown-item>
+							<el-dropdown-item v-hasPermi="['system:payment:edit']" :disabled="scope.row.paymentState === PAYMENT_STATE.UNPAID" command="edit" divided>编辑</el-dropdown-item>
 							<el-dropdown-item v-hasPermi="['system:payment:remove']" command="delete">删除</el-dropdown-item>
 							<el-dropdown-item v-hasPermi="['system:tableeditmessage:list']" command="viewEditReason">查看修改原因</el-dropdown-item>
 						</el-dropdown-menu>
@@ -507,7 +509,7 @@ import CheckDetail from '../../dashboard/components/payment/CheckDetail.vue';
 import BankType from '@/views/dashboard/components/common/BankType.vue';
 import { mixin_bankType } from '../../dashboard/mixins/common/common_bankType';
 import StateTag from '@/views/dashboard/components/common/StateTag.vue';
-import { BankAcceptanceType, PayType, PAYMENT_TARGET_TYPE, PUBLIC_DICT_TYPE } from '../../../api/tool/enums';
+import { BankAcceptanceType, PayType, PAYMENT_TARGET_TYPE, PUBLIC_DICT_TYPE, PAYMENT_STATE } from '../../../api/tool/enums';
 import CheckFiles from '@/components/CheckFiles.vue';
 import { mixin_checkfile } from '@/views/dashboard/mixins/checkfiles/mixin_checkfile';
 import _ from 'lodash';
@@ -719,6 +721,9 @@ export default {
 		},
 		PUBLIC_DICT_TYPE() {
 			return PUBLIC_DICT_TYPE;
+		},
+		PAYMENT_STATE() {
+			return PAYMENT_STATE;
 		}
 	},
 	// 展示与隐藏
@@ -767,6 +772,11 @@ export default {
 					this.handlePaymentRow(row);
 					break;
 				case 'edit':
+					// 检查付款状态，如果是未支付状态则不允许编辑
+					if (row.paymentState === PAYMENT_STATE.UNPAID) {
+						this.$message.warning('未支付的付款信息不允许编辑，请先完成付款操作');
+						return;
+					}
 					this.handleEdit(row);
 					break;
 				case 'delete':
@@ -1148,7 +1158,7 @@ export default {
 				zIndex: 2600,
 				onOk: async () => {
 					try {
-						const res = await updatePayment({ ...row, paymentState: '已支付' });
+						const res = await updatePayment({ ...row, paymentState: PAYMENT_STATE.PAID });
 						this.$message.success(res.msg || '付款成功');
 						this.reset();
 						this.getList();
@@ -1169,7 +1179,7 @@ export default {
 			// 对auditState做保证处理
 			this.chooseInfo.auditState = this.chooseInfo.auditState === null ? '0' : this.chooseInfo.auditState === true ? '1' : '0';
 			// 更新付款状态
-			const newPayment = { ...this.chooseInfo, paymentState: '已支付' };
+			const newPayment = { ...this.chooseInfo, paymentState: PAYMENT_STATE.PAID };
 			updatePayment(newPayment).then(res => {
 				this.$modal.msgSuccess(res.msg);
 				// 重置弹出窗的付款信息 主要包含我方银行卡的信息
@@ -1186,10 +1196,6 @@ export default {
 					// 校验收款类型 和银行卡类型
 					if (!this.form.payType) {
 						this.$message.warning('请选择付款类型');
-						return;
-					}
-					if (!this.form.selfBankCardType || !this.form.otherBankCardType) {
-						this.$message.warning('请选择银行账户类型,缺一不可!');
 						return;
 					}
 					if (this.form.selfBankCardType && this.form.otherBankCardType) {
