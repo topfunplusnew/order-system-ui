@@ -75,8 +75,8 @@ export default {
 			:data="filterSelectedList"
 			:cell-style="
 				() => {
-					return { padding: '.5px' };
-				}
+				return { padding: '.5px' };
+			}
 			"
 			max-height="700"
 			size="mini"
@@ -112,4 +112,28 @@ export default {
 	</div>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+// 表格滚动条样式
+::v-deep .el-table__body-wrapper {
+	&::-webkit-scrollbar {
+		width: 12px;
+		height: 22px;
+		background-color: #0068ff;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		background-color: #f80606;
+		border-radius: 2px;
+		border: 2px solid #f2f6fc;
+
+		&:hover {
+			background-color: #fff30c;
+		}
+	}
+
+	&::-webkit-scrollbar-track {
+		background-color: rgba(0, 255, 70, 0.59);
+		border-radius: 6px;
+	}
+}
+</style>
