@@ -23,7 +23,7 @@
 			</el-form-item>
 			<el-form-item label="收取时间">
 				<el-date-picker
-					v-model="queryParams.depositDate"
+					v-model="dateRange"
 					type="daterange"
 					range-separator="至"
 					start-placeholder="开始日期"
@@ -173,6 +173,8 @@ export default {
 			total: 0,
 			// 保证金收取信息表格数据
 			depositMoneyList: [],
+			// 日期范围
+			dateRange: [],
 			// 查询参数
 			queryParams: {
 				pageNum: 1,
@@ -181,9 +183,12 @@ export default {
 				type: null,
 				targetType: null,
 				target: null,
-				depositDate: null,
 				reason: null,
-				comments: null
+				comments: null,
+				params: {
+					beginTime: null,
+					endTime: null
+				}
 			},
 			// 退款相关
 			refundDialogVisible: false,
@@ -242,6 +247,7 @@ export default {
 		},
 		resetQuery() {
 			this.resetForm('queryForm');
+			this.dateRange = null;
 			this.queryParams = {
 				pageNum: 1,
 				pageSize: 10,
@@ -249,9 +255,12 @@ export default {
 				type: null,
 				targetType: null,
 				target: null,
-				depositDate: null,
 				reason: null,
-				comments: null
+				comments: null,
+				params: {
+					beginTime: null,
+					endTime: null
+				}
 			};
 			this.handleQuery();
 		},
@@ -318,11 +327,11 @@ export default {
 		/** 日期范围选择处理 */
 		handleDateChange(dates) {
 			if (dates && dates.length === 2) {
-				this.queryParams.beginDepositDate = dates[0];
-				this.queryParams.endDepositDate = dates[1];
+				this.queryParams.params.beginTime = dates[0];
+				this.queryParams.params.endTime = dates[1];
 			} else {
-				this.queryParams.beginDepositDate = null;
-				this.queryParams.endDepositDate = null;
+				this.queryParams.params.beginTime = null;
+				this.queryParams.params.endTime = null;
 			}
 		},
 		/** 退款管理 */
