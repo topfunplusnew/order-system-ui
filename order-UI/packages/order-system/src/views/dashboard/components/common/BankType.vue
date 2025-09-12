@@ -7,7 +7,6 @@
 				<el-option v-for="item in dict.type.order_bank_card_type_nodel" :key="item.value" :label="item.label" :value="item.value" />
 			</el-select>
 		</div>
-
 		<div class="button-container">
 			<!-- 承兑信息按钮：根据是否已填写信息显示不同状态 -->
 			<el-button v-if="showAcceptanceButton()" size="small" @click="handleAcceptanceInfo">
@@ -71,7 +70,6 @@
 													:query-name="companyName"
 													@commitBack="
 														value => {
-															// 这里给的户名 - 使用 $set 确保响应式更新
 															this.$set(this.form, 'endorserName', value.acountsName);
 															this.$set(this.form, 'origin', PUBLIC_DICT_TYPE.SELF_COMPANY);
 															this.$set(this.form, 'endorser', value.id);
@@ -710,6 +708,7 @@ export default {
 			// 通知父组件更新
 			this.$emit('updateBankAcceptance', null);
 			this.$emit('updateSelectedType', value);
+			// 如果是双选择模式
 			if (this.waitForBothSelection && this.componentRole) {
 				this.handleDualSelectionMode(value);
 			} else {
@@ -729,7 +728,6 @@ export default {
 				// 使用 Vuex store 中的计算逻辑：只有双方都选择完成且有承兑选择时才显示抽屉
 				if (this.shouldShowAcceptanceDrawerInDualMode && !this.baned && !this.drawer) {
 					this.checkAndRestoreSessionData();
-					// 自动打开承兑信息填写抽屉
 					this.handleAcceptanceInfo();
 				}
 			});

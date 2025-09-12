@@ -66,6 +66,14 @@ export const TableName = Object.freeze({
 	ORDERCOMMISION: 'ordercommission'
 });
 
+// 给根据表明和id批量查询使用
+export const BatchQueryTableName = Object.freeze({
+	GOODS_ORDER: 'goodsorder',
+	ORDER_DETAIL: 'orderdetail',
+	INVENTORY: 'inventory_main',
+	INVENTORY_DETAIL: 'inventory_detail'
+});
+
 export const moduleNames = Object.freeze({
 	goodsorder: '订单',
 	inventory: '库存',

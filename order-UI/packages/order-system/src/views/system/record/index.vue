@@ -57,7 +57,6 @@
 			@selection-change="handleSelectionChange"
 		>
 			<el-table-column type="selection" width="55" align="center" />
-
 			<el-table-column v-if="columns[0].visible" label="ID" align="center" prop="id" />
 			<el-table-column v-if="columns[1].visible" label="交易时间" align="center" prop="transactionTime" width="180">
 				<template slot-scope="scope">
@@ -92,7 +91,6 @@
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[18].visible" label="操作人员姓名" align="center" prop="userName" show-overflow-tooltip />
-
 			<!-- 附件列 -->
 			<el-table-column label="附件" align="center" prop="attachment">
 				<template #default="scope">
@@ -104,7 +102,6 @@
 					</div>
 				</template>
 			</el-table-column>
-
 			<!-- 操作列 -->
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
 				<template slot-scope="scope">
@@ -158,18 +155,14 @@
 									<span>支出方信息</span>
 								</div>
 							</el-divider>
-
 							<el-form-item label="支出方类型" label-width="120px">
 								<el-radio v-model="form.sourceCompanyType" label="客户">客户</el-radio>
 								<el-radio v-model="form.sourceCompanyType" label="供应商">供应商</el-radio>
 								<el-radio v-model="form.sourceCompanyType" label="司机">司机</el-radio>
 							</el-form-item>
-
-							<!-- 支出方支付类型 -->
 							<el-form-item label="支付类型" prop="sourcePaymentType" label-width="120px">
 								<el-cascader v-model="form.sourcePaymentType" :options="paymentTypeTree" :props="props" @change="handleChange" placeholder="请选择支出方支付类型"></el-cascader>
 							</el-form-item>
-
 							<el-form-item label="支出方" label-width="120px">
 								<el-row>
 									<el-col :span="16">
@@ -194,7 +187,6 @@
 											</template>
 										</SearchOption>
 									</el-col>
-									<!--              如果是己方公司-->
 									<el-col v-else-if="form.sourceCompanyType === '己方公司'" :span="8">
 										<SearchOption
 											:limit-info="{
@@ -217,7 +209,6 @@
 											</template>
 										</SearchOption>
 									</el-col>
-									<!--            其他-->
 									<el-col v-else :span="8">
 										<SearchOption
 											:limit-info="{
@@ -242,8 +233,6 @@
 									</el-col>
 								</el-row>
 							</el-form-item>
-
-							<!-- 支出方户名 -->
 							<el-form-item label="户名" prop="sourceAccountName" label-width="120px">
 								<el-row>
 									<el-col :span="16">
@@ -676,6 +665,7 @@ import { mixin_record_uploadFiles } from '../../dashboard/mixins/record/record_u
 import { mixin_payment_subject } from '../../dashboard/mixins/payment/payment_subject';
 import { CASH_TYPE } from './constrant';
 import { mixin_record_fill } from './recordFill';
+import { mixin_record_auto_save } from './record_auto_save';
 import { mapActions, mapGetters } from 'vuex';
 export default {
 	name: 'Record',
@@ -692,7 +682,9 @@ export default {
 		// 通用银行卡类型选择混入
 		mixin_bankType,
 		// 支付类型选择混入
-		mixin_payment_subject
+		mixin_payment_subject,
+		// 内部转账表单自动保存混入
+		mixin_record_auto_save
 	],
 	data() {
 		return {
@@ -880,15 +872,16 @@ export default {
 			 * 只要冲抵类型改变那么就是要重新赋值表单
 			 * @param val
 			 */
-			handler(newVal) {
+			handler() {
 				this.reset();
-				// reset 方法中已经根据 cashType 设置了正确的支付类型，这里不需要再次设置
 			},
 			immediate: true
 		}
 	},
 	created() {
 		this.getList();
+		// 清除保存的内部转账表单数据
+		this.clearSavedInternalTransferForm();
 	},
 	methods: {
 		listCars,
@@ -897,47 +890,7 @@ export default {
 		parseTime,
 		updateRecord,
 		getRecord,
-		// Vuex actions 映射
 		...mapActions('bankAcceptance', ['setAccountTypeSelection', 'resetDualSelection', 'clearRoleSelection', 'saveInternalTransferFormData', 'clearInternalTransferFormData']),
-
-		/**
-		 * 获取当前保存的内部转账表单信息
-		 * @returns {Object} 保存的表单信息
-		 */
-		getSavedInternalTransferData() {
-			if (this.hasSavedInternalTransferData) {
-				return {
-					sourceAccount: this.sourceAccountInfo,
-					targetAccount: this.targetAccountInfo,
-					formData: this.savedFormData,
-					fullData: this.internalTransferFormData
-				};
-			}
-			return null;
-		},
-
-		/**
-		 * 恢复保存的内部转账表单信息（可选功能 当表单需要填充上次内容的时候）
-		 * 用于在特定场景下恢复之前保存的表单状态
-		 */
-		restoreSavedInternalTransferData() {
-			if (this.hasSavedInternalTransferData && this.cashType === this.CASH_TYPE.TRANSFER) {
-				const savedData = this.getSavedInternalTransferData();
-				if (savedData) {
-					// 恢复账户信息
-					if (savedData.sourceAccount) {
-						this.form.sourceBankNo = savedData.sourceAccount.bankNo;
-						this.sourceName = savedData.sourceAccount.acountsName;
-						this.form.sourceId = savedData.sourceAccount.id;
-					}
-					if (savedData.targetAccount) {
-						this.form.targetBankNo = savedData.targetAccount.bankNo;
-						this.targetName = savedData.targetAccount.acountsName;
-						this.form.targetId = savedData.targetAccount.id;
-					}
-				}
-			}
-		},
 		// 下拉菜单命令处理
 		handleCommand(command, row) {
 			switch (command) {
@@ -1051,25 +1004,21 @@ export default {
 		// 处理收入方银行账户类型的承兑信息更新
 		handleSelfBankAcceptanceUpdate(value) {
 			this.form.params.bankacceptance = value;
-			// 在内部转账模式下，保持支付类型不被清空
 			this.maintainInternalTransferPaymentTypes();
 		},
 		// 处理支出方银行账户类型的承兑信息更新
 		handleOtherBankAcceptanceUpdate(value) {
 			this.form.params.bankacceptance = value;
-			// 在内部转账模式下，保持支付类型不被清空
 			this.maintainInternalTransferPaymentTypes();
 		},
 		// 处理收入方银行类型变化
 		changeSelfBankType(value) {
 			this.form.selfBankCardType = value;
-			// 在内部转账模式下，确保支付类型不会被清空
 			this.maintainInternalTransferPaymentTypes();
 		},
 		// 处理支出方银行类型变化
 		changeOtherBankType(value) {
 			this.form.otherBankCardType = value;
-			// 在内部转账模式下，确保支付类型不会被清空
 			this.maintainInternalTransferPaymentTypes();
 		},
 		// 维护内部转账的支付类型
@@ -1108,8 +1057,6 @@ export default {
 				this.$refs.attachmentUpload.clearUploadedFiles();
 			}
 			this.clearAcceptanceFillStatus();
-
-			// **用户主动取消时，强制清空承兑信息（绕过错误保护机制）**
 			// 这里使用手动清空方法，因为用户主动取消意味着放弃当前操作
 			if (this.$refs.otherSelectBankType && this.$refs.otherSelectBankType.forceClearAcceptanceInfo) {
 				this.$refs.otherSelectBankType.forceClearAcceptanceInfo();
@@ -1117,14 +1064,10 @@ export default {
 			if (this.$refs.selfSelectBankType && this.$refs.selfSelectBankType.forceClearAcceptanceInfo) {
 				this.$refs.selfSelectBankType.forceClearAcceptanceInfo();
 			}
-
 			// 清除内部转账表单信息
 			const formId = `income-${this.form.id || 'new'}`;
 			this.clearInternalTransferFormData(formId);
-
-			// **发送 changeFlag 事件进行最终清理**
 			this.$bus.$emit('changeFlag', false);
-
 			// **优化的状态重置：使用组件的重置方法**
 			if (this.$refs.otherSelectBankType && this.$refs.otherSelectBankType.resetComponentState) {
 				this.$refs.otherSelectBankType.resetComponentState();
@@ -1132,16 +1075,13 @@ export default {
 			if (this.$refs.selfSelectBankType && this.$refs.selfSelectBankType.resetComponentState) {
 				this.$refs.selfSelectBankType.resetComponentState();
 			}
-
-			// **Vuex全局状态清理：确保双选择状态彻底清除**
 			if (this.cashType === this.CASH_TYPE.TRANSFER) {
 				// 使用唯一的formId确保状态隔离
 				const formId = `internal-transfer-${this.form.id || Date.now()}`;
 				this.$store.dispatch('bankAcceptance/resetDualSelection', formId);
 			}
-
-			// **会话存储清理：防止跨弹窗状态污染**
 			sessionStorage.removeItem('bankAcceptanceFilled');
+			this.clearSavedInternalTransferForm();
 		},
 		// 表单重置
 		reset() {
@@ -1258,7 +1198,6 @@ export default {
 		},
 		/** 提交按钮 */
 		submitForm() {
-			console.log(`this.form=>`, this.form);
 			this.$refs['form'].validate(valid => {
 				if (!valid) return;
 
@@ -1346,6 +1285,7 @@ export default {
 					sessionStorage.removeItem('editReason_record');
 					// 只在成功时清空票据信息状态
 					this.$bus.$emit('changeFlag', false);
+					this.clearSavedInternalTransferForm();
 					this.onSuccess('修改成功');
 				})
 				.catch(error => {
@@ -1382,7 +1322,6 @@ export default {
 					this.onSuccess('新增成功', true);
 				})
 				.catch(error => {
-					console.error('新增冲抵记录失败:', error);
 					// 回滚附件ID到原始状态
 					this.$store.commit('CLEAR_ATTACHMENT_IDS');
 					originalAttachmentIds.forEach(id => {
@@ -1430,6 +1369,7 @@ export default {
 					this.onSuccess('新增成功', true, true);
 					// 清除承兑信息状态
 					this.clearAcceptanceFillStatus();
+					this.clearSavedInternalTransferForm();
 					this.$refs.selfSelectBankType.localSelectType = null;
 					this.$refs.otherSelectBankType.localSelectType = null;
 				})
@@ -1566,12 +1506,9 @@ export default {
 				const formId = `internal-transfer-${this.form.id || Date.now()}`;
 				this.$store.dispatch('bankAcceptance/resetDualSelection', formId);
 			}
-
 			// 清除内部转账表单信息
 			const formId = `income-${this.form.id || 'new'}`;
 			this.clearInternalTransferFormData(formId);
-
-			// **会话存储清理：防止跨弹窗状态污染**
 			sessionStorage.removeItem('bankAcceptanceFilled');
 		},
 
@@ -1586,10 +1523,7 @@ export default {
 			if (this.$refs.selfSelectBankType && this.$refs.selfSelectBankType.forceClearAcceptanceInfo) {
 				this.$refs.selfSelectBankType.forceClearAcceptanceInfo();
 			}
-
-			// **发送 changeFlag 事件进行最终清理**
 			this.$bus.$emit('changeFlag', false);
-
 			// **优化的状态重置：使用组件的重置方法**
 			if (this.$refs.otherSelectBankType && this.$refs.otherSelectBankType.resetComponentState) {
 				this.$refs.otherSelectBankType.resetComponentState();
@@ -1597,8 +1531,6 @@ export default {
 			if (this.$refs.selfSelectBankType && this.$refs.selfSelectBankType.resetComponentState) {
 				this.$refs.selfSelectBankType.resetComponentState();
 			}
-
-			// **Vuex全局状态清理：确保双选择状态彻底清除**
 			if (this.cashType === this.CASH_TYPE.TRANSFER) {
 				const formId = `internal-transfer-${this.form.id || Date.now()}`;
 				this.$store.dispatch('bankAcceptance/resetDualSelection', formId);
