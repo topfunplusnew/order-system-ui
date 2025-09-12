@@ -399,8 +399,8 @@
 								ref="transactionHistoryUpload"
 								flag="transactionHistoryAttachmentList"
 								:extra-info="{ moduleType: 'payment', formId: form.id }"
-								:initial-attachments="form.transactionHistoryAttachmentList || []"
-								@files-updated="handleTransactionHistoryFilesUpdated"
+								:initial-attachments="form.attachmentList || []"
+								@files-updated="handleAttachmentFilesUpdated"
 							/>
 						</el-form-item>
 						<el-form-item label="录入人员" prop="userName">
@@ -419,7 +419,7 @@
 		</el-dialog>
 
 		<!--    选择银行卡的页面-->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="请选择付款银行卡" :visible.sync="chooseBankDialogVisible" width="600px">
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="请填写付款信息" :visible.sync="chooseBankDialogVisible" width="600px">
 			<div>
 				<el-form :model="chooseInfo" label-width="150px">
 					<el-form-item label="对方银行账户类型" prop="selfBankNo">
@@ -427,7 +427,7 @@
 							:bill-type="BankAcceptanceType.PAY_TYPE.PAYMENT"
 							:select-type="chooseInfo.otherBankCardType"
 							@updateSelectedType="changeCustomSelfBankType"
-							@updateBankAcceptance="value => (chooseInfo.bankacceptance = value)"
+							@updateBankAcceptance="value => (chooseInfo.params.bankacceptance = value)"
 						/>
 					</el-form-item>
 					<el-form-item label="我方银行账户类型" prop="selfBankNo">
@@ -437,7 +437,7 @@
 							:bill-type="BankAcceptanceType.PAY_TYPE.PAYMENT"
 							:select-type="chooseInfo.selfBankCardType"
 							@updateSelectedType="changeCustomSelfBankType"
-							@updateBankAcceptance="value => (chooseInfo.bankacceptance = value)"
+							@updateBankAcceptance="value => (chooseInfo.params.bankacceptance = value)"
 						/>
 					</el-form-item>
 					<el-form-item label="我方户名" prop="selfAccountsName">
@@ -682,7 +682,11 @@ export default {
 			],
 			// 银行卡选择的弹窗
 			chooseBankDialogVisible: false,
-			chooseInfo: {},
+			chooseInfo: {
+				params: {
+					bankacceptance: null
+				}
+			},
 			oneClickPaymentDialogVisible: false,
 
 			// 展示一下合并的信息
@@ -798,17 +802,6 @@ export default {
 				this.form.params.attachmentIds = uploadParams.params.attachmentIds;
 			}
 		},
-		// 处理银行卡流水附件文件更新
-		handleTransactionHistoryFilesUpdated(uploadParams) {
-			if (uploadParams && uploadParams.params && uploadParams.params.attachmentIds) {
-				// 确保 form.params 对象存在
-				if (!this.form.params) {
-					this.form.params = {};
-				}
-				// 将银行流水附件ID设置到表单的银行流水附件字段
-				this.form.params.transactionHistoryAttachmentIds = uploadParams.params.attachmentIds;
-			}
-		},
 		handleCommitUpload(value) {
 			this.form.attachment = value;
 		},
@@ -894,7 +887,6 @@ export default {
 				transactionHistory: null,
 				params: {
 					attachmentIds: [],
-					transactionHistoryAttachmentIds: [],
 					bankacceptance: null
 				}
 			};
@@ -952,7 +944,6 @@ export default {
 				bankacceptance: null,
 				params: {
 					attachmentIds: [],
-					transactionHistoryAttachmentIds: [],
 					bankacceptance: null
 				}
 			};
@@ -1001,7 +992,6 @@ export default {
 				delFlag: null,
 				params: {
 					attachmentIds: [],
-					transactionHistoryAttachmentIds: [],
 					bankacceptance: {}
 				}
 			};
@@ -1090,7 +1080,6 @@ export default {
 				params: {
 					...paymentData.params,
 					attachmentIds: paymentData.attachmentList ? paymentData.attachmentList.map(item => item.id) : [],
-					transactionHistoryAttachmentIds: paymentData.transactionHistoryAttachmentList ? paymentData.transactionHistoryAttachmentList.map(item => item.id) : [],
 					bankacceptance: paymentData.params?.bankacceptance || null
 				}
 			};
@@ -1146,11 +1135,11 @@ export default {
 			// 如果没有我方银行卡信息 需要跳出选择银行卡信息
 			if (!row.selfBankID) {
 				this.resetChooseInfo();
-				// 深克隆防止出现引用问题
-				this.chooseInfo = _.cloneDeep(row);
-				// 初始化承兑对象
-				this.chooseInfo.bankacceptance = null;
-				this.chooseInfo.params = { attachmentIds: [] };
+				Object.assign(this.chooseInfo, _.cloneDeep(row));
+				// 只填写弹窗表单中的相关属性到 chooseInfo
+				this.chooseInfo.selfAccountsName = row.selfAccountsName || '';
+				this.chooseInfo.selfBankNo = row.selfBankNo || '';
+				this.chooseInfo.selfBankName = row.selfBankName || '';
 				this.chooseBankDialogVisible = true;
 				return;
 			}
