@@ -841,7 +841,7 @@ export default {
 		},
 
 		// Vuex getters 映射 - 获取保存的内部转账表单信息
-		...mapGetters('bankAcceptance', ['internalTransferFormData', 'sourceAccountInfo', 'targetAccountInfo', 'savedFormData', 'hasSavedInternalTransferData']),
+		...mapGetters('bankAcceptance', ['internalTransferFormData', 'sourceAccountInfo', 'targetAccountInfo', 'savedFormData', 'hasSavedInternalTransferData', 'hasAcceptanceSelection']),
 
 		/**
 		 * 显示的去
@@ -1299,6 +1299,18 @@ export default {
 				}
 				if (this.$refs.otherSelectBankType && this.$refs.otherSelectBankType.localSelectType !== null) {
 					this.form.otherBankCardType = this.$refs.otherSelectBankType.localSelectType;
+				}
+
+				// **新增：内部转账时的承兑信息验证**
+				if (this.cashType === this.CASH_TYPE.TRANSFER) {
+					// 检查是否有任一方选择了承兑类型
+					if (this.hasAcceptanceSelection) {
+						// 如果有承兑选择，检查是否已填写承兑信息
+						if (!this.form.params.bankacceptance || this.form.params.bankacceptance === null) {
+							this.$message.error('请先填写承兑信息！');
+							return;
+						}
+					}
 				}
 
 				// 提取公共逻辑
