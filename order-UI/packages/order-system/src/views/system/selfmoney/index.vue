@@ -51,6 +51,11 @@
 							<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
 						</el-col>
 					</template>
+					<template #export>
+						<el-col :span="1.5">
+							<el-button plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
+						</el-col>
+					</template>
 				</right-toolbar>
 			</el-col>
 		</el-row>
@@ -262,6 +267,10 @@ export default {
 		resetQuery() {
 			this.resetForm('queryForm');
 			this.getList();
+		},
+		/** 导出按钮操作 */
+		handleExport() {
+			this.download('system/bankAccount/exportSelfMoneySummary?endDate=' + (this.queryParams.endDate ? this.queryParams.endDate : ''), null, `selfMoneySummary_${new Date().getTime()}.xlsx`);
 		}
 	}
 };

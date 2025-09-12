@@ -214,7 +214,6 @@ export function download(url, params, filename, config, isShowConfig = false) {
 			clearInterval(fakeProgressInterval); // 停止假进度
 		}
 	}, 500); // 每500ms更新一次进度
-
 	// 发送下载请求
 	return service
 		.post(url, params, {
@@ -231,7 +230,6 @@ export function download(url, params, filename, config, isShowConfig = false) {
 		.then(async data => {
 			clearInterval(fakeProgressInterval); // 停止假进度
 			downloadLoadingInstance.setText(`正在下载数据，请稍候 (100%)`); // 下载完成设置为100%
-
 			const isBlob = blobValidate(data);
 			if (isBlob) {
 				const blob = new Blob([data]);
