@@ -543,6 +543,7 @@ export default {
 
 	&::-webkit-scrollbar-track {
 		background: transparent;
+
 	}
 }
 
