@@ -30,6 +30,7 @@
 						</template>
 					</right-toolbar>
 				</el-row>
+
 				<el-table id="printBox" :data="tableData" border stripe size="mini">
 					<el-table-column type="index" label="序号" width="50" />
 					<el-table-column v-if="columns[0].visible" prop="date" label="日期" />
