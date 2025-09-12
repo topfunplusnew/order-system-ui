@@ -1136,10 +1136,6 @@ export default {
 			if (!row.selfBankID) {
 				this.resetChooseInfo();
 				Object.assign(this.chooseInfo, _.cloneDeep(row));
-				// 只填写弹窗表单中的相关属性到 chooseInfo
-				this.chooseInfo.selfAccountsName = row.selfAccountsName || '';
-				this.chooseInfo.selfBankNo = row.selfBankNo || '';
-				this.chooseInfo.selfBankName = row.selfBankName || '';
 				this.chooseBankDialogVisible = true;
 				return;
 			}
