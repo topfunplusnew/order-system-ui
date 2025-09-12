@@ -52,7 +52,11 @@
 			size="mini"
 			@selection-change="handleSelectionChange"
 		>
-			<el-table-column v-if="columns[0].visible" label="开票日期" align="center" prop="invoiceDate" width="140" show-overflow-tooltip />
+			<el-table-column v-if="columns[0].visible" label="开票日期" align="center" prop="invoiceDate" width="140" show-overflow-tooltip>
+				<template #default="scope">
+					{{ parseTime(scope.row.invoiceDate, '{y}-{m}-{d}') }}
+				</template>
+			</el-table-column>
 			<el-table-column v-if="columns[1].visible" label="发票金额" align="center" prop="invoiceAmount" width="140" show-overflow-tooltip />
 			<el-table-column v-if="columns[2].visible" label="公司类型" align="center" prop="companyType" width="140" show-overflow-tooltip />
 			<el-table-column v-if="columns[3].visible" label="公司名称" align="center" prop="companyName" width="140" show-overflow-tooltip />
@@ -75,7 +79,11 @@
 			<el-table-column v-if="columns[14].visible" label="票点收入（金额）" align="center" prop="ticketPointIncomeAmount" width="140" show-overflow-tooltip />
 			<el-table-column v-if="columns[15].visible" label="票点差额" align="center" prop="ticketPointDifference" width="140" show-overflow-tooltip />
 			<el-table-column v-if="columns[16].visible" label="总货款" align="center" prop="allPayments" width="140" show-overflow-tooltip />
-			<el-table-column v-if="columns[17].visible" label="实际开票日期" align="center" prop="orderDate" width="140" show-overflow-tooltip />
+			<el-table-column v-if="columns[17].visible" label="实际开票日期" align="center" prop="orderDate" width="140" show-overflow-tooltip>
+				<template #default="scope">
+					{{ parseTime(scope.row.orderDate, '{y}-{m}-{d}') }}
+				</template>
+			</el-table-column>
 			<el-table-column v-if="columns[18].visible" label="当月欠票" align="center" prop="oweamount" width="140" show-overflow-tooltip />
 			<el-table-column v-if="columns[19].visible" label="备注" align="center" prop="comments" width="140" show-overflow-tooltip />
 		</el-table>
@@ -141,6 +149,7 @@ import { listInvoiceAll } from '@/api/system/allInvoice';
 import { addInvoiceIn, delInvoiceIn, updateInvoiceIn } from '@/api/system/invoiceIn';
 import { TableName } from '@/api/tool/enums';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
+import { parseTime } from '@/utils/ruoyi';
 
 export default {
 	name: 'AllInvoice',
@@ -252,6 +261,7 @@ export default {
 		}
 	},
 	methods: {
+		parseTime,
 		/** 查询发票购入信息列表 */
 		getList() {
 			this.loading = true;

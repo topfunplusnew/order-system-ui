@@ -70,7 +70,11 @@
 			@selection-change="handleSelectionChange"
 		>
 			<el-table-column label="ID" align="center" prop="id" show-overflow-tooltip />
-			<el-table-column v-if="columns[0].visible" label="日期" align="center" prop="invoiceDate" show-overflow-tooltip />
+			<el-table-column v-if="columns[0].visible" label="日期" align="center" prop="invoiceDate" show-overflow-tooltip>
+				<template #default="scope">
+					{{ parseTime(scope.row.invoiceDate, '{y}-{m}-{d}') }}
+				</template>
+			</el-table-column>
 			<el-table-column v-if="columns[1].visible" label="我方收票主体" align="center" prop="invoiceObject" show-overflow-tooltip width="100px" />
 			<el-table-column v-if="columns[2].visible" label="开票金额" align="center" prop="invoiceAmount" show-overflow-tooltip />
 			<el-table-column v-if="columns[3].visible" label="对方公司类别" align="center" prop="companyType" width="100px" show-overflow-tooltip />
@@ -90,7 +94,7 @@
 			</el-table-column>
 			<el-table-column v-if="columns[12].visible" label="开票时间" align="center" show-overflow-tooltip>
 				<template #default="scope">
-					{{ scope.row.extraInfo && scope.row.extraInfo.actualInvoiceTime }}
+					{{ parseTime(scope.row.extraInfo && scope.row.extraInfo.actualInvoiceTime, '{y}-{m}-{d}') }}
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[13].visible" label="当月欠票金额" align="center" show-overflow-tooltip>
@@ -568,6 +572,7 @@ export default {
 		}
 	},
 	methods: {
+		parseTime,
 		updateInvoiceIn,
 		getInvoiceIn,
 		listCompany,

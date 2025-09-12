@@ -67,7 +67,11 @@
 		>
 			<el-table-column prop="id" label="ID" width="60" align="center" />
 			<el-table-column v-if="columns[4].visible" label="供应商公司名称" align="center" prop="Supplier" show-overflow-tooltip />
-			<el-table-column v-if="columns[0].visible" label="日期" align="center" prop="invoiceDate" show-overflow-tooltip />
+			<el-table-column v-if="columns[0].visible" label="日期" align="center" prop="invoiceDate" show-overflow-tooltip>
+				<template #default="scope">
+					{{ parseTime(scope.row.invoiceDate, '{y}-{m}-{d}') }}
+				</template>
+			</el-table-column>
 			<el-table-column v-if="columns[1].visible" label="开票金额" align="center" prop="invoiceAmount" show-overflow-tooltip />
 			<el-table-column v-if="columns[2].visible" label="供应商票点" align="center" prop="supplierTicketPoint" show-overflow-tooltip />
 			<el-table-column v-if="columns[3].visible" label="供应商票点金额" align="center" prop="supplierPointAmount" show-overflow-tooltip>
@@ -86,7 +90,7 @@
 			</el-table-column>
 			<el-table-column v-if="columns[9].visible" label="开票时间" align="center" show-overflow-tooltip>
 				<template #default="scope">
-					{{ scope.row.extraInfo && scope.row.extraInfo.actualInvoiceTime }}
+					{{ parseTime(scope.row.extraInfo && scope.row.extraInfo.actualInvoiceTime, '{y}-{m}-{d}') }}
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[10].visible" label="当月欠票金额" align="center" show-overflow-tooltip>
@@ -373,7 +377,7 @@ import { TableName } from '@/api/tool/enums';
 import SearchOption from '@/components/SearchOption.vue';
 import { listCompany } from '@/api/system/company';
 import { listGoodsOrder } from '@/api/system/goodsOrder';
-import { addDateRange } from '@/utils/ruoyi';
+import { addDateRange, parseTime } from '@/utils/ruoyi';
 import OrderInfos from '../../dashboard/components/goodsOrder/OrderInfos.vue';
 import { fix } from '../../../api/tool/format';
 import reLength from '../../dashboard/mixins/reLength';
@@ -574,6 +578,7 @@ export default {
 		}
 	},
 	methods: {
+		parseTime,
 		listGoodsOrder,
 		listCompany,
 		getInvoiceOther,

@@ -123,7 +123,10 @@ export default {
 				{ key: 19, label: '是否可编辑', visible: true },
 				{ key: 20, label: '客户是否含税', visible: true },
 				{ key: 21, label: '供应商是否开票', visible: true },
-				{ key: 22, label: '备注', visible: true }
+				{ key: 22, label: '备注', visible: true },
+				{ key: 23, label: '总利润(含税)', visible: true },
+				{ key: 24, label: '总利润(不含税)', visible: true },
+				{ key: 25, label: '总吨位', visible: true }
 			]
 		};
 	},
@@ -865,6 +868,22 @@ export default {
 					</template>
 				</CustomTableColumn>
 				<CustomTableColumn v-if="columns[22].visible" show-overflow-tooltip label="备注" align="center" prop="comments" />
+				<!-- 新增利润和吨位相关列 -->
+				<CustomTableColumn v-if="columns[23].visible" show-overflow-tooltip label="总利润(含税)" align="center" prop="allProfit" width="120px">
+					<template #default="scope">
+						{{ scope.row.allProfit | changeNumber(changeLength) }}
+					</template>
+				</CustomTableColumn>
+				<CustomTableColumn v-if="columns[24].visible" show-overflow-tooltip label="总利润(不含税)" align="center" prop="allProfitNoTax" width="120px">
+					<template #default="scope">
+						{{ scope.row.allProfitNoTax | changeNumber(changeLength) }}
+					</template>
+				</CustomTableColumn>
+				<CustomTableColumn v-if="columns[25].visible" show-overflow-tooltip label="总吨位" align="center" prop="allTonnage" width="120px">
+					<template #default="scope">
+						{{ scope.row.allTonnage | changeNumber(changeLength) }}
+					</template>
+				</CustomTableColumn>
 				<!--      右侧操作栏-->
 				<CustomTableColumn show-overflow-tooltip label="订单操作" align="center" class-name="small-padding fixed-width" width="300px" fixed="right">
 					<template slot-scope="scope">
