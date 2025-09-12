@@ -216,14 +216,7 @@ export default {
 	dicts: ['order_bank_card_type_nodel'],
 	computed: {
 		// Vuex getters 映射 - 银行承兑双选择状态管理
-		...mapGetters('bankAcceptance', [
-			'dualSelectionState',
-			'hasAcceptanceSelection',
-			'bothSelectedInDualMode',
-			'shouldShowAcceptanceDrawerInDualMode',
-			'getAcceptanceFormDraft',
-			'hasAcceptanceFormDraft'
-		]),
+		...mapGetters('bankAcceptance', ['dualSelectionState', 'hasAcceptanceSelection', 'bothSelectedInDualMode', 'shouldShowAcceptanceDrawerInDualMode']),
 		PUBLIC_DICT_TYPE() {
 			return PUBLIC_DICT_TYPE;
 		},
@@ -233,23 +226,6 @@ export default {
 		// 生成唯一的组件标识符
 		componentId() {
 			return `${this.formId}_${this.componentRole || 'default'}`;
-		},
-		// 在waitForBothSelection模式下，使用统一的formId来共享承兑表单数据
-		sharedFormId() {
-			if (this.waitForBothSelection) {
-				// 从formId中提取基础部分，去掉前缀差异
-				const baseId = this.formId.replace(/^(income|expense)-/, 'shared-');
-				return baseId;
-			}
-			return this.formId;
-		},
-		// 共享模式下的组件标识符（两个组件使用相同的标识符）
-		sharedComponentId() {
-			if (this.waitForBothSelection) {
-				// 在共享模式下，两个组件使用相同的componentId来共享草稿数据
-				return `${this.sharedFormId}_shared`;
-			}
-			return this.componentId;
 		}
 	},
 	// 对于不需要选择的场景，设置optionBaned = true  banned= true
@@ -505,9 +481,8 @@ export default {
 					this.hasSavedAcceptanceInfo = true;
 					// 将获取到的数据保存到sessionStorage
 					sessionStorage.setItem(this.bankAcceptanceFilledKey, JSON.stringify(res.data));
-					// 更新表单数据
+					// 从sessionStorage更新表单数据
 					this.loadSavedFormFromSession();
-					console.log('获取到承兑信息', this.form);
 					// 通知父组件更新状态
 					this.$emit('updateBankAcceptance', _.cloneDeep(res.data));
 				}
@@ -536,14 +511,7 @@ export default {
 	},
 	methods: {
 		// Vuex actions 映射
-		...mapActions('bankAcceptance', [
-			'setAccountTypeSelection',
-			'resetDualSelection',
-			'clearRoleSelection',
-			'saveAcceptanceFormDraft',
-			'clearAcceptanceFormDraft',
-			'clearAcceptanceFormDraftsByFormId'
-		]),
+		...mapActions('bankAcceptance', ['setAccountTypeSelection', 'resetDualSelection', 'clearRoleSelection']),
 		listBankAccount,
 		listCompany,
 		// 控制承兑信息按钮的显示
@@ -551,7 +519,6 @@ export default {
 			if (this.baned || !this.localSelectType) {
 				return false;
 			}
-
 			// 如果不是承兑类型，不显示按钮
 			if (!this.localSelectType || this.localSelectType !== BankAcceptanceType.ACCEPTANCE) {
 				return false;
@@ -569,10 +536,6 @@ export default {
 			if (this.flag && this.hasSavedAcceptanceInfo) {
 				return '修改承兑信息';
 			}
-			// 如果有草稿数据（使用共享标识符检查）
-			if (this.hasAcceptanceFormDraft(this.sharedFormId, this.sharedComponentId)) {
-				return '继续填写承兑信息';
-			}
 			// 默认状态
 			return '填写承兑信息';
 		},
@@ -583,9 +546,7 @@ export default {
 			}
 			// 重置票据信息表单
 			this.resetAcceptanceForm();
-			// 从 Vuex 获取草稿数据
-			this.loadFormDraftFromStore();
-			// 如果没有草稿数据且有已保存的承兑信息，则从sessionStorage加载
+			// 如果有已保存的承兑信息，则从sessionStorage加载
 			if (this.hasSavedAcceptanceInfo) {
 				this.loadSavedFormFromSession();
 			}
@@ -727,8 +688,6 @@ export default {
 			this.flag = false;
 			this.clearAcceptanceFillStatus();
 			this.resetAcceptanceForm();
-			// 清除草稿数据
-			this.clearCurrentFormDraft();
 		},
 		// **新增：完整的组件状态重置方法**
 		resetComponentState() {
@@ -738,9 +697,6 @@ export default {
 			this.drawer = false;
 			this.resetAcceptanceForm();
 			this.clearAcceptanceFillStatus();
-
-			// 清除草稿数据
-			this.clearCurrentFormDraft();
 
 			// 如果是双选择模式，清除对应的角色状态
 			if (this.waitForBothSelection && this.componentRole) {
@@ -753,23 +709,6 @@ export default {
 		handleEmitType(value) {
 			if (value !== BankAcceptanceType.ACCEPTANCE) {
 				this.clearAcceptanceFillStatus();
-				// 清除草稿数据的逻辑
-				if (this.waitForBothSelection) {
-					// 在waitForBothSelection模式下，只有当双方都不是承兑类型时才清除草稿数据
-					this.$nextTick(() => {
-						const accountTypes = this.dualSelectionState;
-						if (accountTypes && typeof accountTypes === 'object') {
-							const hasAnyAcceptance = accountTypes.source === BankAcceptanceType.ACCEPTANCE || accountTypes.target === BankAcceptanceType.ACCEPTANCE;
-							if (!hasAnyAcceptance) {
-								// 双方都不是承兑类型，清除草稿数据
-								this.clearCurrentFormDraft();
-							}
-						}
-					});
-				} else {
-					// 单独模式下，直接清除草稿数据
-					this.clearCurrentFormDraft();
-				}
 			}
 			// 通知父组件更新
 			this.$emit('updateBankAcceptance', null);
@@ -846,14 +785,10 @@ export default {
 			this.hasSavedAcceptanceInfo = true;
 			// 保存数据到sessionStorage
 			this.setAcceptanceFilled();
-			// 清除草稿数据（因为已经正式提交了）
-			this.clearCurrentFormDraft();
 			this.$message.success('承兑信息保存成功');
 		},
 		// 抽屉关闭的逻辑
 		handleClose(done) {
-			// 在关闭前保存表单草稿到store
-			this.saveFormDraftToStore();
 			done();
 		},
 		handleAssign(value) {
@@ -960,41 +895,8 @@ export default {
 			}
 		},
 
-		// 保存表单草稿到store
-		saveFormDraftToStore() {
-			this.saveAcceptanceFormDraft({
-				formId: this.sharedFormId,
-				componentId: this.sharedComponentId,
-				formData: _.cloneDeep(this.form)
-			});
-		},
-
-		// 从store加载表单草稿
-		loadFormDraftFromStore() {
-			const draft = this.getAcceptanceFormDraft(this.sharedFormId, this.sharedComponentId);
-			if (draft && draft.formData) {
-				this.form = _.cloneDeep(draft.formData);
-				// 确保表单验证状态正确
-				this.$nextTick(() => {
-					if (this.$refs['form']) {
-						this.$refs['form'].clearValidate();
-					}
-				});
-			}
-		},
-
-		// 清除当前表单的草稿数据
-		clearCurrentFormDraft() {
-			this.clearAcceptanceFormDraft({
-				formId: this.sharedFormId,
-				componentId: this.sharedComponentId
-			});
-		},
-
-		// 处理重置承兑表单（包括清除草稿）
+		// 处理重置承兑表单
 		handleResetAcceptanceForm() {
-			// 清除store中的草稿数据
-			this.clearCurrentFormDraft();
 			// 重置表单
 			this.resetAcceptanceForm();
 			this.$message.success('表单已重置');
@@ -1005,11 +907,6 @@ export default {
 		this.resetAcceptanceForm();
 	},
 	beforeDestroy() {
-		// 在销毁前保存表单草稿（如果有数据）
-		if (this.drawer) {
-			this.saveFormDraftToStore();
-		}
-
 		// 组件销毁时清除当前组件的sessionStorage
 		sessionStorage.removeItem(this.bankAcceptanceFilledKey);
 		// 移除总线事件监听
