@@ -70,7 +70,7 @@
 		<!-- 退款管理弹窗 -->
 		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" title="退款管理" :visible.sync="refundDialogVisible" width="80%" append-to-body>
 			<div class="mb8">
-				<el-button type="primary" size="mini" @click="handleAddRefund">新增退款</el-button>
+				<el-button type="primary" size="mini" @click="handleAddRefund(currentRow)">新增退款</el-button>
 			</div>
 			<el-table v-loading="refundLoading" :data="refundList" border size="mini">
 				<CustomTableColumn prop="refundDate" label="退款日期" width="120" />
@@ -105,10 +105,33 @@
 					<el-date-picker v-model="refundForm.refundDate" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="请选择退款日期" style="width: 100%" />
 				</el-form-item>
 				<el-form-item label="收款账户" prop="accountsName">
-					<el-input v-model="refundForm.accountsName" placeholder="请输入收款账户" />
+					<el-row>
+						<el-col :span="16">
+							<el-input v-model="refundForm.accountsName" placeholder="请选择收款账户" disabled />
+						</el-col>
+						<el-col :span="8">
+							<SearchOption
+								:limit-info="{ acountsType: '己方公司' }"
+								:get-data="listBankAccount"
+								icon="el-icon-search"
+								query-label="户名查找"
+								query-info="acountsName"
+								:query-name="queryRefundBank"
+								@commitBack="handleRefundBankCommitBack"
+								@update:queryName="handleUpdateRefundQueryName"
+							>
+								<template #table-columns>
+									<CustomTableColumn label="账户类型" align="center" prop="acountsType" />
+									<CustomTableColumn label="己方公司" align="center" prop="displayName" />
+									<CustomTableColumn label="开户名称(户名)" align="center" prop="acountsName" />
+									<CustomTableColumn label="账号(银行账号)" align="center" prop="bankNo" />
+								</template>
+							</SearchOption>
+						</el-col>
+					</el-row>
 				</el-form-item>
 				<el-form-item label="收款账号" prop="bankNo">
-					<el-input v-model="refundForm.bankNo" placeholder="请输入收款账号" />
+					<el-input v-model="refundForm.bankNo" placeholder="自动填充" disabled />
 				</el-form-item>
 				<el-form-item label="退款金额" prop="moneyAmount">
 					<el-input v-model="refundForm.moneyAmount" placeholder="请输入退款金额" />
@@ -138,15 +161,21 @@ import {
 	getDepositRefundByMainId
 } from '@/api/system/depositMoney';
 import { DEPOSIT_OPTIONS } from '@/api/tool/enums';
+import { BankAcceptanceType } from '@/api/tool/enums';
 import { validateAmount } from '@/api/tool';
 import { createConfigManager } from '@/utils/configManager';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import { tableColumnMixin } from '@/mixins/tableColumnMixin';
 import columnConfig from './base/columns.js';
 import DepositMoneyForm from './base/DepositMoneyForm.vue';
+import { listBankAccount } from '@/api/system/bankAccount';
+import SearchOption from '@/components/SearchOption.vue';
 
 export default {
 	name: 'DepositMoney',
+	components: {
+		SearchOption
+	},
 	mixins: [common_dialog, tableColumnMixin],
 	data() {
 		return {
@@ -208,8 +237,15 @@ export default {
 					{ required: true, message: '退款金额不能为空', trigger: 'blur' },
 					{ validator: validateAmount, trigger: 'blur' }
 				]
-			}
+			},
+			// 退款银行账户搜索
+			queryRefundBank: ''
 		};
+	},
+	computed: {
+		BankAcceptanceType() {
+			return BankAcceptanceType;
+		}
 	},
 	created() {
 		// 初始化配置管理器
@@ -419,16 +455,32 @@ export default {
 		/** 重置退款表单 */
 		resetRefundForm() {
 			this.refundForm = {
-				id: null,
 				depositMoneyId: null,
 				refundDate: null,
+				selfBankCardType: BankAcceptanceType.BANK_CASH,
+				otherBankCardType: BankAcceptanceType.BANK_CASH,
 				accountsName: null,
 				bankNo: null,
 				moneyAmount: null,
-				comments: null,
-				badDebtFlag: '否'
+				comments: null
 			};
 			this.resetForm('refundForm');
+		},
+
+		/** 退款银行账户搜索查询名称更新 */
+		handleUpdateRefundQueryName(val) {
+			this.queryRefundBank = val;
+		},
+
+		/** 退款银行账户选择回调 - 自动填充银行信息 */
+		handleRefundBankCommitBack(val) {
+			this.refundForm.accountsName = val.acountsName;
+			this.refundForm.bankNo = val.bankNo;
+		},
+
+		/** 银行账户查询方法 */
+		listBankAccount(params) {
+			return listBankAccount(params);
 		}
 	}
 };

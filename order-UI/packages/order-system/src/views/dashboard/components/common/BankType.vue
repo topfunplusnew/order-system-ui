@@ -31,13 +31,11 @@
 										<el-radio v-model="form.reason" label="其他">其他</el-radio>
 									</template>
 									<template v-else>
-										<template v-if="getEndorserActionType === 'payment'">
-											>
+										<template v-if="getEndorserActionType() === 'payment'">
 											<el-radio v-model="form.reason" label="出售">出售</el-radio>
 											<el-radio v-model="form.reason" label="对外付款">对外付款</el-radio>
 										</template>
-										<template v-if="getEndorserActionType === 'receive'">
-											>
+										<template v-if="getEndorserActionType() === 'receive'">
 											<el-radio v-model="form.reason" label="购买">购买</el-radio>
 											<el-radio v-model="form.reason" label="客户付款">客户付款</el-radio>
 										</template>

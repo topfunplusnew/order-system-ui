@@ -151,6 +151,7 @@ export default {
 			formConfig: {
 				type: 'input',
 				show: true,
+				// 只读 表示这个输入框是不可以修改输入的
 				readonly: true,
 				placeholder: '自动填充',
 				col: { span: 12 },

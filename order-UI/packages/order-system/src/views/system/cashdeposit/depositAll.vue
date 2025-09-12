@@ -46,28 +46,28 @@
 			:cell-style="() => ({ padding: '1px' })"
 			@selection-change="handleSelectionChange"
 		>
-			<CustomTableColumn type="selection" width="40" />
-			<CustomTableColumn v-if="colVisible(0)" label="类型" prop="type" align="center" width="110" />
-			<CustomTableColumn v-if="colVisible(1)" :label="companyLabel" prop="futuresMarginCompany" align="center" show-overflow-tooltip>
+			<el-table-column type="selection" width="40" />
+			<el-table-column v-if="colVisible(0)" label="类型" prop="type" align="center" width="110" />
+			<el-table-column v-if="colVisible(1)" :label="companyLabel" prop="futuresMarginCompany" align="center" show-overflow-tooltip>
 				<template #default="{ row }">
 					<span v-if="row.futuresMarginCompany">{{ row.futuresMarginCompany }}</span>
 					<span v-else>无{{ row.type }}公司</span>
 				</template>
-			</CustomTableColumn>
-			<CustomTableColumn v-if="colVisible(2)" label="对方类型" prop="targetType" align="center" show-overflow-tooltip />
-			<CustomTableColumn v-if="colVisible(3)" label="公司名称" prop="target" align="center" show-overflow-tooltip />
-			<CustomTableColumn v-if="colVisible(4)" label="金额" prop="moneyAmount" align="center" show-overflow-tooltip />
-			<CustomTableColumn v-if="colVisible(5)" label="未收回金额" prop="unrecoveredAmount" align="center" show-overflow-tooltip />
-			<CustomTableColumn v-if="colVisible(6)" label="对方账户" prop="targetAcountsName" align="center" show-overflow-tooltip />
-			<CustomTableColumn v-if="colVisible(7)" label="对方账号" prop="targetBankNo" align="center" show-overflow-tooltip />
-			<CustomTableColumn v-if="colVisible(8)" label="对方开户行" prop="targetBankName" align="center" show-overflow-tooltip />
-			<CustomTableColumn v-if="colVisible(9)" label="我方支付账户" prop="selfAcountsName" align="center" show-overflow-tooltip />
-			<CustomTableColumn v-if="colVisible(10)" label="我方账号" prop="selfBankNo" align="center" show-overflow-tooltip />
-			<CustomTableColumn v-if="colVisible(11)" label="我方开户行" prop="selfBankName" align="center" show-overflow-tooltip />
-			<CustomTableColumn v-if="colVisible(12)" :label="payTimeLabel" prop="futuresDate" align="center" show-overflow-tooltip />
-			<CustomTableColumn v-if="colVisible(13)" label="事由" prop="reason" align="center" show-overflow-tooltip />
-			<CustomTableColumn v-if="colVisible(14)" label="备注" prop="comments" align="center" show-overflow-tooltip />
-			<CustomTableColumn label="操作" fixed="right" width="350" align="center">
+			</el-table-column>
+			<el-table-column v-if="colVisible(2)" label="对方类型" prop="targetType" align="center" show-overflow-tooltip />
+			<el-table-column v-if="colVisible(3)" label="公司名称" prop="target" align="center" show-overflow-tooltip />
+			<el-table-column v-if="colVisible(4)" label="金额" prop="moneyAmount" align="center" show-overflow-tooltip />
+			<el-table-column v-if="colVisible(5)" label="未收回金额" prop="unrecoveredAmount" align="center" show-overflow-tooltip />
+			<el-table-column v-if="colVisible(6)" label="对方账户" prop="targetAcountsName" align="center" show-overflow-tooltip />
+			<el-table-column v-if="colVisible(7)" label="对方账号" prop="targetBankNo" align="center" show-overflow-tooltip />
+			<el-table-column v-if="colVisible(8)" label="对方开户行" prop="targetBankName" align="center" show-overflow-tooltip />
+			<el-table-column v-if="colVisible(9)" label="我方支付账户" prop="selfAcountsName" align="center" show-overflow-tooltip />
+			<el-table-column v-if="colVisible(10)" label="我方账号" prop="selfBankNo" align="center" show-overflow-tooltip />
+			<el-table-column v-if="colVisible(11)" label="我方开户行" prop="selfBankName" align="center" show-overflow-tooltip />
+			<el-table-column v-if="colVisible(12)" :label="payTimeLabel" prop="futuresDate" align="center" show-overflow-tooltip />
+			<el-table-column v-if="colVisible(13)" label="事由" prop="reason" align="center" show-overflow-tooltip />
+			<el-table-column v-if="colVisible(14)" label="备注" prop="comments" align="center" show-overflow-tooltip />
+			<el-table-column label="操作" width="350" align="center">
 				<template #default="{ row }">
 					<el-button type="text" size="mini" @click="handleUpdate(row)">修改</el-button>
 					<el-button type="text" size="mini" @click="applyForPayment(row)">坏账损失</el-button>
@@ -75,7 +75,7 @@
 					<el-button type="text" size="mini" @click="checkDetail(row)">历史收回</el-button>
 					<el-button type="text" size="mini" style="color: red" @click="handleDelete(row)">删除</el-button>
 				</template>
-			</CustomTableColumn>
+			</el-table-column>
 		</el-table>
 
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
@@ -212,17 +212,77 @@
 			</keep-alive>
 		</el-dialog>
 
+		<!-- 收回资金弹窗 -->
+		<el-dialog
+			:modal="false"
+			v-dialogDrag
+			v-dialogDragWidth
+			v-dialogDragHeight
+			:close-on-click-modal="false"
+			:show-close="false"
+			title="收回资金操作"
+			:visible.sync="giveRecoverMoneyShow"
+			width="600px"
+			append-to-body
+		>
+			<el-form :model="recoverMoneyEntity" :rules="recoverRules" ref="recoverForm" label-width="100px">
+				<el-form-item label="收回账户" prop="acountsName">
+					<el-row :gutter="8">
+						<el-col :span="12">
+							<el-input v-model="recoverMoneyEntity.acountsName" placeholder="请输入收回账户" />
+						</el-col>
+						<el-col :span="6">
+							<SearchOption
+								:get-data="listBankAccount"
+								icon="el-icon-search"
+								:limit-info="{ acountsType: '己方公司' }"
+								query-label="户名查找"
+								query-info="acountsName"
+								:query-name="queryBankRecover"
+								@commitBack="handleCommitBackBankAcountForm"
+								@update:queryName="handleUpdateQueryBankAcountForm"
+							>
+								<template #table-columns>
+									<el-table-column label="账户类型" align="center" prop="acountsType" />
+									<el-table-column label="己方公司" align="center" prop="displayName" />
+									<el-table-column label="开户行" align="center" prop="bankName" />
+									<el-table-column label="开户名" align="center" prop="acountsName" />
+									<el-table-column label="账号" align="center" prop="bankNo" />
+								</template>
+							</SearchOption>
+						</el-col>
+					</el-row>
+				</el-form-item>
+				<el-form-item label="收回账号" prop="bankNo">
+					<el-input v-model="recoverMoneyEntity.bankNo" placeholder="请输入收回账号" />
+				</el-form-item>
+				<el-form-item label="收回金额" prop="moneyAmount">
+					<el-input v-model="recoverMoneyEntity.moneyAmount" placeholder="请输入收回金额" style="width: 200px" />
+				</el-form-item>
+				<el-form-item label="收回日期" prop="payDate">
+					<el-date-picker v-model="recoverMoneyEntity.recoverDate" type="datetime" placeholder="请选择收回日期" value-format="yyyy-MM-dd HH:mm:ss" style="width: 100%"></el-date-picker>
+				</el-form-item>
+				<el-form-item label="备注信息" prop="comments">
+					<el-input v-model="recoverMoneyEntity.comments" placeholder="请输入备注信息" type="textarea" :rows="3" />
+				</el-form-item>
+				<el-form-item>
+					<el-button type="primary" @click="RecoverMoney">收款</el-button>
+					<el-button type="primary" @click="resetRecoverMoney">取消</el-button>
+				</el-form-item>
+			</el-form>
+		</el-dialog>
+
 		<!-- 历史收回记录 -->
 		<InfoDialog title="历史收回记录" :visible.sync="dialogHistoryVisible" :width="'620px'">
 			<template #info>
 				<el-table v-if="tableData.length" :data="tableData" size="mini" border :span-method="mergeCells" :cell-style="() => ({ padding: '2px' })">
-					<CustomTableColumn width="160">
+					<el-table-column width="160">
 						<template #default="scope">
 							<span v-if="scope.$index === 0">{{ firstMergeTitle }}</span>
 						</template>
-					</CustomTableColumn>
-					<CustomTableColumn prop="recoverDate" label="时间" width="180" />
-					<CustomTableColumn prop="moneyAmount" label="收回金额" />
+					</el-table-column>
+					<el-table-column prop="recoverDate" label="时间" width="180" />
+					<el-table-column prop="moneyAmount" label="收回金额" />
 				</el-table>
 				<pagination v-show="detailTotal > 0" :total="detailTotal" :page.sync="queryRepaymentParams.pageNum" :limit.sync="queryRepaymentParams.pageSize" @pagination="getRepaymentMoneyList" />
 			</template>
@@ -345,7 +405,33 @@ export default {
 			queryRepaymentParams: { pageNum: 1, pageSize: 20 },
 			// 搜索控件本地变量
 			queryBankOther: '',
-			queryBankSelf: ''
+			queryBankSelf: '',
+			queryBankRecover: '',
+			// 收回资金相关
+			giveRecoverMoneyShow: false,
+			recoverMoneyEntity: {
+				acountsName: '',
+				bankNo: '',
+				moneyAmount: '',
+				recoverDate: null,
+				comments: '',
+				futuresNO: null
+			},
+			recoverRules: {
+				moneyAmount: [
+					{ required: true, message: '收回金额不能为空', trigger: 'blur' },
+					{
+						validator: (rule, value, callback) => {
+							if (!/^\d+(\.\d{1,2})?$/.test(value)) {
+								callback(new Error('收回金额只能为正数且小数点后最多两位'));
+							} else {
+								callback();
+							}
+						},
+						trigger: 'blur'
+					}
+				]
+			}
 		};
 	},
 	computed: {
@@ -460,6 +546,7 @@ export default {
 			};
 			this.queryBankOther = '';
 			this.queryBankSelf = '';
+			this.queryBankRecover = '';
 		},
 		handleCommitBackOther(val) {
 			this.form.targetBankNo = val.bankNo;
@@ -493,7 +580,44 @@ export default {
 		handleGetBackMoney(row) {
 			this.initReviveMoneyTableInfo(row.id, ReceiveType.LEND_MONEY_GET_BACK, TableName.LEND_MONEY);
 			this.initReviveMoneyOtherAccountInfo(row.targetAcountsName, row.targetBankNo, row.targetBankName);
-			this.giveRecoverMoneyShow = true; // 若需要可复用原组件逻辑
+			this.giveRecoverMoneyShow = true;
+			this.recoverMoneyEntity.futuresNO = row.futuresNO;
+			this.initComment('借出款收回');
+		},
+		// 收回资金相关方法
+		RecoverMoney() {
+			this.$refs.recoverForm.validate(valid => {
+				if (valid) {
+					this.initReceiveTime(this.recoverMoneyEntity.recoverDate);
+					addRecoverMoney(this.recoverMoneyEntity).then(res => {
+						this.$modal.msgSuccess('添加借出款收回信息成功~');
+						this.giveRecoverMoneyShow = false;
+						this.resetRecoverMoney();
+						this.getList();
+					});
+				}
+			});
+		},
+		resetRecoverMoney() {
+			this.recoverMoneyEntity = {
+				acountsName: '',
+				bankNo: '',
+				moneyAmount: '',
+				recoverDate: null,
+				comments: '',
+				futuresNO: null
+			};
+			this.giveRecoverMoneyShow = false;
+		},
+		// 收回资金的搜索按钮自动填充方法
+		handleUpdateQueryBankAcountForm(val) {
+			this.queryBankRecover = val;
+		},
+		handleCommitBackBankAcountForm(val) {
+			// 初始化我方账户信息
+			this.initReviveMoneySelfAccountInfo(val.acountsName, val.bankNo, val.bankName, val.id);
+			this.recoverMoneyEntity.acountsName = val.acountsName;
+			this.recoverMoneyEntity.bankNo = val.bankNo;
 		},
 		// 历史记录
 		checkDetail(row) {
