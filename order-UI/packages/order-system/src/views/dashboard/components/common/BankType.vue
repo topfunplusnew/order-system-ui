@@ -522,7 +522,7 @@ export default {
 		getEndorserTypeLabel() {
 			if (this.isInternalTransfer && this.waitForBothSelection && this.componentRole) {
 				// 内部转账场景：根据新的业务规则判断
-				if (this.isEndorserScenario) {
+				if (this.isEndorserScenario()) {
 					// 支出方银行活期存款 -> 收入方承兑：背书事由
 					return '背书';
 				} else {
@@ -538,7 +538,7 @@ export default {
 		getEndorserActionType() {
 			if (this.isInternalTransfer && this.waitForBothSelection && this.componentRole) {
 				// 内部转账场景：根据新的业务规则判断
-				if (this.isEndorserScenario) {
+				if (this.isEndorserScenario()) {
 					// 支出方银行活期存款 -> 收入方承兑：收款动作
 					return 'receive';
 				} else {
@@ -570,7 +570,7 @@ export default {
 
 		// 获取背书人类型标签（被背书人类型 或 背书人类型）
 		getEndorserPersonTypeLabel() {
-			if (this.isEndorserScenario) {
+			if (this.isEndorserScenario()) {
 				return '背书人类型';
 			} else {
 				return '被背书人类型';
@@ -579,7 +579,7 @@ export default {
 
 		// 获取背书人标签（被背书人 或 背书人）
 		getEndorserPersonLabel() {
-			if (this.isEndorserScenario) {
+			if (this.isEndorserScenario()) {
 				// 背书人场景
 				return '背书人';
 			} else {
@@ -591,7 +591,7 @@ export default {
 		getAmountDirectionLabel() {
 			if (this.isInternalTransfer && this.waitForBothSelection && this.componentRole) {
 				// 内部转账场景：根据新的业务规则判断
-				if (this.isEndorserScenario) {
+				if (this.isEndorserScenario()) {
 					// 支出方银行活期存款 -> 收入方承兑：收入
 					return '收入';
 				} else {
@@ -695,9 +695,10 @@ export default {
 				formId: this.formId
 			});
 
-			// 检查是否应该自动打开抽屉（基于 Vuex 计算属性）
+			// 检查是否双方都已选择完成且有承兑选择，然后再弹窗
 			this.$nextTick(() => {
-				if (this.bankAcceptanceShouldShowDrawer && !this.baned) {
+				// 使用 Vuex store 中的计算逻辑：只有双方都选择完成且有承兑选择时才显示抽屉
+				if (this.bankAcceptanceShouldShowDrawer && !this.baned && !this.drawer) {
 					// 检查是否已有承兑信息
 					const json = sessionStorage.getItem(this.bankAcceptanceFilledKey);
 					if (json) {
@@ -707,6 +708,8 @@ export default {
 						// 通知父组件已有承兑信息
 						this.$emit('updateBankAcceptance', _.cloneDeep(this.bankacceptanceInfo));
 					}
+					// 自动打开承兑信息填写抽屉
+					this.handleAcceptanceInfo();
 				}
 			});
 		},
@@ -717,7 +720,6 @@ export default {
 				if (this.baned) {
 					return;
 				}
-
 				const json = sessionStorage.getItem(this.bankAcceptanceFilledKey);
 				// 检查是否已经填写过承兑信息
 				if (json) {
@@ -727,7 +729,8 @@ export default {
 					// 通知父组件已有承兑信息
 					this.$emit('updateBankAcceptance', _.cloneDeep(this.bankacceptanceInfo));
 				}
-				this.drawer = true;
+				// 自动打开承兑信息填写抽屉
+				this.handleAcceptanceInfo();
 			}
 		},
 		// 右侧滑窗的提交逻辑（原handleSubmit方法）
@@ -769,7 +772,6 @@ export default {
 			}
 
 			if (!inputValue) {
-				this.$message.error('票据号码为空,填充失败');
 				return;
 			}
 			// 如果是修改 不用获取
@@ -783,11 +785,23 @@ export default {
 					return;
 				}
 				const obj = _.cloneDeep(res.data);
-				// 填充三个时间
+				// 检查获取到的数据是否有效（不为空且至少有一个有效字段）
+				const hasValidData = obj && ((obj.issueDate && obj.issueDate.trim() !== '') || (obj.dueDate && obj.dueDate.trim() !== '') || (obj.billAccount && obj.billAccount.trim() !== ''));
+				if (!hasValidData) {
+					return;
+				}
+				// 填充三个时间，只填充非空的字段
 				this.$nextTick(() => {
-					this.form.issueDate = obj.issueDate;
-					this.form.dueDate = obj.dueDate;
-					this.form.billAccount = obj.billAccount;
+					// 只有当获取到的值不为空时才填充，防止覆盖用户已填写的信息
+					if (obj.issueDate && obj.issueDate.trim() !== '') {
+						this.form.issueDate = obj.issueDate;
+					}
+					if (obj.dueDate && obj.dueDate.trim() !== '') {
+						this.form.dueDate = obj.dueDate;
+					}
+					if (obj.billAccount && obj.billAccount.trim() !== '') {
+						this.form.billAccount = obj.billAccount;
+					}
 				});
 			});
 		},
