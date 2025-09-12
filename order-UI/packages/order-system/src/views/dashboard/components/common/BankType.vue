@@ -73,10 +73,10 @@
 													:query-name="companyName"
 													@commitBack="
 														value => {
-															// 这里给的户名
-															form.endorserName = value.acountsName;
-															form.origin = PUBLIC_DICT_TYPE.SELF_COMPANY;
-															form.endorser = value.id;
+															// 这里给的户名 - 使用 $set 确保响应式更新
+															this.$set(this.form, 'endorserName', value.acountsName);
+															this.$set(this.form, 'origin', PUBLIC_DICT_TYPE.SELF_COMPANY);
+															this.$set(this.form, 'endorser', value.id);
 														}
 													"
 													@update:queryName="value => (companyName = value)"
@@ -104,9 +104,10 @@
 													@update:queryName="value => (companyName = value)"
 													@commitBack="
 														value => {
-															form.endorserName = value.companyName;
-															form.origin = value.companyType;
-															form.endorser = value.id;
+															// 使用 $set 确保响应式更新
+															this.$set(this.form, 'endorserName', value.companyName);
+															this.$set(this.form, 'origin', value.companyType);
+															this.$set(this.form, 'endorser', value.id);
 														}
 													"
 												>
@@ -154,7 +155,7 @@
 												:query-name="queryBank"
 												@commitBack="
 													value => {
-														form.billAccount = value.acountsName;
+														this.$set(this.form, 'billAccount', value.acountsName);
 													}
 												"
 												@update:queryName="value => (queryBank = value)"
@@ -187,8 +188,7 @@
 						<div class="footer">
 							<div class="footer-box">
 								<el-button type="primary" @click="submitAcceptanceForm">确 定</el-button>
-								<el-button @click="() => (drawer = false)">关 闭</el-button>
-								<el-button @click="resetAcceptanceForm">重 置</el-button>
+								<el-button @click="handleResetAcceptanceForm">重 置</el-button>
 							</div>
 						</div>
 					</el-form>
@@ -215,13 +215,41 @@ export default {
 	components: { SearchOption },
 	dicts: ['order_bank_card_type_nodel'],
 	computed: {
-		// Vuex getters 映射
-		...mapGetters(['bankAcceptanceDualSelectionState', 'bankAcceptanceHasSelection', 'bankAcceptanceBothSelected', 'bankAcceptanceShouldShowDrawer']),
+		// Vuex getters 映射 - 银行承兑双选择状态管理
+		...mapGetters('bankAcceptance', [
+			'dualSelectionState',
+			'hasAcceptanceSelection',
+			'bothSelectedInDualMode',
+			'shouldShowAcceptanceDrawerInDualMode',
+			'getAcceptanceFormDraft',
+			'hasAcceptanceFormDraft'
+		]),
 		PUBLIC_DICT_TYPE() {
 			return PUBLIC_DICT_TYPE;
 		},
 		BankAcceptanceType() {
 			return BankAcceptanceType;
+		},
+		// 生成唯一的组件标识符
+		componentId() {
+			return `${this.formId}_${this.componentRole || 'default'}`;
+		},
+		// 在waitForBothSelection模式下，使用统一的formId来共享承兑表单数据
+		sharedFormId() {
+			if (this.waitForBothSelection) {
+				// 从formId中提取基础部分，去掉前缀差异
+				const baseId = this.formId.replace(/^(income|expense)-/, 'shared-');
+				return baseId;
+			}
+			return this.formId;
+		},
+		// 共享模式下的组件标识符（两个组件使用相同的标识符）
+		sharedComponentId() {
+			if (this.waitForBothSelection) {
+				// 在共享模式下，两个组件使用相同的componentId来共享草稿数据
+				return `${this.sharedFormId}_shared`;
+			}
+			return this.componentId;
 		}
 	},
 	// 对于不需要选择的场景，设置optionBaned = true  banned= true
@@ -278,12 +306,36 @@ export default {
 			// 右侧抽屉
 			drawer: false,
 			flag: false,
-			bankacceptanceInfo: {},
-			hasBankAcceptanceInfo: false,
+			// 是否有已保存的承兑信息
+			hasSavedAcceptanceInfo: false,
 			// 统一存储键，用于检查是否已填写过承兑信息
 			bankAcceptanceFilledKey: 'bankAcceptanceFilled',
-			// 承兑表单数据
-			form: {},
+			// 承兑表单数据 - 确保所有字段都预先定义，避免响应式问题
+			form: {
+				id: null,
+				operateDate: null,
+				billNo: null,
+				issueDate: null,
+				dueDate: null,
+				billAccount: null,
+				billDate: null,
+				billType: null,
+				reason: null,
+				billAmount: null,
+				inDiscountPoints: null,
+				inDiscountAmount: null,
+				billCategory: '电子',
+				origin: null,
+				endorserName: null,
+				endorser: null,
+				endorseReason: null,
+				comments: null,
+				addtime: null,
+				userId: null,
+				UserName: null,
+				updateTime: null,
+				delFlag: null
+			},
 			// 双选择状态管理键（用于内部转账账户类型选择状态）
 			bothSelectionKey: 'internalTransferAccountTypeSelection',
 			// 表单校验规则
@@ -440,11 +492,8 @@ export default {
 				return;
 			}
 			if (!value) {
-				if (this.protectOnError && this.bankacceptanceInfo && Object.keys(this.bankacceptanceInfo).length > 0) {
-					const hasValidContent = this.bankacceptanceInfo.billNo || this.bankacceptanceInfo.billAmount || this.bankacceptanceInfo.billDate || this.bankacceptanceInfo.dueDate;
-					if (hasValidContent) {
-						return;
-					}
+				if (this.protectOnError) {
+					return;
 				}
 				this.flag = value;
 				this.clearAcceptanceFillStatus();
@@ -453,10 +502,14 @@ export default {
 			// 获取承兑信息
 			getBankAcceptance(value).then(res => {
 				if (res.data) {
-					this.hasBankAcceptanceInfo = true;
-					this.bankacceptanceInfo = res.data;
+					this.hasSavedAcceptanceInfo = true;
+					// 将获取到的数据保存到sessionStorage
+					sessionStorage.setItem(this.bankAcceptanceFilledKey, JSON.stringify(res.data));
+					// 更新表单数据
+					this.loadSavedFormFromSession();
+					console.log('获取到承兑信息', this.form);
 					// 通知父组件更新状态
-					this.$emit('updateBankAcceptance', _.cloneDeep(this.bankacceptanceInfo));
+					this.$emit('updateBankAcceptance', _.cloneDeep(res.data));
 				}
 				this.flag = true;
 			});
@@ -483,7 +536,14 @@ export default {
 	},
 	methods: {
 		// Vuex actions 映射
-		...mapActions('bankAcceptance', ['setAccountTypeSelection', 'resetDualSelection', 'clearRoleSelection']),
+		...mapActions('bankAcceptance', [
+			'setAccountTypeSelection',
+			'resetDualSelection',
+			'clearRoleSelection',
+			'saveAcceptanceFormDraft',
+			'clearAcceptanceFormDraft',
+			'clearAcceptanceFormDraftsByFormId'
+		]),
 		listBankAccount,
 		listCompany,
 		// 控制承兑信息按钮的显示
@@ -498,23 +558,36 @@ export default {
 			}
 
 			if (this.waitForBothSelection) {
-				return this.bankAcceptanceShouldShowDrawer && this.bankAcceptanceHasSelection;
+				return this.shouldShowAcceptanceDrawerInDualMode && this.hasAcceptanceSelection;
 			} else {
 				return true;
 			}
 		},
 		// 承兑信息按钮文本
 		acceptanceButtonText() {
-			return this.flag && this.hasBankAcceptanceInfo ? '修改承兑信息' : '填写承兑信息';
+			// 如果有正式保存的承兑信息
+			if (this.flag && this.hasSavedAcceptanceInfo) {
+				return '修改承兑信息';
+			}
+			// 如果有草稿数据（使用共享标识符检查）
+			if (this.hasAcceptanceFormDraft(this.sharedFormId, this.sharedComponentId)) {
+				return '继续填写承兑信息';
+			}
+			// 默认状态
+			return '填写承兑信息';
 		},
 		// 统一的承兑信息处理方法
 		handleAcceptanceInfo() {
 			if (this.baned) {
 				return;
 			}
+			// 重置票据信息表单
 			this.resetAcceptanceForm();
-			if (this.hasBankAcceptanceInfo) {
-				this.form = _.cloneDeep(this.bankacceptanceInfo);
+			// 从 Vuex 获取草稿数据
+			this.loadFormDraftFromStore();
+			// 如果没有草稿数据且有已保存的承兑信息，则从sessionStorage加载
+			if (this.hasSavedAcceptanceInfo) {
+				this.loadSavedFormFromSession();
 			}
 			this.drawer = true;
 		},
@@ -553,7 +626,7 @@ export default {
 			if (!this.isInternalTransfer || !this.waitForBothSelection || !this.componentRole) {
 				return this.billType !== BankAcceptanceType.PAY_TYPE.PAYMENT;
 			}
-			const accountTypes = this.bankAcceptanceDualSelectionState;
+			const accountTypes = this.dualSelectionState;
 			if (!accountTypes || typeof accountTypes !== 'object') {
 				return false;
 			}
@@ -605,7 +678,7 @@ export default {
 		// 获取我方承兑账户的标识（用于确定应该显示哪个账户作为承兑账户）
 		getMyAcceptanceAccount() {
 			if (this.isInternalTransfer && this.waitForBothSelection && this.componentRole) {
-				const accountTypes = this.bankAcceptanceDualSelectionState;
+				const accountTypes = this.dualSelectionState;
 				if (accountTypes) {
 					const currentType = this.localSelectType;
 					const otherRole = this.componentRole === 'source' ? 'target' : 'source';
@@ -635,7 +708,7 @@ export default {
 		},
 		// 设置已填写承兑信息状态
 		setAcceptanceFilled() {
-			sessionStorage.setItem(this.bankAcceptanceFilledKey, JSON.stringify(this.bankacceptanceInfo));
+			sessionStorage.setItem(this.bankAcceptanceFilledKey, JSON.stringify(this.form));
 		},
 		// 清除承兑信息填写状态
 		clearAcceptanceFillStatus() {
@@ -652,19 +725,23 @@ export default {
 		// 用于在确实需要清空承兑信息时调用，绕过错误保护机制
 		forceClearAcceptanceInfo() {
 			this.flag = false;
-			this.bankacceptanceInfo = {};
 			this.clearAcceptanceFillStatus();
 			this.resetAcceptanceForm();
+			// 清除草稿数据
+			this.clearCurrentFormDraft();
 		},
 		// **新增：完整的组件状态重置方法**
 		resetComponentState() {
 			// 重置本地状态
 			this.localSelectType = null;
 			this.flag = false;
-			this.bankacceptanceInfo = {};
 			this.drawer = false;
 			this.resetAcceptanceForm();
 			this.clearAcceptanceFillStatus();
+
+			// 清除草稿数据
+			this.clearCurrentFormDraft();
+
 			// 如果是双选择模式，清除对应的角色状态
 			if (this.waitForBothSelection && this.componentRole) {
 				this.clearRoleSelection({
@@ -676,6 +753,23 @@ export default {
 		handleEmitType(value) {
 			if (value !== BankAcceptanceType.ACCEPTANCE) {
 				this.clearAcceptanceFillStatus();
+				// 清除草稿数据的逻辑
+				if (this.waitForBothSelection) {
+					// 在waitForBothSelection模式下，只有当双方都不是承兑类型时才清除草稿数据
+					this.$nextTick(() => {
+						const accountTypes = this.dualSelectionState;
+						if (accountTypes && typeof accountTypes === 'object') {
+							const hasAnyAcceptance = accountTypes.source === BankAcceptanceType.ACCEPTANCE || accountTypes.target === BankAcceptanceType.ACCEPTANCE;
+							if (!hasAnyAcceptance) {
+								// 双方都不是承兑类型，清除草稿数据
+								this.clearCurrentFormDraft();
+							}
+						}
+					});
+				} else {
+					// 单独模式下，直接清除草稿数据
+					this.clearCurrentFormDraft();
+				}
 			}
 			// 通知父组件更新
 			this.$emit('updateBankAcceptance', null);
@@ -686,7 +780,7 @@ export default {
 				this.handleSingleSelectionMode(value);
 			}
 		},
-
+		// 处理双选择模式的逻辑
 		handleDualSelectionMode(value) {
 			// 更新 Vuex 状态
 			this.setAccountTypeSelection({
@@ -694,40 +788,49 @@ export default {
 				accountType: value,
 				formId: this.formId
 			});
-
 			// 检查是否双方都已选择完成且有承兑选择，然后再弹窗
 			this.$nextTick(() => {
 				// 使用 Vuex store 中的计算逻辑：只有双方都选择完成且有承兑选择时才显示抽屉
-				if (this.bankAcceptanceShouldShowDrawer && !this.baned && !this.drawer) {
-					// 检查是否已有承兑信息
-					const json = sessionStorage.getItem(this.bankAcceptanceFilledKey);
-					if (json) {
-						// 恢复已保存的承兑信息
-						this.bankacceptanceInfo = JSON.parse(json);
-						this.flag = true;
-						// 通知父组件已有承兑信息
-						this.$emit('updateBankAcceptance', _.cloneDeep(this.bankacceptanceInfo));
-					}
+				if (this.shouldShowAcceptanceDrawerInDualMode && !this.baned && !this.drawer) {
+					this.checkAndRestoreSessionData();
 					// 自动打开承兑信息填写抽屉
 					this.handleAcceptanceInfo();
 				}
 			});
 		},
+		// 从sessionStorage恢复承兑信息
+		loadSavedFormFromSession() {
+			const json = sessionStorage.getItem(this.bankAcceptanceFilledKey);
+			if (json) {
+				const savedData = JSON.parse(json);
+				this.form = _.cloneDeep(savedData);
+				this.hasSavedAcceptanceInfo = true;
+				// 通知父组件已有承兑信息
+				this.$emit('updateBankAcceptance', _.cloneDeep(savedData));
+			}
+		},
 
+		// 检查并恢复sessionStorage中的承兑信息
+		checkAndRestoreSessionData() {
+			const json = sessionStorage.getItem(this.bankAcceptanceFilledKey);
+			if (json) {
+				const savedData = JSON.parse(json);
+				this.hasSavedAcceptanceInfo = true;
+				// 通知父组件已有承兑信息
+				this.$emit('updateBankAcceptance', _.cloneDeep(savedData));
+				return true;
+			}
+			return false;
+		},
 		handleSingleSelectionMode(value) {
 			// 单选择模式：选择承兑类型时的处理
 			if (BankAcceptanceType.ACCEPTANCE === value) {
 				if (this.baned) {
 					return;
 				}
-				const json = sessionStorage.getItem(this.bankAcceptanceFilledKey);
 				// 检查是否已经填写过承兑信息
-				if (json) {
-					// 从sessionStorage恢复已保存的承兑信息
-					this.bankacceptanceInfo = JSON.parse(json);
+				if (this.checkAndRestoreSessionData()) {
 					this.flag = true;
-					// 通知父组件已有承兑信息
-					this.$emit('updateBankAcceptance', _.cloneDeep(this.bankacceptanceInfo));
 				}
 				// 自动打开承兑信息填写抽屉
 				this.handleAcceptanceInfo();
@@ -735,19 +838,22 @@ export default {
 		},
 		// 右侧滑窗的提交逻辑（原handleSubmit方法）
 		handleSubmit(value) {
-			// 新扔一个emit 给父组件用
+			// 通知父组件更新
 			this.$emit('updateBankAcceptance', _.cloneDeep(value));
 			this.flag = true;
 			this.drawer = false;
 			// 标记有承兑信息
-			this.hasBankAcceptanceInfo = true;
-			this.bankacceptanceInfo = value;
+			this.hasSavedAcceptanceInfo = true;
 			// 保存数据到sessionStorage
 			this.setAcceptanceFilled();
+			// 清除草稿数据（因为已经正式提交了）
+			this.clearCurrentFormDraft();
 			this.$message.success('承兑信息保存成功');
 		},
 		// 抽屉关闭的逻辑
 		handleClose(done) {
+			// 在关闭前保存表单草稿到store
+			this.saveFormDraftToStore();
 			done();
 		},
 		handleAssign(value) {
@@ -757,20 +863,10 @@ export default {
 		// 获取票据信息
 		getBankAcceptanceDate(e) {
 			let inputValue;
-
-			// 处理两种调用方式：
-			// 1. 从事件对象中获取值 (模板中的 @blur 事件)
-			// 2. 直接传入字符串值 (watch 中的直接调用)
-			if (typeof e === 'string') {
-				// 直接传入的字符串
-				inputValue = e;
-			} else if (e && e.target && e.target.value !== undefined) {
+			if (e && e.target && e.target.value !== undefined) {
 				// 事件对象
 				inputValue = _.cloneDeep(e.target.value);
-			} else {
-				return;
 			}
-
 			if (!inputValue) {
 				return;
 			}
@@ -781,7 +877,6 @@ export default {
 			// 在这里 发送请求 获取三个时间 自动填充
 			getMinIdByBillNo(inputValue).then(res => {
 				if (!res.data) {
-					this.$message.error('该票据不存在,自动填充时间失败');
 					return;
 				}
 				const obj = _.cloneDeep(res.data);
@@ -809,8 +904,8 @@ export default {
 		submitAcceptanceForm() {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
-					if (this.waitForBothSelection && this.bankAcceptanceBothSelected) {
-						const accountTypes = this.bankAcceptanceDualSelectionState;
+					if (this.waitForBothSelection && this.bothSelectedInDualMode) {
+						const accountTypes = this.dualSelectionState;
 						if (accountTypes && accountTypes.source === BankAcceptanceType.ACCEPTANCE && accountTypes.target === BankAcceptanceType.ACCEPTANCE) {
 							this.form.billType = '收入';
 						} else {
@@ -851,6 +946,7 @@ export default {
 				billCategory: '电子',
 				origin: null,
 				endorserName: null,
+				endorser: null,
 				endorseReason: null,
 				comments: null,
 				addtime: null,
@@ -862,6 +958,46 @@ export default {
 			if (this.$refs['form']) {
 				this.$refs['form'].resetFields();
 			}
+		},
+
+		// 保存表单草稿到store
+		saveFormDraftToStore() {
+			this.saveAcceptanceFormDraft({
+				formId: this.sharedFormId,
+				componentId: this.sharedComponentId,
+				formData: _.cloneDeep(this.form)
+			});
+		},
+
+		// 从store加载表单草稿
+		loadFormDraftFromStore() {
+			const draft = this.getAcceptanceFormDraft(this.sharedFormId, this.sharedComponentId);
+			if (draft && draft.formData) {
+				this.form = _.cloneDeep(draft.formData);
+				// 确保表单验证状态正确
+				this.$nextTick(() => {
+					if (this.$refs['form']) {
+						this.$refs['form'].clearValidate();
+					}
+				});
+			}
+		},
+
+		// 清除当前表单的草稿数据
+		clearCurrentFormDraft() {
+			this.clearAcceptanceFormDraft({
+				formId: this.sharedFormId,
+				componentId: this.sharedComponentId
+			});
+		},
+
+		// 处理重置承兑表单（包括清除草稿）
+		handleResetAcceptanceForm() {
+			// 清除store中的草稿数据
+			this.clearCurrentFormDraft();
+			// 重置表单
+			this.resetAcceptanceForm();
+			this.$message.success('表单已重置');
 		}
 	},
 	created() {
@@ -869,6 +1005,11 @@ export default {
 		this.resetAcceptanceForm();
 	},
 	beforeDestroy() {
+		// 在销毁前保存表单草稿（如果有数据）
+		if (this.drawer) {
+			this.saveFormDraftToStore();
+		}
+
 		// 组件销毁时清除当前组件的sessionStorage
 		sessionStorage.removeItem(this.bankAcceptanceFilledKey);
 		// 移除总线事件监听
