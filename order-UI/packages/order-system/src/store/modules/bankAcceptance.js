@@ -13,8 +13,6 @@ const state = {
 	},
 	// 是否有任一方选择了承兑类型
 	hasAcceptanceSelection: false,
-	// 当前激活的表单实例ID（用于区分不同的双选择场景）
-	activeFormId: null,
 	// 内部转账表单信息保存
 	internalTransferFormData: {
 		formId: null,
@@ -22,11 +20,6 @@ const state = {
 		targetAccountInfo: null, // 目标账户信息
 		formData: null, // 完整表单数据
 		timestamp: null // 保存时间戳
-	},
-	// 承兑表单暂存数据管理
-	acceptanceFormDrafts: {
-		// 使用 formId + componentId 作为key，存储多个表单实例的草稿
-		// 格式: { [formId_componentId]: { formData: {}, timestamp: number } }
 	}
 };
 
@@ -42,8 +35,6 @@ const mutations = {
 		if (!['source', 'target'].includes(role)) {
 			return;
 		}
-		// 设置激活的表单ID
-		state.activeFormId = formId;
 		// 更新对应角色的账户类型
 		state.dualSelectionState[role] = accountType;
 		// 重新计算是否有承兑选择
@@ -54,32 +45,21 @@ const mutations = {
 	/**
 	 * 重置双选择状态
 	 * @param {Object} state - Vuex state
-	 * @param {string} formId - 可选的表单ID，如果提供则只重置对应表单的状态
 	 */
-	RESET_DUAL_SELECTION(state, formId = null) {
-		if (formId && state.activeFormId !== formId) {
-			// 如果指定了formId且不匹配当前激活的表单ID，则不执行重置
-			return;
-		}
-
+	RESET_DUAL_SELECTION(state) {
 		state.dualSelectionState = {
 			source: null,
 			target: null
 		};
 		state.hasAcceptanceSelection = false;
-		state.activeFormId = null;
 	},
 
 	/**
 	 * 清除指定角色的选择
 	 * @param {Object} state - Vuex state
-	 * @param {Object} payload - { role: 'source'|'target', formId: string }
+	 * @param {Object} payload - { role: 'source'|'target' }
 	 */
-	CLEAR_ROLE_SELECTION(state, { role, formId }) {
-		if (state.activeFormId !== formId) {
-			return;
-		}
-
+	CLEAR_ROLE_SELECTION(state, { role }) {
 		state.dualSelectionState[role] = null;
 
 		// 重新计算是否有承兑选择
@@ -137,49 +117,6 @@ const mutations = {
 			formData: null,
 			timestamp: null
 		};
-	},
-
-	/**
-	 * 保存承兑表单草稿
-	 * @param {Object} state - Vuex state
-	 * @param {Object} payload - { formId, componentId, formData }
-	 */
-	SAVE_ACCEPTANCE_FORM_DRAFT(state, { formId, componentId, formData }) {
-		const key = `${formId}_${componentId}`;
-		state.acceptanceFormDrafts[key] = {
-			formData: { ...formData },
-			timestamp: Date.now()
-		};
-	},
-
-	/**
-	 * 清除承兑表单草稿
-	 * @param {Object} state - Vuex state
-	 * @param {Object} payload - { formId, componentId } 或者 { clearAll: true }
-	 */
-	CLEAR_ACCEPTANCE_FORM_DRAFT(state, payload) {
-		if (payload.clearAll) {
-			// 清除所有草稿
-			state.acceptanceFormDrafts = {};
-		} else {
-			const { formId, componentId } = payload;
-			const key = `${formId}_${componentId}`;
-			delete state.acceptanceFormDrafts[key];
-		}
-	},
-
-	/**
-	 * 清除指定表单ID下的所有承兑表单草稿
-	 * @param {Object} state - Vuex state
-	 * @param {string} formId - 表单ID
-	 */
-	CLEAR_ACCEPTANCE_FORM_DRAFTS_BY_FORM_ID(state, formId) {
-		const keys = Object.keys(state.acceptanceFormDrafts);
-		keys.forEach(key => {
-			if (key.startsWith(`${formId}_`)) {
-				delete state.acceptanceFormDrafts[key];
-			}
-		});
 	}
 };
 
@@ -196,10 +133,9 @@ const actions = {
 	/**
 	 * 重置双选择状态
 	 * @param {Object} context - Vuex context
-	 * @param {string} formId - 表单ID
 	 */
-	resetDualSelection({ commit }, formId) {
-		commit('RESET_DUAL_SELECTION', formId);
+	resetDualSelection({ commit }) {
+		commit('RESET_DUAL_SELECTION');
 	},
 
 	/**
@@ -227,33 +163,6 @@ const actions = {
 	 */
 	clearInternalTransferFormData({ commit }, formId) {
 		commit('CLEAR_INTERNAL_TRANSFER_FORM_DATA', formId);
-	},
-
-	/**
-	 * 保存承兑表单草稿
-	 * @param {Object} context - Vuex context
-	 * @param {Object} payload - 草稿参数
-	 */
-	saveAcceptanceFormDraft({ commit }, payload) {
-		commit('SAVE_ACCEPTANCE_FORM_DRAFT', payload);
-	},
-
-	/**
-	 * 清除承兑表单草稿
-	 * @param {Object} context - Vuex context
-	 * @param {Object} payload - 清除参数
-	 */
-	clearAcceptanceFormDraft({ commit }, payload) {
-		commit('CLEAR_ACCEPTANCE_FORM_DRAFT', payload);
-	},
-
-	/**
-	 * 清除指定表单ID下的所有承兑表单草稿
-	 * @param {Object} context - Vuex context
-	 * @param {string} formId - 表单ID
-	 */
-	clearAcceptanceFormDraftsByFormId({ commit }, formId) {
-		commit('CLEAR_ACCEPTANCE_FORM_DRAFTS_BY_FORM_ID', formId);
 	}
 };
 
@@ -280,13 +189,6 @@ const getters = {
 	bothSelectedInDualMode: state => {
 		return !!(state.dualSelectionState.source && state.dualSelectionState.target);
 	},
-
-	/**
-	 * 获取当前激活的表单ID
-	 * @param {Object} state - Vuex state
-	 * @returns {string|null} 表单ID
-	 */
-	activeFormId: state => state.activeFormId,
 
 	/**
 	 * 检查是否应该显示承兑抽屉（双选择模式下）
@@ -333,34 +235,7 @@ const getters = {
 	 */
 	hasSavedInternalTransferData: state => {
 		return !!(state.internalTransferFormData.formId && (state.internalTransferFormData.sourceAccountInfo || state.internalTransferFormData.targetAccountInfo));
-	},
-
-	/**
-	 * 获取指定承兑表单的草稿数据
-	 * @param {Object} state - Vuex state
-	 * @returns {Function} 接受 formId 和 componentId 参数的函数
-	 */
-	getAcceptanceFormDraft: state => (formId, componentId) => {
-		const key = `${formId}_${componentId}`;
-		return state.acceptanceFormDrafts[key] || null;
-	},
-
-	/**
-	 * 检查指定承兑表单是否有草稿数据
-	 * @param {Object} state - Vuex state
-	 * @returns {Function} 接受 formId 和 componentId 参数的函数
-	 */
-	hasAcceptanceFormDraft: state => (formId, componentId) => {
-		const key = `${formId}_${componentId}`;
-		return !!(state.acceptanceFormDrafts[key] && state.acceptanceFormDrafts[key].formData);
-	},
-
-	/**
-	 * 获取所有承兑表单草稿
-	 * @param {Object} state - Vuex state
-	 * @returns {Object} 所有草稿数据
-	 */
-	acceptanceFormDrafts: state => state.acceptanceFormDrafts
+	}
 };
 
 export default {

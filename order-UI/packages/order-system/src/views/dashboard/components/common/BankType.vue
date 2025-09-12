@@ -680,7 +680,7 @@ export default {
 			sessionStorage.removeItem(this.bankAcceptanceFilledKey);
 			// 如果需要等待双选择，也清除双选择状态
 			if (this.waitForBothSelection) {
-				this.resetDualSelection(this.formId);
+				this.resetDualSelection();
 			}
 		},
 		// 用于在确实需要清空承兑信息时调用，绕过错误保护机制
@@ -701,8 +701,7 @@ export default {
 			// 如果是双选择模式，清除对应的角色状态
 			if (this.waitForBothSelection && this.componentRole) {
 				this.clearRoleSelection({
-					role: this.componentRole,
-					formId: this.formId
+					role: this.componentRole
 				});
 			}
 		},
@@ -915,8 +914,7 @@ export default {
 		if (this.waitForBothSelection && this.componentRole) {
 			// 清除当前角色的选择状态
 			this.clearRoleSelection({
-				role: this.componentRole,
-				formId: this.formId
+				role: this.componentRole
 			});
 		}
 	}
