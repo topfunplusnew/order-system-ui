@@ -1024,6 +1024,7 @@ export default {
 		},
 		// 处理承兑信息更新（包含反向填充逻辑）
 		handleBankAcceptanceUpdate(acceptanceData, componentRole) {
+			console.log(`acceptanceData`, acceptanceData);
 			// 如果不是内部转账或没有承兑信息，则跳过反向填充
 			if (this.cashType !== this.CASH_TYPE.TRANSFER || !acceptanceData || !acceptanceData.endorserName || !acceptanceData.billAccount) {
 				return;
@@ -1038,28 +1039,37 @@ export default {
 
 			const BankCash = BankAcceptanceType.BANK_CASH;
 			const Acceptance = BankAcceptanceType.ACCEPTANCE;
+
+			console.log(`反向填充开始 - 场景: 支出方${sourceType} → 收入方${targetType}`);
+			console.log('承兑信息数据:', {
+				endorser: acceptanceData.endorser,
+				endorserName: acceptanceData.endorserName,
+				billAccount: acceptanceData.billAccount,
+				billAccountId: acceptanceData.billAccountId
+			});
+
 			// 根据场景判断如何反向填充
 			if (sourceType === BankCash && targetType === Acceptance) {
 				// ①A账户现金到A账户承兑
 				// 承兑表单中: 背书人=A账户, 我方承兑账户=A账户
 				// 反向填充: 支出方账户=背书人, 收入方账户=我方承兑账户
 				this.fillAccountInfo(acceptanceData.endorser, 'source', acceptanceData.endorserName);
-				this.fillAccountInfo(acceptanceData.endorser, 'target', acceptanceData.billAccount);
+				this.fillAccountInfo(acceptanceData.billAccountId, 'target', acceptanceData.billAccount);
 			} else if (sourceType === Acceptance && targetType === BankCash) {
 				// ②B账户承兑到B账户现金
-				// 承兑表单中: 被背书人=B账户, 方承兑账户=B账户
+				// 承兑表单中: 被背书人=B账户, 我方承兑账户=B账户
 				// 反向填充: 支出方账户=我方承兑账户, 收入方账户=被背书人
-				this.fillAccountInfo(acceptanceData.endorser, 'source', acceptanceData.billAccount);
+				this.fillAccountInfo(acceptanceData.billAccountId, 'source', acceptanceData.billAccount);
 				this.fillAccountInfo(acceptanceData.endorser, 'target', acceptanceData.endorserName);
 			} else if (sourceType === Acceptance && targetType === Acceptance) {
 				// ③C账户承兑到D账户承兑
 				// 承兑表单中: 被背书人=D账户, 我方承兑账户=C账户
 				// 反向填充: 支出方账户=我方承兑账户, 收入方账户=被背书人
-				this.fillAccountInfo(acceptanceData.endorser, 'target', acceptanceData.billAccount);
-				this.fillAccountInfo(acceptanceData.endorser, 'source', acceptanceData.endorserName);
+				this.fillAccountInfo(acceptanceData.billAccountId, 'source', acceptanceData.billAccount);
+				this.fillAccountInfo(acceptanceData.endorser, 'target', acceptanceData.endorserName);
 			}
 
-			console.log('反向填充开始，正在获取银行卡信息...');
+			console.log('反向填充完成，开始获取银行卡信息...');
 		},
 
 		// 根据账户ID获取银行卡信息并填充

@@ -152,6 +152,7 @@
 												@commitBack="
 													value => {
 														this.$set(this.form, 'billAccount', value.acountsName);
+														this.$set(this.form, 'billAccountId', value.id);
 													}
 												"
 												@update:queryName="value => (queryBank = value)"
@@ -290,6 +291,7 @@ export default {
 				issueDate: null,
 				dueDate: null,
 				billAccount: null,
+				billAccountId: null, // 我方承兑账户的银行卡ID
 				billDate: null,
 				billType: null,
 				reason: null,
@@ -865,6 +867,7 @@ export default {
 				issueDate: null,
 				dueDate: null,
 				billAccount: null,
+				billAccountId: null, // 重置我方承兑账户ID
 				billDate: dayjs().format('YYYY-MM-DD HH:mm:ss'),
 				billType: this.billType,
 				// 内部转账时默认为内部转账，其他情况收票时默认为购买
