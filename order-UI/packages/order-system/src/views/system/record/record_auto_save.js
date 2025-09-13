@@ -13,12 +13,7 @@ export const mixin_record_auto_save = {
 					// 检查是否有实际数据需要保存
 					const hasData = newVal.amount || newVal.sourceBankNo || newVal.targetBankNo || newVal.remarks || newVal.sourceId || newVal.targetId;
 					if (hasData) {
-						const result = this.saveInternalTransferFormToSession();
-						if (result.success) {
-							console.log('自动暂存成功:', result.storageKey);
-						} else {
-							console.error('自动暂存失败:', result.error);
-						}
+						this.saveInternalTransferFormToSession();
 					}
 				}
 			},
@@ -34,7 +29,6 @@ export const mixin_record_auto_save = {
 		saveInternalTransferFormToSession() {
 			// 只有当选择内部转账时才进行暂存
 			if (this.cashType !== this.CASH_TYPE.TRANSFER) {
-				console.warn('当前不是内部转账模式，无法暂存');
 				return { success: false, error: '当前不是内部转账模式' };
 			}
 
@@ -188,14 +182,10 @@ export const mixin_record_auto_save = {
 			try {
 				// 使用固定的存储键
 				const keyToUse = storageKey || 'internal_transfer_form_data';
-
 				// 清除暂存数据
 				sessionStorage.removeItem(keyToUse);
-
-				console.log('已清除暂存的内部转账表单数据');
 				return true;
 			} catch (error) {
-				console.error('清除暂存数据失败:', error);
 				return false;
 			}
 		}

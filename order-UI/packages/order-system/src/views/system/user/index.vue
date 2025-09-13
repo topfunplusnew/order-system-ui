@@ -55,18 +55,6 @@
 					<el-col :span="1.5">
 						<el-button v-hasPermi="['system:user:add']" type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd">新增用户信息</el-button>
 					</el-col>
-					<!--          <el-col :span="1.5">-->
-					<!--            <el-button-->
-					<!--              type="success"-->
-					<!--              plain-->
-					<!--              icon="el-icon-edit"-->
-					<!--              size="mini"-->
-					<!--              :disabled="single"-->
-					<!--              @click="handleUpdate"-->
-					<!--              v-hasPermi="['system:user:edit']"-->
-					<!--            >修改-->
-					<!--            </el-button>-->
-					<!--          </el-col>-->
 					<el-col :span="1.5">
 						<el-button v-hasPermi="['system:user:remove']" type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete">删除</el-button>
 					</el-col>
@@ -91,6 +79,21 @@
 					"
 					@selection-change="handleSelectionChange"
 				>
+					<!-- 操作栏-->
+					<el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">
+						<template v-if="scope.row.userId !== 1" slot-scope="scope">
+							<el-button v-hasPermi="['system:user:edit']" size="mini" type="text" @click="checkRowInfo(scope.row)">查看用户信息</el-button>
+							<el-button v-hasPermi="['system:user:edit']" size="mini" type="text" @click="handleUpdate(scope.row)">修改</el-button>
+							<el-button v-hasPermi="['system:user:remove']" size="mini" type="text" @click="handleDelete(scope.row)">删除</el-button>
+							<el-dropdown v-hasPermi="['system:user:resetpwd', 'system:user:edit']" size="mini" @command="command => handleCommand(command, scope.row)">
+								<el-button size="mini" type="text">更多&gt;</el-button>
+								<el-dropdown-menu slot="dropdown">
+									<el-dropdown-item v-hasPermi="['system:user:resetpwd']" command="handleResetPwd" icon="el-icon-key">重置密码</el-dropdown-item>
+									<el-dropdown-item v-hasPermi="['system:user:edit']" command="handleAuthRole" icon="el-icon-circle-check">分配角色</el-dropdown-item>
+								</el-dropdown-menu>
+							</el-dropdown>
+						</template>
+					</el-table-column>
 					<el-table-column type="selection" width="50" align="center" />
 					<el-table-column v-if="columns[0].visible" key="userId" label="用户编号" align="center" prop="userId" />
 					<el-table-column v-if="columns[1].visible" key="userName" label="用户名称" align="center" prop="userName" :show-overflow-tooltip="true" />
@@ -133,21 +136,6 @@
 							<span>
 								{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}:{s}') }}
 							</span>
-						</template>
-					</el-table-column>
-					<!-- 操作栏-->
-					<el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width" fixed="right">
-						<template v-if="scope.row.userId !== 1" slot-scope="scope">
-							<el-button v-hasPermi="['system:user:edit']" size="mini" type="text" @click="checkRowInfo(scope.row)">查看用户信息</el-button>
-							<el-button v-hasPermi="['system:user:edit']" size="mini" type="text" @click="handleUpdate(scope.row)">修改</el-button>
-							<el-button v-hasPermi="['system:user:remove']" size="mini" type="text" @click="handleDelete(scope.row)">删除</el-button>
-							<el-dropdown v-hasPermi="['system:user:resetpwd', 'system:user:edit']" size="mini" @command="command => handleCommand(command, scope.row)">
-								<el-button size="mini" type="text">更多&gt;</el-button>
-								<el-dropdown-menu slot="dropdown">
-									<el-dropdown-item v-hasPermi="['system:user:resetpwd']" command="handleResetPwd" icon="el-icon-key">重置密码</el-dropdown-item>
-									<el-dropdown-item v-hasPermi="['system:user:edit']" command="handleAuthRole" icon="el-icon-circle-check">分配角色</el-dropdown-item>
-								</el-dropdown-menu>
-							</el-dropdown>
 						</template>
 					</el-table-column>
 				</el-table>

@@ -546,6 +546,10 @@ export default {
 			if (this.hasSavedAcceptanceInfo) {
 				this.loadSavedFormFromSession();
 			}
+			// 内部转账时自动填充承兑表单字段
+			if (this.isInternalTransfer && this.waitForBothSelection && this.componentRole) {
+				this.autoFillAcceptanceFormForInternalTransfer();
+			}
 			this.drawer = true;
 		},
 		// 获取事由类型标签（背书事由 或 收票事由）
@@ -891,6 +895,83 @@ export default {
 			// 重置表单
 			this.resetAcceptanceForm();
 			this.$message.success('表单已重置');
+		},
+
+		/**
+		 * 为内部转账自动填充承兑表单字段
+		 * 根据四个场景自动填充背书人/被背书人和我方承兑账户
+		 */
+		autoFillAcceptanceFormForInternalTransfer() {
+			// 从sessionStorage获取内部转账表单数据
+			const savedDataStr = sessionStorage.getItem('internal_transfer_form_data');
+			if (!savedDataStr) {
+				console.warn('没有找到内部转账表单数据，无法自动填充');
+				return;
+			}
+
+			try {
+				const savedData = JSON.parse(savedDataStr);
+				// 根据数据结构映射正确的字段
+				const sourceType = savedData.selfBankCardType; // 支出方账户类型 (other)
+				const targetType = savedData.otherBankCardType; // 收入方账户类型 (self)
+				const targetName = savedData.targetName; // 支出方名称
+				const sourceName = savedData.sourceName; // 收入方名称
+				const sourceId = savedData.sourceId; // 支出方ID
+				const targetId = savedData.targetId; // 收入方ID
+
+				// 验证必要数据
+				if (!sourceType || !targetType || !sourceName || !targetName) {
+					return;
+				}
+
+				// 判断四种场景并自动填充
+				const BankCash = BankAcceptanceType.BANK_CASH; // 银行活期存款
+				const Acceptance = BankAcceptanceType.ACCEPTANCE; // 承兑
+
+				console.log(`自动填充承兑信息 - 场景分析: 支出方${sourceType} → 收入方${targetType}`);
+
+				// 场景判断
+				if (sourceType === BankCash && targetType === Acceptance) {
+					// ①A账户现金到A账户承兑
+					// 相当于收款：A账户下的承兑类型账号收到一张承兑
+					// 背书人是账户A, 我方承兑账户是账户A
+					// 收入方承兑组件
+					this.$nextTick(() => {
+						this.form.endorserName = sourceName; // 背书人是支出方名称
+						this.form.billAccount = targetName; // 我方承兑账户是收入方名称
+						this.form.endorser = sourceId; // 背书人ID
+						console.log(`场景①自动填充: 背书人=${sourceName}, 我方承兑账户=${targetName}`);
+					});
+				} else if (sourceType === Acceptance && targetType === BankCash) {
+					// ②B账户承兑到B账户现金
+					// 相当于付款：B账户下的承兑类型账号支出一张承兑
+					// 被背书人是账户B, 我方承兑账户是账户B
+					// 支出方承兑组件
+					this.$nextTick(() => {
+						this.form.endorserName = targetName; // 被背书人是收入方名称
+						this.form.billAccount = sourceName; // 我方承兑账户是支出方名称
+						this.form.endorser = targetId; // 被背书人ID
+						console.log(`场景②自动填充: 被背书人=${targetName}, 我方承兑账户=${sourceName}`);
+					});
+				} else if (sourceType === Acceptance && targetType === Acceptance) {
+					// ③C账户承兑到D账户承兑
+					// 相当于两步：
+					// 首先C付款：C账户承兑支出一张承兑
+					// 被背书人是账户D, 我方承兑账户是账户C
+					this.$nextTick(() => {
+						this.form.endorserName = targetName; // 被背书人是收入方名称
+						this.form.billAccount = sourceName; // 我方承兑账户是支出方名称
+						this.form.endorser = targetId; // 被背书人ID
+						console.log(`场景③-支出自动填充: 被背书人=${targetName}, 我方承兑账户=${sourceName}`);
+					});
+				}
+				this.$nextTick(() => {
+					this.form.origin = PUBLIC_DICT_TYPE.SELF_COMPANY; // 票据来源为己方公司
+				});
+				console.log(`自动填充承兑信息完成 - 场景: ${sourceType} → ${targetType}`);
+			} catch (error) {
+				console.error('自动填充承兑信息失败:', error);
+			}
 		}
 	},
 	created() {
