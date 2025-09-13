@@ -817,6 +817,10 @@ export default {
 				if (!hasValidData) {
 					return;
 				}
+				if (!obj.endorser) {
+					console.warn('获取到的承兑信息缺少背书人ID，无法填充我方承兑账户ID');
+					return;
+				}
 				// 填充三个时间，只填充非空的字段
 				this.$nextTick(() => {
 					// 只有当获取到的值不为空时才填充，防止覆盖用户已填写的信息
@@ -828,6 +832,9 @@ export default {
 					}
 					if (obj.billAccount && obj.billAccount.trim() !== '') {
 						this.form.billAccount = obj.billAccount;
+					}
+					if (obj.endorser) {
+						this.form.billAccountId = obj.endorser;
 					}
 				});
 			});
@@ -921,6 +928,7 @@ export default {
 				const sourceName = savedData.sourceName; // 收入方名称
 				const sourceId = savedData.sourceId; // 支出方ID
 				const targetId = savedData.targetId; // 收入方ID
+				console.log(`自动填充承兑信息 - 支出方ID: ${sourceId}, 收入方ID: ${targetId}`);
 
 				// 验证必要数据
 				if (!sourceType || !targetType || !sourceName || !targetName) {
@@ -943,6 +951,7 @@ export default {
 						this.form.endorserName = sourceName; // 背书人是支出方名称
 						this.form.billAccount = targetName; // 我方承兑账户是收入方名称
 						this.form.endorser = sourceId; // 背书人ID
+						this.form.billAccountId = targetId; // 我方承兑账户ID
 						console.log(`场景①自动填充: 背书人=${sourceName}, 我方承兑账户=${targetName}`);
 					});
 				} else if (sourceType === Acceptance && targetType === BankCash) {
@@ -954,6 +963,7 @@ export default {
 						this.form.endorserName = targetName; // 被背书人是收入方名称
 						this.form.billAccount = sourceName; // 我方承兑账户是支出方名称
 						this.form.endorser = targetId; // 被背书人ID
+						this.form.billAccountId = sourceId; // 我方承兑账户ID
 						console.log(`场景②自动填充: 被背书人=${targetName}, 我方承兑账户=${sourceName}`);
 					});
 				} else if (sourceType === Acceptance && targetType === Acceptance) {
@@ -965,6 +975,7 @@ export default {
 						this.form.endorserName = targetName; // 被背书人是收入方名称
 						this.form.billAccount = sourceName; // 我方承兑账户是支出方名称
 						this.form.endorser = targetId; // 被背书人ID
+						this.form.billAccountId = sourceId; // 我方承兑账户ID
 						console.log(`场景③-支出自动填充: 被背书人=${targetName}, 我方承兑账户=${sourceName}`);
 					});
 				}
