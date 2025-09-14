@@ -347,10 +347,6 @@ export default {
 		parseTime,
 		updateGoodsOrder,
 		getGoodsOrder,
-		// 兼容旧调用（若其他地方仍引用）
-		tableRowClassName() {
-			return {};
-		},
 		// 处理下拉菜单  使用的是事件委托
 		handleCommand(command, row) {
 			// 根据不同操作委派不同的方法

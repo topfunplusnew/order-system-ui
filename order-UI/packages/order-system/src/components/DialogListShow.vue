@@ -2,7 +2,7 @@
 	<div>
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" v-bind="$attrs" :title="title" v-on="$listeners" @open="onOpen">
 			<el-row>
-				<el-table :data="showInfoList" :loading="loading" height="450px" size="mini" :cell-style="cellStyle">
+				<el-table :data="showInfoList" :loading="loading" height="450px" size="mini" border :cell-style="cellStyle">
 					<template #append>
 						<AddBankAccounts :company-info="queryObject" @callGetList="handleChangeBank" />
 					</template>
