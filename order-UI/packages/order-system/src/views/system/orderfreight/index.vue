@@ -80,7 +80,7 @@
 			"
 			@selection-change="handleSelectionChange"
 		>
-			<el-table-column type="selection" width="55" />
+			<el-table-column type="selection" width="55" align="center" />
 			<el-table-column width="80" align="center" label="冲抵选择">
 				<template #header>
 					<el-checkbox v-model="selectAllOffset" :indeterminate="isOffsetIndeterminate" @change="handleOffsetSelectAll"></el-checkbox>
@@ -89,6 +89,7 @@
 					<el-checkbox :value="isOffsetRowSelected(row)" @input="value => handleOffsetToggle(row, value)"></el-checkbox>
 				</template>
 			</el-table-column>
+			<el-table-column label="ID" align="center" prop="id" width="80" show-overflow-tooltip />
 			<el-table-column v-if="columns[0].visible" label="付款日期" align="center" prop="payDate" width="100" show-overflow-tooltip />
 			<el-table-column v-if="columns[1].visible" label="运费类型" align="center" prop="freightType" width="100" show-overflow-tooltip />
 			<el-table-column v-if="columns[2].visible" label="车队" align="center" prop="fleet" width="100" show-overflow-tooltip />
@@ -107,7 +108,8 @@
 			</el-table-column>
 			<el-table-column v-if="columns[10].visible" label="支付状态" align="center" prop="paymentState" width="100" show-overflow-tooltip>
 				<template slot-scope="scope">
-					<PaymentFlag :business-object="scope.row" size="mini" :custom-status-fn="customFreightStatusFn" :custom-status-styles="freightStatusStyles" />
+					<el-tag v-if="scope.row.paymentState === '已支付'" type="success" size="mini">已支付</el-tag>
+					<el-tag v-else type="danger" size="mini">未支付</el-tag>
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[11].visible" label="申请人员姓名" align="center" prop="applyUserName" width="100" show-overflow-tooltip />
@@ -376,13 +378,11 @@ import FillFreight from '../../dashboard/components/orderfreight/FillFreight.vue
 import { mixin_order_freight_fill } from './orderFreightFill';
 import { FREIGHT_TYPE, mixin_freight_payment } from '@/views/dashboard/mixins/freight/freight_payment';
 import { fix } from '../../../api/tool/format';
-import PaymentFlag from '@/components/PaymentFlag';
 import { common_dialog } from '../../dashboard/mixins/common/common_dialog';
 
 export default {
 	name: 'OrderFreight',
 	components: {
-		PaymentFlag,
 		FillFreight,
 		CheckOrderInfo,
 		InfoDialog,
@@ -636,25 +636,6 @@ export default {
 				false,
 				true
 			);
-		},
-		// 运费业务自定义状态判断函数
-		customFreightStatusFn(businessObject) {
-			// 运费业务逻辑：有payment对象就是已支付，没有就是未支付
-			if (businessObject && businessObject.payment && businessObject.payment !== null) {
-				return {
-					text: '已支付',
-					type: 'success',
-					status: 'PAID',
-					statusType: 'payment'
-				};
-			} else {
-				return {
-					text: '未支付',
-					type: 'danger',
-					status: 'UNPAID',
-					statusType: 'payment'
-				};
-			}
 		},
 		// 拿到付款状态
 		PaymentState() {

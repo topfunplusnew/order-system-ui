@@ -483,13 +483,11 @@ export default {
 }
 
 .offset-payment-info ::v-deep .total-amount-badge {
-	background: #f56c6c;
-	color: white;
+	color: red;
 	padding: 4px 12px;
 	border-radius: 14px;
 	font-size: 13px;
 	font-weight: 600;
-	box-shadow: 0 2px 4px rgba(245, 108, 108, 0.3);
 	flex-shrink: 0;
 }
 
