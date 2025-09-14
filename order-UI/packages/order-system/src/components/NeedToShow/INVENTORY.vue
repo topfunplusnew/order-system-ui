@@ -94,6 +94,7 @@ export default {
 				:summary-method="getSummaries"
 				stripe
 				style="width: 100%"
+				border
 			>
 				<el-table-column prop="supplier" label="供应商" width="150" />
 				<el-table-column label="级别名称" align="center" prop="levelName" show-overflow-tooltip />

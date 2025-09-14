@@ -8,7 +8,7 @@
 		</div>
 
 		<div v-else-if="type === 'array'">
-			<el-table :data="items" style="width: 100%" show-summary :summary-method="getSummaries">
+			<el-table :data="items" style="width: 100%" show-summary border :summary-method="getSummaries">
 				<el-table-column type="index" label="ID"></el-table-column>
 				<el-table-column v-for="(item, index) in array" :prop="item.prop" :label="item.label" :key="index"></el-table-column>
 			</el-table>

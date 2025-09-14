@@ -61,7 +61,7 @@ export default {
 			</el-descriptions>
 			<el-divider></el-divider>
 
-			<el-table :data="detailList" style="width: 100%">
+			<el-table :data="detailList" style="width: 100%" border>
 				<el-table-column prop="actualReceived" label="实际收到金额">
 					<template slot-scope="scope">{{ scope.row.actualReceived }} 元</template>
 				</el-table-column>

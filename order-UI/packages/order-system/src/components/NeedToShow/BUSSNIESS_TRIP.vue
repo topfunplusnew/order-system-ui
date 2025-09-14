@@ -48,7 +48,7 @@ export default {
 				{{ needToShowInfo.userName || '暂无数据' }}
 			</el-descriptions-item>
 		</el-descriptions>
-		<el-table :data="needToShowInfo.tripReimbursementList" style="width: 100%">
+		<el-table :data="needToShowInfo.tripReimbursementList" style="width: 100%" border>
 			<el-table-column prop="item" label="报销项目"></el-table-column>
 			<el-table-column prop="itemCost" label="费用 (元)"></el-table-column>
 		</el-table>

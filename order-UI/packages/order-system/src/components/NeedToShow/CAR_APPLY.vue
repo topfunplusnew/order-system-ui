@@ -98,7 +98,7 @@ export default {
 		</el-descriptions>
 
 		<h4 style="font-weight: bold">加油卡消费信息</h4>
-		<el-table :data="needToShowInfo.oilCardConsumes" style="width: 100%">
+		<el-table :data="needToShowInfo.oilCardConsumes" style="width: 100%" border>
 			<el-table-column prop="oilCardNo" label="油卡号" />
 			<el-table-column prop="useDate" label="使用日期" />
 			<el-table-column prop="carNo" label="车牌号" />

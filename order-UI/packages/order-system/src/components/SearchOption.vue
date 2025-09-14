@@ -268,7 +268,7 @@ export default {
 						</el-form-item>
 					</el-form>
 				</div>
-				<el-table size="mini" :key="tableData.length" v-loading="loading" :data="tableData">
+				<el-table size="mini" :key="tableData.length" v-loading="loading" :data="tableData" border>
 					<el-table-column label="操作" width="100">
 						<template slot-scope="scope">
 							<el-button type="danger" size="mini" :disabled="disable" @click="commitSomeThing(scope.row)">确认</el-button>
