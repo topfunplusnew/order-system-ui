@@ -102,7 +102,7 @@
 			<el-table-column prop="payNO" label="凭证号数" show-overflow-tooltip></el-table-column>
 			<el-table-column prop="changeType" label="类型(收款/付款)" show-overflow-tooltip></el-table-column>
 			<el-table-column prop="displayPayType" label="支付类型" show-overflow-tooltip></el-table-column>
-			<el-table-column prop="companyType" label="对象类型（客户/供应商/本公司/运费/票点/日常费用）" show-overflow-tooltip></el-table-column>
+			<el-table-column prop="otherCompanyType" label="对象类型（客户/供应商/本公司/运费/票点/日常费用）" show-overflow-tooltip></el-table-column>
 			<el-table-column prop="otherCompanyName" label="对象名称" show-overflow-tooltip></el-table-column>
 			<el-table-column prop="otherAcountsName" label="对方户名（对方真实收付款名称）" show-overflow-tooltip></el-table-column>
 			<el-table-column prop="otherBankNO" label="对方银行账号" show-overflow-tooltip></el-table-column>
