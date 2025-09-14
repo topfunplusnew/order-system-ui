@@ -72,7 +72,6 @@
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="700px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="120px">
 				<el-form-item label="操作时间" prop="operateDate">
-					<!--          <el-input v-model="form.operateDate" placeholder="请输入操作时间"/>-->
 					<el-date-picker v-model="form.operateDate" type="datetime" placeholder="选择操作时间" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 				</el-form-item>
 				<el-form-item label="金额" prop="moneyAmount">
