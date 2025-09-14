@@ -26,6 +26,15 @@ export function addRecord(data) {
 	});
 }
 
+// 批量新增现金记账
+export function addRecordBatch(data) {
+	return request({
+		url: '/system/record/batch',
+		method: 'post',
+		data: data
+	});
+}
+
 // 修改现金记账
 export function updateRecord(data) {
 	return request({

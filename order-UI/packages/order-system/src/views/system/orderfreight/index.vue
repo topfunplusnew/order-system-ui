@@ -44,6 +44,11 @@
 			<!--  运费修正-->
 			<FillFreight />
 
+			<!-- 一键冲抵款按钮 -->
+			<el-col :span="1.5">
+				<el-button :disabled="offsetSelections.length <= 0" size="mini" type="warning" icon="el-icon-money" @click="handleOffsetPayment">一键冲抵款</el-button>
+			</el-col>
+
 			<right-toolbar :show-search.sync="showSearch" :columns="columns" @queryTable="getList">
 				<template #print>
 					<el-col :span="1.5">
@@ -75,7 +80,15 @@
 			"
 			@selection-change="handleSelectionChange"
 		>
-			<el-table-column type="selection" width="55" fixed="left" />
+			<el-table-column type="selection" width="55" />
+			<el-table-column width="80" align="center" label="冲抵选择">
+				<template #header>
+					<el-checkbox v-model="selectAllOffset" :indeterminate="isOffsetIndeterminate" @change="handleOffsetSelectAll"></el-checkbox>
+				</template>
+				<template #default="{ row }">
+					<el-checkbox :value="isOffsetRowSelected(row)" @input="value => handleOffsetToggle(row, value)"></el-checkbox>
+				</template>
+			</el-table-column>
 			<el-table-column v-if="columns[0].visible" label="付款日期" align="center" prop="payDate" width="100" show-overflow-tooltip />
 			<el-table-column v-if="columns[1].visible" label="运费类型" align="center" prop="freightType" width="100" show-overflow-tooltip />
 			<el-table-column v-if="columns[2].visible" label="车队" align="center" prop="fleet" width="100" show-overflow-tooltip />
@@ -364,6 +377,7 @@ import { mixin_order_freight_fill } from './orderFreightFill';
 import { FREIGHT_TYPE, mixin_freight_payment } from '@/views/dashboard/mixins/freight/freight_payment';
 import { fix } from '../../../api/tool/format';
 import PaymentFlag from '@/components/PaymentFlag';
+import { common_dialog } from '../../dashboard/mixins/common/common_dialog';
 
 export default {
 	name: 'OrderFreight',
@@ -375,7 +389,7 @@ export default {
 		ApplyPayment,
 		SearchOption
 	},
-	mixins: [mixin_order_freight_fill, mixin_order_base, mixin_order_freight_payment, /* 引入支付类型的混入*/ mixin_payment_subject, /* 引入支付类型的混入*/ mixin_freight_payment],
+	mixins: [common_dialog, mixin_order_freight_fill, mixin_order_base, mixin_order_freight_payment, /* 引入支付类型的混入*/ mixin_payment_subject, /* 引入支付类型的混入*/ mixin_freight_payment],
 	data() {
 		return {
 			// 遮罩层
@@ -490,7 +504,10 @@ export default {
 						trigger: 'blur'
 					}
 				]
-			}
+			},
+			// 冲抵款相关数据
+			offsetSelections: [], // 冲抵选择的数据
+			selectAllOffset: false // 全选状态
 		};
 	},
 	computed: {
@@ -510,6 +527,12 @@ export default {
 					color: '#F56C6C'
 				}
 			};
+		},
+		// 冲抵选择相关计算属性
+		// 是否半选状态
+		isOffsetIndeterminate() {
+			const selectedCount = this.offsetSelections.length;
+			return selectedCount > 0 && selectedCount < this.orderFreightList.length;
 		}
 	},
 	watch: {
@@ -518,6 +541,12 @@ export default {
 				localStorage.setItem('freight-columns', JSON.stringify(newVal));
 			},
 			deep: true
+		},
+		isOffsetIndeterminate: {
+			handler(newVal) {
+				this.selectAllOffset = newVal;
+			},
+			immediate: true
 		}
 	},
 	created() {
@@ -559,6 +588,55 @@ export default {
 		listFleet,
 		listData,
 		listBankAccount,
+		// 冲抵选择相关方法
+		// 判断行是否被冲抵选中
+		isOffsetRowSelected(row) {
+			return this.offsetSelections.some(item => item.id === row.id);
+		},
+		// 处理单行的冲抵选择切换
+		handleOffsetToggle(row, value) {
+			if (value) {
+				// 添加到选中数组
+				if (!this.isOffsetRowSelected(row)) {
+					this.offsetSelections.push(row);
+				}
+			} else {
+				// 从选中数组移除
+				const index = this.offsetSelections.findIndex(item => item.id === row.id);
+				if (index > -1) {
+					this.offsetSelections.splice(index, 1);
+				}
+			}
+		},
+		// 处理全选/取消全选
+		handleOffsetSelectAll(value) {
+			if (value) {
+				// 全选：将所有数据添加到选中数组
+				this.offsetSelections = [...this.orderFreightList];
+			} else {
+				// 取消全选：清空选中数组
+				this.offsetSelections = [];
+			}
+		},
+		// 处理一键冲抵款按钮点击
+		handleOffsetPayment() {
+			if (this.offsetSelections.length === 0) {
+				this.$modal.msgWarning('请至少选择一条数据进行冲抵');
+				return;
+			}
+
+			// 使用通用弹窗混入打开冲抵款弹窗
+			this.openDialog(
+				() => import('./components/OffsetPaymentDialog.vue'),
+				'一键冲抵款',
+				'1100px',
+				{
+					selectedFreights: this.offsetSelections
+				},
+				false,
+				true
+			);
+		},
 		// 运费业务自定义状态判断函数
 		customFreightStatusFn(businessObject) {
 			// 运费业务逻辑：有payment对象就是已支付，没有就是未支付

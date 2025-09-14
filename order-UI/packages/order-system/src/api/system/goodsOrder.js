@@ -101,3 +101,36 @@ export function checkOrderByOrderNo(orderNo) {
 		method: 'get'
 	});
 }
+
+/**
+ * 根据表名和ID列表批量查询数据
+ * 通用的批量查询接口，支持查询任意表的指定ID记录
+ *
+ * @param {Object} params - 查询参数对象
+ * @param {string} params.tableName - 要查询的表名，如 'inventory_detail', 'goodsOrder' 等
+ * @param {Array<number|string>|number|string} params.ids - 要查询的ID列表，支持数组或单个值
+ * @param {Object} [params.otherParams] - 其他可选的查询参数
+ */
+export function getBussinessInfoTodayList(params) {
+	if (!params) {
+		console.warn('请求参数非法');
+		return Promise.reject(new Error('请求参数不能为空'));
+	}
+
+	// 验证必要参数
+	if (!params.tableName) {
+		console.warn('tableName参数不能为空');
+		return Promise.reject(new Error('tableName参数不能为空'));
+	}
+
+	if (!params.ids || (!Array.isArray(params.ids) && !params.ids)) {
+		console.warn('ids参数不能为空');
+		return Promise.reject(new Error('ids参数不能为空'));
+	}
+
+	return request({
+		url: '/system/batchQuery/queryByTableNameAndIds',
+		method: 'post',
+		params: params
+	});
+}
