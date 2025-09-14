@@ -4,115 +4,76 @@
 			<div v-if="orderList.length === 0 && !loading" class="empty-state">
 				<a-empty description="暂无订单数据" />
 			</div>
-			<a-list v-else :data-source="orderList" :pagination="pagination" item-layout="vertical" size="large">
-				<template #renderItem="{ item }">
-					<a-list-item key="item.id">
-						<template #actions>
-							<span>
-								<a-icon type="calendar" />
-								{{ item.orderDate }}
-							</span>
-							<span>
-								<a-icon type="dollar" />
-								{{ formatMoney(item.allPayments) }}
-							</span>
-							<span v-if="item.checkState">
-								<a-tag :color="getStatusColor(item.checkState)">
-									{{ item.checkState }}
-								</a-tag>
-							</span>
-						</template>
+			<div v-else class="table-container">
+				<!-- 表头 -->
+				<div class="table-header">
+					<div class="header-cell date-col">日期</div>
+					<div class="header-cell customer-col">客户</div>
+					<div class="header-cell supplier-col">供应商/仓库</div>
+					<div class="header-cell transport-col">运输信息</div>
+					<div class="header-cell weight-col">重量</div>
+					<div class="header-cell amount-col">金额</div>
+					<div class="header-cell profit-col">利润</div>
+					<div class="header-cell status-col">状态</div>
+					<div class="header-cell operator-col">操作员</div>
+				</div>
 
-						<a-list-item-meta>
-							<template #title>
-								<span class="order-title">
-									<a-icon type="file-text" />
-									订单 #{{ item.id }}
-									<a-tag v-if="item.customer" color="blue" class="customer-tag">
-										{{ item.customer }}
-									</a-tag>
-								</span>
-							</template>
-							<template #description>
-								<div class="order-description">
-									<!-- 供应商/仓库信息 -->
-									<div v-if="item.supplierNames" class="info-row">
-										<span class="label">供应商/仓库:</span>
-										<span class="value">{{ item.supplierNames }}</span>
-									</div>
-
-									<!-- 运输信息 -->
-									<div class="transport-info">
-										<!-- 陆运信息 -->
-										<div v-if="item.landCarNo || item.landDriverName" class="info-row">
-											<span class="label">陆运:</span>
-											<span class="value">
-												<span v-if="item.landCarNo">车牌: {{ item.landCarNo }}</span>
-												<span v-if="item.landDriverName" class="driver-info">
-													司机: {{ item.landDriverName }}
-													<span v-if="item.landDriverTel">({{ item.landDriverTel }})</span>
-												</span>
-												<span v-if="item.landFreight" class="freight-info">运费: ¥{{ formatMoney(item.landFreight) }}</span>
-											</span>
-										</div>
-
-										<!-- 海运信息 -->
-										<div v-if="item.seaCarNo || item.seaDriverName" class="info-row">
-											<span class="label">海运:</span>
-											<span class="value">
-												<span v-if="item.seaCarNo">柜号: {{ item.seaCarNo }}</span>
-												<span v-if="item.seaDriverName" class="driver-info">
-													公司: {{ item.seaDriverName }}
-													<span v-if="item.seaDriverTel">({{ item.seaDriverTel }})</span>
-												</span>
-												<span v-if="item.seaFreight" class="freight-info">运费: ¥{{ formatMoney(item.seaFreight) }}</span>
-											</span>
-										</div>
-									</div>
-
-									<!-- 其他信息 -->
-									<div class="additional-info">
-										<div v-if="item.fleet" class="info-row">
-											<span class="label">车队:</span>
-											<span class="value">{{ item.fleet }}</span>
-										</div>
-										<div v-if="item.saleManager" class="info-row">
-											<span class="label">销售经理:</span>
-											<span class="value">{{ item.saleManager }}</span>
-										</div>
-										<div v-if="item.userName" class="info-row">
-											<span class="label">录入员:</span>
-											<span class="value">{{ item.userName }}</span>
-										</div>
-									</div>
-
-									<!-- 财务信息 -->
-									<div class="financial-info">
-										<div v-if="item.allProfit" class="info-row">
-											<span class="label">利润(含税):</span>
-											<span class="value profit-value">¥{{ formatMoney(item.allProfit) }}</span>
-										</div>
-										<div v-if="item.allProfitNoTax" class="info-row">
-											<span class="label">利润(不含税):</span>
-											<span class="value profit-value">¥{{ formatMoney(item.allProfitNoTax) }}</span>
-										</div>
-										<div v-if="item.allTonnage" class="info-row">
-											<span class="label">总吨位:</span>
-											<span class="value">{{ item.allTonnage }} 吨</span>
-										</div>
-									</div>
-
-									<!-- 备注 -->
-									<div v-if="item.comments" class="info-row comments">
-										<span class="label">备注:</span>
-										<span class="value">{{ item.comments }}</span>
-									</div>
+				<!-- 表格内容 -->
+				<div class="table-body">
+					<div v-for="item in orderList" :key="item.id" class="table-row">
+						<div class="table-cell date-col">
+							{{ item.orderDate || '-' }}
+						</div>
+						<div class="table-cell customer-col">
+							{{ item.customer || '-' }}
+						</div>
+						<div class="table-cell supplier-col">
+							{{ item.supplierNames || '-' }}
+						</div>
+						<div class="table-cell transport-col">
+							<div class="transport-info">
+								<div v-if="item.landCarNo || item.landDriverName" class="transport-line">
+									<span class="transport-type">陆运:</span>
+									<span v-if="item.landCarNo">{{ item.landCarNo }}</span>
+									<span v-if="item.landDriverName">{{ item.landDriverName }}</span>
+									<span v-if="item.landDriverTel">({{ item.landDriverTel }})</span>
 								</div>
-							</template>
-						</a-list-item-meta>
-					</a-list-item>
-				</template>
-			</a-list>
+								<div v-if="item.seaCarNo || item.seaDriverName" class="transport-line">
+									<span class="transport-type">海运:</span>
+									<span v-if="item.seaCarNo">{{ item.seaCarNo }}</span>
+									<span v-if="item.seaDriverName">{{ item.seaDriverName }}</span>
+									<span v-if="item.seaDriverTel">({{ item.seaDriverTel }})</span>
+								</div>
+							</div>
+						</div>
+						<div class="table-cell weight-col">
+							{{ item.allTonnage ? `${item.allTonnage}吨` : '-' }}
+						</div>
+						<div class="table-cell amount-col">
+							{{ formatMoney(item.allPayments) }}
+						</div>
+						<div class="table-cell profit-col">
+							<div v-if="item.allProfit" class="profit-item">含税: ¥{{ formatMoney(item.allProfit) }}</div>
+							<div v-if="item.allProfitNoTax" class="profit-item">不含税: ¥{{ formatMoney(item.allProfitNoTax) }}</div>
+						</div>
+						<div class="table-cell status-col">
+							<a-tag v-if="item.checkState" :color="getStatusColor(item.checkState)">
+								{{ item.checkState }}
+							</a-tag>
+							<span v-else>-</span>
+						</div>
+						<div class="table-cell operator-col">
+							<div v-if="item.userName">{{ item.userName }}</div>
+							<div v-if="item.saleManager" class="sale-manager">{{ item.saleManager }}</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- 分页 -->
+				<div class="pagination-wrapper">
+					<a-pagination v-bind="pagination" :total="orderList.length" @change="handlePageChange" @showSizeChange="handleSizeChange" />
+				</div>
+			</div>
 		</a-spin>
 	</div>
 </template>
@@ -200,6 +161,18 @@ export default {
 				作废: 'purple'
 			};
 			return statusColors[status] || 'default';
+		},
+
+		// 分页改变
+		handlePageChange(page, pageSize) {
+			this.pagination.current = page;
+			this.pagination.pageSize = pageSize;
+		},
+
+		// 页大小改变
+		handleSizeChange(current, size) {
+			this.pagination.current = 1;
+			this.pagination.pageSize = size;
 		}
 	}
 };
@@ -214,84 +187,184 @@ export default {
 		padding: 40px;
 	}
 
-	.order-title {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		font-size: 16px;
-		font-weight: 500;
+	.table-container {
+		border: 1px solid #e8e8e8;
+		border-radius: 4px;
+		overflow: hidden;
+		background: #fff;
 
-		.customer-tag {
-			margin-left: auto;
-		}
-	}
-
-	.order-description {
-		.info-row {
+		.table-header {
 			display: flex;
-			margin-bottom: 8px;
+			background: #fafafa;
+			border-bottom: 1px solid #e8e8e8;
 
-			.label {
-				min-width: 80px;
-				color: #666;
-				font-weight: 500;
-			}
-
-			.value {
-				flex: 1;
-				color: #333;
-			}
-
-			&.comments {
-				.value {
-					color: #666;
-					font-style: italic;
-				}
-			}
-		}
-
-		.transport-info,
-		.additional-info,
-		.financial-info {
-			margin: 12px 0;
-
-			.driver-info,
-			.freight-info {
-				margin-left: 8px;
-
-				&::before {
-					content: ' | ';
-					color: #ccc;
-				}
-			}
-
-			.profit-value {
+			.header-cell {
+				padding: 12px 8px;
 				font-weight: 600;
-				color: #52c41a;
+				color: #262626;
+				border-right: 1px solid #e8e8e8;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				font-size: 13px;
+
+				&:last-child {
+					border-right: none;
+				}
 			}
+		}
+
+		.table-body {
+			.table-row {
+				display: flex;
+				border-bottom: 1px solid #f0f0f0;
+
+				&:hover {
+					background-color: #f5f5f5;
+				}
+
+				&:last-child {
+					border-bottom: none;
+				}
+
+				.table-cell {
+					padding: 8px;
+					border-right: 1px solid #f0f0f0;
+					display: flex;
+					align-items: center;
+					font-size: 12px;
+					line-height: 1.4;
+					word-break: break-word;
+
+					&:last-child {
+						border-right: none;
+					}
+				}
+			}
+		}
+
+		// 列宽定义
+		.date-col {
+			width: 80px;
+			min-width: 80px;
+			flex-shrink: 0;
+			justify-content: center;
+		}
+
+		.customer-col {
+			width: 120px;
+			min-width: 120px;
+			flex-shrink: 0;
+		}
+
+		.supplier-col {
+			width: 150px;
+			min-width: 150px;
+			flex-shrink: 0;
+		}
+
+		.transport-col {
+			width: 200px;
+			min-width: 200px;
+			flex-shrink: 0;
+			flex-direction: column;
+			align-items: flex-start;
+
+			.transport-info {
+				width: 100%;
+
+				.transport-line {
+					margin-bottom: 2px;
+					font-size: 11px;
+
+					&:last-child {
+						margin-bottom: 0;
+					}
+
+					.transport-type {
+						color: #666;
+						font-weight: 500;
+						margin-right: 4px;
+					}
+				}
+			}
+		}
+
+		.weight-col {
+			width: 80px;
+			min-width: 80px;
+			flex-shrink: 0;
+			justify-content: center;
+		}
+
+		.amount-col {
+			width: 100px;
+			min-width: 100px;
+			flex-shrink: 0;
+			justify-content: flex-end;
+			color: #1890ff;
+			font-weight: 500;
+		}
+
+		.profit-col {
+			width: 150px;
+			min-width: 150px;
+			flex-shrink: 0;
+			flex-direction: column;
+			align-items: flex-start;
+
+			.profit-item {
+				font-size: 11px;
+				color: #52c41a;
+				font-weight: 500;
+				margin-bottom: 2px;
+
+				&:last-child {
+					margin-bottom: 0;
+				}
+			}
+		}
+
+		.status-col {
+			width: 80px;
+			min-width: 80px;
+			flex-shrink: 0;
+			justify-content: center;
+		}
+
+		.operator-col {
+			width: 100px;
+			min-width: 100px;
+			flex-shrink: 0;
+			flex-direction: column;
+			align-items: flex-start;
+
+			.sale-manager {
+				font-size: 11px;
+				color: #666;
+			}
+		}
+
+		.pagination-wrapper {
+			padding: 16px;
+			text-align: center;
+			border-top: 1px solid #f0f0f0;
+			background: #fafafa;
 		}
 	}
 }
 
-// Ant Design Vue 样式定制
-::v-deep .ant-list-item {
-	padding: 16px 24px;
-	border-bottom: 1px solid #f0f0f0;
-
-	&:hover {
-		background-color: #fafafa;
-	}
-}
-
-::v-deep .ant-list-item-meta-title {
-	margin-bottom: 8px;
-}
-
-::v-deep .ant-list-item-action {
-	margin-left: 16px;
-}
-
+// Ant Design Vue 样式覆盖
 ::v-deep .ant-tag {
-	margin: 0 4px;
+	margin: 0;
+	font-size: 11px;
+	padding: 2px 6px;
+	border-radius: 2px;
+}
+
+::v-deep .ant-pagination {
+	.ant-pagination-item {
+		border-radius: 2px;
+	}
 }
 </style>

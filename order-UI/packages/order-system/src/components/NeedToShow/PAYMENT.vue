@@ -11,7 +11,6 @@ import REBATE from '@/components/NeedToShow/REBATE.vue';
 import INVENTORY from '@/components/NeedToShow/INVENTORY.vue';
 import BANK_ACCEPTANCE from '@/components/NeedToShow/BANK_ACCEPTANCE.vue';
 import ORDER_FREIGHTVue from '@/components/NeedToShow/ORDER_FREIGHT.vue';
-
 export default {
 	name: 'PAYMENT',
 	mixins: [common_dialog],
@@ -37,9 +36,6 @@ export default {
 			if (!tableName && !tID) {
 				this.$message.warning('当前付款信息不牵扯任何其他模块，无详细信息');
 				return;
-			}
-			if (tableName) {
-				fillTableName = tableName;
 			}
 			if (tID) {
 				tid = tID;

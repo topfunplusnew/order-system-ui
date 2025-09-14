@@ -70,7 +70,7 @@ export const TableName = Object.freeze({
 export const BatchQueryTableName = Object.freeze({
 	GOODS_ORDER: 'goodsorder',
 	ORDER_DETAIL: 'orderdetail',
-	INVENTORY: 'inventory_main',
+	INVENTORY_MAIN: 'inventory_main',
 	INVENTORY_DETAIL: 'inventory_detail'
 });
 

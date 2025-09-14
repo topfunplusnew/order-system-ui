@@ -1,5 +1,6 @@
 import request from '@/utils/request';
 import { MessageBox } from 'element-ui';
+import { BatchQueryTableName } from '@/api/tool/enums';
 
 // 查询订单列表
 export function listGoodsOrder(query) {
@@ -103,6 +104,22 @@ export function checkOrderByOrderNo(orderNo) {
 }
 
 /**
+ * 检查是否为订单的表名
+ * @param {string} tableName
+ * @returns {boolean}
+ */
+export function isGoodsOrderDisplay(tableName) {
+	return [BatchQueryTableName.GOODS_ORDER, BatchQueryTableName.ORDER_DETAIL].includes(tableName);
+}
+/**
+ * 检查是否为库存的表名
+ * @param {string} tableName
+ * @returns {boolean}
+ */
+export function isInventoryDisplay(tableName) {
+	return [BatchQueryTableName.INVENTORY_MAIN, BatchQueryTableName.INVENTORY_DETAIL].includes(tableName);
+}
+/**
  * 根据表名和ID列表批量查询数据
  * 通用的批量查询接口，支持查询任意表的指定ID记录
  *
@@ -121,6 +138,14 @@ export function getBussinessInfoTodayList(params) {
 	if (!params.tableName) {
 		console.warn('tableName参数不能为空');
 		return Promise.reject(new Error('tableName参数不能为空'));
+	}
+
+	// 验证tableName是否为有效的枚举值
+	const validTableNames = Object.values(BatchQueryTableName);
+	if (!validTableNames.includes(params.tableName)) {
+		const errorMsg = `tableName参数值无效: ${params.tableName}，有效值为: ${validTableNames.join(', ')}`;
+		console.warn(errorMsg);
+		return Promise.reject(new Error(errorMsg));
 	}
 
 	if (!params.ids || (!Array.isArray(params.ids) && !params.ids)) {
