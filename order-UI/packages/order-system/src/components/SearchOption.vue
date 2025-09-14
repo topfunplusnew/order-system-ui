@@ -182,7 +182,9 @@ export default {
 			}
 			this.limitInfo[this.queryInfo] = this.query;
 			const query = {
-				...this.limitInfo
+				...this.limitInfo,
+				page: this.pageNum,
+				pageSize: this.pageSize
 			};
 			// 判断一下 如果额外的请求参数不为空
 			if (this.extraParams != null) {
