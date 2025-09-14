@@ -76,7 +76,6 @@ Vue.use(VueTour);
 Vue.use(Antd);
 Vue.use(VueVirtualScroller);
 Vue.use(ModelPlugin);
-
 window.axios = service;
 Vue.prototype.getDicts = getDicts;
 Vue.prototype.getConfigKey = getConfigKey;
@@ -149,19 +148,6 @@ Vue.prototype.$excludeWithUpdate = [
 	'isedit'
 ];
 Vue.prototype.$imgs = ['png', 'jpg', 'jpeg', 'bmp', 'gif', 'webp'];
-// 2.挂载加载中动态效果
-// 使用: 数据加载前:this.$wait()  数据加载后:this.$close()
-Vue.prototype.$wait = () => {
-	Loading.service({
-		fullscreen: true,
-		text: '正在加载中，请稍后...'
-	});
-};
-// 结束加载
-Vue.prototype.$close = () => {
-	Loading.service({}).close();
-};
-
 Vue.prototype.$datePicker = function () {
 	return new Promise(resolve => {
 		// 获取一个构造函数
@@ -170,14 +156,11 @@ Vue.prototype.$datePicker = function () {
 		const datePickerInstance = new DatePickerConstructor({
 			propsData: { resolve }
 		});
-
 		// 手动挂载到 DOM 上
 		datePickerInstance.$mount();
 		document.body.appendChild(datePickerInstance.$el);
-
 		// 显示弹框
 		datePickerInstance.show();
-
 		// 捕获关闭事件
 		datePickerInstance.$on('resolve', data => {
 			resolve(data); // 处理日期选择
@@ -187,7 +170,6 @@ Vue.prototype.$datePicker = function () {
 
 // 引入composition-api写法
 import VueCompositionAPI from '@vue/composition-api';
-
 Vue.use(VueCompositionAPI);
 // 全局注册 keepAliveDialog 混入，使 system 目录下组件自动应用
 Vue.mixin(keepAliveDialog);
@@ -226,7 +208,6 @@ Vue.use(Element, {
 });
 // 表单生成器
 Vue.use(VForm);
-
 Vue.config.productionTip = false;
 
 // 创建vm 挂载全局事件总线

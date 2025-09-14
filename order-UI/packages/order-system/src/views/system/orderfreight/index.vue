@@ -414,7 +414,7 @@ export default {
 				paymentState: null,
 				driverName: null,
 				driverId: null,
-				CarNo: null,
+				carNo: null,
 				fleet: null,
 				applyUserId: null,
 				applyUserName: null,
@@ -422,13 +422,7 @@ export default {
 				isedit: null,
 				payUserId: null,
 				payUserName: null,
-				payDate: null,
-				cancelFlag: null,
-				comments: null,
-				addtime: null,
-				userId: null,
-				UserName: null,
-				delFlag: null
+				payDate: null
 			},
 			// 表单参数
 			form: {},
