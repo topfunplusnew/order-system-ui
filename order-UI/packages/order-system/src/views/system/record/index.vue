@@ -78,7 +78,7 @@
 			<!-- TODO 这地方后续需要更正 只是一个类型 用来标识冲抵类型 -->
 			<el-table-column v-if="columns[14].visible" label="冲抵类型" align="center" show-overflow-tooltip>
 				<template slot-scope="scope">
-					<span>{{ scope.row.referenceTableName === 'offsetting' ? '冲抵货款' : '内部转账' }}</span>
+					<span>{{ scope.row.type === 'offsetting' ? '冲抵货款' : '内部转账' }}</span>
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[15].visible" label="支出方开户行" align="center" prop="sourceBankName" show-overflow-tooltip />
@@ -86,7 +86,7 @@
 			<el-table-column v-if="columns[17].visible" label="账户类型" align="center" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<div>
-						{{ handleDisplayType(scope.row, scope.row.referenceTableName) }}
+						{{ handleDisplayType(scope.row, scope.row.type) }}
 					</div>
 				</template>
 			</el-table-column>
@@ -717,7 +717,7 @@ export default {
 				customerId: null,
 				amount: null,
 				referenceTableId: null,
-				referenceTableName: null,
+				type: null,
 				attachment: null,
 				remarks: null,
 				addtime: null,
@@ -744,7 +744,7 @@ export default {
 				{ key: 11, label: '支出方公司类型', prop: 'sourceCompanyType', visible: true },
 				{ key: 12, label: '支出方支付类型', prop: 'sourcePaymentType', visible: true },
 				{ key: 13, label: '收入方开户行', prop: 'targetBankName', visible: true },
-				{ key: 14, label: '冲抵类型', prop: 'referenceTableName', visible: true },
+				{ key: 14, label: '冲抵类型', prop: 'type', visible: true },
 				{ key: 15, label: '支出方开户行', prop: 'sourceBankName', visible: true },
 				{ key: 16, label: '备注', prop: 'remarks', visible: true },
 				{ key: 17, label: '账户类型', prop: 'accountType', visible: true },
@@ -781,7 +781,7 @@ export default {
 						trigger: 'blur'
 					}
 				],
-				referenceTableName: [
+				type: [
 					{
 						required: true,
 						message: '对应表名不能为空',
@@ -1014,9 +1014,9 @@ export default {
 			this.targetName = value.acountsName;
 			this.form.targetId = value.id;
 		},
-		//referenceTableName为 transfor的时候才进行判断,显示为银行活期存款,如果不为空 那么就是承兑类型
-		handleDisplayType(row, referenceTableName) {
-			if (referenceTableName === CASH_TYPE.TRANSFER) {
+		//type为 transfor的时候才进行判断,显示为银行活期存款,如果不为空 那么就是承兑类型
+		handleDisplayType(row, type) {
+			if (type === CASH_TYPE.TRANSFER) {
 				if (row.selfBankCardType !== row.otherBankCardType) {
 					return '银承互转';
 				}
@@ -1221,7 +1221,7 @@ export default {
 				targetId: null,
 				amount: null,
 				referenceTableId: null,
-				referenceTableName: null,
+				type: null,
 				remarks: null,
 				// 收入方与支付方的公司类型
 				sourceCompanyType: '客户',
@@ -1439,7 +1439,7 @@ export default {
 		// 处理冲抵货款逻辑
 		handleOffsetting(originalAttachmentIds, dataToAdd = null) {
 			const formData = dataToAdd || this.form;
-			formData.referenceTableName = TableName.CASH_RECORD;
+			formData.type = TableName.CASH_RECORD;
 			formData.referenceTableId = 0;
 			addRecord(formData)
 				.then(() => {
@@ -1486,7 +1486,7 @@ export default {
 			formData.sourceCompanyType = PUBLIC_DICT_TYPE.SELF_COMPANY;
 			formData.targetCompanyType = PUBLIC_DICT_TYPE.SELF_COMPANY;
 			// 填充转账类型表
-			formData.referenceTableName = CASH_TYPE.TRANSFER;
+			formData.type = CASH_TYPE.TRANSFER;
 			formData.referenceTableId = 0;
 			addRecord(formData)
 				.then(() => {
@@ -1655,7 +1655,7 @@ export default {
 			if (this.form.attachmentList && Array.isArray(this.form.attachmentList)) {
 				this.form.params.attachmentIds = this.form.attachmentList.map(item => item.id);
 			}
-			this.cashType = data.referenceTableName;
+			this.cashType = data.type;
 			// 根据冲抵类型处理支付类型
 			if (this.cashType === CASH_TYPE.CASH_RECORD) {
 				// 冲抵货款：将字符串转换为数组（用于级联选择器）
@@ -1674,7 +1674,7 @@ export default {
 				this.targetName = data.targetCompanyName;
 				this.form.sourceId = data.sourceId;
 				this.form.targetId = data.targetId;
-				this.form.referenceTableName = data.referenceTableName;
+				this.form.type = data.type;
 				this.form.referenceTableId = data.referenceTableId;
 				this.form.amount = data.amount;
 				this.form.transactionTime = data.transactionTime;

@@ -81,7 +81,7 @@
 					<el-checkbox v-model="selectAllOffset" :indeterminate="isOffsetIndeterminate" @change="handleOffsetSelectAll"></el-checkbox>
 				</template>
 				<template #default="{ row }">
-					<el-checkbox :value="isOffsetRowSelected(row)" @input="value => handleOffsetToggle(row, value)"></el-checkbox>
+					<el-checkbox :value="isOffsetRowSelected(row)" :disabled="row.paymentState === PAYMENT_STATE.PAID" @input="value => handleOffsetToggle(row, value)"></el-checkbox>
 				</template>
 			</el-table-column>
 			<el-table-column label="ID" align="center" prop="id" width="80" show-overflow-tooltip />
@@ -103,8 +103,8 @@
 			</el-table-column>
 			<el-table-column v-if="columns[10].visible" label="支付状态" align="center" prop="paymentState" width="100" show-overflow-tooltip>
 				<template slot-scope="scope">
-					<el-tag v-if="scope.row.paymentState === '已支付'" type="success" size="mini">已支付</el-tag>
-					<el-tag v-else type="danger" size="mini">未支付</el-tag>
+					<el-tag v-if="scope.row.paymentState === PAYMENT_STATE.PAID" type="success" size="mini">{{ PAYMENT_STATE.PAID }}</el-tag>
+					<el-tag v-else type="danger" size="mini">{{ PAYMENT_STATE.UNPAID }}</el-tag>
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[11].visible" label="申请人员姓名" align="center" prop="applyUserName" width="100" show-overflow-tooltip />
@@ -367,7 +367,7 @@ import { mixin_order_base } from '../../dashboard/mixins/order/order_base';
 import { mixin_order_freight_payment } from '../../dashboard/mixins/order/order_freight_payment';
 import InfoDialog from '../../../components/InfoDialog.vue';
 import { mixin_payment_subject } from '../../dashboard/mixins/payment/payment_subject';
-import { PaymentState } from '../../../api/tool/enums';
+import { PaymentState, PAYMENT_STATE } from '../../../api/tool/enums';
 import CheckOrderInfo from '../../dashboard/components/orderfreight/CheckOrderInfo.vue';
 import FillFreight from '../../dashboard/components/orderfreight/FillFreight.vue';
 import { mixin_order_freight_fill } from './orderFreightFill';
@@ -512,6 +512,9 @@ export default {
 		TableName() {
 			return TableName;
 		},
+		PAYMENT_STATE() {
+			return PAYMENT_STATE;
+		},
 		// 运费状态自定义样式映射
 		freightStatusStyles() {
 			return {
@@ -527,7 +530,8 @@ export default {
 		// 是否半选状态
 		isOffsetIndeterminate() {
 			const selectedCount = this.offsetSelections.length;
-			return selectedCount > 0 && selectedCount < this.orderFreightList.length;
+			const unpaidCount = this.orderFreightList.filter(item => item.paymentState !== PAYMENT_STATE.PAID).length;
+			return selectedCount > 0 && selectedCount < unpaidCount;
 		}
 	},
 	watch: {
@@ -590,6 +594,11 @@ export default {
 		},
 		// 处理单行的冲抵选择切换
 		handleOffsetToggle(row, value) {
+			// 如果是已支付的运费，不允许选择
+			if (row.paymentState === PAYMENT_STATE.PAID) {
+				return;
+			}
+
 			if (value) {
 				// 添加到选中数组
 				if (!this.isOffsetRowSelected(row)) {
@@ -606,8 +615,9 @@ export default {
 		// 处理全选/取消全选
 		handleOffsetSelectAll(value) {
 			if (value) {
-				// 全选：将所有数据添加到选中数组
-				this.offsetSelections = [...this.orderFreightList];
+				// 全选：将所有未支付的数据添加到选中数组
+				const unpaidFreights = this.orderFreightList.filter(item => item.paymentState !== PAYMENT_STATE.PAID);
+				this.offsetSelections = [...unpaidFreights];
 			} else {
 				// 取消全选：清空选中数组
 				this.offsetSelections = [];
@@ -672,6 +682,12 @@ export default {
 				this.orderFreightList = response.rows;
 				this.total = response.total;
 				this.loading = false;
+
+				// 清理已支付的运费选择，确保数据一致性
+				this.offsetSelections = this.offsetSelections.filter(selected => {
+					const current = this.orderFreightList.find(item => item.id === selected.id);
+					return current && current.paymentState !== PAYMENT_STATE.PAID;
+				});
 			});
 		},
 		printHTML() {

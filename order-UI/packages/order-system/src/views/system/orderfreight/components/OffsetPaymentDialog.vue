@@ -169,7 +169,7 @@ export default {
 				targetBankName: '',
 				amount: 0,
 				remarks: '',
-				referenceTableName: 'offsetting',
+				type: 'offsetting',
 				userId: null,
 				userName: '',
 				params: {
@@ -370,7 +370,7 @@ export default {
 						attachmentIds: []
 					},
 					referenceTableId: 0,
-					referenceTableName: TableName.CASH_RECORD,
+					type: TableName.CASH_RECORD,
 					// 收入方信息（来自运费数据）
 					targetBankNo: group.bankNo,
 					targetAccountName: group.accountName,
