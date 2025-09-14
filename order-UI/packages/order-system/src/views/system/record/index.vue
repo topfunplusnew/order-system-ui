@@ -883,6 +883,28 @@ export default {
 		// 清除保存的内部转账表单数据
 		this.clearSavedInternalTransferForm();
 	},
+	beforeDestroy() {
+		// 顶层生命周期清理（原 methods 内实现迁移到此）
+		this.clearAcceptanceFillStatus();
+		if (this.$refs.otherSelectBankType && this.$refs.otherSelectBankType.forceClearAcceptanceInfo) {
+			this.$refs.otherSelectBankType.forceClearAcceptanceInfo();
+		}
+		if (this.$refs.selfSelectBankType && this.$refs.selfSelectBankType.forceClearAcceptanceInfo) {
+			this.$refs.selfSelectBankType.forceClearAcceptanceInfo();
+		}
+		this.$bus.$emit('changeFlag', false);
+		if (this.$refs.otherSelectBankType && this.$refs.otherSelectBankType.resetComponentState) {
+			this.$refs.otherSelectBankType.resetComponentState();
+		}
+		if (this.$refs.selfSelectBankType && this.$refs.selfSelectBankType.resetComponentState) {
+			this.$refs.selfSelectBankType.resetComponentState();
+		}
+		if (this.cashType === this.CASH_TYPE.TRANSFER) {
+			const formId = `internal-transfer-${this.form.id || Date.now()}`;
+			this.$store.dispatch('bankAcceptance/resetDualSelection', formId);
+		}
+		sessionStorage.removeItem('bankAcceptanceFilled');
+	},
 	methods: {
 		listCars,
 		listBankAccount,
@@ -1001,6 +1023,7 @@ export default {
 				if (row.selfBankCardType === BankAcceptanceType.ACCEPTANCE) return '承兑';
 				if (row.selfBankCardType === BankAcceptanceType.BANK_CASH) return '银行活期存款';
 			}
+			return '-';
 		},
 		// 处理收入方银行账户类型的承兑信息更新
 		handleSelfBankAcceptanceUpdate(value) {
@@ -1024,7 +1047,6 @@ export default {
 		},
 		// 处理承兑信息更新（包含反向填充逻辑）
 		handleBankAcceptanceUpdate(acceptanceData, componentRole) {
-			console.log(`acceptanceData`, acceptanceData);
 			// 如果不是内部转账或没有承兑信息，则跳过反向填充
 			if (this.cashType !== this.CASH_TYPE.TRANSFER || !acceptanceData || !acceptanceData.endorserName || !acceptanceData.billAccount) {
 				return;
@@ -1040,13 +1062,7 @@ export default {
 			const BankCash = BankAcceptanceType.BANK_CASH;
 			const Acceptance = BankAcceptanceType.ACCEPTANCE;
 
-			console.log(`反向填充开始 - 场景: 支出方${sourceType} → 收入方${targetType}`);
-			console.log('承兑信息数据:', {
-				endorser: acceptanceData.endorser,
-				endorserName: acceptanceData.endorserName,
-				billAccount: acceptanceData.billAccount,
-				billAccountId: acceptanceData.billAccountId
-			});
+			// 调试日志移除
 
 			// 根据场景判断如何反向填充
 			if (sourceType === BankCash && targetType === Acceptance) {
@@ -1069,7 +1085,7 @@ export default {
 				this.fillAccountInfo(acceptanceData.endorser, 'target', acceptanceData.endorserName);
 			}
 
-			console.log('反向填充完成，开始获取银行卡信息...');
+			// 调试日志移除
 		},
 
 		// 根据账户ID获取银行卡信息并填充
@@ -1093,11 +1109,7 @@ export default {
 						// 更新显示变量
 						this.sourceName = this.form.sourceName;
 
-						console.log('支出方账户信息填充完成:', {
-							sourceBankNo: this.form.sourceBankNo,
-							sourceName: this.form.sourceName,
-							sourceId: this.form.sourceId
-						});
+						// 调试日志移除
 					} else if (accountType === 'target') {
 						// 填充收入方/目标账户信息
 						this.form.targetBankNo = bankInfo.bankNo;
@@ -1107,15 +1119,22 @@ export default {
 						// 更新显示变量
 						this.targetName = this.form.targetName;
 
-						console.log('收入方账户信息填充完成:', {
-							targetBankNo: this.form.targetBankNo,
-							targetName: this.form.targetName,
-							targetId: this.form.targetId
-						});
+						// 调试日志移除
 					}
 				}
 			} catch (error) {
 				console.error(`获取账户信息失败 (ID: ${accountId}):`, error);
+			}
+		},
+		// 补充统一清理保存的内部转账表单数据，防止方法缺失报错
+		clearSavedInternalTransferForm() {
+			const incomeKey = `income-${this.form?.id || 'new'}`;
+			try {
+				this.clearInternalTransferFormData && this.clearInternalTransferFormData(incomeKey);
+			} catch (err) {
+				if (process.env.NODE_ENV !== 'production') {
+					console.warn('clearSavedInternalTransferForm 调用异常:', err);
+				}
 			}
 		},
 		// 处理收入方银行类型变化
@@ -1619,33 +1638,6 @@ export default {
 			sessionStorage.removeItem('bankAcceptanceFilled');
 		},
 
-		// 在组件销毁时也清理状态
-		beforeDestroy() {
-			this.clearAcceptanceFillStatus();
-
-			// **参考 cancel 方法：强制清空承兑信息（绕过错误保护机制）**
-			if (this.$refs.otherSelectBankType && this.$refs.otherSelectBankType.forceClearAcceptanceInfo) {
-				this.$refs.otherSelectBankType.forceClearAcceptanceInfo();
-			}
-			if (this.$refs.selfSelectBankType && this.$refs.selfSelectBankType.forceClearAcceptanceInfo) {
-				this.$refs.selfSelectBankType.forceClearAcceptanceInfo();
-			}
-			this.$bus.$emit('changeFlag', false);
-			// **优化的状态重置：使用组件的重置方法**
-			if (this.$refs.otherSelectBankType && this.$refs.otherSelectBankType.resetComponentState) {
-				this.$refs.otherSelectBankType.resetComponentState();
-			}
-			if (this.$refs.selfSelectBankType && this.$refs.selfSelectBankType.resetComponentState) {
-				this.$refs.selfSelectBankType.resetComponentState();
-			}
-			if (this.cashType === this.CASH_TYPE.TRANSFER) {
-				const formId = `internal-transfer-${this.form.id || Date.now()}`;
-				this.$store.dispatch('bankAcceptance/resetDualSelection', formId);
-			}
-
-			// **会话存储清理：防止跨弹窗状态污染**
-			sessionStorage.removeItem('bankAcceptanceFilled');
-		},
 		/**
 		 * 添加现金记账记录
 		 * @param data 冲抵记录数据

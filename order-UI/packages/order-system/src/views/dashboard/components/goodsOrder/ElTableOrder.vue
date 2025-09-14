@@ -255,7 +255,6 @@ export default {
 		// 按供应商分组开票记录
 		groupSupplierInvoicesByCompany() {
 			const groups = {};
-
 			// 根据开票记录分组
 			this.supplierInvoiceList.forEach(invoice => {
 				const companyId = invoice.companyID;
