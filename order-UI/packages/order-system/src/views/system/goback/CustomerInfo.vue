@@ -119,9 +119,8 @@ import SearchOption from '@/components/SearchOption.vue';
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
 import { listCompany } from '@/api/system/company';
 import { common_excel } from '@/views/dashboard/mixins/common/common_excel';
-import { getConfigValue } from '@/views/system/Statement/data/config_get';
 import { getCustomerSubjectDetailSomeDay, getCustomerSubjectDetailSummary } from '@/api/system/statement';
-import { aggregateByDay, fix, fix_2 } from '@/api/tool/format';
+import { fix, fix_2 } from '@/api/tool/format';
 import { getFunction } from '@/utils/order/mapper';
 import { moduleNames, TableName } from '@/api/tool/enums';
 import GOODS_ORDER from '@/components/NeedToShow/GOODS_ORDER.vue';
@@ -137,9 +136,10 @@ import ORDER_FREIGHTVue from '@/components/NeedToShow/ORDER_FREIGHT.vue';
 import RECEIVE_MONEY from '@/components/NeedToShow/RECEIVE_MONEY.vue';
 import BALANCEACCOUNT from '@/components/NeedToShow/BALANCEACCOUNT.vue';
 import _ from 'lodash';
-import { TypeUtils } from '@/views/dashboard/backuplog';
 import { formatBalance } from '@/utils/trash/utils';
-
+import { getBussinessInfoTodayList, isGoodsOrderDisplay, isInventoryDisplay } from '@/api/system/goodsOrder';
+import OrderDayInfo from '@/components/OrderDayInfor/index.vue';
+import InventoryDayInfo from '@/components/InventoryDayInfo/index.vue';
 export default {
 	name: 'CustomerInfo',
 	computed: {
@@ -225,7 +225,6 @@ export default {
 				customer: '',
 				companyId: null
 			});
-			// this.tableData = [];
 		},
 		getSummaries(param) {
 			const { columns, data } = param;
@@ -266,7 +265,6 @@ export default {
 					this.loading = false;
 					return;
 				}
-
 				function calculateLenderAndBorrower(dayData) {
 					const { itemTotalLender, itemTotalBorrower } = dayData.reduce(
 						(acc, customerDetail) => {
@@ -359,6 +357,15 @@ export default {
 			const { tableName, payNo } = row;
 			if (!tableName || !payNo) {
 				this.$message.warning('该行数据有误:模块名或者凭证号不存在');
+				return;
+			}
+			// 这里因为订单和库存需要特殊展示 额外判断
+			if (isGoodsOrderDisplay(tableName)) {
+				this.openDialog(OrderDayInfo, '订单信息', '1500px', {}, false);
+				return;
+			}
+			if (isInventoryDisplay(tableName)) {
+				this.openDialog(InventoryDayInfo, '库存信息', '1500px', {}, false);
 				return;
 			}
 			// 根据tableName动态获取某个JS模块
