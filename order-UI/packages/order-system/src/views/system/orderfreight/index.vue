@@ -46,7 +46,7 @@
 
 			<!-- 一键冲抵款按钮 -->
 			<el-col :span="1.5">
-				<el-button :disabled="offsetSelections.length <= 0" size="mini" type="warning" icon="el-icon-money" @click="handleOffsetPayment">一键冲抵款</el-button>
+				<el-button :disabled="offsetSelections.length <= 0" size="mini" type="warning" @click="handleOffsetPayment">一键冲抵款</el-button>
 			</el-col>
 
 			<right-toolbar :show-search.sync="showSearch" :columns="columns" @queryTable="getList">
@@ -73,11 +73,6 @@
 			:data="orderFreightList"
 			max-height="600px"
 			size="mini"
-			:cell-style="
-				() => {
-					return { padding: '.5px' };
-				}
-			"
 			@selection-change="handleSelectionChange"
 		>
 			<el-table-column type="selection" width="55" align="center" />
