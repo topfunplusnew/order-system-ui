@@ -52,11 +52,7 @@
 			<el-table-column v-if="columns[0].visible" label="操作时间" align="center" prop="operateDate" />
 			<el-table-column v-if="columns[1].visible" label="金额" align="center" prop="moneyAmount" />
 			<el-table-column v-if="columns[2].visible" label="对方公司" align="center" prop="companyName" />
-			<el-table-column label="对方公司类型" align="center" prop="companyType" v-if="columns[3].visible">
-				<template slot-scope="scope">
-					{{ scope.row.companyType === 1 ? '客户' : '供应商' }}
-				</template>
-			</el-table-column>
+			<el-table-column label="对方公司类型" align="center" prop="companyType" v-if="columns[3].visible"></el-table-column>
 			<el-table-column v-if="columns[4].visible" label="备注" align="center" prop="comments" />
 			<el-table-column v-if="columns[5].visible" label="添加时间" align="center" prop="addtime" />
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -385,33 +381,17 @@ export default {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
 					if (this.form.id != null) {
-						this.form.delFlag = null;
-						this.form.addtime = null;
-						this.form.updateTime = null;
-						this.form.userId = null;
-						// this.form.companyType = this.form.companyType === '供应商' ? 2 : 1
 						this.form.operateDate = parseTime(this.form.operateDate, '{y}-{m}-{d} {h}:{i}:{s}');
 						this.form = excludeParams(this.form, this.$exclude);
-						updateBalanceAccounts({
-							...this.form,
-							companyType: this.form.companyType === '供应商' ? 2 : 1
-						}).then(response => {
+						updateBalanceAccounts(this.form).then(response => {
 							this.$modal.msgSuccess('修改成功');
 							this.open = false;
 							this.getList();
 						});
 					} else {
-						this.form.delFlag = null;
-						this.form.addtime = null;
-						this.form.updateTime = null;
-						this.form.userId = null;
-						// this.form.companyType = this.form.companyType === '供应商' ? 2 : 1
 						this.form.operateDate = parseTime(this.form.operateDate, '{y}-{m}-{d} {h}:{i}:{s}');
 						this.form = excludeParams(this.form, this.$exclude);
-						addBalanceAccounts({
-							...this.form,
-							companyType: this.form.companyType === '供应商' ? 2 : 1
-						}).then(response => {
+						addBalanceAccounts(this.form).then(response => {
 							this.$modal.msgSuccess('新增成功');
 							this.open = false;
 							this.getList();
