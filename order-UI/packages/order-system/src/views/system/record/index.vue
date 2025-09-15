@@ -134,7 +134,7 @@
 
 		<!-- 添加现金记账对话框  cashType 用于分别管理冲抵类型 : 冲抵货款 或者 冲抵第三方开票-->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="title" :visible.sync="open" width="1000px" append-to-body @close="handleDialogClose">
-			<el-form ref="form" :model="form" :rules="rules" label-width="150px">
+			<el-form ref="form" :model="form" :rules="dynamicRules" label-width="150px">
 				<!-- 冲抵类型选择 -->
 				<el-form-item label="冲抵类型">
 					<el-row>
@@ -750,17 +750,6 @@ export default {
 				{ key: 17, label: '账户类型', prop: 'accountType', visible: true },
 				{ key: 18, label: '操作人员姓名', prop: 'userName', visible: true }
 			],
-			// 表单校验
-			rules: {
-				transactionTime: [
-					{
-						required: true,
-						message: '交易时间不能为空',
-						trigger: 'blur'
-					}
-				],
-				amount: [{ required: true, message: '金额不能为空', trigger: 'blur' }]
-			},
 			// 冲抵类型 默认为冲抵货款
 			cashType: CASH_TYPE.CASH_RECORD,
 			// 新增的字段
@@ -836,6 +825,39 @@ export default {
 			}
 
 			return '收入';
+		},
+
+		// 动态表单验证规则
+		dynamicRules() {
+			const baseRules = {
+				transactionTime: [
+					{
+						required: true,
+						message: '交易时间不能为空',
+						trigger: 'blur'
+					}
+				],
+				amount: [{ required: true, message: '金额不能为空', trigger: 'blur' }]
+			};
+
+			// 如果是冲抵货款，添加银行卡相关字段的必填验证
+			if (this.cashType === CASH_TYPE.CASH_RECORD) {
+				// 支出方银行信息必填
+				baseRules.sourceAccountName = [{ required: true, message: '支出方户名不能为空', trigger: 'blur' }];
+				baseRules.sourceBankNo = [{ required: true, message: '支出方账号不能为空', trigger: 'blur' }];
+				baseRules.sourceBankName = [{ required: true, message: '支出方开户行不能为空', trigger: 'blur' }];
+
+				// 收入方银行信息必填
+				baseRules.targetAccountName = [{ required: true, message: '收入方户名不能为空', trigger: 'blur' }];
+				baseRules.targetBankNo = [{ required: true, message: '收入方账号不能为空', trigger: 'blur' }];
+				baseRules.targetBankName = [{ required: true, message: '收入方开户行不能为空', trigger: 'blur' }];
+
+				// 支付类型必填
+				baseRules.sourcePaymentType = [{ required: true, message: '支出方支付类型不能为空', trigger: 'change' }];
+				baseRules.targetPaymentType = [{ required: true, message: '收入方支付类型不能为空', trigger: 'change' }];
+			}
+
+			return baseRules;
 		}
 	},
 	watch: {
