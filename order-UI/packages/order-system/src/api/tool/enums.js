@@ -67,11 +67,6 @@ export const TableName = Object.freeze({
 	DEPOSITMONEY: 'deposit_money'
 });
 
-const OFFSETTING_TYPE = Object.freeze({
-	OFFSETTING: 'offsetting',
-	TRANSFOR: 'transfor'
-});
-
 // 给根据表明和id批量查询使用
 export const BatchQueryTableName = Object.freeze({
 	GOODS_ORDER: 'goodsorder',

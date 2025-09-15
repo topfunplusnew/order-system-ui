@@ -4,73 +4,71 @@
 			<div v-if="inventoryList.length === 0 && !loading" class="empty-state">
 				<a-empty description="暂无库存数据" />
 			</div>
-			<div v-else>
-				<el-table
-					id="inventoryPrintBox"
-					border
-					:data="inventoryList"
-					max-height="700"
-					:cell-style="cellStyle"
-					:span-method="spanMethod"
-					:row-class-name="tableRowClassName"
-					size="mini"
-					show-summary
-					:summary-method="getSummaries"
-				>
-					<el-table-column label="日期" align="center" prop="storeDate" show-overflow-tooltip width="80">
-						<template slot-scope="scope">
-							<span v-if="scope.row.type === 'flag'" style="text-align: left; font-weight: bold">备注：{{ scope.row.comments }}</span>
-							<span v-else>
-								{{ scope.row.storeDate ? scope.row.storeDate.split(' ')[0] : '-' }}
-							</span>
-						</template>
-					</el-table-column>
-					<el-table-column label="仓库名称" align="center" prop="storeHouseName" show-overflow-tooltip width="100" />
-					<el-table-column label="供应商" align="center" prop="supplier" show-overflow-tooltip width="120" />
-					<el-table-column label="级别名称" align="center" prop="levelName" min-width="150" />
-					<el-table-column label="计量单位" align="center" prop="countingUnit" show-overflow-tooltip width="70" />
-					<el-table-column label="厚度" align="center" prop="height" show-overflow-tooltip width="50" />
-					<el-table-column label="长度" align="center" prop="length" show-overflow-tooltip width="50" />
-					<el-table-column label="宽度" align="center" prop="width" show-overflow-tooltip width="50" />
-					<el-table-column label="每包片数" align="center" prop="piecesPerPack" show-overflow-tooltip width="70" />
-					<el-table-column label="包数" align="center" prop="packs" show-overflow-tooltip width="50" />
-					<el-table-column label="出厂片数" align="center" prop="pieces" show-overflow-tooltip width="70" />
-					<el-table-column label="入库量" align="center" prop="stockNumber" show-overflow-tooltip width="70" />
-					<el-table-column label="出厂单价" align="center" prop="price" show-overflow-tooltip width="70" />
-					<el-table-column label="是否含税" align="center" prop="isIncludeTaxFactory" show-overflow-tooltip width="80">
-						<template slot-scope="scope">
-							<el-tag disable-transitions>{{ scope.row.isIncludeTaxFactory == 0 ? '否' : '是' }}</el-tag>
-						</template>
-					</el-table-column>
-					<el-table-column label="杂费" align="center" prop="sundryCost" show-overflow-tooltip width="60" />
-					<el-table-column label="出厂货款" align="center" prop="paymentFactory" show-overflow-tooltip width="90" />
-					<el-table-column label="存货价" align="center" prop="paymentUnload" show-overflow-tooltip width="70" />
-					<el-table-column label="出库是否含税" align="center" prop="isIncludeTaxSale" show-overflow-tooltip width="80">
-						<template slot-scope="scope">
-							<el-tag disable-transitions>{{ scope.row.isIncludeTaxSale == 0 ? '否' : '是' }}</el-tag>
-						</template>
-					</el-table-column>
-					<el-table-column label="总货款" align="center" prop="payments" show-overflow-tooltip width="90" />
-					<el-table-column label="误差" align="center" prop="erro" show-overflow-tooltip width="50" />
-					<el-table-column label="吨位" align="center" prop="tonnage" show-overflow-tooltip width="60" />
-					<el-table-column label="陆运费" align="center" prop="landFreight" show-overflow-tooltip width="70" />
-					<el-table-column label="海运费" align="center" prop="seaFreight" show-overflow-tooltip width="70" />
-					<el-table-column label="总运费" align="center" prop="freight" show-overflow-tooltip width="80" />
-					<el-table-column label="其他费用" align="center" prop="otherCost" show-overflow-tooltip width="70" />
-					<el-table-column label="利润" align="center" prop="profit" show-overflow-tooltip width="70" />
-					<el-table-column label="不含税利润" align="center" prop="profitNoTax" show-overflow-tooltip width="90" />
-					<el-table-column label="备注" align="center" prop="comments" show-overflow-tooltip width="100" />
-					<el-table-column label="车队" align="center" prop="fleet" show-overflow-tooltip width="80" />
-					<el-table-column label="审核状态" align="center" prop="checkState" show-overflow-tooltip width="80">
-						<template slot-scope="scope">
-							<el-tag v-if="scope.row.checkState" :color="getStatusColor(scope.row.checkState)" disable-transitions>
-								{{ scope.row.checkState }}
-							</el-tag>
+			<div v-else class="table-container">
+				<!-- 表头 -->
+				<div class="table-header">
+					<div class="header-cell date-col">日期</div>
+					<div class="header-cell warehouse-col">仓库</div>
+					<div class="header-cell supplier-col">供应商</div>
+					<div class="header-cell company-col">货物来源</div>
+					<div class="header-cell transport-col">运输信息</div>
+					<div class="header-cell freight-col">运费</div>
+					<div class="header-cell status-col">状态</div>
+					<div class="header-cell operator-col">操作员</div>
+				</div>
+
+				<!-- 表格内容 -->
+				<div class="table-body">
+					<div v-for="item in inventoryList" :key="item.id" class="table-row">
+						<div class="table-cell date-col">
+							{{ item.storeDate || '-' }}
+						</div>
+						<div class="table-cell warehouse-col">
+							{{ item.storeHouseName || '-' }}
+						</div>
+						<div class="table-cell supplier-col">
+							{{ item.supplier || '-' }}
+						</div>
+						<div class="table-cell company-col">
+							{{ item.goodsCompany || '-' }}
+						</div>
+						<div class="table-cell transport-col">
+							<div class="transport-info">
+								<div v-if="item.landCarNo || item.landDriverName" class="transport-line">
+									<span class="transport-type">陆运:</span>
+									<span v-if="item.landCarNo">{{ item.landCarNo }}</span>
+									<span v-if="item.landDriverName">{{ item.landDriverName }}</span>
+									<span v-if="item.landDriverTel">({{ item.landDriverTel }})</span>
+								</div>
+								<div v-if="item.seaCarNo || item.seaDriverName" class="transport-line">
+									<span class="transport-type">海运:</span>
+									<span v-if="item.seaCarNo">{{ item.seaCarNo }}</span>
+									<span v-if="item.seaDriverName">{{ item.seaDriverName }}</span>
+									<span v-if="item.seaDriverTel">({{ item.seaDriverTel }})</span>
+								</div>
+							</div>
+						</div>
+						<div class="table-cell freight-col">
+							<div v-if="item.totalLandFreight" class="freight-item">陆运: ¥{{ formatMoney(item.totalLandFreight) }}</div>
+							<div v-if="item.totalSeaFreight" class="freight-item">海运: ¥{{ formatMoney(item.totalSeaFreight) }}</div>
+						</div>
+						<div class="table-cell status-col">
+							<a-tag v-if="item.checkState" :color="getStatusColor(item.checkState)">
+								{{ item.checkState }}
+							</a-tag>
 							<span v-else>-</span>
-						</template>
-					</el-table-column>
-					<el-table-column label="操作员" align="center" prop="userName" show-overflow-tooltip width="80" />
-				</el-table>
+						</div>
+						<div class="table-cell operator-col">
+							<div v-if="item.userName">{{ item.userName }}</div>
+							<div v-if="item.fleet" class="fleet-info">{{ item.fleet }}</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- 分页 -->
+				<div class="pagination-wrapper">
+					<a-pagination v-bind="pagination" :total="inventoryList.length" @change="handlePageChange" @showSizeChange="handleSizeChange" />
+				</div>
 			</div>
 		</a-spin>
 	</div>
@@ -79,8 +77,6 @@
 <script>
 import { getBussinessInfoTodayList } from '@/api/system/goodsOrder';
 import { BatchQueryTableName } from '@/api/tool/enums';
-import _ from 'lodash';
-import { PUBLIC_DICT_TYPE } from '@/utils/order';
 
 export default {
 	name: 'InventoryDayInfo',
@@ -89,110 +85,33 @@ export default {
 			type: Array,
 			required: true,
 			default: () => []
-		},
-		isDetail: {
-			type: Boolean,
-			default: false
-		},
-		companyId: {
-			type: Number,
-			required: true
-		},
-		companyType: {
-			type: String,
-			required: true
 		}
 	},
 	data() {
 		return {
 			loading: false,
-			inventoryList: []
+			inventoryList: [],
+			pagination: {
+				pageSize: 10,
+				showSizeChanger: true,
+				showQuickJumper: true,
+				showTotal: total => `共 ${total} 条数据`
+			}
 		};
-	},
-	computed: {
-		computedTableName() {
-			return this.isDetail ? BatchQueryTableName.INVENTORY_DETAIL : BatchQueryTableName.INVENTORY_MAIN;
-		}
 	},
 	watch: {
 		ids: {
 			handler(newIds) {
-				this.inventoryList = [];
 				if (newIds && newIds.length > 0) {
 					this.fetchInventoryData();
+				} else {
+					this.inventoryList = [];
 				}
 			},
 			immediate: true
 		}
 	},
 	methods: {
-		// 单元格样式
-		cellStyle(row) {
-			if (row.row.type === 'flag') {
-				return {
-					padding: '.5px',
-					backgroundColor: '#f5f5f5',
-					textAlign: 'left',
-					fontWeight: 'bold'
-				};
-			}
-			return { padding: '.5px' };
-		},
-		// 单元格合并方法
-		spanMethod({ row, column, rowIndex, columnIndex }) {
-			if (row.type === 'flag') {
-				if (columnIndex === 0) {
-					// 第一列显示所有内容，合并所有列
-					return [1, 29]; // 29是表格的总列数
-				} else {
-					// 其他列不显示
-					return [0, 0];
-				}
-			}
-		},
-		// 表格行样式类名
-		tableRowClassName({ row, rowIndex }) {
-			if (row.type === 'flag') {
-				return 'flag-row';
-			}
-			return '';
-		},
-		// 获取汇总数据
-		getSummaries(param) {
-			const { columns, data } = param;
-			const sums = [];
-			// 需要求和的列 - 根据inventoryMain中的实际字段名调整
-			const sumColumns = ['pieces', 'stockNumber', 'paymentFactory', 'payments', 'tonnage', 'landFreight', 'seaFreight', 'freight', 'profit', 'profitNoTax'];
-
-			columns.forEach((column, index) => {
-				if (index === 0) {
-					sums[index] = '合计';
-					return;
-				}
-
-				// 只对指定的列进行汇总，排除分隔符行
-				if (sumColumns.includes(column.property)) {
-					const values = data.filter(item => item.type !== 'flag').map(item => Number(item[column.property]));
-					if (!values.every(value => isNaN(value))) {
-						sums[index] = values.reduce((prev, curr) => {
-							const value = Number(curr);
-							if (!isNaN(value)) {
-								return prev + curr;
-							} else {
-								return prev;
-							}
-						}, 0);
-						// 保留两位小数
-						sums[index] = Number(sums[index]).toFixed(2);
-					} else {
-						sums[index] = '';
-					}
-				} else {
-					sums[index] = '';
-				}
-			});
-			return sums;
-		},
 		// 获取库存数据
 		async fetchInventoryData() {
 			if (!this.ids || this.ids.length === 0) {
@@ -203,47 +122,12 @@ export default {
 			this.loading = true;
 			try {
 				const params = {
-					tableName: this.computedTableName,
+					tableName: BatchQueryTableName.INVENTORY_MAIN,
 					ids: this.ids
 				};
 
 				const response = await getBussinessInfoTodayList(params);
-				if (response.data && response.data.length > 0) {
-					let inventoryInfoList = _.cloneDeep(response.data);
-					let inventoryFlatList = [];
-					// 如果公司类型是司机 需要把这个司机的订单筛选出来
-					if (inventoryInfoList.length > 0 && this.companyType === PUBLIC_DICT_TYPE.DRIVER) {
-						inventoryInfoList = inventoryInfoList.filter(item => item.landCarID === this.companyId);
-					}
-					inventoryInfoList.forEach(item => {
-						let inventoryDetailList = item.inventoryDetailList;
-						// 如果公司类型是供应商 并且是查看明细信息的话 就需要筛选出明细中供应商id是传入公司的ID
-						if (inventoryDetailList.length > 0 && this.companyId && this.companyType === PUBLIC_DICT_TYPE.SUPPLIER) {
-							inventoryDetailList = inventoryDetailList.filter(item => item.supplierId === this.companyId);
-						}
-						const inventoryInfoToAdd = _.omit(item, 'inventoryDetailList');
-						// 添加所有的扁平的数据
-						inventoryFlatList.push(
-							..._.map(inventoryDetailList, detailItem => {
-								return _.assign(
-									{
-										type: 'data'
-									},
-									detailItem,
-									inventoryInfoToAdd
-								);
-							})
-						);
-						// 每两批库存之间添加一个分隔符
-						inventoryFlatList.push({
-							type: 'flag',
-							comments: item.comments
-						});
-					});
-
-					this.inventoryList = inventoryFlatList;
-					console.log(`this.inventoryList->`, this.inventoryList);
-				}
+				this.inventoryList = response.data || [];
 			} catch (error) {
 				console.error('获取库存数据失败:', error);
 				this.$message.error('获取库存数据失败');
@@ -251,6 +135,15 @@ export default {
 			} finally {
 				this.loading = false;
 			}
+		},
+
+		// 格式化金额
+		formatMoney(value) {
+			if (!value && value !== 0) return '-';
+			return Number(value).toLocaleString('zh-CN', {
+				minimumFractionDigits: 2,
+				maximumFractionDigits: 2
+			});
 		},
 
 		// 获取状态颜色
@@ -266,11 +159,16 @@ export default {
 			return statusColors[status] || 'default';
 		},
 
-		handleReject() {
-			return Promise.resolve();
+		// 分页改变
+		handlePageChange(page, pageSize) {
+			this.pagination.current = page;
+			this.pagination.pageSize = pageSize;
 		},
-		handleProcess() {
-			return Promise.resolve();
+
+		// 页大小改变
+		handleSizeChange(current, size) {
+			this.pagination.current = 1;
+			this.pagination.pageSize = size;
 		}
 	}
 };
@@ -278,21 +176,183 @@ export default {
 
 <style scoped lang="scss">
 .inventory-day-info {
+	width: 100%;
+
 	.empty-state {
-		padding: 20px;
 		text-align: center;
+		padding: 40px;
+	}
+
+	.table-container {
+		border: 1px solid #e8e8e8;
+		border-radius: 4px;
+		overflow: hidden;
+		background: #fff;
+
+		.table-header {
+			display: flex;
+			background: #fafafa;
+			border-bottom: 1px solid #e8e8e8;
+
+			.header-cell {
+				padding: 12px 8px;
+				font-weight: 600;
+				color: #262626;
+				border-right: 1px solid #e8e8e8;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				font-size: 13px;
+
+				&:last-child {
+					border-right: none;
+				}
+			}
+		}
+
+		.table-body {
+			.table-row {
+				display: flex;
+				border-bottom: 1px solid #f0f0f0;
+
+				&:hover {
+					background-color: #f5f5f5;
+				}
+
+				&:last-child {
+					border-bottom: none;
+				}
+
+				.table-cell {
+					padding: 8px;
+					border-right: 1px solid #f0f0f0;
+					display: flex;
+					align-items: center;
+					font-size: 12px;
+					line-height: 1.4;
+					word-break: break-word;
+
+					&:last-child {
+						border-right: none;
+					}
+				}
+			}
+		}
+
+		// 列宽定义
+		.date-col {
+			width: 80px;
+			min-width: 80px;
+			flex-shrink: 0;
+			justify-content: center;
+		}
+
+		.warehouse-col {
+			width: 100px;
+			min-width: 100px;
+			flex-shrink: 0;
+		}
+
+		.supplier-col {
+			width: 120px;
+			min-width: 120px;
+			flex-shrink: 0;
+			color: #1890ff;
+			font-weight: 500;
+		}
+
+		.company-col {
+			width: 150px;
+			min-width: 150px;
+			flex-shrink: 0;
+		}
+
+		.transport-col {
+			width: 200px;
+			min-width: 200px;
+			flex-shrink: 0;
+			flex-direction: column;
+			align-items: flex-start;
+
+			.transport-info {
+				width: 100%;
+
+				.transport-line {
+					margin-bottom: 2px;
+					font-size: 11px;
+
+					&:last-child {
+						margin-bottom: 0;
+					}
+
+					.transport-type {
+						color: #666;
+						font-weight: 500;
+						margin-right: 4px;
+					}
+				}
+			}
+		}
+
+		.freight-col {
+			width: 140px;
+			min-width: 140px;
+			flex-shrink: 0;
+			flex-direction: column;
+			align-items: flex-start;
+
+			.freight-item {
+				font-size: 11px;
+				color: #52c41a;
+				font-weight: 500;
+				margin-bottom: 2px;
+
+				&:last-child {
+					margin-bottom: 0;
+				}
+			}
+		}
+
+		.status-col {
+			width: 80px;
+			min-width: 80px;
+			flex-shrink: 0;
+			justify-content: center;
+		}
+
+		.operator-col {
+			width: 100px;
+			min-width: 100px;
+			flex-shrink: 0;
+			flex-direction: column;
+			align-items: flex-start;
+
+			.fleet-info {
+				font-size: 11px;
+				color: #666;
+			}
+		}
+
+		.pagination-wrapper {
+			padding: 16px;
+			text-align: center;
+			border-top: 1px solid #f0f0f0;
+			background: #fafafa;
+		}
 	}
 }
 
-// 分隔符行样式
-::v-deep .el-table__row {
-	&.flag-row {
-		background-color: #f5f5f5 !important;
+// Ant Design Vue 样式覆盖
+::v-deep .ant-tag {
+	margin: 0;
+	font-size: 11px;
+	padding: 2px 6px;
+	border-radius: 2px;
+}
 
-		.cell {
-			font-weight: bold;
-			color: #666;
-		}
+::v-deep .ant-pagination {
+	.ant-pagination-item {
+		border-radius: 2px;
 	}
 }
 </style>

@@ -1799,6 +1799,7 @@ export default {
 	&::-webkit-scrollbar {
 		width: 12px;
 		height: 22px;
+
 	}
 
 	&::-webkit-scrollbar-thumb {

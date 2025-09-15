@@ -131,9 +131,6 @@ import ORDER_DETAIL from '@/components/NeedToShow/ORDER_DETAIL.vue';
 import BALANCEACCOUNT from '@/components/NeedToShow/BALANCEACCOUNT.vue';
 import { formatBalance } from '@/utils/trash/utils';
 import _ from 'lodash';
-import { isGoodsOrderDisplay, isInventoryDisplay, mergeSpecialTableData } from '@/api/system/goodsOrder';
-import InventoryDayInfo from '@/components/InventoryDayInfo/index.vue';
-import OrderDayInfor from '@/components/OrderDayInfor/index.vue';
 
 export default {
 	name: 'SupplierInfo',
@@ -295,10 +292,6 @@ export default {
 							// 上年结转的余额 (供应商：正数表示我们欠供应商，负数表示供应商欠我们)
 							let currentBalance = Number(lastYearDetail.moneyAmount || 0);
 							let sourceData = _.cloneDeep(res.data);
-
-							// 对订单和库存数据进行合并预处理
-							sourceData = mergeSpecialTableData(sourceData);
-
 							// 按日期分组
 							sourceData = _.groupBy(sourceData, item => {
 								return item.operateDate.match(/^(\d{4}-\d{2}-\d{2})/)[1];
@@ -328,8 +321,7 @@ export default {
 										lender: fix(lender),
 										borrower: fix(borrower),
 										tableName: detail.tableName,
-										moneyAmountLocal: fix(detail.moneyAmount),
-										summary: Array.isArray(detail.summary) ? detail.summary.join('、') : detail.summary
+										moneyAmountLocal: fix(detail.moneyAmount)
 									};
 								};
 								const lenderList = item.map(condition).filter(d => Number(d.moneyAmountLocal) > 0);
@@ -373,44 +365,8 @@ export default {
 				this.$message.warning('该行数据有误:模块名或者凭证号不存在');
 				return;
 			}
-			// 这里因为订单和库存需要特殊展示 额外判断
-			if (isGoodsOrderDisplay(tableName)) {
-				// 订单模块：将payNo数组传递给弹窗
-				this.openDialog(
-					OrderDayInfor,
-					'订单信息',
-					'1500px',
-					{
-						ids: payNo,
-						isDetail: true,
-						companyId: this.searchForm.companyId,
-						companyType: PUBLIC_DICT_TYPE.SUPPLIER
-					},
-					false
-				);
-				return;
-			}
-			if (isInventoryDisplay(tableName)) {
-				// 库存模块：将payNo数组传递给弹窗
-				this.openDialog(
-					InventoryDayInfo,
-					'库存信息',
-					'1500px',
-					{
-						ids: payNo,
-						isDetail: true,
-						companyId: this.searchForm.companyId,
-						companyType: PUBLIC_DICT_TYPE.SUPPLIER
-					},
-					false
-				);
-				return;
-			}
-			// 其他模块：取数组的第一个元素作为单个ID
-			const singlePayNo = Array.isArray(payNo) ? payNo[0] : payNo;
-
 			// 根据tableName动态获取某个JS模块
-			getFunction(tableName)(singlePayNo).then(res => {
+			getFunction(tableName)(payNo).then(res => {
 				if (!res.data) {
 					this.$message.warning('查询该模块条件下，暂无详细数据');
 					return;

@@ -666,30 +666,6 @@
 				}
 			}
 		}
-
-		// 表格滚动条样式调整
-		&::-webkit-scrollbar {
-			height: 16px !important; // 水平滚动条高度，加高
-		}
-
-		&::-webkit-scrollbar-track {
-			background: #f1f1f1 !important;
-			border-radius: 8px !important;
-		}
-
-		&::-webkit-scrollbar-thumb {
-			background: #c1c1c1 !important;
-			border-radius: 8px !important;
-			transition: background 0.3s ease !important;
-
-			&:hover {
-				background: #a1a1a1 !important;
-			}
-		}
-
-		&::-webkit-scrollbar-corner {
-			background: #f1f1f1 !important;
-		}
 	}
 
 	// 表格尺寸变体调整
@@ -831,31 +807,6 @@
 				}
 			}
 		}
-	}
-
-	// 表格整体滚动条样式调整
-	&::-webkit-scrollbar {
-		width: 12px !important;
-		height: 16px !important;
-	}
-
-	&::-webkit-scrollbar-track {
-		background: #f1f1f1 !important;
-		border-radius: 8px !important;
-	}
-
-	&::-webkit-scrollbar-thumb {
-		background: #c1c1c1 !important;
-		border-radius: 8px !important;
-		transition: background 0.3s ease !important;
-
-		&:hover {
-			background: #a1a1a1 !important;
-		}
-	}
-
-	&::-webkit-scrollbar-corner {
-		background: #f1f1f1 !important;
 	}
 }
 

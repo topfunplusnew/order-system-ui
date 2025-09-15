@@ -170,16 +170,17 @@
 			<CustomTableColumn label="录入人员" align="center" prop="userName" width="120" v-if="columns[17] && columns[17].visible" show-overflow-tooltip />
 			<CustomTableColumn label="复核状态" align="center" class-name="small-padding fixed-width" width="80" fixed="right">
 				<template slot-scope="scope">
-					<el-switch
-						v-model="scope.row.auditState"
-						v-hasPermi="['system:payment:audit']"
-						:disabled="!hasAuditPermission"
-						:active-value="'1'"
-						:inactive-value="'0'"
-						active-color="#13ce66"
-						inactive-color="#ff4949"
-						@change="value => handlePaymentAudit(scope.row, value)"
-					/>
+					<el-tooltip :content="hasAuditPermission ? '点击切换复核状态' : '您没有复核权限'" placement="top">
+						<el-switch
+							v-model="scope.row.auditState"
+							:disabled="!hasAuditPermission"
+							:active-value="'1'"
+							:inactive-value="'0'"
+							active-color="#13ce66"
+							inactive-color="#ff4949"
+							@change="value => hasAuditPermission && handlePaymentAudit(scope.row, value)"
+						/>
+					</el-tooltip>
 				</template>
 			</CustomTableColumn>
 			<CustomTableColumn label="操作" align="center" class-name="small-padding fixed-width" width="200" fixed="right">
@@ -719,9 +720,14 @@ export default {
 		PAYMENT_STATE() {
 			return PAYMENT_STATE;
 		},
-		// 检查是否有复核权限
+		// 检查是否有复核权限（包含admin权限）
 		hasAuditPermission() {
-			return this.$store.getters.permissions.some(permission => permission === 'system:payment:audit');
+			const permissions = this.$store.getters.permissions;
+			// 检查是否是超级管理员
+			const isAdmin = this.$store.getters.roles.some(role => role === 'admin');
+			// 检查是否有审核权限
+			const hasAuditPerm = permissions.some(permission => permission === 'system:payment:audit');
+			return isAdmin || hasAuditPerm;
 		}
 	},
 	// 展示与隐藏

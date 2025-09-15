@@ -104,7 +104,7 @@
 import { getFreightSubjectDetailSummary, getFreightSubjectDetailSummarySomeDay } from '@/api/system/statement';
 import { fix_2, fix } from '@/api/tool/format';
 import { getFunction } from '@/utils/order/mapper';
-import { moduleNames, PUBLIC_DICT_TYPE, TableName } from '@/api/tool/enums';
+import { moduleNames, TableName } from '@/api/tool/enums';
 import GOODS_ORDER from '@/components/NeedToShow/GOODS_ORDER.vue';
 import PAYMENT from '@/components/NeedToShow/PAYMENT.vue';
 import INVOICE_IN from '@/components/NeedToShow/INVOICE_IN.vue';
@@ -121,10 +121,6 @@ import ORDER_DETAIL from '@/components/NeedToShow/ORDER_DETAIL.vue';
 import { listCars } from '@/api/system/cars';
 import _ from 'lodash';
 import { formatBalance } from '../../../utils/trash/utils';
-import { isGoodsOrderDisplay, isInventoryDisplay, mergeSpecialTableData } from '@/api/system/goodsOrder';
-import OrderDayInfo from '@/components/OrderDayInfor/index.vue';
-import InventoryDayInfo from '@/components/InventoryDayInfo/index.vue';
-import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 
 export default {
 	name: 'FreightInfo',
@@ -134,7 +130,7 @@ export default {
 		}
 	},
 	components: { SearchOption },
-	mixins: [common_excel, common_dialog],
+	mixins: [common_excel],
 	data() {
 		return {
 			loading: false,
@@ -283,9 +279,6 @@ export default {
 							let currentBalance = Number(lastYearDetail.moneyAmount || 0);
 							let sourceData = _.cloneDeep(res.rows);
 
-							// 对订单和库存数据进行合并预处理
-							sourceData = mergeSpecialTableData(sourceData);
-
 							// 按日期分组
 							sourceData = _.groupBy(sourceData, item => {
 								return item.operateDate.match(/^(\d{4}-\d{2}-\d{2})/)[1];
@@ -315,8 +308,7 @@ export default {
 										lender: fix(lender),
 										borrower: fix(borrower),
 										tableName: detail.tableName,
-										moneyAmountLocal: fix_2(detail.moneyAmount),
-										summary: Array.isArray(detail.summary) ? detail.summary.join('、') : detail.summary
+										moneyAmountLocal: fix_2(detail.moneyAmount)
 									};
 								};
 
@@ -362,47 +354,8 @@ export default {
 				this.$message.warning('该行数据有误:模块名或者凭证号不存在');
 				return;
 			}
-
-			// 这里因为订单和库存需要特殊展示 额外判断
-			if (isGoodsOrderDisplay(tableName)) {
-				// 订单模块：将payNo数组传递给弹窗
-				this.openDialog(
-					OrderDayInfo,
-					'订单信息',
-					'1500px',
-					{
-						ids: payNo,
-						isDetail: false,
-						companyId: this.searchForm.companyId,
-						companyType: PUBLIC_DICT_TYPE.DRIVER // 运费模块标识
-					},
-					false
-				);
-				return;
-			}
-
-			if (isInventoryDisplay(tableName)) {
-				// 库存模块：将payNo数组传递给弹窗
-				this.openDialog(
-					InventoryDayInfo,
-					'库存信息',
-					'1500px',
-					{
-						ids: payNo,
-						isDetail: false,
-						companyId: this.searchForm.companyId,
-						companyType: PUBLIC_DICT_TYPE.DRIVER // 运费模块标识
-					},
-					false
-				);
-				return;
-			}
-
-			// 其他模块：取数组的第一个元素作为单个ID
-			const singlePayNo = Array.isArray(payNo) ? payNo[0] : payNo;
-
 			// 根据tableName动态获取某个JS模块
-			getFunction(tableName)(singlePayNo).then(res => {
+			getFunction(tableName)(payNo).then(res => {
 				if (!res.data) {
 					this.$message.warning('查询该模块条件下，暂无详细数据');
 					return;

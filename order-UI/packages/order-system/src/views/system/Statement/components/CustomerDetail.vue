@@ -3,10 +3,6 @@
 <script>
 import { getCustomerFiveParams, getCustomerSubjectDetailSomeDay, getCustomerSubjectDetailSummary } from '@/api/system/statement';
 import { TableName } from '@/api/tool/enums';
-import { isGoodsOrderDisplay, isInventoryDisplay, mergeSpecialTableData } from '@/api/system/goodsOrder';
-import OrderDayInfo from '@/components/OrderDayInfor/index.vue';
-import InventoryDayInfo from '@/components/InventoryDayInfo/index.vue';
-import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import GOODS_ORDER from '@/components/NeedToShow/GOODS_ORDER.vue';
 import INVENTORY from '@/components/NeedToShow/INVENTORY.vue';
 import INVOICE_IN from '@/components/NeedToShow/INVOICE_IN.vue';
@@ -34,7 +30,7 @@ import { common_excel } from '@/views/dashboard/mixins/common/common_excel';
 export default {
 	name: 'CustomerDetail',
 	components: { SearchOption, TotalTag },
-	mixins: [common_excel, common_dialog],
+	mixins: [common_excel],
 	data() {
 		return {
 			searchForm: {
@@ -136,25 +132,29 @@ export default {
 					return;
 				}
 				try {
-					// 对订单和库存数据进行合并预处理
-					let processedRows = mergeSpecialTableData(res.data);
-
 					// 上年结转的余额
 					let lastMoney = Number(lastYearDetail.moneyAmount);
 					// 累计金额
 					let nowMoney = Number(0);
 					// 拿到汇总账
-					const append = processedRows.map(item => {
+					const append = res.data.map(item => {
 						// 金额累计计算
 						nowMoney = lastMoney + Number(item.moneyAmount);
 						// 更新
 						lastMoney = nowMoney;
 						// 如果有了摘要 不做处理
 						if (item.summary) {
-							const summaryText = Array.isArray(item.summary) ? item.summary[0] : item.summary;
 							return {
 								...item,
-								summary: summaryText,
+								moneyAmountLocal: fix(nowMoney),
+								subjectNo: config.configValue,
+								subjectName: config.subjectName
+							};
+						} else {
+							return {
+								...item,
+								// 如果没有摘要 就加上对应的摘要
+								summary: ReportType.CUSTOMER[item.tableName],
 								moneyAmountLocal: fix(nowMoney),
 								subjectNo: config.configValue,
 								subjectName: config.subjectName
@@ -180,42 +180,6 @@ export default {
 				this.$message.warning('该行数据有误:模块名或者凭证号不存在');
 				return;
 			}
-
-			// 这里因为订单和库存需要特殊展示 额外判断
-			if (isGoodsOrderDisplay(tableName)) {
-				// 订单模块：将payNo数组传递给弹窗
-				this.openDialog(
-					OrderDayInfo,
-					'订单信息',
-					'1500px',
-					{
-						ids: payNo,
-						isDetail: false,
-						companyId: this.searchForm.companyId,
-						companyType: PUBLIC_DICT_TYPE.CUSTOMER // 客户模块标识
-					},
-					false
-				);
-				return;
-			}
-
-			if (isInventoryDisplay(tableName)) {
-				// 库存模块：将payNo数组传递给弹窗
-				this.openDialog(
-					InventoryDayInfo,
-					'库存信息',
-					'1500px',
-					{
-						ids: payNo,
-						isDetail: false,
-						companyId: this.searchForm.companyId,
-						companyType: PUBLIC_DICT_TYPE.CUSTOMER // 客户模块标识
-					},
-					false
-				);
-				return;
-			}
-
 			// 根据tableName动态获取某个JS模块
 			getFunction(tableName)(payNo).then(res => {
 				if (!res.data) {

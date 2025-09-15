@@ -11,7 +11,7 @@
 				<el-input v-model="queryParams.otherBankNo" placeholder="请输入对方账号" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="对方开户行" prop="otherBankName">
-				<el-input v-model="queryParams.otherBankName" placeholder="请输入对方开户行" clearable @keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.otherBankName" placeholder="请输入对方开户999行" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="对方公司" prop="companyName">
 				<el-input v-model="queryParams.companyName" placeholder="请输入对方公司" clearable @keyup.enter.native="handleQuery" />

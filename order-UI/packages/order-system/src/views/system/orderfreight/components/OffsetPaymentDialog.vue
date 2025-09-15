@@ -137,7 +137,7 @@ import { mapGetters } from 'vuex';
 import { TableName, PayType } from '../../../../api/tool/enums';
 import _ from 'lodash';
 import { add, bignumber } from 'mathjs';
-import { OFFSETTING_TYPE } from '@/api/tool/enums';
+
 export default {
 	name: 'OffsetPaymentDialog',
 	components: {
@@ -370,7 +370,7 @@ export default {
 						attachmentIds: []
 					},
 					referenceTableId: 0,
-					type: OFFSETTING_TYPE.OFFSETTING,
+					type: TableName.CASH_RECORD,
 					// 收入方信息（来自运费数据）
 					targetBankNo: group.bankNo,
 					targetAccountName: group.accountName,
