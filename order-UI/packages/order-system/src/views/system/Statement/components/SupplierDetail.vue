@@ -3,6 +3,10 @@
 <script>
 import { getSupplierSubjectDetailSomeDay, getSupplierSubjectDetailSummary } from '@/api/system/statement';
 import { TableName } from '@/api/tool/enums';
+import { isGoodsOrderDisplay, isInventoryDisplay, mergeSpecialTableData } from '@/api/system/goodsOrder';
+import OrderDayInfo from '@/components/OrderDayInfor/index.vue';
+import InventoryDayInfo from '@/components/InventoryDayInfo/index.vue';
+import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import GOODS_ORDER from '@/components/NeedToShow/GOODS_ORDER.vue';
 import INVOICE_IN from '@/components/NeedToShow/INVOICE_IN.vue';
 import INVOICE_ORTHER from '@/components/NeedToShow/INVOICE_ORTHER.vue';
@@ -36,7 +40,7 @@ export default {
 		}
 	},
 	components: { SearchOption, TotalTag },
-	mixins: [common_excel],
+	mixins: [common_excel, common_dialog],
 	data() {
 		return {
 			searchForm: {
@@ -133,29 +137,25 @@ export default {
 					return;
 				}
 				try {
+					// 对订单和库存数据进行合并预处理
+					let processedRows = mergeSpecialTableData(res.data);
+
 					// 上年结转的余额
 					let lastMoney = Number(lastYearDetail.moneyAmount);
 					// 累计金额
 					let nowMoney = Number(0);
 					// 拿到汇总账
-					const append = res.data.map(item => {
+					const append = processedRows.map(item => {
 						// 金额累计计算
 						nowMoney = lastMoney + Number(item.moneyAmount);
 						// 更新
 						lastMoney = nowMoney;
 						// 如果有了摘要 不做处理
 						if (item.summary) {
+							const summaryText = Array.isArray(item.summary) ? item.summary[0] : item.summary;
 							return {
 								...item,
-								moneyAmountLocal: fix_2(nowMoney),
-								subjectNo: config.configValue,
-								subjectName: config.subjectName
-							};
-						} else {
-							return {
-								...item,
-								// 如果没有摘要 就加上对应的摘要
-								summary: ReportType.SUPPLIER[item.tableName],
+								summary: summaryText,
 								moneyAmountLocal: fix_2(nowMoney),
 								subjectNo: config.configValue,
 								subjectName: config.subjectName
@@ -179,6 +179,42 @@ export default {
 				this.$message.warning('该行数据有误:模块名或者凭证号不存在');
 				return;
 			}
+
+			// 这里因为订单和库存需要特殊展示 额外判断
+			if (isGoodsOrderDisplay(tableName)) {
+				// 订单模块：将payNo数组传递给弹窗
+				this.openDialog(
+					OrderDayInfo,
+					'订单信息',
+					'1500px',
+					{
+						ids: payNo,
+						isDetail: true,
+						companyId: this.searchForm.companyId,
+						companyType: PUBLIC_DICT_TYPE.SUPPLIER // 供应商模块标识
+					},
+					false
+				);
+				return;
+			}
+
+			if (isInventoryDisplay(tableName)) {
+				// 库存模块：将payNo数组传递给弹窗
+				this.openDialog(
+					InventoryDayInfo,
+					'库存信息',
+					'1500px',
+					{
+						ids: payNo,
+						isDetail: true,
+						companyId: this.searchForm.companyId,
+						companyType: PUBLIC_DICT_TYPE.SUPPLIER // 供应商模块标识
+					},
+					false
+				);
+				return;
+			}
+
 			// 根据tableName动态获取某个JS模块
 			getFunction(tableName)(payNo).then(res => {
 				// 填充数据

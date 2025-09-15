@@ -24,11 +24,15 @@ import { PUBLIC_DICT_TYPE } from '@/utils/order';
 import { listCars } from '@/api/system/cars';
 import { formatBalance } from '../../../../utils/trash/utils';
 import { common_excel } from '@/views/dashboard/mixins/common/common_excel';
+import { isGoodsOrderDisplay, isInventoryDisplay, mergeSpecialTableData } from '@/api/system/goodsOrder';
+import OrderDayInfo from '@/components/OrderDayInfor/index.vue';
+import InventoryDayInfo from '@/components/InventoryDayInfo/index.vue';
+import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 
 export default {
 	name: 'FreightDetail',
 	components: { SearchOption, TotalTag },
-	mixins: [common_excel],
+	mixins: [common_excel, common_dialog],
 	data() {
 		return {
 			searchForm: {
@@ -133,25 +137,22 @@ export default {
 					let lastMoney = Number(lastYearDetail.moneyAmount);
 					// 累计金额
 					let nowMoney = Number(0);
+
+					// 对订单和库存数据进行合并预处理
+					let processedRows = mergeSpecialTableData(res.rows);
+
 					// 拿到汇总账
-					const append = res.rows.map(item => {
+					const append = processedRows.map(item => {
 						// 金额累计计算
 						nowMoney = lastMoney + Number(item.moneyAmount);
 						// 更新
 						lastMoney = nowMoney;
 						// 如果有了摘要 不做处理
 						if (item.summary) {
+							const summaryText = item.summary[0];
 							return {
 								...item,
-								moneyAmountLocal: fix(nowMoney),
-								subjectNo: config.configValue,
-								subjectName: config.subjectName
-							};
-						} else {
-							return {
-								...item,
-								// 如果没有摘要 就加上对应的摘要
-								summary: ReportType.FREIGHT[item.tableName],
+								summary: summaryText,
 								moneyAmountLocal: fix(nowMoney),
 								subjectNo: config.configValue,
 								subjectName: config.subjectName
@@ -175,9 +176,48 @@ export default {
 				this.$message.warning('该行数据有误:模块名或者凭证号不存在');
 				return;
 			}
+
+			// 这里因为订单和库存需要特殊展示 额外判断
+			if (isGoodsOrderDisplay(tableName)) {
+				// 订单模块：将payNo数组传递给弹窗
+				this.openDialog(
+					OrderDayInfo,
+					'订单信息',
+					'1500px',
+					{
+						ids: payNo,
+						isDetail: false,
+						companyId: this.searchForm.driverId,
+						companyType: PUBLIC_DICT_TYPE.DRIVER // 运费模块标识
+					},
+					false
+				);
+				return;
+			}
+
+			if (isInventoryDisplay(tableName)) {
+				// 库存模块：将payNo数组传递给弹窗
+				this.openDialog(
+					InventoryDayInfo,
+					'库存信息',
+					'1500px',
+					{
+						ids: payNo,
+						isDetail: false,
+						companyId: this.searchForm.driverId,
+						companyType: PUBLIC_DICT_TYPE.DRIVER // 运费模块标识
+					},
+					false
+				);
+				return;
+			}
+
+			// 其他模块：取数组的第一个元素作为单个ID
+			const singlePayNo = Array.isArray(payNo) ? payNo[0] : payNo;
+
 			// 根据tableName动态获取某个JS模块
-			if (tableName && payNo) {
-				getFunction(tableName)(payNo).then(res => {
+			if (tableName && singlePayNo) {
+				getFunction(tableName)(singlePayNo).then(res => {
 					if (!res.data) {
 						this.$message.warning('查询该模块条件下，暂无详细数据');
 						return;
