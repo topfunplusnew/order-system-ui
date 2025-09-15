@@ -211,6 +211,10 @@ export default {
 				if (response.data && response.data.length > 0) {
 					let inventoryInfoList = _.cloneDeep(response.data);
 					let inventoryFlatList = [];
+					// 如果公司类型是司机 需要把这个司机的订单筛选出来
+					if (inventoryInfoList.length > 0 && this.companyType === PUBLIC_DICT_TYPE.DRIVER) {
+						inventoryInfoList = inventoryInfoList.filter(item => item.landCarID === this.companyId);
+					}
 					inventoryInfoList.forEach(item => {
 						let inventoryDetailList = item.inventoryDetailList;
 						// 如果公司类型是供应商 并且是查看明细信息的话 就需要筛选出明细中供应商id是传入公司的ID

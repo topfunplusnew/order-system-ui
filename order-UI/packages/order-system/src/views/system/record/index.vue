@@ -759,35 +759,7 @@ export default {
 						trigger: 'blur'
 					}
 				],
-				supplierId: [
-					{
-						required: true,
-						message: '供应商id(或者说来源方)不能为空',
-						trigger: 'blur'
-					}
-				],
-				customerId: [
-					{
-						required: true,
-						message: '客户id(或者说目的地)不能为空',
-						trigger: 'blur'
-					}
-				],
-				amount: [{ required: true, message: '金额不能为空', trigger: 'blur' }],
-				referenceTableId: [
-					{
-						required: true,
-						message: '对应表id不能为空',
-						trigger: 'blur'
-					}
-				],
-				type: [
-					{
-						required: true,
-						message: '对应表名不能为空',
-						trigger: 'blur'
-					}
-				]
+				amount: [{ required: true, message: '金额不能为空', trigger: 'blur' }]
 			},
 			// 冲抵类型 默认为冲抵货款
 			cashType: CASH_TYPE.CASH_RECORD,

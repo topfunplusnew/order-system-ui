@@ -1,6 +1,7 @@
 import request from '@/utils/request';
 import { MessageBox } from 'element-ui';
 import { BatchQueryTableName } from '@/api/tool/enums';
+import _ from 'lodash';
 
 // 查询订单列表
 export function listGoodsOrder(query) {
@@ -159,4 +160,64 @@ export function getBussinessInfoTodayList(params) {
 		url: `/system/batchQuery/queryByTableNameAndIds?${queryString}`,
 		method: 'post'
 	});
+}
+
+/**
+ * 合并订单和库存的特殊表格数据
+ * 将同一日期同一类型（订单/库存）的多条记录合并为一条，便于前端展示
+ * @param {Array} sourceData - 原始数据数组
+ * @returns {Array} 合并后的数据数组
+ */
+export function mergeSpecialTableData(sourceData) {
+	// 使用 lodash 按条件分组数据
+	const partitionResult = _.partition(sourceData, item => {
+		const isSpecial = isGoodsOrderDisplay(item.tableName) || isInventoryDisplay(item.tableName);
+		return isSpecial;
+	});
+
+	// 两组数据：一组是订单或者库存，一组是其他
+	const specialData = partitionResult[0];
+	const otherData = partitionResult[1];
+
+	// 对订单或者库存的数据按日期和类型进行分组
+	const groupedSpecialData = _.groupBy(specialData, item => {
+		const date = item.operateDate.match(/^(\d{4}-\d{2}-\d{2})/)[1];
+		const type = isGoodsOrderDisplay(item.tableName) ? 'order' : 'inventory';
+		const groupKey = `${date}_${type}`;
+		return groupKey;
+	});
+
+	const mergedData = _.flatMap(groupedSpecialData, items => {
+		if (items.length === 1) {
+			// 单条数据，将关键字段转为数组格式
+			const singleItem = { ...items[0] };
+			singleItem.payNo = [singleItem.payNo];
+			singleItem.summary = [singleItem.summary];
+			return [singleItem];
+		}
+
+		// 合并多条记录 - 收集不同字段到数组中
+		const baseItem = _.head(items);
+		const merged = {
+			...baseItem,
+			// 将不同的payNo收集到数组中
+			payNo: _.uniq(_.map(items, 'payNo')),
+			// 将不同的summary收集到数组中
+			summary: _.uniq(_.map(items, 'summary')),
+			// 计算总金额
+			moneyAmount: _.sumBy(items, item => Number(item.moneyAmount))
+		};
+
+		return [merged];
+	});
+
+	// 对其他数据也进行相同处理，确保字段格式统一
+	const processedOtherData = otherData.map(item => ({
+		...item,
+		payNo: [item.payNo],
+		summary: [item.summary]
+	}));
+
+	// 返回合并后的数据和其他数据
+	return _.concat(mergedData, processedOtherData);
 }
