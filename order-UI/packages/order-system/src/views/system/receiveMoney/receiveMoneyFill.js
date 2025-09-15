@@ -1,3 +1,5 @@
+import { PUBLIC_DICT_TYPE } from '../../../api/tool/enums';
+
 export var mixin_receive_money_fill = {
 	data: function () {
 		return {
@@ -65,7 +67,7 @@ export var mixin_receive_money_fill = {
 		handleCommitBackCompany(val) {
 			this.form.companyName = val.companyName;
 			this.form.companyId = val.id;
-			this.form.companyType = val.companyType === '供应商' ? 2 : 1;
+			this.form.companyType = val.companyType;
 		},
 		// 填充司机的信息 如果选择的对方类型是司机的话
 		handleCommitBackCar(val) {
@@ -73,7 +75,7 @@ export var mixin_receive_money_fill = {
 			this.form.companyName = val.driver;
 			this.form.companyId = val.id;
 			// 司机这里给的是3
-			this.form.companyType = 3;
+			this.form.companyType = PUBLIC_DICT_TYPE.DRIVER;
 			// 填充银行卡数据 这里不填充了  因为司机和银行卡不强关联 自己选择
 			// this.form.otherAcountsName = val.acountsName;
 			// this.form.otherBankNo = val.bankNo;

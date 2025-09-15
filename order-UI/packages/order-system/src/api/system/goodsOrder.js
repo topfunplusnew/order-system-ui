@@ -152,10 +152,11 @@ export function getBussinessInfoTodayList(params) {
 		console.warn('ids参数不能为空');
 		return Promise.reject(new Error('ids参数不能为空'));
 	}
-
+	// 处理ids参数 - 构建查询字符串
+	const idsArray = Array.isArray(params.ids) ? params.ids : [params.ids];
+	const queryString = `tableName=${params.tableName}&${idsArray.map(id => `ids=${id}`).join('&')}`;
 	return request({
-		url: '/system/batchQuery/queryByTableNameAndIds',
-		method: 'post',
-		params: params
+		url: `/system/batchQuery/queryByTableNameAndIds?${queryString}`,
+		method: 'post'
 	});
 }
