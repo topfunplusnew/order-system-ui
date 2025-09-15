@@ -370,13 +370,35 @@ export default {
 			// 这里因为订单和库存需要特殊展示 额外判断
 			if (isGoodsOrderDisplay(tableName)) {
 				// 订单模块：将payNo数组传递给弹窗
-				this.openDialog(OrderDayInfo, '订单信息', '1500px', { ids: payNo, isDetail: false }, false);
+				this.openDialog(
+					OrderDayInfo,
+					'订单信息',
+					'1500px',
+					{
+						ids: payNo,
+						isDetail: false,
+						companyId: this.searchForm.companyId,
+						companyType: PUBLIC_DICT_TYPE.CUSTOMER
+					},
+					false
+				);
 				return;
 			}
 
 			if (isInventoryDisplay(tableName)) {
 				// 库存模块：将payNo数组传递给弹窗
-				this.openDialog(InventoryDayInfo, '库存信息', '1500px', { ids: payNo, isDetail: false }, false);
+				this.openDialog(
+					InventoryDayInfo,
+					'库存信息',
+					'1500px',
+					{
+						ids: payNo,
+						isDetail: false,
+						companyId: this.searchForm.companyId,
+						companyType: PUBLIC_DICT_TYPE.CUSTOMER
+					},
+					false
+				);
 				return;
 			}
 

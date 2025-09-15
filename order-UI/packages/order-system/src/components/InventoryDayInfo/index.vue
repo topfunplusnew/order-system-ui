@@ -80,6 +80,7 @@
 import { getBussinessInfoTodayList } from '@/api/system/goodsOrder';
 import { BatchQueryTableName } from '@/api/tool/enums';
 import _ from 'lodash';
+import { PUBLIC_DICT_TYPE } from '@/utils/order';
 
 export default {
 	name: 'InventoryDayInfo',
@@ -92,6 +93,14 @@ export default {
 		isDetail: {
 			type: Boolean,
 			default: false
+		},
+		companyId: {
+			type: Number,
+			required: true
+		},
+		companyType: {
+			type: String,
+			required: true
 		}
 	},
 	data() {
@@ -200,10 +209,14 @@ export default {
 
 				const response = await getBussinessInfoTodayList(params);
 				if (response.data && response.data.length > 0) {
-					const inventoryInfoList = _.cloneDeep(response.data);
+					let inventoryInfoList = _.cloneDeep(response.data);
 					let inventoryFlatList = [];
 					inventoryInfoList.forEach(item => {
-						const inventoryDetailList = item.inventoryDetailList;
+						let inventoryDetailList = item.inventoryDetailList;
+						// 如果公司类型是供应商 并且是查看明细信息的话 就需要筛选出明细中供应商id是传入公司的ID
+						if (inventoryDetailList.length > 0 && this.companyId && this.companyType === PUBLIC_DICT_TYPE.SUPPLIER) {
+							inventoryDetailList = inventoryDetailList.filter(item => item.supplierId === this.companyId);
+						}
 						const inventoryInfoToAdd = _.omit(item, 'inventoryDetailList');
 						// 添加所有的扁平的数据
 						inventoryFlatList.push(
@@ -218,13 +231,12 @@ export default {
 							})
 						);
 						// 每两批库存之间添加一个分隔符
-						if (inventoryFlatList.length !== inventoryDetailList.length) {
-							inventoryFlatList.push({
-								type: 'flag',
-								comments: item.comments
-							});
-						}
+						inventoryFlatList.push({
+							type: 'flag',
+							comments: item.comments
+						});
 					});
+
 					this.inventoryList = inventoryFlatList;
 					console.log(`this.inventoryList->`, this.inventoryList);
 				}

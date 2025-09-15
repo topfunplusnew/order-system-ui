@@ -80,7 +80,7 @@
 
 <script>
 import { getBussinessInfoTodayList } from '@/api/system/goodsOrder';
-import { BatchQueryTableName } from '@/api/tool/enums';
+import { BatchQueryTableName, PUBLIC_DICT_TYPE } from '@/api/tool/enums';
 import _ from 'lodash';
 
 export default {
@@ -94,6 +94,14 @@ export default {
 		isDetail: {
 			type: Boolean,
 			default: false
+		},
+		companyId: {
+			type: Number,
+			required: true
+		},
+		companyType: {
+			type: String,
+			required: true
 		}
 	},
 	computed: {
@@ -202,8 +210,13 @@ export default {
 				if (response.data && response.data.length > 0) {
 					const orderInfoList = _.cloneDeep(response.data);
 					let orderFlatList = [];
-					this.orderList = orderInfoList.forEach(item => {
-						const orderDetailList = item.orderDetailList;
+					// orderInfoList是主子表信息 orderDetailList是明细
+					orderInfoList.forEach(item => {
+						let orderDetailList = item.orderDetailList;
+						// 如果公司类型是供应商 并且是查看明细信息的话 就需要筛选出明细中供应商id是传入公司的ID
+						if (orderDetailList.length > 0 && this.companyId && this.companyType === PUBLIC_DICT_TYPE.SUPPLIER) {
+							orderDetailList = orderDetailList.filter(item => item.supplierID === this.companyId);
+						}
 						const orderInfoToAdd = _.omit(item, 'orderDetailList');
 						// 添加所有的扁平的数据
 						orderFlatList.push(
@@ -218,12 +231,10 @@ export default {
 							})
 						);
 						// 每两批订单之间添加一个分隔符
-						if (orderFlatList.length !== orderDetailList.length) {
-							orderFlatList.push({
-								type: 'flag',
-								comments: item.comments
-							});
-						}
+						orderFlatList.push({
+							type: 'flag',
+							comments: item.comments
+						});
 					});
 					this.orderList = orderFlatList;
 					console.log(`this.orderList->`, this.orderList);
