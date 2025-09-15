@@ -110,6 +110,7 @@ export default {
 		handleTargetTypeChange() {
 			// 清空相关字段
 			this.$refs.dynamicForm.updateFieldValue('targetAccountsName', null);
+			this.$refs.dynamicForm.updateFieldValue('targetId', null);
 			this.$refs.dynamicForm.updateFieldValue('targetBankNo', null);
 			this.$refs.dynamicForm.updateFieldValue('targetBankName', null);
 			this.queryBankOther = '';
@@ -148,6 +149,7 @@ export default {
 			updateValue(val.acountsName);
 
 			// 自动填充相关字段
+			this.$refs.dynamicForm.updateFieldValue('targetId', val.id);
 			this.$refs.dynamicForm.updateFieldValue('targetBankNo', val.bankNo);
 			this.$refs.dynamicForm.updateFieldValue('targetBankName', val.bankName);
 		},

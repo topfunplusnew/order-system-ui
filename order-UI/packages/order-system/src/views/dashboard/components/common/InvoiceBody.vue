@@ -7,7 +7,9 @@ import { parseTime } from '@/utils/ruoyi';
 import { getUuid } from '@/utils/trash/utils';
 import { TableName } from '@/api/tool/enums';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
-import ReadyList from '@/views/dashboard/components/common/ReadyList.vue';
+import { batchInvoice } from '@/api/system/excel';
+import INVOICE_OUT from '@/components/NeedToShow/INVOICE_OUT.vue';
+import INVOICE_IN from '@/components/NeedToShow/INVOICE_IN.vue';
 
 export default {
 	name: 'InvoiceBody',
@@ -79,13 +81,135 @@ export default {
 
 		// 批量开发票
 		async handleInvoiceBatch() {
-			// 保持旧行为：直接检查当前已经生成的发票列表
+			// 获取当前已经生成的发票列表
 			const invoiceList = this.$store.getters.selectedInvoiceList || [];
 			if (!invoiceList || invoiceList.length === 0) {
 				this.$message.warning('开票列表为空,请检查!');
 				return;
 			}
-			this.handleCheckInvoice(invoiceList);
+
+			// 显示加载状态
+			const loadingInstance = this.$loading({
+				lock: true,
+				text: '正在批量开票，请稍候...',
+				spinner: 'el-icon-loading',
+				background: 'rgba(0, 0, 0, 0.7)'
+			});
+
+			try {
+				// 直接执行批量开票
+				await this.executeBatchInvoice(invoiceList);
+			} catch (error) {
+				console.error('批量开票失败:', error);
+			} finally {
+				loadingInstance.close();
+			}
+		},
+
+		// 执行批量开票的核心逻辑（从ReadyList.vue迁移）
+		async executeBatchInvoice(invoices) {
+			const filteredInvoices = invoices.filter(item => item !== null);
+			if (filteredInvoices.length === 0) {
+				this.$message.error('开票信息为空');
+				return;
+			}
+
+			const res = await batchInvoice(filteredInvoices);
+			if (!res.data && !res.rows) {
+				this.$message.error('批量开票出现问题：返回结果非法');
+				return;
+			}
+
+			const result = this.checkInvoiceResult(res.data);
+			if (!result) {
+				this.$message.error('批量开票出现问题：返回结果非法');
+				return;
+			}
+
+			// 如果成功
+			if (result.flag) {
+				// 告诉订单列表重新加载
+				this.$bus.$emit('select-goods:update');
+
+				// 清理发票相关状态
+				if (this.$store && this.$store.dispatch) {
+					this.$store.dispatch('excel/clearSelectedInvoiceList');
+					this.$store.dispatch('excel/clearInvoiceAmount');
+				}
+
+				// 清理 sessionStorage 中的临时开票数据
+				sessionStorage.removeItem('invoiceAmount');
+				sessionStorage.removeItem('us');
+
+				// 广播清理事件
+				this.$bus.$emit('invoice-clear');
+
+				this.$message.success('本批开票成功');
+			} else {
+				this.$message.error('本批开票有误 请检查错误信息后重新提交');
+
+				// 延迟显示错误详情
+				setTimeout(() => {
+					this.handleInvoiceError(result, filteredInvoices);
+				}, 1000);
+			}
+		},
+
+		// 处理开票错误详情
+		handleInvoiceError(result, invoices) {
+			const uuid = result.uuid;
+			for (let i = 0; i < invoices.length; i++) {
+				const item = invoices[i];
+				const index = i;
+				if (item.uuid === uuid) {
+					// 查找该出错的信息 提示用户
+					this.$message.error(`第${index}条信息发生错误:${item.result}`);
+
+					// 判断tableName并打开对应的错误信息弹窗
+					switch (item.tableName) {
+						case TableName.INVOICE_OUT: {
+							this.openDialog(
+								INVOICE_OUT,
+								'出错的发票信息',
+								'900px',
+								{
+									needToShowInfo: item
+								},
+								false
+							);
+							break;
+						}
+						case TableName.INVOICE_IN: {
+							this.openDialog(
+								INVOICE_IN,
+								'出错的发票信息',
+								'900px',
+								{
+									needToShowInfo: item
+								},
+								false
+							);
+							break;
+						}
+					}
+					break;
+				}
+			}
+		},
+
+		// 检查开票结果（从ReadyList.vue迁移）
+		checkInvoiceResult(data) {
+			let result = {};
+			for (let item of data) {
+				if (item.result !== 'success') {
+					result.message = item.result;
+					result.uuid = item.uuid;
+					result.flag = false;
+				} else {
+					result.flag = true;
+				}
+			}
+			return result;
 		},
 
 		/**
@@ -253,19 +377,6 @@ export default {
 			this.$message.success(`生成 ${resultInvoices.length} 条发票记录`);
 		},
 
-		// 校验
-		handleCheckInvoice(resultList) {
-			// 打开弹窗
-			this.openDialog(
-				ReadyList,
-				'待开票列表',
-				'900px',
-				{
-					list: resultList
-				},
-				false
-			);
-		},
 		// 分配金额的具体函数 选择某一个订单后要扣钱
 		handleTransform(orderItem) {
 			if (this.invoiceType === PUBLIC_DICT_TYPE.CUSTOMER) {
@@ -543,7 +654,6 @@ export default {
 
 	&::-webkit-scrollbar-track {
 		background: transparent;
-
 	}
 }
 

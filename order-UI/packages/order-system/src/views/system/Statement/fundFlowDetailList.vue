@@ -81,59 +81,62 @@
 			</el-form-item>
 		</el-form>
 
+		<el-row :gutter="10" class="mb8">
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="fetchStatementData">
+				<template #export>
+					<el-col :span="1.5">
+						<el-button plain icon="el-icon-folder-opened" size="mini" @click="handleExport">导出</el-button>
+					</el-col>
+				</template>
+			</right-toolbar>
+		</el-row>
+
 		<!-- 银行流水明细表格  正借负贷 -->
 		<el-table :data="statementData" border style="width: 100%" class="statement-table" size="mini" v-loading="loading" element-loading-text="数据加载中...">
-			<el-table-column prop="operateDate" label="月" show-overflow-tooltip>
+			<CustomTableColumn v-if="columns[0].visible" prop="operateDate" label="日期" show-overflow-tooltip>
 				<template slot-scope="{ row }">
-					{{ row.operateDate ? dayjs(row.operateDate).month() + 1 : '' }}
+					{{ row.operateDate ? dayjs(row.operateDate).format('YYYY-MM-DD') : '' }}
 				</template>
-			</el-table-column>
-			<el-table-column prop="operateDate" label="日" show-overflow-tooltip>
+			</CustomTableColumn>
+			<CustomTableColumn v-if="columns[1].visible" prop="operateDate" label="时间" show-overflow-tooltip>
 				<template slot-scope="{ row }">
-					{{ row.operateDate ? dayjs(row.operateDate).date() : '' }}
+					{{ row.operateDate ? dayjs(row.operateDate).format('HH:mm:ss') : '' }}
 				</template>
-			</el-table-column>
-			<el-table-column prop="operateDate" label="时间" show-overflow-tooltip>
-				<template slot-scope="{ row }">
-					{{ row.operateDate ? dayjs(row.operateDate).format('HH:mm') : '' }}
-				</template>
-			</el-table-column>
+			</CustomTableColumn>
 
-			<el-table-column prop="payNO" label="凭证号数" show-overflow-tooltip></el-table-column>
-			<el-table-column prop="changeType" label="类型(收款/付款)" show-overflow-tooltip></el-table-column>
-			<el-table-column prop="displayPayType" label="支付类型" show-overflow-tooltip></el-table-column>
-			<el-table-column prop="otherCompanyType" label="对象类型（客户/供应商/本公司/运费/票点/日常费用）" show-overflow-tooltip></el-table-column>
-			<el-table-column prop="otherCompanyName" label="对象名称" show-overflow-tooltip></el-table-column>
-			<el-table-column prop="otherAcountsName" label="对方户名（对方真实收付款名称）" show-overflow-tooltip></el-table-column>
-			<el-table-column prop="otherBankNO" label="对方银行账号" show-overflow-tooltip></el-table-column>
-			<el-table-column prop="changeType" label="摘要" show-overflow-tooltip></el-table-column>
-			<el-table-column prop="moneyAmount" label="借" align="right" show-overflow-tooltip>
+			<CustomTableColumn v-if="columns[2].visible" prop="payNO" label="凭证号数" show-overflow-tooltip></CustomTableColumn>
+			<CustomTableColumn v-if="columns[3].visible" prop="changeType" label="类型（收款/付款）" show-overflow-tooltip></CustomTableColumn>
+			<CustomTableColumn v-if="columns[4].visible" prop="displayPayType" label="支付类型" show-overflow-tooltip></CustomTableColumn>
+			<CustomTableColumn v-if="columns[5].visible" prop="otherCompanyType" label="对象类型" show-overflow-tooltip></CustomTableColumn>
+			<CustomTableColumn v-if="columns[6].visible" prop="otherCompanyName" label="对象名称" show-overflow-tooltip></CustomTableColumn>
+			<CustomTableColumn v-if="columns[7].visible" prop="otherAcountsName" label="对方户名" show-overflow-tooltip></CustomTableColumn>
+			<CustomTableColumn v-if="columns[8].visible" prop="otherBankNO" label="对方银行卡号" show-overflow-tooltip></CustomTableColumn>
+			<CustomTableColumn v-if="columns[9].visible" prop="changeType" label="摘要" show-overflow-tooltip></CustomTableColumn>
+			<CustomTableColumn v-if="columns[10].visible" prop="moneyAmount" label="收入" align="right" show-overflow-tooltip>
 				<template #default="{ row }">
-					<span>{{ row.moneyAmount > 0 ? row.moneyAmount : '' }}</span>
+					<span v-if="row.moneyAmount > 0" style="color: #67c23a">￥{{ row.moneyAmount.toLocaleString('zh-CN', { minimumFractionDigits: 2 }) }}</span>
+					<span v-else>￥0.00</span>
 				</template>
-			</el-table-column>
-			<el-table-column prop="moneyAmount" label="贷" align="right" show-overflow-tooltip>
+			</CustomTableColumn>
+			<CustomTableColumn v-if="columns[11].visible" prop="moneyAmount" label="支出" align="right" show-overflow-tooltip>
 				<template #default="{ row }">
-					<span>{{ row.moneyAmount > 0 ? '' : row.moneyAmount }}</span>
+					<span v-if="row.moneyAmount < 0" style="color: #f56c6c">￥{{ Math.abs(row.moneyAmount).toLocaleString('zh-CN', { minimumFractionDigits: 2 }) }}</span>
+					<span v-else>￥0.00</span>
 				</template>
-			</el-table-column>
-			<el-table-column label="方向" align="right" show-overflow-tooltip>
+			</CustomTableColumn>
+			<CustomTableColumn v-if="columns[12].visible" prop="balance" label="余额" align="right" show-overflow-tooltip>
 				<template #default="{ row }">
-					<span>{{ row.balance > 0 ? '借' : '贷' }}</span>
+					<span :style="{ color: row.balance >= 0 ? '#67c23a' : '#f56c6c' }">￥{{ row.balance.toLocaleString('zh-CN', { minimumFractionDigits: 2 }) }}</span>
 				</template>
-			</el-table-column>
-			<el-table-column prop="balance" label="余额" align="right" show-overflow-tooltip></el-table-column>
+			</CustomTableColumn>
 
 			<!--      加一个操作列-->
-			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
+			<CustomTableColumn label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
 				<template #default="{ row }">
 					<el-button type="text" size="mini" @click="handleCheckDetail(row)">查看明细</el-button>
 				</template>
-			</el-table-column>
+			</CustomTableColumn>
 		</el-table>
-
-		<!-- 数据为空时的提示 -->
-		<el-empty v-if="!loading && statementData.length === 0" description="暂无数据"></el-empty>
 	</div>
 </template>
 
@@ -151,6 +154,8 @@ import SearchOption from '@/components/SearchOption.vue';
 import { listBankAccount } from '@/api/system/bankAccount';
 import BankType from '@/views/dashboard/components/common/BankType.vue';
 import dayjs from 'dayjs';
+import { getDepositMoney } from '@/api/system/depositMoney';
+import DEPOSITMONEY from '@/components/NeedToShow/DEPOSITMONEY.vue';
 
 export default {
 	components: { BankType, SearchOption },
@@ -159,6 +164,7 @@ export default {
 		return {
 			dayjs, // 将 dayjs 添加到 data 中，使其在模板中可用
 			queryBank: '',
+			showSearch: true,
 			query: {
 				startTime: '',
 				endTime: '',
@@ -169,6 +175,22 @@ export default {
 			},
 			statementData: [], // 银行流水数据
 			loading: false, // 加载状态
+			// 隐藏列信息
+			columns: [
+				{ key: 0, label: `日期`, visible: true },
+				{ key: 1, label: `时间`, visible: true },
+				{ key: 2, label: `凭证号数`, visible: true },
+				{ key: 3, label: `类型（收款/付款）`, visible: true },
+				{ key: 4, label: `支付类型`, visible: true },
+				{ key: 5, label: `对象类型`, visible: true },
+				{ key: 6, label: `对象名称`, visible: true },
+				{ key: 7, label: `对方户名`, visible: true },
+				{ key: 8, label: `对方银行卡号`, visible: true },
+				{ key: 9, label: `摘要`, visible: true },
+				{ key: 10, label: `收入`, visible: true },
+				{ key: 11, label: `支出`, visible: true },
+				{ key: 12, label: `余额`, visible: true }
+			],
 			endTimePickerOptions: {
 				// 移除日期禁用限制，允许选择任何日期
 				disabledDate: date => {
@@ -194,6 +216,18 @@ export default {
 							false
 						);
 					}
+				});
+			} else if (row.tableName === TableName.DEPOSITMONEY) {
+				getDepositMoney(row.payNO).then(res => {
+					this.openDialog(
+						DEPOSITMONEY,
+						'收取保证金',
+						'700px',
+						{
+							needToShowInfo: res.data
+						},
+						false
+					);
 				});
 			} else if (row.tableName === TableName.CASH_RECORD) {
 				getRecord(row.payNO).then(res => {
@@ -284,6 +318,48 @@ export default {
 				otherAccountName: ''
 			};
 			this.statementData = [];
+		},
+		/** 导出按钮操作 */
+		handleExport() {
+			// 验证必填参数
+			if (!this.query.startTime || !this.query.endTime || !this.query.ourBankNO || !this.query.bankCardType) {
+				this.$message.warning('请完善查询条件后再导出');
+				return;
+			}
+
+			// 构建导出URL
+			const baseUrl = '/statistics/export/FundFlowDetailList';
+			const params = new URLSearchParams({
+				startTime: this.query.startTime,
+				endTime: this.query.endTime,
+				ourBankNO: this.query.ourBankNO,
+				bankCardType: this.query.bankCardType
+			});
+
+			// 添加可选参数
+			if (this.query.otherName) {
+				params.append('otherName', this.query.otherName);
+			}
+			if (this.query.otherAccountName) {
+				params.append('otherAccountName', this.query.otherAccountName);
+			}
+
+			this.download(`${baseUrl}?${params.toString()}`, {}, `资金流水明细_${new Date().getTime()}.xlsx`);
+		}
+	},
+	watch: {
+		columns: {
+			handler: function (newVal) {
+				localStorage.setItem('fundflowdetail-columns', JSON.stringify(newVal));
+			},
+			deep: true
+		}
+	},
+	created() {
+		if (localStorage.getItem('fundflowdetail-columns') === 'null' || !localStorage.getItem('fundflowdetail-columns')) {
+			localStorage.setItem('fundflowdetail-columns', JSON.stringify(this.columns));
+		} else {
+			this.columns = JSON.parse(localStorage.getItem('fundflowdetail-columns'));
 		}
 	}
 	// created() {
