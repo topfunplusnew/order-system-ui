@@ -63,7 +63,8 @@ export const TableName = Object.freeze({
 	INVENTORMAIN: 'inventory_main',
 	INVENTORDETAIL: 'inventory_detail',
 	DAILY: 'daily',
-	ORDERCOMMISION: 'ordercommission'
+	ORDERCOMMISION: 'ordercommission',
+	DEPOSITMONEY: 'deposit_money'
 });
 
 const OFFSETTING_TYPE = Object.freeze({
