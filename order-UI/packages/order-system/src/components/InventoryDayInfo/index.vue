@@ -88,6 +88,10 @@ export default {
 			type: Array,
 			required: true,
 			default: () => []
+		},
+		isDetail: {
+			type: Boolean,
+			default: false
 		}
 	},
 	data() {
@@ -95,6 +99,11 @@ export default {
 			loading: false,
 			inventoryList: []
 		};
+	},
+	computed: {
+		computedTableName() {
+			return this.isDetail ? BatchQueryTableName.INVENTORY_DETAIL : BatchQueryTableName.INVENTORY_MAIN;
+		}
 	},
 	watch: {
 		ids: {
@@ -185,7 +194,7 @@ export default {
 			this.loading = true;
 			try {
 				const params = {
-					tableName: BatchQueryTableName.INVENTORY_DETAIL,
+					tableName: this.computedTableName,
 					ids: this.ids
 				};
 

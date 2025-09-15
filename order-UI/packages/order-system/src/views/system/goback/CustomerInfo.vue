@@ -139,6 +139,8 @@ import _ from 'lodash';
 import { formatBalance } from '@/utils/trash/utils';
 import { isGoodsOrderDisplay, isInventoryDisplay } from '@/api/system/goodsOrder';
 import OrderDayInfo from '@/components/OrderDayInfor/index.vue';
+import InventoryDayInfo from '@/components/InventoryDayInfo/index.vue';
+
 export default {
 	name: 'CustomerInfo',
 	computed: {
@@ -264,6 +266,7 @@ export default {
 					this.loading = false;
 					return;
 				}
+
 				function calculateLenderAndBorrower(dayData) {
 					const { itemTotalLender, itemTotalBorrower } = dayData.reduce(
 						(acc, customerDetail) => {
@@ -367,7 +370,13 @@ export default {
 			// 这里因为订单和库存需要特殊展示 额外判断
 			if (isGoodsOrderDisplay(tableName)) {
 				// 订单模块：将payNo数组传递给弹窗
-				this.openDialog(OrderDayInfo, '订单信息', '1500px', { ids: payNo }, false);
+				this.openDialog(OrderDayInfo, '订单信息', '1500px', { ids: payNo, isDetail: false }, false);
+				return;
+			}
+
+			if (isInventoryDisplay(tableName)) {
+				// 库存模块：将payNo数组传递给弹窗
+				this.openDialog(InventoryDayInfo, '库存信息', '1500px', { ids: payNo, isDetail: false }, false);
 				return;
 			}
 

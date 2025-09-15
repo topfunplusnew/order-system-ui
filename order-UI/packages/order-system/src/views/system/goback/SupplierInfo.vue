@@ -133,6 +133,7 @@ import { formatBalance } from '@/utils/trash/utils';
 import _ from 'lodash';
 import { isGoodsOrderDisplay, isInventoryDisplay } from '@/api/system/goodsOrder';
 import InventoryDayInfo from '@/components/InventoryDayInfo/index.vue';
+import OrderDayInfor from '@/components/OrderDayInfor/index.vue';
 
 export default {
 	name: 'SupplierInfo',
@@ -372,9 +373,15 @@ export default {
 				this.$message.warning('该行数据有误:模块名或者凭证号不存在');
 				return;
 			}
+			// 这里因为订单和库存需要特殊展示 额外判断
+			if (isGoodsOrderDisplay(tableName)) {
+				// 订单模块：将payNo数组传递给弹窗
+				this.openDialog(OrderDayInfor, '订单信息', '1500px', { ids: payNo, isDetail: true }, false);
+				return;
+			}
 			if (isInventoryDisplay(tableName)) {
 				// 库存模块：将payNo数组传递给弹窗
-				this.openDialog(InventoryDayInfo, '库存信息', '1500px', { ids: payNo }, false);
+				this.openDialog(InventoryDayInfo, '库存信息', '1500px', { ids: payNo, isDetail: true }, false);
 				return;
 			}
 			// 其他模块：取数组的第一个元素作为单个ID

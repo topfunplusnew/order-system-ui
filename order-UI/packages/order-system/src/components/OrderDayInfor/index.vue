@@ -90,6 +90,15 @@ export default {
 			type: Array,
 			required: true,
 			default: () => []
+		},
+		isDetail: {
+			type: Boolean,
+			default: false
+		}
+	},
+	computed: {
+		computedTableName() {
+			return this.isDetail ? BatchQueryTableName.ORDER_DETAIL : BatchQueryTableName.GOODS_ORDER;
 		}
 	},
 	data() {
@@ -186,7 +195,7 @@ export default {
 			this.loading = true;
 			try {
 				const params = {
-					tableName: BatchQueryTableName.GOODS_ORDER,
+					tableName: this.computedTableName,
 					ids: this.ids
 				};
 				const response = await getBussinessInfoTodayList(params);
