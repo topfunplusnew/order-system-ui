@@ -137,9 +137,8 @@ import RECEIVE_MONEY from '@/components/NeedToShow/RECEIVE_MONEY.vue';
 import BALANCEACCOUNT from '@/components/NeedToShow/BALANCEACCOUNT.vue';
 import _ from 'lodash';
 import { formatBalance } from '@/utils/trash/utils';
-import { getBussinessInfoTodayList, isGoodsOrderDisplay, isInventoryDisplay } from '@/api/system/goodsOrder';
+import { isGoodsOrderDisplay, isInventoryDisplay } from '@/api/system/goodsOrder';
 import OrderDayInfo from '@/components/OrderDayInfor/index.vue';
-import InventoryDayInfo from '@/components/InventoryDayInfo/index.vue';
 export default {
 	name: 'CustomerInfo',
 	computed: {
@@ -369,11 +368,6 @@ export default {
 			if (isGoodsOrderDisplay(tableName)) {
 				// 订单模块：将payNo数组传递给弹窗
 				this.openDialog(OrderDayInfo, '订单信息', '1500px', { ids: payNo }, false);
-				return;
-			}
-			if (isInventoryDisplay(tableName)) {
-				// 库存模块：将payNo数组传递给弹窗
-				this.openDialog(InventoryDayInfo, '库存信息', '1500px', { ids: payNo }, false);
 				return;
 			}
 

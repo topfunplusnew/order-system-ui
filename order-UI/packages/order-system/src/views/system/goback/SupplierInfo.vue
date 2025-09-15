@@ -131,6 +131,8 @@ import ORDER_DETAIL from '@/components/NeedToShow/ORDER_DETAIL.vue';
 import BALANCEACCOUNT from '@/components/NeedToShow/BALANCEACCOUNT.vue';
 import { formatBalance } from '@/utils/trash/utils';
 import _ from 'lodash';
+import { isGoodsOrderDisplay, isInventoryDisplay } from '@/api/system/goodsOrder';
+import InventoryDayInfo from '@/components/InventoryDayInfo/index.vue';
 
 export default {
 	name: 'SupplierInfo',
@@ -292,6 +294,10 @@ export default {
 							// 上年结转的余额 (供应商：正数表示我们欠供应商，负数表示供应商欠我们)
 							let currentBalance = Number(lastYearDetail.moneyAmount || 0);
 							let sourceData = _.cloneDeep(res.data);
+
+							// 对订单和库存数据进行合并预处理
+							sourceData = this.mergeSpecialTableData(sourceData);
+
 							// 按日期分组
 							sourceData = _.groupBy(sourceData, item => {
 								return item.operateDate.match(/^(\d{4}-\d{2}-\d{2})/)[1];
@@ -321,7 +327,8 @@ export default {
 										lender: fix(lender),
 										borrower: fix(borrower),
 										tableName: detail.tableName,
-										moneyAmountLocal: fix(detail.moneyAmount)
+										moneyAmountLocal: fix(detail.moneyAmount),
+										summary: Array.isArray(detail.summary) ? detail.summary.join('、') : detail.summary
 									};
 								};
 								const lenderList = item.map(condition).filter(d => Number(d.moneyAmountLocal) > 0);
@@ -365,8 +372,16 @@ export default {
 				this.$message.warning('该行数据有误:模块名或者凭证号不存在');
 				return;
 			}
+			if (isInventoryDisplay(tableName)) {
+				// 库存模块：将payNo数组传递给弹窗
+				this.openDialog(InventoryDayInfo, '库存信息', '1500px', { ids: payNo }, false);
+				return;
+			}
+			// 其他模块：取数组的第一个元素作为单个ID
+			const singlePayNo = Array.isArray(payNo) ? payNo[0] : payNo;
+
 			// 根据tableName动态获取某个JS模块
-			getFunction(tableName)(payNo).then(res => {
+			getFunction(tableName)(singlePayNo).then(res => {
 				if (!res.data) {
 					this.$message.warning('查询该模块条件下，暂无详细数据');
 					return;
@@ -416,6 +431,57 @@ export default {
 		handleCommitBackCompany(value) {
 			this.searchForm.supplier = value.companyName;
 			this.searchForm.companyId = value.id;
+		},
+		// 合并订单和库存数据
+		mergeSpecialTableData(sourceData) {
+			// 使用 lodash 按条件分组数据 - 修复解构赋值
+			const partitionResult = _.partition(sourceData, item => {
+				const isSpecial = isGoodsOrderDisplay(item.tableName) || isInventoryDisplay(item.tableName);
+				return isSpecial;
+			});
+			// 两组数据 一组是订单或者库存 一组是其他
+			const specialData = partitionResult[0];
+			const otherData = partitionResult[1];
+			// 对订单或者库存的数据按日期和类型进行分组
+			const groupedSpecialData = _.groupBy(specialData, item => {
+				const date = item.operateDate.match(/^(\d{4}-\d{2}-\d{2})/)[1];
+				const type = isGoodsOrderDisplay(item.tableName) ? 'order' : 'inventory';
+				const groupKey = `${date}_${type}`;
+				return groupKey;
+			});
+			const mergedData = _.flatMap(groupedSpecialData, items => {
+				if (items.length === 1) {
+					// 单条数据，将关键字段转为数组格式
+					const singleItem = { ...items[0] };
+					singleItem.payNo = [singleItem.payNo];
+					singleItem.summary = [singleItem.summary];
+					return [singleItem];
+				}
+
+				// 合并多条记录 - 收集不同字段到数组中
+				const baseItem = _.head(items);
+				const merged = {
+					...baseItem,
+					// 将不同的payNo收集到数组中
+					payNo: _.uniq(_.map(items, 'payNo')),
+					// 将不同的summary收集到数组中
+					summary: _.uniq(_.map(items, 'summary')),
+					// 计算总金额
+					moneyAmount: _.sumBy(items, item => Number(item.moneyAmount))
+				};
+
+				return [merged];
+			});
+
+			// 对其他数据也进行相同处理，确保字段格式统一
+			const processedOtherData = otherData.map(item => ({
+				...item,
+				payNo: [item.payNo],
+				summary: [item.summary]
+			}));
+
+			// 返回合并后的数据和其他数据
+			return _.concat(mergedData, processedOtherData);
 		}
 	}
 };
