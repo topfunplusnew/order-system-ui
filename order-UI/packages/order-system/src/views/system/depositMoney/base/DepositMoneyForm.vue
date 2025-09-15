@@ -1,5 +1,31 @@
 <template>
 	<DynamicForm ref="dynamicForm" :config="columnConfig" :form-data="formData" :external-data="externalData" @field-change="handleFieldChange">
+		<!-- 对方公司选择器插槽 -->
+		<template #targetCompanyName="{ value, updateValue }">
+			<el-row>
+				<el-col :span="16">
+					<el-input :value="value" disabled placeholder="请选择对方公司" />
+				</el-col>
+				<el-col :span="8">
+					<SearchOption
+						v-if="getTargetCompanySearchConfig().show"
+						:limit-info="getTargetCompanySearchConfig().limitInfo"
+						:get-data="getTargetCompanySearchConfig().getData"
+						icon="el-icon-search"
+						:query-label="getTargetCompanySearchConfig().queryLabel"
+						:query-info="getTargetCompanySearchConfig().queryInfo"
+						:query-name="queryCompany"
+						@commitBack="val => handleCommitBackCompany(val, updateValue)"
+						@update:queryName="val => (queryCompany = val)"
+					>
+						<template #table-columns>
+							<el-table-column v-for="col in getTargetCompanySearchConfig().columns" :key="col.prop" :label="col.label" align="center" :prop="col.prop" />
+						</template>
+					</SearchOption>
+				</el-col>
+			</el-row>
+		</template>
+
 		<!-- 对方账户选择器插槽 -->
 		<template #targetAccountsName="{ value, updateValue }">
 			<el-row>
@@ -61,6 +87,8 @@ import DynamicForm from '@/components/DynamicForm';
 import SearchOption from '@/components/SearchOption.vue';
 import { addDepositMoney, updateDepositMoney } from '@/api/system/depositMoney';
 import { listBankAccount } from '@/api/system/bankAccount';
+import { listCompany } from '@/api/system/company';
+import { listCars } from '@/api/system/cars';
 import { excludeParams } from '@/api/tool/exclude';
 import columnConfig from './columns';
 
@@ -94,7 +122,8 @@ export default {
 			externalData: {},
 			// 搜索控件本地变量
 			queryBankOther: '',
-			queryBankSelf: ''
+			queryBankSelf: '',
+			queryCompany: ''
 		};
 	},
 	methods: {
@@ -109,8 +138,93 @@ export default {
 		// 对象类型变化处理
 		handleTargetTypeChange() {
 			// 清空相关字段
-			this.$refs.dynamicForm.updateFieldValue('targetAccountsName', null);
+			this.$refs.dynamicForm.updateFieldValue('targetCompanyName', null);
+			this.$refs.dynamicForm.updateFieldValue('target', null);
 			this.$refs.dynamicForm.updateFieldValue('targetId', null);
+			this.$refs.dynamicForm.updateFieldValue('targetAccountsName', null);
+			this.$refs.dynamicForm.updateFieldValue('targetBankNo', null);
+			this.$refs.dynamicForm.updateFieldValue('targetBankName', null);
+			this.queryBankOther = '';
+			this.queryCompany = '';
+		},
+
+		// 获取对方公司搜索配置
+		getTargetCompanySearchConfig() {
+			const formData = this.$refs.dynamicForm ? this.$refs.dynamicForm.getFormData() : {};
+			const targetType = formData.targetType;
+
+			// 根据对象类型返回不同的搜索配置
+			switch (targetType) {
+				case '客户':
+					return {
+						show: true,
+						limitInfo: { companyType: '客户' },
+						getData: listCompany,
+						queryLabel: '公司名称',
+						queryInfo: 'companyName',
+						columns: [
+							{ prop: 'companyName', label: '客户' },
+							{ prop: 'leader', label: '老板姓名' },
+							{ prop: 'leaderTel', label: '老板电话' },
+							{ prop: 'region', label: '区域' },
+							{ prop: 'salesManager', label: '销售经理' }
+						]
+					};
+				case '供应商':
+					return {
+						show: true,
+						limitInfo: { companyType: '供应商' },
+						getData: listCompany,
+						queryLabel: '公司名称',
+						queryInfo: 'companyName',
+						columns: [
+							{ prop: 'companyName', label: '供应商' },
+							{ prop: 'leader', label: '老板姓名' },
+							{ prop: 'leaderTel', label: '老板电话' },
+							{ prop: 'region', label: '区域' },
+							{ prop: 'salesManager', label: '销售经理' }
+						]
+					};
+				case '司机':
+					return {
+						show: true,
+						limitInfo: { companyType: '司机' },
+						getData: listCars,
+						queryLabel: '司机',
+						queryInfo: 'driver',
+						columns: [
+							{ prop: 'carType', label: '运输类型' },
+							{ prop: 'carNo', label: '车牌/柜号' },
+							{ prop: 'driver', label: '司机姓名/海运公司' },
+							{ prop: 'tel', label: '司机电话' }
+						]
+					};
+				default:
+					return {
+						show: false,
+						limitInfo: {},
+						getData: null,
+						queryLabel: '',
+						queryInfo: '',
+						columns: []
+					};
+			}
+		},
+
+		// 对方公司选择回调
+		handleCommitBackCompany(val, updateValue) {
+			const formData = this.$refs.dynamicForm ? this.$refs.dynamicForm.getFormData() : {};
+			const targetType = formData.targetType;
+
+			// 更新对方公司字段
+			updateValue(targetType === '司机' ? val.driver : val.companyName);
+
+			// 自动填充对象名称和对象ID
+			this.$refs.dynamicForm.updateFieldValue('target', targetType === '司机' ? val.driver : val.companyName);
+			this.$refs.dynamicForm.updateFieldValue('targetId', val.id);
+
+			// 清空对方账户相关信息，因为公司变更了
+			this.$refs.dynamicForm.updateFieldValue('targetAccountsName', null);
 			this.$refs.dynamicForm.updateFieldValue('targetBankNo', null);
 			this.$refs.dynamicForm.updateFieldValue('targetBankName', null);
 			this.queryBankOther = '';
@@ -120,27 +234,68 @@ export default {
 		getTargetLimitInfo() {
 			const formData = this.$refs.dynamicForm ? this.$refs.dynamicForm.getFormData() : {};
 			const targetType = formData.targetType;
+			const targetId = formData.targetId;
 
-			// 根据对象类型返回不同的限制条件
+			// 基本的账户类型限制
+			let limitInfo = {};
+
 			switch (targetType) {
 				case '员工':
-					return { acountsType: '员工' };
+					limitInfo = { acountsType: '员工' };
+					break;
 				case '客户':
-					return { acountsType: '客户' };
+					limitInfo = { acountsType: '客户' };
+					// 如果已选择了具体的客户公司，则添加公司ID限制
+					if (targetId) {
+						limitInfo.companyId = targetId;
+						limitInfo.companyType = '客户';
+					}
+					break;
 				case '供应商':
-					return { acountsType: '供应商' };
+					limitInfo = { acountsType: '供应商' };
+					// 如果已选择了具体的供应商公司，则添加公司ID限制
+					if (targetId) {
+						limitInfo.companyId = targetId;
+						limitInfo.companyType = '供应商';
+					}
+					break;
+				case '司机':
+					limitInfo = { acountsType: '司机' };
+					// 如果已选择了具体的司机，则添加公司ID限制
+					if (targetId) {
+						limitInfo.companyId = targetId;
+						limitInfo.companyType = '司机';
+					}
+					break;
 				case '其他':
-					return { acountsType: '其他' };
+					limitInfo = { acountsType: '其他' };
+					break;
 				default:
-					return {};
+					limitInfo = {};
 			}
+
+			return limitInfo;
 		},
 
 		// 获取对方账户的标签
 		getTargetAccountLabel() {
 			const formData = this.$refs.dynamicForm ? this.$refs.dynamicForm.getFormData() : {};
 			const targetType = formData.targetType;
-			return targetType === '其他' || targetType === '员工' ? '名称' : targetType || '名称';
+
+			switch (targetType) {
+				case '员工':
+					return '员工姓名';
+				case '客户':
+					return '客户名称';
+				case '供应商':
+					return '供应商名称';
+				case '司机':
+					return '司机姓名';
+				case '其他':
+					return '名称';
+				default:
+					return '名称';
+			}
 		},
 
 		// 对方账户选择回调
@@ -148,8 +303,7 @@ export default {
 			// 更新当前字段值
 			updateValue(val.acountsName);
 
-			// 自动填充相关字段
-			this.$refs.dynamicForm.updateFieldValue('targetId', val.id);
+			// 自动填充相关字段 - 注意：这里不设置 targetId，targetId 应该来自公司选择
 			this.$refs.dynamicForm.updateFieldValue('targetBankNo', val.bankNo);
 			this.$refs.dynamicForm.updateFieldValue('targetBankName', val.bankName);
 		},
@@ -211,7 +365,13 @@ export default {
 		},
 
 		// 银行账户搜索方法
-		listBankAccount
+		listBankAccount,
+
+		// 公司搜索方法
+		listCompany,
+
+		// 司机搜索方法
+		listCars
 	}
 };
 </script>
