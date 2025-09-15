@@ -67,6 +67,7 @@ export default {
 					{ label: '员工', value: '员工' },
 					{ label: '客户', value: '客户' },
 					{ label: '供应商', value: '供应商' },
+					{ label: '司机', value: '司机' },
 					{ label: '其他', value: '其他' }
 				],
 				optionLabel: 'label',
@@ -74,6 +75,41 @@ export default {
 				change: 'handleTargetTypeChange',
 				col: { span: 12 },
 				order: 3
+			}
+		},
+		{
+			key: 'targetCompanyName',
+			prop: 'targetCompanyName',
+			label: '对方公司名称',
+			visible: true,
+			includeInForm: true,
+			width: 150,
+			showOverflowTooltip: true,
+			formConfig: {
+				type: 'custom',
+				show: true,
+				placeholder: '请选择对方公司',
+				rules: [
+					{
+						required: true,
+						message: '请选择对方公司',
+						trigger: 'change',
+						validator: (rule, value, callback) => {
+							// 当对象类型为员工或其他时，此字段不是必填的
+							const form = rule._form || {};
+							if (form.targetType === '员工' || form.targetType === '其他') {
+								callback();
+							} else if (!value) {
+								callback(new Error('请选择对方公司'));
+							} else {
+								callback();
+							}
+						}
+					}
+				],
+				col: { span: 12 },
+				order: 3.5,
+				slotName: 'targetCompanyName'
 			}
 		},
 		{
@@ -87,8 +123,9 @@ export default {
 			formConfig: {
 				type: 'input',
 				show: true,
-				placeholder: '请输入对象名称',
+				placeholder: '自动填充',
 				rules: validationRules.required,
+				readonly: true,
 				col: { span: 12 },
 				order: 4
 			}

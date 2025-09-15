@@ -24,8 +24,8 @@ module.exports = {
 				// target: `http://223.254.129.240:60036`,
 				// target: `http://223.254.129.240:60035`,
 				// 以下为远程主机
-				// target: `http://123.57.37.74:60036/`,
-				target: `http://172.20.182.31:30065/`,
+				target: `http://123.57.37.74:60036/`,
+				// target: `http://172.20.182.31:30065/`,
 				changeOrigin: true,
 				pathRewrite: {
 					['^' + process.env.VUE_APP_BASE_API]: ''
