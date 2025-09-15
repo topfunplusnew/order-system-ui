@@ -107,6 +107,13 @@
 				<el-form-item label="角色顺序" prop="roleSort">
 					<el-input-number v-model="form.roleSort" controls-position="right" :min="0" />
 				</el-form-item>
+        <el-form-item label="是否拥有复核权限">
+          <el-switch
+            v-model="form.hasPaymentAuditPermission"
+            active-value="1"
+            inactive-value="0">
+          </el-switch>
+        </el-form-item>
 				<el-form-item label="状态">
 					<el-radio-group v-model="form.status">
 						<el-radio v-for="dict in dict.type.sys_normal_disable" :key="dict.value" :label="dict.value">{{ dict.label }}</el-radio>
@@ -331,7 +338,18 @@ export default {
 				deptDataScope: '', // 最后一位
 				paymentApplyDataScope: '', // 第三位
 				companyDataScope: '', // 第二位
-				orderDataScope: '' // 第一位
+				orderDataScope: '', // 第一位
+				roleId: undefined,
+				roleName: undefined,
+				roleKey: undefined,
+				roleSort: 0,
+				status: '0',
+				menuIds: [],
+				deptIds: [],
+				menuCheckStrictly: true,
+				deptCheckStrictly: true,
+				remark: undefined,
+          hasPaymentAuditPermission: '0'
 			},
 			defaultProps: {
 				children: 'children',
@@ -463,7 +481,8 @@ export default {
 					deptIds: [],
 					menuCheckStrictly: true,
 					deptCheckStrictly: true,
-					remark: undefined
+					remark: undefined,
+          hasPaymentAuditPermission: '0'
 				});
 			this.resetForm('form');
 		},
@@ -553,6 +572,10 @@ export default {
 					});
 				});
 				this.title = '修改角色';
+        
+        // 设置复核权限状态
+        const hasAuditPerm = response.data.roleKey === 'system:payment:audit';
+        this.$set(this.form, 'hasPaymentAuditPermission', hasAuditPerm ? '1' : '0');
 			});
 		},
 		/** 选择角色权限范围触发 */
@@ -603,6 +626,14 @@ export default {
 		submitForm: function () {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
+          // 处理付款复核权限角色键
+          if (this.form.hasPaymentAuditPermission === '1') {
+            this.form.roleKey = 'system:payment:audit';
+          } else if (this.form.roleKey === 'system:payment:audit') {
+            // 如果取消了复核权限且原角色键是复核权限，则清空角色键
+            this.form.roleKey = '';
+          }
+          
 					if (this.form.roleId != undefined) {
 						this.form.menuIds = this.getMenuAllCheckedKeys();
 						updateRole(this.form).then(response => {

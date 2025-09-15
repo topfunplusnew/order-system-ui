@@ -133,11 +133,14 @@
 					</el-table-column>
 					<el-table-column v-if="columns[27].visible" label="创建时间" align="center" prop="createTime" width="160">
 						<template slot-scope="scope">
-							<span>
-								{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}:{s}') }}
-							</span>
+							<span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
 						</template>
 					</el-table-column>
+<!--					<el-table-column v-if="columns[28].visible" label="复核权限" align="center" width="100">-->
+<!--						<template slot-scope="scope">-->
+<!--							<el-switch :value="hasPaymentAuditPermission(scope.row)" active-value="1" inactive-value="0" disabled></el-switch>-->
+<!--						</template>-->
+<!--					</el-table-column>-->
 				</el-table>
 
 				<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
@@ -172,6 +175,14 @@
 									<el-option v-for="dict in dict.type.sys_user_sex" :key="dict.value" :label="dict.label" :value="dict.value"></el-option>
 								</el-select>
 							</el-form-item>
+
+							<el-form-item label="是否拥有复核功能">
+								<el-radio-group v-model="form.hasPaymentAuditPermission" @change="handleAuditPermissionChange">
+									<el-radio :label="'1'">是</el-radio>
+									<el-radio :label="'0'">否</el-radio>
+								</el-radio-group>
+							</el-form-item>
+
 							<el-form-item label="角色">
 								<el-select v-model="form.roleIds" multiple placeholder="请选择角色">
 									<el-option v-for="item in roleOptions" :key="item.roleId" :label="item.roleName" :value="item.roleId" :disabled="item.status == 1"></el-option>
@@ -599,7 +610,8 @@ export default {
 				{ key: 24, label: `开户银行`, visible: true },
 				{ key: 25, label: `银行账号`, visible: true },
 				{ key: 26, label: `状态`, visible: true },
-				{ key: 27, label: `创建时间`, visible: true }
+				{ key: 27, label: `创建时间`, visible: true },
+
 			],
 			// 表单校验
 			rules: {
@@ -795,6 +807,38 @@ export default {
 	},
 	methods: {
 		parseTime,
+		// 判断用户是否拥有付款复核权限
+		hasPaymentAuditPermission(row) {
+			// 查找付款复核角色
+			const auditRole = this.roleOptions.find(role => role.roleKey === 'system:payment:audit');
+			if (auditRole && row.roleIds) {
+				return row.roleIds.includes(auditRole.roleId);
+			}
+			return false;
+		},
+		// 处理复核权限变更
+		handleAuditPermissionChange(value) {
+			// 查找复核角色
+			const auditRole = this.roleOptions.find(role => role.roleKey === 'system:payment:audit');
+			if (!auditRole) return;
+
+			const auditRoleId = auditRole.roleId;
+
+			// 确保 form.roleIds 是数组
+			if (!Array.isArray(this.form.roleIds)) {
+				this.$set(this.form, 'roleIds', []);
+			}
+
+			if (value === '1') {
+				// 添加复核角色（避免重复）
+				if (!this.form.roleIds.includes(auditRoleId)) {
+					this.form.roleIds = [...this.form.roleIds, auditRoleId];
+				}
+			} else {
+				// 移除复核角色
+				this.form.roleIds = this.form.roleIds.filter(id => id !== auditRoleId);
+			}
+		},
 		// 查看某一行用户的信息
 		checkRowInfo(row) {
 			this.currentUserInfo = row;
@@ -879,7 +923,8 @@ export default {
 				profession: null,
 				gradualDate: null,
 				bankName: null,
-				bankNo: null
+				bankNo: null,
+				hasPaymentAuditPermission: '0'
 			};
 			this.resetForm('form');
 		},
@@ -924,6 +969,22 @@ export default {
 				this.open = true;
 				this.title = '添加用户信息';
 				this.form.password = this.initPassword;
+
+				// 确保roleIds是数组
+				if (!Array.isArray(this.form.roleIds)) {
+					this.$set(this.form, 'roleIds', []);
+				}
+
+				// 初始化付款复核权限选项
+				// 查找系统中是否存在付款复核角色
+				const auditRole = this.roleOptions.find(role => role.roleKey === 'system:payment:audit');
+				if (auditRole) {
+					// 如果存在付款复核角色，则根据用户当前的角色列表确定是否具有该权限
+					this.form.hasPaymentAuditPermission = this.form.roleIds && this.form.roleIds.includes(auditRole.roleId) ? '1' : '0';
+				} else {
+					// 如果不存在付款复核角色，则默认不具有该权限
+					this.form.hasPaymentAuditPermission = '0';
+				}
 			});
 		},
 		/** 修改按钮操作 */
@@ -935,10 +996,23 @@ export default {
 				this.postOptions = response.posts;
 				this.roleOptions = response.roles;
 				this.$set(this.form, 'postIds', response.postIds);
-				this.$set(this.form, 'roleIds', response.roleIds);
+				this.$set(this.form, 'roleIds', response.roleIds || []);
 				this.open = true;
 				this.title = '修改用户';
 				this.form.password = '';
+
+				// 确保roleIds是数组
+				if (!Array.isArray(this.form.roleIds)) {
+					this.$set(this.form, 'roleIds', []);
+				}
+
+				// 初始化付款复核权限选项
+				const auditRole = this.roleOptions.find(role => role.roleKey === 'system:payment:audit');
+				if (auditRole) {
+					this.form.hasPaymentAuditPermission = this.form.roleIds && this.form.roleIds.includes(auditRole.roleId) ? '1' : '0';
+				} else {
+					this.form.hasPaymentAuditPermission = '0';
+				}
 			});
 		},
 		/** 重置密码按钮操作 */
@@ -972,6 +1046,28 @@ export default {
 		submitForm: function () {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
+					// 处理付款复核权限
+					if (this.form.hasPaymentAuditPermission === '1') {
+						// 确保角色包含付款复核权限
+						const auditRole = this.roleOptions.find(role => role.roleKey === 'system:payment:audit');
+						if (auditRole) {
+							const auditRoleId = auditRole.roleId;
+							if (!this.form.roleIds.includes(auditRoleId)) {
+								this.form.roleIds.push(auditRoleId);
+							}
+						}
+					} else {
+						// 移除付款复核权限
+						const auditRole = this.roleOptions.find(role => role.roleKey === 'system:payment:audit');
+						if (auditRole) {
+							const auditRoleId = auditRole.roleId;
+							const index = this.form.roleIds.indexOf(auditRoleId);
+							if (index > -1) {
+								this.form.roleIds.splice(index, 1);
+							}
+						}
+					}
+
 					if (this.form.userId != undefined) {
 						updateUser(this.form).then(() => {
 							this.$modal.msgSuccess('修改成功');
@@ -1032,10 +1128,6 @@ export default {
 			this.$refs.upload.clearFiles();
 			this.$alert("<div style='overflow: auto;overflow-x: hidden;max-height: 70vh;padding: 10px 20px 0;'>" + response.msg + '</div>', '导入结果', { dangerouslyUseHTMLString: true });
 			this.getList();
-		},
-		// 提交上传文件
-		submitFileForm() {
-			this.$refs.upload.submit();
 		}
 	}
 };
