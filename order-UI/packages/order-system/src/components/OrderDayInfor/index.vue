@@ -173,6 +173,12 @@ export default {
 		handleSizeChange(current, size) {
 			this.pagination.current = 1;
 			this.pagination.pageSize = size;
+		},
+		handleReject() {
+			return Promise.resolve();
+		},
+		handleProcess() {
+			return Promise.resolve();
 		}
 	}
 };
