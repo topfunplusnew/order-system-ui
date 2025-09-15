@@ -94,6 +94,22 @@ export default {
 			}
 		},
 		{
+			key: 'targetId',
+			prop: 'targetId',
+			label: '对象ID',
+			visible: false,
+			includeInForm: true,
+			width: 100,
+			formConfig: {
+				type: 'input',
+				show: false,
+				placeholder: '对象ID',
+				rules: validationRules.required,
+				col: { span: 12 },
+				order: 4.5
+			}
+		},
+		{
 			key: 'moneyAmount',
 			prop: 'moneyAmount',
 			label: '保证金金额',

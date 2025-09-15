@@ -116,9 +116,6 @@ export default {
 		},
 		// 筛选右侧的订单 通过事件总线提醒
 		handleFilterOrders(row) {
-			console.log('筛选订单', row);
-			// 先显示公司信息弹窗
-			this.handleCheck(row);
 			this.$bus.$emit('update-goods-order-company', row);
 			// 维护开票金额
 			this.$store.dispatch('excel/clearInvoiceAmount');
@@ -173,24 +170,26 @@ export default {
 		</div>
 
 		<!-- 公司列表表格 -->
-		<el-table :data="companyTotalInfo" :row-style="handleRowClassName" :cell-style="() => ({ padding: '2px' })" size="mini" style="width: 100%" border>
-			<!--多选框-->
-			<el-table-column prop="id" label="ID" width="60"></el-table-column>
-			<el-table-column prop="us" label="我方"></el-table-column>
-			<el-table-column prop="name" label="对方公司"></el-table-column>
-			<el-table-column prop="type" label="类型" width="80"></el-table-column>
-			<el-table-column prop="total" label="开票金额" width="100">
-				<template slot-scope="scope">
-					<span class="bold-text money">{{ scope.row.total }}</span>
-				</template>
-			</el-table-column>
-			<el-table-column label="操作" width="120" fixed="right">
-				<template slot-scope="scope">
-					<el-button size="mini" type="text" @click="handleCheck(scope.row)">查看</el-button>
-					<el-button size="mini" type="text" @click="handleFilterOrders(scope.row)">检索</el-button>
-				</template>
-			</el-table-column>
-		</el-table>
+		<div class="table-wrapper">
+			<el-table :data="companyTotalInfo" :row-style="handleRowClassName" :cell-style="() => ({ padding: '2px' })" size="mini" style="width: 100%; min-width: 600px" border>
+				<!--多选框-->
+				<el-table-column label="操作" width="120">
+					<template slot-scope="scope">
+						<el-button size="mini" type="text" @click="handleCheck(scope.row)">查看</el-button>
+						<el-button size="mini" type="text" @click="handleFilterOrders(scope.row)">检索</el-button>
+					</template>
+				</el-table-column>
+				<el-table-column prop="id" label="ID" width="60"></el-table-column>
+				<el-table-column prop="us" label="我方" min-width="120"></el-table-column>
+				<el-table-column prop="name" label="对方公司" min-width="150"></el-table-column>
+				<el-table-column prop="type" label="类型" width="80"></el-table-column>
+				<el-table-column prop="total" label="开票金额">
+					<template slot-scope="scope">
+						<span class="bold-text money">{{ scope.row.total }}</span>
+					</template>
+				</el-table-column>
+			</el-table>
+		</div>
 
 		<!-- 查看模板数据弹窗 -->
 		<el-dialog :modal="false" title="模板数据预览" :visible.sync="viewTemplateVisible" width="800px" append-to-body>
@@ -217,6 +216,37 @@ export default {
 	height: 100%;
 	display: flex;
 	flex-direction: column;
+}
+
+/* 表格包装器样式 - 支持水平滚动 */
+.table-wrapper {
+	overflow-x: auto;
+	overflow-y: visible;
+	width: 100%;
+
+	/* 美化水平滚动条 */
+	&::-webkit-scrollbar {
+		height: 8px;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		background: #dcdfe6;
+		border-radius: 4px;
+
+		&:hover {
+			background: #c0c4cc;
+		}
+	}
+
+	&::-webkit-scrollbar-track {
+		background: #f5f7fa;
+		border-radius: 4px;
+	}
+
+	/* 确保表格在滚动时保持良好的显示效果 */
+	.el-table {
+		white-space: nowrap;
+	}
 }
 
 /* 统计信息样式 */
@@ -369,6 +399,15 @@ export default {
 		}
 	}
 
+	/* 在小屏幕下确保表格水平滚动正常工作 */
+	.table-wrapper {
+		max-width: 100%;
+
+		.el-table {
+			min-width: 500px; /* 减少最小宽度以适应中等屏幕 */
+		}
+	}
+
 	.statistics-content {
 		gap: 4px;
 	}
@@ -410,6 +449,18 @@ export default {
 		.stat-amount {
 			margin-left: 0;
 			align-self: flex-end;
+		}
+	}
+
+	/* 在最小屏幕下进一步优化表格 */
+	.table-wrapper {
+		.el-table {
+			min-width: 450px; /* 进一步减少最小宽度 */
+		}
+
+		/* 优化滚动条在小屏幕上的显示 */
+		&::-webkit-scrollbar {
+			height: 6px;
 		}
 	}
 }

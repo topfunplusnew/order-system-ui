@@ -27,6 +27,16 @@ export default {
 			default: () => {
 				return [];
 			}
+		},
+		// 工作簿引用（用于大文件懒加载）
+		workbookRef: {
+			type: Object,
+			default: null
+		},
+		// 是否为大文件
+		isLargeFile: {
+			type: Boolean,
+			default: false
 		}
 	},
 	data() {
@@ -76,11 +86,130 @@ export default {
 			// 清除购买方和销方的信息
 			this.handleClearPurchaseInfo();
 			this.handleClearSellerInfo();
+
+			// 显示加载状态
+			const loadingInstance = this.$loading({
+				lock: true,
+				text: '正在处理数据，请稍候...',
+				spinner: 'el-icon-loading',
+				background: 'rgba(0, 0, 0, 0.7)'
+			});
+
+			// 使用setTimeout来确保loading能够显示
+			setTimeout(async () => {
+				try {
+					let excelInfo;
+
+					// 如果是大文件，需要懒加载数据
+					if (this.isLargeFile && this.workbookRef) {
+						excelInfo = await this.loadSheetData(excelIndex);
+					} else {
+						excelInfo = this.handleReadExcel();
+					}
+
+					await this.processExcelData(excelInfo, excelIndex);
+
+					// 打开弹窗
+					this.invoiceAllVisible = true;
+				} catch (error) {
+					console.error('处理Excel数据失败:', error);
+					this.$message.error('处理数据时发生错误，请重试');
+				} finally {
+					loadingInstance.close();
+				}
+			}, 100);
+		},
+		/**
+		 * 懒加载Sheet数据（用于大文件）
+		 * @param {number} sheetIndex - Sheet索引
+		 * @returns {Array} - 加载的数据
+		 */
+		async loadSheetData(sheetIndex) {
+			if (!this.workbookRef) {
+				throw new Error('工作簿引用不存在');
+			}
+
+			const sheetName = this.workbookRef.SheetNames[sheetIndex];
+			const sheet = this.workbookRef.Sheets[sheetName];
+
+			// 对于大文件，分批读取数据
+			const data = await this.readSheetInBatches(sheet);
+
+			// 创建类似于原始结构的数组
+			const result = [];
+			for (let i = 0; i < this.sheetList.length; i++) {
+				if (i === sheetIndex) {
+					result.push(data);
+				} else {
+					result.push([]);
+				}
+			}
+
+			return result;
+		},
+		/**
+		 * 分批读取Sheet数据
+		 * @param {Object} sheet - Sheet对象
+		 * @returns {Array} - 读取的数据
+		 */
+		async readSheetInBatches(sheet) {
+			const { utils } = await import('xlsx');
+
+			// 获取数据范围
+			const range = utils.decode_range(sheet['!ref'] || 'A1:A1');
+			const totalRows = range.e.r - range.s.r + 1;
+
+			// 如果数据量不大，直接读取
+			if (totalRows <= 1000) {
+				return utils.sheet_to_json(sheet);
+			}
+
+			// 分批读取
+			const batchSize = 500;
+			const result = [];
+
+			for (let startRow = range.s.r + 1; startRow <= range.e.r; startRow += batchSize) {
+				const endRow = Math.min(startRow + batchSize - 1, range.e.r);
+
+				// 创建临时范围
+				const tempRange = {
+					s: { r: range.s.r, c: range.s.c },
+					e: { r: endRow, c: range.e.c }
+				};
+
+				// 创建临时Sheet
+				const tempSheet = {};
+				tempSheet['!ref'] = utils.encode_range(tempRange);
+
+				// 复制数据
+				for (let row = range.s.r; row <= endRow; row++) {
+					for (let col = range.s.c; col <= range.e.c; col++) {
+						const cellAddr = utils.encode_cell({ r: row, c: col });
+						if (sheet[cellAddr]) {
+							tempSheet[cellAddr] = sheet[cellAddr];
+						}
+					}
+				}
+
+				const batchData = utils.sheet_to_json(tempSheet);
+				result.push(...batchData);
+
+				// 给UI一点时间更新
+				await new Promise(resolve => setTimeout(resolve, 10));
+			}
+
+			return result;
+		},
+		/**
+		 * 处理Excel数据的通用方法
+		 * @param {Array} excelInfo - Excel数据
+		 * @param {number} excelIndex - 选中的索引
+		 */
+		async processExcelData(excelInfo, excelIndex) {
 			let arr = [];
 			let purchaseMap = new Map();
 			let sellerMap = new Map();
-			// 读取excel的数据
-			const excelInfo = this.handleReadExcel();
+
 			// 需要销售方id 销售方的名称和类型 以及购买方id  购买方类型 和名称
 			for (let item of excelInfo[excelIndex]) {
 				if (item['销方ID'] && !/^\d+$/.test(item['销方ID'])) {
@@ -156,8 +285,6 @@ export default {
 			// 暂存购买方和销方的信息
 			this.handleStorePurchaseInfo(this.purchaseTotalInfo);
 			this.handleStoreSellerInfo(this.sellerTotalInfo);
-			// 打开弹窗
-			this.invoiceAllVisible = true;
 		},
 		// 映射关系 这里可以自定义
 		mapperParams(item) {
@@ -595,6 +722,7 @@ export default {
 .company-lists {
 	flex: 1;
 	overflow-y: auto;
+	overflow-x: visible; /* 允许子元素水平滚动 */
 	min-height: 0;
 
 	.el-divider {

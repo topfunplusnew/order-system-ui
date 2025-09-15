@@ -23,7 +23,19 @@ export default {
 			// 批量开票的弹窗
 			invoiceAllVisible: false,
 			// 当前的操作步骤
-			currentStep: 1
+			currentStep: 1,
+			// 数据处理状态
+			isProcessing: false,
+			// 大文件处理配置
+			largeFileConfig: {
+				maxRowsPerBatch: 1000, // 每批处理的最大行数
+				maxMemoryRows: 5000, // 内存中最大保存行数
+				showProgressAfter: 2000 // 超过多少行显示进度条
+			},
+			// 工作簿引用（用于大文件懒加载）
+			workbookRef: null,
+			// 是否为大文件
+			isLargeFile: false
 		};
 	},
 	methods: {
@@ -40,7 +52,7 @@ export default {
 		 * excel的读写操作 如果后期excel大小过于大在这里优化
 		 * @param e Event
 		 */
-		onChange(e) {
+		async onChange(e) {
 			// 清除状态
 			this.handleClearExcel();
 
@@ -56,35 +68,152 @@ export default {
 				return false;
 			}
 
-			// fileReader读取文件
-			const fileReader = new FileReader();
+			// 检查文件大小
+			const fileSizeMB = file.size / (1024 * 1024);
+			if (fileSizeMB > 50) {
+				const confirmed = await this.$confirm(`文件大小为 ${fileSizeMB.toFixed(2)}MB，较大的文件可能需要较长时间处理。是否继续？`, '文件较大提示', {
+					confirmButtonText: '继续处理',
+					cancelButtonText: '取消',
+					type: 'warning'
+				}).catch(() => false);
 
-			// FileReader 接口的 load 事件在成功读取文件时触发。
-			fileReader.onload = ev => {
-				try {
-					// data是文件读取的二进制数据
-					const data = ev.target.result;
-					// read是xlsx库提供的一个方法 返回一个workbook工作铺对象 里面包含sheets对象，sheet对象中包含表名，表数据等
-					const workbook = read(data, { type: 'binary' });
-					// 取对应表生成json表格内容  SheetNames 是所有的 Sheet item就是每一个Sheet
-					workbook.SheetNames.forEach(item => {
-						// 填充到sheetList中
-						this.sheetList.push(item);
-						// 放入tableData中 el-table中tableData的数据结构为 [{},{},{}] 对象中每一个属性对应一个column 的prop
-						this.tableData.push(utils.sheet_to_json(workbook.Sheets[item]));
-					});
-					// 存储vuex中 供给子组件使用
-					this.handleStoreExcel(this.tableData);
-					// 打开选择sheet的弹窗
+				if (!confirmed) return false;
+			}
+
+			this.isProcessing = true;
+
+			// 显示处理进度
+			const loadingInstance = this.$loading({
+				lock: true,
+				text: '正在读取Excel文件，请稍候...',
+				spinner: 'el-icon-loading',
+				background: 'rgba(0, 0, 0, 0.7)'
+			});
+
+			try {
+				const result = await this.readExcelFile(file);
+				if (result) {
 					this.dialogVisible = true;
-					return true;
-					// 重写数据
-				} catch (e) {
-					console.log('读取excel发生异常:' + e);
-					return false;
 				}
+			} catch (error) {
+				console.error('读取excel发生异常:', error);
+				this.$message.error('读取Excel文件失败，请检查文件格式是否正确');
+			} finally {
+				this.isProcessing = false;
+				loadingInstance.close();
+			}
+		},
+		/**
+		 * 优化的Excel文件读取方法 - 支持大文件处理
+		 * @param {File} file - 要读取的文件
+		 * @returns {Promise<boolean>} - 是否读取成功
+		 */
+		readExcelFile(file) {
+			return new Promise((resolve, reject) => {
+				const fileReader = new FileReader();
+
+				fileReader.onload = async ev => {
+					try {
+						const data = ev.target.result;
+						const workbook = read(data, { type: 'binary' });
+
+						// 首先检查所有Sheet的数据量
+						const sheetInfo = await this.analyzeWorkbook(workbook);
+
+						// 如果数据量过大，使用分批处理
+						if (sheetInfo.totalRows > this.largeFileConfig.maxMemoryRows) {
+							await this.handleLargeFile(workbook, sheetInfo);
+						} else {
+							await this.handleNormalFile(workbook);
+						}
+
+						resolve(true);
+					} catch (error) {
+						console.error('读取Excel失败:', error);
+						reject(error);
+					}
+				};
+
+				fileReader.onerror = () => {
+					reject(new Error('文件读取失败'));
+				};
+
+				fileReader.readAsBinaryString(file);
+			});
+		},
+		/**
+		 * 分析工作簿中的数据量
+		 * @param {Object} workbook - xlsx工作簿对象
+		 * @returns {Object} - 分析结果
+		 */
+		analyzeWorkbook(workbook) {
+			const sheetInfo = {
+				sheets: [],
+				totalRows: 0,
+				largeSheets: []
 			};
-			fileReader.readAsBinaryString(file);
+
+			workbook.SheetNames.forEach(sheetName => {
+				const sheet = workbook.Sheets[sheetName];
+				const range = utils.decode_range(sheet['!ref'] || 'A1:A1');
+				const rowCount = range.e.r - range.s.r + 1;
+
+				const info = {
+					name: sheetName,
+					rowCount: rowCount,
+					isLarge: rowCount > this.largeFileConfig.maxRowsPerBatch
+				};
+
+				sheetInfo.sheets.push(info);
+				sheetInfo.totalRows += rowCount;
+
+				if (info.isLarge) {
+					sheetInfo.largeSheets.push(info);
+				}
+			});
+
+			return sheetInfo;
+		},
+		/**
+		 * 处理大文件 - 分批读取
+		 * @param {Object} workbook - xlsx工作簿对象
+		 * @param {Object} sheetInfo - Sheet信息
+		 */
+		async handleLargeFile(workbook, sheetInfo) {
+			this.$message.warning(`检测到大量数据(${sheetInfo.totalRows}行)，将采用优化模式处理，这可能需要一些时间...`);
+
+			// 对于大文件，我们只读取Sheet名称和基本信息，实际数据在用户选择时再读取
+			this.sheetList = [];
+			this.tableData = [];
+
+			workbook.SheetNames.forEach((sheetName, index) => {
+				this.sheetList.push(sheetName);
+				// 对于大文件，我们暂时只存储空数组，在选择Sheet时再加载数据
+				this.tableData.push([]);
+			});
+
+			// 存储工作簿引用以便后续使用
+			this.workbookRef = workbook;
+			this.isLargeFile = true;
+
+			// 不在这里存储到Vuex，等用户选择Sheet时再处理
+		},
+		/**
+		 * 处理普通大小的文件
+		 * @param {Object} workbook - xlsx工作簿对象
+		 */
+		async handleNormalFile(workbook) {
+			this.sheetList = [];
+			this.tableData = [];
+
+			workbook.SheetNames.forEach(item => {
+				this.sheetList.push(item);
+				this.tableData.push(utils.sheet_to_json(workbook.Sheets[item]));
+			});
+
+			// 存储到Vuex
+			this.handleStoreExcel(this.tableData);
+			this.isLargeFile = false;
 		},
 		// 校验一下文件类型
 		checkFileType(file) {
@@ -96,6 +225,10 @@ export default {
 		clearState() {
 			this.sheetList = [];
 			this.tableData = [];
+			// 清除大文件相关状态
+			this.workbookRef = null;
+			this.isLargeFile = false;
+			this.isProcessing = false;
 		},
 		// 下载模板
 		downloadTemplate() {
@@ -233,12 +366,13 @@ export default {
 				class="sheet-select-dialog"
 			>
 				<div class="dialog-content">
-					<div class="dialog-tip">
-						<i class="el-icon-info"></i>
-						<span>检测到Excel文件中包含多个工作表，请选择需要处理的工作表</span>
+					<div class="dialog-tip" :class="{ 'large-file-tip': isLargeFile }">
+						<i :class="isLargeFile ? 'el-icon-warning' : 'el-icon-info'"></i>
+						<span v-if="!isLargeFile">检测到Excel文件中包含多个工作表，请选择需要处理的工作表</span>
+						<span v-else>检测到大文件，已启用优化模式。选择工作表时将自动分批加载数据</span>
 					</div>
 					<el-card class="sheet-card">
-						<SheetList :sheet-list="sheetList" />
+						<SheetList :sheet-list="sheetList" :workbook-ref="workbookRef" :is-large-file="isLargeFile" />
 					</el-card>
 				</div>
 				<span slot="footer" class="dialog-footer">
@@ -549,12 +683,22 @@ export default {
 		align-items: center;
 		gap: 6px;
 		padding: 8px 12px;
-		background: rgba(64, 158, 255, 0.1);
-		border: 1px solid #c6e2ff;
 		border-radius: 4px;
 		margin-bottom: 12px;
 		font-size: 12px;
-		color: #409eff;
+		transition: all 0.3s ease;
+
+		&:not(.large-file-tip) {
+			background: rgba(64, 158, 255, 0.1);
+			border: 1px solid #c6e2ff;
+			color: #409eff;
+		}
+
+		&.large-file-tip {
+			background: rgba(230, 162, 60, 0.1);
+			border: 1px solid #f0c78a;
+			color: #e6a23c;
+		}
 
 		i {
 			font-size: 14px;

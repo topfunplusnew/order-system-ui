@@ -83,8 +83,12 @@
 			</div>
 			<el-table v-loading="refundLoading" :data="refundList" border size="mini">
 				<CustomTableColumn prop="refundDate" label="退款日期" width="120" />
-				<CustomTableColumn prop="accountsName" label="收款账户" width="150" />
-				<CustomTableColumn prop="bankNo" label="收款账号" width="180" />
+				<CustomTableColumn prop="selfAccountName" label="己方账户名" width="150" />
+				<CustomTableColumn prop="selfBankNo" label="己方账号" width="180" />
+				<CustomTableColumn prop="selfBankName" label="己方开户行" width="150" />
+				<CustomTableColumn prop="otherAccountName" label="对方账户名" width="150" />
+				<CustomTableColumn prop="otherBankNo" label="对方账号" width="180" />
+				<CustomTableColumn prop="otherBankName" label="对方开户行" width="150" />
 				<CustomTableColumn prop="moneyAmount" label="退款金额" width="120" align="right" />
 				<CustomTableColumn prop="comments" label="备注" />
 				<CustomTableColumn prop="UserName" label="操作人员" width="100" />
@@ -113,10 +117,10 @@
 				<el-form-item label="退款日期" prop="refundDate">
 					<el-date-picker v-model="refundForm.refundDate" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="请选择退款日期" style="width: 100%" />
 				</el-form-item>
-				<el-form-item label="收款账户" prop="accountsName">
+				<el-form-item label="己方账户名" prop="selfAccountName">
 					<el-row>
 						<el-col :span="16">
-							<el-input v-model="refundForm.accountsName" placeholder="请选择收款账户" disabled />
+							<el-input v-model="refundForm.selfAccountName" placeholder="请选择己方账户" disabled />
 						</el-col>
 						<el-col :span="8">
 							<SearchOption
@@ -139,8 +143,20 @@
 						</el-col>
 					</el-row>
 				</el-form-item>
-				<el-form-item label="收款账号" prop="bankNo">
-					<el-input v-model="refundForm.bankNo" placeholder="自动填充" disabled />
+				<el-form-item label="己方账号" prop="selfBankNo">
+					<el-input v-model="refundForm.selfBankNo" placeholder="自动填充" disabled />
+				</el-form-item>
+				<el-form-item label="己方开户行" prop="selfBankName">
+					<el-input v-model="refundForm.selfBankName" placeholder="自动填充" disabled />
+				</el-form-item>
+				<el-form-item label="对方账户名" prop="otherAccountName">
+					<el-input v-model="refundForm.otherAccountName" placeholder="请输入对方账户名" />
+				</el-form-item>
+				<el-form-item label="对方账号" prop="otherBankNo">
+					<el-input v-model="refundForm.otherBankNo" placeholder="请输入对方账号" />
+				</el-form-item>
+				<el-form-item label="对方开户行" prop="otherBankName">
+					<el-input v-model="refundForm.otherBankName" placeholder="请输入对方开户行" />
 				</el-form-item>
 				<el-form-item label="退款金额" prop="moneyAmount">
 					<el-input v-model="refundForm.moneyAmount" placeholder="请输入退款金额" />
@@ -243,6 +259,12 @@ export default {
 			refundForm: {},
 			refundRules: {
 				refundDate: [{ required: true, message: '退款日期不能为空', trigger: 'change' }],
+				selfAccountName: [{ required: true, message: '己方账户名不能为空', trigger: 'blur' }],
+				selfBankNo: [{ required: true, message: '己方账号不能为空', trigger: 'blur' }],
+				selfBankName: [{ required: true, message: '己方开户行不能为空', trigger: 'blur' }],
+				otherAccountName: [{ required: true, message: '对方账户名不能为空', trigger: 'blur' }],
+				otherBankNo: [{ required: true, message: '对方账号不能为空', trigger: 'blur' }],
+				otherBankName: [{ required: true, message: '对方开户行不能为空', trigger: 'blur' }],
 				moneyAmount: [
 					{ required: true, message: '退款金额不能为空', trigger: 'blur' },
 					{ validator: validateAmount, trigger: 'blur' }
@@ -473,8 +495,12 @@ export default {
 				refundDate: null,
 				selfBankCardType: BankAcceptanceType.BANK_CASH,
 				otherBankCardType: BankAcceptanceType.BANK_CASH,
-				accountsName: null,
-				bankNo: null,
+				selfAccountName: null,
+				selfBankNo: null,
+				selfBankName: null,
+				otherAccountName: null,
+				otherBankNo: null,
+				otherBankName: null,
 				moneyAmount: null,
 				comments: null
 			};
@@ -488,8 +514,9 @@ export default {
 
 		/** 退款银行账户选择回调 - 自动填充银行信息 */
 		handleRefundBankCommitBack(val) {
-			this.refundForm.accountsName = val.acountsName;
-			this.refundForm.bankNo = val.bankNo;
+			this.refundForm.selfAccountName = val.acountsName;
+			this.refundForm.selfBankNo = val.bankNo;
+			this.refundForm.selfBankName = val.bankName;
 		},
 
 		/** 银行账户查询方法 */
