@@ -60,7 +60,7 @@
 					<el-table-column label="利润" align="center" prop="profit" show-overflow-tooltip width="70" />
 					<el-table-column label="不含税利润" align="center" prop="profitNoTax" show-overflow-tooltip width="90" />
 					<el-table-column label="备注" align="center" prop="comments" show-overflow-tooltip width="100" />
-					<el-table-column label="运输方式" align="center" prop="fleet" show-overflow-tooltip width="80" />
+					<el-table-column label="车队" align="center" prop="fleet" show-overflow-tooltip width="80" />
 					<el-table-column label="审核状态" align="center" prop="checkState" show-overflow-tooltip width="80">
 						<template slot-scope="scope">
 							<el-tag v-if="scope.row.checkState" :color="getStatusColor(scope.row.checkState)" disable-transitions>
