@@ -80,7 +80,7 @@
 					@selection-change="handleSelectionChange"
 				>
 					<!-- 操作栏-->
-					<el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">
+					<el-table-column label="操作" align="center" width="220" class-name="small-padding fixed-width">
 						<template v-if="scope.row.userId !== 1" slot-scope="scope">
 							<el-button v-hasPermi="['system:user:edit']" size="mini" type="text" @click="checkRowInfo(scope.row)">查看用户信息</el-button>
 							<el-button v-hasPermi="['system:user:edit']" size="mini" type="text" @click="handleUpdate(scope.row)">修改</el-button>
@@ -136,11 +136,6 @@
 							<span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
 						</template>
 					</el-table-column>
-					<!--					<el-table-column v-if="columns[28].visible" label="复核权限" align="center" width="100">-->
-					<!--						<template slot-scope="scope">-->
-					<!--							<el-switch :value="hasPaymentAuditPermission(scope.row)" active-value="1" inactive-value="0" disabled></el-switch>-->
-					<!--						</template>-->
-					<!--					</el-table-column>-->
 				</el-table>
 
 				<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
@@ -174,13 +169,6 @@
 								<el-select v-model="form.sex" placeholder="请选择性别">
 									<el-option v-for="dict in dict.type.sys_user_sex" :key="dict.value" :label="dict.label" :value="dict.value"></el-option>
 								</el-select>
-							</el-form-item>
-
-							<el-form-item label="是否拥有复核功能">
-								<el-radio-group v-model="form.hasPaymentAuditPermission" @change="handleAuditPermissionChange">
-									<el-radio :label="'1'">是</el-radio>
-									<el-radio :label="'0'">否</el-radio>
-								</el-radio-group>
 							</el-form-item>
 
 							<el-form-item label="角色">
@@ -806,38 +794,6 @@ export default {
 	},
 	methods: {
 		parseTime,
-		// 判断用户是否拥有付款复核权限
-		hasPaymentAuditPermission(row) {
-			// 查找付款复核角色
-			const auditRole = this.roleOptions.find(role => role.roleKey === 'system:payment:audit');
-			if (auditRole && row.roleIds) {
-				return row.roleIds.includes(auditRole.roleId);
-			}
-			return false;
-		},
-		// 处理复核权限变更
-		handleAuditPermissionChange(value) {
-			// 查找复核角色
-			const auditRole = this.roleOptions.find(role => role.roleKey === 'system:payment:audit');
-			if (!auditRole) return;
-
-			const auditRoleId = auditRole.roleId;
-
-			// 确保 form.roleIds 是数组
-			if (!Array.isArray(this.form.roleIds)) {
-				this.$set(this.form, 'roleIds', []);
-			}
-
-			if (value === '1') {
-				// 添加复核角色（避免重复）
-				if (!this.form.roleIds.includes(auditRoleId)) {
-					this.form.roleIds = [...this.form.roleIds, auditRoleId];
-				}
-			} else {
-				// 移除复核角色
-				this.form.roleIds = this.form.roleIds.filter(id => id !== auditRoleId);
-			}
-		},
 		// 查看某一行用户的信息
 		checkRowInfo(row) {
 			this.currentUserInfo = row;
@@ -922,8 +878,7 @@ export default {
 				profession: null,
 				gradualDate: null,
 				bankName: null,
-				bankNo: null,
-				hasPaymentAuditPermission: '0'
+				bankNo: null
 			};
 			this.resetForm('form');
 		},
@@ -973,17 +928,6 @@ export default {
 				if (!Array.isArray(this.form.roleIds)) {
 					this.$set(this.form, 'roleIds', []);
 				}
-
-				// 初始化付款复核权限选项
-				// 查找系统中是否存在付款复核角色
-				const auditRole = this.roleOptions.find(role => role.roleKey === 'system:payment:audit');
-				if (auditRole) {
-					// 如果存在付款复核角色，则根据用户当前的角色列表确定是否具有该权限
-					this.form.hasPaymentAuditPermission = this.form.roleIds && this.form.roleIds.includes(auditRole.roleId) ? '1' : '0';
-				} else {
-					// 如果不存在付款复核角色，则默认不具有该权限
-					this.form.hasPaymentAuditPermission = '0';
-				}
 			});
 		},
 		/** 修改按钮操作 */
@@ -1003,14 +947,6 @@ export default {
 				// 确保roleIds是数组
 				if (!Array.isArray(this.form.roleIds)) {
 					this.$set(this.form, 'roleIds', []);
-				}
-
-				// 初始化付款复核权限选项
-				const auditRole = this.roleOptions.find(role => role.roleKey === 'system:payment:audit');
-				if (auditRole) {
-					this.form.hasPaymentAuditPermission = this.form.roleIds && this.form.roleIds.includes(auditRole.roleId) ? '1' : '0';
-				} else {
-					this.form.hasPaymentAuditPermission = '0';
 				}
 			});
 		},
@@ -1045,28 +981,6 @@ export default {
 		submitForm: function () {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
-					// 处理付款复核权限
-					if (this.form.hasPaymentAuditPermission === '1') {
-						// 确保角色包含付款复核权限
-						const auditRole = this.roleOptions.find(role => role.roleKey === 'system:payment:audit');
-						if (auditRole) {
-							const auditRoleId = auditRole.roleId;
-							if (!this.form.roleIds.includes(auditRoleId)) {
-								this.form.roleIds.push(auditRoleId);
-							}
-						}
-					} else {
-						// 移除付款复核权限
-						const auditRole = this.roleOptions.find(role => role.roleKey === 'system:payment:audit');
-						if (auditRole) {
-							const auditRoleId = auditRole.roleId;
-							const index = this.form.roleIds.indexOf(auditRoleId);
-							if (index > -1) {
-								this.form.roleIds.splice(index, 1);
-							}
-						}
-					}
-
 					if (this.form.userId != undefined) {
 						updateUser(this.form).then(() => {
 							this.$modal.msgSuccess('修改成功');

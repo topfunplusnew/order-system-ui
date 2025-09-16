@@ -511,6 +511,7 @@ import _ from 'lodash';
 import UploadFilesButton from '@/components/UploadFilesButton';
 import PaymentFlag from '@/components/PaymentFlag';
 import { getBankAcceptance } from '../../../api/system/bankAcceptance';
+import { checkPermi } from '@/utils/permission';
 
 export default {
 	name: 'Payment',
@@ -722,12 +723,7 @@ export default {
 		},
 		// 检查是否有复核权限（包含admin权限）
 		hasAuditPermission() {
-			const permissions = this.$store.getters.permissions;
-			// 检查是否是超级管理员
-			const isAdmin = this.$store.getters.roles.some(role => role === 'admin');
-			// 检查是否有审核权限
-			const hasAuditPerm = permissions.some(permission => permission === 'system:payment:audit');
-			return isAdmin || hasAuditPerm;
+			return checkPermi(['system:payment:audit']);
 		}
 	},
 	// 展示与隐藏
