@@ -49,7 +49,6 @@
 			:summary-method="getSummaries"
 			size="mini"
 			:cell-style="() => ({ padding: '1.5px' })"
-			height="480px"
 			@selection-change="handleSelectionChange"
 		>
 			<el-table-column v-if="columns[1].visible" label="票据号码" align="center" prop="billNo" width="120" show-overflow-tooltip />
@@ -73,7 +72,7 @@
 			<el-table-column v-if="columns[18].visible" label="支出贴息金额" align="center" prop="expenseInDiscountAmount" width="120" show-overflow-tooltip />
 			<el-table-column v-if="columns[19].visible" label="备注" align="center" prop="comments" width="120" show-overflow-tooltip />
 
-			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="150px">
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="150px" fixed="right">
 				<template #default="scope">
 					<el-button v-hasPermi="['system:bankacceptance:remove']" size="mini" type="text" @click="handleCheck(scope.row)">查看详情</el-button>
 					<el-button v-hasPermi="['system:bankacceptance:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
@@ -99,7 +98,6 @@
 							return { padding: '2px' };
 						}
 					"
-					height="480px"
 					@selection-change="handleSelectionChange"
 				>
 					<el-table-column label="ID" align="center" prop="id" width="120" show-overflow-tooltip />
