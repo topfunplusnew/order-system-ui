@@ -1,5 +1,5 @@
 <script>
-import { getOrderFreightList, getOrderFreight, updateOrderFreight } from '@/api/system/orderFreight';
+import { getOrderFreightList } from '@/api/system/orderFreight';
 import { mixin_order_freeApply } from '../../dashboard/mixins/order/order_freeApply';
 import { common_dialog } from '../../dashboard/mixins/common/common_dialog';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
@@ -157,8 +157,8 @@ export default {
 			const oneMonthLater = new Date();
 			oneMonthLater.setMonth(today.getMonth() + 1);
 			this.queryParams = {
-				startDate: this.formatDate(oneMonthAgo),
-				endDate: this.formatDate(oneMonthLater),
+				startDate: null,
+				endDate: null,
 				payDate: '',
 				fleet: '',
 				carNo: '',
