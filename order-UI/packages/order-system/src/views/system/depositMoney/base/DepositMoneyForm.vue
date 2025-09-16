@@ -1,10 +1,10 @@
 <template>
 	<DynamicForm ref="dynamicForm" :config="columnConfig" :form-data="formData" :external-data="externalData" @field-change="handleFieldChange">
-		<!-- 对方公司选择器插槽 -->
-		<template #targetCompanyName="{ value, updateValue }">
+		<!-- 对象选择器插槽 -->
+		<template #target="{ value, updateValue }">
 			<el-row>
 				<el-col :span="16">
-					<el-input :value="value" disabled placeholder="请选择对方公司" />
+					<el-input :value="value" disabled placeholder="请选择对象" />
 				</el-col>
 				<el-col :span="8">
 					<SearchOption
@@ -138,7 +138,6 @@ export default {
 		// 对象类型变化处理
 		handleTargetTypeChange() {
 			// 清空相关字段
-			this.$refs.dynamicForm.updateFieldValue('targetCompanyName', null);
 			this.$refs.dynamicForm.updateFieldValue('target', null);
 			this.$refs.dynamicForm.updateFieldValue('targetId', null);
 			this.$refs.dynamicForm.updateFieldValue('targetAccountsName', null);
@@ -148,7 +147,7 @@ export default {
 			this.queryCompany = '';
 		},
 
-		// 获取对方公司搜索配置
+		// 获取对象搜索配置
 		getTargetCompanySearchConfig() {
 			const formData = this.$refs.dynamicForm ? this.$refs.dynamicForm.getFormData() : {};
 			const targetType = formData.targetType;
@@ -211,16 +210,16 @@ export default {
 			}
 		},
 
-		// 对方公司选择回调
+		// 对象选择回调
 		handleCommitBackCompany(val, updateValue) {
 			const formData = this.$refs.dynamicForm ? this.$refs.dynamicForm.getFormData() : {};
 			const targetType = formData.targetType;
 
-			// 更新对方公司字段
-			updateValue(targetType === '司机' ? val.driver : val.companyName);
+			// 更新对象名称字段
+			const targetName = targetType === '司机' ? val.driver : val.companyName;
+			updateValue(targetName);
 
-			// 自动填充对象名称和对象ID
-			this.$refs.dynamicForm.updateFieldValue('target', targetType === '司机' ? val.driver : val.companyName);
+			// 自动填充对象ID
 			this.$refs.dynamicForm.updateFieldValue('targetId', val.id);
 
 			// 清空对方账户相关信息，因为公司变更了

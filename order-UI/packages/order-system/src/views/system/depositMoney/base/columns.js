@@ -57,24 +57,6 @@ export default {
 			}
 		},
 		{
-			key: 'targetCompanyName',
-			prop: 'targetCompanyName',
-			label: '对方公司名称',
-			visible: true,
-			includeInForm: true,
-			width: 150,
-			showOverflowTooltip: true,
-			formConfig: {
-				type: 'custom',
-				show: true,
-				placeholder: '请选择对方公司',
-				rules: validationRules.required,
-				col: { span: 12 },
-				order: 3.5,
-				slotName: 'targetCompanyName'
-			}
-		},
-		{
 			key: 'target',
 			prop: 'target',
 			label: '对象名称',
@@ -83,13 +65,13 @@ export default {
 			width: 150,
 			showOverflowTooltip: true,
 			formConfig: {
-				type: 'input',
+				type: 'custom',
 				show: true,
-				placeholder: '自动填充',
+				placeholder: '请选择对象',
 				rules: validationRules.required,
-				readonly: true,
 				col: { span: 12 },
-				order: 4
+				order: 3.5,
+				slotName: 'target'
 			}
 		},
 		{
