@@ -107,7 +107,8 @@
 
 		// 标签字体大小调小
 		.el-form-item__label {
-			font-size: 12px; // 从13px缩小到12px
+			font-size: 12px; // 字体大小改为14px
+			color: #000000; // 字体颜色改为黑色
 			line-height: 28px; // 对应输入框高度
 			padding: 0 6px 0 0; // 右边距进一步调小
 		}
@@ -540,20 +541,20 @@
 .el-button {
 	&.el-button--medium {
 		padding: 6px 12px !important;
-		font-size: 12px !important;
-		height: 28px !important;
+		font-size: 16px !important;
+		height: 48px !important;
 	}
 
 	&.el-button--small {
 		padding: 4px 10px !important;
-		font-size: 11px !important;
-		height: 24px !important;
+		font-size: 14px !important;
+		height: 38 !important;
 	}
 
 	&.el-button--mini {
 		padding: 2px 6px !important;
-		font-size: 10px !important;
-		height: 20px !important;
+		font-size: 12px !important;
+		height: 28px !important;
 	}
 
 	// text类型按钮特殊样式调整
