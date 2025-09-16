@@ -12,10 +12,9 @@
 			</el-form-item>
 			<el-form-item label="对象类型">
 				<el-select v-model="queryParams.targetType" placeholder="请选择对象类型" clearable>
-					<el-option label="员工" value="员工" />
 					<el-option label="客户" value="客户" />
 					<el-option label="供应商" value="供应商" />
-					<el-option label="其他" value="其他" />
+					<el-option label="司机" value="司机" />
 				</el-select>
 			</el-form-item>
 			<el-form-item label="对象名称">

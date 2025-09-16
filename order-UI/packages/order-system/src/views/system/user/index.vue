@@ -136,11 +136,11 @@
 							<span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
 						</template>
 					</el-table-column>
-<!--					<el-table-column v-if="columns[28].visible" label="复核权限" align="center" width="100">-->
-<!--						<template slot-scope="scope">-->
-<!--							<el-switch :value="hasPaymentAuditPermission(scope.row)" active-value="1" inactive-value="0" disabled></el-switch>-->
-<!--						</template>-->
-<!--					</el-table-column>-->
+					<!--					<el-table-column v-if="columns[28].visible" label="复核权限" align="center" width="100">-->
+					<!--						<template slot-scope="scope">-->
+					<!--							<el-switch :value="hasPaymentAuditPermission(scope.row)" active-value="1" inactive-value="0" disabled></el-switch>-->
+					<!--						</template>-->
+					<!--					</el-table-column>-->
 				</el-table>
 
 				<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
@@ -610,8 +610,7 @@ export default {
 				{ key: 24, label: `开户银行`, visible: true },
 				{ key: 25, label: `银行账号`, visible: true },
 				{ key: 26, label: `状态`, visible: true },
-				{ key: 27, label: `创建时间`, visible: true },
-
+				{ key: 27, label: `创建时间`, visible: true }
 			],
 			// 表单校验
 			rules: {

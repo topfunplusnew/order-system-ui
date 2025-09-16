@@ -32,25 +32,6 @@ export default {
 				order: 1
 			}
 		},
-		// {
-		// 	key: 'type',
-		// 	prop: 'type',
-		// 	label: '保证金类型',
-		// 	visible: true,
-		// 	includeInForm: false,
-		// 	width: 120,
-		// 	formConfig: {
-		// 		type: 'select',
-		// 		show: true,
-		// 		placeholder: '请选择保证金类型',
-		// 		rules: [{ required: true, message: '保证金类型不能为空', trigger: 'change' }],
-		// 		options: DEPOSIT_OPTIONS,
-		// 		optionLabel: 'label',
-		// 		optionValue: 'value',
-		// 		col: { span: 12 },
-		// 		order: 2
-		// 	}
-		// },
 		{
 			key: 'targetType',
 			prop: 'targetType',
@@ -64,11 +45,9 @@ export default {
 				placeholder: '请选择对象类型',
 				rules: [{ required: true, message: '对象类型不能为空', trigger: 'change' }],
 				options: [
-					{ label: '员工', value: '员工' },
 					{ label: '客户', value: '客户' },
 					{ label: '供应商', value: '供应商' },
-					{ label: '司机', value: '司机' },
-					{ label: '其他', value: '其他' }
+					{ label: '司机', value: '司机' }
 				],
 				optionLabel: 'label',
 				optionValue: 'value',
@@ -89,24 +68,7 @@ export default {
 				type: 'custom',
 				show: true,
 				placeholder: '请选择对方公司',
-				rules: [
-					{
-						required: true,
-						message: '请选择对方公司',
-						trigger: 'change',
-						validator: (rule, value, callback) => {
-							// 当对象类型为员工或其他时，此字段不是必填的
-							const form = rule._form || {};
-							if (form.targetType === '员工' || form.targetType === '其他') {
-								callback();
-							} else if (!value) {
-								callback(new Error('请选择对方公司'));
-							} else {
-								callback();
-							}
-						}
-					}
-				],
+				rules: validationRules.required,
 				col: { span: 12 },
 				order: 3.5,
 				slotName: 'targetCompanyName'
@@ -371,10 +333,9 @@ export default {
 			type: 'select',
 			placeholder: '请选择对象类型',
 			options: [
-				{ label: '员工', value: '员工' },
 				{ label: '客户', value: '客户' },
 				{ label: '供应商', value: '供应商' },
-				{ label: '其他', value: '其他' }
+				{ label: '司机', value: '司机' }
 			],
 			optionLabel: 'label',
 			optionValue: 'value'

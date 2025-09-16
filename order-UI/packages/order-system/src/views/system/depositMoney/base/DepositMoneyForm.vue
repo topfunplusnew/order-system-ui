@@ -240,9 +240,6 @@ export default {
 			let limitInfo = {};
 
 			switch (targetType) {
-				case '员工':
-					limitInfo = { acountsType: '员工' };
-					break;
 				case '客户':
 					limitInfo = { acountsType: '客户' };
 					// 如果已选择了具体的客户公司，则添加公司ID限制
@@ -267,9 +264,6 @@ export default {
 						limitInfo.companyType = '司机';
 					}
 					break;
-				case '其他':
-					limitInfo = { acountsType: '其他' };
-					break;
 				default:
 					limitInfo = {};
 			}
@@ -283,16 +277,12 @@ export default {
 			const targetType = formData.targetType;
 
 			switch (targetType) {
-				case '员工':
-					return '员工姓名';
 				case '客户':
 					return '客户名称';
 				case '供应商':
 					return '供应商名称';
 				case '司机':
 					return '司机姓名';
-				case '其他':
-					return '名称';
 				default:
 					return '名称';
 			}
