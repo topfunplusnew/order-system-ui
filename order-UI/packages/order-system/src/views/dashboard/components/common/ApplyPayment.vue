@@ -38,12 +38,7 @@
 							query-label="银行卡查找"
 							query-info="bankNo"
 							:query-name="querySelfCompany"
-							@commitBack="
-								value => {
-									form.selfAccountsName = value.acountsName;
-									form.selfBankNo = value.bankNo;
-								}
-							"
+							@commitBack="handleSelfBankSelect"
 							@update:queryName="value => (querySelfCompany = value)"
 						>
 							<template #table-columns>
@@ -100,12 +95,7 @@
 								query-label="车牌"
 								query-info="carNo"
 								:query-name="queryCars"
-								@commitBack="
-									value => {
-										form.companyName = value.carNo;
-										form.companyId = value.id;
-									}
-								"
+								@commitBack="handleDriverSelect"
 								@update:queryName="value => (queryCars = value)"
 							>
 								<template #table-columns>
@@ -538,10 +528,13 @@ export default {
 				applyPersonId: null, // 注意字段名修改
 				// 审核状态
 				checkState: null,
-				// 附件ID数组
+				// 附件相关
 				attachmentIds: [],
-				// 附件列表（用于初始化显示）
 				attachmentList: [],
+				// 用于附件上传的参数结构
+				params: {
+					attachmentIds: []
+				},
 				comments: null,
 				// 时间戳字段
 				addTime: null,
@@ -575,14 +568,16 @@ export default {
 		};
 	},
 	watch: {
-		value(newValue) {
-			// 当对方类型改变时，清空之前选择的公司和银行卡信息
-			if (this.form.companyType !== newValue) {
+		// 监听对方类型变化
+		value(newValue, oldValue) {
+			if (newValue !== oldValue && this.form.companyType !== newValue) {
+				// 清空相关信息
 				this.form.companyName = null;
 				this.form.companyId = null;
 				this.form.otherBankNo = null;
 				this.form.otherBankName = null;
 				this.form.otherAccountsName = null;
+				this.form.companyType = newValue;
 			}
 		},
 		// 监听 tableReferences 变化，自动计算总金额
@@ -591,14 +586,14 @@ export default {
 				if (newReferences && newReferences.length > 0) {
 					// 构建表单的 tableReferences
 					this.form.tableReferences = newReferences.map(ref => ({
-						refTableName: ref.refTableName || this.tableName, // 兼容旧字段名
-						refTableId: ref.refTableId || this.tID, // 兼容旧字段名
+						refTableName: ref.refTableName || this.tableName,
+						refTableId: ref.refTableId || this.tID,
 						amount: parseFloat(ref.amount) || null
 					}));
 
 					// 如果没有手动设置金额，则自动计算总金额
 					if (!this.needMoney && this.form.tableReferences.length > 0) {
-						const totalAmount = this.form.tableReferences.reduce((sum, ref) => sum + ref.amount, 0);
+						const totalAmount = this.form.tableReferences.reduce((sum, ref) => sum + (ref.amount || 0), 0);
 						if (totalAmount > 0) {
 							this.form.moneyAmount = totalAmount;
 						}
@@ -657,32 +652,40 @@ export default {
 				fundsDate: this.form.fundsDate,
 				payType: Array.isArray(this.form.payType) ? this.form.payType.join('-') : null,
 				moneyAmount: parseFloat(this.form.moneyAmount) || null,
-				// 注意字段名的映射
-				otherAccountsName: this.form.otherAccountsName || this.form.otherAccountsName, // 兼容旧字段名
+				// 对方信息
+				otherAccountsName: this.form.otherAccountsName,
 				otherBankNo: this.form.otherBankNo,
 				otherBankName: this.form.otherBankName,
+				// 公司信息
 				companyName: this.form.companyName,
 				companyId: this.form.companyId,
 				companyType: this.form.companyType || this.value,
 				reason: this.form.reason,
+				// 申请人信息
 				applyPerson: this.form.applyPerson,
 				applyPersonId: this.form.applyPersonId || null,
-				// 附件ID数组
-				attachmentIds: this.form.attachmentIds || [],
+				// 附件信息
+				params: {
+					attachmentIds: this.form.params?.attachmentIds || []
+				},
 				comments: this.form.comments,
 				// 时间戳信息
 				addTime: this.form.addTime || parseTime(new Date()),
 				userId: this.form.userId,
 				userName: this.form.userName,
-				// 新的表关联结构
+				// 表关联结构
 				tableReferences: this.buildTableReferences()
 			};
 			return formData;
 		},
 		// 处理附件文件更新
 		handleAttachmentFilesUpdated(uploadParams) {
-			// 直接获取附件ID数组并赋值给form.attachmentIds
-			this.form.params.attachmentIds = uploadParams.params.attachmentIds || [];
+			// 确保params结构存在
+			if (!this.form.params) {
+				this.form.params = {};
+			}
+			// 更新附件ID数组
+			this.form.params.attachmentIds = uploadParams.params?.attachmentIds || [];
 		},
 		handleUpdateQueryNameOther(val) {
 			this.queryOther = val;
@@ -713,6 +716,17 @@ export default {
 			this.form.otherBankName = null;
 			this.form.otherAccountsName = null;
 			this.form.companyType = newValue;
+		},
+		// 处理我方银行卡选择
+		handleSelfBankSelect(value) {
+			this.form.selfAccountsName = value.acountsName;
+			this.form.selfBankNo = value.bankNo;
+			this.form.selfBankName = value.bankName;
+		},
+		// 处理司机选择
+		handleDriverSelect(value) {
+			this.form.companyName = value.carNo;
+			this.form.companyId = value.id;
 		},
 		// 根据对方类型返回相应的校验规则
 		getOpponentTypeRules() {
@@ -833,18 +847,21 @@ export default {
 						const formData = this.buildFormData();
 						formData.id = this.form.id;
 						formData.companyType = this.extraInformation.__companyType;
-						updatePaymentApply(formData).then(() => {
-							this.$modal.msgSuccess('付款申请保存成功,点击提交并审核可提交信息至审核流程');
-							// 清除附件组件状态
-							if (this.$refs.attachmentUpload) {
-								this.$refs.attachmentUpload.clearUploadedFiles();
-							}
-							this.clear();
-							that.dialogVisible = false;
-							// 发布一个事件 提醒更新
-							this.$bus.$emit('payment-apply-unaudit-list-update');
-							return Promise.resolve();
-						});
+						updatePaymentApply(formData)
+							.then(() => {
+								this.$modal.msgSuccess('付款申请保存成功,点击提交并审核可提交信息至审核流程');
+								// 清除附件组件状态
+								if (this.$refs.attachmentUpload) {
+									this.$refs.attachmentUpload.clearUploadedFiles();
+								}
+								this.$bus.$emit('payment-apply-unaudit-list-update');
+								this.clear();
+								that.dialogVisible = false;
+								return Promise.resolve();
+							})
+							.catch(err => {
+								this.$modal.msgError(err.message || '保存失败');
+							});
 					} else {
 						this.$message.error('系统错误:付款时没有主键');
 					}
@@ -883,18 +900,20 @@ export default {
 				selfBankNo: null,
 				selfBankName: null,
 				selfAccountsName: null,
-				// 对方银行卡信息（统一字段名）
+				// 对方银行卡信息
 				otherAccountsName: null,
 				otherBankNo: null,
 				otherBankName: null,
+				// 公司信息
 				companyName: null,
 				companyId: null,
 				companyType: null,
 				reason: null,
-				// 附件ID数组
-				attachmentIds: [],
-				// 附件列表（用于初始化显示）
+				// 附件相关
 				attachmentList: [],
+				params: {
+					attachmentIds: []
+				},
 				// 申请人信息
 				applyPerson: null,
 				applyPersonId: null,
@@ -904,11 +923,13 @@ export default {
 				addTime: null,
 				userId: null,
 				userName: null,
-				// 新增字段
+				// 表关联字段
 				tableReferences: []
 			};
 			this.value = ''; // 重置对方类型
-			this.currentSort = { levelOne: '', levelTwo: '' };
+			if (this.currentSort) {
+				this.currentSort = { levelOne: '', levelTwo: '' };
+			}
 			this.resetForm('form');
 		},
 		// 保存表单数据到 localStorage
