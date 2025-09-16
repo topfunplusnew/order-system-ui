@@ -1046,6 +1046,38 @@
 		.el-table__fixed-body-wrapper {
 			bottom: 15px !important; // 与横向滚动条高度保持一致
 		}
+
+		// 确保固定列表头高度与主表格一致
+		.el-table__fixed-header-wrapper {
+			.el-table__header {
+				th {
+					height: 32px !important;
+					padding: 6px 0 !important;
+					font-size: 13px !important;
+
+					.cell {
+						padding: 0 8px !important;
+						line-height: 20px !important;
+					}
+				}
+			}
+		}
+
+		// 确保固定列表体行高与主表格一致
+		.el-table__fixed-body-wrapper {
+			.el-table__body {
+				td {
+					height: 30px !important;
+					padding: 4px 0 !important;
+					font-size: 13px !important;
+
+					.cell {
+						padding: 0 8px !important;
+						line-height: 22px !important;
+					}
+				}
+			}
+		}
 	}
 
 	// 确保固定列在有横向滚动条时的正确定位
@@ -1054,6 +1086,61 @@
 		.el-table__fixed-right {
 			.el-table__fixed-body-wrapper {
 				bottom: 15px !important;
+			}
+		}
+	}
+
+	// 针对不同尺寸表格的固定列行高修复
+	&.el-table--medium {
+		.el-table__fixed,
+		.el-table__fixed-right {
+			.el-table__fixed-header-wrapper .el-table__header th {
+				height: 28px !important;
+				padding: 4px 0 !important;
+			}
+			.el-table__fixed-body-wrapper .el-table__body td {
+				height: 26px !important;
+				padding: 3px 0 !important;
+			}
+		}
+	}
+
+	&.el-table--small {
+		.el-table__fixed,
+		.el-table__fixed-right {
+			.el-table__fixed-header-wrapper .el-table__header th {
+				height: 24px !important;
+				padding: 2px 0 !important;
+				.cell {
+					padding: 0 6px !important;
+				}
+			}
+			.el-table__fixed-body-wrapper .el-table__body td {
+				height: 22px !important;
+				padding: 2px 0 !important;
+				.cell {
+					padding: 0 6px !important;
+				}
+			}
+		}
+	}
+
+	&.el-table--mini {
+		.el-table__fixed,
+		.el-table__fixed-right {
+			.el-table__fixed-header-wrapper .el-table__header th {
+				height: 20px !important;
+				padding: 1px 0 !important;
+				.cell {
+					padding: 0 4px !important;
+				}
+			}
+			.el-table__fixed-body-wrapper .el-table__body td {
+				height: 18px !important;
+				padding: 1px 0 !important;
+				.cell {
+					padding: 0 4px !important;
+				}
 			}
 		}
 	}

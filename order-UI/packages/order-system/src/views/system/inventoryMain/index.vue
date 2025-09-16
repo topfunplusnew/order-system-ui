@@ -368,7 +368,7 @@
 							<el-button v-else size="mini" type="success" icon="el-icon-check" @click="handleRowSave(scope.row)">保存</el-button>
 						</template>
 					</CustomTableColumn>
-					<CustomTableColumn label="供应商" width="170">
+					<CustomTableColumn label="供应商" width="220" align="center">
 						<template #default="scope">
 							<el-row>
 								<el-col :span="12">
@@ -1983,7 +1983,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .el-table {
 	.el-button {
 		margin: 0 5px;
@@ -2017,7 +2017,7 @@ export default {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	flex-wrap: wrap;
+	flex-wrap: nowrap;
 	gap: 4px;
 	line-height: 1.4;
 }
@@ -2025,7 +2025,6 @@ export default {
 .supplier-name {
 	color: #409eff; /* 蓝色表示供应商 */
 	cursor: pointer;
-	display: inline-block;
 	margin-right: 4px;
 	white-space: nowrap;
 	font-weight: 500;
@@ -2125,21 +2124,6 @@ export default {
 		&:last-child {
 			margin-bottom: 0 !important;
 		}
-	}
-}
-
-::v-deep .el-table__body-wrapper {
-	&::-webkit-scrollbar {
-		width: 14px;
-		height: 14px;
-	}
-	&::-webkit-scrollbar-thumb {
-		border-radius: 2px;
-		background-color: rgba(0, 0, 0, 0.5);
-	}
-	&::-webkit-scrollbar-track {
-		border-radius: 2px;
-		background-color: rgba(0, 0, 0, 0.1);
 	}
 }
 </style>
