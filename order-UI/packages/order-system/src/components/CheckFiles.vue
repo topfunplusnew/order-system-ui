@@ -305,4 +305,35 @@ export default {
 	color: #999;
 	font-size: 14px;
 }
+
+/* 弹窗自定义样式 - 固定标题栏 */
+::v-deep .check-files-dialog {
+	.el-dialog__header {
+		position: sticky;
+		top: 0;
+		background: #fff;
+		border-bottom: 1px solid #ebeef5;
+		z-index: 10;
+		padding: 20px 20px 16px;
+		margin: 0;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+	}
+
+	.el-dialog__body {
+		padding-top: 0;
+		max-height: calc(100vh - 150px);
+		overflow-y: auto;
+	}
+
+	.el-dialog__footer {
+		position: sticky;
+		bottom: 0;
+		background: #fff;
+		border-top: 1px solid #ebeef5;
+		z-index: 10;
+		padding: 16px 20px 20px;
+		margin: 0;
+		box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.08);
+	}
+}
 </style>
