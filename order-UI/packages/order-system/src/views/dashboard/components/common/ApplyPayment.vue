@@ -648,7 +648,7 @@ export default {
 		// 处理附件文件更新
 		handleAttachmentFilesUpdated(uploadParams) {
 			// 直接获取附件ID数组并赋值给form.attachmentIds
-			this.form.attachmentIds = uploadParams.params.attachmentIds || [];
+			this.form.params.attachmentIds = uploadParams.params.attachmentIds || [];
 		},
 		handleUpdateQueryNameOther(val) {
 			this.queryOther = val;
