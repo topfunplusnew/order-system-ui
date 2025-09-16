@@ -1,7 +1,7 @@
 <!--付款审核流程页面 需求:渲染需要付款的信息列表，付款信息中有多个审核流程 提供按钮筛选仅
 当前账号需要审核的流程 审核的过程调用修改接口-->
 <script>
-import { getPaymentApply, listPaymentApply, submitPaymentApply } from '@/api/system/paymentApply';
+import { getPaymentApply, listPaymentApply, submitPaymentApply, delPaymentApply } from '@/api/system/paymentApply';
 import StepInfo from '@/views/dashboard/components/applyProcess/StepInfo.vue';
 import { mapGetters } from 'vuex';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
@@ -395,6 +395,20 @@ export default {
 				this.getUnProcessedAuditList();
 			});
 		},
+		// 删除付款申请信息
+		handleDeleteApply(paymentApplyInfo) {
+			const { id, reason } = paymentApplyInfo;
+			this.$modal
+				.confirm(`是否确认删除付款申请"${reason || '无原因'}"？`)
+				.then(() => {
+					return delPaymentApply(id);
+				})
+				.then(() => {
+					this.$modal.msgSuccess('删除成功');
+					this.getUnProcessedAuditList(); // 刷新待提交/驳回列表
+				})
+				.catch(() => {});
+		},
 		handleAdd() {
 			this.reset();
 			this.open = true;
@@ -613,6 +627,7 @@ export default {
 									<a slot="actions" @click="reApply(item, true)">修改填写</a>
 									<a slot="actions" @click="handleCheck(item)">查看详情</a>
 									<a slot="actions" @click="submitReApplyInfo(item)">提交</a>
+									<a slot="actions" @click="handleDeleteApply(item)" style="color: #f56c6c">删除</a>
 									<a-list-item-meta>
 										<template slot="title">
 											<div class="apply-item-title">

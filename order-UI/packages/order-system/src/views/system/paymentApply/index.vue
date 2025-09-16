@@ -81,7 +81,9 @@
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
 				<template slot-scope="scope">
 					<el-button v-hasPermi="['system:paymentapply:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
-					<el-button v-hasPermi="['system:paymentapply:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
+					<el-button v-hasPermi="['system:paymentapply:remove']" size="mini" type="danger" :disabled="!['待提交', '驳回'].includes(scope.row.checkState)" @click="handleDelete(scope.row)">
+						删除
+					</el-button>
 					<el-button v-hasPermi="['system:paymentapply:remove']" size="mini" @click="checkPaymentApplyInfo(scope.row)">查看信息</el-button>
 				</template>
 			</el-table-column>

@@ -428,6 +428,40 @@ import { listCars } from '@/api/system/cars';
 
 export default {
 	name: 'ApplyPayment',
+	props: {
+		tableName: {
+			type: String,
+			default: null
+		},
+		tID: {
+			type: [String, Number],
+			default: null
+		},
+		needMoney: {
+			type: Number,
+			default: 0
+		},
+		tableReferences: {
+			type: Array,
+			default: () => []
+		},
+		isDailyExpense: {
+			type: Number,
+			default: 0
+		},
+		isMulti: {
+			type: Boolean,
+			default: false
+		},
+		isOtherButtonDisabled: {
+			type: Boolean,
+			default: false
+		},
+		extraInformation: {
+			type: Object,
+			default: () => ({})
+		}
+	},
 	computed: {
 		PUBLIC_DICT_TYPE() {
 			return PUBLIC_DICT_TYPE;
@@ -669,6 +703,16 @@ export default {
 				this.form.companyId = row.companyId;
 			}
 			this.form.otherAccountsName = row.acountsName;
+		},
+		// 处理对方类型变化
+		handleOpponentTypeChange(newValue) {
+			// 当对方类型改变时，清空相关信息
+			this.form.companyName = null;
+			this.form.companyId = null;
+			this.form.otherBankNo = null;
+			this.form.otherBankName = null;
+			this.form.otherAccountsName = null;
+			this.form.companyType = newValue;
 		},
 		// 根据对方类型返回相应的校验规则
 		getOpponentTypeRules() {
