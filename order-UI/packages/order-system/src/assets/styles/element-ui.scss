@@ -1038,6 +1038,56 @@
 			}
 		}
 	}
+
+	// 修复固定列与滚动条错位问题 - 调整固定列高度以适应滚动条
+	.el-table__fixed,
+	.el-table__fixed-right {
+		// 减少固定列高度，为滚动条留出空间
+		.el-table__fixed-body-wrapper {
+			bottom: 15px !important; // 与横向滚动条高度保持一致
+		}
+	}
+
+	// 确保固定列在有横向滚动条时的正确定位
+	&.el-table--scrollable-x {
+		.el-table__fixed,
+		.el-table__fixed-right {
+			.el-table__fixed-body-wrapper {
+				bottom: 15px !important;
+			}
+		}
+	}
+
+	// 为固定列添加滚动条占位空间
+	.el-table__fixed {
+		&::after {
+			content: '';
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			height: 15px !important;
+			background-color: #fafafa !important; // 更改为浅灰色背景
+			border-top: 1px solid #ebeef5;
+			z-index: -1 !important; // 设置为负值，确保在滚动条下面
+			pointer-events: none !important; // 让鼠标事件穿透，不阻止滚动条点击
+		}
+	}
+
+	.el-table__fixed-right {
+		&::after {
+			content: '';
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			height: 15px !important;
+			background-color: #fafafa !important; // 更改为浅灰色背景
+			border-top: 1px solid #ebeef5;
+			z-index: -1 !important; // 设置为负值，确保在滚动条下面
+			pointer-events: none !important; // 让鼠标事件穿透，不阻止滚动条点击
+		}
+	}
 }
 
 // dropdown

@@ -182,7 +182,7 @@ Vue.use(elDragDialog.install ? elDragDialog : { install: v => v.directive('el-dr
 Vue.use(elRelenDialog.install ? elRelenDialog : { install: v => v.directive('el-relen-dialog', elRelenDialog) });
 
 // 引入表格固定列修复工具 - 自动修复所有el-table的固定列错行问题
-import '@/utils/tableFixedColumnAdjustment';
+// import '@/utils/tableFixedColumnAdjustment';
 
 export const isNull = val => {
 	return !val ? '暂无' : val;
