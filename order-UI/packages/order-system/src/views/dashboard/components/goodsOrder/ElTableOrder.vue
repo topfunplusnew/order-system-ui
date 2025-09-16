@@ -80,8 +80,6 @@ export default {
 	},
 	data() {
 		return {
-			// 订单表格中的数据
-			goodsOrderList: [],
 			// 加载中的效果
 			loading: true,
 			// 订单总数 用于分页

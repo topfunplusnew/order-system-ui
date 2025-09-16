@@ -60,11 +60,16 @@ export var mixin_order_base = {
 				userName: '修改人',
 				supplierNames: '供应商',
 				allPayments: '总货款'
-			}
+			},
+			// 订单表格中的数据
+			goodsOrderList: [],
+			renderedList: [], // 用于在表格中显示的数据，实现分时渲染
+			batchSize: 5, // 每次渲染的行数，根据性能调整
+			currentIndex: 0 // 当前渲染的起始索引
 		};
 	},
 	methods: {
-		// 查询订单的列表
+		// 查询订单的列表 分批渲染 因为dom太多
 		getList() {
 			if (!this.queryParams.isAdjust) {
 				const isAdjust = this.isAdjustOrder ? -1 : 0;
@@ -76,6 +81,7 @@ export var mixin_order_base = {
 					// 预处理订单数据，添加供应商和仓库的预处理信息
 					this.goodsOrderList = this.preprocessOrderData(response.rows);
 					this.total = response.total;
+					this.renderBatch(); // 开始分批渲染
 					this.loading = false;
 				});
 			} else {
@@ -83,9 +89,26 @@ export var mixin_order_base = {
 					// 预处理订单数据，添加供应商和仓库的预处理信息
 					this.goodsOrderList = this.preprocessOrderData(response.rows);
 					this.total = response.total;
+					this.renderBatch(); // 开始分批渲染
 					this.loading = false;
 				});
 			}
+		},
+		renderBatch() {
+			if (this.currentIndex >= this.goodsOrderList.length) {
+				// 渲染完成
+				return;
+			}
+			// 获取要渲染的行
+			const nextBatch = this.goodsOrderList.slice(this.currentIndex, this.currentIndex + this.batchSize);
+			console.log(` nextBatch `, nextBatch);
+			// 更新要渲染的数据
+			this.renderedList = this.renderedList.concat(nextBatch);
+			this.currentIndex += this.batchSize;
+			// 使用 requestAnimationFrame 执行下一次渲染
+			requestAnimationFrame(() => {
+				this.renderBatch();
+			});
 		},
 		// 获取供应商的名称列表 主要用于表格的供应商列表的展示
 		getSupplierNames(list) {
