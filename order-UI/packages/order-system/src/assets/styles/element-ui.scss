@@ -555,6 +555,43 @@
 		font-size: 10px !important;
 		height: 20px !important;
 	}
+
+	// text类型按钮特殊样式调整
+	&.el-button--text {
+		padding: 2px 6px !important;
+		font-size: 15px !important;
+		color: #3585d4 !important; // 深色字体
+		font-weight: bold !important;
+		min-height: 28px !important;
+		line-height: 1.4 !important;
+
+		&:hover {
+			color: #409eff !important;
+		}
+
+		&:disabled {
+			color: #c0c4cc !important;
+		}
+
+		// text按钮的不同尺寸调整
+		&.el-button--medium {
+			padding: 6px 12px !important;
+			font-size: 14px !important;
+			min-height: 30px !important;
+		}
+
+		&.el-button--small {
+			padding: 5px 10px !important;
+			font-size: 13px !important;
+			min-height: 26px !important;
+		}
+
+		&.el-button--mini {
+			padding: 4px 8px !important;
+			font-size: 12px !important;
+			min-height: 22px !important;
+		}
+	}
 }
 
 // 全局时间选择器调整
