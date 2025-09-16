@@ -1016,6 +1016,30 @@
 	}
 }
 
+// 表格滚动条样式调整 - 只调整横向滚动条高度
+.el-table {
+	.el-table__body-wrapper {
+		// 横向滚动条样式
+		&::-webkit-scrollbar:horizontal {
+			height: 15px !important;
+		}
+
+		&::-webkit-scrollbar-track:horizontal {
+			background: #f1f1f1 !important;
+			border-radius: 4px !important;
+		}
+
+		&::-webkit-scrollbar-thumb:horizontal {
+			background: #c1c1c1 !important;
+			border-radius: 4px !important;
+
+			&:hover {
+				background: #a8a8a8 !important;
+			}
+		}
+	}
+}
+
 // dropdown
 .el-dropdown-menu {
 	a {
