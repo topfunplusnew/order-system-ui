@@ -78,6 +78,66 @@ export const companyConfig = {
 			}
 		},
 		{
+			prop: 'relationName',
+			label: '联系人',
+			width: 100,
+			align: 'center',
+			showOverflowTooltip: false, // 禁用默认 tooltip，使用自定义 popover
+			autoWidth: true, // 开启自适应宽度
+			minWidth: 80,
+			maxWidth: 150,
+			includeInForm: true,
+			formConfig: {
+				show: true,
+				type: 'input',
+				order: 4,
+				sortIndex: 4, // 表单项排序索引
+				col: { span: 12 },
+				placeholder: '请输入联系人',
+				rules: [{ required: true, message: '请输入联系人', trigger: 'blur' }, stringRule(), maxLengthRule(20)]
+			}
+		},
+		{
+			prop: 'salesManager',
+			label: '销售经理',
+			width: 120,
+			align: 'center',
+			showOverflowTooltip: false, // 禁用默认 tooltip，使用自定义 popover
+			autoWidth: true, // 开启自适应宽度
+			minWidth: 100,
+			maxWidth: 180,
+			includeInForm: true,
+			formConfig: {
+				show: true,
+				type: 'input',
+				order: 5,
+				sortIndex: 5, // 表单项排序索引
+				col: { span: 12 },
+				placeholder: '请输入销售经理',
+				rules: [{ required: true, message: '请输入销售经理', trigger: 'blur' }, stringRule(), maxLengthRule(20)]
+			}
+		},
+		{
+			prop: 'relationTel',
+			label: '电话',
+			width: 120,
+			align: 'center',
+			showOverflowTooltip: false, // 禁用默认 tooltip，使用自定义 popover
+			autoWidth: true, // 开启自适应宽度
+			minWidth: 110,
+			maxWidth: 160,
+			includeInForm: true,
+			formConfig: {
+				show: true,
+				type: 'input',
+				order: 6,
+				sortIndex: 6, // 表单项排序索引
+				col: { span: 12 },
+				placeholder: '请输入联系人电话',
+				rules: [{ required: true, message: '请输入联系人电话', trigger: 'blur' }, phoneRule()] // 必填且校验手机号格式
+			}
+		},
+		{
 			prop: 'region',
 			label: '区域',
 			width: 100,
@@ -106,8 +166,8 @@ export const companyConfig = {
 			formConfig: {
 				show: true,
 				type: 'select',
-				order: 4.1,
-				sortIndex: 4, // 表单项排序索引
+				order: 7,
+				sortIndex: 7, // 表单项排序索引
 				col: { span: 8 },
 				placeholder: '请选择省份',
 				options: 'provinceList',
@@ -126,8 +186,8 @@ export const companyConfig = {
 			formConfig: {
 				show: true,
 				type: 'select',
-				order: 4.2,
-				sortIndex: 5, // 表单项排序索引
+				order: 8,
+				sortIndex: 8, // 表单项排序索引
 				col: { span: 8 },
 				placeholder: '请选择城市',
 				options: 'cityList',
@@ -146,54 +206,14 @@ export const companyConfig = {
 			formConfig: {
 				show: true,
 				type: 'select',
-				order: 4.3,
-				sortIndex: 6, // 表单项排序索引
+				order: 9,
+				sortIndex: 9, // 表单项排序索引
 				col: { span: 8 },
 				placeholder: '请选择区县',
 				options: 'districtList',
 				optionLabel: 'name',
 				optionValue: 'name',
 				rules: [stringRule(), maxLengthRule(50)]
-			}
-		},
-		{
-			prop: 'relationName',
-			label: '联系人',
-			width: 100,
-			align: 'center',
-			showOverflowTooltip: false, // 禁用默认 tooltip，使用自定义 popover
-			autoWidth: true, // 开启自适应宽度
-			minWidth: 80,
-			maxWidth: 150,
-			includeInForm: true,
-			formConfig: {
-				show: true,
-				type: 'input',
-				order: 5,
-				sortIndex: 7, // 表单项排序索引
-				col: { span: 12 },
-				placeholder: '请输入联系人',
-				rules: [{ required: true, message: '请输入联系人', trigger: 'blur' }, stringRule(), maxLengthRule(20)]
-			}
-		},
-		{
-			prop: 'salesManager',
-			label: '销售经理',
-			width: 120,
-			align: 'center',
-			showOverflowTooltip: false, // 禁用默认 tooltip，使用自定义 popover
-			autoWidth: true, // 开启自适应宽度
-			minWidth: 100,
-			maxWidth: 180,
-			includeInForm: true,
-			formConfig: {
-				show: true,
-				type: 'input',
-				order: 6,
-				sortIndex: 8, // 表单项排序索引
-				col: { span: 12 },
-				placeholder: '请输入销售经理',
-				rules: [{ required: true, message: '请输入销售经理', trigger: 'blur' }, stringRule(), maxLengthRule(20)]
 			}
 		},
 		{
@@ -209,32 +229,12 @@ export const companyConfig = {
 			formConfig: {
 				show: true,
 				type: 'textarea',
-				order: 7,
-				sortIndex: 9, // 表单项排序索引
+				order: 10,
+				sortIndex: 10, // 表单项排序索引
 				col: { span: 24 },
 				placeholder: '请输入地址',
 				rows: 3,
 				rules: [stringRule(), maxLengthRule(200)]
-			}
-		},
-		{
-			prop: 'relationTel',
-			label: '电话',
-			width: 120,
-			align: 'center',
-			showOverflowTooltip: false, // 禁用默认 tooltip，使用自定义 popover
-			autoWidth: true, // 开启自适应宽度
-			minWidth: 110,
-			maxWidth: 160,
-			includeInForm: true,
-			formConfig: {
-				show: true,
-				type: 'input',
-				order: 8,
-				sortIndex: 10, // 表单项排序索引
-				col: { span: 12 },
-				placeholder: '请输入联系人电话',
-				rules: [{ required: true, message: '请输入联系人电话', trigger: 'blur' }, phoneRule()] // 必填且校验手机号格式
 			}
 		},
 		{
@@ -250,7 +250,7 @@ export const companyConfig = {
 			formConfig: {
 				show: true,
 				type: 'textarea',
-				order: 9,
+				order: 11,
 				sortIndex: 11, // 表单项排序索引
 				col: { span: 24 },
 				placeholder: '请输入备注',
