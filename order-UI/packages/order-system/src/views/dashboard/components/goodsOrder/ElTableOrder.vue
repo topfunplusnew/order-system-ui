@@ -26,6 +26,7 @@ import StateTag from '@/views/dashboard/components/common/StateTag.vue';
 import { auditGoodsOrder, listGoodsOrder } from '../../../../api/system/goodsOrder';
 // 前端Excel导出依赖
 import * as XLSX from 'xlsx';
+import { debounce } from 'lodash';
 
 export default {
 	name: 'ElTableOrder',
@@ -131,15 +132,19 @@ export default {
 		};
 	},
 	watch: {
-		// 监听显示隐藏列的改变
 		columns: {
-			handler: function (newVal) {
-				localStorage.setItem('goodsorder-columns', JSON.stringify(newVal));
+			handler(newVal, oldVal) {
+				newVal.forEach((column, index) => {
+					if (column.visible !== oldVal[index]?.visible) {
+						debounce(() => {
+							localStorage.setItem('goodsorder-columns', JSON.stringify(newVal));
+						}, 500);
+					}
+				});
 			},
 			deep: true
 		}
 	},
-
 	created() {
 		if (localStorage.getItem('goodsorder-columns') === 'null' || !localStorage.getItem('goodsorder-columns')) {
 			localStorage.setItem('goodsorder-columns', JSON.stringify(this.columns));
@@ -695,7 +700,7 @@ export default {
 				:data="goodsOrderList"
 				@header-dragend="changeColWidth"
 			>
-				<CustomTableColumn label="行操作" align="center" class-name="small-padding fixed-width" width="142" fixed="left">
+				<CustomTableColumn label="行操作" align="center" class-name="small-padding fixed-width" width="180" fixed="left">
 					<template slot-scope="scope">
 						<!-- 查看按钮 -->
 						<el-button size="mini" type="text" @click="checkOrderItemInfo(scope.row)">查看</el-button>
@@ -880,7 +885,7 @@ export default {
 					</template>
 				</CustomTableColumn>
 				<!--      右侧操作栏-->
-				<CustomTableColumn show-overflow-tooltip label="订单操作" align="center" class-name="small-padding fixed-width" width="300px" fixed="right">
+				<CustomTableColumn show-overflow-tooltip label="订单操作" align="center" class-name="small-padding fixed-width" width="320px" fixed="right">
 					<template slot-scope="scope">
 						<el-button size="mini" type="text" :disabled="scope.row.isAdjusted !== 1" v-if="!isAdjustOrder" @click="handleCheckAdjust(scope.row)">查看调整单</el-button>
 						<el-button size="mini" type="text" :disabled="scope.row.isAdjusted === 1" @click="handleOrderItemInfo(scope.row)">调整单</el-button>
