@@ -323,8 +323,8 @@
 										acountsType: PUBLIC_DICT_TYPE.EMPLOYEE,
 										acountsName: form.otherAccountsName
 									}"
-									query-label="银行卡查找"
-									query-info="bankNo"
+									query-label="户名查找"
+									query-info="acountsName"
 									:query-name="queryCompany"
 									@commitBack="handleCommitBack"
 									@update:queryName="handleUpdateQueryName"
