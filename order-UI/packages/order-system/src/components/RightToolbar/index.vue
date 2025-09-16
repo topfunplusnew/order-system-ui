@@ -18,10 +18,14 @@
 				<el-button v-if="showColumnsType == 'transfer'" size="mini" circle icon="el-icon-s-open" @click="showColumn()" />
 				<el-dropdown v-if="showColumnsType == 'checkbox'" trigger="click" :hide-on-click="false" style="padding-left: 12px">
 					<el-button size="mini" icon="el-icon-s-open" />
-					<el-dropdown-menu slot="dropdown">
-						<el-dropdown-item v-for="item in columns" :key="item.key || item.prop || item.label">
-							<el-checkbox :checked="item.visible" :label="item.label" @change="checkboxChange($event, item.label)" />
-						</el-dropdown-item>
+					<el-dropdown-menu slot="dropdown" class="multi-column-dropdown" :style="{ width: columnGroups.length > 1 ? '800px' : 'auto' }">
+						<div class="columns-container" :class="{ 'multi-columns': columnGroups.length > 1 }" :style="{ display: columnGroups.length > 1 ? 'flex' : 'block' }">
+							<div v-for="(group, groupIndex) in columnGroups" :key="groupIndex" class="column-group" :style="{ flex: columnGroups.length > 1 ? '1' : 'none' }">
+								<el-dropdown-item v-for="item in group" :key="item.key || item.prop || item.label">
+									<el-checkbox :checked="item.visible" :label="item.label" @change="checkboxChange($event, item.label)" />
+								</el-dropdown-item>
+							</div>
+						</div>
 					</el-dropdown-menu>
 				</el-dropdown>
 			</el-tooltip>
@@ -77,6 +81,20 @@ export default {
 				ret.marginRight = `${this.gutter / 2}px`;
 			}
 			return ret;
+		},
+		// 计算列分组，每组最多20个
+		columnGroups() {
+			if (!this.columns || !Array.isArray(this.columns)) {
+				return [];
+			}
+			const groups = [];
+			const chunkSize = 20;
+			for (let i = 0; i < this.columns.length; i += chunkSize) {
+				groups.push(this.columns.slice(i, i + chunkSize));
+			}
+			// 添加调试信息
+			console.log('总列数:', this.columns.length, '分组数:', groups.length, '分组详情:', groups);
+			return groups;
 		}
 	},
 	created() {
@@ -163,5 +181,67 @@ export default {
 
 ::v-deep .el-transfer__button:first-child {
 	margin-bottom: 10px;
+}
+
+// 多列下拉菜单样式 - 增强权重
+::v-deep .el-dropdown-menu.multi-column-dropdown {
+	.columns-container {
+		display: flex !important;
+		flex-direction: row !important;
+
+		&.multi-columns {
+			max-width: 800px !important; // 增加最大宽度
+			min-width: 400px !important;
+		}
+
+		.column-group {
+			flex: 1 !important;
+			min-width: 200px !important; // 增加每列最小宽度
+			display: flex !important;
+			flex-direction: column !important;
+
+			&:not(:last-child) {
+				border-right: 1px solid #ebeef5 !important;
+				padding-right: 12px !important;
+				margin-right: 12px !important;
+			}
+
+			.el-dropdown-item {
+				padding: 6px 8px !important;
+				margin: 0 !important;
+				display: block !important;
+
+				&:hover {
+					background-color: #f5f7fa !important;
+				}
+
+				.el-checkbox {
+					width: 100% !important;
+					margin: 0 !important;
+
+					.el-checkbox__label {
+						font-size: 12px !important;
+						line-height: 1.4 !important;
+						word-break: break-all !important;
+						white-space: normal !important;
+						max-width: 160px !important;
+						display: inline-block !important;
+					}
+				}
+			}
+		}
+	}
+}
+
+// 额外的全局样式确保生效
+::v-deep .el-dropdown-menu {
+	&.multi-column-dropdown {
+		max-height: none !important;
+		overflow: visible !important;
+
+		.el-dropdown-item {
+			line-height: normal !important;
+		}
+	}
 }
 </style>

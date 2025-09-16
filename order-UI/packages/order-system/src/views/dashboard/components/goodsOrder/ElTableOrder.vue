@@ -9,9 +9,7 @@ import { mixin_order_Invoice } from '@/views/dashboard/mixins/order/order_Invoic
 import { mixin_order_uploadFiles } from '@/views/dashboard/mixins/order/order_UploadFiles';
 import { mixin_order_add } from '@/views/dashboard/mixins/order/order_addOrder';
 import { mixin_order_adjustOrder } from '@/views/dashboard/mixins/order/order_adjustOrder';
-import { mixin_order_audit } from '@/views/dashboard/mixins/order/order_audit';
 import { mixin_order_base } from '@/views/dashboard/mixins/order/order_base';
-import { mixin_order_checkOrder } from '@/views/dashboard/mixins/order/order_checkOrder';
 import { mixin_order_deliverGoods } from '@/views/dashboard/mixins/order/order_deliverGoods';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import reLength from '@/views/dashboard/mixins/reLength';
@@ -24,6 +22,7 @@ import HistoryList from '@/views/dashboard/components/goodsOrder/HistoryList.vue
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
 import StateTag from '@/views/dashboard/components/common/StateTag.vue';
 import { auditGoodsOrder, listGoodsOrder } from '../../../../api/system/goodsOrder';
+import CheckOrder from '@/views/dashboard/components/goodsOrder/CheckOrder.vue';
 // 前端Excel导出依赖
 import * as XLSX from 'xlsx';
 import { debounce } from 'lodash';
@@ -52,14 +51,10 @@ export default {
 		reLength,
 		// 订单基本功能
 		mixin_order_base,
-		// 订单审核功能
-		mixin_order_audit,
 		// 文件查看功能
 		mixin_checkfile,
 		// 订单开票的功能
 		mixin_order_Invoice,
-		// 订单查看的功能
-		mixin_order_checkOrder,
 		// 订单的添加或者修改
 		mixin_order_add,
 		// 调整单功能
@@ -151,6 +146,43 @@ export default {
 		}
 	},
 	methods: {
+		// 行操作中点击查看 查看当前行订单的信息
+		checkOrderItemInfo(row) {
+			const id = row.id;
+			// 读取订单信息
+			getGoodsOrder(id).then(res => {
+				this.orderInfo = res.data;
+				this.orderDetailInfo = res.data.orderDetailList;
+				// 打开弹窗
+				this.openDialog(
+					CheckOrder,
+					'查看订单详情',
+					'1300px',
+					{
+						orderInfo: this.orderInfo,
+						orderDetailInfo: this.orderDetailInfo
+					},
+					true
+				);
+			});
+		},
+		handleCheck(row) {
+			// 弹出确认和取消
+			this.$antdconfirm({
+				title: '提示',
+				content: '是否审核该信息?',
+				okText: '确定',
+				cancelText: '取消',
+				zIndex: 2600,
+				onOk: () => {
+					// 修改审核状态
+					auditGoodsOrder({ id: row.id, isaudit: true }).then(res => {
+						this.$message.success('操作成功~!');
+						this.getList();
+					});
+				}
+			});
+		},
 		// 统一行样式，保持固定列与主体区域行高一致
 		rowStyle({ row }) {
 			// 基础统一高度
