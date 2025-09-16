@@ -431,7 +431,7 @@ export default {
 					this.openDialog(
 						GOODS_ORDER,
 						'查看调整单信息',
-						'650px',
+						'1400px',
 						{
 							needToShowInfo: response.data
 						},
@@ -447,7 +447,7 @@ export default {
 				this.openDialog(
 					GOODS_ORDER,
 					'查看原订单信息',
-					'650px',
+					'1400px',
 					{
 						needToShowInfo: res.data
 					},
