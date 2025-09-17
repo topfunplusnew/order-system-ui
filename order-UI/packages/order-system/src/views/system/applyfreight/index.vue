@@ -233,6 +233,15 @@ export default {
 			} else if (row.transportType === 'sea') {
 				this.handleApplySeaFree(row);
 			}
+		},
+		handleExport() {
+			this.download(
+				'/system/orderFreight/ledger/export',
+				{
+					...this.queryParams
+				},
+				`orderFreight_${new Date().getTime()}.xlsx`
+			);
 		}
 	},
 	created() {
@@ -285,6 +294,11 @@ export default {
 					<template #print>
 						<el-col :span="1.5">
 							<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
+						</el-col>
+					</template>
+					<template #export>
+						<el-col :span="1.5">
+							<el-button v-hasPermi="['system:orderfreight:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
 						</el-col>
 					</template>
 				</right-toolbar>

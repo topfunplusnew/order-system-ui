@@ -18,7 +18,7 @@ export var mixin_order_freeApply = {
 			let source = null;
 			if (row.source === '订单' || row.source === '调整单') source = FreightSource.GOODS_ORDER;
 			else source = FreightSource.INVENTORY_MAIN;
-			getCars(row.car_id).then(res => {
+			getCars(row.carId).then(res => {
 				if (!res.data) {
 					this.$message.error('请先添加车辆信息');
 					return;
@@ -26,11 +26,11 @@ export var mixin_order_freeApply = {
 				// 组装订单运费信息 我方银行卡信息弹窗自己选
 				const landFreightInfo = {
 					sourceId: row.sourceId,
-					freightType: row.transport_type === 'sea' ? '海运' : '陆运',
+					freightType: row.transportType === 'sea' ? '海运' : '陆运',
 					moneyAmount: row.freight,
 					paymentState: '申请中',
 					driverName: res.data.driver,
-					driverId: row.car_id,
+					driverId: row.carId,
 					carNo: res.data.carNo,
 					fleet: row.fleet,
 					source: source,
@@ -59,7 +59,7 @@ export var mixin_order_freeApply = {
 			if (row.source === '订单' || row.source === '调整单') source = FreightSource.GOODS_ORDER;
 			else source = FreightSource.INVENTORY_MAIN;
 			// 首先获取车辆信息
-			getCars(row.car_id).then(res => {
+			getCars(row.carId).then(res => {
 				if (!res.data) {
 					this.$message.error('请先添加车辆信息');
 					return;
@@ -67,7 +67,7 @@ export var mixin_order_freeApply = {
 				// 组装海运费信息
 				const seaFreightInfo = {
 					sourceId: row.sourceId,
-					freightType: row.transport_type === 'sea' ? '海运' : '陆运',
+					freightType: row.transportType === 'sea' ? '海运' : '陆运',
 					moneyAmount: row.freight,
 					// 对方银行卡信息
 					otherAcountsName: res.data.acountsName,
@@ -75,7 +75,7 @@ export var mixin_order_freeApply = {
 					otherBankName: res.data.bankName,
 					paymentState: '申请中',
 					driverName: res.data.driver,
-					driverId: row.car_id,
+					driverId: row.carId,
 					carNo: res.data.carNo,
 					fleet: row.fleet,
 					// 区分订单还是库存开的运费字段
