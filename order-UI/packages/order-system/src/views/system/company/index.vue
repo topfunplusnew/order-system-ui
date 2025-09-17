@@ -38,17 +38,7 @@
 			</right-toolbar>
 		</el-row>
 
-		<el-table
-			id="printBox"
-			v-loading="loading"
-			v-horizontal-scroll="'always'"
-			border
-			:data="companyList"
-			size="mini"
-			:cell-style="cellStyle"
-			@selection-change="handleSelectionChange"
-			class="table-container"
-		>
+		<el-table id="printBox" v-loading="loading" v-horizontal-scroll="'always'" border :data="companyList" size="mini" :cell-style="cellStyle" @selection-change="handleSelectionChange">
 			<CustomTableColumn v-for="column in visibleColumns" :key="column.key" v-bind="getColumnProps(column)" />
 			<CustomTableColumn label="操作" align="center" class-name="small-padding fixed-width" width="200">
 				<template slot-scope="scope">
@@ -300,12 +290,6 @@ export default {
 	padding: 10px;
 	border-radius: 5px;
 	margin-bottom: 10px;
-}
-
-.table-container {
-	background-color: #fff;
-	border-radius: 5px;
-	padding: 10px;
 }
 
 /* 添加新的样式，确保弹窗不会捕获点击事件 */

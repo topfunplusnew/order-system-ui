@@ -136,14 +136,11 @@ export default {
 					this.$store.dispatch('excel/clearSelectedInvoiceList');
 					this.$store.dispatch('excel/clearInvoiceAmount');
 				}
-
 				// 清理 sessionStorage 中的临时开票数据
 				sessionStorage.removeItem('invoiceAmount');
 				sessionStorage.removeItem('us');
-
 				// 广播清理事件
 				this.$bus.$emit('invoice-clear');
-
 				this.$message.success('本批开票成功');
 			} else {
 				this.$message.error('本批开票有误 请检查错误信息后重新提交');
@@ -164,7 +161,6 @@ export default {
 				if (item.uuid === uuid) {
 					// 查找该出错的信息 提示用户
 					this.$message.error(`第${index}条信息发生错误:${item.result}`);
-
 					// 判断tableName并打开对应的错误信息弹窗
 					switch (item.tableName) {
 						case TableName.INVOICE_OUT: {
@@ -253,7 +249,6 @@ export default {
 				this.$message.warning('请先选择订单后再生成发票');
 				return;
 			}
-
 			// 读取并合并模板数据（购买方+销方）
 			const purchaseTemplates = this.$store.state.excel.purchaseTemplateData || [];
 			const sellerTemplates = this.$store.state.excel.sellerTemplateData || [];
@@ -262,7 +257,6 @@ export default {
 				this.$message.warning('暂无模板数据，无法生成发票');
 				return;
 			}
-
 			// 这部分逻辑是筛选公司 使用该公司模板数据
 			const selectedCompanyId = this.supplierId;
 			const preferInvoiceType = this.invoiceType; // PUBLIC_DICT_TYPE
@@ -275,7 +269,6 @@ export default {
 					return false;
 				}
 			};
-
 			let filtered = templates;
 			if (selectedCompanyId) {
 				// 优先按销方 id 过滤；当偏好为 CUSTOMER 时，优先匹配 sellerType 为客户的模板
@@ -292,22 +285,18 @@ export default {
 					if (purchaseMatches.length > 0) filtered = purchaseMatches;
 				}
 			}
-
 			// 深拷贝模板，避免修改原始 Vuex 数据
 			let templatePool = filtered.map(t => ({ ...t }));
-
 			// 生成发票列表
 			const resultInvoices = [];
-
 			// 使用 mathjs BigNumber 做精确计算
 			const b = v => this.math.bignumber(v || 0);
-
 			for (let order of orders) {
 				// 每个订单的 remainingAmount 是订单的已开票金额(allPayments)
 				let remaining = b(order.allPayments - order.params.totalInvoiceAmount || 0);
 				let orderFullyInvoiced = false;
 				// 如果订单的剩余开票金额等于0
-				if (remaining === 0) {
+				if (this.math.equal(remaining, b(0))) {
 					continue; // 跳过该订单，继续下一个订单
 				}
 				for (let i = 0; i < templatePool.length; i++) {
@@ -315,7 +304,6 @@ export default {
 					let tplAmount = b(tpl.total || 0);
 					// 没有可用模板金额则跳过
 					if (this.math.equal(tplAmount, b(0))) continue;
-
 					// 计算本次要使用的金额：used = min(tplAmount, remaining)
 					let used;
 					if (this.math.largerEq(tplAmount, remaining)) {
@@ -323,17 +311,16 @@ export default {
 					} else {
 						used = tplAmount;
 					}
-
 					// 根据模板行判断 companyType/companyID/companyName：优先判断销方（sellerId），否则判断购买方（purchaseId）
-					let companyTypeConst = this.invoiceType || this.PUBLIC_DICT_TYPE.CUSTOMER;
+					let companyTypeConst = this.invoiceType;
 					let companyID = tpl.sellerId || tpl.purchaseId || null;
-					let companyName = tpl.sellerName || tpl.purchaseName || tpl.invoiceCompanyName || '未知';
+					let companyName = tpl.sellerName || tpl.purchaseName || tpl.invoiceCompanyName;
 					if (tpl.sellerId && Number(tpl.sellerId) !== 0) {
-						companyTypeConst = tpl.sellerType === '供应商' ? this.PUBLIC_DICT_TYPE.SUPPLIER : this.PUBLIC_DICT_TYPE.CUSTOMER;
+						companyTypeConst = tpl.sellerType;
 						companyID = tpl.sellerId;
 						companyName = tpl.sellerName || companyName;
 					} else if (tpl.purchaseId && Number(tpl.purchaseId) !== 0) {
-						companyTypeConst = tpl.purchaseType === '供应商' ? this.PUBLIC_DICT_TYPE.SUPPLIER : this.PUBLIC_DICT_TYPE.CUSTOMER;
+						companyTypeConst = tpl.purchaseType;
 						companyID = tpl.purchaseId;
 						companyName = tpl.purchaseName || companyName;
 					}
@@ -353,13 +340,11 @@ export default {
 						comments: this.comment
 					});
 					resultInvoices.push(invoice);
-
 					// 更新订单剩余和模板剩余
 					remaining = this.math.subtract(remaining, used);
 					const tplRemainAfter = this.math.subtract(tplAmount, used);
 					// 将剩余模板金额写回 pool（转为普通数字），便于后续继续使用
 					templatePool[i].total = Number(this.math.format(tplRemainAfter));
-
 					// 如果订单已被完全抵扣，则结束当前订单的模板匹配
 					if (this.math.largerEq(b(0), remaining) || this.math.equal(remaining, b(0))) {
 						orderFullyInvoiced = true;
@@ -389,16 +374,20 @@ export default {
 		handleCustomer(orderItem) {
 			// 不存在id 返回null
 			if (!orderItem.customerID) return null;
-
-			const invoiceAmount = Number(orderItem.allPayments);
+			const invoiceAmount = this.math.bignumber(orderItem.allPayments);
 			// 使用新的票点计算公式：票点金额 = 开票金额 / (1 + 票点) * 票点
-			const ticketPointAmount = this.currentTicketPoint > 0 ? Number(((invoiceAmount / (1 + this.currentTicketPoint)) * this.currentTicketPoint).toFixed(2)) : 0;
-
+			let ticketPointAmount = 0;
+			if (this.math.larger(this.currentTicketPoint, 0)) {
+				const denominator = this.math.add(this.math.bignumber(1), this.math.bignumber(this.currentTicketPoint));
+				const fraction = this.math.divide(invoiceAmount, denominator);
+				const multiplied = this.math.multiply(fraction, this.math.bignumber(this.currentTicketPoint));
+				ticketPointAmount = Number(this.math.format(multiplied));
+			}
 			// 创建客户发票对象
 			return this.createInvoiceObject({
 				invoiceDate: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
 				invoiceObject: sessionStorage.getItem('us'), // 己方公司实体
-				invoiceAmount: invoiceAmount,
+				invoiceAmount: Number(this.math.format(invoiceAmount)),
 				companyType: PUBLIC_DICT_TYPE.CUSTOMER,
 				companyName: orderItem.customer,
 				companyID: orderItem.customerID,
@@ -412,26 +401,27 @@ export default {
 		// 对供应商进行处理
 		handleSupplier(orderItem) {
 			if (!orderItem.smailOrderDetails || orderItem.smailOrderDetails.length === 0) return null;
-
 			// 先找到该检索的供应商
 			const _suppliers = orderItem.smailOrderDetails.filter(item => {
 				if (item.supplierID === this.supplierId) return item;
 			});
-
 			if (_suppliers.length === 0) return null;
-
 			// 计算该供应商的出场货款
-			const paymentFactory = _suppliers.reduce((pre, cur) => pre + cur.paymentFactory, 0);
-			const invoiceAmount = Number(paymentFactory);
-
+			const paymentFactory = _suppliers.reduce((pre, cur) => this.math.add(this.math.bignumber(pre), this.math.bignumber(cur.paymentFactory)), this.math.bignumber(0));
+			const invoiceAmount = this.math.bignumber(Number(paymentFactory));
 			// 使用新的票点计算公式：票点金额 = 开票金额 / (1 + 票点) * 票点
-			const ticketPointAmount = this.currentTicketPoint > 0 ? Number(((invoiceAmount / (1 + this.currentTicketPoint)) * this.currentTicketPoint).toFixed(2)) : 0;
-
+			let ticketPointAmount = 0;
+			if (this.math.larger(this.currentTicketPoint, 0)) {
+				const denominator = this.math.add(this.math.bignumber(1), this.math.bignumber(this.currentTicketPoint));
+				const fraction = this.math.divide(invoiceAmount, denominator);
+				const multiplied = this.math.multiply(fraction, this.math.bignumber(this.currentTicketPoint));
+				ticketPointAmount = Number(this.math.format(multiplied));
+			}
 			// 创建供应商发票对象
 			return this.createInvoiceObject({
 				invoiceDate: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
 				invoiceObject: sessionStorage.getItem('us'),
-				invoiceAmount: invoiceAmount,
+				invoiceAmount: Number(this.math.format(invoiceAmount)),
 				companyType: PUBLIC_DICT_TYPE.SUPPLIER,
 				companyName: _suppliers[0].supplier,
 				companyID: _suppliers[0].supplierID, // 供应商id
@@ -476,7 +466,6 @@ export default {
 			this.currentTicketPoint = 0;
 			this.currentTicketPointAmount = 0;
 		});
-
 		// 监听生成发票的触发（由 SelectGoods 发出）
 		this.$bus.$on('generate-invoice', this.generateInvoicesByTemplates);
 	},
@@ -507,11 +496,9 @@ export default {
 						<span class="money">{{ invoiceAmount || '无' }}</span>
 					</div>
 				</div>
-
 				<div class="invoice-list">
 					<InvoiceItem v-for="(item, index) in selectedInvoiceList" :key="index" :invoice="item" />
 				</div>
-
 				<!--    批量开票-->
 				<div class="options">
 					<el-button

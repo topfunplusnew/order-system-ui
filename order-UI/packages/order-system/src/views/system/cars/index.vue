@@ -36,7 +36,6 @@
 			v-horizontal-scroll="'always'"
 			border
 			:data="carsList"
-			height="450px"
 			size="mini"
 			:cell-style="
 				() => {

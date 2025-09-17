@@ -72,7 +72,7 @@
 					<el-table-column v-if="columns[5].visible" label="长度" align="center" prop="length" />
 					<el-table-column v-if="columns[6].visible" label="宽度" align="center" prop="width" />
 					<el-table-column v-if="columns[7].visible" label="吨位差" align="center" prop="tonnage" />
-					<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
+					<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
 						<template slot-scope="scope">
 							<el-button v-hasPermi="['system:productlevel:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
 							<el-button v-hasPermi="['system:productlevel:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>

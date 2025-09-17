@@ -45,7 +45,6 @@
 			v-horizontal-scroll="'always'"
 			border
 			:data="companyList"
-			height="650px"
 			size="mini"
 			:cell-style="
 				() => {
@@ -444,7 +443,7 @@ export default {
 			// 默认银行卡列表的id
 			currentID: '',
 			bankTotal: 0,
-			bankpageSize: 20,
+			bankPageSize: 20,
 			bankPageNum: 1
 		};
 	},
