@@ -122,7 +122,7 @@
 					</el-row>
 				</template>
 			</el-table-column>
-			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
 				<template slot-scope="scope">
 					<el-dropdown @command="command => handleCommand(command, scope.row)">
 						<el-button type="primary" size="mini">
