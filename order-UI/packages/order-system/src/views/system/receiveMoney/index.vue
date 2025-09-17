@@ -13,7 +13,7 @@
 				/>
 			</el-form-item>
 			<el-form-item label="支付类型" prop="receiveType">
-				<el-input v-model="queryParams.receiveType" placeholder="请输入支付类型" clearable style="width: 150px" @keyup.enter.native="handleQuery" />
+				<el-cascader v-model="queryParams.receiveType" :options="paymentTypeTree" :props="props" style="width: 150px" clearable />
 			</el-form-item>
 			<el-form-item label="我方户名" prop="selfAcountsName">
 				<el-input v-model="queryParams.selfAcountsName" placeholder="请输入我方户名" clearable style="width: 150px" @keyup.enter.native="handleQuery" />
@@ -23,9 +23,6 @@
 			</el-form-item>
 			<el-form-item label="对方公司" prop="companyName">
 				<el-input v-model="queryParams.companyName" placeholder="请输入对方公司" clearable style="width: 150px" @keyup.enter.native="handleQuery" />
-			</el-form-item>
-			<el-form-item label="备注" prop="comments">
-				<el-input v-model="queryParams.comments" placeholder="请输入备注" clearable style="width: 150px" @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -335,6 +332,7 @@ import { mixin_bankType } from '../../dashboard/mixins/common/common_bankType';
 import { mixin_receive_money_subject } from '@/views/dashboard/mixins/receivemoney/receive_money_subject';
 import { getBankAcceptance } from '@/api/system/bankAcceptance';
 import { parseTime } from '@/utils/ruoyi';
+import { mixin_payment_subject } from '../../dashboard/mixins/payment/payment_subject';
 
 export default {
 	name: 'ReceiveMoney',
@@ -353,7 +351,7 @@ export default {
 		}
 	},
 	components: { BankType, CheckFiles, UploadFilesButton, SearchOption },
-	mixins: [mixin_printHTML, mixin_receive_money_fill, mixin_checkfile, mixin_bankType, mixin_receive_money_subject],
+	mixins: [mixin_printHTML, mixin_receive_money_fill, mixin_checkfile, mixin_bankType, mixin_receive_money_subject, mixin_payment_subject],
 	data() {
 		return {
 			// 遮罩层
@@ -388,7 +386,7 @@ export default {
 				pageSize: 20,
 				receiveNO: null,
 				fundsDate: null,
-				receiveType: null,
+				receiveType: [],
 				tableName: null,
 				tID: null,
 				moneyAmount: null,
@@ -599,6 +597,10 @@ export default {
 			}
 			// 删除dateRange参数，避免传递给后端
 			delete params.dateRange;
+			// 把查询条件中的receiveType转成字符串
+			if (params.receiveType && Array.isArray(params.receiveType)) {
+				params.receiveType = params.receiveType.join('-');
+			}
 
 			listReceiveMoney(params).then(response => {
 				this.receiveMoneyList = response.rows;
@@ -729,6 +731,8 @@ export default {
 		/** 重置按钮操作 */
 		resetQuery() {
 			this.resetForm('queryForm');
+			// 重置级联选择器
+			this.queryParams.receiveType = [];
 			this.handleQuery();
 		},
 		// 多选框选中数据
