@@ -25,7 +25,7 @@ export default {
 			queryParams: {
 				startDate: null,
 				endDate: null,
-				payDate: '',
+				paymentDate: '',
 				fleet: '',
 				carNo: '',
 				bankName: '',
@@ -46,56 +46,56 @@ export default {
 				{
 					key: 0,
 					label: '运费状态',
-					prop: 'payment_state',
+					prop: 'paymentState',
 					visible: true
 				},
-				{ key: 1, label: '支付时间', prop: 'payDate', visible: true },
+				{ key: 1, label: '支付时间', prop: 'paymentDate', visible: true },
 				{
 					key: 2,
 					label: '运输类型',
-					prop: 'transport_type',
+					prop: 'transportType',
 					visible: true
 				},
 				{
 					key: 3,
 					label: '订单日期',
-					prop: 'document_date',
+					prop: 'documentDate',
 					visible: true
 				},
 				{
 					key: 4,
 					label: '客户/仓库名称',
-					prop: 'customer_or_storehouse_name',
+					prop: 'customerOrStorehouseName',
 					visible: true
 				},
-				{ key: 5, label: '录入员', prop: 'entry_user', visible: true },
+				{ key: 5, label: '录入员', prop: 'entryUser', visible: true },
 				{ key: 6, label: '车队/海运公司', prop: 'fleet', visible: true },
-				{ key: 7, label: '车牌号/柜号', prop: 'car_no', visible: true },
+				{ key: 7, label: '车牌号/柜号', prop: 'carNo', visible: true },
 				{ key: 8, label: '吨位', prop: 'tonnage', visible: true },
 				{
 					key: 9,
 					label: '平均运费价格',
-					prop: 'average_freight_price',
+					prop: 'averageFreightPrice',
 					visible: true
 				},
 				{ key: 10, label: '运费', prop: 'freight', visible: true },
 				{
 					key: 11,
 					label: '司机户名',
-					prop: 'driver_bank_name',
+					prop: 'driverAccountName',
 					visible: true
 				},
 				{
 					key: 12,
 					label: '司机银行账号',
-					prop: 'driver_bank_no',
+					prop: 'driverBankNo',
 					visible: true
 				},
 				{ key: 13, label: '订单来源', prop: 'source', visible: true },
 				{
 					key: 14,
 					label: '订单状态',
-					prop: 'check_state',
+					prop: 'checkState',
 					visible: true
 				},
 				{
@@ -107,7 +107,7 @@ export default {
 				{
 					key: 16,
 					label: '已支付金额',
-					prop: 'paid_amount',
+					prop: 'paidAmount',
 					visible: true
 				}
 			]
@@ -159,7 +159,7 @@ export default {
 			this.queryParams = {
 				startDate: null,
 				endDate: null,
-				payDate: '',
+				paymentDate: '',
 				fleet: '',
 				carNo: '',
 				bankName: '',
@@ -228,9 +228,9 @@ export default {
 			}
 		},
 		handleApplyFreight(row) {
-			if (row.transport_type === 'land') {
+			if (row.transportType === 'land') {
 				this.handleApplyLandFree(row);
-			} else if (row.transport_type === 'sea') {
+			} else if (row.transportType === 'sea') {
 				this.handleApplySeaFree(row);
 			}
 		}
@@ -252,7 +252,7 @@ export default {
 					<el-date-picker v-model="queryParams.endDate" type="date" value-format="yyyy-MM-dd" placeholder="请选择结束时间" clearable />
 				</el-form-item>
 				<el-form-item label="支付时间">
-					<el-date-picker v-model="queryParams.payDate" type="date" value-format="yyyy-MM-dd" placeholder="请选择支付时间" clearable />
+					<el-date-picker v-model="queryParams.paymentDate" type="date" value-format="yyyy-MM-dd" placeholder="请选择支付时间" clearable />
 				</el-form-item>
 				<el-form-item label="车队">
 					<el-input v-model="queryParams.fleet" placeholder="请输入车队" clearable />
@@ -291,50 +291,50 @@ export default {
 			</el-col>
 		</el-row>
 		<el-table id="printBox" :data="freightList" v-loading="loading" border fit size="mini" style="width: 100%; margin-top: 20px">
-			<CustomTableColumn v-if="columns[0].visible" show-overflow-tooltip prop="payment_state" label="运费状态" align="center" />
-			<CustomTableColumn v-if="columns[1].visible" show-overflow-tooltip prop="payDate" label="支付时间" align="center" />
+			<CustomTableColumn v-if="columns[0].visible" show-overflow-tooltip prop="paymentState" label="运费状态" align="center" />
+			<CustomTableColumn v-if="columns[1].visible" show-overflow-tooltip prop="paymentDate" label="支付时间" align="center" />
 			<CustomTableColumn v-if="columns[2].visible" show-overflow-tooltip label="运输类型" align="center">
 				<template #default="scope">
 					<span
 						:class="{
-							'sea-transport': scope.row.transport_type === 'sea',
-							'land-transport': scope.row.transport_type === 'land'
+							'sea-transport': scope.row.transportType === 'sea',
+							'land-transport': scope.row.transportType === 'land'
 						}"
 					>
-						{{ scope.row.transport_type === 'sea' ? '海运' : '陆运' }}
+						{{ scope.row.transportType === 'sea' ? '海运' : '陆运' }}
 					</span>
 				</template>
 			</CustomTableColumn>
-			<CustomTableColumn v-if="columns[3].visible" show-overflow-tooltip prop="document_date" label="订单日期" align="center" />
+			<CustomTableColumn v-if="columns[3].visible" show-overflow-tooltip prop="documentDate" label="订单日期" align="center" />
 			<CustomTableColumn v-if="columns[13].visible" show-overflow-tooltip prop="source" label="订单来源" align="center" />
-			<CustomTableColumn v-if="columns[14].visible" show-overflow-tooltip prop="check_state" label="订单状态" align="center" />
-			<CustomTableColumn v-if="columns[4].visible" show-overflow-tooltip prop="customer_or_storehouse_name" label="客户/仓库名称" align="center" />
-			<CustomTableColumn v-if="columns[5].visible" show-overflow-tooltip prop="entry_user" label="录入员" align="center" />
+			<CustomTableColumn v-if="columns[14].visible" show-overflow-tooltip prop="checkState" label="订单状态" align="center" />
+			<CustomTableColumn v-if="columns[4].visible" show-overflow-tooltip prop="customerOrStorehouseName" label="客户/仓库名称" align="center" />
+			<CustomTableColumn v-if="columns[5].visible" show-overflow-tooltip prop="entryUser" label="录入员" align="center" />
 			<CustomTableColumn show-overflow-tooltip prop="fleet" label="司机" align="center">
 				<template #default="scope">
-					{{ scope.row.transport_type === 'sea' ? '无' : scope.row.driverName }}
+					{{ scope.row.transportType === 'sea' ? '无' : scope.row.driverName }}
 				</template>
 			</CustomTableColumn>
 			<CustomTableColumn v-if="columns[6].visible" show-overflow-tooltip prop="fleet" label="车队" align="center">
 				<template #default="scope">
-					{{ scope.row.transport_type === 'sea' ? '无' : scope.row.fleet }}
+					{{ scope.row.transportType === 'sea' ? '无' : scope.row.fleet }}
 				</template>
 			</CustomTableColumn>
 			<CustomTableColumn v-if="columns[6].visible" show-overflow-tooltip prop="driverName" label="海运公司" align="center">
 				<template #default="scope">
-					{{ scope.row.transport_type === 'sea' ? scope.row.driverName : '无' }}
+					{{ scope.row.transportType === 'sea' ? scope.row.driverName : '无' }}
 				</template>
 			</CustomTableColumn>
-			<CustomTableColumn v-if="columns[7].visible" show-overflow-tooltip prop="car_no" label="车牌号/柜号" align="center" />
+			<CustomTableColumn v-if="columns[7].visible" show-overflow-tooltip prop="carNo" label="车牌号/柜号" align="center" />
 			<CustomTableColumn v-if="columns[8].visible" show-overflow-tooltip prop="tonnage" label="吨位" align="center">
 				<template #default="scope">
-					{{ scope.row.transport_type === 'sea' ? '无' : scope.row.tonnage }}
+					{{ scope.row.transportType === 'sea' ? '无' : scope.row.tonnage }}
 				</template>
 			</CustomTableColumn>
-			<CustomTableColumn v-if="columns[9].visible" show-overflow-tooltip prop="average_freight_price" label="平均运费价格" align="center" />
+			<CustomTableColumn v-if="columns[9].visible" show-overflow-tooltip prop="averageFreightPrice" label="平均运费价格" align="center" />
 			<CustomTableColumn v-if="columns[10].visible" show-overflow-tooltip prop="freight" label="运费" align="center" />
-			<CustomTableColumn v-if="columns[11].visible" show-overflow-tooltip prop="driver_bank_name" label="司机户名" align="center" />
-			<CustomTableColumn v-if="columns[12].visible" show-overflow-tooltip prop="driver_bank_no" label="司机银行账号" align="center" />
+			<CustomTableColumn v-if="columns[11].visible" show-overflow-tooltip prop="driverAccountName" label="司机户名" align="center" />
+			<CustomTableColumn v-if="columns[12].visible" show-overflow-tooltip prop="driverBankNo" label="司机银行账号" align="center" />
 			<CustomTableColumn v-if="columns[15].visible" show-overflow-tooltip label="收到条" align="center">
 				<template #default="scope">
 					<CheckFiles
@@ -345,11 +345,11 @@ export default {
 					/>
 				</template>
 			</CustomTableColumn>
-			<CustomTableColumn v-if="columns[16].visible" show-overflow-tooltip prop="paid_amount" label="已支付金额" align="center" />
+			<CustomTableColumn v-if="columns[16].visible" show-overflow-tooltip prop="paidAmount" label="已支付金额" align="center" />
 			<CustomTableColumn show-overflow-tooltip label="操作" align="center" class-name="small-padding fixed-width" width="180px">
 				<template #default="scope">
 					<el-button size="mini" type="text" @click="viewOrderDetails(scope.row)">查看详情</el-button>
-					<el-button size="mini" type="text" :disabled="scope.row.payment_state !== '未申请'" @click="handleApplyFreight(scope.row)">运费申请</el-button>
+					<el-button size="mini" type="text" :disabled="scope.row.paymentState !== '未申请'" @click="handleApplyFreight(scope.row)">运费申请</el-button>
 				</template>
 			</CustomTableColumn>
 		</el-table>

@@ -362,10 +362,6 @@ export default {
 			this.columns = JSON.parse(localStorage.getItem('fundflowdetail-columns'));
 		}
 	}
-	// created() {
-	// 	// 初始加载数据
-	// 	this.fetchStatementData();
-	// }
 };
 </script>
 
