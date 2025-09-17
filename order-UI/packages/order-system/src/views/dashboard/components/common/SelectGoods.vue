@@ -6,6 +6,7 @@ import { mapGetters } from 'vuex';
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import OrderDisplay from '@/components/OrderDisplay/index.vue';
+import { create, all } from 'mathjs';
 
 export default {
 	name: 'SelectGoods',
@@ -13,7 +14,16 @@ export default {
 	mixins: [common_dialog],
 	computed: {
 		// 拿出需要的
-		...mapGetters(['ticketPoint', 'comment'])
+		...mapGetters(['ticketPoint', 'comment']),
+		// 计算剩余开票金额的方法
+		calculateRemainingAmount() {
+			return row => {
+				const allPayments = this.math.bignumber(row.allPayments || 0);
+				const totalInvoiceAmount = this.math.bignumber(row.params.totalInvoiceAmount || 0);
+				const remaining = this.math.subtract(allPayments, totalInvoiceAmount);
+				return Number(this.math.format(remaining, { precision: 2, notation: 'fixed' }));
+			};
+		}
 	},
 	watch: {
 		// 监听两个值的变化 取消禁用多选框
@@ -62,6 +72,7 @@ export default {
 		};
 	},
 	created() {
+		this.math = create(all, { number: 'BigNumber', precision: 64 });
 		this.resetParams();
 		this.getList();
 	},
@@ -149,10 +160,12 @@ export default {
 				// 筛选出未开完的订单
 				this.goodsOrderList = res.rows
 					.map(row => {
-						// 计算剩余开票金额
-						const remainingInvoiceAmount = Number(row.allPayments) - Number(row.params.totalInvoiceAmount || 0);
+						// 计算剩余开票金额 - 使用 mathjs 进行精确计算
+						const allPayments = this.math.bignumber(row.allPayments || 0);
+						const totalInvoiceAmount = this.math.bignumber(row.params.totalInvoiceAmount || 0);
+						const remainingInvoiceAmount = this.math.subtract(allPayments, totalInvoiceAmount);
 						// 只返回剩余开票金额大于0的订单
-						if (remainingInvoiceAmount > 0) {
+						if (this.math.larger(remainingInvoiceAmount, this.math.bignumber(0))) {
 							return row;
 						}
 						return null;
@@ -187,7 +200,6 @@ export default {
 			if (value.id < 0) this.refresh();
 			// 什么都不选 就只getList
 			if (!value.id) this.refresh();
-			console.log('筛选订单，类型=>', value);
 			value.type === PUBLIC_DICT_TYPE.CUSTOMER ? this.handleCustomerFilter(value.id) : this.handleSupplierFilter(value.id);
 		},
 		// 对客户的筛选
@@ -279,49 +291,58 @@ export default {
 		},
 		// 计算操作金额的函数
 		calculateMoney(rows, type) {
-			let money = 0;
-			if (rows.length === 0) return money;
+			let money = this.math.bignumber(0);
+			if (rows.length === 0) return Number(this.math.format(money, { precision: 2, notation: 'fixed' }));
+
 			for (let row of rows) {
 				if (type === PUBLIC_DICT_TYPE.CUSTOMER) {
-					if (row.params.totalInvoiceAmount > 0) {
-						if (row.params.totalInvoiceAmount > row.allPayments) {
+					const totalInvoiceAmount = this.math.bignumber(row.params.totalInvoiceAmount || 0);
+					if (this.math.larger(totalInvoiceAmount, this.math.bignumber(0))) {
+						const allPayments = this.math.bignumber(row.allPayments || 0);
+						if (this.math.larger(totalInvoiceAmount, allPayments)) {
 							this.$message.warning('参数有误：已开票金额大于总货款');
 							// 取消勾选
 							this.$refs.goodsTable.clearSelection();
 							break;
 						}
-						money += row.params.totalInvoiceAmount;
+						money = this.math.add(money, totalInvoiceAmount);
 					} else {
 						// 客户操作金额
-						money += row.allPayments;
+						const allPayments = this.math.bignumber(row.allPayments || 0);
+						money = this.math.add(money, allPayments);
 					}
 				} else if (type === PUBLIC_DICT_TYPE.SUPPLIER) {
-					let _total = 0;
+					let _total = this.math.bignumber(0);
 					if (!row.smailOrderDetails) {
 						this.$message.warning('该行订单详情为空，总出厂货款为0');
 					} else {
-						// 计算总的出场货款
-						_total = row.smailOrderDetails.reduce((pre, cur) => pre + Number(cur.paymentFactory), 0);
+						// 计算总的出场货款 - 使用 mathjs 进行精确计算
+						_total = row.smailOrderDetails.reduce((pre, cur) => {
+							return this.math.add(this.math.bignumber(pre), this.math.bignumber(cur.paymentFactory || 0));
+						}, this.math.bignumber(0));
 					}
-					if (row.params.totalInvoiceAmount > 0) {
-						if (row.params.totalInvoiceAmount > _total) {
+
+					const totalInvoiceAmount = this.math.bignumber(row.params.totalInvoiceAmount || 0);
+					if (this.math.larger(totalInvoiceAmount, this.math.bignumber(0))) {
+						if (this.math.larger(totalInvoiceAmount, _total)) {
 							this.$message.warning('参数有误：已开票金额大于总出厂货款');
 							// 取消勾选
 							this.$refs.goodsTable.clearSelection();
 							break;
 						}
-						money += row.params.totalInvoiceAmount;
+						money = this.math.add(money, totalInvoiceAmount);
 					} else {
 						row.smailOrderDetails.forEach(detail => {
 							if (detail.supplierID === this.id) {
-								money += detail.paymentFactory;
+								const paymentFactory = this.math.bignumber(detail.paymentFactory || 0);
+								money = this.math.add(money, paymentFactory);
 							}
 						});
 					}
 				}
 			}
 
-			return money;
+			return Number(this.math.format(money, { precision: 2, notation: 'fixed' }));
 		},
 
 		handleQuery(value) {
@@ -431,7 +452,7 @@ export default {
 			<el-table-column type="selection" width="55" align="center" :selectable="selectable" />
 			<el-table-column v-if="type" show-overflow-tooltip :label="type + `剩余开票金额`" align="center" width="150px">
 				<template #default="scope">
-					{{ Number(scope.row.allPayments) - Number(scope.row.params.totalInvoiceAmount) }}
+					{{ calculateRemainingAmount(scope.row) }}
 				</template>
 			</el-table-column>
 			<el-table-column show-overflow-tooltip label="ID" align="center" prop="id" />

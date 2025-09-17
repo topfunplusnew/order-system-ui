@@ -329,13 +329,13 @@ export default {
 					const invoice = this.createInvoiceObject({
 						invoiceDate: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
 						invoiceObject: sessionStorage.getItem('us'),
-						invoiceAmount: Number(this.math.format(used)),
+						invoiceAmount: Number(this.math.format(used, { precision: 2, notation: 'fixed' })),
 						companyType: companyTypeConst,
 						companyName: companyName,
 						companyID: companyID,
 						invoiceCompanyName: companyName,
 						ticketPoint: tpl.ticketPoint || tpl.ticketPointAmount || 0,
-						ticketPointAmount: Number(this.math.format(this.math.multiply(used, b(tpl.ticketPoint || 0)))),
+						ticketPointAmount: Number(this.math.format(this.math.multiply(used, b(tpl.ticketPoint || 0)), { precision: 2, notation: 'fixed' })),
 						isOrderTax: order.id,
 						comments: this.comment
 					});
@@ -344,7 +344,7 @@ export default {
 					remaining = this.math.subtract(remaining, used);
 					const tplRemainAfter = this.math.subtract(tplAmount, used);
 					// 将剩余模板金额写回 pool（转为普通数字），便于后续继续使用
-					templatePool[i].total = Number(this.math.format(tplRemainAfter));
+					templatePool[i].total = Number(this.math.format(tplRemainAfter, { precision: 2, notation: 'fixed' }));
 					// 如果订单已被完全抵扣，则结束当前订单的模板匹配
 					if (this.math.largerEq(b(0), remaining) || this.math.equal(remaining, b(0))) {
 						orderFullyInvoiced = true;
@@ -381,13 +381,13 @@ export default {
 				const denominator = this.math.add(this.math.bignumber(1), this.math.bignumber(this.currentTicketPoint));
 				const fraction = this.math.divide(invoiceAmount, denominator);
 				const multiplied = this.math.multiply(fraction, this.math.bignumber(this.currentTicketPoint));
-				ticketPointAmount = Number(this.math.format(multiplied));
+				ticketPointAmount = Number(this.math.format(multiplied, { precision: 2, notation: 'fixed' }));
 			}
 			// 创建客户发票对象
 			return this.createInvoiceObject({
 				invoiceDate: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
 				invoiceObject: sessionStorage.getItem('us'), // 己方公司实体
-				invoiceAmount: Number(this.math.format(invoiceAmount)),
+				invoiceAmount: Number(this.math.format(invoiceAmount, { precision: 2, notation: 'fixed' })),
 				companyType: PUBLIC_DICT_TYPE.CUSTOMER,
 				companyName: orderItem.customer,
 				companyID: orderItem.customerID,
@@ -408,20 +408,20 @@ export default {
 			if (_suppliers.length === 0) return null;
 			// 计算该供应商的出场货款
 			const paymentFactory = _suppliers.reduce((pre, cur) => this.math.add(this.math.bignumber(pre), this.math.bignumber(cur.paymentFactory)), this.math.bignumber(0));
-			const invoiceAmount = this.math.bignumber(Number(paymentFactory));
+			const invoiceAmount = this.math.bignumber(Number(this.math.format(paymentFactory, { precision: 2, notation: 'fixed' })));
 			// 使用新的票点计算公式：票点金额 = 开票金额 / (1 + 票点) * 票点
 			let ticketPointAmount = 0;
 			if (this.math.larger(this.currentTicketPoint, 0)) {
 				const denominator = this.math.add(this.math.bignumber(1), this.math.bignumber(this.currentTicketPoint));
 				const fraction = this.math.divide(invoiceAmount, denominator);
 				const multiplied = this.math.multiply(fraction, this.math.bignumber(this.currentTicketPoint));
-				ticketPointAmount = Number(this.math.format(multiplied));
+				ticketPointAmount = Number(this.math.format(multiplied, { precision: 2, notation: 'fixed' }));
 			}
 			// 创建供应商发票对象
 			return this.createInvoiceObject({
 				invoiceDate: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
 				invoiceObject: sessionStorage.getItem('us'),
-				invoiceAmount: Number(this.math.format(invoiceAmount)),
+				invoiceAmount: Number(this.math.format(invoiceAmount, { precision: 2, notation: 'fixed' })),
 				companyType: PUBLIC_DICT_TYPE.SUPPLIER,
 				companyName: _suppliers[0].supplier,
 				companyID: _suppliers[0].supplierID, // 供应商id
@@ -493,7 +493,7 @@ export default {
 					</div>
 					<div class="info-item">
 						<span class="info-label">剩余开票金额：</span>
-						<span class="money">{{ invoiceAmount || '无' }}</span>
+						<span class="money">{{ Number(invoiceAmount).toFixed(2) || '暂无' }}</span>
 					</div>
 				</div>
 				<div class="invoice-list">
