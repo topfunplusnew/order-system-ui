@@ -443,6 +443,7 @@ export default {
 			// 清空开票金额
 			this.$store.dispatch('excel/clearInvoiceAmount');
 		});
+		// 监听左侧选择某个公司点击检索后
 		this.$bus.$on('update-goods-order-company', value => {
 			this.companyName = value.name;
 			this.invoiceType = value.type;
