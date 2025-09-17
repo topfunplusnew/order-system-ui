@@ -76,7 +76,7 @@ export var common_dialog = {
 			document.body.appendChild(instance.$el);
 			this._dialogInstances.push(instance); // 监听 close 事件
 			instance.$on('close', callback => {
-				callback(this).finally(() => {
+				callback(this).then(() => {
 					this._reallyCloseDialog(config.id);
 					// 根据isList参数决定是否调用getList
 					if (config.isList && this.getList) {
