@@ -669,13 +669,8 @@ export default {
 <template>
 	<div>
 		<!--    这是框架自带的搜索模组，封装成了组件并且放在与index.vue同级目录下-->
-		<div>
-			<el-card class="box-card">
-				<QuerySearchBar @updateQuery="handleGetQueryParams" :is-adjust="isAdjustOrder" />
-			</el-card>
-		</div>
+		<QuerySearchBar @updateQuery="handleGetQueryParams" :is-adjust="isAdjustOrder" />
 		<br />
-
 		<!--    订单历史记录查看-->
 		<div>
 			<OrderHistoryCheck
@@ -685,18 +680,19 @@ export default {
 				@close="closeOrderHistoryCheck"
 			/>
 		</div>
-
-		<!--    顶部按钮操作-->
-		<div style="padding: 10px">
-			<el-row :gutter="10" class="mb8">
-				<el-col v-if="!isAdjustOrder" :span="1.5">
-					<el-button v-hasPermi="['system:goodsorder:add']" type="danger" size="mini" @click="handleAdd">添加订单信息</el-button>
-				</el-col>
-			</el-row>
-		</div>
 		<!--      右侧的工具栏-->
 		<div>
 			<right-toolbar :columns="columns" @queryTable="getList">
+				<!-- 左侧的新增订单的按钮 -->
+				<template #left>
+					<div style="padding: 10px">
+						<el-row :gutter="10" class="mb8">
+							<el-col v-if="!isAdjustOrder" :span="1.5">
+								<el-button v-hasPermi="['system:goodsorder:add']" type="danger" size="mini" @click="handleAdd">添加订单信息</el-button>
+							</el-col>
+						</el-row>
+					</div>
+				</template>
 				<template #print>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML" />

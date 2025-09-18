@@ -1,38 +1,46 @@
 <template>
-	<div class="top-right-btn" :style="style">
-		<el-row>
-			<!--      打印-->
-			<el-tooltip class="item" effect="dark" content="打印" placement="top" style="margin-right: 10px">
-				<slot name="print"></slot>
-			</el-tooltip>
+	<div class="toolbar-container" :style="style">
+		<!-- 左侧自定义内容插槽 可以放新增按钮等 -->
+		<div class="left-content">
+			<slot name="left"></slot>
+		</div>
 
-			<!--      导出-->
-			<el-tooltip class="item" effect="dark" content="导出" placement="top">
-				<slot name="export"></slot>
-			</el-tooltip>
-			<el-tooltip class="item" effect="dark" content="导出2" placement="top">
-				<slot name="export2"></slot>
-			</el-tooltip>
-			<!-- 隐藏列的控制   -->
-			<el-tooltip v-if="columns" class="item" style="margin-right: 10px" effect="dark" content="显隐列" placement="top">
-				<el-button v-if="showColumnsType == 'transfer'" size="mini" circle icon="el-icon-s-open" @click="showColumn()" />
-				<el-dropdown v-if="showColumnsType == 'checkbox'" trigger="click" :hide-on-click="false" style="padding-left: 12px">
-					<el-button size="mini" icon="el-icon-s-open" />
-					<el-dropdown-menu slot="dropdown" class="multi-column-dropdown" :style="{ width: columnGroups.length > 1 ? '800px' : 'auto' }">
-						<div class="columns-container" :class="{ 'multi-columns': columnGroups.length > 1 }" :style="{ display: columnGroups.length > 1 ? 'flex' : 'block' }">
-							<div v-for="(group, groupIndex) in columnGroups" :key="groupIndex" class="column-group" :style="{ flex: columnGroups.length > 1 ? '1' : 'none' }">
-								<el-dropdown-item v-for="item in group" :key="item.key || item.prop || item.label">
-									<el-checkbox :checked="item.visible" :label="item.label" @change="checkboxChange($event, item.label)" />
-								</el-dropdown-item>
+		<!-- 右侧工具栏 -->
+		<div class="top-right-btn">
+			<el-row>
+				<!--      打印-->
+				<el-tooltip class="item" effect="dark" content="打印" placement="top" style="margin-right: 10px">
+					<slot name="print"></slot>
+				</el-tooltip>
+
+				<!--      导出-->
+				<el-tooltip class="item" effect="dark" content="导出" placement="top">
+					<slot name="export"></slot>
+				</el-tooltip>
+				<el-tooltip class="item" effect="dark" content="导出2" placement="top">
+					<slot name="export2"></slot>
+				</el-tooltip>
+				<!-- 隐藏列的控制   -->
+				<el-tooltip v-if="columns" class="item" style="margin-right: 10px" effect="dark" content="显隐列" placement="top">
+					<el-button v-if="showColumnsType == 'transfer'" size="mini" circle icon="el-icon-s-open" @click="showColumn()" />
+					<el-dropdown v-if="showColumnsType == 'checkbox'" trigger="click" :hide-on-click="false" style="padding-left: 12px">
+						<el-button size="mini" icon="el-icon-s-open" />
+						<el-dropdown-menu slot="dropdown" class="multi-column-dropdown" :style="{ width: columnGroups.length > 1 ? '800px' : 'auto' }">
+							<div class="columns-container" :class="{ 'multi-columns': columnGroups.length > 1 }" :style="{ display: columnGroups.length > 1 ? 'flex' : 'block' }">
+								<div v-for="(group, groupIndex) in columnGroups" :key="groupIndex" class="column-group" :style="{ flex: columnGroups.length > 1 ? '1' : 'none' }">
+									<el-dropdown-item v-for="item in group" :key="item.key || item.prop || item.label">
+										<el-checkbox :checked="item.visible" :label="item.label" @change="checkboxChange($event, item.label)" />
+									</el-dropdown-item>
+								</div>
 							</div>
-						</div>
-					</el-dropdown-menu>
-				</el-dropdown>
-			</el-tooltip>
-		</el-row>
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :title="title" :visible.sync="open" append-to-body>
-			<el-transfer v-model="value" :titles="['显示', '隐藏']" :data="columns" @change="dataChange"></el-transfer>
-		</el-dialog>
+						</el-dropdown-menu>
+					</el-dropdown>
+				</el-tooltip>
+			</el-row>
+			<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :title="title" :visible.sync="open" append-to-body>
+				<el-transfer v-model="value" :titles="['显示', '隐藏']" :data="columns" @change="dataChange"></el-transfer>
+			</el-dialog>
+		</div>
 	</div>
 </template>
 <script>
@@ -172,6 +180,28 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+// 工具栏容器 - 弹性盒布局
+.toolbar-container {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	width: 100%;
+}
+
+// 左侧内容区域
+.left-content {
+	flex: 1;
+	display: flex;
+	align-items: center;
+}
+
+// 右侧工具按钮区域
+.top-right-btn {
+	flex-shrink: 0;
+	display: flex;
+	align-items: center;
+}
+
 ::v-deep .el-transfer__button {
 	border-radius: 50%;
 	padding: 12px;

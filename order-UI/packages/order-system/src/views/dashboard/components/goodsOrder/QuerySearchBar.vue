@@ -17,58 +17,58 @@
 				/>
 			</el-form-item>
 			<el-form-item v-if="shouldShowField('customer')" label="客户名称" prop="customer">
-				<el-input v-model="queryParams.customer" placeholder="请输入客户名称" clearable size="mini" @keyup.enter.native="handleQuery"></el-input>
+				<el-input v-model="queryParams.customer" placeholder="请输入客户名称" clearable size="mini" class="input-standard" @keyup.enter.native="handleQuery"></el-input>
 			</el-form-item>
 			<el-form-item v-if="shouldShowField('supplierNames')" label="供应商" prop="supplierNames">
-				<el-input v-model="queryParams.params.supplierNames" placeholder="请输入供应商名称" clearable size="mini" @keyup.enter.native="handleQuery"></el-input>
+				<el-input v-model="queryParams.params.supplierNames" placeholder="请输入供应商名称" clearable size="mini" class="input-standard" @keyup.enter.native="handleQuery"></el-input>
 			</el-form-item>
 			<el-form-item v-if="shouldShowField('landDriverName')" label="司机名称" prop="landDriverName">
-				<el-input v-model="queryParams.landDriverName" placeholder="请输入司机名称" clearable size="mini" @keyup.enter.native="handleQuery"></el-input>
+				<el-input v-model="queryParams.landDriverName" placeholder="请输入司机名称" clearable size="mini" class="input-medium" @keyup.enter.native="handleQuery"></el-input>
 			</el-form-item>
 			<el-form-item v-if="shouldShowField('landCarNo')" label="车牌" prop="landCarNo">
-				<el-input v-model="queryParams.landCarNo" placeholder="请输入车牌" clearable size="mini" @keyup.enter.native="handleQuery"></el-input>
+				<el-input v-model="queryParams.landCarNo" placeholder="请输入车牌" clearable size="mini" class="input-short" @keyup.enter.native="handleQuery"></el-input>
 			</el-form-item>
 			<el-form-item v-if="shouldShowField('seaDriverName')" label="海运公司" prop="seaDriverName">
-				<el-input v-model="queryParams.seaDriverName" placeholder="请输入海运公司" clearable size="mini" @keyup.enter.native="handleQuery"></el-input>
+				<el-input v-model="queryParams.seaDriverName" placeholder="请输入海运公司" clearable size="mini" class="input-medium" @keyup.enter.native="handleQuery"></el-input>
 			</el-form-item>
 			<el-form-item v-if="shouldShowField('seaCarNo')" label="柜号" prop="seaCarNo">
-				<el-input v-model="queryParams.seaCarNo" placeholder="请输入柜号" clearable size="mini" @keyup.enter.native="handleQuery"></el-input>
+				<el-input v-model="queryParams.seaCarNo" placeholder="请输入柜号" clearable size="mini" class="input-short" @keyup.enter.native="handleQuery"></el-input>
 			</el-form-item>
 			<el-form-item v-if="shouldShowField('fleet')" label="车队名称" prop="fleet">
-				<el-input v-model="queryParams.fleet" placeholder="请输入车队名称" clearable size="mini" @keyup.enter.native="handleQuery"></el-input>
+				<el-input v-model="queryParams.fleet" placeholder="请输入车队名称" clearable size="mini" class="input-medium" @keyup.enter.native="handleQuery"></el-input>
 			</el-form-item>
 			<el-form-item v-if="shouldShowField('userName')" label="录入员" prop="userName">
-				<el-input v-model="queryParams.userName" placeholder="请输入录入员" clearable size="mini" @keyup.enter.native="handleQuery"></el-input>
+				<el-input v-model="queryParams.userName" placeholder="请输入录入员" clearable size="mini" class="input-medium" @keyup.enter.native="handleQuery"></el-input>
 			</el-form-item>
 			<el-form-item v-if="shouldShowField('saleManager')" label="销售经理" prop="saleManager">
-				<el-input v-model="queryParams.saleManager" placeholder="请输入车队名称" clearable size="mini" @keyup.enter.native="handleQuery"></el-input>
+				<el-input v-model="queryParams.saleManager" placeholder="请输入销售经理" clearable size="mini" class="input-medium" @keyup.enter.native="handleQuery"></el-input>
 			</el-form-item>
 			<el-form-item v-if="shouldShowField('checkState')" label="审核状态" prop="checkState">
-				<el-select v-model="queryParams.checkState" placeholder="请选择" size="mini" clearable>
+				<el-select v-model="queryParams.checkState" placeholder="请选择" size="mini" clearable class="select-standard">
 					<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
 				</el-select>
 			</el-form-item>
 			<el-form-item v-if="shouldShowField('isIncludeTaxFactory')" label="供应商是否开票">
-				<el-select v-model="queryParams.params.isIncludeTaxFactory" placeholder="请选择" size="mini" clearable>
+				<el-select v-model="queryParams.params.isIncludeTaxFactory" placeholder="请选择" size="mini" clearable class="input-short">
 					<el-option v-for="item in OptionInvent()" :key="item.value" :label="item.label" :value="item.value"></el-option>
 				</el-select>
 			</el-form-item>
 			<el-form-item v-if="shouldShowField('isIncludeTaxSale')" label="客户是否开票">
-				<el-select v-model="queryParams.params.isIncludeTaxSale" placeholder="请选择" size="mini" clearable>
+				<el-select v-model="queryParams.params.isIncludeTaxSale" placeholder="请选择" size="mini" clearable class="input-short">
 					<el-option v-for="item in OptionInvent()" :key="item.value" :label="item.label" :value="item.value"></el-option>
 				</el-select>
 			</el-form-item>
 			<el-form-item v-if="shouldShowField('levelName')" label="级别名称" prop="levelName">
-				<el-input v-model="queryParams.params.levelName" placeholder="请输入级别名称" clearable size="mini" @keyup.enter.native="handleQuery"></el-input>
+				<el-input v-model="queryParams.params.levelName" placeholder="请输入级别名称" clearable size="mini" class="input-medium" @keyup.enter.native="handleQuery"></el-input>
 			</el-form-item>
 			<el-form-item v-if="shouldShowField('length')" label="长度" prop="length">
-				<el-input v-model="queryParams.params.length" placeholder="请输入长度" clearable size="mini" @keyup.enter.native="handleQuery"></el-input>
+				<el-input v-model="queryParams.params.length" placeholder="请输入长度" clearable size="mini" class="input-short" @keyup.enter.native="handleQuery"></el-input>
 			</el-form-item>
 			<el-form-item v-if="shouldShowField('width')" label="宽度" prop="width">
-				<el-input v-model="queryParams.params.width" placeholder="请输入宽度" clearable size="mini" @keyup.enter.native="handleQuery"></el-input>
+				<el-input v-model="queryParams.params.width" placeholder="请输入宽度" clearable size="mini" class="input-short" @keyup.enter.native="handleQuery"></el-input>
 			</el-form-item>
 			<el-form-item v-if="shouldShowField('height')" label="厚度" prop="height">
-				<el-input v-model="queryParams.params.height" placeholder="请输入厚度" clearable size="mini" @keyup.enter.native="handleQuery"></el-input>
+				<el-input v-model="queryParams.params.height" placeholder="请输入厚度" clearable size="mini" class="input-short" @keyup.enter.native="handleQuery"></el-input>
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -263,4 +263,31 @@ export default {
 	}
 };
 </script>
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+// 根据placeholder文本长度调整表单项宽度
+
+// 短输入框 - 120px (3-5字符placeholder)
+.input-short {
+	width: 70px !important;
+}
+
+// 中等输入框 - 140px (6-7字符placeholder)
+.input-medium {
+	width: 110px !important;
+}
+
+// 长输入框 - 160px (8字符placeholder)
+.input-long {
+	width: 140px !important;
+}
+
+// 标准选择框 - 120px
+.select-standard {
+	width: 100px !important;
+}
+
+// 时间范围选择器保持原有宽度
+::v-deep .el-date-editor {
+	width: 280px !important;
+}
+</style>
