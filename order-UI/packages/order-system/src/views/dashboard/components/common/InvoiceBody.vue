@@ -8,7 +8,7 @@ import { getUuid } from '@/utils/trash/utils';
 import { TableName } from '@/api/tool/enums';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import { batchInvoice } from '@/api/system/excel';
-import { markOperated, makeUniqueKeyByIdName } from '@/api/excelTemplateStore';
+import { markOperated, makeUniqueKeyByIdName, markOperatedByCompanyId, markOperatedByRecordId } from '@/api/excelTemplateStore';
 import INVOICE_OUT from '@/components/NeedToShow/INVOICE_OUT.vue';
 import INVOICE_IN from '@/components/NeedToShow/INVOICE_IN.vue';
 
@@ -155,38 +155,47 @@ export default {
 				// 清理 sessionStorage 中的临时开票数据
 				sessionStorage.removeItem('invoiceAmount');
 				sessionStorage.removeItem('us');
-				// 广播清理事件
-				this.$bus.$emit('invoice-clear');
-				this.$message.success('本批开票成功');
-				// 标记模板行为已操作（基于当前版本 + 选择的公司维度）
+				// 标记模板行为已操作（基于当前版本 + 选择的公司维度）——放在清理事件之前，避免 sessionStorage 被清空
 				try {
 					const raw = localStorage.getItem('batch-invoice-session');
 					const session = raw ? JSON.parse(raw) : {};
 					const version = session && session.timestamp ? session.timestamp : null;
 					if (version) {
-						const keys = [];
-						// 根据开票类型，使用当前右侧公司维度（supplierId/companyName 或 customerID/customer）生成唯一键
-						if (this.invoiceType === this.PUBLIC_DICT_TYPE.SUPPLIER && this.supplierId) {
-							keys.push(makeUniqueKeyByIdName(this.supplierId, this.companyName));
+						// 优先根据 CompanysList 选中行的记录主键 id 精确标记
+						const selectedRecordId = sessionStorage.getItem('companyList_selected_record_id');
+						console.log('selectedRecordId', selectedRecordId);
+						if (selectedRecordId !== null && selectedRecordId !== undefined) {
+							await markOperatedByRecordId(version, Number(selectedRecordId));
+							const maybeKey = this.companyName ? makeUniqueKeyByIdName(null, this.companyName) : '';
+							console.log('maybeKey', maybeKey);
+							this.$nextTick(() => {
+								this.$bus.$emit('excel:operated-updated', { version, keys: maybeKey ? [maybeKey] : [] });
+							});
+						} else {
+							// 退化为根据公司ID批量标记
+							let companyId = null;
+							if (this.invoiceType === this.PUBLIC_DICT_TYPE.SUPPLIER && this.supplierId) {
+								companyId = this.supplierId;
+							}
+							if (this.invoiceType === this.PUBLIC_DICT_TYPE.CUSTOMER) {
+								const anyOrder = (this.$store.getters.selectedOrder || [])[0];
+								companyId = anyOrder ? anyOrder.customerID : null;
+							}
+							if (companyId !== null && companyId !== undefined) {
+								await markOperatedByCompanyId(version, companyId);
+								const maybeKey = makeUniqueKeyByIdName(companyId, this.companyName);
+								this.$nextTick(() => {
+									this.$bus.$emit('excel:operated-updated', { version, keys: [maybeKey] });
+								});
+							}
 						}
-						if (this.invoiceType === this.PUBLIC_DICT_TYPE.CUSTOMER && this.companyName) {
-							// 客户场景 companyName + id（从选中订单中取任一行的customerID）
-							const anyOrder = (this.$store.getters.selectedOrder || [])[0];
-							const cid = anyOrder ? anyOrder.customerID : 0;
-							keys.push(makeUniqueKeyByIdName(cid, this.companyName));
-						}
-                if (keys.length > 0) {
-                  const uniqKeys = Array.from(new Set(keys));
-                  await markOperated(version, uniqKeys);
-                  // 通知左侧公司列表刷新“已操作”状态（携带版本与键，便于乐观更新）
-                  this.$nextTick(() => {
-                    this.$bus.$emit('excel:operated-updated', { version, keys: uniqKeys });
-                  });
-                }
 					}
 				} catch (e) {
 					console.error('标记模板行已操作失败:', e);
 				}
+				// 广播清理事件（放在回写之后）
+				this.$bus.$emit('invoice-clear');
+				this.$message.success('本批开票成功');
 				// 成功后保存一次快照，记录清空后的状态
 				this.saveGeneratedInvoicesSession();
 			} else {

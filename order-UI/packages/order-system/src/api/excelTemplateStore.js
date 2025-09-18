@@ -137,3 +137,58 @@ export async function clearVersion(version) {
 	await waitTransaction(tx);
 	db.close();
 }
+
+// 根据版本与公司ID（sellerId 或 purchaseId）批量标记 operated=true
+export async function markOperatedByCompanyId(version, companyId) {
+	if (companyId === undefined || companyId === null) return;
+	const db = await openDB();
+	const tx = db.transaction([STORE_TEMPLATES], 'readwrite');
+	const store = tx.objectStore(STORE_TEMPLATES);
+	const idx = store.index('version');
+	const range = IDBKeyRange.only(version);
+	await new Promise((resolve, reject) => {
+		const req = idx.openCursor(range);
+		req.onsuccess = e => {
+			const cursor = e.target.result;
+			if (cursor) {
+				const rec = cursor.value;
+				const data = rec && rec.data ? rec.data : {};
+				if (Number(data.sellerId) === Number(companyId) || Number(data.purchaseId) === Number(companyId)) {
+					rec.operated = true;
+					store.put(rec);
+				}
+				cursor.continue();
+			} else resolve();
+		};
+		req.onerror = e => reject(e.target.error);
+	});
+	await waitTransaction(tx);
+	db.close();
+}
+
+// 根据版本与记录主键ID精确标记 operated=true（最可靠）
+export async function markOperatedByRecordId(version, recordId) {
+	if (recordId === undefined || recordId === null) return;
+	const db = await openDB();
+	const tx = db.transaction([STORE_TEMPLATES], 'readwrite');
+	const store = tx.objectStore(STORE_TEMPLATES);
+	const idx = store.index('version');
+	const range = IDBKeyRange.only(version);
+	await new Promise((resolve, reject) => {
+		const req = idx.openCursor(range);
+		req.onsuccess = e => {
+			const cursor = e.target.result;
+			if (cursor) {
+				if (Number(cursor.primaryKey) === Number(recordId)) {
+					const rec = cursor.value;
+					rec.operated = true;
+					store.put(rec);
+				}
+				cursor.continue();
+			} else resolve();
+		};
+		req.onerror = e => reject(e.target.error);
+	});
+	await waitTransaction(tx);
+	db.close();
+}

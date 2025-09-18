@@ -401,23 +401,23 @@ export default {
 					// 支持外部触发“继续上次开票”
 					this.$bus.$on('excel:resume', this.openFromSession);
 					// 监听已操作状态变更，实时刷新映射
-    this.$bus.$on('excel:operated-updated', async payload => {
-      const { version, keys } = payload || {};
-      // 乐观更新：先把传入的键标记为已操作
-      if (Array.isArray(keys) && keys.length > 0) {
-        const nextMap = { ...(this.templateOperatedMap || {}) };
-        keys.forEach(k => (nextMap[k] = true));
-        this.templateOperatedMap = nextMap;
-      }
-      // 再从 IndexedDB 拉一次，确保最终一致
-      const v = version || this.currentVersion;
-      if (!v) return;
-      try {
-        const map = await getOperatedMap(v);
-        this.templateOperatedMap = map || {};
-        this.$nextTick(() => {});
-      } catch (e) {}
-    });
+					this.$bus.$on('excel:operated-updated', async payload => {
+						const { version, keys } = payload || {};
+						// 乐观更新：先把传入的键标记为已操作
+						if (Array.isArray(keys) && keys.length > 0) {
+							const nextMap = { ...(this.templateOperatedMap || {}) };
+							keys.forEach(k => (nextMap[k] = true));
+							this.templateOperatedMap = nextMap;
+						}
+						// 再从 IndexedDB 拉一次，确保最终一致
+						const v = version || this.currentVersion;
+						if (!v) return;
+						try {
+							const map = await getOperatedMap(v);
+							this.templateOperatedMap = map || {};
+							this.$nextTick(() => {});
+						} catch (e) {}
+					});
 				},
 				beforeDestroy() {
 					this.$bus.$off('excel:resume', this.openFromSession);

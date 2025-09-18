@@ -137,6 +137,8 @@ export default {
 			// 需要暂存我方实体
 			sessionStorage.setItem('us', row.us || '');
 			sessionStorage.setItem('invoiceAmount', row.total);
+			// 额外存储：当前选中行的记录主键 id，供 InvoiceBody 精确回写
+			sessionStorage.setItem('companyList_selected_record_id', row.id);
 			// 方便变颜色
 			this.selectedRowId = row.id;
 			// 不在检索时标记，由开具发票成功后由上层写入映射
