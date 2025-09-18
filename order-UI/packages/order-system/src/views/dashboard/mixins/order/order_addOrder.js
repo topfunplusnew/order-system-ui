@@ -27,6 +27,7 @@ export var mixin_order_add = {
 					orderId: null,
 					submitInfo: '添加订单'
 				},
+				false,
 				false
 			);
 		},
