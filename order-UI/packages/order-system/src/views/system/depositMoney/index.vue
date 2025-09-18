@@ -64,7 +64,7 @@
 		<el-table v-loading="loading" :data="depositMoneyList" border size="mini" :cell-style="cellStyle" @selection-change="handleSelectionChange" class="table-container">
 			<CustomTableColumn type="selection" width="55" align="center" />
 			<CustomTableColumn v-for="column in visibleColumns" :key="column.key" v-bind="getColumnProps(column)" />
-			<CustomTableColumn label="操作" align="center" class-name="small-padding fixed-width" width="200">
+			<CustomTableColumn label="操作" align="center" class-name="small-padding fixed-width" width="300" fixed="right">
 				<template slot-scope="scope">
 					<el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)">修改</el-button>
 					<el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)">删除</el-button>

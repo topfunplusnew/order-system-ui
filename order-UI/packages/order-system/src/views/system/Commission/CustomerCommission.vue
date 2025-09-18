@@ -59,10 +59,11 @@
 			id="printBox"
 			v-loading="loading"
 			v-horizontal-scroll="'always'"
+			fit
 			border
 			:data="computedTableData"
 			size="mini"
-			:height="600"
+			max-height="750"
 			:cell-style="
 				() => {
 					return { padding: '1.5px' };
@@ -124,7 +125,7 @@
 				</template>
 			</CustomTableColumn>
 			<!--      加一列操作列-->
-			<CustomTableColumn show-overflow-tooltip label="操作" align="center" width="230">
+			<CustomTableColumn show-overflow-tooltip label="操作" align="center" class-name="small-padding fixed-width" width="230" fixed="right">
 				<template slot-scope="scope">
 					<el-button type="text" size="mini" @click="handleEdit(scope.row)">{{ scope.row.id ? '修改佣金信息' : '填写佣金信息' }}</el-button>
 					<el-button :disabled="scope.row.id === null" type="text" size="mini" @click="handleDelete(scope.row)">删除</el-button>

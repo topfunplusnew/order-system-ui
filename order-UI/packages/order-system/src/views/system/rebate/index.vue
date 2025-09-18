@@ -132,7 +132,7 @@
 			</el-table-column>
 
 			<!-- 操作 -->
-			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="150px" fixed="right">
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="150px">
 				<template slot-scope="scope">
 					<el-button v-hasPermi="['system:rebate:edit']" size="mini" type="text" @click="handleRebate(scope.row)">返利</el-button>
 					<el-button v-hasPermi="['system:rebate:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>

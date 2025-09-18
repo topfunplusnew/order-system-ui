@@ -6,6 +6,8 @@ import InvoiceBody from '@/views/dashboard/components/common/InvoiceBody.vue';
 import SelectGoods from '@/views/dashboard/components/common/SelectGoods.vue';
 import SheetItem from '@/views/dashboard/components/common/SheetItem.vue';
 import { mixin_excel_server } from '@/views/dashboard/components/common/utils/excelServer';
+import TripleDragDiv from '@/components/DragDiv/TripleDragDiv.vue';
+import { upsertTemplates, getOperatedMap, makeUniqueKeyByTemplate } from '@/api/excelTemplateStore';
 
 // 默认导出组件
 export default {
@@ -16,7 +18,8 @@ export default {
 		InvoiceBody,
 		// CompanyInformation,
 		SelectGoods,
-		SheetItem
+		SheetItem,
+		TripleDragDiv
 	},
 	mixins: [mixin_excel_server],
 	// 接收文件读取到的sheetList 渲染出来给用户看 并且可以选择看哪一个
@@ -70,11 +73,73 @@ export default {
 					suppliers: { total: 0, count: 0 }, // 供应商作为销方的统计
 					customers: { total: 0, count: 0 } // 客户作为销方的统计
 				}
-			}
+			},
 			// 模板数据（按对方身份拆分）
+			// 本次导入的版本号（时间戳）
+			currentVersion: null,
+			// 已操作映射（来自 IndexedDB）
+			templateOperatedMap: {}
 		};
 	},
 	methods: {
+		// 保存当前批量开票会话（模板/聚合/统计/已生成列表）
+		saveBatchInvoiceSession(extra = {}) {
+			try {
+				const payload = {
+					purchaseTemplateData: this.$store?.state?.excel?.purchaseTemplateData || [],
+					sellerTemplateData: this.$store?.state?.excel?.sellerTemplateData || [],
+					purchaseTotalInfo: this.purchaseTotalInfo || [],
+					sellerTotalInfo: this.sellerTotalInfo || [],
+					statisticsInfo: this.statisticsInfo || {},
+					generatedInvoices: this.$store?.getters?.selectedInvoiceList || [],
+					timestamp: Date.now(),
+					...extra
+				};
+				localStorage.setItem('batch-invoice-session', JSON.stringify(payload));
+			} catch (e) {
+				console.error('保存批量开票会话失败:', e);
+			}
+		},
+		// 从本地恢复批量开票会话，并直接打开全屏弹窗
+		openFromSession() {
+			try {
+				const raw = localStorage.getItem('batch-invoice-session');
+				if (!raw) {
+					this.$message.info('暂无上次开票会话');
+					return;
+				}
+				const session = JSON.parse(raw);
+				// 恢复版本号
+				this.currentVersion = session && session.timestamp ? session.timestamp : null;
+				// 恢复模板到 Vuex
+				if (Array.isArray(session.purchaseTemplateData)) {
+					this.$store.dispatch('excel/setPurchaseTemplateData', session.purchaseTemplateData);
+				}
+				if (Array.isArray(session.sellerTemplateData)) {
+					this.$store.dispatch('excel/setSellerTemplateData', session.sellerTemplateData);
+				}
+				// 恢复聚合与统计
+				this.purchaseTotalInfo = Array.isArray(session.purchaseTotalInfo) ? session.purchaseTotalInfo : [];
+				this.sellerTotalInfo = Array.isArray(session.sellerTotalInfo) ? session.sellerTotalInfo : [];
+				this.statisticsInfo = session.statisticsInfo || {
+					purchaseStats: { suppliers: { total: 0, count: 0 }, customers: { total: 0, count: 0 } },
+					sellerStats: { suppliers: { total: 0, count: 0 }, customers: { total: 0, count: 0 } }
+				};
+				// 恢复已生成的发票清单（如有）
+				if (Array.isArray(session.generatedInvoices)) {
+					this.$store.dispatch('excel/setSelectedInvoiceList', session.generatedInvoices);
+				}
+				// 打开全屏弹窗
+				this.invoiceAllVisible = true;
+				// 加载已操作映射
+				if (this.currentVersion) {
+					getOperatedMap(this.currentVersion).then(map => (this.templateOperatedMap = map || {}));
+				}
+			} catch (e) {
+				console.error('恢复批量开票会话失败:', e);
+				this.$message.error('无法恢复上次开票会话');
+			}
+		},
 		/**
 		 * 对某一个excel点击打开的函数
 		 * @param excelItem 选中的某一个excel 例:信息汇总表
@@ -107,10 +172,22 @@ export default {
 						excelInfo = this.handleReadExcel();
 					}
 
+					// 本次导入版本：使用时间戳
+					this.currentVersion = Date.now();
 					await this.processExcelData(excelInfo, excelIndex);
+					// 将模板写入/更新到 IndexedDB（带版本）
+					try {
+						const templates = (this.$store.state.excel.purchaseTemplateData || []).concat(this.$store.state.excel.sellerTemplateData || []);
+						await upsertTemplates(this.currentVersion, templates);
+						this.templateOperatedMap = await getOperatedMap(this.currentVersion);
+					} catch (err) {
+						console.error('写入模板至 IndexedDB 失败:', err);
+					}
 
 					// 打开弹窗
 					this.invoiceAllVisible = true;
+					// 首次打开后，保存一次会话
+					this.saveBatchInvoiceSession();
 				} catch (error) {
 					console.error('处理Excel数据失败:', error);
 					this.$message.error('处理数据时发生错误，请重试');
@@ -285,6 +362,8 @@ export default {
 			// 暂存购买方和销方的信息
 			this.handleStorePurchaseInfo(this.purchaseTotalInfo);
 			this.handleStoreSellerInfo(this.sellerTotalInfo);
+			// 保存一次会话快照
+			this.saveBatchInvoiceSession();
 		},
 		// 映射关系 这里可以自定义
 		mapperParams(item) {
@@ -317,6 +396,32 @@ export default {
 				sellerStats: {
 					suppliers: { total: 0, count: 0 },
 					customers: { total: 0, count: 0 }
+				},
+				mounted() {
+					// 支持外部触发“继续上次开票”
+					this.$bus.$on('excel:resume', this.openFromSession);
+					// 监听已操作状态变更，实时刷新映射
+    this.$bus.$on('excel:operated-updated', async payload => {
+      const { version, keys } = payload || {};
+      // 乐观更新：先把传入的键标记为已操作
+      if (Array.isArray(keys) && keys.length > 0) {
+        const nextMap = { ...(this.templateOperatedMap || {}) };
+        keys.forEach(k => (nextMap[k] = true));
+        this.templateOperatedMap = nextMap;
+      }
+      // 再从 IndexedDB 拉一次，确保最终一致
+      const v = version || this.currentVersion;
+      if (!v) return;
+      try {
+        const map = await getOperatedMap(v);
+        this.templateOperatedMap = map || {};
+        this.$nextTick(() => {});
+      } catch (e) {}
+    });
+				},
+				beforeDestroy() {
+					this.$bus.$off('excel:resume', this.openFromSession);
+					this.$bus.$off('excel:operated-updated');
 				}
 			};
 
@@ -488,17 +593,14 @@ export default {
 		<div>
 			<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="批量开票" fullscreen :visible.sync="invoiceAllVisible" append-to-body>
 				<div class="invoice-container">
-					<el-row :gutter="16" class="invoice-row">
-						<!-- 左侧区域 -->
-						<el-col :xl="6" :lg="7" :md="8" :sm="24" :xs="24" class="column-section left-section">
+					<TripleDragDiv style="height: 100%" :initial-left-width="360" :initial-middle-width="640" :min-left-width="240" :min-middle-width="360" :min-right-width="320">
+						<template #left>
 							<div class="section-wrapper">
-								<!-- 公司列表卡片 - 占用整个左侧空间 -->
 								<div class="company-list-section-full">
 									<el-card class="full-height-card">
 										<div slot="header" class="card-header">
 											<span class="bold-text">公司列表</span>
 										</div>
-										<!-- 搜索表单 -->
 										<el-form class="search-form">
 											<el-row :gutter="8">
 												<el-col :span="12">
@@ -522,7 +624,6 @@ export default {
 											</el-row>
 										</el-form>
 
-										<!-- 公司列表 -->
 										<div class="company-lists">
 											<el-divider>
 												<span class="bold-text">购买方信息</span>
@@ -531,6 +632,7 @@ export default {
 												side="purchase"
 												:company-total-info="purchaseTotalInfo"
 												:statistics-info="statisticsInfo ? statisticsInfo.purchaseStats : { suppliers: { total: 0, count: 0 }, customers: { total: 0, count: 0 } }"
+												:operated-map="templateOperatedMap"
 												@handleCheck="handleCheck"
 											/>
 											<el-divider>
@@ -540,16 +642,16 @@ export default {
 												side="seller"
 												:company-total-info="sellerTotalInfo"
 												:statistics-info="statisticsInfo ? statisticsInfo.sellerStats : { suppliers: { total: 0, count: 0 }, customers: { total: 0, count: 0 } }"
+												:operated-map="templateOperatedMap"
 												@handleCheck="handleCheck"
 											/>
 										</div>
 									</el-card>
 								</div>
 							</div>
-						</el-col>
+						</template>
 
-						<!-- 中间区域 -->
-						<el-col :xl="12" :lg="11" :md="10" :sm="24" :xs="24" class="column-section middle-section">
+						<template #middle>
 							<div class="section-wrapper">
 								<el-card class="full-height-card">
 									<div slot="header" class="card-header">
@@ -561,15 +663,14 @@ export default {
 									</div>
 								</el-card>
 							</div>
-						</el-col>
+						</template>
 
-						<!-- 右侧区域 -->
-						<el-col :xl="6" :lg="6" :md="6" :sm="24" :xs="24" class="column-section right-section">
+						<template #right>
 							<div class="section-wrapper">
 								<InvoiceBody />
 							</div>
-						</el-col>
-					</el-row>
+						</template>
+					</TripleDragDiv>
 				</div>
 				<span slot="footer" class="dialog-footer">
 					<el-button @click="handleClose">关 闭</el-button>

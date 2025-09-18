@@ -26,6 +26,11 @@ export default {
 					customers: { total: 0, count: 0 }
 				};
 			}
+		},
+		// 来自父组件（SheetList）的 IndexedDB 已操作映射：{ 'id::name': true/false }
+		operatedMap: {
+			type: Object,
+			default: () => ({})
 		}
 	},
 	data() {
@@ -55,6 +60,15 @@ export default {
 		this.$bus.$off('select-goods:update'); // 清理事件监听
 	},
 	methods: {
+		// 唯一键：与模板侧保持一致（id::name）
+		makeKey(row) {
+			if (!row) return '';
+			return `${row.id || 0}::${row.name || ''}`;
+		},
+		isOperated(row) {
+			const key = this.makeKey(row);
+			return !!(key && this.operatedMap && this.operatedMap[key]);
+		},
 		openTemplateViewer() {
 			// 仅在有数据时打开
 			if (!this.selectedTemplateData || this.selectedTemplateData.length === 0) {
@@ -125,6 +139,7 @@ export default {
 			sessionStorage.setItem('invoiceAmount', row.total);
 			// 方便变颜色
 			this.selectedRowId = row.id;
+			// 不在检索时标记，由开具发票成功后由上层写入映射
 		},
 		// 点击某一行变颜色的函数
 		handleRowClassName({ row }) {
@@ -186,6 +201,11 @@ export default {
 				<el-table-column prop="total" label="开票金额">
 					<template slot-scope="scope">
 						<span class="bold-text money">{{ scope.row.total }}</span>
+					</template>
+				</el-table-column>
+				<el-table-column label="已操作" width="80" align="center">
+					<template slot-scope="scope">
+						<el-tag size="mini" :type="isOperated(scope.row) ? 'success' : 'info'">{{ isOperated(scope.row) ? '是' : '否' }}</el-tag>
 					</template>
 				</el-table-column>
 			</el-table>

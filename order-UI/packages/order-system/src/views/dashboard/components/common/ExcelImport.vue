@@ -39,6 +39,18 @@ export default {
 		};
 	},
 	methods: {
+		// 恢复上次开票流程，直接打开批量开票全屏弹窗
+		resumeLast() {
+			const raw = localStorage.getItem('batch-invoice-session');
+			if (!raw) {
+				this.$message.info('暂无上次开票会话');
+				return;
+			}
+			// 通知 SheetList 恢复
+			this.$bus.$emit('excel:resume');
+			// 打开sheet选择弹窗（SheetList 内会再打开全屏）
+			this.dialogVisible = true;
+		},
 		// 点击后上传 通过主动调用ref
 		handleUpload() {
 			// 清空状态
@@ -348,6 +360,7 @@ export default {
 				<div class="action-buttons">
 					<el-button class="compact-btn download-btn" type="primary" icon="el-icon-download" size="small" @click="downloadTemplate">下载模板</el-button>
 					<el-button class="compact-btn upload-btn" type="success" icon="el-icon-upload" size="small" @click="handleUpload">批量开票</el-button>
+					<el-button class="compact-btn" type="warning" icon="el-icon-refresh" size="small" @click="resumeLast">继续上次开票</el-button>
 					<input ref="fileInput" type="file" class="file-input-hidden" multiple @change="onChange" />
 				</div>
 			</div>

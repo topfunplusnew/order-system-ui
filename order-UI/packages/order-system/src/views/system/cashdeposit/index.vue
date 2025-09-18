@@ -99,7 +99,7 @@
 				<el-table-column label="备注" align="center" prop="comments" show-overflow-tooltip />
 
 				<!-- 操作列 -->
-				<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
+				<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
 					<template slot-scope="scope">
 						<el-dropdown trigger="click">
 							<el-button size="mini" type="text">

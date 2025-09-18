@@ -1192,8 +1192,6 @@
 			left: 0;
 			right: 0;
 			height: 15px !important;
-			background-color: #fafafa !important; // 更改为浅灰色背景
-			border-top: 1px solid #ebeef5;
 			z-index: -1 !important; // 设置为负值，确保在滚动条下面
 			pointer-events: none !important; // 让鼠标事件穿透，不阻止滚动条点击
 		}
@@ -1207,8 +1205,6 @@
 			left: 0;
 			right: 0;
 			height: 15px !important;
-			background-color: white !important; // 更改为透明背景
-			border-top: 1px solid #ebeef5;
 			z-index: 100 !important; // 设置为负值，确保在滚动条下面
 			pointer-events: none !important; // 让鼠标事件穿透，不阻止滚动条点击
 		}

@@ -8,6 +8,7 @@ import { getUuid } from '@/utils/trash/utils';
 import { TableName } from '@/api/tool/enums';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import { batchInvoice } from '@/api/system/excel';
+import { markOperated, makeUniqueKeyByIdName } from '@/api/excelTemplateStore';
 import INVOICE_OUT from '@/components/NeedToShow/INVOICE_OUT.vue';
 import INVOICE_IN from '@/components/NeedToShow/INVOICE_IN.vue';
 
@@ -56,6 +57,21 @@ export default {
 		}
 	},
 	methods: {
+		// 保存当前生成结果到本地（与 SheetList 会话格式兼容）
+		saveGeneratedInvoicesSession() {
+			try {
+				const raw = localStorage.getItem('batch-invoice-session');
+				const base = raw ? JSON.parse(raw) : {};
+				// 保持版本号（timestamp）不变，仅更新已生成清单
+				const payload = {
+					...base,
+					generatedInvoices: this.$store?.getters?.selectedInvoiceList || []
+				};
+				localStorage.setItem('batch-invoice-session', JSON.stringify(payload));
+			} catch (e) {
+				console.error('保存开票生成结果失败:', e);
+			}
+		},
 		// 创建发票对象的工具函数
 		createInvoiceObject(params) {
 			const { invoiceDate, invoiceObject, invoiceAmount, companyType, companyName, companyID, invoiceCompanyName, ticketPoint = 0, ticketPointAmount, isOrderTax, comments } = params;
@@ -142,6 +158,37 @@ export default {
 				// 广播清理事件
 				this.$bus.$emit('invoice-clear');
 				this.$message.success('本批开票成功');
+				// 标记模板行为已操作（基于当前版本 + 选择的公司维度）
+				try {
+					const raw = localStorage.getItem('batch-invoice-session');
+					const session = raw ? JSON.parse(raw) : {};
+					const version = session && session.timestamp ? session.timestamp : null;
+					if (version) {
+						const keys = [];
+						// 根据开票类型，使用当前右侧公司维度（supplierId/companyName 或 customerID/customer）生成唯一键
+						if (this.invoiceType === this.PUBLIC_DICT_TYPE.SUPPLIER && this.supplierId) {
+							keys.push(makeUniqueKeyByIdName(this.supplierId, this.companyName));
+						}
+						if (this.invoiceType === this.PUBLIC_DICT_TYPE.CUSTOMER && this.companyName) {
+							// 客户场景 companyName + id（从选中订单中取任一行的customerID）
+							const anyOrder = (this.$store.getters.selectedOrder || [])[0];
+							const cid = anyOrder ? anyOrder.customerID : 0;
+							keys.push(makeUniqueKeyByIdName(cid, this.companyName));
+						}
+                if (keys.length > 0) {
+                  const uniqKeys = Array.from(new Set(keys));
+                  await markOperated(version, uniqKeys);
+                  // 通知左侧公司列表刷新“已操作”状态（携带版本与键，便于乐观更新）
+                  this.$nextTick(() => {
+                    this.$bus.$emit('excel:operated-updated', { version, keys: uniqKeys });
+                  });
+                }
+					}
+				} catch (e) {
+					console.error('标记模板行已操作失败:', e);
+				}
+				// 成功后保存一次快照，记录清空后的状态
+				this.saveGeneratedInvoicesSession();
 			} else {
 				this.$message.error('本批开票有误 请检查错误信息后重新提交');
 
@@ -360,6 +407,8 @@ export default {
 			// 将生成的发票列表写入 Vuex，触发界面更新
 			this.$store.dispatch('excel/setSelectedInvoiceList', resultInvoices);
 			this.$message.success(`生成 ${resultInvoices.length} 条发票记录`);
+			// 保存生成结果到本地，便于恢复
+			this.saveGeneratedInvoicesSession();
 		},
 
 		// 分配金额的具体函数 选择某一个订单后要扣钱

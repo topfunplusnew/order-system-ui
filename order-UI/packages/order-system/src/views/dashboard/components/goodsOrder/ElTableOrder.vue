@@ -1586,30 +1586,6 @@ export default {
 	line-height: 1.2;
 }
 
-::v-deep .el-table .cell {
-	/* 统一单元格行高，避免固定列与主体错位 */
-	white-space: nowrap !important;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	line-height: 28px !important;
-	height: 28px !important;
-}
-
-::v-deep .el-table__fixed,
-::v-deep .el-table__fixed-right {
-	/* 保证固定列同样的行高表现 */
-	.cell {
-		line-height: 28px !important;
-		height: 28px !important;
-	}
-}
-
-/* 压缩整体内边距，保持视觉紧凑且统一 */
-::v-deep .el-table td,
-::v-deep .el-table th {
-	padding: 0 6px !important;
-}
-
 .supplier-name {
 	color: #409eff; // 蓝色表示供应商
 	cursor: pointer;
@@ -1692,44 +1668,6 @@ export default {
 
 	.el-dialog__header {
 		padding: 15px 20px 10px;
-	}
-}
-
-// 紧凑型表格样式
-::v-deep .compact-table {
-	.el-table__body-wrapper {
-		.el-table__row {
-			height: 40px;
-
-			td {
-				padding: 8px 0;
-				font-size: 13px;
-			}
-		}
-	}
-
-	.el-table__header-wrapper {
-		.el-table__header {
-			th {
-				padding: 8px 0;
-				font-size: 13px;
-				font-weight: 500;
-			}
-		}
-	}
-
-	.el-card {
-		margin-bottom: 15px;
-
-		.el-card__header {
-			padding: 12px 20px;
-			font-size: 14px;
-			font-weight: 500;
-		}
-
-		.el-card__body {
-			padding: 10px 20px 15px;
-		}
 	}
 }
 </style>

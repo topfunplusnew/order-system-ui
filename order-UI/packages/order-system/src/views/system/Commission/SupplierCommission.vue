@@ -59,10 +59,11 @@
 			id="printBox"
 			v-loading="loading"
 			v-horizontal-scroll="'always'"
+			fit
 			border
 			:data="computedTableData"
 			size="mini"
-			:height="600"
+			max-height="750"
 			:cell-style="
 				() => {
 					return { padding: '1.5px' };
@@ -73,18 +74,10 @@
 			<CustomTableColumn type="selection" width="55" align="center" :selectable="(row, index) => row.id !== null && isPaymentUnApplied(row)" />
 			<el-table-column width="80" align="center" label="批量选择">
 				<template slot="header">
-					<el-checkbox 
-						v-model="selectAllBatch" 
-						:indeterminate="isBatchIndeterminate" 
-						@change="handleBatchSelectAll">
-					</el-checkbox>
+					<el-checkbox v-model="selectAllBatch" :indeterminate="isBatchIndeterminate" @change="handleBatchSelectAll"></el-checkbox>
 				</template>
 				<template slot-scope="scope">
-					<el-checkbox 
-						v-if="scope.row.id === null" 
-						:value="isBatchRowSelected(scope.row)" 
-						@change="handleBatchToggle(scope.row, $event)">
-					</el-checkbox>
+					<el-checkbox v-if="scope.row.id === null" :value="isBatchRowSelected(scope.row)" @change="handleBatchToggle(scope.row, $event)"></el-checkbox>
 					<span v-else>-</span>
 				</template>
 			</el-table-column>
@@ -137,7 +130,7 @@
 				</template>
 			</CustomTableColumn>
 			<!--      加一列操作列-->
-			<CustomTableColumn show-overflow-tooltip label="操作" align="center" width="230" fixed="right">
+			<CustomTableColumn show-overflow-tooltip label="操作" align="center" width="230" class-name="small-padding fixed-width" fixed="right">
 				<template slot-scope="scope">
 					<el-button type="text" size="mini" @click="handleEdit(scope.row)">{{ scope.row.id ? '修改佣金信息' : '填写佣金信息' }}</el-button>
 					<el-button :disabled="scope.row.id === null" type="text" size="mini" @click="handleDelete(scope.row)">删除</el-button>
