@@ -1,10 +1,10 @@
 <template>
 	<div class="app-container">
-		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="120px">
+		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="80px">
 			<el-form-item label="付款时间">
 				<el-date-picker
 					v-model="dateRange"
-					style="width: 240px"
+					class="date-range-280"
 					value-format="yyyy-MM-dd HH:mm:ss"
 					type="daterange"
 					range-separator="-"
@@ -14,7 +14,7 @@
 			</el-form-item>
 			<!--      客户还是供应商-->
 			<el-form-item label="对象类型" prop="companyType">
-				<el-select v-model="queryParams.companyType" placeholder="请选择对象类型" clearable>
+				<el-select class="input-short" v-model="queryParams.companyType" placeholder="请选择对象类型" clearable>
 					<el-option v-for="item in options_companyType" :key="item.value" :label="item.label" :value="item.value"></el-option>
 				</el-select>
 			</el-form-item>
@@ -22,22 +22,22 @@
 				<el-cascader v-model="queryParams.payType" :options="paymentTypeTree" :props="props" @change="handleChange"></el-cascader>
 			</el-form-item>
 			<el-form-item label="我方户名" prop="selfAccountsName">
-				<el-input v-model="queryParams.selfAccountsName" placeholder="请输入我方户名" clearable @keyup.enter.native="handleQuery" />
+				<el-input class="input-medium" v-model="queryParams.selfAccountsName" placeholder="请输入我方户名" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="对方公司" prop="companyName">
-				<el-input v-model="queryParams.companyName" placeholder="请输入对方公司" clearable @keyup.enter.native="handleQuery" />
+				<el-input class="input-medium" v-model="queryParams.companyName" placeholder="请输入对方公司" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="对方户名" prop="otherAccountsName">
-				<el-input v-model="queryParams.otherAccountsName" placeholder="请输入对方户名" clearable @keyup.enter.native="handleQuery" />
+				<el-input class="input-medium" v-model="queryParams.otherAccountsName" placeholder="请输入对方户名" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="对方银行卡号" prop="selfBankID">
-				<el-input v-model="queryParams.otherBankNo" placeholder="请输入对方银行卡号" clearable @keyup.enter.native="handleQuery" />
+				<el-input class="input-medium" v-model="queryParams.otherBankNo" placeholder="请输入对方银行卡号" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="备注" prop="otherBankNo">
-				<el-input v-model="queryParams.comments" placeholder="请输入备注" clearable @keyup.enter.native="handleQuery" />
+				<el-input class="input-long" v-model="queryParams.comments" placeholder="请输入备注" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="复核状态" prop="auditState">
-				<el-select v-model="queryParams.auditState" placeholder="请选择复核状态" clearable>
+				<el-select class="input-short" v-model="queryParams.auditState" placeholder="请选择复核状态" clearable>
 					<el-option v-for="item in auditState_options" :key="item.value" :label="item.label" :value="item.value"></el-option>
 				</el-select>
 			</el-form-item>
@@ -47,15 +47,19 @@
 		</el-form>
 
 		<el-row :gutter="10" class="mb8">
-			<!-- 刷新按钮-->
-			<el-col :span="1.5">
-				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
-			</el-col>
-			<!--      解开了新增付款信息-->
-			<el-col :span="1.5">
-				<el-button v-hasPermi="['system:payment:add']" type="danger" size="mini" @click="handleAdd">新增付款信息</el-button>
-			</el-col>
 			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
+				<template #left>
+					<rl-row>
+						<!-- 刷新按钮-->
+						<el-col :span="1.5">
+							<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
+						</el-col>
+						<!--      解开了新增付款信息-->
+						<el-col :span="1.5">
+							<el-button v-hasPermi="['system:payment:add']" type="danger" size="mini" @click="handleAdd">新增付款信息</el-button>
+						</el-col>
+					</rl-row>
+				</template>
 				<template #print>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>

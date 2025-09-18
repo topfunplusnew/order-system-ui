@@ -1,6 +1,6 @@
 <template>
 	<div class="app-container">
-		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="100px">
+		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="80px">
 			<el-form-item label="时间段" prop="dateRange">
 				<el-date-picker
 					v-model="queryParams.dateRange"
@@ -9,34 +9,37 @@
 					start-placeholder="开始日期"
 					end-placeholder="结束日期"
 					value-format="yyyy-MM-dd HH:mm:ss"
-					style="width: 300px"
+					class="date-range-280"
 				/>
 			</el-form-item>
 			<el-form-item label="支付类型" prop="receiveType">
-				<el-cascader v-model="queryParams.receiveType" :options="paymentTypeTree" :props="props" style="width: 150px" clearable />
+				<el-cascader v-model="queryParams.receiveType" :options="paymentTypeTree" :props="props" class="input-medium" clearable />
 			</el-form-item>
 			<el-form-item label="我方户名" prop="selfAcountsName">
-				<el-input v-model="queryParams.selfAcountsName" placeholder="请输入我方户名" clearable style="width: 150px" @keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.selfAcountsName" class="input-medium" placeholder="请输入我方户名" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="对方户名" prop="otherAcountsName">
-				<el-input v-model="queryParams.otherAcountsName" placeholder="请输入对方户名" clearable style="width: 150px" @keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.otherAcountsName" class="input-medium" placeholder="请输入对方户名" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="对方公司" prop="companyName">
-				<el-input v-model="queryParams.companyName" placeholder="请输入对方公司" clearable style="width: 150px" @keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.companyName" class="input-medium" placeholder="请输入对方公司" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
 			</el-form-item>
 		</el-form>
-
 		<el-row :gutter="10" class="mb8">
-			<el-col :span="1.5">
-				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
-			</el-col>
-			<el-col :span="1.5">
-				<el-button v-hasPermi="['system:receivemoney:add']" type="danger" size="mini" @click="handleAdd">新增收款信息</el-button>
-			</el-col>
 			<right-toolbar :show-search.sync="showSearch" :columns="columns" @queryTable="getList">
+				<template #left>
+					<rl-row>
+						<el-col :span="1.5">
+							<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
+						</el-col>
+						<el-col :span="1.5">
+							<el-button v-hasPermi="['system:receivemoney:add']" type="danger" size="mini" @click="handleAdd">新增收款信息</el-button>
+						</el-col>
+					</rl-row>
+				</template>
 				<template #print>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML" />

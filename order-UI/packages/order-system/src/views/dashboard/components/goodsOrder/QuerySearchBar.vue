@@ -10,7 +10,7 @@
 					end-placeholder="结束日期"
 					value-format="yyyy-MM-dd"
 					size="mini"
-					style="width: 280px"
+					class="date-range-280"
 					unlink-panels
 					:clearable="true"
 					@change="onDateRangeChange"
@@ -263,31 +263,4 @@ export default {
 	}
 };
 </script>
-<style lang="scss" scoped>
-// 根据placeholder文本长度调整表单项宽度
-
-// 短输入框 - 120px (3-5字符placeholder)
-.input-short {
-	width: 70px !important;
-}
-
-// 中等输入框 - 140px (6-7字符placeholder)
-.input-medium {
-	width: 110px !important;
-}
-
-// 长输入框 - 160px (8字符placeholder)
-.input-long {
-	width: 140px !important;
-}
-
-// 标准选择框 - 120px
-.select-standard {
-	width: 100px !important;
-}
-
-// 时间范围选择器保持原有宽度
-::v-deep .el-date-editor {
-	width: 280px !important;
-}
-</style>
+<style lang="scss" scoped></style>
