@@ -51,7 +51,7 @@
 			<el-table-column v-if="columns[3].visible" label="还款账户" align="center" prop="acountsName" show-overflow-tooltip />
 			<el-table-column v-if="columns[4].visible" label="还款账号" align="center" prop="bankNo" show-overflow-tooltip />
 			<el-table-column label="备注" align="center" prop="comments" show-overflow-tooltip />
-			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
+			<el-table-column label="操作" align="center" class-name="small-padding">
 				<template slot-scope="scope">
 					<el-button v-if="scope.row.checkState === '未申请'" size="mini" type="warning" @click="applyForPayment(scope.row)">申请付款</el-button>
 					<el-button v-if="scope.row.checkState === '审核中'" size="mini" type="warning" disabled>审核中</el-button>
