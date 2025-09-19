@@ -368,7 +368,7 @@ export default {
 			<div class="middle-section">
 				<el-steps :active="currentStep" simple class="compact-steps">
 					<el-step title="下载模板" icon="el-icon-download"></el-step>
-					<el-step title="填写信息" icon="el-icon-edit-outline"></el-step>
+					<el-step title="填写信息" icon="el-icon-edit-outline" @click.native="resumeLast"></el-step>
 					<el-step title="批量开票" icon="el-icon-s-order"></el-step>
 				</el-steps>
 			</div>
@@ -378,7 +378,6 @@ export default {
 				<div class="action-buttons">
 					<el-button class="compact-btn download-btn" type="primary" icon="el-icon-download" size="small" @click="downloadTemplate">下载模板</el-button>
 					<el-button class="compact-btn upload-btn" type="success" icon="el-icon-upload" size="small" @click="handleUpload">批量开票</el-button>
-					<el-button class="compact-btn" type="warning" icon="el-icon-refresh" size="small" @click="resumeLast">继续上次开票</el-button>
 					<input ref="fileInput" type="file" class="file-input-hidden" multiple @change="onChange" />
 				</div>
 			</div>

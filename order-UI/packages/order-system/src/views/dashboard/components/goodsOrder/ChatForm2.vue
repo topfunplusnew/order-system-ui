@@ -73,7 +73,7 @@ export default {
 				<div>客户：{{ orderInfo.customer }}</div>
 				<div>日期：{{ orderInfo.orderDate }}</div>
 				<div>车号：{{ orderInfo.landCarNo }}</div>
-				<div>单据编号：{{ orderInfo.ordersNo }}</div>
+				<div>单据编号：{{ orderInfo.code }}</div>
 			</div>
 
 			<table>
