@@ -20,8 +20,8 @@ export default {
 <template>
 	<div>
 		<el-card>
-			<el-descriptions title="订单详情" column="3">
-				<el-descriptions-item label="订单号">{{ needToShowInfo.ordersNo }}</el-descriptions-item>
+			<el-descriptions title="订单详情" column="6">
+				<el-descriptions-item label="订单号">{{ needToShowInfo.code }}</el-descriptions-item>
 				<el-descriptions-item label="订单日期">{{ needToShowInfo.orderDate }}</el-descriptions-item>
 				<el-descriptions-item label="供应商">{{ needToShowInfo.supplier }}</el-descriptions-item>
 				<el-descriptions-item label="客户">{{ needToShowInfo.customer }}</el-descriptions-item>
