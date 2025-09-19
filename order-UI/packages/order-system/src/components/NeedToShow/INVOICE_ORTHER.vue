@@ -21,7 +21,7 @@ export default {
 	<div>
 		<el-card>
 			<el-descriptions title="发票信息" :column="5" border size="mini">
-				<el-descriptions-item label="订单号">{{ needToShowInfo.ordersNo }}</el-descriptions-item>
+				<el-descriptions-item label="订单编码">{{ needToShowInfo.code }}</el-descriptions-item>
 				<el-descriptions-item label="发票日期">{{ needToShowInfo.invoiceDate }}</el-descriptions-item>
 				<el-descriptions-item label="发票金额">{{ needToShowInfo.invoiceAmount }} 元</el-descriptions-item>
 				<el-descriptions-item label="供应商">{{ needToShowInfo.supplier }}</el-descriptions-item>

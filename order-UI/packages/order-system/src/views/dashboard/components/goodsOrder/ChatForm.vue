@@ -90,7 +90,7 @@ export default {
 				</thead>
 				<tbody>
 					<template v-if="currentOrderInfo.smailOrderDetails.length > 0">
-						<tr v-for="item in itemList" :key="item.ordersNo">
+						<tr v-for="item in itemList" :key="item.code">
 							<!--							<td>{{ item.orderDate }}</td>-->
 							<td>{{ item.levelName }}</td>
 							<td>{{ item.height }}</td>
