@@ -54,20 +54,27 @@ export default {
 	mounted() {
 		// 重置行的样式
 		this.$bus.$on('select-goods-row:update', () => (this.selectedRowId = null));
+
+		// 监听已操作状态更新事件
+		this.$bus.$on('excel:operated-updated', payload => {
+			// 强制重新渲染组件以显示最新状态
+			this.$forceUpdate();
+		});
 	},
 	beforeDestroy() {
 		// 清除事件监听 防止内存泄漏
 		this.$bus.$off('select-goods:update'); // 清理事件监听
+		this.$bus.$off('excel:operated-updated'); // 清理已操作状态更新监听
 	},
 	methods: {
-		// 唯一键：与模板侧保持一致（id::name）
-		makeKey(row) {
-			if (!row) return '';
-			return `${row.id || 0}::${row.name || ''}`;
+		// 获取公司ID（直接使用row.id作为公司ID）
+		getCompanyId(row) {
+			if (!row) return null;
+			return Number(row.id) || null;
 		},
 		isOperated(row) {
-			const key = this.makeKey(row);
-			return !!(key && this.operatedMap && this.operatedMap[key]);
+			const companyId = this.getCompanyId(row);
+			return !!(companyId && this.operatedMap && this.operatedMap[companyId]);
 		},
 		openTemplateViewer() {
 			// 仅在有数据时打开
@@ -137,8 +144,9 @@ export default {
 			// 需要暂存我方实体
 			sessionStorage.setItem('us', row.us || '');
 			sessionStorage.setItem('invoiceAmount', row.total);
-			// 额外存储：当前选中行的记录主键 id，供 InvoiceBody 精确回写
-			sessionStorage.setItem('companyList_selected_record_id', row.id);
+			// 存储当前选中行的公司ID，供 InvoiceBody 精确回写
+			const companyId = this.getCompanyId(row);
+			sessionStorage.setItem('companyList_selected_company_id', companyId);
 			// 方便变颜色
 			this.selectedRowId = row.id;
 			// 不在检索时标记，由开具发票成功后由上层写入映射

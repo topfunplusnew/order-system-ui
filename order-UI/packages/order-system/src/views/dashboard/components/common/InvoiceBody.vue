@@ -8,7 +8,7 @@ import { getUuid } from '@/utils/trash/utils';
 import { TableName } from '@/api/tool/enums';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import { batchInvoice } from '@/api/system/excel';
-import { markOperated, makeUniqueKeyByIdName, markOperatedByCompanyId, markOperatedByRecordId } from '@/api/excelTemplateStore';
+import { markCompanyOperated, markCompaniesOperated, debugGetAllOperatedRecords } from '@/api/excelTemplateStore';
 import INVOICE_OUT from '@/components/NeedToShow/INVOICE_OUT.vue';
 import INVOICE_IN from '@/components/NeedToShow/INVOICE_IN.vue';
 
@@ -155,43 +155,42 @@ export default {
 				// 清理 sessionStorage 中的临时开票数据
 				sessionStorage.removeItem('invoiceAmount');
 				sessionStorage.removeItem('us');
-				// 标记模板行为已操作（基于当前版本 + 选择的公司维度）——放在清理事件之前，避免 sessionStorage 被清空
+				// 标记公司为已操作——放在清理事件之前，避免 sessionStorage 被清空
 				try {
-					const raw = localStorage.getItem('batch-invoice-session');
-					const session = raw ? JSON.parse(raw) : {};
-					const version = session && session.timestamp ? session.timestamp : null;
-					if (version) {
-						// 优先根据 CompanysList 选中行的记录主键 id 精确标记
-						const selectedRecordId = sessionStorage.getItem('companyList_selected_record_id');
-						console.log('selectedRecordId', selectedRecordId);
-						if (selectedRecordId !== null && selectedRecordId !== undefined) {
-							await markOperatedByRecordId(version, Number(selectedRecordId));
-							const maybeKey = this.companyName ? makeUniqueKeyByIdName(null, this.companyName) : '';
-							console.log('maybeKey', maybeKey);
+					// 调试：先查看所有已操作记录
+					await debugGetAllOperatedRecords();
+
+					// 优先根据 CompanysList 选中行的公司ID精确标记
+					const selectedCompanyId = sessionStorage.getItem('companyList_selected_company_id');
+					console.log('selectedCompanyId', selectedCompanyId);
+					if (selectedCompanyId && selectedCompanyId !== 'null' && selectedCompanyId !== 'undefined') {
+						await markCompanyOperated(Number(selectedCompanyId));
+						console.log('已标记公司为已操作:', selectedCompanyId);
+						// 再次查看记录确认更新
+						await debugGetAllOperatedRecords();
+						this.$nextTick(() => {
+							this.$bus.$emit('excel:operated-updated', { companyIds: [Number(selectedCompanyId)] });
+						});
+					} else {
+						// 退化为根据当前公司信息批量标记
+						let companyId = null;
+						if (this.invoiceType === this.PUBLIC_DICT_TYPE.SUPPLIER && this.supplierId) {
+							companyId = this.supplierId;
+						}
+						if (this.invoiceType === this.PUBLIC_DICT_TYPE.CUSTOMER) {
+							const anyOrder = (this.$store.getters.selectedOrder || [])[0];
+							companyId = anyOrder ? anyOrder.customerID : null;
+						}
+						if (companyId !== null && companyId !== undefined) {
+							await markCompanyOperated(Number(companyId));
+							console.log('已根据公司ID标记为已操作:', companyId);
 							this.$nextTick(() => {
-								this.$bus.$emit('excel:operated-updated', { version, keys: maybeKey ? [maybeKey] : [] });
+								this.$bus.$emit('excel:operated-updated', { companyIds: [Number(companyId)] });
 							});
-						} else {
-							// 退化为根据公司ID批量标记
-							let companyId = null;
-							if (this.invoiceType === this.PUBLIC_DICT_TYPE.SUPPLIER && this.supplierId) {
-								companyId = this.supplierId;
-							}
-							if (this.invoiceType === this.PUBLIC_DICT_TYPE.CUSTOMER) {
-								const anyOrder = (this.$store.getters.selectedOrder || [])[0];
-								companyId = anyOrder ? anyOrder.customerID : null;
-							}
-							if (companyId !== null && companyId !== undefined) {
-								await markOperatedByCompanyId(version, companyId);
-								const maybeKey = makeUniqueKeyByIdName(companyId, this.companyName);
-								this.$nextTick(() => {
-									this.$bus.$emit('excel:operated-updated', { version, keys: [maybeKey] });
-								});
-							}
 						}
 					}
 				} catch (e) {
-					console.error('标记模板行已操作失败:', e);
+					console.error('标记公司已操作失败:', e);
 				}
 				// 广播清理事件（放在回写之后）
 				this.$bus.$emit('invoice-clear');
@@ -513,7 +512,9 @@ export default {
 
 		this.$bus.$on('invoice-clear', () => {
 			// 重置开票金额
-			sessionStorage.clear();
+			sessionStorage.removeItem('invoiceAmount');
+			sessionStorage.removeItem('us');
+			sessionStorage.removeItem('companyList_selected_company_id');
 			this.$store.dispatch('excel/clearInvoiceAmount');
 			// 重置开票列表
 			this.$store.dispatch('excel/clearSelectedInvoiceList');
@@ -728,6 +729,7 @@ export default {
 			opacity: 0.6;
 		}
 	}
+
 }
 
 /* 响应式适配 */

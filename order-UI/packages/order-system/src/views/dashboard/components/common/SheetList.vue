@@ -7,7 +7,7 @@ import SelectGoods from '@/views/dashboard/components/common/SelectGoods.vue';
 import SheetItem from '@/views/dashboard/components/common/SheetItem.vue';
 import { mixin_excel_server } from '@/views/dashboard/components/common/utils/excelServer';
 import TripleDragDiv from '@/components/DragDiv/TripleDragDiv.vue';
-import { upsertTemplates, getOperatedMap, makeUniqueKeyByTemplate } from '@/api/excelTemplateStore';
+import { importTemplateCompanies, getOperatedMap, extractCompanyId } from '@/api/excelTemplateStore';
 
 // 默认导出组件
 export default {
@@ -81,6 +81,32 @@ export default {
 			templateOperatedMap: {}
 		};
 	},
+	mounted() {
+		// 支持外部触发"继续上次开票"
+		this.$bus.$on('excel:resume', this.openFromSession);
+		// 监听已操作状态变更，实时刷新映射
+		this.$bus.$on('excel:operated-updated', async payload => {
+			const { companyIds } = payload || {};
+			// 乐观更新：先把传入的公司ID标记为已操作
+			if (Array.isArray(companyIds) && companyIds.length > 0) {
+				const nextMap = { ...(this.templateOperatedMap || {}) };
+				companyIds.forEach(id => (nextMap[id] = true));
+				this.templateOperatedMap = nextMap;
+			}
+			// 再从 IndexedDB 拉一次，确保最终一致
+			try {
+				const map = await getOperatedMap();
+				this.templateOperatedMap = map || {};
+				this.$nextTick(() => {});
+			} catch (e) {
+				console.error('刷新已操作映射失败:', e);
+			}
+		});
+	},
+	beforeDestroy() {
+		this.$bus.$off('excel:resume', this.openFromSession);
+		this.$bus.$off('excel:operated-updated');
+	},
 	methods: {
 		// 保存当前批量开票会话（模板/聚合/统计/已生成列表）
 		saveBatchInvoiceSession(extra = {}) {
@@ -132,9 +158,7 @@ export default {
 				// 打开全屏弹窗
 				this.invoiceAllVisible = true;
 				// 加载已操作映射
-				if (this.currentVersion) {
-					getOperatedMap(this.currentVersion).then(map => (this.templateOperatedMap = map || {}));
-				}
+				getOperatedMap().then(map => (this.templateOperatedMap = map || {}));
 			} catch (e) {
 				console.error('恢复批量开票会话失败:', e);
 				this.$message.error('无法恢复上次开票会话');
@@ -175,15 +199,14 @@ export default {
 					// 本次导入版本：使用时间戳
 					this.currentVersion = Date.now();
 					await this.processExcelData(excelInfo, excelIndex);
-					// 将模板写入/更新到 IndexedDB（带版本）
+					// 将模板公司数据导入到 IndexedDB
 					try {
 						const templates = (this.$store.state.excel.purchaseTemplateData || []).concat(this.$store.state.excel.sellerTemplateData || []);
-						await upsertTemplates(this.currentVersion, templates);
-						this.templateOperatedMap = await getOperatedMap(this.currentVersion);
+						await importTemplateCompanies(templates);
+						this.templateOperatedMap = await getOperatedMap();
 					} catch (err) {
-						console.error('写入模板至 IndexedDB 失败:', err);
+						console.error('导入模板公司数据至 IndexedDB 失败:', err);
 					}
-
 					// 打开弹窗
 					this.invoiceAllVisible = true;
 					// 首次打开后，保存一次会话
@@ -396,32 +419,6 @@ export default {
 				sellerStats: {
 					suppliers: { total: 0, count: 0 },
 					customers: { total: 0, count: 0 }
-				},
-				mounted() {
-					// 支持外部触发“继续上次开票”
-					this.$bus.$on('excel:resume', this.openFromSession);
-					// 监听已操作状态变更，实时刷新映射
-					this.$bus.$on('excel:operated-updated', async payload => {
-						const { version, keys } = payload || {};
-						// 乐观更新：先把传入的键标记为已操作
-						if (Array.isArray(keys) && keys.length > 0) {
-							const nextMap = { ...(this.templateOperatedMap || {}) };
-							keys.forEach(k => (nextMap[k] = true));
-							this.templateOperatedMap = nextMap;
-						}
-						// 再从 IndexedDB 拉一次，确保最终一致
-						const v = version || this.currentVersion;
-						if (!v) return;
-						try {
-							const map = await getOperatedMap(v);
-							this.templateOperatedMap = map || {};
-							this.$nextTick(() => {});
-						} catch (e) {}
-					});
-				},
-				beforeDestroy() {
-					this.$bus.$off('excel:resume', this.openFromSession);
-					this.$bus.$off('excel:operated-updated');
 				}
 			};
 

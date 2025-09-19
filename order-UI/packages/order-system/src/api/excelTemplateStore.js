@@ -1,18 +1,24 @@
-// 简易 IndexedDB 封装：专用于存储每次导入的 Excel 模板行及“已操作”标记
+// 简化的 IndexedDB 封装：专用于存储公司ID和"已操作"标记
 
 const DB_NAME = 'order-system-db';
-const DB_VERSION = 1;
-const STORE_TEMPLATES = 'excel_templates';
+const DB_VERSION = 2; // 增加版本号以触发数据库升级
+const STORE_OPERATED = 'company_operated'; // 重命名存储表
 
 function openDB() {
 	return new Promise((resolve, reject) => {
 		const request = window.indexedDB.open(DB_NAME, DB_VERSION);
 		request.onupgradeneeded = e => {
 			const db = e.target.result;
-			if (!db.objectStoreNames.contains(STORE_TEMPLATES)) {
-				const store = db.createObjectStore(STORE_TEMPLATES, { keyPath: 'id', autoIncrement: true });
-				store.createIndex('version', 'version', { unique: false });
-				store.createIndex('vk', 'vk', { unique: true }); // 组合键：version::uniqueKey
+
+			// 删除旧的存储表（如果存在）
+			if (db.objectStoreNames.contains('excel_templates')) {
+				db.deleteObjectStore('excel_templates');
+			}
+
+			// 创建新的存储表，使用公司ID作为主键
+			if (!db.objectStoreNames.contains(STORE_OPERATED)) {
+				const store = db.createObjectStore(STORE_OPERATED, { keyPath: 'companyId' });
+				// 不需要额外的索引，因为主键就是公司ID
 			}
 		};
 		request.onsuccess = e => resolve(e.target.result);
@@ -35,160 +41,213 @@ function waitTransaction(tx) {
 	});
 }
 
-function makeVK(version, uniqueKey) {
-	return `${version}::${uniqueKey}`;
-}
+// 从模板行中提取公司ID（优先sellerId，否则purchaseId）
+export function extractCompanyId(templateRow) {
+	if (!templateRow) return null;
 
-export function makeUniqueKeyByTemplate(templateRow) {
-	// 约定：优先 sellerId，否则 purchaseId；再拼接 companyName 或 us
-	const id = templateRow.sellerId && Number(templateRow.sellerId) !== 0 ? templateRow.sellerId : templateRow.purchaseId || 0;
-	const name = templateRow.sellerName || templateRow.purchaseName || templateRow.invoiceCompanyName || '';
-	return `${id}::${name}`;
-}
-
-export function makeUniqueKeyByIdName(id, name) {
-	return `${id || 0}::${name || ''}`;
-}
-
-export async function upsertTemplates(version, templateList = []) {
-	const db = await openDB();
-	const tx = db.transaction([STORE_TEMPLATES], 'readwrite');
-	const store = tx.objectStore(STORE_TEMPLATES);
-	for (const tpl of templateList) {
-		const uniqueKey = makeUniqueKeyByTemplate(tpl);
-		const vk = makeVK(version, uniqueKey);
-		const record = {
-			vk,
-			version,
-			uniqueKey,
-			operated: false,
-			data: tpl
-		};
-		// put 可新增或更新
-		store.put(record);
+	// 优先使用sellerId（如果非0）
+	if (templateRow.sellerId && Number(templateRow.sellerId) !== 0) {
+		return Number(templateRow.sellerId);
 	}
-	await waitTransaction(tx);
-	db.close();
-}
 
-export async function markOperated(version, uniqueKeys = []) {
-	if (!uniqueKeys || uniqueKeys.length === 0) return;
-	const db = await openDB();
-	const tx = db.transaction([STORE_TEMPLATES], 'readwrite');
-	const store = tx.objectStore(STORE_TEMPLATES);
-	const index = store.index('vk');
-	for (const uk of uniqueKeys) {
-		const vk = makeVK(version, uk);
-		try {
-			const getReq = index.get(vk);
-			// eslint-disable-next-line no-await-in-loop
-			const rec = await promisifyRequest(getReq);
-			if (rec) {
-				rec.operated = true;
-				store.put(rec);
-			}
-		} catch (_) {}
+	// 否则使用purchaseId（如果非0）
+	if (templateRow.purchaseId && Number(templateRow.purchaseId) !== 0) {
+		return Number(templateRow.purchaseId);
 	}
-	await waitTransaction(tx);
-	db.close();
+
+	return null;
 }
 
-export async function getOperatedMap(version) {
+// 清空所有已操作记录
+export async function clearAllOperatedRecords() {
+	console.log('clearAllOperatedRecords: 开始清空所有已操作记录');
 	const db = await openDB();
-	const tx = db.transaction([STORE_TEMPLATES], 'readonly');
-	const store = tx.objectStore(STORE_TEMPLATES);
-	const idx = store.index('version');
-	const range = IDBKeyRange.only(version);
-	const operatedMap = {};
+	const tx = db.transaction([STORE_OPERATED], 'readwrite');
+	const store = tx.objectStore(STORE_OPERATED);
+
 	await new Promise((resolve, reject) => {
-		const req = idx.openCursor(range);
+		const req = store.clear();
+		req.onsuccess = () => {
+			console.log('clearAllOperatedRecords: 清空完成');
+			resolve();
+		};
+		req.onerror = e => reject(e.target.error);
+	});
+
+	await waitTransaction(tx);
+	db.close();
+}
+
+// 导入模板数据，提取公司ID并初始化已操作状态
+export async function importTemplateCompanies(templateList = []) {
+	console.log('importTemplateCompanies: 开始导入模板公司数据', templateList.length);
+
+	// 先清空所有现有数据
+	await clearAllOperatedRecords();
+
+	const db = await openDB();
+	const tx = db.transaction([STORE_OPERATED], 'readwrite');
+	const store = tx.objectStore(STORE_OPERATED);
+
+	// 用于去重的Set
+	const companyIds = new Set();
+
+	for (const tpl of templateList) {
+		const companyId = extractCompanyId(tpl);
+		if (companyId && !companyIds.has(companyId)) {
+			companyIds.add(companyId);
+			const record = {
+				companyId: companyId,
+				operated: false
+			};
+			// put 可新增或更新（如果主键重复则更新）
+			store.put(record);
+		}
+	}
+
+	await waitTransaction(tx);
+	db.close();
+
+	console.log('importTemplateCompanies: 导入完成，共处理', companyIds.size, '个公司');
+}
+
+// 根据公司ID标记为已操作
+export async function markCompanyOperated(companyId) {
+	if (!companyId) {
+		console.warn('markCompanyOperated: 缺少公司ID参数');
+		return;
+	}
+
+	console.log('markCompanyOperated: 开始标记公司为已操作', companyId);
+
+	const db = await openDB();
+	const tx = db.transaction([STORE_OPERATED], 'readwrite');
+	const store = tx.objectStore(STORE_OPERATED);
+
+	try {
+		// 先检查记录是否存在
+		const getReq = store.get(companyId);
+		const existingRecord = await promisifyRequest(getReq);
+
+		if (existingRecord) {
+			// 更新现有记录
+			existingRecord.operated = true;
+			store.put(existingRecord);
+			console.log('markCompanyOperated: 更新现有记录', companyId);
+		} else {
+			// 创建新记录
+			const newRecord = {
+				companyId: companyId,
+				operated: true
+			};
+			store.put(newRecord);
+			console.log('markCompanyOperated: 创建新记录', companyId);
+		}
+
+		await waitTransaction(tx);
+		console.log('markCompanyOperated: 标记完成', companyId);
+	} catch (error) {
+		console.error('markCompanyOperated: 标记失败', companyId, error);
+		throw error;
+	} finally {
+		db.close();
+	}
+}
+
+// 根据公司ID数组批量标记为已操作
+export async function markCompaniesOperated(companyIds) {
+	if (!companyIds || !Array.isArray(companyIds) || companyIds.length === 0) {
+		console.warn('markCompaniesOperated: 缺少公司ID数组参数');
+		return;
+	}
+
+	console.log('markCompaniesOperated: 开始批量标记', companyIds);
+
+	const db = await openDB();
+	const tx = db.transaction([STORE_OPERATED], 'readwrite');
+	const store = tx.objectStore(STORE_OPERATED);
+
+	for (const companyId of companyIds) {
+		if (companyId) {
+			try {
+				const getReq = store.get(companyId);
+				const existingRecord = await promisifyRequest(getReq);
+
+				if (existingRecord) {
+					existingRecord.operated = true;
+					store.put(existingRecord);
+				} else {
+					const newRecord = {
+						companyId: companyId,
+						operated: true
+					};
+					store.put(newRecord);
+				}
+			} catch (error) {
+				console.error('markCompaniesOperated: 标记公司失败', companyId, error);
+			}
+		}
+	}
+
+	await waitTransaction(tx);
+	db.close();
+
+	console.log('markCompaniesOperated: 批量标记完成');
+}
+
+// 获取所有已操作状态映射（以公司ID为键）
+export async function getOperatedMap() {
+	console.log('getOperatedMap: 开始获取已操作状态映射');
+
+	const db = await openDB();
+	const tx = db.transaction([STORE_OPERATED], 'readonly');
+	const store = tx.objectStore(STORE_OPERATED);
+	const operatedMap = {};
+
+	await new Promise((resolve, reject) => {
+		const req = store.openCursor();
 		req.onsuccess = e => {
 			const cursor = e.target.result;
 			if (cursor) {
 				const rec = cursor.value;
-				operatedMap[rec.uniqueKey] = !!rec.operated;
+				operatedMap[rec.companyId] = !!rec.operated;
 				cursor.continue();
 			} else resolve();
 		};
 		req.onerror = e => reject(e.target.error);
 	});
+
 	await waitTransaction(tx);
 	db.close();
+
+	console.log('getOperatedMap: 获取完成', operatedMap);
 	return operatedMap;
 }
 
-export async function clearVersion(version) {
-	const db = await openDB();
-	const tx = db.transaction([STORE_TEMPLATES], 'readwrite');
-	const store = tx.objectStore(STORE_TEMPLATES);
-	const idx = store.index('version');
-	const range = IDBKeyRange.only(version);
-	await new Promise((resolve, reject) => {
-		const req = idx.openCursor(range);
-		req.onsuccess = e => {
-			const cursor = e.target.result;
-			if (cursor) {
-				store.delete(cursor.primaryKey);
-				cursor.continue();
-			} else resolve();
-		};
-		req.onerror = e => reject(e.target.error);
-	});
-	await waitTransaction(tx);
-	db.close();
-}
+// 调试函数：查看所有已操作记录
+export async function debugGetAllOperatedRecords() {
+	console.log('debugGetAllOperatedRecords: 开始获取所有已操作记录');
 
-// 根据版本与公司ID（sellerId 或 purchaseId）批量标记 operated=true
-export async function markOperatedByCompanyId(version, companyId) {
-	if (companyId === undefined || companyId === null) return;
 	const db = await openDB();
-	const tx = db.transaction([STORE_TEMPLATES], 'readwrite');
-	const store = tx.objectStore(STORE_TEMPLATES);
-	const idx = store.index('version');
-	const range = IDBKeyRange.only(version);
-	await new Promise((resolve, reject) => {
-		const req = idx.openCursor(range);
-		req.onsuccess = e => {
-			const cursor = e.target.result;
-			if (cursor) {
-				const rec = cursor.value;
-				const data = rec && rec.data ? rec.data : {};
-				if (Number(data.sellerId) === Number(companyId) || Number(data.purchaseId) === Number(companyId)) {
-					rec.operated = true;
-					store.put(rec);
-				}
-				cursor.continue();
-			} else resolve();
-		};
-		req.onerror = e => reject(e.target.error);
-	});
-	await waitTransaction(tx);
-	db.close();
-}
+	const tx = db.transaction([STORE_OPERATED], 'readonly');
+	const store = tx.objectStore(STORE_OPERATED);
+	const records = [];
 
-// 根据版本与记录主键ID精确标记 operated=true（最可靠）
-export async function markOperatedByRecordId(version, recordId) {
-	if (recordId === undefined || recordId === null) return;
-	const db = await openDB();
-	const tx = db.transaction([STORE_TEMPLATES], 'readwrite');
-	const store = tx.objectStore(STORE_TEMPLATES);
-	const idx = store.index('version');
-	const range = IDBKeyRange.only(version);
 	await new Promise((resolve, reject) => {
-		const req = idx.openCursor(range);
+		const req = store.openCursor();
 		req.onsuccess = e => {
 			const cursor = e.target.result;
 			if (cursor) {
-				if (Number(cursor.primaryKey) === Number(recordId)) {
-					const rec = cursor.value;
-					rec.operated = true;
-					store.put(rec);
-				}
+				records.push(cursor.value);
 				cursor.continue();
 			} else resolve();
 		};
 		req.onerror = e => reject(e.target.error);
 	});
+
 	await waitTransaction(tx);
 	db.close();
+
+	console.log('debugGetAllOperatedRecords: 所有记录:', records);
+	return records;
 }
