@@ -78,7 +78,7 @@
 			<!-- TODO 这地方后续需要更正 只是一个类型 用来标识冲抵类型 -->
 			<el-table-column v-if="columns[14].visible" label="冲抵类型" align="center" show-overflow-tooltip>
 				<template slot-scope="scope">
-					<span>{{ scope.row.type === 'offsetting' ? '冲抵货款' : '内部转账' }}</span>
+					<span>{{ scope.row.type === CASH_TYPE.CASH_RECORD ? '冲抵货款' : '内部转账' }}</span>
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[15].visible" label="支出方开户行" align="center" prop="sourceBankName" show-overflow-tooltip />
@@ -146,6 +146,14 @@
 
 				<!-- ============================== 冲抵货款相关内容 ============================== -->
 				<template v-if="cashType === CASH_TYPE.CASH_RECORD">
+					<!-- 现金记账编码（只读，仅编辑时展示） -->
+					<el-row>
+						<el-col :span="12">
+							<el-form-item v-if="form && form.id != null" label="记账编码">
+								<el-input v-model="form.code" disabled />
+							</el-form-item>
+						</el-col>
+					</el-row>
 					<el-row :gutter="20">
 						<!-- 左侧：支出方信息 -->
 						<el-col :span="12">
@@ -1216,6 +1224,7 @@ export default {
 
 			this.form = {
 				id: null,
+				code: null,
 				transactionTime: parseTime(new Date()),
 				sourceId: null,
 				targetId: null,
@@ -1656,17 +1665,17 @@ export default {
 				this.form.params.attachmentIds = this.form.attachmentList.map(item => item.id);
 			}
 			this.cashType = data.type;
-			// 根据冲抵类型处理支付类型
-			if (this.cashType === CASH_TYPE.CASH_RECORD) {
-				// 冲抵货款：将字符串转换为数组（用于级联选择器）
-				if (this.form.sourcePaymentType && typeof this.form.sourcePaymentType === 'string') {
-					this.form.sourcePaymentType = this.form.sourcePaymentType.split('-');
-				}
-				if (this.form.targetPaymentType && typeof this.form.targetPaymentType === 'string') {
-					this.form.targetPaymentType = this.form.targetPaymentType.split('-');
-				}
-			}
 			this.$nextTick(() => {
+				// 根据冲抵类型处理支付类型
+				if (this.cashType === CASH_TYPE.CASH_RECORD) {
+					// 冲抵货款：将字符串转换为数组（用于级联选择器）
+					if (data.sourcePaymentType) {
+						this.form.sourcePaymentType = data.sourcePaymentType.split('-');
+					}
+					if (data.targetPaymentType) {
+						this.form.targetPaymentType = data.targetPaymentType.split('-');
+					}
+				}
 				// 填充id 用于区分是新增还是修改
 				this.form.id = data.id;
 				// 公共字段填充逻辑
@@ -1679,6 +1688,10 @@ export default {
 				this.form.amount = data.amount;
 				this.form.transactionTime = data.transactionTime;
 				this.form.remarks = data.remarks;
+				this.form.code = data.code;
+				// 填充转账账户和目标账户
+				this.form.sourceBankNo = data.sourceBankNo;
+				this.form.targetBankNo = data.targetBankNo;
 				if (this.cashType === CASH_TYPE.CASH_RECORD) {
 					// 如果是冲抵货款
 					this.form.targetCompanyType = data.targetCompanyType;
@@ -1687,9 +1700,6 @@ export default {
 					// 如果是内部转账
 					this.form.sourceCompanyType = PUBLIC_DICT_TYPE.SELF_COMPANY;
 					this.form.targetCompanyType = PUBLIC_DICT_TYPE.SELF_COMPANY;
-					// 填充转账账户和目标账户
-					this.form.sourceBankNo = data.sourceBankNo;
-					this.form.targetBankNo = data.targetBankNo;
 					// 填充己方和对方银行卡类型
 					this.$refs.selfSelectBankType.localSelectType = data.selfBankCardType;
 					this.$refs.otherSelectBankType.localSelectType = data.otherBankCardType;

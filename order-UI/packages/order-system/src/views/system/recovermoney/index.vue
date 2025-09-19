@@ -60,6 +60,10 @@
 		<!-- 添加或修改借出款收回信息对话框 -->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="80px">
+				<!-- 收回款编码（只读，仅编辑时展示） -->
+				<el-form-item v-if="form && form.id != null" label="收回款编码">
+					<el-input v-model="form.code" disabled />
+				</el-form-item>
 				<el-form-item label="借出款编号" prop="futuresNO">
 					<el-input v-model="form.futuresNO" placeholder="请输入借出款编号" />
 				</el-form-item>
@@ -195,6 +199,7 @@ export default {
 		// 表单重置
 		reset() {
 			this.form = {
+				code: null,
 				id: null,
 				futuresNO: null,
 				recoverNO: null,

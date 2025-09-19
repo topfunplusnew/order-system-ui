@@ -113,6 +113,10 @@
 			append-to-body
 		>
 			<el-form ref="refundForm" :model="refundForm" :rules="refundRules" label-width="120px" size="mini">
+				<!-- 保证金编码（只读，仅编辑时展示）：主表在选择时通过 currentRow 传递到表单展示 -->
+				<el-form-item v-if="refundForm && refundForm.id != null && currentRow && currentRow.code" label="保证金编码">
+					<el-input :value="currentRow.code" disabled />
+				</el-form-item>
 				<el-form-item label="退款日期" prop="refundDate">
 					<el-date-picker v-model="refundForm.refundDate" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="请选择退款日期" style="width: 100%" />
 				</el-form-item>

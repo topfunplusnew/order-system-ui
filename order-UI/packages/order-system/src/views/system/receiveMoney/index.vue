@@ -126,6 +126,10 @@
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="1000px" append-to-body>
 			<div>
 				<el-form ref="form" :model="form" :rules="rules" label-width="150px">
+					<!-- 收款编码（只读，仅编辑时展示） -->
+					<el-form-item v-if="form && form.id != null" label="收款编码">
+						<el-input v-model="form.code" disabled />
+					</el-form-item>
 					<!--        第一列-->
 					<el-col :span="isPaymentFee ? 24 : 12">
 						<el-form-item label="日期" prop="fundsDate">
@@ -632,6 +636,7 @@ export default {
 		reset() {
 			this.form = {
 				id: null,
+				code: null,
 				receiveNO: null,
 				fundsDate: parseTime(new Date()),
 				receiveType: null,

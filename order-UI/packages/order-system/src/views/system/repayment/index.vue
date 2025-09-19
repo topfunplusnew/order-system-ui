@@ -65,6 +65,10 @@
 		<!-- 添加或修改贷款还款信息对话框 -->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="80px">
+				<!-- 还款编码（只读，仅编辑时展示） -->
+				<el-form-item v-if="form && form.id != null" label="还款编码">
+					<el-input v-model="form.code" disabled />
+				</el-form-item>
 				<el-form-item label="贷款编号" prop="loanNO">
 					<el-input v-model="form.loanNO" placeholder="请输入贷款编号" />
 				</el-form-item>
@@ -245,6 +249,7 @@ export default {
 		// 表单重置
 		reset() {
 			this.form = {
+				code: null,
 				id: null,
 				loanNO: null,
 				payNO: null,

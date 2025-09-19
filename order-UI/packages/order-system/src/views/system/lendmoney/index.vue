@@ -141,6 +141,10 @@
 		<!-- 添加或修改向外部借出款信息对话框 -->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="1000px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="160px">
+				<!-- 借出款编码（只读，仅编辑时展示） -->
+				<el-form-item v-if="form && form.id != null" label="借出款编码">
+					<el-input v-model="form.code" disabled />
+				</el-form-item>
 				<el-row>
 					<el-col :span="12">
 						<el-form-item label="支付时间" prop="futuresDate">
@@ -718,6 +722,7 @@ export default {
 		// 表单重置F
 		reset() {
 			this.form = {
+				code: null,
 				id: null,
 				futuresNO: null,
 				futuresMarginCompany: null,
