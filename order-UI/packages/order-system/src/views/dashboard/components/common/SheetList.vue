@@ -97,11 +97,9 @@ export default {
 				if (newFileId && newFileId !== oldFileId) {
 					// 文件标识发生变化，说明是新文件导入
 					this.isNewFileImport = true;
-					console.log('SheetList: 检测到新文件导入', newFileId);
 				} else if (newFileId && newFileId === oldFileId) {
 					// 文件标识相同，说明是同一文件的不同工作表
 					this.isNewFileImport = false;
-					console.log('SheetList: 同一文件的不同工作表选择');
 				}
 			},
 			immediate: true
@@ -203,13 +201,6 @@ export default {
 			// 保存 isNewFileImport 的值，因为 reset() 会重置它
 			const wasNewFileImport = this.isNewFileImport;
 
-			console.log('SheetList: 检查Sheet操作状态', {
-				fileId: this.currentFileId,
-				sheetName: sheetName,
-				isOperated: isCurrentSheetOperated,
-				isNewFileImport: this.isNewFileImport
-			});
-
 			// 先清除
 			this.reset();
 			// 清除购买方和销方的信息
@@ -249,24 +240,14 @@ export default {
 					try {
 						const templates = (this.$store.state.excel.purchaseTemplateData || []).concat(this.$store.state.excel.sellerTemplateData || []);
 
-						// 根据是否为新文件导入和Sheet是否已操作过决定使用不同的函数
-						console.log('SheetList: 条件判断', {
-							isNewFileImport: this.isNewFileImport,
-							isCurrentSheetOperated: isCurrentSheetOperated,
-							willClearData: this.isNewFileImport || !isCurrentSheetOperated
-						});
-
 						if (this.isNewFileImport) {
 							await importTemplateCompanies(templates, this.currentFileId);
-							console.log('SheetList: 新文件导入，清空 IndexedDB 并导入新数据');
 						} else if (!isCurrentSheetOperated) {
 							// 同一文件但Sheet未操作过，清空数据并导入
 							await importTemplateCompanies(templates, this.currentFileId);
-							console.log('SheetList: 同一文件的新Sheet，清空 IndexedDB 并导入新数据');
 						} else {
 							// 同一文件且Sheet已操作过，保持现有数据
 							await updateTemplateCompanies(templates);
-							console.log('SheetList: 同一文件且Sheet已操作过，保持现有 IndexedDB 数据');
 						}
 
 						this.templateOperatedMap = await getOperatedMap();
@@ -286,7 +267,6 @@ export default {
 					// 标记当前Sheet为已操作（因为用户已经打开了批量开票弹窗）
 					try {
 						await markSheetOperated(this.currentFileId, this.currentSheetName);
-						console.log('SheetList: 已标记Sheet为已操作（打开弹窗时）:', this.currentFileId, this.currentSheetName);
 					} catch (e) {
 						console.error('SheetList: 标记Sheet已操作失败:', e);
 					}

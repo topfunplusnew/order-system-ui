@@ -127,7 +127,6 @@ export default {
 
 		// 执行批量开票的核心逻辑（从ReadyList.vue迁移）
 		async executeBatchInvoice(invoices) {
-			console.log('InvoiceBody: executeBatchInvoice 被调用', invoices.length, '个发票');
 			const filteredInvoices = invoices.filter(item => item !== null);
 			if (filteredInvoices.length === 0) {
 				this.$message.error('开票信息为空');
@@ -199,14 +198,9 @@ export default {
 				
 				// 标记当前Sheet为已操作
 				try {
-					console.log('InvoiceBody: 准备标记Sheet为已操作', {
-						fileId: this.currentFileId,
-						sheetName: this.currentSheetName
-					});
 					// 使用本地存储的文件ID和Sheet名称
 					if (this.currentFileId && this.currentSheetName) {
 						await markSheetOperated(this.currentFileId, this.currentSheetName);
-						console.log('InvoiceBody: 已标记Sheet为已操作:', this.currentFileId, this.currentSheetName);
 					} else {
 						console.warn('InvoiceBody: 无法标记Sheet为已操作：缺少文件ID或Sheet名称', {
 							fileId: this.currentFileId,
@@ -556,7 +550,6 @@ export default {
 		this.$bus.$on('sheet-info-updated', payload => {
 			this.currentFileId = payload.fileId;
 			this.currentSheetName = payload.sheetName;
-			console.log('InvoiceBody: 收到Sheet信息更新', payload);
 		});
 		// 监听生成发票的触发（由 SelectGoods 发出）
 		this.$bus.$on('generate-invoice', this.generateInvoicesByTemplates);
