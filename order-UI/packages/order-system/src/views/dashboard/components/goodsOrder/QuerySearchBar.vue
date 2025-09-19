@@ -154,7 +154,7 @@ export default {
 			}
 			this.$emit('updateQuery', query);
 		} catch (e) {
-			// 配置读取异常不影响页面，其它逻辑继续
+			// 配置读取异常不影响页面，其他逻辑继续
 			console.error('获取默认时间范围失败：', e && e.message ? e.message : e);
 		}
 	},

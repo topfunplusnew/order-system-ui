@@ -8,7 +8,7 @@ import { getUuid } from '@/utils/trash/utils';
 import { TableName } from '@/api/tool/enums';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import { batchInvoice } from '@/api/system/excel';
-import { markCompanyOperated, markCompaniesOperated, debugGetAllOperatedRecords } from '@/api/excelTemplateStore';
+import { markCompanyOperated, markCompaniesOperated, debugGetAllOperatedRecords, markSheetOperated } from '@/api/excelTemplateStore';
 import INVOICE_OUT from '@/components/NeedToShow/INVOICE_OUT.vue';
 import INVOICE_IN from '@/components/NeedToShow/INVOICE_IN.vue';
 
@@ -40,7 +40,10 @@ export default {
 			supplierId: null,
 			// 票点信息
 			currentTicketPoint: 0,
-			currentTicketPointAmount: 0
+			currentTicketPointAmount: 0,
+			// 当前文件ID和Sheet名称（用于标记Sheet操作）
+			currentFileId: null,
+			currentSheetName: null
 		};
 	},
 	created() {
@@ -124,6 +127,7 @@ export default {
 
 		// 执行批量开票的核心逻辑（从ReadyList.vue迁移）
 		async executeBatchInvoice(invoices) {
+			console.log('InvoiceBody: executeBatchInvoice 被调用', invoices.length, '个发票');
 			const filteredInvoices = invoices.filter(item => item !== null);
 			if (filteredInvoices.length === 0) {
 				this.$message.error('开票信息为空');
@@ -192,6 +196,27 @@ export default {
 				} catch (e) {
 					console.error('标记公司已操作失败:', e);
 				}
+				
+				// 标记当前Sheet为已操作
+				try {
+					console.log('InvoiceBody: 准备标记Sheet为已操作', {
+						fileId: this.currentFileId,
+						sheetName: this.currentSheetName
+					});
+					// 使用本地存储的文件ID和Sheet名称
+					if (this.currentFileId && this.currentSheetName) {
+						await markSheetOperated(this.currentFileId, this.currentSheetName);
+						console.log('InvoiceBody: 已标记Sheet为已操作:', this.currentFileId, this.currentSheetName);
+					} else {
+						console.warn('InvoiceBody: 无法标记Sheet为已操作：缺少文件ID或Sheet名称', {
+							fileId: this.currentFileId,
+							sheetName: this.currentSheetName
+						});
+					}
+				} catch (e) {
+					console.error('InvoiceBody: 标记Sheet已操作失败:', e);
+				}
+				
 				// 广播清理事件（放在回写之后）
 				this.$bus.$emit('invoice-clear');
 				this.$message.success('本批开票成功');
@@ -526,6 +551,13 @@ export default {
 			this.currentTicketPoint = 0;
 			this.currentTicketPointAmount = 0;
 		});
+		
+		// 监听Sheet信息更新事件
+		this.$bus.$on('sheet-info-updated', payload => {
+			this.currentFileId = payload.fileId;
+			this.currentSheetName = payload.sheetName;
+			console.log('InvoiceBody: 收到Sheet信息更新', payload);
+		});
 		// 监听生成发票的触发（由 SelectGoods 发出）
 		this.$bus.$on('generate-invoice', this.generateInvoicesByTemplates);
 	},
@@ -534,6 +566,7 @@ export default {
 		this.$bus.$off('select-goods:update'); // 清理事件监听
 		this.$bus.$off('update-goods-order-company');
 		this.$bus.$off('invoice-clear');
+		this.$bus.$off('sheet-info-updated');
 		this.$bus.$off('generate-invoice', this.generateInvoicesByTemplates);
 	}
 };

@@ -46,8 +46,8 @@ export default {
 					label: '司机'
 				},
 				{
-					value: '其它',
-					label: '其它'
+					value: '其他',
+					label: '其他'
 				}
 			],
 			form: {},

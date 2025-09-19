@@ -7,7 +7,7 @@ import SelectGoods from '@/views/dashboard/components/common/SelectGoods.vue';
 import SheetItem from '@/views/dashboard/components/common/SheetItem.vue';
 import { mixin_excel_server } from '@/views/dashboard/components/common/utils/excelServer';
 import TripleDragDiv from '@/components/DragDiv/TripleDragDiv.vue';
-import { importTemplateCompanies, getOperatedMap, extractCompanyId } from '@/api/excelTemplateStore';
+import { importTemplateCompanies, updateTemplateCompanies, getOperatedMap, extractCompanyId, isSheetOperated, markSheetOperated, clearSheetRecordsByFileId } from '@/api/excelTemplateStore';
 
 // 默认导出组件
 export default {
@@ -40,6 +40,11 @@ export default {
 		isLargeFile: {
 			type: Boolean,
 			default: false
+		},
+		// 当前文件标识
+		currentFileId: {
+			type: String,
+			default: null
 		}
 	},
 	data() {
@@ -78,8 +83,29 @@ export default {
 			// 本次导入的版本号（时间戳）
 			currentVersion: null,
 			// 已操作映射（来自 IndexedDB）
-			templateOperatedMap: {}
+			templateOperatedMap: {},
+			// 当前Sheet名称
+			currentSheetName: null,
+			// 是否为新文件导入（true: 新文件，false: 同一文件的不同工作表）
+			isNewFileImport: true
 		};
+	},
+	watch: {
+		// 监听文件标识变化
+		currentFileId: {
+			handler(newFileId, oldFileId) {
+				if (newFileId && newFileId !== oldFileId) {
+					// 文件标识发生变化，说明是新文件导入
+					this.isNewFileImport = true;
+					console.log('SheetList: 检测到新文件导入', newFileId);
+				} else if (newFileId && newFileId === oldFileId) {
+					// 文件标识相同，说明是同一文件的不同工作表
+					this.isNewFileImport = false;
+					console.log('SheetList: 同一文件的不同工作表选择');
+				}
+			},
+			immediate: true
+		}
 	},
 	mounted() {
 		// 支持外部触发"继续上次开票"
@@ -169,12 +195,32 @@ export default {
 		 * @param excelItem 选中的某一个excel 例:信息汇总表
 		 * @param excelIndex 选中的excel的索引 例:0
 		 */
-		handleInvoiceAll(excelItem, excelIndex) {
+		async handleInvoiceAll(excelItem, excelIndex) {
+			// 检查当前Sheet是否已被操作过
+			const sheetName = excelItem;
+			const isCurrentSheetOperated = await isSheetOperated(this.currentFileId, sheetName);
+
+			// 保存 isNewFileImport 的值，因为 reset() 会重置它
+			const wasNewFileImport = this.isNewFileImport;
+
+			console.log('SheetList: 检查Sheet操作状态', {
+				fileId: this.currentFileId,
+				sheetName: sheetName,
+				isOperated: isCurrentSheetOperated,
+				isNewFileImport: this.isNewFileImport
+			});
+
 			// 先清除
 			this.reset();
 			// 清除购买方和销方的信息
 			this.handleClearPurchaseInfo();
 			this.handleClearSellerInfo();
+
+			// 在reset之后重新设置当前Sheet名称
+			this.currentSheetName = sheetName;
+
+			// 恢复 isNewFileImport 的值
+			this.isNewFileImport = wasNewFileImport;
 
 			// 显示加载状态
 			const loadingInstance = this.$loading({
@@ -202,7 +248,27 @@ export default {
 					// 将模板公司数据导入到 IndexedDB
 					try {
 						const templates = (this.$store.state.excel.purchaseTemplateData || []).concat(this.$store.state.excel.sellerTemplateData || []);
-						await importTemplateCompanies(templates);
+
+						// 根据是否为新文件导入和Sheet是否已操作过决定使用不同的函数
+						console.log('SheetList: 条件判断', {
+							isNewFileImport: this.isNewFileImport,
+							isCurrentSheetOperated: isCurrentSheetOperated,
+							willClearData: this.isNewFileImport || !isCurrentSheetOperated
+						});
+
+						if (this.isNewFileImport) {
+							await importTemplateCompanies(templates, this.currentFileId);
+							console.log('SheetList: 新文件导入，清空 IndexedDB 并导入新数据');
+						} else if (!isCurrentSheetOperated) {
+							// 同一文件但Sheet未操作过，清空数据并导入
+							await importTemplateCompanies(templates, this.currentFileId);
+							console.log('SheetList: 同一文件的新Sheet，清空 IndexedDB 并导入新数据');
+						} else {
+							// 同一文件且Sheet已操作过，保持现有数据
+							await updateTemplateCompanies(templates);
+							console.log('SheetList: 同一文件且Sheet已操作过，保持现有 IndexedDB 数据');
+						}
+
 						this.templateOperatedMap = await getOperatedMap();
 					} catch (err) {
 						console.error('导入模板公司数据至 IndexedDB 失败:', err);
@@ -211,6 +277,24 @@ export default {
 					this.invoiceAllVisible = true;
 					// 首次打开后，保存一次会话
 					this.saveBatchInvoiceSession();
+					// 发送当前文件ID和Sheet名称到子组件
+					this.$bus.$emit('sheet-info-updated', {
+						fileId: this.currentFileId,
+						sheetName: this.currentSheetName
+					});
+
+					// 标记当前Sheet为已操作（因为用户已经打开了批量开票弹窗）
+					try {
+						await markSheetOperated(this.currentFileId, this.currentSheetName);
+						console.log('SheetList: 已标记Sheet为已操作（打开弹窗时）:', this.currentFileId, this.currentSheetName);
+					} catch (e) {
+						console.error('SheetList: 标记Sheet已操作失败:', e);
+					}
+
+					// 第一次处理后，标记为非新文件导入
+					if (this.isNewFileImport) {
+						this.isNewFileImport = false;
+					}
 				} catch (error) {
 					console.error('处理Excel数据失败:', error);
 					this.$message.error('处理数据时发生错误，请重试');
@@ -573,6 +657,10 @@ export default {
 			};
 			// 发布事件 组件中清除自己状态
 			this.$bus.$emit('invoice-clear');
+			// 重置文件标识状态
+			this.isNewFileImport = true;
+			// 重置当前Sheet名称
+			this.currentSheetName = null;
 		}
 	}
 };

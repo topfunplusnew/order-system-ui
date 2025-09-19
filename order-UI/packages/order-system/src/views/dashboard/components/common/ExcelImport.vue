@@ -35,7 +35,9 @@ export default {
 			// 工作簿引用（用于大文件懒加载）
 			workbookRef: null,
 			// 是否为大文件
-			isLargeFile: false
+			isLargeFile: false,
+			// 当前文件标识（用于区分是否为新文件）
+			currentFileId: null
 		};
 	},
 	methods: {
@@ -59,6 +61,20 @@ export default {
 			this.$refs.fileInput.value = '';
 			// 触发input的点击事件
 			this.$refs.fileInput.click();
+		},
+		
+		// 生成文件标识
+		generateFileId(file) {
+			// 基于文件名、大小和修改时间生成唯一标识
+			const fileInfo = `${file.name}_${file.size}_${file.lastModified}`;
+			// 使用简单的哈希算法生成短标识
+			let hash = 0;
+			for (let i = 0; i < fileInfo.length; i++) {
+				const char = fileInfo.charCodeAt(i);
+				hash = ((hash << 5) - hash) + char;
+				hash = hash & hash; // 转换为32位整数
+			}
+			return Math.abs(hash).toString(36);
 		},
 		/**
 		 * excel的读写操作 如果后期excel大小过于大在这里优化
@@ -105,6 +121,8 @@ export default {
 			try {
 				const result = await this.readExcelFile(file);
 				if (result) {
+					// 生成文件标识（基于文件名、大小和修改时间）
+					this.currentFileId = this.generateFileId(file);
 					this.dialogVisible = true;
 				}
 			} catch (error) {
@@ -385,7 +403,7 @@ export default {
 						<span v-else>检测到大文件，已启用优化模式。选择工作表时将自动分批加载数据</span>
 					</div>
 					<el-card class="sheet-card">
-						<SheetList :sheet-list="sheetList" :workbook-ref="workbookRef" :is-large-file="isLargeFile" />
+						<SheetList :sheet-list="sheetList" :workbook-ref="workbookRef" :is-large-file="isLargeFile" :current-file-id="currentFileId" />
 					</el-card>
 				</div>
 				<span slot="footer" class="dialog-footer">
