@@ -6,7 +6,7 @@
 				<el-date-picker v-model="searchForm.endTime" value-format="yyyy-MM-dd" type="date" placeholder="选择日期"></el-date-picker>
 			</el-form-item>
 			<el-form-item>
-				<el-button type="primary" @click="handleSearch">搜索</el-button>
+				<el-button type="primary" @click="handleSearch" size="mini">搜索</el-button>
 			</el-form-item>
 		</el-form>
 
