@@ -336,7 +336,7 @@ export default {
 			queryParams: {
 				pageNum: 1,
 				pageSize: 20,
-				type: '', // 为空表示全部
+				type: '厂家保证金和佣金',
 				targetType: null,
 				params: { beginTime: null, endTime: null }
 			},
