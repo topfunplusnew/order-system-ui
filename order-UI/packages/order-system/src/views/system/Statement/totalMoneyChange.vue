@@ -49,14 +49,16 @@ export default {
 				value
 			});
 			return [
-				createRow('资金总额=①+②-③-④+⑤+⑥-⑦', this.calculateTotalBalance(data)),
+				createRow('资金总额=①+②-③-④+⑤+⑥+⑦-⑧-⑨', this.calculateTotalBalance(data)),
 				createRow('①客户欠款合计数', data.companyTotalBalance),
 				createRow('②所有银行卡资金合计', data.selfCompanyTotalFunds),
 				createRow('③欠厂家货款', data.supplierTotalBalance),
 				createRow('④未支付运费合计', data.driverUnpaidAmount),
-				createRow('⑤期货保证金', data.futuresMarginBalance),
-				createRow('⑥其他应收-个人从公司借款', data.loanFromCompany),
-				createRow('⑦公司从外面借款合计', data.loanBalance),
+				createRow('⑤其他应收-个人从公司借款', data.loanFromCompany),
+				createRow('⑥期货保证金', data.futuresMarginBalance),
+				createRow('⑦支付保证金', data.paymentMarginBalance),
+				createRow('⑧收取保证金', data.receiveMarginBalance),
+				createRow('⑨公司从外面借款合计', data.loanBalance),
 				createRow('客户票点合计', data.companyTotalInvoiceAmount),
 				createRow('供应商票点合计', data.supplierTotalInvoiceAmount)
 			];
@@ -67,20 +69,24 @@ export default {
 				selfCompanyTotalFunds: data.selfCompanyTotalFunds || 0,
 				supplierTotalBalance: data.supplierTotalBalance || 0,
 				driverUnpaidAmount: data.driverUnpaidAmount || 0,
-				futuresMarginBalance: data.futuresMarginBalance || 0,
 				loanFromCompany: data.loanFromCompany || 0,
+				futuresMarginBalance: data.futuresMarginBalance || 0,
+				paymentMarginBalance: data.paymentMarginBalance || 0,
+				receiveMarginBalance: data.receiveMarginBalance || 0,
 				loanBalance: data.loanBalance || 0
 			};
 
-			// 按照公式计算资金总额：① + ② - ③ - ④ + ⑤ + ⑥ - ⑦
+			// 按照公式计算资金总额：① + ② - ③ - ④ + ⑤ + ⑥ + ⑦ - ⑧ - ⑨
 			const result =
 				safeData.companyTotalBalance + // ①客户欠款合计数
 				safeData.selfCompanyTotalFunds - // ②所有银行卡资金合计
 				safeData.supplierTotalBalance - // ③欠厂家货款
 				safeData.driverUnpaidAmount + // ④未支付运费合计
-				safeData.futuresMarginBalance + // ⑤期货保证金
-				safeData.loanFromCompany - // ⑥其他应收-个人从公司借款
-				safeData.loanBalance; // ⑦公司从外面借款合计
+				safeData.loanFromCompany + // ⑤其他应收-个人从公司借款
+				safeData.futuresMarginBalance + // ⑥期货保证金
+				safeData.paymentMarginBalance - // ⑦支付保证金
+				safeData.receiveMarginBalance - // ⑧收取保证金
+				safeData.loanBalance; // ⑨公司从外面借款合计
 
 			return result.toFixed(2); // 保留两位小数
 		},
