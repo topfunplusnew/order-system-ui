@@ -1,20 +1,20 @@
 import request from '@/utils/request';
-import { MessageBox } from 'element-ui';
+// import { MessageBox } from 'element-ui';
 import { BatchQueryTableName } from '@/api/tool/enums';
 
 // 查询订单列表
 export function listGoodsOrder(query) {
-	if (!query || !query.orderDateStart || !query.orderDateEnd) {
-		const KEY = 'HINT_GOODS_ORDER_DATE_ONCE';
-		if (!sessionStorage.getItem(KEY)) {
-			// 仅在本次会话首次提示，且不阻塞请求
-			MessageBox.alert('选择时间后可加速查询', '提示', {
-				confirmButtonText: '我知道了',
-				type: 'warning',
-				callback: () => sessionStorage.setItem(KEY, 'true')
-			});
-		}
-	}
+	// if (!query || !query.orderDateStart || !query.orderDateEnd) {
+	// 	const KEY = 'HINT_GOODS_ORDER_DATE_ONCE';
+	// 	if (!sessionStorage.getItem(KEY)) {
+	// 		// 仅在本次会话首次提示，且不阻塞请求
+	// 		MessageBox.alert('选择时间后可加速查询', '提示', {
+	// 			confirmButtonText: '我知道了',
+	// 			type: 'warning',
+	// 			callback: () => sessionStorage.setItem(KEY, 'true')
+	// 		});
+	// 	}
+	// }
 	return request({
 		url: '/system/goodsOrder/list',
 		method: 'get',
