@@ -9,7 +9,6 @@
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-				<!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
 			</el-form-item>
 		</el-form>
 
@@ -117,8 +116,8 @@
 				</el-form-item>
 				<br />
 				<el-form-item label="运输方式" required>
-					<el-checkbox v-model="isLand">陆运</el-checkbox>
-					<el-checkbox v-model="isSea">海运</el-checkbox>
+					<el-checkbox v-model="isLand" @change="updateTransportMode">陆运</el-checkbox>
+					<el-checkbox v-model="isSea" @change="updateTransportMode">海运</el-checkbox>
 					<div v-if="transportError" class="el-form-item__error">请至少选择一种运输方式</div>
 				</el-form-item>
 				<el-row v-if="isLand" style="margin: 20px 0">
@@ -253,9 +252,9 @@
 					@selection-change="handleInventoryDetailSelectionChange"
 					ref="inventoryDetail"
 				>
-					<el-table-column type="selection" width="50" align="center" :selectable="() => isEditingDetails" />
-					<el-table-column label="序号" align="center" prop="id" width="50" />
-					<el-table-column label="行操作" align="center" width="100">
+					<el-table-column type="selection" width="40" align="center" :selectable="() => isEditingDetails" />
+					<el-table-column label="序号" align="center" prop="id" width="40" />
+					<el-table-column label="行操作" align="center" width="80">
 						<template slot-scope="scope">
 							<el-button
 								v-if="scope.row.shouldDel || !scope.row.isEditing"
@@ -270,7 +269,7 @@
 							<el-button v-else size="mini" type="success" icon="el-icon-check" @click="handleRowSave(scope.row)">保存</el-button>
 						</template>
 					</el-table-column>
-					<el-table-column label="供应商" width="220">
+					<el-table-column label="供应商" width="170">
 						<template #default="scope">
 							<el-row>
 								<el-col :span="14">
@@ -357,30 +356,36 @@
 							</el-col>
 						</template>
 					</el-table-column>
-					<el-table-column label="计量单位" prop="countingUnit" width="150">
+					<el-table-column label="计量单位" prop="countingUnit" width="60" class-name="counting-unit-column">
 						<template #default="scope">
-							<el-radio-group v-model="scope.row.countingUnit" size="mini" :disabled="scope.row.shouldDel || !scope.row.isEditing" @change="() => recalculateAll(scope)">
-								<el-radio label="片">片数</el-radio>
-								<el-radio label="其他">其他</el-radio>
+							<el-radio-group
+								v-model="scope.row.countingUnit"
+								size="mini"
+								:disabled="scope.row.shouldDel || !scope.row.isEditing"
+								@change="() => recalculateAll(scope)"
+								class="vertical-radio-group"
+							>
+								<el-radio label="片" class="vertical-radio">片数</el-radio>
+								<el-radio label="其他" class="vertical-radio">其他</el-radio>
 							</el-radio-group>
 						</template>
 					</el-table-column>
-					<el-table-column label="厚度" prop="height" width="150">
+					<el-table-column label="厚度" prop="height" width="60">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.height" placeholder="请选择产品级别" disabled />
 						</template>
 					</el-table-column>
-					<el-table-column label="长度" prop="length" width="150">
+					<el-table-column label="长度" prop="length" width="60">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.length" placeholder="请选择产品级别" disabled />
 						</template>
 					</el-table-column>
-					<el-table-column label="宽度" prop="width" width="150">
+					<el-table-column label="宽度" prop="width" width="60">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.width" placeholder="请选择产品级别" disabled />
 						</template>
 					</el-table-column>
-					<el-table-column label="每包片数" prop="piecesPerPack" width="150">
+					<el-table-column label="每包片数" prop="piecesPerPack" width="90">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -391,7 +396,7 @@
 							/>
 						</template>
 					</el-table-column>
-					<el-table-column label="包数" prop="packs" width="150">
+					<el-table-column label="包数" prop="packs" width="90">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -402,7 +407,7 @@
 							/>
 						</template>
 					</el-table-column>
-					<el-table-column label="出厂片数" prop="pieces" width="150">
+					<el-table-column label="出厂片数" prop="pieces" width="90">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -413,7 +418,7 @@
 							/>
 						</template>
 					</el-table-column>
-					<el-table-column label="出厂单价" prop="price" width="150">
+					<el-table-column label="出厂单价" prop="price" width="90">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -425,15 +430,21 @@
 							/>
 						</template>
 					</el-table-column>
-					<el-table-column label="出厂是否含税" prop="isIncludeTaxFactory" width="150">
+					<el-table-column label="出厂是否含税" prop="isIncludeTaxFactory" width="60" class-name="tax-column">
 						<template #default="scope">
-							<el-radio-group v-model="scope.row.isIncludeTaxFactory" size="mini" @change="() => recalculateAll(scope)" :disabled="scope.row.shouldDel || !scope.row.isEditing">
-								<el-radio :label="1">是</el-radio>
-								<el-radio :label="0">否</el-radio>
+							<el-radio-group
+								v-model="scope.row.isIncludeTaxFactory"
+								size="mini"
+								@change="() => recalculateAll(scope)"
+								:disabled="scope.row.shouldDel || !scope.row.isEditing"
+								class="vertical-tax-radio-group"
+							>
+								<el-radio :label="1" class="vertical-tax-radio">是</el-radio>
+								<el-radio :label="0" class="vertical-tax-radio">否</el-radio>
 							</el-radio-group>
 						</template>
 					</el-table-column>
-					<el-table-column label="杂费" prop="sundryCost" width="150">
+					<el-table-column label="杂费" prop="sundryCost" width="60">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -445,17 +456,17 @@
 							/>
 						</template>
 					</el-table-column>
-					<el-table-column label="出厂货款" prop="paymentFactory" width="150">
+					<el-table-column label="出厂货款" prop="paymentFactory" width="70">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.paymentFactory" placeholder="自动计算" disabled />
 						</template>
 					</el-table-column>
-					<el-table-column label="二次入库片数" prop="stockNumber" width="150">
+					<el-table-column label="二次入库片数" prop="stockNumber" width="90">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.stockNumber" placeholder="请输入二次入库片数" :disabled="scope.row.shouldDel" />
 						</template>
 					</el-table-column>
-					<el-table-column label="存货价" prop="paymentUnload" width="150">
+					<el-table-column label="存货价" prop="paymentUnload" width="70">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -467,25 +478,31 @@
 							/>
 						</template>
 					</el-table-column>
-					<el-table-column label="库存是否含税" prop="isIncludeTaxSale" width="150">
+					<el-table-column label="库存是否含税" prop="isIncludeTaxSale" width="60" class-name="tax-column">
 						<template #default="scope">
-							<el-radio-group v-model="scope.row.isIncludeTaxSale" size="mini" @change="() => recalculateAll(scope)" :disabled="scope.row.shouldDel || !scope.row.isEditing">
-								<el-radio :label="1">是</el-radio>
-								<el-radio :label="0">否</el-radio>
+							<el-radio-group
+								v-model="scope.row.isIncludeTaxSale"
+								size="mini"
+								@change="() => recalculateAll(scope)"
+								:disabled="scope.row.shouldDel || !scope.row.isEditing"
+								class="vertical-tax-radio-group"
+							>
+								<el-radio :label="1" class="vertical-tax-radio">是</el-radio>
+								<el-radio :label="0" class="vertical-tax-radio">否</el-radio>
 							</el-radio-group>
 						</template>
 					</el-table-column>
-					<el-table-column label="库存金额" prop="payments" width="150">
+					<el-table-column label="库存金额" prop="payments" width="70">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.payments" placeholder="自动计算" disabled />
 						</template>
 					</el-table-column>
-					<el-table-column label="误差" prop="erro" width="150">
+					<el-table-column label="误差" prop="erro" width="70">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.erro" placeholder="请输入误差" disabled />
 						</template>
 					</el-table-column>
-					<el-table-column label="吨位" prop="tonnage" width="150">
+					<el-table-column label="吨位" prop="tonnage" width="70">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.tonnage" placeholder="自动计算" disabled />
 						</template>
@@ -502,7 +519,7 @@
 							/>
 						</template>
 					</el-table-column>
-					<el-table-column label="加费" prop="additionalFees" width="150">
+					<el-table-column label="加费" prop="additionalFees" width="90">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -514,12 +531,12 @@
 							/>
 						</template>
 					</el-table-column>
-					<el-table-column label="陆运费" prop="landFreight" width="150" v-if="isLand">
+					<el-table-column label="陆运费" prop="landFreight" width="90" v-if="isLand">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.landFreight" placeholder="自动计算" disabled />
 						</template>
 					</el-table-column>
-					<el-table-column label="海运费" prop="seaFreight" width="150" v-if="isSea">
+					<el-table-column label="海运费" prop="seaFreight" width="90" v-if="isSea">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -531,12 +548,12 @@
 							/>
 						</template>
 					</el-table-column>
-					<el-table-column label="总运费" prop="freight" width="150">
+					<el-table-column label="总运费" prop="freight" width="90">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.freight" placeholder="自动计算" disabled />
 						</template>
 					</el-table-column>
-					<el-table-column label="其他费用" prop="otherCost" width="150">
+					<el-table-column label="其他费用" prop="otherCost" width="90">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -548,17 +565,17 @@
 							/>
 						</template>
 					</el-table-column>
-					<el-table-column label="利润" prop="profit" width="150">
+					<el-table-column label="利润" prop="profit" width="90">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.profit" placeholder="自动计算" disabled />
 						</template>
 					</el-table-column>
-					<el-table-column label="不含税利润" prop="profitNoTax" width="150">
+					<el-table-column label="不含税利润" prop="profitNoTax" width="90">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.profitNoTax" placeholder="自动计算" disabled />
 						</template>
 					</el-table-column>
-					<el-table-column label="物流利润" prop="logisticsProfit" width="150">
+					<el-table-column label="物流利润" prop="logisticsProfit" width="90">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -569,7 +586,7 @@
 							/>
 						</template>
 					</el-table-column>
-					<el-table-column label="厂家佣金" prop="factoryCommission" width="150">
+					<el-table-column label="厂家佣金" prop="factoryCommission" width="90">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -580,7 +597,7 @@
 							/>
 						</template>
 					</el-table-column>
-					<el-table-column label="计提厂家返利金额" prop="factoryRebateAmount" width="150">
+					<el-table-column label="计提厂家返利金额" prop="factoryRebateAmount" width="90">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -591,7 +608,7 @@
 							/>
 						</template>
 					</el-table-column>
-					<el-table-column label="计提厂家降价金额" prop="factoryDiscountAmount" width="150">
+					<el-table-column label="计提厂家降价金额" prop="factoryDiscountAmount" width="90">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -602,7 +619,7 @@
 							/>
 						</template>
 					</el-table-column>
-					<el-table-column label="备注" prop="comments" width="150">
+					<el-table-column label="备注" prop="comments" width="90">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.comments" placeholder="请输入备注" :disabled="scope.row.shouldDel || !scope.row.isEditing" />
 						</template>
@@ -610,8 +627,8 @@
 				</el-table>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
-				<el-button type="primary" @click="submitSecond">提交二次入库</el-button>
-				<el-button @click="cancelSecond">取消二次入库</el-button>
+				<el-button type="primary" @click="submitSecond">确认提交</el-button>
+				<el-button @click="cancelSecond">取消</el-button>
 			</div>
 		</el-dialog>
 
@@ -996,6 +1013,25 @@ export default {
 		 */
 		handleCommitUpload(val) {
 			this.secondForm.receiveProof = val;
+		},
+		/**
+		 * @description: 更新运输方式选择状态
+		 *              根据 isLand 和 isSea 的状态更新错误状态，用于表单校验
+		 *              在下一个 tick 中触发表单字段的校验
+		 */
+		updateTransportMode() {
+			if (this.isLand || this.isSea) {
+				this.transportError = false;
+			}
+			this.$nextTick(() => {
+				// 可以在这里触发相关字段的校验
+				if (this.$refs.secondForm) {
+					this.$refs.secondForm.validateField('fleet');
+					this.$refs.secondForm.validateField('landCarNo');
+					this.$refs.secondForm.validateField('seaCarNo');
+					this.$refs.secondForm.validateField('seaDriverName');
+				}
+			});
 		},
 		/**
 		 * @description: 查看指定出库记录的库存详细信息
@@ -1396,108 +1432,89 @@ export default {
 		 * @description: 提交二次入库表单，进行数据校验和API调用
 		 */
 		submitSecond() {
-			// 检查是否至少选择了一种运输方式
+			// 强制校验运输方式
 			if (!this.isLand && !this.isSea) {
 				this.transportError = true;
-				this.$message.error('请至少选择一种运输方式');
+				this.$message.error('请至少选择一种运输方式（陆运或海运）');
 				return;
 			}
-			// 检查是否有库存详情数据
-			if (this.inventoryDetailList.length === 0) {
-				this.$message.error('请添加至少一条库存详情');
-				return;
-			}
+
 			this.$refs['secondForm'].validate(valid => {
 				if (!valid) {
-					this.$message.error('请检查表单必填项!');
+					this.$message.error('请检查并完善表单中的必填项!');
 					return;
 				}
-				// 检查是否有未保存的编辑项
-				const hasEditingRows = this.inventoryDetailList.some(item => item.isEditing);
-				if (!hasEditingRows) {
-					// 没有编辑状态的行，直接提交
-					this.doSubmitSecond();
-					return;
-				}
-				this.inventoryDetailList.forEach(item => {
-					item.exWareHoustId = this.secondForm.exWareHoustId;
-				});
 
-				this.$antdconfirm({
-					title: '二次入库提示',
-					content: '有未保存的库存项，是否先保存后再提交?',
-					okText: '是',
-					cancelText: '否',
-					type: 'warning',
-					zIndex: 2600,
-					onOk: () => {
-						const dataList = this.inventoryDetailList.filter(item => item.isEditing);
-						this.handleRowSave(dataList).then(() => {
-							// 保存成功后提交整个表单
-							this.doSubmitSecond();
-							this.resetSecond();
-						});
-					},
-					onCancel: () => {
-						// 用户选择不先保存，直接提交
-						this.doSubmitSecond();
-						this.resetSecond();
+				// 强制再次校验运输方式
+				if (!this.isLand && !this.isSea) {
+					this.transportError = true;
+					this.$message.error('请至少选择一种运输方式（陆运或海运）');
+					return;
+				}
+
+				// 检查库存详情数据
+				const validInventoryItems = this.inventoryDetailList.filter(item => !item.shouldDel);
+				if (validInventoryItems.length === 0) {
+					this.$message.error('请至少添加一条有效的库存详情信息，不能仅包含默认记录');
+					return;
+				}
+
+				// 检查是否有未保存的子项或子项列表为空
+				const hasEditingRows = this.inventoryDetailList.some(item => item.isEditing);
+				if (hasEditingRows) {
+					this.$message.error('当前有未保存的库存信息，请先保存所有编辑中的数据后再提交');
+					return;
+				}
+
+				// 深拷贝有效的库存详情列表到表单
+				this.secondForm.inventoryDetailList = _.cloneDeep(validInventoryItems);
+
+				// 计算总陆运费和总海运费
+				this.secondForm.allLandFreight = this.isLand ? this.inventoryDetailList.reduce((prev, curr) => Number(prev) + Number(curr.landFreight || 0), 0) : 0;
+				this.secondForm.allSeaFreight = this.isSea ? this.inventoryDetailList.reduce((prev, curr) => Number(prev) + Number(curr.seaFreight || 0), 0) : 0;
+
+				// 根据表单ID判断是新增还是更新
+				const apiCall = this.secondForm.id ? updateInventoryMain : addInventoryMain;
+				const successMessage = this.secondForm.id ? '二次入库信息修改成功' : '二次入库提交成功';
+
+				// 调用API
+				const body = {
+					...this.secondForm,
+					params: {
+						attachmentIds: this.secondForm.params?.attachmentIds || []
 					}
-				});
+				};
+				apiCall(body)
+					.then(response => {
+						this.$modal.msgSuccess(successMessage + '，可继续操作或关闭窗口');
+						// 不关闭弹窗，只显示成功消息
+						this.getList(); // 刷新列表
+						// 如果是新增操作，更新表单ID和明细项数据
+						if (!this.secondForm.id && response.data && response.data.id) {
+							this.secondForm.id = response.data.id;
+							// 直接使用后端返回的明细项数据替换前端有效明细项
+							if (response.data.inventoryDetailList && response.data.inventoryDetailList.length > 0) {
+								// 保留shouldDel为true的项（默认记录），替换其他有效明细项
+								const shouldDelItems = this.inventoryDetailList.filter(item => item.shouldDel);
+								// 将后端返回的明细项添加必要的前端状态字段
+								const backendDetails = response.data.inventoryDetailList.map(item => ({
+									...item,
+									isEditing: false,
+									hasError: false,
+									manuallyEditedPieces: true,
+									selfButtonDisabled: item.supplierId === 0
+								}));
+								// 合并：保留shouldDel项 + 后端返回的明细项
+								this.inventoryDetailList = [...shouldDelItems, ...backendDetails];
+							}
+						}
+					})
+					.catch(error => {
+						this.$message.error('提交失败: ' + (error.message || '未知错误'));
+					});
 			});
 		},
-		/**
-		 * @description: 执行二次入库表单的实际提交操作
-		 */
-		doSubmitSecond() {
-			// 最终检查所有行的数据有效性
-			let hasInvalidRow = false;
-			for (const row of this.inventoryDetailList) {
-				const validationResult = this.validateInventoryRow(row);
-				if (!validationResult.valid) {
-					this.$set(row, 'hasError', true);
-					this.$message.error(`行 "${row.levelName || '未命名'}" 验证失败: ${validationResult.message}`);
-					hasInvalidRow = true;
-					// 不立即返回，继续检查所有行以显示所有错误
-				}
-			}
-			if (hasInvalidRow) {
-				this.$message.error('请修正表单中的错误后再提交');
-				return;
-			}
-			// 筛选掉不需要进行处理的列
-			this.secondForm.inventoryDetailList = _.cloneDeep(this.inventoryDetailList.filter(item => !item.shouldDel));
-			this.secondForm.allLandFreight = this.isLand ? this.inventoryDetailList.reduce((prev, curr) => Number(prev) + Number(curr.landFreight || 0), 0) : 0;
-			this.secondForm.allSeaFreight = this.isSea ? this.inventoryDetailList.reduce((prev, curr) => Number(prev) + Number(curr.seaFreight || 0), 0) : 0;
-			const apiCall = this.secondForm.id ? updateInventoryMain : addInventoryMain;
-			const successMessage = this.secondForm.id ? '修改成功' : '新增成功';
 
-			// 如果没有货物信息 要提醒用户
-			if (!this.secondForm.inventoryDetailList.length) {
-				this.$modal.msgError('请添加货物信息');
-				return;
-			}
-			// 调用新增或者修改接口
-			apiCall({
-				...this.secondForm,
-				params: {
-					attachmentIds: this.secondForm.params?.attachmentIds || []
-				}
-			})
-				.then(() => {
-					this.$modal.msgSuccess(successMessage);
-					this.secondInventoryVisible = false;
-					this.getList();
-					this.resetSecond();
-					// 清空附件上传组件
-					if (this.$refs.attachmentUploader) {
-						this.$refs.attachmentUploader.clearUploadedFiles();
-					}
-				})
-				.catch(error => {
-					this.$message.error('提交失败: ' + (error.message || '未知错误'));
-				});
-		},
 		/**
 		 * @description: 处理库存详情表格中行的编辑操作，将行设置为编辑状态
 		 * @param {object} row 当前行的数据对象
@@ -1604,12 +1621,23 @@ export default {
 					// 如果是新增，保存返回的ID到表单中，确保后续操作为修改
 					if (!newInventoryInfo.id && res.data && res.data.id) {
 						this.secondForm.id = res.data.id;
-						// 更新所有明细项的主表ID关联
-						this.inventoryDetailList.forEach(item => {
-							item.inventoryId = res.data.id;
-						});
-						this.$message.success(successMessage);
+						// 直接使用后端返回的明细项数据替换前端有效明细项
+						if (res.data.inventoryDetailList && res.data.inventoryDetailList.length > 0) {
+							// 保留shouldDel为true的项（默认记录），替换其他有效明细项
+							const shouldDelItems = this.inventoryDetailList.filter(item => item.shouldDel);
+							// 将后端返回的明细项添加必要的前端状态字段
+							const backendDetails = res.data.inventoryDetailList.map(item => ({
+								...item,
+								isEditing: false,
+								hasError: false,
+								manuallyEditedPieces: true,
+								selfButtonDisabled: item.supplierId === 0
+							}));
+							// 合并：保留shouldDel项 + 后端返回的明细项
+							this.inventoryDetailList = [...shouldDelItems, ...backendDetails];
+						}
 					}
+					this.$message.success(successMessage);
 					resolve && resolve(res);
 				})
 				.catch(error => {
@@ -1877,6 +1905,108 @@ export default {
 	&::-webkit-scrollbar-track {
 		border-radius: 2px;
 		background-color: rgba(0, 0, 0, 0.1);
+	}
+}
+
+/* 计量单位列垂直布局样式 */
+::v-deep .counting-unit-column {
+	.cell {
+		padding: 2px 4px !important; // 减少内边距
+		line-height: 1.1 !important;
+		white-space: normal !important; // 允许换行
+		overflow: visible !important; // 显示溢出内容
+		height: auto !important; // 自动高度适应内容
+	}
+}
+
+::v-deep .vertical-radio-group {
+	display: flex !important;
+	flex-direction: column !important; // 强制垂直排列
+	align-items: flex-start !important;
+	gap: 1px !important; // 减少选项间距
+	width: 100% !important;
+	margin: 0 !important;
+
+	.vertical-radio {
+		margin-right: 0 !important;
+		margin-bottom: 1px !important;
+		white-space: nowrap !important;
+		width: 100% !important;
+
+		.el-radio__label {
+			font-size: 10px !important; // 进一步缩小字体适应空间
+			padding-left: 3px !important;
+		}
+
+		.el-radio__input {
+			.el-radio__inner {
+				width: 9px !important; // 稍微缩小单选框
+				height: 9px !important;
+
+				&:after {
+					width: 2px !important;
+					height: 2px !important;
+					left: 2.5px !important;
+					top: 2.5px !important;
+				}
+			}
+		}
+
+		// 移除最后一个单选框的下边距
+		&:last-child {
+			margin-bottom: 0 !important;
+		}
+	}
+}
+
+/* 含税列垂直布局样式 */
+::v-deep .tax-column {
+	.cell {
+		padding: 2px 4px !important; // 减少内边距
+		line-height: 1.1 !important;
+		white-space: normal !important; // 允许换行
+		overflow: visible !important; // 显示溢出内容
+		height: auto !important; // 自动高度适应内容
+	}
+}
+
+::v-deep .vertical-tax-radio-group {
+	display: flex !important;
+	flex-direction: column !important; // 强制垂直排列
+	align-items: flex-start !important;
+	gap: 1px !important; // 减少选项间距
+	width: 100% !important;
+	margin: 0 !important;
+
+	.vertical-tax-radio {
+		margin-right: 0 !important;
+		margin-bottom: 1px !important;
+		white-space: nowrap !important;
+		width: 100% !important;
+
+		.el-radio__label {
+			font-size: 10px !important; // 进一步缩小字体适应空间
+			padding-left: 3px !important;
+		}
+
+		.el-radio__input {
+			.el-radio__inner {
+				width: 9px !important; // 稍微缩小单选框
+				height: 9px !important;
+
+				&:after {
+					width: 2px !important;
+					height: 2px !important;
+					left: 2.5px !important;
+					top: 2.5px !important;
+				}
+			}
+		}
+
+		// 移除最后一个单选框的下边距
+		&:last-child {
+			margin-bottom: 0 !important;
+		}
 	}
 }
 </style>
