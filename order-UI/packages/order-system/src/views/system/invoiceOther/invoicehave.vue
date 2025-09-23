@@ -373,7 +373,7 @@
 import { listInvoiceOther, delInvoiceOther, addInvoiceOther, getInvoiceOther, updateInvoiceOther, updateInvoiceOtherExtra } from '@/api/system/invoiceOther';
 import { listTableEditMessage } from '@/api/system/tableEditMessage';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
-import { TableName } from '@/api/tool/enums';
+import { TableName, PUBLIC_DICT_TYPE } from '@/api/tool/enums';
 import SearchOption from '@/components/SearchOption.vue';
 import { listCompany } from '@/api/system/company';
 import { listGoodsOrder } from '@/api/system/goodsOrder';
@@ -406,6 +406,8 @@ export default {
 			}
 		};
 		return {
+			// 枚举常量，供模板使用
+			PUBLIC_DICT_TYPE,
 			// 遮罩层
 			loading: true,
 			// 选中数组
@@ -693,6 +695,10 @@ export default {
 				customer: null,
 				CustomerID: null,
 				invoiceCompanyName: null,
+				// 供应商公司类型：固定为供应商
+				supplierCompanyType: PUBLIC_DICT_TYPE.SUPPLIER,
+				// 客户公司类型：固定为客户
+				customerCompanyType: PUBLIC_DICT_TYPE.CUSTOMER,
 				customerTicketPoint: null,
 				customerPointAmount: null,
 				type: 'customerTicketPointIsZero',
@@ -804,6 +810,9 @@ export default {
 			this.reset();
 			this.form = {
 				...invoiceOtherData,
+				// 确保公司类型字段被正确设置
+				supplierCompanyType: PUBLIC_DICT_TYPE.SUPPLIER,
+				customerCompanyType: PUBLIC_DICT_TYPE.CUSTOMER,
 				params: {
 					...invoiceOtherData.params,
 					attachmentIds: invoiceOtherData.attachmentList ? invoiceOtherData.attachmentList.map(item => item.id) : []
