@@ -82,56 +82,98 @@
 			</right-toolbar>
 		</el-row>
 
-		<el-row :gutter="10">
-			<el-col :span="4">
-				<div class="tree-container" style="max-height: 400px; overflow-y: auto">
-					<el-tree :data="storeList" :props="defaultProps" @node-click="handleNodeClick" />
-				</div>
-			</el-col>
-			<el-col :span="20">
-				<el-table border id="printBox" size="mini" v-loading="loading" :data="detailList" @selection-change="handleSelectionChange">
-					<!-- 手写每一列，使用 v-if 判断列的可见性 -->
-					<el-table-column v-if="columns[0].visible" label="ID" align="center" prop="id" show-overflow-tooltip />
-					<el-table-column v-if="columns[1].visible" label="变动日期(入库)" align="center" prop="storeDate" show-overflow-tooltip />
-					<el-table-column v-if="columns[2].visible" label="仓库名称" align="center" prop="storeHouseName" show-overflow-tooltip />
-					<el-table-column v-if="columns[3].visible" label="入库片数" align="center" prop="stockNumber" show-overflow-tooltip />
-					<el-table-column v-if="columns[4].visible" label="剩余量" align="center" prop="actualPieces" show-overflow-tooltip />
-					<el-table-column v-if="columns[5].visible" label="供应商" align="center" prop="supplier" show-overflow-tooltip />
-					<el-table-column v-if="columns[6].visible" label="计量单位" align="center" prop="countingUnit" show-overflow-tooltip />
-					<el-table-column v-if="columns[7].visible" label="厚度" align="center" prop="height" show-overflow-tooltip />
-					<el-table-column v-if="columns[8].visible" label="长度" align="center" prop="length" show-overflow-tooltip />
-					<el-table-column v-if="columns[9].visible" label="宽度" align="center" prop="width" show-overflow-tooltip />
-					<el-table-column v-if="columns[10].visible" label="每包片数" align="center" prop="piecesPerPack" show-overflow-tooltip />
-					<el-table-column v-if="columns[11].visible" label="包数" align="center" prop="packs" show-overflow-tooltip />
-					<el-table-column v-if="columns[12].visible" label="存货价" align="center" prop="paymentUnload" show-overflow-tooltip />
-					<el-table-column v-if="columns[13].visible" label="库存是否含税" align="center" prop="isIncludeTaxSale" show-overflow-tooltip>
-						<template #default="scope">
-							<span>{{ scope.row.isIncludeTaxSale === 1 ? '含税' : '不含税' }}</span>
-						</template>
-					</el-table-column>
-					<el-table-column v-if="columns[14].visible" label="入库金额" align="center" prop="payments" show-overflow-tooltip />
-					<el-table-column v-if="columns[15].visible" label="误差" align="center" prop="erro" show-overflow-tooltip />
-					<el-table-column v-if="columns[16].visible" label="吨位" align="center" prop="tonnage" show-overflow-tooltip />
-					<!-- 操作列 -->
-					<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="120px">
-						<template #default="scope">
-							<el-dropdown trigger="hover">
-								<span class="el-dropdown-link">
-									操作
-									<i class="el-icon-arrow-down el-icon--right"></i>
-								</span>
-								<el-dropdown-menu slot="dropdown">
-									<el-dropdown-item @click.native="secondryInventoryOut(scope.row)">加工后出库</el-dropdown-item>
-									<el-dropdown-item @click.native="afterbreakInventoryOut(scope.row)">破损后出库</el-dropdown-item>
-								</el-dropdown-menu>
-							</el-dropdown>
-						</template>
-					</el-table-column>
-				</el-table>
-			</el-col>
-		</el-row>
+		<!-- 使用 DragDiv 组件替换原来的 el-col 布局 -->
+		<div style="height: 800px">
+			<DragDiv :initial-left-width="300" :min-left-width="200" :min-right-width="400" :divider-width="6" @drag-start="handleDragStart" @dragging="handleDragging" @drag-end="handleDragEnd">
+				<!-- 左侧：仓库树 -->
+				<template #left>
+					<div class="tree-container" style="height: 100%; padding: 10px; background: #fafafa; border: 1px solid #e6e6e6; display: flex; flex-direction: column">
+						<div style="margin-bottom: 10px; font-weight: bold; color: #333">仓库列表</div>
+						<div style="flex: 1; overflow-y: auto; margin-bottom: 10px">
+							<el-tree :data="storeList" :props="defaultProps" @node-click="handleNodeClick" />
+						</div>
+						<!-- 仓库分页组件 -->
+						<div style="padding: 5px 0; border-top: 1px solid #e6e6e6">
+							<el-pagination
+								small
+								background
+								layout="total, sizes, prev, pager, next"
+								:total="storeTotal"
+								:page-size="storePageParams.pageSize"
+								:current-page="storePageParams.pageNum"
+								:page-sizes="[20, 50, 100]"
+								@size-change="handleStoreSizeChange"
+								@current-change="handleStoreCurrentChange"
+								style="text-align: center"
+							/>
+						</div>
+					</div>
+				</template>
 
-		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
+				<!-- 右侧：数据表格 -->
+				<template #right>
+					<div style="height: 100%; display: flex; flex-direction: column">
+						<el-table
+							border
+							id="printBox"
+							size="mini"
+							v-loading="loading"
+							:data="detailList"
+							@selection-change="handleSelectionChange"
+							stripe
+							style="flex: 1; margin-bottom: 20px"
+							:height="'100%'"
+						>
+							<!-- 手写每一列，使用 v-if 判断列的可见性 -->
+							<el-table-column v-if="columns[0].visible" label="ID" align="center" prop="id" show-overflow-tooltip />
+							<el-table-column v-if="columns[1].visible" label="变动日期(入库)" align="center" prop="storeDate" show-overflow-tooltip />
+							<el-table-column v-if="columns[2].visible" label="仓库名称" align="center" prop="storeHouseName" show-overflow-tooltip />
+							<el-table-column v-if="columns[3].visible" label="入库片数" align="center" prop="stockNumber" show-overflow-tooltip />
+							<el-table-column v-if="columns[4].visible" label="剩余量" align="center" prop="actualPieces" show-overflow-tooltip />
+							<el-table-column v-if="columns[5].visible" label="供应商" align="center" prop="supplier" show-overflow-tooltip />
+							<el-table-column v-if="columns[6].visible" label="计量单位" align="center" prop="countingUnit" show-overflow-tooltip />
+							<el-table-column v-if="columns[7].visible" label="厚度" align="center" prop="height" show-overflow-tooltip />
+							<el-table-column v-if="columns[8].visible" label="长度" align="center" prop="length" show-overflow-tooltip />
+							<el-table-column v-if="columns[9].visible" label="宽度" align="center" prop="width" show-overflow-tooltip />
+							<el-table-column v-if="columns[10].visible" label="每包片数" align="center" prop="piecesPerPack" show-overflow-tooltip />
+							<el-table-column v-if="columns[11].visible" label="包数" align="center" prop="packs" show-overflow-tooltip />
+							<el-table-column v-if="columns[12].visible" label="存货价" align="center" prop="paymentUnload" show-overflow-tooltip />
+							<el-table-column v-if="columns[13].visible" label="库存是否含税" align="center" prop="isIncludeTaxSale" show-overflow-tooltip>
+								<template #default="scope">
+									<span>{{ scope.row.isIncludeTaxSale === 1 ? '含税' : '不含税' }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column v-if="columns[14].visible" label="入库金额" align="center" prop="payments" show-overflow-tooltip />
+							<el-table-column v-if="columns[15].visible" label="误差" align="center" prop="erro" show-overflow-tooltip />
+							<el-table-column v-if="columns[16].visible" label="吨位" align="center" prop="tonnage" show-overflow-tooltip />
+							<!-- 操作列 -->
+							<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="120px">
+								<template #default="scope">
+									<el-dropdown trigger="hover">
+										<span class="el-dropdown-link">
+											操作
+											<i class="el-icon-arrow-down el-icon--right"></i>
+										</span>
+										<el-dropdown-menu slot="dropdown">
+											<el-dropdown-item @click.native="secondryInventoryOut(scope.row)">加工后出库</el-dropdown-item>
+											<el-dropdown-item @click.native="afterbreakInventoryOut(scope.row)">破损后出库</el-dropdown-item>
+										</el-dropdown-menu>
+									</el-dropdown>
+								</template>
+							</el-table-column>
+						</el-table>
+						<pagination
+							v-show="total > 0"
+							:total="total"
+							:page.sync="queryParams.pageNum"
+							:limit.sync="queryParams.pageSize"
+							@pagination="getList"
+							style="margin-top: 10px; text-align: right"
+						/>
+					</div>
+				</template>
+			</DragDiv>
+		</div>
 
 		<!-- 添加或修改库存子对话框 -->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="title" :visible.sync="open" width="500px" append-to-body>
@@ -315,10 +357,11 @@ import { parseTime } from '@/utils/ruoyi';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
 import SearchOption from '@/components/SearchOption.vue';
 import { listStoreHouse } from '@/api/system/StoreHouse';
+import DragDiv from '@/components/DragDiv/index.vue';
 
 export default {
 	name: 'Detail',
-	components: { SearchOption },
+	components: { SearchOption, DragDiv },
 	mixins: [mixin_printHTML],
 	data() {
 		return {
@@ -343,13 +386,19 @@ export default {
 			storeHouseName: null,
 			queryStoreHouseName: null,
 			storeList: [],
+			// 仓库分页相关数据
+			storePageParams: {
+				pageNum: 1,
+				pageSize: 50
+			},
+			storeTotal: 0,
 			defaultProps: {
 				label: 'label'
 			},
 			// 查询参数
 			queryParams: {
 				pageNum: 1,
-				pageSize: 20,
+				pageSize: 50,
 				mainId: null,
 				stockNumber: null,
 				supplier: null,
@@ -458,8 +507,28 @@ export default {
 				this.columns = JSON.parse(localStorage.getItem('detail-columns'));
 			}
 		},
-		fetchStore() {
-			listStoreHouse().then(res => {
+		// DragDiv 事件处理方法
+		handleDragStart() {
+			// 拖拽开始时的处理逻辑
+		},
+		handleDragging(leftWidth, rightWidth) {
+			// 拖拽过程中的处理逻辑
+			// console.log('拖拽中:', leftWidth, rightWidth);
+		},
+		handleDragEnd(leftWidth, rightWidth) {
+			// 拖拽结束时的处理逻辑
+			// console.log('拖拽结束:', leftWidth, rightWidth);
+		},
+
+		/**
+		 * @description: 获取仓库列表数据（支持分页）
+		 */
+		getStoreList() {
+			const params = {
+				pageNum: this.storePageParams.pageNum,
+				pageSize: this.storePageParams.pageSize
+			};
+			listStoreHouse(params).then(res => {
 				this.storeList = res.rows.map(item => {
 					return {
 						label: item.storeHouseName,
@@ -467,7 +536,31 @@ export default {
 						children: []
 					};
 				});
+				this.storeTotal = res.total;
 			});
+		},
+
+		/**
+		 * @description: 仓库分页大小改变事件
+		 * @param {number} size 新的分页大小
+		 */
+		handleStoreSizeChange(size) {
+			this.storePageParams.pageSize = size;
+			this.storePageParams.pageNum = 1;
+			this.getStoreList();
+		},
+
+		/**
+		 * @description: 仓库当前页改变事件
+		 * @param {number} page 新的页码
+		 */
+		handleStoreCurrentChange(page) {
+			this.storePageParams.pageNum = page;
+			this.getStoreList();
+		},
+
+		fetchStore() {
+			this.getStoreList();
 		},
 		// 左侧树的点击
 		handleNodeClick(data) {

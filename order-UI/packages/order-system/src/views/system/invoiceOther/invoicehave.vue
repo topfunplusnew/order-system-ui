@@ -463,6 +463,13 @@ export default {
 			queryGoodsOrder: '',
 			// 表单校验
 			rules: {
+				invoiceDate: [
+					{
+						required: true,
+						message: '请选择开票时间',
+						trigger: 'blur'
+					}
+				],
 				invoiceAmount: [
 					{
 						required: true,
