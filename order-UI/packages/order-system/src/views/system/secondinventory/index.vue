@@ -57,7 +57,7 @@
 						</span>
 						<el-dropdown-menu slot="dropdown">
 							<el-dropdown-item
-								:disabled="scope.row.targetInventoryDetail && scope.row.targetInventoryDetail.id"
+								:disabled="scope.row.targetInventoryDetail && scope.row.targetInventoryDetail.id != null"
 								v-hasPermi="['system:secondinventory:add']"
 								@click.native="secondInventory(scope.row)"
 							>
@@ -1062,7 +1062,6 @@ export default {
 			this.secondForm.goodsCompany = row.storeHouseName;
 			// 设置主表的出库ID信息
 			this.secondForm.exWareHoustId = row.id;
-
 			getDetail(row.storeID).then(res => {
 				if (!res.data) {
 					this.$message.error('该货物没有库存信息');
@@ -1277,6 +1276,7 @@ export default {
 			scope.row.rebate = '';
 			scope.row.factoryCommission = '';
 			scope.row.comments = '';
+			scope.row.exWareHoustId = '';
 			scope.row.manuallyEditedPieces = false;
 		},
 		/**
@@ -1453,7 +1453,16 @@ export default {
 				}
 
 				// 检查库存详情数据
-				const validInventoryItems = this.inventoryDetailList.filter(item => !item.shouldDel);
+				const validInventoryItems = this.inventoryDetailList
+					.filter(item => !item.shouldDel)
+					.map(item => {
+						return {
+							...item,
+							exWareHoustId: this.secondForm.exWareHoustId
+						};
+					});
+
+				// 如果长度为0 需要提示用户
 				if (validInventoryItems.length === 0) {
 					this.$message.error('请至少添加一条有效的库存详情信息，不能仅包含默认记录');
 					return;

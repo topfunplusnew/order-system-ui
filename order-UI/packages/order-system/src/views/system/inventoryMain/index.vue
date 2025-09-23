@@ -152,7 +152,23 @@
 							<CustomTableColumn v-if="columns[20].visible" label="操作" align="center" width="200" fixed="right">
 								<template slot-scope="scope">
 									<el-button size="mini" type="text" icon="el-icon-edit" @click="handleCheckInventory(scope.row)">查看</el-button>
-									<el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)" v-hasPermi="['system:inventoryMain:edit']">修改</el-button>
+									<el-tooltip effect="light" v-if="isInventoryDisabledModify(scope.row)" placement="top">
+										<template #content>
+											<div>该货物为二次入库货物，请在存货二次加工管理处修改</div>
+										</template>
+										<el-button :disabled="true" size="mini" type="text" icon="el-icon-edit" v-hasPermi="['system:inventoryMain:edit']">修改</el-button>
+									</el-tooltip>
+									<el-button
+										v-else
+										:disabled="isInventoryDisabledModify(scope.row)"
+										size="mini"
+										type="text"
+										icon="el-icon-edit"
+										@click="handleUpdate(scope.row)"
+										v-hasPermi="['system:inventoryMain:edit']"
+									>
+										修改
+									</el-button>
 									<el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)" v-hasPermi="['system:inventoryMain:remove']">删除</el-button>
 								</template>
 							</CustomTableColumn>
@@ -1012,7 +1028,16 @@ export default {
 			// 拖拽结束时的处理逻辑
 			// console.log('拖拽结束:', leftWidth, rightWidth);
 		},
-
+		// 是否禁用修改（如果是二次入库的入库信息 需要禁用修改）
+		isInventoryDisabledModify(row) {
+			console.log(row);
+			if (!row.inventoryDetailList) {
+				return false;
+			}
+			return row.inventoryDetailList.every(item => {
+				return item.exWareHoustId != null;
+			});
+		},
 		/**
 		 * @description: 获取仓库列表数据（支持分页）
 		 */
