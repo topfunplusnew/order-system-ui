@@ -1138,61 +1138,80 @@ export default {
 			// 获取目标库存详情的ID（二次入库后的库存信息）
 			const targetDetailId = row.targetInventoryDetail.id;
 
-			getInventoryMainByDetailId(targetDetailId)
-				.then(response => {
-					this.resetSecond();
-					this.isSecondaryStorage = true; // 标记为二次入库模式
-
-					const data = response.data;
-					// 填充主表单信息
-					this.secondForm = { ...data };
-					this.secondForm.exWareHoustId = row.id; // 设置出库ID
-
-					// 设置运输方式状态
-					this.isSea = data.seaCarNo != null;
-					this.isLand = data.landCarNo != null;
-
-					// 处理库存详情列表
-					this.inventoryDetailList = [];
-
-					// 第一行：显示原始库存信息作为参考（只读）
-					const referenceItem = {
-						...row.sourceInventoryDetail,
-						supplier: '参考信息',
-						pieces: row.outAmount, // 显示出库数量
-						stockNumber: 0,
-						isEditing: false,
-						hasError: false,
-						isReadOnly: true,
-						shouldDel: true, // 保存时过滤掉
-						selfButtonDisabled: true
-					};
-					this.inventoryDetailList.push(referenceItem);
-
-					// 后续行：显示实际的二次入库信息（可编辑）
-					if (data.inventoryDetailList && data.inventoryDetailList.length > 0) {
-						const editableItems = data.inventoryDetailList.map(item => ({
-							...item,
-							isEditing: false,
-							hasError: false,
-							isReadOnly: false,
-							shouldDel: false
-						}));
-						this.inventoryDetailList.push(...editableItems);
-
-						// 对可编辑行进行初始计算
-						editableItems.forEach(item => {
-							updateInventoryRowCalculations(item, this.isSea, this.isLand);
-						});
+			// 先获取原始库存信息，再获取二次入库信息
+			getDetail(row.storeID)
+				.then(originalRes => {
+					if (!originalRes.data) {
+						this.$message.error('无法获取原始库存信息');
+						return;
 					}
 
-					this.secondInventoryVisible = true;
-					this.title = '修改二次入库';
-					this.isEditingDetails = false;
+					const originalData = originalRes.data;
+
+					getInventoryMainByDetailId(targetDetailId)
+						.then(response => {
+							this.resetSecond();
+							this.isSecondaryStorage = true; // 标记为二次入库模式
+
+							const data = response.data;
+							// 填充主表单信息
+							this.secondForm = { ...data };
+							this.secondForm.exWareHoustId = row.id; // 设置出库ID
+
+							// 设置运输方式状态
+							this.isSea = data.seaCarNo != null;
+							this.isLand = data.landCarNo != null;
+
+							// 处理库存详情列表
+							this.inventoryDetailList = [];
+
+							// 第一行：显示原始库存信息作为参考（只读）
+							const referenceItem = {
+								...row.sourceInventoryDetail,
+								supplier: '己方公司',
+								pieces: row.outAmount, // 显示出库数量
+								stockNumber: 0,
+								isEditing: false,
+								hasError: false,
+								isReadOnly: true,
+								shouldDel: true, // 保存时过滤掉
+								selfButtonDisabled: true,
+								// 出厂是否含税使用原始库存信息的isIncludeTaxSale字段
+								isIncludeTaxFactory: originalData.isIncludeTaxSale,
+								// 库存是否含税默认为否
+								isIncludeTaxSale: 0
+							};
+							this.inventoryDetailList.push(referenceItem);
+
+							// 后续行：显示实际的二次入库信息（可编辑）
+							if (data.inventoryDetailList && data.inventoryDetailList.length > 0) {
+								const editableItems = data.inventoryDetailList.map(item => ({
+									...item,
+									isEditing: false,
+									hasError: false,
+									isReadOnly: false,
+									shouldDel: false
+								}));
+								this.inventoryDetailList.push(...editableItems);
+
+								// 对可编辑行进行初始计算
+								editableItems.forEach(item => {
+									updateInventoryRowCalculations(item, this.isSea, this.isLand);
+								});
+							}
+
+							this.secondInventoryVisible = true;
+							this.title = '修改二次入库';
+							this.isEditingDetails = false;
+						})
+						.catch(error => {
+							console.error('获取库存详情失败:', error);
+							this.$modal.msgError('获取库存详情失败，请重试');
+						});
 				})
 				.catch(error => {
-					console.error('获取库存详情失败:', error);
-					this.$modal.msgError('获取库存详情失败，请重试');
+					console.error('获取原始库存信息失败:', error);
+					this.$modal.msgError('获取原始库存信息失败，请重试');
 				});
 		},
 		/**
