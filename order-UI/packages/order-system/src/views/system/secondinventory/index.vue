@@ -48,8 +48,9 @@
 			<el-table-column v-if="columns[6].visible" label="宽度" align="center" prop="sourceInventoryDetail.width" />
 			<el-table-column v-if="columns[7].visible" label="存货价" align="center" prop="sourceInventoryDetail.paymentUnload" />
 			<el-table-column v-if="columns[8].visible" label="出库量" align="center" prop="outAmount" />
-			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="80">
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="120">
 				<template slot-scope="scope">
+					<el-button size="mini" type="text" icon="el-icon-edit" @click="handleModifySecondStorage(scope.row)" v-hasPermi="['system:secondinventory:edit']">修改</el-button>
 					<el-dropdown trigger="hover">
 						<span class="el-dropdown-link">
 							操作
@@ -258,7 +259,7 @@
 						<template slot-scope="scope">
 							<el-button
 								v-if="scope.row.shouldDel || !scope.row.isEditing"
-								:disabled="!isEditingDetails"
+								:disabled="!isEditingDetails || scope.row.shouldDel"
 								size="mini"
 								type="warning"
 								icon="el-icon-edit"
@@ -286,13 +287,14 @@
 										:type="scope.row.selfButtonDisabled ? 'danger' : 'success'"
 										size="mini"
 										icon="el-icon-school"
+										:disabled="scope.row.shouldDel || !scope.row.isEditing"
 										@click="
 											() => {
-												if (!scope.row.selfButtonDisabled) {
+												if (!scope.row.selfButtonDisabled && !scope.row.shouldDel && scope.row.isEditing) {
 													scope.row.supplier = PUBLIC_DICT_TYPE.SELF_COMPANY;
 													scope.row.supplierId = 0;
 													scope.row.selfButtonDisabled = true;
-												} else {
+												} else if (scope.row.selfButtonDisabled && !scope.row.shouldDel && scope.row.isEditing) {
 													scope.row.supplier = '';
 													scope.row.supplierId = '';
 													scope.row.selfButtonDisabled = false;
@@ -733,7 +735,7 @@
 <script>
 import { addExWarehouse, delExWarehouse, getExWarehouse, listExWarehouse, updateExWarehouse } from '@/api/system/exWarehouse';
 import { excludeParams } from '@/api/tool/exclude';
-import { getDetail } from '../../../api/system/detail';
+import { getDetail, getInventoryMainByDetailId } from '../../../api/system/detail';
 import { listStoreHouse } from '../../../api/system/StoreHouse';
 import { listCars } from '../../../api/system/cars';
 import { listFleet } from '../../../api/system/fleet';
@@ -868,6 +870,7 @@ export default {
 			querySupplier: '',
 			queryLevel: '',
 			isEditingDetails: false,
+			isSecondaryStorage: false, // 二次入库模式标识
 			checkedInventoryDetail: [],
 			queryItemsCompany: {
 				queryList: [
@@ -1121,6 +1124,78 @@ export default {
 			});
 		},
 		/**
+		 * @description: 处理修改按钮操作，用于修改二次入库信息
+		 *              根据当前行的targetInventoryDetail中的ID，调用API获取完整的库存信息
+		 *              成功后，填充表单并打开弹窗，第一行数据设置为只读状态
+		 * @param {object} row - 当前操作的行数据对象
+		 */
+		handleModifySecondStorage(row) {
+			if (!row.targetInventoryDetail || !row.targetInventoryDetail.id) {
+				this.$modal.msgError('该记录没有二次入库信息，无法进行修改');
+				return;
+			}
+
+			// 获取目标库存详情的ID（二次入库后的库存信息）
+			const targetDetailId = row.targetInventoryDetail.id;
+
+			getInventoryMainByDetailId(targetDetailId)
+				.then(response => {
+					this.resetSecond();
+					this.isSecondaryStorage = true; // 标记为二次入库模式
+
+					const data = response.data;
+					// 填充主表单信息
+					this.secondForm = { ...data };
+					this.secondForm.exWareHoustId = row.id; // 设置出库ID
+
+					// 设置运输方式状态
+					this.isSea = data.seaCarNo != null;
+					this.isLand = data.landCarNo != null;
+
+					// 处理库存详情列表
+					this.inventoryDetailList = [];
+
+					// 第一行：显示原始库存信息作为参考（只读）
+					const referenceItem = {
+						...row.sourceInventoryDetail,
+						supplier: '参考信息',
+						pieces: row.outAmount, // 显示出库数量
+						stockNumber: 0,
+						isEditing: false,
+						hasError: false,
+						isReadOnly: true,
+						shouldDel: true, // 保存时过滤掉
+						selfButtonDisabled: true
+					};
+					this.inventoryDetailList.push(referenceItem);
+
+					// 后续行：显示实际的二次入库信息（可编辑）
+					if (data.inventoryDetailList && data.inventoryDetailList.length > 0) {
+						const editableItems = data.inventoryDetailList.map(item => ({
+							...item,
+							isEditing: false,
+							hasError: false,
+							isReadOnly: false,
+							shouldDel: false
+						}));
+						this.inventoryDetailList.push(...editableItems);
+
+						// 对可编辑行进行初始计算
+						editableItems.forEach(item => {
+							updateInventoryRowCalculations(item, this.isSea, this.isLand);
+						});
+					}
+
+					this.secondInventoryVisible = true;
+					this.title = '修改二次入库';
+					this.isEditingDetails = false;
+				})
+				.catch(error => {
+					console.error('获取库存详情失败:', error);
+					this.$modal.msgError('获取库存详情失败，请重试');
+				});
+		},
+		/**
 		 * @description: 计算表格的合计行数据
 		 * @param {object} param Element UI 表格传递的参数，包含列配置和数据
 		 * @return {Array} 计算得到的合计行数据数组
@@ -1335,6 +1410,8 @@ export default {
 				return 'error-row';
 			} else if (row.isEditing) {
 				return 'editing-row';
+			} else if (row.isReadOnly || row.shouldDel) {
+				return 'readonly-row';
 			}
 			return '';
 		},
@@ -1898,6 +1975,22 @@ export default {
 
 	&:hover td {
 		animation: none;
+	}
+}
+
+// 只读行样式
+::v-deep .readonly-row {
+	td:first-child {
+		border-left: 9px solid #909399 !important;
+	}
+
+	td {
+		background-color: #f5f7fa !important;
+		color: #909399 !important;
+	}
+
+	&:hover td {
+		background-color: #e9ecef !important;
 	}
 }
 

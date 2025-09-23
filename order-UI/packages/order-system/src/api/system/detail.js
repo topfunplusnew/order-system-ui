@@ -46,3 +46,11 @@ export function delDetail(id) {
 		method: 'delete'
 	});
 }
+
+// 根据明细ID获取完整的库存主表信息
+export function getInventoryMainByDetailId(detailId) {
+	return request({
+		url: '/system/inventoryMain/getByDetailId/' + detailId,
+		method: 'get'
+	});
+}
