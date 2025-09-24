@@ -149,7 +149,7 @@
 									/>
 								</template>
 							</CustomTableColumn>
-							<CustomTableColumn v-if="columns[20].visible" label="操作" align="center" width="200" fixed="right">
+							<CustomTableColumn v-if="columns[20].visible" label="操作" align="center" width="250" fixed="right">
 								<template slot-scope="scope">
 									<el-button size="mini" type="text" icon="el-icon-edit" @click="handleCheckInventory(scope.row)">查看</el-button>
 									<el-tooltip effect="light" v-if="isInventoryDisabledModify(scope.row)" placement="top">
