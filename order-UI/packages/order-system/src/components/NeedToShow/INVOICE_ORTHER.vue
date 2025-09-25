@@ -24,7 +24,7 @@ export default {
 				<el-descriptions-item label="订单编码">{{ needToShowInfo.code }}</el-descriptions-item>
 				<el-descriptions-item label="发票日期">{{ needToShowInfo.invoiceDate }}</el-descriptions-item>
 				<el-descriptions-item label="发票金额">{{ needToShowInfo.invoiceAmount }} 元</el-descriptions-item>
-				<el-descriptions-item label="供应商">{{ needToShowInfo.supplier }}</el-descriptions-item>
+				<el-descriptions-item label="供应商">{{ needToShowInfo.Supplier }}</el-descriptions-item>
 				<el-descriptions-item label="供应商票点">{{ needToShowInfo.supplierTicketPoint }}</el-descriptions-item>
 				<el-descriptions-item label="供应商票点金额">{{ needToShowInfo.supplierPointAmount }} 元</el-descriptions-item>
 				<el-descriptions-item label="客户">{{ needToShowInfo.customer }}</el-descriptions-item>
