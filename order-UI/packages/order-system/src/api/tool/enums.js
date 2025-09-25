@@ -19,6 +19,11 @@ export const YES_OR_NO = Object.freeze({
 	NO: 0
 });
 
+export const CAR_TYPE = Object.freeze({
+	LAND: '陆运',
+	SEA: '海运'
+});
+
 // 系统常用枚举类
 
 export const TableName = Object.freeze({

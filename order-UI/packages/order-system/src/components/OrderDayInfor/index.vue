@@ -82,6 +82,7 @@
 import { getBussinessInfoTodayList } from '@/api/system/goodsOrder';
 import { BatchQueryTableName, PUBLIC_DICT_TYPE } from '@/api/tool/enums';
 import _ from 'lodash';
+import { CAR_TYPE } from '../../api/tool/enums';
 
 export default {
 	name: 'OrderDayInfo',
@@ -209,10 +210,6 @@ export default {
 				const response = await getBussinessInfoTodayList(params);
 				if (response.data && response.data.length > 0) {
 					let orderInfoList = _.cloneDeep(response.data);
-					// 如果公司类型是司机 需要把这个司机的订单筛选出来
-					if (orderInfoList.length > 0 && this.companyType === PUBLIC_DICT_TYPE.DRIVER) {
-						orderInfoList = orderInfoList.filter(item => item.landCarID === this.companyId);
-					}
 					let orderFlatList = [];
 					// orderInfoList是主子表信息 orderDetailList是明细
 					orderInfoList.forEach(item => {
