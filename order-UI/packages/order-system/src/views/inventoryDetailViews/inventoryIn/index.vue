@@ -7,17 +7,16 @@
 			<el-form-item label="结束日期" prop="endDate">
 				<el-date-picker v-model="queryParams.endDate" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="选择结束日期" clearable />
 			</el-form-item>
-			<el-form-item label="仓库名称" prop="storeHouseName">
+			<!-- 因为没用，后端要求删除 -->
+			<!-- <el-form-item label="仓库名称" prop="storeHouseName">
 				<el-input v-model="queryParams.storeHouseName" placeholder="请输入仓库名称" clearable @keyup.enter.native="handleQuery" />
-			</el-form-item>
+			</el-form-item> -->
 			<el-form-item label="产品级别" prop="levelName">
 				<el-input v-model="queryParams.levelName" placeholder="请输入产品级别" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
-
 			<el-form-item label="供应商/库房" prop="supplierOrWarehouse">
 				<el-input v-model="queryParams.supplierOrWarehouse" placeholder="请输入供应商/库房" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
-
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery" v-hasPermi="['system:inventoryStatistics:inStatistics']">搜索</el-button>
 				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>

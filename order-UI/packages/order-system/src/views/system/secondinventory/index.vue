@@ -64,7 +64,6 @@
 							>
 								二次入库
 							</el-dropdown-item>
-							<el-dropdown-item v-hasPermi="['system:secondinventory:list']" @click.native="checkInvoInfo(scope.row)">查看库存信息</el-dropdown-item>
 							<el-dropdown-item v-hasPermi="['system:secondinventory:remove']" @click.native="handleDelete(scope.row)">删除</el-dropdown-item>
 						</el-dropdown-menu>
 					</el-dropdown>
@@ -634,100 +633,6 @@
 			</div>
 		</el-dialog>
 
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="true"
-			title="库存信息"
-			:visible.sync="inventoryInfoVisible"
-			width="900px"
-			append-to-body
-		>
-			<el-descriptions title="库存详情" border size="mini">
-				<el-descriptions-item label="陆地车号">
-					{{ inventoryInfo.landCarNo }}
-				</el-descriptions-item>
-				<el-descriptions-item label="陆地司机姓名">
-					{{ inventoryInfo.landDriverName }}
-				</el-descriptions-item>
-				<el-descriptions-item label="陆地司机电话">
-					{{ inventoryInfo.landDriverTel }}
-				</el-descriptions-item>
-				<el-descriptions-item label="陆地运费">
-					{{ inventoryInfo.landFreight }}
-				</el-descriptions-item>
-				<el-descriptions-item label="陆地运费单价">
-					{{ inventoryInfo.landFreightPrice }}
-				</el-descriptions-item>
-				<el-descriptions-item label="长度">
-					{{ inventoryInfo.length }}
-				</el-descriptions-item>
-				<el-descriptions-item label="宽度">
-					{{ inventoryInfo.width }}
-				</el-descriptions-item>
-				<el-descriptions-item label="厚度">
-					{{ inventoryInfo.height }}
-				</el-descriptions-item>
-				<el-descriptions-item label="吨位">
-					{{ inventoryInfo.freight }}
-				</el-descriptions-item>
-				<el-descriptions-item label="单位">
-					{{ inventoryInfo.countingUnit }}
-				</el-descriptions-item>
-				<el-descriptions-item label="误差">
-					{{ inventoryInfo.erro }}
-				</el-descriptions-item>
-				<el-descriptions-item label="等级名称">
-					{{ inventoryInfo.levelName }}
-				</el-descriptions-item>
-				<el-descriptions-item label="其他费用">
-					{{ inventoryInfo.otherCost }}
-				</el-descriptions-item>
-				<el-descriptions-item label="包数">
-					{{ inventoryInfo.packs }}
-				</el-descriptions-item>
-				<el-descriptions-item label="出厂货款">
-					{{ inventoryInfo.paymentFactory }}
-				</el-descriptions-item>
-				<el-descriptions-item label="卸货付款">
-					{{ inventoryInfo.paymentUnload }}
-				</el-descriptions-item>
-				<el-descriptions-item label="总货款">
-					{{ inventoryInfo.payments }}
-				</el-descriptions-item>
-				<el-descriptions-item label="产品级别">
-					{{ inventoryInfo.levelName }}
-				</el-descriptions-item>
-				<el-descriptions-item label="产品级别">
-					{{ inventoryInfo.levelName }}
-				</el-descriptions-item>
-				<el-descriptions-item label="剩余库存量">
-					{{ inventoryInfo.stockNumber }}
-				</el-descriptions-item>
-				<el-descriptions-item label="供应商">
-					{{ inventoryInfo.supplier }}
-				</el-descriptions-item>
-				<el-descriptions-item label="重量">
-					{{ inventoryInfo.tonnage }}
-				</el-descriptions-item>
-				<el-descriptions-item label="库存编号">
-					{{ inventoryInfo.stockNumber }}
-				</el-descriptions-item>
-				<el-descriptions-item label="存储日期">
-					{{ inventoryInfo.storeDate }}
-				</el-descriptions-item>
-				<el-descriptions-item label="仓库名称">
-					{{ inventoryInfo.storeHouseName }}
-				</el-descriptions-item>
-				<el-descriptions-item label="杂费">
-					{{ inventoryInfo.sundryCost }}
-				</el-descriptions-item>
-			</el-descriptions>
-		</el-dialog>
-
 		<v-tour name="selfButtonTour" :steps="selfButtonTourSteps" :options="tourOptions" :callbacks="tourCallBacks"></v-tour>
 	</div>
 </template>
@@ -857,11 +762,9 @@ export default {
 				{ key: 7, label: `存货价`, visible: true },
 				{ key: 8, label: `出库量`, visible: true }
 			],
-			inventoryInfoVisible: false,
 			isLand: false,
 			isSea: false,
 			inventoryDetailList: [],
-			inventoryInfo: {},
 			secondInventoryVisible: false,
 			queryStore: '',
 			queryLandCar: '',
@@ -1036,20 +939,7 @@ export default {
 				}
 			});
 		},
-		/**
-		 * @description: 查看指定出库记录的库存详细信息
-		 * @param {object} row 当前行的数据对象，包含 storeID
-		 */
-		checkInvoInfo(row) {
-			getDetail(row.storeID).then(res => {
-				if (!res.data) {
-					this.$message.error('该货物没有库存信息');
-					return;
-				}
-				this.inventoryInfo = res.data;
-				this.inventoryInfoVisible = true;
-			});
-		},
+
 		/**
 		 * @description: 打开二次入库弹窗并填充初始数据
 		 * @param {object} row 当前行的数据对象，包含出库信息和库存详情
