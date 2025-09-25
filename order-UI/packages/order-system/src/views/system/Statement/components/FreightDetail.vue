@@ -22,7 +22,7 @@ import SearchOption from '@/components/SearchOption.vue';
 import { parseTime } from '@/utils/ruoyi';
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
 import { listCars } from '@/api/system/cars';
-import { formatBalance } from '../../../../utils/trash/utils';
+import { formatSupplierBalance } from '../../../../utils/trash/utils';
 import { common_excel } from '@/views/dashboard/mixins/common/common_excel';
 
 export default {
@@ -62,7 +62,7 @@ export default {
 	},
 
 	methods: {
-		formatBalance,
+		formatSupplierBalance,
 		listCars,
 		fix,
 		// 查看明细 点击的时候 先让用户输入时间 然后拿该行数据的companyId查询该司机的明细账
@@ -312,25 +312,25 @@ export default {
 					<!--        这两列应该是根据moneyAmount字段的正负进行判断-->
 					<el-table-column show-overflow-tooltip label="借方发生额" align="center" width="140">
 						<template slot-scope="scope">
-							{{ scope.row.moneyAmount > 0 ? fix(Math.abs(scope.row.moneyAmount)) : '-' }}
+							{{ scope.row.moneyAmount > 0 ? '-' : fix(Math.abs(scope.row.moneyAmount)) }}
 						</template>
 					</el-table-column>
 					<el-table-column show-overflow-tooltip label="贷方发生额" align="center" width="140">
 						<template slot-scope="scope">
-							{{ scope.row.moneyAmount > 0 ? '-' : fix(scope.row.moneyAmount) }}
+							{{ scope.row.moneyAmount > 0 ? fix(scope.row.moneyAmount) : '-' }}
 						</template>
 					</el-table-column>
 
 					<!--        方向根据余额本币的正负进行判断 这个要先查询上年结转的余额本币 进行填充-->
 					<el-table-column show-overflow-tooltip label="方向" align="center" width="140">
 						<template slot-scope="scope">
-							{{ scope.row.moneyAmountLocal > 0 ? '借方' : '贷方' }}
+							{{ scope.row.moneyAmountLocal > 0 ? '贷方' : '借方' }}
 						</template>
 					</el-table-column>
 
 					<el-table-column show-overflow-tooltip label="余额本币" align="center" prop="moneyAmountLocal" width="140">
 						<template slot-scope="scope">
-							{{ formatBalance(scope.row.moneyAmountLocal) }}
+							{{ formatSupplierBalance(scope.row.moneyAmountLocal) }}
 						</template>
 					</el-table-column>
 					<el-table-column show-overflow-tooltip label="我方收款户名" align="center" prop="selfAccountsName" width="140" />
