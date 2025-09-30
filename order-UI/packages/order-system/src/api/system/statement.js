@@ -507,6 +507,22 @@ export function findFundFlowBalanceInLocalCurrencyAtDate(query) {
 }
 
 /**
+ * 内部资金往来统计
+ * @param {Object} query
+ * @param {string} query.payerCompanyAccount - 付款方公司账户
+ * @param {string} query.beneficiaryCompanyAccount - 收款方公司账户
+ * @param {number} query.pageNum - 分页页码
+ * @returns
+ */
+export function getInternalFundsSummary(query) {
+	return request({
+		url: '/statistics/InternalFundsSummary',
+		method: 'get',
+		params: query
+	});
+}
+
+/**
  * 获取可选择的时间下拉列表
  * @param {string} backupDate - 备份日期
  * @returns
