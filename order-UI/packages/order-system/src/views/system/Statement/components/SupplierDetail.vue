@@ -236,8 +236,8 @@ export default {
 				this.download(
 					'statistics/export/supplierBalanceDetails',
 					{
-						beginTime: res.beginTime + ' 00:00:00',
-						endTime: res.endTime + ' 23:59:59',
+						beginTime: res.beginTime,
+						endTime: res.endTime,
 						companyId: this.searchForm.companyId
 					},
 					`供应商科目明细表_${parseTime(new Date().getTime())}.xlsx`

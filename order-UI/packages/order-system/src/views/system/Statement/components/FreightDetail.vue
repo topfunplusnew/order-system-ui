@@ -224,8 +224,8 @@ export default {
 				this.download(
 					'statistics/export/freightBalanceDetails',
 					{
-						beginTime: res.beginTime + ' 00:00:00',
-						endTime: res.endTime + ' 23:59:59',
+						beginTime: res.beginTime,
+						endTime: res.endTime,
 						carId: this.searchForm.driverId
 					},
 					`司机科目明细表_${parseTime(new Date().getTime())}.xlsx`
