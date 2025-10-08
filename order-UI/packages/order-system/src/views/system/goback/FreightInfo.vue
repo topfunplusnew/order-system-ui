@@ -69,7 +69,7 @@
 			</el-table-column>
 			<el-table-column prop="moneyAmountLocal" label="余额本币">
 				<template slot-scope="scope">
-					<span :class="{ negative: scope.row.moneyAmountLocal < 0 }">{{ formatBalance(scope.row.moneyAmountLocal) }}</span>
+					<span :class="{ negative: scope.row.moneyAmountLocal < 0 }">{{ formatSupplierBalance(scope.row.moneyAmountLocal) }}</span>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -120,7 +120,7 @@ import { common_excel } from '@/views/dashboard/mixins/common/common_excel';
 import ORDER_DETAIL from '@/components/NeedToShow/ORDER_DETAIL.vue';
 import { listCars } from '@/api/system/cars';
 import _ from 'lodash';
-import { formatBalance } from '../../../utils/trash/utils';
+import { formatSupplierBalance } from '../../../utils/trash/utils';
 import { isGoodsOrderDisplay, isInventoryDisplay, mergeSpecialTableData } from '@/api/system/goodsOrder';
 import OrderDayInfo from '@/components/OrderDayInfor/index.vue';
 import InventoryDayInfo from '@/components/InventoryDayInfo/index.vue';
@@ -163,7 +163,7 @@ export default {
 		};
 	},
 	methods: {
-		formatBalance,
+		formatSupplierBalance,
 		listCars,
 		listVehicles,
 		// 查询方法
@@ -259,7 +259,7 @@ export default {
 						const { itemTotalLender, itemTotalBorrower } = dayData.reduce(
 							(acc, customerDetail) => {
 								const amount = Number(customerDetail.moneyAmount);
-								if (amount > 0) {
+								if (amount < 0) {
 									acc.itemTotalLender += amount;
 								} else {
 									acc.itemTotalBorrower += amount;
@@ -307,8 +307,8 @@ export default {
 								}
 								// 准备当天借方和贷方明细列表 (用于弹窗)
 								const condition = detail => {
-									const lender = detail.moneyAmount > 0 ? Math.abs(detail.moneyAmount) : 0;
-									const borrower = detail.moneyAmount < 0 ? Math.abs(detail.moneyAmount) : 0;
+									const lender = detail.moneyAmount < 0 ? Math.abs(detail.moneyAmount) : 0;
+									const borrower = detail.moneyAmount > 0 ? Math.abs(detail.moneyAmount) : 0;
 									return {
 										date: detail.operateDate,
 										payNo: detail.payNo,
@@ -324,9 +324,9 @@ export default {
 								// const lenderList = item.map(condition).filter(d => Number(d.moneyAmount) > 0);
 								// const borrowerList = item.map(condition).filter(d => Number(d.moneyAmount) < 0);
 								// 运费：借方列表是应收运费增加的操作 (moneyAmount > 0)
-								const lenderList = item.map(condition).filter(detail => Number(detail.moneyAmountLocal) > 0);
+								const lenderList = item.map(condition).filter(detail => Number(detail.moneyAmountLocal) < 0);
 								// 运费：贷方列表是实收运费或冲减的操作 (moneyAmount < 0)
-								const borrowerList = item.map(condition).filter(detail => Number(detail.moneyAmountLocal) < 0);
+								const borrowerList = item.map(condition).filter(detail => Number(detail.moneyAmountLocal) > 0);
 								return {
 									operateDate: date, // 日期列使用分组的key
 									payNo: '', // 主表该列现在显示明细，留空或移除

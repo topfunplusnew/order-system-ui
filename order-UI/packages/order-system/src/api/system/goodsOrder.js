@@ -212,7 +212,7 @@ export function mergeSpecialTableData(sourceData) {
 		const merged = {
 			...baseItem,
 			// 将不同的payNo收集到数组中
-			payNo: _.uniq(_.map(items, 'payNo')),
+			payNo: _.uniq(_.map(items, item => item.payNo)),
 			// 将不同的summary收集到数组中
 			summary: _.uniq(_.map(items, 'summary')),
 			// 计算总金额

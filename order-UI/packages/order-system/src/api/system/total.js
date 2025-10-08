@@ -27,3 +27,4 @@ export function getSalesManagerTotal(query) {
 		params: query
 	});
 }
+

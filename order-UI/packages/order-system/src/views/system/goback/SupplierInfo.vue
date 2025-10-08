@@ -74,7 +74,7 @@
 			<el-table-column prop="moneyAmountLocal" label="余额本币">
 				<template slot-scope="scope">
 					<span :class="{ negative: scope.row.moneyAmountLocal < 0 }">
-						{{ formatBalance(scope.row.moneyAmountLocal) }}
+						{{ formatSupplierBalance(scope.row.moneyAmountLocal) }}
 					</span>
 				</template>
 			</el-table-column>
@@ -129,7 +129,7 @@ import RECEIVE_MONEY from '@/components/NeedToShow/RECEIVE_MONEY.vue';
 import INVENTORYDETAIL from '@/components/NeedToShow/INVENTORYDETAIL.vue';
 import ORDER_DETAIL from '@/components/NeedToShow/ORDER_DETAIL.vue';
 import BALANCEACCOUNT from '@/components/NeedToShow/BALANCEACCOUNT.vue';
-import { formatBalance } from '@/utils/trash/utils';
+import { formatSupplierBalance } from '@/utils/trash/utils';
 import _ from 'lodash';
 import { isGoodsOrderDisplay, isInventoryDisplay, mergeSpecialTableData } from '@/api/system/goodsOrder';
 import InventoryDayInfo from '@/components/InventoryDayInfo/index.vue';
@@ -181,7 +181,7 @@ export default {
 		}
 	},
 	methods: {
-		formatBalance,
+		formatSupplierBalance,
 		fix,
 		listCompany,
 		// 查询方法
@@ -272,7 +272,7 @@ export default {
 						const { itemTotalLender, itemTotalBorrower } = dayData.reduce(
 							(acc, customerDetail) => {
 								const amount = Number(customerDetail.moneyAmount);
-								if (amount > 0) {
+								if (amount < 0) {
 									acc.itemTotalLender += amount;
 								} else {
 									acc.itemTotalBorrower += amount;
@@ -320,8 +320,10 @@ export default {
 								}
 								// 准备当天借方和贷方明细列表 (用于弹窗)
 								const condition = detail => {
-									const lender = detail.moneyAmount > 0 ? Math.abs(detail.moneyAmount) : 0;
-									const borrower = detail.moneyAmount < 0 ? Math.abs(detail.moneyAmount) : 0;
+									console.log(`detail`, detail);
+									const lender = detail.moneyAmount < 0 ? Math.abs(detail.moneyAmount) : 0;
+									const borrower = detail.moneyAmount > 0 ? Math.abs(detail.moneyAmount) : 0;
+
 									return {
 										date: detail.operateDate,
 										payNo: detail.payNo,
@@ -332,8 +334,8 @@ export default {
 										summary: Array.isArray(detail.summary) ? detail.summary.join('、') : detail.summary
 									};
 								};
-								const lenderList = item.map(condition).filter(d => Number(d.moneyAmountLocal) > 0);
-								const borrowerList = item.map(condition).filter(d => Number(d.moneyAmountLocal) < 0);
+								const lenderList = item.map(condition).filter(d => Number(d.moneyAmountLocal) < 0);
+								const borrowerList = item.map(condition).filter(d => Number(d.moneyAmountLocal) > 0);
 
 								return {
 									supplierName: _.cloneDeep(this.searchForm.supplier),
