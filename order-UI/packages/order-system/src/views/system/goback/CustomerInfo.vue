@@ -296,7 +296,6 @@ export default {
 
 						// 对订单和库存数据进行合并预处理
 						sourceData = mergeSpecialTableData(sourceData);
-
 						sourceData = _.groupBy(sourceData, item => {
 							return item.operateDate.match(/^(\d{4}-\d{2}-\d{2})/)[1];
 						});
