@@ -32,7 +32,8 @@ export const common_excel = {
 			}
 
 			// 检查表格是否有数据行
-			const dataRows = table.querySelectorAll('tr:not(:first-child)');
+			const allRows = table.querySelectorAll('tr');
+			const dataRows = Array.from(allRows).slice(1); // 排除第一行（表头）
 			if (dataRows.length === 0) {
 				this.$message.warning('表格暂无数据，无法导出');
 				return;

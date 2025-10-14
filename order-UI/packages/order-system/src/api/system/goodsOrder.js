@@ -230,5 +230,5 @@ export function mergeSpecialTableData(sourceData) {
 	}));
 
 	// 返回合并后的数据和其他数据
-	return _.concat(mergedData, processedOtherData);
+	return _.concat(mergedData, processedOtherData).sort((a, b) => new Date(a.operateDate) - new Date(b.operateDate));
 }
