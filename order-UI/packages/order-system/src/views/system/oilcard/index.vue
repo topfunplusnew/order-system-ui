@@ -43,7 +43,7 @@
 						<el-table-column v-if="columns[0].visible" label="加油卡卡号" align="center" prop="oilCardNo" />
 						<el-table-column v-if="columns[1].visible" label="当前金额" align="center" prop="moneyAmount" />
 						<el-table-column v-if="columns[2].visible" label="备注" align="center" prop="comments" />
-						<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
+						<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
 							<template slot-scope="scope">
 								<el-button v-hasPermi="['system:oilcard:query']" size="mini" type="text" @click="handleCheck(scope.row)">查看明细</el-button>
 								<el-button v-hasPermi="['system:oilcard:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">编辑</el-button>
@@ -60,7 +60,7 @@
 						<el-table-column v-if="columns[1].visible" label="可用金额" align="center" prop="moneyAmount" />
 						<el-table-column label="待圈存金额" align="center" prop="virtualMoneyAmount" />
 						<el-table-column v-if="columns[2].visible" label="备注" align="center" prop="comments" />
-						<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
+						<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
 							<template slot-scope="scope">
 								<el-button v-hasPermi="['system:oilcard:query']" size="mini" type="text" @click="handleCheck(scope.row)">查看明细</el-button>
 								<el-button v-hasPermi="['system:oilcard:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">编辑</el-button>
