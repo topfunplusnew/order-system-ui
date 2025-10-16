@@ -317,7 +317,7 @@ export default {
 					</el-table-column>
 					<el-table-column show-overflow-tooltip label="贷方发生额" align="center" width="140">
 						<template slot-scope="scope">
-							{{ scope.row.moneyAmount > 0 ? fix(scope.row.moneyAmount) : '-' }}
+							{{ scope.row.moneyAmount > 0 ? fix(Math.abs(scope.row.moneyAmount)) : '-' }}
 						</template>
 					</el-table-column>
 
