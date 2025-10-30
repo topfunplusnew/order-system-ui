@@ -526,8 +526,8 @@ export default {
 		},
 		// 左侧的产品列表点击某个分类
 		handleNodeClick(data) {
-			// 发请求  获取数据
-			listProductLevel({ categoryNo: data.value }).then(res => {
+			// 发请求  获取数据 TODO
+			listProductLevel({ categoryNo: data.value, pageNum: this.queryParams.pageNum, pageSize: this.queryParams.pageSize }).then(res => {
 				this.productLevelList = res.rows;
 			});
 		},
