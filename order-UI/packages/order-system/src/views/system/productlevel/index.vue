@@ -120,8 +120,8 @@
 			<br />
 			<el-row>
 				<el-table :data="tempCategoryList" border style="width: 100%">
-					<el-table-column fixed prop="dictValue" label="分类编码"></el-table-column>
-					<el-table-column fixed prop="dictLabel" label="分类名称"></el-table-column>
+					<el-table-column prop="dictValue" label="分类编码"></el-table-column>
+					<el-table-column prop="dictLabel" label="分类名称"></el-table-column>
 					<el-table-column label="操作" width="200">
 						<template slot-scope="scope">
 							<el-row>
@@ -622,8 +622,18 @@ export default {
 				onOk: async () => {
 					try {
 						await delData(row.dictCode);
+						// 处理弹窗内分页边界：若当前页只有1条且不是第1页，删除后回退一页
+						if (this.level_pageNum > 1 && this.tempCategoryList && this.tempCategoryList.length === 1) {
+							this.level_pageNum = this.level_pageNum - 1;
+						}
+						await this.getDictsData();
+						await this.getCategoryList();
+						// 若右侧当前筛选分类等于被删分类，则清空筛选并刷新列表
+						if (this.queryParams && this.queryParams.categoryNo === row.dictValue) {
+							this.queryParams.categoryNo = null;
+						}
+						await this.getList();
 						this.$message.success('删除成功!');
-						this.getList();
 					} catch {
 						this.$message.error('删除失败，请重试');
 					}
@@ -657,7 +667,7 @@ export default {
 		},
 		// 分页获取左边的分类树
 		getCategoryList() {
-			listData({
+			return listData({
 				dictType: 'order_product_categories',
 				pageNum: this.category_pageNum,
 				pageSize: this.category_pageSize
@@ -676,7 +686,7 @@ export default {
 		},
 		// 添加产品分类弹窗中的分页获取数据的函数
 		getDictsData() {
-			listData({
+			return listData({
 				dictType: 'order_product_categories',
 				pageNum: this.level_pageNum,
 				pageSize: this.level_pageSize
