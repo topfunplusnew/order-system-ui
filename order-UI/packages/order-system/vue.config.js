@@ -27,6 +27,9 @@ module.exports = {
 				// target: `http://172.20.193.200:8080/`,
 				// target: `http://172.20.182.31:30065/`,
 				//k8s
+
+
+				
 				target: 'https://devlop.order.project.k3s.ixuni.win/',
 				changeOrigin: true,
 				pathRewrite: {
