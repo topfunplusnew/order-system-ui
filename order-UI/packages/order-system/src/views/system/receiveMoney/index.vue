@@ -358,7 +358,7 @@ export default {
 		}
 	},
 	components: { BankType, CheckFiles, UploadFilesButton, SearchOption },
-	mixins: [mixin_printHTML, mixin_receive_money_fill, mixin_checkfile, mixin_bankType, mixin_receive_money_subject, mixin_payment_subject],
+	mixins: [mixin_printHTML, mixin_receive_money_fill, mixin_checkfile, mixin_bankType, mixin_payment_subject],
 	data() {
 		return {
 			// 遮罩层
