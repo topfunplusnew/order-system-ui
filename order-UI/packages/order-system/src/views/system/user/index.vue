@@ -101,16 +101,16 @@
 					<el-table-column v-if="columns[3].visible" key="nickName" label="真实姓名" align="center" prop="trueName" :show-overflow-tooltip="true" />
 					<el-table-column v-if="columns[4].visible" key="deptName" label="岗位" align="center" prop="postName" :show-overflow-tooltip="true" />
 					<el-table-column v-if="columns[5].visible" key="phonenumber" label="手机号码" align="center" prop="phonenumber" width="120" />
-					<el-table-column v-if="columns[6].visible" key="phonenumber" label="就职状态" align="center" prop="state" width="120" />
+					<el-table-column v-if="columns[6].visible" key="phonenumber" label="在职状态" align="center" prop="state" width="120" />
 					<el-table-column v-if="columns[7].visible" key="phonenumber" label="入职时间" align="center" prop="startDate" width="120" />
 					<el-table-column v-if="columns[8].visible" key="phonenumber" label="身份证号码" align="center" prop="idCard" width="120" />
 					<el-table-column v-if="columns[10].visible" label="性别" align="center" prop="sex" width="120">
-						<!-- 0男1女 -->
-
+						<!-- 1男0女 -->
 						<template slot-scope="scope">
-							{{ scope.row.sex == 0 ? '男' : '女' }}
+							{{ scope.row.sex == '0' ? '男' : '女' }}
 						</template>
 					</el-table-column>
+
 					<el-table-column v-if="columns[11].visible" key="phonenumber" label="出生日期" align="center" prop="birthday" width="120" />
 					<el-table-column v-if="columns[12].visible" key="phonenumber" label="民族" align="center" prop="nation" width="120" />
 					<el-table-column v-if="columns[13].visible" key="phonenumber" label="政治面貌" align="center" prop="politicalStatus" width="120" />
@@ -167,7 +167,7 @@
 							</el-form-item>
 							<el-form-item label="用户性别">
 								<el-select v-model="form.sex" placeholder="请选择性别">
-									<el-option v-for="dict in dict.type.sys_user_sex" :key="dict.value" :label="dict.label" :value="dict.value"></el-option>
+									<el-option v-for="dict in dict.type.sys_user_sex || []" :key="dict.value" :label="dict.label" :value="dict.value"></el-option>
 								</el-select>
 							</el-form-item>
 
@@ -379,8 +379,9 @@
 						<i class="el-icon-location-outline"></i>
 						用户性别
 					</template>
-					{{ currentUserInfo.sex }}
+					{{ String(currentUserInfo.sex) === '0' ? '男' : '女' }}
 				</el-descriptions-item>
+
 				<el-descriptions-item>
 					<template slot="label">
 						<i class="el-icon-tickets"></i>
@@ -577,7 +578,7 @@ export default {
 				{ key: 3, label: `真实姓名`, visible: true },
 				{ key: 4, label: `岗位`, visible: true },
 				{ key: 5, label: `手机号码`, visible: true },
-				{ key: 6, label: `就职状态`, visible: true },
+				{ key: 6, label: `在职状态`, visible: true },
 				{ key: 7, label: `入职时间`, visible: true },
 				{ key: 8, label: `身份证号码`, visible: true },
 				{ key: 9, label: `联系电话`, visible: true },

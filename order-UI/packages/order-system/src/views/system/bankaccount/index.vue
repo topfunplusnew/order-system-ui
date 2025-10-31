@@ -175,7 +175,7 @@
 									<CustomTableColumn key="nickName" label="员工" align="center" prop="trueName" :show-overflow-tooltip="true" />
 									<CustomTableColumn key="deptName" label="岗位" align="center" prop="postName" :show-overflow-tooltip="true" />
 									<CustomTableColumn label="手机号码" align="center" prop="phonenumber" width="120" />
-									<CustomTableColumn label="就职状态" align="center" prop="state" width="120" />
+									<CustomTableColumn label="在职状态" align="center" prop="state" width="120" />
 									<CustomTableColumn label="入职时间" align="center" prop="startDate" width="120" />
 									<CustomTableColumn label="身份证号码" align="center" prop="iDCard" width="120" />
 									<CustomTableColumn label="性别" align="center" prop="sex" width="120" />

@@ -50,7 +50,7 @@
 						<el-table-column key="trueName" label="真实姓名" align="center" prop="trueName" :show-overflow-tooltip="true" />
 						<el-table-column key="deptName" label="岗位" align="center" prop="postName" :show-overflow-tooltip="true" />
 						<el-table-column key="phonenumber" label="手机号码" align="center" prop="phonenumber" width="120" />
-						<el-table-column key="state" label="就职状态" align="center" prop="state" width="120" />
+						<el-table-column key="state" label="在职状态" align="center" prop="state" width="120" />
 						<el-table-column key="startDate" label="入职时间" align="center" prop="startDate" width="120" />
 						<el-table-column key="iDCard" label="身份证号码" align="center" prop="iDCard" width="120" />
 						<el-table-column key="sex" label="性别" align="center" prop="sex" width="120" />

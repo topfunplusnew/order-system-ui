@@ -21,8 +21,12 @@
 							{{ user.email }}
 						</el-descriptions-item>
 						<el-descriptions-item label="性别">
-							<el-tag size="mini">{{ user.sex === '1' ? '男' : '女' }}</el-tag>
+							<template v-if="user.sex != null && user.sex !== ''">
+								<el-tag size="mini" v-if="user.sex === '1' || user.sex === 1">女</el-tag>
+								<el-tag size="mini" v-else-if="user.sex === '0' || user.sex === 0">男</el-tag>
+							</template>
 						</el-descriptions-item>
+
 						<el-descriptions-item label="账号状态">
 							{{ user.status === '0' ? '正常' : '停用' }}
 						</el-descriptions-item>
@@ -79,9 +83,12 @@
 						<el-descriptions-item label="岗位">
 							{{ user.postName }}
 						</el-descriptions-item>
-						<el-descriptions-item label="就职状态">
-							{{ user.state === '1' ? '在职' : '离职' }}
+						<el-descriptions-item label="在职状态">
+							<span v-if="user.state === '1' || user.state === 1 || user.state === '在职'">在职</span>
+							<span v-else-if="user.state === '0' || user.state === 0 || user.state === '离职'">离职</span>
+							<span v-else>未设置</span>
 						</el-descriptions-item>
+
 						<el-descriptions-item label="入职时间">
 							{{ user.startDate }}
 						</el-descriptions-item>
@@ -307,7 +314,7 @@ export default {
 		Treeselect,
 		resetPwd
 	},
-	dicts: ['sys_normal_disable'],
+	dicts: ['sys_normal_disable', 'sys_user_sex'],
 	data() {
 		return {
 			user: {},
