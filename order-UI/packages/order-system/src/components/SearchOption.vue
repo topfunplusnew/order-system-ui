@@ -64,6 +64,11 @@ export default {
 				};
 			}
 		},
+		// 弹窗宽度
+		width: {
+			type: [Number, String],
+			default: '65%'
+		},
 		// 请求方法返回的数据是否分页
 		isPage: {
 			type: Boolean,
@@ -230,7 +235,7 @@ export default {
 			<el-button size="mini" icon="el-icon-delete" type="danger" @click="handleClear" :disabled="disable" class="clear-btn"></el-button>
 		</div>
 		<!--    弹窗-->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :title="title" :visible.sync="dialogVisible" width="65%">
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :title="title" :visible.sync="dialogVisible" :width="width">
 			<!--      弹出的表格内容-->
 			<el-row>
 				<div>

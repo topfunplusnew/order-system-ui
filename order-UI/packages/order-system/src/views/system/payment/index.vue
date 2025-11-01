@@ -265,15 +265,16 @@
 										query-label="户名查找"
 										query-info="acountsName"
 										:query-name="queryBank"
+										width="1300px"
 										@commitBack="handleCommitBack"
 										@update:queryName="handleUpdateQueryName"
 									>
 										<template #table-columns>
-											<CustomTableColumn label="账户类型" align="center" prop="acountsType" />
-											<CustomTableColumn label="己方公司" align="center" prop="displayName" />
-											<CustomTableColumn label="开户名称(户名)" align="center" prop="acountsName" />
-											<CustomTableColumn label="账号(银行账号)" align="center" prop="bankNo" />
-											<CustomTableColumn label="开户行" align="center" prop="bankName" />
+											<CustomTableColumn label="账户类型" align="center" prop="acountsType" width="100" />
+											<CustomTableColumn label="己方公司" align="center" prop="displayName" width="300" />
+											<CustomTableColumn label="开户名称(户名)" align="center" prop="acountsName" width="300" />
+											<CustomTableColumn label="账号(银行账号)" align="center" prop="bankNo" width="300" />
+											<CustomTableColumn label="开户行" align="center" prop="bankName" width="300" />
 										</template>
 									</SearchOption>
 								</el-col>
@@ -310,11 +311,11 @@
 										@commitBack="handleCommitBackCompany"
 									>
 										<template #table-columns>
-											<CustomTableColumn :label="form.companyType" align="center" prop="companyName" />
+											<CustomTableColumn :label="form.companyType" align="center" prop="companyName" :width="form.companyType === PAYMENT_TARGET_TYPE.SUPPLIER ? 340 : 150" />
 											<CustomTableColumn label="老板姓名" align="center" prop="leader" />
 											<CustomTableColumn label="老板电话" align="center" prop="leaderTel" />
 											<CustomTableColumn label="区域" align="center" prop="region" />
-											<CustomTableColumn label="销售经理" align="center" prop="salesManager" />
+											<CustomTableColumn label="销售经理" align="center" prop="salesManager" v-if="form.companyType !== PAYMENT_TARGET_TYPE.SUPPLIER" />
 										</template>
 									</SearchOption>
 								</el-col>
@@ -462,11 +463,11 @@
 									@update:queryName="handleUpdateQueryChoose"
 								>
 									<template #table-columns>
-										<CustomTableColumn label="账号类型" align="center" prop="acountsType" />
-										<CustomTableColumn label="我方公司" align="center" prop="displayName" />
-										<CustomTableColumn label="开户名" align="center" prop="acountsName" />
-										<CustomTableColumn label="账号" align="center" prop="bankNo" />
-										<CustomTableColumn label="开户行" align="center" prop="bankName" />
+										<CustomTableColumn label="账号类型" align="center" prop="acountsType" width="100" />
+										<CustomTableColumn label="我方公司" align="center" prop="displayName" width="200" />
+										<CustomTableColumn label="开户名" align="center" prop="acountsName" width="200" />
+										<CustomTableColumn label="账号" align="center" prop="bankNo" width="200" />
+										<CustomTableColumn label="开户行" align="center" prop="bankName" width="200" />
 									</template>
 								</SearchOption>
 							</el-col>
