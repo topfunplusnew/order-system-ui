@@ -135,7 +135,7 @@
 			<el-row>
 				<el-table v-loading="loading" :data="singleInfo" @selection-change="handleSelectionChange">
 					<template #append>
-						<AddBankAccounts :company-info="currentInfo" @callGetList="handleChangeBank" />
+						<AddBankAccounts :company-info="currentInfo" :company-type="PUBLIC_DICT_TYPE.SUPPLIER" @callGetList="handleChangeBank" />
 					</template>
 					<el-table-column label="序号" align="center" prop="id" />
 					<el-table-column label="户名" align="center" prop="acountsName" />
@@ -278,6 +278,7 @@ import { excludeParams } from '@/api/tool/exclude';
 import { INFO_TYPE, isUsed } from '../../../api/system/isUsed';
 import AddBankAccounts from '../../dashboard/components/company/AddBankAccounts.vue';
 import { checkCarsIsExit } from '@/api/system/cars';
+import { PUBLIC_DICT_TYPE } from '../../../api/tool/enums';
 import _ from 'lodash';
 
 export default {
@@ -446,6 +447,11 @@ export default {
 			bankPageSize: 20,
 			bankPageNum: 1
 		};
+	},
+	computed: {
+		PUBLIC_DICT_TYPE() {
+			return PUBLIC_DICT_TYPE;
+		}
 	},
 	// 展示与隐藏
 	watch: {

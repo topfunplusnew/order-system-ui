@@ -119,7 +119,8 @@ export default {
 		handleAddBankAccount() {
 			this.reset();
 			// 填充公司信息 公司类型和id
-			this.form.acountsType = this.computedCompanyInfo.companyType || this.computedCompanyInfo.acountsType;
+			// 优先使用传入的 companyType prop，如果没有则使用 companyInfo 中的类型
+			this.form.acountsType = this.companyType || this.computedCompanyInfo.companyType || this.computedCompanyInfo.acountsType;
 			this.form.companyId = this.computedCompanyInfo.id || this.computedCompanyInfo.companyId;
 			this.form.companyName = this.computedCompanyInfo.companyName;
 			// 打开弹窗

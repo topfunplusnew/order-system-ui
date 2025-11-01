@@ -16,7 +16,7 @@
 			<el-table v-loading="loading" :data="singleInfo" class="table-container">
 				<!-- 为本公司绑定银行卡 -->
 				<template #append>
-					<AddBankAccounts :company-info="currentInfo" @callGetList="handleRefresh" />
+					<AddBankAccounts :company-info="currentInfo" :company-type="PUBLIC_DICT_TYPE.CUSTOMER" @callGetList="handleRefresh" />
 				</template>
 				<el-table-column label="户名" align="center" prop="acountsName" />
 				<el-table-column label="银行卡号" align="center" prop="bankNo" />
@@ -43,6 +43,7 @@ import { updateCompany } from '@/api/system/company';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import AddBankAccounts from '../../../dashboard/components/company/AddBankAccounts.vue';
 import BankSearch from './BankSearch.vue';
+import { PUBLIC_DICT_TYPE } from '../../../../api/tool/enums';
 
 export default {
 	name: 'BankManage',
@@ -75,6 +76,11 @@ export default {
 			},
 			immediate: true,
 			deep: true
+		}
+	},
+	computed: {
+		PUBLIC_DICT_TYPE() {
+			return PUBLIC_DICT_TYPE;
 		}
 	},
 	methods: {
