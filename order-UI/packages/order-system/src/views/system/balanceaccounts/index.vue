@@ -199,7 +199,11 @@ export default {
 				endTime: ''
 			},
 			// 表单参数
-			form: {},
+			// 表单参数
+			form: {
+				companyType: '供应商' // 添加这行设置默认值
+			},
+
 			columns: [
 				{ key: 0, label: `操作时间`, visible: true },
 				{ key: 1, label: `金额`, visible: true },
@@ -338,7 +342,7 @@ export default {
 				moneyAmount: null,
 				companyName: null,
 				companyID: null,
-				companyType: null,
+				companyType: '供应商',
 				comments: null,
 				addtime: null,
 				userId: null,

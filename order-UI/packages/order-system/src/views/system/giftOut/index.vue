@@ -255,7 +255,9 @@ export default {
 				handler: null
 			},
 			// 表单参数
-			form: {},
+			form: {
+				companyType: '供应商'
+			},
 			// 表单校验
 			rules: {
 				outDate: [
@@ -324,7 +326,7 @@ export default {
 				{ key: 10, label: `备注`, visible: true },
 				{ key: 11, label: `操作`, visible: true }
 			],
-			companyType: ''
+			companyType: '供应商'
 		};
 	},
 	created() {
@@ -376,6 +378,7 @@ export default {
 				createBy: null,
 				remark: null
 			};
+			this.companyType = '供应商';
 			this.resetForm('form');
 		},
 		/** 搜索按钮操作 */

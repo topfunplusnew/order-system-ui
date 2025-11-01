@@ -71,10 +71,10 @@
 			<el-table-column v-if="colVisible(4)" label="金额" prop="moneyAmount" align="center" show-overflow-tooltip />
 			<el-table-column v-if="colVisible(5)" label="未收回金额" prop="unrecoveredAmount" align="center" show-overflow-tooltip />
 			<el-table-column v-if="colVisible(6)" label="对方账户" prop="targetAcountsName" align="center" show-overflow-tooltip />
-			<el-table-column v-if="colVisible(7)" label="对方账号" prop="targetBankNo" align="center" show-overflow-tooltip />
+			<el-table-column v-if="colVisible(7)" label="对方账号" prop="targetBankNo" align="center" show-overflow-tooltip width="170" />
 			<el-table-column v-if="colVisible(8)" label="对方开户行" prop="targetBankName" align="center" show-overflow-tooltip />
 			<el-table-column v-if="colVisible(9)" label="我方支付账户" prop="selfAcountsName" align="center" show-overflow-tooltip />
-			<el-table-column v-if="colVisible(10)" label="我方账号" prop="selfBankNo" align="center" show-overflow-tooltip />
+			<el-table-column v-if="colVisible(10)" label="我方账号" prop="selfBankNo" align="center" show-overflow-tooltip width="170" />
 			<el-table-column v-if="colVisible(11)" label="我方开户行" prop="selfBankName" align="center" show-overflow-tooltip />
 			<el-table-column v-if="colVisible(12)" :label="payTimeLabel" prop="futuresDate" align="center" show-overflow-tooltip />
 			<el-table-column v-if="colVisible(13)" label="事由" prop="reason" align="center" show-overflow-tooltip />
@@ -345,7 +345,7 @@ export default {
 				id: null,
 				type: '厂家保证金',
 				futuresMarginCompany: null,
-				targetType: null,
+				targetType: '供应商',
 				target: null,
 				moneyAmount: null,
 				targetAcountsName: null,
@@ -543,7 +543,7 @@ export default {
 				id: null,
 				type: DEPOSIT_TYPE.FACTORY_GUARANTEE.value,
 				futuresMarginCompany: null,
-				targetType: null,
+				targetType: '供应商',
 				target: null,
 				moneyAmount: null,
 				targetAcountsName: null,

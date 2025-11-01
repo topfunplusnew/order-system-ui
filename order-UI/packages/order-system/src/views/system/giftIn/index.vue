@@ -297,7 +297,7 @@ export default {
 				{ key: 8, label: `收礼方式`, visible: true },
 				{ key: 9, label: `付款时间`, visible: true }
 			],
-			companyType: ''
+			companyType: '供应商'
 		};
 	},
 	created() {
@@ -345,6 +345,7 @@ export default {
 				createBy: null,
 				remark: null
 			};
+			this.companyType = '供应商';
 			this.resetForm('form');
 		},
 		/** 搜索按钮操作 */

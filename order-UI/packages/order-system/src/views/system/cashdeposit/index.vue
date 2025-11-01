@@ -75,7 +75,7 @@
 				<el-table-column v-if="columns[4].visible" label="对方账户" align="center" prop="targetAcountsName" show-overflow-tooltip />
 
 				<!-- 对方账号 -->
-				<el-table-column v-if="columns[5].visible" label="对方账号" align="center" prop="targetBankNo" show-overflow-tooltip />
+				<el-table-column v-if="columns[5].visible" label="对方账号" align="center" prop="targetBankNo" show-overflow-tooltip width="170" />
 
 				<!-- 对方开户行 -->
 				<el-table-column v-if="columns[6].visible" label="对方开户行" align="center" prop="targetBankName" show-overflow-tooltip />
@@ -84,7 +84,7 @@
 				<el-table-column v-if="columns[7].visible" label="我方支付账户" align="center" prop="selfAcountsName" show-overflow-tooltip />
 
 				<!-- 我方账号 -->
-				<el-table-column v-if="columns[8].visible" label="我方账号" align="center" prop="selfBankNo" show-overflow-tooltip />
+				<el-table-column v-if="columns[8].visible" label="我方账号" align="center" prop="selfBankNo" show-overflow-tooltip width="170" />
 
 				<!-- 我方开户行 -->
 				<el-table-column v-if="columns[9].visible" label="我方开户行" align="center" prop="selfBankName" show-overflow-tooltip />
@@ -379,6 +379,7 @@ export default {
 			currentFuturesNO: null,
 			// 遮罩层
 			loading: true,
+
 			// 选中数组
 			ids: [],
 			// 非单个禁用
@@ -424,7 +425,10 @@ export default {
 				}
 			},
 			// 表单参数
-			form: { ishave: '' },
+			form: {
+				ishave: '',
+				targetType: '供应商' // 添加这一行
+			},
 			// 表单校验
 			rules: {
 				// 添加校验
@@ -772,7 +776,7 @@ export default {
 				id: null,
 				futuresNO: null,
 				futuresMarginCompany: null,
-				targetType: null,
+				targetType: '供应商', // 在这里也设置默认值
 				target: null,
 				moneyAmount: null,
 				targetAcountsName: null,

@@ -105,12 +105,12 @@
 					<DynamicField :row="scope.row" field="companyName" />
 				</template>
 			</CustomTableColumn>
-			<CustomTableColumn label="对方公司类型" align="center" prop="companyType" width="120" v-if="columns[12].visible" show-overflow-tooltip>
+			<CustomTableColumn label="对方公司类型" align="center" prop="companyType" width="70" v-if="columns[12].visible" show-overflow-tooltip>
 				<template #default="scope">
 					<DynamicField :row="scope.row" field="companyType" />
 				</template>
 			</CustomTableColumn>
-			<CustomTableColumn label="金额" align="center" prop="moneyAmount" width="120" v-if="columns[3].visible" show-overflow-tooltip>
+			<CustomTableColumn label="金额" align="center" prop="moneyAmount" width="40" v-if="columns[3].visible" show-overflow-tooltip>
 				<template #default="scope">
 					<DynamicField :row="scope.row" field="moneyAmount" />
 				</template>
@@ -120,7 +120,7 @@
 					<DynamicField :row="scope.row" field="selfAccountsName" />
 				</template>
 			</CustomTableColumn>
-			<CustomTableColumn label="我方账号" align="center" prop="selfBankNo" width="120" v-if="columns[5].visible" show-overflow-tooltip>
+			<CustomTableColumn label="我方账号" align="center" prop="selfBankNo" width="170" v-if="columns[5].visible" show-overflow-tooltip>
 				<template #default="scope">
 					<DynamicField :row="scope.row" field="selfBankNo" />
 				</template>
@@ -135,11 +135,20 @@
 					<DynamicField :row="scope.row" field="otherAccountsName" />
 				</template>
 			</CustomTableColumn>
-			<CustomTableColumn label="对方账号" align="center" prop="otherBankNo" width="120" v-if="columns[8].visible" show-overflow-tooltip>
+			<!-- 对方账号列已经包含了 show-overflow-tooltip，可以正常显示 -->
+			<CustomTableColumn label="对方账号" align="center" prop="otherBankNo" width="170" v-if="columns[8].visible" show-overflow-tooltip>
 				<template #default="scope">
 					<DynamicField :row="scope.row" field="otherBankNo" />
 				</template>
 			</CustomTableColumn>
+
+			<!-- 我方账号列也确保包含了 show-overflow-tooltip -->
+			<CustomTableColumn label="我方账号" align="center" prop="selfBankNo" width="140" v-if="columns[5].visible" show-overflow-tooltip>
+				<template #default="scope">
+					<DynamicField :row="scope.row" field="selfBankNo" />
+				</template>
+			</CustomTableColumn>
+
 			<CustomTableColumn label="对方开户行" align="center" prop="otherBankName" width="120" v-if="columns[9].visible" show-overflow-tooltip>
 				<template #default="scope">
 					<DynamicField :row="scope.row" field="otherBankName" />
@@ -546,6 +555,7 @@ export default {
 				{ value: PAYMENT_TARGET_TYPE.PAYMENT_FEE, label: PAYMENT_TARGET_TYPE.PAYMENT_FEE },
 				{ value: PUBLIC_DICT_TYPE.EMPLOYEE, label: PUBLIC_DICT_TYPE.EMPLOYEE }
 			],
+			defaultCompanyType: '供应商', // 添加默认公司类型
 			// 选中数组
 			ids: [],
 			// 非单个禁用
@@ -735,6 +745,7 @@ export default {
 		}
 	},
 	// 展示与隐藏
+	// 在现有的 watch 对象中添加新的监听器
 	watch: {
 		columns: {
 			handler: function (newVal) {
@@ -754,8 +765,16 @@ export default {
 				this.form.companyName = null;
 				this.form.companyId = null;
 			}
+		},
+		// 添加以下监听器实现自动切换功能
+		'form.companyId'(newVal) {
+			// 当选择了客户且当前公司类型为客户时，自动切换为供应商
+			if (newVal && this.form.companyType === PAYMENT_TARGET_TYPE.CUSTOMER) {
+				this.form.companyType = PAYMENT_TARGET_TYPE.SUPPLIER;
+			}
 		}
 	},
+
 	created() {
 		this.reset();
 		this.getList();
@@ -896,7 +915,7 @@ export default {
 				paymentState: null,
 				companyName: null,
 				companyId: null,
-				companyType: null,
+				companyType: this.defaultCompanyType, // 设置默认公司类型为客户
 				comments: null,
 				addtime: null,
 				userId: null,

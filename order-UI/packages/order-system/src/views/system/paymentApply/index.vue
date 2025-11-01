@@ -204,6 +204,7 @@ export default {
 		return {
 			// 遮罩层
 			loading: true,
+			defaultCompanyType: '供应商', // 添加默认公司类型
 			// 选中数组
 			ids: [],
 			// 非单个禁用
@@ -292,14 +293,23 @@ export default {
 		}
 	},
 	// 展示与隐藏
+	// 在现有的 watch 对象中添加新的监听器
 	watch: {
 		columns: {
 			handler: function (newVal) {
 				localStorage.setItem('paymentapply-columns', JSON.stringify(newVal));
 			},
 			deep: true
+		},
+		// 监听公司ID变化，当选择了客户时自动切换为供应商类型
+		'form.companyId'(newVal) {
+			// 只有在当前是客户类型且选择了公司时才自动切换
+			if (this.form.companyType === '客户' && newVal) {
+				this.form.companyType = '供应商';
+			}
 		}
 	},
+
 	created() {
 		this.getList();
 		if (localStorage.getItem('paymentapply-columns') === 'null' || !localStorage.getItem('paymentapply-columns')) {
@@ -417,8 +427,7 @@ export default {
 				otherBankName: null,
 				companyName: null,
 				companyId: null,
-				companyType: null,
-				reason: null,
+				companyType: this.defaultCompanyType, // 设置默认公司类型为客户				reason: null,
 				attachmentList: [],
 				applyPerson: null,
 				applyPersonID: null,
