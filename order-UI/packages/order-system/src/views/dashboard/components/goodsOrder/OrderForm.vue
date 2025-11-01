@@ -118,15 +118,15 @@ export default {
 					},
 					{
 						id: 2,
-						label: '宽度',
-						prop: 'width',
+						label: '长度',
+						prop: 'length',
 						type: 'input',
 						value: ''
 					},
 					{
 						id: 3,
-						label: '长度',
-						prop: 'length',
+						label: '宽度',
+						prop: 'width',
 						type: 'input',
 						value: ''
 					},
