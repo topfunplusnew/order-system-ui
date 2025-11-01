@@ -380,15 +380,15 @@
 					@selection-change="handleInventoryDetailSelectionChange"
 					ref="inventoryDetail"
 				>
-					<CustomTableColumn type="selection" width="50" align="center" :selectable="() => true" />
-					<CustomTableColumn label="序号" align="center" prop="id" width="50" />
-					<CustomTableColumn label="行操作" align="center" width="100">
+					<el-table-column type="selection" width="50" align="center" :selectable="() => true" />
+					<el-table-column label="序号" align="center" prop="id" width="50" />
+					<el-table-column label="行操作" align="center" width="100">
 						<template slot-scope="scope">
 							<el-button v-if="!scope.row.isEditing" :disabled="!isEditingDetails" size="mini" type="warning" icon="el-icon-edit" @click="handleRowEdit(scope.row)">编辑</el-button>
 							<el-button v-else size="mini" type="success" icon="el-icon-check" @click="handleRowSave(scope.row)">保存</el-button>
 						</template>
-					</CustomTableColumn>
-					<CustomTableColumn label="供应商" width="220" align="center">
+					</el-table-column>
+					<el-table-column label="供应商" width="220" align="center">
 						<template #default="scope">
 							<el-row>
 								<el-col :span="12">
@@ -420,9 +420,9 @@
 								</el-col>
 							</el-row>
 						</template>
-					</CustomTableColumn>
+					</el-table-column>
 
-					<CustomTableColumn label="级别名称" prop="levelName" width="150">
+					<el-table-column label="级别名称" prop="levelName" width="150">
 						<template #default="scope">
 							<el-col :span="12">
 								<!-- 添加 disabled 属性 -->
@@ -454,8 +454,8 @@
 								</SearchOption>
 							</el-col>
 						</template>
-					</CustomTableColumn>
-					<CustomTableColumn label="计量单位" prop="countingUnit" width="60" class-name="counting-unit-column">
+					</el-table-column>
+					<el-table-column label="计量单位" prop="countingUnit" width="60" class-name="counting-unit-column">
 						<template #default="scope">
 							<!-- 添加 disabled 属性 -->
 							<el-radio-group v-model="scope.row.countingUnit" size="mini" :disabled="!scope.row.isEditing" @change="() => recalculateAll(scope)" class="vertical-radio-group">
@@ -463,26 +463,26 @@
 								<el-radio label="其他" class="vertical-radio">其他</el-radio>
 							</el-radio-group>
 						</template>
-					</CustomTableColumn>
-					<CustomTableColumn label="厚度" prop="height" width="60">
+					</el-table-column>
+					<el-table-column label="厚度" prop="height" width="60">
 						<template #default="scope">
 							<!-- 添加 disabled 属性 -->
 							<el-input size="mini" v-model="scope.row.height" placeholder="请选择产品级别" disabled />
 						</template>
-					</CustomTableColumn>
-					<CustomTableColumn label="长度" prop="length" width="60">
+					</el-table-column>
+					<el-table-column label="长度" prop="length" width="60">
 						<template #default="scope">
 							<!-- 添加 disabled 属性 -->
 							<el-input size="mini" v-model="scope.row.length" placeholder="请选择产品级别" disabled />
 						</template>
-					</CustomTableColumn>
-					<CustomTableColumn label="宽度" prop="width" width="60">
+					</el-table-column>
+					<el-table-column label="宽度" prop="width" width="60">
 						<template #default="scope">
 							<!-- 添加 disabled 属性 -->
 							<el-input size="mini" v-model="scope.row.width" placeholder="请选择产品级别" disabled />
 						</template>
-					</CustomTableColumn>
-					<CustomTableColumn label="每包片数" prop="piecesPerPack" width="90">
+					</el-table-column>
+					<el-table-column label="每包片数" prop="piecesPerPack" width="90">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -492,8 +492,8 @@
 								@input="val => handlePiecesInput(scope.row, 'piecesPerPack', val, () => calculatePieces(scope.row))"
 							/>
 						</template>
-					</CustomTableColumn>
-					<CustomTableColumn label="包数" prop="packs" width="90">
+					</el-table-column>
+					<el-table-column label="包数" prop="packs" width="90">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -503,9 +503,9 @@
 								@input="val => handlePiecesInput(scope.row, 'packs', val, () => calculatePieces(scope.row))"
 							/>
 						</template>
-					</CustomTableColumn>
+					</el-table-column>
 
-					<CustomTableColumn label="出厂片数" prop="pieces" width="90">
+					<el-table-column label="出厂片数" prop="pieces" width="90">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -516,9 +516,9 @@
 								:disabled="!scope.row.isEditing"
 							/>
 						</template>
-					</CustomTableColumn>
+					</el-table-column>
 
-					<CustomTableColumn label="出厂单价" prop="price" width="90">
+					<el-table-column label="出厂单价" prop="price" width="90">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -529,8 +529,8 @@
 								@blur="() => formatPriceInput(scope.row, 'price', 4, false)"
 							/>
 						</template>
-					</CustomTableColumn>
-					<CustomTableColumn label="是否含税" prop="isIncludeTaxFactory" width="60" class-name="tax-column">
+					</el-table-column>
+					<el-table-column label="是否含税" prop="isIncludeTaxFactory" width="60" class-name="tax-column">
 						<template #default="scope">
 							<!-- 添加 disabled 属性 -->
 							<el-radio-group v-model="scope.row.isIncludeTaxFactory" size="mini" @change="() => recalculateAll(scope)" :disabled="!scope.row.isEditing" class="vertical-tax-radio-group">
@@ -538,8 +538,8 @@
 								<el-radio :label="0" class="vertical-tax-radio">否</el-radio>
 							</el-radio-group>
 						</template>
-					</CustomTableColumn>
-					<CustomTableColumn label="杂费" prop="sundryCost" width="60">
+					</el-table-column>
+					<el-table-column label="杂费" prop="sundryCost" width="60">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -550,19 +550,19 @@
 								@blur="() => formatPriceInput(scope.row, 'sundryCost', 2)"
 							/>
 						</template>
-					</CustomTableColumn>
-					<CustomTableColumn label="出厂货款" prop="paymentFactory" width="70">
+					</el-table-column>
+					<el-table-column label="出厂货款" prop="paymentFactory" width="70">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.paymentFactory" placeholder="自动计算" disabled />
 						</template>
-					</CustomTableColumn>
-					<CustomTableColumn label="入库量" prop="stockNumber" width="70">
+					</el-table-column>
+					<el-table-column label="入库量" prop="stockNumber" width="70">
 						<template #default="scope">
 							<!-- 添加 disabled 属性 -->
 							<el-input size="mini" v-model="scope.row.stockNumber" placeholder="入库时片数" :disabled="!scope.row.isEditing" />
 						</template>
-					</CustomTableColumn>
-					<CustomTableColumn label="存货价" prop="paymentUnload" width="70">
+					</el-table-column>
+					<el-table-column label="存货价" prop="paymentUnload" width="70">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -573,8 +573,8 @@
 								@blur="() => formatPriceInput(scope.row, 'paymentUnload', 4, false)"
 							/>
 						</template>
-					</CustomTableColumn>
-					<CustomTableColumn label="是否含税" prop="isIncludeTaxSale" width="60" class-name="tax-column">
+					</el-table-column>
+					<el-table-column label="是否含税" prop="isIncludeTaxSale" width="60" class-name="tax-column">
 						<template #default="scope">
 							<!-- 添加 disabled 属性 -->
 							<el-radio-group v-model="scope.row.isIncludeTaxSale" size="mini" @change="() => recalculateAll(scope)" :disabled="!scope.row.isEditing" class="vertical-tax-radio-group">
@@ -582,26 +582,26 @@
 								<el-radio :label="0" class="vertical-tax-radio">否</el-radio>
 							</el-radio-group>
 						</template>
-					</CustomTableColumn>
+					</el-table-column>
 
-					<CustomTableColumn label="库存金额" prop="payments" width="70">
+					<el-table-column label="库存金额" prop="payments" width="70">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.payments" placeholder="自动计算" disabled />
 						</template>
-					</CustomTableColumn>
-					<CustomTableColumn label="误差" prop="erro" width="70">
+					</el-table-column>
+					<el-table-column label="误差" prop="erro" width="70">
 						<template #default="scope">
 							<!-- 添加 disabled 属性 -->
 							<el-input size="mini" v-model="scope.row.erro" placeholder="请输入误差" disabled />
 						</template>
-					</CustomTableColumn>
-					<CustomTableColumn label="吨位" prop="tonnage" width="70">
+					</el-table-column>
+					<el-table-column label="吨位" prop="tonnage" width="70">
 						<template #default="scope">
 							<!-- 添加 disabled 属性 -->
 							<el-input size="mini" v-model="scope.row.tonnage" placeholder="自动计算" disabled />
 						</template>
-					</CustomTableColumn>
-					<CustomTableColumn label="陆运费单价" prop="landFreightPrice" width="90" v-if="isLand">
+					</el-table-column>
+					<el-table-column label="陆运费单价" prop="landFreightPrice" width="90" v-if="isLand">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -612,8 +612,8 @@
 								@blur="() => formatPriceInput(scope.row, 'landFreightPrice', 2)"
 							/>
 						</template>
-					</CustomTableColumn>
-					<CustomTableColumn label="加费" prop="additionalFees" width="70">
+					</el-table-column>
+					<el-table-column label="加费" prop="additionalFees" width="70">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -624,14 +624,14 @@
 								@blur="() => formatPriceInput(scope.row, 'additionalFees', 2)"
 							/>
 						</template>
-					</CustomTableColumn>
-					<CustomTableColumn label="陆运费" prop="landFreight" width="70" v-if="isLand">
+					</el-table-column>
+					<el-table-column label="陆运费" prop="landFreight" width="70" v-if="isLand">
 						<template #default="scope">
 							<!-- 添加 disabled 属性 -->
 							<el-input size="mini" v-model="scope.row.landFreight" placeholder="自动计算" disabled />
 						</template>
-					</CustomTableColumn>
-					<CustomTableColumn label="海运费" prop="seaFreight" width="70" v-if="isSea">
+					</el-table-column>
+					<el-table-column label="海运费" prop="seaFreight" width="70" v-if="isSea">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -642,15 +642,15 @@
 								@blur="() => formatPriceInput(scope.row, 'seaFreight', 2)"
 							/>
 						</template>
-					</CustomTableColumn>
+					</el-table-column>
 
-					<CustomTableColumn label="总运费" prop="freight" width="70">
+					<el-table-column label="总运费" prop="freight" width="70">
 						<template #default="scope">
 							<!-- 添加 disabled 属性 -->
 							<el-input size="mini" v-model="scope.row.freight" placeholder="自动计算" disabled />
 						</template>
-					</CustomTableColumn>
-					<CustomTableColumn label="其他费用" prop="otherCost" width="80">
+					</el-table-column>
+					<el-table-column label="其他费用" prop="otherCost" width="80">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -661,18 +661,18 @@
 								@blur="() => formatPriceInput(scope.row, 'otherCost', 2)"
 							/>
 						</template>
-					</CustomTableColumn>
-					<CustomTableColumn label="利润" prop="profit" width="70">
+					</el-table-column>
+					<el-table-column label="利润" prop="profit" width="70">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.profit" placeholder="自动计算" disabled />
 						</template>
-					</CustomTableColumn>
-					<CustomTableColumn label="不含税利润" prop="profitNoTax" width="90">
+					</el-table-column>
+					<el-table-column label="不含税利润" prop="profitNoTax" width="90">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.profitNoTax" placeholder="自动计算" disabled />
 						</template>
-					</CustomTableColumn>
-					<CustomTableColumn label="物流利润" prop="logisticsProfit" width="80">
+					</el-table-column>
+					<el-table-column label="物流利润" prop="logisticsProfit" width="80">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -682,8 +682,8 @@
 								@blur="() => formatPriceInput(scope.row, 'logisticsProfit', 2)"
 							/>
 						</template>
-					</CustomTableColumn>
-					<CustomTableColumn label="厂家佣金" prop="factoryCommission" width="80">
+					</el-table-column>
+					<el-table-column label="厂家佣金" prop="factoryCommission" width="80">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -693,8 +693,8 @@
 								@blur="() => formatPriceInput(scope.row, 'factoryCommission', 2)"
 							/>
 						</template>
-					</CustomTableColumn>
-					<CustomTableColumn label="计提厂家返利金额" prop="factoryRebateAmount" width="120">
+					</el-table-column>
+					<el-table-column label="计提厂家返利金额" prop="factoryRebateAmount" width="120">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -704,8 +704,8 @@
 								@blur="() => formatPriceInput(scope.row, 'factoryRebateAmount', 2)"
 							/>
 						</template>
-					</CustomTableColumn>
-					<CustomTableColumn label="计提厂家降价金额" prop="factoryDiscountAmount" width="120">
+					</el-table-column>
+					<el-table-column label="计提厂家降价金额" prop="factoryDiscountAmount" width="120">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -715,14 +715,14 @@
 								@blur="() => formatPriceInput(scope.row, 'factoryDiscountAmount', 2)"
 							/>
 						</template>
-					</CustomTableColumn>
+					</el-table-column>
 
-					<CustomTableColumn label="备注" prop="comments" width="150">
+					<el-table-column label="备注" prop="comments" width="150">
 						<template #default="scope">
 							<!-- 添加 disabled 属性 -->
 							<el-input size="mini" v-model="scope.row.comments" placeholder="请输入备注" :disabled="!scope.row.isEditing" />
 						</template>
-					</CustomTableColumn>
+					</el-table-column>
 				</el-table>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -1403,20 +1403,22 @@ export default {
 			const { columns, data } = param;
 			const sums = [];
 			const summaryColumns = ['paymentFactory', 'payments', 'tonnage', 'landFreight', 'seaFreight', 'freight', 'profit', 'profitNoTax'];
-
+			console.log(columns);
 			columns.forEach((column, index) => {
+				// 第一列显示"合计"文字
 				if (index === 0) {
 					sums[index] = '合计';
 					return;
 				}
 
-				if (summaryColumns.includes(column.property)) {
-					const values = data.map(item => Number(item[column.property]));
+				// 如果列有property且在summaryColumns中，计算合计
+				if (column.property && summaryColumns.includes(column.property)) {
+					const values = data.map(item => Number(item[column.property]) || 0);
 					if (!values.every(value => isNaN(value))) {
 						sums[index] = values.reduce((prev, curr) => {
-							const value = Number(curr);
+							const value = Number(curr) || 0;
 							if (!isNaN(value)) {
-								return prev + curr;
+								return prev + value;
 							} else {
 								return prev;
 							}
@@ -1426,8 +1428,13 @@ export default {
 					} else {
 						sums[index] = 'N/A';
 					}
+				} else {
+					// 对于不需要合计的列，设置为空字符串
+					sums[index] = '';
 				}
 			});
+
+			console.log(`sums`, sums);
 
 			return sums;
 		},

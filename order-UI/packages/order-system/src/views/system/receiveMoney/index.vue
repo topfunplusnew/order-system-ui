@@ -4,11 +4,11 @@
 			<el-form-item label="时间段" prop="dateRange">
 				<el-date-picker
 					v-model="queryParams.dateRange"
-					type="datetimerange"
+					type="datetime"
 					range-separator="至"
 					start-placeholder="开始日期"
 					end-placeholder="结束日期"
-					value-format="yyyy-MM-dd HH:mm:ss"
+					value-format="yyyy-MM-dd"
 					class="date-range-280"
 				/>
 			</el-form-item>
@@ -68,12 +68,12 @@
 			"
 			@selection-change="handleSelectionChange"
 		>
-			<CustomTableColumn label="ID" align="center" prop="id" width="140" show-overflow-tooltip />
+			<CustomTableColumn label="ID" align="center" prop="id" width="60" show-overflow-tooltip />
 			<CustomTableColumn v-if="columns[0].visible" label="日期" align="center" prop="fundsDate" width="140" show-overflow-tooltip />
 			<CustomTableColumn v-if="columns[1].visible" label="支付类型" align="center" prop="receiveType" width="165" show-overflow-tooltip />
 			<CustomTableColumn v-if="columns[9].visible" label="对方公司" align="center" prop="companyName" width="165" show-overflow-tooltip />
-			<CustomTableColumn v-if="columns[10].visible" label="对方公司类型" align="center" prop="companyType" width="165"></CustomTableColumn>
-			<CustomTableColumn v-if="columns[2].visible" label="金额" align="center" prop="moneyAmount" width="165" show-overflow-tooltip />
+			<CustomTableColumn v-if="columns[10].visible" label="对方公司类型" align="center" prop="companyType" width="100"></CustomTableColumn>
+			<CustomTableColumn v-if="columns[2].visible" label="金额" align="center" prop="moneyAmount" width="110" show-overflow-tooltip />
 			<CustomTableColumn v-if="columns[3].visible" label="我方户名" align="center" prop="selfAcountsName" width="165" show-overflow-tooltip />
 			<CustomTableColumn v-if="columns[4].visible" label="我方账号" align="center" prop="selfBankNo" width="165" show-overflow-tooltip />
 			<CustomTableColumn v-if="columns[5].visible" label="我方开户行" align="center" prop="selfBankName" width="165" show-overflow-tooltip />
@@ -166,15 +166,16 @@
 									:query-name="bankQuery"
 									query-info="acountsName"
 									query-label="户名查询"
+									width="1300px"
 									@commitBack="handleCallBack"
 									@update:queryName="handleCommitBackBank"
 								>
 									<template #table-columns>
-										<CustomTableColumn label="账户类型" align="center" prop="acountsType" />
-										<CustomTableColumn label="己方公司" align="center" prop="displayName" />
-										<CustomTableColumn label="开户名称(户名)" align="center" prop="acountsName" />
-										<CustomTableColumn label="账号(银行账号)" align="center" prop="bankNo" />
-										<CustomTableColumn label="开户行" align="center" prop="bankName" />
+										<CustomTableColumn label="账户类型" align="center" prop="acountsType" width="100" />
+										<CustomTableColumn label="己方公司" align="center" prop="displayName" width="300" />
+										<CustomTableColumn label="开户名称(户名)" align="center" prop="acountsName" width="300" />
+										<CustomTableColumn label="账号(银行账号)" align="center" prop="bankNo" width="300" />
+										<CustomTableColumn label="开户行" align="center" prop="bankName" width="300" />
 									</template>
 								</SearchOption>
 							</div>
@@ -268,6 +269,7 @@
 									query-info="acountsName"
 									:query-name="queryCustomerBank"
 									:limit-info="{ acountsType: form.companyType }"
+									width="1100px"
 									@update:queryName="handleUpdateQueryNameCustomer"
 									@commitBack="handleCallBackCompany"
 									:extra-params="{
@@ -276,10 +278,10 @@
 									}"
 								>
 									<template #table-columns>
-										<CustomTableColumn label="账户类型" align="center" prop="acountsType" />
-										<CustomTableColumn label="开户名称(户名)" align="center" prop="acountsName" />
-										<CustomTableColumn label="账号(银行账号)" align="center" prop="bankNo" />
-										<CustomTableColumn label="开户行" align="center" prop="bankName" />
+										<CustomTableColumn label="账户类型" align="center" prop="acountsType" width="100" />
+										<CustomTableColumn label="开户名称(户名)" align="center" prop="acountsName" width="300" />
+										<CustomTableColumn label="账号(银行账号)" align="center" prop="bankNo" width="300" />
+										<CustomTableColumn label="开户行" align="center" prop="bankName" width="300" />
 									</template>
 								</SearchOption>
 							</div>
