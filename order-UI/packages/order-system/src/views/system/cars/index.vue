@@ -112,10 +112,6 @@
 				<el-form-item label="账号" prop="bankNo">
 					<el-input v-model="form.bankNo" placeholder="请输入账号" @input="handleInputTrim($event, 'form', 'bankNo')" />
 				</el-form-item>
-				<el-form-item label="账号类型" prop="acountsType">
-					<el-radio v-model="form.acountsType" label="1">收款</el-radio>
-					<el-radio v-model="form.acountsType" label="2">付款</el-radio>
-				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
 				<el-button type="primary" @click="submitForm">确 定</el-button>
@@ -245,13 +241,6 @@ export default {
 						trigger: 'blur'
 					}
 				],
-				acountsType: [
-					{
-						required: true,
-						message: '账号类型不能为空',
-						trigger: 'blur'
-					}
-				],
 				carType: [
 					{
 						required: true,
@@ -260,16 +249,6 @@ export default {
 					}
 				]
 			},
-			options: [
-				{
-					value: '收款',
-					label: '收款'
-				},
-				{
-					value: '付款',
-					label: '付款'
-				}
-			],
 			columns: [
 				{ key: 0, label: `车牌/柜号`, visible: true },
 				{ key: 1, label: `司机姓名/海运公司`, visible: true },
@@ -425,7 +404,6 @@ export default {
 				acountsName: null,
 				bankNo: null,
 				// 默认值
-				acountsType: '1',
 				carType: '陆运'
 			};
 			this.resetForm('form');
@@ -459,7 +437,6 @@ export default {
 			const id = row.id || this.ids;
 			getCars(id).then(response => {
 				this.form = response.data;
-				this.form.acountsType += '';
 				this.open = true;
 				this.title = '修改外部车辆信息';
 			});
@@ -484,6 +461,9 @@ export default {
 					if (this.form.carType === '海运') {
 						delete submitData.carNo;
 					}
+
+					// 移除 acountsType 字段，不再向后端传递
+					delete submitData.acountsType;
 
 					if (this.form.id != null) {
 						submitData = excludeParams(submitData, this.$exclude);
