@@ -507,7 +507,7 @@ export default {
 						return;
 					}
 					this.$nextTick(() => {
-						this.$set(this.addCategoryModel, 'levelNo', this.addCategoryModel.categoryNo + (Number(_levelMap[this.addCategoryModel.categoryNo]) + 1));
+						this.$set(this.addCategoryModel, 'levelNo', this.addCategoryModel.categoryNo + this.plusOne(_levelMap[this.addCategoryModel.categoryNo]));
 					});
 				});
 			}
@@ -531,24 +531,38 @@ export default {
 				this.productLevelList = res.rows;
 			});
 		},
-		// 点击添加产品分类信息
-		handleAddProductSort() {
-			// +1的操作
-			function plusOne(maxValue) {
-				let arr = maxValue.split('');
-				for (let i = arr.length - 1; i >= 0; i--) {
-					arr[i] = Number(arr[i]) + 1 + '';
-					arr[i] = (Number(arr[i]) % 10) + '';
-
-					if (arr[i] !== '0') {
-						return arr.join('');
-					}
+		plusOne(maxValue) {
+			let arr = maxValue.split('');
+			let carry = 1; // 进位标志，初始为1（要加1）
+			const originalLength = arr.length; // 保存原始长度
+			// 从右到左逐位处理
+			for (let i = arr.length - 1; i >= 0; i--) {
+				if (carry === 0) {
+					// 没有进位了，直接跳出循环
+					break;
 				}
-				arr.map(() => '0');
-				arr.unshift(1);
-				return arr.join('');
+
+				// 当前位加上进位
+				let sum = Number(arr[i]) + carry;
+				carry = Math.floor(sum / 10); // 计算新的进位
+				arr[i] = (sum % 10).toString(); // 当前位的值
 			}
 
+			// 如果还有进位，需要在前面添加1
+			if (carry > 0) {
+				arr.unshift('1');
+			}
+
+			// 保持原有的位数（前面补0）
+			while (arr.length < originalLength) {
+				console.log(`需要进位`);
+				arr.unshift('0');
+			}
+
+			return arr.join('');
+		},
+		// 点击添加产品分类信息
+		handleAddProductSort() {
 			// 获取产品字典信息 为了自动填充最大的分类编码
 			getDicts('order_product_categories').then(res => {
 				// 如果没有数据 则默认为001
@@ -558,7 +572,9 @@ export default {
 				} else {
 					const maxNo = Math.max(...res.data.map(obj => Number(obj.dictValue)));
 					let maxValue = res.data.find(obj => Number(obj.dictValue) === maxNo).dictValue;
-					this.tempCategoryInfo.levelNo = plusOne(maxValue);
+					console.log(`maxValue:`, maxValue);
+					console.log(`plusOne(maxValue):`, this.plusOne(maxValue));
+					this.tempCategoryInfo.levelNo = this.plusOne(maxValue);
 				}
 				this.getDictsData();
 				this.addCategoryOpen = true;

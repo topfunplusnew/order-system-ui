@@ -76,9 +76,14 @@
 				}
 			"
 		>
+			<el-table-column v-if="columns[0].visible" label="排序序号" align="center" prop="sort" width="100">
+				<template #default="scope">
+					<span>{{ scope.row.sort || '-' }}</span>
+				</template>
+			</el-table-column>
 			<el-table-column v-if="columns[1].visible" label="己方公司" align="center" prop="displayName" show-overflow-tooltip />
 			<el-table-column v-if="columns[2].visible" label="开户名称" align="center" prop="acountsName" show-overflow-tooltip />
-			<el-table-column v-if="columns[0].visible" label="银行账号" align="center" prop="bankNo" show-overflow-tooltip>
+			<el-table-column v-if="columns[3].visible" label="银行账号" align="center" prop="bankNo" show-overflow-tooltip>
 				<template #default="scope">
 					<div>
 						<span style="color: red">[{{ scope.row.bankCardType }}]</span>
@@ -86,8 +91,14 @@
 					</div>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[3].visible" label="开户行" align="center" prop="bankName" show-overflow-tooltip />
-			<el-table-column v-if="columns[4].visible" label="余额" align="center" prop="sumMoney" show-overflow-tooltip />
+			<el-table-column v-if="columns[4].visible" label="开户行" align="center" prop="bankName" show-overflow-tooltip />
+			<el-table-column v-if="columns[5].visible" label="余额" align="center" prop="sumMoney" show-overflow-tooltip />
+			<el-table-column label="操作" align="center" width="200" fixed="right">
+				<template #default="scope">
+					<el-input v-model="scope.row.sort" size="mini" style="width: 50px; margin-right: 10px" placeholder="序号" @input="val => handleSortInput(scope.row, val)"></el-input>
+					<el-button size="mini" type="primary" icon="el-icon-check" @click="handleSaveSort(scope.row)">保存</el-button>
+				</template>
+			</el-table-column>
 		</el-table>
 	</div>
 </template>
@@ -95,7 +106,7 @@
 <script>
 import { listCompany } from '@/api/system/company';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
-import { listBankAccount, listBankAccountSelf } from '../../../api/system/bankAccount';
+import { listBankAccount, listBankAccountSelf, updateBankAccount } from '../../../api/system/bankAccount';
 
 export default {
 	name: 'SelfMoney',
@@ -140,11 +151,12 @@ export default {
 				acountsType: ''
 			},
 			columns: [
-				{ key: 0, label: `银行账号`, visible: true },
+				{ key: 0, label: `排序序号`, visible: true },
 				{ key: 1, label: `己方公司`, visible: true },
 				{ key: 2, label: `开户名称`, visible: true },
-				{ key: 3, label: `开户行`, visible: true },
-				{ key: 4, label: `余额`, visible: true }
+				{ key: 3, label: `银行账号`, visible: true },
+				{ key: 4, label: `开户行`, visible: true },
+				{ key: 5, label: `余额`, visible: true }
 			],
 			// 排序选择
 			options: [
@@ -196,6 +208,7 @@ export default {
 	methods: {
 		listBankAccount,
 		listCompany,
+		updateBankAccount,
 		// 获取当前时间的方法
 		getCurrentDateTime() {
 			const now = new Date();
@@ -314,6 +327,51 @@ export default {
 		/** 导出按钮操作 */
 		handleExport() {
 			this.download('system/bankAccount/exportSelfMoneySummary?endDate=' + (this.queryParams.endDate ? this.queryParams.endDate : ''), null, `selfMoneySummary_${new Date().getTime()}.xlsx`);
+		},
+		/**
+		 * 处理排序序号输入，只允许输入数字
+		 * @param {Object} row - 当前行数据
+		 * @param {string|number} val - 输入值
+		 */
+		handleSortInput(row, val) {
+			// 移除所有非数字字符
+			const numericValue = String(val).replace(/[^\d]/g, '');
+			// 如果输入为空，设置为 null；否则转换为数字
+			row.sort = numericValue === '' ? null : Number(numericValue);
+		},
+		/**
+		 * 保存排序序号
+		 * @param {Object} row - 当前行数据
+		 */
+		handleSaveSort(row) {
+			if (!row.id) {
+				this.$message.error('该行数据缺少ID，无法保存');
+				return;
+			}
+
+			// 构建更新数据，只更新sort字段
+			const updateData = {
+				id: row.id,
+				sort: row.sort || 0
+			};
+
+			// 调用更新接口
+			updateBankAccount(updateData)
+				.then(() => {
+					this.$message.success('排序序号保存成功');
+					// 保存成功后，更新本地存储的数据
+					const originalData = JSON.parse(localStorage.getItem('bankAccountList') || '[]');
+					const index = originalData.findIndex(item => item.id === row.id);
+					if (index !== -1) {
+						originalData[index].sort = row.sort;
+						localStorage.setItem('bankAccountList', JSON.stringify(originalData));
+					}
+				})
+				.catch(error => {
+					this.$message.error('排序序号保存失败：' + (error.message || '未知错误'));
+					// 保存失败时，刷新列表恢复原值
+					this.getList();
+				});
 		}
 	}
 };
