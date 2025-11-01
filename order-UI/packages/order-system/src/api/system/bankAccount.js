@@ -78,3 +78,13 @@ export function listBankAccountSelf(query) {
 		params: query
 	});
 }
+
+// 银行卡排序字段修改
+//{id: number, sort: number}
+export function updateBankAccountSort(data) {
+	return request({
+		url: '/system/bankAccount/sort',
+		method: 'put',
+		data: data
+	});
+}

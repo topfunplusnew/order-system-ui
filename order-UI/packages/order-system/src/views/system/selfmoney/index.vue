@@ -3,32 +3,24 @@
 		<!-- 筛选框 -->
 		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
 			<el-form-item label="开始时间" prop="endDate">
-				<el-date-picker
-					v-model="queryParams.endDate"
-					type="datetime"
-					placeholder="选择开始时间"
-					value-format="yyyy-MM-dd HH:mm:ss"
-					size="mini"
-					clearable
-					@change="handleQuery"
-				></el-date-picker>
+				<el-date-picker v-model="queryParams.endDate" type="datetime" placeholder="选择开始时间" value-format="yyyy-MM-dd HH:mm:ss" size="mini" clearable></el-date-picker>
 			</el-form-item>
 			<el-form-item label="账户类型">
-				<el-select v-model="queryParams.bankCardType" placeholder="账户类型" size="mini" clearable @change="applyFrontendFilter">
+				<el-select v-model="queryParams.bankCardType" placeholder="账户类型" size="mini" clearable>
 					<el-option v-for="item in typeOption" :key="item.value" :label="item.label" :value="item.value"></el-option>
 				</el-select>
 			</el-form-item>
 			<el-form-item label="开户名称" prop="acountsName">
-				<el-input v-model="queryParams.acountsName" placeholder="请输入开户名称" clearable @keyup.enter.native="applyFrontendFilter" @input="applyFrontendFilter" />
+				<el-input v-model="queryParams.acountsName" placeholder="请输入开户名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="开户行" prop="acountsName">
-				<el-input v-model="queryParams.bankName" placeholder="请输入开户行" clearable @keyup.enter.native="applyFrontendFilter" @input="applyFrontendFilter" />
+				<el-input v-model="queryParams.bankName" placeholder="请输入开户行" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="银行账号" prop="bankNo">
-				<el-input v-model="queryParams.bankNo" placeholder="请输入银行账号" clearable @keyup.enter.native="applyFrontendFilter" @input="applyFrontendFilter" />
+				<el-input v-model="queryParams.bankNo" placeholder="请输入银行账号" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="己方公司" prop="displayName">
-				<el-input v-model="queryParams.displayName" placeholder="请输入己方公司" clearable @keyup.enter.native="applyFrontendFilter" @input="applyFrontendFilter" />
+				<el-input v-model="queryParams.displayName" placeholder="请输入己方公司" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -78,7 +70,7 @@
 		>
 			<el-table-column v-if="columns[0].visible" label="排序序号" align="center" prop="sort" width="100">
 				<template #default="scope">
-					<span>{{ scope.row.sort || '-' }}</span>
+					<span>{{ scope.row.sort }}</span>
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[1].visible" label="己方公司" align="center" prop="displayName" show-overflow-tooltip />
@@ -93,7 +85,7 @@
 			</el-table-column>
 			<el-table-column v-if="columns[4].visible" label="开户行" align="center" prop="bankName" show-overflow-tooltip />
 			<el-table-column v-if="columns[5].visible" label="余额" align="center" prop="sumMoney" show-overflow-tooltip />
-			<el-table-column label="操作" align="center" width="200" fixed="right">
+			<el-table-column label="排序操作" align="center" width="200" fixed="right">
 				<template #default="scope">
 					<el-input v-model="scope.row.sort" size="mini" style="width: 50px; margin-right: 10px" placeholder="序号" @input="val => handleSortInput(scope.row, val)"></el-input>
 					<el-button size="mini" type="primary" icon="el-icon-check" @click="handleSaveSort(scope.row)">保存</el-button>
@@ -106,7 +98,7 @@
 <script>
 import { listCompany } from '@/api/system/company';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
-import { listBankAccount, listBankAccountSelf, updateBankAccount } from '../../../api/system/bankAccount';
+import { listBankAccount, listBankAccountSelf, updateBankAccountSort } from '../../../api/system/bankAccount';
 
 export default {
 	name: 'SelfMoney',
@@ -208,7 +200,7 @@ export default {
 	methods: {
 		listBankAccount,
 		listCompany,
-		updateBankAccount,
+		updateBankAccountSort,
 		// 获取当前时间的方法
 		getCurrentDateTime() {
 			const now = new Date();
@@ -245,11 +237,11 @@ export default {
 		applySort() {
 			if (this.value === '1') {
 				this.bankAccountList.sort(function (a, b) {
-					return a.sumMoney - b.sumMoney;
+					return a.sort - b.sort;
 				});
 			} else if (this.value === '2') {
 				this.bankAccountList.sort(function (a, b) {
-					return b.sumMoney - a.sumMoney;
+					return b.sort - a.sort;
 				});
 			}
 		},
@@ -282,9 +274,6 @@ export default {
 				// 应用前端筛选
 				this.bankAccountList = originalData.filter(item => this.handleFilter(item, frontendParams));
 			}
-
-			// 应用排序
-			this.applySort();
 		},
 		// 筛选函数
 		handleFilter(item, filterParams = null) {
@@ -344,28 +333,23 @@ export default {
 		 * @param {Object} row - 当前行数据
 		 */
 		handleSaveSort(row) {
-			if (!row.id) {
+			if (!row.bankAccountId) {
 				this.$message.error('该行数据缺少ID，无法保存');
 				return;
 			}
 
-			// 构建更新数据，只更新sort字段
+			// 构建更新数据，只包含id和sort字段
 			const updateData = {
-				id: row.id,
+				id: row.bankAccountId,
 				sort: row.sort || 0
 			};
 
-			// 调用更新接口
-			updateBankAccount(updateData)
+			// 调用更新排序接口
+			updateBankAccountSort(updateData)
 				.then(() => {
 					this.$message.success('排序序号保存成功');
-					// 保存成功后，更新本地存储的数据
-					const originalData = JSON.parse(localStorage.getItem('bankAccountList') || '[]');
-					const index = originalData.findIndex(item => item.id === row.id);
-					if (index !== -1) {
-						originalData[index].sort = row.sort;
-						localStorage.setItem('bankAccountList', JSON.stringify(originalData));
-					}
+					// 保存成功后，重新抓取数据
+					this.getList();
 				})
 				.catch(error => {
 					this.$message.error('排序序号保存失败：' + (error.message || '未知错误'));
