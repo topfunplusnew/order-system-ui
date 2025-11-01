@@ -1,16 +1,16 @@
 <template>
 	<div class="app-container">
 		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="80px">
-			<el-form-item label="时间段" prop="dateRange">
+			<el-form-item label="收款时间">
 				<el-date-picker
-					v-model="queryParams.dateRange"
-					type="datetime"
-					range-separator="至"
+					v-model="dateRange"
+					class="date-range-280"
+					value-format="yyyy-MM-dd"
+					type="daterange"
+					range-separator="-"
 					start-placeholder="开始日期"
 					end-placeholder="结束日期"
-					value-format="yyyy-MM-dd"
-					class="date-range-280"
-				/>
+				></el-date-picker>
 			</el-form-item>
 			<el-form-item label="支付类型" prop="receiveType">
 				<el-cascader v-model="queryParams.receiveType" :options="paymentTypeTree" :props="props" class="input-medium" clearable />
@@ -415,10 +415,11 @@ export default {
 				userId: null,
 				UserName: null,
 				delFlag: null,
-				dateRange: null,
 				startTime: null,
 				endTime: null
 			},
+			// 时间范围选择器
+			dateRange: [],
 			// 表单参数
 			form: {},
 			// 表单校验
@@ -610,12 +611,14 @@ export default {
 			this.loading = true;
 			// 处理时间段参数
 			const params = { ...this.queryParams };
-			if (params.dateRange && params.dateRange.length === 2) {
-				params.startTime = params.dateRange[0];
-				params.endTime = params.dateRange[1];
+			if (this.dateRange && this.dateRange.length === 2) {
+				params.startTime = this.dateRange[0];
+				params.endTime = this.dateRange[1];
+			} else {
+				// 如果时间范围为空，清空时间参数
+				params.startTime = null;
+				params.endTime = null;
 			}
-			// 删除dateRange参数，避免传递给后端
-			delete params.dateRange;
 			// 把查询条件中的receiveType转成字符串
 			if (params.receiveType && Array.isArray(params.receiveType)) {
 				params.receiveType = params.receiveType.join('-');
@@ -752,6 +755,7 @@ export default {
 		/** 重置按钮操作 */
 		resetQuery() {
 			this.resetForm('queryForm');
+			this.dateRange = [];
 			// 重置级联选择器
 			this.queryParams.receiveType = [];
 			this.handleQuery();
@@ -1026,12 +1030,14 @@ export default {
 		handleExport() {
 			// 处理时间段参数
 			const params = { ...this.queryParams };
-			if (params.dateRange && params.dateRange.length === 2) {
-				params.startTime = params.dateRange[0];
-				params.endTime = params.dateRange[1];
+			if (this.dateRange && this.dateRange.length === 2) {
+				params.startTime = this.dateRange[0];
+				params.endTime = this.dateRange[1];
+			} else {
+				// 如果时间范围为空，清空时间参数
+				params.startTime = null;
+				params.endTime = null;
 			}
-			// 删除dateRange参数，避免传递给后端
-			delete params.dateRange;
 
 			this.download('system/receiveMoney/export', params, `receiveMoney_${new Date().getTime()}.xlsx`);
 		}

@@ -3,7 +3,9 @@
 	<el-table-column v-bind="filteredAttrs" v-on="$listeners">
 		<!-- 如果有默认插槽内容，在作用域插槽内渲染（支持嵌套 CustomTableColumn 和传递 scope） -->
 		<template v-if="hasSlotContent" v-slot="scope">
-			<slot v-bind="scope" :row="scope.row" :column="scope.column" :$index="scope.$index"></slot>
+			<slot-content-wrapper :scope="scope">
+				<slot v-bind="scope" :row="scope.row" :column="scope.column" :$index="scope.$index"></slot>
+			</slot-content-wrapper>
 		</template>
 		<!-- 如果没有插槽内容，根据类型决定是否渲染自定义内容 -->
 		<template v-else-if="!isSpecialType" v-slot="scope">
@@ -77,11 +79,81 @@ const CellContent = {
 	}
 };
 
+// 子组件用于包装 slot 内容，直接显示 popover
+const SlotContentWrapper = {
+	name: 'SlotContentWrapper',
+	props: {
+		scope: Object
+	},
+	computed: {
+		// 从父组件获取 mode，如果是 normal 则不显示 popover
+		shouldShowPopover() {
+			const parent = this.$parent;
+			if (parent && parent.mode === 'normal') {
+				return false;
+			}
+			// 其他所有情况都显示 popover
+			return true;
+		}
+	},
+	render(h) {
+		const slotContent = this.$slots.default;
+
+		if (this.shouldShowPopover) {
+			// 获取 slot 内容的文本表示（用于 popover 显示）
+			const textContent = this.getSlotTextContent();
+			const referenceEl = h(
+				'div',
+				{
+					class: 'ellipsis slot-content-wrapper',
+					ref: 'slotWrapper',
+					slot: 'reference'
+				},
+				slotContent
+			);
+			const popoverContent = h('div', { class: 'slot-popover-content' }, textContent || slotContent);
+
+			return h('div', { class: 'cell-with-popover' }, [
+				h(
+					'el-popover',
+					{
+						props: {
+							placement: 'top',
+							trigger: 'hover',
+							popperClass: 'table-cell-popover'
+						}
+					},
+					[referenceEl, popoverContent]
+				)
+			]);
+		}
+
+		return h(
+			'div',
+			{
+				class: 'slot-content-wrapper',
+				ref: 'slotWrapper'
+			},
+			slotContent
+		);
+	},
+	methods: {
+		getSlotTextContent() {
+			// 尝试从 DOM 获取文本内容
+			if (this.$refs.slotWrapper) {
+				return this.$refs.slotWrapper.textContent || this.$refs.slotWrapper.innerText;
+			}
+			return '';
+		}
+	}
+};
+
 export default {
 	name: 'CustomTableColumn',
 	inheritAttrs: false, // 避免属性污染根节点
 	components: {
-		CellContent
+		CellContent,
+		SlotContentWrapper
 	},
 	props: {
 		prop: {
@@ -104,10 +176,14 @@ export default {
 		return {
 			textWidthCache: {}, // 缓存文本宽度计算结果
 			columnWidthCache: {}, // 缓存列宽度
+			slotWidthCache: {}, // 缓存 slot 元素宽度
 			resizeObserver: null,
 			// 添加防抖控制
 			resizeTimer: null,
-			isResizing: false
+			isResizing: false,
+			columnIndex: null, // 列索引缓存
+			popoverDecisionCache: {}, // Popover 显示决策缓存
+			measureElement: null // 用于测量文本宽度的临时元素
 		};
 	},
 
@@ -142,6 +218,28 @@ export default {
 		// 检查是否传递了 show-overflow-tooltip 属性
 		hasOverflowTooltip() {
 			return Object.prototype.hasOwnProperty.call(this.$attrs, 'show-overflow-tooltip');
+		},
+
+		// 获取传入的列宽度（从 props 或 attrs）
+		columnWidth() {
+			// 优先使用 width prop，如果没有则从 $attrs 获取
+			const width = this.$attrs.width;
+			if (!width) return null;
+
+			// 如果 width 是数字，直接返回
+			if (typeof width === 'number') {
+				return width;
+			}
+
+			// 如果 width 是字符串（如 "100px"），提取数字部分
+			if (typeof width === 'string') {
+				const match = width.match(/(\d+)/);
+				if (match) {
+					return parseInt(match[1], 10);
+				}
+			}
+
+			return null;
 		}
 	},
 
@@ -446,6 +544,27 @@ export default {
 			}
 		},
 
+		// 测量 slot 元素的宽度
+		measureSlotWidth(scope, slotElement) {
+			if (!slotElement) return 0;
+
+			const cacheKey = `slot_${scope.$index}`;
+
+			try {
+				// 获取元素的 scrollWidth（内容实际宽度）和 offsetWidth（可见宽度）
+				const scrollWidth = slotElement.scrollWidth || 0;
+				const offsetWidth = slotElement.offsetWidth || 0;
+				const actualWidth = Math.max(scrollWidth, offsetWidth);
+
+				// 缓存结果
+				this.slotWidthCache[cacheKey] = actualWidth;
+				return actualWidth;
+			} catch (error) {
+				console.warn('Failed to measure slot width:', error);
+				return 0;
+			}
+		},
+
 		// 初始化ResizeObserver监听列宽变化 - 优化版本
 		initResizeObserver() {
 			if (typeof ResizeObserver !== 'undefined') {
@@ -473,6 +592,7 @@ export default {
 
 			// 立即清空缓存
 			this.columnWidthCache = {};
+			this.slotWidthCache = {};
 			this.popoverDecisionCache = {};
 			this.columnIndex = null; // 重置列索引缓存
 
@@ -487,6 +607,7 @@ export default {
 		clearCaches() {
 			this.textWidthCache = {};
 			this.columnWidthCache = {};
+			this.slotWidthCache = {};
 			this.popoverDecisionCache = {};
 			this.columnIndex = null;
 		},
