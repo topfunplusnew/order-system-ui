@@ -166,15 +166,16 @@
 									:query-name="bankQuery"
 									query-info="acountsName"
 									query-label="户名查询"
+									width="1300px"
 									@commitBack="handleCallBack"
 									@update:queryName="handleCommitBackBank"
 								>
 									<template #table-columns>
-										<CustomTableColumn label="账户类型" align="center" prop="acountsType" />
-										<CustomTableColumn label="己方公司" align="center" prop="displayName" />
-										<CustomTableColumn label="开户名称(户名)" align="center" prop="acountsName" />
-										<CustomTableColumn label="账号(银行账号)" align="center" prop="bankNo" />
-										<CustomTableColumn label="开户行" align="center" prop="bankName" />
+										<CustomTableColumn label="账户类型" align="center" prop="acountsType" width="100" />
+										<CustomTableColumn label="己方公司" align="center" prop="displayName" width="300" />
+										<CustomTableColumn label="开户名称(户名)" align="center" prop="acountsName" width="300" />
+										<CustomTableColumn label="账号(银行账号)" align="center" prop="bankNo" width="300" />
+										<CustomTableColumn label="开户行" align="center" prop="bankName" width="300" />
 									</template>
 								</SearchOption>
 							</div>
