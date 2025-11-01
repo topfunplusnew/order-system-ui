@@ -68,12 +68,12 @@
 			"
 			@selection-change="handleSelectionChange"
 		>
-			<CustomTableColumn label="ID" align="center" prop="id" width="140" show-overflow-tooltip />
+			<CustomTableColumn label="ID" align="center" prop="id" width="60" show-overflow-tooltip />
 			<CustomTableColumn v-if="columns[0].visible" label="日期" align="center" prop="fundsDate" width="140" show-overflow-tooltip />
 			<CustomTableColumn v-if="columns[1].visible" label="支付类型" align="center" prop="receiveType" width="165" show-overflow-tooltip />
 			<CustomTableColumn v-if="columns[9].visible" label="对方公司" align="center" prop="companyName" width="165" show-overflow-tooltip />
-			<CustomTableColumn v-if="columns[10].visible" label="对方公司类型" align="center" prop="companyType" width="165"></CustomTableColumn>
-			<CustomTableColumn v-if="columns[2].visible" label="金额" align="center" prop="moneyAmount" width="165" show-overflow-tooltip />
+			<CustomTableColumn v-if="columns[10].visible" label="对方公司类型" align="center" prop="companyType" width="100"></CustomTableColumn>
+			<CustomTableColumn v-if="columns[2].visible" label="金额" align="center" prop="moneyAmount" width="110" show-overflow-tooltip />
 			<CustomTableColumn v-if="columns[3].visible" label="我方户名" align="center" prop="selfAcountsName" width="165" show-overflow-tooltip />
 			<CustomTableColumn v-if="columns[4].visible" label="我方账号" align="center" prop="selfBankNo" width="165" show-overflow-tooltip />
 			<CustomTableColumn v-if="columns[5].visible" label="我方开户行" align="center" prop="selfBankName" width="165" show-overflow-tooltip />
