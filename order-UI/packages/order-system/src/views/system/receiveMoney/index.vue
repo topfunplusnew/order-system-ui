@@ -8,7 +8,7 @@
 					range-separator="至"
 					start-placeholder="开始日期"
 					end-placeholder="结束日期"
-					value-format="yyyy-MM-dd HH:mm:ss"
+					value-format="yyyy-MM-dd"
 					class="date-range-280"
 				/>
 			</el-form-item>

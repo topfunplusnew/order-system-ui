@@ -5,7 +5,7 @@
 				<el-date-picker
 					v-model="dateRange"
 					class="date-range-280"
-					value-format="yyyy-MM-dd HH:mm:ss"
+					value-format="yyyy-MM-dd"
 					type="daterange"
 					range-separator="-"
 					start-placeholder="开始日期"
