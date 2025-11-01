@@ -4,7 +4,7 @@
 			<el-form-item label="时间段" prop="dateRange">
 				<el-date-picker
 					v-model="queryParams.dateRange"
-					type="datetimerange"
+					type="datetime"
 					range-separator="至"
 					start-placeholder="开始日期"
 					end-placeholder="结束日期"
