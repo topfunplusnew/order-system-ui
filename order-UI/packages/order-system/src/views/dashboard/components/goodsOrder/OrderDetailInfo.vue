@@ -239,11 +239,11 @@ export default {
 				<el-table-column label="利润" align="center" prop="profit" show-overflow-tooltip width="90px" />
 				<el-table-column label="不含税利润" align="center" prop="profitNoTax" show-overflow-tooltip width="90px" />
 				<el-table-column label="备注" align="center" prop="comments" show-overflow-tooltip width="50px" />
-				<el-table-column label="物流利润" align="center" prop="logisticsProfit" show-overflow-tooltip width="50px" />
-				<el-table-column label="客户佣金" align="center" prop="customerCommission" show-overflow-tooltip width="50px" />
-				<el-table-column label="厂家佣金" align="center" prop="factoryCommission" show-overflow-tooltip width="50px" />
-				<el-table-column label="计提厂家返利金额" align="center" prop="factoryRebateAmount" show-overflow-tooltip width="50px" />
-				<el-table-column label="计提厂家降价金额" align="center" prop="factoryDiscountAmount" show-overflow-tooltip width="50px" />
+				<el-table-column label="物流利润" align="center" prop="logisticsProfit" show-overflow-tooltip width="100px" />
+				<el-table-column label="客户佣金" align="center" prop="customerCommission" show-overflow-tooltip width="100px" />
+				<el-table-column label="厂家佣金" align="center" prop="factoryCommission" show-overflow-tooltip width="100px" />
+				<el-table-column label="计提厂家返利金额" align="center" prop="factoryRebateAmount" show-overflow-tooltip width="120px" />
+				<el-table-column label="计提厂家降价金额" align="center" prop="factoryDiscountAmount" show-overflow-tooltip width="120px" />
 			</el-table>
 		</el-row>
 
