@@ -140,13 +140,32 @@
 							<CustomTableColumn v-if="columns[16].visible" label="子项陆运费之和" align="center" prop="allLandFreight" width="150" />
 							<CustomTableColumn v-if="columns[17].visible" label="子项海运费之和" align="center" prop="allSeaFreight" />
 							<CustomTableColumn v-if="columns[18].visible" label="录入人员" align="center" prop="userName" width="120" />
-							<CustomTableColumn v-if="columns[19].visible" label="收到条附件" align="center" prop="attachmentList" width="150" fixed="right">
-								<template slot-scope="scope">
-									<CheckFiles
-										:attachmentList="scope.row.attachmentList"
-										@needToUpdate="value => handleUpdateFilePath(value, scope.row, getInventoryMain, updateInventoryMain)"
-										flag="attachmentList"
-									/>
+							<CustomTableColumn v-if="columns[19].visible" label="收到条附件" align="center" prop="receiveProof" width="150" fixed="right">
+								<template #default="scope">
+									<div v-if="Array.isArray(scope.row.attachmentList)">
+										<CheckFiles
+											:attachmentList="scope.row.attachmentList"
+											:flag="'receiveProof'"
+											@needToUpdate="value => handleUpdateFilePath(value, scope.row, getInventoryMain, updateInventoryMain)"
+										/>
+									</div>
+									<div v-else>
+										<el-tag type="danger">加载错误</el-tag>
+									</div>
+								</template>
+							</CustomTableColumn>
+							<CustomTableColumn v-if="columns[21].visible" label="附件" align="center" prop="path" width="150" fixed="right">
+								<template #default="scope">
+									<div v-if="Array.isArray(scope.row.attachmentList)">
+										<CheckFiles
+											:attachmentList="scope.row.attachmentList"
+											:flag="'path'"
+											@needToUpdate="value => handleUpdateFilePath(value, scope.row, getInventoryMain, updateInventoryMain)"
+										/>
+									</div>
+									<div v-else>
+										<el-tag type="danger">加载错误</el-tag>
+									</div>
 								</template>
 							</CustomTableColumn>
 							<CustomTableColumn v-if="columns[20].visible" label="操作" align="center" width="250" fixed="right">
@@ -218,16 +237,16 @@
 				<el-form-item label="货物来源" prop="goodsCompany">
 					<el-input size="mini" v-model="form.goodsCompany" placeholder="请输入货物来源公司(本部或者海盛)" />
 				</el-form-item>
-				<el-form-item label="录入人员" prop="userName">
+				<!-- <el-form-item label="录入人员" prop="userName">
 					<el-input size="mini" v-model="form.userName" placeholder="请输入录入人员" />
-				</el-form-item>
+				</el-form-item> -->
 				<el-form-item label="附件">
 					<UploadFilesButton
-						ref="attachmentUploader"
-						flag="attachmentList"
+						ref="attachmentsUploader"
+						flag="path"
 						:extra-info="{ moduleType: 'inventoryMain', formId: form.id }"
-						:initial-attachments="form.attachmentList || []"
-						@files-updated="handleAttachmentFilesUpdated"
+						:initial-attachments="filteredPathAttachments"
+						@files-updated="handleAttachmentsFilesUpdated"
 					/>
 				</el-form-item>
 				<br />
@@ -897,8 +916,9 @@ export default {
 				{ key: 16, label: '子项陆运费之和', visible: true },
 				{ key: 17, label: '子项海运费之和', visible: true },
 				{ key: 18, label: '录入人员', visible: true },
-				{ key: 19, label: '收到条附件路径', visible: true },
-				{ key: 20, label: '操作', visible: true }
+				{ key: 19, label: '收到条附件', visible: true },
+				{ key: 20, label: '操作', visible: true },
+				{ key: 21, label: '附件', visible: true }
 			],
 			// 表单校验
 			rules: {
@@ -1003,6 +1023,22 @@ export default {
 		 */
 		hasEditingRows() {
 			return this.inventoryDetailList && this.inventoryDetailList.some(row => row.isEditing);
+		},
+		/**
+		 * @description: 过滤出收到条附件列表
+		 * @returns {Array} 收到条附件列表
+		 */
+		filteredReceiveProofAttachments() {
+			if (!Array.isArray(this.form.attachmentList)) return [];
+			return this.form.attachmentList.filter(item => item && item.flag === 'receiveProof');
+		},
+		/**
+		 * @description: 过滤出附件列表
+		 * @returns {Array} 附件列表
+		 */
+		filteredPathAttachments() {
+			if (!Array.isArray(this.form.attachmentList)) return [];
+			return this.form.attachmentList.filter(item => item && item.flag === 'path');
 		}
 	},
 	/**
@@ -1141,14 +1177,25 @@ export default {
 		listCompany,
 		getInventoryMain, // 确保已引入
 		updateInventoryMain, // 确保已引入
-		// 附件更新处理
+		// 附件更新处理（收到条附件）
 		handleAttachmentFilesUpdated(uploadParams) {
 			if (uploadParams && uploadParams.params && uploadParams.params.attachmentIds) {
 				// 确保 form.params 对象存在
 				if (!this.form.params) {
 					this.form.params = {};
 				}
-				// 直接使用上传组件返回的统一附件ID数组
+				// 存储收到条附件的ID列表
+				this.form.params.attachmentIds = uploadParams.params.attachmentIds;
+			}
+		},
+		// 附件更新处理（附件）
+		handleAttachmentsFilesUpdated(uploadParams) {
+			if (uploadParams && uploadParams.params && uploadParams.params.attachmentIds) {
+				// 确保 form.params 对象存在
+				if (!this.form.params) {
+					this.form.params = {};
+				}
+				// 存储附件的ID列表
 				this.form.params.attachmentIds = uploadParams.params.attachmentIds;
 			}
 		},
@@ -1561,8 +1608,8 @@ export default {
 		 */
 		cancel() {
 			// 清空附件上传组件
-			if (this.$refs.attachmentUploader) {
-				this.$refs.attachmentUploader.clearUploadedFiles();
+			if (this.$refs.attachmentsUploader) {
+				this.$refs.attachmentsUploader.clearUploadedFiles();
 			}
 			this.open = false;
 			this.reset();
@@ -1615,8 +1662,8 @@ export default {
 			this.inventoryDetailList = [];
 			this.isEditingDetails = false; // 重置编辑状态
 			// 清空附件上传组件
-			if (this.$refs.attachmentUploader) {
-				this.$refs.attachmentUploader.clearUploadedFiles();
+			if (this.$refs.attachmentsUploader) {
+				this.$refs.attachmentsUploader.clearUploadedFiles();
 			}
 			if (this.$refs.form) {
 				this.$refs.form.resetFields();
@@ -1803,6 +1850,7 @@ export default {
 					apiCall({
 						...this.form,
 						params: {
+							...this.form.params,
 							attachmentIds: this.form.params?.attachmentIds || []
 						}
 					})
@@ -1812,8 +1860,8 @@ export default {
 							this.getList();
 							this.isEditingDetails = false; // 关闭弹窗时重置编辑状态
 							// 清空附件上传组件
-							if (this.$refs.attachmentUploader) {
-								this.$refs.attachmentUploader.clearUploadedFiles();
+							if (this.$refs.attachmentsUploader) {
+								this.$refs.attachmentsUploader.clearUploadedFiles();
 							}
 						})
 						.catch(error => {
