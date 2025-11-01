@@ -145,6 +145,14 @@ export default {
 			this.columns = JSON.parse(localStorage.getItem('goodsorder-columns'));
 		}
 	},
+	mounted() {
+		this.$bus.$on('refreshList', () => {
+			this.getList();
+		});
+	},
+	beforeDestroy() {
+		this.$bus.$off('refreshList');
+	},
 	methods: {
 		// 行操作中点击查看 查看当前行订单的信息
 		checkOrderItemInfo(row) {

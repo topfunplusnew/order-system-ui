@@ -78,6 +78,7 @@ export var common_dialog = {
 			instance.$on('close', callback => {
 				callback(this).then(() => {
 					this._reallyCloseDialog(config.id);
+
 					// 根据isList参数决定是否调用getList
 					if (config.isList && this.getList) {
 						this.getList();
@@ -95,6 +96,7 @@ export var common_dialog = {
 						if (config.isList && this.getList) {
 							this.getList();
 						}
+						this.$bus.$emit('refreshList');
 					})
 					.catch(error => {
 						// 失败时不关闭弹窗

@@ -65,7 +65,8 @@ export var mixin_order_add = {
 										orderId: row.id,
 										submitInfo: '修改订单'
 									},
-									false
+									false,
+									true
 								);
 							})
 							.catch(() => {
@@ -84,7 +85,8 @@ export var mixin_order_add = {
 								orderId: row.id,
 								submitInfo: '修改订单'
 							},
-							false
+							false,
+							true
 						);
 					}
 				})
