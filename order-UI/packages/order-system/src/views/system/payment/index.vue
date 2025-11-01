@@ -374,7 +374,7 @@
 											<CustomTableColumn label="账户类型" align="center" prop="acountsType" />
 											<CustomTableColumn label="公司名称" align="center" prop="companyName" />
 											<CustomTableColumn label="户名" align="center" prop="acountsName" />
-											<CustomTableColumn label="账号(银行账号)" align="center" prop="bankNo" />
+											<CustomTableColumn label="账号(银行账号)" align="center" prop="bankNo" width="200" />
 											<CustomTableColumn label="开户行" align="center" prop="bankName" />
 										</template>
 									</SearchOption>
