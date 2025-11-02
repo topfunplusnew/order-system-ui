@@ -147,6 +147,7 @@ export default {
 				Object.assign(this.limitInfo.params, this.limitInfo.__params);
 				delete this.limitInfo.__params;
 			}
+			console.log(`已设置params属性`, this.limitInfo);
 			// 获取数据 渲染表格
 			this.getList();
 			this.dialogVisible = true;
@@ -162,7 +163,12 @@ export default {
 		},
 		// 条件查询
 		handleSearchInfo() {
+			// 确保 params 属性存在，如果不存在则初始化
+			if (!this.limitInfo.params) {
+				this.limitInfo.params = {};
+			}
 			if (this.computedQueryItems.queryList.length > 0) {
+				console.log(`this.computedQueryItems.queryList`, this.computedQueryItems.queryList);
 				for (let item of this.computedQueryItems.queryList) {
 					const queryItem = _.cloneDeep(item);
 					// 如果是params的查询参数
@@ -178,6 +184,8 @@ export default {
 							});
 							continue;
 						}
+						console.log(`this.limitInfo`, this.limitInfo);
+						console.log(`this.limitInfo.params`, this.limitInfo.params);
 						// 如果不是 直接添加
 						this.limitInfo.params[queryItem.prop] = queryItem.value;
 						continue;

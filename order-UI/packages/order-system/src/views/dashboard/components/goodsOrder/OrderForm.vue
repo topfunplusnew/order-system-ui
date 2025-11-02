@@ -180,16 +180,6 @@ export default {
 							__isParams: false
 						},
 						value: ''
-					},
-					{
-						id: 5,
-						label: '分类名称',
-						prop: 'levelName',
-						type: 'input',
-						extraInfo: {
-							__isParams: false
-						},
-						value: ''
 					}
 					// {
 					// 	id: 6,
