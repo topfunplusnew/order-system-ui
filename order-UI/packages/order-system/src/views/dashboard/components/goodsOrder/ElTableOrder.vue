@@ -100,27 +100,27 @@ export default {
 				{ key: 2, label: '客户', visible: true },
 				{ key: 3, label: '供应商/仓库', visible: true },
 				{ key: 4, label: '审核状态', visible: true },
-				{ key: 5, label: '陆运车牌', visible: true },
-				{ key: 6, label: '陆运司机电话', visible: true },
-				{ key: 7, label: '陆地司机姓名', visible: true },
-				{ key: 8, label: '总货款', visible: true },
-				{ key: 9, label: '陆运费', visible: true },
-				{ key: 10, label: '海运柜号', visible: true },
-				{ key: 11, label: '海运司机电话', visible: true },
-				{ key: 12, label: '海运公司', visible: true },
-				{ key: 13, label: '海运费', visible: true },
-				{ key: 14, label: '销售经理', visible: true },
-				{ key: 15, label: '车队', visible: true },
-				{ key: 16, label: '录入员', visible: true },
-				{ key: 17, label: '附件', visible: true },
-				{ key: 18, label: '收到条附件', visible: true },
-				{ key: 19, label: '是否可编辑', visible: true },
-				{ key: 20, label: '客户是否含税', visible: true },
-				{ key: 21, label: '供应商是否开票', visible: true },
-				{ key: 22, label: '备注', visible: true },
-				{ key: 23, label: '总利润(含税)', visible: true },
-				{ key: 24, label: '总利润(不含税)', visible: true },
-				{ key: 25, label: '总吨位', visible: true }
+				{ key: 5, label: '车队', visible: true },
+				{ key: 6, label: '陆运车牌', visible: true },
+				{ key: 7, label: '陆运司机电话', visible: true },
+				{ key: 8, label: '陆地司机姓名', visible: true },
+				{ key: 9, label: '海运柜号', visible: true },
+				{ key: 10, label: '海运司机电话', visible: true },
+				{ key: 11, label: '海运公司', visible: true },
+				{ key: 12, label: '总货款', visible: true },
+				{ key: 13, label: '总吨位', visible: true },
+				{ key: 14, label: '陆运费', visible: true },
+				{ key: 15, label: '海运费', visible: true },
+				{ key: 16, label: '总利润(含税)', visible: true },
+				{ key: 17, label: '总利润(不含税)', visible: true },
+				{ key: 18, label: '销售经理', visible: true },
+				{ key: 19, label: '录入员', visible: true },
+				{ key: 20, label: '备注', visible: true },
+				{ key: 21, label: '附件', visible: true },
+				{ key: 22, label: '收到条附件', visible: true },
+				{ key: 23, label: '是否可编辑', visible: true },
+				{ key: 24, label: '客户是否含税', visible: true },
+				{ key: 25, label: '供应商是否开票', visible: true }
 			]
 		};
 	},
@@ -165,7 +165,7 @@ export default {
 				this.openDialog(
 					CheckOrder,
 					'查看订单详情',
-					'1300px',
+					'100%',
 					{
 						orderInfo: this.orderInfo,
 						orderDetailInfo: this.orderDetailInfo
@@ -551,42 +551,48 @@ export default {
 					return this.formatSupplierWarehouse(row);
 				case 4: // 审核状态
 					return row.checkState || '';
-				case 5: // 陆运车牌
-					return row.landCarNo || '';
-				case 6: // 陆运司机电话
-					return row.landDriverTel || '';
-				case 7: // 陆地司机姓名
-					return row.landDriverName || '';
-				case 8: // 总货款
-					return row.allPayments || '';
-				case 9: // 陆运费
-					return row.landFreight || '';
-				case 10: // 海运柜号
-					return row.seaCarNo || '无';
-				case 11: // 海运司机电话
-					return row.seaDriverTel || '无';
-				case 12: // 海运公司
-					return row.seaDriverName || '无';
-				case 13: // 海运费
-					return row.seaFreight || '';
-				case 14: // 销售经理
-					return row.saleManager || '';
-				case 15: // 车队
+				case 5: // 车队
 					return row.fleet || '';
-				case 16: // 录入员
+				case 6: // 陆运车牌
+					return row.landCarNo || '';
+				case 7: // 陆运司机电话
+					return row.landDriverTel || '';
+				case 8: // 陆地司机姓名
+					return row.landDriverName || '';
+				case 9: // 海运柜号
+					return row.seaCarNo || '无';
+				case 10: // 海运司机电话
+					return row.seaDriverTel || '无';
+				case 11: // 海运公司
+					return row.seaDriverName || '无';
+				case 12: // 总货款
+					return row.allPayments || '';
+				case 13: // 总吨位
+					return row.allTonnage || '';
+				case 14: // 陆运费
+					return row.landFreight || '';
+				case 15: // 海运费
+					return row.seaFreight || '';
+				case 16: // 总利润(含税)
+					return row.allProfit || '';
+				case 17: // 总利润(不含税)
+					return row.allProfitNoTax || '';
+				case 18: // 销售经理
+					return row.saleManager || '';
+				case 19: // 录入员
 					return row.userName || '';
-				case 17: // 附件
-					return this.formatAttachments(row.attachmentList, 'path');
-				case 18: // 收到条附件
-					return this.formatAttachments(row.attachmentList, 'receiveProof');
-				case 19: // 是否可编辑
-					return row.isedit === 0 ? '否' : '是';
-				case 20: // 客户是否含税
-					return this.hasInvoice(row, PUBLIC_DICT_TYPE.CUSTOMER) ? '是' : '否';
-				case 21: // 供应商是否含税
-					return this.hasInvoice(row, PUBLIC_DICT_TYPE.SUPPLIER) ? '是' : '否';
-				case 22: // 备注
+				case 20: // 备注
 					return row.comments || '';
+				case 21: // 附件
+					return this.formatAttachments(row.attachmentList, 'path');
+				case 22: // 收到条附件
+					return this.formatAttachments(row.attachmentList, 'receiveProof');
+				case 23: // 是否可编辑
+					return row.isedit === 0 ? '否' : '是';
+				case 24: // 客户是否含税
+					return this.hasInvoice(row, PUBLIC_DICT_TYPE.CUSTOMER) ? '是' : '否';
+				case 25: // 供应商是否开票
+					return this.hasInvoice(row, PUBLIC_DICT_TYPE.SUPPLIER) ? '是' : '否';
 				default:
 					return '';
 			}
@@ -773,13 +779,17 @@ export default {
 						</el-dropdown>
 					</template>
 				</el-table-column>
+				<!-- 1. ID -->
 				<CustomTableColumn v-if="columns[0].visible" show-overflow-tooltip label="ID" align="center" prop="id" fixed="left" />
+				<!-- 2. 日期 -->
 				<CustomTableColumn v-if="columns[1].visible" show-overflow-tooltip label="日期" align="center" prop="orderDate" fixed="left">
 					<template #default="scope">
 						<div>{{ parseTime(scope.row.orderDate, '{y}-{m}-{d}') }}</div>
 					</template>
 				</CustomTableColumn>
+				<!-- 3. 客户 -->
 				<CustomTableColumn v-if="columns[2].visible" show-overflow-tooltip label="客户" align="center" prop="customer" fixed="left" width="100px" />
+				<!-- 4. 供应商/仓库 -->
 				<el-table-column v-if="columns[3].visible" show-overflow-tooltip label="供应商/仓库" align="center" prop="supplierNames" fixed="left" width="200">
 					<template #default="scope">
 						<div class="supplier-warehouse-container">
@@ -801,6 +811,7 @@ export default {
 						</div>
 					</template>
 				</el-table-column>
+				<!-- 5. 审核状态 -->
 				<el-table-column v-if="columns[4].visible" show-overflow-tooltip label="审核状态" align="center" prop="checkState" width="120">
 					<template #default="scope">
 						<el-row v-if="scope.row.checkState === '已审核'">
@@ -813,51 +824,68 @@ export default {
 						</el-row>
 					</template>
 				</el-table-column>
-				<el-table-column v-if="columns[20].visible" show-overflow-tooltip label="客户是否含税" align="center" prop="customerTaxIncluded" width="120">
-					<template #default="scope">
-						<el-row>
-							<el-row v-if="hasInvoice(scope.row, PUBLIC_DICT_TYPE.CUSTOMER)">
-								<el-row>
-									<el-button type="text" size="mini" @click="showCustomerInvoiceList(scope.row)">是</el-button>
-								</el-row>
-							</el-row>
-							<el-row v-else>
-								<StateTag :state-title="`否`" :state-mapper="{ 3: '否' }" />
-							</el-row>
-						</el-row>
-					</template>
-				</el-table-column>
-				<CustomTableColumn v-if="columns[5].visible" show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo" width="100px" />
-				<CustomTableColumn v-if="columns[6].visible" show-overflow-tooltip label="陆运司机电话" align="center" prop="landDriverTel" width="100px" />
-				<CustomTableColumn v-if="columns[7].visible" show-overflow-tooltip label="陆地司机姓名" align="center" prop="landDriverName" width="100px" />
-				<CustomTableColumn v-if="columns[8].visible" show-overflow-tooltip label="总货款" align="center" prop="allPayments" width="100px">
-					<template #default="scope">
-						{{ scope.row.allPayments | changeNumber(changeLength) }}
-					</template>
-				</CustomTableColumn>
-				<CustomTableColumn v-if="columns[9].visible" show-overflow-tooltip label="陆运费" align="center" prop="landFreight" width="100px" />
-				<!--      原为海运车牌号-->
-				<CustomTableColumn v-if="columns[10].visible" show-overflow-tooltip label="海运柜号" align="center" prop="seaCarNo" width="100px">
+				<!-- 6. 车队 -->
+				<CustomTableColumn v-if="columns[5].visible" show-overflow-tooltip label="车队" align="center" prop="fleet" width="100px" />
+				<!-- 7. 陆运车牌 -->
+				<CustomTableColumn v-if="columns[6].visible" show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo" width="100px" />
+				<!-- 8. 陆运司机电话 -->
+				<CustomTableColumn v-if="columns[7].visible" show-overflow-tooltip label="陆运司机电话" align="center" prop="landDriverTel" width="100px" />
+				<!-- 9. 陆地司机姓名 -->
+				<CustomTableColumn v-if="columns[8].visible" show-overflow-tooltip label="陆地司机姓名" align="center" prop="landDriverName" width="100px" />
+				<!-- 10. 海运柜号 -->
+				<CustomTableColumn v-if="columns[9].visible" show-overflow-tooltip label="海运柜号" align="center" prop="seaCarNo" width="100px">
 					<template #default="scope">
 						{{ !scope.row.seaCarNo ? '无' : scope.row.seaCarNo }}
 					</template>
 				</CustomTableColumn>
-				<CustomTableColumn v-if="columns[11].visible" show-overflow-tooltip label="海运司机电话" align="center" prop="seaDriverTel" width="100px">
+				<!-- 11. 海运司机电话 -->
+				<CustomTableColumn v-if="columns[10].visible" show-overflow-tooltip label="海运司机电话" align="center" prop="seaDriverTel" width="100px">
 					<template #default="scope">
 						{{ !scope.row.seaDriverTel ? '无' : scope.row.seaDriverTel }}
 					</template>
 				</CustomTableColumn>
-				<!--      原为海运司机姓名-->
-				<CustomTableColumn v-if="columns[12].visible" show-overflow-tooltip label="海运公司" align="center" prop="seaDriverName" width="100px">
+				<!-- 12. 海运公司 -->
+				<CustomTableColumn v-if="columns[11].visible" show-overflow-tooltip label="海运公司" align="center" prop="seaDriverName" width="100px">
 					<template #default="scope">
 						{{ !scope.row.seaDriverName ? '无' : scope.row.seaDriverName }}
 					</template>
 				</CustomTableColumn>
-				<CustomTableColumn v-if="columns[13].visible" show-overflow-tooltip label="海运费" align="center" prop="seaFreight" width="100px" />
-				<CustomTableColumn v-if="columns[14].visible" show-overflow-tooltip label="销售经理" align="center" prop="saleManager" width="100px" />
-				<CustomTableColumn v-if="columns[15].visible" show-overflow-tooltip label="车队" align="center" prop="fleet" width="100px" />
-				<CustomTableColumn v-if="columns[16].visible" show-overflow-tooltip label="录入员" align="center" prop="userName" width="120px" />
-				<el-table-column v-if="columns[17].visible" show-overflow-tooltip label="附件" align="center" prop="path" width="150px">
+				<!-- 13. 总货款 -->
+				<CustomTableColumn v-if="columns[12].visible" show-overflow-tooltip label="总货款" align="center" prop="allPayments" width="100px">
+					<template #default="scope">
+						{{ scope.row.allPayments | changeNumber(changeLength) }}
+					</template>
+				</CustomTableColumn>
+				<!-- 14. 总吨位 -->
+				<CustomTableColumn v-if="columns[13].visible" show-overflow-tooltip label="总吨位" align="center" prop="allTonnage" width="120px">
+					<template #default="scope">
+						{{ scope.row.allTonnage | changeNumber(changeLength) }}
+					</template>
+				</CustomTableColumn>
+				<!-- 15. 陆运费 -->
+				<CustomTableColumn v-if="columns[14].visible" show-overflow-tooltip label="陆运费" align="center" prop="landFreight" width="100px" />
+				<!-- 16. 海运费 -->
+				<CustomTableColumn v-if="columns[15].visible" show-overflow-tooltip label="海运费" align="center" prop="seaFreight" width="100px" />
+				<!-- 17. 总利润(含税) -->
+				<CustomTableColumn v-if="columns[16].visible" show-overflow-tooltip label="总利润(含税)" align="center" prop="allProfit" width="120px">
+					<template #default="scope">
+						{{ scope.row.allProfit | changeNumber(changeLength) }}
+					</template>
+				</CustomTableColumn>
+				<!-- 18. 总利润(不含税) -->
+				<CustomTableColumn v-if="columns[17].visible" show-overflow-tooltip label="总利润(不含税)" align="center" prop="allProfitNoTax" width="120px">
+					<template #default="scope">
+						{{ scope.row.allProfitNoTax | changeNumber(changeLength) }}
+					</template>
+				</CustomTableColumn>
+				<!-- 19. 销售经理 -->
+				<CustomTableColumn v-if="columns[18].visible" show-overflow-tooltip label="销售经理" align="center" prop="saleManager" width="100px" />
+				<!-- 20. 录入员 -->
+				<CustomTableColumn v-if="columns[19].visible" show-overflow-tooltip label="录入员" align="center" prop="userName" width="120px" />
+				<!-- 21. 备注 -->
+				<CustomTableColumn v-if="columns[20].visible" show-overflow-tooltip label="备注" align="center" prop="comments" />
+				<!-- 22. 附件 -->
+				<el-table-column v-if="columns[21].visible" show-overflow-tooltip label="附件" align="center" prop="path" width="150px">
 					<template slot-scope="scope">
 						<div v-if="Array.isArray(scope.row.attachmentList)">
 							<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'path'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getGoodsOrder, updateGoodsOrder)" />
@@ -867,7 +895,8 @@ export default {
 						</div>
 					</template>
 				</el-table-column>
-				<el-table-column v-if="columns[18].visible" show-overflow-tooltip label="收到条附件路径" align="center" prop="receiveProof" width="150px">
+				<!-- 23. 收到条附件 -->
+				<el-table-column v-if="columns[22].visible" show-overflow-tooltip label="收到条附件" align="center" prop="receiveProof" width="150px">
 					<template #default="scope">
 						<div v-if="Array.isArray(scope.row.attachmentList)">
 							<CheckFiles
@@ -881,13 +910,29 @@ export default {
 						</div>
 					</template>
 				</el-table-column>
-				<CustomTableColumn v-if="columns[19].visible" show-overflow-tooltip label="是否可编辑" align="center" prop="isedit" width="100px">
+				<!-- 24. 是否可编辑 -->
+				<CustomTableColumn v-if="columns[23].visible" show-overflow-tooltip label="是否可编辑" align="center" prop="isedit" width="100px">
 					<template slot-scope="scope">
 						<StateTag :state-title="scope.row.isedit === 0 ? '否' : '是'" :state-mapper="{ 0: '否', 2: '是' }" />
 					</template>
 				</CustomTableColumn>
-				<!--      客户供应商是否开票-->
-				<el-table-column v-if="columns[21].visible" show-overflow-tooltip label="供应商是否含税" align="center" width="120px">
+				<!-- 25. 客户是否含税 -->
+				<el-table-column v-if="columns[24].visible" show-overflow-tooltip label="客户是否含税" align="center" prop="customerTaxIncluded" width="120">
+					<template #default="scope">
+						<el-row>
+							<el-row v-if="hasInvoice(scope.row, PUBLIC_DICT_TYPE.CUSTOMER)">
+								<el-row>
+									<el-button type="text" size="mini" @click="showCustomerInvoiceList(scope.row)">是</el-button>
+								</el-row>
+							</el-row>
+							<el-row v-else>
+								<StateTag :state-title="`否`" :state-mapper="{ 3: '否' }" />
+							</el-row>
+						</el-row>
+					</template>
+				</el-table-column>
+				<!-- 26. 供应商是否开票 -->
+				<el-table-column v-if="columns[25].visible" show-overflow-tooltip label="供应商是否开票" align="center" width="120px">
 					<template #default="scope">
 						<el-row>
 							<el-row v-if="hasInvoice(scope.row, PUBLIC_DICT_TYPE.SUPPLIER)">
@@ -901,23 +946,6 @@ export default {
 						</el-row>
 					</template>
 				</el-table-column>
-				<CustomTableColumn v-if="columns[22].visible" show-overflow-tooltip label="备注" align="center" prop="comments" />
-				<!-- 新增利润和吨位相关列 -->
-				<CustomTableColumn v-if="columns[23].visible" show-overflow-tooltip label="总利润(含税)" align="center" prop="allProfit" width="120px">
-					<template #default="scope">
-						{{ scope.row.allProfit | changeNumber(changeLength) }}
-					</template>
-				</CustomTableColumn>
-				<CustomTableColumn v-if="columns[24].visible" show-overflow-tooltip label="总利润(不含税)" align="center" prop="allProfitNoTax" width="120px">
-					<template #default="scope">
-						{{ scope.row.allProfitNoTax | changeNumber(changeLength) }}
-					</template>
-				</CustomTableColumn>
-				<CustomTableColumn v-if="columns[25].visible" show-overflow-tooltip label="总吨位" align="center" prop="allTonnage" width="120px">
-					<template #default="scope">
-						{{ scope.row.allTonnage | changeNumber(changeLength) }}
-					</template>
-				</CustomTableColumn>
 				<!--      右侧操作栏-->
 				<el-table-column show-overflow-tooltip label="订单操作" align="center" class-name="small-padding fixed-width" width="320px" fixed="right">
 					<template slot-scope="scope">
