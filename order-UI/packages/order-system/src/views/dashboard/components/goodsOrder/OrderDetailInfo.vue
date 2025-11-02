@@ -68,20 +68,22 @@ export default {
 		getSummaries(param) {
 			const { columns, data } = param;
 			const sums = [];
+			// 需要计算合计的列属性
+			const sumColumns = ['sundryCost', 'paymentsWithSundry', 'payments', 'landFreight', 'freight', 'profit', 'profitNoTax'];
 			columns.forEach((column, index) => {
 				if (index === 0) {
 					sums[index] = '合计';
 					return;
 				}
-				// 根据是否显示操作列来调整索引
-				// ban=false时(有操作列): 杂费14, 总货款杂费19, 总货款21, 陆运费24, 总运费26, 利润28, 不含税利润29
-				// ban=true时(无操作列): 杂费13, 总货款杂费18, 总货款20, 陆运费23, 总运费25, 利润27, 不含税利润28
-				const includes = this.ban ? [13, 18, 20, 23, 25, 27, 28] : [14, 19, 21, 24, 26, 28, 29];
-				if (!data || data.length === 0) return;
-				const values = data.map(item => Number(item[column.property]));
-				if (!values.every(value => isNaN(value))) {
-					// 包含的计算
-					if (includes.includes(index)) {
+				// 如果列没有属性（如expand列、操作列），跳过计算
+				if (!column.property) {
+					return;
+				}
+				// 根据列属性判断是否需要计算合计
+				if (sumColumns.includes(column.property)) {
+					if (!data || data.length === 0) return;
+					const values = data.map(item => Number(item[column.property]));
+					if (!values.every(value => isNaN(value))) {
 						sums[index] = values.reduce((prev, curr) => {
 							const value = Number(curr);
 							if (!isNaN(value)) {
@@ -180,6 +182,8 @@ export default {
 				id="printBox"
 				border
 				:data="orderDetailInfoList"
+				row-key="id"
+				default-expand-all
 				max-height="700"
 				:cell-style="
 					() => {
@@ -238,7 +242,14 @@ export default {
 				<el-table-column label="其他费用" align="center" prop="otherCost" show-overflow-tooltip width="50px" />
 				<el-table-column label="利润" align="center" prop="profit" show-overflow-tooltip width="90px" />
 				<el-table-column label="不含税利润" align="center" prop="profitNoTax" show-overflow-tooltip width="90px" />
-				<el-table-column label="备注" align="center" prop="comments" show-overflow-tooltip width="50px" />
+				<el-table-column type="expand" width="50" label="备注">
+					<template slot-scope="scope">
+						<div class="expand-row">
+							<div class="expand-label">备注：</div>
+							<div class="expand-content">{{ scope.row.comments || '-' }}</div>
+						</div>
+					</template>
+				</el-table-column>
 				<el-table-column label="物流利润" align="center" prop="logisticsProfit" show-overflow-tooltip width="100px" />
 				<el-table-column label="客户佣金" align="center" prop="customerCommission" show-overflow-tooltip width="100px" />
 				<el-table-column label="厂家佣金" align="center" prop="factoryCommission" show-overflow-tooltip width="100px" />
@@ -349,5 +360,32 @@ export default {
 ::-webkit-scrollbar-track {
 	background-color: #f2f6fc;
 	border-radius: 6px;
+}
+
+// 展开行样式
+.expand-row {
+	padding: 4px 5px;
+	display: flex;
+	align-items: flex-start;
+	background-color: #fafafa;
+	border-left: 3px solid #409eff;
+
+	.expand-label {
+		font-weight: bold;
+		color: #606266;
+		margin-right: 10px;
+		min-width: 60px;
+		flex-shrink: 0;
+		font-size: 13px;
+	}
+
+	.expand-content {
+		flex: 1;
+		color: #303133;
+		word-break: break-all;
+		white-space: pre-wrap;
+		line-height: 1.4;
+		font-size: 13px;
+	}
 }
 </style>
