@@ -1461,25 +1461,3 @@
 		visibility: visible !important;
 	}
 }
-
-.el-table th {
-	padding: 0;
-	white-space: nowrap;
-	min-width: fit-content;
-}
-
-.el-table td {
-	padding: 1px;
-	white-space: nowrap;
-	width: fit-content;
-}
-
-/** 修改el-card默认paddingL:20px-内边距 **/
-.el-card__body {
-	padding: 10px;
-}
-
-.el-table .cell {
-	white-space: nowrap;
-	width: fit-content;
-}
