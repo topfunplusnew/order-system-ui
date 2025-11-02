@@ -92,6 +92,10 @@ const SlotContentWrapper = {
 			if (parent && parent.mode === 'normal') {
 				return false;
 			}
+			// 检查插槽内容中是否包含交互式元素
+			if (this.hasInteractiveElements(this.$slots.default)) {
+				return false;
+			}
 			// 其他所有情况都显示 popover
 			return true;
 		}
@@ -138,6 +142,95 @@ const SlotContentWrapper = {
 		);
 	},
 	methods: {
+		// 检测 VNode 中是否包含交互式元素
+		hasInteractiveElements(vnodes) {
+			if (!vnodes || !Array.isArray(vnodes)) {
+				return false;
+			}
+
+			const interactiveComponents = [
+				'el-button',
+				'el-dropdown',
+				'el-select',
+				'el-input',
+				'el-switch',
+				'el-checkbox',
+				'el-radio',
+				'el-date-picker',
+				'el-time-picker',
+				'el-cascader',
+				'el-upload',
+				'el-link',
+				'el-tag',
+				'button',
+				'input',
+				'select',
+				'a'
+			];
+
+			const checkVNode = vnode => {
+				if (!vnode) return false;
+
+				// 检查组件标签
+				if (vnode.tag) {
+					// 检查是否是交互式组件
+					if (
+						interactiveComponents.some(comp => {
+							// 处理组件标签，可能是 'el-button' 或 'ElButton'
+							const tagLower = vnode.tag.toLowerCase();
+							const compLower = comp.toLowerCase();
+							return tagLower === compLower || tagLower.includes(compLower);
+						})
+					) {
+						return true;
+					}
+
+					// 检查组件名（对于 Vue 组件）
+					if (vnode.componentOptions) {
+						const componentName = vnode.componentOptions.tag || (vnode.componentOptions.Ctor && vnode.componentOptions.Ctor.options && vnode.componentOptions.Ctor.options.name);
+						if (componentName) {
+							if (
+								interactiveComponents.some(comp => {
+									const nameLower = componentName.toLowerCase();
+									const compLower = comp.toLowerCase();
+									return nameLower === compLower || nameLower.includes(compLower);
+								})
+							) {
+								return true;
+							}
+						}
+					}
+				}
+
+				// 递归检查子节点
+				if (vnode.children && Array.isArray(vnode.children)) {
+					for (let i = 0; i < vnode.children.length; i++) {
+						if (checkVNode(vnode.children[i])) {
+							return true;
+						}
+					}
+				}
+
+				// 检查组件选项的子节点
+				if (vnode.componentOptions && vnode.componentOptions.children) {
+					for (let i = 0; i < vnode.componentOptions.children.length; i++) {
+						if (checkVNode(vnode.componentOptions.children[i])) {
+							return true;
+						}
+					}
+				}
+
+				return false;
+			};
+
+			for (let i = 0; i < vnodes.length; i++) {
+				if (checkVNode(vnodes[i])) {
+					return true;
+				}
+			}
+
+			return false;
+		},
 		getSlotTextContent() {
 			// 尝试从 DOM 获取文本内容
 			if (this.$refs.slotWrapper) {

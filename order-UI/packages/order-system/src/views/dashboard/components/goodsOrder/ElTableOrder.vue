@@ -734,7 +734,7 @@ export default {
 				:data="goodsOrderList"
 				@header-dragend="changeColWidth"
 			>
-				<CustomTableColumn label="行操作" align="center" class-name="small-padding fixed-width" width="180" fixed="left">
+				<el-table-column label="行操作" align="center" class-name="small-padding fixed-width" width="180" fixed="left">
 					<template slot-scope="scope">
 						<!-- 查看按钮 -->
 						<el-button size="mini" type="text" @click="checkOrderItemInfo(scope.row)">查看</el-button>
@@ -772,7 +772,7 @@ export default {
 							</el-dropdown-menu>
 						</el-dropdown>
 					</template>
-				</CustomTableColumn>
+				</el-table-column>
 				<CustomTableColumn v-if="columns[0].visible" show-overflow-tooltip label="ID" align="center" prop="id" fixed="left" />
 				<CustomTableColumn v-if="columns[1].visible" show-overflow-tooltip label="日期" align="center" prop="orderDate" fixed="left">
 					<template #default="scope">
@@ -780,7 +780,7 @@ export default {
 					</template>
 				</CustomTableColumn>
 				<CustomTableColumn v-if="columns[2].visible" show-overflow-tooltip label="客户" align="center" prop="customer" fixed="left" width="100px" />
-				<CustomTableColumn v-if="columns[3].visible" show-overflow-tooltip label="供应商/仓库" align="center" prop="supplierNames" fixed="left" width="200">
+				<el-table-column v-if="columns[3].visible" show-overflow-tooltip label="供应商/仓库" align="center" prop="supplierNames" fixed="left" width="200">
 					<template #default="scope">
 						<div class="supplier-warehouse-container">
 							<!-- 显示预处理的供应商列表 -->
@@ -800,8 +800,8 @@ export default {
 							<span v-if="scope.row._uniqueSuppliers.length === 0 && scope.row._uniqueWarehouses.length === 0" class="empty-item">-</span>
 						</div>
 					</template>
-				</CustomTableColumn>
-				<CustomTableColumn v-if="columns[4].visible" show-overflow-tooltip label="审核状态" align="center" prop="checkState" width="120">
+				</el-table-column>
+				<el-table-column v-if="columns[4].visible" show-overflow-tooltip label="审核状态" align="center" prop="checkState" width="120">
 					<template #default="scope">
 						<el-row v-if="scope.row.checkState === '已审核'">
 							<StateTag :state-title="scope.row.checkState" :state-mapper="{ 2: '已审核' }" @click.native="handleReCheck(scope.row)" style="cursor: pointer" />
@@ -812,8 +812,8 @@ export default {
 							</el-row>
 						</el-row>
 					</template>
-				</CustomTableColumn>
-				<CustomTableColumn v-if="columns[20].visible" show-overflow-tooltip label="客户是否含税" align="center" prop="customerTaxIncluded" width="120">
+				</el-table-column>
+				<el-table-column v-if="columns[20].visible" show-overflow-tooltip label="客户是否含税" align="center" prop="customerTaxIncluded" width="120">
 					<template #default="scope">
 						<el-row>
 							<el-row v-if="hasInvoice(scope.row, PUBLIC_DICT_TYPE.CUSTOMER)">
@@ -826,7 +826,7 @@ export default {
 							</el-row>
 						</el-row>
 					</template>
-				</CustomTableColumn>
+				</el-table-column>
 				<CustomTableColumn v-if="columns[5].visible" show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo" width="100px" />
 				<CustomTableColumn v-if="columns[6].visible" show-overflow-tooltip label="陆运司机电话" align="center" prop="landDriverTel" width="100px" />
 				<CustomTableColumn v-if="columns[7].visible" show-overflow-tooltip label="陆地司机姓名" align="center" prop="landDriverName" width="100px" />
@@ -857,7 +857,7 @@ export default {
 				<CustomTableColumn v-if="columns[14].visible" show-overflow-tooltip label="销售经理" align="center" prop="saleManager" width="100px" />
 				<CustomTableColumn v-if="columns[15].visible" show-overflow-tooltip label="车队" align="center" prop="fleet" width="100px" />
 				<CustomTableColumn v-if="columns[16].visible" show-overflow-tooltip label="录入员" align="center" prop="userName" width="120px" />
-				<CustomTableColumn v-if="columns[17].visible" show-overflow-tooltip label="附件" align="center" prop="path" width="150px">
+				<el-table-column v-if="columns[17].visible" show-overflow-tooltip label="附件" align="center" prop="path" width="150px">
 					<template slot-scope="scope">
 						<div v-if="Array.isArray(scope.row.attachmentList)">
 							<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'path'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getGoodsOrder, updateGoodsOrder)" />
@@ -866,8 +866,8 @@ export default {
 							<el-tag type="danger">加载错误</el-tag>
 						</div>
 					</template>
-				</CustomTableColumn>
-				<CustomTableColumn v-if="columns[18].visible" show-overflow-tooltip label="收到条附件路径" align="center" prop="receiveProof" width="150px">
+				</el-table-column>
+				<el-table-column v-if="columns[18].visible" show-overflow-tooltip label="收到条附件路径" align="center" prop="receiveProof" width="150px">
 					<template #default="scope">
 						<div v-if="Array.isArray(scope.row.attachmentList)">
 							<CheckFiles
@@ -880,14 +880,14 @@ export default {
 							<el-tag type="danger">加载错误</el-tag>
 						</div>
 					</template>
-				</CustomTableColumn>
+				</el-table-column>
 				<CustomTableColumn v-if="columns[19].visible" show-overflow-tooltip label="是否可编辑" align="center" prop="isedit" width="100px">
 					<template slot-scope="scope">
 						<StateTag :state-title="scope.row.isedit === 0 ? '否' : '是'" :state-mapper="{ 0: '否', 2: '是' }" />
 					</template>
 				</CustomTableColumn>
 				<!--      客户供应商是否开票-->
-				<CustomTableColumn v-if="columns[21].visible" show-overflow-tooltip label="供应商是否含税" align="center" width="120px">
+				<el-table-column v-if="columns[21].visible" show-overflow-tooltip label="供应商是否含税" align="center" width="120px">
 					<template #default="scope">
 						<el-row>
 							<el-row v-if="hasInvoice(scope.row, PUBLIC_DICT_TYPE.SUPPLIER)">
@@ -900,7 +900,7 @@ export default {
 							</el-row>
 						</el-row>
 					</template>
-				</CustomTableColumn>
+				</el-table-column>
 				<CustomTableColumn v-if="columns[22].visible" show-overflow-tooltip label="备注" align="center" prop="comments" />
 				<!-- 新增利润和吨位相关列 -->
 				<CustomTableColumn v-if="columns[23].visible" show-overflow-tooltip label="总利润(含税)" align="center" prop="allProfit" width="120px">
@@ -919,7 +919,7 @@ export default {
 					</template>
 				</CustomTableColumn>
 				<!--      右侧操作栏-->
-				<CustomTableColumn show-overflow-tooltip label="订单操作" align="center" class-name="small-padding fixed-width" width="320px" fixed="right">
+				<el-table-column show-overflow-tooltip label="订单操作" align="center" class-name="small-padding fixed-width" width="320px" fixed="right">
 					<template slot-scope="scope">
 						<el-button size="mini" type="text" :disabled="scope.row.isAdjusted !== 1" v-if="!isAdjustOrder" @click="handleCheckAdjust(scope.row)">查看调整单</el-button>
 						<el-button size="mini" type="text" :disabled="scope.row.isAdjusted === 1" @click="handleOrderItemInfo(scope.row)">调整单</el-button>
@@ -941,7 +941,7 @@ export default {
 							</el-dropdown-menu>
 						</el-dropdown>
 					</template>
-				</CustomTableColumn>
+				</el-table-column>
 			</el-table>
 			<!--    分页组件-->
 			<pagination v-if="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
