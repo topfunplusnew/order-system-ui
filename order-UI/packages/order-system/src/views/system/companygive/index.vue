@@ -362,20 +362,6 @@ export default {
 						message: '销售经理不能为空',
 						trigger: 'blur'
 					}
-				],
-				province: [
-					{
-						required: true,
-						message: '省份信息不能为空',
-						trigger: 'blur'
-					}
-				],
-				city: [
-					{
-						required: true,
-						message: '市县信息不能为空',
-						trigger: 'blur'
-					}
 				]
 			},
 			columns: [
