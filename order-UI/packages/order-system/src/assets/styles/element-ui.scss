@@ -63,14 +63,15 @@
 }
 
 .el-dialog > .el-dialog__header {
-	padding: 20px 25px 10px;
+	padding: 12px 25px 8px; // 从 20px 25px 10px 改为 12px 25px 8px，缩小上下间距
 	border-bottom: 2px solid rgba(0, 0, 0, 0.05);
 }
 
 .el-dialog > .el-dialog__title {
-	font-size: 1.25em;
+	font-size: 1.1em; // 从 1.25em 改为 1.1em，缩小标题字体
 	color: #333333;
 	font-weight: 600;
+	line-height: 1.4; // 添加行高，让标题更紧凑
 }
 
 .el-dialog > .el-dialog__body {
@@ -1435,7 +1436,7 @@
 	pointer-events: auto !important; // 允许 tooltip 接收鼠标事件
 	z-index: 9999 !important; // 确保层级足够高
 	max-width: 500px !important;
-	
+
 	// tooltip 内容区域可以接收鼠标事件并允许选中
 	.el-tooltip__popper__inner {
 		pointer-events: auto !important;
@@ -1448,15 +1449,37 @@
 		padding: 8px 12px !important;
 		line-height: 1.5 !important;
 	}
-	
+
 	// tooltip 箭头也可以接收鼠标事件
 	.popper__arrow {
 		pointer-events: auto !important;
 	}
-	
+
 	// 当 tooltip 显示时，确保完全可见
-	&[aria-hidden="false"] {
+	&[aria-hidden='false'] {
 		opacity: 1 !important;
 		visibility: visible !important;
 	}
+}
+
+.el-table th {
+	padding: 0;
+	white-space: nowrap;
+	min-width: fit-content;
+}
+
+.el-table td {
+	padding: 1px;
+	white-space: nowrap;
+	width: fit-content;
+}
+
+/** 修改el-card默认paddingL:20px-内边距 **/
+.el-card__body {
+	padding: 10px;
+}
+
+.el-table .cell {
+	white-space: nowrap;
+	width: fit-content;
 }
