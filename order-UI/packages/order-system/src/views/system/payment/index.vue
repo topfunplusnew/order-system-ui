@@ -283,10 +283,10 @@
 									>
 										<template #table-columns>
 											<CustomTableColumn label="账户类型" align="center" prop="acountsType" width="100" />
-											<CustomTableColumn label="己方公司" align="center" prop="displayName" width="300" />
 											<CustomTableColumn label="开户名称(户名)" align="center" prop="acountsName" width="300" />
 											<CustomTableColumn label="账号(银行账号)" align="center" prop="bankNo" width="300" />
 											<CustomTableColumn label="开户行" align="center" prop="bankName" width="300" />
+											<CustomTableColumn label="己方公司" align="center" prop="displayName" width="300" />
 										</template>
 									</SearchOption>
 								</el-col>
