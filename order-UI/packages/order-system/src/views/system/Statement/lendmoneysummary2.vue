@@ -60,11 +60,11 @@
 			<el-table-column v-if="columns[3].visible" label="保证金金额" align="center" prop="moneyAmount" width="110" />
 
 			<el-table-column v-if="columns[4].visible" label="对方户名" align="center" prop="targetAcountsName" width="160"></el-table-column>
-			<el-table-column v-if="columns[5].visible" label="对方收保证金账号" align="center" prop="targetBankNo" width="160" />
+			<el-table-column v-if="columns[5].visible" label="对方收保证金账号" align="center" prop="targetBankNo" width="180" />
 			<el-table-column v-if="columns[6].visible" label="对方开户行" align="center" prop="targetBankName" width="160" />
 
 			<el-table-column v-if="columns[7].visible" label="我方支付保证金账户名称" align="center" prop="selfAcountsName" width="160" />
-			<el-table-column v-if="columns[8].visible" label="我方付款账号" align="center" prop="selfBankNo" width="160" />
+			<el-table-column v-if="columns[8].visible" label="我方付款账号" align="center" prop="selfBankNo" width="180" />
 			<el-table-column v-if="columns[9].visible" label="我方支付保证金开户行" align="center" prop="selfBankName" width="160" />
 			<el-table-column v-if="columns[10].visible" label="支付期货保证金时间" align="center" prop="futuresDate" width="160" />
 			<el-table-column v-if="columns[11].visible" label="事由" align="center" prop="reason" width="160" />

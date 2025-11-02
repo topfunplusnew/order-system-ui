@@ -97,7 +97,7 @@
 				</template>
 			</el-table-column>
 
-			<el-table-column v-if="columns[8].visible" label="我方账号" align="center" prop="selfBankNo" width="110" show-overflow-tooltip>
+			<el-table-column v-if="columns[8].visible" label="我方账号" align="center" prop="selfBankNo" width="180" show-overflow-tooltip>
 				<template #default="scope">
 					<DynamicField :row="scope.row" field="selfBankNo" />
 				</template>
