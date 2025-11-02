@@ -628,12 +628,12 @@ export default {
 			this.open = false;
 			this.$bus.$emit('changeFlag', false);
 			this.reset();
-			// 安全地清除组件引用
-			if (this.$refs.selfSelectedBankType) {
-				this.$refs.selfSelectedBankType.localSelectType = null;
+			// 安全地清除 BankType 组件状态
+			if (this.$refs.selfSelectedBankType && this.$refs.selfSelectedBankType.resetComponentState) {
+				this.$refs.selfSelectedBankType.resetComponentState();
 			}
-			if (this.$refs.otherSelectedBankType) {
-				this.$refs.otherSelectedBankType.localSelectType = null;
+			if (this.$refs.otherSelectedBankType && this.$refs.otherSelectedBankType.resetComponentState) {
+				this.$refs.otherSelectedBankType.resetComponentState();
 			}
 			// 清除上传组件状态
 			if (this.$refs.attachmentUploader) {
@@ -957,6 +957,13 @@ export default {
 								this.open = false;
 								this.getList();
 								this.$bus.$emit('changeFlag', false);
+								// 清除 BankType 组件状态
+								if (this.$refs.selfSelectedBankType && this.$refs.selfSelectedBankType.resetComponentState) {
+									this.$refs.selfSelectedBankType.resetComponentState();
+								}
+								if (this.$refs.otherSelectedBankType && this.$refs.otherSelectedBankType.resetComponentState) {
+									this.$refs.otherSelectedBankType.resetComponentState();
+								}
 								// 清理上传组件
 								if (this.$refs.attachmentUploader) {
 									this.$refs.attachmentUploader.clearUploadedFiles();
@@ -983,6 +990,13 @@ export default {
 								this.open = false;
 								this.getList();
 								this.$bus.$emit('changeFlag', false);
+								// 清除 BankType 组件状态
+								if (this.$refs.selfSelectedBankType && this.$refs.selfSelectedBankType.resetComponentState) {
+									this.$refs.selfSelectedBankType.resetComponentState();
+								}
+								if (this.$refs.otherSelectedBankType && this.$refs.otherSelectedBankType.resetComponentState) {
+									this.$refs.otherSelectedBankType.resetComponentState();
+								}
 								// 清理上传组件
 								if (this.$refs.attachmentUploader) {
 									this.$refs.attachmentUploader.clearUploadedFiles();
