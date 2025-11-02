@@ -277,7 +277,7 @@
 										query-label="户名查找"
 										query-info="acountsName"
 										:query-name="queryBank"
-										width="1300px"
+										width="1000px"
 										@commitBack="handleCommitBack"
 										@update:queryName="handleUpdateQueryName"
 									>

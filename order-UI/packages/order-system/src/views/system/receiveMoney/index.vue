@@ -169,7 +169,7 @@
 									:query-name="bankQuery"
 									query-info="acountsName"
 									query-label="户名查询"
-									width="1300px"
+									width="1000px"
 									@commitBack="handleCallBack"
 									@update:queryName="handleCommitBackBank"
 								>
