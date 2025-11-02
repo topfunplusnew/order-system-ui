@@ -536,13 +536,6 @@ export default {
 				this.form.companyName = null;
 				this.form.companyId = null;
 			}
-		},
-		// 监听公司ID变化，当选择了客户时自动切换为供应商类型
-		'form.companyId'(newVal) {
-			// 只有在当前是客户类型且选择了公司时才自动切换
-			if (this.form.companyType === PAYMENT_TARGET_TYPE.CUSTOMER && newVal) {
-				this.form.companyType = PAYMENT_TARGET_TYPE.SUPPLIER;
-			}
 		}
 	},
 
