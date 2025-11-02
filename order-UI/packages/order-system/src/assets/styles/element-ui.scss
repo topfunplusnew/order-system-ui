@@ -1428,3 +1428,35 @@
 .el-menu--collapse > div > .el-submenu > .el-submenu__title .el-submenu__icon-arrow {
 	display: none;
 }
+
+// 表格单元格 tooltip 样式定制
+// 确保 tooltip 可以接收鼠标事件，实现鼠标移入 tooltip 时不消失，并且可以复制
+.table-cell-tooltip {
+	pointer-events: auto !important; // 允许 tooltip 接收鼠标事件
+	z-index: 9999 !important; // 确保层级足够高
+	max-width: 500px !important;
+	
+	// tooltip 内容区域可以接收鼠标事件并允许选中
+	.el-tooltip__popper__inner {
+		pointer-events: auto !important;
+		user-select: text !important; // 允许选中文本
+		cursor: text !important;
+		word-break: break-all !important;
+		white-space: pre-wrap !important;
+		max-height: 300px !important;
+		overflow-y: auto !important;
+		padding: 8px 12px !important;
+		line-height: 1.5 !important;
+	}
+	
+	// tooltip 箭头也可以接收鼠标事件
+	.popper__arrow {
+		pointer-events: auto !important;
+	}
+	
+	// 当 tooltip 显示时，确保完全可见
+	&[aria-hidden="false"] {
+		opacity: 1 !important;
+		visibility: visible !important;
+	}
+}
