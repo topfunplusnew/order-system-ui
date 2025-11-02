@@ -9,13 +9,7 @@
 		</template>
 		<!-- 如果没有插槽内容，根据类型决定是否渲染自定义内容 -->
 		<template v-else-if="!isSpecialType" v-slot="scope">
-			<cell-content
-				:scope="scope"
-				:prop="currentColumnProp"
-				:should-show-popover="shouldShowPopoverByWidth(scope)"
-				:cell-text="getCellText(scope)"
-				:key="`${scope.$index}_${currentColumnProp}`"
-			/>
+			<cell-content :scope="scope" :prop="currentColumnProp" :should-show-popover="true" :cell-text="getCellText(scope)" :key="`${scope.$index}_${currentColumnProp}`" />
 		</template>
 		<!-- 特殊类型（selection、index、expand）不渲染插槽，保持 Element UI 原生行为 -->
 	</el-table-column>
@@ -34,35 +28,39 @@ const CellContent = {
 	render(h) {
 		const { scope, prop, shouldShowPopover, cellText } = this;
 
-		if (shouldShowPopover) {
-			return h('div', { class: 'cell-with-popover' }, [
-				h(
-					'el-popover',
-					{
-						props: {
-							placement: 'top',
-							trigger: 'hover',
-							popperClass: 'table-cell-popover',
-							content: cellText,
-							disabled: !cellText
-						}
-					},
-					[
-						h(
-							'div',
-							{
-								slot: 'reference',
-								class: 'ellipsis',
-								ref: `cellText_${scope.$index}_${prop}`,
-								attrs: {
-									'data-text': cellText
-								}
-							},
-							cellText
-						)
-					]
-				)
-			]);
+		// 如果 shouldShowPopover 为 true，或者没有设置判断条件，都显示 tooltip
+		// 这里为了保持兼容性，保留 shouldShowPopover 的判断
+		// 但如果要所有都显示，可以将条件改为 true
+		const shouldShowTooltip = shouldShowPopover !== false; // 默认都显示
+
+		if (shouldShowTooltip) {
+			return h(
+				'el-tooltip',
+				{
+					props: {
+						content: cellText || '',
+						placement: 'top',
+						effect: 'dark',
+						disabled: false, // 始终启用 tooltip
+						hideAfter: 3000, // 延迟3秒关闭
+						popperClass: 'table-cell-tooltip'
+					}
+				},
+				[
+					h(
+						'div',
+						{
+							slot: 'default',
+							class: 'ellipsis',
+							ref: `cellText_${scope.$index}_${prop}`,
+							attrs: {
+								'data-text': cellText
+							}
+						},
+						cellText
+					)
+				]
+			);
 		}
 
 		return h(
@@ -79,57 +77,71 @@ const CellContent = {
 	}
 };
 
-// 子组件用于包装 slot 内容，直接显示 popover
+// 子组件用于包装 slot 内容，使用 tooltip 显示完整内容
 const SlotContentWrapper = {
 	name: 'SlotContentWrapper',
 	props: {
 		scope: Object
 	},
+	data() {
+		return {
+			textContent: '' // 缓存文本内容
+		};
+	},
 	computed: {
-		// 从父组件获取 mode，如果是 normal 则不显示 popover
-		shouldShowPopover() {
+		// 从父组件获取 mode，如果是 normal 则不显示 tooltip，否则都显示
+		shouldShowTooltip() {
 			const parent = this.$parent;
+			// 只有当 mode 明确设置为 'normal' 时才不显示 tooltip
+			// 其他所有情况都显示 tooltip，不需要判断是否超出内容
 			if (parent && parent.mode === 'normal') {
 				return false;
 			}
-			// 检查插槽内容中是否包含交互式元素
-			if (this.hasInteractiveElements(this.$slots.default)) {
-				return false;
-			}
-			// 其他所有情况都显示 popover
+			// 默认都显示 tooltip
 			return true;
 		}
+	},
+	mounted() {
+		// 获取 slot 的文本内容
+		this.$nextTick(() => {
+			this.updateTextContent();
+		});
+	},
+	updated() {
+		// 当插槽内容更新时，更新文本内容
+		this.$nextTick(() => {
+			this.updateTextContent();
+		});
 	},
 	render(h) {
 		const slotContent = this.$slots.default;
 
-		if (this.shouldShowPopover) {
-			// 获取 slot 内容的文本表示（用于 popover 显示）
-			const textContent = this.getSlotTextContent();
-			const referenceEl = h(
-				'div',
+		// 只要 shouldShowTooltip 为 true，就显示 tooltip，不判断是否超出内容
+		if (this.shouldShowTooltip) {
+			return h(
+				'el-tooltip',
 				{
-					class: 'ellipsis slot-content-wrapper',
-					ref: 'slotWrapper',
-					slot: 'reference'
+					props: {
+						content: this.textContent || '', // 即使没有文本内容也显示 tooltip
+						placement: 'top',
+						effect: 'dark',
+						hideAfter: 3000, // 延迟3秒关闭
+						popperClass: 'table-cell-tooltip table-cell-tooltip-slot',
+						disabled: false // 始终启用 tooltip
+					}
 				},
-				slotContent
+				[
+					h(
+						'div',
+						{
+							slot: 'default',
+							class: 'ellipsis slot-content-wrapper',
+							ref: 'slotWrapper'
+						},
+						slotContent
+					)
+				]
 			);
-			const popoverContent = h('div', { class: 'slot-popover-content' }, textContent || slotContent);
-
-			return h('div', { class: 'cell-with-popover' }, [
-				h(
-					'el-popover',
-					{
-						props: {
-							placement: 'top',
-							trigger: 'hover',
-							popperClass: 'table-cell-popover'
-						}
-					},
-					[referenceEl, popoverContent]
-				)
-			]);
 		}
 
 		return h(
@@ -231,12 +243,17 @@ const SlotContentWrapper = {
 
 			return false;
 		},
-		getSlotTextContent() {
+		updateTextContent() {
 			// 尝试从 DOM 获取文本内容
 			if (this.$refs.slotWrapper) {
-				return this.$refs.slotWrapper.textContent || this.$refs.slotWrapper.innerText;
+				this.textContent = this.$refs.slotWrapper.textContent || this.$refs.slotWrapper.innerText || '';
+			} else {
+				this.textContent = '';
 			}
-			return '';
+		},
+		getSlotTextContent() {
+			// 兼容方法，返回缓存的文本内容
+			return this.textContent || '';
 		}
 	}
 };
@@ -737,16 +754,21 @@ export default {
 </style>
 
 <style>
-/* 全局样式，用于 Popover */
-.table-cell-popover {
-	max-width: 400px !important;
+/* 全局样式，用于 Tooltip */
+.table-cell-tooltip {
+	max-width: 500px !important;
+	pointer-events: auto !important; /* 允许 tooltip 接收鼠标事件 */
 }
 
-.table-cell-popover .el-popover__content {
+.table-cell-tooltip .el-tooltip__popper__inner {
 	word-break: break-all;
 	white-space: pre-wrap;
 	max-height: 300px;
 	overflow-y: auto;
+	user-select: text !important; /* 允许选中文本进行复制 */
+	cursor: text !important;
+	padding: 8px 12px !important;
+	line-height: 1.5 !important;
 }
 
 /* 确保使用 CustomTableColumn 的列始终显示省略样式，而不是 Element UI 的默认 tooltip */

@@ -10,7 +10,7 @@ import ThemePicker from '@/components/ThemePicker';
 
 export default {
 	name: 'App',
-	components: { ThemePicker },
+	components: { ThemePicker }
 };
 </script>
 <style scoped>
