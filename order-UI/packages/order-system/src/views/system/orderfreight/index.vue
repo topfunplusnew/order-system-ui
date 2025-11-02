@@ -92,7 +92,7 @@
 			<el-table-column v-if="columns[4].visible" label="车牌号" align="center" prop="carNo" width="100" show-overflow-tooltip />
 			<el-table-column v-if="columns[5].visible" label="金额" align="center" prop="moneyAmount" width="100" show-overflow-tooltip />
 			<el-table-column v-if="columns[6].visible" label="对方户名" align="center" prop="otherAcountsName" width="100" show-overflow-tooltip />
-			<el-table-column v-if="columns[7].visible" label="对方账号" align="center" prop="otherBankNo" width="100" show-overflow-tooltip />
+			<el-table-column v-if="columns[7].visible" label="对方账号" align="center" prop="otherBankNo" width="180" show-overflow-tooltip />
 			<el-table-column v-if="columns[8].visible" label="对方开户行" align="center" prop="otherBankName" width="100" show-overflow-tooltip />
 			<el-table-column v-if="columns[8].visible" label="对方开户行" align="center" prop="otherBankName" width="100" show-overflow-tooltip />
 			<el-table-column v-if="columns[9].visible" label="运费来源" align="center" prop="source" width="100" show-overflow-tooltip>
@@ -111,7 +111,7 @@
 			<el-table-column v-if="columns[12].visible" label="申请日期" align="center" prop="applyDate" width="100" show-overflow-tooltip />
 			<el-table-column v-if="columns[13].visible" label="付款人员姓名" align="center" prop="payUserName" width="100" show-overflow-tooltip />
 			<el-table-column v-if="columns[14].visible" label="我方户名" align="center" prop="selfAcountsName" width="100" show-overflow-tooltip />
-			<el-table-column v-if="columns[15].visible" label="我方账号" align="center" prop="selfBankNo" width="100" show-overflow-tooltip />
+			<el-table-column v-if="columns[15].visible" label="我方账号" align="center" prop="selfBankNo" width="180" show-overflow-tooltip />
 			<el-table-column v-if="columns[16].visible" label="我方开户行" align="center" prop="selfBankName" width="100" show-overflow-tooltip />
 			<el-table-column v-if="columns[17].visible" label="备注" align="center" prop="comments" width="100" show-overflow-tooltip />
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="150">
@@ -151,7 +151,7 @@
 									<el-table-column label="公司类型" align="center" prop="companyType" />
 									<el-table-column label="开户行" align="center" prop="bankName" />
 									<el-table-column label="开户名" align="center" prop="acountsName" />
-									<el-table-column label="账号" align="center" prop="bankNo" />
+									<el-table-column label="账号" align="center" prop="bankNo" width="180" />
 								</template>
 							</SearchOption>
 						</el-col>
@@ -301,7 +301,7 @@
 												<el-table-column label="账户类型" align="center" prop="acountsType" />
 												<el-table-column label="己方公司" align="center" prop="displayName" />
 												<el-table-column label="开户名称(户名)" align="center" prop="acountsName" />
-												<el-table-column label="账号(银行账号)" align="center" prop="bankNo" />
+												<el-table-column label="账号(银行账号)" align="center" prop="bankNo" width="200" />
 												<el-table-column label="开户行" align="center" prop="bankName" />
 												<el-table-column label="公司名称" align="center" prop="companyName" />
 											</template>

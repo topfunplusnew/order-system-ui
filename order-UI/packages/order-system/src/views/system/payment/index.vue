@@ -143,7 +143,7 @@
 			</CustomTableColumn>
 
 			<!-- 我方账号列也确保包含了 show-overflow-tooltip -->
-			<CustomTableColumn label="我方账号" align="center" prop="selfBankNo" width="140" v-if="columns[5].visible" show-overflow-tooltip>
+			<CustomTableColumn label="我方账号" align="center" prop="selfBankNo" width="180" v-if="columns[5].visible" show-overflow-tooltip>
 				<template #default="scope">
 					<DynamicField :row="scope.row" field="selfBankNo" />
 				</template>

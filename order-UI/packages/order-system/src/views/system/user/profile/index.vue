@@ -31,7 +31,7 @@
 							{{ user.status === '0' ? '正常' : '停用' }}
 						</el-descriptions-item>
 
-						<el-descriptions-item label="银行账号">
+						<el-descriptions-item label="银行账号" width="180">
 							{{ user.bankNo }}
 						</el-descriptions-item>
 						<el-descriptions-item label="开户银行">

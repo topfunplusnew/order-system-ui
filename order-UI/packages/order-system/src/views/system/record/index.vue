@@ -67,9 +67,9 @@
 			<el-table-column v-if="columns[3].visible" label="收入方/资金流入方" align="center" prop="targetCompanyName" show-overflow-tooltip />
 			<el-table-column v-if="columns[4].visible" label="支出方/资金流出方" align="center" prop="sourceCompanyName" show-overflow-tooltip />
 			<el-table-column v-if="columns[5].visible" label="资金流入户名" align="center" prop="targetAccountName" show-overflow-tooltip />
-			<el-table-column v-if="columns[6].visible" label="资金流入账号" align="center" prop="targetBankNo" show-overflow-tooltip />
+			<el-table-column v-if="columns[6].visible" label="资金流入账号" align="center" prop="targetBankNo" show-overflow-tooltip width="170" />
 			<el-table-column v-if="columns[7].visible" label="资金流出户名" align="center" prop="sourceAccountName" show-overflow-tooltip />
-			<el-table-column v-if="columns[8].visible" label="资金流出账号" align="center" prop="sourceBankNo" show-overflow-tooltip />
+			<el-table-column v-if="columns[8].visible" label="资金流出账号" align="center" prop="sourceBankNo" show-overflow-tooltip width="170" />
 			<el-table-column v-if="columns[9].visible" label="收入公司类型" align="center" prop="targetCompanyType" show-overflow-tooltip />
 			<el-table-column v-if="columns[10].visible" label="收入方支付类型" align="center" prop="targetPaymentType" show-overflow-tooltip />
 			<el-table-column v-if="columns[11].visible" label="支出方公司类型" align="center" prop="sourceCompanyType" show-overflow-tooltip />
@@ -211,7 +211,7 @@
 												<el-table-column label="账户类型" align="center" prop="acountsType" />
 												<el-table-column label="己方公司" align="center" prop="displayName" />
 												<el-table-column label="开户名称(户名)" align="center" prop="acountsName" />
-												<el-table-column label="账号(银行账号)" align="center" prop="bankNo" />
+												<el-table-column label="账号(银行账号)" align="center" prop="bankNo" width="200" />
 												<el-table-column label="开户行" align="center" prop="bankName" />
 												<el-table-column label="公司名称" align="center" prop="companyName" />
 											</template>
@@ -263,7 +263,7 @@
 												<el-table-column label="账户类型" align="center" prop="acountsType" />
 												<el-table-column label="己方公司" align="center" prop="displayName" />
 												<el-table-column label="开户名称(户名)" align="center" prop="acountsName" />
-												<el-table-column label="账号(银行账号)" align="center" prop="bankNo" />
+												<el-table-column label="账号(银行账号)" align="center" prop="bankNo" width="200" />
 												<el-table-column label="开户行" align="center" prop="bankName" />
 												<el-table-column label="公司名称" align="center" prop="companyName" />
 											</template>
@@ -343,7 +343,7 @@
 												<el-table-column label="账户类型" align="center" prop="acountsType" />
 												<el-table-column label="己方公司" align="center" prop="displayName" />
 												<el-table-column label="开户名称(户名)" align="center" prop="acountsName" />
-												<el-table-column label="账号(银行账号)" align="center" prop="bankNo" />
+												<el-table-column label="账号(银行账号)" align="center" prop="bankNo" width="200" />
 												<el-table-column label="开户行" align="center" prop="bankName" />
 												<el-table-column label="公司名称" align="center" prop="companyName" />
 											</template>
@@ -398,7 +398,7 @@
 												<el-table-column label="账户类型" align="center" prop="acountsType" />
 												<el-table-column label="己方公司" align="center" prop="displayName" />
 												<el-table-column label="开户名称(户名)" align="center" prop="acountsName" />
-												<el-table-column label="账号(银行账号)" align="center" prop="bankNo" />
+												<el-table-column label="账号(银行账号)" align="center" prop="bankNo" width="200" />
 												<el-table-column label="开户行" align="center" prop="bankName" />
 												<el-table-column label="公司名称" align="center" prop="companyName" />
 											</template>
@@ -408,12 +408,12 @@
 							</el-form-item>
 
 							<!-- 收入方账号 -->
-							<el-form-item label="账号" prop="targetBankNo" label-width="120px">
+							<el-form-item label="账号" prop="targetBankNo" label-width="170px">
 								<el-input v-model="form.targetBankNo" placeholder="请输入收入方账号" disabled />
 							</el-form-item>
 
 							<!-- 收入方开户行 -->
-							<el-form-item label="开户行" prop="targetBankName" label-width="120px">
+							<el-form-item label="开户行" prop="targetBankName" label-width="170px">
 								<el-input v-model="form.targetBankName" placeholder="请输入收入方开户行" disabled />
 							</el-form-item>
 						</el-col>

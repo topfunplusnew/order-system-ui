@@ -58,12 +58,12 @@
 			<el-table-column v-if="columns[1].visible" label="对象类型" align="center" prop="targetType" show-overflow-tooltip />
 			<el-table-column v-if="columns[2].visible" label="借出金额" align="center" prop="moneyAmount" show-overflow-tooltip />
 			<el-table-column v-if="columns[11].visible" label="未收回金额" align="center" prop="unrecoveredAmount" show-overflow-tooltip />
-			<el-table-column v-if="columns[3].visible" label="对方收借款账号" align="center" prop="targetBankNo" show-overflow-tooltip />
+			<el-table-column v-if="columns[3].visible" label="对方收借款账号" align="center" prop="targetBankNo" show-overflow-tooltip width="200" />
 			<el-table-column v-if="columns[4].visible" label="对方户名" align="center" prop="targetAcountsName" show-overflow-tooltip />
 			<el-table-column v-if="columns[5].visible" label="对方开户行" align="center" prop="targetBankName" show-overflow-tooltip />
 			<el-table-column v-if="columns[6].visible" label="我方支付借款账户名称" align="center" prop="selfAcountsName" show-overflow-tooltip />
 			<el-table-column v-if="columns[7].visible" label="我方支付借款开户行" align="center" prop="selfBankName" show-overflow-tooltip />
-			<el-table-column v-if="columns[8].visible" label="我方付款账号" align="center" prop="selfBankNo" show-overflow-tooltip />
+			<el-table-column v-if="columns[8].visible" label="我方付款账号" align="center" prop="selfBankNo" show-overflow-tooltip width="200" />
 			<el-table-column v-if="columns[9].visible" label="支付员工/外面公司在我公司借款时间" align="center" prop="futuresDate" show-overflow-tooltip />
 			<el-table-column v-if="columns[10].visible" label="借款事由" align="center" prop="reason" show-overflow-tooltip />
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
