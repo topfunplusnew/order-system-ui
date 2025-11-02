@@ -36,6 +36,9 @@
 			<el-form-item label="备注" prop="otherBankNo">
 				<el-input class="input-long" v-model="queryParams.comments" placeholder="请输入备注" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
+			<el-form-item label="票据号码" prop="bankacceptanceBillNo">
+				<el-input class="input-medium" v-model="queryParams.params.bankacceptanceBillNo" placeholder="请输入票据号码" clearable @keyup.enter.native="handleQuery" />
+			</el-form-item>
 			<el-form-item label="复核状态" prop="auditState">
 				<el-select class="input-short" v-model="queryParams.auditState" placeholder="请选择复核状态" clearable>
 					<el-option v-for="item in auditState_options" :key="item.value" :label="item.label" :value="item.value"></el-option>
@@ -599,7 +602,10 @@ export default {
 				userId: null,
 				UserName: null,
 				delFlag: null,
-				auditState: null
+				auditState: null,
+				params: {
+					bankacceptanceBillNo: null
+				}
 			},
 			auditState_options: [
 				{ label: '未复核', value: '0' },
@@ -1043,6 +1049,11 @@ export default {
 		/** 重置按钮操作 */
 		resetQuery() {
 			this.resetForm('queryForm');
+			// 确保 params 对象存在并重置
+			if (!this.queryParams.params) {
+				this.queryParams.params = {};
+			}
+			this.queryParams.params.bankacceptanceBillNo = null;
 			this.handleQuery();
 		},
 		// 多选框选中数据

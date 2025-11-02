@@ -24,6 +24,9 @@
 			<el-form-item label="对方公司" prop="companyName">
 				<el-input v-model="queryParams.companyName" class="input-medium" placeholder="请输入对方公司" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
+			<el-form-item label="票据号码" prop="bankacceptanceBillNo">
+				<el-input v-model="queryParams.params.bankacceptanceBillNo" class="input-medium" placeholder="请输入票据号码" clearable @keyup.enter.native="handleQuery" />
+			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
 			</el-form-item>
@@ -416,7 +419,10 @@ export default {
 				UserName: null,
 				delFlag: null,
 				startTime: null,
-				endTime: null
+				endTime: null,
+				params: {
+					bankacceptanceBillNo: null
+				}
 			},
 			// 时间范围选择器
 			dateRange: [],
@@ -751,6 +757,11 @@ export default {
 			this.dateRange = [];
 			// 重置级联选择器
 			this.queryParams.receiveType = [];
+			// 确保 params 对象存在并重置
+			if (!this.queryParams.params) {
+				this.queryParams.params = {};
+			}
+			this.queryParams.params.bankacceptanceBillNo = null;
 			this.handleQuery();
 		},
 		// 多选框选中数据
