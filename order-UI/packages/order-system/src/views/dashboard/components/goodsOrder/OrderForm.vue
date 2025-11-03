@@ -7,7 +7,7 @@ import { listExitInventory } from '../../../../api/system/inventoryMain';
 import { addGoodsOrder, getGoodsOrder, updateGoodsOrder } from '../../../../api/system/goodsOrder';
 import { listProductLevel } from '../../../../api/system/productLevel';
 import { excludeParams } from '../../../../api/tool/exclude';
-import { fix } from '../../../../api/tool/format';
+import { fix, fix_2 } from '../../../../api/tool/format';
 import SearchOption from '../../../../components/SearchOption.vue';
 import { parseTime } from '../../../../utils/ruoyi';
 import { mixin_form_fillInfo } from '../../mixins/order/form/form_fillInfo';
@@ -527,7 +527,7 @@ export default {
 								return prev;
 							}
 						}, 0);
-						sums[index] = fix(sums[index]);
+						sums[index] = fix_2(sums[index]);
 						sums[index] += column.property === 'tonnage' ? ' 吨' : ' 元';
 					} else {
 						sums[index] = 'N/A';

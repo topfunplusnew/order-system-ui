@@ -1519,3 +1519,132 @@
 		visibility: visible !important;
 	}
 }
+
+// 全局描述列表组件调整 - 字体加黑加粗
+.el-descriptions {
+	font-size: 13px !important;
+
+	// 描述列表标题
+	.el-descriptions__title {
+		color: #000000 !important;
+		font-weight: bold !important;
+		font-size: 14px !important;
+	}
+
+	// 描述列表项 - 使用更强的选择器优先级
+	.el-descriptions-item {
+		// 标签部分
+		.el-descriptions-item__label {
+			color: #000000 !important;
+			font-weight: bold !important;
+			font-size: 13px !important;
+		}
+
+		// 内容部分 - 只加黑不加粗
+		.el-descriptions-item__content {
+			color: #000000 !important;
+			font-weight: normal !important;
+			font-size: 13px !important;
+		}
+
+		// 标签单元格
+		td.el-descriptions-item__label {
+			color: #000000 !important;
+			font-weight: bold !important;
+			font-size: 13px !important;
+		}
+
+		// 内容单元格 - 只加黑不加粗
+		td.el-descriptions-item__content {
+			color: #000000 !important;
+			font-weight: normal !important;
+			font-size: 13px !important;
+		}
+	}
+
+	// 边框模式下的样式
+	&.is-bordered {
+		.el-descriptions-item {
+			.el-descriptions-item__label {
+				background-color: #fafafa !important;
+				color: #000000 !important;
+				font-weight: bold !important;
+			}
+
+			.el-descriptions-item__content {
+				color: #000000 !important;
+				font-weight: normal !important;
+			}
+
+			td.el-descriptions-item__label {
+				background-color: #fafafa !important;
+				color: #000000 !important;
+				font-weight: bold !important;
+			}
+
+			td.el-descriptions-item__content {
+				color: #000000 !important;
+				font-weight: normal !important;
+			}
+		}
+	}
+
+	// 表格单元格样式
+	table {
+		.el-descriptions-item__label {
+			color: #000000 !important;
+			font-weight: bold !important;
+			font-size: 13px !important;
+		}
+
+		.el-descriptions-item__content {
+			color: #000000 !important;
+			font-weight: normal !important;
+			font-size: 13px !important;
+		}
+
+		td {
+			&.el-descriptions-item__label {
+				color: #000000 !important;
+				font-weight: bold !important;
+				font-size: 13px !important;
+			}
+
+			&.el-descriptions-item__content {
+				color: #000000 !important;
+				font-weight: normal !important;
+				font-size: 13px !important;
+			}
+		}
+	}
+}
+
+// 更具体的选择器，确保覆盖所有情况
+.el-descriptions-item__label {
+	color: #000000 !important;
+	font-weight: bold !important;
+	font-size: 13px !important;
+}
+
+.el-descriptions-item__content {
+	color: #000000 !important;
+	font-weight: normal !important;
+	font-size: 13px !important;
+}
+
+// 针对表格内的描述项
+.el-descriptions table {
+	tbody tr td {
+		&.el-descriptions-item__label {
+			color: #000000 !important;
+			font-weight: bold !important;
+			font-size: 13px !important;
+		}
+
+		&.el-descriptions-item__content {
+			color: #000000 !important;
+			font-weight: normal !important;
+			font-size: 13px !important;
+		}
+	}
+}
