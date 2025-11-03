@@ -970,7 +970,7 @@ export default {
 		 */
 		formatPriceInput(row, field, precision, control = true) {
 			// 获取完整精度的原始值（优先使用_raw字段）
-			const rawValue = row[`_${field}_raw`] !== undefined ? row[`_${field}_raw`] : row[field];
+			const rawValue = row[`_${field}_raw`] !== undefined ? row[field] : row[`_${field}_raw`];
 
 			// 只做数值规范化，转换为Number类型，保持完整精度不截断
 			if (rawValue !== null && rawValue !== undefined && rawValue !== '') {
