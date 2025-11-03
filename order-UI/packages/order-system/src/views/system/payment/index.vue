@@ -533,6 +533,7 @@ import UploadFilesButton from '@/components/UploadFilesButton';
 import PaymentFlag from '@/components/PaymentFlag';
 import { getBankAcceptance } from '../../../api/system/bankAcceptance';
 import { checkPermi } from '@/utils/permission';
+import ExpandCursor from '../../dashboard/components/common/ExpandCursor.vue';
 
 export default {
 	name: 'Payment',
@@ -544,7 +545,8 @@ export default {
 		CheckDetail,
 		DynamicField,
 		SearchOption,
-		PaymentFlag
+		PaymentFlag,
+		ExpandCursor
 	},
 	mixins: [mixin_printHTML, mixin_payment_audit, mixin_payment_select, mixin_payment_subject, mixin_paymentindex_fill, mixin_bankType, mixin_checkfile],
 	data() {

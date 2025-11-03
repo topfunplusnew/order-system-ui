@@ -26,6 +26,7 @@ import CheckOrder from '@/views/dashboard/components/goodsOrder/CheckOrder.vue';
 // 前端Excel导出依赖
 import * as XLSX from 'xlsx';
 import { debounce } from 'lodash';
+import ExpandCursor from '../common/ExpandCursor.vue';
 
 export default {
 	name: 'ElTableOrder',
@@ -42,7 +43,8 @@ export default {
 		HistoryList,
 		OrderHistoryCheck,
 		CheckFiles,
-		QuerySearchBar
+		QuerySearchBar,
+		ExpandCursor
 	},
 	// 引入打印的混入、拖动表头宽度引起的变化、订单的基本信息的混入
 	mixins: [
@@ -792,23 +794,25 @@ export default {
 				<!-- 4. 供应商/仓库 -->
 				<el-table-column v-if="columns[3].visible" show-overflow-tooltip label="供应商/仓库" align="center" prop="supplierNames" fixed="left" width="200">
 					<template #default="scope">
-						<div class="supplier-warehouse-container">
-							<!-- 显示预处理的供应商列表 -->
-							<span
-								v-for="supplier in scope.row._uniqueSuppliers"
-								:key="`supplier-${supplier.supplierID}`"
-								class="supplier-name"
-								@click="updateOrderItemVisibleSupplierInvoice(scope.row, supplier.supplierID)"
-							>
-								{{ supplier.supplier }}
-							</span>
-							<!-- 显示预处理的仓库列表 -->
-							<span v-for="warehouse in scope.row._uniqueWarehouses" :key="`warehouse-${warehouse.storeHouseID}`" class="warehouse-name">
-								{{ warehouse.storeHouseName }}
-							</span>
-							<!-- 如果既没有供应商也没有仓库，显示横线 -->
-							<span v-if="scope.row._uniqueSuppliers.length === 0 && scope.row._uniqueWarehouses.length === 0" class="empty-item">-</span>
-						</div>
+						<ExpandCursor>
+							<div class="supplier-warehouse-container">
+								<!-- 显示预处理的供应商列表 -->
+								<span
+									v-for="supplier in scope.row._uniqueSuppliers"
+									:key="`supplier-${supplier.supplierID}`"
+									class="supplier-name"
+									@click="updateOrderItemVisibleSupplierInvoice(scope.row, supplier.supplierID)"
+								>
+									{{ supplier.supplier }}
+								</span>
+								<!-- 显示预处理的仓库列表 -->
+								<span v-for="warehouse in scope.row._uniqueWarehouses" :key="`warehouse-${warehouse.storeHouseID}`" class="warehouse-name">
+									{{ warehouse.storeHouseName }}
+								</span>
+								<!-- 如果既没有供应商也没有仓库，显示横线 -->
+								<span v-if="scope.row._uniqueSuppliers.length === 0 && scope.row._uniqueWarehouses.length === 0" class="empty-item">-</span>
+							</div>
+						</ExpandCursor>
 					</template>
 				</el-table-column>
 				<!-- 5. 审核状态 -->
