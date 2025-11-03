@@ -47,7 +47,7 @@ function calculateTonnage(row) {
 
 	// 使用完整精度进行计算，保存完整精度值用于后续计算
 	const rawTonnage = ((height - erro) * length * width * pieces) / 1000000 / 20 / 20;
-	setCalculatedValue(row, 'tonnage', rawTonnage, 4); // 吨位保留4位小数
+	setCalculatedValue(row, 'tonnage', rawTonnage, 2); // 吨位显示2位小数，计算时使用完整精度
 }
 
 /**

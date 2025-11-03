@@ -1522,7 +1522,7 @@ export default {
 								@input="() => recalculateAll(scope)"
 								:placeholder="scope.row.pieces <= 0 ? '请先完善出厂片数' : '请输入出厂单价'"
 								:disabled="!scope.row.isEditing || !scope.row.pieces"
-								@blur="() => formatPriceInput(scope.row, 'price', 4, false)"
+								@blur="() => formatPriceInput(scope.row, 'price', 2, false)"
 							/>
 						</template>
 					</el-table-column>
@@ -1564,7 +1564,7 @@ export default {
 								placeholder="请输入卸货价"
 								@input="() => recalculateAll(scope)"
 								:disabled="!scope.row.isEditing"
-								@blur="() => formatPriceInput(scope.row, 'paymentUnload', 4, false)"
+								@blur="() => formatPriceInput(scope.row, 'paymentUnload', 2, false)"
 							/>
 						</template>
 					</el-table-column>

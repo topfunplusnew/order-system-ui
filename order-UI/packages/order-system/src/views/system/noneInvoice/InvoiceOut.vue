@@ -69,7 +69,7 @@
 			<el-table-column v-if="columns[2].visible" label="开票金额" align="center" prop="invoiceAmount" show-overflow-tooltip />
 			<el-table-column v-if="columns[3].visible" label="公司类别" align="center" prop="companyType" show-overflow-tooltip />
 			<el-table-column v-if="columns[4].visible" label="对方公司名称" align="center" prop="companyName" show-overflow-tooltip />
-			<el-table-column v-if="columns[5].visible" label="票据单位名称" align="center" prop="invoiceCompanyName" show-overflow-tooltip />
+			<el-table-column v-if="columns[5].visible" label="票据单位名称" align="center" prop="invoiceCompanyName" show-overflow-tooltip width="250"/>
 			<el-table-column v-if="columns[6].visible" label="票点" align="center" prop="ticketPoint" show-overflow-tooltip />
 			<el-table-column v-if="columns[7].visible" label="票点金额" align="center" prop="ticketPointAmount" show-overflow-tooltip>
 				<template #default="scope">

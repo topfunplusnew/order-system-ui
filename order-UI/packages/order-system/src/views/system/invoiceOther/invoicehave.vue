@@ -66,7 +66,7 @@
 			@selection-change="handleSelectionChange"
 		>
 			<el-table-column prop="id" label="ID" width="60" align="center" />
-			<el-table-column v-if="columns[4].visible" label="供应商公司名称" align="center" prop="Supplier" show-overflow-tooltip />
+			<el-table-column v-if="columns[4].visible" label="供应商公司名称" align="center" prop="Supplier" show-overflow-tooltip width="200" />
 			<el-table-column v-if="columns[0].visible" label="日期" align="center" prop="invoiceDate" show-overflow-tooltip>
 				<template #default="scope">
 					{{ parseTime(scope.row.invoiceDate, '{y}-{m}-{d}') }}
@@ -79,8 +79,8 @@
 					{{ scope.row.supplierPointAmount | changeNumber(changeLength) }}
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[5].visible" label="客户名称" align="center" prop="customer" show-overflow-tooltip />
-			<el-table-column v-if="columns[12].visible" label="开票单位" align="center" prop="invoiceCompanyName" show-overflow-tooltip />
+			<el-table-column v-if="columns[5].visible" label="客户名称" align="center" prop="customer" show-overflow-tooltip width="200px" />
+			<el-table-column v-if="columns[12].visible" label="开票单位" align="center" prop="invoiceCompanyName" show-overflow-tooltip width="200px" />
 
 			<!-- 新增 extraInfo 属性展示 -->
 			<el-table-column v-if="columns[8].visible" label="实际开票金额" align="center" show-overflow-tooltip>

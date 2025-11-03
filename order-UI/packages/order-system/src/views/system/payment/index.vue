@@ -1,6 +1,6 @@
 <template>
 	<div class="app-container">
-		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="80px">
+		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="100px">
 			<el-form-item label="付款时间">
 				<el-date-picker
 					v-model="dateRange"
@@ -771,13 +771,6 @@ export default {
 				// 员工类型只清空公司相关字段，保留银行卡字段
 				this.form.companyName = null;
 				this.form.companyId = null;
-			}
-		},
-		// 添加以下监听器实现自动切换功能
-		'form.companyId'(newVal) {
-			// 当选择了客户且当前公司类型为客户时，自动切换为供应商
-			if (newVal && this.form.companyType === PAYMENT_TARGET_TYPE.CUSTOMER) {
-				this.form.companyType = PAYMENT_TARGET_TYPE.SUPPLIER;
 			}
 		}
 	},
