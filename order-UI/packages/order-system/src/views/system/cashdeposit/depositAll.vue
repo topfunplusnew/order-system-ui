@@ -631,7 +631,7 @@ export default {
 			this.recoverMoneyEntity.acountsName = val.acountsName;
 			this.recoverMoneyEntity.bankNo = val.bankNo;
 		},
-		// 历史记录
+		// 修改记录
 		checkDetail(row) {
 			this.getRepaymentMoneyList(row);
 		},

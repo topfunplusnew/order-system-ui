@@ -140,7 +140,7 @@ export default {
 			showSearch: true,
 			// 总条数
 			total: 0,
-			// 历史记录相关
+			// 修改记录相关
 			detailTotal: 0,
 			dialogHistoryVisible: false,
 			// 向外部借出款信息表格数据
