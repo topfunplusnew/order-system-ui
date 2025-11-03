@@ -6,7 +6,7 @@ import SearchOption from '@/components/SearchOption.vue';
 import { listCompany } from '@/api/system/company';
 import { listBankAccount } from '@/api/system/bankAccount';
 // 不再通过字典接口获取返利方式，使用硬编码选项
-import { fix_2 } from '../../../../api/tool/format';
+import { fix, fix_2 } from '../../../../api/tool/format';
 import { RebateType } from '@/api/tool/enums';
 
 export default {
@@ -68,20 +68,20 @@ export default {
 		getSummaries(param) {
 			const { columns, data } = param;
 			const sums = [];
-			// 需要计算合计的列属性
-			const sumColumns = ['sundryCost', 'paymentsWithSundry', 'payments', 'landFreight', 'freight', 'profit', 'profitNoTax'];
+			const summaryColumns = ['paymentFactory', 'payments', 'tonnage', 'landFreight', 'seaFreight', 'freight', 'profit', 'profitNoTax', 'sundryCost', 'paymentsWithSundry'];
+
 			columns.forEach((column, index) => {
 				if (index === 0) {
 					sums[index] = '合计';
 					return;
 				}
+
 				// 如果列没有属性（如expand列、操作列），跳过计算
 				if (!column.property) {
 					return;
 				}
-				// 根据列属性判断是否需要计算合计
-				if (sumColumns.includes(column.property)) {
-					if (!data || data.length === 0) return;
+
+				if (summaryColumns.includes(column.property)) {
 					const values = data.map(item => Number(item[column.property]));
 					if (!values.every(value => isNaN(value))) {
 						sums[index] = values.reduce((prev, curr) => {
@@ -92,8 +92,10 @@ export default {
 								return prev;
 							}
 						}, 0);
-						sums[index] = fix_2(sums[index]);
-						sums[index] += '';
+						sums[index] = fix(sums[index]);
+						sums[index] += column.property === 'tonnage' ? ' 吨' : ' 元';
+					} else {
+						sums[index] = 'N/A';
 					}
 				}
 			});
@@ -233,10 +235,10 @@ export default {
 				<el-table-column label="总货款杂费" align="center" prop="paymentsWithSundry" show-overflow-tooltip />
 				<el-table-column label="总货款" align="center" prop="payments" show-overflow-tooltip width="100px" />
 				<el-table-column label="误差" align="center" prop="erro" show-overflow-tooltip width="50px" />
-				<el-table-column label="吨位" align="center" prop="tonnage" show-overflow-tooltip width="50px" />
+				<el-table-column label="吨位" align="center" prop="tonnage" show-overflow-tooltip width="90px" />
 				<el-table-column label="陆运费单价" align="center" prop="landFreightPrice" show-overflow-tooltip width="50px" />
 				<el-table-column label="加费" align="center" prop="additionalFees" show-overflow-tooltip width="50px" />
-				<el-table-column label="陆运费" align="center" prop="landFreight" show-overflow-tooltip width="50px" />
+				<el-table-column label="陆运费" align="center" prop="landFreight" show-overflow-tooltip width="70px" />
 				<el-table-column label="海运费" align="center" prop="seaFreight" show-overflow-tooltip width="50px" />
 				<el-table-column label="总运费" align="center" prop="freight" show-overflow-tooltip width="100px" />
 				<el-table-column label="其他费用" align="center" prop="otherCost" show-overflow-tooltip width="50px" />

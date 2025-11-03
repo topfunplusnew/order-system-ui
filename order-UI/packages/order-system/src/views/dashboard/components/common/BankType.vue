@@ -108,7 +108,7 @@
 													"
 												>
 													<template #table-columns>
-														<el-table-column :label="type" align="center" prop="companyName" />
+														<el-table-column :label="type" align="center" prop="companyName" width="200" />
 														<el-table-column label="老板姓名" align="center" prop="leader" />
 														<el-table-column label="老板电话" align="center" prop="leaderTel" />
 														<el-table-column label="区域" align="center" prop="region" />
