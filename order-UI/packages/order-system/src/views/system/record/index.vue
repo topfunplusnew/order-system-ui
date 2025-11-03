@@ -156,7 +156,7 @@
 					<el-row>
 						<el-col :span="12">
 							<el-form-item v-if="form && form.id != null" label="记账编码">
-								<el-input v-model="form.code" disabled />
+								<el-input v-model="form.code" disabled style="width: 100%" />
 							</el-form-item>
 						</el-col>
 					</el-row>
@@ -175,12 +175,19 @@
 								<el-radio v-model="form.sourceCompanyType" label="司机">司机</el-radio>
 							</el-form-item>
 							<el-form-item label="支付类型" prop="sourcePaymentType" label-width="120px">
-								<el-cascader v-model="form.sourcePaymentType" :options="paymentTypeTree" :props="props" @change="handleChange" placeholder="请选择支出方支付类型"></el-cascader>
+								<el-cascader
+									v-model="form.sourcePaymentType"
+									:options="paymentTypeTree"
+									:props="props"
+									@change="handleChange"
+									placeholder="请选择支出方支付类型"
+									style="width: 100%"
+								></el-cascader>
 							</el-form-item>
 							<el-form-item label="支出方" label-width="120px">
 								<el-row>
 									<el-col :span="16">
-										<el-input disabled v-model="sourceName" type="text" placeholder="请选择" />
+										<el-input disabled v-model="sourceName" type="text" placeholder="请选择" style="width: 100%" />
 									</el-col>
 									<!--               如果是司机-->
 									<el-col v-if="form.sourceCompanyType === '司机'" :span="8">
@@ -250,7 +257,7 @@
 							<el-form-item label="户名" prop="sourceAccountName" label-width="120px">
 								<el-row>
 									<el-col :span="16">
-										<el-input v-model="form.sourceAccountName" placeholder="请输入支出方户名" disabled />
+										<el-input v-model="form.sourceAccountName" placeholder="请输入支出方户名" disabled style="width: 100%" />
 									</el-col>
 									<el-col :span="8">
 										<SearchOption
@@ -280,12 +287,12 @@
 
 							<!-- 支出方账号 -->
 							<el-form-item label="账号" prop="sourceBankNo" label-width="120px">
-								<el-input v-model="form.sourceBankNo" placeholder="请输入支出方账号" disabled />
+								<el-input v-model="form.sourceBankNo" placeholder="请输入支出方账号" disabled style="width: 100%" />
 							</el-form-item>
 
 							<!-- 支出方开户行 -->
 							<el-form-item label="开户行" prop="sourceBankName" label-width="120px">
-								<el-input v-model="form.sourceBankName" placeholder="请输入支出方开户行" disabled />
+								<el-input v-model="form.sourceBankName" placeholder="请输入支出方开户行" disabled style="width: 100%" />
 							</el-form-item>
 						</el-col>
 
@@ -306,13 +313,20 @@
 
 							<!-- 收入方支付类型 -->
 							<el-form-item label="支付类型" prop="targetPaymentType" label-width="120px">
-								<el-cascader v-model="form.targetPaymentType" :options="paymentTypeTree" :props="props" @change="handleChange" placeholder="请选择收入方支付类型"></el-cascader>
+								<el-cascader
+									v-model="form.targetPaymentType"
+									:options="paymentTypeTree"
+									:props="props"
+									@change="handleChange"
+									placeholder="请选择收入方支付类型"
+									style="width: 100%"
+								></el-cascader>
 							</el-form-item>
 
 							<el-form-item label="收入方" label-width="120px">
 								<el-row>
 									<el-col :span="16">
-										<el-input disabled v-model="targetName" type="text" placeholder="请选择" />
+										<el-input disabled v-model="targetName" type="text" placeholder="请选择" style="width: 100%" />
 									</el-col>
 
 									<el-col v-if="form.targetCompanyType === PUBLIC_DICT_TYPE.DRIVER" :span="8">
@@ -385,7 +399,7 @@
 							<el-form-item label="户名" prop="targetAccountName" label-width="120px">
 								<el-row>
 									<el-col :span="16">
-										<el-input v-model="form.targetAccountName" placeholder="请输入收入方户名" disabled />
+										<el-input v-model="form.targetAccountName" placeholder="请输入收入方户名" disabled style="width: 100%" />
 									</el-col>
 									<el-col :span="8">
 										<SearchOption
@@ -415,12 +429,12 @@
 
 							<!-- 收入方账号 -->
 							<el-form-item label="账号" prop="targetBankNo" label-width="170px">
-								<el-input v-model="form.targetBankNo" placeholder="请输入收入方账号" disabled />
+								<el-input v-model="form.targetBankNo" placeholder="请输入收入方账号" disabled style="width: 100%" />
 							</el-form-item>
 
 							<!-- 收入方开户行 -->
 							<el-form-item label="开户行" prop="targetBankName" label-width="170px">
-								<el-input v-model="form.targetBankName" placeholder="请输入收入方开户行" disabled />
+								<el-input v-model="form.targetBankName" placeholder="请输入收入方开户行" disabled style="width: 100%" />
 							</el-form-item>
 						</el-col>
 					</el-row>
@@ -440,7 +454,7 @@
 					<el-form-item label="资金流出方支付类型" prop="sourcePaymentType">
 						<el-row>
 							<el-col :span="14">
-								<el-input v-model="sourcePaymentTypeDisplay" placeholder="内部往来支出" disabled />
+								<el-input v-model="sourcePaymentTypeDisplay" placeholder="内部往来支出" disabled style="width: 100%" />
 							</el-col>
 						</el-row>
 					</el-form-item>
@@ -449,7 +463,7 @@
 					<el-form-item label="转账账户">
 						<el-row>
 							<el-col :span="14">
-								<el-input v-model="form.sourceBankNo" disabled placeholder="请选择转账账户"></el-input>
+								<el-input v-model="form.sourceBankNo" disabled placeholder="请选择转账账户" style="width: 100%"></el-input>
 							</el-col>
 							<el-col :span="4">
 								<SearchOption
@@ -499,13 +513,14 @@
 							:form-id="`income-${form.id || 'new'}`"
 							:wait-for-both-selection="true"
 							:component-role="'source'"
+							style="width: 100%"
 						/>
 					</el-form-item>
 
 					<el-form-item :label="source">
 						<el-row>
 							<el-col :span="14">
-								<el-input disabled v-model="sourceName" placeholder="请选择" />
+								<el-input disabled v-model="sourceName" placeholder="请选择" style="width: 100%" />
 							</el-col>
 						</el-row>
 					</el-form-item>
@@ -522,7 +537,7 @@
 					<el-form-item label="资金流入方支付类型" prop="targetPaymentType">
 						<el-row>
 							<el-col :span="14">
-								<el-input v-model="targetPaymentTypeDisplay" placeholder="内部往来收入" disabled />
+								<el-input v-model="targetPaymentTypeDisplay" placeholder="内部往来收入" disabled style="width: 100%" />
 							</el-col>
 						</el-row>
 					</el-form-item>
@@ -531,7 +546,7 @@
 					<el-form-item label="目标账户">
 						<el-row>
 							<el-col :span="14">
-								<el-input v-model="form.targetBankNo" disabled placeholder="请选择目标账户"></el-input>
+								<el-input v-model="form.targetBankNo" disabled placeholder="请选择目标账户" style="width: 100%"></el-input>
 							</el-col>
 							<el-col :span="4">
 								<SearchOption
@@ -581,13 +596,14 @@
 							:form-id="`expense-${form.id || 'new'}`"
 							:wait-for-both-selection="true"
 							:component-role="'target'"
+							style="width: 100%"
 						/>
 					</el-form-item>
 
 					<el-form-item :label="target">
 						<el-row>
 							<el-col :span="14">
-								<el-input disabled v-model="targetName" placeholder="请选择" />
+								<el-input disabled v-model="targetName" placeholder="请选择" style="width: 100%" />
 							</el-col>
 						</el-row>
 					</el-form-item>
@@ -603,7 +619,7 @@
 				<el-form-item :label="cashType === CASH_TYPE.TRANSFER ? '转账金额' : '冲抵金额'" prop="amount">
 					<el-row>
 						<el-col :span="14">
-							<el-input v-model="form.amount" :placeholder="cashType === CASH_TYPE.TRANSFER ? '转账金额' : '冲抵金额'" type="number" />
+							<el-input v-model="form.amount" :placeholder="cashType === CASH_TYPE.TRANSFER ? '转账金额' : '冲抵金额'" type="number" style="width: 100%" />
 						</el-col>
 					</el-row>
 				</el-form-item>
@@ -616,17 +632,18 @@
 						:initial-attachments="(form.params && form.params.attachments) || []"
 						:extra-info="{ moduleType: 'record', formId: form.id }"
 						@files-updated="handleAttachmentFilesUpdated"
+						style="width: 100%"
 					/>
 				</el-form-item>
 
 				<!-- 交易时间 -->
 				<el-form-item label="交易时间" prop="transactionTime">
-					<el-date-picker v-model="form.transactionTime" clearable type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="请选择交易时间" />
+					<el-date-picker v-model="form.transactionTime" clearable type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="请选择交易时间" style="width: 100%" />
 				</el-form-item>
 
 				<!-- 备注 -->
 				<el-form-item label="备注" prop="remarks">
-					<el-input v-model="form.remarks" placeholder="请输入备注" />
+					<el-input v-model="form.remarks" placeholder="请输入备注" style="width: 100%" />
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
