@@ -46,7 +46,7 @@ export default {
 
 <template>
 	<div>
-		<el-button style="margin-left: 5px" size="mini" type="text" @click="checkHistoryList(row)">记录查看</el-button>
+		<el-button style="margin-left: 5px" size="mini" type="text" @click="checkHistoryList(row)">查看修改记录</el-button>
 	</div>
 </template>
 

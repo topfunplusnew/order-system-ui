@@ -772,9 +772,9 @@ export default {
 								<el-dropdown-item>
 									<HistoryList :row="scope.row" />
 								</el-dropdown-item>
-								<el-dropdown-item>
+								<!-- <el-dropdown-item>
 									<el-button style="margin-left: 5px" size="mini" type="text" @click="checkOrderHistory(scope.row)">历史对比</el-button>
-								</el-dropdown-item>
+								</el-dropdown-item> -->
 							</el-dropdown-menu>
 						</el-dropdown>
 					</template>
