@@ -68,7 +68,7 @@
 								}
 							"
 						>
-							<el-table-column label="序号" width="50" align="center" prop="id"></el-table-column>
+							<el-table-column label="ID" width="50" align="center" prop="id"></el-table-column>
 							<el-table-column v-if="columns[0].visible" prop="orderDate" label="日期" show-overflow-tooltip></el-table-column>
 							<el-table-column v-if="columns[1].visible" prop="companyName" label="客户" show-overflow-tooltip></el-table-column>
 							<el-table-column v-if="columns[2].visible" prop="salesman" label="业务员" show-overflow-tooltip></el-table-column>
@@ -79,7 +79,7 @@
 							<el-table-column v-if="columns[7].visible" prop="paymentFactory" label="出厂货款" show-overflow-tooltip></el-table-column>
 							<el-table-column v-if="columns[8].visible" prop="tonnage" label="吨位" show-overflow-tooltip></el-table-column>
 							<el-table-column v-if="columns[9].visible" prop="clerk" label="内勤" show-overflow-tooltip></el-table-column>
-							<el-table-column v-if="columns[10].visible" prop="landCarNo" label="陆运车牌" show-overflow-tooltip>
+							  <el-table-column v-if="columns[10].visible" prop="landCarNo" label="陆运车牌" show-overflow-tooltip>
 								<template #default="scope">
 									<span v-if="scope.row.landCarNo !== null">
 										{{ scope.row.landCarNo }}

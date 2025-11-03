@@ -64,7 +64,7 @@ export var mixin_order_base = {
 			// 订单表格中的数据
 			goodsOrderList: [],
 			renderedList: [], // 用于在表格中显示的数据，实现分时渲染
-			batchSize: 5, // 每次渲染的行数，根据性能调整
+			batchSize: 10, // 每次渲染的行数，根据性能调整
 			currentIndex: 0 // 当前渲染的起始索引
 		};
 	},
@@ -101,7 +101,6 @@ export var mixin_order_base = {
 			}
 			// 获取要渲染的行
 			const nextBatch = this.goodsOrderList.slice(this.currentIndex, this.currentIndex + this.batchSize);
-			console.log(` nextBatch `, nextBatch);
 			// 更新要渲染的数据
 			this.renderedList = this.renderedList.concat(nextBatch);
 			this.currentIndex += this.batchSize;

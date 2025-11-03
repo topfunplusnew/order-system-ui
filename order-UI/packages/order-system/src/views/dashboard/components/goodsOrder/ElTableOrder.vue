@@ -32,6 +32,9 @@ export default {
 	computed: {
 		PUBLIC_DICT_TYPE() {
 			return PUBLIC_DICT_TYPE;
+		},
+		paddingFix() {
+			return { padding: '.4px' };
 		}
 	},
 	components: {
@@ -193,8 +196,9 @@ export default {
 		},
 		// 统一行样式，保持固定列与主体区域行高一致
 		rowStyle({ row }) {
-			// 基础统一高度
 			const base = { height: '28px', lineHeight: '28px' };
+			if (!row.isAdjust) return base;
+			// 基础统一高度
 			if (row.isAdjust > 0 && this.isAdjustOrder) {
 				// 返回需要的背景色
 				if (row.isAdjust === 1) return { ...base, background: '#f0f0f0' };
@@ -727,17 +731,13 @@ export default {
 				id="printBox"
 				v-loading="loading"
 				v-horizontal-scroll="'always'"
-				:row-style="rowStyle"
 				fit
+				:row-style="rowStyle"
 				border
 				size="mini"
 				max-height="750"
-				:cell-style="
-					() => {
-						return { padding: '.4px' };
-					}
-				"
-				:data="goodsOrderList"
+				:cell-style="paddingFix"
+				:data="renderedList"
 				@header-dragend="changeColWidth"
 			>
 				<el-table-column label="行操作" align="center" class-name="small-padding fixed-width" width="180" fixed="left">
