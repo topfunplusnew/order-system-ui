@@ -63,7 +63,7 @@ export default {
 		mixin_order_uploadFiles,
 		// 发货单
 		mixin_order_deliverGoods,
-		// 订单历史记录查看
+		// 订单修改记录查看
 		mixin_order_orderHistory
 	],
 	props: {
@@ -685,7 +685,7 @@ export default {
 		<!--    这是框架自带的搜索模组，封装成了组件并且放在与index.vue同级目录下-->
 		<QuerySearchBar @updateQuery="handleGetQueryParams" :is-adjust="isAdjustOrder" />
 		<br />
-		<!--    订单历史记录查看-->
+		<!--    订单修改记录查看-->
 		<div>
 			<OrderHistoryCheck
 				:check-history-order-visible="checkHistoryOrderVisible"
@@ -765,16 +765,16 @@ export default {
 							</el-dropdown-menu>
 						</el-dropdown>
 
-						<!-- 历史记录下拉菜单 -->
+						<!-- 修改记录下拉菜单 -->
 						<el-dropdown size="mini">
-							<el-button size="mini" type="text">历史记录</el-button>
+							<el-button size="mini" type="text">修改记录</el-button>
 							<el-dropdown-menu slot="dropdown">
 								<el-dropdown-item>
 									<HistoryList :row="scope.row" />
 								</el-dropdown-item>
-								<el-dropdown-item>
+								<!-- <el-dropdown-item>
 									<el-button style="margin-left: 5px" size="mini" type="text" @click="checkOrderHistory(scope.row)">历史对比</el-button>
-								</el-dropdown-item>
+								</el-dropdown-item> -->
 							</el-dropdown-menu>
 						</el-dropdown>
 					</template>

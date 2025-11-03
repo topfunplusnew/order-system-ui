@@ -92,7 +92,7 @@ export default {
 								return prev;
 							}
 						}, 0);
-						sums[index] = fix(sums[index]);
+						sums[index] = fix_2(sums[index]);
 						sums[index] += column.property === 'tonnage' ? ' 吨' : ' 元';
 					} else {
 						sums[index] = 'N/A';
@@ -207,7 +207,7 @@ export default {
 						{{ scope.row.storeHouseName ? scope.row.storeHouseName : '-' }}
 					</template>
 				</el-table-column>
-				<el-table-column label="供应商" align="center" prop="supplier" show-overflow-tooltip width="120" />
+				<el-table-column label="供应商" align="center" prop="supplier" show-overflow-tooltip width="230" />
 				<el-table-column label="级别名称" align="center" prop="levelName" min-width="120" />
 				<el-table-column label="计量单位" align="center" prop="countingUnit" show-overflow-tooltip width="70" />
 				<el-table-column label="厚度" align="center" prop="height" show-overflow-tooltip width="50" />

@@ -33,7 +33,7 @@ export default {
 
 <template>
 	<div>
-		<el-descriptions title="订单信息" size="mini" border>
+		<el-descriptions title="订单信息" size="mini" border :column="6">
 			<el-descriptions-item label="日期">
 				{{ formatValue(orderInfo.orderDate) }}
 			</el-descriptions-item>

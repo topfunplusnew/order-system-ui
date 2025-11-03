@@ -151,7 +151,7 @@
 					</div>
 				</template>
 			</el-table-column>
-			<el-table-column label="操作" align="center" class-name="small-padding">
+			<el-table-column label="操作" align="center" class-name="small-padding" width="150">
 				<template slot-scope="scope">
 					<el-button type="text" size="mini" @click="handleAddExtraInfo(scope.row)">补充信息</el-button>
 					<el-dropdown @command="command => handleCommand(command, scope.row)">

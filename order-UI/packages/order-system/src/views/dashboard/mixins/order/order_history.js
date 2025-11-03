@@ -28,7 +28,7 @@ export var mixin_order_orderHistory = {
 			// 先获取原订单的信息
 			getGoodsOrder(row.id).then(res => {
 				this.currentOrderItemInfo = res.data;
-				// 获取订单历史记录信息
+				// 获取订单修改记录信息
 				getHistoryGoodsOrder({ goodsOrderID: id }).then(res => {
 					if (res.total === 0) {
 						this.$message.warning('无订单历史信息');

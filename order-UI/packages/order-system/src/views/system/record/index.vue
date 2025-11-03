@@ -13,6 +13,12 @@
 			<el-form-item label="备注" prop="remarks">
 				<el-input v-model="queryParams.remarks" placeholder="请输入备注" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
+			<el-form-item label="我方户名" prop="selfAccountName">
+				<el-input v-model="querySelfAccountName" placeholder="请输入我方户名" clearable @keyup.enter.native="handleQuery" />
+			</el-form-item>
+			<el-form-item label="承兑号" prop="bankacceptanceBillNo">
+				<el-input v-model="queryBankacceptanceBillNo" placeholder="请输入承兑号" clearable @keyup.enter.native="handleQuery" />
+			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
 				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -825,7 +831,10 @@ export default {
 				pageSize: 20,
 				tableName: TableName.RECORD,
 				tid: null
-			}
+			},
+			// 查询相关变量
+			querySelfAccountName: null,
+			queryBankacceptanceBillNo: null
 		};
 	},
 	// 计算属性
@@ -1176,6 +1185,14 @@ export default {
 				this.queryParams.params['beginTransactionTime'] = this.dateRange[0];
 				this.queryParams.params['endTransactionTime'] = this.dateRange[1];
 			}
+			// 添加我方户名搜索参数
+			if (this.querySelfAccountName) {
+				this.queryParams.params['selfAccountName'] = this.querySelfAccountName;
+			}
+			// 添加承兑号搜索参数
+			if (this.queryBankacceptanceBillNo) {
+				this.queryParams.params['bankacceptanceBillNo'] = this.queryBankacceptanceBillNo;
+			}
 			listRecord(this.queryParams).then(response => {
 				this.recordList = response.rows;
 				this.total = response.total;
@@ -1268,6 +1285,8 @@ export default {
 		/** 重置按钮操作 */
 		resetQuery() {
 			this.dateRange = [];
+			this.querySelfAccountName = null;
+			this.queryBankacceptanceBillNo = null;
 			this.resetForm('queryForm');
 			this.handleQuery();
 		},

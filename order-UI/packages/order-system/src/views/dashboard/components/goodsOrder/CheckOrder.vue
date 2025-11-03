@@ -2,7 +2,7 @@
 
 <template>
 	<div>
-		<el-descriptions border size="mini">
+		<el-descriptions border size="mini" :column="6">
 			<el-descriptions-item label="订单日期">{{ orderInfo.orderDate }}</el-descriptions-item>
 			<el-descriptions-item label="客户(公司名称)">{{ orderInfo.customer }}</el-descriptions-item>
 			<el-descriptions-item label="销售经理">{{ orderInfo.saleManager }}</el-descriptions-item>
