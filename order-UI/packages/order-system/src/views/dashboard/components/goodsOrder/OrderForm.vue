@@ -1520,9 +1520,9 @@ export default {
 								size="mini"
 								v-model="scope.row.price"
 								@input="() => recalculateAll(scope)"
-								:placeholder="scope.row.pieces <= 0 ? '请先完善出厂片数' : '请输入出厂单价'"
-								:disabled="!scope.row.isEditing || !scope.row.pieces"
+								:disabled="!scope.row.isEditing"
 								@blur="() => formatPriceInput(scope.row, 'price', 2, false)"
+								placeholder="请输入出厂单价"
 							/>
 						</template>
 					</el-table-column>
@@ -1540,9 +1540,9 @@ export default {
 								size="mini"
 								v-model.lazy="scope.row.sundryCost"
 								@input="() => recalculateAll(scope)"
-								:placeholder="scope.row.paymentUnload <= 0 ? '请先完善出厂单价' : '请输入杂费'"
-								:disabled="!scope.row.isEditing || !scope.row.price"
+								:disabled="!scope.row.isEditing"
 								@blur="() => formatPriceInput(scope.row, 'sundryCost', 2)"
+								placeholder="请输入杂费"
 							/>
 						</template>
 					</el-table-column>
@@ -1582,9 +1582,9 @@ export default {
 								size="mini"
 								v-model.lazy="scope.row.paymentsWithSundry"
 								@input="() => recalculateAll(scope)"
-								:disabled="!scope.row.isEditing || !scope.row.paymentUnload"
-								:placeholder="scope.row.paymentUnload <= 0 ? '请先完善卸货价' : '请输入总货款杂费'"
+								:disabled="!scope.row.isEditing"
 								@blur="() => formatPriceInput(scope.row, 'paymentsWithSundry', 2)"
+								placeholder="请输入总货款杂费"
 							/>
 						</template>
 					</el-table-column>
