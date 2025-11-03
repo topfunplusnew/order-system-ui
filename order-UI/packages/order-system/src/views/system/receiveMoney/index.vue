@@ -131,7 +131,7 @@
 				<el-form ref="form" :model="form" :rules="rules" label-width="150px">
 					<!-- 收款编码（只读，仅编辑时展示） -->
 					<el-form-item v-if="form && form.id != null" label="收款编码">
-						<el-input v-model="form.code" disabled />
+						<el-input v-model="form.code" disabled style="width: 100%" />
 					</el-form-item>
 					<!--        第一列-->
 					<el-col :span="isPaymentFee ? 24 : 12">

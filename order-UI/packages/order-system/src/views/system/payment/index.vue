@@ -242,15 +242,15 @@
 					<!-- 左列 -->
 					<el-col :span="form.companyType === PAYMENT_TARGET_TYPE.PAYMENT_FEE ? 24 : 12">
 						<el-form-item label="日期" prop="fundsDate">
-							<el-date-picker v-model="form.fundsDate" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+							<el-date-picker v-model="form.fundsDate" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss" style="width: 100%"></el-date-picker>
 						</el-form-item>
 
 						<el-form-item label="付款类型" prop="payType">
-							<el-cascader v-model="form.payType" :options="paymentTypeTree" :props="props" @change="handleChange"></el-cascader>
+							<el-cascader v-model="form.payType" :options="paymentTypeTree" :props="props" @change="handleChange" style="width: 100%"></el-cascader>
 						</el-form-item>
 
 						<el-form-item label="金额" prop="moneyAmount">
-							<el-input v-model="form.moneyAmount" placeholder="请输入金额" />
+							<el-input v-model="form.moneyAmount" placeholder="请输入金额" style="width: 100%" />
 						</el-form-item>
 
 						<el-form-item label="我方银行账户类型">
@@ -261,13 +261,14 @@
 								:external-bankacceptance-info="form.params.bankacceptance"
 								@updateSelectedType="changeSelfBankType"
 								@updateBankAcceptance="value => (form.params.bankacceptance = value)"
+								style="width: 100%"
 							/>
 						</el-form-item>
 
 						<el-form-item label="我方户名" prop="selfAccountsName">
 							<el-row>
 								<el-col :span="16">
-									<el-input disabled v-model="form.selfAccountsName" placeholder="请选择" />
+									<el-input disabled v-model="form.selfAccountsName" placeholder="请选择" style="width: 100%" />
 								</el-col>
 								<el-col :span="8">
 									<SearchOption
@@ -294,15 +295,15 @@
 						</el-form-item>
 
 						<el-form-item label="我方账号" prop="selfBankNo">
-							<el-input disabled v-model="form.selfBankNo" placeholder="请选择" />
+							<el-input disabled v-model="form.selfBankNo" placeholder="请选择" style="width: 100%" />
 						</el-form-item>
 
 						<el-form-item label="我方开户行" prop="selfBankName">
-							<el-input disabled v-model="form.selfBankName" placeholder="请选择" />
+							<el-input disabled v-model="form.selfBankName" placeholder="请选择" style="width: 100%" />
 						</el-form-item>
 
 						<el-form-item label="对方类型">
-							<el-select v-model="form.companyType" placeholder="请选择">
+							<el-select v-model="form.companyType" placeholder="请选择" style="width: 100%">
 								<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
 							</el-select>
 						</el-form-item>
@@ -310,7 +311,7 @@
 						<el-form-item v-if="form.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE && form.companyType !== PUBLIC_DICT_TYPE.EMPLOYEE" label="对方公司名称" prop="companyName">
 							<el-row>
 								<el-col :span="22">
-									<el-input disabled v-model="form.companyName" placeholder="请选择" />
+									<el-input disabled v-model="form.companyName" placeholder="请选择" style="width: 100%" />
 								</el-col>
 								<el-col :span="2" v-if="form.companyType === PAYMENT_TARGET_TYPE.CUSTOMER || form.companyType === PAYMENT_TARGET_TYPE.SUPPLIER">
 									<SearchOption
@@ -356,18 +357,25 @@
 					<!-- 右列 -->
 					<el-col :span="form.companyType === PAYMENT_TARGET_TYPE.PAYMENT_FEE ? 24 : 12">
 						<el-form-item v-if="form.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE" label="对方银行账户类型">
-							<BankType ref="otherSelectedBankType" :option-baned="true" :baned="true" :select-type="form.otherBankCardType" @updateSelectedType="changeOtherBankType" />
+							<BankType
+								ref="otherSelectedBankType"
+								:option-baned="true"
+								:baned="true"
+								:select-type="form.otherBankCardType"
+								@updateSelectedType="changeOtherBankType"
+								style="width: 100%"
+							/>
 						</el-form-item>
 
 						<!-- 选择供应商 -->
 						<el-form-item v-if="form.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE" label="对方户名" prop="otherAccountsName">
-							<el-input disabled v-model="form.otherAccountsName" placeholder="请选择" />
+							<el-input disabled v-model="form.otherAccountsName" placeholder="请选择" style="width: 100%" />
 						</el-form-item>
 
 						<el-form-item v-if="form.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE" label="对方账号" prop="otherBankNo">
 							<el-row>
 								<el-col :span="16">
-									<el-input disabled v-model="form.otherBankNo" placeholder="请选择" />
+									<el-input disabled v-model="form.otherBankNo" placeholder="请选择" style="width: 100%" />
 								</el-col>
 								<el-col :span="8">
 									<SearchOption
@@ -396,7 +404,7 @@
 						</el-form-item>
 
 						<el-form-item v-if="form.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE" label="对方开户行" prop="otherBankName">
-							<el-input disabled v-model="form.otherBankName" placeholder="请选择" />
+							<el-input disabled v-model="form.otherBankName" placeholder="请选择" style="width: 100%" />
 						</el-form-item>
 
 						<el-form-item label="附件" prop="attachmentIds">
@@ -406,11 +414,12 @@
 								:extra-info="{ moduleType: 'payment', formId: form.id }"
 								:initial-attachments="form.attachmentList || []"
 								@files-updated="handleAttachmentFilesUpdated"
+								style="width: 100%"
 							/>
 						</el-form-item>
 
 						<el-form-item label="银行卡流水编号" prop="transactionHistory">
-							<el-input v-model="form.transactionHistory" placeholder="请输入银行卡流水编号" />
+							<el-input v-model="form.transactionHistory" placeholder="请输入银行卡流水编号" style="width: 100%" />
 						</el-form-item>
 						<el-form-item label="银行卡流水附件" prop="attachmentIds">
 							<UploadFilesButton
@@ -419,13 +428,14 @@
 								:extra-info="{ moduleType: 'payment', formId: form.id }"
 								:initial-attachments="form.attachmentList || []"
 								@files-updated="handleAttachmentFilesUpdated"
+								style="width: 100%"
 							/>
 						</el-form-item>
 						<el-form-item label="录入人员" prop="userName">
-							<el-input v-model="form.userName" placeholder="请输入录入人员" />
+							<el-input v-model="form.userName" placeholder="请输入录入人员" style="width: 100%" />
 						</el-form-item>
 						<el-form-item label="备注" prop="comments">
-							<el-input v-model="form.comments" placeholder="请输入备注" />
+							<el-input v-model="form.comments" placeholder="请输入备注" style="width: 100%" />
 						</el-form-item>
 					</el-col>
 				</el-row>
