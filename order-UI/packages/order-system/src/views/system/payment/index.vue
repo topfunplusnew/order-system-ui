@@ -231,9 +231,9 @@
 			<pagination v-show="editReasonTotal > 0" :total="editReasonTotal" :page.sync="editReasonQueryParams.pageNum" :limit.sync="editReasonQueryParams.pageSize" @pagination="getEditReasonList" />
 		</el-dialog>
 
-		<!--     添加或修改付款信息对话框 -->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="700px" append-to-body>
-			<el-form ref="form" :model="form" :rules="rules" label-width="140px">
+		<!--		     添加或修改付款信息对话框 -->
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="1000px" append-to-body>
+			<el-form ref="form" :model="form" :rules="rules" label-width="150px">
 				<!-- 付款编码（只读，仅编辑时展示） -->
 				<el-form-item v-if="form && form.id != null" label="付款编码">
 					<el-input v-model="form.code" disabled />
@@ -309,7 +309,7 @@
 
 						<el-form-item v-if="form.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE && form.companyType !== PUBLIC_DICT_TYPE.EMPLOYEE" label="对方公司名称" prop="companyName">
 							<el-row>
-								<el-col :span="10">
+								<el-col :span="22">
 									<el-input disabled v-model="form.companyName" placeholder="请选择" />
 								</el-col>
 								<el-col :span="2" v-if="form.companyType === PAYMENT_TARGET_TYPE.CUSTOMER || form.companyType === PAYMENT_TARGET_TYPE.SUPPLIER">
