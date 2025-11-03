@@ -240,12 +240,12 @@ export const companyConfig = {
 		{
 			prop: 'comments',
 			label: '备注',
-			width: 200,
+			width: 90,
 			align: 'center',
 			showOverflowTooltip: false, // 禁用默认 tooltip，使用自定义 popover
 			autoWidth: true, // 开启自适应宽度
-			minWidth: 120,
-			maxWidth: 300,
+			minWidth: 90,
+			maxWidth: 90,
 			includeInForm: true,
 			formConfig: {
 				show: true,

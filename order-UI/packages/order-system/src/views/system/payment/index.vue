@@ -36,6 +36,9 @@
 			<el-form-item label="备注" prop="otherBankNo">
 				<el-input class="input-long" v-model="queryParams.comments" placeholder="请输入备注" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
+			<el-form-item label="票据号码" prop="bankacceptanceBillNo">
+				<el-input class="input-medium" v-model="queryParams.params.bankacceptanceBillNo" placeholder="请输入票据号码" clearable @keyup.enter.native="handleQuery" />
+			</el-form-item>
 			<el-form-item label="复核状态" prop="auditState">
 				<el-select class="input-short" v-model="queryParams.auditState" placeholder="请选择复核状态" clearable>
 					<el-option v-for="item in auditState_options" :key="item.value" :label="item.label" :value="item.value"></el-option>
@@ -274,16 +277,16 @@
 										query-label="户名查找"
 										query-info="acountsName"
 										:query-name="queryBank"
-										width="1300px"
+										width="1000px"
 										@commitBack="handleCommitBack"
 										@update:queryName="handleUpdateQueryName"
 									>
 										<template #table-columns>
 											<CustomTableColumn label="账户类型" align="center" prop="acountsType" width="100" />
-											<CustomTableColumn label="己方公司" align="center" prop="displayName" width="300" />
 											<CustomTableColumn label="开户名称(户名)" align="center" prop="acountsName" width="300" />
 											<CustomTableColumn label="账号(银行账号)" align="center" prop="bankNo" width="300" />
 											<CustomTableColumn label="开户行" align="center" prop="bankName" width="300" />
+											<CustomTableColumn label="己方公司" align="center" prop="displayName" width="300" />
 										</template>
 									</SearchOption>
 								</el-col>
@@ -599,7 +602,10 @@ export default {
 				userId: null,
 				UserName: null,
 				delFlag: null,
-				auditState: null
+				auditState: null,
+				params: {
+					bankacceptanceBillNo: null
+				}
 			},
 			auditState_options: [
 				{ label: '未复核', value: '0' },
@@ -877,12 +883,12 @@ export default {
 			this.open = false;
 			this.$bus.$emit('changeFlag', false);
 			this.reset();
-			// 安全地清除组件引用
-			if (this.$refs.selfSelectedBankType) {
-				this.$refs.selfSelectedBankType.localSelectType = null;
+			// 安全地清除 BankType 组件状态
+			if (this.$refs.selfSelectedBankType && this.$refs.selfSelectedBankType.resetComponentState) {
+				this.$refs.selfSelectedBankType.resetComponentState();
 			}
-			if (this.$refs.otherSelectedBankType) {
-				this.$refs.otherSelectedBankType.localSelectType = null;
+			if (this.$refs.otherSelectedBankType && this.$refs.otherSelectedBankType.resetComponentState) {
+				this.$refs.otherSelectedBankType.resetComponentState();
 			}
 			// 清除附件上传状态
 			if (this.$refs.attachmentUpload) {
@@ -1043,6 +1049,11 @@ export default {
 		/** 重置按钮操作 */
 		resetQuery() {
 			this.resetForm('queryForm');
+			// 确保 params 对象存在并重置
+			if (!this.queryParams.params) {
+				this.queryParams.params = {};
+			}
+			this.queryParams.params.bankacceptanceBillNo = null;
 			this.handleQuery();
 		},
 		// 多选框选中数据
@@ -1306,6 +1317,13 @@ export default {
 								// 先部分重置表单，保留关键字段
 								this.partialReset();
 								this.open = false;
+								// 清除 BankType 组件状态
+								if (this.$refs.selfSelectedBankType && this.$refs.selfSelectedBankType.resetComponentState) {
+									this.$refs.selfSelectedBankType.resetComponentState();
+								}
+								if (this.$refs.otherSelectedBankType && this.$refs.otherSelectedBankType.resetComponentState) {
+									this.$refs.otherSelectedBankType.resetComponentState();
+								}
 								// 清除附件上传状态
 								if (this.$refs.attachmentUpload) {
 									this.$refs.attachmentUpload.clearUploadedFiles();
@@ -1346,6 +1364,13 @@ export default {
 								// 先部分重置表单，保留关键字段
 								this.partialReset();
 								this.open = false;
+								// 清除 BankType 组件状态
+								if (this.$refs.selfSelectedBankType && this.$refs.selfSelectedBankType.resetComponentState) {
+									this.$refs.selfSelectedBankType.resetComponentState();
+								}
+								if (this.$refs.otherSelectedBankType && this.$refs.otherSelectedBankType.resetComponentState) {
+									this.$refs.otherSelectedBankType.resetComponentState();
+								}
 								// 清除附件上传状态
 								if (this.$refs.attachmentUpload) {
 									this.$refs.attachmentUpload.clearUploadedFiles();

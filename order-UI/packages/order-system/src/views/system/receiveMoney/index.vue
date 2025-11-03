@@ -24,6 +24,9 @@
 			<el-form-item label="对方公司" prop="companyName">
 				<el-input v-model="queryParams.companyName" class="input-medium" placeholder="请输入对方公司" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
+			<el-form-item label="票据号码" prop="bankacceptanceBillNo">
+				<el-input v-model="queryParams.params.bankacceptanceBillNo" class="input-medium" placeholder="请输入票据号码" clearable @keyup.enter.native="handleQuery" />
+			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
 			</el-form-item>
@@ -166,16 +169,16 @@
 									:query-name="bankQuery"
 									query-info="acountsName"
 									query-label="户名查询"
-									width="1300px"
+									width="1000px"
 									@commitBack="handleCallBack"
 									@update:queryName="handleCommitBackBank"
 								>
 									<template #table-columns>
 										<CustomTableColumn label="账户类型" align="center" prop="acountsType" width="100" />
-										<CustomTableColumn label="己方公司" align="center" prop="displayName" width="300" />
 										<CustomTableColumn label="开户名称(户名)" align="center" prop="acountsName" width="300" />
 										<CustomTableColumn label="账号(银行账号)" align="center" prop="bankNo" width="300" />
 										<CustomTableColumn label="开户行" align="center" prop="bankName" width="300" />
+										<CustomTableColumn label="己方公司" align="center" prop="displayName" width="300" />
 									</template>
 								</SearchOption>
 							</div>
@@ -416,7 +419,10 @@ export default {
 				UserName: null,
 				delFlag: null,
 				startTime: null,
-				endTime: null
+				endTime: null,
+				params: {
+					bankacceptanceBillNo: null
+				}
 			},
 			// 时间范围选择器
 			dateRange: [],
@@ -628,12 +634,12 @@ export default {
 			this.open = false;
 			this.$bus.$emit('changeFlag', false);
 			this.reset();
-			// 安全地清除组件引用
-			if (this.$refs.selfSelectedBankType) {
-				this.$refs.selfSelectedBankType.localSelectType = null;
+			// 安全地清除 BankType 组件状态
+			if (this.$refs.selfSelectedBankType && this.$refs.selfSelectedBankType.resetComponentState) {
+				this.$refs.selfSelectedBankType.resetComponentState();
 			}
-			if (this.$refs.otherSelectedBankType) {
-				this.$refs.otherSelectedBankType.localSelectType = null;
+			if (this.$refs.otherSelectedBankType && this.$refs.otherSelectedBankType.resetComponentState) {
+				this.$refs.otherSelectedBankType.resetComponentState();
 			}
 			// 清除上传组件状态
 			if (this.$refs.attachmentUploader) {
@@ -751,6 +757,11 @@ export default {
 			this.dateRange = [];
 			// 重置级联选择器
 			this.queryParams.receiveType = [];
+			// 确保 params 对象存在并重置
+			if (!this.queryParams.params) {
+				this.queryParams.params = {};
+			}
+			this.queryParams.params.bankacceptanceBillNo = null;
 			this.handleQuery();
 		},
 		// 多选框选中数据
@@ -957,6 +968,13 @@ export default {
 								this.open = false;
 								this.getList();
 								this.$bus.$emit('changeFlag', false);
+								// 清除 BankType 组件状态
+								if (this.$refs.selfSelectedBankType && this.$refs.selfSelectedBankType.resetComponentState) {
+									this.$refs.selfSelectedBankType.resetComponentState();
+								}
+								if (this.$refs.otherSelectedBankType && this.$refs.otherSelectedBankType.resetComponentState) {
+									this.$refs.otherSelectedBankType.resetComponentState();
+								}
 								// 清理上传组件
 								if (this.$refs.attachmentUploader) {
 									this.$refs.attachmentUploader.clearUploadedFiles();
@@ -983,6 +1001,13 @@ export default {
 								this.open = false;
 								this.getList();
 								this.$bus.$emit('changeFlag', false);
+								// 清除 BankType 组件状态
+								if (this.$refs.selfSelectedBankType && this.$refs.selfSelectedBankType.resetComponentState) {
+									this.$refs.selfSelectedBankType.resetComponentState();
+								}
+								if (this.$refs.otherSelectedBankType && this.$refs.otherSelectedBankType.resetComponentState) {
+									this.$refs.otherSelectedBankType.resetComponentState();
+								}
 								// 清理上传组件
 								if (this.$refs.attachmentUploader) {
 									this.$refs.attachmentUploader.clearUploadedFiles();

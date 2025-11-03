@@ -180,16 +180,6 @@ export default {
 							__isParams: false
 						},
 						value: ''
-					},
-					{
-						id: 5,
-						label: '分类名称',
-						prop: 'levelName',
-						type: 'input',
-						extraInfo: {
-							__isParams: false
-						},
-						value: ''
 					}
 					// {
 					// 	id: 6,
@@ -938,9 +928,11 @@ export default {
 		 */
 		calculatePieces(row) {
 			if (row.piecesPerPack > 0 && row.packs > 0) {
-				// 计算出厂片数
-				const result = row.piecesPerPack * row.packs;
-				// 格式化为最多两位小数
+				// 计算出厂片数，使用完整精度
+				const piecesPerPack = Number(row.piecesPerPack);
+				const packs = Number(row.packs);
+				const result = piecesPerPack * packs;
+				// 规范化数值但保持完整精度
 				row.pieces = this.formatPiecesValue(result);
 				// 设置卸货片数等于出厂片数
 				row.actualPieces = row.pieces;
@@ -949,24 +941,108 @@ export default {
 			}
 		},
 		/**
-		 * 格式化价格输入，控制小数位数
+		 * 处理价格字段输入，保存完整精度值用于计算
 		 * @param {Object} row - 当前行数据
 		 * @param {String} field - 字段名
-		 * @param {Number} precision - 小数位数
-		 * @param {boolean} control - 是否控制输入
+		 * @param {String} inputValue - 用户输入的值
+		 * @param {Function} callback - 输入后的回调函数（如重新计算）
+		 */
+		handlePriceInput(row, field, inputValue, callback) {
+			// 解析输入值，保持完整精度存储
+			const parsedValue = this.parseInputValue(inputValue);
+			// 存储完整精度的原始值（用于计算）
+			row[`_${field}_raw`] = parsedValue;
+			// 同时更新显示值（允许用户继续编辑）
+			row[field] = inputValue;
+			// 如果有回调，执行回调（通常是重新计算）
+			if (callback) {
+				callback();
+			}
+		},
+		/**
+		 * 规范化价格输入，确保为有效的Number类型，但保持完整精度不截断
+		 * 在失去焦点时格式化显示，但保留完整精度值用于计算
+		 * @param {Object} row - 当前行数据
+		 * @param {String} field - 字段名
+		 * @param {Number} precision - 显示精度（2或4位小数）
+		 * @param {boolean} control - 是否严格控制（暂保留兼容性，实际不截断）
 		 */
 		formatPriceInput(row, field, precision, control = true) {
-			if (control) {
-				if (row[field] && !isNaN(row[field])) {
-					row[field] = Number(row[field]).toFixed(precision);
-				}
-			} else {
-				// 如果小数位不超过四位 那么不做处理 如果超过四位 需要精确到四位
-				if (this.getDecimalPlaces(row[field]) > 4) {
-					row[field] = parseFloat(row[field]).toFixed(4);
+			// 获取完整精度的原始值（优先使用_raw字段）
+			const rawValue = row[`_${field}_raw`] !== undefined ? row[`_${field}_raw`] : row[field];
+
+			// 只做数值规范化，转换为Number类型，保持完整精度不截断
+			if (rawValue !== null && rawValue !== undefined && rawValue !== '') {
+				const numValue = Number(rawValue);
+				if (!isNaN(numValue)) {
+					// 存储完整精度的原始值（用于计算）
+					row[`_${field}_raw`] = numValue;
+					// 显示时格式化为指定精度（仅用于显示，不影响计算）
+					row[field] = this.formatValueForDisplay(numValue, precision);
+				} else {
+					// 无效数值时清空
+					row[field] = '';
+					row[`_${field}_raw`] = '';
 				}
 			}
 		},
+		/**
+		 * 处理价格字段聚焦事件，恢复完整精度显示以便编辑
+		 * @param {Object} row - 当前行数据
+		 * @param {String} field - 字段名
+		 */
+		handlePriceFocus(row, field) {
+			// 如果存在原始值，恢复显示原始完整精度
+			if (row[`_${field}_raw`] !== undefined && row[`_${field}_raw`] !== null && row[`_${field}_raw`] !== '') {
+				row[field] = row[`_${field}_raw`].toString();
+			} else if (row[field] !== null && row[field] !== undefined && row[field] !== '') {
+				// 如果没有原始值，保存当前值为原始值
+				const numValue = Number(row[field]);
+				if (!isNaN(numValue)) {
+					row[`_${field}_raw`] = numValue;
+					row[field] = numValue.toString();
+				}
+			}
+		},
+		/**
+		 * 格式化数值用于输入框显示（仅用于显示，不影响实际存储值）
+		 * @param {number|string} value - 需要格式化的值
+		 * @param {number} precision - 小数位数（用于显示，如2或4）
+		 * @returns {string} 格式化后的字符串（仅用于显示）
+		 */
+		formatValueForInput(value, precision = 2) {
+			if (value === null || value === undefined || value === '') {
+				return '';
+			}
+			const num = Number(value);
+			if (isNaN(num)) {
+				return '';
+			}
+			// 格式化为指定小数位数显示，但实际存储值不变
+			return num.toFixed(precision);
+		},
+		/**
+		 * 解析用户输入值，转换为Number类型并保持完整精度
+		 * @param {string} inputValue - 用户输入的字符串值
+		 * @returns {number|string} 解析后的数值（Number类型，保持完整精度）或空字符串
+		 */
+		parseInputValue(inputValue) {
+			if (inputValue === null || inputValue === undefined || inputValue === '') {
+				return '';
+			}
+			// 移除所有非数字和小数点的字符（保留负号如果需要）
+			const cleanValue = String(inputValue).replace(/[^\d.]/g, '');
+			if (cleanValue === '' || cleanValue === '.') {
+				return '';
+			}
+			const num = Number(cleanValue);
+			if (isNaN(num)) {
+				return '';
+			}
+			// 返回Number类型，保持用户输入的完整精度（不截断）
+			return num;
+		},
+
 		// 获取数字的小数位数
 		getDecimalPlaces(num) {
 			// 将数字转换为字符串
@@ -981,9 +1057,28 @@ export default {
 			return strNum.length - dotIndex - 1;
 		},
 		/**
-		 * @description: 格式化片数值，最多保留两位小数
-		 * @param {number} value 需要格式化的数值
-		 * @returns {string} 格式化后的字符串
+		 * 格式化数值用于显示，但不影响存储值
+		 * @param {number|string} value - 需要格式化的值
+		 * @param {number} precision - 小数位数（用于显示）
+		 * @returns {string} 格式化后的字符串（仅用于显示）
+		 */
+		formatValueForDisplay(value, precision = 2) {
+			if (value === null || value === undefined || value === '') {
+				return '';
+			}
+			const num = Number(value);
+			if (isNaN(num)) {
+				return '';
+			}
+			// 仅用于显示，不修改原始值
+			return num.toFixed(precision);
+		},
+		/**
+		 * @description: 规范化片数值，确保为有效的Number类型，保持完整精度
+		 * 注意：此方法只做数值规范化，不格式化显示（不截断小数位）
+		 * 格式化显示由输入框的 formatter 或显示层处理
+		 * @param {number} value 需要规范化的数值
+		 * @returns {number|string} 规范化后的数值（Number类型）或空字符串
 		 */
 		formatPiecesValue(value) {
 			if (value === null || value === undefined || value === '') {
@@ -995,13 +1090,9 @@ export default {
 				return '';
 			}
 
-			// 如果是整数，直接返回整数字符串
-			if (num % 1 === 0) {
-				return num.toString();
-			}
-
-			// 否则最多保留两位小数，去掉末尾的0
-			return parseFloat(num.toFixed(2)).toString();
+			// 返回Number类型，保持完整精度，不截断小数位
+			// 这样计算时可以使用完整数值，保证计算精度
+			return num;
 		},
 		/**
 		 * 检查订单明细是否为空（所有业务字段都为空）

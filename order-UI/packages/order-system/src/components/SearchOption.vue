@@ -1,10 +1,10 @@
-<!--封装的通用搜索组件 -->
+<!-- 封装的通用搜索组件 -->
 <!-- 使用方式 -->
 <!-- 1. 必传属性: -->
 <!--   - getData: 获取数据的函数 -->
 <!--   - limitInfo: 限制条件，限制获取函数，例如查询客户类型为供应商信息 -->
 <!-- 2. 选传属性: -->
-<!--- title: 弹出框的标题，默认为 "标题" -->
+<!--   - title: 弹出框的标题，默认为 "标题" -->
 <!--   - icon: 组件的图标，默认为 "el-icon-search" -->
 <!--   - queryInfo: 搜索框要查询的字段，默认为 "name" -->
 <!--   - queryName: 搜索框中输入的值，需要和 $emit 配合使用，默认为 "name" -->
@@ -16,7 +16,7 @@
 <!--   - @update:queryName: 修改父组件传入的 queryName 的值，保证输入框的响应式 -->
 <!--   - @commitBack(val): 点击确认后的回调，val 是需要自动填充的对象 -->
 
-<!--混入中是对于数据的进一步处理 mixin_search_option -->
+<!-- 混入中是对于数据的进一步处理 mixin_search_option -->
 
 <!--特别注意 针对某些特殊情况 可以补充字段-->
 <script>
@@ -74,7 +74,7 @@ export default {
 			type: Boolean,
 			default: true
 		},
-		//额外的查询参数信息
+		// 额外的查询参数信息
 		extraParams: {
 			type: Object,
 			default: () => {
@@ -92,7 +92,10 @@ export default {
 			// 加载效果
 			loading: false,
 			queryParams: {},
-			inputWidth: 120 // 添加默认宽度
+			// 输入框宽度
+			inputWidth: '160px',
+			// span文本内容（用于测量宽度）
+			spanText: ''
 		};
 	},
 
@@ -118,29 +121,38 @@ export default {
 			return this.limitInfo && this.limitInfo.__params && Object.keys(this.limitInfo.__params).length > 0;
 		}
 	},
+	mounted() {
+		// 初始化输入框宽度
+		this.updateInputWidth();
+	},
 	watch: {
 		query: {
-			handler(newVal) {
-				// 更新输入框宽度
-				this.updateInputWidth(newVal);
-
-				// 原有逻辑保持不变
+			handler() {
 				var queryParams = Object.create({});
 				Object.defineProperty(queryParams, this.queryInfo, {
 					value: this.query,
 					enumerable: true
 				});
 				Object.assign(this.limitInfo, queryParams);
-			},
-			immediate: true
+			}
 		}
 	},
 	methods: {
-		// 添加更新输入框宽度的方法
-		updateInputWidth(value) {
-			// 基于字符长度计算宽度：每个字符约8px，加上padding等约50px
-			const width = Math.max(120, (value || '').length * 8 + 50);
-			this.inputWidth = Math.min(width, 300); // 限制最大宽度为300px
+		// 更新输入框宽度（参考CSDN文章思路：使用隐藏span测量宽度）
+		updateInputWidth() {
+			this.spanText = this.query || '';
+			this.$nextTick(() => {
+				// 使用$nextTick确保DOM更新后再获取宽度
+				const spanEl = this.$refs.widthMeasure;
+				if (spanEl) {
+					const minWidth = 160; // 最小宽度
+					const maxWidth = 400; // 最大宽度
+					const padding = 30; // 输入框内边距和清空图标的空间
+					const textWidth = spanEl.offsetWidth;
+					const calculatedWidth = textWidth < minWidth ? minWidth : Math.min(textWidth + padding, maxWidth);
+					this.inputWidth = calculatedWidth + 'px';
+				}
+			});
 		},
 		getList() {
 			// 启动加载效果
@@ -159,6 +171,7 @@ export default {
 				Object.assign(this.limitInfo.params, this.limitInfo.__params);
 				delete this.limitInfo.__params;
 			}
+			console.log(`已设置params属性`, this.limitInfo);
 			// 获取数据 渲染表格
 			this.getList();
 			this.dialogVisible = true;
@@ -167,6 +180,7 @@ export default {
 		commitSomeThing(row) {
 			this.$emit('commitBack', row);
 			this.query = '';
+			this.inputWidth = '160px'; // 重置宽度
 			Object.keys(this.computedQueryItems.queryList).forEach(key => {
 				this.computedQueryItems.queryList[key].value = '';
 			});
@@ -174,7 +188,12 @@ export default {
 		},
 		// 条件查询
 		handleSearchInfo() {
+			// 确保 params 属性存在，如果不存在则初始化
+			if (!this.limitInfo.params) {
+				this.limitInfo.params = {};
+			}
 			if (this.computedQueryItems.queryList.length > 0) {
+				console.log(`this.computedQueryItems.queryList`, this.computedQueryItems.queryList);
 				for (let item of this.computedQueryItems.queryList) {
 					const queryItem = _.cloneDeep(item);
 					// 如果是params的查询参数
@@ -190,6 +209,8 @@ export default {
 							});
 							continue;
 						}
+						console.log(`this.limitInfo`, this.limitInfo);
+						console.log(`this.limitInfo.params`, this.limitInfo.params);
 						// 如果不是 直接添加
 						this.limitInfo.params[queryItem.prop] = queryItem.value;
 						continue;
@@ -215,6 +236,7 @@ export default {
 		},
 		handleCancel() {
 			this.query = '';
+			this.inputWidth = '160px'; // 重置宽度
 			Object.keys(this.computedQueryItems.queryList).forEach(key => {
 				this.computedQueryItems.queryList[key].value = '';
 			});
@@ -222,6 +244,7 @@ export default {
 		},
 		handleSubmit() {
 			this.query = '';
+			this.inputWidth = '160px'; // 重置宽度
 			Object.keys(this.computedQueryItems.queryList).forEach(key => {
 				this.computedQueryItems.queryList[key].value = '';
 			});
@@ -231,6 +254,7 @@ export default {
 		handleClear() {
 			this.$emit('commitBack', {});
 			this.query = '';
+			this.inputWidth = '160px'; // 重置宽度
 			Object.keys(this.computedQueryItems.queryList).forEach(key => {
 				this.computedQueryItems.queryList[key].value = '';
 			});
@@ -253,7 +277,11 @@ export default {
 				<div>
 					<el-form ref="queryForm" :model="computedQueryItems" size="mini" :inline="true" label-width="100px">
 						<el-form-item :label="queryLabel">
-							<el-input v-model="query" type="text" placeholder="请输入" size="mini" clearable :style="{ width: inputWidth + 'px', minWidth: '120px', maxWidth: '300px' }"></el-input>
+							<div class="input-wrapper">
+								<!-- 隐藏的测量元素，用于获取文本实际宽度 -->
+								<span ref="widthMeasure" class="width-measure">{{ spanText }}</span>
+								<el-input v-model="query" type="text" placeholder="请输入" size="mini" clearable @input="updateInputWidth" :style="{ width: inputWidth }"></el-input>
+							</div>
 						</el-form-item>
 						<el-form-item v-for="item in computedQueryItems.queryList" :label="item.label" :prop="item.prop" :key="item.id">
 							<template v-if="item.type === 'input'">
@@ -304,19 +332,6 @@ export default {
 </template>
 
 <style scoped lang="scss">
-.auto-width-input {
-	display: inline-grid;
-	grid-template-columns: max-content;
-	min-width: 120px;
-	max-width: 300px;
-}
-
-.auto-width-input ::v-deep .el-input__inner {
-	grid-column: 1;
-	grid-row: 1;
-	width: 100%;
-	min-width: 100%;
-}
 // 按钮组悬停效果
 .button-group {
 	display: inline-flex;
@@ -378,7 +393,7 @@ export default {
 	text-align: right;
 
 	::v-deep .el-pagination__total,
-	::v-deep.el-pagination__jump {
+	::v-deep .el-pagination__jump {
 		font-size: 13px;
 	}
 
@@ -395,5 +410,22 @@ export default {
 		height: 24px;
 		line-height: 24px;
 	}
+}
+
+// 输入框包装器
+.input-wrapper {
+	position: relative;
+	display: inline-block;
+}
+
+// 隐藏的测量元素（参考CSDN文章思路）
+.width-measure {
+	font-size: 13px; // 与输入框字体大小保持一致（size="mini"）
+	position: absolute;
+	left: 0;
+	padding: 0 15px; // 与el-input的padding保持一致
+	white-space: nowrap;
+	visibility: hidden;
+	pointer-events: none;
 }
 </style>

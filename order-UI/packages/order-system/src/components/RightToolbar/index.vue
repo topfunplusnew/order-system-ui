@@ -90,18 +90,26 @@ export default {
 			}
 			return ret;
 		},
-		// 计算列分组，每组最多20个
+		// 计算列分组，每列9个，按 key 排序后顺序分组
 		columnGroups() {
 			if (!this.columns || !Array.isArray(this.columns)) {
 				return [];
 			}
+
+			// 1. 先按 key 排序
+			const sortedColumns = [...this.columns].sort((a, b) => {
+				const keyA = a.key !== undefined ? a.key : Number.MAX_SAFE_INTEGER;
+				const keyB = b.key !== undefined ? b.key : Number.MAX_SAFE_INTEGER;
+				return keyA - keyB;
+			});
+
+			// 2. 每列9个，顺序分组
+			const chunkSize = 9;
 			const groups = [];
-			const chunkSize = 20;
-			for (let i = 0; i < this.columns.length; i += chunkSize) {
-				groups.push(this.columns.slice(i, i + chunkSize));
+			for (let i = 0; i < sortedColumns.length; i += chunkSize) {
+				groups.push(sortedColumns.slice(i, i + chunkSize));
 			}
-			// 添加调试信息
-			console.log('总列数:', this.columns.length, '分组数:', groups.length, '分组详情:', groups);
+
 			return groups;
 		}
 	},
