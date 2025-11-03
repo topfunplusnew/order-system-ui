@@ -21,8 +21,8 @@
 			<el-form-item label="对方户名" prop="otherAcountsName">
 				<el-input v-model="queryParams.otherAcountsName" class="input-medium" placeholder="请输入对方户名" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
-			<el-form-item label="对方公司" prop="companyName">
-				<el-input v-model="queryParams.companyName" class="input-medium" placeholder="请输入对方公司" clearable @keyup.enter.native="handleQuery" />
+			<el-form-item label="对方公司名称" prop="companyName">
+				<el-input v-model="queryParams.companyName" class="input-medium" placeholder="请输入对方公司名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="票据号码" prop="bankacceptanceBillNo">
 				<el-input v-model="queryParams.params.bankacceptanceBillNo" class="input-medium" placeholder="请输入票据号码" clearable @keyup.enter.native="handleQuery" />
@@ -74,7 +74,7 @@
 			<CustomTableColumn label="ID" align="center" prop="id" width="60" show-overflow-tooltip />
 			<CustomTableColumn v-if="columns[0].visible" label="日期" align="center" prop="fundsDate" width="140" show-overflow-tooltip />
 			<CustomTableColumn v-if="columns[1].visible" label="支付类型" align="center" prop="receiveType" width="165" show-overflow-tooltip />
-			<CustomTableColumn v-if="columns[9].visible" label="对方公司" align="center" prop="companyName" width="165" show-overflow-tooltip />
+			<CustomTableColumn v-if="columns[9].visible" label="对方公司名称" align="center" prop="companyName" width="165" show-overflow-tooltip />
 			<CustomTableColumn v-if="columns[10].visible" label="对方公司类型" align="center" prop="companyType" width="100"></CustomTableColumn>
 			<CustomTableColumn v-if="columns[2].visible" label="金额" align="center" prop="moneyAmount" width="110" show-overflow-tooltip />
 			<CustomTableColumn v-if="columns[3].visible" label="我方户名" align="center" prop="selfAcountsName" width="165" show-overflow-tooltip />
@@ -196,13 +196,9 @@
 								</el-select>
 							</el-tooltip>
 						</el-form-item>
-					</el-col>
-
-					<!--        第二列-->
-					<el-col :span="isPaymentFee ? 24 : 12" class="receive-second-col">
 						<el-form-item
 							v-if="form.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE && form.companyType !== PUBLIC_DICT_TYPE.EMPLOYEE"
-							:label="form.companyType === PAYMENT_TARGET_TYPE.DRIVER ? PUBLIC_DICT_TYPE.DRIVER : '对方公司'"
+							:label="form.companyType === PAYMENT_TARGET_TYPE.DRIVER ? PUBLIC_DICT_TYPE.DRIVER : '对方公司名称'"
 							prop="companyName"
 						>
 							<div style="width: 100%; display: flex">
@@ -248,6 +244,10 @@
 								</SearchOption>
 							</div>
 						</el-form-item>
+					</el-col>
+
+					<!--        第二列-->
+					<el-col :span="isPaymentFee ? 24 : 12" class="receive-second-col">
 						<el-form-item label="对方银行账户类型" v-if="form.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE">
 							<BankType
 								ref="otherSelectedBankType"
@@ -473,7 +473,7 @@ export default {
 				companyName: [
 					{
 						required: true,
-						message: '对方公司不能为空',
+						message: '对方公司名称不能为空',
 						trigger: 'blur'
 					}
 				],
@@ -502,7 +502,7 @@ export default {
 				{ key: 6, label: `对方户名`, visible: true },
 				{ key: 7, label: `对方账号`, visible: true },
 				{ key: 8, label: `对方开户行`, visible: true },
-				{ key: 9, label: `对方公司`, visible: true },
+				{ key: 9, label: `对方公司名称`, visible: true },
 				{ key: 10, label: `对方公司类型`, visible: true },
 				{ key: 11, label: `录入人员`, visible: true }
 			],
