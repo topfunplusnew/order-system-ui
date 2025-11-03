@@ -338,10 +338,11 @@ export default {
 		 * @param {Function} [reject=null] - Promise reject回调
 		 */
 		addOrUpdateOrderDetail(newOrderInfo, rows, resolve = null, reject = null) {
+			const editReason = sessionStorage.getItem('goodsorder-edit-reason');
 			// 保存row的引用，避免在Promise链中丢失
 			const currentRows = rows;
 			if (this.isEditingOrder.id) {
-				updateGoodsOrder(newOrderInfo)
+				updateGoodsOrder({ ...newOrderInfo, editReason })
 					.then(res => {
 						// 成功后清除可能的错误标记
 						currentRows.forEach(row => {

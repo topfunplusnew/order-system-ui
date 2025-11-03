@@ -42,6 +42,7 @@ const CellContent = {
 						placement: 'top',
 						effect: 'dark',
 						disabled: false, // 始终启用 tooltip
+						openDelay: 1000, // 延迟1秒显示
 						hideAfter: 3000, // 延迟3秒关闭
 						popperClass: 'table-cell-tooltip'
 					}
@@ -125,6 +126,7 @@ const SlotContentWrapper = {
 						content: this.textContent || '', // 即使没有文本内容也显示 tooltip
 						placement: 'top',
 						effect: 'dark',
+						openDelay: 1000, // 延迟1秒显示
 						hideAfter: 3000, // 延迟3秒关闭
 						popperClass: 'table-cell-tooltip table-cell-tooltip-slot',
 						disabled: false // 始终启用 tooltip
