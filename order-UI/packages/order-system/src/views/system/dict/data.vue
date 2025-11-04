@@ -1,6 +1,6 @@
 <template>
 	<div class="app-container">
-		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
+		<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
 			<el-form-item label="字典名称" prop="dictType">
 				<el-select v-model="queryParams.dictType">
 					<el-option v-for="item in typeOptions" :key="item.dictId" :label="item.dictName" :value="item.dictType" />

@@ -1,7 +1,7 @@
 <template>
 	<div class="app-container">
 		<!-- 搜索条件 -->
-		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
+		<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
 			<el-form-item label="开始时间">
 				<el-date-picker v-model="queryParams.params.beginTime" type="datetime" placeholder="请选择开始时间" value-format="yyyy-MM-dd HH:mm:ss" />
 			</el-form-item>

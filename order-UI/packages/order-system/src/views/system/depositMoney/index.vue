@@ -1,7 +1,7 @@
 <template>
 	<div class="app-container">
 		<!-- 搜索条件 -->
-		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="100px" class="form-container">
+		<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px" class="form-container">
 			<el-form-item label="保证金公司">
 				<el-input v-model="queryParams.depositCompany" placeholder="请输入保证金公司" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>

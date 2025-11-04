@@ -1,7 +1,7 @@
 <!-- 加油卡管理，要分开管理 分为加油卡主卡和加油卡副卡-->
 <template>
 	<div class="app-container">
-		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="120px">
+		<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
 			<el-form-item label="加油卡卡号" prop="oilCardNo">
 				<el-input v-model="queryParams.oilCardNo" placeholder="请输入加油卡卡号" clearable @keyup.enter.native="handleQuery" @input="handleInputTrim($event, 'queryParams', 'oilCardNo')" />
 			</el-form-item>
@@ -76,7 +76,7 @@
 
 		<!-- 添加或修改加油卡信息对话框 -->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
-			<el-form ref="form" :model="form" :rules="rules" label-width="120px" @keyup.enter.native="submitForm" size="mini" @submit.native.prevent="submitForm">
+			<el-form ref="form" :model="form" :rules="rules" label-width="200px" @keyup.enter.native="submitForm" size="mini" @submit.native.prevent="submitForm">
 				<el-form-item label="加油卡卡号" prop="oilCardNo">
 					<el-input v-model="form.oilCardNo" placeholder="请输入加油卡卡号" @input="handleInputTrim($event, 'form', 'oilCardNo')" />
 				</el-form-item>
@@ -107,7 +107,7 @@
 			width="500px"
 			append-to-body
 		>
-			<el-form :model="moneyInfo" :rules="moneyRules" label-width="120px" @keyup.enter.native="submitMoney" @submit.native.prevent="submitMoney" ref="moneyFormRef" size="mini">
+			<el-form :model="moneyInfo" :rules="moneyRules" label-width="200px" @keyup.enter.native="submitMoney" @submit.native.prevent="submitMoney" ref="moneyFormRef" size="mini">
 				<el-form-item label="加油卡卡号" prop="oilCardNo">
 					<el-row>
 						<el-col :span="10">
@@ -206,7 +206,7 @@
 				ref="oilCardForm"
 				:model="oilCardOption"
 				:rules="optionRules"
-				label-width="120px"
+				label-width="200px"
 				size="mini"
 				@keyup.enter.native="submitOilCardOption"
 				@submit.native.prevent="submitOilCardOption"

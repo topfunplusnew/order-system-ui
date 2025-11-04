@@ -39,7 +39,7 @@ export var mixin_paymentindex_fill = {
 		// 填充对方新信息
 		handleCommitBackBankAcount(val) {
 			this.form.otherBankName = val.bankName;
-			this.form.otherAcountsName = val.acountsName;
+			this.form.otherAccountsName = val.acountsName;
 			this.form.otherBankNo = val.bankNo;
 		},
 		handleUpdateQueryBankAcount(val) {

@@ -1,6 +1,6 @@
 <template>
 	<div class="app-container">
-		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px" class="form-container">
+		<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px" class="form-container">
 			<el-form-item label="客户名称" prop="companyName">
 				<el-input v-model="queryParams.companyName" placeholder="请输入客户名称" clearable @keyup.enter.native="handleQuery" @input="handleInputTrim($event, 'queryParams', 'companyName')" />
 			</el-form-item>

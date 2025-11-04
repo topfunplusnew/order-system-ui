@@ -1,6 +1,6 @@
 <template>
 	<div class="app-container">
-		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
+		<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
 			<el-form-item label="类型" prop="acountsType">
 				<el-select v-model="queryParams.acountsType" placeholder="请选择">
 					<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>

@@ -1,6 +1,6 @@
 <template>
 	<div class="app-container">
-		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
+		<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
 			<el-form-item label="出差ID" prop="bTripId">
 				<el-input v-model="queryParams.bTripId" placeholder="请输入出差ID" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>

@@ -1,7 +1,7 @@
 <template>
 	<div class="app-container">
 		<!-- 筛选框 -->
-		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
+		<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
 			<el-form-item label="开始时间" prop="endDate">
 				<el-date-picker v-model="queryParams.endDate" type="datetime" placeholder="选择开始时间" value-format="yyyy-MM-dd HH:mm:ss" size="mini" clearable></el-date-picker>
 			</el-form-item>

@@ -1,5 +1,5 @@
 <template>
-	<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="70px">
+	<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
 		<el-row>
 			<el-col :span="6">
 				<el-form-item label="开始时间" prop="beginTime">

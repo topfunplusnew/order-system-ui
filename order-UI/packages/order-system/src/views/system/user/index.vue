@@ -22,7 +22,7 @@
 			</el-col>
 			<!--用户数据-->
 			<el-col :span="20" :xs="24">
-				<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
+				<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
 					<el-form-item label="用户名称" prop="userName">
 						<el-input v-model="queryParams.userName" placeholder="请输入用户名称" clearable style="width: 240px" @keyup.enter.native="handleQuery" />
 					</el-form-item>
