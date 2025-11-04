@@ -1,6 +1,6 @@
 <template>
 	<div class="app-container">
-		<el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="100px">
+		<el-form id="top-search-form-item" :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="150">
 			<el-form-item label="仓库名称" prop="supplier">
 				<el-row>
 					<el-col :span="20">

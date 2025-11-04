@@ -1,6 +1,6 @@
 <template>
 	<div class="app-container">
-		<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
+		<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="190px">
 			<el-form-item label="加油卡卡号" prop="oilCardNo">
 				<el-input v-model="queryParams.oilCardNo" placeholder="请输入加油卡卡号" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
@@ -209,7 +209,6 @@ import { listOilCardConsume, getOilCardConsume, delOilCardConsume, addOilCardCon
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import CheckFiles from '@/components/CheckFiles.vue';
 import { mixin_checkfile } from '@/views/dashboard/mixins/checkfiles/mixin_checkfile';
-import FileUpload from '@/components/FileUpload/index.vue';
 import UploadFilesButton from '@/components/UploadFilesButton/index.vue';
 import SearchOption from '@/components/SearchOption.vue';
 import { listOilCard } from '@/api/system/oilCard';
@@ -221,7 +220,6 @@ export default {
 	components: {
 		SearchOption,
 		CheckFiles,
-		FileUpload,
 		UploadFilesButton
 	},
 	mixins: [mixin_printHTML, mixin_checkfile],

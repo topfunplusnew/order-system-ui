@@ -3,7 +3,7 @@
 		<h2>油卡消费充值明细表</h2>
 
 		<el-row>
-			<el-form ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="100px">
+			<el-form id="top-search-form-item" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
 				<el-form-item label="油卡号">
 					<el-input v-model="queryParams.oilCardNo" placeholder="请输入油卡号" clearable size="mini" />
 				</el-form-item>

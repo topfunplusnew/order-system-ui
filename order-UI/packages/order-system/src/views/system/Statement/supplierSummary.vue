@@ -7,7 +7,7 @@
 			<el-button type="primary" icon="el-icon-refresh" @click="refresh">刷新</el-button>
 		</el-row>
 		<hr color="#e6e6e6" />
-		<el-form ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
+		<el-form id="top-search-form-item" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
 			<el-form-item label="开始时间" prop="beginTime">
 				<el-date-picker v-model="queryParams.beginTime" type="date" placeholder="请选择开始时间" value-format="yyyy-MM-dd" clearable></el-date-picker>
 			</el-form-item>

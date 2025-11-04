@@ -2,7 +2,7 @@
 	<div class="freight-info">
 		<!-- 搜索区域 -->
 		<div class="search-area">
-			<el-form :inline="true" :model="searchForm" ref="form" :rules="rules" class="demo-form-inline" size="mini">
+			<el-form id="top-search-form-item" :inline="true" :model="searchForm" ref="form" :rules="rules" class="demo-form-inline" size="mini" label-width="150">
 				<el-form-item label="开始时间：" prop="startTime">
 					<el-date-picker v-model="searchForm.startTime" type="date" placeholder="请选择开始时间" value-format="yyyy-MM-dd" size="mini"></el-date-picker>
 				</el-form-item>

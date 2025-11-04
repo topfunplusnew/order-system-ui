@@ -1,7 +1,7 @@
 <template>
 	<div class="app-container">
 		<!-- 查询表单 -->
-		<el-form ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
+		<el-form id="top-search-form-item" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
 			<el-form-item label="付款方" prop="payerCompanyAccount">
 				<el-input v-model="queryParams.payerCompanyAccount" placeholder="请输入付款方" clearable />
 			</el-form-item>

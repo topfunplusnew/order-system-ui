@@ -2,7 +2,7 @@
 	<div class="customer-total">
 		<!-- 搜索区域 -->
 		<div class="search-area">
-			<el-form :inline="true" :model="searchForm" ref="form" :rules="rules" class="demo-form-inline" size="mini">
+			<el-form id="top-search-form-item" :inline="true" :model="searchForm" ref="form" :rules="rules" class="demo-form-inline" size="mini" label-width="150">
 				<el-form-item label="时间：" prop="endTime">
 					<el-date-picker clearable v-model="searchForm.endTime" type="date" placeholder="请选择时间" value-format="yyyy-MM-dd" size="mini"></el-date-picker>
 				</el-form-item>

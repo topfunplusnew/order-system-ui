@@ -1,6 +1,6 @@
 <template>
 	<div class="app-container">
-		<el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" label-width="100px" class="search-form">
+		<el-form id="top-search-form-item" :model="queryParams" ref="queryForm" size="mini" :inline="true" label-width="150" class="search-form">
 			<el-form-item label="级别名" prop="levelName">
 				<el-input v-model="queryParams.levelName" placeholder="请输入级别名称" clearable />
 			</el-form-item>

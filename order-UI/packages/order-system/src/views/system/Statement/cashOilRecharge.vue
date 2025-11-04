@@ -3,7 +3,7 @@
 		<h2 class="title">现金加油台账</h2>
 
 		<!-- 查询条件 -->
-		<el-form :model="query" label-width="80px" class="filter-form">
+		<el-form id="top-search-form-item" :model="query" label-width="150px" class="filter-form">
 			<div class="form-row">
 				<el-form-item label="车牌号">
 					<el-input v-model="query.carNo" placeholder="请输入车牌号" size="mini" clearable />

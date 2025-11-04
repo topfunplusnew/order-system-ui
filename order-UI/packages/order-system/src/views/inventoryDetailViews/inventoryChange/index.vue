@@ -2,7 +2,7 @@
 	<div class="inventory-change">
 		<!-- 查询区域 -->
 		<div class="search-area">
-			<el-form :inline="true" :model="searchForm" ref="form" size="mini" class="demo-form-inline">
+			<el-form id="top-search-form-item" :inline="true" :model="searchForm" ref="form" size="mini" class="demo-form-inline" label-width="150">
 				<el-form-item label="开始日期" prop="startDate">
 					<el-date-picker v-model="searchForm.startDate" type="date" placeholder="请选择开始日期" value-format="yyyy-MM-dd" size="mini"></el-date-picker>
 				</el-form-item>

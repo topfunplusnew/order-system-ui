@@ -364,7 +364,7 @@ export default {
 <template>
 	<div>
 		<div class="container">
-			<el-form :inline="true" :model="changeForm" class="search-form">
+			<el-form id="top-search-form-item" :inline="true" :model="changeForm" class="search-form" label-width="150px">
 				<el-form-item label="日期查询">
 					<el-date-picker v-model="changeForm.endTime" type="date" value-format="yyyy-MM-dd" placeholder="选择日期" @change="handleTopDateChange"></el-date-picker>
 				</el-form-item>

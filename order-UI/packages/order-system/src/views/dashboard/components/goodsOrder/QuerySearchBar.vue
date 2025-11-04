@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<el-form ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="110">
+		<el-form id="top-search-form-item" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150">
 			<el-form-item v-if="shouldShowField('dateRange')" label="时间范围">
 				<el-date-picker
 					v-model="dateRange"

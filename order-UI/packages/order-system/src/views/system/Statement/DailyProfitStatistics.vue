@@ -118,7 +118,7 @@ export default {
 
 <template>
 	<div class="app-container">
-		<el-form :model="queryParams" ref="queryForm" :inline="true" class="search-form" size="mini">
+		<el-form id="top-search-form-item" :model="queryParams" ref="queryForm" :inline="true" class="search-form" size="mini" label-width="150px">
 			<el-form-item label="日期">
 				<el-date-picker v-model="queryParams.date" type="date" placeholder="选择日期" value-format="yyyy-MM-dd" style="width: 240px" size="mini" />
 			</el-form-item>

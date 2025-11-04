@@ -1,7 +1,7 @@
 <template>
 	<div class="bank-statement">
 		<!-- 查询条件部分 -->
-		<el-form :model="query" label-width="100px" class="query-form" :inline="true" size="mini">
+		<el-form id="top-search-form-item" :model="query" class="query-form" :inline="true" size="mini" label-width="150px">
 			<el-form-item label="开始日期：" prop="startTime">
 				<el-date-picker v-model="query.startTime" type="date" placeholder="选择开始日期" size="mini" value-format="yyyy-MM-dd" :clearable="false"></el-date-picker>
 			</el-form-item>
@@ -9,7 +9,7 @@
 				<el-date-picker
 					v-model="query.endTime"
 					type="date"
-					placeholder="选择结束日期"
+					placeholder="选择结束日期"  
 					size="mini"
 					value-format="yyyy-MM-dd"
 					:clearable="false"

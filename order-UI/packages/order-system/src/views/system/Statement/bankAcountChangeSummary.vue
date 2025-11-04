@@ -97,7 +97,7 @@ export default {
 			<hr color="#e6e6e6" />
 			<!--    时间范围搜索行-->
 			<el-row>
-				<el-form ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="100px">
+				<el-form id="top-search-form-item" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
 					<el-form-item label="时间" prop="companyName">
 						<el-date-picker v-model="queryParams.endTime" type="date" size="mini" value-format="yyyy-MM-dd" placeholder="选择日期"></el-date-picker>
 					</el-form-item>

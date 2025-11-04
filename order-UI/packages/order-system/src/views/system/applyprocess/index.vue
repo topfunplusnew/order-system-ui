@@ -553,7 +553,7 @@ export default {
 
 <template>
 	<div class="app-container">
-		<el-form ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="100px">
+		<el-form id="top-search-form-item" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150">
 			<el-form-item label="开始日期" prop="fundsDateBegin">
 				<el-date-picker clearable v-model="queryParams.fundsDateBegin" type="date" placeholder="开始日期" value-format="yyyy-MM-dd"></el-date-picker>
 			</el-form-item>

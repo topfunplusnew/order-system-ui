@@ -252,7 +252,7 @@ export default {
 
 <template>
 	<div class="app-container">
-		<el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" label-width="90px" class="query-form">
+		<el-form id="top-search-form-item" :model="queryParams" ref="queryForm" size="mini" :inline="true" label-width="150" class="query-form">
 			<el-form-item label="开始时间">
 				<el-date-picker v-model="queryParams.startDate" type="date" value-format="yyyy-MM-dd" placeholder="请选择开始时间" clearable />
 			</el-form-item>

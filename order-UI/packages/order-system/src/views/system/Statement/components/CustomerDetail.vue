@@ -254,7 +254,7 @@ export default {
 
 <template>
 	<div class="app-container">
-		<el-form :inline="true" :model="searchForm" class="demo-form-inline" size="mini">
+		<el-form id="top-search-form-item" :inline="true" :model="searchForm" class="demo-form-inline" size="mini" label-width="150px">
 			<el-form-item label="客户" prop="customer">
 				<el-row>
 					<el-col :span="4">

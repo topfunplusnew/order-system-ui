@@ -1,7 +1,7 @@
 <template>
 	<div class="total-money-change">
 		<!-- 搜索框 -->
-		<el-form :inline="true" :model="searchForm" class="search-form">
+		<el-form id="top-search-form-item" :inline="true" :model="searchForm" class="search-form" label-width="150px">
 			<el-form-item label="日期">
 				<el-date-picker v-model="searchForm.endTime" value-format="yyyy-MM-dd" type="date" placeholder="选择日期"></el-date-picker>
 			</el-form-item>

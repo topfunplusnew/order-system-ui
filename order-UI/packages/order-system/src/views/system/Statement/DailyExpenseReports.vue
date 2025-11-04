@@ -1,6 +1,6 @@
 <template>
 	<div class="daily-expense-reports">
-		<el-form ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="110">
+		<el-form id="top-search-form-item" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
 			<el-form-item label="开始时间" prop="startTime">
 				<el-date-picker v-model="queryParams.startTime" type="date" placeholder="开始日期" value-format="yyyy-MM-dd" />
 			</el-form-item>
