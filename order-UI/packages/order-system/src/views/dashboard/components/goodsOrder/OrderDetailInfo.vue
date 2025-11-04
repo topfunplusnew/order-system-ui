@@ -176,7 +176,7 @@ export default {
 	<div>
 		<el-row>
 			<el-col :span="8">
-				<span style="font-weight: bolder">单货物详情列表</span>
+				<span style="font-weight: bolder">订单货物详情列表</span>
 			</el-col>
 		</el-row>
 		<el-row>
