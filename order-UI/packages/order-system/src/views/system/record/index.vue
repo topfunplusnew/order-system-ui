@@ -70,25 +70,25 @@
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[2].visible" label="金额" align="center" prop="amount" />
-			<el-table-column v-if="columns[3].visible" label="收入方/资金流入方" align="center" prop="targetCompanyName" show-overflow-tooltip />
-			<el-table-column v-if="columns[4].visible" label="支出方/资金流出方" align="center" prop="sourceCompanyName" show-overflow-tooltip />
-			<el-table-column v-if="columns[5].visible" label="资金流入户名" align="center" prop="targetAccountName" show-overflow-tooltip />
+			<el-table-column v-if="columns[3].visible" label="收入方/资金流入方" align="center" prop="targetCompanyName" show-overflow-tooltip width="180" />
+			<el-table-column v-if="columns[4].visible" label="支出方/资金流出方" align="center" prop="sourceCompanyName" show-overflow-tooltip width="180" />
+			<el-table-column v-if="columns[5].visible" label="资金流入户名" align="center" prop="targetAccountName" show-overflow-tooltip width="180" />
 			<el-table-column v-if="columns[6].visible" label="资金流入账号" align="center" prop="targetBankNo" show-overflow-tooltip width="170" />
-			<el-table-column v-if="columns[7].visible" label="资金流出户名" align="center" prop="sourceAccountName" show-overflow-tooltip />
+			<el-table-column v-if="columns[7].visible" label="资金流出户名" align="center" prop="sourceAccountName" show-overflow-tooltip width="180" />
 			<el-table-column v-if="columns[8].visible" label="资金流出账号" align="center" prop="sourceBankNo" show-overflow-tooltip width="170" />
-			<el-table-column v-if="columns[9].visible" label="收入公司类型" align="center" prop="targetCompanyType" show-overflow-tooltip />
-			<el-table-column v-if="columns[10].visible" label="收入方支付类型" align="center" prop="targetPaymentType" show-overflow-tooltip />
-			<el-table-column v-if="columns[11].visible" label="支出方公司类型" align="center" prop="sourceCompanyType" show-overflow-tooltip />
-			<el-table-column v-if="columns[12].visible" label="支出方支付类型" align="center" prop="sourcePaymentType" show-overflow-tooltip />
-			<el-table-column v-if="columns[13].visible" label="收入方开户行" align="center" prop="targetBankName" show-overflow-tooltip />
+			<el-table-column v-if="columns[9].visible" label="收入公司类型" align="center" prop="targetCompanyType" show-overflow-tooltip width="130" />
+			<el-table-column v-if="columns[10].visible" label="收入方支付类型" align="center" prop="targetPaymentType" show-overflow-tooltip width="180" />
+			<el-table-column v-if="columns[11].visible" label="支出方公司类型" align="center" prop="sourceCompanyType" show-overflow-tooltip width="130" />
+			<el-table-column v-if="columns[12].visible" label="支出方支付类型" align="center" prop="sourcePaymentType" show-overflow-tooltip width="180" />
+			<el-table-column v-if="columns[13].visible" label="收入方开户行" align="center" prop="targetBankName" show-overflow-tooltip width="180" />
 			<!-- TODO 这地方后续需要更正 只是一个类型 用来标识冲抵类型 -->
 			<el-table-column v-if="columns[14].visible" label="冲抵类型" align="center" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<span>{{ scope.row.type === CASH_TYPE.CASH_RECORD ? '冲抵货款' : '内部转账' }}</span>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[15].visible" label="支出方开户行" align="center" prop="sourceBankName" show-overflow-tooltip />
-			<el-table-column v-if="columns[16].visible" label="备注" align="center" prop="remarks" show-overflow-tooltip />
+			<el-table-column v-if="columns[15].visible" label="支出方开户行" align="center" prop="sourceBankName" show-overflow-tooltip width="180" />
+			<el-table-column v-if="columns[16].visible" label="备注" align="center" prop="remarks" show-overflow-tooltip width="180" />
 			<el-table-column v-if="columns[17].visible" label="账户类型" align="center" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<div>
