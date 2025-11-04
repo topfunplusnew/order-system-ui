@@ -451,7 +451,7 @@
 		<!--    选择银行卡的页面-->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="请填写付款信息" :visible.sync="chooseBankDialogVisible" width="600px">
 			<div>
-				<el-form :model="chooseInfo" label-width="150px">
+				<el-form :model="chooseInfo" label-width="170px">
 					<el-form-item label="对方银行账户类型" prop="selfBankNo">
 						<BankType
 							:bill-type="BankAcceptanceType.PAY_TYPE.PAYMENT"
@@ -472,10 +472,10 @@
 					</el-form-item>
 					<el-form-item label="我方户名" prop="selfAccountsName">
 						<el-row>
-							<el-col :span="10">
+							<el-col :span="22">
 								<el-input v-model="chooseInfo.selfAccountsName" placeholder="请输入我方户名" />
 							</el-col>
-							<el-col :span="3">
+							<el-col :span="2">
 								<SearchOption
 									:limit-info="{ acountsType: '己方公司' }"
 									:get-data="listBankAccount"
@@ -960,10 +960,10 @@ export default {
 		},
 		// 部分重置 - 保留银行账户类型和付款类型
 		partialReset() {
-			// 保存原始的payType，如果是字符串格式则转换为数组格式以便级联选择器使用
+			// 保存原始的payType，如果是字符串格式则通过searchSubjectFromMap查找完整路径数组
 			let preservedPayType = this.form.payType;
 			if (typeof preservedPayType === 'string' && preservedPayType) {
-				preservedPayType = preservedPayType.split('-');
+				preservedPayType = this.searchSubjectFromMap(preservedPayType);
 			}
 			const preservedSelfBankCardType = this.form.selfBankCardType;
 			const preservedOtherBankCardType = this.form.otherBankCardType;
@@ -1177,9 +1177,11 @@ export default {
 					}
 				}
 
-				// 设置级联选择器的值
+				// 设置级联选择器的值 - 使用searchSubjectFromMap查找完整路径数组
 				if (this.form.payType) {
-					this.form.payType = this.form.payType.split('-');
+					if (typeof this.form.payType === 'string') {
+						this.form.payType = this.searchSubjectFromMap(this.form.payType);
+					}
 				}
 
 				// 对方类型直接已在 form.companyType 中

@@ -707,10 +707,10 @@ export default {
 		},
 		// 部分重置 - 保留银行账户类型和收款类型
 		partialReset() {
-			// 保存原始的receiveType，如果是字符串格式则转换为数组格式以便级联选择器使用
+			// 保存原始的receiveType，如果是字符串格式则通过searchSubjectFromMap查找完整路径数组
 			let preservedReceiveType = this.form.receiveType;
 			if (typeof preservedReceiveType === 'string' && preservedReceiveType) {
-				preservedReceiveType = preservedReceiveType.split('-');
+				preservedReceiveType = this.searchSubjectFromMap(preservedReceiveType);
 			}
 			const preservedSelfBankCardType = this.form.selfBankCardType;
 			const preservedOtherBankCardType = this.form.otherBankCardType;
@@ -857,7 +857,10 @@ export default {
 				}
 			};
 			this.$bus.$emit('changeFlag', receiveMoneyData.bankacceptanceId !== null ? receiveMoneyData.bankacceptanceId : false);
-			this.form.receiveType = receiveMoneyData.receiveType.split('-');
+			// 使用searchSubjectFromMap查找完整路径数组
+			if (receiveMoneyData.receiveType) {
+				this.form.receiveType = this.searchSubjectFromMap(receiveMoneyData.receiveType);
+			}
 			// 处理银行账户类型
 			let flag = false;
 			if (!receiveMoneyData.bankacceptanceId) {

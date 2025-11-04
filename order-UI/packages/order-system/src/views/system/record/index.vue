@@ -1704,12 +1704,12 @@ export default {
 			this.$nextTick(() => {
 				// 根据冲抵类型处理支付类型
 				if (this.cashType === CASH_TYPE.CASH_RECORD) {
-					// 冲抵货款：将字符串转换为数组（用于级联选择器）
+					// 冲抵货款：使用searchSubjectFromMap查找完整路径数组（用于级联选择器）
 					if (data.sourcePaymentType) {
-						this.form.sourcePaymentType = data.sourcePaymentType.split('-');
+						this.form.sourcePaymentType = this.searchSubjectFromMap(data.sourcePaymentType);
 					}
 					if (data.targetPaymentType) {
-						this.form.targetPaymentType = data.targetPaymentType.split('-');
+						this.form.targetPaymentType = this.searchSubjectFromMap(data.targetPaymentType);
 					}
 				}
 				// 填充id 用于区分是新增还是修改

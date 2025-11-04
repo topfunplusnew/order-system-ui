@@ -56,20 +56,20 @@ export var mixin_payment_subject = {
 		// 从查找表中查找某一个完整科目字符串对应的路径
 		searchSubjectFromMap(subjectString) {
 			if (!subjectString) return [];
-			
+
 			// 标准化输入的 subjectString，确保格式一致（去掉首尾空格，统一分隔符）
 			const normalizedSubjectString = subjectString.trim();
-			
+
 			// 递归查找节点
 			const findNodePath = (nodes, path = []) => {
 				for (let node of nodes) {
 					const currentPath = [...path, node.title];
-					
+
 					// 检查当前节点的 fullSubjectString 是否匹配
 					if (node.fullSubjectString === normalizedSubjectString) {
 						return currentPath;
 					}
-					
+
 					// 如果有子节点，递归查找
 					if (node.children && node.children.length > 0) {
 						const result = findNodePath(node.children, currentPath);
@@ -80,7 +80,7 @@ export var mixin_payment_subject = {
 				}
 				return null;
 			};
-			
+
 			// 从根节点开始查找
 			const path = findNodePath(this.paymentTypeTree);
 			return path || [];
