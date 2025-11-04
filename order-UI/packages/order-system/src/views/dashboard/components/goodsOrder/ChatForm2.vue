@@ -56,6 +56,91 @@ export default {
 				type: 'html',
 				targetStyles: ['*'] // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
 			});
+		},
+		async copyTable() {
+			try {
+				// 获取表格元素
+				const table = document.getElementById('copyTable');
+				if (!table) {
+					this.$message.error('未找到表格');
+					return;
+				}
+
+				// 创建一个临时的表格副本，包含所有样式
+				const tableClone = table.cloneNode(true);
+
+				// 创建一个包含样式的 HTML 字符串
+				const htmlContent = `
+					<html>
+						<head>
+							<meta charset="utf-8">
+							<style>
+								table {
+									border-collapse: collapse;
+									width: 100%;
+								}
+								table, th, td {
+									border: 1px solid #000;
+								}
+								th, td {
+									text-align: center;
+									padding: 4px;
+									font-size: 14px;
+								}
+								td[style*="text-align: center"] {
+									text-align: center !important;
+								}
+								td[style*="text-align: left"] {
+									text-align: left !important;
+								}
+							</style>
+						</head>
+						<body>
+							${tableClone.outerHTML}
+						</body>
+					</html>
+				`;
+
+				// 创建纯文本版本（备用）
+				const textContent = Array.from(tableClone.querySelectorAll('tr'))
+					.map(row => {
+						return Array.from(row.querySelectorAll('th, td'))
+							.map(cell => cell.textContent.trim())
+							.join('\t');
+					})
+					.join('\n');
+
+				// 使用 Clipboard API 复制
+				const clipboardItem = new ClipboardItem({
+					'text/html': new Blob([htmlContent], { type: 'text/html' }),
+					'text/plain': new Blob([textContent], { type: 'text/plain' })
+				});
+
+				await navigator.clipboard.write([clipboardItem]);
+				this.$message.success('表格已复制到剪贴板，可直接粘贴到 Excel');
+			} catch (error) {
+				console.error('复制失败:', error);
+				// 降级方案：使用传统的 execCommand
+				try {
+					const table = document.getElementById('copyTable');
+					if (!table) {
+						this.$message.error('未找到表格');
+						return;
+					}
+
+					const range = document.createRange();
+					range.selectNodeContents(table);
+					const selection = window.getSelection();
+					selection.removeAllRanges();
+					selection.addRange(range);
+					document.execCommand('copy');
+					selection.removeAllRanges();
+					this.$message.success('表格已复制到剪贴板');
+				} catch (fallbackError) {
+					console.error('降级复制方案也失败:', fallbackError);
+					this.$message.error('复制失败，请手动选择表格复制');
+				}
+			}
 		}
 	}
 };
@@ -65,6 +150,7 @@ export default {
 	<div>
 		<el-row>
 			<el-button @click="printHTML">打印</el-button>
+			<el-button type="primary" @click="copyTable">复制表格</el-button>
 		</el-row>
 		<div id="printBoxs" class="invoice-container">
 			<div class="invoice-title">发货单</div>
@@ -76,7 +162,7 @@ export default {
 				<div>单据编号：{{ orderInfo.code }}</div>
 			</div>
 
-			<table>
+			<table id="copyTable">
 				<thead>
 					<tr>
 						<th>商品名称</th>
