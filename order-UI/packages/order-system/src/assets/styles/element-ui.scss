@@ -65,13 +65,167 @@
 .el-dialog > .el-dialog__header {
 	padding: 12px 25px 8px; // 从 20px 25px 10px 改为 12px 25px 8px，缩小上下间距
 	border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+	font-size: 26px !important; // 标题字体大小改为 26px
+	color: #000000 !important; // 字体颜色改为纯黑
+	font-weight: bold !important; // 加粗
+	line-height: 1.4 !important; // 添加行高，让标题更紧凑
 }
 
 .el-dialog > .el-dialog__title {
-	font-size: 1.1em; // 从 1.25em 改为 1.1em，缩小标题字体
-	color: #333333;
-	font-weight: 600;
-	line-height: 1.4; // 添加行高，让标题更紧凑
+	font-size: 26px !important; // 标题字体大小改为 26px
+	color: #000000 !important; // 字体颜色改为纯黑
+	font-weight: bold !important; // 加粗
+	line-height: 1.4 !important; // 添加行高，让标题更紧凑
+}
+// 适用于顶部搜索框的整套样式
+#top-search-form-item {
+	font-size: 20px !important;
+	color: #000000 !important;
+	font-weight: bold !important;
+	line-height: 1.4 !important;
+
+	// 表单项label样式
+	.el-form-item {
+		margin-bottom: 16px !important;
+
+		.el-form-item__label {
+			font-size: 20px !important;
+			color: #000000 !important;
+			font-weight: bold !important;
+			line-height: 36px !important;
+			padding: 0 8px 0 0 !important;
+		}
+
+		.el-form-item__content {
+			line-height: 36px !important;
+
+			// 输入框样式 - 黑色边框并放大
+			.el-input {
+				font-size: 14px !important;
+
+				.el-input__inner {
+					height: 36px !important;
+					line-height: 36px !important;
+					padding: 0 12px !important;
+					font-size: 14px !important;
+					border: 1px solid #323232 !important;
+					border-radius: 4px !important;
+					color: #000000 !important;
+					font-weight: normal !important;
+
+					&:hover {
+						border-color: #000000 !important;
+					}
+
+					&:focus {
+						border-color: #000000 !important;
+					}
+
+					&::placeholder {
+						font-size: 13px !important;
+						color: #999999 !important;
+						font-weight: normal !important;
+					}
+				}
+
+				.el-input__suffix,
+				.el-input__prefix {
+					.el-input__suffix-inner,
+					.el-input__prefix-inner {
+						line-height: 36px !important;
+
+						.el-input__icon {
+							font-size: 14px !important;
+							line-height: 36px !important;
+						}
+					}
+				}
+			}
+
+			// 选择器样式
+			.el-select {
+				.el-input .el-input__inner {
+					height: 36px !important;
+					line-height: 36px !important;
+					border: 1px solid #000000 !important;
+					font-size: 14px !important;
+					color: #000000 !important;
+					padding: 0 30px 0 12px !important;
+
+					&:hover {
+						border-color: #000000 !important;
+					}
+
+					&:focus {
+						border-color: #000000 !important;
+					}
+				}
+			}
+
+			// 级联选择器样式
+			.el-cascader {
+				.el-input .el-input__inner {
+					height: 36px !important;
+					line-height: 36px !important;
+					border: 1px solid #000000 !important;
+					font-size: 14px !important;
+					color: #000000 !important;
+					padding: 0 30px 0 12px !important;
+
+					&:hover {
+						border-color: #000000 !important;
+					}
+
+					&:focus {
+						border-color: #000000 !important;
+					}
+				}
+			}
+
+			// 日期选择器样式
+			.el-date-editor {
+				&.el-input .el-input__inner {
+					height: 36px !important;
+					line-height: 36px !important;
+					border: 1px solid #000000 !important;
+					font-size: 14px !important;
+					color: #000000 !important;
+					padding: 0 30px 0 12px !important;
+
+					&:hover {
+						border-color: #000000 !important;
+					}
+
+					&:focus {
+						border-color: #000000 !important;
+					}
+				}
+
+				&.el-range-editor {
+					height: 36px !important;
+					line-height: 36px !important;
+					border: 1px solid #000000 !important;
+
+					.el-range-input {
+						font-size: 14px !important;
+						height: 34px !important;
+						line-height: 34px !important;
+						color: #000000 !important;
+					}
+
+					.el-range-separator {
+						font-size: 14px !important;
+						line-height: 34px !important;
+						color: #000000 !important;
+					}
+
+					&:hover {
+						border-color: #000000 !important;
+					}
+				}
+			}
+		}
+	}
 }
 
 .el-dialog > .el-dialog__body {
@@ -200,10 +354,12 @@
 	// 下拉选项调整
 	.el-select-dropdown {
 		.el-select-dropdown__item {
-			height: 22px; // 从26px缩小到22px
-			line-height: 22px;
-			padding: 0 8px; // 从10px缩小到8px
-			font-size: 11px; // 从12px缩小到11px
+			height: 32px !important;
+			line-height: 32px !important;
+			padding: 0 8px !important;
+			font-size: 19px !important;
+			color: #000000 !important;
+			font-weight: bold !important;
 		}
 	}
 }
@@ -439,10 +595,12 @@
 // 全局选择器下拉选项调整
 .el-select-dropdown {
 	.el-select-dropdown__item {
-		height: 22px !important;
-		line-height: 22px !important;
+		height: 32px !important;
+		line-height: 32px !important;
 		padding: 0 8px !important;
-		font-size: 11px !important;
+		font-size: 16px !important;
+		color: #000000 !important;
+		font-weight: bold !important;
 	}
 }
 
@@ -481,9 +639,11 @@
 // 全局级联面板调整
 .el-cascader-panel {
 	.el-cascader-node {
-		height: 22px !important;
-		line-height: 22px !important;
-		font-size: 11px !important;
+		height: 32px !important;
+		line-height: 32px !important;
+		font-size: 16px !important;
+		color: #000000 !important;
+		font-weight: bold !important;
 		padding: 0 8px !important;
 	}
 }

@@ -98,14 +98,15 @@
 					{{ scope.row.extraInfo && scope.row.extraInfo.comment }}
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[9].visible" label="订单信息" align="center" prop="isOrderTax" width="180" show-overflow-tooltip>
+			<!-- 2025-11-4 去除订单信息查看 -->
+			<!-- <el-table-column v-if="columns[9].visible" label="订单信息" align="center" prop="isOrderTax" width="180" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<el-row v-if="scope.row.isOrderTax === 0">无关联订单</el-row>
 					<el-row v-else>
 						<el-button size="mini" type="text" @click="checkOrderInfo(scope.row)">查看订单信息</el-button>
 					</el-row>
 				</template>
-			</el-table-column>
+			</el-table-column> -->
 			<el-table-column label="银行回执单" align="center" prop="attachmentList">
 				<template #default="scope">
 					<div v-if="Array.isArray(scope.row.attachmentList)">
