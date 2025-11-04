@@ -101,17 +101,17 @@
 
 			// 输入框样式 - 黑色边框并放大
 			.el-input {
-				font-size: 14px !important;
+				font-size: 16px !important;
 
 				.el-input__inner {
 					height: 36px !important;
 					line-height: 36px !important;
 					padding: 0 12px !important;
-					font-size: 14px !important;
+					font-size: 16px !important; // 字体大小改为16px
 					border: 1px solid #323232 !important;
 					border-radius: 4px !important;
-					color: #000000 !important;
-					font-weight: normal !important;
+					color: #000000 !important; // 黑色
+					font-weight: normal !important; // 不加粗
 
 					&:hover {
 						border-color: #000000 !important;
@@ -148,8 +148,9 @@
 					height: 36px !important;
 					line-height: 36px !important;
 					border: 1px solid #000000 !important;
-					font-size: 14px !important;
-					color: #000000 !important;
+					font-size: 16px !important; // 字体大小改为16px
+					color: #000000 !important; // 黑色
+					font-weight: normal !important; // 不加粗
 					padding: 0 30px 0 12px !important;
 
 					&:hover {
@@ -168,8 +169,9 @@
 					height: 36px !important;
 					line-height: 36px !important;
 					border: 1px solid #000000 !important;
-					font-size: 14px !important;
-					color: #000000 !important;
+					font-size: 16px !important; // 字体大小改为16px
+					color: #000000 !important; // 黑色
+					font-weight: normal !important; // 不加粗
 					padding: 0 30px 0 12px !important;
 
 					&:hover {
@@ -188,8 +190,9 @@
 					height: 36px !important;
 					line-height: 36px !important;
 					border: 1px solid #000000 !important;
-					font-size: 14px !important;
-					color: #000000 !important;
+					font-size: 16px !important; // 字体大小改为16px
+					color: #000000 !important; // 黑色
+					font-weight: normal !important; // 不加粗
 					padding: 0 30px 0 12px !important;
 
 					&:hover {
@@ -207,10 +210,11 @@
 					border: 1px solid #000000 !important;
 
 					.el-range-input {
-						font-size: 14px !important;
+						font-size: 16px !important; // 字体大小改为16px
 						height: 34px !important;
 						line-height: 34px !important;
-						color: #000000 !important;
+						color: #000000 !important; // 黑色
+						font-weight: normal !important; // 不加粗
 					}
 
 					.el-range-separator {
@@ -358,9 +362,9 @@
 			height: 32px !important;
 			line-height: 32px !important;
 			padding: 0 8px !important;
-			font-size: 19px !important;
-			color: #000000 !important;
-			font-weight: bold !important;
+			font-size: 16px !important; // 字体大小改为16px
+			color: #000000 !important; // 黑色
+			font-weight: normal !important; // 不加粗
 		}
 	}
 }
@@ -483,10 +487,10 @@
 		height: 24px !important;
 		line-height: 24px !important;
 		padding: 0 8px !important;
-		font-size: 11px !important;
+		font-size: 16px !important; // 字体大小改为16px
 		// 有值时的字体样式
-		color: #181818 !important;
-		font-weight: bold !important;
+		color: #000000 !important; // 黑色
+		font-weight: normal !important; // 不加粗
 
 		&::placeholder {
 			font-size: 10px !important;
@@ -496,9 +500,9 @@
 
 		// 禁用状态下的字体样式增强
 		&:disabled {
-			color: #303133 !important; // 更深的字体颜色
-			font-size: 12px !important; // 增大字体
-			font-weight: 600 !important; // 加粗字体
+			color: #000000 !important; // 黑色
+			font-size: 16px !important; // 字体大小改为16px
+			font-weight: normal !important; // 不加粗
 			background-color: #f5f7fa !important; // 保持背景色
 			border-color: #e4e7ed !important; // 保持边框色
 		}
@@ -517,9 +521,9 @@
 	// 禁用状态的输入框整体样式
 	&.is-disabled {
 		.el-input__inner {
-			color: #303133 !important;
-			font-size: 12px !important;
-			font-weight: 600 !important;
+			color: #000000 !important; // 黑色
+			font-size: 16px !important; // 字体大小改为16px
+			font-weight: normal !important; // 不加粗
 		}
 	}
 }
@@ -530,11 +534,11 @@
 
 	.el-textarea__inner {
 		padding: 4px 8px !important; // 从6px 10px缩小到4px 8px
-		font-size: 11px !important;
+		font-size: 16px !important; // 字体大小改为16px
 		line-height: 1.2 !important; // 从1.3缩小到1.2
 		// 有值时的字体样式
-		color: #181818 !important;
-		font-weight: bold !important;
+		color: #000000 !important; // 黑色
+		font-weight: normal !important; // 不加粗
 
 		&::placeholder {
 			font-size: 10px !important;
@@ -544,9 +548,9 @@
 
 		// 禁用状态下的字体样式增强
 		&:disabled {
-			color: #303133 !important; // 更深的字体颜色
-			font-size: 12px !important; // 增大字体
-			font-weight: 600 !important; // 加粗字体
+			color: #000000 !important; // 黑色
+			font-size: 16px !important; // 字体大小改为16px
+			font-weight: normal !important; // 不加粗
 			background-color: #f5f7fa !important; // 保持背景色
 		}
 	}
@@ -554,9 +558,9 @@
 	// 禁用状态的textarea整体样式
 	&.is-disabled {
 		.el-textarea__inner {
-			color: #303133 !important;
-			font-size: 12px !important;
-			font-weight: 600 !important;
+			color: #000000 !important; // 黑色
+			font-size: 16px !important; // 字体大小改为16px
+			font-weight: normal !important; // 不加粗
 		}
 	}
 }
@@ -566,9 +570,10 @@
 	.el-input .el-input__inner {
 		height: 24px !important;
 		line-height: 24px !important;
+		font-size: 16px !important; // 字体大小改为16px
 		// 有值时的字体样式
-		color: #666666 !important;
-		font-weight: bold !important;
+		color: #000000 !important; // 黑色
+		font-weight: normal !important; // 不加粗
 
 		&::placeholder {
 			color: transparent !important; // 透明色，隐藏placeholder
@@ -577,18 +582,18 @@
 
 		// 禁用状态下的字体样式增强
 		&:disabled {
-			color: #303133 !important; // 更深的字体颜色
-			font-size: 12px !important; // 增大字体
-			font-weight: 600 !important; // 加粗字体
+			color: #000000 !important; // 黑色
+			font-size: 16px !important; // 字体大小改为16px
+			font-weight: normal !important; // 不加粗
 		}
 	}
 
 	// 禁用状态的选择器整体样式
 	&.is-disabled {
 		.el-input .el-input__inner {
-			color: #303133 !important;
-			font-size: 12px !important;
-			font-weight: 600 !important;
+			color: #000000 !important; // 黑色
+			font-size: 16px !important; // 字体大小改为16px
+			font-weight: normal !important; // 不加粗
 		}
 	}
 }
@@ -599,9 +604,9 @@
 		height: 32px !important;
 		line-height: 32px !important;
 		padding: 0 8px !important;
-		font-size: 16px !important;
-		color: #000000 !important;
-		font-weight: bold !important;
+		font-size: 16px !important; // 字体大小改为16px
+		color: #000000 !important; // 黑色
+		font-weight: normal !important; // 不加粗
 	}
 }
 
@@ -610,9 +615,10 @@
 	.el-input .el-input__inner {
 		height: 24px !important;
 		line-height: 24px !important;
+		font-size: 16px !important; // 字体大小改为16px
 		// 有值时的字体样式
-		color: #666666 !important;
-		font-weight: bold !important;
+		color: #000000 !important; // 黑色
+		font-weight: normal !important; // 不加粗
 
 		&::placeholder {
 			color: transparent !important; // 透明色，隐藏placeholder
@@ -621,18 +627,18 @@
 
 		// 禁用状态下的字体样式增强
 		&:disabled {
-			color: #303133 !important; // 更深的字体颜色
-			font-size: 12px !important; // 增大字体
-			font-weight: 600 !important; // 加粗字体
+			color: #000000 !important; // 黑色
+			font-size: 16px !important; // 字体大小改为16px
+			font-weight: normal !important; // 不加粗
 		}
 	}
 
 	// 禁用状态的级联选择器整体样式
 	&.is-disabled {
 		.el-input .el-input__inner {
-			color: #303133 !important;
-			font-size: 12px !important;
-			font-weight: 600 !important;
+			color: #000000 !important; // 黑色
+			font-size: 16px !important; // 字体大小改为16px
+			font-weight: normal !important; // 不加粗
 		}
 	}
 }
@@ -642,9 +648,9 @@
 	.el-cascader-node {
 		height: 32px !important;
 		line-height: 32px !important;
-		font-size: 16px !important;
-		color: #000000 !important;
-		font-weight: bold !important;
+		font-size: 16px !important; // 字体大小改为16px
+		color: #000000 !important; // 黑色
+		font-weight: normal !important; // 不加粗
 		padding: 0 8px !important;
 	}
 }
@@ -655,9 +661,10 @@
 		height: 24px !important;
 		line-height: 24px !important;
 		padding-right: 25px !important; // 为图标留出足够空间
+		font-size: 16px !important; // 字体大小改为16px
 		// 有值时的字体样式
-		color: #181818 !important;
-		font-weight: bold !important;
+		color: #000000 !important; // 黑色
+		font-weight: normal !important; // 不加粗
 
 		&::placeholder {
 			color: transparent !important; // 透明色，隐藏placeholder
@@ -666,9 +673,9 @@
 
 		// 禁用状态下的字体样式增强
 		&:disabled {
-			color: #303133 !important; // 更深的字体颜色
-			font-size: 12px !important; // 增大字体
-			font-weight: 600 !important; // 加粗字体
+			color: #000000 !important; // 黑色
+			font-size: 16px !important; // 字体大小改为16px
+			font-weight: normal !important; // 不加粗
 		}
 	}
 
@@ -681,12 +688,12 @@
 
 	&.el-range-editor {
 		.el-range-input {
-			font-size: 11px !important;
+			font-size: 16px !important; // 字体大小改为16px
 			height: 22px !important;
 			line-height: 22px !important;
 			// 有值时的字体样式
-			color: #181818 !important;
-			font-weight: bold !important;
+			color: #000000 !important; // 黑色
+			font-weight: normal !important; // 不加粗
 
 			&::placeholder {
 				color: transparent !important; // 透明色，隐藏placeholder
@@ -695,9 +702,9 @@
 
 			// 禁用状态下的字体样式增强
 			&:disabled {
-				color: #303133 !important;
-				font-size: 12px !important;
-				font-weight: 600 !important;
+				color: #000000 !important; // 黑色
+				font-size: 16px !important; // 字体大小改为16px
+				font-weight: normal !important; // 不加粗
 			}
 		}
 
@@ -710,15 +717,15 @@
 	// 禁用状态的日期选择器整体样式
 	&.is-disabled {
 		&.el-input .el-input__inner {
-			color: #303133 !important;
-			font-size: 12px !important;
-			font-weight: 600 !important;
+			color: #000000 !important; // 黑色
+			font-size: 16px !important; // 字体大小改为16px
+			font-weight: normal !important; // 不加粗
 		}
 
 		&.el-range-editor .el-range-input {
-			color: #303133 !important;
-			font-size: 12px !important;
-			font-weight: 600 !important;
+			color: #000000 !important; // 黑色
+			font-size: 16px !important; // 字体大小改为16px
+			font-weight: normal !important; // 不加粗
 		}
 	}
 }
@@ -751,9 +758,10 @@
 		line-height: 24px !important;
 		padding-left: 28px !important;
 		padding-right: 28px !important;
+		font-size: 16px !important; // 字体大小改为16px
 		// 有值时的字体样式
-		color: #181818 !important;
-		font-weight: bold !important;
+		color: #000000 !important; // 黑色
+		font-weight: normal !important; // 不加粗
 
 		&::placeholder {
 			color: transparent !important; // 透明色，隐藏placeholder
@@ -762,9 +770,9 @@
 
 		// 禁用状态下的字体样式增强
 		&:disabled {
-			color: #303133 !important; // 更深的字体颜色
-			font-size: 12px !important; // 增大字体
-			font-weight: 600 !important; // 加粗字体
+			color: #000000 !important; // 黑色
+			font-size: 16px !important; // 字体大小改为16px
+			font-weight: normal !important; // 不加粗
 		}
 	}
 
@@ -782,9 +790,9 @@
 	// 禁用状态的数字输入框整体样式
 	&.is-disabled {
 		.el-input__inner {
-			color: #303133 !important;
-			font-size: 12px !important;
-			font-weight: 600 !important;
+			color: #000000 !important; // 黑色
+			font-size: 16px !important; // 字体大小改为16px
+			font-weight: normal !important; // 不加粗
 		}
 	}
 }
@@ -852,27 +860,26 @@
 
 		// 禁用状态下的字体样式增强
 		&.is-disabled {
-			color: #303133 !important; // 更深的字体颜色
-			font-size: 13px !important; // 增大字体
-			font-weight: 600 !important; // 加粗字体
+			color: #000000 !important; // 黑色
+			font-size: 16px !important; // 字体大小改为16px
+			font-weight: normal !important; // 不加粗
 		}
 	}
 
 	// 禁用状态的单选框整体样式
 	&.is-disabled {
 		.el-radio__label {
-			color: #303133 !important;
-			font-size: 13px !important;
-			font-weight: 600 !important;
+			color: #000000 !important; // 黑色
+			font-size: 16px !important; // 字体大小改为16px
+			font-weight: normal !important; // 不加粗
 		}
 
 		// 禁用且选中状态下的标签样式特殊增强
 		&.is-checked {
 			.el-radio__label {
-				color: #1a1a1a !important; // 选中时使用更深的黑色
-				font-size: 14px !important; // 选中时字体更大
-				font-weight: 700 !important; // 选中时字体更粗
-				text-shadow: 0.5px 0.5px 1px rgba(0, 0, 0, 0.1) !important; // 添加轻微阴影增强效果
+				color: #000000 !important; // 黑色
+				font-size: 16px !important; // 字体大小改为16px
+				font-weight: normal !important; // 不加粗
 			}
 		}
 	}
@@ -902,18 +909,18 @@
 
 		// 禁用状态下的字体样式增强
 		&.is-disabled {
-			color: #303133 !important; // 更深的字体颜色
-			font-size: 13px !important; // 增大字体
-			font-weight: 600 !important; // 加粗字体
+			color: #000000 !important; // 黑色
+			font-size: 16px !important; // 字体大小改为16px
+			font-weight: normal !important; // 不加粗
 		}
 	}
 
 	// 禁用状态的复选框整体样式
 	&.is-disabled {
 		.el-checkbox__label {
-			color: #303133 !important;
-			font-size: 13px !important;
-			font-weight: 600 !important;
+			color: #000000 !important; // 黑色
+			font-size: 16px !important; // 字体大小改为16px
+			font-weight: normal !important; // 不加粗
 		}
 	}
 }
@@ -995,9 +1002,10 @@
 		line-height: 24px !important;
 		padding-left: 8px !important; // 恢复正常左边距
 		padding-right: 8px !important; // 恢复正常右边距
+		font-size: 16px !important; // 字体大小改为16px
 		// 有值时的字体样式
-		color: #181818 !important;
-		font-weight: bold !important;
+		color: #000000 !important; // 黑色
+		font-weight: normal !important; // 不加粗
 
 		&::placeholder {
 			color: transparent !important; // 透明色，隐藏placeholder
@@ -1006,9 +1014,9 @@
 
 		// 禁用状态下的字体样式增强
 		&:disabled {
-			color: #303133 !important; // 更深的字体颜色
-			font-size: 12px !important; // 增大字体
-			font-weight: 600 !important; // 加粗字体
+			color: #000000 !important; // 黑色
+			font-size: 16px !important; // 字体大小改为16px
+			font-weight: normal !important; // 不加粗
 		}
 	}
 
@@ -1021,9 +1029,9 @@
 	// 禁用状态的时间选择器整体样式
 	&.is-disabled {
 		.el-input__inner {
-			color: #303133 !important;
-			font-size: 12px !important;
-			font-weight: 600 !important;
+			color: #000000 !important; // 黑色
+			font-size: 16px !important; // 字体大小改为16px
+			font-weight: normal !important; // 不加粗
 		}
 	}
 }
@@ -1097,13 +1105,16 @@
 			td {
 				height: 30px !important; // 从默认48px缩小到30px
 				padding: 4px 0 !important; // 从默认12px缩小到4px
-				font-size: 13px !important; // 表格内容字体大小改为11px
+				font-size: 16px !important; // 表格内容字体大小改为16px
 				color: #000000 !important; // 表格内容字体颜色改为纯黑色
+				font-weight: normal !important; // 不加粗
 
 				.cell {
 					padding: 0 8px !important; // 从默认18px缩小到8px
 					line-height: 22px !important;
+					font-size: 16px !important; // 单元格字体大小改为16px
 					color: #000000 !important; // 单元格字体颜色改为纯黑色
+					font-weight: normal !important; // 不加粗
 				}
 			}
 		}
@@ -1128,8 +1139,15 @@
 		.el-table__body td {
 			height: 26px !important;
 			padding: 3px 0 !important;
-			font-size: 13px !important;
+			font-size: 16px !important; // 表格内容字体大小改为16px
 			color: #000000 !important;
+			font-weight: normal !important; // 不加粗
+
+			.cell {
+				font-size: 16px !important; // 单元格字体大小改为16px
+				color: #000000 !important;
+				font-weight: normal !important; // 不加粗
+			}
 		}
 	}
 
@@ -1152,12 +1170,15 @@
 		.el-table__body td {
 			height: 22px !important;
 			padding: 2px 0 !important;
-			font-size: 13px !important;
+			font-size: 16px !important; // 表格内容字体大小改为16px
 			color: #000000 !important;
+			font-weight: normal !important; // 不加粗
 
 			.cell {
 				padding: 0 6px !important;
+				font-size: 16px !important; // 单元格字体大小改为16px
 				color: #000000 !important;
+				font-weight: normal !important; // 不加粗
 			}
 		}
 	}
@@ -1181,13 +1202,15 @@
 		.el-table__body td {
 			height: 18px !important;
 			padding: 1px 0 !important;
-			font-size: 13px !important;
+			font-size: 16px !important; // 表格内容字体大小改为16px
 			color: #000000 !important;
+			font-weight: normal !important; // 不加粗
 
 			.cell {
 				padding: 0 4px !important;
-				font-size: 13px !important;
+				font-size: 16px !important; // 单元格字体大小改为16px
 				color: #000000 !important;
+				font-weight: normal !important; // 不加粗
 			}
 		}
 	}
@@ -1542,11 +1565,16 @@
 				td {
 					height: 30px !important;
 					padding: 4px 0 !important;
-					font-size: 13px !important;
+					font-size: 16px !important; // 固定列表体字体大小改为16px
+					color: #000000 !important;
+					font-weight: normal !important; // 不加粗
 
 					.cell {
 						padding: 0 8px !important;
 						line-height: 22px !important;
+						font-size: 16px !important; // 固定列表体单元格字体大小改为16px
+						color: #000000 !important;
+						font-weight: normal !important; // 不加粗
 					}
 				}
 			}
@@ -1583,6 +1611,15 @@
 			.el-table__fixed-body-wrapper .el-table__body td {
 				height: 26px !important;
 				padding: 3px 0 !important;
+				font-size: 16px !important; // 固定列表体字体大小改为16px
+				color: #000000 !important;
+				font-weight: normal !important; // 不加粗
+
+				.cell {
+					font-size: 16px !important; // 固定列表体单元格字体大小改为16px
+					color: #000000 !important;
+					font-weight: normal !important; // 不加粗
+				}
 			}
 		}
 	}
@@ -1607,8 +1644,15 @@
 			.el-table__fixed-body-wrapper .el-table__body td {
 				height: 22px !important;
 				padding: 2px 0 !important;
+				font-size: 16px !important; // 固定列表体字体大小改为16px
+				color: #000000 !important;
+				font-weight: normal !important; // 不加粗
+
 				.cell {
 					padding: 0 6px !important;
+					font-size: 16px !important; // 固定列表体单元格字体大小改为16px
+					color: #000000 !important;
+					font-weight: normal !important; // 不加粗
 				}
 			}
 		}
@@ -1634,8 +1678,15 @@
 			.el-table__fixed-body-wrapper .el-table__body td {
 				height: 18px !important;
 				padding: 1px 0 !important;
+				font-size: 16px !important; // 固定列表体字体大小改为16px
+				color: #000000 !important;
+				font-weight: normal !important; // 不加粗
+
 				.cell {
 					padding: 0 4px !important;
+					font-size: 16px !important; // 固定列表体单元格字体大小改为16px
+					color: #000000 !important;
+					font-weight: normal !important; // 不加粗
 				}
 			}
 		}

@@ -73,16 +73,16 @@
 		>
 			<CustomTableColumn label="ID" align="center" prop="id" width="60" show-overflow-tooltip />
 			<CustomTableColumn v-if="columns[0].visible" label="日期" align="center" prop="fundsDate" width="140" show-overflow-tooltip />
-			<CustomTableColumn v-if="columns[1].visible" label="支付类型" align="center" prop="receiveType" width="165" show-overflow-tooltip />
+			<CustomTableColumn v-if="columns[1].visible" label="支付类型" align="center" prop="receiveType" width="180" show-overflow-tooltip />
 			<CustomTableColumn v-if="columns[9].visible" label="对方公司名称" align="center" prop="companyName" width="165" show-overflow-tooltip />
-			<CustomTableColumn v-if="columns[10].visible" label="对方公司类型" align="center" prop="companyType" width="100"></CustomTableColumn>
+			<CustomTableColumn v-if="columns[10].visible" label="对方公司类型" align="center" prop="companyType" width="140"></CustomTableColumn>
 			<CustomTableColumn v-if="columns[2].visible" label="金额" align="center" prop="moneyAmount" width="110" show-overflow-tooltip />
 			<CustomTableColumn v-if="columns[3].visible" label="我方户名" align="center" prop="selfAcountsName" width="165" show-overflow-tooltip />
-			<CustomTableColumn v-if="columns[4].visible" label="我方账号" align="center" prop="selfBankNo" width="165" show-overflow-tooltip />
+			<CustomTableColumn v-if="columns[4].visible" label="我方账号" align="center" prop="selfBankNo" width="180" show-overflow-tooltip />
 			<CustomTableColumn v-if="columns[5].visible" label="我方开户行" align="center" prop="selfBankName" width="165" show-overflow-tooltip />
 			<CustomTableColumn v-if="columns[6].visible" label="对方户名" align="center" prop="otherAcountsName" width="165" show-overflow-tooltip />
-			<CustomTableColumn v-if="columns[7].visible" label="对方账号" align="center" prop="otherBankNo" width="165" show-overflow-tooltip />
-			<CustomTableColumn v-if="columns[8].visible" label="对方开户行" align="center" prop="otherBankName" width="165" show-overflow-tooltip />
+			<CustomTableColumn v-if="columns[7].visible" label="对方账号" align="center" prop="otherBankNo" width="190" show-overflow-tooltip />
+			<CustomTableColumn v-if="columns[8].visible" label="对方开户行" align="center" prop="otherBankName" width="180" show-overflow-tooltip />
 			<CustomTableColumn label="备注" align="center" prop="comments" width="165" />
 			<CustomTableColumn label="银行卡流水编号" align="center" prop="transactionHistory" width="165" />
 			<CustomTableColumn label="录入人员" align="center" prop="userName" width="120" />
@@ -128,7 +128,7 @@
 		<!-- 添加收款信息对话框 -->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="1000px" append-to-body>
 			<div>
-				<el-form ref="form" :model="form" :rules="rules" label-width="150px">
+				<el-form ref="form" :model="form" :rules="rules" label-width="170px">
 					<!-- 收款编码（只读，仅编辑时展示） -->
 					<el-form-item v-if="form && form.id != null" label="收款编码">
 						<el-input v-model="form.code" disabled style="width: 100%" />

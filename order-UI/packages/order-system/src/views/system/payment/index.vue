@@ -108,12 +108,12 @@
 					<DynamicField :row="scope.row" field="companyName" />
 				</template>
 			</CustomTableColumn>
-			<CustomTableColumn label="对方公司类型" align="center" prop="companyType" width="70" v-if="columns[12].visible" show-overflow-tooltip>
+			<CustomTableColumn label="对方公司类型" align="center" prop="companyType" width="130" v-if="columns[12].visible" show-overflow-tooltip>
 				<template #default="scope">
 					<DynamicField :row="scope.row" field="companyType" />
 				</template>
 			</CustomTableColumn>
-			<CustomTableColumn label="金额" align="center" prop="moneyAmount" width="40" v-if="columns[3].visible" show-overflow-tooltip>
+			<CustomTableColumn label="金额" align="center" prop="moneyAmount" width="70" v-if="columns[3].visible" show-overflow-tooltip>
 				<template #default="scope">
 					<DynamicField :row="scope.row" field="moneyAmount" />
 				</template>
@@ -123,7 +123,7 @@
 					<DynamicField :row="scope.row" field="selfAccountsName" />
 				</template>
 			</CustomTableColumn>
-			<CustomTableColumn label="我方账号" align="center" prop="selfBankNo" width="170" v-if="columns[5].visible" show-overflow-tooltip>
+			<CustomTableColumn label="我方账号" align="center" prop="selfBankNo" width="180" v-if="columns[5].visible" show-overflow-tooltip>
 				<template #default="scope">
 					<DynamicField :row="scope.row" field="selfBankNo" />
 				</template>
@@ -139,7 +139,7 @@
 				</template>
 			</CustomTableColumn>
 			<!-- 对方账号列已经包含了 show-overflow-tooltip，可以正常显示 -->
-			<CustomTableColumn label="对方账号" align="center" prop="otherBankNo" width="170" v-if="columns[8].visible" show-overflow-tooltip>
+			<CustomTableColumn label="对方账号" align="center" prop="otherBankNo" width="190" v-if="columns[8].visible" show-overflow-tooltip>
 				<template #default="scope">
 					<DynamicField :row="scope.row" field="otherBankNo" />
 				</template>
@@ -267,10 +267,10 @@
 
 						<el-form-item label="我方户名" prop="selfAccountsName">
 							<el-row>
-								<el-col :span="16">
+								<el-col :span="22">
 									<el-input disabled v-model="form.selfAccountsName" placeholder="请选择" style="width: 100%" />
 								</el-col>
-								<el-col :span="8">
+								<el-col :span="2">
 									<SearchOption
 										:limit-info="{ acountsType: '己方公司' }"
 										:get-data="listBankAccount"
@@ -374,10 +374,10 @@
 
 						<el-form-item v-if="form.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE" label="对方账号" prop="otherBankNo">
 							<el-row>
-								<el-col :span="16">
+								<el-col :span="22">
 									<el-input disabled v-model="form.otherBankNo" placeholder="请选择" style="width: 100%" />
 								</el-col>
-								<el-col :span="8">
+								<el-col :span="2">
 									<SearchOption
 										:limit-info="{ acountsType: form.companyType }"
 										:get-data="listBankAccount"
