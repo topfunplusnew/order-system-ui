@@ -2,7 +2,7 @@ import Vue from 'vue';
 
 import Cookies from 'js-cookie';
 
-import Element, { Loading } from 'element-ui';
+import Element, { Loading, MessageBox } from 'element-ui';
 import './assets/styles/element-variables.scss';
 import './element-variables.scss';
 
