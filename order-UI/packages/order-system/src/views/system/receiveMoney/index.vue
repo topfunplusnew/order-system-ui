@@ -138,7 +138,7 @@
 						<el-form-item label="日期" prop="fundsDate">
 							<el-date-picker v-model="form.fundsDate" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="请选择日期" style="width: 100%" />
 						</el-form-item>
-						<el-form-item label="收款类型" prop="payType">
+						<el-form-item label="收款类型" prop="receiveType">
 							<el-cascader v-model="form.receiveType" :options="paymentTypeTree" :props="props" style="width: 100%" />
 						</el-form-item>
 						<el-form-item label="金额" prop="moneyAmount">
@@ -447,6 +447,13 @@ export default {
 							}
 						},
 						trigger: 'blur'
+					}
+				],
+				receiveType: [
+					{
+						required: true,
+						message: '请选择收款类型',
+						trigger: 'change'
 					}
 				],
 				selfAcountsName: [
