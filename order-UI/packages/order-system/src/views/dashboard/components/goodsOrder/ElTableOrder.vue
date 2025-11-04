@@ -681,6 +681,55 @@ export default {
 				},
 				`goodsOrder_${new Date().getTime()}.xlsx`
 			);
+		},
+		/**
+		 * 计算表格合计行
+		 * @param {Object} param - 包含 columns 和 data
+		 * @returns {Array} 合计行数据数组
+		 */
+		getSummary(param) {
+			const { columns, data } = param;
+			const sums = [];
+			// 需要合计的数字列（根据 prop 属性判断）
+			const summaryColumns = ['allPayments', 'allTonnage', 'landFreight', 'seaFreight', 'allProfit', 'allProfitNoTax'];
+
+			columns.forEach((column, index) => {
+				// 第一列显示"合计"文字
+				if (index === 0) {
+					sums[index] = '合计';
+					return;
+				}
+
+				// 判断当前列是否需要合计
+				if (summaryColumns.includes(column.property)) {
+					// 计算该列的所有数据之和
+					const values = data.map(item => {
+						const value = item[column.property];
+						// 转换为数字，如果转换失败则返回0
+						const numValue = Number(value);
+						return isNaN(numValue) ? 0 : numValue;
+					});
+
+					// 计算总和
+					const sum = values.reduce((prev, curr) => {
+						return prev + curr;
+					}, 0);
+
+					// 格式化显示（使用与数据列相同的格式）
+					if (column.property === 'allTonnage') {
+						// 吨位保留2位小数
+						sums[index] = sum.toFixed(2);
+					} else {
+						// 金额类保留2位小数
+						sums[index] = sum.toFixed(2);
+					}
+				} else {
+					// 不需要合计的列显示空字符串
+					sums[index] = '';
+				}
+			});
+
+			return sums;
 		}
 	}
 };
@@ -740,6 +789,8 @@ export default {
 				max-height="750"
 				:cell-style="paddingFix"
 				:data="goodsOrderList"
+				show-summary
+				:summary-method="getSummary"
 				@header-dragend="changeColWidth"
 			>
 				<el-table-column label="行操作" align="center" class-name="small-padding fixed-width" width="180" fixed="left">

@@ -322,9 +322,13 @@ export default {
 		},
 
 		// 过滤后的属性，移除 show-overflow-tooltip 避免 Element UI 默认提示
+		// 同时显式包含 prop，因为它被声明为 props，不会出现在 $attrs 中
 		filteredAttrs() {
 			const { 'show-overflow-tooltip': showOverflowTooltip, ...otherAttrs } = this.$attrs;
-			return otherAttrs;
+			return {
+				...otherAttrs,
+				prop: this.prop // 显式添加 prop，确保传递给 el-table-column
+			};
 		},
 
 		// 检查是否传递了 show-overflow-tooltip 属性
