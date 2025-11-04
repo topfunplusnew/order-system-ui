@@ -453,7 +453,7 @@
 					<!-- 资金流出方支付类型 -->
 					<el-form-item label="资金流出方支付类型" prop="sourcePaymentType">
 						<el-row>
-							<el-col :span="14">
+							<el-col :span="24">
 								<el-input v-model="sourcePaymentTypeDisplay" placeholder="内部往来支出" disabled style="width: 100%" />
 							</el-col>
 						</el-row>
@@ -462,7 +462,7 @@
 					<!-- 转账账户 -->
 					<el-form-item label="转账账户">
 						<el-row>
-							<el-col :span="14">
+							<el-col :span="20">
 								<el-input v-model="form.sourceBankNo" disabled placeholder="请选择转账账户" style="width: 100%"></el-input>
 							</el-col>
 							<el-col :span="4">
@@ -519,7 +519,7 @@
 
 					<el-form-item :label="source">
 						<el-row>
-							<el-col :span="14">
+							<el-col :span="24">
 								<el-input disabled v-model="sourceName" placeholder="请选择" style="width: 100%" />
 							</el-col>
 						</el-row>
@@ -536,7 +536,7 @@
 					<!-- 资金流入方支付类型 -->
 					<el-form-item label="资金流入方支付类型" prop="targetPaymentType">
 						<el-row>
-							<el-col :span="14">
+							<el-col :span="24">
 								<el-input v-model="targetPaymentTypeDisplay" placeholder="内部往来收入" disabled style="width: 100%" />
 							</el-col>
 						</el-row>
@@ -545,7 +545,7 @@
 					<!-- 目标账户 -->
 					<el-form-item label="目标账户">
 						<el-row>
-							<el-col :span="14">
+							<el-col :span="20">
 								<el-input v-model="form.targetBankNo" disabled placeholder="请选择目标账户" style="width: 100%"></el-input>
 							</el-col>
 							<el-col :span="4">
@@ -602,7 +602,7 @@
 
 					<el-form-item :label="target">
 						<el-row>
-							<el-col :span="14">
+							<el-col :span="24">
 								<el-input disabled v-model="targetName" placeholder="请选择" style="width: 100%" />
 							</el-col>
 						</el-row>

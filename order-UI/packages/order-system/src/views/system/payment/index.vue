@@ -1083,9 +1083,7 @@ export default {
 						this.$message.error('获取付款信息失败');
 						return;
 					}
-
 					const paymentData = response.data;
-
 					// 判断是否需要填写修改原因
 					if (paymentData && paymentData.shouldTrackEditReason === true) {
 						// 需要填写修改原因
@@ -1104,7 +1102,6 @@ export default {
 							.then(({ value }) => {
 								// 将修改原因存储到sessionStorage
 								sessionStorage.setItem('editReason_payment', value);
-
 								// 继续编辑操作
 								this.performEditLogic(paymentData);
 							})
@@ -1128,7 +1125,6 @@ export default {
 		// 执行编辑操作的逻辑
 		performEditLogic(paymentData) {
 			this.reset();
-
 			// 保留表单结构，特别是 params.attachmentIds 和 params.bankacceptance
 			this.form = {
 				...paymentData,
@@ -1138,9 +1134,6 @@ export default {
 					bankacceptance: paymentData.params?.bankacceptance || null
 				}
 			};
-
-			this.$bus.$emit('changeFlag', paymentData.bankacceptanceId > 0 ? paymentData.bankacceptanceId : false);
-
 			// 处理银行账户类型
 			let flag = false;
 			if (!paymentData.bankacceptanceId) {
@@ -1148,10 +1141,8 @@ export default {
 				flag = true;
 				this.form.params.bankacceptance = null;
 			}
-
 			this.open = true;
 			this.title = '修改付款信息';
-
 			// 使用 $nextTick 确保组件渲染完成后再设置银行账户类型和其他属性
 			this.$nextTick(() => {
 				if (!flag) {
@@ -1183,7 +1174,9 @@ export default {
 				}
 
 				// 对方类型直接已在 form.companyType 中
+				console.log(`this.form.payType`, this.form.payType);
 			});
+			this.$bus.$emit('changeFlag', paymentData.bankacceptanceId > 0 ? paymentData.bankacceptanceId : false);
 		},
 		// 付款的操作
 		handlePaymentRow(row) {
