@@ -123,7 +123,7 @@
 
 					&::placeholder {
 						font-size: 13px !important;
-						color: #999999 !important;
+						color: transparent !important;
 						font-weight: normal !important;
 					}
 				}
@@ -262,8 +262,9 @@
 
 		// 标签字体大小调小
 		.el-form-item__label {
-			font-size: 14px; // 字体大小改为14px
-			color: #000000; // 字体颜色改为黑色
+			font-size: 20px !important; // 字体大小改为20px
+			color: #000000 !important; // 字体颜色改为黑色
+			font-weight: 600 !important; // 加粗
 			line-height: 28px; // 对应输入框高度
 			padding: 0 6px 0 0; // 右边距进一步调小
 		}
@@ -295,7 +296,7 @@
 		// placeholder字体大小
 		&::placeholder {
 			font-size: 10px; // 从11px缩小到10px
-			color: #666666; // 深灰色字体
+			color: transparent; // 透明色，隐藏placeholder
 			font-weight: bold; // 加粗处理
 		}
 	}
@@ -336,7 +337,7 @@
 
 		&::placeholder {
 			font-size: 11px; // 从12px缩小到11px
-			color: #666666; // 深灰色字体
+			color: transparent; // 透明色，隐藏placeholder
 			font-weight: bold; // 加粗处理
 		}
 	}
@@ -489,7 +490,7 @@
 
 		&::placeholder {
 			font-size: 10px !important;
-			color: #666666 !important;
+			color: transparent !important; // 透明色，隐藏placeholder
 			font-weight: bold !important; // 深灰色字体加粗处理
 		}
 
@@ -537,7 +538,7 @@
 
 		&::placeholder {
 			font-size: 10px !important;
-			color: #666666 !important;
+			color: transparent !important; // 透明色，隐藏placeholder
 			font-weight: bold !important; // 深灰色字体加粗处理
 		}
 
@@ -570,7 +571,7 @@
 		font-weight: bold !important;
 
 		&::placeholder {
-			color: #666666 !important;
+			color: transparent !important; // 透明色，隐藏placeholder
 			font-weight: bold !important; // 深灰色字体加粗处理
 		}
 
@@ -614,7 +615,7 @@
 		font-weight: bold !important;
 
 		&::placeholder {
-			color: #666666 !important;
+			color: transparent !important; // 透明色，隐藏placeholder
 			font-weight: bold !important; // 深灰色字体加粗处理
 		}
 
@@ -659,7 +660,7 @@
 		font-weight: bold !important;
 
 		&::placeholder {
-			color: #000000 !important;
+			color: transparent !important; // 透明色，隐藏placeholder
 			font-weight: normal !important; // placeholder 不加粗
 		}
 
@@ -688,7 +689,7 @@
 			font-weight: bold !important;
 
 			&::placeholder {
-				color: #666666 !important;
+				color: transparent !important; // 透明色，隐藏placeholder
 				font-weight: normal !important; // placeholder 不加粗
 			}
 
@@ -755,7 +756,7 @@
 		font-weight: bold !important;
 
 		&::placeholder {
-			color: #000000 !important;
+			color: transparent !important; // 透明色，隐藏placeholder
 			font-weight: normal !important; // placeholder 不加粗
 		}
 
@@ -999,7 +1000,7 @@
 		font-weight: bold !important;
 
 		&::placeholder {
-			color: #000000 !important;
+			color: transparent !important; // 透明色，隐藏placeholder
 			font-weight: normal !important; // placeholder 不加粗
 		}
 
@@ -1075,14 +1076,16 @@
 			th {
 				height: 32px !important; // 从默认40px缩小到32px
 				padding: 6px 0 !important; // 从默认12px缩小到6px
-				font-size: 13px !important;
+				font-size: 20px !important; // 表头字体大小改为20px
 				color: #000000 !important; // 表头字体颜色改为纯黑色
-				font-weight: 600 !important;
+				font-weight: bold !important; // 加粗
 
 				.cell {
 					padding: 0 8px !important; // 从默认18px缩小到8px
 					line-height: 20px !important;
+					font-size: 20px !important; // 表头单元格字体大小改为20px
 					color: #000000 !important; // 表头单元格字体颜色改为纯黑色
+					font-weight: bold !important; // 加粗
 				}
 			}
 		}
@@ -1111,8 +1114,15 @@
 		.el-table__header th {
 			height: 28px !important;
 			padding: 4px 0 !important;
-			font-size: 13px !important;
+			font-size: 20px !important; // 表头字体大小改为20px
 			color: #000000 !important;
+			font-weight: bold !important; // 加粗
+
+			.cell {
+				font-size: 20px !important; // 表头单元格字体大小改为20px
+				color: #000000 !important;
+				font-weight: bold !important; // 加粗
+			}
 		}
 
 		.el-table__body td {
@@ -1127,12 +1137,15 @@
 		.el-table__header th {
 			height: 24px !important;
 			padding: 2px 0 !important;
-			font-size: 13px !important;
+			font-size: 20px !important; // 表头字体大小改为20px
 			color: #000000 !important;
+			font-weight: bold !important; // 加粗
 
 			.cell {
 				padding: 0 6px !important;
+				font-size: 20px !important; // 表头单元格字体大小改为20px
 				color: #000000 !important;
+				font-weight: bold !important; // 加粗
 			}
 		}
 
@@ -1153,13 +1166,15 @@
 		.el-table__header th {
 			height: 20px !important;
 			padding: 1px 0 !important;
-			font-size: 13px !important;
+			font-size: 20px !important; // 表头字体大小改为20px
 			color: #000000 !important;
+			font-weight: bold !important; // 加粗
 
 			.cell {
 				padding: 0 4px !important;
-				font-size: 13px !important;
+				font-size: 20px !important; // 表头单元格字体大小改为20px
 				color: #000000 !important;
+				font-weight: bold !important; // 加粗
 			}
 		}
 
@@ -1506,11 +1521,16 @@
 				th {
 					height: 32px !important;
 					padding: 6px 0 !important;
-					font-size: 13px !important;
+					font-size: 20px !important; // 固定列表头字体大小改为20px
+					color: #000000 !important; // 表头字体颜色改为纯黑色
+					font-weight: bold !important; // 加粗
 
 					.cell {
 						padding: 0 8px !important;
 						line-height: 20px !important;
+						font-size: 20px !important; // 固定列表头单元格字体大小改为20px
+						color: #000000 !important; // 表头单元格字体颜色改为纯黑色
+						font-weight: bold !important; // 加粗
 					}
 				}
 			}
@@ -1550,6 +1570,15 @@
 			.el-table__fixed-header-wrapper .el-table__header th {
 				height: 28px !important;
 				padding: 4px 0 !important;
+				font-size: 20px !important; // 固定列表头字体大小改为20px
+				color: #000000 !important;
+				font-weight: bold !important; // 加粗
+
+				.cell {
+					font-size: 20px !important; // 固定列表头单元格字体大小改为20px
+					color: #000000 !important;
+					font-weight: bold !important; // 加粗
+				}
 			}
 			.el-table__fixed-body-wrapper .el-table__body td {
 				height: 26px !important;
@@ -1564,8 +1593,15 @@
 			.el-table__fixed-header-wrapper .el-table__header th {
 				height: 24px !important;
 				padding: 2px 0 !important;
+				font-size: 20px !important; // 固定列表头字体大小改为20px
+				color: #000000 !important;
+				font-weight: bold !important; // 加粗
+
 				.cell {
 					padding: 0 6px !important;
+					font-size: 20px !important; // 固定列表头单元格字体大小改为20px
+					color: #000000 !important;
+					font-weight: bold !important; // 加粗
 				}
 			}
 			.el-table__fixed-body-wrapper .el-table__body td {
@@ -1584,8 +1620,15 @@
 			.el-table__fixed-header-wrapper .el-table__header th {
 				height: 20px !important;
 				padding: 1px 0 !important;
+				font-size: 20px !important; // 固定列表头字体大小改为20px
+				color: #000000 !important;
+				font-weight: bold !important; // 加粗
+
 				.cell {
 					padding: 0 4px !important;
+					font-size: 20px !important; // 固定列表头单元格字体大小改为20px
+					color: #000000 !important;
+					font-weight: bold !important; // 加粗
 				}
 			}
 			.el-table__fixed-body-wrapper .el-table__body td {

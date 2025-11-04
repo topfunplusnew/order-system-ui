@@ -1176,7 +1176,7 @@ export default {
 <template>
 	<div>
 		<!-- 基本信息表单部分不变 -->
-		<el-form :inline="true" :model="orderInfo" label-width="80px" :rules="orderRules" ref="orderForm">
+		<el-form :inline="true" :model="orderInfo" label-width="100px" :rules="orderRules" ref="orderForm">
 			<el-card class="box-card" shadow="hover" size="mini" style="margin-top: 10px">
 				<el-form-item label="订单日期" prop="orderDate">
 					<el-date-picker v-model="orderInfo.orderDate" size="mini" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss" style="width: 120px" />
@@ -1357,7 +1357,7 @@ export default {
 					ref="orderdetail"
 				>
 					<el-table-column type="selection" width="40" align="center" :selectable="() => true" />
-					<el-table-column label="序号" align="center" type="index" width="40" />
+					<el-table-column label="序号" align="center" type="index" width="60" />
 					<el-table-column label="行操作" align="center" width="80">
 						<template slot-scope="scope">
 							<el-button v-if="!scope.row.isEditing" size="mini" type="warning" icon="el-icon-edit" @click="handleRowEdit(scope.row)">编辑</el-button>
@@ -1546,12 +1546,12 @@ export default {
 							/>
 						</template>
 					</el-table-column>
-					<el-table-column label="出厂货款" prop="paymentFactory" width="70">
+					<el-table-column label="出厂货款" prop="paymentFactory" width="100">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.paymentFactory" placeholder="自动计算" disabled />
 						</template>
 					</el-table-column>
-					<el-table-column label="卸货片数" prop="actualPieces" width="70">
+					<el-table-column label="卸货片数" prop="actualPieces" width="100">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.actualPieces" placeholder="请输入卸货片数" @input="() => recalculateAll(scope)" :disabled="!scope.row.isEditing" />
 						</template>
@@ -1576,7 +1576,7 @@ export default {
 							</el-radio-group>
 						</template>
 					</el-table-column>
-					<el-table-column label="总货款杂费" prop="paymentsWithSundry" width="90">
+					<el-table-column label="总货款杂费" prop="paymentsWithSundry" width="120">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -1588,7 +1588,7 @@ export default {
 							/>
 						</template>
 					</el-table-column>
-					<el-table-column label="总货款" prop="payments" width="70">
+					<el-table-column label="总货款" prop="payments" width="100">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.payments" placeholder="自动计算" disabled />
 						</template>
@@ -1668,7 +1668,7 @@ export default {
 							<el-input size="mini" v-model="scope.row.profit" placeholder="自动计算" disabled />
 						</template>
 					</el-table-column>
-					<el-table-column label="不含税利润" prop="profitNoTax" width="90">
+					<el-table-column label="不含税利润" prop="profitNoTax" width="120">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.profitNoTax" placeholder="自动计算" disabled />
 						</template>
@@ -1706,7 +1706,7 @@ export default {
 							/>
 						</template>
 					</el-table-column>
-					<el-table-column label="计提厂家返利金额" prop="factoryRebateAmount" width="90">
+					<el-table-column label="计提厂家返利金额" prop="factoryRebateAmount" width="220">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -1717,7 +1717,7 @@ export default {
 							/>
 						</template>
 					</el-table-column>
-					<el-table-column label="计提厂家降价金额" prop="factoryDiscountAmount" width="90">
+					<el-table-column label="计提厂家降价金额" prop="factoryDiscountAmount" width="220">
 						<template #default="scope">
 							<el-input
 								size="mini"

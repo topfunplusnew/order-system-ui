@@ -207,7 +207,7 @@
 
 		<!-- 添加或修改库存库存主表对话框 -->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="title" :visible.sync="open" width="1600px" append-to-body :close-on-click-modal="false">
-			<el-form ref="form" :model="form" :rules="rules" label-width="80px" :inline="true">
+			<el-form ref="form" :model="form" :rules="rules" label-width="100px" :inline="true">
 				<el-form-item label="仓库名称" prop="storeHouseName">
 					<el-col :span="16">
 						<el-input disabled size="mini" v-model="form.storeHouseName" placeholder="请输入仓库名称" />
