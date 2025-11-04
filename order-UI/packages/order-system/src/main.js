@@ -67,7 +67,7 @@ import { columnVisibilityMixin } from '@/mixins/columnVisibilityMixin';
 // 全局注册弹窗拖拽与位置重算指令
 import elDragDialog from '@/views/dashboard/directive/dialog/drugDialog';
 import elRelenDialog from '@/views/dashboard/directive/dialog/relenDialog';
-
+import { checkVersion } from './utils/versionChecker';
 message.config({
 	top: '10px',
 	getContainer: () => document.getElementById('messsage-box-div')
@@ -213,6 +213,18 @@ Vue.use(Element, {
 Vue.use(VForm);
 Vue.config.productionTip = false;
 
+// 每隔 1 分钟检测一次版本号
+setInterval(checkVersion, 60 * 1000);
+
+window.addEventListener('app-version-changed', () => {
+	MessageBox.confirm('检测到系统已更新，是否立即刷新页面？', '版本更新提示', {
+		confirmButtonText: '刷新',
+		cancelButtonText: '稍后',
+		type: 'warning'
+	}).then(() => {
+		window.location.reload(true);
+	});
+});
 // 创建vm 挂载全局事件总线
 new Vue({
 	el: '#app',

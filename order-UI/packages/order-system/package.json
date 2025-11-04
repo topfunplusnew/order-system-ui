@@ -6,8 +6,8 @@
 	"license": "MIT",
 	"scripts": {
 		"dev": "vue-cli-service serve",
-		"build:prod": "vue-cli-service build",
-		"build:stage": "vue-cli-service build --mode staging",
+		"build:prod": "vue-cli-service build && node build-version.js",
+		"build:stage": "vue-cli-service build --mode staging && node build-version.js",
 		"test": "jest",
 		"preview": "node build/index.js --preview",
 		"lint": "vue-cli-service lint",
