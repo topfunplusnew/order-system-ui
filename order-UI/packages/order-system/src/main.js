@@ -215,7 +215,6 @@ Vue.config.productionTip = false;
 
 // 每隔 1 分钟检测一次版本号
 setInterval(checkVersion, 60 * 1000);
-
 window.addEventListener('app-version-changed', () => {
 	MessageBox.confirm('检测到系统已更新，是否立即刷新页面？', '版本更新提示', {
 		confirmButtonText: '刷新',
