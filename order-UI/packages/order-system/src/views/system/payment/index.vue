@@ -235,7 +235,7 @@
 
 		<!--		     添加或修改付款信息对话框 -->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="1000px" append-to-body>
-			<el-form ref="form" :model="form" :rules="rules" label-width="150px">
+			<el-form ref="form" :model="form" :rules="rules" label-width="170px">
 				<!-- 付款编码（只读，仅编辑时展示） -->
 				<el-form-item v-if="form && form.id != null" label="付款编码">
 					<el-input v-model="form.code" disabled />
@@ -248,7 +248,7 @@
 						</el-form-item>
 
 						<el-form-item label="付款类型" prop="payType">
-							<el-cascader v-model="form.payType" :options="paymentTypeTree" :props="props" @change="handleChange" style="width: 100%"></el-cascader>
+							<el-cascader v-model="form.payType" :options="paymentTypeTree" :props="props" @change="handleChange" @blur="handlePayTypeBlur" style="width: 100%"></el-cascader>
 						</el-form-item>
 
 						<el-form-item label="金额" prop="moneyAmount">
@@ -522,6 +522,7 @@ import { listTableEditMessage } from '@/api/system/tableEditMessage';
 import { TableName } from '@/api/tool/enums';
 import SearchOption from '@/components/SearchOption.vue';
 import { listCompany } from '@/api/system/company';
+import { getDicts } from '@/api/system/dict/data';
 import { excludeParams } from '@/api/tool/exclude';
 import { addDateRange, parseTime } from '@/utils/ruoyi';
 import { listBankAccount } from '../../../api/system/bankAccount';
@@ -1428,6 +1429,91 @@ export default {
 				},
 				`payment_${new Date().getTime()}.xlsx`
 			);
+		},
+		/** 付款类型失去焦点事件处理 */
+		async handlePayTypeBlur() {
+			// 获取付款类型值
+			const payType = this.form.payType;
+			if (!payType) {
+				return;
+			}
+
+			// 将 payType 转换为字符串格式（数组用 '-' 连接）
+			let payTypeString = '';
+			if (Array.isArray(payType)) {
+				payTypeString = payType.join('-');
+			} else {
+				payTypeString = payType;
+			}
+
+			if (!payTypeString) {
+				return;
+			}
+
+			try {
+				// 获取字典数据
+				const dictResponse = await getDicts('order_payment_subject_company_mapping');
+				const dictData = dictResponse.data || [];
+
+				// 查找匹配的字典项（格式：subjectNo:companyType:id）
+				// 优先检查 dictValue，如果没有则检查 dictLabel
+				let matchedDictItem = null;
+				for (const item of dictData) {
+					const dictValue = item.dictValue || '';
+					const dictLabel = item.dictLabel || '';
+					// 检查是否匹配 subjectNo（payTypeString），格式：subjectNo:companyType:id
+					if (dictValue && dictValue.startsWith(payTypeString + ':')) {
+						matchedDictItem = dictValue;
+						break;
+					} else if (dictLabel && dictLabel.startsWith(payTypeString + ':')) {
+						matchedDictItem = dictLabel;
+						break;
+					}
+				}
+
+				if (!matchedDictItem) {
+					// 没有找到匹配的字典项，静默返回
+					return;
+				}
+
+				// 解析字典值，格式：subjectNo:companyType:id
+				const parts = matchedDictItem.split(':');
+				if (parts.length >= 3) {
+					const companyType = parts[1];
+					const companyId = parts[2];
+
+					if (!companyType || !companyId) {
+						return;
+					}
+
+					// 调用 listCompany 查询公司信息
+					const companyResponse = await listCompany({
+						companyType: companyType,
+						id: companyId
+					});
+
+					// 获取查询结果
+					const companyList = companyResponse.rows || companyResponse.data || [];
+					if (companyList.length > 0) {
+						// 取第一个结果（唯一值）
+						const company = companyList[0];
+						if (company && company.companyName) {
+							// 自动填充对方公司名称
+							this.form.companyName = company.companyName;
+							// 同时填充公司ID和类型
+							if (company.id) {
+								this.form.companyId = company.id;
+							}
+							if (companyType) {
+								this.form.companyType = companyType;
+							}
+						}
+					}
+				}
+			} catch (error) {
+				console.error('获取付款类型对应的公司信息失败:', error);
+				// 静默处理错误，不显示提示
+			}
 		}
 	}
 };
