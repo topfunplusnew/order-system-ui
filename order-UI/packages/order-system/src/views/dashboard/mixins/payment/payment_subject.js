@@ -16,7 +16,9 @@ export var mixin_payment_subject = {
 		// 查询科目列表
 		listSubject({}, true).then(res => {
 			this.paymentTypeOptions = res.data;
-			this.makeTree();
+			this.$nextTick(() => {
+				this.makeTree();
+			});
 		});
 	},
 

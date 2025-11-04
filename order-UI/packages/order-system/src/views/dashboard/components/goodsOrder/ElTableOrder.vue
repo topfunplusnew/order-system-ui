@@ -739,7 +739,7 @@ export default {
 				size="mini"
 				max-height="750"
 				:cell-style="paddingFix"
-				:data="renderedList"
+				:data="goodsOrderList"
 				@header-dragend="changeColWidth"
 			>
 				<el-table-column label="行操作" align="center" class-name="small-padding fixed-width" width="180" fixed="left">
