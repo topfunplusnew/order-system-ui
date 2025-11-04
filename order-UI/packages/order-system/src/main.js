@@ -213,6 +213,8 @@ Vue.use(Element, {
 Vue.use(VForm);
 Vue.config.productionTip = false;
 
+// 启动时立即检查一次版本号
+checkVersion();
 // 每隔 1 分钟检测一次版本号
 setInterval(checkVersion, 60 * 1000);
 window.addEventListener('app-version-changed', () => {
