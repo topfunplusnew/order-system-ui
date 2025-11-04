@@ -1,5 +1,7 @@
 <template>
-	<div class="app-container">
+	<div class="app-container" :class="{ 'mask-overlay': showMask }">
+		<!-- 遮罩层 -->
+		<div v-if="showMask" class="container-mask"></div>
 		<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
 			<el-form-item label="付款时间">
 				<el-date-picker
@@ -739,7 +741,9 @@ export default {
 				pageSize: 20,
 				tableName: TableName.PAYMENT,
 				tid: null
-			}
+			},
+			// 遮罩层显示状态
+			showMask: false
 		};
 	},
 	computed: {
@@ -886,6 +890,7 @@ export default {
 		// 取消按钮
 		cancel() {
 			this.open = false;
+			this.showMask = false;
 			this.$bus.$emit('changeFlag', false);
 			this.reset();
 			// 安全地清除 BankType 组件状态
@@ -1072,9 +1077,11 @@ export default {
 			this.reset();
 			this.open = true;
 			this.title = '添加付款信息';
+			this.showMask = true;
 		},
 		/** 编辑按钮操作 */
 		handleEdit(row) {
+			this.showMask = true;
 			// 先获取付款详情，判断是否需要填写修改原因
 			const id = row.id || this.ids;
 			getPayment(id)
@@ -1106,6 +1113,7 @@ export default {
 								this.performEditLogic(paymentData);
 							})
 							.catch(() => {
+								this.showMask = false;
 								this.$message({
 									type: 'info',
 									message: '已取消修改'
@@ -1118,6 +1126,7 @@ export default {
 				})
 				.catch(error => {
 					console.error('获取付款详情失败:', error);
+					this.showMask = false;
 					this.$message.error('获取付款详情失败');
 				});
 		},
@@ -1315,6 +1324,7 @@ export default {
 								// 先部分重置表单，保留关键字段
 								this.partialReset();
 								this.open = false;
+								this.showMask = false;
 								// 清除 BankType 组件状态
 								if (this.$refs.selfSelectedBankType && this.$refs.selfSelectedBankType.resetComponentState) {
 									this.$refs.selfSelectedBankType.resetComponentState();
@@ -1362,6 +1372,7 @@ export default {
 								// 先部分重置表单，保留关键字段
 								this.partialReset();
 								this.open = false;
+								this.showMask = false;
 								// 清除 BankType 组件状态
 								if (this.$refs.selfSelectedBankType && this.$refs.selfSelectedBankType.resetComponentState) {
 									this.$refs.selfSelectedBankType.resetComponentState();
@@ -1422,5 +1433,26 @@ export default {
 <style scoped>
 .w-85px {
 	width: 85px;
+}
+.app-container {
+	position: relative;
+}
+.app-container.mask-overlay {
+	position: relative;
+}
+.container-mask {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: rgba(0, 0, 0, 0.1);
+	z-index: 999;
+	pointer-events: all;
+	cursor: not-allowed;
+}
+/* 确保对话框在遮罩层之上 */
+.app-container >>> .el-dialog__wrapper {
+	z-index: 2000 !important;
 }
 </style>

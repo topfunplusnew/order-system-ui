@@ -828,46 +828,6 @@ export default {
 				this.$emit('changeOpen');
 			});
 		},
-		// 提交到数据库 但是状态是待提交 这个是当付款填写表单在弹窗中的时候
-		submitAndUpdate(that) {
-			this.$refs['form'].validate(valid => {
-				if (valid) {
-					if (this.form.id != null) {
-						// 填充公司类型
-						if (!this.extraInformation.__companyType) {
-							this.$message.error('请选择公司类型!');
-							return;
-						}
-						// 添加付款类型
-						if (!this.form.payType) {
-							this.$modal.msgError('请选择付款类型');
-							return;
-						}
-						// 构建表单数据
-						const formData = this.buildFormData();
-						formData.id = this.form.id;
-						formData.companyType = this.extraInformation.__companyType;
-						updatePaymentApply(formData)
-							.then(() => {
-								this.$modal.msgSuccess('付款申请保存成功,点击提交并审核可提交信息至审核流程');
-								// 清除附件组件状态
-								if (this.$refs.attachmentUpload) {
-									this.$refs.attachmentUpload.clearUploadedFiles();
-								}
-								this.$bus.$emit('payment-apply-unaudit-list-update');
-								this.clear();
-								that.dialogVisible = false;
-								return Promise.resolve();
-							})
-							.catch(err => {
-								this.$modal.msgError(err.message || '保存失败');
-							});
-					} else {
-						this.$message.error('系统错误:付款时没有主键');
-					}
-				}
-			});
-		},
 		close() {
 			this.$emit('changeOpen');
 			this.saveForm();
@@ -969,7 +929,49 @@ export default {
 			}
 		},
 		handleProcess(that) {
-			return this.submitAndUpdate(that);
+			return new Promise((resolve, reject) => {
+				this.$refs['form'].validate(valid => {
+					if (valid) {
+						if (this.form.id != null) {
+							// 填充公司类型
+							if (!this.extraInformation.__companyType) {
+								this.$message.error('请选择公司类型!');
+								reject(new Error('请选择公司类型'));
+								return;
+							}
+							// 添加付款类型
+							if (!this.form.payType) {
+								this.$modal.msgError('请选择付款类型');
+								reject(new Error('请选择付款类型'));
+								return;
+							}
+							// 构建表单数据
+							const formData = this.buildFormData();
+							formData.id = this.form.id;
+							formData.companyType = this.extraInformation.__companyType;
+							updatePaymentApply(formData)
+								.then(() => {
+									// 清除附件组件状态
+									if (this.$refs.attachmentUpload) {
+										this.$refs.attachmentUpload.clearUploadedFiles();
+									}
+									this.$bus.$emit('payment-apply-unaudit-list-update');
+									this.clear();
+									that.dialogVisible = false;
+									this.$modal.msgSuccess('付款申请保存成功,点击提交并审核可提交信息至审核流程');
+									resolve();
+								})
+								.catch(err => {
+									this.$modal.msgError(err.message || '保存失败');
+									reject(err);
+								});
+						} else {
+							this.$message.error('系统错误:付款时没有主键');
+							reject(new Error('系统错误:付款时没有主键'));
+						}
+					}
+				});
+			});
 		},
 		handleReject() {
 			return Promise.resolve();
