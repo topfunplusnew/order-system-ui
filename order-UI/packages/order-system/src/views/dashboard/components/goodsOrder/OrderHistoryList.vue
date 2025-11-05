@@ -37,27 +37,26 @@ export default {
 				this.$message.error('订单ID不存在');
 				return;
 			}
+			this.openDialog(
+				GOODS_ORDER,
+				'订单信息',
+				'900px',
+				{
+					needToShowInfo: row
+				},
+				false
+			);
+			// getGoodsOrder(row.goodsOrderID)
+			// 	.then(res => {
+			// 		if (!res.data) {
+			// 			this.$message.error('暂无该条订单数据');
+			// 			return;
+			// 		}
 
-			getGoodsOrder(row.goodsOrderID)
-				.then(res => {
-					if (!res.data) {
-						this.$message.error('暂无该条订单数据');
-						return;
-					}
-
-					this.openDialog(
-						GOODS_ORDER,
-						'订单信息',
-						'900px',
-						{
-							needToShowInfo: res.data
-						},
-						false
-					);
-				})
-				.catch(error => {
-					this.$message.error('获取订单信息失败: ' + error.message);
-				});
+			// 	})
+			// 	.catch(error => {
+			// 		this.$message.error('获取订单信息失败: ' + error.message);
+			// 	});
 		}
 	}
 };
