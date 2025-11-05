@@ -87,6 +87,15 @@ export function getHistoryGoodsOrder(query) {
 	});
 }
 
+// 查看某个历史订单的详细信息
+export function getHistoryGoodsOrderInfo(id) {
+	return request({
+		url: `/system/goodsOrderBack/${id}`,
+		method: 'get',
+		params: query
+	});
+}
+
 // 根据订单id检查
 export function checkOrderAllinvoice(params) {
 	return request({
