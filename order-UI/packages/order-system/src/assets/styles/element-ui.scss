@@ -1623,12 +1623,32 @@
 		}
 	}
 
-	// 修复固定列与滚动条错位问题 - 调整固定列高度以适应滚动条
+	// 修复固定列与滚动条错位问题 - 调整固定列高度以适应滚动条和合计行
 	.el-table__fixed,
 	.el-table__fixed-right {
-		// 减少固定列高度，为滚动条留出空间
+		// 减少固定列高度，为滚动条和合计行留出空间
+		// 当有合计行时：bottom = 滚动条高度(15px) + 合计行高度(28px) = 43px
+		// 当没有合计行时：bottom = 滚动条高度(15px)
 		.el-table__fixed-body-wrapper {
-			bottom: 15px !important; // 与横向滚动条高度保持一致
+			bottom: 14px !important; // 默认只考虑滚动条高度，有合计行时会被覆盖
+		}
+
+		// 固定列合计行样式 - 确保与主表格合计行对齐
+		.el-table__fixed-footer-wrapper {
+			.el-table__footer {
+				td {
+					height: 28px !important;
+					padding: 4px 0 !important;
+					font-size: 14px !important;
+					color: #000000 !important;
+					font-weight: 500 !important;
+
+					.cell {
+						padding: 0 8px !important;
+						color: #000000 !important;
+					}
+				}
+			}
 		}
 
 		// 确保固定列表头高度与主表格一致
@@ -1702,6 +1722,17 @@
 		.el-table__fixed-right {
 			.el-table__fixed-body-wrapper {
 				bottom: 15px !important;
+			}
+		}
+	}
+
+	// 当表格有合计行时，固定列底部需要额外预留合计行高度
+	// 通过检测表格是否有 footer-wrapper 来判断是否有合计行
+	&:has(.el-table__footer-wrapper) {
+		.el-table__fixed,
+		.el-table__fixed-right {
+			.el-table__fixed-body-wrapper {
+				bottom: 45px !important; // 滚动条高度(15px) + 合计行高度(28px)
 			}
 		}
 	}
@@ -1881,7 +1912,7 @@
 			bottom: 0;
 			left: 0;
 			right: 0;
-			height: 15px !important;
+			height: 16px !important; // 默认只考虑滚动条高度
 			z-index: -1 !important; // 设置为负值，确保在滚动条下面
 			pointer-events: none !important; // 让鼠标事件穿透，不阻止滚动条点击
 		}
@@ -1894,9 +1925,19 @@
 			bottom: 0;
 			left: 0;
 			right: 0;
-			height: 15px !important;
-			z-index: 100 !important; // 设置为负值，确保在滚动条下面
+			height: 15px !important; // 默认只考虑滚动条高度
+			z-index: 100 !important; // 设置为正值，确保在滚动条上面
 			pointer-events: none !important; // 让鼠标事件穿透，不阻止滚动条点击
+		}
+	}
+
+	// 当表格有合计行时，调整固定列占位空间高度
+	&:has(.el-table__footer-wrapper) {
+		.el-table__fixed,
+		.el-table__fixed-right {
+			&::after {
+				height: 43px !important; // 滚动条高度(15px) + 合计行高度(28px)
+			}
 		}
 	}
 }

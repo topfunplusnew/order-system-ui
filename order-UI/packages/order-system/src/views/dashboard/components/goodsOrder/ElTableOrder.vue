@@ -784,6 +784,7 @@ export default {
 		<div>
 			<el-table
 				id="printBox"
+				:row-key="row => row.id"
 				v-loading="loading"
 				v-horizontal-scroll="'always'"
 				fit
@@ -792,7 +793,7 @@ export default {
 				size="mini"
 				max-height="750"
 				:cell-style="paddingFix"
-				:data="goodsOrderList"
+				:data="renderedList"
 				show-summary
 				:summary-method="getSummary"
 				@header-dragend="changeColWidth"
