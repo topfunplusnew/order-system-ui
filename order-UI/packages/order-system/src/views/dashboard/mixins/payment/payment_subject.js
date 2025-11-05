@@ -121,34 +121,21 @@ export var mixin_payment_subject = {
 		// 选中某一个节点
 		async handleChange(value) {
 			try {
-				const config = await getConfigKey('order.freigent.subjectNo');
-				if (!config) {
-					throw new Error('配置数据不存在，可能没有配置运费科目参数');
-				}
-				const subjectNo = config.msg;
-				const subjectNofigList = subjectNo.split(';');
 				const subjectNode = this.searchSubjectNodeFromMap(value.join('-'));
-				// 只有是运费节点的时候才进行填充
-				if (subjectNofigList.includes(subjectNode.subjectNo)) {
-					// 获取字典数据
-					const dictResponse = await getDicts('order_payment_subject_company_mapping');
-					if (dictResponse.data.length > 0) {
-						const dictData = dictResponse.data[0];
-						if (!dictData) {
-							throw new Error('字典相应结果为空，可能没有配置字典数据');
-						}
-						const dictValue = dictData.dictValue;
-						if (!dictValue) {
-							throw new Error('字典数据不存在');
-						}
-						// 格式 subjectNo:companyType:id
-						const [subjectNo, companyType, id] = dictValue.split(':');
-						getCompany(id, companyType).then(res => {
-							if (!res.data) return;
-							this.$nextTick(() => {
-								this.form.companyName = res.data.companyName;
+				// 获取字典数据
+				const dictResponse = await getDicts('order_payment_subject_company_mapping');
+				if (dictResponse.data.length > 0) {
+					for (const dict of dictResponse.data) {
+						const [subjectNo, companyType, id] = dict.dictValue.split(':');
+						if (subjectNo === subjectNode.subjectNo) {
+							console.log(subjectNo);
+							getCompany(id, companyType).then(res => {
+								if (!res.data) return;
+								this.$nextTick(() => {
+									this.form.companyName = res.data.companyName;
+								});
 							});
-						});
+						}
 					}
 				}
 			} catch (error) {

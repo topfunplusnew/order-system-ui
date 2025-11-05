@@ -154,6 +154,21 @@ export var mixin_order_base = {
 				this.renderBatch();
 			}
 		},
+		/**
+		 * 重置分片加载状态，清空已渲染的数据，重新开始分片加载
+		 */
+		resetBatchLoading() {
+			// 如果数据列表为空，不需要重置
+			if (!this.goodsOrderList || this.goodsOrderList.length === 0) {
+				return;
+			}
+			// 重置分片加载相关状态
+			this.renderedList = [];
+			this.currentIndex = 0;
+			this.isLoadingBatch = false;
+			// 重新开始分片加载
+			this.renderBatch();
+		},
 		// 获取供应商的名称列表 主要用于表格的供应商列表的展示
 		getSupplierNames(list) {
 			if (list.length === 0) {

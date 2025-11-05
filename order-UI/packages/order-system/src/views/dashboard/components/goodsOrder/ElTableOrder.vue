@@ -171,11 +171,29 @@ export default {
 		this.$nextTick(() => {
 			this.bindTableScroll();
 		});
+		// 监听页面可见性变化，当页面重新可见时重置分片加载
+		this.handleVisibilityChange = () => {
+			// 如果页面从隐藏变为可见，且已经加载完毕，则重置分片加载
+			if (!document.hidden && this.currentIndex >= this.goodsOrderList.length && this.goodsOrderList.length > 0) {
+				this.resetBatchLoading();
+			}
+		};
+		document.addEventListener('visibilitychange', this.handleVisibilityChange);
+	},
+	activated() {
+		// 如果使用了 keep-alive，当组件被激活时，如果已经加载完毕，则重置分片加载
+		if (this.currentIndex >= this.goodsOrderList.length && this.goodsOrderList.length > 0) {
+			this.resetBatchLoading();
+		}
 	},
 	beforeDestroy() {
 		this.$bus.$off('refreshList');
 		// 移除滚动事件监听
 		this.unbindTableScroll();
+		// 移除页面可见性监听
+		if (this.handleVisibilityChange) {
+			document.removeEventListener('visibilitychange', this.handleVisibilityChange);
+		}
 	},
 	methods: {
 		// 行操作中点击查看 查看当前行订单的信息
