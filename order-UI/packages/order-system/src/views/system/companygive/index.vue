@@ -135,17 +135,20 @@
 			<el-row>
 				<el-table v-loading="loading" :data="singleInfo" @selection-change="handleSelectionChange">
 					<template #append>
-						<AddBankAccounts :company-info="currentInfo" :company-type="PUBLIC_DICT_TYPE.SUPPLIER" @callGetList="handleChangeBank" />
+						<AddBankAccounts :company-info="currentInfo" :company-type="currentInfo.companyType" @callGetList="handleRefresh" />
 					</template>
-					<el-table-column label="序号" align="center" prop="id" />
 					<el-table-column label="户名" align="center" prop="acountsName" />
 					<el-table-column label="银行卡号" align="center" prop="bankNo" />
 					<el-table-column label="银行卡余额" align="center" prop="amount" />
-					<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
+					<!-- 在操作列中添加修改按钮 -->
+					<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="180">
 						<template slot-scope="scope">
-							<el-button v-hasPermi="['system:company:remove']" size="mini" @click="handleDeleteBankaccount(scope.row)">
+							<el-button size="mini" type="primary" @click="handleEditBank(scope.row)">修改</el-button>
+							<el-button v-hasPermi="['system:company:remove']" size="mini" type="danger" @click="handleDeleteBank(scope.row)">
 								<i class="el-icon-delete"></i>
+								删除
 							</el-button>
+							<el-button size="mini" type="primary" @click="handleSearchBank">搜索银行卡</el-button>
 						</template>
 					</el-table-column>
 				</el-table>
@@ -155,55 +158,6 @@
 				<el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
 			</div>
 			<pagination v-show="bankTotal > 0" :total="bankTotal" :page.sync="bankPageNum" :limit.sync="bankPageSize" @pagination="getBankList" />
-
-			<el-dialog
-				:modal="false"
-				v-dialogDrag
-				v-dialogDragWidth
-				v-dialogDragHeight
-				:close-on-click-modal="false"
-				:show-close="false"
-				title="操作银行卡"
-				:visible.sync="dialogBankInfoVisible"
-				append-to-body
-			>
-				<el-form :model="queryBankInfo">
-					<el-row :gutter="4">
-						<el-col :span="8">
-							<el-form-item label="账号类型" :label-width="formLabelWidth">
-								<el-select v-model="queryBankInfo.acountsType" placeholder="请选择">
-									<el-option v-for="item in acountsTypeList" :key="item.value" :label="item.label" :value="item.value"></el-option>
-								</el-select>
-							</el-form-item>
-						</el-col>
-						<el-col :span="8">
-							<el-form-item label="账户名" :label-width="formLabelWidth">
-								<el-input v-model="queryBankInfo.acountsName" autocomplete="off" @input="handleInputTrim($event, 'queryBankInfo', 'acountsName')"></el-input>
-							</el-form-item>
-						</el-col>
-						<el-col :span="3">
-							<el-button type="primary" @click="handleSearchBankInfo">搜索</el-button>
-						</el-col>
-					</el-row>
-				</el-form>
-				<el-row>
-					<el-table v-loading="loading" :data="bankInfo">
-						<el-table-column label="银行卡号" align="center" prop="bankNo" />
-						<el-table-column label="账户类型" align="center" prop="acountsType" />
-						<el-table-column label="账户名" align="center" prop="acountsName" />
-						<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="180">
-							<template slot-scope="scope">
-								<el-button type="danger" @click="addThisBankInfo(scope.row)">添加该银行卡</el-button>
-							</template>
-						</el-table-column>
-					</el-table>
-				</el-row>
-				<div slot="footer" class="dialog-footer">
-					<el-button @click="dialogBankInfoVisible = false">取 消</el-button>
-					<el-button type="primary" @click="dialogBankInfoVisible = false">确 定</el-button>
-				</div>
-				<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
-			</el-dialog>
 		</el-dialog>
 
 		<!--    账号搜索-->
@@ -261,18 +215,61 @@
 				<el-table-column label="账号(银行账号)" align="center" prop="bankNo" />
 				<el-table-column label="开户行" align="center" prop="bankName" />
 				<el-table-column label="公司名称" align="center" prop="companyName" />
+				<!-- 在银行卡表格的操作列中添加修改按钮 -->
 				<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
 					<template slot-scope="scope">
-						<el-button size="mini" type="primary" @click="addDefaultCard(scope.row)">设置为默认</el-button>
+						<el-button size="mini" type="primary" @click="handleEditBank(scope.row)">修改</el-button>
+						<el-button v-hasPermi="['system:company:remove']" size="mini" @click="handleDeleteBankaccount(scope.row)">
+							<i class="el-icon-delete"></i>
+						</el-button>
 					</template>
 				</el-table-column>
 			</el-table>
+		</el-dialog>
+
+		<!-- 银行卡编辑对话框 -->
+		<el-dialog
+			:modal="false"
+			v-dialogDrag
+			v-dialogDragWidth
+			v-dialogDragHeight
+			:close-on-click-modal="false"
+			:show-close="true"
+			title="编辑银行卡信息"
+			:visible.sync="editBankDialogVisible"
+			width="500px"
+			append-to-body
+		>
+			<el-form ref="editBankForm" :model="editBankForm" :rules="editBankRules" label-width="100px">
+				<el-form-item label="账户类型" prop="acountsType">
+					<el-select v-model="editBankForm.acountsType" placeholder="请选择账户类型" style="width: 100%">
+						<el-option label="己方公司" value="己方公司"></el-option>
+						<el-option label="客户" value="客户"></el-option>
+						<el-option label="供应商" value="供应商"></el-option>
+						<el-option label="司机" value="司机"></el-option>
+						<el-option label="其他" value="其他"></el-option>
+					</el-select>
+				</el-form-item>
+				<el-form-item label="账户名" prop="acountsName">
+					<el-input v-model="editBankForm.acountsName" placeholder="请输入账户名"></el-input>
+				</el-form-item>
+				<el-form-item label="银行卡号" prop="bankNo">
+					<el-input v-model="editBankForm.bankNo" placeholder="请输入银行卡号"></el-input>
+				</el-form-item>
+				<el-form-item label="开户行" prop="bankName">
+					<el-input v-model="editBankForm.bankName" placeholder="请输入开户行"></el-input>
+				</el-form-item>
+			</el-form>
+			<div slot="footer" class="dialog-footer">
+				<el-button @click="editBankDialogVisible = false">取 消</el-button>
+				<el-button type="primary" @click="submitEditBank">确 定</el-button>
+			</div>
 		</el-dialog>
 	</div>
 </template>
 
 <script>
-import { delBankAccount, listBankAccount, setDefault } from '@/api/system/bankAccount';
+import { delBankAccount, listBankAccount, setDefault, updateBankAccount } from '@/api/system/bankAccount';
 import { addCompany, checkCustomerIsExit, checkSupplierIsExit, delCompany, getCompany, listCompany, updateCompany } from '@/api/system/company';
 import { excludeParams } from '@/api/tool/exclude';
 import { INFO_TYPE, isUsed } from '../../../api/system/isUsed';
@@ -280,6 +277,7 @@ import AddBankAccounts from '../../dashboard/components/company/AddBankAccounts.
 import { checkCarsIsExit } from '@/api/system/cars';
 import { PUBLIC_DICT_TYPE } from '../../../api/tool/enums';
 import _ from 'lodash';
+import BankManage from '../company/options/BankManage.vue';
 
 export default {
 	name: 'CompanyGive',
@@ -431,7 +429,24 @@ export default {
 			currentID: '',
 			bankTotal: 0,
 			bankPageSize: 20,
-			bankPageNum: 1
+			bankPageNum: 1,
+
+			// 银行卡编辑对话框
+			editBankDialogVisible: false,
+			editBankForm: {
+				id: null,
+				companyId: null,
+				acountsType: '',
+				acountsName: '',
+				bankNo: '',
+				bankName: ''
+			},
+			editBankRules: {
+				acountsType: [{ required: true, message: '账户类型不能为空', trigger: 'blur' }],
+				acountsName: [{ required: true, message: '账户名不能为空', trigger: 'blur' }],
+				bankNo: [{ required: true, message: '银行卡号不能为空', trigger: 'blur' }],
+				bankName: [{ required: true, message: '开户行不能为空', trigger: 'blur' }]
+			}
 		};
 	},
 	computed: {
@@ -485,6 +500,61 @@ export default {
 				this[obj][prop] = val.replace(/\s+/g, '');
 			}
 		},
+
+		// 编辑银行卡信息
+		handleEditBank(row) {
+			// 填充编辑表单数据
+			this.editBankForm = {
+				id: row.id,
+				companyId: row.companyId || this.currentInfo.id,
+				acountsType: row.acountsType || '供应商',
+				acountsName: row.acountsName,
+				bankNo: row.bankNo,
+				bankName: row.bankName
+			};
+			// 显示编辑对话框
+			this.editBankDialogVisible = true;
+		},
+
+		// 提交银行卡编辑
+		submitEditBank() {
+			this.$refs['editBankForm'].validate(valid => {
+				if (valid) {
+					updateBankAccount(this.editBankForm).then(() => {
+						this.$modal.msgSuccess('修改成功');
+						this.editBankDialogVisible = false;
+						// 刷新银行卡列表
+						this.getBankList();
+					});
+				}
+			});
+		},
+
+		// 刷新已绑定银行卡列表
+		handleRefresh() {
+			this.getBankList();
+		},
+
+		// 删除已绑定银行卡
+		handleDeleteBank(row) {
+			this.$modal
+				.confirm('是否确认删除该银行卡信息？')
+				.then(() => {
+					return delBankAccount(row.id);
+				})
+				.then(() => {
+					this.$modal.msgSuccess('删除成功');
+					this.getBankList();
+				})
+				.catch(() => {});
+		},
+
+		// 搜索银行卡
+		handleSearchBank() {
+			// 这里可以实现搜索银行卡的逻辑
+			this.$message.info('搜索银行卡功能待实现');
+		},
+
 		// 城市变化
 		changeProvince(e) {
 			this.province = e;
