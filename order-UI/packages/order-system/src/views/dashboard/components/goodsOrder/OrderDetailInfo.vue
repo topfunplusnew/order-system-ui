@@ -244,7 +244,7 @@ export default {
 				<el-table-column label="其他费用" align="center" prop="otherCost" show-overflow-tooltip width="50px" />
 				<el-table-column label="利润" align="center" prop="profit" show-overflow-tooltip width="80" />
 				<el-table-column label="不含税利润" align="center" prop="profitNoTax" show-overflow-tooltip width="140" />
-				<el-table-column type="expand" width="50" label="备注">
+				<el-table-column type="expand" width="50" label="备注" align="center">
 					<template slot-scope="scope">
 						<div class="expand-row">
 							<div class="expand-label">备注：</div>
@@ -368,7 +368,8 @@ export default {
 .expand-row {
 	padding: 4px 5px;
 	display: flex;
-	align-items: flex-start;
+	align-items: center;
+	justify-content: center;
 	background-color: #fafafa;
 	border-left: 3px solid #409eff;
 
@@ -376,18 +377,17 @@ export default {
 		font-weight: bold;
 		color: #606266;
 		margin-right: 10px;
-		min-width: 60px;
 		flex-shrink: 0;
 		font-size: 13px;
 	}
 
 	.expand-content {
-		flex: 1;
 		color: #303133;
 		word-break: break-all;
 		white-space: pre-wrap;
 		line-height: 1.4;
 		font-size: 13px;
+		text-align: center;
 	}
 }
 </style>
