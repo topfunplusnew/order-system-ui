@@ -126,9 +126,10 @@ export var mixin_payment_subject = {
 					throw new Error('配置数据不存在，可能没有配置运费科目参数');
 				}
 				const subjectNo = config.msg;
+				const subjectNofigList = subjectNo.split(';');
 				const subjectNode = this.searchSubjectNodeFromMap(value.join('-'));
 				// 只有是运费节点的时候才进行填充
-				if (subjectNode.subjectNo === subjectNo) {
+				if (subjectNofigList.includes(subjectNode.subjectNo)) {
 					// 获取字典数据
 					const dictResponse = await getDicts('order_payment_subject_company_mapping');
 					if (dictResponse.data.length > 0) {

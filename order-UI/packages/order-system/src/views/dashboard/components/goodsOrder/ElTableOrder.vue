@@ -825,7 +825,16 @@ export default {
 		</div>
 
 		<!--    订单表格 数据量较大-->
-		<div>
+		<div class="table-container">
+			<!-- 加载遮盖层 -->
+			<transition name="fade">
+				<div v-if="isLoadingBatch" class="table-loading-overlay">
+					<div class="loading-overlay-content">
+						<i class="el-icon-loading"></i>
+						<span class="loading-text">正在加载数据...</span>
+					</div>
+				</div>
+			</transition>
 			<el-table
 				ref="orderTable"
 				id="printBox"
@@ -1084,15 +1093,6 @@ export default {
 					</template>
 				</el-table-column>
 			</el-table>
-			<!-- 加载更多提示 -->
-			<transition name="fade">
-				<div v-if="isLoadingBatch" class="loading-more-container">
-					<div class="loading-more-content">
-						<i class="el-icon-loading"></i>
-						<span class="loading-text">正在加载更多数据...</span>
-					</div>
-				</div>
-			</transition>
 			<!-- 已加载全部提示 -->
 			<transition name="fade">
 				<div v-if="!isLoadingBatch && currentIndex >= goodsOrderList.length && goodsOrderList.length > batchSize" class="load-complete-container">
@@ -1838,30 +1838,46 @@ export default {
 	}
 }
 
-// 加载更多提示样式
-.loading-more-container {
+// 表格容器样式
+.table-container {
+	position: relative;
+}
+
+// 表格加载遮盖层样式
+.table-loading-overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(255, 255, 255, 0.9);
+	backdrop-filter: blur(2px);
+	z-index: 1000;
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	padding: 20px 0;
-	margin: 10px 0;
-	background: #f8f9fa;
 	border-radius: 4px;
 
-	.loading-more-content {
+	.loading-overlay-content {
 		display: flex;
+		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		gap: 8px;
-		color: #409eff;
-		font-size: 14px;
+		gap: 12px;
+		padding: 20px 30px;
+		background: #ffffff;
+		border-radius: 8px;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 
 		.el-icon-loading {
-			font-size: 16px;
+			font-size: 24px;
+			color: #409eff;
 			animation: rotating 1s linear infinite;
 		}
 
 		.loading-text {
+			color: #409eff;
+			font-size: 14px;
 			font-weight: 500;
 		}
 	}
