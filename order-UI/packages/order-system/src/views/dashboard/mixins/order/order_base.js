@@ -64,8 +64,9 @@ export var mixin_order_base = {
 			// 订单表格中的数据
 			goodsOrderList: [],
 			renderedList: [], // 用于在表格中显示的数据，实现分时渲染
-			batchSize: 8, // 每次渲染的行数，根据性能调整
-			currentIndex: 0 // 当前渲染的起始索引
+			batchSize: 22, // 每次渲染的行数，根据性能调整
+			currentIndex: 0, // 当前渲染的起始索引
+			isLoadingBatch: false // 是否正在加载批次，防止重复加载
 		};
 	},
 	methods: {
@@ -82,8 +83,9 @@ export var mixin_order_base = {
 					this.goodsOrderList = this.preprocessOrderData(response.rows);
 					this.renderedList = [];
 					this.currentIndex = 0;
+					this.isLoadingBatch = false;
 					this.total = response.total;
-					this.renderBatch(); // 开始分批渲染
+					this.renderBatch(); // 渲染第一批数据
 					this.loading = false;
 				});
 			} else {
@@ -92,26 +94,65 @@ export var mixin_order_base = {
 					this.goodsOrderList = this.preprocessOrderData(response.rows);
 					this.renderedList = [];
 					this.currentIndex = 0;
+					this.isLoadingBatch = false;
 					this.total = response.total;
-					this.renderBatch(); // 开始分批渲染
+					this.renderBatch(); // 渲染第一批数据
 					this.loading = false;
 				});
 			}
 		},
+		/**
+		 * 渲染一批数据（由滚动事件触发，不再自动递归）
+		 */
 		renderBatch() {
+			// 如果已经全部渲染完成，直接返回
 			if (this.currentIndex >= this.goodsOrderList.length) {
-				// 渲染完成
+				this.isLoadingBatch = false;
 				return;
 			}
-			// 获取要渲染的行
-			const nextBatch = this.goodsOrderList.slice(this.currentIndex, this.currentIndex + this.batchSize);
-			// 更新要渲染的数据
-			this.renderedList = this.renderedList.concat(nextBatch);
-			this.currentIndex += this.batchSize;
-			// 使用 requestAnimationFrame 执行下一次渲染
-			requestAnimationFrame(() => {
+			// 如果正在加载，防止重复加载
+			if (this.isLoadingBatch) {
+				return;
+			}
+			// 标记为正在加载
+			this.isLoadingBatch = true;
+
+			// 使用 setTimeout 模拟加载过程，同时让 DOM 有时间更新
+			// 这样可以给用户一个平滑的加载体验
+			setTimeout(() => {
+				// 获取要渲染的行
+				const nextBatch = this.goodsOrderList.slice(this.currentIndex, this.currentIndex + this.batchSize);
+				// 更新要渲染的数据
+				this.renderedList = this.renderedList.concat(nextBatch);
+				this.currentIndex += this.batchSize;
+
+				// 使用 $nextTick 确保 DOM 更新完成后再隐藏加载状态
+				// 这样可以让新添加的行有更好的过渡效果
+				this.$nextTick(() => {
+					// 标记加载完成
+					this.isLoadingBatch = false;
+				});
+			}, 200); // 200ms 的延迟，足够让加载动画显示，又不会让用户感觉太慢
+		},
+		/**
+		 * 处理表格滚动事件，当滚动到底部时加载下一批数据
+		 * @param {Event} event - 滚动事件对象
+		 */
+		handleTableScroll(event) {
+			const target = event.target;
+			// 如果正在加载或已经全部渲染完成，直接返回
+			if (this.isLoadingBatch || this.currentIndex >= this.goodsOrderList.length) {
+				return;
+			}
+			// 计算滚动位置
+			const scrollTop = target.scrollTop;
+			const scrollHeight = target.scrollHeight;
+			const clientHeight = target.clientHeight;
+			// 当滚动到距离底部50px以内时，加载下一批数据
+			const threshold = 50;
+			if (scrollHeight - scrollTop - clientHeight <= threshold) {
 				this.renderBatch();
-			});
+			}
 		},
 		// 获取供应商的名称列表 主要用于表格的供应商列表的展示
 		getSupplierNames(list) {

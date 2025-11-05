@@ -142,6 +142,15 @@ export default {
 				});
 			},
 			deep: true
+		},
+		// 监听 loading 状态，当数据加载完成后确保滚动事件已绑定
+		loading(newVal, oldVal) {
+			if (oldVal === true && newVal === false) {
+				// 数据加载完成，确保滚动事件已绑定
+				this.$nextTick(() => {
+					this.bindTableScroll();
+				});
+			}
 		}
 	},
 	created() {
@@ -158,9 +167,15 @@ export default {
 		getUserConfig('goodsorder-columns').then(res => {
 			console.log(res);
 		});
+		// 绑定表格滚动事件，实现滚动加载
+		this.$nextTick(() => {
+			this.bindTableScroll();
+		});
 	},
 	beforeDestroy() {
 		this.$bus.$off('refreshList');
+		// 移除滚动事件监听
+		this.unbindTableScroll();
 	},
 	methods: {
 		// 行操作中点击查看 查看当前行订单的信息
@@ -734,6 +749,35 @@ export default {
 			});
 
 			return sums;
+		},
+		/**
+		 * 绑定表格滚动事件
+		 */
+		bindTableScroll() {
+			this.$nextTick(() => {
+				const table = this.$refs.orderTable;
+				if (table && table.bodyWrapper) {
+					// 如果已经绑定过，先移除
+					if (this._handleTableScroll) {
+						table.bodyWrapper.removeEventListener('scroll', this._handleTableScroll);
+					}
+					// 保存滚动事件处理函数引用，方便后续移除
+					this._handleTableScroll = event => {
+						this.handleTableScroll(event);
+					};
+					table.bodyWrapper.addEventListener('scroll', this._handleTableScroll);
+				}
+			});
+		},
+		/**
+		 * 移除表格滚动事件监听
+		 */
+		unbindTableScroll() {
+			const table = this.$refs.orderTable;
+			if (table && table.bodyWrapper && this._handleTableScroll) {
+				table.bodyWrapper.removeEventListener('scroll', this._handleTableScroll);
+				this._handleTableScroll = null;
+			}
 		}
 	}
 };
@@ -783,6 +827,7 @@ export default {
 		<!--    订单表格 数据量较大-->
 		<div>
 			<el-table
+				ref="orderTable"
 				id="printBox"
 				:row-key="row => row.id"
 				v-loading="loading"
@@ -1039,6 +1084,24 @@ export default {
 					</template>
 				</el-table-column>
 			</el-table>
+			<!-- 加载更多提示 -->
+			<transition name="fade">
+				<div v-if="isLoadingBatch" class="loading-more-container">
+					<div class="loading-more-content">
+						<i class="el-icon-loading"></i>
+						<span class="loading-text">正在加载更多数据...</span>
+					</div>
+				</div>
+			</transition>
+			<!-- 已加载全部提示 -->
+			<transition name="fade">
+				<div v-if="!isLoadingBatch && currentIndex >= goodsOrderList.length && goodsOrderList.length > batchSize" class="load-complete-container">
+					<div class="load-complete-content">
+						<i class="el-icon-success"></i>
+						<span class="complete-text">已加载全部数据</span>
+					</div>
+				</div>
+			</transition>
 			<!--    分页组件-->
 			<pagination v-if="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
@@ -1772,6 +1835,107 @@ export default {
 
 	.el-dialog__header {
 		padding: 15px 20px 10px;
+	}
+}
+
+// 加载更多提示样式
+.loading-more-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 20px 0;
+	margin: 10px 0;
+	background: #f8f9fa;
+	border-radius: 4px;
+
+	.loading-more-content {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		color: #409eff;
+		font-size: 14px;
+
+		.el-icon-loading {
+			font-size: 16px;
+			animation: rotating 1s linear infinite;
+		}
+
+		.loading-text {
+			font-weight: 500;
+		}
+	}
+}
+
+// 加载完成提示样式
+.load-complete-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 15px 0;
+	margin: 10px 0;
+
+	.load-complete-content {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		color: #67c23a;
+		font-size: 14px;
+
+		.el-icon-success {
+			font-size: 16px;
+		}
+
+		.complete-text {
+			font-weight: 500;
+		}
+	}
+}
+
+// 旋转动画
+@keyframes rotating {
+	0% {
+		transform: rotate(0deg);
+	}
+
+	100% {
+		transform: rotate(360deg);
+	}
+}
+
+// 淡入淡出过渡效果
+.fade-enter-active,
+.fade-leave-active {
+	transition: opacity 0.3s ease;
+}
+
+.fade-enter,
+.fade-leave-to {
+	opacity: 0;
+}
+
+// 表格行过渡效果
+::v-deep .el-table__body-wrapper {
+	.el-table__row {
+		transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+	}
+
+	// 新添加的行会有淡入效果
+	.el-table__row.fade-enter-active {
+		animation: fadeInRow 0.3s ease-in-out;
+	}
+}
+
+@keyframes fadeInRow {
+	from {
+		opacity: 0;
+		transform: translateY(-10px);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0);
 	}
 }
 </style>
