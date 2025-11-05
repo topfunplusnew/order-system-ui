@@ -74,7 +74,7 @@ export var mixin_checkfile = {
 				onUpdate(data).then(() => {
 					this.$message.success('操作成功！');
 					// 刷新数据列表
-					this.getList();
+					// this.getList();
 				});
 			});
 		},

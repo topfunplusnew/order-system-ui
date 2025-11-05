@@ -90,7 +90,6 @@ export var common_dialog = {
 			instance.$on('confirm', callback => {
 				callback(this)
 					.then(() => {
-						// 只有在成功时才关闭弹窗和刷新列表
 						this._reallyCloseDialog(config.id);
 						// 根据isList参数决定是否调用getList
 						if (config.isList && this.getList) {

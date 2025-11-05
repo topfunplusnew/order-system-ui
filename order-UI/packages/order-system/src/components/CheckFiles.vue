@@ -41,12 +41,6 @@ export default {
 			}
 		}
 	},
-	mounted() {
-		this.$bus.$on('changeFileVisible', value => {
-			if (this.isUploading && !value) return;
-			this.dialogVisible = value;
-		});
-	},
 	methods: {
 		showImgSrc(p) {
 			return process.env.VUE_APP_BASE_API + p;

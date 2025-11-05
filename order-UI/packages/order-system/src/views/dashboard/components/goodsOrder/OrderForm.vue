@@ -257,6 +257,10 @@ export default {
 						this.$message.error('未查询到该订单的明细信息');
 						return;
 					}
+					if (detailList.some(item => !item.id)) {
+						this.$message.error('数据错误，某行中缺少id!');
+						return;
+					}
 					this.orderdetailList = detailList.map(item => {
 						return { ...item, isEditing: false };
 					});
@@ -662,6 +666,13 @@ export default {
 				return;
 			}
 
+			// 如果明细中没有id 报错
+			if (filteredOrderDetailList.some(item => !item.id)) {
+				this.$message.error('数据错误，某行中缺少id!');
+				reject(new Error('请添加有效的货物信息'));
+				return;
+			}
+
 			// 如果过滤掉了一些空白行，给用户提示
 			const filteredCount = this.orderdetailList.length - filteredOrderDetailList.length;
 			if (filteredCount > 0) {
@@ -725,6 +736,7 @@ export default {
 								cancelText: '否',
 								zIndex: 2660,
 								onOk: () => {
+									// 点击确定时，保存 宝成成功清除状态
 									new Promise((saveResolve, saveReject) => {
 										this.handleRowSave(this.orderdetailList, saveResolve, saveReject);
 									})
@@ -1706,7 +1718,7 @@ export default {
 							/>
 						</template>
 					</el-table-column>
-					<el-table-column label="计提厂家返利金额" prop="factoryRebateAmount" width="220">
+					<el-table-column label="计提厂家返利金额" prop="factoryRebateAmount" width="150">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -1717,7 +1729,7 @@ export default {
 							/>
 						</template>
 					</el-table-column>
-					<el-table-column label="计提厂家降价金额" prop="factoryDiscountAmount" width="220">
+					<el-table-column label="计提厂家降价金额" prop="factoryDiscountAmount" width="150">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -1728,7 +1740,7 @@ export default {
 							/>
 						</template>
 					</el-table-column>
-					<el-table-column label="备注" prop="comments" width="90">
+					<el-table-column label="备注" prop="comments" width="280">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.comments" placeholder="请输入备注" :disabled="!scope.row.isEditing" />
 						</template>
