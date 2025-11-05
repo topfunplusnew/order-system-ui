@@ -21,7 +21,7 @@
 				</el-select>
 			</el-form-item>
 			<el-form-item label="付款类型" prop="payType">
-				<el-cascader v-model="queryParams.payType" :options="paymentTypeTree" :props="props" @change="handleChange"></el-cascader>
+				<el-cascader v-model="queryParams.payType" :options="paymentTypeTree" :props="props"></el-cascader>
 			</el-form-item>
 			<el-form-item label="我方户名" prop="selfAccountsName">
 				<el-input class="input-medium" v-model="queryParams.selfAccountsName" placeholder="请输入我方户名" clearable @keyup.enter.native="handleQuery" />
@@ -866,12 +866,13 @@ export default {
 		/** 查询付款信息列表 */
 		getList() {
 			this.loading = true;
+			let payTypeString = '';
 			// 把查询条件中的payType转成字符串
 			if (this.queryParams.payType) {
-				this.queryParams.payType = this.queryParams.payType.join('-');
+				payTypeString = this.queryParams.payType.join('-');
 			}
 			// 查询
-			return listPayment(addDateRange(this.queryParams, this.dateRange, 'payment')).then(response => {
+			return listPayment(addDateRange({ ...this.queryParams, payType: payTypeString }, this.dateRange, 'payment')).then(response => {
 				// 规范化 auditState：后端已复核为字符串 '1'，未复核为 null，这里统一为 '1' 或 '0'
 				const rows = Array.isArray(response.rows) ? response.rows : [];
 				rows.forEach(r => {
