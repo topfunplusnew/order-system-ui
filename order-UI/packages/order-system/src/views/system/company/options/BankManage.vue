@@ -111,7 +111,7 @@ export default {
 				acountsType: [{ required: true, message: '账户类型不能为空', trigger: 'blur' }],
 				acountsName: [{ required: true, message: '账户名不能为空', trigger: 'blur' }],
 				bankNo: [{ required: true, message: '银行卡号不能为空', trigger: 'blur' }],
-				bankName: [{ required: true, message: '开户行不能为空', trigger: 'blur' }]
+				bankName: []
 			}
 		};
 	},
