@@ -793,7 +793,7 @@ export default {
 				size="mini"
 				max-height="750"
 				:cell-style="paddingFix"
-				:data="renderedList"
+				:data="goodsOrderList"
 				show-summary
 				:summary-method="getSummary"
 				@header-dragend="changeColWidth"
