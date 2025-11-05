@@ -50,7 +50,8 @@
 				</template>
 				<el-table-column label="户名" align="center" prop="acountsName" />
 				<el-table-column label="银行卡号" align="center" prop="bankNo" />
-				<el-table-column label="银行卡余额" align="center" prop="amount" />
+				<el-table-column label="开户行" align="center" prop="bankName" />
+				<el-table-column label="公司名称" align="center" prop="companyName" />
 				<!-- 在操作列中添加修改按钮 -->
 				<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="180">
 					<template slot-scope="scope">
