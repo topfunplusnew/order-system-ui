@@ -1,5 +1,7 @@
 import { listSubject } from '../../../../api/system/subject';
-
+import { getCompany } from '@/api/system/company';
+import { getDicts } from '@/api/system/dict/data';
+import { getConfigKey } from '../../../../api/system/config';
 export var mixin_payment_subject = {
 	data: function () {
 		return {
@@ -85,7 +87,73 @@ export var mixin_payment_subject = {
 			const path = findNodePath(this.paymentTypeTree);
 			return path || [];
 		},
+		searchSubjectNodeFromMap(subjectString) {
+			if (!subjectString) return [];
+
+			// 标准化输入的 subjectString，确保格式一致（去掉首尾空格，统一分隔符）
+			const normalizedSubjectString = subjectString.trim();
+
+			// 递归查找节点
+			const findNodePath = (nodes, path = []) => {
+				for (let node of nodes) {
+					const currentPath = [...path, node.title];
+
+					// 检查当前节点的 fullSubjectString 是否匹配
+					if (node.fullSubjectString === normalizedSubjectString) {
+						return node;
+					}
+
+					// 如果有子节点，递归查找
+					if (node.children && node.children.length > 0) {
+						const result = findNodePath(node.children, currentPath);
+						if (result) {
+							return result;
+						}
+					}
+				}
+				return null;
+			};
+
+			// 从根节点开始查找
+			const node = findNodePath(this.paymentTypeTree);
+			return node || null;
+		},
 		// 选中某一个节点
-		handleChange(value) {}
+		async handleChange(value) {
+			try {
+				const config = await getConfigKey('order.freigent.subjectNo');
+				if (!config) {
+					throw new Error('配置数据不存在，可能没有配置运费科目参数');
+				}
+				const subjectNo = config.msg;
+				const subjectNode = this.searchSubjectNodeFromMap(value.join('-'));
+				// 只有是运费节点的时候才进行填充
+				if (subjectNode.subjectNo === subjectNo) {
+					// 获取字典数据
+					const dictResponse = await getDicts('order_payment_subject_company_mapping');
+					if (dictResponse.data.length > 0) {
+						const dictData = dictResponse.data[0];
+						if (!dictData) {
+							throw new Error('字典相应结果为空，可能没有配置字典数据');
+						}
+						const dictValue = dictData.dictValue;
+						if (!dictValue) {
+							throw new Error('字典数据不存在');
+						}
+						// 格式 subjectNo:companyType:id
+						const [subjectNo, companyType, id] = dictValue.split(':');
+						getCompany(id, companyType).then(res => {
+							if (!res.data) return;
+							this.$nextTick(() => {
+								this.form.companyName = res.data.companyName;
+							});
+						});
+					}
+				}
+			} catch (error) {
+				console.error('获取付款类型对应的公司信息失败:', error);
+				// 静默处理错误，不显示提示
+			}
+		}
 	}
 };
