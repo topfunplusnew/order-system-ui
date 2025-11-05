@@ -27,6 +27,7 @@ import CheckOrder from '@/views/dashboard/components/goodsOrder/CheckOrder.vue';
 import * as XLSX from 'xlsx';
 import { debounce } from 'lodash';
 import ExpandCursor from '../common/ExpandCursor.vue';
+import { batchGetUserConfig, getUserConfig, listUserConfig, saveUserConfig } from '../../../../api/user-config';
 
 export default {
 	name: 'ElTableOrder',
@@ -153,6 +154,9 @@ export default {
 	mounted() {
 		this.$bus.$on('refreshList', () => {
 			this.getList();
+		});
+		getUserConfig('goodsorder-columns').then(res => {
+			console.log(res);
 		});
 	},
 	beforeDestroy() {

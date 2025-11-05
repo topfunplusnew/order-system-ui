@@ -489,13 +489,13 @@
 									@update:queryName="value => (querySourceBankNo = value)"
 								>
 									<template #table-columns>
-										<el-table-column label="账户类型" align="center" prop="acountsType" width="200" />
-										<el-table-column label="己方公司" align="center" prop="displayName" />
-										<el-table-column label="开户名称" align="center" prop="acountsName" width="200" />
+										<el-table-column label="账户类型" align="center" prop="acountsType" width="120" />
+										<el-table-column label="开户名称" align="center" prop="acountsName" width="250" />
 										<el-table-column label="银行账号" align="center" prop="bankNo" width="200" />
-										<el-table-column label="开户行" align="center" prop="bankName" width="200" />
+										<el-table-column label="开户行" align="center" prop="bankName" width="250" />
 										<el-table-column label="公司名称" align="center" prop="companyName" width="200" />
 										<el-table-column label="余额" align="center" prop="amount" width="200" />
+										<el-table-column label="己方公司" align="center" prop="displayName" width="200" />
 									</template>
 								</SearchOption>
 							</el-col>
@@ -572,13 +572,13 @@
 									@update:queryName="value => (querySourceBankNo = value)"
 								>
 									<template #table-columns>
-										<el-table-column label="账户类型" align="center" prop="acountsType" width="200" />
-										<el-table-column label="己方公司" align="center" prop="displayName" />
+										<el-table-column label="账户类型" align="center" prop="acountsType" width="120" />
 										<el-table-column label="开户名称" align="center" prop="acountsName" width="200" />
 										<el-table-column label="银行账号" align="center" prop="bankNo" width="200" />
 										<el-table-column label="开户行" align="center" prop="bankName" width="200" />
 										<el-table-column label="公司名称" align="center" prop="companyName" width="200" />
 										<el-table-column label="余额" align="center" prop="amount" width="200" />
+										<el-table-column label="己方公司" align="center" prop="displayName" width="200" />
 									</template>
 								</SearchOption>
 							</el-col>
