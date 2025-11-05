@@ -64,7 +64,7 @@ export var mixin_order_base = {
 			// 订单表格中的数据
 			goodsOrderList: [],
 			renderedList: [], // 用于在表格中显示的数据，实现分时渲染
-			batchSize: 10, // 每次渲染的行数，根据性能调整
+			batchSize: 8, // 每次渲染的行数，根据性能调整
 			currentIndex: 0 // 当前渲染的起始索引
 		};
 	},
@@ -80,6 +80,8 @@ export var mixin_order_base = {
 				listGoodsOrder(query).then(response => {
 					// 预处理订单数据，添加供应商和仓库的预处理信息
 					this.goodsOrderList = this.preprocessOrderData(response.rows);
+					this.renderedList = [];
+					this.currentIndex = 0;
 					this.total = response.total;
 					this.renderBatch(); // 开始分批渲染
 					this.loading = false;
@@ -88,6 +90,8 @@ export var mixin_order_base = {
 				listGoodsOrder(this.queryParams).then(response => {
 					// 预处理订单数据，添加供应商和仓库的预处理信息
 					this.goodsOrderList = this.preprocessOrderData(response.rows);
+					this.renderedList = [];
+					this.currentIndex = 0;
 					this.total = response.total;
 					this.renderBatch(); // 开始分批渲染
 					this.loading = false;

@@ -793,7 +793,7 @@ export default {
 				size="mini"
 				max-height="750"
 				:cell-style="paddingFix"
-				:data="goodsOrderList"
+				:data="renderedList"
 				show-summary
 				:summary-method="getSummary"
 				@header-dragend="changeColWidth"
@@ -801,11 +801,15 @@ export default {
 				<el-table-column label="行操作" align="center" class-name="small-padding fixed-width" width="180" fixed="left">
 					<template slot-scope="scope">
 						<!-- 查看按钮 -->
-						<el-button size="mini" type="text" @click="checkOrderItemInfo(scope.row)">查看</el-button>
+						<el-button size="mini" type="text" @click="checkOrderItemInfo(scope.row)">
+							<span v-once>查看</span>
+						</el-button>
 
 						<!-- 操作下拉菜单 -->
 						<el-dropdown size="mini" @command="command => handleCommand(command, scope.row)">
-							<el-button size="mini" type="text">操作</el-button>
+							<el-button size="mini" type="text">
+								<span v-once>操作</span>
+							</el-button>
 							<el-dropdown-menu slot="dropdown">
 								<el-dropdown-item v-hasPermi="['system:goodsorder:edit']" command="handleUpdate">
 									<el-button
@@ -818,14 +822,16 @@ export default {
 									</el-button>
 								</el-dropdown-item>
 								<el-dropdown-item v-hasPermi="['system:goodsorder:remove']" command="handleDelete">
-									<el-button size="mini" type="danger">删 除</el-button>
+									<el-button size="mini" type="danger" v-once>删 除</el-button>
 								</el-dropdown-item>
 							</el-dropdown-menu>
 						</el-dropdown>
 
 						<!-- 修改记录下拉菜单 -->
 						<el-dropdown size="mini">
-							<el-button size="mini" type="text">修改记录</el-button>
+							<el-button size="mini" type="text">
+								<span v-once>修改记录</span>
+							</el-button>
 							<el-dropdown-menu slot="dropdown">
 								<el-dropdown-item>
 									<HistoryList :row="scope.row" />
@@ -879,7 +885,9 @@ export default {
 						</el-row>
 						<el-row v-else>
 							<el-row>
-								<el-button v-hasPermi="['system:goodsorder:audit']" type="text" size="mini" @click="handleCheck(scope.row)">审核</el-button>
+								<el-button v-hasPermi="['system:goodsorder:audit']" type="text" size="mini" @click="handleCheck(scope.row)">
+									<span v-once>审核</span>
+								</el-button>
 							</el-row>
 						</el-row>
 					</template>
@@ -951,7 +959,7 @@ export default {
 							<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'path'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getGoodsOrder, updateGoodsOrder)" />
 						</div>
 						<div v-else>
-							<el-tag type="danger">加载错误</el-tag>
+							<el-tag type="danger" v-once>加载错误</el-tag>
 						</div>
 					</template>
 				</el-table-column>
@@ -966,7 +974,7 @@ export default {
 							/>
 						</div>
 						<div v-else>
-							<el-tag type="danger">加载错误</el-tag>
+							<el-tag type="danger" v-once>加载错误</el-tag>
 						</div>
 					</template>
 				</el-table-column>

@@ -115,7 +115,7 @@ export default {
 		<div class="attachment-entry" v-if="filteredAttachments.length > 0" @click="openAttachmentPanel">
 			<el-tooltip content="点击查看/上传附件" placement="top">
 				<div class="attachment-icon-wrapper">
-					<i class="el-icon-picture" />
+					<i class="el-icon-picture" v-once />
 				</div>
 			</el-tooltip>
 		</div>
@@ -136,7 +136,7 @@ export default {
 			custom-class="check-files-dialog"
 			@close="isUploading = false"
 		>
-			<h3>附件列表</h3>
+			<h3 v-once>附件列表</h3>
 			<div class="file-list" :class="{ 'empty-list': checkFileList.length === 0 }">
 				<!--上传过的文件列表-->
 				<template v-if="checkFileList.length > 0">
