@@ -208,7 +208,7 @@ export default {
 				companyType: '',
 				reason: '',
 				params: {
-					checkStateList: ['审核中', '通过', '未通过', '驳回', '作废']
+					checkStateList: ['审核中', '通过', '未通过', '驳回']
 				}
 			},
 
