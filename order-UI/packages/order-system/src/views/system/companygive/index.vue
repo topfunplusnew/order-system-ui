@@ -446,7 +446,7 @@ export default {
 				acountsType: [{ required: true, message: '账户类型不能为空', trigger: 'blur' }],
 				acountsName: [{ required: true, message: '账户名不能为空', trigger: 'blur' }],
 				bankNo: [{ required: true, message: '银行卡号不能为空', trigger: 'blur' }],
-				bankName: []
+				bankName: [{ min: 0, max: 1000, message: '开户行长度不能超过1000个字符', trigger: 'blur' }]
 			}
 		};
 	},
