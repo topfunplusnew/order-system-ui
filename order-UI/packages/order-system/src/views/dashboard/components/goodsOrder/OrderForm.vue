@@ -365,7 +365,7 @@ export default {
 			if (this.isEditingOrder.id) {
 				newOrderInfo.id = this.isEditingOrder.id;
 			}
-			this.addOrUpdateOrderDetail(newOrderInfo, rows, resolve, reject);
+			this.addOrUpdateOrderDetail(newOrderInfo, rows, resolve, reject, row);
 		},
 		/**
 		 * 添加或更新订单详情
@@ -374,7 +374,7 @@ export default {
 		 * @param {Function} [resolve=null] - Promise resolve回调
 		 * @param {Function} [reject=null] - Promise reject回调
 		 */
-		addOrUpdateOrderDetail(newOrderInfo, rows, resolve = null, reject = null) {
+		addOrUpdateOrderDetail(newOrderInfo, rows, resolve = null, reject = null, row = null) {
 			const editReason = sessionStorage.getItem('goodsorder-edit-reason');
 			// 保存row的引用，避免在Promise链中丢失
 			const currentRows = rows;
@@ -410,13 +410,27 @@ export default {
 							}
 						});
 						const orderInfo = _.cloneDeep(res.data);
-						this.$nextTick(() => {
-							Object.assign(this.orderInfo, orderInfo);
+						if (!orderInfo || !orderInfo.orderDetailList || orderInfo.orderDetailList.length === 0) {
+							this.$message.error('保存失败，保存后未找到相应数据');
+							this.isEditingDetails = true;
+							reject && reject();
+							return;
+						}
+						// 如果该行是新增行，则从后端返回的数据中找到index等于该行数据的index的id，并赋值给该行 并且将isAdd标记为false
+						if (row && row.isAdd) {
+							row.id = orderInfo.orderDetailList.find(item => item.index === row.index).id;
+							row.isAdd = false;
 							this.$message.success('该行订单详情信息已添加并保存!');
-							// 设置当前正在编辑的订单是哪条订单
-							this.setIsEditingOrder(_.cloneDeep(res.data), true);
 							resolve && resolve();
-						});
+						} else {
+							this.$nextTick(() => {
+								Object.assign(this.orderInfo, orderInfo);
+								this.$message.success('该行订单详情信息已添加并保存!');
+								// 设置当前正在编辑的订单是哪条订单 
+								this.setIsEditingOrder(_.cloneDeep(res.data), true);
+								resolve && resolve();
+							});
+						}
 					})
 					.catch(error => {
 						currentRows.forEach(row => {
@@ -509,7 +523,7 @@ export default {
 		 * 处理出厂片数变化，自动填充卸货片数并重新计算
 		 * @param {Object} scope - 表格行作用域对象
 		 */
-		handlePiecesChange(scope) { 
+		handlePiecesChange(scope) {
 			// 将出厂片数的值赋给卸货片数
 			scope.row.actualPieces = scope.row.pieces;
 			// 触发重新计算
