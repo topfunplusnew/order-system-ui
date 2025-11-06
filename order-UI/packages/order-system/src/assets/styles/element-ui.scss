@@ -645,13 +645,10 @@
 
 // 全局级联面板调整
 .el-cascader-panel {
-	.el-cascader-node {
-		height: 32px !important;
-		line-height: 32px !important;
-		font-size: 16px !important; // 字体大小改为16px
-		color: #000000 !important; // 黑色
-		font-weight: normal !important; // 不加粗
-		padding: 0 8px !important;
+	// 级联菜单滚动区域高度调整
+	.el-cascader-menu__wrap.el-scrollbar__wrap {
+		height: 450px !important;
+		max-height: 450px !important;
 	}
 }
 
