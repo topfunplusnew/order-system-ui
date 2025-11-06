@@ -389,33 +389,17 @@ export default {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
 					if (this.form.id != null) {
-						this.form.delFlag = null;
-						this.form.addtime = null;
-						this.form.updateTime = null;
-						this.form.userId = null;
-						// this.form.companyType = this.form.companyType === '供应商' ? 2 : 1
 						this.form.operateDate = parseTime(this.form.operateDate, '{y}-{m}-{d} {h}:{i}:{s}');
 						this.form = excludeParams(this.form, this.$exclude);
-						updateBalanceAccounts({
-							...this.form,
-							companyType: this.form.companyType === '供应商' ? 2 : 1
-						}).then(response => {
+						updateBalanceAccounts(this.form).then(response => {
 							this.$modal.msgSuccess('修改成功');
 							this.open = false;
 							this.getList();
 						});
 					} else {
-						this.form.delFlag = null;
-						this.form.addtime = null;
-						this.form.updateTime = null;
-						this.form.userId = null;
-						// this.form.companyType = this.form.companyType === '供应商' ? 2 : 1
 						this.form.operateDate = parseTime(this.form.operateDate, '{y}-{m}-{d} {h}:{i}:{s}');
 						this.form = excludeParams(this.form, this.$exclude);
-						addBalanceAccounts({
-							...this.form,
-							companyType: this.form.companyType === '供应商' ? 2 : 1
-						}).then(response => {
+						addBalanceAccounts(this.form).then(response => {
 							this.$modal.msgSuccess('新增成功');
 							this.open = false;
 							this.getList();

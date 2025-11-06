@@ -27,7 +27,7 @@ import CheckOrder from '@/views/dashboard/components/goodsOrder/CheckOrder.vue';
 import * as XLSX from 'xlsx';
 import { debounce } from 'lodash';
 import ExpandCursor from '../common/ExpandCursor.vue';
-import { batchGetUserConfig, getUserConfig, listUserConfig, saveUserConfig } from '../../../../api/user-config';
+import { getUserConfig } from '../../../../api/user-config';
 
 export default {
 	name: 'ElTableOrder',
@@ -37,6 +37,10 @@ export default {
 		},
 		paddingFix() {
 			return { padding: '.4px' };
+		},
+		// 获取陆运车牌列的配置
+		landCarNoColumn() {
+			return this.columns.find(c => c.key === 6);
 		}
 	},
 	components: {
@@ -105,9 +109,9 @@ export default {
 				{ key: 1, label: '日期', visible: true },
 				{ key: 2, label: '客户', visible: true },
 				{ key: 3, label: '供应商/仓库', visible: true },
+				{ key: 6, label: '陆运车牌', visible: true },
 				{ key: 4, label: '审核状态', visible: true },
 				{ key: 5, label: '车队', visible: true },
-				{ key: 6, label: '陆运车牌', visible: true },
 				{ key: 7, label: '陆运司机电话', visible: true },
 				{ key: 8, label: '陆地司机姓名', visible: true },
 				{ key: 9, label: '海运柜号', visible: true },
@@ -949,7 +953,9 @@ export default {
 						</ExpandCursor>
 					</template>
 				</el-table-column>
-				<!-- 5. 审核状态 -->
+				<!-- 5. 陆运车牌 -->
+				<CustomTableColumn v-if="landCarNoColumn && landCarNoColumn.visible" show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo" width="100px" fixed="left" />
+				<!-- 6. 审核状态 -->
 				<el-table-column v-if="columns[4].visible" show-overflow-tooltip label="审核状态" align="center" prop="checkState" width="120">
 					<template #default="scope">
 						<el-row v-if="scope.row.checkState === '已审核'">
@@ -964,10 +970,8 @@ export default {
 						</el-row>
 					</template>
 				</el-table-column>
-				<!-- 6. 车队 -->
+				<!-- 7. 车队 -->
 				<CustomTableColumn v-if="columns[5].visible" show-overflow-tooltip label="车队" align="center" prop="fleet" width="100px" />
-				<!-- 7. 陆运车牌 -->
-				<CustomTableColumn v-if="columns[6].visible" show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo" width="100px" />
 				<!-- 8. 陆运司机电话 -->
 				<CustomTableColumn v-if="columns[7].visible" show-overflow-tooltip label="陆运司机电话" align="center" prop="landDriverTel" width="100px" />
 				<!-- 9. 陆地司机姓名 -->
