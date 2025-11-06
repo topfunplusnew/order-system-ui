@@ -376,6 +376,18 @@ export default {
 								this.$set(row, 'hasError', false);
 							}
 						});
+						const orderInfo = _.cloneDeep(res.data);
+						if (!orderInfo || !orderInfo.orderDetailList || orderInfo.orderDetailList.length === 0) {
+							this.$message.error('保存失败，保存后未找到相应数据');
+							this.isEditingDetails = true;
+							reject && reject();
+							return;
+						}
+						// 如果该行是新增行，则从后端返回的数据中找到index等于该行数据的index的id，并赋值给该行 并且将isAdd标记为false
+						if (row && row.isAdd) {
+							row.id = orderInfo.orderDetailList.find(item => item.index === row.index).id;
+							row.isAdd = false;
+						}
 						this.$message.success('该行订单详情信息已修改并保存!');
 						resolve && resolve();
 					})
@@ -405,21 +417,14 @@ export default {
 							reject && reject();
 							return;
 						}
-						// 如果该行是新增行，则从后端返回的数据中找到index等于该行数据的index的id，并赋值给该行 并且将isAdd标记为false
-						if (row && row.isAdd) {
-							row.id = orderInfo.orderDetailList.find(item => item.index === row.index).id;
-							row.isAdd = false;
+
+						this.$nextTick(() => {
+							Object.assign(this.orderInfo, orderInfo);
 							this.$message.success('该行订单详情信息已添加并保存!');
+							// 设置当前正在编辑的订单是哪条订单
+							this.setIsEditingOrder(_.cloneDeep(res.data), true);
 							resolve && resolve();
-						} else {
-							this.$nextTick(() => {
-								Object.assign(this.orderInfo, orderInfo);
-								this.$message.success('该行订单详情信息已添加并保存!');
-								// 设置当前正在编辑的订单是哪条订单 
-								this.setIsEditingOrder(_.cloneDeep(res.data), true);
-								resolve && resolve();
-							});
-						}
+						});
 					})
 					.catch(error => {
 						currentRows.forEach(row => {
