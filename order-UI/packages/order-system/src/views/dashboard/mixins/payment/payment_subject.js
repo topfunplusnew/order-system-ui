@@ -133,6 +133,7 @@ export var mixin_payment_subject = {
 								if (!res.data) return;
 								this.$nextTick(() => {
 									this.form.companyName = res.data.companyName;
+									this.form.companyId = res.data.id;
 								});
 							});
 						}
