@@ -24,8 +24,12 @@ export default {
 					sums[index] = '合计';
 					return;
 				}
-				const includes = [14, 19, 21, 24, 26, 28];
-				if (!data || data.length === 0) return;
+				// 添加了 12(出厂货款) 和 16(库存金额) 到合计列
+				const includes = [12, 14, 16, 19, 21, 24, 26, 28];
+				if (!data || data.length === 0) {
+					sums[index] = '';
+					return;
+				}
 				const values = data.map(item => Number(item[column.property]));
 				if (!values.every(value => isNaN(value))) {
 					// 包含的计算
@@ -40,7 +44,11 @@ export default {
 						}, 0);
 						sums[index] = fix_2(sums[index]);
 						sums[index] += '';
+					} else {
+						sums[index] = '';
 					}
+				} else {
+					sums[index] = '';
 				}
 			});
 

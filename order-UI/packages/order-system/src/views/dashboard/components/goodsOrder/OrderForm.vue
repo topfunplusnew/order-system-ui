@@ -281,7 +281,8 @@ export default {
 						return {
 							...item,
 							isEditing: false,
-							isDeleted: item.isDeleted !== undefined ? item.isDeleted : false // 确保 isDeleted 字段存在
+							isDeleted: item.isDeleted !== undefined ? item.isDeleted : false, // 确保 isDeleted 字段存在
+							isAdd: false // 从后端加载的数据标记为非新增
 						};
 					});
 
@@ -491,7 +492,8 @@ export default {
 				factoryDiscountAmount: '',
 				comments: '',
 				isEditing: true, // 默认处于编辑状态
-				isDeleted: false // 新添加的行未删除
+				isDeleted: false, // 新添加的行未删除
+				isAdd: true // 标记为新增行
 			};
 			this.orderDetailList.push(obj);
 			this.$nextTick(() => {
@@ -507,7 +509,7 @@ export default {
 		 * 处理出厂片数变化，自动填充卸货片数并重新计算
 		 * @param {Object} scope - 表格行作用域对象
 		 */
-		handlePiecesChange(scope) {
+		handlePiecesChange(scope) { 
 			// 将出厂片数的值赋给卸货片数
 			scope.row.actualPieces = scope.row.pieces;
 			// 触发重新计算
@@ -743,14 +745,6 @@ export default {
 			// 检查是否至少有一些有效数据（正常数据或已删除数据）
 			if (allOrderDetails.length === 0) {
 				this.$message.error('请添加有效的货物信息!');
-				reject(new Error('请添加有效的货物信息'));
-				return;
-			}
-
-			// 检查正常数据中是否有缺少id的（已删除的行允许没有id，因为可能是新添加就删除的）
-			const normalDetailsWithoutId = filteredVisibleDetails.filter(item => !item.id);
-			if (normalDetailsWithoutId.length > 0) {
-				this.$message.error('数据错误，某行中缺少id!');
 				reject(new Error('请添加有效的货物信息'));
 				return;
 			}
