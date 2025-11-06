@@ -62,8 +62,15 @@ export default {
 			}
 		};
 
+		// 存储一套用于发送后端的表单数据，一套用于用户前端编辑，点击保存时将设置为已编辑的数据 根据id 替换元数据某行 并将元数据发送后端
+
 		return {
+			// 订单原始数据 用于发送后端
 			orderInfo: {},
+			orderDetailList: [],
+			// 订单用户所编辑的数据 用于展示
+			orderCopyInfo: {},
+			orderDetailCopyList: [],
 			orderRules: {
 				// 添加或更新校验规则
 				fleet: [{ validator: validateFleet, trigger: 'blur' }], // 触发改为 change
@@ -86,7 +93,6 @@ export default {
 					}
 				]
 			},
-			orderdetailList: [],
 			checkedOrderdetail: [],
 			isEditingDetails: false, // 保留全局编辑状态用于添加/删除行操作
 			isEditingBasicInfo: true, // 基本信息编辑状态
@@ -203,17 +209,24 @@ export default {
 		};
 	},
 	computed: {
-		// 添加计算属性检查是否有子项
+		// 添加计算属性检查是否有子项（排除已删除的行）
 		hasOrderDetails() {
-			return this.orderdetailList && this.orderdetailList.length > 0;
+			return this.visibleOrderDetailList && this.visibleOrderDetailList.length > 0;
 		},
-		// 检查是否有任何行正在编辑
+		// 检查是否有任何行正在编辑（排除已删除的行）
 		hasEditingRows() {
-			return this.orderdetailList && this.orderdetailList.some(row => row.isEditing);
+			return this.visibleOrderDetailList && this.visibleOrderDetailList.some(row => row.isEditing);
+		},
+		// 过滤掉已删除的行，用于表格显示
+		visibleOrderDetailList() {
+			return this.orderDetailList.filter(row => row.isDeleted !== 1);
+		},
+		// 获取所有已标记删除的行
+		deletedOrderDetailList() {
+			return this.orderDetailList.filter(row => row.isDeleted === 1);
 		}
 	},
 	created() {
-		console.log(`OrderForm created`);
 		this.resetOrderInfo();
 		this.isEditingDetails = false;
 		this.orderId && this.getGoodsOrderInfo(this.orderId);
@@ -238,6 +251,9 @@ export default {
 		 * @param {Number} id - 订单ID
 		 */
 		getGoodsOrderInfo(id) {
+			if (!id) {
+				throw new Error('获取订单信息失败，id为空');
+			}
 			getGoodsOrder(id).then(response => {
 				this.orderInfo = response.data;
 				if (!response.data) {
@@ -257,12 +273,20 @@ export default {
 						this.$message.error('未查询到该订单的明细信息');
 						return;
 					}
-					this.orderdetailList = detailList.map(item => {
-						return { ...item, isEditing: false };
+					if (detailList.some(item => !item.id)) {
+						this.$message.error('数据错误，某行中缺少id!');
+						return;
+					}
+					this.orderDetailList = detailList.map(item => {
+						return {
+							...item,
+							isEditing: false,
+							isDeleted: item.isDeleted !== undefined ? item.isDeleted : 0 // 确保 isDeleted 字段存在
+						};
 					});
 
 					// 对加载的数据进行计算
-					this.orderdetailList.forEach(row => {
+					this.orderDetailList.forEach(row => {
 						this.$nextTick(() => {
 							// 确保DOM更新后再计算，虽然这里主要是数据计算
 							updateOrderRowCalculations(row, this.isSea, this.isLand);
@@ -295,20 +319,27 @@ export default {
 			const rows = Array.isArray(row) ? row : [row];
 			// 处理每一行，关闭编辑状态并更新计算
 			rows.forEach(r => {
-				if (r.isEditing) {
+				if (r.isEditing && r.isDeleted !== 1) {
 					this.$set(r, 'isEditing', false);
 					updateOrderRowCalculations(r, this.isSea, this.isLand);
 				}
 			});
-			// 深拷贝并过滤掉仍在编辑的行
-			let saveDetails = this.fillOrderDetailInfo(_.cloneDeep(rows).filter(item => !item.isEditing));
+			// 深拷贝并过滤掉仍在编辑的行和已删除的行（已删除的行单独处理）
+			const rowsToSave = rows.filter(item => !item.isEditing && item.isDeleted !== 1);
+			let saveDetails = this.fillOrderDetailInfo(_.cloneDeep(rowsToSave));
 
 			// 过滤掉空白行（所有业务字段都为空的行）
 			const originalCount = saveDetails.length;
 			saveDetails = saveDetails.filter(detail => !this.isOrderDetailEmpty(detail));
 
-			// 检查过滤后是否还有有效的订单明细
-			if (saveDetails.length === 0) {
+			// 收集所有已标记删除的行（需要一起发送给后端）
+			const deletedDetails = this.fillOrderDetailInfo(_.cloneDeep(this.deletedOrderDetailList));
+
+			// 合并正常保存的行和已删除的行
+			const allDetails = [...saveDetails, ...deletedDetails];
+
+			// 检查是否至少有一些有效数据（正常数据或已删除数据）
+			if (allDetails.length === 0) {
 				this.$message.error('请添加有效的货物信息!');
 				if (reject) reject(new Error('请添加有效的货物信息'));
 				return;
@@ -320,10 +351,15 @@ export default {
 				this.$message.info(`已自动过滤掉${filteredCount}条空白明细行`);
 			}
 
-			// 构造新的订单信息
+			// 如果有已删除的行，提示用户
+			if (deletedDetails.length > 0) {
+				console.log(`保存时包含${deletedDetails.length}条已标记删除的数据`);
+			}
+
+			// 构造新的订单信息（包含正常数据和已删除数据）
 			const newOrderInfo = {
 				...this.orderInfo,
-				orderDetailList: saveDetails
+				orderDetailList: allDetails
 			};
 			if (this.isEditingOrder.id) {
 				newOrderInfo.id = this.isEditingOrder.id;
@@ -408,7 +444,7 @@ export default {
 		handleAddOrderdetail() {
 			let obj = {
 				// 添加唯一索引
-				index: this.orderdetailList.length + 1,
+				index: this.orderDetailList.length + 1,
 				orderDate: parseTime(new Date()),
 				supplier: '',
 				supplierID: '',
@@ -454,9 +490,10 @@ export default {
 				factoryRebateAmount: '',
 				factoryDiscountAmount: '',
 				comments: '',
-				isEditing: true // 默认不处于编辑状态
+				isEditing: true, // 默认处于编辑状态
+				isDeleted: 0 // 新添加的行未删除
 			};
-			this.orderdetailList.push(obj);
+			this.orderDetailList.push(obj);
 			this.$nextTick(() => {
 				if (this.$refs.orderdetail) {
 					const bodyWrapper = this.$refs.orderdetail.bodyWrapper;
@@ -487,17 +524,53 @@ export default {
 				resolve(res);
 			});
 		},
-		/** 删除选中的订单详情行 */
+		/** 删除选中的订单详情行（标记为已删除，不真正删除） */
 		handleDeleteOrderdetail() {
 			if (this.checkedOrderdetail.length === 0) {
 				this.$message.error('请先选择要删除的订单详情数据');
 			} else {
-				const orderdetails = this.orderdetailList;
-				const checkedOrderdetails = this.checkedOrderdetail;
-				console.log(`checked:`, orderdetails, checkedOrderdetails);
-				this.orderdetailList = orderdetails.filter(function (item) {
-					return checkedOrderdetails.indexOf(item.index) === -1;
+				const checkedItems = this.checkedOrderdetail;
+				let deletedCount = 0;
+				// 将选中的行标记为已删除
+				// 遍历完整列表，使用精确匹配找到对应的行
+				this.orderDetailList.forEach(item => {
+					// 检查当前行是否在选中列表中
+					// 由于 checkedItems 可能包含 id（数字）或行对象引用
+					const isChecked = checkedItems.some(checked => {
+						// 如果 checked 是数字（id），直接比较
+						if (typeof checked === 'number' && item.id === checked) {
+							return true;
+						}
+						// 如果 checked 是对象，比较引用或 id
+						if (typeof checked === 'object' && checked !== null) {
+							// 对象引用相同，或者 id 相同
+							return checked === item || (item.id && checked.id === item.id);
+						}
+						return false;
+					});
+
+					if (isChecked) {
+						// 如果该行已经有id（已保存的数据），标记为删除
+						if (item.id) {
+							this.$set(item, 'isDeleted', 1);
+							// 清除编辑状态
+							this.$set(item, 'isEditing', false);
+							deletedCount++;
+						} else {
+							// 如果是新添加但未保存的行，直接删除
+							const index = this.orderDetailList.indexOf(item);
+							if (index > -1) {
+								this.orderDetailList.splice(index, 1);
+								deletedCount++;
+							}
+						}
+					}
 				});
+				// 清空选中项
+				this.checkedOrderdetail = [];
+				if (deletedCount > 0) {
+					this.$message.success(`已标记${deletedCount}条数据为删除状态，保存时将提交删除操作`);
+				}
 			}
 		},
 		/**
@@ -543,8 +616,13 @@ export default {
 		 */
 		handleOrderdetailSelectionChange(selection) {
 			console.log(selection);
-			this.checkedOrderdetail = selection.map(item => item.index);
-			console.log(`selection index`, this.checkedOrderdetail);
+			// 存储选中行的唯一标识：优先使用 id，如果没有 id 则使用对象引用
+			// 注意：id 可能是 0，所以不能用简单的 item.id || item 判断
+			this.checkedOrderdetail = selection.map(item => {
+				// 如果 id 存在且不为 null/undefined，使用 id；否则使用对象引用
+				return item.id !== undefined && item.id !== null ? item.id : item;
+			});
+			console.log(`selection identifiers`, this.checkedOrderdetail);
 		},
 		/**
 		 * 更新仓库查询名称
@@ -636,7 +714,7 @@ export default {
 		 * @param {Array} [detailList=this.orderdetailList] - 订单详情列表
 		 * @returns {Array} 填充信息后的订单详情列表
 		 */
-		fillOrderDetailInfo(detailList = this.orderdetailList) {
+		fillOrderDetailInfo(detailList = this.orderDetailList) {
 			const formatOrderItem = () => ({
 				customerID: this.orderInfo.customerID,
 				customer: this.orderInfo.customer,
@@ -650,25 +728,45 @@ export default {
 		 * @param {Function} reject - Promise reject回调
 		 */
 		submitOrder(resolve, reject) {
-			this.orderdetailList = this.fillOrderDetailInfo();
+			// 填充订单详情信息（排除已删除的行）
+			const visibleDetails = this.fillOrderDetailInfo(_.cloneDeep(this.visibleOrderDetailList));
 
-			// 过滤掉空白行（所有业务字段都为空的行）
-			const filteredOrderDetailList = this.orderdetailList.filter(detail => !this.isOrderDetailEmpty(detail));
+			// 填充已删除的行信息
+			const deletedDetails = this.fillOrderDetailInfo(_.cloneDeep(this.deletedOrderDetailList));
 
-			// 检查过滤后是否还有有效的订单明细
-			if (filteredOrderDetailList.length === 0) {
+			// 过滤掉空白行（所有业务字段都为空的行），但保留已删除的行
+			const filteredVisibleDetails = visibleDetails.filter(detail => !this.isOrderDetailEmpty(detail));
+
+			// 合并正常数据和已删除数据
+			const allOrderDetails = [...filteredVisibleDetails, ...deletedDetails];
+
+			// 检查是否至少有一些有效数据（正常数据或已删除数据）
+			if (allOrderDetails.length === 0) {
 				this.$message.error('请添加有效的货物信息!');
 				reject(new Error('请添加有效的货物信息'));
 				return;
 			}
 
+			// 检查正常数据中是否有缺少id的（已删除的行允许没有id，因为可能是新添加就删除的）
+			const normalDetailsWithoutId = filteredVisibleDetails.filter(item => !item.id);
+			if (normalDetailsWithoutId.length > 0) {
+				this.$message.error('数据错误，某行中缺少id!');
+				reject(new Error('请添加有效的货物信息'));
+				return;
+			}
+
 			// 如果过滤掉了一些空白行，给用户提示
-			const filteredCount = this.orderdetailList.length - filteredOrderDetailList.length;
+			const filteredCount = visibleDetails.length - filteredVisibleDetails.length;
 			if (filteredCount > 0) {
 				this.$message.info(`已自动过滤掉${filteredCount}条空白明细行`);
 			}
 
-			this.orderInfo.orderDetailList = _.cloneDeep(filteredOrderDetailList);
+			// 如果有已删除的行，提示用户
+			if (deletedDetails.length > 0) {
+				console.log(`提交时包含${deletedDetails.length}条已标记删除的数据`);
+			}
+
+			this.orderInfo.orderDetailList = _.cloneDeep(allOrderDetails);
 			this.orderInfo = excludeParams(this.orderInfo, this.$exclude);
 			let json = _.cloneDeep(this.orderInfo);
 			if (!this.isEditingOrder.id) {
@@ -712,21 +810,22 @@ export default {
 			return new Promise((resolve, reject) => {
 				this.$refs.orderForm.validate(valid => {
 					if (valid) {
-						if (this.orderdetailList.length === 0) {
+						if (this.visibleOrderDetailList.length === 0) {
 							this.$message.error('请添加货物信息!');
 							reject(new Error('请添加货物信息'));
 							return;
 						}
-						// 检查是否有没有保存的项
-						if (this.orderdetailList.some(item => item.isEditing)) {
+						// 检查是否有没有保存的项（只检查可见行）
+						if (this.visibleOrderDetailList.some(item => item.isEditing)) {
 							this.$antdconfirm({
 								title: '当前订单信息中有未保存的项,是否保存并提交?',
 								okText: '是',
 								cancelText: '否',
 								zIndex: 2660,
 								onOk: () => {
+									// 点击确定时，保存所有可见行（包括已删除的行会一起发送）
 									new Promise((saveResolve, saveReject) => {
-										this.handleRowSave(this.orderdetailList, saveResolve, saveReject);
+										this.handleRowSave(this.visibleOrderDetailList, saveResolve, saveReject);
 									})
 										.then(() => {
 											this.reset(that);
@@ -804,7 +903,7 @@ export default {
 				comments: '' // 确保备注也被重置
 			};
 			this.isEditingDetails = false;
-			this.orderdetailList = [];
+			this.orderDetailList = [];
 			// 重置表单校验状态
 			if (this.$refs.orderForm) {
 				this.$refs.orderForm.resetFields();
@@ -893,8 +992,8 @@ export default {
 		 */
 		toggleEditDetails(editState) {
 			if (editState) {
-				// 进入编辑模式，设置所有行为可编辑状态
-				this.orderdetailList.forEach(row => {
+				// 进入编辑模式，设置所有可见行为可编辑状态
+				this.visibleOrderDetailList.forEach(row => {
 					this.$set(row, 'isEditing', true);
 					if (row.hasError) {
 						this.$set(row, 'hasError', false);
@@ -902,10 +1001,10 @@ export default {
 				});
 				this.$message.info('已进入批量编辑模式，可以修改所有订单信息');
 			} else {
-				// 退出编辑模式，保存所有行
+				// 退出编辑模式，保存所有可见行
 				// 如果有正在编辑的行，全部设置为不可编辑
 				if (this.hasEditingRows) {
-					this.handleRowSave(this.orderdetailList);
+					this.handleRowSave(this.visibleOrderDetailList);
 				}
 			}
 		},
@@ -1349,7 +1448,7 @@ export default {
 				<el-table
 					border
 					size="mini"
-					:data="orderdetailList"
+					:data="visibleOrderDetailList"
 					show-summary
 					:summary-method="getSummary"
 					:row-class-name="getRowClassName"
@@ -1706,7 +1805,7 @@ export default {
 							/>
 						</template>
 					</el-table-column>
-					<el-table-column label="计提厂家返利金额" prop="factoryRebateAmount" width="220">
+					<el-table-column label="计提厂家返利金额" prop="factoryRebateAmount" width="150">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -1717,7 +1816,7 @@ export default {
 							/>
 						</template>
 					</el-table-column>
-					<el-table-column label="计提厂家降价金额" prop="factoryDiscountAmount" width="220">
+					<el-table-column label="计提厂家降价金额" prop="factoryDiscountAmount" width="150">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -1728,7 +1827,7 @@ export default {
 							/>
 						</template>
 					</el-table-column>
-					<el-table-column label="备注" prop="comments" width="90">
+					<el-table-column label="备注" prop="comments" width="280">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.comments" placeholder="请输入备注" :disabled="!scope.row.isEditing" />
 						</template>

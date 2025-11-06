@@ -132,8 +132,7 @@ export default {
 						message: '车队名称不能为空',
 						trigger: 'blur'
 					}
-				],
-				address: [{ required: true, message: '地址不能为空', trigger: 'blur' }]
+				]
 			},
 			columns: [
 				{ key: 0, label: `车队名称`, visible: true },

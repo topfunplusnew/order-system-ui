@@ -20,13 +20,6 @@ export default {
 			uploading: false
 		};
 	},
-	watch: {
-		progress: {
-			handler(val) {
-				console.log(val);
-			}
-		}
-	},
 	methods: {
 		async handleUpload({ file, onProgress }) {
 			if (this.uploading) return;
