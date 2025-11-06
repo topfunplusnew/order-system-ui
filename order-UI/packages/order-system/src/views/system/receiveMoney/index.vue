@@ -670,13 +670,13 @@ export default {
 				tID: null,
 				moneyAmount: null,
 				// 我方银行卡的账户类型
-				selfBankCardType: null,
+				selfBankCardType: `银行活期存款`,
 				selfAcountsName: null,
 				selfBankNo: null,
 				selfBankName: null,
 				selfBankID: null,
 				// 对方银行卡账户的类型
-				otherBankCardType: null,
+				otherBankCardType: `银行活期存款`,
 				otherAcountsName: null,
 				otherBankNo: null,
 				otherBankName: null,

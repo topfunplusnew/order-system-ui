@@ -187,17 +187,6 @@ export default {
 						},
 						value: ''
 					}
-					// {
-					// 	id: 6,
-					// 	label: '入库时间范围',
-					// 	prop: 'main_storeDate_startTime&main_storeDate_endTime',
-					// 	type: 'date-range-picker',
-					// 	extraInfo: {
-					// 		__isParams: true,
-					// 		__isMultiple: true
-					// 	},
-					// 	value: ''
-					// }
 				]
 			},
 			// 当前是编辑订单还是添加订单 编辑订单此值非空,添加订单为空
