@@ -60,16 +60,16 @@
 			@header-dragend="changeColWidth"
 		>
 			<el-table-column label="ID" align="center" prop="id" show-overflow-tooltip />
-			<el-table-column v-if="columns[0].visible" label="日期" align="center" prop="invoiceDate" show-overflow-tooltip>
+			<el-table-column v-if="columns[0].visible" label="日期" align="center" prop="invoiceDate" width="150" show-overflow-tooltip>
 				<template #default="scope">
 					{{ parseTime(scope.row.invoiceDate, '{y}-{m}-{d}') }}
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[1].visible" label="我方开票主体" align="center" prop="invoiceObject" show-overflow-tooltip />
-			<el-table-column v-if="columns[2].visible" label="开票金额" align="center" prop="invoiceAmount" show-overflow-tooltip />
+			<el-table-column v-if="columns[4].visible" label="对方公司名称" align="center" prop="companyName" width="200" show-overflow-tooltip />
+			<el-table-column v-if="columns[1].visible" label="我方开票主体" align="center" prop="invoiceObject" width="160" show-overflow-tooltip />
+			<el-table-column v-if="columns[2].visible" label="开票金额" align="center" prop="invoiceAmount" width="80" show-overflow-tooltip />
 			<el-table-column v-if="columns[3].visible" label="公司类别" align="center" prop="companyType" show-overflow-tooltip />
-			<el-table-column v-if="columns[4].visible" label="对方公司名称" align="center" prop="companyName" show-overflow-tooltip />
-			<el-table-column v-if="columns[5].visible" label="票据单位名称" align="center" prop="invoiceCompanyName" show-overflow-tooltip width="250"/>
+			<el-table-column v-if="columns[5].visible" label="票据单位名称" align="center" prop="invoiceCompanyName" show-overflow-tooltip width="250" />
 			<el-table-column v-if="columns[6].visible" label="票点" align="center" prop="ticketPoint" show-overflow-tooltip />
 			<el-table-column v-if="columns[7].visible" label="票点金额" align="center" prop="ticketPointAmount" show-overflow-tooltip>
 				<template #default="scope">
@@ -98,6 +98,7 @@
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[8].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
+
 			<el-table-column label="银行回执单" align="center" prop="paymentReceipts">
 				<template #default="scope">
 					<div v-if="Array.isArray(scope.row.attachmentList)">
@@ -394,10 +395,10 @@ export default {
 			},
 			columns: [
 				{ key: 0, label: `开票日期`, visible: true },
+				{ key: 4, label: `公司名称`, visible: true }, // 调整位置
 				{ key: 1, label: `我方收票主体`, visible: true },
 				{ key: 2, label: `开票金额`, visible: true },
 				{ key: 3, label: `公司类别`, visible: true },
-				{ key: 4, label: `公司名称`, visible: true },
 				{ key: 5, label: `票据单位名称`, visible: true },
 				{ key: 6, label: `票点`, visible: true },
 				{ key: 7, label: `票点金额`, visible: true },
