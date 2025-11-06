@@ -1425,7 +1425,8 @@ export default {
 			this.download(
 				'system/payment/export',
 				{
-					...this.queryParams
+					...this.queryParams,
+					payType: this.queryParams.payType.join('-')
 				},
 				`payment_${new Date().getTime()}.xlsx`
 			);
