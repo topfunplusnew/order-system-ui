@@ -1732,6 +1732,10 @@ export default {
 					// 如果是冲抵货款
 					this.form.targetCompanyType = data.targetCompanyType;
 					this.form.sourceCompanyType = data.sourceCompanyType;
+					this.form.sourceAccountName = data.sourceAccountName;
+					this.form.targetAccountName = data.targetAccountName;
+					this.form.sourceBankName = data.sourceBankName;
+					this.form.targetBankName = data.targetBankName;
 				} else {
 					// 如果是内部转账
 					this.form.sourceCompanyType = PUBLIC_DICT_TYPE.SELF_COMPANY;

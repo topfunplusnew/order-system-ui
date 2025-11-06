@@ -123,6 +123,8 @@
 							stripe
 							style="flex: 1; margin-bottom: 20px"
 							:height="'100%'"
+							show-summary
+							:summary-method="getSummary"
 						>
 							<!-- 手写每一列，使用 v-if 判断列的可见性 -->
 							<el-table-column v-if="columns[0].visible" label="ID" align="center" prop="id" show-overflow-tooltip />
@@ -358,6 +360,7 @@ import { mixin_printHTML } from '../../dashboard/mixins/print';
 import SearchOption from '@/components/SearchOption.vue';
 import { listStoreHouse } from '@/api/system/StoreHouse';
 import DragDiv from '@/components/DragDiv/index.vue';
+import { fix_2 } from '@/api/tool/format';
 
 export default {
 	name: 'Detail',
@@ -707,6 +710,49 @@ export default {
 				},
 				`detail_${new Date().getTime()}.xlsx`
 			);
+		},
+		/**
+		 * @description: 计算表格的合计行数据。
+		 *              针对入库金额 (payments) 进行合计。
+		 *              使用 fix 方法格式化合计结果。
+		 * @param {object} param - Element UI 表格传递的参数，包含列配置 { columns } 和数据 { data }。
+		 * @returns {Array<string|number>} 计算得到的合计行数据数组。
+		 */
+		getSummary(param) {
+			const { columns, data } = param;
+			const sums = [];
+			const summaryColumns = ['payments'];
+			columns.forEach((column, index) => {
+				// 第一列显示"合计"文字
+				if (index === 0) {
+					sums[index] = '合计';
+					return;
+				}
+
+				// 如果列有property且在summaryColumns中，计算合计
+				if (column.property && summaryColumns.includes(column.property)) {
+					const values = data.map(item => Number(item[column.property]) || 0);
+					if (!values.every(value => isNaN(value))) {
+						sums[index] = values.reduce((prev, curr) => {
+							const value = Number(curr) || 0;
+							if (!isNaN(value)) {
+								return prev + value;
+							} else {
+								return prev;
+							}
+						}, 0);
+						sums[index] = fix_2(sums[index]);
+						sums[index] += ' 元';
+					} else {
+						sums[index] = 'N/A';
+					}
+				} else {
+					// 对于不需要合计的列，设置为空字符串
+					sums[index] = '';
+				}
+			});
+
+			return sums;
 		},
 		secondryInventoryOut(row) {
 			this.secondInfo = {

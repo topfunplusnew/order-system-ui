@@ -281,7 +281,8 @@ export default {
 						return {
 							...item,
 							isEditing: false,
-							isDeleted: item.isDeleted !== undefined ? item.isDeleted : false // 确保 isDeleted 字段存在
+							isDeleted: item.isDeleted !== undefined ? item.isDeleted : false, // 确保 isDeleted 字段存在
+							isAdd: false // 从后端加载的数据标记为非新增
 						};
 					});
 
@@ -364,7 +365,7 @@ export default {
 			if (this.isEditingOrder.id) {
 				newOrderInfo.id = this.isEditingOrder.id;
 			}
-			this.addOrUpdateOrderDetail(newOrderInfo, rows, resolve, reject);
+			this.addOrUpdateOrderDetail(newOrderInfo, rows, resolve, reject, row);
 		},
 		/**
 		 * 添加或更新订单详情
@@ -373,7 +374,7 @@ export default {
 		 * @param {Function} [resolve=null] - Promise resolve回调
 		 * @param {Function} [reject=null] - Promise reject回调
 		 */
-		addOrUpdateOrderDetail(newOrderInfo, rows, resolve = null, reject = null) {
+		addOrUpdateOrderDetail(newOrderInfo, rows, resolve = null, reject = null, row = null) {
 			const editReason = sessionStorage.getItem('goodsorder-edit-reason');
 			// 保存row的引用，避免在Promise链中丢失
 			const currentRows = rows;
@@ -409,13 +410,27 @@ export default {
 							}
 						});
 						const orderInfo = _.cloneDeep(res.data);
-						this.$nextTick(() => {
-							Object.assign(this.orderInfo, orderInfo);
+						if (!orderInfo || !orderInfo.orderDetailList || orderInfo.orderDetailList.length === 0) {
+							this.$message.error('保存失败，保存后未找到相应数据');
+							this.isEditingDetails = true;
+							reject && reject();
+							return;
+						}
+						// 如果该行是新增行，则从后端返回的数据中找到index等于该行数据的index的id，并赋值给该行 并且将isAdd标记为false
+						if (row && row.isAdd) {
+							row.id = orderInfo.orderDetailList.find(item => item.index === row.index).id;
+							row.isAdd = false;
 							this.$message.success('该行订单详情信息已添加并保存!');
-							// 设置当前正在编辑的订单是哪条订单
-							this.setIsEditingOrder(_.cloneDeep(res.data), true);
 							resolve && resolve();
-						});
+						} else {
+							this.$nextTick(() => {
+								Object.assign(this.orderInfo, orderInfo);
+								this.$message.success('该行订单详情信息已添加并保存!');
+								// 设置当前正在编辑的订单是哪条订单 
+								this.setIsEditingOrder(_.cloneDeep(res.data), true);
+								resolve && resolve();
+							});
+						}
 					})
 					.catch(error => {
 						currentRows.forEach(row => {
@@ -491,7 +506,8 @@ export default {
 				factoryDiscountAmount: '',
 				comments: '',
 				isEditing: true, // 默认处于编辑状态
-				isDeleted: false // 新添加的行未删除
+				isDeleted: false, // 新添加的行未删除
+				isAdd: true // 标记为新增行
 			};
 			this.orderDetailList.push(obj);
 			this.$nextTick(() => {
@@ -743,14 +759,6 @@ export default {
 			// 检查是否至少有一些有效数据（正常数据或已删除数据）
 			if (allOrderDetails.length === 0) {
 				this.$message.error('请添加有效的货物信息!');
-				reject(new Error('请添加有效的货物信息'));
-				return;
-			}
-
-			// 检查正常数据中是否有缺少id的（已删除的行允许没有id，因为可能是新添加就删除的）
-			const normalDetailsWithoutId = filteredVisibleDetails.filter(item => !item.id);
-			if (normalDetailsWithoutId.length > 0) {
-				this.$message.error('数据错误，某行中缺少id!');
 				reject(new Error('请添加有效的货物信息'));
 				return;
 			}

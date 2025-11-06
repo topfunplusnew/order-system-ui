@@ -97,6 +97,8 @@
 							stripe
 							style="flex: 1; margin-bottom: 20px"
 							:height="'100%'"
+							show-summary
+							:summary-method="getMainTableSummary"
 						>
 							<CustomTableColumn type="selection" width="50" align="center" />
 							<CustomTableColumn v-if="columns[0].visible" label="ID" align="center" prop="id" width="80" />
@@ -140,21 +142,7 @@
 							<CustomTableColumn v-if="columns[16].visible" label="子项陆运费之和" align="center" prop="allLandFreight" width="150" />
 							<CustomTableColumn v-if="columns[17].visible" label="子项海运费之和" align="center" prop="allSeaFreight" />
 							<CustomTableColumn v-if="columns[18].visible" label="录入人员" align="center" prop="userName" width="120" />
-							<CustomTableColumn v-if="columns[19].visible" label="收到条附件" align="center" prop="receiveProof" width="150" fixed="right">
-								<template #default="scope">
-									<div v-if="Array.isArray(scope.row.attachmentList)">
-										<CheckFiles
-											:attachmentList="scope.row.attachmentList"
-											:flag="'receiveProof'"
-											@needToUpdate="value => handleUpdateFilePath(value, scope.row, getInventoryMain, updateInventoryMain)"
-										/>
-									</div>
-									<div v-else>
-										<el-tag type="danger">加载错误</el-tag>
-									</div>
-								</template>
-							</CustomTableColumn>
-							<CustomTableColumn v-if="columns[21].visible" label="附件" align="center" prop="path" width="150" fixed="right">
+							<CustomTableColumn v-if="columns[19].visible" label="附件" align="center" prop="path" width="150" fixed="right">
 								<template #default="scope">
 									<div v-if="Array.isArray(scope.row.attachmentList)">
 										<CheckFiles
@@ -168,7 +156,21 @@
 									</div>
 								</template>
 							</CustomTableColumn>
-							<CustomTableColumn v-if="columns[20].visible" label="操作" align="center" width="250" fixed="right">
+							<CustomTableColumn v-if="columns[20].visible" label="收到条附件" align="center" prop="receiveProof" width="150" fixed="right">
+								<template #default="scope">
+									<div v-if="Array.isArray(scope.row.attachmentList)">
+										<CheckFiles
+											:attachmentList="scope.row.attachmentList"
+											:flag="'receiveProof'"
+											@needToUpdate="value => handleUpdateFilePath(value, scope.row, getInventoryMain, updateInventoryMain)"
+										/>
+									</div>
+									<div v-else>
+										<el-tag type="danger">加载错误</el-tag>
+									</div>
+								</template>
+							</CustomTableColumn>
+							<CustomTableColumn v-if="columns[21].visible" label="操作" align="center" width="250" fixed="right">
 								<template slot-scope="scope">
 									<el-button size="mini" type="text" icon="el-icon-edit" @click="handleCheckInventory(scope.row)">查看</el-button>
 									<el-tooltip effect="light" v-if="isInventoryDisabledModify(scope.row)" placement="top">
@@ -775,7 +777,7 @@ import { listFleet } from '../../../api/system/fleet';
 import { listInventory } from '../../../api/system/inventory';
 import { listProductLevel } from '../../../api/system/productLevel';
 import { listStoreHouse } from '../../../api/system/StoreHouse';
-import { fix } from '../../../api/tool/format';
+import { fix, fix_2 } from '../../../api/tool/format';
 import SearchOption from '../../../components/SearchOption.vue';
 import UploadFilesButton from '@/components/UploadFilesButton/index.vue';
 import { _fill } from './fill';
@@ -931,9 +933,9 @@ export default {
 				{ key: 16, label: '子项陆运费之和', visible: true },
 				{ key: 17, label: '子项海运费之和', visible: true },
 				{ key: 18, label: '录入人员', visible: true },
-				{ key: 19, label: '收到条附件', visible: true },
-				{ key: 20, label: '操作', visible: true },
-				{ key: 21, label: '附件', visible: true }
+				{ key: 19, label: '附件', visible: true },
+				{ key: 20, label: '收到条附件', visible: true },
+				{ key: 21, label: '操作', visible: true }
 			],
 			// 表单校验
 			rules: {
@@ -1483,7 +1485,7 @@ export default {
 								return prev;
 							}
 						}, 0);
-						sums[index] = fix(sums[index]);
+						sums[index] = fix_2(sums[index]);
 						sums[index] += column.property === 'tonnage' ? ' 吨' : ' 元';
 					} else {
 						sums[index] = 'N/A';
@@ -1495,6 +1497,49 @@ export default {
 			});
 
 			console.log(`sums`, sums);
+
+			return sums;
+		},
+		/**
+		 * @description: 计算主表格的合计行数据。
+		 *              针对指定的列 (allLandFreight, allSeaFreight) 进行合计。
+		 *              使用 fix 方法格式化合计结果。
+		 * @param {object} param - Element UI 表格传递的参数，包含列配置 { columns } 和数据 { data }。
+		 * @returns {Array<string|number>} 计算得到的合计行数据数组。
+		 */
+		getMainTableSummary(param) {
+			const { columns, data } = param;
+			const sums = [];
+			const summaryColumns = ['allLandFreight', 'allSeaFreight'];
+			columns.forEach((column, index) => {
+				// 第一列显示"合计"文字
+				if (index === 0) {
+					sums[index] = '合计';
+					return;
+				}
+
+				// 如果列有property且在summaryColumns中，计算合计
+				if (column.property && summaryColumns.includes(column.property)) {
+					const values = data.map(item => Number(item[column.property]) || 0);
+					if (!values.every(value => isNaN(value))) {
+						sums[index] = values.reduce((prev, curr) => {
+							const value = Number(curr) || 0;
+							if (!isNaN(value)) {
+								return prev + value;
+							} else {
+								return prev;
+							}
+						}, 0);
+						sums[index] = fix_2(sums[index]);
+						sums[index] += ' 元';
+					} else {
+						sums[index] = 'N/A';
+					}
+				} else {
+					// 对于不需要合计的列，设置为空字符串
+					sums[index] = '';
+				}
+			});
 
 			return sums;
 		},

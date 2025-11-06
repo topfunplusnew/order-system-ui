@@ -52,11 +52,7 @@
 			<el-table-column v-if="columns[0].visible" label="操作时间" align="center" prop="operateDate" />
 			<el-table-column v-if="columns[1].visible" label="金额" align="center" prop="moneyAmount" />
 			<el-table-column v-if="columns[2].visible" label="对方公司" align="center" prop="companyName" />
-			<el-table-column label="对方公司类型" align="center" prop="companyType" v-if="columns[3].visible">
-				<template slot-scope="scope">
-					{{ scope.row.companyType === 1 ? '客户' : '供应商' }}
-				</template>
-			</el-table-column>
+			<el-table-column label="对方公司类型" align="center" prop="companyType" v-if="columns[3].visible"></el-table-column>
 			<el-table-column v-if="columns[4].visible" label="备注" align="center" prop="comments" />
 			<el-table-column v-if="columns[5].visible" label="添加时间" align="center" prop="addtime" />
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -201,7 +197,8 @@ export default {
 			// 表单参数
 			// 表单参数
 			form: {
-				companyType: '供应商' // 添加这行设置默认值
+				companyType: '客户', // 添加这行设置默认值
+				operateDate: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}') // 默认今天
 			},
 
 			columns: [
@@ -338,11 +335,11 @@ export default {
 		reset() {
 			this.form = {
 				id: null,
-				operateDate: null,
+				operateDate: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'), // 默认今天
 				moneyAmount: null,
 				companyName: null,
 				companyID: null,
-				companyType: '供应商',
+				companyType: '客户', // 默认客户
 				comments: null,
 				addtime: null,
 				userId: null,
