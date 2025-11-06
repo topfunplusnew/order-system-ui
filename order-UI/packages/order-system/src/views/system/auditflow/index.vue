@@ -73,6 +73,8 @@ export default {
 	mixins: [mixin_printHTML, common_dialog],
 	data() {
 		return {
+			checkStepList: [], // 将 checkStepList 移到这里
+			nextStepId: 1, // 用于生成唯一 ID
 			// 遮罩层
 			loading: true,
 			// 选中数组
@@ -118,12 +120,13 @@ export default {
 	},
 	created() {
 		this.getList();
+		this.checkStepList = [];
 	},
 	computed: {
 		stepLength() {
 			return this.checkStepList.length;
 		},
-		...mapGetters(['checkStepList']),
+		// ...mapGetters(['checkStepList']),
 		// 展示用的流程（解析审计人员列表）
 		displayFlowList() {
 			return (this.auditflowList || []).map(item => ({
@@ -141,6 +144,7 @@ export default {
 		// 添加审核流程
 		addCheckStateStep() {
 			this.checkStepList.push({
+				id: this.nextStepId++, // 添加唯一 ID
 				flowname: '',
 				stepnum: null,
 				step: null,
@@ -233,23 +237,40 @@ export default {
 		},
 		/** 新增按钮操作 */
 		handleAdd() {
-			this.reset();
 			this.title = '更改审核流程';
 			this.open = true;
+			// 清空 checkStepList
+			this.checkStepList = [];
+			// 将 auditflowList 中的数据转换为 checkStepList 的格式
+			this.auditflowList.forEach(item => {
+				const stepItem = {
+					...item,
+					auditauthority: typeof item.auditauthority === 'string' && item.auditauthority.trim() !== '' ? item.auditauthority.split(',') : []
+				};
+				this.checkStepList.push(stepItem);
+			});
+			// 如果没有现有流程，则添加一个空步骤
+			if (this.checkStepList.length === 0) {
+				this.addCheckStateStep();
+			}
 		},
+
 		// 添加审核步骤
 		submitForm() {
-			this.checkStepList.forEach(item => {
-				item.stepnum = this.checkStepList.length;
-				item.auditauthority = item.auditauthority.join(',');
-			});
-			updateAuditflow(this.checkStepList).then(res => {
-				this.$message.success('添加审核流程成功');
-				this.$store.dispatch('paymentApply/clearCheckStepList');
-				this.getList();
+			const submitData = this.checkStepList.map((item, index) => ({
+				...item,
+				stepnum: this.checkStepList.length,
+				step: index + 1, // 确保 step 是正确的序号
+				auditauthority: Array.isArray(item.auditauthority) ? item.auditauthority.join(',') : item.auditauthority
+			}));
+
+			updateAuditflow(submitData).then(res => {
+				this.$message.success('更新审核流程成功');
 				this.open = false;
+				this.getList(); // 重新获取最新数据
 			});
 		},
+
 		/** 导出按钮操作 */
 		handleExport() {
 			this.download(
