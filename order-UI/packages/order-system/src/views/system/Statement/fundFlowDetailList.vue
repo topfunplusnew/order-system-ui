@@ -9,7 +9,7 @@
 				<el-date-picker
 					v-model="query.endTime"
 					type="date"
-					placeholder="选择结束日期"  
+					placeholder="选择结束日期"
 					size="mini"
 					value-format="yyyy-MM-dd"
 					:clearable="false"
@@ -103,15 +103,7 @@
 					{{ row.operateDate ? dayjs(row.operateDate).format('HH:mm:ss') : '' }}
 				</template>
 			</CustomTableColumn>
-
-			<CustomTableColumn v-if="columns[2].visible" prop="payNO" label="凭证号数" show-overflow-tooltip></CustomTableColumn>
-			<CustomTableColumn v-if="columns[3].visible" prop="changeType" label="类型（收款/付款）" show-overflow-tooltip></CustomTableColumn>
-			<CustomTableColumn v-if="columns[4].visible" prop="displayPayType" label="支付类型" show-overflow-tooltip></CustomTableColumn>
-			<CustomTableColumn v-if="columns[5].visible" prop="otherCompanyType" label="对象类型" show-overflow-tooltip></CustomTableColumn>
-			<CustomTableColumn v-if="columns[6].visible" prop="otherCompanyName" label="对象名称" show-overflow-tooltip></CustomTableColumn>
-			<CustomTableColumn v-if="columns[7].visible" prop="otherAcountsName" label="对方户名" show-overflow-tooltip></CustomTableColumn>
-			<CustomTableColumn v-if="columns[8].visible" prop="otherBankNO" label="对方银行卡号" show-overflow-tooltip></CustomTableColumn>
-			<CustomTableColumn v-if="columns[9].visible" prop="changeType" label="摘要" show-overflow-tooltip></CustomTableColumn>
+			<!-- 将收入、支出、余额列移到时间列之后 -->
 			<CustomTableColumn v-if="columns[10].visible" prop="moneyAmount" label="收入" align="right" show-overflow-tooltip>
 				<template #default="{ row }">
 					<span v-if="row.moneyAmount > 0" style="color: #67c23a">￥{{ row.moneyAmount.toLocaleString('zh-CN', { minimumFractionDigits: 2 }) }}</span>
@@ -129,6 +121,14 @@
 					<span :style="{ color: row.balance >= 0 ? '#67c23a' : '#f56c6c' }">￥{{ row.balance.toLocaleString('zh-CN', { minimumFractionDigits: 2 }) }}</span>
 				</template>
 			</CustomTableColumn>
+			<CustomTableColumn v-if="columns[2].visible" prop="payNO" label="凭证号数" show-overflow-tooltip></CustomTableColumn>
+			<CustomTableColumn v-if="columns[3].visible" prop="changeType" label="类型（收款/付款）" show-overflow-tooltip></CustomTableColumn>
+			<CustomTableColumn v-if="columns[4].visible" prop="displayPayType" label="支付类型" show-overflow-tooltip></CustomTableColumn>
+			<CustomTableColumn v-if="columns[5].visible" prop="otherCompanyType" label="对象类型" show-overflow-tooltip></CustomTableColumn>
+			<CustomTableColumn v-if="columns[6].visible" prop="otherCompanyName" label="对象名称" show-overflow-tooltip></CustomTableColumn>
+			<CustomTableColumn v-if="columns[7].visible" prop="otherAcountsName" label="对方户名" show-overflow-tooltip></CustomTableColumn>
+			<CustomTableColumn v-if="columns[8].visible" prop="otherBankNO" label="对方银行卡号" show-overflow-tooltip></CustomTableColumn>
+			<CustomTableColumn v-if="columns[9].visible" prop="changeType" label="摘要" show-overflow-tooltip></CustomTableColumn>
 
 			<!--      加一个操作列-->
 			<CustomTableColumn label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
@@ -161,13 +161,14 @@ export default {
 	components: { BankType, SearchOption },
 	mixins: [common_dialog],
 	data() {
+		const today = new Date().toISOString().split('T')[0];
 		return {
 			dayjs, // 将 dayjs 添加到 data 中，使其在模板中可用
 			queryBank: '',
 			showSearch: true,
 			query: {
 				startTime: '',
-				endTime: '',
+				endTime: 'today',
 				otherName: '',
 				otherAccountName: '',
 				ourBankNO: '',
@@ -179,6 +180,9 @@ export default {
 			columns: [
 				{ key: 0, label: `日期`, visible: true },
 				{ key: 1, label: `时间`, visible: true },
+				{ key: 10, label: `收入`, visible: true },
+				{ key: 11, label: `支出`, visible: true },
+				{ key: 12, label: `余额`, visible: true },
 				{ key: 2, label: `凭证号数`, visible: true },
 				{ key: 3, label: `类型（收款/付款）`, visible: true },
 				{ key: 4, label: `支付类型`, visible: true },
@@ -186,10 +190,7 @@ export default {
 				{ key: 6, label: `对象名称`, visible: true },
 				{ key: 7, label: `对方户名`, visible: true },
 				{ key: 8, label: `对方银行卡号`, visible: true },
-				{ key: 9, label: `摘要`, visible: true },
-				{ key: 10, label: `收入`, visible: true },
-				{ key: 11, label: `支出`, visible: true },
-				{ key: 12, label: `余额`, visible: true }
+				{ key: 9, label: `摘要`, visible: true }
 			],
 			endTimePickerOptions: {
 				// 移除日期禁用限制，允许选择任何日期
@@ -356,6 +357,10 @@ export default {
 		}
 	},
 	created() {
+		const today = new Date().toISOString().split('T')[0]; // 获取 YYYY-MM-DD 格式的当前日期
+		this.query.startTime = today;
+		this.query.endTime = today; // 同时也将结束时间设为今天
+
 		if (localStorage.getItem('fundflowdetail-columns') === 'null' || !localStorage.getItem('fundflowdetail-columns')) {
 			localStorage.setItem('fundflowdetail-columns', JSON.stringify(this.columns));
 		} else {
