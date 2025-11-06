@@ -1,20 +1,19 @@
 <template>
 	<div>
-		<virtual-list :keeps="60" style="height: 800px; overflow-y: auto" :data-key="'uid'" :data-sources="items" :data-component="itemComponent" :extra-props="extraProps" />
+		<virtual-list :keeps="60" style="height: 800px; overflow-y: auto" :data-key="'uid'" :data-sources="orderList" :data-component="itemComponent" :extra-props="extraProps" />
 	</div>
 </template>
 <script>
 import Item from './Item';
 import VirtualList from 'vue-virtual-scroll-list';
 import { delGoodsOrder, getGoodsOrder, auditGoodsOrder, listGoodsOrder } from '@/api/system/goodsOrder';
-import { listInvoiceOut } from '@/api/system/invoiceOut';
 import { listInvoiceIn } from '@/api/system/invoiceIn';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import { mixin_order_Invoice } from '@/views/dashboard/mixins/order/order_Invoice';
 import { mixin_order_add } from '@/views/dashboard/mixins/order/order_addOrder';
 import { mixin_order_adjustOrder } from '@/views/dashboard/mixins/order/order_adjustOrder';
 import { mixin_order_deliverGoods } from '@/views/dashboard/mixins/order/order_deliverGoods';
-import { parseTime } from '@/utils/ruoyi';
+import { mixin_order_base } from '@/views/dashboard/mixins/order/order_base';
 import CheckOrder from '@/views/dashboard/components/goodsOrder/CheckOrder.vue';
 import GOODS_ORDER from '@/components/NeedToShow/GOODS_ORDER.vue';
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
@@ -22,6 +21,8 @@ import { PUBLIC_DICT_TYPE } from '@/utils/order';
 export default {
 	name: 'root',
 	mixins: [
+		// 订单基础功能（包含数据获取逻辑）
+		mixin_order_base,
 		// 通用的弹窗组件配套的混入
 		common_dialog,
 		// 订单开票的功能
@@ -34,78 +35,18 @@ export default {
 		mixin_order_deliverGoods
 	],
 	data() {
-		// 生成50000条数据 并放在items中
-		const items = [];
-		const suppliers = ['供应商A', '供应商B', '供应商C', '供应商D', '供应商E'];
-		const warehouses = ['仓库1', '仓库2', '仓库3'];
-		const customers = ['客户A', '客户B', '客户C', '客户D', '客户E'];
-		const fleets = ['车队1', '车队2', '车队3', '车队4', '车队5'];
-		const managers = ['经理1', '经理2', '经理3'];
-		const users = ['用户1', '用户2'];
-
-		for (let i = 0; i < 50000; i++) {
-			const date = new Date();
-			date.setDate(date.getDate() - i);
-			const year = date.getFullYear();
-			const month = String(date.getMonth() + 1).padStart(2, '0');
-			const day = String(date.getDate()).padStart(2, '0');
-
-			// 随机供应商和仓库数量
-			const supplierCount = Math.floor(Math.random() * 2) + 1; // 1-2个
-			const warehouseCount = Math.floor(Math.random() * 2); // 0-1个
-			const selectedSuppliers = [];
-			const selectedWarehouses = [];
-
-			for (let j = 0; j < supplierCount; j++) {
-				selectedSuppliers.push(suppliers[(i + j) % suppliers.length]);
-			}
-			for (let j = 0; j < warehouseCount; j++) {
-				selectedWarehouses.push(warehouses[(i + j) % warehouses.length]);
-			}
-
-			// 生成订单创建时间（addtime）
-			const addDate = new Date();
-			addDate.setDate(addDate.getDate() - (i % 15)); // 0-14天前
-
-			items.push({
-				uid: `unique_${i}`,
-				id: i + 1,
-				orderDate: `${year}-${month}-${day}`,
-				customer: customers[i % customers.length],
-				suppliers: selectedSuppliers,
-				warehouses: selectedWarehouses,
-				checkState: i % 3 === 0 ? '已审核' : '未审核',
-				fleet: fleets[i % fleets.length],
-				landCarNo: 'A' + String(i + 1000).slice(-4),
-				allPayments: (i + 1) * 10000 + Math.floor(Math.random() * 5000),
-				allTonnage: (i + 1) * 10.5 + Math.random() * 5,
-				allProfit: (i + 1) * 2000 + Math.floor(Math.random() * 1000),
-				saleManager: managers[i % managers.length],
-				userName: users[i % users.length],
-				comments: `测试备注信息 ${i + 1}`,
-				isedit: i % 2 === 0 ? 1 : 0,
-				customerTaxIncluded: i % 3 === 0,
-				supplierInvoice: i % 4 === 0,
-				addtime: addDate.toISOString(), // 添加创建时间
-				isAdjust: i % 10 === 0 ? 1 : 0, // 模拟调整单状态
-				isAdjusted: i % 5 === 0 ? 1 : 0, // 模拟是否已调整
-				adjustOrderid: i % 5 === 0 ? i - 1 : null, // 模拟调整单ID
-				historyCount: i % 7 === 0 ? Math.floor(Math.random() * 5) : 0, // 模拟历史记录数量
-				// 模拟订单详情数据（用于开票功能）
-				smailOrderDetails: selectedSuppliers.map((supplier, idx) => ({
-					supplier: supplier,
-					supplierID: idx + 1,
-					isIncludeTaxSale: i % 3 === 0 ? 1 : 0,
-					isIncludeTaxFactory: i % 4 === 0 ? 1 : 0,
-					paymentFactory: (i + 1) * 5000,
-					storeHouseID: idx + 1,
-					storeHouseName: selectedWarehouses[idx] || null
-				}))
-			});
-		}
 		return {
 			itemComponent: Item,
-			items: items,
+			items: [], // 从 goodsOrderList 获取，在 watch 中同步
+			// 加载中的效果
+			loading: true,
+			// 订单总数 用于分页
+			total: 0,
+			// 本地维护的查询参数
+			queryParams: {
+				pageNum: 1,
+				pageSize: 1000
+			},
 			// 是否为调整单页面
 			isAdjustOrder: false,
 			// 传递给虚拟列表的额外属性
@@ -125,6 +66,12 @@ export default {
 	computed: {
 		PUBLIC_DICT_TYPE() {
 			return PUBLIC_DICT_TYPE;
+		},
+		orderList() {
+			return this.goodsOrderList.map((item, index) => ({
+				...item,
+				uid: item.uid || `order_${item.id || index}`
+			}));
 		}
 	},
 	methods: {
@@ -157,12 +104,6 @@ export default {
 		handleView(row) {
 			this.checkOrderItemInfo(row);
 		},
-		// 处理修改事件
-		handleUpdate(row) {
-			// 混入中的 handleUpdate 方法会自动被调用，因为 mixin_order_add 已经混入
-			// 这里直接调用父类方法（来自 mixin）
-			// 注意：由于混入机制，this.handleUpdate 已经指向混入中的方法
-		},
 		// 处理删除事件
 		handleDelete(row) {
 			const ids = row.id;
@@ -172,20 +113,12 @@ export default {
 					return delGoodsOrder(ids);
 				})
 				.then(() => {
-					// 从列表中移除该订单
-					const index = this.items.findIndex(item => item.id === ids);
-					if (index > -1) {
-						this.items.splice(index, 1);
-					}
+					// 刷新列表
+					this.getList();
 					this.$modal.msgSuccess('删除成功');
 				})
 				.catch(() => {
-					// 如果是测试数据，模拟删除
-					const index = this.items.findIndex(item => item.id === ids);
-					if (index > -1) {
-						this.items.splice(index, 1);
-						this.$message.success('删除成功（测试数据）');
-					}
+					this.$message.error('删除失败');
 				});
 		},
 		// 处理审核事件
@@ -201,20 +134,12 @@ export default {
 					// 修改审核状态
 					auditGoodsOrder({ id: row.id, isaudit: true })
 						.then(() => {
-							// 更新本地数据
-							const item = this.items.find(item => item.id === row.id);
-							if (item) {
-								item.checkState = '已审核';
-							}
+							// 刷新列表
+							this.getList();
 							this.$message.success('操作成功~!');
 						})
 						.catch(() => {
-							// 如果是测试数据，模拟审核
-							const item = this.items.find(item => item.id === row.id);
-							if (item) {
-								item.checkState = '已审核';
-							}
-							this.$message.success('审核成功（测试数据）');
+							this.$message.error('审核失败');
 						});
 				}
 			});
@@ -222,7 +147,9 @@ export default {
 		// 处理供应商点击事件
 		handleSupplierClick(supplier, row) {
 			// 调用供应商开票方法
-			this.updateOrderItemVisibleSupplierInvoice(row, supplier.id || 1);
+			// supplier 可能是对象（有 supplierID）或字符串
+			const supplierId = supplier?.supplierID || supplier?.id || 1;
+			this.updateOrderItemVisibleSupplierInvoice(row, supplierId);
 		},
 		// 处理客户开票事件
 		handleCustomerInvoice(row) {
@@ -380,6 +307,9 @@ export default {
 	},
 	components: { 'virtual-list': VirtualList },
 	mounted() {
+		// 初始化时获取数据
+		this.getList();
+
 		// 将父组件的方法绑定到 extraProps，以便 Item 组件可以通过 $parent 访问
 		// 由于虚拟列表的限制，我们通过 Vue 的响应式系统来传递方法引用
 		this.extraProps.parentMethods = {

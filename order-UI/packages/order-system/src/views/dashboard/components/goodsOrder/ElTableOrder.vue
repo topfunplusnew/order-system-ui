@@ -28,6 +28,8 @@ import * as XLSX from 'xlsx';
 import { debounce } from 'lodash';
 import ExpandCursor from '../common/ExpandCursor.vue';
 import { getUserConfig } from '../../../../api/user-config';
+// 引入虚拟滚动组件
+import VirtualScroll from 'el-table-virtual-scroll';
 
 export default {
 	name: 'ElTableOrder',
@@ -49,7 +51,8 @@ export default {
 		OrderHistoryCheck,
 		CheckFiles,
 		QuerySearchBar,
-		ExpandCursor
+		ExpandCursor,
+		VirtualScroll
 	},
 	// 引入打印的混入、拖动表头宽度引起的变化、订单的基本信息的混入
 	mixins: [
@@ -104,6 +107,8 @@ export default {
 			supplierInvoiceList: [],
 			supplierInvoiceListLoading: false,
 			supplierInvoiceGroups: [], // 按供应商分组的开票记录
+			// 虚拟滚动渲染的数据列表
+			virtualRenderedList: [],
 			columns: [
 				{ key: 0, label: 'ID', visible: true },
 				{ key: 1, label: '日期', visible: true },
@@ -147,14 +152,9 @@ export default {
 			},
 			deep: true
 		},
-		// 监听 loading 状态，当数据加载完成后确保滚动事件已绑定
+		// 监听 loading 状态（虚拟滚动不需要手动绑定滚动事件）
 		loading(newVal, oldVal) {
-			if (oldVal === true && newVal === false) {
-				// 数据加载完成，确保滚动事件已绑定
-				this.$nextTick(() => {
-					this.bindTableScroll();
-				});
-			}
+			// 虚拟滚动会自动处理，无需手动绑定滚动事件
 		}
 	},
 	created() {
@@ -171,35 +171,42 @@ export default {
 		getUserConfig('goodsorder-columns').then(res => {
 			console.log(res);
 		});
-		// 绑定表格滚动事件，实现滚动加载
-		this.$nextTick(() => {
-			this.bindTableScroll();
-		});
-		// 监听页面可见性变化，当页面重新可见时重置分片加载
-		this.handleVisibilityChange = () => {
-			// 如果页面从隐藏变为可见，且已经加载完毕，则重置分片加载
-			if (!document.hidden && this.currentIndex >= this.goodsOrderList.length && this.goodsOrderList.length > 0) {
-				this.resetBatchLoading();
-			}
-		};
-		document.addEventListener('visibilitychange', this.handleVisibilityChange);
+		// 虚拟滚动会自动处理滚动，无需手动绑定
 	},
 	activated() {
-		// 如果使用了 keep-alive，当组件被激活时，如果已经加载完毕，则重置分片加载
-		if (this.currentIndex >= this.goodsOrderList.length && this.goodsOrderList.length > 0) {
-			this.resetBatchLoading();
-		}
+		// 虚拟滚动会自动处理，无需重置
 	},
 	beforeDestroy() {
 		this.$bus.$off('refreshList');
-		// 移除滚动事件监听
-		this.unbindTableScroll();
-		// 移除页面可见性监听
-		if (this.handleVisibilityChange) {
-			document.removeEventListener('visibilitychange', this.handleVisibilityChange);
-		}
+		// 虚拟滚动会自动清理，无需手动移除
 	},
 	methods: {
+		// 覆盖 mixin 中的 getList 方法，使用虚拟滚动，不需要分批加载
+		getList() {
+			this.loading = true;
+			if (!this.queryParams.isAdjust) {
+				const isAdjust = this.isAdjustOrder ? -1 : 0;
+				const query = {
+					...this.queryParams,
+					isAdjust: isAdjust
+				};
+				listGoodsOrder(query).then(response => {
+					// 预处理订单数据，添加供应商和仓库的预处理信息
+					this.goodsOrderList = this.preprocessOrderData(response.rows);
+					this.total = response.total;
+					this.loading = false;
+					// 虚拟滚动会自动处理渲染，无需手动调用 renderBatch
+				});
+			} else {
+				listGoodsOrder(this.queryParams).then(response => {
+					// 预处理订单数据，添加供应商和仓库的预处理信息
+					this.goodsOrderList = this.preprocessOrderData(response.rows);
+					this.total = response.total;
+					this.loading = false;
+					// 虚拟滚动会自动处理渲染，无需手动调用 renderBatch
+				});
+			}
+		},
 		// 行操作中点击查看 查看当前行订单的信息
 		checkOrderItemInfo(row) {
 			const id = row.id;
@@ -772,34 +779,13 @@ export default {
 
 			return sums;
 		},
+		// 虚拟滚动会自动处理滚动事件，无需手动绑定
 		/**
-		 * 绑定表格滚动事件
+		 * 虚拟滚动 change 事件处理
+		 * @param {Array} renderData - 虚拟滚动计算后需要渲染的数据
 		 */
-		bindTableScroll() {
-			this.$nextTick(() => {
-				const table = this.$refs.orderTable;
-				if (table && table.bodyWrapper) {
-					// 如果已经绑定过，先移除
-					if (this._handleTableScroll) {
-						table.bodyWrapper.removeEventListener('scroll', this._handleTableScroll);
-					}
-					// 保存滚动事件处理函数引用，方便后续移除
-					this._handleTableScroll = event => {
-						this.handleTableScroll(event);
-					};
-					table.bodyWrapper.addEventListener('scroll', this._handleTableScroll);
-				}
-			});
-		},
-		/**
-		 * 移除表格滚动事件监听
-		 */
-		unbindTableScroll() {
-			const table = this.$refs.orderTable;
-			if (table && table.bodyWrapper && this._handleTableScroll) {
-				table.bodyWrapper.removeEventListener('scroll', this._handleTableScroll);
-				this._handleTableScroll = null;
-			}
+		onVirtualScrollChange(renderData) {
+			this.virtualRenderedList = renderData;
 		}
 	}
 };
@@ -848,282 +834,282 @@ export default {
 
 		<!--    订单表格 数据量较大-->
 		<div class="table-container">
-			<!-- 加载遮盖层 -->
-			<transition name="fade">
-				<div v-if="isLoadingBatch" class="table-loading-overlay">
-					<div class="loading-overlay-content">
-						<i class="el-icon-loading"></i>
-						<span class="loading-text">正在加载数据...</span>
-					</div>
-				</div>
-			</transition>
-			<el-table
-				ref="orderTable"
-				id="printBox"
-				:row-key="row => row.id"
-				v-loading="loading"
-				v-horizontal-scroll="'always'"
-				fit
-				:row-style="rowStyle"
-				border
-				size="mini"
-				max-height="750"
-				:cell-style="paddingFix"
-				:data="renderedList"
-				show-summary
-				:summary-method="getSummary"
-				@header-dragend="changeColWidth"
+			<!-- 虚拟滚动表格 -->
+			<virtual-scroll
+				ref="virtualScrollTable"
+				:data="goodsOrderList"
+				:item-size="28"
+				:buffer="200"
+				:throttle-time="16"
+				:dynamic="true"
+				:virtualized="true"
+				height="750"
+				key-prop="id"
+				@change="onVirtualScrollChange"
 			>
-				<el-table-column label="行操作" align="center" class-name="small-padding fixed-width" width="180" fixed="left">
-					<template slot-scope="scope">
-						<!-- 查看按钮 -->
-						<el-button size="mini" type="text" @click="checkOrderItemInfo(scope.row)">
-							<span v-once>查看</span>
-						</el-button>
-
-						<!-- 操作下拉菜单 -->
-						<el-dropdown size="mini" @command="command => handleCommand(command, scope.row)">
-							<el-button size="mini" type="text">
-								<span v-once>操作</span>
+				<el-table
+					ref="orderTable"
+					fit
+					border
+					id="printBox"
+					:row-key="row => row.id"
+					size="mini"
+					height="750"
+					show-summary
+					v-loading="loading"
+					:row-style="rowStyle"
+					:data="virtualRenderedList"
+					:cell-style="paddingFix"
+					v-horizontal-scroll="'always'"
+					:summary-method="getSummary"
+					@header-dragend="changeColWidth"
+				>
+					<el-table-column label="行操作" align="center" class-name="small-padding fixed-width" width="180" fixed="left">
+						<template slot-scope="scope">
+							<!-- 查看按钮 -->
+							<el-button size="mini" type="text" @click="checkOrderItemInfo(scope.row)">
+								<span v-once>查看</span>
 							</el-button>
-							<el-dropdown-menu slot="dropdown">
-								<el-dropdown-item v-hasPermi="['system:goodsorder:edit']" command="handleUpdate">
-									<el-button
-										size="mini"
-										type="primary"
-										:disabled="!scope.row.isedit || scope.row.isAdjust < 0 || isOrderExpired(scope.row.addtime)"
-										:title="isOrderExpired(scope.row.addtime) ? '订单已超过7天，无法修改' : ''"
-									>
-										修 改
-									</el-button>
-								</el-dropdown-item>
-								<el-dropdown-item v-hasPermi="['system:goodsorder:remove']" command="handleDelete">
-									<el-button size="mini" type="danger" v-once>删 除</el-button>
-								</el-dropdown-item>
-							</el-dropdown-menu>
-						</el-dropdown>
 
-						<!-- 修改记录下拉菜单 -->
-						<el-dropdown size="mini">
-							<el-button size="mini" type="text" :disabled="scope.row.historyCount === 0">
-								<span v-once>修改记录</span>
-							</el-button>
-							<el-dropdown-menu slot="dropdown" v-if="scope.row.historyCount > 0">
-								<el-dropdown-item>
-									<HistoryList :row="scope.row" />
-								</el-dropdown-item>
-								<!-- <el-dropdown-item>
+							<!-- 操作下拉菜单 -->
+							<el-dropdown size="mini" @command="command => handleCommand(command, scope.row)">
+								<el-button size="mini" type="text">
+									<span v-once>操作</span>
+								</el-button>
+								<el-dropdown-menu slot="dropdown">
+									<el-dropdown-item v-hasPermi="['system:goodsorder:edit']" command="handleUpdate">
+										<el-button
+											size="mini"
+											type="primary"
+											:disabled="!scope.row.isedit || scope.row.isAdjust < 0 || isOrderExpired(scope.row.addtime)"
+											:title="isOrderExpired(scope.row.addtime) ? '订单已超过7天，无法修改' : ''"
+										>
+											修 改
+										</el-button>
+									</el-dropdown-item>
+									<el-dropdown-item v-hasPermi="['system:goodsorder:remove']" command="handleDelete">
+										<el-button size="mini" type="danger" v-once>删 除</el-button>
+									</el-dropdown-item>
+								</el-dropdown-menu>
+							</el-dropdown>
+
+							<!-- 修改记录下拉菜单 -->
+							<el-dropdown size="mini">
+								<el-button size="mini" type="text" :disabled="scope.row.historyCount === 0">
+									<span v-once>修改记录</span>
+								</el-button>
+								<el-dropdown-menu slot="dropdown" v-if="scope.row.historyCount > 0">
+									<el-dropdown-item>
+										<HistoryList :row="scope.row" />
+									</el-dropdown-item>
+									<!-- <el-dropdown-item>
 									<el-button style="margin-left: 5px" size="mini" type="text" @click="checkOrderHistory(scope.row)">历史对比</el-button>
 								</el-dropdown-item> -->
-							</el-dropdown-menu>
-						</el-dropdown>
-					</template>
-				</el-table-column>
-				<!-- 1. ID -->
-				<CustomTableColumn v-if="columns[0].visible" show-overflow-tooltip label="ID" align="center" prop="id" fixed="left" />
-				<!-- 2. 日期 -->
-				<CustomTableColumn v-if="columns[1].visible" show-overflow-tooltip label="日期" align="center" prop="orderDate" fixed="left">
-					<template #default="scope">
-						<div>{{ parseTime(scope.row.orderDate, '{y}-{m}-{d}') }}</div>
-					</template>
-				</CustomTableColumn>
-				<!-- 3. 客户 -->
-				<CustomTableColumn v-if="columns[2].visible" show-overflow-tooltip label="客户" align="center" prop="customer" fixed="left" width="100px" />
-				<!-- 4. 供应商/仓库 -->
-				<el-table-column v-if="columns[3].visible" show-overflow-tooltip label="供应商/仓库" align="center" prop="supplierNames" fixed="left" width="200">
-					<template #default="scope">
-						<ExpandCursor>
-							<div class="supplier-warehouse-container">
-								<!-- 显示预处理的供应商列表 -->
-								<span
-									v-for="supplier in scope.row._uniqueSuppliers"
-									:key="`supplier-${supplier.supplierID}`"
-									class="supplier-name"
-									@click="updateOrderItemVisibleSupplierInvoice(scope.row, supplier.supplierID)"
-								>
-									{{ supplier.supplier }}
-								</span>
-								<!-- 显示预处理的仓库列表 -->
-								<span v-for="warehouse in scope.row._uniqueWarehouses" :key="`warehouse-${warehouse.storeHouseID}`" class="warehouse-name">
-									{{ warehouse.storeHouseName }}
-								</span>
-								<!-- 如果既没有供应商也没有仓库，显示横线 -->
-								<span v-if="scope.row._uniqueSuppliers.length === 0 && scope.row._uniqueWarehouses.length === 0" class="empty-item">-</span>
+								</el-dropdown-menu>
+							</el-dropdown>
+						</template>
+					</el-table-column>
+					<!-- 1. ID -->
+					<CustomTableColumn v-if="columns[0].visible" show-overflow-tooltip label="ID" align="center" prop="id" fixed="left" />
+					<!-- 2. 日期 -->
+					<CustomTableColumn v-if="columns[1].visible" show-overflow-tooltip label="日期" align="center" prop="orderDate" fixed="left">
+						<template #default="scope">
+							<div>{{ parseTime(scope.row.orderDate, '{y}-{m}-{d}') }}</div>
+						</template>
+					</CustomTableColumn>
+					<!-- 3. 客户 -->
+					<CustomTableColumn v-if="columns[2].visible" show-overflow-tooltip label="客户" align="center" prop="customer" fixed="left" width="100px" />
+					<!-- 4. 供应商/仓库 -->
+					<el-table-column v-if="columns[3].visible" show-overflow-tooltip label="供应商/仓库" align="center" prop="supplierNames" fixed="left" width="200">
+						<template #default="scope">
+							<ExpandCursor>
+								<div class="supplier-warehouse-container">
+									<!-- 显示预处理的供应商列表 -->
+									<span
+										v-for="supplier in scope.row._uniqueSuppliers"
+										:key="`supplier-${supplier.supplierID}`"
+										class="supplier-name"
+										@click="updateOrderItemVisibleSupplierInvoice(scope.row, supplier.supplierID)"
+									>
+										{{ supplier.supplier }}
+									</span>
+									<!-- 显示预处理的仓库列表 -->
+									<span v-for="warehouse in scope.row._uniqueWarehouses" :key="`warehouse-${warehouse.storeHouseID}`" class="warehouse-name">
+										{{ warehouse.storeHouseName }}
+									</span>
+									<!-- 如果既没有供应商也没有仓库，显示横线 -->
+									<span v-if="scope.row._uniqueSuppliers.length === 0 && scope.row._uniqueWarehouses.length === 0" class="empty-item">-</span>
+								</div>
+							</ExpandCursor>
+						</template>
+					</el-table-column>
+					<!-- 5. 陆运车牌 -->
+					<CustomTableColumn v-if="landCarNoColumn && landCarNoColumn.visible" show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo" width="100px" fixed="left" />
+					<!-- 6. 审核状态 -->
+					<el-table-column v-if="columns[4].visible" show-overflow-tooltip label="审核状态" align="center" prop="checkState" width="120">
+						<template #default="scope">
+							<el-row v-if="scope.row.checkState === '已审核'">
+								<StateTag :state-title="scope.row.checkState" :state-mapper="{ 2: '已审核' }" @click.native="handleReCheck(scope.row)" style="cursor: pointer" />
+							</el-row>
+							<el-row v-else>
+								<el-row>
+									<el-button v-hasPermi="['system:goodsorder:audit']" type="text" size="mini" @click="handleCheck(scope.row)">
+										<span v-once>审核</span>
+									</el-button>
+								</el-row>
+							</el-row>
+						</template>
+					</el-table-column>
+					<!-- 7. 车队 -->
+					<CustomTableColumn v-if="columns[5].visible" show-overflow-tooltip label="车队" align="center" prop="fleet" width="100px" />
+					<!-- 8. 陆运司机电话 -->
+					<CustomTableColumn v-if="columns[7].visible" show-overflow-tooltip label="陆运司机电话" align="center" prop="landDriverTel" width="100px" />
+					<!-- 9. 陆地司机姓名 -->
+					<CustomTableColumn v-if="columns[8].visible" show-overflow-tooltip label="陆地司机姓名" align="center" prop="landDriverName" width="100px" />
+					<!-- 10. 海运柜号 -->
+					<CustomTableColumn v-if="columns[9].visible" show-overflow-tooltip label="海运柜号" align="center" prop="seaCarNo" width="100px">
+						<template #default="scope">
+							{{ !scope.row.seaCarNo ? '无' : scope.row.seaCarNo }}
+						</template>
+					</CustomTableColumn>
+					<!-- 11. 海运司机电话 -->
+					<CustomTableColumn v-if="columns[10].visible" show-overflow-tooltip label="海运司机电话" align="center" prop="seaDriverTel" width="100px">
+						<template #default="scope">
+							{{ !scope.row.seaDriverTel ? '无' : scope.row.seaDriverTel }}
+						</template>
+					</CustomTableColumn>
+					<!-- 12. 海运公司 -->
+					<CustomTableColumn v-if="columns[11].visible" show-overflow-tooltip label="海运公司" align="center" prop="seaDriverName" width="100px">
+						<template #default="scope">
+							{{ !scope.row.seaDriverName ? '无' : scope.row.seaDriverName }}
+						</template>
+					</CustomTableColumn>
+					<!-- 13. 总货款 -->
+					<CustomTableColumn v-if="columns[12].visible" show-overflow-tooltip label="总货款" align="center" prop="allPayments" width="100px">
+						<template #default="scope">
+							{{ scope.row.allPayments | changeNumber(changeLength) }}
+						</template>
+					</CustomTableColumn>
+					<!-- 14. 总吨位 -->
+					<CustomTableColumn v-if="columns[13].visible" show-overflow-tooltip label="总吨位" align="center" prop="allTonnage" width="120px">
+						<template #default="scope">
+							{{ scope.row.allTonnage | changeNumber(changeLength) }}
+						</template>
+					</CustomTableColumn>
+					<!-- 15. 陆运费 -->
+					<CustomTableColumn v-if="columns[14].visible" show-overflow-tooltip label="陆运费" align="center" prop="landFreight" width="100px" />
+					<!-- 16. 海运费 -->
+					<CustomTableColumn v-if="columns[15].visible" show-overflow-tooltip label="海运费" align="center" prop="seaFreight" width="100px" />
+					<!-- 17. 总利润(含税) -->
+					<CustomTableColumn v-if="columns[16].visible" show-overflow-tooltip label="总利润(含税)" align="center" prop="allProfit" width="120px">
+						<template #default="scope">
+							{{ scope.row.allProfit | changeNumber(changeLength) }}
+						</template>
+					</CustomTableColumn>
+					<!-- 18. 总利润(不含税) -->
+					<CustomTableColumn v-if="columns[17].visible" show-overflow-tooltip label="总利润(不含税)" align="center" prop="allProfitNoTax" width="120px">
+						<template #default="scope">
+							{{ scope.row.allProfitNoTax | changeNumber(changeLength) }}
+						</template>
+					</CustomTableColumn>
+					<!-- 19. 销售经理 -->
+					<CustomTableColumn v-if="columns[18].visible" show-overflow-tooltip label="销售经理" align="center" prop="saleManager" width="100px" />
+					<!-- 20. 录入员 -->
+					<CustomTableColumn v-if="columns[19].visible" show-overflow-tooltip label="录入员" align="center" prop="userName" width="120px" />
+					<!-- 21. 备注 -->
+					<CustomTableColumn v-if="columns[20].visible" show-overflow-tooltip label="备注" align="center" prop="comments" />
+					<!-- 22. 附件 -->
+					<el-table-column v-if="columns[21].visible" show-overflow-tooltip label="附件" align="center" prop="path" width="150px">
+						<template slot-scope="scope">
+							<div v-if="Array.isArray(scope.row.attachmentList)">
+								<CheckFiles
+									:attachmentList="scope.row.attachmentList"
+									:flag="'path'"
+									@needToUpdate="value => handleUpdateFilePath(value, scope.row, getGoodsOrder, updateGoodsOrder)"
+								/>
 							</div>
-						</ExpandCursor>
-					</template>
-				</el-table-column>
-				<!-- 5. 陆运车牌 -->
-				<CustomTableColumn v-if="landCarNoColumn && landCarNoColumn.visible" show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo" width="100px" fixed="left" />
-				<!-- 6. 审核状态 -->
-				<el-table-column v-if="columns[4].visible" show-overflow-tooltip label="审核状态" align="center" prop="checkState" width="120">
-					<template #default="scope">
-						<el-row v-if="scope.row.checkState === '已审核'">
-							<StateTag :state-title="scope.row.checkState" :state-mapper="{ 2: '已审核' }" @click.native="handleReCheck(scope.row)" style="cursor: pointer" />
-						</el-row>
-						<el-row v-else>
+							<div v-else>
+								<el-tag type="danger" v-once>加载错误</el-tag>
+							</div>
+						</template>
+					</el-table-column>
+					<!-- 23. 收到条附件 -->
+					<el-table-column v-if="columns[22].visible" show-overflow-tooltip label="收到条附件" align="center" prop="receiveProof" width="150px">
+						<template #default="scope">
+							<div v-if="Array.isArray(scope.row.attachmentList)">
+								<CheckFiles
+									:attachmentList="scope.row.attachmentList"
+									:flag="'receiveProof'"
+									@needToUpdate="value => handleUpdateFilePath(value, scope.row, getGoodsOrder, updateGoodsOrder)"
+								/>
+							</div>
+							<div v-else>
+								<el-tag type="danger" v-once>加载错误</el-tag>
+							</div>
+						</template>
+					</el-table-column>
+					<!-- 24. 是否可编辑 -->
+					<CustomTableColumn v-if="columns[23].visible" show-overflow-tooltip label="是否可编辑" align="center" prop="isedit" width="100px">
+						<template slot-scope="scope">
+							<StateTag :state-title="scope.row.isedit === 0 ? '否' : '是'" :state-mapper="{ 0: '否', 2: '是' }" />
+						</template>
+					</CustomTableColumn>
+					<!-- 25. 客户是否含税 -->
+					<el-table-column v-if="columns[24].visible" show-overflow-tooltip label="客户是否含税" align="center" prop="customerTaxIncluded" width="120">
+						<template #default="scope">
 							<el-row>
-								<el-button v-hasPermi="['system:goodsorder:audit']" type="text" size="mini" @click="handleCheck(scope.row)">
-									<span v-once>审核</span>
+								<el-row v-if="hasInvoice(scope.row, PUBLIC_DICT_TYPE.CUSTOMER)">
+									<el-row>
+										<el-button type="text" size="mini" @click="showCustomerInvoiceList(scope.row)">是</el-button>
+									</el-row>
+								</el-row>
+								<el-row v-else>
+									<StateTag :state-title="`否`" :state-mapper="{ 3: '否' }" />
+								</el-row>
+							</el-row>
+						</template>
+					</el-table-column>
+					<!-- 26. 供应商是否开票 -->
+					<el-table-column v-if="columns[25].visible" show-overflow-tooltip label="供应商是否开票" align="center" width="120px">
+						<template #default="scope">
+							<el-row>
+								<el-row v-if="hasInvoice(scope.row, PUBLIC_DICT_TYPE.SUPPLIER)">
+									<el-row>
+										<el-button type="text" size="mini" @click="showSupplierInvoiceList(scope.row)">是</el-button>
+									</el-row>
+								</el-row>
+								<el-row v-else>
+									<StateTag :state-title="`否`" :state-mapper="{ 3: '否' }" />
+								</el-row>
+							</el-row>
+						</template>
+					</el-table-column>
+					<!--      右侧操作栏-->
+					<el-table-column show-overflow-tooltip label="订单操作" align="center" class-name="small-padding fixed-width" width="320px" fixed="right">
+						<template slot-scope="scope">
+							<el-button size="mini" type="text" :disabled="scope.row.isAdjusted !== 1" v-if="!isAdjustOrder" @click="handleCheckAdjust(scope.row)">查看调整单</el-button>
+							<el-button size="mini" type="text" :disabled="scope.row.isAdjusted === 1" @click="handleOrderItemInfo(scope.row)">调整单</el-button>
+							<el-button v-if="isAdjustOrder" size="mini" type="text" @click="handleCheckPrevious(scope.row)">查看原单据</el-button>
+							<!-- 发货单操作：单独展示发货单1 + 下拉中的发货单2/3 -->
+							<el-button size="mini" type="text" @click="handleOrder1(scope.row)">发货单1</el-button>
+							<el-dropdown size="mini" type="text" trigger="click">
+								<el-button type="text" size="mini">
+									发货单
+									<i class="el-icon-arrow-down el-icon--right" />
 								</el-button>
-							</el-row>
-						</el-row>
-					</template>
-				</el-table-column>
-				<!-- 7. 车队 -->
-				<CustomTableColumn v-if="columns[5].visible" show-overflow-tooltip label="车队" align="center" prop="fleet" width="100px" />
-				<!-- 8. 陆运司机电话 -->
-				<CustomTableColumn v-if="columns[7].visible" show-overflow-tooltip label="陆运司机电话" align="center" prop="landDriverTel" width="100px" />
-				<!-- 9. 陆地司机姓名 -->
-				<CustomTableColumn v-if="columns[8].visible" show-overflow-tooltip label="陆地司机姓名" align="center" prop="landDriverName" width="100px" />
-				<!-- 10. 海运柜号 -->
-				<CustomTableColumn v-if="columns[9].visible" show-overflow-tooltip label="海运柜号" align="center" prop="seaCarNo" width="100px">
-					<template #default="scope">
-						{{ !scope.row.seaCarNo ? '无' : scope.row.seaCarNo }}
-					</template>
-				</CustomTableColumn>
-				<!-- 11. 海运司机电话 -->
-				<CustomTableColumn v-if="columns[10].visible" show-overflow-tooltip label="海运司机电话" align="center" prop="seaDriverTel" width="100px">
-					<template #default="scope">
-						{{ !scope.row.seaDriverTel ? '无' : scope.row.seaDriverTel }}
-					</template>
-				</CustomTableColumn>
-				<!-- 12. 海运公司 -->
-				<CustomTableColumn v-if="columns[11].visible" show-overflow-tooltip label="海运公司" align="center" prop="seaDriverName" width="100px">
-					<template #default="scope">
-						{{ !scope.row.seaDriverName ? '无' : scope.row.seaDriverName }}
-					</template>
-				</CustomTableColumn>
-				<!-- 13. 总货款 -->
-				<CustomTableColumn v-if="columns[12].visible" show-overflow-tooltip label="总货款" align="center" prop="allPayments" width="100px">
-					<template #default="scope">
-						{{ scope.row.allPayments | changeNumber(changeLength) }}
-					</template>
-				</CustomTableColumn>
-				<!-- 14. 总吨位 -->
-				<CustomTableColumn v-if="columns[13].visible" show-overflow-tooltip label="总吨位" align="center" prop="allTonnage" width="120px">
-					<template #default="scope">
-						{{ scope.row.allTonnage | changeNumber(changeLength) }}
-					</template>
-				</CustomTableColumn>
-				<!-- 15. 陆运费 -->
-				<CustomTableColumn v-if="columns[14].visible" show-overflow-tooltip label="陆运费" align="center" prop="landFreight" width="100px" />
-				<!-- 16. 海运费 -->
-				<CustomTableColumn v-if="columns[15].visible" show-overflow-tooltip label="海运费" align="center" prop="seaFreight" width="100px" />
-				<!-- 17. 总利润(含税) -->
-				<CustomTableColumn v-if="columns[16].visible" show-overflow-tooltip label="总利润(含税)" align="center" prop="allProfit" width="120px">
-					<template #default="scope">
-						{{ scope.row.allProfit | changeNumber(changeLength) }}
-					</template>
-				</CustomTableColumn>
-				<!-- 18. 总利润(不含税) -->
-				<CustomTableColumn v-if="columns[17].visible" show-overflow-tooltip label="总利润(不含税)" align="center" prop="allProfitNoTax" width="120px">
-					<template #default="scope">
-						{{ scope.row.allProfitNoTax | changeNumber(changeLength) }}
-					</template>
-				</CustomTableColumn>
-				<!-- 19. 销售经理 -->
-				<CustomTableColumn v-if="columns[18].visible" show-overflow-tooltip label="销售经理" align="center" prop="saleManager" width="100px" />
-				<!-- 20. 录入员 -->
-				<CustomTableColumn v-if="columns[19].visible" show-overflow-tooltip label="录入员" align="center" prop="userName" width="120px" />
-				<!-- 21. 备注 -->
-				<CustomTableColumn v-if="columns[20].visible" show-overflow-tooltip label="备注" align="center" prop="comments" />
-				<!-- 22. 附件 -->
-				<el-table-column v-if="columns[21].visible" show-overflow-tooltip label="附件" align="center" prop="path" width="150px">
-					<template slot-scope="scope">
-						<div v-if="Array.isArray(scope.row.attachmentList)">
-							<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'path'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getGoodsOrder, updateGoodsOrder)" />
-						</div>
-						<div v-else>
-							<el-tag type="danger" v-once>加载错误</el-tag>
-						</div>
-					</template>
-				</el-table-column>
-				<!-- 23. 收到条附件 -->
-				<el-table-column v-if="columns[22].visible" show-overflow-tooltip label="收到条附件" align="center" prop="receiveProof" width="150px">
-					<template #default="scope">
-						<div v-if="Array.isArray(scope.row.attachmentList)">
-							<CheckFiles
-								:attachmentList="scope.row.attachmentList"
-								:flag="'receiveProof'"
-								@needToUpdate="value => handleUpdateFilePath(value, scope.row, getGoodsOrder, updateGoodsOrder)"
-							/>
-						</div>
-						<div v-else>
-							<el-tag type="danger" v-once>加载错误</el-tag>
-						</div>
-					</template>
-				</el-table-column>
-				<!-- 24. 是否可编辑 -->
-				<CustomTableColumn v-if="columns[23].visible" show-overflow-tooltip label="是否可编辑" align="center" prop="isedit" width="100px">
-					<template slot-scope="scope">
-						<StateTag :state-title="scope.row.isedit === 0 ? '否' : '是'" :state-mapper="{ 0: '否', 2: '是' }" />
-					</template>
-				</CustomTableColumn>
-				<!-- 25. 客户是否含税 -->
-				<el-table-column v-if="columns[24].visible" show-overflow-tooltip label="客户是否含税" align="center" prop="customerTaxIncluded" width="120">
-					<template #default="scope">
-						<el-row>
-							<el-row v-if="hasInvoice(scope.row, PUBLIC_DICT_TYPE.CUSTOMER)">
-								<el-row>
-									<el-button type="text" size="mini" @click="showCustomerInvoiceList(scope.row)">是</el-button>
-								</el-row>
-							</el-row>
-							<el-row v-else>
-								<StateTag :state-title="`否`" :state-mapper="{ 3: '否' }" />
-							</el-row>
-						</el-row>
-					</template>
-				</el-table-column>
-				<!-- 26. 供应商是否开票 -->
-				<el-table-column v-if="columns[25].visible" show-overflow-tooltip label="供应商是否开票" align="center" width="120px">
-					<template #default="scope">
-						<el-row>
-							<el-row v-if="hasInvoice(scope.row, PUBLIC_DICT_TYPE.SUPPLIER)">
-								<el-row>
-									<el-button type="text" size="mini" @click="showSupplierInvoiceList(scope.row)">是</el-button>
-								</el-row>
-							</el-row>
-							<el-row v-else>
-								<StateTag :state-title="`否`" :state-mapper="{ 3: '否' }" />
-							</el-row>
-						</el-row>
-					</template>
-				</el-table-column>
-				<!--      右侧操作栏-->
-				<el-table-column show-overflow-tooltip label="订单操作" align="center" class-name="small-padding fixed-width" width="320px" fixed="right">
-					<template slot-scope="scope">
-						<el-button size="mini" type="text" :disabled="scope.row.isAdjusted !== 1" v-if="!isAdjustOrder" @click="handleCheckAdjust(scope.row)">查看调整单</el-button>
-						<el-button size="mini" type="text" :disabled="scope.row.isAdjusted === 1" @click="handleOrderItemInfo(scope.row)">调整单</el-button>
-						<el-button v-if="isAdjustOrder" size="mini" type="text" @click="handleCheckPrevious(scope.row)">查看原单据</el-button>
-						<!-- 发货单操作：单独展示发货单1 + 下拉中的发货单2/3 -->
-						<el-button size="mini" type="text" @click="handleOrder1(scope.row)">发货单1</el-button>
-						<el-dropdown size="mini" type="text" trigger="click">
-							<el-button type="text" size="mini">
-								发货单
-								<i class="el-icon-arrow-down el-icon--right" />
-							</el-button>
-							<el-dropdown-menu slot="dropdown">
-								<el-dropdown-item>
-									<el-button size="mini" type="text" @click="handleOrder2(scope.row)">发货单2</el-button>
-								</el-dropdown-item>
-								<el-dropdown-item>
-									<el-button size="mini" type="text" @click="handleOrder3(scope.row)">发货单3</el-button>
-								</el-dropdown-item>
-							</el-dropdown-menu>
-						</el-dropdown>
-					</template>
-				</el-table-column>
-			</el-table>
-			<!-- 已加载全部提示 -->
-			<transition name="fade">
-				<div v-if="!isLoadingBatch && currentIndex >= goodsOrderList.length && goodsOrderList.length > batchSize" class="load-complete-container">
-					<div class="load-complete-content">
-						<i class="el-icon-success"></i>
-						<span class="complete-text">已加载全部数据</span>
-					</div>
-				</div>
-			</transition>
+								<el-dropdown-menu slot="dropdown">
+									<el-dropdown-item>
+										<el-button size="mini" type="text" @click="handleOrder2(scope.row)">发货单2</el-button>
+									</el-dropdown-item>
+									<el-dropdown-item>
+										<el-button size="mini" type="text" @click="handleOrder3(scope.row)">发货单3</el-button>
+									</el-dropdown-item>
+								</el-dropdown-menu>
+							</el-dropdown>
+						</template>
+					</el-table-column>
+				</el-table>
+			</virtual-scroll>
 			<!--    分页组件-->
 			<pagination v-if="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 

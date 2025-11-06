@@ -3,78 +3,34 @@
 		<table class="table-row">
 			<thead v-if="shouldShowHeader" class="table-header">
 				<tr>
-					<th class="fixed-left col-actions text-center resizable" :data-col="'col-actions'">
-						操作
-						<span class="resize-handle" @mousedown.prevent="startResize($event, 'col-actions')"></span>
-					</th>
-					<th class="col-id text-center resizable" :data-col="'col-id'">
-						ID
-						<span class="resize-handle" @mousedown.prevent="startResize($event, 'col-id')"></span>
-					</th>
-					<th class="col-date text-center resizable" :data-col="'col-date'">
-						日期
-						<span class="resize-handle" @mousedown.prevent="startResize($event, 'col-date')"></span>
-					</th>
-					<th class="col-customer text-center resizable" :data-col="'col-customer'">
-						客户
-						<span class="resize-handle" @mousedown.prevent="startResize($event, 'col-customer')"></span>
-					</th>
-					<th class="col-supplier-warehouse text-center resizable" :data-col="'col-supplier-warehouse'">
-						供应商/仓库
-						<span class="resize-handle" @mousedown.prevent="startResize($event, 'col-supplier-warehouse')"></span>
-					</th>
-					<th class="col-check-state text-center resizable" :data-col="'col-check-state'">
-						审核状态
-						<span class="resize-handle" @mousedown.prevent="startResize($event, 'col-check-state')"></span>
-					</th>
-					<th class="col-fleet text-center resizable" :data-col="'col-fleet'">
-						车队
-						<span class="resize-handle" @mousedown.prevent="startResize($event, 'col-fleet')"></span>
-					</th>
-					<th class="col-car-no text-center resizable" :data-col="'col-car-no'">
-						陆运车牌
-						<span class="resize-handle" @mousedown.prevent="startResize($event, 'col-car-no')"></span>
-					</th>
-					<th class="col-payment text-center resizable" :data-col="'col-payment'">
-						总货款
-						<span class="resize-handle" @mousedown.prevent="startResize($event, 'col-payment')"></span>
-					</th>
-					<th class="col-tonnage text-center resizable" :data-col="'col-tonnage'">
-						总吨位
-						<span class="resize-handle" @mousedown.prevent="startResize($event, 'col-tonnage')"></span>
-					</th>
-					<th class="col-profit text-center resizable" :data-col="'col-profit'">
-						总利润(含税)
-						<span class="resize-handle" @mousedown.prevent="startResize($event, 'col-profit')"></span>
-					</th>
-					<th class="col-sale-manager text-center resizable" :data-col="'col-sale-manager'">
-						销售经理
-						<span class="resize-handle" @mousedown.prevent="startResize($event, 'col-sale-manager')"></span>
-					</th>
-					<th class="col-user text-center resizable" :data-col="'col-user'">
-						录入员
-						<span class="resize-handle" @mousedown.prevent="startResize($event, 'col-user')"></span>
-					</th>
-					<th class="col-remark text-center resizable" :data-col="'col-remark'">
-						备注
-						<span class="resize-handle" @mousedown.prevent="startResize($event, 'col-remark')"></span>
-					</th>
-					<th class="col-edit text-center resizable" :data-col="'col-edit'">
-						是否可编辑
-						<span class="resize-handle" @mousedown.prevent="startResize($event, 'col-edit')"></span>
-					</th>
-					<th class="col-customer-tax text-center resizable" :data-col="'col-customer-tax'">
-						客户是否含税
-						<span class="resize-handle" @mousedown.prevent="startResize($event, 'col-customer-tax')"></span>
-					</th>
-					<th class="col-supplier-tax text-center resizable" :data-col="'col-supplier-tax'">
-						供应商是否开票
-						<span class="resize-handle" @mousedown.prevent="startResize($event, 'col-supplier-tax')"></span>
-					</th>
-					<th class="fixed-right col-order-actions text-center resizable" :data-col="'col-order-actions'">
-						订单操作
-						<span class="resize-handle" @mousedown.prevent="startResize($event, 'col-order-actions')"></span>
-					</th>
+					<th class="fixed-left col-actions text-center">操作</th>
+					<th class="col-id text-center">ID</th>
+					<th class="col-date text-center">日期</th>
+					<th class="col-customer text-center">客户</th>
+					<th class="col-supplier-warehouse text-center">供应商/仓库</th>
+					<th class="col-check-state text-center">审核状态</th>
+					<th class="col-fleet text-center">车队</th>
+					<th class="col-car-no text-center">陆运车牌</th>
+					<th class="col-land-driver-tel text-center">陆运司机电话</th>
+					<th class="col-land-driver-name text-center">陆地司机姓名</th>
+					<th class="col-sea-car-no text-center">海运柜号</th>
+					<th class="col-sea-driver-tel text-center">海运司机电话</th>
+					<th class="col-sea-driver-name text-center">海运公司</th>
+					<th class="col-payment text-center">总货款</th>
+					<th class="col-tonnage text-center">总吨位</th>
+					<th class="col-land-freight text-center">陆运费</th>
+					<th class="col-sea-freight text-center">海运费</th>
+					<th class="col-profit text-center">总利润(含税)</th>
+					<th class="col-profit-no-tax text-center">总利润(不含税)</th>
+					<th class="col-sale-manager text-center">销售经理</th>
+					<th class="col-user text-center">录入员</th>
+					<th class="col-remark text-center">备注</th>
+					<th class="col-attachment text-center">附件</th>
+					<th class="col-receive-proof text-center">收到条附件</th>
+					<th class="col-edit text-center">是否可编辑</th>
+					<th class="col-customer-tax text-center">客户是否含税</th>
+					<th class="col-supplier-tax text-center">供应商是否开票</th>
+					<th class="fixed-right col-order-actions text-center">订单操作</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -118,7 +74,7 @@
 
 					<!-- 日期 -->
 					<td class="text-center col-date">
-						<div class="cell-content">{{ source.orderDate || formatDate() }}</div>
+						<div class="cell-content">{{ formatOrderDate(source.orderDate) }}</div>
 					</td>
 
 					<!-- 客户 -->
@@ -129,13 +85,34 @@
 					<!-- 供应商/仓库 -->
 					<td class="text-center col-supplier-warehouse">
 						<div class="supplier-warehouse-container">
-							<span v-for="(supplier, idx) in source.suppliers" :key="`supplier-${idx}`" class="supplier-name" @click="handleSupplierClick(supplier)">
-								{{ supplier }}
+							<!-- 使用预处理后的供应商数据 -->
+							<span v-for="supplier in source._uniqueSuppliers || []" :key="`supplier-${supplier.supplierID}`" class="supplier-name" @click="handleSupplierClick(supplier, source)">
+								{{ supplier.supplier }}
 							</span>
-							<span v-for="(warehouse, idx) in source.warehouses" :key="`warehouse-${idx}`" class="warehouse-name">
-								{{ warehouse }}
+							<!-- 使用预处理后的仓库数据 -->
+							<span v-for="warehouse in source._uniqueWarehouses || []" :key="`warehouse-${warehouse.storeHouseID}`" class="warehouse-name">
+								{{ warehouse.storeHouseName }}
 							</span>
-							<span v-if="(!source.suppliers || source.suppliers.length === 0) && (!source.warehouses || source.warehouses.length === 0)" class="empty-item">-</span>
+							<!-- 兼容旧数据格式 -->
+							<template v-if="!source._uniqueSuppliers && !source._uniqueWarehouses">
+								<span v-for="(supplier, idx) in source.suppliers || []" :key="`supplier-${idx}`" class="supplier-name" @click="handleSupplierClick(supplier, source)">
+									{{ supplier }}
+								</span>
+								<span v-for="(warehouse, idx) in source.warehouses || []" :key="`warehouse-${idx}`" class="warehouse-name">
+									{{ warehouse }}
+								</span>
+							</template>
+							<span
+								v-if="
+									(!source._uniqueSuppliers || source._uniqueSuppliers.length === 0) &&
+									(!source._uniqueWarehouses || source._uniqueWarehouses.length === 0) &&
+									(!source.suppliers || source.suppliers.length === 0) &&
+									(!source.warehouses || source.warehouses.length === 0)
+								"
+								class="empty-item"
+							>
+								-
+							</span>
 						</div>
 					</td>
 
@@ -154,7 +131,32 @@
 
 					<!-- 陆运车牌 -->
 					<td class="text-center col-car-no">
-						<div class="cell-content">{{ source.landCarNo || 'A' + String(index + 1000).slice(-4) }}</div>
+						<div class="cell-content">{{ source.landCarNo || '-' }}</div>
+					</td>
+
+					<!-- 陆运司机电话 -->
+					<td class="text-center col-land-driver-tel">
+						<div class="cell-content">{{ source.landDriverTel || '-' }}</div>
+					</td>
+
+					<!-- 陆地司机姓名 -->
+					<td class="text-center col-land-driver-name">
+						<div class="cell-content">{{ source.landDriverName || '-' }}</div>
+					</td>
+
+					<!-- 海运柜号 -->
+					<td class="text-center col-sea-car-no">
+						<div class="cell-content">{{ source.seaCarNo || '无' }}</div>
+					</td>
+
+					<!-- 海运司机电话 -->
+					<td class="text-center col-sea-driver-tel">
+						<div class="cell-content">{{ source.seaDriverTel || '无' }}</div>
+					</td>
+
+					<!-- 海运公司 -->
+					<td class="text-center col-sea-driver-name">
+						<div class="cell-content">{{ source.seaDriverName || '无' }}</div>
 					</td>
 
 					<!-- 总货款 -->
@@ -164,12 +166,27 @@
 
 					<!-- 总吨位 -->
 					<td class="text-center col-tonnage">
-						<div class="cell-content amount">{{ formatAmount(source.allTonnage || (index + 1) * 10.5) }}</div>
+						<div class="cell-content amount">{{ formatAmount(source.allTonnage) }}</div>
+					</td>
+
+					<!-- 陆运费 -->
+					<td class="text-center col-land-freight">
+						<div class="cell-content amount">{{ formatAmount(source.landFreight) }}</div>
+					</td>
+
+					<!-- 海运费 -->
+					<td class="text-center col-sea-freight">
+						<div class="cell-content amount">{{ formatAmount(source.seaFreight) }}</div>
 					</td>
 
 					<!-- 总利润(含税) -->
 					<td class="text-center col-profit">
-						<div class="cell-content amount profit">{{ formatAmount(source.allProfit || (index + 1) * 2000) }}</div>
+						<div class="cell-content amount profit">{{ formatAmount(source.allProfit) }}</div>
+					</td>
+
+					<!-- 总利润(不含税) -->
+					<td class="text-center col-profit-no-tax">
+						<div class="cell-content amount profit">{{ formatAmount(source.allProfitNoTax) }}</div>
 					</td>
 
 					<!-- 销售经理 -->
@@ -184,7 +201,23 @@
 
 					<!-- 备注 -->
 					<td class="text-center col-remark">
-						<div class="cell-content remark">{{ source.comments || '测试备注信息' }}</div>
+						<div class="cell-content remark">{{ source.comments || '-' }}</div>
+					</td>
+
+					<!-- 附件 -->
+					<td class="text-center col-attachment">
+						<div class="cell-content">
+							<span v-if="hasAttachment(source.attachmentList, 'path')" class="attachment-indicator">有附件</span>
+							<span v-else class="empty-item">无</span>
+						</div>
+					</td>
+
+					<!-- 收到条附件 -->
+					<td class="text-center col-receive-proof">
+						<div class="cell-content">
+							<span v-if="hasAttachment(source.attachmentList, 'receiveProof')" class="attachment-indicator">有附件</span>
+							<span v-else class="empty-item">无</span>
+						</div>
 					</td>
 
 					<!-- 是否可编辑 -->
@@ -197,7 +230,7 @@
 					<!-- 客户是否含税 -->
 					<td class="text-center col-customer-tax">
 						<div class="cell-content">
-							<el-button v-if="source.customerTaxIncluded" type="text" size="mini" @click="handleCustomerInvoice">是</el-button>
+							<el-button v-if="hasCustomerInvoice" type="text" size="mini" @click="handleCustomerInvoice">是</el-button>
 							<StateTag v-else :state-title="'否'" :state-mapper="{ 3: '否' }" />
 						</div>
 					</td>
@@ -205,7 +238,7 @@
 					<!-- 供应商是否开票 -->
 					<td class="text-center col-supplier-tax">
 						<div class="cell-content">
-							<el-button v-if="source.supplierInvoice" type="text" size="mini" @click="handleSupplierInvoice">是</el-button>
+							<el-button v-if="hasSupplierInvoice" type="text" size="mini" @click="handleSupplierInvoice">是</el-button>
 							<StateTag v-else :state-title="'否'" :state-mapper="{ 3: '否' }" />
 						</div>
 					</td>
@@ -239,6 +272,7 @@
 
 <script>
 import StateTag from '@/views/dashboard/components/common/StateTag.vue';
+import { parseTime } from '@/utils/ruoyi';
 
 export default {
 	name: 'item-component',
@@ -258,185 +292,42 @@ export default {
 		showHeader: {
 			type: Boolean,
 			default: false
+		},
+		extraProps: {
+			type: Object,
+			default() {
+				return {};
+			}
 		}
 	},
 	data() {
-		return {
-			// 列宽配置
-			columnWidths: {},
-			// 拖拽状态
-			isResizing: false,
-			resizingColumn: null,
-			startX: 0,
-			startWidth: 0
-		};
+		return {};
 	},
 	computed: {
 		shouldShowHeader() {
 			// 如果显式指定了 showHeader，使用它；否则第一个项显示表头
 			return this.showHeader || this.index === 0;
+		},
+		// 检查客户是否含税
+		hasCustomerInvoice() {
+			if (!this.source.smailOrderDetails || !Array.isArray(this.source.smailOrderDetails)) {
+				return false;
+			}
+			return this.source.smailOrderDetails.some(item => item.isIncludeTaxSale === 1);
+		},
+		// 检查供应商是否开票
+		hasSupplierInvoice() {
+			if (!this.source.smailOrderDetails || !Array.isArray(this.source.smailOrderDetails)) {
+				return false;
+			}
+			return this.source.smailOrderDetails.some(item => item.isIncludeTaxFactory === 1);
+		},
+		// 获取父组件方法
+		parentMethods() {
+			return this.extraProps?.parentMethods || {};
 		}
-	},
-	watch: {
-		// 监听列宽配置变化（从父组件或 localStorage 更新）
-		columnWidths: {
-			handler() {
-				this.$nextTick(() => {
-					this.applyColumnWidths();
-				});
-			},
-			deep: true
-		}
-	},
-	created() {
-		// 从 localStorage 加载列宽配置
-		this.loadColumnWidths();
-	},
-	mounted() {
-		// 应用列宽配置
-		this.$nextTick(() => {
-			this.applyColumnWidths();
-		});
-		// 绑定全局事件
-		document.addEventListener('mousemove', this.handleMouseMove);
-		document.addEventListener('mouseup', this.handleMouseUp);
-	},
-	beforeDestroy() {
-		// 移除全局事件
-		document.removeEventListener('mousemove', this.handleMouseMove);
-		document.removeEventListener('mouseup', this.handleMouseUp);
 	},
 	methods: {
-		// 加载列宽配置
-		loadColumnWidths() {
-			try {
-				const saved = localStorage.getItem('testing-table-column-widths');
-				if (saved) {
-					this.columnWidths = JSON.parse(saved);
-				}
-			} catch (error) {
-				console.warn('加载列宽配置失败:', error);
-			}
-		},
-		// 保存列宽配置
-		saveColumnWidths() {
-			try {
-				localStorage.setItem('testing-table-column-widths', JSON.stringify(this.columnWidths));
-			} catch (error) {
-				console.warn('保存列宽配置失败:', error);
-			}
-		},
-		// 应用列宽配置
-		applyColumnWidths() {
-			const table = this.$el.querySelector('.table-row');
-			if (!table) return;
-
-			// 确保表格使用固定布局
-			table.style.tableLayout = 'fixed';
-
-			// 应用所有已保存的列宽配置
-			Object.keys(this.columnWidths).forEach(columnClass => {
-				const width = this.columnWidths[columnClass];
-				this.updateAllColumnsWidth(columnClass, width);
-			});
-		},
-		// 开始拖拽
-		startResize(event, columnClass) {
-			if (!this.shouldShowHeader) return;
-
-			this.isResizing = true;
-			this.resizingColumn = columnClass;
-			this.startX = event.clientX;
-
-			const table = this.$el.querySelector('.table-row');
-			if (!table) return;
-
-			const th = table.querySelector(`th[data-col="${columnClass}"]`);
-			if (th) {
-				this.startWidth = th.offsetWidth;
-			}
-
-			// 添加全局样式
-			document.body.style.cursor = 'col-resize';
-			document.body.style.userSelect = 'none';
-		},
-		// 处理鼠标移动
-		handleMouseMove(event) {
-			if (!this.isResizing || !this.resizingColumn) return;
-
-			const diff = event.clientX - this.startX;
-			const newWidth = Math.max(50, this.startWidth + diff); // 最小宽度50px
-
-			// 更新页面上所有表格的相同列（包括所有 Item 组件实例）
-			this.updateAllColumnsWidth(this.resizingColumn, newWidth);
-
-			// 更新配置
-			this.columnWidths[this.resizingColumn] = newWidth;
-		},
-		// 更新所有表格中指定列的宽度
-		updateAllColumnsWidth(columnClass, width) {
-			// 查找页面上所有的表格（包括虚拟列表中的其他 Item 组件）
-			const allTables = document.querySelectorAll('.table-row');
-
-			allTables.forEach(table => {
-				// 更新表头 th
-				const th = table.querySelector(`th[data-col="${columnClass}"]`);
-				if (th) {
-					th.style.width = `${width}px`;
-					th.style.minWidth = `${width}px`;
-					th.style.maxWidth = `${width}px`;
-				}
-
-				// 更新数据行 td
-				const tbody = table.querySelector('tbody');
-				if (tbody) {
-					// 先尝试通过表头找到列索引（最可靠的方法）
-					const headerRow = table.querySelector('thead tr');
-					let columnIndex = -1;
-
-					if (headerRow) {
-						const headers = Array.from(headerRow.querySelectorAll('th[data-col]'));
-						columnIndex = headers.findIndex(th => th.getAttribute('data-col') === columnClass);
-					}
-
-					// 如果找到了列索引，使用索引更新（最准确）
-					if (columnIndex >= 0) {
-						const rows = tbody.querySelectorAll('tr');
-						rows.forEach(row => {
-							const cells = row.querySelectorAll('td');
-							if (cells[columnIndex]) {
-								cells[columnIndex].style.width = `${width}px`;
-								cells[columnIndex].style.minWidth = `${width}px`;
-								cells[columnIndex].style.maxWidth = `${width}px`;
-							}
-						});
-					} else {
-						// 如果没有表头，通过 class 选择器更新（适用于没有表头的 Item）
-						const cellsByClass = tbody.querySelectorAll(`td.${columnClass}`);
-						cellsByClass.forEach(td => {
-							td.style.width = `${width}px`;
-							td.style.minWidth = `${width}px`;
-							td.style.maxWidth = `${width}px`;
-						});
-					}
-				}
-			});
-		},
-		// 处理鼠标抬起
-		handleMouseUp() {
-			if (this.isResizing) {
-				this.isResizing = false;
-				// 保存配置
-				this.saveColumnWidths();
-				// 通知父组件更新（如果第一个 Item 调整了列宽，需要同步到其他 Item）
-				this.$emit('column-width-changed', this.columnWidths);
-				this.resizingColumn = null;
-
-				// 恢复全局样式
-				document.body.style.cursor = '';
-				document.body.style.userSelect = '';
-			}
-		},
 		formatDate() {
 			const date = new Date();
 			date.setDate(date.getDate() - this.index);
@@ -445,14 +336,31 @@ export default {
 			const day = String(date.getDate()).padStart(2, '0');
 			return `${year}-${month}-${day}`;
 		},
+		// 格式化订单日期
+		formatOrderDate(date) {
+			if (!date) return '-';
+			return parseTime(date, '{y}-{m}-{d}');
+		},
 		formatAmount(value) {
+			if (value === null || value === undefined || value === '') {
+				return '-';
+			}
 			if (typeof value === 'number') {
 				return value.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 			}
 			return value;
 		},
+		// 检查是否有附件
+		hasAttachment(attachmentList, type) {
+			if (!Array.isArray(attachmentList)) {
+				return false;
+			}
+			return attachmentList.some(item => item.flag === type);
+		},
 		handleView() {
-			console.log('查看', this.source.uid || this.source.id);
+			if (this.parentMethods.handleView) {
+				this.parentMethods.handleView(this.source);
+			}
 		},
 		handleCommand(command) {
 			if (command === 'handleUpdate') {
@@ -462,34 +370,54 @@ export default {
 			}
 		},
 		handleEdit() {
-			console.log('编辑', this.source.uid || this.source.id);
+			if (this.parentMethods.handleUpdate) {
+				this.parentMethods.handleUpdate(this.source);
+			}
 		},
 		handleDelete() {
-			console.log('删除', this.source.uid || this.source.id);
+			if (this.parentMethods.handleDelete) {
+				this.parentMethods.handleDelete(this.source);
+			}
 		},
 		handleCheck() {
-			console.log('审核', this.source.uid || this.source.id);
+			if (this.parentMethods.handleCheck) {
+				this.parentMethods.handleCheck(this.source);
+			}
 		},
-		handleSupplierClick(supplier) {
-			console.log('供应商点击', supplier);
+		handleSupplierClick(supplier, row) {
+			if (this.parentMethods.handleSupplierClick) {
+				this.parentMethods.handleSupplierClick(supplier, row || this.source);
+			}
 		},
 		handleCustomerInvoice() {
-			console.log('客户开票', this.source.uid || this.source.id);
+			if (this.parentMethods.handleCustomerInvoice) {
+				this.parentMethods.handleCustomerInvoice(this.source);
+			}
 		},
 		handleSupplierInvoice() {
-			console.log('供应商开票', this.source.uid || this.source.id);
+			if (this.parentMethods.handleSupplierInvoice) {
+				this.parentMethods.handleSupplierInvoice(this.source);
+			}
 		},
 		handleAdjustOrder() {
-			console.log('调整单', this.source.uid || this.source.id);
+			if (this.parentMethods.handleAdjustOrder) {
+				this.parentMethods.handleAdjustOrder(this.source);
+			}
 		},
 		handleOrder1() {
-			console.log('发货单1', this.source.uid || this.source.id);
+			if (this.parentMethods.handleOrder1) {
+				this.parentMethods.handleOrder1(this.source);
+			}
 		},
 		handleOrder2() {
-			console.log('发货单2', this.source.uid || this.source.id);
+			if (this.parentMethods.handleOrder2) {
+				this.parentMethods.handleOrder2(this.source);
+			}
 		},
 		handleOrder3() {
-			console.log('发货单3', this.source.uid || this.source.id);
+			if (this.parentMethods.handleOrder3) {
+				this.parentMethods.handleOrder3(this.source);
+			}
 		}
 	}
 };
@@ -712,6 +640,26 @@ $table-fixed-cell-z-index: 10; // 固定列单元格层级
 				width: 4%; // 1.2/29.8
 			}
 
+			&.col-land-driver-tel {
+				width: 4%; // 1.2/29.8
+			}
+
+			&.col-land-driver-name {
+				width: 4%; // 1.2/29.8
+			}
+
+			&.col-sea-car-no {
+				width: 4%; // 1.2/29.8
+			}
+
+			&.col-sea-driver-tel {
+				width: 4%; // 1.2/29.8
+			}
+
+			&.col-sea-driver-name {
+				width: 4%; // 1.2/29.8
+			}
+
 			&.col-payment {
 				width: 5%; // 1.5/29.8
 			}
@@ -720,7 +668,19 @@ $table-fixed-cell-z-index: 10; // 固定列单元格层级
 				width: 5%; // 1.5/29.8
 			}
 
+			&.col-land-freight {
+				width: 4%; // 1.2/29.8
+			}
+
+			&.col-sea-freight {
+				width: 4%; // 1.2/29.8
+			}
+
 			&.col-profit {
+				width: 5%; // 1.5/29.8
+			}
+
+			&.col-profit-no-tax {
 				width: 5%; // 1.5/29.8
 			}
 
@@ -734,6 +694,14 @@ $table-fixed-cell-z-index: 10; // 固定列单元格层级
 
 			&.col-remark {
 				width: 6.7%; // 2/29.8
+			}
+
+			&.col-attachment {
+				width: 4%; // 1.2/29.8
+			}
+
+			&.col-receive-proof {
+				width: 4%; // 1.2/29.8
 			}
 
 			&.col-edit {
@@ -890,6 +858,12 @@ $table-fixed-cell-z-index: 10; // 固定列单元格层级
 				font-style: italic;
 				font-size: $table-cell-font-size;
 			}
+		}
+
+		.attachment-indicator {
+			color: $table-link-color;
+			font-weight: 500;
+			font-size: $table-cell-font-size;
 		}
 	}
 }

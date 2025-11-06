@@ -46,6 +46,7 @@
 		"core-js": "3.37.1",
 		"echarts": "5.4.0",
 		"el-table-horizontal-scroll": "^1.2.5",
+		"el-table-virtual-scroll": "^2.0.2",
 		"element-ui": "2.15.14",
 		"express": "^4.21.2",
 		"file-saver": "2.0.5",
