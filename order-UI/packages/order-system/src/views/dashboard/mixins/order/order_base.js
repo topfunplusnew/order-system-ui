@@ -64,7 +64,7 @@ export var mixin_order_base = {
 			// 订单表格中的数据
 			goodsOrderList: [],
 			renderedList: [], // 用于在表格中显示的数据，实现分时渲染
-			batchSize: 22, // 每次渲染的行数，根据性能调整
+			batchSize: 35, // 每次渲染的行数，根据性能调整
 			currentIndex: 0, // 当前渲染的起始索引
 			isLoadingBatch: false // 是否正在加载批次，防止重复加载
 		};

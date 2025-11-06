@@ -219,11 +219,11 @@ export default {
 		},
 		// 过滤掉已删除的行，用于表格显示
 		visibleOrderDetailList() {
-			return this.orderDetailList.filter(row => row.isDeleted !== 1);
+			return this.orderDetailList.filter(row => !row.isDeleted);
 		},
 		// 获取所有已标记删除的行
 		deletedOrderDetailList() {
-			return this.orderDetailList.filter(row => row.isDeleted === 1);
+			return this.orderDetailList.filter(row => row.isDeleted === true);
 		}
 	},
 	created() {
@@ -278,10 +278,10 @@ export default {
 						return;
 					}
 					this.orderDetailList = detailList.map(item => {
-						return { 
-							...item, 
+						return {
+							...item,
 							isEditing: false,
-							isDeleted: item.isDeleted !== undefined ? item.isDeleted : 0 // 确保 isDeleted 字段存在
+							isDeleted: item.isDeleted !== undefined ? item.isDeleted : false // 确保 isDeleted 字段存在
 						};
 					});
 
@@ -319,13 +319,13 @@ export default {
 			const rows = Array.isArray(row) ? row : [row];
 			// 处理每一行，关闭编辑状态并更新计算
 			rows.forEach(r => {
-				if (r.isEditing && r.isDeleted !== 1) {
+				if (r.isEditing && !r.isDeleted) {
 					this.$set(r, 'isEditing', false);
 					updateOrderRowCalculations(r, this.isSea, this.isLand);
 				}
 			});
 			// 深拷贝并过滤掉仍在编辑的行和已删除的行（已删除的行单独处理）
-			const rowsToSave = rows.filter(item => !item.isEditing && item.isDeleted !== 1);
+			const rowsToSave = rows.filter(item => !item.isEditing && !item.isDeleted);
 			let saveDetails = this.fillOrderDetailInfo(_.cloneDeep(rowsToSave));
 
 			// 过滤掉空白行（所有业务字段都为空的行）
@@ -334,7 +334,7 @@ export default {
 
 			// 收集所有已标记删除的行（需要一起发送给后端）
 			const deletedDetails = this.fillOrderDetailInfo(_.cloneDeep(this.deletedOrderDetailList));
-			
+
 			// 合并正常保存的行和已删除的行
 			const allDetails = [...saveDetails, ...deletedDetails];
 
@@ -491,7 +491,7 @@ export default {
 				factoryDiscountAmount: '',
 				comments: '',
 				isEditing: true, // 默认处于编辑状态
-				isDeleted: 0 // 新添加的行未删除
+				isDeleted: false // 新添加的行未删除
 			};
 			this.orderDetailList.push(obj);
 			this.$nextTick(() => {
@@ -548,11 +548,11 @@ export default {
 						}
 						return false;
 					});
-					
+
 					if (isChecked) {
 						// 如果该行已经有id（已保存的数据），标记为删除
 						if (item.id) {
-							this.$set(item, 'isDeleted', 1);
+							this.$set(item, 'isDeleted', true);
 							// 清除编辑状态
 							this.$set(item, 'isEditing', false);
 							deletedCount++;
@@ -730,13 +730,13 @@ export default {
 		submitOrder(resolve, reject) {
 			// 填充订单详情信息（排除已删除的行）
 			const visibleDetails = this.fillOrderDetailInfo(_.cloneDeep(this.visibleOrderDetailList));
-			
+
 			// 填充已删除的行信息
 			const deletedDetails = this.fillOrderDetailInfo(_.cloneDeep(this.deletedOrderDetailList));
 
 			// 过滤掉空白行（所有业务字段都为空的行），但保留已删除的行
 			const filteredVisibleDetails = visibleDetails.filter(detail => !this.isOrderDetailEmpty(detail));
-			
+
 			// 合并正常数据和已删除数据
 			const allOrderDetails = [...filteredVisibleDetails, ...deletedDetails];
 

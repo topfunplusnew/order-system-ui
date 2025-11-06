@@ -901,10 +901,10 @@ export default {
 
 						<!-- 修改记录下拉菜单 -->
 						<el-dropdown size="mini">
-							<el-button size="mini" type="text">
+							<el-button size="mini" type="text" :disabled="scope.row.historyCount === 0">
 								<span v-once>修改记录</span>
 							</el-button>
-							<el-dropdown-menu slot="dropdown">
+							<el-dropdown-menu slot="dropdown" v-if="scope.row.historyCount > 0">
 								<el-dropdown-item>
 									<HistoryList :row="scope.row" />
 								</el-dropdown-item>
