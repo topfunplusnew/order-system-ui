@@ -267,6 +267,11 @@ export default {
 						return;
 					}
 					this.orderDetailList = detailList.map(item => {
+						if (item.supplier){
+							item.currentType = 'supplier'
+						}else{
+							item.currentType = 'storeHouseName'
+						}
 						return {
 							...item,
 							isEditing: false,
