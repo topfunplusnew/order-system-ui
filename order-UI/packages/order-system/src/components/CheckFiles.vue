@@ -98,6 +98,7 @@ export default {
 		closeDialog() {
 			this.dialogVisible = false;
 			this.isUploading = false;
+			this.$bus.$emit('refreshList');
 		}
 	}
 };

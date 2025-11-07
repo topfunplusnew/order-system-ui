@@ -41,6 +41,11 @@
 
 		<!--    订单表格 数据量较大-->
 		<div class="table-container" v-loading="loading">
+			<!-- 渲染进度提示 -->
+			<div v-if="isRendering" class="rendering-progress">
+				<el-progress :percentage="renderProgress" :status="renderProgress === 100 ? 'success' : null" :stroke-width="6"></el-progress>
+				<span class="progress-text">正在渲染数据: {{ renderedData.length }} / {{ paginatedData.length }}</span>
+			</div>
 			<div class="table-wrapper" id="printBox">
 				<table class="native-table">
 					<thead>
@@ -105,7 +110,7 @@
 					</thead>
 					<tbody>
 						<tr
-							v-for="(row, index) in paginatedData"
+							v-for="(row, index) in renderedData"
 							:key="row.id"
 							:style="getRowStyle(row)"
 							:class="{ 'stripe-row': index % 2 === 1 }"
@@ -590,7 +595,7 @@ import StateTag from '@/views/dashboard/components/common/StateTag.vue';
 import ExpandCursor from '@/views/dashboard/components/common/ExpandCursor.vue';
 
 export default {
-	name: 'PerformanceTest',
+	name: 'OrderTable',
 	components: {
 		StateTag,
 		HistoryList,
@@ -628,6 +633,12 @@ export default {
 			supplierInvoiceGroups: [], // 按供应商分组的开票记录
 			// 订单列表数据
 			goodsOrderList: [],
+			// 分片渲染相关
+			renderedData: [], // 当前已渲染的数据
+			isRendering: false, // 是否正在渲染
+			renderProgress: 0, // 渲染进度
+			renderChunkSize: 50, // 每次渲染的行数
+			renderTimer: null, // 渲染定时器
 			// 订单修改记录相关
 			checkHistoryOrderVisible: false,
 			orderHistoryInfoList: [],
@@ -678,10 +689,88 @@ export default {
 			return this.goodsOrderList.slice(start, end);
 		}
 	},
+	watch: {
+		// 监听分页数据变化，触发分片渲染
+		paginatedData: {
+			handler(newData) {
+				if (newData && newData.length > 0) {
+					this.renderDataInChunks(newData);
+				} else {
+					this.renderedData = [];
+					this.isRendering = false;
+					this.renderProgress = 0;
+				}
+			},
+			immediate: true
+		}
+	},
 	mounted() {
 		this.generateData();
 	},
+	beforeDestroy() {
+		// 清理渲染定时器
+		if (this.renderTimer) {
+			cancelAnimationFrame(this.renderTimer);
+			this.renderTimer = null;
+		}
+	},
 	methods: {
+		// 分片渲染数据
+		renderDataInChunks(data) {
+			// 如果正在渲染，先取消
+			if (this.renderTimer) {
+				cancelAnimationFrame(this.renderTimer);
+				this.renderTimer = null;
+			}
+
+			const total = data.length;
+
+			// 如果数据量很小，直接一次性渲染
+			if (total <= this.renderChunkSize) {
+				this.renderedData = [...data];
+				this.isRendering = false;
+				this.renderProgress = 0;
+				return;
+			}
+
+			// 重置状态
+			this.renderedData = [];
+			this.isRendering = true;
+			this.renderProgress = 0;
+
+			let currentIndex = 0;
+
+			const renderChunk = () => {
+				// 计算本次要渲染的数据范围
+				const endIndex = Math.min(currentIndex + this.renderChunkSize, total);
+				const chunk = data.slice(currentIndex, endIndex);
+
+				// 添加到已渲染数据
+				this.renderedData = [...this.renderedData, ...chunk];
+
+				// 更新进度
+				currentIndex = endIndex;
+				this.renderProgress = Math.round((currentIndex / total) * 100);
+
+				// 如果还有数据未渲染，继续下一批
+				if (currentIndex < total) {
+					this.renderTimer = requestAnimationFrame(renderChunk);
+				} else {
+					// 渲染完成
+					this.isRendering = false;
+					this.renderProgress = 100;
+					this.renderTimer = null;
+					
+					// 延迟隐藏进度条，让用户看到完成状态
+					setTimeout(() => {
+						this.renderProgress = 0;
+					}, 500);
+				}
+			};
+
+			// 开始渲染
+			this.renderTimer = requestAnimationFrame(renderChunk);
+		},
 		// 生成测试数据
 		generateData() {
 			this.loading = true;
@@ -1280,6 +1369,26 @@ export default {
 .table-container {
 	position: relative;
 
+	.rendering-progress {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		z-index: 1000;
+		background: rgba(255, 255, 255, 0.95);
+		padding: 10px 20px;
+		border-bottom: 1px solid #ebeef5;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+		.progress-text {
+			display: block;
+			margin-top: 8px;
+			text-align: center;
+			font-size: 12px;
+			color: #606266;
+		}
+	}
+
 	.table-wrapper {
 		position: relative;
 		width: 100%;
@@ -1427,3 +1536,5 @@ export default {
 	}
 }
 </style>
+
+ 

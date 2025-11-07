@@ -131,19 +131,46 @@ export default {
 				{ key: 23, label: '是否可编辑', visible: true },
 				{ key: 24, label: '客户是否含税', visible: true },
 				{ key: 25, label: '供应商是否开票', visible: true }
-			]
+			],
+			// 性能优化相关：缓存 DOM 尺寸信息，避免频繁访问
+			_cachedScrollInfo: {
+				scrollTop: 0,
+				scrollHeight: 0,
+				clientHeight: 0,
+				lastUpdateTime: 0
+			},
+			// 列配置保存的防抖函数
+			_saveColumnsDebounced: null,
+			// 用于批量更新 DOM 的 RAF ID
+			_columnsUpdateRafId: null
 		};
 	},
 	watch: {
 		columns: {
 			handler(newVal, oldVal) {
-				newVal.forEach((column, index) => {
-					if (column.visible !== oldVal[index]?.visible) {
-						debounce(() => {
-							localStorage.setItem('goodsorder-columns', JSON.stringify(newVal));
-						}, 500);
-					}
+				// 检查是否有列可见性变化
+				const hasChange = newVal.some((column, index) => {
+					return column.visible !== oldVal[index]?.visible;
 				});
+
+				if (hasChange) {
+					// 使用 requestAnimationFrame 合并多次更新
+					if (this._columnsUpdateRafId) {
+						cancelAnimationFrame(this._columnsUpdateRafId);
+					}
+					
+					this._columnsUpdateRafId = requestAnimationFrame(() => {
+						// 初始化防抖函数（如果还没有）
+						if (!this._saveColumnsDebounced) {
+							this._saveColumnsDebounced = debounce((columns) => {
+								localStorage.setItem('goodsorder-columns', JSON.stringify(columns));
+							}, 500);
+						}
+						// 调用防抖函数保存列配置
+						this._saveColumnsDebounced(newVal);
+						this._columnsUpdateRafId = null;
+					});
+				}
 			},
 			deep: true
 		},
@@ -171,41 +198,29 @@ export default {
 		getUserConfig('goodsorder-columns').then(res => {
 			console.log(res);
 		});
-		// 绑定表格滚动事件，实现滚动加载
+		// 绑定表格滚动事件
 		this.$nextTick(() => {
 			this.bindTableScroll();
 		});
-		// 监听页面可见性变化，当页面重新可见时重置分片加载
-		this.handleVisibilityChange = () => {
-			// 如果页面从隐藏变为可见，且已经加载完毕，则重置分片加载
-			if (!document.hidden && this.currentIndex >= this.goodsOrderList.length && this.goodsOrderList.length > 0) {
-				this.resetBatchLoading();
-			}
-		};
-		document.addEventListener('visibilitychange', this.handleVisibilityChange);
-	},
-	activated() {
-		// 如果使用了 keep-alive，当组件被激活时，如果已经加载完毕，则重置分片加载
-		if (this.currentIndex >= this.goodsOrderList.length && this.goodsOrderList.length > 0) {
-			this.resetBatchLoading();
-		}
 	},
 	beforeDestroy() {
 		this.$bus.$off('refreshList');
 		// 移除滚动事件监听
 		this.unbindTableScroll();
-		// 移除页面可见性监听
-		if (this.handleVisibilityChange) {
-			document.removeEventListener('visibilitychange', this.handleVisibilityChange);
-		}
-		// 取消动画帧
-		if (this.rafId) {
-			cancelAnimationFrame(this.rafId);
-			this.rafId = null;
-		}
+		// 取消滚动事件的 RAF
 		if (this._scrollRafId) {
 			cancelAnimationFrame(this._scrollRafId);
 			this._scrollRafId = null;
+		}
+		// 取消列配置更新的 RAF
+		if (this._columnsUpdateRafId) {
+			cancelAnimationFrame(this._columnsUpdateRafId);
+			this._columnsUpdateRafId = null;
+		}
+		// 取消防抖函数
+		if (this._saveColumnsDebounced) {
+			this._saveColumnsDebounced.cancel();
+			this._saveColumnsDebounced = null;
 		}
 	},
 	methods: {
@@ -792,6 +807,7 @@ export default {
 		},
 		/**
 		 * 绑定表格滚动事件
+		 * 优化：使用 requestAnimationFrame 合并滚动事件，避免频繁触发
 		 */
 		bindTableScroll() {
 			this.$nextTick(() => {
@@ -802,10 +818,20 @@ export default {
 						table.bodyWrapper.removeEventListener('scroll', this._handleTableScroll);
 					}
 					// 保存滚动事件处理函数引用，方便后续移除
+					// 使用 requestAnimationFrame 优化滚动事件处理
 					this._handleTableScroll = event => {
-						this.handleTableScroll(event);
+						// 使用 RAF 合并滚动事件，避免频繁触发
+						// 如果已经有待处理的 RAF，取消它，使用最新的滚动位置
+						if (this._scrollRafId) {
+							cancelAnimationFrame(this._scrollRafId);
+						}
+						this._scrollRafId = requestAnimationFrame(() => {
+							this.handleTableScroll(event);
+							this._scrollRafId = null;
+						});
 					};
-					table.bodyWrapper.addEventListener('scroll', this._handleTableScroll);
+					// 使用 passive: true 优化滚动性能，告诉浏览器不会调用 preventDefault
+					table.bodyWrapper.addEventListener('scroll', this._handleTableScroll, { passive: true });
 				}
 			});
 		},
@@ -866,29 +892,20 @@ export default {
 
 		<!--    订单表格 数据量较大-->
 		<div class="table-container">
-			<!-- 加载遮盖层 -->
-			<transition name="fade">
-				<div v-if="isLoadingBatch" class="table-loading-overlay">
-					<div class="loading-overlay-content">
-						<i class="el-icon-loading"></i>
-						<span class="loading-text">正在加载数据...</span>
-					</div>
-				</div>
-			</transition>
-			<el-table
+			<u-table
 				ref="orderTable"
 				id="printBox"
 				:row-key="row => row.id"
 				v-loading="loading"
 				v-horizontal-scroll="'always'"
 				fit
-				v-virtual-scroll="{ data: renderedList, buffer: 5 }"
+				v-virtual-scroll="{ data: goodsOrderList, buffer: 5 }"
 				:row-style="rowStyle"
 				border
 				size="mini"
 				max-height="750"
 				:cell-style="paddingFix"
-				:data="renderedList"
+				:data="goodsOrderList"
 				@header-dragend="changeColWidth"
 			>
 				<el-table-column label="行操作" align="center" class-name="small-padding fixed-width" width="180" fixed="left">
@@ -951,21 +968,21 @@ export default {
 					<template #default="scope">
 						<ExpandCursor>
 							<div class="supplier-warehouse-container">
-								<!-- 显示预处理的供应商列表 -->
-								<span
-									v-for="supplier in scope.row._uniqueSuppliers"
-									:key="`supplier-${supplier.supplierID}`"
-									class="supplier-name"
-									@click="updateOrderItemVisibleSupplierInvoice(scope.row, supplier.supplierID)"
-								>
-									{{ supplier.supplier }}
+								<span v-if="scope.row._uniqueSuppliers.length === 0 && scope.row._uniqueWarehouses.length === 0" class="empty-item" v-once>-</span>
+								<span v-else>
+									<span
+										v-for="supplier in scope.row._uniqueSuppliers"
+										:key="`supplier-${supplier.supplierID}`"
+										class="supplier-name"
+										@click="updateOrderItemVisibleSupplierInvoice(scope.row, supplier.supplierID)"
+									>
+										{{ supplier.supplier }}
+									</span>
+									<!-- 显示预处理的仓库列表 -->
+									<span v-for="warehouse in scope.row._uniqueWarehouses" :key="`warehouse-${warehouse.storeHouseID}`" class="warehouse-name">
+										{{ warehouse.storeHouseName }}
+									</span>
 								</span>
-								<!-- 显示预处理的仓库列表 -->
-								<span v-for="warehouse in scope.row._uniqueWarehouses" :key="`warehouse-${warehouse.storeHouseID}`" class="warehouse-name">
-									{{ warehouse.storeHouseName }}
-								</span>
-								<!-- 如果既没有供应商也没有仓库，显示横线 -->
-								<span v-if="scope.row._uniqueSuppliers.length === 0 && scope.row._uniqueWarehouses.length === 0" class="empty-item">-</span>
 							</div>
 						</ExpandCursor>
 					</template>
@@ -991,7 +1008,9 @@ export default {
 									<span v-once>审核</span>
 								</el-button>
 								<!-- 其他用户显示状态文本 -->
-								<span v-else style="color: #909399; font-size: 12px">待审核</span>
+								<span v-else style="color: #909399; font-size: 12px">
+									<span v-once>待审核</span>
+								</span>
 							</el-row>
 						</el-row>
 					</template>
@@ -1126,7 +1145,7 @@ export default {
 						<el-button size="mini" type="text" @click="handleOrder1(scope.row)">发货单1</el-button>
 						<el-dropdown size="mini" type="text" trigger="click">
 							<el-button type="text" size="mini">
-								发货单
+								<span v-once>发货单</span>
 								<i class="el-icon-arrow-down el-icon--right" />
 							</el-button>
 							<el-dropdown-menu slot="dropdown">
@@ -1140,16 +1159,7 @@ export default {
 						</el-dropdown>
 					</template>
 				</el-table-column>
-			</el-table>
-			<!-- 已加载全部提示 -->
-			<transition name="fade">
-				<div v-if="!isLoadingBatch && currentIndex >= goodsOrderList.length && goodsOrderList.length > batchSize" class="load-complete-container">
-					<div class="load-complete-content">
-						<i class="el-icon-success"></i>
-						<span class="complete-text">已加载全部数据</span>
-					</div>
-				</div>
-			</transition>
+			</u-table>
 			<!--    分页组件-->
 			<pagination v-if="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
