@@ -2,20 +2,8 @@
 	<div class="bank-statement">
 		<!-- 查询条件部分 -->
 		<el-form id="top-search-form-item" :model="query" class="query-form" :inline="true" size="mini" label-width="150px">
-			<el-form-item label="开始日期：" prop="startTime">
-				<el-date-picker v-model="query.startTime" type="date" placeholder="选择开始日期" size="mini" value-format="yyyy-MM-dd" :clearable="false"></el-date-picker>
-			</el-form-item>
-			<el-form-item label="结束日期：" prop="endTime">
-				<el-date-picker
-					v-model="query.endTime"
-					type="date"
-					placeholder="选择结束日期"
-					size="mini"
-					value-format="yyyy-MM-dd"
-					:clearable="false"
-					:disabled="!query.startTime"
-					:picker-options="endTimePickerOptions"
-				></el-date-picker>
+			<el-form-item label="日期范围：" prop="dateRange">
+				<el-date-picker v-model="query.dateRange" type="daterange" value-format="yyyy-MM-dd" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" size="mini" style="width: 240px"></el-date-picker>
 			</el-form-item>
 			<el-form-item label="我方卡号：" required>
 				<el-row>
@@ -167,8 +155,9 @@ export default {
 			queryBank: '',
 			showSearch: true,
 			query: {
+				dateRange: [],
 				startTime: '',
-				endTime: 'today',
+				endTime: '',
 				otherName: '',
 				otherAccountName: '',
 				ourBankNO: '',
@@ -192,12 +181,6 @@ export default {
 				{ key: 8, label: `对方银行卡号`, visible: true },
 				{ key: 9, label: `摘要`, visible: true }
 			],
-			endTimePickerOptions: {
-				// 移除日期禁用限制，允许选择任何日期
-				disabledDate: date => {
-					return false;
-				}
-			}
 		};
 	},
 	methods: {
@@ -263,17 +246,17 @@ export default {
 		fetchStatementData() {
 			// 清空
 			this.statementData = [];
+			// 将日期范围转换为 startTime 和 endTime
+			if (this.query.dateRange && this.query.dateRange.length === 2) {
+				this.query.startTime = this.query.dateRange[0];
+				this.query.endTime = this.query.dateRange[1];
+			} else {
+				this.query.startTime = '';
+				this.query.endTime = '';
+			}
 			// 报表中是必须都要传递 但这里后端不传也可以 按照开始时间 如果不传就是至今
 			if (!this.query.startTime || !this.query.endTime) {
 				this.$message.warning('请选择开始日期和结束日期');
-				return;
-			}
-
-			// 添加日期校验逻辑
-			const startDate = new Date(this.query.startTime);
-			const endDate = new Date(this.query.endTime);
-			if (endDate < startDate) {
-				this.$message.warning('结束日期不能早于开始日期');
 				return;
 			}
 
@@ -311,10 +294,13 @@ export default {
 		},
 		// 重置查询条件
 		resetQuery() {
+			const today = new Date().toISOString().split('T')[0];
 			this.query = {
-				startTime: '',
-				endTime: '',
-				ourUserName: '',
+				dateRange: [today, today],
+				startTime: today,
+				endTime: today,
+				ourBankNO: '',
+				bankCardType: '',
 				otherName: '',
 				otherAccountName: ''
 			};
@@ -322,6 +308,14 @@ export default {
 		},
 		/** 导出按钮操作 */
 		handleExport() {
+			// 将日期范围转换为 startTime 和 endTime
+			if (this.query.dateRange && this.query.dateRange.length === 2) {
+				this.query.startTime = this.query.dateRange[0];
+				this.query.endTime = this.query.dateRange[1];
+			} else {
+				this.query.startTime = '';
+				this.query.endTime = '';
+			}
 			// 验证必填参数
 			if (!this.query.startTime || !this.query.endTime || !this.query.ourBankNO || !this.query.bankCardType) {
 				this.$message.warning('请完善查询条件后再导出');
@@ -358,6 +352,7 @@ export default {
 	},
 	created() {
 		const today = new Date().toISOString().split('T')[0]; // 获取 YYYY-MM-DD 格式的当前日期
+		this.query.dateRange = [today, today];
 		this.query.startTime = today;
 		this.query.endTime = today; // 同时也将结束时间设为今天
 

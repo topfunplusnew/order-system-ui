@@ -1,11 +1,8 @@
 <template>
 	<div class="app-container">
 		<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150">
-			<el-form-item label="开始日期" prop="startDate">
-				<el-date-picker v-model="queryParams.startDate" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="请选择开始日期" style="width: 200px" />
-			</el-form-item>
-			<el-form-item label="结束日期" prop="endDate">
-				<el-date-picker v-model="queryParams.endDate" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="请选择结束日期" style="width: 200px" />
+			<el-form-item label="日期范围" prop="dateRange">
+				<el-date-picker v-model="queryParams.dateRange" type="daterange" value-format="yyyy-MM-dd" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" style="width: 240px" />
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -55,6 +52,7 @@ export default {
 			moneyDetailList: [],
 			showSearch: true,
 			queryParams: {
+				dateRange: [],
 				startDate: '',
 				endDate: '',
 				pageNum: 1,
@@ -73,10 +71,20 @@ export default {
 			const yyyy = today.getFullYear();
 			const mm = String(today.getMonth() + 1).padStart(2, '0');
 			const dd = String(today.getDate()).padStart(2, '0');
-			this.queryParams.startDate = `${yyyy}-${mm}-${dd} 00:00:00`;
-			this.queryParams.endDate = `${yyyy}-${mm}-${dd} 23:00:00`;
+			const todayStr = `${yyyy}-${mm}-${dd}`;
+			this.queryParams.dateRange = [todayStr, todayStr];
+			this.queryParams.startDate = todayStr;
+			this.queryParams.endDate = todayStr;
 		},
 		getList() {
+			// 将日期范围转换为 startDate 和 endDate
+			if (this.queryParams.dateRange && this.queryParams.dateRange.length === 2) {
+				this.queryParams.startDate = this.queryParams.dateRange[0];
+				this.queryParams.endDate = this.queryParams.dateRange[1];
+			} else {
+				this.queryParams.startDate = '';
+				this.queryParams.endDate = '';
+			}
 			this.loading = true;
 			listMoneyDetail(this.queryParams)
 				.then(res => {
@@ -95,7 +103,7 @@ export default {
 		resetQuery() {
 			this.initDefaultDate();
 			this.queryParams.pageNum = 1;
-			this.queryParams.pageSize = 10;
+			this.queryParams.pageSize = 20;
 			this.getList();
 		},
 		handleExport() {
