@@ -417,7 +417,11 @@ export default {
 							reject && reject();
 							return;
 						}
-
+						// 如果该行是新增行，则从后端返回的数据中找到index等于该行数据的index的id，并赋值给该行 并且将isAdd标记为false
+						if (row && row.isAdd) {
+							row.id = orderInfo.orderDetailList.find(item => item.index === row.index).id;
+							row.isAdd = false;
+						}
 						this.$nextTick(() => {
 							Object.assign(this.orderInfo, orderInfo);
 							this.$message.success('该行订单详情信息已添加并保存!');

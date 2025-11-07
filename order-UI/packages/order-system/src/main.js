@@ -68,10 +68,14 @@ import { columnVisibilityMixin } from '@/mixins/columnVisibilityMixin';
 import elDragDialog from '@/views/dashboard/directive/dialog/drugDialog';
 import elRelenDialog from '@/views/dashboard/directive/dialog/relenDialog';
 import { checkVersion } from './utils/versionChecker';
+import { UTable, UTableColumn } from 'umy-ui';
+import 'umy-ui/lib/theme-chalk/index.css';// 引入样式
 message.config({
 	top: '10px',
 	getContainer: () => document.getElementById('messsage-box-div')
 });
+Vue.component(UTable.name, UTable);
+Vue.component(UTableColumn.name, UTableColumn);
 Vue.use(VueTour);
 Vue.use(Antd);
 Vue.use(VueVirtualScroller);
@@ -212,8 +216,6 @@ Vue.use(Element, {
 // 表单生成器
 Vue.use(VForm);
 Vue.config.productionTip = false;
-
-
 
 // 启动时立即检查一次版本号
 checkVersion();

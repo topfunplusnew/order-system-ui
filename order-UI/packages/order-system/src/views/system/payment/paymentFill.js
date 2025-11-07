@@ -41,6 +41,11 @@ export var mixin_paymentindex_fill = {
 			this.form.otherBankName = val.bankName;
 			this.form.otherAccountsName = val.acountsName;
 			this.form.otherBankNo = val.bankNo;
+			// 如果是员工，那么就从银行卡中取信息填充
+			if (this.form.companyType === PUBLIC_DICT_TYPE.EMPLOYEE) {
+				this.form.companyId = val.companyId;
+				this.form.companyName = val.companyName;
+			}
 		},
 		handleUpdateQueryBankAcount(val) {
 			this.queryBankAcount = val;

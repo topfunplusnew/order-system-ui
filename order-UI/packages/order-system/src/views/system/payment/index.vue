@@ -783,10 +783,6 @@ export default {
 				this.form.otherAccountsName = null;
 				this.form.otherBankNo = null;
 				this.form.otherBankName = null;
-			} else if (newVal === PUBLIC_DICT_TYPE.EMPLOYEE) {
-				// 员工类型只清空公司相关字段，保留银行卡字段
-				this.form.companyName = null;
-				this.form.companyId = null;
 			}
 		}
 	},

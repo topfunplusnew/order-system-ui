@@ -198,6 +198,15 @@ export default {
 		if (this.handleVisibilityChange) {
 			document.removeEventListener('visibilitychange', this.handleVisibilityChange);
 		}
+		// 取消动画帧
+		if (this.rafId) {
+			cancelAnimationFrame(this.rafId);
+			this.rafId = null;
+		}
+		if (this._scrollRafId) {
+			cancelAnimationFrame(this._scrollRafId);
+			this._scrollRafId = null;
+		}
 	},
 	methods: {
 		// 行操作中点击查看 查看当前行订单的信息
@@ -729,8 +738,10 @@ export default {
 		 * @returns {Array} 合计行数据数组
 		 */
 		getSummary(param) {
-			const { columns, data } = param;
+			const { columns } = param;
 			const sums = [];
+			// 使用整个 goodsOrderList 数组进行合计计算，而不是只计算已渲染的数据
+			const data = this.goodsOrderList || [];
 			// 需要合计的数字列（根据 prop 属性判断）
 			const summaryColumns = ['allPayments', 'allTonnage', 'landFreight', 'seaFreight', 'allProfit', 'allProfitNoTax'];
 
@@ -864,14 +875,13 @@ export default {
 				v-loading="loading"
 				v-horizontal-scroll="'always'"
 				fit
+				v-virtual-scroll="{ data: renderedList, buffer: 5 }"
 				:row-style="rowStyle"
 				border
 				size="mini"
 				max-height="750"
 				:cell-style="paddingFix"
 				:data="renderedList"
-				show-summary
-				:summary-method="getSummary"
 				@header-dragend="changeColWidth"
 			>
 				<el-table-column label="行操作" align="center" class-name="small-padding fixed-width" width="180" fixed="left">
@@ -928,9 +938,9 @@ export default {
 					</template>
 				</CustomTableColumn>
 				<!-- 3. 客户 -->
-				<CustomTableColumn v-if="columns[2].visible" show-overflow-tooltip label="客户" align="center" prop="customer" fixed="left" width="100px" />
+				<CustomTableColumn v-if="columns[2].visible" show-overflow-tooltip label="客户" align="center" prop="customer" width="100px" fixed="left" />
 				<!-- 4. 供应商/仓库 -->
-				<el-table-column v-if="columns[3].visible" show-overflow-tooltip label="供应商/仓库" align="center" prop="supplierNames" fixed="left" width="200">
+				<el-table-column v-if="columns[3].visible" show-overflow-tooltip label="供应商/仓库" align="center" prop="supplierNames" width="200" fixed="left">
 					<template #default="scope">
 						<ExpandCursor>
 							<div class="supplier-warehouse-container">

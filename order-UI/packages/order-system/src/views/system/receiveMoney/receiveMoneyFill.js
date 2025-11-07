@@ -1,4 +1,4 @@
-import { PUBLIC_DICT_TYPE } from "../../../api/tool/enums";
+import { PUBLIC_DICT_TYPE } from '../../../api/tool/enums';
 
 export var mixin_receive_money_fill = {
 	data: function () {
@@ -42,6 +42,11 @@ export var mixin_receive_money_fill = {
 			this.form.otherAcountsName = val.acountsName;
 			this.form.otherBankNo = val.bankNo;
 			this.form.otherBankName = val.bankName;
+			// 如果是员工，那么就从银行卡中取信息填充
+			if (this.form.companyType === PUBLIC_DICT_TYPE.EMPLOYEE) {
+				this.form.companyId = val.companyId;
+				this.form.companyName = val.companyName;
+			}
 		},
 		handleUpdateCarName(val) {
 			this.carName = val;
