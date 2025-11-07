@@ -8,16 +8,23 @@ export async function checkVersion() {
 			cache: 'no-store',
 			headers: {
 				'Cache-Control': 'no-cache, no-store, must-revalidate',
-				'Pragma': 'no-cache',
-				'Expires': '0'
+				Pragma: 'no-cache',
+				Expires: '0'
 			}
 		});
-		
+
 		if (!response.ok) {
 			console.error('版本检测失败: HTTP', response.status);
 			return;
 		}
-		
+
+		// 检查响应的内容类型
+		const contentType = response.headers.get('content-type');
+		if (!contentType || !contentType.includes('application/json')) {
+			console.error('版本检测失败: 响应不是有效的JSON格式');
+			return;
+		}
+
 		const data = await response.json();
 
 		if (!currentVersion) {
