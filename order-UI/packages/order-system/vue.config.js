@@ -52,7 +52,7 @@ module.exports = {
 				'@': resolve('src')
 			}
 		},
-		plugins: [ 
+		plugins: [
 			// new CompressionPlugin({
 			// 	cache: false, // 不启用文件缓存
 			// 	test: /\.(js|css|html|jpe?g|png|gif|svg)?$/i, // 压缩文件格式

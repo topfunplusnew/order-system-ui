@@ -133,16 +133,16 @@ export default {
 				{ key: 25, label: '供应商是否开票', visible: true }
 			],
 			// 性能优化相关：缓存 DOM 尺寸信息，避免频繁访问
-			_cachedScrollInfo: {
+			cachedScrollInfo: {
 				scrollTop: 0,
 				scrollHeight: 0,
 				clientHeight: 0,
 				lastUpdateTime: 0
 			},
 			// 列配置保存的防抖函数
-			_saveColumnsDebounced: null,
+			saveColumnsDebounced: null,
 			// 用于批量更新 DOM 的 RAF ID
-			_columnsUpdateRafId: null
+			columnsUpdateRafId: null
 		};
 	},
 	watch: {
@@ -155,20 +155,20 @@ export default {
 
 				if (hasChange) {
 					// 使用 requestAnimationFrame 合并多次更新
-					if (this._columnsUpdateRafId) {
-						cancelAnimationFrame(this._columnsUpdateRafId);
+					if (this.columnsUpdateRafId) {
+						cancelAnimationFrame(this.columnsUpdateRafId);
 					}
 
-					this._columnsUpdateRafId = requestAnimationFrame(() => {
+					this.columnsUpdateRafId = requestAnimationFrame(() => {
 						// 初始化防抖函数（如果还没有）
-						if (!this._saveColumnsDebounced) {
-							this._saveColumnsDebounced = debounce(columns => {
+						if (!this.saveColumnsDebounced) {
+							this.saveColumnsDebounced = debounce(columns => {
 								localStorage.setItem('goodsorder-columns', JSON.stringify(columns));
 							}, 500);
 						}
 						// 调用防抖函数保存列配置
-						this._saveColumnsDebounced(newVal);
-						this._columnsUpdateRafId = null;
+						this.saveColumnsDebounced(newVal);
+						this.columnsUpdateRafId = null;
 					});
 				}
 			},
@@ -213,14 +213,14 @@ export default {
 			this._scrollRafId = null;
 		}
 		// 取消列配置更新的 RAF
-		if (this._columnsUpdateRafId) {
-			cancelAnimationFrame(this._columnsUpdateRafId);
-			this._columnsUpdateRafId = null;
+		if (this.columnsUpdateRafId) {
+			cancelAnimationFrame(this.columnsUpdateRafId);
+			this.columnsUpdateRafId = null;
 		}
 		// 取消防抖函数
-		if (this._saveColumnsDebounced) {
-			this._saveColumnsDebounced.cancel();
-			this._saveColumnsDebounced = null;
+		if (this.saveColumnsDebounced) {
+			this.saveColumnsDebounced.cancel();
+			this.saveColumnsDebounced = null;
 		}
 	},
 	methods: {
@@ -908,6 +908,12 @@ export default {
 				:data="goodsOrderList"
 				@header-dragend="changeColWidth"
 			>
+				<!-- 序号列 -->
+				<u-table-column label="序号" align="center" width="80" fixed="left">
+					<template slot-scope="scope">
+						{{ (queryParams.pageNum - 1) * queryParams.pageSize + scope.$index + 1 }}
+					</template>
+				</u-table-column>
 				<u-table-column label="行操作" align="center" class-name="small-padding fixed-width" width="180" fixed="left">
 					<template slot-scope="scope">
 						<div>

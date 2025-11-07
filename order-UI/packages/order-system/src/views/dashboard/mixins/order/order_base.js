@@ -104,7 +104,7 @@ export var mixin_order_base = {
 			// 只在必要时（距离上次更新超过 16ms 或首次访问）更新缓存
 			const now = Date.now();
 			const cache = this._cachedScrollInfo || {};
-			const shouldUpdateCache = !cache.lastUpdateTime || (now - cache.lastUpdateTime) > 16;
+			const shouldUpdateCache = !cache.lastUpdateTime || now - cache.lastUpdateTime > 16;
 
 			let scrollTop, scrollHeight, clientHeight;
 
