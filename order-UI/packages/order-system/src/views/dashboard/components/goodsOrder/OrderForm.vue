@@ -367,7 +367,7 @@ export default {
 			const editReason = sessionStorage.getItem('goodsorder-edit-reason');
 			// 保存row的引用，避免在Promise链中丢失
 			const currentRows = rows;
-			if (this.isEditingOrder.id === row?.id) {
+			if (this.isEditingOrder.id) {
 				updateGoodsOrder({ ...newOrderInfo, editReason })
 					.then(res => {
 						// 成功后清除可能的错误标记
