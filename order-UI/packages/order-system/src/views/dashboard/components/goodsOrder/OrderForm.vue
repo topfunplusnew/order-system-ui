@@ -367,7 +367,7 @@ export default {
 			const editReason = sessionStorage.getItem('goodsorder-edit-reason');
 			// 保存row的引用，避免在Promise链中丢失
 			const currentRows = rows;
-			if (this.isEditingOrder.id) {
+			if (this.isEditingOrder.id === row?.id) {
 				updateGoodsOrder({ ...newOrderInfo, editReason })
 					.then(res => {
 						// 成功后清除可能的错误标记
@@ -385,7 +385,14 @@ export default {
 						}
 						// 如果该行是新增行，则从后端返回的数据中找到index等于该行数据的index的id，并赋值给该行 并且将isAdd标记为false
 						if (row && row.isAdd) {
-							row.id = orderInfo.orderDetailList.find(item => item.index === row.index).id;
+							const orderRow = orderInfo.orderDetailList.find(item => item.index === row.index);
+							if (!orderRow) {
+								this.$message.error('保存失败，新增的数据索引并未找到服务器对应索引的数据，请联系管理员!');
+								this.isEditingDetails = true;
+								reject && reject();
+								return;
+							}
+							row.id = orderRow.id;
 							row.isAdd = false;
 						}
 						this.$message.success('该行订单详情信息已修改并保存!');
@@ -412,16 +419,24 @@ export default {
 						});
 						const orderInfo = _.cloneDeep(res.data);
 						if (!orderInfo || !orderInfo.orderDetailList || orderInfo.orderDetailList.length === 0) {
-							this.$message.error('保存失败，保存后未找到相应数据');
+							this.$message.error('保存失败，保存后服务器订单详情响应数据为空，请联系管理员!');
 							this.isEditingDetails = true;
 							reject && reject();
 							return;
 						}
 						// 如果该行是新增行，则从后端返回的数据中找到index等于该行数据的index的id，并赋值给该行 并且将isAdd标记为false
 						if (row && row.isAdd) {
-							row.id = orderInfo.orderDetailList.find(item => item.index === row.index).id;
+							const orderRow = orderInfo.orderDetailList.find(item => item.index === row.index);
+							if (!orderRow) {
+								this.$message.error('保存失败，新增的数据索引并未找到服务器对应索引的数据，请联系管理员!');
+								this.isEditingDetails = true;
+								reject && reject();
+								return;
+							}
+							row.id = orderRow.id;
 							row.isAdd = false;
 						}
+
 						this.$nextTick(() => {
 							Object.assign(this.orderInfo, orderInfo);
 							this.$message.success('该行订单详情信息已添加并保存!');
@@ -665,6 +680,7 @@ export default {
 		 * @param {Object} val - 选择的供应商信息
 		 */
 		handleCommitBackSupplier(scope, val) {
+			this.clearDetail(scope);
 			scope.row.supplier = val.companyName;
 			scope.row.supplierID = val.id;
 			scope.row.currentType = 'supplier';
