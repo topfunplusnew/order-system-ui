@@ -28,6 +28,7 @@
 				</el-step>
 			</el-steps>
 		</el-row>
+
 		<!-- 添加或修改审核流程对话框 -->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="700px" append-to-body>
 			<el-row>
@@ -38,10 +39,11 @@
 						</template>
 						<template #title>
 							<el-button v-if="item.auditauthority.length === 0" icon="el-icon-circle-plus-outline" type="success" @click="selectAuditFlowPersons(index)">选择审核人员</el-button>
-							<el-button v-else icon="el-icon-circle-plus-outline" type="success" @click="selectAuditFlowPersons(index)">已选择用户编号为{{ item.auditauthority }}的用户</el-button>
+							<el-button v-else icon="el-icon-circle-plus-outline" type="success" @click="selectAuditFlowPersons(index)">已选择{{ getUserNames(item.auditauthority) }}</el-button>
 						</template>
 						<template #description>
-							<el-input v-model="item.flowname" type="text" placeholder="请输入审核名称"></el-input>
+							<!-- 确保每个输入框都有占位符 -->
+							<el-input v-model="item.flowname" type="text" :placeholder="`请输入第${index + 1}步审核流程名称`" />
 						</template>
 					</el-step>
 				</el-steps>
@@ -65,7 +67,7 @@ import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import { mapGetters } from 'vuex';
 import AuditFlowInfo from './auditFlowInfo.vue';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
-import USER_INFO from '@/components/NeedToShow/USER_INFO.vue';
+import USER_INFO from '@/components/NeedToShow/USER_INFO.vue'; // 保留了这个导入，确保使用了用户信息对话框
 
 export default {
 	name: 'Auditflow',
@@ -73,27 +75,20 @@ export default {
 	mixins: [mixin_printHTML, common_dialog],
 	data() {
 		return {
-			checkStepList: [], // 将 checkStepList 移到这里
+			checkStepList: [], // 审核步骤列表
+			// 在 data 中添加用户姓名映射
+			userNames: {}, // 存储用户ID到姓名的映射
+
 			nextStepId: 1, // 用于生成唯一 ID
-			// 遮罩层
-			loading: true,
-			// 选中数组
-			ids: [],
-			// 非单个禁用
-			single: true,
-			// 非多个禁用
-			multiple: true,
-			// 显示搜索条件
-			showSearch: true,
-			// 总条数
-			total: 0,
-			// 审核流程表格数据
-			auditflowList: [],
-			// 弹出层标题
-			title: '',
-			// 是否显示弹出层
-			open: false,
-			// 查询参数
+			loading: true, // 遮罩层
+			ids: [], // 选中数组
+			single: true, // 单选禁用
+			multiple: true, // 多选禁用
+			showSearch: true, // 显示搜索条件
+			total: 0, // 总条数
+			auditflowList: [], // 审核流程表格数据
+			title: '', // 弹出层标题
+			open: false, // 是否显示弹出层
 			queryParams: {
 				pageNum: 1,
 				pageSize: 20,
@@ -102,11 +97,8 @@ export default {
 				step: null,
 				auditauthority: null
 			},
-			// 表单参数
-			form: {},
-			// 表单校验
-			rules: {},
-			// 审核信息
+			form: {}, // 表单参数
+			rules: {}, // 表单校验
 			stepInfo: {
 				id: 1,
 				flowname: '',
@@ -114,20 +106,19 @@ export default {
 				step: null,
 				auditauthority: []
 			},
-			auditFlowPersonsVisible: false,
-			currentId: ''
+			auditFlowPersonsVisible: false, // 是否显示选择审核人员对话框
+			currentId: '' // 当前审核步骤的 ID
 		};
 	},
 	created() {
-		this.getList();
-		this.checkStepList = [];
+		this.getList(); // 获取审核流程列表
+		this.checkStepList = []; // 初始化审核步骤列表
 	},
 	computed: {
 		stepLength() {
-			return this.checkStepList.length;
+			return this.checkStepList.length; // 获取审核步骤的长度
 		},
-		// ...mapGetters(['checkStepList']),
-		// 展示用的流程（解析审计人员列表）
+		// 展示流程（解析审计人员列表）
 		displayFlowList() {
 			return (this.auditflowList || []).map(item => ({
 				...item,
@@ -136,6 +127,12 @@ export default {
 		}
 	},
 	methods: {
+		getUserNames(ids) {
+			if (Array.isArray(ids)) {
+				return ids.map(id => this.userNames[id] || id).join(',');
+			}
+			return this.userNames[ids] || ids;
+		},
 		// 点击用户编号，打开用户信息
 		openUser(uid) {
 			if (!uid) return;
@@ -144,14 +141,11 @@ export default {
 		// 添加审核流程
 		addCheckStateStep() {
 			this.checkStepList.push({
-				id: this.nextStepId++, // 添加唯一 ID
 				flowname: '',
-				stepnum: null,
-				step: null,
 				auditauthority: []
 			});
 		},
-		// 删除
+		// 删除审核步骤
 		deleteCheckStateStep() {
 			this.checkStepList.pop();
 		},
@@ -177,14 +171,10 @@ export default {
 		// 删除审核人员
 		deleteSelectList(id) {
 			if (typeof id === 'object') {
-				this.checkStepList[this.currentId].auditauthority = this.checkStepList[this.currentId].auditauthority.filter(item => {
-					return !id.includes(item);
-				});
+				this.checkStepList[this.currentId].auditauthority = this.checkStepList[this.currentId].auditauthority.filter(item => !id.includes(item));
 				this.checkStepList[this.currentId].auditauthority = [...new Set(this.checkStepList[this.currentId].auditauthority)];
 			} else {
-				this.checkStepList[this.currentId].auditauthority = this.checkStepList[this.currentId].auditauthority.filter(item => {
-					return item !== id;
-				});
+				this.checkStepList[this.currentId].auditauthority = this.checkStepList[this.currentId].auditauthority.filter(item => item !== id);
 				this.checkStepList[this.currentId].auditauthority = [...new Set(this.checkStepList[this.currentId].auditauthority)];
 			}
 		},
@@ -205,7 +195,7 @@ export default {
 		// 表单重置
 		reset() {
 			this.form = {
-				flowname: null,
+				flowname: ' ',
 				stepnum: null,
 				step: null,
 				auditauthority: null
@@ -239,9 +229,7 @@ export default {
 		handleAdd() {
 			this.title = '更改审核流程';
 			this.open = true;
-			// 清空 checkStepList
 			this.checkStepList = [];
-			// 将 auditflowList 中的数据转换为 checkStepList 的格式
 			this.auditflowList.forEach(item => {
 				const stepItem = {
 					...item,
@@ -249,18 +237,16 @@ export default {
 				};
 				this.checkStepList.push(stepItem);
 			});
-			// 如果没有现有流程，则添加一个空步骤
 			if (this.checkStepList.length === 0) {
 				this.addCheckStateStep();
 			}
 		},
-
-		// 添加审核步骤
+		// 提交审核步骤
 		submitForm() {
 			const submitData = this.checkStepList.map((item, index) => ({
 				...item,
 				stepnum: this.checkStepList.length,
-				step: index + 1, // 确保 step 是正确的序号
+				step: index + 1,
 				auditauthority: Array.isArray(item.auditauthority) ? item.auditauthority.join(',') : item.auditauthority
 			}));
 
@@ -270,7 +256,6 @@ export default {
 				this.getList(); // 重新获取最新数据
 			});
 		},
-
 		/** 导出按钮操作 */
 		handleExport() {
 			this.download(
@@ -299,26 +284,31 @@ export default {
 	font-weight: 600;
 	box-shadow: 0 0 0 2px #e6f2ff inset;
 }
+
 .af-flow-title {
 	font-weight: 600;
 	font-size: 14px;
 }
+
 .af-auditor-wrap {
 	margin-top: 10px;
 	font-size: 12px;
 	color: #666;
 }
+
 .af-label {
 	color: #999;
 	margin-right: 6px;
 }
+
 .af-placeholder {
 	color: #bbb;
 }
-/* 调整垂直步骤间距 */
+
 ::v-deep .el-steps.is-vertical .el-step.is-vertical:not(:last-child) .el-step__line {
 	height: 42px;
 }
+
 ::v-deep .el-steps.is-vertical .el-step__main {
 	padding-bottom: 16px;
 }

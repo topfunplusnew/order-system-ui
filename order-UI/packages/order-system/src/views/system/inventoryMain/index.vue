@@ -117,18 +117,29 @@
 								</template>
 							</CustomTableColumn>
 							<CustomTableColumn v-if="columns[4].visible" label="货物来源公司" align="center" prop="goodsCompany" width="180" />
+							<!-- 修改审核状态列 -->
 							<CustomTableColumn v-if="columns[5].visible" label="审核状态" align="center" prop="checkState" width="150">
 								<template #default="scope">
 									<el-row v-if="scope.row.checkState === '已审核'">
-										<StateTag :state-title="scope.row.checkState" :state-mapper="{ 2: '已审核' }" @click.native="handleReCheck(scope.row)" style="cursor: pointer" />
+										<!-- 只有具有财务或超级管理员权限的用户可以取消审核 -->
+										<StateTag
+											:state-title="scope.row.checkState"
+											:state-mapper="{ 2: '已审核' }"
+											@click.native="hasAuditPermission() && handleReCheck(scope.row)"
+											:style="{ cursor: hasAuditPermission() ? 'pointer' : 'default' }"
+										/>
 									</el-row>
 									<el-row v-else>
 										<el-row>
-											<el-button v-hasPermi="['system:inventoryMain:audit']" type="text" size="mini" @click="handleCheck(scope.row)">审核</el-button>
+											<!-- 只有具有财务或超级管理员权限的用户可以审核 -->
+											<el-button v-if="hasAuditPermission()" type="text" size="mini" @click="handleCheck(scope.row)">审核</el-button>
+											<!-- 其他用户显示状态文本 -->
+											<span v-else style="color: #909399; font-size: 12px">待审核</span>
 										</el-row>
 									</el-row>
 								</template>
 							</CustomTableColumn>
+
 							<CustomTableColumn v-if="columns[6].visible" label="陆运车牌" align="center" prop="landCarNo" width="120" />
 							<CustomTableColumn v-if="columns[7].visible" label="陆运司机电话" align="center" prop="landDriverTel" width="150" />
 							<CustomTableColumn v-if="columns[8].visible" label="陆地司机姓名" align="center" prop="landDriverName" width="120" />
@@ -1069,6 +1080,10 @@ export default {
 		this.getStoreList();
 	},
 	methods: {
+		hasAuditPermission() {
+			// 使用系统权限检查方法
+			return this.$store.getters.permissions.some(permission => permission === 'system:inventoryMain:audit');
+		},
 		// DragDiv 事件处理方法
 		handleDragStart() {
 			// 拖拽开始时的处理逻辑

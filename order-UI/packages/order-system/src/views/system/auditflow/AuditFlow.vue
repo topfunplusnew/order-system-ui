@@ -47,7 +47,7 @@
 							<el-button v-else icon="el-icon-circle-plus-outline" type="success" @click="selectAuditFlowPersons(index)">已选择用户编号为{{ item.auditauthority }}的用户</el-button>
 						</template>
 						<template #description>
-							<el-input v-model="item.flowname" type="text" placeholder="请输入审核名称"></el-input>
+							<el-input v-model="item.flowname" type="text" :placeholder="`请输入第${index + 1}步审核流程名称`"></el-input>
 						</template>
 					</el-step>
 				</el-steps>

@@ -200,6 +200,13 @@ export default {
 		}
 	},
 	methods: {
+		// 检查用户是否具有指定权限
+		hasPermission(roles) {
+			// 从 Vuex store 或其他地方获取当前用户角色
+			const userRoles = this.$store.getters.roles || [];
+			// 检查是否包含所需角色
+			return userRoles.some(role => roles.includes(role));
+		},
 		// 行操作中点击查看 查看当前行订单的信息
 		checkOrderItemInfo(row) {
 			const id = row.id;
@@ -955,17 +962,26 @@ export default {
 				</el-table-column>
 				<!-- 5. 陆运车牌 -->
 				<CustomTableColumn v-if="landCarNoColumn && landCarNoColumn.visible" show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo" width="100px" fixed="left" />
-				<!-- 6. 审核状态 -->
+				<!--       < !&#45;&#45; 6. 审核状态 &ndash;&gt;-->
 				<el-table-column v-if="columns[4].visible" show-overflow-tooltip label="审核状态" align="center" prop="checkState" width="120">
 					<template #default="scope">
 						<el-row v-if="scope.row.checkState === '已审核'">
-							<StateTag :state-title="scope.row.checkState" :state-mapper="{ 2: '已审核' }" @click.native="handleReCheck(scope.row)" style="cursor: pointer" />
+							<!-- 只有财务和超级管理员可以取消审核 -->
+							<StateTag
+								:state-title="scope.row.checkState"
+								:state-mapper="{ 2: '已审核' }"
+								@click.native="hasPermission(['finance', 'admin']) && handleReCheck(scope.row)"
+								:style="{ cursor: hasPermission(['finance', 'admin']) ? 'pointer' : 'default' }"
+							/>
 						</el-row>
 						<el-row v-else>
 							<el-row>
-								<el-button v-hasPermi="['system:goodsorder:audit']" type="text" size="mini" @click="handleCheck(scope.row)">
+								<!-- 只有财务和超级管理员可以审核 -->
+								<el-button v-if="hasPermission(['finance', 'admin'])" type="text" size="mini" @click="handleCheck(scope.row)">
 									<span v-once>审核</span>
 								</el-button>
+								<!-- 其他用户显示状态文本 -->
+								<span v-else style="color: #909399; font-size: 12px">待审核</span>
 							</el-row>
 						</el-row>
 					</template>
