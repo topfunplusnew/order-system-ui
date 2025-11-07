@@ -33,7 +33,7 @@
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="700px" append-to-body>
 			<el-row>
 				<el-steps :active="stepLength" align-center direction="vertical">
-					<el-step v-for="(item, index) in checkStepList" :key="index">
+					<el-step v-for="(item, index) in checkStepList" :key="item.id">
 						<template #icon>
 							<span>{{ index + 1 }}</span>
 						</template>
@@ -42,7 +42,6 @@
 							<el-button v-else icon="el-icon-circle-plus-outline" type="success" @click="selectAuditFlowPersons(index)">已选择{{ getUserNames(item.auditauthority) }}</el-button>
 						</template>
 						<template #description>
-							<!-- 确保每个输入框都有占位符 -->
 							<el-input v-model="item.flowname" type="text" :placeholder="`请输入第${index + 1}步审核流程名称`" />
 						</template>
 					</el-step>
@@ -75,10 +74,8 @@ export default {
 	mixins: [mixin_printHTML, common_dialog],
 	data() {
 		return {
-			checkStepList: [], // 审核步骤列表
-			// 在 data 中添加用户姓名映射
-			userNames: {}, // 存储用户ID到姓名的映射
-
+			checkStepList: [],
+			// 审核步骤列表
 			nextStepId: 1, // 用于生成唯一 ID
 			loading: true, // 遮罩层
 			ids: [], // 选中数组
@@ -129,9 +126,9 @@ export default {
 	methods: {
 		getUserNames(ids) {
 			if (Array.isArray(ids)) {
-				return ids.map(id => this.userNames[id] || id).join(',');
+				return ids.join(',');
 			}
-			return this.userNames[ids] || ids;
+			return ids;
 		},
 		// 点击用户编号，打开用户信息
 		openUser(uid) {
@@ -139,8 +136,10 @@ export default {
 			this.openDialog(USER_INFO, '用户信息', '520px', { userId: uid }, false);
 		},
 		// 添加审核流程
+		// 修改 addCheckStateStep
 		addCheckStateStep() {
 			this.checkStepList.push({
+				id: this.nextStepId++,
 				flowname: '',
 				auditauthority: []
 			});
