@@ -175,7 +175,7 @@ export default {
 			v-dialogDragHeight
 			title="提示"
 			:visible.sync="dialogVisible"
-			width="30%"
+			width="50%"
 			append-to-body
 			:close-on-click-modal="false"
 			:close-on-press-escape="false"
@@ -189,7 +189,7 @@ export default {
 					</el-form-item>
 					<el-form-item label="公司名称" prop="companyName">
 						<el-row>
-							<el-col :span="10">
+							<el-col :span="24">
 								<el-input v-model="form.companyName" placeholder="请输入公司名称" />
 							</el-col>
 						</el-row>

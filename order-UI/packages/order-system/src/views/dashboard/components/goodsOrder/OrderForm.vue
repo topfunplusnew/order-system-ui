@@ -267,10 +267,10 @@ export default {
 						return;
 					}
 					this.orderDetailList = detailList.map(item => {
-						if (item.supplier){
-							item.currentType = 'supplier'
-						}else{
-							item.currentType = 'storeHouseName'
+						if (item.supplier) {
+							item.currentType = 'supplier';
+						} else {
+							item.currentType = 'storeHouseName';
 						}
 						return {
 							...item,
@@ -1799,6 +1799,11 @@ export default {
 							<el-input size="mini" v-model="scope.row.profitNoTax" placeholder="自动计算" disabled />
 						</template>
 					</el-table-column>
+					<el-table-column label="备注" prop="comments" width="250">
+						<template #default="scope">
+							<el-input size="mini" v-model="scope.row.comments" placeholder="请输入备注" :disabled="!scope.row.isEditing" />
+						</template>
+					</el-table-column>
 					<el-table-column label="物流利润" prop="logisticsProfit" width="90">
 						<template #default="scope">
 							<el-input
@@ -1852,11 +1857,6 @@ export default {
 								:disabled="!scope.row.isEditing"
 								@blur="() => formatPriceInput(scope.row, 'factoryDiscountAmount', 2)"
 							/>
-						</template>
-					</el-table-column>
-					<el-table-column label="备注" prop="comments" width="280">
-						<template #default="scope">
-							<el-input size="mini" v-model="scope.row.comments" placeholder="请输入备注" :disabled="!scope.row.isEditing" />
 						</template>
 					</el-table-column>
 				</el-table>
