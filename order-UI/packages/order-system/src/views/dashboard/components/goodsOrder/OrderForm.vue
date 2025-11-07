@@ -1991,48 +1991,4 @@ export default {
 		box-shadow: 0 0 8px rgba(245, 108, 108, 0.8);
 	}
 }
-
-// 表格滚动条样式
-::v-deep .el-table__body-wrapper {
-	&::-webkit-scrollbar {
-		width: 12px;
-		height: 22px;
-	}
-
-	&::-webkit-scrollbar-thumb {
-		background-color: #909399;
-		border-radius: 2px;
-		border: 2px solid #f2f6fc;
-
-		&:hover {
-			background-color: #606266;
-		}
-	}
-
-	&::-webkit-scrollbar-track {
-		background-color: #f2f6fc;
-		border-radius: 6px;
-	}
-}
-
-// 全局滚动条样式
-::-webkit-scrollbar {
-	width: 12px;
-	height: 22px;
-}
-
-::-webkit-scrollbar-thumb {
-	background-color: #909399;
-	border-radius: 6px;
-	border: 2px solid #f2f6fc;
-
-	&:hover {
-		background-color: #606266;
-	}
-}
-
-::-webkit-scrollbar-track {
-	background-color: #f2f6fc;
-	border-radius: 6px;
-}
 </style>

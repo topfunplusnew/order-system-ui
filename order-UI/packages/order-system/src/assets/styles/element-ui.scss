@@ -1060,6 +1060,15 @@
 // Table 表格
 // ============================================
 // 全局表格组件调整 - 整体缩小
+.el-table--scrollable-x {
+	.el-table__fixed {
+	  bottom: 10px !important;
+	}
+  
+	.el-table__fixed-right {
+	  bottom: 10px !important;
+	}
+  }
 .el-table {
 	font-size: 13px !important;
 	color: #000000 !important; // 表格字体颜色改为纯黑色
@@ -1069,12 +1078,20 @@
 	-moz-user-select: text !important;
 	-ms-user-select: text !important;
 
+	// 滚动条样式
+	::-webkit-scrollbar {
+		height: 10px;
+	}
+	::-webkit-scrollbar-thumb {
+		// 滚动条上的滚动滑块
+		// background: #000 !important;
+		height: 10px;
+	  }
 	// 非固定列的样式
 	.el-table__header-wrapper {
 		.el-table__header {
 			th {
 				height: 32px !important; // 从默认40px缩小到32px
-				padding: 6px 0 !important; // 从默认12px缩小到6px
 				font-size: 20px !important; // 表头字体大小改为20px
 				color: #000000 !important; // 表头字体颜色改为纯黑色
 				font-weight: bold !important; // 加粗
@@ -1085,7 +1102,6 @@
 				-ms-user-select: text !important;
 
 				.cell {
-					padding: 0 8px !important; // 从默认18px缩小到8px
 					line-height: 20px !important;
 					font-size: 20px !important; // 表头单元格字体大小改为20px
 					color: #000000 !important; // 表头单元格字体颜色改为纯黑色
@@ -1118,7 +1134,6 @@
 					-ms-user-select: text !important;
 	
 					.cell {
-						padding: 0 8px !important; // 从默认18px缩小到8px
 						line-height: 20px !important;
 						font-size: 20px !important; // 表头单元格字体大小改为20px
 						color: #000000 !important; // 表头单元格字体颜色改为纯黑色
@@ -1218,8 +1233,9 @@
 			}
 		}
 	}
-}
 
+	
+}
 // 表格筛选面板调整
 .el-table-filter {
 	.el-table-filter__list {
