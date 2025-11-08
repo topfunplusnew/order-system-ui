@@ -59,7 +59,7 @@
 			</right-toolbar>
 		</el-row>
 
-		<el-table
+		<u-table
 			id="printBox"
 			v-horizontal-scroll="'always'"
 			v-loading="loading"
@@ -113,17 +113,17 @@
 					</el-dropdown>
 				</template>
 			</CustomTableColumn>
-		</el-table>
+		</u-table>
 
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 查看修改原因弹窗 -->
 		<el-dialog title="查看修改原因" :visible.sync="editReasonDialogVisible" width="800px" append-to-body>
-			<el-table :data="editReasonList" style="width: 100%">
+			<u-table :data="editReasonList" style="width: 100%">
 				<CustomTableColumn prop="addtime" label="修改时间" />
 				<CustomTableColumn prop="reason" label="修改原因" />
 				<CustomTableColumn prop="userName" label="修改人" />
-			</el-table>
+			</u-table>
 			<pagination v-show="editReasonTotal > 0" :total="editReasonTotal" :page.sync="editReasonQueryParams.pageNum" :limit.sync="editReasonQueryParams.pageSize" @pagination="getEditReasonList" />
 		</el-dialog>
 

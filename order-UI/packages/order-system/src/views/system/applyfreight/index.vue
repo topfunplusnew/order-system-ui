@@ -305,7 +305,7 @@ export default {
 				</right-toolbar>
 			</el-col>
 		</el-row>
-		<el-table id="printBox" :data="freightList" v-loading="loading" border fit size="mini" style="width: 100%; margin-top: 20px">
+		<u-table id="printBox" :data="freightList" v-loading="loading" border fit size="mini" style="width: 100%; margin-top: 20px">
 			<CustomTableColumn v-if="columns[0].visible" show-overflow-tooltip prop="paymentState" label="运费状态" align="center" />
 			<CustomTableColumn v-if="columns[1].visible" show-overflow-tooltip prop="paymentDate" label="支付时间" align="center" />
 			<CustomTableColumn v-if="columns[2].visible" show-overflow-tooltip label="运输类型" align="center">
@@ -367,7 +367,7 @@ export default {
 					<el-button size="mini" type="text" :disabled="scope.row.paymentState !== '未申请'" @click="handleApplyFreight(scope.row)">运费申请</el-button>
 				</template>
 			</CustomTableColumn>
-		</el-table>
+		</u-table>
 
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 

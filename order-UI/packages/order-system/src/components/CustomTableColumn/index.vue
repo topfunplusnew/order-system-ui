@@ -1,6 +1,6 @@
 <template>
 	<!-- 外层就是 u-table-column，所有属性和事件透传 -->
-	<el-table-column v-bind="filteredAttrs" v-on="$listeners">
+	<u-table-column v-bind="filteredAttrs" v-on="$listeners">
 		<!-- 如果有默认插槽内容，在作用域插槽内渲染（支持嵌套 CustomTableColumn 和传递 scope） -->
 		<template v-if="hasSlotContent" v-slot="scope">
 			<slot-content-wrapper :scope="scope">
@@ -12,7 +12,7 @@
 			<cell-content :scope="scope" :prop="currentColumnProp" :should-show-popover="true" :cell-text="getCellText(scope)" :key="`${scope.$index}_${currentColumnProp}`" />
 		</template>
 		<!-- 特殊类型（selection、index、expand）不渲染插槽，保持 Element UI 原生行为 -->
-	</el-table-column>
+	</u-table-column>
 </template>
 
 <script>

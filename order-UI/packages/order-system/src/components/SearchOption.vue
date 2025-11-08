@@ -313,14 +313,14 @@ export default {
 						</el-form-item>
 					</el-form>
 				</div>
-				<el-table size="mini" :key="tableData.length" v-loading="loading" :data="tableData" border>
-					<el-table-column label="操作" width="60" align="center">
+				<u-table size="mini" :key="tableData.length" v-loading="loading" :data="tableData" border>
+					<u-table-column label="操作" width="60" align="center">
 						<template slot-scope="scope">
 							<el-button type="danger" size="mini" :disabled="disable" @click="commitSomeThing(scope.row)">确认</el-button>
 						</template>
-					</el-table-column>
+					</u-table-column>
 					<slot name="table-columns" :tableData="tableData"></slot>
-				</el-table>
+				</u-table>
 				<pagination v-if="isPage" v-show="total > 0" :total="total" :page.sync="pageNum" :limit.sync="pageSize" @pagination="getList" />
 			</el-row>
 			<span slot="footer" class="dialog-footer">

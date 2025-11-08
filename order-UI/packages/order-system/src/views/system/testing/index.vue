@@ -386,7 +386,7 @@
 
 				<!-- 开票记录表格 -->
 				<div class="invoice-table-container">
-					<el-table
+					<u-table
 						v-loading="customerInvoiceListLoading"
 						:data="customerInvoiceList"
 						border
@@ -449,7 +449,7 @@
 								</div>
 							</template>
 						</CustomTableColumn>
-					</el-table>
+					</u-table>
 				</div>
 			</div>
 		</el-dialog>
@@ -509,7 +509,7 @@
 
 						<!-- 该供应商的开票记录表格 -->
 						<div class="supplier-table-container">
-							<el-table
+							<u-table
 								:data="group.invoices"
 								border
 								stripe
@@ -570,7 +570,7 @@
 										</div>
 									</template>
 								</CustomTableColumn>
-							</el-table>
+							</u-table>
 						</div>
 					</div>
 				</div>

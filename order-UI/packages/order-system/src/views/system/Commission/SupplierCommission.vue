@@ -54,7 +54,7 @@
 		</el-row>
 		<el-alert title="添加佣金信息后，方可进行付款申请操作!" type="warning"></el-alert>
 		<br />
-		<el-table
+		<u-table
 			ref="multipleTable"
 			id="printBox"
 			v-loading="loading"
@@ -137,7 +137,7 @@
 					<el-button :disabled="scope.row.id === null" type="text" size="mini" @click="handleApplyPayment(scope.row)">申请付款</el-button>
 				</template>
 			</CustomTableColumn>
-		</el-table>
+		</u-table>
 
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 		<!--    申请付款-->

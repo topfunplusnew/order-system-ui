@@ -87,7 +87,7 @@
 				<!-- 右侧：数据表格 -->
 				<template #right>
 					<div style="height: 100%; display: flex; flex-direction: column">
-						<el-table
+						<u-table
 							border
 							id="printBox"
 							size="mini"
@@ -204,7 +204,7 @@
 									<el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)" v-hasPermi="['system:inventoryMain:remove']">删除</el-button>
 								</template>
 							</CustomTableColumn>
-						</el-table>
+						</u-table>
 						<pagination
 							v-show="total > 0"
 							:total="total"

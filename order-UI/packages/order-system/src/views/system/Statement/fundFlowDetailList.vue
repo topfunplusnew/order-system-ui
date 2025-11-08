@@ -80,7 +80,7 @@
 		</el-row>
 
 		<!-- 银行流水明细表格  正借负贷 -->
-		<el-table :data="statementData" border style="width: 100%" class="statement-table" size="mini" v-loading="loading" element-loading-text="数据加载中...">
+		<u-table :data="statementData" border style="width: 100%" class="statement-table" size="mini" v-loading="loading" element-loading-text="数据加载中...">
 			<CustomTableColumn v-if="columns[0].visible" prop="operateDate" label="日期" show-overflow-tooltip>
 				<template slot-scope="{ row }">
 					{{ row.operateDate ? dayjs(row.operateDate).format('YYYY-MM-DD') : '' }}
@@ -124,7 +124,7 @@
 					<el-button type="text" size="mini" @click="handleCheckDetail(row)">查看明细</el-button>
 				</template>
 			</CustomTableColumn>
-		</el-table>
+		</u-table>
 	</div>
 </template>
 

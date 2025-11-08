@@ -906,7 +906,6 @@ export default {
 				showHeaderOverflow="title"
 				max-height="750"
 				:data="goodsOrderList"
-				@header-dragend="changeColWidth"
 			>
 				<!-- 序号列 -->
 				<u-table-column label="序号" align="center" width="80" fixed="left">

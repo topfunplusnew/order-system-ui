@@ -660,8 +660,8 @@ export default {
 		</el-row>
 
 		<!--    放置付款信息列表-->
-		<el-row>
-			<el-table
+		<u-row>
+			<u-table
 				id="printBox"
 				v-loading="loading"
 				:data="paymentList"
@@ -728,10 +728,10 @@ export default {
 						<el-button type="text" size="mini" @click="handleCheckApplyInfo(scope.row)">查看</el-button>
 					</template>
 				</CustomTableColumn>
-			</el-table>
+			</u-table>
 			<!--      分页-->
 			<pagination v-show="total > 0" :total="total" :page.sync="pageNum" :limit.sync="pageSize" @pagination="getAuditList" />
-		</el-row>
+		</u-row>
 
 		<!--    固定的锚点-->
 

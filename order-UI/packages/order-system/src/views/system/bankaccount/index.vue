@@ -42,7 +42,7 @@
 		</el-row>
 
 		<!-- 打印内容 -->
-		<el-table
+		<u-table
 			id="printBox"
 			v-loading="loading"
 			v-horizontal-scroll="'always'"
@@ -100,7 +100,7 @@
 					</el-row>
 				</template>
 			</CustomTableColumn>
-		</el-table>
+		</u-table>
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改银行账号对话框 -->

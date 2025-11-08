@@ -61,7 +61,7 @@
 		</el-row>
 
 		<!-- 表格 -->
-		<el-table v-loading="loading" :data="depositMoneyList" border size="mini" :cell-style="cellStyle" @selection-change="handleSelectionChange" class="table-container">
+		<u-table v-loading="loading" :data="depositMoneyList" border size="mini" :cell-style="cellStyle" @selection-change="handleSelectionChange" class="table-container">
 			<CustomTableColumn type="selection" width="55" align="center" />
 			<CustomTableColumn v-for="column in visibleColumns" :key="column.key" v-bind="getColumnProps(column)" />
 			<CustomTableColumn label="操作" align="center" class-name="small-padding fixed-width" width="300" fixed="right">
@@ -71,7 +71,7 @@
 					<el-button size="mini" type="text" icon="el-icon-money" @click="handleRefund(scope.row)">退款管理</el-button>
 				</template>
 			</CustomTableColumn>
-		</el-table>
+		</u-table>
 
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
