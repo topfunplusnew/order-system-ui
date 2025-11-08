@@ -167,7 +167,7 @@ export default {
 									</el-table-column>
 									<el-table-column label="供应商" align="center" prop="supplier" />
 									<el-table-column label="级别编码" align="center" prop="levelID" />
-                  <el-table-column label="级别名称" align="center" prop="levelName" width="150"/>
+									<el-table-column label="级别名称" align="center" prop="levelName" width="150" />
 								</template>
 							</SearchOption>
 						</el-col>

@@ -23,6 +23,10 @@ export default {
 		}
 	},
 	computed: {
+		filteredOrderDetailInfoList() {
+			// 显示所有行，包括没有备注的行
+			return this.orderDetailInfoList;
+		},
 		RebateType() {
 			return RebateType;
 		}
@@ -30,6 +34,8 @@ export default {
 	data() {
 		return {
 			addMoneyBackVisible: false,
+			// 控制表格展开行的keys
+			expandRowKeys: [],
 			// 返利回扣信息
 			moneyBackInfo: {
 				// 后端期望的是 orderDetailIds 数组
@@ -61,10 +67,30 @@ export default {
 			loading: false
 		};
 	},
+	watch: {
+		// 监听订单详情列表变化，更新默认展开的行
+		orderDetailInfoList: {
+			handler(newVal) {
+				this.updateExpandRows(newVal);
+			},
+			immediate: true
+		}
+	},
 	// 不再需要在 created 中请求字典，返利方式已硬编码
 	methods: {
 		listBankAccount,
 		listCompany,
+		// 更新默认展开的行
+		updateExpandRows(data) {
+			if (Array.isArray(data)) {
+				this.expandRowKeys = data.filter(item => item.comments && item.comments.trim() !== '' && item.comments !== '-').map(item => item.id);
+			}
+		},
+		tableRowClassName({ row }) {
+			// 所有行都显示展开图标
+			return 'expandable-row';
+		},
+
 		getSummaries(param) {
 			const { columns, data } = param;
 			const sums = [];
@@ -183,9 +209,8 @@ export default {
 			<el-table
 				id="printBox"
 				border
-				:data="orderDetailInfoList"
+				:data="filteredOrderDetailInfoList"
 				row-key="id"
-				default-expand-all
 				max-height="700"
 				:cell-style="
 					() => {
@@ -195,13 +220,15 @@ export default {
 				size="mini"
 				show-summary
 				:summary-method="getSummaries"
+				:row-class-name="tableRowClassName"
+				:expand-row-keys="expandRowKeys"
 			>
 				<el-table-column v-if="!ban" label="操作" align="center" class-name="small-padding fixed-width" width="70px" fixed="left">
 					<template slot-scope="scope">
 						<el-button size="mini" type="warning" @click="handleMoneyBack(scope.row)">货物返利</el-button>
 					</template>
 				</el-table-column>
-				<el-table-column label="仓库名称" align="center" prop="storeHouseName" show-overflow-tooltip width="140">
+				<el-table-column label="仓库名称" align="center" prop="storeHouseName" show-overflow-tooltip width="140" :data="filteredOrderDetailInfoList">
 					<!--          如果有 显示 如果没有 显示- -->
 					<template slot-scope="scope">
 						{{ scope.row.storeHouseName ? scope.row.storeHouseName : '-' }}
@@ -244,19 +271,20 @@ export default {
 				<el-table-column label="其他费用" align="center" prop="otherCost" show-overflow-tooltip width="50px" />
 				<el-table-column label="利润" align="center" prop="profit" show-overflow-tooltip width="80" />
 				<el-table-column label="不含税利润" align="center" prop="profitNoTax" show-overflow-tooltip width="140" />
-				<el-table-column type="expand" width="50" label="备注" align="center">
-					<template slot-scope="scope">
-						<div class="expand-row">
-							<div class="expand-label">备注：</div>
-							<div class="expand-content">{{ scope.row.comments || '-' }}</div>
-						</div>
-					</template>
-				</el-table-column>
+
 				<el-table-column label="物流利润" align="center" prop="logisticsProfit" show-overflow-tooltip width="100px" />
 				<el-table-column label="客户佣金" align="center" prop="customerCommission" show-overflow-tooltip width="100px" />
 				<el-table-column label="厂家佣金" align="center" prop="factoryCommission" show-overflow-tooltip width="100px" />
 				<el-table-column label="计提厂家返利金额" align="center" prop="factoryRebateAmount" show-overflow-tooltip width="120px" />
 				<el-table-column label="计提厂家降价金额" align="center" prop="factoryDiscountAmount" show-overflow-tooltip width="120px" />
+				<el-table-column type="expand" width="50" label="备注" align="center">
+					<template slot-scope="scope">
+						<div class="expand-row">
+							<div class="expand-label">备注：</div>
+							<div class="expand-content">{{ scope.row.comments }}</div>
+						</div>
+					</template>
+				</el-table-column>
 			</el-table>
 		</el-row>
 
@@ -340,6 +368,17 @@ export default {
 	&::-webkit-scrollbar-track {
 		background-color: #f2f6fc;
 		border-radius: 6px;
+	}
+}
+::v-deep .non-expandable-row {
+	.el-table__expand-column .el-table__expand-icon {
+		display: none;
+	}
+}
+
+::v-deep .expandable-row {
+	.el-table__expand-column .el-table__expand-icon {
+		display: inline-block;
 	}
 }
 
