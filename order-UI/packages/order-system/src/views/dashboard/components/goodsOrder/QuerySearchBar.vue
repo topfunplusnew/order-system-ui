@@ -72,17 +72,37 @@
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-			</el-form-item>
-			<el-form-item>
+				<el-button icon="el-icon-setting" size="mini" @click="openFieldSetting">自定义</el-button>
 				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
 			</el-form-item>
 		</el-form>
+
+		<!-- 字段设置弹窗 -->
+		<el-dialog title="自定义搜索字段" :visible.sync="fieldSettingVisible" width="500px">
+			<el-checkbox-group v-model="selectedFields">
+				<el-row :gutter="10">
+					<el-col v-for="field in allFields" :key="field.value" :span="12" style="margin-bottom: 8px">
+						<el-checkbox :label="field.value" style="width: 100%">
+							<span style="font-size: 12px">{{ field.label }}</span>
+						</el-checkbox>
+					</el-col>
+				</el-row>
+			</el-checkbox-group>
+			<span slot="footer" class="dialog-footer">
+				<el-button size="mini" @click="resetToDefault">恢复默认</el-button>
+				<el-button size="mini" @click="fieldSettingVisible = false">取 消</el-button>
+				<el-button size="mini" type="primary" @click="saveFieldSettings">确 定</el-button>
+			</span>
+		</el-dialog>
 	</div>
 </template>
 <script>
 import { OptionInvent, Options } from '@/views/dashboard/mixins/order/order_Invoice';
 import { getDateRangeDays } from '@/utils/index';
 import _ from 'lodash';
+import { getUserConfig, saveUserConfig } from '@/api/user-config';
+
+// import { getUserConfig, saveUserConfig } from '@/api/user-config/index.js';
 
 export default {
 	name: 'QuerySearchBar',
@@ -90,28 +110,48 @@ export default {
 		isAdjust: {
 			type: Boolean,
 			default: false
-		},
-		// 可见字段配置数组 - 空数组表示显示所有字段
-		visibleFields: {
-			type: Array,
-			default: () => []
 		}
 	},
 	computed: {
-		// 检查字段是否应该显示 - 空数组表示显示所有字段
 		shouldShowField() {
 			return fieldName => {
-				// 如果 visibleFields 为空数组，显示所有字段
-				if (!this.visibleFields || this.visibleFields.length === 0) {
+				// 使用从后端获取的字段设置
+				if (!this.selectedFields || this.selectedFields.length === 0) {
 					return true;
 				}
-				// 否则检查字段是否在可见列表中
-				return this.visibleFields.includes(fieldName);
+				return this.selectedFields.includes(fieldName);
 			};
 		}
 	},
 	data() {
 		return {
+			// 字段设置对话框可见性
+			fieldSettingVisible: false,
+
+			// 所有可选字段
+			allFields: [
+				{ value: 'dateRange', label: '时间范围' },
+				{ value: 'customer', label: '客户名称' },
+				{ value: 'supplierNames', label: '供应商' },
+				{ value: 'landDriverName', label: '司机名称' },
+				{ value: 'landCarNo', label: '车牌' },
+				{ value: 'seaDriverName', label: '海运公司' },
+				{ value: 'seaCarNo', label: '柜号' },
+				{ value: 'fleet', label: '车队名称' },
+				{ value: 'userName', label: '录入员' },
+				{ value: 'saleManager', label: '销售经理' },
+				{ value: 'checkState', label: '审核状态' },
+				{ value: 'isIncludeTaxFactory', label: '供应商是否开票' },
+				{ value: 'isIncludeTaxSale', label: '客户是否开票' },
+				{ value: 'levelName', label: '级别名称' },
+				{ value: 'length', label: '长度' },
+				{ value: 'width', label: '宽度' },
+				{ value: 'height', label: '厚度' }
+			],
+
+			// 用户选择的字段
+			selectedFields: [],
+
 			// 日期范围
 			dateRange: [],
 			// 选择框筛选
@@ -135,9 +175,9 @@ export default {
 			}
 		};
 	},
-	// 当使用了QuerySearchBar组件，在这个组件初始化的时候，就会默认获取一次订单信息，所以 使用这个组件的代码只需要做到接收工作
-	// 不需要额外获取订单信息
 	async created() {
+		// 加载用户自定义字段设置
+		await this.loadFieldSettings();
 		// 挂载时尝试读取默认时间范围并填充表单（若配置允许）
 		try {
 			const range = await getDateRangeDays();
@@ -163,6 +203,67 @@ export default {
 		this.$bus.$on('select-goods:update', () => this.resetParams());
 	},
 	methods: {
+		// 打开字段设置对话框
+		openFieldSetting() {
+			this.fieldSettingVisible = true;
+		},
+
+		// 修改 loadFieldSettings 方法
+		async loadFieldSettings() {
+			try {
+				const response = await getUserConfig('goodsSearch-columns');
+				if (response.code === 200 && response.data) {
+					let configValue = response.data.value;
+
+					if (typeof configValue === 'string') {
+						try {
+							const parsed = JSON.parse(configValue);
+							this.selectedFields = Object.keys(parsed.columns || {}).filter(key => parsed.columns[key]);
+						} catch (e) {
+							this.selectedFields = this.allFields.map(field => field.value);
+						}
+					} else if (configValue && typeof configValue === 'object' && configValue.columns) {
+						// 正确处理后端返回的对象格式
+						this.selectedFields = Object.keys(configValue.columns).filter(key => configValue.columns[key]);
+					} else {
+						this.selectedFields = this.allFields.map(field => field.value);
+					}
+				} else {
+					this.selectedFields = this.allFields.map(field => field.value);
+				}
+			} catch (error) {
+				console.error('加载用户搜索字段配置失败:', error);
+				this.selectedFields = this.allFields.map(field => field.value);
+			}
+		},
+		async saveFieldSettings() {
+			try {
+				// 构造符合后端期望的格式
+				const columnsConfig = {};
+				this.allFields.forEach(field => {
+					columnsConfig[field.value] = this.selectedFields.includes(field.value);
+				});
+
+				// 正确调用 saveUserConfig，传递两个参数
+				await saveUserConfig('goodsSearch-columns', {
+					columns: columnsConfig
+				});
+
+				this.fieldSettingVisible = false;
+				this.$message.success('字段设置已保存');
+			} catch (error) {
+				console.error('保存用户搜索字段配置失败:', error);
+				this.$message.error('保存失败，请重试');
+			}
+		},
+
+		// 恢复默认设置（显示所有字段）
+		resetToDefault() {
+			this.selectedFields = this.allFields.map(field => field.value);
+			// 调用保存方法来持久化默认设置
+			this.saveFieldSettings();
+		},
+
 		OptionInvent() {
 			return OptionInvent;
 		},
@@ -263,4 +364,5 @@ export default {
 	}
 };
 </script>
+
 <style lang="scss" scoped></style>
