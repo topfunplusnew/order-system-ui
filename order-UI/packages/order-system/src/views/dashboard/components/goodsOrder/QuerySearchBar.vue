@@ -1,6 +1,7 @@
 <template>
 	<div>
-		<el-form id="top-search-form-item" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150">
+		<!-- 用 v-show 避免 $refs 丢失 -->
+		<el-form v-show="isConfigLoaded" id="top-search-form-item" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150">
 			<el-form-item v-if="shouldShowField('dateRange')" label="时间范围">
 				<el-date-picker
 					v-model="dateRange"
@@ -16,60 +17,77 @@
 					@change="onDateRangeChange"
 				/>
 			</el-form-item>
+
 			<el-form-item v-if="shouldShowField('customer')" label="客户名称" prop="customer">
 				<el-input v-model="queryParams.customer" placeholder="请输入客户名称" clearable size="mini" class="input-standard" @keyup.enter.native="handleQuery"></el-input>
 			</el-form-item>
+
 			<el-form-item v-if="shouldShowField('supplierNames')" label="供应商" prop="supplierNames">
 				<el-input v-model="queryParams.params.supplierNames" placeholder="请输入供应商名称" clearable size="mini" class="input-standard" @keyup.enter.native="handleQuery"></el-input>
 			</el-form-item>
+
 			<el-form-item v-if="shouldShowField('landDriverName')" label="司机名称" prop="landDriverName">
 				<el-input v-model="queryParams.landDriverName" placeholder="请输入司机名称" clearable size="mini" class="input-medium" @keyup.enter.native="handleQuery"></el-input>
 			</el-form-item>
+
 			<el-form-item v-if="shouldShowField('landCarNo')" label="车牌" prop="landCarNo">
 				<el-input v-model="queryParams.landCarNo" placeholder="请输入车牌" clearable size="mini" class="input-short" @keyup.enter.native="handleQuery"></el-input>
 			</el-form-item>
+
 			<el-form-item v-if="shouldShowField('seaDriverName')" label="海运公司" prop="seaDriverName">
 				<el-input v-model="queryParams.seaDriverName" placeholder="请输入海运公司" clearable size="mini" class="input-medium" @keyup.enter.native="handleQuery"></el-input>
 			</el-form-item>
+
 			<el-form-item v-if="shouldShowField('seaCarNo')" label="柜号" prop="seaCarNo">
 				<el-input v-model="queryParams.seaCarNo" placeholder="请输入柜号" clearable size="mini" class="input-short" @keyup.enter.native="handleQuery"></el-input>
 			</el-form-item>
+
 			<el-form-item v-if="shouldShowField('fleet')" label="车队名称" prop="fleet">
 				<el-input v-model="queryParams.fleet" placeholder="请输入车队名称" clearable size="mini" class="input-medium" @keyup.enter.native="handleQuery"></el-input>
 			</el-form-item>
+
 			<el-form-item v-if="shouldShowField('userName')" label="录入员" prop="userName">
 				<el-input v-model="queryParams.userName" placeholder="请输入录入员" clearable size="mini" class="input-medium" @keyup.enter.native="handleQuery"></el-input>
 			</el-form-item>
+
 			<el-form-item v-if="shouldShowField('saleManager')" label="销售经理" prop="saleManager">
 				<el-input v-model="queryParams.saleManager" placeholder="请输入销售经理" clearable size="mini" class="input-medium" @keyup.enter.native="handleQuery"></el-input>
 			</el-form-item>
+
 			<el-form-item v-if="shouldShowField('checkState')" label="审核状态" prop="checkState">
 				<el-select v-model="queryParams.checkState" placeholder="请选择" size="mini" clearable class="select-standard">
-					<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
+					<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
 				</el-select>
 			</el-form-item>
+
 			<el-form-item v-if="shouldShowField('isIncludeTaxFactory')" label="供应商是否开票">
 				<el-select v-model="queryParams.params.isIncludeTaxFactory" placeholder="请选择" size="mini" clearable class="input-short">
-					<el-option v-for="item in OptionInvent()" :key="item.value" :label="item.label" :value="item.value"></el-option>
+					<el-option v-for="item in getOptionInvent()" :key="item.value" :label="item.label" :value="item.value" />
 				</el-select>
 			</el-form-item>
+
 			<el-form-item v-if="shouldShowField('isIncludeTaxSale')" label="客户是否开票">
 				<el-select v-model="queryParams.params.isIncludeTaxSale" placeholder="请选择" size="mini" clearable class="input-short">
-					<el-option v-for="item in OptionInvent()" :key="item.value" :label="item.label" :value="item.value"></el-option>
+					<el-option v-for="item in getOptionInvent()" :key="item.value" :label="item.label" :value="item.value" />
 				</el-select>
 			</el-form-item>
+
 			<el-form-item v-if="shouldShowField('levelName')" label="级别名称" prop="levelName">
 				<el-input v-model="queryParams.params.levelName" placeholder="请输入级别名称" clearable size="mini" class="input-medium" @keyup.enter.native="handleQuery"></el-input>
 			</el-form-item>
+
 			<el-form-item v-if="shouldShowField('length')" label="长度" prop="length">
 				<el-input v-model="queryParams.params.length" placeholder="请输入长度" clearable size="mini" class="input-short" @keyup.enter.native="handleQuery"></el-input>
 			</el-form-item>
+
 			<el-form-item v-if="shouldShowField('width')" label="宽度" prop="width">
 				<el-input v-model="queryParams.params.width" placeholder="请输入宽度" clearable size="mini" class="input-short" @keyup.enter.native="handleQuery"></el-input>
 			</el-form-item>
+
 			<el-form-item v-if="shouldShowField('height')" label="厚度" prop="height">
 				<el-input v-model="queryParams.params.height" placeholder="请输入厚度" clearable size="mini" class="input-short" @keyup.enter.native="handleQuery"></el-input>
 			</el-form-item>
+
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
 				<el-button icon="el-icon-setting" size="mini" @click="openFieldSetting">自定义</el-button>
@@ -90,19 +108,18 @@
 			</el-checkbox-group>
 			<span slot="footer" class="dialog-footer">
 				<el-button size="mini" @click="resetToDefault">恢复默认</el-button>
-				<el-button size="mini" @click="fieldSettingVisible = false">取 消</el-button>
-				<el-button size="mini" type="primary" @click="saveFieldSettings">确 定</el-button>
+				<el-button size="mini" @click="fieldSettingVisible = false">取消</el-button>
+				<el-button size="mini" type="primary" @click="saveFieldSettings">确定</el-button>
 			</span>
 		</el-dialog>
 	</div>
 </template>
+
 <script>
 import { OptionInvent, Options } from '@/views/dashboard/mixins/order/order_Invoice';
 import { getDateRangeDays } from '@/utils/index';
 import _ from 'lodash';
 import { getUserConfig, saveUserConfig } from '@/api/user-config';
-
-// import { getUserConfig, saveUserConfig } from '@/api/user-config/index.js';
 
 export default {
 	name: 'QuerySearchBar',
@@ -112,23 +129,10 @@ export default {
 			default: false
 		}
 	},
-	computed: {
-		shouldShowField() {
-			return fieldName => {
-				// 使用从后端获取的字段设置
-				if (!this.selectedFields || this.selectedFields.length === 0) {
-					return true;
-				}
-				return this.selectedFields.includes(fieldName);
-			};
-		}
-	},
 	data() {
 		return {
-			// 字段设置对话框可见性
 			fieldSettingVisible: false,
-
-			// 所有可选字段
+			isConfigLoaded: false,
 			allFields: [
 				{ value: 'dateRange', label: '时间范围' },
 				{ value: 'customer', label: '客户名称' },
@@ -148,21 +152,23 @@ export default {
 				{ value: 'width', label: '宽度' },
 				{ value: 'height', label: '厚度' }
 			],
-
-			// 用户选择的字段
 			selectedFields: [],
-
-			// 日期范围
 			dateRange: [],
-			// 选择框筛选
-			optionInvent: OptionInvent,
 			options: Options,
-			// 查询参数
 			queryParams: {
 				orderDateStart: null,
 				orderDateEnd: null,
 				pageNum: 1,
 				pageSize: 50,
+				customer: '',
+				saleManager: '',
+				landDriverName: '',
+				landCarNo: '',
+				seaDriverName: '',
+				seaCarNo: '',
+				fleet: '',
+				userName: '',
+				checkState: '',
 				params: {
 					isIncludeTaxSale: '',
 					isIncludeTaxFactory: '',
@@ -175,113 +181,92 @@ export default {
 			}
 		};
 	},
-	async created() {
-		// 加载用户自定义字段设置
-		await this.loadFieldSettings();
-		// 挂载时尝试读取默认时间范围并填充表单（若配置允许）
-		try {
-			const range = await getDateRangeDays();
-			let query = null;
-			if (range && range.startTime !== null && range.endTime !== null) {
-				// date-picker 使用 yyyy-MM-dd 格式，截取日期部分
-				const start = String(range.startTime).substring(0, 10);
-				const end = String(range.endTime).substring(0, 10);
-				this.dateRange = [start, end];
-				this.queryParams.orderDateStart = start;
-				this.queryParams.orderDateEnd = end;
-				query = _.cloneDeep(this.queryParams);
-				this.formatOrderDateRange(query);
-			}
-			this.$emit('updateQuery', query);
-		} catch (e) {
-			// 配置读取异常不影响页面，其他逻辑继续
-			console.error('获取默认时间范围失败：', e && e.message ? e.message : e);
+	computed: {
+		shouldShowField() {
+			return fieldName => this.isConfigLoaded && Array.isArray(this.selectedFields) && this.selectedFields.includes(fieldName);
 		}
 	},
-	mounted() {
-		// 清除搜索条件
-		this.$bus.$on('select-goods:update', () => this.resetParams());
+	async created() {
+		await this.loadFieldSettings();
+		this.initializeDefaultQuery();
 	},
 	methods: {
-		// 打开字段设置对话框
-		openFieldSetting() {
-			this.fieldSettingVisible = true;
+		getOptionInvent() {
+			return OptionInvent;
 		},
-
-		// 修改 loadFieldSettings 方法
 		async loadFieldSettings() {
 			try {
 				const response = await getUserConfig('goodsSearch-columns');
-				if (response.code === 200 && response.data) {
-					let configValue = response.data.value;
-
-					if (typeof configValue === 'string') {
-						try {
-							const parsed = JSON.parse(configValue);
-							this.selectedFields = Object.keys(parsed.columns || {}).filter(key => parsed.columns[key]);
-						} catch (e) {
-							this.selectedFields = this.allFields.map(field => field.value);
-						}
-					} else if (configValue && typeof configValue === 'object' && configValue.columns) {
-						// 正确处理后端返回的对象格式
-						this.selectedFields = Object.keys(configValue.columns).filter(key => configValue.columns[key]);
-					} else {
-						this.selectedFields = this.allFields.map(field => field.value);
+				const configValue = response?.data?.value || response?.data || null;
+				if (typeof configValue === 'string') {
+					try {
+						const parsed = JSON.parse(configValue);
+						this.selectedFields = Object.keys(parsed.columns || {}).filter(key => parsed.columns[key]);
+					} catch {
+						this.selectedFields = this.allFields.map(f => f.value);
 					}
+				} else if (configValue?.columns) {
+					this.selectedFields = Object.keys(configValue.columns).filter(key => configValue.columns[key]);
 				} else {
-					this.selectedFields = this.allFields.map(field => field.value);
+					this.selectedFields = this.allFields.map(f => f.value);
 				}
-			} catch (error) {
-				console.error('加载用户搜索字段配置失败:', error);
-				this.selectedFields = this.allFields.map(field => field.value);
+			} catch (err) {
+				console.error('加载用户搜索字段配置失败:', err);
+				this.selectedFields = this.allFields.map(f => f.value);
+			} finally {
+				this.isConfigLoaded = true;
 			}
 		},
 		async saveFieldSettings() {
 			try {
-				// 构造符合后端期望的格式
 				const columnsConfig = {};
-				this.allFields.forEach(field => {
-					columnsConfig[field.value] = this.selectedFields.includes(field.value);
+				this.allFields.forEach(f => {
+					columnsConfig[f.value] = this.selectedFields.includes(f.value);
 				});
-
-				// 正确调用 saveUserConfig，传递两个参数
-				await saveUserConfig('goodsSearch-columns', {
-					columns: columnsConfig
-				});
-
-				this.fieldSettingVisible = false;
+				await saveUserConfig('goodsSearch-columns', { columns: columnsConfig });
 				this.$message.success('字段设置已保存');
-			} catch (error) {
-				console.error('保存用户搜索字段配置失败:', error);
+				this.fieldSettingVisible = false;
+			} catch (err) {
+				console.error('保存用户搜索字段配置失败:', err);
 				this.$message.error('保存失败，请重试');
 			}
 		},
-
-		// 恢复默认设置（显示所有字段）
 		resetToDefault() {
-			this.selectedFields = this.allFields.map(field => field.value);
-			// 调用保存方法来持久化默认设置
+			this.selectedFields = this.allFields.map(f => f.value);
 			this.saveFieldSettings();
+			this.fieldSettingVisible = false;
 		},
-
-		OptionInvent() {
-			return OptionInvent;
+		openFieldSetting() {
+			this.fieldSettingVisible = true;
+		},
+		async initializeDefaultQuery() {
+			try {
+				const range = (await getDateRangeDays()) || {};
+				if (range.startTime && range.endTime) {
+					const start = String(range.startTime).substring(0, 10);
+					const end = String(range.endTime).substring(0, 10);
+					this.dateRange = [start, end];
+					this.queryParams.orderDateStart = start;
+					this.queryParams.orderDateEnd = end;
+					const query = _.cloneDeep(this.queryParams);
+					this.formatOrderDateRange(query);
+					this.$nextTick(() => this.$emit('updateQuery', query));
+				}
+			} catch (e) {
+				console.error('获取默认时间范围失败:', e);
+			}
 		},
 		onDateRangeChange(val) {
-			// 仅在选择完成时触发搜索；清空时不自动触发
 			if (Array.isArray(val) && val.length === 2) {
 				this.dateRange = val;
 				this.handleQuery();
 			} else {
 				this.dateRange = [];
-				// 不触发搜索
 			}
 		},
-		// 处理查询的方法
 		handleQuery() {
 			this.queryParams.pageNum = 1;
 			this.queryParams.pageSize = 50;
-			// 将 dateRange 写回开始/结束
 			if (Array.isArray(this.dateRange) && this.dateRange.length === 2) {
 				this.queryParams.orderDateStart = this.dateRange[0];
 				this.queryParams.orderDateEnd = this.dateRange[1];
@@ -289,77 +274,47 @@ export default {
 				this.queryParams.orderDateStart = null;
 				this.queryParams.orderDateEnd = null;
 			}
-			// 创建查询参数的副本，避免修改原始数据
-			const queryData = { ...this.queryParams };
+			const queryData = _.cloneDeep(this.queryParams);
 			this.formatOrderDateRange(queryData);
 			this.$emit('updateQuery', queryData);
 		},
-		/** 重置按钮操作 */
 		resetQuery() {
-			this.resetForm('queryForm');
-			this.resetParams();
-			this.handleQuery();
-		},
-		/** 将 orderDateStart/orderDateEnd 从 yyyy-MM-dd 转为 yyyy-MM-dd HH:mm:ss（00:00:00 / 23:59:59） */
-		formatOrderDateRange(queryData) {
-			if (!queryData) return;
-			if (!queryData.orderDateStart || !queryData.orderDateEnd) return;
-			// 检查长度，yyyy-MM-dd 格式长度为10，如果长度等于10说明还没拼接过时间
-			if (String(queryData.orderDateStart).length === 10) {
-				queryData.orderDateStart = String(queryData.orderDateStart) + ' 00:00:00';
-			}
-			if (String(queryData.orderDateEnd).length === 10) {
-				queryData.orderDateEnd = String(queryData.orderDateEnd) + ' 23:59:59';
-			}
-		},
-		resetParams() {
-			this.queryParams = {
+			if (this.$refs.queryForm) this.$refs.queryForm.resetFields();
+			Object.assign(this.queryParams, {
 				orderDateStart: null,
 				orderDateEnd: null,
 				pageNum: 1,
 				pageSize: 50,
-				ordersNo: null,
-				orderDate: null,
-				customer: null,
-				customerID: null,
-				landCarID: null,
-				landCarNo: null,
-				landDriverTel: null,
-				landDriverName: null,
-				seaCarID: null,
-				seaCarNo: null,
-				seaDriverTel: null,
-				seaDriverName: null,
-				checkUserId: null,
-				checkState: null,
-				path: null,
-				PaymentState: null,
-				landBankName: null,
-				landBankNo: null,
-				seaBankName: null,
-				seaBankNo: null,
-				receiveProof: null,
-				saleManager: null,
-				fleet: null,
-				isAdjusted: null,
-				adjustDate: null,
-				isAdjust: null,
-				adjustOrderid: null,
-				isedit: null,
-				customerIsInvoice: null,
-				isSupplierInvoice: null,
-				comments: null,
-				params: {
-					isIncludeTaxSale: null,
-					isIncludeTaxFactory: null,
-					supplierNames: null,
-					levelName: '',
-					length: '',
-					width: '',
-					height: ''
-				}
-			};
+				customer: '',
+				saleManager: '',
+				landDriverName: '',
+				landCarNo: '',
+				seaDriverName: '',
+				seaCarNo: '',
+				fleet: '',
+				userName: '',
+				checkState: ''
+			});
+			Object.assign(this.queryParams.params, {
+				isIncludeTaxSale: '',
+				isIncludeTaxFactory: '',
+				supplierNames: '',
+				levelName: '',
+				length: '',
+				width: '',
+				height: ''
+			});
 			this.dateRange = [];
+			this.handleQuery();
+		},
+		formatOrderDateRange(queryData) {
+			if (!queryData?.orderDateStart || !queryData?.orderDateEnd) return;
+			if (String(queryData.orderDateStart).length === 10) {
+				queryData.orderDateStart += ' 00:00:00';
+			}
+			if (String(queryData.orderDateEnd).length === 10) {
+				queryData.orderDateEnd += ' 23:59:59';
+			}
 		}
 	}
 };
