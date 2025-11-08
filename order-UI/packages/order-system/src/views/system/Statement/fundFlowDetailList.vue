@@ -121,7 +121,8 @@
 			<!--      加一个操作列-->
 			<CustomTableColumn label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
 				<template #default="{ row }">
-					<el-button type="text" size="mini" @click="handleCheckDetail(row)">查看明细</el-button>
+					<el-button v-if="row.changeType !== '上年结转'" type="text" size="mini" @click="handleCheckDetail(row)">查看明细</el-button>
+					<span v-else>-</span>
 				</template>
 			</CustomTableColumn>
 		</u-table>

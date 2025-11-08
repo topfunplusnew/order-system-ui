@@ -1,7 +1,8 @@
 import { getBankAcceptance } from '../../../../api/system/bankAcceptance';
-import { TableName } from '../../../../api/tool/enums';
+import { CHECK_STATE, TableName } from '../../../../api/tool/enums';
 import { excludeParams } from '../../../../api/tool/exclude'; // 导入 excludeParams 方法
 import _ from 'lodash';
+import { updateGoodsOrderAttachments } from '@/api/system/goodsOrder';
 /**
  * 用法示例：
  * <el-table-column
@@ -68,6 +69,21 @@ export var mixin_checkfile = {
 						data.params.bankacceptance = _.cloneDeep(await getBankAcceptance(deepData.bankacceptanceId)).data;
 					}
 				}
+
+				// 对于已审核订单的特殊处理，如果已经审核 并且模块是订单，那么就需要调用另一个接口来进行上传
+				if (`metaDataTableName` in deepData && this.isGoodsOrderTable(deepData.metaDataTableName)) {
+					// 如果是已审核的订单
+					if (deepData.checkState === CHECK_STATE.CHECKED) {
+						const payload = {
+							goodsOrderId: deepData.id,
+							attachmentIds: data.params.attachmentIds
+						};
+						updateGoodsOrderAttachments(payload).then(() => {
+							this.$message.success('更新订单附件成功~');
+						});
+						return;
+					}
+				}
 				// 这里如果传递editReason给一个固定值 就可以进行修改
 				data.editReason = 'f871391c-0e97-43e5-89f9-a97837e57a22';
 				// 调用 onUpdate 方法更新文件记录
@@ -80,6 +96,10 @@ export var mixin_checkfile = {
 		},
 		isTableInList(tableName) {
 			const tableList = [TableName.PAYMENT, TableName.RECEIVE_MONEY, TableName.CASH_RECORD];
+			return tableList.includes(tableName);
+		},
+		isGoodsOrderTable(tableName) {
+			const tableList = [TableName.GOODS_ORDER];
 			return tableList.includes(tableName);
 		}
 	}

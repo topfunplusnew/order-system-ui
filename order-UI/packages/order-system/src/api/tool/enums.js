@@ -347,3 +347,8 @@ export const DEPOSIT_OPTIONS = Object.freeze([
 	{ label: DEPOSIT_TYPE.FACTORY_GUARANTEE.label, value: DEPOSIT_TYPE.FACTORY_GUARANTEE.value },
 	{ label: DEPOSIT_TYPE.REGULAR.label, value: DEPOSIT_TYPE.REGULAR.value }
 ]);
+
+// 审核状态
+export const CHECK_STATE = Object.freeze({
+	CHECKED: '已审核'
+});

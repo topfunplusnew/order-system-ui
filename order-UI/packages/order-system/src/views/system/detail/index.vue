@@ -130,24 +130,25 @@
 							<el-table-column v-if="columns[0].visible" label="ID" align="center" prop="id" show-overflow-tooltip />
 							<el-table-column v-if="columns[1].visible" label="变动日期(入库)" align="center" prop="storeDate" show-overflow-tooltip />
 							<el-table-column v-if="columns[2].visible" label="仓库名称" align="center" prop="storeHouseName" show-overflow-tooltip />
-							<el-table-column v-if="columns[3].visible" label="入库片数" align="center" prop="stockNumber" show-overflow-tooltip />
-							<el-table-column v-if="columns[4].visible" label="剩余量" align="center" prop="actualPieces" show-overflow-tooltip />
-							<el-table-column v-if="columns[5].visible" label="供应商" align="center" prop="supplier" show-overflow-tooltip />
-							<el-table-column v-if="columns[6].visible" label="计量单位" align="center" prop="countingUnit" show-overflow-tooltip />
-							<el-table-column v-if="columns[7].visible" label="厚度" align="center" prop="height" show-overflow-tooltip />
-							<el-table-column v-if="columns[8].visible" label="长度" align="center" prop="length" show-overflow-tooltip />
-							<el-table-column v-if="columns[9].visible" label="宽度" align="center" prop="width" show-overflow-tooltip />
-							<el-table-column v-if="columns[10].visible" label="每包片数" align="center" prop="piecesPerPack" show-overflow-tooltip />
-							<el-table-column v-if="columns[11].visible" label="包数" align="center" prop="packs" show-overflow-tooltip />
-							<el-table-column v-if="columns[12].visible" label="存货价" align="center" prop="paymentUnload" show-overflow-tooltip />
-							<el-table-column v-if="columns[13].visible" label="库存是否含税" align="center" prop="isIncludeTaxSale" show-overflow-tooltip>
+							<el-table-column v-if="columns[3].visible" label="级别名称" align="center" prop="levelName" show-overflow-tooltip />
+							<el-table-column v-if="columns[4].visible" label="入库片数" align="center" prop="stockNumber" show-overflow-tooltip />
+							<el-table-column v-if="columns[5].visible" label="剩余量" align="center" prop="actualPieces" show-overflow-tooltip />
+							<el-table-column v-if="columns[6].visible" label="供应商" align="center" prop="supplier" show-overflow-tooltip />
+							<el-table-column v-if="columns[7].visible" label="计量单位" align="center" prop="countingUnit" show-overflow-tooltip />
+							<el-table-column v-if="columns[8].visible" label="厚度" align="center" prop="height" show-overflow-tooltip />
+							<el-table-column v-if="columns[9].visible" label="长度" align="center" prop="length" show-overflow-tooltip />
+							<el-table-column v-if="columns[10].visible" label="宽度" align="center" prop="width" show-overflow-tooltip />
+							<el-table-column v-if="columns[11].visible" label="每包片数" align="center" prop="piecesPerPack" show-overflow-tooltip />
+							<el-table-column v-if="columns[12].visible" label="包数" align="center" prop="packs" show-overflow-tooltip />
+							<el-table-column v-if="columns[13].visible" label="存货价" align="center" prop="paymentUnload" show-overflow-tooltip />
+							<el-table-column v-if="columns[14].visible" label="库存是否含税" align="center" prop="isIncludeTaxSale" show-overflow-tooltip>
 								<template #default="scope">
 									<span>{{ scope.row.isIncludeTaxSale === 1 ? '含税' : '不含税' }}</span>
 								</template>
 							</el-table-column>
-							<el-table-column v-if="columns[14].visible" label="入库金额" align="center" prop="payments" show-overflow-tooltip />
-							<el-table-column v-if="columns[15].visible" label="误差" align="center" prop="erro" show-overflow-tooltip />
-							<el-table-column v-if="columns[16].visible" label="吨位" align="center" prop="tonnage" show-overflow-tooltip />
+							<el-table-column v-if="columns[15].visible" label="入库金额" align="center" prop="payments" show-overflow-tooltip />
+							<el-table-column v-if="columns[16].visible" label="误差" align="center" prop="erro" show-overflow-tooltip />
+							<el-table-column v-if="columns[17].visible" label="吨位" align="center" prop="tonnage" show-overflow-tooltip />
 							<!-- 操作列 -->
 							<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="120px">
 								<template #default="scope">
@@ -451,20 +452,21 @@ export default {
 				{ key: 0, label: 'ID', prop: 'id', visible: true },
 				{ key: 1, label: '变动日期(入库)', prop: 'storeDate', visible: true },
 				{ key: 2, label: '仓库名称', prop: 'storeHouseName', visible: true },
-				{ key: 3, label: '入库片数', prop: 'stockNumber', visible: true },
-				{ key: 4, label: '剩余量', prop: 'actualPieces', visible: true },
-				{ key: 5, label: '供应商', prop: 'supplier', visible: true },
-				{ key: 6, label: '计量单位', prop: 'countingUnit', visible: true },
-				{ key: 7, label: '厚度', prop: 'height', visible: true },
-				{ key: 8, label: '长度', prop: 'length', visible: true },
-				{ key: 9, label: '宽度', prop: 'width', visible: true },
-				{ key: 10, label: '每包片数', prop: 'piecesPerPack', visible: true },
-				{ key: 11, label: '包数', prop: 'packs', visible: true },
-				{ key: 12, label: '存货价', prop: 'paymentUnload', visible: true },
-				{ key: 13, label: '库存是否含税', prop: 'isIncludeTaxSale', visible: true },
-				{ key: 14, label: '入库金额', prop: 'payments', visible: true },
-				{ key: 15, label: '误差', prop: 'erro', visible: true },
-				{ key: 16, label: '吨位', prop: 'tonnage', visible: true }
+				{ key: 3, label: '级别名称', prop: 'levelName', visible: true },
+				{ key: 4, label: '入库片数', prop: 'stockNumber', visible: true },
+				{ key: 5, label: '剩余量', prop: 'actualPieces', visible: true },
+				{ key: 6, label: '供应商', prop: 'supplier', visible: true },
+				{ key: 7, label: '计量单位', prop: 'countingUnit', visible: true },
+				{ key: 8, label: '厚度', prop: 'height', visible: true },
+				{ key: 9, label: '长度', prop: 'length', visible: true },
+				{ key: 10, label: '宽度', prop: 'width', visible: true },
+				{ key: 11, label: '每包片数', prop: 'piecesPerPack', visible: true },
+				{ key: 12, label: '包数', prop: 'packs', visible: true },
+				{ key: 13, label: '存货价', prop: 'paymentUnload', visible: true },
+				{ key: 14, label: '库存是否含税', prop: 'isIncludeTaxSale', visible: true },
+				{ key: 15, label: '入库金额', prop: 'payments', visible: true },
+				{ key: 16, label: '误差', prop: 'erro', visible: true },
+				{ key: 17, label: '吨位', prop: 'tonnage', visible: true }
 			],
 			// 表单校验
 			rules: {

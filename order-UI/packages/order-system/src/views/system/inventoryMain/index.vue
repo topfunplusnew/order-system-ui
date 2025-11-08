@@ -97,8 +97,6 @@
 							stripe
 							style="flex: 1; margin-bottom: 20px"
 							:height="'100%'"
-							show-summary
-							:summary-method="getMainTableSummary"
 						>
 							<CustomTableColumn type="selection" width="50" align="center" />
 							<CustomTableColumn v-if="columns[0].visible" label="ID" align="center" prop="id" width="80" />
@@ -405,15 +403,13 @@
 				<el-table
 					border
 					size="mini"
-					:data="inventoryDetailList"
-					show-summary
-					:summary-method="getSummary"
+					:data="visibleInventoryDetailList"
 					:row-class-name="getRowClassName"
 					@selection-change="handleInventoryDetailSelectionChange"
 					ref="inventoryDetail"
 				>
 					<el-table-column type="selection" width="50" align="center" :selectable="() => true" />
-					<el-table-column label="序号" align="center" prop="id" width="50" />
+					<el-table-column label="序号" align="center" type="index" width="60" />
 					<el-table-column label="行操作" align="center" width="100">
 						<template slot-scope="scope">
 							<el-button v-if="!scope.row.isEditing" :disabled="!isEditingDetails" size="mini" type="warning" icon="el-icon-edit" @click="handleRowEdit(scope.row)">编辑</el-button>
@@ -1038,19 +1034,21 @@ export default {
 		};
 	},
 	computed: {
-		/**
-		 * @description: 计算属性，检查库存详情列表是否有子项。
-		 * @returns {boolean} 如果 inventoryDetailList 存在且长度大于0，则返回 true，否则返回 false。
-		 */
+		// 添加计算属性检查是否有子项（排除已删除的行）
 		hasInventoryDetails() {
-			return this.inventoryDetailList && this.inventoryDetailList.length > 0;
+			return this.visibleInventoryDetailList && this.visibleInventoryDetailList.length > 0;
 		},
-		/**
-		 * @description: 计算属性，检查库存详情列表中是否有任何行正在编辑。
-		 * @returns {boolean} 如果 inventoryDetailList 中有任何行的 isEditing 为 true，则返回 true，否则返回 false。
-		 */
+		// 检查是否有任何行正在编辑（排除已删除的行）
 		hasEditingRows() {
-			return this.inventoryDetailList && this.inventoryDetailList.some(row => row.isEditing);
+			return this.visibleInventoryDetailList && this.visibleInventoryDetailList.some(row => row.isEditing);
+		},
+		// 过滤掉已删除的行，用于表格显示
+		visibleInventoryDetailList() {
+			return this.inventoryDetailList.filter(row => !row.isDeleted);
+		},
+		// 获取所有已标记删除的行
+		deletedInventoryDetailList() {
+			return this.inventoryDetailList.filter(row => row.isDeleted === true);
 		},
 		/**
 		 * @description: 过滤出收到条附件列表
@@ -1255,7 +1253,6 @@ export default {
 		 * @description: 处理库存详情表格中行的编辑操作。
 		 *              将指定行设置为编辑状态 (isEditing = true)。
 		 *              如果行存在错误标记 (hasError = true)，则清除错误标记。
-		 *              显示提示信息。
 		 * @param {object} row - 当前操作的行数据对象。
 		 */
 		handleRowEdit(row) {
@@ -1267,83 +1264,132 @@ export default {
 			}
 		},
 		/**
-		 * @description: 保存库存详情表格中正在编辑的行数据。
-		 *              将编辑状态的行设置为非编辑状态。
-		 *              调用 updateInventoryRowCalculations 重新计算相关数值。
-		 *              构造包含主表单信息和所有子项的 newInventoryInfo 对象。
-		 *              计算总运费等主表信息。
-		 *              调用 addOrUpdateInventoryDetail 方法将数据持久化到后端。
-		 * @param {object|Array<object>} row - 当前操作的行数据对象或行数据对象数组。
+		 * @description: 处理行保存事件
+		 * @param {Object|Array} row - 当前保存的行数据或行数据数组
+		 * @param {Function} [resolve=null] - Promise resolve回调
+		 * @param {Function} [reject=null] - Promise reject回调
 		 */
-		handleRowSave(row) {
+		handleRowSave(row, resolve = null, reject = null) {
 			// 统一处理输入，确保 rows 是数组
 			const rows = Array.isArray(row) ? row : [row];
 			// 处理每一行，关闭编辑状态并更新计算
 			rows.forEach(r => {
-				if (r.isEditing) {
-					this.$set(r, 'isEditing', false); // 使用 $set 确保响应式更新
+				if (r.isEditing && !r.isDeleted) {
+					this.$set(r, 'isEditing', false);
 					updateInventoryRowCalculations(r, this.isSea, this.isLand);
 				}
 			});
+			// 深拷贝并过滤掉仍在编辑的行和已删除的行（已删除的行单独处理）
+			const rowsToSave = rows.filter(item => !item.isEditing && !item.isDeleted);
+			let saveDetails = _.cloneDeep(rowsToSave);
+
+			// 过滤掉空白行（所有业务字段都为空的行）
+			const originalCount = saveDetails.length;
+			saveDetails = saveDetails.filter(detail => !this.isInventoryDetailEmpty(detail));
+
+			// 收集所有已标记删除的行（需要一起发送给后端）
+			const deletedDetails = _.cloneDeep(this.deletedInventoryDetailList);
+
+			// 合并正常保存的行和已删除的行
+			const allDetails = [...saveDetails, ...deletedDetails];
+
+			// 检查是否至少有一些有效数据（正常数据或已删除数据）
+			if (allDetails.length === 0) {
+				this.$message.error('请添加有效的库存信息!');
+				if (reject) reject(new Error('请添加有效的库存信息'));
+				return;
+			}
+
+			// 如果过滤掉了一些空白行，给用户提示
+			const filteredCount = originalCount - saveDetails.length;
+			if (filteredCount > 0) {
+				this.$message.info(`已自动过滤掉${filteredCount}条空白明细行`);
+			}
+
+			// 如果有已删除的行，提示用户
+			if (deletedDetails.length > 0) {
+				console.log(`保存时包含${deletedDetails.length}条已标记删除的数据`);
+			}
+
+			// 构造新的库存信息（包含正常数据和已删除数据）
 			const newInventoryInfo = {
-				...this.form, // 使用当前表单的主信息
-				inventoryDetailList: _.cloneDeep(this.inventoryDetailList) // 包含所有子项
+				...this.form,
+				inventoryDetailList: allDetails
 			};
 			// 计算总运费等主表信息
-			newInventoryInfo.allLandFreight = this.isLand ? this.inventoryDetailList.reduce((prev, curr) => Number(prev) + Number(curr.landFreight || 0), 0) : 0;
-			newInventoryInfo.allSeaFreight = this.isSea ? this.inventoryDetailList.reduce((prev, curr) => Number(prev) + Number(curr.seaFreight || 0), 0) : 0;
+			newInventoryInfo.allLandFreight = this.isLand ? this.visibleInventoryDetailList.reduce((prev, curr) => Number(prev) + Number(curr.landFreight || 0), 0) : 0;
+			newInventoryInfo.allSeaFreight = this.isSea ? this.visibleInventoryDetailList.reduce((prev, curr) => Number(prev) + Number(curr.seaFreight || 0), 0) : 0;
 
-			this.addOrUpdateInventoryDetail(newInventoryInfo, rows); // 传入原始rows用于状态更新
+			this.addOrUpdateInventoryDetail(newInventoryInfo, rows, resolve, reject, row);
 		},
 		/**
-		 * @description: 添加或更新库存详情数据到后端。
-		 *              根据主表单是否存在 id 判断是新增还是更新操作。
-		 *              调用相应的 API (addInventoryMain 或 updateInventoryMain)。
-		 *              成功后，更新行的编辑状态和错误状态，显示成功消息，如果是新增則更新主表 ID，并刷新列表。
-		 *              失败后，保持行的编辑状态並標記錯誤，顯示錯誤消息。
-		 * @param {object} newInventoryInfo - 包含主表单和库存详情列表的对象。
-		 * @param {Array<object>} rows - 当前操作的行对象数组。
+		 * @description: 添加或更新库存详情
+		 * @param {Object} newInventoryInfo - 新的库存信息
+		 * @param {Array} rows - 相关的行数据
+		 * @param {Function} [resolve=null] - Promise resolve回调
+		 * @param {Function} [reject=null] - Promise reject回调
 		 */
-		addOrUpdateInventoryDetail(newInventoryInfo, rows) {
-			const currentRows = rows; // 保存引用
+		addOrUpdateInventoryDetail(newInventoryInfo, rows, resolve = null, reject = null, row = null) {
+			// 保存row的引用，避免在Promise链中丢失
+			const currentRows = rows;
 			const apiCall = this.form.id ? updateInventoryMain : addInventoryMain;
 			const successMessage = this.form.id ? '该行库存详情信息已修改并保存!' : '该行库存详情信息已添加并保存!';
 			const errorMessage = '保存失败，请重新编辑: ';
 
 			apiCall(newInventoryInfo)
 				.then(res => {
+					// 成功后清除可能的错误标记
 					currentRows.forEach(row => {
-						this.$set(row, 'isEditing', false); // 确认保存成功，关闭编辑状态
 						if (row.hasError) {
 							this.$set(row, 'hasError', false);
 						}
 					});
+					const inventoryInfo = _.cloneDeep(res.data);
+					if (!inventoryInfo || !inventoryInfo.inventoryDetailList || inventoryInfo.inventoryDetailList.length === 0) {
+						this.$message.error('保存失败，保存后未找到相应数据');
+						this.isEditingDetails = true;
+						reject && reject();
+						return;
+					}
+					// 如果该行是新增行，则从后端返回的数据中找到index等于该行数据的index的id，并赋值给该行 并且将isAdd标记为false
+					if (row && row.isAdd) {
+						const inventoryRow = inventoryInfo.inventoryDetailList.find(item => item.index === row.index);
+						if (!inventoryRow) {
+							this.$message.error('保存失败，新增的数据索引并未找到服务器对应索引的数据，请联系管理员!');
+							this.isEditingDetails = true;
+							reject && reject();
+							return;
+						}
+						row.id = inventoryRow.id;
+						row.isAdd = false;
+					}
 					this.$message.success(successMessage);
 					// 如果是新增，更新主表ID和数据
 					if (!this.form.id && res.data && res.data.id) {
 						this.form.id = res.data.id;
 					}
+					resolve && resolve();
 					this.getList(); // 刷新列表
 				})
 				.catch(error => {
 					currentRows.forEach(row => {
-						this.$set(row, 'isEditing', true); // 保存失败，保持编辑状态
+						// 使用Vue的响应式方法确保UI更新
+						this.$set(row, 'isEditing', true);
 						this.$set(row, 'hasError', true); // 添加错误标记
 					});
 					this.$message.error(errorMessage + (error.message || '未知错误'));
+					this.isEditingDetails = true;
+					reject && reject();
 				});
 		},
 		/**
-		 * @description: 切换库存详情的批量编辑状态。
-		 *              如果 editState 为 true，则进入批量编辑模式，将所有子项设置为可编辑状态，并清除错误标记。
-		 *              如果 editState 为 false，则退出批量编辑模式，保存所有正在编辑的行。
-		 * @param {boolean} editState - true 表示进入编辑模式，false 表示保存并退出编辑模式。
+		 * @description: 切换库存详情的批量编辑模式
+		 * @param {boolean} editState - true表示进入编辑模式，false表示退出并保存
 		 */
 		toggleEditDetails(editState) {
-			this.isEditingDetails = editState;
 			if (editState) {
-				// 进入编辑模式，设置所有行为可编辑状态
-				this.inventoryDetailList.forEach(row => {
+				// 进入编辑模式，设置所有可见行为可编辑状态
+				this.visibleInventoryDetailList.forEach(row => {
 					this.$set(row, 'isEditing', true);
 					if (row.hasError) {
 						this.$set(row, 'hasError', false);
@@ -1351,11 +1397,10 @@ export default {
 				});
 				this.$message.info('已进入批量编辑模式，可以修改所有库存信息');
 			} else {
-				// 退出编辑模式，保存所有正在编辑的行
+				// 退出编辑模式，保存所有可见行（包括已删除的行会一起发送）
+				// 如果有正在编辑的行，全部设置为不可编辑
 				if (this.hasEditingRows) {
-					this.handleRowSave(this.inventoryDetailList.filter(row => row.isEditing));
-				} else {
-					this.$message.info('没有需要保存的更改');
+					this.handleRowSave(this.visibleInventoryDetailList);
 				}
 			}
 		},
@@ -1468,95 +1513,6 @@ export default {
 					this.getList();
 				});
 			});
-		},
-		/**
-		 * @description: 计算表格的合计行数据。
-		 *              针对指定的列 (paymentFactory, payments, tonnage, landFreight, seaFreight, freight, profit, profitNoTax) 进行合计。
-		 *              使用 fix 方法格式化合计结果。
-		 * @param {object} param - Element UI 表格传递的参数，包含列配置 { columns } 和数据 { data }。
-		 * @returns {Array<string|number>} 计算得到的合计行数据数组。
-		 */
-		getSummary(param) {
-			const { columns, data } = param;
-			const sums = [];
-			const summaryColumns = ['paymentFactory', 'payments', 'tonnage', 'landFreight', 'seaFreight', 'freight', 'profit', 'profitNoTax'];
-			console.log(columns);
-			columns.forEach((column, index) => {
-				// 第一列显示"合计"文字
-				if (index === 0) {
-					sums[index] = '合计';
-					return;
-				}
-
-				// 如果列有property且在summaryColumns中，计算合计
-				if (column.property && summaryColumns.includes(column.property)) {
-					const values = data.map(item => Number(item[column.property]) || 0);
-					if (!values.every(value => isNaN(value))) {
-						sums[index] = values.reduce((prev, curr) => {
-							const value = Number(curr) || 0;
-							if (!isNaN(value)) {
-								return prev + value;
-							} else {
-								return prev;
-							}
-						}, 0);
-						sums[index] = fix_2(sums[index]);
-						sums[index] += column.property === 'tonnage' ? ' 吨' : ' 元';
-					} else {
-						sums[index] = 'N/A';
-					}
-				} else {
-					// 对于不需要合计的列，设置为空字符串
-					sums[index] = '';
-				}
-			});
-
-			console.log(`sums`, sums);
-
-			return sums;
-		},
-		/**
-		 * @description: 计算主表格的合计行数据。
-		 *              针对指定的列 (allLandFreight, allSeaFreight) 进行合计。
-		 *              使用 fix 方法格式化合计结果。
-		 * @param {object} param - Element UI 表格传递的参数，包含列配置 { columns } 和数据 { data }。
-		 * @returns {Array<string|number>} 计算得到的合计行数据数组。
-		 */
-		getMainTableSummary(param) {
-			const { columns, data } = param;
-			const sums = [];
-			const summaryColumns = ['allLandFreight', 'allSeaFreight'];
-			columns.forEach((column, index) => {
-				// 第一列显示"合计"文字
-				if (index === 0) {
-					sums[index] = '合计';
-					return;
-				}
-
-				// 如果列有property且在summaryColumns中，计算合计
-				if (column.property && summaryColumns.includes(column.property)) {
-					const values = data.map(item => Number(item[column.property]) || 0);
-					if (!values.every(value => isNaN(value))) {
-						sums[index] = values.reduce((prev, curr) => {
-							const value = Number(curr) || 0;
-							if (!isNaN(value)) {
-								return prev + value;
-							} else {
-								return prev;
-							}
-						}, 0);
-						sums[index] = fix_2(sums[index]);
-						sums[index] += ' 元';
-					} else {
-						sums[index] = 'N/A';
-					}
-				} else {
-					// 对于不需要合计的列，设置为空字符串
-					sums[index] = '';
-				}
-			});
-
-			return sums;
 		},
 		/**
 		 * @description: 更新供应商搜索组件的查询关键字。
@@ -1861,9 +1817,12 @@ export default {
 				this.form.transportMode = this.isLand || this.isSea ? 'selected' : '';
 
 				// 初始化子项的编辑状态
-				this.inventoryDetailList = response.data.inventoryDetailList.map(item => ({
+				this.inventoryDetailList = response.data.inventoryDetailList.map((item, index) => ({
 					...item,
+					index: index + 1, // 设置唯一索引
 					isEditing: false, // 初始为非编辑状态
+					isDeleted: item.isDeleted !== undefined ? item.isDeleted : false, // 确保 isDeleted 字段存在
+					isAdd: false, // 从后端加载的数据标记为非新增
 					hasError: false // 初始无错误
 				}));
 				// 对加载的数据进行计算
@@ -1906,18 +1865,21 @@ export default {
 						return;
 					}
 
-					// 检查是否有未保存的子项
-					if (this.inventoryDetailList.some(item => item.isEditing)) {
+					// 检查是否有未保存的子项（只检查可见行）
+					if (this.visibleInventoryDetailList.some(item => item.isEditing)) {
 						this.$message.error('当前库存信息中有未保存的项,请先保存或取消编辑后再提交!');
 						return;
 					}
-					if (this.inventoryDetailList.length === 0) {
+					if (this.visibleInventoryDetailList.length === 0) {
 						this.$message.error('请添加库存明细');
 						return;
 					}
-					this.form.inventoryDetailList = _.cloneDeep(this.inventoryDetailList);
-					this.form.allLandFreight = this.isLand ? this.inventoryDetailList.reduce((prev, curr) => fix(Number(prev) + Number(curr.landFreight || 0)), 0) : 0;
-					this.form.allSeaFreight = this.isSea ? this.inventoryDetailList.reduce((prev, curr) => fix(Number(prev) + Number(curr.seaFreight || 0)), 0) : 0;
+					// 填充已删除的行信息
+					const deletedDetails = _.cloneDeep(this.deletedInventoryDetailList);
+					// 合并正常数据和已删除数据
+					this.form.inventoryDetailList = [..._.cloneDeep(this.visibleInventoryDetailList), ...deletedDetails];
+					this.form.allLandFreight = this.isLand ? this.visibleInventoryDetailList.reduce((prev, curr) => fix(Number(prev) + Number(curr.landFreight || 0)), 0) : 0;
+					this.form.allSeaFreight = this.isSea ? this.visibleInventoryDetailList.reduce((prev, curr) => fix(Number(prev) + Number(curr.seaFreight || 0)), 0) : 0;
 					const apiCall = this.form.id ? updateInventoryMain : addInventoryMain;
 					const successMessage = this.form.id ? '修改成功' : '新增成功';
 					apiCall({
@@ -1972,14 +1934,11 @@ export default {
 		rowInventoryDetailIndex({ row, rowIndex }) {
 			row.index = rowIndex + 1;
 		},
-		/**
-		 * @description: 处理添加库存子项按钮操作。
-		 *              创建一个包含默认值的子项对象 obj，并设置 isEditing 为 true。
-		 *              将 obj添加到 inventoryDetailList。
-		 *              在 Vue 的 nextTick 中，如果子表引用存在，则滚动到表格底部。
-		 */
+		/** 添加新的库存详情行 */
 		handleAddInventoryDetail() {
 			let obj = {
+				// 添加唯一索引
+				index: this.inventoryDetailList.length + 1,
 				stockNumber: '',
 				supplier: '',
 				supplierId: '',
@@ -2010,15 +1969,15 @@ export default {
 				profitNoTax: '',
 				paymentsWithSundry: '',
 				additionalFees: '',
-				factoryCommission: '', // 添加厂家佣金
-				factoryRebateAmount: '', // 添加返利金额
-				factoryDiscountAmount: '', // 添加降价金额
+				factoryCommission: '',
+				factoryRebateAmount: '',
+				factoryDiscountAmount: '',
 				comments: '',
-				isEditing: true, // 新增：默认处于编辑状态
-				hasError: false // 新增：默认无错误
+				isEditing: true, // 默认处于编辑状态
+				isDeleted: false, // 新添加的行未删除
+				isAdd: true // 标记为新增行
 			};
 			this.inventoryDetailList.push(obj);
-			// 可能需要滚动到底部或新行
 			this.$nextTick(() => {
 				if (this.$refs.inventoryDetail) {
 					const bodyWrapper = this.$refs.inventoryDetail.$el.querySelector('.el-table__body-wrapper');
@@ -2028,40 +1987,83 @@ export default {
 				}
 			});
 		},
-		/**
-		 * @description: 处理删除库存子项按钮操作。
-		 *              如果 checkedInventoryDetail 为空，则提示用户先选择。
-		 *              否则，根据 checkedInventoryDetail 中的索引过滤 inventoryDetailList，移除选中的行。
-		 *              清空 checkedInventoryDetail，并清除表格的选中状态。
-		 *              显示删除成功消息。
-		 */
+		/** 删除选中的库存详情行（标记为已删除，不真正删除） */
 		handleDeleteInventoryDetail() {
-			if (this.checkedInventoryDetail.length == 0) {
-				this.$modal.msgError('请先选择要删除的库存子数据');
-			} else {
-				// 获取选中的行的实际对象，而不是索引
-				const selectedRows = this.inventoryDetailList.filter((item, index) => this.checkedInventoryDetail.includes(index + 1)); // index从1开始
+			// 直接从表格获取当前选中的行（这样更准确，避免使用存储的标识可能不一致的问题）
+			const tableRef = this.$refs.inventoryDetail;
+			if (!tableRef) {
+				this.$message.error('表格引用不存在');
+				return;
+			}
+			
+			// 获取表格当前选中的行（这些行来自 visibleInventoryDetailList）
+			const selectedRows = tableRef.selection || [];
+			
+			if (selectedRows.length === 0) {
+				this.$message.error('请先选择要删除的库存详情数据');
+				return;
+			}
+			
+			let deletedCount = 0;
+			// 直接遍历选中的行，在 inventoryDetailList 中找到对应的行
+			selectedRows.forEach(selectedRow => {
+				// 在 inventoryDetailList 中查找匹配的行（通过对象引用或 id）
+				const matchedItem = this.inventoryDetailList.find(item => {
+					// 对象引用相同（最准确的匹配）
+					if (selectedRow === item) {
+						return true;
+					}
+					// 如果对象引用不同，通过 id 匹配（适用于已保存的行）
+					if (selectedRow.id !== undefined && selectedRow.id !== null && 
+					    item.id !== undefined && item.id !== null && 
+					    selectedRow.id === item.id) {
+						return true;
+					}
+					return false;
+				});
 
-				// 从 inventoryDetailList 中移除这些选中的行
-				this.inventoryDetailList = this.inventoryDetailList.filter((item, index) => !this.checkedInventoryDetail.includes(index + 1));
-
-				// 清空选中项
-				this.checkedInventoryDetail = [];
-				if (this.$refs.inventoryDetail) {
-					this.$refs.inventoryDetail.clearSelection();
+				if (matchedItem) {
+					// 如果该行已经有id（已保存的数据），标记为删除
+					if (matchedItem.id !== undefined && matchedItem.id !== null) {
+						this.$set(matchedItem, 'isDeleted', true);
+						// 清除编辑状态
+						this.$set(matchedItem, 'isEditing', false);
+						deletedCount++;
+					} else {
+						// 如果是新添加但未保存的行，直接删除
+						const index = this.inventoryDetailList.indexOf(matchedItem);
+						if (index > -1) {
+							this.inventoryDetailList.splice(index, 1);
+							deletedCount++;
+						}
+					}
 				}
-				this.$message.success('删除成功');
-				// 注意：如果需要立即持久化删除，需要调用API更新主表
+			});
+			
+			// 清空选中项
+			this.checkedInventoryDetail = [];
+			// 清除表格的选中状态
+			if (tableRef) {
+				tableRef.clearSelection();
+			}
+			
+			if (deletedCount > 0) {
+				this.$message.success(`已标记${deletedCount}条数据为删除状态，保存时将提交删除操作`);
 			}
 		},
 		/**
-		 * @description: 处理库存子表选择项变化事件。
-		 *              更新 checkedInventoryDetail 数组，存储选中行的索引 (从1开始)。
-		 * @param {Array<object>} selection - 当前选中的行对象数组。
+		 * @description: 处理库存详情表格选择项变化事件
+		 * @param {Array} selection - 当前选中的行数据数组
 		 */
 		handleInventoryDetailSelectionChange(selection) {
-			// 更新选中的行的索引列表 (注意 index 是从1开始的)
-			this.checkedInventoryDetail = selection.map(item => this.inventoryDetailList.findIndex(listItem => listItem === item) + 1);
+			console.log(selection);
+			// 存储选中行的唯一标识：优先使用 id，如果没有 id 则使用对象引用
+			// 注意：id 可能是 0，所以不能用简单的 item.id || item 判断
+			this.checkedInventoryDetail = selection.map(item => {
+				// 如果 id 存在且不为 null/undefined，使用 id；否则使用对象引用
+				return item.id !== undefined && item.id !== null ? item.id : item;
+			});
+			console.log(`selection identifiers`, this.checkedInventoryDetail);
 		},
 		/**
 		 * @description: 处理导出库存主列表数据按钮操作。
@@ -2208,6 +2210,48 @@ export default {
 			}
 			// 仅用于显示，不修改原始值
 			return num.toFixed(precision);
+		},
+		/**
+		 * @description: 检查库存明细是否为空（所有业务字段都为空）
+		 * @param {Object} inventoryDetail - 库存明细对象
+		 * @returns {boolean} - 如果所有业务字段都为空则返回true，否则返回false
+		 */
+		isInventoryDetailEmpty(inventoryDetail) {
+			if (!inventoryDetail) return true;
+
+			// 定义需要检查的核心业务字段（排除有默认值或系统自动填充的字段）
+			const businessFields = [
+				'supplier',
+				'levelName',
+				'height',
+				'length',
+				'width',
+				'piecesPerPack',
+				'packs',
+				'pieces',
+				'price',
+				'sundryCost',
+				'stockNumber',
+				'paymentUnload',
+				'paymentsWithSundry',
+				'erro',
+				'landFreightPrice',
+				'additionalFees',
+				'seaFreight',
+				'otherCost',
+				'logisticsProfit',
+				'factoryCommission',
+				'factoryRebateAmount',
+				'factoryDiscountAmount',
+				'comments'
+			];
+
+			// 检查每个业务字段是否都为空
+			return businessFields.every(field => {
+				const value = inventoryDetail[field];
+				// 检查是否为空值：null、undefined、空字符串、或只包含空白字符的字符串
+				return value === null || value === undefined || value === '' || (typeof value === 'string' && value.trim() === '') || (typeof value === 'number' && value === 0);
+			});
 		},
 		/**
 		 * @description: 处理片数输入，限制最多两位小数

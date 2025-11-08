@@ -1,5 +1,4 @@
 <script>
-import { listBankAccount } from '../../../../api/system/bankAccount';
 import { listCars } from '../../../../api/system/cars';
 import { listCompany } from '../../../../api/system/company';
 import { listFleet } from '../../../../api/system/fleet';
@@ -7,7 +6,7 @@ import { listExitInventory } from '../../../../api/system/inventoryMain';
 import { addGoodsOrder, getGoodsOrder, updateGoodsOrder } from '../../../../api/system/goodsOrder';
 import { listProductLevel } from '../../../../api/system/productLevel';
 import { excludeParams } from '../../../../api/tool/exclude';
-import { fix, fix_2 } from '../../../../api/tool/format';
+import { fix_2 } from '../../../../api/tool/format';
 import SearchOption from '../../../../components/SearchOption.vue';
 import { parseTime } from '../../../../utils/ruoyi';
 import { mixin_form_fillInfo } from '../../mixins/order/form/form_fillInfo';
@@ -68,9 +67,6 @@ export default {
 			// 订单原始数据 用于发送后端
 			orderInfo: {},
 			orderDetailList: [],
-			// 订单用户所编辑的数据 用于展示
-			orderCopyInfo: {},
-			orderDetailCopyList: [],
 			orderRules: {
 				// 添加或更新校验规则
 				fleet: [{ validator: validateFleet, trigger: 'blur' }], // 触发改为 change
@@ -95,10 +91,8 @@ export default {
 			},
 			checkedOrderdetail: [],
 			isEditingDetails: false, // 保留全局编辑状态用于添加/删除行操作
-			isEditingBasicInfo: true, // 基本信息编辑状态
 			isLand: false,
 			isSea: false,
-			orderNums: 0,
 			querySupplier: null,
 			queryLevel: null,
 			queryStoreHouseName: null,
@@ -221,14 +215,10 @@ export default {
 		this.orderId && this.getGoodsOrderInfo(this.orderId);
 	},
 	methods: {
-		/** 修复数字精度问题 */
-		fix,
 		/** 获取车队列表 */
 		listFleet,
 		/** 获取车辆列表 */
 		listCars,
-		/** 获取银行账户列表 */
-		listBankAccount,
 		/** 获取公司列表 */
 		listCompany,
 		/** 获取产品级别列表 */
@@ -566,33 +556,32 @@ export default {
 				const checkedItems = this.checkedOrderdetail;
 				let deletedCount = 0;
 				// 将选中的行标记为已删除
-				// 遍历完整列表，使用精确匹配找到对应的行
-				this.orderDetailList.forEach(item => {
-					// 检查当前行是否在选中列表中
-					// 由于 checkedItems 可能包含 id（数字）或行对象引用
-					const isChecked = checkedItems.some(checked => {
+				// 直接遍历 checkedItems，在 orderDetailList 中找到对应的行
+				checkedItems.forEach(checked => {
+					// 在 orderDetailList 中查找匹配的行
+					const matchedItem = this.orderDetailList.find(item => {
 						// 如果 checked 是数字（id），直接比较
-						if (typeof checked === 'number' && item.id === checked) {
-							return true;
+						if (typeof checked === 'number') {
+							return item.id === checked;
 						}
 						// 如果 checked 是对象，比较引用或 id
 						if (typeof checked === 'object' && checked !== null) {
 							// 对象引用相同，或者 id 相同
-							return checked === item || (item.id && checked.id === item.id);
+							return checked === item || (item.id !== undefined && item.id !== null && checked.id !== undefined && checked.id !== null && item.id === checked.id);
 						}
 						return false;
 					});
 
-					if (isChecked) {
+					if (matchedItem) {
 						// 如果该行已经有id（已保存的数据），标记为删除
-						if (item.id) {
-							this.$set(item, 'isDeleted', true);
+						if (matchedItem.id !== undefined && matchedItem.id !== null) {
+							this.$set(matchedItem, 'isDeleted', true);
 							// 清除编辑状态
-							this.$set(item, 'isEditing', false);
+							this.$set(matchedItem, 'isEditing', false);
 							deletedCount++;
 						} else {
 							// 如果是新添加但未保存的行，直接删除
-							const index = this.orderDetailList.indexOf(item);
+							const index = this.orderDetailList.indexOf(matchedItem);
 							if (index > -1) {
 								this.orderDetailList.splice(index, 1);
 								deletedCount++;
@@ -602,6 +591,10 @@ export default {
 				});
 				// 清空选中项
 				this.checkedOrderdetail = [];
+				// 清除表格的选中状态
+				if (this.$refs.orderdetail) {
+					this.$refs.orderdetail.clearSelection();
+				}
 				if (deletedCount > 0) {
 					this.$message.success(`已标记${deletedCount}条数据为删除状态，保存时将提交删除操作`);
 				}
@@ -1068,25 +1061,6 @@ export default {
 			}
 		},
 		/**
-		 * 处理价格字段输入，保存完整精度值用于计算
-		 * @param {Object} row - 当前行数据
-		 * @param {String} field - 字段名
-		 * @param {String} inputValue - 用户输入的值
-		 * @param {Function} callback - 输入后的回调函数（如重新计算）
-		 */
-		handlePriceInput(row, field, inputValue, callback) {
-			// 解析输入值，保持完整精度存储
-			const parsedValue = this.parseInputValue(inputValue);
-			// 存储完整精度的原始值（用于计算）
-			row[`_${field}_raw`] = parsedValue;
-			// 同时更新显示值（允许用户继续编辑）
-			row[field] = inputValue;
-			// 如果有回调，执行回调（通常是重新计算）
-			if (callback) {
-				callback();
-			}
-		},
-		/**
 		 * 规范化价格输入，确保为有效的Number类型，但保持完整精度不截断
 		 * 在失去焦点时格式化显示，但保留完整精度值用于计算
 		 * @param {Object} row - 当前行数据
@@ -1112,76 +1086,6 @@ export default {
 					row[`_${field}_raw`] = '';
 				}
 			}
-		},
-		/**
-		 * 处理价格字段聚焦事件，恢复完整精度显示以便编辑
-		 * @param {Object} row - 当前行数据
-		 * @param {String} field - 字段名
-		 */
-		handlePriceFocus(row, field) {
-			// 如果存在原始值，恢复显示原始完整精度
-			if (row[`_${field}_raw`] !== undefined && row[`_${field}_raw`] !== null && row[`_${field}_raw`] !== '') {
-				row[field] = row[`_${field}_raw`].toString();
-			} else if (row[field] !== null && row[field] !== undefined && row[field] !== '') {
-				// 如果没有原始值，保存当前值为原始值
-				const numValue = Number(row[field]);
-				if (!isNaN(numValue)) {
-					row[`_${field}_raw`] = numValue;
-					row[field] = numValue.toString();
-				}
-			}
-		},
-		/**
-		 * 格式化数值用于输入框显示（仅用于显示，不影响实际存储值）
-		 * @param {number|string} value - 需要格式化的值
-		 * @param {number} precision - 小数位数（用于显示，如2或4）
-		 * @returns {string} 格式化后的字符串（仅用于显示）
-		 */
-		formatValueForInput(value, precision = 2) {
-			if (value === null || value === undefined || value === '') {
-				return '';
-			}
-			const num = Number(value);
-			if (isNaN(num)) {
-				return '';
-			}
-			// 格式化为指定小数位数显示，但实际存储值不变
-			return num.toFixed(precision);
-		},
-		/**
-		 * 解析用户输入值，转换为Number类型并保持完整精度
-		 * @param {string} inputValue - 用户输入的字符串值
-		 * @returns {number|string} 解析后的数值（Number类型，保持完整精度）或空字符串
-		 */
-		parseInputValue(inputValue) {
-			if (inputValue === null || inputValue === undefined || inputValue === '') {
-				return '';
-			}
-			// 移除所有非数字和小数点的字符（保留负号如果需要）
-			const cleanValue = String(inputValue).replace(/[^\d.]/g, '');
-			if (cleanValue === '' || cleanValue === '.') {
-				return '';
-			}
-			const num = Number(cleanValue);
-			if (isNaN(num)) {
-				return '';
-			}
-			// 返回Number类型，保持用户输入的完整精度（不截断）
-			return num;
-		},
-
-		// 获取数字的小数位数
-		getDecimalPlaces(num) {
-			// 将数字转换为字符串
-			const strNum = num.toString();
-			// 查找小数点的位置
-			const dotIndex = strNum.indexOf('.');
-			// 如果没有小数点，返回 0
-			if (dotIndex === -1) {
-				return 0;
-			}
-			// 返回小数点后的字符长度
-			return strNum.length - dotIndex - 1;
 		},
 		/**
 		 * 格式化数值用于显示，但不影响存储值
