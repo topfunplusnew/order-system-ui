@@ -241,19 +241,16 @@
 					</el-col>
 				</el-row>
 
-				<el-table
-					size="mini"
-					:data="visibleInventoryDetailList"
-					:row-class-name="getRowClassName"
-					@selection-change="handleInventoryDetailSelectionChange"
-					ref="inventoryDetail"
-				>
+				<el-table size="mini" :data="visibleInventoryDetailList" :row-class-name="getRowClassName" @selection-change="handleInventoryDetailSelectionChange" ref="inventoryDetail">
 					<el-table-column type="selection" width="40" align="center" :selectable="() => true" />
 					<el-table-column label="序号" align="center" type="index" width="60" />
-					<el-table-column label="行操作" align="center" width="80">
+					<el-table-column label="行操作" align="center" width="140">
 						<template slot-scope="scope">
-							<el-button v-if="!scope.row.isEditing" size="mini" type="warning" icon="el-icon-edit" @click="handleRowEdit(scope.row)">编辑</el-button>
-							<el-button v-else size="mini" type="success" icon="el-icon-check" @click="handleRowSave(scope.row)">保存</el-button>
+							<div>
+								<el-button v-if="!scope.row.isEditing" size="mini" type="warning" icon="el-icon-edit" @click="handleRowEdit(scope.row)">编辑</el-button>
+								<el-button v-else size="mini" type="success" icon="el-icon-check" @click="handleRowSave(scope.row)">保存</el-button>
+								<el-button :disabled="scope.row.isEditing" size="mini" type="danger" icon="el-icon-document-copy" @click="handleCopyRow(scope.row)">复制</el-button>
+							</div>
 						</template>
 					</el-table-column>
 					<el-table-column label="供应商" width="170">
@@ -1403,6 +1400,38 @@ export default {
 			});
 		},
 		/**
+		 * 复制指定行数据并在末尾添加
+		 * @param {Object} row - 要复制的行数据
+		 */
+		handleCopyRow(row) {
+			// 深拷贝行数据
+			const copiedRow = _.cloneDeep(row);
+			// 清除 id，因为这是新行
+			copiedRow.id = undefined;
+			// 设置新的索引
+			copiedRow.index = this.inventoryDetailList.length + 1;
+			// 设置为编辑状态
+			copiedRow.isEditing = true;
+			// 标记为新增行
+			copiedRow.isAdd = true;
+			// 清除删除标记
+			copiedRow.isDeleted = false;
+			// 清除错误标记
+			copiedRow.hasError = false;
+			// 添加到列表末尾
+			this.inventoryDetailList.push(copiedRow);
+			this.$message.success('已复制该行数据');
+			// 滚动到底部显示新添加的行
+			this.$nextTick(() => {
+				if (this.$refs.inventoryDetail) {
+					const bodyWrapper = this.$refs.inventoryDetail.$el.querySelector('.el-table__body-wrapper');
+					if (bodyWrapper) {
+						bodyWrapper.scrollTop = bodyWrapper.scrollHeight;
+					}
+				}
+			});
+		},
+		/**
 		 * @description: 处理库存详情表格选择项变化事件
 		 * @param {Array} selection - 当前选中的行数据数组
 		 */
@@ -1424,15 +1453,15 @@ export default {
 				this.$message.error('表格引用不存在');
 				return;
 			}
-			
+
 			// 获取表格当前选中的行（这些行来自 visibleInventoryDetailList）
 			const selectedRows = tableRef.selection || [];
-			
+
 			if (selectedRows.length === 0) {
 				this.$message.error('请先选择要删除的库存详情数据');
 				return;
 			}
-			
+
 			let deletedCount = 0;
 			// 直接遍历选中的行，在 inventoryDetailList 中找到对应的行
 			selectedRows.forEach(selectedRow => {
@@ -1443,9 +1472,7 @@ export default {
 						return true;
 					}
 					// 如果对象引用不同，通过 id 匹配（适用于已保存的行）
-					if (selectedRow.id !== undefined && selectedRow.id !== null && 
-					    item.id !== undefined && item.id !== null && 
-					    selectedRow.id === item.id) {
+					if (selectedRow.id !== undefined && selectedRow.id !== null && item.id !== undefined && item.id !== null && selectedRow.id === item.id) {
 						return true;
 					}
 					return false;
@@ -1468,14 +1495,14 @@ export default {
 					}
 				}
 			});
-			
+
 			// 清空选中项
 			this.checkedInventoryDetail = [];
 			// 清除表格的选中状态
 			if (tableRef) {
 				tableRef.clearSelection();
 			}
-			
+
 			if (deletedCount > 0) {
 				this.$message.success(`已标记${deletedCount}条数据为删除状态，保存时将提交删除操作`);
 			}
@@ -1516,7 +1543,7 @@ export default {
 					this.$message.error('当前有未保存的库存信息，请先保存所有编辑中的数据后再提交');
 					return;
 				}
-				
+
 				// 检查是否有有效的库存详情（排除 shouldDel 和已删除的行）
 				const validInventoryItems = this.visibleInventoryDetailList
 					.filter(item => !item.shouldDel)
@@ -1540,7 +1567,7 @@ export default {
 						...item,
 						exWareHoustId: this.secondForm.exWareHoustId
 					}));
-				
+
 				// 合并正常数据和已删除数据
 				this.secondForm.inventoryDetailList = [..._.cloneDeep(validInventoryItems), ...deletedDetails];
 
@@ -1653,7 +1680,7 @@ export default {
 		handleRowSave(row, resolve = null, reject = null) {
 			// 统一处理输入，确保 rows 是数组
 			const rows = Array.isArray(row) ? row : [row];
-			
+
 			// 先进行数据校验
 			for (const r of rows) {
 				if (!r.isEditing || r.isDeleted) continue;
@@ -1665,7 +1692,7 @@ export default {
 					return;
 				}
 			}
-			
+
 			// 处理每一行，关闭编辑状态并更新计算
 			rows.forEach(r => {
 				if (r.isEditing && !r.isDeleted) {
@@ -1674,7 +1701,7 @@ export default {
 					updateInventoryRowCalculations(r, this.isSea, this.isLand, extraOptions);
 				}
 			});
-			
+
 			// 深拷贝并过滤掉仍在编辑的行和已删除的行（已删除的行单独处理）
 			const rowsToSave = rows.filter(item => !item.isEditing && !item.isDeleted);
 			let saveDetails = _.cloneDeep(rowsToSave);

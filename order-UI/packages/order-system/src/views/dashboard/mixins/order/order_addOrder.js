@@ -22,7 +22,7 @@ export var mixin_order_add = {
 			this.openDialog(
 				OrderForm,
 				'添加订单',
-				'1600px',
+				'100%',
 				{
 					orderId: null,
 					submitInfo: '添加订单'

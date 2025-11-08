@@ -528,6 +528,38 @@ export default {
 			});
 		},
 		/**
+		 * 复制指定行数据并在末尾添加
+		 * @param {Object} row - 要复制的行数据
+		 */
+		handleCopyRow(row) {
+			// 深拷贝行数据
+			const copiedRow = _.cloneDeep(row);
+			// 清除 id，因为这是新行
+			copiedRow.id = undefined;
+			// 设置新的索引
+			copiedRow.index = this.orderDetailList.length + 1;
+			// 设置为编辑状态
+			copiedRow.isEditing = true;
+			// 标记为新增行
+			copiedRow.isAdd = true;
+			// 清除删除标记
+			copiedRow.isDeleted = false;
+			// 清除错误标记
+			copiedRow.hasError = false;
+			// 添加到列表末尾
+			this.orderDetailList.push(copiedRow);
+			this.$message.success('已复制该行数据');
+			// 滚动到底部显示新添加的行
+			this.$nextTick(() => {
+				if (this.$refs.orderdetail) {
+					const bodyWrapper = this.$refs.orderdetail.bodyWrapper;
+					if (bodyWrapper) {
+						bodyWrapper.scrollTop = bodyWrapper.scrollHeight;
+					}
+				}
+			});
+		},
+		/**
 		 * 处理出厂片数变化，自动填充卸货片数并重新计算
 		 * @param {Object} scope - 表格行作用域对象
 		 */
@@ -1386,12 +1418,13 @@ export default {
 					@selection-change="handleOrderdetailSelectionChange"
 					ref="orderdetail"
 				>
-					<el-table-column type="selection" width="40" align="center" :selectable="() => true" />
-					<el-table-column label="序号" align="center" type="index" width="60" />
-					<el-table-column label="行操作" align="center" width="80">
+					<el-table-column type="selection" width="70" align="center" :selectable="() => true" />
+					<el-table-column label="序号" align="center" type="index" width="70" />
+					<el-table-column label="行操作" align="center" width="140">
 						<template slot-scope="scope">
 							<el-button v-if="!scope.row.isEditing" size="mini" type="warning" icon="el-icon-edit" @click="handleRowEdit(scope.row)">编辑</el-button>
 							<el-button v-else size="mini" type="success" icon="el-icon-check" @click="handleRowSave(scope.row)">保存</el-button>
+							<el-button :disabled="scope.row.isEditing" size="mini" type="danger" icon="el-icon-document-copy" @click="handleCopyRow(scope.row)">复制</el-button>
 						</template>
 					</el-table-column>
 					<el-table-column label="供应商/仓库" width="170">

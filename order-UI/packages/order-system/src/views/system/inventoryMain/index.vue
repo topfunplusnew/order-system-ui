@@ -400,20 +400,16 @@
 				</el-row>
 
 				<!--        与订单一致 -->
-				<el-table
-					border
-					size="mini"
-					:data="visibleInventoryDetailList"
-					:row-class-name="getRowClassName"
-					@selection-change="handleInventoryDetailSelectionChange"
-					ref="inventoryDetail"
-				>
+				<el-table border size="mini" :data="visibleInventoryDetailList" :row-class-name="getRowClassName" @selection-change="handleInventoryDetailSelectionChange" ref="inventoryDetail">
 					<el-table-column type="selection" width="50" align="center" :selectable="() => true" />
 					<el-table-column label="序号" align="center" type="index" width="60" />
-					<el-table-column label="行操作" align="center" width="100">
+					<el-table-column label="行操作" align="center" width="140">
 						<template slot-scope="scope">
-							<el-button v-if="!scope.row.isEditing" :disabled="!isEditingDetails" size="mini" type="warning" icon="el-icon-edit" @click="handleRowEdit(scope.row)">编辑</el-button>
-							<el-button v-else size="mini" type="success" icon="el-icon-check" @click="handleRowSave(scope.row)">保存</el-button>
+							<div>
+								<el-button v-if="!scope.row.isEditing" :disabled="!isEditingDetails" size="mini" type="warning" icon="el-icon-edit" @click="handleRowEdit(scope.row)">编辑</el-button>
+								<el-button v-else size="mini" type="success" icon="el-icon-check" @click="handleRowSave(scope.row)">保存</el-button>
+								<el-button :disabled="scope.row.isEditing" size="mini" type="danger" icon="el-icon-document-copy" @click="handleCopyRow(scope.row)">复制</el-button>
+							</div>
 						</template>
 					</el-table-column>
 					<el-table-column label="供应商" width="220" align="center">
@@ -1779,7 +1775,7 @@ export default {
 				this.openDialog(
 					INVENTORY,
 					'库存信息',
-					'1300px',
+					'100%',
 					{
 						needToShowInfo: response.data
 					},
@@ -1987,6 +1983,38 @@ export default {
 				}
 			});
 		},
+		/**
+		 * 复制指定行数据并在末尾添加
+		 * @param {Object} row - 要复制的行数据
+		 */
+		handleCopyRow(row) {
+			// 深拷贝行数据
+			const copiedRow = _.cloneDeep(row);
+			// 清除 id，因为这是新行
+			copiedRow.id = undefined;
+			// 设置新的索引
+			copiedRow.index = this.inventoryDetailList.length + 1;
+			// 设置为编辑状态
+			copiedRow.isEditing = true;
+			// 标记为新增行
+			copiedRow.isAdd = true;
+			// 清除删除标记
+			copiedRow.isDeleted = false;
+			// 清除错误标记
+			copiedRow.hasError = false;
+			// 添加到列表末尾
+			this.inventoryDetailList.push(copiedRow);
+			this.$message.success('已复制该行数据');
+			// 滚动到底部显示新添加的行
+			this.$nextTick(() => {
+				if (this.$refs.inventoryDetail) {
+					const bodyWrapper = this.$refs.inventoryDetail.$el.querySelector('.el-table__body-wrapper');
+					if (bodyWrapper) {
+						bodyWrapper.scrollTop = bodyWrapper.scrollHeight;
+					}
+				}
+			});
+		},
 		/** 删除选中的库存详情行（标记为已删除，不真正删除） */
 		handleDeleteInventoryDetail() {
 			// 直接从表格获取当前选中的行（这样更准确，避免使用存储的标识可能不一致的问题）
@@ -1995,15 +2023,15 @@ export default {
 				this.$message.error('表格引用不存在');
 				return;
 			}
-			
+
 			// 获取表格当前选中的行（这些行来自 visibleInventoryDetailList）
 			const selectedRows = tableRef.selection || [];
-			
+
 			if (selectedRows.length === 0) {
 				this.$message.error('请先选择要删除的库存详情数据');
 				return;
 			}
-			
+
 			let deletedCount = 0;
 			// 直接遍历选中的行，在 inventoryDetailList 中找到对应的行
 			selectedRows.forEach(selectedRow => {
@@ -2014,9 +2042,7 @@ export default {
 						return true;
 					}
 					// 如果对象引用不同，通过 id 匹配（适用于已保存的行）
-					if (selectedRow.id !== undefined && selectedRow.id !== null && 
-					    item.id !== undefined && item.id !== null && 
-					    selectedRow.id === item.id) {
+					if (selectedRow.id !== undefined && selectedRow.id !== null && item.id !== undefined && item.id !== null && selectedRow.id === item.id) {
 						return true;
 					}
 					return false;
@@ -2039,14 +2065,14 @@ export default {
 					}
 				}
 			});
-			
+
 			// 清空选中项
 			this.checkedInventoryDetail = [];
 			// 清除表格的选中状态
 			if (tableRef) {
 				tableRef.clearSelection();
 			}
-			
+
 			if (deletedCount > 0) {
 				this.$message.success(`已标记${deletedCount}条数据为删除状态，保存时将提交删除操作`);
 			}
