@@ -190,6 +190,7 @@ export default {
 		} else {
 			this.columns = JSON.parse(localStorage.getItem('goodsorder-columns'));
 		}
+		this.getList();
 	},
 	mounted() {
 		this.$bus.$on('refreshList', () => {
