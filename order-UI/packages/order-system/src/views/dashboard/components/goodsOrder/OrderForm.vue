@@ -710,10 +710,9 @@ export default {
 		 * @param {Object} val - 选择的供应商信息
 		 */
 		handleCommitBackSupplier(scope, val) {
-			this.clearDetail(scope);
+      scope.row.currentType = 'supplier';
 			scope.row.supplier = val.companyName;
 			scope.row.supplierID = val.id;
-			scope.row.currentType = 'supplier';
 		},
 		/**
 		 * 处理库存信息选择回调
@@ -722,6 +721,7 @@ export default {
 		 */
 		handleCommitBackInventory(scope, val) {
 			this.clearDetail(scope);
+      scope.row.currentType = 'storeHouseName';
 			scope.row.storeID = val.id;
 			scope.row.storeHouseID = val.storeHouseid;
 			scope.row.storeHouseName = val.storeHouseName;
@@ -731,7 +731,6 @@ export default {
 			scope.row.levelID = val.levelID;
 			scope.row.levelName = val.levelName;
 			scope.row.erro = val.erro;
-			scope.row.currentType = 'storeHouseName';
 			// 填充出厂单价（库存为填充存货价）
 			// TODO 这里改为填充出厂价格
 			scope.row.price = val.paymentUnload;
