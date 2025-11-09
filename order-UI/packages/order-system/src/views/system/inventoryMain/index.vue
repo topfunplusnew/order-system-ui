@@ -585,7 +585,14 @@
 					<el-table-column label="入库量" prop="stockNumber" width="70">
 						<template #default="scope">
 							<!-- 添加 disabled 属性 -->
-							<el-input size="mini" v-model="scope.row.stockNumber" placeholder="入库时片数" :disabled="!scope.row.isEditing" />
+							<el-input
+								size="mini"
+								@input="val => handlePiecesInput(scope.row, 'stockNumber', val, () => recalculateAll(scope))"
+								@change="() => handlePiecesChange(scope)"
+								v-model="scope.row.stockNumber"
+								placeholder="入库时片数"
+								:disabled="!scope.row.isEditing"
+							/>
 						</template>
 					</el-table-column>
 					<el-table-column label="存货价" prop="paymentUnload" width="70">

@@ -241,7 +241,7 @@
 					</el-col>
 				</el-row>
 
-				<el-table size="mini" :data="visibleInventoryDetailList" :row-class-name="getRowClassName" @selection-change="handleInventoryDetailSelectionChange" ref="inventoryDetail">
+				<el-table border size="mini" :data="visibleInventoryDetailList" :row-class-name="getRowClassName" @selection-change="handleInventoryDetailSelectionChange" ref="inventoryDetail">
 					<el-table-column type="selection" width="40" align="center" :selectable="() => true" />
 					<el-table-column label="序号" align="center" type="index" width="60" />
 					<el-table-column label="行操作" align="center" width="140">
@@ -450,7 +450,14 @@
 					</el-table-column>
 					<el-table-column label="二次入库片数" prop="stockNumber" width="90">
 						<template #default="scope">
-							<el-input size="mini" v-model="scope.row.stockNumber" placeholder="请输入二次入库片数" :disabled="scope.row.shouldDel" />
+							<el-input
+								size="mini"
+								@input="val => handlePiecesInput(scope.row, 'stockNumber', val, () => recalculateAll(scope))"
+								@change="() => handlePiecesChange(scope)"
+								v-model="scope.row.stockNumber"
+								placeholder="请输入二次入库片数"
+								:disabled="scope.row.shouldDel"
+							/>
 						</template>
 					</el-table-column>
 					<el-table-column label="存货价" prop="paymentUnload" width="70">
@@ -2111,10 +2118,12 @@ export default {
 		width: 14px;
 		height: 14px;
 	}
+
 	&::-webkit-scrollbar-thumb {
 		border-radius: 2px;
 		background-color: rgba(0, 0, 0, 0.5);
 	}
+
 	&::-webkit-scrollbar-track {
 		border-radius: 2px;
 		background-color: rgba(0, 0, 0, 0.1);

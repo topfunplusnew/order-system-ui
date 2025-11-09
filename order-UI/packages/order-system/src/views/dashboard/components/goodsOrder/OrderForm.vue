@@ -1426,15 +1426,15 @@ export default {
 										:disable="!scope.row.isEditing"
 									>
 										<template #table-columns>
-											<el-table-column label="仓库名称" align="center" prop="storeHouseName" show-overflow-tooltip />
-											<el-table-column label="级别名称" align="center" prop="levelName" show-overflow-tooltip />
-											<el-table-column label="计量单位" align="center" prop="countingUnit" show-overflow-tooltip />
-											<el-table-column label="厚度" align="center" prop="height" show-overflow-tooltip />
-											<el-table-column label="长度" align="center" prop="length" show-overflow-tooltip />
-											<el-table-column label="宽度" align="center" prop="width" show-overflow-tooltip />
-											<el-table-column label="剩余量" align="center" prop="actualPieces" show-overflow-tooltip />
-											<el-table-column label="存货价" align="center" prop="paymentUnload" show-overflow-tooltip />
-											<el-table-column label="库存金额" align="center" prop="payments" show-overflow-tooltip />
+											<el-table-column label="仓库名称" align="center" prop="storeHouseName" />
+											<el-table-column label="级别名称" align="center" prop="levelName" />
+											<el-table-column label="计量单位" align="center" prop="countingUnit" />
+											<el-table-column label="厚度" align="center" prop="height" />
+											<el-table-column label="长度" align="center" prop="length" />
+											<el-table-column label="宽度" align="center" prop="width" />
+											<el-table-column label="剩余量" align="center" prop="actualPieces" />
+											<el-table-column label="存货价" align="center" prop="paymentUnload" />
+											<el-table-column label="库存金额" align="center" prop="payments" />
 										</template>
 									</SearchOption>
 								</el-col>
