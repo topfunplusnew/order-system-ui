@@ -1932,9 +1932,10 @@ export default {
 		},
 		/** 添加新的库存详情行 */
 		handleAddInventoryDetail() {
+			const arrMaxItem = _.maxBy(this.inventoryDetailList, 'index');
 			let obj = {
 				// 添加唯一索引
-				index: this.inventoryDetailList.length + 1,
+				index: arrMaxItem ? arrMaxItem.index + 1 : 1,
 				stockNumber: '',
 				supplier: '',
 				supplierId: '',

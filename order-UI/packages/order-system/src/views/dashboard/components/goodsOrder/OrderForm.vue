@@ -479,9 +479,10 @@ export default {
 		},
 		/** 添加新的订单详情行 */
 		handleAddOrderdetail() {
+			const arrMaxItem = _.maxBy(this.orderDetailList, 'index');
 			let obj = {
 				// 添加唯一索引
-				index: this.orderDetailList.length + 1,
+				index: arrMaxItem ? arrMaxItem.index + 1 : 1,
 				orderDate: parseTime(new Date()),
 				supplier: '',
 				supplierID: '',
