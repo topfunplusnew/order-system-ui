@@ -710,7 +710,7 @@ export default {
 		 * @param {Object} val - 选择的供应商信息
 		 */
 		handleCommitBackSupplier(scope, val) {
-      scope.row.currentType = 'supplier';
+			scope.row.currentType = 'supplier';
 			scope.row.supplier = val.companyName;
 			scope.row.supplierID = val.id;
 		},
@@ -721,7 +721,7 @@ export default {
 		 */
 		handleCommitBackInventory(scope, val) {
 			this.clearDetail(scope);
-      scope.row.currentType = 'storeHouseName';
+			scope.row.currentType = 'storeHouseName';
 			scope.row.storeID = val.id;
 			scope.row.storeHouseID = val.storeHouseid;
 			scope.row.storeHouseName = val.storeHouseName;
@@ -1092,6 +1092,25 @@ export default {
 			}
 		},
 		/**
+		 * 处理价格字段输入，保存完整精度值用于计算
+		 * @param {Object} row - 当前行数据
+		 * @param {String} field - 字段名
+		 * @param {String} inputValue - 用户输入的值
+		 * @param {Function} callback - 输入后的回调函数（如重新计算）
+		 */
+		handlePriceInput(row, field, inputValue, callback) {
+			// 解析输入值，保持完整精度存储
+			const parsedValue = this.parseInputValue(inputValue);
+			// 存储完整精度的原始值（用于计算）
+			row[`_${field}_raw`] = parsedValue;
+			// 同时更新显示值（允许用户继续编辑）
+			row[field] = inputValue;
+			// 如果有回调，执行回调（通常是重新计算）
+			if (callback) {
+				callback();
+			}
+		},
+		/**
 		 * 规范化价格输入，确保为有效的Number类型，但保持完整精度不截断
 		 * 在失去焦点时格式化显示，但保留完整精度值用于计算
 		 * @param {Object} row - 当前行数据
@@ -1101,7 +1120,7 @@ export default {
 		 */
 		formatPriceInput(row, field, precision, control = true) {
 			// 获取完整精度的原始值（优先使用_raw字段）
-			const rawValue = row[`_${field}_raw`] !== undefined ? row[field] : row[`_${field}_raw`];
+			const rawValue = row[`_${field}_raw`] !== undefined ? row[`_${field}_raw`] : row[field];
 
 			// 只做数值规范化，转换为Number类型，保持完整精度不截断
 			if (rawValue !== null && rawValue !== undefined && rawValue !== '') {
@@ -1117,6 +1136,45 @@ export default {
 					row[`_${field}_raw`] = '';
 				}
 			}
+		},
+		/**
+		 * 处理价格字段聚焦事件，恢复完整精度显示以便编辑
+		 * @param {Object} row - 当前行数据
+		 * @param {String} field - 字段名
+		 */
+		handlePriceFocus(row, field) {
+			// 如果存在原始值，恢复显示原始完整精度
+			if (row[`_${field}_raw`] !== undefined && row[`_${field}_raw`] !== null && row[`_${field}_raw`] !== '') {
+				row[field] = row[`_${field}_raw`].toString();
+			} else if (row[field] !== null && row[field] !== undefined && row[field] !== '') {
+				// 如果没有原始值，保存当前值为原始值
+				const numValue = Number(row[field]);
+				if (!isNaN(numValue)) {
+					row[`_${field}_raw`] = numValue;
+					row[field] = numValue.toString();
+				}
+			}
+		},
+		/**
+		 * 解析用户输入值，转换为Number类型并保持完整精度
+		 * @param {string} inputValue - 用户输入的字符串值
+		 * @returns {number|string} 解析后的数值（Number类型，保持完整精度）或空字符串
+		 */
+		parseInputValue(inputValue) {
+			if (inputValue === null || inputValue === undefined || inputValue === '') {
+				return '';
+			}
+			// 移除所有非数字和小数点的字符（保留负号如果需要）
+			const cleanValue = String(inputValue).replace(/[^\d.]/g, '');
+			if (cleanValue === '' || cleanValue === '.') {
+				return '';
+			}
+			const num = Number(cleanValue);
+			if (isNaN(num)) {
+				return '';
+			}
+			// 返回Number类型，保持用户输入的完整精度（不截断）
+			return num;
 		},
 		/**
 		 * 格式化数值用于显示，但不影响存储值
@@ -1276,8 +1334,8 @@ export default {
 				</el-form-item>
 				<!-- 2025-11-1 录入人员不用录入了 -->
 				<!-- <el-form-item label="录入人员" prop="userName">
-					<el-input v-model="orderInfo.userName" type="text" size="mini" placeholder="请输入录入人员" style="width: 110px" />
-				</el-form-item> -->
+          <el-input v-model="orderInfo.userName" type="text" size="mini" placeholder="请输入录入人员" style="width: 110px" />
+        </el-form-item> -->
 				<el-form-item label="备注" prop="comments">
 					<el-input v-model="orderInfo.comments" type="text" size="mini" placeholder="请输入备注" />
 				</el-form-item>
@@ -1432,7 +1490,7 @@ export default {
 								<el-col :span="12">
 									<el-input disabled size="mini" v-model="scope.row[scope.row.currentType || 'supplier']" placeholder="请输入供应商/仓库" />
 								</el-col>
-								<el-col :span="4">
+								<el-col :span="6">
 									<SearchOption
 										title="供应商信息"
 										:get-data="listCompany"
@@ -1455,7 +1513,7 @@ export default {
 										</template>
 									</SearchOption>
 								</el-col>
-								<el-col :span="4">
+								<el-col :span="6">
 									<SearchOption
 										title="库存信息"
 										:get-data="listExitInventory"
@@ -1581,7 +1639,8 @@ export default {
 							<el-input
 								size="mini"
 								v-model="scope.row.price"
-								@input="() => recalculateAll(scope)"
+								@input="val => handlePriceInput(scope.row, 'price', val, () => recalculateAll(scope))"
+								@focus="() => handlePriceFocus(scope.row, 'price')"
 								:disabled="!scope.row.isEditing"
 								@blur="() => formatPriceInput(scope.row, 'price', 2, false)"
 								placeholder="请输入出厂单价"
@@ -1601,7 +1660,8 @@ export default {
 							<el-input
 								size="mini"
 								v-model.lazy="scope.row.sundryCost"
-								@input="() => recalculateAll(scope)"
+								@input="val => handlePriceInput(scope.row, 'sundryCost', val, () => recalculateAll(scope))"
+								@focus="() => handlePriceFocus(scope.row, 'sundryCost')"
 								:disabled="!scope.row.isEditing"
 								@blur="() => formatPriceInput(scope.row, 'sundryCost', 2)"
 								placeholder="请输入杂费"
@@ -1624,7 +1684,8 @@ export default {
 								size="mini"
 								v-model.lazy="scope.row.paymentUnload"
 								placeholder="请输入卸货价"
-								@input="() => recalculateAll(scope)"
+								@input="val => handlePriceInput(scope.row, 'paymentUnload', val, () => recalculateAll(scope))"
+								@focus="() => handlePriceFocus(scope.row, 'paymentUnload')"
 								:disabled="!scope.row.isEditing"
 								@blur="() => formatPriceInput(scope.row, 'paymentUnload', 2, false)"
 							/>
@@ -1643,7 +1704,8 @@ export default {
 							<el-input
 								size="mini"
 								v-model.lazy="scope.row.paymentsWithSundry"
-								@input="() => recalculateAll(scope)"
+								@input="val => handlePriceInput(scope.row, 'paymentsWithSundry', val, () => recalculateAll(scope))"
+								@focus="() => handlePriceFocus(scope.row, 'paymentsWithSundry')"
 								:disabled="!scope.row.isEditing"
 								@blur="() => formatPriceInput(scope.row, 'paymentsWithSundry', 2)"
 								placeholder="请输入总货款杂费"
@@ -1671,7 +1733,8 @@ export default {
 							<el-input
 								size="mini"
 								v-model.lazy="scope.row.landFreightPrice"
-								@input="() => recalculateAll(scope)"
+								@input="val => handlePriceInput(scope.row, 'landFreightPrice', val, () => recalculateAll(scope))"
+								@focus="() => handlePriceFocus(scope.row, 'landFreightPrice')"
 								placeholder="请输入陆运费单价"
 								:disabled="!scope.row.isEditing"
 								@blur="() => formatPriceInput(scope.row, 'landFreightPrice', 2)"
@@ -1683,7 +1746,8 @@ export default {
 							<el-input
 								size="mini"
 								v-model.lazy="scope.row.additionalFees"
-								@input="() => recalculateAll(scope)"
+								@input="val => handlePriceInput(scope.row, 'additionalFees', val, () => recalculateAll(scope))"
+								@focus="() => handlePriceFocus(scope.row, 'additionalFees')"
 								:placeholder="!scope.row.landFreightPrice ? '请先完善陆运费单价' : '请输入加费'"
 								:disabled="!scope.row.isEditing"
 								@blur="() => formatPriceInput(scope.row, 'additionalFees', 2)"
@@ -1700,7 +1764,8 @@ export default {
 							<el-input
 								size="mini"
 								v-model.lazy="scope.row.seaFreight"
-								@input="() => recalculateAll(scope)"
+								@input="val => handlePriceInput(scope.row, 'seaFreight', val, () => recalculateAll(scope))"
+								@focus="() => handlePriceFocus(scope.row, 'seaFreight')"
 								placeholder="请输入海运费"
 								:disabled="!scope.row.isEditing"
 								@blur="() => formatPriceInput(scope.row, 'seaFreight', 2)"
@@ -1719,7 +1784,8 @@ export default {
 								size="mini"
 								v-model.lazy="scope.row.otherCost"
 								placeholder="请输入其他费用"
-								@input="() => recalculateAll(scope)"
+								@input="val => handlePriceInput(scope.row, 'otherCost', val, () => recalculateAll(scope))"
+								@focus="() => handlePriceFocus(scope.row, 'otherCost')"
 								:disabled="!scope.row.isEditing"
 								@blur="() => formatPriceInput(scope.row, 'otherCost', 2)"
 							/>
@@ -1745,6 +1811,8 @@ export default {
 							<el-input
 								size="mini"
 								v-model="scope.row.logisticsProfit"
+								@input="val => handlePriceInput(scope.row, 'logisticsProfit', val, () => {})"
+								@focus="() => handlePriceFocus(scope.row, 'logisticsProfit')"
 								placeholder="请输入物流利润"
 								:disabled="!scope.row.isEditing"
 								@blur="() => formatPriceInput(scope.row, 'logisticsProfit', 2)"
@@ -1756,6 +1824,8 @@ export default {
 							<el-input
 								size="mini"
 								v-model="scope.row.customerCommission"
+								@input="val => handlePriceInput(scope.row, 'customerCommission', val, () => {})"
+								@focus="() => handlePriceFocus(scope.row, 'customerCommission')"
 								placeholder="请输入佣金"
 								:disabled="!scope.row.isEditing"
 								@blur="() => formatPriceInput(scope.row, 'customerCommission', 2)"
@@ -1767,6 +1837,8 @@ export default {
 							<el-input
 								size="mini"
 								v-model="scope.row.factoryCommission"
+								@input="val => handlePriceInput(scope.row, 'factoryCommission', val, () => {})"
+								@focus="() => handlePriceFocus(scope.row, 'factoryCommission')"
 								placeholder="请输入佣金"
 								:disabled="!scope.row.isEditing"
 								@blur="() => formatPriceInput(scope.row, 'factoryCommission', 2)"
@@ -1778,6 +1850,8 @@ export default {
 							<el-input
 								size="mini"
 								v-model="scope.row.factoryRebateAmount"
+								@input="val => handlePriceInput(scope.row, 'factoryRebateAmount', val, () => {})"
+								@focus="() => handlePriceFocus(scope.row, 'factoryRebateAmount')"
 								placeholder="请输入计提厂家返利金额"
 								:disabled="!scope.row.isEditing"
 								@blur="() => formatPriceInput(scope.row, 'factoryRebateAmount', 2)"
@@ -1789,6 +1863,8 @@ export default {
 							<el-input
 								size="mini"
 								v-model="scope.row.factoryDiscountAmount"
+								@input="val => handlePriceInput(scope.row, 'factoryDiscountAmount', val, () => {})"
+								@focus="() => handlePriceFocus(scope.row, 'factoryDiscountAmount')"
 								placeholder="请输入计提厂家降价金额"
 								:disabled="!scope.row.isEditing"
 								@blur="() => formatPriceInput(scope.row, 'factoryDiscountAmount', 2)"

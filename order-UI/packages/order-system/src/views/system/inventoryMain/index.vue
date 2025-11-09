@@ -123,14 +123,14 @@
 										<StateTag
 											:state-title="scope.row.checkState"
 											:state-mapper="{ 2: '已审核' }"
-											@click.native="hasAuditPermission() && handleReCheck(scope.row)"
-											:style="{ cursor: hasAuditPermission() ? 'pointer' : 'default' }"
+											@click.native="hasPermission(['finance', 'admin']) && handleReCheck(scope.row)"
+											:style="{ cursor: hasPermission(['finance', 'admin']) ? 'pointer' : 'default' }"
 										/>
 									</el-row>
 									<el-row v-else>
 										<el-row>
 											<!-- 只有具有财务或超级管理员权限的用户可以审核 -->
-											<el-button v-if="hasAuditPermission()" type="text" size="mini" @click="handleCheck(scope.row)">审核</el-button>
+											<el-button v-if="hasPermission(['finance', 'admin'])" type="text" size="mini" @click="handleCheck(scope.row)">审核</el-button>
 											<!-- 其他用户显示状态文本 -->
 											<span v-else style="color: #909399; font-size: 12px">待审核</span>
 										</el-row>
@@ -703,6 +703,12 @@
 							<el-input size="mini" v-model="scope.row.profitNoTax" placeholder="自动计算" disabled />
 						</template>
 					</el-table-column>
+					<el-table-column label="备注" prop="comments" width="150">
+						<template #default="scope">
+							<!-- 添加 disabled 属性 -->
+							<el-input size="mini" v-model="scope.row.comments" placeholder="请输入备注" :disabled="!scope.row.isEditing" />
+						</template>
+					</el-table-column>
 					<el-table-column label="物流利润" prop="logisticsProfit" width="80">
 						<template #default="scope">
 							<el-input
@@ -753,13 +759,6 @@
 								placeholder="请输入计提厂家降价金额"
 								:disabled="!scope.row.isEditing"
 							/>
-						</template>
-					</el-table-column>
-
-					<el-table-column label="备注" prop="comments" width="150">
-						<template #default="scope">
-							<!-- 添加 disabled 属性 -->
-							<el-input size="mini" v-model="scope.row.comments" placeholder="请输入备注" :disabled="!scope.row.isEditing" />
 						</template>
 					</el-table-column>
 				</el-table>
@@ -1006,15 +1005,15 @@ export default {
 					},
 					{
 						id: 2,
-						label: '宽度',
-						prop: 'width',
+						label: '长度',
+						prop: 'length',
 						type: 'input',
 						value: ''
 					},
 					{
 						id: 3,
-						label: '长度',
-						prop: 'length',
+						label: '宽度',
+						prop: 'width',
 						type: 'input',
 						value: ''
 					},
@@ -1074,9 +1073,12 @@ export default {
 		this.getStoreList();
 	},
 	methods: {
-		hasAuditPermission() {
-			// 使用系统权限检查方法
-			return this.$store.getters.permissions.some(permission => permission === 'system:inventoryMain:audit');
+		// 检查用户是否具有指定权限
+		hasPermission(roles) {
+			// 从 Vuex store 或其他地方获取当前用户角色
+			const userRoles = this.$store.getters.roles || [];
+			// 检查是否包含所需角色
+			return userRoles.some(role => roles.includes(role));
 		},
 		// DragDiv 事件处理方法
 		handleDragStart() {

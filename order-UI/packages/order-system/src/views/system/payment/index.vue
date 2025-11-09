@@ -918,7 +918,7 @@ export default {
 				tID: null,
 				moneyAmount: null,
 				selfBankCardType: BankAcceptanceType.BANK_CASH, // 默认设置为银行活期存款
-				otherBankCardType: null,
+				otherBankCardType: BankAcceptanceType.BANK_CASH,
 				selfAccountsName: null,
 				selfBankNo: null,
 				selfBankName: null,

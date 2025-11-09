@@ -3,7 +3,7 @@
 		<!-- 筛选框 -->
 		<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
 			<el-form-item label="开始时间" prop="endDate">
-				<el-date-picker v-model="queryParams.endDate" type="datetime" placeholder="选择开始时间" value-format="yyyy-MM-dd HH:mm:ss" size="mini" clearable></el-date-picker>
+				<el-date-picker v-model="queryParams.endDate" type="date" placeholder="选择开始时间" value-format="yyyy-MM-dd" size="mini" clearable></el-date-picker>
 			</el-form-item>
 			<el-form-item label="账户类型">
 				<el-select v-model="queryParams.bankCardType" placeholder="账户类型" size="mini" clearable>
@@ -104,16 +104,13 @@ export default {
 	name: 'SelfMoney',
 	mixins: [mixin_printHTML],
 	data() {
-		// 获取当前时间，格式化为 yyyy-MM-dd HH:mm:ss
+		// 获取当前日期，格式化为 yyyy-MM-dd
 		const getCurrentDateTime = () => {
 			const now = new Date();
 			const year = now.getFullYear();
 			const month = String(now.getMonth() + 1).padStart(2, '0');
 			const day = String(now.getDate()).padStart(2, '0');
-			const hours = String(now.getHours()).padStart(2, '0');
-			const minutes = String(now.getMinutes()).padStart(2, '0');
-			const seconds = String(now.getSeconds()).padStart(2, '0');
-			return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+			return `${year}-${month}-${day}`;
 		};
 
 		return {
@@ -201,16 +198,13 @@ export default {
 		listBankAccount,
 		listCompany,
 		updateBankAccountSort,
-		// 获取当前时间的方法
+		// 获取当前日期的方法
 		getCurrentDateTime() {
 			const now = new Date();
 			const year = now.getFullYear();
 			const month = String(now.getMonth() + 1).padStart(2, '0');
 			const day = String(now.getDate()).padStart(2, '0');
-			const hours = String(now.getHours()).padStart(2, '0');
-			const minutes = String(now.getMinutes()).padStart(2, '0');
-			const seconds = String(now.getSeconds()).padStart(2, '0');
-			return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+			return `${year}-${month}-${day}`;
 		},
 		getList() {
 			this.loading = true;
