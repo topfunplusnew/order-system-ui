@@ -588,7 +588,6 @@
 							<el-input
 								size="mini"
 								@input="val => handlePiecesInput(scope.row, 'stockNumber', val, () => recalculateAll(scope))"
-								@change="() => handlePiecesChange(scope)"
 								v-model="scope.row.stockNumber"
 								placeholder="入库时片数"
 								:disabled="!scope.row.isEditing"
