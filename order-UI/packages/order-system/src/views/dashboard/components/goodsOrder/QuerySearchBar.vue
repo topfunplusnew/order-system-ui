@@ -17,6 +17,9 @@
 					@change="onDateRangeChange"
 				/>
 			</el-form-item>
+			<el-form-item v-if="shouldShowField('id')" label="ID" prop="id">
+				<el-input v-model="queryParams.id" placeholder="请输入订单ID" clearable size="mini" class="input-short" @keyup.enter.native="handleQuery"></el-input>
+			</el-form-item>
 
 			<el-form-item v-if="shouldShowField('customer')" label="客户名称" prop="customer">
 				<el-input v-model="queryParams.customer" placeholder="请输入客户名称" clearable size="mini" class="input-standard" @keyup.enter.native="handleQuery"></el-input>
@@ -135,6 +138,7 @@ export default {
 			fieldSettingVisible: false,
 			isConfigLoaded: false,
 			allFields: [
+				{ value: 'id', label: 'ID' },
 				{ value: 'dateRange', label: '时间范围' },
 				{ value: 'customer', label: '客户名称' },
 				{ value: 'supplierNames', label: '供应商' },
@@ -157,10 +161,12 @@ export default {
 			dateRange: [],
 			options: Options,
 			queryParams: {
+				id: '',
 				orderDateStart: null,
 				orderDateEnd: null,
 				pageNum: 1,
 				pageSize: 50,
+
 				customer: '',
 				saleManager: '',
 				landDriverName: '',
@@ -296,6 +302,7 @@ export default {
 		resetQuery() {
 			if (this.$refs.queryForm) this.$refs.queryForm.resetFields();
 			Object.assign(this.queryParams, {
+				id: '',
 				orderDateStart: null,
 				orderDateEnd: null,
 				pageNum: 1,
