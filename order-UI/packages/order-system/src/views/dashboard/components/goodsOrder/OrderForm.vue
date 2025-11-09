@@ -1116,10 +1116,10 @@ export default {
 		 * @param {Object} row - 当前行数据
 		 * @param {String} field - 字段名
 		 * @param {Number} precision - 显示精度（2或4位小数）
-		 * @param {boolean} control - 是否严格控制（暂保留兼容性，实际不截断）
+		 * @param {boolean} isSpecialFieldFlag - 是否强制作为特殊字段处理（false表示根据字段名自动判断）
 		 */
-		formatPriceInput(row, field, precision, control = true) {
-			return utilFormatPriceInput(row, field, precision, control);
+		formatPriceInput(row, field, precision, isSpecialFieldFlag = false) {
+			return utilFormatPriceInput(row, field, precision, isSpecialFieldFlag);
 		},
 		/**
 		 * 处理价格字段聚焦事件，恢复完整精度显示以便编辑

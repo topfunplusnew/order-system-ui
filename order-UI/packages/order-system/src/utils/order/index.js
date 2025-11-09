@@ -92,7 +92,7 @@ export function handlePriceInput(row, field, inputValue, callback) {
 			}
 		}
 	} else {
-		// 其他字段：输入时保持完整精度（允许用户继续输入），失去焦点时会截断
+		// 其他字段：输入时保持完整精度（允许用户输入任意小数位），失去焦点时会截断为两位小数
 		row[`_${field}_raw`] = parsedValue;
 		row[field] = inputValue;
 	}

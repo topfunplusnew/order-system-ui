@@ -217,7 +217,7 @@
 		</div>
 
 		<!-- 添加或修改库存库存主表对话框 -->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="title" :visible.sync="open" width="1600px" append-to-body :close-on-click-modal="false">
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="title" :visible.sync="open" width="100%" append-to-body :close-on-click-modal="false">
 			<el-form ref="form" :model="form" :rules="rules" label-width="100px" :inline="true">
 				<el-form-item label="仓库名称" prop="storeHouseName">
 					<el-col :span="16">
@@ -2114,10 +2114,10 @@ export default {
 		 * @param {Object} row - 当前行数据
 		 * @param {String} field - 字段名
 		 * @param {Number} precision - 显示精度（2或4位小数）
-		 * @param {boolean} control - 是否严格控制（暂保留兼容性，实际不截断）
+		 * @param {boolean} isSpecialFieldFlag - 是否强制作为特殊字段处理（false表示根据字段名自动判断）
 		 */
-		formatPriceInput(row, field, precision, control = true) {
-			return utilFormatPriceInput(row, field, precision, control);
+		formatPriceInput(row, field, precision, isSpecialFieldFlag = false) {
+			return utilFormatPriceInput(row, field, precision, isSpecialFieldFlag);
 		},
 		/**
 		 * 处理价格字段聚焦事件，恢复完整精度显示以便编辑
