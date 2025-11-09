@@ -1426,8 +1426,8 @@ export default {
 										:disable="!scope.row.isEditing"
 									>
 										<template #table-columns>
-											<el-table-column label="仓库名称" align="center" prop="storeHouseName" show-overflow-tooltip />
-											<el-table-column label="级别名称" align="center" prop="levelName" show-overflow-tooltip />
+											<el-table-column label="仓库名称" align="center" prop="storeHouseName" width="150" show-overflow-tooltip />
+											<el-table-column label="级别名称" align="center" prop="levelName" width="150" show-overflow-tooltip />
 											<el-table-column label="计量单位" align="center" prop="countingUnit" show-overflow-tooltip />
 											<el-table-column label="厚度" align="center" prop="height" show-overflow-tooltip />
 											<el-table-column label="长度" align="center" prop="length" show-overflow-tooltip />
