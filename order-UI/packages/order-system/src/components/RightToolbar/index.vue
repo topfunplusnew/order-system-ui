@@ -1,6 +1,6 @@
 <template>
 	<div class="toolbar-container" :style="style">
-		<!-- 左侧自定义内容插槽 可以放新增按钮等 -->
+		<!-- 左侧自定义内容插槽 -->
 		<div class="left-content">
 			<slot name="left"></slot>
 		</div>
@@ -8,28 +8,36 @@
 		<!-- 右侧工具栏 -->
 		<div class="top-right-btn">
 			<el-row>
-				<!--      打印-->
+				<!-- 打印 -->
 				<el-tooltip class="item" effect="dark" content="打印" placement="top" style="margin-right: 10px">
 					<slot name="print"></slot>
 				</el-tooltip>
 
-				<!--      导出-->
-				<el-tooltip class="item" effect="dark" content="导出" placement="top">
+				<!-- 导出 -->
+				<el-tooltip class="item" effect="dark" content="导出" placement="top" style="margin-right: 0px">
 					<slot name="export"></slot>
 				</el-tooltip>
-				<el-tooltip class="item" effect="dark" content="导出2" placement="top">
-					<slot name="export2"></slot>
-				</el-tooltip>
-				<!-- 隐藏列的控制   -->
-				<el-tooltip v-if="columns" class="item" style="margin-right: 10px" effect="dark" content="显隐列" placement="top">
-					<el-button v-if="showColumnsType == 'transfer'" size="mini" circle icon="el-icon-s-open" @click="showColumn()" />
-					<el-dropdown v-if="showColumnsType == 'checkbox'" trigger="click" :hide-on-click="false" style="padding-left: 12px">
+
+				<!-- 显隐列 -->
+				<el-tooltip v-if="columns && columns.length > 0" class="item" style="margin-right: 10px" effect="dark" content="显隐列" placement="top">
+					<!-- 穿梭框模式 -->
+					<el-button v-if="showColumnsType === 'transfer'" size="mini" circle icon="el-icon-s-open" @click="showColumn" />
+					<!-- 多选框模式 -->
+					<el-dropdown v-if="showColumnsType === 'checkbox'" trigger="click" :hide-on-click="false" style="padding-left: 12px">
 						<el-button size="mini" icon="el-icon-s-open" />
 						<el-dropdown-menu slot="dropdown" class="multi-column-dropdown" :style="{ width: columnGroups.length > 1 ? '800px' : 'auto' }">
+							<div class="select-all-container">
+								<el-button size="mini" @click="toggleSelectAll" style="margin-bottom: 8px; margin-left: 8px">
+									{{ isAllSelected ? '取消全选' : '全选' }}
+								</el-button>
+							</div>
 							<div class="columns-container" :class="{ 'multi-columns': columnGroups.length > 1 }" :style="{ display: columnGroups.length > 1 ? 'flex' : 'block' }">
 								<div v-for="(group, groupIndex) in columnGroups" :key="groupIndex" class="column-group" :style="{ flex: columnGroups.length > 1 ? '1' : 'none' }">
 									<el-dropdown-item v-for="item in group" :key="item.key || item.prop || item.label">
-										<el-checkbox :checked="item.visible" :label="item.label" @change="checkboxChange($event, item.label)" />
+										<!-- v-model 绑定 visible，保证全选/取消全选有效 -->
+										<el-checkbox v-model="item.visible" @change="checkboxChange(item.visible, item.label)">
+											{{ item.label }}
+										</el-checkbox>
 									</el-dropdown-item>
 								</div>
 							</div>
@@ -37,248 +45,277 @@
 					</el-dropdown>
 				</el-tooltip>
 			</el-row>
+
+			<!-- 穿梭框弹窗 -->
 			<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :title="title" :visible.sync="open" append-to-body>
 				<el-transfer v-model="value" :titles="['显示', '隐藏']" :data="columns" @change="dataChange"></el-transfer>
 			</el-dialog>
 		</div>
 	</div>
 </template>
+
 <script>
+import { getUserConfig, saveUserConfig } from '@/api/user-config/index.js';
+import { ShowColumnsType } from '@/api/tool/user-config.js';
+
 export default {
 	name: 'RightToolbar',
 	props: {
-		/* 是否显示检索条件 */
+		showColumnsType: {
+			type: String,
+			default: ShowColumnsType.CHECKBOX
+		},
+		beforeUnmount() {
+			this.open = false;
+		},
 		showSearch: {
 			type: Boolean,
 			default: true
 		},
-		/* 显隐列信息 */
 		columns: {
-			type: Array
+			type: Array,
+			default: () => []
 		},
-		/* 是否显示检索图标 */
-		search: {
-			type: Boolean,
-			default: true
-		},
-		/* 显隐列类型（transfer穿梭框、checkbox复选框） */
-		showColumnsType: {
-			type: String,
-			default: 'checkbox'
-		},
-		/* 右外边距 */
 		gutter: {
 			type: Number,
 			default: 10
+		},
+		tableName: {
+			type: String,
+			default: 'goodsorder-columns'
 		}
 	},
 	data() {
 		return {
-			// 显隐数据
 			value: [],
-			// 弹出层标题
-			title: '显示/隐藏',
-			// 是否显示弹出层
-			open: false
+			title: '显示/隐藏列',
+			open: false,
+			configLoaded: false
 		};
 	},
 	computed: {
-		style() {
-			const ret = {};
-			if (this.gutter) {
-				ret.marginRight = `${this.gutter / 2}px`;
-			}
-			return ret;
+		isAllSelected() {
+			// 强制布尔判断，避免 undefined 或非布尔值导致计算错误
+			return this.columns.length > 0 && this.columns.every(col => !!col.visible);
 		},
-		// 计算列分组，每列9个，按 key 排序后顺序分组
+		style() {
+			return this.gutter ? { marginRight: `${this.gutter / 2}px` } : {};
+		},
 		columnGroups() {
-			if (!this.columns || !Array.isArray(this.columns)) {
-				return [];
-			}
-
-			// 1. 先按 key 排序
+			if (!Array.isArray(this.columns) || this.columns.length === 0) return [];
 			const sortedColumns = [...this.columns].sort((a, b) => {
-				const keyA = a.key !== undefined ? a.key : Number.MAX_SAFE_INTEGER;
-				const keyB = b.key !== undefined ? b.key : Number.MAX_SAFE_INTEGER;
+				const keyA = a.key ?? Number.MAX_SAFE_INTEGER;
+				const keyB = b.key ?? Number.MAX_SAFE_INTEGER;
 				return keyA - keyB;
 			});
-
-			// 2. 每列9个，顺序分组
 			const chunkSize = 9;
 			const groups = [];
 			for (let i = 0; i < sortedColumns.length; i += chunkSize) {
 				groups.push(sortedColumns.slice(i, i + chunkSize));
 			}
-
 			return groups;
 		}
 	},
-	created() {
-		if (this.showColumnsType == 'transfer') {
-			// 显隐列初始默认隐藏列
-			for (const item in this.columns) {
-				if (this.columns[item].visible === false) {
-					this.value.push(parseInt(item));
+	mounted() {
+		this.tryLoadConfig();
+	},
+	watch: {
+		columns: {
+			immediate: true,
+			handler(newCols) {
+				if (newCols.length > 0 && !this.configLoaded) {
+					this.tryLoadConfig();
 				}
 			}
 		}
-
-		// 确保所有列都有明确的 visible 属性
-		this.initializeColumnVisibility();
-	},
-	watch: {
-		// 监听 columns 变化，确保新传入的列配置正确初始化
-		columns: {
-			handler() {
-				this.initializeColumnVisibility();
-			},
-			immediate: true,
-			deep: true
-		}
 	},
 	methods: {
-		// 初始化列的可见性
+		async tryLoadConfig() {
+			this.initializeColumnVisibility();
+			await this.loadUserConfig();
+		},
+
 		initializeColumnVisibility() {
-			if (this.columns && Array.isArray(this.columns)) {
+			if (!Array.isArray(this.columns) || this.configLoaded) return;
+			this.columns.forEach((column, index) => {
+				if (column.visible === undefined) {
+					this.$set(this.columns, index, { ...column, visible: true });
+				}
+			});
+		},
+
+		async loadUserConfig() {
+			if (!this.tableName || this.columns.length === 0) return;
+			try {
+				const configKey = `column_config_${this.tableName}`;
+				const response = await getUserConfig(configKey);
+				if (!response?.data) return;
+
+				const savedConfig = typeof response.data === 'string' ? JSON.parse(response.data) : response.data;
+
 				this.columns.forEach((column, index) => {
-					// 如果 visible 属性未定义，默认设置为 true
-					if (typeof column.visible === 'undefined') {
-						this.$set(column, 'visible', true);
+					if (column.label && Object.prototype.hasOwnProperty.call(savedConfig, column.label)) {
+						this.$set(this.columns[index], 'visible', !!savedConfig[column.label]);
 					}
 				});
+
+				this.configLoaded = true;
+				this.$forceUpdate();
+			} catch (error) {
+				console.warn('加载列配置失败:', error);
 			}
 		},
 
-		// 打印
-		handlePrint() {},
-		// 搜索
-		toggleSearch() {
-			this.$emit('update:showSearch', !this.showSearch);
-		},
-		// 刷新
-		refresh() {
-			this.$emit('queryTable');
-		},
-		// 右侧列表元素变化
-		dataChange(data) {
-			for (const item in this.columns) {
-				const key = this.columns[item].key;
-				this.columns[item].visible = !data.includes(key);
+		async saveUserConfig() {
+			if (!this.tableName || this.columns.length === 0) return;
+			try {
+				const config = this.columns.reduce((obj, col) => {
+					if (col.label) obj[col.label] = !!col.visible;
+					return obj;
+				}, {});
+				const configKey = `column_config_${this.tableName}`;
+				await saveUserConfig(configKey, config);
+			} catch (error) {
+				console.warn('保存列配置失败:', error);
 			}
 		},
-		// 打开显隐列dialog
+
+		toggleSelectAll() {
+			const shouldSelectAll = !this.isAllSelected;
+			this.columns.forEach((col, index) => {
+				this.$set(col, 'visible', shouldSelectAll);
+				this.$emit('column-change', { index, column: col, visible: shouldSelectAll });
+			});
+			this.saveUserConfig();
+		},
+
+		handleRefresh() {
+			this.$emit('refresh-table');
+		},
+
 		showColumn() {
 			this.open = true;
 		},
-		// 勾选
-		checkboxChange(event, label) {
-			const columnIndex = this.columns.findIndex(item => item.label === label);
-			if (columnIndex !== -1) {
-				// 使用Vue.set确保响应式更新
-				this.$set(this.columns[columnIndex], 'visible', event);
-				// 通知父组件列配置已更改
-				this.$emit('column-change', {
-					index: columnIndex,
-					column: this.columns[columnIndex],
-					visible: event
-				});
-			}
+
+		checkboxChange(visible, label) {
+			const index = this.columns.findIndex(col => col.label === label);
+			if (index === -1) return;
+			this.$set(this.columns[index], 'visible', visible);
+			this.$emit('column-change', { index, column: this.columns[index], visible });
+			this.saveUserConfig();
+		},
+
+		dataChange(hiddenIndices) {
+			this.columns.forEach((col, index) => {
+				const isVisible = !hiddenIndices.includes(index);
+				if (col.visible !== isVisible) {
+					this.$set(col, 'visible', isVisible);
+					this.$emit('column-change', { index, column: col, visible: isVisible });
+				}
+			});
+			this.saveUserConfig();
+		},
+
+		async refreshColumns() {
+			await this.loadUserConfig();
+			this.$message.success('列配置已刷新');
+			this.$emit('column-refresh', this.columns);
 		}
 	}
 };
 </script>
+
 <style lang="scss" scoped>
-// 工具栏容器 - 弹性盒布局
+/* 样式保持不变，和原版相同 */
 .toolbar-container {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
 	width: 100%;
+	padding: 8px 0;
 }
 
-// 左侧内容区域
 .left-content {
 	flex: 1;
 	display: flex;
 	align-items: center;
+	gap: 10px;
 }
 
-// 右侧工具按钮区域
 .top-right-btn {
 	flex-shrink: 0;
 	display: flex;
 	align-items: center;
-}
 
-::v-deep .el-transfer__button {
-	border-radius: 50%;
-	padding: 12px;
-	display: block;
-	margin-left: 0px;
-}
+	.item {
+		margin-right: 8px;
+	}
 
-::v-deep .el-transfer__button:first-child {
-	margin-bottom: 10px;
-}
-
-// 多列下拉菜单样式 - 增强权重
-::v-deep .el-dropdown-menu.multi-column-dropdown {
-	.columns-container {
-		display: flex !important;
-		flex-direction: row !important;
-
-		&.multi-columns {
-			max-width: 800px !important; // 增加最大宽度
-			min-width: 400px !important;
-		}
-
-		.column-group {
-			flex: 1 !important;
-			min-width: 200px !important; // 增加每列最小宽度
-			display: flex !important;
-			flex-direction: column !important;
-
-			&:not(:last-child) {
-				border-right: 1px solid #ebeef5 !important;
-				padding-right: 12px !important;
-				margin-right: 12px !important;
-			}
-
-			.el-dropdown-item {
-				padding: 6px 8px !important;
-				margin: 0 !important;
-				display: block !important;
-
-				&:hover {
-					background-color: #f5f7fa !important;
-				}
-
-				.el-checkbox {
-					width: 100% !important;
-					margin: 0 !important;
-
-					.el-checkbox__label {
-						font-size: 12px !important;
-						line-height: 1.4 !important;
-						word-break: break-all !important;
-						white-space: normal !important;
-						max-width: 160px !important;
-						display: inline-block !important;
-					}
-				}
-			}
+	.el-button {
+		transition: all 0.2s;
+		&:hover {
+			transform: scale(1.05);
 		}
 	}
 }
 
-// 额外的全局样式确保生效
-::v-deep .el-dropdown-menu {
-	&.multi-column-dropdown {
-		max-height: none !important;
-		overflow: visible !important;
+::v-deep .el-transfer {
+	width: 100%;
+	min-width: 500px;
 
-		.el-dropdown-item {
-			line-height: normal !important;
+	.el-transfer__button {
+		border-radius: 50%;
+		padding: 12px;
+		margin-left: 0;
+	}
+
+	.el-transfer__button:first-child {
+		margin-bottom: 10px;
+	}
+}
+
+::v-deep .el-dropdown-menu.multi-column-dropdown {
+	padding: 8px 0;
+	max-height: 400px;
+	overflow-y: auto;
+
+	.select-all-container {
+		border-bottom: 1px solid #ebeef5;
+		padding: 0 8px 8px;
+	}
+
+	.columns-container {
+		display: flex;
+		flex-direction: row;
+
+		&.multi-columns {
+			max-width: 800px;
+			min-width: 400px;
+		}
+
+		.column-group {
+			flex: 1;
+			min-width: 200px;
+			padding: 0 8px;
+
+			&:not(:last-child) {
+				border-right: 1px solid #ebeef5;
+			}
+
+			.el-dropdown-item {
+				padding: 6px 8px;
+				margin: 0;
+				white-space: normal;
+
+				.el-checkbox {
+					width: 100%;
+					.el-checkbox__label {
+						font-size: 12px;
+						line-height: 1.4;
+						word-break: break-all;
+					}
+				}
+			}
 		}
 	}
 }

@@ -120,6 +120,7 @@ import { OptionInvent, Options } from '@/views/dashboard/mixins/order/order_Invo
 import { getDateRangeDays } from '@/utils/index';
 import _ from 'lodash';
 import { getUserConfig, saveUserConfig } from '@/api/user-config';
+import { UserConfigKey } from '@/api/tool/user-config.js'; // 导入枚举类
 
 export default {
 	name: 'QuerySearchBar',
@@ -186,6 +187,20 @@ export default {
 			return fieldName => this.isConfigLoaded && Array.isArray(this.selectedFields) && this.selectedFields.includes(fieldName);
 		}
 	},
+	watch: {
+		columns: {
+			handler(newVal) {
+				if (newVal.length > 0 && !this.configLoaded) {
+					this.$nextTick(async () => {
+						this.initializeColumnVisibility();
+						await this.loadUserConfig();
+					});
+				}
+			},
+			immediate: true
+		}
+	},
+
 	async created() {
 		await this.loadFieldSettings();
 		this.initializeDefaultQuery();
@@ -196,7 +211,7 @@ export default {
 		},
 		async loadFieldSettings() {
 			try {
-				const response = await getUserConfig('goodsSearch-columns');
+				const response = await getUserConfig(UserConfigKey.GOODS_SEARCH_COLUMNS);
 				const configValue = response?.data?.value || response?.data || null;
 				if (typeof configValue === 'string') {
 					try {

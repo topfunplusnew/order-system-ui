@@ -185,6 +185,7 @@ export default {
 		}
 	},
 	created() {
+		// 初始化时加载本地存储的列配置
 		if (localStorage.getItem('goodsorder-columns') === 'null' || !localStorage.getItem('goodsorder-columns')) {
 			localStorage.setItem('goodsorder-columns', JSON.stringify(this.columns));
 		} else {
@@ -225,6 +226,19 @@ export default {
 		}
 	},
 	methods: {
+		// 在 ElTableOrder.vue 中
+		handleColumnRefresh(updatedColumns) {
+			// 更新表格列的显示状态
+			this.columns = [...updatedColumns];
+			// 触发表格重新加载
+			this.getList();
+		},
+
+		onColumnChange({ index, column, visible }) {
+			// 可以在这里处理列可见性变化的逻辑
+			// 例如：更新列配置或执行其他相关操作
+			this.$set(this.columns, index, { ...column, visible });
+		},
 		// 检查用户是否具有指定权限
 		hasPermission(roles) {
 			// 从 Vuex store 或其他地方获取当前用户角色
@@ -866,7 +880,7 @@ export default {
 		</div>
 		<!--      右侧的工具栏-->
 		<div>
-			<right-toolbar :columns="columns" @queryTable="getList">
+			<right-toolbar :columns="columns" @column-change="onColumnChange" @column-refresh="handleColumnRefresh" tableName="goodsorder-columns">
 				<!-- 左侧的新增订单的按钮 -->
 				<template #left>
 					<div style="padding: 10px">
