@@ -64,7 +64,7 @@
 						:attachmentList="scope.row.attachmentList"
 						@needToUpdate="value => handleUpdateFilePath(value, scope.row, getPaymentApply, updatePaymentApply)"
 						:is-upload="false"
-						flag="attachmentList"
+						flag="attachments"
 					/>
 				</template>
 			</el-table-column>
@@ -324,6 +324,8 @@ export default {
 		});
 	},
 	methods: {
+		updatePaymentApply,
+		getPaymentApply,
 		listCompany,
 		// 附件
 		isPic(url) {
