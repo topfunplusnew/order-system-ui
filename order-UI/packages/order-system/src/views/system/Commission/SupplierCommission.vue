@@ -1,5 +1,6 @@
 <template>
 	<div class="app-container">
+		<!-- 查询表单 -->
 		<el-form id="top-search-form-item" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
 			<el-form-item label="时间范围">
 				<el-date-picker
@@ -33,11 +34,15 @@
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
 			</el-form-item>
 		</el-form>
+
+		<!-- 操作按钮 -->
 		<el-row>
 			<el-button size="mini" icon="el-icon-refresh" @click="refresh">刷新</el-button>
 			<el-button :disabled="selections.length <= 0" size="mini" type="success" icon="el-icon-s-claim" @click="handleOnceApply">一键申请</el-button>
 			<el-button :disabled="batchFillDisabled" size="mini" type="primary" icon="el-icon-edit" @click="handleBatchFill">批量填写佣金</el-button>
 		</el-row>
+
+		<!-- 工具栏 -->
 		<el-row :gutter="10" class="mb8">
 			<right-toolbar :columns="columns" @queryTable="getList">
 				<template #print>
@@ -52,8 +57,12 @@
 				</template>
 			</right-toolbar>
 		</el-row>
+
+		<!-- 警告提示 -->
 		<el-alert title="添加佣金信息后，方可进行付款申请操作!" type="warning"></el-alert>
 		<br />
+
+		<!-- 表格 -->
 		<u-table
 			ref="multipleTable"
 			id="printBox"
@@ -71,7 +80,10 @@
 			"
 			@selection-change="handleSelectionChange"
 		>
+			<!-- 选择列 -->
 			<CustomTableColumn type="selection" width="55" align="center" :selectable="(row, index) => row.id !== null && isPaymentUnApplied(row)" />
+
+			<!-- 批量选择列 -->
 			<el-table-column width="80" align="center" label="批量选择">
 				<template slot="header">
 					<el-checkbox v-model="selectAllBatch" :indeterminate="isBatchIndeterminate" @change="handleBatchSelectAll"></el-checkbox>
@@ -81,6 +93,8 @@
 					<span v-else>-</span>
 				</template>
 			</el-table-column>
+
+			<!-- 数据列 -->
 			<CustomTableColumn v-if="columns[0].visible" show-overflow-tooltip label="订单日期" align="center" prop="orderDate" width="140" />
 			<CustomTableColumn show-overflow-tooltip label="佣金来源" align="center" prop="source">
 				<template slot-scope="scope">
@@ -126,12 +140,14 @@
 					<el-button v-if="scope.row.difference && scope.row.difference !== 0" size="mini" type="text" @click="handleDifferenceReason(scope.row)">
 						{{ scope.row.differenceReason || '填写差异原因' }}
 					</el-button>
-					<span v-else>-</span>
+					<span v-else></span>
 				</template>
 			</CustomTableColumn>
-			<!--      加一列操作列-->
-			<CustomTableColumn show-overflow-tooltip label="操作" align="center" width="230" class-name="small-padding fixed-width" fixed="right">
+
+			<!-- 操作列 -->
+			<CustomTableColumn show-overflow-tooltip label="操作" align="center" width="400" class-name="small-padding fixed-width" fixed="right">
 				<template slot-scope="scope">
+					<el-button type="text" size="mini" @click="handleViewOrder(scope.row)">查看订单</el-button>
 					<el-button type="text" size="mini" @click="handleEdit(scope.row)">{{ scope.row.id ? '修改佣金信息' : '填写佣金信息' }}</el-button>
 					<el-button :disabled="scope.row.id === null" type="text" size="mini" @click="handleDelete(scope.row)">删除</el-button>
 					<el-button :disabled="scope.row.id === null" type="text" size="mini" @click="handleApplyPayment(scope.row)">申请付款</el-button>
@@ -139,8 +155,10 @@
 			</CustomTableColumn>
 		</u-table>
 
+		<!-- 分页 -->
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
-		<!--    申请付款-->
+
+		<!-- 付款申请对话框 -->
 		<el-dialog
 			:modal="false"
 			v-dialogDrag
@@ -157,7 +175,7 @@
 			</keep-alive>
 		</el-dialog>
 
-		<!--    批量填写佣金-->
+		<!-- 批量填写佣金对话框 -->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" title="批量填写佣金信息" :visible.sync="batchFillVisible" width="500px">
 			<el-form ref="batchForm" :model="batchForm" :rules="batchRules" label-width="140px">
 				<el-form-item label="佣金单价" prop="commissionUnitPrice">
@@ -176,7 +194,7 @@
 			</div>
 		</el-dialog>
 
-		<!--    一键申请对话框-->
+		<!-- 一键申请对话框 -->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" title="供应商佣金一键申请" :visible.sync="onceApplyVisible" width="1100px">
 			<el-card class="box-card">
 				<div slot="header" class="clearfix">
@@ -199,7 +217,7 @@
 			</el-card>
 		</el-dialog>
 
-		<!--    申请信息填写对话框-->
+		<!-- 申请信息填写对话框 -->
 		<el-dialog
 			:modal="false"
 			v-dialogDrag
@@ -225,6 +243,67 @@
 					@getApplyPayment="handleCommitApplyInfo"
 				/>
 			</keep-alive>
+		</el-dialog>
+
+		<!-- 订单详情对话框 -->
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" title="订单详情" :visible.sync="orderDetailVisible" width="80%">
+			<div v-if="currentOrder" class="order-detail-content">
+				<el-descriptions title="基本信息" :column="3" border size="mini">
+					<el-descriptions-item label="订单编号">{{ currentOrder.orderNo || '-' }}</el-descriptions-item>
+					<el-descriptions-item label="订单日期">{{ currentOrder.orderDate || '-' }}</el-descriptions-item>
+					<el-descriptions-item label="厂家名称">{{ currentOrder.companyName || '-' }}</el-descriptions-item>
+					<el-descriptions-item label="车牌号">{{ currentOrder.landCarNo || '-' }}</el-descriptions-item>
+					<el-descriptions-item label="产品名称">{{ currentOrder.levelName || '-' }}</el-descriptions-item>
+					<el-descriptions-item label="规格">{{ currentOrder.height || '-' }}×{{ currentOrder.length || '-' }}×{{ currentOrder.width || '-' }}</el-descriptions-item>
+				</el-descriptions>
+
+				<br />
+
+				<el-descriptions title="数量信息" :column="3" border size="mini">
+					<el-descriptions-item label="单位">{{ currentOrder.countingUnit || '-' }}</el-descriptions-item>
+					<el-descriptions-item label="每包片数">{{ currentOrder.piecesPerPack || '-' }}</el-descriptions-item>
+					<el-descriptions-item label="包数">{{ currentOrder.packs || '-' }}</el-descriptions-item>
+					<el-descriptions-item label="出厂片数">{{ currentOrder.pieces || '-' }}</el-descriptions-item>
+					<el-descriptions-item label="面积">{{ currentOrder.area || '-' }}</el-descriptions-item>
+					<el-descriptions-item label="备注">{{ currentOrder.comments || '-' }}</el-descriptions-item>
+				</el-descriptions>
+
+				<br />
+
+				<el-descriptions title="财务信息" :column="3" border size="mini">
+					<el-descriptions-item label="卸货价">{{ currentOrder.paymentUnload || '-' }}</el-descriptions-item>
+					<el-descriptions-item label="含税销售">{{ currentOrder.isIncludeTaxSale ? '含税' : '不含税' }}</el-descriptions-item>
+					<el-descriptions-item label="杂费">{{ currentOrder.sundryCost || '-' }}</el-descriptions-item>
+					<el-descriptions-item label="总货款">{{ currentOrder.payments || '-' }}</el-descriptions-item>
+					<el-descriptions-item label="利润">{{ currentOrder.profit || '-' }}</el-descriptions-item>
+					<el-descriptions-item label="不含税利润">{{ currentOrder.profitNoTax || '-' }}</el-descriptions-item>
+				</el-descriptions>
+
+				<br />
+
+				<el-descriptions title="佣金信息" :column="3" border size="mini">
+					<el-descriptions-item label="订单计提佣金">{{ currentOrder.commissionAmount || '-' }}</el-descriptions-item>
+					<el-descriptions-item label="佣金单价">{{ currentOrder.commissionUnitPrice || '-' }}</el-descriptions-item>
+					<el-descriptions-item label="其他付款金额">{{ currentOrder.otherPaymentAmount || '-' }}</el-descriptions-item>
+					<el-descriptions-item label="已验证佣金">{{ currentOrder.verifiedCommission || '-' }}</el-descriptions-item>
+					<el-descriptions-item label="实际厂家佣金">{{ currentOrder.actualCustomerCommission || '-' }}</el-descriptions-item>
+					<el-descriptions-item label="差异">{{ currentOrder.difference || '-' }}</el-descriptions-item>
+					<el-descriptions-item label="差异原因" :span="3">{{ currentOrder.differenceReason || '-' }}</el-descriptions-item>
+				</el-descriptions>
+
+				<br />
+
+				<el-descriptions title="支付信息" :column="3" border size="mini">
+					<el-descriptions-item label="支付日期">{{ currentOrder.fundDate || '-' }}</el-descriptions-item>
+					<el-descriptions-item label="支付状态">
+						<PaymentFlag :business-object="currentOrder" />
+					</el-descriptions-item>
+				</el-descriptions>
+			</div>
+
+			<div slot="footer" class="dialog-footer">
+				<el-button @click="orderDetailVisible = false">关闭</el-button>
+			</div>
 		</el-dialog>
 	</div>
 </template>
@@ -392,7 +471,10 @@ export default {
 					{ required: true, message: '请输入佣金单价', trigger: 'blur' },
 					{ pattern: /^\d+(\.\d{1,3})?$/, message: '佣金单价格式不正确', trigger: 'blur' }
 				]
-			}
+			},
+			// 订单详情相关
+			orderDetailVisible: false,
+			currentOrder: null
 		};
 	},
 	watch: {
@@ -508,7 +590,7 @@ export default {
 			// 保留 dateRange，不清空组件
 			this.getList();
 		},
-		// 查询数据z
+		// 查询数据
 		handleQuery() {
 			this.getList();
 		},
@@ -925,7 +1007,7 @@ export default {
 			});
 		},
 
-		// 判断行是否处于“未申请”状态（仅当未申请时复选框可选）
+		// 判断行是否处于"未申请"状态（仅当未申请时复选框可选）
 		isPaymentUnApplied(row) {
 			if (row && row.paymentApply && row.paymentApply.checkState !== undefined && row.paymentApply.checkState !== null) {
 				return row.paymentApply.checkState === PAYMENT_APPLY_STATE.V2.UN_APPLIED;
@@ -936,9 +1018,20 @@ export default {
 			}
 
 			return true;
+		},
+
+		// 查看订单详情
+		handleViewOrder(row) {
+			this.currentOrder = row;
+			this.orderDetailVisible = true;
 		}
 	}
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.order-detail-content {
+	max-height: 60vh;
+	overflow-y: auto;
+}
+</style>

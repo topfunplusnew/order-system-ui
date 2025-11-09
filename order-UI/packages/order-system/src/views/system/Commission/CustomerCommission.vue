@@ -58,7 +58,7 @@
 			ref="multipleTable"
 			id="printBox"
 			v-loading="loading"
-			v-horizontal-scroll="'always'"
+			v-horizontal-scroll="'auto'"
 			fit
 			border
 			:data="computedTableData"
@@ -125,11 +125,16 @@
 				</template>
 			</CustomTableColumn>
 			<!--      加一列操作列-->
-			<CustomTableColumn show-overflow-tooltip label="操作" align="center" class-name="small-padding fixed-width" width="230" fixed="right">
+			<CustomTableColumn show-overflow-tooltip label="操作" align="center" class-name="small-padding fixed-width" width="430" fixed="right">
 				<template slot-scope="scope">
+					<el-button type="text" size="mini" @click="handleViewOrder(scope.row)">查看订单</el-button>
 					<el-button type="text" size="mini" @click="handleEdit(scope.row)">{{ scope.row.id ? '修改佣金信息' : '填写佣金信息' }}</el-button>
-					<el-button :disabled="scope.row.id === null" type="text" size="mini" @click="handleDelete(scope.row)">删除</el-button>
-					<el-button :disabled="scope.row.id === null" type="text" size="mini" @click="handleApplyPayment(scope.row)">申请付款</el-button>
+					<!--					<el-button :disabled="!scope.row.id || scope.row.id === '0'" type="text" size="mini" @click="handleDelete(scope.row)">删除</el-button>-->
+
+					<!--					<el-button :disabled="!scope.row.id || scope.row.id === '0'" type="text" size="mini" @click="handleApplyPayment(scope.row)">申请付款</el-button>-->
+					<el-button type="text" size="mini" @click="handleDelete(scope.row)">删除</el-button>
+
+					<el-button type="text" size="mini" @click="handleApplyPayment(scope.row)">申请付款</el-button>
 				</template>
 			</CustomTableColumn>
 		</u-table>
@@ -220,6 +225,67 @@
 					@getApplyPayment="handleCommitApplyInfo"
 				/>
 			</keep-alive>
+		</el-dialog>
+
+		<!-- 订单详情对话框 -->
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" title="订单详情" :visible.sync="orderDetailVisible" width="80%">
+			<div v-if="currentOrder" class="order-detail-content">
+				<el-descriptions title="基本信息" :column="3" border size="mini">
+					<el-descriptions-item label="订单编号">{{ currentOrder.orderNo || '-' }}</el-descriptions-item>
+					<el-descriptions-item label="订单日期">{{ currentOrder.orderDate || '-' }}</el-descriptions-item>
+					<el-descriptions-item label="客户名称">{{ currentOrder.companyName || '-' }}</el-descriptions-item>
+					<el-descriptions-item label="车牌号">{{ currentOrder.landCarNo || '-' }}</el-descriptions-item>
+					<el-descriptions-item label="产品名称">{{ currentOrder.levelName || '-' }}</el-descriptions-item>
+					<el-descriptions-item label="规格">{{ currentOrder.height || '-' }}×{{ currentOrder.length || '-' }}×{{ currentOrder.width || '-' }}</el-descriptions-item>
+				</el-descriptions>
+
+				<br />
+
+				<el-descriptions title="数量信息" :column="3" border size="mini">
+					<el-descriptions-item label="单位">{{ currentOrder.countingUnit || '-' }}</el-descriptions-item>
+					<el-descriptions-item label="每包片数">{{ currentOrder.piecesPerPack || '-' }}</el-descriptions-item>
+					<el-descriptions-item label="包数">{{ currentOrder.packs || '-' }}</el-descriptions-item>
+					<el-descriptions-item label="卸货片数">{{ currentOrder.actualPieces || '-' }}</el-descriptions-item>
+					<el-descriptions-item label="面积">{{ currentOrder.area || '-' }}</el-descriptions-item>
+					<el-descriptions-item label="备注">{{ currentOrder.comments || '-' }}</el-descriptions-item>
+				</el-descriptions>
+
+				<br />
+
+				<el-descriptions title="财务信息" :column="3" border size="mini">
+					<el-descriptions-item label="卸货价">{{ currentOrder.paymentUnload || '-' }}</el-descriptions-item>
+					<el-descriptions-item label="含税销售">{{ currentOrder.isIncludeTaxSale ? '含税' : '不含税' }}</el-descriptions-item>
+					<el-descriptions-item label="杂费">{{ currentOrder.sundryCost || '-' }}</el-descriptions-item>
+					<el-descriptions-item label="总货款">{{ currentOrder.payments || '-' }}</el-descriptions-item>
+					<el-descriptions-item label="利润">{{ currentOrder.profit || '-' }}</el-descriptions-item>
+					<el-descriptions-item label="不含税利润">{{ currentOrder.profitNoTax || '-' }}</el-descriptions-item>
+				</el-descriptions>
+
+				<br />
+
+				<el-descriptions title="佣金信息" :column="3" border size="mini">
+					<el-descriptions-item label="订单计提佣金">{{ currentOrder.commissionAmount || '-' }}</el-descriptions-item>
+					<el-descriptions-item label="佣金单价">{{ currentOrder.commissionUnitPrice || '-' }}</el-descriptions-item>
+					<el-descriptions-item label="其他付款金额">{{ currentOrder.otherPaymentAmount || '-' }}</el-descriptions-item>
+					<el-descriptions-item label="已验证佣金">{{ currentOrder.verifiedCommission || '-' }}</el-descriptions-item>
+					<el-descriptions-item label="实际客户佣金">{{ currentOrder.actualCustomerCommission || '-' }}</el-descriptions-item>
+					<el-descriptions-item label="差异">{{ currentOrder.difference || '-' }}</el-descriptions-item>
+					<el-descriptions-item label="差异原因" :span="3">{{ currentOrder.differenceReason || '-' }}</el-descriptions-item>
+				</el-descriptions>
+
+				<br />
+
+				<el-descriptions title="支付信息" :column="3" border size="mini">
+					<el-descriptions-item label="支付日期">{{ currentOrder.fundDate || '-' }}</el-descriptions-item>
+					<el-descriptions-item label="支付状态">
+						<PaymentFlag :business-object="currentOrder" />
+					</el-descriptions-item>
+				</el-descriptions>
+			</div>
+
+			<div slot="footer" class="dialog-footer">
+				<el-button @click="orderDetailVisible = false">关闭</el-button>
+			</div>
 		</el-dialog>
 	</div>
 </template>
@@ -379,7 +445,10 @@ export default {
 					{ required: true, message: '请输入佣金单价', trigger: 'blur' },
 					{ pattern: /^\d+(\.\d{1,3})?$/, message: '佣金单价格式不正确', trigger: 'blur' }
 				]
-			}
+			},
+			// 订单详情相关
+			orderDetailVisible: false,
+			currentOrder: null
 		};
 	},
 	watch: {
@@ -602,7 +671,7 @@ export default {
 			console.log('批量选中状态变化，当前选中数量:', this.batchSelections.length);
 		},
 
-		// 判断行是否处于“未申请”状态（仅当未申请时复选框可选）
+		// 判断行是否处于"未申请"状态（仅当未申请时复选框可选）
 		isPaymentUnApplied(row) {
 			// 1. 优先检查 paymentApply.checkState
 			if (row && row.paymentApply && row.paymentApply.checkState !== undefined && row.paymentApply.checkState !== null) {
@@ -917,9 +986,19 @@ export default {
 					this.$message.info('已取消批量申请');
 				}
 			});
+		},
+		// 查看订单详情
+		handleViewOrder(row) {
+			this.currentOrder = row;
+			this.orderDetailVisible = true;
 		}
 	}
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.order-detail-content {
+	max-height: 60vh;
+	overflow-y: auto;
+}
+</style>
