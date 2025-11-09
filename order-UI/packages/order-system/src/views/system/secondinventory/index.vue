@@ -655,6 +655,17 @@ import { PUBLIC_DICT_TYPE } from '@/utils/order';
 import { updateInventoryRowCalculations } from '../inventoryMain/inventoryCalculations';
 import { parseTime } from '@/utils/ruoyi';
 import _ from 'lodash';
+import {
+	handlePriceInput as utilHandlePriceInput,
+	formatPriceInput as utilFormatPriceInput,
+	handlePriceFocus as utilHandlePriceFocus,
+	parseInputValue,
+	formatValueForDisplay,
+	getDecimalPlaces,
+	handlePiecesInput as utilHandlePiecesInput,
+	getRowClassName as utilGetRowClassName,
+	initSpecialFieldDecimalPlaces
+} from '@/utils/order';
 
 export default {
 	name: 'SecondInventory',
@@ -1024,6 +1035,8 @@ export default {
 						isAdd: false // 参考行标记为非新增
 					}
 				};
+				// 初始化特殊字段的小数位数
+				initSpecialFieldDecimalPlaces(detailItem.row);
 				this.calculatePayment(detailItem);
 				this.inventoryDetailList.push(detailItem.row);
 				this.title = '二次入库';
@@ -1096,16 +1109,21 @@ export default {
 
 							// 后续行：显示实际的二次入库信息（可编辑）
 							if (data.inventoryDetailList && data.inventoryDetailList.length > 0) {
-								const editableItems = data.inventoryDetailList.map((item, index) => ({
-									...item,
-									index: index + 2, // 设置唯一索引（从2开始，因为第一行是参考行）
-									isEditing: false,
-									hasError: false,
-									isReadOnly: false,
-									shouldDel: false,
-									isDeleted: item.isDeleted !== undefined ? item.isDeleted : false, // 确保 isDeleted 字段存在
-									isAdd: false // 从后端加载的数据标记为非新增
-								}));
+								const editableItems = data.inventoryDetailList.map((item, index) => {
+									const processedItem = {
+										...item,
+										index: index + 2, // 设置唯一索引（从2开始，因为第一行是参考行）
+										isEditing: false,
+										hasError: false,
+										isReadOnly: false,
+										shouldDel: false,
+										isDeleted: item.isDeleted !== undefined ? item.isDeleted : false, // 确保 isDeleted 字段存在
+										isAdd: false // 从后端加载的数据标记为非新增
+									};
+									// 初始化特殊字段的小数位数
+									initSpecialFieldDecimalPlaces(processedItem);
+									return processedItem;
+								});
 								this.inventoryDetailList.push(...editableItems);
 
 								// 对可编辑行进行初始计算
@@ -1347,16 +1365,8 @@ export default {
 		 * @param {object} param Element UI 表格传递的参数，包含当前行数据
 		 * @return {string} 行的类名
 		 */
-		// 添加获取行类名的方法
-		getRowClassName({ row }) {
-			if (row.hasError) {
-				return 'error-row';
-			} else if (row.isEditing) {
-				return 'editing-row';
-			} else if (row.isReadOnly || row.shouldDel) {
-				return 'readonly-row';
-			}
-			return '';
+		getRowClassName(param) {
+			return utilGetRowClassName(param);
 		},
 		/** 添加新的库存详情行 */
 		handleAddInventoryDetail() {
@@ -1614,16 +1624,21 @@ export default {
 								// 保留shouldDel为true的项（默认记录），替换其他有效明细项
 								const shouldDelItems = this.inventoryDetailList.filter(item => item.shouldDel);
 								// 将后端返回的明细项添加必要的前端状态字段
-								const backendDetails = response.data.inventoryDetailList.map((item, index) => ({
-									...item,
-									index: shouldDelItems.length + index + 1, // 设置唯一索引
-									isEditing: false,
-									hasError: false,
-									manuallyEditedPieces: true,
-									selfButtonDisabled: item.supplierId === 0,
-									isDeleted: false,
-									isAdd: false
-								}));
+								const backendDetails = response.data.inventoryDetailList.map((item, index) => {
+									const processedItem = {
+										...item,
+										index: shouldDelItems.length + index + 1, // 设置唯一索引
+										isEditing: false,
+										hasError: false,
+										manuallyEditedPieces: true,
+										selfButtonDisabled: item.supplierId === 0,
+										isDeleted: false,
+										isAdd: false
+									};
+									// 初始化特殊字段的小数位数
+									initSpecialFieldDecimalPlaces(processedItem);
+									return processedItem;
+								});
 								// 合并：保留shouldDel项 + 后端返回的明细项
 								this.inventoryDetailList = [...shouldDelItems, ...backendDetails];
 							}
@@ -1809,16 +1824,21 @@ export default {
 							// 保留shouldDel为true的项（默认记录），替换其他有效明细项
 							const shouldDelItems = this.inventoryDetailList.filter(item => item.shouldDel);
 							// 将后端返回的明细项添加必要的前端状态字段
-							const backendDetails = res.data.inventoryDetailList.map((item, index) => ({
-								...item,
-								index: shouldDelItems.length + index + 1, // 设置唯一索引
-								isEditing: false,
-								hasError: false,
-								manuallyEditedPieces: true,
-								selfButtonDisabled: item.supplierId === 0,
-								isDeleted: false,
-								isAdd: false
-							}));
+							const backendDetails = res.data.inventoryDetailList.map((item, index) => {
+								const processedItem = {
+									...item,
+									index: shouldDelItems.length + index + 1, // 设置唯一索引
+									isEditing: false,
+									hasError: false,
+									manuallyEditedPieces: true,
+									selfButtonDisabled: item.supplierId === 0,
+									isDeleted: false,
+									isAdd: false
+								};
+								// 初始化特殊字段的小数位数
+								initSpecialFieldDecimalPlaces(processedItem);
+								return processedItem;
+							});
 							// 合并：保留shouldDel项 + 后端返回的明细项
 							this.inventoryDetailList = [...shouldDelItems, ...backendDetails];
 						}
@@ -1881,27 +1901,7 @@ export default {
 		 * @param {function} callback 回调函数
 		 */
 		handlePiecesInput(row, field, value, callback) {
-			// 允许输入数字和小数点
-			let sanitizedValue = value.replace(/[^\d.]/g, '');
-
-			// 只允许一个小数点
-			const parts = sanitizedValue.split('.');
-			if (parts.length > 2) {
-				sanitizedValue = parts[0] + '.' + parts.slice(1).join('');
-			}
-
-			// 限制小数点后最多2位
-			if (parts.length === 2 && parts[1].length > 2) {
-				sanitizedValue = parts[0] + '.' + parts[1].slice(0, 2);
-			}
-
-			// 更新行数据
-			row[field] = sanitizedValue;
-
-			// 执行回调函数
-			if (callback) {
-				callback();
-			}
+			return utilHandlePiecesInput(row, field, value, callback);
 		},
 		/**
 		 * @description: 获取出库列表数据
@@ -2040,16 +2040,7 @@ export default {
 		 * @param {Function} callback - 输入后的回调函数（如重新计算）
 		 */
 		handlePriceInput(row, field, inputValue, callback) {
-			// 解析输入值，保持完整精度存储
-			const parsedValue = this.parseInputValue(inputValue);
-			// 存储完整精度的原始值（用于计算）
-			row[`_${field}_raw`] = parsedValue;
-			// 同时更新显示值（允许用户继续编辑）
-			row[field] = inputValue;
-			// 如果有回调，执行回调（通常是重新计算）
-			if (callback) {
-				callback();
-			}
+			return utilHandlePriceInput(row, field, inputValue, callback);
 		},
 		/**
 		 * 规范化价格输入，确保为有效的Number类型，但保持完整精度不截断
@@ -2060,23 +2051,7 @@ export default {
 		 * @param {boolean} control - 是否严格控制（暂保留兼容性，实际不截断）
 		 */
 		formatPriceInput(row, field, precision, control = true) {
-			// 获取完整精度的原始值（优先使用_raw字段）
-			const rawValue = row[`_${field}_raw`] !== undefined ? row[`_${field}_raw`] : row[field];
-
-			// 只做数值规范化，转换为Number类型，保持完整精度不截断
-			if (rawValue !== null && rawValue !== undefined && rawValue !== '') {
-				const numValue = Number(rawValue);
-				if (!isNaN(numValue)) {
-					// 存储完整精度的原始值（用于计算）
-					row[`_${field}_raw`] = numValue;
-					// 显示时格式化为指定精度（仅用于显示，不影响计算）
-					row[field] = this.formatValueForDisplay(numValue, precision);
-				} else {
-					// 无效数值时清空
-					row[field] = '';
-					row[`_${field}_raw`] = '';
-				}
-			}
+			return utilFormatPriceInput(row, field, precision, control);
 		},
 		/**
 		 * 处理价格字段聚焦事件，恢复完整精度显示以便编辑
@@ -2084,73 +2059,9 @@ export default {
 		 * @param {String} field - 字段名
 		 */
 		handlePriceFocus(row, field) {
-			// 如果存在原始值，恢复显示原始完整精度
-			if (row[`_${field}_raw`] !== undefined && row[`_${field}_raw`] !== null && row[`_${field}_raw`] !== '') {
-				row[field] = row[`_${field}_raw`].toString();
-			} else if (row[field] !== null && row[field] !== undefined && row[field] !== '') {
-				// 如果没有原始值，保存当前值为原始值
-				const numValue = Number(row[field]);
-				if (!isNaN(numValue)) {
-					row[`_${field}_raw`] = numValue;
-					row[field] = numValue.toString();
-				}
-			}
-		},
-		/**
-		 * 解析用户输入值，转换为Number类型并保持完整精度
-		 * @param {string} inputValue - 用户输入的字符串值
-		 * @returns {number|string} 解析后的数值（Number类型，保持完整精度）或空字符串
-		 */
-		parseInputValue(inputValue) {
-			if (inputValue === null || inputValue === undefined || inputValue === '') {
-				return '';
-			}
-			// 移除所有非数字和小数点的字符（保留负号如果需要）
-			const cleanValue = String(inputValue).replace(/[^\d.]/g, '');
-			if (cleanValue === '' || cleanValue === '.') {
-				return '';
-			}
-			const num = Number(cleanValue);
-			if (isNaN(num)) {
-				return '';
-			}
-			// 返回Number类型，保持用户输入的完整精度（不截断）
-			return num;
-		},
-		/**
-		 * 格式化数值用于显示，但不影响存储值
-		 * @param {number|string} value - 需要格式化的值
-		 * @param {number} precision - 小数位数（用于显示）
-		 * @returns {string} 格式化后的字符串（仅用于显示）
-		 */
-		formatValueForDisplay(value, precision = 2) {
-			if (value === null || value === undefined || value === '') {
-				return '';
-			}
-			const num = Number(value);
-			if (isNaN(num)) {
-				return '';
-			}
-			// 仅用于显示，不修改原始值
-			return num.toFixed(precision);
-		},
-		/**
-		 * 获取数字的小数位数
-		 * @param {number} num - 需要检查的数字
-		 * @returns {number} 小数位数
-		 */
-		getDecimalPlaces(num) {
-			// 将数字转换为字符串
-			const strNum = num.toString();
-			// 查找小数点的位置
-			const dotIndex = strNum.indexOf('.');
-			// 如果没有小数点，返回 0
-			if (dotIndex === -1) {
-				return 0;
-			}
-			// 返回小数点后的字符长度
-			return strNum.length - dotIndex - 1;
+			return utilHandlePriceFocus(row, field);
 		}
+		// parseInputValue, formatValueForDisplay, getDecimalPlaces 已从 @/utils/order 导入，直接使用
 	}
 };
 </script>

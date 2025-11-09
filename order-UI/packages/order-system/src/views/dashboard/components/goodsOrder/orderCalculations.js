@@ -1,14 +1,34 @@
 import { fix, fix_2 } from '../../../../api/tool/format';
 /**
- * 获取完整精度的数值（优先使用_raw字段，用于精确计算）
+ * 特殊字段列表：这些字段需要保持用户输入的完整精度（不截断）
+ * - price: 出厂单价
+ * - paymentUnload: 卸货价
+ */
+const SPECIAL_PRECISION_FIELDS = ['price', 'paymentUnload'];
+
+/**
+ * 获取用于计算的数值（优先使用_raw字段）
+ * 特殊字段（price, paymentUnload）：使用完整精度
+ * 其他字段：先保留两位小数再计算
  * @param {object} row - 订单详情行数据
  * @param {string} field - 字段名
- * @returns {number} 完整精度的数值
+ * @returns {number} 用于计算的数值
  */
 function getRawValue(row, field) {
 	// 优先使用_raw字段（完整精度），如果没有则使用原字段
 	const rawValue = row[`_${field}_raw`] !== undefined ? row[`_${field}_raw`] : row[field];
-	return Number(rawValue) || 0;
+	const numValue = Number(rawValue) || 0;
+	
+	// 判断是否为特殊字段
+	const isSpecialField = SPECIAL_PRECISION_FIELDS.includes(field);
+	
+	if (isSpecialField) {
+		// 特殊字段：使用完整精度
+		return numValue;
+	} else {
+		// 其他字段：先保留两位小数再计算
+		return Math.round(numValue * 100) / 100;
+	}
 }
 
 /**
@@ -109,11 +129,12 @@ function calculatePayment(row) {
 /**
  * 计算陆运费
  * 规则: (吨位 * 陆运费单价) + 加费
+ * 注意：吨位、陆运费单价、加费都是非特殊字段，会先保留两位再计算
  * @param {object} row - 订单详情行数据
  */
 function calculateLandFreight(row) {
-	// 使用完整精度值进行计算
-	const tonnage = fix_2(getRawValue(row, 'tonnage')); // 使用吨位的完整精度值
+	// 吨位、陆运费单价、加费都是非特殊字段，getRawValue会自动保留两位小数
+	const tonnage = getRawValue(row, 'tonnage');
 	const landFreightPrice = getRawValue(row, 'landFreightPrice');
 	const additionalFees = getRawValue(row, 'additionalFees');
 	const rawLandFreight = tonnage * landFreightPrice + additionalFees;
