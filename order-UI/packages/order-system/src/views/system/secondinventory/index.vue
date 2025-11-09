@@ -1441,7 +1441,7 @@ export default {
 			// 清除 id，因为这是新行
 			copiedRow.id = undefined;
 			// 设置新的索引
-			copiedRow.index = this.inventoryDetailList.length + 1;
+			copiedRow.index = _.maxBy(this.inventoryDetailList, 'index')?.index + 1;
 			// 设置为编辑状态
 			copiedRow.isEditing = true;
 			// 标记为新增行
