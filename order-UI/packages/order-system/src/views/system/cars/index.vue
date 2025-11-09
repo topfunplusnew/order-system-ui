@@ -178,6 +178,7 @@ export default {
 			rules: {
 				carNo: [
 					{
+						required: true,
 						validator: (rule, value, callback) => {
 							// 只有在陆运类型时才验证车牌号
 							if (this.form.carType === '陆运') {
