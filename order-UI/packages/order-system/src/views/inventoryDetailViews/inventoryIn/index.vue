@@ -25,10 +25,13 @@
 
 		<el-row :gutter="10" class="mb8">
 			<!-- 只保留导出按钮和右侧工具栏 -->
-			<el-col :span="1.5">
-				<el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport" v-hasPermi="['system:inventoryStatistics:exportIn']">导出</el-button>
-			</el-col>
-			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList"></right-toolbar>
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
+				<template #export>
+					<el-col :span="1.5">
+						<el-button plain icon="el-icon-download" size="mini" @click="handleExport" v-hasPermi="['system:inventoryStatistics:exportIn']"></el-button>
+					</el-col>
+				</template>
+			</right-toolbar>
 		</el-row>
 
 		<el-table v-loading="loading" :data="inventoryList" size="mini" border>
@@ -83,6 +86,7 @@
 import _ from 'lodash';
 import { listInStatistics } from '../../../api/inventory/index';
 import { fix_2 } from '../../../api/tool/format';
+
 export default {
 	name: 'InventoryIn',
 	data() {

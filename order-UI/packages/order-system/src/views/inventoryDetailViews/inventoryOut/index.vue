@@ -24,10 +24,13 @@
 		</el-form>
 
 		<el-row :gutter="10" class="mb8">
-			<el-col :span="1.5">
-				<el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport" v-hasPermi="['system:inventoryStatistics:exportOut']">导出</el-button>
-			</el-col>
-			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList"></right-toolbar>
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
+				<template #export>
+					<el-col :span="1.5">
+						<el-button plain icon="el-icon-download" size="mini" @click="handleExport" v-hasPermi="['system:inventoryStatistics:exportOut']"></el-button>
+					</el-col>
+				</template>
+			</right-toolbar>
 		</el-row>
 
 		<el-table v-loading="loading" :data="inventoryList" size="mini" border>
@@ -43,6 +46,7 @@
 import _ from 'lodash';
 import { listOutStatistics, exportOutStatistics } from '../../../api/inventory/index';
 import { fix_2 } from '../../../api/tool/format';
+
 export default {
 	name: 'InventoryOut',
 	data() {
@@ -130,9 +134,13 @@ export default {
 			this.handleQuery();
 		},
 		handleExport() {
-			exportOutStatistics({
-				...this.queryParams
-			});
+			this.download(
+				'system/inventoryStatistics/exportOutStatistics',
+				{
+					...this.queryParams
+				},
+				`inventory_out_${new Date().getTime()}.xlsx`
+			);
 		}
 	}
 };

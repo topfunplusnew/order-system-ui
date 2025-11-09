@@ -479,9 +479,10 @@ export default {
 		},
 		/** 添加新的订单详情行 */
 		handleAddOrderdetail() {
+			const arrMaxItem = _.maxBy(this.orderDetailList, 'index');
 			let obj = {
 				// 添加唯一索引
-				index: this.orderDetailList.length + 1,
+				index: arrMaxItem ? arrMaxItem.index + 1 : 1,
 				orderDate: parseTime(new Date()),
 				supplier: '',
 				supplierID: '',
@@ -551,7 +552,7 @@ export default {
 			// 清除 id，因为这是新行
 			copiedRow.id = undefined;
 			// 设置新的索引
-			copiedRow.index = this.orderDetailList.length + 1;
+			copiedRow.index = _.maxBy(this.orderDetailList, 'index')?.index + 1;
 			// 设置为编辑状态
 			copiedRow.isEditing = true;
 			// 标记为新增行
