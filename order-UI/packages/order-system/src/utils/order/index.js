@@ -2,6 +2,7 @@
 
 /**
  * 解析用户输入值，转换为Number类型并保持完整精度
+ * 支持负数输入
  * @param {string} inputValue - 用户输入的字符串值
  * @returns {number|string} 解析后的数值（Number类型，保持完整精度）或空字符串
  */
@@ -9,11 +10,37 @@ export function parseInputValue(inputValue) {
 	if (inputValue === null || inputValue === undefined || inputValue === '') {
 		return '';
 	}
-	// 移除所有非数字和小数点的字符（保留负号如果需要）
-	const cleanValue = String(inputValue).replace(/[^\d.]/g, '');
+	const strValue = String(inputValue);
+	
+	// 处理负号：只允许在开头有一个负号
+	let hasNegative = false;
+	let cleanValue = strValue;
+	
+	// 检查开头是否有负号
+	if (strValue.startsWith('-')) {
+		hasNegative = true;
+		cleanValue = strValue.substring(1);
+	}
+	
+	// 移除所有非数字和小数点的字符
+	cleanValue = cleanValue.replace(/[^\d.]/g, '');
+	
+	// 只允许一个小数点
+	const parts = cleanValue.split('.');
+	if (parts.length > 2) {
+		cleanValue = parts[0] + '.' + parts.slice(1).join('');
+	}
+	
+	// 如果只有负号或只有小数点，返回空字符串
 	if (cleanValue === '' || cleanValue === '.') {
 		return '';
+	} 
+	
+	// 如果有负号，添加到开头
+	if (hasNegative) {
+		cleanValue = '-' + cleanValue;
 	}
+	
 	const num = Number(cleanValue);
 	if (isNaN(num)) {
 		return '';
