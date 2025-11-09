@@ -55,10 +55,10 @@ function getRawValue(row, field) {
 	// 优先使用_raw字段（完整精度），如果没有则使用原字段
 	const rawValue = row[`_${field}_raw`] !== undefined ? row[`_${field}_raw`] : row[field];
 	const numValue = Number(rawValue) || 0;
-	
+
 	// 判断是否为特殊字段
 	const isSpecialField = SPECIAL_PRECISION_FIELDS.includes(field);
-	
+
 	if (isSpecialField) {
 		// 特殊字段：使用完整精度
 		return numValue;
@@ -162,20 +162,20 @@ function calculatePayment(row) {
 	// 使用完整精度值进行计算
 	const length = Number(row.length) || 0;
 	const width = Number(row.width) || 0;
-	const pieces = Number(row.pieces) || 0; // 库存使用pieces作为入库片数
+	const stockNumber = Number(row.stockNumber) || 0; // 库存使用stockNumber作为入库片数
 	const paymentUnload = getRawValue(row, 'paymentUnload'); // 使用完整精度值
 	const paymentsWithSundry = getRawValue(row, 'paymentsWithSundry'); // 使用完整精度值
 
 	let rawPayments;
 	if (row.countingUnit === '其他') {
 		// 计量单位为"其他"时，不除以1000000
-		rawPayments = length * width * pieces * paymentUnload + paymentsWithSundry;
+		rawPayments = length * width * stockNumber * paymentUnload + paymentsWithSundry;
 	} else {
 		// 计量单位为"片"时，除以1000000（原来的逻辑）
 		if (row.isIncludeTaxFactory === 0 && row.isIncludeTaxSale === 0) {
-			rawPayments = ((length * width * pieces) / 1000000) * paymentUnload + paymentsWithSundry;
+			rawPayments = ((length * width * stockNumber) / 1000000) * paymentUnload + paymentsWithSundry;
 		} else {
-			rawPayments = (length * width * pieces * paymentUnload) / 1000000 + paymentsWithSundry;
+			rawPayments = (length * width * stockNumber * paymentUnload) / 1000000 + paymentsWithSundry;
 		}
 	}
 	// 保存完整精度值用于后续计算
