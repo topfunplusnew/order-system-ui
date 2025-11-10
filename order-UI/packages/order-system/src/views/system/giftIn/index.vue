@@ -46,9 +46,6 @@
 			<el-col :span="1.5">
 				<el-button v-hasPermi="['system:giftIn:remove']" type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete">删除</el-button>
 			</el-col>
-			<el-col :span="1.5">
-				<el-button v-hasPermi="['system:giftIn:export']" type="warning" plain icon="el-icon-download" size="mini" @click="handleExport">导出</el-button>
-			</el-col>
 			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
 				<template #print>
 					<el-col :span="1.5">
@@ -108,7 +105,7 @@
 
 			<el-table-column label="备注" align="center" prop="remark" show-overflow-tooltip />
 
-			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" show-overflow-tooltip width="180" fixed="right">
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" show-overflow-tooltip width="220" fixed="right">
 				<template #default="scope">
 					<el-button v-hasPermi="['system:giftIn:edit']" size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)">修改</el-button>
 					<el-button v-hasPermi="['system:giftIn:remove']" size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)">删除</el-button>

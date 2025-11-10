@@ -79,7 +79,7 @@
 							<el-table-column v-if="columns[7].visible" prop="paymentFactory" label="出厂货款" show-overflow-tooltip></el-table-column>
 							<el-table-column v-if="columns[8].visible" prop="tonnage" label="吨位" show-overflow-tooltip></el-table-column>
 							<el-table-column v-if="columns[9].visible" prop="clerk" label="内勤" show-overflow-tooltip></el-table-column>
-							  <el-table-column v-if="columns[10].visible" prop="landCarNo" label="陆运车牌" show-overflow-tooltip>
+							<el-table-column v-if="columns[10].visible" prop="landCarNo" label="陆运车牌" show-overflow-tooltip>
 								<template #default="scope">
 									<span v-if="scope.row.landCarNo !== null">
 										{{ scope.row.landCarNo }}
@@ -166,8 +166,8 @@
 			<div>
 				<el-button type="primary" size="mini" icon="el-icon-document" @click="logDialogVisible = true">下载日志</el-button>
 				<el-button type="info" icon="el-icon-question" size="mini" @click="handleLearn">查看教程</el-button>
-				<el-button id="step1" icon="el-icon-download" size="mini" type="warning" @click="handleBackgroundDownload">预先导出</el-button>
-				<el-button id="step2" type="primary" icon="el-icon-download" size="mini" @click="handleDownload">一键下载</el-button>
+				<el-button id="step1" icon="el-icon-download" size="mini" type="warning" @click="handleBackgroundDownload" v-hasPermi="['system:exportfile:export']">预先导出</el-button>
+				<el-button id="step2" type="primary" icon="el-icon-download" size="mini" @click="handleDownload" v-hasPermi="['system:exportfile:export']">一键下载</el-button>
 				<el-button id="step3" icon="el-icon-folder" size="mini" type="success" @click="showFileList">下载列表</el-button>
 			</div>
 		</div>
@@ -210,10 +210,10 @@
 						<a-col :span="3" class="size">{{ formatSize(item.size) }}</a-col>
 						<a-col :span="3" class="actions">
 							<a-space>
-								<a-button type="link" @click="downloadFile(item)" style="padding: 4px">
+								<a-button type="link" v-hasPermi="['system:exportfile:download']" @click="downloadFile(item)" style="padding: 4px">
 									<a-icon type="download" style="color: #1890ff" />
 								</a-button>
-								<a-button type="link" @click="deleteFile(item)" style="padding: 4px">
+								<a-button type="link" v-hasPermi="['system:exportfile:remove']" @click="deleteFile(item)" style="padding: 4px">
 									<a-icon type="delete" style="color: #ff4d4f" />
 								</a-button>
 							</a-space>
@@ -615,6 +615,7 @@ export default {
 			}
 		},
 		async deleteFile(file) {
+			const self = this;
 			this.$antdconfirm({
 				title: '确认删除',
 				content: `是否确认删除文件 "${file.fileName}"？`,
@@ -625,12 +626,14 @@ export default {
 					try {
 						const res = await deleteExport(file.fileName);
 						if (res.code === 200) {
-							this.$message.success(`删除成功: ${file.fileName}`);
-							await this.getFileList(); // 重新加载文件列表
+							self.$message.success(`删除成功: ${file.fileName}`);
+							await self.getFileList(); // 重新加载文件列表
+						} else {
+							self.$message.error(`删除失败: ${file.fileName}`);
 						}
 					} catch (error) {
 						console.error('删除文件失败:', error);
-						this.$message.error(`删除失败: ${file.fileName}`);
+						self.$message.error(`删除失败: ${file.fileName}`);
 					}
 				}
 			});
