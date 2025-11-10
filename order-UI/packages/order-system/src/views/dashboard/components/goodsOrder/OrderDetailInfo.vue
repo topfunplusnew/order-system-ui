@@ -8,10 +8,11 @@ import { listBankAccount } from '@/api/system/bankAccount';
 // 不再通过字典接口获取返利方式，使用硬编码选项
 import { fix, fix_2 } from '../../../../api/tool/format';
 import { RebateType } from '@/api/tool/enums';
+import ExpandCursor from '../common/ExpandCursor.vue';
 
 export default {
 	name: 'OrderDetailInfo',
-	components: { SearchOption },
+	components: { SearchOption, ExpandCursor },
 	props: {
 		orderDetailInfoList: {
 			type: Array,
@@ -231,52 +232,244 @@ export default {
 				<el-table-column label="仓库名称" align="center" prop="storeHouseName" show-overflow-tooltip width="140" :data="filteredOrderDetailInfoList">
 					<!--          如果有 显示 如果没有 显示- -->
 					<template slot-scope="scope">
-						{{ scope.row.storeHouseName ? scope.row.storeHouseName : '-' }}
+						<ExpandCursor>
+							{{ scope.row.storeHouseName ? scope.row.storeHouseName : '-' }}
+						</ExpandCursor>
 					</template>
 				</el-table-column>
-				<el-table-column label="供应商" align="center" prop="supplier" show-overflow-tooltip width="230" />
-				<el-table-column label="级别名称" align="center" prop="levelName" min-width="200" />
-				<el-table-column label="计量单位" align="center" prop="countingUnit" show-overflow-tooltip width="100" />
-				<el-table-column label="厚度" align="center" prop="height" show-overflow-tooltip width="80" />
-				<el-table-column label="长度" align="center" prop="length" show-overflow-tooltip width="80" />
-				<el-table-column label="宽度" align="center" prop="width" show-overflow-tooltip width="80" />
-				<el-table-column label="每包片数" align="center" prop="piecesPerPack" show-overflow-tooltip width="140" />
-				<el-table-column label="包数" align="center" prop="packs" show-overflow-tooltip width="80" />
-				<el-table-column label="出厂片数" align="center" prop="pieces" show-overflow-tooltip width="150" />
-				<el-table-column label="出厂单价" align="center" prop="price" show-overflow-tooltip width="140" />
+				<el-table-column label="供应商" align="center" prop="supplier" show-overflow-tooltip width="230">
+					<template slot-scope="scope">
+						<ExpandCursor>
+							{{ scope.row.supplier }}
+						</ExpandCursor>
+					</template>
+				</el-table-column>
+				<el-table-column label="级别名称" align="center" prop="levelName" min-width="200">
+					<template slot-scope="scope">
+						<ExpandCursor>
+							{{ scope.row.levelName }}
+						</ExpandCursor>
+					</template>
+				</el-table-column>
+				<el-table-column label="计量单位" align="center" prop="countingUnit" show-overflow-tooltip width="100">
+					<template slot-scope="scope">
+						<ExpandCursor>
+							{{ scope.row.countingUnit }}
+						</ExpandCursor>
+					</template>
+				</el-table-column>
+				<el-table-column label="厚度" align="center" prop="height" show-overflow-tooltip width="80">
+					<template slot-scope="scope">
+						<ExpandCursor>
+							{{ scope.row.height }}
+						</ExpandCursor>
+					</template>
+				</el-table-column>
+				<el-table-column label="长度" align="center" prop="length" show-overflow-tooltip width="80">
+					<template slot-scope="scope">
+						<ExpandCursor>
+							{{ scope.row.length }}
+						</ExpandCursor>
+					</template>
+				</el-table-column>
+				<el-table-column label="宽度" align="center" prop="width" show-overflow-tooltip width="80">
+					<template slot-scope="scope">
+						<ExpandCursor>
+							{{ scope.row.width }}
+						</ExpandCursor>
+					</template>
+				</el-table-column>
+				<el-table-column label="每包片数" align="center" prop="piecesPerPack" show-overflow-tooltip width="140">
+					<template slot-scope="scope">
+						<ExpandCursor>
+							{{ scope.row.piecesPerPack }}
+						</ExpandCursor>
+					</template>
+				</el-table-column>
+				<el-table-column label="包数" align="center" prop="packs" show-overflow-tooltip width="80">
+					<template slot-scope="scope">
+						<ExpandCursor>
+							{{ scope.row.packs }}
+						</ExpandCursor>
+					</template>
+				</el-table-column>
+				<el-table-column label="出厂片数" align="center" prop="pieces" show-overflow-tooltip width="150">
+					<template slot-scope="scope">
+						<ExpandCursor>
+							{{ scope.row.pieces }}
+						</ExpandCursor>
+					</template>
+				</el-table-column>
+				<el-table-column label="出厂单价" align="center" prop="price" show-overflow-tooltip width="140">
+					<template slot-scope="scope">
+						<ExpandCursor>
+							{{ scope.row.price }}
+						</ExpandCursor>
+					</template>
+				</el-table-column>
 
 				<el-table-column label="出厂是否含税" align="center" prop="isIncludeTaxFactory" show-overflow-tooltip width="160">
 					<template slot-scope="scope">
-						<el-tag disable-transitions>{{ scope.row.isIncludeTaxFactory == 0 ? '否' : '是' }}</el-tag>
+						<ExpandCursor>
+							<el-tag disable-transitions>{{ scope.row.isIncludeTaxFactory == 0 ? '否' : '是' }}</el-tag>
+						</ExpandCursor>
 					</template>
 				</el-table-column>
-				<el-table-column label="杂费" align="center" prop="sundryCost" show-overflow-tooltip />
-				<el-table-column label="出厂货款" align="center" prop="paymentFactory" show-overflow-tooltip width="140" />
-				<el-table-column label="卸货片数" align="center" prop="actualPieces" show-overflow-tooltip width="140" />
-				<el-table-column label="卸货价" align="center" prop="paymentUnload" show-overflow-tooltip width="140" />
+				<el-table-column label="杂费" align="center" prop="sundryCost" show-overflow-tooltip>
+					<template slot-scope="scope">
+						<ExpandCursor>
+							{{ scope.row.sundryCost }}
+						</ExpandCursor>
+					</template>
+				</el-table-column>
+				<el-table-column label="出厂货款" align="center" prop="paymentFactory" show-overflow-tooltip width="140">
+					<template slot-scope="scope">
+						<ExpandCursor>
+							{{ scope.row.paymentFactory }}
+						</ExpandCursor>
+					</template>
+				</el-table-column>
+				<el-table-column label="卸货片数" align="center" prop="actualPieces" show-overflow-tooltip width="140">
+					<template slot-scope="scope">
+						<ExpandCursor>
+							{{ scope.row.actualPieces }}
+						</ExpandCursor>
+					</template>
+				</el-table-column>
+				<el-table-column label="卸货价" align="center" prop="paymentUnload" show-overflow-tooltip width="140">
+					<template slot-scope="scope">
+						<ExpandCursor>
+							{{ scope.row.paymentUnload }}
+						</ExpandCursor>
+					</template>
+				</el-table-column>
 				<el-table-column label="销售是否含税" align="center" prop="isIncludeTaxSale" show-overflow-tooltip width="160">
 					<template slot-scope="scope">
-						<el-tag disable-transitions>{{ scope.row.isIncludeTaxSale == 0 ? '否' : '是' }}</el-tag>
+						<ExpandCursor>
+							<el-tag disable-transitions>{{ scope.row.isIncludeTaxSale == 0 ? '否' : '是' }}</el-tag>
+						</ExpandCursor>
 					</template>
 				</el-table-column>
-				<el-table-column label="总货款杂费" align="center" prop="paymentsWithSundry" show-overflow-tooltip width="140" />
-				<el-table-column label="总货款" align="center" prop="payments" show-overflow-tooltip width="140" />
-				<el-table-column label="误差" align="center" prop="erro" show-overflow-tooltip width="50px" />
-				<el-table-column label="吨位" align="center" prop="tonnage" show-overflow-tooltip width="80" />
-				<el-table-column label="陆运费单价" align="center" prop="landFreightPrice" show-overflow-tooltip width="140" />
-				<el-table-column label="加费" align="center" prop="additionalFees" show-overflow-tooltip width="80px" />
-				<el-table-column label="陆运费" align="center" prop="landFreight" show-overflow-tooltip width="70px" />
-				<el-table-column label="海运费" align="center" prop="seaFreight" show-overflow-tooltip width="50px" />
-				<el-table-column label="总运费" align="center" prop="freight" show-overflow-tooltip width="100px" />
-				<el-table-column label="其他费用" align="center" prop="otherCost" show-overflow-tooltip width="50px" />
-				<el-table-column label="利润" align="center" prop="profit" show-overflow-tooltip width="80" />
-				<el-table-column label="不含税利润" align="center" prop="profitNoTax" show-overflow-tooltip width="140" />
+				<el-table-column label="总货款杂费" align="center" prop="paymentsWithSundry" show-overflow-tooltip width="140">
+					<template slot-scope="scope">
+						<ExpandCursor>
+							{{ scope.row.paymentsWithSundry }}
+						</ExpandCursor>
+					</template>
+				</el-table-column>
+				<el-table-column label="总货款" align="center" prop="payments" show-overflow-tooltip width="140">
+					<template slot-scope="scope">
+						<ExpandCursor>
+							{{ scope.row.payments }}
+						</ExpandCursor>
+					</template>
+				</el-table-column>
+				<el-table-column label="误差" align="center" prop="erro" show-overflow-tooltip width="50px">
+					<template slot-scope="scope">
+						<ExpandCursor>
+							{{ scope.row.erro }}
+						</ExpandCursor>
+					</template>
+				</el-table-column>
+				<el-table-column label="吨位" align="center" prop="tonnage" show-overflow-tooltip width="80">
+					<template slot-scope="scope">
+						<ExpandCursor>
+							{{ scope.row.tonnage }}
+						</ExpandCursor>
+					</template>
+				</el-table-column>
+				<el-table-column label="陆运费单价" align="center" prop="landFreightPrice" show-overflow-tooltip width="140">
+					<template slot-scope="scope">
+						<ExpandCursor>
+							{{ scope.row.landFreightPrice }}
+						</ExpandCursor>
+					</template>
+				</el-table-column>
+				<el-table-column label="加费" align="center" prop="additionalFees" show-overflow-tooltip width="80px">
+					<template slot-scope="scope">
+						<ExpandCursor>
+							{{ scope.row.additionalFees }}
+						</ExpandCursor>
+					</template>
+				</el-table-column>
+				<el-table-column label="陆运费" align="center" prop="landFreight" show-overflow-tooltip width="70px">
+					<template slot-scope="scope">
+						<ExpandCursor>
+							{{ scope.row.landFreight }}
+						</ExpandCursor>
+					</template>
+				</el-table-column>
+				<el-table-column label="海运费" align="center" prop="seaFreight" show-overflow-tooltip width="50px">
+					<template slot-scope="scope">
+						<ExpandCursor>
+							{{ scope.row.seaFreight }}
+						</ExpandCursor>
+					</template>
+				</el-table-column>
+				<el-table-column label="总运费" align="center" prop="freight" show-overflow-tooltip width="100px">
+					<template slot-scope="scope">
+						<ExpandCursor>
+							{{ scope.row.freight }}
+						</ExpandCursor>
+					</template>
+				</el-table-column>
+				<el-table-column label="其他费用" align="center" prop="otherCost" show-overflow-tooltip width="50px">
+					<template slot-scope="scope">
+						<ExpandCursor>
+							{{ scope.row.otherCost }}
+						</ExpandCursor>
+					</template>
+				</el-table-column>
+				<el-table-column label="利润" align="center" prop="profit" show-overflow-tooltip width="80">
+					<template slot-scope="scope">
+						<ExpandCursor>
+							{{ scope.row.profit }}
+						</ExpandCursor>
+					</template>
+				</el-table-column>
+				<el-table-column label="不含税利润" align="center" prop="profitNoTax" show-overflow-tooltip width="140">
+					<template slot-scope="scope">
+						<ExpandCursor>
+							{{ scope.row.profitNoTax }}
+						</ExpandCursor>
+					</template>
+				</el-table-column>
 
-				<el-table-column label="物流利润" align="center" prop="logisticsProfit" show-overflow-tooltip width="100px" />
-				<el-table-column label="客户佣金" align="center" prop="customerCommission" show-overflow-tooltip width="100px" />
-				<el-table-column label="厂家佣金" align="center" prop="factoryCommission" show-overflow-tooltip width="100px" />
-				<el-table-column label="计提厂家返利金额" align="center" prop="factoryRebateAmount" show-overflow-tooltip width="120px" />
-				<el-table-column label="计提厂家降价金额" align="center" prop="factoryDiscountAmount" show-overflow-tooltip width="120px" />
+				<el-table-column label="物流利润" align="center" prop="logisticsProfit" show-overflow-tooltip width="100px">
+					<template slot-scope="scope">
+						<ExpandCursor>
+							{{ scope.row.logisticsProfit }}
+						</ExpandCursor>
+					</template>
+				</el-table-column>
+				<el-table-column label="客户佣金" align="center" prop="customerCommission" show-overflow-tooltip width="100px">
+					<template slot-scope="scope">
+						<ExpandCursor>
+							{{ scope.row.customerCommission }}
+						</ExpandCursor>
+					</template>
+				</el-table-column>
+				<el-table-column label="厂家佣金" align="center" prop="factoryCommission" show-overflow-tooltip width="100px">
+					<template slot-scope="scope">
+						<ExpandCursor>
+							{{ scope.row.factoryCommission }}
+						</ExpandCursor>
+					</template>
+				</el-table-column>
+				<el-table-column label="计提厂家返利金额" align="center" prop="factoryRebateAmount" show-overflow-tooltip width="120px">
+					<template slot-scope="scope">
+						<ExpandCursor>
+							{{ scope.row.factoryRebateAmount }}
+						</ExpandCursor>
+					</template>
+				</el-table-column>
+				<el-table-column label="计提厂家降价金额" align="center" prop="factoryDiscountAmount" show-overflow-tooltip width="120px">
+					<template slot-scope="scope">
+						<ExpandCursor>
+							{{ scope.row.factoryDiscountAmount }}
+						</ExpandCursor>
+					</template>
+				</el-table-column>
 				<el-table-column type="expand" width="50" label="备注" align="center">
 					<template slot-scope="scope">
 						<div class="expand-row">
@@ -370,6 +563,7 @@ export default {
 		border-radius: 6px;
 	}
 }
+
 ::v-deep .non-expandable-row {
 	.el-table__expand-column .el-table__expand-icon {
 		display: none;

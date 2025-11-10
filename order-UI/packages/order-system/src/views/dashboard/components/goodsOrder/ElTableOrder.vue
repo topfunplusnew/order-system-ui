@@ -34,13 +34,6 @@ export default {
 	computed: {
 		PUBLIC_DICT_TYPE() {
 			return PUBLIC_DICT_TYPE;
-		},
-		paddingFix() {
-			return { padding: '.4px' };
-		},
-		// 获取陆运车牌列的配置（已废弃，直接使用 columns[4]）
-		landCarNoColumn() {
-			return this.columns[4];
 		}
 	},
 	components: {
@@ -109,9 +102,9 @@ export default {
 				{ key: 1, label: '日期', visible: true },
 				{ key: 2, label: '客户', visible: true },
 				{ key: 3, label: '供应商/仓库', visible: true },
-				{ key: 6, label: '陆运车牌', visible: true }, // columns[4]
-				{ key: 4, label: '审核状态', visible: true }, // columns[5]
-				{ key: 5, label: '车队', visible: true }, // columns[6]
+				{ key: 4, label: '陆运车牌', visible: true },
+				{ key: 5, label: '审核状态', visible: true },
+				{ key: 6, label: '车队', visible: true },
 				{ key: 7, label: '陆运司机电话', visible: true },
 				{ key: 8, label: '陆地司机姓名', visible: true },
 				{ key: 9, label: '海运柜号', visible: true },
@@ -146,34 +139,6 @@ export default {
 		};
 	},
 	watch: {
-		columns: {
-			handler(newVal, oldVal) {
-				// 检查是否有列可见性变化
-				const hasChange = newVal.some((column, index) => {
-					return column.visible !== oldVal[index]?.visible;
-				});
-
-				if (hasChange) {
-					// 使用 requestAnimationFrame 合并多次更新
-					if (this.columnsUpdateRafId) {
-						cancelAnimationFrame(this.columnsUpdateRafId);
-					}
-
-					this.columnsUpdateRafId = requestAnimationFrame(() => {
-						// 初始化防抖函数（如果还没有）
-						if (!this.saveColumnsDebounced) {
-							this.saveColumnsDebounced = debounce(columns => {
-								localStorage.setItem('goodsorder-columns', JSON.stringify(columns));
-							}, 500);
-						}
-						// 调用防抖函数保存列配置
-						this.saveColumnsDebounced(newVal);
-						this.columnsUpdateRafId = null;
-					});
-				}
-			},
-			deep: true
-		},
 		// 监听 loading 状态，当数据加载完成后确保滚动事件已绑定
 		loading(newVal, oldVal) {
 			if (oldVal === true && newVal === false) {
@@ -185,20 +150,11 @@ export default {
 		}
 	},
 	created() {
-		// 初始化时加载本地存储的列配置
-		if (localStorage.getItem('goodsorder-columns') === 'null' || !localStorage.getItem('goodsorder-columns')) {
-			localStorage.setItem('goodsorder-columns', JSON.stringify(this.columns));
-		} else {
-			this.columns = JSON.parse(localStorage.getItem('goodsorder-columns'));
-		}
 		this.getList();
 	},
 	mounted() {
 		this.$bus.$on('refreshList', () => {
 			this.getList();
-		});
-		getUserConfig('goodsorder-columns').then(res => {
-			console.log(res);
 		});
 		// 绑定表格滚动事件
 		this.$nextTick(() => {
@@ -909,6 +865,7 @@ export default {
 		<div class="table-container">
 			<u-table
 				border
+				:row-style="rowStyle"
 				ref="orderTable"
 				id="printBox"
 				:row-key="row => row.id"
@@ -967,24 +924,35 @@ export default {
 									<el-dropdown-item>
 										<HistoryList :row="scope.row" />
 									</el-dropdown-item>
-									<!-- <el-dropdown-item>
-									<el-button style="margin-left: 5px" size="mini" type="text" @click="checkOrderHistory(scope.row)">历史对比</el-button>
-								</el-dropdown-item> -->
 								</el-dropdown-menu>
 							</el-dropdown>
 						</div>
 					</template>
 				</u-table-column>
 				<!-- 1. ID -->
-				<CustomTableColumn v-if="columns[0].visible" show-overflow-tooltip label="ID" align="center" prop="id" fixed="left" />
+				<CustomTableColumn v-if="columns[0].visible" show-overflow-tooltip label="ID" align="center" prop="id" fixed="left">
+					<template #default="scope">
+						<ExpandCursor>
+							{{ scope.row.id }}
+						</ExpandCursor>
+					</template>
+				</CustomTableColumn>
 				<!-- 2. 日期 -->
 				<CustomTableColumn v-if="columns[1].visible" show-overflow-tooltip label="日期" align="center" prop="orderDate" fixed="left">
 					<template #default="scope">
-						<div>{{ parseTime(scope.row.orderDate, '{y}-{m}-{d}') }}</div>
+						<ExpandCursor>
+							{{ parseTime(scope.row.orderDate, '{y}-{m}-{d}') }}
+						</ExpandCursor>
 					</template>
 				</CustomTableColumn>
 				<!-- 3. 客户 -->
-				<CustomTableColumn v-if="columns[2].visible" show-overflow-tooltip label="客户" align="center" prop="customer" width="100px" fixed="left" />
+				<CustomTableColumn v-if="columns[2].visible" show-overflow-tooltip label="客户" align="center" prop="customer" width="100px" fixed="left">
+					<template #default="scope">
+						<ExpandCursor>
+							{{ scope.row.customer }}
+						</ExpandCursor>
+					</template>
+				</CustomTableColumn>
 				<!-- 4. 供应商/仓库 -->
 				<u-table-column v-if="columns[3].visible" show-overflow-tooltip label="供应商/仓库" align="center" prop="supplierNames" width="200" fixed="left">
 					<template #default="scope">
@@ -1010,151 +978,235 @@ export default {
 					</template>
 				</u-table-column>
 				<!-- 5. 陆运车牌 -->
-				<CustomTableColumn v-if="columns[4].visible" show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo" width="100px" fixed="left" />
+				<CustomTableColumn v-if="columns[4].visible" show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo" width="100px" fixed="left">
+					<template #default="scope">
+						<ExpandCursor>
+							{{ scope.row.landCarNo }}
+						</ExpandCursor>
+					</template>
+				</CustomTableColumn>
 				<!--       < !&#45;&#45; 6. 审核状态 &ndash;&gt;-->
 				<u-table-column v-if="columns[5].visible" show-overflow-tooltip label="审核状态" align="center" prop="checkState" width="120">
 					<template #default="scope">
-						<el-row v-if="scope.row.checkState === '已审核'">
-							<!-- 只有财务和超级管理员可以取消审核 -->
-							<StateTag
-								:state-title="scope.row.checkState"
-								:state-mapper="{ 2: '已审核' }"
-								@click.native="hasPermission(['finance', 'admin']) && handleReCheck(scope.row)"
-								:style="{ cursor: hasPermission(['finance', 'admin']) ? 'pointer' : 'default' }"
-							/>
-						</el-row>
-						<el-row v-else>
-							<el-row>
-								<!-- 只有财务和超级管理员可以审核 -->
-								<el-button v-if="hasPermission(['finance', 'admin'])" type="text" size="mini" @click="handleCheck(scope.row)">
-									<span v-once>审核</span>
-								</el-button>
-								<!-- 其他用户显示状态文本 -->
-								<span v-else style="color: #909399; font-size: 12px">
-									<span v-once>待审核</span>
-								</span>
+						<ExpandCursor>
+							<el-row v-if="scope.row.checkState === '已审核'">
+								<!-- 只有财务和超级管理员可以取消审核 -->
+								<StateTag
+									:state-title="scope.row.checkState"
+									:state-mapper="{ 2: '已审核' }"
+									@click.native="hasPermission(['finance', 'admin']) && handleReCheck(scope.row)"
+									:style="{ cursor: hasPermission(['finance', 'admin']) ? 'pointer' : 'default' }"
+								/>
 							</el-row>
-						</el-row>
+							<el-row v-else>
+								<el-row>
+									<!-- 只有财务和超级管理员可以审核 -->
+									<el-button v-if="hasPermission(['finance', 'admin'])" type="text" size="mini" @click="handleCheck(scope.row)">
+										<span v-once>审核</span>
+									</el-button>
+									<!-- 其他用户显示状态文本 -->
+									<span v-else style="color: #909399; font-size: 12px">
+										<span v-once>待审核</span>
+									</span>
+								</el-row>
+							</el-row>
+						</ExpandCursor>
 					</template>
 				</u-table-column>
 				<!-- 7. 车队 -->
-				<CustomTableColumn v-if="columns[6].visible" show-overflow-tooltip label="车队" align="center" prop="fleet" width="100px" />
+				<CustomTableColumn v-if="columns[6].visible" show-overflow-tooltip label="车队" align="center" prop="fleet" width="100px">
+					<template #default="scope">
+						<ExpandCursor>
+							{{ scope.row.fleet }}
+						</ExpandCursor>
+					</template>
+				</CustomTableColumn>
 				<!-- 8. 陆运司机电话 -->
-				<CustomTableColumn v-if="columns[7].visible" show-overflow-tooltip label="陆运司机电话" align="center" prop="landDriverTel" width="100px" />
+				<CustomTableColumn v-if="columns[7].visible" show-overflow-tooltip label="陆运司机电话" align="center" prop="landDriverTel" width="100px">
+					<template #default="scope">
+						<ExpandCursor>
+							{{ scope.row.landDriverTel }}
+						</ExpandCursor>
+					</template>
+				</CustomTableColumn>
 				<!-- 9. 陆地司机姓名 -->
-				<CustomTableColumn v-if="columns[8].visible" show-overflow-tooltip label="陆地司机姓名" align="center" prop="landDriverName" width="100px" />
+				<CustomTableColumn v-if="columns[8].visible" show-overflow-tooltip label="陆地司机姓名" align="center" prop="landDriverName" width="100px">
+					<template #default="scope">
+						<ExpandCursor>
+							{{ scope.row.landDriverName }}
+						</ExpandCursor>
+					</template>
+				</CustomTableColumn>
 				<!-- 10. 海运柜号 -->
 				<CustomTableColumn v-if="columns[9].visible" show-overflow-tooltip label="海运柜号" align="center" prop="seaCarNo" width="100px">
 					<template #default="scope">
-						{{ !scope.row.seaCarNo ? '无' : scope.row.seaCarNo }}
+						<ExpandCursor>
+							{{ !scope.row.seaCarNo ? '无' : scope.row.seaCarNo }}
+						</ExpandCursor>
 					</template>
 				</CustomTableColumn>
 				<!-- 11. 海运司机电话 -->
 				<CustomTableColumn v-if="columns[10].visible" show-overflow-tooltip label="海运司机电话" align="center" prop="seaDriverTel" width="100px">
 					<template #default="scope">
-						{{ !scope.row.seaDriverTel ? '无' : scope.row.seaDriverTel }}
+						<ExpandCursor>
+							{{ !scope.row.seaDriverTel ? '无' : scope.row.seaDriverTel }}
+						</ExpandCursor>
 					</template>
 				</CustomTableColumn>
 				<!-- 12. 海运公司 -->
 				<CustomTableColumn v-if="columns[11].visible" show-overflow-tooltip label="海运公司" align="center" prop="seaDriverName" width="100px">
 					<template #default="scope">
-						{{ !scope.row.seaDriverName ? '无' : scope.row.seaDriverName }}
+						<ExpandCursor>
+							{{ !scope.row.seaDriverName ? '无' : scope.row.seaDriverName }}
+						</ExpandCursor>
 					</template>
 				</CustomTableColumn>
 				<!-- 13. 总货款 -->
 				<CustomTableColumn v-if="columns[12].visible" show-overflow-tooltip label="总货款" align="center" prop="allPayments" width="100px">
 					<template #default="scope">
-						{{ scope.row.allPayments | changeNumber(changeLength) }}
+						<ExpandCursor>
+							{{ scope.row.allPayments | changeNumber(changeLength) }}
+						</ExpandCursor>
 					</template>
 				</CustomTableColumn>
 				<!-- 14. 总吨位 -->
 				<CustomTableColumn v-if="columns[13].visible" show-overflow-tooltip label="总吨位" align="center" prop="allTonnage" width="120px">
 					<template #default="scope">
-						{{ scope.row.allTonnage | changeNumber(changeLength) }}
+						<ExpandCursor>
+							{{ scope.row.allTonnage | changeNumber(changeLength) }}
+						</ExpandCursor>
 					</template>
 				</CustomTableColumn>
 				<!-- 15. 陆运费 -->
-				<CustomTableColumn v-if="columns[14].visible" show-overflow-tooltip label="陆运费" align="center" prop="landFreight" width="100px" />
+				<CustomTableColumn v-if="columns[14].visible" show-overflow-tooltip label="陆运费" align="center" prop="landFreight" width="100px">
+					<template #default="scope">
+						<ExpandCursor>
+							{{ scope.row.landFreight }}
+						</ExpandCursor>
+					</template>
+				</CustomTableColumn>
 				<!-- 16. 海运费 -->
-				<CustomTableColumn v-if="columns[15].visible" show-overflow-tooltip label="海运费" align="center" prop="seaFreight" width="100px" />
+				<CustomTableColumn v-if="columns[15].visible" show-overflow-tooltip label="海运费" align="center" prop="seaFreight" width="100px">
+					<template #default="scope">
+						<ExpandCursor>
+							{{ scope.row.seaFreight }}
+						</ExpandCursor>
+					</template>
+				</CustomTableColumn>
 				<!-- 17. 总利润(含税) -->
 				<CustomTableColumn v-if="columns[16].visible" show-overflow-tooltip label="总利润(含税)" align="center" prop="allProfit" width="120px">
 					<template #default="scope">
-						{{ scope.row.allProfit | changeNumber(changeLength) }}
+						<ExpandCursor>
+							{{ scope.row.allProfit | changeNumber(changeLength) }}
+						</ExpandCursor>
 					</template>
 				</CustomTableColumn>
 				<!-- 18. 总利润(不含税) -->
 				<CustomTableColumn v-if="columns[17].visible" show-overflow-tooltip label="总利润(不含税)" align="center" prop="allProfitNoTax" width="120px">
 					<template #default="scope">
-						{{ scope.row.allProfitNoTax | changeNumber(changeLength) }}
+						<ExpandCursor>
+							{{ scope.row.allProfitNoTax | changeNumber(changeLength) }}
+						</ExpandCursor>
 					</template>
 				</CustomTableColumn>
 				<!-- 19. 销售经理 -->
-				<CustomTableColumn v-if="columns[18].visible" show-overflow-tooltip label="销售经理" align="center" prop="saleManager" width="100px" />
+				<CustomTableColumn v-if="columns[18].visible" show-overflow-tooltip label="销售经理" align="center" prop="saleManager" width="100px">
+					<template #default="scope">
+						<ExpandCursor>
+							{{ scope.row.saleManager }}
+						</ExpandCursor>
+					</template>
+				</CustomTableColumn>
 				<!-- 20. 录入员 -->
-				<CustomTableColumn v-if="columns[19].visible" show-overflow-tooltip label="录入员" align="center" prop="userName" width="120px" />
+				<CustomTableColumn v-if="columns[19].visible" show-overflow-tooltip label="录入员" align="center" prop="userName" width="120px">
+					<template #default="scope">
+						<ExpandCursor>
+							{{ scope.row.userName }}
+						</ExpandCursor>
+					</template>
+				</CustomTableColumn>
 				<!-- 21. 备注 -->
-				<CustomTableColumn v-if="columns[20].visible" show-overflow-tooltip label="备注" align="center" prop="comments" />
+				<CustomTableColumn v-if="columns[20].visible" show-overflow-tooltip label="备注" align="center" prop="comments">
+					<template #default="scope">
+						<ExpandCursor>
+							{{ scope.row.comments }}
+						</ExpandCursor>
+					</template>
+				</CustomTableColumn>
 				<!-- 22. 附件 -->
 				<u-table-column v-if="columns[21].visible" show-overflow-tooltip label="附件" align="center" prop="path" width="150px">
-					<template slot-scope="scope">
-						<div v-if="Array.isArray(scope.row.attachmentList)">
-							<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'path'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getGoodsOrder, updateGoodsOrder)" />
-						</div>
-						<div v-else>
-							<el-tag type="danger" v-once>加载错误</el-tag>
-						</div>
+					<template #default="scope">
+						<ExpandCursor>
+							<div v-if="Array.isArray(scope.row.attachmentList)">
+								<CheckFiles
+									:attachmentList="scope.row.attachmentList"
+									:flag="'path'"
+									@needToUpdate="value => handleUpdateFilePath(value, scope.row, getGoodsOrder, updateGoodsOrder)"
+								/>
+							</div>
+							<div v-else>
+								<el-tag type="danger" v-once>加载错误</el-tag>
+							</div>
+						</ExpandCursor>
 					</template>
 				</u-table-column>
 				<!-- 23. 收到条附件 -->
 				<u-table-column v-if="columns[22].visible" show-overflow-tooltip label="收到条附件" align="center" prop="receiveProof" width="150px">
 					<template #default="scope">
-						<div v-if="Array.isArray(scope.row.attachmentList)">
-							<CheckFiles
-								:attachmentList="scope.row.attachmentList"
-								:flag="'receiveProof'"
-								@needToUpdate="value => handleUpdateFilePath(value, scope.row, getGoodsOrder, updateGoodsOrder)"
-							/>
-						</div>
-						<div v-else>
-							<el-tag type="danger" v-once>加载错误</el-tag>
-						</div>
+						<ExpandCursor>
+							<div v-if="Array.isArray(scope.row.attachmentList)">
+								<CheckFiles
+									:attachmentList="scope.row.attachmentList"
+									:flag="'receiveProof'"
+									@needToUpdate="value => handleUpdateFilePath(value, scope.row, getGoodsOrder, updateGoodsOrder)"
+								/>
+							</div>
+							<div v-else>
+								<el-tag type="danger" v-once>加载错误</el-tag>
+							</div>
+						</ExpandCursor>
 					</template>
 				</u-table-column>
 				<!-- 24. 是否可编辑 -->
 				<CustomTableColumn v-if="columns[23].visible" show-overflow-tooltip label="是否可编辑" align="center" prop="isedit" width="100px">
-					<template slot-scope="scope">
-						<StateTag :state-title="scope.row.isedit === 0 ? '否' : '是'" :state-mapper="{ 0: '否', 2: '是' }" />
+					<template #default="scope">
+						<ExpandCursor>
+							<StateTag :state-title="scope.row.isedit === 0 ? '否' : '是'" :state-mapper="{ 0: '否', 2: '是' }" />
+						</ExpandCursor>
 					</template>
 				</CustomTableColumn>
 				<!-- 25. 客户是否含税 -->
 				<u-table-column v-if="columns[24].visible" show-overflow-tooltip label="客户是否含税" align="center" prop="customerTaxIncluded" width="120">
 					<template #default="scope">
-						<el-row>
-							<el-row v-if="hasInvoice(scope.row, PUBLIC_DICT_TYPE.CUSTOMER)">
-								<el-row>
-									<el-button type="text" size="mini" @click="showCustomerInvoiceList(scope.row)">是</el-button>
+						<ExpandCursor>
+							<el-row>
+								<el-row v-if="hasInvoice(scope.row, PUBLIC_DICT_TYPE.CUSTOMER)">
+									<el-row>
+										<el-button type="text" size="mini" @click="showCustomerInvoiceList(scope.row)">是</el-button>
+									</el-row>
+								</el-row>
+								<el-row v-else>
+									<StateTag :state-title="`否`" :state-mapper="{ 3: '否' }" />
 								</el-row>
 							</el-row>
-							<el-row v-else>
-								<StateTag :state-title="`否`" :state-mapper="{ 3: '否' }" />
-							</el-row>
-						</el-row>
+						</ExpandCursor>
 					</template>
 				</u-table-column>
 				<!-- 26. 供应商是否开票 -->
 				<u-table-column v-if="columns[25].visible" show-overflow-tooltip label="供应商是否开票" align="center" width="120px">
 					<template #default="scope">
-						<el-row>
-							<el-row v-if="hasInvoice(scope.row, PUBLIC_DICT_TYPE.SUPPLIER)">
-								<el-row>
-									<el-button type="text" size="mini" @click="showSupplierInvoiceList(scope.row)">是</el-button>
+						<ExpandCursor>
+							<el-row>
+								<el-row v-if="hasInvoice(scope.row, PUBLIC_DICT_TYPE.SUPPLIER)">
+									<el-row>
+										<el-button type="text" size="mini" @click="showSupplierInvoiceList(scope.row)">是</el-button>
+									</el-row>
+								</el-row>
+								<el-row v-else>
+									<StateTag :state-title="`否`" :state-mapper="{ 3: '否' }" />
 								</el-row>
 							</el-row>
-							<el-row v-else>
-								<StateTag :state-title="`否`" :state-mapper="{ 3: '否' }" />
-							</el-row>
-						</el-row>
+						</ExpandCursor>
 					</template>
 				</u-table-column>
 				<!--      右侧操作栏-->

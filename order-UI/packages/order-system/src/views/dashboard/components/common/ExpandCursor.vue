@@ -350,6 +350,7 @@ export default {
 		white-space: nowrap;
 
 		.text-content {
+			text-align: center;
 			display: inline-block;
 			width: 100%;
 			overflow: hidden;
