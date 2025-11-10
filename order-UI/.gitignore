@@ -19,5 +19,18 @@ selenium-debug.log
 *.sln
 *.local
 
+# Package managers
 package-lock.json
-yarn.lock
+# yarn.lock 应该提交，所以注释掉
+# yarn.lock
+
+# Build outputs
+**/dist/
+**/coverage/
+**/.turbo/
+**/.cache/
+
+# Environment files
+.env
+.env.local
+.env.*.local

@@ -1,15 +1,18 @@
 {
-	"name": "apps",
+	"name": "order-system-ui",
 	"version": "1.0.0",
 	"private": true,
 	"workspaces": [
 		"packages/*"
 	],
+	"description": "订单管理系统 - Monorepo 项目",
 	"prettier": "./.prettierrc.js",
 	"scripts": {
-		"order": "yarn workspaces run dev",
-		"build": "yarn workspaces run build:stage",
+		"order": "yarn workspace order-system dev",
+		"build": "yarn workspace order-system build:stage",
+		"build:prod": "yarn workspace order-system build:prod",
 		"install-order": "yarn install --ignore-engines",
+		"lint": "yarn workspace order-system lint",
 		"prettier": "prettier --write \"**/*.{js,vue,json,md,ts,tsx,jsx,css,scss,html}\"",
 		"prettier:check": "prettier --check \"**/*.{js,vue,json,md,ts,tsx,jsx,css,scss,html}\""
 	},

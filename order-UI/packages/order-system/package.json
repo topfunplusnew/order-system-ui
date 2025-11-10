@@ -39,6 +39,9 @@
 		"url": "https://gitee.com/y_project/RuoYi-Vue.git"
 	},
 	"dependencies": {
+		"@order-system/shared": "*",
+		"@order-system/ui-components": "*",
+		"@order-system/config": "*",
 		"@riophae/vue-treeselect": "0.4.0",
 		"@vue/composition-api": "^1.7.2",
 		"axios": "0.28.1",
@@ -82,6 +85,7 @@
 		"@babel/eslint-parser": "^7.12.16",
 		"@eslint/js": "^9.15.0",
 		"@jest/globals": "^29.7.0",
+		"@vue/babel-preset-jsx": "^1.4.0",
 		"@vue/cli-plugin-babel": "4.4.6",
 		"@vue/cli-plugin-eslint": "^5.0.0",
 		"@vue/cli-service": "4.4.6",

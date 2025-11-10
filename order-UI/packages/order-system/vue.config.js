@@ -49,7 +49,11 @@ module.exports = {
 		resolve: {
 			alias: {
 				// '@': resolve(__dirname, 'src')
-				'@': resolve('src')
+				'@': resolve('src'),
+				// 支持引用共享包
+				'@shared': resolve(__dirname, '../shared'),
+				'@ui-components': resolve(__dirname, '../ui-components'),
+				'@config': resolve(__dirname, '../config')
 			}
 		},
 		plugins: [

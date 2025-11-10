@@ -427,7 +427,8 @@ export default {
 			// 表单参数
 			form: {
 				ishave: '',
-				targetType: '供应商' // 添加这一行
+				targetType: '供应商', // 添加这一行
+				targetBankNold: null
 			},
 			// 表单校验
 			rules: {
@@ -743,6 +744,7 @@ export default {
 		//
 		handleCommitBack(val) {
 			this.form.targetBankNo = val.bankNo;
+			this.form.targetBankNold = val.id;
 			this.form.targetBankName = val.bankName;
 			this.form.targetAcountsName = val.acountsName;
 		},
@@ -781,6 +783,7 @@ export default {
 				moneyAmount: null,
 				targetAcountsName: null,
 				targetBankNo: null,
+				targetBankNold: null,
 				targetBankName: null,
 				selfAcountsName: null,
 				selfBankNo: null,

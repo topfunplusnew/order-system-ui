@@ -520,7 +520,9 @@ export default {
 				pageSize: 20
 			},
 			dialogHistoryVisible: false,
-			form: {},
+			form: {
+				targetBankNold: null
+			},
 			// 添加借给员工的表单校验
 			rules: {
 				// 添加校验
@@ -799,6 +801,7 @@ export default {
 				moneyAmount: null,
 				targetAcountsName: null,
 				targetBankNo: null,
+				targetBankNold: null,
 				targetBankName: null,
 				selfAcountsName: null,
 				selfBankNo: null,
@@ -913,6 +916,7 @@ export default {
 		},
 		handleCommitBack(val) {
 			this.form.targetBankNo = val.bankNo;
+			this.form.targetBankNold = val.id;
 			this.form.targetBankName = val.bankName;
 			this.form.targetAcountsName = val.acountsName;
 		},

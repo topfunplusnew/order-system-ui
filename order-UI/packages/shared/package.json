@@ -1,0 +1,14 @@
+{
+	"name": "@order-system/shared",
+	"version": "1.0.0",
+	"description": "共享工具函数、常量和类型定义",
+	"main": "index.js",
+	"types": "index.d.ts",
+	"license": "MIT",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"dependencies": {},
+	"devDependencies": {}
+}
+
