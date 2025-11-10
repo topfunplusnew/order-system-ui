@@ -622,7 +622,7 @@ export default {
 				params.endTime = this.dateRange[1];
 			} else {
 				// 如果时间范围为空，清空时间参数
-				params.startTime = null; 
+				params.startTime = null;
 				params.endTime = null;
 			}
 			// 把查询条件中的receiveType转成字符串
@@ -984,6 +984,7 @@ export default {
 								this.showMask = false;
 								this.getList();
 								this.$bus.$emit('changeFlag', false);
+								this.reset();
 								// 清除 BankType 组件状态
 								if (this.$refs.selfSelectedBankType && this.$refs.selfSelectedBankType.resetComponentState) {
 									this.$refs.selfSelectedBankType.resetComponentState();
@@ -1017,6 +1018,7 @@ export default {
 								this.open = false;
 								this.showMask = false;
 								this.getList();
+								this.reset();
 								this.$bus.$emit('changeFlag', false);
 								// 清除 BankType 组件状态
 								if (this.$refs.selfSelectedBankType && this.$refs.selfSelectedBankType.resetComponentState) {
