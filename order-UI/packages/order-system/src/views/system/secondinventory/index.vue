@@ -19,6 +19,11 @@
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
 					</el-col>
 				</template>
+				<template #export>
+					<el-col :span="1.5">
+						<el-button v-hasPermi="['system:exWarehouse:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
+					</el-col>
+				</template>
 			</right-toolbar>
 		</el-row>
 
@@ -52,7 +57,7 @@
 			<el-table-column v-if="columns[6].visible" label="宽度" align="center" prop="sourceInventoryDetail.width" />
 			<el-table-column v-if="columns[7].visible" label="存货价" align="center" prop="sourceInventoryDetail.paymentUnload" />
 			<el-table-column v-if="columns[8].visible" label="出库量" align="center" prop="outAmount" />
-			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="120">
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="180" fixed="right">
 				<template slot-scope="scope">
 					<el-button size="mini" type="text" icon="el-icon-edit" @click="handleModifySecondStorage(scope.row)" v-hasPermi="['system:secondinventory:edit']">修改</el-button>
 					<el-dropdown trigger="hover">

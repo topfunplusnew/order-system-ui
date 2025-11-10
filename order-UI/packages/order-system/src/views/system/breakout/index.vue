@@ -20,6 +20,11 @@
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
 					</el-col>
 				</template>
+				<template #export>
+					<el-col :span="1.5">
+						<el-button v-hasPermi="['system:exWarehouse:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
+					</el-col>
+				</template>
 			</right-toolbar>
 		</el-row>
 
@@ -1269,7 +1274,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`exWarehouse_${new Date().getTime()}.xlsx`
+				`breakout_${new Date().getTime()}.xlsx`
 			);
 		}
 	}

@@ -30,6 +30,11 @@
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
 					</el-col>
 				</template>
+				<template #export>
+					<el-col :span="1.5">
+						<el-button v-hasPermi="['system:exwarehouse:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
+					</el-col>
+				</template>
 			</right-toolbar>
 		</el-row>
 
@@ -273,10 +278,10 @@
 
 <script>
 /* eslint-disable */
-import { listExWarehouse, getExWarehouse, delExWarehouse, addExWarehouse, updateExWarehouse } from '@/api/system/exWarehouse';
+import { listExWarehouse, delExWarehouse, addExWarehouse, updateExWarehouse } from '@/api/system/exWarehouse';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import { addDateRange, parseTime } from '@/utils/ruoyi';
-import { getDetail, getInventoryMainByDetailId } from '../../../api/system/detail';
+import { getInventoryMainByDetailId } from '../../../api/system/detail';
 import { listOrderDetailByOrderNos } from '../../../api/system/orderDetail';
 import OrderDetailInfo from '../../dashboard/components/goodsOrder/OrderDetailInfo.vue';
 import INVENTORY from '@/components/NeedToShow/INVENTORY.vue';
@@ -290,10 +295,6 @@ export default {
 			loading: true,
 			// 选中数组
 			ids: [],
-			// 非单个禁用
-			single: true,
-			// 非多个禁用
-			multiple: true,
 			// 显示搜索条件
 			showSearch: true,
 			// 总条数
@@ -336,10 +337,8 @@ export default {
 				{ key: 6, label: `宽度`, visible: true },
 				{ key: 7, label: `存货价`, visible: true },
 				{ key: 8, label: `出库量`, visible: true },
-				{ key: 9, label: `出库金额`, visible: true } // 新增
+				{ key: 9, label: `出库金额`, visible: true }
 			],
-			checkOrderVisible: false,
-			orderDetailInfo: {},
 			inventoryInfo: {},
 			checkInventoryVisible: false
 		};
@@ -362,11 +361,6 @@ export default {
 			this.columns = JSON.parse(localStorage.getItem('exwarehouse-columns'));
 		}
 	},
-	// 取消按钮
-	cancel() {
-		this.open = false;
-		this.reset();
-	},
 	methods: {
 		computedAmount(row) {
 			const length = (row.sourceInventoryDetail && row.sourceInventoryDetail.length) || 0;
@@ -388,7 +382,7 @@ export default {
 					this.openDialog(
 						OrderDetailInfo,
 						'订单详情信息查看',
-						'700px',
+						'100%',
 						{
 							orderDetailInfoList: details,
 							ban: true
@@ -411,9 +405,6 @@ export default {
 				this.openDialog(INVENTORY, '查看库存信息', '100%', { needToShowInfo: res.data || {} }, false, false);
 			});
 		},
-		isOrNot(val) {
-			return val === 1 ? '是' : '否';
-		},
 
 		/** 查询出库列表 */
 		getList() {
@@ -425,8 +416,6 @@ export default {
 				this.loading = false;
 			});
 		},
-		/** 查询参数列表 */
-
 		// 取消按钮
 		cancel() {
 			this.open = false;
@@ -464,30 +453,12 @@ export default {
 		// 多选框选中数据
 		handleSelectionChange(selection) {
 			this.ids = selection.map(item => item.id);
-			this.single = selection.length !== 1;
-			this.multiple = !selection.length;
 		},
 		printHTML() {
 			this.$print({
 				printable: 'printBox',
 				type: 'html',
 				targetStyles: ['*'] // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
-			});
-		},
-		/** 新增按钮操作 */
-		handleAdd() {
-			this.reset();
-			this.open = true;
-			this.title = '添加出库';
-		},
-		/** 修改按钮操作 */
-		handleUpdate(row) {
-			this.reset();
-			const id = row.id || this.ids;
-			getExWarehouse(id).then(response => {
-				this.form = response.data;
-				this.open = true;
-				this.title = '修改出库';
 			});
 		},
 		/** 提交按钮 */
