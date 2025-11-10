@@ -187,7 +187,20 @@ export default {
 			this.queryParams.pageNum = 1;
 			this.getList();
 		},
+		/** 重置查询条件（保留时间参数） */
+		resetQuery() {
+			// 清除除时间外的所有搜索条件
+			this.queryParams.companyName = null;
+			this.queryParams.pageNum = 1;
+			// 重置表单验证
+			this.$nextTick(() => {
+				if (this.$refs.queryForm) {
+					this.$refs.queryForm.clearValidate();
+				}
+			});
+		},
 		refresh() {
+			this.resetQuery();
 			this.getList();
 		},
 		handleSubmitTime() {
