@@ -128,7 +128,11 @@
 						>
 							<!-- 手写每一列，使用 v-if 判断列的可见性 -->
 							<el-table-column v-if="columns[0].visible" label="ID" align="center" prop="id" show-overflow-tooltip />
-							<el-table-column v-if="columns[1].visible" label="变动日期(入库)" align="center" prop="storeDate" show-overflow-tooltip />
+							<el-table-column v-if="columns[1].visible" label="变动日期(入库)" align="center" prop="storeDate" show-overflow-tooltip>
+								<template #default="scope">
+									{{ parseTime(scope.row.storeDate, '{y}-{m}-{d}') }}
+								</template>
+							</el-table-column>
 							<el-table-column v-if="columns[2].visible" label="仓库名称" align="center" prop="storeHouseName" show-overflow-tooltip />
 							<el-table-column v-if="columns[3].visible" label="级别名称" align="center" prop="levelName" show-overflow-tooltip />
 							<el-table-column v-if="columns[4].visible" label="入库片数" align="center" prop="stockNumber" show-overflow-tooltip />

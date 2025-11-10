@@ -91,7 +91,11 @@
 							<CustomTableColumn type="selection" width="50" align="center" />
 							<CustomTableColumn v-if="columns[0].visible" label="ID" align="center" prop="id" width="80" />
 							<CustomTableColumn v-if="columns[1].visible" label="仓库名称" align="center" prop="storeHouseName" width="150" />
-							<CustomTableColumn v-if="columns[2].visible" label="变动日期(入库)" align="center" prop="storeDate" width="150" />
+							<CustomTableColumn v-if="columns[2].visible" label="变动日期(入库)" align="center" prop="storeDate" width="150">
+								<template #default="scope">
+									{{ parseTime(scope.row.storeDate, '{y}-{m}-{d}') }}
+								</template>
+							</CustomTableColumn>
 							<CustomTableColumn v-if="columns[3].visible" label="供应商" align="center" prop="supplier" width="150">
 								<template #default="scope">
 									<div class="supplier-container">

@@ -36,7 +36,11 @@
 					<span v-else>存货毁损</span>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[2].visible" label="变动日期(出库)" align="center" prop="outDate" />
+			<el-table-column v-if="columns[2].visible" label="变动日期(出库)" align="center" prop="outDate">
+				<template #default="scope">
+					{{ parseTime(scope.row.outDate, '{y}-{m}-{d}') }}
+				</template>
+			</el-table-column>
 			<el-table-column v-if="columns[3].visible" label="产品级别" align="center" prop="sourceInventoryDetail.levelName" />
 			<el-table-column v-if="columns[4].visible" label="厚度" align="center" prop="sourceInventoryDetail.height" />
 			<el-table-column v-if="columns[5].visible" label="长度" align="center" prop="sourceInventoryDetail.length" />
@@ -659,6 +663,7 @@ import { fix } from '../../../api/tool/format';
 import SearchOption from '../../../components/SearchOption.vue';
 import { _fill } from './fill';
 import { updateInventoryMain, addInventoryMain } from '../../../api/system/inventoryMain';
+import { parseTime } from '@/utils/ruoyi';
 
 export default {
 	name: 'BreakOut',

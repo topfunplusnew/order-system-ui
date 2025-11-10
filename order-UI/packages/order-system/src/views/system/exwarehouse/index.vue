@@ -59,7 +59,11 @@
 					<span v-else>存货毁损</span>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[2].visible" label="变动日期(出库)" align="center" prop="outDate" />
+			<el-table-column v-if="columns[2].visible" label="变动日期(出库)" align="center" prop="outDate">
+				<template #default="scope">
+					{{ parseTime(scope.row.outDate, '{y}-{m}-{d}') }}
+				</template>
+			</el-table-column>
 			<el-table-column v-if="columns[3].visible" label="产品级别" align="center" prop="sourceInventoryDetail.levelName" />
 			<el-table-column v-if="columns[4].visible" label="厚度" align="center" prop="sourceInventoryDetail.height" />
 			<el-table-column v-if="columns[5].visible" label="长度" align="center" prop="sourceInventoryDetail.length" />
@@ -271,7 +275,7 @@
 /* eslint-disable */
 import { listExWarehouse, getExWarehouse, delExWarehouse, addExWarehouse, updateExWarehouse } from '@/api/system/exWarehouse';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
-import { addDateRange } from '@/utils/ruoyi';
+import { addDateRange, parseTime } from '@/utils/ruoyi';
 import { getDetail } from '../../../api/system/detail';
 import { listOrderDetailByOrderNos } from '../../../api/system/orderDetail';
 import OrderDetailInfo from '../../dashboard/components/goodsOrder/OrderDetailInfo.vue';
