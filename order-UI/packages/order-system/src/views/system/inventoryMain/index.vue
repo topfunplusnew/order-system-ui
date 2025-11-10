@@ -57,7 +57,7 @@
 		</el-row>
 
 		<!-- 使用 DragDiv 组件替换原来的 el-col 布局 -->
-		<div style="height: 800px">
+		<div>
 			<DragDiv :initial-left-width="300" :min-left-width="200" :min-right-width="400" :divider-width="6" @drag-start="handleDragStart" @dragging="handleDragging" @drag-end="handleDragEnd">
 				<!-- 左侧：仓库树 -->
 				<template #left>
@@ -87,17 +87,7 @@
 				<!-- 右侧：数据表格 -->
 				<template #right>
 					<div style="height: 100%; display: flex; flex-direction: column">
-						<u-table
-							border
-							id="printBox"
-							size="mini"
-							v-loading="loading"
-							:data="inventoryMainList"
-							@selection-change="handleSelectionChange"
-							stripe
-							style="flex: 1; margin-bottom: 20px"
-							:height="'100%'"
-						>
+						<u-table border id="printBox" size="mini" v-loading="loading" :data="inventoryMainList" @selection-change="handleSelectionChange" stripe :height="'100%'">
 							<CustomTableColumn type="selection" width="50" align="center" />
 							<CustomTableColumn v-if="columns[0].visible" label="ID" align="center" prop="id" width="80" />
 							<CustomTableColumn v-if="columns[1].visible" label="仓库名称" align="center" prop="storeHouseName" width="150" />
@@ -179,7 +169,7 @@
 									</div>
 								</template>
 							</CustomTableColumn>
-							<CustomTableColumn v-if="columns[21].visible" label="操作" align="center" width="250" fixed="right">
+							<CustomTableColumn v-if="columns[21].visible" label="操作" align="center" width="300" fixed="right">
 								<template slot-scope="scope">
 									<el-button size="mini" type="text" icon="el-icon-edit" @click="handleCheckInventory(scope.row)">查看</el-button>
 									<el-tooltip effect="light" v-if="isInventoryDisabledModify(scope.row)" placement="top">

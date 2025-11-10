@@ -693,8 +693,8 @@ export default {
 		},
 		// **新增：完整的组件状态重置方法**
 		resetComponentState() {
-			// 重置本地状态
-			this.localSelectType = null;
+			// 重置本地状态 - 优先使用 selectType prop 的值（父组件传入的默认值）
+			this.localSelectType = this.selectType || null;
 			this.flag = false;
 			this.drawer = false;
 			this.resetAcceptanceForm();

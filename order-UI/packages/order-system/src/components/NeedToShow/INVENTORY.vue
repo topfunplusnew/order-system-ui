@@ -66,21 +66,13 @@ export default {
 					{{ needToShowInfo.storeDate ? new Date(needToShowInfo.storeDate).toLocaleDateString() : '-' }}
 				</el-descriptions-item>
 				<el-descriptions-item label="仓库名称">{{ needToShowInfo.storeHouseName || '-' }}</el-descriptions-item>
-				<el-descriptions-item label="审核状态">{{ needToShowInfo.checkState || '-' }}</el-descriptions-item>
 				<el-descriptions-item label="车队">{{ needToShowInfo.fleet || '-' }}</el-descriptions-item>
 				<el-descriptions-item label="陆运银行账号">{{ needToShowInfo.landBankNo || '-' }}</el-descriptions-item>
 				<el-descriptions-item label="陆运车牌">{{ needToShowInfo.landCarNo || '-' }}</el-descriptions-item>
-				<el-descriptions-item label="陆地司机姓名">{{ needToShowInfo.landDriverName || '-' }}</el-descriptions-item>
-				<el-descriptions-item label="陆运司机电话">{{ needToShowInfo.landDriverTel || '-' }}</el-descriptions-item>
-				<el-descriptions-item label="海运银行账号">{{ needToShowInfo.seaBankNo || '-' }}</el-descriptions-item>
 				<el-descriptions-item label="柜号">{{ needToShowInfo.seaCarNo || '-' }}</el-descriptions-item>
 				<el-descriptions-item label="海运公司">{{ needToShowInfo.seaDriverName || '-' }}</el-descriptions-item>
-				<el-descriptions-item label="海运公司电话">{{ needToShowInfo.seaDriverTel || '-' }}</el-descriptions-item>
 				<el-descriptions-item label="操作人员">
 					{{ needToShowInfo.userName || '暂无数据' }}
-				</el-descriptions-item>
-				<el-descriptions-item label="备注">
-					<el-tag size="small">{{ needToShowInfo.comments || '无' }}</el-tag>
 				</el-descriptions-item>
 			</el-descriptions>
 

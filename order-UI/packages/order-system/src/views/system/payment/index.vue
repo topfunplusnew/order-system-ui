@@ -890,13 +890,16 @@ export default {
 			this.showMask = false;
 			this.$bus.$emit('changeFlag', false);
 			this.reset();
-			// 安全地清除 BankType 组件状态
-			if (this.$refs.selfSelectedBankType && this.$refs.selfSelectedBankType.resetComponentState) {
-				this.$refs.selfSelectedBankType.resetComponentState();
-			}
-			if (this.$refs.otherSelectedBankType && this.$refs.otherSelectedBankType.resetComponentState) {
-				this.$refs.otherSelectedBankType.resetComponentState();
-			}
+			// 使用 $nextTick 确保 reset() 后 form 的值已更新，再重置 BankType 组件状态
+			this.$nextTick(() => {
+				// 安全地清除 BankType 组件状态，此时会使用 reset() 中设置的默认值
+				if (this.$refs.selfSelectedBankType && this.$refs.selfSelectedBankType.resetComponentState) {
+					this.$refs.selfSelectedBankType.resetComponentState();
+				}
+				if (this.$refs.otherSelectedBankType && this.$refs.otherSelectedBankType.resetComponentState) {
+					this.$refs.otherSelectedBankType.resetComponentState();
+				}
+			});
 			// 清除附件上传状态
 			if (this.$refs.attachmentUpload) {
 				this.$refs.attachmentUpload.clearUploadedFiles();
@@ -1324,13 +1327,17 @@ export default {
 								this.partialReset();
 								this.open = false;
 								this.showMask = false;
-								// 清除 BankType 组件状态
-								if (this.$refs.selfSelectedBankType && this.$refs.selfSelectedBankType.resetComponentState) {
-									this.$refs.selfSelectedBankType.resetComponentState();
-								}
-								if (this.$refs.otherSelectedBankType && this.$refs.otherSelectedBankType.resetComponentState) {
-									this.$refs.otherSelectedBankType.resetComponentState();
-								}
+								this.reset();
+								// 使用 $nextTick 确保 reset() 后 form 的值已更新，再重置 BankType 组件状态
+								this.$nextTick(() => {
+									// 清除 BankType 组件状态，此时会使用 reset() 中设置的默认值
+									if (this.$refs.selfSelectedBankType && this.$refs.selfSelectedBankType.resetComponentState) {
+										this.$refs.selfSelectedBankType.resetComponentState();
+									}
+									if (this.$refs.otherSelectedBankType && this.$refs.otherSelectedBankType.resetComponentState) {
+										this.$refs.otherSelectedBankType.resetComponentState();
+									}
+								});
 								// 清除附件上传状态
 								if (this.$refs.attachmentUpload) {
 									this.$refs.attachmentUpload.clearUploadedFiles();
@@ -1372,13 +1379,17 @@ export default {
 								this.partialReset();
 								this.open = false;
 								this.showMask = false;
-								// 清除 BankType 组件状态
-								if (this.$refs.selfSelectedBankType && this.$refs.selfSelectedBankType.resetComponentState) {
-									this.$refs.selfSelectedBankType.resetComponentState();
-								}
-								if (this.$refs.otherSelectedBankType && this.$refs.otherSelectedBankType.resetComponentState) {
-									this.$refs.otherSelectedBankType.resetComponentState();
-								}
+								this.reset();
+								// 使用 $nextTick 确保 reset() 后 form 的值已更新，再重置 BankType 组件状态
+								this.$nextTick(() => {
+									// 清除 BankType 组件状态，此时会使用 reset() 中设置的默认值
+									if (this.$refs.selfSelectedBankType && this.$refs.selfSelectedBankType.resetComponentState) {
+										this.$refs.selfSelectedBankType.resetComponentState();
+									}
+									if (this.$refs.otherSelectedBankType && this.$refs.otherSelectedBankType.resetComponentState) {
+										this.$refs.otherSelectedBankType.resetComponentState();
+									}
+								});
 								// 清除附件上传状态
 								if (this.$refs.attachmentUpload) {
 									this.$refs.attachmentUpload.clearUploadedFiles();
