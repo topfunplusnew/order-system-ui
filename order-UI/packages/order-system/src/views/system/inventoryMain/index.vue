@@ -58,7 +58,7 @@
 
 		<!-- 使用 DragDiv 组件替换原来的 el-col 布局 -->
 		<div>
-			<DragDiv :initial-left-width="300" :min-left-width="200" :min-right-width="400" :divider-width="6" @drag-start="handleDragStart" @dragging="handleDragging" @drag-end="handleDragEnd">
+			<DragDiv :initial-left-width="300" :min-left-width="200" :min-right-width="800" :divider-width="6" @drag-start="handleDragStart" @dragging="handleDragging" @drag-end="handleDragEnd">
 				<!-- 左侧：仓库树 -->
 				<template #left>
 					<div class="tree-container" style="height: 100%; padding: 10px; background: #fafafa; border: 1px solid #e6e6e6; display: flex; flex-direction: column">
