@@ -17,7 +17,7 @@
 				/>
 			</el-form-item>
 			<el-form-item v-if="shouldShowField('userName')" label="录入人员" prop="userName">
-				<el-input v-model="queryParams.userName" class="input-standard" placeholder="录入人员" clearable @keyup.enter.native="handleQuery" @input="val => queryParams.UserName = val" />
+				<el-input v-model="queryParams.userName" class="input-standard" placeholder="录入人员" clearable @keyup.enter.native="handleQuery" @input="val => (queryParams.UserName = val)" />
 			</el-form-item>
 			<el-form-item v-if="shouldShowField('supplier')" label="供应商" prop="supplier">
 				<el-input v-model="queryParams.params.detail_supplier" class="input-standard" placeholder="请输入供应商" clearable @keyup.enter.native="handleQuery" />
@@ -1141,6 +1141,9 @@ export default {
 		this.getList();
 		// 抓取左侧仓库信息
 		this.getStoreList();
+	},
+	mounted() {
+		this.$bus.$on('refreshList', this.getList);
 	},
 	methods: {
 		/**

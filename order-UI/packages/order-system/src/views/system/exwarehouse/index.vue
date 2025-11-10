@@ -136,7 +136,7 @@
 			:show-close="false"
 			title="查看库存信息"
 			:visible.sync="checkInventoryVisible"
-			width="900px"
+			width="100%"
 		>
 			<el-descriptions title="库存详情" border size="mini">
 				<el-descriptions-item label="备注">
@@ -276,9 +276,10 @@
 import { listExWarehouse, getExWarehouse, delExWarehouse, addExWarehouse, updateExWarehouse } from '@/api/system/exWarehouse';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import { addDateRange, parseTime } from '@/utils/ruoyi';
-import { getDetail } from '../../../api/system/detail';
+import { getDetail, getInventoryMainByDetailId } from '../../../api/system/detail';
 import { listOrderDetailByOrderNos } from '../../../api/system/orderDetail';
 import OrderDetailInfo from '../../dashboard/components/goodsOrder/OrderDetailInfo.vue';
+import INVENTORY from '@/components/NeedToShow/INVENTORY.vue';
 
 export default {
 	name: 'ExWarehouse',
@@ -384,7 +385,16 @@ export default {
 			listOrderDetailByOrderNos([row.ordersNo])
 				.then(res => {
 					const details = res.rows || [];
-					this.openDialog(OrderDetailInfo, '订单详情信息查看', '700px', { orderDetailInfoList: details, ban: true }, false);
+					this.openDialog(
+						OrderDetailInfo,
+						'订单详情信息查看',
+						'700px',
+						{
+							orderDetailInfoList: details,
+							ban: true
+						},
+						false
+					);
 				})
 				.catch(err => {
 					console.error('获取订单详情失败:', err);
@@ -394,9 +404,11 @@ export default {
 
 		// 查看库存信息 查询当前行的库存信息
 		checkInvoInfo(row) {
-			getDetail(row.storeID).then(res => {
-				this.inventoryInfo = res.data;
-				this.checkInventoryVisible = true;
+			if (!row.storeID) {
+				this.$message.warning('查看库存时发生错误，改行数据没有storeID');
+			}
+			getInventoryMainByDetailId(row.storeID).then(res => {
+				this.openDialog(INVENTORY, '查看库存信息', '100%', { needToShowInfo: res.data || {} }, false, false);
 			});
 		},
 		isOrNot(val) {
