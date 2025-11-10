@@ -12,13 +12,10 @@
 					{{ formatValue(warehouseData.outDirection) }}
 				</el-descriptions-item>
 				<el-descriptions-item label="出库数量">
-					{{ warehouseData.outAmount !== undefined && warehouseData.outAmount !== null ? warehouseData.outAmount + ' 件' : '暂无数据' }}
+					{{ warehouseData.outAmount !== undefined && warehouseData.outAmount !== null ? warehouseData.outAmount : '暂无数据' }}
 				</el-descriptions-item>
 				<el-descriptions-item label="操作人">
 					{{ formatValue(warehouseData.userName) }}
-				</el-descriptions-item>
-				<el-descriptions-item label="备注">
-					{{ formatValue(warehouseData.remark) }}
 				</el-descriptions-item>
 			</el-descriptions>
 		</el-card>
@@ -38,19 +35,19 @@
 				<el-descriptions-item label="厚度">
 					{{
 						warehouseData.sourceInventoryDetail.height !== undefined && warehouseData.sourceInventoryDetail.height !== null
-							? warehouseData.sourceInventoryDetail.height + ' mm'
+							? warehouseData.sourceInventoryDetail.height
 							: '暂无数据'
 					}}
 				</el-descriptions-item>
 				<el-descriptions-item label="长度">
 					{{
 						warehouseData.sourceInventoryDetail.length !== undefined && warehouseData.sourceInventoryDetail.length !== null
-							? warehouseData.sourceInventoryDetail.length + ' mm'
+							? warehouseData.sourceInventoryDetail.length
 							: '暂无数据'
 					}}
 				</el-descriptions-item>
 				<el-descriptions-item label="宽度">
-					{{ warehouseData.sourceInventoryDetail.width !== undefined && warehouseData.sourceInventoryDetail.width !== null ? warehouseData.sourceInventoryDetail.width + ' mm' : '暂无数据' }}
+					{{ warehouseData.sourceInventoryDetail.width !== undefined && warehouseData.sourceInventoryDetail.width !== null ? warehouseData.sourceInventoryDetail.width : '暂无数据' }}
 				</el-descriptions-item>
 				<el-descriptions-item label="每包片数">
 					{{ formatValue(warehouseData.sourceInventoryDetail.piecesPerPack) }}
@@ -64,7 +61,7 @@
 				<el-descriptions-item label="出厂单价">
 					{{
 						warehouseData.sourceInventoryDetail.price !== undefined && warehouseData.sourceInventoryDetail.price !== null
-							? fix2(warehouseData.sourceInventoryDetail.price) + ' 元'
+							? fix2(warehouseData.sourceInventoryDetail.price)
 							: '暂无数据'
 					}}
 				</el-descriptions-item>
