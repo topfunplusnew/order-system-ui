@@ -5,6 +5,8 @@
 export const UserConfigKey = Object.freeze({
 	// 订单搜索字段配置
 	GOODS_SEARCH_COLUMNS: 'goodsSearch-columns',
+	// 库存搜索字段配置
+	INVENTORY_SEARCH_COLUMNS: 'inventorySearch-columns',
 	// 订单列表列配置
 	GOODS_ORDER_TABLE_COLUMNS: 'goodsOrder-table-columns',
 	// 库存列表列配置
