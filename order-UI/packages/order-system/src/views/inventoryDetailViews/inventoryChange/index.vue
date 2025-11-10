@@ -101,11 +101,11 @@
 
 <script>
 import { inventoryChangeDetails } from '@/api/inventory';
-import { getDetail } from '@/api/system/detail';
+import { getInventoryMainByDetailId } from '@/api/system/detail';
 import { getExWarehouse } from '@/api/system/exWarehouse';
 import Pagination from '@/components/Pagination';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
-import INVENTORYDETAIL from '@/components/NeedToShow/INVENTORYDETAIL.vue';
+import INVENTORY from '@/components/NeedToShow/INVENTORY.vue';
 import WAREHOUSE from '../../../components/NeedToShow/WAREHOUSE.vue';
 export default {
 	name: 'DetailInventoryChange',
@@ -169,14 +169,14 @@ export default {
 			this.currentDetailType = type;
 			if (type === 'IN') {
 				console.log('入库明细', item);
-				// 入库明细，调用 getInventoryMain
-				const res = await getDetail(item.detailId);
+				// 入库明细，调用 getInventoryMainByDetailId
+				const res = await getInventoryMainByDetailId(item.detailId);
 				if (!res.data) {
 					this.$message.warning('未找到入库明细信息');
 					return;
 				}
 				this.openDialog(
-					INVENTORYDETAIL,
+					INVENTORY,
 					'入库详情信息',
 					'1500px',
 					{
