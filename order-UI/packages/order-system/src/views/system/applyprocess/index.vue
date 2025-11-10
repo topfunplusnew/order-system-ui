@@ -690,7 +690,7 @@ export default {
 						<div v-if="Array.isArray(scope.row.attachmentList)">
 							<CheckFiles
 								:attachmentList="scope.row.attachmentList"
-								:flag="'attachment'"
+								:flag="'attachments'"
 								:is-upload="false"
 								@needToUpdate="value => handleUpdateFilePath(value, scope.row, getPaymentApply, updatePaymentApply)"
 							/>

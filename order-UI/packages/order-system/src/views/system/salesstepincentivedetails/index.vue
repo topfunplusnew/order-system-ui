@@ -273,21 +273,21 @@ export default {
 						message: '请选择利润是否达标',
 						trigger: 'blur'
 					}
-				],
-				rewardAmount: [
-					{
-						required: true,
-						message: '请输入奖励金额',
-						trigger: 'blur'
-					}
-				],
-				rewardDate: [
-					{
-						required: true,
-						message: '请选择奖励日期',
-						trigger: 'blur'
-					}
 				]
+				// rewardAmount: [
+				// 	{
+				// 		required: true,
+				// 		message: '请输入奖励金额',
+				// 		trigger: 'blur'
+				// 	}
+				// ],
+				// rewardDate: [
+				// 	{
+				// 		required: true,
+				// 		message: '请选择奖励日期',
+				// 		trigger: 'blur'
+				// 	}
+				// ]
 			},
 			columns: [
 				{ key: 0, label: `id`, visible: true },

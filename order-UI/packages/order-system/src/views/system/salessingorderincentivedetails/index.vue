@@ -156,6 +156,7 @@
 						<el-form-item label="奖励日期" prop="rewardDate">
 							<el-date-picker v-model="form.rewardDate" clearable type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="请选择奖励日期"></el-date-picker>
 						</el-form-item>
+						1
 						<el-form-item label="备注" prop="remark">
 							<el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
 						</el-form-item>
@@ -268,20 +269,6 @@ export default {
 					{
 						required: true,
 						message: '请输入综合单车利润',
-						trigger: 'blur'
-					}
-				],
-				rewardAmount: [
-					{
-						required: true,
-						message: '请输入奖励金额',
-						trigger: 'blur'
-					}
-				],
-				rewardDate: [
-					{
-						required: true,
-						message: '请选择奖励日期',
 						trigger: 'blur'
 					}
 				]

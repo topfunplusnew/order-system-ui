@@ -29,6 +29,10 @@
 				<el-input v-model="queryParams.params.supplierNames" placeholder="请输入供应商名称" clearable size="mini" class="input-standard" @keyup.enter.native="handleQuery"></el-input>
 			</el-form-item>
 
+			<el-form-item v-if="shouldShowField('storeHouseName')" label="仓库名称" prop="params.storeHouseName">
+				<el-input v-model="queryParams.params.storeHouseName" placeholder="请输入仓库名称" clearable size="mini" class="input-medium" @keyup.enter.native="handleQuery"></el-input>
+			</el-form-item>
+
 			<el-form-item v-if="shouldShowField('landDriverName')" label="司机名称" prop="landDriverName">
 				<el-input v-model="queryParams.landDriverName" placeholder="请输入司机名称" clearable size="mini" class="input-medium" @keyup.enter.native="handleQuery"></el-input>
 			</el-form-item>
@@ -142,6 +146,7 @@ export default {
 				{ value: 'dateRange', label: '时间范围' },
 				{ value: 'customer', label: '客户名称' },
 				{ value: 'supplierNames', label: '供应商' },
+				{ value: 'storeHouseName', label: '仓库' },
 				{ value: 'landDriverName', label: '司机名称' },
 				{ value: 'landCarNo', label: '车牌' },
 				{ value: 'seaDriverName', label: '海运公司' },
@@ -177,6 +182,7 @@ export default {
 				userName: '',
 				checkState: '',
 				params: {
+					storeHouseName: '',
 					isIncludeTaxSale: '',
 					isIncludeTaxFactory: '',
 					supplierNames: '',
