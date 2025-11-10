@@ -70,13 +70,19 @@
 		</el-form>
 
 		<el-row :gutter="10" class="mb8">
-			<el-col :span="1.5">
+			<!-- <el-col :span="1.5">
 				<el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport" v-hasPermi="['system:detail:export']">导出</el-button>
-			</el-col>
+			</el-col> -->
 			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
 				<template #print>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
+					</el-col>
+				</template>
+				<template #export>
+					<el-col :span="1.5">
+						<el-button v-hasPermi="['system:detail:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport">导出库存明细目录</el-button>
+						<el-button v-hasPermi="['system:detail:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExportNoPage">导出全部库存明细</el-button>
 					</el-col>
 				</template>
 			</right-toolbar>
@@ -366,6 +372,8 @@ import SearchOption from '@/components/SearchOption.vue';
 import { listStoreHouse } from '@/api/system/StoreHouse';
 import DragDiv from '@/components/DragDiv/index.vue';
 import { fix_2 } from '@/api/tool/format';
+// 前端Excel导出依赖
+import * as XLSX from 'xlsx';
 
 export default {
 	name: 'Detail',
@@ -707,14 +715,146 @@ export default {
 				})
 				.catch(() => {});
 		},
-		/** 导出按钮操作 */
+		/**
+		 * @description: 处理导出库存明细列表数据按钮操作（前端Excel导出）。
+		 *              使用 XLSX 库在前端生成 Excel 文件。
+		 */
 		handleExport() {
+			try {
+				// 开始导出提示
+				this.$message({
+					message: '正在生成Excel文件，请稍候...',
+					type: 'info'
+				});
+
+				// 生成Excel数据
+				const excelData = this.generateExcelData();
+
+				// 创建工作簿并下载
+				this.downloadExcel(excelData);
+
+				// 成功提示
+				this.$message({
+					message: 'Excel文件导出成功！',
+					type: 'success'
+				});
+			} catch (error) {
+				console.error('Excel导出失败:', error);
+				this.$message({
+					message: 'Excel导出失败，请重试',
+					type: 'error'
+				});
+			}
+		},
+		/**
+		 * 生成Excel数据
+		 * @returns {Object} 包含表头和数据的对象
+		 */
+		generateExcelData() {
+			// 获取可见列配置
+			const visibleColumns = this.columns.filter(col => col.visible);
+
+			// 生成表头
+			const headers = visibleColumns.map(col => col.label);
+
+			// 生成数据行
+			const rows = this.detailList.map(row => {
+				return visibleColumns.map(col => {
+					return this.formatCellValue(row, col.key);
+				});
+			});
+
+			return {
+				headers,
+				rows
+			};
+		},
+		/**
+		 * 格式化单元格值
+		 * @param {Object} row - 行数据
+		 * @param {number} colKey - 列键值
+		 * @returns {string} 格式化后的值
+		 */
+		formatCellValue(row, colKey) {
+			switch (colKey) {
+				case 0: // ID
+					return row.id || '';
+				case 1: // 变动日期(入库)
+					return row.storeDate ? parseTime(row.storeDate, '{y}-{m}-{d}') : '';
+				case 2: // 仓库名称
+					return row.storeHouseName || '';
+				case 3: // 级别名称
+					return row.levelName || '';
+				case 4: // 入库片数
+					return row.stockNumber || '';
+				case 5: // 剩余量
+					return row.actualPieces || '';
+				case 6: // 供应商
+					return row.supplier || '';
+				case 7: // 计量单位
+					return row.countingUnit || '';
+				case 8: // 厚度
+					return row.height || '';
+				case 9: // 长度
+					return row.length || '';
+				case 10: // 宽度
+					return row.width || '';
+				case 11: // 每包片数
+					return row.piecesPerPack || '';
+				case 12: // 包数
+					return row.packs || '';
+				case 13: // 存货价
+					return row.paymentUnload || '';
+				case 14: // 库存是否含税
+					return row.isIncludeTaxSale === 1 ? '含税' : '不含税';
+				case 15: // 入库金额
+					return row.payments || '';
+				case 16: // 误差
+					return row.erro || '';
+				case 17: // 吨位
+					return row.tonnage || '';
+				default:
+					return '';
+			}
+		},
+		/**
+		 * 下载Excel文件
+		 * @param {Object} data - Excel数据
+		 */
+		downloadExcel(data) {
+			// 创建工作表数据
+			const worksheetData = [data.headers, ...data.rows];
+
+			// 创建工作表
+			const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+
+			// 设置列宽（可选优化）
+			const colWidths = data.headers.map(() => ({ wch: 15 }));
+			worksheet['!cols'] = colWidths;
+
+			// 创建工作簿
+			const workbook = XLSX.utils.book_new();
+			XLSX.utils.book_append_sheet(workbook, worksheet, '库存明细列表');
+
+			// 生成文件名
+			const fileName = `库存明细列表_${parseTime(new Date(), '{y}{m}{d}_{h}{i}{s}')}.xlsx`;
+
+			// 下载文件
+			XLSX.writeFile(workbook, fileName);
+		},
+		/**
+		 * @description: 处理导出全部库存明细列表数据按钮操作（不分页导出）。
+		 *              调用 download 方法，请求 'system/inventoryDetail/export' 接口导出全部数据。
+		 */
+		handleExportNoPage() {
 			this.download(
 				'system/inventoryDetail/export',
 				{
-					...this.queryParams
+					...this.queryParams,
+					// 不分页的导出
+					noPage: true
 				},
-				`detail_${new Date().getTime()}.xlsx`
+				`detail_all_${new Date().getTime()}.xlsx`
 			);
 		},
 		/**

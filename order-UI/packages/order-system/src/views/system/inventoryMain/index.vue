@@ -4,8 +4,17 @@
 			<el-form-item label="仓库名称" prop="storeHouseName">
 				<el-input v-model="queryParams.storeHouseName" class="input-standard" placeholder="请输入仓库名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
-			<el-form-item label="入库日期" prop="storeDate">
-				<el-date-picker v-model="queryParams.storeDate" type="date" value-format="yyyy-MM-dd" placeholder="选择入库日期" clearable />
+			<el-form-item label="入库日期" prop="storeDateRange">
+				<el-date-picker
+					v-model="queryParams.storeDateRange"
+					type="daterange"
+					value-format="yyyy-MM-dd"
+					range-separator="至"
+					start-placeholder="开始日期"
+					end-placeholder="结束日期"
+					clearable
+					@change="handleDateRangeChange"
+				/>
 			</el-form-item>
 			<el-form-item label="陆运车牌" prop="landCarNo">
 				<el-input v-model="queryParams.landCarNo" class="input-standard" placeholder="请输入陆运车牌" clearable @keyup.enter.native="handleQuery" />
@@ -38,9 +47,9 @@
 						<el-col :span="1.5">
 							<el-button type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete" v-hasPermi="['system:inventoryMain:remove']">删除</el-button>
 						</el-col>
-						<el-col :span="1.5">
+						<!-- <el-col :span="1.5">
 							<el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport" v-hasPermi="['system:inventoryMain:export']">导出</el-button>
-						</el-col>
+						</el-col> -->
 					</el-row>
 				</template>
 				<template #print>
@@ -50,7 +59,8 @@
 				</template>
 				<template #export>
 					<el-col :span="1.5">
-						<el-button v-hasPermi="['system:bankaccount:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
+						<el-button v-hasPermi="['system:inventoryMain:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport">导出库存目录</el-button>
+						<el-button v-hasPermi="['system:inventoryMain:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExportNoPage">导出全部库存</el-button>
 					</el-col>
 				</template>
 			</right-toolbar>
@@ -794,6 +804,8 @@ import { parseTime } from '@/utils/ruoyi';
 import _ from 'lodash'; // 引入 lodash
 import { updateInventoryRowCalculations } from './inventoryCalculations'; // 确保导入
 import DragDiv from '@/components/DragDiv/index.vue';
+// 前端Excel导出依赖
+import * as XLSX from 'xlsx';
 import {
 	handlePriceInput as utilHandlePriceInput,
 	formatPriceInput as utilFormatPriceInput,
@@ -907,6 +919,7 @@ export default {
 				storeHouseid: null,
 				storeHouseName: null,
 				storeDate: null,
+				storeDateRange: null, // 日期范围选择器的值
 				landCarID: null,
 				landCarNo: null,
 				landDriverTel: null,
@@ -923,7 +936,11 @@ export default {
 				exWareHoustId: null,
 				goodsCompany: null,
 				allLandFreight: null,
-				allSeaFreight: null
+				allSeaFreight: null,
+				params: {
+					main_storeDate_startTime: null,
+					main_storeDate_endTime: null
+				}
 			},
 			// 表单参数
 			form: {},
@@ -1710,6 +1727,27 @@ export default {
 			this.$set(row, 'currentType', type);
 		},
 		/**
+		 * @description: 处理日期范围变化事件
+		 *              将日期范围值赋给 params.main_storeDate_startTime 和 params.main_storeDate_endTime
+		 * @param {Array|null} dateRange - 日期范围数组 [startDate, endDate] 或 null
+		 */
+		handleDateRangeChange(dateRange) {
+			if (dateRange && Array.isArray(dateRange) && dateRange.length === 2) {
+				// 确保 params 对象存在
+				if (!this.queryParams.params) {
+					this.$set(this.queryParams, 'params', {});
+				}
+				this.queryParams.params.main_storeDate_startTime = dateRange[0];
+				this.queryParams.params.main_storeDate_endTime = dateRange[1];
+			} else {
+				// 清空日期范围时，清空 params 中的时间参数
+				if (this.queryParams.params) {
+					this.queryParams.params.main_storeDate_startTime = null;
+					this.queryParams.params.main_storeDate_endTime = null;
+				}
+			}
+		},
+		/**
 		 * @description: 处理搜索按钮操作。
 		 *              设置 queryParams.pageNum 为 1。
 		 *              调用 getList 方法重新获取列表数据。
@@ -1721,10 +1759,18 @@ export default {
 		/**
 		 * @description: 处理重置搜索按钮操作。
 		 *              调用 resetForm 方法重置搜索表单。
+		 *              清理 params 对象中的时间范围参数。
 		 *              调用 handleQuery 方法重新获取列表数据。
 		 */
 		resetQuery() {
 			this.resetForm('queryForm');
+			// 清理 params 对象中的时间范围参数
+			if (this.queryParams.params) {
+				this.queryParams.params.main_storeDate_startTime = null;
+				this.queryParams.params.main_storeDate_endTime = null;
+			}
+			// 清空日期范围选择器的值
+			this.queryParams.storeDateRange = null;
 			this.handleQuery();
 		},
 		/**
@@ -2087,16 +2133,176 @@ export default {
 			console.log(`selection identifiers`, this.checkedInventoryDetail);
 		},
 		/**
-		 * @description: 处理导出库存主列表数据按钮操作。
-		 *              调用 download 方法，请求 'system/inventoryMain/export' 接口导出数据。
+		 * @description: 处理导出库存主列表数据按钮操作（前端Excel导出）。
+		 *              使用 XLSX 库在前端生成 Excel 文件。
 		 */
 		handleExport() {
+			try {
+				// 开始导出提示
+				this.$message({
+					message: '正在生成Excel文件，请稍候...',
+					type: 'info'
+				});
+
+				// 生成Excel数据
+				const excelData = this.generateExcelData();
+
+				// 创建工作簿并下载
+				this.downloadExcel(excelData);
+
+				// 成功提示
+				this.$message({
+					message: 'Excel文件导出成功！',
+					type: 'success'
+				});
+			} catch (error) {
+				console.error('Excel导出失败:', error);
+				this.$message({
+					message: 'Excel导出失败，请重试',
+					type: 'error'
+				});
+			}
+		},
+		/**
+		 * 生成Excel数据
+		 * @returns {Object} 包含表头和数据的对象
+		 */
+		generateExcelData() {
+			// 获取可见列配置
+			const visibleColumns = this.columns.filter(col => col.visible && col.key !== 21); // 排除操作列
+
+			// 生成表头
+			const headers = visibleColumns.map(col => col.label);
+
+			// 生成数据行
+			const rows = this.inventoryMainList.map(row => {
+				return visibleColumns.map(col => {
+					return this.formatCellValue(row, col.key);
+				});
+			});
+
+			return {
+				headers,
+				rows
+			};
+		},
+		/**
+		 * 格式化单元格值
+		 * @param {Object} row - 行数据
+		 * @param {number} colKey - 列键值
+		 * @returns {string} 格式化后的值
+		 */
+		formatCellValue(row, colKey) {
+			switch (colKey) {
+				case 0: // ID
+					return row.id || '';
+				case 1: // 仓库名称
+					return row.storeHouseName || '';
+				case 2: // 入库日期
+					return row.storeDate ? parseTime(row.storeDate, '{y}-{m}-{d}') : '';
+				case 3: // 供应商
+					return this.formatSuppliers(row);
+				case 4: // 货物来源公司
+					return row.goodsCompany || '';
+				case 5: // 审核状态
+					return row.checkState || '待审核';
+				case 6: // 陆运车牌
+					return row.landCarNo || '';
+				case 7: // 陆运司机电话
+					return row.landDriverTel || '';
+				case 8: // 陆地司机姓名
+					return row.landDriverName || '';
+				case 9: // 陆运银行卡号
+					return row.landBankNo || '';
+				case 10: // 陆运银行户名
+					return row.landBankName || '';
+				case 11: // 柜号
+					return row.seaCarNo || '';
+				case 12: // 海运司机电话
+					return row.seaDriverTel || '';
+				case 13: // 海运公司
+					return row.seaDriverName || '';
+				case 14: // 海运银行卡号
+					return row.seaBankNo || '';
+				case 15: // 海运银行户名
+					return row.seaBankName || '';
+				case 16: // 子项陆运费之和
+					return row.allLandFreight || '';
+				case 17: // 子项海运费之和
+					return row.allSeaFreight || '';
+				case 18: // 录入人员
+					return row.userName || '';
+				case 19: // 附件
+					return this.formatAttachments(row.attachmentList, 'path');
+				case 20: // 收到条附件
+					return this.formatAttachments(row.attachmentList, 'receiveProof');
+				default:
+					return '';
+			}
+		},
+		/**
+		 * 格式化供应商信息
+		 * @param {Object} row - 行数据
+		 * @returns {string} 格式化后的字符串
+		 */
+		formatSuppliers(row) {
+			const suppliers = row._uniqueSuppliers || [];
+			if (suppliers.length === 0) return '-';
+			return suppliers.map(s => s.supplier).join(', ');
+		},
+		/**
+		 * 格式化附件信息
+		 * @param {Array} attachmentList - 附件列表
+		 * @param {string} type - 附件类型
+		 * @returns {string} 格式化后的附件信息
+		 */
+		formatAttachments(attachmentList, type) {
+			if (!Array.isArray(attachmentList)) return '无';
+
+			const filteredAttachments = attachmentList.filter(item => item.flag === type);
+
+			if (filteredAttachments.length === 0) return '无';
+
+			return filteredAttachments.map(item => item.fileName || '附件').join(', ');
+		},
+		/**
+		 * 下载Excel文件
+		 * @param {Object} data - Excel数据
+		 */
+		downloadExcel(data) {
+			// 创建工作表数据
+			const worksheetData = [data.headers, ...data.rows];
+
+			// 创建工作表
+			const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+
+			// 设置列宽（可选优化）
+			const colWidths = data.headers.map(() => ({ wch: 15 }));
+			worksheet['!cols'] = colWidths;
+
+			// 创建工作簿
+			const workbook = XLSX.utils.book_new();
+			XLSX.utils.book_append_sheet(workbook, worksheet, '库存列表');
+
+			// 生成文件名
+			const fileName = `库存列表_${parseTime(new Date(), '{y}{m}{d}_{h}{i}{s}')}.xlsx`;
+
+			// 下载文件
+			XLSX.writeFile(workbook, fileName);
+		},
+		/**
+		 * @description: 处理导出全部库存主列表数据按钮操作（不分页导出）。
+		 *              调用 download 方法，请求 'system/inventoryMain/export' 接口导出全部数据。
+		 */
+		handleExportNoPage() {
 			this.download(
 				'system/inventoryMain/export',
 				{
-					...this.queryParams
+					...this.queryParams,
+					// 不分页的导出
+					noPage: true
 				},
-				`inventoryMain_${new Date().getTime()}.xlsx`
+				`inventoryMain_all_${new Date().getTime()}.xlsx`
 			);
 		},
 		/**
