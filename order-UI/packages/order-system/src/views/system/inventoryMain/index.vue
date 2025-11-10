@@ -1,10 +1,10 @@
 <template>
 	<div class="app-container">
-		<el-form id="top-search-form-item" :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="150">
-			<el-form-item label="仓库名称" prop="storeHouseName">
+		<el-form id="top-search-form-item" :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch && isConfigLoaded" label-width="150">
+			<el-form-item v-if="shouldShowField('storeHouseName')" label="仓库名称" prop="storeHouseName">
 				<el-input v-model="queryParams.storeHouseName" class="input-standard" placeholder="请输入仓库名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
-			<el-form-item label="入库日期" prop="storeDateRange">
+			<el-form-item v-if="shouldShowField('storeDateRange')" label="入库日期" prop="storeDateRange">
 				<el-date-picker
 					v-model="queryParams.storeDateRange"
 					type="daterange"
@@ -16,23 +16,45 @@
 					@change="handleDateRangeChange"
 				/>
 			</el-form-item>
-			<el-form-item label="陆运车牌" prop="landCarNo">
+			<el-form-item v-if="shouldShowField('userName')" label="录入人员" prop="userName">
+				<el-input v-model="queryParams.userName" class="input-standard" placeholder="录入人员" clearable @keyup.enter.native="handleQuery" @input="val => queryParams.UserName = val" />
+			</el-form-item>
+			<el-form-item v-if="shouldShowField('supplier')" label="供应商" prop="supplier">
+				<el-input v-model="queryParams.params.detail_supplier" class="input-standard" placeholder="请输入供应商" clearable @keyup.enter.native="handleQuery" />
+			</el-form-item>
+			<el-form-item v-if="shouldShowField('goodsCompany')" label="货物来源" prop="goodsCompany">
+				<el-input v-model="queryParams.goodsCompany" class="input-standard" placeholder="请输入货物来源公司" clearable @keyup.enter.native="handleQuery" />
+			</el-form-item>
+			<el-form-item v-if="shouldShowField('landCarNo')" label="陆运车牌" prop="landCarNo">
 				<el-input v-model="queryParams.landCarNo" class="input-standard" placeholder="请输入陆运车牌" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
-			<el-form-item label="陆运司机电话" prop="landDriverTel">
-				<el-input v-model="queryParams.landDriverTel" class="input-standard" placeholder="请输入陆运司机电话" clearable @keyup.enter.native="handleQuery" />
-			</el-form-item>
-			<el-form-item label="陆地司机姓名" prop="landDriverName">
-				<el-input v-model="queryParams.landDriverName" class="input-standard" placeholder="请输入陆地司机姓名" clearable @keyup.enter.native="handleQuery" />
-			</el-form-item>
-			<el-form-item label="海运公司" prop="seaDriverName">
+			<el-form-item v-if="shouldShowField('seaDriverName')" label="海运公司" prop="seaDriverName">
 				<el-input v-model="queryParams.seaDriverName" class="input-standard" placeholder="请输入海运公司" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+				<el-button icon="el-icon-setting" size="mini" @click="openFieldSetting">自定义</el-button>
 				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
 			</el-form-item>
 		</el-form>
+
+		<!-- 字段设置弹窗 -->
+		<el-dialog title="自定义搜索字段" :visible.sync="fieldSettingVisible" width="500px">
+			<el-checkbox-group v-model="selectedFields">
+				<el-row :gutter="10">
+					<el-col v-for="field in allFields" :key="field.value" :span="12" style="margin-bottom: 8px">
+						<el-checkbox :label="field.value" style="width: 100%">
+							<span style="font-size: 12px">{{ field.label }}</span>
+						</el-checkbox>
+					</el-col>
+				</el-row>
+			</el-checkbox-group>
+			<span slot="footer" class="dialog-footer">
+				<el-button size="mini" @click="resetToDefault">恢复默认</el-button>
+				<el-button size="mini" @click="fieldSettingVisible = false">取消</el-button>
+				<el-button size="mini" type="primary" @click="saveFieldSettings">确定</el-button>
+			</span>
+		</el-dialog>
 
 		<el-row :gutter="10" class="mb8">
 			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
@@ -806,6 +828,8 @@ import { updateInventoryRowCalculations } from './inventoryCalculations'; // 确
 import DragDiv from '@/components/DragDiv/index.vue';
 // 前端Excel导出依赖
 import * as XLSX from 'xlsx';
+import { getUserConfig, saveUserConfig } from '@/api/user-config';
+import { UserConfigKey } from '@/api/tool/user-config.js';
 import {
 	handlePriceInput as utilHandlePriceInput,
 	formatPriceInput as utilFormatPriceInput,
@@ -905,6 +929,19 @@ export default {
 			multiple: true,
 			// 显示搜索条件
 			showSearch: true,
+			// 字段自定义相关
+			fieldSettingVisible: false,
+			isConfigLoaded: false,
+			allFields: [
+				{ value: 'storeHouseName', label: '仓库名称' },
+				{ value: 'storeDateRange', label: '入库日期' },
+				{ value: 'userName', label: '入库人员' },
+				{ value: 'supplier', label: '供应商' },
+				{ value: 'goodsCompany', label: '货物来源' },
+				{ value: 'landCarNo', label: '陆运车牌' },
+				{ value: 'seaDriverName', label: '海运公司' }
+			],
+			selectedFields: [],
 			// 总条数
 			total: 0,
 			// 库存库存主表表格数据
@@ -922,24 +959,23 @@ export default {
 				storeDateRange: null, // 日期范围选择器的值
 				landCarID: null,
 				landCarNo: null,
-				landDriverTel: null,
-				landDriverName: null,
 				seaCarID: null,
 				seaCarNo: null,
-				seaDriverTel: null,
-				seaDriverName: null,
 				addtime: null,
 				userId: null,
 				UserName: null,
+				userName: null, // 入库人员
 				delFlag: null,
 				showFlag: null,
 				exWareHoustId: null,
 				goodsCompany: null,
 				allLandFreight: null,
 				allSeaFreight: null,
+				seaDriverName: null,
 				params: {
 					main_storeDate_startTime: null,
-					main_storeDate_endTime: null
+					main_storeDate_endTime: null,
+					detail_supplier: null // 供应商
 				}
 			},
 			// 表单参数
@@ -1058,6 +1094,10 @@ export default {
 		};
 	},
 	computed: {
+		// 字段显示控制
+		shouldShowField() {
+			return fieldName => this.isConfigLoaded && Array.isArray(this.selectedFields) && this.selectedFields.includes(fieldName);
+		},
 		// 添加计算属性检查是否有子项（排除已删除的行）
 		hasInventoryDetails() {
 			return this.visibleInventoryDetailList && this.visibleInventoryDetailList.length > 0;
@@ -1096,12 +1136,70 @@ export default {
 	 *              调用 getList 方法获取库存主列表数据。
 	 *              调用 listStoreHouse API 获取仓库列表，并格式化为树形结构数据。
 	 */
-	created() {
+	async created() {
+		await this.loadFieldSettings();
 		this.getList();
 		// 抓取左侧仓库信息
 		this.getStoreList();
 	},
 	methods: {
+		/**
+		 * @description: 加载用户搜索字段配置
+		 */
+		async loadFieldSettings() {
+			try {
+				const response = await getUserConfig(UserConfigKey.INVENTORY_SEARCH_COLUMNS);
+				const configValue = response?.data?.value || response?.data || null;
+				if (typeof configValue === 'string') {
+					try {
+						const parsed = JSON.parse(configValue);
+						this.selectedFields = Object.keys(parsed.columns || {}).filter(key => parsed.columns[key]);
+					} catch {
+						this.selectedFields = this.allFields.map(f => f.value);
+					}
+				} else if (configValue?.columns) {
+					this.selectedFields = Object.keys(configValue.columns).filter(key => configValue.columns[key]);
+				} else {
+					this.selectedFields = this.allFields.map(f => f.value);
+				}
+			} catch (err) {
+				console.error('加载用户搜索字段配置失败:', err);
+				this.selectedFields = this.allFields.map(f => f.value);
+			} finally {
+				this.isConfigLoaded = true;
+			}
+		},
+		/**
+		 * @description: 保存用户搜索字段配置
+		 */
+		async saveFieldSettings() {
+			try {
+				const columnsConfig = {};
+				this.allFields.forEach(f => {
+					columnsConfig[f.value] = this.selectedFields.includes(f.value);
+				});
+				await saveUserConfig('inventorySearch-columns', { columns: columnsConfig });
+				this.$message.success('字段设置已保存');
+				this.fieldSettingVisible = false;
+			} catch (err) {
+				console.error('保存用户搜索字段配置失败:', err);
+				this.$message.error('保存失败，请重试');
+			}
+		},
+		/**
+		 * @description: 恢复默认字段设置
+		 */
+		resetToDefault() {
+			this.selectedFields = this.allFields.map(f => f.value);
+			this.saveFieldSettings();
+			this.fieldSettingVisible = false;
+		},
+		/**
+		 * @description: 打开字段设置弹窗
+		 */
+		openFieldSetting() {
+			this.fieldSettingVisible = true;
+		},
 		// 检查用户是否具有指定权限
 		hasPermission(roles) {
 			// 从 Vuex store 或其他地方获取当前用户角色
@@ -1746,14 +1844,34 @@ export default {
 					this.queryParams.params.main_storeDate_endTime = null;
 				}
 			}
+			// 确保 params.detail_supplier 存在
+			if (!this.queryParams.params.detail_supplier) {
+				this.$set(this.queryParams.params, 'detail_supplier', null);
+			}
 		},
 		/**
 		 * @description: 处理搜索按钮操作。
 		 *              设置 queryParams.pageNum 为 1。
+		 *              确保 params 对象和 detail_supplier 字段存在。
+		 *              将 userName 同步到 UserName（后端使用 UserName）。
 		 *              调用 getList 方法重新获取列表数据。
 		 */
 		handleQuery() {
 			this.queryParams.pageNum = 1;
+			// 确保 params 对象存在
+			if (!this.queryParams.params) {
+				this.$set(this.queryParams, 'params', {});
+			}
+			// 确保 detail_supplier 字段存在
+			if (this.queryParams.params.detail_supplier === undefined) {
+				this.$set(this.queryParams.params, 'detail_supplier', null);
+			}
+			// 确保 userName 字段存在（入库人员），并同步到 UserName（后端使用）
+			if (this.queryParams.userName === undefined) {
+				this.$set(this.queryParams, 'userName', null);
+			}
+			// 将 userName 同步到 UserName（后端 API 使用 UserName）
+			this.queryParams.UserName = this.queryParams.userName;
 			this.getList();
 		},
 		/**
@@ -1763,14 +1881,41 @@ export default {
 		 *              调用 handleQuery 方法重新获取列表数据。
 		 */
 		resetQuery() {
-			this.resetForm('queryForm');
-			// 清理 params 对象中的时间范围参数
+			if (this.$refs.queryForm) {
+				this.$refs.queryForm.resetFields();
+			}
+			// 重置查询参数
+			Object.assign(this.queryParams, {
+				pageNum: 1,
+				pageSize: 20,
+				storeHouseid: null,
+				storeHouseName: null,
+				storeDate: null,
+				storeDateRange: null,
+				landCarID: null,
+				landCarNo: null,
+				seaCarID: null,
+				seaCarNo: null,
+				addtime: null,
+				userId: null,
+				UserName: null,
+				userName: null,
+				delFlag: null,
+				showFlag: null,
+				exWareHoustId: null,
+				goodsCompany: null,
+				allLandFreight: null,
+				allSeaFreight: null,
+				seaDriverName: null
+			});
+			// 清理 params 对象中的时间范围参数和供应商参数
 			if (this.queryParams.params) {
 				this.queryParams.params.main_storeDate_startTime = null;
 				this.queryParams.params.main_storeDate_endTime = null;
+				this.queryParams.params.detail_supplier = null;
 			}
-			// 清空日期范围选择器的值
-			this.queryParams.storeDateRange = null;
+			// 同步清空 UserName
+			this.queryParams.UserName = null;
 			this.handleQuery();
 		},
 		/**

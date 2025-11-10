@@ -7,7 +7,7 @@
 				</el-descriptions-item>
 				<el-descriptions-item label="出库日期">
 					{{ formatValue(warehouseData.outDate) }}
-				</el-descriptions-item>
+				</el-descriptions-item>  
 				<el-descriptions-item label="出库类型">
 					{{ formatValue(warehouseData.outDirection) }}
 				</el-descriptions-item>
