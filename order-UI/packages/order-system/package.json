@@ -39,9 +39,9 @@
 		"url": "https://gitee.com/y_project/RuoYi-Vue.git"
 	},
 	"dependencies": {
+		"@order-system/config": "*",
 		"@order-system/shared": "*",
 		"@order-system/ui-components": "*",
-		"@order-system/config": "*",
 		"@riophae/vue-treeselect": "0.4.0",
 		"@vue/composition-api": "^1.7.2",
 		"axios": "0.28.1",
@@ -49,6 +49,7 @@
 		"core-js": "3.37.1",
 		"echarts": "5.4.0",
 		"el-table-horizontal-scroll": "^1.2.5",
+		"el-table-virtual-scroll": "^2.0.2",
 		"element-ui": "2.15.14",
 		"express": "^4.21.2",
 		"file-saver": "2.0.5",
@@ -68,6 +69,7 @@
 		"sortablejs": "1.10.2",
 		"umy-ui": "^1.1.7",
 		"v-code-diff": "^1.13.1",
+		"v-fit-columns": "^0.2.0",
 		"vform-builds": "^2.2.9",
 		"vue": "2.6.12",
 		"vue-code-diff": "^1.2.0",
