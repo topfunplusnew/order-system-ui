@@ -215,13 +215,13 @@
 			font-size: 20px !important; // 字体大小改为20px
 			color: #000000 !important; // 字体颜色改为黑色
 			font-weight: 600 !important; // 加粗
-			line-height: 28px; // 对应输入框高度
+			line-height: 24px; // 对应输入框高度，与输入框高度一致
 			padding: 0 6px 0 0; // 右边距进一步调小
 		}
 
 		// 表单项内容区域
 		.el-form-item__content {
-			line-height: 28px; // 对应输入框高度
+			line-height: 24px; // 对应输入框高度，与输入框高度一致
 			font-size: 12px; // 从13px缩小到12px
 		}
 
@@ -260,8 +260,7 @@
 				font-size: 16px !important;
 
 				.el-input__inner {
-					height: 36px !important;
-					line-height: 36px !important;
+					height: 28px !important;
 					padding: 0 12px !important;
 					font-size: 16px !important; // 字体大小改为16px
 					border: 1px solid #323232 !important;
@@ -288,8 +287,6 @@
 				.el-input__prefix {
 					.el-input__suffix-inner,
 					.el-input__prefix-inner {
-						line-height: 36px !important;
-
 						.el-input__icon {
 							font-size: 14px !important;
 							line-height: 36px !important;
@@ -301,8 +298,7 @@
 			// 选择器样式
 			.el-select {
 				.el-input .el-input__inner {
-					height: 36px !important;
-					line-height: 36px !important;
+					height: 28px !important;
 					border: 1px solid #000000 !important;
 					font-size: 16px !important; // 字体大小改为16px
 					color: #000000 !important; // 黑色
@@ -322,8 +318,7 @@
 			// 级联选择器样式
 			.el-cascader {
 				.el-input .el-input__inner {
-					height: 36px !important;
-					line-height: 36px !important;
+					height: 28px !important;
 					border: 1px solid #000000 !important;
 					font-size: 16px !important; // 字体大小改为16px
 					color: #000000 !important; // 黑色
@@ -343,14 +338,11 @@
 			// 日期选择器样式
 			.el-date-editor {
 				&.el-input .el-input__inner {
-					height: 36px !important;
-					line-height: 36px !important;
+					height: 28px !important;
 					border: 1px solid #000000 !important;
 					font-size: 16px !important; // 字体大小改为16px
 					color: #000000 !important; // 黑色
 					font-weight: normal !important; // 不加粗
-					padding: 0 30px 0 12px !important;
-
 					&:hover {
 						border-color: #000000 !important;
 					}
@@ -361,21 +353,17 @@
 				}
 
 				&.el-range-editor {
-					height: 36px !important;
-					line-height: 36px !important;
+					height: 28px !important;
 					border: 1px solid #000000 !important;
 
 					.el-range-input {
 						font-size: 16px !important; // 字体大小改为16px
-						height: 34px !important;
-						line-height: 34px !important;
 						color: #000000 !important; // 黑色
 						font-weight: normal !important; // 不加粗
 					}
 
 					.el-range-separator {
 						font-size: 14px !important;
-						line-height: 34px !important;
 						color: #000000 !important;
 					}
 
@@ -1087,6 +1075,13 @@
 		// background: #000 !important;
 		height: 10px;
 	  }
+	// 全局单元格内边距统一设置（相当于 cell-style 的 padding 效果）
+	// 表头和表体的单元格内边距
+	th .cell,
+	td .cell {
+		padding: 0 6px !important; // 默认尺寸单元格内间距（统一调小）
+	}
+
 	// 非固定列的样式
 	.el-table__header-wrapper {
 		.el-table__header {
@@ -1116,6 +1111,8 @@
 			}
 		}
 	}
+
+	// 表体单元格样式（padding 已在全局设置中统一）
 
 	// 固定列表头样式 - 与主表格表头保持一致
 	.el-table__fixed,
@@ -1151,12 +1148,16 @@
 	}
 	// 表格尺寸变体调整
 	&.el-table--medium {
+		// medium 尺寸单元格内边距
+		th .cell,
+		td .cell {
+			padding: 0 5px !important; // medium尺寸单元格内间距（比默认稍小）
+		}
+
 		.el-table__header th {
 			height: 28px !important;
-			padding: 4px 0 !important;
 			font-size: 20px !important; // 表头字体大小改为20px
 			color: #000000 !important;
-			font-weight: bold !important; // 加粗
 			// 允许选择文本以便复制
 			user-select: text !important;
 			-webkit-user-select: text !important;
@@ -1166,7 +1167,6 @@
 			.cell {
 				font-size: 20px !important; // 表头单元格字体大小改为20px
 				color: #000000 !important;
-				font-weight: bold !important; // 加粗
 				// 允许选择文本以便复制
 				user-select: text !important;
 				-webkit-user-select: text !important;
@@ -1179,12 +1179,16 @@
 
 
 	&.el-table--small {
+		// small 尺寸单元格内边距
+		th .cell,
+		td .cell {
+			padding: 0 4px !important; // small尺寸单元格内间距（进一步调小）
+		}
+
 		.el-table__header th {
 			height: 24px !important;
-			padding: 2px 0 !important;
 			font-size: 20px !important; // 表头字体大小改为20px
 			color: #000000 !important;
-			font-weight: bold !important; // 加粗
 			// 允许选择文本以便复制
 			user-select: text !important;
 			-webkit-user-select: text !important;
@@ -1192,7 +1196,6 @@
 			-ms-user-select: text !important;
 
 			.cell {
-				padding: 0 6px !important;
 				font-size: 20px !important; // 表头单元格字体大小改为20px
 				color: #000000 !important;
 				font-weight: bold !important; // 加粗
@@ -1207,12 +1210,17 @@
 	}
 
 	&.el-table--mini {
+		// mini 尺寸单元格内边距
+		th .cell,
+		td .cell {
+			padding: 0 2px !important; // mini尺寸单元格内间距（最小）
+		}
+
 		.el-table__header th {
 			height: 20px !important;
 			padding: 1px 0 !important;
 			font-size: 20px !important; // 表头字体大小改为20px
 			color: #000000 !important;
-			font-weight: bold !important; // 加粗
 			// 允许选择文本以便复制
 			user-select: text !important;
 			-webkit-user-select: text !important;
@@ -1220,10 +1228,8 @@
 			-ms-user-select: text !important;
 
 			.cell {
-				padding: 0 4px !important;
 				font-size: 20px !important; // 表头单元格字体大小改为20px
 				color: #000000 !important;
-				font-weight: bold !important; // 加粗
 				// 允许选择文本以便复制
 				user-select: text !important;
 				-webkit-user-select: text !important;
