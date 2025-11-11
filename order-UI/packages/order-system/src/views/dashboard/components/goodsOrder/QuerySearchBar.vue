@@ -103,7 +103,7 @@
 		</el-form>
 
 		<!-- 字段设置弹窗 -->
-		<el-dialog title="自定义搜索字段" :visible.sync="fieldSettingVisible" width="500px">
+		<el-dialog title="自定义搜索字段" :visible.sync="fieldSettingVisible" width="500px" append-to-body>
 			<el-checkbox-group v-model="selectedFields">
 				<el-row :gutter="10">
 					<el-col v-for="field in allFields" :key="field.value" :span="12" style="margin-bottom: 8px">

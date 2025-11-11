@@ -239,24 +239,24 @@ export default {
 
 		<!-- 公司列表表格 -->
 		<div class="table-wrapper">
-			<el-table :data="companyTotalInfo" :row-style="handleRowClassName" :cell-style="() => ({ padding: '2px' })" size="mini" style="width: 100%; min-width: 600px" border>
+			<el-table :data="companyTotalInfo" :row-style="handleRowClassName" :cell-style="() => ({ padding: '2px' })" size="mini" style="width: 100%" border>
 				<!--多选框-->
-				<el-table-column label="操作" width="120">
+				<el-table-column label="操作">
 					<template slot-scope="scope">
 						<el-button size="mini" type="text" @click="handleCheck(scope.row)">查看</el-button>
 						<el-button size="mini" type="text" @click="handleFilterOrders(scope.row)">检索</el-button>
 					</template>
 				</el-table-column>
-				<el-table-column prop="id" label="ID" width="60"></el-table-column>
-				<el-table-column prop="us" label="我方" min-width="120"></el-table-column>
-				<el-table-column prop="name" label="对方公司" min-width="150"></el-table-column>
-				<el-table-column prop="type" label="类型" width="80"></el-table-column>
+				<el-table-column prop="id" label="ID"></el-table-column>
+				<el-table-column prop="us" label="我方"></el-table-column>
+				<el-table-column prop="name" label="对方公司"></el-table-column>
+				<el-table-column prop="type" label="类型"></el-table-column>
 				<el-table-column prop="total" label="开票金额">
 					<template slot-scope="scope">
 						<span class="bold-text money">{{ scope.row.total }}</span>
 					</template>
 				</el-table-column>
-				<el-table-column label="已操作" width="80" align="center">
+				<el-table-column label="已操作" align="center">
 					<template slot-scope="scope">
 						<el-tag size="mini" :type="isOperated(scope.row) ? 'success' : 'info'">{{ isOperated(scope.row) ? '是' : '否' }}</el-tag>
 					</template>

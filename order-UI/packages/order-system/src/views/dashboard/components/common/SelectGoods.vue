@@ -431,7 +431,6 @@ export default {
 			v-horizontal-scroll="'always'"
 			fit
 			ref="goodsTable"
-			max-height="700px"
 			border
 			empty-text="暂无可开票订单（订单的可开票金额为0）"
 			:data="goodsOrderList"

@@ -6,7 +6,7 @@ import InvoiceBody from '@/views/dashboard/components/common/InvoiceBody.vue';
 import SelectGoods from '@/views/dashboard/components/common/SelectGoods.vue';
 import SheetItem from '@/views/dashboard/components/common/SheetItem.vue';
 import { mixin_excel_server } from '@/views/dashboard/components/common/utils/excelServer';
-import TripleDragDiv from '@/components/DragDiv/TripleDragDiv.vue';
+import DragDiv from '@/components/DragDiv/index.vue';
 import { importTemplateCompanies, updateTemplateCompanies, getOperatedMap, extractCompanyId, isSheetOperated, markSheetOperated, clearSheetRecordsByFileId } from '@/api/excelTemplateStore';
 
 // 默认导出组件
@@ -19,7 +19,7 @@ export default {
 		// CompanyInformation,
 		SelectGoods,
 		SheetItem,
-		TripleDragDiv
+		DragDiv
 	},
 	mixins: [mixin_excel_server],
 	// 接收文件读取到的sheetList 渲染出来给用户看 并且可以选择看哪一个
@@ -658,84 +658,87 @@ export default {
 		<div>
 			<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="批量开票" fullscreen :visible.sync="invoiceAllVisible" append-to-body>
 				<div class="invoice-container">
-					<TripleDragDiv style="height: 100%" :initial-left-width="360" :initial-middle-width="640" :min-left-width="240" :min-middle-width="360" :min-right-width="320">
-						<template #left>
-							<div class="section-wrapper">
-								<div class="company-list-section-full">
-									<el-card class="full-height-card">
-										<div slot="header" class="card-header">
-											<span class="bold-text">公司列表</span>
-										</div>
-										<el-form class="search-form">
-											<el-row :gutter="8">
-												<el-col :span="12">
-													<el-form-item label="购买方" label-width="60px">
-														<el-input v-model="purchase" placeholder="购买方名称" size="mini" clearable />
-													</el-form-item>
-												</el-col>
-												<el-col :span="12">
-													<el-form-item label="销方" label-width="40px">
-														<el-input v-model="seller" placeholder="销方名称" size="mini" clearable />
-													</el-form-item>
-												</el-col>
-											</el-row>
-											<el-row>
-												<el-col :span="24">
-													<div class="button-group">
-														<el-button type="primary" size="mini" @click="handleFilter">查询</el-button>
-														<el-button type="warning" size="mini" @click="handleReset">重置</el-button>
-													</div>
-												</el-col>
-											</el-row>
-										</el-form>
+					<!-- 上下布局：上面是 CompanysList + InvoiceBody（DragDiv），下面是 SelectGoods -->
+					<div class="invoice-layout">
+						<!-- 上半部分：公司列表和开票信息（左右布局，使用DragDiv） -->
+						<div class="top-section">
+							<DragDiv style="height: 100%" :initial-left-width="600" :min-left-width="400" :min-right-width="400" :divider-width="6">
+								<template #left>
+									<div class="section-wrapper">
+										<div class="company-list-section-full">
+											<el-card class="full-height-card">
+												<div slot="header" class="card-header">
+													<span class="bold-text">公司列表</span>
+												</div>
+												<el-form class="search-form">
+													<el-row :gutter="8">
+														<el-col :span="8">
+															<el-form-item label="购买方" label-width="100px">
+																<el-input v-model="purchase" placeholder="购买方名称" size="mini" clearable />
+															</el-form-item>
+														</el-col>
+														<el-col :span="8">
+															<el-form-item label="销方" label-width="100px">
+																<el-input v-model="seller" placeholder="销方名称" size="mini" clearable />
+															</el-form-item>
+														</el-col>
+														<el-col :span="6">
+															<div class="button-group">
+																<el-button type="primary" size="mini" @click="handleFilter">查询</el-button>
+																<el-button type="warning" size="mini" @click="handleReset">重置</el-button>
+															</div>
+														</el-col>
+													</el-row>
+												</el-form>
 
-										<div class="company-lists">
-											<el-divider>
-												<span class="bold-text">购买方信息</span>
-											</el-divider>
-											<CompanysList
-												side="purchase"
-												:company-total-info="purchaseTotalInfo"
-												:statistics-info="statisticsInfo ? statisticsInfo.purchaseStats : { suppliers: { total: 0, count: 0 }, customers: { total: 0, count: 0 } }"
-												:operated-map="templateOperatedMap"
-												@handleCheck="handleCheck"
-											/>
-											<el-divider>
-												<span class="bold-text">销方信息</span>
-											</el-divider>
-											<CompanysList
-												side="seller"
-												:company-total-info="sellerTotalInfo"
-												:statistics-info="statisticsInfo ? statisticsInfo.sellerStats : { suppliers: { total: 0, count: 0 }, customers: { total: 0, count: 0 } }"
-												:operated-map="templateOperatedMap"
-												@handleCheck="handleCheck"
-											/>
+												<div class="company-lists">
+													<el-divider>
+														<span class="bold-text">购买方信息</span>
+													</el-divider>
+													<CompanysList
+														side="purchase"
+														:company-total-info="purchaseTotalInfo"
+														:statistics-info="statisticsInfo ? statisticsInfo.purchaseStats : { suppliers: { total: 0, count: 0 }, customers: { total: 0, count: 0 } }"
+														:operated-map="templateOperatedMap"
+														@handleCheck="handleCheck"
+													/>
+													<el-divider>
+														<span class="bold-text">销方信息</span>
+													</el-divider>
+													<CompanysList
+														side="seller"
+														:company-total-info="sellerTotalInfo"
+														:statistics-info="statisticsInfo ? statisticsInfo.sellerStats : { suppliers: { total: 0, count: 0 }, customers: { total: 0, count: 0 } }"
+														:operated-map="templateOperatedMap"
+														@handleCheck="handleCheck"
+													/>
+												</div>
+											</el-card>
 										</div>
-									</el-card>
+									</div>
+								</template>
+
+								<template #right>
+									<div class="section-wrapper">
+										<InvoiceBody />
+									</div>
+								</template>
+							</DragDiv>
+						</div>
+
+						<!-- 下半部分：订单列表（占满宽度） -->
+						<div class="bottom-section">
+							<el-card class="full-height-card">
+								<div slot="header" class="card-header">
+									<span class="bold-text">订单列表(未开票)</span>
+									<el-button class="header-button" type="text" @click="handleResetOrderList">重置筛选</el-button>
 								</div>
-							</div>
-						</template>
-
-						<template #middle>
-							<div class="section-wrapper">
-								<el-card class="full-height-card">
-									<div slot="header" class="card-header">
-										<span class="bold-text">订单列表(未开票)</span>
-										<el-button class="header-button" type="text" @click="handleResetOrderList">重置筛选</el-button>
-									</div>
-									<div class="select-goods-wrapper">
-										<SelectGoods />
-									</div>
-								</el-card>
-							</div>
-						</template>
-
-						<template #right>
-							<div class="section-wrapper">
-								<InvoiceBody />
-							</div>
-						</template>
-					</TripleDragDiv>
+								<div class="select-goods-wrapper">
+									<SelectGoods />
+								</div>
+							</el-card>
+						</div>
+					</div>
 				</div>
 				<span slot="footer" class="dialog-footer">
 					<el-button @click="handleClose">关 闭</el-button>
@@ -775,11 +778,32 @@ export default {
 	height: calc(100vh - 120px);
 	padding: 0 20px;
 	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+}
 
-	.invoice-row {
-		height: 100%;
-		margin: 0;
-	}
+/* 新的上下布局 */
+.invoice-layout {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+/* 上半部分：公司列表和开票信息 */
+.top-section {
+	flex: 0 0 50%;
+	min-height: 0;
+	height: 50%;
+	overflow: hidden;
+}
+
+/* 下半部分：订单列表 */
+.bottom-section {
+	flex: 1;
+	min-height: 0;
+	display: flex;
+	flex-direction: column;
 }
 
 .column-section {
@@ -922,8 +946,29 @@ export default {
 /* 订单选择组件包装 */
 .select-goods-wrapper {
 	flex: 1;
-	overflow: hidden;
+	overflow-y: auto;
+	overflow-x: hidden;
 	min-height: 0;
+	max-height: calc(50vh - 100px); /* 设置最大高度，减去头部和间距 */
+
+	/* 美化滚动条 */
+	&::-webkit-scrollbar {
+		width: 8px;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		background: #dcdfe6;
+		border-radius: 4px;
+
+		&:hover {
+			background: #c0c4cc;
+		}
+	}
+
+	&::-webkit-scrollbar-track {
+		background: #f5f7fa;
+		border-radius: 4px;
+	}
 }
 
 /* 响应式布局 */
@@ -931,19 +976,21 @@ export default {
 	.invoice-container {
 		height: auto;
 		min-height: calc(100vh - 120px);
-
-		.invoice-row {
-			height: auto;
-		}
 	}
 
-	.column-section {
-		height: auto;
-		margin-bottom: 16px;
+	.invoice-layout {
+		flex-direction: column;
+	}
 
-		&:last-child {
-			margin-bottom: 0;
-		}
+	.top-section {
+		flex: 0 0 auto;
+		height: auto;
+		min-height: 400px;
+	}
+
+	.bottom-section {
+		flex: 0 0 auto;
+		min-height: 400px;
 	}
 
 	.section-wrapper {
