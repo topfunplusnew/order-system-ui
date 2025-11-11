@@ -60,10 +60,12 @@ export default {
 			purchaseTotalInfo: [],
 			// 销方统计
 			sellerTotalInfo: [],
-			// 购买方搜索字段
-			purchase: null,
-			// 卖出方搜索字段
-			seller: null,
+			// 我方公司搜索字段
+			myCompany: null,
+			// 对方公司搜索字段
+			otherCompany: null,
+			// 已操作状态搜索字段（null: 全部, true: 已操作, false: 未操作）
+			operatedStatus: null,
 			// 减去的金额
 			minusValue: 0,
 			// 统计信息
@@ -548,21 +550,65 @@ export default {
 				// 如果购买方和销方的id都不为0
 			} else return !(item.purchaseId !== 0 && item.sellerId !== 0);
 		},
+		// 判断公司是否已操作
+		isCompanyOperated(row) {
+			if (!row || !row.id) return false;
+			const companyId = Number(row.id);
+			return !!(companyId && this.templateOperatedMap && this.templateOperatedMap[companyId]);
+		},
 		// 弹窗左侧供应商列表的筛选
 		handleFilter() {
-			// 每次操作之前都要重置 重置的逻辑就是从暂存拿出新的进行复制
-			this.handleReset();
-			// 筛选
-			if (this.purchase) {
-				this.purchaseTotalInfo = this.purchaseTotalInfo.filter(item => {
-					return item.name.indexOf(this.purchase) !== -1;
-				});
-			}
-			if (this.seller) {
-				this.sellerTotalInfo = this.sellerTotalInfo.filter(item => {
-					return item.name.indexOf(this.seller) !== -1;
-				});
-			}
+			// 从暂存数据中获取原始数据
+			const purchaseTempData = this.$store.getters.purchaseTempInfo || [];
+			const sellerTempData = this.$store.getters.sellerTempInfo || [];
+			
+			// 筛选购买方信息
+			this.purchaseTotalInfo = purchaseTempData.filter(item => {
+				// 我方公司筛选
+				if (this.myCompany && item.us) {
+					if (item.us.indexOf(this.myCompany) === -1) {
+						return false;
+					}
+				}
+				// 对方公司筛选
+				if (this.otherCompany && item.name) {
+					if (item.name.indexOf(this.otherCompany) === -1) {
+						return false;
+					}
+				}
+				// 已操作状态筛选
+				if (this.operatedStatus !== null) {
+					const isOperated = this.isCompanyOperated(item);
+					if (isOperated !== this.operatedStatus) {
+						return false;
+					}
+				}
+				return true;
+			});
+			
+			// 筛选销方信息
+			this.sellerTotalInfo = sellerTempData.filter(item => {
+				// 我方公司筛选
+				if (this.myCompany && item.us) {
+					if (item.us.indexOf(this.myCompany) === -1) {
+						return false;
+					}
+				}
+				// 对方公司筛选
+				if (this.otherCompany && item.name) {
+					if (item.name.indexOf(this.otherCompany) === -1) {
+						return false;
+					}
+				}
+				// 已操作状态筛选
+				if (this.operatedStatus !== null) {
+					const isOperated = this.isCompanyOperated(item);
+					if (isOperated !== this.operatedStatus) {
+						return false;
+					}
+				}
+				return true;
+			});
 		},
 
 		//查看某一个公司的信息
@@ -594,6 +640,10 @@ export default {
 		handleReset() {
 			this.purchaseTotalInfo = this.$store.getters.purchaseTempInfo;
 			this.sellerTotalInfo = this.$store.getters.sellerTempInfo;
+			// 清空搜索条件
+			this.myCompany = null;
+			this.otherCompany = null;
+			this.operatedStatus = null;
 		},
 		// 重置订单列表的数据 通过事件总线实现
 		handleResetOrderList() {
@@ -662,7 +712,7 @@ export default {
 					<div class="invoice-layout">
 						<!-- 上半部分：公司列表和开票信息（左右布局，使用DragDiv） -->
 						<div class="top-section">
-							<DragDiv style="height: 100%" :initial-left-width="600" :min-left-width="400" :min-right-width="400" :divider-width="6">
+							<DragDiv style="height: 100%" :initial-left-width="1350" :min-left-width="600" :min-right-width="300" :divider-width="6">
 								<template #left>
 									<div class="section-wrapper">
 										<div class="company-list-section-full">
@@ -672,17 +722,26 @@ export default {
 												</div>
 												<el-form class="search-form">
 													<el-row :gutter="8">
-														<el-col :span="8">
-															<el-form-item label="购买方" label-width="100px">
-																<el-input v-model="purchase" placeholder="购买方名称" size="mini" clearable />
+														<el-col :span="7">
+															<el-form-item label="我方公司" label-width="160px">
+																<el-input v-model="myCompany" placeholder="我方公司名称" size="mini" clearable />
 															</el-form-item>
 														</el-col>
-														<el-col :span="8">
-															<el-form-item label="销方" label-width="100px">
-																<el-input v-model="seller" placeholder="销方名称" size="mini" clearable />
+														<el-col :span="7">
+															<el-form-item label="对方公司" label-width="160px">
+																<el-input v-model="otherCompany" placeholder="对方公司名称" size="mini" clearable />
 															</el-form-item>
 														</el-col>
-														<el-col :span="6">
+														<el-col :span="7">
+															<el-form-item label="已操作状态" label-width="160px">
+																<el-select v-model="operatedStatus" placeholder="全部" size="mini" clearable style="width: 100%">
+																	<el-option label="全部" :value="null" />
+																	<el-option label="已操作" :value="true" />
+																	<el-option label="未操作" :value="false" />
+																</el-select>
+															</el-form-item>
+														</el-col>
+														<el-col :span="3">
 															<div class="button-group">
 																<el-button type="primary" size="mini" @click="handleFilter">查询</el-button>
 																<el-button type="warning" size="mini" @click="handleReset">重置</el-button>
