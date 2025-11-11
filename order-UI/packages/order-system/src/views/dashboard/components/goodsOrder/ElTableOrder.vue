@@ -930,29 +930,29 @@ export default {
 					</template>
 				</u-table-column>
 				<!-- 1. ID -->
-				<CustomTableColumn v-if="columns[0].visible" show-overflow-tooltip label="ID" align="center" prop="id" fixed="left">
+				<u-table-column v-if="columns[0].visible" show-overflow-tooltip label="ID" align="center" prop="id" fixed="left">
 					<template #default="scope">
 						<ExpandCursor>
 							{{ scope.row.id }}
 						</ExpandCursor>
 					</template>
-				</CustomTableColumn>
+				</u-table-column>
 				<!-- 2. 日期 -->
-				<CustomTableColumn v-if="columns[1].visible" show-overflow-tooltip label="日期" align="center" prop="orderDate" fixed="left">
+				<u-table-column v-if="columns[1].visible" show-overflow-tooltip label="日期" align="center" prop="orderDate" fixed="left">
 					<template #default="scope">
 						<ExpandCursor>
 							{{ parseTime(scope.row.orderDate, '{y}-{m}-{d}') }}
 						</ExpandCursor>
 					</template>
-				</CustomTableColumn>
+				</u-table-column>
 				<!-- 3. 客户 -->
-				<CustomTableColumn v-if="columns[2].visible" show-overflow-tooltip label="客户" align="center" prop="customer" width="100px" fixed="left">
+				<u-table-column v-if="columns[2].visible" show-overflow-tooltip label="客户" align="center" prop="customer" width="100px" fixed="left">
 					<template #default="scope">
 						<ExpandCursor>
 							{{ scope.row.customer }}
 						</ExpandCursor>
 					</template>
-				</CustomTableColumn>
+				</u-table-column>
 				<!-- 4. 供应商/仓库 -->
 				<u-table-column v-if="columns[3].visible" show-overflow-tooltip label="供应商/仓库" align="center" prop="supplierNames" width="200" fixed="left">
 					<template #default="scope">
@@ -978,13 +978,13 @@ export default {
 					</template>
 				</u-table-column>
 				<!-- 5. 陆运车牌 -->
-				<CustomTableColumn v-if="columns[4].visible" show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo" width="100px" fixed="left">
+				<u-table-column v-if="columns[4].visible" show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo" width="100px" fixed="left">
 					<template #default="scope">
 						<ExpandCursor>
 							{{ scope.row.landCarNo }}
 						</ExpandCursor>
 					</template>
-				</CustomTableColumn>
+				</u-table-column>
 				<!--       < !&#45;&#45; 6. 审核状态 &ndash;&gt;-->
 				<u-table-column v-if="columns[5].visible" show-overflow-tooltip label="审核状态" align="center" prop="checkState" width="120">
 					<template #default="scope">
@@ -1014,125 +1014,125 @@ export default {
 					</template>
 				</u-table-column>
 				<!-- 7. 车队 -->
-				<CustomTableColumn v-if="columns[6].visible" show-overflow-tooltip label="车队" align="center" prop="fleet" width="100px">
+				<u-table-column v-if="columns[6].visible" show-overflow-tooltip label="车队" align="center" prop="fleet" width="100px">
 					<template #default="scope">
 						<ExpandCursor>
 							{{ scope.row.fleet }}
 						</ExpandCursor>
 					</template>
-				</CustomTableColumn>
+				</u-table-column>
 				<!-- 8. 陆运司机电话 -->
-				<CustomTableColumn v-if="columns[7].visible" show-overflow-tooltip label="陆运司机电话" align="center" prop="landDriverTel" width="100px">
+				<u-table-column v-if="columns[7].visible" show-overflow-tooltip label="陆运司机电话" align="center" prop="landDriverTel" width="100px">
 					<template #default="scope">
 						<ExpandCursor>
 							{{ scope.row.landDriverTel }}
 						</ExpandCursor>
 					</template>
-				</CustomTableColumn>
+				</u-table-column>
 				<!-- 9. 陆地司机姓名 -->
-				<CustomTableColumn v-if="columns[8].visible" show-overflow-tooltip label="陆地司机姓名" align="center" prop="landDriverName" width="100px">
+				<u-table-column v-if="columns[8].visible" show-overflow-tooltip label="陆地司机姓名" align="center" prop="landDriverName" width="100px">
 					<template #default="scope">
 						<ExpandCursor>
 							{{ scope.row.landDriverName }}
 						</ExpandCursor>
 					</template>
-				</CustomTableColumn>
+				</u-table-column>
 				<!-- 10. 海运柜号 -->
-				<CustomTableColumn v-if="columns[9].visible" show-overflow-tooltip label="海运柜号" align="center" prop="seaCarNo" width="100px">
+				<u-table-column v-if="columns[9].visible" show-overflow-tooltip label="海运柜号" align="center" prop="seaCarNo" width="100px">
 					<template #default="scope">
 						<ExpandCursor>
 							{{ !scope.row.seaCarNo ? '无' : scope.row.seaCarNo }}
 						</ExpandCursor>
 					</template>
-				</CustomTableColumn>
+				</u-table-column>
 				<!-- 11. 海运司机电话 -->
-				<CustomTableColumn v-if="columns[10].visible" show-overflow-tooltip label="海运司机电话" align="center" prop="seaDriverTel" width="100px">
+				<u-table-column v-if="columns[10].visible" show-overflow-tooltip label="海运司机电话" align="center" prop="seaDriverTel" width="100px">
 					<template #default="scope">
 						<ExpandCursor>
 							{{ !scope.row.seaDriverTel ? '无' : scope.row.seaDriverTel }}
 						</ExpandCursor>
 					</template>
-				</CustomTableColumn>
+				</u-table-column>
 				<!-- 12. 海运公司 -->
-				<CustomTableColumn v-if="columns[11].visible" show-overflow-tooltip label="海运公司" align="center" prop="seaDriverName" width="100px">
+				<u-table-column v-if="columns[11].visible" show-overflow-tooltip label="海运公司" align="center" prop="seaDriverName" width="100px">
 					<template #default="scope">
 						<ExpandCursor>
 							{{ !scope.row.seaDriverName ? '无' : scope.row.seaDriverName }}
 						</ExpandCursor>
 					</template>
-				</CustomTableColumn>
+				</u-table-column>
 				<!-- 13. 总货款 -->
-				<CustomTableColumn v-if="columns[12].visible" show-overflow-tooltip label="总货款" align="center" prop="allPayments" width="100px">
+				<u-table-column v-if="columns[12].visible" show-overflow-tooltip label="总货款" align="center" prop="allPayments" width="100px">
 					<template #default="scope">
 						<ExpandCursor>
 							{{ scope.row.allPayments | changeNumber(changeLength) }}
 						</ExpandCursor>
 					</template>
-				</CustomTableColumn>
+				</u-table-column>
 				<!-- 14. 总吨位 -->
-				<CustomTableColumn v-if="columns[13].visible" show-overflow-tooltip label="总吨位" align="center" prop="allTonnage" width="120px">
+				<u-table-column v-if="columns[13].visible" show-overflow-tooltip label="总吨位" align="center" prop="allTonnage" width="120px">
 					<template #default="scope">
 						<ExpandCursor>
 							{{ scope.row.allTonnage | changeNumber(changeLength) }}
 						</ExpandCursor>
 					</template>
-				</CustomTableColumn>
+				</u-table-column>
 				<!-- 15. 陆运费 -->
-				<CustomTableColumn v-if="columns[14].visible" show-overflow-tooltip label="陆运费" align="center" prop="landFreight" width="100px">
+				<u-table-column v-if="columns[14].visible" show-overflow-tooltip label="陆运费" align="center" prop="landFreight" width="100px">
 					<template #default="scope">
 						<ExpandCursor>
 							{{ scope.row.landFreight }}
 						</ExpandCursor>
 					</template>
-				</CustomTableColumn>
+				</u-table-column>
 				<!-- 16. 海运费 -->
-				<CustomTableColumn v-if="columns[15].visible" show-overflow-tooltip label="海运费" align="center" prop="seaFreight" width="100px">
+				<u-table-column v-if="columns[15].visible" show-overflow-tooltip label="海运费" align="center" prop="seaFreight" width="100px">
 					<template #default="scope">
 						<ExpandCursor>
 							{{ scope.row.seaFreight }}
 						</ExpandCursor>
 					</template>
-				</CustomTableColumn>
+				</u-table-column>
 				<!-- 17. 总利润(含税) -->
-				<CustomTableColumn v-if="columns[16].visible" show-overflow-tooltip label="总利润(含税)" align="center" prop="allProfit" width="120px">
+				<u-table-column v-if="columns[16].visible" show-overflow-tooltip label="总利润(含税)" align="center" prop="allProfit" width="120px">
 					<template #default="scope">
 						<ExpandCursor>
 							{{ scope.row.allProfit | changeNumber(changeLength) }}
 						</ExpandCursor>
 					</template>
-				</CustomTableColumn>
+				</u-table-column>
 				<!-- 18. 总利润(不含税) -->
-				<CustomTableColumn v-if="columns[17].visible" show-overflow-tooltip label="总利润(不含税)" align="center" prop="allProfitNoTax" width="120px">
+				<u-table-column v-if="columns[17].visible" show-overflow-tooltip label="总利润(不含税)" align="center" prop="allProfitNoTax" width="120px">
 					<template #default="scope">
 						<ExpandCursor>
 							{{ scope.row.allProfitNoTax | changeNumber(changeLength) }}
 						</ExpandCursor>
 					</template>
-				</CustomTableColumn>
+				</u-table-column>
 				<!-- 19. 销售经理 -->
-				<CustomTableColumn v-if="columns[18].visible" show-overflow-tooltip label="销售经理" align="center" prop="saleManager" width="100px">
+				<u-table-column v-if="columns[18].visible" show-overflow-tooltip label="销售经理" align="center" prop="saleManager" width="100px">
 					<template #default="scope">
 						<ExpandCursor>
 							{{ scope.row.saleManager }}
 						</ExpandCursor>
 					</template>
-				</CustomTableColumn>
+				</u-table-column>
 				<!-- 20. 录入员 -->
-				<CustomTableColumn v-if="columns[19].visible" show-overflow-tooltip label="录入员" align="center" prop="userName" width="120px">
+				<u-table-column v-if="columns[19].visible" show-overflow-tooltip label="录入员" align="center" prop="userName" width="120px">
 					<template #default="scope">
 						<ExpandCursor>
 							{{ scope.row.userName }}
 						</ExpandCursor>
 					</template>
-				</CustomTableColumn>
+				</u-table-column>
 				<!-- 21. 备注 -->
-				<CustomTableColumn v-if="columns[20].visible" show-overflow-tooltip label="备注" align="center" prop="comments">
+				<u-table-column v-if="columns[20].visible" show-overflow-tooltip label="备注" align="center" prop="comments">
 					<template #default="scope">
 						<ExpandCursor>
 							{{ scope.row.comments }}
 						</ExpandCursor>
 					</template>
-				</CustomTableColumn>
+				</u-table-column>
 				<!-- 22. 附件 -->
 				<u-table-column v-if="columns[21].visible" show-overflow-tooltip label="附件" align="center" prop="path" width="150px">
 					<template #default="scope">
@@ -1168,13 +1168,13 @@ export default {
 					</template>
 				</u-table-column>
 				<!-- 24. 是否可编辑 -->
-				<CustomTableColumn v-if="columns[23].visible" show-overflow-tooltip label="是否可编辑" align="center" prop="isedit" width="100px">
+				<u-table-column v-if="columns[23].visible" show-overflow-tooltip label="是否可编辑" align="center" prop="isedit" width="100px">
 					<template #default="scope">
 						<ExpandCursor>
 							<StateTag :state-title="scope.row.isedit === 0 ? '否' : '是'" :state-mapper="{ 0: '否', 2: '是' }" />
 						</ExpandCursor>
 					</template>
-				</CustomTableColumn>
+				</u-table-column>
 				<!-- 25. 客户是否含税 -->
 				<u-table-column v-if="columns[24].visible" show-overflow-tooltip label="客户是否含税" align="center" prop="customerTaxIncluded" width="120">
 					<template #default="scope">
@@ -1332,59 +1332,59 @@ export default {
 						:header-cell-style="{ background: '#f8f9fa', color: '#495057', fontWeight: 600 }"
 						:row-class-name="getInvoiceRowClassName"
 					>
-						<CustomTableColumn prop="orderDate" label="日期" align="center" width="170">
-							<template #default>
+						<el-table-column prop="orderDate" label="日期" align="center" width="170">
+							<template #default="scope">
 								<div class="date-cell">
 									<i class="el-icon-date"></i>
 									{{ currentOrderInfo && currentOrderInfo.orderDate ? parseTime(currentOrderInfo.orderDate, '{y}-{m}-{d}') : '-' }}
 								</div>
 							</template>
-						</CustomTableColumn>
+						</el-table-column>
 
-						<CustomTableColumn prop="companyName" label="客户名称" align="center" min-width="120">
+						<el-table-column prop="companyName" label="客户名称" align="center" min-width="120">
 							<template #default="scope">
 								<div class="company-cell">
 									<i class="el-icon-office-building"></i>
 									{{ scope.row.companyName }}
 								</div>
 							</template>
-						</CustomTableColumn>
+						</el-table-column>
 
-						<CustomTableColumn prop="allPayments" label="需开票金额" align="center" width="110">
-							<template #default>
+						<el-table-column prop="allPayments" label="需开票金额" align="center" width="110">
+							<template #default="scope">
 								<div class="amount-cell need-amount">
 									<span class="currency-symbol">¥</span>
 									{{ Number(currentOrderInfo ? currentOrderInfo.allPayments : 0).toLocaleString() }}
 								</div>
 							</template>
-						</CustomTableColumn>
+						</el-table-column>
 
-						<CustomTableColumn prop="invoiceDate" label="开票时间" align="center" width="200">
+						<el-table-column prop="invoiceDate" label="开票时间" align="center" width="200">
 							<template #default="scope">
 								<div class="datetime-cell">
 									<i class="el-icon-time"></i>
 									{{ scope.row.invoiceDate ? parseTime(scope.row.invoiceDate, '{y}-{m}-{d} {h}:{i}') : '-' }}
 								</div>
 							</template>
-						</CustomTableColumn>
+						</el-table-column>
 
-						<CustomTableColumn prop="invoiceAmount" label="开票金额" align="center" width="130">
+						<el-table-column prop="invoiceAmount" label="开票金额" align="center" width="130">
 							<template #default="scope">
 								<div class="amount-cell invoiced-amount">
 									<span class="currency-symbol">¥</span>
 									{{ Number(scope.row.invoiceAmount || 0).toLocaleString() }}
 								</div>
 							</template>
-						</CustomTableColumn>
+						</el-table-column>
 
-						<CustomTableColumn label="累计开票金额" align="center" width="140">
+						<el-table-column label="累计开票金额" align="center" width="140">
 							<template #default="scope">
 								<div class="amount-cell accumulated-amount">
 									<span class="currency-symbol">¥</span>
 									{{ Number(calculateAccumulatedInvoiceAmount(scope.$index)).toLocaleString() }}
 								</div>
 							</template>
-						</CustomTableColumn>
+						</el-table-column>
 					</el-table>
 				</div>
 			</div>
@@ -1453,59 +1453,59 @@ export default {
 								class="supplier-invoice-table"
 								:header-cell-style="{ background: '#f8f9fa', color: '#495057', fontWeight: 600 }"
 							>
-								<CustomTableColumn prop="orderDate" label="日期" align="center" width="170">
-									<template #default>
+								<el-table-column prop="orderDate" label="日期" align="center" width="170">
+									<template #default="scope">
 										<div class="date-cell">
 											<i class="el-icon-date"></i>
 											{{ currentOrderInfo && currentOrderInfo.orderDate ? parseTime(currentOrderInfo.orderDate, '{y}-{m}-{d}') : '-' }}
 										</div>
 									</template>
-								</CustomTableColumn>
+								</el-table-column>
 
-								<CustomTableColumn prop="companyName" label="供应商名称" align="center" min-width="120">
+								<el-table-column prop="companyName" label="供应商名称" align="center" min-width="120">
 									<template #default="scope">
 										<div class="company-cell">
 											<i class="el-icon-office-building"></i>
 											{{ scope.row.companyName }}
 										</div>
 									</template>
-								</CustomTableColumn>
+								</el-table-column>
 
-								<CustomTableColumn label="需开票金额" align="center" width="130">
-									<template #default>
+								<el-table-column label="需开票金额" align="center" width="130">
+									<template #default="scope">
 										<div class="amount-cell need-amount">
 											<span class="currency-symbol">¥</span>
 											{{ Number(group.needInvoiceAmount).toLocaleString() }}
 										</div>
 									</template>
-								</CustomTableColumn>
+								</el-table-column>
 
-								<CustomTableColumn prop="invoiceDate" label="开票时间" align="center" width="200">
+								<el-table-column prop="invoiceDate" label="开票时间" align="center" width="200">
 									<template #default="scope">
 										<div class="datetime-cell">
 											<i class="el-icon-time"></i>
 											{{ scope.row.invoiceDate }}
 										</div>
 									</template>
-								</CustomTableColumn>
+								</el-table-column>
 
-								<CustomTableColumn prop="invoiceAmount" label="开票金额" align="center" width="130">
+								<el-table-column prop="invoiceAmount" label="开票金额" align="center" width="130">
 									<template #default="scope">
 										<div class="amount-cell invoiced-amount">
 											<span class="currency-symbol">¥</span>
 											{{ Number(scope.row.invoiceAmount || 0).toLocaleString() }}
 										</div>
 									</template>
-								</CustomTableColumn>
+								</el-table-column>
 
-								<CustomTableColumn label="累计开票金额" align="center" width="140">
+								<el-table-column label="累计开票金额" align="center" width="140">
 									<template #default="scope">
 										<div class="amount-cell accumulated-amount">
 											<span class="currency-symbol">¥</span>
 											{{ Number(calculateSupplierAccumulatedInvoiceAmount(group.invoices, scope.$index)).toLocaleString() }}
 										</div>
 									</template>
-								</CustomTableColumn>
+								</el-table-column>
 							</el-table>
 						</div>
 					</div>

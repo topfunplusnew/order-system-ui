@@ -137,16 +137,59 @@ export default {
 		},
 		// 筛选右侧的订单 通过事件总线提醒
 		handleFilterOrders(row) {
-			this.$bus.$emit('update-goods-order-company', row);
-			// 维护开票金额
+			// 查找相同对方ID的所有记录（可能我方公司不同）
+			const sameIdRows = this.companyTotalInfo.filter(item => item.id === row.id);
+			
+			// 合并所有相同ID的记录的total
+			const mergedTotal = sameIdRows.reduce((sum, item) => {
+				return sum + (Number(item.total) || 0);
+			}, 0);
+			
+			// 合并票点金额（取平均值或第一个，这里取第一个的票点）
+			const mergedTicketPointAmount = sameIdRows.reduce((sum, item) => {
+				return sum + (Number(item.ticketPointAmount) || 0);
+			}, 0);
+			
+			// 创建一个合并后的row对象，保留原始row的其他属性
+			const mergedRow = {
+				...row,
+				total: mergedTotal,
+				ticketPointAmount: mergedTicketPointAmount,
+				// 标记这是合并后的数据，包含所有我方公司信息
+				_mergedRows: sameIdRows,
+				_isMerged: sameIdRows.length > 1
+			};
+			
+			this.$bus.$emit('update-goods-order-company', mergedRow);
+			// 维护开票金额 - 使用合并后的总金额
 			this.$store.dispatch('excel/clearInvoiceAmount');
-			this.$store.dispatch('excel/setInvoiceAmount', row.total);
-			// 需要暂存我方实体
-			sessionStorage.setItem('us', row.us || '');
-			sessionStorage.setItem('invoiceAmount', row.total);
+			this.$store.dispatch('excel/setInvoiceAmount', mergedTotal);
+			// 需要暂存我方实体 - 如果有多条记录，存储所有我方公司信息
+			if (sameIdRows.length > 1) {
+				// 存储所有我方公司名称的数组
+				const allUsNames = sameIdRows.map(item => item.us).filter(Boolean);
+				sessionStorage.setItem('us', JSON.stringify(allUsNames));
+			} else {
+				sessionStorage.setItem('us', row.us || '');
+			}
+			sessionStorage.setItem('invoiceAmount', mergedTotal);
 			// 存储当前选中行的公司ID，供 InvoiceBody 精确回写
 			const companyId = this.getCompanyId(row);
 			sessionStorage.setItem('companyList_selected_company_id', companyId);
+			// 存储合并信息，供生成发票时使用
+			if (sameIdRows.length > 1) {
+				sessionStorage.setItem('merged_company_info', JSON.stringify({
+					companyId: companyId,
+					rows: sameIdRows.map(item => ({
+						us: item.us,
+						total: item.total,
+						ticketPoint: item.ticketPoint,
+						ticketPointAmount: item.ticketPointAmount
+					}))
+				}));
+			} else {
+				sessionStorage.removeItem('merged_company_info');
+			}
 			// 方便变颜色
 			this.selectedRowId = row.id;
 			// 不在检索时标记，由开具发票成功后由上层写入映射

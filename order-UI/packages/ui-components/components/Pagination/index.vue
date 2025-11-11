@@ -1,5 +1,5 @@
 <!-- 
-  这是一个占位文件，实际组件需要从 order-system/src/components/Pagination 复制
+  这是一个占位文件，组件需要从 order-system/src/components/Pagination 复制
   为了保持结构完整性，这里先创建占位文件
 -->
 <template>

@@ -389,20 +389,47 @@ export default {
 					let companyTypeConst = this.invoiceType;
 					let companyID = tpl.sellerId || tpl.purchaseId || null;
 					let companyName = tpl.sellerName || tpl.purchaseName || tpl.invoiceCompanyName;
+					// 根据模板确定我方公司名称（invoiceObject）
+					// 当sellerId=0时，sellerName是我方公司；当purchaseId=0时，purchaseName是我方公司
+					let invoiceObject = null;
 					if (tpl.sellerId && Number(tpl.sellerId) !== 0) {
 						companyTypeConst = tpl.sellerType;
 						companyID = tpl.sellerId;
 						companyName = tpl.sellerName || companyName;
+						// 对方是销方，我方是购买方
+						invoiceObject = tpl.purchaseName || null;
 					} else if (tpl.purchaseId && Number(tpl.purchaseId) !== 0) {
 						companyTypeConst = tpl.purchaseType;
 						companyID = tpl.purchaseId;
 						companyName = tpl.purchaseName || companyName;
+						// 对方是购买方，我方是销方
+						invoiceObject = tpl.sellerName || null;
+					}
+					
+					// 如果模板中没有明确的我方公司信息，则使用sessionStorage中的值
+					if (!invoiceObject) {
+						const storedUs = sessionStorage.getItem('us');
+						if (storedUs) {
+							try {
+								// 尝试解析为JSON数组（合并情况）
+								const parsedUs = JSON.parse(storedUs);
+								if (Array.isArray(parsedUs) && parsedUs.length > 0) {
+									// 如果是数组，使用第一个（或者可以根据模板匹配，这里简化处理）
+									invoiceObject = parsedUs[0];
+								} else {
+									invoiceObject = storedUs;
+								}
+							} catch (e) {
+								// 不是JSON，直接使用字符串
+								invoiceObject = storedUs;
+							}
+						}
 					}
 
 					// 生成发票对象（本次使用的金额 used）
 					const invoice = this.createInvoiceObject({
 						invoiceDate: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
-						invoiceObject: sessionStorage.getItem('us'),
+						invoiceObject: invoiceObject || sessionStorage.getItem('us') || '',
 						invoiceAmount: Number(this.math.format(used, { precision: 2, notation: 'fixed' })),
 						companyType: companyTypeConst,
 						companyName: companyName,
@@ -534,6 +561,7 @@ export default {
 			sessionStorage.removeItem('invoiceAmount');
 			sessionStorage.removeItem('us');
 			sessionStorage.removeItem('companyList_selected_company_id');
+			sessionStorage.removeItem('merged_company_info'); // 清理合并信息
 			this.$store.dispatch('excel/clearInvoiceAmount');
 			// 重置开票列表
 			this.$store.dispatch('excel/clearSelectedInvoiceList');
