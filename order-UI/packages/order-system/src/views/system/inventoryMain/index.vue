@@ -754,6 +754,19 @@
 							/>
 						</template>
 					</el-table-column>
+					<el-table-column label="客户佣金" prop="customerCommission" width="80">
+						<template #default="scope">
+							<el-input
+								size="mini"
+								v-model="scope.row.customerCommission"
+								@input="val => handlePriceInput(scope.row, 'customerCommission', val, () => {})"
+								@focus="() => handlePriceFocus(scope.row, 'customerCommission')"
+								@blur="() => formatPriceInput(scope.row, 'customerCommission', 2)"
+								placeholder="请输入佣金"
+								:disabled="!scope.row.isEditing"
+							/>
+						</template>
+					</el-table-column>
 					<el-table-column label="厂家佣金" prop="factoryCommission" width="80">
 						<template #default="scope">
 							<el-input
@@ -2154,6 +2167,7 @@ export default {
 				profitNoTax: '',
 				paymentsWithSundry: '',
 				additionalFees: '',
+				customerCommission: '',
 				factoryCommission: '',
 				factoryRebateAmount: '',
 				factoryDiscountAmount: '',
@@ -2521,6 +2535,7 @@ export default {
 				'seaFreight',
 				'otherCost',
 				'logisticsProfit',
+				'customerCommission',
 				'factoryCommission',
 				'factoryRebateAmount',
 				'factoryDiscountAmount',
