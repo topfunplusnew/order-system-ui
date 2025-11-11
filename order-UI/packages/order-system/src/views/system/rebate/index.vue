@@ -151,7 +151,7 @@
 						<el-col :span="12">
 							<!-- 系数输入框 -->
 							<el-form-item label="（返利/降价）单价" prop="unitPrice">
-								<el-input v-model="form.unitPrice" placeholder="请输入（返利/降价）单价" />
+								<el-input v-model="form.unitPrice" placeholder="请输入（返利/降价）单价" @input="isManualEditRebate = false" />
 							</el-form-item>
 
 							<!--              需要进行选择 是面积值还是重箱值-->
@@ -162,8 +162,9 @@
 									:disabled="!form.unitPrice"
 									@change="
 										() => {
-											form.rebate > 0 ? submitSelectOrderDetail() : '';
 											areaOrWeightBox = form.rebateMethod;
+											// 返利方式变化时，重置手动编辑标志，使用自动计算
+											isManualEditRebate = false;
 										}
 									"
 								>
@@ -226,16 +227,16 @@
 							</el-form-item>
 							<!-- 重箱值 -->
 							<el-form-item label="重箱值" prop="weightBox" v-if="areaOrWeightBox === RebateType.Weight">
-								<el-input v-model="form.weightBox" placeholder="根据订单自动计算" disabled />
+								<el-input :value="calculatedWeightBox" placeholder="根据订单自动计算" disabled />
 							</el-form-item>
 							<!-- 面积值 -->
 							<el-form-item label="面积值" prop="area" v-if="areaOrWeightBox === RebateType.Square">
-								<el-input v-model="form.area" placeholder="根据订单自动计算" disabled />
+								<el-input :value="calculatedArea" placeholder="根据订单自动计算" disabled />
 							</el-form-item>
 
 							<!-- 金额 -->
 							<el-form-item label="金额" prop="rebate">
-								<el-input v-model="form.rebate" placeholder="请输入金额" :disabled="!form.unitPrice" />
+								<el-input v-model="calculatedRebate" placeholder="请输入金额" :disabled="!form.unitPrice" />
 							</el-form-item>
 							<!-- 返利原因 -->
 							<el-form-item label="返利原因" prop="rebateReason">
@@ -517,8 +518,6 @@ export default {
 			multiple: true,
 			// 当前选中的供应商（用于一致性检查）
 			currentSelectedSupplier: null,
-			// 供应商选择的时间段
-			dateRange: [],
 			// 计提返利时间段选择（前端使用，用于时间段组件绑定）
 			rebateDateRange: null,
 			// 收到返利时间段选择（前端使用，用于时间段组件绑定）
@@ -676,17 +675,17 @@ export default {
 			orderDialogVisible: false,
 			// 订单个人信息和订单详情信息
 			orderInfo: {},
-			queryBankAcount: '',
 			// 搜索供应商
 			queryCompanyGive: '',
-			bankAcountSelf: '',
 			queryCompany: '',
 
 			// 订单选择的框
 			selectOrdersList: [],
 
 			// 选择重箱还是面积
-			areaOrWeightBox: RebateType.Weight
+			areaOrWeightBox: RebateType.Weight,
+			// 是否手动编辑过金额
+			isManualEditRebate: false
 		};
 	},
 	computed: {
@@ -695,9 +694,52 @@ export default {
 		},
 		TableName() {
 			return TableName;
+		},
+		// 计算面积值
+		calculatedArea() {
+			if (_.isEmpty(this.goods)) {
+				return 0;
+			}
+			return this.goods.reduce((sum, item) => {
+				return sum + (item.length * item.width * item.pieces) / 1000000;
+			}, 0);
+		},
+		// 计算重箱值
+		calculatedWeightBox() {
+			if (_.isEmpty(this.goods)) {
+				return 0;
+			}
+			return this.goods.reduce((sum, item) => {
+				return sum + (item.height * item.length * item.width * item.pieces) / 1000000 / 20;
+			}, 0);
+		},
+		// 计算返利金额（支持手动编辑）
+		calculatedRebate: {
+			get() {
+				// 如果手动编辑过，返回手动值
+				if (this.isManualEditRebate) {
+					return this.form.rebate || 0;
+				}
+				// 否则返回计算值
+				if (_.isEmpty(this.goods) || !this.form.unitPrice || !this.form.rebateMethod) {
+					return this.form.rebate || 0;
+				}
+				const baseValue = this.form.rebateMethod === this.RebateType.Weight ? this.calculatedWeightBox : this.calculatedArea;
+				return fix(baseValue * this.form.unitPrice);
+			},
+			set(value) {
+				this.form.rebate = value;
+				// 计算当前应该的值
+				let expectedValue = 0;
+				if (!_.isEmpty(this.goods) && this.form.unitPrice && this.form.rebateMethod) {
+					const baseValue = this.form.rebateMethod === this.RebateType.Weight ? this.calculatedWeightBox : this.calculatedArea;
+					expectedValue = fix(baseValue * this.form.unitPrice);
+				}
+				// 如果用户输入的值与计算值不同，标记为手动编辑
+				this.isManualEditRebate = Number(value) !== expectedValue;
+			}
 		}
 	},
-	watch: {},
 	created() {
 		this.getList();
 		if (localStorage.getItem('rebate-columns') === 'null' || !localStorage.getItem('rebate-columns')) {
@@ -731,14 +773,14 @@ export default {
 		// 重写mixin中的多选某个货物方法，添加供应商一致性检查
 		handleSelectionChangeOrderDetail(selection) {
 			// 如果没有选中任何货物，清空当前供应商
-			if (selection.length === 0) {
+			if (_.isEmpty(selection)) {
 				this.currentSelectedSupplier = null;
 				this.goods = [];
 				return;
 			}
 
 			// 如果是第一次选择，设置当前供应商
-			if (!this.currentSelectedSupplier && selection.length > 0) {
+			if (!this.currentSelectedSupplier) {
 				this.currentSelectedSupplier = selection[0].supplier;
 			}
 
@@ -774,13 +816,13 @@ export default {
 		// 重写mixin中的确认选择货物方法，添加供应商自动填充功能
 		submitSelectOrderDetail() {
 			this.form.orderDetailIds = [];
-			if (!this.goods || this.goods.length <= 0) {
+			if (_.isEmpty(this.goods)) {
 				this.$message.info('请选择货物');
 				return;
 			}
 
 			// 自动填充供应商信息（基于已选择的货物）
-			if (this.goods.length > 0 && this.currentSelectedSupplier) {
+			if (this.currentSelectedSupplier) {
 				this.form.supplier = this.currentSelectedSupplier;
 
 				// 尝试找到供应商ID（如果货物数据中包含supplierID）
@@ -792,32 +834,23 @@ export default {
 				this.$message.success(`已自动填充供应商：${this.currentSelectedSupplier}`);
 			}
 
-			// 计算重箱和面积的和
-			const result = this.goods.reduce(
-				(prev, next) => {
-					// 累加面积 - 修改计算公式为：长度*宽度*出场片数/1000000
-					prev.area += (next.length * next.width * next.pieces) / 1000000;
-					// 累加重箱
-					prev.weightBox += (next.height * next.length * next.width * next.pieces) / 1000000 / 20;
-					return prev;
-				},
-				{ area: 0, weightBox: 0 } // 初始值
-			);
-
 			// 推入id数组
-			this.goods.forEach(item => {
-				this.form.orderDetailIds.push(item.id);
-			});
+			this.form.orderDetailIds = this.goods.map(item => item.id);
 
-			// 判断一下是重箱还是面积
+			// 更新返利方式对应的显示变量
+			this.areaOrWeightBox = this.form.rebateMethod;
+
+			// 更新面积和重箱值到表单（用于提交）
 			if (this.form.rebateMethod === this.RebateType.Weight) {
-				this.form.weightBox = result.weightBox || 0;
+				this.form.weightBox = this.calculatedWeightBox;
 			} else {
-				this.form.area = result.area || 0;
+				this.form.area = this.calculatedArea;
 			}
 
-			// 修复精度
-			this.form.rebate = fix((this.form.area || this.form.weightBox) * this.form.unitPrice);
+			// 重置手动编辑标志，使用自动计算
+			this.isManualEditRebate = false;
+			// 更新金额（使用计算属性的值）
+			this.form.rebate = this.calculatedRebate;
 
 			// 关闭对话框
 			this.orderDialogVisible = false;
@@ -827,24 +860,26 @@ export default {
 		},
 		// 获取最早的返利日期
 		getEarliestReceivedDate(row) {
-			if (!row.actualReceivedDetails || !row.actualReceivedDetails.detailList || row.actualReceivedDetails.detailList.length === 0) {
+			const detailList = _.get(row, 'actualReceivedDetails.detailList', []);
+			if (_.isEmpty(detailList)) {
 				return '未收到';
 			}
 
-			const dates = row.actualReceivedDetails.detailList
+			const dates = detailList
 				.map(item => item.actualReceivedDate)
-				.filter(date => date) // 过滤空值
-				.sort(); // 字符串排序，日期格式 "yyyy-MM-dd HH:mm:ss" 可以直接排序
+				.filter(Boolean)
+				.sort();
 
-			return dates.length > 0 ? dates[0] : '未收到';
+			return _.isEmpty(dates) ? '未收到' : dates[0];
 		},
 		// 计算返利金额总和
 		getTotalReceivedAmount(row) {
-			if (!row.actualReceivedDetails || !row.actualReceivedDetails.detailList || row.actualReceivedDetails.detailList.length === 0) {
+			const detailList = _.get(row, 'actualReceivedDetails.detailList', []);
+			if (_.isEmpty(detailList)) {
 				return 0;
 			}
 
-			return row.actualReceivedDetails.detailList.reduce((total, item) => {
+			return detailList.reduce((total, item) => {
 				return total + (Number(item.actualReceived) || 0);
 			}, 0);
 		},
@@ -884,12 +919,10 @@ export default {
 								const originalAmount = row.rebate; // 表格中的金额列
 
 								// 计算已累计返利金额
-								let existingTotal = 0;
-								if (res.data.actualReceivedDetails && res.data.actualReceivedDetails.detailList) {
-									existingTotal = res.data.actualReceivedDetails.detailList.reduce((sum, item) => {
-										return sum + (Number(item.actualReceived) || 0);
-									}, 0);
-								}
+								const detailList = _.get(res.data, 'actualReceivedDetails.detailList', []);
+								const existingTotal = detailList.reduce((sum, item) => {
+									return sum + (Number(item.actualReceived) || 0);
+								}, 0);
 
 								const newTotal = existingTotal + currentAmount;
 
@@ -898,27 +931,19 @@ export default {
 
 								// TODO 这里后端还没有完善好备注的逻辑 随时可能更改
 								const processRebate = (remark = '') => {
-									let item = {
+									const item = {
 										uuid: getUuid(),
 										actualReceived: currentAmount,
 										actualReceivedDate: parseTime(new Date(date)),
 										comment: remark || null
 									};
-									let body = _.cloneDeep(row);
+									const body = _.cloneDeep(row);
 
-									let rebate = res.data.actualReceivedDetails;
-									if (!rebate || !rebate.detailList) {
-										let actualReceivedDetails = {
-											detailList: []
-										};
-										actualReceivedDetails.detailList.push(item);
-										body.actualReceivedDetails = actualReceivedDetails;
-									} else {
-										rebate.detailList.push(item);
-										body.actualReceivedDetails = {
-											detailList: rebate.detailList
-										};
-									}
+									const existingDetailList = _.get(res.data, 'actualReceivedDetails.detailList', []);
+									body.actualReceivedDetails = {
+										detailList: [...existingDetailList, item]
+									};
+
 									updateRebate(body).then(() => {
 										this.$modal.msgSuccess('返利成功');
 										this.getList();
@@ -966,13 +991,14 @@ export default {
 		// 查询返利流水账
 		handleRebateDetail(row) {
 			getRebate(row.id).then(res => {
-				if (!res.data.actualReceivedDetails || !res.data.actualReceivedDetails.detailList) {
+				const detailList = _.get(res.data, 'actualReceivedDetails.detailList', []);
+				if (_.isEmpty(detailList)) {
 					this.$modal.msgError('没有返利流水账');
 					return;
 				}
 				this.$model({
 					type: 'array',
-					items: res.data.actualReceivedDetails.detailList,
+					items: detailList,
 					array: [
 						{
 							prop: 'actualReceived',
@@ -1044,6 +1070,8 @@ export default {
 			this.goods = [];
 			// 重置当前选中的供应商
 			this.currentSelectedSupplier = null;
+			// 重置手动编辑标志
+			this.isManualEditRebate = false;
 			this.resetForm('form');
 		},
 		/** 搜索按钮操作 */
@@ -1096,14 +1124,15 @@ export default {
 			getRebate(id).then(response => {
 				this.form = response.data;
 				// 这里打开的时候要判断后端返回的数据 如果orderDetailIds有数据 那么要自动选择相关订单
-				if (this.form.orderDetailIds?.length > 0) {
+				if (!_.isEmpty(this.form.orderDetailIds)) {
 					// goods 要填充这个数组 这个是货物的id 查询货物list 筛选需要的货物
-					const ids = JSON.parse(JSON.stringify(this.form.orderDetailIds));
+					const ids = _.cloneDeep(this.form.orderDetailIds);
 					listOrderDetailByIds(ids).then(res => {
 						this.goods = res.rows;
 					});
 					// 填充选择框
 					this.form.rebateMethod = response.data.rebateMethod === 1 ? RebateType.Weight : RebateType.Square;
+					this.areaOrWeightBox = this.form.rebateMethod;
 				}
 				// 打开修改弹窗
 				this.open = true;
