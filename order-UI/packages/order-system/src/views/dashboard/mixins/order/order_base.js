@@ -65,6 +65,10 @@ export var mixin_order_base = {
             goodsOrderList: [],
             // 虚拟滚动的数据
             virsualGoodsOrderList: [],
+            // 缓存的订单列表数据
+            pendingData: [],
+            // 是否正在render
+            ticking: false,
             _scrollRafId: null // 滚动事件处理的 requestAnimationFrame ID
         };
     },

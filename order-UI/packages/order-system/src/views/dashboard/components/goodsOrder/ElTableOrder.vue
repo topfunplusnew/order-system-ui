@@ -25,9 +25,10 @@ import {auditGoodsOrder, listGoodsOrder} from '../../../../api/system/goodsOrder
 import CheckOrder from '@/views/dashboard/components/goodsOrder/CheckOrder.vue';
 // 前端Excel导出依赖
 import * as XLSX from 'xlsx';
-import {debounce} from 'lodash';
+import {debounce, throttle} from 'lodash';
 import ExpandCursor from '../common/ExpandCursor.vue';
 import VirtualScroll from 'el-table-virtual-scroll'
+import {requestAnimationFrame} from "vue-count-to/src/requestAnimationFrame";
 
 export default {
   name: 'ElTableOrder',
@@ -104,27 +105,27 @@ export default {
         {key: 2, label: '客户', visible: true},
         {key: 3, label: '供应商/仓库', visible: true},
         {key: 4, label: '陆运车牌', visible: true},
-        {key: 5, label: '审核状态', visible: true},
+        {key: 5, label: '审核', visible: true},
         {key: 6, label: '车队', visible: true},
-        {key: 7, label: '陆运司机电话', visible: true},
-        {key: 8, label: '陆地司机姓名', visible: true},
+        {key: 7, label: '陆运电话', visible: true},
+        {key: 8, label: '司机', visible: true},
         {key: 9, label: '海运柜号', visible: true},
-        {key: 10, label: '海运司机电话', visible: true},
+        {key: 10, label: '海运电话', visible: true},
         {key: 11, label: '海运公司', visible: true},
         {key: 12, label: '总货款', visible: true},
         {key: 13, label: '总吨位', visible: true},
         {key: 14, label: '陆运费', visible: true},
         {key: 15, label: '海运费', visible: true},
-        {key: 16, label: '总利润(含税)', visible: true},
-        {key: 17, label: '总利润(不含税)', visible: true},
+        {key: 16, label: '含税利润', visible: true},
+        {key: 17, label: '不含税利润', visible: true},
         {key: 18, label: '销售经理', visible: true},
         {key: 19, label: '录入员', visible: true},
         {key: 20, label: '备注', visible: true},
-        {key: 21, label: '附件', visible: true},
+        {key: 21, label: '出库单', visible: true},
         {key: 22, label: '收到条附件', visible: true},
-        {key: 23, label: '是否可编辑', visible: true},
-        {key: 24, label: '客户是否含税', visible: true},
-        {key: 25, label: '供应商是否开票', visible: true}
+        {key: 23, label: '可否编辑', visible: true},
+        {key: 24, label: '客户含税', visible: true},
+        {key: 25, label: '出厂含税', visible: true}
       ],
       // 性能优化相关：缓存 DOM 尺寸信息，避免频繁访问
       cachedScrollInfo: {
@@ -192,14 +193,28 @@ export default {
     }
   },
   methods: {
-    // 在 ElTableOrder.vue 中
+    orderDataAppendChange(renderData) {
+      this.pendingData = renderData;
+      const updateVisibleRows = throttle((renderData) => {
+        this.virsualGoodsOrderList.splice(0, this.virsualGoodsOrderList.length, ...renderData)
+      }, 16);
+      if (!this.ticking) {
+        this.ticking = true;
+        requestAnimationFrame(() => {
+          if (this.pendingData && this.pendingData.length > 0) {
+            updateVisibleRows(renderData);
+            this.pendingData = null;
+          }
+          this.ticking = false;
+        })
+      }
+    },
     handleColumnRefresh(updatedColumns) {
       // 更新表格列的显示状态
       this.columns = [...updatedColumns];
       // 触发表格重新加载
       this.getList();
     },
-
     onColumnChange({index, column, visible}) {
       // 可以在这里处理列可见性变化的逻辑
       // 例如：更新列配置或执行其他相关操作
@@ -609,19 +624,19 @@ export default {
           return row.customer || '';
         case 3: // 供应商/仓库
           return this.formatSupplierWarehouse(row);
-        case 4: // 审核状态
-          return row.checkState || '';
-        case 5: // 车队
-          return row.fleet || '';
-        case 6: // 陆运车牌
+        case 4: // 陆运车牌
           return row.landCarNo || '';
-        case 7: // 陆运司机电话
+        case 5: // 审核
+          return row.checkState || '';
+        case 6: // 车队
+          return row.fleet || '';
+        case 7: // 陆运电话
           return row.landDriverTel || '';
-        case 8: // 陆地司机姓名
+        case 8: // 司机
           return row.landDriverName || '';
         case 9: // 海运柜号
           return row.seaCarNo || '无';
-        case 10: // 海运司机电话
+        case 10: // 海运电话
           return row.seaDriverTel || '无';
         case 11: // 海运公司
           return row.seaDriverName || '无';
@@ -633,9 +648,9 @@ export default {
           return row.landFreight || '';
         case 15: // 海运费
           return row.seaFreight || '';
-        case 16: // 总利润(含税)
+        case 16: // 含税利润
           return row.allProfit || '';
-        case 17: // 总利润(不含税)
+        case 17: // 不含税利润
           return row.allProfitNoTax || '';
         case 18: // 销售经理
           return row.saleManager || '';
@@ -643,15 +658,15 @@ export default {
           return row.userName || '';
         case 20: // 备注
           return row.comments || '';
-        case 21: // 附件
+        case 21: // 出库单
           return this.formatAttachments(row.attachmentList, 'path');
         case 22: // 收到条附件
           return this.formatAttachments(row.attachmentList, 'receiveProof');
-        case 23: // 是否可编辑
+        case 23: // 可否编辑
           return row.isedit === 0 ? '否' : '是';
-        case 24: // 客户是否含税
+        case 24: // 客户含税
           return this.hasInvoice(row, PUBLIC_DICT_TYPE.CUSTOMER) ? '是' : '否';
-        case 25: // 供应商是否开票
+        case 25: // 出厂含税
           return this.hasInvoice(row, PUBLIC_DICT_TYPE.SUPPLIER) ? '是' : '否';
         default:
           return '';
@@ -882,9 +897,9 @@ export default {
     <!--    订单表格  -->
     <virtual-scroll
         :data="goodsOrderList"
-        :item-size="62"
+        :item-size="30"
         key-prop="id"
-        @change="(renderData) => virsualGoodsOrderList = renderData">
+        @change="orderDataAppendChange">
       <el-table
           border
           ref="orderTable"
@@ -895,14 +910,12 @@ export default {
           size="mini"
           height="750"
           style="width: 100%"
-          show-summary
-          :show-summary-method="getSummary"
           :data="virsualGoodsOrderList"
           :default-sort="{prop: 'orderDate', order: 'descending'}"
           tooltip-effect="dark"
       >
         <!-- 序号列 -->
-        <el-table-column label="序号" align="center" fixed="left">
+        <el-table-column label="序号" align="center" fixed="left" width="50">
           <template slot-scope="scope">
             {{ (queryParams.pageNum - 1) * queryParams.pageSize + scope.$index + 1 }}
           </template>
@@ -928,7 +941,9 @@ export default {
                         :disabled="!scope.row.isedit || scope.row.isAdjust < 0 || isOrderExpired(scope.row.addtime)"
                         :title="isOrderExpired(scope.row.addtime) ? '订单已超过7天，无法修改' : ''"
                     >
-                      修 改
+                      <span v-once>
+                        修 改
+                      </span>
                     </el-button>
                   </el-dropdown-item>
                   <el-dropdown-item v-hasPermi="['system:goodsorder:remove']" command="handleDelete">
@@ -962,7 +977,7 @@ export default {
         </el-table-column>
         <!-- 2. 日期 -->
         <el-table-column v-if="columns[1].visible" show-overflow-tooltip label="日期" align="center" prop="orderDate"
-                         fixed="left" width="120">
+                         fixed="left" width="200">
           <template #default="scope">
             <ExpandCursor>
               {{ parseTime(scope.row.orderDate, '{y}-{m}-{d}') }}
@@ -970,8 +985,8 @@ export default {
           </template>
         </el-table-column>
         <!-- 3. 客户 -->
-        <el-table-column v-if="columns[2].visible" show-overflow-tooltip label="客户" align="center" prop="customer"
-                         fixed="left" width="200">
+        <el-table-column v-if="columns[2].visible" show-overflow-tooltip label="客户" align="left" prop="customer"
+                         fixed="left" width="196">
           <template #default="scope">
             <ExpandCursor>
               {{ scope.row.customer }}
@@ -979,8 +994,8 @@ export default {
           </template>
         </el-table-column>
         <!-- 4. 供应商/仓库 -->
-        <el-table-column v-if="columns[3].visible" show-overflow-tooltip label="供应商/仓库" align="center"
-                         prop="supplierNames" fixed="left" width="200">
+        <el-table-column v-if="columns[3].visible" show-overflow-tooltip label="供应商/仓库" align="left"
+                         prop="supplierNames" fixed="left" width="280">
           <template #default="scope">
             <ExpandCursor>
               <div class="supplier-warehouse-container">
@@ -1008,16 +1023,16 @@ export default {
         <!-- 5. 陆运车牌 -->
         <el-table-column v-if="columns[4].visible" show-overflow-tooltip label="陆运车牌" align="center"
                          prop="landCarNo"
-                         fixed="left" width="150">
+                         fixed="left" width="112">
           <template #default="scope">
             <ExpandCursor>
               {{ scope.row.landCarNo }}
             </ExpandCursor>
           </template>
         </el-table-column>
-        <!--       < !&#45;&#45; 6. 审核状态 &ndash;&gt;-->
-        <el-table-column v-if="columns[5].visible" show-overflow-tooltip label="审核状态" align="center"
-                         prop="checkState" width="100">
+        <!--       < !&#45;&#45; 6. 审核 &ndash;&gt;-->
+        <el-table-column v-if="columns[5].visible" show-overflow-tooltip label="审核" align="center"
+                         prop="checkState" width="112">
           <template #default="scope">
             <ExpandCursor>
               <el-row v-if="scope.row.checkState === '已审核'">
@@ -1046,25 +1061,25 @@ export default {
           </template>
         </el-table-column>
         <!-- 7. 车队 -->
-        <el-table-column v-if="columns[6].visible" show-overflow-tooltip label="车队" align="center" prop="fleet">
+        <el-table-column v-if="columns[6].visible" show-overflow-tooltip label="车队" align="center" prop="fleet" width="112">
           <template #default="scope">
             <ExpandCursor>
               {{ scope.row.fleet }}
             </ExpandCursor>
           </template>
         </el-table-column>
-        <!-- 8. 陆运司机电话 -->
-        <el-table-column v-if="columns[7].visible" show-overflow-tooltip label="陆运司机电话" align="center"
-                         prop="landDriverTel" width="150">
+        <!-- 8. 陆运电话 -->
+        <el-table-column v-if="columns[7].visible" show-overflow-tooltip label="陆运电话" align="center"
+                         prop="landDriverTel" width="176">
           <template #default="scope">
             <ExpandCursor>
               {{ scope.row.landDriverTel }}
             </ExpandCursor>
           </template>
         </el-table-column>
-        <!-- 9. 陆地司机姓名 -->
-        <el-table-column v-if="columns[8].visible" show-overflow-tooltip label="陆地司机姓名" align="center"
-                         prop="landDriverName">
+        <!-- 9. 司机 -->
+        <el-table-column v-if="columns[8].visible" show-overflow-tooltip label="司机" align="center"
+                         prop="landDriverName" width="84">
           <template #default="scope">
             <ExpandCursor>
               {{ scope.row.landDriverName }}
@@ -1073,16 +1088,16 @@ export default {
         </el-table-column>
         <!-- 10. 海运柜号 -->
         <el-table-column v-if="columns[9].visible" show-overflow-tooltip label="海运柜号" align="center"
-                         prop="seaCarNo">
+                         prop="seaCarNo" width="176">
           <template #default="scope">
             <ExpandCursor>
               {{ !scope.row.seaCarNo ? '无' : scope.row.seaCarNo }}
             </ExpandCursor>
           </template>
         </el-table-column>
-        <!-- 11. 海运司机电话 -->
-        <el-table-column v-if="columns[10].visible" show-overflow-tooltip label="海运司机电话" align="center"
-                         prop="seaDriverTel">
+        <!-- 11. 海运电话 -->
+        <el-table-column v-if="columns[10].visible" show-overflow-tooltip label="海运电话" align="center"
+                         prop="seaDriverTel" width="176">
           <template #default="scope">
             <ExpandCursor>
               {{ !scope.row.seaDriverTel ? '无' : scope.row.seaDriverTel }}
@@ -1091,7 +1106,7 @@ export default {
         </el-table-column>
         <!-- 12. 海运公司 -->
         <el-table-column v-if="columns[11].visible" show-overflow-tooltip label="海运公司" align="center"
-                         prop="seaDriverName">
+                         prop="seaDriverName" width="168">
           <template #default="scope">
             <ExpandCursor>
               {{ !scope.row.seaDriverName ? '无' : scope.row.seaDriverName }}
@@ -1100,7 +1115,7 @@ export default {
         </el-table-column>
         <!-- 13. 总货款 -->
         <el-table-column v-if="columns[12].visible" show-overflow-tooltip label="总货款" align="center"
-                         prop="allPayments">
+                         prop="allPayments" width="144">
           <template #default="scope">
             <ExpandCursor>
               {{ scope.row.allPayments | changeNumber(changeLength) }}
@@ -1109,7 +1124,7 @@ export default {
         </el-table-column>
         <!-- 14. 总吨位 -->
         <el-table-column v-if="columns[13].visible" show-overflow-tooltip label="总吨位" align="center"
-                         prop="allTonnage">
+                         prop="allTonnage" width="80">
           <template #default="scope">
             <ExpandCursor>
               {{ scope.row.allTonnage | changeNumber(changeLength) }}
@@ -1118,7 +1133,7 @@ export default {
         </el-table-column>
         <!-- 15. 陆运费 -->
         <el-table-column v-if="columns[14].visible" show-overflow-tooltip label="陆运费" align="center"
-                         prop="landFreight">
+                         prop="landFreight" width="112">
           <template #default="scope">
             <ExpandCursor>
               {{ scope.row.landFreight }}
@@ -1127,25 +1142,25 @@ export default {
         </el-table-column>
         <!-- 16. 海运费 -->
         <el-table-column v-if="columns[15].visible" show-overflow-tooltip label="海运费" align="center"
-                         prop="seaFreight">
+                         prop="seaFreight" width="112">
           <template #default="scope">
             <ExpandCursor>
               {{ scope.row.seaFreight }}
             </ExpandCursor>
           </template>
         </el-table-column>
-        <!-- 17. 总利润(含税) -->
-        <el-table-column v-if="columns[16].visible" show-overflow-tooltip label="总利润(含税)" align="center"
-                         prop="allProfit">
+        <!-- 17. 含税利润 -->
+        <el-table-column v-if="columns[16].visible" show-overflow-tooltip label="含税利润" align="center"
+                         prop="allProfit" width="112">
           <template #default="scope">
             <ExpandCursor>
               {{ scope.row.allProfit | changeNumber(changeLength) }}
             </ExpandCursor>
           </template>
         </el-table-column>
-        <!-- 18. 总利润(不含税) -->
-        <el-table-column v-if="columns[17].visible" show-overflow-tooltip label="总利润(不含税)" align="center"
-                         prop="allProfitNoTax">
+        <!-- 18. 不含税利润 -->
+        <el-table-column v-if="columns[17].visible" show-overflow-tooltip label="不含税利润" align="center"
+                         prop="allProfitNoTax" width="112">
           <template #default="scope">
             <ExpandCursor>
               {{ scope.row.allProfitNoTax | changeNumber(changeLength) }}
@@ -1154,7 +1169,7 @@ export default {
         </el-table-column>
         <!-- 19. 销售经理 -->
         <el-table-column v-if="columns[18].visible" show-overflow-tooltip label="销售经理" align="center"
-                         prop="saleManager">
+                         prop="saleManager" width="112">
           <template #default="scope">
             <ExpandCursor>
               {{ scope.row.saleManager }}
@@ -1162,7 +1177,7 @@ export default {
           </template>
         </el-table-column>
         <!-- 20. 录入员 -->
-        <el-table-column v-if="columns[19].visible" show-overflow-tooltip label="录入员" align="center" prop="userName">
+        <el-table-column v-if="columns[19].visible" show-overflow-tooltip label="录入员" align="center" prop="userName" width="84">
           <template #default="scope">
             <ExpandCursor>
               {{ scope.row.userName }}
@@ -1170,15 +1185,15 @@ export default {
           </template>
         </el-table-column>
         <!-- 21. 备注 -->
-        <el-table-column v-if="columns[20].visible" show-overflow-tooltip label="备注" align="center" prop="comments">
+        <el-table-column v-if="columns[20].visible" show-overflow-tooltip label="备注" align="center" prop="comments" width="140">
           <template #default="scope">
             <ExpandCursor>
               {{ scope.row.comments }}
             </ExpandCursor>
           </template>
         </el-table-column>
-        <!-- 22. 附件 -->
-        <el-table-column v-if="columns[21].visible" show-overflow-tooltip label="附件" align="center" prop="path">
+        <!-- 22. 出库单 -->
+        <el-table-column v-if="columns[21].visible" show-overflow-tooltip label="出库单" align="center" prop="path" width="84">
           <template #default="scope">
             <ExpandCursor>
               <div v-if="Array.isArray(scope.row.attachmentList)">
@@ -1212,18 +1227,18 @@ export default {
             </ExpandCursor>
           </template>
         </el-table-column>
-        <!-- 24. 是否可编辑 -->
-        <el-table-column v-if="columns[23].visible" show-overflow-tooltip label="是否可编辑" align="center"
-                         prop="isedit">
+        <!-- 24. 可否编辑 -->
+        <el-table-column v-if="columns[23].visible" show-overflow-tooltip label="可否编辑" align="center"
+                         prop="isedit" width="112">
           <template #default="scope">
             <ExpandCursor>
               <StateTag :state-title="scope.row.isedit === 0 ? '否' : '是'" :state-mapper="{ 0: '否', 2: '是' }"/>
             </ExpandCursor>
           </template>
         </el-table-column>
-        <!-- 25. 客户是否含税 -->
-        <el-table-column v-if="columns[24].visible" show-overflow-tooltip label="客户是否含税" align="center"
-                         prop="customerTaxIncluded">
+        <!-- 25. 客户含税 -->
+        <el-table-column v-if="columns[24].visible" show-overflow-tooltip label="客户含税" align="center"
+                         prop="customerTaxIncluded" width="112">
           <template #default="scope">
             <ExpandCursor>
               <el-row>
@@ -1239,8 +1254,8 @@ export default {
             </ExpandCursor>
           </template>
         </el-table-column>
-        <!-- 26. 供应商是否开票 -->
-        <el-table-column v-if="columns[25].visible" show-overflow-tooltip label="供应商是否开票" align="center">
+        <!-- 26. 出厂含税 -->
+        <el-table-column v-if="columns[25].visible" show-overflow-tooltip label="出厂含税" align="center" width="112">
           <template #default="scope">
             <ExpandCursor>
               <el-row>

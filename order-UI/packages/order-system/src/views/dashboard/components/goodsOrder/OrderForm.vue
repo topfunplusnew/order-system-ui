@@ -1189,10 +1189,9 @@ export default {
 
 <template>
 	<div>
-		<!-- 基本信息表单部分不变 -->
-		<el-form :inline="true" :model="orderInfo" label-width="100px" :rules="orderRules" ref="orderForm">
-			<el-card class="box-card" shadow="hover" size="mini" style="margin-top: 10px">
-				<el-form-item label="订单日期" prop="orderDate">
+		<!-- 基本信息表单部分 -->
+		<el-form :inline="true" :model="orderInfo" label-width="100px" :rules="orderRules" ref="orderForm" style="margin-top: 10px; margin-bottom: 10px">
+			<el-form-item label="订单日期" prop="orderDate">
 					<el-date-picker v-model="orderInfo.orderDate" size="mini" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss" style="width: 120px" />
 				</el-form-item>
 				<el-form-item label="客户" prop="customer">
@@ -1339,14 +1338,11 @@ export default {
 						<el-input disabled v-model="orderInfo.seaDriverTel" type="text" size="mini" placeholder="请选择" style="width: 120px" />
 					</el-form-item>
 				</el-row>
-			</el-card>
 		</el-form>
-		<br />
 
-		<!--    订单详情的填写-->
-		<el-card class="box-card" shadow="hover" size="mini">
-			<div>
-				<el-row :gutter="10" class="mb8">
+		<!-- 订单详情的填写 -->
+		<div>
+			<el-row :gutter="10" class="mb8">
 					<el-col :span="1.5">
 						<el-button size="mini" type="primary" @click="handleAddOrderdetail">添加</el-button>
 					</el-col>
@@ -1370,9 +1366,9 @@ export default {
 					@selection-change="handleOrderdetailSelectionChange"
 					ref="orderdetail"
 				>
-					<el-table-column type="selection" width="70" align="center" :selectable="() => true" />
-					<el-table-column label="序号" align="center" type="index" width="70" />
-					<el-table-column label="行操作" align="center" width="140">
+				<el-table-column type="selection" width="30" align="center" :selectable="() => true" />
+				<el-table-column label="序号" align="center" type="index" width="60" />
+				<el-table-column label="行操作" align="center" width="140">
 						<template slot-scope="scope">
 							<el-button v-if="!scope.row.isEditing" size="mini" type="warning" icon="el-icon-edit" @click="handleRowEdit(scope.row)">编辑</el-button>
 							<el-button v-else size="mini" type="success" icon="el-icon-check" @click="handleRowSave(scope.row)">保存</el-button>
@@ -1472,64 +1468,64 @@ export default {
 							</el-col>
 						</template>
 					</el-table-column>
-					<el-table-column label="计量单位" prop="countingUnit" width="60" class-name="counting-unit-column">
-						<template #default="scope">
-							<el-radio-group v-model="scope.row.countingUnit" size="mini" :disabled="!scope.row.isEditing" @change="() => recalculateAll(scope)" class="vertical-radio-group">
-								<el-radio label="片" class="vertical-radio">片数</el-radio>
-								<el-radio label="其他" class="vertical-radio">其他</el-radio>
-							</el-radio-group>
-						</template>
-					</el-table-column>
-					<el-table-column label="厚度" prop="height" width="60">
-						<template #default="scope">
-							<el-input size="mini" v-model="scope.row.height" placeholder="请选择产品级别" disabled />
-						</template>
-					</el-table-column>
-					<el-table-column label="长度" prop="length" width="60">
-						<template #default="scope">
-							<el-input size="mini" v-model="scope.row.length" placeholder="请选择产品级别" disabled />
-						</template>
-					</el-table-column>
-					<el-table-column label="宽度" prop="width" width="60">
+				<el-table-column label="计量单位" prop="countingUnit" width="92" class-name="counting-unit-column">
+					<template #default="scope">
+						<el-radio-group v-model="scope.row.countingUnit" size="mini" :disabled="!scope.row.isEditing" @change="() => recalculateAll(scope)" class="horizontal-radio-group">
+							<el-radio label="片" class="horizontal-radio">片数</el-radio>
+							<el-radio label="其他" class="horizontal-radio">其他</el-radio>
+						</el-radio-group>
+					</template>
+				</el-table-column>
+				<el-table-column label="厚度" prop="height" width="90">
+					<template #default="scope">
+						<el-input size="mini" v-model="scope.row.height" placeholder="请选择产品级别" disabled />
+					</template>
+				</el-table-column>
+				<el-table-column label="长度" prop="length" width="90">
+					<template #default="scope">
+						<el-input size="mini" v-model="scope.row.length" placeholder="请选择产品级别" disabled />
+					</template>
+				</el-table-column>
+				<el-table-column label="宽度" prop="width" width="90">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.width" placeholder="请选择产品级别" disabled />
 						</template>
 					</el-table-column>
-					<el-table-column label="每包片数" prop="piecesPerPack" width="90">
-						<template #default="scope">
-							<el-input
-								size="mini"
-								v-model="scope.row.piecesPerPack"
-								placeholder="请输入每包片数"
-								:disabled="!scope.row.isEditing"
-								@input="val => handlePiecesInput(scope.row, 'piecesPerPack', val, () => calculatePieces(scope.row))"
-							/>
-						</template>
-					</el-table-column>
-					<el-table-column label="包数" prop="packs" width="90">
-						<template #default="scope">
-							<el-input
-								size="mini"
-								v-model="scope.row.packs"
-								:placeholder="scope.row.piecesPerPack <= 0 ? '请先输入每包片数' : '请输入包数'"
-								:disabled="!scope.row.isEditing || scope.row.piecesPerPack <= 0"
-								@input="val => handlePiecesInput(scope.row, 'packs', val, () => calculatePieces(scope.row))"
-							/>
-						</template>
-					</el-table-column>
-					<el-table-column label="出厂片数" prop="pieces" width="90">
-						<template #default="scope">
-							<el-input
-								size="mini"
-								v-model="scope.row.pieces"
-								placeholder="请输入出厂片数"
-								@change="() => handlePiecesChange(scope)"
-								@input="val => handlePiecesInput(scope.row, 'pieces', val, () => recalculateAll(scope))"
-								:disabled="!scope.row.isEditing"
-							/>
-						</template>
-					</el-table-column>
-					<el-table-column label="出厂单价" prop="price" width="90">
+				<el-table-column label="每包片数" prop="piecesPerPack" width="80">
+					<template #default="scope">
+						<el-input
+							size="mini"
+							v-model="scope.row.piecesPerPack"
+							placeholder="请输入每包片数"
+							:disabled="!scope.row.isEditing"
+							@input="val => handlePiecesInput(scope.row, 'piecesPerPack', val, () => calculatePieces(scope.row))"
+						/>
+					</template>
+				</el-table-column>
+				<el-table-column label="包数" prop="packs" width="60">
+					<template #default="scope">
+						<el-input
+							size="mini"
+							v-model="scope.row.packs"
+							:placeholder="scope.row.piecesPerPack <= 0 ? '请先输入每包片数' : '请输入包数'"
+							:disabled="!scope.row.isEditing || scope.row.piecesPerPack <= 0"
+							@input="val => handlePiecesInput(scope.row, 'packs', val, () => calculatePieces(scope.row))"
+						/>
+					</template>
+				</el-table-column>
+				<el-table-column label="出厂片数" prop="pieces" width="80">
+					<template #default="scope">
+						<el-input
+							size="mini"
+							v-model="scope.row.pieces"
+							placeholder="请输入出厂片数"
+							@change="() => handlePiecesChange(scope)"
+							@input="val => handlePiecesInput(scope.row, 'pieces', val, () => recalculateAll(scope))"
+							:disabled="!scope.row.isEditing"
+						/>
+					</template>
+				</el-table-column>
+				<el-table-column label="出厂单价" prop="price" width="80">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -1542,38 +1538,38 @@ export default {
 							/>
 						</template>
 					</el-table-column>
-					<el-table-column label="是否含税" prop="isIncludeTaxFactory" width="60" class-name="tax-column">
-						<template #default="scope">
-							<el-radio-group v-model="scope.row.isIncludeTaxFactory" size="mini" @change="() => recalculateAll(scope)" :disabled="!scope.row.isEditing" class="vertical-tax-radio-group">
-								<el-radio :label="1" class="vertical-tax-radio">是</el-radio>
-								<el-radio :label="0" class="vertical-tax-radio">否</el-radio>
-							</el-radio-group>
-						</template>
-					</el-table-column>
-					<el-table-column label="杂费" prop="sundryCost" width="60">
-						<template #default="scope">
-							<el-input
-								size="mini"
-								v-model.lazy="scope.row.sundryCost"
-								@input="val => handlePriceInput(scope.row, 'sundryCost', val, () => recalculateAll(scope))"
-								@focus="() => handlePriceFocus(scope.row, 'sundryCost')"
-								:disabled="!scope.row.isEditing"
-								@blur="() => formatPriceInput(scope.row, 'sundryCost', 2)"
-								placeholder="请输入杂费"
-							/>
-						</template>
-					</el-table-column>
-					<el-table-column label="出厂货款" prop="paymentFactory" width="100">
-						<template #default="scope">
-							<el-input size="mini" v-model="scope.row.paymentFactory" placeholder="自动计算" disabled />
-						</template>
-					</el-table-column>
-					<el-table-column label="卸货片数" prop="actualPieces" width="100">
-						<template #default="scope">
-							<el-input size="mini" v-model="scope.row.actualPieces" placeholder="请输入卸货片数" @input="() => recalculateAll(scope)" :disabled="!scope.row.isEditing" />
-						</template>
-					</el-table-column>
-					<el-table-column label="卸货价" prop="paymentUnload" width="70">
+				<el-table-column label="含税" prop="isIncludeTaxFactory" width="80" class-name="tax-column">
+					<template #default="scope">
+						<el-radio-group v-model="scope.row.isIncludeTaxFactory" size="mini" @change="() => recalculateAll(scope)" :disabled="!scope.row.isEditing" class="horizontal-tax-radio-group">
+							<el-radio :label="1" class="horizontal-tax-radio">是</el-radio>
+							<el-radio :label="0" class="horizontal-tax-radio">否</el-radio>
+						</el-radio-group>
+					</template>
+				</el-table-column>
+				<el-table-column label="杂费" prop="sundryCost" width="100">
+					<template #default="scope">
+						<el-input
+							size="mini"
+							v-model.lazy="scope.row.sundryCost"
+							@input="val => handlePriceInput(scope.row, 'sundryCost', val, () => recalculateAll(scope))"
+							@focus="() => handlePriceFocus(scope.row, 'sundryCost')"
+							:disabled="!scope.row.isEditing"
+							@blur="() => formatPriceInput(scope.row, 'sundryCost', 2)"
+							placeholder="请输入杂费"
+						/>
+					</template>
+				</el-table-column>
+				<el-table-column label="出厂货款" prop="paymentFactory" width="150">
+					<template #default="scope">
+						<el-input size="mini" v-model="scope.row.paymentFactory" placeholder="自动计算" disabled />
+					</template>
+				</el-table-column>
+				<el-table-column label="卸货片数" prop="actualPieces" width="120">
+					<template #default="scope">
+						<el-input size="mini" v-model="scope.row.actualPieces" placeholder="请输入卸货片数" @input="() => recalculateAll(scope)" :disabled="!scope.row.isEditing" />
+					</template>
+				</el-table-column>
+				<el-table-column label="卸货价" prop="paymentUnload" width="60">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -1586,112 +1582,112 @@ export default {
 							/>
 						</template>
 					</el-table-column>
-					<el-table-column label="是否含税" prop="isIncludeTaxSale" width="60" class-name="tax-column">
-						<template #default="scope">
-							<el-radio-group v-model="scope.row.isIncludeTaxSale" size="mini" @change="() => recalculateAll(scope)" :disabled="!scope.row.isEditing" class="vertical-tax-radio-group">
-								<el-radio :label="1" class="vertical-tax-radio">是</el-radio>
-								<el-radio :label="0" class="vertical-tax-radio">否</el-radio>
-							</el-radio-group>
-						</template>
-					</el-table-column>
-					<el-table-column label="总货款杂费" prop="paymentsWithSundry" width="120">
-						<template #default="scope">
-							<el-input
-								size="mini"
-								v-model.lazy="scope.row.paymentsWithSundry"
-								@input="val => handlePriceInput(scope.row, 'paymentsWithSundry', val, () => recalculateAll(scope))"
-								@focus="() => handlePriceFocus(scope.row, 'paymentsWithSundry')"
-								:disabled="!scope.row.isEditing"
-								@blur="() => formatPriceInput(scope.row, 'paymentsWithSundry', 2)"
-								placeholder="请输入总货款杂费"
-							/>
-						</template>
-					</el-table-column>
-					<el-table-column label="总货款" prop="payments" width="100">
-						<template #default="scope">
-							<el-input size="mini" v-model="scope.row.payments" placeholder="自动计算" disabled />
-						</template>
-					</el-table-column>
-					<el-table-column label="误差" prop="erro" width="70">
-						<template #default="scope">
-							<!-- 误差通常由产品级别带出，如果允许手动输入则需要触发计算 -->
-							<el-input size="mini" v-model="scope.row.erro" placeholder="请输入误差" @input="() => recalculateAll(scope)" :disabled="!scope.row.isEditing" />
-						</template>
-					</el-table-column>
-					<el-table-column label="吨位" prop="tonnage" width="70">
+				<el-table-column label="含税" prop="isIncludeTaxSale" width="60" class-name="tax-column">
+					<template #default="scope">
+						<el-radio-group v-model="scope.row.isIncludeTaxSale" size="mini" @change="() => recalculateAll(scope)" :disabled="!scope.row.isEditing" class="horizontal-tax-radio-group">
+							<el-radio :label="1" class="horizontal-tax-radio">是</el-radio>
+							<el-radio :label="0" class="horizontal-tax-radio">否</el-radio>
+						</el-radio-group>
+					</template>
+				</el-table-column>
+				<el-table-column label="杂费" prop="paymentsWithSundry" width="100">
+					<template #default="scope">
+						<el-input
+							size="mini"
+							v-model.lazy="scope.row.paymentsWithSundry"
+							@input="val => handlePriceInput(scope.row, 'paymentsWithSundry', val, () => recalculateAll(scope))"
+							@focus="() => handlePriceFocus(scope.row, 'paymentsWithSundry')"
+							:disabled="!scope.row.isEditing"
+							@blur="() => formatPriceInput(scope.row, 'paymentsWithSundry', 2)"
+							placeholder="请输入杂费"
+						/>
+					</template>
+				</el-table-column>
+				<el-table-column label="总货款" prop="payments" width="150">
+					<template #default="scope">
+						<el-input size="mini" v-model="scope.row.payments" placeholder="自动计算" disabled />
+					</template>
+				</el-table-column>
+				<el-table-column label="误差" prop="erro" width="60">
+					<template #default="scope">
+						<!-- 误差通常由产品级别带出，如果允许手动输入则需要触发计算 -->
+						<el-input size="mini" v-model="scope.row.erro" placeholder="请输入误差" @input="() => recalculateAll(scope)" :disabled="!scope.row.isEditing" />
+					</template>
+				</el-table-column>
+				<el-table-column label="吨位" prop="tonnage" width="100">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.tonnage" placeholder="自动计算" disabled />
 						</template>
 					</el-table-column>
-					<el-table-column label="陆运费单价" prop="landFreightPrice" width="150" v-if="isLand">
-						<template #default="scope">
-							<el-input
-								size="mini"
-								v-model.lazy="scope.row.landFreightPrice"
-								@input="val => handlePriceInput(scope.row, 'landFreightPrice', val, () => recalculateAll(scope))"
-								@focus="() => handlePriceFocus(scope.row, 'landFreightPrice')"
-								placeholder="请输入陆运费单价"
-								:disabled="!scope.row.isEditing"
-								@blur="() => formatPriceInput(scope.row, 'landFreightPrice', 2)"
-							/>
-						</template>
-					</el-table-column>
-					<el-table-column label="加费" prop="additionalFees" width="90" v-if="isLand">
-						<template #default="scope">
-							<el-input
-								size="mini"
-								v-model.lazy="scope.row.additionalFees"
-								@input="val => handlePriceInput(scope.row, 'additionalFees', val, () => recalculateAll(scope))"
-								@focus="() => handlePriceFocus(scope.row, 'additionalFees')"
-								:placeholder="!scope.row.landFreightPrice ? '请先完善陆运费单价' : '请输入加费'"
-								:disabled="!scope.row.isEditing"
-								@blur="() => formatPriceInput(scope.row, 'additionalFees', 2)"
-							/>
-						</template>
-					</el-table-column>
-					<el-table-column label="陆运费" prop="landFreight" width="90" v-if="isLand">
-						<template #default="scope">
-							<el-input size="mini" v-model="scope.row.landFreight" placeholder="自动计算" disabled />
-						</template>
-					</el-table-column>
-					<el-table-column label="海运费" prop="seaFreight" width="90" v-if="isSea">
-						<template #default="scope">
-							<el-input
-								size="mini"
-								v-model.lazy="scope.row.seaFreight"
-								@input="val => handlePriceInput(scope.row, 'seaFreight', val, () => recalculateAll(scope))"
-								@focus="() => handlePriceFocus(scope.row, 'seaFreight')"
-								placeholder="请输入海运费"
-								:disabled="!scope.row.isEditing"
-								@blur="() => formatPriceInput(scope.row, 'seaFreight', 2)"
-							/>
-						</template>
-					</el-table-column>
+				<el-table-column label="陆运费单价" prop="landFreightPrice" width="150" v-if="isLand">
+					<template #default="scope">
+						<el-input
+							size="mini"
+							v-model.lazy="scope.row.landFreightPrice"
+							@input="val => handlePriceInput(scope.row, 'landFreightPrice', val, () => recalculateAll(scope))"
+							@focus="() => handlePriceFocus(scope.row, 'landFreightPrice')"
+							placeholder="请输入陆运费单价"
+							:disabled="!scope.row.isEditing"
+							@blur="() => formatPriceInput(scope.row, 'landFreightPrice', 2)"
+						/>
+					</template>
+				</el-table-column>
+				<el-table-column label="加费" prop="additionalFees" width="60" v-if="isLand">
+					<template #default="scope">
+						<el-input
+							size="mini"
+							v-model.lazy="scope.row.additionalFees"
+							@input="val => handlePriceInput(scope.row, 'additionalFees', val, () => recalculateAll(scope))"
+							@focus="() => handlePriceFocus(scope.row, 'additionalFees')"
+							:placeholder="!scope.row.landFreightPrice ? '请先完善陆运费单价' : '请输入加费'"
+							:disabled="!scope.row.isEditing"
+							@blur="() => formatPriceInput(scope.row, 'additionalFees', 2)"
+						/>
+					</template>
+				</el-table-column>
+				<el-table-column label="陆运费" prop="landFreight" width="100" v-if="isLand">
+					<template #default="scope">
+						<el-input size="mini" v-model="scope.row.landFreight" placeholder="自动计算" disabled />
+					</template>
+				</el-table-column>
+				<el-table-column label="海运费" prop="seaFreight" width="100" v-if="isSea">
+					<template #default="scope">
+						<el-input
+							size="mini"
+							v-model.lazy="scope.row.seaFreight"
+							@input="val => handlePriceInput(scope.row, 'seaFreight', val, () => recalculateAll(scope))"
+							@focus="() => handlePriceFocus(scope.row, 'seaFreight')"
+							placeholder="请输入海运费"
+							:disabled="!scope.row.isEditing"
+							@blur="() => formatPriceInput(scope.row, 'seaFreight', 2)"
+						/>
+					</template>
+				</el-table-column>
 
-					<el-table-column label="总运费" prop="freight" width="90">
-						<template #default="scope">
-							<el-input size="mini" v-model="scope.row.freight" placeholder="自动计算" disabled />
-						</template>
-					</el-table-column>
-					<el-table-column label="其他费用" prop="otherCost" width="90">
-						<template #default="scope">
-							<el-input
-								size="mini"
-								v-model.lazy="scope.row.otherCost"
-								placeholder="请输入其他费用"
-								@input="val => handlePriceInput(scope.row, 'otherCost', val, () => recalculateAll(scope))"
-								@focus="() => handlePriceFocus(scope.row, 'otherCost')"
-								:disabled="!scope.row.isEditing"
-								@blur="() => formatPriceInput(scope.row, 'otherCost', 2)"
-							/>
-						</template>
-					</el-table-column>
-					<el-table-column label="利润" prop="profit" width="90">
-						<template #default="scope">
-							<el-input size="mini" v-model="scope.row.profit" placeholder="自动计算" disabled />
-						</template>
-					</el-table-column>
-					<el-table-column label="不含税利润" prop="profitNoTax" width="120">
+				<el-table-column label="总运费" prop="freight" width="100">
+					<template #default="scope">
+						<el-input size="mini" v-model="scope.row.freight" placeholder="自动计算" disabled />
+					</template>
+				</el-table-column>
+				<el-table-column label="其他费用" prop="otherCost" width="100">
+					<template #default="scope">
+						<el-input
+							size="mini"
+							v-model.lazy="scope.row.otherCost"
+							placeholder="请输入其他费用"
+							@input="val => handlePriceInput(scope.row, 'otherCost', val, () => recalculateAll(scope))"
+							@focus="() => handlePriceFocus(scope.row, 'otherCost')"
+							:disabled="!scope.row.isEditing"
+							@blur="() => formatPriceInput(scope.row, 'otherCost', 2)"
+						/>
+					</template>
+				</el-table-column>
+				<el-table-column label="利润" prop="profit" width="150">
+					<template #default="scope">
+						<el-input size="mini" v-model="scope.row.profit" placeholder="自动计算" disabled />
+					</template>
+				</el-table-column>
+				<el-table-column label="不含税利润" prop="profitNoTax" width="150">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.profitNoTax" placeholder="自动计算" disabled />
 						</template>
@@ -1740,67 +1736,256 @@ export default {
 							/>
 						</template>
 					</el-table-column>
-					<el-table-column label="计提厂家返利金额" prop="factoryRebateAmount" width="150">
+					<el-table-column label="计提厂家返利" prop="factoryRebateAmount" width="150">
 						<template #default="scope">
 							<el-input
 								size="mini"
 								v-model="scope.row.factoryRebateAmount"
 								@input="val => handlePriceInput(scope.row, 'factoryRebateAmount', val, () => {})"
 								@focus="() => handlePriceFocus(scope.row, 'factoryRebateAmount')"
-								placeholder="请输入计提厂家返利金额"
+								placeholder="请输入计提厂家返利"
 								:disabled="!scope.row.isEditing"
 								@blur="() => formatPriceInput(scope.row, 'factoryRebateAmount', 2)"
 							/>
 						</template>
 					</el-table-column>
-					<el-table-column label="计提厂家降价金额" prop="factoryDiscountAmount" width="150">
+					<el-table-column label="计提厂家降价" prop="factoryDiscountAmount" width="150">
 						<template #default="scope">
 							<el-input
 								size="mini"
 								v-model="scope.row.factoryDiscountAmount"
 								@input="val => handlePriceInput(scope.row, 'factoryDiscountAmount', val, () => {})"
 								@focus="() => handlePriceFocus(scope.row, 'factoryDiscountAmount')"
-								placeholder="请输入计提厂家降价金额"
+								placeholder="请输入计提厂家降价"
 								:disabled="!scope.row.isEditing"
 								@blur="() => formatPriceInput(scope.row, 'factoryDiscountAmount', 2)"
 							/>
 						</template>
 					</el-table-column>
 				</el-table>
-			</div>
-		</el-card>
+		</div>
 	</div>
 </template>
 
 <style scoped lang="scss">
-/* 表单间距调整 */
+// ============================================
+// 表单样式
+// ============================================
 ::v-deep .el-form {
 	.el-form-item {
 		margin-bottom: 8px !important; // 进一步缩小表单项间距
+
+		// 表单 label 样式 - 字体大小与输入框值一致（16px）
+		.el-form-item__label {
+			font-size: 16px !important; // 参考输入框值的字体大小
+			color: #000000 !important; // 保持黑色
+			font-weight: 600 !important; // 保持加粗
+			line-height: 24px !important; // 与输入框高度一致
+		}
+
+		// 运输方式checkbox样式 - 字体大小与表单label一致（16px）
+		.el-checkbox {
+			font-size: 16px !important; // 与表单label字体大小一致
+
+			.el-checkbox__label {
+				font-size: 16px !important; // 与表单label字体大小一致
+				color: #000000 !important; // 保持黑色
+				font-weight: normal !important; // 正常字重
+				padding-left: 8px !important; // 增加左边距，与checkbox保持适当距离
+			}
+
+			.el-checkbox__input {
+				.el-checkbox__inner {
+					width: 16px !important; // 增大checkbox尺寸
+					height: 16px !important; // 增大checkbox尺寸
+					border-radius: 2px !important; // 保持圆角
+
+					&:after {
+						width: 5px !important; // 增大对勾尺寸
+						height: 8px !important; // 增大对勾尺寸
+						left: 5px !important; // 调整对勾位置
+						top: 1px !important; // 调整对勾位置
+					}
+				}
+
+				// 选中状态
+				&.is-checked {
+					.el-checkbox__inner {
+						background-color: #409eff !important;
+						border-color: #409eff !important;
+					}
+				}
+
+				// 禁用状态
+				&.is-disabled {
+					.el-checkbox__inner {
+						background-color: #f5f7fa !important;
+						border-color: #e4e7ed !important;
+					}
+				}
+			}
+		}
 	}
 }
 
-/* 卡片内间距调整 */
-::v-deep .el-card__body {
-	padding: 12px !important; // 缩小卡片内边距
+// ============================================
+// 表格样式
+// ============================================
+::v-deep .el-table {
+	// 表格表头样式 - 字体大小与表单label一致（16px）
+	.el-table__header-wrapper {
+		.el-table__header {
+			th {
+				.cell {
+					font-size: 16px !important; // 与表单label字体大小一致
+					color: #000000 !important; // 保持黑色
+					font-weight: bold !important; // 保持加粗
+				}
+			}
+		}
+	}
+
+	// 固定列表头样式 - 与主表格表头保持一致
+	.el-table__fixed {
+		.el-table__fixed-header-wrapper {
+			.el-table__header {
+				th {
+					.cell {
+						font-size: 16px !important; // 与表单label字体大小一致
+						color: #000000 !important; // 保持黑色
+						font-weight: bold !important; // 保持加粗
+					}
+				}
+			}
+		}
+	}
+
+	// 右侧固定列表头样式
+	.el-table__fixed-right {
+		.el-table__fixed-header-wrapper {
+			.el-table__header {
+				th {
+					.cell {
+						font-size: 16px !important; // 与表单label字体大小一致
+						color: #000000 !important; // 保持黑色
+						font-weight: bold !important; // 保持加粗
+					}
+				}
+			}
+		}
+	}
 }
 
-/* 行间距调整 */
+// ============================================
+// 布局样式
+// ============================================
 ::v-deep .el-row {
 	margin-bottom: 4px !important; // 缩小行间距
 }
 
-/* 计量单位列垂直布局样式 */
+// ============================================
+// 表格列特殊样式
+// ============================================
+// 计量单位列水平布局样式
 ::v-deep .counting-unit-column {
 	.cell {
 		padding: 2px 4px !important; // 减少内边距
-		line-height: 1.1 !important;
-		white-space: normal !important; // 允许换行
+		line-height: 1.2 !important;
+		white-space: nowrap !important; // 不换行，保持水平布局
 		overflow: visible !important; // 显示溢出内容
 		height: auto !important; // 自动高度适应内容
+		text-align: center !important; // 居中对齐
 	}
 }
 
+// 含税列水平布局样式
+::v-deep .tax-column {
+	.cell {
+		padding: 2px 4px !important; // 减少内边距
+		line-height: 1.2 !important;
+		white-space: nowrap !important; // 不换行，保持水平布局
+		overflow: visible !important; // 显示溢出内容
+		height: auto !important; // 自动高度适应内容
+		text-align: center !important; // 居中对齐
+	}
+}
+
+// ============================================
+// 单选框组样式
+// ============================================
+// 计量单位单选框组水平布局（左边片数，右边其他）
+::v-deep .horizontal-radio-group {
+	display: flex !important;
+	flex-direction: row !important; // 水平排列
+	align-items: center !important;
+	justify-content: center !important;
+	gap: 4px !important; // 选项间距
+	width: 100% !important;
+	margin: 0 !important;
+
+	.horizontal-radio {
+		margin-right: 0 !important;
+		margin-bottom: 0 !important;
+		white-space: nowrap !important;
+
+		.el-radio__label {
+			font-size: 14px !important; // 字体大小
+			padding-left: 2px !important;
+		}
+
+		.el-radio__input {
+			.el-radio__inner {
+				width: 14px !important; // 增大单选框尺寸
+				height: 14px !important; // 增大单选框尺寸
+
+				&:after {
+					width: 4px !important; // 增大内部圆点尺寸
+					height: 4px !important; // 增大内部圆点尺寸
+					left: 5px !important; // 调整圆点位置以居中
+					top: 5px !important; // 调整圆点位置以居中
+				}
+			}
+		}
+	}
+}
+
+// 含税单选框组水平布局（左是右否）
+::v-deep .horizontal-tax-radio-group {
+	display: flex !important;
+	flex-direction: row !important; // 水平排列
+	align-items: center !important;
+	justify-content: center !important;
+	gap: 4px !important; // 选项间距
+	width: 100% !important;
+	margin: 0 !important;
+
+	.horizontal-tax-radio {
+		margin-right: 0 !important;
+		margin-bottom: 0 !important;
+		white-space: nowrap !important;
+
+		.el-radio__label {
+			font-size: 14px !important; // 字体大小
+			padding-left: 2px !important;
+		}
+
+		.el-radio__input {
+			.el-radio__inner {
+				width: 14px !important; // 增大单选框尺寸
+				height: 14px !important; // 增大单选框尺寸
+
+				&:after {
+					width: 4px !important; // 增大内部圆点尺寸
+					height: 4px !important; // 增大内部圆点尺寸
+					left: 5px !important; // 调整圆点位置以居中
+					top: 5px !important; // 调整圆点位置以居中
+				}
+			}
+		}
+	}
+}
+
+// 计量单位单选框组垂直布局（保留原有样式，以防其他地方使用）
 ::v-deep .vertical-radio-group {
 	display: flex !important;
 	flex-direction: column !important; // 强制垂直排列
@@ -1816,20 +2001,20 @@ export default {
 		width: 100% !important;
 
 		.el-radio__label {
-			font-size: 10px !important; // 进一步缩小字体适应空间
+			font-size: 14px !important; // 增大字体大小（从10px增加到14px）
 			padding-left: 3px !important;
 		}
 
 		.el-radio__input {
 			.el-radio__inner {
-				width: 9px !important; // 稍微缩小单选框
-				height: 9px !important;
+				width: 14px !important; // 增大单选框尺寸（从9px增加到14px）
+				height: 14px !important; // 增大单选框尺寸（从9px增加到14px）
 
 				&:after {
-					width: 2px !important;
-					height: 2px !important;
-					left: 2.5px !important;
-					top: 2.5px !important;
+					width: 4px !important; // 增大内部圆点尺寸（从2px增加到4px）
+					height: 4px !important; // 增大内部圆点尺寸（从2px增加到4px）
+					left: 5px !important; // 调整圆点位置以居中
+					top: 5px !important; // 调整圆点位置以居中
 				}
 			}
 		}
@@ -1841,17 +2026,7 @@ export default {
 	}
 }
 
-/* 含税列垂直布局样式 */
-::v-deep .tax-column {
-	.cell {
-		padding: 2px 4px !important; // 减少内边距
-		line-height: 1.1 !important;
-		white-space: normal !important; // 允许换行
-		overflow: visible !important; // 显示溢出内容
-		height: auto !important; // 自动高度适应内容
-	}
-}
-
+// 含税单选框组垂直布局
 ::v-deep .vertical-tax-radio-group {
 	display: flex !important;
 	flex-direction: column !important; // 强制垂直排列
@@ -1867,20 +2042,20 @@ export default {
 		width: 100% !important;
 
 		.el-radio__label {
-			font-size: 10px !important; // 进一步缩小字体适应空间
+			font-size: 14px !important; // 增大字体大小（从10px增加到14px）
 			padding-left: 3px !important;
 		}
 
 		.el-radio__input {
 			.el-radio__inner {
-				width: 9px !important; // 稍微缩小单选框
-				height: 9px !important;
+				width: 14px !important; // 增大单选框尺寸（从9px增加到14px）
+				height: 14px !important; // 增大单选框尺寸（从9px增加到14px）
 
 				&:after {
-					width: 2px !important;
-					height: 2px !important;
-					left: 2.5px !important;
-					top: 2.5px !important;
+					width: 4px !important; // 增大内部圆点尺寸（从2px增加到4px）
+					height: 4px !important; // 增大内部圆点尺寸（从2px增加到4px）
+					left: 5px !important; // 调整圆点位置以居中
+					top: 5px !important; // 调整圆点位置以居中
 				}
 			}
 		}
@@ -1892,7 +2067,9 @@ export default {
 	}
 }
 
-/* 保留编辑行样式 */
+// ============================================
+// 表格行状态样式
+// ============================================
 // 编辑行样式
 ::v-deep .editing-row {
 	background-color: rgba(121, 246, 164, 0.1);

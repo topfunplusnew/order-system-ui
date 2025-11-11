@@ -462,7 +462,6 @@
         </el-row>
         <br/>
 
-        <el-divider content-position="center">货物信息</el-divider>
         <el-row :gutter="10" class="mb8">
           <el-col :span="1.5">
             <!-- 添加按钮：始终可用 -->
@@ -491,7 +490,7 @@
         <!--        与订单一致 -->
         <el-table border size="mini" :data="visibleInventoryDetailList" :row-class-name="getRowClassName"
                   @selection-change="handleInventoryDetailSelectionChange" ref="inventoryDetail">
-          <el-table-column type="selection" width="50" align="center" :selectable="() => true"/>
+          <el-table-column type="selection" width="30" align="center" :selectable="() => true"/>
           <el-table-column label="序号" align="center" type="index" width="60"/>
           <el-table-column label="行操作" align="center" width="140">
             <template slot-scope="scope">
@@ -508,10 +507,10 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column label="供应商" width="220" align="center">
+          <el-table-column label="供应商" width="170" align="center">
             <template #default="scope">
               <el-row>
-                <el-col :span="12">
+                <el-col :span="20">
                   <el-input disabled size="mini" v-model="scope.row.supplier" placeholder="请选择"/>
                 </el-col>
                 <el-col :span="4">
@@ -544,7 +543,7 @@
 
           <el-table-column label="级别名称" prop="levelName" width="150">
             <template #default="scope">
-              <el-col :span="12">
+              <el-col :span="16">
                 <!-- 添加 disabled 属性 -->
                 <el-input disabled size="mini" v-model="scope.row.levelName" placeholder="请选择"/>
               </el-col>
@@ -575,35 +574,35 @@
               </el-col>
             </template>
           </el-table-column>
-          <el-table-column label="计量单位" prop="countingUnit" width="60" class-name="counting-unit-column">
+          <el-table-column label="计量单位" prop="countingUnit" width="92" class-name="counting-unit-column">
             <template #default="scope">
               <!-- 添加 disabled 属性 -->
               <el-radio-group v-model="scope.row.countingUnit" size="mini" :disabled="!scope.row.isEditing"
-                              @change="() => recalculateAll(scope)" class="vertical-radio-group">
-                <el-radio label="片" class="vertical-radio">片数</el-radio>
-                <el-radio label="其他" class="vertical-radio">其他</el-radio>
+                              @change="() => recalculateAll(scope)" class="horizontal-radio-group">
+                <el-radio label="片" class="horizontal-radio">片数</el-radio>
+                <el-radio label="其他" class="horizontal-radio">其他</el-radio>
               </el-radio-group>
             </template>
           </el-table-column>
-          <el-table-column label="厚度" prop="height" width="60">
+          <el-table-column label="厚度" prop="height" width="90">
             <template #default="scope">
               <!-- 添加 disabled 属性 -->
               <el-input size="mini" v-model="scope.row.height" placeholder="请选择产品级别" disabled/>
             </template>
           </el-table-column>
-          <el-table-column label="长度" prop="length" width="60">
+          <el-table-column label="长度" prop="length" width="90">
             <template #default="scope">
               <!-- 添加 disabled 属性 -->
               <el-input size="mini" v-model="scope.row.length" placeholder="请选择产品级别" disabled/>
             </template>
           </el-table-column>
-          <el-table-column label="宽度" prop="width" width="60">
+          <el-table-column label="宽度" prop="width" width="90">
             <template #default="scope">
               <!-- 添加 disabled 属性 -->
               <el-input size="mini" v-model="scope.row.width" placeholder="请选择产品级别" disabled/>
             </template>
           </el-table-column>
-          <el-table-column label="每包片数" prop="piecesPerPack" width="90">
+          <el-table-column label="每包片数" prop="piecesPerPack" width="80">
             <template #default="scope">
               <el-input
                   size="mini"
@@ -614,7 +613,7 @@
               />
             </template>
           </el-table-column>
-          <el-table-column label="包数" prop="packs" width="90">
+          <el-table-column label="包数" prop="packs" width="60">
             <template #default="scope">
               <el-input
                   size="mini"
@@ -626,7 +625,7 @@
             </template>
           </el-table-column>
 
-          <el-table-column label="出厂片数" prop="pieces" width="90">
+          <el-table-column label="出厂片数" prop="pieces" width="80">
             <template #default="scope">
               <el-input
                   size="mini"
@@ -639,7 +638,7 @@
             </template>
           </el-table-column>
 
-          <el-table-column label="出厂单价" prop="price" width="90">
+          <el-table-column label="出厂单价" prop="price" width="80">
             <template #default="scope">
               <el-input
                   size="mini"
@@ -652,17 +651,17 @@
               />
             </template>
           </el-table-column>
-          <el-table-column label="是否含税" prop="isIncludeTaxFactory" width="60" class-name="tax-column">
+          <el-table-column label="含税" prop="isIncludeTaxFactory" width="80" class-name="tax-column">
             <template #default="scope">
               <!-- 添加 disabled 属性 -->
               <el-radio-group v-model="scope.row.isIncludeTaxFactory" size="mini" @change="() => recalculateAll(scope)"
-                              :disabled="!scope.row.isEditing" class="vertical-tax-radio-group">
-                <el-radio :label="1" class="vertical-tax-radio">是</el-radio>
-                <el-radio :label="0" class="vertical-tax-radio">否</el-radio>
+                              :disabled="!scope.row.isEditing" class="horizontal-tax-radio-group">
+                <el-radio :label="1" class="horizontal-tax-radio">是</el-radio>
+                <el-radio :label="0" class="horizontal-tax-radio">否</el-radio>
               </el-radio-group>
             </template>
           </el-table-column>
-          <el-table-column label="杂费" prop="sundryCost" width="60">
+          <el-table-column label="杂费" prop="sundryCost" width="100">
             <template #default="scope">
               <el-input
                   size="mini"
@@ -675,7 +674,7 @@
               />
             </template>
           </el-table-column>
-          <el-table-column label="出厂货款" prop="paymentFactory" width="70">
+          <el-table-column label="出厂货款" prop="paymentFactory" width="150">
             <template #default="scope">
               <el-input size="mini" v-model="scope.row.paymentFactory" placeholder="自动计算" disabled/>
             </template>
@@ -705,35 +704,35 @@
               />
             </template>
           </el-table-column>
-          <el-table-column label="是否含税" prop="isIncludeTaxSale" width="60" class-name="tax-column">
+          <el-table-column label="含税" prop="isIncludeTaxSale" width="60" class-name="tax-column">
             <template #default="scope">
               <!-- 添加 disabled 属性 -->
               <el-radio-group v-model="scope.row.isIncludeTaxSale" size="mini" @change="() => recalculateAll(scope)"
-                              :disabled="!scope.row.isEditing" class="vertical-tax-radio-group">
-                <el-radio :label="1" class="vertical-tax-radio">是</el-radio>
-                <el-radio :label="0" class="vertical-tax-radio">否</el-radio>
+                              :disabled="!scope.row.isEditing" class="horizontal-tax-radio-group">
+                <el-radio :label="1" class="horizontal-tax-radio">是</el-radio>
+                <el-radio :label="0" class="horizontal-tax-radio">否</el-radio>
               </el-radio-group>
             </template>
           </el-table-column>
 
-          <el-table-column label="库存金额" prop="payments" width="70">
+          <el-table-column label="库存金额" prop="payments" width="150">
             <template #default="scope">
               <el-input size="mini" v-model="scope.row.payments" placeholder="自动计算" disabled/>
             </template>
           </el-table-column>
-          <el-table-column label="误差" prop="erro" width="70">
+          <el-table-column label="误差" prop="erro" width="60">
             <template #default="scope">
               <!-- 添加 disabled 属性 -->
               <el-input size="mini" v-model="scope.row.erro" placeholder="请输入误差" disabled/>
             </template>
           </el-table-column>
-          <el-table-column label="吨位" prop="tonnage" width="70">
+          <el-table-column label="吨位" prop="tonnage" width="100">
             <template #default="scope">
               <!-- 添加 disabled 属性 -->
               <el-input size="mini" v-model="scope.row.tonnage" placeholder="自动计算" disabled/>
             </template>
           </el-table-column>
-          <el-table-column label="陆运费单价" prop="landFreightPrice" width="90" v-if="isLand">
+          <el-table-column label="陆运费单价" prop="landFreightPrice" width="150" v-if="isLand">
             <template #default="scope">
               <el-input
                   size="mini"
@@ -746,7 +745,7 @@
               />
             </template>
           </el-table-column>
-          <el-table-column label="加费" prop="additionalFees" width="70">
+          <el-table-column label="加费" prop="additionalFees" width="60">
             <template #default="scope">
               <el-input
                   size="mini"
@@ -759,13 +758,13 @@
               />
             </template>
           </el-table-column>
-          <el-table-column label="陆运费" prop="landFreight" width="70" v-if="isLand">
+          <el-table-column label="陆运费" prop="landFreight" width="100" v-if="isLand">
             <template #default="scope">
               <!-- 添加 disabled 属性 -->
               <el-input size="mini" v-model="scope.row.landFreight" placeholder="自动计算" disabled/>
             </template>
           </el-table-column>
-          <el-table-column label="海运费" prop="seaFreight" width="70" v-if="isSea">
+          <el-table-column label="海运费" prop="seaFreight" width="100" v-if="isSea">
             <template #default="scope">
               <el-input
                   size="mini"
@@ -779,13 +778,13 @@
             </template>
           </el-table-column>
 
-          <el-table-column label="总运费" prop="freight" width="70">
+          <el-table-column label="总运费" prop="freight" width="100">
             <template #default="scope">
               <!-- 添加 disabled 属性 -->
               <el-input size="mini" v-model="scope.row.freight" placeholder="自动计算" disabled/>
             </template>
           </el-table-column>
-          <el-table-column label="其他费用" prop="otherCost" width="80">
+          <el-table-column label="其他费用" prop="otherCost" width="100">
             <template #default="scope">
               <el-input
                   size="mini"
@@ -798,12 +797,12 @@
               />
             </template>
           </el-table-column>
-          <el-table-column label="利润" prop="profit" width="70">
+          <el-table-column label="利润" prop="profit" width="150">
             <template #default="scope">
               <el-input size="mini" v-model="scope.row.profit" placeholder="自动计算" disabled/>
             </template>
           </el-table-column>
-          <el-table-column label="不含税利润" prop="profitNoTax" width="90">
+          <el-table-column label="不含税利润" prop="profitNoTax" width="150">
             <template #default="scope">
               <el-input size="mini" v-model="scope.row.profitNoTax" placeholder="自动计算" disabled/>
             </template>
@@ -2643,10 +2642,116 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.el-table {
-  .el-button {
-    margin: 0 5px;
-  }
+// ============================================
+// 表单样式
+// ============================================
+::v-deep .el-form {
+	.el-form-item {
+		margin-bottom: 8px !important; // 进一步缩小表单项间距
+
+		// 表单 label 样式 - 字体大小与输入框值一致（16px）
+		.el-form-item__label {
+			font-size: 16px !important; // 参考输入框值的字体大小
+			color: #000000 !important; // 保持黑色
+			font-weight: 600 !important; // 保持加粗
+			line-height: 24px !important; // 与输入框高度一致
+		}
+
+		// 运输方式checkbox样式 - 字体大小与表单label一致（16px）
+		.el-checkbox {
+			font-size: 16px !important; // 与表单label字体大小一致
+
+			.el-checkbox__label {
+				font-size: 16px !important; // 与表单label字体大小一致
+				color: #000000 !important; // 保持黑色
+				font-weight: normal !important; // 正常字重
+				padding-left: 8px !important; // 增加左边距，与checkbox保持适当距离
+			}
+
+			.el-checkbox__input {
+				.el-checkbox__inner {
+					width: 16px !important; // 增大checkbox尺寸
+					height: 16px !important; // 增大checkbox尺寸
+					border-radius: 2px !important; // 保持圆角
+
+					&:after {
+						width: 5px !important; // 增大对勾尺寸
+						height: 8px !important; // 增大对勾尺寸
+						left: 5px !important; // 调整对勾位置
+						top: 1px !important; // 调整对勾位置
+					}
+				}
+
+				// 选中状态
+				&.is-checked {
+					.el-checkbox__inner {
+						background-color: #409eff !important;
+						border-color: #409eff !important;
+					}
+				}
+
+				// 禁用状态
+				&.is-disabled {
+					.el-checkbox__inner {
+						background-color: #f5f7fa !important;
+						border-color: #e4e7ed !important;
+					}
+				}
+			}
+		}
+	}
+}
+
+// ============================================
+// 表格样式
+// ============================================
+::v-deep .el-table {
+	// 表格表头样式 - 字体大小与表单label一致（16px）
+	.el-table__header-wrapper {
+		.el-table__header {
+			th {
+				.cell {
+					font-size: 16px !important; // 与表单label字体大小一致
+					color: #000000 !important; // 保持黑色
+					font-weight: bold !important; // 保持加粗
+				}
+			}
+		}
+	}
+
+	// 固定列表头样式 - 与主表格表头保持一致
+	.el-table__fixed {
+		.el-table__fixed-header-wrapper {
+			.el-table__header {
+				th {
+					.cell {
+						font-size: 16px !important; // 与表单label字体大小一致
+						color: #000000 !important; // 保持黑色
+						font-weight: bold !important; // 保持加粗
+					}
+				}
+			}
+		}
+	}
+
+	// 右侧固定列表头样式
+	.el-table__fixed-right {
+		.el-table__fixed-header-wrapper {
+			.el-table__header {
+				th {
+					.cell {
+						font-size: 16px !important; // 与表单label字体大小一致
+						color: #000000 !important; // 保持黑色
+						font-weight: bold !important; // 保持加粗
+					}
+				}
+			}
+		}
+	}
+
+	.el-button {
+		margin: 0 5px;
+	}
 }
 
 ::v-deep .editing-row {
@@ -2706,82 +2811,98 @@ export default {
   font-style: italic;
 }
 
-/* 计量单位列垂直布局样式 */
+/* 计量单位列水平布局样式 */
 ::v-deep .counting-unit-column {
   .cell {
     padding: 2px 4px !important;
-    line-height: 1.1 !important;
-    white-space: normal !important;
+    line-height: 1.2 !important;
+    white-space: nowrap !important; // 不换行，保持水平布局
     overflow: visible !important;
     height: auto !important;
+    text-align: center !important; // 居中对齐
   }
 }
 
-::v-deep .vertical-radio-group {
+// 计量单位单选框组水平布局（左边片数，右边其他）
+::v-deep .horizontal-radio-group {
   display: flex !important;
-  flex-direction: column !important;
-  align-items: flex-start !important;
-  gap: 1px !important;
+  flex-direction: row !important; // 水平排列
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 4px !important; // 选项间距
   width: 100% !important;
   margin: 0 !important;
 
-  .vertical-radio {
+  .horizontal-radio {
     margin-right: 0 !important;
-    margin-bottom: 1px !important;
+    margin-bottom: 0 !important;
     white-space: nowrap !important;
-    width: 100% !important;
 
     .el-radio__label {
-      font-size: 11px !important;
-      padding-left: 4px !important;
+      font-size: 14px !important; // 字体大小
+      padding-left: 2px !important;
     }
 
     .el-radio__input {
-      margin-right: 2px !important;
-    }
+      .el-radio__inner {
+        width: 14px !important; // 增大单选框尺寸
+        height: 14px !important; // 增大单选框尺寸
 
-    &:last-child {
-      margin-bottom: 0 !important;
+        &:after {
+          width: 4px !important; // 增大内部圆点尺寸
+          height: 4px !important; // 增大内部圆点尺寸
+          left: 5px !important; // 调整圆点位置以居中
+          top: 5px !important; // 调整圆点位置以居中
+        }
+      }
     }
   }
 }
 
-/* 含税列垂直布局样式 */
+/* 含税列水平布局样式 */
 ::v-deep .tax-column {
   .cell {
     padding: 2px 4px !important;
-    line-height: 1.1 !important;
-    white-space: normal !important;
+    line-height: 1.2 !important;
+    white-space: nowrap !important; // 不换行，保持水平布局
     overflow: visible !important;
     height: auto !important;
+    text-align: center !important; // 居中对齐
   }
 }
 
-::v-deep .vertical-tax-radio-group {
+// 含税单选框组水平布局（左是右否）
+::v-deep .horizontal-tax-radio-group {
   display: flex !important;
-  flex-direction: column !important;
-  align-items: flex-start !important;
-  gap: 1px !important;
+  flex-direction: row !important; // 水平排列
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 4px !important; // 选项间距
   width: 100% !important;
   margin: 0 !important;
 
-  .vertical-tax-radio {
+  .horizontal-tax-radio {
     margin-right: 0 !important;
-    margin-bottom: 1px !important;
+    margin-bottom: 0 !important;
     white-space: nowrap !important;
-    width: 100% !important;
 
     .el-radio__label {
-      font-size: 11px !important;
-      padding-left: 4px !important;
+      font-size: 14px !important; // 字体大小
+      padding-left: 2px !important;
     }
 
     .el-radio__input {
-      margin-right: 2px !important;
-    }
+      .el-radio__inner {
+        width: 14px !important; // 增大单选框尺寸
+        height: 14px !important; // 增大单选框尺寸
 
-    &:last-child {
-      margin-bottom: 0 !important;
+        &:after {
+          width: 4px !important; // 增大内部圆点尺寸
+          height: 4px !important; // 增大内部圆点尺寸
+          left: 5px !important; // 调整圆点位置以居中
+          top: 5px !important; // 调整圆点位置以居中
+        }
+      }
     }
   }
 }
