@@ -208,8 +208,7 @@ function calculateTotalFreight(row, isSea) {
 	// 使用完整精度值进行计算
 	const landFreight = getRawValue(row, 'landFreight'); // 使用陆运费的完整精度值
 	const seaFreight = isSea ? getRawValue(row, 'seaFreight') : 0; // 使用海运费的完整精度值
-	const additionalFees = getRawValue(row, 'additionalFees'); // 使用加费的完整精度值
-	const rawFreight = landFreight + seaFreight + additionalFees;
+	const rawFreight = landFreight + seaFreight;
 	// 保存完整精度值用于后续计算
 	setCalculatedValue(row, 'freight', rawFreight, 2);
 }

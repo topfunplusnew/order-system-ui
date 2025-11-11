@@ -16,8 +16,6 @@ import {
 	handlePriceInput as utilHandlePriceInput,
 	formatPriceInput as utilFormatPriceInput,
 	handlePriceFocus as utilHandlePriceFocus,
-	parseInputValue,
-	formatValueForDisplay,
 	formatPiecesValue,
 	handlePiecesInput as utilHandlePiecesInput,
 	getRowClassName as utilGetRowClassName,
