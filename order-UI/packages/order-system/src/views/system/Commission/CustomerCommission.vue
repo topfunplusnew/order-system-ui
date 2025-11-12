@@ -540,12 +540,7 @@ export default {
 					comments: ''
 				});
 			});
-
-			// 由于是批量申请，只需要一条申请记录
-			this.applications = [this.applications[0]];
-
-			// 深拷贝数据并显示申请列表对话框
-			this.localApplications = JSON.parse(JSON.stringify(this.applications));
+			this.localApplications = _.cloneDeep(applications);
 			this.onceApplyVisible = true;
 		},
 		// 刷新表格（保留当前时间范围）
