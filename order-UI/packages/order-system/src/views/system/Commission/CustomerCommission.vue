@@ -540,7 +540,7 @@ export default {
 					comments: ''
 				});
 			});
-			this.localApplications = _.cloneDeep(applications);
+			this.localApplications = _.cloneDeep(this.applications);
 			this.onceApplyVisible = true;
 		},
 		// 刷新表格（保留当前时间范围）
