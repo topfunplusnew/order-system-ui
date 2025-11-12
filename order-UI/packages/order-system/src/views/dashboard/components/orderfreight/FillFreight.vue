@@ -19,7 +19,7 @@ export default {
 			visible: false,
 			form: {},
 			rules: {
-				// 金额校验：必须为数值，最多两位小数，且大于 0
+				// 金额校验：必须为数值，最多两位小数，允许负数
 				moneyAmount: [
 					{ required: true, message: '请输入金额', trigger: 'blur' },
 					{
@@ -28,11 +28,12 @@ export default {
 								return callback(new Error('请输入金额'));
 							}
 							const str = String(value).trim();
-							if (!/^\d+(?:\.\d{1,2})?$/.test(str)) {
-								return callback(new Error('请输入有效金额，最多两位小数'));
+							// 允许负数、小数，最多两位小数
+							if (!/^-?\d+(?:\.\d{1,2})?$/.test(str)) {
+								return callback(new Error('请输入有效金额，最多两位小数，可输入负数'));
 							}
-							if (Number(str) <= 0) {
-								return callback(new Error('金额必须大于 0'));
+							if (Number(str) === 0) {
+								return callback(new Error('金额不能为 0'));
 							}
 							return callback();
 						},
@@ -187,23 +188,43 @@ export default {
 			this.form.otherBankName = val.bankName;
 			this.form.otherAcountsName = val.acountsName;
 		},
-		// 金额输入过滤：保留数字和小数点，且最多两位小数
+		// 金额输入过滤：保留数字、小数点和负号，且最多两位小数
 		onMoneyInput(val) {
 			if (val === null || val === undefined) return;
 			let s = String(val);
-			// 删除非法字符（保留数字和小数点）
-			s = s.replace(/[^\d.]/g, '');
+			// 删除非法字符（保留数字、小数点和负号）
+			s = s.replace(/[^\d.-]/g, '');
+			// 只允许一个负号，且必须在开头
+			if (s.includes('-')) {
+				const minusCount = (s.match(/-/g) || []).length;
+				if (minusCount > 1 || (s.indexOf('-') !== 0 && s.includes('-'))) {
+					// 如果负号不在开头或有多个负号，只保留开头的负号
+					s = s.replace(/-/g, '');
+					if (val < 0) {
+						s = '-' + s;
+					}
+				}
+			}
 			// 只允许一个小数点
 			s = s.replace(/(\.+)\./g, '$1');
 			// 限制两位小数
-			if (/^\d+\.\d{3,}$/.test(s)) {
-				s = s.replace(/^(\d+\.\d{2}).*$/, '$1');
+			if (/^-?\d+\.\d{3,}$/.test(s)) {
+				s = s.replace(/^(-?\d+\.\d{2}).*$/, '$1');
 			}
-			// 去除前导多余的 0（保留 0 或 0.xx）
-			if (/^0\d+/.test(s)) {
-				s = s.replace(/^0+(?=\d)/, '0');
+			// 去除前导多余的 0（保留 0 或 0.xx 或 -0.xx），但保留负号
+			if (/^-?0\d+/.test(s) && !s.startsWith('-0.')) {
+				if (s.startsWith('-')) {
+					s = s.replace(/^-0+(?=\d)/, '-0');
+				} else {
+					s = s.replace(/^0+(?=\d)/, '0');
+				}
 			}
-			this.form.moneyAmount = s === '' ? null : Number(s);
+			// 如果只有负号，保留为空
+			if (s === '-' || s === '') {
+				this.form.moneyAmount = null;
+			} else {
+				this.form.moneyAmount = Number(s);
+			}
 		},
 		handleCommitBackCars(val) {
 			this.form.carNo = val.dictLabel;

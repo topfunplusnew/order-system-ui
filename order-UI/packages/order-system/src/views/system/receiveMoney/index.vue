@@ -1084,6 +1084,7 @@ export default {
 				params.startTime = null;
 				params.endTime = null;
 			}
+			params.receiveType = this.queryParams.receiveType?.join('-')
 
 			this.download('system/receiveMoney/export', params, `receiveMoney_${new Date().getTime()}.xlsx`);
 		}
