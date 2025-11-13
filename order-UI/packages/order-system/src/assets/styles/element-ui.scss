@@ -208,11 +208,11 @@
 .el-form {
   // 表单项间距调小
   .el-form-item {
-    margin-bottom: 0; // 从16px进一步缩小到12px
+    margin-bottom: 5px; // 从16px进一步缩小到12px
 
     // 标签字体大小调小
     .el-form-item__label {
-      font-size: 20px !important; // 字体大小改为20px
+      font-size: 18px !important; // 字体大小改为20px
       color: #000000 !important; // 字体颜色改为黑色
       font-weight: 600 !important; // 加粗
       line-height: 24px; // 对应输入框高度，与输入框高度一致
@@ -227,7 +227,7 @@
 
     // 错误信息字体调小
     .el-form-item__error {
-      font-size: 10px; // 从11px缩小到10px
+      font-size: 12px; // 从11px缩小到10px
       padding-top: 1px; // 进一步减少上边距
     }
   }

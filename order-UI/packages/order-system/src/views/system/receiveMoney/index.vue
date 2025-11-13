@@ -28,14 +28,14 @@
 		<el-row :gutter="10" class="mb8">
 			<right-toolbar :show-search.sync="showSearch" :columns="columns" @queryTable="getList">
 				<template #left>
-					<rl-row>
+					<el-row>
 						<el-col :span="1.5">
 							<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
 						</el-col>
 						<el-col :span="1.5">
 							<el-button v-hasPermi="['system:receivemoney:add']" type="danger" size="mini" @click="handleAdd">新增收款信息</el-button>
 						</el-col>
-					</rl-row>
+					</el-row>
 				</template>
 				<template #print>
 					<el-col :span="1.5">
@@ -143,7 +143,7 @@
 								:select-type="form.selfBankCardType"
 								:external-bankacceptance-info="form.params.bankacceptance"
 								@updateSelectedType="changeSelfBankType"
-								@updateBankAcceptance="value => (form.params.bankacceptance = value)"
+								@updateBankAcceptance="handleBankAcceptanceUpdate"
 								style="width: 100%"
 							/>
 						</el-form-item>
@@ -281,7 +281,7 @@
 import { addReceiveMoney, delReceiveMoney, listReceiveMoney } from '@/api/system/receiveMoney';
 import { listTableEditMessage } from '@/api/system/tableEditMessage';
 import SearchOption from '@/components/SearchOption.vue';
-import { listBankAccount } from '@/api/system/bankAccount';
+import { listBankAccount, getBankAccount } from '@/api/system/bankAccount';
 import { excludeParams } from '@/api/tool/exclude';
 import { addReason } from '@/api/system/user';
 import { BankAcceptanceType, PayType, PAYMENT_TARGET_TYPE, TableName, PUBLIC_DICT_TYPE } from '@/api/tool/enums';
@@ -559,11 +559,59 @@ export default {
 		listCars,
 		listCompany,
 		listBankAccount,
+		getBankAccount,
 		updateReceiveMoney() {
 			return updateReceiveMoney;
 		},
 		getReceiveMoney() {
 			return getReceiveMoney;
+		},
+		// 处理承兑信息更新，自动填充我方户名和对方户名
+		handleBankAcceptanceUpdate(acceptanceData) {
+			// 保存承兑信息
+			this.form.params.bankacceptance = acceptanceData;
+			
+			// 如果没有承兑信息，直接返回
+			if (!acceptanceData) {
+				return;
+			}
+			
+			// 填充我方承兑账户信息（我方户名、账号、开户行）
+			if (acceptanceData.billAccountId) {
+				getBankAccount(acceptanceData.billAccountId)
+					.then(response => {
+						if (response.data) {
+							const bankInfo = response.data;
+							this.form.selfAcountsName = bankInfo.acountsName;
+							this.form.selfBankNo = bankInfo.bankNo;
+							this.form.selfBankName = bankInfo.bankName;
+							this.form.selfBankID = bankInfo.id;
+						}
+					})
+					.catch(error => {
+						console.error('获取我方承兑账户信息失败:', error);
+					});
+			}
+			
+			// 填充背书人/被背书人信息（对方户名、账号、开户行）
+			if (acceptanceData.endorser) {
+				getBankAccount(acceptanceData.endorser)
+					.then(response => {
+						if (response.data) {
+							const bankInfo = response.data;
+							this.form.otherAcountsName = bankInfo.acountsName;
+							this.form.otherBankNo = bankInfo.bankNo;
+							this.form.otherBankName = bankInfo.bankName;
+							// 如果对方公司信息存在，也填充
+							if (bankInfo.companyId) {
+								this.form.companyId = bankInfo.companyId;
+							}
+						}
+					})
+					.catch(error => {
+						console.error('获取背书人/被背书人账户信息失败:', error);
+					});
+			}
 		},
 		/** 查询收款信息列表 */
 		getList() {
