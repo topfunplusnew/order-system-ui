@@ -83,7 +83,8 @@ export var mixin_business_trip_add = {
 		// 新增操作
 		handleAdd() {
 			this.reset();
-			this.form.employee = this.trueName;
+			// 不再固定设置当前用户，由用户通过SearchOption组件选择报销人
+			// this.form.employee = this.trueName;
 			this.open = true;
 			this.title = '添加出差';
 			this.UUID = getUuid();

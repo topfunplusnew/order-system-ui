@@ -76,15 +76,7 @@
 			<el-table-column v-if="columns[7].visible" label="备注" align="center" prop="comments" />
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="260px" fixed="right">
 				<template slot-scope="scope">
-					<el-button
-						:disabled="scope.row.checkState === PAYMENT_APPLY_STATE.V1.CHECKED"
-						v-hasPermi="['system:businesstrip:edit']"
-						size="mini"
-						type="primary"
-						@click="handleUpdate(scope.row)"
-					>
-						修改
-					</el-button>
+					<el-button :disabled="scope.row.checkState === PAYMENT_APPLY_STATE.V1.CHECKED" v-hasPermi="['system:businesstrip:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
 					<el-button v-hasPermi="['system:businesstrip:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
@@ -99,7 +91,33 @@
 					<el-form ref="form" :model="form" :rules="rules" label-width="120px">
 						<el-col :span="12">
 							<el-form-item label="报销人" prop="employee">
-								<el-input v-model="form.employee" disabled placeholder="请输入报销人" />
+								<el-row>
+									<el-col :span="20">
+										<el-input v-model="form.employee" disabled placeholder="请选择" />
+									</el-col>
+									<el-col :span="4">
+										<SearchOption :limit-info="{}" :get-data="listUser" query-label="用户名" :query-name="queryEmployee" query-info="userName" @commitBack="handleCommitBackEmployee" @update:queryName="handleQueryEmployee">
+											<template #table-columns>
+												<el-table-column label="用户名" prop="userName" :show-overflow-tooltip="true" />
+												<el-table-column label="真实姓名" prop="trueName" :show-overflow-tooltip="true" />
+												<el-table-column label="岗位" prop="postName" :show-overflow-tooltip="true" />
+												<el-table-column label="手机号码" prop="phonenumber" width="120" />
+												<el-table-column label="在职状态" prop="state" width="120" />
+												<el-table-column label="入职时间" prop="startDate" width="120" />
+												<el-table-column label="身份证号码" prop="iDCard" width="120" />
+												<el-table-column label="性别" prop="sex" width="120" />
+												<el-table-column label="出生日期" prop="birthday" width="120" />
+												<el-table-column label="民族" prop="nation" width="120" />
+												<el-table-column label="政治面貌" prop="politicalStatus" width="120" />
+												<el-table-column label="婚姻状况" prop="maritalStatus" width="120" />
+												<el-table-column label="户籍地址" prop="domicileAddress" width="120" />
+												<el-table-column label="居住地址" prop="residentialAddress" width="120" />
+												<el-table-column label="紧急联系人" prop="relationPerson" width="120" />
+												<el-table-column label="紧急联系人电话" prop="relationPersonTel" width="120" />
+											</template>
+										</SearchOption>
+									</el-col>
+								</el-row>
 							</el-form-item>
 							<el-form-item label="部门" prop="deptName">
 								<treeselect v-model="form.deptName" :options="deptOptions" :normalizer="normalizer" placeholder="请选择部门" />
@@ -157,15 +175,7 @@
 											<el-input size="mini" disabled v-model="scope.row.carNo" />
 										</el-col>
 										<el-col :span="4">
-											<SearchOption
-												:limit-info="{}"
-												:get-data="listCarApply"
-												:query-name="queryCarApply"
-												query-info="carNo"
-												query-label="车牌"
-												@commitBack="value => handleCommitBackCarApply(value, scope)"
-												@update:queryName="handleQueryCarApply"
-											>
+											<SearchOption :limit-info="{}" :get-data="listCarApply" :query-name="queryCarApply" query-info="carNo" query-label="车牌" @commitBack="value => handleCommitBackCarApply(value, scope)" @update:queryName="handleQueryCarApply">
 												<template #table-columns>
 													<el-table-column label="申请人" prop="applyUser" />
 													<el-table-column label="部门" prop="department" />
@@ -237,17 +247,7 @@
 		</el-dialog>
 
 		<!--    付款申请弹窗-->
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="提示"
-			:visible.sync="applyForPaymentDialogVisible"
-			width="60%"
-		>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="提示" :visible.sync="applyForPaymentDialogVisible" width="60%">
 			<keep-alive>
 				<ApplyPayment :table-name="TableName.BUSINESS_TRIP" :t-i-d="tID" :need-info="{}" :need-money="needMoney" @changeOpen="changePaymentApplyInfoVisible" />
 			</keep-alive>
@@ -294,6 +294,7 @@ import SearchOption from '../../../components/SearchOption.vue';
 import { common_dialog } from '../../dashboard/mixins/common/common_dialog';
 import { listVehicles } from '@/api/system/vehicles';
 import COMPANY_CAR from '@/components/NeedToShow/COMPANY_CAR.vue';
+import { listUser } from '@/api/system/user';
 
 export default {
 	name: 'BusinessTrip',
@@ -422,7 +423,9 @@ export default {
 
 			// 未审核通过车辆列表相关
 			notPassedCarDialogVisible: false,
-			notPassedCarList: []
+			notPassedCarList: [],
+			// 报销人搜索字段
+			queryEmployee: ''
 		};
 	},
 	// 展示与隐藏
@@ -465,6 +468,16 @@ export default {
 	},
 	methods: {
 		listCarApply,
+		listUser,
+		// 搜索报销人信息的回调
+		handleQueryEmployee(val) {
+			this.queryEmployee = val;
+		},
+		handleCommitBackEmployee(val) {
+			// 优先使用trueName，如果为空或Null则回退使用userName
+			this.form.employee = val.trueName ? val.trueName : val.userName;
+			this.form.employeeID = val.userId;
+		},
 
 		/**
 		 * **状态映射函数：版本适配层**
