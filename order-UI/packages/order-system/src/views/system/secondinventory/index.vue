@@ -206,7 +206,7 @@
 				<el-table border size="mini" :data="visibleInventoryDetailList" :row-class-name="getRowClassName" @selection-change="handleInventoryDetailSelectionChange" ref="inventoryDetail">
 					<el-table-column type="selection" width="30" align="center" :selectable="() => true" fixed="left" />
 					<el-table-column label="序号" align="center" type="index" width="60" fixed="left" />
-					<el-table-column label="行操作" align="center" width="140">
+					<el-table-column label="行操作" align="center" width="200">
 						<template slot-scope="scope">
 							<div>
 								<el-button v-if="!scope.row.isEditing" size="mini" type="warning" icon="el-icon-edit" @click="handleRowEdit(scope.row)">编辑</el-button>

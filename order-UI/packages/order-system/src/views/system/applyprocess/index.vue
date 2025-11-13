@@ -220,7 +220,7 @@ export default {
 			// 传递给子组件的参数
 			needInfo: {},
 			extraInformation: {},
-			// 生成付款弹窗
+			// 付款弹窗
 			generatePaymentVisible: false,
 			generatePaymentForm: {
 				fundsDate: null,
@@ -625,7 +625,7 @@ export default {
 				})
 				.catch(() => {});
 		},
-		// 生成付款
+		// 付款
 		handleGeneratePayment(row) {
 			// 重置表单
 			this.generatePaymentForm = {
@@ -666,7 +666,7 @@ export default {
 				}
 			});
 		},
-		// 提交生成付款
+		// 提交付款
 		submitGeneratePayment() {
 			// 校验付款类型
 			if (!this.generatePaymentForm.payType) {
@@ -714,15 +714,15 @@ export default {
 
 			addPayment(formData)
 				.then(res => {
-					this.$modal.msgSuccess('生成付款成功');
+					this.$modal.msgSuccess('付款成功');
 					this.cancelGeneratePayment();
 					this.getAuditList();
 				})
 				.catch(error => {
-					this.$message.error(error.msg || '生成付款失败');
+					this.$message.error(error.msg || '付款失败');
 				});
 		},
-		// 取消生成付款
+		// 取消付款
 		cancelGeneratePayment() {
 			this.generatePaymentVisible = false;
 			this.generatePaymentForm = {
@@ -758,7 +758,7 @@ export default {
 				this.$refs.generatePaymentTransactionHistoryUpload.clearUploadedFiles();
 			}
 		},
-		// 处理生成付款表单的附件更新
+		// 处理付款表单的附件更新
 		handleGeneratePaymentAttachmentFilesUpdated(uploadParams) {
 			if (uploadParams && uploadParams.params && uploadParams.params.attachmentIds) {
 				if (!this.generatePaymentForm.params) {
@@ -940,7 +940,7 @@ export default {
 			<el-table-column v-if="columns[11].visible" label="操作" show-overflow-tooltip align="center" fixed="right" width="260">
 				<template slot-scope="scope">
 					<el-button type="text" size="mini" @click="handleCheckApplyInfo(scope.row)">查看</el-button>
-					<el-button type="text" size="mini" @click="handleGeneratePayment(scope.row)">生成付款</el-button>
+					<el-button type="text" size="mini" @click="handleGeneratePayment(scope.row)">付款</el-button>
 					<el-button v-if="isCurrentUserAuditor(scope.row)" type="text" size="mini" style="color: #f56c6c" @click="handleDeletePaymentApply(scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
@@ -1019,8 +1019,8 @@ export default {
 			</keep-alive>
 		</el-dialog>
 
-		<!-- 生成付款弹窗 -->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="生成付款" :visible.sync="generatePaymentVisible" width="1000px" append-to-body>
+		<!-- 付款弹窗 -->
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="付款" :visible.sync="generatePaymentVisible" width="1000px" append-to-body>
 			<el-form ref="generatePaymentFormRef" :model="generatePaymentForm" label-width="170px">
 				<el-row :gutter="40">
 					<!-- 左列 -->

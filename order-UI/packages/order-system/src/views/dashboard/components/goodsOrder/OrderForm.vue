@@ -1324,7 +1324,7 @@ export default {
 			<el-table border size="mini" :data="visibleOrderDetailList" show-summary :summary-method="getSummary" :row-class-name="getRowClassName" @selection-change="handleOrderdetailSelectionChange" ref="orderdetail">
 				<el-table-column type="selection" width="30" align="center" :selectable="() => true" />
 				<el-table-column label="序号" align="center" type="index" width="60" fixed="left" />
-				<el-table-column label="行操作" align="center" width="140" fixed="left">
+				<el-table-column label="行操作" align="center" width="200" fixed="left">
 					<template slot-scope="scope">
 						<el-button v-if="!scope.row.isEditing" size="mini" type="warning" icon="el-icon-edit" @click="handleRowEdit(scope.row)">编辑</el-button>
 						<el-button v-else size="mini" type="success" icon="el-icon-check" @click="handleRowSave(scope.row)">保存</el-button>
