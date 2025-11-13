@@ -62,7 +62,7 @@
 					<StateTag :state-title="scope.row.isReimburse === 0 ? '否' : '是'" :state-mapper="{ 0: '否', 2: '是' }" />
 				</template>
 			</el-table-column>
-			<el-table-column label="付款状态" align="center" prop="checkState" width="160px">
+			<el-table-column label="付款状态" align="center" prop="checkState" width="200">
 				<template slot-scope="scope">
 					<PaymentFlag :business-object="scope.row">
 						<template #extra="{ status, type }">
