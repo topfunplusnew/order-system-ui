@@ -925,10 +925,10 @@ export default {
           <div style="padding: 10px">
             <el-row :gutter="10" class="mb8">
               <el-col v-if="!isAdjustOrder" :span="1.5">
-                <el-button size="mini" @click="handleDownloadTemplate">下载导入模板</el-button>
+                <el-button v-hasPermi="['system:goodsorder:import']" size="mini" @click="handleDownloadTemplate">下载导入模板</el-button>
               </el-col>
               <el-col v-if="!isAdjustOrder" :span="1.5">
-                <el-button size="mini" @click="handleImportData">导入模板</el-button>
+                <el-button v-hasPermi="['system:goodsorder:import']" size="mini" @click="handleImportData">导入模板</el-button>
               </el-col>
               <el-col v-if="!isAdjustOrder" :span="1.5">
                 <el-button v-hasPermi="['system:goodsorder:add']" type="danger" size="mini" @click="handleAdd">
