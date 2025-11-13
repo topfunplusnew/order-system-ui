@@ -1,5 +1,5 @@
 <script>
-import {delGoodsOrder, getGoodsOrder, updateGoodsOrder} from '@/api/system/goodsOrder';
+import {delGoodsOrder, getGoodsOrder, updateGoodsOrder, importOrderData} from '@/api/system/goodsOrder';
 import {listInvoiceOut} from '@/api/system/invoiceOut';
 import {listInvoiceIn} from '@/api/system/invoiceIn';
 import CheckFiles from '@/components/CheckFiles.vue';
@@ -29,6 +29,7 @@ import {debounce, throttle} from 'lodash';
 import ExpandCursor from '../common/ExpandCursor.vue';
 import VirtualScroll from 'el-table-virtual-scroll'
 import {requestAnimationFrame} from "vue-count-to/src/requestAnimationFrame";
+import {download} from '@/utils/request';
 
 export default {
   name: 'ElTableOrder',
@@ -139,7 +140,10 @@ export default {
       // 用于批量更新 DOM 的 RAF ID
       columnsUpdateRafId: null,
       // 搜索查询参数的防抖函数
-      handleGetQueryParamsDebounced: null
+      handleGetQueryParamsDebounced: null,
+      // 导入结果弹窗
+      importResultVisible: false,
+      importResultMessage: ''
     };
   },
   watch: {
@@ -841,6 +845,58 @@ export default {
         table.bodyWrapper.removeEventListener('scroll', this._handleTableScroll);
         this._handleTableScroll = null;
       }
+    },
+    // 下载导入模板
+    handleDownloadTemplate() {
+      download(
+        'system/goodsOrder/importTemplate',
+        {},
+        `订单导入模板_${parseTime(new Date(), '{y}{m}{d}_{h}{i}{s}')}.xlsx`
+      );
+    },
+    // 导入订单数据
+    handleImportData() {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.xlsx,.xls';
+      input.onchange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // 校验文件格式
+        const fileName = file.name.toLowerCase();
+        const validExtensions = ['.xlsx', '.xls'];
+        const isValidFormat = validExtensions.some(ext => fileName.endsWith(ext));
+        
+        if (!isValidFormat) {
+          this.$message.error('请上传Excel格式的文件（.xlsx 或 .xls）');
+          return;
+        }
+
+        // 上传文件
+        const formData = new FormData();
+        formData.append('file', file);
+
+        this.$message.info('正在导入，请稍候...');
+        importOrderData(formData).then(res => {
+          this.importResultMessage = res.msg || '导入完成';
+          this.importResultVisible = true;
+          // 如果导入成功，刷新列表
+          if (res.code === 200 && !res.msg.includes('无有效数据')) {
+            this.getList();
+          }
+        }).catch(error => {
+          console.error('导入失败:', error);
+          this.importResultMessage = error.msg || '导入失败，请重试';
+          this.importResultVisible = true;
+        });
+      };
+      input.click();
+    },
+    // 关闭导入结果弹窗
+    closeImportResult() {
+      this.importResultVisible = false;
+      this.importResultMessage = '';
     }
   }
 };
@@ -868,6 +924,12 @@ export default {
         <template #left>
           <div style="padding: 10px">
             <el-row :gutter="10" class="mb8">
+              <el-col v-if="!isAdjustOrder" :span="1.5">
+                <el-button size="mini" @click="handleDownloadTemplate">下载导入模板</el-button>
+              </el-col>
+              <el-col v-if="!isAdjustOrder" :span="1.5">
+                <el-button size="mini" @click="handleImportData">导入模板</el-button>
+              </el-col>
               <el-col v-if="!isAdjustOrder" :span="1.5">
                 <el-button v-hasPermi="['system:goodsorder:add']" type="danger" size="mini" @click="handleAdd">
                   添加订单信息
@@ -1590,6 +1652,23 @@ export default {
             </div>
           </div>
         </div>
+      </div>
+    </el-dialog>
+
+    <!-- 导入结果弹窗 -->
+    <el-dialog
+        title="导入结果"
+        :visible.sync="importResultVisible"
+        width="500px"
+        :close-on-click-modal="false"
+        append-to-body
+    >
+      <div style="padding: 20px 0;">
+        <div style="margin-bottom: 15px; font-weight: 600; font-size: 16px;">导入结果：完成</div>
+        <div style="color: #606266; line-height: 1.6;">{{ importResultMessage }}</div>
+      </div>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="closeImportResult">确定</el-button>
       </div>
     </el-dialog>
   </div>

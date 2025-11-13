@@ -239,3 +239,24 @@ export function mergeSpecialTableData(sourceData) {
 	// 返回合并后的数据和其他数据
 	return _.concat(mergedData, processedOtherData).sort((a, b) => new Date(a.operateDate) - new Date(b.operateDate));
 }
+
+// 下载订单导入模板
+export function downloadImportTemplate() {
+	return request({
+		url: '/system/goodsOrder/importTemplate',
+		method: 'post',
+		responseType: 'blob'
+	});
+}
+
+// 导入订单数据
+export function importOrderData(formData) {
+	return request({
+		url: '/system/goodsOrder/importData',
+		method: 'post',
+		data: formData,
+		headers: {
+			'Content-Type': 'multipart/form-data'
+		}
+	});
+}
