@@ -1008,7 +1008,7 @@ export default {
 					</template>
 				</el-table-column>
 				<!-- 3. 客户 -->
-				<el-table-column v-if="columns[2].visible" show-overflow-tooltip label="客户" align="left" prop="customer" fixed="left" width="196">
+				<el-table-column v-if="columns[2].visible" show-overflow-tooltip label="客户" align="center" prop="customer" fixed="left" width="196">
 					<template #default="scope">
 						<ExpandCursor>
 							{{ scope.row.customer }}
@@ -1016,7 +1016,7 @@ export default {
 					</template>
 				</el-table-column>
 				<!-- 4. 供应商/仓库 -->
-				<el-table-column v-if="columns[3].visible" show-overflow-tooltip label="供应商/仓库" align="left" prop="supplierNames" fixed="left" width="280">
+				<el-table-column v-if="columns[3].visible" show-overflow-tooltip label="供应商/仓库" align="center" prop="supplierNames" fixed="left" width="280">
 					<template #default="scope">
 						<ExpandCursor>
 							<div class="supplier-warehouse-container">
