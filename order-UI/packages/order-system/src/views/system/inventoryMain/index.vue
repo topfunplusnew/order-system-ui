@@ -491,8 +491,8 @@
         <el-table border size="mini" :data="visibleInventoryDetailList" :row-class-name="getRowClassName"
                   @selection-change="handleInventoryDetailSelectionChange" ref="inventoryDetail">
           <el-table-column type="selection" width="30" align="center" :selectable="() => true"/>
-          <el-table-column label="序号" align="center" type="index" width="60"/>
-          <el-table-column label="行操作" align="center" width="140">
+          <el-table-column label="序号" align="center" type="index" width="60" fixed="left"/>
+          <el-table-column label="行操作" align="center" width="140" fixed="left">
             <template slot-scope="scope">
               <div>
                 <el-button v-if="!scope.row.isEditing" :disabled="!isEditingDetails" size="mini" type="warning"
