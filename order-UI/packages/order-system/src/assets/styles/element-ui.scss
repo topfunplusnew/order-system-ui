@@ -208,7 +208,7 @@
 .el-form {
   // 表单项间距调小
   .el-form-item {
-    margin-bottom: 12px; // 从16px进一步缩小到12px
+    margin-bottom: 0; // 从16px进一步缩小到12px
 
     // 标签字体大小调小
     .el-form-item__label {
@@ -235,17 +235,16 @@
 
 // 适用于顶部搜索框的整套样式
 #top-search-form-item {
-  font-size: 20px !important;
+  font-size: 18px !important;
   color: #000000 !important;
   font-weight: bold !important;
   line-height: 1.4 !important;
 
   // 表单项label样式
   .el-form-item {
-    margin-bottom: 16px !important;
 
     .el-form-item__label {
-      font-size: 20px !important;
+      font-size: 18px !important;
       color: #000000 !important;
       font-weight: bold !important;
       line-height: 36px !important;
@@ -1083,7 +1082,7 @@
     .el-table__header {
       th {
         height: 32px !important; // 从默认40px缩小到32px
-        font-size: 20px !important; // 表头字体大小改为20px
+        font-size: 18px !important; // 表头字体大小改为20px
         color: #000000 !important; // 表头字体颜色改为纯黑色
         font-weight: bold !important; // 加粗
         // 允许选择文本以便复制
@@ -1094,7 +1093,7 @@
 
         .cell {
           line-height: 20px !important;
-          font-size: 20px !important; // 表头单元格字体大小改为20px
+          font-size: 18px !important; // 表头单元格字体大小改为20px
           color: #000000 !important; // 表头单元格字体颜色改为纯黑色
           font-weight: bold !important; // 加粗
           // 允许选择文本以便复制
@@ -1118,7 +1117,7 @@
       .el-table__header {
         th {
           height: 32px !important; // 从默认40px缩小到32px
-          font-size: 20px !important; // 表头字体大小改为20px
+          font-size: 18px !important; // 表头字体大小改为20px
           color: #000000 !important; // 表头字体颜色改为纯黑色
           font-weight: bold !important; // 加粗
           // 允许选择文本以便复制
@@ -1129,7 +1128,7 @@
 
           .cell {
             line-height: 20px !important;
-            font-size: 20px !important; // 表头单元格字体大小改为20px
+            font-size: 18px !important; // 表头单元格字体大小改为20px
             color: #000000 !important; // 表头单元格字体颜色改为纯黑色
             font-weight: bold !important; // 加粗
             // 允许选择文本以便复制
@@ -1154,7 +1153,7 @@
 
     .el-table__header th {
       height: 28px !important;
-      font-size: 20px !important; // 表头字体大小改为20px
+      font-size: 18px !important; // 表头字体大小改为20px
       color: #000000 !important;
       // 允许选择文本以便复制
       user-select: text !important;
@@ -1163,7 +1162,7 @@
       -ms-user-select: text !important;
 
       .cell {
-        font-size: 20px !important; // 表头单元格字体大小改为20px
+        font-size: 18px !important; // 表头单元格字体大小改为20px
         color: #000000 !important;
         // 允许选择文本以便复制
         user-select: text !important;
@@ -1189,7 +1188,7 @@
     .el-table__header th {
       height: 20px !important;
       padding: 1px 0 !important;
-      font-size: 20px !important; // 表头字体大小改为20px
+      font-size: 18px !important; // 表头字体大小改为20px
       color: #000000 !important;
       // 允许选择文本以便复制
       user-select: text !important;
@@ -1198,7 +1197,7 @@
       -ms-user-select: text !important;
 
       .cell {
-        font-size: 20px !important; // 表头单元格字体大小改为20px
+        font-size: 18px !important; // 表头单元格字体大小改为20px
         color: #000000 !important;
         // 允许选择文本以便复制
         user-select: text !important;

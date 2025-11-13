@@ -2,7 +2,7 @@
 	<div class="app-container" :class="{ 'mask-overlay': showMask }">
 		<!-- 遮罩层 -->
 		<div v-if="showMask" class="container-mask"></div>
-		<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
+		<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="120px">
 			<el-form-item label="付款时间">
 				<el-date-picker v-model="dateRange" class="date-range-280" value-format="yyyy-MM-dd" type="daterange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
 			</el-form-item>
@@ -78,6 +78,7 @@
 			:data="paymentList"
 			size="mini"
 			border
+			max-height="600px"
 			:cell-style="
 				() => {
 					return { padding: '1.5px' };

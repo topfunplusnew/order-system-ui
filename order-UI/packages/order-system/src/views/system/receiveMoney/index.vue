@@ -2,17 +2,9 @@
 	<div class="app-container" :class="{ 'mask-overlay': showMask }">
 		<!-- 遮罩层 -->
 		<div v-if="showMask" class="container-mask"></div>
-		<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
+		<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="120px">
 			<el-form-item label="收款时间">
-				<el-date-picker
-					v-model="dateRange"
-					class="date-range-280"
-					value-format="yyyy-MM-dd"
-					type="daterange"
-					range-separator="-"
-					start-placeholder="开始日期"
-					end-placeholder="结束日期"
-				></el-date-picker>
+				<el-date-picker v-model="dateRange" class="date-range-280" value-format="yyyy-MM-dd" type="daterange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
 			</el-form-item>
 			<el-form-item label="支付类型" prop="receiveType">
 				<el-cascader v-model="queryParams.receiveType" :options="paymentTypeTree" :props="props" class="input-medium" clearable />
@@ -61,6 +53,7 @@
 
 		<u-table
 			id="printBox"
+			max-height="600px"
 			v-horizontal-scroll="'always'"
 			v-loading="loading"
 			border
@@ -91,11 +84,7 @@
 			<CustomTableColumn label="银行卡流水附件" align="center" prop="attachmentList" width="165" fixed="right">
 				<template slot-scope="scope">
 					<!-- 这是封装的一个通用组件 可以直接传入url 组件效果为一个按钮 点击后可以查看附件-->
-					<CheckFiles
-						:attachmentList="scope.row.attachmentList"
-						@needToUpdate="value => handleUpdateFilePath(value, scope.row, getReceiveMoney(), updateReceiveMoney())"
-						flag="transactionHistoryAttachment"
-					/>
+					<CheckFiles :attachmentList="scope.row.attachmentList" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getReceiveMoney(), updateReceiveMoney())" flag="transactionHistoryAttachment" />
 				</template>
 			</CustomTableColumn>
 			<CustomTableColumn label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="150">
@@ -198,23 +187,10 @@
 								</el-select>
 							</el-tooltip>
 						</el-form-item>
-						<el-form-item
-							v-if="form.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE && form.companyType !== PUBLIC_DICT_TYPE.EMPLOYEE"
-							:label="form.companyType === PAYMENT_TARGET_TYPE.DRIVER ? PUBLIC_DICT_TYPE.DRIVER : '对方公司名称'"
-							prop="companyName"
-						>
+						<el-form-item v-if="form.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE && form.companyType !== PUBLIC_DICT_TYPE.EMPLOYEE" :label="form.companyType === PAYMENT_TARGET_TYPE.DRIVER ? PUBLIC_DICT_TYPE.DRIVER : '对方公司名称'" prop="companyName">
 							<div style="width: 100%; display: flex">
 								<el-input disabled v-model="form.companyName" placeholder="请选择" style="flex: 1; margin-right: 8px" />
-								<SearchOption
-									v-if="form.companyType === PAYMENT_TARGET_TYPE.DRIVER"
-									:limit-info="{}"
-									:get-data="listCars"
-									query-info="carNo"
-									query-label="车牌/柜号"
-									:query-name="carName"
-									@update:queryName="handleUpdateCarName"
-									@commitBack="handleCommitBackCar"
-								>
+								<SearchOption v-if="form.companyType === PAYMENT_TARGET_TYPE.DRIVER" :limit-info="{}" :get-data="listCars" query-info="carNo" query-label="车牌/柜号" :query-name="carName" @update:queryName="handleUpdateCarName" @commitBack="handleCommitBackCar">
 									<template #table-columns>
 										<CustomTableColumn label="车牌/柜号" align="center" prop="carNo" width="220" />
 										<CustomTableColumn label="司机姓名/海运公司" align="center" prop="driver" width="220" />
@@ -225,16 +201,7 @@
 										<CustomTableColumn label="运输类型" align="center" prop="carType" width="200" />
 									</template>
 								</SearchOption>
-								<SearchOption
-									v-else
-									:limit-info="{ companyType: form.companyType }"
-									:get-data="listCompany"
-									query-info="companyName"
-									query-label="公司名称"
-									:query-name="companyName"
-									@update:queryName="handleUpdateCompanyName"
-									@commitBack="handleCommitBackCompany"
-								>
+								<SearchOption v-else :limit-info="{ companyType: form.companyType }" :get-data="listCompany" query-info="companyName" query-label="公司名称" :query-name="companyName" @update:queryName="handleUpdateCompanyName" @commitBack="handleCommitBackCompany">
 									<template #table-columns>
 										<CustomTableColumn :label="value" align="center" prop="companyName" />
 										<CustomTableColumn label="公司类型" align="center" prop="companyType" />
@@ -251,14 +218,7 @@
 					<!--        第二列-->
 					<el-col :span="isPaymentFee ? 24 : 12" class="receive-second-col">
 						<el-form-item label="对方银行账户类型" v-if="form.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE">
-							<BankType
-								ref="otherSelectedBankType"
-								:option-baned="true"
-								:baned="true"
-								:select-type="form.otherBankCardType"
-								@updateSelectedType="changeOtherBankType"
-								style="width: 100%"
-							/>
+							<BankType ref="otherSelectedBankType" :option-baned="true" :baned="true" :select-type="form.otherBankCardType" @updateSelectedType="changeOtherBankType" style="width: 100%" />
 						</el-form-item>
 						<el-form-item label="对方户名" prop="otherAcountsName" v-if="form.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE">
 							<el-input disabled v-model="form.otherAcountsName" placeholder="请选择" style="width: 100%" />
@@ -298,14 +258,7 @@
 							<el-input v-model="form.transactionHistory" placeholder="请输入银行卡流水编号" style="width: 100%" />
 						</el-form-item>
 						<el-form-item label="银行卡流水编号附件">
-							<UploadFilesButton
-								ref="attachmentUploader"
-								flag="transactionHistoryAttachment"
-								:extra-info="{ moduleType: 'receiveMoney', formId: form.id }"
-								:initial-attachments="form.attachmentList || []"
-								@files-updated="handleAttachmentFilesUpdated"
-								style="width: 100%"
-							/>
+							<UploadFilesButton ref="attachmentUploader" flag="transactionHistoryAttachment" :extra-info="{ moduleType: 'receiveMoney', formId: form.id }" :initial-attachments="form.attachmentList || []" @files-updated="handleAttachmentFilesUpdated" style="width: 100%" />
 						</el-form-item>
 						<el-form-item label="录入人员" prop="userName">
 							<el-input v-model="form.userName" placeholder="请输入录入人员" style="width: 100%" />
@@ -875,7 +828,7 @@ export default {
 			this.$nextTick(() => {
 				// 确保 BankType 组件已经挂载并注册了监听器后再触发事件
 				this.$bus.$emit('changeFlag', receiveMoneyData.bankacceptanceId !== null ? receiveMoneyData.bankacceptanceId : false);
-				
+
 				if (!flag) {
 					if (this.$refs[`selfSelectedBankType`] && receiveMoneyData.selfBankCardType) {
 						this.$refs.selfSelectedBankType.localSelectType = receiveMoneyData.selfBankCardType;
@@ -1087,7 +1040,7 @@ export default {
 				params.startTime = null;
 				params.endTime = null;
 			}
-			params.receiveType = this.queryParams.receiveType?.join('-')
+			params.receiveType = this.queryParams.receiveType?.join('-');
 
 			this.download('system/receiveMoney/export', params, `receiveMoney_${new Date().getTime()}.xlsx`);
 		}
