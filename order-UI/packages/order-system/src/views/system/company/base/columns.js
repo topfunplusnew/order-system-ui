@@ -134,7 +134,7 @@ export const companyConfig = {
 				sortIndex: 6, // 表单项排序索引
 				col: { span: 12 },
 				placeholder: '请输入联系人电话',
-				rules: [{ required: true, message: '请输入联系人电话', trigger: 'blur' }, phoneRule()] // 必填且校验手机号格式
+				rules: [optionalPhoneRule()] // 使用可选手机号验证规则
 			}
 		},
 		{

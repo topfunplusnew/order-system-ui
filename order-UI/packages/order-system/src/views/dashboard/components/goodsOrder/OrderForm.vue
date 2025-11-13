@@ -1344,7 +1344,7 @@ export default {
 		<div>
 			<el-row :gutter="10" class="mb8">
 					<el-col :span="1.5">
-						<el-button size="mini" type="primary" @click="handleAddOrderdetail">添加</el-button>
+						<el-button slsize="mini" type="primary" @click="handleAddOrderdetail">添加</el-button>
 					</el-col>
 					<el-col :span="1.5">
 						<el-button size="mini" type="danger" @click="handleDeleteOrderdetail" :disabled="checkedOrderdetail.length === 0">删除</el-button>
@@ -1396,11 +1396,11 @@ export default {
 										:disable="!scope.row.isEditing"
 									>
 										<template #table-columns>
-											<el-table-column label="公司名称" align="center" prop="companyName" />
-											<el-table-column label="销售经理" align="center" prop="salesManager" />
-											<el-table-column label="联系人" align="center" prop="relationName" />
-											<el-table-column label="电话" align="center" prop="relationTel" />
-											<el-table-column label="地址" align="center" prop="address" />
+											<el-table-column label="公司名称" align="center" prop="companyName" width="240" />
+											<el-table-column label="销售经理" align="center" prop="salesManager" width="150" />
+											<el-table-column label="联系人" align="center" prop="relationName" width="150" />
+											<el-table-column label="电话" align="center" prop="relationTel" width="150" />
+											<el-table-column label="地址" align="center" prop="address" width="150" />
 										</template>
 									</SearchOption>
 								</el-col>

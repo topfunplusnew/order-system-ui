@@ -348,13 +348,6 @@ export default {
 						trigger: 'blur'
 					}
 				],
-				relationTel: [
-					{
-						required: true,
-						message: '联系人电话不能为空',
-						trigger: 'blur'
-					}
-				],
 				salesManager: [
 					{
 						required: true,
