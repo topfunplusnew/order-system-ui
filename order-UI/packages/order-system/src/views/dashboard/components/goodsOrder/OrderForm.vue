@@ -189,7 +189,9 @@ export default {
 				id: '',
 				state: false,
 				currentEditingOrderInfo: {}
-			}
+			},
+			// 默认陆运费单价，用于自动填充新添加的行
+			defaultLandFreightPrice: ''
 		};
 	},
 	computed: {
@@ -281,6 +283,14 @@ export default {
 							updateOrderRowCalculations(row, this.isSea, this.isLand);
 						});
 					});
+
+					// 如果加载的数据中有陆运费单价，设置为默认值（取第一个有效的值）
+					if (this.isLand && !this.defaultLandFreightPrice) {
+						const firstRowWithLandFreightPrice = this.orderDetailList.find(row => row.landFreightPrice && row.landFreightPrice.toString().trim() !== '');
+						if (firstRowWithLandFreightPrice) {
+							this.defaultLandFreightPrice = firstRowWithLandFreightPrice.landFreightPrice;
+						}
+					}
 				}
 			});
 		},
@@ -496,7 +506,7 @@ export default {
 				payments: '',
 				erro: '',
 				tonnage: '',
-				landFreightPrice: '',
+				landFreightPrice: this.defaultLandFreightPrice || '', // 自动填充默认陆运费单价
 				landFreight: '',
 				seaFreight: '',
 				freight: '',
@@ -960,6 +970,7 @@ export default {
 			};
 			this.isEditingDetails = false;
 			this.orderDetailList = [];
+			this.defaultLandFreightPrice = ''; // 重置默认陆运费单价
 			// 重置表单校验状态
 			if (this.$refs.orderForm) {
 				this.$refs.orderForm.resetFields();
@@ -1174,6 +1185,17 @@ export default {
 		 */
 		handlePiecesInput(row, field, value, callback) {
 			return utilHandlePiecesInput(row, field, value, callback);
+		},
+		/**
+		 * 更新默认陆运费单价
+		 * 当首次填写陆运费单价时，记录为默认值，后续添加的新行将自动填充此值
+		 * @param {string} value - 陆运费单价值
+		 */
+		updateDefaultLandFreightPrice(value) {
+			// 如果当前没有默认值，且输入值有效（不为空且为有效数字），则设置为默认值
+			if (!this.defaultLandFreightPrice && value && value.trim() !== '' && !isNaN(Number(value))) {
+				this.defaultLandFreightPrice = value;
+			}
 		}
 	}
 };
@@ -1411,7 +1433,7 @@ export default {
 								:disable="!scope.row.isEditing"
 							>
 								<template #table-columns>
-									<el-table-column label="级别编码" align="center" prop="levelNo" width="220"/>
+									<el-table-column label="级别编码" align="center" prop="levelNo" width="220" />
 									<el-table-column label="级别名称" align="center" prop="levelName" width="220" />
 									<el-table-column label="分类编号" align="center" prop="categoryNo" />
 									<el-table-column label="分类名称" align="center" prop="categoryName" />
@@ -1571,7 +1593,10 @@ export default {
 							@focus="() => handlePriceFocus(scope.row, 'landFreightPrice')"
 							placeholder="请输入陆运费单价"
 							:disabled="!scope.row.isEditing"
-							@blur="() => formatPriceInput(scope.row, 'landFreightPrice', 2)"
+							@blur="() => {
+								formatPriceInput(scope.row, 'landFreightPrice', 2);
+								updateDefaultLandFreightPrice(scope.row.landFreightPrice);
+							}"
 						/>
 					</template>
 				</el-table-column>
