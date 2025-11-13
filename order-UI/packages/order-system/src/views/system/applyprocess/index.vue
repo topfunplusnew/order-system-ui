@@ -254,7 +254,73 @@ export default {
 				{ value: PAYMENT_TARGET_TYPE.DRIVER, label: PUBLIC_DICT_TYPE.DRIVER },
 				{ value: PAYMENT_TARGET_TYPE.PAYMENT_FEE, label: PAYMENT_TARGET_TYPE.PAYMENT_FEE },
 				{ value: PUBLIC_DICT_TYPE.EMPLOYEE, label: PUBLIC_DICT_TYPE.EMPLOYEE }
-			]
+			],
+			// 付款表单校验规则
+			generatePaymentFormRules: {
+				fundsDate: [{ required: true, message: '请选择日期', trigger: 'blur' }],
+				payType: [
+					{
+						required: true,
+						message: '请选择付款类型',
+						trigger: 'blur'
+					}
+				],
+				moneyAmount: [
+					{ required: true, message: '请输入金额', trigger: 'blur' },
+					{
+						validator: (rule, value, callback) => {
+							if (!/^\d+(\.\d{1,2})?$/.test(value)) {
+								callback(new Error('金额只能为数字且小数点后最多两位'));
+							} else {
+								callback();
+							}
+						},
+						trigger: 'blur'
+					}
+				],
+				selfAccountsName: [
+					{
+						required: true,
+						message: '请输入我方户名',
+						trigger: 'blur'
+					}
+				],
+				selfBankNo: [
+					{
+						required: true,
+						message: '请输入我方账号',
+						trigger: 'blur'
+					}
+				],
+				selfBankName: [
+					{
+						required: true,
+						message: '请输入我方开户行',
+						trigger: 'blur'
+					}
+				],
+				companyName: [
+					{
+						required: true,
+						message: '对方公司不能为空',
+						trigger: 'blur'
+					}
+				],
+				otherAccountsName: [
+					{
+						required: true,
+						message: '请输入对方户名',
+						trigger: 'blur'
+					}
+				],
+				otherBankNo: [
+					{
+						required: true,
+						message: '请输入对方账号',
+						trigger: 'blur'
+					}
+				]
+			}
 		};
 	},
 	watch: {
@@ -668,59 +734,65 @@ export default {
 		},
 		// 提交付款
 		submitGeneratePayment() {
-			// 校验付款类型
-			if (!this.generatePaymentForm.payType) {
-				this.$message.warning('请选择付款类型');
-				return;
-			}
-			// 校验银行账户类型
-			if (this.generatePaymentForm.selfBankCardType && this.generatePaymentForm.otherBankCardType) {
-				if (this.generatePaymentForm.selfBankCardType !== this.generatePaymentForm.otherBankCardType) {
-					this.$message.warning('操作失败，无法进行承兑与活期存款或者相反的交易,类型需要保持一致');
+			// 使用表单校验
+			this.$refs.generatePaymentFormRef.validate(valid => {
+				if (!valid) {
 					return;
 				}
-			}
-
-			const formData = _.cloneDeep(this.generatePaymentForm);
-
-			// 处理付款类型：如果是数组则转换为字符串
-			if (Array.isArray(formData.payType)) {
-				formData.payType = formData.payType.join('-');
-			}
-			// 处理日期格式
-			if (formData.fundsDate && typeof formData.fundsDate === 'string') {
-				formData.fundsDate = formData.fundsDate.replace('T', ' ').slice(0, 19);
-			}
-
-			// 处理承兑逻辑
-			const selfType = this.$refs.generatePaymentSelfSelectedBankType?.localSelectType;
-			const otherType = this.$refs.generatePaymentOtherSelectedBankType?.localSelectType;
-			if (selfType && otherType && selfType !== otherType) {
-				if (!formData.params) {
-					formData.params = {};
+				// 校验付款类型
+				if (!this.generatePaymentForm.payType) {
+					this.$message.warning('请选择付款类型');
+					return;
 				}
-				if (!formData.params.bankacceptance) {
-					formData.params.bankacceptance = {};
-				}
-				if (!formData.params.bankacceptance.billType) {
-					if (selfType === BankAcceptanceType.ACCEPTANCE) {
-						formData.params.bankacceptance.billType = PayType.PAYMENT;
-					}
-					if (otherType === BankAcceptanceType.ACCEPTANCE) {
-						formData.params.bankacceptance.billType = PayType.RECEIVE;
+				// 校验银行账户类型
+				if (this.generatePaymentForm.selfBankCardType && this.generatePaymentForm.otherBankCardType) {
+					if (this.generatePaymentForm.selfBankCardType !== this.generatePaymentForm.otherBankCardType) {
+						this.$message.warning('操作失败，无法进行承兑与活期存款或者相反的交易,类型需要保持一致');
+						return;
 					}
 				}
-			}
 
-			addPayment(formData)
-				.then(res => {
-					this.$modal.msgSuccess('付款成功');
-					this.cancelGeneratePayment();
-					this.getAuditList();
-				})
-				.catch(error => {
-					this.$message.error(error.msg || '付款失败');
-				});
+				const formData = _.cloneDeep(this.generatePaymentForm);
+
+				// 处理付款类型：如果是数组则转换为字符串
+				if (Array.isArray(formData.payType)) {
+					formData.payType = formData.payType.join('-');
+				}
+				// 处理日期格式
+				if (formData.fundsDate && typeof formData.fundsDate === 'string') {
+					formData.fundsDate = formData.fundsDate.replace('T', ' ').slice(0, 19);
+				}
+
+				// 处理承兑逻辑
+				const selfType = this.$refs.generatePaymentSelfSelectedBankType?.localSelectType;
+				const otherType = this.$refs.generatePaymentOtherSelectedBankType?.localSelectType;
+				if (selfType && otherType && selfType !== otherType) {
+					if (!formData.params) {
+						formData.params = {};
+					}
+					if (!formData.params.bankacceptance) {
+						formData.params.bankacceptance = {};
+					}
+					if (!formData.params.bankacceptance.billType) {
+						if (selfType === BankAcceptanceType.ACCEPTANCE) {
+							formData.params.bankacceptance.billType = PayType.PAYMENT;
+						}
+						if (otherType === BankAcceptanceType.ACCEPTANCE) {
+							formData.params.bankacceptance.billType = PayType.RECEIVE;
+						}
+					}
+				}
+
+				addPayment(formData)
+					.then(res => {
+						this.$modal.msgSuccess('付款成功');
+						this.cancelGeneratePayment();
+						this.getAuditList();
+					})
+					.catch(error => {
+						this.$message.error(error.msg || '付款失败');
+					});
+			});
 		},
 		// 取消付款
 		cancelGeneratePayment() {
@@ -750,6 +822,10 @@ export default {
 					bankacceptance: null
 				}
 			};
+			// 重置表单校验状态
+			if (this.$refs.generatePaymentFormRef) {
+				this.$refs.generatePaymentFormRef.resetFields();
+			}
 			// 清除附件上传状态
 			if (this.$refs.generatePaymentAttachmentUpload) {
 				this.$refs.generatePaymentAttachmentUpload.clearUploadedFiles();
@@ -940,7 +1016,7 @@ export default {
 			<el-table-column v-if="columns[11].visible" label="操作" show-overflow-tooltip align="center" fixed="right" width="260">
 				<template slot-scope="scope">
 					<el-button type="text" size="mini" @click="handleCheckApplyInfo(scope.row)">查看</el-button>
-					<el-button type="text" size="mini" @click="handleGeneratePayment(scope.row)">付款</el-button>
+					<el-button type="text" size="mini" :disabled="scope.row.checkState !== PAYMENT_APPLY_STATE.V2.PASS" @click="handleGeneratePayment(scope.row)">付款</el-button>
 					<el-button v-if="isCurrentUserAuditor(scope.row)" type="text" size="mini" style="color: #f56c6c" @click="handleDeletePaymentApply(scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
@@ -1021,19 +1097,19 @@ export default {
 
 		<!-- 付款弹窗 -->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="付款" :visible.sync="generatePaymentVisible" width="1000px" append-to-body>
-			<el-form ref="generatePaymentFormRef" :model="generatePaymentForm" label-width="170px">
+			<el-form ref="generatePaymentFormRef" :model="generatePaymentForm" :rules="generatePaymentFormRules" label-width="170px">
 				<el-row :gutter="40">
 					<!-- 左列 -->
 					<el-col :span="generatePaymentForm.companyType === PAYMENT_TARGET_TYPE.PAYMENT_FEE ? 24 : 12">
-						<el-form-item label="日期">
+						<el-form-item label="日期" prop="fundsDate">
 							<el-date-picker v-model="generatePaymentForm.fundsDate" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss" style="width: 100%"></el-date-picker>
 						</el-form-item>
 
-						<el-form-item label="付款类型">
+						<el-form-item label="付款类型" prop="payType">
 							<el-cascader v-model="generatePaymentForm.payType" :options="paymentTypeTree" :props="props" style="width: 100%"></el-cascader>
 						</el-form-item>
 
-						<el-form-item label="金额">
+						<el-form-item label="金额" prop="moneyAmount">
 							<el-input v-model="generatePaymentForm.moneyAmount" placeholder="请输入金额" style="width: 100%" />
 						</el-form-item>
 
@@ -1049,7 +1125,7 @@ export default {
 							/>
 						</el-form-item>
 
-						<el-form-item label="我方户名">
+						<el-form-item label="我方户名" prop="selfAccountsName">
 							<el-row>
 								<el-col :span="22">
 									<el-input disabled v-model="generatePaymentForm.selfAccountsName" placeholder="请选择" style="width: 100%" />
@@ -1085,11 +1161,11 @@ export default {
 							</el-row>
 						</el-form-item>
 
-						<el-form-item label="我方账号">
+						<el-form-item label="我方账号" prop="selfBankNo">
 							<el-input disabled v-model="generatePaymentForm.selfBankNo" placeholder="请选择" style="width: 100%" />
 						</el-form-item>
 
-						<el-form-item label="我方开户行">
+						<el-form-item label="我方开户行" prop="selfBankName">
 							<el-input disabled v-model="generatePaymentForm.selfBankName" placeholder="请选择" style="width: 100%" />
 						</el-form-item>
 
@@ -1099,7 +1175,7 @@ export default {
 							</el-select>
 						</el-form-item>
 
-						<el-form-item v-if="generatePaymentForm.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE && generatePaymentForm.companyType !== PUBLIC_DICT_TYPE.EMPLOYEE" label="对方公司名称">
+						<el-form-item v-if="generatePaymentForm.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE && generatePaymentForm.companyType !== PUBLIC_DICT_TYPE.EMPLOYEE" label="对方公司名称" prop="companyName">
 							<el-row>
 								<el-col :span="22">
 									<el-input disabled v-model="generatePaymentForm.companyName" placeholder="请选择" style="width: 100%" />
@@ -1165,11 +1241,11 @@ export default {
 							<BankType ref="generatePaymentOtherSelectedBankType" :option-baned="true" :baned="true" :select-type="generatePaymentForm.otherBankCardType" @updateSelectedType="value => (generatePaymentForm.otherBankCardType = value)" style="width: 100%" />
 						</el-form-item>
 
-						<el-form-item v-if="generatePaymentForm.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE" label="对方户名">
+						<el-form-item v-if="generatePaymentForm.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE" label="对方户名" prop="otherAccountsName">
 							<el-input disabled v-model="generatePaymentForm.otherAccountsName" placeholder="请选择" style="width: 100%" />
 						</el-form-item>
 
-						<el-form-item v-if="generatePaymentForm.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE" label="对方账号">
+						<el-form-item v-if="generatePaymentForm.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE" label="对方账号" prop="otherBankNo">
 							<el-row>
 								<el-col :span="22">
 									<el-input disabled v-model="generatePaymentForm.otherBankNo" placeholder="请选择" style="width: 100%" />
