@@ -350,12 +350,12 @@ export default {
 			<CustomTableColumn v-if="columns[10].visible" show-overflow-tooltip prop="freight" label="运费" align="center" />
 			<CustomTableColumn v-if="columns[11].visible" show-overflow-tooltip prop="driverAccountName" label="司机户名" align="center" />
 			<CustomTableColumn v-if="columns[12].visible" show-overflow-tooltip prop="driverBankNo" label="司机银行账号" align="center" />
-			<CustomTableColumn v-if="columns[15].visible" show-overflow-tooltip label="收到条" align="center">
+			<CustomTableColumn v-if="columns[15].visible" show-overflow-tooltip label="收到条" align="center" fixed="right">
 				<template #default="scope">
 					<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'receiveProof'" :is-upload="false" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getOrderFreight, updateOrderFreight)" />
 				</template>
 			</CustomTableColumn>
-			<CustomTableColumn v-if="columns[16].visible" show-overflow-tooltip prop="paidAmount" label="已支付金额" align="center" />
+			<CustomTableColumn v-if="columns[16].visible" show-overflow-tooltip prop="paidAmount" label="已支付金额" align="center" fixed="right" />
 			<CustomTableColumn show-overflow-tooltip label="操作" align="center" class-name="small-padding fixed-width" width="220" fixed="right">
 				<template #default="scope">
 					<el-button size="mini" type="text" @click="viewOrderDetails(scope.row)">查看详情</el-button>

@@ -71,27 +71,14 @@ methods: {
 			<el-button type="primary" size="mini" icon="el-icon-upload2" @click="triggerFileUpload" :loading="uploading" class="upload-btn">上传附件</el-button>
 
 			<!-- 查看已上传文件的图标按钮 -->
-			<el-button v-if="uploadedFiles.length > 0" type="text" size="mini" icon="el-icon-view" @click="showUploadedFiles" class="view-btn" :title="`已上传 ${uploadedFiles.length} 个文件`">
-				({{ uploadedFiles.length }})
-			</el-button>
+			<el-button v-if="uploadedFiles.length > 0" type="text" size="mini" icon="el-icon-view" @click="showUploadedFiles" class="view-btn" :title="`已上传 ${uploadedFiles.length} 个文件`">({{ uploadedFiles.length }})</el-button>
 		</div>
 
 		<!-- 隐藏的文件输入框 -->
 		<input ref="fileInput" type="file" multiple style="display: none" @change="handleFileSelect" :accept="acceptTypes" />
 
 		<!-- 文件列表查看对话框 -->
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			title="已上传文件列表"
-			:visible.sync="dialogVisible"
-			width="600px"
-			append-to-body
-			:close-on-click-modal="false"
-			custom-class="upload-files-dialog"
-		>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="已上传文件列表" :visible.sync="dialogVisible" width="600px" append-to-body :close-on-click-modal="false" custom-class="upload-files-dialog">
 			<div class="file-list-container">
 				<div v-if="uploadedFiles.length > 0" class="file-grid">
 					<div v-for="(file, index) in uploadedFiles" :key="file.id" class="file-item">
@@ -232,8 +219,12 @@ export default {
 			this.uploadedFiles = [];
 
 			// 设置初始附件到组件本地
-			this.uploadedFiles = [...attachments];
-			const attachmentIds = attachments.map(file => file.id).filter(id => id);
+			this.uploadedFiles = [...attachments].filter(file => file.flag === this.flag);
+			console.log(`attachments`, attachments);
+			console.log(`this.flag`, this.flag);
+			const attachmentIds = attachments
+				.map(file => file.id)
+				.filter(id => id);
 
 			// 将初始附件ID添加到全局池（不清空，避免覆盖其他组件的ID）
 			if (attachmentIds.length > 0) {
