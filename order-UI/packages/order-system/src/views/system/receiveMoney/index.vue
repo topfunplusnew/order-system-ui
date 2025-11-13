@@ -855,7 +855,7 @@ export default {
 					bankacceptance: receiveMoneyData.params?.bankacceptance || null
 				}
 			};
-			this.$bus.$emit('changeFlag', receiveMoneyData.bankacceptanceId !== null ? receiveMoneyData.bankacceptanceId : false);
+			console.log(`receiveMoneyData.bankacceptanceId`, receiveMoneyData.bankacceptanceId);
 			// 使用searchSubjectFromMap查找完整路径数组
 			if (receiveMoneyData.receiveType) {
 				this.form.receiveType = this.searchSubjectFromMap(receiveMoneyData.receiveType);
@@ -871,8 +871,11 @@ export default {
 			this.open = true;
 			this.title = '修改收款信息';
 
-			// 使用 $nextTick 确保组件渲染完成后再设置银行账户类型和附件列表
+			// 使用 $nextTick 确保组件渲染完成后再触发事件和设置银行账户类型
 			this.$nextTick(() => {
+				// 确保 BankType 组件已经挂载并注册了监听器后再触发事件
+				this.$bus.$emit('changeFlag', receiveMoneyData.bankacceptanceId !== null ? receiveMoneyData.bankacceptanceId : false);
+				
 				if (!flag) {
 					if (this.$refs[`selfSelectedBankType`] && receiveMoneyData.selfBankCardType) {
 						this.$refs.selfSelectedBankType.localSelectType = receiveMoneyData.selfBankCardType;

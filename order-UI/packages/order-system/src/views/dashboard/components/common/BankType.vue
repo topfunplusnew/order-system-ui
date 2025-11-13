@@ -78,11 +78,7 @@
 													@update:queryName="value => (companyName = value)"
 												>
 													<template #table-columns>
-														<el-table-column
-															:label="form.targetType === '其他' || form.targetType === '员工' ? '名称' : form.targetType"
-															align="center"
-															prop="acountsName"
-														/>
+														<el-table-column :label="form.targetType === '其他' || form.targetType === '员工' ? '名称' : form.targetType" align="center" prop="acountsName" />
 														<el-table-column label="开户行" align="center" prop="bankName" />
 														<el-table-column label="开户名" align="center" prop="acountsName" />
 														<el-table-column label="账号" align="center" prop="bankNo" />
@@ -460,7 +456,9 @@ export default {
 		if (this.isInternalTransfer) {
 			this.type = '己方公司';
 		}
+		console.log(`开始注册监听器`);
 		this.$bus.$on('changeFlag', value => {
+			console.log(`value`, value);
 			if (this.baned) {
 				this.flag = false;
 				return;
@@ -475,16 +473,21 @@ export default {
 			}
 			// 获取承兑信息
 			getBankAcceptance(value).then(res => {
-				if (res.data) {
-					this.hasSavedAcceptanceInfo = true;
-					// 将获取到的数据保存到sessionStorage
-					sessionStorage.setItem(this.bankAcceptanceFilledKey, JSON.stringify(res.data));
-					// 从sessionStorage更新表单数据
-					this.loadSavedFormFromSession();
-					// 通知父组件更新状态
-					this.$emit('updateBankAcceptance', _.cloneDeep(res.data));
-				}
-				this.flag = true;
+				this.$nextTick(() => {
+					if (res.data) {
+						this.hasSavedAcceptanceInfo = true;
+						// 将获取到的数据保存到sessionStorage
+						sessionStorage.setItem(this.bankAcceptanceFilledKey, JSON.stringify(res.data));
+						// 从sessionStorage更新表单数据
+						this.loadSavedFormFromSession();
+						// 通知父组件更新状态
+						this.$emit('updateBankAcceptance', _.cloneDeep(res.data));
+					}
+					this.flag = true;
+
+					console.log(`this.flag`, this.flag);
+					console.log(`this.hasSavedAcceptanceInfo`, this.hasSavedAcceptanceInfo);
+				});
 			});
 		});
 	},
@@ -530,8 +533,10 @@ export default {
 		},
 		// 承兑信息按钮文本
 		acceptanceButtonText() {
+			console.log(this.flag, this.hasSavedAcceptanceInfo);
 			// 如果有正式保存的承兑信息
 			if (this.flag && this.hasSavedAcceptanceInfo) {
+				console.log(`修改承兑信息`, this.flag, this.hasSavedAcceptanceInfo);
 				return '修改承兑信息';
 			}
 			// 默认状态

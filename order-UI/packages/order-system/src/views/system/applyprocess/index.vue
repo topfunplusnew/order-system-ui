@@ -2,6 +2,7 @@
 当前账号需要审核的流程 审核的过程调用修改接口-->
 <script>
 import { getPaymentApply, listPaymentApply, submitPaymentApply, delPaymentApply } from '@/api/system/paymentApply';
+import { addPayment } from '@/api/system/payment';
 import StepInfo from '@/views/dashboard/components/applyProcess/StepInfo.vue';
 import { mapGetters } from 'vuex';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
@@ -12,31 +13,33 @@ import { mixin_payment_select, PAYMENT_TYPES } from '@/views/dashboard/mixins/pa
 import { listCompany } from '@/api/system/company';
 import { listBankAccount } from '@/api/system/bankAccount';
 import CheckFiles from '@/components/CheckFiles.vue';
-import { TableName, getTagColor, PAYMENT_APPLY_STATE } from '@/api/tool/enums';
+import { TableName, getTagColor, PAYMENT_APPLY_STATE, BankAcceptanceType, PAYMENT_TARGET_TYPE, PUBLIC_DICT_TYPE, PayType } from '@/api/tool/enums';
 import { listCars } from '@/api/system/cars';
 import ApplyPayment from '@/views/dashboard/components/common/ApplyPayment.vue';
 import _ from 'lodash';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import PAYMENT_APPLY_INFO from '@/components/NeedToShow/PAYMENT_APPLY_INFO.vue';
 import { listMyPaymentApply } from '../../../api/system/paymentApply';
+import SearchOption from '@/components/SearchOption.vue';
+import BankType from '@/views/dashboard/components/common/BankType.vue';
+import UploadFilesButton from '@/components/UploadFilesButton';
+import { parseTime } from '@/utils/ruoyi';
 
 export default {
 	name: 'ApplyProcess',
 	components: {
 		ApplyPayment,
 		CheckFiles,
-		StepInfo
+		StepInfo,
+		SearchOption,
+		BankType,
+		UploadFilesButton
 	},
 	mixins: [mixin_printHTML, mixin_payment_subject, mixin_bankType, mixin_paymentindex_fill, mixin_payment_select, common_dialog],
 	data() {
 		return {
 			// 已经提交的申请
-			alreadyApplyList: [
-				{
-					title: '测试数据',
-					description: '测试数据'
-				}
-			],
+			alreadyApplyList: [],
 			tourSteps: [
 				{
 					target: '#step-1',
@@ -216,7 +219,42 @@ export default {
 			currentID: '',
 			// 传递给子组件的参数
 			needInfo: {},
-			extraInformation: {}
+			extraInformation: {},
+			// 生成付款弹窗
+			generatePaymentVisible: false,
+			generatePaymentForm: {
+				fundsDate: null,
+				payType: null,
+				moneyAmount: null,
+				selfBankCardType: BankAcceptanceType.BANK_CASH,
+				otherBankCardType: BankAcceptanceType.BANK_CASH,
+				selfAccountsName: null,
+				selfBankNo: null,
+				selfBankName: null,
+				selfBankID: null,
+				otherAccountsName: null,
+				otherBankNo: null,
+				otherBankName: null,
+				companyName: null,
+				companyId: null,
+				companyType: null,
+				comments: null,
+				transactionHistory: null,
+				userName: null,
+				attachmentList: [],
+				params: {
+					attachmentIds: [],
+					bankacceptance: null
+				}
+			},
+			// 对方类型选项
+			generatePaymentOptions: [
+				{ value: PAYMENT_TARGET_TYPE.CUSTOMER, label: PUBLIC_DICT_TYPE.CUSTOMER },
+				{ value: PAYMENT_TARGET_TYPE.SUPPLIER, label: PUBLIC_DICT_TYPE.SUPPLIER },
+				{ value: PAYMENT_TARGET_TYPE.DRIVER, label: PUBLIC_DICT_TYPE.DRIVER },
+				{ value: PAYMENT_TARGET_TYPE.PAYMENT_FEE, label: PAYMENT_TARGET_TYPE.PAYMENT_FEE },
+				{ value: PUBLIC_DICT_TYPE.EMPLOYEE, label: PUBLIC_DICT_TYPE.EMPLOYEE }
+			]
 		};
 	},
 	watch: {
@@ -235,6 +273,15 @@ export default {
 						this.$store.dispatch('apply/clearChecked');
 					}, 500);
 				}
+			}
+		},
+		'generatePaymentForm.companyType'(newVal) {
+			if (newVal === PAYMENT_TARGET_TYPE.PAYMENT_FEE) {
+				this.generatePaymentForm.companyName = null;
+				this.generatePaymentForm.companyId = null;
+				this.generatePaymentForm.otherAccountsName = null;
+				this.generatePaymentForm.otherBankNo = null;
+				this.generatePaymentForm.otherBankName = null;
 			}
 		}
 	},
@@ -266,7 +313,16 @@ export default {
 		TableName() {
 			return TableName;
 		},
-		...mapGetters(['checked'])
+		PAYMENT_TARGET_TYPE() {
+			return PAYMENT_TARGET_TYPE;
+		},
+		PUBLIC_DICT_TYPE() {
+			return PUBLIC_DICT_TYPE;
+		},
+		BankAcceptanceType() {
+			return BankAcceptanceType;
+		},
+		...mapGetters(['checked', 'getId'])
 	},
 	methods: {
 		getTagColor,
@@ -281,7 +337,7 @@ export default {
 			};
 			const json = {
 				params: {
-					userId: this.$store.getters.userId,
+					userId: this.getId,
 					checkStateList: ['待提交', '驳回']
 				}
 			};
@@ -546,6 +602,170 @@ export default {
 		handleQuery() {
 			this.pageNum = 1;
 			this.getAuditList();
+		},
+		// 判断当前用户是否是审核人
+		isCurrentUserAuditor(row) {
+			if (!row.auditInfoList || !Array.isArray(row.auditInfoList)) {
+				return false;
+			}
+			const currentUserId = this.getId;
+			return row.auditInfoList.some(auditInfo => auditInfo.userId === currentUserId);
+		},
+		// 删除付款申请
+		handleDeletePaymentApply(row) {
+			const { id, reason } = row;
+			this.$modal
+				.confirm(`是否确认删除付款申请"${reason || '无原因'}"？`)
+				.then(() => {
+					return delPaymentApply(id);
+				})
+				.then(() => {
+					this.$modal.msgSuccess('删除成功');
+					this.getAuditList();
+				})
+				.catch(() => {});
+		},
+		// 生成付款
+		handleGeneratePayment(row) {
+			// 重置表单
+			this.generatePaymentForm = {
+				fundsDate: row.fundsDate || parseTime(new Date()),
+				payType: null,
+				moneyAmount: row.moneyAmount || null,
+				selfBankCardType: BankAcceptanceType.BANK_CASH,
+				otherBankCardType: BankAcceptanceType.BANK_CASH,
+				selfAccountsName: null,
+				selfBankNo: null,
+				selfBankName: null,
+				selfBankID: null,
+				otherAccountsName: row.otherAccountsName || null,
+				otherBankNo: row.otherBankNo || null,
+				otherBankName: row.otherBankName || null,
+				companyName: row.companyName || null,
+				companyId: row.companyId || null,
+				companyType: row.companyType || null,
+				comments: row.comments || row.reason || null,
+				transactionHistory: null,
+				userName: null,
+				attachmentList: row.attachmentList && Array.isArray(row.attachmentList) ? row.attachmentList : [],
+				params: {
+					attachmentIds: row.attachmentList && Array.isArray(row.attachmentList) ? row.attachmentList.map(item => item.id) : [],
+					bankacceptance: null
+				}
+			};
+			this.generatePaymentVisible = true;
+			// 使用 $nextTick 确保弹窗渲染完成后再设置 payType
+			this.$nextTick(() => {
+				if (row.payType) {
+					if (typeof row.payType === 'string') {
+						// 使用 searchSubjectFromMap 方法将字符串转换为级联选择器需要的数组格式
+						this.generatePaymentForm.payType = this.searchSubjectFromMap(row.payType);
+					} else if (Array.isArray(row.payType)) {
+						this.generatePaymentForm.payType = row.payType;
+					}
+				}
+			});
+		},
+		// 提交生成付款
+		submitGeneratePayment() {
+			// 校验付款类型
+			if (!this.generatePaymentForm.payType) {
+				this.$message.warning('请选择付款类型');
+				return;
+			}
+			// 校验银行账户类型
+			if (this.generatePaymentForm.selfBankCardType && this.generatePaymentForm.otherBankCardType) {
+				if (this.generatePaymentForm.selfBankCardType !== this.generatePaymentForm.otherBankCardType) {
+					this.$message.warning('操作失败，无法进行承兑与活期存款或者相反的交易,类型需要保持一致');
+					return;
+				}
+			}
+
+			const formData = _.cloneDeep(this.generatePaymentForm);
+
+			// 处理付款类型：如果是数组则转换为字符串
+			if (Array.isArray(formData.payType)) {
+				formData.payType = formData.payType.join('-');
+			}
+			// 处理日期格式
+			if (formData.fundsDate && typeof formData.fundsDate === 'string') {
+				formData.fundsDate = formData.fundsDate.replace('T', ' ').slice(0, 19);
+			}
+
+			// 处理承兑逻辑
+			const selfType = this.$refs.generatePaymentSelfSelectedBankType?.localSelectType;
+			const otherType = this.$refs.generatePaymentOtherSelectedBankType?.localSelectType;
+			if (selfType && otherType && selfType !== otherType) {
+				if (!formData.params) {
+					formData.params = {};
+				}
+				if (!formData.params.bankacceptance) {
+					formData.params.bankacceptance = {};
+				}
+				if (!formData.params.bankacceptance.billType) {
+					if (selfType === BankAcceptanceType.ACCEPTANCE) {
+						formData.params.bankacceptance.billType = PayType.PAYMENT;
+					}
+					if (otherType === BankAcceptanceType.ACCEPTANCE) {
+						formData.params.bankacceptance.billType = PayType.RECEIVE;
+					}
+				}
+			}
+
+			addPayment(formData)
+				.then(res => {
+					this.$modal.msgSuccess('生成付款成功');
+					this.cancelGeneratePayment();
+					this.getAuditList();
+				})
+				.catch(error => {
+					this.$message.error(error.msg || '生成付款失败');
+				});
+		},
+		// 取消生成付款
+		cancelGeneratePayment() {
+			this.generatePaymentVisible = false;
+			this.generatePaymentForm = {
+				fundsDate: null,
+				payType: null,
+				moneyAmount: null,
+				selfBankCardType: BankAcceptanceType.BANK_CASH,
+				otherBankCardType: BankAcceptanceType.BANK_CASH,
+				selfAccountsName: null,
+				selfBankNo: null,
+				selfBankName: null,
+				selfBankID: null,
+				otherAccountsName: null,
+				otherBankNo: null,
+				otherBankName: null,
+				companyName: null,
+				companyId: null,
+				companyType: null,
+				comments: null,
+				transactionHistory: null,
+				userName: null,
+				attachmentList: [],
+				params: {
+					attachmentIds: [],
+					bankacceptance: null
+				}
+			};
+			// 清除附件上传状态
+			if (this.$refs.generatePaymentAttachmentUpload) {
+				this.$refs.generatePaymentAttachmentUpload.clearUploadedFiles();
+			}
+			if (this.$refs.generatePaymentTransactionHistoryUpload) {
+				this.$refs.generatePaymentTransactionHistoryUpload.clearUploadedFiles();
+			}
+		},
+		// 处理生成付款表单的附件更新
+		handleGeneratePaymentAttachmentFilesUpdated(uploadParams) {
+			if (uploadParams && uploadParams.params && uploadParams.params.attachmentIds) {
+				if (!this.generatePaymentForm.params) {
+					this.generatePaymentForm.params = {};
+				}
+				this.generatePaymentForm.params.attachmentIds = uploadParams.params.attachmentIds;
+			}
 		}
 	}
 };
@@ -660,93 +880,78 @@ export default {
 		</el-row>
 
 		<!--    放置付款信息列表-->
-		<u-row>
-			<u-table
-				id="printBox"
-				v-loading="loading"
-				:data="paymentList"
-				border
-				:cell-style="
-					() => {
-						return { padding: '.5px' };
-					}
-				"
-				style="width: 100%"
-				size="mini"
-				align="center"
-			>
-				<CustomTableColumn v-if="columns[0].visible" prop="id" label="ID" width="80" show-overflow-tooltip></CustomTableColumn>
-				<CustomTableColumn v-if="columns[1].visible" prop="fundsDate" label="日期" width="150" show-overflow-tooltip></CustomTableColumn>
-				<CustomTableColumn v-if="columns[2].visible" prop="payType" label="支付类型" width="150" show-overflow-tooltip></CustomTableColumn>
-				<CustomTableColumn v-if="columns[3].visible" prop="moneyAmount" label="金额" width="120" show-overflow-tooltip></CustomTableColumn>
-				<CustomTableColumn v-if="columns[4].visible" prop="otherBankNo" label="对方账号" width="300" show-overflow-tooltip></CustomTableColumn>
-				<CustomTableColumn v-if="columns[5].visible" prop="otherAccountsName" label="对方户名" width="200" show-overflow-tooltip></CustomTableColumn>
-				<CustomTableColumn v-if="columns[6].visible" prop="companyName" label="对方公司" width="120" show-overflow-tooltip></CustomTableColumn>
-				<CustomTableColumn v-if="columns[7].visible" prop="reason" label="付款原因" width="120" show-overflow-tooltip></CustomTableColumn>
-				<CustomTableColumn v-if="columns[8].visible" prop="applyPerson" label="申请人" width="120" show-overflow-tooltip></CustomTableColumn>
-				<CustomTableColumn v-if="columns[9].visible" prop="comments" label="备注" width="120" show-overflow-tooltip></CustomTableColumn>
-				<CustomTableColumn v-if="columns[10].visible" prop="comments" label="附件" width="120" show-overflow-tooltip>
-					<template #default="scope">
-						<div v-if="Array.isArray(scope.row.attachmentList)">
-							<CheckFiles
-								:attachmentList="scope.row.attachmentList"
-								:flag="'attachments'"
-								:is-upload="false"
-								@needToUpdate="value => handleUpdateFilePath(value, scope.row, getPaymentApply, updatePaymentApply)"
-							/>
-						</div>
-						<div v-else>
-							<el-tag type="danger">加载错误</el-tag>
-						</div>
-					</template>
-				</CustomTableColumn>
-				<CustomTableColumn label="操作" fixed="right" width="100" align="center">
-					<template slot-scope="scope">
-						<el-button type="text" size="mini" @click="handleCheckInfo(scope.row)">查看</el-button>
-					</template>
-				</CustomTableColumn>
-				<CustomTableColumn label="审核状态" align="center" fixed="right">
-					<template slot-scope="scope">
-						<el-tag
-							:type="
-								{
-									[PAYMENT_APPLY_STATE.V2.PENDING]: 'warning',
-									[PAYMENT_APPLY_STATE.V2.ING]: 'info',
-									[PAYMENT_APPLY_STATE.V2.PASS]: 'success',
-									[PAYMENT_APPLY_STATE.V2.NOT_PASS]: 'danger',
-									[PAYMENT_APPLY_STATE.V2.REJECT]: 'danger',
-									[PAYMENT_APPLY_STATE.V2.VOID]: 'default'
-								}[scope.row.checkState]
-							"
-						>
-							{{ scope.row.checkState }}
-						</el-tag>
-					</template>
-				</CustomTableColumn>
-				<CustomTableColumn v-if="columns[11].visible" label="审核流程" show-overflow-tooltip align="center" fixed="right">
-					<template slot-scope="scope">
-						<el-button type="text" size="mini" @click="handleCheckApplyInfo(scope.row)">查看</el-button>
-					</template>
-				</CustomTableColumn>
-			</u-table>
-			<!--      分页-->
-			<pagination v-show="total > 0" :total="total" :page.sync="pageNum" :limit.sync="pageSize" @pagination="getAuditList" />
-		</u-row>
+		<el-table
+			id="printBox"
+			v-loading="loading"
+			:data="paymentList"
+			border
+			:cell-style="
+				() => {
+					return { padding: '.5px' };
+				}
+			"
+			style="width: 100%"
+			size="mini"
+			align="center"
+		>
+			<el-table-column v-if="columns[0].visible" prop="id" label="ID" width="80" show-overflow-tooltip></el-table-column>
+			<el-table-column v-if="columns[1].visible" prop="fundsDate" label="日期" width="150" show-overflow-tooltip></el-table-column>
+			<el-table-column v-if="columns[2].visible" prop="payType" label="支付类型" width="150" show-overflow-tooltip></el-table-column>
+			<el-table-column v-if="columns[3].visible" prop="moneyAmount" label="金额" width="120" show-overflow-tooltip></el-table-column>
+			<el-table-column v-if="columns[4].visible" prop="otherBankNo" label="对方账号" width="300" show-overflow-tooltip></el-table-column>
+			<el-table-column v-if="columns[5].visible" prop="otherAccountsName" label="对方户名" width="200" show-overflow-tooltip></el-table-column>
+			<el-table-column v-if="columns[6].visible" prop="companyName" label="对方公司" width="120" show-overflow-tooltip></el-table-column>
+			<el-table-column v-if="columns[7].visible" prop="reason" label="付款原因" width="120" show-overflow-tooltip></el-table-column>
+			<el-table-column v-if="columns[8].visible" prop="applyPerson" label="申请人" width="120" show-overflow-tooltip></el-table-column>
+			<el-table-column v-if="columns[9].visible" prop="comments" label="备注" width="120" show-overflow-tooltip></el-table-column>
+			<el-table-column v-if="columns[10].visible" prop="comments" label="附件" width="120" show-overflow-tooltip>
+				<template #default="scope">
+					<div v-if="Array.isArray(scope.row.attachmentList)">
+						<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'attachments'" :is-upload="false" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getPaymentApply, updatePaymentApply)" />
+					</div>
+					<div v-else>
+						<el-tag type="danger">加载错误</el-tag>
+					</div>
+				</template>
+			</el-table-column>
+			<el-table-column label="详情" fixed="right" width="100" align="center">
+				<template slot-scope="scope">
+					<el-button type="text" size="mini" @click="handleCheckInfo(scope.row)">查看</el-button>
+				</template>
+			</el-table-column>
+			<el-table-column label="审核状态" align="center" fixed="right">
+				<template slot-scope="scope">
+					<el-tag
+						:type="
+							{
+								[PAYMENT_APPLY_STATE.V2.PENDING]: 'warning',
+								[PAYMENT_APPLY_STATE.V2.ING]: 'info',
+								[PAYMENT_APPLY_STATE.V2.PASS]: 'success',
+								[PAYMENT_APPLY_STATE.V2.NOT_PASS]: 'danger',
+								[PAYMENT_APPLY_STATE.V2.REJECT]: 'danger',
+								[PAYMENT_APPLY_STATE.V2.VOID]: 'default'
+							}[scope.row.checkState]
+						"
+					>
+						{{ scope.row.checkState }}
+					</el-tag>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[11].visible" label="操作" show-overflow-tooltip align="center" fixed="right" width="260">
+				<template slot-scope="scope">
+					<el-button type="text" size="mini" @click="handleCheckApplyInfo(scope.row)">查看</el-button>
+					<el-button type="text" size="mini" @click="handleGeneratePayment(scope.row)">生成付款</el-button>
+					<el-button v-if="isCurrentUserAuditor(scope.row)" type="text" size="mini" style="color: #f56c6c" @click="handleDeletePaymentApply(scope.row)">删除</el-button>
+				</template>
+			</el-table-column>
+		</el-table>
+		<!--      分页-->
+		<pagination v-show="total > 0" :total="total" :page.sync="pageNum" :limit.sync="pageSize" @pagination="getAuditList" />
 
 		<!--    固定的锚点-->
 
 		<!--    查看付款信息的详细信息-->
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="付款信息详细"
-			:visible.sync="checkInfoDialogVisible"
-			width="50%"
-		>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="付款信息详细" :visible.sync="checkInfoDialogVisible" width="50%">
 			<el-descriptions title="付款信息明细">
 				<el-descriptions-item label="申请人">
 					{{ checkPaymentInfo.applyPerson }}
@@ -786,17 +991,7 @@ export default {
 		</el-dialog>
 
 		<!--      审核流程步骤图信息  -->
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="false"
-			:visible.sync="checkApplyInfoDialogVisible"
-			title="审核流程多项信息"
-			width="58%"
-		>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :visible.sync="checkApplyInfoDialogVisible" title="审核流程多项信息" width="58%">
 			<el-collapse v-model="activeNames" @change="handleChangeApplyItem">
 				<el-collapse-item name="1">
 					<template #title>
@@ -818,21 +1013,244 @@ export default {
 		</el-dialog>
 
 		<!--   2025-2-17 新增付款功能-->
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="付款处理"
-			:visible.sync="open"
-			width="650px"
-			append-to-body
-		>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="付款处理" :visible.sync="open" width="650px" append-to-body>
 			<keep-alive>
 				<ApplyPayment :is-daily-expense="1" :need-money="needMoney" :need-info="{}" @changeOpen="changePaymentApplyInfoVisible" :money-input-disabled="false" />
 			</keep-alive>
+		</el-dialog>
+
+		<!-- 生成付款弹窗 -->
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="生成付款" :visible.sync="generatePaymentVisible" width="1000px" append-to-body>
+			<el-form ref="generatePaymentFormRef" :model="generatePaymentForm" label-width="170px">
+				<el-row :gutter="40">
+					<!-- 左列 -->
+					<el-col :span="generatePaymentForm.companyType === PAYMENT_TARGET_TYPE.PAYMENT_FEE ? 24 : 12">
+						<el-form-item label="日期">
+							<el-date-picker v-model="generatePaymentForm.fundsDate" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss" style="width: 100%"></el-date-picker>
+						</el-form-item>
+
+						<el-form-item label="付款类型">
+							<el-cascader v-model="generatePaymentForm.payType" :options="paymentTypeTree" :props="props" style="width: 100%"></el-cascader>
+						</el-form-item>
+
+						<el-form-item label="金额">
+							<el-input v-model="generatePaymentForm.moneyAmount" placeholder="请输入金额" style="width: 100%" />
+						</el-form-item>
+
+						<el-form-item label="我方银行账户类型">
+							<BankType
+								ref="generatePaymentSelfSelectedBankType"
+								:bill-type="BankAcceptanceType.PAY_TYPE.PAYMENT"
+								:select-type="generatePaymentForm.selfBankCardType"
+								:external-bankacceptance-info="generatePaymentForm.params.bankacceptance"
+								@updateSelectedType="value => (generatePaymentForm.selfBankCardType = value)"
+								@updateBankAcceptance="value => (generatePaymentForm.params.bankacceptance = value)"
+								style="width: 100%"
+							/>
+						</el-form-item>
+
+						<el-form-item label="我方户名">
+							<el-row>
+								<el-col :span="22">
+									<el-input disabled v-model="generatePaymentForm.selfAccountsName" placeholder="请选择" style="width: 100%" />
+								</el-col>
+								<el-col :span="2">
+									<SearchOption
+										:limit-info="{ acountsType: '己方公司' }"
+										:get-data="listBankAccount"
+										icon="el-icon-search"
+										query-label="户名查找"
+										query-info="acountsName"
+										:query-name="queryBank"
+										width="1000px"
+										@commitBack="
+											val => {
+												generatePaymentForm.selfBankName = val.bankName;
+												generatePaymentForm.selfAccountsName = val.acountsName;
+												generatePaymentForm.selfBankNo = val.bankNo;
+												generatePaymentForm.selfBankID = val.id;
+											}
+										"
+										@update:queryName="handleUpdateQueryName"
+									>
+										<template #table-columns>
+											<el-table-column label="账户类型" align="center" prop="acountsType" width="100" />
+											<el-table-column label="开户名称(户名)" align="center" prop="acountsName" width="300" />
+											<el-table-column label="账号(银行账号)" align="center" prop="bankNo" width="300" />
+											<el-table-column label="开户行" align="center" prop="bankName" width="300" />
+											<el-table-column label="己方公司" align="center" prop="displayName" width="300" />
+										</template>
+									</SearchOption>
+								</el-col>
+							</el-row>
+						</el-form-item>
+
+						<el-form-item label="我方账号">
+							<el-input disabled v-model="generatePaymentForm.selfBankNo" placeholder="请选择" style="width: 100%" />
+						</el-form-item>
+
+						<el-form-item label="我方开户行">
+							<el-input disabled v-model="generatePaymentForm.selfBankName" placeholder="请选择" style="width: 100%" />
+						</el-form-item>
+
+						<el-form-item label="对方类型">
+							<el-select v-model="generatePaymentForm.companyType" placeholder="请选择" style="width: 100%">
+								<el-option v-for="item in generatePaymentOptions" :key="item.value" :label="item.label" :value="item.value" />
+							</el-select>
+						</el-form-item>
+
+						<el-form-item v-if="generatePaymentForm.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE && generatePaymentForm.companyType !== PUBLIC_DICT_TYPE.EMPLOYEE" label="对方公司名称">
+							<el-row>
+								<el-col :span="22">
+									<el-input disabled v-model="generatePaymentForm.companyName" placeholder="请选择" style="width: 100%" />
+								</el-col>
+								<el-col :span="2" v-if="generatePaymentForm.companyType === PAYMENT_TARGET_TYPE.CUSTOMER || generatePaymentForm.companyType === PAYMENT_TARGET_TYPE.SUPPLIER">
+									<SearchOption
+										:limit-info="{ companyType: generatePaymentForm.companyType }"
+										:get-data="listCompany"
+										:query-info="`companyName`"
+										:query-label="`公司名称`"
+										:query-name="companyName"
+										@update:queryName="value => (companyName = value)"
+										@commitBack="
+											val => {
+												if (generatePaymentForm.companyType !== PAYMENT_TARGET_TYPE.DRIVER) {
+													generatePaymentForm.companyName = val.companyName;
+												} else {
+													generatePaymentForm.companyName = val.driver;
+												}
+												generatePaymentForm.companyId = val.id;
+											}
+										"
+									>
+										<template #table-columns>
+											<el-table-column :label="generatePaymentForm.companyType" align="center" prop="companyName" :width="generatePaymentForm.companyType === PAYMENT_TARGET_TYPE.SUPPLIER ? 340 : 150" />
+											<el-table-column label="老板姓名" align="center" prop="leader" />
+											<el-table-column label="老板电话" align="center" prop="leaderTel" />
+											<el-table-column label="区域" align="center" prop="region" />
+											<el-table-column label="销售经理" align="center" prop="salesManager" v-if="generatePaymentForm.companyType !== PAYMENT_TARGET_TYPE.SUPPLIER" />
+										</template>
+									</SearchOption>
+								</el-col>
+								<el-col :span="2" v-if="generatePaymentForm.companyType === PAYMENT_TARGET_TYPE.DRIVER">
+									<SearchOption
+										:limit-info="{ companyType: generatePaymentForm.companyType }"
+										:get-data="listCars"
+										:query-info="`driver`"
+										:query-label="`司机`"
+										:query-name="companyName"
+										@update:queryName="value => (companyName = value)"
+										@commitBack="
+											val => {
+												generatePaymentForm.companyName = val.driver;
+												generatePaymentForm.companyId = val.id;
+											}
+										"
+									>
+										<template #table-columns>
+											<el-table-column label="运输类型" align="center" prop="carType" />
+											<el-table-column label="车牌/柜号" align="center" prop="carNo" />
+											<el-table-column label="司机姓名/海运公司" align="center" prop="driver" />
+											<el-table-column label="司机电话" align="center" prop="tel" />
+										</template>
+									</SearchOption>
+								</el-col>
+							</el-row>
+						</el-form-item>
+					</el-col>
+
+					<!-- 右列 -->
+					<el-col :span="generatePaymentForm.companyType === PAYMENT_TARGET_TYPE.PAYMENT_FEE ? 24 : 12">
+						<el-form-item v-if="generatePaymentForm.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE" label="对方银行账户类型">
+							<BankType ref="generatePaymentOtherSelectedBankType" :option-baned="true" :baned="true" :select-type="generatePaymentForm.otherBankCardType" @updateSelectedType="value => (generatePaymentForm.otherBankCardType = value)" style="width: 100%" />
+						</el-form-item>
+
+						<el-form-item v-if="generatePaymentForm.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE" label="对方户名">
+							<el-input disabled v-model="generatePaymentForm.otherAccountsName" placeholder="请选择" style="width: 100%" />
+						</el-form-item>
+
+						<el-form-item v-if="generatePaymentForm.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE" label="对方账号">
+							<el-row>
+								<el-col :span="22">
+									<el-input disabled v-model="generatePaymentForm.otherBankNo" placeholder="请选择" style="width: 100%" />
+								</el-col>
+								<el-col :span="2">
+									<SearchOption
+										:limit-info="{ acountsType: generatePaymentForm.companyType }"
+										:get-data="listBankAccount"
+										:query-name="queryBankAcount"
+										query-label="户名查找"
+										query-info="acountsName"
+										@commitBack="
+											val => {
+												generatePaymentForm.otherBankName = val.bankName;
+												generatePaymentForm.otherAccountsName = val.acountsName;
+												generatePaymentForm.otherBankNo = val.bankNo;
+												if (generatePaymentForm.companyType === PUBLIC_DICT_TYPE.EMPLOYEE) {
+													generatePaymentForm.companyId = val.companyId;
+													generatePaymentForm.companyName = val.companyName;
+												}
+											}
+										"
+										@update:queryName="handleUpdateQueryBankAcount"
+										:extra-params="{
+											companyId: generatePaymentForm.companyId,
+											companyType: generatePaymentForm.companyType
+										}"
+									>
+										<template #table-columns>
+											<el-table-column label="账户类型" align="center" prop="acountsType" />
+											<el-table-column label="公司名称" align="center" prop="companyName" />
+											<el-table-column label="户名" align="center" prop="acountsName" />
+											<el-table-column label="账号(银行账号)" align="center" prop="bankNo" width="200" />
+											<el-table-column label="开户行" align="center" prop="bankName" />
+										</template>
+									</SearchOption>
+								</el-col>
+							</el-row>
+						</el-form-item>
+
+						<el-form-item v-if="generatePaymentForm.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE" label="对方开户行">
+							<el-input disabled v-model="generatePaymentForm.otherBankName" placeholder="请选择" style="width: 100%" />
+						</el-form-item>
+
+						<el-form-item label="附件" prop="attachmentIds">
+							<UploadFilesButton
+								ref="generatePaymentAttachmentUpload"
+								flag="attachments"
+								:extra-info="{ moduleType: 'payment', formId: null }"
+								:initial-attachments="generatePaymentForm.attachmentList || []"
+								@files-updated="handleGeneratePaymentAttachmentFilesUpdated"
+								style="width: 100%"
+							/>
+						</el-form-item>
+
+						<el-form-item label="银行卡流水编号" prop="transactionHistory">
+							<el-input v-model="generatePaymentForm.transactionHistory" placeholder="请输入银行卡流水编号" style="width: 100%" />
+						</el-form-item>
+						<el-form-item label="银行卡流水附件" prop="attachmentIds">
+							<UploadFilesButton
+								ref="generatePaymentTransactionHistoryUpload"
+								flag="transactionHistoryAttachmentList"
+								:extra-info="{ moduleType: 'payment', formId: null }"
+								:initial-attachments="generatePaymentForm.attachmentList || []"
+								@files-updated="handleGeneratePaymentAttachmentFilesUpdated"
+								style="width: 100%"
+							/>
+						</el-form-item>
+						<el-form-item label="录入人员" prop="userName">
+							<el-input v-model="generatePaymentForm.userName" placeholder="请输入录入人员" style="width: 100%" />
+						</el-form-item>
+						<el-form-item label="备注" prop="comments">
+							<el-input v-model="generatePaymentForm.comments" placeholder="请输入备注" style="width: 100%" />
+						</el-form-item>
+					</el-col>
+				</el-row>
+			</el-form>
+			<div slot="footer" class="dialog-footer">
+				<el-button type="primary" @click="submitGeneratePayment">确 定</el-button>
+				<el-button @click="cancelGeneratePayment">取 消</el-button>
+			</div>
 		</el-dialog>
 		<!--    漫游组件-->
 		<v-tour name="paymentApplyTour" :steps="tourSteps" :options="tourOptions" :callbacks="tourCallBacks"></v-tour>

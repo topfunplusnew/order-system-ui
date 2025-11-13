@@ -1086,6 +1086,8 @@ export default {
 			this.title = '修改付款信息';
 			// 使用 $nextTick 确保组件渲染完成后再设置银行账户类型和其他属性
 			this.$nextTick(() => {
+				console.log(`paymentData.bankacceptanceId`, paymentData.bankacceptanceId);
+				this.$bus.$emit('changeFlag', paymentData.bankacceptanceId > 0 ? paymentData.bankacceptanceId : false);
 				if (!flag) {
 					if (this.$refs[`selfSelectedBankType`] && paymentData.selfBankCardType) {
 						this.$refs.selfSelectedBankType.localSelectType = paymentData.selfBankCardType;
@@ -1093,7 +1095,6 @@ export default {
 					if (this.$refs[`otherSelectedBankType`] && paymentData.otherBankCardType) {
 						this.$refs.otherSelectedBankType.localSelectType = paymentData.otherBankCardType;
 					}
-
 					if (paymentData.bankacceptanceId) {
 						getBankAcceptance(paymentData.bankacceptanceId).then(result => {
 							if (!result.data) {
@@ -1102,24 +1103,17 @@ export default {
 								this.form.params.bankacceptance = null;
 								return;
 							}
-							this.$nextTick(() => {
-								this.form.params.bankacceptance = result.data;
-							});
+							this.form.params.bankacceptance = result.data;
 						});
 					}
 				}
-
 				// 设置级联选择器的值 - 使用searchSubjectFromMap查找完整路径数组
 				if (this.form.payType) {
 					if (typeof this.form.payType === 'string') {
 						this.form.payType = this.searchSubjectFromMap(this.form.payType);
 					}
 				}
-
-				// 对方类型直接已在 form.companyType 中
-				console.log(`this.form.payType`, this.form.payType);
 			});
-			this.$bus.$emit('changeFlag', paymentData.bankacceptanceId > 0 ? paymentData.bankacceptanceId : false);
 		},
 		// 付款的操作
 		handlePaymentRow(row) {
