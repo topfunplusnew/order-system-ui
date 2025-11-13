@@ -41,9 +41,6 @@
 				<el-button type="success" size="mini" :disabled="freightPaymentOnceDisabled" @click="handleFreightPaymentOnce">一键付运费</el-button>
 			</el-col>
 
-			<!--  运费修正-->
-			<FillFreight />
-
 			<!-- 一键冲抵款按钮 -->
 			<el-col :span="1.5">
 				<el-button :disabled="offsetSelections.length <= 0" size="mini" type="warning" @click="handleOffsetPayment">一键冲抵款</el-button>
@@ -64,17 +61,7 @@
 			</right-toolbar>
 		</el-row>
 
-		<el-table
-			id="printBox"
-			ref="multipleTable"
-			v-horizontal-scroll="'always'"
-			v-loading="loading"
-			border
-			:data="orderFreightList"
-			max-height="600px"
-			size="mini"
-			@selection-change="handleSelectionChange"
-		>
+		<el-table id="printBox" ref="multipleTable" v-horizontal-scroll="'always'" v-loading="loading" border :data="orderFreightList" max-height="600px" size="mini" @selection-change="handleSelectionChange">
 			<el-table-column type="selection" width="55" align="center" />
 			<el-table-column width="80" align="center" label="冲抵选择">
 				<template #header>
@@ -113,9 +100,10 @@
 			<el-table-column v-if="columns[15].visible" label="我方账号" align="center" prop="selfBankNo" width="180" show-overflow-tooltip />
 			<el-table-column v-if="columns[16].visible" label="我方开户行" align="center" prop="selfBankName" width="100" show-overflow-tooltip />
 			<el-table-column v-if="columns[17].visible" label="备注" align="center" prop="comments" width="100" show-overflow-tooltip />
-			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="150">
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="200">
 				<template slot-scope="scope">
 					<CheckOrderInfo :row="scope.row" />
+					<el-button size="mini" type="warning" @click="handleFillFreight(scope.row)">修正</el-button>
 					<el-button v-if="scope.row.isedit" v-hasPermi="['system:orderfreight:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
 					<el-button v-hasPermi="['system:orderfreight:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
 				</template>
@@ -135,16 +123,7 @@
 							<el-input v-model="form.otherAcountsName" placeholder="请输入对方户名" :disabled="bankInputDisabled" />
 						</el-col>
 						<el-col v-if="bankInputDisabled === false" :span="3">
-							<SearchOption
-								:get-data="listBankAccount"
-								icon="el-icon-search"
-								:limit-info="{}"
-								query-label="户名查找"
-								query-info="acountsName"
-								:query-name="queryCompany"
-								@commitBack="handleCommitBack"
-								@update:queryName="handleUpdateQueryName"
-							>
+							<SearchOption :get-data="listBankAccount" icon="el-icon-search" :limit-info="{}" query-label="户名查找" query-info="acountsName" :query-name="queryCompany" @commitBack="handleCommitBack" @update:queryName="handleUpdateQueryName">
 								<template #table-columns>
 									<el-table-column label="公司名称" align="center" prop="companyName" />
 									<el-table-column label="公司类型" align="center" prop="companyType" />
@@ -174,15 +153,7 @@
 							<el-input v-model="form.carNo" placeholder="请输入车牌号" />
 						</el-col>
 						<el-col :span="4">
-							<SearchOption
-								:limit-info="{ dictType: 'order_cars' }"
-								:get-data="listData"
-								query-label="车牌搜索"
-								:query-name="queryCars"
-								query-info="dictLabel"
-								@update:queryName="updateQueryCars"
-								@commitBack="handleCommitBackCars"
-							>
+							<SearchOption :limit-info="{ dictType: 'order_cars' }" :get-data="listData" query-label="车牌搜索" :query-name="queryCars" query-info="dictLabel" @update:queryName="updateQueryCars" @commitBack="handleCommitBackCars">
 								<template #table-columns>
 									<el-table-column label="车牌" prop="dictLabel" />
 								</template>
@@ -195,15 +166,7 @@
 						<el-input v-model="form.fleet" placeholder="请输入车队" />
 					</el-col>
 					<el-col :span="4">
-						<SearchOption
-							:limit-info="{}"
-							:get-data="listFleet"
-							query-label="车队名称搜索"
-							:query-name="queryFleet"
-							query-info="fname"
-							@update:queryName="updateQueryFleet"
-							@commitBack="handleCommitBackFleet"
-						>
+						<SearchOption :limit-info="{}" :get-data="listFleet" query-label="车队名称搜索" :query-name="queryFleet" query-info="fname" @update:queryName="updateQueryFleet" @commitBack="handleCommitBackFleet">
 							<template #table-columns>
 								<el-table-column label="车队名称" prop="fname" />
 							</template>
@@ -315,14 +278,15 @@
 								<el-input v-model="freightSelfOnceInfo.selfBankName" placeholder="请输入我方开户行" />
 							</el-form-item>
 
-							<el-form-item label="运费总和">
-								<el-button type="text" disabled style="color: orangered">
-									{{ fix(total_freight) }}
-								</el-button>
-							</el-form-item>
+							<!-- 运费总和展示区域 -->
+							<div class="total-freight-section">
+								<div class="total-freight-label">运费总和</div>
+								<div class="total-freight-amount">{{ fix(total_freight) }}</div>
+							</div>
+
 							<el-form-item>
 								<div class="order-freight-submit">
-									<el-button type="success" @click="submitFreightOnce">一键付运费</el-button>
+									<el-button type="success" size="medium" @click="submitFreightOnce">一键付运费</el-button>
 								</div>
 							</el-form-item>
 						</el-form>
@@ -333,22 +297,74 @@
 		</InfoDialog>
 
 		<!--    created第一次传递的props，然后监听后来props的变化-->
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="运费付款申请"
-			:visible.sync="applyPaymentVisible"
-			width="500px"
-			append-to-body
-		>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="运费付款申请" :visible.sync="applyPaymentVisible" width="500px" append-to-body>
 			<keep-alive>
 				<ApplyPayment :table-name="TableName.ORDER_FREIGHT" :t-i-d="tID" :need-info="needInfo" :need-money="freight" @changeOpen="changeOpen" />
 			</keep-alive>
 		</el-dialog>
+
+		<!--     运费修正弹窗-->
+		<InfoDialog :visible.sync="fillFreightVisible" title="运费修正" :width="'750px'" @close="cancelFillFreight">
+			<template #info>
+				<el-form ref="fillFreightFormRef" :model="fillFreightForm" :rules="fillFreightRules" label-width="100px">
+					<el-form-item label="金额" prop="moneyAmount">
+						<el-input v-model.number="fillFreightForm.moneyAmount" placeholder="请输入金额" @input="onFillFreightMoneyInput" />
+					</el-form-item>
+					<el-form-item label="车牌号/柜号" prop="carNo">
+						<el-row>
+							<el-col :span="20">
+								<el-input disabled v-model="fillFreightForm.carNo" placeholder="自动填充" />
+							</el-col>
+						</el-row>
+					</el-form-item>
+					<el-form-item label="对方户名" prop="otherAcountsName">
+						<el-row>
+							<el-col :span="16">
+								<el-input v-model="fillFreightForm.otherAcountsName" placeholder="请输入对方户名或点击搜索" />
+							</el-col>
+							<el-col :span="4">
+								<SearchOption :get-data="listBankAccount" icon="el-icon-search" :limit-info="{}" query-label="户名查找" query-info="acountsName" :query-name="queryBankAccount" @commitBack="handleCommitBackBankAccount" @update:queryName="updateQueryBankAccount">
+									<template #table-columns>
+										<el-table-column label="公司名称" align="center" prop="companyName" />
+										<el-table-column label="公司类型" align="center" prop="companyType" />
+										<el-table-column label="开户行" align="center" prop="bankName" />
+										<el-table-column label="开户名" align="center" prop="acountsName" />
+										<el-table-column label="账号" align="center" prop="bankNo" />
+									</template>
+								</SearchOption>
+							</el-col>
+						</el-row>
+					</el-form-item>
+					<el-form-item label="对方账号" prop="otherBankNo">
+						<el-input v-model="fillFreightForm.otherBankNo" placeholder="请输入对方账号或点击上方搜索自动填充" />
+					</el-form-item>
+					<el-form-item label="对方开户行">
+						<el-input v-model="fillFreightForm.otherBankName" placeholder="请输入对方开户行或点击上方搜索自动填充" />
+					</el-form-item>
+					<el-form-item label="司机姓名" prop="driverName">
+						<el-input disabled v-model="fillFreightForm.driverName" placeholder="自动填充" />
+					</el-form-item>
+					<el-form-item label="车队" prop="fleet">
+						<el-col :span="20">
+							<el-input disabled v-model="fillFreightForm.fleet" placeholder="自动填充" />
+						</el-col>
+					</el-form-item>
+					<el-form-item label="申请日期" prop="applyDate">
+						<el-date-picker v-model="fillFreightForm.applyDate" type="datetime" placeholder="请选择申请日期" value-format="yyyy-MM-dd HH:mm:ss" />
+					</el-form-item>
+					<el-form-item label="付款日期" prop="payDate">
+						<el-date-picker v-model="fillFreightForm.payDate" type="datetime" placeholder="请选择付款日期" value-format="yyyy-MM-dd HH:mm:ss" />
+					</el-form-item>
+					<el-form-item label="备注" prop="comments">
+						<el-input v-model="fillFreightForm.comments" placeholder="请输入备注" />
+					</el-form-item>
+				</el-form>
+				<div slot="footer" class="dialog-footer" style="text-align: center">
+					<el-button type="primary" @click="submitFillFreightForm">确 定</el-button>
+					<el-button @click="cancelFillFreight">取 消</el-button>
+				</div>
+			</template>
+		</InfoDialog>
 	</div>
 </template>
 
@@ -368,16 +384,16 @@ import InfoDialog from '../../../components/InfoDialog.vue';
 import { mixin_payment_subject } from '../../dashboard/mixins/payment/payment_subject';
 import { PaymentState, PAYMENT_STATE } from '../../../api/tool/enums';
 import CheckOrderInfo from '../../dashboard/components/orderfreight/CheckOrderInfo.vue';
-import FillFreight from '../../dashboard/components/orderfreight/FillFreight.vue';
 import { mixin_order_freight_fill } from './orderFreightFill';
 import { FREIGHT_TYPE, mixin_freight_payment } from '@/views/dashboard/mixins/freight/freight_payment';
 import { fix } from '../../../api/tool/format';
 import { common_dialog } from '../../dashboard/mixins/common/common_dialog';
+import { listGoodsOrder } from '@/api/system/goodsOrder';
+import { isNull } from '@/main';
 
 export default {
 	name: 'OrderFreight',
 	components: {
-		FillFreight,
 		CheckOrderInfo,
 		InfoDialog,
 		ApplyPayment,
@@ -501,7 +517,63 @@ export default {
 			},
 			// 冲抵款相关数据
 			offsetSelections: [], // 冲抵选择的数据
-			selectAllOffset: false // 全选状态
+			selectAllOffset: false, // 全选状态
+			// 运费修正相关数据
+			fillFreightVisible: false, // 运费修正弹窗显示状态
+			fillFreightForm: {}, // 运费修正表单数据
+			fillFreightRules: {
+				// 金额校验：必须为数值，最多两位小数，允许负数
+				moneyAmount: [
+					{ required: true, message: '请输入金额', trigger: 'blur' },
+					{
+						validator: (rule, value, callback) => {
+							if (value === null || value === undefined || value === '') {
+								return callback(new Error('请输入金额'));
+							}
+							const str = String(value).trim();
+							// 允许负数、小数，最多两位小数
+							if (!/^-?\d+(?:\.\d{1,2})?$/.test(str)) {
+								return callback(new Error('请输入有效金额，最多两位小数，可输入负数'));
+							}
+							if (Number(str) === 0) {
+								return callback(new Error('金额不能为 0'));
+							}
+							return callback();
+						},
+						trigger: 'blur'
+					}
+				],
+				otherAcountsName: [
+					{
+						required: true,
+						message: '请输入对方户名或点击搜索选择',
+						trigger: 'blur'
+					}
+				],
+				otherBankNo: [
+					{
+						required: true,
+						message: '请输入对方账号或点击搜索选择',
+						trigger: 'blur'
+					}
+				],
+				applyDate: [
+					{
+						required: true,
+						message: '请选择申请日期',
+						trigger: 'blur'
+					}
+				],
+				payDate: [
+					{
+						required: true,
+						message: '请选择付款日期',
+						trigger: 'blur'
+					}
+				]
+			},
+			// 运费修正搜索字段
+			queryBankAccount: '' // 银行账户搜索字段
 		};
 	},
 	computed: {
@@ -570,22 +642,14 @@ export default {
 		if (Object.keys(this.$route.query).length) {
 			this.$router.replace({ path: this.$route.path });
 		}
-
-		// 监听来自 FillFreight 的刷新事件，收到后重新加载列表
-		if (this.$bus && this.$bus.$on) {
-			this.$bus.$on('order-freight:refresh', this.getList);
-		}
-	},
-	beforeDestroy() {
-		if (this.$bus && this.$bus.$off) {
-			this.$bus.$off('order-freight:refresh', this.getList);
-		}
 	},
 	methods: {
 		fix,
 		listFleet,
 		listData,
 		listBankAccount,
+		listGoodsOrder,
+		isNull,
 		// 冲抵选择相关方法
 		// 判断行是否被冲抵选中
 		isOffsetRowSelected(row) {
@@ -816,6 +880,125 @@ export default {
 				},
 				`orderFreight_${new Date().getTime()}.xlsx`
 			);
+		},
+		// 运费修正相关方法
+		// 打开运费修正弹窗
+		handleFillFreight(row) {
+			this.resetFillFreightForm();
+			// 从行数据填充表单信息（除了金额）
+			this.fillFreightForm = {
+				sourceId: row.sourceId || null,
+				source: row.source || null,
+				freightType: row.freightType || null,
+				moneyAmount: null, // 金额不自动填充
+				selfAcountsName: row.selfAcountsName || null,
+				selfBankNo: row.selfBankNo || null,
+				selfBankName: row.selfBankName || null,
+				otherAcountsName: row.otherAcountsName || null,
+				otherBankNo: row.otherBankNo || null,
+				otherBankName: row.otherBankName || null,
+				driverName: row.driverName || null,
+				driverId: row.driverId || null,
+				carNo: row.carNo || null,
+				fleet: row.fleet || null,
+				applyDate: row.applyDate || null,
+				payDate: row.payDate || null,
+				comments: row.comments || null
+			};
+			this.fillFreightVisible = true;
+		},
+		// 重置运费修正表单
+		resetFillFreightForm() {
+			this.fillFreightForm = {
+				sourceId: null,
+				source: null,
+				freightType: null,
+				moneyAmount: null,
+				selfAcountsName: null,
+				selfBankNo: null,
+				selfBankName: null,
+				otherAcountsName: null,
+				otherBankNo: null,
+				otherBankName: null,
+				driverName: null,
+				driverId: null,
+				carNo: null,
+				fleet: null,
+				applyDate: null,
+				payDate: null,
+				comments: null
+			};
+			if (this.$refs.fillFreightFormRef) {
+				this.$refs.fillFreightFormRef.resetFields();
+			}
+		},
+		// 银行账户搜索回调 - 专门用于对方户名搜索
+		handleCommitBackBankAccount(val) {
+			this.fillFreightForm.otherBankNo = val.bankNo;
+			this.fillFreightForm.otherBankName = val.bankName;
+			this.fillFreightForm.otherAcountsName = val.acountsName;
+		},
+		// 银行账户搜索相关函数
+		updateQueryBankAccount(val) {
+			this.queryBankAccount = val;
+		},
+		// 金额输入过滤：保留数字、小数点和负号，且最多两位小数
+		onFillFreightMoneyInput(val) {
+			if (val === null || val === undefined) return;
+			let s = String(val);
+			// 删除非法字符（保留数字、小数点和负号）
+			s = s.replace(/[^\d.-]/g, '');
+			// 只允许一个负号，且必须在开头
+			if (s.includes('-')) {
+				const minusCount = (s.match(/-/g) || []).length;
+				if (minusCount > 1 || (s.indexOf('-') !== 0 && s.includes('-'))) {
+					// 如果负号不在开头或有多个负号，只保留开头的负号
+					s = s.replace(/-/g, '');
+					if (val < 0) {
+						s = '-' + s;
+					}
+				}
+			}
+			// 只允许一个小数点
+			s = s.replace(/(\.+)\./g, '$1');
+			// 限制两位小数
+			if (/^-?\d+\.\d{3,}$/.test(s)) {
+				s = s.replace(/^(-?\d+\.\d{2}).*$/, '$1');
+			}
+			// 去除前导多余的 0（保留 0 或 0.xx 或 -0.xx），但保留负号
+			if (/^-?0\d+/.test(s) && !s.startsWith('-0.')) {
+				if (s.startsWith('-')) {
+					s = s.replace(/^-0+(?=\d)/, '-0');
+				} else {
+					s = s.replace(/^0+(?=\d)/, '0');
+				}
+			}
+			// 如果只有负号，保留为空
+			if (s === '-' || s === '') {
+				this.fillFreightForm.moneyAmount = null;
+			} else {
+				this.fillFreightForm.moneyAmount = Number(s);
+			}
+		},
+		// 提交运费修正表单
+		submitFillFreightForm() {
+			this.$refs.fillFreightFormRef.validate(valid => {
+				if (valid) {
+					const formData = excludeParams(this.fillFreightForm, this.$exclude);
+					// 运费修正需要使用字段isOrderFreightFix
+					formData.extraInfo = { isOrderFreightFix: true };
+					addOrderFreight(formData).then(() => {
+						this.$modal.msgSuccess('新增成功');
+						this.fillFreightVisible = false;
+						this.getList();
+					});
+				}
+			});
+		},
+		// 取消运费修正
+		cancelFillFreight() {
+			this.fillFreightVisible = false;
+			this.resetFillFreightForm();
 		}
 	}
 };
@@ -855,7 +1038,7 @@ export default {
 	flex-direction: column;
 	background: #fafafa;
 	border-left: 1px solid #f0f0f0;
-	padding-left: 12px;
+	padding: 16px 16px 0 16px;
 }
 
 /* 让表单在右侧面板中自适应滚动 */
@@ -863,10 +1046,44 @@ export default {
 	height: 100%;
 	display: flex;
 	flex-direction: column;
+	padding-right: 4px;
+}
+
+/* 优化表单标签样式 */
+.order-freight-self-info ::v-deep .el-form-item__label {
+	font-weight: 500;
+	color: #606266;
 }
 
 .order-freight-self-info ::v-deep .el-form-item {
-	margin-bottom: 10px;
+	margin-bottom: 16px;
+}
+
+/* 运费总和展示区域 - 醒目样式 */
+.total-freight-section {
+	margin: 20px 0;
+	padding: 20px;
+	background: linear-gradient(135deg, #093b61 0%, #156fb2 100%);
+	border-radius: 8px;
+	box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+	text-align: center;
+	color: #fff;
+}
+
+.total-freight-label {
+	font-size: 14px;
+	font-weight: 500;
+	margin-bottom: 8px;
+	opacity: 0.95;
+	letter-spacing: 0.5px;
+}
+
+.total-freight-amount {
+	font-size: 32px;
+	font-weight: bold;
+	line-height: 1.2;
+	text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+	font-family: 'Arial', 'Microsoft YaHei', sans-serif;
 }
 
 /* 将按钮区域吸底并加柔和分隔效果 */
@@ -878,38 +1095,79 @@ export default {
 	position: sticky;
 	bottom: 0;
 	background: linear-gradient(to top, rgba(250, 250, 250, 1), rgba(250, 250, 250, 0.92));
-	padding: 10px 0 6px;
+	padding: 16px 0 12px;
 	border-top: 1px solid #eee;
 }
 
 /* 优化左侧卡片与折叠面板的紧凑感 */
+.order-freight-info ::v-deep .el-collapse {
+	border: none;
+}
+
+.order-freight-info ::v-deep .el-collapse-item {
+	margin-bottom: 12px;
+	border: 1px solid #e4e7ed;
+	border-radius: 6px;
+	overflow: hidden;
+}
+
 .order-freight-info ::v-deep .el-collapse-item__header {
-	padding: 0 10px;
-	font-size: 13px;
+	padding: 12px 16px;
+	font-size: 14px;
+	font-weight: 500;
+	background-color: #f5f7fa;
+	color: #303133;
+	border-bottom: 1px solid #e4e7ed;
+}
+
+.order-freight-info ::v-deep .el-collapse-item__header:hover {
+	background-color: #ecf5ff;
+}
+
+.order-freight-info ::v-deep .el-collapse-item__wrap {
+	border-bottom: none;
+}
+
+.order-freight-info ::v-deep .el-collapse-item__content {
+	padding: 0;
 }
 
 .order-freight-info ::v-deep .el-card {
-	border: 1px solid #f0f0f0;
+	border: none;
 	box-shadow: none;
+	margin: 0;
 }
 
 .order-freight-info ::v-deep .el-card__body {
-	padding: 10px 12px;
+	padding: 16px;
+}
+
+.order-freight-info ::v-deep .el-descriptions {
+	background-color: #fff;
 }
 
 .order-freight-info ::v-deep .el-descriptions__title {
-	font-size: 14px;
+	font-size: 15px;
+	font-weight: 600;
+	color: #303133;
+	margin-bottom: 12px;
 }
 
 .order-freight-info ::v-deep .el-descriptions__label {
-	color: #888;
-	width: 88px;
+	color: #606266;
+	width: 100px;
+	font-weight: 500;
 	/* 控制标签宽度，提升可读性 */
 }
 
+.order-freight-info ::v-deep .el-descriptions__content {
+	color: #303133;
+}
+
 .order-freight-info ::v-deep .el-tag.el-tag--mini {
-	line-height: 18px;
-	height: 18px;
+	line-height: 20px;
+	height: 20px;
+	padding: 0 8px;
 }
 
 /* 表单输入宽度与组件对齐优化 */

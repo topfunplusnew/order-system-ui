@@ -296,16 +296,7 @@ export default {
 								<el-date-picker v-model="item.value" type="date" value-format="yyyy-MM-dd" placeholder="选择日期" size="mini" clearable></el-date-picker>
 							</template>
 							<template v-else-if="item.type === 'date-range-picker'">
-								<el-date-picker
-									v-model="item.value"
-									type="daterange"
-									range-separator="至"
-									start-placeholder="开始日期"
-									end-placeholder="结束日期"
-									value-format="yyyy-MM-dd"
-									size="mini"
-									clearable
-								></el-date-picker>
+								<el-date-picker v-model="item.value" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" size="mini" clearable></el-date-picker>
 							</template>
 						</el-form-item>
 						<el-form-item>
@@ -314,7 +305,7 @@ export default {
 					</el-form>
 				</div>
 				<u-table size="mini" :key="tableData.length" v-loading="loading" :data="tableData" border>
-					<u-table-column label="操作" width="60" align="center">
+					<u-table-column label="操作" width="60" align="center" fixed="left">
 						<template slot-scope="scope">
 							<el-button type="danger" size="mini" :disabled="disable" @click="commitSomeThing(scope.row)">确认</el-button>
 						</template>

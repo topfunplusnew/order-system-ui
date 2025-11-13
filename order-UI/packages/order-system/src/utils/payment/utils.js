@@ -22,4 +22,3 @@ export function hasTableReference(data, tableName) {
 		return item && item.refTableName === tableName;
 	});
 }
-

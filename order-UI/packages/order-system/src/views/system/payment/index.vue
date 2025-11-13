@@ -195,6 +195,7 @@
 							<el-dropdown-item v-hasPermi="['system:payment:edit']" :disabled="scope.row.paymentState === PAYMENT_STATE.UNPAID || (scope.row.paymentState === PAYMENT_STATE.PAID && scope.row.auditState === '1')" command="edit" divided>编辑</el-dropdown-item>
 							<el-dropdown-item v-hasPermi="['system:payment:remove']" :disabled="scope.row.paymentState === PAYMENT_STATE.PAID && scope.row.auditState === '1'" command="delete">删除</el-dropdown-item>
 							<el-dropdown-item v-hasPermi="['system:tableeditmessage:list']" command="viewEditReason">查看修改原因</el-dropdown-item>
+							<el-dropdown-item v-if="hasTableReference(scope.row, TableName.ORDER_FREIGHT)" command="viewFreightInfo" divided>查看运费信息</el-dropdown-item>
 						</el-dropdown-menu>
 					</el-dropdown>
 				</template>
@@ -435,6 +436,100 @@
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="信息" :visible.sync="infoVisible" width="900px" append-to-body>
 			<component :is="Components" :need-to-show-info="needToShowInfo" />
 		</el-dialog>
+
+		<!--     查看运费信息弹窗-->
+		<InfoDialog :visible.sync="viewFreightVisible" title="查看运费信息" :width="'1100px'" @close="closeViewFreight">
+			<template #info>
+				<div class="order-freight-body">
+					<!-- 左侧：运费信息展示区域 -->
+					<div class="order-freight-info">
+						<el-collapse v-model="activeNames">
+							<el-collapse-item v-for="(item, index) in viewFreightList" :key="index" :title="'运费信息(' + (index + 1) + ')'" :name="index + ''">
+								<el-card class="box-card">
+									<div>
+										<el-descriptions :title="'运费信息(' + (index + 1) + ')'" :column="2" border>
+											<el-descriptions-item label="运费ID" :span="1">{{ item.id }}</el-descriptions-item>
+											<el-descriptions-item label="运费类型" :span="1">
+												<el-tag size="mini">{{ item.freightType }}</el-tag>
+											</el-descriptions-item>
+											<el-descriptions-item label="司机/海运公司" :span="1">{{ item.driverName || '-' }}</el-descriptions-item>
+											<el-descriptions-item label="车牌号/柜号" :span="1">{{ item.carNo || '-' }}</el-descriptions-item>
+											<el-descriptions-item label="车队" :span="1">{{ item.fleet || '-' }}</el-descriptions-item>
+											<el-descriptions-item label="运费金额" :span="1">
+												<span style="color: #f56c6c; font-weight: bold">{{ item.moneyAmount || 0 }}</span>
+											</el-descriptions-item>
+											<el-descriptions-item label="已付金额" :span="1">
+												<span style="color: #67c23a; font-weight: bold">{{ item.paidAmount || 0 }}</span>
+											</el-descriptions-item>
+											<el-descriptions-item label="支付状态" :span="1">
+												<el-tag :type="item.paymentState === '已支付' ? 'success' : 'danger'" size="mini">
+													{{ item.paymentState || '未支付' }}
+												</el-tag>
+											</el-descriptions-item>
+											<el-descriptions-item label="运费来源" :span="1">
+												<el-tag size="mini">{{ item.source === 'goodsorder' ? '订单' : item.source || '-' }}</el-tag>
+											</el-descriptions-item>
+											<el-descriptions-item label="对方户名" :span="1">{{ item.otherAcountsName || '-' }}</el-descriptions-item>
+											<el-descriptions-item label="对方账号" :span="1">{{ item.otherBankNo || '-' }}</el-descriptions-item>
+											<el-descriptions-item label="对方开户行" :span="1">{{ item.otherBankName || '-' }}</el-descriptions-item>
+											<el-descriptions-item label="申请人员" :span="1">{{ item.applyUserName || '-' }}</el-descriptions-item>
+											<el-descriptions-item label="申请日期" :span="1">{{ item.applyDate || '-' }}</el-descriptions-item>
+											<el-descriptions-item label="付款人员" :span="1">{{ item.payUserName || '-' }}</el-descriptions-item>
+											<el-descriptions-item label="付款日期" :span="1">{{ item.payDate || '-' }}</el-descriptions-item>
+											<el-descriptions-item label="备注" :span="2">{{ item.comments || item.content || '-' }}</el-descriptions-item>
+											<!-- 付款信息 -->
+											<el-descriptions-item label="付款信息" :span="2">
+												<div v-if="item.payment" style="margin-top: 8px">
+													<el-descriptions :column="2" border size="mini">
+														<el-descriptions-item label="付款编码" :span="1">{{ item.payment.code || '-' }}</el-descriptions-item>
+														<el-descriptions-item label="付款日期" :span="1">{{ item.payment.fundsDate || '-' }}</el-descriptions-item>
+														<el-descriptions-item label="付款类型" :span="1">{{ item.payment.payType || '-' }}</el-descriptions-item>
+														<el-descriptions-item label="付款金额" :span="1">
+															<span style="color: #67c23a; font-weight: bold">{{ item.payment.moneyAmount || 0 }}</span>
+														</el-descriptions-item>
+														<el-descriptions-item label="我方银行类型" :span="1">{{ item.payment.selfBankCardType || '-' }}</el-descriptions-item>
+														<el-descriptions-item label="对方银行类型" :span="1">{{ item.payment.otherBankCardType || '-' }}</el-descriptions-item>
+														<el-descriptions-item label="对方户名" :span="1">{{ item.payment.otherAccountsName || '-' }}</el-descriptions-item>
+														<el-descriptions-item label="对方账号" :span="1">{{ item.payment.otherBankNo || '-' }}</el-descriptions-item>
+														<el-descriptions-item label="对方开户行" :span="1">{{ item.payment.otherBankName || '-' }}</el-descriptions-item>
+														<el-descriptions-item label="复核状态" :span="1">
+															<el-tag :type="item.payment.auditState === '1' ? 'success' : 'info'" size="mini">
+																{{ item.payment.auditState === '1' ? '已复核' : '未复核' }}
+															</el-tag>
+														</el-descriptions-item>
+														<el-descriptions-item label="付款备注" :span="2">{{ item.payment.comments || '-' }}</el-descriptions-item>
+													</el-descriptions>
+												</div>
+												<span v-else>-</span>
+											</el-descriptions-item>
+										</el-descriptions>
+									</div>
+								</el-card>
+							</el-collapse-item>
+						</el-collapse>
+					</div>
+					<!-- 右侧：我方信息和运费合计 -->
+					<div class="order-freight-self-info">
+						<el-form label-width="120px">
+							<el-form-item label="我方户名">
+								<el-input :value="selfBankInfo.selfAcountsName" disabled />
+							</el-form-item>
+							<el-form-item label="我方账号">
+								<el-input :value="selfBankInfo.selfBankNo" disabled />
+							</el-form-item>
+							<el-form-item label="我方开户行">
+								<el-input :value="selfBankInfo.selfBankName" disabled />
+							</el-form-item>
+							<!-- 运费总和展示区域 -->
+							<div class="total-freight-section">
+								<div class="total-freight-label">运费总和</div>
+								<div class="total-freight-amount">{{ fix(totalFreightAmount) }}</div>
+							</div>
+						</el-form>
+					</div>
+				</div>
+			</template>
+		</InfoDialog>
 	</div>
 </template>
 
@@ -468,6 +563,10 @@ import PaymentFlag from '@/components/PaymentFlag';
 import { getBankAcceptance } from '../../../api/system/bankAcceptance';
 import { checkPermi } from '@/utils/permission';
 import ExpandCursor from '../../dashboard/components/common/ExpandCursor.vue';
+import { getOrderFreight } from '@/api/system/orderFreight';
+import { hasTableReference } from '@/utils/payment/utils';
+import InfoDialog from '../../../components/InfoDialog.vue';
+import { fix } from '../../../api/tool/format';
 
 export default {
 	name: 'Payment',
@@ -480,7 +579,8 @@ export default {
 		DynamicField,
 		SearchOption,
 		PaymentFlag,
-		ExpandCursor
+		ExpandCursor,
+		InfoDialog
 	},
 	mixins: [mixin_printHTML, mixin_payment_audit, mixin_payment_select, mixin_payment_subject, mixin_paymentindex_fill, mixin_bankType, mixin_checkfile],
 	data() {
@@ -665,7 +765,11 @@ export default {
 				tid: null
 			},
 			// 遮罩层显示状态
-			showMask: false
+			showMask: false,
+			// 查看运费信息相关数据
+			viewFreightVisible: false, // 查看运费信息弹窗显示状态
+			viewFreightList: [], // 查看的运费信息列表
+			activeNames: [] // 折叠面板激活项
 		};
 	},
 	computed: {
@@ -684,9 +788,35 @@ export default {
 		PAYMENT_STATE() {
 			return PAYMENT_STATE;
 		},
+		TableName() {
+			return TableName;
+		},
 		// 检查是否有复核权限（包含admin权限）
 		hasAuditPermission() {
 			return checkPermi(['system:payment:audit']);
+		},
+		// 计算运费总和
+		totalFreightAmount() {
+			if (_.isEmpty(this.viewFreightList)) {
+				return 0;
+			}
+			return _.sumBy(this.viewFreightList, item => Number(item.moneyAmount) || 0);
+		},
+		// 获取我方信息（从第一条运费信息中获取，因为应该都是一样的）
+		selfBankInfo() {
+			if (_.isEmpty(this.viewFreightList)) {
+				return {
+					selfAcountsName: '-',
+					selfBankNo: '-',
+					selfBankName: '-'
+				};
+			}
+			const firstItem = this.viewFreightList[0];
+			return {
+				selfAcountsName: firstItem.selfAcountsName || '-',
+				selfBankNo: firstItem.selfBankNo || '-',
+				selfBankName: firstItem.selfBankName || '-'
+			};
 		}
 	},
 	// 展示与隐藏
@@ -726,6 +856,8 @@ export default {
 		listCars,
 		listBankAccount,
 		listCompany,
+		hasTableReference,
+		fix,
 		// 下拉菜单命令处理
 		handleCommand(command, row) {
 			switch (command) {
@@ -755,6 +887,9 @@ export default {
 					break;
 				case 'viewEditReason':
 					this.handleViewEditReason(row);
+					break;
+				case 'viewFreightInfo':
+					this.handleViewFreightInfo(row);
 					break;
 			}
 		},
@@ -1363,6 +1498,55 @@ export default {
 				},
 				`payment_${new Date().getTime()}.xlsx`
 			);
+		},
+		// 查看运费信息相关方法
+		// 打开查看运费信息弹窗
+		handleViewFreightInfo(row) {
+			// 从 tableReferences 中提取运费ID列表
+			const freightIds = _.chain(row.tableReferences)
+				.filter(ref => ref.refTableName === TableName.ORDER_FREIGHT && ref.refTableId)
+				.map('refTableId')
+				.value();
+
+			if (_.isEmpty(freightIds)) {
+				this.$message.warning('未找到关联的运费信息');
+				return;
+			}
+
+			// 批量查询运费信息
+			this.viewFreightList = [];
+			this.viewFreightVisible = true;
+			this.activeNames = []; // 重置展开项
+
+			// 使用 Promise.all 并行查询所有运费信息
+			Promise.all(_.map(freightIds, id => getOrderFreight(id)))
+				.then(responses => {
+					// 提取所有成功返回的运费数据
+					this.viewFreightList = _.chain(responses)
+						.map('data')
+						.filter(data => data)
+						.value();
+
+					if (_.isEmpty(this.viewFreightList)) {
+						this.$message.warning('未查询到运费信息');
+						this.viewFreightVisible = false;
+					} else {
+						// 默认展开第一项
+						this.$nextTick(() => {
+							this.activeNames = ['0'];
+						});
+					}
+				})
+				.catch(error => {
+					console.error('查询运费信息失败:', error);
+					this.$message.error('查询运费信息失败');
+					this.viewFreightVisible = false;
+				});
+		},
+		// 关闭查看运费信息弹窗
+		closeViewFreight() {
+			this.viewFreightVisible = false;
+			this.viewFreightList = [];
 		}
 	}
 };
@@ -1391,5 +1575,166 @@ export default {
 /* 确保对话框在遮罩层之上 */
 .app-container >>> .el-dialog__wrapper {
 	z-index: 2000 !important;
+}
+
+/* 查看运费信息弹窗样式 */
+.order-freight-body {
+	display: grid;
+	grid-template-columns: 1.1fr 0.9fr;
+	gap: 16px;
+	height: 68vh;
+	min-height: 420px;
+	overflow: hidden;
+	padding-right: 4px;
+}
+
+.order-freight-info,
+.order-freight-self-info {
+	min-width: 0;
+}
+
+.order-freight-info {
+	height: 100%;
+	overflow: auto;
+	padding-right: 4px;
+}
+
+.order-freight-self-info {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	background: #fafafa;
+	border-left: 1px solid #f0f0f0;
+	padding: 16px 16px 0 16px;
+}
+
+.order-freight-self-info ::v-deep .el-form {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	padding-right: 4px;
+}
+
+.order-freight-self-info ::v-deep .el-form-item {
+	margin-bottom: 16px;
+}
+
+.order-freight-self-info ::v-deep .el-form-item__label {
+	font-weight: 500;
+	color: #606266;
+}
+
+.order-freight-self-info ::v-deep .el-input {
+	width: 100%;
+}
+
+.order-freight-info ::v-deep .el-collapse {
+	border: none;
+}
+
+.order-freight-info ::v-deep .el-collapse-item {
+	margin-bottom: 12px;
+	border: 1px solid #e4e7ed;
+	border-radius: 6px;
+	overflow: hidden;
+}
+
+.order-freight-info ::v-deep .el-collapse-item__header {
+	padding: 12px 16px;
+	font-size: 14px;
+	font-weight: 500;
+	background-color: #f5f7fa;
+	color: #303133;
+	border-bottom: 1px solid #e4e7ed;
+}
+
+.order-freight-info ::v-deep .el-collapse-item__header:hover {
+	background-color: #ecf5ff;
+}
+
+.order-freight-info ::v-deep .el-collapse-item__wrap {
+	border-bottom: none;
+}
+
+.order-freight-info ::v-deep .el-collapse-item__content {
+	padding: 0;
+}
+
+.order-freight-info ::v-deep .el-card {
+	border: none;
+	box-shadow: none;
+	margin: 0;
+}
+
+.order-freight-info ::v-deep .el-card__body {
+	padding: 16px;
+}
+
+.order-freight-info ::v-deep .el-descriptions {
+	background-color: #fff;
+}
+
+.order-freight-info ::v-deep .el-descriptions__title {
+	font-size: 15px;
+	font-weight: 600;
+	color: #303133;
+	margin-bottom: 12px;
+}
+
+.order-freight-info ::v-deep .el-descriptions__label {
+	color: #606266;
+	width: 100px;
+	font-weight: 500;
+}
+
+.order-freight-info ::v-deep .el-descriptions__content {
+	color: #303133;
+}
+
+.order-freight-info ::v-deep .el-tag.el-tag--mini {
+	line-height: 20px;
+	height: 20px;
+	padding: 0 8px;
+}
+
+/* 运费总和展示区域 - 醒目样式 */
+.total-freight-section {
+	margin: 20px 0;
+	padding: 20px;
+	background: linear-gradient(135deg, #093b61 0%, #156fb2 100%);
+	border-radius: 8px;
+	box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+	text-align: center;
+	color: #fff;
+}
+
+.total-freight-label {
+	font-size: 14px;
+	font-weight: 500;
+	margin-bottom: 8px;
+	opacity: 0.95;
+	letter-spacing: 0.5px;
+}
+
+.total-freight-amount {
+	font-size: 32px;
+	font-weight: bold;
+	line-height: 1.2;
+	text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+	font-family: 'Arial', 'Microsoft YaHei', sans-serif;
+}
+
+/* 小屏幕降级为单列布局 */
+@media (max-width: 1366px) {
+	.order-freight-body {
+		grid-template-columns: 1fr;
+		height: 75vh;
+	}
+
+	.order-freight-self-info {
+		border-left: none;
+		border-top: 1px solid #f0f0f0;
+		padding-top: 12px;
+	}
 }
 </style>
