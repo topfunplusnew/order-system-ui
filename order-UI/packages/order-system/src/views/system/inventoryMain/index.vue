@@ -562,7 +562,7 @@
                 >
                   <template #table-columns>
                     <CustomTableColumn label="级别编码" align="center" prop="levelNo"/>
-                    <CustomTableColumn label="级别名称" align="center" prop="levelName"/>
+                    <CustomTableColumn label="级别名称" align="center" prop="levelName" width="220"/>
                     <CustomTableColumn label="分类编号" align="center" prop="categoryNo"/>
                     <CustomTableColumn label="分类名称" align="center" prop="categoryName"/>
                     <CustomTableColumn label="厚度" align="center" prop="height"/>

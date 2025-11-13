@@ -66,13 +66,7 @@
 							<i class="el-icon-arrow-down el-icon--right"></i>
 						</span>
 						<el-dropdown-menu slot="dropdown">
-							<el-dropdown-item
-								:disabled="scope.row.targetInventoryDetail && scope.row.targetInventoryDetail.id != null"
-								v-hasPermi="['system:secondinventory:add']"
-								@click.native="secondInventory(scope.row)"
-							>
-								二次入库
-							</el-dropdown-item>
+							<el-dropdown-item :disabled="scope.row.targetInventoryDetail && scope.row.targetInventoryDetail.id != null" v-hasPermi="['system:secondinventory:add']" @click.native="secondInventory(scope.row)">二次入库</el-dropdown-item>
 							<el-dropdown-item v-hasPermi="['system:secondinventory:remove']" @click.native="handleDelete(scope.row)">删除</el-dropdown-item>
 						</el-dropdown-menu>
 					</el-dropdown>
@@ -89,17 +83,7 @@
 						<el-input size="mini" v-model="secondForm.storeHouseName" placeholder="请输入仓库名称" />
 					</el-col>
 					<el-col :span="8">
-						<SearchOption
-							:get-data="listStoreHouse"
-							icon="el-icon-s-home"
-							:limit-info="{}"
-							query-label="仓库名称"
-							query-info="storeHouseName"
-							:query-name="queryStore"
-							@commitBack="value => handleCommitBackInventory(value)"
-							@update:queryName="handleUpdateQueryNameStore"
-							:is-page="false"
-						>
+						<SearchOption :get-data="listStoreHouse" icon="el-icon-s-home" :limit-info="{}" query-label="仓库名称" query-info="storeHouseName" :query-name="queryStore" @commitBack="value => handleCommitBackInventory(value)" @update:queryName="handleUpdateQueryNameStore" :is-page="false">
 							<template #table-columns>
 								<el-table-column label="仓库名称" align="center" prop="storeHouseName" />
 								<el-table-column label="地址" align="center" prop="address" />
@@ -114,14 +98,7 @@
 					<el-input size="mini" v-model="secondForm.goodsCompany" placeholder="请输入货物来源公司(本部或者海盛)" />
 				</el-form-item>
 				<el-form-item label="附件">
-					<UploadFilesButton
-						ref="attachmentUploader"
-						:table-name="'secondinventory'"
-						:record-id="secondForm.id"
-						:attachment-type="'附件'"
-						:initial-attachments="(secondForm.params && secondForm.params.attachments) || []"
-						@files-updated="handleAttachmentFilesUpdated"
-					/>
+					<UploadFilesButton ref="attachmentUploader" :table-name="'secondinventory'" :record-id="secondForm.id" :attachment-type="'附件'" :initial-attachments="(secondForm.params && secondForm.params.attachments) || []" @files-updated="handleAttachmentFilesUpdated" />
 				</el-form-item>
 				<br />
 				<el-form-item label="运输方式" required>
@@ -136,15 +113,7 @@
 								<el-input disabled v-model="secondForm.landCarNo" type="text" size="mini" placeholder="请输入陆运车牌" style="width: 120px" />
 							</el-col>
 							<el-col :span="4">
-								<SearchOption
-									:limit-info="{ carType: '陆运' }"
-									:get-data="listCars"
-									query-label="车牌搜索"
-									query-info="carNo"
-									:query-name="queryLandCar"
-									@commitBack="handleCommitBackCar"
-									@update:queryName="handleChangeCar"
-								>
+								<SearchOption :limit-info="{ carType: '陆运' }" :get-data="listCars" query-label="车牌搜索" query-info="carNo" :query-name="queryLandCar" @commitBack="handleCommitBackCar" @update:queryName="handleChangeCar">
 									<template #table-columns>
 										<el-table-column label="车牌" align="center" prop="carNo" />
 										<el-table-column label="司机" align="center" prop="driver" />
@@ -175,15 +144,7 @@
 								<el-input disabled v-model="secondForm.fleet" type="text" size="mini" placeholder="请输入车队" />
 							</el-col>
 							<el-col :span="4">
-								<SearchOption
-									:limit-info="{}"
-									:get-data="listFleet"
-									query-label="车队名称"
-									query-info="fname"
-									:query-name="queryFleet"
-									@commitBack="handleCommitBackFleet"
-									@update:queryName="handleChangeFleet"
-								>
+								<SearchOption :limit-info="{}" :get-data="listFleet" query-label="车队名称" query-info="fname" :query-name="queryFleet" @commitBack="handleCommitBackFleet" @update:queryName="handleChangeFleet">
 									<template #table-columns>
 										<el-table-column label="车队名称" align="center" prop="fname" />
 										<el-table-column label="车队经理" align="center" prop="fleader" />
@@ -202,15 +163,7 @@
 								<el-input v-model="secondForm.seaCarNo" type="text" size="mini" placeholder="请输入柜号" style="width: 120px" />
 							</el-col>
 							<el-col :span="4">
-								<SearchOption
-									:limit-info="{ carType: '海运' }"
-									:get-data="listCars"
-									query-label="车牌"
-									query-info="carNo"
-									:query-name="querySeaCars"
-									@commitBack="handleCommitBackSeaCar"
-									@update:queryName="handleChangeSeaCar"
-								>
+								<SearchOption :limit-info="{ carType: '海运' }" :get-data="listCars" query-label="车牌" query-info="carNo" :query-name="querySeaCars" @commitBack="handleCommitBackSeaCar" @update:queryName="handleChangeSeaCar">
 									<template #table-columns>
 										<el-table-column label="柜号" align="center" prop="carNo" />
 										<el-table-column label="海运公司" align="center" prop="driver" />
@@ -251,8 +204,8 @@
 				</el-row>
 
 				<el-table border size="mini" :data="visibleInventoryDetailList" :row-class-name="getRowClassName" @selection-change="handleInventoryDetailSelectionChange" ref="inventoryDetail">
-					<el-table-column type="selection" width="30" align="center" :selectable="() => true" fixed="left"/>
-					<el-table-column label="序号" align="center" type="index" width="60" fixed="left"/>
+					<el-table-column type="selection" width="30" align="center" :selectable="() => true" fixed="left" />
+					<el-table-column label="序号" align="center" type="index" width="60" fixed="left" />
 					<el-table-column label="行操作" align="center" width="140">
 						<template slot-scope="scope">
 							<div>
@@ -266,12 +219,7 @@
 						<template #default="scope">
 							<el-row>
 								<el-col :span="14">
-									<el-input
-										size="mini"
-										v-model="scope.row.supplier"
-										placeholder="请输入供应商"
-										:disabled="scope.row.shouldDel || !scope.row.isEditing || scope.row.selfButtonDisabled"
-									/>
+									<el-input size="mini" v-model="scope.row.supplier" placeholder="请输入供应商" :disabled="scope.row.shouldDel || !scope.row.isEditing || scope.row.selfButtonDisabled" />
 								</el-col>
 								<el-col :span="5">
 									<el-button
@@ -338,7 +286,7 @@
 								>
 									<template #table-columns>
 										<el-table-column label="级别编码" align="center" prop="levelNo" />
-										<el-table-column label="级别名称" align="center" prop="levelName" width="140" />
+										<el-table-column label="级别名称" align="center" prop="levelName" width="220" />
 										<el-table-column label="分类编号" align="center" prop="categoryNo" />
 										<el-table-column label="分类名称" align="center" prop="categoryName" />
 										<el-table-column label="厚度" align="center" prop="height" />
@@ -352,13 +300,7 @@
 					</el-table-column>
 					<el-table-column label="计量单位" prop="countingUnit" width="92" class-name="counting-unit-column">
 						<template #default="scope">
-							<el-radio-group
-								v-model="scope.row.countingUnit"
-								size="mini"
-								:disabled="scope.row.shouldDel || !scope.row.isEditing"
-								@change="() => recalculateAll(scope)"
-								class="horizontal-radio-group"
-							>
+							<el-radio-group v-model="scope.row.countingUnit" size="mini" :disabled="scope.row.shouldDel || !scope.row.isEditing" @change="() => recalculateAll(scope)" class="horizontal-radio-group">
 								<el-radio label="片" class="horizontal-radio">片数</el-radio>
 								<el-radio label="其他" class="horizontal-radio">其他</el-radio>
 							</el-radio-group>
@@ -381,13 +323,7 @@
 					</el-table-column>
 					<el-table-column label="每包片数" prop="piecesPerPack" width="80">
 						<template #default="scope">
-							<el-input
-								size="mini"
-								v-model="scope.row.piecesPerPack"
-								@input="val => handlePiecesInput(scope.row, 'piecesPerPack', val, () => recalculateAll(scope))"
-								placeholder="请输入每包片数"
-								:disabled="scope.row.shouldDel || !scope.row.isEditing"
-							/>
+							<el-input size="mini" v-model="scope.row.piecesPerPack" @input="val => handlePiecesInput(scope.row, 'piecesPerPack', val, () => recalculateAll(scope))" placeholder="请输入每包片数" :disabled="scope.row.shouldDel || !scope.row.isEditing" />
 						</template>
 					</el-table-column>
 					<el-table-column label="包数" prop="packs" width="60">
@@ -403,13 +339,7 @@
 					</el-table-column>
 					<el-table-column label="出厂片数" prop="pieces" width="80">
 						<template #default="scope">
-							<el-input
-								size="mini"
-								v-model="scope.row.pieces"
-								@input="val => handlePiecesInput(scope.row, 'pieces', val, val => handlePiecesChange(scope, val))"
-								placeholder="请输入出厂片数"
-								:disabled="scope.row.shouldDel || !scope.row.isEditing"
-							/>
+							<el-input size="mini" v-model="scope.row.pieces" @input="val => handlePiecesInput(scope.row, 'pieces', val, val => handlePiecesChange(scope, val))" placeholder="请输入出厂片数" :disabled="scope.row.shouldDel || !scope.row.isEditing" />
 						</template>
 					</el-table-column>
 					<el-table-column label="出厂单价" prop="price" width="80">
@@ -427,13 +357,7 @@
 					</el-table-column>
 					<el-table-column label="含税" prop="isIncludeTaxFactory" width="80" class-name="tax-column">
 						<template #default="scope">
-							<el-radio-group
-								v-model="scope.row.isIncludeTaxFactory"
-								size="mini"
-								@change="() => recalculateAll(scope)"
-								:disabled="scope.row.shouldDel || !scope.row.isEditing"
-								class="horizontal-tax-radio-group"
-							>
+							<el-radio-group v-model="scope.row.isIncludeTaxFactory" size="mini" @change="() => recalculateAll(scope)" :disabled="scope.row.shouldDel || !scope.row.isEditing" class="horizontal-tax-radio-group">
 								<el-radio :label="1" class="horizontal-tax-radio">是</el-radio>
 								<el-radio :label="0" class="horizontal-tax-radio">否</el-radio>
 							</el-radio-group>
@@ -459,14 +383,7 @@
 					</el-table-column>
 					<el-table-column label="二次入库片数" prop="stockNumber" width="90">
 						<template #default="scope">
-							<el-input
-								size="mini"
-								@input="val => handlePiecesInput(scope.row, 'stockNumber', val, () => recalculateAll(scope))"
-								@change="() => handlePiecesChange(scope)"
-								v-model="scope.row.stockNumber"
-								placeholder="请输入二次入库片数"
-								:disabled="scope.row.shouldDel"
-							/>
+							<el-input size="mini" @input="val => handlePiecesInput(scope.row, 'stockNumber', val, () => recalculateAll(scope))" @change="() => handlePiecesChange(scope)" v-model="scope.row.stockNumber" placeholder="请输入二次入库片数" :disabled="scope.row.shouldDel" />
 						</template>
 					</el-table-column>
 					<el-table-column label="存货价" prop="paymentUnload" width="100">
@@ -484,13 +401,7 @@
 					</el-table-column>
 					<el-table-column label="含税" prop="isIncludeTaxSale" width="60" class-name="tax-column">
 						<template #default="scope">
-							<el-radio-group
-								v-model="scope.row.isIncludeTaxSale"
-								size="mini"
-								@change="() => recalculateAll(scope)"
-								:disabled="scope.row.shouldDel || !scope.row.isEditing"
-								class="horizontal-tax-radio-group"
-							>
+							<el-radio-group v-model="scope.row.isIncludeTaxSale" size="mini" @change="() => recalculateAll(scope)" :disabled="scope.row.shouldDel || !scope.row.isEditing" class="horizontal-tax-radio-group">
 								<el-radio :label="1" class="horizontal-tax-radio">是</el-radio>
 								<el-radio :label="0" class="horizontal-tax-radio">否</el-radio>
 							</el-radio-group>
