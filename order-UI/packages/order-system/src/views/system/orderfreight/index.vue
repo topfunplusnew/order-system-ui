@@ -94,7 +94,6 @@
 			<el-table-column v-if="columns[6].visible" label="对方户名" align="center" prop="otherAcountsName" width="100" show-overflow-tooltip />
 			<el-table-column v-if="columns[7].visible" label="对方账号" align="center" prop="otherBankNo" width="180" show-overflow-tooltip />
 			<el-table-column v-if="columns[8].visible" label="对方开户行" align="center" prop="otherBankName" width="100" show-overflow-tooltip />
-			<el-table-column v-if="columns[8].visible" label="对方开户行" align="center" prop="otherBankName" width="100" show-overflow-tooltip />
 			<el-table-column v-if="columns[9].visible" label="运费来源" align="center" prop="source" width="100" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<el-tag v-if="scope.row.source === FREIGHT_TYPE.GOODS_ORDER">订单</el-tag>

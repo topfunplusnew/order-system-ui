@@ -1569,7 +1569,7 @@ export default {
 						<el-input size="mini" v-model="scope.row.actualPieces" placeholder="请输入卸货片数" @input="() => recalculateAll(scope)" :disabled="!scope.row.isEditing" />
 					</template>
 				</el-table-column>
-				<el-table-column label="卸货价" prop="paymentUnload" width="60">
+				<el-table-column label="卸货价" prop="paymentUnload" width="100">
 						<template #default="scope">
 							<el-input
 								size="mini"

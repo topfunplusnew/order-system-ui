@@ -127,15 +127,7 @@
 						<el-col :span="20">
 							<el-input v-model="form.companyName" placeholder="请输入车牌号" @input="handleInputTrim($event, 'form', 'companyName')" />
 						</el-col>
-						<SearchOption
-							:limit-info="{}"
-							:get-data="listCars"
-							query-info="carNo"
-							query-label="车牌查找"
-							:query-name="queryBankAccount"
-							@update:queryName="handleUpdateBankAccount"
-							@commitBack="handleCommitBackBankAccount"
-						>
+						<SearchOption :limit-info="{}" :get-data="listCars" query-info="carNo" query-label="车牌查找" :query-name="queryBankAccount" @update:queryName="handleUpdateBankAccount" @commitBack="handleCommitBackBankAccount">
 							<template #table-columns>
 								<CustomTableColumn label="司机" align="center" prop="driver" />
 								<CustomTableColumn label="车牌号" align="center" prop="carNo" />
@@ -162,18 +154,11 @@
 						</el-col>
 						<!-- 我方员工信息搜索-->
 						<el-col v-if="form.acountsType === PUBLIC_DICT_TYPE.EMPLOYEE" :span="4">
-							<SearchOption
-								:limit-info="{}"
-								:get-data="listUser"
-								query-label="姓名"
-								:query-name="queryUser"
-								query-info="trueName"
-								@commitBack="handleCommitBackUser"
-								@update:queryName="handleQueryUser"
-							>
+							<SearchOption :limit-info="{}" :get-data="listUser" query-label="用户名" :query-name="queryUser" query-info="userName" @commitBack="handleCommitBackUser" @update:queryName="handleQueryUser">
 								<template #table-columns>
-									<CustomTableColumn key="nickName" label="员工" align="center" prop="trueName" :show-overflow-tooltip="true" />
-									<CustomTableColumn key="deptName" label="岗位" align="center" prop="postName" :show-overflow-tooltip="true" />
+									<CustomTableColumn label="用户名" align="center" prop="userName" :show-overflow-tooltip="true" />
+									<CustomTableColumn label="真实姓名" align="center" prop="trueName" :show-overflow-tooltip="true" />
+									<CustomTableColumn label="岗位" align="center" prop="postName" :show-overflow-tooltip="true" />
 									<CustomTableColumn label="手机号码" align="center" prop="phonenumber" width="120" />
 									<CustomTableColumn label="在职状态" align="center" prop="state" width="120" />
 									<CustomTableColumn label="入职时间" align="center" prop="startDate" width="120" />
@@ -197,16 +182,7 @@
 						</el-col>
 						<!-- 供应商信息搜索-->
 						<el-col v-if="form.acountsType === PUBLIC_DICT_TYPE.SUPPLIER" :span="2">
-							<SearchOption
-								title="供应商信息"
-								:limit-info="{ companyType: '供应商' }"
-								:get-data="listCompany"
-								@commitBack="handleCommitBackCompanyGive"
-								@update:queryName="handleQueryCompanyGive"
-								query-info="companyName"
-								query-label="公司名称"
-								:query-name="queryCompanyGive"
-							>
+							<SearchOption title="供应商信息" :limit-info="{ companyType: '供应商' }" :get-data="listCompany" @commitBack="handleCommitBackCompanyGive" @update:queryName="handleQueryCompanyGive" query-info="companyName" query-label="公司名称" :query-name="queryCompanyGive">
 								<template #table-columns>
 									<CustomTableColumn label="供应商" align="center" prop="companyName" />
 									<CustomTableColumn label="地址" align="center" prop="address" />
@@ -215,16 +191,7 @@
 						</el-col>
 						<!-- 客户信息搜索-->
 						<el-col v-if="form.acountsType === PUBLIC_DICT_TYPE.CUSTOMER" :span="2">
-							<SearchOption
-								title="客户信息"
-								:limit-info="{ companyType: '客户' }"
-								:get-data="listCompany"
-								@commitBack="handleCommitBackCompany"
-								@update:queryName="handleQueryCompany"
-								query-info="companyName"
-								query-label="公司名称"
-								:query-name="queryCompany"
-							>
+							<SearchOption title="客户信息" :limit-info="{ companyType: '客户' }" :get-data="listCompany" @commitBack="handleCommitBackCompany" @update:queryName="handleQueryCompany" query-info="companyName" query-label="公司名称" :query-name="queryCompany">
 								<template #table-columns>
 									<CustomTableColumn label="客户" align="center" prop="companyName" />
 									<CustomTableColumn label="老板姓名" align="center" prop="leader" />
@@ -260,18 +227,7 @@
 		</el-dialog>
 
 		<!--    银行卡流水-->
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="银行卡流水"
-			:visible.sync="bankChangeDialogVisible"
-			width="850px"
-			append-to-body
-		>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="银行卡流水" :visible.sync="bankChangeDialogVisible" width="850px" append-to-body>
 			<el-row>
 				<div>
 					<el-form :model="bankAcountQuery" label-width="80px" :inline="true">
@@ -292,13 +248,7 @@
 					<CustomTableColumn prop="payType" label="支付类型"></CustomTableColumn>
 					<CustomTableColumn prop="moneyAmount" label="金额"></CustomTableColumn>
 				</el-table>
-				<pagination
-					v-show="bankAcountTotal > 0"
-					:total="bankAcountTotal"
-					:page.sync="bankAcountQuery.bankAcountTotalPageNum"
-					:limit.sync="bankAcountQuery.bankAcountTotalPageSize"
-					@pagination="getBankAcountChangeList"
-				/>
+				<pagination v-show="bankAcountTotal > 0" :total="bankAcountTotal" :page.sync="bankAcountQuery.bankAcountTotalPageNum" :limit.sync="bankAcountQuery.bankAcountTotalPageSize" @pagination="getBankAcountChangeList" />
 			</el-row>
 			<div slot="footer" class="dialog-footer">
 				<el-button type="primary" @click="submitBankChange">确 定</el-button>
@@ -615,7 +565,8 @@ export default {
 			this.queryUser = val;
 		},
 		handleCommitBackUser(val) {
-			this.form.companyName = val.trueName;
+			// 2025-11-12 优先truename 空或者Null的情况回退使用username
+			this.form.companyName = val.trueName ? val.trueName : val.userName;
 			this.form.companyId = val.userId;
 		},
 		// 搜索供应商信息的回调

@@ -1,6 +1,6 @@
 // 运费一键申请
 import { batchPayment } from '../../../../api/system/payment';
-import { BankAcceptanceType, PAYMENT_APPLY_STATE, PaymentState, TableName } from '../../../../api/tool/enums';
+import { BankAcceptanceType, TableName } from '../../../../api/tool/enums';
 import { parseTime } from '../../../../utils/ruoyi';
 import _ from 'lodash';
 
@@ -133,7 +133,6 @@ export var mixin_order_freight_payment = {
 						onOk: () => {
 							// 转换为新的API数据结构
 							const paymentData = this.transformToNewPaymentStructure();
-
 							// 如果是多个司机，需要分别提交每个司机的付款
 							const submitPayments = Array.isArray(paymentData) ? paymentData : [paymentData];
 							batchPayment(submitPayments)
@@ -171,10 +170,10 @@ export var mixin_order_freight_payment = {
 						fundsDate: parseTime(new Date()),
 						payType: this.freightSelfOnceInfo.payType ? this.freightSelfOnceInfo.payType.join('-') : '',
 						moneyAmount: Number(item.moneyAmount),
-						selfAcountsName: this.freightSelfOnceInfo.selfAcountsName,
+						selfAccountsName: this.freightSelfOnceInfo.selfAccountsName,
 						selfBankNo: this.freightSelfOnceInfo.selfBankNo,
 						selfBankName: this.freightSelfOnceInfo.selfBankName,
-						otherAcountsName: item.otherAcountsName,
+						otherAccountsName: item.otherAccountsName,
 						otherBankNo: item.otherBankNo,
 						otherBankName: item.otherBankName,
 						companyName: item.companyName,
@@ -207,8 +206,7 @@ export var mixin_order_freight_payment = {
 					}
 				}
 			});
-			const result = Array.from(driverMap.values());
-			return result;
+			return Array.from(driverMap.values());
 		},
 		// 重置
 		resetFreightSelfOnceInfo() {

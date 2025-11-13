@@ -691,7 +691,7 @@
               />
             </template>
           </el-table-column>
-          <el-table-column label="存货价" prop="paymentUnload" width="70">
+          <el-table-column label="存货价" prop="paymentUnload" width="100">
             <template #default="scope">
               <el-input
                   size="mini"
