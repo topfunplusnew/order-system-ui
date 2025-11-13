@@ -1665,7 +1665,7 @@ export default {
     >
       <div style="padding: 20px 0;">
         <div style="margin-bottom: 15px; font-weight: 600; font-size: 16px;">导入结果：完成</div>
-        <div style="color: #606266; line-height: 1.6;">{{ importResultMessage }}</div>
+        <div style="color: #606266; line-height: 1.6; white-space: pre-line;">{{ importResultMessage }}</div>
       </div>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="closeImportResult">确定</el-button>
