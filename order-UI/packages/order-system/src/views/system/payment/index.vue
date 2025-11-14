@@ -46,7 +46,7 @@
 		<el-row :gutter="10" class="mb8">
 			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
 				<template #left>
-					<el-row>
+					<el-row :gutter="10">
 						<!-- 刷新按钮-->
 						<el-col :span="1.5">
 							<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
@@ -58,7 +58,7 @@
 							<el-button v-hasPermi="['system:payment:import']" size="mini" @click="handleImportData">导入模板</el-button>
 						</el-col>
 						<!--      解开了新增付款信息-->
-						<el-col :span="1.5">
+						<el-col :span="1.5" style="margin-left: 15px">
 							<el-button v-hasPermi="['system:payment:add']" type="danger" size="mini" @click="handleAdd">新增付款信息</el-button>
 						</el-col>
 					</el-row>
