@@ -567,6 +567,7 @@ import { getOrderFreight } from '@/api/system/orderFreight';
 import { hasTableReference } from '@/utils/payment/utils';
 import InfoDialog from '../../../components/InfoDialog.vue';
 import { fix } from '../../../api/tool/format';
+import { getCompany } from '../../../api/system/company';
 
 export default {
 	name: 'Payment',
@@ -931,12 +932,12 @@ export default {
 		handleBankAcceptanceUpdate(acceptanceData) {
 			// 保存承兑信息
 			this.form.params.bankacceptance = acceptanceData;
-			
+
 			// 如果没有承兑信息，直接返回
 			if (!acceptanceData) {
 				return;
 			}
-			
+
 			// 填充我方承兑账户信息（我方户名、账号、开户行）
 			if (acceptanceData.billAccountId) {
 				getBankAccount(acceptanceData.billAccountId)
@@ -953,25 +954,33 @@ export default {
 						console.error('获取我方承兑账户信息失败:', error);
 					});
 			}
-			
-			// 填充背书人/被背书人信息（对方户名、账号、开户行）
+
+			// 填充背书人/被背书人信息 只填充对方公司
+			// 不过获取一张银行卡，需要对象+卡号，对象需要对象companyId+companyType
 			if (acceptanceData.endorser) {
-				getBankAccount(acceptanceData.endorser)
-					.then(response => {
-						if (response.data) {
-							const bankInfo = response.data;
-							this.form.otherAccountsName = bankInfo.acountsName;
-							this.form.otherBankNo = bankInfo.bankNo;
-							this.form.otherBankName = bankInfo.bankName;
-							// 如果对方公司信息存在，也填充
-							if (bankInfo.companyId) {
-								this.form.companyId = bankInfo.companyId;
-							}
-						}
-					})
-					.catch(error => {
-						console.error('获取背书人/被背书人账户信息失败:', error);
-					});
+				getCompany(acceptanceData.endorser).then(response => {
+					if (response.data) {
+						const companyInfo = response.data;
+						this.form.companyName = companyInfo.companyName;
+						this.form.companyId = companyInfo.id;
+					}
+				});
+				// getBankAccount(acceptanceData.endorser)
+				// 	.then(response => {
+				// 		if (response.data) {
+				// 			const bankInfo = response.data;
+				// 			this.form.otherAccountsName = bankInfo.acountsName;
+				// 			this.form.otherBankNo = bankInfo.bankNo;
+				// 			this.form.otherBankName = bankInfo.bankName;
+				// 			// 如果对方公司信息存在，也填充
+				// 			if (bankInfo.companyId) {
+				// 				this.form.companyId = bankInfo.companyId;
+				// 			}
+				// 		}
+				// 	})
+				// 	.catch(error => {
+				// 		console.error('获取背书人/被背书人账户信息失败:', error);
+				// 	});
 			}
 		},
 		/** 查询付款信息列表 */
