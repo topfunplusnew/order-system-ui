@@ -53,7 +53,6 @@
 
 		<u-table
 			id="printBox"
-			max-height="600px"
 			v-horizontal-scroll="'always'"
 			v-loading="loading"
 			border

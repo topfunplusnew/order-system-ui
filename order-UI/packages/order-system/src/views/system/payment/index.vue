@@ -78,7 +78,6 @@
 			:data="paymentList"
 			size="mini"
 			border
-			max-height="600px"
 			:cell-style="
 				() => {
 					return { padding: '1.5px' };
