@@ -89,3 +89,24 @@ export function addBadBetPayment(data) {
 		data: data
 	});
 }
+
+// 下载导入模板
+export function downloadPaymentTemplate() {
+	return request({
+		url: '/system/payment/importTemplate',
+		method: 'post',
+		responseType: 'blob'
+	});
+}
+
+// 导入付款数据
+export function importPaymentData(formData) {
+	return request({
+		url: '/system/payment/importData',
+		method: 'post',
+		data: formData,
+		headers: {
+			'Content-Type': 'multipart/form-data'
+		}
+	});
+}

@@ -19,7 +19,7 @@ const service = axios.create({
 	// axios中请求配置有baseURL选项，表示请求URL公共部分
 	baseURL: process.env.VUE_APP_BASE_API,
 	// 超时
-	timeout: 60 * 1000
+	timeout: 10 * 60 * 1000
 });
 
 // 定义需要排除全屏loading效果的API路径数组

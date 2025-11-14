@@ -244,24 +244,7 @@ export default {
 					params: {
 						startTime: null,
 						endTime: null,
-						tableNames: [
-							'payment',
-							'receivemoney',
-							'invoiceother',
-							'invoicein',
-							'invoiceout',
-							'bankacceptance',
-							'orderDetail',
-							'goodsorder',
-							'orderfreight',
-							'inventory_detail',
-							'inventory_main',
-							'bankaccountchange',
-							'borrowedmoney',
-							'repayment',
-							'lendmoney',
-							'recovermoney'
-						],
+						tableNames: ['payment', 'receivemoney', 'invoiceother', 'invoicein', 'invoiceout', 'bankacceptance', 'orderDetail', 'goodsorder', 'orderfreight', 'inventory_detail', 'inventory_main', 'bankaccountchange', 'borrowedmoney', 'repayment', 'lendmoney', 'recovermoney'],
 						targetDate: null
 					}
 				};
@@ -383,30 +366,13 @@ export default {
 					<!--          日期选择框-->
 					<el-row>
 						<el-col :span="20">
-							<el-select
-								v-model="targetLeftDate"
-								placeholder="选择当日截取查询日期"
-								style="width: 100%"
-								size="mini"
-								:disabled="!availableDates.length"
-								:loading="isLoadingDates"
-								@change="changeLeftDate"
-							>
+							<el-select v-model="targetLeftDate" placeholder="选择当日截取查询日期" style="width: 100%" size="mini" :disabled="!availableDates.length" :loading="isLoadingDates" @change="changeLeftDate">
 								<el-option v-for="date in availableDates" :key="date" :label="date" :value="date"></el-option>
 							</el-select>
 						</el-col>
 					</el-row>
 					<br />
-					<el-table
-						@row-click="handleRowClick"
-						:cell-style="cellStyle"
-						size="mini"
-						:data="changeMoneyTableData"
-						border
-						class="money-table"
-						:row-style="tableRowClassName"
-						:span-method="objectSpanMethod"
-					>
+					<el-table @row-click="handleRowClick" :cell-style="cellStyle" size="mini" :data="changeMoneyTableData" border class="money-table" :row-style="tableRowClassName" :span-method="objectSpanMethod">
 						<el-table-column :label="columnHeaderChange" align="center">
 							<el-table-column label="科目名称">
 								<template slot-scope="scope">
@@ -436,30 +402,13 @@ export default {
 				<el-col :span="12">
 					<el-row>
 						<el-col :span="20">
-							<el-select
-								v-model="targetRightDate"
-								placeholder="选择数据固定后日期"
-								style="width: 100%"
-								size="mini"
-								:disabled="!availableDates.length"
-								:loading="isLoadingDates"
-								@change="changeRightDate"
-							>
+							<el-select v-model="targetRightDate" placeholder="选择数据固定后日期" style="width: 100%" size="mini" :disabled="!availableDates.length" :loading="isLoadingDates" @change="changeRightDate">
 								<el-option v-for="date in availableDates" :key="date" :label="date" :value="date"></el-option>
 							</el-select>
 						</el-col>
 					</el-row>
 					<br />
-					<el-table
-						@row-click="handleRowClick"
-						:cell-style="cellStyle"
-						size="mini"
-						:data="fixedMoneyTableData"
-						border
-						class="money-table"
-						:row-style="tableRowClassName"
-						:span-method="objectSpanMethod"
-					>
+					<el-table @row-click="handleRowClick" :cell-style="cellStyle" size="mini" :data="fixedMoneyTableData" border class="money-table" :row-style="tableRowClassName" :span-method="objectSpanMethod">
 						<el-table-column :label="columnHeaderFix" align="center">
 							<el-table-column label="科目名称">
 								<template slot-scope="scope">

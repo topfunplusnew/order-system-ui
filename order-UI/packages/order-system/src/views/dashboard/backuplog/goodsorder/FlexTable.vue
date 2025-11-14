@@ -150,6 +150,7 @@ export default {
 							// 确保 calculateDifferences 返回的是对象
 							return this.calculateDifferences(original, changed) || {};
 						});
+						console.log('子表 allDiffs', allDiffs);
 						// 使用之前的 totalDiff 计算逻辑
 						diffData = allDiffs.reduce((acc, diff) => {
 							Object.entries(diff).forEach(([key, diffValue]) => {
@@ -417,12 +418,7 @@ export default {
 		},
 		saveAsJson(data, type) {
 			try {
-				if (
-					data === null ||
-					typeof data === 'undefined' ||
-					(Array.isArray(data) && data.length === 0) ||
-					(typeof data === 'object' && !Array.isArray(data) && Object.keys(data).length === 0)
-				) {
+				if (data === null || typeof data === 'undefined' || (Array.isArray(data) && data.length === 0) || (typeof data === 'object' && !Array.isArray(data) && Object.keys(data).length === 0)) {
 					console.warn('尝试保存的数据为空或无效');
 					this.$message?.warning('没有可保存的数据。');
 					return;

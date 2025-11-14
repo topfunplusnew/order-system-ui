@@ -62,3 +62,24 @@ export function getReceiveMoneyByPayNo(receiveNO) {
 		method: 'get'
 	});
 }
+
+// 下载导入模板
+export function downloadReceiveMoneyTemplate() {
+	return request({
+		url: '/system/receiveMoney/importTemplate',
+		method: 'post',
+		responseType: 'blob'
+	});
+}
+
+// 导入收款数据
+export function importReceiveMoneyData(formData) {
+	return request({
+		url: '/system/receiveMoney/importData',
+		method: 'post',
+		data: formData,
+		headers: {
+			'Content-Type': 'multipart/form-data'
+		}
+	});
+}

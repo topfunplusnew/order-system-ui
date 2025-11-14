@@ -33,6 +33,12 @@
 							<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
 						</el-col>
 						<el-col :span="1.5">
+							<el-button v-hasPermi="['system:receivemoney:import']" size="mini" @click="handleDownloadTemplate">下载导入模板</el-button>
+						</el-col>
+						<el-col :span="1.5">
+							<el-button v-hasPermi="['system:receivemoney:import']" size="mini" @click="handleImportData">导入模板</el-button>
+						</el-col>
+						<el-col :span="1.5">
 							<el-button v-hasPermi="['system:receivemoney:add']" type="danger" size="mini" @click="handleAdd">新增收款信息</el-button>
 						</el-col>
 					</el-row>
@@ -104,6 +110,17 @@
 		</u-table>
 
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
+
+		<!-- 导入结果弹窗 -->
+		<el-dialog title="导入结果" :visible.sync="importResultVisible" width="500px" :close-on-click-modal="false" append-to-body>
+			<div style="padding: 20px 0">
+				<div style="margin-bottom: 15px; font-weight: 600; font-size: 16px">导入结果：完成</div>
+				<div style="color: #606266; line-height: 1.6; white-space: pre-line">{{ importResultMessage }}</div>
+			</div>
+			<div slot="footer" class="dialog-footer">
+				<el-button type="primary" @click="closeImportResult">确定</el-button>
+			</div>
+		</el-dialog>
 
 		<!-- 查看修改原因弹窗 -->
 		<el-dialog title="查看修改原因" :visible.sync="editReasonDialogVisible" width="800px" append-to-body>
@@ -277,7 +294,7 @@
 </template>
 
 <script>
-import { addReceiveMoney, delReceiveMoney, listReceiveMoney } from '@/api/system/receiveMoney';
+import { addReceiveMoney, delReceiveMoney, listReceiveMoney, importReceiveMoneyData } from '@/api/system/receiveMoney';
 import { listTableEditMessage } from '@/api/system/tableEditMessage';
 import SearchOption from '@/components/SearchOption.vue';
 import { listBankAccount, getBankAccount } from '@/api/system/bankAccount';
@@ -480,7 +497,10 @@ export default {
 				tid: null
 			},
 			// 遮罩层显示状态
-			showMask: false
+			showMask: false,
+			// 导入结果弹窗
+			importResultVisible: false,
+			importResultMessage: ''
 		};
 	},
 	// 展示与隐藏
@@ -1097,6 +1117,56 @@ export default {
 			params.receiveType = this.queryParams.receiveType?.join('-');
 
 			this.download('system/receiveMoney/export', params, `receiveMoney_${new Date().getTime()}.xlsx`);
+		},
+		// 下载导入模板
+		handleDownloadTemplate() {
+			this.download('system/receiveMoney/importTemplate', {}, `收款导入模板_${parseTime(new Date(), '{y}{m}{d}_{h}{i}{s}')}.xlsx`);
+		},
+		// 导入收款数据
+		handleImportData() {
+			const input = document.createElement('input');
+			input.type = 'file';
+			input.accept = '.xlsx,.xls';
+			input.onchange = e => {
+				const file = e.target.files[0];
+				if (!file) return;
+
+				// 校验文件格式
+				const fileName = file.name.toLowerCase();
+				const validExtensions = ['.xlsx', '.xls'];
+				const isValidFormat = validExtensions.some(ext => fileName.endsWith(ext));
+
+				if (!isValidFormat) {
+					this.$message.error('请上传Excel格式的文件（.xlsx 或 .xls）');
+					return;
+				}
+
+				// 上传文件
+				const formData = new FormData();
+				formData.append('file', file);
+
+				this.$message.info('正在导入，请稍候...');
+				importReceiveMoneyData(formData)
+					.then(res => {
+						this.importResultMessage = res.msg || '导入完成';
+						this.importResultVisible = true;
+						// 如果导入成功，刷新列表
+						if (res.code === 200 && !res.msg.includes('无有效数据')) {
+							this.getList();
+						}
+					})
+					.catch(error => {
+						console.error('导入失败:', error);
+						this.importResultMessage = error.msg || '导入失败，请重试';
+						this.importResultVisible = true;
+					});
+			};
+			input.click();
+		},
+		// 关闭导入结果弹窗
+		closeImportResult() {
+			this.importResultVisible = false;
+			this.importResultMessage = '';
 		}
 	}
 };
