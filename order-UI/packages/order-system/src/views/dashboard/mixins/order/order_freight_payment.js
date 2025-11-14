@@ -119,7 +119,7 @@ export var mixin_order_freight_payment = {
 				tID: orderFreight.id,
 				moneyAmount: orderFreight.moneyAmount,
 				// 使用 lodash pick 提取需要的字段
-				..._.pick(orderFreight, ['otherAcountsName', 'otherBankNo', 'otherBankName', 'driverName', 'driverId', 'carNo', 'fleet', 'freightType']),
+				..._.pick(orderFreight, ['otherAccountsName', 'otherBankNo', 'otherBankName', 'driverName', 'driverId', 'carNo', 'fleet', 'freightType']),
 				companyName: orderFreight.driverName,
 				companyId: orderFreight.driverId,
 				companyType: '司机',
@@ -130,7 +130,7 @@ export var mixin_order_freight_payment = {
 		handleCallBack(val) {
 			// 使用 lodash assign 批量赋值
 			_.assign(this.freightSelfOnceInfo, {
-				selfAcountsName: val.acountsName,
+				selfAccountsName: val.acountsName,
 				selfBankNo: val.bankNo,
 				selfBankName: val.bankName,
 				selfBankID: val.id
@@ -232,7 +232,7 @@ export var mixin_order_freight_payment = {
 		// 重置
 		resetFreightSelfOnceInfo() {
 			this.freightSelfOnceInfo = {
-				selfAcountsName: null,
+				selfAccountsName: null,
 				selfBankNo: null,
 				selfBankName: null,
 				selfBankID: null,

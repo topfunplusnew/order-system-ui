@@ -16,8 +16,8 @@
 			<el-form-item label="车队名称" prop="fleet">
 				<el-input v-model="queryParams.fleet" placeholder="请输入车队名称" clearable size="mini" @keyup.enter.native="handleQuery" />
 			</el-form-item>
-			<el-form-item label="对方户名" prop="otherAcountsName">
-				<el-input v-model="queryParams.otherAcountsName" placeholder="请输入车队名称" clearable size="mini" @keyup.enter.native="handleQuery" />
+			<el-form-item label="对方户名" prop="otherAccountsName">
+				<el-input v-model="queryParams.otherAccountsName" placeholder="请输入车队名称" clearable size="mini" @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="支付状态" prop="paymentState">
 				<el-select v-model="queryParams.paymentState" placeholder="请选择" size="mini" clearable>
@@ -78,7 +78,7 @@
 			<el-table-column v-if="columns[3].visible" label="司机名称/海运公司" align="center" prop="driverName" width="120" show-overflow-tooltip />
 			<el-table-column v-if="columns[4].visible" label="车牌号" align="center" prop="carNo" width="100" show-overflow-tooltip />
 			<el-table-column v-if="columns[5].visible" label="金额" align="center" prop="moneyAmount" width="100" show-overflow-tooltip />
-			<el-table-column v-if="columns[6].visible" label="对方户名" align="center" prop="otherAcountsName" width="100" show-overflow-tooltip />
+			<el-table-column v-if="columns[6].visible" label="对方户名" align="center" prop="otherAccountsName" width="100" show-overflow-tooltip />
 			<el-table-column v-if="columns[7].visible" label="对方账号" align="center" prop="otherBankNo" width="180" show-overflow-tooltip />
 			<el-table-column v-if="columns[8].visible" label="对方开户行" align="center" prop="otherBankName" width="100" show-overflow-tooltip />
 			<el-table-column v-if="columns[9].visible" label="运费来源" align="center" prop="source" width="100" show-overflow-tooltip>
@@ -96,7 +96,7 @@
 			<el-table-column v-if="columns[11].visible" label="申请人员姓名" align="center" prop="applyUserName" width="100" show-overflow-tooltip />
 			<el-table-column v-if="columns[12].visible" label="申请日期" align="center" prop="applyDate" width="100" show-overflow-tooltip />
 			<el-table-column v-if="columns[13].visible" label="付款人员姓名" align="center" prop="payUserName" width="100" show-overflow-tooltip />
-			<el-table-column v-if="columns[14].visible" label="我方户名" align="center" prop="selfAcountsName" width="100" show-overflow-tooltip />
+			<el-table-column v-if="columns[14].visible" label="我方户名" align="center" prop="selfAccountsName" width="100" show-overflow-tooltip />
 			<el-table-column v-if="columns[15].visible" label="我方账号" align="center" prop="selfBankNo" width="180" show-overflow-tooltip />
 			<el-table-column v-if="columns[16].visible" label="我方开户行" align="center" prop="selfBankName" width="100" show-overflow-tooltip />
 			<el-table-column v-if="columns[17].visible" label="备注" align="center" prop="comments" width="100" show-overflow-tooltip />
@@ -117,10 +117,10 @@
 				<el-form-item label="金额" prop="moneyAmount">
 					<el-input v-model="form.moneyAmount" placeholder="请输入金额" />
 				</el-form-item>
-				<el-form-item label="对方户名" prop="otherAcountsName">
+				<el-form-item label="对方户名" prop="otherAccountsName">
 					<el-row>
 						<el-col :span="10">
-							<el-input v-model="form.otherAcountsName" placeholder="请输入对方户名" :disabled="bankInputDisabled" />
+							<el-input v-model="form.otherAccountsName" placeholder="请输入对方户名" :disabled="bankInputDisabled" />
 						</el-col>
 						<el-col v-if="bankInputDisabled === false" :span="3">
 							<SearchOption :get-data="listBankAccount" icon="el-icon-search" :limit-info="{}" query-label="户名查找" query-info="acountsName" :query-name="queryCompany" @commitBack="handleCommitBack" @update:queryName="handleUpdateQueryName">
@@ -219,7 +219,7 @@
 												</el-tag>
 											</el-descriptions-item>
 											<el-descriptions-item label="开户名">
-												{{ item.otherAcountsName }}
+												{{ item.otherAccountsName }}
 											</el-descriptions-item>
 											<el-descriptions-item label="开户行">
 												{{ item.otherBankName }}
@@ -239,10 +239,10 @@
 							<el-form-item label="支付类型" prop="payType">
 								<el-cascader v-model="freightSelfOnceInfo.payType" :options="paymentTypeTree" :props="props" />
 							</el-form-item>
-							<el-form-item label="我方户名" prop="selfAcountsName">
+							<el-form-item label="我方户名" prop="selfAccountsName">
 								<el-row>
 									<el-col :span="10">
-										<el-input v-model="freightSelfOnceInfo.selfAcountsName" placeholder="请输入我方户名" />
+										<el-input v-model="freightSelfOnceInfo.selfAccountsName" placeholder="请输入我方户名" />
 									</el-col>
 									<!--   自定义组件查找-->
 									<el-col :span="3">
@@ -317,10 +317,10 @@
 							</el-col>
 						</el-row>
 					</el-form-item>
-					<el-form-item label="对方户名" prop="otherAcountsName">
+					<el-form-item label="对方户名" prop="otherAccountsName">
 						<el-row>
 							<el-col :span="16">
-								<el-input v-model="fillFreightForm.otherAcountsName" placeholder="请输入对方户名或点击搜索" />
+								<el-input v-model="fillFreightForm.otherAccountsName" placeholder="请输入对方户名或点击搜索" />
 							</el-col>
 							<el-col :span="4">
 								<SearchOption :get-data="listBankAccount" icon="el-icon-search" :limit-info="{}" query-label="户名查找" query-info="acountsName" :query-name="queryBankAccount" @commitBack="handleCommitBackBankAccount" @update:queryName="updateQueryBankAccount">
@@ -428,10 +428,10 @@ export default {
 				ordersNo: null,
 				freightType: null,
 				moneyAmount: null,
-				selfAcountsName: null,
+				selfAccountsName: null,
 				selfBankNo: null,
 				selfBankName: null,
-				otherAcountsName: null,
+				otherAccountsName: null,
 				otherBankNo: null,
 				otherBankName: null,
 				content: null,
@@ -480,7 +480,7 @@ export default {
 			needInfo: {},
 			freightSelfOnceInfo: {
 				payType: null,
-				selfAcountsName: '',
+				selfAccountsName: '',
 				selfBankNo: '',
 				selfBankName: '',
 				otherBankCardType: null
@@ -493,7 +493,7 @@ export default {
 						trigger: 'change'
 					}
 				],
-				selfAcountsName: [
+				selfAccountsName: [
 					{
 						required: true,
 						message: '请输入我方户名',
@@ -543,7 +543,7 @@ export default {
 						trigger: 'blur'
 					}
 				],
-				otherAcountsName: [
+				otherAccountsName: [
 					{
 						required: true,
 						message: '请输入对方户名或点击搜索选择',
@@ -772,10 +772,10 @@ export default {
 				ordersNo: null,
 				freightType: null,
 				moneyAmount: null,
-				selfAcountsName: null,
+				selfAccountsName: null,
 				selfBankNo: null,
 				selfBankName: null,
-				otherAcountsName: null,
+				otherAccountsName: null,
 				otherBankNo: null,
 				otherBankName: null,
 				content: null,
@@ -891,10 +891,10 @@ export default {
 				source: row.source || null,
 				freightType: row.freightType || null,
 				moneyAmount: null, // 金额不自动填充
-				selfAcountsName: row.selfAcountsName || null,
+				selfAccountsName: row.selfAccountsName || null,
 				selfBankNo: row.selfBankNo || null,
 				selfBankName: row.selfBankName || null,
-				otherAcountsName: row.otherAcountsName || null,
+				otherAccountsName: row.otherAccountsName || null,
 				otherBankNo: row.otherBankNo || null,
 				otherBankName: row.otherBankName || null,
 				driverName: row.driverName || null,
@@ -914,10 +914,10 @@ export default {
 				source: null,
 				freightType: null,
 				moneyAmount: null,
-				selfAcountsName: null,
+				selfAccountsName: null,
 				selfBankNo: null,
 				selfBankName: null,
-				otherAcountsName: null,
+				otherAccountsName: null,
 				otherBankNo: null,
 				otherBankName: null,
 				driverName: null,
@@ -936,7 +936,7 @@ export default {
 		handleCommitBackBankAccount(val) {
 			this.fillFreightForm.otherBankNo = val.bankNo;
 			this.fillFreightForm.otherBankName = val.bankName;
-			this.fillFreightForm.otherAcountsName = val.acountsName;
+			this.fillFreightForm.otherAccountsName = val.acountsName;
 		},
 		// 银行账户搜索相关函数
 		updateQueryBankAccount(val) {
