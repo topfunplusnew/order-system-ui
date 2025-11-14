@@ -239,10 +239,10 @@
 							<el-form-item label="支付类型" prop="payType">
 								<el-cascader v-model="freightSelfOnceInfo.payType" :options="paymentTypeTree" :props="props" />
 							</el-form-item>
-							<el-form-item label="我方户名" prop="selfAcountsName">
+							<el-form-item label="我方户名" prop="selfAccountsName">
 								<el-row>
 									<el-col :span="10">
-										<el-input v-model="freightSelfOnceInfo.selfAcountsName" placeholder="请输入我方户名" />
+										<el-input v-model="freightSelfOnceInfo.selfAccountsName" placeholder="请输入我方户名" />
 									</el-col>
 									<!--   自定义组件查找-->
 									<el-col :span="3">
@@ -480,7 +480,7 @@ export default {
 			needInfo: {},
 			freightSelfOnceInfo: {
 				payType: null,
-				selfAcountsName: '',
+				selfAccountsName: '',
 				selfBankNo: '',
 				selfBankName: '',
 				otherBankCardType: null
@@ -493,7 +493,7 @@ export default {
 						trigger: 'change'
 					}
 				],
-				selfAcountsName: [
+				selfAccountsName: [
 					{
 						required: true,
 						message: '请输入我方户名',
