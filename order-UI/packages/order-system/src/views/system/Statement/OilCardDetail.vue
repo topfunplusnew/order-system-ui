@@ -12,27 +12,27 @@
 		<!-- 表格展示 -->
 		<el-table :data="filteredRecords" border stripe size="mini" style="width: 100%">
 			<!-- 序号列 -->
-			<el-table-column label="序号" align="center" width="60">
+			<el-table-column label="序号" align="center" width="60" show-overflow-tooltip>
 				<template #default="scope">
 					{{ scope.$index + 1 }}
 				</template>
 			</el-table-column>
 
 			<!-- 类型 -->
-			<el-table-column label="类型" align="center" width="120">
+			<el-table-column label="类型" align="center" width="120" show-overflow-tooltip>
 				<template #default="scope">
 					{{ scope.row.tableName === 'oilrecharge' ? '充值' : '消费' }}
 				</template>
 			</el-table-column>
 
 			<!-- 油卡编号 -->
-			<el-table-column prop="oilCardNo" label="油卡编号" align="center" />
+			<el-table-column prop="oilCardNo" label="油卡编号" align="center" show-overflow-tooltip />
 
 			<!-- 日期 -->
-			<el-table-column prop="changeDate" label="变动日期" align="center" />
+			<el-table-column prop="changeDate" label="变动日期" align="center" show-overflow-tooltip />
 
 			<!-- 变动金额 -->
-			<el-table-column prop="changeAmount" label="变动金额 (元)" align="center">
+			<el-table-column prop="changeAmount" label="变动金额 (元)" align="center" show-overflow-tooltip>
 				<template #default="scope">
 					<span
 						:class="{
@@ -46,7 +46,7 @@
 			</el-table-column>
 
 			<!-- 当前余额 -->
-			<el-table-column prop="runningBalance" label="余额 (元)" align="center">
+			<el-table-column prop="runningBalance" label="余额 (元)" align="center" show-overflow-tooltip>
 				<template #default="scope">
 					{{ scope.row.runningBalance.toFixed(2) }}
 				</template>

@@ -132,33 +132,151 @@
 							show-summary
 							:summary-method="getSummary"
 						>
-							<!-- 手写每一列，使用 v-if 判断列的可见性 -->
-							<el-table-column v-if="columns[0].visible" label="ID" align="center" prop="id" show-overflow-tooltip />
-							<el-table-column v-if="columns[1].visible" label="变动日期(入库)" align="center" prop="storeDate" show-overflow-tooltip>
-								<template #default="scope">
-									{{ parseTime(scope.row.storeDate, '{y}-{m}-{d}') }}
-								</template>
-							</el-table-column>
-							<el-table-column v-if="columns[2].visible" label="仓库名称" align="center" prop="storeHouseName" show-overflow-tooltip />
-							<el-table-column v-if="columns[3].visible" label="级别名称" align="center" prop="levelName" show-overflow-tooltip />
-							<el-table-column v-if="columns[4].visible" label="入库片数" align="center" prop="stockNumber" show-overflow-tooltip />
-							<el-table-column v-if="columns[5].visible" label="剩余量" align="center" prop="actualPieces" show-overflow-tooltip />
-							<el-table-column v-if="columns[6].visible" label="供应商" align="center" prop="supplier" show-overflow-tooltip />
-							<el-table-column v-if="columns[7].visible" label="计量单位" align="center" prop="countingUnit" show-overflow-tooltip />
-							<el-table-column v-if="columns[8].visible" label="厚度" align="center" prop="height" show-overflow-tooltip />
-							<el-table-column v-if="columns[9].visible" label="长度" align="center" prop="length" show-overflow-tooltip />
-							<el-table-column v-if="columns[10].visible" label="宽度" align="center" prop="width" show-overflow-tooltip />
-							<el-table-column v-if="columns[11].visible" label="每包片数" align="center" prop="piecesPerPack" show-overflow-tooltip />
-							<el-table-column v-if="columns[12].visible" label="包数" align="center" prop="packs" show-overflow-tooltip />
-							<el-table-column v-if="columns[13].visible" label="存货价" align="center" prop="paymentUnload" show-overflow-tooltip />
-							<el-table-column v-if="columns[14].visible" label="库存是否含税" align="center" prop="isIncludeTaxSale" show-overflow-tooltip>
-								<template #default="scope">
+						<!-- 手写每一列，使用 v-if 判断列的可见性 -->
+						<el-table-column v-if="columns[0].visible" label="ID" align="center" prop="id" show-overflow-tooltip>
+							<template #default="scope">
+								<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+									<div slot="content">{{ scope.row.id }}</div>
+									<span>{{ scope.row.id }}</span>
+								</el-tooltip>
+							</template>
+						</el-table-column>
+						<el-table-column v-if="columns[1].visible" label="变动日期(入库)" align="center" prop="storeDate" show-overflow-tooltip>
+							<template #default="scope">
+								<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+									<div slot="content">{{ parseTime(scope.row.storeDate, '{y}-{m}-{d}') }}</div>
+									<span>{{ parseTime(scope.row.storeDate, '{y}-{m}-{d}') }}</span>
+								</el-tooltip>
+							</template>
+						</el-table-column>
+						<el-table-column v-if="columns[2].visible" label="仓库名称" align="center" prop="storeHouseName" show-overflow-tooltip>
+							<template #default="scope">
+								<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+									<div slot="content">{{ scope.row.storeHouseName }}</div>
+									<span>{{ scope.row.storeHouseName }}</span>
+								</el-tooltip>
+							</template>
+						</el-table-column>
+						<el-table-column v-if="columns[3].visible" label="级别名称" align="center" prop="levelName" show-overflow-tooltip>
+							<template #default="scope">
+								<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+									<div slot="content">{{ scope.row.levelName }}</div>
+									<span>{{ scope.row.levelName }}</span>
+								</el-tooltip>
+							</template>
+						</el-table-column>
+						<el-table-column v-if="columns[4].visible" label="入库片数" align="center" prop="stockNumber" show-overflow-tooltip>
+							<template #default="scope">
+								<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+									<div slot="content">{{ scope.row.stockNumber }}</div>
+									<span>{{ scope.row.stockNumber }}</span>
+								</el-tooltip>
+							</template>
+						</el-table-column>
+						<el-table-column v-if="columns[5].visible" label="剩余量" align="center" prop="actualPieces" show-overflow-tooltip>
+							<template #default="scope">
+								<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+									<div slot="content">{{ scope.row.actualPieces }}</div>
+									<span>{{ scope.row.actualPieces }}</span>
+								</el-tooltip>
+							</template>
+						</el-table-column>
+						<el-table-column v-if="columns[6].visible" label="供应商" align="center" prop="supplier" show-overflow-tooltip>
+							<template #default="scope">
+								<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+									<div slot="content">{{ scope.row.supplier }}</div>
+									<span>{{ scope.row.supplier }}</span>
+								</el-tooltip>
+							</template>
+						</el-table-column>
+						<el-table-column v-if="columns[7].visible" label="计量单位" align="center" prop="countingUnit" show-overflow-tooltip>
+							<template #default="scope">
+								<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+									<div slot="content">{{ scope.row.countingUnit }}</div>
+									<span>{{ scope.row.countingUnit }}</span>
+								</el-tooltip>
+							</template>
+						</el-table-column>
+						<el-table-column v-if="columns[8].visible" label="厚度" align="center" prop="height" show-overflow-tooltip>
+							<template #default="scope">
+								<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+									<div slot="content">{{ scope.row.height }}</div>
+									<span>{{ scope.row.height }}</span>
+								</el-tooltip>
+							</template>
+						</el-table-column>
+						<el-table-column v-if="columns[9].visible" label="长度" align="center" prop="length" show-overflow-tooltip>
+							<template #default="scope">
+								<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+									<div slot="content">{{ scope.row.length }}</div>
+									<span>{{ scope.row.length }}</span>
+								</el-tooltip>
+							</template>
+						</el-table-column>
+						<el-table-column v-if="columns[10].visible" label="宽度" align="center" prop="width" show-overflow-tooltip>
+							<template #default="scope">
+								<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+									<div slot="content">{{ scope.row.width }}</div>
+									<span>{{ scope.row.width }}</span>
+								</el-tooltip>
+							</template>
+						</el-table-column>
+						<el-table-column v-if="columns[11].visible" label="每包片数" align="center" prop="piecesPerPack" show-overflow-tooltip>
+							<template #default="scope">
+								<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+									<div slot="content">{{ scope.row.piecesPerPack }}</div>
+									<span>{{ scope.row.piecesPerPack }}</span>
+								</el-tooltip>
+							</template>
+						</el-table-column>
+						<el-table-column v-if="columns[12].visible" label="包数" align="center" prop="packs" show-overflow-tooltip>
+							<template #default="scope">
+								<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+									<div slot="content">{{ scope.row.packs }}</div>
+									<span>{{ scope.row.packs }}</span>
+								</el-tooltip>
+							</template>
+						</el-table-column>
+						<el-table-column v-if="columns[13].visible" label="存货价" align="center" prop="paymentUnload" show-overflow-tooltip>
+							<template #default="scope">
+								<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+									<div slot="content">{{ scope.row.paymentUnload }}</div>
+									<span>{{ scope.row.paymentUnload }}</span>
+								</el-tooltip>
+							</template>
+						</el-table-column>
+						<el-table-column v-if="columns[14].visible" label="库存是否含税" align="center" prop="isIncludeTaxSale" show-overflow-tooltip>
+							<template #default="scope">
+								<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+									<div slot="content">{{ scope.row.isIncludeTaxSale === 1 ? '含税' : '不含税' }}</div>
 									<span>{{ scope.row.isIncludeTaxSale === 1 ? '含税' : '不含税' }}</span>
-								</template>
-							</el-table-column>
-							<el-table-column v-if="columns[15].visible" label="入库金额" align="center" prop="payments" show-overflow-tooltip />
-							<el-table-column v-if="columns[16].visible" label="误差" align="center" prop="erro" show-overflow-tooltip />
-							<el-table-column v-if="columns[17].visible" label="吨位" align="center" prop="tonnage" show-overflow-tooltip />
+								</el-tooltip>
+							</template>
+						</el-table-column>
+						<el-table-column v-if="columns[15].visible" label="入库金额" align="center" prop="payments" show-overflow-tooltip>
+							<template #default="scope">
+								<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+									<div slot="content">{{ scope.row.payments }}</div>
+									<span>{{ scope.row.payments }}</span>
+								</el-tooltip>
+							</template>
+						</el-table-column>
+						<el-table-column v-if="columns[16].visible" label="误差" align="center" prop="erro" show-overflow-tooltip>
+							<template #default="scope">
+								<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+									<div slot="content">{{ scope.row.erro }}</div>
+									<span>{{ scope.row.erro }}</span>
+								</el-tooltip>
+							</template>
+						</el-table-column>
+						<el-table-column v-if="columns[17].visible" label="吨位" align="center" prop="tonnage" show-overflow-tooltip>
+							<template #default="scope">
+								<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+									<div slot="content">{{ scope.row.tonnage }}</div>
+									<span>{{ scope.row.tonnage }}</span>
+								</el-tooltip>
+							</template>
+						</el-table-column>
 							<!-- 操作列 -->
 							<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="120px">
 								<template #default="scope">

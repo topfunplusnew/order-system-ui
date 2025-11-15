@@ -150,16 +150,16 @@ export default {
 						"
 					>
 						<!-- 司机信息 -->
-						<el-table-column v-if="columns[0].visible" label="司机信息" align="center">
-							<el-table-column label="车队" align="center" prop="fleet" width="200" />
+						<el-table-column v-if="columns[0].visible" label="司机信息" align="center" show-overflow-tooltip>
+							<el-table-column label="车队" align="center" prop="fleet" width="200" show-overflow-tooltip />
 						</el-table-column>
 
 						<!-- 运费日报 -->
-						<el-table-column label="运费日报" align="center">
-							<el-table-column v-if="columns[1].visible" label="上日欠运费" align="center" prop="previousDebtAmountToday" width="200" />
-							<el-table-column v-if="columns[2].visible" label="当日应付运费" align="center" prop="unpaidAmountToday" width="200" />
-							<el-table-column v-if="columns[3].visible" label="本日付款金额" align="center" prop="paidAmountToday" width="200" />
-							<el-table-column v-if="columns[4].visible" label="本日欠款余额" align="center" prop="debtAmountToday" width="200">
+						<el-table-column label="运费日报" align="center" show-overflow-tooltip>
+							<el-table-column v-if="columns[1].visible" label="上日欠运费" align="center" prop="previousDebtAmountToday" width="200" show-overflow-tooltip />
+							<el-table-column v-if="columns[2].visible" label="当日应付运费" align="center" prop="unpaidAmountToday" width="200" show-overflow-tooltip />
+							<el-table-column v-if="columns[3].visible" label="本日付款金额" align="center" prop="paidAmountToday" width="200" show-overflow-tooltip />
+							<el-table-column v-if="columns[4].visible" label="本日欠款余额" align="center" prop="debtAmountToday" width="200" show-overflow-tooltip>
 								<template slot-scope="scope">
 									{{ fix(scope.row.debtAmountToday) }}
 								</template>
@@ -167,11 +167,11 @@ export default {
 						</el-table-column>
 
 						<!-- 运费月报 -->
-						<el-table-column label="运费月报" align="center">
-							<el-table-column v-if="columns[5].visible" label="上月结转欠款全额" align="center" prop="previousDebtAmountThisMonth" width="200" />
-							<el-table-column v-if="columns[6].visible" label="本月付款金额合计" align="center" prop="paidAmountThisMonth" width="200" />
-							<el-table-column v-if="columns[7].visible" label="本月累计应付运费" align="center" prop="unpaidAmountThisMonth" width="200" />
-							<el-table-column v-if="columns[8].visible" label="本月欠款金额" align="center" prop="debtAmountThisMonth" width="200">
+						<el-table-column label="运费月报" align="center" show-overflow-tooltip>
+							<el-table-column v-if="columns[5].visible" label="上月结转欠款全额" align="center" prop="previousDebtAmountThisMonth" width="200" show-overflow-tooltip />
+							<el-table-column v-if="columns[6].visible" label="本月付款金额合计" align="center" prop="paidAmountThisMonth" width="200" show-overflow-tooltip />
+							<el-table-column v-if="columns[7].visible" label="本月累计应付运费" align="center" prop="unpaidAmountThisMonth" width="200" show-overflow-tooltip />
+							<el-table-column v-if="columns[8].visible" label="本月欠款金额" align="center" prop="debtAmountThisMonth" width="200" show-overflow-tooltip>
 								<template slot-scope="scope">
 									{{ fix(scope.row.debtAmountThisMonth) }}
 								</template>
@@ -179,11 +179,11 @@ export default {
 						</el-table-column>
 
 						<!-- 运费年报 -->
-						<el-table-column label="运费年报" align="center">
-							<el-table-column v-if="columns[9].visible" label="上年结转欠款金额" align="center" prop="previousDebtAmountThisYear" width="200" />
-							<el-table-column v-if="columns[10].visible" label="本年付款金额合计" align="center" prop="paidAmountThisYear" width="200" />
-							<el-table-column v-if="columns[11].visible" label="本年累计应付运费" align="center" prop="unpaidAmountThisYear" width="200" />
-							<el-table-column v-if="columns[12].visible" label="本年欠款金额" align="center" prop="debtAmountThisYear" width="200">
+						<el-table-column label="运费年报" align="center" show-overflow-tooltip>
+							<el-table-column v-if="columns[9].visible" label="上年结转欠款金额" align="center" prop="previousDebtAmountThisYear" width="200" show-overflow-tooltip />
+							<el-table-column v-if="columns[10].visible" label="本年付款金额合计" align="center" prop="paidAmountThisYear" width="200" show-overflow-tooltip />
+							<el-table-column v-if="columns[11].visible" label="本年累计应付运费" align="center" prop="unpaidAmountThisYear" width="200" show-overflow-tooltip />
+							<el-table-column v-if="columns[12].visible" label="本年欠款金额" align="center" prop="debtAmountThisYear" width="200" show-overflow-tooltip>
 								<template slot-scope="scope">
 									{{ fix(scope.row.debtAmountThisYear) }}
 								</template>

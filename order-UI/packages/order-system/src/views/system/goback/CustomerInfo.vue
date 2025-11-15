@@ -47,42 +47,83 @@
 
 		<!-- 表格区域 -->
 		<el-table id="educe-table" :data="tableData" border style="width: 100%" v-loading="loading" size="mini">
-			<el-table-column prop="date" label="日期"></el-table-column>
+			<el-table-column prop="date" label="日期" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.date }}</div>
+						<span>{{ scope.row.date }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 
-			<el-table-column label="客户名称" width="150" prop="customerName"></el-table-column>
+			<el-table-column label="客户名称" width="150" prop="customerName" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.customerName }}</div>
+						<span>{{ scope.row.customerName }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 
 			<!--      借方列表-->
-			<el-table-column label="往来明细">
-				<template slot-scope="scope">
-					<div v-for="(item, index) in scope.row.lenderList" :key="index">
-						<span style="color: red; margin-right: 6px">[{{ moduleNames[item.tableName] }}]</span>
-						<span style="margin-right: 7px">{{ item.lender }}</span>
-						<i class="el-icon-s-order" style="cursor: pointer" @click="handleCheckDetail(item)"></i>
-					</div>
+			<el-table-column label="往来明细" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">
+							<div v-for="(item, index) in scope.row.lenderList" :key="index">
+								<span style="color: red; margin-right: 6px">[{{ moduleNames[item.tableName] }}]</span>
+								<span style="margin-right: 7px">{{ item.lender }}</span>
+								<i class="el-icon-s-order" style="cursor: pointer" @click="handleCheckDetail(item)"></i>
+							</div>
+						</div>
+						<div v-for="(item, index) in scope.row.lenderList" :key="index">
+							<span style="color: red; margin-right: 6px">[{{ moduleNames[item.tableName] }}]</span>
+							<span style="margin-right: 7px">{{ item.lender }}</span>
+							<i class="el-icon-s-order" style="cursor: pointer" @click="handleCheckDetail(item)"></i>
+						</div>
+					</el-tooltip>
 				</template>
 			</el-table-column>
 
 			<!--      借方总款-->
-			<el-table-column prop="lender" label="借方（客户欠款增加）">
-				<template slot-scope="scope">
-					<span>{{ Math.abs(scope.row.lender) }}</span>
+			<el-table-column prop="lender" label="借方（客户欠款增加）" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">
+							<span>{{ Math.abs(scope.row.lender) }}</span>
+						</div>
+						<span>{{ Math.abs(scope.row.lender) }}</span>
+					</el-tooltip>
 				</template>
 			</el-table-column>
 
 			<!--      贷方总款-->
-			<el-table-column prop="borrower" label="贷方（客户欠款减少）">
-				<template slot-scope="scope">
-					<span style="margin-right: 10px">{{ Math.abs(scope.row.borrower) }}</span>
-					<i class="el-icon-s-order" style="cursor: pointer" @click="handleCheckBorrowerDetailList(scope.row)"></i>
+			<el-table-column prop="borrower" label="贷方（客户欠款减少）" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">
+							<span style="margin-right: 10px">{{ Math.abs(scope.row.borrower) }}</span>
+							<i class="el-icon-s-order" style="cursor: pointer" @click="handleCheckBorrowerDetailList(scope.row)"></i>
+						</div>
+						<span style="margin-right: 10px">{{ Math.abs(scope.row.borrower) }}</span>
+						<i class="el-icon-s-order" style="cursor: pointer" @click="handleCheckBorrowerDetailList(scope.row)"></i>
+					</el-tooltip>
 				</template>
 			</el-table-column>
 
 			<!--      余额本币-->
-			<el-table-column prop="moneyAmountLocal" label="余额本币">
-				<template slot-scope="scope">
-					<span :class="{ negative: scope.row.moneyAmountLocal < 0 }">
-						{{ formatBalance(scope.row.moneyAmountLocal) }}
-					</span>
+			<el-table-column prop="moneyAmountLocal" label="余额本币" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">
+							<span :class="{ negative: scope.row.moneyAmountLocal < 0 }">
+								{{ formatBalance(scope.row.moneyAmountLocal) }}
+							</span>
+						</div>
+						<span :class="{ negative: scope.row.moneyAmountLocal < 0 }">
+							{{ formatBalance(scope.row.moneyAmountLocal) }}
+						</span>
+					</el-tooltip>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -98,15 +139,55 @@
 
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="明细信息" :visible.sync="detailVisible" width="900px" append-to-body>
 			<el-table :data="detailList" border style="width: 100%" v-loading="detailLoading" size="mini" :summary-method="getSummaries" show-summary>
-				<el-table-column prop="date" label="日期"></el-table-column>
-				<el-table-column prop="payNo" label="凭证号"></el-table-column>
-				<el-table-column prop="lender" label="借方(客户欠款增加)"></el-table-column>
-				<el-table-column prop="borrower" label="贷方(客户欠款减少)"></el-table-column>
-				<el-table-column prop="moneyAmountLocal" label="余额本币"></el-table-column>
+				<el-table-column prop="date" label="日期" show-overflow-tooltip>
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">{{ scope.row.date }}</div>
+							<span>{{ scope.row.date }}</span>
+						</el-tooltip>
+					</template>
+				</el-table-column>
+				<el-table-column prop="payNo" label="凭证号" show-overflow-tooltip>
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">{{ scope.row.payNo }}</div>
+							<span>{{ scope.row.payNo }}</span>
+						</el-tooltip>
+					</template>
+				</el-table-column>
+				<el-table-column prop="lender" label="借方(客户欠款增加)" show-overflow-tooltip>
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">{{ scope.row.lender }}</div>
+							<span>{{ scope.row.lender }}</span>
+						</el-tooltip>
+					</template>
+				</el-table-column>
+				<el-table-column prop="borrower" label="贷方(客户欠款减少)" show-overflow-tooltip>
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">{{ scope.row.borrower }}</div>
+							<span>{{ scope.row.borrower }}</span>
+						</el-tooltip>
+					</template>
+				</el-table-column>
+				<el-table-column prop="moneyAmountLocal" label="余额本币" show-overflow-tooltip>
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">{{ scope.row.moneyAmountLocal }}</div>
+							<span>{{ scope.row.moneyAmountLocal }}</span>
+						</el-tooltip>
+					</template>
+				</el-table-column>
 				<!--        添加查看列-->
-				<el-table-column label="查看明细">
-					<template slot-scope="scope">
-						<i class="el-icon-s-order" style="cursor: pointer" @click="handleCheckDetail(scope.row)"></i>
+				<el-table-column label="查看明细" show-overflow-tooltip>
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">
+								<i class="el-icon-s-order" style="cursor: pointer" @click="handleCheckDetail(scope.row)"></i>
+							</div>
+							<i class="el-icon-s-order" style="cursor: pointer" @click="handleCheckDetail(scope.row)"></i>
+						</el-tooltip>
 					</template>
 				</el-table-column>
 			</el-table>

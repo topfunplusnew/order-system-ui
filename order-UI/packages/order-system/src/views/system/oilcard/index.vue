@@ -40,9 +40,30 @@
 			<el-tabs v-model="activeName" @tab-click="handleClick">
 				<el-tab-pane lazy label="加油卡主卡管理" name="first">
 					<el-table id="printBox" v-loading="loading" v-horizontal-scroll="'always'" size="mini" border :data="mainOilCardList" @selection-change="handleSelectionChange">
-						<el-table-column v-if="columns[0].visible" label="加油卡卡号" align="center" prop="oilCardNo" />
-						<el-table-column v-if="columns[1].visible" label="当前金额" align="center" prop="moneyAmount" />
-						<el-table-column v-if="columns[2].visible" label="备注" align="center" prop="comments" />
+						<el-table-column v-if="columns[0].visible" label="加油卡卡号" align="center" prop="oilCardNo" show-overflow-tooltip>
+							<template #default="scope">
+								<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+									<div slot="content">{{ scope.row.oilCardNo }}</div>
+									<span>{{ scope.row.oilCardNo }}</span>
+								</el-tooltip>
+							</template>
+						</el-table-column>
+						<el-table-column v-if="columns[1].visible" label="当前金额" align="center" prop="moneyAmount" show-overflow-tooltip>
+							<template #default="scope">
+								<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+									<div slot="content">{{ scope.row.moneyAmount }}</div>
+									<span>{{ scope.row.moneyAmount }}</span>
+								</el-tooltip>
+							</template>
+						</el-table-column>
+						<el-table-column v-if="columns[2].visible" label="备注" align="center" prop="comments" show-overflow-tooltip>
+							<template #default="scope">
+								<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+									<div slot="content">{{ scope.row.comments }}</div>
+									<span>{{ scope.row.comments }}</span>
+								</el-tooltip>
+							</template>
+						</el-table-column>
 						<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
 							<template slot-scope="scope">
 								<el-button v-hasPermi="['system:oilcard:query']" size="mini" type="text" @click="handleCheck(scope.row)">查看明细</el-button>
@@ -56,10 +77,38 @@
 				</el-tab-pane>
 				<el-tab-pane lazy label="加油卡副卡管理" name="second">
 					<el-table id="printBox" v-loading="loading" v-horizontal-scroll="'always'" border size="mini" :data="subCardList" @selection-change="handleSelectionChange">
-						<el-table-column v-if="columns[0].visible" label="加油卡卡号" align="center" prop="oilCardNo" />
-						<el-table-column v-if="columns[1].visible" label="可用金额" align="center" prop="moneyAmount" />
-						<el-table-column label="待圈存金额" align="center" prop="virtualMoneyAmount" />
-						<el-table-column v-if="columns[2].visible" label="备注" align="center" prop="comments" />
+						<el-table-column v-if="columns[0].visible" label="加油卡卡号" align="center" prop="oilCardNo" show-overflow-tooltip>
+							<template #default="scope">
+								<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+									<div slot="content">{{ scope.row.oilCardNo }}</div>
+									<span>{{ scope.row.oilCardNo }}</span>
+								</el-tooltip>
+							</template>
+						</el-table-column>
+						<el-table-column v-if="columns[1].visible" label="可用金额" align="center" prop="moneyAmount" show-overflow-tooltip>
+							<template #default="scope">
+								<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+									<div slot="content">{{ scope.row.moneyAmount }}</div>
+									<span>{{ scope.row.moneyAmount }}</span>
+								</el-tooltip>
+							</template>
+						</el-table-column>
+						<el-table-column label="待圈存金额" align="center" prop="virtualMoneyAmount" show-overflow-tooltip>
+							<template #default="scope">
+								<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+									<div slot="content">{{ scope.row.virtualMoneyAmount }}</div>
+									<span>{{ scope.row.virtualMoneyAmount }}</span>
+								</el-tooltip>
+							</template>
+						</el-table-column>
+						<el-table-column v-if="columns[2].visible" label="备注" align="center" prop="comments">
+							<template #default="scope">
+								<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+									<div slot="content">{{ scope.row.comments }}</div>
+									<span>{{ scope.row.comments }}</span>
+								</el-tooltip>
+							</template>
+						</el-table-column>
 						<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
 							<template slot-scope="scope">
 								<el-button v-hasPermi="['system:oilcard:query']" size="mini" type="text" @click="handleCheck(scope.row)">查看明细</el-button>

@@ -81,16 +81,16 @@
 				<el-button type="primary" size="mini" @click="handleAddRefund(currentRow)">新增退款</el-button>
 			</div>
 			<el-table v-loading="refundLoading" :data="refundList" border size="mini">
-				<el-table-column prop="refundDate" label="退款日期" width="120" />
-				<el-table-column prop="selfAccountName" label="己方账户名" width="150" />
-				<el-table-column prop="selfBankNo" label="己方账号" width="180" />
-				<el-table-column prop="selfBankName" label="己方开户行" width="150" />
-				<el-table-column prop="otherAccountName" label="对方账户名" width="150" />
-				<el-table-column prop="otherBankNo" label="对方账号" width="180" />
-				<el-table-column prop="otherBankName" label="对方开户行" width="150" />
-				<el-table-column prop="moneyAmount" label="退款金额" width="120" align="right" />
-				<el-table-column prop="comments" label="备注" />
-				<el-table-column prop="UserName" label="操作人员" width="100" />
+				<el-table-column prop="refundDate" label="退款日期" width="120" show-overflow-tooltip />
+				<el-table-column prop="selfAccountName" label="己方账户名" width="150" show-overflow-tooltip />
+				<el-table-column prop="selfBankNo" label="己方账号" width="180" show-overflow-tooltip />
+				<el-table-column prop="selfBankName" label="己方开户行" width="150" show-overflow-tooltip />
+				<el-table-column prop="otherAccountName" label="对方账户名" width="150" show-overflow-tooltip />
+				<el-table-column prop="otherBankNo" label="对方账号" width="180" show-overflow-tooltip />
+				<el-table-column prop="otherBankName" label="对方开户行" width="150" show-overflow-tooltip />
+				<el-table-column prop="moneyAmount" label="退款金额" width="120" align="right" show-overflow-tooltip />
+				<el-table-column prop="comments" label="备注" show-overflow-tooltip />
+				<el-table-column prop="UserName" label="操作人员" width="100" show-overflow-tooltip />
 				<el-table-column label="操作" align="center" width="150">
 					<template slot-scope="scope">
 						<el-button size="mini" type="text" @click="handleUpdateRefund(scope.row)">修改</el-button>

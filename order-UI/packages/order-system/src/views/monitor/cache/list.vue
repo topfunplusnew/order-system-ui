@@ -11,11 +11,11 @@
 						<el-button style="float: right; padding: 3px 0" type="text" icon="el-icon-refresh-right" @click="refreshCacheNames()"></el-button>
 					</div>
 					<el-table v-loading="loading" :data="cacheNames" :height="tableHeight" highlight-current-row style="width: 100%" @row-click="getCacheKeys">
-						<el-table-column label="序号" width="60" type="index"></el-table-column>
+						<el-table-column label="序号" width="60" type="index" show-overflow-tooltip></el-table-column>
 
-						<el-table-column label="缓存名称" align="center" prop="cacheName" :show-overflow-tooltip="true" :formatter="nameFormatter"></el-table-column>
+						<el-table-column label="缓存名称" align="center" prop="cacheName" show-overflow-tooltip :formatter="nameFormatter"></el-table-column>
 
-						<el-table-column label="备注" align="center" prop="remark" :show-overflow-tooltip="true" />
+						<el-table-column label="备注" align="center" prop="remark" show-overflow-tooltip />
 						<el-table-column label="操作" width="60" align="center" class-name="small-padding fixed-width">
 							<template slot-scope="scope">
 								<el-button size="mini" type="text" icon="el-icon-delete" @click="handleClearCacheName(scope.row)"></el-button>
@@ -35,8 +35,8 @@
 						<el-button style="float: right; padding: 3px 0" type="text" icon="el-icon-refresh-right" @click="refreshCacheKeys()"></el-button>
 					</div>
 					<el-table v-loading="subLoading" :data="cacheKeys" :height="tableHeight" highlight-current-row style="width: 100%" @row-click="handleCacheValue">
-						<el-table-column label="序号" width="60" type="index"></el-table-column>
-						<el-table-column label="缓存键名" align="center" :show-overflow-tooltip="true" :formatter="keyFormatter"></el-table-column>
+						<el-table-column label="序号" width="60" type="index" show-overflow-tooltip></el-table-column>
+						<el-table-column label="缓存键名" align="center" show-overflow-tooltip :formatter="keyFormatter"></el-table-column>
 						<el-table-column label="操作" width="60" align="center" class-name="small-padding fixed-width">
 							<template slot-scope="scope">
 								<el-button size="mini" type="text" icon="el-icon-delete" @click="handleClearCacheKey(scope.row)"></el-button>

@@ -12,8 +12,8 @@
 
 		<!-- 表格 -->
 		<el-table :data="tableData" border class="money-table" :row-style="tableRowClassName">
-			<el-table-column prop="label" label="项目"></el-table-column>
-			<el-table-column prop="value" label="金额" :formatter="formatValue"></el-table-column>
+			<el-table-column prop="label" label="项目" show-overflow-tooltip></el-table-column>
+			<el-table-column prop="value" label="金额" :formatter="formatValue" show-overflow-tooltip></el-table-column>
 		</el-table>
 	</div>
 </template>

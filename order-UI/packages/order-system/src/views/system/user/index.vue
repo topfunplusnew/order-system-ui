@@ -95,45 +95,223 @@
 						</template>
 					</el-table-column>
 					<el-table-column type="selection" width="50" align="center" />
-					<el-table-column v-if="columns[0].visible" key="userId" label="用户编号" align="center" prop="userId" />
-					<el-table-column v-if="columns[1].visible" key="userName" label="用户名称" align="center" prop="userName" :show-overflow-tooltip="true" />
-					<el-table-column v-if="columns[2].visible" key="nickName" label="用户昵称" align="center" prop="nickName" :show-overflow-tooltip="true" />
-					<el-table-column v-if="columns[3].visible" key="nickName" label="真实姓名" align="center" prop="trueName" :show-overflow-tooltip="true" />
-					<el-table-column v-if="columns[4].visible" key="deptName" label="岗位" align="center" prop="postName" :show-overflow-tooltip="true" />
-					<el-table-column v-if="columns[5].visible" key="phonenumber" label="手机号码" align="center" prop="phonenumber" width="120" />
-					<el-table-column v-if="columns[6].visible" key="phonenumber" label="在职状态" align="center" prop="state" width="120" />
-					<el-table-column v-if="columns[7].visible" key="phonenumber" label="入职时间" align="center" prop="startDate" width="120" />
-					<el-table-column v-if="columns[8].visible" key="phonenumber" label="身份证号码" align="center" prop="idCard" width="120" />
-					<el-table-column v-if="columns[10].visible" label="性别" align="center" prop="sex" width="120">
-						<!-- 1男0女 -->
-						<template slot-scope="scope">
-							{{ scope.row.sex == '0' ? '男' : '女' }}
+					<el-table-column v-if="columns[0].visible" key="userId" label="用户编号" align="center" prop="userId" show-overflow-tooltip>
+						<template #default="scope">
+							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+								<div slot="content">{{ scope.row.userId }}</div>
+								<span>{{ scope.row.userId }}</span>
+							</el-tooltip>
+						</template>
+					</el-table-column>
+					<el-table-column v-if="columns[1].visible" key="userName" label="用户名称" align="center" prop="userName" :show-overflow-tooltip="true">
+						<template #default="scope">
+							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+								<div slot="content">{{ scope.row.userName }}</div>
+								<span>{{ scope.row.userName }}</span>
+							</el-tooltip>
+						</template>
+					</el-table-column>
+					<el-table-column v-if="columns[2].visible" key="nickName" label="用户昵称" align="center" prop="nickName" :show-overflow-tooltip="true">
+						<template #default="scope">
+							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+								<div slot="content">{{ scope.row.nickName }}</div>
+								<span>{{ scope.row.nickName }}</span>
+							</el-tooltip>
+						</template>
+					</el-table-column>
+					<el-table-column v-if="columns[3].visible" key="nickName" label="真实姓名" align="center" prop="trueName" :show-overflow-tooltip="true">
+						<template #default="scope">
+							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+								<div slot="content">{{ scope.row.trueName }}</div>
+								<span>{{ scope.row.trueName }}</span>
+							</el-tooltip>
+						</template>
+					</el-table-column>
+					<el-table-column v-if="columns[4].visible" key="deptName" label="岗位" align="center" prop="postName" :show-overflow-tooltip="true">
+						<template #default="scope">
+							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+								<div slot="content">{{ scope.row.postName }}</div>
+								<span>{{ scope.row.postName }}</span>
+							</el-tooltip>
+						</template>
+					</el-table-column>
+					<el-table-column v-if="columns[5].visible" key="phonenumber" label="手机号码" align="center" prop="phonenumber" width="120" show-overflow-tooltip>
+						<template #default="scope">
+							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+								<div slot="content">{{ scope.row.phonenumber }}</div>
+								<span>{{ scope.row.phonenumber }}</span>
+							</el-tooltip>
+						</template>
+					</el-table-column>
+					<el-table-column v-if="columns[6].visible" key="phonenumber" label="在职状态" align="center" prop="state" width="120" show-overflow-tooltip>
+						<template #default="scope">
+							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+								<div slot="content">{{ scope.row.state }}</div>
+								<span>{{ scope.row.state }}</span>
+							</el-tooltip>
+						</template>
+					</el-table-column>
+					<el-table-column v-if="columns[7].visible" key="phonenumber" label="入职时间" align="center" prop="startDate" width="120" show-overflow-tooltip>
+						<template #default="scope">
+							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+								<div slot="content">{{ scope.row.startDate }}</div>
+								<span>{{ scope.row.startDate }}</span>
+							</el-tooltip>
+						</template>
+					</el-table-column>
+					<el-table-column v-if="columns[8].visible" key="phonenumber" label="身份证号码" align="center" prop="idCard" width="120" show-overflow-tooltip>
+						<template #default="scope">
+							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+								<div slot="content">{{ scope.row.idCard }}</div>
+								<span>{{ scope.row.idCard }}</span>
+							</el-tooltip>
+						</template>
+					</el-table-column>
+					<el-table-column v-if="columns[10].visible" label="性别" align="center" prop="sex" width="120" show-overflow-tooltip>
+						<template #default="scope">
+							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+								<div slot="content">{{ scope.row.sex == '0' ? '男' : '女' }}</div>
+								<span>{{ scope.row.sex == '0' ? '男' : '女' }}</span>
+							</el-tooltip>
 						</template>
 					</el-table-column>
 
-					<el-table-column v-if="columns[11].visible" key="phonenumber" label="出生日期" align="center" prop="birthday" width="120" />
-					<el-table-column v-if="columns[12].visible" key="phonenumber" label="民族" align="center" prop="nation" width="120" />
-					<el-table-column v-if="columns[13].visible" key="phonenumber" label="政治面貌" align="center" prop="politicalStatus" width="120" />
-					<el-table-column v-if="columns[14].visible" key="phonenumber" label="婚姻状况" align="center" prop="maritalStatus" width="120" />
-					<el-table-column v-if="columns[15].visible" key="phonenumber" label="户籍地址" align="center" prop="domicileAddress" width="120" />
-					<el-table-column v-if="columns[16].visible" key="phonenumber" label="居住地址" align="center" prop="residentialAddress" width="120" />
-					<el-table-column v-if="columns[17].visible" key="phonenumber" label="紧急联系人" align="center" prop="relationPerson" width="120" />
-					<el-table-column v-if="columns[18].visible" key="phonenumber" label="紧急联系人电话" align="center" prop="relationPersonTel" width="120" />
-					<el-table-column v-if="columns[19].visible" key="phonenumber" label="关系" align="center" prop="relationship" width="120" />
-					<el-table-column v-if="columns[20].visible" key="phonenumber" label="学历" align="center" prop="education" width="120" />
-					<el-table-column v-if="columns[21].visible" key="phonenumber" label="毕业院校" align="center" prop="gradualUniversity" width="120" />
-					<el-table-column v-if="columns[22].visible" key="phonenumber" label="专业" align="center" prop="profession" width="120" />
-					<el-table-column v-if="columns[23].visible" key="phonenumber" label="毕业时间" align="center" prop="gradualDate" width="120" />
-					<el-table-column v-if="columns[24].visible" key="phonenumber" label="开户银行" align="center" prop="bankName" width="120" />
-					<el-table-column v-if="columns[25].visible" key="phonenumber" label="银行账号" align="center" prop="bankNo" width="120" />
-					<el-table-column v-if="columns[26].visible" key="status" label="状态" align="center">
-						<template slot-scope="scope">
-							<el-switch v-model="scope.row.status" active-value="0" inactive-value="1" @change="handleStatusChange(scope.row)"></el-switch>
+					<el-table-column v-if="columns[11].visible" key="phonenumber" label="出生日期" align="center" prop="birthday" width="120" show-overflow-tooltip>
+						<template #default="scope">
+							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+								<div slot="content">{{ scope.row.birthday }}</div>
+								<span>{{ scope.row.birthday }}</span>
+							</el-tooltip>
 						</template>
 					</el-table-column>
-					<el-table-column v-if="columns[27].visible" label="创建时间" align="center" prop="createTime" width="160">
-						<template slot-scope="scope">
-							<span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
+					<el-table-column v-if="columns[12].visible" key="phonenumber" label="民族" align="center" prop="nation" width="120" show-overflow-tooltip>
+						<template #default="scope">
+							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+								<div slot="content">{{ scope.row.nation }}</div>
+								<span>{{ scope.row.nation }}</span>
+							</el-tooltip>
+						</template>
+					</el-table-column>
+					<el-table-column v-if="columns[13].visible" key="phonenumber" label="政治面貌" align="center" prop="politicalStatus" width="120" show-overflow-tooltip>
+						<template #default="scope">
+							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+								<div slot="content">{{ scope.row.politicalStatus }}</div>
+								<span>{{ scope.row.politicalStatus }}</span>
+							</el-tooltip>
+						</template>
+					</el-table-column>
+					<el-table-column v-if="columns[14].visible" key="phonenumber" label="婚姻状况" align="center" prop="maritalStatus" width="120" show-overflow-tooltip>
+						<template #default="scope">
+							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+								<div slot="content">{{ scope.row.maritalStatus }}</div>
+								<span>{{ scope.row.maritalStatus }}</span>
+							</el-tooltip>
+						</template>
+					</el-table-column>
+					<el-table-column v-if="columns[15].visible" key="phonenumber" label="户籍地址" align="center" prop="domicileAddress" width="120" show-overflow-tooltip>
+						<template #default="scope">
+							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+								<div slot="content">{{ scope.row.domicileAddress }}</div>
+								<span>{{ scope.row.domicileAddress }}</span>
+							</el-tooltip>
+						</template>
+					</el-table-column>
+					<el-table-column v-if="columns[16].visible" key="phonenumber" label="居住地址" align="center" prop="residentialAddress" width="120" show-overflow-tooltip>
+						<template #default="scope">
+							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+								<div slot="content">{{ scope.row.residentialAddress }}</div>
+								<span>{{ scope.row.residentialAddress }}</span>
+							</el-tooltip>
+						</template>
+					</el-table-column>
+					<el-table-column v-if="columns[17].visible" key="phonenumber" label="紧急联系人" align="center" prop="relationPerson" width="120" show-overflow-tooltip>
+						<template #default="scope">
+							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+								<div slot="content">{{ scope.row.relationPerson }}</div>
+								<span>{{ scope.row.relationPerson }}</span>
+							</el-tooltip>
+						</template>
+					</el-table-column>
+					<el-table-column v-if="columns[18].visible" key="phonenumber" label="紧急联系人电话" align="center" prop="relationPersonTel" width="120" show-overflow-tooltip>
+						<template #default="scope">
+							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+								<div slot="content">{{ scope.row.relationPersonTel }}</div>
+								<span>{{ scope.row.relationPersonTel }}</span>
+							</el-tooltip>
+						</template>
+					</el-table-column>
+					<el-table-column v-if="columns[19].visible" key="phonenumber" label="关系" align="center" prop="relationship" width="120" show-overflow-tooltip>
+						<template #default="scope">
+							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+								<div slot="content">{{ scope.row.relationship }}</div>
+								<span>{{ scope.row.relationship }}</span>
+							</el-tooltip>
+						</template>
+					</el-table-column>
+					<el-table-column v-if="columns[20].visible" key="phonenumber" label="学历" align="center" prop="education" width="120" show-overflow-tooltip>
+						<template #default="scope">
+							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+								<div slot="content">{{ scope.row.education }}</div>
+								<span>{{ scope.row.education }}</span>
+							</el-tooltip>
+						</template>
+					</el-table-column>
+					<el-table-column v-if="columns[21].visible" key="phonenumber" label="毕业院校" align="center" prop="gradualUniversity" width="120" show-overflow-tooltip>
+						<template #default="scope">
+							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+								<div slot="content">{{ scope.row.gradualUniversity }}</div>
+								<span>{{ scope.row.gradualUniversity }}</span>
+							</el-tooltip>
+						</template>
+					</el-table-column>
+					<el-table-column v-if="columns[22].visible" key="phonenumber" label="专业" align="center" prop="profession" width="120" show-overflow-tooltip>
+						<template #default="scope">
+							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+								<div slot="content">{{ scope.row.profession }}</div>
+								<span>{{ scope.row.profession }}</span>
+							</el-tooltip>
+						</template>
+					</el-table-column>
+					<el-table-column v-if="columns[23].visible" key="phonenumber" label="毕业时间" align="center" prop="gradualDate" width="120" show-overflow-tooltip>
+						<template #default="scope">
+							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+								<div slot="content">{{ scope.row.gradualDate }}</div>
+								<span>{{ scope.row.gradualDate }}</span>
+							</el-tooltip>
+						</template>
+					</el-table-column>
+					<el-table-column v-if="columns[24].visible" key="phonenumber" label="开户银行" align="center" prop="bankName" width="120" show-overflow-tooltip>
+						<template #default="scope">
+							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+								<div slot="content">{{ scope.row.bankName }}</div>
+								<span>{{ scope.row.bankName }}</span>
+							</el-tooltip>
+						</template>
+					</el-table-column>
+					<el-table-column v-if="columns[25].visible" key="phonenumber" label="银行账号" align="center" prop="bankNo" width="120" show-overflow-tooltip>
+						<template #default="scope">
+							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+								<div slot="content">{{ scope.row.bankNo }}</div>
+								<span>{{ scope.row.bankNo }}</span>
+							</el-tooltip>
+						</template>
+					</el-table-column>
+					<el-table-column v-if="columns[26].visible" key="status" label="状态" align="center" show-overflow-tooltip>
+						<template #default="scope">
+							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+								<div slot="content">
+									<el-switch v-model="scope.row.status" active-value="0" inactive-value="1" @change="handleStatusChange(scope.row)"></el-switch>
+								</div>
+								<el-switch v-model="scope.row.status" active-value="0" inactive-value="1" @change="handleStatusChange(scope.row)"></el-switch>
+							</el-tooltip>
+						</template>
+					</el-table-column>
+					<el-table-column v-if="columns[27].visible" label="创建时间" align="center" prop="createTime" width="160" show-overflow-tooltip>
+						<template #default="scope">
+							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+								<div slot="content">{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</div>
+								<span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
+							</el-tooltip>
 						</template>
 					</el-table-column>
 				</el-table>

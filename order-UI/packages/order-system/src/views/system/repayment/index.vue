@@ -45,12 +45,54 @@
 			"
 			@selection-change="handleSelectionChange"
 		>
-			<el-table-column v-if="columns[0].visible" label="还款金额" align="center" prop="moneyAmount" show-overflow-tooltip />
-			<el-table-column v-if="columns[1].visible" label="付息" align="center" prop="ratio" show-overflow-tooltip />
-			<el-table-column v-if="columns[2].visible" label="还款日期" align="center" prop="payDate" show-overflow-tooltip />
-			<el-table-column v-if="columns[3].visible" label="还款账户" align="center" prop="acountsName" show-overflow-tooltip />
-			<el-table-column v-if="columns[4].visible" label="还款账号" align="center" prop="bankNo" show-overflow-tooltip />
-			<el-table-column label="备注" align="center" prop="comments" show-overflow-tooltip />
+		<el-table-column v-if="columns[0].visible" label="还款金额" align="center" prop="moneyAmount" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.moneyAmount }}</div>
+					<span>{{ scope.row.moneyAmount }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[1].visible" label="付息" align="center" prop="ratio" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.ratio }}</div>
+					<span>{{ scope.row.ratio }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[2].visible" label="还款日期" align="center" prop="payDate" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.payDate }}</div>
+					<span>{{ scope.row.payDate }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[3].visible" label="还款账户" align="center" prop="acountsName" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.acountsName }}</div>
+					<span>{{ scope.row.acountsName }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[4].visible" label="还款账号" align="center" prop="bankNo" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.bankNo }}</div>
+					<span>{{ scope.row.bankNo }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column label="备注" align="center" prop="comments" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.comments }}</div>
+					<span>{{ scope.row.comments }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
 			<el-table-column label="操作" align="center" class-name="small-padding">
 				<template slot-scope="scope">
 					<el-button v-if="scope.row.checkState === '未申请'" size="mini" type="warning" @click="applyForPayment(scope.row)">申请付款</el-button>

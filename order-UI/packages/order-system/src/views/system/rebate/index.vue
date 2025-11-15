@@ -64,56 +64,106 @@
 			"
 			@selection-change="handleSelectionChange"
 		>
-			<!-- 计提返利日期 -->
-			<el-table-column v-if="columns[0].visible" label="计提返利日期" align="center" prop="rebateDate" show-overflow-tooltip />
+		<!-- 计提返利日期 -->
+		<el-table-column v-if="columns[0].visible" label="计提返利日期" align="center" prop="rebateDate" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.rebateDate }}</div>
+					<span>{{ scope.row.rebateDate }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
 
-			<!-- 类型 -->
-			<el-table-column v-if="columns[1].visible" label="类型" align="center" prop="rebateType" show-overflow-tooltip />
+		<!-- 类型 -->
+		<el-table-column v-if="columns[1].visible" label="类型" align="center" prop="rebateType" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.rebateType }}</div>
+					<span>{{ scope.row.rebateType }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
 
-			<!-- 供应商 -->
-			<el-table-column v-if="columns[2].visible" label="供应商" align="center" prop="supplier" />
+		<!-- 供应商 -->
+		<el-table-column v-if="columns[2].visible" label="供应商" align="center" prop="supplier" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.supplier }}</div>
+					<span>{{ scope.row.supplier }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
 
-			<!-- 返利方式 -->
-			<el-table-column v-if="columns[3].visible" label="返利方式" align="center" prop="rebateMethod" show-overflow-tooltip>
-				<template slot-scope="scope">
-					{{ scope.row.rebateMethod == 2 ? '面积' : '重箱' }}
-				</template>
-			</el-table-column>
+		<!-- 返利方式 -->
+		<el-table-column v-if="columns[3].visible" label="返利方式" align="center" prop="rebateMethod" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.rebateMethod == 2 ? '面积' : '重箱' }}</div>
+					<span>{{ scope.row.rebateMethod == 2 ? '面积' : '重箱' }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
 
-			<!-- （返利/降价）单价 -->
-			<el-table-column v-if="columns[4].visible" label="（返利/降价）单价" align="center" prop="unitPrice" show-overflow-tooltip />
+		<!-- （返利/降价）单价 -->
+		<el-table-column v-if="columns[4].visible" label="（返利/降价）单价" align="center" prop="unitPrice" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.unitPrice }}</div>
+					<span>{{ scope.row.unitPrice }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
 
-			<!-- 金额 -->
-			<el-table-column v-if="columns[5].visible" label="金额" align="center" prop="rebate" show-overflow-tooltip>
-				<template slot-scope="scope">
+		<!-- 金额 -->
+		<el-table-column v-if="columns[5].visible" label="金额" align="center" prop="rebate" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.rebate }}</div>
 					<span class="money">{{ scope.row.rebate }}</span>
-				</template>
-			</el-table-column>
+				</el-tooltip>
+			</template>
+		</el-table-column>
 
-			<!-- 返利原因 -->
-			<el-table-column v-if="columns[6].visible" label="返利原因" align="center" prop="rebateReason" show-overflow-tooltip />
+		<!-- 返利原因 -->
+		<el-table-column v-if="columns[6].visible" label="返利原因" align="center" prop="rebateReason" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.rebateReason }}</div>
+					<span>{{ scope.row.rebateReason }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
 
-			<!-- 收到返利日期 -->
-			<el-table-column v-if="columns[7].visible" label="收到返利日期" align="center" prop="receivedRebateDate" show-overflow-tooltip>
-				<template slot-scope="scope">
-					{{ getEarliestReceivedDate(scope.row) }}
-				</template>
-			</el-table-column>
+		<!-- 收到返利日期 -->
+		<el-table-column v-if="columns[7].visible" label="收到返利日期" align="center" prop="receivedRebateDate" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ getEarliestReceivedDate(scope.row) }}</div>
+					<span>{{ getEarliestReceivedDate(scope.row) }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
 
-			<!-- 收到返利金额 -->
-			<el-table-column v-if="columns[8].visible" label="收到返利金额" align="center" prop="receivedRebateAmount" show-overflow-tooltip>
-				<template slot-scope="scope">
+		<!-- 收到返利金额 -->
+		<el-table-column v-if="columns[8].visible" label="收到返利金额" align="center" prop="receivedRebateAmount" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ getTotalReceivedAmount(scope.row) > 0 ? getTotalReceivedAmount(scope.row) : '未收到' }}</div>
 					<span v-if="getTotalReceivedAmount(scope.row) > 0" class="money">{{ getTotalReceivedAmount(scope.row) }}</span>
 					<span v-else>未收到</span>
-				</template>
-			</el-table-column>
+				</el-tooltip>
+			</template>
+		</el-table-column>
 
-			<!-- 返利流水 -->
-			<el-table-column label="返利流水" align="center" show-overflow-tooltip>
-				<template slot-scope="scope">
+		<!-- 返利流水 -->
+		<el-table-column label="返利流水" align="center" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">查看流水</div>
 					<el-button size="mini" type="text" @click="handleRebateDetail(scope.row)">查看流水</el-button>
-				</template>
-			</el-table-column>
+				</el-tooltip>
+			</template>
+		</el-table-column>
 
 			<!-- 操作 -->
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="200px">

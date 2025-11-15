@@ -53,19 +53,110 @@
 			"
 			@selection-change="handleSelectionChange"
 		>
-			<el-table-column v-if="columns[0].visible" label="购入日期" align="center" prop="buyDate" width="120px" show-overflow-tooltip />
-			<el-table-column v-if="columns[1].visible" label="资产编号" align="center" prop="assetNo" show-overflow-tooltip />
-			<el-table-column v-if="columns[2].visible" label="资产名称" align="center" prop="assetName" show-overflow-tooltip />
-			<el-table-column v-if="columns[3].visible" label="规格型号" align="center" prop="specification" show-overflow-tooltip />
-			<el-table-column v-if="columns[4].visible" label="数量" align="center" prop="number" show-overflow-tooltip />
-			<el-table-column v-if="columns[5].visible" label="计量单位" align="center" prop="measurementUnit" show-overflow-tooltip />
-			<el-table-column v-if="columns[6].visible" label="含税金额" align="center" prop="amountIncludeTax" show-overflow-tooltip />
-			<el-table-column v-if="columns[7].visible" label="不含税金额" align="center" prop="amountNoTax" show-overflow-tooltip />
-			<el-table-column v-if="columns[8].visible" label="户名名称" align="center" prop="account" show-overflow-tooltip />
-			<el-table-column v-if="columns[9].visible" label="使用部门" align="center" prop="department" show-overflow-tooltip />
-			<el-table-column v-if="columns[10].visible" label="低值易耗品台账清理时间" align="center" prop="scrapDate" show-overflow-tooltip />
-			<el-table-column v-if="columns[11].visible" label="清理/变卖价值" align="center" prop="saleAmount" show-overflow-tooltip />
-			<el-table-column v-if="columns[12].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
+		<el-table-column v-if="columns[0].visible" label="购入日期" align="center" prop="buyDate" width="120px" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.buyDate }}</div>
+					<span>{{ scope.row.buyDate }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[1].visible" label="资产编号" align="center" prop="assetNo" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.assetNo }}</div>
+					<span>{{ scope.row.assetNo }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[2].visible" label="资产名称" align="center" prop="assetName" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.assetName }}</div>
+					<span>{{ scope.row.assetName }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[3].visible" label="规格型号" align="center" prop="specification" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.specification }}</div>
+					<span>{{ scope.row.specification }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[4].visible" label="数量" align="center" prop="number" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.number }}</div>
+					<span>{{ scope.row.number }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[5].visible" label="计量单位" align="center" prop="measurementUnit" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.measurementUnit }}</div>
+					<span>{{ scope.row.measurementUnit }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[6].visible" label="含税金额" align="center" prop="amountIncludeTax" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.amountIncludeTax }}</div>
+					<span>{{ scope.row.amountIncludeTax }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[7].visible" label="不含税金额" align="center" prop="amountNoTax" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.amountNoTax }}</div>
+					<span>{{ scope.row.amountNoTax }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[8].visible" label="户名名称" align="center" prop="account" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.account }}</div>
+					<span>{{ scope.row.account }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[9].visible" label="使用部门" align="center" prop="department" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.department }}</div>
+					<span>{{ scope.row.department }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[10].visible" label="低值易耗品台账清理时间" align="center" prop="scrapDate" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.scrapDate }}</div>
+					<span>{{ scope.row.scrapDate }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[11].visible" label="清理/变卖价值" align="center" prop="saleAmount" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.saleAmount }}</div>
+					<span>{{ scope.row.saleAmount }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[12].visible" label="备注" align="center" prop="comments" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.comments }}</div>
+					<span>{{ scope.row.comments }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
 				<template slot-scope="scope">
 					<el-button v-hasPermi="['system:lowvalueconsumables:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>

@@ -47,22 +47,22 @@
 			@selection-change="handleSelectionChange"
 		>
 			<!--      <el-table-column label="报销人ID" align="center" prop="employeeID"/>-->
-			<el-table-column v-if="columns[0].visible" label="报销人" align="center" prop="employee" />
-			<el-table-column v-if="columns[1].visible" label="共同出差人员" align="center" prop="personnel" />
-			<el-table-column v-if="columns[2].visible" label="部门" align="center" prop="deptName" />
-			<el-table-column v-if="columns[3].visible" label="出差时间" align="center" prop="starttime" />
-			<el-table-column v-if="columns[4].visible" label="出差结束时间" align="center" prop="endtime" />
-			<el-table-column v-if="columns[5].visible" label="附件" align="center" prop="attachmentList">
+			<el-table-column v-if="columns[0].visible" label="报销人" align="center" prop="employee" show-overflow-tooltip />
+			<el-table-column v-if="columns[1].visible" label="共同出差人员" align="center" prop="personnel" show-overflow-tooltip />
+			<el-table-column v-if="columns[2].visible" label="部门" align="center" prop="deptName" show-overflow-tooltip />
+			<el-table-column v-if="columns[3].visible" label="出差时间" align="center" prop="starttime" show-overflow-tooltip />
+			<el-table-column v-if="columns[4].visible" label="出差结束时间" align="center" prop="endtime" show-overflow-tooltip />
+			<el-table-column v-if="columns[5].visible" label="附件" align="center" prop="attachmentList" show-overflow-tooltip>
 				<template #default="scope">
 					<CheckFiles :attachment-list="scope.row.attachmentList" flag="attachmentList" @needToUpdate="value => handleUpdateAttachments(value, scope.row)" />
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[6].visible" label="是否已报销" align="center" prop="isReimburse">
+			<el-table-column v-if="columns[6].visible" label="是否已报销" align="center" prop="isReimburse" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<StateTag :state-title="scope.row.isReimburse === 0 ? '否' : '是'" :state-mapper="{ 0: '否', 2: '是' }" />
 				</template>
 			</el-table-column>
-			<el-table-column label="付款状态" align="center" prop="checkState" width="200">
+			<el-table-column label="付款状态" align="center" prop="checkState" width="200" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<PaymentFlag :business-object="scope.row">
 						<template #extra="{ status, type }">
@@ -73,7 +73,7 @@
 				</template>
 			</el-table-column>
 
-			<el-table-column v-if="columns[7].visible" label="备注" align="center" prop="comments" />
+			<el-table-column v-if="columns[7].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="260px" fixed="right">
 				<template slot-scope="scope">
 					<el-button :disabled="scope.row.checkState === PAYMENT_APPLY_STATE.V1.CHECKED" v-hasPermi="['system:businesstrip:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>

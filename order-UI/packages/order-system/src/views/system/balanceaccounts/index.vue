@@ -49,12 +49,12 @@
 			"
 			@selection-change="handleSelectionChange"
 		>
-			<el-table-column v-if="columns[0].visible" label="操作时间" align="center" prop="operateDate" />
-			<el-table-column v-if="columns[1].visible" label="金额" align="center" prop="moneyAmount" />
-			<el-table-column v-if="columns[2].visible" label="对方公司" align="center" prop="companyName" />
-			<el-table-column label="对方公司类型" align="center" prop="companyType" v-if="columns[3].visible"></el-table-column>
-			<el-table-column v-if="columns[4].visible" label="备注" align="center" prop="comments" />
-			<el-table-column v-if="columns[5].visible" label="添加时间" align="center" prop="addtime" />
+			<el-table-column v-if="columns[0].visible" label="操作时间" align="center" prop="operateDate" show-overflow-tooltip />
+			<el-table-column v-if="columns[1].visible" label="金额" align="center" prop="moneyAmount" show-overflow-tooltip />
+			<el-table-column v-if="columns[2].visible" label="对方公司" align="center" prop="companyName" show-overflow-tooltip />
+			<el-table-column label="对方公司类型" align="center" prop="companyType" v-if="columns[3].visible" show-overflow-tooltip></el-table-column>
+			<el-table-column v-if="columns[4].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
+			<el-table-column v-if="columns[5].visible" label="添加时间" align="center" prop="addtime" show-overflow-tooltip />
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
 				<template slot-scope="scope">
 					<el-button v-hasPermi="['system:balanceaccounts:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">编辑</el-button>

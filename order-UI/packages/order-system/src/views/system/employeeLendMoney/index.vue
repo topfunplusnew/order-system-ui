@@ -54,34 +54,136 @@
 				}
 			"
 		>
-			<el-table-column v-if="columns[0].visible" label="借款人" align="center" prop="target" show-overflow-tooltip />
-			<el-table-column v-if="columns[1].visible" label="对象类型" align="center" prop="targetType" show-overflow-tooltip />
-			<el-table-column v-if="columns[2].visible" label="借出金额" align="center" prop="moneyAmount" show-overflow-tooltip />
-			<el-table-column v-if="columns[11].visible" label="未收回金额" align="center" prop="unrecoveredAmount" show-overflow-tooltip />
-			<el-table-column v-if="columns[3].visible" label="对方收借款账号" align="center" prop="targetBankNo" show-overflow-tooltip width="200" />
-			<el-table-column v-if="columns[4].visible" label="对方户名" align="center" prop="targetAcountsName" show-overflow-tooltip />
-			<el-table-column v-if="columns[5].visible" label="对方开户行" align="center" prop="targetBankName" show-overflow-tooltip />
-			<el-table-column v-if="columns[6].visible" label="我方支付借款账户名称" align="center" prop="selfAcountsName" show-overflow-tooltip />
-			<el-table-column v-if="columns[7].visible" label="我方支付借款开户行" align="center" prop="selfBankName" show-overflow-tooltip />
-			<el-table-column v-if="columns[8].visible" label="我方付款账号" align="center" prop="selfBankNo" show-overflow-tooltip width="200" />
-			<el-table-column v-if="columns[9].visible" label="支付员工/外面公司在我公司借款时间" align="center" prop="futuresDate" show-overflow-tooltip />
-			<el-table-column v-if="columns[10].visible" label="借款事由" align="center" prop="reason" show-overflow-tooltip />
+			<el-table-column v-if="columns[0].visible" label="借款人" align="center" prop="target" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.target }}</div>
+						<span>{{ scope.row.target }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[1].visible" label="对象类型" align="center" prop="targetType" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.targetType }}</div>
+						<span>{{ scope.row.targetType }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[2].visible" label="借出金额" align="center" prop="moneyAmount" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.moneyAmount }}</div>
+						<span>{{ scope.row.moneyAmount }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[11].visible" label="未收回金额" align="center" prop="unrecoveredAmount" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.unrecoveredAmount }}</div>
+						<span>{{ scope.row.unrecoveredAmount }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[3].visible" label="对方收借款账号" align="center" prop="targetBankNo" show-overflow-tooltip width="200">
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.targetBankNo }}</div>
+						<span>{{ scope.row.targetBankNo }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[4].visible" label="对方户名" align="center" prop="targetAcountsName" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.targetAcountsName }}</div>
+						<span>{{ scope.row.targetAcountsName }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[5].visible" label="对方开户行" align="center" prop="targetBankName" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.targetBankName }}</div>
+						<span>{{ scope.row.targetBankName }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[6].visible" label="我方支付借款账户名称" align="center" prop="selfAcountsName" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.selfAcountsName }}</div>
+						<span>{{ scope.row.selfAcountsName }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[7].visible" label="我方支付借款开户行" align="center" prop="selfBankName" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.selfBankName }}</div>
+						<span>{{ scope.row.selfBankName }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[8].visible" label="我方付款账号" align="center" prop="selfBankNo" show-overflow-tooltip width="200">
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.selfBankNo }}</div>
+						<span>{{ scope.row.selfBankNo }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[9].visible" label="支付员工/外面公司在我公司借款时间" align="center" prop="futuresDate" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.futuresDate }}</div>
+						<span>{{ scope.row.futuresDate }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[10].visible" label="借款事由" align="center" prop="reason" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.reason }}</div>
+						<span>{{ scope.row.reason }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-				<template slot-scope="scope">
-					<el-dropdown trigger="click">
-						<el-button size="mini" type="text">
-							操作
-							<i class="el-icon-arrow-down el-icon--right"></i>
-						</el-button>
-						<el-dropdown-menu slot="dropdown">
-							<el-dropdown-item @click.native="checkDetail(scope.row)">查看历史收回</el-dropdown-item>
-							<el-dropdown-item @click.native="applyForPayment(scope.row)">坏账损失</el-dropdown-item>
-							<el-dropdown-item v-hasPermi="['system:lendmoney:remove']" @click.native="handleGetBackMoney(scope.row)">收回资金</el-dropdown-item>
-							<el-dropdown-item v-hasPermi="['system:lendmoney:edit']" @click.native="handleUpdate(scope.row)">修改</el-dropdown-item>
-							<el-dropdown-item v-hasPermi="['system:lendmoney:remove']" @click.native="handleDelete(scope.row)" style="color: red">删除</el-dropdown-item>
-						</el-dropdown-menu>
-					</el-dropdown>
-					<el-button v-if="scope.row.checkState === '审核中'" size="mini" type="warning" disabled style="margin-left: 8px">审核中</el-button>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">
+							<el-dropdown trigger="click">
+								<el-button size="mini" type="text">
+									操作
+									<i class="el-icon-arrow-down el-icon--right"></i>
+								</el-button>
+								<el-dropdown-menu slot="dropdown">
+									<el-dropdown-item @click.native="checkDetail(scope.row)">查看历史收回</el-dropdown-item>
+									<el-dropdown-item @click.native="applyForPayment(scope.row)">坏账损失</el-dropdown-item>
+									<el-dropdown-item v-hasPermi="['system:lendmoney:remove']" @click.native="handleGetBackMoney(scope.row)">收回资金</el-dropdown-item>
+									<el-dropdown-item v-hasPermi="['system:lendmoney:edit']" @click.native="handleUpdate(scope.row)">修改</el-dropdown-item>
+									<el-dropdown-item v-hasPermi="['system:lendmoney:remove']" @click.native="handleDelete(scope.row)" style="color: red">删除</el-dropdown-item>
+								</el-dropdown-menu>
+							</el-dropdown>
+							<el-button v-if="scope.row.checkState === '审核中'" size="mini" type="warning" disabled style="margin-left: 8px">审核中</el-button>
+						</div>
+						<el-dropdown trigger="click">
+							<el-button size="mini" type="text">
+								操作
+								<i class="el-icon-arrow-down el-icon--right"></i>
+							</el-button>
+							<el-dropdown-menu slot="dropdown">
+								<el-dropdown-item @click.native="checkDetail(scope.row)">查看历史收回</el-dropdown-item>
+								<el-dropdown-item @click.native="applyForPayment(scope.row)">坏账损失</el-dropdown-item>
+								<el-dropdown-item v-hasPermi="['system:lendmoney:remove']" @click.native="handleGetBackMoney(scope.row)">收回资金</el-dropdown-item>
+								<el-dropdown-item v-hasPermi="['system:lendmoney:edit']" @click.native="handleUpdate(scope.row)">修改</el-dropdown-item>
+								<el-dropdown-item v-hasPermi="['system:lendmoney:remove']" @click.native="handleDelete(scope.row)" style="color: red">删除</el-dropdown-item>
+							</el-dropdown-menu>
+						</el-dropdown>
+						<el-button v-if="scope.row.checkState === '审核中'" size="mini" type="warning" disabled style="margin-left: 8px">审核中</el-button>
+					</el-tooltip>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -107,11 +209,30 @@
 				>
 					<el-table-column prop="" width="180">
 						<template #default="scope">
-							<span v-if="scope.$index === 0">借出资金收回</span>
+							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+								<div slot="content">
+									<span v-if="scope.$index === 0">借出资金收回</span>
+								</div>
+								<span v-if="scope.$index === 0">借出资金收回</span>
+							</el-tooltip>
 						</template>
 					</el-table-column>
-					<el-table-column prop="recoverDate" label="时间" width="180"></el-table-column>
-					<el-table-column prop="moneyAmount" label="收回金额"></el-table-column>
+					<el-table-column prop="recoverDate" label="时间" width="180">
+						<template #default="scope">
+							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+								<div slot="content">{{ scope.row.recoverDate }}</div>
+								<span>{{ scope.row.recoverDate }}</span>
+							</el-tooltip>
+						</template>
+					</el-table-column>
+					<el-table-column prop="moneyAmount" label="收回金额">
+						<template #default="scope">
+							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+								<div slot="content">{{ scope.row.moneyAmount }}</div>
+								<span>{{ scope.row.moneyAmount }}</span>
+							</el-tooltip>
+						</template>
+					</el-table-column>
 					<!--          操作列-->
 					<!--					<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="240" fixed="right">-->
 					<!--						<template slot-scope="scope">-->

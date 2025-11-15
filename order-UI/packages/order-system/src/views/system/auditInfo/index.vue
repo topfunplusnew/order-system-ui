@@ -58,22 +58,22 @@
 
 		<el-table v-loading="loading" :data="auditInfoList" @selection-change="handleSelectionChange">
 			<el-table-column type="selection" width="55" align="center" />
-			<el-table-column label="${comment}" align="center" prop="id" />
-			<el-table-column label="流程名称" align="center" prop="flowname" />
-			<el-table-column label="对应的表主键" align="center" prop="applyID" />
-			<el-table-column label="审核总共步骤" align="center" prop="stepnum" />
-			<el-table-column label="步骤序号" align="center" prop="step" />
-			<el-table-column label="允许的审核人员ID" align="center" prop="auditauthority" />
-			<el-table-column label="审核时间" align="center" prop="auditdate" width="180">
+			<el-table-column label="${comment}" align="center" prop="id" show-overflow-tooltip />
+			<el-table-column label="流程名称" align="center" prop="flowname" show-overflow-tooltip />
+			<el-table-column label="对应的表主键" align="center" prop="applyID" show-overflow-tooltip />
+			<el-table-column label="审核总共步骤" align="center" prop="stepnum" show-overflow-tooltip />
+			<el-table-column label="步骤序号" align="center" prop="step" show-overflow-tooltip />
+			<el-table-column label="允许的审核人员ID" align="center" prop="auditauthority" show-overflow-tooltip />
+			<el-table-column label="审核时间" align="center" prop="auditdate" width="180" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<span>{{ parseTime(scope.row.auditdate, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
 				</template>
 			</el-table-column>
-			<el-table-column label="审核人员ID" align="center" prop="userId" />
-			<el-table-column label="审核人员姓名" align="center" prop="UserName" />
-			<el-table-column label="审核状态" align="center" prop="checkState" />
-			<el-table-column label="审核意见" align="center" prop="auditcomment" />
-			<el-table-column label="提交标记" align="center" prop="submitflag" />
+			<el-table-column label="审核人员ID" align="center" prop="userId" show-overflow-tooltip />
+			<el-table-column label="审核人员姓名" align="center" prop="UserName" show-overflow-tooltip />
+			<el-table-column label="审核状态" align="center" prop="checkState" show-overflow-tooltip />
+			<el-table-column label="审核意见" align="center" prop="auditcomment" show-overflow-tooltip />
+			<el-table-column label="提交标记" align="center" prop="submitflag" show-overflow-tooltip />
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
 				<template slot-scope="scope">
 					<el-button v-hasPermi="['system:auditinfo:edit']" size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)">修改</el-button>

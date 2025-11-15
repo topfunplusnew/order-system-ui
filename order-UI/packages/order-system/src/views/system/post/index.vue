@@ -36,18 +36,54 @@
 
 		<el-table v-loading="loading" :data="postList" @selection-change="handleSelectionChange">
 			<el-table-column type="selection" width="55" align="center" />
-			<el-table-column label="岗位编号" align="center" prop="postId" />
-			<el-table-column label="岗位编码" align="center" prop="postCode" />
-			<el-table-column label="岗位名称" align="center" prop="postName" />
-			<el-table-column label="岗位排序" align="center" prop="postSort" />
-			<el-table-column label="状态" align="center" prop="status">
-				<template slot-scope="scope">
-					<dict-tag :options="dict.type.sys_normal_disable" :value="scope.row.status" />
+			<el-table-column label="岗位编号" align="center" prop="postId" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.postId }}</div>
+						<span>{{ scope.row.postId }}</span>
+					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column label="创建时间" align="center" prop="createTime" width="180">
-				<template slot-scope="scope">
-					<span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
+			<el-table-column label="岗位编码" align="center" prop="postCode" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.postCode }}</div>
+						<span>{{ scope.row.postCode }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column label="岗位名称" align="center" prop="postName" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.postName }}</div>
+						<span>{{ scope.row.postName }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column label="岗位排序" align="center" prop="postSort" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.postSort }}</div>
+						<span>{{ scope.row.postSort }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column label="状态" align="center" prop="status" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">
+							<dict-tag :options="dict.type.sys_normal_disable" :value="scope.row.status" />
+						</div>
+						<dict-tag :options="dict.type.sys_normal_disable" :value="scope.row.status" />
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column label="创建时间" align="center" prop="createTime" width="180" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</div>
+						<span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
+					</el-tooltip>
 				</template>
 			</el-table-column>
 

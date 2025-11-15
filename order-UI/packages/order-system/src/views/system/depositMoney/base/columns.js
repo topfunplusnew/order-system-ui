@@ -13,7 +13,8 @@ export default {
 			label: 'ID',
 			visible: true,
 			includeInForm: false,
-			width: 80
+			width: 80,
+			showOverflowTooltip: true
 		},
 		{
 			key: 'depositCompany',
@@ -39,6 +40,7 @@ export default {
 			visible: true,
 			includeInForm: true,
 			width: 100,
+			showOverflowTooltip: true,
 			formConfig: {
 				type: 'select',
 				show: true,
@@ -98,6 +100,7 @@ export default {
 			includeInForm: true,
 			width: 120,
 			align: 'right',
+			showOverflowTooltip: true,
 			formConfig: {
 				type: 'input',
 				show: true,
@@ -117,7 +120,8 @@ export default {
 			visible: true,
 			includeInForm: false,
 			width: 120,
-			align: 'right'
+			align: 'right',
+			showOverflowTooltip: true
 		},
 		{
 			key: 'targetAccountsName',
@@ -145,6 +149,7 @@ export default {
 			visible: true,
 			includeInForm: true,
 			width: 180,
+			showOverflowTooltip: true,
 			formConfig: {
 				type: 'input',
 				show: true,
@@ -198,6 +203,7 @@ export default {
 			visible: true,
 			includeInForm: true,
 			width: 180,
+			showOverflowTooltip: true,
 			formConfig: {
 				type: 'input',
 				show: true,
@@ -231,6 +237,7 @@ export default {
 			visible: true,
 			includeInForm: true,
 			width: 160,
+			showOverflowTooltip: true,
 			formConfig: {
 				type: 'datetime',
 				show: true,
@@ -280,7 +287,8 @@ export default {
 			label: '添加时间',
 			visible: false,
 			includeInForm: false,
-			width: 160
+			width: 160,
+			showOverflowTooltip: true
 		},
 		{
 			key: 'UserName',
@@ -288,7 +296,8 @@ export default {
 			label: '操作人员',
 			visible: true,
 			includeInForm: false,
-			width: 100
+			width: 100,
+			showOverflowTooltip: true
 		}
 	],
 

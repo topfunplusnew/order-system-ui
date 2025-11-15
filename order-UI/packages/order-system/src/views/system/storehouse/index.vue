@@ -39,8 +39,22 @@
 		</el-row>
 
 		<el-table id="printBox" v-horizontal-scroll="'always'" v-loading="loading" size="mini" border :data="StoreHouseList" @selection-change="handleSelectionChange">
-			<el-table-column v-if="columns[0].visible" label="仓库名称" align="center" prop="storeHouseName" />
-			<el-table-column v-if="columns[1].visible" label="地址" align="center" prop="address" />
+			<el-table-column v-if="columns[0].visible" label="仓库名称" align="center" prop="storeHouseName" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.storeHouseName }}</div>
+						<span>{{ scope.row.storeHouseName }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[1].visible" label="地址" align="center" prop="address" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.address }}</div>
+						<span>{{ scope.row.address }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
 				<template slot-scope="scope">
 					<el-button v-hasPermi="['system:storehouse:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">编辑</el-button>

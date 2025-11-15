@@ -32,7 +32,7 @@
 
 		<el-table id="printBox" v-loading="loading" v-horizontal-scroll="'always'" border :data="carsList" height="450px" size="mini" @selection-change="handleSelectionChange">
 			<!--      <el-table-column label="id" align="center" prop="dictCode"/>-->
-			<el-table-column v-if="columns[0].visible" label="车牌" align="center" prop="dictLabel" min-width="70%" />
+			<el-table-column v-if="columns[0].visible" label="车牌" align="center" prop="dictLabel" min-width="70%" show-overflow-tooltip />
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" min-width="30%">
 				<template slot-scope="scope">
 					<el-button v-hasPermi="['system:companycar:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">编辑</el-button>

@@ -71,35 +71,163 @@
 					<el-checkbox :value="isOffsetRowSelected(row)" :disabled="row.paymentState === PAYMENT_STATE.PAID" @input="value => handleOffsetToggle(row, value)"></el-checkbox>
 				</template>
 			</el-table-column>
-			<el-table-column label="ID" align="center" prop="id" width="80" show-overflow-tooltip />
-			<el-table-column v-if="columns[0].visible" label="付款日期" align="center" prop="payDate" width="100" show-overflow-tooltip />
-			<el-table-column v-if="columns[1].visible" label="运费类型" align="center" prop="freightType" width="100" show-overflow-tooltip />
-			<el-table-column v-if="columns[2].visible" label="车队" align="center" prop="fleet" width="100" show-overflow-tooltip />
-			<el-table-column v-if="columns[3].visible" label="司机名称/海运公司" align="center" prop="driverName" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[4].visible" label="车牌号" align="center" prop="carNo" width="100" show-overflow-tooltip />
-			<el-table-column v-if="columns[5].visible" label="金额" align="center" prop="moneyAmount" width="100" show-overflow-tooltip />
-			<el-table-column v-if="columns[6].visible" label="对方户名" align="center" prop="otherAcountsName" width="100" show-overflow-tooltip />
-			<el-table-column v-if="columns[7].visible" label="对方账号" align="center" prop="otherBankNo" width="180" show-overflow-tooltip />
-			<el-table-column v-if="columns[8].visible" label="对方开户行" align="center" prop="otherBankName" width="100" show-overflow-tooltip />
-			<el-table-column v-if="columns[9].visible" label="运费来源" align="center" prop="source" width="100" show-overflow-tooltip>
-				<template slot-scope="scope">
+		<el-table-column label="ID" align="center" prop="id" width="80" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.id }}</div>
+					<span>{{ scope.row.id }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[0].visible" label="付款日期" align="center" prop="payDate" width="100" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.payDate }}</div>
+					<span>{{ scope.row.payDate }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[1].visible" label="运费类型" align="center" prop="freightType" width="100" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.freightType }}</div>
+					<span>{{ scope.row.freightType }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[2].visible" label="车队" align="center" prop="fleet" width="100" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.fleet }}</div>
+					<span>{{ scope.row.fleet }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[3].visible" label="司机名称/海运公司" align="center" prop="driverName" width="120" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.driverName }}</div>
+					<span>{{ scope.row.driverName }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[4].visible" label="车牌号" align="center" prop="carNo" width="100" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.carNo }}</div>
+					<span>{{ scope.row.carNo }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[5].visible" label="金额" align="center" prop="moneyAmount" width="100" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.moneyAmount }}</div>
+					<span>{{ scope.row.moneyAmount }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[6].visible" label="对方户名" align="center" prop="otherAcountsName" width="100" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.otherAcountsName }}</div>
+					<span>{{ scope.row.otherAcountsName }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[7].visible" label="对方账号" align="center" prop="otherBankNo" width="180" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.otherBankNo }}</div>
+					<span>{{ scope.row.otherBankNo }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[8].visible" label="对方开户行" align="center" prop="otherBankName" width="100" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.otherBankName }}</div>
+					<span>{{ scope.row.otherBankName }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[9].visible" label="运费来源" align="center" prop="source" width="100" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">
+						<span v-if="scope.row.source === FREIGHT_TYPE.GOODS_ORDER">订单</span>
+						<span v-if="scope.row.source === FREIGHT_TYPE.INVENTORY">库存</span>
+					</div>
 					<el-tag v-if="scope.row.source === FREIGHT_TYPE.GOODS_ORDER">订单</el-tag>
 					<el-tag v-if="scope.row.source === FREIGHT_TYPE.INVENTORY">库存</el-tag>
-				</template>
-			</el-table-column>
-			<el-table-column v-if="columns[10].visible" label="支付状态" align="center" prop="paymentState" width="100" show-overflow-tooltip>
-				<template slot-scope="scope">
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[10].visible" label="支付状态" align="center" prop="paymentState" width="100" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.paymentState === PAYMENT_STATE.PAID ? PAYMENT_STATE.PAID : PAYMENT_STATE.UNPAID }}</div>
 					<el-tag v-if="scope.row.paymentState === PAYMENT_STATE.PAID" type="success" size="mini">{{ PAYMENT_STATE.PAID }}</el-tag>
 					<el-tag v-else type="danger" size="mini">{{ PAYMENT_STATE.UNPAID }}</el-tag>
-				</template>
-			</el-table-column>
-			<el-table-column v-if="columns[11].visible" label="申请人员姓名" align="center" prop="applyUserName" width="100" show-overflow-tooltip />
-			<el-table-column v-if="columns[12].visible" label="申请日期" align="center" prop="applyDate" width="100" show-overflow-tooltip />
-			<el-table-column v-if="columns[13].visible" label="付款人员姓名" align="center" prop="payUserName" width="100" show-overflow-tooltip />
-			<el-table-column v-if="columns[14].visible" label="我方户名" align="center" prop="selfAcountsName" width="100" show-overflow-tooltip />
-			<el-table-column v-if="columns[15].visible" label="我方账号" align="center" prop="selfBankNo" width="180" show-overflow-tooltip />
-			<el-table-column v-if="columns[16].visible" label="我方开户行" align="center" prop="selfBankName" width="100" show-overflow-tooltip />
-			<el-table-column v-if="columns[17].visible" label="备注" align="center" prop="comments" width="100" show-overflow-tooltip />
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[11].visible" label="申请人员姓名" align="center" prop="applyUserName" width="100" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.applyUserName }}</div>
+					<span>{{ scope.row.applyUserName }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[12].visible" label="申请日期" align="center" prop="applyDate" width="100" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.applyDate }}</div>
+					<span>{{ scope.row.applyDate }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[13].visible" label="付款人员姓名" align="center" prop="payUserName" width="100" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.payUserName }}</div>
+					<span>{{ scope.row.payUserName }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[14].visible" label="我方户名" align="center" prop="selfAcountsName" width="100" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.selfAcountsName }}</div>
+					<span>{{ scope.row.selfAcountsName }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[15].visible" label="我方账号" align="center" prop="selfBankNo" width="180" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.selfBankNo }}</div>
+					<span>{{ scope.row.selfBankNo }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[16].visible" label="我方开户行" align="center" prop="selfBankName" width="100" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.selfBankName }}</div>
+					<span>{{ scope.row.selfBankName }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[17].visible" label="备注" align="center" prop="comments" width="100" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.comments }}</div>
+					<span>{{ scope.row.comments }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="200">
 				<template slot-scope="scope">
 					<CheckOrderInfo :row="scope.row" />

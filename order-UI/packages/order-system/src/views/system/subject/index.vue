@@ -44,19 +44,50 @@
 					}"
 					size="mini"
 				>
-					<el-table-column v-if="columns[0].visible" label="科目名称" prop="title" />
-					<el-table-column v-if="columns[1].visible" label="科目编码" align="center" prop="subjectNo" />
-					<el-table-column label="排序" prop="orderNum" width="120"></el-table-column>
-					<!-- 新增是否禁用列 -->
-					<el-table-column label="是否禁用" prop="STATUS" align="center" width="100">
-						<template slot-scope="scope">
+				<el-table-column v-if="columns[0].visible" label="科目名称" prop="title" show-overflow-tooltip>
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">{{ scope.row.title }}</div>
+							<span>{{ scope.row.title }}</span>
+						</el-tooltip>
+					</template>
+				</el-table-column>
+				<el-table-column v-if="columns[1].visible" label="科目编码" align="center" prop="subjectNo" show-overflow-tooltip>
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">{{ scope.row.subjectNo }}</div>
+							<span>{{ scope.row.subjectNo }}</span>
+						</el-tooltip>
+					</template>
+				</el-table-column>
+				<el-table-column label="排序" prop="orderNum" width="120" show-overflow-tooltip>
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">{{ scope.row.orderNum }}</div>
+							<span>{{ scope.row.orderNum }}</span>
+						</el-tooltip>
+					</template>
+				</el-table-column>
+				<!-- 新增是否禁用列 -->
+				<el-table-column label="是否禁用" prop="STATUS" align="center" width="100" show-overflow-tooltip>
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">{{ scope.row.STATUS === YES_OR_NO.YES ? '是' : '否' }}</div>
 							<span v-if="scope.row.STATUS === YES_OR_NO.YES">是</span>
 							<span v-else>否</span>
-						</template>
-					</el-table-column>
-					<!--					<el-table-column v-if="columns[2].visible" label="科目类别" align="center" prop="type" />-->
-					<!--          <el-table-column label="父级ID" align="center" prop="parentId" v-if="columns[3].visible"/>-->
-					<el-table-column v-if="columns[2].visible" label="备注" align="center" prop="remark" />
+						</el-tooltip>
+					</template>
+				</el-table-column>
+				<!--					<el-table-column v-if="columns[2].visible" label="科目类别" align="center" prop="type" />-->
+				<!--          <el-table-column label="父级ID" align="center" prop="parentId" v-if="columns[3].visible"/>-->
+				<el-table-column v-if="columns[2].visible" label="备注" align="center" prop="remark" show-overflow-tooltip>
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">{{ scope.row.remark }}</div>
+							<span>{{ scope.row.remark }}</span>
+						</el-tooltip>
+					</template>
+				</el-table-column>
 					<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
 						<template slot-scope="scope">
 							<el-button v-hasPermi="['system:subject:edit']" size="mini" @click="handleUpdate(scope.row)">修改</el-button>

@@ -373,20 +373,20 @@ export default {
 					</el-row>
 					<br />
 					<el-table @row-click="handleRowClick" :cell-style="cellStyle" size="mini" :data="changeMoneyTableData" border class="money-table" :row-style="tableRowClassName" :span-method="objectSpanMethod">
-						<el-table-column :label="columnHeaderChange" align="center">
-							<el-table-column label="科目名称">
+						<el-table-column :label="columnHeaderChange" align="center" show-overflow-tooltip>
+							<el-table-column label="科目名称" show-overflow-tooltip>
 								<template slot-scope="scope">
-									<!-- 只在第一行显示“股东权益” -->
+									<!-- 只在第一行显示"股东权益" -->
 									<div v-if="scope.$index === 0">股东权益</div>
-									<!-- 合并“资产类” -->
+									<!-- 合并"资产类" -->
 									<div v-if="scope.$index === 1">资产类</div>
-									<!-- 合并“负债类” -->
+									<!-- 合并"负债类" -->
 									<div v-if="scope.$index === 6">负债类</div>
 								</template>
 							</el-table-column>
-							<el-table-column prop="label" label="项目"></el-table-column>
-							<el-table-column prop="value" label="上日资金总额" :formatter="formatValue"></el-table-column>
-							<el-table-column label="当日利润变动">
+							<el-table-column prop="label" label="项目" show-overflow-tooltip></el-table-column>
+							<el-table-column prop="value" label="上日资金总额" :formatter="formatValue" show-overflow-tooltip></el-table-column>
+							<el-table-column label="当日利润变动" show-overflow-tooltip>
 								<template slot-scope="scope">
 									<!-- 只在第一行显示差值 -->
 									<div v-if="scope.$index === 0">
@@ -394,8 +394,8 @@ export default {
 									</div>
 								</template>
 							</el-table-column>
-							<el-table-column prop="anotherLabel" label="本日资金总额" :formatter="formatValue"></el-table-column>
-							<el-table-column prop="anotherValue" label="当日资金总额变动情况" :formatter="formatValue"></el-table-column>
+							<el-table-column prop="anotherLabel" label="本日资金总额" :formatter="formatValue" show-overflow-tooltip></el-table-column>
+							<el-table-column prop="anotherValue" label="当日资金总额变动情况" :formatter="formatValue" show-overflow-tooltip></el-table-column>
 						</el-table-column>
 					</el-table>
 				</el-col>
@@ -409,20 +409,20 @@ export default {
 					</el-row>
 					<br />
 					<el-table @row-click="handleRowClick" :cell-style="cellStyle" size="mini" :data="fixedMoneyTableData" border class="money-table" :row-style="tableRowClassName" :span-method="objectSpanMethod">
-						<el-table-column :label="columnHeaderFix" align="center">
-							<el-table-column label="科目名称">
+						<el-table-column :label="columnHeaderFix" align="center" show-overflow-tooltip>
+							<el-table-column label="科目名称" show-overflow-tooltip>
 								<template slot-scope="scope">
-									<!-- 只在第一行显示“股东权益” -->
+									<!-- 只在第一行显示"股东权益" -->
 									<div v-if="scope.$index === 0">股东权益</div>
-									<!-- 合并“资产类” -->
+									<!-- 合并"资产类" -->
 									<div v-if="scope.$index === 1">资产类</div>
-									<!-- 合并“负债类” -->
+									<!-- 合并"负债类" -->
 									<div v-if="scope.$index === 6">负债类</div>
 								</template>
 							</el-table-column>
-							<el-table-column prop="label" label="项目"></el-table-column>
-							<el-table-column prop="value" label="上日资金总额" :formatter="formatValue"></el-table-column>
-							<el-table-column label="当日利润变动">
+							<el-table-column prop="label" label="项目" show-overflow-tooltip></el-table-column>
+							<el-table-column prop="value" label="上日资金总额" :formatter="formatValue" show-overflow-tooltip></el-table-column>
+							<el-table-column label="当日利润变动" show-overflow-tooltip>
 								<template slot-scope="scope">
 									<!-- 只在第一行显示差值 -->
 									<div v-if="scope.$index === 0">
@@ -430,8 +430,8 @@ export default {
 									</div>
 								</template>
 							</el-table-column>
-							<el-table-column prop="anotherLabel" label="本日资金总额" :formatter="formatValue"></el-table-column>
-							<el-table-column prop="anotherValue" label="当日资金总额变动情况" :formatter="formatValue"></el-table-column>
+							<el-table-column prop="anotherLabel" label="本日资金总额" :formatter="formatValue" show-overflow-tooltip></el-table-column>
+							<el-table-column prop="anotherValue" label="当日资金总额变动情况" :formatter="formatValue" show-overflow-tooltip></el-table-column>
 						</el-table-column>
 					</el-table>
 				</el-col>

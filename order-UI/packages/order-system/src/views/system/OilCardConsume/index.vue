@@ -61,7 +61,7 @@
 			<el-table-column v-if="columns[9].visible" label="加油卡余额" align="center" prop="endCardSurplus" width="110" show-overflow-tooltip />
 			<!--      <el-table-column label="加油小票附件" align="center" prop="attachmentOiladd" v-if="columns[10].visible"-->
 			<!--                       width="300px"/>-->
-			<el-table-column v-if="columns[10].visible" label="加油小票附件" align="center" prop="attachmentOiladd">
+			<el-table-column v-if="columns[10].visible" label="加油小票附件" align="center" prop="attachmentOiladd" show-overflow-tooltip>
 				<template #default="scope">
 					<div v-if="Array.isArray(scope.row.attachmentList)">
 						<CheckFiles
@@ -75,7 +75,7 @@
 					</div>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[11].visible" label="备注" align="center" prop="comments" />
+			<el-table-column v-if="columns[11].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
 				<template slot-scope="scope">
 					<el-button v-hasPermi="['system:oilcardconsume:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
@@ -141,21 +141,21 @@
 								"
 							>
 								<template #table-columns>
-									<el-table-column label="车辆型号" align="center" prop="model" />
-									<el-table-column label="车牌号" align="center" prop="licensePlate" />
-									<el-table-column label="购买时间" align="center" prop="purchaseDate" width="180">
+									<el-table-column label="车辆型号" align="center" prop="model" show-overflow-tooltip />
+									<el-table-column label="车牌号" align="center" prop="licensePlate" show-overflow-tooltip />
+									<el-table-column label="购买时间" align="center" prop="purchaseDate" width="180" show-overflow-tooltip>
 										<template slot-scope="scope">
 											<span>{{ parseTime(scope.row.purchaseDate, '{y}-{m}-{d}') }}</span>
 										</template>
 									</el-table-column>
-									<el-table-column label="行驶里程" align="center" prop="mileage" />
-									<el-table-column label="保养金额" align="center" prop="maintenanceCost" />
-									<el-table-column label="保养日期" align="center" prop="maintenanceDate" width="180">
+									<el-table-column label="行驶里程" align="center" prop="mileage" show-overflow-tooltip />
+									<el-table-column label="保养金额" align="center" prop="maintenanceCost" show-overflow-tooltip />
+									<el-table-column label="保养日期" align="center" prop="maintenanceDate" width="180" show-overflow-tooltip>
 										<template slot-scope="scope">
 											<span>{{ parseTime(scope.row.maintenanceDate, '{y}-{m}-{d}') }}</span>
 										</template>
 									</el-table-column>
-									<el-table-column label="保险金额" align="center"></el-table-column>
+									<el-table-column label="保险金额" align="center" show-overflow-tooltip></el-table-column>
 								</template>
 							</SearchOption>
 						</el-col>

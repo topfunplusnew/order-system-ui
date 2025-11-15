@@ -150,17 +150,17 @@ export default {
 						"
 					>
 						<el-table-column align="center">
-							<el-table-column v-if="columns[0].visible" label="客户" align="center" prop="companyName" width="200" />
-							<el-table-column v-if="columns[1].visible" label="录入员" align="driverName" prop="salesman" width="200" />
-							<el-table-column v-if="columns[2].visible" label="区域" align="center" prop="region" width="200" />
+							<el-table-column v-if="columns[0].visible" label="客户" align="center" prop="companyName" width="200" show-overflow-tooltip />
+							<el-table-column v-if="columns[1].visible" label="录入员" align="driverName" prop="salesman" width="200" show-overflow-tooltip />
+							<el-table-column v-if="columns[2].visible" label="区域" align="center" prop="region" width="200" show-overflow-tooltip />
 						</el-table-column>
 						<!--            联系方式-->
-						<el-table-column align="center" label="联系方式" prop="phone"></el-table-column>
+						<el-table-column align="center" label="联系方式" prop="phone" show-overflow-tooltip></el-table-column>
 						<!--            年份信息 遍历年份数组-->
 						<template v-if="statementList.length !== 0">
-							<el-table-column v-for="(item, index) in handleData(statementList, 0)" :key="index" align="center" :label="item + `年`">
+							<el-table-column v-for="(item, index) in handleData(statementList, 0)" :key="index" align="center" :label="item + `年`" show-overflow-tooltip>
 								<!--              遍历月份 先拿到该年份下的月份数据 然后在下面进行遍历-->
-								<el-table-column v-for="(element, cols) in handleData(statementList, item)" :key="cols" label="发货量" align="center" width="100">
+								<el-table-column v-for="(element, cols) in handleData(statementList, item)" :key="cols" label="发货量" align="center" width="100" show-overflow-tooltip>
 									<template #header>
 										{{ element.orderDateButMonth.split('-')[1] + `月份` }}
 									</template>

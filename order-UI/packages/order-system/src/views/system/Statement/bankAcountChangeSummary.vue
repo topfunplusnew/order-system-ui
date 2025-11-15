@@ -138,13 +138,13 @@ export default {
 						"
 						fit
 					>
-						<el-table-column v-if="columns[0].visible" label="日期" align="center" prop="time" width="200" />
-						<el-table-column v-if="columns[1].visible" label="户名" align="driverName" prop="acountsName" width="200" />
-						<el-table-column v-if="columns[2].visible" label="银行账号" align="center" prop="bankNo" width="200" />
-						<el-table-column v-if="columns[3].visible" label="上日余额" align="center" prop="previousDayBalance" width="200" />
-						<el-table-column v-if="columns[4].visible" label="本日收款" align="center" prop="dailyReceipts" width="200" />
-						<el-table-column v-if="columns[5].visible" label="本日付款" align="center" prop="dailyPayments" width="200" />
-						<el-table-column v-if="columns[6].visible" label="本日余额" align="center">
+						<el-table-column v-if="columns[0].visible" label="日期" align="center" prop="time" width="200" show-overflow-tooltip />
+						<el-table-column v-if="columns[1].visible" label="户名" align="driverName" prop="acountsName" width="200" show-overflow-tooltip />
+						<el-table-column v-if="columns[2].visible" label="银行账号" align="center" prop="bankNo" width="200" show-overflow-tooltip />
+						<el-table-column v-if="columns[3].visible" label="上日余额" align="center" prop="previousDayBalance" width="200" show-overflow-tooltip />
+						<el-table-column v-if="columns[4].visible" label="本日收款" align="center" prop="dailyReceipts" width="200" show-overflow-tooltip />
+						<el-table-column v-if="columns[5].visible" label="本日付款" align="center" prop="dailyPayments" width="200" show-overflow-tooltip />
+						<el-table-column v-if="columns[6].visible" label="本日余额" align="center" show-overflow-tooltip>
 							<template slot-scope="scope">
 								{{ scope.row.previousDayBalance + scope.row.dailyReceipts - scope.row.dailyPayments }}
 							</template>

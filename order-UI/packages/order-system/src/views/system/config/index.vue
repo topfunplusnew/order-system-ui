@@ -50,17 +50,17 @@
 
 		<el-table v-loading="loading" border :data="configList" @selection-change="handleSelectionChange">
 			<el-table-column type="selection" width="55" align="center" />
-			<el-table-column label="参数主键" align="center" prop="configId" />
-			<el-table-column label="参数名称" align="center" prop="configName" :show-overflow-tooltip="true" />
-			<el-table-column label="参数键名" align="center" prop="configKey" :show-overflow-tooltip="true" />
-			<el-table-column label="参数键值" align="center" prop="configValue" :show-overflow-tooltip="true" />
-			<el-table-column label="系统内置" align="center" prop="configType">
+			<el-table-column label="参数主键" align="center" prop="configId" show-overflow-tooltip />
+			<el-table-column label="参数名称" align="center" prop="configName" show-overflow-tooltip />
+			<el-table-column label="参数键名" align="center" prop="configKey" show-overflow-tooltip />
+			<el-table-column label="参数键值" align="center" prop="configValue" show-overflow-tooltip />
+			<el-table-column label="系统内置" align="center" prop="configType" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<dict-tag :options="dict.type.sys_yes_no" :value="scope.row.configType" />
 				</template>
 			</el-table-column>
-			<el-table-column label="备注" align="center" prop="remark" :show-overflow-tooltip="true" />
-			<el-table-column label="创建时间" align="center" prop="createTime" width="180">
+			<el-table-column label="备注" align="center" prop="remark" show-overflow-tooltip />
+			<el-table-column label="创建时间" align="center" prop="createTime" width="180" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
 				</template>

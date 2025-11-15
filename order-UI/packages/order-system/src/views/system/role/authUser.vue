@@ -28,18 +28,54 @@
 
 		<el-table v-loading="loading" :data="userList" @selection-change="handleSelectionChange">
 			<el-table-column type="selection" width="55" align="center" />
-			<el-table-column label="用户名称" prop="userName" :show-overflow-tooltip="true" />
-			<el-table-column label="用户昵称" prop="nickName" :show-overflow-tooltip="true" />
-			<el-table-column label="邮箱" prop="email" :show-overflow-tooltip="true" />
-			<el-table-column label="手机" prop="phonenumber" :show-overflow-tooltip="true" />
-			<el-table-column label="状态" align="center" prop="status">
-				<template slot-scope="scope">
-					<dict-tag :options="dict.type.sys_normal_disable" :value="scope.row.status" />
+			<el-table-column label="用户名称" prop="userName" :show-overflow-tooltip="true">
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.userName }}</div>
+						<span>{{ scope.row.userName }}</span>
+					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column label="创建时间" align="center" prop="createTime" width="180">
-				<template slot-scope="scope">
-					<span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
+			<el-table-column label="用户昵称" prop="nickName" :show-overflow-tooltip="true">
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.nickName }}</div>
+						<span>{{ scope.row.nickName }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column label="邮箱" prop="email" :show-overflow-tooltip="true">
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.email }}</div>
+						<span>{{ scope.row.email }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column label="手机" prop="phonenumber" :show-overflow-tooltip="true">
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.phonenumber }}</div>
+						<span>{{ scope.row.phonenumber }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column label="状态" align="center" prop="status" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">
+							<dict-tag :options="dict.type.sys_normal_disable" :value="scope.row.status" />
+						</div>
+						<dict-tag :options="dict.type.sys_normal_disable" :value="scope.row.status" />
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column label="创建时间" align="center" prop="createTime" width="180" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</div>
+						<span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
+					</el-tooltip>
 				</template>
 			</el-table-column>
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">

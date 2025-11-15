@@ -2035,6 +2035,7 @@ textarea::placeholder,
 	border: none !important;
 }
 
+// 第二层菜单（第一级子菜单）
 .sidebar-menu .el-submenu .el-menu .el-menu-item,
 .sidebar-menu .el-submenu .el-menu .el-submenu__title {
 	padding-left: 40px !important;
@@ -2051,14 +2052,28 @@ textarea::placeholder,
 	color: #156fb2 !important;
 }
 
+// 第三层菜单（第二级子菜单）
 .sidebar-menu .el-submenu .el-menu .el-submenu .el-menu-item,
 .sidebar-menu .el-submenu .el-menu .el-submenu .el-submenu__title {
-	padding-left: 50px !important;
+	padding-left: 60px !important;
 }
 
+// 第四层菜单（第三级子菜单）
 .sidebar-menu .el-submenu .el-menu .el-submenu .el-menu .el-menu-item,
 .sidebar-menu .el-submenu .el-menu .el-submenu .el-menu .el-submenu__title {
-	padding-left: 60px !important;
+	padding-left: 80px !important;
+}
+
+// 第五层菜单（第四级子菜单）
+.sidebar-menu .el-submenu .el-menu .el-submenu .el-menu .el-submenu .el-menu-item,
+.sidebar-menu .el-submenu .el-menu .el-submenu .el-menu .el-submenu .el-submenu__title {
+	padding-left: 100px !important;
+}
+
+// 第六层菜单（第五级子菜单）
+.sidebar-menu .el-submenu .el-menu .el-submenu .el-menu .el-submenu .el-menu .el-menu-item,
+.sidebar-menu .el-submenu .el-menu .el-submenu .el-menu .el-submenu .el-menu .el-submenu__title {
+	padding-left: 120px !important;
 }
 
 .sidebar-menu .el-scrollbar__wrap {

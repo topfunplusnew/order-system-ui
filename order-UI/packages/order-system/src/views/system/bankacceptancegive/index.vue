@@ -48,7 +48,7 @@
 			:cell-style="() => ({ padding: '.5px' })"
 			@selection-change="handleSelectionChange"
 		>
-			<el-table-column v-if="columns[0].visible" label="ID" align="center" prop="id" />
+			<el-table-column v-if="columns[0].visible" label="ID" align="center" prop="id" show-overflow-tooltip />
 
 			<el-table-column v-if="columns[1].visible" label="操作日期" align="center" prop="operateDate" show-overflow-tooltip />
 			<el-table-column v-if="columns[2].visible" label="票据种类" align="center" prop="billCategory" show-overflow-tooltip />

@@ -76,39 +76,118 @@
 		>
 			<el-table-column type="selection" width="55" align="center" />
 
-			<el-table-column v-if="columns[0].visible" label="ID" align="center" prop="id" show-overflow-tooltip />
+			<el-table-column v-if="columns[0].visible" label="ID" align="center" prop="id" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.id }}</div>
+						<span>{{ scope.row.id }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 
 			<el-table-column v-if="columns[1].visible" label="入库日期" align="center" prop="inDate" width="180" show-overflow-tooltip>
 				<template #default="scope">
-					<span>{{ parseTime(scope.row.inDate, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">
+							<span>{{ parseTime(scope.row.inDate, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
+						</div>
+						<span>{{ parseTime(scope.row.inDate, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
+					</el-tooltip>
 				</template>
 			</el-table-column>
 
 			<el-table-column v-if="columns[2].visible" label="入库方式" align="center" prop="inMethod" show-overflow-tooltip>
 				<template #default="scope">
-					<dict-tag :options="dict.type.order_gift_in_method" :value="scope.row.inMethod" />
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">
+							<dict-tag :options="dict.type.order_gift_in_method" :value="scope.row.inMethod" />
+						</div>
+						<dict-tag :options="dict.type.order_gift_in_method" :value="scope.row.inMethod" />
+					</el-tooltip>
 				</template>
 			</el-table-column>
 
-			<el-table-column v-if="columns[3].visible" label="对方信息" align="center" prop="fromInfo" show-overflow-tooltip />
+			<el-table-column v-if="columns[3].visible" label="对方信息" align="center" prop="fromInfo" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.fromInfo }}</div>
+						<span>{{ scope.row.fromInfo }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 
-			<el-table-column v-if="columns[4].visible" label="物品名称" align="center" prop="itemName" show-overflow-tooltip />
+			<el-table-column v-if="columns[4].visible" label="物品名称" align="center" prop="itemName" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.itemName }}</div>
+						<span>{{ scope.row.itemName }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 
-			<el-table-column v-if="columns[5].visible" label="数量" align="center" prop="quantity" show-overflow-tooltip />
+			<el-table-column v-if="columns[5].visible" label="数量" align="center" prop="quantity" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.quantity }}</div>
+						<span>{{ scope.row.quantity }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 
-			<el-table-column v-if="columns[6].visible" label="预估价值/购买金额" align="center" prop="estimatedValue" show-overflow-tooltip />
+			<el-table-column v-if="columns[6].visible" label="预估价值/购买金额" align="center" prop="estimatedValue" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.estimatedValue }}</div>
+						<span>{{ scope.row.estimatedValue }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 
-			<el-table-column v-if="columns[7].visible" label="经办人" align="center" prop="handler" show-overflow-tooltip />
+			<el-table-column v-if="columns[7].visible" label="经办人" align="center" prop="handler" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.handler }}</div>
+						<span>{{ scope.row.handler }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 
-			<el-table-column v-if="columns[8].visible" label="收礼方式" align="center" prop="receiveMethod" show-overflow-tooltip />
-			<el-table-column v-if="columns[9].visible" label="付款时间" align="center" prop="payTime" show-overflow-tooltip />
+			<el-table-column v-if="columns[8].visible" label="收礼方式" align="center" prop="receiveMethod" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.receiveMethod }}</div>
+						<span>{{ scope.row.receiveMethod }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[9].visible" label="付款时间" align="center" prop="payTime" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.payTime }}</div>
+						<span>{{ scope.row.payTime }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 
-			<el-table-column label="备注" align="center" prop="remark" show-overflow-tooltip />
+			<el-table-column label="备注" align="center" prop="remark" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.remark }}</div>
+						<span>{{ scope.row.remark }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" show-overflow-tooltip width="220" fixed="right">
 				<template #default="scope">
-					<el-button v-hasPermi="['system:giftIn:edit']" size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)">修改</el-button>
-					<el-button v-hasPermi="['system:giftIn:remove']" size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)">删除</el-button>
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">
+							<el-button v-hasPermi="['system:giftIn:edit']" size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)">修改</el-button>
+							<el-button v-hasPermi="['system:giftIn:remove']" size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)">删除</el-button>
+						</div>
+						<el-button v-hasPermi="['system:giftIn:edit']" size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)">修改</el-button>
+						<el-button v-hasPermi="['system:giftIn:remove']" size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)">删除</el-button>
+					</el-tooltip>
 				</template>
 			</el-table-column>
 		</el-table>

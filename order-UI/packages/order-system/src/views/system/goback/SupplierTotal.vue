@@ -60,13 +60,34 @@
 
 		<!-- 表格区域 -->
 		<el-table id="educe-table" :data="tableData" border style="width: 100%" v-loading="loading" size="mini">
-			<el-table-column prop="time" label="日期"></el-table-column>
-			<el-table-column prop="companyName" label="供应商"></el-table-column>
-			<el-table-column prop="moneyAmount" label="余额">
-				<template slot-scope="scope">
-					<span :class="{ negative: scope.row.moneyAmount < 0 }">
-						{{ formatBalance(scope.row.moneyAmount) }}
-					</span>
+			<el-table-column prop="time" label="日期" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.time }}</div>
+						<span>{{ scope.row.time }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column prop="companyName" label="供应商" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.companyName }}</div>
+						<span>{{ scope.row.companyName }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column prop="moneyAmount" label="余额" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">
+							<span :class="{ negative: scope.row.moneyAmount < 0 }">
+								{{ formatBalance(scope.row.moneyAmount) }}
+							</span>
+						</div>
+						<span :class="{ negative: scope.row.moneyAmount < 0 }">
+							{{ formatBalance(scope.row.moneyAmount) }}
+						</span>
+					</el-tooltip>
 				</template>
 			</el-table-column>
 			<el-table-column label="查看供应商信息" align="center">

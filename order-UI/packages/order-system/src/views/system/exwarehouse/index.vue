@@ -52,36 +52,102 @@
 			"
 			@selection-change="handleSelectionChange"
 		>
-			<el-table-column v-if="columns[0].visible" label="仓库名称" align="center" prop="storeHouseName" />
+			<el-table-column v-if="columns[0].visible" label="仓库名称" align="center" prop="storeHouseName">
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.storeHouseName }}</div>
+						<span>{{ scope.row.storeHouseName }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 			<el-table-column v-if="columns[1].visible" label="出库方向" align="center" prop="outDirection">
-				<template slot-scope="scope">
-					<span v-if="scope.row.outDirection && scope.row.outDirection !== '二次加工' && scope.row.outDirection !== '破损出库'">
-						<el-tooltip content="该出库方向为客户名称" placement="top">
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">
+							<span v-if="scope.row.outDirection && scope.row.outDirection !== '二次加工' && scope.row.outDirection !== '破损出库'">
+								<span style="color: #f56c6c; font-weight: bold">{{ scope.row.outDirection }}[客户]</span>
+							</span>
+							<span v-else-if="scope.row.outDirection && scope.row.outDirection === '二次加工'">二次入库出库</span>
+							<span v-else>存货毁损</span>
+						</div>
+						<span v-if="scope.row.outDirection && scope.row.outDirection !== '二次加工' && scope.row.outDirection !== '破损出库'">
 							<span style="color: #f56c6c; font-weight: bold">{{ scope.row.outDirection }}[客户]</span>
-						</el-tooltip>
-					</span>
-					<span v-else-if="scope.row.outDirection && scope.row.outDirection === '二次加工'">二次入库出库</span>
-					<span v-else>存货毁损</span>
+						</span>
+						<span v-else-if="scope.row.outDirection && scope.row.outDirection === '二次加工'">二次入库出库</span>
+						<span v-else>存货毁损</span>
+					</el-tooltip>
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[2].visible" label="变动日期(出库)" align="center" prop="outDate">
 				<template #default="scope">
-					{{ parseTime(scope.row.outDate, '{y}-{m}-{d}') }}
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">
+							{{ parseTime(scope.row.outDate, '{y}-{m}-{d}') }}
+						</div>
+						<span>{{ parseTime(scope.row.outDate, '{y}-{m}-{d}') }}</span>
+					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[3].visible" label="产品级别" align="center" prop="sourceInventoryDetail.levelName" />
-			<el-table-column v-if="columns[4].visible" label="厚度" align="center" prop="sourceInventoryDetail.height" />
-			<el-table-column v-if="columns[5].visible" label="长度" align="center" prop="sourceInventoryDetail.length" />
-			<el-table-column v-if="columns[6].visible" label="宽度" align="center" prop="sourceInventoryDetail.width" />
-			<el-table-column v-if="columns[7].visible" label="存货价" align="center" prop="sourceInventoryDetail.paymentUnload" />
-			<el-table-column v-if="columns[8].visible" label="出库量" align="center" prop="outAmount" />
+			<el-table-column v-if="columns[3].visible" label="产品级别" align="center" prop="sourceInventoryDetail.levelName">
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.sourceInventoryDetail && scope.row.sourceInventoryDetail.levelName }}</div>
+						<span>{{ scope.row.sourceInventoryDetail && scope.row.sourceInventoryDetail.levelName }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[4].visible" label="厚度" align="center" prop="sourceInventoryDetail.height">
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.sourceInventoryDetail && scope.row.sourceInventoryDetail.height }}</div>
+						<span>{{ scope.row.sourceInventoryDetail && scope.row.sourceInventoryDetail.height }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[5].visible" label="长度" align="center" prop="sourceInventoryDetail.length">
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.sourceInventoryDetail && scope.row.sourceInventoryDetail.length }}</div>
+						<span>{{ scope.row.sourceInventoryDetail && scope.row.sourceInventoryDetail.length }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[6].visible" label="宽度" align="center" prop="sourceInventoryDetail.width">
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.sourceInventoryDetail && scope.row.sourceInventoryDetail.width }}</div>
+						<span>{{ scope.row.sourceInventoryDetail && scope.row.sourceInventoryDetail.width }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[7].visible" label="存货价" align="center" prop="sourceInventoryDetail.paymentUnload">
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.sourceInventoryDetail && scope.row.sourceInventoryDetail.paymentUnload }}</div>
+						<span>{{ scope.row.sourceInventoryDetail && scope.row.sourceInventoryDetail.paymentUnload }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[8].visible" label="出库量" align="center" prop="outAmount">
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.outAmount }}</div>
+						<span>{{ scope.row.outAmount }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 			<el-table-column v-if="columns[9].visible" label="出库金额" align="center">
-				<template slot-scope="scope">
-					{{ computedAmount(scope.row) }}
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">
+							{{ computedAmount(scope.row) }}
+						</div>
+						<span>{{ computedAmount(scope.row) }}</span>
+					</el-tooltip>
 				</template>
 			</el-table-column>
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="80">
-				<template slot-scope="scope">
+				<template #default="scope">
 					<el-dropdown trigger="hover">
 						<span class="el-dropdown-link">
 							操作

@@ -50,30 +50,74 @@
 
 		<el-table v-loading="loading" border :data="typeList" @selection-change="handleSelectionChange">
 			<el-table-column type="selection" width="55" align="center" />
-			<el-table-column label="字典编号" align="center" prop="dictId" />
-			<el-table-column label="字典名称" align="center" prop="dictName" :show-overflow-tooltip="true" />
-			<el-table-column label="字典类型" align="center" :show-overflow-tooltip="true">
-				<template slot-scope="scope">
-					<router-link :to="'/system/dict-data/index/' + scope.row.dictId" class="link-type">
-						<span>{{ scope.row.dictType }}</span>
-					</router-link>
+			<el-table-column label="字典编号" align="center" prop="dictId" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.dictId }}</div>
+						<span>{{ scope.row.dictId }}</span>
+					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column label="状态" align="center" prop="status">
-				<template slot-scope="scope">
-					<dict-tag :options="dict.type.sys_normal_disable" :value="scope.row.status" />
+			<el-table-column label="字典名称" align="center" prop="dictName" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.dictName }}</div>
+						<span>{{ scope.row.dictName }}</span>
+					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column label="备注" align="center" prop="remark" :show-overflow-tooltip="true" />
-			<el-table-column label="创建时间" align="center" prop="createTime" width="180">
-				<template slot-scope="scope">
-					<span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
+			<el-table-column label="字典类型" align="center" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">
+							<router-link :to="'/system/dict-data/index/' + scope.row.dictId" class="link-type">
+								<span>{{ scope.row.dictType }}</span>
+							</router-link>
+						</div>
+						<router-link :to="'/system/dict-data/index/' + scope.row.dictId" class="link-type">
+							<span>{{ scope.row.dictType }}</span>
+						</router-link>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column label="状态" align="center" prop="status" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">
+							<dict-tag :options="dict.type.sys_normal_disable" :value="scope.row.status" />
+						</div>
+						<dict-tag :options="dict.type.sys_normal_disable" :value="scope.row.status" />
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column label="备注" align="center" prop="remark" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.remark }}</div>
+						<span>{{ scope.row.remark }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column label="创建时间" align="center" prop="createTime" width="180" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">
+							<span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
+						</div>
+						<span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
+					</el-tooltip>
 				</template>
 			</el-table-column>
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-				<template slot-scope="scope">
-					<el-button v-hasPermi="['system:dict:edit']" size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)">修改</el-button>
-					<el-button v-hasPermi="['system:dict:remove']" size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)">删除</el-button>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">
+							<el-button v-hasPermi="['system:dict:edit']" size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)">修改</el-button>
+							<el-button v-hasPermi="['system:dict:remove']" size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)">删除</el-button>
+						</div>
+						<el-button v-hasPermi="['system:dict:edit']" size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)">修改</el-button>
+						<el-button v-hasPermi="['system:dict:remove']" size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)">删除</el-button>
+					</el-tooltip>
 				</template>
 			</el-table-column>
 		</el-table>

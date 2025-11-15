@@ -77,109 +77,162 @@
 			</right-toolbar>
 		</el-row>
 
-		<el-table
-			id="printBox"
-			v-loading="loading"
-			v-horizontal-scroll="'always'"
-			:data="paymentList"
-			size="mini"
-			border
-			:cell-style="
-				() => {
-					return { padding: '1.5px' };
-				}
-			"
-			@selection-change="handleSelectionChange"
-			ref="paymentTable"
-		>
-			<el-table-column label="id" align="center" prop="id" v-if="columns[0].visible" />
+		<el-table id="printBox" v-loading="loading" v-horizontal-scroll="'always'" :data="paymentList" size="mini" border @selection-change="handleSelectionChange" ref="paymentTable">
+			<el-table-column label="id" align="center" prop="id" v-if="columns[0].visible" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.id }}</div>
+						<span>{{ scope.row.id }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 			<el-table-column label="日期" align="center" prop="fundsDate" width="120" v-if="columns[1].visible" show-overflow-tooltip>
 				<template #default="scope">
-					<DynamicField :row="scope.row" field="fundsDate" />
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.fundsDate }}</div>
+						<span>{{ scope.row.fundsDate }}</span>
+					</el-tooltip>
 				</template>
 			</el-table-column>
 			<el-table-column label="支付类型" align="center" prop="payType" width="120" v-if="columns[2].visible" show-overflow-tooltip>
 				<template #default="scope">
-					<DynamicField :row="scope.row" field="payType" />
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.payType }}</div>
+						<span>{{ scope.row.payType }}</span>
+					</el-tooltip>
 				</template>
 			</el-table-column>
 			<el-table-column label="对方公司" align="center" prop="companyName" width="120" v-if="columns[11].visible" show-overflow-tooltip>
 				<template #default="scope">
-					<DynamicField :row="scope.row" field="companyName" />
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.companyName }}</div>
+						<span>{{ scope.row.companyName }}</span>
+					</el-tooltip>
 				</template>
 			</el-table-column>
 			<el-table-column label="对方公司类型" align="center" prop="companyType" width="130" v-if="columns[12].visible" show-overflow-tooltip>
 				<template #default="scope">
-					<DynamicField :row="scope.row" field="companyType" />
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.companyType }}</div>
+						<span>{{ scope.row.companyType }}</span>
+					</el-tooltip>
 				</template>
 			</el-table-column>
 			<el-table-column label="金额" align="center" prop="moneyAmount" width="70" v-if="columns[3].visible" show-overflow-tooltip>
 				<template #default="scope">
-					<DynamicField :row="scope.row" field="moneyAmount" />
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.moneyAmount }}</div>
+						<span>{{ scope.row.moneyAmount }}</span>
+					</el-tooltip>
 				</template>
 			</el-table-column>
 			<el-table-column label="我方户名" align="center" prop="selfAccountsName" width="120" v-if="columns[4].visible" show-overflow-tooltip>
 				<template #default="scope">
-					<DynamicField :row="scope.row" field="selfAccountsName" />
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.selfAccountsName }}</div>
+						<span>{{ scope.row.selfAccountsName }}</span>
+					</el-tooltip>
 				</template>
 			</el-table-column>
 			<el-table-column label="我方账号" align="center" prop="selfBankNo" width="180" v-if="columns[5].visible" show-overflow-tooltip>
 				<template #default="scope">
-					<DynamicField :row="scope.row" field="selfBankNo" />
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.selfBankNo }}</div>
+						<span>{{ scope.row.selfBankNo }}</span>
+					</el-tooltip>
 				</template>
 			</el-table-column>
 			<el-table-column label="我方开户行" align="center" prop="selfBankName" width="120" v-if="columns[6].visible" show-overflow-tooltip>
 				<template #default="scope">
-					<DynamicField :row="scope.row" field="selfBankName" />
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.selfBankName }}</div>
+						<span>{{ scope.row.selfBankName }}</span>
+					</el-tooltip>
 				</template>
 			</el-table-column>
 			<el-table-column label="对方户名" align="center" prop="otherAccountsName" width="120" v-if="columns[7].visible" show-overflow-tooltip>
 				<template #default="scope">
-					<DynamicField :row="scope.row" field="otherAccountsName" />
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.otherAccountsName }}</div>
+						<span>{{ scope.row.otherAccountsName }}</span>
+					</el-tooltip>
 				</template>
 			</el-table-column>
 			<!-- 对方账号列已经包含了 show-overflow-tooltip，可以正常显示 -->
 			<el-table-column label="对方账号" align="center" prop="otherBankNo" width="190" v-if="columns[8].visible" show-overflow-tooltip>
 				<template #default="scope">
-					<DynamicField :row="scope.row" field="otherBankNo" />
-				</template>
-			</el-table-column>
-
-			<!-- 我方账号列也确保包含了 show-overflow-tooltip -->
-			<el-table-column label="我方账号" align="center" prop="selfBankNo" width="180" v-if="columns[5].visible" show-overflow-tooltip>
-				<template #default="scope">
-					<DynamicField :row="scope.row" field="selfBankNo" />
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.otherBankNo }}</div>
+						<span>{{ scope.row.otherBankNo }}</span>
+					</el-tooltip>
 				</template>
 			</el-table-column>
 
 			<el-table-column label="对方开户行" align="center" prop="otherBankName" width="120" v-if="columns[9].visible" show-overflow-tooltip>
 				<template #default="scope">
-					<DynamicField :row="scope.row" field="otherBankName" />
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.otherBankName }}</div>
+						<span>{{ scope.row.otherBankName }}</span>
+					</el-tooltip>
 				</template>
 			</el-table-column>
 			<el-table-column label="支付状态" align="center" prop="paymentState" width="120" v-if="columns[10].visible" show-overflow-tooltip>
 				<template #default="scope">
-					<el-tag :type="scope.row.paymentState === PAYMENT_STATE.PAID ? 'success' : scope.row.paymentState === PAYMENT_STATE.UNPAID ? 'info' : 'warning'" size="mini">
-						{{ scope.row.paymentState }}
-					</el-tag>
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.paymentState }}</div>
+						<el-tag :type="scope.row.paymentState === PAYMENT_STATE.PAID ? 'success' : scope.row.paymentState === PAYMENT_STATE.UNPAID ? 'info' : 'warning'" size="mini">
+							{{ scope.row.paymentState }}
+						</el-tag>
+					</el-tooltip>
 				</template>
 			</el-table-column>
 
-			<el-table-column label="备注" align="center" prop="comments" width="120" v-if="columns[13].visible" show-overflow-tooltip />
+			<el-table-column label="备注" align="center" prop="comments" width="120" v-if="columns[13].visible" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.comments }}</div>
+						<span>{{ scope.row.comments }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 			<el-table-column label="附件" align="center" prop="attachmentList" width="120" v-if="columns[14].visible" show-overflow-tooltip>
 				<template #default="scope">
-					<CheckFiles :attachmentList="scope.row.attachmentList" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getPayment, updatePayment)" flag="attachments" />
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
+						<div slot="content" @click.stop>
+							<CheckFiles :attachmentList="scope.row.attachmentList" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getPayment, updatePayment)" flag="attachments" />
+						</div>
+						<CheckFiles :attachmentList="scope.row.attachmentList" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getPayment, updatePayment)" flag="attachments" />
+					</el-tooltip>
 				</template>
 			</el-table-column>
 			<!-- 新增银行卡流水编号列 -->
-			<el-table-column label="银行卡流水编号" align="center" prop="transactionHistory" width="120" v-if="columns[15] && columns[15].visible" show-overflow-tooltip />
-			<!-- 新增银行卡流水附件列 -->
-			<el-table-column label="银行卡流水附件" align="center" prop="transactionHistoryAttachmentList" width="120" v-if="columns[16] && columns[16].visible" fixed="right">
+			<el-table-column label="银行卡流水编号" align="center" prop="transactionHistory" width="120" v-if="columns[15] && columns[15].visible" show-overflow-tooltip>
 				<template #default="scope">
-					<CheckFiles :attachmentList="scope.row.attachmentList" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getPayment, updatePayment)" flag="transactionHistoryAttachmentList" />
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.transactionHistory }}</div>
+						<span>{{ scope.row.transactionHistory }}</span>
+					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column label="录入人员" align="center" prop="userName" width="120" v-if="columns[17] && columns[17].visible" show-overflow-tooltip />
+			<!-- 新增银行卡流水附件列 -->
+			<el-table-column label="银行卡流水附件" align="center" prop="transactionHistoryAttachmentList" width="120" v-if="columns[16] && columns[16].visible" fixed="right" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
+						<div slot="content" @click.stop>
+							<CheckFiles :attachmentList="scope.row.attachmentList" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getPayment, updatePayment)" flag="transactionHistoryAttachmentList" />
+						</div>
+						<CheckFiles :attachmentList="scope.row.attachmentList" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getPayment, updatePayment)" flag="transactionHistoryAttachmentList" />
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column label="录入人员" align="center" prop="userName" width="120" v-if="columns[17] && columns[17].visible" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.userName }}</div>
+						<span>{{ scope.row.userName }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 			<el-table-column label="复核状态" align="center" class-name="small-padding fixed-width" width="80" fixed="right">
 				<template slot-scope="scope">
 					<el-tooltip :content="hasAuditPermission ? '点击切换复核状态' : '您没有复核权限'" placement="top">
@@ -224,9 +277,9 @@
 		<!-- 查看修改原因弹窗 -->
 		<el-dialog title="查看修改原因" :visible.sync="editReasonDialogVisible" width="800px" append-to-body>
 			<el-table :data="editReasonList" style="width: 100%">
-				<el-table-column prop="addtime" label="修改时间" />
-				<el-table-column prop="reason" label="修改原因" />
-				<el-table-column prop="userName" label="修改人" />
+				<el-table-column prop="addtime" label="修改时间" show-overflow-tooltip />
+				<el-table-column prop="reason" label="修改原因" show-overflow-tooltip />
+				<el-table-column prop="userName" label="修改人" show-overflow-tooltip />
 			</el-table>
 			<pagination v-show="editReasonTotal > 0" :total="editReasonTotal" :page.sync="editReasonQueryParams.pageNum" :limit.sync="editReasonQueryParams.pageSize" @pagination="getEditReasonList" />
 		</el-dialog>
@@ -565,7 +618,6 @@ import { listCars } from '../../../api/system/cars';
 import { isNull } from '../../../main';
 import { mixin_payment_subject } from '../../dashboard/mixins/payment/payment_subject';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
-import DynamicField from '@/components/DynamicField.vue';
 import { mixin_paymentindex_fill } from './paymentFill';
 import CheckDetail from '../../dashboard/components/payment/CheckDetail.vue';
 import BankType from '@/views/dashboard/components/common/BankType.vue';
@@ -594,7 +646,6 @@ export default {
 		StateTag,
 		BankType,
 		CheckDetail,
-		DynamicField,
 		SearchOption,
 		PaymentFlag,
 		ExpandCursor,

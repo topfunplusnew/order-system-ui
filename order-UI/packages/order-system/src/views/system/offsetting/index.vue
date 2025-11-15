@@ -56,19 +56,74 @@
 			border
 			@selection-change="handleSelectionChange"
 		>
-			<el-table-column label="id" align="center" prop="id" />
-			<el-table-column v-if="columns[0].visible" label="冲抵编号" align="center" prop="pffsetNO" show-overflow-tooltip />
-			<el-table-column v-if="columns[1].visible" label="操作时间" align="center" prop="operateDate" show-overflow-tooltip />
-			<el-table-column v-if="columns[2].visible" label="冲抵类型" align="center" prop="operateType" show-overflow-tooltip />
-			<el-table-column v-if="columns[3].visible" label="金额" align="center" prop="moneyAmount" show-overflow-tooltip />
-			<el-table-column v-if="columns[4].visible" label="公司" align="center" prop="companyName" show-overflow-tooltip />
-			<el-table-column v-if="columns[5].visible" label="公司类型" align="center" prop="companyType" show-overflow-tooltip>
-				<template #default="scope">
+		<el-table-column label="id" align="center" prop="id" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.id }}</div>
+					<span>{{ scope.row.id }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[0].visible" label="冲抵编号" align="center" prop="pffsetNO" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.pffsetNO }}</div>
+					<span>{{ scope.row.pffsetNO }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[1].visible" label="操作时间" align="center" prop="operateDate" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.operateDate }}</div>
+					<span>{{ scope.row.operateDate }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[2].visible" label="冲抵类型" align="center" prop="operateType" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.operateType }}</div>
+					<span>{{ scope.row.operateType }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[3].visible" label="金额" align="center" prop="moneyAmount" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.moneyAmount }}</div>
+					<span>{{ scope.row.moneyAmount }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[4].visible" label="公司" align="center" prop="companyName" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.companyName }}</div>
+					<span>{{ scope.row.companyName }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[5].visible" label="公司类型" align="center" prop="companyType" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">
+						<el-tag v-if="scope.row.companyType === '1'">客户</el-tag>
+						<el-tag v-else>供应商</el-tag>
+					</div>
 					<el-tag v-if="scope.row.companyType === '1'">客户</el-tag>
 					<el-tag v-else>供应商</el-tag>
-				</template>
-			</el-table-column>
-			<el-table-column v-if="columns[6].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[6].visible" label="备注" align="center" prop="comments" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.comments }}</div>
+					<span>{{ scope.row.comments }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
 				<template slot-scope="scope">
 					<el-button v-hasPermi="['system:offsetting:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>

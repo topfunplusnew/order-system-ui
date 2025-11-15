@@ -48,36 +48,126 @@
 		<el-table id="printBox" v-horizontal-scroll="'always'" v-loading="loading" border :data="paymentApplyList" @selection-change="handleSelectionChange">
 			<!--      <el-table-column label="对应的表名" align="center" prop="tableName"/>-->
 			<!--      <el-table-column label="对应的表主键" align="center" prop="tID"/>-->
-			<el-table-column v-if="columns[0].visible" label="日期" align="center" prop="fundsDate" />
-			<el-table-column v-if="columns[1].visible" label="支付类型" align="center" prop="payType" />
-			<el-table-column v-if="columns[2].visible" label="金额" align="center" prop="moneyAmount" />
-			<el-table-column v-if="columns[3].visible" label="对方户名" align="center" prop="otherAcountsName" />
-			<el-table-column v-if="columns[4].visible" label="对方账号" align="center" prop="otherBankNo" />
-			<el-table-column v-if="columns[5].visible" label="对方开户行" align="center" prop="otherBankName" />
-			<el-table-column v-if="columns[6].visible" label="对方公司" align="center" prop="companyName" />
-			<!--      <el-table-column label="对方公司ID" align="center" prop="companyId"/>-->
-			<el-table-column v-if="columns[7].visible" label="对方公司类型" align="center" prop="companyType" />
-			<el-table-column v-if="columns[8].visible" label="付款原因" align="center" prop="reason" />
-			<el-table-column v-if="columns[9].visible" label="附件" align="center" prop="attachmentList">
+			<el-table-column v-if="columns[0].visible" label="日期" align="center" prop="fundsDate" show-overflow-tooltip>
 				<template #default="scope">
-					<CheckFiles
-						:attachmentList="scope.row.attachmentList"
-						@needToUpdate="value => handleUpdateFilePath(value, scope.row, getPaymentApply, updatePaymentApply)"
-						:is-upload="false"
-						flag="attachments"
-					/>
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.fundsDate }}</div>
+						<span>{{ scope.row.fundsDate }}</span>
+					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[10].visible" label="申请人" align="center" prop="applyPerson" />
+			<el-table-column v-if="columns[1].visible" label="支付类型" align="center" prop="payType" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.payType }}</div>
+						<span>{{ scope.row.payType }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[2].visible" label="金额" align="center" prop="moneyAmount" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.moneyAmount }}</div>
+						<span>{{ scope.row.moneyAmount }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[3].visible" label="对方户名" align="center" prop="otherAcountsName" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.otherAcountsName }}</div>
+						<span>{{ scope.row.otherAcountsName }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[4].visible" label="对方账号" align="center" prop="otherBankNo" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.otherBankNo }}</div>
+						<span>{{ scope.row.otherBankNo }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[5].visible" label="对方开户行" align="center" prop="otherBankName" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.otherBankName }}</div>
+						<span>{{ scope.row.otherBankName }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[6].visible" label="对方公司" align="center" prop="companyName" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.companyName }}</div>
+						<span>{{ scope.row.companyName }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<!--      <el-table-column label="对方公司ID" align="center" prop="companyId"/>-->
+			<el-table-column v-if="columns[7].visible" label="对方公司类型" align="center" prop="companyType" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.companyType }}</div>
+						<span>{{ scope.row.companyType }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[8].visible" label="付款原因" align="center" prop="reason" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.reason }}</div>
+						<span>{{ scope.row.reason }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[9].visible" label="附件" align="center" prop="attachmentList" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
+						<div slot="content" @click.stop>
+							<CheckFiles
+								:attachmentList="scope.row.attachmentList"
+								@needToUpdate="value => handleUpdateFilePath(value, scope.row, getPaymentApply, updatePaymentApply)"
+								:is-upload="false"
+								flag="attachments"
+							/>
+						</div>
+						<CheckFiles
+							:attachmentList="scope.row.attachmentList"
+							@needToUpdate="value => handleUpdateFilePath(value, scope.row, getPaymentApply, updatePaymentApply)"
+							:is-upload="false"
+							flag="attachments"
+						/>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[10].visible" label="申请人" align="center" prop="applyPerson" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.applyPerson }}</div>
+						<span>{{ scope.row.applyPerson }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 			<!--      <el-table-column label="申请人ID" align="center" prop="applyPersonID"/>-->
-			<el-table-column v-if="columns[11].visible" label="审核状态" align="center" prop="checkState">
-				<template slot-scope="scope">
-					<el-tag :type="scope.row.checkState === '通过' ? 'success' : 'danger'" disable-transitions>
-						{{ scope.row.checkState }}
-					</el-tag>
+			<el-table-column v-if="columns[11].visible" label="审核状态" align="center" prop="checkState" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.checkState }}</div>
+						<el-tag :type="scope.row.checkState === '通过' ? 'success' : 'danger'" disable-transitions>
+							{{ scope.row.checkState }}
+						</el-tag>
+					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[12].visible" label="备注" align="center" prop="comments" />
+			<el-table-column v-if="columns[12].visible" label="备注" align="center" prop="comments" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.comments }}</div>
+						<span>{{ scope.row.comments }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
 				<template slot-scope="scope">
 					<el-button v-hasPermi="['system:paymentapply:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>

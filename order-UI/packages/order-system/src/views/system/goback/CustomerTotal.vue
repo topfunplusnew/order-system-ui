@@ -61,23 +61,54 @@
 
 		<!-- 表格区域 -->
 		<el-table id="educe-table" :data="tableData" border style="width: 100%" v-loading="loading" size="mini">
-			<el-table-column prop="time" label="日期"></el-table-column>
-			<el-table-column prop="companyName" label="客户"></el-table-column>
-			<el-table-column prop="moneyAmount" label="余额">
-				<template slot-scope="scope">
-					<span :class="{ negative: scope.row.moneyAmount < 0 }">
-						{{ formatBalance(scope.row.moneyAmount) }}
-					</span>
+			<el-table-column prop="time" label="日期" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.time }}</div>
+						<span>{{ scope.row.time }}</span>
+					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column prop="lastOrderTime" label="最后一次交易日期">
-				<template slot-scope="scope">
-					{{ scope.row.lastOrderTime ? scope.row.lastOrderTime.slice(0, 10) : '' }}
+			<el-table-column prop="companyName" label="客户" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.companyName }}</div>
+						<span>{{ scope.row.companyName }}</span>
+					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column label="查看客户信息" align="center">
-				<template slot-scope="scope">
-					<el-link :underline="false" type="primary" @click="handleViewCustomerInfo(scope.row.companyId)">查看</el-link>
+			<el-table-column prop="moneyAmount" label="余额" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">
+							<span :class="{ negative: scope.row.moneyAmount < 0 }">
+								{{ formatBalance(scope.row.moneyAmount) }}
+							</span>
+						</div>
+						<span :class="{ negative: scope.row.moneyAmount < 0 }">
+							{{ formatBalance(scope.row.moneyAmount) }}
+						</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column prop="lastOrderTime" label="最后一次交易日期" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">
+							{{ scope.row.lastOrderTime ? scope.row.lastOrderTime.slice(0, 10) : '' }}
+						</div>
+						<span>{{ scope.row.lastOrderTime ? scope.row.lastOrderTime.slice(0, 10) : '' }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column label="查看客户信息" align="center" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">
+							<el-link :underline="false" type="primary" @click="handleViewCustomerInfo(scope.row.companyId)">查看</el-link>
+						</div>
+						<el-link :underline="false" type="primary" @click="handleViewCustomerInfo(scope.row.companyId)">查看</el-link>
+					</el-tooltip>
 				</template>
 			</el-table-column>
 		</el-table>

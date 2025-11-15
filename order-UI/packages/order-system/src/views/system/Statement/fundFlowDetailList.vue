@@ -22,22 +22,22 @@
 							@update:queryName="value => (queryBank = value)"
 						>
 							<template #table-columns>
-								<el-table-column label="公司名称" align="center" prop="companyName">
+								<el-table-column label="公司名称" align="center" prop="companyName" show-overflow-tooltip>
 									<template #default="scope">
 										{{ scope.row.companyName }}
 									</template>
 								</el-table-column>
-								<el-table-column label="开户行" align="center" prop="bankName">
+								<el-table-column label="开户行" align="center" prop="bankName" show-overflow-tooltip>
 									<template #default="scope">
 										{{ scope.row.bankName }}
 									</template>
 								</el-table-column>
-								<el-table-column label="开户名" align="center" prop="acountsName">
+								<el-table-column label="开户名" align="center" prop="acountsName" show-overflow-tooltip>
 									<template #default="scope">
 										{{ scope.row.acountsName }}
 									</template>
 								</el-table-column>
-								<el-table-column label="账号" align="center" prop="bankNo">
+								<el-table-column label="账号" align="center" prop="bankNo" show-overflow-tooltip>
 									<template #default="scope">
 										{{ scope.row.bankNo }}
 									</template>

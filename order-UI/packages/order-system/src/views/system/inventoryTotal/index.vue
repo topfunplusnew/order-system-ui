@@ -41,30 +41,138 @@
 		</el-row>
 		<div class="inventory-table-container">
 			<el-table v-if="inventoryMainList.length > 0" :data="inventoryMainList" size="mini" border stripe>
-				<el-table-column label="仓库名称" prop="storeHouseName" align="center" show-overflow-tooltip />
-				<el-table-column label="级别名称" prop="levelName" align="center" width="150" show-overflow-tooltip />
-				<el-table-column label="级别编码" prop="levelNo" align="center" />
-				<el-table-column label="厚度" prop="height" align="center" />
-				<el-table-column label="长度" prop="length" align="center" />
-				<el-table-column label="宽度" prop="width" align="center" />
-				<el-table-column label="价格" prop="price" align="center" />
-				<el-table-column label="初始入库日期" prop="firstStoreDate" align="center" show-overflow-tooltip />
-				<el-table-column label="剩余库存金额" prop="remainingAmount" align="center">
+				<el-table-column label="仓库名称" prop="storeHouseName" align="center" show-overflow-tooltip>
 					<template #default="scope">
-						<div v-if="scope.row.remainingAmount">
-							{{ scope.row.remainingAmount.toFixed(3) }}
-						</div>
-						<div v-else>
-							{{ 0 }}
-						</div>
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">{{ scope.row.storeHouseName }}</div>
+							<span>{{ scope.row.storeHouseName }}</span>
+						</el-tooltip>
 					</template>
 				</el-table-column>
-				<el-table-column label="吨位" prop="tonnage" align="center" />
-				<el-table-column label="总入库量" prop="totalStockIn" align="center" />
-				<el-table-column label="总出库量" prop="totalStockOut" align="center" />
-				<el-table-column label="剩余量" prop="totalRemaining" align="center" />
-				<el-table-column label="类别名称" prop="categoryName" align="center" />
-				<el-table-column label="类别编号" prop="categoryNo" align="center" />
+				<el-table-column label="级别名称" prop="levelName" align="center" width="150" show-overflow-tooltip>
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">{{ scope.row.levelName }}</div>
+							<span>{{ scope.row.levelName }}</span>
+						</el-tooltip>
+					</template>
+				</el-table-column>
+				<el-table-column label="级别编码" prop="levelNo" align="center" show-overflow-tooltip>
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">{{ scope.row.levelNo }}</div>
+							<span>{{ scope.row.levelNo }}</span>
+						</el-tooltip>
+					</template>
+				</el-table-column>
+				<el-table-column label="厚度" prop="height" align="center" show-overflow-tooltip>
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">{{ scope.row.height }}</div>
+							<span>{{ scope.row.height }}</span>
+						</el-tooltip>
+					</template>
+				</el-table-column>
+				<el-table-column label="长度" prop="length" align="center" show-overflow-tooltip>
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">{{ scope.row.length }}</div>
+							<span>{{ scope.row.length }}</span>
+						</el-tooltip>
+					</template>
+				</el-table-column>
+				<el-table-column label="宽度" prop="width" align="center" show-overflow-tooltip>
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">{{ scope.row.width }}</div>
+							<span>{{ scope.row.width }}</span>
+						</el-tooltip>
+					</template>
+				</el-table-column>
+				<el-table-column label="价格" prop="price" align="center" show-overflow-tooltip>
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">{{ scope.row.price }}</div>
+							<span>{{ scope.row.price }}</span>
+						</el-tooltip>
+					</template>
+				</el-table-column>
+				<el-table-column label="初始入库日期" prop="firstStoreDate" align="center" show-overflow-tooltip>
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">{{ scope.row.firstStoreDate }}</div>
+							<span>{{ scope.row.firstStoreDate }}</span>
+						</el-tooltip>
+					</template>
+				</el-table-column>
+				<el-table-column label="剩余库存金额" prop="remainingAmount" align="center">
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">
+								<div v-if="scope.row.remainingAmount">
+									{{ scope.row.remainingAmount.toFixed(3) }}
+								</div>
+								<div v-else>
+									{{ 0 }}
+								</div>
+							</div>
+							<div v-if="scope.row.remainingAmount">
+								{{ scope.row.remainingAmount.toFixed(3) }}
+							</div>
+							<div v-else>
+								{{ 0 }}
+							</div>
+						</el-tooltip>
+					</template>
+				</el-table-column>
+				<el-table-column label="吨位" prop="tonnage" align="center">
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">{{ scope.row.tonnage }}</div>
+							<span>{{ scope.row.tonnage }}</span>
+						</el-tooltip>
+					</template>
+				</el-table-column>
+				<el-table-column label="总入库量" prop="totalStockIn" align="center">
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">{{ scope.row.totalStockIn }}</div>
+							<span>{{ scope.row.totalStockIn }}</span>
+						</el-tooltip>
+					</template>
+				</el-table-column>
+				<el-table-column label="总出库量" prop="totalStockOut" align="center">
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">{{ scope.row.totalStockOut }}</div>
+							<span>{{ scope.row.totalStockOut }}</span>
+						</el-tooltip>
+					</template>
+				</el-table-column>
+				<el-table-column label="剩余量" prop="totalRemaining" align="center">
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">{{ scope.row.totalRemaining }}</div>
+							<span>{{ scope.row.totalRemaining }}</span>
+						</el-tooltip>
+					</template>
+				</el-table-column>
+				<el-table-column label="类别名称" prop="categoryName" align="center">
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">{{ scope.row.categoryName }}</div>
+							<span>{{ scope.row.categoryName }}</span>
+						</el-tooltip>
+					</template>
+				</el-table-column>
+				<el-table-column label="类别编号" prop="categoryNo" align="center">
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">{{ scope.row.categoryNo }}</div>
+							<span>{{ scope.row.categoryNo }}</span>
+						</el-tooltip>
+					</template>
+				</el-table-column>
 				<el-table-column label="操作" width="120" align="center">
 					<template slot-scope="scope">
 						<el-button type="text" size="mini" @click="openChangeLog(scope.row)">查看变动记录</el-button>
@@ -84,26 +192,91 @@
 			</div>
 			<el-table :data="changeLogData" size="mini" border stripe v-loading="changeLogLoading">
 				<el-table-column label="类别" align="center">
-					<template slot-scope="scope">
-						{{ scope.row.change_amount > 0 ? '入库' : '出库' }}
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">{{ scope.row.change_amount > 0 ? '入库' : '出库' }}</div>
+							<span>{{ scope.row.change_amount > 0 ? '入库' : '出库' }}</span>
+						</el-tooltip>
 					</template>
 				</el-table-column>
-				<el-table-column label="来源方向" prop="source" align="center" />
-				<el-table-column label="级别名称" prop="levelName" align="center" width="150" />
-				<el-table-column label="厚度" prop="height" align="center" />
-				<el-table-column label="长度" prop="length" align="center" />
-				<el-table-column label="宽度" prop="width" align="center" />
-				<el-table-column label="每包片数" prop="piecesPerPack" align="center" />
-				<el-table-column label="包数" prop="packs" align="center" />
+				<el-table-column label="来源方向" prop="source" align="center">
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">{{ scope.row.source }}</div>
+							<span>{{ scope.row.source }}</span>
+						</el-tooltip>
+					</template>
+				</el-table-column>
+				<el-table-column label="级别名称" prop="levelName" align="center" width="150">
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">{{ scope.row.levelName }}</div>
+							<span>{{ scope.row.levelName }}</span>
+						</el-tooltip>
+					</template>
+				</el-table-column>
+				<el-table-column label="厚度" prop="height" align="center">
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">{{ scope.row.height }}</div>
+							<span>{{ scope.row.height }}</span>
+						</el-tooltip>
+					</template>
+				</el-table-column>
+				<el-table-column label="长度" prop="length" align="center">
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">{{ scope.row.length }}</div>
+							<span>{{ scope.row.length }}</span>
+						</el-tooltip>
+					</template>
+				</el-table-column>
+				<el-table-column label="宽度" prop="width" align="center">
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">{{ scope.row.width }}</div>
+							<span>{{ scope.row.width }}</span>
+						</el-tooltip>
+					</template>
+				</el-table-column>
+				<el-table-column label="每包片数" prop="piecesPerPack" align="center">
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">{{ scope.row.piecesPerPack }}</div>
+							<span>{{ scope.row.piecesPerPack }}</span>
+						</el-tooltip>
+					</template>
+				</el-table-column>
+				<el-table-column label="包数" prop="packs" align="center">
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">{{ scope.row.packs }}</div>
+							<span>{{ scope.row.packs }}</span>
+						</el-tooltip>
+					</template>
+				</el-table-column>
 				<el-table-column label="变动片数" align="center">
-					<template slot-scope="scope">
-						{{ Math.abs(scope.row.change_amount) }}
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">{{ Math.abs(scope.row.change_amount) }}</div>
+							<span>{{ Math.abs(scope.row.change_amount) }}</span>
+						</el-tooltip>
 					</template>
 				</el-table-column>
-				<el-table-column label="剩余库存" prop="remaining_stock" align="center" />
+				<el-table-column label="剩余库存" prop="remaining_stock" align="center">
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">{{ scope.row.remaining_stock }}</div>
+							<span>{{ scope.row.remaining_stock }}</span>
+						</el-tooltip>
+					</template>
+				</el-table-column>
 				<el-table-column label="库存金额" align="center">
-					<template slot-scope="scope">
-						{{ (Math.abs(scope.row.change_amount) * (currentItem && currentItem.price ? currentItem.price : 0)).toFixed(2) }}
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">{{ (Math.abs(scope.row.change_amount) * (currentItem && currentItem.price ? currentItem.price : 0)).toFixed(2) }}</div>
+							<span>{{ (Math.abs(scope.row.change_amount) * (currentItem && currentItem.price ? currentItem.price : 0)).toFixed(2) }}</span>
+						</el-tooltip>
 					</template>
 				</el-table-column>
 			</el-table>

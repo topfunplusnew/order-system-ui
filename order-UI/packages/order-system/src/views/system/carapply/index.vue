@@ -84,7 +84,7 @@
 			<el-table-column v-if="columns[25].visible" label="现金加油金额" align="center" prop="cashRefueling" show-overflow-tooltip />
 			<el-table-column v-if="columns[26].visible" label="派车人" align="center" prop="dispatchPerson" show-overflow-tooltip />
 			<el-table-column v-if="columns[27].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
-			<el-table-column v-if="columns[28].visible" label="附件" align="center" prop="attachmentList">
+			<el-table-column v-if="columns[28].visible" label="附件" align="center" prop="attachmentList" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<div v-if="Array.isArray(scope.row.attachmentList)">
 						<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'attachments'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getCarApply, updateCarApply)" />
@@ -94,7 +94,7 @@
 					</div>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[29].visible" label="审核状态" align="center" prop="auditState" width="120px">
+			<el-table-column v-if="columns[29].visible" label="审核状态" align="center" prop="auditState" width="120px" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<el-tag :type="scope.row.auditState === '审核通过' ? 'success' : scope.row.auditState === '审核不通过' ? 'danger' : 'info'">
 						{{ scope.row.auditState || '待审核' }}

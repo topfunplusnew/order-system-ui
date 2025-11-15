@@ -29,9 +29,9 @@
 		</el-row>
 		<!-- 表格区域 -->
 		<el-table :data="tableData" border style="width: 100%" v-loading="loading" size="mini">
-			<el-table-column prop="changeDate" label="日期" align="center"></el-table-column>
-			<el-table-column prop="warehouseName" label="库房名称" align="center"></el-table-column>
-			<el-table-column label="入库明细" align="center">
+			<el-table-column prop="changeDate" label="日期" align="center" show-overflow-tooltip></el-table-column>
+			<el-table-column prop="warehouseName" label="库房名称" align="center" show-overflow-tooltip></el-table-column>
+			<el-table-column label="入库明细" align="center" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<div v-if="scope.row.inDetailsList && scope.row.inDetailsList.length">
 						<div v-for="item in scope.row.inDetailsList" :key="item.detailId" style="margin-right: 10px">
@@ -42,13 +42,13 @@
 					<div v-else>0.00</div>
 				</template>
 			</el-table-column>
-			<el-table-column prop="totalInAmount" label="入库金额" align="center">
+			<el-table-column prop="totalInAmount" label="入库金额" align="center" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<span v-if="scope.row.totalInAmount !== undefined">{{ scope.row.totalInAmount.toFixed(2) }}</span>
 					<span v-else>0.00</span>
 				</template>
 			</el-table-column>
-			<el-table-column label="出库明细" align="center">
+			<el-table-column label="出库明细" align="center" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<div v-if="scope.row.outDetailsList && scope.row.outDetailsList.length">
 						<div v-for="item in scope.row.outDetailsList" :key="item.detailId" style="margin-right: 10px">
@@ -59,13 +59,13 @@
 					<div v-else>0.00</div>
 				</template>
 			</el-table-column>
-			<el-table-column prop="totalOutAmount" label="出库金额" align="center">
+			<el-table-column prop="totalOutAmount" label="出库金额" align="center" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<span v-if="scope.row.totalOutAmount !== undefined">{{ scope.row.totalOutAmount.toFixed(2) }}</span>
 					<span v-else>0.00</span>
 				</template>
 			</el-table-column>
-			<el-table-column prop="warehouseStockAmount" label="库房存货金额" align="center">
+			<el-table-column prop="warehouseStockAmount" label="库房存货金额" align="center" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<span v-if="scope.row.warehouseStockAmount !== undefined">{{ scope.row.warehouseStockAmount.toFixed(2) }}</span>
 					<span v-else>0.00</span>
@@ -81,15 +81,15 @@
 		<!-- 明细弹窗 -->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="明细信息" :visible.sync="detailVisible" width="500px" append-to-body>
 			<el-table v-if="currentDetail" :data="[currentDetail]" border style="width: 100%" size="mini">
-				<el-table-column prop="detailId" label="明细ID" align="center"></el-table-column>
-				<el-table-column prop="detail" label="明细" align="center"></el-table-column>
-				<el-table-column label="类型" align="center">
+				<el-table-column prop="detailId" label="明细ID" align="center" show-overflow-tooltip></el-table-column>
+				<el-table-column prop="detail" label="明细" align="center" show-overflow-tooltip></el-table-column>
+				<el-table-column label="类型" align="center" show-overflow-tooltip>
 					<template>
 						<span v-if="currentDetailType === 'IN'" style="color: #67c23a">入库</span>
 						<span v-else-if="currentDetailType === 'OUT'" style="color: #f56c6c">出库</span>
 					</template>
 				</el-table-column>
-				<el-table-column prop="amount" label="金额" align="center">
+				<el-table-column prop="amount" label="金额" align="center" show-overflow-tooltip>
 					<template slot-scope="scope">
 						{{ Number(scope.row.amount).toFixed(2) }}
 					</template>

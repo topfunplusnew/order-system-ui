@@ -160,7 +160,7 @@ export default {
 				<el-table-column label="票据单位名称" align="center" prop="invoiceCompanyName" width="100px" show-overflow-tooltip />
 				<el-table-column label="票点" align="center" prop="ticketPoint" show-overflow-tooltip />
 				<el-table-column label="票点金额" align="center" prop="ticketPointAmount" show-overflow-tooltip />
-				<el-table-column label="备注" align="center" prop="comments" />
+				<el-table-column label="备注" align="center" prop="comments" show-overflow-tooltip />
 			</el-table>
 		</el-row>
 	</div>

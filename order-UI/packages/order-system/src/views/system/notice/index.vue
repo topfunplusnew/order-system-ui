@@ -33,22 +33,56 @@
 
 		<el-table v-loading="loading" :data="noticeList" @selection-change="handleSelectionChange">
 			<el-table-column type="selection" width="55" align="center" />
-			<el-table-column label="序号" align="center" prop="noticeId" width="100" />
-			<el-table-column label="公告标题" align="center" prop="noticeTitle" :show-overflow-tooltip="true" />
-			<el-table-column label="公告类型" align="center" prop="noticeType" width="100">
-				<template slot-scope="scope">
-					<dict-tag :options="dict.type.sys_notice_type" :value="scope.row.noticeType" />
+			<el-table-column label="序号" align="center" prop="noticeId" width="100" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.noticeId }}</div>
+						<span>{{ scope.row.noticeId }}</span>
+					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column label="状态" align="center" prop="status" width="100">
-				<template slot-scope="scope">
-					<dict-tag :options="dict.type.sys_notice_status" :value="scope.row.status" />
+			<el-table-column label="公告标题" align="center" prop="noticeTitle" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.noticeTitle }}</div>
+						<span>{{ scope.row.noticeTitle }}</span>
+					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column label="创建者" align="center" prop="createBy" width="100" />
-			<el-table-column label="创建时间" align="center" prop="createTime" width="100">
-				<template slot-scope="scope">
-					<span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
+			<el-table-column label="公告类型" align="center" prop="noticeType" width="100" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">
+							<dict-tag :options="dict.type.sys_notice_type" :value="scope.row.noticeType" />
+						</div>
+						<dict-tag :options="dict.type.sys_notice_type" :value="scope.row.noticeType" />
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column label="状态" align="center" prop="status" width="100" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">
+							<dict-tag :options="dict.type.sys_notice_status" :value="scope.row.status" />
+						</div>
+						<dict-tag :options="dict.type.sys_notice_status" :value="scope.row.status" />
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column label="创建者" align="center" prop="createBy" width="100" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.createBy }}</div>
+						<span>{{ scope.row.createBy }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column label="创建时间" align="center" prop="createTime" width="100" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</div>
+						<span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
+					</el-tooltip>
 				</template>
 			</el-table-column>
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">

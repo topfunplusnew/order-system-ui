@@ -29,8 +29,8 @@
 		</el-row>
 
 		<el-table id="printBox" v-horizontal-scroll="'always'" v-loading="loading" border :data="exWarehouseList" size="mini" @selection-change="handleSelectionChange">
-			<el-table-column v-if="columns[0].visible" label="仓库名称" align="center" prop="storeHouseName" />
-			<el-table-column v-if="columns[1].visible" label="出库方向" align="center" prop="outDirection">
+			<el-table-column v-if="columns[0].visible" label="仓库名称" align="center" prop="storeHouseName" show-overflow-tooltip />
+			<el-table-column v-if="columns[1].visible" label="出库方向" align="center" prop="outDirection" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<span v-if="scope.row.outDirection && scope.row.outDirection !== '二次加工' && scope.row.outDirection !== '货物破损'">
 						<el-tooltip content="该出库方向为客户名称" placement="top">
@@ -41,19 +41,19 @@
 					<span v-else>存货毁损</span>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[2].visible" label="变动日期(出库)" align="center" prop="outDate">
+			<el-table-column v-if="columns[2].visible" label="变动日期(出库)" align="center" prop="outDate" show-overflow-tooltip>
 				<template #default="scope">
 					{{ parseTime(scope.row.outDate, '{y}-{m}-{d}') }}
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[3].visible" label="产品级别" align="center" prop="sourceInventoryDetail.levelName" />
-			<el-table-column v-if="columns[4].visible" label="厚度" align="center" prop="sourceInventoryDetail.height" />
-			<el-table-column v-if="columns[5].visible" label="长度" align="center" prop="sourceInventoryDetail.length" />
-			<el-table-column v-if="columns[6].visible" label="宽度" align="center" prop="sourceInventoryDetail.width" />
-			<el-table-column v-if="columns[7].visible" label="存货价" align="center" prop="sourceInventoryDetail.paymentUnload" />
-			<el-table-column v-if="columns[8].visible" label="出库量" align="center" prop="outAmount" />
+			<el-table-column v-if="columns[3].visible" label="产品级别" align="center" prop="sourceInventoryDetail.levelName" show-overflow-tooltip />
+			<el-table-column v-if="columns[4].visible" label="厚度" align="center" prop="sourceInventoryDetail.height" show-overflow-tooltip />
+			<el-table-column v-if="columns[5].visible" label="长度" align="center" prop="sourceInventoryDetail.length" show-overflow-tooltip />
+			<el-table-column v-if="columns[6].visible" label="宽度" align="center" prop="sourceInventoryDetail.width" show-overflow-tooltip />
+			<el-table-column v-if="columns[7].visible" label="存货价" align="center" prop="sourceInventoryDetail.paymentUnload" show-overflow-tooltip />
+			<el-table-column v-if="columns[8].visible" label="出库量" align="center" prop="outAmount" show-overflow-tooltip />
 			<!-- 新增毁损金额列 -->
-			<el-table-column v-if="columns[9].visible" label="毁损金额" align="center">
+			<el-table-column v-if="columns[9].visible" label="毁损金额" align="center" show-overflow-tooltip>
 				<template slot-scope="scope">
 					{{
 						(

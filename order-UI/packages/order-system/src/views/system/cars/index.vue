@@ -44,10 +44,10 @@
 			"
 			@selection-change="handleSelectionChange"
 		>
-			<el-table-column v-if="columns[0].visible" label="车牌/柜号" align="center" prop="carNo" />
-			<el-table-column v-if="columns[1].visible" label="司机姓名/海运公司" align="center" prop="driver" />
-			<el-table-column v-if="columns[2].visible" label="司机电话" align="center" prop="tel" />
-			<el-table-column v-if="columns[3].visible" label="运输类型" align="center" prop="carType" />
+			<el-table-column v-if="columns[0].visible" label="车牌/柜号" align="center" prop="carNo" show-overflow-tooltip />
+			<el-table-column v-if="columns[1].visible" label="司机姓名/海运公司" align="center" prop="driver" show-overflow-tooltip />
+			<el-table-column v-if="columns[2].visible" label="司机电话" align="center" prop="tel" show-overflow-tooltip />
+			<el-table-column v-if="columns[3].visible" label="运输类型" align="center" prop="carType" show-overflow-tooltip />
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
 				<template slot-scope="scope">
 					<el-button size="mini" type="text" @click="checkBankInfo(scope.row)">查看银行卡</el-button>

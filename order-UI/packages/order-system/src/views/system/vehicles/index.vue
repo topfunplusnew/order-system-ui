@@ -44,28 +44,79 @@
 		</el-row>
 
 		<el-table id="printBox" size="mini" v-loading="loading" :data="vehiclesList" @selection-change="handleSelectionChange">
-			<el-table-column type="selection" width="55" align="center" />
-			<el-table-column v-if="columns[0].visible" label="车辆型号" align="center" prop="model" />
-			<el-table-column v-if="columns[1].visible" label="车牌号" align="center" prop="licensePlate" />
-			<el-table-column v-if="columns[2].visible" label="购买时间" align="center" prop="purchaseDate" width="180">
-				<template slot-scope="scope">
+		<el-table-column type="selection" width="55" align="center" />
+		<el-table-column v-if="columns[0].visible" label="车辆型号" align="center" prop="model" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.model }}</div>
+					<span>{{ scope.row.model }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[1].visible" label="车牌号" align="center" prop="licensePlate" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.licensePlate }}</div>
+					<span>{{ scope.row.licensePlate }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[2].visible" label="购买时间" align="center" prop="purchaseDate" width="180" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ parseTime(scope.row.purchaseDate, '{y}-{m}-{d}') }}</div>
 					<span>{{ parseTime(scope.row.purchaseDate, '{y}-{m}-{d}') }}</span>
-				</template>
-			</el-table-column>
-			<el-table-column v-if="columns[3].visible" label="行驶里程" align="center" prop="mileage" />
-			<el-table-column v-if="columns[4].visible" label="保养金额" align="center" prop="maintenanceCost" />
-			<el-table-column v-if="columns[5].visible" label="保养日期" align="center" prop="maintenanceDate" width="180">
-				<template slot-scope="scope">
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[3].visible" label="行驶里程" align="center" prop="mileage" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.mileage }}</div>
+					<span>{{ scope.row.mileage }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[4].visible" label="保养金额" align="center" prop="maintenanceCost" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.maintenanceCost }}</div>
+					<span>{{ scope.row.maintenanceCost }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[5].visible" label="保养日期" align="center" prop="maintenanceDate" width="180" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ parseTime(scope.row.maintenanceDate, '{y}-{m}-{d}') }}</div>
 					<span>{{ parseTime(scope.row.maintenanceDate, '{y}-{m}-{d}') }}</span>
-				</template>
-			</el-table-column>
-			<el-table-column v-if="columns[6].visible" label="保险金额" align="center" prop="insuranceCost" />
-			<el-table-column v-if="columns[7].visible" label="备注" align="center" prop="notes" />
-			<el-table-column label="附件" align="center">
-				<template slot-scope="scope">
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[6].visible" label="保险金额" align="center" prop="insuranceCost" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.insuranceCost }}</div>
+					<span>{{ scope.row.insuranceCost }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[7].visible" label="备注" align="center" prop="notes" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.notes }}</div>
+					<span>{{ scope.row.notes }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column label="附件" align="center" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">附件上传</div>
 					<el-button size="mini" type="primary" icon="el-icon-upload" @click="handleUploadAttachments(scope.row)">附件上传</el-button>
-				</template>
-			</el-table-column>
+				</el-tooltip>
+			</template>
+		</el-table-column>
 			<!--			<el-table-column label="扩展性保留字段" align="center" prop="extraInfo" />-->
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
 				<template slot-scope="scope">

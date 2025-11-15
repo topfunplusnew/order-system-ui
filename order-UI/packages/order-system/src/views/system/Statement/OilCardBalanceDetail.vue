@@ -32,53 +32,53 @@
 		<!-- 表格展示 -->
 		<el-table id="printBox" :data="oilCardDetails" border stripe size="mini" style="width: 100%">
 			<!-- 序号列 -->
-			<el-table-column v-if="columns[0].visible" label="序号" align="center">
+			<el-table-column v-if="columns[0].visible" label="序号" align="center" show-overflow-tooltip>
 				<template #default="scope">
 					{{ scope.$index + 1 }}
 				</template>
 			</el-table-column>
 
 			<!-- 油卡编号 -->
-			<el-table-column v-if="columns[1].visible" prop="oilCardNo" label="油卡编号" align="center" />
+			<el-table-column v-if="columns[1].visible" prop="oilCardNo" label="油卡编号" align="center" show-overflow-tooltip />
 
 			<!-- 变动日期 -->
-			<el-table-column v-if="columns[2].visible" prop="changeDate" label="变动日期" align="center" />
+			<el-table-column v-if="columns[2].visible" prop="changeDate" label="变动日期" align="center" show-overflow-tooltip />
 
 			<!-- 变动金额 -->
-			<el-table-column v-if="columns[3].visible" prop="changeAmount" label="变动金额 (元)" align="center">
+			<el-table-column v-if="columns[3].visible" prop="changeAmount" label="变动金额 (元)" align="center" show-overflow-tooltip>
 				<template #default="scope">
 					{{ scope.row.changeAmount }}
 				</template>
 			</el-table-column>
 
-			<el-table-column prop="tableName" label="业务名称" align="center">
+			<el-table-column prop="tableName" label="业务名称" align="center" show-overflow-tooltip>
 				<template #default="scope">
 					{{ scope.row.tableName === 'oilrecharge' ? '充值' : scope.row.tableName === 'oilcardfundtransfer' ? '分配或圈存' : '消费' }}
 				</template>
 			</el-table-column>
 			<!-- 余额 -->
-			<el-table-column v-if="columns[4].visible" prop="runningBalance" label="余额 (元)" align="center">
+			<el-table-column v-if="columns[4].visible" prop="runningBalance" label="余额 (元)" align="center" show-overflow-tooltip>
 				<template #default="scope">
 					{{ scope.row.runningBalance || 0 }}
 				</template>
 			</el-table-column>
 
 			<!--      这里可能需要动态展示，因为只有副卡用得到这一列-->
-			<el-table-column v-if="oilFundType === OilCardType.SUB" prop="runningVirtualBalance" label="累计待圈存金额 (元)" align="center">
+			<el-table-column v-if="oilFundType === OilCardType.SUB" prop="runningVirtualBalance" label="累计待圈存金额 (元)" align="center" show-overflow-tooltip>
 				<template #default="scope">
 					{{ scope.row.runningVirtualBalance || `无` }}
 				</template>
 			</el-table-column>
 
 			<!--      这里也需要动态展示，如果是tableName = oilcardfundtransfer需要展示类型-->
-			<el-table-column prop="type" label="消费类型" align="center">
+			<el-table-column prop="type" label="消费类型" align="center" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<el-tag v-if="scope.row.tableName === TableName.OIL_CARD_FUND_TRANSFER" size="mini" :type="scope.row.type | typeFilter">{{ scope.row.type | statusFilter }}</el-tag>
 					<el-tag v-else>无</el-tag>
 				</template>
 			</el-table-column>
 
-			<el-table-column label="车辆申请信息" align="center">
+			<el-table-column label="车辆申请信息" align="center" show-overflow-tooltip>
 				<template #default="scope">
 					<div v-if="scope.row.carApplyId">
 						<el-button type="text" size="mini" @click="viewCarDetail(scope.row.carApplyId)">查看明细</el-button>

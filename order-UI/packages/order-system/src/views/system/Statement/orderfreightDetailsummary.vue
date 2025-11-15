@@ -56,14 +56,14 @@
 			"
 		>
 			<!-- 序号 -->
-			<el-table-column v-if="columns[0].visible" label="序号" align="center" type="index" width="160" />
+			<el-table-column v-if="columns[0].visible" label="序号" align="center" type="index" width="160" show-overflow-tooltip />
 			<!-- 车牌号 -->
-			<el-table-column v-if="columns[6].visible" label="车牌号" align="center" prop="carNo" width="110" />
+			<el-table-column v-if="columns[6].visible" label="车牌号" align="center" prop="carNo" width="110" show-overflow-tooltip />
 			<!-- 司机姓名 -->
-			<el-table-column v-if="columns[1].visible" label="司机姓名" align="center" prop="companyName" width="110" />
+			<el-table-column v-if="columns[1].visible" label="司机姓名" align="center" prop="companyName" width="110" show-overflow-tooltip />
 
 			<!-- 初期方向 -->
-			<el-table-column v-if="columns[2].visible" label="初期方向" align="center" width="160">
+			<el-table-column v-if="columns[2].visible" label="初期方向" align="center" width="160" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<div v-if="scope">
 						<span v-if="scope.row.beginningBalance > 0">贷</span>
@@ -74,20 +74,20 @@
 			</el-table-column>
 
 			<!-- 初期余额 -->
-			<el-table-column v-if="columns[3].visible" label="初期余额" align="center" prop="beginningBalance" width="160" />
+			<el-table-column v-if="columns[3].visible" label="初期余额" align="center" prop="beginningBalance" width="160" show-overflow-tooltip />
 
 			<!-- 借方 -->
-			<el-table-column v-if="columns[4].visible" label="借方" align="center" prop="positiveSum" width="160" />
+			<el-table-column v-if="columns[4].visible" label="借方" align="center" prop="positiveSum" width="160" show-overflow-tooltip />
 
 			<!-- 贷方 -->
-			<el-table-column v-if="columns[5].visible" label="贷方" align="center" prop="negativeSum" width="160">
+			<el-table-column v-if="columns[5].visible" label="贷方" align="center" prop="negativeSum" width="160" show-overflow-tooltip>
 				<template slot-scope="scope">
 					{{ fix(Math.abs(scope.row.negativeSum)) }}
 				</template>
 			</el-table-column>
 
 			<!-- 期末方向 -->
-			<el-table-column v-if="columns[7].visible" label="期末方向" align="center" prop="initialBalanceDirection" width="160">
+			<el-table-column v-if="columns[7].visible" label="期末方向" align="center" prop="initialBalanceDirection" width="160" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<div v-if="scope">
 						<span v-if="scope.row.endingBalance > 0">贷</span>
@@ -98,14 +98,14 @@
 			</el-table-column>
 
 			<!-- 期末余额 -->
-			<el-table-column v-if="columns[8].visible" label="期末余额" align="center" prop="endingBalance" width="160">
+			<el-table-column v-if="columns[8].visible" label="期末余额" align="center" prop="endingBalance" width="160" show-overflow-tooltip>
 				<template slot-scope="scope">
 					{{ formatBalance(scope.row.endingBalance) }}
 				</template>
 			</el-table-column>
 
 			<!-- 录入员 -->
-			<el-table-column v-if="columns[9].visible" label="录入员" align="center" prop="salesman" width="160" />
+			<el-table-column v-if="columns[9].visible" label="录入员" align="center" prop="salesman" width="160" show-overflow-tooltip />
 
 			<!-- 操作 -->
 			<!--			<el-table-column label="操作" align="center" prop="driverName" width="150" fixed="right">-->

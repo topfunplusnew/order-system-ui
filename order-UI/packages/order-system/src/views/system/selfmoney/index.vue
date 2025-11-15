@@ -68,23 +68,60 @@
 				}
 			"
 		>
-			<el-table-column v-if="columns[0].visible" label="排序序号" align="center" prop="sort" width="100">
-				<template #default="scope">
+		<el-table-column v-if="columns[0].visible" label="排序序号" align="center" prop="sort" width="100" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.sort }}</div>
 					<span>{{ scope.row.sort }}</span>
-				</template>
-			</el-table-column>
-			<el-table-column v-if="columns[1].visible" label="己方公司" align="center" prop="displayName" show-overflow-tooltip />
-			<el-table-column v-if="columns[2].visible" label="开户名称" align="center" prop="acountsName" show-overflow-tooltip />
-			<el-table-column v-if="columns[3].visible" label="银行账号" align="center" prop="bankNo" show-overflow-tooltip width="260">
-				<template #default="scope">
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[1].visible" label="己方公司" align="center" prop="displayName" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.displayName }}</div>
+					<span>{{ scope.row.displayName }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[2].visible" label="开户名称" align="center" prop="acountsName" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.acountsName }}</div>
+					<span>{{ scope.row.acountsName }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[3].visible" label="银行账号" align="center" prop="bankNo" show-overflow-tooltip width="260">
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">
+						<span style="color: red">[{{ scope.row.bankCardType }}]</span>
+						{{ scope.row.bankNo }}
+					</div>
 					<div>
 						<span style="color: red">[{{ scope.row.bankCardType }}]</span>
 						{{ scope.row.bankNo }}
 					</div>
-				</template>
-			</el-table-column>
-			<el-table-column v-if="columns[4].visible" label="开户行" align="center" prop="bankName" show-overflow-tooltip />
-			<el-table-column v-if="columns[5].visible" label="余额" align="center" prop="sumMoney" show-overflow-tooltip />
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[4].visible" label="开户行" align="center" prop="bankName" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.bankName }}</div>
+					<span>{{ scope.row.bankName }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[5].visible" label="余额" align="center" prop="sumMoney" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.sumMoney }}</div>
+					<span>{{ scope.row.sumMoney }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
 			<el-table-column label="排序操作" align="center" width="200" fixed="right">
 				<template #default="scope">
 					<el-input v-model="scope.row.sort" size="mini" style="width: 50px; margin-right: 10px" placeholder="序号" @input="val => handleSortInput(scope.row, val)"></el-input>

@@ -26,15 +26,15 @@
 		</el-row>
 
 		<el-table v-if="refreshTable" v-loading="loading" :data="deptList" row-key="deptId" :default-expand-all="isExpandAll" :tree-props="{ children: 'children', hasChildren: 'hasChildren' }">
-			<el-table-column prop="deptId" label="部门编号" width="260"></el-table-column>
-			<el-table-column prop="deptName" label="部门名称" width="260"></el-table-column>
-			<el-table-column prop="orderNum" label="排序" width="200"></el-table-column>
-			<el-table-column prop="status" label="状态" width="100">
+			<el-table-column prop="deptId" label="部门编号" width="260" show-overflow-tooltip></el-table-column>
+			<el-table-column prop="deptName" label="部门名称" width="260" show-overflow-tooltip></el-table-column>
+			<el-table-column prop="orderNum" label="排序" width="200" show-overflow-tooltip></el-table-column>
+			<el-table-column prop="status" label="状态" width="100" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<dict-tag :options="dict.type.sys_normal_disable" :value="scope.row.status" />
 				</template>
 			</el-table-column>
-			<el-table-column label="创建时间" align="center" prop="createTime" width="200">
+			<el-table-column label="创建时间" align="center" prop="createTime" width="200" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
 				</template>

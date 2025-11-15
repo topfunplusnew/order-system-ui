@@ -49,79 +49,146 @@
 			:cell-style="() => ({ padding: '1px' })"
 			@selection-change="handleSelectionChange"
 		>
-			<el-table-column v-if="columns[0].visible" label="期货保证金公司" align="center" prop="futuresMarginCompany" width="130" show-overflow-tooltip>
-				<template #default="scope">
+		<el-table-column v-if="columns[0].visible" label="期货保证金公司" align="center" prop="futuresMarginCompany" width="130" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">
+						<DynamicField :row="scope.row" field="futuresMarginCompany" />
+					</div>
 					<DynamicField :row="scope.row" field="futuresMarginCompany" />
-				</template>
-			</el-table-column>
+				</el-tooltip>
+			</template>
+		</el-table-column>
 
-			<el-table-column v-if="columns[1].visible" label="对象" align="center" prop="target" width="110" show-overflow-tooltip>
-				<template #default="scope">
+		<el-table-column v-if="columns[1].visible" label="对象" align="center" prop="target" width="110" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">
+						<DynamicField :row="scope.row" field="target" />
+					</div>
 					<DynamicField :row="scope.row" field="target" />
-				</template>
-			</el-table-column>
+				</el-tooltip>
+			</template>
+		</el-table-column>
 
-			<el-table-column v-if="columns[2].visible" label="对象类型" align="center" prop="targetType" width="110" show-overflow-tooltip>
-				<template #default="scope">
+		<el-table-column v-if="columns[2].visible" label="对象类型" align="center" prop="targetType" width="110" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">
+						<DynamicField :row="scope.row" field="targetType" />
+					</div>
 					<DynamicField :row="scope.row" field="targetType" />
-				</template>
-			</el-table-column>
+				</el-tooltip>
+			</template>
+		</el-table-column>
 
-			<el-table-column v-if="columns[3].visible" label="保证金金额" align="center" prop="moneyAmount" width="110" show-overflow-tooltip>
-				<template #default="scope">
+		<el-table-column v-if="columns[3].visible" label="保证金金额" align="center" prop="moneyAmount" width="110" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">
+						<DynamicField :row="scope.row" field="moneyAmount" />
+					</div>
 					<DynamicField :row="scope.row" field="moneyAmount" />
-				</template>
-			</el-table-column>
+				</el-tooltip>
+			</template>
+		</el-table-column>
 
-			<el-table-column v-if="columns[4].visible" label="对方账户" align="center" prop="targetAcountsName" width="110" show-overflow-tooltip>
-				<template #default="scope">
+		<el-table-column v-if="columns[4].visible" label="对方账户" align="center" prop="targetAcountsName" width="110" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">
+						<DynamicField :row="scope.row" field="targetAcountsName" />
+					</div>
 					<DynamicField :row="scope.row" field="targetAcountsName" />
-				</template>
-			</el-table-column>
+				</el-tooltip>
+			</template>
+		</el-table-column>
 
-			<el-table-column v-if="columns[5].visible" label="对方账号" align="center" prop="targetBankNo" width="160" show-overflow-tooltip>
-				<template #default="scope">
+		<el-table-column v-if="columns[5].visible" label="对方账号" align="center" prop="targetBankNo" width="160" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">
+						<DynamicField :row="scope.row" field="targetBankNo" />
+					</div>
 					<DynamicField :row="scope.row" field="targetBankNo" />
-				</template>
-			</el-table-column>
+				</el-tooltip>
+			</template>
+		</el-table-column>
 
-			<el-table-column v-if="columns[6].visible" label="对方开户行" align="center" prop="targetBankName" width="110" show-overflow-tooltip>
-				<template #default="scope">
+		<el-table-column v-if="columns[6].visible" label="对方开户行" align="center" prop="targetBankName" width="110" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">
+						<DynamicField :row="scope.row" field="targetBankName" />
+					</div>
 					<DynamicField :row="scope.row" field="targetBankName" />
-				</template>
-			</el-table-column>
+				</el-tooltip>
+			</template>
+		</el-table-column>
 
-			<el-table-column v-if="columns[7].visible" label="我方支付账户" align="center" prop="selfAcountsName" show-overflow-tooltip width="160">
-				<template #default="scope">
+		<el-table-column v-if="columns[7].visible" label="我方支付账户" align="center" prop="selfAcountsName" show-overflow-tooltip width="160">
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">
+						<DynamicField :row="scope.row" field="selfAcountsName" />
+					</div>
 					<DynamicField :row="scope.row" field="selfAcountsName" />
-				</template>
-			</el-table-column>
+				</el-tooltip>
+			</template>
+		</el-table-column>
 
-			<el-table-column v-if="columns[8].visible" label="我方账号" align="center" prop="selfBankNo" width="180" show-overflow-tooltip>
-				<template #default="scope">
+		<el-table-column v-if="columns[8].visible" label="我方账号" align="center" prop="selfBankNo" width="180" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">
+						<DynamicField :row="scope.row" field="selfBankNo" />
+					</div>
 					<DynamicField :row="scope.row" field="selfBankNo" />
-				</template>
-			</el-table-column>
+				</el-tooltip>
+			</template>
+		</el-table-column>
 
-			<el-table-column v-if="columns[9].visible" label="我方开户行" align="center" prop="selfBankName" width="110" show-overflow-tooltip>
-				<template #default="scope">
+		<el-table-column v-if="columns[9].visible" label="我方开户行" align="center" prop="selfBankName" width="110" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">
+						<DynamicField :row="scope.row" field="selfBankName" />
+					</div>
 					<DynamicField :row="scope.row" field="selfBankName" />
-				</template>
-			</el-table-column>
+				</el-tooltip>
+			</template>
+		</el-table-column>
 
-			<el-table-column v-if="columns[10].visible" label="支付期货保证金时间" align="center" prop="futuresDate" show-overflow-tooltip width="110">
-				<template #default="scope">
+		<el-table-column v-if="columns[10].visible" label="支付期货保证金时间" align="center" prop="futuresDate" show-overflow-tooltip width="110">
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">
+						<DynamicField :row="scope.row" field="futuresDate" />
+					</div>
 					<DynamicField :row="scope.row" field="futuresDate" />
-				</template>
-			</el-table-column>
+				</el-tooltip>
+			</template>
+		</el-table-column>
 
-			<el-table-column v-if="columns[11].visible" label="事由" align="center" prop="reason" width="110" show-overflow-tooltip>
-				<template #default="scope">
+		<el-table-column v-if="columns[11].visible" label="事由" align="center" prop="reason" width="110" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">
+						<DynamicField :row="scope.row" field="reason" />
+					</div>
 					<DynamicField :row="scope.row" field="reason" />
-				</template>
-			</el-table-column>
+				</el-tooltip>
+			</template>
+		</el-table-column>
 
-			<el-table-column label="备注" align="center" prop="comments" width="110" show-overflow-tooltip />
+		<el-table-column label="备注" align="center" prop="comments" width="110" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.comments }}</div>
+					<span>{{ scope.row.comments }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
 
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="230px" fixed="right">
 				<template slot-scope="scope">

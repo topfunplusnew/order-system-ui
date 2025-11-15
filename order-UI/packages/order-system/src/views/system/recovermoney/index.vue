@@ -42,11 +42,46 @@
 			"
 			@selection-change="handleSelectionChange"
 		>
-			<el-table-column v-if="columns[0].visible" label="收回金额" align="center" prop="moneyAmount" show-overflow-tooltip />
-			<el-table-column v-if="columns[1].visible" label="收回日期" align="center" prop="recoverDate" show-overflow-tooltip />
-			<el-table-column v-if="columns[2].visible" label="收回账户" align="center" prop="acountsName" show-overflow-tooltip />
-			<el-table-column v-if="columns[3].visible" label="收回账号" align="center" prop="bankNo" show-overflow-tooltip />
-			<el-table-column v-if="columns[4].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
+		<el-table-column v-if="columns[0].visible" label="收回金额" align="center" prop="moneyAmount" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.moneyAmount }}</div>
+					<span>{{ scope.row.moneyAmount }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[1].visible" label="收回日期" align="center" prop="recoverDate" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.recoverDate }}</div>
+					<span>{{ scope.row.recoverDate }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[2].visible" label="收回账户" align="center" prop="acountsName" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.acountsName }}</div>
+					<span>{{ scope.row.acountsName }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[3].visible" label="收回账号" align="center" prop="bankNo" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.bankNo }}</div>
+					<span>{{ scope.row.bankNo }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
+		<el-table-column v-if="columns[4].visible" label="备注" align="center" prop="comments" show-overflow-tooltip>
+			<template #default="scope">
+				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+					<div slot="content">{{ scope.row.comments }}</div>
+					<span>{{ scope.row.comments }}</span>
+				</el-tooltip>
+			</template>
+		</el-table-column>
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
 				<template slot-scope="scope">
 					<el-button size="mini" type="primary" @click="handleUpdateRecoverMoney(scope.row)" v-hasPermi="['system:recovermoney:edit']">修改</el-button>

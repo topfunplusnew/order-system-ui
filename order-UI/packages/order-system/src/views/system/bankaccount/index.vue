@@ -56,31 +56,31 @@
 			"
 			@selection-change="handleSelectionChange"
 		>
-			<el-table-column v-if="columns[0].visible" label="绑定状态" align="center">
+			<el-table-column v-if="columns[0].visible" label="绑定状态" align="center" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<span v-if="scope.row.companyId === 0" style="color: #138fe1">己方公司银行卡</span>
 					<span v-else-if="scope.row.companyId === -1" style="color: #ff5722">该卡未被绑定</span>
 					<span v-else>已绑定</span>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[1].visible" label="账户类型" align="center" prop="acountsType" />
-			<el-table-column v-if="columns[2].visible" label="公私户类型" align="center" prop="isPublicAccount">
+			<el-table-column v-if="columns[1].visible" label="账户类型" align="center" prop="acountsType" show-overflow-tooltip />
+			<el-table-column v-if="columns[2].visible" label="公私户类型" align="center" prop="isPublicAccount" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<span v-if="scope.row.isPublicAccount === 0" style="color: #138fe1">私户</span>
 					<span v-else-if="scope.row.isPublicAccount === 1" style="color: #ff5722">公户</span>
 					<span v-else>未区分</span>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[3].visible" label="我方公司" align="center" prop="displayName" />
-			<el-table-column v-if="columns[7].visible" label="公司名称/车牌号" align="center" prop="companyName" />
-			<el-table-column v-if="columns[4].visible" label="开户名称" align="center" prop="acountsName" />
-			<el-table-column v-if="columns[5].visible" label="银行账号" align="center" prop="bankNo" />
-			<el-table-column v-if="columns[6].visible" label="开户行" align="center" prop="bankName" />
+			<el-table-column v-if="columns[3].visible" label="我方公司" align="center" prop="displayName" show-overflow-tooltip />
+			<el-table-column v-if="columns[7].visible" label="公司名称/车牌号" align="center" prop="companyName" show-overflow-tooltip />
+			<el-table-column v-if="columns[4].visible" label="开户名称" align="center" prop="acountsName" show-overflow-tooltip />
+			<el-table-column v-if="columns[5].visible" label="银行账号" align="center" prop="bankNo" show-overflow-tooltip />
+			<el-table-column v-if="columns[6].visible" label="开户行" align="center" prop="bankName" show-overflow-tooltip />
 
 			<!-- 余额的展示 分为现金户和承兑户的展示 -->
 			<!-- bankAccountList需要在data中声明一个默认的属性 cardTypeBalances 不然会报undefined-->
 
-			<el-table-column align="center" v-for="element in typeList" :key="element" :label="element">
+			<el-table-column align="center" v-for="element in typeList" :key="element" :label="element" show-overflow-tooltip>
 				<template slot-scope="scope">
 					{{ scope.row.cardTypeBalances | handleArray(element) }}
 				</template>

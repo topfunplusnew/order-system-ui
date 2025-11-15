@@ -47,17 +47,17 @@
 				}
 			"
 		>
-			<el-table-column v-if="columns[0].visible" label="借款人" align="center" prop="target" width="110" />
-			<el-table-column v-if="columns[1].visible" label="对象" align="center" prop="targetType" width="110" />
-			<el-table-column v-if="columns[2].visible" label="借入金额" align="center" prop="moneyAmount" width="110" />
-			<el-table-column v-if="columns[3].visible" label="对方收借款账号" align="center" prop="targetBankNo" width="180" />
-			<el-table-column v-if="columns[4].visible" label="对方户名" align="center" prop="targetAcountsName" width="160" />
-			<el-table-column v-if="columns[5].visible" label="对方开户行" align="center" prop="targetBankName" width="160" />
-			<el-table-column v-if="columns[6].visible" label="我方支付借款账户名称" align="center" prop="selfAcountsName" width="140" />
-			<el-table-column v-if="columns[7].visible" label="我方支付借款开户行" align="center" prop="selfBankName" width="160" />
-			<el-table-column v-if="columns[8].visible" label="我方付款账号" align="center" prop="selfBankNo" width="180" />
-			<el-table-column v-if="columns[9].visible" label="支付员工/外面公司在我公司借款时间" align="center" prop="futuresDate" width="160" />
-			<el-table-column v-if="columns[10].visible" label="借款事由" align="center" prop="reason" width="160" />
+			<el-table-column v-if="columns[0].visible" label="借款人" align="center" prop="target" width="110" show-overflow-tooltip />
+			<el-table-column v-if="columns[1].visible" label="对象" align="center" prop="targetType" width="110" show-overflow-tooltip />
+			<el-table-column v-if="columns[2].visible" label="借入金额" align="center" prop="moneyAmount" width="110" show-overflow-tooltip />
+			<el-table-column v-if="columns[3].visible" label="对方收借款账号" align="center" prop="targetBankNo" width="180" show-overflow-tooltip />
+			<el-table-column v-if="columns[4].visible" label="对方户名" align="center" prop="targetAcountsName" width="160" show-overflow-tooltip />
+			<el-table-column v-if="columns[5].visible" label="对方开户行" align="center" prop="targetBankName" width="160" show-overflow-tooltip />
+			<el-table-column v-if="columns[6].visible" label="我方支付借款账户名称" align="center" prop="selfAcountsName" width="140" show-overflow-tooltip />
+			<el-table-column v-if="columns[7].visible" label="我方支付借款开户行" align="center" prop="selfBankName" width="160" show-overflow-tooltip />
+			<el-table-column v-if="columns[8].visible" label="我方付款账号" align="center" prop="selfBankNo" width="180" show-overflow-tooltip />
+			<el-table-column v-if="columns[9].visible" label="支付员工/外面公司在我公司借款时间" align="center" prop="futuresDate" width="160" show-overflow-tooltip />
+			<el-table-column v-if="columns[10].visible" label="借款事由" align="center" prop="reason" width="160" show-overflow-tooltip />
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="120" fixed="right">
 				<template slot-scope="scope">
 					<el-button size="mini" type="warning" @click="checkDetail(scope.row)">查看历史收回</el-button>
@@ -81,13 +81,13 @@
 					border
 					:span-method="mergeCells"
 				>
-					<el-table-column prop="" width="180">
+					<el-table-column prop="" width="180" show-overflow-tooltip>
 						<template #default="scope">
 							<span v-if="scope.$index === 0">借出资金收回</span>
 						</template>
 					</el-table-column>
-					<el-table-column prop="recoverDate" label="时间" width="180"></el-table-column>
-					<el-table-column prop="moneyAmount" label="收回金额"></el-table-column>
+					<el-table-column prop="recoverDate" label="时间" width="180" show-overflow-tooltip></el-table-column>
+					<el-table-column prop="moneyAmount" label="收回金额" show-overflow-tooltip></el-table-column>
 				</el-table>
 				<pagination v-show="detailTotal > 0" :total="detailTotal" :page.sync="queryRepaymentParams.pageNum" :limit.sync="queryRepaymentParams.pageSize" @pagination="getRepaymentMoneyList" />
 			</template>

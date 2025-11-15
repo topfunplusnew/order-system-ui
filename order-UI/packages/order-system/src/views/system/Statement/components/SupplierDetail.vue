@@ -269,11 +269,11 @@ export default {
 							"
 						>
 							<template #table-columns>
-								<el-table-column :label="PUBLIC_DICT_TYPE.SUPPLIER" align="center" prop="companyName" />
-								<el-table-column label="老板姓名" align="center" prop="leader" />
-								<el-table-column label="老板电话" align="center" prop="leaderTel" />
-								<el-table-column label="区域" align="center" prop="region" />
-								<el-table-column label="销售经理" align="center" prop="salesManager" />
+								<el-table-column :label="PUBLIC_DICT_TYPE.SUPPLIER" align="center" prop="companyName" show-overflow-tooltip />
+								<el-table-column label="老板姓名" align="center" prop="leader" show-overflow-tooltip />
+								<el-table-column label="老板电话" align="center" prop="leaderTel" show-overflow-tooltip />
+								<el-table-column label="区域" align="center" prop="region" show-overflow-tooltip />
+								<el-table-column label="销售经理" align="center" prop="salesManager" show-overflow-tooltip />
 							</template>
 						</SearchOption>
 					</el-col>

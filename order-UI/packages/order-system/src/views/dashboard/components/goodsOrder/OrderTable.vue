@@ -370,7 +370,7 @@
 						:header-cell-style="{ background: '#f8f9fa', color: '#495057', fontWeight: 600 }"
 						:row-class-name="getInvoiceRowClassName"
 					>
-						<el-table-column prop="orderDate" label="日期" align="center" width="170">
+						<el-table-column prop="orderDate" label="日期" align="center" width="170" show-overflow-tooltip>
 							<template #default>
 								<div class="date-cell">
 									<i class="el-icon-date"></i>
@@ -379,7 +379,7 @@
 							</template>
 						</el-table-column>
 
-						<el-table-column prop="companyName" label="客户名称" align="center" min-width="120">
+						<el-table-column prop="companyName" label="客户名称" align="center" min-width="120" show-overflow-tooltip>
 							<template #default="scope">
 								<div class="company-cell">
 									<i class="el-icon-office-building"></i>
@@ -388,7 +388,7 @@
 							</template>
 						</el-table-column>
 
-						<el-table-column prop="allPayments" label="需开票金额" align="center" width="110">
+						<el-table-column prop="allPayments" label="需开票金额" align="center" width="110" show-overflow-tooltip>
 							<template #default>
 								<div class="amount-cell need-amount">
 									<span class="currency-symbol">¥</span>
@@ -397,7 +397,7 @@
 							</template>
 						</el-table-column>
 
-						<el-table-column prop="invoiceDate" label="开票时间" align="center" width="200">
+						<el-table-column prop="invoiceDate" label="开票时间" align="center" width="200" show-overflow-tooltip>
 							<template #default="scope">
 								<div class="datetime-cell">
 									<i class="el-icon-time"></i>
@@ -406,7 +406,7 @@
 							</template>
 						</el-table-column>
 
-						<el-table-column prop="invoiceAmount" label="开票金额" align="center" width="130">
+						<el-table-column prop="invoiceAmount" label="开票金额" align="center" width="130" show-overflow-tooltip>
 							<template #default="scope">
 								<div class="amount-cell invoiced-amount">
 									<span class="currency-symbol">¥</span>
@@ -415,7 +415,7 @@
 							</template>
 						</el-table-column>
 
-						<el-table-column label="累计开票金额" align="center" width="140">
+						<el-table-column label="累计开票金额" align="center" width="140" show-overflow-tooltip>
 							<template #default="scope">
 								<div class="amount-cell accumulated-amount">
 									<span class="currency-symbol">¥</span>
@@ -487,7 +487,7 @@
 								class="supplier-invoice-table"
 								:header-cell-style="{ background: '#f8f9fa', color: '#495057', fontWeight: 600 }"
 							>
-								<el-table-column prop="orderDate" label="日期" align="center" width="170">
+								<el-table-column prop="orderDate" label="日期" align="center" width="170" show-overflow-tooltip>
 									<template #default>
 										<div class="date-cell">
 											<i class="el-icon-date"></i>
@@ -496,7 +496,7 @@
 									</template>
 								</el-table-column>
 
-								<el-table-column prop="companyName" label="供应商名称" align="center" min-width="120">
+								<el-table-column prop="companyName" label="供应商名称" align="center" min-width="120" show-overflow-tooltip>
 									<template #default="scope">
 										<div class="company-cell">
 											<i class="el-icon-office-building"></i>
@@ -505,7 +505,7 @@
 									</template>
 								</el-table-column>
 
-								<el-table-column label="需开票金额" align="center" width="130">
+								<el-table-column label="需开票金额" align="center" width="130" show-overflow-tooltip>
 									<template #default>
 										<div class="amount-cell need-amount">
 											<span class="currency-symbol">¥</span>
@@ -514,7 +514,7 @@
 									</template>
 								</el-table-column>
 
-								<el-table-column prop="invoiceDate" label="开票时间" align="center" width="200">
+								<el-table-column prop="invoiceDate" label="开票时间" align="center" width="200" show-overflow-tooltip>
 									<template #default="scope">
 										<div class="datetime-cell">
 											<i class="el-icon-time"></i>
@@ -523,7 +523,7 @@
 									</template>
 								</el-table-column>
 
-								<el-table-column prop="invoiceAmount" label="开票金额" align="center" width="130">
+								<el-table-column prop="invoiceAmount" label="开票金额" align="center" width="130" show-overflow-tooltip>
 									<template #default="scope">
 										<div class="amount-cell invoiced-amount">
 											<span class="currency-symbol">¥</span>
@@ -532,7 +532,7 @@
 									</template>
 								</el-table-column>
 
-								<el-table-column label="累计开票金额" align="center" width="140">
+								<el-table-column label="累计开票金额" align="center" width="140" show-overflow-tooltip>
 									<template #default="scope">
 										<div class="amount-cell accumulated-amount">
 											<span class="currency-symbol">¥</span>

@@ -33,29 +33,29 @@
 		<!-- 数据表格 -->
 		<el-table id="printBox" :data="tableData" border stripe size="medium" style="width: 100%; margin-top: 20px">
 			<!-- 序号列 -->
-			<el-table-column v-if="columns[0].visible" label="序号" align="center" width="60">
+			<el-table-column v-if="columns[0].visible" label="序号" align="center" width="60" show-overflow-tooltip>
 				<template #default="scope">
 					{{ scope.$index + 1 }}
 				</template>
 			</el-table-column>
 
 			<!-- 车牌号 -->
-			<el-table-column v-if="columns[1].visible" label="车牌号" prop="carNo" align="center" />
+			<el-table-column v-if="columns[1].visible" label="车牌号" prop="carNo" align="center" show-overflow-tooltip />
 
 			<!-- 申请人 -->
-			<el-table-column v-if="columns[2].visible" label="申请人" prop="applyUser" align="center" />
+			<el-table-column v-if="columns[2].visible" label="申请人" prop="applyUser" align="center" show-overflow-tooltip />
 
 			<!-- 开始时间 -->
-			<el-table-column v-if="columns[3].visible" label="开始时间" prop="startTime" align="center" />
+			<el-table-column v-if="columns[3].visible" label="开始时间" prop="startTime" align="center" show-overflow-tooltip />
 
 			<!-- 结束时间 -->
-			<el-table-column v-if="columns[4].visible" label="结束时间" prop="endTime" align="center" />
+			<el-table-column v-if="columns[4].visible" label="结束时间" prop="endTime" align="center" show-overflow-tooltip />
 
 			<!-- 现金加油次数 -->
-			<el-table-column v-if="columns[5].visible" label="现金加油次数" prop="cashRefuelingFrequency" align="center" />
+			<el-table-column v-if="columns[5].visible" label="现金加油次数" prop="cashRefuelingFrequency" align="center" show-overflow-tooltip />
 
 			<!-- 现金加油金额 -->
-			<el-table-column v-if="columns[6].visible" label="现金加油金额" prop="cashRefueling" align="center">
+			<el-table-column v-if="columns[6].visible" label="现金加油金额" prop="cashRefueling" align="center" show-overflow-tooltip>
 				<template #default="scope">
 					<span class="amount">{{ scope.row.cashRefueling.toFixed(2) }}</span>
 				</template>

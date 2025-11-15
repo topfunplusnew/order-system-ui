@@ -89,7 +89,7 @@
 			"
 			@selection-change="handleSelectionChange"
 		>
-			<el-table-column label="id" align="center" prop="id" fixed="left" />
+			<el-table-column label="id" align="center" prop="id" fixed="left" show-overflow-tooltip />
 			<el-table-column label="走访日期" align="center" prop="visitDate" fixed="left" show-overflow-tooltip />
 			<el-table-column v-if="columns[0].visible" label="是否审核" align="center" prop="isCheckState" fixed="left" show-overflow-tooltip width="120px">
 				<template #default="scope">
@@ -106,7 +106,7 @@
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[1].visible" label="客户名称" align="center" prop="customer" fixed="left" show-overflow-tooltip width="150px" />
-			<el-table-column v-if="columns[2].visible" label="负责人姓名" align="center" prop="leaderName" width="150px" />
+			<el-table-column v-if="columns[2].visible" label="负责人姓名" align="center" prop="leaderName" width="150px" show-overflow-tooltip />
 			<el-table-column v-if="columns[3].visible" label="负责人电话" align="center" prop="LeaderTel" width="150px" show-overflow-tooltip />
 			<el-table-column v-if="columns[4].visible" label="厂房设备" align="center" prop="equipment" width="150px" show-overflow-tooltip />
 			<el-table-column v-if="columns[5].visible" label="竞争对手" align="center" prop="competitor" width="150px" show-overflow-tooltip />

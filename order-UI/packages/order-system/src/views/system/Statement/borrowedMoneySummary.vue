@@ -41,12 +41,12 @@
 				}
 			"
 		>
-			<el-table-column v-if="columns[0].visible" label="id" align="center" prop="id" />
-			<el-table-column v-if="columns[1].visible" label="贷款来源" align="center" prop="origin" />
-			<el-table-column v-if="columns[2].visible" label="借入金额" align="center" prop="moneyAmount" />
-			<el-table-column v-if="columns[3].visible" label="贷款利率" align="center" prop="ratio" />
-			<el-table-column v-if="columns[4].visible" label="贷款发放日期" align="center" prop="loanDate" />
-			<el-table-column v-if="columns[5].visible" label="贷款年限" align="center" prop="loanDuring" />
+			<el-table-column v-if="columns[0].visible" label="id" align="center" prop="id" show-overflow-tooltip />
+			<el-table-column v-if="columns[1].visible" label="贷款来源" align="center" prop="origin" show-overflow-tooltip />
+			<el-table-column v-if="columns[2].visible" label="借入金额" align="center" prop="moneyAmount" show-overflow-tooltip />
+			<el-table-column v-if="columns[3].visible" label="贷款利率" align="center" prop="ratio" show-overflow-tooltip />
+			<el-table-column v-if="columns[4].visible" label="贷款发放日期" align="center" prop="loanDate" show-overflow-tooltip />
+			<el-table-column v-if="columns[5].visible" label="贷款年限" align="center" prop="loanDuring" show-overflow-tooltip />
 			<el-table-column v-if="columns[6].visible" label="抵押担保" align="center" prop="mortgageGuarantee" show-overflow-tooltip />
 			<el-table-column v-if="columns[7].visible" label="打入账户" align="center" prop="acountsName" show-overflow-tooltip />
 			<el-table-column v-if="columns[8].visible" label="打入账号" align="center" prop="bankNo" show-overflow-tooltip />
@@ -75,13 +75,13 @@
 					border
 					:span-method="mergeCells"
 				>
-					<el-table-column prop="" width="180">
+					<el-table-column prop="" width="180" show-overflow-tooltip>
 						<template #default="scope">
 							<span v-if="scope.$index === 0">贷款还款</span>
 						</template>
 					</el-table-column>
-					<el-table-column prop="payDate" label="时间" width="180"></el-table-column>
-					<el-table-column prop="moneyAmount" label="还款金额"></el-table-column>
+					<el-table-column prop="payDate" label="时间" width="180" show-overflow-tooltip></el-table-column>
+					<el-table-column prop="moneyAmount" label="还款金额" show-overflow-tooltip></el-table-column>
 				</el-table>
 				<pagination v-show="detailTotal > 0" :total="detailTotal" :page.sync="queryRepaymentParams.pageNum" :limit.sync="queryRepaymentParams.pageSize" @pagination="getRepaymentMoneyList" />
 			</template>

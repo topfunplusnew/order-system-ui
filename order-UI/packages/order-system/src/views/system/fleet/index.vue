@@ -46,14 +46,48 @@
 
 		<el-table id="printBox" v-horizontal-scroll="'always'" v-loading="loading" border :data="fleetList" size="mini" @selection-change="handleSelectionChange">
 			<!--   fixme 大小写错误 -->
-			<el-table-column v-if="columns[0].visible" label="车队名称" align="center" prop="fname" />
-			<el-table-column v-if="columns[1].visible" label="车队经理" align="center" prop="fleader" />
-			<el-table-column v-if="columns[2].visible" label="车队经理电话" align="center" prop="tel" />
-			<el-table-column v-if="columns[3].visible" label="地址" align="center" prop="address" />
+			<el-table-column v-if="columns[0].visible" label="车队名称" align="center" prop="fname" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.fname }}</div>
+						<span>{{ scope.row.fname }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[1].visible" label="车队经理" align="center" prop="fleader" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.fleader }}</div>
+						<span>{{ scope.row.fleader }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[2].visible" label="车队经理电话" align="center" prop="tel" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.tel }}</div>
+						<span>{{ scope.row.tel }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[3].visible" label="地址" align="center" prop="address" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.address }}</div>
+						<span>{{ scope.row.address }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-				<template slot-scope="scope">
-					<el-button v-hasPermi="['system:fleet:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">编辑</el-button>
-					<el-button v-hasPermi="['system:fleet:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">
+							<el-button v-hasPermi="['system:fleet:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">编辑</el-button>
+							<el-button v-hasPermi="['system:fleet:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
+						</div>
+						<el-button v-hasPermi="['system:fleet:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">编辑</el-button>
+						<el-button v-hasPermi="['system:fleet:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
+					</el-tooltip>
 				</template>
 			</el-table-column>
 		</el-table>
