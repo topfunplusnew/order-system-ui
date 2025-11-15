@@ -2451,3 +2451,107 @@ textarea::placeholder,
 		height: 14px !important;
 	}
 }
+
+// ============================================
+// Scrollbar 滚动条（统一全局样式，确保开发和生产环境一致）
+// ============================================
+// 全局滚动条样式 - 统一所有浏览器的滚动条外观
+// 使用 !important 确保样式优先级，避免被其他样式覆盖
+* {
+	// Webkit 浏览器（Chrome, Safari, Edge）
+	&::-webkit-scrollbar {
+		width: 6px !important;
+		height: 6px !important;
+	}
+
+	&::-webkit-scrollbar-track {
+		background: #f1f1f1 !important;
+		border-radius: 3px !important;
+	}
+
+	&::-webkit-scrollbar-track-piece {
+		background: #d3dce6 !important;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		background: #99a9bf !important;
+		border-radius: 3px !important;
+
+		&:hover {
+			background: #7a8ba3 !important;
+		}
+	}
+
+	// Firefox 浏览器
+	scrollbar-width: thin !important;
+	scrollbar-color: #99a9bf #f1f1f1 !important;
+}
+
+// Element UI 组件内部滚动条样式统一
+.el-scrollbar__wrap {
+	&::-webkit-scrollbar {
+		width: 6px !important;
+		height: 6px !important;
+	}
+
+	&::-webkit-scrollbar-track {
+		background: #f1f1f1 !important;
+		border-radius: 3px !important;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		background: #99a9bf !important;
+		border-radius: 3px !important;
+
+		&:hover {
+			background: #7a8ba3 !important;
+		}
+	}
+}
+
+// 表格滚动条样式统一
+.el-table__body-wrapper,
+.el-table__header-wrapper,
+.el-table__fixed-body-wrapper,
+.el-table__fixed-header-wrapper {
+	&::-webkit-scrollbar {
+		width: 6px !important;
+		height: 6px !important;
+	}
+
+	&::-webkit-scrollbar-track {
+		background: #f1f1f1 !important;
+		border-radius: 3px !important;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		background: #99a9bf !important;
+		border-radius: 3px !important;
+
+		&:hover {
+			background: #7a8ba3 !important;
+		}
+	}
+}
+
+// 对话框内容区域滚动条
+.el-dialog__body {
+	&::-webkit-scrollbar {
+		width: 6px !important;
+		height: 6px !important;
+	}
+
+	&::-webkit-scrollbar-track {
+		background: #f1f1f1 !important;
+		border-radius: 3px !important;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		background: #99a9bf !important;
+		border-radius: 3px !important;
+
+		&:hover {
+			background: #7a8ba3 !important;
+		}
+	}
+}
