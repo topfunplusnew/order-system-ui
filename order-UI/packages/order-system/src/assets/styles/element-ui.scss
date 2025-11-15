@@ -1085,6 +1085,7 @@
 				font-size: 16px !important; // 表头字体大小改为14px
 				color: #000000 !important; // 表头字体颜色改为纯黑色
 				font-weight: bold !important; // 加粗
+				background-color: #f2f2f2 !important; // 表头背景颜色
 				// 允许选择文本以便复制
 				user-select: text !important;
 				-webkit-user-select: text !important;
@@ -1129,7 +1130,8 @@
 	}
 
 	// 固定列表头样式 - 与主表格表头保持一致
-	.el-table__fixed {
+	.el-table__fixed,
+	.el-table__fixed-right {
 		height: auto !important;
 		bottom: 10px !important; //具体值是多少根据页面横向滚动条的高度进行设置
 		.el-table__fixed-header-wrapper {
@@ -1140,6 +1142,7 @@
 					font-size: 16px !important; // 表头字体大小改为14px
 					color: #000000 !important; // 表头字体颜色改为纯黑色
 					font-weight: bold !important; // 加粗
+					background-color: #f2f2f2 !important; // 固定列表头背景颜色
 					// 允许选择文本以便复制
 					user-select: text !important;
 					-webkit-user-select: text !important;
@@ -1195,6 +1198,7 @@
 			padding: 0 !important; // medium 尺寸表头 padding 设置为 0
 			font-size: 16px !important; // 表头字体大小改为14px
 			color: #000000 !important;
+			background-color: #f2f2f2 !important; // medium 尺寸表头背景颜色
 			// 允许选择文本以便复制
 			user-select: text !important;
 			-webkit-user-select: text !important;
@@ -1250,6 +1254,7 @@
 			padding: 0 !important; // mini 尺寸表头 padding 设置为 0
 			font-size: 16px !important; // 表头字体大小改为14px
 			color: #000000 !important;
+			background-color: #f2f2f2 !important; // mini 尺寸表头背景颜色
 			// 允许选择文本以便复制
 			user-select: text !important;
 			-webkit-user-select: text !important;

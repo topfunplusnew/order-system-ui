@@ -58,3 +58,56 @@ export function formatSupplierBalance(amount) {
 	}
 	return amount < 0 ? '[借] ' + fix_2(amount) : '[贷] ' + fix_2(Math.abs(amount));
 }
+
+/**
+ * 根据 debitCredit 字段判断是否为借方
+ * @param {string} debitCredit - 借贷标识：'d' 表示借方，'c' 表示贷方
+ * @returns {boolean} 是否为借方
+ */
+export function isDebit(debitCredit) {
+	return debitCredit === 'd' || debitCredit === 'D';
+}
+
+/**
+ * 根据 debitCredit 字段判断是否为贷方
+ * @param {string} debitCredit - 借贷标识：'d' 表示借方，'c' 表示贷方
+ * @returns {boolean} 是否为贷方
+ */
+export function isCredit(debitCredit) {
+	return debitCredit === 'c' || debitCredit === 'C';
+}
+
+/**
+ * 根据 debitCredit 字段获取借贷标签
+ * @param {string} debitCredit - 借贷标识：'d' 表示借方，'c' 表示贷方
+ * @returns {string} 借贷标签：'借' 或 '贷'
+ */
+export function getDebitCreditLabel(debitCredit) {
+	if (isDebit(debitCredit)) {
+		return '借';
+	}
+	if (isCredit(debitCredit)) {
+		return '贷';
+	}
+	return '';
+}
+
+/**
+ * 根据 debitCredit 字段格式化余额显示
+ * @param {number} amount - 金额
+ * @param {string} debitCredit - 借贷标识：'d' 表示借方，'c' 表示贷方
+ * @returns {string} 格式化后的余额显示
+ */
+export function formatBalanceByDebitCredit(amount, debitCredit) {
+	if (amount === 0) {
+		return '0';
+	}
+	const absAmount = Math.abs(amount);
+	if (isDebit(debitCredit)) {
+		return '[借] ' + fix_2(absAmount);
+	}
+	if (isCredit(debitCredit)) {
+		return '[贷] ' + fix_2(absAmount);
+	}
+	return fix_2(amount);
+}

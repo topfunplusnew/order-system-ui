@@ -105,6 +105,27 @@
 				background-color: $base-sub-menu-hover !important;
 			}
 		}
+
+		// 非一级菜单项的背景颜色为 #F9F9F9（二级菜单标题保持白色）
+		.el-submenu .el-menu-item {
+			background-color: #F9F9F9 !important;
+		}
+
+		// 嵌套菜单中的菜单项背景颜色
+		.nest-menu .el-submenu .el-menu-item,
+		.el-submenu .nest-menu .el-menu-item {
+			background-color: #F9F9F9 !important;
+		}
+
+		// 选中菜单的背景颜色
+		.el-menu-item.is-active {
+			background-color: #DDDDDD !important;
+		}
+
+		// 嵌套菜单中选中项的背景颜色
+		.el-submenu .el-menu-item.is-active {
+			background-color: #DDDDDD !important;
+		}
 	}
 
 	.hideSidebar {
@@ -204,10 +225,40 @@
 		}
 	}
 
+	// 非一级菜单项的背景颜色为 #F9F9F9（二级菜单标题保持白色）
+	.el-submenu .el-menu-item {
+		background-color: #F9F9F9 !important;
+	}
+
+	// 嵌套菜单中的菜单项背景颜色
+	.nest-menu .el-submenu .el-menu-item,
+	.el-submenu .nest-menu .el-menu-item {
+		background-color: #F9F9F9 !important;
+	}
+
+	// 选中菜单的背景颜色
+	.el-menu-item.is-active {
+		background-color: #DDDDDD !important;
+	}
+
+	// 嵌套菜单中选中项的背景颜色
+	.el-submenu .el-menu-item.is-active {
+		background-color: #DDDDDD !important;
+	}
+
 	// the scroll bar appears when the subMenu is too long
 	> .el-menu--popup {
 		max-height: 100vh;
 		overflow-y: auto;
+		// 弹窗菜单背景保持白色，只设置菜单项背景
+
+		.el-menu-item {
+			background-color: #F9F9F9 !important; // 弹窗菜单中菜单项的背景颜色
+		}
+
+		.el-menu-item.is-active {
+			background-color: #DDDDDD !important; // 弹窗菜单中选中项的背景颜色
+		}
 
 		&::-webkit-scrollbar-track-piece {
 			background: #d3dce6;
@@ -221,5 +272,21 @@
 			background: #99a9bf;
 			border-radius: 20px;
 		}
+	}
+}
+
+// 全局样式：确保侧边栏容器内的非一级菜单项背景颜色为 #F9F9F9
+// 使用更高的优先级覆盖 Element UI 的内联样式
+.sidebar-container,
+.scrollbar-wrapper {
+	// 非一级菜单项的背景颜色
+	.el-submenu .el-menu-item {
+		background-color: #F9F9F9 !important;
+	}
+
+	// 嵌套菜单中的菜单项背景颜色
+	.nest-menu .el-submenu .el-menu-item,
+	.el-submenu .nest-menu .el-menu-item {
+		background-color: #F9F9F9 !important;
 	}
 }

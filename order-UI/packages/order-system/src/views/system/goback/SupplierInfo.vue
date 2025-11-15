@@ -129,7 +129,7 @@ import RECEIVE_MONEY from '@/components/NeedToShow/RECEIVE_MONEY.vue';
 import INVENTORYDETAIL from '@/components/NeedToShow/INVENTORYDETAIL.vue';
 import ORDER_DETAIL from '@/components/NeedToShow/ORDER_DETAIL.vue';
 import BALANCEACCOUNT from '@/components/NeedToShow/BALANCEACCOUNT.vue';
-import { formatSupplierBalance } from '@/utils/trash/utils';
+import { formatSupplierBalance, isDebit, isCredit } from '@/utils/trash/utils';
 import _ from 'lodash';
 import { isGoodsOrderDisplay, isInventoryDisplay, mergeSpecialTableData } from '@/api/system/goodsOrder';
 import InventoryDayInfo from '@/components/InventoryDayInfo/index.vue';
@@ -271,10 +271,12 @@ export default {
 					function calculateLenderAndBorrower(dayData) {
 						const { itemTotalLender, itemTotalBorrower } = dayData.reduce(
 							(acc, customerDetail) => {
-								const amount = Number(customerDetail.moneyAmount);
-								if (amount < 0) {
+								const amount = Number(customerDetail.moneyAmount || 0);
+								if (isDebit(customerDetail.debitCredit)) {
+									// 借方：供应商欠款减少
 									acc.itemTotalLender += amount;
-								} else {
+								} else if (isCredit(customerDetail.debitCredit)) {
+									// 贷方：供应商欠款增加
 									acc.itemTotalBorrower += amount;
 								}
 								return acc;
@@ -316,13 +318,19 @@ export default {
 							this.tableData = Object.keys(sourceData).map(date => {
 								const item = _.cloneDeep(sourceData[date]);
 								for (let i = 0; i < item.length; i++) {
-									nowMoney += Number(item[i].moneyAmount);
+									const amount = Number(item[i].moneyAmount || 0);
+									// 根据 debitCredit 判断金额的正负影响
+									if (isDebit(item[i].debitCredit)) {
+										nowMoney -= amount; // 借方：减少欠款
+									} else if (isCredit(item[i].debitCredit)) {
+										nowMoney += amount; // 贷方：增加欠款
+									}
 								}
 								// 准备当天借方和贷方明细列表 (用于弹窗)
 								const condition = detail => {
-									console.log(`detail`, detail);
-									const lender = detail.moneyAmount < 0 ? Math.abs(detail.moneyAmount) : 0;
-									const borrower = detail.moneyAmount > 0 ? Math.abs(detail.moneyAmount) : 0;
+									const amount = Number(detail.moneyAmount || 0);
+									const lender = isDebit(detail.debitCredit) ? Math.abs(amount) : 0;
+									const borrower = isCredit(detail.debitCredit) ? Math.abs(amount) : 0;
 
 									return {
 										date: detail.operateDate,
@@ -330,12 +338,13 @@ export default {
 										lender: fix(lender),
 										borrower: fix(borrower),
 										tableName: detail.tableName,
-										moneyAmountLocal: fix(detail.moneyAmount),
+										debitCredit: detail.debitCredit,
+										moneyAmountLocal: fix(amount),
 										summary: Array.isArray(detail.summary) ? detail.summary.join('、') : detail.summary
 									};
 								};
-								const lenderList = item.map(condition).filter(d => Number(d.moneyAmountLocal) < 0);
-								const borrowerList = item.map(condition).filter(d => Number(d.moneyAmountLocal) > 0);
+								const lenderList = item.map(condition).filter(detail => isDebit(detail.debitCredit));
+								const borrowerList = item.map(condition).filter(detail => isCredit(detail.debitCredit));
 
 								return {
 									supplierName: _.cloneDeep(this.searchForm.supplier),

@@ -12,15 +12,7 @@
 				<el-form-item label="车辆：" prop="vehicle">
 					<el-row>
 						<el-col :span="4">
-							<SearchOption
-								:limit-info="{}"
-								:get-data="listCars"
-								query-label="车牌搜索"
-								:query-name="queryCars"
-								query-info="carNo"
-								@update:queryName="updateQueryCars"
-								@commitBack="handleCommitBackCars"
-							>
+							<SearchOption :limit-info="{}" :get-data="listCars" query-label="车牌搜索" :query-name="queryCars" query-info="carNo" @update:queryName="updateQueryCars" @commitBack="handleCommitBackCars">
 								<template #table-columns>
 									<el-table-column label="车牌" prop="carNo" />
 									<el-table-column label="司机姓名/海运公司" align="center" prop="driver" />
@@ -120,7 +112,7 @@ import { common_excel } from '@/views/dashboard/mixins/common/common_excel';
 import ORDER_DETAIL from '@/components/NeedToShow/ORDER_DETAIL.vue';
 import { listCars } from '@/api/system/cars';
 import _ from 'lodash';
-import { formatSupplierBalance } from '../../../utils/trash/utils';
+import { formatSupplierBalance, isDebit, isCredit } from '@/utils/trash/utils';
 import { isGoodsOrderDisplay, isInventoryDisplay, mergeSpecialTableData } from '@/api/system/goodsOrder';
 import OrderDayInfo from '@/components/OrderDayInfor/index.vue';
 import InventoryDayInfo from '@/components/InventoryDayInfo/index.vue';
@@ -258,10 +250,12 @@ export default {
 					function calculateLenderAndBorrower(dayData) {
 						const { itemTotalLender, itemTotalBorrower } = dayData.reduce(
 							(acc, customerDetail) => {
-								const amount = Number(customerDetail.moneyAmount);
-								if (amount < 0) {
+								const amount = Number(customerDetail.moneyAmount || 0);
+								if (isDebit(customerDetail.debitCredit)) {
+									// 借方：司机欠款减少
 									acc.itemTotalLender += amount;
-								} else {
+								} else if (isCredit(customerDetail.debitCredit)) {
+									// 贷方：司机欠款增加
 									acc.itemTotalBorrower += amount;
 								}
 								return acc;
@@ -303,30 +297,35 @@ export default {
 							this.tableData = Object.keys(sourceData).map(date => {
 								const item = _.cloneDeep(sourceData[date]);
 								for (let i = 0; i < item.length; i++) {
-									nowMoney += Number(item[i].moneyAmount);
+									const amount = Number(item[i].moneyAmount || 0);
+									// 根据 debitCredit 判断金额的正负影响
+									if (isDebit(item[i].debitCredit)) {
+										nowMoney -= amount; // 借方：减少欠款
+									} else if (isCredit(item[i].debitCredit)) {
+										nowMoney += amount; // 贷方：增加欠款
+									}
 								}
 								// 准备当天借方和贷方明细列表 (用于弹窗)
 								const condition = detail => {
-									const lender = detail.moneyAmount < 0 ? Math.abs(detail.moneyAmount) : 0;
-									const borrower = detail.moneyAmount > 0 ? Math.abs(detail.moneyAmount) : 0;
+									const amount = Number(detail.moneyAmount || 0);
+									const lender = isDebit(detail.debitCredit) ? Math.abs(amount) : 0;
+									const borrower = isCredit(detail.debitCredit) ? Math.abs(amount) : 0;
 									return {
 										date: detail.operateDate,
 										payNo: detail.payNo,
 										lender: fix(lender),
 										borrower: fix(borrower),
 										tableName: detail.tableName,
-										moneyAmountLocal: fix_2(detail.moneyAmount),
+										debitCredit: detail.debitCredit,
+										moneyAmountLocal: fix_2(amount),
 										summary: Array.isArray(detail.summary) ? detail.summary.join('、') : detail.summary
 									};
 								};
 
-								// console.log(`item`, item);
-								// const lenderList = item.map(condition).filter(d => Number(d.moneyAmount) > 0);
-								// const borrowerList = item.map(condition).filter(d => Number(d.moneyAmount) < 0);
-								// 运费：借方列表是应收运费增加的操作 (moneyAmount > 0)
-								const lenderList = item.map(condition).filter(detail => Number(detail.moneyAmountLocal) < 0);
-								// 运费：贷方列表是实收运费或冲减的操作 (moneyAmount < 0)
-								const borrowerList = item.map(condition).filter(detail => Number(detail.moneyAmountLocal) > 0);
+								// 运费：借方列表是司机欠款减少的操作 (debitCredit === 'd')
+								const lenderList = item.map(condition).filter(detail => isDebit(detail.debitCredit));
+								// 运费：贷方列表是司机欠款增加的操作 (debitCredit === 'c')
+								const borrowerList = item.map(condition).filter(detail => isCredit(detail.debitCredit));
 								return {
 									operateDate: date, // 日期列使用分组的key
 									payNo: '', // 主表该列现在显示明细，留空或移除

@@ -337,6 +337,7 @@ export default {
 <style lang="scss" scoped>
 /* 样式保持不变，和原版相同 */
 .toolbar-container {
+	background: #f2f2f2;
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
