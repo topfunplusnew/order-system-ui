@@ -803,46 +803,47 @@ export default {
 		// 承兑表单相关方法
 		// 获取票据信息
 		getBankAcceptanceDate(e) {
-			let inputValue;
-			if (e && e.target && e.target.value !== undefined) {
-				// 事件对象
-				inputValue = _.cloneDeep(e.target.value);
-			}
-			if (!inputValue) {
-				return;
-			}
-			// 在这里 发送请求 获取三个时间 自动填充
-			getMinIdByBillNo(inputValue).then(res => {
-				if (!res.data) {
-					return;
-				}
-				const obj = _.cloneDeep(res.data);
-				// 检查获取到的数据是否有效（不为空且至少有一个有效字段）
-				const hasValidData = obj && ((obj.issueDate && obj.issueDate.trim() !== '') || (obj.dueDate && obj.dueDate.trim() !== '') || (obj.billAccount && obj.billAccount.trim() !== ''));
-				if (!hasValidData) {
-					return;
-				}
-				if (!obj.endorser) {
-					console.warn('获取到的承兑信息缺少背书人ID，无法填充我方承兑账户ID');
-					return;
-				}
-				// 填充三个时间，只填充非空的字段
-				this.$nextTick(() => {
-					// 只有当获取到的值不为空时才填充，防止覆盖用户已填写的信息
-					if (obj.issueDate && obj.issueDate.trim() !== '') {
-						this.form.issueDate = obj.issueDate;
-					}
-					if (obj.dueDate && obj.dueDate.trim() !== '') {
-						this.form.dueDate = obj.dueDate;
-					}
-					if (obj.billAccount && obj.billAccount.trim() !== '') {
-						this.form.billAccount = obj.billAccount;
-					}
-					if (obj.endorser) {
-						this.form.billAccountId = obj.endorser;
-					}
-				});
-			});
+			// TODO 暂时禁用 稍后需要进行更改
+			// let inputValue;
+			// if (e && e.target && e.target.value !== undefined) {
+			// 	// 事件对象
+			// 	inputValue = _.cloneDeep(e.target.value);
+			// }
+			// if (!inputValue) {
+			// 	return;
+			// }
+			// // 在这里 发送请求 获取三个时间 自动填充
+			// getMinIdByBillNo(inputValue).then(res => {
+			// 	if (!res.data) {
+			// 		return;
+			// 	}
+			// 	const obj = _.cloneDeep(res.data);
+			// 	// 检查获取到的数据是否有效（不为空且至少有一个有效字段）
+			// 	const hasValidData = obj && ((obj.issueDate && obj.issueDate.trim() !== '') || (obj.dueDate && obj.dueDate.trim() !== '') || (obj.billAccount && obj.billAccount.trim() !== ''));
+			// 	if (!hasValidData) {
+			// 		return;
+			// 	}
+			// 	if (!obj.endorser) {
+			// 		console.warn('获取到的承兑信息缺少背书人ID，无法填充我方承兑账户ID');
+			// 		return;
+			// 	}
+			// 	// 填充三个时间，只填充非空的字段
+			// 	this.$nextTick(() => {
+			// 		// 只有当获取到的值不为空时才填充，防止覆盖用户已填写的信息
+			// 		if (obj.issueDate && obj.issueDate.trim() !== '') {
+			// 			this.form.issueDate = obj.issueDate;
+			// 		}
+			// 		if (obj.dueDate && obj.dueDate.trim() !== '') {
+			// 			this.form.dueDate = obj.dueDate;
+			// 		}
+			// 		if (obj.billAccount && obj.billAccount.trim() !== '') {
+			// 			this.form.billAccount = obj.billAccount;
+			// 		}
+			// 		if (obj.endorser) {
+			// 			this.form.billAccountId = obj.endorser;
+			// 		}
+			// 	});
+			// });
 		},
 		// 提交承兑表单
 		submitAcceptanceForm() {
