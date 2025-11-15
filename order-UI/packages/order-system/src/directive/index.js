@@ -4,6 +4,7 @@ import dialogDrag from './dialog/drag';
 import dialogDragWidth from './dialog/dragWidth';
 import dialogDragHeight from './dialog/dragHeight';
 import clipboard from './module/clipboard';
+import autoTableWidth from './module/autoTableWidth';
 
 const install = function (Vue) {
 	Vue.directive('hasRole', hasRole);
@@ -12,6 +13,7 @@ const install = function (Vue) {
 	Vue.directive('dialogDrag', dialogDrag);
 	Vue.directive('dialogDragWidth', dialogDragWidth);
 	Vue.directive('dialogDragHeight', dialogDragHeight);
+	Vue.directive('autoTableWidth', autoTableWidth);
 };
 
 if (window.Vue) {
