@@ -226,7 +226,7 @@ export default {
 
 <template>
 	<div>
-		<el-form ref="form" :model="form" label-width="80px" :rules="rules">
+		<el-form ref="form" :model="form" label-width="100px" :rules="rules">
 			<el-form-item label="对方户名" prop="otherAcountsName">
 				<el-row>
 					<el-col :span="10">
@@ -275,17 +275,7 @@ export default {
 			</el-form-item>
 		</el-form>
 
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			title="快速添加司机银行卡信息"
-			:visible.sync="addBankAccountDialogVisible"
-			width="500px"
-			append-to-body
-			:close-on-click-modal="false"
-		>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="快速添加司机银行卡信息" :visible.sync="addBankAccountDialogVisible" width="500px" append-to-body :close-on-click-modal="false">
 			<el-form ref="bankAccountFormRef" :model="bankAccountForm" :rules="bankAccountRules" label-width="120px">
 				<el-form-item label="车牌" prop="acountsName">
 					<el-row>
@@ -294,15 +284,7 @@ export default {
 						</el-col>
 						<el-col :span="4">
 							<el-tooltip content="选择车辆" placement="top">
-								<SearchOption
-									:limit-info="{}"
-									:get-data="listCars"
-									query-info="carNo"
-									query-label="车牌查找"
-									:query-name="queryBankAccount"
-									@update:queryName="handleUpdateBankAccount"
-									@commitBack="handleCommitBackBankAccount"
-								>
+								<SearchOption :limit-info="{}" :get-data="listCars" query-info="carNo" query-label="车牌查找" :query-name="queryBankAccount" @update:queryName="handleUpdateBankAccount" @commitBack="handleCommitBackBankAccount">
 									<template #table-columns>
 										<el-table-column label="司机" align="center" prop="driver" />
 										<el-table-column label="车牌号" align="center" prop="carNo" />

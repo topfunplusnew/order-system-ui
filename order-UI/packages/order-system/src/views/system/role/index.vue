@@ -166,6 +166,11 @@
 						<el-option v-for="item in orderDataScopeOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
 					</el-select>
 				</el-form-item>
+				<el-form-item label="订单修改权限">
+					<el-select v-model="form.orderModifyDataScope" @change="orderModifyDataScopeScopeSelectChange">
+						<el-option v-for="item in orderModifyDataScopeOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
+					</el-select>
+				</el-form-item>
 				<!--        系统权限范围-->
 				<el-form-item label="客户供应商数据权限">
 					<el-select v-model="form.companyDataScope" @change="companyDataScopeSystemScopeSelectChange">
@@ -283,6 +288,17 @@ export default {
 					label: '不做任何限制'
 				}
 			],
+			// 订单修改数据权限
+			orderModifyDataScopeOptions: [
+				{
+					value: '0',
+					label: '全部数据权限'
+				},
+				{
+					value: '1',
+					label: '修改本人录入的订单'
+				}
+			],
 			// 付款申请数据权限
 			paymentDataScopeOptions: [
 				{
@@ -332,6 +348,7 @@ export default {
 			// 表单参数
 			form: {
 				deptDataScope: '', // 最后一位
+				orderModifyDataScope: '', // 第四位
 				paymentApplyDataScope: '', // 第三位
 				companyDataScope: '', // 第二位
 				orderDataScope: '', // 第一位
@@ -465,6 +482,7 @@ export default {
 				(this.deptNodeAll = false),
 				(this.form = {
 					deptDataScope: '', // 最后一位
+					orderModifyDataScope: '', // 第四位
 					paymentApplyDataScope: '', // 第三位
 					companyDataScope: '', // 第二位
 					orderDataScope: '', // 第一位
@@ -588,6 +606,9 @@ export default {
 		orderDataScopeScopeSelectChange(e) {
 			this.form.orderDataScope = e;
 		},
+		orderModifyDataScopeScopeSelectChange(e) {
+			this.form.orderModifyDataScope = e;
+		},
 		/** 分配数据权限操作 */
 		handleDataScope(row) {
 			this.reset();
@@ -600,6 +621,7 @@ export default {
 					this.$set(this.form, 'orderDataScope', response.data.dataScope.charAt(0));
 					this.$set(this.form, 'companyDataScope', response.data.dataScope.charAt(1));
 					this.$set(this.form, 'paymentApplyDataScope', response.data.dataScope.charAt(2));
+					this.$set(this.form, 'orderModifyDataScope', response.data.dataScope.charAt(3));
 					this.$set(this.form, 'deptDataScope', response.data.dataScope.charAt(response.data.dataScope.length - 1));
 					console.log('form', this.form);
 					deptTreeSelect.then(res => {
@@ -639,7 +661,7 @@ export default {
 		submitDataScope: function () {
 			this.form.dataScope = '';
 			// 组装数据权限
-			this.form.dataScope = this.form.orderDataScope + this.form.companyDataScope + this.form.paymentApplyDataScope + '0000000000000000' + this.form.deptDataScope;
+			this.form.dataScope = this.form.orderDataScope + this.form.companyDataScope + this.form.paymentApplyDataScope + this.form.orderModifyDataScope + '000000000000000' + this.form.deptDataScope;
 			if (this.form.roleId != undefined) {
 				this.form.deptIds = this.getDeptAllCheckedKeys();
 				dataScope(this.form).then(response => {

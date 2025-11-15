@@ -4,34 +4,34 @@
 // 通用工具类
 // ============================================
 .cell {
-  .el-tag {
-    margin-right: 0px;
-  }
+	.el-tag {
+		margin-right: 0px;
+	}
 }
 
 .small-padding {
-  .cell {
-    padding-left: 5px;
-    padding-right: 5px;
-  }
+	.cell {
+		padding-left: 5px;
+		padding-right: 5px;
+	}
 }
 
 .fixed-width {
-  .el-button--mini {
-    padding: 7px 10px;
-    width: 60px;
-  }
+	.el-button--mini {
+		padding: 7px 10px;
+		width: 60px;
+	}
 }
 
 .status-col {
-  .cell {
-    padding: 0 10px;
-    text-align: center;
+	.cell {
+		padding: 0 10px;
+		text-align: center;
 
-    .el-tag {
-      margin-right: 0px;
-    }
-  }
+		.el-tag {
+			margin-right: 0px;
+		}
+	}
 }
 
 // ============================================
@@ -39,31 +39,31 @@
 // ============================================
 .el-breadcrumb__inner,
 .el-breadcrumb__inner a {
-  font-weight: 400 !important;
+	font-weight: 400 !important;
 }
 
 // ============================================
 // Upload 上传
 // ============================================
 .el-upload {
-  input[type='file'] {
-    display: none !important;
-  }
+	input[type='file'] {
+		display: none !important;
+	}
 }
 
 .el-upload__input {
-  display: none;
+	display: none;
 }
 
 .upload-container {
-  .el-upload {
-    width: 100%;
+	.el-upload {
+		width: 100%;
 
-    .el-upload-dragger {
-      width: 100%;
-      height: 200px;
-    }
-  }
+		.el-upload-dragger {
+			width: 100%;
+			height: 200px;
+		}
+	}
 }
 
 // ============================================
@@ -75,81 +75,81 @@
 // Button 按钮
 // ============================================
 .el-button {
-  &.el-button--medium {
-    padding: 6px 12px !important;
-    font-size: 16px !important;
-    height: 48px !important;
-  }
+	&.el-button--medium {
+		padding: 6px 12px !important;
+		font-size: 16px !important;
+		height: 48px !important;
+	}
 
-  &.el-button--small {
-    padding: 4px 10px !important;
-    font-size: 14px !important;
-    height: 38 !important;
-  }
+	&.el-button--small {
+		padding: 4px 10px !important;
+		font-size: 14px !important;
+		height: 38 !important;
+	}
 
-  &.el-button--mini {
-    padding: 2px 6px !important;
-    font-size: 12px !important;
-    height: 28px !important;
-  }
+	&.el-button--mini {
+		padding: 2px 6px !important;
+		font-size: 12px !important;
+		height: 28px !important;
+	}
 
-  // text类型按钮特殊样式调整
-  &.el-button--text {
-    padding: 2px 6px !important;
-    font-size: 22px !important; // 从18px调大到22px
-    color: #3585d4 !important; // 深色字体
-    font-weight: normal !important;
-    min-height: 28px !important;
-    line-height: 1.4 !important;
+	// text类型按钮特殊样式调整
+	&.el-button--text {
+		padding: 2px 6px !important;
+		font-size: 22px !important; // 从18px调大到22px
+		color: #3585d4 !important; // 深色字体
+		font-weight: normal !important;
+		min-height: 28px !important;
+		line-height: 1.4 !important;
 
-    &:hover {
-      color: #409eff !important;
-    }
+		&:hover {
+			color: #409eff !important;
+		}
 
-    &:disabled {
-      color: #c0c4cc !important;
-    }
+		&:disabled {
+			color: #c0c4cc !important;
+		}
 
-    // text按钮的不同尺寸调整
-    &.el-button--medium {
-      padding: 6px 12px !important;
-      font-size: 18px !important; // 从14px调大到18px
-      min-height: 30px !important;
-    }
+		// text按钮的不同尺寸调整
+		&.el-button--medium {
+			padding: 6px 12px !important;
+			font-size: 18px !important; // 从14px调大到18px
+			min-height: 30px !important;
+		}
 
-    &.el-button--small {
-      padding: 5px 10px !important;
-      font-size: 16px !important; // 从13px调大到16px
-      min-height: 26px !important;
-    }
+		&.el-button--small {
+			padding: 5px 10px !important;
+			font-size: 16px !important; // 从13px调大到16px
+			min-height: 26px !important;
+		}
 
-    &.el-button--mini {
-      padding: 4px 8px !important;
-      font-size: 15px !important; // 从12px调大到15px
-      min-height: 22px !important;
-    }
-  }
+		&.el-button--mini {
+			padding: 4px 8px !important;
+			font-size: 15px !important; // 从12px调大到15px
+			min-height: 22px !important;
+		}
+	}
 }
 
 // 按钮在表单中的调整
 .el-form .el-button {
-  &.el-button--medium {
-    padding: 6px 12px; // 从8px 16px缩小到6px 12px
-    font-size: 12px; // 从13px缩小到12px
-    height: 28px; // 与输入框高度保持一致
-  }
+	&.el-button--medium {
+		padding: 6px 12px; // 从8px 16px缩小到6px 12px
+		font-size: 12px; // 从13px缩小到12px
+		height: 28px; // 与输入框高度保持一致
+	}
 
-  &.el-button--small {
-    padding: 4px 10px; // 从6px 12px缩小到4px 10px
-    font-size: 11px; // 从12px缩小到11px
-    height: 24px;
-  }
+	&.el-button--small {
+		padding: 4px 10px; // 从6px 12px缩小到4px 10px
+		font-size: 11px; // 从12px缩小到11px
+		height: 24px;
+	}
 
-  &.el-button--mini {
-    padding: 2px 6px; // 从4px 8px缩小到2px 6px
-    font-size: 10px; // 从11px缩小到10px
-    height: 20px;
-  }
+	&.el-button--mini {
+		padding: 2px 6px; // 从4px 8px缩小到2px 6px
+		font-size: 10px; // 从11px缩小到10px
+		height: 20px;
+	}
 }
 
 // ============================================
@@ -157,48 +157,48 @@
 // ============================================
 // to fixed https://github.com/ElemeFE/element/issues/2461
 .el-dialog__wrapper {
-  pointer-events: none !important;
+	pointer-events: none !important;
 }
 
 .el-dialog {
-  margin: 20px auto;
-  background-color: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-  transform: none;
-  left: 0;
-  position: relative;
-  pointer-events: auto !important;
+	margin: 20px auto;
+	background-color: #ffffff;
+	border-radius: 8px;
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+	transform: none;
+	left: 0;
+	position: relative;
+	pointer-events: auto !important;
 }
 
 .el-dialog > .el-dialog__header {
-  padding: 12px 25px 8px; // 从 20px 25px 10px 改为 12px 25px 8px，缩小上下间距
-  border-bottom: 2px solid rgba(0, 0, 0, 0.05);
-  font-size: 26px !important; // 标题字体大小改为 26px
-  color: #000000 !important; // 字体颜色改为纯黑
-  font-weight: bold !important; // 加粗
-  line-height: 1.4 !important; // 添加行高，让标题更紧凑
+	padding: 12px 25px 8px; // 从 20px 25px 10px 改为 12px 25px 8px，缩小上下间距
+	border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+	font-size: 26px !important; // 标题字体大小改为 26px
+	color: #000000 !important; // 字体颜色改为纯黑
+	font-weight: bold !important; // 加粗
+	line-height: 1.4 !important; // 添加行高，让标题更紧凑
 }
 
 .el-dialog > .el-dialog__title {
-  font-size: 26px !important; // 标题字体大小改为 26px
-  color: #000000 !important; // 字体颜色改为纯黑
-  font-weight: bold !important; // 加粗
-  line-height: 1.4 !important; // 添加行高，让标题更紧凑
+	font-size: 26px !important; // 标题字体大小改为 26px
+	color: #000000 !important; // 字体颜色改为纯黑
+	font-weight: bold !important; // 加粗
+	line-height: 1.4 !important; // 添加行高，让标题更紧凑
 }
 
 .el-dialog > .el-dialog__body {
-  padding: 20px 25px;
-  border-top: none;
-  border-bottom: none;
-  color: #555555;
-  line-height: 1.6;
+	padding: 20px 25px;
+	border-top: none;
+	border-bottom: none;
+	color: #555555;
+	line-height: 1.6;
 }
 
 .el-dialog > .el-dialog__footer {
-  padding: 10px 25px 20px;
-  border-top: none;
-  text-align: right;
+	padding: 10px 25px 20px;
+	border-top: none;
+	text-align: right;
 }
 
 // ============================================
@@ -206,173 +206,172 @@
 // ============================================
 // 调整表单组件尺寸 - 整体缩小更多
 .el-form {
-  // 表单项间距调小
-  .el-form-item {
-    margin-bottom: 5px; // 从16px进一步缩小到12px
+	// 表单项间距调小
+	.el-form-item {
+		margin-bottom: 15px; // 从16px进一步缩小到12px
 
-    // 标签字体大小调小
-    .el-form-item__label {
-      font-size: 18px !important; // 字体大小改为20px
-      color: #000000 !important; // 字体颜色改为黑色
-      font-weight: 600 !important; // 加粗
-      line-height: 24px; // 对应输入框高度，与输入框高度一致
-      padding: 0 6px 0 0; // 右边距进一步调小
-    }
+		// 标签字体大小调小
+		.el-form-item__label {
+			font-size: 18px !important; // 字体大小改为20px
+			color: #000000 !important; // 字体颜色改为黑色
+			font-weight: 600 !important; // 加粗
+			line-height: 24px; // 对应输入框高度，与输入框高度一致
+			padding: 0 6px 0 0; // 右边距进一步调小
+		}
 
-    // 表单项内容区域
-    .el-form-item__content {
-      line-height: 24px; // 对应输入框高度，与输入框高度一致
-      font-size: 12px; // 从13px缩小到12px
-    }
+		// 表单项内容区域
+		.el-form-item__content {
+			line-height: 24px; // 对应输入框高度，与输入框高度一致
+			font-size: 12px; // 从13px缩小到12px
+		}
 
-    // 错误信息字体调小
-    .el-form-item__error {
-      font-size: 12px; // 从11px缩小到10px
-      padding-top: 1px; // 进一步减少上边距
-    }
-  }
+		// 错误信息字体调小
+		.el-form-item__error {
+			font-size: 12px; // 从11px缩小到10px
+			padding-top: 1px; // 进一步减少上边距
+		}
+	}
 }
 
 // 适用于顶部搜索框的整套样式
 #top-search-form-item {
-  font-size: 18px !important;
-  color: #000000 !important;
-  font-weight: bold !important;
-  line-height: 1.4 !important;
+	font-size: 18px !important;
+	color: #000000 !important;
+	font-weight: bold !important;
+	line-height: 1.4 !important;
 
-  // 表单项label样式
-  .el-form-item {
+	// 表单项label样式
+	.el-form-item {
+		.el-form-item__label {
+			font-size: 18px !important;
+			color: #000000 !important;
+			font-weight: bold !important;
+			line-height: 36px !important;
+			padding: 0 8px 0 0 !important;
+		}
 
-    .el-form-item__label {
-      font-size: 18px !important;
-      color: #000000 !important;
-      font-weight: bold !important;
-      line-height: 36px !important;
-      padding: 0 8px 0 0 !important;
-    }
+		.el-form-item__content {
+			line-height: 36px !important;
 
-    .el-form-item__content {
-      line-height: 36px !important;
+			// 输入框样式 - 黑色边框并放大
+			.el-input {
+				font-size: 16px !important;
 
-      // 输入框样式 - 黑色边框并放大
-      .el-input {
-        font-size: 16px !important;
+				.el-input__inner {
+					height: 28px !important;
+					padding: 0 12px !important;
+					font-size: 16px !important; // 字体大小改为16px
+					border: 1px solid #323232 !important;
+					border-radius: 4px !important;
+					color: #000000 !important; // 黑色
+					font-weight: normal !important; // 不加粗
 
-        .el-input__inner {
-          height: 28px !important;
-          padding: 0 12px !important;
-          font-size: 16px !important; // 字体大小改为16px
-          border: 1px solid #323232 !important;
-          border-radius: 4px !important;
-          color: #000000 !important; // 黑色
-          font-weight: normal !important; // 不加粗
+					&:hover {
+						border-color: #000000 !important;
+					}
 
-          &:hover {
-            border-color: #000000 !important;
-          }
+					&:focus {
+						border-color: #000000 !important;
+					}
 
-          &:focus {
-            border-color: #000000 !important;
-          }
+					&::placeholder {
+						font-size: 13px !important;
+						color: transparent !important;
+						font-weight: normal !important;
+					}
+				}
 
-          &::placeholder {
-            font-size: 13px !important;
-            color: transparent !important;
-            font-weight: normal !important;
-          }
-        }
+				.el-input__suffix,
+				.el-input__prefix {
+					.el-input__suffix-inner,
+					.el-input__prefix-inner {
+						.el-input__icon {
+							font-size: 14px !important;
+							line-height: 36px !important;
+						}
+					}
+				}
+			}
 
-        .el-input__suffix,
-        .el-input__prefix {
-          .el-input__suffix-inner,
-          .el-input__prefix-inner {
-            .el-input__icon {
-              font-size: 14px !important;
-              line-height: 36px !important;
-            }
-          }
-        }
-      }
+			// 选择器样式
+			.el-select {
+				.el-input .el-input__inner {
+					height: 28px !important;
+					border: 1px solid #000000 !important;
+					font-size: 16px !important; // 字体大小改为16px
+					color: #000000 !important; // 黑色
+					font-weight: normal !important; // 不加粗
+					padding: 0 30px 0 12px !important;
 
-      // 选择器样式
-      .el-select {
-        .el-input .el-input__inner {
-          height: 28px !important;
-          border: 1px solid #000000 !important;
-          font-size: 16px !important; // 字体大小改为16px
-          color: #000000 !important; // 黑色
-          font-weight: normal !important; // 不加粗
-          padding: 0 30px 0 12px !important;
+					&:hover {
+						border-color: #000000 !important;
+					}
 
-          &:hover {
-            border-color: #000000 !important;
-          }
+					&:focus {
+						border-color: #000000 !important;
+					}
+				}
+			}
 
-          &:focus {
-            border-color: #000000 !important;
-          }
-        }
-      }
+			// 级联选择器样式
+			.el-cascader {
+				.el-input .el-input__inner {
+					height: 28px !important;
+					border: 1px solid #000000 !important;
+					font-size: 16px !important; // 字体大小改为16px
+					color: #000000 !important; // 黑色
+					font-weight: normal !important; // 不加粗
+					padding: 0 30px 0 12px !important;
 
-      // 级联选择器样式
-      .el-cascader {
-        .el-input .el-input__inner {
-          height: 28px !important;
-          border: 1px solid #000000 !important;
-          font-size: 16px !important; // 字体大小改为16px
-          color: #000000 !important; // 黑色
-          font-weight: normal !important; // 不加粗
-          padding: 0 30px 0 12px !important;
+					&:hover {
+						border-color: #000000 !important;
+					}
 
-          &:hover {
-            border-color: #000000 !important;
-          }
+					&:focus {
+						border-color: #000000 !important;
+					}
+				}
+			}
 
-          &:focus {
-            border-color: #000000 !important;
-          }
-        }
-      }
+			// 日期选择器样式
+			.el-date-editor {
+				&.el-input .el-input__inner {
+					height: 28px !important;
+					border: 1px solid #000000 !important;
+					font-size: 16px !important; // 字体大小改为16px
+					color: #000000 !important; // 黑色
+					font-weight: normal !important; // 不加粗
+					&:hover {
+						border-color: #000000 !important;
+					}
 
-      // 日期选择器样式
-      .el-date-editor {
-        &.el-input .el-input__inner {
-          height: 28px !important;
-          border: 1px solid #000000 !important;
-          font-size: 16px !important; // 字体大小改为16px
-          color: #000000 !important; // 黑色
-          font-weight: normal !important; // 不加粗
-          &:hover {
-            border-color: #000000 !important;
-          }
+					&:focus {
+						border-color: #000000 !important;
+					}
+				}
 
-          &:focus {
-            border-color: #000000 !important;
-          }
-        }
+				&.el-range-editor {
+					height: 28px !important;
+					border: 1px solid #000000 !important;
 
-        &.el-range-editor {
-          height: 28px !important;
-          border: 1px solid #000000 !important;
+					.el-range-input {
+						font-size: 16px !important; // 字体大小改为16px
+						color: #000000 !important; // 黑色
+						font-weight: normal !important; // 不加粗
+					}
 
-          .el-range-input {
-            font-size: 16px !important; // 字体大小改为16px
-            color: #000000 !important; // 黑色
-            font-weight: normal !important; // 不加粗
-          }
+					.el-range-separator {
+						font-size: 14px !important;
+						color: #000000 !important;
+					}
 
-          .el-range-separator {
-            font-size: 14px !important;
-            color: #000000 !important;
-          }
-
-          &:hover {
-            border-color: #000000 !important;
-          }
-        }
-      }
-    }
-  }
+					&:hover {
+						border-color: #000000 !important;
+					}
+				}
+			}
+		}
+	}
 }
 
 // ============================================
@@ -380,94 +379,94 @@
 // ============================================
 // 输入框组件尺寸调整
 .el-input {
-  font-size: 11px; // 从12px进一步缩小到11px
+	font-size: 11px; // 从12px进一步缩小到11px
 
-  .el-input__inner {
-    height: 24px; // 从28px进一步缩小到24px
-    line-height: 24px;
-    padding: 0 8px; // 从10px缩小到8px
-    font-size: 11px; // 从12px缩小到11px
+	.el-input__inner {
+		height: 24px; // 从28px进一步缩小到24px
+		line-height: 24px;
+		padding: 0 8px; // 从10px缩小到8px
+		font-size: 11px; // 从12px缩小到11px
 
-    // placeholder字体大小
-    &::placeholder {
-      font-size: 10px; // 从11px缩小到10px
-      color: transparent; // 透明色，隐藏placeholder
-      font-weight: bold; // 加粗处理
-    }
-  }
+		// placeholder字体大小
+		&::placeholder {
+			font-size: 10px; // 从11px缩小到10px
+			color: transparent; // 透明色，隐藏placeholder
+			font-weight: bold; // 加粗处理
+		}
+	}
 
-  // 输入框后缀图标调整
-  .el-input__suffix {
-    .el-input__suffix-inner {
-      line-height: 24px;
+	// 输入框后缀图标调整
+	.el-input__suffix {
+		.el-input__suffix-inner {
+			line-height: 24px;
 
-      .el-input__icon {
-        font-size: 11px; // 从12px缩小到11px
-        line-height: 24px;
-      }
-    }
-  }
+			.el-input__icon {
+				font-size: 11px; // 从12px缩小到11px
+				line-height: 24px;
+			}
+		}
+	}
 
-  // 前缀图标调整
-  .el-input__prefix {
-    .el-input__prefix-inner {
-      line-height: 24px;
+	// 前缀图标调整
+	.el-input__prefix {
+		.el-input__prefix-inner {
+			line-height: 24px;
 
-      .el-input__icon {
-        font-size: 11px; // 从12px缩小到11px
-        line-height: 24px;
-      }
-    }
-  }
+			.el-input__icon {
+				font-size: 11px; // 从12px缩小到11px
+				line-height: 24px;
+			}
+		}
+	}
 }
 
 // 全局输入框调整
 .el-input {
-  font-size: 11px !important;
+	font-size: 11px !important;
 
-  .el-input__inner {
-    height: 24px !important;
-    line-height: 24px !important;
-    padding: 0 8px !important;
-    font-size: 16px !important; // 字体大小改为16px
-    // 有值时的字体样式
-    color: #000000 !important; // 黑色
-    font-weight: normal !important; // 不加粗
+	.el-input__inner {
+		height: 24px !important;
+		line-height: 24px !important;
+		padding: 0 8px !important;
+		font-size: 16px !important; // 字体大小改为16px
+		// 有值时的字体样式
+		color: #000000 !important; // 黑色
+		font-weight: normal !important; // 不加粗
 
-    &::placeholder {
-      font-size: 10px !important;
-      color: transparent !important; // 透明色，隐藏placeholder
-      font-weight: bold !important; // 深灰色字体加粗处理
-    }
+		&::placeholder {
+			font-size: 10px !important;
+			color: transparent !important; // 透明色，隐藏placeholder
+			font-weight: bold !important; // 深灰色字体加粗处理
+		}
 
-    // 禁用状态下的字体样式增强
-    &:disabled {
-      color: #000000 !important; // 黑色
-      font-size: 16px !important; // 字体大小改为16px
-      font-weight: normal !important; // 不加粗
-      background-color: #f5f7fa !important; // 保持背景色
-      border-color: #e4e7ed !important; // 保持边框色
-    }
-  }
+		// 禁用状态下的字体样式增强
+		&:disabled {
+			color: #000000 !important; // 黑色
+			font-size: 16px !important; // 字体大小改为16px
+			font-weight: normal !important; // 不加粗
+			background-color: #f5f7fa !important; // 保持背景色
+			border-color: #e4e7ed !important; // 保持边框色
+		}
+	}
 
-  .el-input__suffix .el-input__suffix-inner,
-  .el-input__prefix .el-input__prefix-inner {
-    line-height: 24px !important;
+	.el-input__suffix .el-input__suffix-inner,
+	.el-input__prefix .el-input__prefix-inner {
+		line-height: 24px !important;
 
-    .el-input__icon {
-      font-size: 11px !important;
-      line-height: 24px !important;
-    }
-  }
+		.el-input__icon {
+			font-size: 11px !important;
+			line-height: 24px !important;
+		}
+	}
 
-  // 禁用状态的输入框整体样式
-  &.is-disabled {
-    .el-input__inner {
-      color: #000000 !important; // 黑色
-      font-size: 16px !important; // 字体大小改为16px
-      font-weight: normal !important; // 不加粗
-    }
-  }
+	// 禁用状态的输入框整体样式
+	&.is-disabled {
+		.el-input__inner {
+			color: #000000 !important; // 黑色
+			font-size: 16px !important; // 字体大小改为16px
+			font-weight: normal !important; // 不加粗
+		}
+	}
 }
 
 // ============================================
@@ -475,56 +474,56 @@
 // ============================================
 // textarea调整
 .el-textarea {
-  font-size: 12px; // 从13px缩小到12px
+	font-size: 12px; // 从13px缩小到12px
 
-  .el-textarea__inner {
-    padding: 6px 10px; // 从8px 12px缩小到6px 10px
-    font-size: 12px; // 从13px缩小到12px
-    line-height: 1.3; // 从1.4缩小到1.3
+	.el-textarea__inner {
+		padding: 6px 10px; // 从8px 12px缩小到6px 10px
+		font-size: 12px; // 从13px缩小到12px
+		line-height: 1.3; // 从1.4缩小到1.3
 
-    &::placeholder {
-      font-size: 11px; // 从12px缩小到11px
-      color: transparent; // 透明色，隐藏placeholder
-      font-weight: bold; // 加粗处理
-    }
-  }
+		&::placeholder {
+			font-size: 11px; // 从12px缩小到11px
+			color: transparent; // 透明色，隐藏placeholder
+			font-weight: bold; // 加粗处理
+		}
+	}
 }
 
 // 全局textarea调整
 .el-textarea {
-  font-size: 11px !important;
+	font-size: 11px !important;
 
-  .el-textarea__inner {
-    padding: 4px 8px !important; // 从6px 10px缩小到4px 8px
-    font-size: 16px !important; // 字体大小改为16px
-    line-height: 1.2 !important; // 从1.3缩小到1.2
-    // 有值时的字体样式
-    color: #000000 !important; // 黑色
-    font-weight: normal !important; // 不加粗
+	.el-textarea__inner {
+		padding: 4px 8px !important; // 从6px 10px缩小到4px 8px
+		font-size: 16px !important; // 字体大小改为16px
+		line-height: 1.2 !important; // 从1.3缩小到1.2
+		// 有值时的字体样式
+		color: #000000 !important; // 黑色
+		font-weight: normal !important; // 不加粗
 
-    &::placeholder {
-      font-size: 10px !important;
-      color: transparent !important; // 透明色，隐藏placeholder
-      font-weight: bold !important; // 深灰色字体加粗处理
-    }
+		&::placeholder {
+			font-size: 10px !important;
+			color: transparent !important; // 透明色，隐藏placeholder
+			font-weight: bold !important; // 深灰色字体加粗处理
+		}
 
-    // 禁用状态下的字体样式增强
-    &:disabled {
-      color: #000000 !important; // 黑色
-      font-size: 16px !important; // 字体大小改为16px
-      font-weight: normal !important; // 不加粗
-      background-color: #f5f7fa !important; // 保持背景色
-    }
-  }
+		// 禁用状态下的字体样式增强
+		&:disabled {
+			color: #000000 !important; // 黑色
+			font-size: 16px !important; // 字体大小改为16px
+			font-weight: normal !important; // 不加粗
+			background-color: #f5f7fa !important; // 保持背景色
+		}
+	}
 
-  // 禁用状态的textarea整体样式
-  &.is-disabled {
-    .el-textarea__inner {
-      color: #000000 !important; // 黑色
-      font-size: 16px !important; // 字体大小改为16px
-      font-weight: normal !important; // 不加粗
-    }
-  }
+	// 禁用状态的textarea整体样式
+	&.is-disabled {
+		.el-textarea__inner {
+			color: #000000 !important; // 黑色
+			font-size: 16px !important; // 字体大小改为16px
+			font-weight: normal !important; // 不加粗
+		}
+	}
 }
 
 // ============================================
@@ -532,69 +531,69 @@
 // ============================================
 // 选择器组件调整
 .el-select {
-  .el-input .el-input__inner {
-    height: 24px; // 从28px进一步缩小到24px
-    line-height: 24px;
-    color: #666666; // 深灰色字体
-    font-weight: bold; // 加粗处理
-  }
+	.el-input .el-input__inner {
+		height: 24px; // 从28px进一步缩小到24px
+		line-height: 24px;
+		color: #666666; // 深灰色字体
+		font-weight: bold; // 加粗处理
+	}
 
-  // 下拉选项调整
-  .el-select-dropdown {
-    .el-select-dropdown__item {
-      height: 32px !important;
-      line-height: 32px !important;
-      padding: 0 8px !important;
-      font-size: 16px !important; // 字体大小改为16px
-      color: #000000 !important; // 黑色
-      font-weight: normal !important; // 不加粗
-    }
-  }
+	// 下拉选项调整
+	.el-select-dropdown {
+		.el-select-dropdown__item {
+			height: 32px !important;
+			line-height: 32px !important;
+			padding: 0 8px !important;
+			font-size: 16px !important; // 字体大小改为16px
+			color: #000000 !important; // 黑色
+			font-weight: normal !important; // 不加粗
+		}
+	}
 }
 
 // 全局选择器调整
 .el-select {
-  .el-input .el-input__inner {
-    height: 24px !important;
-    line-height: 24px !important;
-    font-size: 16px !important; // 字体大小改为16px
-    // 有值时的字体样式
-    color: #000000 !important; // 黑色
-    font-weight: normal !important; // 不加粗
+	.el-input .el-input__inner {
+		height: 24px !important;
+		line-height: 24px !important;
+		font-size: 16px !important; // 字体大小改为16px
+		// 有值时的字体样式
+		color: #000000 !important; // 黑色
+		font-weight: normal !important; // 不加粗
 
-    &::placeholder {
-      color: transparent !important; // 透明色，隐藏placeholder
-      font-weight: bold !important; // 深灰色字体加粗处理
-    }
+		&::placeholder {
+			color: transparent !important; // 透明色，隐藏placeholder
+			font-weight: bold !important; // 深灰色字体加粗处理
+		}
 
-    // 禁用状态下的字体样式增强
-    &:disabled {
-      color: #000000 !important; // 黑色
-      font-size: 16px !important; // 字体大小改为16px
-      font-weight: normal !important; // 不加粗
-    }
-  }
+		// 禁用状态下的字体样式增强
+		&:disabled {
+			color: #000000 !important; // 黑色
+			font-size: 16px !important; // 字体大小改为16px
+			font-weight: normal !important; // 不加粗
+		}
+	}
 
-  // 禁用状态的选择器整体样式
-  &.is-disabled {
-    .el-input .el-input__inner {
-      color: #000000 !important; // 黑色
-      font-size: 16px !important; // 字体大小改为16px
-      font-weight: normal !important; // 不加粗
-    }
-  }
+	// 禁用状态的选择器整体样式
+	&.is-disabled {
+		.el-input .el-input__inner {
+			color: #000000 !important; // 黑色
+			font-size: 16px !important; // 字体大小改为16px
+			font-weight: normal !important; // 不加粗
+		}
+	}
 }
 
 // 全局选择器下拉选项调整
 .el-select-dropdown {
-  .el-select-dropdown__item {
-    height: 32px !important;
-    line-height: 32px !important;
-    padding: 0 8px !important;
-    font-size: 16px !important; // 字体大小改为16px
-    color: #000000 !important; // 黑色
-    font-weight: normal !important; // 不加粗
-  }
+	.el-select-dropdown__item {
+		height: 32px !important;
+		line-height: 32px !important;
+		padding: 0 8px !important;
+		font-size: 16px !important; // 字体大小改为16px
+		color: #000000 !important; // 黑色
+		font-weight: normal !important; // 不加粗
+	}
 }
 
 // ============================================
@@ -602,54 +601,54 @@
 // ============================================
 // 级联选择器
 .el-cascader {
-  .el-input .el-input__inner {
-    height: 24px; // 从28px进一步缩小到24px
-    line-height: 24px;
-    color: #666666; // 深灰色字体
-    font-weight: bold; // 加粗处理
-  }
+	.el-input .el-input__inner {
+		height: 24px; // 从28px进一步缩小到24px
+		line-height: 24px;
+		color: #666666; // 深灰色字体
+		font-weight: bold; // 加粗处理
+	}
 }
 
 // 全局级联选择器调整
 .el-cascader {
-  .el-input .el-input__inner {
-    height: 24px !important;
-    line-height: 24px !important;
-    font-size: 16px !important; // 字体大小改为16px
-    // 有值时的字体样式
-    color: #000000 !important; // 黑色
-    font-weight: normal !important; // 不加粗
+	.el-input .el-input__inner {
+		height: 24px !important;
+		line-height: 24px !important;
+		font-size: 16px !important; // 字体大小改为16px
+		// 有值时的字体样式
+		color: #000000 !important; // 黑色
+		font-weight: normal !important; // 不加粗
 
-    &::placeholder {
-      color: transparent !important; // 透明色，隐藏placeholder
-      font-weight: bold !important; // 深灰色字体加粗处理
-    }
+		&::placeholder {
+			color: transparent !important; // 透明色，隐藏placeholder
+			font-weight: bold !important; // 深灰色字体加粗处理
+		}
 
-    // 禁用状态下的字体样式增强
-    &:disabled {
-      color: #000000 !important; // 黑色
-      font-size: 16px !important; // 字体大小改为16px
-      font-weight: normal !important; // 不加粗
-    }
-  }
+		// 禁用状态下的字体样式增强
+		&:disabled {
+			color: #000000 !important; // 黑色
+			font-size: 16px !important; // 字体大小改为16px
+			font-weight: normal !important; // 不加粗
+		}
+	}
 
-  // 禁用状态的级联选择器整体样式
-  &.is-disabled {
-    .el-input .el-input__inner {
-      color: #000000 !important; // 黑色
-      font-size: 16px !important; // 字体大小改为16px
-      font-weight: normal !important; // 不加粗
-    }
-  }
+	// 禁用状态的级联选择器整体样式
+	&.is-disabled {
+		.el-input .el-input__inner {
+			color: #000000 !important; // 黑色
+			font-size: 16px !important; // 字体大小改为16px
+			font-weight: normal !important; // 不加粗
+		}
+	}
 }
 
 // 全局级联面板调整
 .el-cascader-panel {
-  // 级联菜单滚动区域高度调整
-  .el-cascader-menu__wrap.el-scrollbar__wrap {
-    height: 450px !important;
-    max-height: 450px !important;
-  }
+	// 级联菜单滚动区域高度调整
+	.el-cascader-menu__wrap.el-scrollbar__wrap {
+		height: 450px !important;
+		max-height: 450px !important;
+	}
 }
 
 // ============================================
@@ -657,139 +656,139 @@
 // ============================================
 // 日期选择器
 .el-date-editor {
-  &.el-input {
-    .el-input__inner {
-      height: 24px; // 从28px进一步缩小到24px
-      line-height: 24px;
-    }
-  }
+	&.el-input {
+		.el-input__inner {
+			height: 24px; // 从28px进一步缩小到24px
+			line-height: 24px;
+		}
+	}
 
-  // 日期范围选择器
-  &.el-range-editor {
-    .el-range-input {
-      font-size: 11px; // 从12px缩小到11px
-      height: 22px; // 从26px缩小到22px
-      line-height: 22px;
-    }
+	// 日期范围选择器
+	&.el-range-editor {
+		.el-range-input {
+			font-size: 11px; // 从12px缩小到11px
+			height: 22px; // 从26px缩小到22px
+			line-height: 22px;
+		}
 
-    .el-range-separator {
-      font-size: 11px; // 从12px缩小到11px
-      line-height: 22px;
-    }
-  }
+		.el-range-separator {
+			font-size: 11px; // 从12px缩小到11px
+			line-height: 22px;
+		}
+	}
 }
 
 // 全局日期选择器调整
 .el-date-editor {
-  &.el-input .el-input__inner {
-    height: 24px !important;
-    line-height: 24px !important;
-    padding-right: 25px !important; // 为图标留出足够空间
-    font-size: 16px !important; // 字体大小改为16px
-    // 有值时的字体样式
-    color: #000000 !important; // 黑色
-    font-weight: normal !important; // 不加粗
+	&.el-input .el-input__inner {
+		height: 24px !important;
+		line-height: 24px !important;
+		padding-right: 25px !important; // 为图标留出足够空间
+		font-size: 16px !important; // 字体大小改为16px
+		// 有值时的字体样式
+		color: #000000 !important; // 黑色
+		font-weight: normal !important; // 不加粗
 
-    &::placeholder {
-      color: transparent !important; // 透明色，隐藏placeholder
-      font-weight: normal !important; // placeholder 不加粗
-    }
+		&::placeholder {
+			color: transparent !important; // 透明色，隐藏placeholder
+			font-weight: normal !important; // placeholder 不加粗
+		}
 
-    // 禁用状态下的字体样式增强
-    &:disabled {
-      color: #000000 !important; // 黑色
-      font-size: 16px !important; // 字体大小改为16px
-      font-weight: normal !important; // 不加粗
-    }
-  }
+		// 禁用状态下的字体样式增强
+		&:disabled {
+			color: #000000 !important; // 黑色
+			font-size: 16px !important; // 字体大小改为16px
+			font-weight: normal !important; // 不加粗
+		}
+	}
 
-  // 修复日期选择器图标重叠问题
-  // 隐藏时间选择器的所有图标
-  .el-input__suffix,
-  .el-input__prefix {
-    display: none !important;
-  }
+	// 修复日期选择器图标重叠问题
+	// 隐藏时间选择器的所有图标
+	.el-input__suffix,
+	.el-input__prefix {
+		display: none !important;
+	}
 
-  &.el-range-editor {
-    .el-range-input {
-      font-size: 16px !important; // 字体大小改为16px
-      height: 22px !important;
-      line-height: 22px !important;
-      // 有值时的字体样式
-      color: #000000 !important; // 黑色
-      font-weight: normal !important; // 不加粗
+	&.el-range-editor {
+		.el-range-input {
+			font-size: 16px !important; // 字体大小改为16px
+			height: 22px !important;
+			line-height: 22px !important;
+			// 有值时的字体样式
+			color: #000000 !important; // 黑色
+			font-weight: normal !important; // 不加粗
 
-      &::placeholder {
-        color: transparent !important; // 透明色，隐藏placeholder
-        font-weight: normal !important; // placeholder 不加粗
-      }
+			&::placeholder {
+				color: transparent !important; // 透明色，隐藏placeholder
+				font-weight: normal !important; // placeholder 不加粗
+			}
 
-      // 禁用状态下的字体样式增强
-      &:disabled {
-        color: #000000 !important; // 黑色
-        font-size: 16px !important; // 字体大小改为16px
-        font-weight: normal !important; // 不加粗
-      }
-    }
+			// 禁用状态下的字体样式增强
+			&:disabled {
+				color: #000000 !important; // 黑色
+				font-size: 16px !important; // 字体大小改为16px
+				font-weight: normal !important; // 不加粗
+			}
+		}
 
-    .el-range-separator {
-      font-size: 11px !important;
-      line-height: 22px !important;
-    }
-  }
+		.el-range-separator {
+			font-size: 11px !important;
+			line-height: 22px !important;
+		}
+	}
 
-  // 禁用状态的日期选择器整体样式
-  &.is-disabled {
-    &.el-input .el-input__inner {
-      color: #000000 !important; // 黑色
-      font-size: 16px !important; // 字体大小改为16px
-      font-weight: normal !important; // 不加粗
-    }
+	// 禁用状态的日期选择器整体样式
+	&.is-disabled {
+		&.el-input .el-input__inner {
+			color: #000000 !important; // 黑色
+			font-size: 16px !important; // 字体大小改为16px
+			font-weight: normal !important; // 不加粗
+		}
 
-    &.el-range-editor .el-range-input {
-      color: #000000 !important; // 黑色
-      font-size: 16px !important; // 字体大小改为16px
-      font-weight: normal !important; // 不加粗
-    }
-  }
+		&.el-range-editor .el-range-input {
+			color: #000000 !important; // 黑色
+			font-size: 16px !important; // 字体大小改为16px
+			font-weight: normal !important; // 不加粗
+		}
+	}
 }
 
 .el-range-editor.el-input__inner {
-  display: inline-flex !important;
-  height: 24px !important;
-  line-height: 24px !important;
+	display: inline-flex !important;
+	height: 24px !important;
+	line-height: 24px !important;
 }
 
 // 全局范围选择器高度调整
 .el-range-editor {
-  height: 24px !important;
-  line-height: 24px !important;
+	height: 24px !important;
+	line-height: 24px !important;
 }
 
 // to fix el-date-picker css style
 .el-range-separator {
-  box-sizing: content-box;
+	box-sizing: content-box;
 }
 
 // 全局日期选择器面板调整
 .el-picker-panel {
-  .el-date-table td {
-    width: 28px !important;
-    height: 28px !important;
-    font-size: 11px !important;
+	.el-date-table td {
+		width: 28px !important;
+		height: 28px !important;
+		font-size: 11px !important;
 
-    span {
-      width: 22px !important;
-      height: 22px !important;
-      line-height: 22px !important;
-    }
-  }
+		span {
+			width: 22px !important;
+			height: 22px !important;
+			line-height: 22px !important;
+		}
+	}
 
-  .el-month-table td,
-  .el-year-table td {
-    height: 28px !important;
-    font-size: 11px !important;
-  }
+	.el-month-table td,
+	.el-year-table td {
+		height: 28px !important;
+		font-size: 11px !important;
+	}
 }
 
 // ============================================
@@ -797,69 +796,69 @@
 // ============================================
 // 数字输入框
 .el-input-number {
-  .el-input__inner {
-    height: 24px; // 从28px进一步缩小到24px
-    line-height: 24px;
-    padding-left: 26px; // 从32px缩小到26px
-    padding-right: 26px;
-  }
+	.el-input__inner {
+		height: 24px; // 从28px进一步缩小到24px
+		line-height: 24px;
+		padding-left: 26px; // 从32px缩小到26px
+		padding-right: 26px;
+	}
 
-  .el-input-number__increase,
-  .el-input-number__decrease {
-    width: 24px; // 从28px缩小到24px
-    height: 12px; // 从14px缩小到12px
-    line-height: 12px;
+	.el-input-number__increase,
+	.el-input-number__decrease {
+		width: 24px; // 从28px缩小到24px
+		height: 12px; // 从14px缩小到12px
+		line-height: 12px;
 
-    i {
-      font-size: 9px; // 从10px缩小到9px
-    }
-  }
+		i {
+			font-size: 9px; // 从10px缩小到9px
+		}
+	}
 }
 
 // 全局数字输入框调整
 .el-input-number {
-  .el-input__inner {
-    height: 24px !important;
-    line-height: 24px !important;
-    padding-left: 28px !important;
-    padding-right: 28px !important;
-    font-size: 16px !important; // 字体大小改为16px
-    // 有值时的字体样式
-    color: #000000 !important; // 黑色
-    font-weight: normal !important; // 不加粗
+	.el-input__inner {
+		height: 24px !important;
+		line-height: 24px !important;
+		padding-left: 28px !important;
+		padding-right: 28px !important;
+		font-size: 16px !important; // 字体大小改为16px
+		// 有值时的字体样式
+		color: #000000 !important; // 黑色
+		font-weight: normal !important; // 不加粗
 
-    &::placeholder {
-      color: transparent !important; // 透明色，隐藏placeholder
-      font-weight: normal !important; // placeholder 不加粗
-    }
+		&::placeholder {
+			color: transparent !important; // 透明色，隐藏placeholder
+			font-weight: normal !important; // placeholder 不加粗
+		}
 
-    // 禁用状态下的字体样式增强
-    &:disabled {
-      color: #000000 !important; // 黑色
-      font-size: 16px !important; // 字体大小改为16px
-      font-weight: normal !important; // 不加粗
-    }
-  }
+		// 禁用状态下的字体样式增强
+		&:disabled {
+			color: #000000 !important; // 黑色
+			font-size: 16px !important; // 字体大小改为16px
+			font-weight: normal !important; // 不加粗
+		}
+	}
 
-  .el-input-number__increase,
-  .el-input-number__decrease {
-    width: 24px !important;
-    height: 12px !important;
-    line-height: 12px !important;
+	.el-input-number__increase,
+	.el-input-number__decrease {
+		width: 24px !important;
+		height: 12px !important;
+		line-height: 12px !important;
 
-    i {
-      font-size: 9px !important;
-    }
-  }
+		i {
+			font-size: 9px !important;
+		}
+	}
 
-  // 禁用状态的数字输入框整体样式
-  &.is-disabled {
-    .el-input__inner {
-      color: #000000 !important; // 黑色
-      font-size: 16px !important; // 字体大小改为16px
-      font-weight: normal !important; // 不加粗
-    }
-  }
+	// 禁用状态的数字输入框整体样式
+	&.is-disabled {
+		.el-input__inner {
+			color: #000000 !important; // 黑色
+			font-size: 16px !important; // 字体大小改为16px
+			font-weight: normal !important; // 不加粗
+		}
+	}
 }
 
 // ============================================
@@ -867,46 +866,46 @@
 // ============================================
 // 开关组件
 .el-switch {
-  height: 16px; // 从18px缩小到16px
-  line-height: 16px;
+	height: 16px; // 从18px缩小到16px
+	line-height: 16px;
 
-  .el-switch__core {
-    height: 16px;
-    min-width: 32px; // 从36px缩小到32px
+	.el-switch__core {
+		height: 16px;
+		min-width: 32px; // 从36px缩小到32px
 
-    &:after {
-      width: 12px; // 从14px缩小到12px
-      height: 12px;
-    }
-  }
+		&:after {
+			width: 12px; // 从14px缩小到12px
+			height: 12px;
+		}
+	}
 
-  .el-switch__label {
-    font-size: 12px; // 从13px缩小到12px
-    height: 16px;
-    line-height: 16px;
-  }
+	.el-switch__label {
+		font-size: 12px; // 从13px缩小到12px
+		height: 16px;
+		line-height: 16px;
+	}
 }
 
 // 全局开关组件调整
 .el-switch {
-  height: 16px !important;
-  line-height: 16px !important;
+	height: 16px !important;
+	line-height: 16px !important;
 
-  .el-switch__core {
-    height: 16px !important;
-    min-width: 32px !important;
+	.el-switch__core {
+		height: 16px !important;
+		min-width: 32px !important;
 
-    &:after {
-      width: 12px !important;
-      height: 12px !important;
-    }
-  }
+		&:after {
+			width: 12px !important;
+			height: 12px !important;
+		}
+	}
 
-  .el-switch__label {
-    font-size: 12px !important;
-    height: 16px !important;
-    line-height: 16px !important;
-  }
+	.el-switch__label {
+		font-size: 12px !important;
+		height: 16px !important;
+		line-height: 16px !important;
+	}
 }
 
 // ============================================
@@ -915,89 +914,89 @@
 // 单选框和复选框
 .el-radio,
 .el-checkbox {
-  font-size: 12px; // 从13px缩小到12px
+	font-size: 12px; // 从13px缩小到12px
 
-  .el-radio__label,
-  .el-checkbox__label {
-    font-size: 12px; // 从13px缩小到12px
-  }
+	.el-radio__label,
+	.el-checkbox__label {
+		font-size: 12px; // 从13px缩小到12px
+	}
 }
 
 // 全局单选框调整
 .el-radio {
-  font-size: 12px !important;
+	font-size: 12px !important;
 
-  .el-radio__input {
-    .el-radio__inner {
-      width: 12px !important;
-      height: 12px !important;
+	.el-radio__input {
+		.el-radio__inner {
+			width: 12px !important;
+			height: 12px !important;
 
-      &:after {
-        width: 4px !important;
-        height: 4px !important;
-      }
-    }
+			&:after {
+				width: 4px !important;
+				height: 4px !important;
+			}
+		}
 
-    // 禁用且选中状态下的单选框样式增强
-    &.is-disabled {
-      &.is-checked {
-        .el-radio__inner {
-          background-color: #409eff !important; // 保持选中的蓝色背景
-          border-color: #409eff !important; // 保持选中的蓝色边框
+		// 禁用且选中状态下的单选框样式增强
+		&.is-disabled {
+			&.is-checked {
+				.el-radio__inner {
+					background-color: #409eff !important; // 保持选中的蓝色背景
+					border-color: #409eff !important; // 保持选中的蓝色边框
 
-          &:after {
-            background-color: #ffffff !important; // 白色圆点更醒目
-            border-radius: 50% !important;
-            width: 5px !important; // 稍微增大圆点
-            height: 5px !important;
-            transform: translate(-50%, -50%) scale(1) !important; // 确保圆点显示
-            opacity: 1 !important; // 确保圆点可见
-          }
-        }
-      }
-    }
-  }
+					&:after {
+						background-color: #ffffff !important; // 白色圆点更醒目
+						border-radius: 50% !important;
+						width: 5px !important; // 稍微增大圆点
+						height: 5px !important;
+						transform: translate(-50%, -50%) scale(1) !important; // 确保圆点显示
+						opacity: 1 !important; // 确保圆点可见
+					}
+				}
+			}
+		}
+	}
 
-  .el-radio__label {
-    font-size: 12px !important;
-    padding-left: 6px !important;
+	.el-radio__label {
+		font-size: 12px !important;
+		padding-left: 6px !important;
 
-    // 禁用状态下的字体样式增强
-    &.is-disabled {
-      color: #000000 !important; // 黑色
-      font-size: 16px !important; // 字体大小改为16px
-      font-weight: normal !important; // 不加粗
-    }
-  }
+		// 禁用状态下的字体样式增强
+		&.is-disabled {
+			color: #000000 !important; // 黑色
+			font-size: 16px !important; // 字体大小改为16px
+			font-weight: normal !important; // 不加粗
+		}
+	}
 
-  // 禁用状态的单选框整体样式
-  &.is-disabled {
-    .el-radio__label {
-      color: #000000 !important; // 黑色
-      font-size: 16px !important; // 字体大小改为16px
-      font-weight: normal !important; // 不加粗
-    }
+	// 禁用状态的单选框整体样式
+	&.is-disabled {
+		.el-radio__label {
+			color: #000000 !important; // 黑色
+			font-size: 16px !important; // 字体大小改为16px
+			font-weight: normal !important; // 不加粗
+		}
 
-    // 禁用且选中状态下的标签样式特殊增强
-    &.is-checked {
-      .el-radio__label {
-        color: #000000 !important; // 黑色
-        font-size: 16px !important; // 字体大小改为16px
-        font-weight: normal !important; // 不加粗
-      }
-    }
-  }
+		// 禁用且选中状态下的标签样式特殊增强
+		&.is-checked {
+			.el-radio__label {
+				color: #000000 !important; // 黑色
+				font-size: 16px !important; // 字体大小改为16px
+				font-weight: normal !important; // 不加粗
+			}
+		}
+	}
 }
 
 // 全局单选框组和复选框组调整
 .el-radio-group,
 .el-checkbox-group {
-  font-size: 12px !important;
+	font-size: 12px !important;
 
-  .el-radio,
-  .el-checkbox {
-    margin-right: 20px !important;
-  }
+	.el-radio,
+	.el-checkbox {
+		margin-right: 20px !important;
+	}
 }
 
 // ============================================
@@ -1005,42 +1004,42 @@
 // ============================================
 // 全局复选框调整
 .el-checkbox {
-  font-size: 12px !important;
+	font-size: 12px !important;
 
-  .el-checkbox__input {
-    .el-checkbox__inner {
-      width: 12px !important;
-      height: 12px !important;
+	.el-checkbox__input {
+		.el-checkbox__inner {
+			width: 12px !important;
+			height: 12px !important;
 
-      &:after {
-        width: 3px !important;
-        height: 6px !important;
-        left: 3px !important;
-        top: 0px !important;
-      }
-    }
-  }
+			&:after {
+				width: 3px !important;
+				height: 6px !important;
+				left: 3px !important;
+				top: 0px !important;
+			}
+		}
+	}
 
-  .el-checkbox__label {
-    font-size: 12px !important;
-    padding-left: 6px !important;
+	.el-checkbox__label {
+		font-size: 12px !important;
+		padding-left: 6px !important;
 
-    // 禁用状态下的字体样式增强
-    &.is-disabled {
-      color: #000000 !important; // 黑色
-      font-size: 16px !important; // 字体大小改为16px
-      font-weight: normal !important; // 不加粗
-    }
-  }
+		// 禁用状态下的字体样式增强
+		&.is-disabled {
+			color: #000000 !important; // 黑色
+			font-size: 16px !important; // 字体大小改为16px
+			font-weight: normal !important; // 不加粗
+		}
+	}
 
-  // 禁用状态的复选框整体样式
-  &.is-disabled {
-    .el-checkbox__label {
-      color: #000000 !important; // 黑色
-      font-size: 16px !important; // 字体大小改为16px
-      font-weight: normal !important; // 不加粗
-    }
-  }
+	// 禁用状态的复选框整体样式
+	&.is-disabled {
+		.el-checkbox__label {
+			color: #000000 !important; // 黑色
+			font-size: 16px !important; // 字体大小改为16px
+			font-weight: normal !important; // 不加粗
+		}
+	}
 }
 
 // ============================================
@@ -1048,196 +1047,257 @@
 // ============================================
 // 全局表格组件调整 - 整体缩小
 .el-table--scrollable-x {
-  .el-table__fixed {
-    bottom: 10px !important;
-  }
+	.el-table__fixed {
+		bottom: 10px !important;
+	}
 
-  .el-table__fixed-right {
-    bottom: 10px !important;
-  }
+	.el-table__fixed-right {
+		bottom: 10px !important;
+	}
 }
 
 .el-table {
-  font-size: 16px !important;
-  color: #000000 !important; // 表格字体颜色改为纯黑色
-  // 允许选择文本以便复制
-  user-select: text !important;
-  -webkit-user-select: text !important;
-  -moz-user-select: text !important;
-  -ms-user-select: text !important;
+	font-size: 16px !important;
+	color: #000000 !important; // 表格字体颜色改为纯黑色
+	// 允许选择文本以便复制
+	user-select: text !important;
+	-webkit-user-select: text !important;
+	-moz-user-select: text !important;
+	-ms-user-select: text !important;
 
-  // 滚动条样式
-  ::-webkit-scrollbar {
-    height: 10px;
-  }
+	// 滚动条样式
+	::-webkit-scrollbar {
+		height: 10px;
+	}
 
-  ::-webkit-scrollbar-thumb {
-    // 滚动条上的滚动滑块
-    // background: #000 !important;
-    height: 10px;
-  }
+	::-webkit-scrollbar-thumb {
+		// 滚动条上的滚动滑块
+		// background: #000 !important;
+		height: 10px;
+	}
 
-  // 非固定列的样式
-  .el-table__header-wrapper {
-    .el-table__header {
-      th {
-        height: 32px !important; // 从默认40px缩小到32px
-        font-size: 18px !important; // 表头字体大小改为20px
-        color: #000000 !important; // 表头字体颜色改为纯黑色
-        font-weight: bold !important; // 加粗
-        // 允许选择文本以便复制
-        user-select: text !important;
-        -webkit-user-select: text !important;
-        -moz-user-select: text !important;
-        -ms-user-select: text !important;
+	// 非固定列的样式
+	.el-table__header-wrapper {
+		.el-table__header {
+			th {
+				height: 32px !important; // 从默认40px缩小到32px
+				padding: 0 !important; // 表头 padding 设置为 0
+				font-size: 16px !important; // 表头字体大小改为14px
+				color: #000000 !important; // 表头字体颜色改为纯黑色
+				font-weight: bold !important; // 加粗
+				// 允许选择文本以便复制
+				user-select: text !important;
+				-webkit-user-select: text !important;
+				-moz-user-select: text !important;
+				-ms-user-select: text !important;
 
-        .cell {
-          line-height: 20px !important;
-          font-size: 18px !important; // 表头单元格字体大小改为20px
-          color: #000000 !important; // 表头单元格字体颜色改为纯黑色
-          font-weight: bold !important; // 加粗
-          // 允许选择文本以便复制
-          user-select: text !important;
-          -webkit-user-select: text !important;
-          -moz-user-select: text !important;
-          -ms-user-select: text !important;
-          cursor: text !important; // 鼠标悬停时显示文本光标
-        }
-      }
-    }
-  }
+				.cell {
+					line-height: 20px !important;
+					font-size: 16px !important; // 表头单元格字体大小改为14px
+					color: #000000 !important; // 表头单元格字体颜色改为纯黑色
+					font-weight: bold !important; // 加粗
+					// 允许选择文本以便复制
+					user-select: text !important;
+					-webkit-user-select: text !important;
+					-moz-user-select: text !important;
+					-ms-user-select: text !important;
+					cursor: text !important; // 鼠标悬停时显示文本光标
+				}
+			}
+		}
+	}
 
-  // 表体单元格样式（padding 已在全局设置中统一）
+	// 表体单元格样式 - padding 设置为 0
+	.el-table__body-wrapper {
+		.el-table__body {
+			td {
+				padding: 0 !important; // 表体单元格 padding 设置为 0
+			}
+		}
+	}
 
-  // 固定列表头样式 - 与主表格表头保持一致
-  .el-table__fixed {
-    height: auto !important;
-    bottom: 10px !important; //具体值是多少根据页面横向滚动条的高度进行设置
-    .el-table__fixed-header-wrapper {
-      .el-table__header {
-        th {
-          height: 32px !important; // 从默认40px缩小到32px
-          font-size: 18px !important; // 表头字体大小改为20px
-          color: #000000 !important; // 表头字体颜色改为纯黑色
-          font-weight: bold !important; // 加粗
-          // 允许选择文本以便复制
-          user-select: text !important;
-          -webkit-user-select: text !important;
-          -moz-user-select: text !important;
-          -ms-user-select: text !important;
+	// 固定列表体单元格样式
+	.el-table__fixed,
+	.el-table__fixed-right {
+		.el-table__fixed-body-wrapper {
+			.el-table__body {
+				td {
+					padding: 0 !important; // 固定列表体单元格 padding 设置为 0
+				}
+			}
+		}
+	}
 
-          .cell {
-            line-height: 20px !important;
-            font-size: 18px !important; // 表头单元格字体大小改为20px
-            color: #000000 !important; // 表头单元格字体颜色改为纯黑色
-            font-weight: bold !important; // 加粗
-            // 允许选择文本以便复制
-            user-select: text !important;
-            -webkit-user-select: text !important;
-            -moz-user-select: text !important;
-            -ms-user-select: text !important;
-            cursor: text !important; // 鼠标悬停时显示文本光标
-          }
-        }
-      }
-    }
-  }
+	// 固定列表头样式 - 与主表格表头保持一致
+	.el-table__fixed {
+		height: auto !important;
+		bottom: 10px !important; //具体值是多少根据页面横向滚动条的高度进行设置
+		.el-table__fixed-header-wrapper {
+			.el-table__header {
+				th {
+					height: 32px !important; // 从默认40px缩小到32px
+					padding: 0 !important; // 固定列表头 padding 设置为 0
+					font-size: 16px !important; // 表头字体大小改为14px
+					color: #000000 !important; // 表头字体颜色改为纯黑色
+					font-weight: bold !important; // 加粗
+					// 允许选择文本以便复制
+					user-select: text !important;
+					-webkit-user-select: text !important;
+					-moz-user-select: text !important;
+					-ms-user-select: text !important;
 
-  // 表格尺寸变体调整
-  &.el-table--medium {
-    // medium 尺寸单元格内边距
-    th .cell,
-    td .cell {
-      padding: 0 5px !important; // medium尺寸单元格内间距（比默认稍小）
-    }
+					.cell {
+						line-height: 20px !important;
+						font-size: 16px !important; // 表头单元格字体大小改为14px
+						color: #000000 !important; // 表头单元格字体颜色改为纯黑色
+						font-weight: bold !important; // 加粗
+						// 允许选择文本以便复制
+						user-select: text !important;
+						-webkit-user-select: text !important;
+						-moz-user-select: text !important;
+						-ms-user-select: text !important;
+						cursor: text !important; // 鼠标悬停时显示文本光标
+					}
+				}
+			}
+		}
+	}
 
-    .el-table__header th {
-      height: 28px !important;
-      font-size: 18px !important; // 表头字体大小改为20px
-      color: #000000 !important;
-      // 允许选择文本以便复制
-      user-select: text !important;
-      -webkit-user-select: text !important;
-      -moz-user-select: text !important;
-      -ms-user-select: text !important;
+	// 表格尺寸变体调整
+	&.el-table--medium {
+		// medium 尺寸单元格内边距
+		th .cell {
+			padding: 0 5px !important; // medium尺寸表头单元格内间距
+		}
 
-      .cell {
-        font-size: 18px !important; // 表头单元格字体大小改为20px
-        color: #000000 !important;
-        // 允许选择文本以便复制
-        user-select: text !important;
-        -webkit-user-select: text !important;
-        -moz-user-select: text !important;
-        -ms-user-select: text !important;
-        cursor: text !important;
-      }
-    }
-  }
+		// medium 尺寸表体单元格 padding 设置为 0
+		.el-table__body-wrapper {
+			.el-table__body {
+				td {
+					padding: 0 !important;
+				}
+			}
+		}
 
-  &.el-table--mini {
-    // 去除表体单元格的 padding（Element UI 默认是 6px）
-    .el-table__cell {
-      padding: 0 !important;
-    }
+		.el-table__fixed,
+		.el-table__fixed-right {
+			.el-table__fixed-body-wrapper {
+				.el-table__body {
+					td {
+						padding: 0 !important; // medium 尺寸固定列表体单元格 padding 设置为 0
+					}
+				}
+			}
+		}
 
-    th .cell {
-      // 只设置表头单元格 padding，不影响表体
-      padding: 0 2px !important; // mini尺寸单元格内间距（最小）
-    }
+		.el-table__header th {
+			height: 28px !important;
+			padding: 0 !important; // medium 尺寸表头 padding 设置为 0
+			font-size: 16px !important; // 表头字体大小改为14px
+			color: #000000 !important;
+			// 允许选择文本以便复制
+			user-select: text !important;
+			-webkit-user-select: text !important;
+			-moz-user-select: text !important;
+			-ms-user-select: text !important;
 
-    .el-table__header th {
-      height: 20px !important;
-      padding: 1px 0 !important;
-      font-size: 18px !important; // 表头字体大小改为20px
-      color: #000000 !important;
-      // 允许选择文本以便复制
-      user-select: text !important;
-      -webkit-user-select: text !important;
-      -moz-user-select: text !important;
-      -ms-user-select: text !important;
+			.cell {
+				font-size: 16px !important; // 表头单元格字体大小改为14px
+				color: #000000 !important;
+				// 允许选择文本以便复制
+				user-select: text !important;
+				-webkit-user-select: text !important;
+				-moz-user-select: text !important;
+				-ms-user-select: text !important;
+				cursor: text !important;
+			}
+		}
+	}
 
-      .cell {
-        font-size: 18px !important; // 表头单元格字体大小改为20px
-        color: #000000 !important;
-        // 允许选择文本以便复制
-        user-select: text !important;
-        -webkit-user-select: text !important;
-        -moz-user-select: text !important;
-        -ms-user-select: text !important;
-        cursor: text !important;
-      }
-    }
-  }
+	&.el-table--mini {
+		// 去除表体单元格的 padding（Element UI 默认是 6px）
+		.el-table__cell {
+			padding: 0 !important;
+		}
+
+		// mini 尺寸表体单元格 padding 设置为 0
+		.el-table__body-wrapper {
+			.el-table__body {
+				td {
+					padding: 0 !important;
+				}
+			}
+		}
+
+		.el-table__fixed,
+		.el-table__fixed-right {
+			.el-table__fixed-body-wrapper {
+				.el-table__body {
+					td {
+						padding: 0 !important; // mini 尺寸固定列表体单元格 padding 设置为 0
+					}
+				}
+			}
+		}
+
+		th .cell {
+			// 只设置表头单元格 padding，不影响表体
+			padding: 0 2px !important; // mini尺寸单元格内间距（最小）
+		}
+
+		.el-table__header th {
+			height: 20px !important;
+			padding: 0 !important; // mini 尺寸表头 padding 设置为 0
+			font-size: 16px !important; // 表头字体大小改为14px
+			color: #000000 !important;
+			// 允许选择文本以便复制
+			user-select: text !important;
+			-webkit-user-select: text !important;
+			-moz-user-select: text !important;
+			-ms-user-select: text !important;
+
+			.cell {
+				font-size: 16px !important; // 表头单元格字体大小改为14px
+				color: #000000 !important;
+				// 允许选择文本以便复制
+				user-select: text !important;
+				-webkit-user-select: text !important;
+				-moz-user-select: text !important;
+				-ms-user-select: text !important;
+				cursor: text !important;
+			}
+		}
+	}
 }
 
 // 表格筛选面板调整
 .el-table-filter {
-  .el-table-filter__list {
-    .el-table-filter__list-item {
-      height: 24px !important;
-      line-height: 24px !important;
-      font-size: 12px !important;
+	.el-table-filter__list {
+		.el-table-filter__list-item {
+			height: 24px !important;
+			line-height: 24px !important;
+			font-size: 12px !important;
 
-      .el-checkbox {
-        .el-checkbox__inner {
-          width: 10px !important;
-          height: 10px !important;
-        }
+			.el-checkbox {
+				.el-checkbox__inner {
+					width: 10px !important;
+					height: 10px !important;
+				}
 
-        .el-checkbox__label {
-          font-size: 11px !important;
-        }
-      }
-    }
-  }
+				.el-checkbox__label {
+					font-size: 11px !important;
+				}
+			}
+		}
+	}
 
-  .el-table-filter__bottom {
-    .el-button {
-      height: 22px !important;
-      padding: 3px 8px !important;
-      font-size: 11px !important;
-    }
-  }
+	.el-table-filter__bottom {
+		.el-button {
+			height: 22px !important;
+			padding: 3px 8px !important;
+			font-size: 11px !important;
+		}
+	}
 }
 
 // ============================================
@@ -1245,209 +1305,209 @@
 // ============================================
 // 表格分页组件调整 - 优化布局和对齐
 .el-pagination {
-  font-size: 12px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  flex-wrap: wrap !important;
-  gap: 8px !important;
+	font-size: 12px !important;
+	display: flex !important;
+	align-items: center !important;
+	justify-content: space-between !important;
+	flex-wrap: wrap !important;
+	gap: 8px !important;
 
-  // 总条数显示
-  .el-pagination__total {
-    font-size: 12px !important;
-    color: #606266 !important;
-    margin-right: 8px !important;
-    order: 1 !important;
-  }
+	// 总条数显示
+	.el-pagination__total {
+		font-size: 12px !important;
+		color: #606266 !important;
+		margin-right: 8px !important;
+		order: 1 !important;
+	}
 
-  // 每页显示条数选择器 - 左侧布局优化
-  .el-pagination__sizes {
-    order: 2 !important;
-    margin-right: auto !important;
-    display: flex !important;
-    align-items: center !important;
+	// 每页显示条数选择器 - 左侧布局优化
+	.el-pagination__sizes {
+		order: 2 !important;
+		margin-right: auto !important;
+		display: flex !important;
+		align-items: center !important;
 
-    .el-select {
-      width: 90px !important;
-      margin-left: 8px !important;
+		.el-select {
+			width: 90px !important;
+			margin-left: 8px !important;
 
-      .el-input__inner {
-        height: 24px !important;
-        line-height: 24px !important;
-        font-size: 11px !important;
-        border-radius: 4px !important;
-        padding: 0 24px 0 8px !important;
-      }
+			.el-input__inner {
+				height: 24px !important;
+				line-height: 24px !important;
+				font-size: 11px !important;
+				border-radius: 4px !important;
+				padding: 0 24px 0 8px !important;
+			}
 
-      .el-input__suffix {
-        right: 6px !important;
-      }
-    }
-  }
+			.el-input__suffix {
+				right: 6px !important;
+			}
+		}
+	}
 
-  // 页码按钮区域 - 中央布局优化
-  .el-pager {
-    order: 3 !important;
-    display: flex !important;
-    align-items: center !important;
-    margin: 0 16px !important;
+	// 页码按钮区域 - 中央布局优化
+	.el-pager {
+		order: 3 !important;
+		display: flex !important;
+		align-items: center !important;
+		margin: 0 16px !important;
 
-    li {
-      min-width: 24px !important;
-      height: 24px !important;
-      line-height: 22px !important;
-      font-size: 11px !important;
-      margin: 0 1px !important;
-      border-radius: 3px !important;
-      border: 1px solid #dcdfe6 !important;
-      background-color: #fff !important;
-      cursor: pointer !important;
-      transition: all 0.2s ease !important;
+		li {
+			min-width: 24px !important;
+			height: 24px !important;
+			line-height: 22px !important;
+			font-size: 11px !important;
+			margin: 0 1px !important;
+			border-radius: 3px !important;
+			border: 1px solid #dcdfe6 !important;
+			background-color: #fff !important;
+			cursor: pointer !important;
+			transition: all 0.2s ease !important;
 
-      &:hover {
-        background-color: #f5f7fa !important;
-        border-color: #c0c4cc !important;
-      }
+			&:hover {
+				background-color: #f5f7fa !important;
+				border-color: #c0c4cc !important;
+			}
 
-      &.active {
-        background-color: #409eff !important;
-        border-color: #409eff !important;
-        color: #fff !important;
-      }
+			&.active {
+				background-color: #409eff !important;
+				border-color: #409eff !important;
+				color: #fff !important;
+			}
 
-      &.more {
-        border: none !important;
-        background: transparent !important;
+			&.more {
+				border: none !important;
+				background: transparent !important;
 
-        &:hover {
-          background: transparent !important;
-          color: #409eff !important;
-        }
-      }
-    }
-  }
+				&:hover {
+					background: transparent !important;
+					color: #409eff !important;
+				}
+			}
+		}
+	}
 
-  // 上一页/下一页按钮
-  .btn-prev,
-  .btn-next {
-    min-width: 24px !important;
-    height: 24px !important;
-    line-height: 22px !important;
-    font-size: 11px !important;
-    border: 1px solid #dcdfe6 !important;
-    border-radius: 3px !important;
-    background-color: #fff !important;
-    cursor: pointer !important;
-    transition: all 0.2s ease !important;
+	// 上一页/下一页按钮
+	.btn-prev,
+	.btn-next {
+		min-width: 24px !important;
+		height: 24px !important;
+		line-height: 22px !important;
+		font-size: 11px !important;
+		border: 1px solid #dcdfe6 !important;
+		border-radius: 3px !important;
+		background-color: #fff !important;
+		cursor: pointer !important;
+		transition: all 0.2s ease !important;
 
-    &:hover:not(.disabled) {
-      background-color: #f5f7fa !important;
-      border-color: #c0c4cc !important;
-    }
+		&:hover:not(.disabled) {
+			background-color: #f5f7fa !important;
+			border-color: #c0c4cc !important;
+		}
 
-    &.disabled {
-      background-color: #f5f7fa !important;
-      border-color: #e4e7ed !important;
-      color: #c0c4cc !important;
-      cursor: not-allowed !important;
-    }
-  }
+		&.disabled {
+			background-color: #f5f7fa !important;
+			border-color: #e4e7ed !important;
+			color: #c0c4cc !important;
+			cursor: not-allowed !important;
+		}
+	}
 
-  .btn-prev {
-    order: 2.5 !important;
-    margin-right: 4px !important;
-  }
+	.btn-prev {
+		order: 2.5 !important;
+		margin-right: 4px !important;
+	}
 
-  .btn-next {
-    order: 3.5 !important;
-    margin-left: 4px !important;
-  }
+	.btn-next {
+		order: 3.5 !important;
+		margin-left: 4px !important;
+	}
 
-  // 跳转输入框 - 右侧布局优化
-  .el-pagination__jump {
-    order: 4 !important;
-    margin-left: auto !important;
-    display: flex !important;
-    align-items: center !important;
-    font-size: 12px !important;
-    color: #606266 !important;
+	// 跳转输入框 - 右侧布局优化
+	.el-pagination__jump {
+		order: 4 !important;
+		margin-left: auto !important;
+		display: flex !important;
+		align-items: center !important;
+		font-size: 12px !important;
+		color: #606266 !important;
 
-    .el-input {
-      width: 40px !important;
-      margin: 0 6px !important;
+		.el-input {
+			width: 40px !important;
+			margin: 0 6px !important;
 
-      .el-input__inner {
-        width: 40px !important;
-        height: 24px !important;
-        line-height: 24px !important;
-        text-align: center !important;
-        padding: 0 4px !important;
-        font-size: 11px !important;
-        border-radius: 3px !important;
-      }
-    }
-  }
+			.el-input__inner {
+				width: 40px !important;
+				height: 24px !important;
+				line-height: 24px !important;
+				text-align: center !important;
+				padding: 0 4px !important;
+				font-size: 11px !important;
+				border-radius: 3px !important;
+			}
+		}
+	}
 
-  // 响应式布局优化
-  @media (max-width: 768px) {
-    flex-direction: column !important;
-    gap: 12px !important;
+	// 响应式布局优化
+	@media (max-width: 768px) {
+		flex-direction: column !important;
+		gap: 12px !important;
 
-    .el-pagination__sizes,
-    .el-pagination__jump {
-      margin: 0 !important;
-      order: initial !important;
-    }
+		.el-pagination__sizes,
+		.el-pagination__jump {
+			margin: 0 !important;
+			order: initial !important;
+		}
 
-    .el-pager {
-      margin: 0 !important;
-      justify-content: center !important;
-      flex-wrap: wrap !important;
-    }
-  }
+		.el-pager {
+			margin: 0 !important;
+			justify-content: center !important;
+			flex-wrap: wrap !important;
+		}
+	}
 
-  // 紧凑模式
-  &.is-background {
-    .el-pager li {
-      background-color: #f4f4f5 !important;
-      border: none !important;
+	// 紧凑模式
+	&.is-background {
+		.el-pager li {
+			background-color: #f4f4f5 !important;
+			border: none !important;
 
-      &:hover {
-        background-color: #e6e8eb !important;
-      }
+			&:hover {
+				background-color: #e6e8eb !important;
+			}
 
-      &.active {
-        background-color: #409eff !important;
-        color: #fff !important;
-      }
-    }
+			&.active {
+				background-color: #409eff !important;
+				color: #fff !important;
+			}
+		}
 
-    .btn-prev,
-    .btn-next {
-      background-color: #f4f4f5 !important;
-      border: none !important;
+		.btn-prev,
+		.btn-next {
+			background-color: #f4f4f5 !important;
+			border: none !important;
 
-      &:hover:not(.disabled) {
-        background-color: #e6e8eb !important;
-      }
-    }
-  }
+			&:hover:not(.disabled) {
+				background-color: #e6e8eb !important;
+			}
+		}
+	}
 }
 
 // ============================================
 // Dropdown 下拉菜单
 // ============================================
 .el-dropdown-menu {
-  a {
-    display: block;
-  }
+	a {
+		display: block;
+	}
 }
 
 // ============================================
 // Menu 导航菜单
 // ============================================
 .el-menu--collapse > div > .el-submenu > .el-submenu__title .el-submenu__icon-arrow {
-  display: none;
+	display: none;
 }
 
 // ============================================
@@ -1456,33 +1516,33 @@
 // 表格单元格 tooltip 样式定制
 // 确保 tooltip 可以接收鼠标事件，实现鼠标移入 tooltip 时不消失，并且可以复制
 .table-cell-tooltip {
-  pointer-events: auto !important; // 允许 tooltip 接收鼠标事件
-  z-index: 9999 !important; // 确保层级足够高
-  max-width: 500px !important;
+	pointer-events: auto !important; // 允许 tooltip 接收鼠标事件
+	z-index: 9999 !important; // 确保层级足够高
+	max-width: 500px !important;
 
-  // tooltip 内容区域可以接收鼠标事件并允许选中
-  .el-tooltip__popper__inner {
-    pointer-events: auto !important;
-    user-select: text !important; // 允许选中文本
-    cursor: text !important;
-    word-break: break-all !important;
-    white-space: pre-wrap !important;
-    max-height: 300px !important;
-    overflow-y: auto !important;
-    padding: 8px 12px !important;
-    line-height: 1.5 !important;
-  }
+	// tooltip 内容区域可以接收鼠标事件并允许选中
+	.el-tooltip__popper__inner {
+		pointer-events: auto !important;
+		user-select: text !important; // 允许选中文本
+		cursor: text !important;
+		word-break: break-all !important;
+		white-space: pre-wrap !important;
+		max-height: 300px !important;
+		overflow-y: auto !important;
+		padding: 8px 12px !important;
+		line-height: 1.5 !important;
+	}
 
-  // tooltip 箭头也可以接收鼠标事件
-  .popper__arrow {
-    pointer-events: auto !important;
-  }
+	// tooltip 箭头也可以接收鼠标事件
+	.popper__arrow {
+		pointer-events: auto !important;
+	}
 
-  // 当 tooltip 显示时，确保完全可见
-  &[aria-hidden='false'] {
-    opacity: 1 !important;
-    visibility: visible !important;
-  }
+	// 当 tooltip 显示时，确保完全可见
+	&[aria-hidden='false'] {
+		opacity: 1 !important;
+		visibility: visible !important;
+	}
 }
 
 // ============================================
@@ -1490,238 +1550,238 @@
 // ============================================
 // 全局描述列表组件调整 - 字体加黑加粗
 .el-descriptions {
-  font-size: 13px !important;
-  // 允许选择文本以便复制
-  user-select: text !important;
-  -webkit-user-select: text !important;
-  -moz-user-select: text !important;
-  -ms-user-select: text !important;
+	font-size: 13px !important;
+	// 允许选择文本以便复制
+	user-select: text !important;
+	-webkit-user-select: text !important;
+	-moz-user-select: text !important;
+	-ms-user-select: text !important;
 
-  // 描述列表标题
-  .el-descriptions__title {
-    color: #000000 !important;
-    font-weight: bold !important;
-    font-size: 14px !important;
-    // 允许选择文本以便复制
-    user-select: text !important;
-    -webkit-user-select: text !important;
-    -moz-user-select: text !important;
-    -ms-user-select: text !important;
-    cursor: text !important;
-  }
+	// 描述列表标题
+	.el-descriptions__title {
+		color: #000000 !important;
+		font-weight: bold !important;
+		font-size: 14px !important;
+		// 允许选择文本以便复制
+		user-select: text !important;
+		-webkit-user-select: text !important;
+		-moz-user-select: text !important;
+		-ms-user-select: text !important;
+		cursor: text !important;
+	}
 
-  // 描述列表项 - 使用更强的选择器优先级
-  .el-descriptions-item {
-    // 标签部分
-    .el-descriptions-item__label {
-      color: #000000 !important;
-      font-weight: bold !important;
-      font-size: 13px !important;
-      // 允许选择文本以便复制
-      user-select: text !important;
-      -webkit-user-select: text !important;
-      -moz-user-select: text !important;
-      -ms-user-select: text !important;
-      cursor: text !important;
-    }
+	// 描述列表项 - 使用更强的选择器优先级
+	.el-descriptions-item {
+		// 标签部分
+		.el-descriptions-item__label {
+			color: #000000 !important;
+			font-weight: bold !important;
+			font-size: 13px !important;
+			// 允许选择文本以便复制
+			user-select: text !important;
+			-webkit-user-select: text !important;
+			-moz-user-select: text !important;
+			-ms-user-select: text !important;
+			cursor: text !important;
+		}
 
-    // 内容部分 - 只加黑不加粗
-    .el-descriptions-item__content {
-      color: #000000 !important;
-      font-weight: normal !important;
-      font-size: 13px !important;
-      // 允许选择文本以便复制
-      user-select: text !important;
-      -webkit-user-select: text !important;
-      -moz-user-select: text !important;
-      -ms-user-select: text !important;
-      cursor: text !important;
-    }
+		// 内容部分 - 只加黑不加粗
+		.el-descriptions-item__content {
+			color: #000000 !important;
+			font-weight: normal !important;
+			font-size: 13px !important;
+			// 允许选择文本以便复制
+			user-select: text !important;
+			-webkit-user-select: text !important;
+			-moz-user-select: text !important;
+			-ms-user-select: text !important;
+			cursor: text !important;
+		}
 
-    // 标签单元格
-    td.el-descriptions-item__label {
-      color: #000000 !important;
-      font-weight: bold !important;
-      font-size: 13px !important;
-      // 允许选择文本以便复制
-      user-select: text !important;
-      -webkit-user-select: text !important;
-      -moz-user-select: text !important;
-      -ms-user-select: text !important;
-      cursor: text !important;
-    }
+		// 标签单元格
+		td.el-descriptions-item__label {
+			color: #000000 !important;
+			font-weight: bold !important;
+			font-size: 13px !important;
+			// 允许选择文本以便复制
+			user-select: text !important;
+			-webkit-user-select: text !important;
+			-moz-user-select: text !important;
+			-ms-user-select: text !important;
+			cursor: text !important;
+		}
 
-    // 内容单元格 - 只加黑不加粗
-    td.el-descriptions-item__content {
-      color: #000000 !important;
-      font-weight: normal !important;
-      font-size: 13px !important;
-      // 允许选择文本以便复制
-      user-select: text !important;
-      -webkit-user-select: text !important;
-      -moz-user-select: text !important;
-      -ms-user-select: text !important;
-      cursor: text !important;
-    }
-  }
+		// 内容单元格 - 只加黑不加粗
+		td.el-descriptions-item__content {
+			color: #000000 !important;
+			font-weight: normal !important;
+			font-size: 13px !important;
+			// 允许选择文本以便复制
+			user-select: text !important;
+			-webkit-user-select: text !important;
+			-moz-user-select: text !important;
+			-ms-user-select: text !important;
+			cursor: text !important;
+		}
+	}
 
-  // 边框模式下的样式
-  &.is-bordered {
-    .el-descriptions-item {
-      .el-descriptions-item__label {
-        background-color: #fafafa !important;
-        color: #000000 !important;
-        font-weight: bold !important;
-        // 允许选择文本以便复制
-        user-select: text !important;
-        -webkit-user-select: text !important;
-        -moz-user-select: text !important;
-        -ms-user-select: text !important;
-        cursor: text !important;
-      }
+	// 边框模式下的样式
+	&.is-bordered {
+		.el-descriptions-item {
+			.el-descriptions-item__label {
+				background-color: #fafafa !important;
+				color: #000000 !important;
+				font-weight: bold !important;
+				// 允许选择文本以便复制
+				user-select: text !important;
+				-webkit-user-select: text !important;
+				-moz-user-select: text !important;
+				-ms-user-select: text !important;
+				cursor: text !important;
+			}
 
-      .el-descriptions-item__content {
-        color: #000000 !important;
-        font-weight: normal !important;
-        // 允许选择文本以便复制
-        user-select: text !important;
-        -webkit-user-select: text !important;
-        -moz-user-select: text !important;
-        -ms-user-select: text !important;
-        cursor: text !important;
-      }
+			.el-descriptions-item__content {
+				color: #000000 !important;
+				font-weight: normal !important;
+				// 允许选择文本以便复制
+				user-select: text !important;
+				-webkit-user-select: text !important;
+				-moz-user-select: text !important;
+				-ms-user-select: text !important;
+				cursor: text !important;
+			}
 
-      td.el-descriptions-item__label {
-        background-color: #fafafa !important;
-        color: #000000 !important;
-        font-weight: bold !important;
-        // 允许选择文本以便复制
-        user-select: text !important;
-        -webkit-user-select: text !important;
-        -moz-user-select: text !important;
-        -ms-user-select: text !important;
-        cursor: text !important;
-      }
+			td.el-descriptions-item__label {
+				background-color: #fafafa !important;
+				color: #000000 !important;
+				font-weight: bold !important;
+				// 允许选择文本以便复制
+				user-select: text !important;
+				-webkit-user-select: text !important;
+				-moz-user-select: text !important;
+				-ms-user-select: text !important;
+				cursor: text !important;
+			}
 
-      td.el-descriptions-item__content {
-        color: #000000 !important;
-        font-weight: normal !important;
-        // 允许选择文本以便复制
-        user-select: text !important;
-        -webkit-user-select: text !important;
-        -moz-user-select: text !important;
-        -ms-user-select: text !important;
-        cursor: text !important;
-      }
-    }
-  }
+			td.el-descriptions-item__content {
+				color: #000000 !important;
+				font-weight: normal !important;
+				// 允许选择文本以便复制
+				user-select: text !important;
+				-webkit-user-select: text !important;
+				-moz-user-select: text !important;
+				-ms-user-select: text !important;
+				cursor: text !important;
+			}
+		}
+	}
 
-  // 表格单元格样式
-  table {
-    .el-descriptions-item__label {
-      color: #000000 !important;
-      font-weight: bold !important;
-      font-size: 13px !important;
-      // 允许选择文本以便复制
-      user-select: text !important;
-      -webkit-user-select: text !important;
-      -moz-user-select: text !important;
-      -ms-user-select: text !important;
-      cursor: text !important;
-    }
+	// 表格单元格样式
+	table {
+		.el-descriptions-item__label {
+			color: #000000 !important;
+			font-weight: bold !important;
+			font-size: 13px !important;
+			// 允许选择文本以便复制
+			user-select: text !important;
+			-webkit-user-select: text !important;
+			-moz-user-select: text !important;
+			-ms-user-select: text !important;
+			cursor: text !important;
+		}
 
-    .el-descriptions-item__content {
-      color: #000000 !important;
-      font-weight: normal !important;
-      font-size: 13px !important;
-      // 允许选择文本以便复制
-      user-select: text !important;
-      -webkit-user-select: text !important;
-      -moz-user-select: text !important;
-      -ms-user-select: text !important;
-      cursor: text !important;
-    }
+		.el-descriptions-item__content {
+			color: #000000 !important;
+			font-weight: normal !important;
+			font-size: 13px !important;
+			// 允许选择文本以便复制
+			user-select: text !important;
+			-webkit-user-select: text !important;
+			-moz-user-select: text !important;
+			-ms-user-select: text !important;
+			cursor: text !important;
+		}
 
-    td {
-      &.el-descriptions-item__label {
-        color: #000000 !important;
-        font-weight: bold !important;
-        font-size: 13px !important;
-        // 允许选择文本以便复制
-        user-select: text !important;
-        -webkit-user-select: text !important;
-        -moz-user-select: text !important;
-        -ms-user-select: text !important;
-        cursor: text !important;
-      }
+		td {
+			&.el-descriptions-item__label {
+				color: #000000 !important;
+				font-weight: bold !important;
+				font-size: 13px !important;
+				// 允许选择文本以便复制
+				user-select: text !important;
+				-webkit-user-select: text !important;
+				-moz-user-select: text !important;
+				-ms-user-select: text !important;
+				cursor: text !important;
+			}
 
-      &.el-descriptions-item__content {
-        color: #000000 !important;
-        font-weight: normal !important;
-        font-size: 13px !important;
-        // 允许选择文本以便复制
-        user-select: text !important;
-        -webkit-user-select: text !important;
-        -moz-user-select: text !important;
-        -ms-user-select: text !important;
-        cursor: text !important;
-      }
-    }
-  }
+			&.el-descriptions-item__content {
+				color: #000000 !important;
+				font-weight: normal !important;
+				font-size: 13px !important;
+				// 允许选择文本以便复制
+				user-select: text !important;
+				-webkit-user-select: text !important;
+				-moz-user-select: text !important;
+				-ms-user-select: text !important;
+				cursor: text !important;
+			}
+		}
+	}
 }
 
 // 更具体的选择器，确保覆盖所有情况
 .el-descriptions-item__label {
-  color: #000000 !important;
-  font-weight: bold !important;
-  font-size: 13px !important;
-  // 允许选择文本以便复制
-  user-select: text !important;
-  -webkit-user-select: text !important;
-  -moz-user-select: text !important;
-  -ms-user-select: text !important;
-  cursor: text !important;
+	color: #000000 !important;
+	font-weight: bold !important;
+	font-size: 13px !important;
+	// 允许选择文本以便复制
+	user-select: text !important;
+	-webkit-user-select: text !important;
+	-moz-user-select: text !important;
+	-ms-user-select: text !important;
+	cursor: text !important;
 }
 
 .el-descriptions-item__content {
-  color: #000000 !important;
-  font-weight: normal !important;
-  font-size: 13px !important;
-  // 允许选择文本以便复制
-  user-select: text !important;
-  -webkit-user-select: text !important;
-  -moz-user-select: text !important;
-  -ms-user-select: text !important;
-  cursor: text !important;
+	color: #000000 !important;
+	font-weight: normal !important;
+	font-size: 13px !important;
+	// 允许选择文本以便复制
+	user-select: text !important;
+	-webkit-user-select: text !important;
+	-moz-user-select: text !important;
+	-ms-user-select: text !important;
+	cursor: text !important;
 }
 
 // 针对表格内的描述项
 .el-descriptions table {
-  tbody tr td {
-    &.el-descriptions-item__label {
-      color: #000000 !important;
-      font-weight: bold !important;
-      font-size: 13px !important;
-      // 允许选择文本以便复制
-      user-select: text !important;
-      -webkit-user-select: text !important;
-      -moz-user-select: text !important;
-      -ms-user-select: text !important;
-      cursor: text !important;
-    }
+	tbody tr td {
+		&.el-descriptions-item__label {
+			color: #000000 !important;
+			font-weight: bold !important;
+			font-size: 13px !important;
+			// 允许选择文本以便复制
+			user-select: text !important;
+			-webkit-user-select: text !important;
+			-moz-user-select: text !important;
+			-ms-user-select: text !important;
+			cursor: text !important;
+		}
 
-    &.el-descriptions-item__content {
-      color: #000000 !important;
-      font-weight: normal !important;
-      font-size: 13px !important;
-      // 允许选择文本以便复制
-      user-select: text !important;
-      -webkit-user-select: text !important;
-      -moz-user-select: text !important;
-      -ms-user-select: text !important;
-      cursor: text !important;
-    }
-  }
+		&.el-descriptions-item__content {
+			color: #000000 !important;
+			font-weight: normal !important;
+			font-size: 13px !important;
+			// 允许选择文本以便复制
+			user-select: text !important;
+			-webkit-user-select: text !important;
+			-moz-user-select: text !important;
+			-ms-user-select: text !important;
+			cursor: text !important;
+		}
+	}
 }
 
 // ============================================
@@ -1730,52 +1790,52 @@
 // 全局时间选择器调整
 .el-time-select,
 .el-time-picker {
-  .el-input__inner {
-    height: 24px !important;
-    line-height: 24px !important;
-    padding-left: 8px !important; // 恢复正常左边距
-    padding-right: 8px !important; // 恢复正常右边距
-    font-size: 16px !important; // 字体大小改为16px
-    // 有值时的字体样式
-    color: #000000 !important; // 黑色
-    font-weight: normal !important; // 不加粗
+	.el-input__inner {
+		height: 24px !important;
+		line-height: 24px !important;
+		padding-left: 8px !important; // 恢复正常左边距
+		padding-right: 8px !important; // 恢复正常右边距
+		font-size: 16px !important; // 字体大小改为16px
+		// 有值时的字体样式
+		color: #000000 !important; // 黑色
+		font-weight: normal !important; // 不加粗
 
-    &::placeholder {
-      color: transparent !important; // 透明色，隐藏placeholder
-      font-weight: normal !important; // placeholder 不加粗
-    }
+		&::placeholder {
+			color: transparent !important; // 透明色，隐藏placeholder
+			font-weight: normal !important; // placeholder 不加粗
+		}
 
-    // 禁用状态下的字体样式增强
-    &:disabled {
-      color: #000000 !important; // 黑色
-      font-size: 16px !important; // 字体大小改为16px
-      font-weight: normal !important; // 不加粗
-    }
-  }
+		// 禁用状态下的字体样式增强
+		&:disabled {
+			color: #000000 !important; // 黑色
+			font-size: 16px !important; // 字体大小改为16px
+			font-weight: normal !important; // 不加粗
+		}
+	}
 
-  // 隐藏时间选择器的所有图标
-  .el-input__suffix,
-  .el-input__prefix {
-    display: none !important;
-  }
+	// 隐藏时间选择器的所有图标
+	.el-input__suffix,
+	.el-input__prefix {
+		display: none !important;
+	}
 
-  // 禁用状态的时间选择器整体样式
-  &.is-disabled {
-    .el-input__inner {
-      color: #000000 !important; // 黑色
-      font-size: 16px !important; // 字体大小改为16px
-      font-weight: normal !important; // 不加粗
-    }
-  }
+	// 禁用状态的时间选择器整体样式
+	&.is-disabled {
+		.el-input__inner {
+			color: #000000 !important; // 黑色
+			font-size: 16px !important; // 字体大小改为16px
+			font-weight: normal !important; // 不加粗
+		}
+	}
 }
 
 // 全局时间选择器面板调整
 .el-time-panel {
-  .el-time-spinner__item {
-    height: 24px !important;
-    line-height: 24px !important;
-    font-size: 10px !important;
-  }
+	.el-time-spinner__item {
+		height: 24px !important;
+		line-height: 24px !important;
+		font-size: 10px !important;
+	}
 }
 
 // ============================================
@@ -1783,10 +1843,10 @@
 // ============================================
 // 全局颜色选择器调整
 .el-color-picker {
-  .el-color-picker__trigger {
-    width: 24px !important;
-    height: 24px !important;
-  }
+	.el-color-picker__trigger {
+		width: 24px !important;
+		height: 24px !important;
+	}
 }
 
 // ============================================
@@ -1794,10 +1854,10 @@
 // ============================================
 // 全局评分组件调整
 .el-rate {
-  .el-rate__item {
-    font-size: 14px !important;
-    margin-right: 4px !important;
-  }
+	.el-rate__item {
+		font-size: 14px !important;
+		margin-right: 4px !important;
+	}
 }
 
 // ============================================
@@ -1805,12 +1865,12 @@
 // ============================================
 // 全局滑块组件调整
 .el-slider {
-  .el-slider__runway {
-    height: 4px !important;
-  }
+	.el-slider__runway {
+		height: 4px !important;
+	}
 
-  .el-slider__button {
-    width: 14px !important;
-    height: 14px !important;
-  }
+	.el-slider__button {
+		width: 14px !important;
+		height: 14px !important;
+	}
 }

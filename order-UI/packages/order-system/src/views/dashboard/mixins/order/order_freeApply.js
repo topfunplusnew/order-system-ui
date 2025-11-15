@@ -45,7 +45,7 @@ export var mixin_order_freeApply = {
 				this.openDialog(
 					FreeApply,
 					'添加陆运费',
-					'600px',
+					'650px',
 					{
 						orderInfo: landFreightInfo
 					},
