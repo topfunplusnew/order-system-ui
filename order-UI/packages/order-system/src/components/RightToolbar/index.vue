@@ -23,23 +23,27 @@
 					<!-- 穿梭框模式 -->
 					<el-button v-if="showColumnsType === 'transfer'" size="mini" circle icon="el-icon-s-open" @click="showColumn" />
 					<!-- 多选框模式 -->
-					<el-dropdown v-if="showColumnsType === 'checkbox'" trigger="click" :hide-on-click="false" style="padding-left: 12px">
+					<el-dropdown ref="columnDropdown" v-if="showColumnsType === 'checkbox'" trigger="click" :hide-on-click="false" style="padding-left: 12px" @visible-change="handleDropdownVisibleChange">
 						<el-button size="mini" icon="el-icon-s-open" />
-						<el-dropdown-menu slot="dropdown" class="multi-column-dropdown" :style="{ width: columnGroups.length > 1 ? '800px' : 'auto' }">
+						<el-dropdown-menu slot="dropdown" class="multi-column-dropdown" :style="{ width: pendingColumnGroups.length > 1 ? '800px' : 'auto' }">
 							<div class="select-all-container">
 								<el-button size="mini" @click="toggleSelectAll" style="margin-bottom: 8px; margin-left: 8px">
-									{{ isAllSelected ? '取消全选' : '全选' }}
+									{{ isPendingAllSelected ? '取消全选' : '全选' }}
 								</el-button>
 							</div>
-							<div class="columns-container" :class="{ 'multi-columns': columnGroups.length > 1 }" :style="{ display: columnGroups.length > 1 ? 'flex' : 'block' }">
-								<div v-for="(group, groupIndex) in columnGroups" :key="groupIndex" class="column-group" :style="{ flex: columnGroups.length > 1 ? '1' : 'none' }">
+							<div class="columns-container" :class="{ 'multi-columns': pendingColumnGroups.length > 1 }" :style="{ display: pendingColumnGroups.length > 1 ? 'flex' : 'block' }">
+								<div v-for="(group, groupIndex) in pendingColumnGroups" :key="groupIndex" class="column-group" :style="{ flex: pendingColumnGroups.length > 1 ? '1' : 'none' }">
 									<el-dropdown-item v-for="item in group" :key="item.key || item.prop || item.label">
-										<!-- v-model 绑定 visible，保证全选/取消全选有效 -->
-										<el-checkbox v-model="item.visible" @change="checkboxChange(item.visible, item.label)">
+										<!-- v-model 绑定 pendingVisible，不立即更新实际列 -->
+										<el-checkbox v-model="item.pendingVisible" @change="checkboxChange(item.pendingVisible, item.label)">
 											{{ item.label }}
 										</el-checkbox>
 									</el-dropdown-item>
 								</div>
+							</div>
+							<div class="action-buttons-container">
+								<el-button size="mini" type="primary" @click="applyColumnChanges" style="margin-right: 8px">确认</el-button>
+								<el-button size="mini" @click="cancelColumnChanges">取消</el-button>
 							</div>
 						</el-dropdown-menu>
 					</el-dropdown>
@@ -91,13 +95,34 @@ export default {
 			title: '显示/隐藏列',
 			open: false,
 			configLoaded: false,
-			saveTimer: null // 防抖定时器
+			saveTimer: null, // 防抖定时器
+			pendingColumns: [], // 临时存储用户选择的列状态
+			dropdownVisible: false // 下拉菜单是否可见
 		};
 	},
 	computed: {
 		isAllSelected() {
 			// 强制布尔判断，避免 undefined 或非布尔值导致计算错误
 			return this.columns.length > 0 && this.columns.every(col => !!col.visible);
+		},
+		isPendingAllSelected() {
+			// 基于临时状态判断是否全选
+			return this.pendingColumns.length > 0 && this.pendingColumns.every(col => !!col.pendingVisible);
+		},
+		pendingColumnGroups() {
+			// 基于临时状态生成分组
+			if (!Array.isArray(this.pendingColumns) || this.pendingColumns.length === 0) return [];
+			const sortedColumns = [...this.pendingColumns].sort((a, b) => {
+				const keyA = a.key ?? Number.MAX_SAFE_INTEGER;
+				const keyB = b.key ?? Number.MAX_SAFE_INTEGER;
+				return keyA - keyB;
+			});
+			const chunkSize = 9;
+			const groups = [];
+			for (let i = 0; i < sortedColumns.length; i += chunkSize) {
+				groups.push(sortedColumns.slice(i, i + chunkSize));
+			}
+			return groups;
 		},
 		style() {
 			return this.gutter ? { marginRight: `${this.gutter / 2}px` } : {};
@@ -189,21 +214,11 @@ export default {
 		},
 
 		toggleSelectAll() {
-			const shouldSelectAll = !this.isAllSelected;
-			this.columns.forEach((col, index) => {
-				this.$set(col, 'visible', shouldSelectAll);
+			const shouldSelectAll = !this.isPendingAllSelected;
+			// 只更新临时状态
+			this.pendingColumns.forEach(col => {
+				this.$set(col, 'pendingVisible', shouldSelectAll);
 			});
-			// 防抖保存配置
-			if (this.saveTimer) {
-				clearTimeout(this.saveTimer);
-			}
-			this.saveTimer = setTimeout(() => {
-				this.columns.forEach((col, index) => {
-					this.$emit('column-change', { index, column: col, visible: col.visible });
-				});
-				this.saveUserConfig();
-				this.saveTimer = null;
-			}, 300);
 		},
 
 		handleRefresh() {
@@ -215,14 +230,68 @@ export default {
 		},
 
 		checkboxChange(visible, label) {
-			const index = this.columns.findIndex(col => col.label === label);
+			// 只更新临时状态，不立即更新实际列
+			const index = this.pendingColumns.findIndex(col => col.label === label);
 			if (index === -1) return;
-			// 立即更新 UI
-			this.$set(this.columns[index], 'visible', visible);
-			// 防抖保存配置和触发事件
-			this.debouncedSave(index);
+			this.$set(this.pendingColumns[index], 'pendingVisible', visible);
 		},
-		
+
+		// 处理下拉菜单显示/隐藏
+		handleDropdownVisibleChange(visible) {
+			this.dropdownVisible = visible;
+			if (visible) {
+				// 打开下拉菜单时，初始化临时状态
+				this.initPendingColumns();
+			} else {
+				// 关闭下拉菜单时，如果没有确认，则取消更改
+				// 这里不自动取消，让用户通过取消按钮或确认按钮来操作
+			}
+		},
+
+		// 初始化临时列状态
+		initPendingColumns() {
+			this.pendingColumns = this.columns.map(col => ({
+				...col,
+				pendingVisible: col.visible
+			}));
+		},
+
+		// 应用列更改
+		applyColumnChanges() {
+			// 将临时状态应用到实际列，批量更新
+			this.pendingColumns.forEach((pendingCol, index) => {
+				const originalIndex = this.columns.findIndex(col => col.label === pendingCol.label);
+				if (originalIndex !== -1) {
+					const newVisible = pendingCol.pendingVisible;
+					this.$set(this.columns[originalIndex], 'visible', newVisible);
+				}
+			});
+			// 批量触发列变化事件
+			this.columns.forEach((col, index) => {
+				this.$emit('column-change', {
+					index,
+					column: col,
+					visible: col.visible
+				});
+			});
+			// 保存配置
+			this.saveUserConfig();
+			// 关闭下拉菜单
+			if (this.$refs.columnDropdown) {
+				this.$refs.columnDropdown.hide();
+			}
+		},
+
+		// 取消列更改
+		cancelColumnChanges() {
+			// 恢复临时状态为实际状态
+			this.initPendingColumns();
+			// 关闭下拉菜单
+			if (this.$refs.columnDropdown) {
+				this.$refs.columnDropdown.hide();
+			}
+		},
+
 		debouncedSave(index) {
 			// 清除之前的定时器
 			if (this.saveTimer) {
@@ -357,6 +426,13 @@ export default {
 				}
 			}
 		}
+	}
+
+	.action-buttons-container {
+		border-top: 1px solid #ebeef5;
+		padding: 8px;
+		text-align: right;
+		margin-top: 8px;
 	}
 }
 </style>

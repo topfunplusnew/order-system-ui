@@ -111,7 +111,7 @@
 				<template #right>
 					<div style="height: 100%; display: flex; flex-direction: column">
 						<virtual-scroll :data="inventoryMainList" :item-size="30" key-prop="id" @change="inventoryDataAppendChange">
-							<el-table border ref="inventoryTable" id="printBox" :row-key="row => row.id" size="mini" v-loading="loading" :data="virsualInventoryMainList" @selection-change="handleSelectionChange" stripe height="100%" tooltip-effect="light">
+							<el-table border ref="inventoryTable" id="printBox" :row-key="row => row.id" size="mini" v-loading="loading" :data="virsualInventoryMainList" @selection-change="handleSelectionChange" stripe height="750" tooltip-effect="light">
 								<el-table-column type="selection" width="50" align="center" />
 								<el-table-column v-if="columns[0].visible" show-overflow-tooltip label="ID" align="center" prop="id" width="80">
 									<template #default="scope">
@@ -1028,7 +1028,7 @@ export default {
 			// 查询参数
 			queryParams: {
 				pageNum: 1,
-				pageSize: 20,
+				pageSize: 50,
 				storeHouseid: null,
 				storeHouseName: null,
 				storeDate: null,
