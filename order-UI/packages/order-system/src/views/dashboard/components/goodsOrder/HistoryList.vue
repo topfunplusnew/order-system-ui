@@ -1,53 +1,47 @@
-<script>
-import { getHistoryGoodsOrder } from '@/api/system/goodsOrder';
-import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
-import OrderHistoryList from '@/views/dashboard/components/goodsOrder/OrderHistoryList.vue';
+<template>
+	<span class="history-list-trigger" @click.stop="handleClick">查看历史</span>
+</template>
 
+<script>
 export default {
 	name: 'HistoryList',
-	mixins: [common_dialog],
 	props: {
 		row: {
 			type: Object,
-			default() {
-				return {};
-			}
+			required: true
 		}
 	},
-	data() {
-		return {
-			orderHistoryInfoList: []
-		};
-	},
 	methods: {
-		checkHistoryList() {
-			const id = this.row.id;
-			// 获取订单修改记录信息
-			getHistoryGoodsOrder({ goodsOrderID: id }).then(res => {
-				if (res.total === 0) {
-					this.$message.warning('无订单历史信息');
-					return;
+		handleClick() {
+			// 通过事件通知父组件查看历史记录
+			this.$emit('check-history', this.row);
+
+			// 同时尝试调用父组件的 checkOrderHistory 方法（如果存在）
+			// 向上查找父组件，直到找到有 checkOrderHistory 方法的组件
+			let parent = this.$parent;
+			while (parent) {
+				if (parent && typeof parent.checkOrderHistory === 'function') {
+					parent.checkOrderHistory(this.row);
+					break;
 				}
-				this.orderHistoryInfoList = res.rows;
-				this.openDialog(
-					OrderHistoryList,
-					'订单修改记录',
-					'50%',
-					{
-						goodsOrderList: this.orderHistoryInfoList
-					},
-					true
-				);
-			});
+				parent = parent.$parent;
+			}
 		}
 	}
 };
 </script>
 
-<template>
-	<div>
-		<el-button style="margin-left: 5px" size="mini" type="text" @click="checkHistoryList(row)">查看修改记录</el-button>
-	</div>
-</template>
+<style scoped lang="scss">
+.history-list-trigger {
+	cursor: pointer;
+	color: #409eff;
+	font-size: 12px;
+	padding: 0 4px;
+	display: inline-block;
 
-<style scoped lang="scss"></style>
+	&:hover {
+		color: #66b1ff;
+		text-decoration: underline;
+	}
+}
+</style>

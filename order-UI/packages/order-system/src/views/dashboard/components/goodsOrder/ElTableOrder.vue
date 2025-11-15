@@ -17,11 +17,11 @@ import GOODS_ORDER from '../../../../components/NeedToShow/GOODS_ORDER.vue';
 import QuerySearchBar from './QuerySearchBar.vue';
 import { mixin_order_orderHistory } from '@/views/dashboard/mixins/order/order_history';
 import OrderHistoryCheck from '@/views/dashboard/components/goodsOrder/OrderHistoryCheck.vue';
+import OrderHistoryList from '@/views/dashboard/components/goodsOrder/OrderHistoryList.vue';
 import { parseTime } from '@/utils/ruoyi';
-import HistoryList from '@/views/dashboard/components/goodsOrder/HistoryList.vue';
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
 import StateTag from '@/views/dashboard/components/common/StateTag.vue';
-import { auditGoodsOrder, listGoodsOrder } from '../../../../api/system/goodsOrder';
+import { auditGoodsOrder, listGoodsOrder, getHistoryGoodsOrder } from '../../../../api/system/goodsOrder';
 import CheckOrder from '@/views/dashboard/components/goodsOrder/CheckOrder.vue';
 // 前端Excel导出依赖
 import * as XLSX from 'xlsx';
@@ -39,8 +39,8 @@ export default {
 	},
 	components: {
 		StateTag,
-		HistoryList,
 		OrderHistoryCheck,
+		OrderHistoryList,
 		CheckFiles,
 		QuerySearchBar,
 		VirtualScroll
@@ -234,20 +234,53 @@ export default {
 		checkOrderItemInfo(row) {
 			const id = row.id;
 			// 读取订单信息
-			getGoodsOrder(id).then(res => {
-				this.orderInfo = res.data;
-				this.orderDetailInfo = res.data.orderDetailList;
-				// 打开弹窗
+			getGoodsOrder(id)
+				.then(res => {
+					if (!res || !res.data) {
+						this.$message.error('获取订单信息失败');
+						return;
+					}
+					this.orderInfo = res.data;
+					this.orderDetailInfo = res.data.orderDetailList || [];
+					// 打开弹窗
+					this.openDialog(
+						CheckOrder,
+						'查看订单详情',
+						'100%',
+						{
+							orderInfo: this.orderInfo,
+							orderDetailInfo: this.orderDetailInfo
+						},
+						true
+					);
+				})
+				.catch(error => {
+					console.error('获取订单信息失败:', error);
+					this.$message.error('获取订单信息失败，请重试');
+				});
+		},
+		// 查看订单修改记录
+		checkHistoryList(row) {
+			const id = row.id;
+			// 获取订单修改记录信息
+			getHistoryGoodsOrder({ goodsOrderID: id }).then(res => {
+				if (res.total === 0) {
+					this.$message.warning('无订单历史信息');
+					return;
+				}
+				this.orderHistoryInfoList = res.rows;
 				this.openDialog(
-					CheckOrder,
-					'查看订单详情',
-					'100%',
+					OrderHistoryList,
+					'订单修改记录',
+					'50%',
 					{
-						orderInfo: this.orderInfo,
-						orderDetailInfo: this.orderDetailInfo
+						goodsOrderList: this.orderHistoryInfoList
 					},
 					true
 				);
+			}).catch(error => {
+				console.error('获取订单修改记录失败:', error);
+				this.$message.error('获取订单修改记录失败，请重试');
 			});
 		},
 		handleCheck(row) {
@@ -472,6 +505,10 @@ export default {
 		handleCommand(command, row) {
 			// 根据不同操作委派不同的方法
 			switch (command) {
+				// 查看订单
+				case 'checkOrderItemInfo':
+					this.checkOrderItemInfo(row);
+					break;
 				// 修改订单
 				case 'handleUpdate':
 					this.handleUpdate(row);
@@ -479,6 +516,10 @@ export default {
 				// 删除订单
 				case 'handleDelete':
 					this.handleDelete(row);
+					break;
+				// 查看修改记录
+				case 'checkHistoryList':
+					this.checkHistoryList(row);
 					break;
 				default:
 					break;
@@ -950,43 +991,28 @@ export default {
 						{{ (queryParams.pageNum - 1) * queryParams.pageSize + scope.$index + 1 }}
 					</template>
 				</el-table-column>
-				<el-table-column label="行操作" align="center" class-name="small-padding fixed-width" fixed="left" width="200">
+				<el-table-column label="行操作" align="center" class-name="small-padding fixed-width" fixed="left" width="100">
 					<template slot-scope="scope">
-						<div>
-							<!-- 查看按钮 -->
-							<el-button size="mini" type="text" @click="checkOrderItemInfo(scope.row)">
+						<el-dropdown size="mini" trigger="hover" @command="command => handleCommand(command, scope.row)">
+							<el-button size="mini" type="text" @click.stop="checkOrderItemInfo(scope.row)">
 								<span v-once>查看</span>
+								<i class="el-icon-arrow-down el-icon--right" />
 							</el-button>
-
-							<!-- 操作下拉菜单 -->
-							<el-dropdown size="mini" @command="command => handleCommand(command, scope.row)">
-								<el-button size="mini" type="text">
-									<span v-once>操作</span>
-								</el-button>
-								<el-dropdown-menu slot="dropdown">
-									<el-dropdown-item v-hasPermi="['system:goodsorder:edit']" command="handleUpdate">
-										<el-button size="mini" type="primary" :disabled="!scope.row.isedit || scope.row.isAdjust < 0 || isOrderExpired(scope.row.addtime)" :title="isOrderExpired(scope.row.addtime) ? '订单已超过7天，无法修改' : ''">
-											<span v-once>修 改</span>
-										</el-button>
-									</el-dropdown-item>
-									<el-dropdown-item v-hasPermi="['system:goodsorder:remove']" command="handleDelete">
-										<el-button size="mini" type="danger" v-once>删 除</el-button>
-									</el-dropdown-item>
-								</el-dropdown-menu>
-							</el-dropdown>
-
-							<!-- 修改记录下拉菜单 -->
-							<el-dropdown size="mini">
-								<el-button size="mini" type="text" :disabled="scope.row.historyCount === 0">
-									<span v-once>修改记录</span>
-								</el-button>
-								<el-dropdown-menu slot="dropdown" v-if="scope.row.historyCount > 0">
-									<el-dropdown-item>
-										<HistoryList :row="scope.row" />
-									</el-dropdown-item>
-								</el-dropdown-menu>
-							</el-dropdown>
-						</div>
+							<el-dropdown-menu slot="dropdown">
+								<!-- 修改 -->
+								<el-dropdown-item v-hasPermi="['system:goodsorder:edit']" command="handleUpdate" :disabled="!scope.row.isedit || scope.row.isAdjust < 0 || isOrderExpired(scope.row.addtime)">
+									<span :title="isOrderExpired(scope.row.addtime) ? '订单已超过7天，无法修改' : ''">修改</span>
+								</el-dropdown-item>
+								<!-- 删除 -->
+								<el-dropdown-item v-hasPermi="['system:goodsorder:remove']" command="handleDelete">
+									<span>删除</span>
+								</el-dropdown-item>
+								<!-- 修改记录 -->
+								<el-dropdown-item :disabled="scope.row.historyCount === 0" divided command="checkHistoryList">
+									<span>修改记录</span>
+								</el-dropdown-item>
+							</el-dropdown-menu>
+						</el-dropdown>
 					</template>
 				</el-table-column>
 				<!-- 1. ID -->

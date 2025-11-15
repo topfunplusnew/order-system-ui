@@ -335,17 +335,24 @@
 										</el-tooltip>
 									</template>
 								</el-table-column>
-								<el-table-column v-if="columns[21].visible" label="操作" align="center" width="300" fixed="right">
+								<el-table-column v-if="columns[21].visible" label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="100">
 									<template slot-scope="scope">
-										<el-button size="mini" type="text" icon="el-icon-edit" @click="handleCheckInventory(scope.row)">查看</el-button>
-										<el-tooltip effect="light" v-if="isInventoryDisabledModify(scope.row)" placement="top" enterable :open-delay="1000">
-											<template #content>
-												<div>该货物为二次入库货物，请在存货二次加工管理处修改</div>
-											</template>
-											<el-button :disabled="true" size="mini" type="text" icon="el-icon-edit" v-hasPermi="['system:inventoryMain:edit']">修改</el-button>
-										</el-tooltip>
-										<el-button v-else :disabled="isInventoryDisabledModify(scope.row)" size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)" v-hasPermi="['system:inventoryMain:edit']">修改</el-button>
-										<el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)" v-hasPermi="['system:inventoryMain:remove']">删除</el-button>
+										<el-dropdown size="mini" trigger="hover" @command="command => handleCommand(command, scope.row)">
+											<el-button size="mini" type="text" @click.stop="handleCheckInventory(scope.row)">
+												<span v-once>查看</span>
+												<i class="el-icon-arrow-down el-icon--right" />
+											</el-button>
+											<el-dropdown-menu slot="dropdown">
+												<!-- 修改 -->
+												<el-dropdown-item v-hasPermi="['system:inventoryMain:edit']" command="handleUpdate" :disabled="isInventoryDisabledModify(scope.row)">
+													<span :title="isInventoryDisabledModify(scope.row) ? '该货物为二次入库货物，请在存货二次加工管理处修改' : ''">修改</span>
+												</el-dropdown-item>
+												<!-- 删除 -->
+												<el-dropdown-item v-hasPermi="['system:inventoryMain:remove']" command="handleDelete" divided>
+													<span>删除</span>
+												</el-dropdown-item>
+											</el-dropdown-menu>
+										</el-dropdown>
 									</template>
 								</el-table-column>
 							</el-table>
@@ -2182,6 +2189,23 @@ export default {
 					this.$message.error('请检查表单必填项!');
 				}
 			});
+		},
+		/**
+		 * @description: 处理下拉菜单命令
+		 * @param {string} command - 命令名称
+		 * @param {object} row - 当前操作的行数据对象
+		 */
+		handleCommand(command, row) {
+			switch (command) {
+				case 'handleUpdate':
+					this.handleUpdate(row);
+					break;
+				case 'handleDelete':
+					this.handleDelete(row);
+					break;
+				default:
+					break;
+			}
 		},
 		/**
 		 * @description: 处理删除库存主表记录按钮操作。

@@ -558,6 +558,8 @@ import { parseTime } from '@/utils/ruoyi';
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
 import StateTag from '@/views/dashboard/components/common/StateTag.vue';
 import ExpandCursor from '@/views/dashboard/components/common/ExpandCursor.vue';
+import { getGoodsOrder, getHistoryGoodsOrder } from '@/api/system/goodsOrder';
+import { excludeParams } from '@/api/tool/exclude';
 
 export default {
 	name: 'OrderTable',
@@ -1190,6 +1192,58 @@ export default {
 				accumulated += Number(invoices[i]?.invoiceAmount || 0);
 			}
 			return accumulated.toFixed(2);
+		},
+
+		// 查看订单历史信息
+		checkOrderHistory(row) {
+			const id = row.id;
+			// 先获取原订单的信息
+			getGoodsOrder(row.id)
+				.then(res => {
+					this.currentOrderItemInfo = res.data;
+					// 获取订单修改记录信息
+					getHistoryGoodsOrder({ goodsOrderID: id })
+						.then(res => {
+							if (res.total === 0) {
+								this.$message.warning('无订单历史信息');
+								return;
+							}
+							this.orderHistoryInfoList = [];
+							let array = res.rows;
+
+							array.unshift(JSON.parse(JSON.stringify(row)));
+
+							for (let i = array.length - 1; i > 0; i--) {
+								const item = array[i];
+								const new_item = array[i - 1];
+								this.orderHistoryInfoList.push({
+									diff: {
+										old: this.formatData(excludeParams(item, this.$excludeWithUpdate || [])),
+										new: this.formatData(excludeParams(new_item, this.$excludeWithUpdate || [])),
+										updateTime: item.updateTime,
+										userName: item.userName,
+										remark: item.remark
+									}
+								});
+							}
+							this.orderHistoryInfoList.reverse();
+							this.checkHistoryOrderVisible = true;
+						})
+						.catch(error => {
+							console.error('获取订单修改记录失败:', error);
+							this.$message.error('获取订单修改记录失败，请重试');
+						});
+				})
+				.catch(error => {
+					console.error('获取订单信息失败:', error);
+					this.$message.error('获取订单信息失败，请重试');
+				});
+		},
+
+		// 格式化数据（用于历史记录对比）
+		formatData(data) {
+			if (!data) return '';
+			return JSON.stringify(data, null, 2);
 		},
 
 		// 关闭订单修改记录查看
