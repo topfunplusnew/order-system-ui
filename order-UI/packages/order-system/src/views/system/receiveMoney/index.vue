@@ -57,146 +57,138 @@
 			</right-toolbar>
 		</el-row>
 
-		<el-table
-			id="printBox"
-			v-horizontal-scroll="'always'"
-			v-loading="loading"
-			border
-			:data="receiveMoneyList"
-			size="mini"
-			@selection-change="handleSelectionChange"
-		>
-		<el-table-column label="ID" align="center" prop="id" width="60" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.id }}</div>
-					<span>{{ scope.row.id }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[0].visible" label="日期" align="center" prop="fundsDate" width="140" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.fundsDate }}</div>
-					<span>{{ scope.row.fundsDate }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[1].visible" label="支付类型" align="center" prop="receiveType" width="180" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.receiveType }}</div>
-					<span>{{ scope.row.receiveType }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[9].visible" label="对方公司名称" align="center" prop="companyName" width="165" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.companyName }}</div>
-					<span>{{ scope.row.companyName }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[10].visible" label="对方公司类型" align="center" prop="companyType" width="140">
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.companyType }}</div>
-					<span>{{ scope.row.companyType }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[2].visible" label="金额" align="center" prop="moneyAmount" width="110" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.moneyAmount }}</div>
-					<span>{{ scope.row.moneyAmount }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[3].visible" label="我方户名" align="center" prop="selfAcountsName" width="165" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.selfAcountsName }}</div>
-					<span>{{ scope.row.selfAcountsName }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[4].visible" label="我方账号" align="center" prop="selfBankNo" width="180" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.selfBankNo }}</div>
-					<span>{{ scope.row.selfBankNo }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[5].visible" label="我方开户行" align="center" prop="selfBankName" width="165" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.selfBankName }}</div>
-					<span>{{ scope.row.selfBankName }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[6].visible" label="对方户名" align="center" prop="otherAcountsName" width="165" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.otherAcountsName }}</div>
-					<span>{{ scope.row.otherAcountsName }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[7].visible" label="对方账号" align="center" prop="otherBankNo" width="190" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.otherBankNo }}</div>
-					<span>{{ scope.row.otherBankNo }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[8].visible" label="对方开户行" align="center" prop="otherBankName" width="180" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.otherBankName }}</div>
-					<span>{{ scope.row.otherBankName }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column label="备注" align="center" prop="comments" width="165">
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.comments }}</div>
-					<span>{{ scope.row.comments }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column label="银行卡流水编号" align="center" prop="transactionHistory" width="165">
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.transactionHistory }}</div>
-					<span>{{ scope.row.transactionHistory }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column label="录入人员" align="center" prop="userName" width="120">
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.userName }}</div>
-					<span>{{ scope.row.userName }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column label="银行卡流水附件" align="center" prop="attachmentList" width="165" fixed="right">
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
-					<div slot="content" @click.stop>
+		<el-table id="printBox" v-horizontal-scroll="'always'" v-loading="loading" border :data="receiveMoneyList" size="mini" @selection-change="handleSelectionChange">
+			<el-table-column label="ID" align="center" prop="id" width="60" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.id }}</div>
+						<span>{{ scope.row.id }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[0].visible" label="日期" align="center" prop="fundsDate" width="140" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.fundsDate }}</div>
+						<span>{{ scope.row.fundsDate }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[1].visible" label="支付类型" align="center" prop="receiveType" width="180" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.receiveType }}</div>
+						<span>{{ scope.row.receiveType }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[9].visible" label="对方公司名称" align="center" prop="companyName" width="165" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.companyName }}</div>
+						<span>{{ scope.row.companyName }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[10].visible" label="对方公司类型" align="center" prop="companyType" width="140">
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.companyType }}</div>
+						<span>{{ scope.row.companyType }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[2].visible" label="金额" align="center" prop="moneyAmount" width="110" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.moneyAmount }}</div>
+						<span>{{ scope.row.moneyAmount }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[3].visible" label="我方户名" align="center" prop="selfAcountsName" width="165" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.selfAcountsName }}</div>
+						<span>{{ scope.row.selfAcountsName }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[4].visible" label="我方账号" align="center" prop="selfBankNo" width="180" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.selfBankNo }}</div>
+						<span>{{ scope.row.selfBankNo }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[5].visible" label="我方开户行" align="center" prop="selfBankName" width="165" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.selfBankName }}</div>
+						<span>{{ scope.row.selfBankName }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[6].visible" label="对方户名" align="center" prop="otherAcountsName" width="165" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.otherAcountsName }}</div>
+						<span>{{ scope.row.otherAcountsName }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[7].visible" label="对方账号" align="center" prop="otherBankNo" width="190" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.otherBankNo }}</div>
+						<span>{{ scope.row.otherBankNo }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[8].visible" label="对方开户行" align="center" prop="otherBankName" width="180" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.otherBankName }}</div>
+						<span>{{ scope.row.otherBankName }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column label="备注" align="center" prop="comments" width="165">
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.comments }}</div>
+						<span>{{ scope.row.comments }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column label="银行卡流水编号" align="center" prop="transactionHistory" width="165">
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.transactionHistory }}</div>
+						<span>{{ scope.row.transactionHistory }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column label="录入人员" align="center" prop="userName" width="120">
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.userName }}</div>
+						<span>{{ scope.row.userName }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column label="银行卡流水附件" align="center" prop="attachmentList" width="165" fixed="right">
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
+						<div slot="content" @click.stop>
+							<CheckFiles :attachmentList="scope.row.attachmentList" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getReceiveMoney(), updateReceiveMoney())" flag="transactionHistoryAttachment" />
+						</div>
+						<!-- 这是封装的一个通用组件 可以直接传入url 组件效果为一个按钮 点击后可以查看附件-->
 						<CheckFiles :attachmentList="scope.row.attachmentList" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getReceiveMoney(), updateReceiveMoney())" flag="transactionHistoryAttachment" />
-					</div>
-					<!-- 这是封装的一个通用组件 可以直接传入url 组件效果为一个按钮 点击后可以查看附件-->
-					<CheckFiles :attachmentList="scope.row.attachmentList" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getReceiveMoney(), updateReceiveMoney())" flag="transactionHistoryAttachment" />
-				</el-tooltip>
-			</template>
-		</el-table-column>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="150">
 				<template slot-scope="scope">
 					<el-dropdown @command="command => handleCommand(command, scope.row)">
@@ -617,9 +609,21 @@ export default {
 			},
 			deep: true
 		},
-		// 监听对方类型 切换为支付费用时清理右侧字段，员工时只清理公司字段
-		'form.companyType'(newVal) {
-			if (newVal === PAYMENT_TARGET_TYPE.PAYMENT_FEE) {
+		// 监听对方类型 切换类型时清空已填充的值
+		'form.companyType'(newVal, oldVal) {
+			// 如果类型发生变化（不是初始化），清空相关字段
+			if (oldVal !== undefined && oldVal !== null && newVal !== oldVal) {
+				// 清空公司相关字段
+				this.form.companyName = null;
+				this.form.companyId = null;
+				// 如果切换到支付费用，还需要清空银行账户相关字段
+				if (newVal === PAYMENT_TARGET_TYPE.PAYMENT_FEE) {
+					this.form.otherAcountsName = null;
+					this.form.otherBankNo = null;
+					this.form.otherBankName = null;
+				}
+			} else if (newVal === PAYMENT_TARGET_TYPE.PAYMENT_FEE) {
+				// 初始化时如果直接选择支付费用，也要清空
 				this.form.companyName = null;
 				this.form.companyId = null;
 				this.form.otherAcountsName = null;

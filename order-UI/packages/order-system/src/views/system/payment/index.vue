@@ -900,8 +900,20 @@ export default {
 			},
 			deep: true
 		},
-		'form.companyType'(newVal) {
-			if (newVal === PAYMENT_TARGET_TYPE.PAYMENT_FEE) {
+		'form.companyType'(newVal, oldVal) {
+			// 如果类型发生变化（不是初始化），清空相关字段
+			if (oldVal !== undefined && oldVal !== null && newVal !== oldVal) {
+				// 清空公司相关字段
+				this.form.companyName = null;
+				this.form.companyId = null;
+				// 如果切换到支付费用，还需要清空银行账户相关字段
+				if (newVal === PAYMENT_TARGET_TYPE.PAYMENT_FEE) {
+					this.form.otherAccountsName = null;
+					this.form.otherBankNo = null;
+					this.form.otherBankName = null;
+				}
+			} else if (newVal === PAYMENT_TARGET_TYPE.PAYMENT_FEE) {
+				// 初始化时如果直接选择支付费用，也要清空
 				this.form.companyName = null;
 				this.form.companyId = null;
 				this.form.otherAccountsName = null;
