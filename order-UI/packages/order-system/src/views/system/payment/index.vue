@@ -43,7 +43,7 @@
 			</el-form-item>
 		</el-form>
 
-		<el-row :gutter="10">
+		<el-row>
 			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
 				<template #left>
 					<el-row :gutter="10">

@@ -25,7 +25,7 @@
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
 			</el-form-item>
 		</el-form>
-		<el-row :gutter="10">
+		<el-row>
 			<right-toolbar :show-search.sync="showSearch" :columns="columns" @queryTable="getList">
 				<template #left>
 					<el-row :gutter="10">
@@ -57,7 +57,7 @@
 			</right-toolbar>
 		</el-row>
 
-		<u-table
+		<el-table
 			id="printBox"
 			v-horizontal-scroll="'always'"
 			v-loading="loading"
@@ -107,7 +107,7 @@
 					</el-dropdown>
 				</template>
 			</el-table-column>
-		</u-table>
+		</el-table>
 
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
@@ -124,11 +124,11 @@
 
 		<!-- 查看修改原因弹窗 -->
 		<el-dialog title="查看修改原因" :visible.sync="editReasonDialogVisible" width="800px" append-to-body>
-			<u-table :data="editReasonList" style="width: 100%">
+			<el-table :data="editReasonList" style="width: 100%">
 				<el-table-column prop="addtime" label="修改时间" />
 				<el-table-column prop="reason" label="修改原因" />
 				<el-table-column prop="userName" label="修改人" />
-			</u-table>
+			</el-table>
 			<pagination v-show="editReasonTotal > 0" :total="editReasonTotal" :page.sync="editReasonQueryParams.pageNum" :limit.sync="editReasonQueryParams.pageSize" @pagination="getEditReasonList" />
 		</el-dialog>
 
