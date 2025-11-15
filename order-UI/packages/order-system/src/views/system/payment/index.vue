@@ -906,6 +906,10 @@ export default {
 				// 清空公司相关字段
 				this.form.companyName = null;
 				this.form.companyId = null;
+				// 如果切换到员工类型，设置companyId为0
+				if (newVal === PUBLIC_DICT_TYPE.EMPLOYEE) {
+					this.form.companyId = 0;
+				}
 				// 如果切换到支付费用，还需要清空银行账户相关字段
 				if (newVal === PAYMENT_TARGET_TYPE.PAYMENT_FEE) {
 					this.form.otherAccountsName = null;
@@ -919,6 +923,10 @@ export default {
 				this.form.otherAccountsName = null;
 				this.form.otherBankNo = null;
 				this.form.otherBankName = null;
+			} else if (newVal === PUBLIC_DICT_TYPE.EMPLOYEE) {
+				// 初始化时如果直接选择员工，设置companyId为0
+				this.form.companyName = null;
+				this.form.companyId = 0;
 			}
 		}
 	},
