@@ -62,15 +62,15 @@
 
 		<!-- 表格 -->
 		<u-table v-loading="loading" :data="depositMoneyList" border size="mini" :cell-style="cellStyle" @selection-change="handleSelectionChange" class="table-container">
-			<CustomTableColumn type="selection" width="55" align="center" />
-			<CustomTableColumn v-for="column in visibleColumns" :key="column.key" v-bind="getColumnProps(column)" />
-			<CustomTableColumn label="操作" align="center" class-name="small-padding fixed-width" width="300" fixed="right">
+			<el-table-column type="selection" width="55" align="center" />
+			<el-table-column v-for="column in visibleColumns" :key="column.key" v-bind="getColumnProps(column)" />
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="300" fixed="right">
 				<template slot-scope="scope">
 					<el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)">修改</el-button>
 					<el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)">删除</el-button>
 					<el-button size="mini" type="text" icon="el-icon-money" @click="handleRefund(scope.row)">退款管理</el-button>
 				</template>
-			</CustomTableColumn>
+			</el-table-column>
 		</u-table>
 
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
@@ -81,22 +81,22 @@
 				<el-button type="primary" size="mini" @click="handleAddRefund(currentRow)">新增退款</el-button>
 			</div>
 			<el-table v-loading="refundLoading" :data="refundList" border size="mini">
-				<CustomTableColumn prop="refundDate" label="退款日期" width="120" />
-				<CustomTableColumn prop="selfAccountName" label="己方账户名" width="150" />
-				<CustomTableColumn prop="selfBankNo" label="己方账号" width="180" />
-				<CustomTableColumn prop="selfBankName" label="己方开户行" width="150" />
-				<CustomTableColumn prop="otherAccountName" label="对方账户名" width="150" />
-				<CustomTableColumn prop="otherBankNo" label="对方账号" width="180" />
-				<CustomTableColumn prop="otherBankName" label="对方开户行" width="150" />
-				<CustomTableColumn prop="moneyAmount" label="退款金额" width="120" align="right" />
-				<CustomTableColumn prop="comments" label="备注" />
-				<CustomTableColumn prop="UserName" label="操作人员" width="100" />
-				<CustomTableColumn label="操作" align="center" width="150">
+				<el-table-column prop="refundDate" label="退款日期" width="120" />
+				<el-table-column prop="selfAccountName" label="己方账户名" width="150" />
+				<el-table-column prop="selfBankNo" label="己方账号" width="180" />
+				<el-table-column prop="selfBankName" label="己方开户行" width="150" />
+				<el-table-column prop="otherAccountName" label="对方账户名" width="150" />
+				<el-table-column prop="otherBankNo" label="对方账号" width="180" />
+				<el-table-column prop="otherBankName" label="对方开户行" width="150" />
+				<el-table-column prop="moneyAmount" label="退款金额" width="120" align="right" />
+				<el-table-column prop="comments" label="备注" />
+				<el-table-column prop="UserName" label="操作人员" width="100" />
+				<el-table-column label="操作" align="center" width="150">
 					<template slot-scope="scope">
 						<el-button size="mini" type="text" @click="handleUpdateRefund(scope.row)">修改</el-button>
 						<el-button size="mini" type="text" @click="handleDeleteRefund(scope.row)">删除</el-button>
 					</template>
-				</CustomTableColumn>
+				</el-table-column>
 			</el-table>
 		</el-dialog>
 
@@ -137,10 +137,10 @@
 								@update:queryName="handleUpdateRefundQueryName"
 							>
 								<template #table-columns>
-									<CustomTableColumn label="账户类型" align="center" prop="acountsType" />
-									<CustomTableColumn label="己方公司" align="center" prop="displayName" />
-									<CustomTableColumn label="开户名称(户名)" align="center" prop="acountsName" />
-									<CustomTableColumn label="账号(银行账号)" align="center" prop="bankNo" />
+									<el-table-column label="账户类型" align="center" prop="acountsType" />
+									<el-table-column label="己方公司" align="center" prop="displayName" />
+									<el-table-column label="开户名称(户名)" align="center" prop="acountsName" />
+									<el-table-column label="账号(银行账号)" align="center" prop="bankNo" />
 								</template>
 							</SearchOption>
 						</el-col>

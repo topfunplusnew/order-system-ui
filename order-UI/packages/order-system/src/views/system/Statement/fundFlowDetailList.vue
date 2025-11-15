@@ -81,50 +81,50 @@
 
 		<!-- 银行流水明细表格  正借负贷 -->
 		<u-table :data="statementData" border style="width: 100%" class="statement-table" size="mini" v-loading="loading" element-loading-text="数据加载中...">
-			<CustomTableColumn v-if="columns[0].visible" prop="operateDate" label="日期" show-overflow-tooltip>
+			<el-table-column v-if="columns[0].visible" prop="operateDate" label="日期" show-overflow-tooltip>
 				<template slot-scope="{ row }">
 					{{ row.operateDate ? dayjs(row.operateDate).format('YYYY-MM-DD') : '' }}
 				</template>
-			</CustomTableColumn>
-			<CustomTableColumn v-if="columns[1].visible" prop="operateDate" label="时间" show-overflow-tooltip>
+			</el-table-column>
+			<el-table-column v-if="columns[1].visible" prop="operateDate" label="时间" show-overflow-tooltip>
 				<template slot-scope="{ row }">
 					{{ row.operateDate ? dayjs(row.operateDate).format('HH:mm:ss') : '' }}
 				</template>
-			</CustomTableColumn>
+			</el-table-column>
 			<!-- 将收入、支出、余额列移到时间列之后 -->
-			<CustomTableColumn v-if="columns[10].visible" prop="moneyAmount" label="收入" align="right" show-overflow-tooltip>
+			<el-table-column v-if="columns[10].visible" prop="moneyAmount" label="收入" align="right" show-overflow-tooltip>
 				<template #default="{ row }">
 					<span v-if="row.moneyAmount > 0" style="color: #67c23a">￥{{ row.moneyAmount.toLocaleString('zh-CN', { minimumFractionDigits: 2 }) }}</span>
 					<span v-else>￥0.00</span>
 				</template>
-			</CustomTableColumn>
-			<CustomTableColumn v-if="columns[11].visible" prop="moneyAmount" label="支出" align="right" show-overflow-tooltip>
+			</el-table-column>
+			<el-table-column v-if="columns[11].visible" prop="moneyAmount" label="支出" align="right" show-overflow-tooltip>
 				<template #default="{ row }">
 					<span v-if="row.moneyAmount < 0" style="color: #f56c6c">￥{{ Math.abs(row.moneyAmount).toLocaleString('zh-CN', { minimumFractionDigits: 2 }) }}</span>
 					<span v-else>￥0.00</span>
 				</template>
-			</CustomTableColumn>
-			<CustomTableColumn v-if="columns[12].visible" prop="balance" label="余额" align="right" show-overflow-tooltip>
+			</el-table-column>
+			<el-table-column v-if="columns[12].visible" prop="balance" label="余额" align="right" show-overflow-tooltip>
 				<template #default="{ row }">
 					<span :style="{ color: row.balance >= 0 ? '#67c23a' : '#f56c6c' }">￥{{ row.balance.toLocaleString('zh-CN', { minimumFractionDigits: 2 }) }}</span>
 				</template>
-			</CustomTableColumn>
-			<CustomTableColumn v-if="columns[2].visible" prop="payNO" label="凭证号数" show-overflow-tooltip></CustomTableColumn>
-			<CustomTableColumn v-if="columns[3].visible" prop="changeType" label="类型（收款/付款）" show-overflow-tooltip></CustomTableColumn>
-			<CustomTableColumn v-if="columns[4].visible" prop="displayPayType" label="支付类型" show-overflow-tooltip></CustomTableColumn>
-			<CustomTableColumn v-if="columns[5].visible" prop="otherCompanyType" label="对象类型" show-overflow-tooltip></CustomTableColumn>
-			<CustomTableColumn v-if="columns[6].visible" prop="otherCompanyName" label="对象名称" show-overflow-tooltip></CustomTableColumn>
-			<CustomTableColumn v-if="columns[7].visible" prop="otherAcountsName" label="对方户名" show-overflow-tooltip></CustomTableColumn>
-			<CustomTableColumn v-if="columns[8].visible" prop="otherBankNO" label="对方银行卡号" show-overflow-tooltip></CustomTableColumn>
-			<CustomTableColumn v-if="columns[9].visible" prop="changeType" label="摘要" show-overflow-tooltip></CustomTableColumn>
+			</el-table-column>
+			<el-table-column v-if="columns[2].visible" prop="payNO" label="凭证号数" show-overflow-tooltip></el-table-column>
+			<el-table-column v-if="columns[3].visible" prop="changeType" label="类型（收款/付款）" show-overflow-tooltip></el-table-column>
+			<el-table-column v-if="columns[4].visible" prop="displayPayType" label="支付类型" show-overflow-tooltip></el-table-column>
+			<el-table-column v-if="columns[5].visible" prop="otherCompanyType" label="对象类型" show-overflow-tooltip></el-table-column>
+			<el-table-column v-if="columns[6].visible" prop="otherCompanyName" label="对象名称" show-overflow-tooltip></el-table-column>
+			<el-table-column v-if="columns[7].visible" prop="otherAcountsName" label="对方户名" show-overflow-tooltip></el-table-column>
+			<el-table-column v-if="columns[8].visible" prop="otherBankNO" label="对方银行卡号" show-overflow-tooltip></el-table-column>
+			<el-table-column v-if="columns[9].visible" prop="changeType" label="摘要" show-overflow-tooltip></el-table-column>
 
 			<!--      加一个操作列-->
-			<CustomTableColumn label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
 				<template #default="{ row }">
 					<el-button v-if="row.changeType !== '上年结转'" type="text" size="mini" @click="handleCheckDetail(row)">查看明细</el-button>
 					<span v-else>-</span>
 				</template>
-			</CustomTableColumn>
+			</el-table-column>
 		</u-table>
 	</div>
 </template>

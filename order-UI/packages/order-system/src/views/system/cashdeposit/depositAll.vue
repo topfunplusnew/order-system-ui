@@ -147,9 +147,9 @@
 										@update:queryName="val => (queryBankOther = val)"
 									>
 										<template #table-columns>
-											<CustomTableColumn :label="form.targetType === '其他' || form.targetType === '员工' ? '名称' : form.targetType" align="center" prop="acountsName" />
-											<CustomTableColumn label="开户行" align="center" prop="bankName" />
-											<CustomTableColumn label="账号" align="center" prop="bankNo" />
+											<el-table-column :label="form.targetType === '其他' || form.targetType === '员工' ? '名称' : form.targetType" align="center" prop="acountsName" />
+											<el-table-column label="开户行" align="center" prop="bankName" />
+											<el-table-column label="账号" align="center" prop="bankNo" />
 										</template>
 									</SearchOption>
 								</el-col>
@@ -180,9 +180,9 @@
 										@update:queryName="val => (queryBankSelf = val)"
 									>
 										<template #table-columns>
-											<CustomTableColumn label="开户行" align="center" prop="bankName" />
-											<CustomTableColumn label="开户名" align="center" prop="acountsName" />
-											<CustomTableColumn label="账号" align="center" prop="bankNo" />
+											<el-table-column label="开户行" align="center" prop="bankName" />
+											<el-table-column label="开户名" align="center" prop="acountsName" />
+											<el-table-column label="账号" align="center" prop="bankNo" />
 										</template>
 									</SearchOption>
 								</el-col>

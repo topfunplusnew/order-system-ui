@@ -77,7 +77,7 @@
 			</right-toolbar>
 		</el-row>
 
-		<u-table
+		<el-table
 			id="printBox"
 			v-loading="loading"
 			v-horizontal-scroll="'always'"
@@ -92,102 +92,102 @@
 			@selection-change="handleSelectionChange"
 			ref="paymentTable"
 		>
-			<CustomTableColumn label="id" align="center" prop="id" v-if="columns[0].visible" />
-			<CustomTableColumn label="日期" align="center" prop="fundsDate" width="120" v-if="columns[1].visible" show-overflow-tooltip>
+			<el-table-column label="id" align="center" prop="id" v-if="columns[0].visible" />
+			<el-table-column label="日期" align="center" prop="fundsDate" width="120" v-if="columns[1].visible" show-overflow-tooltip>
 				<template #default="scope">
 					<DynamicField :row="scope.row" field="fundsDate" />
 				</template>
-			</CustomTableColumn>
-			<CustomTableColumn label="支付类型" align="center" prop="payType" width="120" v-if="columns[2].visible" show-overflow-tooltip>
+			</el-table-column>
+			<el-table-column label="支付类型" align="center" prop="payType" width="120" v-if="columns[2].visible" show-overflow-tooltip>
 				<template #default="scope">
 					<DynamicField :row="scope.row" field="payType" />
 				</template>
-			</CustomTableColumn>
-			<CustomTableColumn label="对方公司" align="center" prop="companyName" width="120" v-if="columns[11].visible" show-overflow-tooltip>
+			</el-table-column>
+			<el-table-column label="对方公司" align="center" prop="companyName" width="120" v-if="columns[11].visible" show-overflow-tooltip>
 				<template #default="scope">
 					<DynamicField :row="scope.row" field="companyName" />
 				</template>
-			</CustomTableColumn>
-			<CustomTableColumn label="对方公司类型" align="center" prop="companyType" width="130" v-if="columns[12].visible" show-overflow-tooltip>
+			</el-table-column>
+			<el-table-column label="对方公司类型" align="center" prop="companyType" width="130" v-if="columns[12].visible" show-overflow-tooltip>
 				<template #default="scope">
 					<DynamicField :row="scope.row" field="companyType" />
 				</template>
-			</CustomTableColumn>
-			<CustomTableColumn label="金额" align="center" prop="moneyAmount" width="70" v-if="columns[3].visible" show-overflow-tooltip>
+			</el-table-column>
+			<el-table-column label="金额" align="center" prop="moneyAmount" width="70" v-if="columns[3].visible" show-overflow-tooltip>
 				<template #default="scope">
 					<DynamicField :row="scope.row" field="moneyAmount" />
 				</template>
-			</CustomTableColumn>
-			<CustomTableColumn label="我方户名" align="center" prop="selfAccountsName" width="120" v-if="columns[4].visible" show-overflow-tooltip>
+			</el-table-column>
+			<el-table-column label="我方户名" align="center" prop="selfAccountsName" width="120" v-if="columns[4].visible" show-overflow-tooltip>
 				<template #default="scope">
 					<DynamicField :row="scope.row" field="selfAccountsName" />
 				</template>
-			</CustomTableColumn>
-			<CustomTableColumn label="我方账号" align="center" prop="selfBankNo" width="180" v-if="columns[5].visible" show-overflow-tooltip>
+			</el-table-column>
+			<el-table-column label="我方账号" align="center" prop="selfBankNo" width="180" v-if="columns[5].visible" show-overflow-tooltip>
 				<template #default="scope">
 					<DynamicField :row="scope.row" field="selfBankNo" />
 				</template>
-			</CustomTableColumn>
-			<CustomTableColumn label="我方开户行" align="center" prop="selfBankName" width="120" v-if="columns[6].visible" show-overflow-tooltip>
+			</el-table-column>
+			<el-table-column label="我方开户行" align="center" prop="selfBankName" width="120" v-if="columns[6].visible" show-overflow-tooltip>
 				<template #default="scope">
 					<DynamicField :row="scope.row" field="selfBankName" />
 				</template>
-			</CustomTableColumn>
-			<CustomTableColumn label="对方户名" align="center" prop="otherAccountsName" width="120" v-if="columns[7].visible" show-overflow-tooltip>
+			</el-table-column>
+			<el-table-column label="对方户名" align="center" prop="otherAccountsName" width="120" v-if="columns[7].visible" show-overflow-tooltip>
 				<template #default="scope">
 					<DynamicField :row="scope.row" field="otherAccountsName" />
 				</template>
-			</CustomTableColumn>
+			</el-table-column>
 			<!-- 对方账号列已经包含了 show-overflow-tooltip，可以正常显示 -->
-			<CustomTableColumn label="对方账号" align="center" prop="otherBankNo" width="190" v-if="columns[8].visible" show-overflow-tooltip>
+			<el-table-column label="对方账号" align="center" prop="otherBankNo" width="190" v-if="columns[8].visible" show-overflow-tooltip>
 				<template #default="scope">
 					<DynamicField :row="scope.row" field="otherBankNo" />
 				</template>
-			</CustomTableColumn>
+			</el-table-column>
 
 			<!-- 我方账号列也确保包含了 show-overflow-tooltip -->
-			<CustomTableColumn label="我方账号" align="center" prop="selfBankNo" width="180" v-if="columns[5].visible" show-overflow-tooltip>
+			<el-table-column label="我方账号" align="center" prop="selfBankNo" width="180" v-if="columns[5].visible" show-overflow-tooltip>
 				<template #default="scope">
 					<DynamicField :row="scope.row" field="selfBankNo" />
 				</template>
-			</CustomTableColumn>
+			</el-table-column>
 
-			<CustomTableColumn label="对方开户行" align="center" prop="otherBankName" width="120" v-if="columns[9].visible" show-overflow-tooltip>
+			<el-table-column label="对方开户行" align="center" prop="otherBankName" width="120" v-if="columns[9].visible" show-overflow-tooltip>
 				<template #default="scope">
 					<DynamicField :row="scope.row" field="otherBankName" />
 				</template>
-			</CustomTableColumn>
-			<CustomTableColumn label="支付状态" align="center" prop="paymentState" width="120" v-if="columns[10].visible" show-overflow-tooltip>
+			</el-table-column>
+			<el-table-column label="支付状态" align="center" prop="paymentState" width="120" v-if="columns[10].visible" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tag :type="scope.row.paymentState === PAYMENT_STATE.PAID ? 'success' : scope.row.paymentState === PAYMENT_STATE.UNPAID ? 'info' : 'warning'" size="mini">
 						{{ scope.row.paymentState }}
 					</el-tag>
 				</template>
-			</CustomTableColumn>
+			</el-table-column>
 
-			<CustomTableColumn label="备注" align="center" prop="comments" width="120" v-if="columns[13].visible" show-overflow-tooltip />
-			<CustomTableColumn label="附件" align="center" prop="attachmentList" width="120" v-if="columns[14].visible" show-overflow-tooltip>
+			<el-table-column label="备注" align="center" prop="comments" width="120" v-if="columns[13].visible" show-overflow-tooltip />
+			<el-table-column label="附件" align="center" prop="attachmentList" width="120" v-if="columns[14].visible" show-overflow-tooltip>
 				<template #default="scope">
 					<CheckFiles :attachmentList="scope.row.attachmentList" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getPayment, updatePayment)" flag="attachments" />
 				</template>
-			</CustomTableColumn>
+			</el-table-column>
 			<!-- 新增银行卡流水编号列 -->
-			<CustomTableColumn label="银行卡流水编号" align="center" prop="transactionHistory" width="120" v-if="columns[15] && columns[15].visible" show-overflow-tooltip />
+			<el-table-column label="银行卡流水编号" align="center" prop="transactionHistory" width="120" v-if="columns[15] && columns[15].visible" show-overflow-tooltip />
 			<!-- 新增银行卡流水附件列 -->
-			<CustomTableColumn label="银行卡流水附件" align="center" prop="transactionHistoryAttachmentList" width="120" v-if="columns[16] && columns[16].visible" fixed="right">
+			<el-table-column label="银行卡流水附件" align="center" prop="transactionHistoryAttachmentList" width="120" v-if="columns[16] && columns[16].visible" fixed="right">
 				<template #default="scope">
 					<CheckFiles :attachmentList="scope.row.attachmentList" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getPayment, updatePayment)" flag="transactionHistoryAttachmentList" />
 				</template>
-			</CustomTableColumn>
-			<CustomTableColumn label="录入人员" align="center" prop="userName" width="120" v-if="columns[17] && columns[17].visible" show-overflow-tooltip />
-			<CustomTableColumn label="复核状态" align="center" class-name="small-padding fixed-width" width="80" fixed="right">
+			</el-table-column>
+			<el-table-column label="录入人员" align="center" prop="userName" width="120" v-if="columns[17] && columns[17].visible" show-overflow-tooltip />
+			<el-table-column label="复核状态" align="center" class-name="small-padding fixed-width" width="80" fixed="right">
 				<template slot-scope="scope">
 					<el-tooltip :content="hasAuditPermission ? '点击切换复核状态' : '您没有复核权限'" placement="top">
 						<el-switch v-model="scope.row.auditState" :disabled="!hasAuditPermission" :active-value="'1'" :inactive-value="'0'" active-color="#13ce66" inactive-color="#ff4949" @change="value => hasAuditPermission && handlePaymentAudit(scope.row, value)" />
 					</el-tooltip>
 				</template>
-			</CustomTableColumn>
-			<CustomTableColumn label="操作" align="center" class-name="small-padding fixed-width" width="200" fixed="right">
+			</el-table-column>
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="200" fixed="right">
 				<template slot-scope="scope">
 					<el-dropdown @command="command => handleCommand(command, scope.row)">
 						<el-button type="primary" size="mini">
@@ -205,8 +205,8 @@
 						</el-dropdown-menu>
 					</el-dropdown>
 				</template>
-			</CustomTableColumn>
-		</u-table>
+			</el-table-column>
+		</el-table>
 
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" z />
 
@@ -223,11 +223,11 @@
 
 		<!-- 查看修改原因弹窗 -->
 		<el-dialog title="查看修改原因" :visible.sync="editReasonDialogVisible" width="800px" append-to-body>
-			<u-table :data="editReasonList" style="width: 100%">
-				<CustomTableColumn prop="addtime" label="修改时间" />
-				<CustomTableColumn prop="reason" label="修改原因" />
-				<CustomTableColumn prop="userName" label="修改人" />
-			</u-table>
+			<el-table :data="editReasonList" style="width: 100%">
+				<el-table-column prop="addtime" label="修改时间" />
+				<el-table-column prop="reason" label="修改原因" />
+				<el-table-column prop="userName" label="修改人" />
+			</el-table>
 			<pagination v-show="editReasonTotal > 0" :total="editReasonTotal" :page.sync="editReasonQueryParams.pageNum" :limit.sync="editReasonQueryParams.pageSize" @pagination="getEditReasonList" />
 		</el-dialog>
 
@@ -283,11 +283,11 @@
 										@update:queryName="handleUpdateQueryName"
 									>
 										<template #table-columns>
-											<CustomTableColumn label="账户类型" align="center" prop="acountsType" width="100" />
-											<CustomTableColumn label="开户名称(户名)" align="center" prop="acountsName" width="300" />
-											<CustomTableColumn label="账号(银行账号)" align="center" prop="bankNo" width="300" />
-											<CustomTableColumn label="开户行" align="center" prop="bankName" width="300" />
-											<CustomTableColumn label="己方公司" align="center" prop="displayName" width="300" />
+											<el-table-column label="账户类型" align="center" prop="acountsType" width="100" />
+											<el-table-column label="开户名称(户名)" align="center" prop="acountsName" width="300" />
+											<el-table-column label="账号(银行账号)" align="center" prop="bankNo" width="300" />
+											<el-table-column label="开户行" align="center" prop="bankName" width="300" />
+											<el-table-column label="己方公司" align="center" prop="displayName" width="300" />
 										</template>
 									</SearchOption>
 								</el-col>
@@ -316,21 +316,21 @@
 								<el-col :span="2" v-if="form.companyType === PAYMENT_TARGET_TYPE.CUSTOMER || form.companyType === PAYMENT_TARGET_TYPE.SUPPLIER">
 									<SearchOption :limit-info="{ companyType: form.companyType }" :get-data="listCompany" :query-info="`companyName`" :query-label="`公司名称`" :query-name="companyName" @update:queryName="value => (companyName = value)" @commitBack="handleCommitBackCompany">
 										<template #table-columns>
-											<CustomTableColumn :label="form.companyType" align="center" prop="companyName" :width="form.companyType === PAYMENT_TARGET_TYPE.SUPPLIER ? 340 : 150" />
-											<CustomTableColumn label="老板姓名" align="center" prop="leader" />
-											<CustomTableColumn label="老板电话" align="center" prop="leaderTel" />
-											<CustomTableColumn label="区域" align="center" prop="region" />
-											<CustomTableColumn label="销售经理" align="center" prop="salesManager" v-if="form.companyType !== PAYMENT_TARGET_TYPE.SUPPLIER" />
+											<el-table-column :label="form.companyType" align="center" prop="companyName" :width="form.companyType === PAYMENT_TARGET_TYPE.SUPPLIER ? 340 : 150" />
+											<el-table-column label="老板姓名" align="center" prop="leader" />
+											<el-table-column label="老板电话" align="center" prop="leaderTel" />
+											<el-table-column label="区域" align="center" prop="region" />
+											<el-table-column label="销售经理" align="center" prop="salesManager" v-if="form.companyType !== PAYMENT_TARGET_TYPE.SUPPLIER" />
 										</template>
 									</SearchOption>
 								</el-col>
 								<el-col :span="2" v-if="form.companyType === PAYMENT_TARGET_TYPE.DRIVER">
 									<SearchOption :limit-info="{ companyType: form.companyType }" :get-data="listCars" :query-info="`driver`" :query-label="`司机`" :query-name="companyName" @update:queryName="value => (companyName = value)" @commitBack="handleCommitBackCompany">
 										<template #table-columns>
-											<CustomTableColumn label="运输类型" align="center" prop="carType" />
-											<CustomTableColumn label="车牌/柜号" align="center" prop="carNo" />
-											<CustomTableColumn label="司机姓名/海运公司" align="center" prop="driver" />
-											<CustomTableColumn label="司机电话" align="center" prop="tel" />
+											<el-table-column label="运输类型" align="center" prop="carType" />
+											<el-table-column label="车牌/柜号" align="center" prop="carNo" />
+											<el-table-column label="司机姓名/海运公司" align="center" prop="driver" />
+											<el-table-column label="司机电话" align="center" prop="tel" />
 										</template>
 									</SearchOption>
 								</el-col>
@@ -369,11 +369,11 @@
 										}"
 									>
 										<template #table-columns>
-											<CustomTableColumn label="账户类型" align="center" prop="acountsType" />
-											<CustomTableColumn label="公司名称" align="center" prop="companyName" />
-											<CustomTableColumn label="户名" align="center" prop="acountsName" />
-											<CustomTableColumn label="账号(银行账号)" align="center" prop="bankNo" width="200" />
-											<CustomTableColumn label="开户行" align="center" prop="bankName" />
+											<el-table-column label="账户类型" align="center" prop="acountsType" />
+											<el-table-column label="公司名称" align="center" prop="companyName" />
+											<el-table-column label="户名" align="center" prop="acountsName" />
+											<el-table-column label="账号(银行账号)" align="center" prop="bankNo" width="200" />
+											<el-table-column label="开户行" align="center" prop="bankName" />
 										</template>
 									</SearchOption>
 								</el-col>
@@ -427,11 +427,11 @@
 							<el-col :span="2">
 								<SearchOption :limit-info="{ acountsType: '己方公司' }" :get-data="listBankAccount" icon="el-icon-search" query-label="户名查找" query-info="acountsName" :query-name="queryChoose" @commitBack="handleCommitBackChoose" @update:queryName="handleUpdateQueryChoose">
 									<template #table-columns>
-										<CustomTableColumn label="账号类型" align="center" prop="acountsType" width="100" />
-										<CustomTableColumn label="我方公司" align="center" prop="displayName" width="200" />
-										<CustomTableColumn label="开户名" align="center" prop="acountsName" width="200" />
-										<CustomTableColumn label="账号" align="center" prop="bankNo" width="200" />
-										<CustomTableColumn label="开户行" align="center" prop="bankName" width="200" />
+										<el-table-column label="账号类型" align="center" prop="acountsType" width="100" />
+										<el-table-column label="我方公司" align="center" prop="displayName" width="200" />
+										<el-table-column label="开户名" align="center" prop="acountsName" width="200" />
+										<el-table-column label="账号" align="center" prop="bankNo" width="200" />
+										<el-table-column label="开户行" align="center" prop="bankName" width="200" />
 									</template>
 								</SearchOption>
 							</el-col>

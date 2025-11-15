@@ -396,59 +396,59 @@
 						:header-cell-style="{ background: '#f8f9fa', color: '#495057', fontWeight: 600 }"
 						:row-class-name="getInvoiceRowClassName"
 					>
-						<CustomTableColumn prop="orderDate" label="日期" align="center" width="170">
+						<el-table-column prop="orderDate" label="日期" align="center" width="170">
 							<template #default>
 								<div class="date-cell">
 									<i class="el-icon-date"></i>
 									{{ currentOrderInfo && currentOrderInfo.orderDate ? parseTime(currentOrderInfo.orderDate, '{y}-{m}-{d}') : '-' }}
 								</div>
 							</template>
-						</CustomTableColumn>
+						</el-table-column>
 
-						<CustomTableColumn prop="companyName" label="客户名称" align="center" min-width="120">
+						<el-table-column prop="companyName" label="客户名称" align="center" min-width="120">
 							<template #default="scope">
 								<div class="company-cell">
 									<i class="el-icon-office-building"></i>
 									{{ scope.row.companyName }}
 								</div>
 							</template>
-						</CustomTableColumn>
+						</el-table-column>
 
-						<CustomTableColumn prop="allPayments" label="需开票金额" align="center" width="110">
+						<el-table-column prop="allPayments" label="需开票金额" align="center" width="110">
 							<template #default>
 								<div class="amount-cell need-amount">
 									<span class="currency-symbol">¥</span>
 									{{ Number(currentOrderInfo ? currentOrderInfo.allPayments : 0).toLocaleString() }}
 								</div>
 							</template>
-						</CustomTableColumn>
+						</el-table-column>
 
-						<CustomTableColumn prop="invoiceDate" label="开票时间" align="center" width="200">
+						<el-table-column prop="invoiceDate" label="开票时间" align="center" width="200">
 							<template #default="scope">
 								<div class="datetime-cell">
 									<i class="el-icon-time"></i>
 									{{ scope.row.invoiceDate ? parseTime(scope.row.invoiceDate, '{y}-{m}-{d} {h}:{i}') : '-' }}
 								</div>
 							</template>
-						</CustomTableColumn>
+						</el-table-column>
 
-						<CustomTableColumn prop="invoiceAmount" label="开票金额" align="center" width="130">
+						<el-table-column prop="invoiceAmount" label="开票金额" align="center" width="130">
 							<template #default="scope">
 								<div class="amount-cell invoiced-amount">
 									<span class="currency-symbol">¥</span>
 									{{ Number(scope.row.invoiceAmount || 0).toLocaleString() }}
 								</div>
 							</template>
-						</CustomTableColumn>
+						</el-table-column>
 
-						<CustomTableColumn label="累计开票金额" align="center" width="140">
+						<el-table-column label="累计开票金额" align="center" width="140">
 							<template #default="scope">
 								<div class="amount-cell accumulated-amount">
 									<span class="currency-symbol">¥</span>
 									{{ Number(calculateAccumulatedInvoiceAmount(scope.$index)).toLocaleString() }}
 								</div>
 							</template>
-						</CustomTableColumn>
+						</el-table-column>
 					</u-table>
 				</div>
 			</div>
@@ -517,59 +517,59 @@
 								class="supplier-invoice-table"
 								:header-cell-style="{ background: '#f8f9fa', color: '#495057', fontWeight: 600 }"
 							>
-								<CustomTableColumn prop="orderDate" label="日期" align="center" width="170">
+								<el-table-column prop="orderDate" label="日期" align="center" width="170">
 									<template #default>
 										<div class="date-cell">
 											<i class="el-icon-date"></i>
 											{{ currentOrderInfo && currentOrderInfo.orderDate ? parseTime(currentOrderInfo.orderDate, '{y}-{m}-{d}') : '-' }}
 										</div>
 									</template>
-								</CustomTableColumn>
+								</el-table-column>
 
-								<CustomTableColumn prop="companyName" label="供应商名称" align="center" min-width="120">
+								<el-table-column prop="companyName" label="供应商名称" align="center" min-width="120">
 									<template #default="scope">
 										<div class="company-cell">
 											<i class="el-icon-office-building"></i>
 											{{ scope.row.companyName }}
 										</div>
 									</template>
-								</CustomTableColumn>
+								</el-table-column>
 
-								<CustomTableColumn label="需开票金额" align="center" width="130">
+								<el-table-column label="需开票金额" align="center" width="130">
 									<template #default>
 										<div class="amount-cell need-amount">
 											<span class="currency-symbol">¥</span>
 											{{ Number(group.needInvoiceAmount).toLocaleString() }}
 										</div>
 									</template>
-								</CustomTableColumn>
+								</el-table-column>
 
-								<CustomTableColumn prop="invoiceDate" label="开票时间" align="center" width="200">
+								<el-table-column prop="invoiceDate" label="开票时间" align="center" width="200">
 									<template #default="scope">
 										<div class="datetime-cell">
 											<i class="el-icon-time"></i>
 											{{ scope.row.invoiceDate }}
 										</div>
 									</template>
-								</CustomTableColumn>
+								</el-table-column>
 
-								<CustomTableColumn prop="invoiceAmount" label="开票金额" align="center" width="130">
+								<el-table-column prop="invoiceAmount" label="开票金额" align="center" width="130">
 									<template #default="scope">
 										<div class="amount-cell invoiced-amount">
 											<span class="currency-symbol">¥</span>
 											{{ Number(scope.row.invoiceAmount || 0).toLocaleString() }}
 										</div>
 									</template>
-								</CustomTableColumn>
+								</el-table-column>
 
-								<CustomTableColumn label="累计开票金额" align="center" width="140">
+								<el-table-column label="累计开票金额" align="center" width="140">
 									<template #default="scope">
 										<div class="amount-cell accumulated-amount">
 											<span class="currency-symbol">¥</span>
 											{{ Number(calculateSupplierAccumulatedInvoiceAmount(group.invoices, scope.$index)).toLocaleString() }}
 										</div>
 									</template>
-								</CustomTableColumn>
+								</el-table-column>
 							</u-table>
 						</div>
 					</div>

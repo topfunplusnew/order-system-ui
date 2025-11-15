@@ -373,8 +373,8 @@
 					<el-col :span="8">
 						<SearchOption :get-data="listStoreHouse" icon="el-icon-s-home" :limit-info="{}" query-label="仓库名称" query-info="storeHouseName" :query-name="queryStore" @commitBack="value => handleCommitBackInventory(value)" @update:queryName="handleUpdateQueryNameStore" :is-page="false">
 							<template #table-columns>
-								<CustomTableColumn label="仓库名称" align="center" prop="storeHouseName" />
-								<CustomTableColumn label="地址" align="center" prop="address" />
+								<el-table-column label="仓库名称" align="center" prop="storeHouseName" />
+								<el-table-column label="地址" align="center" prop="address" />
 							</template>
 						</SearchOption>
 					</el-col>
@@ -407,12 +407,12 @@
 								<!--搜索银行卡信息-->
 								<SearchOption :limit-info="{ carType: '陆运' }" :get-data="listCars" query-label="车牌搜索" query-info="carNo" :query-name="queryLandCar" @commitBack="handleCommitBackCar" @update:queryName="handleChangeCar">
 									<template #table-columns>
-										<CustomTableColumn label="车牌" align="center" prop="carNo" />
-										<CustomTableColumn label="司机" align="center" prop="driver" />
-										<CustomTableColumn label="司机电话" align="center" prop="tel" />
-										<CustomTableColumn label="开户名" align="center" prop="acountsName" />
-										<CustomTableColumn label="账号" align="center" prop="bankNo" />
-										<CustomTableColumn label="开户行" align="center" prop="bankName" />
+										<el-table-column label="车牌" align="center" prop="carNo" />
+										<el-table-column label="司机" align="center" prop="driver" />
+										<el-table-column label="司机电话" align="center" prop="tel" />
+										<el-table-column label="开户名" align="center" prop="acountsName" />
+										<el-table-column label="账号" align="center" prop="bankNo" />
+										<el-table-column label="开户行" align="center" prop="bankName" />
 									</template>
 								</SearchOption>
 							</el-col>
@@ -439,10 +439,10 @@
 							<el-col :span="4">
 								<SearchOption :limit-info="{}" :get-data="listFleet" query-label="车队名称" query-info="fname" :query-name="queryFleet" @commitBack="handleCommitBackFleet" @update:queryName="handleChangeFleet">
 									<template #table-columns>
-										<CustomTableColumn label="车队名称" align="center" prop="fname" />
-										<CustomTableColumn label="车队经理" align="center" prop="fleader" />
-										<CustomTableColumn label="车队经理电话" align="center" prop="tel" />
-										<CustomTableColumn label="地址" align="center" prop="address" />
+										<el-table-column label="车队名称" align="center" prop="fname" />
+										<el-table-column label="车队经理" align="center" prop="fleader" />
+										<el-table-column label="车队经理电话" align="center" prop="tel" />
+										<el-table-column label="地址" align="center" prop="address" />
 									</template>
 								</SearchOption>
 							</el-col>
@@ -460,11 +460,11 @@
 							<el-col :span="4">
 								<SearchOption :limit-info="{ carType: '海运' }" :get-data="listCars" query-label="车牌" query-info="carNo" :query-name="querySeaCars" @commitBack="handleCommitBackSeaCar" @update:queryName="handleChangeSeaCar">
 									<template #table-columns>
-										<CustomTableColumn label="车牌" align="center" prop="carNo" />
-										<CustomTableColumn label="司机" align="center" prop="driver" />
-										<CustomTableColumn label="司机电话" align="center" prop="tel" />
-										<CustomTableColumn label="开户名" align="center" prop="acountsName" />
-										<CustomTableColumn label="账号" align="center" prop="bankNo" />
+										<el-table-column label="车牌" align="center" prop="carNo" />
+										<el-table-column label="司机" align="center" prop="driver" />
+										<el-table-column label="司机电话" align="center" prop="tel" />
+										<el-table-column label="开户名" align="center" prop="acountsName" />
+										<el-table-column label="账号" align="center" prop="bankNo" />
 									</template>
 								</SearchOption>
 							</el-col>
@@ -540,11 +540,11 @@
 										:disable="!scope.row.isEditing"
 									>
 										<template #table-columns>
-											<CustomTableColumn label="公司名称" align="center" prop="companyName" />
-											<CustomTableColumn label="销售经理" align="center" prop="salesManager" />
-											<CustomTableColumn label="联系人" align="center" prop="relationName" />
-											<CustomTableColumn label="电话" align="center" prop="relationTel" />
-											<CustomTableColumn label="地址" align="center" prop="address" />
+											<el-table-column label="公司名称" align="center" prop="companyName" />
+											<el-table-column label="销售经理" align="center" prop="salesManager" />
+											<el-table-column label="联系人" align="center" prop="relationName" />
+											<el-table-column label="电话" align="center" prop="relationTel" />
+											<el-table-column label="地址" align="center" prop="address" />
 										</template>
 									</SearchOption>
 								</el-col>
@@ -572,14 +572,14 @@
 									:disable="!scope.row.isEditing"
 								>
 									<template #table-columns>
-										<CustomTableColumn label="级别编码" align="center" prop="levelNo" width="220" />
-										<CustomTableColumn label="级别名称" align="center" prop="levelName" width="220" />
-										<CustomTableColumn label="分类编号" align="center" prop="categoryNo" />
-										<CustomTableColumn label="分类名称" align="center" prop="categoryName" />
-										<CustomTableColumn label="厚度" align="center" prop="height" />
-										<CustomTableColumn label="长度" align="center" prop="length" />
-										<CustomTableColumn label="宽度" align="center" prop="width" />
-										<CustomTableColumn label="误差" align="center" prop="tonnage" />
+										<el-table-column label="级别编码" align="center" prop="levelNo" width="220" />
+										<el-table-column label="级别名称" align="center" prop="levelName" width="220" />
+										<el-table-column label="分类编号" align="center" prop="categoryNo" />
+										<el-table-column label="分类名称" align="center" prop="categoryName" />
+										<el-table-column label="厚度" align="center" prop="height" />
+										<el-table-column label="长度" align="center" prop="length" />
+										<el-table-column label="宽度" align="center" prop="width" />
+										<el-table-column label="误差" align="center" prop="tonnage" />
 									</template>
 								</SearchOption>
 							</el-col>

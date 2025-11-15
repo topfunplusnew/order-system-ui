@@ -25,15 +25,16 @@
 			</el-form-item>
 		</el-form>
 
-		<el-row :gutter="10" class="mb8">
-			<el-col :span="1.5">
-				<el-button v-hasPermi="['system:record:add']" type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd">新增</el-button>
-			</el-col>
-			<el-col :span="1.5">
-				<el-button v-hasPermi="['system:record:remove']" type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete">删除</el-button>
-			</el-col>
-
+		<el-row :gutter="10">
 			<right-toolbar :columns="columns" @queryTable="getList">
+				<template #left>
+					<el-col :span="1.5">
+						<el-button v-hasPermi="['system:record:add']" type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd">新增</el-button>
+					</el-col>
+					<el-col :span="1.5">
+						<el-button v-hasPermi="['system:record:remove']" type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete">删除</el-button>
+					</el-col>
+				</template>
 				<template #print>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML" />
@@ -49,6 +50,7 @@
 		</el-row>
 
 		<el-table
+			width="100%"
 			id="printBox"
 			v-loading="loading"
 			v-horizontal-scroll="'always'"
@@ -175,14 +177,7 @@
 								<el-radio v-model="form.sourceCompanyType" label="司机">司机</el-radio>
 							</el-form-item>
 							<el-form-item label="支付类型" prop="sourcePaymentType" label-width="120px">
-								<el-cascader
-									v-model="form.sourcePaymentType"
-									:options="paymentTypeTree"
-									:props="props"
-									@change="handleChange"
-									placeholder="请选择支出方支付类型"
-									style="width: 100%"
-								></el-cascader>
+								<el-cascader v-model="form.sourcePaymentType" :options="paymentTypeTree" :props="props" @change="handleChange" placeholder="请选择支出方支付类型" style="width: 100%"></el-cascader>
 							</el-form-item>
 							<el-form-item label="支出方" label-width="120px">
 								<el-row>
@@ -191,15 +186,7 @@
 									</el-col>
 									<!--               如果是司机-->
 									<el-col v-if="form.sourceCompanyType === '司机'" :span="8">
-										<SearchOption
-											:limit-info="{}"
-											:get-data="listCars"
-											query-info="driver"
-											query-label="司机姓名"
-											:query-name="querySourceDriver"
-											@update:queryName="handleUpdateSourceDriver"
-											@commitBack="handleCommitBackSourceDriver"
-										>
+										<SearchOption :limit-info="{}" :get-data="listCars" query-info="driver" query-label="司机姓名" :query-name="querySourceDriver" @update:queryName="handleUpdateSourceDriver" @commitBack="handleCommitBackSourceDriver">
 											<template #table-columns>
 												<el-table-column label="司机姓名" align="center" prop="driver" />
 												<el-table-column label="司机电话" align="center" prop="tel" />
@@ -313,14 +300,7 @@
 
 							<!-- 收入方支付类型 -->
 							<el-form-item label="支付类型" prop="targetPaymentType" label-width="120px">
-								<el-cascader
-									v-model="form.targetPaymentType"
-									:options="paymentTypeTree"
-									:props="props"
-									@change="handleChange"
-									placeholder="请选择收入方支付类型"
-									style="width: 100%"
-								></el-cascader>
+								<el-cascader v-model="form.targetPaymentType" :options="paymentTypeTree" :props="props" @change="handleChange" placeholder="请选择收入方支付类型" style="width: 100%"></el-cascader>
 							</el-form-item>
 
 							<el-form-item label="收入方" label-width="120px">
@@ -330,15 +310,7 @@
 									</el-col>
 
 									<el-col v-if="form.targetCompanyType === PUBLIC_DICT_TYPE.DRIVER" :span="8">
-										<SearchOption
-											:limit-info="{}"
-											:get-data="listCars"
-											query-info="driver"
-											query-label="司机姓名"
-											:query-name="queryTargetDriver"
-											@update:queryName="handleUpdateTargetDriver"
-											@commitBack="handleCommitBackTargetDriver"
-										>
+										<SearchOption :limit-info="{}" :get-data="listCars" query-info="driver" query-label="司机姓名" :query-name="queryTargetDriver" @update:queryName="handleUpdateTargetDriver" @commitBack="handleCommitBackTargetDriver">
 											<template #table-columns>
 												<el-table-column label="司机姓名" align="center" prop="driver" />
 												<el-table-column label="司机电话" align="center" prop="tel" />
@@ -626,14 +598,7 @@
 
 				<!-- 附件 -->
 				<el-form-item label="附件" prop="attachment">
-					<UploadFilesButton
-						ref="attachmentUpload"
-						flag="attachment"
-						:initial-attachments="(form.params && form.params.attachments) || []"
-						:extra-info="{ moduleType: 'record', formId: form.id }"
-						@files-updated="handleAttachmentFilesUpdated"
-						style="width: 100%"
-					/>
+					<UploadFilesButton ref="attachmentUpload" flag="attachment" :initial-attachments="(form.params && form.params.attachments) || []" :extra-info="{ moduleType: 'record', formId: form.id }" @files-updated="handleAttachmentFilesUpdated" style="width: 100%" />
 				</el-form-item>
 
 				<!-- 交易时间 -->
@@ -653,17 +618,7 @@
 		</el-dialog>
 
 		<!--    查看附件列表的组件-->
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="查看附件"
-			:visible.sync="checkAttachmentVisible"
-			width="48%"
-		>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="查看附件" :visible.sync="checkAttachmentVisible" width="48%">
 			<el-row v-for="(item, index) in checkFileList" :key="index">
 				<el-button type="text" icon="el-icon-document" @click="checkFileItem(item)">
 					{{ item }}
@@ -1095,8 +1050,6 @@ export default {
 
 			const BankCash = BankAcceptanceType.BANK_CASH;
 			const Acceptance = BankAcceptanceType.ACCEPTANCE;
-
-			// 调试日志移除
 
 			// 根据场景判断如何反向填充
 			if (sourceType === BankCash && targetType === Acceptance) {

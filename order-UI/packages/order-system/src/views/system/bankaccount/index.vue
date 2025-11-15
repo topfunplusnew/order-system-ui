@@ -56,50 +56,50 @@
 			"
 			@selection-change="handleSelectionChange"
 		>
-			<CustomTableColumn v-if="columns[0].visible" label="绑定状态" align="center">
+			<el-table-column v-if="columns[0].visible" label="绑定状态" align="center">
 				<template slot-scope="scope">
 					<span v-if="scope.row.companyId === 0" style="color: #138fe1">己方公司银行卡</span>
 					<span v-else-if="scope.row.companyId === -1" style="color: #ff5722">该卡未被绑定</span>
 					<span v-else>已绑定</span>
 				</template>
-			</CustomTableColumn>
-			<CustomTableColumn v-if="columns[1].visible" label="账户类型" align="center" prop="acountsType" />
-			<CustomTableColumn v-if="columns[2].visible" label="公私户类型" align="center" prop="isPublicAccount">
+			</el-table-column>
+			<el-table-column v-if="columns[1].visible" label="账户类型" align="center" prop="acountsType" />
+			<el-table-column v-if="columns[2].visible" label="公私户类型" align="center" prop="isPublicAccount">
 				<template slot-scope="scope">
 					<span v-if="scope.row.isPublicAccount === 0" style="color: #138fe1">私户</span>
 					<span v-else-if="scope.row.isPublicAccount === 1" style="color: #ff5722">公户</span>
 					<span v-else>未区分</span>
 				</template>
-			</CustomTableColumn>
-			<CustomTableColumn v-if="columns[3].visible" label="我方公司" align="center" prop="displayName" />
-			<CustomTableColumn v-if="columns[7].visible" label="公司名称/车牌号" align="center" prop="companyName" />
-			<CustomTableColumn v-if="columns[4].visible" label="开户名称" align="center" prop="acountsName" />
-			<CustomTableColumn v-if="columns[5].visible" label="银行账号" align="center" prop="bankNo" />
-			<CustomTableColumn v-if="columns[6].visible" label="开户行" align="center" prop="bankName" />
+			</el-table-column>
+			<el-table-column v-if="columns[3].visible" label="我方公司" align="center" prop="displayName" />
+			<el-table-column v-if="columns[7].visible" label="公司名称/车牌号" align="center" prop="companyName" />
+			<el-table-column v-if="columns[4].visible" label="开户名称" align="center" prop="acountsName" />
+			<el-table-column v-if="columns[5].visible" label="银行账号" align="center" prop="bankNo" />
+			<el-table-column v-if="columns[6].visible" label="开户行" align="center" prop="bankName" />
 
 			<!-- 余额的展示 分为现金户和承兑户的展示 -->
 			<!-- bankAccountList需要在data中声明一个默认的属性 cardTypeBalances 不然会报undefined-->
 
-			<CustomTableColumn align="center" v-for="element in typeList" :key="element" :label="element">
+			<el-table-column align="center" v-for="element in typeList" :key="element" :label="element">
 				<template slot-scope="scope">
 					{{ scope.row.cardTypeBalances | handleArray(element) }}
 				</template>
-			</CustomTableColumn>
-			<CustomTableColumn label="银行卡操作" align="center" class-name="small-padding fixed-width">
+			</el-table-column>
+			<el-table-column label="银行卡操作" align="center" class-name="small-padding fixed-width">
 				<template slot-scope="scope">
 					<el-row>
 						<el-button size="mini" type="text" @click="checkBankChangeFlow(scope.row)">变动流水</el-button>
 					</el-row>
 				</template>
-			</CustomTableColumn>
-			<CustomTableColumn label="行操作" align="center" class-name="small-padding fixed-width">
+			</el-table-column>
+			<el-table-column label="行操作" align="center" class-name="small-padding fixed-width">
 				<template slot-scope="scope">
 					<el-row>
 						<el-button v-hasPermi="['system:bankaccount:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">编辑</el-button>
 						<el-button v-hasPermi="['system:bankaccount:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
 					</el-row>
 				</template>
-			</CustomTableColumn>
+			</el-table-column>
 		</u-table>
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
@@ -129,13 +129,13 @@
 						</el-col>
 						<SearchOption :limit-info="{}" :get-data="listCars" query-info="carNo" query-label="车牌查找" :query-name="queryBankAccount" @update:queryName="handleUpdateBankAccount" @commitBack="handleCommitBackBankAccount">
 							<template #table-columns>
-								<CustomTableColumn label="司机" align="center" prop="driver" />
-								<CustomTableColumn label="车牌号" align="center" prop="carNo" />
-								<CustomTableColumn label="司机电话" align="center" prop="tel" />
-								<CustomTableColumn label="开户名" align="center" prop="acountsName" />
-								<CustomTableColumn label="账号" align="center" prop="bankNo" />
-								<CustomTableColumn label="开户行" align="center" prop="bankName" />
-								<CustomTableColumn label="运输方式" align="center" prop="carType" />
+								<el-table-column label="司机" align="center" prop="driver" />
+								<el-table-column label="车牌号" align="center" prop="carNo" />
+								<el-table-column label="司机电话" align="center" prop="tel" />
+								<el-table-column label="开户名" align="center" prop="acountsName" />
+								<el-table-column label="账号" align="center" prop="bankNo" />
+								<el-table-column label="开户行" align="center" prop="bankName" />
+								<el-table-column label="运输方式" align="center" prop="carType" />
 							</template>
 						</SearchOption>
 					</el-row>
@@ -156,22 +156,22 @@
 						<el-col v-if="form.acountsType === PUBLIC_DICT_TYPE.EMPLOYEE" :span="4">
 							<SearchOption :limit-info="{}" :get-data="listUser" query-label="用户名" :query-name="queryUser" query-info="userName" @commitBack="handleCommitBackUser" @update:queryName="handleQueryUser">
 								<template #table-columns>
-									<CustomTableColumn label="用户名" align="center" prop="userName" :show-overflow-tooltip="true" />
-									<CustomTableColumn label="真实姓名" align="center" prop="trueName" :show-overflow-tooltip="true" />
-									<CustomTableColumn label="岗位" align="center" prop="postName" :show-overflow-tooltip="true" />
-									<CustomTableColumn label="手机号码" align="center" prop="phonenumber" width="120" />
-									<CustomTableColumn label="在职状态" align="center" prop="state" width="120" />
-									<CustomTableColumn label="入职时间" align="center" prop="startDate" width="120" />
-									<CustomTableColumn label="身份证号码" align="center" prop="iDCard" width="120" />
-									<CustomTableColumn label="性别" align="center" prop="sex" width="120" />
-									<CustomTableColumn label="出生日期" align="center" prop="birthday" width="120" />
-									<CustomTableColumn label="民族" align="center" prop="nation" width="120" />
-									<CustomTableColumn label="政治面貌" align="center" prop="politicalStatus" width="120" />
-									<CustomTableColumn label="婚姻状况" align="center" prop="maritalStatus" width="120" />
-									<CustomTableColumn label="户籍地址" align="center" prop="domicileAddress" width="120" />
-									<CustomTableColumn label="居住地址" align="center" prop="residentialAddress" width="120" />
-									<CustomTableColumn label="紧急联系人" align="center" prop="relationPerson" width="120" />
-									<CustomTableColumn label="紧急联系人电话" align="center" prop="relationPersonTel" width="120" />
+									<el-table-column label="用户名" align="center" prop="userName" :show-overflow-tooltip="true" />
+									<el-table-column label="真实姓名" align="center" prop="trueName" :show-overflow-tooltip="true" />
+									<el-table-column label="岗位" align="center" prop="postName" :show-overflow-tooltip="true" />
+									<el-table-column label="手机号码" align="center" prop="phonenumber" width="120" />
+									<el-table-column label="在职状态" align="center" prop="state" width="120" />
+									<el-table-column label="入职时间" align="center" prop="startDate" width="120" />
+									<el-table-column label="身份证号码" align="center" prop="iDCard" width="120" />
+									<el-table-column label="性别" align="center" prop="sex" width="120" />
+									<el-table-column label="出生日期" align="center" prop="birthday" width="120" />
+									<el-table-column label="民族" align="center" prop="nation" width="120" />
+									<el-table-column label="政治面貌" align="center" prop="politicalStatus" width="120" />
+									<el-table-column label="婚姻状况" align="center" prop="maritalStatus" width="120" />
+									<el-table-column label="户籍地址" align="center" prop="domicileAddress" width="120" />
+									<el-table-column label="居住地址" align="center" prop="residentialAddress" width="120" />
+									<el-table-column label="紧急联系人" align="center" prop="relationPerson" width="120" />
+									<el-table-column label="紧急联系人电话" align="center" prop="relationPersonTel" width="120" />
 								</template>
 							</SearchOption>
 						</el-col>
@@ -184,8 +184,8 @@
 						<el-col v-if="form.acountsType === PUBLIC_DICT_TYPE.SUPPLIER" :span="2">
 							<SearchOption title="供应商信息" :limit-info="{ companyType: '供应商' }" :get-data="listCompany" @commitBack="handleCommitBackCompanyGive" @update:queryName="handleQueryCompanyGive" query-info="companyName" query-label="公司名称" :query-name="queryCompanyGive">
 								<template #table-columns>
-									<CustomTableColumn label="供应商" align="center" prop="companyName" />
-									<CustomTableColumn label="地址" align="center" prop="address" />
+									<el-table-column label="供应商" align="center" prop="companyName" />
+									<el-table-column label="地址" align="center" prop="address" />
 								</template>
 							</SearchOption>
 						</el-col>
@@ -193,10 +193,10 @@
 						<el-col v-if="form.acountsType === PUBLIC_DICT_TYPE.CUSTOMER" :span="2">
 							<SearchOption title="客户信息" :limit-info="{ companyType: '客户' }" :get-data="listCompany" @commitBack="handleCommitBackCompany" @update:queryName="handleQueryCompany" query-info="companyName" query-label="公司名称" :query-name="queryCompany">
 								<template #table-columns>
-									<CustomTableColumn label="客户" align="center" prop="companyName" />
-									<CustomTableColumn label="老板姓名" align="center" prop="leader" />
-									<CustomTableColumn label="老板电话" align="center" prop="leaderTel" />
-									<CustomTableColumn label="销售经理" align="center" prop="salesManager" />
+									<el-table-column label="客户" align="center" prop="companyName" />
+									<el-table-column label="老板姓名" align="center" prop="leader" />
+									<el-table-column label="老板电话" align="center" prop="leaderTel" />
+									<el-table-column label="销售经理" align="center" prop="salesManager" />
 								</template>
 							</SearchOption>
 						</el-col>
@@ -243,10 +243,10 @@
 					</el-form>
 				</div>
 				<el-table :data="bankChangeList" style="width: 100%" :default-sort="bankChangeDefaultSort" @sort-change="handleBankChangeSortChange">
-					<CustomTableColumn prop="selfBankNo" label="我方账号" width="180"></CustomTableColumn>
-					<CustomTableColumn prop="operateDate" label="日期" width="180" sortable="custom" :sort-orders="['descending', 'ascending']"></CustomTableColumn>
-					<CustomTableColumn prop="payType" label="支付类型"></CustomTableColumn>
-					<CustomTableColumn prop="moneyAmount" label="金额"></CustomTableColumn>
+					<el-table-column prop="selfBankNo" label="我方账号" width="180"></el-table-column>
+					<el-table-column prop="operateDate" label="日期" width="180" sortable="custom" :sort-orders="['descending', 'ascending']"></el-table-column>
+					<el-table-column prop="payType" label="支付类型"></el-table-column>
+					<el-table-column prop="moneyAmount" label="金额"></el-table-column>
 				</el-table>
 				<pagination v-show="bankAcountTotal > 0" :total="bankAcountTotal" :page.sync="bankAcountQuery.bankAcountTotalPageNum" :limit.sync="bankAcountQuery.bankAcountTotalPageSize" @pagination="getBankAcountChangeList" />
 			</el-row>
