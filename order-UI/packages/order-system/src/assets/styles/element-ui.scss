@@ -1,6 +1,154 @@
 // cover some element-ui styles
 
 // ============================================
+// 全局变量定义
+// ============================================
+
+// 表格相关变量
+$table-cell-padding: 0px !default; // 单元格内边距（设置为0）
+$table-cell-padding-horizontal: 0px !default; // 单元格左右内边距（设置为0）
+$table-cell-height: 20px !default; // 单元格高度
+$table-cell-line-height: 20px !default; // 单元格行高
+$table-font-size: 14px !default; // 表格字体大小
+$table-header-bg: #f2f2f2 !default; // 表头背景色
+$table-body-bg: #fff !default; // 表体背景色
+$table-border-color: #e6e6e6 !default; // 表格边框颜色
+$table-header-color: #333 !default; // 表头文字颜色
+$table-body-color: #666 !default; // 表体文字颜色
+$table-hover-bg: #f2f2f2 !default; // 悬停背景色
+$table-footer-bg: #f5f5f5 !default; // 合计行背景色
+
+// 输入框相关变量
+$input-height: 24px !default; // 输入框高度
+$input-line-height: 24px !default; // 输入框行高
+$input-padding-horizontal: 8px !default; // 输入框左右内边距
+$input-font-size: 16px !default; // 输入框字体大小
+$input-placeholder-font-size: 10px !default; // placeholder字体大小
+$input-disabled-bg: #f5f7fa !default; // 禁用状态背景色
+$input-disabled-border: #e4e7ed !default; // 禁用状态边框色
+
+// 按钮相关变量
+$button-primary-color: #156fb2 !default; // 主按钮颜色
+$button-height-default: 38px !default; // 默认按钮高度
+$button-height-large: 44px !default; // 大按钮高度
+$button-height-small: 30px !default; // 小按钮高度
+$button-height-mini: 22px !default; // 迷你按钮高度
+
+// 分页相关变量
+$pagination-height: 28px !default; // 分页按钮高度
+$pagination-line-height: 28px !default; // 分页按钮行高
+$pagination-padding: 0 15px !default; // 分页按钮内边距
+$pagination-font-size: 12px !default; // 分页字体大小
+$pagination-border-color: #e2e2e2 !default; // 分页边框颜色
+$pagination-active-color: #156fb2 !default; // 分页激活颜色
+
+// 文本选择相关
+$user-select-properties: (
+	user-select: text,
+	-webkit-user-select: text,
+	-moz-user-select: text,
+	-ms-user-select: text
+) !default;
+
+// ============================================
+// Mixin 定义
+// ============================================
+
+// 文本选择 mixin
+@mixin user-select-text {
+	user-select: text !important;
+	-webkit-user-select: text !important;
+	-moz-user-select: text !important;
+	-ms-user-select: text !important;
+}
+
+// 表格单元格基础样式 mixin
+@mixin table-cell-base {
+	padding: $table-cell-padding !important;
+	font-size: $table-font-size !important;
+	border: 1px solid $table-border-color !important;
+	text-align: center !important;
+}
+
+// 表格单元格内容 mixin
+@mixin table-cell-content {
+	padding: 0 $table-cell-padding-horizontal !important;
+	min-height: $table-cell-height !important;
+	line-height: $table-cell-line-height !important;
+	font-size: $table-font-size !important;
+	text-align: center !important;
+}
+
+// 表格表头单元格 mixin
+@mixin table-header-cell {
+	@include table-cell-base;
+	font-weight: 400 !important;
+	color: $table-header-color !important;
+	background-color: $table-header-bg !important;
+}
+
+// 表格表体单元格 mixin
+@mixin table-body-cell {
+	@include table-cell-base;
+	color: $table-body-color !important;
+	background-color: $table-body-bg !important;
+}
+
+// 表格尺寸变体 mixin（用于 medium 和 mini）
+@mixin table-size-variant {
+	.el-table__header th {
+		@include table-header-cell;
+		@include user-select-text;
+
+		.cell {
+			@include table-cell-content;
+			color: $table-header-color !important;
+			font-weight: 400 !important;
+			overflow: hidden !important;
+			text-overflow: ellipsis !important;
+			white-space: nowrap !important;
+			@include user-select-text;
+			cursor: text !important;
+		}
+	}
+
+	.el-table__body-wrapper {
+		.el-table__body {
+			td {
+				@include table-body-cell;
+
+				.cell {
+					@include table-cell-content;
+					color: $table-body-color !important;
+					overflow: hidden !important;
+					text-overflow: ellipsis !important;
+					white-space: nowrap !important;
+				}
+			}
+		}
+	}
+
+	.el-table__fixed,
+	.el-table__fixed-right {
+		.el-table__fixed-body-wrapper {
+			.el-table__body {
+				td {
+					@include table-body-cell;
+
+					.cell {
+						@include table-cell-content;
+						color: $table-body-color !important;
+						overflow: hidden !important;
+						text-overflow: ellipsis !important;
+						white-space: nowrap !important;
+					}
+				}
+			}
+		}
+	}
+}
+
+// ============================================
 // 通用工具类
 // ============================================
 .cell {
@@ -75,81 +223,149 @@
 // Button 按钮
 // ============================================
 .el-button {
-	&.el-button--medium {
-		padding: 6px 12px !important;
+	display: inline-block !important;
+	height: 38px !important;
+	line-height: 38px !important;
+	padding: 0 18px !important;
+	background-color: #156fb2 !important;
+	color: #fff !important;
+	white-space: nowrap !important;
+	text-align: center !important;
+	font-size: 14px !important;
+	border: none !important;
+	border-radius: 2px !important;
+	cursor: pointer !important;
+	transition: all 0.3s !important;
+	vertical-align: middle !important;
+	box-sizing: border-box !important;
+
+	&:hover:not(.is-disabled):not([disabled]) {
+		opacity: 0.8 !important;
+		color: #fff !important;
+	}
+
+	&:active:not(.is-disabled):not([disabled]) {
+		opacity: 1 !important;
+	}
+
+	& + .el-button {
+		margin-left: 10px !important;
+	}
+
+	&.el-button--large {
+		height: 44px !important;
+		line-height: 44px !important;
+		padding: 0 25px !important;
 		font-size: 16px !important;
-		height: 48px !important;
 	}
 
 	&.el-button--small {
-		padding: 4px 10px !important;
-		font-size: 14px !important;
-		height: 38 !important;
+		height: 30px !important;
+		line-height: 30px !important;
+		padding: 0 10px !important;
+		font-size: 12px !important;
 	}
 
 	&.el-button--mini {
-		padding: 2px 6px !important;
+		height: 22px !important;
+		line-height: 22px !important;
+		padding: 0 5px !important;
 		font-size: 12px !important;
-		height: 28px !important;
 	}
 
-	// text类型按钮特殊样式调整
-	&.el-button--text {
-		padding: 2px 6px !important;
-		font-size: 22px !important; // 从18px调大到22px
-		color: #3585d4 !important; // 深色字体
-		font-weight: normal !important;
-		min-height: 28px !important;
-		line-height: 1.4 !important;
+	&.is-round {
+		border-radius: 100px !important;
+	}
 
-		&:hover {
-			color: #409eff !important;
+	&.is-disabled,
+	&[disabled] {
+		border: 1px solid #e6e6e6 !important;
+		background-color: #fbfbfb !important;
+		color: #c9c9c9 !important;
+		cursor: not-allowed !important;
+		opacity: 1 !important;
+	}
+}
+
+.el-button--default,
+.el-button--plain {
+	border: 1px solid #c9c9c9 !important;
+	background-color: #fff !important;
+	color: #555 !important;
+
+	&:hover:not(.is-disabled):not([disabled]) {
+		border-color: #156fb2 !important;
+		color: #333 !important;
+	}
+}
+
+.el-button--primary {
+	background-color: #156fb2 !important;
+	color: #fff !important;
+}
+
+.el-button--success {
+	background-color: #5fb878 !important;
+	color: #fff !important;
+}
+
+.el-button--info {
+	background-color: #1e9fff !important;
+	color: #fff !important;
+}
+
+.el-button--warning {
+	background-color: #ffb800 !important;
+	color: #fff !important;
+}
+
+.el-button--danger {
+	background-color: #ff5722 !important;
+	color: #fff !important;
+}
+
+.el-button--text {
+	background: transparent !important;
+	border: none !important;
+	color: #156fb2 !important;
+	padding: 0 10px !important;
+	height: auto !important;
+	line-height: 24px !important;
+
+	&:hover:not(.is-disabled):not([disabled]) {
+		color: #333 !important;
+		background: transparent !important;
+	}
+}
+
+.el-button-group {
+	display: inline-block !important;
+	vertical-align: middle !important;
+	font-size: 0 !important;
+
+	.el-button {
+		margin-left: 0 !important;
+		margin-right: 0 !important;
+		border-radius: 0 !important;
+
+		& + .el-button {
+			margin-left: 0 !important;
+			border-left: 1px solid rgba(255, 255, 255, 0.5) !important;
 		}
 
-		&:disabled {
-			color: #c0c4cc !important;
+		&:first-child {
+			border-left: none !important;
+			border-radius: 2px 0 0 2px !important;
 		}
 
-		// text按钮的不同尺寸调整
-		&.el-button--medium {
-			padding: 6px 12px !important;
-			font-size: 18px !important; // 从14px调大到18px
-			min-height: 30px !important;
-		}
-
-		&.el-button--small {
-			padding: 5px 10px !important;
-			font-size: 16px !important; // 从13px调大到16px
-			min-height: 26px !important;
-		}
-
-		&.el-button--mini {
-			padding: 4px 8px !important;
-			font-size: 15px !important; // 从12px调大到15px
-			min-height: 22px !important;
+		&:last-child {
+			border-radius: 0 2px 2px 0 !important;
 		}
 	}
 }
 
-// 按钮在表单中的调整
-.el-form .el-button {
-	&.el-button--medium {
-		padding: 6px 12px; // 从8px 16px缩小到6px 12px
-		font-size: 12px; // 从13px缩小到12px
-		height: 28px; // 与输入框高度保持一致
-	}
-
-	&.el-button--small {
-		padding: 4px 10px; // 从6px 12px缩小到4px 10px
-		font-size: 11px; // 从12px缩小到11px
-		height: 24px;
-	}
-
-	&.el-button--mini {
-		padding: 2px 6px; // 从4px 8px缩小到2px 6px
-		font-size: 10px; // 从11px缩小到10px
-		height: 20px;
-	}
+.el-button-group + .el-button-group {
+	margin-left: 10px !important;
 }
 
 // ============================================
@@ -233,52 +449,94 @@
 	}
 }
 
-// 适用于顶部搜索框的整套样式
+// 适用于顶部搜索框的整套样式（参考LayUI配置）
 #top-search-form-item {
-	font-size: 18px !important;
-	color: #000000 !important;
-	font-weight: bold !important;
+	font-size: 0.8rem !important; // 字体大小0.8rem
+	color: #333 !important; // 字体颜色#333（参考LayUI配置）
+	font-weight: normal !important; // 不加粗（参考LayUI配置）
 	line-height: 1.4 !important;
+	margin-bottom: 10px !important; // 表单容器下边距（参考LayUI配置）
+	padding: 10px 0 !important; // 表单容器内边距（参考LayUI配置）
+	background-color: transparent !important;
 
-	// 表单项label样式
+	// 表单项样式
 	.el-form-item {
+		margin-bottom: 0px !important; // 无下边距（参考LayUI配置）
+		margin-right: 10px !important; // 右边距10px（参考LayUI配置）
+		display: inline-block !important; // 横向排列（参考LayUI配置）
+		vertical-align: middle !important; // 垂直对齐（参考LayUI配置）
+
+		// 标签样式（参考LayUI配置）
 		.el-form-item__label {
-			font-size: 18px !important;
-			color: #000000 !important;
-			font-weight: bold !important;
-			line-height: 36px !important;
-			padding: 0 8px 0 0 !important;
+			width: auto !important; // 自适应宽度（参考LayUI配置）
+			min-width: 75px !important; // 最小宽度75px（参考LayUI配置）
+			font-size: 0.8rem !important; // 字体大小0.8rem
+			color: #333 !important; // 字体颜色#333（参考LayUI配置）
+			font-weight: normal !important; // 不加粗（参考LayUI配置）
+			line-height: 28px !important; // 行高28px，与输入框高度一致
+			padding: 9px 5px !important; // 上下9px，左右5px（参考LayUI配置）
+			text-align: right !important; // 右对齐（参考LayUI配置）
 		}
 
 		.el-form-item__content {
-			line-height: 36px !important;
+			line-height: 28px !important; // 行高28px，与输入框高度一致
+			display: inline-block !important;
+			vertical-align: middle !important;
 
-			// 输入框样式 - 黑色边框并放大
+			// 输入框样式（参考LayUI配置）
 			.el-input {
-				font-size: 16px !important;
+				font-size: 0.8rem !important; // 字体大小0.8rem
+				width: 100px !important; // 标准宽度100px（参考LayUI配置）
 
 				.el-input__inner {
-					height: 28px !important;
-					padding: 0 12px !important;
-					font-size: 16px !important; // 字体大小改为16px
-					border: 1px solid #323232 !important;
-					border-radius: 4px !important;
-					color: #000000 !important; // 黑色
+					height: 28px !important; // 统一高度28px（参考LayUI配置）
+					padding: 4px 8px !important; // 上下4px，左右8px（参考LayUI配置）
+					font-size: 0.8rem !important; // 字体大小0.8rem
+					line-height: 20px !important; // 行高20px
+					border: 1px solid #e6e6e6 !important; // LayUI默认边框（参考LayUI配置）
+					border-radius: 2px !important; // 圆角2px（参考LayUI配置）
+					background-color: #fff !important; // 背景白色
+					color: #333 !important; // 字体颜色#333（参考LayUI配置）
 					font-weight: normal !important; // 不加粗
+					transition: border-color 0.3s !important; // 过渡效果
 
 					&:hover {
-						border-color: #000000 !important;
+						border-color: #d2d2d2 !important; // 悬停边框颜色（参考LayUI配置）
 					}
 
 					&:focus {
-						border-color: #000000 !important;
+						border-color: #1e9fff !important; // LayUI默认焦点色（参考LayUI配置）
+						outline: none !important;
 					}
 
 					&::placeholder {
-						font-size: 13px !important;
-						color: transparent !important;
+						font-size: 0.8rem !important;
+						color: transparent !important; // 透明色，隐藏placeholder
 						font-weight: normal !important;
 					}
+
+					// 禁用状态（参考LayUI配置）
+					&:disabled {
+						background-color: #f5f5f5 !important;
+						cursor: not-allowed !important;
+						color: #999 !important;
+					}
+				}
+
+				// 特殊宽度输入框（参考LayUI配置）
+				&[style*='width: 120px'],
+				&[style*='width:120px'] {
+					width: 120px !important;
+				}
+
+				// 日期范围分隔符宽度（参考LayUI配置）
+				&[style*='width: 10px'],
+				&[style*='width:10px'] {
+					width: 10px !important;
+					text-align: center !important;
+					padding: 0 !important;
+					line-height: 28px !important;
+					color: #666 !important;
 				}
 
 				.el-input__suffix,
@@ -286,88 +544,195 @@
 					.el-input__suffix-inner,
 					.el-input__prefix-inner {
 						.el-input__icon {
-							font-size: 14px !important;
-							line-height: 36px !important;
+							font-size: 0.8rem !important;
+							line-height: 28px !important; // 与输入框高度一致
 						}
 					}
 				}
+
+				// 必填字段标识（参考LayUI配置）
+				&.require .el-input__inner {
+					border: 1px solid #ff0000 !important; // 红色边框标识必填
+				}
 			}
 
-			// 选择器样式
+			// 选择器样式（参考LayUI配置）
 			.el-select {
+				width: 100px !important; // 标准宽度100px（参考LayUI配置）
+
 				.el-input .el-input__inner {
-					height: 28px !important;
-					border: 1px solid #000000 !important;
-					font-size: 16px !important; // 字体大小改为16px
-					color: #000000 !important; // 黑色
+					height: 28px !important; // 统一高度28px
+					padding: 4px 30px 4px 8px !important; // 内边距调整
+					font-size: 0.8rem !important; // 字体大小0.8rem
+					border: 1px solid #e6e6e6 !important; // LayUI默认边框
+					border-radius: 2px !important; // 圆角2px
+					background-color: #fff !important;
+					color: #333 !important; // 字体颜色#333
 					font-weight: normal !important; // 不加粗
-					padding: 0 30px 0 12px !important;
+					cursor: pointer !important;
+					transition: border-color 0.3s !important;
 
 					&:hover {
-						border-color: #000000 !important;
+						border-color: #d2d2d2 !important;
 					}
 
 					&:focus {
-						border-color: #000000 !important;
+						border-color: #1e9fff !important; // LayUI默认焦点色
 					}
 				}
 			}
 
-			// 级联选择器样式
+			// 级联选择器样式（参考LayUI配置）
 			.el-cascader {
+				width: 100px !important; // 标准宽度100px
+
 				.el-input .el-input__inner {
-					height: 28px !important;
-					border: 1px solid #000000 !important;
-					font-size: 16px !important; // 字体大小改为16px
-					color: #000000 !important; // 黑色
+					height: 28px !important; // 统一高度28px
+					padding: 4px 30px 4px 8px !important; // 内边距调整
+					font-size: 0.8rem !important; // 字体大小0.8rem
+					border: 1px solid #e6e6e6 !important; // LayUI默认边框
+					border-radius: 2px !important; // 圆角2px
+					background-color: #fff !important;
+					color: #333 !important; // 字体颜色#333
 					font-weight: normal !important; // 不加粗
-					padding: 0 30px 0 12px !important;
+					cursor: pointer !important;
+					transition: border-color 0.3s !important;
 
 					&:hover {
-						border-color: #000000 !important;
+						border-color: #d2d2d2 !important;
 					}
 
 					&:focus {
-						border-color: #000000 !important;
+						border-color: #1e9fff !important; // LayUI默认焦点色
 					}
 				}
 			}
 
-			// 日期选择器样式
+			// 日期选择器样式（参考LayUI配置）
 			.el-date-editor {
+				width: 100px !important; // 标准宽度100px
+
 				&.el-input .el-input__inner {
-					height: 28px !important;
-					border: 1px solid #000000 !important;
-					font-size: 16px !important; // 字体大小改为16px
-					color: #000000 !important; // 黑色
+					height: 28px !important; // 统一高度28px
+					padding: 4px 25px 4px 8px !important; // 内边距调整
+					font-size: 0.8rem !important; // 字体大小0.8rem
+					border: 1px solid #e6e6e6 !important; // LayUI默认边框
+					border-radius: 2px !important; // 圆角2px
+					background-color: #fff !important;
+					color: #333 !important; // 字体颜色#333
 					font-weight: normal !important; // 不加粗
+					cursor: pointer !important; // 日期选择器光标
+					transition: border-color 0.3s !important;
+
 					&:hover {
-						border-color: #000000 !important;
+						border-color: #d2d2d2 !important;
 					}
 
 					&:focus {
-						border-color: #000000 !important;
+						border-color: #1e9fff !important; // LayUI默认焦点色
 					}
 				}
 
 				&.el-range-editor {
-					height: 28px !important;
-					border: 1px solid #000000 !important;
+					width: 380px !important; // 时间范围选择器宽度，确保能完整显示时间内容
+					min-width: 380px !important; // 最小宽度
+					height: 28px !important; // 统一高度28px
+					border: 1px solid #e6e6e6 !important; // LayUI默认边框
+					border-radius: 2px !important; // 圆角2px
+					padding: 4px 8px !important;
+					transition: border-color 0.3s !important;
 
 					.el-range-input {
-						font-size: 16px !important; // 字体大小改为16px
-						color: #000000 !important; // 黑色
+						font-size: 0.8rem !important; // 字体大小0.8rem
+						color: #333 !important; // 字体颜色#333
 						font-weight: normal !important; // 不加粗
+						height: 20px !important;
+						line-height: 20px !important;
+						flex: 1 !important; // 允许输入框自适应宽度
+						min-width: 0 !important; // 允许收缩
 					}
 
 					.el-range-separator {
-						font-size: 14px !important;
-						color: #000000 !important;
+						font-size: 0.8rem !important;
+						color: #666 !important; // 分隔符颜色
+						line-height: 20px !important;
+						padding: 0 5px !important;
+						flex-shrink: 0 !important; // 分隔符不收缩
 					}
 
 					&:hover {
-						border-color: #000000 !important;
+						border-color: #d2d2d2 !important;
 					}
+
+					&:focus-within {
+						border-color: #1e9fff !important; // LayUI默认焦点色
+					}
+				}
+			}
+
+			// 按钮样式（参考LayUI配置）
+			.el-button {
+				height: 28px !important; // 统一高度28px（参考LayUI配置）
+				line-height: 28px !important; // 行高28px
+				padding: 0 15px !important; // 左右15px（参考LayUI配置）
+				font-size: 0.8rem !important; // 字体大小0.8rem
+				border-radius: 2px !important; // 圆角2px（参考LayUI配置）
+				cursor: pointer !important;
+				transition: background-color 0.3s !important; // 过渡效果
+				border: none !important;
+
+				// 搜索按钮（参考LayUI配置）
+				&.el-button--primary {
+					background-color: #1e9fff !important; // LayUI默认蓝色（参考LayUI配置）
+					color: #fff !important;
+
+					&:hover {
+						background-color: #0097e6 !important; // 悬停颜色（参考LayUI配置）
+					}
+
+					&:active {
+						background-color: #0081d1 !important; // 激活颜色
+					}
+				}
+
+				// 重置按钮（参考LayUI配置）
+				&.el-button--default {
+					background-color: #2f4056 !important; // LayUI默认灰色（参考LayUI配置）
+					color: #fff !important;
+
+					&:hover {
+						background-color: #1e282c !important; // 悬停颜色（参考LayUI配置）
+					}
+				}
+
+				// 按钮间距（参考LayUI配置）
+				& + .el-button {
+					margin-left: 8px !important; // 按钮之间间距8px
+				}
+			}
+		}
+
+		// 最后一个表单项（按钮容器）样式
+		&:last-child {
+			margin-left: 10px !important; // 按钮容器左边距（参考LayUI配置）
+		}
+	}
+
+	// 响应式调整（参考LayUI配置）
+	@media (max-width: 768px) {
+		.el-form-item {
+			display: block !important;
+			margin-bottom: 10px !important;
+			margin-right: 0 !important;
+
+			.el-form-item__content {
+				width: 100% !important;
+
+				.el-input,
+				.el-select,
+				.el-cascader,
+				.el-date-editor {
+					width: 100% !important;
 				}
 			}
 		}
@@ -377,6 +742,21 @@
 // ============================================
 // Input 输入框
 // ============================================
+// 全局表单控件 placeholder 透明设置（确保所有表单控件的 placeholder 都不显示）
+input::placeholder,
+textarea::placeholder,
+.el-input__inner::placeholder,
+.el-textarea__inner::placeholder,
+.el-select .el-input__inner::placeholder,
+.el-cascader .el-input__inner::placeholder,
+.el-date-editor .el-input__inner::placeholder,
+.el-date-editor .el-range-input::placeholder,
+.el-input-number .el-input__inner::placeholder,
+.el-time-select .el-input__inner::placeholder,
+.el-time-picker .el-input__inner::placeholder {
+	color: transparent !important;
+}
+
 // 输入框组件尺寸调整
 .el-input {
 	font-size: 11px; // 从12px进一步缩小到11px
@@ -757,12 +1137,37 @@
 	display: inline-flex !important;
 	height: 24px !important;
 	line-height: 24px !important;
+	width: 380px !important; // 时间范围选择器宽度，确保能完整显示时间内容
+	min-width: 380px !important; // 最小宽度
+	align-items: center !important; // 垂直居中
+
+	.el-range-input {
+		flex: 1 !important; // 允许输入框自适应宽度
+		min-width: 0 !important; // 允许收缩
+	}
+
+	.el-range-separator {
+		flex-shrink: 0 !important; // 分隔符不收缩
+	}
 }
 
-// 全局范围选择器高度调整
+// 全局范围选择器高度和宽度调整
 .el-range-editor {
 	height: 24px !important;
 	line-height: 24px !important;
+	width: 380px !important; // 时间范围选择器宽度，确保能完整显示时间内容
+	min-width: 380px !important; // 最小宽度
+	display: inline-flex !important; // 使用flex布局
+	align-items: center !important; // 垂直居中
+
+	.el-range-input {
+		flex: 1 !important; // 允许输入框自适应宽度
+		min-width: 0 !important; // 允许收缩
+	}
+
+	.el-range-separator {
+		flex-shrink: 0 !important; // 分隔符不收缩
+	}
 }
 
 // to fix el-date-picker css style
@@ -1043,235 +1448,299 @@
 }
 
 // ============================================
-// Table 表格
+// Table 表格（严格按照LayUI配置）
 // ============================================
-// 全局表格组件调整 - 整体缩小
-.el-table--scrollable-x {
-	.el-table__fixed {
-		bottom: 10px !important;
-	}
-
-	.el-table__fixed-right {
-		bottom: 10px !important;
-	}
-}
-
+// 表格容器（严格按照LayUI配置）
 .el-table {
-	font-size: 16px !important;
-	color: #000000 !important; // 表格字体颜色改为纯黑色
-	// 允许选择文本以便复制
-	user-select: text !important;
-	-webkit-user-select: text !important;
-	-moz-user-select: text !important;
-	-ms-user-select: text !important;
+	background-color: $table-body-bg !important;
+	border: 1px solid $table-border-color !important;
+	border-collapse: collapse !important;
+	border-spacing: 0 !important;
+	font-size: $table-font-size !important;
+	color: $table-body-color !important;
+	@include user-select-text;
 
-	// 滚动条样式
-	::-webkit-scrollbar {
-		height: 10px;
+	.el-table__header-wrapper .el-table__header th,
+	.el-table__fixed-header-wrapper .el-table__header th {
+		@include table-header-cell;
 	}
 
-	::-webkit-scrollbar-thumb {
-		// 滚动条上的滚动滑块
-		// background: #000 !important;
-		height: 10px;
+	.el-table__header-wrapper .el-table__header th .cell,
+	.el-table__fixed-header-wrapper .el-table__header th .cell {
+		@include table-cell-content;
+		font-weight: 400 !important;
+		color: $table-header-color !important;
 	}
 
-	// 非固定列的样式
+	.el-table__body-wrapper .el-table__body td,
+	.el-table__fixed-body-wrapper .el-table__body td,
+	.el-table__footer-wrapper .el-table__footer td {
+		@include table-body-cell;
+	}
+
+	.el-table__body-wrapper .el-table__body td .cell,
+	.el-table__fixed-body-wrapper .el-table__body td .cell,
+	.el-table__footer-wrapper .el-table__footer td .cell {
+		@include table-cell-content;
+		color: inherit !important;
+	}
+
+	&.el-table--medium,
+	&.el-table--mini {
+		@include table-size-variant;
+	}
+
+	// 表头样式（严格按照LayUI配置）
 	.el-table__header-wrapper {
+		background-color: $table-header-bg !important;
+
 		.el-table__header {
+			background-color: $table-header-bg !important;
+
 			th {
-				height: 32px !important; // 从默认40px缩小到32px
-				padding: 0 !important; // 表头 padding 设置为 0
-				font-size: 16px !important; // 表头字体大小改为14px
-				color: #000000 !important; // 表头字体颜色改为纯黑色
-				font-weight: bold !important; // 加粗
-				background-color: #f2f2f2 !important; // 表头背景颜色
-				// 允许选择文本以便复制
-				user-select: text !important;
-				-webkit-user-select: text !important;
-				-moz-user-select: text !important;
-				-ms-user-select: text !important;
+				@include table-header-cell;
+				@include user-select-text;
 
 				.cell {
-					line-height: 20px !important;
-					font-size: 16px !important; // 表头单元格字体大小改为14px
-					color: #000000 !important; // 表头单元格字体颜色改为纯黑色
-					font-weight: bold !important; // 加粗
-					// 允许选择文本以便复制
-					user-select: text !important;
-					-webkit-user-select: text !important;
-					-moz-user-select: text !important;
-					-ms-user-select: text !important;
-					cursor: text !important; // 鼠标悬停时显示文本光标
+					@include table-cell-content;
+					color: $table-header-color !important;
+					font-weight: 400 !important;
+					overflow: hidden !important;
+					text-overflow: ellipsis !important;
+					white-space: nowrap !important;
+					@include user-select-text;
+					cursor: text !important;
 				}
 			}
 		}
 	}
 
-	// 表体单元格样式 - padding 设置为 0
+	// 表体单元格样式（严格按照LayUI配置）
 	.el-table__body-wrapper {
+		background-color: $table-body-bg !important;
+
 		.el-table__body {
 			td {
-				padding: 0 !important; // 表体单元格 padding 设置为 0
+				position: relative;
+				@include table-body-cell;
+
+				.cell {
+					@include table-cell-content;
+					color: $table-body-color !important;
+					overflow: hidden !important;
+					text-overflow: ellipsis !important;
+					white-space: nowrap !important;
+				}
+
+				// 居中对齐的单元格（LayUI配置）
+				&[align='center'] {
+					text-align: center !important;
+				}
+
+				// 右对齐的单元格（LayUI配置）
+				&[align='right'] {
+					text-align: right !important;
+				}
+			}
+
+			// 表格行样式（严格按照LayUI配置）
+			tr {
+				border-bottom: 1px solid $table-border-color !important;
+				background-color: $table-body-bg !important;
+
+				// 表格行悬停效果（禁用默认悬停）（LayUI配置）
+				&:hover {
+					background-color: $table-hover-bg !important;
+				}
+
+				// 选中行样式（LayUI配置）
+				&.layui-table-click,
+				&.current-row {
+					background-color: $table-hover-bg !important;
+				}
+			}
+
+			// 斑马纹（如果需要）（LayUI配置）
+			tr:nth-child(even) {
+				background-color: $table-hover-bg !important;
 			}
 		}
 	}
 
-	// 固定列表体单元格样式
+	// 固定列表体单元格样式（严格按照LayUI配置）
 	.el-table__fixed,
 	.el-table__fixed-right {
+		background-color: $table-body-bg !important;
+		box-shadow: 2px 0 6px rgba(0, 0, 0, 0.1) !important;
+
 		.el-table__fixed-body-wrapper {
 			.el-table__body {
 				td {
-					padding: 0 !important; // 固定列表体单元格 padding 设置为 0
-				}
-			}
-		}
-	}
-
-	// 固定列表头样式 - 与主表格表头保持一致
-	.el-table__fixed,
-	.el-table__fixed-right {
-		height: auto !important;
-		bottom: 10px !important; //具体值是多少根据页面横向滚动条的高度进行设置
-		.el-table__fixed-header-wrapper {
-			.el-table__header {
-				th {
-					height: 32px !important; // 从默认40px缩小到32px
-					padding: 0 !important; // 固定列表头 padding 设置为 0
-					font-size: 16px !important; // 表头字体大小改为14px
-					color: #000000 !important; // 表头字体颜色改为纯黑色
-					font-weight: bold !important; // 加粗
-					background-color: #f2f2f2 !important; // 固定列表头背景颜色
-					// 允许选择文本以便复制
-					user-select: text !important;
-					-webkit-user-select: text !important;
-					-moz-user-select: text !important;
-					-ms-user-select: text !important;
+					@include table-body-cell;
 
 					.cell {
-						line-height: 20px !important;
-						font-size: 16px !important; // 表头单元格字体大小改为14px
-						color: #000000 !important; // 表头单元格字体颜色改为纯黑色
-						font-weight: bold !important; // 加粗
-						// 允许选择文本以便复制
-						user-select: text !important;
-						-webkit-user-select: text !important;
-						-moz-user-select: text !important;
-						-ms-user-select: text !important;
-						cursor: text !important; // 鼠标悬停时显示文本光标
+						@include table-cell-content;
+						color: $table-body-color !important;
+						overflow: hidden !important;
+						text-overflow: ellipsis !important;
+						white-space: nowrap !important;
 					}
 				}
 			}
 		}
 	}
 
-	// 表格尺寸变体调整
-	&.el-table--medium {
-		// medium 尺寸单元格内边距
-		th .cell {
-			padding: 0 5px !important; // medium尺寸表头单元格内间距
-		}
+	// 固定列左边框（LayUI配置）
+	.el-table__fixed-left {
+		border-right: 1px solid $table-border-color !important;
+	}
 
-		// medium 尺寸表体单元格 padding 设置为 0
-		.el-table__body-wrapper {
-			.el-table__body {
-				td {
-					padding: 0 !important;
-				}
-			}
-		}
+	// 固定列右边框（LayUI配置）
+	.el-table__fixed-right {
+		border-left: 1px solid $table-border-color !important;
+	}
 
-		.el-table__fixed,
-		.el-table__fixed-right {
-			.el-table__fixed-body-wrapper {
-				.el-table__body {
-					td {
-						padding: 0 !important; // medium 尺寸固定列表体单元格 padding 设置为 0
+	// 固定列表头样式（严格按照LayUI配置）
+	.el-table__fixed,
+	.el-table__fixed-right {
+		.el-table__fixed-header-wrapper {
+			background-color: $table-header-bg !important;
+
+			.el-table__header {
+				th {
+					@include table-header-cell;
+					@include user-select-text;
+
+					.cell {
+						@include table-cell-content;
+						color: $table-header-color !important;
+						font-weight: 400 !important;
+						overflow: hidden !important;
+						text-overflow: ellipsis !important;
+						white-space: nowrap !important;
+						@include user-select-text;
+						cursor: text !important;
 					}
 				}
 			}
 		}
-
-		.el-table__header th {
-			height: 28px !important;
-			padding: 0 !important; // medium 尺寸表头 padding 设置为 0
-			font-size: 16px !important; // 表头字体大小改为14px
-			color: #000000 !important;
-			background-color: #f2f2f2 !important; // medium 尺寸表头背景颜色
-			// 允许选择文本以便复制
-			user-select: text !important;
-			-webkit-user-select: text !important;
-			-moz-user-select: text !important;
-			-ms-user-select: text !important;
-
-			.cell {
-				font-size: 16px !important; // 表头单元格字体大小改为14px
-				color: #000000 !important;
-				// 允许选择文本以便复制
-				user-select: text !important;
-				-webkit-user-select: text !important;
-				-moz-user-select: text !important;
-				-ms-user-select: text !important;
-				cursor: text !important;
-			}
-		}
 	}
 
+	// 表格尺寸变体调整（严格按照LayUI配置）
+	// medium 和 mini 尺寸的通用样式已通过上面的 @include table-size-variant 统一处理
+
+	// mini 尺寸特有的样式
 	&.el-table--mini {
-		// 去除表体单元格的 padding（Element UI 默认是 6px）
 		.el-table__cell {
-			padding: 0 !important;
+			padding: $table-cell-padding !important;
 		}
+	}
 
-		// mini 尺寸表体单元格 padding 设置为 0
-		.el-table__body-wrapper {
-			.el-table__body {
-				td {
-					padding: 0 !important;
-				}
+	// 合计行样式（严格按照LayUI配置）
+	.el-table__footer-wrapper {
+		.el-table__footer {
+			td {
+				background-color: $table-footer-bg !important;
+				font-weight: bold !important;
+				@include table-cell-base;
+				color: $table-header-color !important;
 			}
 		}
+	}
 
-		.el-table__fixed,
-		.el-table__fixed-right {
-			.el-table__fixed-body-wrapper {
-				.el-table__body {
-					td {
-						padding: 0 !important; // mini 尺寸固定列表体单元格 padding 设置为 0
-					}
-				}
-			}
+	// 表格内输入框样式（严格按照LayUI配置）
+	.el-input {
+		.el-input__inner {
+			width: 100% !important;
+			padding-left: 2px !important;
+			border: 1px solid $table-border-color !important;
+			font-size: 12px !important;
 		}
 
-		th .cell {
-			// 只设置表头单元格 padding，不影响表体
-			padding: 0 2px !important; // mini尺寸单元格内间距（最小）
+		// 只读/计算字段背景（LayUI配置）
+		&.gsjs .el-input__inner,
+		.el-input__inner[readonly],
+		.el-input__inner.gsjs {
+			background: #f9f9f9 !important;
+			cursor: not-allowed !important;
+		}
+	}
+
+	// 表格内特殊宽度输入框（严格按照LayUI配置）
+	input[style*='width:50px'] {
+		width: 50px !important;
+	}
+
+	input[style*='width:60px'] {
+		width: 60px !important;
+	}
+
+	// 表格内下拉选择框（严格按照LayUI配置）
+	.el-select {
+		width: 42px !important; // 标准列宽（LayUI配置）
+	}
+
+	// 表格内单选框（严格按照LayUI配置）
+	.el-radio {
+		margin: 0px !important;
+		padding-right: 0px !important;
+
+		* {
+			font-size: 12px !important; // 字体大小12px（LayUI配置）
 		}
 
-		.el-table__header th {
-			height: 20px !important;
-			padding: 0 !important; // mini 尺寸表头 padding 设置为 0
-			font-size: 16px !important; // 表头字体大小改为14px
-			color: #000000 !important;
-			background-color: #f2f2f2 !important; // mini 尺寸表头背景颜色
-			// 允许选择文本以便复制
-			user-select: text !important;
-			-webkit-user-select: text !important;
-			-moz-user-select: text !important;
-			-ms-user-select: text !important;
-
-			.cell {
-				font-size: 16px !important; // 表头单元格字体大小改为14px
-				color: #000000 !important;
-				// 允许选择文本以便复制
-				user-select: text !important;
-				-webkit-user-select: text !important;
-				-moz-user-select: text !important;
-				-ms-user-select: text !important;
-				cursor: text !important;
-			}
+		> i {
+			margin-right: 2px !important;
 		}
+	}
+
+	// 表格内文本域（严格按照LayUI配置）
+	.el-textarea {
+		.el-textarea__inner {
+			padding-left: 2px !important; // 左边距（LayUI配置）
+			font-size: 12px !important; // 字体大小12px（LayUI配置）
+		}
+	}
+
+	// 表格内按钮样式（确保按钮可以完整显示）
+	.el-button {
+		margin: 0 !important; // 移除按钮外边距
+		vertical-align: middle !important; // 垂直居中对齐
+		display: inline-flex !important; // 使用flex布局确保完整显示
+		align-items: center !important;
+		justify-content: center !important;
+	}
+
+	// 表格内按钮组样式
+	.el-button-group {
+		margin: 0 !important;
+		display: inline-flex !important;
+		vertical-align: middle !important;
+
+		.el-button {
+			margin: 0 !important;
+		}
+	}
+
+	// 左对齐列（严格按照LayUI配置）
+	td[style*='text-align:left'] {
+		text-align: left !important;
+	}
+
+	// 特殊列宽（严格按照LayUI配置）
+	th[width='60px'],
+	td[width='60px'] {
+		width: 60px !important;
+	}
+
+	td[style*='width:90px'] {
+		width: 90px !important;
+		text-align: center !important;
+	}
+
+	td[style*='width:100px'] {
+		width: 100px !important;
+		text-align: center !important;
 	}
 }
 
@@ -1306,195 +1775,192 @@
 }
 
 // ============================================
-// Pagination 分页
+// Pagination 分页（LayUI 风格）
 // ============================================
-// 表格分页组件调整 - 优化布局和对齐
 .el-pagination {
-	font-size: 12px !important;
 	display: flex !important;
-	align-items: center !important;
-	justify-content: space-between !important;
 	flex-wrap: wrap !important;
-	gap: 8px !important;
+	align-items: center !important;
+	justify-content: flex-start !important;
+	gap: 10px !important;
+	margin: 10px 0 !important;
+	font-size: 0 !important;
 
-	// 总条数显示
-	.el-pagination__total {
-		font-size: 12px !important;
-		color: #606266 !important;
-		margin-right: 8px !important;
-		order: 1 !important;
-	}
-
-	// 每页显示条数选择器 - 左侧布局优化
-	.el-pagination__sizes {
-		order: 2 !important;
-		margin-right: auto !important;
-		display: flex !important;
-		align-items: center !important;
-
-		.el-select {
-			width: 90px !important;
-			margin-left: 8px !important;
-
-			.el-input__inner {
-				height: 24px !important;
-				line-height: 24px !important;
-				font-size: 11px !important;
-				border-radius: 4px !important;
-				padding: 0 24px 0 8px !important;
-			}
-
-			.el-input__suffix {
-				right: 6px !important;
-			}
-		}
-	}
-
-	// 页码按钮区域 - 中央布局优化
+	// 按钮组容器（上一页、页码、下一页）
+	.el-pagination__btn-wrapper,
 	.el-pager {
-		order: 3 !important;
 		display: flex !important;
 		align-items: center !important;
-		margin: 0 16px !important;
-
-		li {
-			min-width: 24px !important;
-			height: 24px !important;
-			line-height: 22px !important;
-			font-size: 11px !important;
-			margin: 0 1px !important;
-			border-radius: 3px !important;
-			border: 1px solid #dcdfe6 !important;
-			background-color: #fff !important;
-			cursor: pointer !important;
-			transition: all 0.2s ease !important;
-
-			&:hover {
-				background-color: #f5f7fa !important;
-				border-color: #c0c4cc !important;
-			}
-
-			&.active {
-				background-color: #409eff !important;
-				border-color: #409eff !important;
-				color: #fff !important;
-			}
-
-			&.more {
-				border: none !important;
-				background: transparent !important;
-
-				&:hover {
-					background: transparent !important;
-					color: #409eff !important;
-				}
-			}
-		}
+		gap: 0 !important;
+		flex-shrink: 0 !important;
+		margin-right: 0 !important; // 确保按钮组右侧没有多余边距
 	}
 
-	// 上一页/下一页按钮
+	button,
+	.el-pager li {
+		border: 1px solid $pagination-border-color !important;
+		display: inline-flex !important;
+		align-items: center !important;
+		justify-content: center !important;
+		padding: $pagination-padding !important;
+		height: $pagination-height !important;
+		line-height: $pagination-line-height !important;
+		margin: 0 -1px 0 0 !important;
+		background-color: #fff !important;
+		color: #333 !important;
+		font-size: $pagination-font-size !important;
+		cursor: pointer !important;
+		transition: color 0.3s !important;
+		box-sizing: border-box !important;
+		white-space: nowrap !important;
+	}
+
+	button:hover:not([disabled]),
+	.el-pager li:not(.disabled):hover {
+		color: $pagination-active-color !important;
+	}
+
+	.el-pager li.active {
+		color: #fff !important;
+		border-color: $pagination-active-color !important;
+		background-color: $pagination-active-color !important;
+	}
+
+	button[disabled],
+	.el-pager li.disabled {
+		color: #c9c9c9 !important;
+		background-color: #f5f5f5 !important;
+		cursor: not-allowed !important;
+	}
+
 	.btn-prev,
 	.btn-next {
-		min-width: 24px !important;
-		height: 24px !important;
-		line-height: 22px !important;
-		font-size: 11px !important;
-		border: 1px solid #dcdfe6 !important;
-		border-radius: 3px !important;
-		background-color: #fff !important;
-		cursor: pointer !important;
-		transition: all 0.2s ease !important;
-
-		&:hover:not(.disabled) {
-			background-color: #f5f7fa !important;
-			border-color: #c0c4cc !important;
-		}
-
-		&.disabled {
-			background-color: #f5f7fa !important;
-			border-color: #e4e7ed !important;
-			color: #c0c4cc !important;
-			cursor: not-allowed !important;
-		}
+		min-width: 45px !important;
 	}
 
-	.btn-prev {
-		order: 2.5 !important;
-		margin-right: 4px !important;
-	}
-
+	// 确保最后一个按钮（下一页）不会影响后续元素
 	.btn-next {
-		order: 3.5 !important;
-		margin-left: 4px !important;
+		margin-right: 0 !important;
 	}
 
-	// 跳转输入框 - 右侧布局优化
+	// 左侧信息组（总数、每页条数）
+	.el-pagination__total,
+	.el-pagination__sizes {
+		display: inline-flex !important;
+		align-items: center !important;
+		font-size: $pagination-font-size !important;
+		color: #999 !important;
+		padding: 0 !important;
+		line-height: $pagination-line-height !important;
+		white-space: nowrap !important;
+		flex-shrink: 0 !important;
+	}
+
+	// 右侧操作组（跳转）
 	.el-pagination__jump {
-		order: 4 !important;
-		margin-left: auto !important;
+		display: inline-flex !important;
+		align-items: center !important;
+		font-size: $pagination-font-size !important;
+		color: #999 !important;
+		padding: 0 !important;
+		line-height: $pagination-line-height !important;
+		white-space: nowrap !important;
+		flex-shrink: 0 !important;
+		margin-left: 0 !important; // 确保左侧没有多余边距
+		border: none !important; // 确保容器本身没有边框
+	}
+
+	// 跳转输入框容器，移除可能的边框
+	.el-pagination__jump .el-input {
+		border: none !important;
+		margin: 0 !important;
+		padding: 0 !important;
+	}
+
+	// 跳转输入框内部元素
+	.el-pagination__jump .el-input .el-input__inner {
+		width: 40px !important;
+		height: 26px !important;
+		line-height: 26px !important;
+		border: 1px solid $pagination-border-color !important;
+		border-radius: 2px !important;
+		text-align: center !important;
+		padding: 0 3px !important;
+		font-size: $pagination-font-size !important;
+		display: inline-flex !important;
+		align-items: center !important;
+		margin: 0 !important; // 确保没有多余边距
+	}
+
+	.el-pagination__sizes .el-input {
+		display: inline-flex !important;
+		align-items: center !important;
+	}
+
+	.el-pagination__sizes .el-input .el-input__inner {
+		height: 26px !important;
+		line-height: 26px !important;
+		border: 1px solid $pagination-border-color !important;
+		border-radius: 2px !important;
+		font-size: $pagination-font-size !important;
+		padding: 0 24px 0 8px !important;
+		display: inline-flex !important;
+		align-items: center !important;
+	}
+
+	.el-pagination__sizes .el-input__suffix {
+		right: 4px !important;
 		display: flex !important;
 		align-items: center !important;
-		font-size: 12px !important;
-		color: #606266 !important;
+	}
 
-		.el-input {
-			width: 40px !important;
-			margin: 0 6px !important;
+	&.is-background .el-pager li {
+		border: none !important;
+		background-color: #f4f4f5 !important;
 
-			.el-input__inner {
-				width: 40px !important;
-				height: 24px !important;
-				line-height: 24px !important;
-				text-align: center !important;
-				padding: 0 4px !important;
-				font-size: 11px !important;
-				border-radius: 3px !important;
-			}
+		&:hover {
+			background-color: #e6e8eb !important;
+		}
+
+		&.active {
+			background-color: $pagination-active-color !important;
+			color: #fff !important;
 		}
 	}
 
-	// 响应式布局优化
+	// 响应式布局：当宽度不足时自动换行
 	@media (max-width: 768px) {
-		flex-direction: column !important;
-		gap: 12px !important;
+		gap: 8px !important;
 
+		.el-pagination__total,
 		.el-pagination__sizes,
 		.el-pagination__jump {
 			margin: 0 !important;
-			order: initial !important;
 		}
 
-		.el-pager {
-			margin: 0 !important;
-			justify-content: center !important;
-			flex-wrap: wrap !important;
+		button,
+		.el-pager li {
+			margin: 0 -1px 0 0 !important;
 		}
 	}
 
-	// 紧凑模式
-	&.is-background {
-		.el-pager li {
-			background-color: #f4f4f5 !important;
-			border: none !important;
+	// 超小屏幕：强制换行
+	@media (max-width: 480px) {
+		flex-direction: column !important;
+		align-items: flex-start !important;
+		gap: 8px !important;
 
-			&:hover {
-				background-color: #e6e8eb !important;
-			}
-
-			&.active {
-				background-color: #409eff !important;
-				color: #fff !important;
-			}
+		.el-pagination__btn-wrapper,
+		.el-pager {
+			width: 100% !important;
+			justify-content: center !important;
 		}
 
-		.btn-prev,
-		.btn-next {
-			background-color: #f4f4f5 !important;
-			border: none !important;
-
-			&:hover:not(.disabled) {
-				background-color: #e6e8eb !important;
-			}
+		.el-pagination__total,
+		.el-pagination__sizes,
+		.el-pagination__jump {
+			width: 100% !important;
+			justify-content: center !important;
 		}
 	}
 }
@@ -1506,6 +1972,97 @@
 	a {
 		display: block;
 	}
+}
+
+// ============================================
+// Sidebar 侧边菜单（LayUI风格）
+// ============================================
+.sidebar-wrapper.layui-side {
+	background-color: #f9f9f9 !important;
+	border-top: 1px solid #ddd !important;
+}
+
+.sidebar-wrapper .layui-side-scroll {
+	background-color: transparent !important;
+	border-right: 1px solid #ddd !important;
+}
+
+.sidebar-menu {
+	border-right: none !important;
+	background-color: transparent !important;
+}
+
+.sidebar-menu .el-menu-item,
+.sidebar-menu .el-submenu__title {
+	height: 45px !important;
+	line-height: 45px !important;
+	border-bottom: 1px solid #ddd !important;
+	background: #fff !important;
+	color: #000 !important;
+	padding: 0 20px !important;
+}
+
+.sidebar-menu .el-submenu__title .el-submenu__icon-arrow {
+	color: #ddd !important;
+}
+
+.sidebar-menu .el-menu-item i,
+.sidebar-menu .el-submenu__title i {
+	color: inherit !important;
+	margin-right: 8px !important;
+}
+
+.sidebar-menu .el-menu-item:hover,
+.sidebar-menu .el-submenu__title:hover {
+	background: #f9f9f9 !important;
+	color: #333 !important;
+}
+
+.sidebar-menu .el-menu-item.is-active,
+.sidebar-menu .el-menu-item.is-active i,
+.sidebar-menu .el-menu-item.is-active span {
+	background: #ddd !important;
+	color: #156fb2 !important;
+}
+
+.sidebar-menu .el-submenu.is-opened > .el-submenu__title {
+	background: #fff !important;
+	color: #000 !important;
+}
+
+.sidebar-menu .el-submenu .el-menu {
+	background: #f9f9f9 !important;
+	border: none !important;
+}
+
+.sidebar-menu .el-submenu .el-menu .el-menu-item,
+.sidebar-menu .el-submenu .el-menu .el-submenu__title {
+	padding-left: 40px !important;
+	color: #333 !important;
+}
+
+.sidebar-menu .el-submenu .el-menu .el-menu-item:hover {
+	color: #000 !important;
+	background: #f9f9f9 !important;
+}
+
+.sidebar-menu .el-submenu .el-menu .el-menu-item.is-active {
+	background: #ddd !important;
+	color: #156fb2 !important;
+}
+
+.sidebar-menu .el-submenu .el-menu .el-submenu .el-menu-item,
+.sidebar-menu .el-submenu .el-menu .el-submenu .el-submenu__title {
+	padding-left: 50px !important;
+}
+
+.sidebar-menu .el-submenu .el-menu .el-submenu .el-menu .el-menu-item,
+.sidebar-menu .el-submenu .el-menu .el-submenu .el-menu .el-submenu__title {
+	padding-left: 60px !important;
+}
+
+.sidebar-menu .el-scrollbar__wrap {
+	background: transparent !important;
 }
 
 // ============================================

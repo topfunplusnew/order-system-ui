@@ -658,7 +658,7 @@ export default {
 			const summaryColumns = ['paymentFactory', 'payments', 'tonnage', 'landFreight', 'seaFreight', 'freight', 'profit', 'profitNoTax'];
 
 			columns.forEach((column, index) => {
-				if (index === 0) {
+				if (index === 2) {
 					sums[index] = '合计';
 					return;
 				}
@@ -1204,7 +1204,7 @@ export default {
 <template>
 	<div>
 		<!-- 基本信息表单部分 -->
-		<el-form :inline="true" :model="orderInfo" label-width="100px" :rules="orderRules" ref="orderForm" style="margin-top: 10px; margin-bottom: 10px">
+		<el-form :inline="true" :model="orderInfo" label-width="100px" :rules="orderRules" ref="orderForm">
 			<el-form-item label="订单日期" prop="orderDate">
 				<el-date-picker v-model="orderInfo.orderDate" size="mini" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss" style="width: 120px" />
 			</el-form-item>
@@ -1329,7 +1329,7 @@ export default {
 
 		<!-- 订单详情的填写 -->
 		<div>
-			<el-row :gutter="10" class="mb8">
+			<el-row :gutter="10">
 				<el-col :span="1.5">
 					<el-button size="mini" type="primary" @click="handleAddOrderdetail">添加</el-button>
 				</el-col>
@@ -1593,10 +1593,12 @@ export default {
 							@focus="() => handlePriceFocus(scope.row, 'landFreightPrice')"
 							placeholder="请输入陆运费单价"
 							:disabled="!scope.row.isEditing"
-							@blur="() => {
-								formatPriceInput(scope.row, 'landFreightPrice', 2);
-								updateDefaultLandFreightPrice(scope.row.landFreightPrice);
-							}"
+							@blur="
+								() => {
+									formatPriceInput(scope.row, 'landFreightPrice', 2);
+									updateDefaultLandFreightPrice(scope.row.landFreightPrice);
+								}
+							"
 						/>
 					</template>
 				</el-table-column>
@@ -1736,308 +1738,6 @@ export default {
 </template>
 
 <style scoped lang="scss">
-// ============================================
-// 表单样式
-// ============================================
-::v-deep .el-form {
-	.el-form-item {
-		margin-bottom: 8px !important; // 进一步缩小表单项间距
-
-		// 表单 label 样式 - 字体大小与输入框值一致（16px）
-		.el-form-item__label {
-			font-size: 16px !important; // 参考输入框值的字体大小
-			color: #000000 !important; // 保持黑色
-			font-weight: 600 !important; // 保持加粗
-			line-height: 24px !important; // 与输入框高度一致
-		}
-
-		// 运输方式checkbox样式 - 字体大小与表单label一致（16px）
-		.el-checkbox {
-			font-size: 16px !important; // 与表单label字体大小一致
-
-			.el-checkbox__label {
-				font-size: 16px !important; // 与表单label字体大小一致
-				color: #000000 !important; // 保持黑色
-				font-weight: normal !important; // 正常字重
-				padding-left: 8px !important; // 增加左边距，与checkbox保持适当距离
-			}
-
-			.el-checkbox__input {
-				.el-checkbox__inner {
-					width: 16px !important; // 增大checkbox尺寸
-					height: 16px !important; // 增大checkbox尺寸
-					border-radius: 2px !important; // 保持圆角
-
-					&:after {
-						width: 5px !important; // 增大对勾尺寸
-						height: 8px !important; // 增大对勾尺寸
-						left: 5px !important; // 调整对勾位置
-						top: 1px !important; // 调整对勾位置
-					}
-				}
-
-				// 选中状态
-				&.is-checked {
-					.el-checkbox__inner {
-						background-color: #409eff !important;
-						border-color: #409eff !important;
-					}
-				}
-
-				// 禁用状态
-				&.is-disabled {
-					.el-checkbox__inner {
-						background-color: #f5f7fa !important;
-						border-color: #e4e7ed !important;
-					}
-				}
-			}
-		}
-	}
-}
-
-// ============================================
-// 表格样式
-// ============================================
-::v-deep .el-table {
-	// 表格表头样式 - 字体大小与表单label一致（16px）
-	.el-table__header-wrapper {
-		.el-table__header {
-			th {
-				.cell {
-					font-size: 16px !important; // 与表单label字体大小一致
-					color: #000000 !important; // 保持黑色
-					font-weight: bold !important; // 保持加粗
-				}
-			}
-		}
-	}
-
-	// 固定列表头样式 - 与主表格表头保持一致
-	.el-table__fixed {
-		.el-table__fixed-header-wrapper {
-			.el-table__header {
-				th {
-					.cell {
-						font-size: 16px !important; // 与表单label字体大小一致
-						color: #000000 !important; // 保持黑色
-						font-weight: bold !important; // 保持加粗
-					}
-				}
-			}
-		}
-	}
-
-	// 右侧固定列表头样式
-	.el-table__fixed-right {
-		.el-table__fixed-header-wrapper {
-			.el-table__header {
-				th {
-					.cell {
-						font-size: 16px !important; // 与表单label字体大小一致
-						color: #000000 !important; // 保持黑色
-						font-weight: bold !important; // 保持加粗
-					}
-				}
-			}
-		}
-	}
-}
-
-// ============================================
-// 布局样式
-// ============================================
-::v-deep .el-row {
-	margin-bottom: 4px !important; // 缩小行间距
-}
-
-// ============================================
-// 表格列特殊样式
-// ============================================
-// 计量单位列水平布局样式
-::v-deep .counting-unit-column {
-	.cell {
-		padding: 2px 4px !important; // 减少内边距
-		line-height: 1.2 !important;
-		white-space: nowrap !important; // 不换行，保持水平布局
-		overflow: visible !important; // 显示溢出内容
-		height: auto !important; // 自动高度适应内容
-		text-align: center !important; // 居中对齐
-	}
-}
-
-// 含税列水平布局样式
-::v-deep .tax-column {
-	.cell {
-		padding: 2px 4px !important; // 减少内边距
-		line-height: 1.2 !important;
-		white-space: nowrap !important; // 不换行，保持水平布局
-		overflow: visible !important; // 显示溢出内容
-		height: auto !important; // 自动高度适应内容
-		text-align: center !important; // 居中对齐
-	}
-}
-
-// ============================================
-// 单选框组样式
-// ============================================
-// 计量单位单选框组水平布局（左边片数，右边其他）
-::v-deep .horizontal-radio-group {
-	display: flex !important;
-	flex-direction: row !important; // 水平排列
-	align-items: center !important;
-	justify-content: center !important;
-	gap: 4px !important; // 选项间距
-	width: 100% !important;
-	margin: 0 !important;
-
-	.horizontal-radio {
-		margin-right: 0 !important;
-		margin-bottom: 0 !important;
-		white-space: nowrap !important;
-
-		.el-radio__label {
-			font-size: 14px !important; // 字体大小
-			padding-left: 2px !important;
-		}
-
-		.el-radio__input {
-			.el-radio__inner {
-				width: 14px !important; // 增大单选框尺寸
-				height: 14px !important; // 增大单选框尺寸
-
-				&:after {
-					width: 4px !important; // 增大内部圆点尺寸
-					height: 4px !important; // 增大内部圆点尺寸
-					left: 5px !important; // 调整圆点位置以居中
-					top: 5px !important; // 调整圆点位置以居中
-				}
-			}
-		}
-	}
-}
-
-// 含税单选框组水平布局（左是右否）
-::v-deep .horizontal-tax-radio-group {
-	display: flex !important;
-	flex-direction: row !important; // 水平排列
-	align-items: center !important;
-	justify-content: center !important;
-	gap: 4px !important; // 选项间距
-	width: 100% !important;
-	margin: 0 !important;
-
-	.horizontal-tax-radio {
-		margin-right: 0 !important;
-		margin-bottom: 0 !important;
-		white-space: nowrap !important;
-
-		.el-radio__label {
-			font-size: 14px !important; // 字体大小
-			padding-left: 2px !important;
-		}
-
-		.el-radio__input {
-			.el-radio__inner {
-				width: 14px !important; // 增大单选框尺寸
-				height: 14px !important; // 增大单选框尺寸
-
-				&:after {
-					width: 4px !important; // 增大内部圆点尺寸
-					height: 4px !important; // 增大内部圆点尺寸
-					left: 5px !important; // 调整圆点位置以居中
-					top: 5px !important; // 调整圆点位置以居中
-				}
-			}
-		}
-	}
-}
-
-// 计量单位单选框组垂直布局（保留原有样式，以防其他地方使用）
-::v-deep .vertical-radio-group {
-	display: flex !important;
-	flex-direction: column !important; // 强制垂直排列
-	align-items: flex-start !important;
-	gap: 1px !important; // 减少选项间距
-	width: 100% !important;
-	margin: 0 !important;
-
-	.vertical-radio {
-		margin-right: 0 !important;
-		margin-bottom: 1px !important;
-		white-space: nowrap !important;
-		width: 100% !important;
-
-		.el-radio__label {
-			font-size: 14px !important; // 增大字体大小（从10px增加到14px）
-			padding-left: 3px !important;
-		}
-
-		.el-radio__input {
-			.el-radio__inner {
-				width: 14px !important; // 增大单选框尺寸（从9px增加到14px）
-				height: 14px !important; // 增大单选框尺寸（从9px增加到14px）
-
-				&:after {
-					width: 4px !important; // 增大内部圆点尺寸（从2px增加到4px）
-					height: 4px !important; // 增大内部圆点尺寸（从2px增加到4px）
-					left: 5px !important; // 调整圆点位置以居中
-					top: 5px !important; // 调整圆点位置以居中
-				}
-			}
-		}
-
-		// 移除最后一个单选框的下边距
-		&:last-child {
-			margin-bottom: 0 !important;
-		}
-	}
-}
-
-// 含税单选框组垂直布局
-::v-deep .vertical-tax-radio-group {
-	display: flex !important;
-	flex-direction: column !important; // 强制垂直排列
-	align-items: flex-start !important;
-	gap: 1px !important; // 减少选项间距
-	width: 100% !important;
-	margin: 0 !important;
-
-	.vertical-tax-radio {
-		margin-right: 0 !important;
-		margin-bottom: 1px !important;
-		white-space: nowrap !important;
-		width: 100% !important;
-
-		.el-radio__label {
-			font-size: 14px !important; // 增大字体大小（从10px增加到14px）
-			padding-left: 3px !important;
-		}
-
-		.el-radio__input {
-			.el-radio__inner {
-				width: 14px !important; // 增大单选框尺寸（从9px增加到14px）
-				height: 14px !important; // 增大单选框尺寸（从9px增加到14px）
-
-				&:after {
-					width: 4px !important; // 增大内部圆点尺寸（从2px增加到4px）
-					height: 4px !important; // 增大内部圆点尺寸（从2px增加到4px）
-					left: 5px !important; // 调整圆点位置以居中
-					top: 5px !important; // 调整圆点位置以居中
-				}
-			}
-		}
-
-		// 移除最后一个单选框的下边距
-		&:last-child {
-			margin-bottom: 0 !important;
-		}
-	}
-}
-
-// ============================================
-// 表格行状态样式
-// ============================================
 // 编辑行样式
 ::v-deep .editing-row {
 	background-color: rgba(121, 246, 164, 0.1);

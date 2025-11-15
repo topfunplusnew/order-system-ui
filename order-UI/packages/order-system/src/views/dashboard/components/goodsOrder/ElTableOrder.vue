@@ -263,25 +263,27 @@ export default {
 		checkHistoryList(row) {
 			const id = row.id;
 			// 获取订单修改记录信息
-			getHistoryGoodsOrder({ goodsOrderID: id }).then(res => {
-				if (res.total === 0) {
-					this.$message.warning('无订单历史信息');
-					return;
-				}
-				this.orderHistoryInfoList = res.rows;
-				this.openDialog(
-					OrderHistoryList,
-					'订单修改记录',
-					'50%',
-					{
-						goodsOrderList: this.orderHistoryInfoList
-					},
-					true
-				);
-			}).catch(error => {
-				console.error('获取订单修改记录失败:', error);
-				this.$message.error('获取订单修改记录失败，请重试');
-			});
+			getHistoryGoodsOrder({ goodsOrderID: id })
+				.then(res => {
+					if (res.total === 0) {
+						this.$message.warning('无订单历史信息');
+						return;
+					}
+					this.orderHistoryInfoList = res.rows;
+					this.openDialog(
+						OrderHistoryList,
+						'订单修改记录',
+						'50%',
+						{
+							goodsOrderList: this.orderHistoryInfoList
+						},
+						true
+					);
+				})
+				.catch(error => {
+					console.error('获取订单修改记录失败:', error);
+					this.$message.error('获取订单修改记录失败，请重试');
+				});
 		},
 		handleCheck(row) {
 			// 弹出确认和取消
@@ -1365,22 +1367,22 @@ export default {
 				<el-table-column show-overflow-tooltip label="订单操作" align="center" class-name="small-padding fixed-width" fixed="right" width="250">
 					<template slot-scope="scope">
 						<div>
-							<el-button size="mini" type="text" :disabled="scope.row.isAdjusted !== 1" v-if="!isAdjustOrder" @click="handleCheckAdjust(scope.row)">查看调整单</el-button>
-							<el-button size="mini" type="text" :disabled="scope.row.isAdjusted === 1" @click="handleOrderItemInfo(scope.row)">调整单</el-button>
-							<el-button v-if="isAdjustOrder" size="mini" type="text" @click="handleCheckPrevious(scope.row)">查看原单据</el-button>
+							<el-button size="mini" :disabled="scope.row.isAdjusted !== 1" v-if="!isAdjustOrder" @click="handleCheckAdjust(scope.row)">查看调整单</el-button>
+							<el-button size="mini" :disabled="scope.row.isAdjusted === 1" @click="handleOrderItemInfo(scope.row)">调整单</el-button>
+							<el-button v-if="isAdjustOrder" size="mini" @click="handleCheckPrevious(scope.row)">查看原单据</el-button>
 							<!-- 发货单操作：单独展示发货单1 + 下拉中的发货单2/3 -->
-							<el-button size="mini" type="text" @click="handleOrder1(scope.row)">发货单1</el-button>
-							<el-dropdown size="mini" type="text" trigger="click">
+							<el-button size="mini" @click="handleOrder1(scope.row)">发货单1</el-button>
+							<el-dropdown size="mini" trigger="click">
 								<el-button type="text" size="mini">
 									<span v-once>发货单</span>
 									<i class="el-icon-arrow-down el-icon--right" />
 								</el-button>
 								<el-dropdown-menu slot="dropdown">
 									<el-dropdown-item>
-										<el-button size="mini" type="text" @click="handleOrder2(scope.row)">发货单2</el-button>
+										<el-button size="mini" @click="handleOrder2(scope.row)">发货单2</el-button>
 									</el-dropdown-item>
 									<el-dropdown-item>
-										<el-button size="mini" type="text" @click="handleOrder3(scope.row)">发货单3</el-button>
+										<el-button size="mini" @click="handleOrder3(scope.row)">发货单3</el-button>
 									</el-dropdown-item>
 								</el-dropdown-menu>
 							</el-dropdown>

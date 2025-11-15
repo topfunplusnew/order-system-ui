@@ -10,28 +10,28 @@ body {
 	-moz-osx-font-smoothing: grayscale;
 	-webkit-font-smoothing: antialiased;
 	text-rendering: optimizeLegibility;
-	font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, Arial, sans-serif;
+	font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', Tahoma, Arial, sans-serif;
 }
 
 .input-short {
-    width: 70px !important;
+	width: 70px !important;
 }
 
 .input-medium {
-    width: 110px !important;
+	width: 110px !important;
 }
 
 .input-long {
-    width: 140px !important;
+	width: 140px !important;
 }
 
 .select-standard {
-    width: 100px !important;
+	width: 100px !important;
 }
 
 /* 统一的日期范围选择器宽度 */
 .date-range-280 {
-    width: 280px !important;
+	width: 280px !important;
 }
 
 label {
@@ -206,5 +206,4 @@ aside {
 	transform: scaleY(1.5);
 	filter: brightness(0.02);
 	transform: scaleY(1.75) translateY(-10%);
-
 }

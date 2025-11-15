@@ -1,17 +1,6 @@
 <template>
 	<div :class="{ hidden: hidden }" class="pagination-container">
-		<el-pagination
-			:background="background"
-			:current-page.sync="currentPage"
-			:page-size.sync="pageSize"
-			:layout="layout"
-			:page-sizes="pageSizes"
-			:pager-count="pagerCount"
-			:total="total"
-			v-bind="$attrs"
-			@size-change="handleSizeChange"
-			@current-change="handleCurrentChange"
-		/>
+		<el-pagination :background="background" :current-page.sync="currentPage" :page-size.sync="pageSize" :layout="layout" :page-sizes="pageSizes" :pager-count="pagerCount" :total="total" v-bind="$attrs" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
 	</div>
 </template>
 
@@ -104,11 +93,21 @@ export default {
 
 <style scoped>
 .pagination-container {
+	width: 100%;
+	display: block;
 	background: #fff;
-	padding: 32px 16px;
+	padding: 10px 0;
+	text-align: left;
 }
 
 .pagination-container.hidden {
 	display: none;
+}
+
+/* 确保分页组件内容在一行展示 */
+.pagination-container >>> .el-pagination {
+	display: inline-block;
+	vertical-align: middle;
+	white-space: nowrap;
 }
 </style>

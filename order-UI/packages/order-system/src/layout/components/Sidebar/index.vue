@@ -1,8 +1,18 @@
 <template>
-	<div :class="{ 'has-logo': showLogo }" :style="{ backgroundColor: variables.menuLightBackground }">
+	<div :class="['sidebar-wrapper', 'layui-side', 'layui-bg-blue', { 'has-logo': showLogo }]">
 		<logo v-if="showLogo" :collapse="isCollapse" />
-		<el-scrollbar :class="settings.sideTheme" wrap-class="scrollbar-wrapper" style="border-right: #156fb2 2px solid">
-			<el-menu :default-active="activeMenu" :collapse="isCollapse" :background-color="variables.menuLightBackground" :text-color="variables.menuLightColor" :unique-opened="false" :active-text-color="settings.theme" :collapse-transition="false" mode="vertical">
+		<el-scrollbar :class="[settings.sideTheme, 'layui-side-scroll']" wrap-class="scrollbar-wrapper">
+			<el-menu
+				class="sidebar-menu layui-nav layui-nav-tree beg-navbar layui-bg-blue"
+				:default-active="activeMenu"
+				:collapse="isCollapse"
+				background-color="#f9f9f9"
+				text-color="#000"
+				:unique-opened="false"
+				active-text-color="#156fb2"
+				:collapse-transition="false"
+				mode="vertical"
+			>
 				<sidebar-item v-for="(route, index) in sidebarRouters" :key="route.path + index" :item="route" :base-path="route.path" />
 			</el-menu>
 		</el-scrollbar>
@@ -13,7 +23,6 @@
 import { mapGetters, mapState } from 'vuex';
 import Logo from './Logo';
 import SidebarItem from './SidebarItem';
-import variables from '@/assets/styles/variables.scss';
 
 export default {
 	components: { SidebarItem, Logo },
@@ -31,9 +40,6 @@ export default {
 		},
 		showLogo() {
 			return this.$store.state.settings.sidebarLogo;
-		},
-		variables() {
-			return variables;
 		},
 		isCollapse() {
 			return !this.sidebar.opened;

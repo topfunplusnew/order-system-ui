@@ -117,20 +117,7 @@ export default {
 		<div v-else class="attachment-entry empty" @click="openAttachmentPanel"></div>
 
 		<!--    文件列表-->
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-el-relen-dialog
-			title="文件列表"
-			:visible.sync="dialogVisible"
-			width="670px"
-			height="1000px"
-			append-to-body
-			:close-on-click-modal="false"
-			:close-on-press-escape="false"
-			custom-class="check-files-dialog"
-			@close="isUploading = false"
-		>
+		<el-dialog :modal="false" v-dialogDrag v-el-relen-dialog title="文件列表" :visible.sync="dialogVisible" width="670px" height="1000px" append-to-body :close-on-click-modal="false" :close-on-press-escape="false" custom-class="check-files-dialog" @close="isUploading = false">
 			<h3 v-once>附件列表</h3>
 			<div class="file-list" :class="{ 'empty-list': checkFileList.length === 0 }">
 				<!--上传过的文件列表-->
@@ -170,8 +157,8 @@ export default {
 	display: inline-block;
 	cursor: pointer;
 	user-select: none;
-	width: 26px;
-	height: 26px;
+	width: 20px;
+	height: 20px;
 	&.empty {
 		border: 1px dashed #dcdfe6;
 		border-radius: 6px;
