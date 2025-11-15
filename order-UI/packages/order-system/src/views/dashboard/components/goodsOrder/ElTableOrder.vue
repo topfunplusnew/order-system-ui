@@ -711,9 +711,9 @@ export default {
 				case 23: // 可否编辑
 					return row.isedit === 0 ? '否' : '是';
 				case 24: // 客户含税
-					return this.hasInvoice(row, PUBLIC_DICT_TYPE.CUSTOMER) ? '是' : '否';
+					return row.customerInvoiceStatus || '否';
 				case 25: // 出厂含税
-					return this.hasInvoice(row, PUBLIC_DICT_TYPE.SUPPLIER) ? '是' : '否';
+					return row.supplierInvoiceStatus || '否';
 				default:
 					return '';
 			}
@@ -1315,22 +1315,22 @@ export default {
 						<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
 							<div slot="content" @click.stop>
 								<el-row>
-									<el-row v-if="hasInvoice(scope.row, PUBLIC_DICT_TYPE.CUSTOMER)">
-										<el-button type="text" size="mini" @click.stop="showCustomerInvoiceList(scope.row)">是</el-button>
+									<el-row v-if="scope.row.customerInvoiceStatus && scope.row.customerInvoiceStatus !== '未开票' && scope.row.customerInvoiceStatus !== '否'">
+										<el-button type="text" size="mini" @click.stop="showCustomerInvoiceList(scope.row)">{{ scope.row.customerInvoiceStatus || '否' }}</el-button>
 									</el-row>
 									<el-row v-else>
-										<StateTag :state-title="`否`" :state-mapper="{ 3: '否' }" />
+										<StateTag :state-title="scope.row.customerInvoiceStatus || '否'" :state-mapper="{ 3: scope.row.customerInvoiceStatus || '否' }" />
 									</el-row>
 								</el-row>
 							</div>
 							<el-row>
-								<el-row v-if="hasInvoice(scope.row, PUBLIC_DICT_TYPE.CUSTOMER)">
+								<el-row v-if="scope.row.customerInvoiceStatus && scope.row.customerInvoiceStatus !== '未开票' && scope.row.customerInvoiceStatus !== '否'">
 									<el-row>
-										<el-button type="text" size="mini" @click="showCustomerInvoiceList(scope.row)">是</el-button>
+										<el-button type="text" size="mini" @click="showCustomerInvoiceList(scope.row)">{{ scope.row.customerInvoiceStatus || '否' }}</el-button>
 									</el-row>
 								</el-row>
 								<el-row v-else>
-									<StateTag :state-title="`否`" :state-mapper="{ 3: '否' }" />
+									<StateTag :state-title="scope.row.customerInvoiceStatus || '否'" :state-mapper="{ 3: scope.row.customerInvoiceStatus || '否' }" />
 								</el-row>
 							</el-row>
 						</el-tooltip>
@@ -1342,22 +1342,22 @@ export default {
 						<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
 							<div slot="content" @click.stop>
 								<el-row>
-									<el-row v-if="hasInvoice(scope.row, PUBLIC_DICT_TYPE.SUPPLIER)">
-										<el-button type="text" size="mini" @click.stop="showSupplierInvoiceList(scope.row)">是</el-button>
+									<el-row v-if="scope.row.supplierInvoiceStatus && scope.row.supplierInvoiceStatus !== '未开票' && scope.row.supplierInvoiceStatus !== '否'">
+										<el-button type="text" size="mini" @click.stop="showSupplierInvoiceList(scope.row)">{{ scope.row.supplierInvoiceStatus || '否' }}</el-button>
 									</el-row>
 									<el-row v-else>
-										<StateTag :state-title="`否`" :state-mapper="{ 3: '否' }" />
+										<StateTag :state-title="scope.row.supplierInvoiceStatus || '否'" :state-mapper="{ 3: scope.row.supplierInvoiceStatus || '否' }" />
 									</el-row>
 								</el-row>
 							</div>
 							<el-row>
-								<el-row v-if="hasInvoice(scope.row, PUBLIC_DICT_TYPE.SUPPLIER)">
+								<el-row v-if="scope.row.supplierInvoiceStatus && scope.row.supplierInvoiceStatus !== '未开票' && scope.row.supplierInvoiceStatus !== '否'">
 									<el-row>
-										<el-button type="text" size="mini" @click="showSupplierInvoiceList(scope.row)">是</el-button>
+										<el-button type="text" size="mini" @click="showSupplierInvoiceList(scope.row)">{{ scope.row.supplierInvoiceStatus || '否' }}</el-button>
 									</el-row>
 								</el-row>
 								<el-row v-else>
-									<StateTag :state-title="`否`" :state-mapper="{ 3: '否' }" />
+									<StateTag :state-title="scope.row.supplierInvoiceStatus || '否'" :state-mapper="{ 3: scope.row.supplierInvoiceStatus || '否' }" />
 								</el-row>
 							</el-row>
 						</el-tooltip>
