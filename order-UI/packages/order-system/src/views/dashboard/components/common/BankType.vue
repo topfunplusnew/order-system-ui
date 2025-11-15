@@ -822,8 +822,8 @@ export default {
 				if (!hasValidData) {
 					return;
 				}
-				if (!obj.endorser) {
-					console.warn('获取到的承兑信息缺少背书人ID，无法填充我方承兑账户ID');
+				if (!obj.billAccountId) {
+					console.warn('获取到的承兑信息缺少银行卡ID，无法填充我方承兑账户ID');
 					return;
 				}
 				// 填充三个时间，只填充非空的字段
@@ -839,7 +839,7 @@ export default {
 						this.form.billAccount = obj.billAccount;
 					}
 					if (obj.endorser) {
-						this.form.billAccountId = obj.endorser;
+						this.form.billAccountId = obj.billAccountId;
 					}
 				});
 			});
