@@ -124,7 +124,7 @@ export default {
 						<el-date-picker v-model="queryParams.endTime" type="date" size="mini" value-format="yyyy-MM-dd" placeholder="选择日期"></el-date-picker>
 					</el-form-item>
 					<el-form-item label="科目">
-						<el-input v-model="queryParams.subjectName" placeholder="请输入科目名称" clearable size="mini" />
+						<el-input v-model="queryParams.subjectName" placeholder="请输入科目名称" clearable @keyup.enter.native="handleQuery" size="mini" />
 					</el-form-item>
 					<el-form-item>
 						<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>

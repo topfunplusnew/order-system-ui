@@ -8,7 +8,7 @@
 				<el-input v-model="queryParams.configKey" placeholder="请输入参数键名" clearable style="width: 240px" @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="系统内置" prop="configType">
-				<el-select v-model="queryParams.configType" placeholder="系统内置" clearable>
+				<el-select v-model="queryParams.configType" placeholder="系统内置" clearable @keyup.enter.native="handleQuery">
 					<el-option v-for="dict in dict.type.sys_yes_no" :key="dict.value" :label="dict.label" :value="dict.value" />
 				</el-select>
 			</el-form-item>

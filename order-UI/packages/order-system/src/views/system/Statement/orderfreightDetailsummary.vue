@@ -16,7 +16,7 @@
 				<el-input v-model="queryParams.carNo" placeholder="请输入车牌号" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="运输类型" prop="isSea">
-				<el-select v-model="queryParams.isSea" placeholder="请选择">
+				<el-select v-model="queryParams.isSea" placeholder="请选择" @keyup.enter.native="handleQuery">
 					<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
 				</el-select>
 			</el-form-item>

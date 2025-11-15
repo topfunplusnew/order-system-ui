@@ -10,7 +10,7 @@
 					<el-date-picker v-model="searchForm.endDate" type="date" placeholder="请选择结束日期" value-format="yyyy-MM-dd" size="mini"></el-date-picker>
 				</el-form-item>
 				<el-form-item label="仓库名称" prop="warehouseName">
-					<el-input v-model="searchForm.warehouseName" placeholder="请输入仓库名称" clearable size="mini"></el-input>
+					<el-input v-model="searchForm.warehouseName" placeholder="请输入仓库名称" clearable size="mini" @keyup.enter.native="getList"></el-input>
 				</el-form-item>
 				<el-form-item>
 					<el-button type="primary" @click="getList" size="mini" v-hasPermi="['system:inventoryStatistics:warehouseFund']">查询</el-button>

@@ -187,7 +187,12 @@ export default {
 			this.dialogVisible = false;
 		},
 		// 条件查询
-		handleSearchInfo() {
+		handleSearchInfo(event) {
+			// 阻止表单默认提交行为，防止页面刷新
+			if (event) {
+				event.preventDefault();
+				event.stopPropagation();
+			}
 			// 确保 params 属性存在，如果不存在则初始化
 			if (!this.limitInfo.params) {
 				this.limitInfo.params = {};
@@ -275,20 +280,20 @@ export default {
 			<!--      弹出的表格内容-->
 			<el-row>
 				<div>
-					<el-form ref="queryForm" :model="computedQueryItems" size="mini" :inline="true" label-width="100px">
+					<el-form ref="queryForm" :model="computedQueryItems" size="mini" :inline="true" label-width="100px" @submit.native.prevent>
 						<el-form-item :label="queryLabel">
 							<div class="input-wrapper">
 								<!-- 隐藏的测量元素，用于获取文本实际宽度 -->
 								<span ref="widthMeasure" class="width-measure">{{ spanText }}</span>
-								<el-input v-model="query" type="text" placeholder="请输入" size="mini" clearable @input="updateInputWidth" :style="{ width: inputWidth }"></el-input>
+								<el-input v-model="query" type="text" placeholder="请输入" size="mini" clearable @input="updateInputWidth" @keyup.enter.native.prevent="handleSearchInfo" :style="{ width: inputWidth }"></el-input>
 							</div>
 						</el-form-item>
 						<el-form-item v-for="item in computedQueryItems.queryList" :label="item.label" :prop="item.prop" :key="item.id">
 							<template v-if="item.type === 'input'">
-								<el-input v-model="item.value" placeholder="请输入" size="mini" clearable></el-input>
+								<el-input v-model="item.value" placeholder="请输入" size="mini" clearable @keyup.enter.native.prevent="handleSearchInfo"></el-input>
 							</template>
 							<template v-else-if="item.type === 'select'">
-								<el-select v-model="item.value" size="mini" placeholder="请选择" clearable>
+								<el-select v-model="item.value" size="mini" placeholder="请选择" clearable @keyup.enter.native.prevent="handleSearchInfo">
 									<el-option v-for="option in item.options" :key="option.value" :label="option.label" :value="option.value"></el-option>
 								</el-select>
 							</template>

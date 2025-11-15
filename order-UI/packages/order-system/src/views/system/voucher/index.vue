@@ -11,7 +11,7 @@
 				/>
 			</el-form-item> -->
 			<el-form-item label="分类" prop="voucherNo">
-				<el-select v-model="queryParams.voucherNoPrefix" placeholder="单据类型" clearable>
+				<el-select v-model="queryParams.voucherNoPrefix" placeholder="单据类型" clearable @keyup.enter.native="handleQuery">
 					<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
 				</el-select>
 			</el-form-item>

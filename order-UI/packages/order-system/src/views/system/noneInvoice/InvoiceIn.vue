@@ -14,13 +14,13 @@
 				/>
 			</el-form-item>
 			<el-form-item label="对方公司" prop="companyName">
-				<el-input v-model="queryParams.companyName" placeholder="请输入对方公司名称" clearable />
+				<el-input v-model="queryParams.companyName" placeholder="请输入对方公司名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="开票单位" prop="invoiceCompanyName">
-				<el-input v-model="queryParams.invoiceCompanyName" placeholder="请输入票据单位名称" clearable />
+				<el-input v-model="queryParams.invoiceCompanyName" placeholder="请输入票据单位名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="是否已开发票" prop="isInvoiced">
-				<el-select v-model="queryParams.params.isInvoiced" placeholder="请选择" clearable>
+				<el-select v-model="queryParams.params.isInvoiced" placeholder="请选择" clearable @keyup.enter.native="handleQuery">
 					<el-option label="全部" value="" />
 					<el-option label="已开发票" value="true" />
 					<el-option label="未开发票" value="false" />

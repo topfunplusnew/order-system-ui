@@ -17,15 +17,15 @@
 				/>
 			</el-form-item>
 			<el-form-item label="客户名称" prop="companyName">
-				<el-input v-model="queryParams.companyName" placeholder="请输入客户名称" clearable />
+				<el-input v-model="queryParams.companyName" placeholder="请输入客户名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="支付状态" prop="isNoPay">
-				<el-select v-model="queryParams.isNoPay" placeholder="请选择">
+				<el-select v-model="queryParams.isNoPay" placeholder="请选择" @keyup.enter.native="handleQuery">
 					<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
 				</el-select>
 			</el-form-item>
 			<el-form-item label="是否可支付" prop="isCanPay">
-				<el-select v-model="queryParams.isCanPay" placeholder="请选择">
+				<el-select v-model="queryParams.isCanPay" placeholder="请选择" @keyup.enter.native="handleQuery">
 					<el-option v-for="item in pay_options" :key="item.value" :label="item.label" :value="item.value" />
 				</el-select>
 			</el-form-item>

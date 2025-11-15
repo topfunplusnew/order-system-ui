@@ -31,7 +31,7 @@
 							</SearchOption>
 						</el-col>
 						<el-col :span="20">
-							<el-input disabled v-model="searchForm.supplier" placeholder="请选择供应商" clearable size="mini">
+							<el-input disabled v-model="searchForm.supplier" placeholder="请选择供应商" clearable @keyup.enter.native="getList" size="mini">
 								<el-button @click="reset" size="mini">刷新</el-button>
 								<i slot="prefix" class="el-input__icon el-icon-search"></i>
 							</el-input>

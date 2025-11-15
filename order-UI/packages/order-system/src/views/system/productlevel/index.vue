@@ -2,10 +2,10 @@
 	<div class="app-container">
 		<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
 			<el-form-item label="分类名称" prop="categoryName">
-				<el-input v-model="queryParams.categoryName" placeholder="请输入分类名称" clearable @input="handleInputTrim($event, 'queryParams', 'categoryName')" />
+				<el-input v-model="queryParams.categoryName" placeholder="请输入分类名称" clearable @keyup.enter.native="handleQuery" @input="handleInputTrim($event, 'queryParams', 'categoryName')" />
 			</el-form-item>
 			<el-form-item label="级别名称" prop="levelName">
-				<el-input v-model="queryParams.levelName" placeholder="请输入级别名称" clearable @input="handleInputTrim($event, 'queryParams', 'levelName')" />
+				<el-input v-model="queryParams.levelName" placeholder="请输入级别名称" clearable @keyup.enter.native="handleQuery" @input="handleInputTrim($event, 'queryParams', 'levelName')" />
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>

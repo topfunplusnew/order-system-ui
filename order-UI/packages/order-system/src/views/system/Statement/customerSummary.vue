@@ -14,7 +14,7 @@
 				<el-date-picker v-model="queryParams.endTime" type="date" placeholder="请选择结束时间" value-format="yyyy-MM-dd" clearable />
 			</el-form-item>
 			<el-form-item label="客户名称" prop="companyName">
-				<el-input v-model="queryParams.companyName" placeholder="请输入客户名称" clearable />
+				<el-input v-model="queryParams.companyName" placeholder="请输入客户名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>

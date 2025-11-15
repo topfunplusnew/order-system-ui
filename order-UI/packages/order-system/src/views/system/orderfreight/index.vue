@@ -20,7 +20,7 @@
 				<el-input v-model="queryParams.otherAcountsName" placeholder="请输入车队名称" clearable size="mini" @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="支付状态" prop="paymentState">
-				<el-select v-model="queryParams.paymentState" placeholder="请选择" size="mini" clearable>
+				<el-select v-model="queryParams.paymentState" placeholder="请选择" size="mini" clearable @keyup.enter.native="handleQuery">
 					<el-option v-for="item in PaymentState()" :key="item.value" :label="item.label" :value="item.value" />
 				</el-select>
 			</el-form-item>

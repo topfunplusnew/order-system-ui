@@ -22,7 +22,7 @@
 							</SearchOption>
 						</el-col>
 						<el-col :span="20">
-							<el-input disabled v-model="searchForm.vehicle" placeholder="请选择车牌" />
+							<el-input disabled v-model="searchForm.vehicle" placeholder="请选择车牌" / @keyup.enter.native="getList">
 						</el-col>
 					</el-row>
 				</el-form-item>

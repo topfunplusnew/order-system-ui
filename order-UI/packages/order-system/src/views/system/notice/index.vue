@@ -8,7 +8,7 @@
 				<el-input v-model="queryParams.createBy" placeholder="请输入操作人员" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="类型" prop="noticeType">
-				<el-select v-model="queryParams.noticeType" placeholder="公告类型" clearable>
+				<el-select v-model="queryParams.noticeType" placeholder="公告类型" clearable @keyup.enter.native="handleQuery">
 					<el-option v-for="dict in dict.type.sys_notice_type" :key="dict.value" :label="dict.label" :value="dict.value" />
 				</el-select>
 			</el-form-item>

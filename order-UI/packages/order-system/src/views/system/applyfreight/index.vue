@@ -263,22 +263,22 @@ export default {
 				<el-date-picker v-model="queryParams.paymentDate" type="date" value-format="yyyy-MM-dd" placeholder="请选择支付时间" clearable />
 			</el-form-item>
 			<el-form-item label="车队">
-				<el-input v-model="queryParams.fleet" placeholder="请输入车队" clearable />
+				<el-input v-model="queryParams.fleet" placeholder="请输入车队" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="司机名称">
-				<el-input v-model="queryParams.landDriverName" placeholder="请输入陆运司机名称" clearable />
+				<el-input v-model="queryParams.landDriverName" placeholder="请输入陆运司机名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="海运公司">
-				<el-input v-model="queryParams.seaDriverName" placeholder="请输入海运公司" clearable />
+				<el-input v-model="queryParams.seaDriverName" placeholder="请输入海运公司" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="车牌号/柜号">
-				<el-input v-model="queryParams.carNo" placeholder="请输入车牌号/柜号" clearable />
+				<el-input v-model="queryParams.carNo" placeholder="请输入车牌号/柜号" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="对方户名">
-				<el-input v-model="queryParams.bankName" placeholder="请输入对方户名" clearable />
+				<el-input v-model="queryParams.bankName" placeholder="请输入对方户名" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="支付状态">
-				<el-select v-model="queryParams.paymentState" placeholder="请选择支付状态" clearable>
+				<el-select v-model="queryParams.paymentState" placeholder="请选择支付状态" clearable @keyup.enter.native="handleQuery">
 					<el-option label="已支付" value="已支付"></el-option>
 					<el-option label="未支付" value="未支付"></el-option>
 				</el-select>

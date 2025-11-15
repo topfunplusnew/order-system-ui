@@ -33,14 +33,14 @@
 			</el-col>
 			<el-col :span="6">
 				<el-form-item label="审核状态" prop="checkState">
-					<el-select v-model="queryParams.checkState" placeholder="请选择" size="mini" clearable>
+					<el-select v-model="queryParams.checkState" placeholder="请选择" size="mini" clearable @keyup.enter.native="handleQuery">
 						<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
 					</el-select>
 				</el-form-item>
 			</el-col>
 			<el-col :span="6">
 				<el-form-item label="开票状态" prop="invoiceState">
-					<el-select v-model="queryParams.invoiceState" placeholder="请选择" size="mini">
+					<el-select v-model="queryParams.invoiceState" placeholder="请选择" size="mini" @keyup.enter.native="handleQuery">
 						<el-option v-for="item in optionsInvoice" :key="item.value" :label="item.label" :value="item.value"></el-option>
 					</el-select>
 				</el-form-item>

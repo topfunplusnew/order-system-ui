@@ -20,14 +20,14 @@
 			</el-form-item>
 			<el-form-item label="礼品来源" prop="giftSource">
 				<el-tooltip class="item" effect="dark" content="礼品来源可在字典中进行修改" placement="top">
-					<el-select v-model="queryParams.giftSource" placeholder="请选择礼品来源" clearable>
+					<el-select v-model="queryParams.giftSource" placeholder="请选择礼品来源" clearable @keyup.enter.native="handleQuery">
 						<el-option v-for="dict in dict.type.order_gift_source" :key="dict.value" :label="dict.label" :value="dict.value" />
 					</el-select>
 				</el-tooltip>
 			</el-form-item>
 			<el-form-item label="出库方式" prop="outMethod">
 				<el-tooltip class="item" effect="dark" content="出库方式可在字典中进行修改" placement="top">
-					<el-select v-model="queryParams.outMethod" placeholder="请选择出库方式" clearable>
+					<el-select v-model="queryParams.outMethod" placeholder="请选择出库方式" clearable @keyup.enter.native="handleQuery">
 						<el-option v-for="dict in dict.type.order_gift_out_method" :key="dict.value" :label="dict.label" :value="dict.value" />
 					</el-select>
 				</el-tooltip>

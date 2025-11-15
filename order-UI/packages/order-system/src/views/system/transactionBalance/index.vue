@@ -3,10 +3,10 @@
 		<!-- 查询表单 -->
 		<el-form id="top-search-form-item" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
 			<el-form-item label="付款方" prop="payerCompanyAccount">
-				<el-input v-model="queryParams.payerCompanyAccount" placeholder="请输入付款方" clearable />
+				<el-input v-model="queryParams.payerCompanyAccount" placeholder="请输入付款方" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="收款方" prop="beneficiaryCompanyAccount">
-				<el-input v-model="queryParams.beneficiaryCompanyAccount" placeholder="请输入收款方" clearable />
+				<el-input v-model="queryParams.beneficiaryCompanyAccount" placeholder="请输入收款方" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" @click="handleQuery" size="mini">查询</el-button>

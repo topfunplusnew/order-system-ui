@@ -8,12 +8,12 @@
 			</el-form-item>
 			<!--      客户还是供应商-->
 			<el-form-item label="对象类型" prop="companyType">
-				<el-select class="input-medium" v-model="queryParams.companyType" placeholder="请选择对象类型" clearable>
+				<el-select class="input-medium" v-model="queryParams.companyType" placeholder="请选择对象类型" clearable @keyup.enter.native="handleQuery">
 					<el-option v-for="item in options_companyType" :key="item.value" :label="item.label" :value="item.value"></el-option>
 				</el-select>
 			</el-form-item>
 			<el-form-item label="付款类型" prop="payType">
-				<el-cascader v-model="queryParams.payType" :options="paymentTypeTree" :props="props"></el-cascader>
+				<el-cascader v-model="queryParams.payType" :options="paymentTypeTree" :props="props" @keyup.enter.native="handleQuery"></el-cascader>
 			</el-form-item>
 			<el-form-item label="我方户名" prop="selfAccountsName">
 				<el-input class="input-medium" v-model="queryParams.selfAccountsName" placeholder="请输入我方户名" clearable @keyup.enter.native="handleQuery" />
@@ -34,7 +34,7 @@
 				<el-input class="input-medium" v-model="queryParams.params.bankacceptanceBillNo" placeholder="请输入票据号码" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="复核状态" prop="auditState">
-				<el-select class="input-medium" v-model="queryParams.auditState" placeholder="请选择复核状态" clearable>
+				<el-select class="input-medium" v-model="queryParams.auditState" placeholder="请选择复核状态" clearable @keyup.enter.native="handleQuery">
 					<el-option v-for="item in auditState_options" :key="item.value" :label="item.label" :value="item.value"></el-option>
 				</el-select>
 			</el-form-item>
@@ -43,7 +43,7 @@
 			</el-form-item>
 		</el-form>
 
-		<el-row>
+		<el-row></el-row>
 			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
 				<template #left>
 					<el-row :gutter="10">

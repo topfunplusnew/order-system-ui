@@ -31,7 +31,7 @@
 							</SearchOption>
 						</el-col>
 						<el-col :span="20">
-							<el-input disabled v-model="searchForm.customer" placeholder="请选择客户" clearable size="mini">
+							<el-input disabled v-model="searchForm.customer" placeholder="请选择客户" clearable @keyup.enter.native="getList" size="mini">
 								<i slot="prefix" class="el-input__icon el-icon-search"></i>
 							</el-input>
 						</el-col>

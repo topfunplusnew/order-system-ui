@@ -857,25 +857,25 @@ export default {
 				<el-date-picker clearable v-model="queryParams.fundsDateEnd" type="date" placeholder="结束日期" value-format="yyyy-MM-dd"></el-date-picker>
 			</el-form-item>
 			<el-form-item label="支付类型" prop="payType">
-				<el-input clearable v-model="queryParams.payType" placeholder="请输入支付类型"></el-input>
+				<el-input clearable @keyup.enter.native="handleQuery" v-model="queryParams.payType" placeholder="请输入支付类型"></el-input>
 			</el-form-item>
 			<el-form-item label="对方户名" prop="otherAccountsName">
-				<el-input clearable v-model="queryParams.otherAccountsName" placeholder="请输入对方户名"></el-input>
+				<el-input clearable @keyup.enter.native="handleQuery" v-model="queryParams.otherAccountsName" placeholder="请输入对方户名"></el-input>
 			</el-form-item>
 			<el-form-item label="对方账号" prop="otherBankNo">
-				<el-input clearable v-model="queryParams.otherBankNo" placeholder="请输入对方账号"></el-input>
+				<el-input clearable @keyup.enter.native="handleQuery" v-model="queryParams.otherBankNo" placeholder="请输入对方账号"></el-input>
 			</el-form-item>
 			<el-form-item label="对方开户行" prop="otherBankName">
-				<el-input clearable v-model="queryParams.otherBankName" placeholder="请输入对方开户行"></el-input>
+				<el-input clearable @keyup.enter.native="handleQuery" v-model="queryParams.otherBankName" placeholder="请输入对方开户行"></el-input>
 			</el-form-item>
 			<el-form-item label="公司名称" prop="companyName">
-				<el-input clearable v-model="queryParams.companyName" placeholder="请输入公司名称"></el-input>
+				<el-input clearable @keyup.enter.native="handleQuery" v-model="queryParams.companyName" placeholder="请输入公司名称"></el-input>
 			</el-form-item>
 			<el-form-item label="付款原因" prop="reason">
-				<el-input clearable v-model="queryParams.reason" placeholder="请输入付款原因"></el-input>
+				<el-input clearable @keyup.enter.native="handleQuery" v-model="queryParams.reason" placeholder="请输入付款原因"></el-input>
 			</el-form-item>
 			<el-form-item label="审核状态" prop="checkState" id="step-1">
-				<el-select clearable v-model="queryParams.params.checkStateList" placeholder="请选择审核状态" multiple style="max-width: 220px" :collapse-tags="true" :collapse-tags-tooltip="true">
+				<el-select clearable @keyup.enter.native="handleQuery" v-model="queryParams.params.checkStateList" placeholder="请选择审核状态" multiple style="max-width: 220px" :collapse-tags="true" :collapse-tags-tooltip="true">
 					<el-option label="审核中" value="审核中"></el-option>
 					<el-option label="通过" value="通过"></el-option>
 					<el-option label="未通过" value="未通过"></el-option>

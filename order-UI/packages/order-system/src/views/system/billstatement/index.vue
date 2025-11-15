@@ -11,7 +11,7 @@
 				<el-input v-model="queryParams.billNo" placeholder="请输入票据号码" @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="排序方式">
-				<el-select v-model="queryParams.isOrderBybillNo" placeholder="请选择排序方式" size="mini" clearable>
+				<el-select v-model="queryParams.isOrderBybillNo" placeholder="请选择排序方式" size="mini" clearable @keyup.enter.native="handleQuery">
 					<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
 				</el-select>
 			</el-form-item>

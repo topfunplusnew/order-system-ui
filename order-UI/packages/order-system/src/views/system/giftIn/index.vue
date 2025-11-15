@@ -14,7 +14,7 @@
 			</el-form-item>
 			<el-form-item label="入库方式" prop="inMethod">
 				<el-tooltip class="item" effect="dark" content="入库方式可在字典中进行修改" placement="top">
-					<el-select v-model="queryParams.inMethod" placeholder="请选择入库方式" clearable>
+					<el-select v-model="queryParams.inMethod" placeholder="请选择入库方式" clearable @keyup.enter.native="handleQuery">
 						<el-option v-for="dict in dict.type.order_gift_in_method" :key="dict.value" :label="dict.label" :value="dict.value" />
 					</el-select>
 				</el-tooltip>

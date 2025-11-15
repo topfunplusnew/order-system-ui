@@ -9,12 +9,12 @@
 				<el-date-picker v-model="queryParams.params.endTime" type="datetime" placeholder="请选择结束时间" value-format="yyyy-MM-dd HH:mm:ss" />
 			</el-form-item>
 			<el-form-item label="类型">
-				<el-select v-model="queryParams.type" placeholder="全部类型" clearable>
+				<el-select v-model="queryParams.type" placeholder="全部类型" clearable @keyup.enter.native="handleQuery">
 					<el-option v-for="t in typeOptions" :key="t.value" :label="t.label" :value="t.value" />
 				</el-select>
 			</el-form-item>
 			<el-form-item label="对方类型">
-				<el-select v-model="queryParams.targetType" placeholder="请选择对方类型" clearable>
+				<el-select v-model="queryParams.targetType" placeholder="请选择对方类型" clearable @keyup.enter.native="handleQuery">
 					<el-option v-for="o in counterpartOptions" :key="o.value" :label="o.label" :value="o.value" />
 				</el-select>
 			</el-form-item>

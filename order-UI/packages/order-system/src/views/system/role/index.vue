@@ -8,7 +8,7 @@
 				<el-input v-model="queryParams.roleKey" placeholder="请输入权限字符" clearable style="width: 240px" @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="状态" prop="status">
-				<el-select v-model="queryParams.status" placeholder="角色状态" clearable style="width: 240px">
+				<el-select v-model="queryParams.status" placeholder="角色状态" clearable @keyup.enter.native="handleQuery" style="width: 240px">
 					<el-option v-for="dict in dict.type.sys_normal_disable" :key="dict.value" :label="dict.label" :value="dict.value" />
 				</el-select>
 			</el-form-item>

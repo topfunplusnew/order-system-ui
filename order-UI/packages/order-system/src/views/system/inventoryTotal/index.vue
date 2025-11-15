@@ -2,28 +2,28 @@
 	<div class="app-container">
 		<el-form id="top-search-form-item" :model="queryParams" ref="queryForm" size="mini" :inline="true" label-width="150" class="search-form">
 			<el-form-item label="级别名" prop="levelName">
-				<el-input v-model="queryParams.levelName" placeholder="请输入级别名称" clearable />
+				<el-input v-model="queryParams.levelName" placeholder="请输入级别名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="级别编码" prop="levelNo">
-				<el-input v-model="queryParams.levelNo" placeholder="请输入级别编码" clearable />
+				<el-input v-model="queryParams.levelNo" placeholder="请输入级别编码" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="分类编码" prop="categoryNo">
-				<el-input v-model="queryParams.categoryNo" placeholder="请输入分类编码" clearable />
+				<el-input v-model="queryParams.categoryNo" placeholder="请输入分类编码" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="分类名称" prop="categoryName">
-				<el-input v-model="queryParams.categoryName" placeholder="请输入分类名称" clearable />
+				<el-input v-model="queryParams.categoryName" placeholder="请输入分类名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="长度" prop="height">
-				<el-input v-model="queryParams.height" placeholder="请输入长度" clearable />
+				<el-input v-model="queryParams.height" placeholder="请输入长度" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="宽度" prop="width">
-				<el-input v-model="queryParams.width" placeholder="请输入宽度" clearable />
+				<el-input v-model="queryParams.width" placeholder="请输入宽度" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="厚度" prop="length">
-				<el-input v-model="queryParams.length" placeholder="请输入厚度" clearable />
+				<el-input v-model="queryParams.length" placeholder="请输入厚度" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="仓库名称" prop="storeHouseName">
-				<el-input v-model="queryParams.storeHouseName" placeholder="请输入仓库名称" clearable />
+				<el-input v-model="queryParams.storeHouseName" placeholder="请输入仓库名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>

@@ -9,7 +9,7 @@
 				<el-date-picker v-model="queryParams.params.endTime" type="datetime" placeholder="请选择结束时间" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 			</el-form-item>
 			<el-form-item label="对方类型" prop="targetType">
-				<el-select v-model="queryParams.targetType" placeholder="请选择对方类型">
+				<el-select v-model="queryParams.targetType" placeholder="请选择对方类型" @keyup.enter.native="handleQuery">
 					<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
 				</el-select>
 			</el-form-item>

@@ -11,7 +11,7 @@
 				<el-input v-model="queryParams.params.mixCompanyName" placeholder="可搜索供应商或客户名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="开票状态" prop="isInvoiced">
-				<el-select v-model="queryParams.params.isInvoiced" placeholder="请选择开票状态" clearable style="width: 150px">
+				<el-select v-model="queryParams.params.isInvoiced" placeholder="请选择开票状态" clearable @keyup.enter.native="handleQuery" style="width: 150px">
 					<el-option label="已开票" value="true" />
 					<el-option label="未开票" value="false" />
 				</el-select>

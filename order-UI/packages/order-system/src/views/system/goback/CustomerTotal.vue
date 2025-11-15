@@ -28,27 +28,27 @@
 							</SearchOption>
 						</el-col>
 						<el-col :span="20">
-							<el-input disabled clearable v-model="searchForm.customer" placeholder="请选择客户" size="mini">
+							<el-input disabled clearable @keyup.enter.native="getList" v-model="searchForm.customer" placeholder="请选择客户" size="mini">
 								<i slot="prefix" class="el-input__icon el-icon-search"></i>
 							</el-input>
 						</el-col>
 					</el-row>
 				</el-form-item>
 				<el-form-item label="类型：" prop="creditType">
-					<el-select clearable v-model="searchForm.creditType" placeholder="请选择类型" size="mini" style="width: 100px">
+					<el-select clearable @keyup.enter.native="getList" v-model="searchForm.creditType" placeholder="请选择类型" size="mini" style="width: 100px">
 						<el-option label="借" value="借"></el-option>
 						<el-option label="贷" value="贷"></el-option>
 					</el-select>
 				</el-form-item>
 				<el-form-item label="余额：" prop="balanceCompare">
-					<el-select clearable v-model="searchForm.balanceCompare" placeholder="请选择" style="width: 80px" size="mini">
+					<el-select clearable @keyup.enter.native="getList" v-model="searchForm.balanceCompare" placeholder="请选择" style="width: 80px" size="mini">
 						<el-option label="≥" value="ge"></el-option>
 						<el-option label="≤" value="le"></el-option>
 						<el-option label="=" value="eq"></el-option>
 					</el-select>
 				</el-form-item>
 				<el-form-item prop="balanceValue">
-					<el-input clearable v-model="searchForm.balanceValue" placeholder="请输入余额" size="mini" style="width: 120px; margin-left: 5px" @blur="validateBalance"></el-input>
+					<el-input clearable @keyup.enter.native="getList" v-model="searchForm.balanceValue" placeholder="请输入余额" size="mini" style="width: 120px; margin-left: 5px" @blur="validateBalance"></el-input>
 				</el-form-item>
 
 				<el-form-item>

@@ -6,7 +6,7 @@
 				<el-date-picker v-model="queryParams.endDate" type="date" placeholder="选择开始时间" value-format="yyyy-MM-dd" size="mini" clearable></el-date-picker>
 			</el-form-item>
 			<el-form-item label="账户类型">
-				<el-select v-model="queryParams.bankCardType" placeholder="账户类型" size="mini" clearable>
+				<el-select v-model="queryParams.bankCardType" placeholder="账户类型" size="mini" clearable @keyup.enter.native="handleQuery">
 					<el-option v-for="item in typeOption" :key="item.value" :label="item.label" :value="item.value"></el-option>
 				</el-select>
 			</el-form-item>

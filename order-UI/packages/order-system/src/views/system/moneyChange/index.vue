@@ -3,7 +3,7 @@
 		<!-- 搜索区域 -->
 		<el-form :model="queryParams" ref="queryForm" :inline="true" class="search-form" size="mini">
 			<el-form-item label="模块名称">
-				<el-select v-model="tables" multiple collapse-tags placeholder="请选择模块" clearable style="width: 240px" size="mini">
+				<el-select v-model="tables" multiple collapse-tags placeholder="请选择模块" clearable @keyup.enter.native="handleQuery" style="width: 240px" size="mini">
 					<el-option v-for="item in moduleOptions" :key="item.value" :label="item.label" :value="item.value" />
 				</el-select>
 			</el-form-item>

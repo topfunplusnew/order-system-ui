@@ -6,12 +6,12 @@
 				<el-input v-model="queryParams.depositCompany" placeholder="请输入保证金公司" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="保证金类型">
-				<el-select v-model="queryParams.type" placeholder="请选择保证金类型" clearable>
+				<el-select v-model="queryParams.type" placeholder="请选择保证金类型" clearable @keyup.enter.native="handleQuery">
 					<el-option v-for="option in depositOptions" :key="option.value" :label="option.label" :value="option.value" />
 				</el-select>
 			</el-form-item>
 			<el-form-item label="对象类型">
-				<el-select v-model="queryParams.targetType" placeholder="请选择对象类型" clearable>
+				<el-select v-model="queryParams.targetType" placeholder="请选择对象类型" clearable @keyup.enter.native="handleQuery">
 					<el-option label="客户" value="客户" />
 					<el-option label="供应商" value="供应商" />
 					<el-option label="司机" value="司机" />

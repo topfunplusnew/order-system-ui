@@ -8,8 +8,8 @@
 				<el-input v-model="queryParams.region" placeholder="请输入区域" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<!--      <el-form-item label="省" prop="province">-->
-			<!--        &lt;!&ndash;          <el-input v-model="form.province" placeholder="请输入省"/>&ndash;&gt;-->
-			<!--        <el-select v-model="queryParams.province" placeholder="请选择省" @change="changeProvince">-->
+			<!--        &lt;!&ndash;          <el-input v-model="form.province" placeholder="请输入省"/ @keyup.enter.native="handleQuery">&ndash;&gt;-->
+			<!--        <el-select v-model="queryParams.province" placeholder="请选择省" @change="changeProvince" @keyup.enter.native="handleQuery">-->
 			<!--          <el-option-->
 			<!--            v-for="item in provinceList"-->
 			<!--            :key="item.code"-->
@@ -19,8 +19,8 @@
 			<!--        </el-select>-->
 			<!--      </el-form-item>-->
 			<!--      <el-form-item label="市县" prop="city">-->
-			<!--        &lt;!&ndash;          <el-input v-model="form.city" placeholder="请输入市县"/>&ndash;&gt;-->
-			<!--        <el-select v-model="queryParams.city" placeholder="请选择市" @change="changeCity">-->
+			<!--        &lt;!&ndash;          <el-input v-model="form.city" placeholder="请输入市县"/ @keyup.enter.native="handleQuery">&ndash;&gt;-->
+			<!--        <el-select v-model="queryParams.city" placeholder="请选择市" @change="changeCity" @keyup.enter.native="handleQuery">-->
 			<!--          <el-option-->
 			<!--            v-for="item in cityList"-->
 			<!--            :key="item.code"-->
@@ -30,7 +30,7 @@
 			<!--        </el-select>-->
 			<!--      </el-form-item>-->
 			<!--      <el-form-item label="乡镇" prop="county">-->
-			<!--        <el-input v-model="queryParams.county" placeholder="请输入乡镇"/>-->
+			<!--        <el-input v-model="queryParams.county" placeholder="请输入乡镇"/ @keyup.enter.native="handleQuery">-->
 			<!--      </el-form-item>-->
 			<el-form-item label="走访日期">
 				<el-date-picker

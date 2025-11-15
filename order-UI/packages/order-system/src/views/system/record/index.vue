@@ -25,7 +25,7 @@
 			</el-form-item>
 		</el-form>
 
-		<el-row :gutter="10">
+		<el-row>
 			<right-toolbar :columns="columns" @queryTable="getList">
 				<template #left>
 					<el-col :span="1.5">

@@ -14,7 +14,7 @@
 			</el-row>
 			<el-row>
 				<el-form-item label="是否收到返利" prop="isReceivedRebate">
-					<el-select v-model="queryParams.params.isReceivedRebate" placeholder="请选择" clearable>
+					<el-select v-model="queryParams.params.isReceivedRebate" placeholder="请选择" clearable @keyup.enter.native="handleQuery">
 						<el-option label="全部" value="" />
 						<el-option label="已收到" value="Y" />
 						<el-option label="未收到" value="N" />
