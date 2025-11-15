@@ -957,7 +957,7 @@ export default {
 				<!-- 左侧的新增订单的按钮 -->
 				<template #left>
 					<div style="padding: 10px">
-						<el-row :gutter="10" class="mb8">
+						<el-row :gutter="10">
 							<el-col v-if="!isAdjustOrder" :span="1.5">
 								<el-button v-hasPermi="['system:goodsorder:import']" size="mini" @click="handleDownloadTemplate">下载导入模板</el-button>
 							</el-col>
@@ -985,7 +985,7 @@ export default {
 		</div>
 
 		<!--    订单表格  -->
-		<virtual-scroll :data="goodsOrderList" :item-size="30" key-prop="id" @change="orderDataAppendChange">
+		<virtual-scroll :data="goodsOrderList" :item-size="40" key-prop="id" @change="orderDataAppendChange">
 			<el-table border ref="orderTable" id="printBox" :row-key="row => row.id" v-loading="loading" v-horizontal-scroll="'always'" size="mini" height="750" style="width: 100%" :data="virsualGoodsOrderList" :default-sort="{ prop: 'orderDate', order: 'descending' }" tooltip-effect="light">
 				<!-- 序号列 -->
 				<el-table-column label="序号" align="center" fixed="left" width="50">
