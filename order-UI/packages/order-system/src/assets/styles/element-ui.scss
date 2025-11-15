@@ -430,7 +430,7 @@ $user-select-properties: (
 		.el-form-item__label {
 			font-size: 18px !important; // 字体大小改为20px
 			color: #000000 !important; // 字体颜色改为黑色
-			font-weight: 600 !important; // 加粗
+			font-weight: normal !important; // 不加粗
 			line-height: 24px; // 对应输入框高度，与输入框高度一致
 			padding: 0 6px 0 0; // 右边距进一步调小
 		}
