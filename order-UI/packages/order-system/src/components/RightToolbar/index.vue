@@ -90,7 +90,8 @@ export default {
 			value: [],
 			title: '显示/隐藏列',
 			open: false,
-			configLoaded: false
+			configLoaded: false,
+			saveTimer: null // 防抖定时器
 		};
 	},
 	computed: {
@@ -118,6 +119,13 @@ export default {
 	},
 	mounted() {
 		this.tryLoadConfig();
+	},
+	beforeDestroy() {
+		// 清理防抖定时器
+		if (this.saveTimer) {
+			clearTimeout(this.saveTimer);
+			this.saveTimer = null;
+		}
 	},
 	watch: {
 		columns: {
@@ -184,9 +192,18 @@ export default {
 			const shouldSelectAll = !this.isAllSelected;
 			this.columns.forEach((col, index) => {
 				this.$set(col, 'visible', shouldSelectAll);
-				this.$emit('column-change', { index, column: col, visible: shouldSelectAll });
 			});
-			this.saveUserConfig();
+			// 防抖保存配置
+			if (this.saveTimer) {
+				clearTimeout(this.saveTimer);
+			}
+			this.saveTimer = setTimeout(() => {
+				this.columns.forEach((col, index) => {
+					this.$emit('column-change', { index, column: col, visible: col.visible });
+				});
+				this.saveUserConfig();
+				this.saveTimer = null;
+			}, 300);
 		},
 
 		handleRefresh() {
@@ -200,9 +217,23 @@ export default {
 		checkboxChange(visible, label) {
 			const index = this.columns.findIndex(col => col.label === label);
 			if (index === -1) return;
+			// 立即更新 UI
 			this.$set(this.columns[index], 'visible', visible);
-			this.$emit('column-change', { index, column: this.columns[index], visible });
-			this.saveUserConfig();
+			// 防抖保存配置和触发事件
+			this.debouncedSave(index);
+		},
+		
+		debouncedSave(index) {
+			// 清除之前的定时器
+			if (this.saveTimer) {
+				clearTimeout(this.saveTimer);
+			}
+			// 设置新的定时器，300ms 后执行保存
+			this.saveTimer = setTimeout(() => {
+				this.$emit('column-change', { index, column: this.columns[index], visible: this.columns[index].visible });
+				this.saveUserConfig();
+				this.saveTimer = null;
+			}, 300);
 		},
 
 		dataChange(hiddenIndices) {
@@ -210,10 +241,19 @@ export default {
 				const isVisible = !hiddenIndices.includes(index);
 				if (col.visible !== isVisible) {
 					this.$set(col, 'visible', isVisible);
-					this.$emit('column-change', { index, column: col, visible: isVisible });
 				}
 			});
-			this.saveUserConfig();
+			// 防抖保存配置
+			if (this.saveTimer) {
+				clearTimeout(this.saveTimer);
+			}
+			this.saveTimer = setTimeout(() => {
+				this.columns.forEach((col, index) => {
+					this.$emit('column-change', { index, column: col, visible: col.visible });
+				});
+				this.saveUserConfig();
+				this.saveTimer = null;
+			}, 300);
 		},
 
 		async refreshColumns() {
