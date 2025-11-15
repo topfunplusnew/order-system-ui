@@ -152,16 +152,16 @@ export default {
 	},
 	computed: {
 		companyName() {
-			return this.invoiceInfo.companyName;
+			return this.invoiceInfo.companyName || this.form.companyName;
 		},
 		companyType() {
-			return this.invoiceInfo.companyType;
+			return this.invoiceInfo.companyType || this.form.companyType;
 		},
 		companyID() {
-			return this.invoiceInfo.companyID;
+			return this.invoiceInfo.companyID || this.form.companyID;
 		},
 		invoiceAmount() {
-			return this.invoiceInfo.invoiceAmount;
+			return this.invoiceInfo.invoiceAmount || this.form.invoiceAmount;
 		}
 	},
 	watch: {
