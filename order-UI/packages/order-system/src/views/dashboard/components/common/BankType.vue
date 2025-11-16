@@ -841,6 +841,8 @@ export default {
 					}
 					if (obj.bankAccountId) {
 						this.form.billAccountId = obj.bankAccountId;
+						// TODO 特殊处理 后端在冲抵款的时候需要银行卡id
+						this.form.bankAccountId = obj.bankAccountId;
 					}
 				});
 			});
@@ -958,6 +960,8 @@ export default {
 						this.form.billAccount = targetName; // 我方承兑账户是收入方名称
 						this.form.endorser = sourceId; // 背书人ID
 						this.form.billAccountId = targetId; // 我方承兑账户ID
+						// TODO 特殊处理 后端在冲抵款的时候需要银行卡id
+						this.form.bankAccountId = targetId;
 						console.log(`场景①自动填充: 背书人=${sourceName}, 我方承兑账户=${targetName}`);
 					});
 				} else if (sourceType === Acceptance && targetType === BankCash) {
@@ -970,6 +974,8 @@ export default {
 						this.form.billAccount = sourceName; // 我方承兑账户是支出方名称
 						this.form.endorser = targetId; // 被背书人ID
 						this.form.billAccountId = sourceId; // 我方承兑账户ID
+						// TODO 特殊处理 后端在冲抵款的时候需要银行卡id
+						this.form.bankAccountId = sourceId;
 						console.log(`场景②自动填充: 被背书人=${targetName}, 我方承兑账户=${sourceName}`);
 					});
 				} else if (sourceType === Acceptance && targetType === Acceptance) {
@@ -982,6 +988,8 @@ export default {
 						this.form.billAccount = sourceName; // 我方承兑账户是支出方名称
 						this.form.endorser = targetId; // 被背书人ID
 						this.form.billAccountId = sourceId; // 我方承兑账户ID
+						// TODO 特殊处理 后端在冲抵款的时候需要银行卡id
+						this.form.bankAccountId = sourceId;
 						console.log(`场景③-支出自动填充: 被背书人=${targetName}, 我方承兑账户=${sourceName}`);
 					});
 				}
