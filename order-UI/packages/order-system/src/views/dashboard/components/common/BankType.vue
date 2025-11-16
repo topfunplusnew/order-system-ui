@@ -838,7 +838,7 @@ export default {
 					if (obj.billAccount && obj.billAccount.trim() !== '') {
 						this.form.billAccount = obj.billAccount;
 					}
-					if (obj.endorser) {
+					if (obj.billAccountId) {
 						this.form.billAccountId = obj.billAccountId;
 					}
 				});
