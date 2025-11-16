@@ -74,9 +74,7 @@
 		</el-table>
 
 		<!-- 分页 -->
-		<div class="pagination-container">
-			<pagination v-show="total > 0" :total="total" :current-page.sync="searchForm.pageNum" :page-size.sync="searchForm.pageSize" @pagination="getList" />
-		</div>
+		<pagination v-show="total > 0" :total="total" :current-page.sync="searchForm.pageNum" :page-size.sync="searchForm.pageSize" @pagination="getList" />
 
 		<!-- 明细弹窗 -->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="明细信息" :visible.sync="detailVisible" width="500px" append-to-body>
@@ -217,10 +215,5 @@ export default {
 	padding: 15px;
 	background-color: #fff;
 	border-radius: 4px;
-}
-.pagination-container {
-	margin-top: 15px;
-	display: flex;
-	justify-content: flex-end;
 }
 </style>
