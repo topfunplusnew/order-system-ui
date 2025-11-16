@@ -1775,6 +1775,69 @@ textarea::placeholder,
 }
 
 // ============================================
+// Tree 树状列表
+// ============================================
+// 树状列表单元格内容左对齐，不居中
+.el-tree {
+	.el-tree-node__content {
+		text-align: left !important;
+		justify-content: flex-start !important;
+
+		.el-tree-node__label {
+			text-align: left !important;
+		}
+	}
+}
+
+// 树形表格单元格内容左对齐
+.el-table {
+	// 树形表格的单元格内容左对齐
+	&.el-table--tree {
+		.el-table__body-wrapper .el-table__body td .cell {
+			text-align: left !important;
+		}
+
+		.el-table__header-wrapper .el-table__header th .cell {
+			text-align: left !important;
+		}
+
+		// 固定列的树形表格单元格
+		.el-table__fixed,
+		.el-table__fixed-right {
+			.el-table__fixed-body-wrapper .el-table__body td .cell {
+				text-align: left !important;
+			}
+
+			.el-table__fixed-header-wrapper .el-table__header th .cell {
+				text-align: left !important;
+			}
+		}
+	}
+
+	// 包含树形展开图标的单元格左对齐
+	.el-table__body-wrapper .el-table__body td {
+		// 包含展开图标的单元格整体左对齐
+		&:has(.el-table__expand-icon) .cell,
+		&:has(.el-icon-caret-right) .cell,
+		&:has(.el-icon-caret-bottom) .cell {
+			text-align: left !important;
+		}
+	}
+
+	// 固定列中包含树形展开图标的单元格左对齐
+	.el-table__fixed,
+	.el-table__fixed-right {
+		.el-table__fixed-body-wrapper .el-table__body td {
+			&:has(.el-table__expand-icon) .cell,
+			&:has(.el-icon-caret-right) .cell,
+			&:has(.el-icon-caret-bottom) .cell {
+				text-align: left !important;
+			}
+		}
+	}
+}
+
+// ============================================
 // Pagination 分页（LayUI 风格）
 // ============================================
 .el-pagination {

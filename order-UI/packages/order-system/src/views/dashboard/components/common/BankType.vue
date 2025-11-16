@@ -817,7 +817,7 @@ export default {
 					return;
 				}
 				const obj = _.cloneDeep(res.data);
-				console.log (`obj`, obj);
+				console.log(`obj`, obj);
 				// 检查获取到的数据是否有效（不为空且至少有一个有效字段）
 				const hasValidData = obj && ((obj.issueDate && obj.issueDate.trim() !== '') || (obj.dueDate && obj.dueDate.trim() !== '') || (obj.billAccount && obj.billAccount.trim() !== ''));
 				if (!hasValidData) {
