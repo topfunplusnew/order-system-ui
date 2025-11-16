@@ -126,7 +126,8 @@ export default {
 				{ key: 22, label: '收到条附件', visible: true },
 				{ key: 23, label: '可否编辑', visible: true },
 				{ key: 24, label: '客户含税', visible: true },
-				{ key: 25, label: '出厂含税', visible: true }
+				{ key: 25, label: '出厂含税', visible: true },
+				{ key: 27, label: '审核人', visible: true }
 			],
 			// 性能优化相关：缓存 DOM 尺寸信息，避免频繁访问
 			cachedScrollInfo: {
@@ -721,6 +722,8 @@ export default {
 					return row.customerInvoiceStatus || '否';
 				case 25: // 出厂含税
 					return row.supplierInvoiceStatus || '否';
+				case 27: // 审核人
+					return row.checkUserName || '';
 				default:
 					return '';
 			}
@@ -1402,6 +1405,15 @@ export default {
 										<StateTag :state-title="scope.row.supplierInvoiceStatus || '否'" :state-mapper="{ 3: scope.row.supplierInvoiceStatus || '否' }" />
 									</el-row>
 								</el-row>
+							</el-tooltip>
+						</template>
+					</el-table-column>
+					<!-- 27. 审核人 -->
+					<el-table-column v-if="columns[27].visible" show-overflow-tooltip label="审核人" align="center" prop="checkUserName" width="112">
+						<template #default="scope">
+							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+								<div slot="content">{{ scope.row.checkUserName || '-' }}</div>
+								<span>{{ scope.row.checkUserName || '-' }}</span>
 							</el-tooltip>
 						</template>
 					</el-table-column>
