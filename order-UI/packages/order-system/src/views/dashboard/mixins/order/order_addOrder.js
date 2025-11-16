@@ -1,5 +1,5 @@
 import OrderForm from '@/views/dashboard/components/goodsOrder/OrderForm.vue';
-import { getGoodsOrder } from '../../../../api/system/goodsOrder';
+import { getGoodsOrder, getGoodsOrderTodayReason } from '../../../../api/system/goodsOrder';
 
 /**
  * 添加或者修改订单的功能
@@ -39,41 +39,87 @@ export var mixin_order_add = {
 					const orderData = response.data;
 					// 判断是否需要填写修改原因
 					if (orderData && orderData.shouldTrackEditReason === true) {
-						// 需要填写修改原因
-						this.$prompt('请输入修改原因', '提示', {
-							confirmButtonText: '确定',
-							cancelButtonText: '取消',
-							inputType: 'textarea',
-							inputPlaceholder: '请输入修改原因',
-							inputValidator: value => {
-								if (!value || value.trim() === '') {
-									return '修改原因不能为空';
-								}
-								return true;
-							}
-						})
-							.then(({ value }) => {
-								// 将修改原因存储到sessionStorage
-								sessionStorage.setItem('goodsorder-edit-reason', value);
+						// 需要填写修改原因，先获取今日原因
+						getGoodsOrderTodayReason(row.id)
+							.then(reasonResponse => {
+								// 获取今日原因的msg作为默认值
+								const defaultReason = reasonResponse?.msg || '';
 
-								// 打开OrderForm弹窗
-								this.openDialog(
-									OrderForm,
-									'修改订单',
-									'1600px',
-									{
-										orderId: row.id,
-										submitInfo: '修改订单'
-									},
-									false,
-									true
-								);
+								// 弹出输入框，将今日原因作为默认值
+								this.$prompt('请输入修改原因', '提示', {
+									confirmButtonText: '确定',
+									cancelButtonText: '取消',
+									inputType: 'textarea',
+									inputPlaceholder: '请输入修改原因',
+									inputValue: defaultReason,
+									inputValidator: value => {
+										if (!value || value.trim() === '') {
+											return '修改原因不能为空';
+										}
+										return true;
+									}
+								})
+									.then(({ value }) => {
+										// 将修改原因存储到sessionStorage
+										sessionStorage.setItem('goodsorder-edit-reason', value);
+
+										// 打开OrderForm弹窗
+										this.openDialog(
+											OrderForm,
+											'修改订单',
+											'1600px',
+											{
+												orderId: row.id,
+												submitInfo: '修改订单'
+											},
+											false,
+											true
+										);
+									})
+									.catch(() => {
+										this.$message({
+											type: 'info',
+											message: '已取消修改'
+										});
+									});
 							})
-							.catch(() => {
-								this.$message({
-									type: 'info',
-									message: '已取消修改'
-								});
+							.catch(error => {
+								// 获取今日原因失败，仍然弹出输入框，但不填充默认值
+								this.$prompt('请输入修改原因', '提示', {
+									confirmButtonText: '确定',
+									cancelButtonText: '取消',
+									inputType: 'textarea',
+									inputPlaceholder: '请输入修改原因',
+									inputValidator: value => {
+										if (!value || value.trim() === '') {
+											return '修改原因不能为空';
+										}
+										return true;
+									}
+								})
+									.then(({ value }) => {
+										// 将修改原因存储到sessionStorage
+										sessionStorage.setItem('goodsorder-edit-reason', value);
+
+										// 打开OrderForm弹窗
+										this.openDialog(
+											OrderForm,
+											'修改订单',
+											'1600px',
+											{
+												orderId: row.id,
+												submitInfo: '修改订单'
+											},
+											false,
+											true
+										);
+									})
+									.catch(() => {
+										this.$message({
+											type: 'info',
+											message: '已取消修改'
+										});
+									});
 							});
 					} else {
 						// 不需要填写修改原因，直接打开弹窗

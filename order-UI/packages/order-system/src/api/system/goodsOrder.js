@@ -94,6 +94,17 @@ export function getHistoryGoodsOrderInfo(id) {
 	});
 }
 
+// 查询订单今日原因
+export function getGoodsOrderTodayReason(orderId) {
+	return request({
+		url: '/system/goodsOrderBack/todayReason',
+		method: 'get',
+		params: {
+			orderId: orderId
+		}
+	});
+}
+
 // 根据订单id检查
 export function checkOrderAllinvoice(params) {
 	return request({
