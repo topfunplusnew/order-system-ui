@@ -65,7 +65,7 @@ export var mixin_order_base = {
 			// 订单表格中的数据
 			goodsOrderList: [],
 			// 虚拟滚动的数据
-			virsualGoodsOrderList: [],
+			virtualGoodsOrderList: [],
 			// 缓存的订单列表数据
 			pendingData: [],
 			// 是否正在render
@@ -80,57 +80,35 @@ export var mixin_order_base = {
 			// 计算起始序号：根据当前页码和每页数量计算
 			const startIndex = ((this.queryParams.pageNum || 1) - 1) * (this.queryParams.pageSize || 50);
 
-			if (!this.queryParams.isAdjust) {
-				const isAdjust = this.isAdjustOrder ? -1 : 0;
-				const query = {
-					...this.queryParams,
-					isAdjust: isAdjust
-				};
-				listGoodsOrder(query)
-					.then(response => {
-						// 先对原始数据排序，避免虚拟滚动和表格排序冲突
-						// // 按订单日期降序排序（最新的在前）
-						// const sortedRows = (response.rows || []).sort((a, b) => {
-						// 	const dateA = a.orderDate ? new Date(a.orderDate).getTime() : 0;
-						// 	const dateB = b.orderDate ? new Date(b.orderDate).getTime() : 0;
-						// 	return dateB - dateA; // 降序
-						// });
-
-						const orderData = _.cloneDeep(response.rows || []);
-						// 然后预处理订单数据（已包含序号和 Object.freeze 优化）
-						this.goodsOrderList = this.preprocessOrderData(orderData, startIndex);
-						this.total = response.total || 0;
-						this.loading = false;
-					})
-					.catch(error => {
-						console.error('获取订单列表失败:', error);
-						this.goodsOrderList = [];
-						this.total = 0;
-						this.loading = false;
-					});
-			} else {
-				listGoodsOrder(this.queryParams)
-					.then(response => {
-						// 先对原始数据排序，避免虚拟滚动和表格排序冲突
-						// // 按订单日期降序排序（最新的在前）
-						// const sortedRows = (response.rows || []).sort((a, b) => {
-						// 	const dateA = a.orderDate ? new Date(a.orderDate).getTime() : 0;
-						// 	const dateB = b.orderDate ? new Date(b.orderDate).getTime() : 0;
-						// 	return dateB - dateA; // 降序
-						// });
-						const orderData = _.cloneDeep(response.rows || []);
-						// 然后预处理订单数据（已包含序号和 Object.freeze 优化）
-						this.goodsOrderList = this.preprocessOrderData(orderData, startIndex);
-						this.total = response.total || 0;
-						this.loading = false;
-					})
-					.catch(error => {
-						console.error('获取订单列表失败:', error);
-						this.goodsOrderList = [];
-						this.total = 0;
-						this.loading = false;
-					});
+			// 构建查询参数：如果 queryParams 中没有 isAdjust，则根据 isAdjustOrder 设置
+			const query = { ...this.queryParams };
+			if (!query.isAdjust) {
+				query.isAdjust = this.isAdjustOrder ? -1 : 0;
 			}
+
+			// 统一的查询处理逻辑
+			listGoodsOrder(query)
+				.then(response => {
+					// 先对原始数据排序，避免虚拟滚动和表格排序冲突
+					// // 按订单日期降序排序（最新的在前）
+					// const sortedRows = (response.rows || []).sort((a, b) => {
+					// 	const dateA = a.orderDate ? new Date(a.orderDate).getTime() : 0;
+					// 	const dateB = b.orderDate ? new Date(b.orderDate).getTime() : 0;
+					// 	return dateB - dateA; // 降序
+					// });
+
+					const orderData = _.cloneDeep(response.rows || []);
+					// 然后预处理订单数据（已包含序号和 Object.freeze 优化）
+					this.goodsOrderList = this.preprocessOrderData(orderData, startIndex);
+					this.total = response.total || 0;
+					this.loading = false;
+				})
+				.catch(error => {
+					console.error('获取订单列表失败:', error);
+					this.goodsOrderList = [];
+					this.total = 0;
+					this.loading = false;
+				});
 		},
 		/**
 		 * 处理表格滚动事件
@@ -199,7 +177,6 @@ export var mixin_order_base = {
 		 * 时间复杂度: O(n×m), 空间复杂度: O(n×m)
 		 */
 		preprocessOrderData(orderList, startIndex = 0) {
-			console.log(`orderList`, orderList);
 			if (!Array.isArray(orderList)) {
 				return [];
 			}

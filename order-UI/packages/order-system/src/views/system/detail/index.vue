@@ -69,7 +69,7 @@
 			</el-form-item>
 		</el-form>
 
-		<el-row :gutter="10" class="mb8">
+		<el-row>
 			<!-- <el-col :span="1.5">
 				<el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport" v-hasPermi="['system:detail:export']">导出</el-button>
 			</el-col> -->
@@ -89,7 +89,7 @@
 		</el-row>
 
 		<!-- 使用 DragDiv 组件替换原来的 el-col 布局 -->
-		<div style="height: 800px">
+		<div style="height: 750px">
 			<DragDiv :initial-left-width="300" :min-left-width="200" :min-right-width="800" :divider-width="6" @drag-start="handleDragStart" @dragging="handleDragging" @drag-end="handleDragEnd">
 				<!-- 左侧：仓库树 -->
 				<template #left>
@@ -119,164 +119,152 @@
 				<!-- 右侧：数据表格 -->
 				<template #right>
 					<div style="height: 100%; display: flex; flex-direction: column">
-						<el-table
-							border
-							id="printBox"
-							size="mini"
-							v-loading="loading"
-							:data="detailList"
-							@selection-change="handleSelectionChange"
-							stripe
-							style="flex: 1; margin-bottom: 20px"
-							:height="'100%'"
-							show-summary
-							:summary-method="getSummary"
-						>
-						<!-- 手写每一列，使用 v-if 判断列的可见性 -->
-						<el-table-column v-if="columns[0].visible" label="ID" align="center" prop="id" show-overflow-tooltip>
-							<template #default="scope">
-								<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-									<div slot="content">{{ scope.row.id }}</div>
-									<span>{{ scope.row.id }}</span>
-								</el-tooltip>
-							</template>
-						</el-table-column>
-						<el-table-column v-if="columns[1].visible" label="变动日期(入库)" align="center" prop="storeDate" show-overflow-tooltip>
-							<template #default="scope">
-								<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-									<div slot="content">{{ parseTime(scope.row.storeDate, '{y}-{m}-{d}') }}</div>
-									<span>{{ parseTime(scope.row.storeDate, '{y}-{m}-{d}') }}</span>
-								</el-tooltip>
-							</template>
-						</el-table-column>
-						<el-table-column v-if="columns[2].visible" label="仓库名称" align="center" prop="storeHouseName" show-overflow-tooltip>
-							<template #default="scope">
-								<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-									<div slot="content">{{ scope.row.storeHouseName }}</div>
-									<span>{{ scope.row.storeHouseName }}</span>
-								</el-tooltip>
-							</template>
-						</el-table-column>
-						<el-table-column v-if="columns[3].visible" label="级别名称" align="center" prop="levelName" show-overflow-tooltip>
-							<template #default="scope">
-								<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-									<div slot="content">{{ scope.row.levelName }}</div>
-									<span>{{ scope.row.levelName }}</span>
-								</el-tooltip>
-							</template>
-						</el-table-column>
-						<el-table-column v-if="columns[4].visible" label="入库片数" align="center" prop="stockNumber" show-overflow-tooltip>
-							<template #default="scope">
-								<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-									<div slot="content">{{ scope.row.stockNumber }}</div>
-									<span>{{ scope.row.stockNumber }}</span>
-								</el-tooltip>
-							</template>
-						</el-table-column>
-						<el-table-column v-if="columns[5].visible" label="剩余量" align="center" prop="actualPieces" show-overflow-tooltip>
-							<template #default="scope">
-								<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-									<div slot="content">{{ scope.row.actualPieces }}</div>
-									<span>{{ scope.row.actualPieces }}</span>
-								</el-tooltip>
-							</template>
-						</el-table-column>
-						<el-table-column v-if="columns[6].visible" label="供应商" align="center" prop="supplier" show-overflow-tooltip>
-							<template #default="scope">
-								<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-									<div slot="content">{{ scope.row.supplier }}</div>
-									<span>{{ scope.row.supplier }}</span>
-								</el-tooltip>
-							</template>
-						</el-table-column>
-						<el-table-column v-if="columns[7].visible" label="计量单位" align="center" prop="countingUnit" show-overflow-tooltip>
-							<template #default="scope">
-								<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-									<div slot="content">{{ scope.row.countingUnit }}</div>
-									<span>{{ scope.row.countingUnit }}</span>
-								</el-tooltip>
-							</template>
-						</el-table-column>
-						<el-table-column v-if="columns[8].visible" label="厚度" align="center" prop="height" show-overflow-tooltip>
-							<template #default="scope">
-								<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-									<div slot="content">{{ scope.row.height }}</div>
-									<span>{{ scope.row.height }}</span>
-								</el-tooltip>
-							</template>
-						</el-table-column>
-						<el-table-column v-if="columns[9].visible" label="长度" align="center" prop="length" show-overflow-tooltip>
-							<template #default="scope">
-								<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-									<div slot="content">{{ scope.row.length }}</div>
-									<span>{{ scope.row.length }}</span>
-								</el-tooltip>
-							</template>
-						</el-table-column>
-						<el-table-column v-if="columns[10].visible" label="宽度" align="center" prop="width" show-overflow-tooltip>
-							<template #default="scope">
-								<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-									<div slot="content">{{ scope.row.width }}</div>
-									<span>{{ scope.row.width }}</span>
-								</el-tooltip>
-							</template>
-						</el-table-column>
-						<el-table-column v-if="columns[11].visible" label="每包片数" align="center" prop="piecesPerPack" show-overflow-tooltip>
-							<template #default="scope">
-								<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-									<div slot="content">{{ scope.row.piecesPerPack }}</div>
-									<span>{{ scope.row.piecesPerPack }}</span>
-								</el-tooltip>
-							</template>
-						</el-table-column>
-						<el-table-column v-if="columns[12].visible" label="包数" align="center" prop="packs" show-overflow-tooltip>
-							<template #default="scope">
-								<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-									<div slot="content">{{ scope.row.packs }}</div>
-									<span>{{ scope.row.packs }}</span>
-								</el-tooltip>
-							</template>
-						</el-table-column>
-						<el-table-column v-if="columns[13].visible" label="存货价" align="center" prop="paymentUnload" show-overflow-tooltip>
-							<template #default="scope">
-								<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-									<div slot="content">{{ scope.row.paymentUnload }}</div>
-									<span>{{ scope.row.paymentUnload }}</span>
-								</el-tooltip>
-							</template>
-						</el-table-column>
-						<el-table-column v-if="columns[14].visible" label="库存是否含税" align="center" prop="isIncludeTaxSale" show-overflow-tooltip>
-							<template #default="scope">
-								<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-									<div slot="content">{{ scope.row.isIncludeTaxSale === 1 ? '含税' : '不含税' }}</div>
-									<span>{{ scope.row.isIncludeTaxSale === 1 ? '含税' : '不含税' }}</span>
-								</el-tooltip>
-							</template>
-						</el-table-column>
-						<el-table-column v-if="columns[15].visible" label="入库金额" align="center" prop="payments" show-overflow-tooltip>
-							<template #default="scope">
-								<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-									<div slot="content">{{ scope.row.payments }}</div>
-									<span>{{ scope.row.payments }}</span>
-								</el-tooltip>
-							</template>
-						</el-table-column>
-						<el-table-column v-if="columns[16].visible" label="误差" align="center" prop="erro" show-overflow-tooltip>
-							<template #default="scope">
-								<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-									<div slot="content">{{ scope.row.erro }}</div>
-									<span>{{ scope.row.erro }}</span>
-								</el-tooltip>
-							</template>
-						</el-table-column>
-						<el-table-column v-if="columns[17].visible" label="吨位" align="center" prop="tonnage" show-overflow-tooltip>
-							<template #default="scope">
-								<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-									<div slot="content">{{ scope.row.tonnage }}</div>
-									<span>{{ scope.row.tonnage }}</span>
-								</el-tooltip>
-							</template>
-						</el-table-column>
+						<el-table border id="printBox" size="mini" v-loading="loading" :data="detailList" @selection-change="handleSelectionChange" stripe style="flex: 1; margin-bottom: 20px" :height="'100%'" show-summary :summary-method="getSummary">
+							<!-- 手写每一列，使用 v-if 判断列的可见性 -->
+							<el-table-column v-if="columns[0].visible" label="ID" align="center" prop="id" show-overflow-tooltip>
+								<template #default="scope">
+									<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+										<div slot="content">{{ scope.row.id }}</div>
+										<span>{{ scope.row.id }}</span>
+									</el-tooltip>
+								</template>
+							</el-table-column>
+							<el-table-column v-if="columns[1].visible" label="变动日期(入库)" align="center" prop="storeDate" show-overflow-tooltip>
+								<template #default="scope">
+									<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+										<div slot="content">{{ parseTime(scope.row.storeDate, '{y}-{m}-{d}') }}</div>
+										<span>{{ parseTime(scope.row.storeDate, '{y}-{m}-{d}') }}</span>
+									</el-tooltip>
+								</template>
+							</el-table-column>
+							<el-table-column v-if="columns[2].visible" label="仓库名称" align="center" prop="storeHouseName" show-overflow-tooltip>
+								<template #default="scope">
+									<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+										<div slot="content">{{ scope.row.storeHouseName }}</div>
+										<span>{{ scope.row.storeHouseName }}</span>
+									</el-tooltip>
+								</template>
+							</el-table-column>
+							<el-table-column v-if="columns[3].visible" label="级别名称" align="center" prop="levelName" show-overflow-tooltip>
+								<template #default="scope">
+									<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+										<div slot="content">{{ scope.row.levelName }}</div>
+										<span>{{ scope.row.levelName }}</span>
+									</el-tooltip>
+								</template>
+							</el-table-column>
+							<el-table-column v-if="columns[4].visible" label="入库片数" align="center" prop="stockNumber" show-overflow-tooltip>
+								<template #default="scope">
+									<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+										<div slot="content">{{ scope.row.stockNumber }}</div>
+										<span>{{ scope.row.stockNumber }}</span>
+									</el-tooltip>
+								</template>
+							</el-table-column>
+							<el-table-column v-if="columns[5].visible" label="剩余量" align="center" prop="actualPieces" show-overflow-tooltip>
+								<template #default="scope">
+									<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+										<div slot="content">{{ scope.row.actualPieces }}</div>
+										<span>{{ scope.row.actualPieces }}</span>
+									</el-tooltip>
+								</template>
+							</el-table-column>
+							<el-table-column v-if="columns[6].visible" label="供应商" align="center" prop="supplier" show-overflow-tooltip>
+								<template #default="scope">
+									<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+										<div slot="content">{{ scope.row.supplier }}</div>
+										<span>{{ scope.row.supplier }}</span>
+									</el-tooltip>
+								</template>
+							</el-table-column>
+							<el-table-column v-if="columns[7].visible" label="计量单位" align="center" prop="countingUnit" show-overflow-tooltip>
+								<template #default="scope">
+									<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+										<div slot="content">{{ scope.row.countingUnit }}</div>
+										<span>{{ scope.row.countingUnit }}</span>
+									</el-tooltip>
+								</template>
+							</el-table-column>
+							<el-table-column v-if="columns[8].visible" label="厚度" align="center" prop="height" show-overflow-tooltip>
+								<template #default="scope">
+									<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+										<div slot="content">{{ scope.row.height }}</div>
+										<span>{{ scope.row.height }}</span>
+									</el-tooltip>
+								</template>
+							</el-table-column>
+							<el-table-column v-if="columns[9].visible" label="长度" align="center" prop="length" show-overflow-tooltip>
+								<template #default="scope">
+									<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+										<div slot="content">{{ scope.row.length }}</div>
+										<span>{{ scope.row.length }}</span>
+									</el-tooltip>
+								</template>
+							</el-table-column>
+							<el-table-column v-if="columns[10].visible" label="宽度" align="center" prop="width" show-overflow-tooltip>
+								<template #default="scope">
+									<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+										<div slot="content">{{ scope.row.width }}</div>
+										<span>{{ scope.row.width }}</span>
+									</el-tooltip>
+								</template>
+							</el-table-column>
+							<el-table-column v-if="columns[11].visible" label="每包片数" align="center" prop="piecesPerPack" show-overflow-tooltip>
+								<template #default="scope">
+									<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+										<div slot="content">{{ scope.row.piecesPerPack }}</div>
+										<span>{{ scope.row.piecesPerPack }}</span>
+									</el-tooltip>
+								</template>
+							</el-table-column>
+							<el-table-column v-if="columns[12].visible" label="包数" align="center" prop="packs" show-overflow-tooltip>
+								<template #default="scope">
+									<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+										<div slot="content">{{ scope.row.packs }}</div>
+										<span>{{ scope.row.packs }}</span>
+									</el-tooltip>
+								</template>
+							</el-table-column>
+							<el-table-column v-if="columns[13].visible" label="存货价" align="center" prop="paymentUnload" show-overflow-tooltip>
+								<template #default="scope">
+									<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+										<div slot="content">{{ scope.row.paymentUnload }}</div>
+										<span>{{ scope.row.paymentUnload }}</span>
+									</el-tooltip>
+								</template>
+							</el-table-column>
+							<el-table-column v-if="columns[14].visible" label="库存是否含税" align="center" prop="isIncludeTaxSale" show-overflow-tooltip>
+								<template #default="scope">
+									<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+										<div slot="content">{{ scope.row.isIncludeTaxSale === 1 ? '含税' : '不含税' }}</div>
+										<span>{{ scope.row.isIncludeTaxSale === 1 ? '含税' : '不含税' }}</span>
+									</el-tooltip>
+								</template>
+							</el-table-column>
+							<el-table-column v-if="columns[15].visible" label="入库金额" align="center" prop="payments" show-overflow-tooltip>
+								<template #default="scope">
+									<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+										<div slot="content">{{ scope.row.payments }}</div>
+										<span>{{ scope.row.payments }}</span>
+									</el-tooltip>
+								</template>
+							</el-table-column>
+							<el-table-column v-if="columns[16].visible" label="误差" align="center" prop="erro" show-overflow-tooltip>
+								<template #default="scope">
+									<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+										<div slot="content">{{ scope.row.erro }}</div>
+										<span>{{ scope.row.erro }}</span>
+									</el-tooltip>
+								</template>
+							</el-table-column>
+							<el-table-column v-if="columns[17].visible" label="吨位" align="center" prop="tonnage" show-overflow-tooltip>
+								<template #default="scope">
+									<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+										<div slot="content">{{ scope.row.tonnage }}</div>
+										<span>{{ scope.row.tonnage }}</span>
+									</el-tooltip>
+								</template>
+							</el-table-column>
 							<!-- 操作列 -->
 							<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="120px">
 								<template #default="scope">
@@ -293,18 +281,11 @@
 								</template>
 							</el-table-column>
 						</el-table>
-						<pagination
-							v-show="total > 0"
-							:total="total"
-							:page.sync="queryParams.pageNum"
-							:limit.sync="queryParams.pageSize"
-							@pagination="getList"
-							style="margin-top: 10px; text-align: right"
-						/>
 					</div>
 				</template>
 			</DragDiv>
 		</div>
+		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" style="margin-top: 10px; text-align: right" />
 
 		<!-- 添加或修改库存子对话框 -->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="title" :visible.sync="open" width="500px" append-to-body>
@@ -425,18 +406,7 @@
 		</el-dialog>
 
 		<!-- 二次出库对话框 -->
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="二次出库"
-			:visible.sync="secondInvoiceInVisible"
-			width="30%"
-			append-to-body
-		>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="二次出库" :visible.sync="secondInvoiceInVisible" width="30%" append-to-body>
 			<div slot="footer" class="dialog-footer">
 				<el-row :gutter="5">
 					<el-col :span="8">
@@ -452,18 +422,7 @@
 			</div>
 		</el-dialog>
 		<!-- 货物破损出库对话框 -->
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="货物破损出库"
-			:visible.sync="breakInvoiceInVisible"
-			width="30%"
-			append-to-body
-		>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="货物破损出库" :visible.sync="breakInvoiceInVisible" width="30%" append-to-body>
 			<div slot="footer" class="dialog-footer">
 				<el-row :gutter="5">
 					<el-col :span="8">
@@ -977,15 +936,15 @@ export default {
 		},
 		/**
 		 * @description: 计算表格的合计行数据。
-		 *              针对入库金额 (payments) 进行合计。
-		 *              使用 fix 方法格式化合计结果。
+		 *              针对入库金额 (payments) 和吨位 (tonnage) 进行合计。
+		 *              使用 fix_2 方法格式化合计结果。
 		 * @param {object} param - Element UI 表格传递的参数，包含列配置 { columns } 和数据 { data }。
 		 * @returns {Array<string|number>} 计算得到的合计行数据数组。
 		 */
 		getSummary(param) {
 			const { columns, data } = param;
 			const sums = [];
-			const summaryColumns = ['payments'];
+			const summaryColumns = ['payments', 'tonnage'];
 			columns.forEach((column, index) => {
 				// 第一列显示"合计"文字
 				if (index === 0) {
@@ -1006,7 +965,10 @@ export default {
 							}
 						}, 0);
 						sums[index] = fix_2(sums[index]);
-						sums[index] += ' 元';
+						// 吨位不加单位，入库金额加单位
+						if (column.property === 'payments') {
+							sums[index] += ' 元';
+						}
 					} else {
 						sums[index] = 'N/A';
 					}

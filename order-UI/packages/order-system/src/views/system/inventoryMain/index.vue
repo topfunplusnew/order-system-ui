@@ -47,7 +47,7 @@
 			</span>
 		</el-dialog>
 
-		<el-row :gutter="10" class="mb8">
+		<el-row>
 			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
 				<template #left>
 					<el-row :gutter="10">
@@ -110,258 +110,280 @@
 				<!-- 右侧：数据表格 -->
 				<template #right>
 					<div style="height: 100%; display: flex; flex-direction: column">
-						<virtual-scroll :data="inventoryMainList" :item-size="30" key-prop="id" @change="inventoryDataAppendChange">
-							<el-table border ref="inventoryTable" id="printBox" :row-key="row => row.id" size="mini" v-loading="loading" :data="virsualInventoryMainList" @selection-change="handleSelectionChange" stripe height="750" tooltip-effect="light">
-								<el-table-column type="selection" width="50" align="center" />
-								<el-table-column v-if="columns[0].visible" show-overflow-tooltip label="ID" align="center" prop="id" width="80">
-									<template #default="scope">
-										<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-											<div slot="content">{{ scope.row.id }}</div>
-											<span>{{ scope.row.id }}</span>
-										</el-tooltip>
-									</template>
-								</el-table-column>
-								<el-table-column v-if="columns[1].visible" show-overflow-tooltip label="仓库名称" align="center" prop="storeHouseName" width="150">
-									<template #default="scope">
-										<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-											<div slot="content">{{ scope.row.storeHouseName }}</div>
-											<span>{{ scope.row.storeHouseName }}</span>
-										</el-tooltip>
-									</template>
-								</el-table-column>
-								<el-table-column v-if="columns[2].visible" show-overflow-tooltip label="变动日期(入库)" align="center" prop="storeDate" width="150">
-									<template #default="scope">
-										<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-											<div slot="content">{{ parseTime(scope.row.storeDate, '{y}-{m}-{d}') }}</div>
-											<span>{{ parseTime(scope.row.storeDate, '{y}-{m}-{d}') }}</span>
-										</el-tooltip>
-									</template>
-								</el-table-column>
-								<el-table-column v-if="columns[3].visible" show-overflow-tooltip label="供应商" align="center" prop="supplier" width="150">
-									<template #default="scope">
-										<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-											<div slot="content">
+						<virtual-scroll ref="virtualScroll" :data="inventoryMainList" :item-size="30" key-prop="id" @change="inventoryDataAppendChange">
+							<template slot-scope="{ headerCellFixedStyle, cellFixedStyle }">
+								<el-table
+									border
+									ref="inventoryTable"
+									id="printBox"
+									:row-key="row => row.id"
+									size="mini"
+									v-loading="loading"
+									:data="virsualInventoryMainList"
+									@selection-change="handleSelectionChange"
+									stripe
+									height="750"
+									tooltip-effect="light"
+									:headerCellStyle="headerCellFixedStyle"
+									:cellStyle="cellFixedStyle"
+									@header-dragend="onHeaderDragend"
+								>
+									<el-table-column type="selection" width="50" align="center" />
+									<el-table-column v-if="columns[0].visible" show-overflow-tooltip label="ID" align="center" prop="id" width="80">
+										<template #default="scope">
+											<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+												<div slot="content">{{ scope.row.id }}</div>
+												<span>{{ scope.row.id }}</span>
+											</el-tooltip>
+										</template>
+									</el-table-column>
+									<el-table-column v-if="columns[1].visible" show-overflow-tooltip label="仓库名称" align="center" prop="storeHouseName" width="150">
+										<template #default="scope">
+											<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+												<div slot="content">{{ scope.row.storeHouseName }}</div>
+												<span>{{ scope.row.storeHouseName }}</span>
+											</el-tooltip>
+										</template>
+									</el-table-column>
+									<el-table-column v-if="columns[2].visible" show-overflow-tooltip label="变动日期(入库)" align="center" prop="storeDate" width="150">
+										<template #default="scope">
+											<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+												<div slot="content">{{ parseTime(scope.row.storeDate, '{y}-{m}-{d}') }}</div>
+												<span>{{ parseTime(scope.row.storeDate, '{y}-{m}-{d}') }}</span>
+											</el-tooltip>
+										</template>
+									</el-table-column>
+									<el-table-column v-if="columns[3].visible" show-overflow-tooltip label="供应商" align="center" prop="supplier" width="150">
+										<template #default="scope">
+											<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+												<div slot="content">
+													<div class="supplier-container">
+														<span v-for="supplier in scope.row._uniqueSuppliers" :key="`supplier-${supplier.supplierId}`" class="supplier-name">
+															{{ supplier.supplier }}
+														</span>
+														<span v-if="scope.row._uniqueSuppliers.length === 0" class="empty-item">-</span>
+													</div>
+												</div>
 												<div class="supplier-container">
 													<span v-for="supplier in scope.row._uniqueSuppliers" :key="`supplier-${supplier.supplierId}`" class="supplier-name">
 														{{ supplier.supplier }}
 													</span>
 													<span v-if="scope.row._uniqueSuppliers.length === 0" class="empty-item">-</span>
 												</div>
-											</div>
-											<div class="supplier-container">
-												<span v-for="supplier in scope.row._uniqueSuppliers" :key="`supplier-${supplier.supplierId}`" class="supplier-name">
-													{{ supplier.supplier }}
-												</span>
-												<span v-if="scope.row._uniqueSuppliers.length === 0" class="empty-item">-</span>
-											</div>
-										</el-tooltip>
-									</template>
-								</el-table-column>
-								<el-table-column v-if="columns[4].visible" show-overflow-tooltip label="货物来源公司" align="center" prop="goodsCompany" width="180">
-									<template #default="scope">
-										<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-											<div slot="content">{{ scope.row.goodsCompany }}</div>
-											<span>{{ scope.row.goodsCompany }}</span>
-										</el-tooltip>
-									</template>
-								</el-table-column>
-								<!-- 修改审核状态列 -->
-								<el-table-column v-if="columns[5].visible" show-overflow-tooltip label="审核状态" align="center" prop="checkState" width="150">
-									<template #default="scope">
-										<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
-											<div slot="content" @click.stop>
+											</el-tooltip>
+										</template>
+									</el-table-column>
+									<el-table-column v-if="columns[4].visible" show-overflow-tooltip label="货物来源公司" align="center" prop="goodsCompany" width="180">
+										<template #default="scope">
+											<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+												<div slot="content">{{ scope.row.goodsCompany }}</div>
+												<span>{{ scope.row.goodsCompany }}</span>
+											</el-tooltip>
+										</template>
+									</el-table-column>
+									<!-- 修改审核状态列 -->
+									<el-table-column v-if="columns[5].visible" show-overflow-tooltip label="审核状态" align="center" prop="checkState" width="150">
+										<template #default="scope">
+											<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
+												<div slot="content" @click.stop>
+													<el-row v-if="scope.row.checkState === '已审核'">
+														<StateTag
+															:state-title="scope.row.checkState"
+															:state-mapper="{ 2: '已审核' }"
+															@click.native.stop="hasPermission(['finance', 'admin']) && handleReCheck(scope.row)"
+															:style="{ cursor: hasPermission(['finance', 'admin']) ? 'pointer' : 'default' }"
+														/>
+													</el-row>
+													<el-row v-else>
+														<el-button v-if="hasPermission(['finance', 'admin'])" type="text" size="mini" @click.stop="handleCheck(scope.row)">审核</el-button>
+														<span v-else style="color: #909399; font-size: 12px">待审核</span>
+													</el-row>
+												</div>
 												<el-row v-if="scope.row.checkState === '已审核'">
-													<StateTag :state-title="scope.row.checkState" :state-mapper="{ 2: '已审核' }" @click.native.stop="hasPermission(['finance', 'admin']) && handleReCheck(scope.row)" :style="{ cursor: hasPermission(['finance', 'admin']) ? 'pointer' : 'default' }" />
+													<StateTag :state-title="scope.row.checkState" :state-mapper="{ 2: '已审核' }" @click.native="hasPermission(['finance', 'admin']) && handleReCheck(scope.row)" :style="{ cursor: hasPermission(['finance', 'admin']) ? 'pointer' : 'default' }" />
 												</el-row>
 												<el-row v-else>
-													<el-button v-if="hasPermission(['finance', 'admin'])" type="text" size="mini" @click.stop="handleCheck(scope.row)">审核</el-button>
-													<span v-else style="color: #909399; font-size: 12px">待审核</span>
+													<el-row>
+														<el-button v-if="hasPermission(['finance', 'admin'])" type="text" size="mini" @click="handleCheck(scope.row)">审核</el-button>
+														<span v-else style="color: #909399; font-size: 12px">待审核</span>
+													</el-row>
 												</el-row>
-											</div>
-											<el-row v-if="scope.row.checkState === '已审核'">
-												<StateTag :state-title="scope.row.checkState" :state-mapper="{ 2: '已审核' }" @click.native="hasPermission(['finance', 'admin']) && handleReCheck(scope.row)" :style="{ cursor: hasPermission(['finance', 'admin']) ? 'pointer' : 'default' }" />
-											</el-row>
-											<el-row v-else>
-												<el-row>
-													<el-button v-if="hasPermission(['finance', 'admin'])" type="text" size="mini" @click="handleCheck(scope.row)">审核</el-button>
-													<span v-else style="color: #909399; font-size: 12px">待审核</span>
-												</el-row>
-											</el-row>
-										</el-tooltip>
-									</template>
-								</el-table-column>
+											</el-tooltip>
+										</template>
+									</el-table-column>
 
-								<el-table-column v-if="columns[6].visible" show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo" width="120">
-									<template #default="scope">
-										<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-											<div slot="content">{{ scope.row.landCarNo }}</div>
-											<span>{{ scope.row.landCarNo }}</span>
-										</el-tooltip>
-									</template>
-								</el-table-column>
-								<el-table-column v-if="columns[7].visible" show-overflow-tooltip label="陆运司机电话" align="center" prop="landDriverTel" width="150">
-									<template #default="scope">
-										<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-											<div slot="content">{{ scope.row.landDriverTel }}</div>
-											<span>{{ scope.row.landDriverTel }}</span>
-										</el-tooltip>
-									</template>
-								</el-table-column>
-								<el-table-column v-if="columns[8].visible" show-overflow-tooltip label="陆地司机姓名" align="center" prop="landDriverName" width="120">
-									<template #default="scope">
-										<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-											<div slot="content">{{ scope.row.landDriverName }}</div>
-											<span>{{ scope.row.landDriverName }}</span>
-										</el-tooltip>
-									</template>
-								</el-table-column>
-								<el-table-column v-if="columns[9].visible" show-overflow-tooltip label="陆运银行卡号" align="center" prop="landBankNo" width="120">
-									<template #default="scope">
-										<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-											<div slot="content">{{ scope.row.landBankNo }}</div>
-											<span>{{ scope.row.landBankNo }}</span>
-										</el-tooltip>
-									</template>
-								</el-table-column>
-								<el-table-column v-if="columns[10].visible" show-overflow-tooltip label="陆运银行户名" align="center" prop="landBankName" width="120">
-									<template #default="scope">
-										<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-											<div slot="content">{{ scope.row.landBankName }}</div>
-											<span>{{ scope.row.landBankName }}</span>
-										</el-tooltip>
-									</template>
-								</el-table-column>
-								<el-table-column v-if="columns[11].visible" show-overflow-tooltip label="柜号" align="center" prop="seaCarNo" width="120">
-									<template #default="scope">
-										<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-											<div slot="content">{{ scope.row.seaCarNo }}</div>
-											<span>{{ scope.row.seaCarNo }}</span>
-										</el-tooltip>
-									</template>
-								</el-table-column>
-								<el-table-column v-if="columns[12].visible" show-overflow-tooltip label="海运司机电话" align="center" prop="seaDriverTel" width="150">
-									<template #default="scope">
-										<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-											<div slot="content">{{ scope.row.seaDriverTel }}</div>
-											<span>{{ scope.row.seaDriverTel }}</span>
-										</el-tooltip>
-									</template>
-								</el-table-column>
-								<el-table-column v-if="columns[13].visible" show-overflow-tooltip label="海运公司" align="center" prop="seaDriverName" width="120">
-									<template #default="scope">
-										<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-											<div slot="content">{{ scope.row.seaDriverName }}</div>
-											<span>{{ scope.row.seaDriverName }}</span>
-										</el-tooltip>
-									</template>
-								</el-table-column>
-								<el-table-column v-if="columns[14].visible" show-overflow-tooltip label="海运银行卡号" align="center" prop="seaBankNo" width="120">
-									<template #default="scope">
-										<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-											<div slot="content">{{ scope.row.seaBankNo }}</div>
-											<span>{{ scope.row.seaBankNo }}</span>
-										</el-tooltip>
-									</template>
-								</el-table-column>
-								<el-table-column v-if="columns[15].visible" show-overflow-tooltip label="海运银行户名" align="center" prop="seaBankName" width="120">
-									<template #default="scope">
-										<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-											<div slot="content">{{ scope.row.seaBankName }}</div>
-											<span>{{ scope.row.seaBankName }}</span>
-										</el-tooltip>
-									</template>
-								</el-table-column>
-								<el-table-column v-if="columns[16].visible" show-overflow-tooltip label="子项陆运费之和" align="center" prop="allLandFreight" width="150">
-									<template #default="scope">
-										<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-											<div slot="content">{{ scope.row.allLandFreight }}</div>
-											<span>{{ scope.row.allLandFreight }}</span>
-										</el-tooltip>
-									</template>
-								</el-table-column>
-								<el-table-column v-if="columns[17].visible" show-overflow-tooltip label="子项海运费之和" align="center" prop="allSeaFreight">
-									<template #default="scope">
-										<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-											<div slot="content">{{ scope.row.allSeaFreight }}</div>
-											<span>{{ scope.row.allSeaFreight }}</span>
-										</el-tooltip>
-									</template>
-								</el-table-column>
-								<el-table-column v-if="columns[18].visible" show-overflow-tooltip label="录入人员" align="center" prop="userName" width="120">
-									<template #default="scope">
-										<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-											<div slot="content">{{ scope.row.userName }}</div>
-											<span>{{ scope.row.userName }}</span>
-										</el-tooltip>
-									</template>
-								</el-table-column>
-								<el-table-column v-if="columns[19].visible" show-overflow-tooltip label="附件" align="center" prop="path" width="150" fixed="right">
-									<template #default="scope">
-										<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
-											<div slot="content" @click.stop>
+									<el-table-column v-if="columns[6].visible" show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo" width="120">
+										<template #default="scope">
+											<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+												<div slot="content">{{ scope.row.landCarNo }}</div>
+												<span>{{ scope.row.landCarNo }}</span>
+											</el-tooltip>
+										</template>
+									</el-table-column>
+									<el-table-column v-if="columns[7].visible" show-overflow-tooltip label="陆运司机电话" align="center" prop="landDriverTel" width="150">
+										<template #default="scope">
+											<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+												<div slot="content">{{ scope.row.landDriverTel }}</div>
+												<span>{{ scope.row.landDriverTel }}</span>
+											</el-tooltip>
+										</template>
+									</el-table-column>
+									<el-table-column v-if="columns[8].visible" show-overflow-tooltip label="陆地司机姓名" align="center" prop="landDriverName" width="120">
+										<template #default="scope">
+											<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+												<div slot="content">{{ scope.row.landDriverName }}</div>
+												<span>{{ scope.row.landDriverName }}</span>
+											</el-tooltip>
+										</template>
+									</el-table-column>
+									<el-table-column v-if="columns[9].visible" show-overflow-tooltip label="陆运银行卡号" align="center" prop="landBankNo" width="120">
+										<template #default="scope">
+											<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+												<div slot="content">{{ scope.row.landBankNo }}</div>
+												<span>{{ scope.row.landBankNo }}</span>
+											</el-tooltip>
+										</template>
+									</el-table-column>
+									<el-table-column v-if="columns[10].visible" show-overflow-tooltip label="陆运银行户名" align="center" prop="landBankName" width="120">
+										<template #default="scope">
+											<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+												<div slot="content">{{ scope.row.landBankName }}</div>
+												<span>{{ scope.row.landBankName }}</span>
+											</el-tooltip>
+										</template>
+									</el-table-column>
+									<el-table-column v-if="columns[11].visible" show-overflow-tooltip label="柜号" align="center" prop="seaCarNo" width="120">
+										<template #default="scope">
+											<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+												<div slot="content">{{ scope.row.seaCarNo }}</div>
+												<span>{{ scope.row.seaCarNo }}</span>
+											</el-tooltip>
+										</template>
+									</el-table-column>
+									<el-table-column v-if="columns[12].visible" show-overflow-tooltip label="海运司机电话" align="center" prop="seaDriverTel" width="150">
+										<template #default="scope">
+											<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+												<div slot="content">{{ scope.row.seaDriverTel }}</div>
+												<span>{{ scope.row.seaDriverTel }}</span>
+											</el-tooltip>
+										</template>
+									</el-table-column>
+									<el-table-column v-if="columns[13].visible" show-overflow-tooltip label="海运公司" align="center" prop="seaDriverName" width="120">
+										<template #default="scope">
+											<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+												<div slot="content">{{ scope.row.seaDriverName }}</div>
+												<span>{{ scope.row.seaDriverName }}</span>
+											</el-tooltip>
+										</template>
+									</el-table-column>
+									<el-table-column v-if="columns[14].visible" show-overflow-tooltip label="海运银行卡号" align="center" prop="seaBankNo" width="120">
+										<template #default="scope">
+											<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+												<div slot="content">{{ scope.row.seaBankNo }}</div>
+												<span>{{ scope.row.seaBankNo }}</span>
+											</el-tooltip>
+										</template>
+									</el-table-column>
+									<el-table-column v-if="columns[15].visible" show-overflow-tooltip label="海运银行户名" align="center" prop="seaBankName" width="120">
+										<template #default="scope">
+											<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+												<div slot="content">{{ scope.row.seaBankName }}</div>
+												<span>{{ scope.row.seaBankName }}</span>
+											</el-tooltip>
+										</template>
+									</el-table-column>
+									<el-table-column v-if="columns[16].visible" show-overflow-tooltip label="子项陆运费之和" align="center" prop="allLandFreight" width="150">
+										<template #default="scope">
+											<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+												<div slot="content">{{ scope.row.allLandFreight }}</div>
+												<span>{{ scope.row.allLandFreight }}</span>
+											</el-tooltip>
+										</template>
+									</el-table-column>
+									<el-table-column v-if="columns[17].visible" show-overflow-tooltip label="子项海运费之和" align="center" prop="allSeaFreight">
+										<template #default="scope">
+											<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+												<div slot="content">{{ scope.row.allSeaFreight }}</div>
+												<span>{{ scope.row.allSeaFreight }}</span>
+											</el-tooltip>
+										</template>
+									</el-table-column>
+									<el-table-column v-if="columns[18].visible" show-overflow-tooltip label="录入人员" align="center" prop="userName" width="120">
+										<template #default="scope">
+											<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+												<div slot="content">{{ scope.row.userName }}</div>
+												<span>{{ scope.row.userName }}</span>
+											</el-tooltip>
+										</template>
+									</el-table-column>
+									<el-table-column v-if="columns[19].visible" show-overflow-tooltip label="附件" align="center" prop="path" width="150" fixed="right">
+										<template #default="scope">
+											<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
+												<div slot="content" @click.stop>
+													<div v-if="Array.isArray(scope.row.attachmentList)">
+														<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'path'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getInventoryMain, updateInventoryMain)" />
+													</div>
+													<div v-else>
+														<el-tag type="danger">加载错误</el-tag>
+													</div>
+												</div>
 												<div v-if="Array.isArray(scope.row.attachmentList)">
 													<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'path'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getInventoryMain, updateInventoryMain)" />
 												</div>
 												<div v-else>
 													<el-tag type="danger">加载错误</el-tag>
 												</div>
-											</div>
-											<div v-if="Array.isArray(scope.row.attachmentList)">
-												<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'path'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getInventoryMain, updateInventoryMain)" />
-											</div>
-											<div v-else>
-												<el-tag type="danger">加载错误</el-tag>
-											</div>
-										</el-tooltip>
-									</template>
-								</el-table-column>
-								<el-table-column v-if="columns[20].visible" show-overflow-tooltip label="收到条附件" align="center" prop="receiveProof" width="150" fixed="right">
-									<template #default="scope">
-										<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
-											<div slot="content" @click.stop>
+											</el-tooltip>
+										</template>
+									</el-table-column>
+									<el-table-column v-if="columns[20].visible" show-overflow-tooltip label="收到条附件" align="center" prop="receiveProof" width="150" fixed="right">
+										<template #default="scope">
+											<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
+												<div slot="content" @click.stop>
+													<div v-if="Array.isArray(scope.row.attachmentList)">
+														<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'receiveProof'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getInventoryMain, updateInventoryMain)" />
+													</div>
+													<div v-else>
+														<el-tag type="danger">加载错误</el-tag>
+													</div>
+												</div>
 												<div v-if="Array.isArray(scope.row.attachmentList)">
 													<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'receiveProof'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getInventoryMain, updateInventoryMain)" />
 												</div>
 												<div v-else>
 													<el-tag type="danger">加载错误</el-tag>
 												</div>
-											</div>
-											<div v-if="Array.isArray(scope.row.attachmentList)">
-												<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'receiveProof'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getInventoryMain, updateInventoryMain)" />
-											</div>
-											<div v-else>
-												<el-tag type="danger">加载错误</el-tag>
-											</div>
-										</el-tooltip>
-									</template>
-								</el-table-column>
-								<el-table-column v-if="columns[21].visible" label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="100">
-									<template slot-scope="scope">
-										<el-dropdown size="mini" trigger="hover" @command="command => handleCommand(command, scope.row)">
-											<el-button size="mini" type="text" @click.stop="handleCheckInventory(scope.row)">
-												<span v-once>查看</span>
-												<i class="el-icon-arrow-down el-icon--right" />
-											</el-button>
-											<el-dropdown-menu slot="dropdown">
-												<!-- 修改 -->
-												<el-dropdown-item v-hasPermi="['system:inventoryMain:edit']" command="handleUpdate" :disabled="isInventoryDisabledModify(scope.row)">
-													<span :title="isInventoryDisabledModify(scope.row) ? '该货物为二次入库货物，请在存货二次加工管理处修改' : ''">修改</span>
-												</el-dropdown-item>
-												<!-- 删除 -->
-												<el-dropdown-item v-hasPermi="['system:inventoryMain:remove']" command="handleDelete" divided>
-													<span>删除</span>
-												</el-dropdown-item>
-											</el-dropdown-menu>
-										</el-dropdown>
-									</template>
-								</el-table-column>
-							</el-table>
+											</el-tooltip>
+										</template>
+									</el-table-column>
+									<el-table-column v-if="columns[21].visible" label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="100">
+										<template slot-scope="scope">
+											<el-dropdown size="mini" trigger="hover" @command="command => handleCommand(command, scope.row)">
+												<el-button size="mini" type="text" @click.stop="handleCheckInventory(scope.row)">
+													<span v-once>查看</span>
+													<i class="el-icon-arrow-down el-icon--right" />
+												</el-button>
+												<el-dropdown-menu slot="dropdown">
+													<!-- 修改 -->
+													<el-dropdown-item v-hasPermi="['system:inventoryMain:edit']" command="handleUpdate" :disabled="isInventoryDisabledModify(scope.row)">
+														<span :title="isInventoryDisabledModify(scope.row) ? '该货物为二次入库货物，请在存货二次加工管理处修改' : ''">修改</span>
+													</el-dropdown-item>
+													<!-- 删除 -->
+													<el-dropdown-item v-hasPermi="['system:inventoryMain:remove']" command="handleDelete" divided>
+														<span>删除</span>
+													</el-dropdown-item>
+												</el-dropdown-menu>
+											</el-dropdown>
+										</template>
+									</el-table-column>
+								</el-table>
+							</template>
 						</virtual-scroll>
-						<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" style="margin-top: 10px; text-align: right" />
 					</div>
 				</template>
 			</DragDiv>
 		</div>
+		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" style="margin-top: 10px; text-align: right" />
 
 		<!-- 添加或修改库存库存主表对话框 -->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="title" :visible.sync="open" width="100%" append-to-body :close-on-click-modal="false">
@@ -506,7 +528,7 @@
 				</el-row>
 
 				<!--        与订单一致 -->
-				<el-table border size="mini" :data="visibleInventoryDetailList" :row-class-name="getRowClassName" @selection-change="handleInventoryDetailSelectionChange" ref="inventoryDetail">
+				<el-table border size="mini" :data="visibleInventoryDetailList" :row-class-name="getRowClassName" @selection-change="handleInventoryDetailSelectionChange" ref="inventoryDetail" show-summary :summary-method="getInventoryDetailSummary">
 					<el-table-column type="selection" width="30" align="center" :selectable="() => true" />
 					<el-table-column label="序号" align="center" type="index" width="60" fixed="left" />
 					<el-table-column label="行操作" align="center" width="180" fixed="left">
@@ -2661,13 +2683,77 @@ export default {
 		 */
 		handlePiecesInput(row, field, value, callback) {
 			return utilHandlePiecesInput(row, field, value, callback);
+		},
+		/**
+		 * 表头拖动结束后更新虚拟滚动表头布局
+		 */
+		onHeaderDragend() {
+			// 使用自定义列，改变列宽度后，需要手动更新table头部
+			if (this.$refs.virtualScroll) {
+				this.$refs.virtualScroll.doHeaderLayout();
+			}
+		},
+		/**
+		 * 计算库存明细表格合计行
+		 * @param {Object} param - 包含 columns 和 data
+		 * @returns {Array} 合计行数据数组
+		 */
+		getInventoryDetailSummary(param) {
+			const { columns } = param;
+			const sums = [];
+			// 使用可见的库存明细列表进行合计计算
+			const data = this.visibleInventoryDetailList || [];
+			// 需要合计的数字列（根据 prop 属性判断）
+			const summaryColumns = ['paymentFactory', 'payments', 'tonnage', 'profit', 'profitNoTax'];
+
+			columns.forEach((column, index) => {
+				// 第一列是选择框，第二列是序号列，在序号列显示"合计"文字
+				if (index === 1) {
+					sums[index] = '合计';
+					return;
+				}
+				// 第一列（选择框）显示空
+				if (index === 0) {
+					sums[index] = '';
+					return;
+				}
+
+				// 判断当前列是否需要合计
+				if (summaryColumns.includes(column.property)) {
+					// 计算该列的所有数据之和
+					const values = data.map(item => {
+						const value = item[column.property];
+						// 转换为数字，如果转换失败则返回0
+						const numValue = Number(value);
+						return isNaN(numValue) ? 0 : numValue;
+					});
+
+					// 计算总和
+					const sum = values.reduce((prev, curr) => {
+						return prev + curr;
+					}, 0);
+
+					// 格式化显示（使用与数据列相同的格式）
+					if (column.property === 'tonnage') {
+						// 吨位保留2位小数
+						sums[index] = sum.toFixed(2);
+					} else {
+						// 金额类保留2位小数
+						sums[index] = sum.toFixed(2);
+					}
+				} else {
+					// 不需要合计的列显示空字符串
+					sums[index] = '';
+				}
+			});
+
+			return sums;
 		}
 	}
 };
 </script>
 
 <style scoped lang="scss">
-
 ::v-deep .editing-row {
 	td:first-child {
 		border-left: 9px solid #63f697 !important;
@@ -2724,5 +2810,4 @@ export default {
 	display: inline-block;
 	font-style: italic;
 }
-
 </style>
