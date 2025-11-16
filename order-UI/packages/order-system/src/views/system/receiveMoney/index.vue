@@ -396,20 +396,18 @@ import { listTableEditMessage } from '@/api/system/tableEditMessage';
 import SearchOption from '@/components/SearchOption.vue';
 import { listBankAccount, getBankAccount } from '@/api/system/bankAccount';
 import { excludeParams } from '@/api/tool/exclude';
-import { addReason } from '@/api/system/user';
 import { BankAcceptanceType, PayType, PAYMENT_TARGET_TYPE, TableName, PUBLIC_DICT_TYPE } from '@/api/tool/enums';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
 import CheckFiles from '../../../components/CheckFiles.vue';
 import UploadFilesButton from '@/components/UploadFilesButton/index.vue';
 
-import { listCompany } from '../../../api/system/company';
+import { listCompany, getCompany } from '../../../api/system/company';
 import { mixin_receive_money_fill } from './receiveMoneyFill';
 import { listCars } from '../../../api/system/cars';
 import { getReceiveMoney, updateReceiveMoney } from '../../../api/system/receiveMoney';
 import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfile';
 import BankType from '@/views/dashboard/components/common/BankType.vue';
 import { mixin_bankType } from '../../dashboard/mixins/common/common_bankType';
-import { mixin_receive_money_subject } from '@/views/dashboard/mixins/receivemoney/receive_money_subject';
 import { getBankAcceptance } from '@/api/system/bankAcceptance';
 import { parseTime } from '@/utils/ruoyi';
 import { mixin_payment_subject } from '../../dashboard/mixins/payment/payment_subject';
@@ -686,6 +684,7 @@ export default {
 		},
 		listCars,
 		listCompany,
+		getCompany,
 		listBankAccount,
 		getBankAccount,
 		updateReceiveMoney() {
