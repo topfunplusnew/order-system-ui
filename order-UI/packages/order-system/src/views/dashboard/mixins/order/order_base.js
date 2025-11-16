@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import { listGoodsOrder } from '../../../../api/system/goodsOrder';
 
 /**
@@ -76,6 +77,9 @@ export var mixin_order_base = {
 		// 查询订单的列表
 		getList() {
 			this.loading = true;
+			// 计算起始序号：根据当前页码和每页数量计算
+			const startIndex = ((this.queryParams.pageNum || 1) - 1) * (this.queryParams.pageSize || 50);
+
 			if (!this.queryParams.isAdjust) {
 				const isAdjust = this.isAdjustOrder ? -1 : 0;
 				const query = {
@@ -84,8 +88,17 @@ export var mixin_order_base = {
 				};
 				listGoodsOrder(query)
 					.then(response => {
-						// 直接预处理订单数据（已包含 Object.freeze 优化）
-						this.goodsOrderList = this.preprocessOrderData(response.rows || []);
+						// 先对原始数据排序，避免虚拟滚动和表格排序冲突
+						// // 按订单日期降序排序（最新的在前）
+						// const sortedRows = (response.rows || []).sort((a, b) => {
+						// 	const dateA = a.orderDate ? new Date(a.orderDate).getTime() : 0;
+						// 	const dateB = b.orderDate ? new Date(b.orderDate).getTime() : 0;
+						// 	return dateB - dateA; // 降序
+						// });
+
+						const orderData = _.cloneDeep(response.rows || []);
+						// 然后预处理订单数据（已包含序号和 Object.freeze 优化）
+						this.goodsOrderList = this.preprocessOrderData(orderData, startIndex);
 						this.total = response.total || 0;
 						this.loading = false;
 					})
@@ -98,8 +111,16 @@ export var mixin_order_base = {
 			} else {
 				listGoodsOrder(this.queryParams)
 					.then(response => {
-						// 直接预处理订单数据（已包含 Object.freeze 优化）
-						this.goodsOrderList = this.preprocessOrderData(response.rows || []);
+						// 先对原始数据排序，避免虚拟滚动和表格排序冲突
+						// // 按订单日期降序排序（最新的在前）
+						// const sortedRows = (response.rows || []).sort((a, b) => {
+						// 	const dateA = a.orderDate ? new Date(a.orderDate).getTime() : 0;
+						// 	const dateB = b.orderDate ? new Date(b.orderDate).getTime() : 0;
+						// 	return dateB - dateA; // 降序
+						// });
+						const orderData = _.cloneDeep(response.rows || []);
+						// 然后预处理订单数据（已包含序号和 Object.freeze 优化）
+						this.goodsOrderList = this.preprocessOrderData(orderData, startIndex);
 						this.total = response.total || 0;
 						this.loading = false;
 					})
@@ -173,18 +194,22 @@ export var mixin_order_base = {
 		 * 优化渲染性能，避免在模板中重复计算
 		 * 使用 Object.freeze 冻结数据，减少 Vue 的响应式开销
 		 * @param {Array} orderList - 原始订单列表
+		 * @param {number} startIndex - 起始序号，用于计算每行的序号
 		 * @returns {Array} 处理后的订单列表
 		 * 时间复杂度: O(n×m), 空间复杂度: O(n×m)
 		 */
-		preprocessOrderData(orderList) {
+		preprocessOrderData(orderList, startIndex = 0) {
 			console.log(`orderList`, orderList);
 			if (!Array.isArray(orderList)) {
 				return [];
 			}
 
-			return orderList.map(order => {
+			return orderList.map((order, index) => {
 				// 深拷贝订单数据，避免修改原始数据
 				const processedOrder = { ...order };
+
+				// 添加序号字段：从起始序号开始，每条数据递增
+				processedOrder._rowIndex = startIndex + index + 1;
 
 				// 预处理供应商和仓库信息
 				if (order.smailOrderDetails && Array.isArray(order.smailOrderDetails)) {

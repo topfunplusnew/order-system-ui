@@ -196,6 +196,8 @@ export default {
 	},
 	methods: {
 		orderDataAppendChange(renderData) {
+			// 直接使用虚拟滚动组件传递的数据，不要重新排序
+			// 虚拟滚动组件已经根据滚动位置计算好了可见区域的数据顺序
 			this.pendingData = renderData;
 			const updateVisibleRows = throttle(renderData => {
 				this.virsualGoodsOrderList.splice(0, this.virsualGoodsOrderList.length, ...renderData);
@@ -985,12 +987,12 @@ export default {
 		</div>
 
 		<!--    订单表格  -->
-		<virtual-scroll :data="goodsOrderList" :item-size="40" key-prop="id" @change="orderDataAppendChange">
-			<el-table border ref="orderTable" id="printBox" :row-key="row => row.id" v-loading="loading" v-horizontal-scroll="'always'" size="mini" height="750" style="width: 100%" :data="virsualGoodsOrderList" :default-sort="{ prop: 'orderDate', order: 'descending' }" tooltip-effect="light">
+		<virtual-scroll :data="goodsOrderList" :item-size="30" key-prop="id" @change="orderDataAppendChange">
+			<el-table border ref="orderTable" id="printBox" :row-key="row => row.id" v-loading="loading" v-horizontal-scroll="'always'" size="mini" height="750" style="width: 100%" :data="virsualGoodsOrderList" tooltip-effect="light">
 				<!-- 序号列 -->
 				<el-table-column label="序号" align="center" fixed="left" width="50">
 					<template slot-scope="scope">
-						{{ (queryParams.pageNum - 1) * queryParams.pageSize + scope.$index + 1 }}
+						{{ scope.row._rowIndex }}
 					</template>
 				</el-table-column>
 				<el-table-column label="行操作" align="center" class-name="small-padding fixed-width" fixed="left" width="100">
