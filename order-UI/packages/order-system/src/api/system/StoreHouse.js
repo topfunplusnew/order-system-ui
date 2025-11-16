@@ -42,3 +42,22 @@ export function delStoreHouse(id) {
 		method: 'delete'
 	});
 }
+
+// 查询仓库余额
+export function getWarehouseBalance(params) {
+	return request({
+		url: '/system/inventoryStatistics/warehouseBalance',
+		method: 'get',
+		params: params
+	});
+}
+
+// 导出仓库余额
+export function exportWarehouseBalance(params) {
+	return request({
+		url: '/system/inventoryStatistics/exportWarehouseBalance',
+		method: 'post',
+		params: params,
+		responseType: 'blob'
+	});
+}

@@ -2,7 +2,7 @@
 当前账号需要审核的流程 审核的过程调用修改接口-->
 <script>
 import { getPaymentApply, listPaymentApply, submitPaymentApply, delPaymentApply } from '@/api/system/paymentApply';
-import { addPayment } from '@/api/system/payment';
+import { addPayment, generatePaymentFromApply } from '@/api/system/payment';
 import StepInfo from '@/views/dashboard/components/applyProcess/StepInfo.vue';
 import { mapGetters } from 'vuex';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
@@ -217,6 +217,8 @@ export default {
 
 			// 当前操作的ID
 			currentID: '',
+			// 当前操作的付款申请ID（用于生成付款信息）
+			currentPaymentApplyId: null,
 			// 传递给子组件的参数
 			needInfo: {},
 			extraInformation: {},
@@ -693,6 +695,8 @@ export default {
 		},
 		// 付款
 		handleGeneratePayment(row) {
+			// 保存当前操作的付款申请ID
+			this.currentPaymentApplyId = row.id;
 			// 重置表单
 			this.generatePaymentForm = {
 				fundsDate: row.fundsDate || parseTime(new Date()),
@@ -783,7 +787,7 @@ export default {
 					}
 				}
 
-				addPayment(formData)
+				generatePaymentFromApply(this.currentPaymentApplyId, formData)
 					.then(res => {
 						this.$modal.msgSuccess('付款成功');
 						this.cancelGeneratePayment();
@@ -797,6 +801,7 @@ export default {
 		// 取消付款
 		cancelGeneratePayment() {
 			this.generatePaymentVisible = false;
+			this.currentPaymentApplyId = null;
 			this.generatePaymentForm = {
 				fundsDate: null,
 				payType: null,
@@ -1016,7 +1021,7 @@ export default {
 			<el-table-column v-if="columns[11].visible" label="操作" show-overflow-tooltip align="center" fixed="right" width="260">
 				<template slot-scope="scope">
 					<el-button type="text" size="mini" @click="handleCheckApplyInfo(scope.row)">查看</el-button>
-					<el-button type="text" size="mini" :disabled="scope.row.checkState !== PAYMENT_APPLY_STATE.V2.PASS" @click="handleGeneratePayment(scope.row)">付款</el-button>
+					<el-button v-hasPermi="['system:paymentapply:generate']" type="text" size="mini" :disabled="scope.row.checkState !== PAYMENT_APPLY_STATE.V2.PASS" @click="handleGeneratePayment(scope.row)">付款</el-button>
 					<el-button v-if="isCurrentUserAuditor(scope.row)" type="text" size="mini" style="color: #f56c6c" @click="handleDeletePaymentApply(scope.row)">删除</el-button>
 				</template>
 			</el-table-column>

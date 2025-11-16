@@ -110,3 +110,12 @@ export function importPaymentData(formData) {
 		}
 	});
 }
+
+// 将审核通过的付款申请生成付款信息
+export function generatePaymentFromApply(paymentApplyId, data) {
+	return request({
+		url: `/system/paymentApply/${paymentApplyId}/generatePayment`,
+		method: 'post',
+		data: data
+	});
+}
