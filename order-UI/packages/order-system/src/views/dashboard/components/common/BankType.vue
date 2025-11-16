@@ -817,12 +817,13 @@ export default {
 					return;
 				}
 				const obj = _.cloneDeep(res.data);
+				console.log (`obj`, obj);
 				// 检查获取到的数据是否有效（不为空且至少有一个有效字段）
 				const hasValidData = obj && ((obj.issueDate && obj.issueDate.trim() !== '') || (obj.dueDate && obj.dueDate.trim() !== '') || (obj.billAccount && obj.billAccount.trim() !== ''));
 				if (!hasValidData) {
 					return;
 				}
-				if (!obj.billAccountId) {
+				if (!obj.bankAccountId) {
 					console.warn('获取到的承兑信息缺少银行卡ID，无法填充我方承兑账户ID');
 					return;
 				}
@@ -838,8 +839,8 @@ export default {
 					if (obj.billAccount && obj.billAccount.trim() !== '') {
 						this.form.billAccount = obj.billAccount;
 					}
-					if (obj.billAccountId) {
-						this.form.billAccountId = obj.billAccountId;
+					if (obj.bankAccountId) {
+						this.form.billAccountId = obj.bankAccountId;
 					}
 				});
 			});
