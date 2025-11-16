@@ -1,5 +1,5 @@
 // payment/index.vue所需的付款
-import { PAYMENT_TARGET_TYPE } from '../../../api/tool/enums';
+import { PAYMENT_TARGET_TYPE, PUBLIC_DICT_TYPE } from '../../../api/tool/enums';
 export var mixin_paymentindex_fill = {
 	data: function () {
 		return {
@@ -43,6 +43,7 @@ export var mixin_paymentindex_fill = {
 			this.form.otherBankNo = val.bankNo;
 			// 如果是员工，那么就从银行卡中取信息填充
 			if (this.form.companyType === PUBLIC_DICT_TYPE.EMPLOYEE) {
+				console.log(`val`, val);
 				this.form.companyId = val.companyId;
 				this.form.companyName = val.companyName;
 			}
