@@ -25,13 +25,17 @@ export default {
 			queryParams: {
 				startDate: null,
 				endDate: null,
-				paymentDate: '',
+				paymentDateRange: null,
 				fleet: '',
 				carNo: '',
 				bankName: '',
 				paymentState: '',
 				pageNum: 1,
-				pageSize: 20
+				pageSize: 20,
+				params: {
+					payDateStartTime: null,
+					payDateEndTime: null
+				}
 			},
 			freightList: [],
 			loading: false,
@@ -148,24 +152,34 @@ export default {
 				}
 			}
 
+			// 处理支付时间范围
+			if (this.queryParams.paymentDateRange && Array.isArray(this.queryParams.paymentDateRange) && this.queryParams.paymentDateRange.length === 2) {
+				// 时间范围选择器返回的是数组 [startDate, endDate]，直接使用日期字符串，精确到天
+				this.queryParams.params.payDateStartTime = this.queryParams.paymentDateRange[0];
+				this.queryParams.params.payDateEndTime = this.queryParams.paymentDateRange[1];
+			} else {
+				// 清空支付时间范围
+				this.queryParams.params.payDateStartTime = null;
+				this.queryParams.params.payDateEndTime = null;
+			}
+
 			this.getList();
 		},
 		resetQuery() {
-			const today = new Date();
-			const oneMonthAgo = new Date();
-			oneMonthAgo.setMonth(today.getMonth() - 1);
-			const oneMonthLater = new Date();
-			oneMonthLater.setMonth(today.getMonth() + 1);
 			this.queryParams = {
 				startDate: null,
 				endDate: null,
-				paymentDate: '',
+				paymentDateRange: null,
 				fleet: '',
 				carNo: '',
 				bankName: '',
 				paymentState: '',
 				pageNum: 1,
-				pageSize: 20
+				pageSize: 20,
+				params: {
+					payDateStartTime: null,
+					payDateEndTime: null
+				}
 			};
 			this.handleQuery();
 		},
@@ -260,7 +274,7 @@ export default {
 				<el-date-picker v-model="queryParams.endDate" type="date" value-format="yyyy-MM-dd" placeholder="请选择结束时间" clearable />
 			</el-form-item>
 			<el-form-item label="支付时间">
-				<el-date-picker v-model="queryParams.paymentDate" type="date" value-format="yyyy-MM-dd" placeholder="请选择支付时间" clearable />
+				<el-date-picker v-model="queryParams.paymentDateRange" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" clearable />
 			</el-form-item>
 			<el-form-item label="车队">
 				<el-input v-model="queryParams.fleet" placeholder="请输入车队" clearable @keyup.enter.native="handleQuery" />
