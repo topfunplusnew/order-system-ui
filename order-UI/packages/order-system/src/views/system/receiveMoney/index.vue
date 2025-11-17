@@ -980,52 +980,46 @@ export default {
 		// 执行收款编辑操作的逻辑
 		performReceiveMoneyEdit(receiveMoneyData) {
 			this.reset();
-			// 先保存 companyName 和 companyId，避免 watch 监听器清空它们
-			const savedCompanyName = receiveMoneyData.companyName;
-			const savedCompanyId = receiveMoneyData.companyId;
-
-			// 保留表单结构，特别是 params.attachmentIds 和 params.bankacceptance
-			this.form = {
-				...receiveMoneyData,
-				params: {
-					...receiveMoneyData.params,
-					attachmentIds: receiveMoneyData.attachmentList ? receiveMoneyData.attachmentList.map(item => item.id) : [],
-					bankacceptance: receiveMoneyData.params?.bankacceptance || null
-				}
-			};
-			// 如果 companyType 发生了变化，watch 可能已经清空了 companyName，需要恢复
-			// 使用 $nextTick 确保 watch 执行完毕后再恢复值
+			// 使用 $nextTick 确保组件渲染完成后再设置银行账户类型和其他属性
 			this.$nextTick(() => {
-				// 确保 companyName 和 companyId 被正确赋值（包括 0 值）
-				// 使用 hasOwnProperty 检查属性是否存在，而不是判断值是否为 falsy
-				if (receiveMoneyData.hasOwnProperty('companyName')) {
-					this.form.companyName = savedCompanyName;
+				// 先保存 companyName，避免 watch 监听器清空它
+				const savedCompanyName = receiveMoneyData.companyName;
+				const savedCompanyId = receiveMoneyData.companyId;
+				// 保留表单结构，特别是 params.attachmentIds 和 params.bankacceptance
+				Object.assign(this.form, {
+					...receiveMoneyData,
+					params: {
+						...receiveMoneyData.params,
+						attachmentIds: receiveMoneyData.attachmentList ? receiveMoneyData.attachmentList.map(item => item.id) : [],
+						bankacceptance: receiveMoneyData.params?.bankacceptance || null
+					}
+				});
+				// 如果 companyType 发生了变化，watch 可能已经清空了 companyName，需要恢复
+				// 使用 $nextTick 确保 watch 执行完毕后再恢复值
+				this.$nextTick(() => {
+					// 确保 companyName 和 companyId 被正确赋值（包括 0 值）
+					// 使用 hasOwnProperty 或 in 操作符检查属性是否存在，而不是判断值是否为 falsy
+					if (receiveMoneyData.hasOwnProperty('companyName')) {
+						this.form.companyName = savedCompanyName;
+					}
+					if (receiveMoneyData.hasOwnProperty('companyId')) {
+						this.form.companyId = savedCompanyId;
+					}
+				});
+				// 处理银行账户类型
+				let flag = false;
+				if (!receiveMoneyData.bankacceptanceId) {
+					this.$message.warning('该收款信息无凭证相关信息');
+					flag = true;
+					this.form.params.bankacceptance = null;
 				}
-				if (receiveMoneyData.hasOwnProperty('companyId')) {
-					this.form.companyId = savedCompanyId;
-				}
-			});
-			console.log(`receiveMoneyData.bankacceptanceId`, receiveMoneyData.bankacceptanceId);
-			// 使用searchSubjectFromMap查找完整路径数组
-			if (receiveMoneyData.receiveType) {
-				this.form.receiveType = this.searchSubjectFromMap(receiveMoneyData.receiveType);
-			}
-			// 处理银行账户类型
-			let flag = false;
-			if (!receiveMoneyData.bankacceptanceId) {
-				this.$message.warning('该收款信息无凭证相关信息');
-				flag = true;
-				this.form.params.bankacceptance = null;
-			}
-
-			this.open = true;
-			this.title = '修改收款信息';
-
-			// 使用 $nextTick 确保组件渲染完成后再触发事件和设置银行账户类型
-			this.$nextTick(() => {
-				// 确保 BankType 组件已经挂载并注册了监听器后再触发事件
-				this.$bus.$emit('changeFlag', receiveMoneyData.bankacceptanceId !== null ? receiveMoneyData.bankacceptanceId : false);
-
+				this.open = true;
+				this.title = '修改收款信息';
+				console.log(`receiveMoneyData.bankacceptanceId`, receiveMoneyData.bankacceptanceId);
+				// 使用额外的 $nextTick 确保 BankType 组件已经挂载并注册了事件监听器
+				this.$nextTick(() => {
+					this.$bus.$emit('changeFlag', receiveMoneyData.bankacceptanceId !== null ? receiveMoneyData.bankacceptanceId : false);
+				});
 				if (!flag) {
 					if (this.$refs[`selfSelectedBankType`] && receiveMoneyData.selfBankCardType) {
 						this.$refs.selfSelectedBankType.localSelectType = receiveMoneyData.selfBankCardType;
@@ -1033,7 +1027,6 @@ export default {
 					if (this.$refs[`otherSelectedBankType`] && receiveMoneyData.otherBankCardType) {
 						this.$refs.otherSelectedBankType.localSelectType = receiveMoneyData.otherBankCardType;
 					}
-
 					if (receiveMoneyData.bankacceptanceId) {
 						getBankAcceptance(receiveMoneyData.bankacceptanceId).then(result => {
 							if (!result.data) {
@@ -1042,11 +1035,13 @@ export default {
 								this.form.params.bankacceptance = null;
 								return;
 							}
-							this.$nextTick(() => {
-								this.form.params.bankacceptance = result.data;
-							});
+							this.form.params.bankacceptance = result.data;
 						});
 					}
+				}
+				// 设置级联选择器的值 - 使用searchSubjectFromMap查找完整路径数组
+				if (this.form.receiveType) {
+					this.form.receiveType = this.searchSubjectFromMap(this.form.receiveType);
 				}
 			});
 		},

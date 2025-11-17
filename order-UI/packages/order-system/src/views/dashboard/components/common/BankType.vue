@@ -457,7 +457,8 @@ export default {
 			this.type = '己方公司';
 		}
 		console.log(`开始注册监听器`);
-		this.$bus.$on('changeFlag', value => {
+		// 使用命名函数，方便后续移除监听器
+		this.handleChangeFlag = (value) => {
 			console.log(`value`, value);
 			if (this.baned) {
 				this.flag = false;
@@ -471,10 +472,13 @@ export default {
 				this.clearAcceptanceFillStatus();
 				return;
 			}
+			// 立即设置 flag 为 true，表示正在处理承兑信息（避免异步请求期间状态不正确）
+			this.flag = true;
 			// 获取承兑信息
 			getBankAcceptance(value).then(res => {
 				this.$nextTick(() => {
 					if (res.data) {
+						console.log(res.data, 'res.data');
 						this.hasSavedAcceptanceInfo = true;
 						// 将获取到的数据保存到sessionStorage
 						sessionStorage.setItem(this.bankAcceptanceFilledKey, JSON.stringify(res.data));
@@ -482,14 +486,24 @@ export default {
 						this.loadSavedFormFromSession();
 						// 通知父组件更新状态
 						this.$emit('updateBankAcceptance', _.cloneDeep(res.data));
+					} else {
+						// 如果没有数据，重置状态
+						this.hasSavedAcceptanceInfo = false;
+						this.flag = false;
 					}
-					this.flag = true;
 
 					console.log(`this.flag`, this.flag);
 					console.log(`this.hasSavedAcceptanceInfo`, this.hasSavedAcceptanceInfo);
 				});
+			}).catch(error => {
+				// 请求失败时重置状态
+				console.error('获取承兑信息失败:', error);
+				this.flag = false;
+				this.hasSavedAcceptanceInfo = false;
 			});
-		});
+		};
+		// 注册事件监听器
+		this.$bus.$on('changeFlag', this.handleChangeFlag);
 	},
 	watch: {
 		selectType(newVal) {
@@ -1040,8 +1054,10 @@ export default {
 	beforeDestroy() {
 		// 组件销毁时清除当前组件的sessionStorage
 		sessionStorage.removeItem(this.bankAcceptanceFilledKey);
-		// 移除总线事件监听
-		this.$bus.$off('changeFlag');
+		// 移除总线事件监听（使用命名函数确保只移除当前组件的监听器）
+		if (this.handleChangeFlag) {
+			this.$bus.$off('changeFlag', this.handleChangeFlag);
+		}
 		// 清除双选择状态（当组件销毁时）
 		if (this.waitForBothSelection && this.componentRole) {
 			// 清除当前角色的选择状态

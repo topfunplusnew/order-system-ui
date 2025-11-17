@@ -1377,7 +1377,10 @@ export default {
 				this.open = true;
 				this.title = '修改付款信息';
 				console.log(`paymentData.bankacceptanceId`, paymentData.bankacceptanceId);
-				this.$bus.$emit('changeFlag', paymentData.bankacceptanceId > 0 ? paymentData.bankacceptanceId : false);
+				// 使用额外的 $nextTick 确保 BankType 组件已经挂载并注册了事件监听器
+				this.$nextTick(() => {
+					this.$bus.$emit('changeFlag', paymentData.bankacceptanceId > 0 ? paymentData.bankacceptanceId : false);
+				});
 				if (!flag) {
 					if (this.$refs[`selfSelectedBankType`] && paymentData.selfBankCardType) {
 						this.$refs.selfSelectedBankType.localSelectType = paymentData.selfBankCardType;
