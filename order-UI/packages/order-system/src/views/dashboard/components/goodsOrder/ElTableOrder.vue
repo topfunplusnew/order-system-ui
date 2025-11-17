@@ -1121,8 +1121,8 @@ export default {
 							</el-tooltip>
 						</template>
 					</VirtualColumn>
-					<!--       < !&#45;&#45; 6. 审核 &ndash;&gt;-->
-					<el-table-column v-if="columns[5].visible" show-overflow-tooltip label="审核" align="center" prop="checkState" width="112">
+					<!-- 6. 审核 -->
+					<VirtualColumn v-if="columns[5].visible" show-overflow-tooltip label="审核" align="center" prop="checkState" width="112">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
 								<div slot="content" @click.stop>
@@ -1156,7 +1156,7 @@ export default {
 								</el-row>
 							</el-tooltip>
 						</template>
-					</el-table-column>
+					</VirtualColumn>
 					<!-- 7. 车队 -->
 					<el-table-column v-if="columns[6].visible" show-overflow-tooltip label="车队" align="center" prop="fleet" width="112">
 						<template #default="scope">
