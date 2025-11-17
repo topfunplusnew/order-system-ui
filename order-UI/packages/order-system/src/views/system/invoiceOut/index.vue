@@ -842,13 +842,22 @@ export default {
 			});
 		},
 		/** 删除按钮操作 */
-		handleDelete() {
-			const invoiceIds = this.ids;
-			const confirmMsg = `是否确认删除选中的${invoiceIds.length}条发票卖出信息？`;
+		handleDelete(row) {
+			// 如果传入了 row 参数，则是单行删除；否则是批量删除
+			const invoiceIds = row ? [row.id] : this.ids;
+			
+			if (!invoiceIds || invoiceIds.length === 0) {
+				this.$message.warning('请选择要删除的数据');
+				return;
+			}
+
+			const confirmMsg = row 
+				? `是否确认删除发票卖出信息编号为"${row.id}"的数据项？`
+				: `是否确认删除选中的${invoiceIds.length}条发票卖出信息？`;
 
 			this.$modal
 				.confirm(confirmMsg)
-				.then(function () {
+				.then(() => {
 					return delInvoiceOut(invoiceIds.join(','));
 				})
 				.then(() => {
