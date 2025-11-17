@@ -5,7 +5,7 @@
 
 export const mixin_record_auto_save = {
 	watch: {
-		// 监听表单变化，自动暂存内部转账表单
+		// 监听表单变化，自动暂存内部转账表单 
 		form: {
 			handler(newVal, oldVal) {
 				// 只有在内部转账模式下且对话框打开时才自动暂存

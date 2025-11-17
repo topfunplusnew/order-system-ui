@@ -1221,7 +1221,7 @@ export default {
 					if (accountType === 'source') {
 						// 填充支出方/转账账户信息
 						this.form.sourceBankNo = bankInfo.bankNo;
-						this.form.sourceName = accountName || bankInfo.acountsName;
+						this.form.sourceName = bankInfo.acountsName;
 						this.form.sourceId = bankInfo.id;
 
 						// 更新显示变量
@@ -1231,7 +1231,7 @@ export default {
 					} else if (accountType === 'target') {
 						// 填充收入方/目标账户信息
 						this.form.targetBankNo = bankInfo.bankNo;
-						this.form.targetName = accountName || bankInfo.acountsName;
+						this.form.targetName = bankInfo.acountsName;
 						this.form.targetId = bankInfo.id;
 
 						// 更新显示变量

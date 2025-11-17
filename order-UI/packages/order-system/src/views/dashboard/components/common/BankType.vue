@@ -840,6 +840,7 @@ export default {
 						this.form.billAccount = obj.billAccount;
 					}
 					if (obj.bankAccountId) {
+						// 这里使用后端返回的银行卡id来填充
 						this.form.billAccountId = obj.bankAccountId;
 						// TODO 特殊处理 后端在冲抵款的时候需要银行卡id
 						this.form.bankAccountId = obj.bankAccountId;
