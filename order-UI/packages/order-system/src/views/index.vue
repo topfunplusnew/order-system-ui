@@ -55,6 +55,7 @@
 							:data="tableData"
 							max-height="500"
 							show-summary
+							:summary-method="getSummaries"
 							border
 							style="width: 100%"
 							:loading="loading"
@@ -534,6 +535,37 @@ export default {
 		...mapGetters(['downloadProgress', 'downloadMessage'])
 	},
 	methods: {
+		// 自定义汇总方法，排除柜号列的求和
+		getSummaries(param) {
+			const { columns, data } = param;
+			const sums = [];
+			columns.forEach((column, index) => {
+				if (index === 0) {
+					sums[index] = '合计';
+					return;
+				}
+				// 排除柜号列（seaCarNo）的求和
+				if (column.property === 'seaCarNo') {
+					sums[index] = '';
+					return;
+				}
+				// 排除其他非数字列
+				const values = data.map(item => Number(item[column.property]));
+				if (!values.every(value => isNaN(value))) {
+					sums[index] = values.reduce((prev, curr) => {
+						const value = Number(curr);
+						if (!isNaN(value)) {
+							return prev + curr;
+						} else {
+							return prev;
+						}
+					}, 0);
+				} else {
+					sums[index] = '';
+				}
+			});
+			return sums;
+		},
 		// 一键下载
 		handleDownload() {
 			this.$antdconfirm({
