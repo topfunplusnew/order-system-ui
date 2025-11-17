@@ -231,7 +231,7 @@
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="200">
 				<template slot-scope="scope">
 					<CheckOrderInfo :row="scope.row" />
-					<el-button size="mini" type="warning" @click="handleFillFreight(scope.row)">修正</el-button>
+					<el-button size="mini" type="warning" :disabled="scope.row.paymentState !== PAYMENT_STATE.PAID" @click="handleFillFreight(scope.row)">修正</el-button>
 					<el-button v-if="scope.row.isedit" v-hasPermi="['system:orderfreight:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
 					<el-button v-hasPermi="['system:orderfreight:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
 				</template>
