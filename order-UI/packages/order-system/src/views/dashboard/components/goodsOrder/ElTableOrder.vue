@@ -114,19 +114,19 @@ export default {
 				{ key: 11, label: '海运公司', visible: true },
 				{ key: 12, label: '总货款', visible: true },
 				{ key: 13, label: '总吨位', visible: true },
-				{ key: 26, label: '出厂货款', visible: true },
-				{ key: 14, label: '陆运费', visible: true },
-				{ key: 15, label: '海运费', visible: true },
-				{ key: 16, label: '含税利润', visible: true },
-				{ key: 17, label: '不含税利润', visible: true },
-				{ key: 18, label: '销售经理', visible: true },
-				{ key: 19, label: '录入员', visible: true },
-				{ key: 20, label: '备注', visible: true },
-				{ key: 21, label: '出库单', visible: true },
-				{ key: 22, label: '收到条附件', visible: true },
-				{ key: 23, label: '可否编辑', visible: true },
-				{ key: 24, label: '客户含税', visible: true },
-				{ key: 25, label: '出厂含税', visible: true },
+				{ key: 14, label: '出厂货款', visible: true },
+				{ key: 15, label: '陆运费', visible: true },
+				{ key: 16, label: '海运费', visible: true },
+				{ key: 17, label: '含税利润', visible: true },
+				{ key: 18, label: '不含税利润', visible: true },
+				{ key: 19, label: '销售经理', visible: true },
+				{ key: 20, label: '录入员', visible: true },
+				{ key: 21, label: '备注', visible: true },
+				{ key: 22, label: '出库单', visible: true },
+				{ key: 23, label: '收到条附件', visible: true },
+				{ key: 24, label: '可否编辑', visible: true },
+				{ key: 25, label: '客户含税', visible: true },
+				{ key: 26, label: '出厂含税', visible: true },
 				{ key: 27, label: '审核人', visible: true }
 			],
 			// 性能优化相关：缓存 DOM 尺寸信息，避免频繁访问
@@ -1230,7 +1230,7 @@ export default {
 						</template>
 					</el-table-column>
 					<!-- 出厂货款 -->
-					<el-table-column v-if="columns[26].visible" show-overflow-tooltip label="出厂货款" align="center" prop="allPaymentFactory" width="144">
+					<el-table-column v-if="columns[14].visible" show-overflow-tooltip label="出厂货款" align="center" prop="allPaymentFactory" width="144">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.allPaymentFactory | changeNumber(changeLength) }}</div>
@@ -1239,7 +1239,7 @@ export default {
 						</template>
 					</el-table-column>
 					<!-- 15. 陆运费 -->
-					<el-table-column v-if="columns[14].visible" show-overflow-tooltip label="陆运费" align="center" prop="landFreight" width="112">
+					<el-table-column v-if="columns[15].visible" show-overflow-tooltip label="陆运费" align="center" prop="landFreight" width="112">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.landFreight }}</div>
@@ -1248,7 +1248,7 @@ export default {
 						</template>
 					</el-table-column>
 					<!-- 16. 海运费 -->
-					<el-table-column v-if="columns[15].visible" show-overflow-tooltip label="海运费" align="center" prop="seaFreight" width="112">
+					<el-table-column v-if="columns[16].visible" show-overflow-tooltip label="海运费" align="center" prop="seaFreight" width="112">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.seaFreight }}</div>
@@ -1257,7 +1257,7 @@ export default {
 						</template>
 					</el-table-column>
 					<!-- 17. 含税利润 -->
-					<el-table-column v-if="columns[16].visible" show-overflow-tooltip label="含税利润" align="center" prop="allProfit" width="112">
+					<el-table-column v-if="columns[17].visible" show-overflow-tooltip label="含税利润" align="center" prop="allProfit" width="112">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.allProfit | changeNumber(changeLength) }}</div>
@@ -1266,7 +1266,7 @@ export default {
 						</template>
 					</el-table-column>
 					<!-- 18. 不含税利润 -->
-					<el-table-column v-if="columns[17].visible" show-overflow-tooltip label="不含税利润" align="center" prop="allProfitNoTax" width="112">
+					<el-table-column v-if="columns[18].visible" show-overflow-tooltip label="不含税利润" align="center" prop="allProfitNoTax" width="112">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.allProfitNoTax | changeNumber(changeLength) }}</div>
@@ -1275,7 +1275,7 @@ export default {
 						</template>
 					</el-table-column>
 					<!-- 19. 销售经理 -->
-					<el-table-column v-if="columns[18].visible" show-overflow-tooltip label="销售经理" align="center" prop="saleManager" width="112">
+					<el-table-column v-if="columns[19].visible" show-overflow-tooltip label="销售经理" align="center" prop="saleManager" width="112">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.saleManager }}</div>
@@ -1284,7 +1284,7 @@ export default {
 						</template>
 					</el-table-column>
 					<!-- 20. 录入员 -->
-					<el-table-column v-if="columns[19].visible" show-overflow-tooltip label="录入员" align="center" prop="userName" width="84">
+					<el-table-column v-if="columns[20].visible" show-overflow-tooltip label="录入员" align="center" prop="userName" width="84">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.userName }}</div>
@@ -1293,7 +1293,7 @@ export default {
 						</template>
 					</el-table-column>
 					<!-- 21. 备注 -->
-					<el-table-column v-if="columns[20].visible" show-overflow-tooltip label="备注" align="center" prop="comments" width="140">
+					<el-table-column v-if="columns[21].visible" show-overflow-tooltip label="备注" align="center" prop="comments" width="140">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.comments }}</div>
@@ -1302,7 +1302,7 @@ export default {
 						</template>
 					</el-table-column>
 					<!-- 22. 出库单 -->
-					<el-table-column v-if="columns[21].visible" show-overflow-tooltip label="出库单" align="center" prop="path" width="84">
+					<el-table-column v-if="columns[22].visible" show-overflow-tooltip label="出库单" align="center" prop="path" width="84">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
 								<div slot="content" @click.stop>
@@ -1323,7 +1323,7 @@ export default {
 						</template>
 					</el-table-column>
 					<!-- 23. 收到条附件 -->
-					<el-table-column v-if="columns[22].visible" show-overflow-tooltip label="收到条附件" align="center" prop="receiveProof">
+					<el-table-column v-if="columns[23].visible" show-overflow-tooltip label="收到条附件" align="center" prop="receiveProof">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
 								<div slot="content" @click.stop>
@@ -1344,7 +1344,7 @@ export default {
 						</template>
 					</el-table-column>
 					<!-- 24. 可否编辑 -->
-					<el-table-column v-if="columns[23].visible" show-overflow-tooltip label="可否编辑" align="center" prop="isedit" width="112">
+					<el-table-column v-if="columns[24].visible" show-overflow-tooltip label="可否编辑" align="center" prop="isedit" width="112">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">
@@ -1355,7 +1355,7 @@ export default {
 						</template>
 					</el-table-column>
 					<!-- 25. 客户含税 -->
-					<el-table-column v-if="columns[24].visible" show-overflow-tooltip label="客户含税" align="center" prop="customerTaxIncluded" width="112">
+					<el-table-column v-if="columns[25].visible" show-overflow-tooltip label="客户含税" align="center" prop="customerTaxIncluded" width="112">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
 								<div slot="content" @click.stop>
@@ -1382,7 +1382,7 @@ export default {
 						</template>
 					</el-table-column>
 					<!-- 26. 出厂含税 -->
-					<el-table-column v-if="columns[25].visible" show-overflow-tooltip label="出厂含税" align="center" width="112">
+					<el-table-column v-if="columns[26].visible" show-overflow-tooltip label="出厂含税" align="center" width="112">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
 								<div slot="content" @click.stop>
