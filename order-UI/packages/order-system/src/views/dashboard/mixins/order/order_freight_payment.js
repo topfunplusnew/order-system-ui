@@ -118,8 +118,9 @@ export var mixin_order_freight_payment = {
 				// 这里的表id是运费的id
 				tID: orderFreight.id,
 				moneyAmount: orderFreight.moneyAmount,
+				otherAccountsName: orderFreight.otherAcountsName,
 				// 使用 lodash pick 提取需要的字段
-				..._.pick(orderFreight, ['otherAccountsName', 'otherBankNo', 'otherBankName', 'driverName', 'driverId', 'carNo', 'fleet', 'freightType']),
+				..._.pick(orderFreight, ['otherBankNo', 'otherBankName', 'driverName', 'driverId', 'carNo', 'fleet', 'freightType']),
 				companyName: orderFreight.driverName,
 				companyId: orderFreight.driverId,
 				companyType: '司机',
