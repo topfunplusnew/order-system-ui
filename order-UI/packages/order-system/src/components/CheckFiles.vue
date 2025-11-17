@@ -91,8 +91,7 @@ export default {
 						console.error('文件删除失败:', e);
 						this.$message.error('文件删除失败: ' + (e.message || '未知错误'));
 					}
-				},
-				onCancel: () => this.$message.info('已取消删除操作')
+				}
 			});
 		},
 		closeDialog() {
