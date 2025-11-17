@@ -517,6 +517,50 @@
 				<el-button type="primary" @click="submitRebateForm">确 定</el-button>
 			</div>
 		</el-dialog>
+
+		<!-- 返利流水查看对话框 -->
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" title="返利流水账" :visible.sync="rebateDetailDialogVisible" width="800px" append-to-body>
+			<el-table :data="rebateDetailList" style="width: 100%" show-summary border :summary-method="getRebateDetailSummaries" size="mini">
+				<el-table-column type="index" label="序号" width="60" align="center"></el-table-column>
+				<el-table-column prop="actualReceived" label="实收" align="center" width="120">
+					<template #default="scope">
+						<span class="money">{{ scope.row.actualReceived }}</span>
+					</template>
+				</el-table-column>
+				<el-table-column prop="actualReceivedDate" label="实收日期" align="center" width="180"></el-table-column>
+				<el-table-column prop="comment" label="备注" align="center" show-overflow-tooltip></el-table-column>
+				<el-table-column label="操作" align="center" width="150" fixed="right">
+					<template #default="scope">
+						<el-button size="mini" type="primary" @click="handleEditRebateDetail(scope.row, scope.$index)">修改</el-button>
+						<el-button size="mini" type="danger" @click="handleDeleteRebateDetail(scope.row, scope.$index)">删除</el-button>
+					</template>
+				</el-table-column>
+			</el-table>
+			<div slot="footer" class="dialog-footer">
+				<el-button @click="rebateDetailDialogVisible = false">关 闭</el-button>
+			</div>
+		</el-dialog>
+
+		<!-- 修改返利流水对话框 -->
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" title="修改返利流水" :visible.sync="editRebateDetailDialogVisible" width="500px" append-to-body>
+			<el-form ref="editRebateDetailForm" :model="editRebateDetailForm" :rules="rebateFormRules" label-width="120px">
+				<el-form-item label="返利金额" prop="amount">
+					<el-input v-model="editRebateDetailForm.amount" type="number" placeholder="请输入返利金额" clearable>
+						<template slot="append">元</template>
+					</el-input>
+				</el-form-item>
+				<el-form-item label="返利日期" prop="date">
+					<el-date-picker v-model="editRebateDetailForm.date" type="datetime" placeholder="请选择返利日期时间" value-format="yyyy-MM-dd HH:mm:ss" style="width: 100%"></el-date-picker>
+				</el-form-item>
+				<el-form-item label="备注">
+					<el-input v-model="editRebateDetailForm.comment" type="textarea" placeholder="请输入备注" :rows="3"></el-input>
+				</el-form-item>
+			</el-form>
+			<div slot="footer" class="dialog-footer">
+				<el-button @click="editRebateDetailDialogVisible = false">取 消</el-button>
+				<el-button type="primary" @click="submitEditRebateDetail">确 定</el-button>
+			</div>
+		</el-dialog>
 	</div>
 </template>
 
@@ -746,7 +790,19 @@ export default {
 					{ pattern: /^\d+(\.\d+)?$/, message: '请输入正确的数字', trigger: 'blur' }
 				],
 				date: [{ required: true, message: '请选择返利日期', trigger: 'change' }]
-			}
+			},
+			// 返利流水查看相关
+			rebateDetailDialogVisible: false,
+			rebateDetailList: [], // 返利流水列表
+			currentRebateData: null, // 当前返利记录的完整数据（用于更新）
+			// 修改返利流水相关
+			editRebateDetailDialogVisible: false,
+			editRebateDetailForm: {
+				amount: '',
+				date: '',
+				comment: ''
+			},
+			currentEditIndex: -1 // 当前正在编辑的流水记录索引
 		};
 	},
 	computed: {
@@ -955,6 +1011,19 @@ export default {
 		filterName(value, row) {
 			return row.supplier === value;
 		},
+		/**
+		 * 返利按钮逻辑分析：
+		 * 1. 保存当前返利记录行数据到 currentRebateRow
+		 * 2. 重置返利表单（金额和日期）
+		 * 3. 打开返利弹窗，用户输入返利金额和日期
+		 * 4. 提交时调用 submitRebateForm，会：
+		 *    - 获取完整的返利数据（包含已有的流水记录）
+		 *    - 计算累计返利金额
+		 *    - 检查是否需要备注（单次或累计金额超过原金额）
+		 *    - 创建新的流水记录项（包含uuid、金额、日期、备注）
+		 *    - 将新记录添加到 actualReceivedDetails.detailList 数组
+		 *    - 调用 updateRebate 更新整个返利记录
+		 */
 		handleRebate(row) {
 			// 保存当前行数据
 			this.currentRebateRow = row;
@@ -972,7 +1041,10 @@ export default {
 				}
 			});
 		},
-		// 提交返利表单
+		/**
+		 * 提交返利表单
+		 * 将返利金额和日期推入当前数据的detailList中，并调用修改接口
+		 */
 		submitRebateForm() {
 			this.$refs.rebateForm.validate(valid => {
 				if (valid) {
@@ -980,17 +1052,25 @@ export default {
 					const currentAmount = Number(this.rebateForm.amount);
 					const date = this.rebateForm.date;
 
+					if (!row || !row.id) {
+						this.$message.error('数据错误，请重新操作');
+						return;
+					}
+
+					// 获取完整的返利数据
 					getRebate(row.id).then(res => {
 						if (!res.data) {
 							this.$message.error('暂无该条数据');
 							return;
 						}
 
-						const originalAmount = row.rebate; // 表格中的金额列
+						const originalAmount = res.data.rebate || row.rebate; // 原返利金额
 
+						// 获取已有的流水列表
+						const existingDetailList = _.get(res.data, 'actualReceivedDetails.detailList', []) || [];
+						
 						// 计算已累计返利金额
-						const detailList = _.get(res.data, 'actualReceivedDetails.detailList', []);
-						const existingTotal = detailList.reduce((sum, item) => {
+						const existingTotal = existingDetailList.reduce((sum, item) => {
 							return sum + (Number(item.actualReceived) || 0);
 						}, 0);
 
@@ -999,28 +1079,44 @@ export default {
 						// 检查是否需要备注：单次金额超标或累计金额超标
 						const needRemark = currentAmount > originalAmount || newTotal > originalAmount;
 
-						// TODO 这里后端还没有完善好备注的逻辑 随时可能更改
+						/**
+						 * 处理返利逻辑
+						 * @param {string} remark - 备注信息
+						 */
 						const processRebate = (remark = '') => {
-							const item = {
+							// 创建新的流水记录项
+							const newItem = {
 								uuid: getUuid(),
 								actualReceived: currentAmount,
-								actualReceivedDate: parseTime(new Date(date)),
+								actualReceivedDate: date, // date已经是格式化后的字符串，不需要再转换
 								comment: remark || null
 							};
-							const body = _.cloneDeep(row);
 
-							const existingDetailList = _.get(res.data, 'actualReceivedDetails.detailList', []);
+							// 基于完整的返利数据创建更新对象
+							const body = _.cloneDeep(res.data);
+							
+							// 将新记录推入detailList
 							body.actualReceivedDetails = {
-								detailList: [...existingDetailList, item]
+								detailList: [...existingDetailList, newItem]
 							};
 
+							// 调用修改接口更新返利记录
 							updateRebate(body).then(() => {
 								this.$modal.msgSuccess('返利成功');
 								this.rebateDialogVisible = false;
+								// 重置表单
+								this.rebateForm = {
+									amount: '',
+									date: ''
+								};
+								// 刷新列表
 								this.getList();
+							}).catch(error => {
+								this.$message.error('返利失败：' + (error.msg || '未知错误'));
 							});
 						};
 
+						// 如果需要备注，弹出输入框
 						if (needRemark) {
 							let remarkMessage = '';
 							if (currentAmount > originalAmount && newTotal > originalAmount) {
@@ -1047,41 +1143,197 @@ export default {
 									this.$modal.msgError('取消输入备注');
 								});
 						} else {
+							// 不需要备注，直接处理
 							processRebate();
 						}
+					}).catch(error => {
+						this.$message.error('获取返利数据失败：' + (error.msg || '未知错误'));
 					});
 				}
 			});
 		},
-		// 查询返利流水账
+		/**
+		 * 查询返利流水账
+		 * 获取返利记录的完整数据，显示流水列表，支持修改和删除操作
+		 */
 		handleRebateDetail(row) {
 			getRebate(row.id).then(res => {
+				if (!res.data) {
+					this.$modal.msgError('暂无该条数据');
+					return;
+				}
 				const detailList = _.get(res.data, 'actualReceivedDetails.detailList', []);
 				if (_.isEmpty(detailList)) {
 					this.$modal.msgError('没有返利流水账');
 					return;
 				}
-				this.$model({
-					type: 'array',
-					items: detailList,
-					array: [
-						{
-							prop: 'actualReceived',
-							label: '实收'
-						},
-						{
-							prop: 'actualReceivedDate',
-							label: '实收日期'
-						},
-						{
-							prop: 'comment',
-							label: '备注'
-						}
-					],
-					title: '返利流水账 ',
-					needToTotal: ['actualReceived']
-				});
+				// 保存完整的返利数据，用于后续更新
+				this.currentRebateData = _.cloneDeep(res.data);
+				// 保存流水列表
+				this.rebateDetailList = detailList;
+				// 打开流水查看对话框
+				this.rebateDetailDialogVisible = true;
 			});
+		},
+		/**
+		 * 计算返利流水表格合计
+		 */
+		getRebateDetailSummaries(param) {
+			const { columns, data } = param;
+			const sums = [];
+			columns.forEach((column, index) => {
+				if (index === 0) {
+					sums[index] = '合计';
+				} else if (column.property === 'actualReceived') {
+					const values = data.map(item => Number(item.actualReceived) || 0);
+					sums[index] = values.reduce((prev, curr) => {
+						return prev + curr;
+					}, 0);
+				} else {
+					sums[index] = '';
+				}
+			});
+			return sums;
+		},
+		/**
+		 * 修改返利流水记录
+		 * 打开编辑弹窗，填充当前记录的数据
+		 */
+		handleEditRebateDetail(row, index) {
+			this.currentEditIndex = index;
+			this.editRebateDetailForm = {
+				amount: String(row.actualReceived || ''),
+				date: row.actualReceivedDate || '',
+				comment: row.comment || ''
+			};
+			this.editRebateDetailDialogVisible = true;
+			// 清除表单验证
+			this.$nextTick(() => {
+				if (this.$refs.editRebateDetailForm) {
+					this.$refs.editRebateDetailForm.clearValidate();
+				}
+			});
+		},
+		/**
+		 * 提交修改返利流水
+		 * 更新流水列表中的对应项，然后调用 updateRebate 更新整个返利记录
+		 */
+		submitEditRebateDetail() {
+			this.$refs.editRebateDetailForm.validate(valid => {
+				if (valid) {
+					if (this.currentEditIndex < 0 || !this.currentRebateData) {
+						this.$modal.msgError('数据错误，请重新操作');
+						return;
+					}
+
+					const currentAmount = Number(this.editRebateDetailForm.amount);
+					const originalAmount = this.currentRebateData.rebate; // 原返利金额
+
+					// 计算修改后的累计返利金额
+					const detailList = _.cloneDeep(this.rebateDetailList);
+					// 临时移除当前编辑的项，计算其他项的累计金额
+					const otherTotal = detailList
+						.filter((item, idx) => idx !== this.currentEditIndex)
+						.reduce((sum, item) => {
+							return sum + (Number(item.actualReceived) || 0);
+						}, 0);
+					const newTotal = otherTotal + currentAmount;
+
+					// 检查是否需要备注
+					const needRemark = currentAmount > originalAmount || newTotal > originalAmount;
+
+					const processUpdate = (remark = '') => {
+						// 更新流水列表中的对应项
+						detailList[this.currentEditIndex] = {
+							...detailList[this.currentEditIndex],
+							actualReceived: currentAmount,
+							actualReceivedDate: this.editRebateDetailForm.date,
+							comment: remark || this.editRebateDetailForm.comment || null
+						};
+
+						// 更新返利数据
+						const body = _.cloneDeep(this.currentRebateData);
+						body.actualReceivedDetails = {
+							detailList: detailList
+						};
+
+						updateRebate(body).then(() => {
+							this.$modal.msgSuccess('修改成功');
+							this.editRebateDetailDialogVisible = false;
+							// 更新本地流水列表
+							this.rebateDetailList = detailList;
+							// 刷新主列表
+							this.getList();
+						});
+					};
+
+					if (needRemark) {
+						let remarkMessage = '';
+						if (currentAmount > originalAmount && newTotal > originalAmount) {
+							remarkMessage = `本次返利金额(${currentAmount})和累计返利金额(${newTotal})均超过原金额(${originalAmount})，请输入备注原因：`;
+						} else if (currentAmount > originalAmount) {
+							remarkMessage = `本次返利金额(${currentAmount})超过原金额(${originalAmount})，请输入备注原因：`;
+						} else if (newTotal > originalAmount) {
+							remarkMessage = `累计返利金额(${newTotal})超过原金额(${originalAmount})，请输入备注原因：`;
+						}
+
+						this.$prompt(remarkMessage, '需要备注', {
+							confirmButtonText: '确定',
+							cancelButtonText: '取消',
+							inputType: 'textarea',
+							inputValidator: val => {
+								return val && val.trim().length > 0;
+							},
+							inputErrorMessage: '请输入备注原因'
+						})
+							.then(({ value: remarkValue }) => {
+								processUpdate(remarkValue);
+							})
+							.catch(() => {
+								this.$modal.msgError('取消输入备注');
+							});
+					} else {
+						processUpdate();
+					}
+				}
+			});
+		},
+		/**
+		 * 删除返利流水记录
+		 * 从流水列表中删除对应项，然后调用 updateRebate 更新整个返利记录
+		 */
+		handleDeleteRebateDetail(row, index) {
+			this.$modal
+				.confirm(`是否确认删除该条返利流水记录？金额：${row.actualReceived}元，日期：${row.actualReceivedDate}`)
+				.then(() => {
+					if (!this.currentRebateData) {
+						this.$modal.msgError('数据错误，请重新操作');
+						return;
+					}
+
+					// 从流水列表中删除对应项
+					const detailList = _.cloneDeep(this.rebateDetailList);
+					detailList.splice(index, 1);
+
+					// 更新返利数据
+					const body = _.cloneDeep(this.currentRebateData);
+					body.actualReceivedDetails = {
+						detailList: detailList
+					};
+
+					updateRebate(body).then(() => {
+						this.$modal.msgSuccess('删除成功');
+						// 更新本地流水列表
+						this.rebateDetailList = detailList;
+						// 如果删除后列表为空，关闭对话框
+						if (_.isEmpty(detailList)) {
+							this.rebateDetailDialogVisible = false;
+						}
+						// 刷新主列表
+						this.getList();
+					});
+				})
+				.catch(() => {});
 		},
 		// 订单选择的搜索模组
 		handleGetQueryParams(value) {
