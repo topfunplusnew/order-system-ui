@@ -64,183 +64,183 @@
 			"
 			@selection-change="handleSelectionChange"
 		>
-		<el-table-column type="selection" width="55" align="center" />
-		<el-table-column v-if="columns[0].visible" label="ID" align="center" prop="id" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.id }}</div>
-					<span>{{ scope.row.id }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[1].visible" label="交易时间" align="center" prop="transactionTime" width="180" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ parseTime(scope.row.transactionTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</div>
-					<span>{{ parseTime(scope.row.transactionTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[2].visible" label="金额" align="center" prop="amount" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.amount }}</div>
-					<span>{{ scope.row.amount }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[3].visible" label="收入方/资金流入方" align="center" prop="targetCompanyName" show-overflow-tooltip width="180">
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.targetCompanyName }}</div>
-					<span>{{ scope.row.targetCompanyName }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[4].visible" label="支出方/资金流出方" align="center" prop="sourceCompanyName" show-overflow-tooltip width="180">
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.sourceCompanyName }}</div>
-					<span>{{ scope.row.sourceCompanyName }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[5].visible" label="资金流入户名" align="center" prop="targetAccountName" show-overflow-tooltip width="180">
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.targetAccountName }}</div>
-					<span>{{ scope.row.targetAccountName }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[6].visible" label="资金流入账号" align="center" prop="targetBankNo" show-overflow-tooltip width="170">
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.targetBankNo }}</div>
-					<span>{{ scope.row.targetBankNo }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[7].visible" label="资金流出户名" align="center" prop="sourceAccountName" show-overflow-tooltip width="180">
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.sourceAccountName }}</div>
-					<span>{{ scope.row.sourceAccountName }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[8].visible" label="资金流出账号" align="center" prop="sourceBankNo" show-overflow-tooltip width="170">
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.sourceBankNo }}</div>
-					<span>{{ scope.row.sourceBankNo }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[9].visible" label="收入公司类型" align="center" prop="targetCompanyType" show-overflow-tooltip width="130">
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.targetCompanyType }}</div>
-					<span>{{ scope.row.targetCompanyType }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[10].visible" label="收入方支付类型" align="center" prop="targetPaymentType" show-overflow-tooltip width="180">
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.targetPaymentType }}</div>
-					<span>{{ scope.row.targetPaymentType }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[11].visible" label="支出方公司类型" align="center" prop="sourceCompanyType" show-overflow-tooltip width="130">
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.sourceCompanyType }}</div>
-					<span>{{ scope.row.sourceCompanyType }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[12].visible" label="支出方支付类型" align="center" prop="sourcePaymentType" show-overflow-tooltip width="180">
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.sourcePaymentType }}</div>
-					<span>{{ scope.row.sourcePaymentType }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[13].visible" label="收入方开户行" align="center" prop="targetBankName" show-overflow-tooltip width="180">
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.targetBankName }}</div>
-					<span>{{ scope.row.targetBankName }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<!-- TODO 这地方后续需要更正 只是一个类型 用来标识冲抵类型 -->
-		<el-table-column v-if="columns[14].visible" label="冲抵类型" align="center" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.type === CASH_TYPE.CASH_RECORD ? '冲抵货款' : '内部转账' }}</div>
-					<span>{{ scope.row.type === CASH_TYPE.CASH_RECORD ? '冲抵货款' : '内部转账' }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[15].visible" label="支出方开户行" align="center" prop="sourceBankName" show-overflow-tooltip width="180">
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.sourceBankName }}</div>
-					<span>{{ scope.row.sourceBankName }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[16].visible" label="备注" align="center" prop="remarks" show-overflow-tooltip width="180">
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.remarks }}</div>
-					<span>{{ scope.row.remarks }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[17].visible" label="账户类型" align="center" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ handleDisplayType(scope.row, scope.row.type) }}</div>
-					<div>
-						{{ handleDisplayType(scope.row, scope.row.type) }}
-					</div>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[18].visible" label="操作人员姓名" align="center" prop="userName" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.userName }}</div>
-					<span>{{ scope.row.userName }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<!-- 附件列 -->
-		<el-table-column label="附件" align="center" prop="attachment">
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
-					<div slot="content" @click.stop>
+			<el-table-column type="selection" width="55" align="center" />
+			<el-table-column v-if="columns[0].visible" label="ID" align="center" prop="id" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.id }}</div>
+						<span>{{ scope.row.id }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[1].visible" label="交易时间" align="center" prop="transactionTime" width="180" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ parseTime(scope.row.transactionTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</div>
+						<span>{{ parseTime(scope.row.transactionTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[2].visible" label="金额" align="center" prop="amount" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.amount }}</div>
+						<span>{{ scope.row.amount }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[3].visible" label="收入方/资金流入方" align="center" prop="targetCompanyName" show-overflow-tooltip width="180">
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.targetCompanyName }}</div>
+						<span>{{ scope.row.targetCompanyName }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[4].visible" label="支出方/资金流出方" align="center" prop="sourceCompanyName" show-overflow-tooltip width="180">
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.sourceCompanyName }}</div>
+						<span>{{ scope.row.sourceCompanyName }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[5].visible" label="资金流入户名" align="center" prop="targetAccountName" show-overflow-tooltip width="180">
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.targetAccountName }}</div>
+						<span>{{ scope.row.targetAccountName }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[6].visible" label="资金流入账号" align="center" prop="targetBankNo" show-overflow-tooltip width="170">
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.targetBankNo }}</div>
+						<span>{{ scope.row.targetBankNo }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[7].visible" label="资金流出户名" align="center" prop="sourceAccountName" show-overflow-tooltip width="180">
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.sourceAccountName }}</div>
+						<span>{{ scope.row.sourceAccountName }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[8].visible" label="资金流出账号" align="center" prop="sourceBankNo" show-overflow-tooltip width="170">
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.sourceBankNo }}</div>
+						<span>{{ scope.row.sourceBankNo }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[9].visible" label="收入公司类型" align="center" prop="targetCompanyType" show-overflow-tooltip width="130">
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.targetCompanyType }}</div>
+						<span>{{ scope.row.targetCompanyType }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[10].visible" label="收入方支付类型" align="center" prop="targetPaymentType" show-overflow-tooltip width="180">
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.targetPaymentType }}</div>
+						<span>{{ scope.row.targetPaymentType }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[11].visible" label="支出方公司类型" align="center" prop="sourceCompanyType" show-overflow-tooltip width="130">
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.sourceCompanyType }}</div>
+						<span>{{ scope.row.sourceCompanyType }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[12].visible" label="支出方支付类型" align="center" prop="sourcePaymentType" show-overflow-tooltip width="180">
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.sourcePaymentType }}</div>
+						<span>{{ scope.row.sourcePaymentType }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[13].visible" label="收入方开户行" align="center" prop="targetBankName" show-overflow-tooltip width="180">
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.targetBankName }}</div>
+						<span>{{ scope.row.targetBankName }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<!-- TODO 这地方后续需要更正 只是一个类型 用来标识冲抵类型 -->
+			<el-table-column v-if="columns[14].visible" label="冲抵类型" align="center" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.type === CASH_TYPE.CASH_RECORD ? '冲抵货款' : '内部转账' }}</div>
+						<span>{{ scope.row.type === CASH_TYPE.CASH_RECORD ? '冲抵货款' : '内部转账' }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[15].visible" label="支出方开户行" align="center" prop="sourceBankName" show-overflow-tooltip width="180">
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.sourceBankName }}</div>
+						<span>{{ scope.row.sourceBankName }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[16].visible" label="备注" align="center" prop="remarks" show-overflow-tooltip width="180">
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.remarks }}</div>
+						<span>{{ scope.row.remarks }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[17].visible" label="账户类型" align="center" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ handleDisplayType(scope.row, scope.row.type) }}</div>
+						<div>
+							{{ handleDisplayType(scope.row, scope.row.type) }}
+						</div>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[18].visible" label="操作人员姓名" align="center" prop="userName" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.userName }}</div>
+						<span>{{ scope.row.userName }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<!-- 附件列 -->
+			<el-table-column label="附件" align="center" prop="attachment">
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
+						<div slot="content" @click.stop>
+							<div v-if="Array.isArray(scope.row.attachmentList)">
+								<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'attachment'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getRecord, updateRecord)" />
+							</div>
+							<div v-else>
+								<el-tag type="danger">加载错误</el-tag>
+							</div>
+						</div>
 						<div v-if="Array.isArray(scope.row.attachmentList)">
 							<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'attachment'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getRecord, updateRecord)" />
 						</div>
 						<div v-else>
 							<el-tag type="danger">加载错误</el-tag>
 						</div>
-					</div>
-					<div v-if="Array.isArray(scope.row.attachmentList)">
-						<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'attachment'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getRecord, updateRecord)" />
-					</div>
-					<div v-else>
-						<el-tag type="danger">加载错误</el-tag>
-					</div>
-				</el-tooltip>
-			</template>
-		</el-table-column>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 			<!-- 操作列 -->
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
 				<template slot-scope="scope">
@@ -577,8 +577,13 @@
 									query-label="户名"
 									@commitBack="
 										value => {
+											// 填充银行卡相关信息
 											form.sourceBankNo = value.bankNo;
+											form.sourceAccountName = value.acountsName;
+											form.sourceBankName = value.bankName;
+											// 填充展示名称字段
 											sourceName = value.acountsName;
+											// 填充sourceId
 											form.sourceId = value.id;
 											// 保存转账账户信息到store
 											saveInternalTransferFormData({
@@ -660,8 +665,13 @@
 									query-label="户名"
 									@commitBack="
 										value => {
+											// 填充银行卡相关信息
+											form.targetAccountName = value.acountsName;
+											form.targetBankName = value.bankName;
 											form.targetBankNo = value.bankNo;
+											// 填充展示名称字段
 											targetName = value.acountsName;
+											// 填充targetId
 											form.targetId = value.id;
 											// 保存目标账户信息到store
 											saveInternalTransferFormData({

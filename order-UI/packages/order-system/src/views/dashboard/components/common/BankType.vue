@@ -13,7 +13,7 @@
 				{{ acceptanceButtonText() }}
 			</el-button>
 		</div>
-		<el-drawer ref="drawer" title="承兑信息填写" :visible.sync="drawer" direction="rtl" :before-close="handleClose" :append-to-body="true" size="55%">
+		<el-drawer ref="drawer" title="承兑信息填写" :visible.sync="drawer" direction="rtl" :before-close="handleClose" :append-to-body="true" :close-on-click-modal="false" size="55%">
 			<!-- 内嵌的承兑表单 -->
 			<div>
 				<div class="bank-body">
@@ -795,7 +795,16 @@ export default {
 		},
 		// 抽屉关闭的逻辑
 		handleClose(done) {
-			done();
+			// 当点击 drawer 外区域关闭抽屉时，自动触发确定按钮的逻辑
+			this.submitAcceptanceForm()
+				.then(() => {
+					// 表单验证通过，提交成功，关闭抽屉
+					done();
+				})
+				.catch(() => {
+					// 表单验证失败，不关闭抽屉，提示用户
+					this.$message.warning('请完善表单信息后再关闭');
+				});
 		},
 		handleAssign(value) {
 			this.$emit('updateBankAcceptance', value);
@@ -850,28 +859,49 @@ export default {
 		},
 		// 提交承兑表单
 		submitAcceptanceForm() {
-			this.$refs['form'].validate(valid => {
-				if (valid) {
-					if (this.waitForBothSelection && this.bothSelectedInDualMode) {
-						const accountTypes = this.dualSelectionState;
-						if (accountTypes && accountTypes.source === BankAcceptanceType.ACCEPTANCE && accountTypes.target === BankAcceptanceType.ACCEPTANCE) {
-							this.form.billType = '收入';
+			return new Promise((resolve, reject) => {
+				this.$refs['form'].validate(valid => {
+					if (valid) {
+						// 判断 billType 的逻辑
+						if (this.waitForBothSelection && this.bothSelectedInDualMode) {
+							const accountTypes = this.dualSelectionState;
+							// 如果双方都是承兑，设置为"收入"
+							if (accountTypes && accountTypes.source === BankAcceptanceType.ACCEPTANCE && accountTypes.target === BankAcceptanceType.ACCEPTANCE) {
+								this.form.billType = '收入';
+							} else {
+								// 如果任意一方是承兑
+								if (this.localSelectType === BankAcceptanceType.ACCEPTANCE) {
+									// 如果是资金流入方（target/收入方）选择承兑，设置为"收入"
+									if (this.componentRole === 'target') {
+										this.form.billType = '收入';
+									}
+									// 如果是资金流出方（source/支出方）选择承兑，设置为"支出"
+									else if (this.componentRole === 'source') {
+										this.form.billType = '支出';
+									} else {
+										this.form.billType = this.billType;
+									}
+								} else {
+									this.form.billType = this.billType;
+								}
+							}
 						} else {
 							this.form.billType = this.billType;
 						}
+						if (this.isInternalTransfer) {
+							this.form.reason = '内部转账';
+						}
+						this.form = excludeParams(this.form, this.$exclude);
+						const storageKey = 'bankAcceptanceFilled';
+						sessionStorage.setItem(storageKey, JSON.stringify(this.form));
+						sessionStorage.setItem('bankAcceptanceFilledTime', new Date().getTime());
+						this.handleSubmit(_.cloneDeep(this.form));
+						this.resetAcceptanceForm();
+						resolve(true);
 					} else {
-						this.form.billType = this.billType;
+						reject(false);
 					}
-					if (this.isInternalTransfer) {
-						this.form.reason = '内部转账';
-					}
-					this.form = excludeParams(this.form, this.$exclude);
-					const storageKey = 'bankAcceptanceFilled';
-					sessionStorage.setItem(storageKey, JSON.stringify(this.form));
-					sessionStorage.setItem('bankAcceptanceFilledTime', new Date().getTime());
-					this.handleSubmit(_.cloneDeep(this.form));
-					this.resetAcceptanceForm();
-				}
+				});
 			});
 		},
 		// 重置承兑表单
