@@ -980,6 +980,9 @@ export default {
 		// 执行收款编辑操作的逻辑
 		performReceiveMoneyEdit(receiveMoneyData) {
 			this.reset();
+			// 先保存 companyName 和 companyId，避免 watch 监听器清空它们
+			const savedCompanyName = receiveMoneyData.companyName;
+			const savedCompanyId = receiveMoneyData.companyId;
 
 			// 保留表单结构，特别是 params.attachmentIds 和 params.bankacceptance
 			this.form = {
@@ -990,6 +993,18 @@ export default {
 					bankacceptance: receiveMoneyData.params?.bankacceptance || null
 				}
 			};
+			// 如果 companyType 发生了变化，watch 可能已经清空了 companyName，需要恢复
+			// 使用 $nextTick 确保 watch 执行完毕后再恢复值
+			this.$nextTick(() => {
+				// 确保 companyName 和 companyId 被正确赋值（包括 0 值）
+				// 使用 hasOwnProperty 检查属性是否存在，而不是判断值是否为 falsy
+				if (receiveMoneyData.hasOwnProperty('companyName')) {
+					this.form.companyName = savedCompanyName;
+				}
+				if (receiveMoneyData.hasOwnProperty('companyId')) {
+					this.form.companyId = savedCompanyId;
+				}
+			});
 			console.log(`receiveMoneyData.bankacceptanceId`, receiveMoneyData.bankacceptanceId);
 			// 使用searchSubjectFromMap查找完整路径数组
 			if (receiveMoneyData.receiveType) {

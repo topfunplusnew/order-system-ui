@@ -132,8 +132,10 @@ export var mixin_payment_subject = {
 							getCompany(id, companyType).then(res => {
 								if (!res.data) return;
 								this.$nextTick(() => {
-									this.form.companyName = res.data.companyName;
-									this.form.companyId = res.data.id;
+									if (res.data.companyName && res.data.id) {
+										this.form.companyName = res.data.companyName;
+										this.form.companyId = res.data.id;
+									}
 								});
 							});
 						}

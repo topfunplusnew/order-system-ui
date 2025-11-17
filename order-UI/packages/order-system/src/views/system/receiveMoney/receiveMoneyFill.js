@@ -70,16 +70,39 @@ export var mixin_receive_money_fill = {
 		},
 		// 填充己方公司信息
 		handleCommitBackCompany(val) {
-			this.form.companyName = val.companyName;
-			this.form.companyId = val.id;
+			// 先保存 companyName 和 companyId，避免 watch 监听器清空它们
+			const savedCompanyName = val.companyName;
+			const savedCompanyId = val.id;
+			// 先设置 companyType，这会触发 watch 监听器
 			this.form.companyType = val.companyType;
+			// 使用 $nextTick 确保 watch 执行完毕后再恢复值
+			this.$nextTick(() => {
+				// 确保 companyName 和 companyId 被正确赋值（包括 0 值）
+				if (val.hasOwnProperty('companyName')) {
+					this.form.companyName = savedCompanyName;
+				}
+				if (val.hasOwnProperty('id')) {
+					this.form.companyId = savedCompanyId;
+				}
+			});
 		},
 		// 填充司机的信息 如果选择的对方类型是司机的话
 		handleCommitBackCar(val) {
-			// 填充司机基本信息
-			this.form.companyName = val.driver;
-			this.form.companyId = val.id;
+			// 先保存 companyName 和 companyId，避免 watch 监听器清空它们
+			const savedCompanyName = val.driver;
+			const savedCompanyId = val.id;
+			// 先设置 companyType，这会触发 watch 监听器
 			this.form.companyType = PUBLIC_DICT_TYPE.DRIVER;
+			// 使用 $nextTick 确保 watch 执行完毕后再恢复值
+			this.$nextTick(() => {
+				// 确保 companyName 和 companyId 被正确赋值（包括 0 值）
+				if (val.hasOwnProperty('driver')) {
+					this.form.companyName = savedCompanyName;
+				}
+				if (val.hasOwnProperty('id')) {
+					this.form.companyId = savedCompanyId;
+				}
+			});
 		}
 	}
 };

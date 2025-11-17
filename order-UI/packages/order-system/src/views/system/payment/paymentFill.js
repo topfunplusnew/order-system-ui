@@ -29,7 +29,7 @@ export var mixin_paymentindex_fill = {
 		},
 		// 填充对方公司信息
 		handleCommitBackCompany(val) {
-			if (this.value !== PAYMENT_TARGET_TYPE.DRIVER) {
+			if (this.form.companyType !== PAYMENT_TARGET_TYPE.DRIVER) {
 				this.form.companyName = val.companyName;
 			} else {
 				this.form.companyName = val.driver;

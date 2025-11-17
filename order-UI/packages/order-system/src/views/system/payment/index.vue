@@ -1341,26 +1341,41 @@ export default {
 		// 执行编辑操作的逻辑
 		performEditLogic(paymentData) {
 			this.reset();
-			// 保留表单结构，特别是 params.attachmentIds 和 params.bankacceptance
-			this.form = {
-				...paymentData,
-				params: {
-					...paymentData.params,
-					attachmentIds: paymentData.attachmentList ? paymentData.attachmentList.map(item => item.id) : [],
-					bankacceptance: paymentData.params?.bankacceptance || null
-				}
-			};
-			// 处理银行账户类型
-			let flag = false;
-			if (!paymentData.bankacceptanceId) {
-				this.$message.warning('该付款信息无凭证相关信息');
-				flag = true;
-				this.form.params.bankacceptance = null;
-			}
-			this.open = true;
-			this.title = '修改付款信息';
 			// 使用 $nextTick 确保组件渲染完成后再设置银行账户类型和其他属性
 			this.$nextTick(() => {
+				// 先保存 companyName，避免 watch 监听器清空它
+				const savedCompanyName = paymentData.companyName;
+				const savedCompanyId = paymentData.companyId;
+				// 保留表单结构，特别是 params.attachmentIds 和 params.bankacceptance
+				Object.assign(this.form, {
+					...paymentData,
+					params: {
+						...paymentData.params,
+						attachmentIds: paymentData.attachmentList ? paymentData.attachmentList.map(item => item.id) : [],
+						bankacceptance: paymentData.params?.bankacceptance || null
+					}
+				});
+				// 如果 companyType 发生了变化，watch 可能已经清空了 companyName，需要恢复
+				// 使用 $nextTick 确保 watch 执行完毕后再恢复值
+				this.$nextTick(() => {
+					// 确保 companyName 和 companyId 被正确赋值（包括 0 值）
+					// 使用 hasOwnProperty 或 in 操作符检查属性是否存在，而不是判断值是否为 falsy
+					if (paymentData.hasOwnProperty('companyName')) {
+						this.form.companyName = savedCompanyName;
+					}
+					if (paymentData.hasOwnProperty('companyId')) {
+						this.form.companyId = savedCompanyId;
+					}
+				});
+				// 处理银行账户类型
+				let flag = false;
+				if (!paymentData.bankacceptanceId) {
+					this.$message.warning('该付款信息无凭证相关信息');
+					flag = true;
+					this.form.params.bankacceptance = null;
+				}
+				this.open = true;
+				this.title = '修改付款信息';
 				console.log(`paymentData.bankacceptanceId`, paymentData.bankacceptanceId);
 				this.$bus.$emit('changeFlag', paymentData.bankacceptanceId > 0 ? paymentData.bankacceptanceId : false);
 				if (!flag) {
@@ -1384,9 +1399,7 @@ export default {
 				}
 				// 设置级联选择器的值 - 使用searchSubjectFromMap查找完整路径数组
 				if (this.form.payType) {
-					if (typeof this.form.payType === 'string') {
-						this.form.payType = this.searchSubjectFromMap(this.form.payType);
-					}
+					this.form.payType = this.searchSubjectFromMap(this.form.payType);
 				}
 			});
 		},
