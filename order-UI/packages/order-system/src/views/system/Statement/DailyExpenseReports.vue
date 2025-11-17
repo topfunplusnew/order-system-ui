@@ -4,8 +4,8 @@
 			<el-form-item label="开始时间" prop="startTime">
 				<el-date-picker v-model="queryParams.startTime" type="date" placeholder="开始日期" value-format="yyyy-MM-dd" />
 			</el-form-item>
-			<el-form-item label="结束时间" prop="startTime">
-				<el-date-picker v-model="queryParams.startTime" type="date" placeholder="结束日期" value-format="yyyy-MM-dd" />
+			<el-form-item label="结束时间" prop="endTime">
+				<el-date-picker v-model="queryParams.endTime" type="date" placeholder="结束日期" value-format="yyyy-MM-dd" />
 			</el-form-item>
 			<el-form-item>
 				<el-button type="danger" @click="searchData">查询</el-button>
