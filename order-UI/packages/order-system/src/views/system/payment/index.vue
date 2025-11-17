@@ -1041,7 +1041,7 @@ export default {
 			// 填充背书人/被背书人信息 只填充对方公司
 			// 不过获取一张银行卡，需要对象+卡号，对象需要对象companyId+companyType
 			if (acceptanceData.endorser) {
-				getCompany(acceptanceData.endorser).then(response => {
+				getCompany(acceptanceData.endorser, acceptanceData.origin).then(response => {
 					if (response.data) {
 						const companyInfo = response.data;
 						this.form.companyName = companyInfo.companyName;

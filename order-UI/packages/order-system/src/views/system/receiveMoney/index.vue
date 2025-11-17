@@ -722,7 +722,7 @@ export default {
 
 			// 填充背书人/被背书人信息（对方户名、账号、开户行）
 			if (acceptanceData.endorser) {
-				getCompany(acceptanceData.endorser).then(response => {
+				getCompany(acceptanceData.endorser, acceptanceData.origin).then(response => {
 					if (response.data) {
 						const companyInfo = response.data;
 						this.form.companyName = companyInfo.companyName;
