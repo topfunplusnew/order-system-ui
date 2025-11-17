@@ -4,8 +4,8 @@
 			<el-form-item label="申请开始日期" prop="applyDate">
 				<el-date-picker v-model="dateRange" style="width: 240px" value-format="yyyy-MM-dd" type="daterange" start-placeholder="开始日期" end-placeholder="结束日期" clearable />
 			</el-form-item>
-			<el-form-item label="支付日期" prop="payDate">
-				<el-date-picker v-model="queryParams.payDate" placeholder="请选择支付日期" style="width: 240px" value-format="yyyy-MM-dd" type="date" clearable />
+			<el-form-item label="支付时间">
+				<el-date-picker v-model="queryParams.paymentDateRange" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" clearable style="width: 240px" />
 			</el-form-item>
 			<el-form-item label="司机名称/海运公司" prop="driverName">
 				<el-input v-model="queryParams.driverName" placeholder="请输入司机名称" clearable size="mini" @keyup.enter.native="handleQuery" />
@@ -574,7 +574,12 @@ export default {
 				isedit: null,
 				payUserId: null,
 				payUserName: null,
-				payDate: null
+				payDate: null,
+				paymentDateRange: null,
+				params: {
+					payDateStartTime: null,
+					payDateEndTime: null
+				}
 			},
 			// 表单参数
 			form: {},
@@ -933,11 +938,27 @@ export default {
 		/** 搜索按钮操作 */
 		handleQuery() {
 			this.queryParams.pageNum = 1;
+
+			// 处理支付时间范围
+			if (this.queryParams.paymentDateRange && Array.isArray(this.queryParams.paymentDateRange) && this.queryParams.paymentDateRange.length === 2) {
+				// 时间范围选择器返回的是数组 [startDate, endDate]，直接使用日期字符串，精确到天
+				this.queryParams.params.payDateStartTime = this.queryParams.paymentDateRange[0];
+				this.queryParams.params.payDateEndTime = this.queryParams.paymentDateRange[1];
+			} else {
+				// 清空支付时间范围
+				this.queryParams.params.payDateStartTime = null;
+				this.queryParams.params.payDateEndTime = null;
+			}
+
 			this.getList();
 		},
 		/** 重置按钮操作 */
 		resetQuery() {
 			this.resetForm('queryForm');
+			// 显式重置支付时间范围相关字段
+			this.queryParams.paymentDateRange = null;
+			this.queryParams.params.payDateStartTime = null;
+			this.queryParams.params.payDateEndTime = null;
 			this.handleQuery();
 		},
 		// 多选框选中数据
