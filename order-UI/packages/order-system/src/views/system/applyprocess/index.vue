@@ -13,7 +13,7 @@ import { mixin_payment_select, PAYMENT_TYPES } from '@/views/dashboard/mixins/pa
 import { listCompany } from '@/api/system/company';
 import { listBankAccount } from '@/api/system/bankAccount';
 import CheckFiles from '@/components/CheckFiles.vue';
-import { TableName, getTagColor, PAYMENT_APPLY_STATE, BankAcceptanceType, PAYMENT_TARGET_TYPE, PUBLIC_DICT_TYPE, PayType } from '@/api/tool/enums';
+import { TableName, getTagColor, PAYMENT_APPLY_STATE, BankAcceptanceType, PAYMENT_TARGET_TYPE, PUBLIC_DICT_TYPE, PayType, PAYMENT_STATE } from '@/api/tool/enums';
 import { listCars } from '@/api/system/cars';
 import ApplyPayment from '@/views/dashboard/components/common/ApplyPayment.vue';
 import _ from 'lodash';
@@ -389,6 +389,9 @@ export default {
 		},
 		BankAcceptanceType() {
 			return BankAcceptanceType;
+		},
+		PAYMENT_STATE() {
+			return PAYMENT_STATE;
 		},
 		...mapGetters(['checked', 'getId'])
 	},
@@ -1021,7 +1024,9 @@ export default {
 			<el-table-column v-if="columns[11].visible" label="操作" show-overflow-tooltip align="center" fixed="right" width="260">
 				<template slot-scope="scope">
 					<el-button type="text" size="mini" @click="handleCheckApplyInfo(scope.row)">查看</el-button>
-					<el-button v-hasPermi="['system:paymentapply:generate']" type="text" size="mini" :disabled="scope.row.checkState !== PAYMENT_APPLY_STATE.V2.PASS" @click="handleGeneratePayment(scope.row)">付款</el-button>
+					<el-button v-hasPermi="['system:paymentapply:generate']" type="text" size="mini" :disabled="scope.row.checkState !== PAYMENT_APPLY_STATE.V2.PASS || (scope.row.payment && scope.row.payment.paymentState === PAYMENT_STATE.PAID)" @click="handleGeneratePayment(scope.row)">
+						付款
+					</el-button>
 					<el-button v-if="isCurrentUserAuditor(scope.row)" type="text" size="mini" style="color: #f56c6c" @click="handleDeletePaymentApply(scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
