@@ -825,18 +825,25 @@ export default {
 			// 使用整个 goodsOrderList 数组进行合计计算，而不是只计算已渲染的数据
 			const data = this.goodsOrderList || [];
 			// 需要合计的数字列（根据 prop 属性判断）
-			// 添加 allPaymentFactory 用于出厂货款合计
 			const summaryColumns = ['allPaymentFactory', 'allTonnage', 'allPayments', 'allProfit', 'allProfitNoTax'];
 
+			// 确保 sums 数组长度与 columns 数组长度一致
+			// 先初始化所有位置为空字符串
+			for (let i = 0; i < columns.length; i++) {
+				sums[i] = 'N/A';
+			}
+
+			// 遍历所有列，为每一列生成合计值
 			columns.forEach((column, index) => {
-				// 第一列显示"合计"文字
-				if (index === 0) {
+				// 通过 label 判断是否是序号列
+				if (column.label === '序号') {
 					sums[index] = '合计';
 					return;
 				}
 
 				// 判断当前列是否需要合计
-				if (summaryColumns.includes(column.property)) {
+				// 只有当列有 property 属性且属于需要合计的列时才计算
+				if (column.property && summaryColumns.includes(column.property)) {
 					// 计算该列的所有数据之和
 					const values = data.map(item => {
 						const value = item[column.property];
@@ -858,9 +865,6 @@ export default {
 						// 金额类保留2位小数
 						sums[index] = sum.toFixed(2);
 					}
-				} else {
-					// 不需要合计的列显示空字符串
-					sums[index] = '';
 				}
 			});
 
@@ -1158,151 +1162,151 @@ export default {
 						</template>
 					</VirtualColumn>
 					<!-- 7. 车队 -->
-					<el-table-column v-if="columns[6].visible" show-overflow-tooltip label="车队" align="center" prop="fleet" width="112">
+					<VirtualColumn v-if="columns[6].visible" show-overflow-tooltip label="车队" align="center" prop="fleet" width="112">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.fleet }}</div>
 								<span>{{ scope.row.fleet }}</span>
 							</el-tooltip>
 						</template>
-					</el-table-column>
+					</VirtualColumn>
 					<!-- 8. 陆运电话 -->
-					<el-table-column v-if="columns[7].visible" show-overflow-tooltip label="陆运电话" align="center" prop="landDriverTel" width="176">
+					<VirtualColumn v-if="columns[7].visible" show-overflow-tooltip label="陆运电话" align="center" prop="landDriverTel" width="176">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.landDriverTel }}</div>
 								<span>{{ scope.row.landDriverTel }}</span>
 							</el-tooltip>
 						</template>
-					</el-table-column>
+					</VirtualColumn>
 					<!-- 9. 司机 -->
-					<el-table-column v-if="columns[8].visible" show-overflow-tooltip label="司机" align="center" prop="landDriverName" width="84">
+					<VirtualColumn v-if="columns[8].visible" show-overflow-tooltip label="司机" align="center" prop="landDriverName" width="84">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.landDriverName }}</div>
 								<span>{{ scope.row.landDriverName }}</span>
 							</el-tooltip>
 						</template>
-					</el-table-column>
+					</VirtualColumn>
 					<!-- 10. 海运柜号 -->
-					<el-table-column v-if="columns[9].visible" show-overflow-tooltip label="海运柜号" align="center" prop="seaCarNo" width="176">
+					<VirtualColumn v-if="columns[9].visible" show-overflow-tooltip label="海运柜号" align="center" prop="seaCarNo" width="176">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ !scope.row.seaCarNo ? '无' : scope.row.seaCarNo }}</div>
 								<span>{{ !scope.row.seaCarNo ? '无' : scope.row.seaCarNo }}</span>
 							</el-tooltip>
 						</template>
-					</el-table-column>
+					</VirtualColumn>
 					<!-- 11. 海运电话 -->
-					<el-table-column v-if="columns[10].visible" show-overflow-tooltip label="海运电话" align="center" prop="seaDriverTel" width="176">
+					<VirtualColumn v-if="columns[10].visible" show-overflow-tooltip label="海运电话" align="center" prop="seaDriverTel" width="176">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ !scope.row.seaDriverTel ? '无' : scope.row.seaDriverTel }}</div>
 								<span>{{ !scope.row.seaDriverTel ? '无' : scope.row.seaDriverTel }}</span>
 							</el-tooltip>
 						</template>
-					</el-table-column>
+					</VirtualColumn>
 					<!-- 12. 海运公司 -->
-					<el-table-column v-if="columns[11].visible" show-overflow-tooltip label="海运公司" align="center" prop="seaDriverName" width="168">
+					<VirtualColumn v-if="columns[11].visible" show-overflow-tooltip label="海运公司" align="center" prop="seaDriverName" width="168">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ !scope.row.seaDriverName ? '无' : scope.row.seaDriverName }}</div>
 								<span>{{ !scope.row.seaDriverName ? '无' : scope.row.seaDriverName }}</span>
 							</el-tooltip>
 						</template>
-					</el-table-column>
+					</VirtualColumn>
 					<!-- 13. 总货款 -->
-					<el-table-column v-if="columns[12].visible" show-overflow-tooltip label="总货款" align="center" prop="allPayments" width="144">
+					<VirtualColumn v-if="columns[12].visible" show-overflow-tooltip label="总货款" align="center" prop="allPayments" width="144">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.allPayments | changeNumber(changeLength) }}</div>
 								<span>{{ scope.row.allPayments | changeNumber(changeLength) }}</span>
 							</el-tooltip>
 						</template>
-					</el-table-column>
+					</VirtualColumn>
 					<!-- 14. 总吨位 -->
-					<el-table-column v-if="columns[13].visible" show-overflow-tooltip label="总吨位" align="center" prop="allTonnage" width="80">
+					<VirtualColumn v-if="columns[13].visible" show-overflow-tooltip label="总吨位" align="center" prop="allTonnage" width="80">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.allTonnage | changeNumber(changeLength) }}</div>
 								<span>{{ scope.row.allTonnage | changeNumber(changeLength) }}</span>
 							</el-tooltip>
 						</template>
-					</el-table-column>
+					</VirtualColumn>
 					<!-- 出厂货款 -->
-					<el-table-column v-if="columns[14].visible" show-overflow-tooltip label="出厂货款" align="center" prop="allPaymentFactory" width="144">
+					<VirtualColumn v-if="columns[14].visible" show-overflow-tooltip label="出厂货款" align="center" prop="allPaymentFactory" width="144">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.allPaymentFactory | changeNumber(changeLength) }}</div>
 								<span>{{ scope.row.allPaymentFactory | changeNumber(changeLength) }}</span>
 							</el-tooltip>
 						</template>
-					</el-table-column>
+					</VirtualColumn>
 					<!-- 15. 陆运费 -->
-					<el-table-column v-if="columns[15].visible" show-overflow-tooltip label="陆运费" align="center" prop="landFreight" width="112">
+					<VirtualColumn v-if="columns[15].visible" show-overflow-tooltip label="陆运费" align="center" prop="landFreight" width="112">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.landFreight }}</div>
 								<span>{{ scope.row.landFreight }}</span>
 							</el-tooltip>
 						</template>
-					</el-table-column>
+					</VirtualColumn>
 					<!-- 16. 海运费 -->
-					<el-table-column v-if="columns[16].visible" show-overflow-tooltip label="海运费" align="center" prop="seaFreight" width="112">
+					<VirtualColumn v-if="columns[16].visible" show-overflow-tooltip label="海运费" align="center" prop="seaFreight" width="112">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.seaFreight }}</div>
 								<span>{{ scope.row.seaFreight }}</span>
 							</el-tooltip>
 						</template>
-					</el-table-column>
+					</VirtualColumn>
 					<!-- 17. 含税利润 -->
-					<el-table-column v-if="columns[17].visible" show-overflow-tooltip label="含税利润" align="center" prop="allProfit" width="112">
+					<VirtualColumn v-if="columns[17].visible" show-overflow-tooltip label="含税利润" align="center" prop="allProfit" width="112">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.allProfit | changeNumber(changeLength) }}</div>
 								<span>{{ scope.row.allProfit | changeNumber(changeLength) }}</span>
 							</el-tooltip>
 						</template>
-					</el-table-column>
+					</VirtualColumn>
 					<!-- 18. 不含税利润 -->
-					<el-table-column v-if="columns[18].visible" show-overflow-tooltip label="不含税利润" align="center" prop="allProfitNoTax" width="112">
+					<VirtualColumn v-if="columns[18].visible" show-overflow-tooltip label="不含税利润" align="center" prop="allProfitNoTax" width="112">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.allProfitNoTax | changeNumber(changeLength) }}</div>
 								<span>{{ scope.row.allProfitNoTax | changeNumber(changeLength) }}</span>
 							</el-tooltip>
 						</template>
-					</el-table-column>
+					</VirtualColumn>
 					<!-- 19. 销售经理 -->
-					<el-table-column v-if="columns[19].visible" show-overflow-tooltip label="销售经理" align="center" prop="saleManager" width="112">
+					<VirtualColumn v-if="columns[19].visible" show-overflow-tooltip label="销售经理" align="center" prop="saleManager" width="112">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.saleManager }}</div>
 								<span>{{ scope.row.saleManager }}</span>
 							</el-tooltip>
 						</template>
-					</el-table-column>
+					</VirtualColumn>
 					<!-- 20. 录入员 -->
-					<el-table-column v-if="columns[20].visible" show-overflow-tooltip label="录入员" align="center" prop="userName" width="84">
+					<VirtualColumn v-if="columns[20].visible" show-overflow-tooltip label="录入员" align="center" prop="userName" width="84">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.userName }}</div>
 								<span>{{ scope.row.userName }}</span>
 							</el-tooltip>
 						</template>
-					</el-table-column>
+					</VirtualColumn>
 					<!-- 21. 备注 -->
-					<el-table-column v-if="columns[21].visible" show-overflow-tooltip label="备注" align="center" prop="comments" width="140">
+					<VirtualColumn v-if="columns[21].visible" show-overflow-tooltip label="备注" align="center" prop="comments" width="140">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.comments }}</div>
 								<span>{{ scope.row.comments }}</span>
 							</el-tooltip>
 						</template>
-					</el-table-column>
+					</VirtualColumn>
 					<!-- 22. 出库单 -->
-					<el-table-column v-if="columns[22].visible" show-overflow-tooltip label="出库单" align="center" prop="path" width="84">
+					<VirtualColumn v-if="columns[22].visible" show-overflow-tooltip label="出库单" align="center" prop="path" width="84">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
 								<div slot="content" @click.stop>
@@ -1321,9 +1325,9 @@ export default {
 								</div>
 							</el-tooltip>
 						</template>
-					</el-table-column>
+					</VirtualColumn>
 					<!-- 23. 收到条附件 -->
-					<el-table-column v-if="columns[23].visible" show-overflow-tooltip label="收到条附件" align="center" prop="receiveProof">
+					<VirtualColumn v-if="columns[23].visible" show-overflow-tooltip label="收到条附件" align="center" prop="receiveProof">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
 								<div slot="content" @click.stop>
@@ -1342,9 +1346,9 @@ export default {
 								</div>
 							</el-tooltip>
 						</template>
-					</el-table-column>
+					</VirtualColumn>
 					<!-- 24. 可否编辑 -->
-					<el-table-column v-if="columns[24].visible" show-overflow-tooltip label="可否编辑" align="center" prop="isedit" width="112">
+					<VirtualColumn v-if="columns[24].visible" show-overflow-tooltip label="可否编辑" align="center" prop="isedit" width="112">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">
@@ -1353,9 +1357,9 @@ export default {
 								<StateTag :state-title="scope.row.isedit === 0 ? '否' : '是'" :state-mapper="{ 0: '否', 2: '是' }" />
 							</el-tooltip>
 						</template>
-					</el-table-column>
+					</VirtualColumn>
 					<!-- 25. 客户含税 -->
-					<el-table-column v-if="columns[25].visible" show-overflow-tooltip label="客户含税" align="center" prop="customerTaxIncluded" width="112">
+					<VirtualColumn v-if="columns[25].visible" show-overflow-tooltip label="客户含税" align="center" prop="customerTaxIncluded" width="112">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
 								<div slot="content" @click.stop>
@@ -1380,9 +1384,9 @@ export default {
 								</el-row>
 							</el-tooltip>
 						</template>
-					</el-table-column>
+					</VirtualColumn>
 					<!-- 26. 出厂含税 -->
-					<el-table-column v-if="columns[26].visible" show-overflow-tooltip label="出厂含税" align="center" width="112">
+					<VirtualColumn v-if="columns[26].visible" show-overflow-tooltip label="出厂含税" align="center" width="112">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
 								<div slot="content" @click.stop>
@@ -1407,16 +1411,16 @@ export default {
 								</el-row>
 							</el-tooltip>
 						</template>
-					</el-table-column>
+					</VirtualColumn>
 					<!-- 27. 审核人 -->
-					<el-table-column v-if="columns[27].visible" show-overflow-tooltip label="审核人" align="center" prop="checkUserName" width="112">
+					<VirtualColumn v-if="columns[27].visible" show-overflow-tooltip label="审核人" align="center" prop="checkUserName" width="112">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.checkUserName || '-' }}</div>
 								<span>{{ scope.row.checkUserName || '-' }}</span>
 							</el-tooltip>
 						</template>
-					</el-table-column>
+					</VirtualColumn>
 					<!--      右侧操作栏-->
 					<VirtualColumn vfixed="right" show-overflow-tooltip label="订单操作" align="center" class-name="small-padding fixed-width" width="250">
 						<template slot-scope="scope">
