@@ -13,7 +13,11 @@ RUN if ! command -v yarn > /dev/null; then npm install -g yarn; fi
 
 # 复制package.json和yarn.lock文件（用于依赖缓存）
 COPY package.json yarn.lock ./
+# 复制所有工作区包的package.json（yarn workspaces需要这些文件来识别本地包）
 COPY packages/order-system/package.json ./packages/order-system/
+COPY packages/config/package.json ./packages/config/
+COPY packages/shared/package.json ./packages/shared/
+COPY packages/ui-components/package.json ./packages/ui-components/
 
 # 安装依赖（使用缓存）
 RUN yarn install-order
