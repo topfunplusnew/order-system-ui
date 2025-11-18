@@ -12,15 +12,7 @@
 				<el-form-item label="供应商" prop="supplier">
 					<el-row>
 						<el-col :span="4">
-							<SearchOption
-								:limit-info="{ companyType: PUBLIC_DICT_TYPE.SUPPLIER }"
-								:get-data="listCompany"
-								query-info="companyName"
-								query-label="公司名称"
-								:query-name="companyName"
-								@update:queryName="handleUpdateCompanyName"
-								@commitBack="handleCommitBackCompany"
-							>
+							<SearchOption :limit-info="{ companyType: PUBLIC_DICT_TYPE.SUPPLIER }" :get-data="listCompany" query-info="companyName" query-label="公司名称" :query-name="companyName" @update:queryName="handleUpdateCompanyName" @commitBack="handleCommitBackCompany">
 								<template #table-columns>
 									<el-table-column :label="PUBLIC_DICT_TYPE.SUPPLIER" align="center" prop="companyName" />
 									<el-table-column label="老板姓名" align="center" prop="leader" />
@@ -102,8 +94,10 @@
 							<span style="margin-right: 10px">{{ Math.abs(scope.row.borrower) }}</span>
 							<i class="el-icon-s-order" style="cursor: pointer" @click="handleCheckBorrowerDetailList(scope.row)"></i>
 						</div>
-						<span style="margin-right: 10px">{{ Math.abs(scope.row.borrower) }}</span>
-						<i class="el-icon-s-order" style="cursor: pointer" @click="handleCheckBorrowerDetailList(scope.row)"></i>
+						<div style="display: flex; align-items: center; justify-content: center">
+							<span style="margin-right: 5px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{ Math.abs(scope.row.borrower) }}</span>
+							<i v-if="scope.row.borrowerList && scope.row.borrowerList.length > 0" class="el-icon-s-order" style="cursor: pointer; flex-shrink: 0; margin-left: 5px" @click.stop="handleCheckBorrowerDetailList(scope.row)"></i>
+						</div>
 					</el-tooltip>
 				</template>
 			</el-table-column>
