@@ -333,7 +333,13 @@ export default {
 					isOrderTax: orderId
 				});
 				if (response.code === 200) {
-					this.customerInvoiceList = response.rows || [];
+					// 按开票时间倒序排序（最新的在前），累计从下往上累加
+					const list = response.rows || [];
+					this.customerInvoiceList = list.sort((a, b) => {
+						const timeA = a.invoiceDate ? new Date(a.invoiceDate).getTime() : 0;
+						const timeB = b.invoiceDate ? new Date(b.invoiceDate).getTime() : 0;
+						return timeB - timeA; // 倒序：最新的在前面
+					});
 				} else {
 					this.$message.error(response.msg || '获取开票列表失败');
 					this.customerInvoiceList = [];
@@ -370,10 +376,13 @@ export default {
 			this.closeCustomerInvoiceList();
 		},
 
-		// 计算累计开票金额
+		// 计算累计开票金额（从最后一行累加到当前行）
+		// 数据排序：最新的在第一行（索引0），最早的 in 最后一行（索引 length-1）
+		// 累计计算：从最后一行（数组最后一个元素）累加到当前行
 		calculateAccumulatedInvoiceAmount(index) {
 			let accumulated = 0;
-			for (let i = 0; i <= index; i++) {
+			// 从最后一行（数组最后一个元素）开始，往前累加到当前行
+			for (let i = this.customerInvoiceList.length - 1; i >= index; i--) {
 				accumulated += Number(this.customerInvoiceList[i].invoiceAmount || 0);
 			}
 			return accumulated.toFixed(2);
@@ -399,7 +408,13 @@ export default {
 					isOrderTax: orderId
 				});
 				if (response.code === 200) {
-					this.supplierInvoiceList = response.rows || [];
+					// 按开票时间倒序排序（最新的在前），累计从下往上累加
+					const list = response.rows || [];
+					this.supplierInvoiceList = list.sort((a, b) => {
+						const timeA = a.invoiceDate ? new Date(a.invoiceDate).getTime() : 0;
+						const timeB = b.invoiceDate ? new Date(b.invoiceDate).getTime() : 0;
+						return timeB - timeA; // 倒序：最新的在前面
+					});
 					this.groupSupplierInvoicesByCompany();
 				} else {
 					this.$message.error(response.msg || '获取供应商开票列表失败');
@@ -432,6 +447,15 @@ export default {
 				}
 				groups[companyId].invoices.push(invoice);
 				groups[companyId].totalInvoiceAmount += Number(invoice.invoiceAmount || 0);
+			});
+
+			// 对每个供应商的开票记录按时间倒序排序（最新的在前），累计从下往上累加
+			Object.values(groups).forEach(group => {
+				group.invoices.sort((a, b) => {
+					const timeA = a.invoiceDate ? new Date(a.invoiceDate).getTime() : 0;
+					const timeB = b.invoiceDate ? new Date(b.invoiceDate).getTime() : 0;
+					return timeB - timeA; // 倒序：最新的在前面
+				});
 			});
 
 			// 计算每个供应商的需开票金额（从订单详情中获取）
@@ -486,10 +510,13 @@ export default {
 			this.closeSupplierInvoiceList();
 		},
 
-		// 计算供应商累计开票金额
+		// 计算供应商累计开票金额（从最后一行累加到当前行）
+		// 数据排序：最新的在第一行（索引0），最早的 in 最后一行（索引 length-1）
+		// 累计计算：从最后一行（数组最后一个元素）累加到当前行
 		calculateSupplierAccumulatedInvoiceAmount(invoices, index) {
 			let accumulated = 0;
-			for (let i = 0; i <= index; i++) {
+			// 从最后一行（数组最后一个元素）开始，往前累加到当前行
+			for (let i = invoices.length - 1; i >= index; i--) {
 				accumulated += Number(invoices[i].invoiceAmount || 0);
 			}
 			return accumulated.toFixed(2);
