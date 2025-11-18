@@ -2,19 +2,7 @@
 	<div class="app-container">
 		<el-form id="top-search-form-item" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
 			<el-form-item label="时间范围">
-				<el-date-picker
-					v-model="dateRange"
-					type="daterange"
-					range-separator="至"
-					start-placeholder="开始日期"
-					end-placeholder="结束日期"
-					value-format="yyyy-MM-dd"
-					size="mini"
-					style="width: 280px"
-					unlink-panels
-					:clearable="true"
-					@change="onDateRangeChange"
-				/>
+				<el-date-picker v-model="dateRange" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" size="mini" style="width: 280px" unlink-panels :clearable="true" @change="onDateRangeChange" />
 			</el-form-item>
 			<el-form-item label="客户名称" prop="companyName">
 				<el-input v-model="queryParams.companyName" placeholder="请输入客户名称" clearable @keyup.enter.native="handleQuery" />
@@ -54,7 +42,7 @@
 		</el-row>
 		<el-alert title="添加佣金信息后，方可进行付款申请操作!" type="warning"></el-alert>
 		<br />
-		<u-table
+		<el-table
 			ref="multipleTable"
 			id="printBox"
 			v-loading="loading"
@@ -137,21 +125,11 @@
 					<el-button type="text" size="mini" @click="handleApplyPayment(scope.row)">申请付款</el-button>
 				</template>
 			</el-table-column>
-		</u-table>
+		</el-table>
 
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 		<!--    申请付款-->
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="付款申请"
-			:visible.sync="PaymentApplyInfoVisible"
-			width="45%"
-		>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="付款申请" :visible.sync="PaymentApplyInfoVisible" width="45%">
 			<keep-alive>
 				<ApplyPayment :money-input-disabled="false" :table-name="TableName.ORDERCOMMISION" :t-i-d="tID" :need-money="needMoney" :need-info="{}" @changeOpen="changePaymentApplyInfoVisible" />
 			</keep-alive>
@@ -200,18 +178,7 @@
 		</el-dialog>
 
 		<!--    申请信息填写对话框-->
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="付款申请"
-			:visible.sync="applyPaymentVisible"
-			width="45%"
-			append-to-body
-		>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="付款申请" :visible.sync="applyPaymentVisible" width="45%" append-to-body>
 			<keep-alive>
 				<ApplyPayment
 					ref="applyPayment"

@@ -63,7 +63,7 @@
 		<br />
 
 		<!-- 表格 -->
-		<u-table
+		<el-table
 			ref="multipleTable"
 			id="printBox"
 			v-loading="loading"
@@ -153,7 +153,7 @@
 					<el-button :disabled="scope.row.id === null" type="text" size="mini" @click="handleApplyPayment(scope.row)">申请付款</el-button>
 				</template>
 			</el-table-column>
-		</u-table>
+		</el-table>
 
 		<!-- 分页 -->
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
