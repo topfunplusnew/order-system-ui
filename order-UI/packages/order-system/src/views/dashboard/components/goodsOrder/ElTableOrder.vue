@@ -719,9 +719,9 @@ export default {
 				case 23: // 可否编辑
 					return row.isedit === 0 ? '否' : '是';
 				case 24: // 客户含税
-					return row.customerIsInvoice === 1 ? row.customerInvoiceStatus : '否';
+					return this.hasInvoice(row, this.PUBLIC_DICT_TYPE.CUSTOMER) ? row.customerInvoiceStatus : '否';
 				case 25: // 出厂含税
-					return row.isSupplierInvoice === 1 ? row.supplierInvoiceStatus : '否';
+					return this.hasInvoice(row, this.PUBLIC_DICT_TYPE.SUPPLIER) ? row.supplierInvoiceStatus : '否';
 				case 27: // 审核人
 					return row.checkUserName || '';
 				default:
@@ -1361,7 +1361,7 @@ export default {
 					<!-- 25. 客户含税 -->
 					<VirtualColumn v-if="columns[25].visible" show-overflow-tooltip label="客户含税" align="center" prop="customerTaxIncluded" width="112">
 						<template #default="scope">
-							<el-tooltip v-if="scope.row.customerIsInvoice === 1" effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
+							<el-tooltip v-if="hasInvoice(scope.row, PUBLIC_DICT_TYPE.CUSTOMER)" effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
 								<div slot="content" @click.stop>
 									<el-row>
 										<el-button type="text" size="mini" @click.stop="showCustomerInvoiceList(scope.row)">{{ scope.row.customerInvoiceStatus }}</el-button>
@@ -1378,7 +1378,7 @@ export default {
 					<!-- 26. 出厂含税 -->
 					<VirtualColumn v-if="columns[26].visible" show-overflow-tooltip label="出厂含税" align="center" width="112">
 						<template #default="scope">
-							<el-tooltip v-if="scope.row.isSupplierInvoice === 1" effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
+							<el-tooltip v-if="hasInvoice(scope.row, PUBLIC_DICT_TYPE.SUPPLIER)" effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
 								<div slot="content" @click.stop>
 									<el-row>
 										<el-button type="text" size="mini" @click.stop="showSupplierInvoiceList(scope.row)">{{ scope.row.supplierInvoiceStatus }}</el-button>

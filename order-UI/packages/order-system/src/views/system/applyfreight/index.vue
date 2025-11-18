@@ -319,7 +319,7 @@ export default {
 				</right-toolbar>
 			</el-col>
 		</el-row>
-		<u-table id="printBox" :data="freightList" v-loading="loading" border fit size="mini" style="width: 100%; margin-top: 20px">
+		<el-table id="printBox" :data="freightList" v-loading="loading" border fit size="mini" style="width: 100%; margin-top: 20px">
 			<el-table-column v-if="columns[0].visible" show-overflow-tooltip prop="paymentState" label="运费状态" align="center" width="100" />
 			<el-table-column v-if="columns[1].visible" show-overflow-tooltip prop="paymentDate" label="支付时间" align="center" width="160" />
 			<el-table-column v-if="columns[2].visible" show-overflow-tooltip label="运输类型" align="center" width="100">
@@ -372,11 +372,13 @@ export default {
 			<el-table-column v-if="columns[16].visible" show-overflow-tooltip prop="paidAmount" label="已支付金额" align="center" fixed="right" width="120" />
 			<el-table-column show-overflow-tooltip label="操作" align="center" class-name="small-padding fixed-width" width="220" fixed="right">
 				<template #default="scope">
-					<el-button size="mini" type="text" @click="viewOrderDetails(scope.row)">查看详情</el-button>
-					<el-button size="mini" type="text" :disabled="scope.row.paymentState !== '未申请'" @click="handleApplyFreight(scope.row)">运费申请</el-button>
+					<div>
+						<el-button size="mini" type="text" @click="viewOrderDetails(scope.row)">查看详情</el-button>
+						<el-button size="mini" type="text" :disabled="scope.row.paymentState !== '未申请'" @click="handleApplyFreight(scope.row)">运费申请</el-button>
+					</div>
 				</template>
 			</el-table-column>
-		</u-table>
+		</el-table>
 
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
