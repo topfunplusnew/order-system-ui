@@ -719,9 +719,9 @@ export default {
 				case 23: // 可否编辑
 					return row.isedit === 0 ? '否' : '是';
 				case 24: // 客户含税
-					return row.customerInvoiceStatus || '否';
+					return row.customerIsInvoice === 1 ? row.customerInvoiceStatus : '否';
 				case 25: // 出厂含税
-					return row.supplierInvoiceStatus || '否';
+					return row.isSupplierInvoice === 1 ? row.supplierInvoiceStatus : '否';
 				case 27: // 审核人
 					return row.checkUserName || '';
 				default:
@@ -1361,54 +1361,34 @@ export default {
 					<!-- 25. 客户含税 -->
 					<VirtualColumn v-if="columns[25].visible" show-overflow-tooltip label="客户含税" align="center" prop="customerTaxIncluded" width="112">
 						<template #default="scope">
-							<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
+							<el-tooltip v-if="scope.row.customerIsInvoice === 1" effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
 								<div slot="content" @click.stop>
 									<el-row>
-										<el-row v-if="scope.row.customerInvoiceStatus && scope.row.customerInvoiceStatus !== '未开票' && scope.row.customerInvoiceStatus !== '否'">
-											<el-button type="text" size="mini" @click.stop="showCustomerInvoiceList(scope.row)">{{ scope.row.customerInvoiceStatus || '否' }}</el-button>
-										</el-row>
-										<el-row v-else>
-											<StateTag :state-title="scope.row.customerInvoiceStatus || '否'" :state-mapper="{ 3: scope.row.customerInvoiceStatus || '否' }" />
-										</el-row>
+										<el-button type="text" size="mini" @click.stop="showCustomerInvoiceList(scope.row)">{{ scope.row.customerInvoiceStatus }}</el-button>
 									</el-row>
 								</div>
-								<el-row>
-									<el-row v-if="scope.row.customerInvoiceStatus && scope.row.customerInvoiceStatus !== '未开票' && scope.row.customerInvoiceStatus !== '否'">
-										<el-row>
-											<el-button type="text" size="mini" @click="showCustomerInvoiceList(scope.row)">{{ scope.row.customerInvoiceStatus || '否' }}</el-button>
-										</el-row>
-									</el-row>
-									<el-row v-else>
-										<StateTag :state-title="scope.row.customerInvoiceStatus || '否'" :state-mapper="{ 3: scope.row.customerInvoiceStatus || '否' }" />
-									</el-row>
-								</el-row>
+								<el-button type="text" size="mini" @click="showCustomerInvoiceList(scope.row)">{{ scope.row.customerInvoiceStatus }}</el-button>
+							</el-tooltip>
+							<el-tooltip v-else effect="light" placement="top" enterable :open-delay="1000">
+								<div slot="content">否</div>
+								<StateTag :state-title="'否'" :state-mapper="{ 3: '否' }" />
 							</el-tooltip>
 						</template>
 					</VirtualColumn>
 					<!-- 26. 出厂含税 -->
 					<VirtualColumn v-if="columns[26].visible" show-overflow-tooltip label="出厂含税" align="center" width="112">
 						<template #default="scope">
-							<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
+							<el-tooltip v-if="scope.row.isSupplierInvoice === 1" effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
 								<div slot="content" @click.stop>
 									<el-row>
-										<el-row v-if="scope.row.supplierInvoiceStatus && scope.row.supplierInvoiceStatus !== '未开票' && scope.row.supplierInvoiceStatus !== '否'">
-											<el-button type="text" size="mini" @click.stop="showSupplierInvoiceList(scope.row)">{{ scope.row.supplierInvoiceStatus || '否' }}</el-button>
-										</el-row>
-										<el-row v-else>
-											<StateTag :state-title="scope.row.supplierInvoiceStatus || '否'" :state-mapper="{ 3: scope.row.supplierInvoiceStatus || '否' }" />
-										</el-row>
+										<el-button type="text" size="mini" @click.stop="showSupplierInvoiceList(scope.row)">{{ scope.row.supplierInvoiceStatus }}</el-button>
 									</el-row>
 								</div>
-								<el-row>
-									<el-row v-if="scope.row.supplierInvoiceStatus && scope.row.supplierInvoiceStatus !== '未开票' && scope.row.supplierInvoiceStatus !== '否'">
-										<el-row>
-											<el-button type="text" size="mini" @click="showSupplierInvoiceList(scope.row)">{{ scope.row.supplierInvoiceStatus || '否' }}</el-button>
-										</el-row>
-									</el-row>
-									<el-row v-else>
-										<StateTag :state-title="scope.row.supplierInvoiceStatus || '否'" :state-mapper="{ 3: scope.row.supplierInvoiceStatus || '否' }" />
-									</el-row>
-								</el-row>
+								<el-button type="text" size="mini" @click="showSupplierInvoiceList(scope.row)">{{ scope.row.supplierInvoiceStatus }}</el-button>
+							</el-tooltip>
+							<el-tooltip v-else effect="light" placement="top" enterable :open-delay="1000">
+								<div slot="content">否</div>
+								<StateTag :state-title="'否'" :state-mapper="{ 3: '否' }" />
 							</el-tooltip>
 						</template>
 					</VirtualColumn>
