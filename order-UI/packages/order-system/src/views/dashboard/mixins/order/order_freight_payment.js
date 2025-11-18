@@ -111,6 +111,11 @@ export var mixin_order_freight_payment = {
 		},
 		// 将orderFreight对象转换为Payment对象
 		convertOrderFreightToPayment(orderFreight) {
+			// 如果tID不存在
+			if (!orderFreight.id) {
+				this.$message.error('运费ID不存在!');
+				return;
+			}
 			return {
 				// 构建对方信息
 				fundsDate: parseTime(new Date()),
@@ -119,12 +124,12 @@ export var mixin_order_freight_payment = {
 				tID: orderFreight.id,
 				moneyAmount: orderFreight.moneyAmount,
 				otherAccountsName: orderFreight.otherAcountsName,
-				// 使用 lodash pick 提取需要的字段
-				..._.pick(orderFreight, ['otherBankNo', 'otherBankName', 'driverName', 'driverId', 'carNo', 'fleet', 'freightType']),
 				companyName: orderFreight.driverName,
 				companyId: orderFreight.driverId,
 				companyType: '司机',
-				comments: orderFreight.content || orderFreight.comments || ''
+				comments: orderFreight.comments,
+				// 使用 lodash pick 提取需要的字段
+				..._.pick(orderFreight, ['otherBankNo', 'otherBankName', 'driverName', 'driverId', 'carNo', 'fleet', 'freightType'])
 			};
 		},
 		// 自动填充我方信息
