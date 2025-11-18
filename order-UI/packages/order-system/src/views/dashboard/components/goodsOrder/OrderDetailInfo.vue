@@ -9,7 +9,6 @@ import { listBankAccount } from '@/api/system/bankAccount';
 import { fix, fix_2 } from '@/api/tool/format';
 import { RebateType } from '@/api/tool/enums';
 import ExpandCursor from '../common/ExpandCursor.vue';
-import FitColumnPlugin from 'v-fit-columns';
 
 export default {
   name: 'OrderDetailInfo',
@@ -97,6 +96,18 @@ export default {
         }, 100);
       });
     });
+
+    // 监听窗口大小变化，重新调整列宽
+    this.handleResize = this.debounce(() => {
+      this.fitColumns();
+    }, 300);
+    window.addEventListener('resize', this.handleResize);
+  },
+  beforeDestroy() {
+    // 移除窗口大小变化监听
+    if (this.handleResize) {
+      window.removeEventListener('resize', this.handleResize);
+    }
   },
   // 不再需要在 created 中请求字典，返利方式已硬编码
   methods: {
@@ -108,7 +119,7 @@ export default {
       // 如果有需要展开的行，可以在这里处理
       // 暂时保留空实现，避免报错
     },
-    // 调整列宽方法
+    // 原生列宽自动调整方法
     fitColumns() {
       if (!this.$refs.tableRef) {
         return;
@@ -127,14 +138,165 @@ export default {
         setTimeout(() => {
           if (this.$refs.tableRef) {
             try {
-              // 调用 v-fit-columns 插件的方法重新计算列宽
-              FitColumnPlugin.resize(this.$refs.tableRef);
+              this.autoFitColumns();
             } catch (error) {
               console.warn('调整列宽失败:', error);
             }
           }
-        }, 50);
+        }, 100);
       });
+    },
+    // 原生实现：自动调整表格列宽（简化版本，确保表头和表体对齐）
+    autoFitColumns() {
+      const table = this.$refs.tableRef.$el;
+      if (!table) return;
+
+      // 先调用 doLayout 确保表格结构完整
+      this.$refs.tableRef.doLayout();
+
+      // 等待表格完全渲染
+      this.$nextTick(() => {
+        setTimeout(() => {
+          const mainColgroup = table.querySelector('colgroup');
+          if (!mainColgroup) return;
+
+          const colDefs = Array.from(mainColgroup.querySelectorAll('col'));
+          const columnWidths = {};
+
+          // 获取表格列配置
+          const tableColumns = this.$refs.tableRef.columns || [];
+
+          // 计算每列的最大内容宽度
+          colDefs.forEach((col, colIndex) => {
+            const colName = col.getAttribute('name');
+            if (!colName) return;
+
+            const headerCells = Array.from(table.querySelectorAll(`th.${colName}`));
+            const bodyCells = Array.from(table.querySelectorAll(`td.${colName}`));
+
+            if (headerCells.length === 0 && bodyCells.length === 0) return;
+
+            // 检查是否应该跳过此列（如操作列）
+            const firstCell = headerCells[0] || bodyCells[0];
+            if (firstCell && firstCell.classList.contains('leave-alone')) {
+              return;
+            }
+
+            let maxWidth = 0;
+
+            // 获取列配置
+            const column = tableColumns[colIndex];
+            const columnProp = column ? column.property : null;
+
+            // 测量表头宽度
+            if (headerCells.length > 0) {
+              const headerCell = headerCells[0];
+              const headerContent = headerCell.querySelector('.cell');
+              if (headerContent) {
+                const headerText = headerContent.textContent || headerContent.innerText || '';
+                const headerStyle = window.getComputedStyle(headerContent);
+                const tempDiv = document.createElement('div');
+                tempDiv.style.cssText = `
+                  position: absolute;
+                  visibility: hidden;
+                  white-space: nowrap;
+                  font-size: ${headerStyle.fontSize};
+                  font-family: ${headerStyle.fontFamily};
+                  font-weight: ${headerStyle.fontWeight};
+                  padding: ${headerStyle.padding};
+                  left: -9999px;
+                  top: -9999px;
+                `;
+                tempDiv.textContent = headerText;
+                document.body.appendChild(tempDiv);
+                maxWidth = Math.max(maxWidth, tempDiv.offsetWidth);
+                document.body.removeChild(tempDiv);
+              }
+            }
+
+            // 测量数据单元格宽度（从数据源获取完整文本）
+            if (columnProp && this.filteredOrderDetailInfoList && this.filteredOrderDetailInfoList.length > 0) {
+              this.filteredOrderDetailInfoList.forEach((row) => {
+                let cellText = '';
+                const value = row[columnProp];
+
+                if (value !== null && value !== undefined) {
+                  if (columnProp === 'isIncludeTaxFactory' || columnProp === 'isIncludeTaxSale') {
+                    cellText = value == 0 ? '否' : '是';
+                  } else {
+                    cellText = String(value);
+                  }
+                }
+
+                if (cellText) {
+                  // 获取第一个数据单元格的样式作为参考
+                  const styleRef = bodyCells[0]?.querySelector('.cell') || headerCells[0]?.querySelector('.cell');
+                  if (styleRef) {
+                    const computedStyle = window.getComputedStyle(styleRef);
+                    const tempDiv = document.createElement('div');
+                    tempDiv.style.cssText = `
+                      position: absolute;
+                      visibility: hidden;
+                      white-space: nowrap;
+                      font-size: ${computedStyle.fontSize};
+                      font-family: ${computedStyle.fontFamily};
+                      font-weight: ${computedStyle.fontWeight};
+                      padding: ${computedStyle.padding};
+                      left: -9999px;
+                      top: -9999px;
+                    `;
+                    tempDiv.textContent = cellText;
+                    document.body.appendChild(tempDiv);
+                    maxWidth = Math.max(maxWidth, tempDiv.offsetWidth);
+                    document.body.removeChild(tempDiv);
+                  }
+                }
+              });
+            }
+
+            // 设置列宽
+            if (maxWidth > 0) {
+              const padding = 50;
+              const finalWidth = Math.max(maxWidth + padding, 80);
+              columnWidths[colName] = finalWidth;
+            }
+          });
+
+          // 统一更新所有 colgroup 中的列宽（确保表头和表体同步）
+          const allColgroups = table.querySelectorAll('colgroup');
+          allColgroups.forEach((colgroup) => {
+            Object.keys(columnWidths).forEach((colName) => {
+              const cols = colgroup.querySelectorAll(`col[name="${colName}"]`);
+              cols.forEach((colEl) => {
+                colEl.setAttribute('width', columnWidths[colName]);
+                colEl.style.width = `${columnWidths[colName]}px`;
+                colEl.style.minWidth = `${columnWidths[colName]}px`;
+                colEl.style.maxWidth = `${columnWidths[colName]}px`;
+              });
+            });
+          });
+
+          // 强制表格重新布局，确保对齐
+          this.$refs.tableRef.doLayout();
+
+          // 再次确保同步
+          this.$nextTick(() => {
+            this.$refs.tableRef.doLayout();
+          });
+        }, 150);
+      });
+    },
+    // 防抖函数
+    debounce(func, wait) {
+      let timeout;
+      return function executedFunction(...args) {
+        const later = () => {
+          clearTimeout(timeout);
+          func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+      };
     },
     // 处理表头点击事件（如果需要）
     handleHeaderClick(column, event) {
@@ -276,8 +438,8 @@ export default {
     <el-row>
       <el-table ref="tableRef" border :data="filteredOrderDetailInfoList" row-key="id" max-height="700" fit
                 :cell-style="() => ({ padding: '.5px' })" size="mini" show-summary :summary-method="getSummaries"
-                :row-class-name="tableRowClassName" :expand-row-keys="expandRowKeys" v-fit-columns
-                @header-click="handleHeaderClick" @expand-change="handleExpandChange" @body-wrapper-scroll="handleTableScroll">
+                :row-class-name="tableRowClassName" :expand-row-keys="expandRowKeys"
+                @header-click="handleHeaderClick" @expand-change="handleExpandChange">
 
         <el-table-column v-if="!ban" label="操作" align="center" class-name="small-padding fixed-width leave-alone"
                          fixed="left" min-width="90">
@@ -293,14 +455,14 @@ export default {
             </ExpandCursor>
           </template>
         </el-table-column>
-        <el-table-column label="供应商" align="center" prop="supplier" show-overflow-tooltip min-width="100">
+        <el-table-column label="供应商" align="center" prop="supplier" show-overflow-tooltip min-width="150">
           <template slot-scope="scope">
             <ExpandCursor>
               {{ scope.row.supplier }}
             </ExpandCursor>
           </template>
         </el-table-column>
-        <el-table-column label="级别名称" align="center" prop="levelName" show-overflow-tooltip min-width="100">
+        <el-table-column label="级别名称" align="center" prop="levelName" show-overflow-tooltip min-width="200">
           <template slot-scope="scope">
             <ExpandCursor>
               {{ scope.row.levelName }}
@@ -658,8 +820,18 @@ export default {
 
 ::v-deep .el-table {
   width: 100% !important;
-  table-layout: fixed;
+  table-layout: fixed; /* 使用 fixed 布局，确保表头和表体列宽一致 */
 }
+
+/* 确保单元格内容可以正确测量宽度 */
+::v-deep .el-table .cell {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: normal;
+}
+
+/* 确保表头和表体的列宽同步 - 通过 JavaScript 设置，这里不强制覆盖 */
 
 // 展开行样式
 .expand-row {
