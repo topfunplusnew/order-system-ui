@@ -830,7 +830,7 @@ export default {
 			// 确保 sums 数组长度与 columns 数组长度一致
 			// 先初始化所有位置为空字符串
 			for (let i = 0; i < columns.length; i++) {
-				sums[i] = 'N/A';
+				sums[i] = ' ';
 			}
 
 			// 遍历所有列，为每一列生成合计值
