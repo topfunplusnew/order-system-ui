@@ -972,23 +972,29 @@ export default {
 		<br />
 		<!--    订单修改记录查看-->
 		<div>
-			<OrderHistoryCheck :check-history-order-visible="checkHistoryOrderVisible" :order-history-info-list="orderHistoryInfoList" :current-info="currentOrderItemInfo" @close="closeOrderHistoryCheck" />
+			<OrderHistoryCheck :check-history-order-visible="checkHistoryOrderVisible"
+				:order-history-info-list="orderHistoryInfoList" :current-info="currentOrderItemInfo"
+				@close="closeOrderHistoryCheck" />
 		</div>
 		<!--      右侧的工具栏-->
 		<div>
-			<right-toolbar :columns="columns" @column-change="onColumnChange" @column-refresh="handleColumnRefresh" tableName="goodsorder-columns">
+			<right-toolbar :columns="columns" @column-change="onColumnChange" @column-refresh="handleColumnRefresh"
+				tableName="goodsorder-columns">
 				<!-- 左侧的新增订单的按钮 -->
 				<template #left>
 					<div style="padding: 10px">
 						<el-row :gutter="10">
 							<el-col v-if="!isAdjustOrder" :span="1.5">
-								<el-button v-hasPermi="['system:goodsorder:import']" size="mini" @click="handleDownloadTemplate">下载导入模板</el-button>
+								<el-button v-hasPermi="['system:goodsorder:import']" size="mini"
+									@click="handleDownloadTemplate">下载导入模板</el-button>
 							</el-col>
 							<el-col v-if="!isAdjustOrder" :span="1.5">
-								<el-button v-hasPermi="['system:goodsorder:import']" size="mini" @click="handleImportData">导入模板</el-button>
+								<el-button v-hasPermi="['system:goodsorder:import']" size="mini"
+									@click="handleImportData">导入模板</el-button>
 							</el-col>
 							<el-col v-if="!isAdjustOrder" :span="1.5">
-								<el-button v-hasPermi="['system:goodsorder:add']" type="danger" size="mini" @click="handleAdd">添加订单信息</el-button>
+								<el-button v-hasPermi="['system:goodsorder:add']" type="danger" size="mini"
+									@click="handleAdd">添加订单信息</el-button>
 							</el-col>
 						</el-row>
 					</div>
@@ -1000,34 +1006,23 @@ export default {
 				</template>
 				<template #export>
 					<el-col :span="1.5">
-						<el-button v-hasPermi="['system:goodsorder:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport">导出订单目录</el-button>
-						<el-button v-hasPermi="['system:goodsorder:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExportNoPage">导出全部订单</el-button>
+						<el-button v-hasPermi="['system:goodsorder:export']" plain icon="el-icon-folder-opened" size="mini"
+							@click="handleExport">导出订单目录</el-button>
+						<el-button v-hasPermi="['system:goodsorder:export']" plain icon="el-icon-folder-opened" size="mini"
+							@click="handleExportNoPage">导出全部订单</el-button>
 					</el-col>
 				</template>
 			</right-toolbar>
 		</div>
 
 		<!--    订单表格  -->
-		<virtual-scroll ref="virtualScroll" :data="goodsOrderList" :item-size="30" key-prop="id" @change="orderDataAppendChange">
+		<virtual-scroll ref="virtualScroll" :data="goodsOrderList" :item-size="30" key-prop="id"
+			@change="orderDataAppendChange">
 			<template slot-scope="{ headerCellFixedStyle, cellFixedStyle }">
-				<el-table
-					border
-					ref="orderTable"
-					id="printBox"
-					:row-key="row => row.id"
-					v-loading="loading"
-					v-horizontal-scroll="'always'"
-					size="mini"
-					height="650"
-					style="width: 100%"
-					:data="virtualGoodsOrderList"
-					tooltip-effect="light"
-					:headerCellStyle="headerCellFixedStyle"
-					:cellStyle="cellFixedStyle"
-					@header-dragend="onHeaderDragend"
-					show-summary
-					:summary-method="getSummary"
-				>
+				<el-table border ref="orderTable" id="printBox" :row-key="row => row.id" v-loading="loading"
+					v-horizontal-scroll="'always'" size="mini" height="650" style="width: 100%" :data="virtualGoodsOrderList"
+					tooltip-effect="light" :headerCellStyle="headerCellFixedStyle" :cellStyle="cellFixedStyle"
+					@header-dragend="onHeaderDragend" show-summary :summary-method="getSummary">
 					<!-- 序号列 -->
 					<VirtualColumn vfixed label="序号" align="center" width="50">
 						<template slot-scope="scope">
@@ -1043,7 +1038,8 @@ export default {
 								</el-button>
 								<el-dropdown-menu slot="dropdown">
 									<!-- 修改 -->
-									<el-dropdown-item v-hasPermi="['system:goodsorder:edit']" command="handleUpdate" :disabled="!scope.row.isedit || scope.row.isAdjust < 0 || isOrderExpired(scope.row.addtime)">
+									<el-dropdown-item v-hasPermi="['system:goodsorder:edit']" command="handleUpdate"
+										:disabled="!scope.row.isedit || scope.row.isAdjust < 0 || isOrderExpired(scope.row.addtime)">
 										<span :title="isOrderExpired(scope.row.addtime) ? '订单已超过7天，无法修改' : ''">修改</span>
 									</el-dropdown-item>
 									<!-- 删除 -->
@@ -1068,7 +1064,8 @@ export default {
 						</template>
 					</VirtualColumn>
 					<!-- 2. 日期 -->
-					<VirtualColumn v-if="columns[1].visible" vfixed show-overflow-tooltip label="日期" align="center" prop="orderDate" width="200">
+					<VirtualColumn v-if="columns[1].visible" vfixed show-overflow-tooltip label="日期" align="center"
+						prop="orderDate" width="200">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ parseTime(scope.row.orderDate, '{y}-{m}-{d}') }}</div>
@@ -1077,7 +1074,8 @@ export default {
 						</template>
 					</VirtualColumn>
 					<!-- 3. 客户 -->
-					<VirtualColumn v-if="columns[2].visible" vfixed show-overflow-tooltip label="客户" align="center" prop="customer" width="196">
+					<VirtualColumn v-if="columns[2].visible" vfixed show-overflow-tooltip label="客户" align="center"
+						prop="customer" width="196">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.customer }}</div>
@@ -1086,30 +1084,39 @@ export default {
 						</template>
 					</VirtualColumn>
 					<!-- 4. 供应商/仓库 -->
-					<VirtualColumn v-if="columns[3].visible" vfixed show-overflow-tooltip label="供应商/仓库" align="center" prop="supplierNames" width="280">
+					<VirtualColumn v-if="columns[3].visible" vfixed show-overflow-tooltip label="供应商/仓库" align="center"
+						prop="supplierNames" width="280">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content" @click.stop>
 									<div class="supplier-warehouse-container">
-										<span v-if="scope.row._uniqueSuppliers.length === 0 && scope.row._uniqueWarehouses.length === 0" class="empty-item">-</span>
+										<span v-if="scope.row._uniqueSuppliers.length === 0 && scope.row._uniqueWarehouses.length === 0"
+											class="empty-item">-</span>
 										<span v-else>
-											<span v-for="supplier in scope.row._uniqueSuppliers" :key="`supplier-${supplier.supplierID}`" class="supplier-name" @click="updateOrderItemVisibleSupplierInvoice(scope.row, supplier.supplierID)">
+											<span v-for="supplier in scope.row._uniqueSuppliers" :key="`supplier-${supplier.supplierID}`"
+												class="supplier-name"
+												@click="updateOrderItemVisibleSupplierInvoice(scope.row, supplier.supplierID)">
 												{{ supplier.supplier }}
 											</span>
-											<span v-for="warehouse in scope.row._uniqueWarehouses" :key="`warehouse-${warehouse.storeHouseID}`" class="warehouse-name">
+											<span v-for="warehouse in scope.row._uniqueWarehouses"
+												:key="`warehouse-${warehouse.storeHouseID}`" class="warehouse-name">
 												{{ warehouse.storeHouseName }}
 											</span>
 										</span>
 									</div>
 								</div>
 								<div ref="supplier-warehouse" class="supplier-warehouse-container">
-									<span v-if="scope.row._uniqueSuppliers.length === 0 && scope.row._uniqueWarehouses.length === 0" class="empty-item" v-once>-</span>
+									<span v-if="scope.row._uniqueSuppliers.length === 0 && scope.row._uniqueWarehouses.length === 0"
+										class="empty-item" v-once>-</span>
 									<span v-else>
-										<span v-for="supplier in scope.row._uniqueSuppliers" :key="`supplier-${supplier.supplierID}`" class="supplier-name" @click="updateOrderItemVisibleSupplierInvoice(scope.row, supplier.supplierID)">
+										<span v-for="supplier in scope.row._uniqueSuppliers" :key="`supplier-${supplier.supplierID}`"
+											class="supplier-name"
+											@click="updateOrderItemVisibleSupplierInvoice(scope.row, supplier.supplierID)">
 											{{ supplier.supplier }}
 										</span>
 										<!-- 显示预处理的仓库列表 -->
-										<span v-for="warehouse in scope.row._uniqueWarehouses" :key="`warehouse-${warehouse.storeHouseID}`" class="warehouse-name">
+										<span v-for="warehouse in scope.row._uniqueWarehouses" :key="`warehouse-${warehouse.storeHouseID}`"
+											class="warehouse-name">
 											{{ warehouse.storeHouseName }}
 										</span>
 									</span>
@@ -1118,7 +1125,8 @@ export default {
 						</template>
 					</VirtualColumn>
 					<!-- 5. 陆运车牌 -->
-					<VirtualColumn v-if="columns[4].visible" vfixed show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo" width="112">
+					<VirtualColumn v-if="columns[4].visible" vfixed show-overflow-tooltip label="陆运车牌" align="center"
+						prop="landCarNo" width="112">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.landCarNo }}</div>
@@ -1127,16 +1135,21 @@ export default {
 						</template>
 					</VirtualColumn>
 					<!-- 6. 审核 -->
-					<VirtualColumn v-if="columns[5].visible" show-overflow-tooltip label="审核" align="center" prop="checkState" width="112">
+					<VirtualColumn v-if="columns[5].visible" show-overflow-tooltip label="审核" align="center" prop="checkState"
+						width="112">
 						<template #default="scope">
-							<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
+							<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0"
+								popper-class="interactive-tooltip">
 								<div slot="content" @click.stop>
 									<el-row v-if="scope.row.checkState === '已审核'">
-										<StateTag :state-title="scope.row.checkState" :state-mapper="{ 2: '已审核' }" @click.native.stop="hasPermission(['finance', 'admin']) && handleReCheck(scope.row)" :style="{ cursor: hasPermission(['finance', 'admin']) ? 'pointer' : 'default' }" />
+										<StateTag :state-title="scope.row.checkState" :state-mapper="{ 2: '已审核' }"
+											@click.native.stop="hasPermission(['finance', 'admin']) && handleReCheck(scope.row)"
+											:style="{ cursor: hasPermission(['finance', 'admin']) ? 'pointer' : 'default' }" />
 									</el-row>
 									<el-row v-else>
 										<!-- 只有财务和超级管理员可以审核 -->
-										<el-button v-if="hasPermission(['finance', 'admin'])" type="text" size="mini" @click.stop="handleCheck(scope.row)">
+										<el-button v-if="hasPermission(['finance', 'admin'])" type="text" size="mini"
+											@click.stop="handleCheck(scope.row)">
 											<span>审核</span>
 										</el-button>
 										<!-- 其他用户显示状态文本 -->
@@ -1145,12 +1158,15 @@ export default {
 								</div>
 								<el-row v-if="scope.row.checkState === '已审核'">
 									<!-- 只有财务和超级管理员可以取消审核 -->
-									<StateTag :state-title="scope.row.checkState" :state-mapper="{ 2: '已审核' }" @click.native="hasPermission(['finance', 'admin']) && handleReCheck(scope.row)" :style="{ cursor: hasPermission(['finance', 'admin']) ? 'pointer' : 'default' }" />
+									<StateTag :state-title="scope.row.checkState" :state-mapper="{ 2: '已审核' }"
+										@click.native="hasPermission(['finance', 'admin']) && handleReCheck(scope.row)"
+										:style="{ cursor: hasPermission(['finance', 'admin']) ? 'pointer' : 'default' }" />
 								</el-row>
 								<el-row v-else>
 									<el-row>
 										<!-- 只有财务和超级管理员可以审核 -->
-										<el-button v-if="hasPermission(['finance', 'admin'])" type="text" size="mini" @click="handleCheck(scope.row)">
+										<el-button v-if="hasPermission(['finance', 'admin'])" type="text" size="mini"
+											@click="handleCheck(scope.row)">
 											<span v-once>审核</span>
 										</el-button>
 										<!-- 其他用户显示状态文本 -->
@@ -1163,7 +1179,8 @@ export default {
 						</template>
 					</VirtualColumn>
 					<!-- 7. 车队 -->
-					<VirtualColumn v-if="columns[6].visible" show-overflow-tooltip label="车队" align="center" prop="fleet" width="112">
+					<VirtualColumn v-if="columns[6].visible" show-overflow-tooltip label="车队" align="center" prop="fleet"
+						width="112">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.fleet }}</div>
@@ -1172,7 +1189,8 @@ export default {
 						</template>
 					</VirtualColumn>
 					<!-- 8. 陆运电话 -->
-					<VirtualColumn v-if="columns[7].visible" show-overflow-tooltip label="陆运电话" align="center" prop="landDriverTel" width="176">
+					<VirtualColumn v-if="columns[7].visible" show-overflow-tooltip label="陆运电话" align="center"
+						prop="landDriverTel" width="176">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.landDriverTel }}</div>
@@ -1181,7 +1199,8 @@ export default {
 						</template>
 					</VirtualColumn>
 					<!-- 9. 司机 -->
-					<VirtualColumn v-if="columns[8].visible" show-overflow-tooltip label="司机" align="center" prop="landDriverName" width="84">
+					<VirtualColumn v-if="columns[8].visible" show-overflow-tooltip label="司机" align="center" prop="landDriverName"
+						width="84">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.landDriverName }}</div>
@@ -1190,7 +1209,8 @@ export default {
 						</template>
 					</VirtualColumn>
 					<!-- 10. 海运柜号 -->
-					<VirtualColumn v-if="columns[9].visible" show-overflow-tooltip label="海运柜号" align="center" prop="seaCarNo" width="176">
+					<VirtualColumn v-if="columns[9].visible" show-overflow-tooltip label="海运柜号" align="center" prop="seaCarNo"
+						width="176">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ !scope.row.seaCarNo ? '无' : scope.row.seaCarNo }}</div>
@@ -1199,7 +1219,8 @@ export default {
 						</template>
 					</VirtualColumn>
 					<!-- 11. 海运电话 -->
-					<VirtualColumn v-if="columns[10].visible" show-overflow-tooltip label="海运电话" align="center" prop="seaDriverTel" width="176">
+					<VirtualColumn v-if="columns[10].visible" show-overflow-tooltip label="海运电话" align="center"
+						prop="seaDriverTel" width="176">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ !scope.row.seaDriverTel ? '无' : scope.row.seaDriverTel }}</div>
@@ -1208,7 +1229,8 @@ export default {
 						</template>
 					</VirtualColumn>
 					<!-- 12. 海运公司 -->
-					<VirtualColumn v-if="columns[11].visible" show-overflow-tooltip label="海运公司" align="center" prop="seaDriverName" width="168">
+					<VirtualColumn v-if="columns[11].visible" show-overflow-tooltip label="海运公司" align="center"
+						prop="seaDriverName" width="168">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ !scope.row.seaDriverName ? '无' : scope.row.seaDriverName }}</div>
@@ -1217,7 +1239,8 @@ export default {
 						</template>
 					</VirtualColumn>
 					<!-- 13. 总货款 -->
-					<VirtualColumn v-if="columns[12].visible" show-overflow-tooltip label="总货款" align="center" prop="allPayments" width="144">
+					<VirtualColumn v-if="columns[12].visible" show-overflow-tooltip label="总货款" align="center" prop="allPayments"
+						width="144">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.allPayments | changeNumber(changeLength) }}</div>
@@ -1226,7 +1249,8 @@ export default {
 						</template>
 					</VirtualColumn>
 					<!-- 14. 总吨位 -->
-					<VirtualColumn v-if="columns[13].visible" show-overflow-tooltip label="总吨位" align="center" prop="allTonnage" width="80">
+					<VirtualColumn v-if="columns[13].visible" show-overflow-tooltip label="总吨位" align="center" prop="allTonnage"
+						width="80">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.allTonnage | changeNumber(changeLength) }}</div>
@@ -1235,7 +1259,8 @@ export default {
 						</template>
 					</VirtualColumn>
 					<!-- 出厂货款 -->
-					<VirtualColumn v-if="columns[14].visible" show-overflow-tooltip label="出厂货款" align="center" prop="allPaymentFactory" width="144">
+					<VirtualColumn v-if="columns[14].visible" show-overflow-tooltip label="出厂货款" align="center"
+						prop="allPaymentFactory" width="144">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.allPaymentFactory | changeNumber(changeLength) }}</div>
@@ -1244,7 +1269,8 @@ export default {
 						</template>
 					</VirtualColumn>
 					<!-- 15. 陆运费 -->
-					<VirtualColumn v-if="columns[15].visible" show-overflow-tooltip label="陆运费" align="center" prop="landFreight" width="112">
+					<VirtualColumn v-if="columns[15].visible" show-overflow-tooltip label="陆运费" align="center" prop="landFreight"
+						width="112">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.landFreight }}</div>
@@ -1253,7 +1279,8 @@ export default {
 						</template>
 					</VirtualColumn>
 					<!-- 16. 海运费 -->
-					<VirtualColumn v-if="columns[16].visible" show-overflow-tooltip label="海运费" align="center" prop="seaFreight" width="112">
+					<VirtualColumn v-if="columns[16].visible" show-overflow-tooltip label="海运费" align="center" prop="seaFreight"
+						width="112">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.seaFreight }}</div>
@@ -1262,7 +1289,8 @@ export default {
 						</template>
 					</VirtualColumn>
 					<!-- 17. 含税利润 -->
-					<VirtualColumn v-if="columns[17].visible" show-overflow-tooltip label="含税利润" align="center" prop="allProfit" width="112">
+					<VirtualColumn v-if="columns[17].visible" show-overflow-tooltip label="含税利润" align="center" prop="allProfit"
+						width="112">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.allProfit | changeNumber(changeLength) }}</div>
@@ -1271,7 +1299,8 @@ export default {
 						</template>
 					</VirtualColumn>
 					<!-- 18. 不含税利润 -->
-					<VirtualColumn v-if="columns[18].visible" show-overflow-tooltip label="不含税利润" align="center" prop="allProfitNoTax" width="112">
+					<VirtualColumn v-if="columns[18].visible" show-overflow-tooltip label="不含税利润" align="center"
+						prop="allProfitNoTax" width="112">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.allProfitNoTax | changeNumber(changeLength) }}</div>
@@ -1280,7 +1309,8 @@ export default {
 						</template>
 					</VirtualColumn>
 					<!-- 19. 销售经理 -->
-					<VirtualColumn v-if="columns[19].visible" show-overflow-tooltip label="销售经理" align="center" prop="saleManager" width="112">
+					<VirtualColumn v-if="columns[19].visible" show-overflow-tooltip label="销售经理" align="center" prop="saleManager"
+						width="112">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.saleManager }}</div>
@@ -1289,7 +1319,8 @@ export default {
 						</template>
 					</VirtualColumn>
 					<!-- 20. 录入员 -->
-					<VirtualColumn v-if="columns[20].visible" show-overflow-tooltip label="录入员" align="center" prop="userName" width="84">
+					<VirtualColumn v-if="columns[20].visible" show-overflow-tooltip label="录入员" align="center" prop="userName"
+						width="84">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.userName }}</div>
@@ -1298,7 +1329,8 @@ export default {
 						</template>
 					</VirtualColumn>
 					<!-- 21. 备注 -->
-					<VirtualColumn v-if="columns[21].visible" show-overflow-tooltip label="备注" align="center" prop="comments" width="140">
+					<VirtualColumn v-if="columns[21].visible" show-overflow-tooltip label="备注" align="center" prop="comments"
+						width="140">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.comments }}</div>
@@ -1307,19 +1339,23 @@ export default {
 						</template>
 					</VirtualColumn>
 					<!-- 22. 出库单 -->
-					<VirtualColumn v-if="columns[22].visible" show-overflow-tooltip label="出库单" align="center" prop="path" width="84">
+					<VirtualColumn v-if="columns[22].visible" show-overflow-tooltip label="出库单" align="center" prop="path"
+						width="84">
 						<template #default="scope">
-							<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
+							<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0"
+								popper-class="interactive-tooltip">
 								<div slot="content" @click.stop>
 									<div v-if="Array.isArray(scope.row.attachmentList)">
-										<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'path'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getGoodsOrder, updateGoodsOrder)" />
+										<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'path'"
+											@needToUpdate="value => handleUpdateFilePath(value, scope.row, getGoodsOrder, updateGoodsOrder)" />
 									</div>
 									<div v-else>
 										<el-tag type="danger">加载错误</el-tag>
 									</div>
 								</div>
 								<div v-if="Array.isArray(scope.row.attachmentList)">
-									<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'path'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getGoodsOrder, updateGoodsOrder)" />
+									<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'path'"
+										@needToUpdate="value => handleUpdateFilePath(value, scope.row, getGoodsOrder, updateGoodsOrder)" />
 								</div>
 								<div v-else>
 									<el-tag type="danger" v-once>加载错误</el-tag>
@@ -1328,19 +1364,23 @@ export default {
 						</template>
 					</VirtualColumn>
 					<!-- 23. 收到条附件 -->
-					<VirtualColumn v-if="columns[23].visible" show-overflow-tooltip label="收到条附件" align="center" prop="receiveProof">
+					<VirtualColumn v-if="columns[23].visible" show-overflow-tooltip label="收到条附件" align="center"
+						prop="receiveProof">
 						<template #default="scope">
-							<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
+							<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0"
+								popper-class="interactive-tooltip">
 								<div slot="content" @click.stop>
 									<div v-if="Array.isArray(scope.row.attachmentList)">
-										<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'receiveProof'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getGoodsOrder, updateGoodsOrder)" />
+										<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'receiveProof'"
+											@needToUpdate="value => handleUpdateFilePath(value, scope.row, getGoodsOrder, updateGoodsOrder)" />
 									</div>
 									<div v-else>
 										<el-tag type="danger">加载错误</el-tag>
 									</div>
 								</div>
 								<div v-if="Array.isArray(scope.row.attachmentList)">
-									<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'receiveProof'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getGoodsOrder, updateGoodsOrder)" />
+									<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'receiveProof'"
+										@needToUpdate="value => handleUpdateFilePath(value, scope.row, getGoodsOrder, updateGoodsOrder)" />
 								</div>
 								<div v-else>
 									<el-tag type="danger" v-once>加载错误</el-tag>
@@ -1349,7 +1389,8 @@ export default {
 						</template>
 					</VirtualColumn>
 					<!-- 24. 可否编辑 -->
-					<VirtualColumn v-if="columns[24].visible" show-overflow-tooltip label="可否编辑" align="center" prop="isedit" width="112">
+					<VirtualColumn v-if="columns[24].visible" show-overflow-tooltip label="可否编辑" align="center" prop="isedit"
+						width="112">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">
@@ -1360,15 +1401,19 @@ export default {
 						</template>
 					</VirtualColumn>
 					<!-- 25. 客户含税 -->
-					<VirtualColumn v-if="columns[25].visible" show-overflow-tooltip label="客户含税" align="center" prop="customerTaxIncluded" width="112">
+					<VirtualColumn v-if="columns[25].visible" show-overflow-tooltip label="客户含税" align="center"
+						prop="customerTaxIncluded" width="112">
 						<template #default="scope">
-							<el-tooltip v-if="hasInvoice(scope.row, PUBLIC_DICT_TYPE.CUSTOMER)" effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
+							<el-tooltip v-if="hasInvoice(scope.row, PUBLIC_DICT_TYPE.CUSTOMER)" effect="light" placement="top"
+								enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
 								<div slot="content" @click.stop>
 									<el-row>
-										<el-button type="text" size="mini" @click.stop="showCustomerInvoiceList(scope.row)">{{ scope.row.customerInvoiceStatus }}</el-button>
+										<el-button type="text" size="mini" @click.stop="showCustomerInvoiceList(scope.row)">{{
+											scope.row.customerInvoiceStatus }}</el-button>
 									</el-row>
 								</div>
-								<el-button type="text" size="mini" @click="showCustomerInvoiceList(scope.row)">{{ scope.row.customerInvoiceStatus }}</el-button>
+								<el-button type="text" size="mini" @click="showCustomerInvoiceList(scope.row)">{{
+									scope.row.customerInvoiceStatus }}</el-button>
 							</el-tooltip>
 							<el-tooltip v-else effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">否</div>
@@ -1379,13 +1424,16 @@ export default {
 					<!-- 26. 出厂含税 -->
 					<VirtualColumn v-if="columns[26].visible" show-overflow-tooltip label="出厂含税" align="center" width="112">
 						<template #default="scope">
-							<el-tooltip v-if="hasInvoice(scope.row, PUBLIC_DICT_TYPE.SUPPLIER)" effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
+							<el-tooltip v-if="hasInvoice(scope.row, PUBLIC_DICT_TYPE.SUPPLIER)" effect="light" placement="top"
+								enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
 								<div slot="content" @click.stop>
 									<el-row>
-										<el-button type="text" size="mini" @click.stop="showSupplierInvoiceList(scope.row)">{{ scope.row.supplierInvoiceStatus }}</el-button>
+										<el-button type="text" size="mini" @click.stop="showSupplierInvoiceList(scope.row)">{{
+											scope.row.supplierInvoiceStatus }}</el-button>
 									</el-row>
 								</div>
-								<el-button type="text" size="mini" @click="showSupplierInvoiceList(scope.row)">{{ scope.row.supplierInvoiceStatus }}</el-button>
+								<el-button type="text" size="mini" @click="showSupplierInvoiceList(scope.row)">{{
+									scope.row.supplierInvoiceStatus }}</el-button>
 							</el-tooltip>
 							<el-tooltip v-else effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">否</div>
@@ -1394,7 +1442,8 @@ export default {
 						</template>
 					</VirtualColumn>
 					<!-- 27. 审核人 -->
-					<VirtualColumn v-if="columns[27].visible" show-overflow-tooltip label="审核人" align="center" prop="checkUserName" width="112">
+					<VirtualColumn v-if="columns[27].visible" show-overflow-tooltip label="审核人" align="center"
+						prop="checkUserName" width="112">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.checkUserName || '-' }}</div>
@@ -1403,11 +1452,14 @@ export default {
 						</template>
 					</VirtualColumn>
 					<!--      右侧操作栏-->
-					<VirtualColumn vfixed="right" show-overflow-tooltip label="订单操作" align="center" class-name="small-padding fixed-width" width="250">
+					<VirtualColumn vfixed="right" show-overflow-tooltip label="订单操作" align="center"
+						class-name="small-padding fixed-width" width="250">
 						<template slot-scope="scope">
 							<div>
-								<el-button size="mini" :disabled="scope.row.isAdjusted !== 1" v-if="!isAdjustOrder" @click="handleCheckAdjust(scope.row)">查看调整单</el-button>
-								<el-button size="mini" :disabled="scope.row.isAdjusted === 1" @click="handleOrderItemInfo(scope.row)">调整单</el-button>
+								<el-button size="mini" :disabled="scope.row.isAdjusted !== 1" v-if="!isAdjustOrder"
+									@click="handleCheckAdjust(scope.row)">查看调整单</el-button>
+								<el-button size="mini" :disabled="scope.row.isAdjusted === 1"
+									@click="handleOrderItemInfo(scope.row)">调整单</el-button>
 								<el-button v-if="isAdjustOrder" size="mini" @click="handleCheckPrevious(scope.row)">查看原单据</el-button>
 								<!-- 发货单操作：单独展示发货单1 + 下拉中的发货单2/3 -->
 								<el-button size="mini" @click="handleOrder1(scope.row)">发货单1</el-button>
@@ -1432,7 +1484,8 @@ export default {
 			</template>
 		</virtual-scroll>
 		<!--    分页组件-->
-		<pagination v-if="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
+		<pagination v-if="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize"
+			@pagination="getList" />
 
 		<br />
 		<div v-if="isAdjustOrder">
@@ -1442,14 +1495,12 @@ export default {
 						<span style="font-weight: bold; font-size: 16px">调整次数示意</span>
 						<el-tooltip
 							content="负数单，表示该订单为调整订单A后，A订单产生的负数订单，数值与A订单为相反数调整一次意为订单A调整一次,产生的调整单B,记录此时该调整单B为一次调整;调整两次为，对调整单B进行调整，生成调整单C,记录该调整单C为二次调整,以此类推"
-							placement="bottom"
-							effect="light"
-							:open-delay="1000"
-						>
+							placement="bottom" effect="light" :open-delay="1000">
 							<el-button style="float: right; padding: 3px 0" type="text">解释?</el-button>
 						</el-tooltip>
 					</div>
-					<el-alert title="订单列表点击调整单后，会在此生成调整单，不能对负数单进行调整，且负数单不可修改!" type="warning" style="margin-bottom: 10px" show-icon effect="light" />
+					<el-alert title="订单列表点击调整单后，会在此生成调整单，不能对负数单进行调整，且负数单不可修改!" type="warning" style="margin-bottom: 10px"
+						show-icon effect="light" />
 					<el-tag class="custom-tag">负数单</el-tag>
 					<el-tag type="info" class="tag-spacing">调整一次</el-tag>
 					<el-tag type="success" class="tag-spacing">调整两次</el-tag>
@@ -1460,21 +1511,10 @@ export default {
 		</div>
 
 		<!-- 客户开票列表弹窗 -->
-		<el-dialog
-			:modal="false"
-			title="客户开票记录"
-			:visible.sync="customerInvoiceListVisible"
-			width="70%"
-			:before-close="closeCustomerInvoiceList"
-			class="invoice-list-dialog compact-dialog"
-			append-to-body
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:close-on-press-escape="false"
-			:destroy-on-close="false"
-		>
+		<el-dialog :modal="false" title="客户开票记录" :visible.sync="customerInvoiceListVisible" width="70%"
+			:before-close="closeCustomerInvoiceList" class="invoice-list-dialog compact-dialog" append-to-body v-dialogDrag
+			v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :close-on-press-escape="false"
+			:destroy-on-close="false">
 			<div v-if="currentOrderInfo" class="invoice-dialog-content">
 				<!-- 订单信息卡片 -->
 				<el-card class="order-info-card" shadow="hover">
@@ -1493,7 +1533,8 @@ export default {
 						</div>
 						<div class="order-info-item">
 							<span class="info-label">总货款:</span>
-							<span class="info-value total-amount">¥{{ Number(currentOrderInfo.allPayments || 0).toLocaleString() }}</span>
+							<span class="info-value total-amount">¥{{ Number(currentOrderInfo.allPayments || 0).toLocaleString()
+								}}</span>
 						</div>
 					</div>
 				</el-card>
@@ -1516,12 +1557,16 @@ export default {
 
 				<!-- 开票记录表格 -->
 				<div class="invoice-table-container">
-					<el-table v-loading="customerInvoiceListLoading" :data="customerInvoiceList" border stripe class="invoice-table compact-table" size="small" :header-cell-style="{ background: '#f8f9fa', color: '#495057', fontWeight: 600 }" :row-class-name="getInvoiceRowClassName">
+					<el-table v-loading="customerInvoiceListLoading" :data="customerInvoiceList" border stripe
+						class="invoice-table compact-table" size="small"
+						:header-cell-style="{ background: '#f8f9fa', color: '#495057', fontWeight: 600 }"
+						:row-class-name="getInvoiceRowClassName">
 						<el-table-column prop="orderDate" label="日期" align="center">
 							<template #default="scope">
 								<div class="date-cell">
 									<i class="el-icon-date"></i>
-									{{ currentOrderInfo && currentOrderInfo.orderDate ? parseTime(currentOrderInfo.orderDate, '{y}-{m}-{d}') : '-' }}
+									{{ currentOrderInfo && currentOrderInfo.orderDate ? parseTime(currentOrderInfo.orderDate,
+										'{y}-{m}-{d}') : '-' }}
 								</div>
 							</template>
 						</el-table-column>
@@ -1576,21 +1621,10 @@ export default {
 		</el-dialog>
 
 		<!-- 供应商开票列表弹窗 -->
-		<el-dialog
-			:modal="false"
-			title="供应商开票记录"
-			:visible.sync="supplierInvoiceListVisible"
-			width="75%"
-			:before-close="closeSupplierInvoiceList"
-			class="invoice-list-dialog supplier-invoice-dialog compact-dialog"
-			append-to-body
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:close-on-press-escape="false"
-			:destroy-on-close="false"
-		>
+		<el-dialog :modal="false" title="供应商开票记录" :visible.sync="supplierInvoiceListVisible" width="75%"
+			:before-close="closeSupplierInvoiceList" class="invoice-list-dialog supplier-invoice-dialog compact-dialog"
+			append-to-body v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false"
+			:close-on-press-escape="false" :destroy-on-close="false">
 			<div v-if="currentOrderInfo" class="invoice-dialog-content">
 				<!-- 订单信息卡片 -->
 				<el-card class="order-info-card" shadow="hover">
@@ -1630,12 +1664,14 @@ export default {
 
 						<!-- 该供应商的开票记录表格 -->
 						<div class="supplier-table-container">
-							<el-table :data="group.invoices" border stripe size="small" class="supplier-invoice-table" :header-cell-style="{ background: '#f8f9fa', color: '#495057', fontWeight: 600 }">
+							<el-table :data="group.invoices" border stripe size="small" class="supplier-invoice-table"
+								:header-cell-style="{ background: '#f8f9fa', color: '#495057', fontWeight: 600 }">
 								<el-table-column prop="orderDate" label="日期" align="center">
 									<template #default="scope">
 										<div class="date-cell">
 											<i class="el-icon-date"></i>
-											{{ currentOrderInfo && currentOrderInfo.orderDate ? parseTime(currentOrderInfo.orderDate, '{y}-{m}-{d}') : '-' }}
+											{{ currentOrderInfo && currentOrderInfo.orderDate ? parseTime(currentOrderInfo.orderDate,
+												'{y}-{m}-{d}') : '-' }}
 										</div>
 									</template>
 								</el-table-column>
@@ -1680,7 +1716,8 @@ export default {
 									<template #default="scope">
 										<div class="amount-cell accumulated-amount">
 											<span class="currency-symbol">¥</span>
-											{{ Number(calculateSupplierAccumulatedInvoiceAmount(group.invoices, scope.$index)).toLocaleString() }}
+											{{ Number(calculateSupplierAccumulatedInvoiceAmount(group.invoices,
+												scope.$index)).toLocaleString() }}
 										</div>
 									</template>
 								</el-table-column>
@@ -1692,7 +1729,8 @@ export default {
 		</el-dialog>
 
 		<!-- 导入结果弹窗 -->
-		<el-dialog title="导入结果" :visible.sync="importResultVisible" width="500px" :close-on-click-modal="false" append-to-body>
+		<el-dialog title="导入结果" :visible.sync="importResultVisible" width="500px" :close-on-click-modal="false"
+			append-to-body>
 			<div style="padding: 20px 0">
 				<div style="margin-bottom: 15px; font-weight: 600; font-size: 16px">导入结果：完成</div>
 				<div style="color: #606266; line-height: 1.6; white-space: pre-line">{{ importResultMessage }}</div>
@@ -2056,7 +2094,8 @@ export default {
 	display: inline-flex;
 	align-items: center;
 	justify-content: flex-start;
-	flex-wrap: nowrap; /* 避免换行导致高度不一致 */
+	flex-wrap: nowrap;
+	/* 避免换行导致高度不一致 */
 	gap: 4px;
 	max-width: 100%;
 	overflow: hidden;
