@@ -118,11 +118,22 @@ export default {
 			const response = await getTodaySelfCompanyMoneySummary(this.queryParams);
 			if (response.code === 200) {
 				this.tableData = response.data.map(item => {
+					// 对付款相关字段进行数值取反操作
+					// 原因：后端返回的付款数据为负数（表示支出），前端显示需要转换为正数（取反）
+					// 涉及的字段：本日付款、本月付款、本年付款
+					const totalExpense = item.totalExpense != null ? -item.totalExpense : null; // 本日付款取反
+					const monthlyExpense = item.monthlyExpense != null ? -item.monthlyExpense : null; // 本月付款取反
+					const yearlyExpense = item.yearlyExpense != null ? -item.yearlyExpense : null; // 本年付款取反
+
 					return {
 						...item,
 						date: this.formatDate(new Date(this.queryParams.endTime)),
 						acountsName: item.acountsName || '-',
-						bankNo: item.bankNo || '-'
+						bankNo: item.bankNo || '-',
+						// 使用取反后的付款字段值
+						totalExpense,
+						monthlyExpense,
+						yearlyExpense
 					};
 				});
 			} else {
