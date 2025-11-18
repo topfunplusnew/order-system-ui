@@ -64,106 +64,106 @@
 			"
 			@selection-change="handleSelectionChange"
 		>
-		<!-- 计提返利日期 -->
-		<el-table-column v-if="columns[0].visible" label="计提返利日期" align="center" prop="rebateDate" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.rebateDate }}</div>
-					<span>{{ scope.row.rebateDate }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
+			<!-- 计提返利日期 -->
+			<el-table-column v-if="columns[0].visible" label="计提返利日期" align="center" prop="rebateDate" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.rebateDate }}</div>
+						<span>{{ scope.row.rebateDate }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 
-		<!-- 类型 -->
-		<el-table-column v-if="columns[1].visible" label="类型" align="center" prop="rebateType" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.rebateType }}</div>
-					<span>{{ scope.row.rebateType }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
+			<!-- 类型 -->
+			<el-table-column v-if="columns[1].visible" label="类型" align="center" prop="rebateType" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.rebateType }}</div>
+						<span>{{ scope.row.rebateType }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 
-		<!-- 供应商 -->
-		<el-table-column v-if="columns[2].visible" label="供应商" align="center" prop="supplier" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.supplier }}</div>
-					<span>{{ scope.row.supplier }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
+			<!-- 供应商 -->
+			<el-table-column v-if="columns[2].visible" label="供应商" align="center" prop="supplier" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.supplier }}</div>
+						<span>{{ scope.row.supplier }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 
-		<!-- 返利方式 -->
-		<el-table-column v-if="columns[3].visible" label="返利方式" align="center" prop="rebateMethod" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.rebateMethod == 2 ? '面积' : '重箱' }}</div>
-					<span>{{ scope.row.rebateMethod == 2 ? '面积' : '重箱' }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
+			<!-- 返利方式 -->
+			<el-table-column v-if="columns[3].visible" label="返利方式" align="center" prop="rebateMethod" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.rebateMethod == 2 ? '面积' : '重箱' }}</div>
+						<span>{{ scope.row.rebateMethod == 2 ? '面积' : '重箱' }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 
-		<!-- （返利/降价）单价 -->
-		<el-table-column v-if="columns[4].visible" label="（返利/降价）单价" align="center" prop="unitPrice" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.unitPrice }}</div>
-					<span>{{ scope.row.unitPrice }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
+			<!-- （返利/降价）单价 -->
+			<el-table-column v-if="columns[4].visible" label="（返利/降价）单价" align="center" prop="unitPrice" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.unitPrice }}</div>
+						<span>{{ scope.row.unitPrice }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 
-		<!-- 金额 -->
-		<el-table-column v-if="columns[5].visible" label="金额" align="center" prop="rebate" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.rebate }}</div>
-					<span class="money">{{ scope.row.rebate }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
+			<!-- 金额 -->
+			<el-table-column v-if="columns[5].visible" label="金额" align="center" prop="rebate" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.rebate }}</div>
+						<span class="money">{{ scope.row.rebate }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 
-		<!-- 返利原因 -->
-		<el-table-column v-if="columns[6].visible" label="返利原因" align="center" prop="rebateReason" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.rebateReason }}</div>
-					<span>{{ scope.row.rebateReason }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
+			<!-- 返利原因 -->
+			<el-table-column v-if="columns[6].visible" label="返利原因" align="center" prop="rebateReason" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.rebateReason }}</div>
+						<span>{{ scope.row.rebateReason }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 
-		<!-- 收到返利日期 -->
-		<el-table-column v-if="columns[7].visible" label="收到返利日期" align="center" prop="receivedRebateDate" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ getEarliestReceivedDate(scope.row) }}</div>
-					<span>{{ getEarliestReceivedDate(scope.row) }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
+			<!-- 收到返利日期 -->
+			<el-table-column v-if="columns[7].visible" label="收到返利日期" align="center" prop="receivedRebateDate" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ getEarliestReceivedDate(scope.row) }}</div>
+						<span>{{ getEarliestReceivedDate(scope.row) }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 
-		<!-- 收到返利金额 -->
-		<el-table-column v-if="columns[8].visible" label="收到返利金额" align="center" prop="receivedRebateAmount" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ getTotalReceivedAmount(scope.row) > 0 ? getTotalReceivedAmount(scope.row) : '未收到' }}</div>
-					<span v-if="getTotalReceivedAmount(scope.row) > 0" class="money">{{ getTotalReceivedAmount(scope.row) }}</span>
-					<span v-else>未收到</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
+			<!-- 收到返利金额 -->
+			<el-table-column v-if="columns[8].visible" label="收到返利金额" align="center" prop="receivedRebateAmount" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ getTotalReceivedAmount(scope.row) > 0 ? getTotalReceivedAmount(scope.row) : '未收到' }}</div>
+						<span v-if="getTotalReceivedAmount(scope.row) > 0" class="money">{{ getTotalReceivedAmount(scope.row) }}</span>
+						<span v-else>未收到</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 
-		<!-- 返利流水 -->
-		<el-table-column label="返利流水" align="center" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">查看流水</div>
-					<el-button size="mini" type="text" @click="handleRebateDetail(scope.row)">查看流水</el-button>
-				</el-tooltip>
-			</template>
-		</el-table-column>
+			<!-- 返利流水 -->
+			<el-table-column label="返利流水" align="center" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">查看流水</div>
+						<el-button size="mini" type="text" @click="handleRebateDetail(scope.row)">查看流水</el-button>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 
 			<!-- 操作 -->
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="200px">
@@ -1058,97 +1058,101 @@ export default {
 					}
 
 					// 获取完整的返利数据
-					getRebate(row.id).then(res => {
-						if (!res.data) {
-							this.$message.error('暂无该条数据');
-							return;
-						}
-
-						const originalAmount = res.data.rebate || row.rebate; // 原返利金额
-
-						// 获取已有的流水列表
-						const existingDetailList = _.get(res.data, 'actualReceivedDetails.detailList', []) || [];
-						
-						// 计算已累计返利金额
-						const existingTotal = existingDetailList.reduce((sum, item) => {
-							return sum + (Number(item.actualReceived) || 0);
-						}, 0);
-
-						const newTotal = existingTotal + currentAmount;
-
-						// 检查是否需要备注：单次金额超标或累计金额超标
-						const needRemark = currentAmount > originalAmount || newTotal > originalAmount;
-
-						/**
-						 * 处理返利逻辑
-						 * @param {string} remark - 备注信息
-						 */
-						const processRebate = (remark = '') => {
-							// 创建新的流水记录项
-							const newItem = {
-								uuid: getUuid(),
-								actualReceived: currentAmount,
-								actualReceivedDate: date, // date已经是格式化后的字符串，不需要再转换
-								comment: remark || null
-							};
-
-							// 基于完整的返利数据创建更新对象
-							const body = _.cloneDeep(res.data);
-							
-							// 将新记录推入detailList
-							body.actualReceivedDetails = {
-								detailList: [...existingDetailList, newItem]
-							};
-
-							// 调用修改接口更新返利记录
-							updateRebate(body).then(() => {
-								this.$modal.msgSuccess('返利成功');
-								this.rebateDialogVisible = false;
-								// 重置表单
-								this.rebateForm = {
-									amount: '',
-									date: ''
-								};
-								// 刷新列表
-								this.getList();
-							}).catch(error => {
-								this.$message.error('返利失败：' + (error.msg || '未知错误'));
-							});
-						};
-
-						// 如果需要备注，弹出输入框
-						if (needRemark) {
-							let remarkMessage = '';
-							if (currentAmount > originalAmount && newTotal > originalAmount) {
-								remarkMessage = `本次返利金额(${currentAmount})和累计返利金额(${newTotal})均超过原金额(${originalAmount})，请输入备注原因：`;
-							} else if (currentAmount > originalAmount) {
-								remarkMessage = `本次返利金额(${currentAmount})超过原金额(${originalAmount})，请输入备注原因：`;
-							} else if (newTotal > originalAmount) {
-								remarkMessage = `累计返利金额(${newTotal})超过原金额(${originalAmount})，请输入备注原因：`;
+					getRebate(row.id)
+						.then(res => {
+							if (!res.data) {
+								this.$message.error('暂无该条数据');
+								return;
 							}
 
-							this.$prompt(remarkMessage, '需要备注', {
-								confirmButtonText: '确定',
-								cancelButtonText: '取消',
-								inputType: 'textarea',
-								inputValidator: val => {
-									return val && val.trim().length > 0;
-								},
-								inputErrorMessage: '请输入备注原因'
-							})
-								.then(({ value: remarkValue }) => {
-									processRebate(remarkValue);
+							const originalAmount = res.data.rebate || row.rebate; // 原返利金额
+
+							// 获取已有的流水列表
+							const existingDetailList = _.get(res.data, 'actualReceivedDetails.detailList', []) || [];
+
+							// 计算已累计返利金额
+							const existingTotal = existingDetailList.reduce((sum, item) => {
+								return sum + (Number(item.actualReceived) || 0);
+							}, 0);
+
+							const newTotal = existingTotal + currentAmount;
+
+							// 检查是否需要备注：单次金额超标或累计金额超标
+							const needRemark = currentAmount > originalAmount || newTotal > originalAmount;
+
+							/**
+							 * 处理返利逻辑
+							 * @param {string} remark - 备注信息
+							 */
+							const processRebate = (remark = '') => {
+								// 创建新的流水记录项
+								const newItem = {
+									uuid: getUuid(),
+									actualReceived: currentAmount,
+									actualReceivedDate: date, // date已经是格式化后的字符串，不需要再转换
+									comment: remark || null
+								};
+
+								// 基于完整的返利数据创建更新对象
+								const body = _.cloneDeep(res.data);
+
+								// 将新记录推入detailList
+								body.actualReceivedDetails = {
+									detailList: [...existingDetailList, newItem]
+								};
+
+								// 调用修改接口更新返利记录
+								updateRebate(body)
+									.then(() => {
+										this.$modal.msgSuccess('返利成功');
+										this.rebateDialogVisible = false;
+										// 重置表单
+										this.rebateForm = {
+											amount: '',
+											date: ''
+										};
+										// 刷新列表
+										this.getList();
+									})
+									.catch(error => {
+										this.$message.error('返利失败：' + (error.msg || '未知错误'));
+									});
+							};
+
+							// 如果需要备注，弹出输入框
+							if (needRemark) {
+								let remarkMessage = '';
+								if (currentAmount > originalAmount && newTotal > originalAmount) {
+									remarkMessage = `本次返利金额(${currentAmount})和累计返利金额(${newTotal})均超过原金额(${originalAmount})，请输入备注原因：`;
+								} else if (currentAmount > originalAmount) {
+									remarkMessage = `本次返利金额(${currentAmount})超过原金额(${originalAmount})，请输入备注原因：`;
+								} else if (newTotal > originalAmount) {
+									remarkMessage = `累计返利金额(${newTotal})超过原金额(${originalAmount})，请输入备注原因：`;
+								}
+
+								this.$prompt(remarkMessage, '需要备注', {
+									confirmButtonText: '确定',
+									cancelButtonText: '取消',
+									inputType: 'textarea',
+									inputValidator: val => {
+										return val && val.trim().length > 0;
+									},
+									inputErrorMessage: '请输入备注原因'
 								})
-								.catch(() => {
-									this.$modal.msgError('取消输入备注');
-								});
-						} else {
-							// 不需要备注，直接处理
-							processRebate();
-						}
-					}).catch(error => {
-						this.$message.error('获取返利数据失败：' + (error.msg || '未知错误'));
-					});
+									.then(({ value: remarkValue }) => {
+										processRebate(remarkValue);
+									})
+									.catch(() => {
+										this.$modal.msgError('取消输入备注');
+									});
+							} else {
+								// 不需要备注，直接处理
+								processRebate();
+							}
+						})
+						.catch(error => {
+							this.$message.error('获取返利数据失败：' + (error.msg || '未知错误'));
+						});
 				}
 			});
 		},
@@ -1440,16 +1444,45 @@ export default {
 			// 获取订单返利信息
 			getRebate(id).then(response => {
 				this.form = response.data;
+				// 保存服务器返回的原始 rebate 值
+				const originalRebate = response.data.rebate || 0;
+				// 填充选择框（在 goods 加载前先设置，避免显示问题）
+				this.form.rebateMethod = response.data.rebateMethod === 1 ? RebateType.Weight : RebateType.Square;
+				this.areaOrWeightBox = this.form.rebateMethod;
 				// 这里打开的时候要判断后端返回的数据 如果orderDetailIds有数据 那么要自动选择相关订单
 				if (!_.isEmpty(this.form.orderDetailIds)) {
 					// goods 要填充这个数组 这个是货物的id 查询货物list 筛选需要的货物
 					const ids = _.cloneDeep(this.form.orderDetailIds);
 					listOrderDetailByIds(ids).then(res => {
 						this.goods = res.rows;
+
+						// 在 goods 加载完成后，检查计算值和服务器返回的值是否一致
+						// 使用 $nextTick 确保计算属性已经更新
+						this.$nextTick(() => {
+							if (!_.isEmpty(this.goods) && this.form.unitPrice && this.form.rebateMethod) {
+								// 计算当前应该的值
+								const baseValue = this.form.rebateMethod === this.RebateType.Weight ? this.calculatedWeightBox : this.calculatedArea;
+								const calculatedValue = fix(baseValue * this.form.unitPrice);
+								// 如果计算值和服务器返回的值不一致，标记为手动编辑，使用服务器返回的值
+								if (Math.abs(Number(calculatedValue) - Number(originalRebate)) > 0.01) {
+									this.isManualEditRebate = true;
+									this.form.rebate = originalRebate;
+								} else {
+									// 如果一致，使用计算值
+									this.isManualEditRebate = false;
+									this.form.rebate = calculatedValue;
+								}
+							} else {
+								// 如果没有 goods 或缺少必要字段，使用服务器返回的值
+								this.isManualEditRebate = true;
+								this.form.rebate = originalRebate;
+							}
+						});
 					});
-					// 填充选择框
-					this.form.rebateMethod = response.data.rebateMethod === 1 ? RebateType.Weight : RebateType.Square;
-					this.areaOrWeightBox = this.form.rebateMethod;
+				} else {
+					// 如果没有 orderDetailIds，直接使用服务器返回的值
+					this.isManualEditRebate = true;
+					this.form.rebate = originalRebate;
 				}
 				// 打开修改弹窗
 				this.open = true;
@@ -1460,6 +1493,10 @@ export default {
 		submitForm() {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
+					// 确保 rebate 字段的值是最新的计算值（同步计算属性的值到 form.rebate）
+					if (this.calculatedRebate !== undefined && this.calculatedRebate !== null) {
+						this.form.rebate = Number(this.calculatedRebate) || 0;
+					}
 					this.form.rebateMethod = this.form.rebateMethod === RebateType.Weight ? 1 : 2;
 					if (this.form.id != null) {
 						updateRebate(this.form).then(() => {
