@@ -5,7 +5,7 @@
 		<el-row>
 			<el-form id="top-search-form-item" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
 				<el-form-item label="油卡号">
-					<el-input v-model="queryParams.oilCardNo" placeholder="请输入油卡号" clearable size="mini" />
+					<el-input v-model="queryParams.oilCardNo" placeholder="请输入油卡号" clearable size="mini"   @keyup.enter.native="fetchOilCardDetails" />
 				</el-form-item>
 				<el-form-item label="时间" prop="beginTime">
 					<el-date-picker v-model="queryParams.beginTime" type="date" size="mini" value-format="yyyy-MM-dd" placeholder="选择日期"></el-date-picker>

@@ -218,6 +218,15 @@ export default {
 		this.orderId && this.getGoodsOrderInfo(this.orderId);
 	},
 	methods: {
+    handleBasicInfoEnter() {
+      // 可以触发表单验证或其他操作
+      this.$refs.orderForm.validate(valid => {
+        if (valid) {
+          // 表单验证通过后的处理逻辑
+          console.log('Basic info validated');
+        }
+      });
+    },
 		/** 获取车队列表 */
 		listFleet,
 		/** 获取车辆列表 */
@@ -1237,20 +1246,29 @@ export default {
 					</el-col>
 				</el-row>
 			</el-form-item>
-			<el-form-item label="销售经理" prop="saleManager">
-				<el-input v-model="orderInfo.saleManager" type="text" size="mini" placeholder="请输入销售经理名称" style="width: 110px" />
-			</el-form-item>
+      <el-form-item label="销售经理" prop="saleManager">
+        <el-input
+            v-model="orderInfo.saleManager"
+            type="text"
+            size="mini"
+            placeholder="请输入销售经理名称"
+            style="width: 110px"
+            @keyup.enter.native="handleBasicInfoEnter"
+        />
+      </el-form-item>
 			<!-- 2025-11-1 录入人员不用录入了 -->
 			<!-- <el-form-item label="录入人员" prop="userName">
 	  <el-input v-model="orderInfo.userName" type="text" size="mini" placeholder="请输入录入人员" style="width: 110px" />
 	</el-form-item> -->
-			<el-form-item label="备注" prop="comments">
-				<el-input v-model="orderInfo.comments" type="text" size="mini" placeholder="请输入备注" />
-			</el-form-item>
-			<el-form-item label="运输方式">
-				<el-checkbox v-model="isLand">陆运</el-checkbox>
-				<el-checkbox v-model="isSea">海运</el-checkbox>
-			</el-form-item>
+      <el-form-item label="备注" prop="comments">
+        <el-input
+            v-model="orderInfo.comments"
+            type="text"
+            size="mini"
+            placeholder="请输入备注"
+            @keyup.enter.native="handleBasicInfoEnter"
+        />
+      </el-form-item>
 			<el-row v-if="isLand" style="margin: 2px 0">
 				<!-- 确认 prop="landCarNo" -->
 				<el-form-item label="车牌" prop="landCarNo">
@@ -1279,11 +1297,17 @@ export default {
 					<el-input disabled v-model="orderInfo.landDriverTel" type="text" size="mini" placeholder="请选择车牌" style="width: 120px" />
 				</el-form-item>
 				<!-- 确认 prop="fleet" -->
-				<el-form-item label="车队" prop="fleet">
-					<el-row>
-						<el-col :span="12">
-							<el-input v-model="orderInfo.fleet" type="text" size="mini" placeholder="请选择车队" />
-						</el-col>
+        <el-form-item label="车队" prop="fleet">
+          <el-row>
+            <el-col :span="12">
+              <el-input
+                  v-model="orderInfo.fleet"
+                  type="text"
+                  size="mini"
+                  placeholder="请选择车队"
+                  @keyup.enter.native="handleBasicInfoEnter"
+              />
+            </el-col>
 						<el-col :span="4">
 							<SearchOption title="车队信息" :limit-info="{}" :get-data="listFleet" query-label="车队名称" query-info="fname" :query-name="queryFleet" @commitBack="handleCommitBackFleet" @update:queryName="handleChangeFleet">
 								<template #table-columns>
@@ -1299,9 +1323,16 @@ export default {
 			</el-row>
 			<el-row v-if="isSea" style="margin: 2px 0">
 				<!-- 添加 prop="seaCarNo" -->
-				<el-form-item label="柜号(填写)" prop="seaCarNo">
-					<el-input v-model="orderInfo.seaCarNo" type="text" size="mini" placeholder="请输入柜号" style="width: 120px" />
-				</el-form-item>
+        <el-form-item label="柜号(填写)" prop="seaCarNo">
+          <el-input
+              v-model="orderInfo.seaCarNo"
+              type="text"
+              size="mini"
+              placeholder="请输入柜号"
+              style="width: 120px"
+              @keyup.enter.native="handleBasicInfoEnter"
+          />
+        </el-form-item>
 				<!-- 添加 prop="seaDriverName" -->
 				<el-form-item label="海运公司" prop="seaDriverName">
 					<el-row>

@@ -142,6 +142,7 @@ export default {
 			columnsUpdateRafId: null,
 			// 搜索查询参数的防抖函数
 			handleGetQueryParamsDebounced: null,
+
 			// 导入结果弹窗
 			importResultVisible: false,
 			importResultMessage: ''

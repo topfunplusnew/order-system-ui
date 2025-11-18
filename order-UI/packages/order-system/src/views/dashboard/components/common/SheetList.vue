@@ -724,7 +724,7 @@ export default {
 													<el-row :gutter="8">
 														<el-col :span="7">
 															<el-form-item label="我方公司" label-width="160px">
-																<el-input v-model="myCompany" placeholder="我方公司名称" size="mini" clearable />
+																<el-input v-model="myCompany" placeholder="我方公司名称" size="mini" clearable/>
 															</el-form-item>
 														</el-col>
 														<el-col :span="7">

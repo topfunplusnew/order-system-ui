@@ -504,7 +504,7 @@
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" title="返利" :visible.sync="rebateDialogVisible" width="500px" append-to-body>
 			<el-form ref="rebateForm" :model="rebateForm" :rules="rebateFormRules" label-width="120px">
 				<el-form-item label="返利金额" prop="amount">
-					<el-input v-model="rebateForm.amount" type="number" placeholder="请输入返利金额" clearable>
+					<el-input v-model="rebateForm.amount" type="number" placeholder="请输入返利金额" clearable @keyup.enter.native="handleQuery">
 						<template slot="append">元</template>
 					</el-input>
 				</el-form-item>
@@ -545,7 +545,7 @@
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" title="修改返利流水" :visible.sync="editRebateDetailDialogVisible" width="500px" append-to-body>
 			<el-form ref="editRebateDetailForm" :model="editRebateDetailForm" :rules="rebateFormRules" label-width="120px">
 				<el-form-item label="返利金额" prop="amount">
-					<el-input v-model="editRebateDetailForm.amount" type="number" placeholder="请输入返利金额" clearable>
+					<el-input v-model="editRebateDetailForm.amount" type="number" placeholder="请输入返利金额" clearable @keyup.enter.native="handleQuery">
 						<template slot="append">元</template>
 					</el-input>
 				</el-form-item>
