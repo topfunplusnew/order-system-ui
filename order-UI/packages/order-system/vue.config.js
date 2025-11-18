@@ -8,9 +8,12 @@ function resolve(dir) {
 const name = process.env.VUE_APP_TITLE || '订单管理系统'; // 网页标题
 const port = process.env.port || process.env.npm_config_port || 40080; // 端口
 
+// 支持动态输出目录（用于多版本打包）
+const outputDir = process.env.BUILD_OUTPUT_DIR || 'dist';
+
 module.exports = {
 	publicPath: process.env.NODE_ENV === 'production' ? '/' : '/',
-	outputDir: 'dist',
+	outputDir: outputDir,
 	assetsDir: 'static',
 	lintOnSave: process.env.NODE_ENV === 'development',
 	productionSourceMap: false,
