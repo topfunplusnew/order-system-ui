@@ -6,7 +6,7 @@ import SearchOption from '@/components/SearchOption.vue';
 import { listCompany } from '@/api/system/company';
 import { listBankAccount } from '@/api/system/bankAccount';
 // 不再通过字典接口获取返利方式，使用硬编码选项
-import { fix, fix_2 } from '../../../../api/tool/format';
+import { fix, fix_2 } from '@/api/tool/format';
 import { RebateType } from '@/api/tool/enums';
 import ExpandCursor from '../common/ExpandCursor.vue';
 
@@ -79,14 +79,25 @@ export default {
 	},
 	// 不再需要在 created 中请求字典，返利方式已硬编码
 	methods: {
+    recalculateColumnWidths() {
+      const tableElement = this.$refs.tableRef;
+      if (tableElement) {
+        FitColumnPlugin.resize(tableElement);
+      }
+    },
+
+    // 在数据更新后调用
+    updateExpandRows(data) {
+      if (Array.isArray(data)) {
+        this.expandRowKeys = data.filter(item => item.comments && item.comments.trim() !== '' && item.comments !== '-').map(item => item.id);
+        this.recalculateColumnWidths(); // 数据更新后重新计算列宽
+      }
+    },
+
 		listBankAccount,
 		listCompany,
 		// 更新默认展开的行
-		updateExpandRows(data) {
-			if (Array.isArray(data)) {
-				this.expandRowKeys = data.filter(item => item.comments && item.comments.trim() !== '' && item.comments !== '-').map(item => item.id);
-			}
-		},
+
 		tableRowClassName({ row }) {
 			// 所有行都显示展开图标
 			return 'expandable-row';
@@ -207,8 +218,8 @@ export default {
 			</el-col>
 		</el-row>
 		<el-row>
-			<el-table
-				id="printBox"
+      <FitTable
+          id="printBox"
 				border
 				:data="filteredOrderDetailInfoList"
 				row-key="id"
@@ -223,6 +234,7 @@ export default {
 				:summary-method="getSummaries"
 				:row-class-name="tableRowClassName"
 				:expand-row-keys="expandRowKeys"
+        fit-columns
 			>
 				<el-table-column v-if="!ban" label="操作" align="center" class-name="small-padding fixed-width" width="70px" fixed="left">
 					<template slot-scope="scope">
@@ -478,8 +490,7 @@ export default {
 						</div>
 					</template>
 				</el-table-column>
-			</el-table>
-		</el-row>
+      </FitTable>		</el-row>
 
 		<!--    返利回扣-->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" title="添加返利信息" :visible.sync="addMoneyBackVisible" width="40%" append-to-body>
