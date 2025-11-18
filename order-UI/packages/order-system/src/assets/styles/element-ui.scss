@@ -27,11 +27,11 @@ $input-placeholder-font-size: 10px !default; // placeholder字体大小
 $input-disabled-bg: #f5f7fa !default; // 禁用状态背景色
 $input-disabled-border: #e4e7ed !default; // 禁用状态边框色
 
-// 按钮相关变量
+// 按钮相关变量（统一为 mini 尺寸）
 $button-primary-color: #156fb2 !default; // 主按钮颜色
-$button-height-default: 38px !default; // 默认按钮高度
-$button-height-large: 44px !default; // 大按钮高度
-$button-height-small: 30px !default; // 小按钮高度
+$button-height-default: 22px !default; // 默认按钮高度（统一为 mini）
+$button-height-large: 22px !default; // 大按钮高度（统一为 mini）
+$button-height-small: 22px !default; // 小按钮高度（统一为 mini）
 $button-height-mini: 22px !default; // 迷你按钮高度
 
 // 分页相关变量
@@ -166,8 +166,11 @@ $user-select-properties: (
 
 .fixed-width {
 	.el-button--mini {
-		padding: 7px 10px;
+		padding: 0 5px !important; // 统一为 mini 尺寸
 		width: 60px;
+		height: 22px !important; // 统一为 mini 尺寸
+		line-height: 22px !important; // 统一为 mini 尺寸
+		font-size: 12px !important; // 统一为 mini 尺寸
 	}
 }
 
@@ -224,14 +227,14 @@ $user-select-properties: (
 // ============================================
 .el-button {
 	display: inline-block !important;
-	height: 38px !important;
-	line-height: 38px !important;
-	padding: 0 18px !important;
+	height: 22px !important; // 统一为 mini 尺寸
+	line-height: 22px !important; // 统一为 mini 尺寸
+	padding: 0 5px !important; // 统一为 mini 尺寸
 	background-color: #156fb2 !important;
 	color: #fff !important;
 	white-space: nowrap !important;
 	text-align: center !important;
-	font-size: 14px !important;
+	font-size: 12px !important; // 统一为 mini 尺寸
 	border: none !important;
 	border-radius: 2px !important;
 	cursor: pointer !important;
@@ -252,17 +255,18 @@ $user-select-properties: (
 		margin-left: 10px !important;
 	}
 
+	// 统一所有尺寸为 mini 样式
 	&.el-button--large {
-		height: 44px !important;
-		line-height: 44px !important;
-		padding: 0 25px !important;
-		font-size: 16px !important;
+		height: 22px !important;
+		line-height: 22px !important;
+		padding: 0 5px !important;
+		font-size: 12px !important;
 	}
 
 	&.el-button--small {
-		height: 30px !important;
-		line-height: 30px !important;
-		padding: 0 10px !important;
+		height: 22px !important;
+		line-height: 22px !important;
+		padding: 0 5px !important;
 		font-size: 12px !important;
 	}
 
@@ -328,9 +332,9 @@ $user-select-properties: (
 	background: transparent !important;
 	border: none !important;
 	color: #156fb2 !important;
-	padding: 0 10px !important;
+	padding: 0 5px !important; // 统一为 mini 尺寸
 	height: auto !important;
-	line-height: 24px !important;
+	line-height: 22px !important; // 统一为 mini 尺寸
 
 	&:hover:not(.is-disabled):not([disabled]) {
 		color: #333 !important;
@@ -670,12 +674,12 @@ $user-select-properties: (
 				}
 			}
 
-			// 按钮样式（参考LayUI配置）
+			// 按钮样式（统一为 mini 尺寸）
 			.el-button {
-				height: 28px !important; // 统一高度28px（参考LayUI配置）
-				line-height: 28px !important; // 行高28px
-				padding: 0 15px !important; // 左右15px（参考LayUI配置）
-				font-size: 0.8rem !important; // 字体大小0.8rem
+				height: 22px !important; // 统一为 mini 尺寸
+				line-height: 22px !important; // 统一为 mini 尺寸
+				padding: 0 5px !important; // 统一为 mini 尺寸
+				font-size: 12px !important; // 统一为 mini 尺寸
 				border-radius: 2px !important; // 圆角2px（参考LayUI配置）
 				cursor: pointer !important;
 				transition: background-color 0.3s !important; // 过渡效果
@@ -1767,9 +1771,10 @@ textarea::placeholder,
 
 	.el-table-filter__bottom {
 		.el-button {
-			height: 22px !important;
-			padding: 3px 8px !important;
-			font-size: 11px !important;
+			height: 22px !important; // 统一为 mini 尺寸
+			line-height: 22px !important; // 统一为 mini 尺寸
+			padding: 0 5px !important; // 统一为 mini 尺寸
+			font-size: 12px !important; // 统一为 mini 尺寸
 		}
 	}
 }
