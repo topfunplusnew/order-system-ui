@@ -51,39 +51,40 @@
 			</el-form-item>
 		</el-form>
 
-		<el-row>
-			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
-				<template #left>
-					<el-row :gutter="10">
-						<!-- 刷新按钮-->
+			<el-row>
+				<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
+					<template #left>
+						<el-row :gutter="10">
+							<!-- 刷新按钮-->
+							<el-col :span="1.5">
+								<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
+							</el-col>
+							<el-col :span="1.5">
+								<el-button v-hasPermi="['system:payment:import']" size="mini" @click="handleDownloadTemplate">下载导入模板</el-button>
+							</el-col>
+							<el-col :span="1.5">
+								<el-button v-hasPermi="['system:payment:import']" size="mini" @click="handleImportData">导入模板</el-button>
+							</el-col>
+							<!--      解开了新增付款信息-->
+							<el-col :span="1.5" style="margin-left: 15px">
+								<el-button v-hasPermi="['system:payment:add']" type="danger" size="mini" @click="handleAdd">新增付款信息</el-button>
+							</el-col>
+						</el-row>
+					</template>
+					<template #print>
 						<el-col :span="1.5">
-							<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
+							<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
 						</el-col>
+					</template>
+					<!--        导出-->
+					<template #export>
 						<el-col :span="1.5">
-							<el-button v-hasPermi="['system:payment:import']" size="mini" @click="handleDownloadTemplate">下载导入模板</el-button>
+							<el-button v-hasPermi="['system:payment:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
 						</el-col>
-						<el-col :span="1.5">
-							<el-button v-hasPermi="['system:payment:import']" size="mini" @click="handleImportData">导入模板</el-button>
-						</el-col>
-						<!--      解开了新增付款信息-->
-						<el-col :span="1.5" style="margin-left: 15px">
-							<el-button v-hasPermi="['system:payment:add']" type="danger" size="mini" @click="handleAdd">新增付款信息</el-button>
-						</el-col>
-					</el-row>
-				</template>
-				<template #print>
-					<el-col :span="1.5">
-						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
-					</el-col>
-				</template>
-				<!--        导出-->
-				<template #export>
-					<el-col :span="1.5">
-						<el-button v-hasPermi="['system:payment:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
-					</el-col>
-				</template>
-			</right-toolbar>
-		</el-row>
+					</template>
+				</right-toolbar>
+			</el-row>
+		</div>
 
 		<el-table id="printBox" v-loading="loading" v-horizontal-scroll="'always'" :data="paymentList" size="mini" border @selection-change="handleSelectionChange" ref="paymentTable">
 			<el-table-column label="id" align="center" prop="id" v-if="columns[0].visible" show-overflow-tooltip>
@@ -294,7 +295,7 @@
 			</el-table-column>
 		</el-table>
 
-		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" z />
+		<pagination v-show="total > 0" v-fixed="{ position: 'bottom', zIndex: 1000, offset: 0 }" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" z />
 
 		<!-- 导入结果弹窗 -->
 		<el-dialog title="导入结果" :visible.sync="importResultVisible" width="500px" :close-on-click-modal="false" append-to-body>
@@ -1876,6 +1877,53 @@ export default {
 }
 .app-container {
 	position: relative;
+}
+
+/* 固定顶部区域样式 */
+.fixed-top-section {
+	background-color: #fff;
+	padding: 10px;
+	border-radius: 4px;
+	margin-bottom: 10px;
+}
+
+/* 固定表头样式 - 使用 sticky 定位 */
+::v-deep #printBox {
+	position: relative;
+}
+
+/* 固定表头行（包含id、日期等列标题的那一行） */
+::v-deep #printBox .el-table__header-wrapper {
+	position: sticky !important;
+	top: 0 !important;
+	z-index: 99 !important;
+	background-color: #fff !important;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* 确保表头单元格也有背景色 */
+::v-deep #printBox .el-table__header-wrapper th {
+	background-color: #fff !important;
+	position: relative;
+}
+
+/* 确保表头行在滚动时保持固定 */
+::v-deep #printBox .el-table__header {
+	position: sticky !important;
+	top: 0 !important;
+	z-index: 99 !important;
+	background-color: #fff !important;
+}
+
+/* 确保搜索表单有合适的间距 */
+#top-search-form-item {
+	margin-bottom: 10px;
+}
+
+/* 确保分页组件有合适的样式 */
+::v-deep .pagination-container {
+	padding: 10px 0;
+	background-color: #fff;
 }
 .app-container.mask-overlay {
 	position: relative;

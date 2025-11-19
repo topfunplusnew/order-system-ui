@@ -57,7 +57,16 @@
 			</right-toolbar>
 		</el-row>
 
-		<el-table id="printBox" v-horizontal-scroll="'always'" v-loading="loading" border :data="receiveMoneyList" size="mini" @selection-change="handleSelectionChange">
+    <el-table
+        id="printBox"
+        v-horizontal-scroll="'always'"
+        v-loading="loading"
+        border
+        :data="receiveMoneyList"
+        size="mini"
+        @selection-change="handleSelectionChange"
+        :max-height="600"
+    >
 			<el-table-column label="ID" align="center" prop="id" width="60" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">

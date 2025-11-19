@@ -1,48 +1,51 @@
 <template>
 	<div class="app-container">
-		<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
-			<el-form-item label="日期" prop="fundsDate">
-				<el-input v-model="queryParams.fundsDate" placeholder="请输入日期" clearable @keyup.enter.native="handleQuery" />
-			</el-form-item>
-			<el-form-item label="对方户名" prop="otherAcountsName">
-				<el-input v-model="queryParams.otherAcountsName" placeholder="请输入对方户名" clearable @keyup.enter.native="handleQuery" />
-			</el-form-item>
-			<el-form-item label="对方账号" prop="otherBankNo">
-				<el-input v-model="queryParams.otherBankNo" placeholder="请输入对方账号" clearable @keyup.enter.native="handleQuery" />
-			</el-form-item>
-			<el-form-item label="对方开户行" prop="otherBankName">
-				<el-input v-model="queryParams.otherBankName" placeholder="请输入对方开户999行" clearable @keyup.enter.native="handleQuery" />
-			</el-form-item>
-			<el-form-item label="对方公司" prop="companyName">
-				<el-input v-model="queryParams.companyName" placeholder="请输入对方公司" clearable @keyup.enter.native="handleQuery" />
-			</el-form-item>
-			<el-form-item>
-				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
-			</el-form-item>
-		</el-form>
+		<!-- 固定顶部区域：搜索表单和工具栏 -->
+		<div class="fixed-top-section" ref="fixedTopSection" v-fixed="{ position: 'top', zIndex: 1000, offset: 0 }">
+			<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
+				<el-form-item label="日期" prop="fundsDate">
+					<el-input v-model="queryParams.fundsDate" placeholder="请输入日期" clearable @keyup.enter.native="handleQuery" />
+				</el-form-item>
+				<el-form-item label="对方户名" prop="otherAcountsName">
+					<el-input v-model="queryParams.otherAcountsName" placeholder="请输入对方户名" clearable @keyup.enter.native="handleQuery" />
+				</el-form-item>
+				<el-form-item label="对方账号" prop="otherBankNo">
+					<el-input v-model="queryParams.otherBankNo" placeholder="请输入对方账号" clearable @keyup.enter.native="handleQuery" />
+				</el-form-item>
+				<el-form-item label="对方开户行" prop="otherBankName">
+					<el-input v-model="queryParams.otherBankName" placeholder="请输入对方开户999行" clearable @keyup.enter.native="handleQuery" />
+				</el-form-item>
+				<el-form-item label="对方公司" prop="companyName">
+					<el-input v-model="queryParams.companyName" placeholder="请输入对方公司" clearable @keyup.enter.native="handleQuery" />
+				</el-form-item>
+				<el-form-item>
+					<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+					<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+				</el-form-item>
+			</el-form>
 
-		<el-row :gutter="10" class="mb8">
-			<el-col :span="1.5">
-				<el-button v-hasPermi="['system:paymentapply:add']" type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd">新增付款信息</el-button>
-			</el-col>
-			<el-col :span="1.5">
-				<el-button v-hasPermi="['system:paymentapply:remove']" type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete">删除</el-button>
-			</el-col>
-			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
-				<template #print>
-					<el-col :span="1.5">
-						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
-					</el-col>
-				</template>
-				<!--        导出-->
-				<template #export>
-					<el-col :span="1.5">
-						<el-button v-hasPermi="['system:company:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
-					</el-col>
-				</template>
-			</right-toolbar>
-		</el-row>
+			<el-row :gutter="10" class="mb8">
+				<el-col :span="1.5">
+					<el-button v-hasPermi="['system:paymentapply:add']" type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd">新增付款信息</el-button>
+				</el-col>
+				<el-col :span="1.5">
+					<el-button v-hasPermi="['system:paymentapply:remove']" type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete">删除</el-button>
+				</el-col>
+				<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
+					<template #print>
+						<el-col :span="1.5">
+							<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
+						</el-col>
+					</template>
+					<!--        导出-->
+					<template #export>
+						<el-col :span="1.5">
+							<el-button v-hasPermi="['system:company:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
+						</el-col>
+					</template>
+				</right-toolbar>
+			</el-row>
+		</div>
 
 		<!--    列表-->
 		<el-table id="printBox" v-horizontal-scroll="'always'" v-loading="loading" border :data="paymentApplyList" @selection-change="handleSelectionChange">
@@ -179,7 +182,7 @@
 			</el-table-column>
 		</el-table>
 
-		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
+		<pagination v-show="total > 0" v-fixed="{ position: 'bottom', zIndex: 1000, offset: 0 }" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 2.添加或修改付款信息对话框 -->
 		<el-dialog
@@ -674,3 +677,33 @@ export default {
 	}
 };
 </script>
+
+<style scoped>
+/* 固定顶部区域样式 */
+.fixed-top-section {
+	background-color: #fff;
+	padding: 10px;
+	border-radius: 4px;
+	margin-bottom: 10px;
+}
+
+/* 固定表头样式 - 使用 sticky 定位 */
+::v-deep .el-table__header-wrapper {
+	position: sticky !important;
+	top: 0 !important;
+	z-index: 99 !important;
+	background-color: #fff !important;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* 确保搜索表单有合适的间距 */
+#top-search-form-item {
+	margin-bottom: 10px;
+}
+
+/* 确保分页组件有合适的样式 */
+::v-deep .pagination-container {
+	padding: 10px 0;
+	background-color: #fff;
+}
+</style>

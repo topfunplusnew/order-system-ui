@@ -432,7 +432,8 @@ export default {
 
 <template>
   <div>
-    <el-row>
+    <!-- 固定标题区域 -->
+    <el-row v-fixed="{ position: 'top', zIndex: 1000 }" style="background-color: #fff; padding: 10px 0;">
       <el-col :span="8">
         <span style="font-weight: bolder">订单货物详情列表</span>
       </el-col>
@@ -953,6 +954,15 @@ export default {
       }
     }
   }
+}
+
+/* 固定表头样式 - 确保表头在滚动时保持固定 */
+::v-deep .el-table__header-wrapper {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 99 !important;
+  background-color: #fff !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05) !important;
 }
 
 /* 确保表头和表体的列宽同步 - 通过 JavaScript 设置，这里不强制覆盖 */
