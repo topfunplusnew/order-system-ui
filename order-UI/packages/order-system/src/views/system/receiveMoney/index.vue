@@ -602,10 +602,17 @@ export default {
 		'form.companyType'(newVal, oldVal) {
 			// 如果类型发生变化（不是初始化），清空相关字段
 			if (oldVal !== undefined && oldVal !== null && newVal !== oldVal) {
-				this.clearCompanyTypeFields(newVal);
+				// 如果切换到支付费用，清空隐藏的表单项
+				if (newVal === PAYMENT_TARGET_TYPE.PAYMENT_FEE) {
+					this.clearPaymentFeeHiddenFields();
+				}
+				// 如果从支付费用切换到其他类型，需要重置对方银行卡类型为默认值
+				if (oldVal === PAYMENT_TARGET_TYPE.PAYMENT_FEE && newVal !== PAYMENT_TARGET_TYPE.PAYMENT_FEE) {
+					this.resetOtherBankCardType();
+				}
 			} else if (newVal === PAYMENT_TARGET_TYPE.PAYMENT_FEE) {
-				// 初始化时如果直接选择支付费用，也要清空
-				this.clearCompanyTypeFields(newVal);
+				// 初始化时如果直接选择支付费用，也要清空隐藏的表单项
+				this.clearPaymentFeeHiddenFields();
 			}
 		}
 	},
@@ -674,99 +681,31 @@ export default {
     this.clearUploaderState();
   },
 	methods: {
-
-		// 分片渲染数据
-		renderDataInChunks(data) {
-			// 如果正在渲染，先取消
-			if (this.renderTimer) {
-				cancelAnimationFrame(this.renderTimer);
-				this.renderTimer = null;
+		// 重置对方银行卡类型为默认值（银行活期存款）
+		resetOtherBankCardType() {
+			this.$set(this.form, 'otherBankCardType', BankAcceptanceType.BANK_CASH);
+			// 如果存在对方银行账户类型组件引用，也需要更新组件状态
+			if (this.$refs.otherSelectedBankType) {
+				this.$refs.otherSelectedBankType.localSelectType = BankAcceptanceType.BANK_CASH;
 			}
-
-			const total = data.length;
-
-			// 如果数据量很小，直接一次性渲染
-			if (total <= this.renderChunkSize) {
-				this.renderedData = [...data];
-				this.isRendering = false;
-				this.renderProgress = 0;
-				return;
-			}
-
-			// 重置状态
-			this.renderedData = [];
-			this.isRendering = true;
-			this.renderProgress = 0;
-
-			let currentIndex = 0;
-
-			const renderChunk = () => {
-				// 计算本次要渲染的数据范围
-				const endIndex = Math.min(currentIndex + this.renderChunkSize, total);
-				const chunk = data.slice(currentIndex, endIndex);
-
-				// 添加到已渲染数据
-				this.renderedData = [...this.renderedData, ...chunk];
-
-				// 更新进度
-				currentIndex = endIndex;
-				this.renderProgress = Math.round((currentIndex / total) * 100);
-
-				// 如果还有数据未渲染，继续下一批
-				if (currentIndex < total) {
-					this.renderTimer = requestAnimationFrame(renderChunk);
-				} else {
-					// 渲染完成
-					this.isRendering = false;
-					this.renderProgress = 100;
-					this.renderTimer = null;
-
-					// 延迟隐藏进度条，让用户看到完成状态
-					setTimeout(() => {
-						this.renderProgress = 0;
-					}, 500);
-				}
-			};
-
-			// 开始渲染
-			this.renderTimer = requestAnimationFrame(renderChunk);
 		},
-		// 处理窗口大小变化
-		handleResize() {
-			// 使用防抖，避免频繁触发
-			if (this.resizeTimer) {
-				clearTimeout(this.resizeTimer);
-			}
-			this.resizeTimer = setTimeout(() => {
-				// 表格布局已由原生 table 处理，无需额外操作
-			}, 100);
-		},
-		// 重置BankType组件状态
-		resetBankTypeComponents() {
-				this.$nextTick(() => {
-				if (this.$refs.selfSelectedBankType?.resetComponentState) {
-					this.$refs.selfSelectedBankType.resetComponentState();
-				}
-				if (this.$refs.otherSelectedBankType?.resetComponentState) {
+		// 清空选择"支付费用"时隐藏的表单项的值
+		clearPaymentFeeHiddenFields() {
+			// 清空对方银行账户相关字段
+			this.$set(this.form, 'otherBankCardType', null);
+			this.$set(this.form, 'otherAcountsName', null);
+			this.$set(this.form, 'otherBankNo', null);
+			this.$set(this.form, 'otherBankName', null);
+			// 清空对方公司相关字段
+			this.$set(this.form, 'companyName', null);
+			this.$set(this.form, 'companyId', null);
+			// 如果存在对方银行账户类型组件引用，也需要重置组件状态
+			if (this.$refs.otherSelectedBankType) {
+				this.$refs.otherSelectedBankType.localSelectType = null;
+				// 重置组件状态
+				if (this.$refs.otherSelectedBankType.resetComponentState) {
 					this.$refs.otherSelectedBankType.resetComponentState();
 				}
-			});
-		},
-		// 清理上传组件状态
-		clearUploaderState() {
-			if (this.$refs.attachmentUploader) {
-				this.$refs.attachmentUploader.clearUploadedFiles();
-			}
-		},
-		// 清空公司类型相关字段
-		clearCompanyTypeFields(companyType) {
-			this.form.companyName = null;
-			this.form.companyId = null;
-			// 如果切换到支付费用，还需要清空银行账户相关字段
-			if (companyType === PAYMENT_TARGET_TYPE.PAYMENT_FEE) {
-				this.form.otherAcountsName = null;
-				this.form.otherBankNo = null;
-				this.form.otherBankName = null;
 			}
 		},
 		// 下拉菜单命令处理
