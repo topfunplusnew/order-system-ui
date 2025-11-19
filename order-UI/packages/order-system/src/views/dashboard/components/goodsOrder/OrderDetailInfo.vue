@@ -189,30 +189,31 @@ export default {
             const columnProp = column ? column.property : null;
 
             // 测量表头宽度
-            if (headerCells.length > 0) {
-              const headerCell = headerCells[0];
-              const headerContent = headerCell.querySelector('.cell');
-              if (headerContent) {
-                const headerText = headerContent.textContent || headerContent.innerText || '';
-                const headerStyle = window.getComputedStyle(headerContent);
-                const tempDiv = document.createElement('div');
-                tempDiv.style.cssText = `
-                  position: absolute;
-                  visibility: hidden;
-                  white-space: nowrap;
-                  font-size: ${headerStyle.fontSize};
-                  font-family: ${headerStyle.fontFamily};
-                  font-weight: ${headerStyle.fontWeight};
-                  padding: ${headerStyle.padding};
-                  left: -9999px;
-                  top: -9999px;
-                `;
-                tempDiv.textContent = headerText;
-                document.body.appendChild(tempDiv);
-                maxWidth = Math.max(maxWidth, tempDiv.offsetWidth);
-                document.body.removeChild(tempDiv);
-              }
-            }
+            // if (headerCells.length > 0) {
+            //   const headerCell = headerCells[0];
+            //   const headerContent = headerCell.querySelector('.cell');
+            //   if (headerContent) {
+            //     const headerText = headerContent.textContent || headerContent.innerText || '';
+            //     const headerStyle = window.getComputedStyle(headerContent);
+            //     const tempDiv = document.createElement('div');
+            //     tempDiv.style.cssText = `
+            //       position: absolute;
+            //       visibility: hidden;
+            //       white-space: nowrap;
+            //       font-size: ${headerStyle.fontSize};
+            //       font-family: ${headerStyle.fontFamily};
+            //       font-weight: ${headerStyle.fontWeight};
+            //       padding: 0;
+            //       margin: 0;
+            //       left: -9999px;
+            //       top: -9999px;
+            //     `;
+            //     tempDiv.textContent = headerText;
+            //     document.body.appendChild(tempDiv);
+            //     maxWidth = Math.max(maxWidth, tempDiv.offsetWidth);
+            //     document.body.removeChild(tempDiv);
+            //   }
+            // }
 
             // 测量数据单元格宽度（从数据源获取完整文本）
             if (columnProp && this.filteredOrderDetailInfoList && this.filteredOrderDetailInfoList.length > 0) {
@@ -241,7 +242,8 @@ export default {
                       font-size: ${computedStyle.fontSize};
                       font-family: ${computedStyle.fontFamily};
                       font-weight: ${computedStyle.fontWeight};
-                      padding: ${computedStyle.padding};
+                      padding: 0;
+                      margin: 0;
                       left: -9999px;
                       top: -9999px;
                     `;
@@ -254,10 +256,10 @@ export default {
               });
             }
 
-            // 设置列宽
+            // 设置列宽 - 只添加最小间距，让文字刚好显示
             if (maxWidth > 0) {
-              const padding = 50;
-              const finalWidth = Math.max(maxWidth + padding, 80);
+              const padding = 0; // 最小间距，确保文字不被截断
+              const finalWidth = Math.max(maxWidth + padding, 60);
               columnWidths[colName] = finalWidth;
             }
           });
@@ -437,7 +439,9 @@ export default {
     </el-row>
     <el-row>
       <el-table ref="tableRef" border :data="filteredOrderDetailInfoList" row-key="id" max-height="700" fit
-                :cell-style="() => ({ padding: '.5px' })" size="mini" show-summary :summary-method="getSummaries"
+                :cell-style="() => ({ padding: '0', textAlign: 'center' })" 
+                :header-cell-style="{ padding: '0', textAlign: 'center' }" 
+                size="mini" show-summary :summary-method="getSummaries"
                 :row-class-name="tableRowClassName" :expand-row-keys="expandRowKeys"
                 @header-click="handleHeaderClick" @expand-change="handleExpandChange">
 
@@ -455,7 +459,7 @@ export default {
             </ExpandCursor>
           </template>
         </el-table-column>
-        <el-table-column label="供应商" align="center" prop="supplier" show-overflow-tooltip min-width="150">
+        <el-table-column label="供应商" align="center" prop="supplier" show-overflow-tooltip min-width="200">
           <template slot-scope="scope">
             <ExpandCursor>
               {{ scope.row.supplier }}
@@ -476,42 +480,42 @@ export default {
             </ExpandCursor>
           </template>
         </el-table-column>
-        <el-table-column label="厚度" align="center" prop="height" show-overflow-tooltip>
+        <el-table-column label="厚度" align="center" prop="height">
           <template slot-scope="scope">
             <ExpandCursor>
               {{ scope.row.height }}
             </ExpandCursor>
           </template>
         </el-table-column>
-        <el-table-column label="长度" align="center" prop="length" show-overflow-tooltip>
+        <el-table-column label="长度" align="center" prop="length">
           <template slot-scope="scope">
             <ExpandCursor>
               {{ scope.row.length }}
             </ExpandCursor>
           </template>
         </el-table-column>
-        <el-table-column label="宽度" align="center" prop="width" show-overflow-tooltip>
+        <el-table-column label="宽度" align="center" prop="width">
           <template slot-scope="scope">
             <ExpandCursor>
               {{ scope.row.width }}
             </ExpandCursor>
           </template>
         </el-table-column>
-        <el-table-column label="每包片数" align="center" prop="piecesPerPack" show-overflow-tooltip>
+        <el-table-column label="每包片数" align="center" prop="piecesPerPack">
           <template slot-scope="scope">
             <ExpandCursor>
               {{ scope.row.piecesPerPack }}
             </ExpandCursor>
           </template>
         </el-table-column>
-        <el-table-column label="包数" align="center" prop="packs" show-overflow-tooltip>
+        <el-table-column label="包数" align="center" prop="packs" >
           <template slot-scope="scope">
             <ExpandCursor>
               {{ scope.row.packs }}
             </ExpandCursor>
           </template>
         </el-table-column>
-        <el-table-column label="出厂片数" align="center" prop="pieces" show-overflow-tooltip>
+        <el-table-column label="出厂片数" align="center" prop="pieces">
           <template slot-scope="scope">
             <ExpandCursor>
               {{ scope.row.pieces }}
@@ -533,7 +537,7 @@ export default {
             </ExpandCursor>
           </template>
         </el-table-column>
-        <el-table-column label="杂费" align="center" prop="sundryCost" show-overflow-tooltip min-width="80">
+        <el-table-column label="杂费" align="center" prop="sundryCost" min-width="50">
           <template slot-scope="scope">
             <ExpandCursor>
               {{ scope.row.sundryCost }}
@@ -568,7 +572,7 @@ export default {
             </ExpandCursor>
           </template>
         </el-table-column>
-        <el-table-column label="总货款杂费" align="center" prop="paymentsWithSundry" show-overflow-tooltip min-width="100">
+        <el-table-column label="总货款杂费" align="center" prop="paymentsWithSundry" show-overflow-tooltip min-width="70">
           <template slot-scope="scope">
             <ExpandCursor>
               {{ scope.row.paymentsWithSundry }}
@@ -818,17 +822,137 @@ export default {
   border-radius: 6px;
 }
 
+/* 表格样式：内容紧贴边框，零间距布局 */
 ::v-deep .el-table {
   width: 100% !important;
   table-layout: fixed; /* 使用 fixed 布局，确保表头和表体列宽一致 */
-}
-
-/* 确保单元格内容可以正确测量宽度 */
-::v-deep .el-table .cell {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  word-break: normal;
+  
+  /* 表头和表体单元格 - 零内边距，内容紧贴边框 */
+  th, td {
+    padding: 0 !important; /* 零内边距，内容紧贴边框 */
+    margin: 0 !important;
+    text-align: center !important;
+    vertical-align: middle;
+    line-height: 1.1 !important; /* 最小行高，更紧凑 */
+  }
+  
+  /* 单元格内容容器 - 零间距，内容紧贴 */
+  .cell {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: normal;
+    padding: 0 !important;
+    margin: 0 !important;
+    text-align: center !important;
+    line-height: 1.1 !important;
+    
+    /* 确保 .cell 内的所有直接子元素都零间距 */
+    > * {
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+  }
+  
+  /* 表头样式 */
+  thead th {
+    padding: 0 !important;
+    text-align: center !important;
+    font-weight: 500;
+    line-height: 1.1 !important;
+    
+    .cell {
+      text-align: center !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      line-height: 1.1 !important;
+      
+      > * {
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+    }
+  }
+  
+  /* 表体样式 */
+  tbody td {
+    padding: 0 !important;
+    text-align: center !important;
+    line-height: 1.1 !important;
+    
+    .cell {
+      text-align: center !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      line-height: 1.1 !important;
+      
+      > * {
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+    }
+  }
+  
+  /* 合计行样式 */
+  .el-table__footer-wrapper {
+    tbody td {
+      padding: 0 !important;
+      text-align: center !important;
+      line-height: 1.1 !important;
+      
+      .cell {
+        text-align: center !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        line-height: 1.1 !important;
+        
+        > * {
+          margin: 0 !important;
+          padding: 0 !important;
+        }
+      }
+    }
+  }
+  
+  /* 最小行高，让内容紧贴 */
+  tr {
+    height: auto !important;
+    line-height: 1.1 !important;
+  }
+  
+  /* 确保边框紧贴内容 */
+  .el-table__header-wrapper,
+  .el-table__body-wrapper,
+  .el-table__footer-wrapper {
+    th, td {
+      padding: 0 !important;
+    }
+  }
+  
+  /* ExpandCursor 组件零间距样式 - 确保所有列都紧贴边框 */
+  .expand-cursor-wrapper {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    
+    .text-container {
+      margin: 0 !important;
+      padding: 0 !important;
+      flex: 1 !important;
+      min-width: 0 !important;
+      
+      .text-content {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        display: block !important;
+        text-align: center !important;
+      }
+    }
+  }
 }
 
 /* 确保表头和表体的列宽同步 - 通过 JavaScript 设置，这里不强制覆盖 */

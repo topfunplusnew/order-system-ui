@@ -385,7 +385,7 @@ export default {
 		.text-container {
 			height: 24px; // 与 Element UI mini 尺寸一致
 			line-height: 24px;
-			padding: 0 8px;
+			padding: 0px;
 			font-size: 11px;
 			color: #181818;
 			font-weight: bold;
@@ -407,7 +407,7 @@ export default {
 		cursor: pointer;
 		color: #409eff;
 		font-size: 12px;
-		margin-left: 4px;
+		margin-left: 0px;
 		border-radius: 2px;
 		transition: all 0.3s;
 		position: absolute;
