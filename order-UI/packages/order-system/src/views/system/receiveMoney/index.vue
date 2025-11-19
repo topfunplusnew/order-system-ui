@@ -611,22 +611,17 @@ export default {
 		'form.companyType'(newVal, oldVal) {
 			// 如果类型发生变化（不是初始化），清空相关字段
 			if (oldVal !== undefined && oldVal !== null && newVal !== oldVal) {
-				// 清空公司相关字段
-				this.form.companyName = null;
-				this.form.companyId = null;
-				// 如果切换到支付费用，还需要清空银行账户相关字段
+				// 如果切换到支付费用，清空隐藏的表单项
 				if (newVal === PAYMENT_TARGET_TYPE.PAYMENT_FEE) {
-					this.form.otherAcountsName = null;
-					this.form.otherBankNo = null;
-					this.form.otherBankName = null;
+					this.clearPaymentFeeHiddenFields();
+				}
+				// 如果从支付费用切换到其他类型，需要重置对方银行卡类型为默认值
+				if (oldVal === PAYMENT_TARGET_TYPE.PAYMENT_FEE && newVal !== PAYMENT_TARGET_TYPE.PAYMENT_FEE) {
+					this.resetOtherBankCardType();
 				}
 			} else if (newVal === PAYMENT_TARGET_TYPE.PAYMENT_FEE) {
-				// 初始化时如果直接选择支付费用，也要清空
-				this.form.companyName = null;
-				this.form.companyId = null;
-				this.form.otherAcountsName = null;
-				this.form.otherBankNo = null;
-				this.form.otherBankName = null;
+				// 初始化时如果直接选择支付费用，也要清空隐藏的表单项
+				this.clearPaymentFeeHiddenFields();
 			}
 		}
 	},
@@ -644,6 +639,33 @@ export default {
 		}
 	},
 	methods: {
+		// 重置对方银行卡类型为默认值（银行活期存款）
+		resetOtherBankCardType() {
+			this.$set(this.form, 'otherBankCardType', BankAcceptanceType.BANK_CASH);
+			// 如果存在对方银行账户类型组件引用，也需要更新组件状态
+			if (this.$refs.otherSelectedBankType) {
+				this.$refs.otherSelectedBankType.localSelectType = BankAcceptanceType.BANK_CASH;
+			}
+		},
+		// 清空选择"支付费用"时隐藏的表单项的值
+		clearPaymentFeeHiddenFields() {
+			// 清空对方银行账户相关字段
+			this.$set(this.form, 'otherBankCardType', null);
+			this.$set(this.form, 'otherAcountsName', null);
+			this.$set(this.form, 'otherBankNo', null);
+			this.$set(this.form, 'otherBankName', null);
+			// 清空对方公司相关字段
+			this.$set(this.form, 'companyName', null);
+			this.$set(this.form, 'companyId', null);
+			// 如果存在对方银行账户类型组件引用，也需要重置组件状态
+			if (this.$refs.otherSelectedBankType) {
+				this.$refs.otherSelectedBankType.localSelectType = null;
+				// 重置组件状态
+				if (this.$refs.otherSelectedBankType.resetComponentState) {
+					this.$refs.otherSelectedBankType.resetComponentState();
+				}
+			}
+		},
 		// 下拉菜单命令处理
 		handleCommand(command, row) {
 			switch (command) {
