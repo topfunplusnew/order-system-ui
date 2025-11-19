@@ -320,9 +320,9 @@ export default {
 			</el-col>
 		</el-row>
 		<el-table id="printBox" :data="freightList" v-loading="loading" border fit size="mini" style="width: 100%; margin-top: 20px">
-			<el-table-column v-if="columns[0].visible" show-overflow-tooltip prop="paymentState" label="运费状态" align="center" width="100" />
-			<el-table-column v-if="columns[1].visible" show-overflow-tooltip prop="paymentDate" label="支付时间" align="center" width="160" />
-			<el-table-column v-if="columns[2].visible" show-overflow-tooltip label="运输类型" align="center" width="100">
+			<el-table-column v-if="columns[0].visible" show-overflow-tooltip prop="paymentState" label="运费状态" align="center" width="60" />
+			<el-table-column v-if="columns[1].visible" show-overflow-tooltip prop="paymentDate" label="支付时间" align="center" width="120" />
+			<el-table-column v-if="columns[2].visible" show-overflow-tooltip label="运输类型" align="center" width="60">
 				<template #default="scope">
 					<span
 						:class="{
@@ -335,16 +335,11 @@ export default {
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[3].visible" show-overflow-tooltip prop="documentDate" label="订单日期" align="center" width="120" />
-			<el-table-column v-if="columns[13].visible" show-overflow-tooltip prop="source" label="订单来源" align="center" width="100" />
+			<el-table-column v-if="columns[13].visible" show-overflow-tooltip prop="source" label="订单来源" align="center" width="60" />
 			<el-table-column v-if="columns[14].visible" show-overflow-tooltip prop="checkState" label="订单状态" align="center" width="100" />
 			<el-table-column v-if="columns[4].visible" show-overflow-tooltip prop="customerOrStorehouseName" label="客户/仓库名称" align="center" width="150" />
-			<el-table-column v-if="columns[5].visible" show-overflow-tooltip prop="entryUser" label="录入员" align="center" width="100" />
-			<el-table-column show-overflow-tooltip prop="fleet" label="司机" align="center" width="120">
-				<template #default="scope">
-					{{ scope.row.transportType === 'sea' ? '无' : scope.row.driverName }}
-				</template>
-			</el-table-column>
-			<el-table-column v-if="columns[6].visible" show-overflow-tooltip prop="fleet" label="车队" align="center" width="120">
+			<el-table-column v-if="columns[5].visible" show-overflow-tooltip prop="entryUser" label="录入员" align="center" width="60" />
+			<el-table-column v-if="columns[6].visible" show-overflow-tooltip prop="fleet" label="车队" align="center" width="80">
 				<template #default="scope">
 					{{ scope.row.transportType === 'sea' ? '无' : scope.row.fleet }}
 				</template>

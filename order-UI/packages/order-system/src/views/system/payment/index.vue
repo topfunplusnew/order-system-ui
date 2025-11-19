@@ -1771,7 +1771,7 @@ export default {
 /* 固定顶部区域样式 */
 .fixed-top-section {
 	background-color: #fff;
-	padding: 10px;
+	padding: 2px;
 	border-radius: 4px;
 	margin-bottom: 10px;
 }
@@ -1811,7 +1811,7 @@ export default {
 
 /* 确保分页组件有合适的样式 */
 ::v-deep .pagination-container {
-	padding: 10px 0;
+	padding: 3px 0;
 	background-color: #fff;
 }
 .app-container.mask-overlay {
@@ -1923,7 +1923,7 @@ export default {
 }
 
 .order-freight-info ::v-deep .el-card__body {
-	padding: 16px;
+	padding: 2px;
 }
 
 .order-freight-info ::v-deep .el-descriptions {
@@ -1955,8 +1955,8 @@ export default {
 
 /* 运费总和展示区域 - 醒目样式 */
 .total-freight-section {
-	margin: 20px 0;
-	padding: 20px;
+	margin: 10px 0;
+	padding: 5px;
 	background: linear-gradient(135deg, #093b61 0%, #156fb2 100%);
 	border-radius: 8px;
 	box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);

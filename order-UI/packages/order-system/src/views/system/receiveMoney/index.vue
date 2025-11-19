@@ -2,7 +2,7 @@
 	<div class="app-container" :class="{ 'mask-overlay': showMask }">
 		<!-- 遮罩层 -->
 		<div v-if="showMask" class="container-mask"></div>
-		<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="120px">
+		<el-form id="top-search-form-item" v-show="showSearch" v-fixed="{ position: 'top', zIndex: 1001, offset: 0 }" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="120px">
 			<el-form-item label="收款时间">
 				<el-date-picker v-model="dateRange" class="date-range-280" value-format="yyyy-MM-dd" type="daterange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
 			</el-form-item>
@@ -25,7 +25,7 @@
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
 			</el-form-item>
 		</el-form>
-		<el-row>
+		<el-row v-fixed="{ position: 'top', zIndex: 1000, offset: toolbarOffset }">
 			<right-toolbar :show-search.sync="showSearch" :columns="columns" @queryTable="getList">
 				<template #left>
 					<el-row :gutter="10">
@@ -57,16 +57,7 @@
 			</right-toolbar>
 		</el-row>
 
-    <el-table
-        id="printBox"
-        v-horizontal-scroll="'always'"
-        v-loading="loading"
-        border
-        :data="receiveMoneyList"
-        size="mini"
-        @selection-change="handleSelectionChange"
-        :max-height="600"
-    >
+		<el-table id="printBox" ref="table" v-horizontal-scroll="'always'" v-loading="loading" border :data="receiveMoneyList" size="mini" @selection-change="handleSelectionChange" :max-height="getTableHeight()">
 			<el-table-column label="ID" align="center" prop="id" width="60" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
@@ -215,7 +206,14 @@
 			</el-table-column>
 		</el-table>
 
-		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
+		<!-- 显示总条数 -->
+		<div class="total-info" v-if="!loading">
+			<span class="total-text">共 <strong>{{ total }}</strong> 条记录</span>
+		</div>
+
+		<div v-fixed="{ position: 'bottom', zIndex: 1000 }" class="pagination-wrapper">
+			<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
+		</div>
 
 		<!-- 导入结果弹窗 -->
 		<el-dialog title="导入结果" :visible.sync="importResultVisible" width="500px" :close-on-click-modal="false" append-to-body>
@@ -435,6 +433,11 @@ export default {
 		},
 		PUBLIC_DICT_TYPE() {
 			return PUBLIC_DICT_TYPE;
+		},
+		// 计算工具栏的偏移量
+		toolbarOffset() {
+			// 如果搜索表单显示，工具栏需要向下偏移搜索表单的高度
+			return this.showSearch ? 60 : 0;
 		}
 	},
 	components: { BankType, CheckFiles, UploadFilesButton, SearchOption },
@@ -604,7 +607,9 @@ export default {
 			showMask: false,
 			// 导入结果弹窗
 			importResultVisible: false,
-			importResultMessage: ''
+			importResultMessage: '',
+			// 窗口大小变化防抖定时器
+			resizeTimer: null
 		};
 	},
 	// 展示与隐藏
@@ -651,8 +656,46 @@ export default {
 		} else {
 			this.columns = JSON.parse(localStorage.getItem('receivemoney-columns'));
 		}
+		// 监听窗口大小变化，重新计算表格高度
+		window.addEventListener('resize', this.handleResize);
+	},
+	beforeDestroy() {
+		// 移除窗口大小变化监听
+		window.removeEventListener('resize', this.handleResize);
+		// 清理定时器
+		if (this.resizeTimer) {
+			clearTimeout(this.resizeTimer);
+			this.resizeTimer = null;
+		}
 	},
 	methods: {
+		// 计算表格高度
+		getTableHeight() {
+			// 根据窗口高度动态计算表格高度，减去固定元素占用的空间
+			const searchFormHeight = this.showSearch ? 60 : 0; // 搜索表单高度
+			const toolbarHeight = 50; // 工具栏高度
+			const paginationHeight = 50; // 分页器高度
+			const totalInfoHeight = 40; // 总条数显示高度
+			const otherSpace = 20; // 其他间距
+			const height = window.innerHeight - searchFormHeight - toolbarHeight - paginationHeight - totalInfoHeight - otherSpace;
+			// 确保最小高度，避免表头不显示
+			return Math.max(height, 200);
+		},
+		// 处理窗口大小变化
+		handleResize() {
+			// 使用防抖，避免频繁触发
+			if (this.resizeTimer) {
+				clearTimeout(this.resizeTimer);
+			}
+			this.resizeTimer = setTimeout(() => {
+				// 强制更新表格布局，确保表头正确显示
+				this.$nextTick(() => {
+					if (this.$refs.table) {
+						this.$refs.table.doLayout();
+					}
+				});
+			}, 100);
+		},
 		// 下拉菜单命令处理
 		handleCommand(command, row) {
 			switch (command) {
@@ -1327,8 +1370,83 @@ export default {
 	pointer-events: all;
 	cursor: not-allowed;
 }
+/* 固定搜索表单（如果显示） */
+#top-search-form-item {
+	position: sticky;
+	top: 0;
+	z-index: 102;
+	background-color: #fff;
+	padding: 10px 0;
+	margin-bottom: 10px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+/* 固定工具栏 */
+.fixed-toolbar {
+	position: sticky;
+	z-index: 101;
+	background-color: #fff;
+	padding: 10px 0;
+	margin-bottom: 10px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+/* Element UI 的 max-height 会自动处理表头固定，无需额外设置 */
+
+/* 总条数显示样式 */
+.total-info {
+	margin: 0;
+	padding: 5px 0;
+	text-align: left;
+	border-top: 1px solid #ebeef5;
+}
+
+.total-text {
+	font-size: 14px;
+	color: #606266;
+}
+
+.total-text strong {
+	color: #409eff;
+	font-weight: 600;
+	font-size: 16px;
+}
+
 /* 确保对话框在遮罩层之上 */
 .app-container >>> .el-dialog__wrapper {
 	z-index: 2000 !important;
+}
+#printBox {
+	position: relative;
+}
+#printBox ::v-deep .el-table__header-wrapper {
+	position: sticky !important;
+	top: 0 !important;
+	z-index: 99 !important;
+	background-color: #fff !important;
+}
+#printBox ::v-deep .el-table__header {
+	position: relative;
+}
+.total-info {
+	margin: 0;
+	padding: 5px 0;
+	text-align: left;
+	border-top: 1px solid #ebeef5;
+}
+.total-text {
+	font-size: 14px;
+	color: #606266;
+}
+.total-text strong {
+	color: #409eff;
+	font-weight: 600;
+	font-size: 16px;
+}
+.pagination-wrapper {
+	margin: 0;
+	padding: 0;
+}
+.pagination-wrapper ::v-deep .pagination-container {
+	margin: 0;
+	padding: 5px 0;
 }
 </style>
