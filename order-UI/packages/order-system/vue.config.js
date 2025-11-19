@@ -27,7 +27,9 @@ module.exports = {
 				// target: `http://172.20.193.200:8080/`,
 				// target: `http://172.20.182.31:30065/`,
 				//k8s
-				target: 'https://devlop.order.project.k3s.ixuni.win/',
+				// target: 'https://devlop.order.project.k3s.ixuni.win/',
+				// 测试地址
+				target: 'http://42.193.124.39:27454/',
 				changeOrigin: true,
 				pathRewrite: {
 					['^' + process.env.VUE_APP_BASE_API]: ''
