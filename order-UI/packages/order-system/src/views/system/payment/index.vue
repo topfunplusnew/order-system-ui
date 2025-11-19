@@ -2,80 +2,83 @@
 	<div class="app-container" :class="{ 'mask-overlay': showMask }">
 		<!-- 遮罩层 -->
 		<div v-if="showMask" class="container-mask"></div>
-		<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="120px">
-			<el-form-item label="付款时间">
-				<el-date-picker v-model="dateRange" class="date-range-280" value-format="yyyy-MM-dd" type="daterange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
-			</el-form-item>
-			<!--      客户还是供应商-->
-			<el-form-item label="对象类型" prop="companyType">
-				<el-select class="input-medium" v-model="queryParams.companyType" placeholder="请选择对象类型" clearable @keyup.enter.native="handleQuery">
-					<el-option v-for="item in options_companyType" :key="item.value" :label="item.label" :value="item.value"></el-option>
-				</el-select>
-			</el-form-item>
-			<el-form-item label="付款类型" prop="payType">
-				<el-cascader v-model="queryParams.payType" :options="paymentTypeTree" :props="props" @keyup.enter.native="handleQuery"></el-cascader>
-			</el-form-item>
-			<el-form-item label="我方户名" prop="selfAccountsName">
-				<el-input class="input-medium" v-model="queryParams.selfAccountsName" placeholder="请输入我方户名" clearable @keyup.enter.native="handleQuery" />
-			</el-form-item>
-			<el-form-item label="对方公司" prop="companyName">
-				<el-input class="input-medium" v-model="queryParams.companyName" placeholder="请输入对方公司" clearable @keyup.enter.native="handleQuery" />
-			</el-form-item>
-			<el-form-item label="对方户名" prop="otherAccountsName">
-				<el-input class="input-medium" v-model="queryParams.otherAccountsName" placeholder="请输入对方户名" clearable @keyup.enter.native="handleQuery" />
-			</el-form-item>
-			<el-form-item label="对方银行卡号" prop="selfBankID">
-				<el-input class="input-medium" v-model="queryParams.otherBankNo" placeholder="请输入对方银行卡号" clearable @keyup.enter.native="handleQuery" />
-			</el-form-item>
-			<el-form-item label="备注" prop="otherBankNo">
-				<el-input class="input-long" v-model="queryParams.comments" placeholder="请输入备注" clearable @keyup.enter.native="handleQuery" />
-			</el-form-item>
-			<el-form-item label="票据号码" prop="bankacceptanceBillNo">
-				<el-input class="input-medium" v-model="queryParams.params.bankacceptanceBillNo" placeholder="请输入票据号码" clearable @keyup.enter.native="handleQuery" />
-			</el-form-item>
-			<el-form-item label="复核状态" prop="auditState">
-				<el-select class="input-medium" v-model="queryParams.auditState" placeholder="请选择复核状态" clearable @keyup.enter.native="handleQuery">
-					<el-option v-for="item in auditState_options" :key="item.value" :label="item.label" :value="item.value"></el-option>
-				</el-select>
-			</el-form-item>
-			<el-form-item>
-				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-			</el-form-item>
-		</el-form>
+		<!-- 固定顶部区域：搜索表单和工具栏 -->
+		<div class="fixed-top-section" ref="fixedTopSection" v-fixed="{ position: 'top', zIndex: 1000, offset: 0 }">
+			<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="120px">
+				<el-form-item label="付款时间">
+					<el-date-picker v-model="dateRange" class="date-range-280" value-format="yyyy-MM-dd" type="daterange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
+				</el-form-item>
+				<!--      客户还是供应商-->
+				<el-form-item label="对象类型" prop="companyType">
+					<el-select class="input-medium" v-model="queryParams.companyType" placeholder="请选择对象类型" clearable @keyup.enter.native="handleQuery">
+						<el-option v-for="item in options_companyType" :key="item.value" :label="item.label" :value="item.value"></el-option>
+					</el-select>
+				</el-form-item>
+				<el-form-item label="付款类型" prop="payType">
+					<el-cascader v-model="queryParams.payType" :options="paymentTypeTree" :props="props" @keyup.enter.native="handleQuery"></el-cascader>
+				</el-form-item>
+				<el-form-item label="我方户名" prop="selfAccountsName">
+					<el-input class="input-medium" v-model="queryParams.selfAccountsName" placeholder="请输入我方户名" clearable @keyup.enter.native="handleQuery" />
+				</el-form-item>
+				<el-form-item label="对方公司" prop="companyName">
+					<el-input class="input-medium" v-model="queryParams.companyName" placeholder="请输入对方公司" clearable @keyup.enter.native="handleQuery" />
+				</el-form-item>
+				<el-form-item label="对方户名" prop="otherAccountsName">
+					<el-input class="input-medium" v-model="queryParams.otherAccountsName" placeholder="请输入对方户名" clearable @keyup.enter.native="handleQuery" />
+				</el-form-item>
+				<el-form-item label="对方银行卡号" prop="selfBankID">
+					<el-input class="input-medium" v-model="queryParams.otherBankNo" placeholder="请输入对方银行卡号" clearable @keyup.enter.native="handleQuery" />
+				</el-form-item>
+				<el-form-item label="备注" prop="otherBankNo">
+					<el-input class="input-long" v-model="queryParams.comments" placeholder="请输入备注" clearable @keyup.enter.native="handleQuery" />
+				</el-form-item>
+				<el-form-item label="票据号码" prop="bankacceptanceBillNo">
+					<el-input class="input-medium" v-model="queryParams.params.bankacceptanceBillNo" placeholder="请输入票据号码" clearable @keyup.enter.native="handleQuery" />
+				</el-form-item>
+				<el-form-item label="复核状态" prop="auditState">
+					<el-select class="input-medium" v-model="queryParams.auditState" placeholder="请选择复核状态" clearable @keyup.enter.native="handleQuery">
+						<el-option v-for="item in auditState_options" :key="item.value" :label="item.label" :value="item.value"></el-option>
+					</el-select>
+				</el-form-item>
+				<el-form-item>
+					<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+				</el-form-item>
+			</el-form>
 
-		<el-row>
-			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
-				<template #left>
-					<el-row :gutter="10">
-						<!-- 刷新按钮-->
+			<el-row>
+				<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
+					<template #left>
+						<el-row :gutter="10">
+							<!-- 刷新按钮-->
+							<el-col :span="1.5">
+								<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
+							</el-col>
+							<el-col :span="1.5">
+								<el-button v-hasPermi="['system:payment:import']" size="mini" @click="handleDownloadTemplate">下载导入模板</el-button>
+							</el-col>
+							<el-col :span="1.5">
+								<el-button v-hasPermi="['system:payment:import']" size="mini" @click="handleImportData">导入模板</el-button>
+							</el-col>
+							<!--      解开了新增付款信息-->
+							<el-col :span="1.5" style="margin-left: 15px">
+								<el-button v-hasPermi="['system:payment:add']" type="danger" size="mini" @click="handleAdd">新增付款信息</el-button>
+							</el-col>
+						</el-row>
+					</template>
+					<template #print>
 						<el-col :span="1.5">
-							<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
+							<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
 						</el-col>
+					</template>
+					<!--        导出-->
+					<template #export>
 						<el-col :span="1.5">
-							<el-button v-hasPermi="['system:payment:import']" size="mini" @click="handleDownloadTemplate">下载导入模板</el-button>
+							<el-button v-hasPermi="['system:payment:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
 						</el-col>
-						<el-col :span="1.5">
-							<el-button v-hasPermi="['system:payment:import']" size="mini" @click="handleImportData">导入模板</el-button>
-						</el-col>
-						<!--      解开了新增付款信息-->
-						<el-col :span="1.5" style="margin-left: 15px">
-							<el-button v-hasPermi="['system:payment:add']" type="danger" size="mini" @click="handleAdd">新增付款信息</el-button>
-						</el-col>
-					</el-row>
-				</template>
-				<template #print>
-					<el-col :span="1.5">
-						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
-					</el-col>
-				</template>
-				<!--        导出-->
-				<template #export>
-					<el-col :span="1.5">
-						<el-button v-hasPermi="['system:payment:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
-					</el-col>
-				</template>
-			</right-toolbar>
-		</el-row>
+					</template>
+				</right-toolbar>
+			</el-row>
+		</div>
 
 		<el-table id="printBox" v-loading="loading" v-horizontal-scroll="'always'" :data="paymentList" size="mini" border @selection-change="handleSelectionChange" ref="paymentTable">
 			<el-table-column label="id" align="center" prop="id" v-if="columns[0].visible" show-overflow-tooltip>
@@ -261,7 +264,7 @@
 			</el-table-column>
 		</el-table>
 
-		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" z />
+		<pagination v-show="total > 0" v-fixed="{ position: 'bottom', zIndex: 1000, offset: 0 }" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" z />
 
 		<!-- 导入结果弹窗 -->
 		<el-dialog title="导入结果" :visible.sync="importResultVisible" width="500px" :close-on-click-modal="false" append-to-body>
@@ -1763,6 +1766,53 @@ export default {
 }
 .app-container {
 	position: relative;
+}
+
+/* 固定顶部区域样式 */
+.fixed-top-section {
+	background-color: #fff;
+	padding: 10px;
+	border-radius: 4px;
+	margin-bottom: 10px;
+}
+
+/* 固定表头样式 - 使用 sticky 定位 */
+::v-deep #printBox {
+	position: relative;
+}
+
+/* 固定表头行（包含id、日期等列标题的那一行） */
+::v-deep #printBox .el-table__header-wrapper {
+	position: sticky !important;
+	top: 0 !important;
+	z-index: 99 !important;
+	background-color: #fff !important;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* 确保表头单元格也有背景色 */
+::v-deep #printBox .el-table__header-wrapper th {
+	background-color: #fff !important;
+	position: relative;
+}
+
+/* 确保表头行在滚动时保持固定 */
+::v-deep #printBox .el-table__header {
+	position: sticky !important;
+	top: 0 !important;
+	z-index: 99 !important;
+	background-color: #fff !important;
+}
+
+/* 确保搜索表单有合适的间距 */
+#top-search-form-item {
+	margin-bottom: 10px;
+}
+
+/* 确保分页组件有合适的样式 */
+::v-deep .pagination-container {
+	padding: 10px 0;
+	background-color: #fff;
 }
 .app-container.mask-overlay {
 	position: relative;
