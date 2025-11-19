@@ -67,8 +67,10 @@ export default {
       }
     } else {
       // Fixed 模式：使用 fixed 定位，适合搜索框、分页等
-      // 固定在视口位置，不受页面滚动和缩放影响
       const rect = el.getBoundingClientRect();
+      const initialTop = rect.top;
+      const initialLeft = rect.left;
+      const initialWidth = rect.width;
       const initialHeight = rect.height;
       
       // 创建占位元素，避免内容被遮挡
@@ -80,29 +82,10 @@ export default {
       el.parentNode.insertBefore(placeholder, el);
       el._fixedPlaceholder = placeholder;
       
-      // 获取容器的位置信息（用于计算 left）
-      const getContainerInfo = () => {
-        const container = el.parentElement;
-        if (container) {
-          const containerRect = container.getBoundingClientRect();
-          return {
-            left: containerRect.left,
-            width: container.clientWidth || containerRect.width
-          };
-        }
-        return {
-          left: 0,
-          width: window.innerWidth
-        };
-      };
-      
-      const containerInfo = getContainerInfo();
-      
       el.style.position = 'fixed';
       el.style.zIndex = zIndex;
-      el.style.left = `${containerInfo.left}px`;
-      el.style.right = 'auto';
-      el.style.width = `${containerInfo.width}px`;
+      el.style.width = `${initialWidth}px`;
+      el.style.left = `${initialLeft}px`;
       
       // 设置背景色和阴影，避免内容透过
       const computedStyle = window.getComputedStyle(el);
@@ -115,55 +98,52 @@ export default {
         el.style.boxShadow = shadow;
       }
       
-      // 根据位置设置 top 或 bottom（相对于视口，不受缩放影响）
+      // 根据位置设置 top 或 bottom
       if (position === 'bottom') {
         el.style.bottom = offset ? `${offset}px` : '0px';
         el.style.top = 'auto';
       } else {
-        // 顶部固定：直接固定在视口顶部，不随页面滚动
-        el.style.top = offset ? `${offset}px` : '0px';
+        el.style.top = offset ? `${initialTop + offset}px` : `${initialTop}px`;
         el.style.bottom = 'auto';
       }
       
-      // 更新位置和宽度
-      const updateLayout = () => {
-        const containerInfo = getContainerInfo();
+      // 监听滚动和窗口大小变化，更新位置
+      const updatePosition = () => {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
         
-        // 更新 left 和 width（相对于视口）
-        el.style.left = `${containerInfo.left}px`;
-        el.style.width = `${containerInfo.width}px`;
+        // 更新 left 位置（考虑横向滚动）
+        el.style.left = `${initialLeft - scrollLeft}px`;
         
-        // 确保 top/bottom 始终相对于视口
+        // 对于顶部固定，保持初始 top 位置
         if (position === 'top') {
-          el.style.top = offset ? `${offset}px` : '0px';
-          el.style.bottom = 'auto';
-        } else if (position === 'bottom') {
-          el.style.bottom = offset ? `${offset}px` : '0px';
-          el.style.top = 'auto';
-        }
-        
-        // 更新占位元素高度
-        if (el._fixedPlaceholder) {
-          const currentHeight = el.getBoundingClientRect().height;
-          el._fixedPlaceholder.style.height = `${currentHeight}px`;
+          el.style.top = offset ? `${initialTop + offset - scrollTop}px` : `${initialTop - scrollTop}px`;
         }
       };
       
-      // 初始更新布局
-      updateLayout();
+      // 监听窗口大小变化，更新宽度和占位元素高度
+      const updateWidth = () => {
+        const rect = el.getBoundingClientRect();
+        el.style.width = `${rect.width}px`;
+        // 更新占位元素高度
+        if (el._fixedPlaceholder) {
+          el._fixedPlaceholder.style.height = `${rect.height}px`;
+        }
+      };
+      
+      // 初始更新位置
+      updatePosition();
       
       // 绑定事件
-      window.addEventListener('scroll', updateLayout, { passive: true });
-      window.addEventListener('resize', updateLayout, { passive: true });
-      
-      // 如果父元素可滚动，也需要监听
-      if (el.parentElement) {
-        el.parentElement.addEventListener('scroll', updateLayout, { passive: true });
-        el._fixedParentScrollHandler = updateLayout;
-      }
+      window.addEventListener('scroll', updatePosition, { passive: true });
+      window.addEventListener('resize', () => {
+        updatePosition();
+        updateWidth();
+      }, { passive: true });
       
       // 保存更新函数，用于 unbind
-      el._fixedUpdateLayout = updateLayout;
+      el._fixedUpdatePosition = updatePosition;
+      el._fixedUpdateWidth = updateWidth;
     }
   },
   
@@ -189,13 +169,11 @@ export default {
     
     // 移除事件监听（仅 fixed 模式需要）
     if (el._fixedMode === 'fixed') {
-      if (el._fixedUpdateLayout) {
-        window.removeEventListener('scroll', el._fixedUpdateLayout);
-        window.removeEventListener('resize', el._fixedUpdateLayout);
+      if (el._fixedUpdatePosition) {
+        window.removeEventListener('scroll', el._fixedUpdatePosition);
       }
-      // 移除父元素滚动监听
-      if (el._fixedParentScrollHandler && el.parentElement) {
-        el.parentElement.removeEventListener('scroll', el._fixedParentScrollHandler);
+      if (el._fixedUpdateWidth) {
+        window.removeEventListener('resize', el._fixedUpdateWidth);
       }
       // 移除占位元素
       if (el._fixedPlaceholder && el._fixedPlaceholder.parentNode) {
@@ -206,8 +184,8 @@ export default {
     // 清理引用
     delete el._fixedOriginalStyles;
     delete el._fixedMode;
-    delete el._fixedUpdateLayout;
-    delete el._fixedParentScrollHandler;
+    delete el._fixedUpdatePosition;
+    delete el._fixedUpdateWidth;
     delete el._fixedPlaceholder;
   }
 };
