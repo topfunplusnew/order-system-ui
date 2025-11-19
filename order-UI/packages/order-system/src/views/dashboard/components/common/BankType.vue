@@ -807,18 +807,34 @@ export default {
 			this.setAcceptanceFilled();
 			this.$message.success('承兑信息保存成功');
 		},
-		// 抽屉关闭的逻辑
+		// 抽屉关闭的逻辑 - 关闭时自动触发提交逻辑（双向填充）
 		handleClose(done) {
-			// 当点击 drawer 外区域关闭抽屉时，自动触发确定按钮的逻辑
-			this.submitAcceptanceForm()
-				.then(() => {
-					// 表单验证通过，提交成功，关闭抽屉
-					done();
-				})
-				.catch(() => {
-					// 表单验证失败，不关闭抽屉，提示用户
-					this.$message.warning('请完善表单信息后再关闭');
-				});
+			// 执行提交逻辑的核心部分（不进行表单验证）
+			// 设置 billType
+			if (this.waitForBothSelection && this.bothSelectedInDualMode) {
+				const accountTypes = this.dualSelectionState;
+				if (accountTypes && accountTypes.source === BankAcceptanceType.ACCEPTANCE && accountTypes.target === BankAcceptanceType.ACCEPTANCE) {
+					this.form.billType = '收入';
+				} else {
+					this.form.billType = this.billType;
+				}
+			} else {
+				this.form.billType = this.billType;
+			}
+			// 内部转账时设置 reason
+			if (this.isInternalTransfer) {
+				this.form.reason = '内部转账';
+			}
+			// 排除不需要的参数
+			this.form = excludeParams(this.form, this.$exclude);
+			// 保存到 sessionStorage
+			const storageKey = 'bankAcceptanceFilled';
+			sessionStorage.setItem(storageKey, JSON.stringify(this.form));
+			sessionStorage.setItem('bankAcceptanceFilledTime', new Date().getTime());
+			// 触发提交逻辑（双向填充）
+			this.handleSubmit(_.cloneDeep(this.form));
+			// 关闭 drawer
+			done();
 		},
 		handleAssign(value) {
 			this.$emit('updateBankAcceptance', value);
