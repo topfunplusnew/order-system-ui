@@ -347,7 +347,15 @@
 							<el-input v-model="form.transactionHistory" placeholder="请输入银行卡流水编号" style="width: 100%" />
 						</el-form-item>
 						<el-form-item label="银行卡流水编号附件">
-							<UploadFilesButton ref="attachmentUploader" flag="transactionHistoryAttachment" accept-types="image/*,.pdf,.jpg,.jpeg,.png,.gif,.bmp,.doc,.docx,.xls,.xlsx" :extra-info="{ moduleType: 'receiveMoney', formId: form.id }" :initial-attachments="form.attachmentList || []" @files-updated="handleAttachmentFilesUpdated" style="width: 100%" />
+							<UploadFilesButton
+								ref="attachmentUploader"
+								flag="transactionHistoryAttachment"
+								accept-types="image/*,.pdf,.jpg,.jpeg,.png,.gif,.bmp,.doc,.docx,.xls,.xlsx"
+								:extra-info="{ moduleType: 'receiveMoney', formId: form.id ? form.id : 'temp_' + new Date().getTime() }"
+								:initial-attachments="form.attachmentList || []"
+								:params="{businessId: form.id ? form.id : 'temp_' + new Date().getTime(), businessType: 'RECEIVE_MONEY', attachmentIds: form.params && form.params.attachmentIds ? form.params.attachmentIds : []}"
+								@files-updated="handleAttachmentFilesUpdated"
+								style="width: 100%" />
 						</el-form-item>
 						<el-form-item label="录入人员" prop="userName">
 							<el-input v-model="form.userName" placeholder="请输入录入人员" style="width: 100%" />
@@ -359,7 +367,7 @@
 				</el-form>
 			</div>
 			<div slot="footer" class="dialog-footer">
-				<el-button type="primary" @click="submitForm">确 定</el-button>
+				<el-button type="primary" @click="handleSave">确 定</el-button>
 				<el-button @click="cancel">取 消</el-button>
 			</div>
 		</el-dialog>
@@ -473,7 +481,18 @@ export default {
 			// 时间范围选择器
 			dateRange: [],
 			// 表单参数
-			form: {},
+			form: {
+				id: undefined,
+				name: undefined,
+				code: undefined,
+				address: undefined,
+				telephone: undefined,
+				description: undefined,
+				status: "0",
+				params: {
+					attachmentIds: [] // 初始化附件ID数组
+				}
+			},
 			// 表单校验
 			rules: {
 				fundsDate: [{ required: true, message: '日期不能为空', trigger: 'blur' }],
@@ -637,21 +656,25 @@ export default {
 		// 监听窗口大小变化，重新计算表格高度
 		window.addEventListener('resize', this.handleResize);
 	},
-	beforeDestroy() {
-		// 移除窗口大小变化监听
-		window.removeEventListener('resize', this.handleResize);
-		// 清理定时器
-		if (this.resizeTimer) {
-			clearTimeout(this.resizeTimer);
-			this.resizeTimer = null;
-		}
-		// 清理渲染定时器
-		if (this.renderTimer) {
-			cancelAnimationFrame(this.renderTimer);
-			this.renderTimer = null;
-		}
-	},
+  beforeDestroy() {
+    window.removeEventListener('resize', this.handleResize);
+
+    // 清理所有定时器
+    if (this.resizeTimer) {
+      clearTimeout(this.resizeTimer);
+      this.resizeTimer = null;
+    }
+
+    if (this.renderTimer) {
+      cancelAnimationFrame(this.renderTimer);
+      this.renderTimer = null;
+    }
+
+    // 清理上传组件
+    this.clearUploaderState();
+  },
 	methods: {
+
 		// 分片渲染数据
 		renderDataInChunks(data) {
 			// 如果正在渲染，先取消
@@ -779,49 +802,39 @@ export default {
 					this.$message.error('获取修改原因失败');
 			});
 		},
-		handleAttachmentFilesUpdated(uploadParams) {
-			try {
-				// 确保 form.params 对象存在
-				if (!this.form.params) {
-					this.form.params = {};
-				}
+    // 在 handleAttachmentFilesUpdated 方法中增加更完善的错误处理
+    handleAttachmentFilesUpdated(uploadParams) {
+      try {
+        if (!this.form.params) {
+          this.form.params = {};
+        }
 
-				// 检查 uploadParams 是否存在
-				if (!uploadParams) {
-					console.warn('handleAttachmentFilesUpdated: uploadParams 为空');
-					return;
-				}
+        if (!uploadParams || !uploadParams.params) {
+          console.warn('上传参数为空或格式不正确');
+          return;
+        }
 
-				// 检查 params 是否存在
-				if (!uploadParams.params) {
-					console.warn('handleAttachmentFilesUpdated: uploadParams.params 不存在', uploadParams);
-					return;
-				}
+        // 确保 attachmentIds 存在且为数组
+        const attachmentIds = uploadParams.params.attachmentIds || [];
+        if (!Array.isArray(attachmentIds)) {
+          this.$message.warning('附件ID格式错误');
+          return;
+        }
 
-				// 检查 attachmentIds 是否存在且为数组
-				if (!uploadParams.params.attachmentIds) {
-					console.warn('handleAttachmentFilesUpdated: attachmentIds 不存在', uploadParams.params);
-					// 如果 attachmentIds 不存在，设置为空数组
-					this.form.params.attachmentIds = [];
-					return;
-				}
-
-				// 确保 attachmentIds 是数组
-				if (!Array.isArray(uploadParams.params.attachmentIds)) {
-					console.error('handleAttachmentFilesUpdated: attachmentIds 不是数组', uploadParams.params.attachmentIds);
-					this.$message.warning('附件ID格式错误，请重新上传');
-					return;
-				}
-
-				// 直接使用上传组件返回的统一附件ID数组
-				this.form.params.attachmentIds = uploadParams.params.attachmentIds;
-				console.log('附件更新成功，附件ID:', this.form.params.attachmentIds);
-			} catch (error) {
-				console.error('handleAttachmentFilesUpdated 处理失败:', error);
-				this.$message.error('处理附件更新时出错：' + (error.message || '未知错误'));
-			}
-		},
-		listCars,
+        this.form.params.attachmentIds = [...attachmentIds];
+        console.log('附件更新成功，附件ID:', this.form.params.attachmentIds);
+      } catch (error) {
+        console.error('处理附件更新时出错:', error);
+        this.$message.error('附件处理失败：' + (error.message || '未知错误'));
+      }
+    },
+    // 添加一个方法用于更新附件与记录的关联
+    updateAttachmentRelation(recordId) {
+      if (this.$refs.attachmentUploader && recordId) {
+        this.$refs.attachmentUploader.updateBusinessId(recordId);
+      }
+    },
+    listCars,
 		listCompany,
 		getCompany,
 		listBankAccount,
@@ -914,49 +927,47 @@ export default {
 			this.clearUploaderState();
 		},
 		// 表单重置
-		reset() {
-			this.form = {
-				id: null,
-				code: null,
-				receiveNO: null,
-				fundsDate: parseTime(new Date()),
-				receiveType: null,
-				tableName: null,
-				tID: null,
-				moneyAmount: null,
-				// 我方银行卡的账户类型
-				selfBankCardType: `银行活期存款`,
-				selfAcountsName: null,
-				selfBankNo: null,
-				selfBankName: null,
-				selfBankID: null,
-				// 对方银行卡账户的类型
-				otherBankCardType: `银行活期存款`,
-				otherAcountsName: null,
-				otherBankNo: null,
-				otherBankName: null,
-				companyName: null,
-				companyId: null,
-				// 设置默认公司类型为客户
-				companyType: this.defaultCompanyType,
-				comments: null,
-				addtime: null,
-				userId: null,
-				UserName: null,
-				updateTime: null,
-				delFlag: null,
-				transactionHistory: null,
-				params: {
-					attachmentIds: [],
-					bankacceptance: null
-				}
-			};
-			// 安全地重置表单，避免引用错误
-			if (this.$refs.form) {
-				this.resetForm('form');
-			}
-			this.clearUploaderState();
-		},
+    // 优化 reset 方法，确保表单状态一致性
+    reset() {
+      this.form = {
+        id: null,
+        code: null,
+        receiveNO: null,
+        fundsDate: parseTime(new Date()),
+        receiveType: null,
+        tableName: null,
+        tID: null,
+        moneyAmount: null,
+        selfBankCardType: `银行活期存款`,
+        selfAcountsName: null,
+        selfBankNo: null,
+        selfBankName: null,
+        selfBankID: null,
+        otherBankCardType: `银行活期存款`,
+        otherAcountsName: null,
+        otherBankNo: null,
+        otherBankName: null,
+        companyName: null,
+        companyId: null,
+        companyType: this.defaultCompanyType,
+        comments: null,
+        addtime: null,
+        userId: null,
+        userName: null,
+        updateTime: null,
+        delFlag: null,
+        transactionHistory: null,
+        params: {
+          attachmentIds: [],
+          bankacceptance: null
+        }
+      };
+      // 安全地重置表单，避免引用错误
+      if (this.$refs.form) {
+        this.resetForm('form');
+      }
+      this.clearUploaderState();
+    },
 		// 部分重置 - 保留银行账户类型和收款类型
 		partialReset() {
 			// 保存原始的receiveType，如果是字符串格式则通过searchSubjectFromMap查找完整路径数组
@@ -1025,13 +1036,8 @@ export default {
 			this.queryParams.params.bankacceptanceBillNo = null;
 			this.handleQuery();
 		},
-		/** 新增按钮操作 */
-		handleAdd() {
-			this.reset();
-			this.open = true;
-			this.title = '添加收款信息';
-			this.showMask = true;
-		},
+
+
 		/** 修改按钮操作 */
 		handleUpdate(row) {
 			this.showMask = true;
@@ -1155,162 +1161,64 @@ export default {
 		},
 
 		/** 提交按钮 */
-		submitForm() {
-			this.$refs['form'].validate(valid => {
-				if (valid) {
-					// 校验收款类型 和银行卡类型
-					if (!this.form.receiveType) {
-						this.$message.warning('请选择收款类型');
-						return;
-					}
-					if (this.form.selfBankCardType && this.form.otherBankCardType) {
-						if (this.form.selfBankCardType !== this.form.otherBankCardType) {
-							this.$message.warning('操作失败，无法进行承兑与活期存款或者相反的交易,类型需要保持一致');
-							return;
-						}
-					}
+    handleSave() {
+      this.$refs['form'].validate(valid => {
+        if (valid) {
+          this.buttonLoading = true;
+          if (this.form.id != null) {
+            updateReceiveMoney(this.form).then(response => {
+              this.$modal.msgSuccess("修改成功");
+              this.open = false;
+              this.getList();
+            }).finally(() => {
+              this.buttonLoading = false;
+            });
+          } else {
+            // 创建一个清理过的提交对象
+            const submitForm = this.cleanFormData({ ...this.form });
 
-					// 确保 form.params 对象存在
-					if (!this.form.params) {
-						this.form.params = {};
-					}
+            addReceiveMoney(submitForm).then(response => {
+              this.$modal.msgSuccess("新增成功");
+              // 新增成功后更新附件关联
+              if (response.data && response.data.id) {
+                this.updateAttachmentRelation(response.data.id);
+                // 更新记录中的附件信息
+                if (this.form.params && this.form.params.attachmentIds && this.form.params.attachmentIds.length > 0) {
+                  this.relateAttachmentsToRecord(response.data.id, this.form.params.attachmentIds);
+                }
+              }
+              this.open = false;
+              this.getList();
+            }).catch(error => {
+              console.error("新增失败:", error);
+              this.$message.error("新增失败：" + (error.message || "未知错误"));
+            }).finally(() => {
+              this.buttonLoading = false;
+            });
+          }
+        }
+      });
+    },
 
-					// 确保 form.params.attachmentIds 存在且为数组
-					if (!this.form.params.attachmentIds || !Array.isArray(this.form.params.attachmentIds)) {
-						// 从 Vuex store 获取附件ID作为备用
-						const storeAttachmentIds = this.$store.getters.attachmentIds || [];
-						this.form.params.attachmentIds = Array.isArray(storeAttachmentIds) ? [...storeAttachmentIds] : [];
-					}
+    // 清理表单数据，移除可能引起后端解析错误的字段
+    cleanFormData(formData) {
+      // 深拷贝表单数据
+      const cleanedData = JSON.parse(JSON.stringify(formData));
 
-					// 去重附件ID
-					const uniqueAttachmentIds = [...new Set(this.form.params.attachmentIds)];
-					this.form.params.attachmentIds = uniqueAttachmentIds;
+      // 移除可能引起问题的字段
+      delete cleanedData.createTime;
+      delete cleanedData.updateTime;
 
-					// 保存当前附件ID用于错误回滚
-					const originalAttachmentIds = [...uniqueAttachmentIds];
+      // 确保 params 字段正确构造
+      if (!cleanedData.params) {
+        cleanedData.params = {};
+      }
 
-					// 同步到 Vuex store（用于其他组件）
-					if (uniqueAttachmentIds.length > 0) {
-						this.$store.commit('CLEAR_ATTACHMENT_IDS');
-						uniqueAttachmentIds.forEach(id => {
-							this.$store.commit('ADD_ATTACHMENT_ID', id);
-						});
-					}
+      // 确保 attachmentList 不会被发送（它应该是只读的）
+      delete cleanedData.attachmentList;
 
-					// 处理承兑逻辑
-					const selfType = this.$refs.selfSelectedBankType?.localSelectType;
-					const otherType = this.$refs.otherSelectedBankType?.localSelectType;
-					if (selfType && otherType && selfType !== otherType) {
-						if (!this.form.params) {
-							this.form.params = {};
-						}
-						if (!this.form.params.bankacceptance) {
-							this.form.params.bankacceptance = {};
-						}
-						// 只有在没有设置billType时才设置，避免覆盖用户的选择
-						if (!this.form.params.bankacceptance.billType) {
-							if (selfType === BankAcceptanceType.ACCEPTANCE) {
-								this.form.params.bankacceptance.billType = PayType.PAYMENT;
-							} else if (otherType === BankAcceptanceType.ACCEPTANCE) {
-								this.form.params.bankacceptance.billType = PayType.RECEIVE;
-							}
-						}
-					}
-
-					// 创建提交数据的深克隆，避免修改原始响应式数据
-					let submitData = JSON.parse(JSON.stringify(this.form));
-
-					// 如果是修改操作，添加修改原因
-					if (submitData.id != null) {
-						const editReason = sessionStorage.getItem('editReason_receiveMoney');
-						if (editReason) {
-							submitData.editReason = editReason;
-						}
-					}
-
-					// 对提交数据进行处理，不影响页面显示
-					submitData = excludeParams(submitData, this.$exclude);
-
-					// 对结果进行特殊处理 - 只处理提交数据
-					if (typeof submitData.receiveType === 'string') {
-						this.$message.warning('请选择收款类型');
-						return;
-					}
-
-					// 将数组格式转换为字符串格式用于提交
-					if (Array.isArray(submitData.receiveType)) {
-						submitData.receiveType = submitData.receiveType.join('-');
-					}
-
-					if (submitData.id != null) {
-						// submitData.editReason 已经在深克隆中包含了
-
-						updateReceiveMoney(submitData)
-							.then(() => {
-								this.$modal.msgSuccess('修改成功');
-								// 清理修改原因的sessionStorage
-								sessionStorage.removeItem('editReason_receiveMoney');
-								// 先部分重置表单，保留关键字段
-								this.partialReset();
-								this.open = false;
-								this.showMask = false;
-								this.getList();
-								this.$bus.$emit('changeFlag', false);
-								this.reset();
-								this.resetBankTypeComponents();
-								this.clearUploaderState();
-							})
-							.catch(error => {
-								console.error('修改收款记录失败:', error);
-								// 回滚附件ID到原始状态
-								if (originalAttachmentIds && originalAttachmentIds.length > 0) {
-									this.$store.commit('CLEAR_ATTACHMENT_IDS');
-									originalAttachmentIds.forEach(id => {
-										this.$store.commit('ADD_ATTACHMENT_ID', id);
-									});
-									// 同时回滚 form.params.attachmentIds
-									if (this.form.params) {
-										this.form.params.attachmentIds = [...originalAttachmentIds];
-									}
-								}
-								this.$message.error('修改失败：' + (error.msg || error.message || '请重试'));
-							});
-					} else {
-						// 新增时，移除修改原因字段
-						delete submitData.editReason;
-
-						addReceiveMoney(submitData)
-							.then(() => {
-								this.$modal.msgSuccess('新增成功');
-								// 先部分重置表单，保留关键字段
-								this.partialReset();
-								this.open = false;
-								this.showMask = false;
-								this.getList();
-								this.reset();
-								this.$bus.$emit('changeFlag', false);
-								this.resetBankTypeComponents();
-								this.clearUploaderState();
-							})
-							.catch(error => {
-								console.error('新增收款记录失败:', error);
-								// 回滚附件ID到原始状态
-								if (originalAttachmentIds && originalAttachmentIds.length > 0) {
-									this.$store.commit('CLEAR_ATTACHMENT_IDS');
-									originalAttachmentIds.forEach(id => {
-										this.$store.commit('ADD_ATTACHMENT_ID', id);
-									});
-									// 同时回滚 form.params.attachmentIds
-									if (this.form.params) {
-										this.form.params.attachmentIds = [...originalAttachmentIds];
-									}
-								}
-								this.$message.error('新增失败：' + (error.msg || error.message || '请重试'));
-							});
-					}
-				}
-			});
-		},
+      return cleanedData;
+    },
 		/** 删除按钮操作 */
 		handleDelete(row) {
 			const ids = row.id || this.ids;
@@ -1386,7 +1294,27 @@ export default {
 		closeImportResult() {
 			this.importResultVisible = false;
 			this.importResultMessage = '';
-		}
+		},
+		// 添加关联附件到记录的方法
+    relateAttachmentsToRecord(recordId, attachmentIds) {
+      // 如果有附件需要关联，则调用接口进行关联
+      if (recordId && attachmentIds && attachmentIds.length > 0) {
+        // 直接构造最小必要数据对象进行更新
+        const updateData = {
+          id: recordId,
+          params: {
+            attachmentIds: attachmentIds
+          }
+        };
+
+        updateReceiveMoney(updateData).then(response => {
+          console.log("附件关联成功");
+        }).catch(error => {
+          console.error("附件关联失败:", error);
+          this.$message.error("附件关联失败");
+        });
+      }
+    },
 	}
 };
 </script>
@@ -1431,7 +1359,7 @@ export default {
 }
 
 .toolbar-wrapper {
-	margin-bottom: 0px;
+	margin-bottom: 5px;
 
 	.toolbar-left {
 	padding: 5px 0;

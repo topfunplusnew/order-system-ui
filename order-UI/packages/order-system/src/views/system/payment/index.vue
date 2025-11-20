@@ -1094,13 +1094,18 @@ export default {
 		},
 		// 处理附件文件更新
 		handleAttachmentFilesUpdated(uploadParams) {
-			if (uploadParams && uploadParams.params && uploadParams.params.attachmentIds) {
-				// 确保 form.params 对象存在
-				if (!this.form.params) {
-					this.form.params = {};
+			try {
+				if (uploadParams && uploadParams.params && uploadParams.params.attachmentIds) {
+					// 确保 form.params 对象存在
+					if (!this.form.params) {
+						this.form.params = {};
+					}
+					// 直接使用上传组件返回的统一附件ID数组
+					this.form.params.attachmentIds = [...uploadParams.params.attachmentIds];
 				}
-				// 直接使用上传组件返回的统一附件ID数组
-				this.form.params.attachmentIds = uploadParams.params.attachmentIds;
+			} catch (error) {
+				console.error('处理附件更新时出错:', error);
+				this.$message.error('附件处理失败：' + (error.message || '未知错误'));
 			}
 		},
 		handleCommitUpload(value) {
@@ -1299,11 +1304,10 @@ export default {
 				comments: null,
 				addtime: null,
 				userId: null,
-				UserName: null,
+				userName: null,
 				updateTime: null,
 				delFlag: null,
 				transactionHistory: null,
-				bankacceptance: null,
 				params: {
 					attachmentIds: [],
 					bankacceptance: null
@@ -1600,7 +1604,7 @@ export default {
 					}
 
 					// 创建提交数据的深克隆，避免修改原始响应式数据
-					let submitData = JSON.parse(JSON.stringify(this.form));
+					let submitData = this.cleanFormData(JSON.parse(JSON.stringify(this.form)));
 
 					// 如果是修改操作，添加修改原因
 					if (submitData.id != null) {
@@ -1847,7 +1851,202 @@ export default {
 		closeViewFreight() {
 			this.viewFreightVisible = false;
 			this.viewFreightList = [];
-		}
+		},
+    /** 提交按钮 */
+    submitForm() {
+      this.$refs['form'].validate(valid => {
+        if (valid) {
+          // 校验收款类型 和银行卡类型
+          if (!this.form.payType) {
+            this.$message.warning('请选择付款类型');
+            return;
+          }
+          if (this.form.selfBankCardType && this.form.otherBankCardType) {
+            if (this.form.selfBankCardType !== this.form.otherBankCardType) {
+              this.$message.warning('操作失败，无法进行承兑与活期存款或者相反的交易,类型需要保持一致');
+              return;
+            }
+          }
+
+          // 保存当前附件ID用于错误回滚
+          const originalAttachmentIds = this.$store.getters.attachmentIds ? [...this.$store.getters.attachmentIds] : [];
+
+          // 去重附件ID
+          const uniqueAttachmentIds = [...new Set(originalAttachmentIds)];
+          if (uniqueAttachmentIds.length !== originalAttachmentIds.length) {
+            // 清空并重新添加去重后的ID
+            this.$store.commit('CLEAR_ATTACHMENT_IDS');
+            uniqueAttachmentIds.forEach(id => {
+              this.$store.commit('ADD_ATTACHMENT_ID', id);
+            });
+          }
+
+          // 处理承兑逻辑
+          const selfType = this.$refs.selfSelectedBankType?.localSelectType;
+          const otherType = this.$refs.otherSelectedBankType?.localSelectType;
+          if (selfType && otherType && selfType !== otherType) {
+            if (!this.form.params) {
+              this.form.params = {};
+            }
+            if (!this.form.params.bankacceptance) {
+              this.form.params.bankacceptance = {};
+            }
+            // 只有在没有设置billType时才设置，避免覆盖用户的选择
+            if (!this.form.params.bankacceptance.billType) {
+              if (selfType === BankAcceptanceType.ACCEPTANCE) {
+                this.form.params.bankacceptance.billType = PayType.PAYMENT;
+              }
+              if (otherType === BankAcceptanceType.ACCEPTANCE) {
+                this.form.params.bankacceptance.billType = PayType.RECEIVE;
+              }
+            }
+          }
+
+          // 创建提交数据的深克隆，避免修改原始响应式数据
+          let submitData = this.cleanFormData(JSON.parse(JSON.stringify(this.form)));
+
+          // 如果是修改操作，添加修改原因
+          if (submitData.id != null) {
+            const editReason = sessionStorage.getItem('editReason_payment');
+            if (editReason) {
+              submitData.editReason = editReason;
+            }
+          }
+
+          // 对提交数据进行处理，不影响页面显示
+          submitData = excludeParams(submitData, this.$exclude);
+
+          // 对结果进行特殊处理 - 只处理提交数据
+          if (typeof submitData.payType === 'string') {
+            this.$message.warning('请选择付款类型');
+            return;
+          }
+
+          // 将数组格式转换为字符串格式用于提交
+          if (Array.isArray(submitData.payType)) {
+            submitData.payType = submitData.payType.join('-');
+          }
+
+          if (submitData.id != null) {
+            // submitData.editReason 已经在深克隆中包含了
+
+            // 编辑操作，使用新的编辑接口
+            const originalId = submitData.id;
+            updatePaymentSimulate(submitData)
+              .then(response => {
+                this.$modal.msgSuccess('修改成功');
+                // 清除sessionStorage中的修改原因
+                sessionStorage.removeItem('editReason_payment');
+                // 先部分重置表单，保留关键字段
+                this.partialReset();
+                this.open = false;
+                this.showMask = false;
+                this.reset();
+                // 使用 $nextTick 确保 reset() 后 form 的值已更新，再重置 BankType 组件状态
+                this.$nextTick(() => {
+                  // 清除 BankType 组件状态，此时会使用 reset() 中设置的默认值
+                  if (this.$refs.selfSelectedBankType && this.$refs.selfSelectedBankType.resetComponentState) {
+                    this.$refs.selfSelectedBankType.resetComponentState();
+                  }
+                  if (this.$refs.otherSelectedBankType && this.$refs.otherSelectedBankType.resetComponentState) {
+                    this.$refs.otherSelectedBankType.resetComponentState();
+                  }
+                });
+                // 清除附件上传状态
+                if (this.$refs.attachmentUpload) {
+                  this.$refs.attachmentUpload.clearUploadedFiles();
+                }
+                // 清除银行卡流水附件上传状态
+                if (this.$refs.transactionHistoryUpload) {
+                  this.$refs.transactionHistoryUpload.clearUploadedFiles();
+                }
+                // 由于返回了新的id，需要刷新列表并保持选中状态
+                this.getList().then(() => {
+                  // 如果需要保持选中状态，可以根据返回的新id来处理
+                  if (response.data && response.data.id) {
+                    // 可以根据需要添加选中逻辑
+                  }
+                });
+              })
+              .catch(error => {
+                console.error('修改付款记录失败:', error);
+                // 如果编辑失败，保持原有id
+                this.form.id = originalId;
+                // 回滚附件ID到原始状态
+                this.$store.commit('CLEAR_ATTACHMENT_IDS');
+                originalAttachmentIds.forEach(id => {
+                  this.$store.commit('ADD_ATTACHMENT_ID', id);
+                });
+                this.$message.error('修改失败，请重试');
+              });
+          } else {
+            // 新增时，移除修改原因字段
+            delete submitData.editReason;
+
+            // 新增操作 使用 form.companyType
+            submitData.companyType = this.form.companyType;
+            addPayment(submitData)
+              .then(() => {
+                this.$modal.msgSuccess('新增成功');
+                this.$bus.$emit('changeFlag', false);
+                // 先部分重置表单，保留关键字段
+                this.partialReset();
+                this.open = false;
+                this.showMask = false;
+                this.reset();
+                // 使用 $nextTick 确保 reset() 后 form 的值已更新，再重置 BankType 组件状态
+                this.$nextTick(() => {
+                  // 清除 BankType 组件状态，此时会使用 reset() 中设置的默认值
+                  if (this.$refs.selfSelectedBankType && this.$refs.selfSelectedBankType.resetComponentState) {
+                    this.$refs.selfSelectedBankType.resetComponentState();
+                  }
+                  if (this.$refs.otherSelectedBankType && this.$refs.otherSelectedBankType.resetComponentState) {
+                    this.$refs.otherSelectedBankType.resetComponentState();
+                  }
+                });
+                // 清除附件上传状态
+                if (this.$refs.attachmentUpload) {
+                  this.$refs.attachmentUpload.clearUploadedFiles();
+                }
+                // 清除银行卡流水附件上传状态
+                if (this.$refs.transactionHistoryUpload) {
+                  this.$refs.transactionHistoryUpload.clearUploadedFiles();
+                }
+                this.getList();
+              })
+              .catch(error => {
+                console.error('新增付款记录失败:', error);
+                // 回滚附件ID到原始状态
+                this.$store.commit('CLEAR_ATTACHMENT_IDS');
+                originalAttachmentIds.forEach(id => {
+                  this.$store.commit('ADD_ATTACHMENT_ID', id);
+                });
+                this.$message.error('新增失败，请重试');
+              });
+          }
+        }
+      });
+    },
+    
+    // 清理表单数据，移除可能引起后端解析错误的字段
+    cleanFormData(formData) {
+      // 深拷贝表单数据
+      const cleanedData = JSON.parse(JSON.stringify(formData));
+      
+      // 移除可能引起问题的字段
+      delete cleanedData.createTime;
+      delete cleanedData.updateTime;
+      
+      // 确保 params 字段正确构造
+      if (!cleanedData.params) {
+        cleanedData.params = {};
+      }
+      
+      // 确保 attachmentList 不会被发送（它应该是只读的）
+      delete cleanedData.attachmentList;
+      
+      return cleanedData;
+    }
 	}
 };
 </script>
