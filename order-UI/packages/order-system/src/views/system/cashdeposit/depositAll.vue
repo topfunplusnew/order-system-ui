@@ -350,7 +350,7 @@ export default {
 				moneyAmount: null,
 				targetAcountsName: null,
 				targetBankNo: null,
-				targetBankNold: null,
+				targetBankNoId: null,
 				targetBankName: null,
 				selfAcountsName: null,
 				selfBankNo: null,
@@ -549,7 +549,7 @@ export default {
 				moneyAmount: null,
 				targetAcountsName: null,
 				targetBankNo: null,
-				targetBankNold: null,
+				targetBankNoId: null,
 				targetBankName: null,
 				selfAcountsName: null,
 				selfBankNo: null,
@@ -564,7 +564,7 @@ export default {
 		},
 		handleCommitBackOther(val) {
 			this.form.targetBankNo = val.bankNo;
-			this.form.targetBankNold = val.id;
+			this.form.targetBankNoId = val.id;
 			this.form.targetBankName = val.bankName;
 			this.form.targetAcountsName = val.acountsName;
 		},
