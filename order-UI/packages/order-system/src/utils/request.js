@@ -8,6 +8,7 @@ import cache from '@/plugins/cache';
 import { saveAs } from 'file-saver';
 import { getDownLoadStatus, resetDownLoadProgress } from '@/api/system/onceDownload';
 import webSocketManager from '@/utils/websocket';
+import { logRequestStart, logRequestSuccess, logRequestError } from '@/utils/requestLogger';
 
 let downloadLoadingInstance;
 // 是否显示重新登录
@@ -34,6 +35,9 @@ let loadingInstance = null;
 // request拦截器
 service.interceptors.request.use(
 	config => {
+		// 记录请求开始（用于日志记录）
+		logRequestStart(config);
+
 		// 检查当前请求URL是否在排除loading的路径列表中
 		const isExcluded = excludeLoadingPaths.some(path => config.url.includes(path));
 
@@ -95,6 +99,8 @@ service.interceptors.request.use(
 	},
 	error => {
 		console.log(error);
+		// 记录请求错误（用于日志记录）
+		logRequestError(error.config || {}, error);
 		if (loadingInstance) {
 			loadingInstance.close();
 		}
@@ -105,6 +111,9 @@ service.interceptors.request.use(
 // 响应拦截器
 service.interceptors.response.use(
 	res => {
+		// 记录请求成功（用于日志记录）
+		logRequestSuccess(res.config, res);
+
 		// 未设置状态码则默认成功状态
 		const code = res.data.code || 200;
 		// 获取错误信息
@@ -166,6 +175,9 @@ service.interceptors.response.use(
 		}
 	},
 	error => {
+		// 记录请求错误（用于日志记录）
+		logRequestError(error.config || {}, error);
+
 		if (loadingInstance) {
 			loadingInstance.close();
 		}

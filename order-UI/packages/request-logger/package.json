@@ -1,0 +1,27 @@
+{
+	"name": "@order-system/request-logger",
+	"version": "1.0.0",
+	"description": "请求日志记录服务 - 记录所有HTTP请求的详细信息",
+	"main": "src/index.js",
+	"scripts": {
+		"start": "node src/index.js",
+		"dev": "node --watch src/index.js"
+	},
+	"keywords": [
+		"logger",
+		"request-logger",
+		"log-rotation"
+	],
+	"author": "0434实验室",
+	"license": "MIT",
+	"dependencies": {
+		"express": "^4.21.2",
+		"winston": "^3.11.0",
+		"winston-daily-rotate-file": "^4.7.1",
+		"compression": "^1.7.4",
+		"cors": "^2.8.5"
+	},
+	"engines": {
+		"node": ">=18.20.6"
+	}
+}
