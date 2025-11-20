@@ -46,5 +46,21 @@
 		"vue-super-flow": "^1.4.0",
 		"vue-tour": "^2.0.0",
 		"webstomp-client": "^1.2.6"
+	},
+	"husky": {
+		"hooks": {
+			"pre-commit": "lint-staged"
+		}
+	},
+	"lint-staged": {
+		"packages/**/*.{js,vue}": [
+			"eslint --fix",
+			"prettier --write",
+			"git add"
+		],
+		"*.{js,json,md}": [
+			"prettier --write",
+			"git add"
+		]
 	}
 }
