@@ -2,7 +2,7 @@
 	<div class="app-container" :class="{ 'mask-overlay': showMask }">
 		<!-- 遮罩层 -->
 		<div v-if="showMask" class="container-mask"></div>
-		<el-form id="top-search-form-item" v-show="showSearch" v-fixed="{ position: 'top', zIndex: 1001, offset: 0 }" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="120px">
+		<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="120px">
 			<el-form-item label="收款时间">
 				<el-date-picker v-model="dateRange" class="date-range-280" value-format="yyyy-MM-dd" type="daterange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
 			</el-form-item>
@@ -146,13 +146,12 @@
 						<div slot="content" @click.stop>
 										<CheckFiles :attachmentList="row.attachmentList" @needToUpdate="value => handleUpdateFilePath(value, row, getReceiveMoney(), updateReceiveMoney())" flag="transactionHistoryAttachment" />
 						</div>
-									<CheckFiles :attachmentList="row.attachmentList" @needToUpdate="value => handleUpdateFilePath(value, row, getReceiveMoney(), updateReceiveMoney())" flag="transactionHistoryAttachment" />
 					</el-tooltip>
 							</td>
 							<!-- 操作 -->
 							<td class="fixed-right col-action">
 								<el-dropdown @command="command => handleCommand(command, row)">
-						<el-button type="primary" size="mini">
+						<el-button type="primary" size="mini" >
 							操作
 							<i class="el-icon-arrow-down el-icon--right"></i>
 						</el-button>
@@ -1422,11 +1421,9 @@ export default {
 	pointer-events: all;
 	cursor: not-allowed;
 }
-/* 固定搜索表单（如果显示） */
+/* 搜索表单样式 */
 #top-search-form-item {
-	position: sticky;
-	top: 0;
-	z-index: 102;
+	position: relative;
 	background-color: #fff;
 	padding: 10px 0;
 	margin-bottom: 10px;

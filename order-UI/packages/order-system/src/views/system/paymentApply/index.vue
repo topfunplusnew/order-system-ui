@@ -1,7 +1,7 @@
 <template>
 	<div class="app-container">
 		<!-- 搜索模块 -->
-		<el-form id="top-search-form-item" v-show="showSearch" v-fixed="{ position: 'top', zIndex: 1001, offset: 0 }" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
+		<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
 			<el-form-item label="日期" prop="fundsDate">
 				<el-input v-model="queryParams.fundsDate" placeholder="请输入日期" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
@@ -884,11 +884,9 @@ export default {
 	min-height: 100vh;
 }
 
-/* 固定搜索表单（如果显示） */
+/* 搜索表单样式 */
 #top-search-form-item {
-	position: sticky;
-	top: 0;
-	z-index: 102;
+	position: relative;
 	background-color: #fff;
 	padding: 10px 0;
 	margin-bottom: 10px;
@@ -949,6 +947,7 @@ export default {
 			min-width: max-content;
 			table-layout: auto;
 			border-collapse: collapse;
+			border-spacing: 0;
 			font-size: 12px;
 			color: #606266;
 			background: #fff;
@@ -958,9 +957,10 @@ export default {
 				position: sticky;
 				top: 0;
 				z-index: 10;
+				display: table-header-group;
 
 				th {
-					padding: 8px 10px;
+					padding: 8px 4px;
 					text-align: center;
 					font-weight: 500;
 					color: #909399;
@@ -969,6 +969,10 @@ export default {
 					background: #f5f7fa;
 					white-space: nowrap;
 					position: relative;
+					line-height: 1.5;
+					min-height: 32px;
+					height: auto;
+					vertical-align: middle;
 
 					&.fixed-left {
 						position: sticky;
@@ -1012,12 +1016,21 @@ export default {
 					}
 
 					td {
-						padding: 8px 10px;
+						padding: 4px 2px;
 						border: 1px solid #ebeef5;
 						border-top: none;
 						white-space: nowrap;
 						text-align: center;
 						position: relative;
+						line-height: 1.2;
+						vertical-align: middle;
+						
+						// 确保单元格内的按钮和组件正常显示
+						.el-button,
+						.el-dropdown,
+						.el-tooltip {
+							margin: 0;
+						}
 
 						&.fixed-left {
 							position: sticky;
@@ -1053,24 +1066,18 @@ export default {
 }
 
 .pagination-wrapper {
-	position: relative;
-	margin-top: 20px; /* 调整与表格的间距 */
-	padding: 10px 20px;
-	background-color: #fff;
-	border-top: 1px solid #ebeef5;
-	text-align: right;
-	min-height: 40px; /* 确保有足够的高度 */
+  position: relative;
+  margin-top: 20px; /* 调整与表格的间距 */
+  padding: 10px 20px;
+  background-color: #fff;
+  border-top: 1px solid #ebeef5;
+  text-align: right;
 }
+
 
 .pagination-wrapper ::v-deep .pagination-container {
 	margin: 0;
 	padding: 0;
-}
-
-.pagination-wrapper ::v-deep .el-pagination {
-	display: inline-flex;
-	align-items: center;
-	justify-content: flex-end;
 }
 
 // 响应式优化
