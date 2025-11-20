@@ -78,33 +78,33 @@ export default {
 
 <template>
 	<div>
-		<div :class="['file-container', variant === 'empty' ? 'file-container-empty' : '']">
-			<div class="file-icon">
-				<el-icon class="el-icon-plus"></el-icon>
-			</div>
-			<div class="file-name">
-				<el-upload
-					ref="upload"
-					class="upload-demo"
-					action="#"
-					:show-file-list="false"
-					multiple
-					:http-request="handleUpload"
-					:limit="1"
-					:file-list="fileList"
-					:on-progress="handleProgress"
-					:disabled="uploading"
-				>
-					<el-button size="small" type="text">{{ text }}</el-button>
-				</el-upload>
-			</div>
+		<el-upload
+			ref="upload"
+			class="upload-demo"
+			action="#"
+			:show-file-list="false"
+			multiple
+			:http-request="handleUpload"
+			:limit="1"
+			:file-list="fileList"
+			:on-progress="handleProgress"
+			:disabled="uploading"
+		>
+			<div :class="['file-container', variant === 'empty' ? 'file-container-empty' : '']">
+				<div class="file-icon">
+					<el-icon class="el-icon-plus"></el-icon>
+				</div>
+				<div class="file-name">
+					<span class="upload-text">{{ text }}</span>
+				</div>
 
-			<!-- 自定义的上传进度显示 -->
-			<div v-if="progress !== null" class="upload-progress-container">
-				<div class="progress-bar" :style="{ width: progress + '%' }"></div>
-				<span class="progress-text">{{ progress }}%</span>
+				<!-- 自定义的上传进度显示 -->
+				<div v-if="progress !== null" class="upload-progress-container">
+					<div class="progress-bar" :style="{ width: progress + '%' }"></div>
+					<span class="progress-text">{{ progress }}%</span>
+				</div>
 			</div>
-		</div>
+		</el-upload>
 	</div>
 </template>
 
@@ -143,6 +143,10 @@ export default {
 		white-space: nowrap;
 		overflow: hidden;
 		max-width: 80px;
+		
+		.upload-text {
+			display: inline-block;
+		}
 	}
 }
 
@@ -164,10 +168,25 @@ export default {
 		font-weight: 500;
 		font-size: 14px;
 		color: #409eff;
+		
+		.upload-text {
+			display: inline-block;
+		}
 	}
 	&:hover {
 		box-shadow: 0 6px 18px -2px rgba(64, 158, 255, 0.25), 0 0 0 2px rgba(64, 158, 255, 0.15);
 		transform: translateY(-2px);
+	}
+}
+
+// 确保 el-upload 组件不显示默认样式
+::v-deep .upload-demo {
+	display: inline-block;
+	width: 100%;
+	
+	.el-upload {
+		display: block;
+		width: 100%;
 	}
 }
 
@@ -183,6 +202,7 @@ export default {
 	display: flex;
 	align-items: center;
 	gap: 6px;
+	pointer-events: none;
 
 	.progress-bar {
 		flex: 1;

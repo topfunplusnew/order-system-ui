@@ -42,19 +42,6 @@ export default {
 		}
 	},
 	methods: {
-    handleClickUpload(event) {
-      // 阻止事件冒泡到父元素
-      event.stopPropagation();
-
-      // 检查是否点击了文件项或已存在的上传按钮
-      const target = event.target;
-      const isFileItem = target.closest('.file-item') || target.closest('.file-show-item');
-
-      // 如果不是文件项，且允许上传，则触发上传
-      if (!isFileItem && this.isUpload) {
-        this.handleAddFile(null);
-      }
-    },
 		showImgSrc(p) {
 			return process.env.VUE_APP_BASE_API + p;
 		},
@@ -68,8 +55,8 @@ export default {
 			this.dialogVisible = true;
 		},
 		async handleAddFile(file) {
+			// 如果没有文件，可能是用户取消了文件选择，不显示错误
 			if (!file) {
-				this.$message.error('上传的文件格式有误!');
 				return;
 			}
 			try {
@@ -131,7 +118,7 @@ export default {
     <!-- 文件列表 -->
     <el-dialog :modal="false" v-dialogDrag v-el-relen-dialog title="文件列表" :visible.sync="dialogVisible" width="670px" height="1000px" append-to-body :close-on-click-modal="false" :close-on-press-escape="false" custom-class="check-files-dialog" @close="isUploading = false">
       <h3 v-once>附件列表</h3>
-      <div class="file-list" :class="{ 'empty-list': checkFileList.length === 0 }" @click.prevent="handleClickUpload">
+      <div class="file-list" :class="{ 'empty-list': checkFileList.length === 0 }">
         <!-- 上传过的文件列表 -->
         <template v-if="checkFileList.length > 0">
           <FileItems v-for="(item, index) in checkFileList" :key="item.id || index" :fileItem="item" @handleFile="handleDeleteFile" />
