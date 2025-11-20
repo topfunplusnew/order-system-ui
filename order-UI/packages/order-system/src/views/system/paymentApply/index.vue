@@ -1,7 +1,9 @@
 <template>
 	<div class="app-container">
+    <div class="fixed-top">
+
 		<!-- 搜索模块 -->
-		<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
+		<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px" position="fixed">
 			<el-form-item label="日期" prop="fundsDate">
 				<el-input v-model="queryParams.fundsDate" placeholder="请输入日期" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
@@ -55,7 +57,7 @@
 				</template>
 			</right-toolbar>
 		</div>
-
+  </div>
 		<!-- 付款申请表格 -->
 		<div class="table-container" v-loading="loading">
 			<!-- 渲染进度提示 -->
@@ -882,24 +884,40 @@ export default {
 	position: relative;
 	overflow: visible;
 	min-height: 100vh;
+  padding: 0;
 }
+.fixed-top {
+  position: relative;
+  z-index: 10;
+}
+
 
 /* 搜索表单样式 */
 #top-search-form-item {
-	position: relative;
-	background-color: #fff;
-	padding: 10px 0;
-	margin-bottom: 10px;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  background-color: #fff;
+  padding: 10px 0;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 11; /* 高于其他元素 */
+  width: 100%;
 }
 
+
 .toolbar-wrapper {
-	margin-bottom: 15px;
+  position: sticky;
+  top: 60px; /* 搜索栏高度 + 10px 间距 */
+  background-color: #fff;
+  padding: 10px 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+}
+
 
 	.toolbar-left {
 		padding: 10px 0;
 	}
-}
 
 .text-ellipsis {
 	white-space: nowrap;
@@ -935,7 +953,7 @@ export default {
 	.table-wrapper {
 		position: relative;
 		width: 100%;
-		max-height: 750px;
+		max-height: 650px;
 		overflow-x: auto;
 		overflow-y: auto;
 		border: 1px solid #ebeef5;

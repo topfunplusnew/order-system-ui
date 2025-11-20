@@ -358,7 +358,7 @@ export default {
 	align-items: center;
 
 	.item {
-		margin-right: 8px;
+		margin-right: 2px;
 	}
 
 	.el-button {
@@ -380,7 +380,7 @@ export default {
 	}
 
 	.el-transfer__button:first-child {
-		margin-bottom: 10px;
+		margin-bottom: 5px;
 	}
 }
 

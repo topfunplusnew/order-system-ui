@@ -1425,16 +1425,16 @@ export default {
 #top-search-form-item {
 	position: relative;
 	background-color: #fff;
-	padding: 10px 0;
-	margin-bottom: 10px;
+	padding: 1px 0;
+	margin-bottom: 1px;
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .toolbar-wrapper {
-	margin-bottom: 15px;
+	margin-bottom: 0px;
 
 	.toolbar-left {
-	padding: 10px 0;
+	padding: 5px 0;
 	}
 }
 
@@ -1486,7 +1486,7 @@ export default {
 
 		.progress-text {
 			display: block;
-			margin-top: 8px;
+			margin-top:5px;
 			text-align: center;
 			font-size: 12px;
 			color: #606266;
@@ -1628,8 +1628,8 @@ export default {
 
 .pagination-wrapper {
   position: relative;
-  margin-top: 20px; /* 调整与表格的间距 */
-  padding: 10px 20px;
+  margin-top: 5px; /* 调整与表格的间距 */
+  padding: 5px;
   background-color: #fff;
   border-top: 1px solid #ebeef5;
   text-align: right;

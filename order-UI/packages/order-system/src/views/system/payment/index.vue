@@ -235,7 +235,7 @@
 
 		<!-- 导入结果弹窗 -->
 		<el-dialog title="导入结果" :visible.sync="importResultVisible" width="500px" :close-on-click-modal="false" append-to-body>
-			<div style="padding: 20px 0">
+			<div style="padding: 10px 0">
 				<div style="margin-bottom: 15px; font-weight: 600; font-size: 16px">导入结果：完成</div>
 				<div style="color: #606266; line-height: 1.6; white-space: pre-line">{{ importResultMessage }}</div>
 			</div>
@@ -1883,13 +1883,13 @@ export default {
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.toolbar-wrapper {
-	margin-bottom: 15px;
-
-	.toolbar-left {
-		padding: 10px 0;
-	}
-}
+//.toolbar-wrapper {
+//	margin-bottom: 3px;
+//
+//	.toolbar-left {
+//		padding: 5px 0;
+//	}
+//}
 
 .text-ellipsis {
 	white-space: nowrap;
@@ -1914,13 +1914,13 @@ export default {
 		right: 0;
 		z-index: 1000;
 		background: rgba(255, 255, 255, 0.95);
-		padding: 10px 20px;
+		//padding: 3px;
 		border-bottom: 1px solid #ebeef5;
 		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
 		.progress-text {
 			display: block;
-			margin-top: 8px;
+			margin-top: 0px;
 			text-align: center;
 			font-size: 12px;
 			color: #606266;
@@ -1955,7 +1955,7 @@ export default {
 				display: table-header-group;
 
 				th {
-					padding: 8px 4px;
+					padding: 3px 4px;
 					text-align: center;
 					font-weight: 500;
 					color: #909399;
@@ -2047,8 +2047,8 @@ export default {
 
 .pagination-wrapper {
 	position: relative;
-	margin-top: 20px;
-	padding: 10px 20px;
+	margin-top: 5px;
+	padding:5px;
 	background-color: #fff;
 	border-top: 1px solid #ebeef5;
 	text-align: right;
@@ -2109,7 +2109,7 @@ export default {
 }
 
 .order-freight-self-info ::v-deep .el-form-item {
-	margin-bottom: 16px;
+	margin-bottom: 5px;
 }
 
 .order-freight-self-info ::v-deep .el-form-item__label {
@@ -2133,7 +2133,7 @@ export default {
 }
 
 .order-freight-info ::v-deep .el-collapse-item__header {
-	padding: 12px 16px;
+	padding: 5px;
 	font-size: 14px;
 	font-weight: 500;
 	background-color: #f5f7fa;
@@ -2171,7 +2171,7 @@ export default {
 	font-size: 15px;
 	font-weight: 600;
 	color: #303133;
-	margin-bottom: 12px;
+	margin-bottom: 5px;
 }
 
 .order-freight-info ::v-deep .el-descriptions__label {
@@ -2187,7 +2187,7 @@ export default {
 .order-freight-info ::v-deep .el-tag.el-tag--mini {
 	line-height: 20px;
 	height: 20px;
-	padding: 0 8px;
+	padding: 5px;
 }
 
 /* 运费总和展示区域 - 醒目样式 */
@@ -2204,7 +2204,7 @@ export default {
 .total-freight-label {
 	font-size: 14px;
 	font-weight: 500;
-	margin-bottom: 8px;
+	margin-bottom:2px;
 	opacity: 0.95;
 	letter-spacing: 0.5px;
 }
