@@ -161,18 +161,29 @@
 									<el-input disabled v-model="form.targetAcountsName" placeholder="请选择对方账户" />
 								</el-col>
 								<el-col :span="3">
-									<SearchOption
-										:get-data="listBankAccount"
-										icon="el-icon-search"
-										:limit-info="{
-											acountsType: form.targetType === '其他' || form.targetType === '员工' ? '' : form.targetType
-										}"
-										query-label="户名查找"
-										query-info="acountsName"
-										:query-name="queryBank"
-										@commitBack="handleCommitBack"
-										@update:queryName="handleUpdateQueryName"
-									>
+<!--									<SearchOption-->
+<!--										:get-data="listBankAccount"-->
+<!--										icon="el-icon-search"-->
+<!--										:limit-info="{-->
+<!--											acountsType: form.targetType === '其他' || form.targetType === '员工' ? '' : form.targetType-->
+<!--										}"-->
+<!--										query-label="户名查找"-->
+<!--										query-info="acountsName"-->
+<!--										:query-name="queryBank"-->
+                  <!--										@commitBack="handleCommitBack"-->
+<!--										@update:queryName="handleUpdateQueryName"-->
+<!--									>-->
+                  <SearchOption
+                      :limit-info="{
+												acountsType: form.targetCompanyType
+											}"
+                      :get-data="listBankAccount"
+                      query-info="acountsName"
+                      query-label="户名查找"
+                      :query-name="queryBank"
+                  										@update:queryName="handleUpdateQueryName"
+                  										@commitBack="handleCommitBack"
+                  >
 										<template #table-columns>
 											<el-table-column :label="form.targetType === '其他' || form.targetType === '员工' ? '名称' : form.targetType" align="center" prop="acountsName" />
 											<el-table-column label="开户行" align="center" prop="bankName" />
@@ -624,6 +635,31 @@ export default {
 		}
 	},
 	methods: {
+    fetchBankAccount(query) {
+      return new Promise((resolve, reject) => {
+        // 添加查询参数
+        const params = {
+          acountsType: '己方公司',
+          acountsName: query
+        };
+
+        // 调用实际的 API 方法
+        listBankAccount(params).then(response => {
+          resolve(response.data);
+        }).catch(error => {
+          reject(error);
+        });
+      });
+    },
+
+    // 更新查询名称的方法
+    handleUpdateQueryName(val) {
+      this.queryBank = val;
+      // 触发数据重新加载
+      this.$nextTick(() => {
+        this.$refs.searchOption && this.$refs.searchOption.refresh();
+      });
+    },
 		listCompany,
 		listBankAccount,
 		// 查看历史还款信息

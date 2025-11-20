@@ -95,17 +95,21 @@ export default {
 			// 输入框宽度
 			inputWidth: '160px',
 			// span文本内容（用于测量宽度）
-			spanText: ''
+			spanText: '',
+			// 内部查询值，用于双向绑定
+			internalQuery: ''
 		};
 	},
 
 	computed: {
 		query: {
 			set(val) {
+				this.internalQuery = val;
 				this.$emit('update:queryName', val);
 			},
 			get() {
-				return this.queryName;
+				// 使用内部值，确保输入框可以正常输入
+				return this.internalQuery;
 			}
 		},
 		computedQueryItems: {
@@ -122,10 +126,21 @@ export default {
 		}
 	},
 	mounted() {
+		// 初始化内部查询值
+		this.internalQuery = this.queryName || '';
 		// 初始化输入框宽度
 		this.updateInputWidth();
 	},
 	watch: {
+		queryName: {
+			handler(newVal) {
+				// 当 prop 值变化时，同步更新内部值（仅在对话框关闭时或内部值为空时）
+				if (!this.dialogVisible || this.internalQuery === '') {
+					this.internalQuery = newVal || '';
+				}
+			},
+			immediate: true
+		},
 		query: {
 			handler() {
 				var queryParams = Object.create({});
@@ -164,6 +179,8 @@ export default {
 		handleCallBack() {
 			// 刷新状态
 			this.tableData = [];
+			// 初始化查询值
+			this.internalQuery = this.queryName || '';
 			// 初始化params属性
 			_.set(this.limitInfo, 'params', {});
 			// 这里需要加一个特殊逻辑 支持limitInfo传入放置于params的属性
@@ -179,6 +196,7 @@ export default {
 		// 点击确认
 		commitSomeThing(row) {
 			this.$emit('commitBack', row);
+			this.internalQuery = '';
 			this.query = '';
 			this.inputWidth = '160px'; // 重置宽度
 			Object.keys(this.computedQueryItems.queryList).forEach(key => {
@@ -240,6 +258,7 @@ export default {
 			});
 		},
 		handleCancel() {
+			this.internalQuery = '';
 			this.query = '';
 			this.inputWidth = '160px'; // 重置宽度
 			Object.keys(this.computedQueryItems.queryList).forEach(key => {
@@ -248,6 +267,7 @@ export default {
 			this.dialogVisible = false;
 		},
 		handleSubmit() {
+			this.internalQuery = '';
 			this.query = '';
 			this.inputWidth = '160px'; // 重置宽度
 			Object.keys(this.computedQueryItems.queryList).forEach(key => {
@@ -258,6 +278,7 @@ export default {
 		// 点击清空按钮
 		handleClear() {
 			this.$emit('commitBack', {});
+			this.internalQuery = '';
 			this.query = '';
 			this.inputWidth = '160px'; // 重置宽度
 			Object.keys(this.computedQueryItems.queryList).forEach(key => {
