@@ -97,7 +97,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column label="支付类型" align="center" prop="payType" width="120" v-if="columns[2].visible" show-overflow-tooltip>
+			<el-table-column label="支付类型" align="center" prop="payType" width="180" v-if="columns[2].visible" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.payType }}</div>
@@ -129,7 +129,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column label="我方户名" align="center" prop="selfAccountsName" width="120" v-if="columns[4].visible" show-overflow-tooltip>
+			<el-table-column label="我方户名" align="center" prop="selfAccountsName" width="250" v-if="columns[4].visible" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.selfAccountsName }}</div>

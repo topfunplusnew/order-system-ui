@@ -1,73 +1,82 @@
 <template>
 	<div class="app-container">
 		<!-- 筛选框 -->
-		<el-form id="top-search-form-item" v-show="showSearch" v-fixed="{ position: 'top', zIndex: 1001, offset: 0 }" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
+		<el-form id="top-search-form-item" v-show="showSearch" v-fixed="{ position: 'top', zIndex: 1001, offset: 0 }" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="100px" class="search-form">
 			<el-form-item label="开始时间" prop="endDate">
-				<el-date-picker v-model="queryParams.endDate" type="date" placeholder="选择开始时间" value-format="yyyy-MM-dd" size="mini" clearable></el-date-picker>
+				<el-date-picker v-model="queryParams.endDate" type="date" placeholder="选择开始时间" value-format="yyyy-MM-dd" size="mini" clearable class="form-input"></el-date-picker>
 			</el-form-item>
 			<el-form-item label="账户类型">
-				<el-select v-model="queryParams.bankCardType" placeholder="账户类型" size="mini" clearable @keyup.enter.native="handleQuery">
+				<el-select v-model="queryParams.bankCardType" placeholder="账户类型" size="mini" clearable class="form-input" @keyup.enter.native="handleQuery">
 					<el-option v-for="item in typeOption" :key="item.value" :label="item.label" :value="item.value"></el-option>
 				</el-select>
 			</el-form-item>
 			<el-form-item label="开户名称" prop="acountsName">
-				<el-input v-model="queryParams.acountsName" placeholder="请输入开户名称" clearable @keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.acountsName" placeholder="请输入开户名称" clearable class="form-input" @keyup.enter.native="handleQuery" />
 			</el-form-item>
-			<el-form-item label="开户行" prop="acountsName">
-				<el-input v-model="queryParams.bankName" placeholder="请输入开户行" clearable @keyup.enter.native="handleQuery" />
+			<el-form-item label="开户行" prop="bankName">
+				<el-input v-model="queryParams.bankName" placeholder="请输入开户行" clearable class="form-input" @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="银行账号" prop="bankNo">
-				<el-input v-model="queryParams.bankNo" placeholder="请输入银行账号" clearable @keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.bankNo" placeholder="请输入银行账号" clearable class="form-input" @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="己方公司" prop="displayName">
-				<el-input v-model="queryParams.displayName" placeholder="请输入己方公司" clearable @keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.displayName" placeholder="请输入己方公司" clearable class="form-input" @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
 			</el-form-item>
 		</el-form>
-		<el-row v-fixed="{ position: 'top', zIndex: 1000, offset: toolbarOffset }">
-			<right-toolbar :columns="columns" @queryTable="getList">
+
+		<!-- 右侧工具栏 -->
+		<div class="toolbar-wrapper">
+			<right-toolbar :show-search.sync="showSearch" :columns="columns" @queryTable="getList">
+				<!-- 左侧操作按钮 -->
 				<template #left>
-					<el-row :gutter="10">
-						<el-col :span="1.5">
-							<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
-						</el-col>
-						<el-col :span="1.5">
-							<el-select v-model="value" placeholder="余额排序" size="mini">
-								<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
-							</el-select>
-						</el-col>
-					</el-row>
+					<div class="toolbar-left">
+						<el-row :gutter="10" class="mb8">
+							<el-col :span="1.5">
+								<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
+							</el-col>
+							<el-col :span="1.5">
+								<el-select v-model="value" placeholder="余额排序" size="mini" style="width: 120px">
+									<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
+								</el-select>
+							</el-col>
+						</el-row>
+					</div>
 				</template>
+
+				<!-- 打印按钮 -->
 				<template #print>
 					<el-col :span="1.5">
-						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
+						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML" :disabled="bankAccountList.length === 0" />
 					</el-col>
 				</template>
+
+				<!-- 导出按钮 -->
 				<template #export>
 					<el-col :span="1.5">
-						<el-button plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
+						<el-button plain icon="el-icon-folder-opened" size="mini" @click="handleExport" :disabled="bankAccountList.length === 0" />
 					</el-col>
 				</template>
 			</right-toolbar>
-		</el-row>
+		</div>
 
-		<el-table
-			id="printBox"
-			ref="table"
-			v-loading="loading"
-			v-horizontal-scroll="'always'"
-			border
-			:data="bankAccountList"
-			size="mini"
-			:cell-style="
-				() => {
-					return { padding: '.5px' };
-				}
-			"
-			:max-height="getTableHeight()"
-		>
+		<!-- 银行账户表格 -->
+		<div class="table-container" v-loading="loading">
+			<el-table
+				id="printBox"
+				ref="table"
+				v-horizontal-scroll="'always'"
+				border
+				:data="bankAccountList"
+				size="mini"
+				:cell-style="
+					() => {
+						return { padding: '.5px' };
+					}
+				"
+			>
 		<el-table-column v-if="columns[0].visible" label="排序序号" align="center" prop="sort" width="100" show-overflow-tooltip>
 			<template #default="scope">
 				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
@@ -114,11 +123,11 @@
 				</el-tooltip>
 			</template>
 		</el-table-column>
-		<el-table-column v-if="columns[5].visible" label="余额" align="center" prop="sumMoney" show-overflow-tooltip>
+		<el-table-column v-if="columns[5].visible" label="余额" align="right" prop="sumMoney" show-overflow-tooltip>
 			<template #default="scope">
 				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 					<div slot="content">{{ scope.row.sumMoney }}</div>
-					<span>{{ scope.row.sumMoney }}</span>
+					<span style="text-align: right; display: block;">{{ scope.row.sumMoney }}</span>
 				</el-tooltip>
 			</template>
 		</el-table-column>
@@ -128,15 +137,20 @@
 					<el-button size="mini" type="primary" icon="el-icon-check" @click="handleSaveSort(scope.row)">保存</el-button>
 				</template>
 			</el-table-column>
-		</el-table>
-
-		<!-- 显示总条数 -->
-		<div class="total-info" v-if="!loading">
-			<span class="total-text">共 <strong>{{ total }}</strong> 条记录</span>
+			</el-table>
 		</div>
 
-		<div v-fixed="{ position: 'bottom', zIndex: 1000 }" class="pagination-wrapper">
-			<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="handlePagination" />
+		<!-- 分页组件 -->
+		<div class="pagination-wrapper">
+			<pagination
+				:total="total"
+				:page.sync="queryParams.pageNum"
+				:limit.sync="queryParams.pageSize"
+				:page-sizes="[10, 20, 50, 100, 200, 500]"
+				layout="total, sizes, prev, pager, next, jumper"
+				background
+				@pagination="handlePagination"
+			/>
 		</div>
 	</div>
 </template>
@@ -227,13 +241,7 @@ export default {
 			resizeTimer: null
 		};
 	},
-	computed: {
-		// 计算工具栏的偏移量
-		toolbarOffset() {
-			// 如果搜索表单显示，工具栏需要向下偏移搜索表单的高度
-			return this.showSearch ? 60 : 0;
-		}
-	},
+	computed: {},
 	watch: {
 		// 监听value并保存排序状态
 		value: {
@@ -270,18 +278,6 @@ export default {
 		listBankAccount,
 		listCompany,
 		updateBankAccountSort,
-		// 计算表格高度
-		getTableHeight() {
-			// 根据窗口高度动态计算表格高度，减去固定元素占用的空间
-			const searchFormHeight = this.showSearch ? 60 : 0; // 搜索表单高度
-			const toolbarHeight = 50; // 工具栏高度
-			const paginationHeight = 50; // 分页器高度
-			const totalInfoHeight = 40; // 总条数显示高度
-			const otherSpace = 20; // 其他间距
-			const height = window.innerHeight - searchFormHeight - toolbarHeight - paginationHeight - totalInfoHeight - otherSpace;
-			// 确保最小高度，避免表头不显示
-			return Math.max(height, 200);
-		},
 		// 处理窗口大小变化
 		handleResize() {
 			// 使用防抖，避免频繁触发
@@ -313,22 +309,31 @@ export default {
 				apiParams.endDate = this.queryParams.endDate;
 			}
 
-			listBankAccountSelf(apiParams).then(response => {
-				// 存储原始数据到本地，用于前端筛选
-				const originalData = response.data || [];
-				localStorage.setItem('bankAccountList', JSON.stringify(originalData));
-				
-				// 应用前端筛选
-				this.applyFrontendFilter();
-				
-				// 应用保存的排序
-				this.applySort();
-				
-				// 应用分页
-				this.applyPagination();
-				
-				this.loading = false;
-			});
+			listBankAccountSelf(apiParams)
+				.then(response => {
+					// 存储原始数据到本地，用于前端筛选
+					const originalData = response.data || [];
+					localStorage.setItem('bankAccountList', JSON.stringify(originalData));
+					
+					// 应用前端筛选
+					this.applyFrontendFilter();
+					
+					// 应用保存的排序
+					this.applySort();
+					
+					// 应用分页
+					this.applyPagination();
+				})
+				.catch(error => {
+					console.error('查询银行账户列表失败:', error);
+					this.$message.error('查询失败，请重试');
+					this.bankAccountList = [];
+					this.filteredList = [];
+					this.total = 0;
+				})
+				.finally(() => {
+					this.loading = false;
+				});
 		},
 		// 应用当前排序
 		applySort() {
@@ -501,70 +506,202 @@ export default {
 	}
 };
 </script>
-<style scoped>
-.el-table th {
-	background-color: #f4f4f4;
-	color: #333;
-	font-weight: bold;
-	text-align: center;
-}
+<style scoped lang="scss">
+// 统一的容器padding，确保各组件对齐
+$container-padding: 20px;
+$form-item-spacing: 20px; // 表单项之间的间距
 
-.el-table td {
-	text-align: center;
-	padding: 12px;
-	font-size: 14px;
-	color: #555;
-}
-
-.el-table .el-table-column--center {
-	text-align: center;
-}
-
-/* Element UI 的 max-height 会自动处理表头固定 */
-/* 确保表头在缩放时也能正确显示 */
-#printBox {
+.app-container {
 	position: relative;
+	overflow: visible;
+	min-height: 100vh;
+	padding: 20px $container-padding;
+	background-color: #f5f7fa;
 }
 
-#printBox ::v-deep .el-table__header-wrapper {
-	position: sticky !important;
-	top: 0 !important;
-	z-index: 99 !important;
-	background-color: #fff !important;
+/* 固定搜索表单（如果显示） */
+#top-search-form-item {
+	position: sticky;
+	top: 0;
+	z-index: 102;
+	background-color: #fff;
+	padding: 15px $container-padding;
+	margin: -20px (-$container-padding) 15px (-$container-padding);
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	border-bottom: 1px solid #ebeef5;
+
+	::v-deep .el-form-item {
+		margin-bottom: 10px;
+		margin-right: $form-item-spacing;
+		vertical-align: top;
+	}
+
+	::v-deep .el-form-item:last-child {
+		margin-right: 0;
+	}
+
+	::v-deep .el-form-item__label {
+		text-align: right;
+		padding-right: 12px;
+		width: 100px !important;
+		line-height: 28px;
+		font-weight: normal;
+	}
+
+	// 统一所有输入框宽度
+	.form-input {
+		width: 180px !important;
+	}
+
+	// 日期选择器宽度
+	::v-deep .el-date-editor {
+		width: 180px !important;
+	}
+
+	// 下拉选择框宽度
+	::v-deep .el-select {
+		width: 180px !important;
+	}
+
+	// 确保表单项垂直对齐
+	::v-deep .el-form-item__content {
+		line-height: 28px;
+	}
 }
 
-#printBox ::v-deep .el-table__header {
+.toolbar-wrapper {
+	margin-bottom: 15px;
+	padding: 0;
+	background-color: transparent;
+	width: 100%;
+
+	.toolbar-left {
+		padding: 0;
+	}
+
+	::v-deep .el-row {
+		margin: 0 !important;
+		display: flex;
+		align-items: center;
+	}
+
+	::v-deep .el-col {
+		padding: 0;
+	}
+
+	// 确保工具栏按钮对齐
+	::v-deep .el-button,
+	::v-deep .el-select {
+		vertical-align: middle;
+	}
+}
+
+// 表格容器样式
+.table-container {
 	position: relative;
+	background-color: #fff;
+	border-radius: 4px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+	overflow: hidden;
+	padding: 0;
+
+	.el-table {
+		width: 100%;
+
+		th {
+			background-color: #f5f7fa;
+			color: #909399;
+			font-weight: 500;
+			text-align: center;
+			padding: 12px 10px;
+		}
+
+		td {
+			padding: 8px 10px;
+			font-size: 12px;
+			color: #606266;
+		}
+
+		// 默认居中对齐
+		.el-table-column--center {
+			text-align: center;
+		}
+
+		// 右对齐列
+		.el-table-column--right {
+			text-align: right;
+		}
+	}
+
+	// 确保余额列右对齐
+	::v-deep .el-table__body-wrapper .el-table__body .el-table__row .el-table__cell.is-right {
+		text-align: right !important;
+	}
+
+	::v-deep .el-table__header-wrapper .el-table__header .el-table__row .el-table__cell.is-right {
+		text-align: right !important;
+	}
+
+	#printBox {
+		position: relative;
+
+		::v-deep .el-table__header-wrapper {
+			position: sticky !important;
+			top: 0 !important;
+			z-index: 99 !important;
+			background-color: #fff !important;
+			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05) !important;
+		}
+
+		::v-deep .el-table__header {
+			position: relative;
+		}
+
+		::v-deep .el-table__body-wrapper {
+			overflow-x: auto;
+		}
+	}
 }
 
-/* 总条数显示样式 */
-.total-info {
-	margin: 0;
-	padding: 5px 0;
-	text-align: left;
-	border-top: 1px solid #ebeef5;
-}
-
-.total-text {
-	font-size: 14px;
-	color: #606266;
-}
-
-.total-text strong {
-	color: #409eff;
-	font-weight: 600;
-	font-size: 16px;
-}
-
-/* 分页器容器样式 */
 .pagination-wrapper {
+	position: relative;
+	margin-top: 10px;
+	padding: 15px $container-padding;
+	background-color: #fff;
+	border-radius: 4px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+	text-align: right;
+}
+
+.pagination-wrapper ::v-deep .pagination-container {
 	margin: 0;
 	padding: 0;
 }
 
-/* 分页器组件样式 */
-.pagination-wrapper ::v-deep .pagination-container {
-	margin: 0;
-	padding: 5px 0;
+// 响应式优化
+@media screen and (max-width: 768px) {
+	.app-container {
+		padding: 0 10px;
+	}
+
+	#top-search-form-item {
+		padding: 15px 10px;
+		margin: 0 -10px 15px -10px;
+	}
+
+	.table-container {
+		overflow-x: auto;
+	}
+
+	.pagination-wrapper {
+		padding: 10px 10px;
+	}
+}
+
+// 确保表格列对齐
+::v-deep .el-table {
+	.el-table__cell {
+		padding: 8px 10px;
+	}
 }
 </style>

@@ -247,14 +247,29 @@ export default {
 			// 检查文件数量限制
 			if (this.uploadedFiles.length + files.length > this.maxFiles) {
 				this.$message.warning(`最多只能上传 ${this.maxFiles} 个文件`);
+				this.$refs.fileInput.value = '';
 				return;
 			}
 
 			// 检查文件大小
 			const oversizeFiles = files.filter(file => file.size > this.maxFileSize * 1024 * 1024);
 			if (oversizeFiles.length > 0) {
-				this.$message.warning(`文件大小不能超过 ${this.maxFileSize}MB`);
+				const oversizeNames = oversizeFiles.map(f => f.name).join(', ');
+				this.$message.warning(`以下文件大小超过 ${this.maxFileSize}MB：${oversizeNames}`);
+				this.$refs.fileInput.value = '';
 				return;
+			}
+
+			// 检查文件格式（如果指定了 acceptTypes）
+			if (this.acceptTypes && this.acceptTypes !== '*') {
+				const invalidFiles = this.validateFileTypes(files);
+				if (invalidFiles.length > 0) {
+					const invalidNames = invalidFiles.map(f => f.name).join(', ');
+					const allowedTypes = this.getAcceptableTypesDescription();
+					this.$message.error(`以下文件格式不支持：${invalidNames}。请上传 ${allowedTypes} 格式的文件`);
+					this.$refs.fileInput.value = '';
+					return;
+				}
 			}
 
 			// 校验重名（包括后缀）：禁止选中文件内部有重名，或与已上传文件重名
@@ -318,7 +333,14 @@ export default {
 				}
 			} catch (error) {
 				console.error('文件上传失败:', error);
-				this.$message.error('文件上传失败: ' + (error.message || '未知错误'));
+				// 检查是否是文件格式错误
+				const errorMessage = error.message || error.msg || '未知错误';
+				if (errorMessage.includes('格式') || errorMessage.includes('格式有误') || errorMessage.includes('不支持') || errorMessage.includes('file format')) {
+					const allowedTypes = this.getAcceptableTypesDescription();
+					this.$message.error(`文件格式错误：${errorMessage}。${allowedTypes !== '任意格式' ? '请上传 ' + allowedTypes + ' 格式的文件' : ''}`);
+				} else {
+					this.$message.error('文件上传失败: ' + errorMessage);
+				}
 			} finally {
 				this.uploading = false;
 				// 清空文件输入框
@@ -493,6 +515,108 @@ export default {
 		// 获取当前上传的文件参数（对外暴露的方法）
 		getUploadParams() {
 			return this.params;
+		},
+
+		// 验证文件类型
+		validateFileTypes(files) {
+			if (!this.acceptTypes || this.acceptTypes === '*') {
+				return [];
+			}
+
+			const invalidFiles = [];
+			const acceptTypesArray = this.acceptTypes.split(',').map(type => type.trim().toLowerCase());
+
+			files.forEach(file => {
+				const fileName = file.name.toLowerCase();
+				const fileExtension = fileName.substring(fileName.lastIndexOf('.'));
+				let isValid = false;
+
+				// 检查每个接受的文件类型
+				for (const acceptType of acceptTypesArray) {
+					// 处理通配符类型，如 "image/*"
+					if (acceptType.includes('/*')) {
+						const category = acceptType.split('/')[0];
+						if (category === 'image') {
+							const imageExts = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.svg'];
+							if (imageExts.includes(fileExtension)) {
+								isValid = true;
+								break;
+							}
+						} else if (category === 'application') {
+							const appExts = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.zip', '.rar'];
+							if (appExts.includes(fileExtension)) {
+								isValid = true;
+								break;
+							}
+						}
+					}
+					// 处理具体的文件扩展名，如 ".pdf", ".doc"
+					else if (acceptType.startsWith('.')) {
+						if (fileExtension === acceptType) {
+							isValid = true;
+							break;
+						}
+					}
+					// 处理不带点的扩展名，如 "pdf", "doc"
+					else if (!acceptType.includes('/')) {
+						if (fileExtension === '.' + acceptType) {
+							isValid = true;
+							break;
+						}
+					}
+					// 处理 MIME 类型，如 "application/pdf"
+					else if (acceptType.includes('/')) {
+						// 这里可以根据需要扩展 MIME 类型检查
+						// 目前主要检查扩展名
+						const mimeMap = {
+							'application/pdf': '.pdf',
+							'application/msword': '.doc',
+							'application/vnd.openxmlformats-officedocument.wordprocessingml.document': '.docx',
+							'application/vnd.ms-excel': '.xls',
+							'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': '.xlsx',
+							'image/jpeg': '.jpg',
+							'image/png': '.png',
+							'image/gif': '.gif'
+						};
+						if (mimeMap[acceptType] === fileExtension) {
+							isValid = true;
+							break;
+						}
+					}
+				}
+
+				if (!isValid) {
+					invalidFiles.push(file);
+				}
+			});
+
+			return invalidFiles;
+		},
+
+		// 获取可接受的文件类型描述
+		getAcceptableTypesDescription() {
+			if (!this.acceptTypes || this.acceptTypes === '*') {
+				return '任意格式';
+			}
+
+			const acceptTypesArray = this.acceptTypes.split(',').map(type => type.trim());
+			const descriptions = [];
+
+			acceptTypesArray.forEach(type => {
+				if (type === 'image/*') {
+					descriptions.push('图片文件（jpg, png, gif, bmp, webp, svg）');
+				} else if (type === 'application/*') {
+					descriptions.push('文档文件（pdf, doc, docx, xls, xlsx, ppt, pptx）');
+				} else if (type.startsWith('.')) {
+					descriptions.push(type.toUpperCase());
+				} else if (!type.includes('/')) {
+					descriptions.push(type.toUpperCase());
+				} else {
+					descriptions.push(type);
+				}
+			});
+
+			return descriptions.join('、') || '指定格式';
 		}
 	}
 };

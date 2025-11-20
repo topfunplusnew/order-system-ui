@@ -15,8 +15,8 @@
 			<el-form-item label="对方户名" prop="otherAcountsName">
 				<el-input v-model="queryParams.otherAcountsName" class="input-medium" placeholder="请输入对方户名" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
-			<el-form-item label="对方公司名称" prop="companyName">
-				<el-input v-model="queryParams.companyName" class="input-medium" placeholder="请输入对方公司名称" clearable @keyup.enter.native="handleQuery" />
+      <el-form-item label="对方公司名称" prop="companyName">
+      <el-input v-model="queryParams.companyName" class="input-medium" placeholder="请输入对方公司名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="票据号码" prop="bankacceptanceBillNo">
 				<el-input v-model="queryParams.params.bankacceptanceBillNo" class="input-medium" placeholder="请输入票据号码" clearable @keyup.enter.native="handleQuery" />
@@ -25,10 +25,12 @@
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
 			</el-form-item>
 		</el-form>
-		<el-row v-fixed="{ position: 'top', zIndex: 1000, offset: toolbarOffset }">
+		<!-- 右侧工具栏 -->
+		<div class="toolbar-wrapper">
 			<right-toolbar :show-search.sync="showSearch" :columns="columns" @queryTable="getList">
 				<template #left>
-					<el-row :gutter="10">
+					<div class="toolbar-left">
+						<el-row :gutter="10" class="mb8">
 						<el-col :span="1.5">
 							<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
 						</el-col>
@@ -42,156 +44,114 @@
 							<el-button v-hasPermi="['system:receivemoney:add']" type="danger" size="mini" @click="handleAdd">新增收款信息</el-button>
 						</el-col>
 					</el-row>
+					</div>
 				</template>
 				<template #print>
 					<el-col :span="1.5">
-						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML" />
+						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML" :disabled="receiveMoneyList.length === 0" />
 					</el-col>
 				</template>
-				<!--        导出-->
+				<!-- 导出 -->
 				<template #export>
 					<el-col :span="1.5">
-						<el-button v-hasPermi="['system:receivemoney:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport" />
+						<el-button v-hasPermi="['system:receivemoney:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport" :disabled="receiveMoneyList.length === 0" />
 					</el-col>
 				</template>
 			</right-toolbar>
-		</el-row>
+		</div>
 
-		<el-table id="printBox" ref="table" v-horizontal-scroll="'always'" v-loading="loading" border :data="receiveMoneyList" size="mini" @selection-change="handleSelectionChange" :max-height="getTableHeight()">
-			<el-table-column label="ID" align="center" prop="id" width="60" show-overflow-tooltip>
-				<template #default="scope">
-					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.id }}</div>
-						<span>{{ scope.row.id }}</span>
-					</el-tooltip>
-				</template>
-			</el-table-column>
-			<el-table-column v-if="columns[0].visible" label="日期" align="center" prop="fundsDate" width="140" show-overflow-tooltip>
-				<template #default="scope">
-					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.fundsDate }}</div>
-						<span>{{ scope.row.fundsDate }}</span>
-					</el-tooltip>
-				</template>
-			</el-table-column>
-			<el-table-column v-if="columns[1].visible" label="支付类型" align="center" prop="receiveType" width="180" show-overflow-tooltip>
-				<template #default="scope">
-					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.receiveType }}</div>
-						<span>{{ scope.row.receiveType }}</span>
-					</el-tooltip>
-				</template>
-			</el-table-column>
-			<el-table-column v-if="columns[9].visible" label="对方公司名称" align="center" prop="companyName" width="165" show-overflow-tooltip>
-				<template #default="scope">
-					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.companyName }}</div>
-						<span>{{ scope.row.companyName }}</span>
-					</el-tooltip>
-				</template>
-			</el-table-column>
-			<el-table-column v-if="columns[10].visible" label="对方公司类型" align="center" prop="companyType" width="140">
-				<template #default="scope">
-					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.companyType }}</div>
-						<span>{{ scope.row.companyType }}</span>
-					</el-tooltip>
-				</template>
-			</el-table-column>
-			<el-table-column v-if="columns[2].visible" label="金额" align="center" prop="moneyAmount" width="110" show-overflow-tooltip>
-				<template #default="scope">
-					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.moneyAmount }}</div>
-						<span>{{ scope.row.moneyAmount }}</span>
-					</el-tooltip>
-				</template>
-			</el-table-column>
-			<el-table-column v-if="columns[3].visible" label="我方户名" align="center" prop="selfAcountsName" width="165" show-overflow-tooltip>
-				<template #default="scope">
-					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.selfAcountsName }}</div>
-						<span>{{ scope.row.selfAcountsName }}</span>
-					</el-tooltip>
-				</template>
-			</el-table-column>
-			<el-table-column v-if="columns[4].visible" label="我方账号" align="center" prop="selfBankNo" width="180" show-overflow-tooltip>
-				<template #default="scope">
-					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.selfBankNo }}</div>
-						<span>{{ scope.row.selfBankNo }}</span>
-					</el-tooltip>
-				</template>
-			</el-table-column>
-			<el-table-column v-if="columns[5].visible" label="我方开户行" align="center" prop="selfBankName" width="165" show-overflow-tooltip>
-				<template #default="scope">
-					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.selfBankName }}</div>
-						<span>{{ scope.row.selfBankName }}</span>
-					</el-tooltip>
-				</template>
-			</el-table-column>
-			<el-table-column v-if="columns[6].visible" label="对方户名" align="center" prop="otherAcountsName" width="165" show-overflow-tooltip>
-				<template #default="scope">
-					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.otherAcountsName }}</div>
-						<span>{{ scope.row.otherAcountsName }}</span>
-					</el-tooltip>
-				</template>
-			</el-table-column>
-			<el-table-column v-if="columns[7].visible" label="对方账号" align="center" prop="otherBankNo" width="190" show-overflow-tooltip>
-				<template #default="scope">
-					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.otherBankNo }}</div>
-						<span>{{ scope.row.otherBankNo }}</span>
-					</el-tooltip>
-				</template>
-			</el-table-column>
-			<el-table-column v-if="columns[8].visible" label="对方开户行" align="center" prop="otherBankName" width="180" show-overflow-tooltip>
-				<template #default="scope">
-					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.otherBankName }}</div>
-						<span>{{ scope.row.otherBankName }}</span>
-					</el-tooltip>
-				</template>
-			</el-table-column>
-			<el-table-column label="备注" align="center" prop="comments" width="165">
-				<template #default="scope">
-					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.comments }}</div>
-						<span>{{ scope.row.comments }}</span>
-					</el-tooltip>
-				</template>
-			</el-table-column>
-			<el-table-column label="银行卡流水编号" align="center" prop="transactionHistory" width="165">
-				<template #default="scope">
-					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.transactionHistory }}</div>
-						<span>{{ scope.row.transactionHistory }}</span>
-					</el-tooltip>
-				</template>
-			</el-table-column>
-			<el-table-column label="录入人员" align="center" prop="userName" width="120">
-				<template #default="scope">
-					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.userName }}</div>
-						<span>{{ scope.row.userName }}</span>
-					</el-tooltip>
-				</template>
-			</el-table-column>
-			<el-table-column label="银行卡流水附件" align="center" prop="attachmentList" width="165" fixed="right">
-				<template #default="scope">
-					<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
+		<!-- 收款信息表格 -->
+		<div class="table-container" v-loading="loading">
+			<!-- 渲染进度提示 -->
+			<div v-if="isRendering" class="rendering-progress">
+				<el-progress :percentage="renderProgress" :status="renderProgress === 100 ? 'success' : null" :stroke-width="6"></el-progress>
+				<span class="progress-text">正在渲染数据: {{ renderedData.length }} / {{ paginatedData.length }}</span>
+			</div>
+
+			<div class="table-wrapper" id="printBox">
+				<table class="native-table">
+					<thead>
+						<tr>
+							<!-- ID -->
+							<th :style="{ width: columnWidths.id }">ID</th>
+							<!-- 日期 -->
+							<th v-if="columns[0] && columns[0].visible"  :style="{ width: columnWidths.date }">日期</th>
+							<!-- 支付类型 -->
+							<th v-if="columns[1] && columns[1].visible !== false"  :style="{ width: columnWidths.receiveType }">支付类型</th>
+							<!-- 金额 -->
+							<th v-if="columns[2] && columns[2].visible" :style="{ width: columnWidths.moneyAmount }">金额</th>
+							<!-- 我方户名 -->
+							<th v-if="columns[3] && columns[3].visible" :style="{ width: columnWidths.selfAcountsName }">我方户名</th>
+							<!-- 我方账号 -->
+							<th v-if="columns[4] && columns[4].visible" :style="{ width: columnWidths.selfBankNo }">我方账号</th>
+							<!-- 我方开户行 -->
+							<th v-if="columns[5] && columns[5].visible" :style="{ width: columnWidths.selfBankName }">我方开户行</th>
+							<!-- 对方户名 -->
+							<th v-if="columns[6] && columns[6].visible" :style="{ width: columnWidths.otherAcountsName }">对方户名</th>
+							<!-- 对方账号 -->
+							<th v-if="columns[7] && columns[7].visible" :style="{ width: columnWidths.otherBankNo }">对方账号</th>
+							<!-- 对方开户行 -->
+							<th v-if="columns[8] && columns[8].visible" :style="{ width: columnWidths.otherBankName }">对方开户行</th>
+							<!-- 对方公司名称 -->
+							<th v-if="columns[9] && columns[9].visible" :style="{ width: columnWidths.companyName }">对方公司名称</th>
+							<!-- 对方公司类型 -->
+							<th v-if="columns[10] && columns[10].visible" :style="{ width: columnWidths.companyType }">对方公司类型</th>
+							<!-- 备注 -->
+							<th :style="{ width: columnWidths.comments }">备注</th>
+							<!-- 银行卡流水编号 -->
+							<th :style="{ width: columnWidths.transactionHistory }">银行卡流水编号</th>
+							<!-- 录入人员 -->
+							<th :style="{ width: columnWidths.userName }">录入人员</th>
+							<!-- 银行卡流水附件 -->
+							<th :style="{ width: columnWidths.attachment }">银行卡流水附件</th>
+							<!-- 操作 -->
+							<th class="fixed-right col-action" :style="{ width: columnWidths.action }">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr v-for="(row, index) in renderedData" :key="row.id" :class="{ 'stripe-row': index % 2 === 1 }">
+							<!-- ID -->
+							<td>{{ row.id }}</td>
+							<!-- 日期 -->
+							<td v-if="columns[0] && columns[0].visible" >{{ row.fundsDate || '-' }}</td>
+							<!-- 支付类型 -->
+							<td v-if="columns[1] && columns[1].visible !== false" >{{ row.receiveType || '-' }}</td>
+							<!-- 金额 -->
+							<td v-if="columns[2] && columns[2].visible">{{ row.moneyAmount || '-' }}</td>
+							<!-- 我方户名 -->
+							<td v-if="columns[3] && columns[3].visible">{{ row.selfAcountsName || '-' }}</td>
+							<!-- 我方账号 -->
+							<td v-if="columns[4] && columns[4].visible">{{ row.selfBankNo || '-' }}</td>
+							<!-- 我方开户行 -->
+							<td v-if="columns[5] && columns[5].visible">{{ row.selfBankName || '-' }}</td>
+							<!-- 对方户名 -->
+							<td v-if="columns[6] && columns[6].visible">{{ row.otherAcountsName || '-' }}</td>
+							<!-- 对方账号 -->
+							<td v-if="columns[7] && columns[7].visible">{{ row.otherBankNo || '-' }}</td>
+							<!-- 对方开户行 -->
+							<td v-if="columns[8] && columns[8].visible">{{ row.otherBankName || '-' }}</td>
+							<!-- 对方公司名称 -->
+							<td v-if="columns[9] && columns[9].visible">{{ row.companyName || '-' }}</td>
+							<!-- 对方公司类型 -->
+							<td v-if="columns[10] && columns[10].visible">{{ row.companyType || '-' }}</td>
+							<!-- 备注 -->
+							<td class="text-ellipsis">{{ row.comments || '-' }}</td>
+							<!-- 银行卡流水编号 -->
+							<td>{{ row.transactionHistory || '-' }}</td>
+							<!-- 录入人员 -->
+							<td>{{ row.userName || '-' }}</td>
+							<!-- 银行卡流水附件 -->
+							<td>
+								<el-tooltip effect="light" placement="top" enterable :hide-after="0" popper-class="interactive-tooltip">
 						<div slot="content" @click.stop>
-							<CheckFiles :attachmentList="scope.row.attachmentList" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getReceiveMoney(), updateReceiveMoney())" flag="transactionHistoryAttachment" />
+										<CheckFiles :attachmentList="row.attachmentList" @needToUpdate="value => handleUpdateFilePath(value, row, getReceiveMoney(), updateReceiveMoney())" flag="transactionHistoryAttachment" />
 						</div>
-						<!-- 这是封装的一个通用组件 可以直接传入url 组件效果为一个按钮 点击后可以查看附件-->
-						<CheckFiles :attachmentList="scope.row.attachmentList" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getReceiveMoney(), updateReceiveMoney())" flag="transactionHistoryAttachment" />
+									<CheckFiles :attachmentList="row.attachmentList" @needToUpdate="value => handleUpdateFilePath(value, row, getReceiveMoney(), updateReceiveMoney())" flag="transactionHistoryAttachment" />
 					</el-tooltip>
-				</template>
-			</el-table-column>
-			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="150">
-				<template slot-scope="scope">
-					<el-dropdown @command="command => handleCommand(command, scope.row)">
+							</td>
+							<!-- 操作 -->
+							<td class="fixed-right col-action">
+								<el-dropdown @command="command => handleCommand(command, row)">
 						<el-button type="primary" size="mini">
 							操作
 							<i class="el-icon-arrow-down el-icon--right"></i>
@@ -202,18 +162,28 @@
 							<el-dropdown-item v-hasPermi="['system:tableeditmessage:list']" command="viewEditReason">查看修改原因</el-dropdown-item>
 						</el-dropdown-menu>
 					</el-dropdown>
-				</template>
-			</el-table-column>
-		</el-table>
-
-		<!-- 显示总条数 -->
-		<div class="total-info" v-if="!loading">
-			<span class="total-text">共 <strong>{{ total }}</strong> 条记录</span>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
 		</div>
 
-		<div v-fixed="{ position: 'bottom', zIndex: 1000 }" class="pagination-wrapper">
-			<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
-		</div>
+
+
+		<!-- 分页组件 -->
+    <div class="pagination-wrapper">
+      <pagination
+          v-show="total > 0"
+          :total="total"
+          :page.sync="queryParams.pageNum"
+          :limit.sync="queryParams.pageSize"
+          :page-sizes="[10, 20, 50, 100, 200, 500]"
+          layout="total, sizes, prev, pager, next, jumper"
+          background
+          @pagination="getList"
+      />
+    </div>
 
 		<!-- 导入结果弹窗 -->
 		<el-dialog title="导入结果" :visible.sync="importResultVisible" width="500px" :close-on-click-modal="false" append-to-body>
@@ -378,7 +348,7 @@
 							<el-input v-model="form.transactionHistory" placeholder="请输入银行卡流水编号" style="width: 100%" />
 						</el-form-item>
 						<el-form-item label="银行卡流水编号附件">
-							<UploadFilesButton ref="attachmentUploader" flag="transactionHistoryAttachment" :extra-info="{ moduleType: 'receiveMoney', formId: form.id }" :initial-attachments="form.attachmentList || []" @files-updated="handleAttachmentFilesUpdated" style="width: 100%" />
+							<UploadFilesButton ref="attachmentUploader" flag="transactionHistoryAttachment" accept-types="image/*,.pdf,.jpg,.jpeg,.png,.gif,.bmp,.doc,.docx,.xls,.xlsx" :extra-info="{ moduleType: 'receiveMoney', formId: form.id }" :initial-attachments="form.attachmentList || []" @files-updated="handleAttachmentFilesUpdated" style="width: 100%" />
 						</el-form-item>
 						<el-form-item label="录入人员" prop="userName">
 							<el-input v-model="form.userName" placeholder="请输入录入人员" style="width: 100%" />
@@ -434,10 +404,9 @@ export default {
 		PUBLIC_DICT_TYPE() {
 			return PUBLIC_DICT_TYPE;
 		},
-		// 计算工具栏的偏移量
-		toolbarOffset() {
-			// 如果搜索表单显示，工具栏需要向下偏移搜索表单的高度
-			return this.showSearch ? 60 : 0;
+		// 分页后的数据（后端已分页，直接使用列表数据）
+		paginatedData() {
+			return this.receiveMoneyList;
 		}
 	},
 	components: { BankType, CheckFiles, UploadFilesButton, SearchOption },
@@ -510,15 +479,10 @@ export default {
 			rules: {
 				fundsDate: [{ required: true, message: '日期不能为空', trigger: 'blur' }],
 				moneyAmount: [
-					{
-						required: true,
-						message: '金额不能为空',
-						trigger: 'blur'
-					},
-					// 金额校验 小数点只能两位
+					{ required: true, message: '金额不能为空', trigger: 'blur' },
 					{
 						validator: (rule, value, callback) => {
-							if (!/^\d+(\.\d{1,2})?$/.test(value)) {
+							if (value && !/^\d+(\.\d{1,2})?$/.test(value)) {
 								callback(new Error('金额只能为数字且小数点后最多两位'));
 							} else {
 								callback();
@@ -527,55 +491,13 @@ export default {
 						trigger: 'blur'
 					}
 				],
-				receiveType: [
-					{
-						required: true,
-						message: '请选择收款类型',
-						trigger: 'change'
-					}
-				],
-				selfAcountsName: [
-					{
-						required: true,
-						message: '我方户名不能为空',
-						trigger: 'change'
-					}
-				],
-				selfBankNo: [
-					{
-						required: true,
-						message: '我方账号不能为空',
-						trigger: 'blur'
-					}
-				],
-				selfBankName: [
-					{
-						required: true,
-						message: '我方开户行不能为空',
-						trigger: 'blur'
-					}
-				],
-				companyName: [
-					{
-						required: true,
-						message: '对方公司名称不能为空',
-						trigger: 'blur'
-					}
-				],
-				otherAcountsName: [
-					{
-						required: true,
-						message: '对方户名不能为空',
-						trigger: 'blur'
-					}
-				],
-				otherBankNo: [
-					{
-						required: true,
-						message: '对方账号不能为空',
-						trigger: 'blur'
-					}
-				]
+				receiveType: [{ required: true, message: '请选择收款类型', trigger: 'change' }],
+				selfAcountsName: [{ required: true, message: '我方户名不能为空', trigger: 'change' }],
+				selfBankNo: [{ required: true, message: '我方账号不能为空', trigger: 'blur' }],
+				selfBankName: [{ required: true, message: '我方开户行不能为空', trigger: 'blur' }],
+				companyName: [{ required: true, message: '对方公司名称不能为空', trigger: 'blur' }],
+				otherAcountsName: [{ required: true, message: '对方户名不能为空', trigger: 'blur' }],
+				otherBankNo: [{ required: true, message: '对方账号不能为空', trigger: 'blur' }]
 			},
 			columns: [
 				{ key: 0, label: `日期`, visible: true },
@@ -591,6 +513,32 @@ export default {
 				{ key: 10, label: `对方公司类型`, visible: true },
 				{ key: 11, label: `录入人员`, visible: true }
 			],
+			// 列宽度配置
+			columnWidths: {
+				id: '80px',
+				date: '180px',
+				receiveType: '250px',
+				moneyAmount: '120px',
+				selfAcountsName: '180px',
+				selfBankNo: '200px',
+				selfBankName: '200px',
+				otherAcountsName: '180px',
+				otherBankNo: '200px',
+				otherBankName: '200px',
+				companyName: '200px',
+				companyType: '150px',
+				comments: '200px',
+				transactionHistory: '180px',
+				userName: '120px',
+				attachment: '180px',
+				action: '150px'
+			},
+			// 分片渲染相关
+			renderedData: [],
+			isRendering: false,
+			renderProgress: 0,
+			renderChunkSize: 50,
+			renderTimer: null,
 			// 银行卡查询
 			bankQuery: '',
 			// 查看修改原因相关
@@ -612,8 +560,6 @@ export default {
 			resizeTimer: null
 		};
 	},
-	// 展示与隐藏
-	// 在 watch 中添加对公司ID变化的监听
 	watch: {
 		columns: {
 			handler: function (newVal) {
@@ -621,40 +567,73 @@ export default {
 			},
 			deep: true
 		},
+		// 监听分页数据变化，触发分片渲染
+		paginatedData: {
+			handler(newData) {
+				if (newData && newData.length > 0) {
+					this.renderDataInChunks(newData);
+				} else {
+					this.renderedData = [];
+					this.isRendering = false;
+					this.renderProgress = 0;
+				}
+			},
+			immediate: true
+		},
 		// 监听对方类型 切换类型时清空已填充的值
 		'form.companyType'(newVal, oldVal) {
 			// 如果类型发生变化（不是初始化），清空相关字段
 			if (oldVal !== undefined && oldVal !== null && newVal !== oldVal) {
-				// 清空公司相关字段
-				this.form.companyName = null;
-				this.form.companyId = null;
-				// 如果切换到支付费用，还需要清空银行账户相关字段
-				if (newVal === PAYMENT_TARGET_TYPE.PAYMENT_FEE) {
-					this.form.otherAcountsName = null;
-					this.form.otherBankNo = null;
-					this.form.otherBankName = null;
-				}
+				this.clearCompanyTypeFields(newVal);
 			} else if (newVal === PAYMENT_TARGET_TYPE.PAYMENT_FEE) {
 				// 初始化时如果直接选择支付费用，也要清空
-				this.form.companyName = null;
-				this.form.companyId = null;
-				this.form.otherAcountsName = null;
-				this.form.otherBankNo = null;
-				this.form.otherBankName = null;
+				this.clearCompanyTypeFields(newVal);
 			}
 		}
 	},
 
 	created() {
 		this.reset();
-		// 查询列表
 		this.getList();
-		// 获取本地显示隐藏列的存储 以便于下一次用户打开的时候读取喜好
-		if (localStorage.getItem('receivemoney-columns') === 'null' || !localStorage.getItem('receivemoney-columns')) {
-			// 设置localStorage
+		// 获取本地显示隐藏列的存储，以便于下一次用户打开的时候读取喜好
+		const savedColumns = localStorage.getItem('receivemoney-columns');
+		if (savedColumns && savedColumns !== 'null') {
+			try {
+				const parsedColumns = JSON.parse(savedColumns);
+				// 确保 columns 数组完整且每个元素都有 visible 属性
+				if (Array.isArray(parsedColumns) && parsedColumns.length >= 12) {
+					// 确保所有必需的列都存在
+					this.columns = parsedColumns.map((col, index) => {
+						if (!col || typeof col.visible === 'undefined') {
+							// 如果列配置缺失，使用默认配置
+							const defaultColumns = [
+								{ key: 0, label: `日期`, visible: true },
+								{ key: 1, label: `支付类型`, visible: true },
+								{ key: 2, label: `金额`, visible: true },
+								{ key: 3, label: `乙方户名`, visible: true },
+								{ key: 4, label: `我方账号`, visible: true },
+								{ key: 5, label: `我方开户行`, visible: true },
+								{ key: 6, label: `对方户名`, visible: true },
+								{ key: 7, label: `对方账号`, visible: true },
+								{ key: 8, label: `对方开户行`, visible: true },
+								{ key: 9, label: `对方公司名称`, visible: true },
+								{ key: 10, label: `对方公司类型`, visible: true },
+								{ key: 11, label: `录入人员`, visible: true }
+							];
+							return defaultColumns[index] || col;
+						}
+						return col;
+					});
+				} else {
+					// 如果解析的列配置不完整，使用默认配置
 			localStorage.setItem('receivemoney-columns', JSON.stringify(this.columns));
+				}
+			} catch (error) {
+				console.error('解析列配置失败:', error);
+				localStorage.setItem('receivemoney-columns', JSON.stringify(this.columns));
+			}
 		} else {
-			this.columns = JSON.parse(localStorage.getItem('receivemoney-columns'));
+			localStorage.setItem('receivemoney-columns', JSON.stringify(this.columns));
 		}
 		// 监听窗口大小变化，重新计算表格高度
 		window.addEventListener('resize', this.handleResize);
@@ -667,19 +646,68 @@ export default {
 			clearTimeout(this.resizeTimer);
 			this.resizeTimer = null;
 		}
+		// 清理渲染定时器
+		if (this.renderTimer) {
+			cancelAnimationFrame(this.renderTimer);
+			this.renderTimer = null;
+		}
 	},
 	methods: {
-		// 计算表格高度
-		getTableHeight() {
-			// 根据窗口高度动态计算表格高度，减去固定元素占用的空间
-			const searchFormHeight = this.showSearch ? 60 : 0; // 搜索表单高度
-			const toolbarHeight = 50; // 工具栏高度
-			const paginationHeight = 50; // 分页器高度
-			const totalInfoHeight = 40; // 总条数显示高度
-			const otherSpace = 20; // 其他间距
-			const height = window.innerHeight - searchFormHeight - toolbarHeight - paginationHeight - totalInfoHeight - otherSpace;
-			// 确保最小高度，避免表头不显示
-			return Math.max(height, 200);
+		// 分片渲染数据
+		renderDataInChunks(data) {
+			// 如果正在渲染，先取消
+			if (this.renderTimer) {
+				cancelAnimationFrame(this.renderTimer);
+				this.renderTimer = null;
+			}
+
+			const total = data.length;
+
+			// 如果数据量很小，直接一次性渲染
+			if (total <= this.renderChunkSize) {
+				this.renderedData = [...data];
+				this.isRendering = false;
+				this.renderProgress = 0;
+				return;
+			}
+
+			// 重置状态
+			this.renderedData = [];
+			this.isRendering = true;
+			this.renderProgress = 0;
+
+			let currentIndex = 0;
+
+			const renderChunk = () => {
+				// 计算本次要渲染的数据范围
+				const endIndex = Math.min(currentIndex + this.renderChunkSize, total);
+				const chunk = data.slice(currentIndex, endIndex);
+
+				// 添加到已渲染数据
+				this.renderedData = [...this.renderedData, ...chunk];
+
+				// 更新进度
+				currentIndex = endIndex;
+				this.renderProgress = Math.round((currentIndex / total) * 100);
+
+				// 如果还有数据未渲染，继续下一批
+				if (currentIndex < total) {
+					this.renderTimer = requestAnimationFrame(renderChunk);
+				} else {
+					// 渲染完成
+					this.isRendering = false;
+					this.renderProgress = 100;
+					this.renderTimer = null;
+
+					// 延迟隐藏进度条，让用户看到完成状态
+					setTimeout(() => {
+						this.renderProgress = 0;
+					}, 500);
+				}
+			};
+
+			// 开始渲染
+			this.renderTimer = requestAnimationFrame(renderChunk);
 		},
 		// 处理窗口大小变化
 		handleResize() {
@@ -688,13 +716,36 @@ export default {
 				clearTimeout(this.resizeTimer);
 			}
 			this.resizeTimer = setTimeout(() => {
-				// 强制更新表格布局，确保表头正确显示
-				this.$nextTick(() => {
-					if (this.$refs.table) {
-						this.$refs.table.doLayout();
-					}
-				});
+				// 表格布局已由原生 table 处理，无需额外操作
 			}, 100);
+		},
+		// 重置BankType组件状态
+		resetBankTypeComponents() {
+				this.$nextTick(() => {
+				if (this.$refs.selfSelectedBankType?.resetComponentState) {
+					this.$refs.selfSelectedBankType.resetComponentState();
+				}
+				if (this.$refs.otherSelectedBankType?.resetComponentState) {
+					this.$refs.otherSelectedBankType.resetComponentState();
+				}
+			});
+		},
+		// 清理上传组件状态
+		clearUploaderState() {
+			if (this.$refs.attachmentUploader) {
+				this.$refs.attachmentUploader.clearUploadedFiles();
+			}
+		},
+		// 清空公司类型相关字段
+		clearCompanyTypeFields(companyType) {
+			this.form.companyName = null;
+			this.form.companyId = null;
+			// 如果切换到支付费用，还需要清空银行账户相关字段
+			if (companyType === PAYMENT_TARGET_TYPE.PAYMENT_FEE) {
+				this.form.otherAcountsName = null;
+				this.form.otherBankNo = null;
+				this.form.otherBankName = null;
+			}
 		},
 		// 下拉菜单命令处理
 		handleCommand(command, row) {
@@ -719,19 +770,56 @@ export default {
 		},
 		// 获取修改原因列表
 		getEditReasonList() {
-			listTableEditMessage(this.editReasonQueryParams).then(response => {
+			listTableEditMessage(this.editReasonQueryParams)
+				.then(response => {
 				this.editReasonList = response.rows;
 				this.editReasonTotal = response.total;
+				})
+				.catch(error => {
+					console.error('获取修改原因列表失败:', error);
+					this.$message.error('获取修改原因失败');
 			});
 		},
 		handleAttachmentFilesUpdated(uploadParams) {
-			if (uploadParams && uploadParams.params && uploadParams.params.attachmentIds) {
+			try {
 				// 确保 form.params 对象存在
 				if (!this.form.params) {
 					this.form.params = {};
 				}
+
+				// 检查 uploadParams 是否存在
+				if (!uploadParams) {
+					console.warn('handleAttachmentFilesUpdated: uploadParams 为空');
+					return;
+				}
+
+				// 检查 params 是否存在
+				if (!uploadParams.params) {
+					console.warn('handleAttachmentFilesUpdated: uploadParams.params 不存在', uploadParams);
+					return;
+				}
+
+				// 检查 attachmentIds 是否存在且为数组
+				if (!uploadParams.params.attachmentIds) {
+					console.warn('handleAttachmentFilesUpdated: attachmentIds 不存在', uploadParams.params);
+					// 如果 attachmentIds 不存在，设置为空数组
+					this.form.params.attachmentIds = [];
+					return;
+				}
+
+				// 确保 attachmentIds 是数组
+				if (!Array.isArray(uploadParams.params.attachmentIds)) {
+					console.error('handleAttachmentFilesUpdated: attachmentIds 不是数组', uploadParams.params.attachmentIds);
+					this.$message.warning('附件ID格式错误，请重新上传');
+					return;
+				}
+
 				// 直接使用上传组件返回的统一附件ID数组
 				this.form.params.attachmentIds = uploadParams.params.attachmentIds;
+				console.log('附件更新成功，附件ID:', this.form.params.attachmentIds);
+			} catch (error) {
+				console.error('handleAttachmentFilesUpdated 处理失败:', error);
+				this.$message.error('处理附件更新时出错：' + (error.message || '未知错误'));
 			}
 		},
 		listCars,
@@ -774,29 +862,17 @@ export default {
 
 			// 填充背书人/被背书人信息（对方户名、账号、开户行）
 			if (acceptanceData.endorser) {
-				getCompany(acceptanceData.endorser, acceptanceData.origin).then(response => {
+				getCompany(acceptanceData.endorser, acceptanceData.origin)
+					.then(response => {
 					if (response.data) {
 						const companyInfo = response.data;
 						this.form.companyName = companyInfo.companyName;
 						this.form.companyId = companyInfo.id;
 					}
-				});
-				// getBankAccount(acceptanceData.endorser)
-				// 	.then(response => {
-				// 		if (response.data) {
-				// 			const bankInfo = response.data;
-				// 			this.form.otherAcountsName = bankInfo.acountsName;
-				// 			this.form.otherBankNo = bankInfo.bankNo;
-				// 			this.form.otherBankName = bankInfo.bankName;
-				// 			// 如果对方公司信息存在，也填充
-				// 			if (bankInfo.companyId) {
-				// 				this.form.companyId = bankInfo.companyId;
-				// 			}
-				// 		}
-				// 	})
-				// 	.catch(error => {
-				// 		console.error('获取背书人/被背书人账户信息失败:', error);
-				// 	});
+					})
+					.catch(error => {
+						console.error('获取背书人/被背书人公司信息失败:', error);
+					});
 			}
 		},
 		/** 查询收款信息列表 */
@@ -808,7 +884,6 @@ export default {
 				params.startTime = this.dateRange[0];
 				params.endTime = this.dateRange[1];
 			} else {
-				// 如果时间范围为空，清空时间参数
 				params.startTime = null;
 				params.endTime = null;
 			}
@@ -817,9 +892,16 @@ export default {
 				params.receiveType = params.receiveType.join('-');
 			}
 
-			listReceiveMoney(params).then(response => {
+			listReceiveMoney(params)
+				.then(response => {
 				this.receiveMoneyList = response.rows;
 				this.total = response.total;
+				})
+				.catch(error => {
+					console.error('查询收款信息列表失败:', error);
+					this.$message.error('查询失败，请重试');
+				})
+				.finally(() => {
 				this.loading = false;
 			});
 		},
@@ -829,20 +911,8 @@ export default {
 			this.showMask = false;
 			this.$bus.$emit('changeFlag', false);
 			this.reset();
-			// 使用 $nextTick 确保 reset() 后 form 的值已更新，再重置 BankType 组件状态
-			this.$nextTick(() => {
-				// 安全地清除 BankType 组件状态，此时会使用 reset() 中设置的默认值
-				if (this.$refs.selfSelectedBankType && this.$refs.selfSelectedBankType.resetComponentState) {
-					this.$refs.selfSelectedBankType.resetComponentState();
-				}
-				if (this.$refs.otherSelectedBankType && this.$refs.otherSelectedBankType.resetComponentState) {
-					this.$refs.otherSelectedBankType.resetComponentState();
-				}
-			});
-			// 清除上传组件状态
-			if (this.$refs.attachmentUploader) {
-				this.$refs.attachmentUploader.clearUploadedFiles();
-			}
+			this.resetBankTypeComponents();
+			this.clearUploaderState();
 		},
 		// 表单重置
 		reset() {
@@ -886,10 +956,7 @@ export default {
 			if (this.$refs.form) {
 				this.resetForm('form');
 			}
-			// 清除上传组件状态
-			if (this.$refs.attachmentUploader) {
-				this.$refs.attachmentUploader.clearUploadedFiles();
-			}
+			this.clearUploaderState();
 		},
 		// 部分重置 - 保留银行账户类型和收款类型
 		partialReset() {
@@ -939,10 +1006,7 @@ export default {
 			if (this.$refs.form) {
 				this.resetForm('form');
 			}
-			// 清除上传组件状态
-			if (this.$refs.attachmentUploader) {
-				this.$refs.attachmentUploader.clearUploadedFiles();
-			}
+			this.clearUploaderState();
 		},
 		/** 搜索按钮操作 */
 		handleQuery() {
@@ -961,12 +1025,6 @@ export default {
 			}
 			this.queryParams.params.bankacceptanceBillNo = null;
 			this.handleQuery();
-		},
-		// 多选框选中数据
-		handleSelectionChange(selection) {
-			this.ids = selection.map(item => item.id);
-			this.single = selection.length !== 1;
-			this.multiple = !selection.length;
 		},
 		/** 新增按钮操作 */
 		handleAdd() {
@@ -1067,7 +1125,6 @@ export default {
 				}
 				this.open = true;
 				this.title = '修改收款信息';
-				console.log(`receiveMoneyData.bankacceptanceId`, receiveMoneyData.bankacceptanceId);
 				// 使用额外的 $nextTick 确保 BankType 组件已经挂载并注册了事件监听器
 				this.$nextTick(() => {
 					this.$bus.$emit('changeFlag', receiveMoneyData.bankacceptanceId !== null ? receiveMoneyData.bankacceptanceId : false);
@@ -1114,13 +1171,27 @@ export default {
 						}
 					}
 
-					// 保存当前附件ID用于错误回滚
-					const originalAttachmentIds = this.$store.getters.attachmentIds ? [...this.$store.getters.attachmentIds] : [];
+					// 确保 form.params 对象存在
+					if (!this.form.params) {
+						this.form.params = {};
+					}
+
+					// 确保 form.params.attachmentIds 存在且为数组
+					if (!this.form.params.attachmentIds || !Array.isArray(this.form.params.attachmentIds)) {
+						// 从 Vuex store 获取附件ID作为备用
+						const storeAttachmentIds = this.$store.getters.attachmentIds || [];
+						this.form.params.attachmentIds = Array.isArray(storeAttachmentIds) ? [...storeAttachmentIds] : [];
+					}
 
 					// 去重附件ID
-					const uniqueAttachmentIds = [...new Set(originalAttachmentIds)];
-					if (uniqueAttachmentIds.length !== originalAttachmentIds.length) {
-						// 清空并重新添加去重后的ID
+					const uniqueAttachmentIds = [...new Set(this.form.params.attachmentIds)];
+					this.form.params.attachmentIds = uniqueAttachmentIds;
+
+					// 保存当前附件ID用于错误回滚
+					const originalAttachmentIds = [...uniqueAttachmentIds];
+
+					// 同步到 Vuex store（用于其他组件）
+					if (uniqueAttachmentIds.length > 0) {
 						this.$store.commit('CLEAR_ATTACHMENT_IDS');
 						uniqueAttachmentIds.forEach(id => {
 							this.$store.commit('ADD_ATTACHMENT_ID', id);
@@ -1141,8 +1212,7 @@ export default {
 						if (!this.form.params.bankacceptance.billType) {
 							if (selfType === BankAcceptanceType.ACCEPTANCE) {
 								this.form.params.bankacceptance.billType = PayType.PAYMENT;
-							}
-							if (otherType === BankAcceptanceType.ACCEPTANCE) {
+							} else if (otherType === BankAcceptanceType.ACCEPTANCE) {
 								this.form.params.bankacceptance.billType = PayType.RECEIVE;
 							}
 						}
@@ -1188,29 +1258,23 @@ export default {
 								this.getList();
 								this.$bus.$emit('changeFlag', false);
 								this.reset();
-								// 使用 $nextTick 确保 reset() 后 form 的值已更新，再重置 BankType 组件状态
-								this.$nextTick(() => {
-									// 清除 BankType 组件状态，此时会使用 reset() 中设置的默认值
-									if (this.$refs.selfSelectedBankType && this.$refs.selfSelectedBankType.resetComponentState) {
-										this.$refs.selfSelectedBankType.resetComponentState();
-									}
-									if (this.$refs.otherSelectedBankType && this.$refs.otherSelectedBankType.resetComponentState) {
-										this.$refs.otherSelectedBankType.resetComponentState();
-									}
-								});
-								// 清理上传组件
-								if (this.$refs.attachmentUploader) {
-									this.$refs.attachmentUploader.clearUploadedFiles();
-								}
+								this.resetBankTypeComponents();
+								this.clearUploaderState();
 							})
 							.catch(error => {
 								console.error('修改收款记录失败:', error);
 								// 回滚附件ID到原始状态
-								this.$store.commit('CLEAR_ATTACHMENT_IDS');
-								originalAttachmentIds.forEach(id => {
-									this.$store.commit('ADD_ATTACHMENT_ID', id);
-								});
-								this.$message.error('修改失败，请重试');
+								if (originalAttachmentIds && originalAttachmentIds.length > 0) {
+									this.$store.commit('CLEAR_ATTACHMENT_IDS');
+									originalAttachmentIds.forEach(id => {
+										this.$store.commit('ADD_ATTACHMENT_ID', id);
+									});
+									// 同时回滚 form.params.attachmentIds
+									if (this.form.params) {
+										this.form.params.attachmentIds = [...originalAttachmentIds];
+									}
+								}
+								this.$message.error('修改失败：' + (error.msg || error.message || '请重试'));
 							});
 					} else {
 						// 新增时，移除修改原因字段
@@ -1226,34 +1290,24 @@ export default {
 								this.getList();
 								this.reset();
 								this.$bus.$emit('changeFlag', false);
-								// 使用 $nextTick 确保 reset() 后 form 的值已更新，再重置 BankType 组件状态
-								this.$nextTick(() => {
-									// 清除 BankType 组件状态，此时会使用 reset() 中设置的默认值
-									if (this.$refs.selfSelectedBankType && this.$refs.selfSelectedBankType.resetComponentState) {
-										this.$refs.selfSelectedBankType.resetComponentState();
-									}
-									if (this.$refs.otherSelectedBankType && this.$refs.otherSelectedBankType.resetComponentState) {
-										this.$refs.otherSelectedBankType.resetComponentState();
-									}
-								});
-								// 清理上传组件
-								if (this.$refs.attachmentUploader) {
-									this.$refs.attachmentUploader.clearUploadedFiles();
-								}
+								this.resetBankTypeComponents();
+								this.clearUploaderState();
 							})
 							.catch(error => {
 								console.error('新增收款记录失败:', error);
 								// 回滚附件ID到原始状态
-								this.$store.commit('CLEAR_ATTACHMENT_IDS');
-								originalAttachmentIds.forEach(id => {
-									this.$store.commit('ADD_ATTACHMENT_ID', id);
-								});
-								this.$message.error('新增失败，请重试');
+								if (originalAttachmentIds && originalAttachmentIds.length > 0) {
+									this.$store.commit('CLEAR_ATTACHMENT_IDS');
+									originalAttachmentIds.forEach(id => {
+										this.$store.commit('ADD_ATTACHMENT_ID', id);
+									});
+									// 同时回滚 form.params.attachmentIds
+									if (this.form.params) {
+										this.form.params.attachmentIds = [...originalAttachmentIds];
+									}
+								}
+								this.$message.error('新增失败：' + (error.msg || error.message || '请重试'));
 							});
-					}
-					// 清理上传组件
-					if (this.$refs.attachmentUploader) {
-						this.$refs.attachmentUploader.clearUploadedFiles();
 					}
 				}
 			});
@@ -1262,10 +1316,8 @@ export default {
 		handleDelete(row) {
 			const ids = row.id || this.ids;
 			this.$modal
-				.confirm('是否确认删除收款信息编号为"' + ids + '"的数据项？')
-				.then(function () {
-					return delReceiveMoney(ids);
-				})
+				.confirm(`是否确认删除收款信息编号为"${ids}"的数据项？`)
+				.then(() => delReceiveMoney(ids))
 				.then(() => {
 					this.getList();
 					this.$modal.msgSuccess('删除成功');
@@ -1280,12 +1332,10 @@ export default {
 				params.startTime = this.dateRange[0];
 				params.endTime = this.dateRange[1];
 			} else {
-				// 如果时间范围为空，清空时间参数
 				params.startTime = null;
 				params.endTime = null;
 			}
 			params.receiveType = this.queryParams.receiveType?.join('-');
-
 			this.download('system/receiveMoney/export', params, `receiveMoney_${new Date().getTime()}.xlsx`);
 		},
 		// 下载导入模板
@@ -1321,7 +1371,7 @@ export default {
 						this.importResultMessage = res.msg || '导入完成';
 						this.importResultVisible = true;
 						// 如果导入成功，刷新列表
-						if (res.code === 200 && !res.msg.includes('无有效数据')) {
+						if (res.code === 200 && !res.msg?.includes('无有效数据')) {
 							this.getList();
 						}
 					})
@@ -1341,7 +1391,7 @@ export default {
 	}
 };
 </script>
-<style scoped>
+<style scoped lang="scss">
 .w-85px {
 	width: 85px;
 }
@@ -1355,12 +1405,14 @@ export default {
 }
 .app-container {
 	position: relative;
+	overflow: visible;
+	min-height: 100vh;
 }
 .app-container.mask-overlay {
 	position: relative;
 }
 .container-mask {
-	position: absolute;
+	position: fixed;
 	top: 0;
 	left: 0;
 	right: 0;
@@ -1380,16 +1432,21 @@ export default {
 	margin-bottom: 10px;
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-/* 固定工具栏 */
-.fixed-toolbar {
-	position: sticky;
-	z-index: 101;
-	background-color: #fff;
+
+.toolbar-wrapper {
+	margin-bottom: 15px;
+
+	.toolbar-left {
 	padding: 10px 0;
-	margin-bottom: 10px;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	}
 }
-/* Element UI 的 max-height 会自动处理表头固定，无需额外设置 */
+
+.text-ellipsis {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	max-width: 200px;
+}
 
 /* 总条数显示样式 */
 .total-info {
@@ -1414,39 +1471,187 @@ export default {
 .app-container >>> .el-dialog__wrapper {
 	z-index: 2000 !important;
 }
-#printBox {
+
+/* 表格容器样式 */
+.table-container {
 	position: relative;
-}
-#printBox ::v-deep .el-table__header-wrapper {
-	position: sticky !important;
-	top: 0 !important;
-	z-index: 99 !important;
-	background-color: #fff !important;
-}
-#printBox ::v-deep .el-table__header {
+
+	.rendering-progress {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		z-index: 1000;
+		background: rgba(255, 255, 255, 0.95);
+		padding: 10px 20px;
+		border-bottom: 1px solid #ebeef5;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+		.progress-text {
+			display: block;
+			margin-top: 8px;
+			text-align: center;
+			font-size: 12px;
+			color: #606266;
+		}
+	}
+
+	.table-wrapper {
 	position: relative;
+		width: 100%;
+		max-height: 750px;
+		overflow-x: auto;
+		overflow-y: auto;
+		border: 1px solid #ebeef5;
+		border-radius: 4px;
+		background: #fff;
+
+			.native-table {
+			width: 100%;
+			min-width: max-content;
+			table-layout: auto;
+			border-collapse: collapse;
+			border-spacing: 0;
+			font-size: 12px;
+			color: #606266;
+			background: #fff;
+
+			thead {
+				background: #f5f7fa;
+				position: sticky;
+				top: 0;
+				z-index: 10;
+				display: table-header-group;
+
+				th {
+					padding: 8px 4px;
+					text-align: center;
+					font-weight: 500;
+					color: #909399;
+					border: 1px solid #ebeef5;
+					border-top: none;
+					background: #f5f7fa;
+					white-space: nowrap;
+					position: relative;
+					line-height: 1.5;
+					min-height: 32px;
+					height: auto;
+					vertical-align: middle;
+
+					&.fixed-left {
+						position: sticky;
+						z-index: 11;
+						background: #f5f7fa;
+						box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+
+						&.col-date {
+							left: 60px;
+						}
+
+						&.col-receive-type {
+							left: 200px;
+						}
+					}
+
+					&.fixed-right {
+						position: sticky;
+						right: 0;
+						z-index: 11;
+						background: #f5f7fa;
+						box-shadow: -2px 0 4px rgba(0, 0, 0, 0.1);
+					}
+				}
+			}
+
+			tbody {
+				tr {
+					transition: background-color 0.25s ease;
+
+					&:hover {
+						background: #f5f7fa;
+					}
+
+					&.stripe-row {
+						background: #fafafa;
+					}
+
+					&.stripe-row:hover {
+						background: #f5f7fa;
+					}
+
+					td {
+						padding: 4px 2px;
+						border: 1px solid #ebeef5;
+						border-top: none;
+						white-space: nowrap;
+						text-align: center;
+						position: relative;
+						line-height: 1.2;
+						vertical-align: middle;
+						
+						// 确保单元格内的按钮和组件正常显示
+						.el-button,
+						.el-dropdown,
+						.el-tooltip {
+							margin: 0;
+						}
+
+						&.fixed-left {
+							position: sticky;
+							z-index: 9;
+							background: inherit;
+							box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+
+							&.col-date {
+								left: 60px;
+							}
+
+							&.col-receive-type {
+								left: 200px;
+							}
+						}
+
+						&.fixed-right {
+							position: sticky;
+							right: 0;
+							z-index: 9;
+							background: inherit;
+							box-shadow: -2px 0 4px rgba(0, 0, 0, 0.1);
+						}
+					}
+				}
+			}
+
+			// 启用硬件加速
+			transform: translateZ(0);
+			-webkit-transform: translateZ(0);
+		}
+	}
 }
-.total-info {
-	margin: 0;
-	padding: 5px 0;
-	text-align: left;
-	border-top: 1px solid #ebeef5;
-}
-.total-text {
-	font-size: 14px;
-	color: #606266;
-}
-.total-text strong {
-	color: #409eff;
-	font-weight: 600;
-	font-size: 16px;
-}
+
 .pagination-wrapper {
+  position: relative;
+  margin-top: 20px; /* 调整与表格的间距 */
+  padding: 10px 20px;
+  background-color: #fff;
+  border-top: 1px solid #ebeef5;
+  text-align: right;
+}
+
+
+.pagination-wrapper ::v-deep .pagination-container {
 	margin: 0;
 	padding: 0;
 }
-.pagination-wrapper ::v-deep .pagination-container {
-	margin: 0;
-	padding: 5px 0;
+
+// 响应式优化
+@media screen and (max-width: 768px) {
+	.table-wrapper {
+		max-height: 500px;
+	}
+
+	.column-hidden-mobile {
+		display: none;
+	}
 }
 </style>
