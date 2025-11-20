@@ -652,14 +652,7 @@ export default {
       });
     },
 
-    // 更新查询名称的方法
-    handleUpdateQueryName(val) {
-      this.queryBank = val;
-      // 触发数据重新加载
-      this.$nextTick(() => {
-        this.$refs.searchOption && this.$refs.searchOption.refresh();
-      });
-    },
+
 		listCompany,
 		listBankAccount,
 		// 查看历史还款信息
