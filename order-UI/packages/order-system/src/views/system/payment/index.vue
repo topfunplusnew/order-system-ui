@@ -1917,18 +1917,11 @@ export default {
 .w-85px {
 	width: 85px;
 }
-.fixed-top-section {
-	position: sticky;
-	top: 0; /* 根据实际情况调整 */
-	background-color: #fff; /* 与页面背景一致，避免透明导致内容重叠 */
-	z-index: 3000; /* 确保在表格内容之上 */
-	padding: 0px 0; /* 保持原有内边距 */
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 可选：添加阴影增强层次感 */
-}
+
 .app-container {
 	position: relative;
 	overflow: visible;
-	min-height: 100vh;
+	min-height: 90vh;
 	background: #f8f9fb;
 	font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
 }
@@ -2013,7 +2006,7 @@ export default {
 			color: #555;
 
 			thead {
-				background: #f0f2f5;
+				background: #f6f8fa;
 				position: sticky;
 				top: 0;
 				z-index: 10;
@@ -2105,13 +2098,15 @@ export default {
 	}
 }
 
-/* 分页 */
+/* 分页区域优化 */
 .pagination-wrapper {
-	margin-top: 8px;
-	padding: 8px 0;
-	background: #fff;
-	border-top: 1px solid #e0e6ed;
+	margin-top: 20px;
+	padding: 12px 20px;
+	background-color: #ffffff;
+	border-top: 1px solid #ebeef5;
 	text-align: right;
+
+	box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.03), 0 -1px 6px rgba(0, 0, 0, 0.04);
 }
 
 /* 运费弹窗 */

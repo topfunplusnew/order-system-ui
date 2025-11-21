@@ -70,7 +70,7 @@
 			</div>
 
 			<div class="table-wrapper" id="printBox">
-				<el-table id="printBox" ref="table" v-loading="loading" border :data="receiveMoneyList" size="mini" @selection-change="handleSelectionChange" :max-height="tableHeight">
+				<el-table id="printBox" ref="table" v-loading="loading" border :data="receiveMoneyList" size="mini" @selection-change="handleSelectionChange" height="calc(90vh - 300px)">
 					<el-table-column label="ID" align="center" prop="id" width="60" show-overflow-tooltip />
 					<el-table-column v-if="columns[0].visible" label="日期" align="center" prop="fundsDate" width="140" show-overflow-tooltip />
 					<el-table-column v-if="columns[1].visible" label="支付类型" align="center" prop="receiveType" width="180" show-overflow-tooltip />
@@ -1352,7 +1352,7 @@ export default {
 .app-container {
 	position: relative;
 	overflow: visible;
-	min-height: 100vh;
+	min-height: 90vh;
 }
 
 .app-container.mask-overlay {
