@@ -21,7 +21,61 @@
 						<el-row>
 							<el-col :span="12">
 								<el-form-item label="票据号码" prop="billNo">
-									<el-input v-model="form.billNo" placeholder="请输入票据号码" @blur="getBankAcceptanceDate" />
+									<el-row>
+										<el-col :span="20">
+											<el-input v-model="form.billNo" placeholder="请输入票据号码" @blur="getBankAcceptanceDate" />
+										</el-col>
+										<el-col :span="4">
+											<SearchOption
+												title="票据号码"
+												:get-data="getBankAcceptanceSummaryList"
+												icon="el-icon-search"
+												:limit-info="{}"
+												query-label="票据号码"
+												query-info="billNoPrefix"
+												:query-name="billNoPrefix"
+												:is-page="false"
+												:extra-params="{
+													__fillValue: form.billNo || ''
+												}"
+												:auto-fill-config="{
+													fields: ['__fillValue'],
+													actions: [
+														{
+															type: 'fill',
+															handler: (value, fieldName, actionType, context) => {
+																// 填充操作：将值设置到查询输入框
+																context.fillQuery(value);
+															}
+														}
+													],
+													shouldAutoSearch: true
+												}"
+												@commitBack="
+													value => {
+														this.$set(this.form, 'billNo', value.billNo);
+														// 触发 getBankAcceptanceDate 方法完成字段填充
+														this.$nextTick(() => {
+															// 创建模拟事件对象以触发 getBankAcceptanceDate
+															const mockEvent = {
+																target: {
+																	value: value.billNo
+																}
+															};
+															this.getBankAcceptanceDate(mockEvent);
+														});
+													}
+												"
+												@update:queryName="value => (billNoPrefix = value)"
+											>
+												<template #table-columns>
+													<el-table-column label="票据号码" align="center" prop="billNo" width="310" />
+													<el-table-column label="我方承兑账户" align="center" prop="billAccount" width="250" />
+													<el-table-column label="票据余额" align="center" prop="cumulativeBalance" width="150" />
+												</template>
+											</SearchOption>
+										</el-col>
+									</el-row>
 								</el-form-item>
 								<el-form-item :label="`${getEndorserTypeLabel()}事由`" prop="reason">
 									<template v-if="isInternalTransfer">
@@ -197,7 +251,7 @@ import { listCompany } from '@/api/system/company';
 import { listBankAccount } from '@/api/system/bankAccount';
 import { excludeParams } from '@/api/tool/exclude';
 import { BankAcceptanceType, PaymentState } from '@/api/tool/enums';
-import { getBankAcceptance, getMinIdByBillNo } from '@/api/system/bankAcceptance';
+import { getBankAcceptance, getMinIdByBillNo, getBankAcceptanceSummary } from '@/api/system/bankAcceptance';
 import _ from 'lodash';
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
 import { mapGetters, mapActions } from 'vuex';
@@ -447,7 +501,9 @@ export default {
 			// 背书人类型 默认为客户，内部转账时为己方公司
 			type: '客户',
 			// 搜索客户
-			companyName: ''
+			companyName: '',
+			// 票据号码前缀（用于 SearchOption 查询）
+			billNoPrefix: ''
 		};
 	},
 	mounted() {
@@ -458,7 +514,7 @@ export default {
 		}
 		console.log(`开始注册监听器`);
 		// 使用命名函数，方便后续移除监听器
-		this.handleChangeFlag = (value) => {
+		this.handleChangeFlag = value => {
 			console.log(`value`, value);
 			if (this.baned) {
 				this.flag = false;
@@ -475,32 +531,34 @@ export default {
 			// 立即设置 flag 为 true，表示正在处理承兑信息（避免异步请求期间状态不正确）
 			this.flag = true;
 			// 获取承兑信息
-			getBankAcceptance(value).then(res => {
-				this.$nextTick(() => {
-					if (res.data) {
-						console.log(res.data, 'res.data');
-						this.hasSavedAcceptanceInfo = true;
-						// 将获取到的数据保存到sessionStorage
-						sessionStorage.setItem(this.bankAcceptanceFilledKey, JSON.stringify(res.data));
-						// 从sessionStorage更新表单数据
-						this.loadSavedFormFromSession();
-						// 通知父组件更新状态
-						this.$emit('updateBankAcceptance', _.cloneDeep(res.data));
-					} else {
-						// 如果没有数据，重置状态
-						this.hasSavedAcceptanceInfo = false;
-						this.flag = false;
-					}
+			getBankAcceptance(value)
+				.then(res => {
+					this.$nextTick(() => {
+						if (res.data) {
+							console.log(res.data, 'res.data');
+							this.hasSavedAcceptanceInfo = true;
+							// 将获取到的数据保存到sessionStorage
+							sessionStorage.setItem(this.bankAcceptanceFilledKey, JSON.stringify(res.data));
+							// 从sessionStorage更新表单数据
+							this.loadSavedFormFromSession();
+							// 通知父组件更新状态
+							this.$emit('updateBankAcceptance', _.cloneDeep(res.data));
+						} else {
+							// 如果没有数据，重置状态
+							this.hasSavedAcceptanceInfo = false;
+							this.flag = false;
+						}
 
-					console.log(`this.flag`, this.flag);
-					console.log(`this.hasSavedAcceptanceInfo`, this.hasSavedAcceptanceInfo);
+						console.log(`this.flag`, this.flag);
+						console.log(`this.hasSavedAcceptanceInfo`, this.hasSavedAcceptanceInfo);
+					});
+				})
+				.catch(error => {
+					// 请求失败时重置状态
+					console.error('获取承兑信息失败:', error);
+					this.flag = false;
+					this.hasSavedAcceptanceInfo = false;
 				});
-			}).catch(error => {
-				// 请求失败时重置状态
-				console.error('获取承兑信息失败:', error);
-				this.flag = false;
-				this.hasSavedAcceptanceInfo = false;
-			});
 		};
 		// 注册事件监听器
 		this.$bus.$on('changeFlag', this.handleChangeFlag);
@@ -529,6 +587,41 @@ export default {
 		...mapActions('bankAcceptance', ['setAccountTypeSelection', 'resetDualSelection', 'clearRoleSelection']),
 		listBankAccount,
 		listCompany,
+		// 获取票据汇总信息列表（适配 SearchOption 组件）
+		getBankAcceptanceSummaryList(query) {
+			// 从查询参数中获取票据号码前缀
+			const billNoPrefix = query.billNoPrefix || '';
+			if (!billNoPrefix) {
+				// 如果没有输入前缀，返回空数据
+				return Promise.resolve({
+					rows: [],
+					total: 0
+				});
+			}
+			// 调用接口获取汇总信息
+			return getBankAcceptanceSummary(billNoPrefix)
+				.then(res => {
+					// 将接口返回的数据格式转换为 SearchOption 需要的格式
+					if (res && res.code === 200 && res.data) {
+						return {
+							rows: res.data || [],
+							total: res.data ? res.data.length : 0
+						};
+					} else {
+						return {
+							rows: [],
+							total: 0
+						};
+					}
+				})
+				.catch(error => {
+					console.error('获取票据汇总信息失败:', error);
+					return {
+						rows: [],
+						total: 0
+					};
+				});
+		},
 		// 控制承兑信息按钮的显示
 		showAcceptanceButton() {
 			if (this.baned || !this.localSelectType) {
