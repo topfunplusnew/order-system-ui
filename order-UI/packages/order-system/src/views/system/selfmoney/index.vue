@@ -1,7 +1,7 @@
 <template>
 	<div class="app-container">
 		<!-- 筛选框 -->
-		<el-form id="top-search-form-item" v-show="showSearch" v-fixed="{ position: 'top', zIndex: 1001, offset: 0 }" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="100px" class="search-form">
+		<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="100px" class="search-form">
 			<el-form-item label="开始时间" prop="endDate">
 				<el-date-picker v-model="queryParams.endDate" type="date" placeholder="选择开始时间" value-format="yyyy-MM-dd" size="mini" clearable class="form-input"></el-date-picker>
 			</el-form-item>
@@ -395,10 +395,10 @@ export default {
 			if (this.queryParams.pageNum > maxPage && maxPage > 0) {
 				this.queryParams.pageNum = 1;
 			}
-			const start = (this.queryParams.pageNum - 1) * this.queryParams.pageSize;
-			const end = start + this.queryParams.pageSize;
-			this.bankAccountList = this.filteredList.slice(start, end);
-		},
+    const start = (this.queryParams.pageNum - 1) * this.queryParams.pageSize;
+    const end = start + this.queryParams.pageSize;
+    this.bankAccountList = this.filteredList.slice(start, end);
+  },
 		// 分页变化处理
 		handlePagination({ page, limit }) {
 			// 由于使用了 .sync，pageNum 和 pageSize 已经自动更新

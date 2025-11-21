@@ -1,0 +1,21 @@
+# 日志文件
+logs/
+*.log
+*.log.gz
+
+# 依赖
+node_modules/
+
+# 环境变量
+.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+

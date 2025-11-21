@@ -1269,6 +1269,10 @@ export default {
             @keyup.enter.native="handleBasicInfoEnter"
         />
       </el-form-item>
+      <el-form-item label="运输方式">
+        <el-checkbox v-model="isLand">陆运</el-checkbox>
+        <el-checkbox v-model="isSea">海运</el-checkbox>
+      </el-form-item>
 			<el-row v-if="isLand" style="margin: 2px 0">
 				<!-- 确认 prop="landCarNo" -->
 				<el-form-item label="车牌" prop="landCarNo">
