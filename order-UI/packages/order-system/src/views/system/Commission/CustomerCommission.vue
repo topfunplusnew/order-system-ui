@@ -508,7 +508,11 @@ export default {
 				});
 			});
 			this.localApplications = _.cloneDeep(this.applications);
-			this.onceApplyVisible = true;
+			// 直接打开付款申请表单，跳过中间弹窗
+			this.applyNeedMoney = totalAmount;
+			this.applyNeedInfo = {};
+			this.applyTid = null; // 批量申请不需要单个ID
+			this.applyPaymentVisible = true;
 		},
 		// 刷新表格（保留当前时间范围）
 		refresh() {
@@ -849,18 +853,20 @@ export default {
 				}
 			});
 		},
-		// 一键申请相关方法
+		// 一键申请相关方法（已废弃，保留以防其他地方调用）
 		handleApproveApply() {
 			this.applyPaymentVisible = true;
 		},
 		// 处理申请信息提交
 		handleCommitApplyInfo(value) {
 			console.log(`付款申请审核信息`, value);
+			// 自动填充申请信息到所有记录
 			this.$nextTick(() => {
 				this.localApplications.forEach(item => {
 					Object.assign(item, value);
 				});
-				this.$message.success('申请信息已更新');
+				// 自动提交申请，跳过中间弹窗
+				this.handleProcessApply();
 			});
 		},
 		// 处理申请流程
@@ -938,7 +944,10 @@ export default {
 						await addPaymentApply(data);
 						this.$message.success('一键申请成功');
 						this.onceApplyVisible = false;
-						this.$refs[`applyPayment`].reset();
+						this.applyPaymentVisible = false;
+						if (this.$refs.applyPayment) {
+							this.$refs.applyPayment.reset();
+						}
 						this.getList(); // 刷新列表
 					} catch (error) {
 						this.$message.error('申请失败，请重试');
@@ -946,6 +955,7 @@ export default {
 				},
 				onCancel: () => {
 					this.$message.info('已取消批量申请');
+					this.applyPaymentVisible = false;
 				}
 			});
 		},
