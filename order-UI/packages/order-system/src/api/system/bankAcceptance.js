@@ -71,3 +71,11 @@ export function getMinIdByBillNo(billNo) {
 		}
 	});
 }
+
+// 查询商业票据、银行承兑汇总信息
+export function getBankAcceptanceSummary(id) {
+	return request({
+		url: '/system/bankAcceptance/summary/' + id,
+		method: 'get'
+	});
+}
