@@ -1,63 +1,62 @@
 <template>
 	<div class="app-container">
-    <div class="fixed-top">
+		<div class="fixed-top">
+			<!-- 搜索模块 -->
+			<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px" v-fixed="{ mode: 'sticky', position: 'top', offset: 0, zIndex: 11 }">
+				<el-form-item label="日期" prop="fundsDate">
+					<el-input v-model="queryParams.fundsDate" placeholder="请输入日期" clearable @keyup.enter.native="handleQuery" />
+				</el-form-item>
+				<el-form-item label="对方户名" prop="otherAcountsName">
+					<el-input v-model="queryParams.otherAcountsName" placeholder="请输入对方户名" clearable @keyup.enter.native="handleQuery" />
+				</el-form-item>
+				<el-form-item label="对方账号" prop="otherBankNo">
+					<el-input v-model="queryParams.otherBankNo" placeholder="请输入对方账号" clearable @keyup.enter.native="handleQuery" />
+				</el-form-item>
+				<el-form-item label="对方开户行" prop="otherBankName">
+					<el-input v-model="queryParams.otherBankName" placeholder="请输入对方开户行" clearable @keyup.enter.native="handleQuery" />
+				</el-form-item>
+				<el-form-item label="对方公司" prop="companyName">
+					<el-input v-model="queryParams.companyName" placeholder="请输入对方公司" clearable @keyup.enter.native="handleQuery" />
+				</el-form-item>
+				<el-form-item>
+					<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+					<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+				</el-form-item>
+			</el-form>
 
-		<!-- 搜索模块 -->
-		<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px" position="fixed">
-			<el-form-item label="日期" prop="fundsDate">
-				<el-input v-model="queryParams.fundsDate" placeholder="请输入日期" clearable @keyup.enter.native="handleQuery" />
-			</el-form-item>
-			<el-form-item label="对方户名" prop="otherAcountsName">
-				<el-input v-model="queryParams.otherAcountsName" placeholder="请输入对方户名" clearable @keyup.enter.native="handleQuery" />
-			</el-form-item>
-			<el-form-item label="对方账号" prop="otherBankNo">
-				<el-input v-model="queryParams.otherBankNo" placeholder="请输入对方账号" clearable @keyup.enter.native="handleQuery" />
-			</el-form-item>
-			<el-form-item label="对方开户行" prop="otherBankName">
-				<el-input v-model="queryParams.otherBankName" placeholder="请输入对方开户行" clearable @keyup.enter.native="handleQuery" />
-			</el-form-item>
-			<el-form-item label="对方公司" prop="companyName">
-				<el-input v-model="queryParams.companyName" placeholder="请输入对方公司" clearable @keyup.enter.native="handleQuery" />
-			</el-form-item>
-			<el-form-item>
-				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
-			</el-form-item>
-		</el-form>
+			<!-- 右侧工具栏 -->
+			<div class="toolbar-wrapper">
+				<right-toolbar :show-search.sync="showSearch" :columns="columns" @queryTable="getList">
+					<!-- 左侧操作按钮 -->
+					<template #left>
+						<div class="toolbar-left">
+							<el-row :gutter="10" class="mb8">
+								<el-col :span="1.5">
+									<el-button v-hasPermi="['system:paymentapply:add']" type="danger" size="mini" @click="handleAdd">新增付款信息</el-button>
+								</el-col>
+								<el-col :span="1.5">
+									<el-button v-hasPermi="['system:paymentapply:remove']" type="danger" size="mini" :disabled="multiple" @click="handleDelete">删除</el-button>
+								</el-col>
+							</el-row>
+						</div>
+					</template>
 
-		<!-- 右侧工具栏 -->
-		<div class="toolbar-wrapper">
-			<right-toolbar :show-search.sync="showSearch" :columns="columns" @queryTable="getList">
-				<!-- 左侧操作按钮 -->
-				<template #left>
-					<div class="toolbar-left">
-						<el-row :gutter="10" class="mb8">
-							<el-col :span="1.5">
-								<el-button v-hasPermi="['system:paymentapply:add']" type="danger" size="mini" @click="handleAdd">新增付款信息</el-button>
-							</el-col>
-							<el-col :span="1.5">
-								<el-button v-hasPermi="['system:paymentapply:remove']" type="danger" size="mini" :disabled="multiple" @click="handleDelete">删除</el-button>
-							</el-col>
-						</el-row>
-					</div>
-				</template>
+					<!-- 打印按钮 -->
+					<template #print>
+						<el-col :span="1.5">
+							<el-button plain icon="el-icon-printer" size="mini" @click="printHTML" :disabled="paymentApplyList.length === 0" />
+						</el-col>
+					</template>
 
-				<!-- 打印按钮 -->
-				<template #print>
-					<el-col :span="1.5">
-						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML" :disabled="paymentApplyList.length === 0" />
-					</el-col>
-				</template>
-
-				<!-- 导出按钮 -->
-				<template #export>
-					<el-col :span="1.5">
-						<el-button v-hasPermi="['system:paymentapply:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport" :disabled="paymentApplyList.length === 0">导出付款申请</el-button>
-					</el-col>
-				</template>
-			</right-toolbar>
+					<!-- 导出按钮 -->
+					<template #export>
+						<el-col :span="1.5">
+							<el-button v-hasPermi="['system:paymentapply:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport" :disabled="paymentApplyList.length === 0">导出付款申请</el-button>
+						</el-col>
+					</template>
+				</right-toolbar>
+			</div>
 		</div>
-  </div>
 		<!-- 付款申请表格 -->
 		<div class="table-container" v-loading="loading">
 			<!-- 渲染进度提示 -->
@@ -165,19 +164,9 @@
 								<div v-if="Array.isArray(row.attachmentList)">
 									<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
 										<div slot="content" @click.stop>
-											<CheckFiles
-												:attachmentList="row.attachmentList"
-												@needToUpdate="value => handleUpdateFilePath(value, row, getPaymentApply, updatePaymentApply)"
-												:is-upload="false"
-												flag="attachments"
-											/>
+											<CheckFiles :attachmentList="row.attachmentList" @needToUpdate="value => handleUpdateFilePath(value, row, getPaymentApply, updatePaymentApply)" :is-upload="false" flag="attachments" />
 										</div>
-										<CheckFiles
-											:attachmentList="row.attachmentList"
-											@needToUpdate="value => handleUpdateFilePath(value, row, getPaymentApply, updatePaymentApply)"
-											:is-upload="false"
-											flag="attachments"
-										/>
+										<CheckFiles :attachmentList="row.attachmentList" @needToUpdate="value => handleUpdateFilePath(value, row, getPaymentApply, updatePaymentApply)" :is-upload="false" flag="attachments" />
 									</el-tooltip>
 								</div>
 								<div v-else>
@@ -210,9 +199,7 @@
 							<!-- 右侧操作栏 -->
 							<td class="fixed-right col-action">
 								<el-button v-hasPermi="['system:paymentapply:edit']" size="mini" type="primary" @click="handleUpdate(row)">修改</el-button>
-								<el-button v-hasPermi="['system:paymentapply:remove']" size="mini" type="danger" :disabled="!['待提交', '驳回'].includes(row.checkState)" @click="handleDelete(row)">
-									删除
-								</el-button>
+								<el-button v-hasPermi="['system:paymentapply:remove']" size="mini" type="danger" :disabled="!['待提交', '驳回'].includes(row.checkState)" @click="handleDelete(row)">删除</el-button>
 								<el-button v-hasPermi="['system:paymentapply:remove']" size="mini" @click="checkPaymentApplyInfo(row)">查看信息</el-button>
 							</td>
 						</tr>
@@ -222,31 +209,12 @@
 		</div>
 
 		<!-- 分页组件 -->
-		<div class="pagination-wrapper">
-			<pagination
-				:total="total"
-				:page.sync="queryParams.pageNum"
-				:limit.sync="queryParams.pageSize"
-				:page-sizes="[10, 20, 50, 100, 200, 500]"
-				layout="total, sizes, prev, pager, next, jumper"
-				background
-				@pagination="getList"
-			/>
+		<div class="pagination-wrapper" v-fixed="{ mode: 'sticky', position: 'bottom', offset: 0, zIndex: 10 }">
+			<pagination :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" :page-sizes="[10, 20, 50, 100, 200, 500]" layout="total, sizes, prev, pager, next, jumper" background @pagination="getList" />
 		</div>
 
 		<!-- 2.添加或修改付款信息对话框 -->
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="付款申请"
-			:visible.sync="open"
-			width="500px"
-			append-to-body
-		>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="付款申请" :visible.sync="open" width="500px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="80px">
 				<el-form-item label="日期" prop="fundsDate">
 					<el-date-picker v-model="form.fundsDate" type="datetime" placeholder="选择日期"></el-date-picker>
@@ -884,40 +852,34 @@ export default {
 	position: relative;
 	overflow: visible;
 	min-height: 100vh;
-  padding: 0;
+	padding: 0;
 }
 .fixed-top {
-  position: relative;
-  z-index: 10;
+	position: relative;
+	z-index: 10;
 }
-
 
 /* 搜索表单样式 */
 #top-search-form-item {
-  position: sticky;
-  top: 0;
-  background-color: #fff;
-  padding: 10px 0;
-  margin-bottom: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  z-index: 11; /* 高于其他元素 */
-  width: 100%;
+	/* 定位相关样式由 v-fixed 指令处理 */
+	background-color: #fff;
+	padding: 10px 0;
+	margin-bottom: 10px;
+	width: 100%;
 }
-
 
 .toolbar-wrapper {
-  position: sticky;
-  top: 60px; /* 搜索栏高度 + 10px 间距 */
-  background-color: #fff;
-  padding: 10px 0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  z-index: 10;
+	position: sticky;
+	top: 60px; /* 搜索栏高度 + 10px 间距 */
+	background-color: #fff;
+	padding: 10px 0;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	z-index: 10;
 }
 
-
-	.toolbar-left {
-		padding: 10px 0;
-	}
+.toolbar-left {
+	padding: 10px 0;
+}
 
 .text-ellipsis {
 	white-space: nowrap;
@@ -1042,7 +1004,7 @@ export default {
 						position: relative;
 						line-height: 1.2;
 						vertical-align: middle;
-						
+
 						// 确保单元格内的按钮和组件正常显示
 						.el-button,
 						.el-dropdown,
@@ -1084,14 +1046,14 @@ export default {
 }
 
 .pagination-wrapper {
-  position: relative;
-  margin-top: 20px; /* 调整与表格的间距 */
-  padding: 10px 20px;
-  background-color: #fff;
-  border-top: 1px solid #ebeef5;
-  text-align: right;
+	/* 定位相关样式由 v-fixed 指令处理 */
+	margin-top: 20px; /* 调整与表格的间距 */
+	padding: 10px 20px;
+	background-color: #fff;
+	border-top: 1px solid #ebeef5;
+	text-align: right;
+	width: 100%;
 }
-
 
 .pagination-wrapper ::v-deep .pagination-container {
 	margin: 0;

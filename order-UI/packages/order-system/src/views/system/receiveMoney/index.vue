@@ -1,32 +1,34 @@
 <template>
 	<div class="app-container" :class="{ 'mask-overlay': showMask }">
 		<!-- 遮罩层 -->
-		<div v-if="showMask" class="container-mask"></div>
+		<div class="fixed-top-section" v-fixed="{ position: 'top', zIndex: 1000, offset: 100 }">
+			<div v-if="showMask" class="container-mask"></div>
 
-		<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="120px">
-			<el-form-item label="收款时间">
-				<el-date-picker v-model="dateRange" class="date-range-280" value-format="yyyy-MM-dd" type="daterange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
-			</el-form-item>
-			<el-form-item label="支付类型" prop="receiveType">
-				<el-cascader v-model="queryParams.receiveType" :options="paymentTypeTree" :props="props" class="input-medium" clearable @keyup.enter.native="handleQuery" />
-			</el-form-item>
-			<el-form-item label="我方户名" prop="selfAcountsName">
-				<el-input v-model="queryParams.selfAcountsName" class="input-medium" placeholder="请输入我方户名" clearable @keyup.enter.native="handleQuery" />
-			</el-form-item>
-			<el-form-item label="对方户名" prop="otherAcountsName">
-				<el-input v-model="queryParams.otherAcountsName" class="input-medium" placeholder="请输入对方户名" clearable @keyup.enter.native="handleQuery" />
-			</el-form-item>
-			<el-form-item label="对方公司名称" prop="companyName">
-				<el-input v-model="queryParams.companyName" class="input-medium" placeholder="请输入对方公司名称" clearable @keyup.enter.native="handleQuery" />
-			</el-form-item>
-			<el-form-item label="票据号码" prop="bankacceptanceBillNo">
-				<el-input v-model="queryParams.params.bankacceptanceBillNo" class="input-medium" placeholder="请输入票据号码" clearable @keyup.enter.native="handleQuery" />
-			</el-form-item>
-			<el-form-item>
-				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-			</el-form-item>
-		</el-form>
-		<!-- 右侧工具栏 -->
+			<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="120px">
+				<el-form-item label="收款时间">
+					<el-date-picker v-model="dateRange" class="date-range-280" value-format="yyyy-MM-dd" type="daterange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
+				</el-form-item>
+				<el-form-item label="支付类型" prop="receiveType">
+					<el-cascader v-model="queryParams.receiveType" :options="paymentTypeTree" :props="props" class="input-medium" clearable @keyup.enter.native="handleQuery" />
+				</el-form-item>
+				<el-form-item label="我方户名" prop="selfAcountsName">
+					<el-input v-model="queryParams.selfAcountsName" class="input-medium" placeholder="请输入我方户名" clearable @keyup.enter.native="handleQuery" />
+				</el-form-item>
+				<el-form-item label="对方户名" prop="otherAcountsName">
+					<el-input v-model="queryParams.otherAcountsName" class="input-medium" placeholder="请输入对方户名" clearable @keyup.enter.native="handleQuery" />
+				</el-form-item>
+				<el-form-item label="对方公司名称" prop="companyName">
+					<el-input v-model="queryParams.companyName" class="input-medium" placeholder="请输入对方公司名称" clearable @keyup.enter.native="handleQuery" />
+				</el-form-item>
+				<el-form-item label="票据号码" prop="bankacceptanceBillNo">
+					<el-input v-model="queryParams.params.bankacceptanceBillNo" class="input-medium" placeholder="请输入票据号码" clearable @keyup.enter.native="handleQuery" />
+				</el-form-item>
+				<el-form-item>
+					<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+				</el-form-item>
+			</el-form>
+			<!-- 右侧工具栏 -->
+		</div>
 		<div class="toolbar-wrapper">
 			<right-toolbar :show-search.sync="showSearch" :columns="columns" @queryTable="getList">
 				<template #left>
@@ -60,7 +62,6 @@
 				</template>
 			</right-toolbar>
 		</div>
-
 		<!-- 收款信息表格 -->
 		<div class="table-container" v-loading="loading">
 			<!-- 渲染进度提示 -->
@@ -117,7 +118,7 @@
 		</div>
 
 		<!-- 分页组件 -->
-		<div class="pagination-wrapper">
+		<div class="pagination-wrapper" v-fixed="{ position: 'bottom', zIndex: 1000 }">
 			<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" :page-sizes="[10, 20, 50, 100, 200, 500]" layout="total, sizes, prev, pager, next, jumper" background @pagination="getList" />
 		</div>
 
@@ -1371,10 +1372,13 @@ export default {
 /* ============================= */
 /*         搜索表单优化           */
 /* ============================= */
+/* 固定顶部区域 */
+.fixed-top-section {
+	background-color: #f8f9fb;
+	padding: 12px 0;
+}
+
 #top-search-form-item {
-	position: sticky;
-	top: 0;
-	z-index: 102;
 	background-color: #ffffff;
 	padding: 12px 0 8px 0;
 	margin-bottom: 12px;

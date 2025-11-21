@@ -1,7 +1,7 @@
 <template>
 	<div class="app-container" :class="{ 'mask-overlay': showMask }">
 		<!-- 遮罩层 -->
-		<div class="fixed-top-section">
+		<div class="fixed-top-section" v-fixed="{ position: 'top', zIndex: 1000, offset: 100 }">
 			<div v-if="showMask" class="container-mask"></div>
 
 			<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="120px">
@@ -44,43 +44,42 @@
 					<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
 				</el-form-item>
 			</el-form>
-
-			<!-- 右侧工具栏 -->
-			<div class="toolbar-wrapper">
-				<right-toolbar :show-search.sync="showSearch" :columns="columns" @queryTable="getList">
-					<template #left>
-						<div class="toolbar-left">
-							<el-row :gutter="10" class="mb8">
-								<!-- 刷新按钮-->
-								<el-col :span="1.5">
-									<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
-								</el-col>
-								<el-col :span="1.5">
-									<el-button v-hasPermi="['system:payment:import']" size="mini" @click="handleDownloadTemplate">下载导入模板</el-button>
-								</el-col>
-								<el-col :span="1.5">
-									<el-button v-hasPermi="['system:payment:import']" size="mini" @click="handleImportData">导入模板</el-button>
-								</el-col>
-								<!--      解开了新增付款信息-->
-								<el-col :span="1.5" style="margin-left: 15px">
-									<el-button v-hasPermi="['system:payment:add']" type="danger" size="mini" @click="handleAdd">新增付款信息</el-button>
-								</el-col>
-							</el-row>
-						</div>
-					</template>
-					<template #print>
-						<el-col :span="1.5">
-							<el-button plain icon="el-icon-printer" size="mini" @click="printHTML" :disabled="paymentList.length === 0" />
-						</el-col>
-					</template>
-					<!--        导出-->
-					<template #export>
-						<el-col :span="1.5">
-							<el-button v-hasPermi="['system:payment:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport" :disabled="paymentList.length === 0" />
-						</el-col>
-					</template>
-				</right-toolbar>
-			</div>
+		</div>
+		<!-- 右侧工具栏 -->
+		<div class="toolbar-wrapper">
+			<right-toolbar :show-search.sync="showSearch" :columns="columns" @queryTable="getList">
+				<template #left>
+					<div class="toolbar-left">
+						<el-row :gutter="10" class="mb8">
+							<!-- 刷新按钮-->
+							<el-col :span="1.5">
+								<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
+							</el-col>
+							<el-col :span="1.5">
+								<el-button v-hasPermi="['system:payment:import']" size="mini" @click="handleDownloadTemplate">下载导入模板</el-button>
+							</el-col>
+							<el-col :span="1.5">
+								<el-button v-hasPermi="['system:payment:import']" size="mini" @click="handleImportData">导入模板</el-button>
+							</el-col>
+							<!--      解开了新增付款信息-->
+							<el-col :span="1.5" style="margin-left: 15px">
+								<el-button v-hasPermi="['system:payment:add']" type="danger" size="mini" @click="handleAdd">新增付款信息</el-button>
+							</el-col>
+						</el-row>
+					</div>
+				</template>
+				<template #print>
+					<el-col :span="1.5">
+						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML" :disabled="paymentList.length === 0" />
+					</el-col>
+				</template>
+				<!--        导出-->
+				<template #export>
+					<el-col :span="1.5">
+						<el-button v-hasPermi="['system:payment:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport" :disabled="paymentList.length === 0" />
+					</el-col>
+				</template>
+			</right-toolbar>
 		</div>
 		<!--    </div>-->
 		<!-- 付款信息表格 -->
@@ -92,7 +91,7 @@
 			</div>
 
 			<div class="table-wrapper" id="printBox">
-				<el-table id="printBox" v-loading="loading" v-horizontal-scroll="'always'" :data="paymentList" size="mini" border @selection-change="handleSelectionChange" ref="paymentTable">
+				<el-table id="printBox" v-loading="loading" v-horizontal-scroll="'always'" :data="paymentList" :height="tableHeight" size="mini" border @selection-change="handleSelectionChange" ref="paymentTable">
 					<el-table-column label="id" align="center" prop="id" v-if="columns[0].visible" show-overflow-tooltip>
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
@@ -279,7 +278,7 @@
 		</div>
 
 		<!-- 分页组件 -->
-		<div class="pagination-wrapper">
+		<div class="pagination-wrapper" v-fixed="{ position: 'bottom', zIndex: 1000 }">
 			<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" :page-sizes="[10, 20, 50, 100, 200, 500]" layout="total, sizes, prev, pager, next, jumper" background @pagination="getList" />
 		</div>
 
@@ -659,6 +658,7 @@ import { hasTableReference } from '@/utils/payment/utils';
 import InfoDialog from '../../../components/InfoDialog.vue';
 import { fix } from '../../../api/tool/format';
 import { getCompany } from '../../../api/system/company';
+import fixedDirective from '@/directive/module/fixed';
 
 export default {
 	name: 'Payment',
@@ -894,7 +894,9 @@ export default {
 			renderChunkSize: 50,
 			renderTimer: null,
 			// 窗口大小变化防抖定时器
-			resizeTimer: null
+			resizeTimer: null,
+			// 表格高度
+			tableHeight: 600
 		};
 	},
 	computed: {
@@ -1005,6 +1007,18 @@ export default {
 		// 监听窗口大小变化，重新计算表格高度
 		window.addEventListener('resize', this.handleResize);
 	},
+	mounted() {
+		// 固定表格头
+		this.fixTableHeader();
+		// 计算表格高度
+		this.calculateTableHeight();
+	},
+	updated() {
+		// 数据更新后重新固定表格头
+		this.$nextTick(() => {
+			this.fixTableHeader();
+		});
+	},
 	beforeDestroy() {
 		// 移除窗口大小变化监听
 		window.removeEventListener('resize', this.handleResize);
@@ -1017,6 +1031,15 @@ export default {
 		if (this.renderTimer) {
 			cancelAnimationFrame(this.renderTimer);
 			this.renderTimer = null;
+		}
+		// 清理表格头固定指令
+		const table = this.$refs.paymentTable;
+		if (table && table.$el) {
+			const headerWrapper = table.$el.querySelector('.el-table__header-wrapper');
+			if (headerWrapper && headerWrapper._fixedApplied) {
+				fixedDirective.unbind(headerWrapper);
+				headerWrapper._fixedApplied = false;
+			}
 		}
 	},
 	methods: {
@@ -1093,7 +1116,61 @@ export default {
 			}
 			this.resizeTimer = setTimeout(() => {
 				// 表格布局已由原生 table 处理，无需额外操作
+				// 重新固定表格头
+				this.fixTableHeader();
+				// 重新计算表格高度
+				this.calculateTableHeight();
 			}, 100);
+		},
+		// 计算表格高度
+		calculateTableHeight() {
+			this.$nextTick(() => {
+				if (!this.$el) return;
+
+				// 获取视口高度
+				const windowHeight = window.innerHeight;
+				// 获取搜索栏高度
+				const fixedTopSection = this.$el.querySelector('.fixed-top-section');
+				const topHeight = fixedTopSection ? fixedTopSection.getBoundingClientRect().height : 0;
+				// 获取分页栏高度
+				const paginationWrapper = this.$el.querySelector('.pagination-wrapper');
+				const bottomHeight = paginationWrapper ? paginationWrapper.getBoundingClientRect().height : 0;
+				// 获取表格容器的位置和边距
+				const tableContainer = this.$el.querySelector('.table-container');
+				if (!tableContainer) return;
+
+				const containerRect = tableContainer.getBoundingClientRect();
+				const containerTop = containerRect.top;
+				const containerMarginBottom = parseInt(window.getComputedStyle(tableContainer).marginBottom) || 0;
+
+				// 计算可用高度：视口高度 - 表格容器顶部位置 - 分页栏高度 - 容器底部边距 - 预留间距（20px）
+				const availableHeight = windowHeight - containerTop - bottomHeight - containerMarginBottom - 20;
+
+				// 设置表格高度，最小300px，最大650px
+				this.tableHeight = Math.max(300, Math.min(650, availableHeight));
+			});
+		},
+		// 固定表格头
+		fixTableHeader() {
+			this.$nextTick(() => {
+				const table = this.$refs.paymentTable;
+				if (!table || !table.$el) return;
+
+				// 查找表格头元素
+				const headerWrapper = table.$el.querySelector('.el-table__header-wrapper');
+				if (headerWrapper && !headerWrapper._fixedApplied) {
+					// 应用 v-fixed 指令（使用 sticky 模式，适合表头）
+					fixedDirective.inserted(headerWrapper, {
+						value: {
+							mode: 'sticky',
+							position: 'top',
+							offset: 0,
+							zIndex: 999
+						}
+					});
+					headerWrapper._fixedApplied = true;
+				}
+			});
 		},
 		// 下拉菜单命令处理
 		handleCommand(command, row) {
@@ -1249,6 +1326,10 @@ export default {
 				this.paymentList = rows;
 				this.total = response.total;
 				this.loading = false;
+				// 数据加载后固定表格头
+				this.$nextTick(() => {
+					this.fixTableHeader();
+				});
 				return response;
 			});
 		},
@@ -1965,9 +2046,16 @@ export default {
 	max-width: 220px;
 }
 
+/* 固定顶部区域 */
+.fixed-top-section {
+	background-color: #f8f9fb;
+	padding: 12px 0;
+}
+
 /* 表格容器 */
 .table-container {
 	position: relative;
+	margin-top: 12px; // 与固定顶部区域保持间距
 
 	.rendering-progress {
 		position: absolute;
@@ -1991,8 +2079,6 @@ export default {
 	.table-wrapper {
 		position: relative;
 		width: 100%;
-		max-height: 650px;
-		overflow: auto;
 		border: 1px solid #e0e6ed;
 		border-radius: 8px;
 		background: #fff;
@@ -2105,8 +2191,13 @@ export default {
 	background-color: #ffffff;
 	border-top: 1px solid #ebeef5;
 	text-align: right;
-
 	box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.03), 0 -1px 6px rgba(0, 0, 0, 0.04);
+}
+
+/* 为固定元素添加占位空间，避免内容被遮挡 */
+.app-container {
+	// 为固定的分页栏预留底部空间
+	padding-bottom: 80px;
 }
 
 /* 运费弹窗 */
