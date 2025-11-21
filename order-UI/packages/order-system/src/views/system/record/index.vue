@@ -1350,6 +1350,9 @@ export default {
 			// 保存当前的 cashType，因为重置后需要根据它来设置支付类型
 			const currentCashType = this.cashType;
 
+			// 如果是内部转账，默认设置为银行活期存款
+			const defaultBankCardType = currentCashType === CASH_TYPE.TRANSFER ? BankAcceptanceType.BANK_CASH : null;
+
 			this.form = {
 				id: null,
 				code: null,
@@ -1363,9 +1366,9 @@ export default {
 				// 收入方与支付方的公司类型
 				sourceCompanyType: '客户',
 				targetCompanyType: '客户',
-				// 收入方与支付方的银行卡账户类型
-				selfBankCardType: null,
-				otherBankCardType: null,
+				// 收入方与支付方的银行卡账户类型（内部转账时默认为银行活期存款）
+				selfBankCardType: defaultBankCardType,
+				otherBankCardType: defaultBankCardType,
 				// 2025-2-28 新增转账账户
 				sourceBankNo: null,
 				// 支出方额外字段 - 用于冲抵货款时的支付详细信息
@@ -1387,6 +1390,18 @@ export default {
 			this.sourceName = null;
 			this.targetName = null;
 			this.resetForm('form');
+
+			// 如果是内部转账，设置 BankType 组件的默认值
+			if (currentCashType === CASH_TYPE.TRANSFER) {
+				this.$nextTick(() => {
+					if (this.$refs.selfSelectBankType) {
+						this.$refs.selfSelectBankType.localSelectType = BankAcceptanceType.BANK_CASH;
+					}
+					if (this.$refs.otherSelectBankType) {
+						this.$refs.otherSelectBankType.localSelectType = BankAcceptanceType.BANK_CASH;
+					}
+				});
+			}
 		},
 		/** 搜索按钮操作 */
 		handleQuery() {
@@ -1413,6 +1428,17 @@ export default {
 			this.clearAcceptanceFillStatus(); // 清理所有承兑相关状态
 			this.open = true;
 			this.title = '添加冲抵款';
+			// 如果是内部转账，确保组件渲染后设置默认值
+			if (this.cashType === CASH_TYPE.TRANSFER) {
+				this.$nextTick(() => {
+					if (this.$refs.selfSelectBankType) {
+						this.$refs.selfSelectBankType.localSelectType = BankAcceptanceType.BANK_CASH;
+					}
+					if (this.$refs.otherSelectBankType) {
+						this.$refs.otherSelectBankType.localSelectType = BankAcceptanceType.BANK_CASH;
+					}
+				});
+			}
 		},
 		// 修改操作
 		handleUpdate(row) {
