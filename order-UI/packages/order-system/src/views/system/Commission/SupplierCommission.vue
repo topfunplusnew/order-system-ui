@@ -3,19 +3,7 @@
 		<!-- 查询表单 -->
 		<el-form id="top-search-form-item" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
 			<el-form-item label="时间范围">
-				<el-date-picker
-					v-model="dateRange"
-					type="daterange"
-					range-separator="至"
-					start-placeholder="开始日期"
-					end-placeholder="结束日期"
-					value-format="yyyy-MM-dd"
-					size="mini"
-					style="width: 280px"
-					unlink-panels
-					:clearable="true"
-					@change="onDateRangeChange"
-				/>
+				<el-date-picker v-model="dateRange" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" size="mini" style="width: 280px" unlink-panels :clearable="true" @change="onDateRangeChange" />
 			</el-form-item>
 			<el-form-item label="厂家名称" prop="companyName">
 				<el-input v-model="queryParams.companyName" placeholder="请输入厂家名称" clearable @keyup.enter.native="handleQuery" />
@@ -159,17 +147,7 @@
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 付款申请对话框 -->
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="付款申请"
-			:visible.sync="PaymentApplyInfoVisible"
-			width="45%"
-		>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="付款申请" :visible.sync="PaymentApplyInfoVisible" width="45%">
 			<keep-alive>
 				<ApplyPayment :money-input-disabled="false" :table-name="TableName.ORDERCOMMISION" :t-i-d="tID" :need-money="needMoney" :need-info="{}" @changeOpen="changePaymentApplyInfoVisible" />
 			</keep-alive>
@@ -218,18 +196,7 @@
 		</el-dialog>
 
 		<!-- 申请信息填写对话框 -->
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="付款申请"
-			:visible.sync="applyPaymentVisible"
-			width="45%"
-			append-to-body
-		>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="付款申请" :visible.sync="applyPaymentVisible" width="45%" append-to-body>
 			<keep-alive>
 				<ApplyPayment
 					ref="applyPayment"
@@ -321,6 +288,7 @@ import { mixin_checkfile } from '@/views/dashboard/mixins/checkfiles/mixin_check
 import PaymentFlag from '@/components/PaymentFlag';
 import { mapGetters } from 'vuex/dist/vuex.common.js';
 import { getDateRangeDays } from '@/utils';
+import _ from 'lodash';
 
 export default {
 	name: 'SUPPLIERCommission',
@@ -564,9 +532,13 @@ export default {
 					comments: ''
 				});
 			});
-			// 深拷贝数据并显示申请列表对话框
+			// 深拷贝数据
 			this.localApplications = _.cloneDeep(applications);
-			this.onceApplyVisible = true;
+			// 直接打开付款申请表单，跳过中间弹窗
+			this.applyNeedMoney = totalAmount;
+			this.applyNeedInfo = {};
+			this.applyTid = null; // 批量申请不需要单个ID
+			this.applyPaymentVisible = true;
 		},
 		// 刷新表格（保留当前时间范围）
 		refresh() {
@@ -901,18 +873,20 @@ export default {
 				}
 			});
 		},
-		// 一键申请相关方法
+		// 一键申请相关方法（已废弃，保留以防其他地方调用）
 		handleApproveApply() {
 			this.applyPaymentVisible = true;
 		},
 		// 处理申请信息提交
 		handleCommitApplyInfo(value) {
 			console.log(`付款申请审核信息`, value);
+			// 自动填充申请信息到所有记录
 			this.$nextTick(() => {
 				this.localApplications.forEach(item => {
 					Object.assign(item, value);
 				});
-				this.$message.success('申请信息已更新');
+				// 自动提交申请，跳过中间弹窗
+				this.handleProcessApply();
 			});
 		},
 		// 处理申请流程
@@ -990,7 +964,10 @@ export default {
 						await addPaymentApply(data);
 						this.$message.success('一键申请成功');
 						this.onceApplyVisible = false;
-						this.$refs[`applyPayment`].reset();
+						this.applyPaymentVisible = false;
+						if (this.$refs.applyPayment) {
+							this.$refs.applyPayment.reset();
+						}
 						this.getList(); // 刷新列表
 					} catch (error) {
 						console.error('申请失败:', error);
@@ -999,6 +976,7 @@ export default {
 				},
 				onCancel: () => {
 					this.$message.info('已取消批量申请');
+					this.applyPaymentVisible = false;
 				}
 			});
 		},

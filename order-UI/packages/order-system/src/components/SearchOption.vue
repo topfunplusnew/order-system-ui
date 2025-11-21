@@ -80,6 +80,26 @@ export default {
 			default: () => {
 				return null;
 			}
+		},
+		// 自动操作配置：支持多种操作类型（填充、自定义等）
+		// 格式: {
+		//   fields: ['__fillValue', '__fillValue1'],
+		//   actions: [
+		//     { type: 'fill', handler: (value, fieldName, actionType, context) => { ... } },
+		//     { type: 'custom', handler: (value, fieldName, actionType, context) => { ... } }
+		//   ],
+		//   shouldAutoSearch: true // 是否自动触发搜索，默认 true
+		// }
+		// handler 参数说明：
+		//   - value: 字段的值
+		//   - fieldName: 字段名
+		//   - actionType: 操作类型（如 'fill', 'custom' 等）
+		//   - context: 上下文对象，提供 setQuery、fillQuery 等方法
+		autoFillConfig: {
+			type: Object,
+			default: () => {
+				return null;
+			}
 		}
 	},
 	data() {
@@ -180,7 +200,57 @@ export default {
 			// 刷新状态
 			this.tableData = [];
 			// 初始化查询值
-			this.internalQuery = this.queryName || '';
+			let shouldAutoSearch = false;
+
+			// 检查是否有自动操作配置
+			if (this.autoFillConfig && this.extraParams) {
+				const { fields, actions, shouldAutoSearch: configShouldAutoSearch } = this.autoFillConfig;
+
+				if (Array.isArray(fields) && Array.isArray(actions) && actions.length > 0) {
+					// 遍历配置的字段，查找第一个有值的字段
+					for (const fieldName of fields) {
+						if (this.extraParams[fieldName]) {
+							const fieldValue = this.extraParams[fieldName];
+
+							// 创建上下文对象，提供操作 SearchOption 状态的方法
+							const context = {
+								setQuery: value => {
+									this.internalQuery = value;
+									this.query = value;
+								},
+								getQuery: () => this.query,
+								setInternalQuery: value => {
+									this.internalQuery = value;
+								},
+								getInternalQuery: () => this.internalQuery,
+								// 提供一些内置的常用操作
+								fillQuery: value => {
+									this.internalQuery = value;
+									this.query = value;
+								}
+							};
+
+							// 按顺序执行所有配置的操作
+							for (const action of actions) {
+								if (action && typeof action.handler === 'function') {
+									// 执行处理函数，传入值、字段名、操作类型和上下文对象
+									action.handler(fieldValue, fieldName, action.type || 'custom', context);
+								}
+							}
+
+							// 根据配置决定是否自动搜索（默认 true）
+							shouldAutoSearch = configShouldAutoSearch !== false;
+							break; // 找到第一个有效值后停止
+						}
+					}
+				}
+			}
+
+			// 如果没有自动填充，使用默认的 queryName
+			if (!shouldAutoSearch) {
+				this.internalQuery = this.queryName || '';
+			}
+
 			// 初始化params属性
 			_.set(this.limitInfo, 'params', {});
 			// 这里需要加一个特殊逻辑 支持limitInfo传入放置于params的属性
@@ -189,9 +259,19 @@ export default {
 				delete this.limitInfo.__params;
 			}
 			console.log(`已设置params属性`, this.limitInfo);
-			// 获取数据 渲染表格
-			this.getList();
-			this.dialogVisible = true;
+
+			// 如果需要自动搜索，则打开弹窗后触发搜索
+			if (shouldAutoSearch) {
+				this.dialogVisible = true;
+				// 使用 $nextTick 确保弹窗已打开后再触发搜索
+				this.$nextTick(() => {
+					this.handleSearchInfo();
+				});
+			} else {
+				// 获取数据 渲染表格
+				this.getList();
+				this.dialogVisible = true;
+			}
 		},
 		// 点击确认
 		commitSomeThing(row) {
@@ -206,6 +286,8 @@ export default {
 		},
 		// 条件查询
 		handleSearchInfo(event) {
+			// 启动加载效果
+			this.loading = true;
 			// 阻止表单默认提交行为，防止页面刷新
 			if (event) {
 				event.preventDefault();
