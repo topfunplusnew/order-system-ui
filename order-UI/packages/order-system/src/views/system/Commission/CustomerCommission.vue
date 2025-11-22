@@ -908,7 +908,7 @@ export default {
 							fundsDate: firstApplication.fundsDate || currentTime,
 							payType: firstApplication.payType || '',
 							moneyAmount: parseFloat(firstApplication.moneyAmount) || 0,
-							otherAccountsName: firstApplication.otherAcountsName || '', // 注意字段名变化
+							otherAccountsName: firstApplication.otherAccountsName || '', // 注意字段名变化
 							otherBankNo: firstApplication.otherBankNo || '',
 							otherBankName: firstApplication.otherBankName || '',
 							companyName: firstApplication.companyName || '',

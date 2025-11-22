@@ -59,33 +59,37 @@ export default {
 	methods: {
 		listGoodsOrder,
 		handleProcess(that) {
-			this.$refs.commissionForm.validate(valid => {
-				if (valid) {
-					if (this.id) {
-						updateCommission(this.form).then(res => {
-							that.dialogVisible = false;
-							this.$message.success('修改成功');
-							this.reset();
-							return Promise.resolve();
-						});
-					} else {
-						addCommission(this.form).then(res => {
-							that.dialogVisible = false;
-							this.$message.success('添加成功');
-							this.reset();
-							return Promise.resolve();
-						});
+			return new Promise((resolve, reject) => {
+				this.$refs.commissionForm.validate(valid => {
+					if (valid) {
+						if (this.id) {
+							updateCommission(this.form).then(res => {
+								that.dialogVisible = false;
+								this.$message.success('修改成功');
+								this.reset();
+								resolve();
+							});
+						} else {
+							addCommission(this.form).then(res => {
+								that.dialogVisible = false;
+								this.$message.success('添加成功');
+								this.reset();
+								resolve();
+							});
+						}
 					}
-				}
+				});
 			});
 		},
 		handleReject(that) {
-			for (let key in this.form) {
-				this.form[key] = typeof this.form[key] === 'boolean' ? false : '';
-			}
-			that.dialogVisible = false;
-			this.reset();
-			return Promise.resolve();
+			return new Promise((resolve, reject) => {
+				for (let key in this.form) {
+					this.form[key] = typeof this.form[key] === 'boolean' ? false : '';
+				}
+				that.dialogVisible = false;
+				this.reset();
+				resolve();
+			});
 		},
 		getSupplierNames(list) {
 			if (list.length === 0) {
