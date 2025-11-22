@@ -199,37 +199,95 @@ function applyStickyMode(el, config) {
  * 应用 Fixed 模式
  */
 function applyFixedMode(el, config) {
-	// 创建占位元素
-	const placeholder = createPlaceholder(el);
-	el._fixedPlaceholder = placeholder;
+	// 保存元素的原始位置信息（用于顶部元素的判断）
+	let originalTop = null;
+	let isFixed = false;
+
+	// 对于顶部元素，需要先保存原始位置
+	if (config.position === 'top') {
+		// 保存原始位置（相对于文档顶部）
+		// 使用 getBoundingClientRect 获取元素相对于视口的位置
+		// 然后加上当前滚动距离得到相对于文档的位置
+		const rect = el.getBoundingClientRect();
+		originalTop = rect.top + (window.pageYOffset || document.documentElement.scrollTop || 0);
+		isFixed = false;
+		// 初始状态保持正常流
+		el.style.position = 'static';
+	} else {
+		// 底部元素直接应用固定定位
+		const placeholder = createPlaceholder(el);
+		el._fixedPlaceholder = placeholder;
+		isFixed = true;
+		el.style.position = 'fixed';
+	}
 
 	// 初始化位置和尺寸
 	const containerInfo = getContainerInfo(el);
 
-	el.style.position = 'fixed';
-	el.style.zIndex = config.zIndex;
-	el.style.left = `${containerInfo.left}px`;
-	el.style.right = 'auto';
-	el.style.width = `${containerInfo.width}px`;
-
-	setPosition(el, config.position, config.offset);
-	setBackgroundAndShadow(el, config);
+	if (isFixed) {
+		el.style.zIndex = config.zIndex;
+		el.style.left = `${containerInfo.left}px`;
+		el.style.right = 'auto';
+		el.style.width = `${containerInfo.width}px`;
+		setPosition(el, config.position, config.offset);
+		setBackgroundAndShadow(el, config);
+	}
 
 	// 创建布局更新函数（使用防抖优化 resize 事件）
 	const updateLayout = () => {
 		const containerInfo = getContainerInfo(el);
 
-		// 更新位置和尺寸
-		el.style.left = `${containerInfo.left}px`;
-		el.style.width = `${containerInfo.width}px`;
+		// 对于顶部元素，需要判断是否脱离窗口顶部
+		if (config.position === 'top') {
+			const currentScrollTop = window.pageYOffset || document.documentElement.scrollTop || 0;
+			// 当滚动距离达到元素原始位置减去偏移量时，元素应该固定
+			// 例如：元素在 200px 位置，offset 是 100px，那么当滚动到 100px 时就应该固定
+			const shouldBeFixed = currentScrollTop >= originalTop - config.offset;
 
-		// 确保位置正确
-		setPosition(el, config.position, config.offset);
+			if (shouldBeFixed && !isFixed) {
+				// 需要固定：创建占位元素并应用 fixed 定位
+				if (!el._fixedPlaceholder) {
+					const placeholder = createPlaceholder(el);
+					el._fixedPlaceholder = placeholder;
+				}
+				isFixed = true;
+				el.style.position = 'fixed';
+				el.style.zIndex = config.zIndex;
+				setBackgroundAndShadow(el, config);
+			} else if (!shouldBeFixed && isFixed) {
+				// 不需要固定：移除占位元素并恢复正常流
+				if (el._fixedPlaceholder?.parentNode) {
+					el._fixedPlaceholder.parentNode.removeChild(el._fixedPlaceholder);
+					el._fixedPlaceholder = null;
+				}
+				isFixed = false;
+				el.style.position = 'static';
+				el.style.top = '';
+				el.style.bottom = '';
+				el.style.left = '';
+				el.style.right = '';
+				el.style.width = '';
+				el.style.zIndex = '';
+				el.style.backgroundColor = '';
+				el.style.boxShadow = '';
+				// 重新获取原始位置（因为可能窗口大小变化）
+				const rect = el.getBoundingClientRect();
+				originalTop = rect.top + (window.pageYOffset || document.documentElement.scrollTop || 0);
+				return; // 不需要更新 fixed 位置
+			}
+		}
 
-		// 更新占位元素高度
-		if (el._fixedPlaceholder) {
-			const currentHeight = el.getBoundingClientRect().height;
-			el._fixedPlaceholder.style.height = `${currentHeight}px`;
+		// 如果当前是固定状态，更新位置和尺寸
+		if (isFixed) {
+			el.style.left = `${containerInfo.left}px`;
+			el.style.width = `${containerInfo.width}px`;
+			setPosition(el, config.position, config.offset);
+
+			// 更新占位元素高度
+			if (el._fixedPlaceholder) {
+				const currentHeight = el.getBoundingClientRect().height;
+				el._fixedPlaceholder.style.height = `${currentHeight}px`;
+			}
 		}
 	};
 
@@ -249,6 +307,8 @@ function applyFixedMode(el, config) {
 	// 保存引用以便清理
 	el._fixedUpdateLayout = updateLayout;
 	el._fixedDebouncedUpdateLayout = debouncedUpdateLayout;
+	el._fixedIsFixed = () => isFixed; // 用于外部查询状态
+	el._fixedOriginalTop = () => originalTop; // 用于外部查询原始位置
 
 	// 初始更新
 	updateLayout();
@@ -281,6 +341,8 @@ function cleanupFixedMode(el) {
 	delete el._fixedDebouncedUpdateLayout;
 	delete el._fixedParentScrollHandler;
 	delete el._fixedPlaceholder;
+	delete el._fixedIsFixed;
+	delete el._fixedOriginalTop;
 }
 
 export default {
