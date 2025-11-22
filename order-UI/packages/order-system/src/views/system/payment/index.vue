@@ -1,7 +1,7 @@
 <template>
 	<div class="app-container" :class="{ 'mask-overlay': showMask }">
 		<!-- 遮罩层 -->
-		<div class="fixed-top-section" v-fixed="{ position: 'top', zIndex: 1000, offset: 100 }">
+		<div class="fixed-top-section">
 			<div v-if="showMask" class="container-mask"></div>
 
 			<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="120px">
