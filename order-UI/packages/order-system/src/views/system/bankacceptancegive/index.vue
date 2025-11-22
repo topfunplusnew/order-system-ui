@@ -36,18 +36,7 @@
 			</right-toolbar>
 		</el-row>
 
-		<el-table
-			v-loading="loading"
-			v-horizontal-scroll="'always'"
-			id="printBox"
-			border
-			:data="bankAcceptanceList"
-			size="mini"
-			show-summary
-			:summary-method="getSummaries"
-			:cell-style="() => ({ padding: '.5px' })"
-			@selection-change="handleSelectionChange"
-		>
+		<el-table v-loading="loading" v-horizontal-scroll="'always'" id="printBox" border :data="bankAcceptanceList" size="mini" show-summary :summary-method="getSummaries" :cell-style="() => ({ padding: '.5px' })" @selection-change="handleSelectionChange">
 			<el-table-column v-if="columns[0].visible" label="ID" align="center" prop="id" show-overflow-tooltip />
 
 			<el-table-column v-if="columns[1].visible" label="操作日期" align="center" prop="operateDate" show-overflow-tooltip />
@@ -109,15 +98,7 @@
 								</el-col>
 								<el-col :span="4">
 									<!-- 选择的是客户或者供应商名称-->
-									<SearchOption
-										:limit-info="{ companyType: type }"
-										:get-data="listCompany"
-										query-info="companyName"
-										query-label="公司名称"
-										:query-name="companyName"
-										@update:queryName="handleUpdateCompanyName"
-										@commitBack="handleCommitBackCompany"
-									>
+									<SearchOption :limit-info="{ companyType: type }" :get-data="listCompany" query-info="companyName" query-label="公司名称" :query-name="companyName" @update:queryName="handleUpdateCompanyName" @commitBack="handleCommitBackCompany">
 										<template #table-columns>
 											<el-table-column :label="type" align="center" prop="companyName" />
 											<el-table-column label="老板姓名" align="center" prop="leader" />
@@ -451,7 +432,7 @@ export default {
 					const out_list = [9, 10, 11];
 					// index !== 9 && index !== 1 && index !== 16 && index !== 2
 					if (out_list.includes(index)) {
-						sums[index] = values.reduce((prev, curr) => {
+						const sum = values.reduce((prev, curr) => {
 							const value = Number(curr);
 							if (!isNaN(value)) {
 								return prev + curr;
@@ -459,7 +440,8 @@ export default {
 								return prev;
 							}
 						}, 0);
-						sums[index] += ' ';
+						// 保留两位小数
+						sums[index] = Number(sum).toFixed(2);
 					}
 				} else {
 					sums[index] = '';
