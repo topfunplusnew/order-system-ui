@@ -65,7 +65,7 @@
 			<el-table-column v-if="columns[5].visible" show-overflow-tooltip label="本日回款金额" align="center" prop="dailyReceiveMoney" width="140" />
 			<el-table-column v-if="columns[6].visible" show-overflow-tooltip label="本日欠款余额" align="center" prop="amountOwedToday" width="140">
 				<template slot-scope="scope">
-					{{ Number(scope.row.previousDayCarryover) + Number(scope.row.dailyOrderPayments) + Number(scope.row.dailyInvoiceAmount) - Number(scope.row.dailyReceiveMoney) }}
+					{{ fix_2(Number(scope.row.previousDayCarryover) + Number(scope.row.dailyOrderPayments) + Number(scope.row.dailyInvoiceAmount) - Number(scope.row.dailyReceiveMoney)) }}
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[7].visible" show-overflow-tooltip label="本日客户利润" align="center" prop="dailyProfit" width="140" />
@@ -75,7 +75,7 @@
 			<el-table-column v-if="columns[11].visible" show-overflow-tooltip label="本月回款金额" align="center" prop="monthlyReceiveMoney" width="140" />
 			<el-table-column v-if="columns[12].visible" show-overflow-tooltip label="本月欠款" align="center" prop="amountOwedThisMonth" width="140">
 				<template slot-scope="scope">
-					{{ fix(Number(scope.row.previousMonthCarryover) + Number(scope.row.monthlyOrderPayments) + Number(scope.row.monthlyInvoiceAmount) - Number(scope.row.monthlyReceiveMoney)) }}
+					{{ fix_2(Number(scope.row.previousMonthCarryover) + Number(scope.row.monthlyOrderPayments) + Number(scope.row.monthlyInvoiceAmount) - Number(scope.row.monthlyReceiveMoney)) }}
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[13].visible" show-overflow-tooltip label="本月客户利润" align="center" prop="monthlyProfit" width="140" />
@@ -86,7 +86,7 @@
 			<el-table-column v-if="columns[18].visible" show-overflow-tooltip label="本年利润" align="center" prop="yearlyProfit" width="140" />
 			<el-table-column v-if="columns[19].visible" show-overflow-tooltip label="欠款" align="center" prop="arrearsThisYear" width="140">
 				<template slot-scope="scope">
-					{{ fix(Number(scope.row.previousYearCarryover) + Number(scope.row.yearlyOrderPayments) + Number(scope.row.yearlyInvoiceAmount) - Number(scope.row.yearlyReceiveMoney)) }}
+					{{ fix_2(Number(scope.row.previousYearCarryover) + Number(scope.row.yearlyOrderPayments) + Number(scope.row.yearlyInvoiceAmount) - Number(scope.row.yearlyReceiveMoney)) }}
 				</template>
 			</el-table-column>
 		</el-table>
@@ -120,7 +120,7 @@
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import { getCompanySummary } from '../../../api/system/statement';
 import { parseTime } from '../../../utils/ruoyi';
-import { fix } from '../../../api/tool/format';
+import { fix_2 } from '../../../api/tool/format';
 export default {
 	name: 'Companysummary',
 	dicts: ['order_target_type'],
@@ -172,7 +172,7 @@ export default {
 		this.getList();
 	},
 	methods: {
-		fix,
+		fix_2,
 		/** 查询向外部借出款信息列表 */
 		getList() {
 			this.loading = true;
