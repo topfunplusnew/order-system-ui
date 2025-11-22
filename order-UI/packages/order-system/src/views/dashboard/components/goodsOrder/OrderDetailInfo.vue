@@ -154,8 +154,12 @@ export default {
 		listCompany,
 		// 更新默认展开的行
 		updateExpandRows(list) {
-			// 如果有需要展开的行，可以在这里处理
-			// 暂时保留空实现，避免报错
+			// 默认展开所有行，显示备注内容
+			if (list && Array.isArray(list) && list.length > 0) {
+				this.expandRowKeys = list.map(item => item.id).filter(id => id != null);
+			} else {
+				this.expandRowKeys = [];
+			}
 		},
 		// 原生列宽自动调整方法
 		fitColumns() {
