@@ -75,7 +75,7 @@
 			</el-table-column>
 			<el-table-column v-if="columns[10].visible" show-overflow-tooltip label="期末余额" align="center" prop="endingBalance" width="140">
 				<template slot-scope="scope">
-					{{ formatBalance(Math.abs(scope.row.endingBalance)) }}
+					{{ formatBalance(scope.row.endingBalance) }}
 				</template>
 			</el-table-column>
 			<!-- 操作列 -->
