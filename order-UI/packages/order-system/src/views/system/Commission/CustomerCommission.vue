@@ -113,16 +113,18 @@
 				</template>
 			</el-table-column>
 			<!--      加一列操作列-->
-			<el-table-column show-overflow-tooltip label="操作" align="center" class-name="small-padding fixed-width" width="430" fixed="right">
+			<el-table-column show-overflow-tooltip label="操作" align="center" class-name="small-padding fixed-width" width="350" fixed="right">
 				<template slot-scope="scope">
-					<el-button type="text" size="mini" @click="handleViewOrder(scope.row)">查看订单</el-button>
-					<el-button type="text" size="mini" @click="handleEdit(scope.row)">{{ scope.row.id ? '修改佣金信息' : '填写佣金信息' }}</el-button>
-					<!--					<el-button :disabled="!scope.row.id || scope.row.id === '0'" type="text" size="mini" @click="handleDelete(scope.row)">删除</el-button>-->
+					<div>
+						<el-button type="text" size="mini" @click="handleViewOrder(scope.row)">查看订单</el-button>
+						<el-button type="text" size="mini" @click="handleEdit(scope.row)">{{ scope.row.id ? '修改佣金信息' : '填写佣金信息' }}</el-button>
+						<!--					<el-button :disabled="!scope.row.id || scope.row.id === '0'" type="text" size="mini" @click="handleDelete(scope.row)">删除</el-button>-->
 
-					<!--					<el-button :disabled="!scope.row.id || scope.row.id === '0'" type="text" size="mini" @click="handleApplyPayment(scope.row)">申请付款</el-button>-->
-					<el-button type="text" size="mini" @click="handleDelete(scope.row)">删除</el-button>
+						<!--					<el-button :disabled="!scope.row.id || scope.row.id === '0'" type="text" size="mini" @click="handleApplyPayment(scope.row)">申请付款</el-button>-->
+						<el-button type="text" size="mini" @click="handleDelete(scope.row)">删除</el-button>
 
-					<el-button type="text" size="mini" @click="handleApplyPayment(scope.row)">申请付款</el-button>
+						<el-button type="text" size="mini" @click="handleApplyPayment(scope.row)">申请付款</el-button>
+					</div>
 				</template>
 			</el-table-column>
 		</el-table>
