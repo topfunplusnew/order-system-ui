@@ -1,42 +1,38 @@
 <template>
 	<div class="app-container">
-		<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px" class="form-container">
-			<el-form-item label="客户名称" prop="companyName">
-				<el-input v-model="queryParams.companyName" placeholder="请输入客户名称" clearable @keyup.enter.native="handleQuery" @input="handleInputTrim($event, 'queryParams', 'companyName')" />
-			</el-form-item>
-			<el-form-item label="联系人" prop="relationName">
-				<el-input
-					v-model="queryParams.relationName"
-					placeholder="请输入联系人名称"
-					clearable
-					@keyup.enter.native="handleQuery"
-					@input="handleInputTrim($event, 'queryParams', 'relationName')"
-				/>
-			</el-form-item>
-			<el-form-item>
-				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-			</el-form-item>
-		</el-form>
-		<el-row :gutter="10" class="mb8">
-			<el-col :span="1.5">
-				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
-			</el-col>
-			<el-col :span="1.5">
-				<el-button v-hasPermi="['system:company:add']" type="danger" size="mini" @click="handleAdd">新增客户信息</el-button>
-			</el-col>
-			<right-toolbar :showSearch.sync="showSearch" :columns="tableColumns" @queryTable="getList" @column-change="handleColumnChange">
-				<template #print>
-					<el-col :span="1.5">
-						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
-					</el-col>
-				</template>
-				<template #export>
-					<el-col :span="1.5">
-						<el-button v-hasPermi="['system:company:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
-					</el-col>
-				</template>
-			</right-toolbar>
-		</el-row>
+		<div class="fixed-top-section" v-fixed="{ position: 'top', zIndex: 1000, offset: 100 }">
+			<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px" class="form-container">
+				<el-form-item label="客户名称" prop="companyName">
+					<el-input v-model="queryParams.companyName" placeholder="请输入客户名称" clearable @keyup.enter.native="handleQuery" @input="handleInputTrim($event, 'queryParams', 'companyName')" />
+				</el-form-item>
+				<el-form-item label="联系人" prop="relationName">
+					<el-input v-model="queryParams.relationName" placeholder="请输入联系人名称" clearable @keyup.enter.native="handleQuery" @input="handleInputTrim($event, 'queryParams', 'relationName')" />
+				</el-form-item>
+				<el-form-item>
+					<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+				</el-form-item>
+			</el-form>
+			<el-row :gutter="10" class="mb8">
+				<el-col :span="1.5">
+					<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
+				</el-col>
+				<el-col :span="1.5">
+					<el-button v-hasPermi="['system:company:add']" type="danger" size="mini" @click="handleAdd">新增客户信息</el-button>
+				</el-col>
+				<right-toolbar :showSearch.sync="showSearch" :columns="tableColumns" @queryTable="getList" @column-change="handleColumnChange">
+					<template #print>
+						<el-col :span="1.5">
+							<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
+						</el-col>
+					</template>
+					<template #export>
+						<el-col :span="1.5">
+							<el-button v-hasPermi="['system:company:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
+						</el-col>
+					</template>
+				</right-toolbar>
+			</el-row>
+		</div>
 
 		<u-table id="printBox" v-loading="loading" v-horizontal-scroll="'always'" border :data="companyList" size="mini" :cell-style="cellStyle" @selection-change="handleSelectionChange">
 			<el-table-column v-for="column in visibleColumns" :key="column.key" v-bind="getColumnProps(column)" />
@@ -48,7 +44,9 @@
 				</template>
 			</el-table-column>
 		</u-table>
-		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
+		<div class="pagination-wrapper" v-fixed="{ position: 'bottom', zIndex: 1000 }">
+			<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
+		</div>
 	</div>
 </template>
 

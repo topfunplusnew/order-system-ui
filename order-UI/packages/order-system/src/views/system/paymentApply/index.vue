@@ -1,8 +1,8 @@
 <template>
 	<div class="app-container">
-		<div class="fixed-top">
+		<div class="fixed-top-section" v-fixed="{ position: 'top', zIndex: 1000, offset: 100 }">
 			<!-- 搜索模块 -->
-			<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px" v-fixed="{ mode: 'sticky', position: 'top', offset: 0, zIndex: 11 }">
+			<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
 				<el-form-item label="日期" prop="fundsDate">
 					<el-input v-model="queryParams.fundsDate" placeholder="请输入日期" clearable @keyup.enter.native="handleQuery" />
 				</el-form-item>
@@ -209,7 +209,7 @@
 		</div>
 
 		<!-- 分页组件 -->
-		<div class="pagination-wrapper" v-fixed="{ mode: 'sticky', position: 'bottom', offset: 0, zIndex: 10 }">
+		<div class="pagination-wrapper" v-fixed="{ position: 'bottom', zIndex: 1000 }">
 			<pagination :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" :page-sizes="[10, 20, 50, 100, 200, 500]" layout="total, sizes, prev, pager, next, jumper" background @pagination="getList" />
 		</div>
 
