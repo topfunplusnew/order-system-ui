@@ -77,80 +77,72 @@
 					}
 				"
 			>
-		<el-table-column v-if="columns[0].visible" label="排序序号" align="center" prop="sort" width="100" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.sort }}</div>
-					<span>{{ scope.row.sort }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[1].visible" label="己方公司" align="center" prop="displayName" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.displayName }}</div>
-					<span>{{ scope.row.displayName }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[2].visible" label="开户名称" align="center" prop="acountsName" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.acountsName }}</div>
-					<span>{{ scope.row.acountsName }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[3].visible" label="银行账号" align="center" prop="bankNo" show-overflow-tooltip width="260">
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">
-						<span style="color: red">[{{ scope.row.bankCardType }}]</span>
-						{{ scope.row.bankNo }}
-					</div>
-					<div>
-						<span style="color: red">[{{ scope.row.bankCardType }}]</span>
-						{{ scope.row.bankNo }}
-					</div>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[4].visible" label="开户行" align="center" prop="bankName" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.bankName }}</div>
-					<span>{{ scope.row.bankName }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[5].visible" label="余额" align="right" prop="sumMoney" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.sumMoney }}</div>
-					<span style="text-align: right; display: block;">{{ scope.row.sumMoney }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-			<el-table-column label="排序操作" align="center" width="200" fixed="right">
-				<template #default="scope">
-					<el-input v-model="scope.row.sort" size="mini" style="width: 50px; margin-right: 10px" placeholder="序号" @input="val => handleSortInput(scope.row, val)"></el-input>
-					<el-button size="mini" type="primary" icon="el-icon-check" @click="handleSaveSort(scope.row)">保存</el-button>
-				</template>
-			</el-table-column>
+				<el-table-column v-if="columns[0].visible" label="排序序号" align="center" prop="sort" width="100" show-overflow-tooltip>
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">{{ scope.row.sort }}</div>
+							<span>{{ scope.row.sort }}</span>
+						</el-tooltip>
+					</template>
+				</el-table-column>
+				<el-table-column v-if="columns[1].visible" label="己方公司" align="center" prop="displayName" show-overflow-tooltip>
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">{{ scope.row.displayName }}</div>
+							<span>{{ scope.row.displayName }}</span>
+						</el-tooltip>
+					</template>
+				</el-table-column>
+				<el-table-column v-if="columns[2].visible" label="开户名称" align="center" prop="acountsName" show-overflow-tooltip>
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">{{ scope.row.acountsName }}</div>
+							<span>{{ scope.row.acountsName }}</span>
+						</el-tooltip>
+					</template>
+				</el-table-column>
+				<el-table-column v-if="columns[3].visible" label="银行账号" align="center" prop="bankNo" show-overflow-tooltip width="260">
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">
+								<span style="color: red">[{{ scope.row.bankCardType }}]</span>
+								{{ scope.row.bankNo }}
+							</div>
+							<div>
+								<span style="color: red">[{{ scope.row.bankCardType }}]</span>
+								{{ scope.row.bankNo }}
+							</div>
+						</el-tooltip>
+					</template>
+				</el-table-column>
+				<el-table-column v-if="columns[4].visible" label="开户行" align="center" prop="bankName" show-overflow-tooltip>
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">{{ scope.row.bankName }}</div>
+							<span>{{ scope.row.bankName }}</span>
+						</el-tooltip>
+					</template>
+				</el-table-column>
+				<el-table-column v-if="columns[5].visible" label="余额" align="right" prop="sumMoney" show-overflow-tooltip>
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">{{ scope.row.sumMoney }}</div>
+							<span style="text-align: right; display: block">{{ scope.row.sumMoney }}</span>
+						</el-tooltip>
+					</template>
+				</el-table-column>
+				<el-table-column label="排序操作" align="center" width="200" fixed="right">
+					<template #default="scope">
+						<el-input v-model="scope.row.sort" size="mini" style="width: 50px; margin-right: 10px" placeholder="序号" @input="val => handleSortInput(scope.row, val)"></el-input>
+						<el-button size="mini" type="primary" icon="el-icon-check" @click="handleSaveSort(scope.row)">保存</el-button>
+					</template>
+				</el-table-column>
 			</el-table>
 		</div>
 
 		<!-- 分页组件 -->
 		<div class="pagination-wrapper">
-			<pagination
-				:total="total"
-				:page.sync="queryParams.pageNum"
-				:limit.sync="queryParams.pageSize"
-				:page-sizes="[10, 20, 50, 100, 200, 500]"
-				layout="total, sizes, prev, pager, next, jumper"
-				background
-				@pagination="handlePagination"
-			/>
+			<pagination :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" :page-sizes="[10, 20, 50, 100, 200, 500]" layout="total, sizes, prev, pager, next, jumper" background @pagination="handlePagination" />
 		</div>
 	</div>
 </template>
@@ -314,13 +306,13 @@ export default {
 					// 存储原始数据到本地，用于前端筛选
 					const originalData = response.data || [];
 					localStorage.setItem('bankAccountList', JSON.stringify(originalData));
-					
+
 					// 应用前端筛选
 					this.applyFrontendFilter();
-					
+
 					// 应用保存的排序
 					this.applySort();
-					
+
 					// 应用分页
 					this.applyPagination();
 				})
@@ -378,10 +370,10 @@ export default {
 				// 应用前端筛选
 				this.filteredList = originalData.filter(item => this.handleFilter(item, frontendParams));
 			}
-			
+
 			// 更新总数
 			this.total = this.filteredList.length;
-			
+
 			// 如果当前页超出范围，重置到第一页
 			const maxPage = Math.ceil(this.total / this.queryParams.pageSize) || 1;
 			if (this.queryParams.pageNum > maxPage) {
@@ -395,10 +387,10 @@ export default {
 			if (this.queryParams.pageNum > maxPage && maxPage > 0) {
 				this.queryParams.pageNum = 1;
 			}
-    const start = (this.queryParams.pageNum - 1) * this.queryParams.pageSize;
-    const end = start + this.queryParams.pageSize;
-    this.bankAccountList = this.filteredList.slice(start, end);
-  },
+			const start = (this.queryParams.pageNum - 1) * this.queryParams.pageSize;
+			const end = start + this.queryParams.pageSize;
+			this.bankAccountList = this.filteredList.slice(start, end);
+		},
 		// 分页变化处理
 		handlePagination({ page, limit }) {
 			// 由于使用了 .sync，pageNum 和 pageSize 已经自动更新
@@ -409,13 +401,13 @@ export default {
 			if (page !== undefined && page !== this.queryParams.pageNum) {
 				this.queryParams.pageNum = page;
 			}
-			
+
 			// 如果当前页超出范围，重置到第一页
 			const maxPage = Math.ceil(this.total / this.queryParams.pageSize) || 1;
 			if (this.queryParams.pageNum > maxPage && maxPage > 0) {
 				this.queryParams.pageNum = 1;
 			}
-			
+
 			// 重新应用分页
 			this.applyPagination();
 		},
@@ -442,19 +434,22 @@ export default {
 		},
 		/** 重置按钮操作 */
 		resetQuery() {
-			// 保存当前排序状态
+			// 保存当前排序状态和分页参数
 			const currentSort = this.value;
+			const currentPageNum = this.queryParams.pageNum;
+			const currentPageSize = this.queryParams.pageSize;
+			const currentEndDate = this.queryParams.endDate;
 
-			// 重置查询参数
+			// 重置查询参数，但保留分页和日期
 			this.queryParams = {
-				endDate: this.getCurrentDateTime(), // 重置为当前时间
+				endDate: currentEndDate, // 保留当前日期
 				bankCardType: null,
 				bankName: null,
 				acountsName: null,
 				bankNo: null,
 				displayName: null,
-				pageNum: 1,
-				pageSize: 20
+				pageNum: currentPageNum, // 保留当前页码
+				pageSize: currentPageSize // 保留当前每页条数
 			};
 
 			this.getList();
