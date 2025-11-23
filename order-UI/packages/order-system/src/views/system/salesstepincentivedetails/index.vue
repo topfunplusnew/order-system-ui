@@ -240,7 +240,7 @@ import { parseTime } from '../../../utils/ruoyi';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
 import Incent from '../../dashboard/components/incent/Incent.vue';
 import { mixin_step_order_fill } from './salespincent_fill';
-import { checkOrderByOrderNo, getGoodsOrder } from '@/api/system/';
+import { checkOrderByOrderNo, getGoodsOrder } from '@/api/system/goodsOrder';
 import _ from 'lodash';
 import GOODS_ORDER from '@/components/NeedToShow/GOODS_ORDER.vue';
 
