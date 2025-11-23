@@ -512,10 +512,8 @@ export default {
 		if (this.isInternalTransfer) {
 			this.type = '己方公司';
 		}
-		console.log(`开始注册监听器`);
 		// 使用命名函数，方便后续移除监听器
 		this.handleChangeFlag = value => {
-			console.log(`value`, value);
 			if (this.baned) {
 				this.flag = false;
 				return;
@@ -535,7 +533,6 @@ export default {
 				.then(res => {
 					this.$nextTick(() => {
 						if (res.data) {
-							console.log(res.data, 'res.data');
 							this.hasSavedAcceptanceInfo = true;
 							// 将获取到的数据保存到sessionStorage
 							sessionStorage.setItem(this.bankAcceptanceFilledKey, JSON.stringify(res.data));
@@ -548,9 +545,6 @@ export default {
 							this.hasSavedAcceptanceInfo = false;
 							this.flag = false;
 						}
-
-						console.log(`this.flag`, this.flag);
-						console.log(`this.hasSavedAcceptanceInfo`, this.hasSavedAcceptanceInfo);
 					});
 				})
 				.catch(error => {
@@ -640,10 +634,8 @@ export default {
 		},
 		// 承兑信息按钮文本
 		acceptanceButtonText() {
-			console.log(this.flag, this.hasSavedAcceptanceInfo);
 			// 如果有正式保存的承兑信息
 			if (this.flag && this.hasSavedAcceptanceInfo) {
-				console.log(`修改承兑信息`, this.flag, this.hasSavedAcceptanceInfo);
 				return '修改承兑信息';
 			}
 			// 默认状态

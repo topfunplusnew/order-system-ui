@@ -1396,9 +1396,20 @@ export default {
 				this.$nextTick(() => {
 					if (this.$refs.selfSelectBankType) {
 						this.$refs.selfSelectBankType.localSelectType = BankAcceptanceType.BANK_CASH;
+						// 同时需要设置一下store TODO
+						this.setAccountTypeSelection({
+							role: `source`,
+							accountType: BankAcceptanceType.BANK_CASH,
+							formId: `income-${this.form.id || 'new'}`
+						});
 					}
 					if (this.$refs.otherSelectBankType) {
 						this.$refs.otherSelectBankType.localSelectType = BankAcceptanceType.BANK_CASH;
+						this.setAccountTypeSelection({
+							role: `target`,
+							accountType: BankAcceptanceType.BANK_CASH,
+							formId: `expense-${this.form.id || 'new'}`
+						});
 					}
 				});
 			}

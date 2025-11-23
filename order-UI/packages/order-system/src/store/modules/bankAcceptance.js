@@ -187,6 +187,7 @@ const getters = {
 	 * @returns {boolean} 双方是否都已选择
 	 */
 	bothSelectedInDualMode: state => {
+		// 这里组件里单纯设置了值 但是没有更新store
 		return !!(state.dualSelectionState.source && state.dualSelectionState.target);
 	},
 
