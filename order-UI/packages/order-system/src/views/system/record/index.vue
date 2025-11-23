@@ -1392,26 +1392,28 @@ export default {
 			this.resetForm('form');
 
 			// 如果是内部转账，设置 BankType 组件的默认值
-			if (currentCashType === CASH_TYPE.TRANSFER) {
-				this.$nextTick(() => {
-					if (this.$refs.selfSelectBankType) {
-						this.$refs.selfSelectBankType.localSelectType = BankAcceptanceType.BANK_CASH;
-						// 同时需要设置一下store TODO
-						this.setAccountTypeSelection({
-							role: `source`,
-							accountType: BankAcceptanceType.BANK_CASH,
-							formId: `income-${this.form.id || 'new'}`
-						});
-					}
-					if (this.$refs.otherSelectBankType) {
-						this.$refs.otherSelectBankType.localSelectType = BankAcceptanceType.BANK_CASH;
-						this.setAccountTypeSelection({
-							role: `target`,
-							accountType: BankAcceptanceType.BANK_CASH,
-							formId: `expense-${this.form.id || 'new'}`
-						});
-					}
-				});
+			if (!this.form.id) {
+				if (currentCashType === CASH_TYPE.TRANSFER) {
+					this.$nextTick(() => {
+						if (this.$refs.selfSelectBankType) {
+							this.$refs.selfSelectBankType.localSelectType = BankAcceptanceType.BANK_CASH;
+							// 同时需要设置一下store TODO
+							this.setAccountTypeSelection({
+								role: `source`,
+								accountType: BankAcceptanceType.BANK_CASH,
+								formId: `income-${this.form.id || 'new'}`
+							});
+						}
+						if (this.$refs.otherSelectBankType) {
+							this.$refs.otherSelectBankType.localSelectType = BankAcceptanceType.BANK_CASH;
+							this.setAccountTypeSelection({
+								role: `target`,
+								accountType: BankAcceptanceType.BANK_CASH,
+								formId: `expense-${this.form.id || 'new'}`
+							});
+						}
+					});
+				}
 			}
 		},
 		/** 搜索按钮操作 */
@@ -1439,17 +1441,8 @@ export default {
 			this.clearAcceptanceFillStatus(); // 清理所有承兑相关状态
 			this.open = true;
 			this.title = '添加冲抵款';
-			// 如果是内部转账，确保组件渲染后设置默认值
-			if (this.cashType === CASH_TYPE.TRANSFER) {
-				this.$nextTick(() => {
-					if (this.$refs.selfSelectBankType) {
-						this.$refs.selfSelectBankType.localSelectType = BankAcceptanceType.BANK_CASH;
-					}
-					if (this.$refs.otherSelectBankType) {
-						this.$refs.otherSelectBankType.localSelectType = BankAcceptanceType.BANK_CASH;
-					}
-				});
-			}
+			// 注意：默认值设置已经在reset方法中处理（只在新增时设置）
+			// 这里不需要再次设置，因为reset方法中已经有逻辑了
 		},
 		// 修改操作
 		handleUpdate(row) {
@@ -1832,6 +1825,9 @@ export default {
 				this.form.params.attachmentIds = this.form.attachmentList.map(item => item.id);
 			}
 			this.cashType = data.type;
+			// 先打开对话框，确保组件已经渲染
+			this.open = true;
+			this.title = '修改冲抵款';
 			this.$nextTick(() => {
 				// 根据冲抵类型处理支付类型
 				if (this.cashType === CASH_TYPE.CASH_RECORD) {
@@ -1871,29 +1867,43 @@ export default {
 					// 如果是内部转账
 					this.form.sourceCompanyType = PUBLIC_DICT_TYPE.SELF_COMPANY;
 					this.form.targetCompanyType = PUBLIC_DICT_TYPE.SELF_COMPANY;
-					// 填充己方和对方银行卡类型
-					this.$refs.selfSelectBankType.localSelectType = data.selfBankCardType;
-					this.$refs.otherSelectBankType.localSelectType = data.otherBankCardType;
 					// 同步银行账户类型到form对象
 					this.form.selfBankCardType = data.selfBankCardType;
 					this.form.otherBankCardType = data.otherBankCardType;
-					// 处理承兑信息
-					if (data.bankacceptanceId) {
-						// 设置己方账户类型和对方账户类型
-						this.setAccountTypeSelection({
-							role: 'source',
-							accountType: data.selfBankCardType
-						});
-						this.setAccountTypeSelection({
-							role: 'target',
-							accountType: data.otherBankCardType
-						});
-						this.$bus.$emit('changeFlag', data.bankacceptanceId);
-					}
+					// 等待组件引用准备好后再设置
+					this.$nextTick(() => {
+						// 确保组件引用存在
+						if (this.$refs.selfSelectBankType) {
+							this.$refs.selfSelectBankType.localSelectType = data.selfBankCardType;
+						}
+						if (this.$refs.otherSelectBankType) {
+							this.$refs.otherSelectBankType.localSelectType = data.otherBankCardType;
+						}
+						// 处理承兑信息
+						if (data.bankacceptanceId) {
+							// 先设置己方账户类型和对方账户类型（包含正确的formId）
+							const formId = `income-${this.form.id || 'new'}`;
+							this.setAccountTypeSelection({
+								role: 'source',
+								accountType: data.selfBankCardType,
+								formId: formId
+							});
+							this.setAccountTypeSelection({
+								role: 'target',
+								accountType: data.otherBankCardType,
+								formId: `expense-${this.form.id || 'new'}`
+							});
+							// 等待组件完全准备好后再发送changeFlag事件
+							this.$nextTick(() => {
+								// 确保组件已经准备好接收事件
+								setTimeout(() => {
+									this.$bus.$emit('changeFlag', data.bankacceptanceId);
+								}, 150);
+							});
+						}
+					});
 				}
 			});
-			this.open = true;
-			this.title = '修改冲抵款';
 		}
 	}
 };

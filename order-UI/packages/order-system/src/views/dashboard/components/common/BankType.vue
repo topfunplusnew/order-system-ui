@@ -203,6 +203,8 @@
 													value => {
 														this.$set(this.form, 'billAccount', value.acountsName);
 														this.$set(this.form, 'billAccountId', value.id);
+														// TODO 特殊处理 后端需要传入
+														this.$set(this.form, 'bankAccountId', value.id);
 													}
 												"
 												@update:queryName="value => (queryBank = value)"
@@ -507,13 +509,7 @@ export default {
 		};
 	},
 	mounted() {
-		this.clearAllAcceptanceStatus();
-		this.clearInternalTransferFormData();
-		this.resetAcceptanceForm();
-		this.localSelectType = this.selectType;
-		if (this.isInternalTransfer) {
-			this.type = '己方公司';
-		}
+		// 先注册事件监听器，确保能接收到事件
 		// 使用命名函数，方便后续移除监听器
 		this.handleChangeFlag = value => {
 			if (this.baned) {
@@ -526,28 +522,45 @@ export default {
 				}
 				this.flag = value;
 				this.clearAcceptanceFillStatus();
+				this.hasSavedAcceptanceInfo = false;
 				return;
 			}
 			// 立即设置 flag 为 true，表示正在处理承兑信息（避免异步请求期间状态不正确）
 			this.flag = true;
-			// 获取承兑信息
+			// 先检查 sessionStorage 中是否有已保存的数据
+			const savedDataStr = sessionStorage.getItem(this.bankAcceptanceFilledKey);
+			if (savedDataStr) {
+				try {
+					const savedData = JSON.parse(savedDataStr);
+					// 如果 sessionStorage 中有数据，立即设置状态
+					this.hasSavedAcceptanceInfo = true;
+					this.$nextTick(() => {
+						this.form = _.cloneDeep(savedData);
+						this.$emit('updateBankAcceptance', _.cloneDeep(savedData));
+					});
+				} catch (e) {
+					console.error('解析已保存的承兑信息失败:', e);
+				}
+			}
+			// 获取承兑信息（从服务器获取最新数据）
 			getBankAcceptance(value)
 				.then(res => {
-					this.$nextTick(() => {
-						if (res.data) {
-							this.hasSavedAcceptanceInfo = true;
-							// 将获取到的数据保存到sessionStorage
-							sessionStorage.setItem(this.bankAcceptanceFilledKey, JSON.stringify(res.data));
-							// 从sessionStorage更新表单数据
-							this.loadSavedFormFromSession();
+					if (res.data) {
+						this.hasSavedAcceptanceInfo = true;
+						// 将获取到的数据保存到sessionStorage
+						sessionStorage.setItem(this.bankAcceptanceFilledKey, JSON.stringify(res.data));
+						// 使用$nextTick确保DOM更新后再加载数据
+						this.$nextTick(() => {
+							// 直接更新表单数据，而不是从sessionStorage读取（避免时序问题）
+							this.form = _.cloneDeep(res.data);
 							// 通知父组件更新状态
 							this.$emit('updateBankAcceptance', _.cloneDeep(res.data));
-						} else {
-							// 如果没有数据，重置状态
-							this.hasSavedAcceptanceInfo = false;
-							this.flag = false;
-						}
-					});
+						});
+					} else {
+						// 如果没有数据，重置状态
+						this.hasSavedAcceptanceInfo = false;
+						this.flag = false;
+					}
 				})
 				.catch(error => {
 					// 请求失败时重置状态
@@ -558,6 +571,31 @@ export default {
 		};
 		// 注册事件监听器
 		this.$bus.$on('changeFlag', this.handleChangeFlag);
+
+		// 初始化组件状态（不清除 sessionStorage，避免清除修改时需要的数据）
+		this.resetAcceptanceForm();
+		this.localSelectType = this.selectType;
+		if (this.isInternalTransfer) {
+			this.type = '己方公司';
+		}
+
+		// 检查是否有已保存的承兑信息（用于修改场景）
+		this.$nextTick(() => {
+			const savedDataStr = sessionStorage.getItem(this.bankAcceptanceFilledKey);
+			if (savedDataStr && savedDataStr !== 'null' && savedDataStr !== 'undefined') {
+				try {
+					const savedData = JSON.parse(savedDataStr);
+					// 如果 sessionStorage 中有数据，设置状态（但不立即加载，等待 changeFlag 事件）
+					// 这样可以确保按钮文本正确显示
+					this.hasSavedAcceptanceInfo = true;
+					this.flag = true;
+					// 强制更新组件，确保按钮文本更新
+					this.$forceUpdate();
+				} catch (e) {
+					// 解析失败，忽略
+				}
+			}
+		});
 	},
 	watch: {
 		selectType(newVal) {
@@ -636,8 +674,14 @@ export default {
 		},
 		// 承兑信息按钮文本
 		acceptanceButtonText() {
+			// 检查是否有已保存的承兑信息（从状态或sessionStorage）
+			const hasSavedData = this.flag && this.hasSavedAcceptanceInfo;
+			// 也检查 sessionStorage 中是否有数据（作为备用检查）
+			const savedDataStr = sessionStorage.getItem(this.bankAcceptanceFilledKey);
+			const hasSessionData = savedDataStr && savedDataStr !== 'null' && savedDataStr !== 'undefined';
+
 			// 如果有正式保存的承兑信息
-			if (this.flag && this.hasSavedAcceptanceInfo) {
+			if (hasSavedData || hasSessionData) {
 				return '修改承兑信息';
 			}
 			// 默认状态
@@ -1031,6 +1075,7 @@ export default {
 				dueDate: null,
 				billAccount: null,
 				billAccountId: null, // 重置我方承兑账户ID
+				bankAccountId: null,
 				billDate: dayjs().format('YYYY-MM-DD HH:mm:ss'),
 				billType: this.billType,
 				// 内部转账时默认为内部转账，其他情况收票时默认为购买
