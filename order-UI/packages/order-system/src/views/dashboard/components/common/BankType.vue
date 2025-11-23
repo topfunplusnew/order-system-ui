@@ -508,6 +508,8 @@ export default {
 	},
 	mounted() {
 		this.clearAllAcceptanceStatus();
+		this.clearInternalTransferFormData();
+		this.resetAcceptanceForm();
 		this.localSelectType = this.selectType;
 		if (this.isInternalTransfer) {
 			this.type = '己方公司';
@@ -1052,6 +1054,7 @@ export default {
 			if (this.$refs['form']) {
 				this.$refs['form'].resetFields();
 			}
+			sessionStorage.removeItem('internal_transfer_form_data');
 		},
 
 		// 处理重置承兑表单
