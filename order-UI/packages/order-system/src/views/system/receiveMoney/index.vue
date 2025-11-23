@@ -1361,7 +1361,7 @@ export default {
 }
 
 .container-mask {
-	position: fixed;
+	position: absolute;
 	inset: 0;
 	background-color: rgba(0, 0, 0, 0.12);
 	z-index: 999;
