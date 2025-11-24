@@ -828,7 +828,7 @@ export default {
 				'system/goodsOrder/export',
 				{
 					...this.queryParams,
-					isAdjusted: this.isAdjustOrder ? -1 : 0,
+					isAdjust: this.isAdjustOrder ? -1 : 0,
 					// 不分页的导出
 					noPage: true
 				},
