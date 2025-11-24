@@ -14,6 +14,9 @@ export default {
 		handleReject() {
 			return Promise.resolve();
 		}
+	},
+	mounted() {
+		console.log(this.needToShowInfo);
 	}
 };
 </script>

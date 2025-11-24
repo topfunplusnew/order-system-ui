@@ -33,6 +33,10 @@ export default {
 			needToShowInfo: {},
 			// 表名
 			tableNameToProp: '',
+			// 表引用数组信息（多条）
+			tableReferencesInfoList: [],
+			// 表引用数组
+			tableReferences: [],
 
 			isNeedToShowInfoEmpty: false
 		};
@@ -106,12 +110,14 @@ export default {
 			return item.auditcomment === null ? '无' : item.auditcomment;
 		},
 		// 审核
-		handleCheckState(item) {
+		async handleCheckState(item) {
 			console.log('item:', item);
-			// 查询对应表信息
-			this.checkWithTableName(item.paymentApply.tableName, item.paymentApply.tid);
 			// 赋值 先拿到付款申请对象
 			this.currentCheckPaymentApply = item.paymentApply;
+			// 保存 tableReferences 数组
+			this.tableReferences = item.paymentApply.tableReferences || [];
+			// 查询对应表信息（使用 tableReferences 数组）
+			await this.checkWithTableReferences(this.tableReferences);
 			// 组装审核基本对象 传递给子组件审核页面
 			this.checkApplyInfo = {
 				id: item.id,
@@ -131,7 +137,7 @@ export default {
 			this.checkPaymentApplyDialogVisible = false; // 关闭
 		},
 
-		// 根据表名查询
+		// 根据表名查询（保留用于兼容性）
 		async checkWithTableName(tableName, tID) {
 			// 展示对应表信息
 			try {
@@ -147,6 +153,59 @@ export default {
 						console.log('Notification Clicked!');
 					}
 				});
+			}
+		},
+		// 根据 tableReferences 数组查询多条表信息
+		async checkWithTableReferences(tableReferences) {
+			if (!tableReferences || !Array.isArray(tableReferences) || tableReferences.length === 0) {
+				this.isNeedToShowInfoEmpty = true;
+				this.tableReferencesInfoList = [];
+				return;
+			}
+			// 重置状态
+			this.isNeedToShowInfoEmpty = false;
+			this.tableReferencesInfoList = [];
+			const tableComponentsTools = new TableComponentsTools();
+			// 遍历 tableReferences 数组，获取每条对应的信息
+			const promises = tableReferences.map(async ref => {
+				try {
+					const result = await tableComponentsTools.getInformationByTableName(ref.refTableName, ref.refTableId);
+					return {
+						refTableName: ref.refTableName,
+						refTableId: ref.refTableId,
+						component: tableComponentsTools.getComponentsByTableName(ref.refTableName),
+						amount: ref.amount,
+						data: result,
+						success: true
+					};
+				} catch (e) {
+					console.error(`获取表信息失败: ${ref.refTableName} - ${ref.refTableId}`, e);
+					return {
+						refTableName: ref.refTableName,
+						refTableId: ref.refTableId,
+						amount: ref.amount,
+						data: null,
+						success: false,
+						error: e
+					};
+				}
+			});
+			// 等待所有查询完成
+			const results = await Promise.all(promises);
+			// 过滤出成功的结果
+			const successResults = results.filter(r => r.success);
+			if (successResults.length === 0) {
+				this.isNeedToShowInfoEmpty = true;
+				this.$notification['warning']({
+					message: '未找到信息',
+					description: '当前需要审核的付款信息,无相关的关联信息',
+					onClick: () => {
+						console.log('Notification Clicked!');
+					}
+				});
+			} else {
+				this.tableReferencesInfoList = successResults;
+				console.log(`tableReferencesInfoList`, this.tableReferencesInfoList);
 			}
 		}
 	}
@@ -175,14 +234,7 @@ export default {
 								<a-tag size="small" :color="isTag(item.checkState)" style="margin-left: 6px">{{ item.checkState || '待审核' }}</a-tag>
 								<div class="auditors-line">
 									<span class="label">审核人员：</span>
-									<el-tag
-										v-for="uid in item.auditauthority ? item.auditauthority.split(',') : []"
-										:key="uid"
-										size="mini"
-										type="info"
-										style="margin-right: 6px; cursor: pointer"
-										@click="openUser(uid)"
-									>
+									<el-tag v-for="uid in item.auditauthority ? item.auditauthority.split(',') : []" :key="uid" size="mini" type="info" style="margin-right: 6px; cursor: pointer" @click="openUser(uid)">
 										{{ uid }}
 									</el-tag>
 								</div>
@@ -221,14 +273,7 @@ export default {
 									</p>
 									<p>
 										<span>审核人员:</span>
-										<el-tag
-											v-for="uid in item.auditauthority ? item.auditauthority.split(',') : []"
-											:key="uid"
-											size="mini"
-											type="info"
-											style="margin-right: 6px; cursor: pointer"
-											@click="openUser(uid)"
-										>
+										<el-tag v-for="uid in item.auditauthority ? item.auditauthority.split(',') : []" :key="uid" size="mini" type="info" style="margin-right: 6px; cursor: pointer" @click="openUser(uid)">
 											{{ uid }}
 										</el-tag>
 									</p>
@@ -249,17 +294,7 @@ export default {
 				</el-timeline>
 
 				<!-- 审核页面 checkPaymentApplyDialogVisible-->
-				<el-dialog
-					:modal="false"
-					v-dialogDrag
-					v-dialogDragWidth
-					v-dialogDragHeight
-					:close-on-click-modal="false"
-					title="流程审核"
-					:visible.sync="checkPaymentApplyDialogVisible"
-					width="65%"
-					append-to-body
-				>
+				<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" title="流程审核" :visible.sync="checkPaymentApplyDialogVisible" width="65%" append-to-body>
 					<!--   需要展示的对应的表信息-->
 					<CheckApply :payment-apply-info="currentCheckPaymentApply" :check-apply-info="checkApplyInfo" @update:isCheckState="handleUpdateCheckState">
 						<template #additional>
@@ -268,8 +303,20 @@ export default {
 									<template slot="title">
 										<i class="header-icon el-icon-info" style="margin-right: 10px"></i>
 										<span class="payment-title">[付款相关模块信息]-点此查看</span>
+										<span v-if="tableReferencesInfoList.length > 0" style="margin-left: 10px; color: #909399; font-size: 12px">(共 {{ tableReferencesInfoList.length }} 条)</span>
 									</template>
-									<NeedToShowInfo v-if="!isNeedToShowInfoEmpty" :need-to-show-info="needToShowInfo" :table-name-to-prop="tableNameToProp" />
+									<!-- 使用 tableReferences 数组渲染多条信息 -->
+									<div v-if="tableReferencesInfoList.length > 0">
+										<div v-for="(refInfo, index) in tableReferencesInfoList" :key="index" style="margin-bottom: 20px">
+											<el-divider v-if="index > 0" />
+											<div style="margin-bottom: 10px">
+												<el-tag type="info" size="small" style="margin-right: 8px">关联信息 {{ index + 1 }}</el-tag>
+												<el-tag size="small" style="margin-left: 8px">金额: ¥{{ refInfo.amount || 0 }}</el-tag>
+											</div>
+											<component :is="refInfo.component" v-if="refInfo.data" :need-to-show-info="refInfo.data" />
+											<el-alert v-else title="未找到对应信息" type="warning" :description="`表名: ${refInfo.refTableName}, ID: ${refInfo.refTableId}`" show-icon :closable="false"></el-alert>
+										</div>
+									</div>
 									<span v-else>
 										<el-alert title="未找到对应信息" type="warning" description="当前需要审核的付款信息,无相关的关联信息" show-icon :closable="false"></el-alert>
 									</span>
