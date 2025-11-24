@@ -325,7 +325,7 @@
 					<!--          运费信息-->
 					<div class="order-freight-info">
 						<el-collapse v-model="activeNames">
-							<el-collapse-item v-for="(item, index) in selectedList" :key="index" :title="'运费信息(' + (index + 1) + ')'" :name="index + ''">
+							<el-collapse-item v-for="(item, index) in displayFreightList" :key="index" :title="'运费信息(' + (index + 1) + ')'" :name="index + ''">
 								<el-card class="box-card">
 									<div>
 										<el-descriptions :title="'运费信息(' + (index + 1) + ')'">

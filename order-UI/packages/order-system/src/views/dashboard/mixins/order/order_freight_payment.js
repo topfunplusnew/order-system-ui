@@ -12,6 +12,8 @@ export var mixin_order_freight_payment = {
 			freightSelfOnceInfo: {},
 			bankQuery: '',
 			selectedList: [],
+			// 用于弹窗展示的合并后的运费列表（只用于展示，不用于业务逻辑）
+			displayFreightList: [],
 			// 折叠面板的list
 			activeNames: ['0'],
 			batchPaymentList: [],
@@ -48,7 +50,7 @@ export var mixin_order_freight_payment = {
 		handleFreightPaymentOnce() {
 			// 重置运费信息
 			this.resetFreightSelfOnceInfo();
-
+			console.log('this.selectedList', this.selectedList);
 			// 筛选未支付的运费记录并转换为付款对象
 			const filteredList = _.chain(this.selectedList)
 				.filter(item => !item.payment || item.payment === null)
@@ -70,8 +72,8 @@ export var mixin_order_freight_payment = {
 			// 计算总运费
 			this.total_freight = _.sumBy(filteredList, item => Number(item.moneyAmount));
 
-			// 合并展示数据
-			this.selectedList = this.mergeFreight(filteredList);
+			// 合并展示数据（用于弹窗展示，不影响原始selectedList）
+			this.displayFreightList = this.mergeFreight(filteredList);
 
 			// 打开运费付款页面
 			this.freightOnceVisible = true;
@@ -248,6 +250,7 @@ export var mixin_order_freight_payment = {
 				otherBankCardType: null
 			};
 			this.batchPaymentList = [];
+			this.displayFreightList = [];
 		}
 	}
 };
