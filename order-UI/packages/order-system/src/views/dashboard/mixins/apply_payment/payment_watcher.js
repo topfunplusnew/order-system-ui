@@ -87,7 +87,7 @@ export var mixin_payment_watcher = {
 				this.loadForm();
 				// 如果传入的必须自动填充的金额大于0 则自动填充 且无法修改
 				if (this.needMoney >= 0) {
-					this.form.moneyAmount = this.needMoney;
+					this.form.moneyAmount = Number(this.needMoney).toFixed(2);
 					this.inputDisabled = true;
 				}
 			},

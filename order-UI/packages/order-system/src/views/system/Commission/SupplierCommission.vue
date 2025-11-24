@@ -510,9 +510,9 @@ export default {
 				extra.pushSourceInfo(s);
 			});
 
-			// 计算总金额
+			// 计算总金额（使用已验证佣金）
 			const totalAmount = this.selections.reduce((sum, item) => {
-				return sum + (parseFloat(item.commissionAmount) || 0);
+				return sum + (parseFloat(item.verifiedCommission) || 0);
 			}, 0);
 
 			let applications = this.selections.map(item => {
@@ -738,8 +738,11 @@ export default {
 		handleApplyPayment(row) {
 			if (!row.id) {
 				this.$message.error('此佣金信息还未生成，无法进行付款申请');
+				return;
 			}
 			this.tID = row.id;
+			// 使用已验证佣金作为申请金额
+			this.needMoney = parseFloat(row.verifiedCommission) || 0;
 			this.PaymentApplyInfoVisible = true;
 		},
 		// 导出

@@ -556,6 +556,8 @@ export default {
 				this.total = res.total;
 				this.loading = false;
 			});
+			// 同时刷新待提交或驳回的付款申请列表
+			this.getUnProcessedAuditList();
 		},
 		handleLearn() {
 			this.$tours['paymentApplyTour'].start();
