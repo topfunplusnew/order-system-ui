@@ -1,4 +1,5 @@
 import { fix, fix_2 } from '../../../api/tool/format';
+import { round, subtract, add, multiply, divide } from 'mathjs';
 
 /**
  * 计算逻辑说明（根据出厂/销售是否含税的不同组合）：
@@ -63,8 +64,8 @@ function getRawValue(row, field) {
 		// 特殊字段：使用完整精度
 		return numValue;
 	} else {
-		// 其他字段：先保留两位小数再计算
-		return Math.round(numValue * 100) / 100;
+		// 其他字段：先保留两位小数再计算，使用 mathjs 确保精度
+		return round(numValue, 2);
 	}
 }
 
@@ -113,9 +114,11 @@ function calculateTonnage(row) {
 	const width = Number(row.width) || 0;
 	const pieces = Number(row.pieces) || 0;
 
-	// 使用完整精度进行计算，保存完整精度值用于后续计算
-	const rawTonnage = ((height - erro) * length * width * pieces) / 1000000 / 20 / 20;
-	setCalculatedValue(row, 'tonnage', rawTonnage, 2); // 吨位显示2位小数，计算时使用完整精度
+	// 使用 mathjs 进行精确计算，避免浮点数精度误差
+	const rawTonnage = divide(divide(divide(multiply(multiply(multiply(subtract(height, erro), length), width), pieces), 1000000), 20), 20);
+	// 四舍五入到两位小数，确保精度
+	const roundedTonnage = round(rawTonnage, 2);
+	setCalculatedValue(row, 'tonnage', roundedTonnage, 2); // 吨位显示2位小数，计算时使用完整精度
 }
 
 /**
@@ -137,17 +140,21 @@ function calculatePaymentFactory(row) {
 	let rawPaymentFactory;
 	if (row.countingUnit === '其他') {
 		// 计量单位为"其他"时，不除以1000000
-		rawPaymentFactory = length * width * pieces * price + sundryCost;
+		// 使用 mathjs 进行精确计算
+		rawPaymentFactory = add(multiply(multiply(multiply(length, width), pieces), price), sundryCost);
 	} else {
 		// 计量单位为"片"时，除以1000000（原来的逻辑）
+		// 使用 mathjs 进行精确计算
 		if (row.isIncludeTaxFactory === 0) {
-			rawPaymentFactory = ((length * width * pieces) / 1000000) * price + sundryCost;
+			rawPaymentFactory = add(multiply(divide(multiply(multiply(length, width), pieces), 1000000), price), sundryCost);
 		} else {
-			rawPaymentFactory = (length * width * pieces * price) / 1000000 + sundryCost;
+			rawPaymentFactory = add(divide(multiply(multiply(multiply(length, width), pieces), price), 1000000), sundryCost);
 		}
 	}
+	// 四舍五入到两位小数，确保精度
+	const roundedPaymentFactory = round(rawPaymentFactory, 2);
 	// 保存完整精度值用于后续计算
-	setCalculatedValue(row, 'paymentFactory', rawPaymentFactory, 2);
+	setCalculatedValue(row, 'paymentFactory', roundedPaymentFactory, 2);
 }
 
 /**
@@ -169,17 +176,21 @@ function calculatePayment(row) {
 	let rawPayments;
 	if (row.countingUnit === '其他') {
 		// 计量单位为"其他"时，不除以1000000
-		rawPayments = length * width * stockNumber * paymentUnload + paymentsWithSundry;
+		// 使用 mathjs 进行精确计算
+		rawPayments = add(multiply(multiply(multiply(length, width), stockNumber), paymentUnload), paymentsWithSundry);
 	} else {
 		// 计量单位为"片"时，除以1000000（原来的逻辑）
+		// 使用 mathjs 进行精确计算
 		if (row.isIncludeTaxFactory === 0 && row.isIncludeTaxSale === 0) {
-			rawPayments = ((length * width * stockNumber) / 1000000) * paymentUnload + paymentsWithSundry;
+			rawPayments = add(multiply(divide(multiply(multiply(length, width), stockNumber), 1000000), paymentUnload), paymentsWithSundry);
 		} else {
-			rawPayments = (length * width * stockNumber * paymentUnload) / 1000000 + paymentsWithSundry;
+			rawPayments = add(divide(multiply(multiply(multiply(length, width), stockNumber), paymentUnload), 1000000), paymentsWithSundry);
 		}
 	}
+	// 四舍五入到两位小数，确保精度
+	const roundedPayments = round(rawPayments, 2);
 	// 保存完整精度值用于后续计算
-	setCalculatedValue(row, 'payments', rawPayments, 2);
+	setCalculatedValue(row, 'payments', roundedPayments, 2);
 }
 
 /**
@@ -193,9 +204,12 @@ function calculateLandFreight(row) {
 	const tonnage = getRawValue(row, 'tonnage');
 	const landFreightPrice = getRawValue(row, 'landFreightPrice');
 	const additionalFees = getRawValue(row, 'additionalFees');
-	const rawLandFreight = tonnage * landFreightPrice + additionalFees;
+	// 使用 mathjs 进行精确计算
+	const rawLandFreight = add(multiply(tonnage, landFreightPrice), additionalFees);
+	// 四舍五入到两位小数，确保精度
+	const roundedLandFreight = round(rawLandFreight, 2);
 	// 保存完整精度值用于后续计算
-	setCalculatedValue(row, 'landFreight', rawLandFreight, 2);
+	setCalculatedValue(row, 'landFreight', roundedLandFreight, 2);
 }
 
 /**
@@ -208,9 +222,12 @@ function calculateTotalFreight(row, isSea) {
 	// 使用完整精度值进行计算
 	const landFreight = getRawValue(row, 'landFreight'); // 使用陆运费的完整精度值
 	const seaFreight = isSea ? getRawValue(row, 'seaFreight') : 0; // 使用海运费的完整精度值
-	const rawFreight = landFreight + seaFreight;
+	// 使用 mathjs 进行精确计算
+	const rawFreight = add(landFreight, seaFreight);
+	// 四舍五入到两位小数，确保精度
+	const roundedFreight = round(rawFreight, 2);
 	// 保存完整精度值用于后续计算
-	setCalculatedValue(row, 'freight', rawFreight, 2);
+	setCalculatedValue(row, 'freight', roundedFreight, 2);
 }
 
 /**
@@ -224,9 +241,12 @@ function calculateProfit(row) {
 	const payments = getRawValue(row, 'payments'); // 使用库存金额的完整精度值
 	const paymentFactory = getRawValue(row, 'paymentFactory'); // 使用出厂货款的完整精度值
 	const freight = getRawValue(row, 'freight'); // 使用总运费的完整精度值
-	const rawProfit = payments - paymentFactory - freight;
+	// 使用 mathjs 进行精确计算，避免浮点数精度误差
+	const rawProfit = subtract(subtract(payments, paymentFactory), freight);
+	// 四舍五入到两位小数，确保精度
+	const roundedProfit = round(rawProfit, 2);
 	// 保存完整精度值用于后续计算
-	setCalculatedValue(row, 'profit', rawProfit, 2);
+	setCalculatedValue(row, 'profit', roundedProfit, 2);
 }
 
 /**
@@ -241,9 +261,12 @@ function calculateProfitOfSecondInventory(row) {
 	const paymentFactory = getRawValue(row, 'paymentFactory'); // 使用出厂货款的完整精度值
 	const freight = getRawValue(row, 'freight'); // 使用总运费的完整精度值
 	const otherCost = getRawValue(row, 'otherCost'); // 使用其他费用的完整精度值
-	const rawProfit = payments - paymentFactory - freight - otherCost;
+	// 使用 mathjs 进行精确计算，避免浮点数精度误差
+	const rawProfit = subtract(subtract(subtract(payments, paymentFactory), freight), otherCost);
+	// 四舍五入到两位小数，确保精度
+	const roundedProfit = round(rawProfit, 2);
 	// 保存完整精度值用于后续计算
-	setCalculatedValue(row, 'profit', rawProfit, 2);
+	setCalculatedValue(row, 'profit', roundedProfit, 2);
 }
 
 /**
@@ -268,22 +291,28 @@ function calculateProfitNoTax(row) {
 	// 根据厂家和客户是否含税，匹配四种情况
 	if (isIncludeTaxFactory === 0 && isIncludeTaxSale === 0) {
 		// Case 1 (否, 否): 库存金额 - 出厂货款 - 总运费 - 其他费用
-		rawProfitNoTax = numPayments - numPaymentFactory - numFreight - numOtherCost;
+		// 使用 mathjs 进行精确计算，避免浮点数精度误差
+		rawProfitNoTax = subtract(subtract(subtract(numPayments, numPaymentFactory), numFreight), numOtherCost);
 	} else if (isIncludeTaxFactory === 1 && isIncludeTaxSale === 0) {
 		// Case 2 (是, 否): 库存金额 - (出厂货款 / 1.075) - 总运费 - 其他费用
-		rawProfitNoTax = numPayments - numPaymentFactory / taxRate - numFreight - numOtherCost;
+		const paymentFactoryNoTax = divide(numPaymentFactory, taxRate);
+		rawProfitNoTax = subtract(subtract(subtract(numPayments, paymentFactoryNoTax), numFreight), numOtherCost);
 	} else if (isIncludeTaxFactory === 0 && isIncludeTaxSale === 1) {
 		// Case 3 (否, 是): (库存金额 / 1.075) - 出厂货款 - 总运费 - 其他费用
-		rawProfitNoTax = numPayments / taxRate - numPaymentFactory - numFreight - numOtherCost;
+		const paymentsNoTax = divide(numPayments, taxRate);
+		rawProfitNoTax = subtract(subtract(subtract(paymentsNoTax, numPaymentFactory), numFreight), numOtherCost);
 	} else if (isIncludeTaxFactory === 1 && isIncludeTaxSale === 1) {
 		// Case 4 (是, 是): 库存金额 - 出厂货款 - (总运费 * 1.075) - (厚度 * 长度 * 宽度 * 出厂片数 / 1000000 / 20 * 0.5) - 其他费用
-		const specialCost = ((numHeight * numLength * numWidth * numPieces) / 1000000 / 20) * 0.5;
-		rawProfitNoTax = numPayments - numPaymentFactory - numFreight * taxRate - specialCost - numOtherCost;
+		const specialCost = multiply(divide(divide(multiply(multiply(multiply(numHeight, numLength), numWidth), numPieces), 1000000), 20), 0.5);
+		const freightWithTax = multiply(numFreight, taxRate);
+		rawProfitNoTax = subtract(subtract(subtract(subtract(numPayments, numPaymentFactory), freightWithTax), specialCost), numOtherCost);
 	} else {
 		rawProfitNoTax = 0; // 异常情况返回0
 	}
+	// 四舍五入到两位小数，确保精度
+	const roundedProfitNoTax = round(rawProfitNoTax, 2);
 	// 保存完整精度值用于后续计算
-	setCalculatedValue(row, 'profitNoTax', rawProfitNoTax, 2);
+	setCalculatedValue(row, 'profitNoTax', roundedProfitNoTax, 2);
 }
 
 /**

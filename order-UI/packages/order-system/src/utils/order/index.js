@@ -1,3 +1,5 @@
+import { round } from 'mathjs';
+
 // ==================== 价格处理相关函数 ====================
 
 /**
@@ -11,36 +13,36 @@ export function parseInputValue(inputValue) {
 		return '';
 	}
 	const strValue = String(inputValue);
-	
+
 	// 处理负号：只允许在开头有一个负号
 	let hasNegative = false;
 	let cleanValue = strValue;
-	
+
 	// 检查开头是否有负号
 	if (strValue.startsWith('-')) {
 		hasNegative = true;
 		cleanValue = strValue.substring(1);
 	}
-	
+
 	// 移除所有非数字和小数点的字符
 	cleanValue = cleanValue.replace(/[^\d.]/g, '');
-	
+
 	// 只允许一个小数点
 	const parts = cleanValue.split('.');
 	if (parts.length > 2) {
 		cleanValue = parts[0] + '.' + parts.slice(1).join('');
 	}
-	
+
 	// 如果只有负号或只有小数点，返回空字符串
 	if (cleanValue === '' || cleanValue === '.') {
 		return '';
-	} 
-	
+	}
+
 	// 如果有负号，添加到开头
 	if (hasNegative) {
 		cleanValue = '-' + cleanValue;
 	}
-	
+
 	const num = Number(cleanValue);
 	if (isNaN(num)) {
 		return '';
@@ -147,7 +149,7 @@ export function getValueForCalculation(row, field) {
 		return numValue;
 	} else {
 		// 其他字段：先保留两位小数再计算
-		return Math.round(numValue * 100) / 100;
+		return round(numValue, 2);
 	}
 }
 
@@ -200,7 +202,7 @@ export function formatPriceInput(row, field, precision, isSpecialFieldFlag = fal
 				row[field] = decimalPlaces > 0 ? numValue.toFixed(decimalPlaces) : numValue.toString();
 			} else {
 				// 其他字段：先保留两位小数，再存储和显示
-				const roundedValue = Math.round(numValue * 100) / 100; // 保留两位小数
+				const roundedValue = round(numValue, 2); // 保留两位小数
 				row[`_${field}_raw`] = roundedValue;
 				row[field] = formatValueForDisplay(roundedValue, 2);
 			}
