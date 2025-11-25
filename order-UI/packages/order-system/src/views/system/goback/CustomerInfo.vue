@@ -12,15 +12,7 @@
 				<el-form-item label="客户" prop="customer">
 					<el-row>
 						<el-col :span="4">
-							<SearchOption
-								:limit-info="{ companyType: PUBLIC_DICT_TYPE.CUSTOMER }"
-								:get-data="listCompany"
-								query-info="companyName"
-								query-label="公司名称"
-								:query-name="companyName"
-								@update:queryName="handleUpdateCompanyName"
-								@commitBack="handleCommitBackCompany"
-							>
+							<SearchOption :limit-info="{ companyType: PUBLIC_DICT_TYPE.CUSTOMER }" :get-data="listCompany" query-info="companyName" query-label="公司名称" :query-name="companyName" @update:queryName="handleUpdateCompanyName" @commitBack="handleCommitBackCompany">
 								<template #table-columns>
 									<el-table-column :label="PUBLIC_DICT_TYPE.CUSTOMER" align="center" prop="companyName" />
 									<el-table-column label="老板姓名" align="center" prop="leader" />
@@ -90,9 +82,9 @@
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">
-							<span>{{ Math.abs(scope.row.lender) }}</span>
+							<span>{{ abs(scope.row.lender) }}</span>
 						</div>
-						<span>{{ Math.abs(scope.row.lender) }}</span>
+						<span>{{ abs(scope.row.lender) }}</span>
 					</el-tooltip>
 				</template>
 			</el-table-column>
@@ -102,12 +94,12 @@
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">
-							<span style="margin-right: 10px">{{ Math.abs(scope.row.borrower) }}</span>
+							<span style="margin-right: 10px">{{ abs(scope.row.borrower) }}</span>
 							<i class="el-icon-s-order" style="cursor: pointer" @click="handleCheckBorrowerDetailList(scope.row)"></i>
 						</div>
-						<div style="display: flex; align-items: center; justify-content: center;">
-							<span style="margin-right: 5px;min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ Math.abs(scope.row.borrower) }}</span>
-							<i v-if="scope.row.borrowerList && scope.row.borrowerList.length > 0" class="el-icon-s-order" style="cursor: pointer; flex-shrink: 0; margin-left: 5px;" @click.stop="handleCheckBorrowerDetailList(scope.row)"></i>
+						<div style="display: flex; align-items: center; justify-content: center">
+							<span style="margin-right: 5px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{ abs(scope.row.borrower) }}</span>
+							<i v-if="scope.row.borrowerList && scope.row.borrowerList.length > 0" class="el-icon-s-order" style="cursor: pointer; flex-shrink: 0; margin-left: 5px" @click.stop="handleCheckBorrowerDetailList(scope.row)"></i>
 						</div>
 					</el-tooltip>
 				</template>
@@ -223,6 +215,7 @@ import { formatBalance, isDebit, isCredit } from '@/utils/trash/utils';
 import { isGoodsOrderDisplay, isInventoryDisplay, mergeSpecialTableData } from '@/api/system/goodsOrder';
 import OrderDayInfo from '@/components/OrderDayInfor/index.vue';
 import InventoryDayInfo from '@/components/InventoryDayInfo/index.vue';
+import { abs, add, subtract, number } from 'mathjs';
 
 export default {
 	name: 'CustomerInfo',
@@ -273,6 +266,10 @@ export default {
 		formatBalance,
 		fix,
 		listCompany,
+		abs,
+		add,
+		subtract,
+		number,
 		// 查询方法
 		getList() {
 			this.$refs['form']?.validate(valid => {
@@ -318,7 +315,7 @@ export default {
 					sums[index] = '总价';
 					return;
 				}
-				const values = data.map(item => Number(item[column.property]));
+				const values = data.map(item => number(item[column.property]));
 				const exclude = ['operateDate', 'payNo', 'lender', 'borrower'];
 				if (exclude.includes(column.property)) {
 					sums[index] = '';
@@ -326,9 +323,9 @@ export default {
 				}
 				if (!values.every(value => isNaN(value))) {
 					sums[index] = values.reduce((prev, curr) => {
-						const value = Number(curr);
+						const value = number(curr);
 						if (!isNaN(value)) {
-							return prev + curr;
+							return add(prev, curr);
 						} else {
 							return prev;
 						}
@@ -350,23 +347,23 @@ export default {
 					return;
 				}
 
-				function calculateLenderAndBorrower(dayData) {
+				const calculateLenderAndBorrower = dayData => {
 					const { itemTotalLender, itemTotalBorrower } = dayData.reduce(
 						(acc, customerDetail) => {
-							const amount = Number(customerDetail.moneyAmount || 0);
+							const amount = number(customerDetail.moneyAmount || 0);
 							if (isDebit(customerDetail.debitCredit)) {
 								// 借方：客户欠款增加
-								acc.itemTotalLender += amount;
+								acc.itemTotalLender = add(acc.itemTotalLender, amount);
 							} else if (isCredit(customerDetail.debitCredit)) {
 								// 贷方：客户欠款减少
-								acc.itemTotalBorrower += amount;
+								acc.itemTotalBorrower = add(acc.itemTotalBorrower, amount);
 							}
 							return acc;
 						},
 						{ itemTotalLender: 0, itemTotalBorrower: 0 } // 初始值
 					);
 					return [itemTotalLender, itemTotalBorrower];
-				}
+				};
 
 				if (Array.isArray(res.data)) {
 					if (res.data.length <= 0) {
@@ -375,8 +372,8 @@ export default {
 						return;
 					}
 					try {
-						let nowMoney = Number(0);
-						let currentBalance = Number(lastYearDetail.moneyAmount || 0);
+						let nowMoney = number(0);
+						let currentBalance = number(lastYearDetail.moneyAmount || 0);
 						let sourceData = _.cloneDeep(res.data);
 
 						// 对订单和库存数据进行合并预处理
@@ -399,18 +396,18 @@ export default {
 							const item = _.cloneDeep(sourceData[date]);
 							if (Array.isArray(item)) {
 								for (let i = 0; i < item.length; i++) {
-									const amount = Number(item[i].moneyAmount || 0);
+									const amount = abs(number(item[i].moneyAmount || 0));
 									// 根据 debitCredit 判断金额的正负影响
 									if (isDebit(item[i].debitCredit)) {
-										nowMoney += amount; // 借方：增加欠款
+										nowMoney = add(nowMoney, amount); // 借方：增加欠款
 									} else if (isCredit(item[i].debitCredit)) {
-										nowMoney -= amount; // 贷方：减少欠款
+										nowMoney = subtract(nowMoney, amount); // 贷方：减少欠款
 									}
 								}
 								const condition = detail => {
-									const amount = Number(detail.moneyAmount || 0);
-									const lender = isDebit(detail.debitCredit) ? Math.abs(amount) : 0;
-									const borrower = isCredit(detail.debitCredit) ? Math.abs(amount) : 0;
+									const amount = number(detail.moneyAmount || 0);
+									const lender = isDebit(detail.debitCredit) ? abs(amount) : 0;
+									const borrower = isCredit(detail.debitCredit) ? abs(amount) : 0;
 									return {
 										date: detail.operateDate,
 										payNo: detail.payNo,
@@ -429,7 +426,7 @@ export default {
 									date: date,
 									lender: map[date].lender,
 									borrower: map[date].borrower,
-									moneyAmountLocal: fix_2(Number(currentBalance) + Number(nowMoney)),
+									moneyAmountLocal: fix_2(add(currentBalance, nowMoney)),
 									lenderList,
 									borrowerList
 								};
