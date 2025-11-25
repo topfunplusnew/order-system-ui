@@ -2,15 +2,7 @@
 	<div class="app-container">
 		<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
 			<el-form-item label="入库日期">
-				<el-date-picker
-					v-model="daterangeInDate"
-					style="width: 240px"
-					value-format="yyyy-MM-dd HH:mm:ss"
-					type="datetimerange"
-					range-separator="-"
-					start-placeholder="开始日期"
-					end-placeholder="结束日期"
-				></el-date-picker>
+				<el-date-picker v-model="daterangeInDate" style="width: 240px" value-format="yyyy-MM-dd HH:mm:ss" type="datetimerange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
 			</el-form-item>
 			<el-form-item label="入库方式" prop="inMethod">
 				<el-tooltip class="item" effect="dark" content="入库方式可在字典中进行修改" placement="top">
@@ -54,7 +46,7 @@
 				</template>
 				<template #export>
 					<el-col :span="1.5">
-						<el-button v-hasPermi="['system:adjustOrders:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
+						<el-button v-hasPermi="['system:giftIn:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
 					</el-col>
 				</template>
 			</right-toolbar>
@@ -76,118 +68,40 @@
 		>
 			<el-table-column type="selection" width="55" align="center" />
 
-			<el-table-column v-if="columns[0].visible" label="ID" align="center" prop="id" show-overflow-tooltip>
+			<el-table-column v-if="columns[0].visible" label="ID" align="center" prop="id" width="80" show-overflow-tooltip />
+
+			<el-table-column v-if="columns[1].visible" label="入库日期" align="center" prop="inDate" width="160" show-overflow-tooltip>
 				<template #default="scope">
-					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.id }}</div>
-						<span>{{ scope.row.id }}</span>
-					</el-tooltip>
+					<span>{{ parseTime(scope.row.inDate, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
 				</template>
 			</el-table-column>
 
-			<el-table-column v-if="columns[1].visible" label="入库日期" align="center" prop="inDate" width="180" show-overflow-tooltip>
+			<el-table-column v-if="columns[2].visible" label="入库方式" align="center" prop="inMethod" width="100" show-overflow-tooltip>
 				<template #default="scope">
-					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">
-							<span>{{ parseTime(scope.row.inDate, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
-						</div>
-						<span>{{ parseTime(scope.row.inDate, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
-					</el-tooltip>
+					<dict-tag :options="dict.type.order_gift_in_method" :value="scope.row.inMethod" />
 				</template>
 			</el-table-column>
 
-			<el-table-column v-if="columns[2].visible" label="入库方式" align="center" prop="inMethod" show-overflow-tooltip>
-				<template #default="scope">
-					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">
-							<dict-tag :options="dict.type.order_gift_in_method" :value="scope.row.inMethod" />
-						</div>
-						<dict-tag :options="dict.type.order_gift_in_method" :value="scope.row.inMethod" />
-					</el-tooltip>
-				</template>
-			</el-table-column>
+			<el-table-column v-if="columns[3].visible" label="对方信息" align="center" prop="fromInfo" width="120" show-overflow-tooltip />
 
-			<el-table-column v-if="columns[3].visible" label="对方信息" align="center" prop="fromInfo" show-overflow-tooltip>
-				<template #default="scope">
-					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.fromInfo }}</div>
-						<span>{{ scope.row.fromInfo }}</span>
-					</el-tooltip>
-				</template>
-			</el-table-column>
+			<el-table-column v-if="columns[4].visible" label="物品名称" align="center" prop="itemName" width="120" show-overflow-tooltip />
 
-			<el-table-column v-if="columns[4].visible" label="物品名称" align="center" prop="itemName" show-overflow-tooltip>
-				<template #default="scope">
-					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.itemName }}</div>
-						<span>{{ scope.row.itemName }}</span>
-					</el-tooltip>
-				</template>
-			</el-table-column>
+			<el-table-column v-if="columns[5].visible" label="数量" align="center" prop="quantity" width="80" show-overflow-tooltip />
 
-			<el-table-column v-if="columns[5].visible" label="数量" align="center" prop="quantity" show-overflow-tooltip>
-				<template #default="scope">
-					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.quantity }}</div>
-						<span>{{ scope.row.quantity }}</span>
-					</el-tooltip>
-				</template>
-			</el-table-column>
+			<el-table-column v-if="columns[6].visible" label="预估价值/购买金额" align="center" prop="estimatedValue" width="130" show-overflow-tooltip />
 
-			<el-table-column v-if="columns[6].visible" label="预估价值/购买金额" align="center" prop="estimatedValue" show-overflow-tooltip>
-				<template #default="scope">
-					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.estimatedValue }}</div>
-						<span>{{ scope.row.estimatedValue }}</span>
-					</el-tooltip>
-				</template>
-			</el-table-column>
+			<el-table-column v-if="columns[7].visible" label="经办人" align="center" prop="handler" width="100" show-overflow-tooltip />
 
-			<el-table-column v-if="columns[7].visible" label="经办人" align="center" prop="handler" show-overflow-tooltip>
-				<template #default="scope">
-					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.handler }}</div>
-						<span>{{ scope.row.handler }}</span>
-					</el-tooltip>
-				</template>
-			</el-table-column>
+			<el-table-column v-if="columns[8].visible" label="收礼方式" align="center" prop="receiveMethod" width="120" show-overflow-tooltip />
 
-			<el-table-column v-if="columns[8].visible" label="收礼方式" align="center" prop="receiveMethod" show-overflow-tooltip>
-				<template #default="scope">
-					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.receiveMethod }}</div>
-						<span>{{ scope.row.receiveMethod }}</span>
-					</el-tooltip>
-				</template>
-			</el-table-column>
-			<el-table-column v-if="columns[9].visible" label="付款时间" align="center" prop="payTime" show-overflow-tooltip>
-				<template #default="scope">
-					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.payTime }}</div>
-						<span>{{ scope.row.payTime }}</span>
-					</el-tooltip>
-				</template>
-			</el-table-column>
+			<el-table-column v-if="columns[9].visible" label="付款时间" align="center" prop="payTime" width="160" show-overflow-tooltip />
 
-			<el-table-column label="备注" align="center" prop="remark" show-overflow-tooltip>
-				<template #default="scope">
-					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.remark }}</div>
-						<span>{{ scope.row.remark }}</span>
-					</el-tooltip>
-				</template>
-			</el-table-column>
+			<el-table-column label="备注" align="center" prop="remark" width="120" show-overflow-tooltip />
 
-			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" show-overflow-tooltip width="220" fixed="right">
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="150" fixed="right">
 				<template #default="scope">
-					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">
-							<el-button v-hasPermi="['system:giftIn:edit']" size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)">修改</el-button>
-							<el-button v-hasPermi="['system:giftIn:remove']" size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)">删除</el-button>
-						</div>
-						<el-button v-hasPermi="['system:giftIn:edit']" size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)">修改</el-button>
-						<el-button v-hasPermi="['system:giftIn:remove']" size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)">删除</el-button>
-					</el-tooltip>
+					<el-button v-hasPermi="['system:giftIn:edit']" size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)">修改</el-button>
+					<el-button v-hasPermi="['system:giftIn:remove']" size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -195,66 +109,94 @@
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改购入礼品信息对话框 -->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="title" :visible.sync="open" width="500px" append-to-body>
-			<el-form ref="form" :model="form" :rules="rules" label-width="80px">
-				<el-form-item label="入库日期" prop="inDate">
-					<el-date-picker v-model="form.inDate" clearable type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="请选择入库日期"></el-date-picker>
-				</el-form-item>
-				<el-form-item label="入库方式" prop="inMethod">
-					<el-select v-model="form.inMethod" placeholder="请选择入库方式">
-						<el-option v-for="dict in dict.type.order_gift_in_method" :key="dict.value" :label="dict.label" :value="dict.value"></el-option>
-					</el-select>
-				</el-form-item>
-				<el-form-item label="对方类型">
-					<el-select v-model="companyType" placeholder="请选择">
-						<el-option v-for="item in OTHER_TYPE()" :key="item.value" :label="item.label" :value="item.value"></el-option>
-					</el-select>
-				</el-form-item>
-				<el-form-item label="对方信息" prop="fromInfo">
-					<el-row>
-						<el-col :span="10">
-							<el-input v-model="form.fromInfo" placeholder="请输入对方信息" />
-						</el-col>
-						<el-col :span="2">
-							<SearchOption
-								:limit-info="{ companyType: companyType }"
-								:get-data="listCompany"
-								query-info="companyName"
-								query-label="公司名称"
-								:query-name="companyName"
-								@update:queryName="handleUpdateCompanyName"
-								@commitBack="handleCommitBackCompany"
-							>
-								<template #table-columns>
-									<el-table-column :label="companyType" align="center" prop="companyName" />
-									<el-table-column label="老板姓名" align="center" prop="leader" />
-									<el-table-column label="老板电话" align="center" prop="leaderTel" />
-									<el-table-column label="区域" align="center" prop="region" />
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="title" :visible.sync="open" :width="dialogWidth" append-to-body>
+			<el-form ref="form" :model="form" :rules="rules" label-width="120px">
+				<el-row :gutter="20">
+					<el-col :span="24">
+						<el-form-item label="入库日期" prop="inDate">
+							<el-date-picker v-model="form.inDate" clearable type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="请选择入库日期" style="width: 100%"></el-date-picker>
+						</el-form-item>
+					</el-col>
 
-									<el-table-column label="销售经理" align="center" prop="salesManager" />
-								</template>
-							</SearchOption>
-						</el-col>
-					</el-row>
-				</el-form-item>
-				<el-form-item label="物品名称" prop="itemName">
-					<el-input v-model="form.itemName" placeholder="请输入物品名称" />
-				</el-form-item>
-				<el-form-item label="数量" prop="quantity">
-					<el-input v-model="form.quantity" placeholder="请输入数量" />
-				</el-form-item>
-				<el-form-item label="预估价值/购买金额" prop="estimatedValue">
-					<el-input v-model="form.estimatedValue" placeholder="请输入预估价值/购买金额" />
-				</el-form-item>
-				<el-form-item label="经办人" prop="handler">
-					<el-input v-model="form.handler" placeholder="请输入经办人" />
-				</el-form-item>
-				<el-form-item label="收礼方式" prop="receiveMethod">
-					<el-input v-model="form.receiveMethod" placeholder="请输入收礼方式" />
-				</el-form-item>
-				<el-form-item label="备注" prop="remark">
-					<el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
-				</el-form-item>
+					<el-col :span="24">
+						<el-form-item label="入库方式" prop="inMethod">
+							<el-select v-model="form.inMethod" placeholder="请选择入库方式" style="width: 100%">
+								<el-option v-for="dict in dict.type.order_gift_in_method" :key="dict.value" :label="dict.label" :value="dict.value"></el-option>
+							</el-select>
+						</el-form-item>
+					</el-col>
+
+					<el-col :span="24">
+						<el-form-item label="对方类型">
+							<el-select v-model="companyType" placeholder="请选择" style="width: 100%">
+								<el-option v-for="item in OTHER_TYPE()" :key="item.value" :label="item.label" :value="item.value"></el-option>
+							</el-select>
+						</el-form-item>
+					</el-col>
+
+					<el-col :span="24">
+						<el-form-item label="对方信息" prop="fromInfo">
+							<el-row :gutter="10">
+								<el-col :span="20">
+									<el-input v-model="form.fromInfo" placeholder="请输入对方信息" />
+								</el-col>
+								<el-col :span="4">
+									<SearchOption :limit-info="{ companyType: companyType }" :get-data="listCompany" query-info="companyName" query-label="公司名称" :query-name="companyName" @update:queryName="handleUpdateCompanyName" @commitBack="handleCommitBackCompany">
+										<template #table-columns>
+											<el-table-column :label="companyType" align="center" prop="companyName" />
+											<el-table-column label="老板姓名" align="center" prop="leader" />
+											<el-table-column label="老板电话" align="center" prop="leaderTel" />
+											<el-table-column label="区域" align="center" prop="region" />
+											<el-table-column label="销售经理" align="center" prop="salesManager" />
+										</template>
+									</SearchOption>
+								</el-col>
+							</el-row>
+						</el-form-item>
+					</el-col>
+
+					<el-col :span="24">
+						<el-form-item label="物品名称" prop="itemName">
+							<el-input v-model="form.itemName" placeholder="请输入物品名称" />
+						</el-form-item>
+					</el-col>
+
+					<el-col :span="12">
+						<el-form-item label="数量" prop="quantity">
+							<el-input v-model="form.quantity" placeholder="请输入数量" />
+						</el-form-item>
+					</el-col>
+
+					<el-col :span="12">
+						<el-form-item label="预估价值" prop="estimatedValue">
+							<el-input v-model="form.estimatedValue" placeholder="请输入预估价值" />
+						</el-form-item>
+					</el-col>
+
+					<el-col :span="12">
+						<el-form-item label="经办人" prop="handler">
+							<el-input v-model="form.handler" placeholder="请输入经办人" />
+						</el-form-item>
+					</el-col>
+
+					<el-col :span="12">
+						<el-form-item label="收礼方式" prop="receiveMethod">
+							<el-input v-model="form.receiveMethod" placeholder="请输入收礼方式" />
+						</el-form-item>
+					</el-col>
+
+					<el-col :span="24">
+						<el-form-item label="付款时间" prop="payTime">
+							<el-date-picker v-model="form.payTime" clearable type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="请选择付款时间" style="width: 100%"></el-date-picker>
+						</el-form-item>
+					</el-col>
+
+					<el-col :span="24">
+						<el-form-item label="备注" prop="remark">
+							<el-input v-model="form.remark" type="textarea" placeholder="请输入内容" :rows="3" />
+						</el-form-item>
+					</el-col>
+				</el-row>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
 				<el-button type="primary" @click="submitForm">确 定</el-button>
@@ -316,50 +258,20 @@ export default {
 			form: {},
 			// 表单校验
 			rules: {
-				inDate: [
-					{
-						required: true,
-						message: '请选择入库日期',
-						trigger: 'blur'
-					}
+				inDate: [{ required: true, message: '请选择入库日期', trigger: 'blur' }],
+				inMethod: [{ required: true, message: '请选择入库方式', trigger: 'blur' }],
+				fromInfo: [{ required: true, message: '请输入对方信息', trigger: 'blur' }],
+				itemName: [{ required: true, message: '请输入物品名称', trigger: 'blur' }],
+				quantity: [
+					{ required: true, message: '请输入数量', trigger: 'blur' },
+					{ pattern: /^\d+(\.\d+)?$/, message: '请输入有效数字', trigger: 'blur' }
 				],
-				inMethod: [
-					{
-						required: true,
-						message: '请选择入库方式',
-						trigger: 'blur'
-					}
-				],
-				fromInfo: [
-					{
-						required: true,
-						message: '请输入对方信息',
-						trigger: 'blur'
-					}
-				],
-				itemName: [
-					{
-						required: true,
-						message: '请输入物品名称',
-						trigger: 'blur'
-					}
-				],
-				quantity: [{ required: true, message: '请输入数量', trigger: 'blur' }],
 				estimatedValue: [
-					{
-						required: true,
-						message: '请输入预估价值/购买金额',
-						trigger: 'blur'
-					}
+					{ required: true, message: '请输入预估价值', trigger: 'blur' },
+					{ pattern: /^\d+(\.\d{1,2})?$/, message: '请输入有效的金额格式', trigger: 'blur' }
 				],
 				handler: [{ required: true, message: '请输入经办人', trigger: 'blur' }],
-				receiveMethod: [
-					{
-						required: true,
-						message: '请输入收礼方式',
-						trigger: 'blur'
-					}
-				]
+				receiveMethod: [{ required: true, message: '请输入收礼方式', trigger: 'blur' }]
 			},
 			columns: [
 				{ key: 0, label: `ID`, visible: true },
@@ -373,30 +285,46 @@ export default {
 				{ key: 8, label: `收礼方式`, visible: true },
 				{ key: 9, label: `付款时间`, visible: true }
 			],
-			companyType: '供应商'
+			companyType: '供应商',
+			dialogWidth: window.innerWidth > 768 ? '600px' : '95%'
 		};
 	},
 	created() {
 		this.getList();
+		this.updateDialogWidth();
+		window.addEventListener('resize', this.updateDialogWidth);
+	},
+	beforeDestroy() {
+		window.removeEventListener('resize', this.updateDialogWidth);
 	},
 	methods: {
 		OTHER_TYPE() {
 			return OTHER_TYPE;
 		},
 		listCompany,
+		updateDialogWidth() {
+			this.dialogWidth = window.innerWidth > 768 ? '600px' : '95%';
+		},
 		/** 查询购入礼品信息列表 */
 		getList() {
 			this.loading = true;
 			this.queryParams.params = {};
-			if (this.daterangeInDate != null && this.daterangeInDate != '') {
+			if (this.daterangeInDate && this.daterangeInDate.length) {
 				this.queryParams.params['beginInDate'] = this.daterangeInDate[0];
 				this.queryParams.params['endInDate'] = this.daterangeInDate[1];
 			}
-			listGiftIn(this.queryParams).then(response => {
-				this.giftInList = response.rows;
-				this.total = response.total;
-				this.loading = false;
-			});
+			listGiftIn(this.queryParams)
+				.then(response => {
+					this.giftInList = response.rows;
+					this.total = response.total;
+				})
+				.catch(error => {
+					this.$message.error('数据加载失败，请稍后重试');
+					console.error('获取礼品入库列表失败:', error);
+				})
+				.finally(() => {
+					this.loading = false;
+				});
 		},
 		// 取消按钮
 		cancel() {
@@ -415,6 +343,7 @@ export default {
 				estimatedValue: null,
 				handler: null,
 				receiveMethod: null,
+				payTime: null,
 				updateTime: null,
 				updateBy: null,
 				createTime: null,
@@ -462,17 +391,27 @@ export default {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
 					if (this.form.id != null) {
-						updateGiftIn(this.form).then(response => {
-							this.$modal.msgSuccess('修改成功');
-							this.open = false;
-							this.getList();
-						});
+						updateGiftIn(this.form)
+							.then(response => {
+								this.$modal.msgSuccess('修改成功');
+								this.open = false;
+								this.getList();
+							})
+							.catch(error => {
+								this.$message.error('修改失败，请稍后重试');
+								console.error('修改礼品入库信息失败:', error);
+							});
 					} else {
-						addGiftIn(this.form).then(response => {
-							this.$modal.msgSuccess('新增成功');
-							this.open = false;
-							this.getList();
-						});
+						addGiftIn(this.form)
+							.then(response => {
+								this.$modal.msgSuccess('新增成功');
+								this.open = false;
+								this.getList();
+							})
+							.catch(error => {
+								this.$message.error('新增失败，请稍后重试');
+								console.error('新增礼品入库信息失败:', error);
+							});
 					}
 				}
 			});
@@ -480,11 +419,12 @@ export default {
 		/** 删除按钮操作 */
 		handleDelete(row) {
 			const ids = row.id || this.ids;
+			const count = Array.isArray(ids) ? ids.length : 1;
+			const message = count > 1 ? `是否确认删除选中的${count}条购入礼品信息？` : `是否确认删除购入礼品信息编号为"${ids}"的数据项？`;
+
 			this.$modal
-				.confirm('是否确认删除购入礼品信息编号为"' + ids + '"的数据项？')
-				.then(function () {
-					return delGiftIn(ids);
-				})
+				.confirm(message)
+				.then(() => delGiftIn(ids))
 				.then(() => {
 					this.getList();
 					this.$modal.msgSuccess('删除成功');
@@ -498,9 +438,16 @@ export default {
 				{
 					...this.queryParams
 				},
-				`giftIn_${new Date().getTime()}.xlsx`
+				`giftIn_${this.parseTime(new Date(), '{y}{m}{d}_{h}{i}{s}')}.xlsx`
 			);
 		}
 	}
 };
 </script>
+
+<style scoped>
+.el-dialog {
+	max-height: 90vh;
+	overflow-y: auto;
+}
+</style>
