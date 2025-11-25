@@ -274,20 +274,13 @@
 				<el-table-column label="库存金额" align="center">
 					<template #default="scope">
 						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-							<div slot="content">{{ (Math.abs(scope.row.change_amount) * (currentItem && currentItem.price ? currentItem.price : 0)).toFixed(2) }}</div>
-							<span>{{ (Math.abs(scope.row.change_amount) * (currentItem && currentItem.price ? currentItem.price : 0)).toFixed(2) }}</span>
+							<div slot="content">{{ calculateInventoryAmount(scope.row) }}</div>
+							<span>{{ calculateInventoryAmount(scope.row) }}</span>
 						</el-tooltip>
 					</template>
 				</el-table-column>
 			</el-table>
-			<pagination
-				v-show="changeLogTotal > 0"
-				:total="changeLogTotal"
-				:page.sync="changeLogQueryParams.pageNum"
-				:limit.sync="changeLogQueryParams.pageSize"
-				@pagination="getChangeLogData"
-				class="change-log-pagination"
-			/>
+			<pagination v-show="changeLogTotal > 0" :total="changeLogTotal" :page.sync="changeLogQueryParams.pageNum" :limit.sync="changeLogQueryParams.pageSize" @pagination="getChangeLogData" class="change-log-pagination" />
 		</el-dialog>
 	</div>
 </template>
@@ -297,6 +290,7 @@ import { listInventoryMain } from '@/api/system/inventoryMain';
 import { inventorySummary } from '../../../api/system/statement';
 import { listInventoryDetails } from '../../../api/system/inventoryMain';
 import Pagination from '@/components/Pagination';
+import { multiply, divide, round } from 'mathjs';
 
 export default {
 	name: 'InventoryTotal',
@@ -398,6 +392,17 @@ export default {
 				this.changeLogTotal = response.total || this.changeLogData.length;
 				this.changeLogLoading = false;
 			});
+		},
+		// 计算库存金额：剩余库存 * 长度 * 宽度 * 单价 / 1000000
+		calculateInventoryAmount(row) {
+			const remainingStock = Number(row.remaining_stock) || 0;
+			const length = Number(row.length) || 0;
+			const width = Number(row.width) || 0;
+			const price = this.currentItem && this.currentItem.price ? Number(this.currentItem.price) : 0;
+
+			// 使用 mathjs 进行精确计算
+			const result = divide(multiply(multiply(multiply(remainingStock, length), width), price), 1000000);
+			return round(result, 2);
 		}
 	}
 };
