@@ -439,7 +439,10 @@ export default {
 						this.form.parentId = row.parentId;
 					}
 					getSubject(row.id).then(response => {
-						this.form = response.data;
+						this.form = {
+							...response.data,
+							STATUS: Number(response.data.STATUS)
+						};
 						this.open = true;
 						this.title = '修改科目';
 					});
