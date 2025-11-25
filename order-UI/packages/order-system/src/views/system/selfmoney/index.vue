@@ -101,7 +101,7 @@
 						</el-tooltip>
 					</template>
 				</el-table-column>
-				<el-table-column v-if="columns[3].visible" label="银行账号" align="center" prop="bankNo" show-overflow-tooltip width="260">
+				<el-table-column v-if="columns[3].visible" label="银行账号" align="center" prop="bankNo" show-overflow-tooltip width="400">
 					<template #default="scope">
 						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 							<div slot="content">
@@ -123,11 +123,11 @@
 						</el-tooltip>
 					</template>
 				</el-table-column>
-				<el-table-column v-if="columns[5].visible" label="余额" align="right" prop="sumMoney" show-overflow-tooltip>
+				<el-table-column v-if="columns[5].visible" label="余额" align="center" prop="sumMoney" show-overflow-tooltip>
 					<template #default="scope">
 						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 							<div slot="content">{{ scope.row.sumMoney }}</div>
-							<span style="text-align: right; display: block">{{ scope.row.sumMoney }}</span>
+							<span style="text-align: center; display: block">{{ scope.row.sumMoney }}</span>
 						</el-tooltip>
 					</template>
 				</el-table-column>
@@ -501,202 +501,4 @@ export default {
 	}
 };
 </script>
-<style scoped lang="scss">
-// 统一的容器padding，确保各组件对齐
-$container-padding: 20px;
-$form-item-spacing: 20px; // 表单项之间的间距
-
-.app-container {
-	position: relative;
-	overflow: visible;
-	min-height: 100vh;
-	padding: 20px $container-padding;
-	background-color: #f5f7fa;
-}
-
-/* 固定搜索表单（如果显示） */
-#top-search-form-item {
-	position: sticky;
-	top: 0;
-	z-index: 102;
-	background-color: #fff;
-	padding: 15px $container-padding;
-	margin: -20px (-$container-padding) 15px (-$container-padding);
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-	border-bottom: 1px solid #ebeef5;
-
-	::v-deep .el-form-item {
-		margin-bottom: 10px;
-		margin-right: $form-item-spacing;
-		vertical-align: top;
-	}
-
-	::v-deep .el-form-item:last-child {
-		margin-right: 0;
-	}
-
-	::v-deep .el-form-item__label {
-		text-align: right;
-		padding-right: 12px;
-		width: 100px !important;
-		line-height: 28px;
-		font-weight: normal;
-	}
-
-	// 统一所有输入框宽度
-	.form-input {
-		width: 180px !important;
-	}
-
-	// 日期选择器宽度
-	::v-deep .el-date-editor {
-		width: 180px !important;
-	}
-
-	// 下拉选择框宽度
-	::v-deep .el-select {
-		width: 180px !important;
-	}
-
-	// 确保表单项垂直对齐
-	::v-deep .el-form-item__content {
-		line-height: 28px;
-	}
-}
-
-.toolbar-wrapper {
-	margin-bottom: 15px;
-	padding: 0;
-	background-color: transparent;
-	width: 100%;
-
-	.toolbar-left {
-		padding: 0;
-	}
-
-	::v-deep .el-row {
-		margin: 0 !important;
-		display: flex;
-		align-items: center;
-	}
-
-	::v-deep .el-col {
-		padding: 0;
-	}
-
-	// 确保工具栏按钮对齐
-	::v-deep .el-button,
-	::v-deep .el-select {
-		vertical-align: middle;
-	}
-}
-
-// 表格容器样式
-.table-container {
-	position: relative;
-	background-color: #fff;
-	border-radius: 4px;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-	overflow: hidden;
-	padding: 0;
-
-	.el-table {
-		width: 100%;
-
-		th {
-			background-color: #f5f7fa;
-			color: #909399;
-			font-weight: 500;
-			text-align: center;
-			padding: 12px 10px;
-		}
-
-		td {
-			padding: 8px 10px;
-			font-size: 12px;
-			color: #606266;
-		}
-
-		// 默认居中对齐
-		.el-table-column--center {
-			text-align: center;
-		}
-
-		// 右对齐列
-		.el-table-column--right {
-			text-align: right;
-		}
-	}
-
-	// 确保余额列右对齐
-	::v-deep .el-table__body-wrapper .el-table__body .el-table__row .el-table__cell.is-right {
-		text-align: right !important;
-	}
-
-	::v-deep .el-table__header-wrapper .el-table__header .el-table__row .el-table__cell.is-right {
-		text-align: right !important;
-	}
-
-	#printBox {
-		position: relative;
-
-		::v-deep .el-table__header-wrapper {
-			position: sticky !important;
-			top: 0 !important;
-			z-index: 99 !important;
-			background-color: #fff !important;
-			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05) !important;
-		}
-
-		::v-deep .el-table__header {
-			position: relative;
-		}
-
-		::v-deep .el-table__body-wrapper {
-			overflow-x: auto;
-		}
-	}
-}
-
-.pagination-wrapper {
-	position: relative;
-	margin-top: 10px;
-	padding: 15px $container-padding;
-	background-color: #fff;
-	border-radius: 4px;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-	text-align: right;
-}
-
-.pagination-wrapper ::v-deep .pagination-container {
-	margin: 0;
-	padding: 0;
-}
-
-// 响应式优化
-@media screen and (max-width: 768px) {
-	.app-container {
-		padding: 0 10px;
-	}
-
-	#top-search-form-item {
-		padding: 15px 10px;
-		margin: 0 -10px 15px -10px;
-	}
-
-	.table-container {
-		overflow-x: auto;
-	}
-
-	.pagination-wrapper {
-		padding: 10px 10px;
-	}
-}
-
-// 确保表格列对齐
-::v-deep .el-table {
-	.el-table__cell {
-		padding: 8px 10px;
-	}
-}
-</style>
+<style scoped lang="scss"></style>
