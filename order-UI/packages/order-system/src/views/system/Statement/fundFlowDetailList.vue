@@ -111,7 +111,7 @@
 			</el-table-column>
 			<el-table-column v-if="columns[2].visible" prop="payNO" label="凭证号数" show-overflow-tooltip></el-table-column>
 			<el-table-column v-if="columns[3].visible" prop="changeType" label="类型（收款/付款）" show-overflow-tooltip></el-table-column>
-			<el-table-column v-if="columns[4].visible" prop="displayPayType" label="支付类型" show-overflow-tooltip></el-table-column>
+			<el-table-column v-if="columns[4].visible" prop="displayPayType" label="支付类型" show-overflow-tooltip width="200"></el-table-column>
 			<el-table-column v-if="columns[5].visible" prop="otherCompanyType" label="对象类型" show-overflow-tooltip></el-table-column>
 			<el-table-column v-if="columns[6].visible" prop="otherCompanyName" label="对象名称" show-overflow-tooltip></el-table-column>
 			<el-table-column v-if="columns[7].visible" prop="otherAcountsName" label="对方户名" show-overflow-tooltip></el-table-column>
@@ -181,7 +181,7 @@ export default {
 				{ key: 7, label: `对方户名`, visible: true },
 				{ key: 8, label: `对方银行卡号`, visible: true },
 				{ key: 9, label: `摘要`, visible: true }
-			],
+			]
 		};
 	},
 	methods: {
