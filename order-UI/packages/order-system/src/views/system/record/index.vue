@@ -89,7 +89,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[3].visible" label="收入方/资金流入方" align="center" prop="targetCompanyName" show-overflow-tooltip width="180">
+			<el-table-column v-if="columns[3].visible" label="收入方" align="center" prop="targetCompanyName" show-overflow-tooltip width="180">
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.targetCompanyName }}</div>
@@ -97,7 +97,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[4].visible" label="支出方/资金流出方" align="center" prop="sourceCompanyName" show-overflow-tooltip width="180">
+			<el-table-column v-if="columns[4].visible" label="支出方" align="center" prop="sourceCompanyName" show-overflow-tooltip width="180">
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.sourceCompanyName }}</div>
@@ -105,7 +105,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[5].visible" label="资金流入户名" align="center" prop="targetAccountName" show-overflow-tooltip width="180">
+			<el-table-column v-if="columns[5].visible" label="收款户名" align="center" prop="targetAccountName" show-overflow-tooltip width="180">
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.targetAccountName }}</div>
@@ -113,7 +113,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[6].visible" label="资金流入账号" align="center" prop="targetBankNo" show-overflow-tooltip width="170">
+			<el-table-column v-if="columns[6].visible" label="收款账号" align="center" prop="targetBankNo" show-overflow-tooltip width="170">
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.targetBankNo }}</div>
@@ -121,7 +121,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[7].visible" label="资金流出户名" align="center" prop="sourceAccountName" show-overflow-tooltip width="180">
+			<el-table-column v-if="columns[7].visible" label="支付户名" align="center" prop="sourceAccountName" show-overflow-tooltip width="180">
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.sourceAccountName }}</div>
@@ -129,7 +129,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[8].visible" label="资金流出账号" align="center" prop="sourceBankNo" show-overflow-tooltip width="170">
+			<el-table-column v-if="columns[8].visible" label="支付账号" align="center" prop="sourceBankNo" show-overflow-tooltip width="170">
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.sourceBankNo }}</div>
@@ -860,12 +860,12 @@ export default {
 				{ key: 0, label: 'ID', prop: 'id', visible: true },
 				{ key: 1, label: '交易时间', prop: 'transactionTime', visible: true },
 				{ key: 2, label: '金额', prop: 'amount', visible: true },
-				{ key: 3, label: '收入方/资金流入方', prop: 'targetCompanyName', visible: true },
-				{ key: 4, label: '支出方/资金流出方', prop: 'sourceCompanyName', visible: true },
-				{ key: 5, label: '资金流入户名', prop: 'targetAccountName', visible: true },
-				{ key: 6, label: '资金流入账号', prop: 'targetBankNo', visible: true },
-				{ key: 7, label: '资金流出户名', prop: 'sourceAccountName', visible: true },
-				{ key: 8, label: '资金流出账号', prop: 'sourceBankNo', visible: true },
+				{ key: 3, label: '收入方', prop: 'targetCompanyName', visible: true },
+				{ key: 4, label: '支出方', prop: 'sourceCompanyName', visible: true },
+				{ key: 5, label: '收款户名', prop: 'targetAccountName', visible: true },
+				{ key: 6, label: '收款账号', prop: 'targetBankNo', visible: true },
+				{ key: 7, label: '支付户名', prop: 'sourceAccountName', visible: true },
+				{ key: 8, label: '支付账号', prop: 'sourceBankNo', visible: true },
 				{ key: 9, label: '收入公司类型', prop: 'targetCompanyType', visible: true },
 				{ key: 10, label: '收入方支付类型', prop: 'targetPaymentType', visible: true },
 				{ key: 11, label: '支出方公司类型', prop: 'sourceCompanyType', visible: true },
