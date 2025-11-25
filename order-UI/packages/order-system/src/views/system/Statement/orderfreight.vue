@@ -90,15 +90,6 @@ export default {
 			<!--    时间范围搜索行-->
 			<el-row>
 				<el-form id="top-search-form-item" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
-					<!-- <el-form-item label="时间" prop="companyName">
-						<el-date-picker
-							v-model="queryParams.beginTime"
-							type="date"
-							size="mini"
-							value-format="yyyy-MM-dd"
-							placeholder="选择日期"
-						/>
-					</el-form-item> -->
 					<el-form-item>
 						<el-date-picker v-model="queryParams.endTime" type="date" size="mini" value-format="yyyy-MM-dd" placeholder="选择日期" />
 					</el-form-item>
@@ -138,48 +129,88 @@ export default {
 						"
 					>
 						<el-table-column label="序号" align="center" type="index" width="50" show-overflow-tooltip />
-						<!-- todo 缺少字段 -->
-						<!-- <el-table-column
-							v-if="columns[0].visible"
-							label="卸货客户"
-							align="center"
-							prop="carNo"
-							width="200"
-						/> -->
 						<el-table-column show-overflow-tooltip label="时间" align="center" width="140">
 							<template slot-scope="">
 								{{ queryParams.endTime }}
 							</template>
 						</el-table-column>
-						<el-table-column v-if="columns[0].visible" label="车号" align="center" prop="carNo" width="200" show-overflow-tooltip />
-						<el-table-column v-if="columns[1].visible" label="收款人姓名" align="center" prop="otherAcountsName" width="200" show-overflow-tooltip />
-						<el-table-column v-if="columns[2].visible" label="收款银行卡号" align="center" prop="otherBankNo" width="200" show-overflow-tooltip />
-						<el-table-column v-if="columns[3].visible" label="收款司机" align="center" prop="driverName" width="200" show-overflow-tooltip />
+						<el-table-column v-if="columns[1].visible" label="收款人姓名" align="center" width="200" show-overflow-tooltip>
+							<template slot-scope="scope">
+								{{ scope.row.otherAcountsName || 0 }}
+							</template>
+						</el-table-column>
+						<el-table-column v-if="columns[2].visible" label="收款银行卡号" align="center" width="200" show-overflow-tooltip>
+							<template slot-scope="scope">
+								{{ scope.row.otherBankNo || 0 }}
+							</template>
+						</el-table-column>
 
-						<el-table-column v-if="columns[4].visible" label="上日欠运费" align="center" prop="previousDayUnpaidAmount" width="200" show-overflow-tooltip />
-						<el-table-column v-if="columns[5].visible" label="当日应付运费" align="center" prop="dailyTotalAmount" width="200" show-overflow-tooltip />
-						<el-table-column v-if="columns[6].visible" label="本日付款金额" align="center" prop="dailyPaidAmount" width="200" show-overflow-tooltip />
+						<el-table-column v-if="columns[3].visible" label="收款司机" align="center" width="200" show-overflow-tooltip>
+							<template slot-scope="scope">
+								{{ scope.row.driverName || '' }}
+							</template>
+						</el-table-column>
+
+						<el-table-column v-if="columns[4].visible" label="上日欠运费" align="center" width="200" show-overflow-tooltip>
+							<template slot-scope="scope">
+								{{ scope.row.previousDayUnpaidAmount || 0 }}
+							</template>
+						</el-table-column>
+						<el-table-column v-if="columns[5].visible" label="当日应付运费" align="center" width="200" show-overflow-tooltip>
+							<template slot-scope="scope">
+								{{ scope.row.dailyTotalAmount || 0 }}
+							</template>
+						</el-table-column>
+						<el-table-column v-if="columns[6].visible" label="本日付款金额" align="center" width="200" show-overflow-tooltip>
+							<template slot-scope="scope">
+								{{ scope.row.dailyPaidAmount || 0 }}
+							</template>
+						</el-table-column>
 						<el-table-column v-if="columns[7].visible" label="本日欠款余额" align="center" width="200" show-overflow-tooltip>
 							<template slot-scope="scope">
-								{{ fix_2(Number(scope.row.previousDayUnpaidAmount) + Number(scope.row.dailyTotalAmount) - Number(scope.row.dailyPaidAmount)) }}
+								{{ fix_2(Number(scope.row.previousDayUnpaidAmount || 0) + Number(scope.row.dailyTotalAmount || 0) - Number(scope.row.dailyPaidAmount || 0)) }}
 							</template>
 						</el-table-column>
 
-						<el-table-column v-if="columns[8].visible" label="上月结转欠款金额" align="center" prop="previousMonthUnpaidAmount" width="200" show-overflow-tooltip />
-						<el-table-column v-if="columns[9].visible" label="本月付款金额合计" align="center" prop="monthlyPaidAmount" width="200" show-overflow-tooltip />
-						<el-table-column v-if="columns[10].visible" label="本月累计应付运费" align="center" prop="monthlyTotalAmount" width="200" show-overflow-tooltip />
+						<el-table-column v-if="columns[8].visible" label="上月结转欠款金额" align="center" width="200" show-overflow-tooltip>
+							<template slot-scope="scope">
+								{{ scope.row.previousMonthUnpaidAmount || 0 }}
+							</template>
+						</el-table-column>
+						<el-table-column v-if="columns[9].visible" label="本月付款金额合计" align="center" width="200" show-overflow-tooltip>
+							<template slot-scope="scope">
+								{{ scope.row.monthlyPaidAmount || 0 }}
+							</template>
+						</el-table-column>
+						<el-table-column v-if="columns[10].visible" label="本月累计应付运费" align="center" width="200" show-overflow-tooltip>
+							<template slot-scope="scope">
+								{{ scope.row.monthlyTotalAmount || 0 }}
+							</template>
+						</el-table-column>
 						<el-table-column v-if="columns[11].visible" label="本月欠款金额" align="center" width="200" show-overflow-tooltip>
 							<template slot-scope="scope">
-								{{ fix_2(Number(scope.row.previousMonthUnpaidAmount) + Number(scope.row.monthlyTotalAmount) - Number(scope.row.monthlyPaidAmount)) }}
+								{{ fix_2(Number(scope.row.previousMonthUnpaidAmount || 0) + Number(scope.row.monthlyTotalAmount || 0) - Number(scope.row.monthlyPaidAmount || 0)) }}
 							</template>
 						</el-table-column>
 
-						<el-table-column v-if="columns[12].visible" label="上年结转欠款金额" align="center" prop="previousYearUnpaidAmount" width="200" show-overflow-tooltip />
-						<el-table-column v-if="columns[13].visible" label="本年付款金额合计" align="center" prop="yearlyPaidAmount" width="200" show-overflow-tooltip />
-						<el-table-column v-if="columns[14].visible" label="本年累计应付运费" align="center" prop="yearlyTotalAmount" width="200" show-overflow-tooltip />
+						<el-table-column v-if="columns[12].visible" label="上年结转欠款金额" align="center" width="200" show-overflow-tooltip>
+							<template slot-scope="scope">
+								{{ scope.row.previousYearUnpaidAmount || 0 }}
+							</template>
+						</el-table-column>
+						<el-table-column v-if="columns[13].visible" label="本年付款金额合计" align="center" width="200" show-overflow-tooltip>
+							<template slot-scope="scope">
+								{{ scope.row.yearlyPaidAmount || 0 }}
+							</template>
+						</el-table-column>
+						<el-table-column v-if="columns[14].visible" label="本年累计应付运费" align="center" width="200" show-overflow-tooltip>
+							<template slot-scope="scope">
+								{{ scope.row.yearlyTotalAmount || 0 }}
+							</template>
+						</el-table-column>
 						<el-table-column v-if="columns[15].visible" label="本年欠款金额" align="center" width="200" show-overflow-tooltip>
 							<template slot-scope="scope">
-								{{ fix_2(Number(scope.row.previousYearUnpaidAmount) + Number(scope.row.yearlyTotalAmount) - Number(scope.row.yearlyPaidAmount)) }}
+								{{ fix_2(Number(scope.row.previousYearUnpaidAmount || 0) + Number(scope.row.yearlyTotalAmount || 0) - Number(scope.row.yearlyPaidAmount || 0)) }}
 							</template>
 						</el-table-column>
 					</el-table>
@@ -189,15 +220,6 @@ export default {
 		</div>
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="请选择导出时间" :visible.sync="dialogVisible" width="30%">
 			<el-form ref="queryForm" :model="queryParams" size="mini" label-width="68px">
-				<!-- <el-form-item label="开始时间" prop="beginTime">
-					<el-date-picker
-						v-model="queryParams.beginTime"
-						type="date"
-						placeholder="选择时间"
-						value-format="yyyy-MM-dd"
-						size="mini"
-					/>
-				</el-form-item> -->
 				<el-form-item label="时间" prop="endTime">
 					<el-date-picker v-model="queryParams.endTime" type="date" placeholder="选择时间" value-format="yyyy-MM-dd" size="mini" />
 				</el-form-item>
