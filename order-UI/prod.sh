@@ -1,0 +1,1 @@
+docker run -d -p 40085:40085 order-system-ui:latest

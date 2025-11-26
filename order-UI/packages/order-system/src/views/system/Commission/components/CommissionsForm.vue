@@ -50,9 +50,10 @@ export default {
 			queryOrder: null,
 			rules: {
 				commissionUnitPrice: [
-					{ required: true, message: '佣金单价不能为空', trigger: 'blur' },
-					{ pattern: /^[0-9]+(.[0-9]{1,2})?$/, message: '请输入数字，且最多保留两位小数', trigger: 'blur' }
-				]
+					{ required: true, message: '请输入佣金单价', trigger: 'blur' },
+					{ pattern: /^-?\d+(\.\d{1,4})?$/, message: '佣金单价格式不正确，最多保留4位小数', trigger: 'blur' }
+				],
+				otherPaymentAmount: [{ pattern: /^-?\d+(\.\d{1,2})?$/, message: '其他付款金额格式不正确，最多保留2位小数', trigger: 'blur' }]
 			}
 		};
 	},
@@ -125,10 +126,10 @@ export default {
 	<div>
 		<el-form ref="commissionForm" :model="form" :rules="rules" label-width="140px">
 			<el-form-item label="佣金单价" prop="commissionUnitPrice">
-				<el-input v-model="form.commissionUnitPrice" placeholder="请输入内容" />
+				<el-input v-model="form.commissionUnitPrice" placeholder="请输入佣金单价" />
 			</el-form-item>
 			<el-form-item label="其他方式金额" prop="otherPaymentAmount">
-				<el-input v-model="form.otherPaymentAmount" placeholder="请输入内容" />
+				<el-input v-model="form.otherPaymentAmount" placeholder="请输入其他付款金额" />
 			</el-form-item>
 		</el-form>
 	</div>

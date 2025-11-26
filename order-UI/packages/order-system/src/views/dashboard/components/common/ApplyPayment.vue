@@ -79,25 +79,13 @@
 					<span style="color: #1c84c6; font-size: 12px">请先注意选择正确的对方公司类型!</span>
 				</el-form-item>
 
-				<el-form-item
-					v-if="value && value !== PUBLIC_DICT_TYPE.EMPLOYEE && value !== PAYMENT_TARGET_TYPE.PAYMENT_FEE"
-					:label="value === PUBLIC_DICT_TYPE.DRIVER ? '司机' : '对方公司'"
-					prop="companyName"
-				>
+				<el-form-item v-if="value && value !== PUBLIC_DICT_TYPE.EMPLOYEE && value !== PAYMENT_TARGET_TYPE.PAYMENT_FEE" :label="value === PUBLIC_DICT_TYPE.DRIVER ? '司机' : '对方公司'" prop="companyName">
 					<el-row>
 						<el-col :span="14">
 							<el-input disabled v-model="form.companyName" placeholder="请选择" />
 						</el-col>
 						<el-col :span="3" v-if="value === PUBLIC_DICT_TYPE.DRIVER">
-							<SearchOption
-								:limit-info="{}"
-								:get-data="listCars"
-								query-label="车牌"
-								query-info="carNo"
-								:query-name="queryCars"
-								@commitBack="handleDriverSelect"
-								@update:queryName="value => (queryCars = value)"
-							>
+							<SearchOption :limit-info="{}" :get-data="listCars" query-label="车牌" query-info="carNo" :query-name="queryCars" @commitBack="handleDriverSelect" @update:queryName="value => (queryCars = value)">
 								<template #table-columns>
 									<el-table-column label="车牌" align="center" prop="carNo" />
 									<el-table-column label="司机" align="center" prop="driver" />
@@ -108,16 +96,7 @@
 							</SearchOption>
 						</el-col>
 						<el-col :span="4" v-else>
-							<SearchOption
-								:limit-info="{ companyType: value }"
-								:get-data="listCompany"
-								icon="el-icon-search"
-								:query-label="value"
-								query-info="companyName"
-								:query-name="queryOther"
-								@update:queryName="handleUpdateQueryNameOther"
-								@commitBack="handleCommitBackOther"
-							>
+							<SearchOption :limit-info="{ companyType: value }" :get-data="listCompany" icon="el-icon-search" :query-label="value" query-info="companyName" :query-name="queryOther" @update:queryName="handleUpdateQueryNameOther" @commitBack="handleCommitBackOther">
 								<template #table-columns>
 									<el-table-column :label="`${value}名称`" align="center" prop="companyName" width="180" show-overflow-tooltip />
 									<el-table-column label="老板姓名" align="center" prop="leader" width="180" show-overflow-tooltip />
@@ -363,13 +342,7 @@
 					<el-input v-model="form.reason" type="textarea" placeholder="请输入内容" />
 				</el-form-item>
 				<el-form-item label="附件" prop="attachmentIds">
-					<UploadFilesButton
-						ref="attachmentUpload"
-						flag="attachments"
-						:extra-info="{ moduleType: 'paymentApply', formId: form.id }"
-						:initial-attachments="form.attachmentList || []"
-						@files-updated="handleAttachmentFilesUpdated"
-					/>
+					<UploadFilesButton ref="attachmentUpload" flag="attachments" :extra-info="{ moduleType: 'paymentApply', formId: form.id }" :initial-attachments="form.attachmentList || []" @files-updated="handleAttachmentFilesUpdated" />
 				</el-form-item>
 			</template>
 			<el-form-item label="备注" prop="comments">
@@ -704,6 +677,7 @@ export default {
 			// 如果是员工 则需要把 companyId 赋值为员工的 id
 			if (this.value === PUBLIC_DICT_TYPE.EMPLOYEE) {
 				this.form.companyId = row.companyId;
+				this.form.companyName = row.companyName;
 			}
 			this.form.otherAccountsName = row.acountsName;
 		},
