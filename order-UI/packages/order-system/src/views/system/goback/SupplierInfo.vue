@@ -163,8 +163,8 @@
 				<el-table-column prop="moneyAmountLocal" label="余额本币" show-overflow-tooltip>
 					<template #default="scope">
 						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-							<div slot="content">{{ scope.row.moneyAmountLocal }}</div>
-							<span>{{ scope.row.moneyAmountLocal }}</span>
+							<div slot="content">{{ formatBalance(scope.row.moneyAmountLocal) }}</div>
+							<span>{{ formatBalance(scope.row.moneyAmountLocal) }}</span>
 						</el-tooltip>
 					</template>
 				</el-table-column>
@@ -206,7 +206,7 @@ import RECEIVE_MONEY from '@/components/NeedToShow/RECEIVE_MONEY.vue';
 import INVENTORYDETAIL from '@/components/NeedToShow/INVENTORYDETAIL.vue';
 import ORDER_DETAIL from '@/components/NeedToShow/ORDER_DETAIL.vue';
 import BALANCEACCOUNT from '@/components/NeedToShow/BALANCEACCOUNT.vue';
-import { formatSupplierBalance, isDebit, isCredit } from '@/utils/trash/utils';
+import { formatSupplierBalance, formatBalance, isDebit, isCredit } from '@/utils/trash/utils';
 import _ from 'lodash';
 import { isGoodsOrderDisplay, isInventoryDisplay, mergeSpecialTableData } from '@/api/system/goodsOrder';
 import InventoryDayInfo from '@/components/InventoryDayInfo/index.vue';
@@ -266,6 +266,7 @@ export default {
 		add,
 		subtract,
 		number,
+		formatBalance,
 		// 查询方法
 		getList() {
 			this.$refs['form']?.validate(valid => {
@@ -402,10 +403,11 @@ export default {
 								for (let i = 0; i < item.length; i++) {
 									const amount = number(item[i].moneyAmount || 0);
 									// 根据 debitCredit 判断金额的正负影响
+									// 如果是供应商 并且是借方 此时金额需要取反
 									if (isDebit(item[i].debitCredit)) {
-										nowMoney = subtract(nowMoney, amount); // 借方：减少欠款
+										nowMoney = add(nowMoney, -amount); // 借方：减少欠款
 									} else if (isCredit(item[i].debitCredit)) {
-										nowMoney = add(nowMoney, amount); // 贷方：增加欠款
+										nowMoney = subtract(nowMoney, amount); // 贷方：增加欠款
 									}
 								}
 								// 准备当天借方和贷方明细列表 (用于弹窗)

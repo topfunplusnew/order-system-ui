@@ -168,8 +168,8 @@
 				<el-table-column prop="moneyAmountLocal" label="余额本币" show-overflow-tooltip>
 					<template #default="scope">
 						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-							<div slot="content">{{ scope.row.moneyAmountLocal }}</div>
-							<span>{{ scope.row.moneyAmountLocal }}</span>
+							<div slot="content">{{ formatBalance(scope.row.moneyAmountLocal) }}</div>
+							<span>{{ formatBalance(scope.row.moneyAmountLocal) }}</span>
 						</el-tooltip>
 					</template>
 				</el-table-column>
@@ -396,12 +396,16 @@ export default {
 							const item = _.cloneDeep(sourceData[date]);
 							if (Array.isArray(item)) {
 								for (let i = 0; i < item.length; i++) {
-									const amount = abs(number(item[i].moneyAmount || 0));
+									// 这里不取绝对值 要根据页面决定哪一列取相反数
+									const amount = number(item[i].moneyAmount || 0);
 									// 根据 debitCredit 判断金额的正负影响
+									// 如果是客户 并且是借方
 									if (isDebit(item[i].debitCredit)) {
 										nowMoney = add(nowMoney, amount); // 借方：增加欠款
+
+										// 这个地方后端对于数据进行了取反操作，根据判断是贷方，将金额（MoneyAmount）给正常取反就行。
 									} else if (isCredit(item[i].debitCredit)) {
-										nowMoney = subtract(nowMoney, amount); // 贷方：减少欠款
+										nowMoney = subtract(nowMoney, -amount); // 贷方：减少欠款
 									}
 								}
 								const condition = detail => {

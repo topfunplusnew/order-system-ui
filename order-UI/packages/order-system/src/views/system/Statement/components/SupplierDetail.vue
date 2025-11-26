@@ -25,8 +25,9 @@ import SearchOption from '@/components/SearchOption.vue';
 import { parseTime } from '@/utils/ruoyi';
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
 import { listCompany } from '@/api/system/company';
-import { formatSupplierBalance } from '../../../../utils/trash/utils';
+import { formatBalance, isDebit, isCredit } from '../../../../utils/trash/utils';
 import { common_excel } from '@/views/dashboard/mixins/common/common_excel';
+import { number, add, subtract, abs } from 'mathjs';
 
 export default {
 	name: 'SupplierDetail',
@@ -63,8 +64,14 @@ export default {
 
 	methods: {
 		fix_2,
-		formatSupplierBalance,
+		formatBalance,
 		listCompany,
+		number,
+		add,
+		subtract,
+		abs,
+		isDebit,
+		isCredit,
 		handleCheck() {
 			// 清除一下状态
 			this.tableData = [];
@@ -134,15 +141,31 @@ export default {
 				}
 				try {
 					// 上年结转的余额
-					let lastMoney = Number(lastYearDetail.moneyAmount);
+					let currentBalance = number(lastYearDetail.moneyAmount || 0);
 					// 累计金额
-					let nowMoney = Number(0);
+					let nowMoney = number(0);
 					// 拿到汇总账
 					const append = res.data.map(item => {
-						// 金额累计计算
-						nowMoney = lastMoney + Number(item.moneyAmount);
-						// 更新
-						lastMoney = nowMoney;
+						// 金额累计计算 - 根据 debitCredit 判断借贷方向
+						const amount = number(item.moneyAmount || 0);
+						if (item.debitCredit && (isDebit(item.debitCredit) || isCredit(item.debitCredit))) {
+							// 如果有 debitCredit 字段，根据借贷方向计算
+							if (isDebit(item.debitCredit)) {
+								// 借方：供应商欠款减少
+								nowMoney = add(currentBalance, -amount);
+							} else if (isCredit(item.debitCredit)) {
+								// 贷方：供应商欠款增加
+								nowMoney = subtract(currentBalance, amount);
+							} else {
+								// 没有明确的借贷方向，直接累加
+								nowMoney = add(currentBalance, amount);
+							}
+						} else {
+							// 没有 debitCredit 字段，直接累加
+							nowMoney = add(currentBalance, amount);
+						}
+						// 更新余额
+						currentBalance = nowMoney;
 						// 如果有了摘要 不做处理
 						if (item.summary) {
 							return {
@@ -325,25 +348,25 @@ export default {
 				<!--        这两列应该是根据moneyAmount字段的正负进行判断-->
 				<el-table-column show-overflow-tooltip label="借方发生额(付供应商货款)" align="center" width="140">
 					<template slot-scope="scope">
-						{{ scope.row.moneyAmount > 0 ? '-' : Math.abs(scope.row.moneyAmount) }}
+						{{ scope.row.moneyAmount > 0 ? '-' : abs(scope.row.moneyAmount) }}
 					</template>
 				</el-table-column>
 				<el-table-column show-overflow-tooltip label="贷方(在供应商那里提货)" align="center" width="140">
 					<template slot-scope="scope">
-						{{ scope.row.moneyAmount > 0 ? Math.abs(scope.row.moneyAmount) : '-' }}
+						{{ scope.row.moneyAmount > 0 ? abs(scope.row.moneyAmount) : '-' }}
 					</template>
 				</el-table-column>
 
 				<!--        方向根据余额本币的正负进行判断 这个要先查询上年结转的余额本币 进行填充-->
 				<el-table-column show-overflow-tooltip label="方向" align="center" width="140">
 					<template slot-scope="scope">
-						{{ scope.row.moneyAmountLocal > 0 ? '贷方' : '借方' }}
+						{{ scope.row.moneyAmountLocal > 0 ? '借方' : '贷方' }}
 					</template>
 				</el-table-column>
 
 				<el-table-column show-overflow-tooltip label="余额本币" align="center" prop="moneyAmountLocal" width="140">
 					<template slot-scope="scope">
-						{{ formatSupplierBalance(scope.row.moneyAmountLocal != null ? Math.abs(scope.row.moneyAmountLocal) : scope.row.moneyAmountLocal) }}
+						{{ formatBalance(scope.row.moneyAmountLocal != null ? scope.row.moneyAmountLocal : 0) }}
 					</template>
 				</el-table-column>
 				<el-table-column show-overflow-tooltip label="我方收款户名" align="center" prop="selfAccountsName" width="140" />
