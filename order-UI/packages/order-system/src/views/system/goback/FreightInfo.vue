@@ -333,13 +333,13 @@ export default {
 					const calculateLenderAndBorrower = dayData => {
 						const { itemTotalLender, itemTotalBorrower } = dayData.reduce(
 							(acc, customerDetail) => {
-								const amount = abs(number(customerDetail.moneyAmount || 0));
+								const amount = number(customerDetail.moneyAmount || 0);
 								if (isDebit(customerDetail.debitCredit)) {
 									// 借方：司机欠款减少
-									acc.itemTotalLender = add(acc.itemTotalLender, amount);
+									acc.itemTotalLender = add(acc.itemTotalLender, -amount);
 								} else if (isCredit(customerDetail.debitCredit)) {
 									// 贷方：司机欠款增加
-									acc.itemTotalBorrower = add(acc.itemTotalBorrower, amount);
+									acc.itemTotalBorrower = subtract(acc.itemTotalBorrower, amount);
 								}
 								return acc;
 							},
