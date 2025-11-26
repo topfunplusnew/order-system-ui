@@ -41,11 +41,13 @@ RUN apk add --no-cache gettext iproute2
 # 复制构建产物到nginx目录
 COPY --from=builder /app/packages/order-system/dist /usr/share/nginx/html
 
-# 复制nginx配置文件模板（nginx:alpine支持templates目录自动处理）
-COPY nginx.conf /etc/nginx/templates/default.conf.template
+# 创建配置目录和日志目录
+RUN mkdir -p /opt/front /opt/front/log
 
-# 创建日志目录
-RUN mkdir -p /opt/order
+# 复制nginx配置文件模板到/opt/front（支持挂载覆盖）
+COPY nginx.conf /opt/front/nginx.conf.template
+# 同时保留默认位置作为后备
+COPY nginx.conf /etc/nginx/templates/default.conf.template
 
 # 复制启动脚本
 COPY docker-entrypoint.sh /docker-entrypoint.sh
