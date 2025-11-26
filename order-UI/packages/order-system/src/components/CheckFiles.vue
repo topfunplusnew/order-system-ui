@@ -104,53 +104,52 @@ export default {
 </script>
 
 <template>
-  <div>
-    <!-- 有附件时显示图标；无附件时不展示任何内容（仍保留点击区域以便上传，可按需移除 @click） -->
-    <div class="attachment-entry" v-if="filteredAttachments.length > 0" @click="openAttachmentPanel">
-      <el-tooltip content="点击查看/上传附件" placement="top">
-        <div class="attachment-icon-wrapper">
-          <i class="el-icon-picture" v-once />
-        </div>
-      </el-tooltip>
-    </div>
-    <div v-else class="attachment-entry empty" @click="openAttachmentPanel"></div>
+	<div>
+		<!-- 有附件时显示图标；无附件时不展示任何内容（仍保留点击区域以便上传，可按需移除 @click） -->
+		<div class="attachment-entry" v-if="filteredAttachments.length > 0" @click="openAttachmentPanel">
+			<el-tooltip content="点击查看/上传附件" placement="top">
+				<div class="attachment-icon-wrapper">
+					<i class="el-icon-picture" v-once />
+				</div>
+			</el-tooltip>
+		</div>
+		<div v-else class="attachment-entry empty" @click="openAttachmentPanel"></div>
 
-    <!-- 文件列表 -->
-    <el-dialog :modal="false" v-dialogDrag v-el-relen-dialog title="文件列表" :visible.sync="dialogVisible" width="670px" height="1000px" append-to-body :close-on-click-modal="false" :close-on-press-escape="false" custom-class="check-files-dialog" @close="isUploading = false">
-      <h3 v-once>附件列表</h3>
-      <div class="file-list" :class="{ 'empty-list': checkFileList.length === 0 }">
-        <!-- 上传过的文件列表 -->
-        <template v-if="checkFileList.length > 0">
-          <FileItems v-for="(item, index) in checkFileList" :key="item.id || index" :fileItem="item" @handleFile="handleDeleteFile" />
-          <!-- 支持上传 - 有附件时显示在列表最后 -->
-          <FileShowItem @handleFile="handleAddFile" v-if="isUpload" variant="normal" />
-        </template>
-        <template v-else>
-          <div class="empty-content">
-            <div class="empty-text">暂无附件</div>
-            <!-- 支持上传 - 无附件时显示在中央 使用空状态特有样式 -->
-            <FileShowItem @handleFile="handleAddFile" v-if="isUpload" variant="empty" />
-          </div>
-        </template>
-      </div>
+		<!-- 文件列表 -->
+		<el-dialog :modal="false" v-dialogDrag v-el-relen-dialog title="文件列表" :visible.sync="dialogVisible" width="670px" height="1000px" append-to-body :close-on-click-modal="false" :close-on-press-escape="false" custom-class="check-files-dialog" @close="isUploading = false">
+			<h3 v-once>附件列表</h3>
+			<div class="file-list" :class="{ 'empty-list': checkFileList.length === 0 }">
+				<!-- 上传过的文件列表 -->
+				<template v-if="checkFileList.length > 0">
+					<FileItems :canDelete="isUpload" v-for="(item, index) in checkFileList" :key="item.id || index" :fileItem="item" @handleFile="handleDeleteFile" />
+					<!-- 支持上传 - 有附件时显示在列表最后 -->
+					<FileShowItem @handleFile="handleAddFile" v-if="isUpload" variant="normal" />
+				</template>
+				<template v-else>
+					<div class="empty-content">
+						<div class="empty-text">暂无附件</div>
+						<!-- 支持上传 - 无附件时显示在中央 使用空状态特有样式 -->
+						<FileShowItem @handleFile="handleAddFile" v-if="isUpload" variant="empty" />
+					</div>
+				</template>
+			</div>
 
-      <h3>附件图片预览</h3>
-      <div class="img-preview-container">
-        <div class="img-list">
-          <!-- 只渲染checkFileList中的图片 -->
-          <div class="img-wrapper">
-            <img v-for="(item, index) in imgList" :key="index" :src="showImgSrc(item)" alt="该附件无图片/图片无法查看" class="preview-img" />
-          </div>
-        </div>
-      </div>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="closeDialog">取 消</el-button>
-        <el-button type="primary" @click="closeDialog">确 定</el-button>
-      </span>
-    </el-dialog>
-  </div>
+			<h3>附件图片预览</h3>
+			<div class="img-preview-container">
+				<div class="img-list">
+					<!-- 只渲染checkFileList中的图片 -->
+					<div class="img-wrapper">
+						<img v-for="(item, index) in imgList" :key="index" :src="showImgSrc(item)" alt="该附件无图片/图片无法查看" class="preview-img" />
+					</div>
+				</div>
+			</div>
+			<span slot="footer" class="dialog-footer">
+				<el-button @click="closeDialog">取 消</el-button>
+				<el-button type="primary" @click="closeDialog">确 定</el-button>
+			</span>
+		</el-dialog>
+	</div>
 </template>
-
 
 <style scoped lang="scss">
 .attachment-entry {

@@ -17,6 +17,10 @@ export default {
 		fileItem: {
 			type: Object,
 			required: true
+		},
+		canDelete: {
+			type: Boolean,
+			default: true
 		}
 	},
 	data() {
@@ -67,7 +71,7 @@ export default {
 <template>
 	<div>
 		<div class="file-container">
-			<div class="delete">
+			<div class="delete" v-if="canDelete">
 				<el-button type="danger" size="mini" circle icon="el-icon-close" round @click="handleDeleteFile"></el-button>
 			</div>
 			<div class="file-icon">
