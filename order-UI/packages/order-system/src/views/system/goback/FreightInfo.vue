@@ -67,11 +67,11 @@
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">
 							<span>
-								{{ Math.abs(scope.row.lender) }}
+								{{ abs(scope.row.lender) }}
 							</span>
 						</div>
 						<span>
-							{{ Math.abs(scope.row.lender) }}
+							{{ abs(scope.row.lender) }}
 						</span>
 					</el-tooltip>
 				</template>
@@ -80,11 +80,11 @@
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">
-							<span style="margin-right: 10px">{{ Math.abs(scope.row.borrower) }}</span>
+							<span style="margin-right: 10px">{{ abs(scope.row.borrower) }}</span>
 							<i class="el-icon-s-order" style="cursor: pointer" @click="handleCheckBorrowerDetailList(scope.row)"></i>
 						</div>
 						<div style="display: flex; align-items: center; justify-content: center">
-							<span style="margin-right: 5px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{ Math.abs(scope.row.borrower) }}</span>
+							<span style="margin-right: 5px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{ abs(scope.row.borrower) }}</span>
 							<i v-if="scope.row.borrowerList && scope.row.borrowerList.length > 0" class="el-icon-s-order" style="cursor: pointer; flex-shrink: 0; margin-left: 5px" @click.stop="handleCheckBorrowerDetailList(scope.row)"></i>
 						</div>
 					</el-tooltip>
@@ -193,6 +193,7 @@ import { isGoodsOrderDisplay, isInventoryDisplay, mergeSpecialTableData } from '
 import OrderDayInfo from '@/components/OrderDayInfor/index.vue';
 import InventoryDayInfo from '@/components/InventoryDayInfo/index.vue';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
+import { abs, add, subtract, number } from 'mathjs';
 
 export default {
 	name: 'FreightInfo',
@@ -234,6 +235,10 @@ export default {
 		formatSupplierBalance,
 		listCars,
 		listVehicles,
+		abs,
+		add,
+		subtract,
+		number,
 		// 查询方法
 		getList() {
 			this.$refs['form']?.validate(valid => {
@@ -279,7 +284,7 @@ export default {
 					sums[index] = '总价';
 					return;
 				}
-				const values = data.map(item => Number(item[column.property]));
+				const values = data.map(item => number(item[column.property]));
 				const exclude = ['operateDate', 'payNo', 'lender', 'borrower'];
 				if (exclude.includes(column.property)) {
 					sums[index] = '';
@@ -287,9 +292,9 @@ export default {
 				}
 				if (!values.every(value => isNaN(value))) {
 					sums[index] = values.reduce((prev, curr) => {
-						const value = Number(curr);
+						const value = number(curr);
 						if (!isNaN(value)) {
-							return prev + curr;
+							return add(prev, curr);
 						} else {
 							return prev;
 						}
@@ -323,23 +328,23 @@ export default {
 					}
 
 					// 辅助函数：计算某天数据的借方和贷方总额
-					function calculateLenderAndBorrower(dayData) {
+					const calculateLenderAndBorrower = dayData => {
 						const { itemTotalLender, itemTotalBorrower } = dayData.reduce(
 							(acc, customerDetail) => {
-								const amount = Number(customerDetail.moneyAmount || 0);
+								const amount = abs(number(customerDetail.moneyAmount || 0));
 								if (isDebit(customerDetail.debitCredit)) {
 									// 借方：司机欠款减少
-									acc.itemTotalLender += amount;
+									acc.itemTotalLender = add(acc.itemTotalLender, amount);
 								} else if (isCredit(customerDetail.debitCredit)) {
 									// 贷方：司机欠款增加
-									acc.itemTotalBorrower += amount;
+									acc.itemTotalBorrower = add(acc.itemTotalBorrower, amount);
 								}
 								return acc;
 							},
 							{ itemTotalLender: 0, itemTotalBorrower: 0 } // 初始值
 						);
 						return [itemTotalLender, itemTotalBorrower];
-					}
+					};
 
 					if (Array.isArray(res.rows)) {
 						if (res.rows.length <= 0) {
@@ -348,9 +353,9 @@ export default {
 							return;
 						}
 						try {
-							let nowMoney = Number(0);
+							let nowMoney = number(0);
 							// 上年结转的余额 (运费：正数表示对方欠我们运费，负数表示我们欠对方)
-							let currentBalance = Number(lastYearDetail.moneyAmount || 0);
+							let currentBalance = number(lastYearDetail.moneyAmount || 0);
 							let sourceData = _.cloneDeep(res.rows);
 
 							// 对订单和库存数据进行合并预处理
@@ -373,19 +378,19 @@ export default {
 							this.tableData = Object.keys(sourceData).map(date => {
 								const item = _.cloneDeep(sourceData[date]);
 								for (let i = 0; i < item.length; i++) {
-									const amount = Number(item[i].moneyAmount || 0);
+									const amount = number(item[i].moneyAmount || 0);
 									// 根据 debitCredit 判断金额的正负影响
 									if (isDebit(item[i].debitCredit)) {
-										nowMoney -= amount; // 借方：减少欠款
+										nowMoney = subtract(nowMoney, amount); // 借方：减少欠款
 									} else if (isCredit(item[i].debitCredit)) {
-										nowMoney += amount; // 贷方：增加欠款
+										nowMoney = add(nowMoney, amount); // 贷方：增加欠款
 									}
 								}
 								// 准备当天借方和贷方明细列表 (用于弹窗)
 								const condition = detail => {
-									const amount = Number(detail.moneyAmount || 0);
-									const lender = isDebit(detail.debitCredit) ? Math.abs(amount) : 0;
-									const borrower = isCredit(detail.debitCredit) ? Math.abs(amount) : 0;
+									const amount = number(detail.moneyAmount || 0);
+									const lender = isDebit(detail.debitCredit) ? abs(amount) : 0;
+									const borrower = isCredit(detail.debitCredit) ? abs(amount) : 0;
 									return {
 										date: detail.operateDate,
 										payNo: detail.payNo,
@@ -407,7 +412,7 @@ export default {
 									payNo: '', // 主表该列现在显示明细，留空或移除
 									lender: map[date].lender,
 									borrower: map[date].borrower,
-									moneyAmountLocal: fix(Number(currentBalance) + Number(nowMoney)),
+									moneyAmountLocal: fix(add(currentBalance, nowMoney)),
 									lenderList, // 借方明细列表 (弹窗用)
 									borrowerList // 贷方明细列表 (弹窗用)
 								};

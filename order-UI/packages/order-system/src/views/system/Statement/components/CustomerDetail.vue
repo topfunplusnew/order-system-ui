@@ -350,7 +350,7 @@ export default {
 
 				<el-table-column show-overflow-tooltip label="余额本币" align="center" prop="moneyAmountLocal" width="140">
 					<template slot-scope="scope">
-						{{ formatBalance(fix_2(scope.row.moneyAmountLocal)) }}
+						{{ formatBalance(fix_2(scope.row.moneyAmountLocal != null ? Math.abs(scope.row.moneyAmountLocal) : scope.row.moneyAmountLocal)) }}
 					</template>
 				</el-table-column>
 				<el-table-column show-overflow-tooltip label="我方收款户名" align="center" prop="selfAccountsName" width="140" />
