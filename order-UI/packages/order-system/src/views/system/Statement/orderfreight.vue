@@ -51,6 +51,24 @@ export default {
 	},
 	methods: {
 		fix_2,
+		// 格式化数字值：0显示0，空值显示为空
+		formatNumberValue(value) {
+			if (value === null || value === undefined || value === '') return '';
+			const num = Number(value);
+			return isNaN(num) ? '' : fix_2(num);
+		},
+		// 格式化文本值：空值显示为空
+		formatTextValue(value) {
+			return value === null || value === undefined || value === '' ? '' : value;
+		},
+		// 计算欠款余额：如果所有参与计算的值为空则返回空，否则计算
+		calculateBalance(previous, total, paid) {
+			const prev = previous === null || previous === undefined || previous === '' ? null : Number(previous);
+			const tot = total === null || total === undefined || total === '' ? null : Number(total);
+			const pay = paid === null || paid === undefined || paid === '' ? null : Number(paid);
+			if (prev === null && tot === null && pay === null) return '';
+			return fix_2((prev === null ? 0 : prev) + (tot === null ? 0 : tot) - (pay === null ? 0 : pay));
+		},
 		// 时间查询
 		handleQuery() {
 			getOrderFreight(this.queryParams).then(res => {
@@ -136,81 +154,81 @@ export default {
 						</el-table-column>
 						<el-table-column v-if="columns[1].visible" label="收款人姓名" align="center" width="200" show-overflow-tooltip>
 							<template slot-scope="scope">
-								{{ scope.row.otherAcountsName || 0 }}
+								{{ formatTextValue(scope.row.otherAcountsName) }}
 							</template>
 						</el-table-column>
 						<el-table-column v-if="columns[2].visible" label="收款银行卡号" align="center" width="200" show-overflow-tooltip>
 							<template slot-scope="scope">
-								{{ scope.row.otherBankNo || 0 }}
+								{{ formatTextValue(scope.row.otherBankNo) }}
 							</template>
 						</el-table-column>
 
 						<el-table-column v-if="columns[3].visible" label="收款司机" align="center" width="200" show-overflow-tooltip>
 							<template slot-scope="scope">
-								{{ scope.row.driverName || '' }}
+								{{ formatTextValue(scope.row.driverName) }}
 							</template>
 						</el-table-column>
 
 						<el-table-column v-if="columns[4].visible" label="上日欠运费" align="center" width="200" show-overflow-tooltip>
 							<template slot-scope="scope">
-								{{ scope.row.previousDayUnpaidAmount || 0 }}
+								{{ formatNumberValue(scope.row.previousDayUnpaidAmount) }}
 							</template>
 						</el-table-column>
 						<el-table-column v-if="columns[5].visible" label="当日应付运费" align="center" width="200" show-overflow-tooltip>
 							<template slot-scope="scope">
-								{{ scope.row.dailyTotalAmount || 0 }}
+								{{ formatNumberValue(scope.row.dailyTotalAmount) }}
 							</template>
 						</el-table-column>
 						<el-table-column v-if="columns[6].visible" label="本日付款金额" align="center" width="200" show-overflow-tooltip>
 							<template slot-scope="scope">
-								{{ scope.row.dailyPaidAmount || 0 }}
+								{{ formatNumberValue(scope.row.dailyPaidAmount) }}
 							</template>
 						</el-table-column>
 						<el-table-column v-if="columns[7].visible" label="本日欠款余额" align="center" width="200" show-overflow-tooltip>
 							<template slot-scope="scope">
-								{{ fix_2(Number(scope.row.previousDayUnpaidAmount || 0) + Number(scope.row.dailyTotalAmount || 0) - Number(scope.row.dailyPaidAmount || 0)) }}
+								{{ calculateBalance(scope.row.previousDayUnpaidAmount, scope.row.dailyTotalAmount, -scope.row.dailyPaidAmount) }}
 							</template>
 						</el-table-column>
 
 						<el-table-column v-if="columns[8].visible" label="上月结转欠款金额" align="center" width="200" show-overflow-tooltip>
 							<template slot-scope="scope">
-								{{ scope.row.previousMonthUnpaidAmount || 0 }}
+								{{ formatNumberValue(scope.row.previousMonthUnpaidAmount) }}
 							</template>
 						</el-table-column>
 						<el-table-column v-if="columns[9].visible" label="本月付款金额合计" align="center" width="200" show-overflow-tooltip>
 							<template slot-scope="scope">
-								{{ scope.row.monthlyPaidAmount || 0 }}
+								{{ formatNumberValue(scope.row.monthlyPaidAmount) }}
 							</template>
 						</el-table-column>
 						<el-table-column v-if="columns[10].visible" label="本月累计应付运费" align="center" width="200" show-overflow-tooltip>
 							<template slot-scope="scope">
-								{{ scope.row.monthlyTotalAmount || 0 }}
+								{{ formatNumberValue(scope.row.monthlyTotalAmount) }}
 							</template>
 						</el-table-column>
 						<el-table-column v-if="columns[11].visible" label="本月欠款金额" align="center" width="200" show-overflow-tooltip>
 							<template slot-scope="scope">
-								{{ fix_2(Number(scope.row.previousMonthUnpaidAmount || 0) + Number(scope.row.monthlyTotalAmount || 0) - Number(scope.row.monthlyPaidAmount || 0)) }}
+								{{ calculateBalance(scope.row.previousMonthUnpaidAmount, scope.row.monthlyTotalAmount, -scope.row.monthlyPaidAmount) }}
 							</template>
 						</el-table-column>
 
 						<el-table-column v-if="columns[12].visible" label="上年结转欠款金额" align="center" width="200" show-overflow-tooltip>
 							<template slot-scope="scope">
-								{{ scope.row.previousYearUnpaidAmount || 0 }}
+								{{ formatNumberValue(scope.row.previousYearUnpaidAmount) }}
 							</template>
 						</el-table-column>
 						<el-table-column v-if="columns[13].visible" label="本年付款金额合计" align="center" width="200" show-overflow-tooltip>
 							<template slot-scope="scope">
-								{{ scope.row.yearlyPaidAmount || 0 }}
+								{{ formatNumberValue(scope.row.yearlyPaidAmount) }}
 							</template>
 						</el-table-column>
 						<el-table-column v-if="columns[14].visible" label="本年累计应付运费" align="center" width="200" show-overflow-tooltip>
 							<template slot-scope="scope">
-								{{ scope.row.yearlyTotalAmount || 0 }}
+								{{ formatNumberValue(scope.row.yearlyTotalAmount) }}
 							</template>
 						</el-table-column>
 						<el-table-column v-if="columns[15].visible" label="本年欠款金额" align="center" width="200" show-overflow-tooltip>
 							<template slot-scope="scope">
-								{{ fix_2(Number(scope.row.previousYearUnpaidAmount || 0) + Number(scope.row.yearlyTotalAmount || 0) - Number(scope.row.yearlyPaidAmount || 0)) }}
+								{{ calculateBalance(scope.row.previousYearUnpaidAmount, scope.row.yearlyTotalAmount, -scope.row.yearlyPaidAmount) }}
 							</template>
 						</el-table-column>
 					</el-table>
