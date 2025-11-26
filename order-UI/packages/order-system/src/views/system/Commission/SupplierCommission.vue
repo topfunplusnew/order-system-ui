@@ -292,6 +292,7 @@ import PaymentFlag from '@/components/PaymentFlag';
 import { mapGetters } from 'vuex/dist/vuex.common.js';
 import { getDateRangeDays } from '@/utils';
 import _ from 'lodash';
+import { number, add, sum } from 'mathjs';
 
 export default {
 	name: 'SUPPLIERCommission',
@@ -511,9 +512,7 @@ export default {
 			});
 
 			// 计算总金额（使用已验证佣金）
-			const totalAmount = this.selections.reduce((sum, item) => {
-				return sum + (parseFloat(item.verifiedCommission) || 0);
-			}, 0);
+			const totalAmount = sum(this.selections.map(item => number(item.verifiedCommission || 0)));
 
 			let applications = this.selections.map(item => {
 				return new PaymentApply({
@@ -742,7 +741,7 @@ export default {
 			}
 			this.tID = row.id;
 			// 使用已验证佣金作为申请金额
-			this.needMoney = parseFloat(row.verifiedCommission) || 0;
+			this.needMoney = number(row.verifiedCommission || 0);
 			this.PaymentApplyInfoVisible = true;
 		},
 		// 导出
@@ -855,8 +854,8 @@ export default {
 				const batchData = eligibleRows.map(row => ({
 					type: CommissionType.SUPPLIER,
 					orderDetailId: row.orderDetailId,
-					commissionUnitPrice: parseFloat(this.batchForm.commissionUnitPrice),
-					otherPaymentAmount: parseFloat(this.batchForm.otherPaymentAmount),
+					commissionUnitPrice: number(this.batchForm.commissionUnitPrice || 0),
+					otherPaymentAmount: number(this.batchForm.otherPaymentAmount || 0),
 					difference_reason: this.batchForm.difference_reason,
 					extraInfo: {
 						var: this.batchForm.extraInfo.var,
@@ -870,6 +869,7 @@ export default {
 					await batchAddCommission(batchData);
 					this.$message.success(`成功批量填写了 ${batchData.length} 条佣金信息`);
 					this.batchFillVisible = false;
+					this.batchSelections = []; // 清空批量选择
 					this.getList(); // 刷新列表
 				} catch (error) {
 					this.$message.error('批量填写佣金信息失败，请重试');
@@ -928,10 +928,11 @@ export default {
 						const currentTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
 
 						// 构建新的数据结构
+						const moneyAmount = number(firstApplication.moneyAmount || 0);
 						const data = {
 							fundsDate: firstApplication.fundsDate || currentTime,
 							payType: firstApplication.payType || '',
-							moneyAmount: parseFloat(firstApplication.moneyAmount) || 0,
+							moneyAmount: moneyAmount,
 							otherAccountsName: firstApplication.otherAccountsName || '', // 注意字段名变化
 							otherBankNo: firstApplication.otherBankNo || '',
 							otherBankName: firstApplication.otherBankName || '',
@@ -951,7 +952,7 @@ export default {
 									? firstApplication.extraInfo.sourceInfos.map(source => ({
 											refTableName: source.tableName,
 											refTableId: source.tableId,
-											amount: parseFloat(firstApplication.moneyAmount) || 0
+											amount: moneyAmount
 									  }))
 									: []
 						};
@@ -971,6 +972,7 @@ export default {
 						this.$message.success('一键申请成功');
 						this.onceApplyVisible = false;
 						this.applyPaymentVisible = false;
+						this.selections = []; // 清空选择
 						if (this.$refs.applyPayment) {
 							this.$refs.applyPayment.reset();
 						}
