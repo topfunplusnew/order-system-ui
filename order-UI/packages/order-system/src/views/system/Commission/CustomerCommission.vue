@@ -93,10 +93,26 @@
 			<el-table-column v-if="columns[17].visible" show-overflow-tooltip label="备注" align="center" prop="comments" width="140" />
 			<el-table-column v-if="columns[18].visible" show-overflow-tooltip label="面积" align="center" prop="area" width="100" />
 			<el-table-column v-if="columns[19].visible" show-overflow-tooltip label="订单计提佣金" align="center" prop="commissionAmount" width="100" />
-			<el-table-column v-if="columns[20].visible" show-overflow-tooltip label="佣金单价" align="center" prop="commissionUnitPrice" width="100" />
-			<el-table-column v-if="columns[21].visible" show-overflow-tooltip label="其他付款金额" align="center" prop="otherPaymentAmount" width="100" />
-			<el-table-column v-if="columns[22].visible" show-overflow-tooltip label="已验证佣金" align="center" prop="verifiedCommission" width="100" />
-			<el-table-column v-if="columns[23].visible" show-overflow-tooltip label="实际客户佣金" align="center" prop="actualCustomerCommission" width="100" />
+			<el-table-column v-if="columns[20].visible" show-overflow-tooltip label="佣金单价" align="center" prop="commissionUnitPrice" width="100">
+				<template slot-scope="scope">
+					{{ formatNumberWithoutTrailingZeros(scope.row.commissionUnitPrice) }}
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[21].visible" show-overflow-tooltip label="其他付款金额" align="center" prop="otherPaymentAmount" width="100">
+				<template slot-scope="scope">
+					{{ formatNumberWithoutTrailingZeros(scope.row.otherPaymentAmount) }}
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[22].visible" show-overflow-tooltip label="已验证佣金" align="center" prop="verifiedCommission" width="100">
+				<template slot-scope="scope">
+					{{ formatNumberWithoutTrailingZeros(scope.row.verifiedCommission) }}
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[23].visible" show-overflow-tooltip label="实际客户佣金" align="center" prop="actualCustomerCommission" width="100">
+				<template slot-scope="scope">
+					{{ formatNumberWithoutTrailingZeros(scope.row.actualCustomerCommission) }}
+				</template>
+			</el-table-column>
 			<el-table-column v-if="columns[24].visible" show-overflow-tooltip label="支付日期" align="center" prop="fundDate" width="100" />
 			<el-table-column v-if="columns[25].visible" show-overflow-tooltip label="支付状态" align="center" width="120">
 				<template slot-scope="scope">
@@ -141,10 +157,10 @@
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" title="批量填写佣金信息" :visible.sync="batchFillVisible" width="500px">
 			<el-form ref="batchForm" :model="batchForm" :rules="batchRules" label-width="140px">
 				<el-form-item label="佣金单价" prop="commissionUnitPrice">
-					<el-input v-model="batchForm.commissionUnitPrice" placeholder="请输入佣金单价" type="number" step="0.01" />
+					<el-input v-model="batchForm.commissionUnitPrice" placeholder="请输入佣金单价" />
 				</el-form-item>
 				<el-form-item label="其他付款金额" prop="otherPaymentAmount">
-					<el-input v-model="batchForm.otherPaymentAmount" placeholder="请输入其他付款金额" type="number" step="0.01" />
+					<el-input v-model="batchForm.otherPaymentAmount" placeholder="请输入其他付款金额" />
 				</el-form-item>
 				<el-form-item label="差异原因" prop="difference_reason">
 					<el-input v-model="batchForm.difference_reason" placeholder="请输入差异原因" type="textarea" :rows="3" />
@@ -234,10 +250,10 @@
 
 				<el-descriptions title="佣金信息" :column="3" border size="mini">
 					<el-descriptions-item label="订单计提佣金">{{ currentOrder.commissionAmount || '-' }}</el-descriptions-item>
-					<el-descriptions-item label="佣金单价">{{ currentOrder.commissionUnitPrice || '-' }}</el-descriptions-item>
-					<el-descriptions-item label="其他付款金额">{{ currentOrder.otherPaymentAmount || '-' }}</el-descriptions-item>
-					<el-descriptions-item label="已验证佣金">{{ currentOrder.verifiedCommission || '-' }}</el-descriptions-item>
-					<el-descriptions-item label="实际客户佣金">{{ currentOrder.actualCustomerCommission || '-' }}</el-descriptions-item>
+					<el-descriptions-item label="佣金单价">{{ formatNumberWithoutTrailingZeros(currentOrder.commissionUnitPrice) }}</el-descriptions-item>
+					<el-descriptions-item label="其他付款金额">{{ formatNumberWithoutTrailingZeros(currentOrder.otherPaymentAmount) }}</el-descriptions-item>
+					<el-descriptions-item label="已验证佣金">{{ formatNumberWithoutTrailingZeros(currentOrder.verifiedCommission) }}</el-descriptions-item>
+					<el-descriptions-item label="实际客户佣金">{{ formatNumberWithoutTrailingZeros(currentOrder.actualCustomerCommission) }}</el-descriptions-item>
 					<el-descriptions-item label="差异">{{ currentOrder.difference || '-' }}</el-descriptions-item>
 					<el-descriptions-item label="差异原因" :span="3">{{ currentOrder.differenceReason || '-' }}</el-descriptions-item>
 				</el-descriptions>
@@ -413,8 +429,9 @@ export default {
 			batchRules: {
 				commissionUnitPrice: [
 					{ required: true, message: '请输入佣金单价', trigger: 'blur' },
-					{ pattern: /^\d+(\.\d{1,3})?$/, message: '佣金单价格式不正确', trigger: 'blur' }
-				]
+					{ pattern: /^-?\d+(\.\d{1,4})?$/, message: '格式不正确，最多保留4位小数', trigger: 'blur' }
+				],
+				otherPaymentAmount: [{ pattern: /^-?\d+(\.\d{1,2})?$/, message: '格式不正确，最多保留2位小数', trigger: 'blur' }]
 			},
 			// 订单详情相关
 			orderDetailVisible: false,
@@ -460,6 +477,26 @@ export default {
 	},
 
 	methods: {
+		// 格式化数字，去除后缀0
+		formatNumberWithoutTrailingZeros(value) {
+			if (value === null || value === undefined || value === '') {
+				return '-';
+			}
+			const num = Number(value);
+			if (isNaN(num)) {
+				return value;
+			}
+			// 转换为字符串
+			let str = num.toString();
+			// 如果包含小数点，去除末尾的0
+			if (str.includes('.')) {
+				str = str.replace(/0+$/, ''); // 去除末尾的0
+				if (str.endsWith('.')) {
+					str = str.slice(0, -1); // 如果最后是小数点，也去除
+				}
+			}
+			return str;
+		},
 		onDateRangeChange(val) {
 			// 仅在选择完整时间段时触发搜索，清空不触发
 			if (Array.isArray(val) && val.length === 2) {
