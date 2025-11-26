@@ -42,7 +42,7 @@
 			<el-table-column prop="date" label="日期" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.date }}</div>
+						<template slot="content">{{ scope.row.date }}</template>
 						<span>{{ scope.row.date }}</span>
 					</el-tooltip>
 				</template>
@@ -51,7 +51,7 @@
 			<el-table-column label="客户名称" width="150" prop="customerName" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.customerName }}</div>
+						<template slot="content">{{ scope.row.customerName }}</template>
 						<span>{{ scope.row.customerName }}</span>
 					</el-tooltip>
 				</template>
@@ -61,17 +61,19 @@
 			<el-table-column label="往来明细" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">
+						<template slot="content">
 							<div v-for="(item, index) in scope.row.lenderList" :key="index">
 								<span style="color: red; margin-right: 6px">[{{ moduleNames[item.tableName] }}]</span>
 								<span style="margin-right: 7px">{{ item.lender }}</span>
 								<i class="el-icon-s-order" style="cursor: pointer" @click="handleCheckDetail(item)"></i>
 							</div>
-						</div>
-						<div v-for="(item, index) in scope.row.lenderList" :key="index">
-							<span style="color: red; margin-right: 6px">[{{ moduleNames[item.tableName] }}]</span>
-							<span style="margin-right: 7px">{{ item.lender }}</span>
-							<i class="el-icon-s-order" style="cursor: pointer" @click="handleCheckDetail(item)"></i>
+						</template>
+						<div>
+							<div v-for="(item, index) in scope.row.lenderList" :key="index">
+								<span style="color: red; margin-right: 6px">[{{ moduleNames[item.tableName] }}]</span>
+								<span style="margin-right: 7px">{{ item.lender }}</span>
+								<i class="el-icon-s-order" style="cursor: pointer" @click="handleCheckDetail(item)"></i>
+							</div>
 						</div>
 					</el-tooltip>
 				</template>
@@ -81,9 +83,9 @@
 			<el-table-column prop="lender" label="借方（客户欠款增加）" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">
+						<template slot="content">
 							<span>{{ abs(scope.row.lender) }}</span>
-						</div>
+						</template>
 						<span>{{ abs(scope.row.lender) }}</span>
 					</el-tooltip>
 				</template>
@@ -93,10 +95,10 @@
 			<el-table-column prop="borrower" label="贷方（客户欠款减少）" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">
+						<template slot="content">
 							<span style="margin-right: 10px">{{ abs(scope.row.borrower) }}</span>
 							<i class="el-icon-s-order" style="cursor: pointer" @click="handleCheckBorrowerDetailList(scope.row)"></i>
-						</div>
+						</template>
 						<div style="display: flex; align-items: center; justify-content: center">
 							<span style="margin-right: 5px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{ abs(scope.row.borrower) }}</span>
 							<i v-if="scope.row.borrowerList && scope.row.borrowerList.length > 0" class="el-icon-s-order" style="cursor: pointer; flex-shrink: 0; margin-left: 5px" @click.stop="handleCheckBorrowerDetailList(scope.row)"></i>
@@ -109,11 +111,11 @@
 			<el-table-column prop="moneyAmountLocal" label="余额本币" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">
+						<template slot="content">
 							<span :class="{ negative: scope.row.moneyAmountLocal < 0 }">
 								{{ formatBalance(scope.row.moneyAmountLocal) }}
 							</span>
-						</div>
+						</template>
 						<span :class="{ negative: scope.row.moneyAmountLocal < 0 }">
 							{{ formatBalance(scope.row.moneyAmountLocal) }}
 						</span>
@@ -136,7 +138,7 @@
 				<el-table-column prop="date" label="日期" show-overflow-tooltip>
 					<template #default="scope">
 						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-							<div slot="content">{{ scope.row.date }}</div>
+							<template slot="content">{{ scope.row.date }}</template>
 							<span>{{ scope.row.date }}</span>
 						</el-tooltip>
 					</template>
@@ -144,7 +146,7 @@
 				<el-table-column prop="payNo" label="凭证号" show-overflow-tooltip>
 					<template #default="scope">
 						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-							<div slot="content">{{ scope.row.payNo }}</div>
+							<template slot="content">{{ scope.row.payNo }}</template>
 							<span>{{ scope.row.payNo }}</span>
 						</el-tooltip>
 					</template>
@@ -152,7 +154,7 @@
 				<el-table-column prop="lender" label="借方(客户欠款增加)" show-overflow-tooltip>
 					<template #default="scope">
 						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-							<div slot="content">{{ scope.row.lender }}</div>
+							<template slot="content">{{ scope.row.lender }}</template>
 							<span>{{ scope.row.lender }}</span>
 						</el-tooltip>
 					</template>
@@ -160,7 +162,7 @@
 				<el-table-column prop="borrower" label="贷方(客户欠款减少)" show-overflow-tooltip>
 					<template #default="scope">
 						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-							<div slot="content">{{ scope.row.borrower }}</div>
+							<template slot="content">{{ scope.row.borrower }}</template>
 							<span>{{ scope.row.borrower }}</span>
 						</el-tooltip>
 					</template>
@@ -168,7 +170,7 @@
 				<el-table-column prop="moneyAmountLocal" label="余额本币" show-overflow-tooltip>
 					<template #default="scope">
 						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-							<div slot="content">{{ formatBalance(scope.row.moneyAmountLocal) }}</div>
+							<template slot="content">{{ formatBalance(scope.row.moneyAmountLocal) }}</template>
 							<span>{{ formatBalance(scope.row.moneyAmountLocal) }}</span>
 						</el-tooltip>
 					</template>
@@ -177,9 +179,9 @@
 				<el-table-column label="查看明细" show-overflow-tooltip>
 					<template #default="scope">
 						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-							<div slot="content">
+							<template slot="content">
 								<i class="el-icon-s-order" style="cursor: pointer" @click="handleCheckDetail(scope.row)"></i>
-							</div>
+							</template>
 							<i class="el-icon-s-order" style="cursor: pointer" @click="handleCheckDetail(scope.row)"></i>
 						</el-tooltip>
 					</template>
