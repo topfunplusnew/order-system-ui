@@ -188,7 +188,7 @@ export default {
 				}, 100);
 			});
 		},
-		// 原生实现：自动调整表格列宽（简化版本，确保表头和表体对齐）
+		// 原生实现：自动调整表格列宽（优化版本，确保表头和表体对齐，紧凑但完整显示）
 		autoFitColumns() {
 			const table = this.$refs.tableRef.$el;
 			if (!table) return;
@@ -229,33 +229,41 @@ export default {
 						// 获取列配置
 						const column = tableColumns[colIndex];
 						const columnProp = column ? column.property : null;
+						const columnLabel = column ? column.label : '';
+
+						// 获取样式参考元素
+						const styleRef = bodyCells[0]?.querySelector('.cell') || headerCells[0]?.querySelector('.cell');
+						if (!styleRef) return;
+
+						const computedStyle = window.getComputedStyle(styleRef);
+
+						// 创建临时测量元素
+						const createMeasureDiv = (text, isHeader = false) => {
+							const tempDiv = document.createElement('div');
+							tempDiv.style.cssText = `
+								position: absolute;
+								visibility: hidden;
+								white-space: nowrap;
+								font-size: ${computedStyle.fontSize};
+								font-family: ${computedStyle.fontFamily};
+								font-weight: ${isHeader ? '500' : computedStyle.fontWeight};
+								padding: 0;
+								margin: 0;
+								left: -9999px;
+								top: -9999px;
+							`;
+							tempDiv.textContent = text;
+							document.body.appendChild(tempDiv);
+							const width = tempDiv.offsetWidth;
+							document.body.removeChild(tempDiv);
+							return width;
+						};
 
 						// 测量表头宽度
-						// if (headerCells.length > 0) {
-						//   const headerCell = headerCells[0];
-						//   const headerContent = headerCell.querySelector('.cell');
-						//   if (headerContent) {
-						//     const headerText = headerContent.textContent || headerContent.innerText || '';
-						//     const headerStyle = window.getComputedStyle(headerContent);
-						//     const tempDiv = document.createElement('div');
-						//     tempDiv.style.cssText = `
-						//       position: absolute;
-						//       visibility: hidden;
-						//       white-space: nowrap;
-						//       font-size: ${headerStyle.fontSize};
-						//       font-family: ${headerStyle.fontFamily};
-						//       font-weight: ${headerStyle.fontWeight};
-						//       padding: 0;
-						//       margin: 0;
-						//       left: -9999px;
-						//       top: -9999px;
-						//     `;
-						//     tempDiv.textContent = headerText;
-						//     document.body.appendChild(tempDiv);
-						//     maxWidth = Math.max(maxWidth, tempDiv.offsetWidth);
-						//     document.body.removeChild(tempDiv);
-						//   }
-						// }
+						if (columnLabel) {
+							const headerWidth = createMeasureDiv(columnLabel, true);
+							maxWidth = Math.max(maxWidth, headerWidth);
+						}
 
 						// 测量数据单元格宽度（从数据源获取完整文本）
 						if (columnProp && this.filteredOrderDetailInfoList && this.filteredOrderDetailInfoList.length > 0) {
@@ -266,43 +274,68 @@ export default {
 								if (value !== null && value !== undefined) {
 									if (columnProp === 'isIncludeTaxFactory' || columnProp === 'isIncludeTaxSale') {
 										cellText = value == 0 ? '否' : '是';
+									} else if (typeof value === 'number') {
+										// 数字类型，保留2位小数显示
+										cellText = Number.isInteger(value) ? String(value) : value.toFixed(2);
 									} else {
 										cellText = String(value);
 									}
 								}
 
 								if (cellText) {
-									// 获取第一个数据单元格的样式作为参考
-									const styleRef = bodyCells[0]?.querySelector('.cell') || headerCells[0]?.querySelector('.cell');
-									if (styleRef) {
-										const computedStyle = window.getComputedStyle(styleRef);
-										const tempDiv = document.createElement('div');
-										tempDiv.style.cssText = `
-                      position: absolute;
-                      visibility: hidden;
-                      white-space: nowrap;
-                      font-size: ${computedStyle.fontSize};
-                      font-family: ${computedStyle.fontFamily};
-                      font-weight: ${computedStyle.fontWeight};
-                      padding: 0;
-                      margin: 0;
-                      left: -9999px;
-                      top: -9999px;
-                    `;
-										tempDiv.textContent = cellText;
-										document.body.appendChild(tempDiv);
-										maxWidth = Math.max(maxWidth, tempDiv.offsetWidth);
-										document.body.removeChild(tempDiv);
-									}
+									const cellWidth = createMeasureDiv(cellText);
+									maxWidth = Math.max(maxWidth, cellWidth);
 								}
 							});
 						}
 
-						// 设置列宽 - 只添加最小间距，让文字刚好显示
+						// 设置列宽 - 添加适当的内边距，确保内容完整显示且紧凑
 						if (maxWidth > 0) {
-							const padding = 0; // 最小间距，确保文字不被截断
-							const finalWidth = Math.max(maxWidth + padding, 60);
-							columnWidths[colName] = finalWidth;
+							// 根据列类型添加不同的padding
+							let padding = 8; // 默认padding
+
+							// 数字列可以更紧凑
+							if (columnProp && ['height', 'length', 'width', 'piecesPerPack', 'packs', 'pieces', 'actualPieces', 'erro'].includes(columnProp)) {
+								padding = 6;
+							}
+							// 金额列需要稍多一点空间
+							else if (
+								columnProp &&
+								[
+									'price',
+									'paymentFactory',
+									'paymentUnload',
+									'payments',
+									'paymentsWithSundry',
+									'sundryCost',
+									'landFreight',
+									'seaFreight',
+									'freight',
+									'otherCost',
+									'profit',
+									'profitNoTax',
+									'logisticsProfit',
+									'customerCommission',
+									'factoryCommission',
+									'factoryRebateAmount',
+									'factoryDiscountAmount',
+									'landFreightPrice',
+									'additionalFees'
+								].includes(columnProp)
+							) {
+								padding = 10;
+							}
+							// 文本列需要更多空间
+							else if (columnProp && ['supplier', 'storeHouseName', 'levelName'].includes(columnProp)) {
+								padding = 12;
+							}
+							// 标签列（是/否）
+							else if (columnProp && ['isIncludeTaxFactory', 'isIncludeTaxSale'].includes(columnProp)) {
+								padding = 8;
+							}
+
+							const finalWidth = Math.max(maxWidth + padding, 50); // 最小宽度50px
+							columnWidths[colName] = Math.ceil(finalWidth);
 						}
 					});
 
