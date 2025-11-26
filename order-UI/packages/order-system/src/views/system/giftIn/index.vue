@@ -1,9 +1,11 @@
 <template>
 	<div class="app-container">
+		<!-- 搜索表单 -->
 		<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
 			<el-form-item label="入库日期">
-				<el-date-picker v-model="daterangeInDate" style="width: 240px" value-format="yyyy-MM-dd HH:mm:ss" type="datetimerange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
+				<el-date-picker v-model="daterangeInDate" style="width: 240px" value-format="yyyy-MM-dd HH:mm:ss" type="datetimerange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期" />
 			</el-form-item>
+
 			<el-form-item label="入库方式" prop="inMethod">
 				<el-tooltip class="item" effect="dark" content="入库方式可在字典中进行修改" placement="top">
 					<el-select v-model="queryParams.inMethod" placeholder="请选择入库方式" clearable @keyup.enter.native="handleQuery">
@@ -11,6 +13,7 @@
 					</el-select>
 				</el-tooltip>
 			</el-form-item>
+
 			<el-form-item label="经办人" prop="handler">
 				<el-input v-model="queryParams.handler" placeholder="请输入经办人" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
@@ -18,9 +21,11 @@
 			<el-form-item label="客户" prop="fromInfo">
 				<el-input v-model="queryParams.fromInfo" placeholder="请输入客户" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
+
 			<el-form-item label="收礼方式" prop="receiveMethod">
 				<el-input v-model="queryParams.receiveMethod" placeholder="请输入收礼方式" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
+
 			<el-form-item label="物品名称" prop="itemName">
 				<el-input v-model="queryParams.itemName" placeholder="请输入物品名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
@@ -31,6 +36,7 @@
 			</el-form-item>
 		</el-form>
 
+		<!-- 工具栏 -->
 		<el-row :gutter="10" class="mb8">
 			<el-col :span="1.5">
 				<el-button v-hasPermi="['system:giftIn:add']" type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd">新增</el-button>
@@ -52,20 +58,8 @@
 			</right-toolbar>
 		</el-row>
 
-		<el-table
-			id="printBox"
-			v-loading="loading"
-			v-horizontal-scroll="'always'"
-			border
-			:data="giftInList"
-			size="mini"
-			:cell-style="
-				() => {
-					return { padding: '1px' };
-				}
-			"
-			@selection-change="handleSelectionChange"
-		>
+		<!-- 数据表格 -->
+		<el-table id="printBox" v-loading="loading" v-horizontal-scroll="'always'" border :data="giftInList" size="mini" :cell-style="() => ({ padding: '1px' })" @selection-change="handleSelectionChange">
 			<el-table-column type="selection" width="55" align="center" />
 
 			<el-table-column v-if="columns[0].visible" label="ID" align="center" prop="id" width="80" show-overflow-tooltip />
@@ -106,22 +100,23 @@
 			</el-table-column>
 		</el-table>
 
+		<!-- 分页 -->
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
-		<!-- 添加或修改购入礼品信息对话框 -->
+		<!-- 添加/修改弹窗 -->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="title" :visible.sync="open" :width="dialogWidth" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="120px">
 				<el-row :gutter="20">
 					<el-col :span="24">
 						<el-form-item label="入库日期" prop="inDate">
-							<el-date-picker v-model="form.inDate" clearable type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="请选择入库日期" style="width: 100%"></el-date-picker>
+							<el-date-picker v-model="form.inDate" clearable type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="请选择入库日期" style="width: 100%" />
 						</el-form-item>
 					</el-col>
 
 					<el-col :span="24">
 						<el-form-item label="入库方式" prop="inMethod">
 							<el-select v-model="form.inMethod" placeholder="请选择入库方式" style="width: 100%">
-								<el-option v-for="dict in dict.type.order_gift_in_method" :key="dict.value" :label="dict.label" :value="dict.value"></el-option>
+								<el-option v-for="dict in dict.type.order_gift_in_method" :key="dict.value" :label="dict.label" :value="dict.value" />
 							</el-select>
 						</el-form-item>
 					</el-col>
@@ -129,7 +124,7 @@
 					<el-col :span="24">
 						<el-form-item label="对方类型">
 							<el-select v-model="companyType" placeholder="请选择" style="width: 100%">
-								<el-option v-for="item in OTHER_TYPE()" :key="item.value" :label="item.label" :value="item.value"></el-option>
+								<el-option v-for="item in OTHER_TYPE()" :key="item.value" :label="item.label" :value="item.value" />
 							</el-select>
 						</el-form-item>
 					</el-col>
@@ -187,7 +182,7 @@
 
 					<el-col :span="24">
 						<el-form-item label="付款时间" prop="payTime">
-							<el-date-picker v-model="form.payTime" clearable type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="请选择付款时间" style="width: 100%"></el-date-picker>
+							<el-date-picker v-model="form.payTime" clearable type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="请选择付款时间" style="width: 100%" />
 						</el-form-item>
 					</el-col>
 
@@ -198,6 +193,7 @@
 					</el-col>
 				</el-row>
 			</el-form>
+
 			<div slot="footer" class="dialog-footer">
 				<el-button type="primary" @click="submitForm">确 定</el-button>
 				<el-button @click="cancel">取 消</el-button>
@@ -221,27 +217,16 @@ export default {
 	mixins: [mixin_printHTML, mixin_gift_in_fill],
 	data() {
 		return {
-			// 遮罩层
 			loading: true,
-			// 选中数组
 			ids: [],
-			// 非单个禁用
 			single: true,
-			// 非多个禁用
 			multiple: true,
-			// 显示搜索条件
 			showSearch: true,
-			// 总条数
 			total: 0,
-			// 购入礼品信息表格数据
 			giftInList: [],
-			// 弹出层标题
 			title: '',
-			// 是否显示弹出层
 			open: false,
-			// 备注时间范围
 			daterangeInDate: [],
-			// 查询参数
 			queryParams: {
 				pageNum: 1,
 				pageSize: 20,
@@ -254,9 +239,7 @@ export default {
 				handler: null,
 				receiveMethod: null
 			},
-			// 表单参数
 			form: {},
-			// 表单校验
 			rules: {
 				inDate: [{ required: true, message: '请选择入库日期', trigger: 'blur' }],
 				inMethod: [{ required: true, message: '请选择入库方式', trigger: 'blur' }],
@@ -305,7 +288,6 @@ export default {
 		updateDialogWidth() {
 			this.dialogWidth = window.innerWidth > 768 ? '600px' : '95%';
 		},
-		/** 查询购入礼品信息列表 */
 		getList() {
 			this.loading = true;
 			this.queryParams.params = {};
@@ -326,12 +308,10 @@ export default {
 					this.loading = false;
 				});
 		},
-		// 取消按钮
 		cancel() {
 			this.open = false;
 			this.reset();
 		},
-		// 表单重置
 		reset() {
 			this.form = {
 				id: null,
@@ -353,30 +333,25 @@ export default {
 			this.companyType = '供应商';
 			this.resetForm('form');
 		},
-		/** 搜索按钮操作 */
 		handleQuery() {
 			this.queryParams.pageNum = 1;
 			this.getList();
 		},
-		/** 重置按钮操作 */
 		resetQuery() {
 			this.daterangeInDate = [];
 			this.resetForm('queryForm');
 			this.handleQuery();
 		},
-		// 多选框选中数据
 		handleSelectionChange(selection) {
 			this.ids = selection.map(item => item.id);
 			this.single = selection.length !== 1;
 			this.multiple = !selection.length;
 		},
-		/** 新增按钮操作 */
 		handleAdd() {
 			this.reset();
 			this.open = true;
 			this.title = '添加购入礼品信息';
 		},
-		/** 修改按钮操作 */
 		handleUpdate(row) {
 			this.reset();
 			const id = row.id || this.ids;
@@ -386,7 +361,6 @@ export default {
 				this.title = '修改购入礼品信息';
 			});
 		},
-		/** 提交按钮 */
 		submitForm() {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
@@ -416,7 +390,6 @@ export default {
 				}
 			});
 		},
-		/** 删除按钮操作 */
 		handleDelete(row) {
 			const ids = row.id || this.ids;
 			const count = Array.isArray(ids) ? ids.length : 1;
@@ -431,7 +404,6 @@ export default {
 				})
 				.catch(() => {});
 		},
-		/** 导出按钮操作 */
 		handleExport() {
 			this.download(
 				'system/giftIn/export',
