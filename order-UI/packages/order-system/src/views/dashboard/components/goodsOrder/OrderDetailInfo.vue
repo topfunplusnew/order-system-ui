@@ -39,19 +39,19 @@ export default {
 			expandRowKeys: [],
 			// 列宽度配置
 			columnWidths: {
-				action: '100px', // 操作列：按钮文字"货物返利"
-				storeHouseName: '100px', // 仓库名称：通常较短
+				action: '80px', // 操作列：按钮文字"货物返利"
+				storeHouseName: '70px', // 仓库名称：通常较短
 				supplier: '180px', // 供应商：公司名称可能较长
 				levelName: '120px', // 级别名称：级别名称通常不会太长
-				countingUnit: '90px', // 计量单位：单位名称较短
+				countingUnit: '70px', // 计量单位：单位名称较短
 				height: '50px', // 厚度：数字较短
 				length: '50px', // 长度：数字较短
 				width: '50px', // 宽度：数字较短
-				piecesPerPack: '50px', // 每包片数：数字
+				piecesPerPack: '60px', // 每包片数：数字
 				packs: '50px', // 包数：数字较短
-				pieces: '50px', // 出厂片数：数字
-				price: '110px', // 出厂单价：价格数字
-				isIncludeTaxFactory: '110px', // 出厂是否含税："是/否"标签
+				pieces: '70px', // 出厂片数：数字
+				price: '70px', // 出厂单价：价格数字
+				isIncludeTaxFactory: '80px', // 出厂是否含税："是/否"标签
 				sundryCost: '90px', // 杂费：金额数字
 				paymentFactory: '120px', // 出厂货款：金额数字
 				actualPieces: '90px', // 卸货片数：数字
@@ -67,8 +67,8 @@ export default {
 				seaFreight: '100px', // 海运费：金额数字
 				freight: '100px', // 总运费：金额数字
 				otherCost: '100px', // 其他费用：金额数字
-				profit: '110px', // 利润：金额数字
-				profitNoTax: '120px', // 不含税利润：金额数字
+				profit: '100px', // 利润：金额数字
+				profitNoTax: '100px', // 不含税利润：金额数字
 				logisticsProfit: '110px', // 物流利润：金额数字
 				customerCommission: '110px', // 客户佣金：金额数字
 				factoryCommission: '110px', // 厂家佣金：金额数字
@@ -185,151 +185,122 @@ export default {
 							console.warn('调整列宽失败:', error);
 						}
 					}
-				}, 100);
+				}, 80);
 			});
 		},
-		// 原生实现：自动调整表格列宽（简化版本，确保表头和表体对齐）
+		// 自动调整列宽 —— 不增加任何额外内外边距（纯文本宽度）
 		autoFitColumns() {
-			const table = this.$refs.tableRef.$el;
-			if (!table) return;
+			const tableRef = this.$refs.tableRef;
+			if (!tableRef) return;
 
-			// 先调用 doLayout 确保表格结构完整
-			this.$refs.tableRef.doLayout();
+			// 保证表格结构完整
+			tableRef.doLayout();
 
-			// 等待表格完全渲染
 			this.$nextTick(() => {
-				setTimeout(() => {
-					const mainColgroup = table.querySelector('colgroup');
-					if (!mainColgroup) return;
+				requestAnimationFrame(() => {
+					const tableEl = tableRef.$el;
+					if (!tableEl) return;
 
-					const colDefs = Array.from(mainColgroup.querySelectorAll('col'));
-					const columnWidths = {};
+					const colgroup = tableEl.querySelector('colgroup');
+					if (!colgroup) return;
 
-					// 获取表格列配置
-					const tableColumns = this.$refs.tableRef.columns || [];
+					const cols = Array.from(colgroup.querySelectorAll('col'));
+					const tableColumns = tableRef.columns || [];
 
-					// 计算每列的最大内容宽度
-					colDefs.forEach((col, colIndex) => {
-						const colName = col.getAttribute('name');
-						if (!colName) return;
+					const measureCache = new Map();
 
-						const headerCells = Array.from(table.querySelectorAll(`th.${colName}`));
-						const bodyCells = Array.from(table.querySelectorAll(`td.${colName}`));
+					// ——核心：仅纯文本计算，不添加任何内外边距——
+					const measureText = (text, style, weight = null) => {
+						if (!text) return 0;
 
-						if (headerCells.length === 0 && bodyCells.length === 0) return;
+						const key = `${text}|${weight}`;
+						if (measureCache.has(key)) return measureCache.get(key);
 
-						// 检查是否应该跳过此列（如操作列）
-						const firstCell = headerCells[0] || bodyCells[0];
-						if (firstCell && firstCell.classList.contains('leave-alone')) {
+						const div = document.createElement('div');
+						div.style.cssText = `
+          position:absolute;
+          visibility:hidden;
+          white-space:nowrap;
+          font-size:${style.fontSize};
+          font-family:${style.fontFamily};
+          font-weight:${weight || style.fontWeight};
+          padding:0;
+          margin:0;
+          border:0;
+          box-sizing:content-box;
+          left:-9999px;
+          top:-9999px;
+        `;
+
+						div.textContent = text;
+
+						document.body.appendChild(div);
+						const width = div.offsetWidth; // 不加任何附加值
+						document.body.removeChild(div);
+
+						measureCache.set(key, width);
+						return width;
+					};
+
+					cols.forEach((col, colIndex) => {
+						const column = tableColumns[colIndex];
+						if (!column) return;
+
+						// 跳过特殊列（序号、多选、展开、操作列）
+						if (column.type === 'selection' || column.type === 'index' || column.type === 'expand' || column.className === 'leave-alone') {
 							return;
 						}
 
-						let maxWidth = 0;
+						const colName = col.getAttribute('name');
+						if (!colName) return;
 
-						// 获取列配置
-						const column = tableColumns[colIndex];
-						const columnProp = column ? column.property : null;
+						const headerCell = tableEl.querySelector(`th.${colName} .cell`);
+						if (!headerCell) return;
 
-						// 测量表头宽度
-						// if (headerCells.length > 0) {
-						//   const headerCell = headerCells[0];
-						//   const headerContent = headerCell.querySelector('.cell');
-						//   if (headerContent) {
-						//     const headerText = headerContent.textContent || headerContent.innerText || '';
-						//     const headerStyle = window.getComputedStyle(headerContent);
-						//     const tempDiv = document.createElement('div');
-						//     tempDiv.style.cssText = `
-						//       position: absolute;
-						//       visibility: hidden;
-						//       white-space: nowrap;
-						//       font-size: ${headerStyle.fontSize};
-						//       font-family: ${headerStyle.fontFamily};
-						//       font-weight: ${headerStyle.fontWeight};
-						//       padding: 0;
-						//       margin: 0;
-						//       left: -9999px;
-						//       top: -9999px;
-						//     `;
-						//     tempDiv.textContent = headerText;
-						//     document.body.appendChild(tempDiv);
-						//     maxWidth = Math.max(maxWidth, tempDiv.offsetWidth);
-						//     document.body.removeChild(tempDiv);
-						//   }
-						// }
+						const bodyCell = tableEl.querySelector(`td.${colName} .cell`);
+						const refCell = bodyCell || headerCell;
 
-						// 测量数据单元格宽度（从数据源获取完整文本）
-						if (columnProp && this.filteredOrderDetailInfoList && this.filteredOrderDetailInfoList.length > 0) {
+						const style = window.getComputedStyle(refCell);
+
+						let maxW = 0;
+
+						// ① 测量表头
+						if (column.label) {
+							maxW = Math.max(maxW, measureText(column.label, style, '500'));
+						}
+
+						// ② 测量数据
+						const prop = column.property;
+						if (prop && this.filteredOrderDetailInfoList) {
 							this.filteredOrderDetailInfoList.forEach(row => {
-								let cellText = '';
-								const value = row[columnProp];
+								const val = row[prop];
 
-								if (value !== null && value !== undefined) {
-									if (columnProp === 'isIncludeTaxFactory' || columnProp === 'isIncludeTaxSale') {
-										cellText = value == 0 ? '否' : '是';
-									} else {
-										cellText = String(value);
-									}
+								if (val === null || val === undefined) return;
+
+								let text = '';
+								if (typeof val === 'number') {
+									text = Number.isInteger(val) ? String(val) : val.toString();
+								} else {
+									text = String(val);
 								}
 
-								if (cellText) {
-									// 获取第一个数据单元格的样式作为参考
-									const styleRef = bodyCells[0]?.querySelector('.cell') || headerCells[0]?.querySelector('.cell');
-									if (styleRef) {
-										const computedStyle = window.getComputedStyle(styleRef);
-										const tempDiv = document.createElement('div');
-										tempDiv.style.cssText = `
-                      position: absolute;
-                      visibility: hidden;
-                      white-space: nowrap;
-                      font-size: ${computedStyle.fontSize};
-                      font-family: ${computedStyle.fontFamily};
-                      font-weight: ${computedStyle.fontWeight};
-                      padding: 0;
-                      margin: 0;
-                      left: -9999px;
-                      top: -9999px;
-                    `;
-										tempDiv.textContent = cellText;
-										document.body.appendChild(tempDiv);
-										maxWidth = Math.max(maxWidth, tempDiv.offsetWidth);
-										document.body.removeChild(tempDiv);
-									}
+								if (text) {
+									maxW = Math.max(maxW, measureText(text, style));
 								}
 							});
 						}
 
-						// 设置列宽 - 只添加最小间距，让文字刚好显示
-						if (maxWidth > 0) {
-							const padding = 0; // 最小间距，确保文字不被截断
-							const finalWidth = Math.max(maxWidth + padding, 60);
-							columnWidths[colName] = finalWidth;
-						}
+						// 不加 padding，不加 margin，不加 extra —— 完全真实宽度
+						col.width = maxW;
+						column.realWidth = maxW;
 					});
 
-					// 统一更新所有 colgroup 中的列宽（确保表头和表体同步）
-					const allColgroups = table.querySelectorAll('colgroup');
-					allColgroups.forEach(colgroup => {
-						Object.keys(columnWidths).forEach(colName => {
-							const cols = colgroup.querySelectorAll(`col[name="${colName}"]`);
-							cols.forEach(colEl => {
-								colEl.setAttribute('width', columnWidths[colName]);
-								colEl.style.width = `${columnWidths[colName]}px`;
-								colEl.style.minWidth = `${columnWidths[colName]}px`;
-								colEl.style.maxWidth = `${columnWidths[colName]}px`;
-							});
-						});
-					});
-
-					// 强制表格重新布局，确保对齐
-					this.$refs.tableRef.doLayout();
-
-					// 再次确保同步
-					this.$nextTick(() => {
-						this.$refs.tableRef.doLayout();
-					});
-				}, 150);
+					// 最终布局一次
+					tableRef.doLayout();
+				});
 			});
 		},
+
 		// 防抖函数
 		debounce(func, wait) {
 			let timeout;
@@ -475,7 +446,7 @@ export default {
 <template>
 	<div>
 		<!-- 固定标题区域 -->
-		<el-row v-fixed="{ position: 'top', zIndex: 1000 }" style="background-color: #fff; padding: 10px 0">
+		<el-row v-fixed="{ position: 'top', zIndex: 1000 }" style="background-color: #fff; padding: 0">
 			<el-col :span="8">
 				<span style="font-weight: bolder">订单货物详情列表</span>
 			</el-col>
@@ -1004,6 +975,21 @@ export default {
 			}
 		}
 	}
+
+	/* el-tag 标签零间距 */
+	.el-tag {
+		margin: 0 !important;
+		padding: 0 2px !important;
+		border: none !important;
+		line-height: 1.1 !important;
+	}
+
+	/* el-button 按钮紧凑样式 */
+	.el-button--mini {
+		padding: 2px 5px !important;
+		font-size: 12px !important;
+		line-height: 1.1 !important;
+	}
 }
 
 /* 固定表头样式 - 确保表头在滚动时保持固定 */
@@ -1019,7 +1005,7 @@ export default {
 
 // 展开行样式
 .expand-row {
-	padding: 4px 5px;
+	padding: 2px 0;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -1029,7 +1015,7 @@ export default {
 	.expand-label {
 		font-weight: bold;
 		color: #606266;
-		margin-right: 10px;
+		//margin-right: 5px;
 		flex-shrink: 0;
 		font-size: 13px;
 	}
@@ -1038,7 +1024,7 @@ export default {
 		color: #303133;
 		word-break: break-all;
 		white-space: pre-wrap;
-		line-height: 1.4;
+		line-height: 1.2;
 		font-size: 13px;
 		text-align: center;
 	}
