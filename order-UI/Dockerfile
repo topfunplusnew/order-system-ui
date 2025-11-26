@@ -35,15 +35,26 @@ FROM nginx:alpine
 LABEL maintainer="0434实验室"
 LABEL description="订单管理系统前端"
 
+# 安装gettext（包含envsubst工具）和iproute2（用于获取IP）
+RUN apk add --no-cache gettext iproute2
+
 # 复制构建产物到nginx目录
 COPY --from=builder /app/packages/order-system/dist /usr/share/nginx/html
 
-# 复制nginx配置文件
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# 复制nginx配置文件模板（nginx:alpine支持templates目录自动处理）
+COPY nginx.conf /etc/nginx/templates/default.conf.template
 
-# 暴露端口
-EXPOSE 40085
+# 创建日志目录
+RUN mkdir -p /opt/order
 
-# 启动nginx
+# 复制启动脚本
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
+
+# 暴露端口（默认正式环境端口，实际由环境变量控制）
+EXPOSE 40085 40081
+
+# 启动脚本
+ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]
 
