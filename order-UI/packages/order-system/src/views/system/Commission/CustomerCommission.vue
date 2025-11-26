@@ -695,7 +695,7 @@ export default {
 			this.openDialog(
 				CommissionsForm,
 				'新增客户佣金',
-				'400px',
+				'500px',
 				{
 					type: CommissionType.CUSTOMER,
 					orderDetailId: this.orderDetailId,
@@ -723,7 +723,7 @@ export default {
 					this.openDialog(
 						CommissionsForm,
 						'修改客户佣金',
-						'400px',
+						'500px',
 						{
 							id: row.id,
 							type: CommissionType.CUSTOMER,

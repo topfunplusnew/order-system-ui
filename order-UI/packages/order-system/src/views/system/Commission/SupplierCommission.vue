@@ -705,7 +705,7 @@ export default {
 			this.openDialog(
 				CommissionsForm,
 				'新增厂家佣金',
-				'400px',
+				'500px',
 				{
 					type: CommissionType.SUPPLIER,
 					orderDetailId: this.orderDetailId,
@@ -733,7 +733,7 @@ export default {
 					this.openDialog(
 						CommissionsForm,
 						'修改厂家佣金',
-						'400px',
+						'500px',
 						{
 							id: row.id,
 							type: CommissionType.SUPPLIER,
