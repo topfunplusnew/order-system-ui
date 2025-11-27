@@ -121,7 +121,11 @@ export default {
 			// 是否显示清空按钮
 			showClearBtn: false,
 			// 延迟关闭定时器
-			clearTimer: null
+			clearTimer: null,
+			// 跟踪表单项聚焦状态
+			focusedFields: {
+				query: false
+			}
 		};
 	},
 
@@ -399,6 +403,31 @@ export default {
 				this.showClearBtn = false;
 				this.clearTimer = null;
 			}, 400);
+		},
+		// 清除主查询输入框
+		clearQueryInput() {
+			this.internalQuery = '';
+			this.query = '';
+			this.updateInputWidth();
+		},
+		// 清除表单项
+		clearFormItem(item) {
+			item.value = item.type === 'date-range-picker' ? [] : '';
+		},
+		// 表单项获得焦点或鼠标进入
+		handleFieldFocus(fieldKey) {
+			this.$set(this.focusedFields, fieldKey, true);
+		},
+		// 表单项失去焦点或鼠标离开
+		handleFieldBlur(fieldKey) {
+			// 延迟隐藏，避免点击删除按钮时立即隐藏
+			setTimeout(() => {
+				this.$set(this.focusedFields, fieldKey, false);
+			}, 200);
+		},
+		// 获取表单项聚焦状态
+		isFieldFocused(fieldKey) {
+			return this.focusedFields[fieldKey] || false;
 		}
 	}
 };
@@ -418,27 +447,31 @@ export default {
 				<div>
 					<el-form ref="queryForm" :model="computedQueryItems" size="mini" :inline="true" label-width="100px" @submit.native.prevent>
 						<el-form-item :label="queryLabel">
-							<div class="input-wrapper">
+							<div class="input-wrapper" @mouseenter="handleFieldFocus('query')" @mouseleave="handleFieldBlur('query')">
 								<!-- 隐藏的测量元素，用于获取文本实际宽度 -->
 								<span ref="widthMeasure" class="width-measure">{{ spanText }}</span>
-								<el-input v-model="query" type="text" placeholder="请输入" size="mini" clearable @input="updateInputWidth" @keyup.enter.native.prevent="handleSearchInfo" :style="{ width: inputWidth }"></el-input>
+								<el-input v-model="query" type="text" placeholder="请输入" size="mini" @input="updateInputWidth" @focus="handleFieldFocus('query')" @blur="handleFieldBlur('query')" @keyup.enter.native.prevent="handleSearchInfo" :style="{ width: inputWidth }"></el-input>
+								<el-button v-show="isFieldFocused('query')" type="text" icon="el-icon-close" size="mini" class="clear-form-btn" @click="clearQueryInput"></el-button>
 							</div>
 						</el-form-item>
 						<el-form-item v-for="item in computedQueryItems.queryList" :label="item.label" :prop="item.prop" :key="item.id">
-							<template v-if="item.type === 'input'">
-								<el-input v-model="item.value" placeholder="请输入" size="mini" clearable @keyup.enter.native.prevent="handleSearchInfo"></el-input>
-							</template>
-							<template v-else-if="item.type === 'select'">
-								<el-select v-model="item.value" size="mini" placeholder="请选择" clearable @keyup.enter.native.prevent="handleSearchInfo">
-									<el-option v-for="option in item.options" :key="option.value" :label="option.label" :value="option.value"></el-option>
-								</el-select>
-							</template>
-							<template v-else-if="item.type === 'date-picker'">
-								<el-date-picker v-model="item.value" type="date" value-format="yyyy-MM-dd" placeholder="选择日期" size="mini" clearable></el-date-picker>
-							</template>
-							<template v-else-if="item.type === 'date-range-picker'">
-								<el-date-picker v-model="item.value" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" size="mini" clearable></el-date-picker>
-							</template>
+							<div class="form-control-wrapper" @mouseenter="handleFieldFocus(item.id)" @mouseleave="handleFieldBlur(item.id)">
+								<template v-if="item.type === 'input'">
+									<el-input v-model="item.value" placeholder="请输入" size="mini" @focus="handleFieldFocus(item.id)" @blur="handleFieldBlur(item.id)" @keyup.enter.native.prevent="handleSearchInfo"></el-input>
+								</template>
+								<template v-else-if="item.type === 'select'">
+									<el-select v-model="item.value" size="mini" placeholder="请选择" @focus="handleFieldFocus(item.id)" @blur="handleFieldBlur(item.id)" @keyup.enter.native.prevent="handleSearchInfo">
+										<el-option v-for="option in item.options" :key="option.value" :label="option.label" :value="option.value"></el-option>
+									</el-select>
+								</template>
+								<template v-else-if="item.type === 'date-picker'">
+									<el-date-picker v-model="item.value" type="date" value-format="yyyy-MM-dd" placeholder="选择日期" size="mini" @focus="handleFieldFocus(item.id)" @blur="handleFieldBlur(item.id)"></el-date-picker>
+								</template>
+								<template v-else-if="item.type === 'date-range-picker'">
+									<el-date-picker v-model="item.value" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" size="mini" @focus="handleFieldFocus(item.id)" @blur="handleFieldBlur(item.id)"></el-date-picker>
+								</template>
+								<el-button v-show="isFieldFocused(item.id)" type="text" icon="el-icon-close" size="mini" class="clear-form-btn" @click="clearFormItem(item)"></el-button>
+							</div>
 						</el-form-item>
 						<el-form-item>
 							<el-button type="primary" size="mini" @click="handleSearchInfo" :disabled="disable">搜索</el-button>
@@ -544,7 +577,28 @@ export default {
 // 输入框包装器
 .input-wrapper {
 	position: relative;
-	display: inline-block;
+	display: inline-flex;
+	align-items: center;
+}
+
+// 表单控件包装器
+.form-control-wrapper {
+	display: inline-flex;
+	align-items: center;
+}
+
+// 清除按钮
+.clear-form-btn {
+	padding: 0;
+	margin-left: 4px;
+	color: #909399;
+	font-size: 14px;
+	line-height: 1;
+	transition: color 0.3s;
+
+	&:hover {
+		color: #f56c6c;
+	}
 }
 
 // 隐藏的测量元素（参考CSDN文章思路）
