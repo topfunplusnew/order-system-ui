@@ -31,19 +31,7 @@
 			</right-toolbar>
 		</el-row>
 
-		<el-table
-			id="printBox"
-			v-loading="loading"
-			v-horizontal-scroll="'always'"
-			:data="giftStockList"
-			border
-			size="mini"
-			:cell-style="
-				() => {
-					return { padding: '.5px' };
-				}
-			"
-		>
+		<el-table id="printBox" v-loading="loading" v-horizontal-scroll="'always'" :data="giftStockList" border size="mini" :cell-style="{ padding: '.5px' }">
 			<el-table-column v-if="columns[0] && columns[0].visible" label="序号" type="index" width="60" align="center" />
 			<el-table-column v-if="columns[1] && columns[1].visible" label="物品名称" prop="itemName" min-width="150" show-overflow-tooltip />
 			<el-table-column v-if="columns[2] && columns[2].visible" label="入库日期" prop="inDate" width="120" align="center">
@@ -107,60 +95,55 @@ export default {
 		};
 	},
 	created() {
-		if (localStorage.getItem('giftInventory-columns') === 'null' || !localStorage.getItem('giftInventory-columns')) {
-			localStorage.setItem('giftInventory-columns', JSON.stringify(this.columns));
-		} else {
-			try {
-				const savedColumns = JSON.parse(localStorage.getItem('giftInventory-columns'));
-				if (Array.isArray(savedColumns) && savedColumns.length > 0) {
-					this.columns = savedColumns;
-				}
-			} catch (e) {
-				console.error('解析列配置失败:', e);
-				localStorage.setItem('giftInventory-columns', JSON.stringify(this.columns));
-			}
-		}
+		this.initColumns();
 		this.getList();
 	},
 	watch: {
 		columns: {
-			handler: function (newVal, oldVal) {
-				// 避免初始化时触发保存
+			handler(newVal, oldVal) {
 				if (oldVal && JSON.stringify(newVal) !== JSON.stringify(oldVal)) {
 					localStorage.setItem('giftInventory-columns', JSON.stringify(newVal));
 				}
 			},
-			deep: true,
-			immediate: false
+			deep: true
 		}
 	},
 	methods: {
 		parseTime,
-		/** 查询礼品库存列表 */
+		initColumns() {
+			const savedColumns = localStorage.getItem('giftInventory-columns');
+			if (!savedColumns || savedColumns === 'null') {
+				localStorage.setItem('giftInventory-columns', JSON.stringify(this.columns));
+				return;
+			}
+			try {
+				const parsed = JSON.parse(savedColumns);
+				this.columns = Array.isArray(parsed) && parsed.length > 0 ? parsed : this.columns;
+			} catch (e) {
+				console.error('解析列配置失败:', e);
+				localStorage.setItem('giftInventory-columns', JSON.stringify(this.columns));
+			}
+		},
+		buildQueryParams() {
+			const baseParams = { pageNum: 1, pageSize: 10000 };
+			const itemName = this.queryParams.itemName;
+			const inDate = this.queryParams.inDate;
+			const params = { ...baseParams };
+			if (itemName) params.itemName = itemName;
+			if (inDate) {
+				params.params = {
+					beginInDate: `${inDate} 00:00:00`,
+					endInDate: `${inDate} 23:59:59`
+				};
+			}
+			return params;
+		},
 		getList() {
 			this.loading = true;
-			const inParams = {
-				pageNum: 1,
-				pageSize: 10000
-			};
-			if (this.queryParams.itemName) {
-				inParams.itemName = this.queryParams.itemName;
-			}
-			if (this.queryParams.inDate) {
-				inParams.params = {};
-				inParams.params['beginInDate'] = this.queryParams.inDate + ' 00:00:00';
-				inParams.params['endInDate'] = this.queryParams.inDate + ' 23:59:59';
-			}
-			const outParams = {
-				pageNum: 1,
-				pageSize: 10000
-			};
-			if (this.queryParams.itemName) {
-				outParams.itemName = this.queryParams.itemName;
-			}
-			Promise.all([listGiftIn(inParams), listGiftOut(outParams)])
+			const queryParams = this.buildQueryParams();
+			Promise.all([listGiftIn(queryParams), listGiftOut(queryParams)])
 				.then(([inResponse, outResponse]) => {
-					const giftInList = inResponse?.rows || [];
+					const giftInList = (inResponse?.rows || []).filter(item => item && item.id !== null && item.id !== undefined);
 					const giftOutList = outResponse?.rows || [];
 					this.calculateStock(giftInList, giftOutList);
 				})
@@ -174,42 +157,40 @@ export default {
 					this.loading = false;
 				});
 		},
-		/** 计算库存数据 */
 		calculateStock(giftInList, giftOutList) {
 			const stockMap = new Map();
 			giftInList.forEach(item => {
-				const key = item.id;
-				if (!stockMap.has(key)) {
-					stockMap.set(key, {
-						id: item.id,
-						itemName: item.itemName || '',
-						inDate: item.inDate || '',
-						inMethod: item.inMethod || '',
-						unit: item.unit || '',
-						quantity: Number(item.quantity) || 0,
-						estimatedValue: Number(item.estimatedValue) || 0,
-						handler: item.handler || '',
-						outQuantity: 0,
-						remainingQuantity: 0,
-						remainingValue: 0
-					});
+				if (!item || item.id === null || item.id === undefined) {
+					return;
 				}
+				const inQty = Number(item.quantity) || 0;
+				stockMap.set(String(item.id), {
+					id: item.id,
+					itemName: item.itemName || '',
+					inDate: item.inDate || '',
+					inMethod: item.inMethod || '',
+					unit: item.unit || '',
+					quantity: inQty,
+					estimatedValue: Number(item.estimatedValue) || 0,
+					handler: item.handler || '',
+					outQuantity: 0
+				});
 			});
 			giftOutList.forEach(outItem => {
-				if (outItem.giftSource) {
-					const giftInId = String(outItem.giftSource);
-					if (stockMap.has(giftInId)) {
-						const stockItem = stockMap.get(giftInId);
-						const outQty = Number(outItem.quantity) || 0;
-						const currentOutQty = Number(stockItem.outQuantity) || 0;
-						stockItem.outQuantity = add(currentOutQty, outQty);
-					}
+				if (!outItem || !outItem.giftSource) {
+					return;
+				}
+				const giftInId = String(outItem.giftSource);
+				const stockItem = stockMap.get(giftInId);
+				if (stockItem) {
+					const outQty = Number(outItem.quantity) || 0;
+					stockItem.outQuantity = add(stockItem.outQuantity, outQty);
 				}
 			});
 			const stockList = Array.from(stockMap.values()).map(item => {
-				const inQty = Number(item.quantity) || 0;
-				const outQty = Number(item.outQuantity) || 0;
-				const estimatedVal = Number(item.estimatedValue) || 0;
+				const inQty = item.quantity;
+				const outQty = item.outQuantity;
+				const estimatedVal = item.estimatedValue;
 				const remainingQty = subtract(inQty, outQty);
 				const remainingQtyNum = remainingQty > 0 ? remainingQty : 0;
 				const unitValue = inQty > 0 ? divide(estimatedVal, inQty) : 0;
@@ -220,25 +201,21 @@ export default {
 					remainingValue: round(remainingVal, 2)
 				};
 			});
-			const total = stockList.length;
-			const start = (this.queryParams.pageNum - 1) * this.queryParams.pageSize;
-			const end = start + this.queryParams.pageSize;
-			this.giftStockList = stockList.slice(start, end);
-			this.total = total;
+			const { pageNum, pageSize } = this.queryParams;
+			const start = (pageNum - 1) * pageSize;
+			this.giftStockList = stockList.slice(start, start + pageSize);
+			this.total = stockList.length;
 		},
-		/** 搜索按钮操作 */
 		handleQuery() {
 			this.queryParams.pageNum = 1;
 			this.getList();
 		},
-		/** 重置按钮操作 */
 		resetQuery() {
 			this.queryParams.itemName = null;
 			this.queryParams.inDate = null;
 			this.resetForm('queryForm');
 			this.handleQuery();
 		},
-		/** 导出按钮操作 */
 		handleExport() {
 			this.excelExport([], `礼品库存_${this.parseTime(new Date(), '{y}{m}{d}_{h}{i}{s}')}`);
 		}

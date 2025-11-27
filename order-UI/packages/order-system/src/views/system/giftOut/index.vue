@@ -88,11 +88,13 @@
 
 			<el-table-column v-if="columns[6].visible" label="数量" align="center" prop="quantity" width="80" show-overflow-tooltip />
 
-			<el-table-column v-if="columns[7].visible" label="预估价值" align="center" prop="estimatedValue" width="100" show-overflow-tooltip />
+			<el-table-column v-if="columns[7].visible" label="单位" align="center" prop="unit" width="80" show-overflow-tooltip />
 
-			<el-table-column v-if="columns[8].visible" label="经办人" align="center" prop="handler" width="100" show-overflow-tooltip />
+			<el-table-column v-if="columns[8].visible" label="预估价值" align="center" prop="estimatedValue" width="100" show-overflow-tooltip />
 
-			<el-table-column v-if="columns[9].visible" label="备注" align="center" prop="remark" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[9].visible" label="经办人" align="center" prop="handler" width="100" show-overflow-tooltip />
+
+			<el-table-column v-if="columns[10].visible" label="备注" align="center" prop="remark" width="120" show-overflow-tooltip />
 
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="150" fixed="right">
 				<template #default="scope">
@@ -122,7 +124,7 @@
 						</el-form-item>
 					</el-col>
 
-					<el-col :span="24">
+					<el-col :span="12">
 						<el-form-item label="对方类型">
 							<el-select v-model="companyType" placeholder="请选择" style="width: 100%">
 								<el-option v-for="item in OTHER_TYPE()" :key="item.value" :label="item.label" :value="item.value"></el-option>
@@ -136,7 +138,7 @@
 								<el-col :span="20">
 									<el-input v-model="form.companyName" placeholder="请输入公司名称" />
 								</el-col>
-								<el-col :span="4">
+								<el-col :span="2">
 									<SearchOption :limit-info="{ companyType: companyType }" :get-data="listCompany" query-info="companyName" query-label="公司名称" :query-name="companyName" @update:queryName="handleUpdateCompanyName" @commitBack="handleCommitBackCompany">
 										<template #table-columns>
 											<el-table-column :label="companyType" align="center" prop="companyName" />
@@ -151,7 +153,7 @@
 						</el-form-item>
 					</el-col>
 
-					<el-col :span="24">
+					<el-col :span="12">
 						<el-form-item label="收礼人员" prop="recipientReceiver">
 							<el-input v-model="form.recipientReceiver" placeholder="请输入收礼人员" />
 						</el-form-item>
@@ -159,23 +161,43 @@
 
 					<el-col :span="24">
 						<el-form-item label="物品名称" prop="itemName">
-							<el-input v-model="form.itemName" placeholder="请输入物品名称" />
+							<el-row :gutter="10">
+								<el-col :span="20">
+									<el-input v-model="form.itemName" placeholder="请输入物品名称" />
+								</el-col>
+								<el-col :span="2">
+									<SearchOption :get-data="listGiftIn" query-info="itemName" query-label="物品名称" :query-name="itemName" @update:queryName="handleUpdateItemName" @commitBack="handleCommitBackItem">
+										<template #table-columns>
+											<el-table-column label="物品名称" align="center" prop="itemName" />
+											<el-table-column label="数量" align="center" prop="quantity" />
+											<el-table-column label="预估价值/购买金额" align="center" prop="estimatedValue" />
+											<el-table-column label="经办人" align="center" prop="handler" />
+										</template>
+									</SearchOption>
+								</el-col>
+							</el-row>
 						</el-form-item>
 					</el-col>
 
-					<el-col :span="12">
+					<el-col :span="8">
 						<el-form-item label="数量" prop="quantity">
 							<el-input v-model="form.quantity" placeholder="请输入数量" />
 						</el-form-item>
 					</el-col>
 
-					<el-col :span="12">
+					<el-col :span="8">
+						<el-form-item label="单位" prop="unit">
+							<el-input v-model="form.unit" placeholder="请输入单位" maxlength="255" />
+						</el-form-item>
+					</el-col>
+
+					<el-col :span="8">
 						<el-form-item label="预估价值" prop="estimatedValue">
 							<el-input v-model="form.estimatedValue" placeholder="请输入预估价值" />
 						</el-form-item>
 					</el-col>
 
-					<el-col :span="24">
+					<el-col :span="12">
 						<el-form-item label="经办人" prop="handler">
 							<el-input v-model="form.handler" placeholder="请输入经办人" />
 						</el-form-item>
@@ -202,6 +224,7 @@ import { parseTime } from '../../../utils/ruoyi';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
 import SearchOption from '../../../components/SearchOption.vue';
 import { listCompany } from '../../../api/system/company';
+import { listGiftIn } from '@/api/system/giftIn';
 import { mixin_gift_out_fill } from './giftOut_fill';
 import { OTHER_TYPE } from '../../../utils/order';
 
@@ -256,7 +279,25 @@ export default {
 				itemName: [{ required: true, message: '请输入物品名称', trigger: 'blur' }],
 				quantity: [
 					{ required: true, message: '请输入数量', trigger: 'blur' },
-					{ pattern: /^\d+(\.\d+)?$/, message: '请输入有效数字', trigger: 'blur' }
+					{
+						validator: (rule, value, callback) => {
+							if (!value) {
+								callback(new Error('请输入数量'));
+								return;
+							}
+							const num = Number(value);
+							if (!Number.isInteger(num) || num < 1) {
+								callback(new Error('数量必须为正整数且大于等于1'));
+								return;
+							}
+							callback();
+						},
+						trigger: 'blur'
+					}
+				],
+				unit: [
+					{ required: true, message: '请输入单位', trigger: 'blur' },
+					{ max: 255, message: '单位名称长度不能超过255个字符', trigger: 'blur' }
 				],
 				estimatedValue: [
 					{ required: true, message: '请输入预估价值', trigger: 'blur' },
@@ -272,9 +313,10 @@ export default {
 				{ key: 4, label: `收礼人员`, visible: true },
 				{ key: 5, label: `物品名称`, visible: true },
 				{ key: 6, label: `数量`, visible: true },
-				{ key: 7, label: `预估价值`, visible: true },
-				{ key: 8, label: `经办人`, visible: true },
-				{ key: 9, label: `备注`, visible: true }
+				{ key: 7, label: `单位`, visible: true },
+				{ key: 8, label: `预估价值`, visible: true },
+				{ key: 9, label: `经办人`, visible: true },
+				{ key: 10, label: `备注`, visible: true }
 			],
 			companyType: '供应商',
 			dialogWidth: window.innerWidth > 768 ? '600px' : '95%'
@@ -293,6 +335,7 @@ export default {
 			return OTHER_TYPE;
 		},
 		listCompany,
+		listGiftIn,
 		parseTime,
 		updateDialogWidth() {
 			this.dialogWidth = window.innerWidth > 768 ? '600px' : '95%';
@@ -333,15 +376,21 @@ export default {
 				recipientReceiver: null,
 				itemName: null,
 				quantity: null,
+				unit: null,
 				estimatedValue: null,
 				handler: null,
 				updateTime: null,
 				updateBy: null,
 				createTime: null,
 				createBy: null,
-				remark: null
+				remark: null,
+				recipientInfo: null,
+				recipientType: null,
+				inId: null
 			};
 			this.companyType = '供应商';
+			this.companyName = '';
+			this.itemName = '';
 			this.resetForm('form');
 		},
 		/** 搜索按钮操作 */
@@ -370,7 +419,7 @@ export default {
 		/** 修改按钮操作 */
 		handleUpdate(row) {
 			this.reset();
-			const id = row.id || (this.ids.length === 1 ? this.ids[0] : null);
+			const id = row?.id || (Array.isArray(this.ids) && this.ids.length === 1 ? this.ids[0] : null);
 
 			// 添加检查确保有且仅有一个ID
 			if (!id) {
@@ -380,12 +429,28 @@ export default {
 
 			getGiftOut(id)
 				.then(response => {
+					if (!response?.data) {
+						this.$message.error('获取礼品出库信息失败，数据为空');
+						return;
+					}
 					this.form = response.data;
+					// 根据recipientType设置companyType，用于下拉框显示
+					if (this.form.recipientType) {
+						this.companyType = this.form.recipientType;
+					}
+					// 设置companyName和itemName用于SearchOption组件
+					if (this.form.companyName) {
+						this.companyName = this.form.companyName;
+					}
+					if (this.form.itemName) {
+						this.itemName = this.form.itemName;
+					}
 					this.open = true;
 					this.title = '修改礼品出库信息';
 				})
 				.catch(error => {
-					this.$message.error('获取礼品出库信息失败，请稍后重试');
+					const errorMsg = error?.response?.data?.msg || error?.response?.data?.message || error?.message || '获取礼品出库信息失败，请稍后重试';
+					this.$message.error(errorMsg);
 					console.error('获取礼品出库信息失败:', error);
 				});
 		},
@@ -393,8 +458,13 @@ export default {
 		submitForm() {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
+					// 准备提交数据，确保quantity为整数
+					const submitData = { ...this.form };
+					if (submitData.quantity) {
+						submitData.quantity = parseInt(submitData.quantity, 10);
+					}
 					if (this.form.id != null) {
-						updateGiftOut(this.form)
+						updateGiftOut(submitData)
 							.then(response => {
 								this.$modal.msgSuccess('修改成功');
 								this.open = false;
@@ -407,7 +477,7 @@ export default {
 								console.error('错误详情:', error?.response?.data);
 							});
 					} else {
-						addGiftOut(this.form)
+						addGiftOut(submitData)
 							.then(response => {
 								this.$modal.msgSuccess('新增成功');
 								this.open = false;
