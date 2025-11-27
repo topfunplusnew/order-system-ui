@@ -11,6 +11,12 @@
 				</el-form-item>
 				<el-form-item label="供应商" prop="supplier">
 					<el-row>
+						<el-col :span="20">
+							<el-input disabled v-model="searchForm.supplier" placeholder="请选择供应商" clearable @keyup.enter.native="getList" size="mini">
+								<el-button @click="reset" size="mini">刷新</el-button>
+								<i slot="prefix" class="el-input__icon el-icon-search"></i>
+							</el-input>
+						</el-col>
 						<el-col :span="4">
 							<SearchOption :limit-info="{ companyType: PUBLIC_DICT_TYPE.SUPPLIER }" :get-data="listCompany" query-info="companyName" query-label="公司名称" :query-name="companyName" @update:queryName="handleUpdateCompanyName" @commitBack="handleCommitBackCompany">
 								<template #table-columns>
@@ -21,12 +27,6 @@
 									<el-table-column label="销售经理" align="center" prop="salesManager" />
 								</template>
 							</SearchOption>
-						</el-col>
-						<el-col :span="20">
-							<el-input disabled v-model="searchForm.supplier" placeholder="请选择供应商" clearable @keyup.enter.native="getList" size="mini">
-								<el-button @click="reset" size="mini">刷新</el-button>
-								<i slot="prefix" class="el-input__icon el-icon-search"></i>
-							</el-input>
 						</el-col>
 					</el-row>
 				</el-form-item>

@@ -11,6 +11,9 @@
 				</el-form-item>
 				<el-form-item label="车辆：" prop="vehicle">
 					<el-row>
+						<el-col :span="20">
+							<el-input disabled v-model="searchForm.vehicle" placeholder="请选择车牌" @keyup.enter.native="getList" />
+						</el-col>
 						<el-col :span="4">
 							<SearchOption :limit-info="{}" :get-data="listCars" query-label="车牌搜索" :query-name="queryCars" query-info="carNo" @update:queryName="updateQueryCars" @commitBack="handleCommitBackCars">
 								<template #table-columns>
@@ -20,9 +23,6 @@
 									<el-table-column label="运输类型" align="center" prop="carType" />
 								</template>
 							</SearchOption>
-						</el-col>
-						<el-col :span="20">
-							<el-input disabled v-model="searchForm.vehicle" placeholder="请选择车牌" @keyup.enter.native="getList" />
 						</el-col>
 					</el-row>
 				</el-form-item>
