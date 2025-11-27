@@ -309,7 +309,6 @@ export default {
 			console.log(`row`, row);
 			this.queryObject = {
 				companyId: row.id,
-				companyName: row.carNo,
 				acountsType: '司机'
 			};
 			// 查询该银行卡
