@@ -39,8 +39,8 @@ fi
 export BACKEND_PORT=${BACKEND_PORT:-30181}
 export FRONTEND_PORT=${FRONTEND_PORT:-40085}
 
-# 创建日志目录
-mkdir -p /opt/order
+# 确保配置目录和日志目录存在
+mkdir -p /opt/front /opt/front/log
 
 # 输出配置信息（用于调试）
 echo "=== Nginx配置信息 ==="
@@ -49,9 +49,25 @@ echo "后端端口: $BACKEND_PORT"
 echo "前端端口: $FRONTEND_PORT"
 echo "===================="
 
-# 处理nginx配置模板（nginx:alpine会自动处理，但我们手动处理以确保环境变量已设置）
-if [ -f /etc/nginx/templates/default.conf.template ]; then
-    envsubst '${HOST_IP} ${BACKEND_PORT} ${FRONTEND_PORT}' < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf
+# 处理nginx配置模板（优先使用挂载的配置文件）
+CONFIG_TEMPLATE=""
+if [ -f /opt/front/nginx.conf.template ]; then
+    CONFIG_TEMPLATE="/opt/front/nginx.conf.template"
+    echo "使用挂载的配置文件: $CONFIG_TEMPLATE"
+elif [ -f /opt/front/nginx.conf ]; then
+    CONFIG_TEMPLATE="/opt/front/nginx.conf"
+    echo "使用挂载的配置文件: $CONFIG_TEMPLATE"
+elif [ -f /etc/nginx/templates/default.conf.template ]; then
+    CONFIG_TEMPLATE="/etc/nginx/templates/default.conf.template"
+    echo "使用默认配置文件: $CONFIG_TEMPLATE"
+fi
+
+# 如果找到配置文件模板，则处理环境变量替换
+if [ -n "$CONFIG_TEMPLATE" ]; then
+    envsubst '${HOST_IP} ${BACKEND_PORT} ${FRONTEND_PORT}' < "$CONFIG_TEMPLATE" > /etc/nginx/conf.d/default.conf
+    echo "配置文件已生成: /etc/nginx/conf.d/default.conf"
+else
+    echo "警告: 未找到nginx配置文件模板"
 fi
 
 # 执行传入的命令（通常是nginx启动命令）

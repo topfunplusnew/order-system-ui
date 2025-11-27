@@ -42,7 +42,7 @@
 			<el-table-column prop="operateDate" label="日期" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.operateDate }}</div>
+						<template slot="content">{{ scope.row.operateDate }}</template>
 						<span>{{ scope.row.operateDate }}</span>
 					</el-tooltip>
 				</template>
@@ -50,7 +50,7 @@
 			<el-table-column label="供应商名称" width="150" prop="supplierName" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.supplierName }}</div>
+						<template slot="content">{{ scope.row.supplierName }}</template>
 						<span>{{ scope.row.supplierName }}</span>
 					</el-tooltip>
 				</template>
@@ -58,17 +58,19 @@
 			<el-table-column label="往来明细" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">
+						<template slot="content">
 							<div v-for="(item, index) in scope.row.lenderList" :key="index">
 								<span style="color: red; margin-right: 6px">[{{ moduleNames[item.tableName] }}]</span>
 								<span style="margin-right: 7px">{{ item.lender }}</span>
 								<i class="el-icon-s-order" style="cursor: pointer" @click="handleCheckDetail(item)"></i>
 							</div>
-						</div>
-						<div v-for="(item, index) in scope.row.lenderList" :key="index">
-							<span style="color: red; margin-right: 6px">[{{ moduleNames[item.tableName] }}]</span>
-							<span style="margin-right: 7px">{{ item.lender }}</span>
-							<i class="el-icon-s-order" style="cursor: pointer" @click="handleCheckDetail(item)"></i>
+						</template>
+						<div>
+							<div v-for="(item, index) in scope.row.lenderList" :key="index">
+								<span style="color: red; margin-right: 6px">[{{ moduleNames[item.tableName] }}]</span>
+								<span style="margin-right: 7px">{{ item.lender }}</span>
+								<i class="el-icon-s-order" style="cursor: pointer" @click="handleCheckDetail(item)"></i>
+							</div>
 						</div>
 					</el-tooltip>
 				</template>
@@ -76,11 +78,11 @@
 			<el-table-column prop="lender" label="借方(供应商欠款减少)" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">
+						<template slot="content">
 							<span>
 								{{ abs(scope.row.lender) }}
 							</span>
-						</div>
+						</template>
 						<span>
 							{{ abs(scope.row.lender) }}
 						</span>
@@ -90,10 +92,10 @@
 			<el-table-column prop="borrower" label="贷方(供应商欠款增加)" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">
+						<template slot="content">
 							<span style="margin-right: 10px">{{ abs(scope.row.borrower) }}</span>
 							<i class="el-icon-s-order" style="cursor: pointer" @click="handleCheckBorrowerDetailList(scope.row)"></i>
-						</div>
+						</template>
 						<div style="display: flex; align-items: center; justify-content: center">
 							<span style="margin-right: 5px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{ abs(scope.row.borrower) }}</span>
 							<i v-if="scope.row.borrowerList && scope.row.borrowerList.length > 0" class="el-icon-s-order" style="cursor: pointer; flex-shrink: 0; margin-left: 5px" @click.stop="handleCheckBorrowerDetailList(scope.row)"></i>
@@ -104,13 +106,13 @@
 			<el-table-column prop="moneyAmountLocal" label="余额本币" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">
+						<template slot="content">
 							<span :class="{ negative: scope.row.moneyAmountLocal < 0 }">
-								{{ formatSupplierBalance(scope.row.moneyAmountLocal) }}
+								{{ formatBalance(scope.row.moneyAmountLocal) }}
 							</span>
-						</div>
+						</template>
 						<span :class="{ negative: scope.row.moneyAmountLocal < 0 }">
-							{{ formatSupplierBalance(scope.row.moneyAmountLocal) }}
+							{{ formatBalance(scope.row.moneyAmountLocal) }}
 						</span>
 					</el-tooltip>
 				</template>
@@ -131,7 +133,7 @@
 				<el-table-column prop="operateDate" label="日期" show-overflow-tooltip>
 					<template #default="scope">
 						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-							<div slot="content">{{ scope.row.operateDate }}</div>
+							<template slot="content">{{ scope.row.operateDate }}</template>
 							<span>{{ scope.row.operateDate }}</span>
 						</el-tooltip>
 					</template>
@@ -139,7 +141,7 @@
 				<el-table-column prop="payNo" label="凭证号" show-overflow-tooltip>
 					<template #default="scope">
 						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-							<div slot="content">{{ scope.row.payNo }}</div>
+							<template slot="content">{{ scope.row.payNo }}</template>
 							<span>{{ scope.row.payNo }}</span>
 						</el-tooltip>
 					</template>
@@ -147,7 +149,7 @@
 				<el-table-column prop="lender" label="借方(供应商欠款减少)" show-overflow-tooltip>
 					<template #default="scope">
 						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-							<div slot="content">{{ scope.row.lender }}</div>
+							<template slot="content">{{ scope.row.lender }}</template>
 							<span>{{ scope.row.lender }}</span>
 						</el-tooltip>
 					</template>
@@ -155,7 +157,7 @@
 				<el-table-column prop="borrower" label="贷方(供应商欠款增加)" show-overflow-tooltip>
 					<template #default="scope">
 						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-							<div slot="content">{{ scope.row.borrower }}</div>
+							<template slot="content">{{ scope.row.borrower }}</template>
 							<span>{{ scope.row.borrower }}</span>
 						</el-tooltip>
 					</template>
@@ -163,17 +165,17 @@
 				<el-table-column prop="moneyAmountLocal" label="余额本币" show-overflow-tooltip>
 					<template #default="scope">
 						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-							<div slot="content">{{ scope.row.moneyAmountLocal }}</div>
-							<span>{{ scope.row.moneyAmountLocal }}</span>
+							<template slot="content">{{ formatBalance(scope.row.moneyAmountLocal) }}</template>
+							<span>{{ formatBalance(scope.row.moneyAmountLocal) }}</span>
 						</el-tooltip>
 					</template>
 				</el-table-column>
 				<el-table-column label="查看明细" show-overflow-tooltip>
 					<template #default="scope">
 						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-							<div slot="content">
+							<template slot="content">
 								<i class="el-icon-s-order" style="cursor: pointer" @click="handleCheckDetail(scope.row)"></i>
-							</div>
+							</template>
 							<i class="el-icon-s-order" style="cursor: pointer" @click="handleCheckDetail(scope.row)"></i>
 						</el-tooltip>
 					</template>
@@ -206,7 +208,7 @@ import RECEIVE_MONEY from '@/components/NeedToShow/RECEIVE_MONEY.vue';
 import INVENTORYDETAIL from '@/components/NeedToShow/INVENTORYDETAIL.vue';
 import ORDER_DETAIL from '@/components/NeedToShow/ORDER_DETAIL.vue';
 import BALANCEACCOUNT from '@/components/NeedToShow/BALANCEACCOUNT.vue';
-import { formatSupplierBalance, isDebit, isCredit } from '@/utils/trash/utils';
+import { formatBalance, isDebit, isCredit } from '@/utils/trash/utils';
 import _ from 'lodash';
 import { isGoodsOrderDisplay, isInventoryDisplay, mergeSpecialTableData } from '@/api/system/goodsOrder';
 import InventoryDayInfo from '@/components/InventoryDayInfo/index.vue';
@@ -259,13 +261,14 @@ export default {
 		}
 	},
 	methods: {
-		formatSupplierBalance,
+		formatBalance,
 		fix,
 		listCompany,
 		abs,
 		add,
 		subtract,
 		number,
+		formatBalance,
 		// 查询方法
 		getList() {
 			this.$refs['form']?.validate(valid => {
@@ -353,13 +356,13 @@ export default {
 					const calculateLenderAndBorrower = dayData => {
 						const { itemTotalLender, itemTotalBorrower } = dayData.reduce(
 							(acc, customerDetail) => {
-								const amount = abs(number(customerDetail.moneyAmount || 0));
+								const amount = number(customerDetail.moneyAmount || 0);
 								if (isDebit(customerDetail.debitCredit)) {
 									// 借方：供应商欠款减少
-									acc.itemTotalLender = add(acc.itemTotalLender, amount);
+									acc.itemTotalLender = add(acc.itemTotalLender, -amount);
 								} else if (isCredit(customerDetail.debitCredit)) {
 									// 贷方：供应商欠款增加
-									acc.itemTotalBorrower = add(acc.itemTotalBorrower, amount);
+									acc.itemTotalBorrower = subtract(acc.itemTotalBorrower, amount);
 								}
 								return acc;
 							},
@@ -402,10 +405,11 @@ export default {
 								for (let i = 0; i < item.length; i++) {
 									const amount = number(item[i].moneyAmount || 0);
 									// 根据 debitCredit 判断金额的正负影响
+									// 如果是供应商 并且是借方 此时金额需要取反
 									if (isDebit(item[i].debitCredit)) {
-										nowMoney = subtract(nowMoney, amount); // 借方：减少欠款
+										nowMoney = add(nowMoney, -amount); // 借方：减少欠款
 									} else if (isCredit(item[i].debitCredit)) {
-										nowMoney = add(nowMoney, amount); // 贷方：增加欠款
+										nowMoney = subtract(nowMoney, amount); // 贷方：增加欠款
 									}
 								}
 								// 准备当天借方和贷方明细列表 (用于弹窗)
