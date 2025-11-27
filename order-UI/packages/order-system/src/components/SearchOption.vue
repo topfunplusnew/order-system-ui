@@ -117,7 +117,11 @@ export default {
 			// span文本内容（用于测量宽度）
 			spanText: '',
 			// 内部查询值，用于双向绑定
-			internalQuery: ''
+			internalQuery: '',
+			// 是否显示清空按钮
+			showClearBtn: false,
+			// 延迟关闭定时器
+			clearTimer: null
 		};
 	},
 
@@ -150,6 +154,13 @@ export default {
 		this.internalQuery = this.queryName || '';
 		// 初始化输入框宽度
 		this.updateInputWidth();
+	},
+	beforeDestroy() {
+		// 清理定时器
+		if (this.clearTimer) {
+			clearTimeout(this.clearTimer);
+			this.clearTimer = null;
+		}
 	},
 	watch: {
 		queryName: {
@@ -366,6 +377,28 @@ export default {
 			Object.keys(this.computedQueryItems.queryList).forEach(key => {
 				this.computedQueryItems.queryList[key].value = '';
 			});
+		},
+		// 鼠标进入按钮组区域
+		handleMouseEnter() {
+			// 清除之前的定时器
+			if (this.clearTimer) {
+				clearTimeout(this.clearTimer);
+				this.clearTimer = null;
+			}
+			// 立即显示删除按钮
+			this.showClearBtn = true;
+		},
+		// 鼠标离开按钮组区域
+		handleMouseLeave() {
+			// 清除之前的定时器
+			if (this.clearTimer) {
+				clearTimeout(this.clearTimer);
+			}
+			// 延迟500毫秒关闭
+			this.clearTimer = setTimeout(() => {
+				this.showClearBtn = false;
+				this.clearTimer = null;
+			}, 400);
 		}
 	}
 };
@@ -374,9 +407,9 @@ export default {
 <template>
 	<div>
 		<!--    按钮组 - 悬停显示清空按钮 -->
-		<div class="button-group">
+		<div class="button-group" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave">
 			<el-button size="mini" :icon="icon" type="primary" @click="handleCallBack" :disabled="disable" class="search-btn"></el-button>
-			<el-button size="mini" icon="el-icon-delete" type="danger" @click="handleClear" :disabled="disable" class="clear-btn"></el-button>
+			<el-button size="mini" icon="el-icon-delete" type="danger" @click="handleClear" :disabled="disable" :class="['clear-btn', { show: showClearBtn }]"></el-button>
 		</div>
 		<!--    弹窗-->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :title="title" :visible.sync="dialogVisible" :width="width">
@@ -445,16 +478,13 @@ export default {
 
 	.clear-btn {
 		position: absolute;
-		left: 100%;
+		left: 80%;
 		opacity: 0;
 		visibility: hidden;
 		transition: all 0.3s ease;
-		margin-left: 4px;
 		z-index: 999999;
-	}
 
-	&:hover {
-		.clear-btn {
+		&.show {
 			opacity: 1;
 			visibility: visible;
 			z-index: 999999;
