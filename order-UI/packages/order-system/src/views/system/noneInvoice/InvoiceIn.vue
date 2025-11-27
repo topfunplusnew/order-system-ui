@@ -53,6 +53,7 @@
 			:data="invoiceInList"
 			fit
 			size="mini"
+			max-height="800"
 			:cell-style="
 				() => {
 					return { padding: '.5px' };
@@ -195,7 +196,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[10].visible" label="备注" align="center" prop="comments">
+			<el-table-column v-if="columns && columns[10] && columns[10].visible" label="备注" align="center" prop="comments">
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.comments }}</div>
@@ -243,7 +244,8 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column label="操作" align="center" class-name="small-padding" width="150" fixed="right">
+
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="180px" fixed="right">
 				<template slot-scope="scope">
 					<el-button type="text" size="mini" @click="handleAddExtraInfo(scope.row)">补充信息</el-button>
 					<el-dropdown @command="command => handleCommand(command, scope.row)">
@@ -615,11 +617,43 @@ export default {
 	created() {
 		this.reset();
 		this.getList();
-		if (localStorage.getItem('none-invoicein-columns') === 'null' || !localStorage.getItem('none-invoicein-columns')) {
-			// 设置localStorage
+		const defaultColumns = [
+			{ key: 0, label: `开票日期`, visible: true },
+			{ key: 1, label: `我方收票主体`, visible: true },
+			{ key: 2, label: `开票金额`, visible: true },
+			{ key: 3, label: `对方公司类别`, visible: true },
+			{ key: 4, label: `对方公司名称`, visible: true },
+			{ key: 5, label: `票据单位名称`, visible: true },
+			{ key: 6, label: `票点`, visible: true },
+			{ key: 7, label: `票点金额`, visible: true },
+			{ key: 8, label: `订单信息`, visible: true },
+			{ key: 9, label: `审核状态`, visible: true },
+			{ key: 10, label: `备注`, visible: true },
+			{ key: 11, label: `实际开票金额`, visible: true },
+			{ key: 12, label: `实际开票时间`, visible: true },
+			{ key: 13, label: `当月欠票金额`, visible: true },
+			{ key: 14, label: `额外备注`, visible: true }
+		];
+		try {
+			const savedColumnsStr = localStorage.getItem('none-invoicein-columns');
+			if (savedColumnsStr && savedColumnsStr !== 'null') {
+				const savedColumns = JSON.parse(savedColumnsStr);
+				if (Array.isArray(savedColumns) && savedColumns.length > 0) {
+					this.columns = defaultColumns.map(defaultCol => {
+						const savedCol = savedColumns.find(col => col && col.key === defaultCol.key);
+						return savedCol || defaultCol;
+					});
+				} else {
+					this.columns = defaultColumns;
+				}
+			} else {
+				this.columns = defaultColumns;
+			}
 			localStorage.setItem('none-invoicein-columns', JSON.stringify(this.columns));
-		} else {
-			this.columns = JSON.parse(localStorage.getItem('none-invoicein-columns'));
+		} catch (error) {
+			console.error('读取columns配置失败:', error);
+			this.columns = defaultColumns;
+			localStorage.setItem('none-invoicein-columns', JSON.stringify(defaultColumns));
 		}
 	},
 	methods: {
@@ -1020,3 +1054,11 @@ export default {
 	}
 };
 </script>
+<style scoped lang="scss">
+/* 提高样式优先级 */
+.el-table__body-wrapper .fixed-width {
+	position: sticky;
+	right: 0;
+	z-index: 10;
+}
+</style>

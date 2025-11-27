@@ -47,6 +47,8 @@
 				}
 			"
 			size="mini"
+			show-summary
+			:summary-method="getSummaries"
 			@selection-change="handleSelectionChange"
 		>
 			<el-table-column v-if="columns[0].visible" label="开票日期" align="center" prop="invoiceDate" width="140" show-overflow-tooltip>
@@ -146,6 +148,7 @@ import { addInvoiceIn, delInvoiceIn, updateInvoiceIn } from '@/api/system/invoic
 import { TableName } from '@/api/tool/enums';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import { parseTime } from '@/utils/ruoyi';
+import { add, number } from 'mathjs';
 
 export default {
 	name: 'AllInvoice',
@@ -414,6 +417,55 @@ export default {
 				},
 				`invoiceIn_${new Date().getTime()}.xlsx`
 			);
+		},
+		/** 计算表格合计行 */
+		getSummaries(param) {
+			const { columns } = param;
+			const sums = [];
+			// 使用整个列表进行合计计算
+			const data = this.invoiceInList || [];
+			// 需要合计的数字列
+			const summaryColumns = ['invoiceAmount', 'ticketPoint', 'ticketPointIncomeAmount', 'ticketPointCost', 'ticketPointCostAmount', 'ticketPointDifference', 'allPayments', 'owedAmount'];
+			// 不需要合计的列
+			const excludeColumns = ['invoiceDate', 'invoiceObject', 'companyType', 'companyName', 'invoiceCompanyName', 'isOrderTax', 'costCompanyType', 'costCompanyName', 'costInvoiceCompanyName', 'orderDate', 'comments'];
+
+			columns.forEach((column, index) => {
+				// 第一列显示"合计"
+				if (index === 0) {
+					sums[index] = '合计';
+					return;
+				}
+
+				// 如果列没有属性，跳过
+				if (!column.property) {
+					sums[index] = '';
+					return;
+				}
+
+				// 排除不需要合计的列
+				if (excludeColumns.includes(column.property)) {
+					sums[index] = '';
+					return;
+				}
+
+				// 计算需要合计的列
+				if (summaryColumns.includes(column.property)) {
+					const values = data.map(item => number(item[column.property] || 0));
+					if (!values.every(value => isNaN(value))) {
+						sums[index] = values.reduce((prev, curr) => {
+							const value = number(curr);
+							return isNaN(value) ? prev : add(prev, value);
+						}, 0);
+						sums[index] = Number(sums[index]).toFixed(2);
+					} else {
+						sums[index] = '';
+					}
+				} else {
+					sums[index] = '';
+				}
+			});
+
+			return sums;
 		}
 	}
 };
