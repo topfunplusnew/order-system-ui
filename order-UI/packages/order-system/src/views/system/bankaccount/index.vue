@@ -72,9 +72,9 @@
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[3].visible" label="我方公司" align="center" prop="displayName" show-overflow-tooltip />
-			<el-table-column v-if="columns[7].visible" label="公司名称/车牌号" align="center" prop="companyName" show-overflow-tooltip />
-			<el-table-column v-if="columns[4].visible" label="开户名称" align="center" prop="acountsName" show-overflow-tooltip />
-			<el-table-column v-if="columns[5].visible" label="银行账号" align="center" prop="bankNo" show-overflow-tooltip />
+			<el-table-column v-if="columns[7].visible" label="公司名称/车牌号" align="center" prop="companyName" />
+			<el-table-column v-if="columns[4].visible" label="开户名称" align="center" prop="acountsName" />
+			<el-table-column v-if="columns[5].visible" label="银行账号" align="center" prop="bankNo" />
 			<el-table-column v-if="columns[6].visible" label="开户行" align="center" prop="bankName" show-overflow-tooltip />
 
 			<!-- 余额的展示 分为现金户和承兑户的展示 -->
