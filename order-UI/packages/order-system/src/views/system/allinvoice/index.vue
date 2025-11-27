@@ -2,15 +2,7 @@
 	<div class="app-container">
 		<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
 			<el-form-item label="日期范围" prop="dateRange">
-				<el-date-picker
-					v-model="queryParams.dateRange"
-					type="daterange"
-					value-format="yyyy-MM-dd"
-					range-separator="至"
-					start-placeholder="开始日期"
-					end-placeholder="结束日期"
-					style="width: 240px"
-				></el-date-picker>
+				<el-date-picker v-model="queryParams.dateRange" type="daterange" value-format="yyyy-MM-dd" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" style="width: 240px"></el-date-picker>
 			</el-form-item>
 			<el-form-item label="供应商/客户" prop="searchCompamyName">
 				<el-input v-model="queryParams.searchCompamyName" placeholder="请输入供应商/客户" clearable @keyup.enter.native="handleQuery" />
@@ -57,39 +49,39 @@
 			size="mini"
 			@selection-change="handleSelectionChange"
 		>
-		<el-table-column v-if="columns[0].visible" label="开票日期" align="center" prop="invoiceDate" width="140" show-overflow-tooltip>
-			<template #default="scope">
-				{{ parseTime(scope.row.invoiceDate, '{y}-{m}-{d}') }}
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[1].visible" label="我方主体" align="center" prop="invoiceObject" width="140" show-overflow-tooltip />
-		<el-table-column v-if="columns[2].visible" label="发票金额" align="center" prop="invoiceAmount" width="140" show-overflow-tooltip />
-		<el-table-column v-if="columns[3].visible" label="公司类型" align="center" prop="companyType" width="140" show-overflow-tooltip />
-		<el-table-column v-if="columns[4].visible" label="公司名称" align="center" prop="companyName" width="140" show-overflow-tooltip />
-		<el-table-column v-if="columns[5].visible" label="开票单位名称" align="center" prop="invoiceCompanyName" width="140" show-overflow-tooltip />
-		<el-table-column v-if="columns[6].visible" label="票点" align="center" prop="ticketPoint" width="140" show-overflow-tooltip />
-		<el-table-column v-if="columns[7].visible" label="票点收入" align="center" prop="ticketPointIncomeAmount" width="140" show-overflow-tooltip />
-		<el-table-column v-if="columns[8].visible" label="是否为订单税" align="center" prop="isOrderTax" width="140" show-overflow-tooltip>
-			<template slot-scope="scope">
-				<el-tag :type="scope.row.isOrderTax === 0 ? 'danger' : 'success'" disable-transitions>
-					{{ scope.row.isOrderTax === 0 ? '否' : '是' }}
-				</el-tag>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[9].visible" label="公司类型" align="center" prop="costCompanyType" width="140" show-overflow-tooltip />
-		<el-table-column v-if="columns[10].visible" label="公司名称" align="center" prop="costCompanyName" width="140" show-overflow-tooltip />
-		<el-table-column v-if="columns[11].visible" label="开票单位名称" align="center" prop="costInvoiceCompanyName" width="140" show-overflow-tooltip />
-		<el-table-column v-if="columns[12].visible" label="票点" align="center" prop="ticketPointCost" width="140" show-overflow-tooltip />
-		<el-table-column v-if="columns[13].visible" label="票点成本" align="center" prop="ticketPointCostAmount" width="140" show-overflow-tooltip />
-		<el-table-column v-if="columns[14].visible" label="票点差额" align="center" prop="ticketPointDifference" width="140" show-overflow-tooltip />
-		<el-table-column v-if="columns[15].visible" label="实际开票金额" align="center" prop="allPayments" width="140" show-overflow-tooltip />
-		<el-table-column v-if="columns[16].visible" label="实际开票日期" align="center" prop="orderDate" width="140" show-overflow-tooltip>
-			<template #default="scope">
-				{{ parseTime(scope.row.orderDate, '{y}-{m}-{d}') }}
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[17].visible" label="当月欠票" align="center" prop="owedAmount" width="140" show-overflow-tooltip />
-		<el-table-column v-if="columns[18].visible" label="备注" align="center" prop="comments" width="140" show-overflow-tooltip />
+			<el-table-column v-if="columns[0].visible" label="开票日期" align="center" prop="invoiceDate" width="140" show-overflow-tooltip>
+				<template #default="scope">
+					{{ parseTime(scope.row.invoiceDate, '{y}-{m}-{d}') }}
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[1].visible" label="我方主体" align="center" prop="invoiceObject" width="140" show-overflow-tooltip />
+			<el-table-column v-if="columns[2].visible" label="发票金额" align="center" prop="invoiceAmount" width="140" show-overflow-tooltip />
+			<el-table-column v-if="columns[3].visible" label="公司类型" align="center" prop="companyType" width="140" show-overflow-tooltip />
+			<el-table-column v-if="columns[4].visible" label="公司名称" align="center" prop="companyName" width="140" show-overflow-tooltip />
+			<el-table-column v-if="columns[5].visible" label="开票单位名称" align="center" prop="invoiceCompanyName" width="140" show-overflow-tooltip />
+			<el-table-column v-if="columns[6].visible" label="票点" align="center" prop="ticketPoint" width="140" show-overflow-tooltip />
+			<el-table-column v-if="columns[7].visible" label="票点收入" align="center" prop="ticketPointIncomeAmount" width="140" show-overflow-tooltip />
+			<el-table-column v-if="columns[8].visible" label="是否为订单税" align="center" prop="isOrderTax" width="140" show-overflow-tooltip>
+				<template slot-scope="scope">
+					<el-tag :type="scope.row.isOrderTax === 0 ? 'danger' : 'success'" disable-transitions>
+						{{ scope.row.isOrderTax === 0 ? '否' : '是' }}
+					</el-tag>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[9].visible" label="公司类型" align="center" prop="costCompanyType" width="140" show-overflow-tooltip />
+			<el-table-column v-if="columns[10].visible" label="公司名称" align="center" prop="costCompanyName" width="140" show-overflow-tooltip />
+			<el-table-column v-if="columns[11].visible" label="开票单位名称" align="center" prop="costInvoiceCompanyName" width="140" show-overflow-tooltip />
+			<el-table-column v-if="columns[12].visible" label="票点" align="center" prop="ticketPointCost" width="140" show-overflow-tooltip />
+			<el-table-column v-if="columns[13].visible" label="票点成本" align="center" prop="ticketPointCostAmount" width="140" show-overflow-tooltip />
+			<el-table-column v-if="columns[14].visible" label="票点差额" align="center" prop="ticketPointDifference" width="140" show-overflow-tooltip />
+			<el-table-column v-if="columns[15].visible" label="实际开票金额" align="center" prop="allPayments" width="140" show-overflow-tooltip />
+			<el-table-column v-if="columns[16].visible" label="实际开票日期" align="center" prop="orderDate" width="140" show-overflow-tooltip>
+				<template #default="scope">
+					{{ parseTime(scope.row.orderDate, '{y}-{m}-{d}') }}
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[17].visible" label="当月欠票" align="center" prop="owedAmount" width="140" show-overflow-tooltip />
+			<el-table-column v-if="columns[18].visible" label="备注" align="center" prop="comments" width="140" show-overflow-tooltip />
 		</el-table>
 
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
@@ -160,6 +152,8 @@ export default {
 	components: {},
 	mixins: [mixin_printHTML],
 	data() {
+		// 获取当日日期字符串
+		const today = parseTime(new Date(), '{y}-{m}-{d}');
 		return {
 			// 遮罩层
 			loading: true,
@@ -181,9 +175,9 @@ export default {
 			open: false,
 			// 查询参数
 			queryParams: {
-				dateRange: [],
-				startDate: null,
-				endDate: null,
+				dateRange: [today, today],
+				startDate: today,
+				endDate: today,
 				searchCompamyName: null,
 				searchInvoiceCompanyName: null,
 				pageNum: 1,
@@ -206,30 +200,30 @@ export default {
 			},
 			// 表单参数
 			form: {},
-		// 表单校验
-		rules: {},
-		columns: [
-			{ key: 0, label: `开票日期`, visible: true },
-			{ key: 1, label: `我方主体`, visible: true },
-			{ key: 2, label: `发票金额`, visible: true },
-			{ key: 3, label: `公司类型`, visible: true },
-			{ key: 4, label: `公司名称`, visible: true },
-			{ key: 5, label: `开票单位名称`, visible: true },
-			{ key: 6, label: `票点`, visible: true },
-			{ key: 7, label: `票点收入`, visible: true },
-			{ key: 8, label: `是否为订单税`, visible: true },
-			{ key: 9, label: `公司类型`, visible: true },
-			{ key: 10, label: `公司名称`, visible: true },
-			{ key: 11, label: `开票单位名称`, visible: true },
-			{ key: 12, label: `票点`, visible: true },
-			{ key: 13, label: `票点成本`, visible: true },
-			{ key: 14, label: `票点差额`, visible: true },
-			{ key: 15, label: `实际开票金额`, visible: true },
-			{ key: 16, label: `实际开票日期`, visible: true },
-			{ key: 17, label: `当月欠票`, visible: true },
-			{ key: 18, label: `备注`, visible: true }
-		],
-		options: [
+			// 表单校验
+			rules: {},
+			columns: [
+				{ key: 0, label: `开票日期`, visible: true },
+				{ key: 1, label: `我方主体`, visible: true },
+				{ key: 2, label: `发票金额`, visible: true },
+				{ key: 3, label: `公司类型`, visible: true },
+				{ key: 4, label: `公司名称`, visible: true },
+				{ key: 5, label: `开票单位名称`, visible: true },
+				{ key: 6, label: `票点`, visible: true },
+				{ key: 7, label: `票点收入`, visible: true },
+				{ key: 8, label: `是否为订单税`, visible: true },
+				{ key: 9, label: `公司类型`, visible: true },
+				{ key: 10, label: `公司名称`, visible: true },
+				{ key: 11, label: `开票单位名称`, visible: true },
+				{ key: 12, label: `票点`, visible: true },
+				{ key: 13, label: `票点成本`, visible: true },
+				{ key: 14, label: `票点差额`, visible: true },
+				{ key: 15, label: `实际开票金额`, visible: true },
+				{ key: 16, label: `实际开票日期`, visible: true },
+				{ key: 17, label: `当月欠票`, visible: true },
+				{ key: 18, label: `备注`, visible: true }
+			],
+			options: [
 				{
 					value: '已开发票',
 					label: '已开发票'

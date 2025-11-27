@@ -57,76 +57,87 @@
 			@header-dragend="changeColWidth"
 			@selection-change="handleSelectionChange"
 		>
-		<el-table-column type="selection" width="50" align="center" />
-		<el-table-column v-if="columns[0].visible" label="开票日期" align="center" prop="invoiceDate" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.invoiceDate }}</div>
-					<span>{{ scope.row.invoiceDate }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[1].visible" label="我方收票主体" align="center" prop="invoiceObject" show-overflow-tooltip width="100px">
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.invoiceObject }}</div>
-					<span>{{ scope.row.invoiceObject }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[2].visible" label="开票金额" align="center" prop="invoiceAmount" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.invoiceAmount }}</div>
-					<span>{{ scope.row.invoiceAmount }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[3].visible" label="对方公司类别" align="center" prop="companyType" width="100px" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.companyType }}</div>
-					<span>{{ scope.row.companyType }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[4].visible" label="对方公司名称" align="center" prop="companyName" width="100px" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.companyName }}</div>
-					<span>{{ scope.row.companyName }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[5].visible" label="票据单位名称" align="center" prop="invoiceCompanyName" show-overflow-tooltip width="100px">
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.invoiceCompanyName }}</div>
-					<span>{{ scope.row.invoiceCompanyName }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[6].visible" label="票点" align="center" prop="ticketPoint" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.ticketPoint }}</div>
-					<span>{{ scope.row.ticketPoint }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[7].visible" label="票点金额" align="center" prop="ticketPointAmount" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.ticketPointAmount | changeNumber(changeLength) }}</div>
-					<span>{{ scope.row.ticketPointAmount | changeNumber(changeLength) }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<!-- 现在不显示 -->
-		<el-table-column v-if="columns[8].visible && false" label="审核状态" align="center" prop="checkState" width="240">
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">
+			<el-table-column type="selection" width="50" align="center" />
+			<el-table-column v-if="columns[0].visible" label="开票日期" align="center" prop="invoiceDate" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.invoiceDate }}</div>
+						<span>{{ scope.row.invoiceDate }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[1].visible" label="我方收票主体" align="center" prop="invoiceObject" show-overflow-tooltip width="100px">
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.invoiceObject }}</div>
+						<span>{{ scope.row.invoiceObject }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[2].visible" label="开票金额" align="center" prop="invoiceAmount" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.invoiceAmount }}</div>
+						<span>{{ scope.row.invoiceAmount }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[3].visible" label="对方公司类别" align="center" prop="companyType" width="100px" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.companyType }}</div>
+						<span>{{ scope.row.companyType }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[4].visible" label="对方公司名称" align="center" prop="companyName" width="100px" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.companyName }}</div>
+						<span>{{ scope.row.companyName }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[5].visible" label="票据单位名称" align="center" prop="invoiceCompanyName" show-overflow-tooltip width="100px">
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.invoiceCompanyName }}</div>
+						<span>{{ scope.row.invoiceCompanyName }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[6].visible" label="票点" align="center" prop="ticketPoint" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.ticketPoint }}</div>
+						<span>{{ scope.row.ticketPoint }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[7].visible" label="票点金额" align="center" prop="ticketPointAmount" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.ticketPointAmount | changeNumber(changeLength) }}</div>
+						<span>{{ scope.row.ticketPointAmount | changeNumber(changeLength) }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<!-- 现在不显示 -->
+			<el-table-column v-if="columns[8].visible && false" label="审核状态" align="center" prop="checkState" width="240">
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">
+							<el-row>
+								<el-col :span="12">
+									<el-tag>
+										{{ scope.row.checkState }}
+									</el-tag>
+								</el-col>
+								<el-col :span="12">
+									<el-button size="mini" type="text" :disabled="scope.row.checkState !== '未申请'" @click="addPaymentApplyInfos(scope.row)">添加付款申请</el-button>
+								</el-col>
+							</el-row>
+						</div>
 						<el-row>
 							<el-col :span="12">
 								<el-tag>
@@ -137,101 +148,74 @@
 								<el-button size="mini" type="text" :disabled="scope.row.checkState !== '未申请'" @click="addPaymentApplyInfos(scope.row)">添加付款申请</el-button>
 							</el-col>
 						</el-row>
-					</div>
-					<el-row>
-						<el-col :span="12">
-							<el-tag>
-								{{ scope.row.checkState }}
-							</el-tag>
-						</el-col>
-						<el-col :span="12">
-							<el-button size="mini" type="text" :disabled="scope.row.checkState !== '未申请'" @click="addPaymentApplyInfos(scope.row)">添加付款申请</el-button>
-						</el-col>
-					</el-row>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[9].visible" label="备注" align="center" prop="comments">
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.comments }}</div>
-					<span>{{ scope.row.comments }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column label="银行回执单" align="center" prop="paymentReceipts">
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
-					<div slot="content" @click.stop>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[9].visible" label="备注" align="center" prop="comments">
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.comments }}</div>
+						<span>{{ scope.row.comments }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column label="银行回执单" align="center" prop="paymentReceipts">
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
+						<div slot="content" @click.stop>
+							<div v-if="Array.isArray(scope.row.attachmentList)">
+								<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'paymentReceipts'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getInvoiceIn, updateInvoiceIn)" />
+							</div>
+							<div v-else>
+								<el-tag type="danger">加载错误</el-tag>
+							</div>
+						</div>
 						<div v-if="Array.isArray(scope.row.attachmentList)">
-							<CheckFiles
-								:attachmentList="scope.row.attachmentList"
-								:flag="'paymentReceipts'"
-								@needToUpdate="value => handleUpdateFilePath(value, scope.row, getInvoiceIn, updateInvoiceIn)"
-							/>
+							<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'paymentReceipts'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getInvoiceIn, updateInvoiceIn)" />
 						</div>
 						<div v-else>
 							<el-tag type="danger">加载错误</el-tag>
 						</div>
-					</div>
-					<div v-if="Array.isArray(scope.row.attachmentList)">
-						<CheckFiles
-							:attachmentList="scope.row.attachmentList"
-							:flag="'paymentReceipts'"
-							@needToUpdate="value => handleUpdateFilePath(value, scope.row, getInvoiceIn, updateInvoiceIn)"
-						/>
-					</div>
-					<div v-else>
-						<el-tag type="danger">加载错误</el-tag>
-					</div>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column label="发票单" align="center" prop="invoiceAttachments">
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
-					<div slot="content" @click.stop>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column label="发票单" align="center" prop="invoiceAttachments">
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
+						<div slot="content" @click.stop>
+							<div v-if="Array.isArray(scope.row.attachmentList)">
+								<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'invoiceAttachments'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getInvoiceIn, updateInvoiceIn)" />
+							</div>
+							<div v-else>
+								<el-tag type="danger">加载错误</el-tag>
+							</div>
+						</div>
 						<div v-if="Array.isArray(scope.row.attachmentList)">
-							<CheckFiles
-								:attachmentList="scope.row.attachmentList"
-								:flag="'invoiceAttachments'"
-								@needToUpdate="value => handleUpdateFilePath(value, scope.row, getInvoiceIn, updateInvoiceIn)"
-							/>
+							<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'invoiceAttachments'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getInvoiceIn, updateInvoiceIn)" />
 						</div>
 						<div v-else>
 							<el-tag type="danger">加载错误</el-tag>
 						</div>
-					</div>
-					<div v-if="Array.isArray(scope.row.attachmentList)">
-						<CheckFiles
-							:attachmentList="scope.row.attachmentList"
-							:flag="'invoiceAttachments'"
-							@needToUpdate="value => handleUpdateFilePath(value, scope.row, getInvoiceIn, updateInvoiceIn)"
-						/>
-					</div>
-					<div v-else>
-						<el-tag type="danger">加载错误</el-tag>
-					</div>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[8].visible" label="订单信息" align="center" prop="isOrderTax" width="140px">
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[8].visible" label="订单信息" align="center" prop="isOrderTax" width="140px">
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">
+							<el-row v-if="scope.row.isOrderTax === 0">无关联订单</el-row>
+							<el-row v-else>
+								<el-button size="mini" type="text" @click="checkOrderInfo(scope.row)">查看订单信息</el-button>
+							</el-row>
+						</div>
 						<el-row v-if="scope.row.isOrderTax === 0">无关联订单</el-row>
 						<el-row v-else>
 							<el-button size="mini" type="text" @click="checkOrderInfo(scope.row)">查看订单信息</el-button>
 						</el-row>
-					</div>
-					<el-row v-if="scope.row.isOrderTax === 0">无关联订单</el-row>
-					<el-row v-else>
-						<el-button size="mini" type="text" @click="checkOrderInfo(scope.row)">查看订单信息</el-button>
-					</el-row>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
 				<template slot-scope="scope">
 					<el-dropdown @command="command => handleCommand(command, scope.row)">
 						<el-button type="primary" size="mini">
@@ -273,15 +257,7 @@
 							<el-input disabled v-model="form.companyName" placeholder="请选择" />
 						</el-col>
 						<el-col :span="2">
-							<SearchOption
-								:limit-info="{ companyType: type }"
-								:get-data="listCompany"
-								query-info="companyName"
-								query-label="公司名称"
-								:query-name="companyName"
-								@update:queryName="handleUpdateCompanyName"
-								@commitBack="handleCommitBackCompany"
-							>
+							<SearchOption :limit-info="{ companyType: type }" :get-data="listCompany" query-info="companyName" query-label="公司名称" :query-name="companyName" @update:queryName="handleUpdateCompanyName" @commitBack="handleCommitBackCompany">
 								<template #table-columns>
 									<el-table-column :label="type" align="center" prop="companyName" />
 									<el-table-column label="老板姓名" align="center" prop="leader" />
@@ -303,22 +279,10 @@
 					<el-input v-model="invoiceAmount" placeholder="请输入票点金额" />
 				</el-form-item>
 				<el-form-item label="银行回执附件">
-					<UploadFilesButton
-						ref="paymentReceiptsUpload"
-						flag="paymentReceipts"
-						:extra-info="{ moduleType: 'invoiceIn', formId: form.id }"
-						:initial-attachments="form.paymentReceiptsList || []"
-						@files-updated="handlePaymentReceiptsFilesUpdated"
-					/>
+					<UploadFilesButton ref="paymentReceiptsUpload" flag="paymentReceipts" :extra-info="{ moduleType: 'invoiceIn', formId: form.id }" :initial-attachments="form.paymentReceiptsList || []" @files-updated="handlePaymentReceiptsFilesUpdated" />
 				</el-form-item>
 				<el-form-item label="发票单">
-					<UploadFilesButton
-						ref="invoiceAttachmentsUpload"
-						flag="invoiceAttachments"
-						:extra-info="{ moduleType: 'invoiceIn', formId: form.id }"
-						:initial-attachments="form.invoiceAttachmentsList || []"
-						@files-updated="handleInvoiceAttachmentsFilesUpdated"
-					/>
+					<UploadFilesButton ref="invoiceAttachmentsUpload" flag="invoiceAttachments" :extra-info="{ moduleType: 'invoiceIn', formId: form.id }" :initial-attachments="form.invoiceAttachmentsList || []" @files-updated="handleInvoiceAttachmentsFilesUpdated" />
 				</el-form-item>
 				<el-form-item label="备注" prop="comments">
 					<el-input v-model="form.comments" placeholder="请输入备注" />
@@ -331,32 +295,11 @@
 		</el-dialog>
 
 		<!--    添加付款申请-->
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="付款申请"
-			:visible.sync="PaymentApplyInfoVisible"
-			append-to-body
-		>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="付款申请" :visible.sync="PaymentApplyInfoVisible" append-to-body>
 			<ApplyPayment :table-name="TableName.INVOICE_IN" :t-i-d="tID" :need-money="needMoney" :need-info="{}" @changeOpen="changePaymentApplyInfoVisible" />
 		</el-dialog>
 
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="true"
-			title="查看订单信息"
-			:visible.sync="checkOrderInfoVisible"
-			width="70%"
-			append-to-body
-		>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="true" title="查看订单信息" :visible.sync="checkOrderInfoVisible" width="70%" append-to-body>
 			<OrderInfos :order-info="orderInfo" />
 		</el-dialog>
 
@@ -843,15 +786,13 @@ export default {
 		handleDelete(row) {
 			// 如果传入了 row 参数，则是单行删除；否则是批量删除
 			const invoiceIds = row ? [row.id] : this.ids;
-			
+
 			if (!invoiceIds || invoiceIds.length === 0) {
 				this.$message.warning('请选择要删除的数据');
 				return;
 			}
 
-			const confirmMsg = row 
-				? `是否确认删除发票购入信息编号为"${row.id}"的数据项？`
-				: `是否确认删除选中的${invoiceIds.length}条发票购入信息？`;
+			const confirmMsg = row ? `是否确认删除发票购入信息编号为"${row.id}"的数据项？` : `是否确认删除选中的${invoiceIds.length}条发票购入信息？`;
 
 			this.$modal
 				.confirm(confirmMsg)
