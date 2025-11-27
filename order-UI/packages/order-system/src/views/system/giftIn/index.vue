@@ -204,6 +204,7 @@
 
 <script>
 import { listGiftIn, getGiftIn, delGiftIn, addGiftIn, updateGiftIn } from '@/api/system/giftIn';
+import { parseTime } from '../../../utils/ruoyi';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
 import { listCompany } from '../../../api/system/company';
 import { mixin_gift_in_fill } from './giftIn_fill';
@@ -285,6 +286,7 @@ export default {
 			return OTHER_TYPE;
 		},
 		listCompany,
+		parseTime,
 		updateDialogWidth() {
 			this.dialogWidth = window.innerWidth > 768 ? '600px' : '95%';
 		},
@@ -297,7 +299,7 @@ export default {
 			}
 			listGiftIn(this.queryParams)
 				.then(response => {
-					this.giftInList = response.rows;
+					this.giftInList = response.rows || [];
 					this.total = response.total;
 				})
 				.catch(error => {
