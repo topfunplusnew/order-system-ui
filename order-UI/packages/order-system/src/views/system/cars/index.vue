@@ -278,6 +278,14 @@ export default {
 					this.form.carNo = null;
 				}
 			}
+		},
+		'form.carNo': {
+			handler: function (newVal) {
+				// 根据车号自动填充开户名
+				if (newVal && this.form.carType === '陆运') {
+					this.form.acountsName = newVal;
+				}
+			}
 		}
 	},
 	created() {
@@ -404,6 +412,7 @@ export default {
 				bankName: null,
 				acountsName: null,
 				bankNo: null,
+				acountsType: '司机',
 				// 默认值
 				carType: '陆运'
 			};
@@ -438,6 +447,12 @@ export default {
 			const id = row.id || this.ids;
 			getCars(id).then(response => {
 				this.form = response.data;
+				// 确保账号类型为司机
+				this.form.acountsType = '司机';
+				// 如果车号存在且开户名为空，自动填充开户名
+				if (this.form.carNo && !this.form.acountsName && this.form.carType === '陆运') {
+					this.form.acountsName = this.form.carNo;
+				}
 				this.open = true;
 				this.title = '修改外部车辆信息';
 			});
@@ -462,9 +477,6 @@ export default {
 					if (this.form.carType === '海运') {
 						delete submitData.carNo;
 					}
-
-					// 移除 acountsType 字段，不再向后端传递
-					delete submitData.acountsType;
 
 					if (this.form.id != null) {
 						submitData = excludeParams(submitData, this.$exclude);
