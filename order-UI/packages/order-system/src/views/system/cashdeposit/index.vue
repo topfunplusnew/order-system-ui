@@ -41,16 +41,7 @@
 		</el-row>
 
 		<template>
-			<el-table
-				id="printBox"
-				v-loading="loading"
-				v-horizontal-scroll="'always'"
-				border
-				:data="lendMoneyList"
-				size="mini"
-				:cell-style="() => ({ padding: '1px' })"
-				@selection-change="handleSelectionChange"
-			>
+			<el-table id="printBox" v-loading="loading" v-horizontal-scroll="'always'" border :data="lendMoneyList" size="mini" :cell-style="() => ({ padding: '1px' })" @selection-change="handleSelectionChange">
 				<!-- 期货保证金公司 -->
 				<el-table-column v-if="columns[0].visible" label="期货保证金公司" align="center" prop="futuresMarginCompany" show-overflow-tooltip>
 					<template slot-scope="scope">
@@ -123,18 +114,7 @@
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改向外部借出款信息对话框 -->
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="添加期货保证金"
-			:visible.sync="open"
-			width="50%"
-			append-to-body
-		>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="添加期货保证金" :visible.sync="open" width="50%" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="160px">
 				<el-row>
 					<el-col :span="12">
@@ -161,31 +141,31 @@
 									<el-input disabled v-model="form.targetAcountsName" placeholder="请选择对方账户" />
 								</el-col>
 								<el-col :span="3">
-<!--									<SearchOption-->
-<!--										:get-data="listBankAccount"-->
-<!--										icon="el-icon-search"-->
-<!--										:limit-info="{-->
-<!--											acountsType: form.targetType === '其他' || form.targetType === '员工' ? '' : form.targetType-->
-<!--										}"-->
-<!--										query-label="户名查找"-->
-<!--										query-info="acountsName"-->
-<!--										:query-name="queryBank"-->
-                  <!--										@commitBack="handleCommitBack"-->
-<!--										@update:queryName="handleUpdateQueryName"-->
-<!--									>-->
-                  <SearchOption
-                      :limit-info="{
-												acountsType: form.targetCompanyType
-											}"
-                      :get-data="listBankAccount"
-                      query-info="acountsName"
-                      query-label="户名查找"
-                      :query-name="queryBank"
-                  										@update:queryName="handleUpdateQueryName"
-                  										@commitBack="handleCommitBack"
-                  >
+									<!--									<SearchOption-->
+									<!--										:get-data="listBankAccount"-->
+									<!--										icon="el-icon-search"-->
+									<!--										:limit-info="{-->
+									<!--											acountsType: form.targetType === '其他' || form.targetType === '员工' ? '' : form.targetType-->
+									<!--										}"-->
+									<!--										query-label="户名查找"-->
+									<!--										query-info="acountsName"-->
+									<!--										:query-name="queryBank"-->
+									<!--										@commitBack="handleCommitBack"-->
+									<!--										@update:queryName="handleUpdateQueryName"-->
+									<!--									>-->
+									<SearchOption
+										:limit-info="{
+											acountsType: form.targetCompanyType
+										}"
+										:get-data="listBankAccount"
+										query-info="acountsName"
+										query-label="户名查找"
+										:query-name="queryBank"
+										@update:queryName="handleUpdateQueryName"
+										@commitBack="handleCommitBack"
+									>
 										<template #table-columns>
-											<el-table-column :label="form.targetType === '其他' || form.targetType === '员工' ? '名称' : form.targetType" align="center" prop="acountsName" />
+											<el-table-column :label="form.targetType === '其他' || form.targetType === '员工' ? '名称' : form.targetType" align="center" prop="companyName" />
 											<el-table-column label="开户行" align="center" prop="bankName" />
 											<el-table-column label="开户名" align="center" prop="acountsName" />
 											<el-table-column label="账号" align="center" prop="bankNo" />
@@ -253,18 +233,7 @@
 		</el-dialog>
 
 		<!--    回收弹窗-->
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="收回资金操作"
-			:visible.sync="giveRecoverMoneyShow"
-			width="40%"
-			append-to-body
-		>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="收回资金操作" :visible.sync="giveRecoverMoneyShow" width="40%" append-to-body>
 			<el-row>
 				<el-form :model="recoverMoneyEntity" :rules="recoverRules" ref="recoverForm" label-width="120">
 					<el-form-item label="收回账户" prop="acountsName">
@@ -635,23 +604,24 @@ export default {
 		}
 	},
 	methods: {
-    fetchBankAccount(query) {
-      return new Promise((resolve, reject) => {
-        // 添加查询参数
-        const params = {
-          acountsType: '己方公司',
-          acountsName: query
-        };
+		fetchBankAccount(query) {
+			return new Promise((resolve, reject) => {
+				// 添加查询参数
+				const params = {
+					acountsType: '己方公司',
+					acountsName: query
+				};
 
-        // 调用实际的 API 方法
-        listBankAccount(params).then(response => {
-          resolve(response.data);
-        }).catch(error => {
-          reject(error);
-        });
-      });
-    },
-
+				// 调用实际的 API 方法
+				listBankAccount(params)
+					.then(response => {
+						resolve(response.data);
+					})
+					.catch(error => {
+						reject(error);
+					});
+			});
+		},
 
 		listCompany,
 		listBankAccount,

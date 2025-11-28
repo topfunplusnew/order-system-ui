@@ -48,16 +48,7 @@
 		</el-row>
 
 		<!-- 表格 -->
-		<el-table
-			id="printBox"
-			v-loading="loading"
-			v-horizontal-scroll="'always'"
-			border
-			:data="lendMoneyList"
-			size="mini"
-			:cell-style="() => ({ padding: '1px' })"
-			@selection-change="handleSelectionChange"
-		>
+		<el-table id="printBox" v-loading="loading" v-horizontal-scroll="'always'" border :data="lendMoneyList" size="mini" :cell-style="() => ({ padding: '1px' })" @selection-change="handleSelectionChange">
 			<el-table-column type="selection" width="40" />
 			<el-table-column v-if="colVisible(0)" label="类型" prop="type" align="center" width="110" />
 			<el-table-column v-if="colVisible(1)" :label="companyLabel" prop="futuresMarginCompany" align="center" show-overflow-tooltip>
@@ -93,18 +84,7 @@
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 新增/编辑弹窗 -->
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="false"
-			:title="dialogTitle"
-			:visible.sync="open"
-			width="55%"
-			append-to-body
-		>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="dialogTitle" :visible.sync="open" width="55%" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="140px" size="mini">
 				<el-row :gutter="10">
 					<el-col :span="12">
@@ -147,8 +127,9 @@
 										@update:queryName="val => (queryBankOther = val)"
 									>
 										<template #table-columns>
-											<el-table-column :label="form.targetType === '其他' || form.targetType === '员工' ? '名称' : form.targetType" align="center" prop="acountsName" />
+											<el-table-column :label="form.targetType === '其他' || form.targetType === '员工' ? '名称' : form.targetType" align="center" prop="companyName" />
 											<el-table-column label="开户行" align="center" prop="bankName" />
+											<el-table-column label="开户名" align="center" prop="acountsName" />
 											<el-table-column label="账号" align="center" prop="bankNo" />
 										</template>
 									</SearchOption>
@@ -212,31 +193,12 @@
 		<!-- 坏账损失 -->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="坏账损失" :visible.sync="applyDialogVisible" width="45%">
 			<keep-alive>
-				<ApplyPayment
-					:extra-information="{ __futuresNO: currentFuturesNO }"
-					:table-name="TableName.LEND_MONEY"
-					:t-i-d="tid"
-					:need-money="needMoney"
-					:need-info="needInfo"
-					@changeOpen="changeOpen"
-					:money-input-disabled="false"
-				/>
+				<ApplyPayment :extra-information="{ __futuresNO: currentFuturesNO }" :table-name="TableName.LEND_MONEY" :t-i-d="tid" :need-money="needMoney" :need-info="needInfo" @changeOpen="changeOpen" :money-input-disabled="false" />
 			</keep-alive>
 		</el-dialog>
 
 		<!-- 收回资金弹窗 -->
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="收回资金操作"
-			:visible.sync="giveRecoverMoneyShow"
-			width="600px"
-			append-to-body
-		>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="收回资金操作" :visible.sync="giveRecoverMoneyShow" width="600px" append-to-body>
 			<el-form :model="recoverMoneyEntity" :rules="recoverRules" ref="recoverForm" label-width="100px">
 				<el-form-item label="收回账户" prop="acountsName">
 					<el-row :gutter="8">
