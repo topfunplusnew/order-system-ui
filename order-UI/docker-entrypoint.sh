@@ -42,6 +42,14 @@ export FRONTEND_PORT=${FRONTEND_PORT:-40085}
 # 确保配置目录和日志目录存在
 mkdir -p /opt/front /opt/front/log
 
+# 如果挂载目录中没有配置文件，从镜像内复制默认配置
+if [ ! -f /opt/front/nginx.conf.template ] && [ ! -f /opt/front/nginx.conf ]; then
+    if [ -f /etc/nginx/templates/default.conf.template ]; then
+        echo "挂载目录中没有配置文件，从镜像内复制默认配置到 /opt/front/nginx.conf.template"
+        cp /etc/nginx/templates/default.conf.template /opt/front/nginx.conf.template
+    fi
+fi
+
 # 输出配置信息（用于调试）
 echo "=== Nginx配置信息 ==="
 echo "主机IP: $HOST_IP"
