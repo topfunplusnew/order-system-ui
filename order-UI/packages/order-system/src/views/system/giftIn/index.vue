@@ -44,7 +44,7 @@
 			<el-col :span="1.5">
 				<el-button v-hasPermi="['system:giftIn:remove']" type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete">删除</el-button>
 			</el-col>
-			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" table-name="giftIn-columns" @queryTable="getList">
 				<template #print>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
@@ -82,13 +82,19 @@
 
 			<el-table-column v-if="columns[5].visible" label="数量" align="center" prop="quantity" width="80" show-overflow-tooltip />
 
-			<el-table-column v-if="columns[6].visible" label="预估价值/购买金额" align="center" prop="estimatedValue" width="130" show-overflow-tooltip />
+			<el-table-column v-if="columns[6].visible" label="单位" align="center" prop="unit" width="80" show-overflow-tooltip>
+				<template #default="scope">
+					<span>{{ scope.row.unit || '-' }}</span>
+				</template>
+			</el-table-column>
 
-			<el-table-column v-if="columns[7].visible" label="经办人" align="center" prop="handler" width="100" show-overflow-tooltip />
+			<el-table-column v-if="columns[7].visible" label="预估价值/购买金额" align="center" prop="estimatedValue" width="130" show-overflow-tooltip />
 
-			<el-table-column v-if="columns[8].visible" label="收礼方式" align="center" prop="receiveMethod" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[8].visible" label="经办人" align="center" prop="handler" width="100" show-overflow-tooltip />
 
-			<el-table-column v-if="columns[9].visible" label="付款时间" align="center" prop="payTime" width="160" show-overflow-tooltip />
+			<el-table-column v-if="columns[9].visible" label="收礼方式" align="center" prop="receiveMethod" width="120" show-overflow-tooltip />
+
+			<el-table-column v-if="columns[10].visible" label="付款时间" align="center" prop="payTime" width="160" show-overflow-tooltip />
 
 			<el-table-column label="备注" align="center" prop="remark" width="120" show-overflow-tooltip />
 
@@ -162,6 +168,12 @@
 						</el-form-item>
 					</el-col>
 
+					<el-col :span="10">
+						<el-form-item label="单位" prop="unit">
+							<el-input v-model="form.unit" placeholder="请输入单位" maxlength="255" />
+						</el-form-item>
+					</el-col>
+
 					<el-col :span="12">
 						<el-form-item label="预估价值" prop="estimatedValue">
 							<el-input v-model="form.estimatedValue" placeholder="请输入预估价值" />
@@ -204,6 +216,7 @@
 
 <script>
 import { listGiftIn, getGiftIn, delGiftIn, addGiftIn, updateGiftIn } from '@/api/system/giftIn';
+import { parseTime } from '../../../utils/ruoyi';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
 import { listCompany } from '../../../api/system/company';
 import { mixin_gift_in_fill } from './giftIn_fill';
@@ -249,6 +262,10 @@ export default {
 					{ required: true, message: '请输入数量', trigger: 'blur' },
 					{ pattern: /^\d+(\.\d+)?$/, message: '请输入有效数字', trigger: 'blur' }
 				],
+				unit: [
+					{ required: true, message: '请输入单位', trigger: 'blur' },
+					{ max: 255, message: '单位名称长度不能超过255个字符', trigger: 'blur' }
+				],
 				estimatedValue: [
 					{ required: true, message: '请输入预估价值', trigger: 'blur' },
 					{ pattern: /^\d+(\.\d{1,2})?$/, message: '请输入有效的金额格式', trigger: 'blur' }
@@ -263,10 +280,11 @@ export default {
 				{ key: 3, label: `对方信息`, visible: true },
 				{ key: 4, label: `物品名称`, visible: true },
 				{ key: 5, label: `数量`, visible: true },
-				{ key: 6, label: `预估价值/购买金额`, visible: true },
-				{ key: 7, label: `经办人`, visible: true },
-				{ key: 8, label: `收礼方式`, visible: true },
-				{ key: 9, label: `付款时间`, visible: true }
+				{ key: 6, label: `单位`, visible: true },
+				{ key: 7, label: `预估价值/购买金额`, visible: true },
+				{ key: 8, label: `经办人`, visible: true },
+				{ key: 9, label: `收礼方式`, visible: true },
+				{ key: 10, label: `付款时间`, visible: true }
 			],
 			companyType: '供应商',
 			dialogWidth: window.innerWidth > 768 ? '600px' : '95%'
@@ -285,6 +303,7 @@ export default {
 			return OTHER_TYPE;
 		},
 		listCompany,
+		parseTime,
 		updateDialogWidth() {
 			this.dialogWidth = window.innerWidth > 768 ? '600px' : '95%';
 		},
@@ -297,8 +316,13 @@ export default {
 			}
 			listGiftIn(this.queryParams)
 				.then(response => {
-					this.giftInList = response.rows;
+					this.giftInList = response.rows || [];
 					this.total = response.total;
+					// 调试：检查返回数据是否包含unit字段
+					if (this.giftInList.length > 0) {
+						console.log('返回的数据示例:', this.giftInList[0]);
+						console.log('是否包含unit字段:', 'unit' in this.giftInList[0]);
+					}
 				})
 				.catch(error => {
 					this.$message.error('数据加载失败，请稍后重试');
@@ -320,6 +344,7 @@ export default {
 				fromInfo: null,
 				itemName: null,
 				quantity: null,
+				unit: null,
 				estimatedValue: null,
 				handler: null,
 				receiveMethod: null,
