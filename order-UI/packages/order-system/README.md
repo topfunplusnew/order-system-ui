@@ -122,7 +122,7 @@ const obj = {
 			data: {
 				id: '1',
 				backupTime: '2025-05-02',
-				logicBackupType: 'insert',
+				backupType: 'insert',
 				changedInfo: '{"id": null, "path": null}',
 				originalInfo: null,
 				uuid: '5c2c6305-10d7-40b0-a0e2-3a02233ef91c'
@@ -131,7 +131,7 @@ const obj = {
 				{
 					id: '1',
 					backupTime: '2025-05-02',
-					logicBackupType: 'insert',
+					backupType: 'insert',
 					changedInfo: '{"id": null, "path": null}',
 					originalInfo: null,
 					uuid: '5c2c6305-10d7-40b0-a0e2-3a02233ef91c'
@@ -139,7 +139,7 @@ const obj = {
 				{
 					id: '2',
 					backupTime: '2025-05-02',
-					logicBackupType: 'insert',
+					backupType: 'insert',
 					changedInfo: '{"id": null, "path": null}',
 					originalInfo: null,
 					uuid: '5c2c6305-10d7-40b0-a0e2-3a02233ef91c'

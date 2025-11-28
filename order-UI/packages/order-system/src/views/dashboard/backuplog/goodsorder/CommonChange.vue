@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import { completeJsonData, JsonUtils, TypeUtils } from '@/views/dashboard/backuplog';
+import { TypeUtils } from '@/views/dashboard/backuplog';
 import { moduleNames, TableName } from '@/api/tool/enums';
 import _ from 'lodash';
 import { MultiList, TableConfig } from '../backup.config';
@@ -52,7 +52,6 @@ export default {
 	},
 	data() {
 		return {
-			activeNames: ['1'],
 			currentPage: 1, // 当前页码
 			pageSize: 20, // 每页显示数量
 			totalPages: 1 // 总页数
@@ -63,35 +62,19 @@ export default {
 			return TableName;
 		},
 		renderData() {
-			let data = _.cloneDeep(this.compareData);
+			const data = _.cloneDeep(this.compareData);
 			// 存放展平后的数据
 			const extra = [];
 			const extraIds = [];
-			// 先把数据中的`null`处理一下
-			const result = data.map(backlog => {
-				let processed = { ...backlog };
-				if (processed.logicBackupType === 'insert' && processed.originalInfo === 'null' && processed.changedInfo !== 'null') {
-					processed.changedInfo = JsonUtils.getJson(processed.changedInfo);
-					processed.originalInfo = null;
-				}
-				if (processed.logicBackupType === 'delete' && processed.originalInfo !== 'null') {
-					processed.originalInfo = JsonUtils.getJson(processed.originalInfo);
-					processed.changedInfo = null;
-				}
-				if (processed.logicBackupType === 'update' && processed.originalInfo !== 'null' && processed.changedInfo !== 'null') {
-					processed.originalInfo = JsonUtils.getJson(processed.originalInfo);
-					processed.changedInfo = JsonUtils.getJson(processed.changedInfo);
-				}
-				return processed;
-			});
-			// 以上代码调试无问题
 
+			// 后端已返回对象类型，直接使用，无需 JSON 解析
 			// 开始进行解压缩的逻辑 逻辑就是 先根据原来的备份信息 生成新的，这些新的给一个新的id 推入数组
-			const finalResult = result.map(backlog => {
-				const ori = _.cloneDeep(backlog.originalInfo);
-				const chag = _.cloneDeep(backlog.changedInfo);
-				const originDataType = TypeUtils.prototype.checkType(ori);
-				const changedDataType = TypeUtils.prototype.checkType(chag);
+			const finalResult = data.map(backlog => {
+				// 处理 null 值：如果 originalInfo 或 changedInfo 为 null，则设为 null
+				const ori = backlog.originalInfo === null ? null : _.cloneDeep(backlog.originalInfo);
+				const chag = backlog.changedInfo === null ? null : _.cloneDeep(backlog.changedInfo);
+				const originDataType = ori === null ? 'Null' : TypeUtils.prototype.checkType(ori);
+				const changedDataType = chag === null ? 'Null' : TypeUtils.prototype.checkType(chag);
 				// 创建新元素的创建函数
 				const createNewBack = (element, isOri) => {
 					let newBacklog = _.cloneDeep(backlog);
@@ -107,7 +90,6 @@ export default {
 						// 分别将原信息和修改后信息推入
 						ori.forEach(element => {
 							const newBacklog = createNewBack(element, true);
-							console.log(newBacklog);
 							element && extra.push(newBacklog);
 						});
 						chag.forEach(element => {
@@ -115,8 +97,6 @@ export default {
 							element && extra.push(newBacklog);
 						});
 						extraIds.push(backlog.id);
-					} else {
-						console.log('数组为空');
 					}
 					return backlog;
 				} else if (originDataType === 'Array' && changedDataType !== 'Array') {
@@ -143,7 +123,7 @@ export default {
 				finalResult.push(newBacklog);
 			});
 			const totalResult = _.cloneDeep(finalResult);
-			// 对数据进行筛选排序和补全操作
+			// 对数据进行筛选排序操作
 			const actualResult = totalResult
 				// 因为会无故根据老的带有数组属性的数据推入新的数据 所以需要把老信息删除
 				.filter(backlog => !extraIds.includes(backlog.id))
@@ -152,22 +132,10 @@ export default {
 					// 将 backupTime 转换为日期对象进行比较
 					return new Date(a.backupTime) - new Date(b.backupTime);
 				})
-				.map(backlog => {
-					// 将不完整的数据进行补全
-					let processed = { ...backlog };
-					const origin = _.cloneDeep(backlog.originalInfo);
-					const changed = _.cloneDeep(backlog.changedInfo);
-					if (!origin || !changed) return backlog;
-					origin && (processed.originalInfo = origin);
-					changed && (processed.changedInfo = completeJsonData(origin, changed));
-					return processed;
-				})
 				.reverse();
-			console.log(`actualResult`, actualResult);
 			return Object.entries(_.groupBy(actualResult, item => item.uuid)).map(entries => _.groupBy(entries[1], item => item.tableName));
 		},
 		bodyData() {
-			console.log(`renderData`, this.renderData);
 			return this.renderData.map(backlog => {
 				const moduleName = this.moduleName;
 				let multiModuleName = null;
@@ -254,12 +222,6 @@ export default {
 					container.scrollTo({ top: 0, behavior: 'smooth' });
 				}
 			});
-		},
-		handleProcess() {
-			return Promise.resolve();
-		},
-		handleReject() {
-			return Promise.resolve();
 		},
 		// **新增：保存 JSON 数据方法**
 		saveJsonData() {

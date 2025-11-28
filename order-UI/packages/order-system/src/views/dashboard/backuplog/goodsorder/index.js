@@ -77,11 +77,11 @@ export function typeFilter(backupRow) {
 		console.error('备份数据行originalInfo和changedInfo为null,索引为:', backupRow.id);
 	}
 
-	if (backupRow.logicBackupType === 'insert') {
+	if (backupRow.backupType === 'insert') {
 		backupRow.originalInfo = backupRow.changedInfo;
 		return backupRow;
 	}
-	if (backupRow.logicBackupType === 'delete') {
+	if (backupRow.backupType === 'delete') {
 		backupRow.changedInfo = backupRow.originalInfo;
 		return backupRow;
 	}

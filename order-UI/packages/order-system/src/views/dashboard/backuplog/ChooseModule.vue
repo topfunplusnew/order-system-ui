@@ -101,12 +101,8 @@ export default {
 				return result;
 			}, {}); // 初始值为空对象
 		},
-		handleProcess() {
-			return Promise.resolve();
-		},
-		handleReject() {
-			return Promise.resolve();
-		}
+		handleProcess() {},
+		handleReject() {}
 	}
 };
 </script>

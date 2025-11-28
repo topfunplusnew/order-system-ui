@@ -459,7 +459,7 @@ export default {
 								<span>{{ calculateProp(item, moduleName).time }}</span>
 							</span>
 							<!--              后续可以添加操作按钮-->
-							<!--							<el-button style="float: right; padding: 3px 0" type="text">操作类型:{{ item.logicBackupType }} 时间:{{ item.changed_targetTime }}</el-button>-->
+							<!--							<el-button style="float: right; padding: 3px 0" type="text">操作类型:{{ item.backupType }} 时间:{{ item.changed_targetTime }}</el-button>-->
 						</div>
 
 						<!--            对于订单-->
@@ -544,7 +544,7 @@ export default {
 								<span>{{ calculateProp(item, moduleName).time }}</span>
 							</span>
 							<!--              后续可以添加操作按钮-->
-							<!--							<el-button style="float: right; padding: 3px 0" type="text">操作类型:{{ item.logicBackupType }} 时间:{{ item.changed_targetTime }}</el-button>-->
+							<!--							<el-button style="float: right; padding: 3px 0" type="text">操作类型:{{ item.backupType }} 时间:{{ item.changed_targetTime }}</el-button>-->
 						</div>
 						<div id="table-gen">
 							<div class="container" id="table-before">

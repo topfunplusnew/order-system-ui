@@ -5,6 +5,7 @@ import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import ChooseModule from '@/views/dashboard/backuplog/ChooseModule.vue';
 import { TableName } from '@/api/tool/enums';
 import { getFundChangeDetail } from '@/api/system/sql';
+import * as echarts from 'echarts';
 
 export default {
 	name: 'MoneyChangeTotalAmount',
@@ -27,6 +28,7 @@ export default {
 
 			diffRows: [],
 			diffModules: [],
+			diffList: [], // 差异对比列表
 
 			// 表格上方查询日期
 			targetLeftDate: null,
@@ -34,7 +36,13 @@ export default {
 
 			// 可选择的时间下拉列表
 			availableDates: [],
-			isLoadingDates: false
+			isLoadingDates: false,
+
+			// Tab 切换
+			activeTab: 'card',
+
+			// ECharts 图表实例
+			diffChart: null
 		};
 	},
 	computed: {
@@ -43,6 +51,40 @@ export default {
 		},
 		columnHeaderChange() {
 			return `日期:` + (this.changeForm.endTime ? this.changeForm.endTime : '未选择日期') + `(${this.targetLeftDate === null ? '' : this.targetLeftDate}当日截取)`;
+		},
+		// 差异汇总统计
+		diffSummary() {
+			if (this.diffList.length === 0) return null;
+			const totalDiff = this.diffList.reduce((sum, item) => sum + Math.abs(item.diffValue), 0);
+			return {
+				totalCount: this.diffList.length,
+				totalDiffValue: totalDiff
+			};
+		},
+		// 图表数据
+		chartData() {
+			if (this.diffList.length === 0) return null;
+			return {
+				categories: this.diffList.map(item => {
+					// 简化标签名称，只保留关键信息
+					return item.label.replace(/^[①②③④⑤⑥⑦⑧]/g, '').replace(/---.*$/, '');
+				}),
+				leftValues: this.diffList.map(item => Number(item.leftValue)),
+				rightValues: this.diffList.map(item => Number(item.rightValue)),
+				diffValues: this.diffList.map(item => Number(item.diffValue))
+			};
+		}
+	},
+	watch: {
+		diffList: {
+			handler() {
+				if (this.activeTab === 'chart' && this.diffList.length > 0) {
+					this.$nextTick(() => {
+						this.initChart();
+					});
+				}
+			},
+			deep: true
 		}
 	},
 	methods: {
@@ -88,47 +130,51 @@ export default {
 			this.changeMoneyTableData = this.formatTableData(right);
 			// 计算差异
 			this.calculateDiff();
+			// 如果当前在图表 tab，更新图表
+			if (this.activeTab === 'chart') {
+				this.$nextTick(() => {
+					this.initChart();
+				});
+			}
 		},
-		// 计算差异行 在图表中显示高亮
+		// 计算差异行和差异列表
 		calculateDiff(leftTableData, rightTableData) {
-			// 计算差异行
-			this.$nextTick(() => {
-				this.diffRows = [];
-				let leftData = leftTableData || this.fixedMoneyTableData;
-				let rightData = rightTableData || this.changeMoneyTableData;
-				if (!leftData || !rightData) {
-					throw new Error('左右侧数据为空,函数calculateDiff发生计算错误');
-				}
+			this.diffRows = [];
+			this.diffModules = [];
+			this.diffList = [];
+			const leftData = leftTableData || this.fixedMoneyTableData;
+			const rightData = rightTableData || this.changeMoneyTableData;
+			if (!leftData || !rightData || leftData.length === 0 || rightData.length === 0) {
+				return;
+			}
 
-				// 进行计算差异
-				const minLength = Math.max(leftData.length, rightData.length);
-				for (let i = 0; i < minLength; i++) {
-					const fixed = Number(leftData[i].anotherValue).toFixed(2);
-					const change = Number(rightData[i].anotherValue).toFixed(2);
-					if (fixed !== change) {
-						this.diffRows.push(i);
+			// 进行计算差异
+			const minLength = Math.min(leftData.length, rightData.length);
+			for (let i = 0; i < minLength; i++) {
+				if (!leftData[i] || !rightData[i]) continue;
+				const leftValue = Number(leftData[i].anotherValue || 0);
+				const rightValue = Number(rightData[i].anotherValue || 0);
+				const diffValue = leftValue - rightValue;
+
+				// 如果存在差异（允许0.01的误差）
+				if (Math.abs(diffValue) > 0.01) {
+					this.diffRows.push(i);
+					if (rightData[i].moduleName) {
 						this.diffModules.push(rightData[i].moduleName);
 					}
+					// 添加到差异列表（排除第一行总资产）
+					if (i > 0) {
+						this.diffList.push({
+							label: leftData[i].label,
+							leftValue: leftValue.toFixed(2),
+							rightValue: rightValue.toFixed(2),
+							diffValue: diffValue.toFixed(2),
+							moduleName: rightData[i].moduleName,
+							rowIndex: i
+						});
+					}
 				}
-			});
-		},
-		// 对第一行 以及 calculateDiff 计算出的差异列进行高亮显示
-		tableRowClassName({ rowIndex }) {
-			if (rowIndex === 0) {
-				return {
-					color: 'red !important',
-					fontWeight: 'bold !important',
-					fontSize: '16px !important'
-				};
 			}
-			if (this.diffRows.includes(rowIndex)) {
-				return {
-					color: '#ffdc00 !important',
-					fontSize: '16px !important',
-					fontWeight: 'bold !important'
-				};
-			}
-			return {};
 		},
 		/**
 		 * 获取变动数据 23号修改的数据，现在给B为23,C为24,A给19现在能搜索出来
@@ -201,56 +247,180 @@ export default {
 				createRow('⑧其他应付款---公司从外面借款合计', startTimeMoney.loanBalance, endTimeMoney.loanBalance, data.loanBalance, `loanBalance`)
 			];
 		},
+		// 点击差异项查看详情
+		handleDiffItemClick(item) {
+			if (!item.moduleName) return;
+			this.viewModuleDetail(item.moduleName);
+		},
+		// 查看模块详情
+		viewModuleDetail(moduleName) {
+			const qs = {
+				pageNum: 2,
+				pageSize: 30,
+				params: {
+					startTime: null,
+					endTime: null,
+					tableNames: ['payment', 'receivemoney', 'invoiceother', 'invoicein', 'invoiceout', 'bankacceptance', 'orderDetail', 'goodsorder', 'orderfreight', 'inventory_detail', 'inventory_main', 'bankaccountchange', 'borrowedmoney', 'repayment', 'lendmoney', 'recovermoney'],
+					targetDate: null
+				}
+			};
+			getFundChangeDetail(qs).then(res => {
+				if (!res.rows || res.rows.length === 0) {
+					this.$message.warning('该模块没有变动信息');
+					return;
+				}
+				let moduleList = Array.from(new Set(res.rows.map(item => item.tableName)));
+				moduleList = moduleList.filter(tableName => tableName !== TableName.ORDER_DETAIL);
+				moduleList = moduleList.filter(tableName => tableName !== TableName.INVENTORDETAIL);
+				this.openDialog(
+					ChooseModule,
+					'请选择模块查看其详细资金变动',
+					'700px',
+					{
+						moduleList,
+						result: res.rows
+					},
+					false,
+					false
+				);
+			});
+		},
 		// 点击行的逻辑 点击后将对应的模块名传给后端
 		handleRowClick(row, column, event) {
 			if (this.diffModules.includes(row.moduleName)) {
-				const qs = {
-					pageNum: 2,
-					pageSize: 30,
-					params: {
-						startTime: null,
-						endTime: null,
-						tableNames: ['payment', 'receivemoney', 'invoiceother', 'invoicein', 'invoiceout', 'bankacceptance', 'orderDetail', 'goodsorder', 'orderfreight', 'inventory_detail', 'inventory_main', 'bankaccountchange', 'borrowedmoney', 'repayment', 'lendmoney', 'recovermoney'],
-						targetDate: null
-					}
-				};
-				// todo 测试接口 信息更全 测试完毕后换回V1接口
-				getFundChangeDetail(qs).then(res => {
-					if (!res.rows) {
-						this.$message.warning('该模块没有变动信息');
-						return;
-					}
-					if (res.rows.length === 0) {
-						this.$message.warning('该模块没有变动信息');
-						return;
-					}
-					let moduleList = Array.from(new Set(res.rows.map(item => item.tableName)));
-					moduleList = moduleList.filter(tableName => tableName !== TableName.ORDER_DETAIL);
-					moduleList = moduleList.filter(tableName => tableName !== TableName.INVENTORDETAIL);
-					// 对res.rows的数据
-					this.openDialog(
-						ChooseModule,
-						'请选择模块查看其详细资金变动',
-						'700px',
-						{
-							moduleList,
-							result: res.rows
-						},
-						false
-					);
+				this.viewModuleDetail(row.moduleName);
+			}
+		},
+		// Tab 切换处理
+		handleTabChange(tab) {
+			this.activeTab = tab.name;
+			if (tab.name === 'chart' && this.diffList.length > 0) {
+				this.$nextTick(() => {
+					this.initChart();
 				});
 			}
 		},
-		// 修改单元格样式方法
-		cellStyle({ row, column, rowIndex }) {
-			if (column.property === 'value' && this.diffRows.includes(rowIndex)) {
-				return {
-					cursor: 'pointer'
-				};
+		// 初始化图表
+		initChart() {
+			if (!this.chartData) return;
+
+			const chartDom = document.getElementById('diffChart');
+			if (!chartDom) return;
+
+			// 销毁旧图表
+			if (this.diffChart) {
+				this.diffChart.dispose();
 			}
-			return {
-				cursor: 'default'
+
+			this.diffChart = echarts.init(chartDom);
+
+			const option = {
+				tooltip: {
+					trigger: 'axis',
+					axisPointer: {
+						type: 'shadow'
+					},
+					formatter: params => {
+						let result = params[0].name + '<br/>';
+						params.forEach(item => {
+							const value = Math.abs(item.value).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+							result += `${item.marker}${item.seriesName}: ${item.value >= 0 ? '+' : ''}${value}<br/>`;
+						});
+						return result;
+					}
+				},
+				legend: {
+					data: ['当日截取', '固定截取', '差异值'],
+					top: 10
+				},
+				grid: {
+					left: '3%',
+					right: '4%',
+					bottom: '15%',
+					top: '15%',
+					containLabel: true
+				},
+				xAxis: {
+					type: 'category',
+					data: this.chartData.categories,
+					axisLabel: {
+						rotate: 45,
+						interval: 0,
+						fontSize: 12
+					}
+				},
+				yAxis: {
+					type: 'value',
+					axisLabel: {
+						formatter: value => {
+							return Math.abs(value).toLocaleString('zh-CN', { maximumFractionDigits: 0 });
+						}
+					}
+				},
+				series: [
+					{
+						name: '当日截取',
+						type: 'bar',
+						data: this.chartData.leftValues,
+						itemStyle: {
+							color: '#409eff'
+						},
+						label: {
+							show: true,
+							position: 'top',
+							formatter: value => {
+								return value.value >= 0 ? '+' : '' + value.value.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+							}
+						}
+					},
+					{
+						name: '固定截取',
+						type: 'bar',
+						data: this.chartData.rightValues,
+						itemStyle: {
+							color: '#67c23a'
+						},
+						label: {
+							show: true,
+							position: 'top',
+							formatter: value => {
+								return value.value >= 0 ? '+' : '' + value.value.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+							}
+						}
+					},
+					{
+						name: '差异值',
+						type: 'line',
+						data: this.chartData.diffValues,
+						itemStyle: {
+							color: '#e6a23c'
+						},
+						lineStyle: {
+							width: 3
+						},
+						symbol: 'circle',
+						symbolSize: 8,
+						label: {
+							show: true,
+							position: 'top',
+							formatter: value => {
+								return value.value >= 0 ? '+' : '' + value.value.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+							}
+						}
+					}
+				]
 			};
+
+			this.diffChart.setOption(option);
+
+			// 响应式调整
+			window.addEventListener('resize', this.handleChartResize);
+		},
+		// 图表响应式调整
+		handleChartResize() {
+			if (this.diffChart) {
+				this.diffChart.resize();
+			}
 		},
 		// 合并行和列的方法
 		objectSpanMethod({ row, column, rowIndex, columnIndex }) {
@@ -306,6 +476,14 @@ export default {
 				};
 			}
 		}
+	},
+	beforeDestroy() {
+		// 销毁图表
+		if (this.diffChart) {
+			this.diffChart.dispose();
+			this.diffChart = null;
+		}
+		window.removeEventListener('resize', this.handleChartResize);
 	}
 };
 </script>
@@ -323,7 +501,7 @@ export default {
 			</el-form>
 
 			<el-row>
-				<el-alert title="请先选择顶部日期，然后从下拉框中选择两个表格的时间。标记为黄色的数据代表有差异，可点击查看模块详细数据变动" type="warning"></el-alert>
+				<el-alert title="请先选择顶部日期，然后从下拉框中选择两个表格的时间。差异对比信息将显示在表格下方" type="warning"></el-alert>
 			</el-row>
 			<br />
 			<!-- 表格 -->
@@ -338,7 +516,7 @@ export default {
 						</el-col>
 					</el-row>
 					<br />
-					<el-table @row-click="handleRowClick" :cell-style="cellStyle" size="mini" :data="changeMoneyTableData" border class="money-table" :row-style="tableRowClassName" :span-method="objectSpanMethod">
+					<el-table size="mini" :data="changeMoneyTableData" border class="money-table" :span-method="objectSpanMethod">
 						<el-table-column :label="columnHeaderChange" align="center" show-overflow-tooltip>
 							<el-table-column label="科目名称" show-overflow-tooltip>
 								<template slot-scope="scope">
@@ -350,7 +528,7 @@ export default {
 									<div v-if="scope.$index === 6">负债类</div>
 								</template>
 							</el-table-column>
-							<el-table-column prop="label" label="项目" show-overflow-tooltip></el-table-column>
+							<el-table-column prop="label" label="项目" show-overflow-tooltip width="300px"></el-table-column>
 							<el-table-column prop="value" label="上日资金总额" :formatter="formatValue" show-overflow-tooltip></el-table-column>
 							<el-table-column label="当日利润变动" show-overflow-tooltip>
 								<template slot-scope="scope">
@@ -374,7 +552,7 @@ export default {
 						</el-col>
 					</el-row>
 					<br />
-					<el-table @row-click="handleRowClick" :cell-style="cellStyle" size="mini" :data="fixedMoneyTableData" border class="money-table" :row-style="tableRowClassName" :span-method="objectSpanMethod">
+					<el-table size="mini" :data="fixedMoneyTableData" border class="money-table" :span-method="objectSpanMethod">
 						<el-table-column :label="columnHeaderFix" align="center" show-overflow-tooltip>
 							<el-table-column label="科目名称" show-overflow-tooltip>
 								<template slot-scope="scope">
@@ -386,7 +564,7 @@ export default {
 									<div v-if="scope.$index === 6">负债类</div>
 								</template>
 							</el-table-column>
-							<el-table-column prop="label" label="项目" show-overflow-tooltip></el-table-column>
+							<el-table-column prop="label" label="项目" show-overflow-tooltip width="300px"></el-table-column>
 							<el-table-column prop="value" label="上日资金总额" :formatter="formatValue" show-overflow-tooltip></el-table-column>
 							<el-table-column label="当日利润变动" show-overflow-tooltip>
 								<template slot-scope="scope">
@@ -402,6 +580,56 @@ export default {
 					</el-table>
 				</el-col>
 			</el-row>
+
+			<!-- 差异对比展示区域 -->
+			<div v-if="diffList.length > 0" class="diff-comparison-section">
+				<el-card class="diff-card">
+					<div slot="header" class="diff-header">
+						<span class="diff-title">
+							<i class="el-icon-warning-outline"></i>
+							差异对比结果
+						</span>
+						<el-tag v-if="diffSummary" type="warning" size="medium" class="diff-summary-tag">共发现 {{ diffSummary.totalCount }} 项差异</el-tag>
+					</div>
+					<el-tabs v-model="activeTab" @tab-click="handleTabChange">
+						<!-- 卡片对比 Tab -->
+						<el-tab-pane label="卡片对比" name="card">
+							<div class="diff-content">
+								<div v-for="(item, index) in diffList" :key="index" class="diff-item" @click="handleDiffItemClick(item)">
+									<div class="diff-item-header">
+										<span class="diff-label">{{ item.label }}</span>
+										<el-tag :type="Math.abs(Number(item.diffValue)) > 1000 ? 'danger' : 'warning'" size="medium" class="diff-value-tag">差异: {{ Number(item.diffValue) > 0 ? '+' : '' }}{{ item.diffValue }}</el-tag>
+									</div>
+									<div class="diff-item-body">
+										<div class="diff-value-item">
+											<span class="diff-value-label">当日截取:</span>
+											<span class="diff-value left-value">{{ item.leftValue }}</span>
+										</div>
+										<div class="diff-arrow">
+											<i class="el-icon-right"></i>
+										</div>
+										<div class="diff-value-item">
+											<span class="diff-value-label">固定截取:</span>
+											<span class="diff-value right-value">{{ item.rightValue }}</span>
+										</div>
+									</div>
+								</div>
+							</div>
+						</el-tab-pane>
+						<!-- 图表对比 Tab -->
+						<el-tab-pane label="图表对比" name="chart">
+							<div class="chart-container">
+								<div id="diffChart" class="diff-chart"></div>
+							</div>
+						</el-tab-pane>
+					</el-tabs>
+				</el-card>
+			</div>
+
+			<!-- 无差异提示 -->
+			<div v-else-if="fixedMoneyTableData.length > 0 && changeMoneyTableData.length > 0" class="no-diff-tip">
+				<el-alert title="两个时间点的数据完全一致，无差异" type="success" :closable="false"></el-alert>
+			</div>
 		</div>
 	</div>
 </template>
@@ -409,5 +637,154 @@ export default {
 <style scoped lang="scss">
 .container {
 	margin: 30px;
+}
+
+// 差异对比区域
+.diff-comparison-section {
+	margin-top: 30px;
+}
+
+.diff-card {
+	border: 1px solid #e4e7ed;
+	border-radius: 4px;
+	box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+}
+
+.diff-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.diff-title {
+	font-size: 18px;
+	font-weight: bold;
+	color: #303133;
+
+	i {
+		margin-right: 8px;
+		color: #e6a23c;
+		font-size: 20px;
+	}
+}
+
+.diff-content {
+	margin-top: 20px;
+}
+
+.diff-item {
+	padding: 20px;
+	margin-bottom: 16px;
+	background: #f5f7fa;
+	border: 1px solid #e4e7ed;
+	border-radius: 4px;
+	cursor: pointer;
+	transition: all 0.3s;
+
+	&:hover {
+		background: #ecf5ff;
+		border-color: #409eff;
+		box-shadow: 0 2px 8px rgba(64, 158, 255, 0.2);
+	}
+
+	&:last-child {
+		margin-bottom: 0;
+	}
+}
+
+.diff-item-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 16px;
+}
+
+.diff-label {
+	font-size: 16px;
+	font-weight: 500;
+	color: #606266;
+	flex: 1;
+}
+
+.diff-item-body {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.diff-value-item {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+}
+
+.diff-value-label {
+	font-size: 14px;
+	color: #909399;
+	margin-bottom: 6px;
+}
+
+.diff-value {
+	font-size: 20px;
+	font-weight: bold;
+
+	&.left-value {
+		color: #409eff;
+	}
+
+	&.right-value {
+		color: #67c23a;
+	}
+}
+
+.diff-arrow {
+	margin: 0 20px;
+	color: #909399;
+	font-size: 22px;
+}
+
+.no-diff-tip {
+	margin-top: 30px;
+}
+
+// 图表容器
+.chart-container {
+	padding: 20px 0;
+}
+
+.diff-chart {
+	width: 100%;
+	height: 500px;
+	min-height: 500px;
+}
+
+// 差异标签字体放大
+::v-deep .diff-summary-tag {
+	font-size: 14px;
+	padding: 4px 12px;
+	line-height: 1.2;
+	height: auto;
+	display: inline-flex;
+	align-items: center;
+
+	.el-tag__content {
+		line-height: 1.2;
+	}
+}
+
+::v-deep .diff-value-tag {
+	font-size: 16px;
+	font-weight: bold;
+	padding: 4px 16px;
+	line-height: 1.2;
+	height: auto;
+	display: inline-flex;
+	align-items: center;
+
+	.el-tag__content {
+		line-height: 1.2;
+		display: flex;
+		align-items: center;
+	}
 }
 </style>
