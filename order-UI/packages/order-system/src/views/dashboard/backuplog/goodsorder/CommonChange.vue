@@ -367,18 +367,6 @@ export default {
 			const _type = typeEnumMap[backupType] || typeEnumMap.default;
 			return { time: backupTime, type: _type };
 		},
-		typeStyle(type) {
-			switch (type) {
-				case '新增':
-					return { backgroundColor: '#f0f9eb', color: '#67c23a' };
-				case '修改':
-					return { backgroundColor: '#ecf5ff', color: '#409eff' };
-				case '删除':
-					return { backgroundColor: '#fef0f0', color: '#f56c6c' };
-				default:
-					return { backgroundColor: '#f4f4f5', color: '#909399' };
-			}
-		},
 		calculateDifferences(original = {}, changed = {}) {
 			const diffs = {};
 			const allKeys = new Set([...Object.keys(original), ...Object.keys(changed)]);

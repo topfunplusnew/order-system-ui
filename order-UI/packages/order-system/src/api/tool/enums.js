@@ -286,9 +286,9 @@ export const RebateType = {
 };
 
 export const System_Option_Type = {
-	INSERT: '新增',
-	UPDATE: '修改',
-	DELETE: '删除'
+	INSERT: 'insert',
+	UPDATE: 'update',
+	DELETE: 'delete'
 };
 
 export const AuditCheckState = Object.freeze({
