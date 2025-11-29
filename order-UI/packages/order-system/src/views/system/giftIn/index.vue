@@ -3,7 +3,7 @@
 		<!-- 搜索表单 -->
 		<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
 			<el-form-item label="入库日期">
-				<el-date-picker v-model="daterangeInDate" style="width: 240px" value-format="yyyy-MM-dd HH:mm:ss" type="datetimerange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期" />
+				<el-date-picker v-model="daterangeInDate" style="width: 240px" value-format="yyyy-MM-dd" type="daterange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期" />
 			</el-form-item>
 
 			<el-form-item label="入库方式" prop="inMethod">
@@ -66,7 +66,7 @@
 
 			<el-table-column v-if="columns[1].visible" label="入库日期" align="center" prop="inDate" width="160" show-overflow-tooltip>
 				<template #default="scope">
-					<span>{{ parseTime(scope.row.inDate, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
+					<span>{{ parseTime(scope.row.inDate, '{y}-{m}-{d}') }}</span>
 				</template>
 			</el-table-column>
 
@@ -115,7 +115,7 @@
 				<el-row :gutter="20">
 					<el-col :span="24">
 						<el-form-item label="入库日期" prop="inDate">
-							<el-date-picker v-model="form.inDate" clearable type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="请选择入库日期" style="width: 100%" />
+							<el-date-picker v-model="form.inDate" clearable type="date" value-format="yyyy-MM-dd" placeholder="请选择入库日期" style="width: 100%" />
 						</el-form-item>
 					</el-col>
 
@@ -170,7 +170,9 @@
 
 					<el-col :span="10">
 						<el-form-item label="单位" prop="unit">
-							<el-input v-model="form.unit" placeholder="请输入单位" maxlength="255" />
+							<el-select v-model="form.unit" placeholder="请选择单位" style="width: 100%">
+								<el-option v-for="dict in dict.type.gift_unit" :key="dict.value" :label="dict.label" :value="dict.value" />
+							</el-select>
 						</el-form-item>
 					</el-col>
 
@@ -226,7 +228,7 @@ import { OTHER_TYPE } from '../../../utils/order';
 export default {
 	name: 'GiftIn',
 	components: { SearchOption },
-	dicts: ['order_gift_in_method'],
+	dicts: ['order_gift_in_method', 'gift_unit'],
 	mixins: [mixin_printHTML, mixin_gift_in_fill],
 	data() {
 		return {
@@ -262,10 +264,7 @@ export default {
 					{ required: true, message: '请输入数量', trigger: 'blur' },
 					{ pattern: /^\d+(\.\d+)?$/, message: '请输入有效数字', trigger: 'blur' }
 				],
-				unit: [
-					{ required: true, message: '请输入单位', trigger: 'blur' },
-					{ max: 255, message: '单位名称长度不能超过255个字符', trigger: 'blur' }
-				],
+				unit: [{ required: true, message: '请选择单位', trigger: 'change' }],
 				estimatedValue: [
 					{ required: true, message: '请输入预估价值', trigger: 'blur' },
 					{ pattern: /^\d+(\.\d{1,2})?$/, message: '请输入有效的金额格式', trigger: 'blur' }
@@ -294,6 +293,15 @@ export default {
 		this.getList();
 		this.updateDialogWidth();
 		window.addEventListener('resize', this.updateDialogWidth);
+		// 调试：检查字典数据是否加载
+		this.$nextTick(() => {
+			if (this.dict && this.dict.type) {
+				console.log('单位字典数据:', this.dict.type.gift_unit);
+				if (!this.dict.type.gift_unit || this.dict.type.gift_unit.length === 0) {
+					console.warn('单位字典数据为空，请检查：1. 字典类型名称是否为 gift_unit 2. 是否已添加字典数据 3. 数据状态是否为正常');
+				}
+			}
+		});
 	},
 	beforeDestroy() {
 		window.removeEventListener('resize', this.updateDialogWidth);
@@ -311,13 +319,13 @@ export default {
 			this.loading = true;
 			this.queryParams.params = {};
 			if (this.daterangeInDate && this.daterangeInDate.length) {
-				this.queryParams.params['beginInDate'] = this.daterangeInDate[0];
-				this.queryParams.params['endInDate'] = this.daterangeInDate[1];
+				this.queryParams.params['beginInDate'] = this.daterangeInDate[0] + ' 00:00:00';
+				this.queryParams.params['endInDate'] = this.daterangeInDate[1] + ' 23:59:59';
 			}
 			listGiftIn(this.queryParams)
 				.then(response => {
-					this.giftInList = response.rows || [];
-					this.total = response.total;
+					this.giftInList = (response && response.rows) || [];
+					this.total = (response && response.total) || 0;
 					// 调试：检查返回数据是否包含unit字段
 					if (this.giftInList.length > 0) {
 						console.log('返回的数据示例:', this.giftInList[0]);
@@ -380,11 +388,64 @@ export default {
 		handleUpdate(row) {
 			this.reset();
 			const id = row.id || this.ids;
-			getGiftIn(id).then(response => {
-				this.form = response.data;
-				this.open = true;
-				this.title = '修改购入礼品信息';
-			});
+			getGiftIn(id)
+				.then(response => {
+					if (!(response && response.data)) {
+						this.$message.error('获取礼品入库信息失败，数据为空');
+						return;
+					}
+					this.form = response.data;
+					// 确保日期格式正确（日期选择器需要 yyyy-MM-dd HH:mm:ss 格式）
+					if (this.form.inDate) {
+						const formattedDate = this.formatDateTime(this.form.inDate);
+						this.$set(this.form, 'inDate', formattedDate);
+					}
+					this.$nextTick(() => {
+						this.open = true;
+						this.title = '修改购入礼品信息';
+					});
+				})
+				.catch(error => {
+					this.$message.error('获取礼品入库信息失败，请稍后重试');
+					console.error('获取礼品入库信息失败:', error);
+				});
+		},
+		/** 格式化日期时间 */
+		formatDateTime(dateTime) {
+			if (!dateTime) return '';
+			// 如果已经是字符串格式 yyyy-MM-dd，直接返回
+			if (typeof dateTime === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dateTime)) {
+				return dateTime;
+			}
+			// 如果是字符串格式 yyyy-MM-dd HH:mm:ss，提取日期部分
+			if (typeof dateTime === 'string' && /^\d{4}-\d{2}-\d{2}/.test(dateTime)) {
+				// 提取日期部分（yyyy-MM-dd）
+				const datePart = dateTime.split(' ')[0];
+				if (/^\d{4}-\d{2}-\d{2}$/.test(datePart)) {
+					return datePart;
+				}
+				// 尝试解析并格式化
+				const date = new Date(dateTime.replace(/-/g, '/'));
+				if (!isNaN(date.getTime())) {
+					return this.parseTime(date, '{y}-{m}-{d}');
+				}
+			}
+			// 如果是时间戳，转换为字符串格式
+			if (typeof dateTime === 'number') {
+				// 判断是秒级还是毫秒级时间戳
+				const timestamp = dateTime.toString().length === 10 ? dateTime * 1000 : dateTime;
+				return this.parseTime(timestamp, '{y}-{m}-{d}');
+			}
+			// 如果是 Date 对象，转换为字符串格式
+			if (dateTime instanceof Date) {
+				return this.parseTime(dateTime, '{y}-{m}-{d}');
+			}
+			// 尝试解析字符串日期
+			const date = new Date(dateTime);
+			if (!isNaN(date.getTime())) {
+				return this.parseTime(date, '{y}-{m}-{d}');
+			}
+			return dateTime;
 		},
 		submitForm() {
 			this.$refs['form'].validate(valid => {

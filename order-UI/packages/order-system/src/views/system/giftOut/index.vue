@@ -2,7 +2,7 @@
 	<div class="app-container">
 		<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="120px">
 			<el-form-item label="出库日期">
-				<el-date-picker v-model="daterangeOutDate" style="width: 240px" value-format="yyyy-MM-dd HH:mm:ss" type="datetimerange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
+				<el-date-picker v-model="daterangeOutDate" style="width: 240px" value-format="yyyy-MM-dd" type="daterange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
 			</el-form-item>
 			<el-form-item label="经办人" prop="handler">
 				<el-input v-model="queryParams.handler" placeholder="请输入经办人" clearable @keyup.enter.native="handleQuery" />
@@ -68,9 +68,15 @@
 
 			<el-table-column v-if="columns[0].visible" label="ID" align="center" prop="id" width="80" show-overflow-tooltip />
 
+			<el-table-column label="入库ID" align="center" width="100" show-overflow-tooltip>
+				<template #default="scope">
+					<span>{{ scope.row.giftSource || scope.row.inId || '-' }}</span>
+				</template>
+			</el-table-column>
+
 			<el-table-column v-if="columns[1].visible" label="出库日期" align="center" prop="outDate" width="160" show-overflow-tooltip>
 				<template #default="scope">
-					<span>{{ parseTime(scope.row.outDate, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
+					<span>{{ parseTime(scope.row.outDate, '{y}-{m}-{d}') }}</span>
 				</template>
 			</el-table-column>
 
@@ -88,13 +94,11 @@
 
 			<el-table-column v-if="columns[6].visible" label="数量" align="center" prop="quantity" width="80" show-overflow-tooltip />
 
-			<el-table-column v-if="columns[7].visible" label="单位" align="center" prop="unit" width="80" show-overflow-tooltip />
+			<el-table-column v-if="columns[7].visible" label="预估价值" align="center" prop="estimatedValue" width="100" show-overflow-tooltip />
 
-			<el-table-column v-if="columns[8].visible" label="预估价值" align="center" prop="estimatedValue" width="100" show-overflow-tooltip />
+			<el-table-column v-if="columns[8].visible" label="经办人" align="center" prop="handler" width="100" show-overflow-tooltip />
 
-			<el-table-column v-if="columns[9].visible" label="经办人" align="center" prop="handler" width="100" show-overflow-tooltip />
-
-			<el-table-column v-if="columns[10].visible" label="备注" align="center" prop="remark" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[9].visible" label="备注" align="center" prop="remark" width="120" show-overflow-tooltip />
 
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="150" fixed="right">
 				<template #default="scope">
@@ -112,7 +116,7 @@
 				<el-row :gutter="20">
 					<el-col :span="24">
 						<el-form-item label="出库日期" prop="outDate">
-							<el-date-picker v-model="form.outDate" clearable type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="请选择出库日期" style="width: 100%"></el-date-picker>
+							<el-date-picker v-model="form.outDate" clearable type="date" value-format="yyyy-MM-dd" placeholder="请选择出库日期" style="width: 100%"></el-date-picker>
 						</el-form-item>
 					</el-col>
 
@@ -163,14 +167,15 @@
 						<el-form-item label="物品名称" prop="itemName">
 							<el-row :gutter="10">
 								<el-col :span="20">
-									<el-input v-model="form.itemName" placeholder="请输入物品名称" />
+									<el-input v-model="form.itemName" placeholder="从入库记录自动获取" readonly />
 								</el-col>
 								<el-col :span="2">
-									<SearchOption :get-data="listGiftIn" query-info="itemName" query-label="物品名称" :query-name="itemName" @update:queryName="handleUpdateItemName" @commitBack="handleCommitBackItem">
+									<SearchOption :get-data="listGiftInWithRemaining" query-info="itemName" query-label="物品名称" :query-name="itemName" @update:queryName="handleUpdateItemName" @commitBack="handleCommitBackItem">
 										<template #table-columns>
 											<el-table-column label="物品名称" align="center" prop="itemName" />
 											<el-table-column label="数量" align="center" prop="quantity" />
 											<el-table-column label="预估价值/购买金额" align="center" prop="estimatedValue" />
+											<el-table-column label="剩余数量" align="center" prop="remainingQuantity" />
 											<el-table-column label="经办人" align="center" prop="handler" />
 										</template>
 									</SearchOption>
@@ -179,19 +184,13 @@
 						</el-form-item>
 					</el-col>
 
-					<el-col :span="8">
+					<el-col :span="12">
 						<el-form-item label="数量" prop="quantity">
 							<el-input v-model="form.quantity" placeholder="请输入数量" />
 						</el-form-item>
 					</el-col>
 
-					<el-col :span="8">
-						<el-form-item label="单位" prop="unit">
-							<el-input v-model="form.unit" placeholder="请输入单位" maxlength="255" />
-						</el-form-item>
-					</el-col>
-
-					<el-col :span="8">
+					<el-col :span="12">
 						<el-form-item label="预估价值" prop="estimatedValue">
 							<el-input v-model="form.estimatedValue" placeholder="请输入预估价值" />
 						</el-form-item>
@@ -224,9 +223,10 @@ import { parseTime } from '../../../utils/ruoyi';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
 import SearchOption from '../../../components/SearchOption.vue';
 import { listCompany } from '../../../api/system/company';
-import { listGiftIn } from '@/api/system/giftIn';
+import { listGiftIn, getGiftIn } from '@/api/system/giftIn';
 import { mixin_gift_out_fill } from './giftOut_fill';
 import { OTHER_TYPE } from '../../../utils/order';
+import { subtract, round, add } from 'mathjs';
 
 export default {
 	name: 'GiftOut',
@@ -295,10 +295,6 @@ export default {
 						trigger: 'blur'
 					}
 				],
-				unit: [
-					{ required: true, message: '请输入单位', trigger: 'blur' },
-					{ max: 255, message: '单位名称长度不能超过255个字符', trigger: 'blur' }
-				],
 				estimatedValue: [
 					{ required: true, message: '请输入预估价值', trigger: 'blur' },
 					{ pattern: /^\d+(\.\d{1,2})?$/, message: '请输入有效的金额格式', trigger: 'blur' }
@@ -313,10 +309,9 @@ export default {
 				{ key: 4, label: `收礼人员`, visible: true },
 				{ key: 5, label: `物品名称`, visible: true },
 				{ key: 6, label: `数量`, visible: true },
-				{ key: 7, label: `单位`, visible: true },
-				{ key: 8, label: `预估价值`, visible: true },
-				{ key: 9, label: `经办人`, visible: true },
-				{ key: 10, label: `备注`, visible: true }
+				{ key: 7, label: `预估价值`, visible: true },
+				{ key: 8, label: `经办人`, visible: true },
+				{ key: 9, label: `备注`, visible: true }
 			],
 			companyType: '供应商',
 			dialogWidth: window.innerWidth > 768 ? '600px' : '95%'
@@ -336,7 +331,42 @@ export default {
 		},
 		listCompany,
 		listGiftIn,
+		getGiftIn,
 		parseTime,
+		// 获取入库数据并计算剩余数量
+		listGiftInWithRemaining(query) {
+			return Promise.all([listGiftIn(query), listGiftOut({ pageNum: 1, pageSize: 10000 })]).then(([inResponse, outResponse]) => {
+				const giftInList = (inResponse && inResponse.rows) || [];
+				const giftOutList = (outResponse && outResponse.rows) || [];
+				// 计算每个入库记录的出库数量
+				const outQuantityMap = new Map();
+				giftOutList.forEach(outItem => {
+					// 兼容giftSource和inId两种字段名
+					const sourceId = (outItem && outItem.giftSource) || (outItem && outItem.inId);
+					if (sourceId) {
+						const inId = String(sourceId);
+						const outQty = Number(outItem.quantity) || 0;
+						const currentOutQty = outQuantityMap.get(inId) || 0;
+						outQuantityMap.set(inId, add(currentOutQty, outQty));
+					}
+				});
+				// 为每个入库记录添加剩余数量
+				const result = giftInList.map(item => {
+					const inQty = Number(item.quantity) || 0;
+					const outQty = outQuantityMap.get(String(item.id)) || 0;
+					const remainingQty = subtract(inQty, outQty);
+					const remainingQtyNum = remainingQty > 0 ? remainingQty : 0;
+					return {
+						...item,
+						remainingQuantity: round(remainingQtyNum, 2)
+					};
+				});
+				return {
+					...inResponse,
+					rows: result
+				};
+			});
+		},
 		updateDialogWidth() {
 			this.dialogWidth = window.innerWidth > 768 ? '600px' : '95%';
 		},
@@ -345,13 +375,25 @@ export default {
 			this.loading = true;
 			this.queryParams.params = {};
 			if (this.daterangeOutDate && this.daterangeOutDate.length) {
-				this.queryParams.params['beginOutDate'] = this.daterangeOutDate[0];
-				this.queryParams.params['endOutDate'] = this.daterangeOutDate[1];
+				this.queryParams.params['beginOutDate'] = this.daterangeOutDate[0] + ' 00:00:00';
+				this.queryParams.params['endOutDate'] = this.daterangeOutDate[1] + ' 23:59:59';
 			}
 			listGiftOut(this.queryParams)
 				.then(response => {
-					this.giftOutList = response.rows || [];
-					this.total = response.total;
+					this.giftOutList = (response && response.rows) || [];
+					this.total = (response && response.total) || 0;
+					// 调试：检查出库记录是否有关联的入库ID
+					console.log('=== 出库记录入库ID检查 ===');
+					this.giftOutList.forEach((item, index) => {
+						const sourceId = (item && item.giftSource) || (item && item.inId);
+						console.log(`出库记录 ${index + 1} (ID: ${item.id}):`, {
+							物品名称: item.itemName,
+							giftSource: item.giftSource,
+							inId: item.inId,
+							入库ID: sourceId || '无'
+						});
+					});
+					console.log('=== 检查完成 ===');
 				})
 				.catch(error => {
 					this.$message.error('数据加载失败，请稍后重试');
@@ -376,7 +418,6 @@ export default {
 				recipientReceiver: null,
 				itemName: null,
 				quantity: null,
-				unit: null,
 				estimatedValue: null,
 				handler: null,
 				updateTime: null,
@@ -419,7 +460,7 @@ export default {
 		/** 修改按钮操作 */
 		handleUpdate(row) {
 			this.reset();
-			const id = row?.id || (Array.isArray(this.ids) && this.ids.length === 1 ? this.ids[0] : null);
+			const id = (row && row.id) || (Array.isArray(this.ids) && this.ids.length === 1 ? this.ids[0] : null);
 
 			// 添加检查确保有且仅有一个ID
 			if (!id) {
@@ -429,11 +470,16 @@ export default {
 
 			getGiftOut(id)
 				.then(response => {
-					if (!response?.data) {
+					if (!(response && response.data)) {
 						this.$message.error('获取礼品出库信息失败，数据为空');
 						return;
 					}
 					this.form = response.data;
+					// 确保日期格式正确（日期选择器需要 yyyy-MM-dd HH:mm:ss 格式）
+					if (this.form.outDate) {
+						const formattedDate = this.formatDateTime(this.form.outDate);
+						this.$set(this.form, 'outDate', formattedDate);
+					}
 					// 根据recipientType设置companyType，用于下拉框显示
 					if (this.form.recipientType) {
 						this.companyType = this.form.recipientType;
@@ -445,11 +491,13 @@ export default {
 					if (this.form.itemName) {
 						this.itemName = this.form.itemName;
 					}
-					this.open = true;
-					this.title = '修改礼品出库信息';
+					this.$nextTick(() => {
+						this.open = true;
+						this.title = '修改礼品出库信息';
+					});
 				})
 				.catch(error => {
-					const errorMsg = error?.response?.data?.msg || error?.response?.data?.message || error?.message || '获取礼品出库信息失败，请稍后重试';
+					const errorMsg = (error && error.response && error.response.data && error.response.data.msg) || (error && error.response && error.response.data && error.response.data.message) || (error && error.message) || '获取礼品出库信息失败，请稍后重试';
 					this.$message.error(errorMsg);
 					console.error('获取礼品出库信息失败:', error);
 				});
@@ -463,37 +511,82 @@ export default {
 					if (submitData.quantity) {
 						submitData.quantity = parseInt(submitData.quantity, 10);
 					}
-					if (this.form.id != null) {
-						updateGiftOut(submitData)
-							.then(response => {
-								this.$modal.msgSuccess('修改成功');
-								this.open = false;
-								this.getList();
+					// 确保giftSource字段存在（后端可能使用giftSource而不是inId）
+					if (submitData.inId && !submitData.giftSource) {
+						submitData.giftSource = submitData.inId;
+					}
+					// 验证库存：如果有入库ID，检查剩余数量是否足够
+					if (submitData.inId && submitData.quantity) {
+						this.validateStock(submitData.inId, submitData.quantity, submitData.id)
+							.then(() => {
+								this.doSubmit(submitData);
 							})
 							.catch(error => {
-								const errorMsg = error?.response?.data?.msg || error?.response?.data?.message || error?.message || '修改失败，请稍后重试';
-								this.$message.error(errorMsg);
-								console.error('修改礼品出库信息失败:', error);
-								console.error('错误详情:', error?.response?.data);
+								this.$message.error(error || '批次库存不足或操作失败，请重试！');
 							});
 					} else {
-						addGiftOut(submitData)
-							.then(response => {
-								this.$modal.msgSuccess('新增成功');
-								this.open = false;
-								this.getList();
-							})
-							.catch(error => {
-								const errorMsg = error?.response?.data?.msg || error?.response?.data?.message || error?.message || '新增失败，请稍后重试';
-								this.$message.error(errorMsg);
-								console.error('新增礼品出库信息失败:', error);
-								console.error('错误详情:', error?.response?.data);
-							});
+						this.doSubmit(submitData);
 					}
 				} else {
 					this.$message.warning('请完善表单信息');
 				}
 			});
+		},
+		/** 验证库存 */
+		validateStock(inId, outQuantity, currentOutId) {
+			return Promise.all([getGiftIn(inId), listGiftOut({ pageNum: 1, pageSize: 10000 })]).then(([inResponse, outResponse]) => {
+				const giftInData = inResponse && inResponse.data;
+				if (!giftInData) {
+					return Promise.reject('未找到对应的入库记录');
+				}
+				const inQty = Number(giftInData.quantity) || 0;
+				const giftOutList = (outResponse && outResponse.rows) || [];
+				// 计算已出库数量（排除当前正在编辑的记录）
+				let totalOutQty = 0;
+				giftOutList.forEach(outItem => {
+					const sourceId = (outItem && outItem.giftSource) || (outItem && outItem.inId);
+					if (sourceId && String(sourceId) === String(inId) && outItem.id !== currentOutId) {
+						totalOutQty = add(totalOutQty, Number(outItem.quantity) || 0);
+					}
+				});
+				// 计算剩余数量
+				const remainingQty = subtract(inQty, totalOutQty);
+				const remainingQtyNum = remainingQty > 0 ? remainingQty : 0;
+				// 验证剩余数量是否足够
+				if (remainingQtyNum < outQuantity) {
+					return Promise.reject(`批次库存不足，剩余数量：${round(remainingQtyNum, 2)}，需要出库数量：${outQuantity}`);
+				}
+			});
+		},
+		/** 执行提交 */
+		doSubmit(submitData) {
+			if (this.form.id != null) {
+				updateGiftOut(submitData)
+					.then(response => {
+						this.$modal.msgSuccess('修改成功');
+						this.open = false;
+						this.getList();
+					})
+					.catch(error => {
+						const errorMsg = (error && error.response && error.response.data && error.response.data.msg) || (error && error.response && error.response.data && error.response.data.message) || (error && error.message) || '修改失败，请稍后重试';
+						this.$message.error(errorMsg);
+						console.error('修改礼品出库信息失败:', error);
+						console.error('错误详情:', error && error.response && error.response.data);
+					});
+			} else {
+				addGiftOut(submitData)
+					.then(response => {
+						this.$modal.msgSuccess('新增成功');
+						this.open = false;
+						this.getList();
+					})
+					.catch(error => {
+						const errorMsg = (error && error.response && error.response.data && error.response.data.msg) || (error && error.response && error.response.data && error.response.data.message) || (error && error.message) || '新增失败，请稍后重试';
+						this.$message.error(errorMsg);
+						console.error('新增礼品出库信息失败:', error);
+						console.error('错误详情:', error && error.response && error.response.data);
+					});
+			}
 		},
 		/** 删除按钮操作 */
 		handleDelete(row) {
@@ -519,6 +612,43 @@ export default {
 				},
 				`giftOut_${this.parseTime(new Date(), '{y}{m}{d}_{h}{i}{s}')}.xlsx`
 			);
+		},
+		/** 格式化日期时间 */
+		formatDateTime(dateTime) {
+			if (!dateTime) return '';
+			// 如果已经是字符串格式 yyyy-MM-dd，直接返回
+			if (typeof dateTime === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dateTime)) {
+				return dateTime;
+			}
+			// 如果是字符串格式 yyyy-MM-dd HH:mm:ss，提取日期部分
+			if (typeof dateTime === 'string' && /^\d{4}-\d{2}-\d{2}/.test(dateTime)) {
+				// 提取日期部分（yyyy-MM-dd）
+				const datePart = dateTime.split(' ')[0];
+				if (/^\d{4}-\d{2}-\d{2}$/.test(datePart)) {
+					return datePart;
+				}
+				// 尝试解析并格式化
+				const date = new Date(dateTime.replace(/-/g, '/'));
+				if (!isNaN(date.getTime())) {
+					return this.parseTime(date, '{y}-{m}-{d}');
+				}
+			}
+			// 如果是时间戳，转换为字符串格式
+			if (typeof dateTime === 'number') {
+				// 判断是秒级还是毫秒级时间戳
+				const timestamp = dateTime.toString().length === 10 ? dateTime * 1000 : dateTime;
+				return this.parseTime(timestamp, '{y}-{m}-{d}');
+			}
+			// 如果是 Date 对象，转换为字符串格式
+			if (dateTime instanceof Date) {
+				return this.parseTime(dateTime, '{y}-{m}-{d}');
+			}
+			// 尝试解析字符串日期
+			const date = new Date(dateTime);
+			if (!isNaN(date.getTime())) {
+				return this.parseTime(date, '{y}-{m}-{d}');
+			}
+			return dateTime;
 		}
 	}
 };
