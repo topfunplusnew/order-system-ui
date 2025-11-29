@@ -278,14 +278,6 @@ export default {
 					this.form.carNo = null;
 				}
 			}
-		},
-		'form.carNo': {
-			handler: function (newVal) {
-				// 根据车号自动填充开户名
-				if (newVal && this.form.carType === '陆运') {
-					this.form.acountsName = newVal;
-				}
-			}
 		}
 	},
 	created() {
@@ -448,10 +440,7 @@ export default {
 				this.form = response.data;
 				// 确保账号类型为司机
 				this.form.acountsType = '司机';
-				// 如果车号存在且开户名为空，自动填充开户名
-				if (this.form.carNo && !this.form.acountsName && this.form.carType === '陆运') {
-					this.form.acountsName = this.form.carNo;
-				}
+				// 不再自动填充开户名
 				this.open = true;
 				this.title = '修改外部车辆信息';
 			});

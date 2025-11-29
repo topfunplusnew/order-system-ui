@@ -41,40 +41,40 @@ export default {
 			columnWidths: {
 				action: '80px', // 操作列：按钮文字"货物返利"
 				storeHouseName: '70px', // 仓库名称：通常较短
-				supplier: '180px', // 供应商：公司名称可能较长
+				supplier: '120px', // 供应商：公司名称可能较长
 				levelName: '120px', // 级别名称：级别名称通常不会太长
-				countingUnit: '70px', // 计量单位：单位名称较短
-				height: '50px', // 厚度：数字较短
-				length: '50px', // 长度：数字较短
-				width: '50px', // 宽度：数字较短
+				countingUnit: '65px', // 计量单位：单位名称较短
+				height: '45px', // 厚度：数字较短
+				length: '45px', // 长度：数字较短
+				width: '45px', // 宽度：数字较短
 				piecesPerPack: '60px', // 每包片数：数字
-				packs: '50px', // 包数：数字较短
-				pieces: '70px', // 出厂片数：数字
-				price: '70px', // 出厂单价：价格数字
+				packs: '45px', // 包数：数字较短
+				pieces: '60px', // 出厂片数：数字
+				price: '60px', // 出厂单价：价格数字
 				isIncludeTaxFactory: '80px', // 出厂是否含税："是/否"标签
-				sundryCost: '90px', // 杂费：金额数字
-				paymentFactory: '120px', // 出厂货款：金额数字
-				actualPieces: '90px', // 卸货片数：数字
-				paymentUnload: '110px', // 卸货价：价格数字
-				isIncludeTaxSale: '110px', // 销售是否含税："是/否"标签
-				paymentsWithSundry: '120px', // 总货款杂费：金额数字
-				payments: '120px', // 总货款：金额数字
-				erro: '70px', // 误差：数字较短
-				tonnage: '90px', // 吨位：数字+单位
-				landFreightPrice: '120px', // 陆运费单价：价格数字
-				additionalFees: '90px', // 加费：金额数字
-				landFreight: '100px', // 陆运费：金额数字
-				seaFreight: '100px', // 海运费：金额数字
-				freight: '100px', // 总运费：金额数字
-				otherCost: '100px', // 其他费用：金额数字
-				profit: '100px', // 利润：金额数字
-				profitNoTax: '100px', // 不含税利润：金额数字
-				logisticsProfit: '110px', // 物流利润：金额数字
-				customerCommission: '110px', // 客户佣金：金额数字
-				factoryCommission: '110px', // 厂家佣金：金额数字
-				factoryRebateAmount: '140px', // 计提厂家返利金额：金额数字，列名较长
-				factoryDiscountAmount: '140px', // 计提厂家降价金额：金额数字，列名较长
-				comments: '120px' // 备注：可能需要显示较长文本
+				sundryCost: '70px', // 杂费：金额数字
+				paymentFactory: '100px', // 出厂货款：金额数字
+				actualPieces: '60px', // 卸货片数：数字
+				paymentUnload: '60px', // 卸货价：价格数字
+				isIncludeTaxSale: '80px', // 销售是否含税："是/否"标签
+				paymentsWithSundry: '70px', // 总货款杂费：金额数字
+				payments: '100px', // 总货款：金额数字
+				erro: '50px', // 误差：数字较短
+				tonnage: '70px', // 吨位：数字+单位
+				landFreightPrice: '90px', // 陆运费单价：价格数字
+				additionalFees: '60px', // 加费：金额数字
+				landFreight: '90px', // 陆运费：金额数字
+				seaFreight: '90px', // 海运费：金额数字
+				freight: '90px', // 总运费：金额数字
+				otherCost: '70px', // 其他费用：金额数字
+				profit: '70px', // 利润：金额数字
+				profitNoTax: '90px', // 不含税利润：金额数字
+				logisticsProfit: '70px', // 物流利润：金额数字
+				customerCommission: '70px', // 客户佣金：金额数字
+				factoryCommission: '70px', // 厂家佣金：金额数字
+				factoryRebateAmount: '120px', // 计提厂家返利金额：金额数字，列名较长
+				factoryDiscountAmount: '120px', // 计提厂家降价金额：金额数字，列名较长
+				comments: '70px' // 备注：可能需要显示较长文本
 			},
 			// 返利回扣信息
 			moneyBackInfo: {

@@ -143,8 +143,8 @@ export default {
 			const queryParams = this.buildQueryParams();
 			Promise.all([listGiftIn(queryParams), listGiftOut(queryParams)])
 				.then(([inResponse, outResponse]) => {
-					const giftInList = (inResponse?.rows || []).filter(item => item && item.id !== null && item.id !== undefined);
-					const giftOutList = outResponse?.rows || [];
+					const giftInList = ((inResponse && inResponse.rows) || []).filter(item => item && item.id !== null && item.id !== undefined);
+					const giftOutList = (outResponse && outResponse.rows) || [];
 					this.calculateStock(giftInList, giftOutList);
 				})
 				.catch(error => {
