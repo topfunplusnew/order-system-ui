@@ -91,7 +91,7 @@ $user-select-properties: (
 @mixin table-body-cell {
 	@include table-cell-base;
 	color: $table-body-color !important;
-	background-color: $table-body-bg !important;
+	background-color: $table-body-bg; // 移除 !important，允许通过 cell-style 内联样式覆盖（用于高亮差异列）
 }
 
 // 表格尺寸变体 mixin（用于 medium 和 mini）
@@ -1526,7 +1526,13 @@ textarea::placeholder,
 		.el-table__body {
 			td {
 				position: relative;
-				@include table-body-cell;
+				// 移除背景色的 !important，允许通过 cell-style 覆盖
+				padding: $table-cell-padding !important;
+				font-size: $table-font-size !important;
+				border: 1px solid $table-border-color !important;
+				text-align: center !important;
+				color: $table-body-color !important;
+				background-color: $table-body-bg; // 移除 !important，允许内联样式覆盖
 
 				.cell {
 					@include table-cell-content;
@@ -1580,7 +1586,13 @@ textarea::placeholder,
 		.el-table__fixed-body-wrapper {
 			.el-table__body {
 				td {
-					@include table-body-cell;
+					// 移除背景色的 !important，允许通过 cell-style 覆盖
+					padding: $table-cell-padding !important;
+					font-size: $table-font-size !important;
+					border: 1px solid $table-border-color !important;
+					text-align: center !important;
+					color: $table-body-color !important;
+					background-color: $table-body-bg; // 移除 !important，允许内联样式覆盖
 
 					.cell {
 						@include table-cell-content;

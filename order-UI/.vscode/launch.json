@@ -1,0 +1,33 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "调试订单系统（根目录启动）",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:40080",
+      "webRoot": "${workspaceFolder}/packages/order-system/src",
+      "cwd": "${workspaceFolder}",                    // 在根目录执行命令
+      "preLaunchTask": "npm: order",                  // 执行根目录的 yarn order
+      "sourceMapPathOverrides": {
+        "webpack:///*": "${webRoot}/*",
+        "webpack:///src/*": "${webRoot}/*"
+      }
+    }
+  ],
+  "tasks": [
+    {
+      "label": "npm: order",
+      "type": "npm",
+      "script": "order",                              // 根目录的 "order": "yarn workspace order-system dev"
+      "isBackground": true,
+      "problemMatcher": {
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".*",
+          "endsPattern": "Local:.*http://localhost:40080"
+        }
+      }
+    }
+  ]
+}

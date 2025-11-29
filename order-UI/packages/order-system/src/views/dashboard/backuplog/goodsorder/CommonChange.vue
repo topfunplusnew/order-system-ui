@@ -1,45 +1,44 @@
 <template>
 	<div>
 		<div class="body">
-			<el-card class="box-card">
-				<!-- 分页控制器 -->
-				<div class="pagination-controls">
-					<el-button @click="prevPage" :disabled="currentPage === 1" size="small">上一页</el-button>
-					<span class="page-info">第 {{ currentPage }} 页 / 共 {{ totalPages }} 页 (共 {{ totalItems }} 条记录)</span>
-					<el-button @click="nextPage" :disabled="currentPage >= totalPages" size="small">下一页</el-button>
-					<!-- 快速跳转 -->
-					<!--					<el-input type="number" v-model="currentPage" :min="1" :max="totalPages" size="small" @change="goToPage(currentPage)" style="width: 80px; margin-left: 10px" />-->
-					<!-- 保存 JSON 按钮，方便调试 -->
-					<!--					<el-button type="primary" size="small" @click="saveJsonData" style="margin-left: 10px">保存 JSON(调试)</el-button>-->
-				</div>
-				<div id="scrollContainer" class="scroll-area">
-					<div v-for="(item, idx) in paginatedData" :key="idx">
-						<FlexTable :body="item" :index="idx + (currentPage - 1) * pageSize" :key="`${currentPage}-${idx}`" />
-					</div>
-					<div v-if="paginatedData.length === 0" class="no-data">暂无数据</div>
-				</div>
-				<!-- 底部重复分页控制 -->
-				<div class="pagination-controls bottom-controls">
-					<el-button @click="prevPage" :disabled="currentPage === 1" size="small">上一页</el-button>
-					<span class="page-info">第 {{ currentPage }} 页 / 共 {{ totalPages }} 页</span>
-					<el-button @click="nextPage" :disabled="currentPage >= totalPages" size="small">下一页</el-button>
-				</div>
-			</el-card>
+			<div id="scrollContainer" class="scroll-area">
+				<el-table v-if="allMergedTableData.length > 0" :data="allMergedTableData" :span-method="getAllSpanMethod" :cell-style="getAllMergedCellStyle" border style="width: 100%">
+					<el-table-column label="记录" width="180" align="center">
+						<template slot-scope="scope">
+							<span>{{ scope.row.recordLabel }}</span>
+						</template>
+					</el-table-column>
+					<el-table-column label="状态" width="120" align="center">
+						<template slot-scope="scope">
+							<span>{{ scope.row.status }}</span>
+						</template>
+					</el-table-column>
+					<el-table-column v-for="col in allMergedTableColumns" :key="col.prop" :prop="col.prop" :label="col.label" :formatter="col.formatter" align="center" />
+				</el-table>
+				<div v-if="allMergedTableData.length === 0" class="no-data">暂无数据</div>
+			</div>
+			<!-- 底部重复分页控制 -->
+			<div class="pagination-controls bottom-controls">
+				<el-button @click="prevPage" :disabled="currentPage === 1" size="small">上一页</el-button>
+				<span class="page-info">第 {{ currentPage }} 页 / 共 {{ totalPages }} 页</span>
+				<el-button @click="nextPage" :disabled="currentPage >= totalPages" size="small">下一页</el-button>
+			</div>
 		</div>
 	</div>
 </template>
 
 <script>
 import { TypeUtils } from '@/views/dashboard/backuplog';
-import { moduleNames, TableName } from '@/api/tool/enums';
+import { moduleNames, System_Option_Type, TableName } from '@/api/tool/enums';
 import _ from 'lodash';
 import { MultiList, TableConfig } from '../backup.config';
-import FlexTable from '@/views/dashboard/backuplog/goodsorder/FlexTable.vue';
 import { getUuid } from '@/utils/trash/utils';
+
+// 定义高亮背景色
+const HIGHLIGHT_COLOR = '#fff3cd'; // 一个淡黄色，类似 Bootstrap 的 warning 背景色
 
 export default {
 	name: 'CommonChange',
-	components: { FlexTable },
 	props: {
 		compareData: {
 			type: Array,
@@ -54,12 +53,18 @@ export default {
 		return {
 			currentPage: 1, // 当前页码
 			pageSize: 20, // 每页显示数量
-			totalPages: 1 // 总页数
+			totalPages: 1, // 总页数
+			// 使用 WeakMap 来缓存差异属性，键是 item 或 sub_info 对象，值是 Set<string>
+			// WeakMap 的好处是当 item/sub_info 对象不再被引用时，缓存会自动清理，避免内存泄漏
+			diffPropsCache: new WeakMap()
 		};
 	},
 	computed: {
 		TableName() {
 			return TableName;
+		},
+		moduleNames() {
+			return moduleNames;
 		},
 		renderData() {
 			const data = _.cloneDeep(this.compareData);
@@ -182,6 +187,48 @@ export default {
 		},
 		totalItems() {
 			return this.bodyData.length;
+		},
+		// 合并所有表格数据
+		allMergedTableData() {
+			if (!this.paginatedData || this.paginatedData.length === 0) {
+				return [];
+			}
+
+			const allData = [];
+			this.paginatedData.forEach((body, bodyIdx) => {
+				const recordIndex = bodyIdx + (this.currentPage - 1) * this.pageSize + 1;
+				const recordLabel = `${this.moduleNames[body.moduleName]}信息[${recordIndex}]`;
+				const bodyData = this.getMergedTableData(body);
+
+				bodyData.forEach((row, rowIdx) => {
+					allData.push({
+						...row,
+						recordLabel: rowIdx === 0 ? recordLabel : '',
+						recordIndex: bodyIdx,
+						bodyRef: body
+					});
+				});
+			});
+
+			return allData;
+		},
+		// 合并所有表格列配置
+		allMergedTableColumns() {
+			if (!this.paginatedData || this.paginatedData.length === 0) {
+				return [];
+			}
+
+			const columnMap = new Map();
+			this.paginatedData.forEach(body => {
+				const columns = this.getMergedTableColumns(body);
+				columns.forEach(col => {
+					if (!columnMap.has(col.prop)) {
+						columnMap.set(col.prop, col);
+					}
+				});
+			});
+
+			return Array.from(columnMap.values());
 		}
 	},
 	watch: {
@@ -223,26 +270,547 @@ export default {
 				}
 			});
 		},
-		// **新增：保存 JSON 数据方法**
-		saveJsonData() {
-			const jsonData = this.paginatedData; // 获取当前页展示的数据
-			const jsonString = JSON.stringify(jsonData, null, 2); // 转换为 JSON 字符串，并格式化
-			const blob = new Blob([jsonString], { type: 'application/json' }); // 创建 Blob 对象
-			const url = URL.createObjectURL(blob); // 创建下载链接
+		handleProcess() {
+			return Promise.resolve();
+		},
+		handleReject() {
+			return Promise.resolve();
+		},
+		// --- 判断差异是否有意义 (用于决定是否高亮) ---
+		isMeaningfulDifference(diffValue) {
+			if (diffValue === null || diffValue === undefined) return false;
+			if (typeof diffValue === 'number') return diffValue !== 0; // 数字差异不为0
+			if (Array.isArray(diffValue)) return diffValue.length > 0; // 列表差异数组不为空 (calculateDifferences 已保证)
+			// totalDiff 中可能标记为 '列表有变更'
+			if (diffValue === '列表有变更') return true;
+			if (diffValue === '[changed]') return true; // 明确标记为变更
+			// 如果 diffValue 是对象（理论上不该直接出现在 diff 结果里，除非 calculateDifferences 改变），也视为有差异
+			if (typeof diffValue === 'object' && Object.keys(diffValue).length > 0) return true;
+			return false; // 其他情况（如空字符串等）视为无意义差异
+		},
+		// --- 获取并缓存差异属性集合 ---
+		getAndCacheDiffProps(context, isSubInfo) {
+			if (this.diffPropsCache.has(context)) {
+				return this.diffPropsCache.get(context);
+			}
 
-			const downloadLink = document.createElement('a');
-			downloadLink.href = url;
-			downloadLink.download = `backup_data_page_${this.currentPage}.json`; // 设置下载文件名，可以根据需要修改
-			document.body.appendChild(downloadLink);
-			downloadLink.click(); // 触发下载
-			document.body.removeChild(downloadLink); // 移除链接
-			URL.revokeObjectURL(url); // 释放 URL 对象
+			let diffData = {};
+			if (isSubInfo) {
+				// 计算子表的汇总差异 (totalDiff)
+				if (!context || !Array.isArray(context)) {
+					diffData = {}; // 无效 subInfo
+				} else {
+					const allDiffs = context.map(sub => {
+						const original = sub?.originalInfo || {};
+						const changed = sub?.changedInfo || {};
+						// 确保 calculateDifferences 返回的是对象
+						return this.calculateDifferences(original, changed) || {};
+					});
+					console.log('子表 allDiffs', allDiffs);
+					// 使用之前的 totalDiff 计算逻辑
+					diffData = allDiffs.reduce((acc, diff) => {
+						Object.entries(diff).forEach(([key, diffValue]) => {
+							const existingValue = acc[key];
+							if (key === 'inventoryDetailList' && Array.isArray(diffValue) && diffValue.length > 0) {
+								acc[key] = '列表有变更';
+							} else if (typeof diffValue === 'number' && isFinite(diffValue)) {
+								if (typeof existingValue === 'number' || existingValue === undefined) {
+									acc[key] = (existingValue || 0) + diffValue;
+								} // else 保持标记
+							} else if (diffValue === '[changed]' || (typeof diffValue === 'object' && diffValue !== null && !Array.isArray(diffValue))) {
+								// 标记为 changed 或列表有变更 优先
+								if (existingValue !== '列表有变更') {
+									acc[key] = '[changed]';
+								}
+							}
+						});
+						return acc;
+					}, {});
+				}
+			} else {
+				// 计算主表的差异 (diff)
+				const original = context?.originalInfo || {};
+				const changed = context?.changedInfo || {};
+				diffData = this.calculateDifferences(original, changed) || {};
+			}
+
+			// 筛选出有意义差异的属性名
+			const meaningfulDiffProps = Object.keys(diffData).filter(key => this.isMeaningfulDifference(diffData[key]));
+			this.diffPropsCache.set(context, new Set(meaningfulDiffProps));
+			return this.diffPropsCache.get(context);
+		},
+		// --- :cell-style 的包装处理函数 ---
+		// 检查每行的数据的每一个单元格，并返回一个样式对象
+		getCellStyleHandler(context, isSubInfo) {
+			// 获取当前 context (item 或 sub_info) 的有差异的属性集合
+			const diffProps = this.getAndCacheDiffProps(context, isSubInfo);
+
+			// 返回 Element UI :cell-style 所期望的函数
+			return ({ row, column, rowIndex, columnIndex }) => {
+				// 检查当前列的属性名是否存在于差异集合中
+				if (column.property && diffProps.has(column.property)) {
+					// 如果是差异列，应用高亮背景色
+					return { backgroundColor: HIGHLIGHT_COLOR };
+				}
+				// 否则，返回空对象或 null，表示使用默认样式
+				return null;
+			};
+		},
+		calculateProp(item) {
+			const { backupType = '', backupTime = null } = item || {};
+			const typeEnumMap = {
+				[System_Option_Type.INSERT]: '新增',
+				[System_Option_Type.DELETE]: '删除',
+				[System_Option_Type.UPDATE]: '修改',
+				default: '修改'
+			};
+			const _type = typeEnumMap[backupType] || typeEnumMap.default;
+			return { time: backupTime, type: _type };
+		},
+		typeStyle(type) {
+			switch (type) {
+				case '新增':
+					return { backgroundColor: '#f0f9eb', color: '#67c23a' };
+				case '修改':
+					return { backgroundColor: '#ecf5ff', color: '#409eff' };
+				case '删除':
+					return { backgroundColor: '#fef0f0', color: '#f56c6c' };
+				default:
+					return { backgroundColor: '#f4f4f5', color: '#909399' };
+			}
+		},
+		calculateDifferences(original = {}, changed = {}) {
+			const diffs = {};
+			const allKeys = new Set([...Object.keys(original), ...Object.keys(changed)]);
+			allKeys.forEach(key => {
+				if (key === 'inventoryDetailList') {
+					const originalList = original[key] || [];
+					const changedList = changed[key] || [];
+					const listDiffs = this.calculateListDifferences(originalList, changedList);
+					if (listDiffs.length > 0) {
+						// calculateListDifferences 已保证非空
+						diffs[key] = listDiffs;
+					}
+					return;
+				}
+
+				const origVal = original[key];
+				const changedVal = changed[key];
+				const normalizedOrigVal = origVal === null || typeof origVal === 'undefined' ? '' : origVal;
+				const normalizedChangedVal = changedVal === null || typeof changedVal === 'undefined' ? '' : changedVal;
+
+				if (typeof normalizedOrigVal === 'number' || typeof normalizedChangedVal === 'number') {
+					const numOrig = Number(normalizedOrigVal) || 0;
+					const numChanged = Number(normalizedChangedVal) || 0;
+					if (numOrig !== numChanged) {
+						diffs[key] = numChanged - numOrig;
+					}
+					return;
+				}
+
+				if (String(normalizedOrigVal) !== String(normalizedChangedVal)) {
+					diffs[key] = '[changed]';
+				}
+			});
+			return diffs;
+		},
+		calculateListDifferences(originalList = [], changedList = []) {
+			const maxLength = Math.max(originalList.length, changedList.length);
+			const diffs = [];
+			for (let i = 0; i < maxLength; i++) {
+				const orig = originalList[i] || {};
+				const changed = changedList[i] || {};
+				const itemDiff = this.calculateDifferences(orig, changed);
+				if (Object.keys(itemDiff).length > 0) {
+					diffs.push(itemDiff);
+				}
+			}
+			return diffs.filter(d => Object.keys(d).length > 0);
+		},
+		getTableColumns(body, isDetail = false) {
+			const moduleKey = isDetail ? body.multiModuleName : body.moduleName;
+			if (!moduleKey || !TableConfig[moduleKey]) {
+				console.warn(`未找到模块 ${moduleKey} 的表格配置。`);
+				return [];
+			}
+
+			const config = TableConfig[moduleKey];
+			const mappers = config.mappers || {};
+			return Object.keys(mappers).map(key => ({
+				prop: key,
+				label: mappers[key],
+				formatter: (row, column, cellValue, index) => {
+					if (row.status === '差额') {
+						return this.getDiffValue(row, key);
+					}
+
+					const value = cellValue;
+					if (typeof config.options !== 'function') {
+						return value === null || typeof value === 'undefined' ? '-' : String(value);
+					}
+
+					try {
+						const formattedValue = config.options(key, value);
+						return formattedValue === null || typeof formattedValue === 'undefined' ? '-' : formattedValue;
+					} catch (error) {
+						console.error(`格式化字段 ${key} 的值 ${value} 时出错:`, error);
+						return value === null || typeof value === 'undefined' ? '-' : String(value);
+					}
+				}
+			}));
+		},
+		getDiffValue(row, key) {
+			const value = row ? row[key] : undefined;
+
+			if (typeof value === 'number') {
+				if (!isFinite(value)) return '-';
+				return value > 0 ? `+${value.toFixed(2)}` : value.toFixed(2);
+			}
+
+			if (value === '[changed]') {
+				return '有修改';
+			}
+
+			if (value === '列表有变更') {
+				return '列表有变更';
+			}
+
+			if (Array.isArray(value)) {
+				return value.length > 0 ? '列表有变更' : '-';
+			}
+
+			if (typeof value === 'object' && value !== null) {
+				return Object.keys(value).length > 0 ? '对象有修改' : '-';
+			}
+
+			return '-';
+		},
+		isRowEmpty(row, columns) {
+			return columns.every(col => {
+				const value = row[col.prop];
+				return value === null || value === undefined || value === '';
+			});
+		},
+		getCombinedData(item, body) {
+			const original = item?.originalInfo || {};
+			const changed = item?.changedInfo || {};
+			const operationType = this.calculateProp(item).type;
+			const diff = this.calculateDifferences(original, changed);
+			const columns = this.getTableColumns(body);
+
+			const result = [];
+			// 如果是新增操作，只显示新增行，不显示修改前和差额
+			if (operationType === '新增') {
+				const newRow = { status: '新增', ...changed };
+				if (!this.isRowEmpty(newRow, columns)) {
+					result.push(newRow);
+				}
+				return result;
+			}
+			// 非新增操作：显示修改前
+			if (operationType !== '新增') {
+				const originalRow = { status: '修改前', ...original };
+				if (!this.isRowEmpty(originalRow, columns)) {
+					result.push(originalRow);
+				}
+			}
+			// 显示修改后
+			const changedRow = { status: '修改后', ...changed };
+			if (!this.isRowEmpty(changedRow, columns)) {
+				result.push(changedRow);
+			}
+			// 显示差额（仅非新增操作）
+			if (Object.keys(diff).length > 0) {
+				const diffRow = { status: '差额', ...diff };
+				// Check if the diff row (excluding status) has any meaningful difference
+				const hasMeaningfulDiff = columns.some(col => {
+					if (col.prop !== 'status') {
+						return this.isMeaningfulDifference(diffRow[col.prop]);
+					}
+					return false;
+				});
+				if (hasMeaningfulDiff) {
+					result.push(diffRow);
+				}
+			}
+			return result;
+		},
+		getCombinedSubData(subItems, body) {
+			if (!Array.isArray(subItems) || subItems.length === 0) {
+				return [];
+			}
+			const operationType = this.calculateProp(subItems[0]).type;
+			const columns = this.getTableColumns(body, true);
+			const allRows = [];
+
+			// 如果是新增操作，只显示新增行，不显示修改前和差额
+			if (operationType === '新增') {
+				subItems.forEach(sub => {
+					const newRow = { status: '新增', ...(sub?.changedInfo || {}) };
+					if (!this.isRowEmpty(newRow, columns)) {
+						allRows.push(newRow);
+					}
+				});
+				return allRows;
+			}
+
+			// 非新增操作：显示修改前
+			if (operationType !== '新增') {
+				subItems.forEach(sub => {
+					const originalRow = { status: '修改前', ...(sub?.originalInfo || {}) };
+					if (!this.isRowEmpty(originalRow, columns)) {
+						allRows.push(originalRow);
+					}
+				});
+			}
+			// 显示修改后
+			subItems.forEach(sub => {
+				const changedRow = { status: '修改后', ...(sub?.changedInfo || {}) };
+				if (!this.isRowEmpty(changedRow, columns)) {
+					allRows.push(changedRow);
+				}
+			});
+
+			// 显示差额（仅非新增操作）
+			const allDiffs = subItems.map(sub => this.calculateDifferences(sub?.originalInfo || {}, sub?.changedInfo || {}));
+			const totalDiff = allDiffs.reduce((acc, diff) => {
+				Object.entries(diff).forEach(([key, diffValue]) => {
+					const existingValue = acc[key];
+					if (key === 'inventoryDetailList' && Array.isArray(diffValue) && diffValue.length > 0) {
+						acc[key] = '列表有变更';
+					} else if (typeof diffValue === 'number' && isFinite(diffValue)) {
+						if (typeof existingValue === 'number' || existingValue === undefined) {
+							acc[key] = (existingValue || 0) + diffValue;
+						}
+					} else if (diffValue === '[changed]' || (typeof diffValue === 'object' && diffValue !== null && !Array.isArray(diffValue))) {
+						if (existingValue !== '列表有变更') {
+							acc[key] = '[changed]';
+						}
+					}
+				});
+				return acc;
+			}, {});
+
+			const diffRow = { status: '差额', ...totalDiff };
+			const hasMeaningfulDiff = columns.some(col => {
+				if (col.prop !== 'status') {
+					return this.isMeaningfulDifference(diffRow[col.prop]);
+				}
+				return false;
+			});
+			if (Object.keys(totalDiff).length > 0 && hasMeaningfulDiff) {
+				if (!this.isRowEmpty(diffRow, columns)) {
+					allRows.push(diffRow);
+				}
+			}
+
+			return allRows;
+		},
+		// 获取合并后的表格数据
+		getMergedTableData(body) {
+			if (!body) {
+				return [];
+			}
+
+			const mergedData = [];
+
+			// 处理主信息
+			const mainItems = body.main_info?.items || body.main_info?.data || [];
+			if (Array.isArray(mainItems)) {
+				mainItems.forEach((item, itemIdx) => {
+					if (!item) return;
+
+					const mainRows = this.getCombinedData(item, body) || [];
+					mainRows.forEach((row, rowIdx) => {
+						if (!row) return;
+
+						mergedData.push({
+							...row,
+							groupLabel: rowIdx === 0 ? this.moduleNames[body.moduleName] || '' : '',
+							groupType: 'main',
+							groupIndex: itemIdx,
+							itemRef: item,
+							rowIndexInGroup: rowIdx
+						});
+					});
+				});
+			}
+
+			// 处理子信息
+			if (body.sub_info && Array.isArray(body.sub_info) && body.sub_info.length > 0) {
+				const subRows = this.getCombinedSubData(body.sub_info, body) || [];
+				subRows.forEach((row, rowIdx) => {
+					if (!row) return;
+
+					mergedData.push({
+						...row,
+						groupLabel: rowIdx === 0 ? this.moduleNames[body.multiModuleName] || '' : '',
+						groupType: 'sub',
+						groupIndex: 0,
+						itemRef: body.sub_info,
+						rowIndexInGroup: rowIdx
+					});
+				});
+			}
+
+			return mergedData;
+		},
+		// 获取合并后的表格列配置
+		getMergedTableColumns(body) {
+			const mainColumns = this.getTableColumns(body, false);
+			const subColumns = body.sub_info && body.sub_info.length > 0 ? this.getTableColumns(body, true) : [];
+
+			// 合并列，去重
+			const columnMap = new Map();
+			mainColumns.forEach(col => {
+				columnMap.set(col.prop, col);
+			});
+			subColumns.forEach(col => {
+				if (!columnMap.has(col.prop)) {
+					columnMap.set(col.prop, col);
+				}
+			});
+
+			return Array.from(columnMap.values());
+		},
+		// 单元格合并方法
+		getSpanMethod(row, column, rowIndex, columnIndex, body) {
+			// 如果 row 不存在，返回默认值
+			if (!row) {
+				return {
+					rowspan: 1,
+					colspan: 1
+				};
+			}
+
+			// 第一列（组别列）需要合并相同组的数据
+			if (columnIndex !== 0) {
+				return {
+					rowspan: 1,
+					colspan: 1
+				};
+			}
+
+			// 只在每个组的第一行显示组标签
+			if (row.rowIndexInGroup !== 0) {
+				return {
+					rowspan: 0,
+					colspan: 0
+				};
+			}
+
+			const mergedData = this.getMergedTableData(body);
+			let rowspan = 1;
+
+			// 向后查找相同组的行数
+			for (let i = rowIndex + 1; i < mergedData.length; i++) {
+				const nextRow = mergedData[i];
+				if (nextRow && nextRow.groupType === row.groupType && nextRow.groupIndex === row.groupIndex) {
+					rowspan++;
+				} else {
+					break;
+				}
+			}
+
+			return {
+				rowspan: rowspan,
+				colspan: 1
+			};
+		},
+		// 获取合并表格的单元格样式
+		getMergedCellStyle({ row, column, rowIndex, columnIndex }) {
+			// 如果 row 不存在，返回 null
+			if (!row) {
+				return null;
+			}
+
+			// 如果是组别列，不需要高亮
+			if (columnIndex === 0) {
+				return null;
+			}
+
+			// 根据 row 中的 itemRef 来判断是否需要高亮
+			if (row.groupType === 'main' && row.itemRef) {
+				const handler = this.getCellStyleHandler(row.itemRef, false);
+				return handler ? handler({ row, column, rowIndex, columnIndex }) : null;
+			}
+
+			if (row.groupType === 'sub' && row.itemRef) {
+				const handler = this.getCellStyleHandler(row.itemRef, true);
+				return handler ? handler({ row, column, rowIndex, columnIndex }) : null;
+			}
+
+			return null;
+		},
+		// 所有数据的单元格合并方法
+		getAllSpanMethod({ row, column, rowIndex, columnIndex }) {
+			if (!row) {
+				return { rowspan: 1, colspan: 1 };
+			}
+
+			// 第一列（记录列）需要合并相同记录的数据
+			if (columnIndex !== 0) {
+				return {
+					rowspan: 1,
+					colspan: 1
+				};
+			}
+
+			if (row.rowIndexInGroup !== 0 || row.groupIndex !== 0) {
+				return {
+					rowspan: 0,
+					colspan: 0
+				};
+			}
+
+			const allData = this.allMergedTableData;
+			let rowspan = 1;
+
+			// 向后查找相同记录的所有行数
+			for (let i = rowIndex + 1; i < allData.length; i++) {
+				const nextRow = allData[i];
+				if (nextRow && nextRow.recordIndex === row.recordIndex) {
+					rowspan++;
+				} else {
+					break;
+				}
+			}
+
+			return {
+				rowspan: rowspan,
+				colspan: 1
+			};
+		},
+		// 所有数据的单元格样式
+		getAllMergedCellStyle({ row, column, rowIndex, columnIndex }) {
+			// 如果 row 不存在，返回 null
+			if (!row) {
+				return null;
+			}
+
+			// 如果是记录列，不需要高亮
+			if (columnIndex === 0) {
+				return null;
+			}
+
+			// 根据 row 中的 itemRef 来判断是否需要高亮
+			if (row.groupType === 'main' && row.itemRef) {
+				const handler = this.getCellStyleHandler(row.itemRef, false);
+				return handler ? handler({ row, column, rowIndex, columnIndex }) : null;
+			}
+
+			if (row.groupType === 'sub' && row.itemRef) {
+				const handler = this.getCellStyleHandler(row.itemRef, true);
+				return handler ? handler({ row, column, rowIndex, columnIndex }) : null;
+			}
+
+			return null;
 		}
 	}
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 /* 保持原有的样式，或者根据需要添加新的样式 */
 .pagination-controls {
 	display: flex;
@@ -279,5 +847,24 @@ export default {
 
 .bottom-controls .page-info {
 	margin: 0 20px; /* 底部页码信息增加左右间距 */
+}
+
+.el-table {
+	margin-bottom: 10px;
+}
+
+.el-table th,
+.el-table td {
+	text-align: center;
+}
+
+.el-table th {
+	background-color: #e8e5e5;
+}
+
+header > span > span {
+	padding: 2px 4px;
+	border-radius: 3px;
+	margin-left: 4px;
 }
 </style>

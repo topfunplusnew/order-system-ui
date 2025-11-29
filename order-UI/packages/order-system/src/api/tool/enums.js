@@ -118,7 +118,8 @@ export const moduleNames = Object.freeze({
 	inventory_main: '库存',
 	inventory_detail: '库存明细',
 	bankacceptance: '商业票据',
-	ordercommission: '订单佣金'
+	ordercommission: '订单佣金',
+	deposit_money: '保证金'
 });
 
 // 报表所用类型

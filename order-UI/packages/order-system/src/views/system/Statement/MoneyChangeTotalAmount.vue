@@ -6,6 +6,8 @@ import ChooseModule from '@/views/dashboard/backuplog/ChooseModule.vue';
 import { TableName } from '@/api/tool/enums';
 import { getFundChangeDetail } from '@/api/system/sql';
 import * as echarts from 'echarts';
+import _ from 'lodash';
+import { subtract, add, format, abs, compare } from 'mathjs';
 
 export default {
 	name: 'MoneyChangeTotalAmount',
@@ -52,13 +54,17 @@ export default {
 		columnHeaderChange() {
 			return `日期:` + (this.changeForm.endTime ? this.changeForm.endTime : '未选择日期') + `(${this.targetLeftDate === null ? '' : this.targetLeftDate}当日截取)`;
 		},
-		// 差异汇总统计
+		// 差异汇总统计（使用 math.js 进行高精度计算）
 		diffSummary() {
 			if (this.diffList.length === 0) return null;
-			const totalDiff = this.diffList.reduce((sum, item) => sum + Math.abs(item.diffValue), 0);
+			// 使用 math.js 的 add 和 abs 进行高精度计算
+			const totalDiff = this.diffList.reduce((sum, item) => {
+				const diffValue = Number(item.diffValue || 0);
+				return add(sum, abs(diffValue));
+			}, 0);
 			return {
 				totalCount: this.diffList.length,
-				totalDiffValue: totalDiff
+				totalDiffValue: format(totalDiff, { notation: 'fixed', precision: 2 })
 			};
 		},
 		// 图表数据
@@ -115,29 +121,38 @@ export default {
 		// 对左侧时间的校验逻辑
 		changeLeftDate(value) {
 			// 下拉选择，无需复杂校验
+			console.log(`changeLeftDate: ${value}`);
 		},
 		// 表格右侧时间的校验逻辑
 		changeRightDate(value) {
 			// 下拉选择，无需复杂校验
+			console.log(`changeRightDate: ${value}`);
 		},
 		// 搜索
 		async handleChangeSearch() {
-			// 获取左侧的数据
-			const left = await this.getChangeData(this.changeForm.endTime, this.targetLeftDate);
-			this.fixedMoneyTableData = this.formatTableData(left);
-			// 获取右侧的数据
-			const right = await this.getChangeData(this.changeForm.endTime, this.targetRightDate);
-			this.changeMoneyTableData = this.formatTableData(right);
-			// 计算差异
-			this.calculateDiff();
-			// 如果当前在图表 tab，更新图表
-			if (this.activeTab === 'chart') {
-				this.$nextTick(() => {
-					this.initChart();
-				});
+			try {
+				// 并行获取左右两侧的数据
+				const [left, right] = await Promise.all([this.getChangeData(this.changeForm.endTime, this.targetLeftDate), this.getChangeData(this.changeForm.endTime, this.targetRightDate)]);
+
+				// 格式化数据
+				this.fixedMoneyTableData = this.formatTableData(left);
+				this.changeMoneyTableData = this.formatTableData(right);
+
+				// 计算差异
+				this.calculateDiff();
+
+				// 如果当前在图表 tab，更新图表
+				if (this.activeTab === 'chart') {
+					this.$nextTick(() => {
+						this.initChart();
+					});
+				}
+			} catch (error) {
+				this.$message.error('获取数据失败，请重试');
+				console.error('获取数据失败:', error);
 			}
 		},
-		// 计算差异行和差异列表
+		// 计算差异行和差异列表（使用 math.js 进行高精度计算）
 		calculateDiff(leftTableData, rightTableData) {
 			this.diffRows = [];
 			this.diffModules = [];
@@ -152,12 +167,15 @@ export default {
 			const minLength = Math.min(leftData.length, rightData.length);
 			for (let i = 0; i < minLength; i++) {
 				if (!leftData[i] || !rightData[i]) continue;
+
+				// 使用 math.js 进行高精度计算
 				const leftValue = Number(leftData[i].anotherValue || 0);
 				const rightValue = Number(rightData[i].anotherValue || 0);
-				const diffValue = leftValue - rightValue;
+				const diffValue = subtract(leftValue, rightValue);
+				const absDiffValue = abs(diffValue);
 
-				// 如果存在差异（允许0.01的误差）
-				if (Math.abs(diffValue) > 0.01) {
+				// 如果存在差异（不允许任何误差），使用 math.js 的 compare 进行比较
+				if (compare(absDiffValue, 0) === 1) {
 					this.diffRows.push(i);
 					if (rightData[i].moduleName) {
 						this.diffModules.push(rightData[i].moduleName);
@@ -166,9 +184,9 @@ export default {
 					if (i > 0) {
 						this.diffList.push({
 							label: leftData[i].label,
-							leftValue: leftValue.toFixed(2),
-							rightValue: rightValue.toFixed(2),
-							diffValue: diffValue.toFixed(2),
+							leftValue: format(leftValue, { notation: 'fixed', precision: 2 }),
+							rightValue: format(rightValue, { notation: 'fixed', precision: 2 }),
+							diffValue: format(diffValue, { notation: 'fixed', precision: 2 }),
 							moduleName: rightData[i].moduleName,
 							rowIndex: i
 						});
@@ -191,40 +209,58 @@ export default {
 			const changeMoney = await getMoneyChangeSummaryByDate(query);
 			return changeMoney.data.originalData;
 		},
-		// 对数据进行精确
-		formatValue(row, column, cellValue) {
-			return Number(cellValue).toFixed(2);
-		},
-		// 计算总资产
+		// 计算总资产（使用 math.js 进行高精度计算）
 		calculateTotalBalance(data) {
-			return (
-				data.companyTotalBalance + // ①应收账款---客户欠款合计数
-				data.selfCompanyTotalFunds + // ②银行存款---公司所有银行资金合计
-				data.futuresMarginBalance + // ③保证金----期货保证金
-				data.loanFromCompany + // ④其他应收---个人或公司从我公司借款
-				data.remainingInventoryAmount - // ⑤库存
-				data.driverUnpaidAmount - // ⑥应付账款---运费合计
-				data.supplierTotalBalance - // ⑦应付账款---欠厂家货款
-				data.loanBalance
-			) // ⑧其他应付款---公司从外面借款合计
-				.toFixed(2);
+			// 使用 math.js 进行高精度计算，避免浮点数精度问题
+			// ①应收账款 + ②银行存款 + ③保证金 + ④其他应收 + ⑤库存 - ⑥应付账款(运费) - ⑦应付账款(货款) - ⑧其他应付款
+			// 使用 add 函数的多参数形式，一次性计算所有正数项的和
+			const positiveSum = add(
+				Number(data.companyTotalBalance || 0), // ①应收账款---客户欠款合计数
+				Number(data.selfCompanyTotalFunds || 0), // ②银行存款---公司所有银行资金合计
+				Number(data.futuresMarginBalance || 0), // ③保证金----期货保证金
+				Number(data.loanFromCompany || 0), // ④其他应收---个人或公司从我公司借款
+				Number(data.remainingInventoryAmount || 0) // ⑤库存
+			);
+
+			// 使用 add 函数的多参数形式，一次性计算所有负数项的和
+			const negativeSum = add(
+				Number(data.driverUnpaidAmount || 0), // ⑥应付账款---运费合计
+				Number(data.supplierTotalBalance || 0), // ⑦应付账款---欠厂家货款
+				Number(data.loanBalance || 0) // ⑧其他应付款---公司从外面借款合计
+			);
+
+			const result = subtract(positiveSum, negativeSum);
+			// 使用 math.js 的 format 函数格式化为两位小数
+			return format(result, { notation: 'fixed', precision: 2 });
 		},
-		// 对数据进行格式化处理
+		// 对数据进行格式化处理（使用 math.js 进行高精度计算）
 		formatTableData(list) {
 			// 根据type进行判断 然后存入一个数组 进行对比 然后高亮相关列
-			const { startTimeMoney, endTimeMoney } = list;
+			const { startTimeMoney, endTimeMoney } = _.cloneDeep(list);
 
-			// 计算数据差异的函数
-			const calculateDifference = field => startTimeMoney[field] - endTimeMoney[field];
+			// 计算数据差异的函数（使用 math.js 进行高精度计算）
+			const calculateDifference = field => {
+				const startValue = Number(startTimeMoney[field] || 0);
+				const endValue = Number(endTimeMoney[field] || 0);
+				return subtract(startValue, endValue);
+			};
+
+			// 格式化数值为两位小数（使用 math.js 的 format 函数）
+			const formatNumber = value => {
+				const numValue = typeof value === 'number' ? value : Number(value || 0);
+				return format(numValue, { notation: 'fixed', precision: 2 });
+			};
+
 			// 创建表格数据的函数
 			const createRow = (label, value, anotherLabel, anotherValue, moduleName) => ({
 				label,
-				value,
-				anotherLabel,
-				anotherValue,
+				value: formatNumber(value),
+				anotherLabel: formatNumber(anotherLabel),
+				anotherValue: formatNumber(anotherValue),
 				moduleName
 			});
-			// 计算各个字段的差异
+
+			// 计算各个字段的差异（使用高精度计算）
 			const data = {
 				companyTotalBalance: calculateDifference('companyTotalBalance'),
 				supplierTotalBalance: calculateDifference('supplierTotalBalance'),
@@ -235,6 +271,7 @@ export default {
 				loanFromCompany: calculateDifference('loanFromCompany'),
 				remainingInventoryAmount: calculateDifference('remainingInventoryAmount')
 			};
+
 			return [
 				createRow('资金总额（即股东权益）=①+②+③+④+⑤-⑥-⑦-⑧', this.calculateTotalBalance(startTimeMoney), this.calculateTotalBalance(endTimeMoney), this.calculateTotalBalance(data), null),
 				createRow('①应收账款---客户欠款合计数', startTimeMoney.companyTotalBalance, endTimeMoney.companyTotalBalance, data.companyTotalBalance, `companyTotalBalance`),
@@ -249,47 +286,47 @@ export default {
 		},
 		// 点击差异项查看详情
 		handleDiffItemClick(item) {
-			if (!item.moduleName) return;
+			if (!item.moduleName) {
+				console.warn('差异项没有模块名');
+				return;
+			}
+			// 查看明细
 			this.viewModuleDetail(item.moduleName);
 		},
 		// 查看模块详情
 		viewModuleDetail(moduleName) {
-			const qs = {
-				pageNum: 2,
-				pageSize: 30,
-				params: {
-					startTime: null,
-					endTime: null,
-					tableNames: ['payment', 'receivemoney', 'invoiceother', 'invoicein', 'invoiceout', 'bankacceptance', 'orderDetail', 'goodsorder', 'orderfreight', 'inventory_detail', 'inventory_main', 'bankaccountchange', 'borrowedmoney', 'repayment', 'lendmoney', 'recovermoney'],
-					targetDate: null
-				}
+			// 需要查询的表名 后端需要根据表名来获取对应的变动数据
+			// 这里默认是查询所有的表名 后续需要根据实际情况进行修改
+			const query = {
+				variableName: moduleName,
+				backupDate: this.changeForm.endTime,
+				firstTargetDate: this.targetLeftDate,
+				secondTargetDate: this.targetRightDate
 			};
-			getFundChangeDetail(qs).then(res => {
-				if (!res.rows || res.rows.length === 0) {
+			// 获取变动明细 这里的接口是测试接口 后续需要换成 getBackupInfoV1 接口
+			// getBackupInfoV1
+			getFundChangeDetail(query).then(res => {
+				if (_.isEmpty(res.rows)) {
 					this.$message.warning('该模块没有变动信息');
 					return;
 				}
-				let moduleList = Array.from(new Set(res.rows.map(item => item.tableName)));
-				moduleList = moduleList.filter(tableName => tableName !== TableName.ORDER_DETAIL);
-				moduleList = moduleList.filter(tableName => tableName !== TableName.INVENTORDETAIL);
+				const tableNames = res.rows.map(item => item.tableName);
+				const uniqueTableNames = _.uniq(tableNames);
+				console.log(uniqueTableNames);
+				// 提取表名并去重，过滤掉不需要的表
+				const moduleList = _.without(uniqueTableNames, [TableName.ORDER_DETAIL, TableName.INVENTORDETAIL]);
 				this.openDialog(
 					ChooseModule,
 					'请选择模块查看其详细资金变动',
 					'700px',
 					{
 						moduleList,
-						result: res.rows
+						result: _.cloneDeep(res.rows)
 					},
 					false,
 					false
 				);
 			});
-		},
-		// 点击行的逻辑 点击后将对应的模块名传给后端
-		handleRowClick(row, column, event) {
-			if (this.diffModules.includes(row.moduleName)) {
-				this.viewModuleDetail(row.moduleName);
-			}
 		},
 		// Tab 切换处理
 		handleTabChange(tab) {
@@ -323,8 +360,10 @@ export default {
 					formatter: params => {
 						let result = params[0].name + '<br/>';
 						params.forEach(item => {
-							const value = Math.abs(item.value).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-							result += `${item.marker}${item.seriesName}: ${item.value >= 0 ? '+' : ''}${value}<br/>`;
+							// 使用 math.js 的 abs 进行高精度计算
+							const absValue = abs(Number(item.value || 0));
+							const formattedValue = absValue.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+							result += `${item.marker}${item.seriesName}: ${item.value >= 0 ? '+' : ''}${formattedValue}<br/>`;
 						});
 						return result;
 					}
@@ -353,7 +392,9 @@ export default {
 					type: 'value',
 					axisLabel: {
 						formatter: value => {
-							return Math.abs(value).toLocaleString('zh-CN', { maximumFractionDigits: 0 });
+							// 使用 math.js 的 abs 进行高精度计算
+							const absValue = abs(Number(value || 0));
+							return absValue.toLocaleString('zh-CN', { maximumFractionDigits: 0 });
 						}
 					}
 				},
@@ -421,6 +462,19 @@ export default {
 			if (this.diffChart) {
 				this.diffChart.resize();
 			}
+		},
+		// 计算当日利润变动（使用 math.js 进行高精度计算）
+		calculateProfitChange(anotherLabel, value) {
+			const anotherLabelNum = Number(anotherLabel || 0);
+			const valueNum = Number(value || 0);
+			const result = subtract(anotherLabelNum, valueNum);
+			return format(result, { notation: 'fixed', precision: 2 });
+		},
+		// 判断差异值是否大于阈值（使用 math.js 进行高精度比较）
+		isDiffLarge(diffValue, threshold = 1000) {
+			const diffNum = Number(diffValue || 0);
+			const absDiff = abs(diffNum);
+			return compare(absDiff, threshold) === 1; // 返回 true 如果 absDiff > threshold
 		},
 		// 合并行和列的方法
 		objectSpanMethod({ row, column, rowIndex, columnIndex }) {
@@ -529,17 +583,17 @@ export default {
 								</template>
 							</el-table-column>
 							<el-table-column prop="label" label="项目" show-overflow-tooltip width="300px"></el-table-column>
-							<el-table-column prop="value" label="上日资金总额" :formatter="formatValue" show-overflow-tooltip></el-table-column>
+							<el-table-column prop="value" label="上日资金总额" show-overflow-tooltip></el-table-column>
 							<el-table-column label="当日利润变动" show-overflow-tooltip>
 								<template slot-scope="scope">
 									<!-- 只在第一行显示差值 -->
 									<div v-if="scope.$index === 0">
-										{{ fix(scope.row.anotherLabel - scope.row.value) }}
+										{{ calculateProfitChange(scope.row.anotherLabel, scope.row.value) }}
 									</div>
 								</template>
 							</el-table-column>
-							<el-table-column prop="anotherLabel" label="本日资金总额" :formatter="formatValue" show-overflow-tooltip></el-table-column>
-							<el-table-column prop="anotherValue" label="当日资金总额变动情况" :formatter="formatValue" show-overflow-tooltip></el-table-column>
+							<el-table-column prop="anotherLabel" label="本日资金总额" show-overflow-tooltip></el-table-column>
+							<el-table-column prop="anotherValue" label="当日资金总额变动情况" show-overflow-tooltip></el-table-column>
 						</el-table-column>
 					</el-table>
 				</el-col>
@@ -565,17 +619,17 @@ export default {
 								</template>
 							</el-table-column>
 							<el-table-column prop="label" label="项目" show-overflow-tooltip width="300px"></el-table-column>
-							<el-table-column prop="value" label="上日资金总额" :formatter="formatValue" show-overflow-tooltip></el-table-column>
+							<el-table-column prop="value" label="上日资金总额" show-overflow-tooltip></el-table-column>
 							<el-table-column label="当日利润变动" show-overflow-tooltip>
 								<template slot-scope="scope">
 									<!-- 只在第一行显示差值 -->
 									<div v-if="scope.$index === 0">
-										{{ fix(scope.row.anotherLabel - scope.row.value) }}
+										{{ calculateProfitChange(scope.row.anotherLabel, scope.row.value) }}
 									</div>
 								</template>
 							</el-table-column>
-							<el-table-column prop="anotherLabel" label="本日资金总额" :formatter="formatValue" show-overflow-tooltip></el-table-column>
-							<el-table-column prop="anotherValue" label="当日资金总额变动情况" :formatter="formatValue" show-overflow-tooltip></el-table-column>
+							<el-table-column prop="anotherLabel" label="本日资金总额" show-overflow-tooltip></el-table-column>
+							<el-table-column prop="anotherValue" label="当日资金总额变动情况" show-overflow-tooltip></el-table-column>
 						</el-table-column>
 					</el-table>
 				</el-col>
@@ -598,7 +652,7 @@ export default {
 								<div v-for="(item, index) in diffList" :key="index" class="diff-item" @click="handleDiffItemClick(item)">
 									<div class="diff-item-header">
 										<span class="diff-label">{{ item.label }}</span>
-										<el-tag :type="Math.abs(Number(item.diffValue)) > 1000 ? 'danger' : 'warning'" size="medium" class="diff-value-tag">差异: {{ Number(item.diffValue) > 0 ? '+' : '' }}{{ item.diffValue }}</el-tag>
+										<el-tag :type="isDiffLarge(item.diffValue, 1000) ? 'danger' : 'warning'" size="medium" class="diff-value-tag">差异: {{ Number(item.diffValue) > 0 ? '+' : '' }}{{ item.diffValue }}</el-tag>
 									</div>
 									<div class="diff-item-body">
 										<div class="diff-value-item">

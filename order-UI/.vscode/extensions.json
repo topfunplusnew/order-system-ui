@@ -1,0 +1,33 @@
+{
+	"recommendations": [
+		// Vue 开发必备
+		"octref.vetur",
+		"dbaeumer.vscode-eslint",
+		"esbenp.prettier-vscode",
+		
+		// 样式支持
+		"syler.sass-indented",
+		"mrmlnc.vscode-scss",
+		
+		// Git 工具
+		"eamodio.gitlens",
+		
+		// 调试支持
+		"msjsdiag.debugger-for-chrome",
+		
+		// 代码增强
+		"christian-kohler.path-intellisense",
+		"formulahendry.auto-rename-tag",
+		
+		// 代码质量
+		"streetsidesoftware.code-spell-checker",
+		"usernamehw.errorlens",
+		
+		// 实用工具
+		"redhat.vscode-yaml",
+		"ms-vscode.vscode-json",
+		
+		// 中文语言包（可选）
+		"ms-ceintl.vscode-language-pack-zh-hans"
+	]
+}

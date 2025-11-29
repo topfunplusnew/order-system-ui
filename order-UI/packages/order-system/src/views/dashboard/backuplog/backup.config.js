@@ -651,5 +651,69 @@ export const TableConfig = {
 				}
 			}
 		}
+	},
+
+	// 冲抵货款/内部转账
+	[TableName.CASH_RECORD]: {
+		mappers: {
+			id: 'ID',
+			code: '编码',
+			type: '冲抵类型',
+			amount: '金额',
+			transactionTime: '交易时间',
+			userName: '操作人员姓名',
+			targetCompanyName: '收入方',
+			sourceCompanyName: '支出方',
+			targetAccountName: '收款户名',
+			targetBankNo: '收款账号',
+			sourceAccountName: '支付户名',
+			sourceBankNo: '支付账号',
+			targetCompanyType: '收入公司类型',
+			targetPaymentType: '收入方支付类型',
+			sourceCompanyType: '支出方公司类型',
+			sourcePaymentType: '支出方支付类型',
+			targetBankName: '收入方开户行',
+			sourceBankName: '支出方开户行',
+			remarks: '备注',
+			accountType: '账户类型',
+			selfBankCardType: '己方银行卡类型',
+			otherBankCardType: '对方银行卡类型',
+			addtime: '添加时间',
+			createTime: '创建时间',
+			updateTime: '更新时间',
+			remark: '备注'
+		},
+		params: [{ name: 'amount', label: '金额' }],
+		options(key, value) {
+			switch (key) {
+				case 'type': {
+					if (value === 'transfer') {
+						return '内部转账';
+					}
+					if (value === 'cash_record' || value === TableName.CASH_RECORD) {
+						return '冲抵货款';
+					}
+					return value;
+				}
+				case 'accountType': {
+					// 账户类型格式化逻辑（仅在内部转账时显示）
+					// 注意：这个格式化需要在组件中根据 row.type 和 row.selfBankCardType/otherBankCardType 来判断
+					// 这里只做基础处理，复杂逻辑在组件中处理
+					return value;
+				}
+				case 'delFlag': {
+					if (value === 0) {
+						return '正常';
+					}
+					if (value === 1) {
+						return '已删除';
+					}
+					return value;
+				}
+				default: {
+					return value;
+				}
+			}
+		}
 	}
 };
