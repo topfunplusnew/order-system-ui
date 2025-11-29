@@ -3,7 +3,24 @@
 		<div class="fixed-top-section" v-fixed="{ position: 'top', zIndex: 1000, offset: 100 }">
 			<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px" class="form-container">
 				<el-form-item label="订单ID" prop="orderId">
-					<el-input v-model="queryParams.orderId" placeholder="请输入订单ID" clearable @keyup.enter.native="handleQuery" />
+					<el-col :span="20">
+						<el-input v-model="queryParams.orderId" disabled placeholder="请选择订单" style="width: 100%" />
+					</el-col>
+					<el-col :span="4">
+						<SearchOption :limit-info="{}" :get-data="listGoodsOrder" query-info="customer" query-label="客户名称" :query-name="querySearchGoodsOrder" @update:queryName="handleUpdateSearchGoodsOrder" @commitBack="handleCommitBackSearchGoodsOrder">
+							<template #table-columns>
+								<el-table-column show-overflow-tooltip label="ID" align="center" prop="id" fixed="left" />
+								<el-table-column show-overflow-tooltip label="日期" align="center" prop="orderDate" fixed="left" />
+								<el-table-column show-overflow-tooltip label="客户" align="center" prop="customer" fixed="left" />
+								<el-table-column show-overflow-tooltip label="供应商" align="center" prop="supplierNames" fixed="left" />
+								<el-table-column label="订单编号" align="center" prop="ordersNo" width="200px" />
+								<el-table-column show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo" />
+								<el-table-column show-overflow-tooltip label="销售经理" align="center" prop="saleManager" />
+								<el-table-column show-overflow-tooltip label="车队" align="center" prop="fleet" />
+								<el-table-column show-overflow-tooltip label="审核状态" align="center" prop="checkState" width="120"></el-table-column>
+							</template>
+						</SearchOption>
+					</el-col>
 				</el-form-item>
 				<el-form-item label="奖励接收人" prop="rewardReceiver">
 					<el-input v-model="queryParams.rewardReceiver" placeholder="请输入奖励接收人" clearable @keyup.enter.native="handleQuery" />
@@ -205,8 +222,43 @@
 				<el-row>
 					<el-col :span="12">
 						<el-form-item label="订单ID" prop="orderId">
-							<el-input-number v-model="form.orderId" :min="1" placeholder="请输入订单ID" style="width: 100%" @change="handleOrderIdChange"></el-input-number>
-							<el-button v-if="form.orderId" size="mini" type="text" @click="handleLoadOrderData">加载订单数据</el-button>
+							<el-col :span="20">
+								<el-input v-model="form.orderId" disabled placeholder="请选择关联订单" />
+							</el-col>
+							<el-col :span="4">
+								<SearchOption :limit-info="{}" :get-data="listGoodsOrder" query-info="customer" query-label="客户名称" :query-name="queryGoodsOrder" @update:queryName="handleUpdateGoodsOrder" @commitBack="handleCommitBackGoodsOrder">
+									<template #table-columns>
+										<el-table-column show-overflow-tooltip label="ID" align="center" prop="id" fixed="left" />
+										<el-table-column show-overflow-tooltip label="日期" align="center" prop="orderDate" fixed="left" />
+										<el-table-column show-overflow-tooltip label="客户" align="center" prop="customer" fixed="left" />
+										<el-table-column show-overflow-tooltip label="供应商" align="center" prop="supplierNames" fixed="left" />
+										<el-table-column label="订单编号" align="center" prop="ordersNo" width="200px" />
+										<el-table-column show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo" />
+										<el-table-column show-overflow-tooltip label="陆运司机电话" align="center" prop="landDriverTel" width="100px" />
+										<el-table-column show-overflow-tooltip label="陆地司机姓名" align="center" prop="landDriverName" width="100px" />
+										<el-table-column show-overflow-tooltip label="柜号" align="center" prop="seaCarNo">
+											<template #default="scope">
+												{{ !scope.row.seaCarNo ? '无' : scope.row.seaCarNo }}
+											</template>
+										</el-table-column>
+										<el-table-column show-overflow-tooltip label="海运司机电话" align="center" prop="seaDriverTel" width="100px">
+											<template #default="scope">
+												{{ !scope.row.seaDriverTel ? '无' : scope.row.seaDriverTel }}
+											</template>
+										</el-table-column>
+										<el-table-column show-overflow-tooltip label="海运公司" align="center" prop="seaDriverName" width="100px">
+											<template #default="scope">
+												{{ !scope.row.seaDriverName ? '无' : scope.row.seaDriverName }}
+											</template>
+										</el-table-column>
+										<el-table-column show-overflow-tooltip label="销售经理" align="center" prop="saleManager" />
+										<el-table-column show-overflow-tooltip label="车队" align="center" prop="fleet" />
+										<el-table-column show-overflow-tooltip label="审核状态" align="center" prop="checkState" width="120"></el-table-column>
+										<el-table-column show-overflow-tooltip label="开票状态" align="center" prop="invoiceState" width="120px"></el-table-column>
+										<el-table-column show-overflow-tooltip label="备注" align="center" prop="comments" />
+									</template>
+								</SearchOption>
+							</el-col>
 						</el-form-item>
 						<el-form-item label="订单日期" prop="orderDate">
 							<el-date-picker v-model="form.orderDate" clearable type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="请选择订单日期" style="width: 100%"></el-date-picker>
@@ -279,12 +331,14 @@
 import { listSalesReward, getSalesReward, delSalesReward, addSalesReward, updateSalesReward, auditSalesReward, getOrderRewardData, exportSalesReward } from '@/api/salesReward/salesReward';
 import { parseTime } from '@/utils/ruoyi';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
-import { getGoodsOrder } from '@/api/system/goodsOrder';
+import { getGoodsOrder, listGoodsOrder } from '@/api/system/goodsOrder';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import GOODS_ORDER from '@/components/NeedToShow/GOODS_ORDER.vue';
+import SearchOption from '@/components/SearchOption.vue';
 
 export default {
 	name: 'StepReward',
+	components: { SearchOption },
 	mixins: [mixin_printHTML, common_dialog],
 	data() {
 		return {
@@ -314,8 +368,10 @@ export default {
 				rewardDateEnd: null
 			},
 			form: {},
+			queryGoodsOrder: '',
+			querySearchGoodsOrder: '',
 			rules: {
-				orderId: [{ required: true, message: '请输入订单ID', trigger: 'blur' }],
+				orderId: [{ required: true, message: '请选择订单', trigger: 'change' }],
 				personnelIdentity: [{ required: true, message: '请选择人员身份', trigger: 'change' }],
 				rewardReceiver: [{ required: true, message: '请输入奖励接收人', trigger: 'blur' }],
 				rewardAmount: [{ required: true, message: '请输入奖励金额', trigger: 'blur' }]
@@ -357,6 +413,20 @@ export default {
 	},
 	methods: {
 		parseTime,
+		listGoodsOrder,
+		handleUpdateGoodsOrder(val) {
+			this.queryGoodsOrder = val;
+		},
+		handleCommitBackGoodsOrder(val) {
+			this.form.orderId = val.id;
+			this.handleLoadOrderData();
+		},
+		handleUpdateSearchGoodsOrder(val) {
+			this.querySearchGoodsOrder = val;
+		},
+		handleCommitBackSearchGoodsOrder(val) {
+			this.queryParams.orderId = val.id;
+		},
 		handleCheckOrder(row) {
 			if (!row.orderId) {
 				this.$message.error('该行数据有误,订单ID为空!');
@@ -370,14 +440,8 @@ export default {
 				this.openDialog(GOODS_ORDER, '订单信息', '800px', { needToShowInfo: result.data }, false);
 			});
 		},
-		handleOrderIdChange() {
-			if (this.form.orderId) {
-				this.handleLoadOrderData();
-			}
-		},
 		handleLoadOrderData() {
 			if (!this.form.orderId) {
-				this.$message.warning('请先输入订单ID');
 				return;
 			}
 			getOrderRewardData(this.form.orderId).then(response => {
@@ -441,6 +505,7 @@ export default {
 				rewardDate: null,
 				auditState: '未审核'
 			};
+			this.queryGoodsOrder = '';
 			this.resetForm('form');
 		},
 		handleQuery() {
@@ -450,6 +515,7 @@ export default {
 		resetQuery() {
 			this.daterangeOrderDate = [];
 			this.daterangeRewardDate = [];
+			this.querySearchGoodsOrder = '';
 			this.resetForm('queryForm');
 			this.handleQuery();
 		},
