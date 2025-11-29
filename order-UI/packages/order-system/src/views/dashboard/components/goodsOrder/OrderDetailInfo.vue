@@ -52,7 +52,7 @@ export default {
 				pieces: '60px', // 出厂片数：数字
 				price: '60px', // 出厂单价：价格数字
 				isIncludeTaxFactory: '80px', // 出厂是否含税："是/否"标签
-				sundryCost: '45px', // 杂费：金额数字
+				sundryCost: '70px', // 杂费：金额数字
 				paymentFactory: '100px', // 出厂货款：金额数字
 				actualPieces: '60px', // 卸货片数：数字
 				paymentUnload: '60px', // 卸货价：价格数字
