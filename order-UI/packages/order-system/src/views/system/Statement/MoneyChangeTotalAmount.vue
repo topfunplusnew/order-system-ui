@@ -290,11 +290,11 @@ export default {
 				console.warn('差异项没有模块名');
 				return;
 			}
-			// 查看明细
-			this.viewModuleDetail(item.moduleName);
+			// 查看明细，传递项目名称
+			this.viewModuleDetail(item.moduleName, item.label);
 		},
 		// 查看模块详情
-		viewModuleDetail(moduleName) {
+		viewModuleDetail(moduleName, projectName) {
 			// 需要查询的表名 后端需要根据表名来获取对应的变动数据
 			// 这里默认是查询所有的表名 后续需要根据实际情况进行修改
 			const query = {
@@ -315,9 +315,11 @@ export default {
 				console.log(uniqueTableNames);
 				// 提取表名并去重，过滤掉不需要的表
 				const moduleList = _.without(uniqueTableNames, [TableName.ORDER_DETAIL, TableName.INVENTORDETAIL]);
+				// 使用项目名称作为弹窗标题
+				const dialogTitle = projectName || '请选择模块查看其详细资金变动';
 				this.openDialog(
 					ChooseModule,
-					'请选择模块查看其详细资金变动',
+					dialogTitle,
 					'700px',
 					{
 						moduleList,
@@ -476,6 +478,22 @@ export default {
 			const absDiff = abs(diffNum);
 			return compare(absDiff, threshold) === 1; // 返回 true 如果 absDiff > threshold
 		},
+		// 表格行类名方法，用于高亮差异行
+		tableRowClassName({ row, rowIndex }) {
+			return this.diffRows.includes(rowIndex) ? 'diff-row' : '';
+		},
+		// 处理表格行点击事件
+		handleTableRowClick(row, column, event) {
+			// 获取行索引（检查两个表格的数据源）
+			const leftIndex = this.changeMoneyTableData.indexOf(row);
+			const rightIndex = this.fixedMoneyTableData.indexOf(row);
+			const rowIndex = leftIndex !== -1 ? leftIndex : rightIndex;
+			// 判断是否是差异行且有模块名
+			if (rowIndex !== -1 && this.diffRows.includes(rowIndex) && row.moduleName) {
+				// 调用查看模块详情，传递项目名称
+				this.viewModuleDetail(row.moduleName, row.label);
+			}
+		},
 		// 合并行和列的方法
 		objectSpanMethod({ row, column, rowIndex, columnIndex }) {
 			// 合并“科目名称”列
@@ -570,7 +588,7 @@ export default {
 						</el-col>
 					</el-row>
 					<br />
-					<el-table size="mini" :data="changeMoneyTableData" border class="money-table" :span-method="objectSpanMethod">
+					<el-table size="mini" :data="changeMoneyTableData" border class="money-table" :span-method="objectSpanMethod" :row-class-name="tableRowClassName" @row-click="handleTableRowClick">
 						<el-table-column :label="columnHeaderChange" align="center" show-overflow-tooltip>
 							<el-table-column label="科目名称" show-overflow-tooltip>
 								<template slot-scope="scope">
@@ -606,7 +624,7 @@ export default {
 						</el-col>
 					</el-row>
 					<br />
-					<el-table size="mini" :data="fixedMoneyTableData" border class="money-table" :span-method="objectSpanMethod">
+					<el-table size="mini" :data="fixedMoneyTableData" border class="money-table" :span-method="objectSpanMethod" :row-class-name="tableRowClassName" @row-click="handleTableRowClick">
 						<el-table-column :label="columnHeaderFix" align="center" show-overflow-tooltip>
 							<el-table-column label="科目名称" show-overflow-tooltip>
 								<template slot-scope="scope">
@@ -839,6 +857,52 @@ export default {
 		line-height: 1.2;
 		display: flex;
 		align-items: center;
+	}
+}
+
+// 差异行高亮样式（需要更高的优先级来覆盖 element-ui.scss 中的样式）
+.money-table {
+	::v-deep .el-table__body-wrapper {
+		.el-table__body {
+			tr.diff-row {
+				background-color: #ffeb3b !important;
+				cursor: pointer !important;
+
+				&:hover {
+					background-color: #ffd54f !important;
+				}
+
+				td {
+					background-color: #ffeb3b !important;
+				}
+
+				&:hover td {
+					background-color: #ffd54f !important;
+				}
+			}
+		}
+	}
+
+	// 固定列也需要高亮
+	::v-deep .el-table__fixed-body-wrapper {
+		.el-table__body {
+			tr.diff-row {
+				background-color: #ffeb3b !important;
+				cursor: pointer !important;
+
+				&:hover {
+					background-color: #ffd54f !important;
+				}
+
+				td {
+					background-color: #ffeb3b !important;
+				}
+
+				&:hover td {
+					background-color: #ffd54f !important;
+				}
+			}
+		}
 	}
 }
 </style>
