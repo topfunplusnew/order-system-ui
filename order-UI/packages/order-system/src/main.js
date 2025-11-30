@@ -10,7 +10,7 @@ import { getConfigKey } from '@/api/system/config';
 import { getDicts } from '@/api/system/dict/data';
 import '@/assets/styles/index.scss'; // global css
 import '@/assets/styles/ruoyi.scss'; // ruoyi css
-import { download, onceDownload } from '@/utils/request';
+import { download, downloadByGetMethod, onceDownload } from '@/utils/request';
 import { addDateRange, handleTree, parseTime, resetForm, selectDictLabel, selectDictLabels } from '@/utils/ruoyi';
 import App from './App.vue';
 import './assets/icons'; // icon
@@ -93,6 +93,7 @@ Vue.prototype.addDateRange = addDateRange;
 Vue.prototype.selectDictLabel = selectDictLabel;
 Vue.prototype.selectDictLabels = selectDictLabels;
 Vue.prototype.download = download;
+Vue.prototype.downloadByGetMethod = downloadByGetMethod;
 Vue.prototype.handleTree = handleTree;
 Vue.prototype.$print = print;
 Vue.prototype.$log = new Logger({
