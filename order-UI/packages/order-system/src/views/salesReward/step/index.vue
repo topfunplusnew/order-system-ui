@@ -145,16 +145,16 @@
 			<el-table-column v-if="columns[7].visible" label="订单不含税利润" align="center" prop="orderProfit" width="120" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.orderProfit }}</div>
-						<span>{{ scope.row.orderProfit }}</span>
+						<div slot="content">{{ formatAmount(scope.row.orderProfit) }}</div>
+						<span>{{ formatAmount(scope.row.orderProfit) }}</span>
 					</el-tooltip>
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[8].visible" label="综合单车利润" align="center" prop="comprehensiveProfit" width="120" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.comprehensiveProfit }}</div>
-						<span>{{ scope.row.comprehensiveProfit }}</span>
+						<div slot="content">{{ formatAmount(scope.row.comprehensiveProfit) }}</div>
+						<span>{{ formatAmount(scope.row.comprehensiveProfit) }}</span>
 					</el-tooltip>
 				</template>
 			</el-table-column>
@@ -166,16 +166,16 @@
 			<el-table-column v-if="columns[10].visible" label="奖励金额" align="center" prop="rewardAmount" width="120" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.rewardAmount }}</div>
-						<span>{{ scope.row.rewardAmount }}</span>
+						<div slot="content">{{ formatAmount(scope.row.rewardAmount) }}</div>
+						<span>{{ formatAmount(scope.row.rewardAmount) }}</span>
 					</el-tooltip>
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[11].visible" label="实际支付金额" align="center" prop="paymentAmount" width="120" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.paymentAmount || '-' }}</div>
-						<span>{{ scope.row.paymentAmount || '-' }}</span>
+						<div slot="content">{{ scope.row.paymentAmount ? formatAmount(scope.row.paymentAmount) : '-' }}</div>
+						<span>{{ scope.row.paymentAmount ? formatAmount(scope.row.paymentAmount) : '-' }}</span>
 					</el-tooltip>
 				</template>
 			</el-table-column>
@@ -204,7 +204,7 @@
 				<template #default="scope">
 					<el-button size="mini" type="text" @click="handleCheckOrder(scope.row)">查看订单</el-button>
 					<el-button v-hasPermi="['system:salesReward:edit']" size="mini" type="text" icon="el-icon-edit" :disabled="scope.row.auditState === '已审核'" @click="handleUpdate(scope.row)">修改</el-button>
-					<el-button v-hasPermi="['system:salesReward:supplement']" size="mini" type="text" icon="el-icon-edit-outline" @click="handleSupplement(scope.row)">补充信息</el-button>
+					<el-button v-hasPermi="['system:salesReward:supplement']" size="mini" type="text" icon="el-icon-edit-outline" :disabled="isSupplementDisabled(scope.row)" @click="handleSupplement(scope.row)">补充信息</el-button>
 					<el-button v-if="scope.row.auditState === '未审核'" v-hasPermi="['system:salesReward:audit']" size="mini" type="text" icon="el-icon-check" @click="handleAudit(scope.row, true)">审核</el-button>
 					<el-button v-else v-hasPermi="['system:salesReward:audit']" size="mini" type="text" icon="el-icon-close" @click="handleAudit(scope.row, false)">取消审核</el-button>
 					<el-button v-hasPermi="['system:salesReward:remove']" size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)">删除</el-button>
@@ -277,18 +277,18 @@
 							<el-input v-model="form.rewardReason" placeholder="请输入奖励原因" />
 						</el-form-item>
 						<el-form-item label="订单不含税利润" prop="orderProfit">
-							<el-input v-model="form.orderProfit" placeholder="请输入订单不含税利润" style="width: 100%"></el-input>
+							<el-input v-model="form.orderProfit" placeholder="请输入订单不含税利润" @blur="formatAmountField('orderProfit')" style="width: 100%"></el-input>
 						</el-form-item>
 						<el-form-item label="厂家返利及降价合计" prop="manufacturerRebateDiscountAmount">
-							<el-input v-model="form.manufacturerRebateDiscountAmount" placeholder="请输入厂家返利及降价合计" style="width: 100%"></el-input>
+							<el-input v-model="form.manufacturerRebateDiscountAmount" placeholder="请输入厂家返利及降价合计" @blur="formatAmountField('manufacturerRebateDiscountAmount')" style="width: 100%"></el-input>
 						</el-form-item>
 					</el-col>
 					<el-col :span="12">
 						<el-form-item label="承兑贴息收益" prop="acceptanceDiscountProfit">
-							<el-input v-model="form.acceptanceDiscountProfit" placeholder="请输入承兑贴息收益" style="width: 100%"></el-input>
+							<el-input v-model="form.acceptanceDiscountProfit" placeholder="请输入承兑贴息收益" @blur="formatAmountField('acceptanceDiscountProfit')" style="width: 100%"></el-input>
 						</el-form-item>
 						<el-form-item label="客户及厂家佣金合计" prop="customerManufacturerCommissionAmount">
-							<el-input v-model="form.customerManufacturerCommissionAmount" placeholder="请输入客户及厂家佣金合计" style="width: 100%"></el-input>
+							<el-input v-model="form.customerManufacturerCommissionAmount" placeholder="请输入客户及厂家佣金合计" @blur="formatAmountField('customerManufacturerCommissionAmount')" style="width: 100%"></el-input>
 						</el-form-item>
 						<el-form-item label="综合单车利润" prop="comprehensiveProfit">
 							<el-input v-model="form.comprehensiveProfit" placeholder="综合单车利润" disabled style="width: 100%"></el-input>
@@ -300,7 +300,7 @@
 							</el-radio-group>
 						</el-form-item>
 						<el-form-item label="奖励金额" prop="rewardAmount">
-							<el-input v-model="form.rewardAmount" placeholder="请输入奖励金额" style="width: 100%"></el-input>
+							<el-input v-model="form.rewardAmount" placeholder="请输入奖励金额" @blur="formatAmountField('rewardAmount')" style="width: 100%"></el-input>
 						</el-form-item>
 						<el-form-item label="审核状态" prop="auditState">
 							<el-select v-model="form.auditState" placeholder="请选择审核状态" style="width: 100%">
@@ -324,7 +324,7 @@
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="补充信息" :visible.sync="supplementOpen" width="500px" append-to-body>
 			<el-form ref="supplementForm" :model="supplementForm" :rules="supplementRules" label-width="150px">
 				<el-form-item label="实际支付金额" prop="paymentAmount">
-					<el-input v-model="supplementForm.paymentAmount" placeholder="请输入实际支付金额" style="width: 100%"></el-input>
+					<el-input v-model="supplementForm.paymentAmount" placeholder="请输入实际支付金额" @blur="formatSupplementAmountField('paymentAmount')" style="width: 100%"></el-input>
 				</el-form-item>
 				<el-form-item label="奖励日期" prop="rewardDate">
 					<el-date-picker v-model="supplementForm.rewardDate" clearable type="date" value-format="yyyy-MM-dd" placeholder="请选择奖励日期" style="width: 100%"></el-date-picker>
@@ -398,8 +398,8 @@ export default {
 								return;
 							}
 							const numStr = String(value).trim();
-							if (!/^-?(\d+\.?\d*|\.\d+)$/.test(numStr)) {
-								callback(new Error('只能输入数字，可以输入负数'));
+							if (!/^-?(\d+\.?\d{0,2}|\.\d{1,2})$/.test(numStr)) {
+								callback(new Error('只能输入数字，可以输入负数，小数点最多保留两位'));
 							} else {
 								callback();
 							}
@@ -416,8 +416,8 @@ export default {
 								return;
 							}
 							const numStr = String(value).trim();
-							if (!/^-?(\d+\.?\d*|\.\d+)$/.test(numStr)) {
-								callback(new Error('只能输入数字，可以输入负数'));
+							if (!/^-?(\d+\.?\d{0,2}|\.\d{1,2})$/.test(numStr)) {
+								callback(new Error('只能输入数字，可以输入负数，小数点最多保留两位'));
 							} else {
 								callback();
 							}
@@ -434,8 +434,8 @@ export default {
 								return;
 							}
 							const numStr = String(value).trim();
-							if (!/^-?(\d+\.?\d*|\.\d+)$/.test(numStr)) {
-								callback(new Error('只能输入数字，可以输入负数'));
+							if (!/^-?(\d+\.?\d{0,2}|\.\d{1,2})$/.test(numStr)) {
+								callback(new Error('只能输入数字，可以输入负数，小数点最多保留两位'));
 							} else {
 								callback();
 							}
@@ -452,8 +452,8 @@ export default {
 								return;
 							}
 							const numStr = String(value).trim();
-							if (!/^-?(\d+\.?\d*|\.\d+)$/.test(numStr)) {
-								callback(new Error('只能输入数字，可以输入负数'));
+							if (!/^-?(\d+\.?\d{0,2}|\.\d{1,2})$/.test(numStr)) {
+								callback(new Error('只能输入数字，可以输入负数，小数点最多保留两位'));
 							} else {
 								callback();
 							}
@@ -471,8 +471,8 @@ export default {
 								return;
 							}
 							const numStr = String(value).trim();
-							if (!/^-?(\d+\.?\d*|\.\d+)$/.test(numStr)) {
-								callback(new Error('只能输入数字，可以输入负数'));
+							if (!/^-?(\d+\.?\d{0,2}|\.\d{1,2})$/.test(numStr)) {
+								callback(new Error('只能输入数字，可以输入负数，小数点最多保留两位'));
 							} else {
 								callback();
 							}
@@ -526,8 +526,8 @@ export default {
 							}
 							if (value) {
 								const numStr = String(value).trim();
-								if (!/^-?(\d+\.?\d*|\.\d+)$/.test(numStr)) {
-									callback(new Error('只能输入数字，可以输入负数'));
+								if (!/^-?(\d+\.?\d{0,2}|\.\d{1,2})$/.test(numStr)) {
+									callback(new Error('只能输入数字，可以输入负数，小数点最多保留两位'));
 									return;
 								}
 							}
@@ -588,6 +588,49 @@ export default {
 	methods: {
 		parseTime,
 		listGoodsOrder,
+		// 格式化金额显示（保留两位小数）
+		formatAmount(value) {
+			if (value === null || value === undefined || value === '') {
+				return '-';
+			}
+			const num = parseFloat(value);
+			if (isNaN(num)) {
+				return value;
+			}
+			return num.toFixed(2);
+		},
+		// 格式化金额值（保留两位小数，用于表单字段）
+		formatAmountValue(value) {
+			if (value === null || value === undefined || value === '') {
+				return '';
+			}
+			const num = parseFloat(value);
+			if (isNaN(num)) {
+				return value;
+			}
+			return parseFloat(num.toFixed(2));
+		},
+		// 格式化金额输入框字段
+		formatAmountField(fieldName) {
+			if (this.form[fieldName] !== null && this.form[fieldName] !== undefined && this.form[fieldName] !== '') {
+				const formatted = this.formatAmountValue(this.form[fieldName]);
+				this.$set(this.form, fieldName, formatted);
+			}
+		},
+		// 格式化补充信息金额字段
+		formatSupplementAmountField(fieldName) {
+			if (this.supplementForm[fieldName] !== null && this.supplementForm[fieldName] !== undefined && this.supplementForm[fieldName] !== '') {
+				const formatted = this.formatAmountValue(this.supplementForm[fieldName]);
+				this.$set(this.supplementForm, fieldName, formatted);
+			}
+		},
+		// 判断是否禁用补充信息按钮
+		isSupplementDisabled(row) {
+			// 如果 paymentAmount 或 rewardDate 任意一个不为空，则认为补充信息不为空，禁用按钮
+			const hasPaymentAmount = row.paymentAmount != null && row.paymentAmount !== '';
+			const hasRewardDate = row.rewardDate != null && row.rewardDate !== '';
+			return hasPaymentAmount || hasRewardDate;
+		},
 		handleUpdateGoodsOrder(val) {
 			this.queryGoodsOrder = val;
 		},
