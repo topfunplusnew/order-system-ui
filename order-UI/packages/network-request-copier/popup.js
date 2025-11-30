@@ -123,7 +123,8 @@ function renderRequestList(requests) {
 				<div class="request-header" style="width: 100%;  box-sizing: border-box;">
 					<span class="method-badge ${methodClass}">${req.method}</span>
 					${req.statusCode ? `<span class="status-badge ${statusClass}">${req.statusCode}</span>` : ''}
-					<button class="btn btn-primary copy-btn" data-request-id="${req.requestId}" style="font-size: 11px; padding: 4px 8px; margin-left: auto; flex-shrink: 0;">复制</button>
+					<button class="btn btn-primary copy-btn" data-request-id="${req.requestId}" style="font-size: 11px; padding: 4px 8px; margin-left: auto; flex-shrink: 0; margin-right: 4px;">复制</button>
+					<button class="btn copy-image-btn" data-request-id="${req.requestId}" style="font-size: 11px; padding: 4px 8px; background: #67c23a; color: white; border: none; border-radius: 4px; cursor: pointer; flex-shrink: 0;">复制图片</button>
 				</div>
 				<div class="request-url-full" style="width: 100%;  box-sizing: border-box;">${escapeHtml(displayUrl)}</div>
 				${paramsHtml}
@@ -139,6 +140,14 @@ function renderRequestList(requests) {
 		btn.addEventListener('click', e => {
 			const requestId = e.target.getAttribute('data-request-id');
 			copyRequestInfo(requestId);
+		});
+	});
+
+	// 绑定复制图片按钮事件
+	listContainer.querySelectorAll('.copy-image-btn').forEach(btn => {
+		btn.addEventListener('click', e => {
+			const requestId = e.target.getAttribute('data-request-id');
+			copyRequestAsImage(requestId);
 		});
 	});
 }
@@ -217,6 +226,389 @@ function copyRequestInfo(requestId) {
 			showMessage('复制失败：请求数据不存在', 'error');
 		}
 	});
+}
+
+// 复制请求信息为图片
+function copyRequestAsImage(requestId) {
+	chrome.runtime.sendMessage({ action: 'getRequest', requestId: requestId }, response => {
+		if (chrome.runtime.lastError) {
+			console.error('Error:', chrome.runtime.lastError);
+			showMessage('获取请求失败：' + chrome.runtime.lastError.message, 'error');
+			return;
+		}
+
+		if (response && response.success && response.data) {
+			const data = response.data;
+			generateRequestImage(data)
+				.then(() => {
+					showMessage('图片已复制到剪贴板');
+				})
+				.catch(err => {
+					console.error('Failed to copy image:', err);
+					showMessage('复制图片失败：' + err.message, 'error');
+				});
+		} else {
+			showMessage('复制失败：请求数据不存在', 'error');
+		}
+	});
+}
+
+// 生成请求信息图片
+async function generateRequestImage(data) {
+	// 解码URL
+	let decodedUrl = data.url;
+	if (decodedUrl) {
+		try {
+			decodedUrl = decodeURIComponent(decodedUrl);
+		} catch (e) {
+			try {
+				const urlObj = new URL(decodedUrl);
+				if (urlObj.search) {
+					const params = new URLSearchParams(urlObj.search);
+					const decodedParams = new URLSearchParams();
+					for (const [key, value] of params.entries()) {
+						try {
+							decodedParams.append(decodeURIComponent(key), decodeURIComponent(value));
+						} catch (err) {
+							decodedParams.append(key, value);
+						}
+					}
+					urlObj.search = decodedParams.toString();
+					decodedUrl = urlObj.toString();
+				}
+			} catch (err) {
+				// 使用原始URL
+			}
+		}
+	}
+
+	// 准备要显示的内容（使用对象来标记每行的类型和缩进）
+	const contentLines = [];
+
+	// 标题
+	contentLines.push({ text: '网络请求信息', type: 'title' });
+	contentLines.push({ text: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', type: 'separator' });
+	contentLines.push({ text: '', type: 'empty' });
+
+	// 请求方法
+	contentLines.push({ text: '请求方法: ' + data.method, type: 'label' });
+
+	// 请求地址（可能需要换行）
+	contentLines.push({ text: '请求地址: ' + decodedUrl, type: 'url' });
+	contentLines.push({ text: '', type: 'empty' });
+
+	// 请求载荷
+	contentLines.push({ text: '请求载荷:', type: 'section' });
+	const requestBodyLines = formatDataForImageLines(data.requestBody, 2);
+	requestBodyLines.forEach(line => {
+		contentLines.push({ text: line.text, type: line.type, indent: line.indent });
+	});
+	contentLines.push({ text: '', type: 'empty' });
+
+	// 响应结构
+	contentLines.push({ text: '响应结构:', type: 'section' });
+	contentLines.push({ text: '  状态码: ' + (data.statusCode || 'N/A'), type: 'label', indent: 2 });
+	contentLines.push({ text: '  响应头:', type: 'section', indent: 2 });
+	const headerLines = formatHeadersForImageLines(data.responseHeaders, 4);
+	headerLines.forEach(line => {
+		contentLines.push({ text: line.text, type: line.type, indent: line.indent });
+	});
+	contentLines.push({ text: '  响应数据:', type: 'section', indent: 2 });
+	const responseLines = formatDataForImageLines(data.responseData || data.responseBody || null, 2);
+	responseLines.forEach(line => {
+		contentLines.push({ text: line.text, type: line.type, indent: (line.indent || 0) + 2 });
+	});
+	contentLines.push({ text: '', type: 'empty' });
+
+	// 时间
+	contentLines.push({ text: '时间: ' + new Date(data.timestamp).toLocaleString(), type: 'label' });
+
+	// 创建 Canvas
+	const canvas = document.createElement('canvas');
+	const ctx = canvas.getContext('2d');
+
+	// 设置字体
+	const fontSize = 13;
+	const lineHeight = 22;
+	const padding = 24;
+	const indentSize = 20; // 每级缩进的大小
+	const fontFamily = 'Consolas, Monaco, "Courier New", monospace';
+	const maxLineWidth = 1400; // 最大宽度
+
+	ctx.font = `${fontSize}px ${fontFamily}`;
+
+	// 计算文本宽度和高度（考虑换行和缩进）
+	let maxWidth = 0;
+	const allLines = [];
+
+	contentLines.forEach(item => {
+		const indent = item.indent || 0;
+		const indentStr = ' '.repeat(indent);
+		const fullText = indentStr + item.text;
+
+		const metrics = ctx.measureText(fullText);
+		const lineWidth = metrics.width;
+		const availableWidth = maxLineWidth - padding * 2;
+
+		if (lineWidth > availableWidth && item.text) {
+			// 需要换行（对于长URL或长字符串）
+			const words = item.text.split('');
+			let currentLine = '';
+			for (let i = 0; i < words.length; i++) {
+				const testLine = currentLine + words[i];
+				const testFullText = indentStr + testLine;
+				const testMetrics = ctx.measureText(testFullText);
+				if (testMetrics.width > availableWidth && currentLine !== '') {
+					allLines.push({ text: indentStr + currentLine, type: item.type, indent: indent });
+					maxWidth = Math.max(maxWidth, ctx.measureText(indentStr + currentLine).width);
+					currentLine = words[i];
+				} else {
+					currentLine = testLine;
+				}
+			}
+			if (currentLine) {
+				allLines.push({ text: indentStr + currentLine, type: item.type, indent: indent });
+				maxWidth = Math.max(maxWidth, ctx.measureText(indentStr + currentLine).width);
+			}
+		} else {
+			allLines.push({ text: fullText, type: item.type, indent: indent });
+			maxWidth = Math.max(maxWidth, lineWidth);
+		}
+	});
+
+	const textWidth = Math.min(maxWidth + padding * 2, maxLineWidth);
+	const textHeight = allLines.length * lineHeight + padding * 2;
+
+	canvas.width = textWidth;
+	canvas.height = textHeight;
+
+	// 重新设置字体
+	ctx.font = `${fontSize}px ${fontFamily}`;
+
+	// 绘制背景
+	ctx.fillStyle = '#ffffff';
+	ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+	// 绘制边框
+	ctx.strokeStyle = '#e0e0e0';
+	ctx.lineWidth = 1;
+	ctx.strokeRect(0, 0, canvas.width, canvas.height);
+
+	// 绘制标题背景
+	ctx.fillStyle = '#409EFF';
+	ctx.fillRect(0, 0, canvas.width, lineHeight + padding);
+
+	// 绘制文本（带颜色区分）
+	let y = padding + fontSize;
+
+	// 颜色定义
+	const colors = {
+		title: '#ffffff',
+		separator: '#ffffff',
+		label: '#333333',
+		url: '#409EFF',
+		section: '#666666',
+		key: '#881391', // JSON key 颜色（紫色）
+		string: '#1A1AA6', // JSON string 颜色（蓝色）
+		number: '#1C00CF', // JSON number 颜色（深蓝）
+		boolean: '#0D22AA', // JSON boolean 颜色
+		null: '#808080', // JSON null 颜色（灰色）
+		empty: '#ffffff',
+		default: '#333333'
+	};
+
+	allLines.forEach((item, index) => {
+		const line = typeof item === 'string' ? item : item.text;
+		const type = typeof item === 'string' ? 'default' : item.type || 'default';
+
+		// 根据类型设置颜色和字体
+		if (index === 0) {
+			// 标题
+			ctx.fillStyle = colors.title;
+			ctx.font = `bold ${fontSize + 2}px ${fontFamily}`;
+		} else if (index === 1) {
+			// 分隔线
+			ctx.fillStyle = colors.separator;
+			ctx.font = `${fontSize}px ${fontFamily}`;
+		} else {
+			// 根据内容类型设置颜色
+			let fillColor = colors[type] || colors.default;
+
+			// 对于JSON内容，尝试识别类型
+			if (type === 'default' || !colors[type]) {
+				// 尝试识别JSON语法
+				const trimmed = line.trim();
+				if (trimmed.match(/^"[^"]+":/)) {
+					// JSON key
+					fillColor = colors.key;
+				} else if (trimmed.match(/^".*"$/)) {
+					// JSON string value
+					fillColor = colors.string;
+				} else if (trimmed.match(/^-?\d+\.?\d*$/)) {
+					// JSON number
+					fillColor = colors.number;
+				} else if (trimmed === 'true' || trimmed === 'false') {
+					// JSON boolean
+					fillColor = colors.boolean;
+				} else if (trimmed === 'null') {
+					// JSON null
+					fillColor = colors.null;
+				} else {
+					fillColor = colors[type] || colors.default;
+				}
+			}
+
+			ctx.fillStyle = fillColor;
+			ctx.font = `${fontSize}px ${fontFamily}`;
+		}
+
+		ctx.fillText(line, padding, y);
+		y += lineHeight;
+	});
+
+	// 将 Canvas 转换为 Blob
+	return new Promise((resolve, reject) => {
+		canvas.toBlob(blob => {
+			if (!blob) {
+				reject(new Error('Failed to create image blob'));
+				return;
+			}
+
+			// 复制到剪贴板
+			if (navigator.clipboard && navigator.clipboard.write) {
+				const clipboardItem = new ClipboardItem({ 'image/png': blob });
+				navigator.clipboard
+					.write([clipboardItem])
+					.then(() => {
+						resolve();
+					})
+					.catch(err => {
+						reject(err);
+					});
+			} else {
+				// 降级方案：下载图片
+				const url = URL.createObjectURL(blob);
+				const a = document.createElement('a');
+				a.href = url;
+				a.download = 'request-info.png';
+				a.click();
+				URL.revokeObjectURL(url);
+				resolve();
+			}
+		}, 'image/png');
+	});
+}
+
+// 格式化数据用于图片显示（返回行数组，每行包含文本、类型和缩进）
+function formatDataForImageLines(data, baseIndent = 0) {
+	if (data === null || data === undefined) {
+		return [{ text: 'null', type: 'null', indent: baseIndent }];
+	}
+
+	if (typeof data === 'string') {
+		// 尝试解析为 JSON
+		try {
+			const parsed = JSON.parse(data);
+			return formatJsonLines(parsed, baseIndent);
+		} catch (e) {
+			// 不是JSON，作为普通字符串返回
+			return [{ text: data, type: 'string', indent: baseIndent }];
+		}
+	}
+
+	if (typeof data === 'object') {
+		return formatJsonLines(data, baseIndent);
+	}
+
+	return [{ text: String(data), type: 'default', indent: baseIndent }];
+}
+
+// 格式化JSON为行数组（保持正确的缩进）
+function formatJsonLines(obj, baseIndent = 0, indentStep = 2) {
+	const lines = [];
+
+	if (obj === null) {
+		lines.push({ text: 'null', type: 'null', indent: baseIndent });
+		return lines;
+	}
+
+	if (Array.isArray(obj)) {
+		if (obj.length === 0) {
+			lines.push({ text: '[]', type: 'default', indent: baseIndent });
+			return lines;
+		}
+		lines.push({ text: '[', type: 'default', indent: baseIndent });
+		obj.forEach((item, index) => {
+			const itemLines = formatJsonLines(item, baseIndent + indentStep, indentStep);
+			// 最后一个元素不需要逗号
+			if (index < obj.length - 1) {
+				itemLines[itemLines.length - 1].text += ',';
+			}
+			lines.push(...itemLines);
+		});
+		lines.push({ text: ']', type: 'default', indent: baseIndent });
+		return lines;
+	}
+
+	if (typeof obj === 'object') {
+		const keys = Object.keys(obj);
+		if (keys.length === 0) {
+			lines.push({ text: '{}', type: 'default', indent: baseIndent });
+			return lines;
+		}
+		lines.push({ text: '{', type: 'default', indent: baseIndent });
+		keys.forEach((key, index) => {
+			const value = obj[key];
+			const keyLine = `"${key}":`;
+			const indent = baseIndent + indentStep;
+
+			// 处理值
+			if (value === null || value === undefined || typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+				// 简单值，可以放在同一行
+				let valueStr;
+				if (typeof value === 'string') {
+					valueStr = `"${value}"`;
+				} else if (value === null) {
+					valueStr = 'null';
+				} else {
+					valueStr = String(value);
+				}
+				const lineText = `${keyLine} ${valueStr}${index < keys.length - 1 ? ',' : ''}`;
+				lines.push({ text: lineText, type: 'key', indent: indent });
+			} else {
+				// 复杂值（对象或数组），需要多行
+				lines.push({ text: keyLine, type: 'key', indent: indent });
+				const valueLines = formatJsonLines(value, indent, indentStep);
+				if (index < keys.length - 1) {
+					valueLines[valueLines.length - 1].text += ',';
+				}
+				lines.push(...valueLines);
+			}
+		});
+		lines.push({ text: '}', type: 'default', indent: baseIndent });
+		return lines;
+	}
+
+	// 基本类型
+	let text = String(obj);
+	if (typeof obj === 'string') {
+		text = `"${obj}"`;
+	}
+	lines.push({ text: text, type: typeof obj, indent: baseIndent });
+	return lines;
+}
+
+// 格式化响应头用于图片显示（返回行数组）
+function formatHeadersForImageLines(headers, baseIndent = 0) {
+	if (!headers || !Array.isArray(headers)) {
+		return [{ text: 'null', type: 'null', indent: baseIndent }];
+	}
+
+	return headers.map(h => ({
+		text: `${h.name}: ${h.value}`,
+		type: 'label',
+		indent: baseIndent
+	}));
 }
 
 // 显示消息提示
