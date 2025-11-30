@@ -13,7 +13,6 @@
 								<el-table-column show-overflow-tooltip label="日期" align="center" prop="orderDate" fixed="left" />
 								<el-table-column show-overflow-tooltip label="客户" align="center" prop="customer" fixed="left" />
 								<el-table-column show-overflow-tooltip label="供应商" align="center" prop="supplierNames" fixed="left" />
-								<el-table-column label="订单编号" align="center" prop="ordersNo" width="200px" />
 								<el-table-column show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo" />
 								<el-table-column show-overflow-tooltip label="销售经理" align="center" prop="saleManager" />
 								<el-table-column show-overflow-tooltip label="车队" align="center" prop="fleet" />
@@ -230,7 +229,6 @@
 										<el-table-column show-overflow-tooltip label="日期" align="center" prop="orderDate" fixed="left" />
 										<el-table-column show-overflow-tooltip label="客户" align="center" prop="customer" fixed="left" />
 										<el-table-column show-overflow-tooltip label="供应商" align="center" prop="supplierNames" fixed="left" />
-										<el-table-column label="订单编号" align="center" prop="ordersNo" width="200px" />
 										<el-table-column show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo" />
 										<el-table-column show-overflow-tooltip label="陆运司机电话" align="center" prop="landDriverTel" width="100px" />
 										<el-table-column show-overflow-tooltip label="陆地司机姓名" align="center" prop="landDriverName" width="100px" />
