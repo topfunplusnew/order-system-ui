@@ -7,7 +7,7 @@
 				</el-descriptions-item>
 				<el-descriptions-item label="出库日期">
 					{{ formatValue(warehouseData.outDate) }}
-				</el-descriptions-item>  
+				</el-descriptions-item>
 				<el-descriptions-item label="出库类型">
 					{{ formatValue(warehouseData.outDirection) }}
 				</el-descriptions-item>
@@ -33,18 +33,10 @@
 					{{ formatValue(warehouseData.sourceInventoryDetail.countingUnit) }}
 				</el-descriptions-item>
 				<el-descriptions-item label="厚度">
-					{{
-						warehouseData.sourceInventoryDetail.height !== undefined && warehouseData.sourceInventoryDetail.height !== null
-							? warehouseData.sourceInventoryDetail.height
-							: '暂无数据'
-					}}
+					{{ warehouseData.sourceInventoryDetail.height !== undefined && warehouseData.sourceInventoryDetail.height !== null ? warehouseData.sourceInventoryDetail.height : '暂无数据' }}
 				</el-descriptions-item>
 				<el-descriptions-item label="长度">
-					{{
-						warehouseData.sourceInventoryDetail.length !== undefined && warehouseData.sourceInventoryDetail.length !== null
-							? warehouseData.sourceInventoryDetail.length
-							: '暂无数据'
-					}}
+					{{ warehouseData.sourceInventoryDetail.length !== undefined && warehouseData.sourceInventoryDetail.length !== null ? warehouseData.sourceInventoryDetail.length : '暂无数据' }}
 				</el-descriptions-item>
 				<el-descriptions-item label="宽度">
 					{{ warehouseData.sourceInventoryDetail.width !== undefined && warehouseData.sourceInventoryDetail.width !== null ? warehouseData.sourceInventoryDetail.width : '暂无数据' }}
@@ -59,11 +51,7 @@
 					{{ formatValue(warehouseData.sourceInventoryDetail.pieces) }}
 				</el-descriptions-item>
 				<el-descriptions-item label="出厂单价">
-					{{
-						warehouseData.sourceInventoryDetail.price !== undefined && warehouseData.sourceInventoryDetail.price !== null
-							? fix2(warehouseData.sourceInventoryDetail.price)
-							: '暂无数据'
-					}}
+					{{ warehouseData.sourceInventoryDetail.price !== undefined && warehouseData.sourceInventoryDetail.price !== null ? fix2(warehouseData.sourceInventoryDetail.price) : '暂无数据' }}
 				</el-descriptions-item>
 				<el-descriptions-item label="出厂是否含税">
 					<el-tag disable-transitions>{{ boolTag(warehouseData.sourceInventoryDetail.isIncludeTaxFactory) }}</el-tag>

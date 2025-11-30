@@ -5,13 +5,7 @@
 				<el-input v-model="queryParams.companyName" placeholder="请输入供应商名称" clearable @keyup.enter.native="handleQuery" @input="handleInputTrim($event, 'queryParams', 'companyName')" />
 			</el-form-item>
 			<el-form-item label="联系人" prop="relationName">
-				<el-input
-					v-model="queryParams.relationName"
-					placeholder="请输入联系人名称"
-					clearable
-					@keyup.enter.native="handleQuery"
-					@input="handleInputTrim($event, 'queryParams', 'relationName')"
-				/>
+				<el-input v-model="queryParams.relationName" placeholder="请输入联系人名称" clearable @keyup.enter.native="handleQuery" @input="handleInputTrim($event, 'queryParams', 'relationName')" />
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -198,18 +192,7 @@
 			<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 		</el-dialog>
 
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="设置默认银行卡"
-			:visible.sync="addDefaultCardVisible"
-			width="500px"
-			append-to-body
-		>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="设置默认银行卡" :visible.sync="addDefaultCardVisible" width="500px" append-to-body>
 			<el-table v-loading="loading" v-horizontal-scroll="'always'" border :data="singleInfo" height="300px" @selection-change="handleSelectionChange">
 				<el-table-column label="账户类型" align="center" prop="acountsType" />
 				<el-table-column label="开户名称(户名)" align="center" prop="acountsName" />
@@ -229,18 +212,7 @@
 		</el-dialog>
 
 		<!-- 银行卡编辑对话框 -->
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="true"
-			title="编辑银行卡信息"
-			:visible.sync="editBankDialogVisible"
-			width="500px"
-			append-to-body
-		>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="true" title="编辑银行卡信息" :visible.sync="editBankDialogVisible" width="500px" append-to-body>
 			<el-form ref="editBankForm" :model="editBankForm" :rules="editBankRules" label-width="100px">
 				<el-form-item label="账户类型" prop="acountsType">
 					<el-select v-model="editBankForm.acountsType" placeholder="请选择账户类型" style="width: 100%">

@@ -53,83 +53,83 @@
 			"
 			border
 		>
-		<!-- 凭证编号 -->
-		<el-table-column v-if="columns[0].visible" label="凭证编号" align="center" prop="voucherNo" width="300" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.voucherNo }}</div>
-					<span>{{ scope.row.voucherNo }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
+			<!-- 凭证编号 -->
+			<el-table-column v-if="columns[0].visible" label="凭证编号" align="center" prop="voucherNo" width="300" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.voucherNo }}</div>
+						<span>{{ scope.row.voucherNo }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 
-		<!-- 制单日期 -->
-		<el-table-column v-if="columns[1].visible" label="制单日期" align="center" prop="vdate" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.vdate }}</div>
-					<span>{{ scope.row.vdate }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<!-- 制单人 -->
-		<el-table-column v-if="columns[2].visible" label="制单人" align="center" prop="makeUser" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.makeUser }}</div>
-					<span>{{ scope.row.makeUser }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
+			<!-- 制单日期 -->
+			<el-table-column v-if="columns[1].visible" label="制单日期" align="center" prop="vdate" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.vdate }}</div>
+						<span>{{ scope.row.vdate }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<!-- 制单人 -->
+			<el-table-column v-if="columns[2].visible" label="制单人" align="center" prop="makeUser" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.makeUser }}</div>
+						<span>{{ scope.row.makeUser }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 
-		<!-- 合计 -->
-		<el-table-column v-if="columns[3].visible" label="合计" align="center" prop="amount" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.amount }}</div>
-					<span>{{ scope.row.amount }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
+			<!-- 合计 -->
+			<el-table-column v-if="columns[3].visible" label="合计" align="center" prop="amount" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.amount }}</div>
+						<span>{{ scope.row.amount }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 
-		<!-- 借方 -->
-		<el-table-column v-if="columns[4].visible" label="借方" align="center" prop="borrower" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.borrower }}</div>
-					<span>{{ scope.row.borrower }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
+			<!-- 借方 -->
+			<el-table-column v-if="columns[4].visible" label="借方" align="center" prop="borrower" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.borrower }}</div>
+						<span>{{ scope.row.borrower }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 
-		<!-- 贷方 -->
-		<el-table-column v-if="columns[5].visible" label="贷方" align="center" prop="lender" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.lender }}</div>
-					<span>{{ scope.row.lender }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
+			<!-- 贷方 -->
+			<el-table-column v-if="columns[5].visible" label="贷方" align="center" prop="lender" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.lender }}</div>
+						<span>{{ scope.row.lender }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 
-		<!-- 凭证类型 -->
-		<el-table-column v-if="columns[6].visible" label="凭证类型" align="center" prop="voucherType" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.voucherType }}</div>
-					<span>{{ scope.row.voucherType }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<!-- 备注 -->
-		<el-table-column v-if="columns[7].visible" label="备注" align="center" prop="comments" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.comments }}</div>
-					<span>{{ scope.row.comments }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
+			<!-- 凭证类型 -->
+			<el-table-column v-if="columns[6].visible" label="凭证类型" align="center" prop="voucherType" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.voucherType }}</div>
+						<span>{{ scope.row.voucherType }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<!-- 备注 -->
+			<el-table-column v-if="columns[7].visible" label="备注" align="center" prop="comments" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.comments }}</div>
+						<span>{{ scope.row.comments }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 
 			<!-- 操作 -->
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">

@@ -268,18 +268,29 @@ export default {
 	transition: background-color 0.2s ease;
 }
 
-.drag-divider:hover .drag-line { background-color: #666; }
-.drag-divider.dragging .drag-line { background-color: #fff; }
+.drag-divider:hover .drag-line {
+	background-color: #666;
+}
+.drag-divider.dragging .drag-line {
+	background-color: #fff;
+}
 
 /* 避免内容被选中 */
-.triple-drag-container * { box-sizing: border-box; }
+.triple-drag-container * {
+	box-sizing: border-box;
+}
 
 /* 响应式 */
 @media (max-width: 768px) {
-	.drag-divider { width: 8px; }
-	.drag-handle { height: 40px; }
-	.drag-line { width: 3px; height: 5px; }
+	.drag-divider {
+		width: 8px;
+	}
+	.drag-handle {
+		height: 40px;
+	}
+	.drag-line {
+		width: 3px;
+		height: 5px;
+	}
 }
 </style>
-
-

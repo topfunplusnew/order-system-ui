@@ -35,7 +35,7 @@ function getGitChanges() {
 				changedFiles = status.trim();
 			}
 		}
-		
+
 		// 获取变更的摘要（只显示统计信息，不包含具体内容）
 		let diffSummary = '';
 		try {
@@ -50,7 +50,7 @@ function getGitChanges() {
 				diffSummary = '';
 			}
 		}
-		
+
 		return {
 			hasChanges: true,
 			changedFiles: changedFiles,
@@ -124,17 +124,7 @@ function analyzeWithDeepSeek(changes) {
 		const diffSummaryText = sanitizeText(changes.diffSummary);
 
 		// 构建prompt，使用数组拼接避免模板字符串问题
-		const promptLines = [
-			'请分析以下git变更，用一句话（不超过30个字）总结本次修改的主要功能需求。只返回总结内容，不要其他说明文字。',
-			'',
-			'变更文件：',
-			changedFilesText,
-			'',
-			'变更统计：',
-			diffSummaryText || '无统计信息',
-			'',
-			'请用简洁的中文总结本次修改的主要功能需求：'
-		];
+		const promptLines = ['请分析以下git变更，用一句话（不超过30个字）总结本次修改的主要功能需求。只返回总结内容，不要其他说明文字。', '', '变更文件：', changedFilesText, '', '变更统计：', diffSummaryText || '无统计信息', '', '请用简洁的中文总结本次修改的主要功能需求：'];
 		const prompt = promptLines.join('\n');
 
 		// 构建请求数据
@@ -175,17 +165,17 @@ function analyzeWithDeepSeek(changes) {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json; charset=utf-8',
-				'Authorization': `Bearer ${apiKey}`,
+				Authorization: `Bearer ${apiKey}`,
 				'Content-Length': dataBuffer.length
 			}
 		};
 
-		const req = https.request(options, (res) => {
+		const req = https.request(options, res => {
 			let responseData = '';
 
 			// 检查HTTP状态码
 			if (res.statusCode !== 200) {
-				res.on('data', (chunk) => {
+				res.on('data', chunk => {
 					responseData += chunk;
 				});
 				res.on('end', () => {
@@ -207,7 +197,7 @@ function analyzeWithDeepSeek(changes) {
 				return;
 			}
 
-			res.on('data', (chunk) => {
+			res.on('data', chunk => {
 				responseData += chunk;
 			});
 
@@ -238,7 +228,7 @@ function analyzeWithDeepSeek(changes) {
 			});
 		});
 
-		req.on('error', (error) => {
+		req.on('error', error => {
 			reject(new Error(`请求失败: ${error.message}`));
 		});
 
@@ -253,7 +243,7 @@ function analyzeWithDeepSeek(changes) {
  */
 async function analyzeChanges() {
 	const changes = getGitChanges();
-	
+
 	if (!changes.hasChanges) {
 		console.log('ℹ️  ' + (changes.message || '没有检测到变更'));
 		return '常规更新';
@@ -287,4 +277,3 @@ if (require.main === module) {
 }
 
 module.exports = { analyzeChanges, getApiKey };
-

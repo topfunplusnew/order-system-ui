@@ -32,7 +32,7 @@ function generateVersionDirName(featureDescription) {
  */
 function moveDistToTarget(sourceDist, targetDir) {
 	const targetDist = path.join(targetDir, 'dist');
-	
+
 	// 确保目标目录的父目录存在
 	if (!fs.existsSync(targetDir)) {
 		fs.mkdirSync(targetDir, { recursive: true });
@@ -117,10 +117,10 @@ async function main() {
 		// 检查是否有 --mode 参数
 		const modeIndex = args.indexOf('--mode');
 		const mode = modeIndex !== -1 && args[modeIndex + 1] ? args[modeIndex + 1] : 'production';
-		
+
 		const buildCommand = `vue-cli-service build --mode ${mode}`;
 		console.log('执行命令:', buildCommand);
-		execSync(buildCommand, { 
+		execSync(buildCommand, {
 			stdio: 'inherit',
 			cwd: __dirname,
 			env: { ...process.env, BUILD_OUTPUT_DIR: process.env.BUILD_OUTPUT_DIR }
@@ -128,7 +128,7 @@ async function main() {
 
 		// 构建完成后，dist已经在目标位置（因为vue.config.js会使用BUILD_OUTPUT_DIR）
 		const finalDistPath = process.env.BUILD_OUTPUT_DIR;
-		
+
 		// 更新version.json
 		updateVersionJson(finalDistPath);
 
@@ -150,4 +150,3 @@ if (require.main === module) {
 }
 
 module.exports = { generateVersionDirName, moveDistToTarget };
-

@@ -20,7 +20,7 @@ class OrderDataProcessorManager {
 			return Promise.resolve();
 		}
 
-		return new Promise((resolve) => {
+		return new Promise(resolve => {
 			try {
 				// 在 Vue CLI 中，使用相对路径创建 Worker
 				// 使用内联 Blob URL 方式创建 Worker，避免路径问题
@@ -36,7 +36,7 @@ class OrderDataProcessorManager {
 				this.worker.addEventListener('error', this.handleError.bind(this));
 
 				// 等待 Worker 准备就绪
-				const readyHandler = (e) => {
+				const readyHandler = e => {
 					if (e.data.type === 'WORKER_READY') {
 						this.isReady = true;
 						this.worker.removeEventListener('message', readyHandler);
@@ -323,7 +323,7 @@ class OrderDataProcessorManager {
 	fallbackPreprocessBatch(orderList, startIndex, batchSize) {
 		const endIndex = Math.min(startIndex + batchSize, orderList.length);
 		const batch = orderList.slice(startIndex, endIndex);
-		
+
 		return batch.map(order => this.fallbackPreprocessOrder(order));
 	}
 
@@ -421,4 +421,3 @@ class OrderDataProcessorManager {
 const orderDataProcessorManager = new OrderDataProcessorManager();
 
 export default orderDataProcessorManager;
-

@@ -119,15 +119,7 @@ export default {
 							<el-input v-model="inventoryInfo.storeHouseName" type="text" size="mini" placeholder="请输入仓库名称" />
 						</el-col>
 						<el-col :span="4">
-							<SearchOption
-								:get-data="listStoreHouse"
-								:query-name="queryStoreHouseName"
-								query-label="库房名称"
-								query-info="storeHouseName"
-								:limit-info="{}"
-								@update:queryName="handleUpdateQueryStoreHouseName"
-								@commitBack="handleCommitBackStoreHouseName"
-							>
+							<SearchOption :get-data="listStoreHouse" :query-name="queryStoreHouseName" query-label="库房名称" query-info="storeHouseName" :limit-info="{}" @update:queryName="handleUpdateQueryStoreHouseName" @commitBack="handleCommitBackStoreHouseName">
 								<template #table-columns>
 									<el-table-column label="仓库名称" align="center" prop="storeHouseName" />
 									<el-table-column label="地址" align="center" prop="address" />
@@ -150,15 +142,7 @@ export default {
 							</el-col>
 							<el-col :span="4">
 								<!--搜索银行卡信息-->
-								<SearchOption
-									:get-data="listCars"
-									:query-name="queryCars"
-									query-label="司机姓名"
-									query-info="driver"
-									:limit-info="{}"
-									@update:queryName="handleUpdateQueryCars"
-									@commitBack="handleCommitBackCars"
-								>
+								<SearchOption :get-data="listCars" :query-name="queryCars" query-label="司机姓名" query-info="driver" :limit-info="{}" @update:queryName="handleUpdateQueryCars" @commitBack="handleCommitBackCars">
 									<template #table-columns>
 										<el-table-column label="车牌号" align="center" prop="carNo" />
 										<el-table-column label="司机姓名" align="center" prop="driver" />
@@ -180,15 +164,7 @@ export default {
 								<el-input v-model="inventoryInfo.fleet" type="text" size="mini" placeholder="请输入车队" />
 							</el-col>
 							<el-col :span="4">
-								<SearchOption
-									:get-data="listFleet"
-									:query-name="queryFleet"
-									query-label="车队名称"
-									query-info="fname"
-									:limit-info="{}"
-									@update:queryName="handleUpdateQueryFleet"
-									@commitBack="handleCommitBackFleet"
-								>
+								<SearchOption :get-data="listFleet" :query-name="queryFleet" query-label="车队名称" query-info="fname" :limit-info="{}" @update:queryName="handleUpdateQueryFleet" @commitBack="handleCommitBackFleet">
 									<template #table-columns>
 										<el-table-column label="车队名称" align="center" prop="fname" />
 										<el-table-column label="车队经理" align="center" prop="fLeader" />
@@ -208,15 +184,7 @@ export default {
 								<el-input v-model="inventoryInfo.seaCarNo" type="text" size="mini" placeholder="请输入柜号" style="width: 120px" />
 							</el-col>
 							<el-col :span="4">
-								<SearchOption
-									:limit-info="{ carType: '海运' }"
-									:get-data="listCars"
-									query-label="车牌"
-									query-info="carNo"
-									:query-name="querySeaCars"
-									@commitBack="handleCommitBackSeaCar"
-									@update:queryName="handleChangeSeaCar"
-								>
+								<SearchOption :limit-info="{ carType: '海运' }" :get-data="listCars" query-label="车牌" query-info="carNo" :query-name="querySeaCars" @commitBack="handleCommitBackSeaCar" @update:queryName="handleChangeSeaCar">
 									<template #table-columns>
 										<el-table-column label="车牌" align="center" prop="carNo" />
 										<el-table-column label="司机" align="center" prop="driver" />

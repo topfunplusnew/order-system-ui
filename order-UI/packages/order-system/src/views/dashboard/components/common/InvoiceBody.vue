@@ -195,7 +195,7 @@ export default {
 				} catch (e) {
 					console.error('标记公司已操作失败:', e);
 				}
-				
+
 				// 标记当前Sheet为已操作
 				try {
 					// 使用本地存储的文件ID和Sheet名称
@@ -210,7 +210,7 @@ export default {
 				} catch (e) {
 					console.error('InvoiceBody: 标记Sheet已操作失败:', e);
 				}
-				
+
 				// 广播清理事件（放在回写之后）
 				this.$bus.$emit('invoice-clear');
 				this.$message.success('本批开票成功');
@@ -405,7 +405,7 @@ export default {
 						// 对方是购买方，我方是销方
 						invoiceObject = tpl.sellerName || null;
 					}
-					
+
 					// 如果模板中没有明确的我方公司信息，则使用sessionStorage中的值
 					if (!invoiceObject) {
 						const storedUs = sessionStorage.getItem('us');
@@ -573,7 +573,7 @@ export default {
 			this.currentTicketPoint = 0;
 			this.currentTicketPointAmount = 0;
 		});
-		
+
 		// 监听Sheet信息更新事件
 		this.$bus.$on('sheet-info-updated', payload => {
 			this.currentFileId = payload.fileId;
@@ -615,26 +615,8 @@ export default {
 				</div>
 				<!--    批量开票-->
 				<div class="options">
-					<el-button
-						v-if="invoiceType === PUBLIC_DICT_TYPE.CUSTOMER"
-						type="success"
-						size="small"
-						:disabled="op_customer || !hasGeneratedInvoices"
-						@click="handleInvoiceBatch"
-						class="invoice-button"
-					>
-						开具客户发票
-					</el-button>
-					<el-button
-						v-if="invoiceType === PUBLIC_DICT_TYPE.SUPPLIER"
-						type="success"
-						size="small"
-						:disabled="op_supplier || !hasGeneratedInvoices"
-						@click="handleInvoiceBatch"
-						class="invoice-button"
-					>
-						开具供应商发票
-					</el-button>
+					<el-button v-if="invoiceType === PUBLIC_DICT_TYPE.CUSTOMER" type="success" size="small" :disabled="op_customer || !hasGeneratedInvoices" @click="handleInvoiceBatch" class="invoice-button">开具客户发票</el-button>
+					<el-button v-if="invoiceType === PUBLIC_DICT_TYPE.SUPPLIER" type="success" size="small" :disabled="op_supplier || !hasGeneratedInvoices" @click="handleInvoiceBatch" class="invoice-button">开具供应商发票</el-button>
 				</div>
 			</div>
 		</el-card>
@@ -783,7 +765,6 @@ export default {
 			opacity: 0.6;
 		}
 	}
-
 }
 
 /* 响应式适配 */

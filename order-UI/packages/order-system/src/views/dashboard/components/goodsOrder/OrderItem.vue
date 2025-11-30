@@ -127,16 +127,7 @@ export default {
 					<el-row>
 						<el-col :span="12">
 							<!--              供应商的查找-->
-							<SearchOption
-								:get-data="listCompany"
-								icon="el-icon-user"
-								query-label="供应商名称"
-								query-info="companyName"
-								:query-name="querySupplier"
-								:limit-info="{ companyType: '供应商' }"
-								@commitBack="handleCommitBackCompany"
-								@update:queryName="handleUpdateQuerySupplier"
-							>
+							<SearchOption :get-data="listCompany" icon="el-icon-user" query-label="供应商名称" query-info="companyName" :query-name="querySupplier" :limit-info="{ companyType: '供应商' }" @commitBack="handleCommitBackCompany" @update:queryName="handleUpdateQuerySupplier">
 								<template #table-columns>
 									<el-table-column label="供应商名称" align="center" prop="companyName" />
 									<el-table-column label="联系人" align="center" prop="relationName" />
@@ -177,16 +168,7 @@ export default {
 					<span class="text-bold">产品级别</span>
 					<hr />
 					<el-input v-model="orderItemInfo.levelName" type="text" placeholder="请输入产品级别" />
-					<SearchOption
-						:get-data="listProductLevel"
-						icon="el-icon-search"
-						:limit-info="{}"
-						query-label="级别名称"
-						query-info="levelName"
-						:query-name="queryLevel"
-						@update:queryName="handleUpdateQueryNameLevel"
-						@commitBack="handleCommitBackProductLevel"
-					>
+					<SearchOption :get-data="listProductLevel" icon="el-icon-search" :limit-info="{}" query-label="级别名称" query-info="levelName" :query-name="queryLevel" @update:queryName="handleUpdateQueryNameLevel" @commitBack="handleCommitBackProductLevel">
 						<template #table-columns>
 							<el-table-column label="级别编码" align="center" prop="levelNo" />
 							<el-table-column label="级别名称" align="center" prop="levelName" min-width="150" />

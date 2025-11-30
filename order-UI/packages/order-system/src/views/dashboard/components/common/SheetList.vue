@@ -561,7 +561,7 @@ export default {
 			// 从暂存数据中获取原始数据
 			const purchaseTempData = this.$store.getters.purchaseTempInfo || [];
 			const sellerTempData = this.$store.getters.sellerTempInfo || [];
-			
+
 			// 筛选购买方信息
 			this.purchaseTotalInfo = purchaseTempData.filter(item => {
 				// 我方公司筛选
@@ -585,7 +585,7 @@ export default {
 				}
 				return true;
 			});
-			
+
 			// 筛选销方信息
 			this.sellerTotalInfo = sellerTempData.filter(item => {
 				// 我方公司筛选
@@ -724,7 +724,7 @@ export default {
 													<el-row :gutter="8">
 														<el-col :span="7">
 															<el-form-item label="我方公司" label-width="160px">
-																<el-input v-model="myCompany" placeholder="我方公司名称" size="mini" clearable/>
+																<el-input v-model="myCompany" placeholder="我方公司名称" size="mini" clearable />
 															</el-form-item>
 														</el-col>
 														<el-col :span="7">

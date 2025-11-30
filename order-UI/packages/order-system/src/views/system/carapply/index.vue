@@ -135,15 +135,7 @@
 										<el-input v-model="form.carNo" placeholder="请输入车牌" />
 									</el-col>
 									<el-col :span="4">
-										<SearchOption
-											:limit-info="{}"
-											:get-data="listVehicles"
-											query-label="车牌搜索"
-											:query-name="queryCars"
-											query-info="licensePlate"
-											@update:queryName="updateQueryCars"
-											@commitBack="handleCommitBackCars"
-										>
+										<SearchOption :limit-info="{}" :get-data="listVehicles" query-label="车牌搜索" :query-name="queryCars" query-info="licensePlate" @update:queryName="updateQueryCars" @commitBack="handleCommitBackCars">
 											<template #table-columns>
 												<el-table-column label="车牌" prop="licensePlate" />
 												<el-table-column label="车辆型号" prop="model" />

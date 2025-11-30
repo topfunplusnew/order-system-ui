@@ -17,49 +17,42 @@
 		</el-form>
 
 		<h4 class="form-header h4">角色信息</h4>
-		<el-table
-			ref="table"
-			v-loading="loading"
-			:row-key="getRowKey"
-			:data="roles.slice((pageNum - 1) * pageSize, pageNum * pageSize)"
-			@row-click="clickRow"
-			@selection-change="handleSelectionChange"
-		>
-		<el-table-column label="序号" type="index" align="center" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ (pageNum - 1) * pageSize + scope.$index + 1 }}</div>
-					<span>{{ (pageNum - 1) * pageSize + scope.$index + 1 }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column type="selection" :reserve-selection="true" width="55"></el-table-column>
-		<el-table-column label="角色编号" align="center" prop="roleId" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.roleId }}</div>
-					<span>{{ scope.row.roleId }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column label="角色名称" align="center" prop="roleName" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.roleName }}</div>
-					<span>{{ scope.row.roleName }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column label="创建时间" align="center" prop="createTime" width="180" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</div>
-					<span>
-						{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}:{s}') }}
-					</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
+		<el-table ref="table" v-loading="loading" :row-key="getRowKey" :data="roles.slice((pageNum - 1) * pageSize, pageNum * pageSize)" @row-click="clickRow" @selection-change="handleSelectionChange">
+			<el-table-column label="序号" type="index" align="center" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ (pageNum - 1) * pageSize + scope.$index + 1 }}</div>
+						<span>{{ (pageNum - 1) * pageSize + scope.$index + 1 }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column type="selection" :reserve-selection="true" width="55"></el-table-column>
+			<el-table-column label="角色编号" align="center" prop="roleId" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.roleId }}</div>
+						<span>{{ scope.row.roleId }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column label="角色名称" align="center" prop="roleName" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.roleName }}</div>
+						<span>{{ scope.row.roleName }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column label="创建时间" align="center" prop="createTime" width="180" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</div>
+						<span>
+							{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}:{s}') }}
+						</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 		</el-table>
 
 		<pagination v-show="total > 0" :total="total" :page.sync="pageNum" :limit.sync="pageSize" />

@@ -2,17 +2,7 @@
 	<div :class="['sidebar-wrapper', 'layui-side', 'layui-bg-blue', { 'has-logo': showLogo }]">
 		<logo v-if="showLogo" :collapse="isCollapse" />
 		<el-scrollbar :class="[settings.sideTheme, 'layui-side-scroll']" wrap-class="scrollbar-wrapper">
-			<el-menu
-				class="sidebar-menu layui-nav layui-nav-tree beg-navbar layui-bg-blue"
-				:default-active="activeMenu"
-				:collapse="isCollapse"
-				background-color="#f9f9f9"
-				text-color="#000"
-				:unique-opened="false"
-				active-text-color="#156fb2"
-				:collapse-transition="false"
-				mode="vertical"
-			>
+			<el-menu class="sidebar-menu layui-nav layui-nav-tree beg-navbar layui-bg-blue" :default-active="activeMenu" :collapse="isCollapse" background-color="#f9f9f9" text-color="#000" :unique-opened="false" active-text-color="#156fb2" :collapse-transition="false" mode="vertical">
 				<sidebar-item v-for="(route, index) in sidebarRouters" :key="route.path + index" :item="route" :base-path="route.path" />
 			</el-menu>
 		</el-scrollbar>

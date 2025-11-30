@@ -11,18 +11,9 @@ import ImagePreview from './components/ImagePreview';
 import Editor from './components/Editor';
 
 // 全局注册组件
-const components = [
-	Pagination,
-	RightToolbar,
-	DictTag,
-	SvgIcon,
-	ImageUpload,
-	FileUpload,
-	ImagePreview,
-	Editor
-];
+const components = [Pagination, RightToolbar, DictTag, SvgIcon, ImageUpload, FileUpload, ImagePreview, Editor];
 
-const install = function(Vue) {
+const install = function (Vue) {
 	components.forEach(component => {
 		Vue.component(component.name, component);
 	});
@@ -46,14 +37,4 @@ export default {
 };
 
 // 单独导出组件
-export {
-	Pagination,
-	RightToolbar,
-	DictTag,
-	SvgIcon,
-	ImageUpload,
-	FileUpload,
-	ImagePreview,
-	Editor
-};
-
+export { Pagination, RightToolbar, DictTag, SvgIcon, ImageUpload, FileUpload, ImagePreview, Editor };

@@ -84,15 +84,7 @@
 						<el-col :span="12">
 							<el-input v-model="form.companyName" placeholder="请输入对方公司" />
 						</el-col>
-						<SearchOption
-							:limit-info="{ companyType: form.companyType }"
-							:get-data="listCompany"
-							query-info="companyName"
-							query-label="公司名称"
-							:query-name="queryCompanyName"
-							@update:queryName="handleUpdateCompanyName"
-							@commitBack="handleCommitBackCompany"
-						>
+						<SearchOption :limit-info="{ companyType: form.companyType }" :get-data="listCompany" query-info="companyName" query-label="公司名称" :query-name="queryCompanyName" @update:queryName="handleUpdateCompanyName" @commitBack="handleCommitBackCompany">
 							<template #table-columns>
 								<el-table-column :label="form.companyType" align="center" prop="companyName" />
 								<el-table-column label="对方公司类型" align="center" prop="companyType" />

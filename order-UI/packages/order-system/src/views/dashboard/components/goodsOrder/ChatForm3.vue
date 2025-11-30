@@ -75,7 +75,7 @@ export default {
 				const titleEl = container.querySelector('.invoice-title');
 				const headerEl = container.querySelector('.invoice-header');
 				const tableEl = container.querySelector('#copyTable');
-				
+
 				if (!tableEl) {
 					this.$message.error('未找到表格');
 					return;
@@ -83,7 +83,7 @@ export default {
 
 				const titleText = titleEl ? titleEl.textContent.trim() : '';
 				const headerTexts = headerEl ? Array.from(headerEl.querySelectorAll('div')).map(div => div.textContent.trim()) : [];
-				
+
 				// 计算表格列数（从thead的第一行计算）
 				const firstRow = tableEl.querySelector('thead tr');
 				let colCount = 0;
@@ -134,7 +134,7 @@ export default {
 					const headerRow = document.createElement('tr');
 					const colSpanPerHeader = Math.floor(colCount / headerTexts.length);
 					const remainder = colCount % headerTexts.length;
-					
+
 					headerTexts.forEach((text, index) => {
 						const headerCell = document.createElement('td');
 						// 最后一个单元格包含余数
@@ -145,7 +145,7 @@ export default {
 						headerCell.textContent = text;
 						headerRow.appendChild(headerCell);
 					});
-					
+
 					// 插入到title行之后
 					if (newThead.querySelector('tr')) {
 						newThead.insertBefore(headerRow, newThead.querySelector('tr').nextSibling);
@@ -215,7 +215,7 @@ export default {
 					const titleEl = container.querySelector('.invoice-title');
 					const headerEl = container.querySelector('.invoice-header');
 					const tableEl = container.querySelector('#copyTable');
-					
+
 					if (!tableEl) {
 						this.$message.error('未找到表格');
 						return;
@@ -223,7 +223,7 @@ export default {
 
 					const titleText = titleEl ? titleEl.textContent.trim() : '';
 					const headerTexts = headerEl ? Array.from(headerEl.querySelectorAll('div')).map(div => div.textContent.trim()) : [];
-					
+
 					const firstRow = tableEl.querySelector('thead tr');
 					let colCount = 0;
 					if (firstRow) {
@@ -267,7 +267,7 @@ export default {
 						const headerRow = document.createElement('tr');
 						const colSpanPerHeader = Math.floor(colCount / headerTexts.length);
 						const remainder = colCount % headerTexts.length;
-						
+
 						headerTexts.forEach((text, index) => {
 							const headerCell = document.createElement('td');
 							const colspan = index === headerTexts.length - 1 ? colSpanPerHeader + remainder : colSpanPerHeader;
@@ -277,7 +277,7 @@ export default {
 							headerCell.textContent = text;
 							headerRow.appendChild(headerCell);
 						});
-						
+
 						if (newThead.querySelector('tr')) {
 							newThead.insertBefore(headerRow, newThead.querySelector('tr').nextSibling);
 						} else {

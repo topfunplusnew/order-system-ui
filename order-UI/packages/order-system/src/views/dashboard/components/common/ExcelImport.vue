@@ -62,7 +62,7 @@ export default {
 			// 触发input的点击事件
 			this.$refs.fileInput.click();
 		},
-		
+
 		// 生成文件标识
 		generateFileId(file) {
 			// 基于文件名、大小和修改时间生成唯一标识
@@ -71,7 +71,7 @@ export default {
 			let hash = 0;
 			for (let i = 0; i < fileInfo.length; i++) {
 				const char = fileInfo.charCodeAt(i);
-				hash = ((hash << 5) - hash) + char;
+				hash = (hash << 5) - hash + char;
 				hash = hash & hash; // 转换为32位整数
 			}
 			return Math.abs(hash).toString(36);
@@ -385,16 +385,7 @@ export default {
 
 		<!-- 批量开票弹窗 -->
 		<div>
-			<el-dialog
-				:modal="false"
-				v-dialogDrag
-				v-dialogDragWidth
-				v-dialogDragHeight
-				title="请选择该excel中的一个工作表后进行批量开票"
-				:visible.sync="dialogVisible"
-				width="500px"
-				class="sheet-select-dialog"
-			>
+			<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="请选择该excel中的一个工作表后进行批量开票" :visible.sync="dialogVisible" width="500px" class="sheet-select-dialog">
 				<div class="dialog-content">
 					<div class="dialog-tip" :class="{ 'large-file-tip': isLargeFile }">
 						<i :class="isLargeFile ? 'el-icon-warning' : 'el-icon-info'"></i>

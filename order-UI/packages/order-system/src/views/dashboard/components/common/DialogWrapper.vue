@@ -1,18 +1,5 @@
 <template>
-	<el-dialog
-		v-if="internalVisible"
-		:modal="false"
-		v-dialogDrag
-		v-el-relen-dialog
-		:title="dialogTitle"
-		:visible.sync="internalVisible"
-		:width="dialogWidth"
-		append-to-body
-		:close-on-click-modal="false"
-		:close-on-press-escape="false"
-		:destroy-on-close="false"
-		@close="handleClose"
-	>
+	<el-dialog v-if="internalVisible" :modal="false" v-dialogDrag v-el-relen-dialog :title="dialogTitle" :visible.sync="internalVisible" :width="dialogWidth" append-to-body :close-on-click-modal="false" :close-on-press-escape="false" :destroy-on-close="false" @close="handleClose">
 		<keep-alive>
 			<component :is="currentComponent" :key="dialogKey" ref="dynamicComponent" v-bind="dialogProps" />
 		</keep-alive>

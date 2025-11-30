@@ -2,16 +2,16 @@ import Vue from 'vue';
 
 import Cookies from 'js-cookie';
 
-import Element, {Loading, MessageBox} from 'element-ui';
+import Element, { Loading, MessageBox } from 'element-ui';
 import './assets/styles/element-variables.scss';
 import './element-variables.scss';
 
-import {getConfigKey} from '@/api/system/config';
-import {getDicts} from '@/api/system/dict/data';
+import { getConfigKey } from '@/api/system/config';
+import { getDicts } from '@/api/system/dict/data';
 import '@/assets/styles/index.scss'; // global css
 import '@/assets/styles/ruoyi.scss'; // ruoyi css
-import {download, onceDownload} from '@/utils/request';
-import {addDateRange, handleTree, parseTime, resetForm, selectDictLabel, selectDictLabels} from '@/utils/ruoyi';
+import { download, onceDownload } from '@/utils/request';
+import { addDateRange, handleTree, parseTime, resetForm, selectDictLabel, selectDictLabels } from '@/utils/ruoyi';
 import App from './App.vue';
 import './assets/icons'; // icon
 import directive from './directive'; // directive
@@ -47,37 +47,35 @@ import 'print-js/dist/print.css';
 import VForm from 'vform-builds'; // 引入VForm库
 import 'vform-builds/dist/VFormDesigner.css'; // 引入VForm样式
 import service from './utils/request';
-import {Logger} from '@/utils/order/logger';
+import { Logger } from '@/utils/order/logger';
 // 虚拟滚动
 import VueVirtualScroller from 'vue-virtual-scroller';
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css';
 import DatePickerDialog from './views/dashboard/components/common/DatePickerDialog.vue';
-import Antd, {message} from 'ant-design-vue';
+import Antd, { message } from 'ant-design-vue';
 import 'ant-design-vue/dist/antd.css';
-
-
 
 // 漫游组件
 import 'vue-tour/dist/vue-tour.css';
 import VueTour from 'vue-tour';
 import keepAliveDialog from '@/views/dashboard/mixins/keepAliveDialog';
 // 引入通用弹窗混入和组件
-import {common_dialog} from '@/views/dashboard/mixins/common/common_dialog';
+import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 import CustomTableColumn from '@/components/CustomTableColumn/index.vue';
 // 引入列显隐控制混入
-import {columnVisibilityMixin} from '@/mixins/columnVisibilityMixin';
+import { columnVisibilityMixin } from '@/mixins/columnVisibilityMixin';
 // 全局注册弹窗拖拽与位置重算指令
 import elDragDialog from '@/views/dashboard/directive/dialog/drugDialog';
 import elRelenDialog from '@/views/dashboard/directive/dialog/relenDialog';
-import {checkVersion} from './utils/versionChecker';
-import {UTable, UTableColumn} from 'umy-ui';
-import 'umy-ui/lib/theme-chalk/index.css';// 引入样式
+import { checkVersion } from './utils/versionChecker';
+import { UTable, UTableColumn } from 'umy-ui';
+import 'umy-ui/lib/theme-chalk/index.css'; // 引入样式
 import FitColumnPlugin from 'v-fit-columns';
 
 message.config({
-    top: '10px',
-    getContainer: () => document.getElementById('messsage-box-div')
+	top: '10px',
+	getContainer: () => document.getElementById('messsage-box-div')
 });
 Vue.component(UTable.name, UTable);
 Vue.component(UTableColumn.name, UTableColumn);
@@ -98,8 +96,8 @@ Vue.prototype.download = download;
 Vue.prototype.handleTree = handleTree;
 Vue.prototype.$print = print;
 Vue.prototype.$log = new Logger({
-    prefix: 'MyApp',
-    enableDebug: true
+	prefix: 'MyApp',
+	enableDebug: true
 });
 
 // 一键下载
@@ -107,75 +105,58 @@ Vue.prototype.downLoadOnce = onceDownload;
 
 Vue.prototype.$antdconfirm = Vue.prototype.$confirm;
 // 使用: this.form = excludeParams(this.form, this.$exclude)  api/tool/exclude.js
-Vue.prototype.$exclude = [
-    'addtime',
-    'userId',
-    'UserName',
-    'delFlag',
-    'submitflag',
-    'cancelFlag',
-    'createBy',
-    'createTime',
-    'updateBy',
-    'updateTime',
-    'isedit',
-    'userName',
-    'create_time',
-    'update_time',
-    'username',
-    'cancelflag'
-];
+Vue.prototype.$exclude = ['addtime', 'userId', 'UserName', 'delFlag', 'submitflag', 'cancelFlag', 'createBy', 'createTime', 'updateBy', 'updateTime', 'isedit', 'userName', 'create_time', 'update_time', 'username', 'cancelflag'];
 Vue.prototype.$excludeWithUpdate = [
-    'addtime',
-    'userId',
-    'delFlag',
-    'id',
-    'orderDetailList',
-    'goodsOrderID',
-    'ordersNo',
-    'customerID',
-    'checkUserId',
-    'checkState',
-    'isAdjust',
-    'adjustDate',
-    'isAdjusted',
-    'adjustOrderid',
-    'receiveProof',
-    'paymentState',
-    'invoiceState',
-    'customerIsInvoice',
-    'isSupplierInvoice',
-    'orderDateEnd',
-    'orderDateStart',
-    'landCarID',
-    'seaCarID',
-    'path',
-    'submitflag',
-    'cancelFlag',
-    'createBy',
-    'createTime',
-    'updateBy',
-    'isedit'
+	'addtime',
+	'userId',
+	'delFlag',
+	'id',
+	'orderDetailList',
+	'goodsOrderID',
+	'ordersNo',
+	'customerID',
+	'checkUserId',
+	'checkState',
+	'isAdjust',
+	'adjustDate',
+	'isAdjusted',
+	'adjustOrderid',
+	'receiveProof',
+	'paymentState',
+	'invoiceState',
+	'customerIsInvoice',
+	'isSupplierInvoice',
+	'orderDateEnd',
+	'orderDateStart',
+	'landCarID',
+	'seaCarID',
+	'path',
+	'submitflag',
+	'cancelFlag',
+	'createBy',
+	'createTime',
+	'updateBy',
+	'isedit'
 ];
 Vue.prototype.$imgs = ['png', 'jpg', 'jpeg', 'bmp', 'gif', 'webp'];
 Vue.prototype.$datePicker = function () {
-    return new Promise(resolve => {
-        // 获取一个构造函数
-        const DatePickerConstructor = Vue.extend(DatePickerDialog);
-        // 实例化
-        const datePickerInstance = new DatePickerConstructor({
-            propsData: {resolve}
-        });
-        // 手动挂载到 DOM 上
-        datePickerInstance.$mount();
-        document.body.appendChild(datePickerInstance.$el);
-        // 显示弹框
-        datePickerInstance.show();
-        // 捕获关闭事件
-        datePickerInstance.$on('resolve', data => {
-            resolve(data); // 处理日期选择
-        });
-    });
+	return new Promise(resolve => {
+		// 获取一个构造函数
+		const DatePickerConstructor = Vue.extend(DatePickerDialog);
+		// 实例化
+		const datePickerInstance = new DatePickerConstructor({
+			propsData: { resolve }
+		});
+		// 手动挂载到 DOM 上
+		datePickerInstance.$mount();
+		document.body.appendChild(datePickerInstance.$el);
+		// 显示弹框
+		datePickerInstance.show();
+		// 捕获关闭事件
+		datePickerInstance.$on('resolve', data => {
+			resolve(data); // 处理日期选择
+		});
+	});
 };
 
 // 引入composition-api写法
@@ -189,14 +170,14 @@ Vue.mixin(common_dialog);
 // 全局注册列显隐控制混入
 Vue.mixin(columnVisibilityMixin);
 // 全局指令（若指令文件包含 install 则可直接 use；此处双保险显式注册）
-Vue.use(elDragDialog.install ? elDragDialog : {install: v => v.directive('el-drag-dialog', elDragDialog)});
-Vue.use(elRelenDialog.install ? elRelenDialog : {install: v => v.directive('el-relen-dialog', elRelenDialog)});
+Vue.use(elDragDialog.install ? elDragDialog : { install: v => v.directive('el-drag-dialog', elDragDialog) });
+Vue.use(elRelenDialog.install ? elRelenDialog : { install: v => v.directive('el-relen-dialog', elRelenDialog) });
 
 // 引入表格固定列修复工具 - 自动修复所有el-table的固定列错行问题
 // import '@/utils/tableFixedColumnAdjustment';
 
 export const isNull = val => {
-    return !val ? '暂无' : val;
+	return !val ? '暂无' : val;
 };
 
 // 全局组件挂载
@@ -218,7 +199,7 @@ Vue.use(VueMeta);
 Vue.use(horizontalScroll);
 DictData.install();
 Vue.use(Element, {
-    size: Cookies.get('size') || 'medium' // set element-ui default size
+	size: Cookies.get('size') || 'medium' // set element-ui default size
 });
 // 表单生成器
 Vue.use(VForm);
@@ -229,21 +210,21 @@ checkVersion();
 // 每隔 1 分钟检测一次版本号
 setInterval(checkVersion, 60 * 1000);
 window.addEventListener('app-version-changed', () => {
-    MessageBox.confirm('检测到系统已更新，是否立即刷新页面？', '版本更新提示', {
-        confirmButtonText: '刷新',
-        cancelButtonText: '稍后',
-        type: 'warning'
-    }).then(() => {
-        window.location.reload(true);
-    });
+	MessageBox.confirm('检测到系统已更新，是否立即刷新页面？', '版本更新提示', {
+		confirmButtonText: '刷新',
+		cancelButtonText: '稍后',
+		type: 'warning'
+	}).then(() => {
+		window.location.reload(true);
+	});
 });
 // 创建vm 挂载全局事件总线
 new Vue({
-    el: '#app',
-    router,
-    store,
-    beforeCreate() {
-        Vue.prototype.$bus = this;
-    },
-    render: h => h(App)
+	el: '#app',
+	router,
+	store,
+	beforeCreate() {
+		Vue.prototype.$bus = this;
+	},
+	render: h => h(App)
 });

@@ -151,35 +151,12 @@
 			</div>
 		</el-dialog>
 
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="Cron表达式生成器"
-			:visible.sync="openCron"
-			append-to-body
-			destroy-on-close
-			class="scrollbar"
-		>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="Cron表达式生成器" :visible.sync="openCron" append-to-body destroy-on-close class="scrollbar">
 			<crontab :expression="expression" @hide="openCron = false" @fill="crontabFill"></crontab>
 		</el-dialog>
 
 		<!-- 任务日志详细 -->
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="任务详细"
-			:visible.sync="openView"
-			width="700px"
-			append-to-body
-		>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="任务详细" :visible.sync="openView" width="700px" append-to-body>
 			<el-form ref="form" :model="form" label-width="120px" size="mini">
 				<el-row>
 					<el-col :span="12">

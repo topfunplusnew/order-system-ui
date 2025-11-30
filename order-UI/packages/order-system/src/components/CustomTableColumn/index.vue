@@ -162,25 +162,7 @@ const SlotContentWrapper = {
 				return false;
 			}
 
-			const interactiveComponents = [
-				'el-button',
-				'el-dropdown',
-				'el-select',
-				'el-input',
-				'el-switch',
-				'el-checkbox',
-				'el-radio',
-				'el-date-picker',
-				'el-time-picker',
-				'el-cascader',
-				'el-upload',
-				'el-link',
-				'el-tag',
-				'button',
-				'input',
-				'select',
-				'a'
-			];
+			const interactiveComponents = ['el-button', 'el-dropdown', 'el-select', 'el-input', 'el-switch', 'el-checkbox', 'el-radio', 'el-date-picker', 'el-time-picker', 'el-cascader', 'el-upload', 'el-link', 'el-tag', 'button', 'input', 'select', 'a'];
 
 			const checkVNode = vnode => {
 				if (!vnode) return false;

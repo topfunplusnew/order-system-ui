@@ -5,29 +5,13 @@
 				<el-input v-model="queryParams.orderNo" placeholder="请输入订单编号" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="订单日期">
-				<el-date-picker
-					v-model="daterangeOrderDate"
-					style="width: 240px"
-					value-format="yyyy-MM-dd HH:mm:ss"
-					type="daterange"
-					range-separator="-"
-					start-placeholder="开始日期"
-					end-placeholder="结束日期"
-				></el-date-picker>
+				<el-date-picker v-model="daterangeOrderDate" style="width: 240px" value-format="yyyy-MM-dd HH:mm:ss" type="daterange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
 			</el-form-item>
 			<el-form-item label="接受奖励人员" prop="rewardReceiver">
 				<el-input v-model="queryParams.rewardReceiver" placeholder="请输入接受奖励人员" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="奖励日期">
-				<el-date-picker
-					v-model="daterangeRewardDate"
-					style="width: 240px"
-					value-format="yyyy-MM-dd HH:mm:ss"
-					type="daterange"
-					range-separator="-"
-					start-placeholder="开始日期"
-					end-placeholder="结束日期"
-				></el-date-picker>
+				<el-date-picker v-model="daterangeRewardDate" style="width: 240px" value-format="yyyy-MM-dd HH:mm:ss" type="daterange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -43,9 +27,7 @@
 				<el-button v-hasPermi="['system:salessingorderincentivedetails:edit']" type="success" plain icon="el-icon-edit" size="mini" :disabled="single" @click="handleUpdate">修改</el-button>
 			</el-col>
 			<el-col :span="1.5">
-				<el-button v-hasPermi="['system:salessingorderincentivedetails:remove']" type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete">
-					删除
-				</el-button>
+				<el-button v-hasPermi="['system:salessingorderincentivedetails:remove']" type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete">删除</el-button>
 			</el-col>
 			<el-col :span="1.5">
 				<el-button v-hasPermi="['system:salessingorderincentivedetails:export']" type="warning" plain icon="el-icon-download" size="mini" @click="handleExport">导出</el-button>
@@ -77,97 +59,97 @@
 			"
 			@selection-change="handleSelectionChange"
 		>
-		<el-table-column type="selection" width="55" align="center" />
+			<el-table-column type="selection" width="55" align="center" />
 
-		<el-table-column v-if="columns[0].visible" label="id" align="center" prop="id" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.id }}</div>
-					<span>{{ scope.row.id }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
+			<el-table-column v-if="columns[0].visible" label="id" align="center" prop="id" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.id }}</div>
+						<span>{{ scope.row.id }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 
-		<el-table-column v-if="columns[1].visible" label="订单日期" align="center" prop="orderDate" width="180" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ parseTime(scope.row.orderDate, '{y}-{m}-{d} {h}:{i}:{s}') }}</div>
-					<span>{{ parseTime(scope.row.orderDate, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
+			<el-table-column v-if="columns[1].visible" label="订单日期" align="center" prop="orderDate" width="180" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ parseTime(scope.row.orderDate, '{y}-{m}-{d} {h}:{i}:{s}') }}</div>
+						<span>{{ parseTime(scope.row.orderDate, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 
-		<el-table-column v-if="columns[2].visible" label="接受奖励人员" align="center" prop="rewardReceiver" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.rewardReceiver }}</div>
-					<span>{{ scope.row.rewardReceiver }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
+			<el-table-column v-if="columns[2].visible" label="接受奖励人员" align="center" prop="rewardReceiver" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.rewardReceiver }}</div>
+						<span>{{ scope.row.rewardReceiver }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 
-		<el-table-column v-if="columns[3].visible" label="订单不含税利润" align="center" prop="orderProfit" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.orderProfit }}</div>
-					<span>{{ scope.row.orderProfit }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
+			<el-table-column v-if="columns[3].visible" label="订单不含税利润" align="center" prop="orderProfit" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.orderProfit }}</div>
+						<span>{{ scope.row.orderProfit }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 
-		<el-table-column v-if="columns[4].visible" label="厂家返利" align="center" prop="manufacturerRebate" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.manufacturerRebate }}</div>
-					<span>{{ scope.row.manufacturerRebate }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
+			<el-table-column v-if="columns[4].visible" label="厂家返利" align="center" prop="manufacturerRebate" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.manufacturerRebate }}</div>
+						<span>{{ scope.row.manufacturerRebate }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 
-		<el-table-column v-if="columns[5].visible" label="客户/厂家佣金" align="center" prop="customerCommission" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.customerCommission }}</div>
-					<span>{{ scope.row.customerCommission }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
+			<el-table-column v-if="columns[5].visible" label="客户/厂家佣金" align="center" prop="customerCommission" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.customerCommission }}</div>
+						<span>{{ scope.row.customerCommission }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 
-		<el-table-column v-if="columns[6].visible" label="综合单车利润" align="center" prop="comprehensiveProfit" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.comprehensiveProfit }}</div>
-					<span>{{ scope.row.comprehensiveProfit }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
+			<el-table-column v-if="columns[6].visible" label="综合单车利润" align="center" prop="comprehensiveProfit" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.comprehensiveProfit }}</div>
+						<span>{{ scope.row.comprehensiveProfit }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 
-		<el-table-column v-if="columns[7].visible" label="奖励金额" align="center" prop="rewardAmount" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.rewardAmount }}</div>
-					<span>{{ scope.row.rewardAmount }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
+			<el-table-column v-if="columns[7].visible" label="奖励金额" align="center" prop="rewardAmount" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.rewardAmount }}</div>
+						<span>{{ scope.row.rewardAmount }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 
-		<el-table-column v-if="columns[8].visible" label="奖励日期" align="center" prop="rewardDate" width="180" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ parseTime(scope.row.rewardDate, '{y}-{m}-{d} {h}:{i}:{s}') }}</div>
-					<span>{{ parseTime(scope.row.rewardDate, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
+			<el-table-column v-if="columns[8].visible" label="奖励日期" align="center" prop="rewardDate" width="180" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ parseTime(scope.row.rewardDate, '{y}-{m}-{d} {h}:{i}:{s}') }}</div>
+						<span>{{ parseTime(scope.row.rewardDate, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 
-		<el-table-column v-if="columns[9].visible" label="备注" align="center" prop="remark" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.remark }}</div>
-					<span>{{ scope.row.remark }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
+			<el-table-column v-if="columns[9].visible" label="备注" align="center" prop="remark" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.remark }}</div>
+						<span>{{ scope.row.remark }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="200">
 				<template #default="scope">
@@ -234,13 +216,7 @@
 </template>
 
 <script>
-import {
-	listSalessingorderincentivedetails,
-	getSalessingorderincentivedetails,
-	delSalessingorderincentivedetails,
-	addSalessingorderincentivedetails,
-	updateSalessingorderincentivedetails
-} from '@/api/system/salessingorderincentivedetails';
+import { listSalessingorderincentivedetails, getSalessingorderincentivedetails, delSalessingorderincentivedetails, addSalessingorderincentivedetails, updateSalessingorderincentivedetails } from '@/api/system/salessingorderincentivedetails';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
 import { mixin_sing_order_fill } from './saleorder_fill';
 import Incent from '../../dashboard/components/incent/Incent.vue';

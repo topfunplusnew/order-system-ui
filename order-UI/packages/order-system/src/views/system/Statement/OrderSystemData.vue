@@ -29,34 +29,13 @@ export default {
 	},
 	computed: {
 		dailyProfit() {
-			return (
-				this.orderSystemData.systemGlassRevenueDay -
-				this.orderSystemData.systemGlassCostDay -
-				this.orderSystemData.systemPayableFreightDay +
-				this.orderSystemData.systemInvoiceOutDay -
-				this.orderSystemData.systemInvoiceInDay -
-				this.orderSystemData.systemDailyExpenseDay
-			);
+			return this.orderSystemData.systemGlassRevenueDay - this.orderSystemData.systemGlassCostDay - this.orderSystemData.systemPayableFreightDay + this.orderSystemData.systemInvoiceOutDay - this.orderSystemData.systemInvoiceInDay - this.orderSystemData.systemDailyExpenseDay;
 		},
 		monthlyProfit() {
-			return (
-				this.orderSystemData.systemGlassRevenueMonth -
-				this.orderSystemData.systemGlassCostMonth -
-				this.orderSystemData.systemPayableFreightMonth +
-				this.orderSystemData.systemInvoiceOutMonth -
-				this.orderSystemData.systemInvoiceInMonth -
-				this.orderSystemData.systemDailyExpenseMonth
-			);
+			return this.orderSystemData.systemGlassRevenueMonth - this.orderSystemData.systemGlassCostMonth - this.orderSystemData.systemPayableFreightMonth + this.orderSystemData.systemInvoiceOutMonth - this.orderSystemData.systemInvoiceInMonth - this.orderSystemData.systemDailyExpenseMonth;
 		},
 		yearlyProfit() {
-			return (
-				this.orderSystemData.systemGlassRevenueYear -
-				this.orderSystemData.systemGlassCostYear -
-				this.orderSystemData.systemPayableFreightYear +
-				this.orderSystemData.systemInvoiceOutYear -
-				this.orderSystemData.systemInvoiceInYear -
-				this.orderSystemData.systemDailyExpenseYear
-			);
+			return this.orderSystemData.systemGlassRevenueYear - this.orderSystemData.systemGlassCostYear - this.orderSystemData.systemPayableFreightYear + this.orderSystemData.systemInvoiceOutYear - this.orderSystemData.systemInvoiceInYear - this.orderSystemData.systemDailyExpenseYear;
 		}
 	},
 	methods: {

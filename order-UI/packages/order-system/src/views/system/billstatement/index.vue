@@ -39,20 +39,7 @@
 			</right-toolbar>
 		</el-row>
 
-    <el-table
-        v-loading="loading"
-        v-horizontal-scroll="'always'"
-        border
-        :data="bankAcceptanceList"
-        show-summary
-        id="printBox"
-        :summary-method="getSummaries"
-        size="mini"
-        :cell-style="() => ({ padding: '1.5px' })"
-        @selection-change="handleSelectionChange"
-        :max-height="600"
-    >
-
+		<el-table v-loading="loading" v-horizontal-scroll="'always'" border :data="bankAcceptanceList" show-summary id="printBox" :summary-method="getSummaries" size="mini" :cell-style="() => ({ padding: '1.5px' })" @selection-change="handleSelectionChange" :max-height="600">
 			<el-table-column v-if="columns[1].visible" label="票据号码" align="center" prop="billNo" width="120" show-overflow-tooltip />
 			<el-table-column v-if="columns[2].visible" label="出票日期" align="center" prop="issueDate" width="120" show-overflow-tooltip />
 			<el-table-column v-if="columns[3].visible" label="到期日期" align="center" prop="dueDate" width="120" show-overflow-tooltip />

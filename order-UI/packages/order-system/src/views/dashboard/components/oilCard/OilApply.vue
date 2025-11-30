@@ -356,13 +356,7 @@ export default {
 					<el-input v-model="form.reason" type="textarea" placeholder="请输入内容" />
 				</el-form-item>
 				<el-form-item label="附件" prop="attachmentIds">
-					<UploadFilesButton
-						ref="attachmentUpload"
-						flag="attachment"
-						:initial-attachments="(form.params && form.params.attachments) || []"
-						:extra-info="{ moduleType: 'oilRecharge', formId: form.id }"
-						@files-updated="handleCommitUpload"
-					/>
+					<UploadFilesButton ref="attachmentUpload" flag="attachment" :initial-attachments="(form.params && form.params.attachments) || []" :extra-info="{ moduleType: 'oilRecharge', formId: form.id }" @files-updated="handleCommitUpload" />
 				</el-form-item>
 				<el-form-item label="备注" prop="comments">
 					<el-input v-model="form.comments" placeholder="请输入备注" />

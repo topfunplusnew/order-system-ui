@@ -203,10 +203,11 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[15].visible" label="操作" align="center" class-name="small-padding fixed-width" width="250">
+			<el-table-column v-if="columns[15].visible" label="操作" align="center" class-name="small-padding fixed-width" width="400" fixed="right">
 				<template #default="scope">
 					<el-button size="mini" type="text" @click="handleCheckOrder(scope.row)">查看订单</el-button>
-					<el-button v-hasPermi="['system:salesReward:edit']" size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)">修改</el-button>
+					<el-button v-hasPermi="['system:salesReward:edit']" size="mini" type="text" icon="el-icon-edit" :disabled="scope.row.auditState === '已审核'" @click="handleUpdate(scope.row)">修改</el-button>
+					<el-button v-hasPermi="['system:salesReward:supplement']" size="mini" type="text" icon="el-icon-edit-outline" @click="handleSupplement(scope.row)">补充信息</el-button>
 					<el-button v-if="scope.row.auditState === '未审核'" v-hasPermi="['system:salesReward:audit']" size="mini" type="text" icon="el-icon-check" @click="handleAudit(scope.row, true)">审核</el-button>
 					<el-button v-else v-hasPermi="['system:salesReward:audit']" size="mini" type="text" icon="el-icon-close" @click="handleAudit(scope.row, false)">取消审核</el-button>
 					<el-button v-hasPermi="['system:salesReward:remove']" size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)">删除</el-button>
@@ -304,17 +305,14 @@
 						<el-form-item label="奖励金额" prop="rewardAmount">
 							<el-input v-model="form.rewardAmount" placeholder="请输入奖励金额" style="width: 100%"></el-input>
 						</el-form-item>
-						<el-form-item label="实际支付金额" prop="paymentAmount">
-							<el-input v-model="form.paymentAmount" placeholder="请输入实际支付金额" style="width: 100%"></el-input>
-						</el-form-item>
-						<el-form-item label="奖励日期" prop="rewardDate">
-							<el-date-picker v-model="form.rewardDate" clearable type="date" value-format="yyyy-MM-dd" placeholder="请选择奖励日期" style="width: 100%"></el-date-picker>
-						</el-form-item>
 						<el-form-item label="审核状态" prop="auditState">
 							<el-select v-model="form.auditState" placeholder="请选择审核状态" style="width: 100%">
 								<el-option label="未审核" value="未审核" />
 								<el-option label="已审核" value="已审核" />
 							</el-select>
+						</el-form-item>
+						<el-form-item label="备注" prop="remark">
+							<el-input v-model="form.remark" type="textarea" :rows="3" placeholder="请输入备注" style="width: 100%"></el-input>
 						</el-form-item>
 					</el-col>
 				</el-row>
@@ -324,11 +322,27 @@
 				<el-button @click="cancel">取 消</el-button>
 			</div>
 		</el-dialog>
+
+		<!-- 补充信息对话框 -->
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="补充信息" :visible.sync="supplementOpen" width="500px" append-to-body>
+			<el-form ref="supplementForm" :model="supplementForm" :rules="supplementRules" label-width="150px">
+				<el-form-item label="实际支付金额" prop="paymentAmount">
+					<el-input v-model="supplementForm.paymentAmount" placeholder="请输入实际支付金额" style="width: 100%"></el-input>
+				</el-form-item>
+				<el-form-item label="奖励日期" prop="rewardDate">
+					<el-date-picker v-model="supplementForm.rewardDate" clearable type="date" value-format="yyyy-MM-dd" placeholder="请选择奖励日期" style="width: 100%"></el-date-picker>
+				</el-form-item>
+			</el-form>
+			<div slot="footer" class="dialog-footer">
+				<el-button type="primary" @click="submitSupplementForm">确 定</el-button>
+				<el-button @click="cancelSupplement">取 消</el-button>
+			</div>
+		</el-dialog>
 	</div>
 </template>
 
 <script>
-import { listSalesReward, getSalesReward, delSalesReward, addSalesReward, updateSalesReward, auditSalesReward, getOrderRewardData, exportSalesReward } from '@/api/salesReward/salesReward';
+import { listSalesReward, getSalesReward, delSalesReward, addSalesReward, updateSalesReward, auditSalesReward, getOrderRewardData, supplementSalesReward } from '@/api/salesReward/salesReward';
 import { parseTime } from '@/utils/ruoyi';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import { getGoodsOrder, listGoodsOrder } from '@/api/system/goodsOrder';
@@ -351,6 +365,8 @@ export default {
 			salesRewardList: [],
 			title: '',
 			open: false,
+			supplementOpen: false,
+			supplementForm: {},
 			daterangeOrderDate: [],
 			daterangeRewardDate: [],
 			queryParams: {
@@ -372,8 +388,84 @@ export default {
 			querySearchGoodsOrder: '',
 			rules: {
 				orderId: [{ required: true, message: '请选择订单', trigger: 'change' }],
+				orderDate: [{ required: true, message: '请选择订单日期', trigger: 'change' }],
+				customerName: [{ required: true, message: '请输入客户名称', trigger: 'blur' }],
 				personnelIdentity: [{ required: true, message: '请选择人员身份', trigger: 'change' }],
 				rewardReceiver: [{ required: true, message: '请输入奖励接收人', trigger: 'blur' }],
+				rewardReason: [{ required: true, message: '请输入奖励原因', trigger: 'blur' }],
+				orderProfit: [
+					{ required: true, message: '请输入订单不含税利润', trigger: 'blur' },
+					{
+						validator: (rule, value, callback) => {
+							if (value === null || value === undefined || value === '') {
+								callback(new Error('请输入订单不含税利润'));
+								return;
+							}
+							const numStr = String(value).trim();
+							if (!/^-?(\d+\.?\d*|\.\d+)$/.test(numStr)) {
+								callback(new Error('只能输入数字，可以输入负数'));
+							} else {
+								callback();
+							}
+						},
+						trigger: 'blur'
+					}
+				],
+				manufacturerRebateDiscountAmount: [
+					{ required: true, message: '请输入厂家返利及降价合计', trigger: 'blur' },
+					{
+						validator: (rule, value, callback) => {
+							if (value === null || value === undefined || value === '') {
+								callback(new Error('请输入厂家返利及降价合计'));
+								return;
+							}
+							const numStr = String(value).trim();
+							if (!/^-?(\d+\.?\d*|\.\d+)$/.test(numStr)) {
+								callback(new Error('只能输入数字，可以输入负数'));
+							} else {
+								callback();
+							}
+						},
+						trigger: 'blur'
+					}
+				],
+				acceptanceDiscountProfit: [
+					{ required: true, message: '请输入承兑贴息收益', trigger: 'blur' },
+					{
+						validator: (rule, value, callback) => {
+							if (value === null || value === undefined || value === '') {
+								callback(new Error('请输入承兑贴息收益'));
+								return;
+							}
+							const numStr = String(value).trim();
+							if (!/^-?(\d+\.?\d*|\.\d+)$/.test(numStr)) {
+								callback(new Error('只能输入数字，可以输入负数'));
+							} else {
+								callback();
+							}
+						},
+						trigger: 'blur'
+					}
+				],
+				customerManufacturerCommissionAmount: [
+					{ required: true, message: '请输入客户及厂家佣金合计', trigger: 'blur' },
+					{
+						validator: (rule, value, callback) => {
+							if (value === null || value === undefined || value === '') {
+								callback(new Error('请输入客户及厂家佣金合计'));
+								return;
+							}
+							const numStr = String(value).trim();
+							if (!/^-?(\d+\.?\d*|\.\d+)$/.test(numStr)) {
+								callback(new Error('只能输入数字，可以输入负数'));
+							} else {
+								callback();
+							}
+						},
+						trigger: 'blur'
+					}
+				],
+				isTargetReached: [{ required: true, message: '请选择利润是否达标', trigger: 'change' }],
 				rewardAmount: [
 					{ required: true, message: '请输入奖励金额', trigger: 'blur' },
 					{
@@ -392,74 +484,7 @@ export default {
 						trigger: 'blur'
 					}
 				],
-				orderProfit: [
-					{
-						validator: (rule, value, callback) => {
-							if (value === null || value === undefined || value === '') {
-								callback();
-								return;
-							}
-							const numStr = String(value).trim();
-							if (!/^-?(\d+\.?\d*|\.\d+)$/.test(numStr)) {
-								callback(new Error('只能输入数字，可以输入负数'));
-							} else {
-								callback();
-							}
-						},
-						trigger: 'blur'
-					}
-				],
-				manufacturerRebateDiscountAmount: [
-					{
-						validator: (rule, value, callback) => {
-							if (value === null || value === undefined || value === '') {
-								callback();
-								return;
-							}
-							const numStr = String(value).trim();
-							if (!/^-?(\d+\.?\d*|\.\d+)$/.test(numStr)) {
-								callback(new Error('只能输入数字，可以输入负数'));
-							} else {
-								callback();
-							}
-						},
-						trigger: 'blur'
-					}
-				],
-				acceptanceDiscountProfit: [
-					{
-						validator: (rule, value, callback) => {
-							if (value === null || value === undefined || value === '') {
-								callback();
-								return;
-							}
-							const numStr = String(value).trim();
-							if (!/^-?(\d+\.?\d*|\.\d+)$/.test(numStr)) {
-								callback(new Error('只能输入数字，可以输入负数'));
-							} else {
-								callback();
-							}
-						},
-						trigger: 'blur'
-					}
-				],
-				customerManufacturerCommissionAmount: [
-					{
-						validator: (rule, value, callback) => {
-							if (value === null || value === undefined || value === '') {
-								callback();
-								return;
-							}
-							const numStr = String(value).trim();
-							if (!/^-?(\d+\.?\d*|\.\d+)$/.test(numStr)) {
-								callback(new Error('只能输入数字，可以输入负数'));
-							} else {
-								callback();
-							}
-						},
-						trigger: 'blur'
-					}
-				],
+				auditState: [{ required: true, message: '请选择审核状态', trigger: 'change' }],
 				comprehensiveProfit: [
 					{
 						validator: (rule, value, callback) => {
@@ -492,6 +517,39 @@ export default {
 							}
 						},
 						trigger: 'blur'
+					}
+				]
+			},
+			supplementRules: {
+				paymentAmount: [
+					{
+						validator: (rule, value, callback) => {
+							if (!value && !this.supplementForm.rewardDate) {
+								callback();
+								return;
+							}
+							if (value) {
+								const numStr = String(value).trim();
+								if (!/^-?(\d+\.?\d*|\.\d+)$/.test(numStr)) {
+									callback(new Error('只能输入数字，可以输入负数'));
+									return;
+								}
+							}
+							callback();
+						},
+						trigger: 'blur'
+					}
+				],
+				rewardDate: [
+					{
+						validator: (rule, value, callback) => {
+							if (!value && !this.supplementForm.paymentAmount) {
+								callback(new Error('请至少填写支付金额或奖励日期其中一个'));
+								return;
+							}
+							callback();
+						},
+						trigger: 'change'
 					}
 				]
 			},
@@ -557,7 +615,7 @@ export default {
 					this.$message.error('获取订单数据失败');
 					return;
 				}
-				this.openDialog(GOODS_ORDER, '订单信息', '800px', { needToShowInfo: result.data }, false);
+				this.openDialog(GOODS_ORDER, '订单信息', '100%', { needToShowInfo: result.data }, false);
 			});
 		},
 		handleLoadOrderData() {
@@ -623,10 +681,39 @@ export default {
 				isTargetReached: 1,
 				rewardAmount: null,
 				rewardDate: null,
-				auditState: '未审核'
+				auditState: '未审核',
+				remark: null
 			};
 			this.queryGoodsOrder = '';
 			this.resetForm('form');
+		},
+		handleSupplement(row) {
+			this.supplementForm = {
+				id: row.id,
+				paymentAmount: row.paymentAmount || null,
+				rewardDate: row.rewardDate || null
+			};
+			this.supplementOpen = true;
+		},
+		cancelSupplement() {
+			this.supplementOpen = false;
+			this.supplementForm = {};
+			this.resetForm('supplementForm');
+		},
+		submitSupplementForm() {
+			this.$refs['supplementForm'].validate(valid => {
+				if (valid) {
+					if (!this.supplementForm.paymentAmount && !this.supplementForm.rewardDate) {
+						this.$message.error('请至少填写支付金额或奖励日期其中一个');
+						return;
+					}
+					supplementSalesReward(this.supplementForm).then(() => {
+						this.$modal.msgSuccess('补充信息成功');
+						this.supplementOpen = false;
+						this.getList();
+					});
+				}
+			});
 		},
 		handleQuery() {
 			this.queryParams.pageNum = 1;
@@ -715,17 +802,7 @@ export default {
 				exportParams.rewardDateBegin = this.daterangeRewardDate[0];
 				exportParams.rewardDateEnd = this.daterangeRewardDate[1];
 			}
-			exportSalesReward(exportParams).then(response => {
-				const blob = new Blob([response]);
-				const url = window.URL.createObjectURL(blob);
-				const link = document.createElement('a');
-				link.href = url;
-				link.setAttribute('download', `台阶奖励_${new Date().getTime()}.xlsx`);
-				document.body.appendChild(link);
-				link.click();
-				document.body.removeChild(link);
-				window.URL.revokeObjectURL(url);
-			});
+			this.download('system/salesReward/export', exportParams, `台阶奖励_${new Date().getTime()}.xlsx`);
 		}
 	}
 };

@@ -2,13 +2,7 @@
 	<div class="app-container">
 		<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
 			<el-form-item label="仓库名称" prop="storeHouseName">
-				<el-input
-					v-model="queryParams.storeHouseName"
-					placeholder="请输入仓库名称"
-					clearable
-					@keyup.enter.native="handleQuery"
-					@input="handleInputTrim($event, 'queryParams', 'storeHouseName')"
-				/>
+				<el-input v-model="queryParams.storeHouseName" placeholder="请输入仓库名称" clearable @keyup.enter.native="handleQuery" @input="handleInputTrim($event, 'queryParams', 'storeHouseName')" />
 			</el-form-item>
 			<el-form-item label="地址" prop="address">
 				<el-input v-model="queryParams.address" placeholder="请输入地址" clearable @keyup.enter.native="handleQuery" @input="handleInputTrim($event, 'queryParams', 'address')" />

@@ -85,12 +85,12 @@ function preprocessOrder(order) {
 function preprocessBatch(orderList, startIndex, batchSize) {
 	const endIndex = Math.min(startIndex + batchSize, orderList.length);
 	const batch = orderList.slice(startIndex, endIndex);
-	
+
 	return batch.map(order => preprocessOrder(order));
 }
 
 // 监听主线程消息
-self.addEventListener('message', function(e) {
+self.addEventListener('message', function (e) {
 	const { type, payload } = e.data;
 
 	try {
@@ -99,7 +99,7 @@ self.addEventListener('message', function(e) {
 				// 预处理一批数据
 				const { orderList, startIndex, batchSize } = payload;
 				const processedBatch = preprocessBatch(orderList, startIndex, batchSize);
-				
+
 				// 使用 transferable objects 优化性能（如果可能）
 				self.postMessage({
 					type: 'PREPROCESS_BATCH_SUCCESS',
@@ -115,7 +115,7 @@ self.addEventListener('message', function(e) {
 				// 预处理所有数据（用于初始加载）
 				const { orderList: allOrderList } = payload;
 				const processedAll = allOrderList.map(order => preprocessOrder(order));
-				
+
 				self.postMessage({
 					type: 'PREPROCESS_ALL_SUCCESS',
 					payload: {
@@ -148,4 +148,3 @@ self.postMessage({
 	type: 'WORKER_READY',
 	payload: {}
 });
-

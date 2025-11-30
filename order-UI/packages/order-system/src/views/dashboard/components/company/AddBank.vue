@@ -95,15 +95,7 @@ export default {
 			<div slot="title">
 				<div style="display: flex; justify-content: space-between">
 					<div>
-						<el-input
-							v-model="queryParams.acountsName"
-							placeholder="请输入账户名称"
-							clearable
-							size="mini"
-							prefix-icon="el-icon-search"
-							style="width: 200px; margin-right: 10px"
-							@keyup.enter.native="handleQuery"
-						/>
+						<el-input v-model="queryParams.acountsName" placeholder="请输入账户名称" clearable size="mini" prefix-icon="el-icon-search" style="width: 200px; margin-right: 10px" @keyup.enter.native="handleQuery" />
 						<el-button type="primary" size="mini" @click="handleQuery">
 							<i class="el-icon-search" />
 							搜索

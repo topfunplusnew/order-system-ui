@@ -6,72 +6,27 @@
 				<div v-for="(config, configIndex) in column.items" :key="`${config.prop || 'field'}-${configIndex}`" class="form-item-wrapper">
 					<el-form-item :label="config.label" :prop="config.prop">
 						<!-- 优先使用具名插槽 -->
-						<slot
-							v-if="$scopedSlots[config.prop]"
-							:name="config.prop"
-							:config="config"
-							:value="form[config.prop]"
-							:form="form"
-							:updateValue="value => updateFieldValue(config.prop, value)"
-						></slot>
+						<slot v-if="$scopedSlots[config.prop]" :name="config.prop" :config="config" :value="form[config.prop]" :form="form" :updateValue="value => updateFieldValue(config.prop, value)"></slot>
 
 						<!-- 输入框 -->
-						<el-input
-							v-else-if="config.formConfig.type === 'input'"
-							v-model="form[config.prop]"
-							:placeholder="config.formConfig.placeholder"
-							:readonly="config.formConfig.readonly"
-							@input="handleInputTrim($event, config.prop)"
-						/>
+						<el-input v-else-if="config.formConfig.type === 'input'" v-model="form[config.prop]" :placeholder="config.formConfig.placeholder" :readonly="config.formConfig.readonly" @input="handleInputTrim($event, config.prop)" />
 
 						<!-- 选择器 -->
-						<el-select
-							v-else-if="config.formConfig.type === 'select'"
-							v-model="form[config.prop]"
-							:placeholder="config.formConfig.placeholder"
-							style="width: 100%"
-							@change="handleSelectChange(config.prop, $event, config.formConfig.change)"
-						>
-							<el-option
-								v-for="option in getSelectOptions(config.formConfig.options)"
-								:key="getOptionValue(option, config.formConfig)"
-								:label="getOptionLabel(option, config.formConfig)"
-								:value="getOptionValue(option, config.formConfig)"
-							></el-option>
+						<el-select v-else-if="config.formConfig.type === 'select'" v-model="form[config.prop]" :placeholder="config.formConfig.placeholder" style="width: 100%" @change="handleSelectChange(config.prop, $event, config.formConfig.change)">
+							<el-option v-for="option in getSelectOptions(config.formConfig.options)" :key="getOptionValue(option, config.formConfig)" :label="getOptionLabel(option, config.formConfig)" :value="getOptionValue(option, config.formConfig)"></el-option>
 						</el-select>
 
 						<!-- 文本域 -->
-						<el-input
-							v-else-if="config.formConfig.type === 'textarea'"
-							v-model="form[config.prop]"
-							type="textarea"
-							:placeholder="config.formConfig.placeholder"
-							:rows="config.formConfig.rows || 3"
-						/>
+						<el-input v-else-if="config.formConfig.type === 'textarea'" v-model="form[config.prop]" type="textarea" :placeholder="config.formConfig.placeholder" :rows="config.formConfig.rows || 3" />
 
 						<!-- 数字输入框 -->
-						<el-input-number
-							v-else-if="config.formConfig.type === 'number'"
-							v-model="form[config.prop]"
-							:placeholder="config.formConfig.placeholder"
-							:min="config.formConfig.min"
-							:max="config.formConfig.max"
-							:precision="config.formConfig.precision"
-							style="width: 100%"
-						/>
+						<el-input-number v-else-if="config.formConfig.type === 'number'" v-model="form[config.prop]" :placeholder="config.formConfig.placeholder" :min="config.formConfig.min" :max="config.formConfig.max" :precision="config.formConfig.precision" style="width: 100%" />
 
 						<!-- 日期选择器 -->
 						<el-date-picker v-else-if="config.formConfig.type === 'date'" v-model="form[config.prop]" type="date" :placeholder="config.formConfig.placeholder" style="width: 100%" />
 
 						<!-- 日期时间选择器 -->
-						<el-date-picker
-							v-else-if="config.formConfig.type === 'datetime'"
-							v-model="form[config.prop]"
-							type="datetime"
-							:placeholder="config.formConfig.placeholder"
-							value-format="yyyy-MM-dd HH:mm:ss"
-							style="width: 100%"
-						/>
+						<el-date-picker v-else-if="config.formConfig.type === 'datetime'" v-model="form[config.prop]" type="datetime" :placeholder="config.formConfig.placeholder" value-format="yyyy-MM-dd HH:mm:ss" style="width: 100%" />
 
 						<!-- 时间选择器 -->
 						<el-time-picker v-else-if="config.formConfig.type === 'time'" v-model="form[config.prop]" :placeholder="config.formConfig.placeholder" style="width: 100%" />
@@ -88,11 +43,7 @@
 
 						<!-- 多选框组 -->
 						<el-checkbox-group v-else-if="config.formConfig.type === 'checkbox'" v-model="form[config.prop]">
-							<el-checkbox
-								v-for="option in getSelectOptions(config.formConfig.options)"
-								:key="getOptionValue(option, config.formConfig)"
-								:label="getOptionValue(option, config.formConfig)"
-							>
+							<el-checkbox v-for="option in getSelectOptions(config.formConfig.options)" :key="getOptionValue(option, config.formConfig)" :label="getOptionValue(option, config.formConfig)">
 								{{ getOptionLabel(option, config.formConfig) }}
 							</el-checkbox>
 						</el-checkbox-group>

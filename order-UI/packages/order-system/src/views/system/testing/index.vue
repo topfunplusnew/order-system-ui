@@ -5,12 +5,7 @@
 		<br />
 		<!--    订单修改记录查看-->
 		<div>
-			<OrderHistoryCheck
-				:check-history-order-visible="checkHistoryOrderVisible"
-				:order-history-info-list="orderHistoryInfoList"
-				:current-info="currentOrderItemInfo"
-				@close="closeOrderHistoryCheck"
-			/>
+			<OrderHistoryCheck :check-history-order-visible="checkHistoryOrderVisible" :order-history-info-list="orderHistoryInfoList" :current-info="currentOrderItemInfo" @close="closeOrderHistoryCheck" />
 		</div>
 		<!--      右侧的工具栏-->
 		<div>
@@ -46,70 +41,65 @@
 					<thead>
 						<tr>
 							<!-- 行操作 -->
-							<th class="fixed-left col-row-action" style="width: 180px;">行操作</th>
+							<th class="fixed-left col-row-action" style="width: 180px">行操作</th>
 							<!-- 1. ID -->
-							<th v-if="columns[0].visible" class="fixed-left col-id" style="width: 100px;">ID</th>
+							<th v-if="columns[0].visible" class="fixed-left col-id" style="width: 100px">ID</th>
 							<!-- 2. 日期 -->
-							<th v-if="columns[1].visible" class="fixed-left col-date" style="width: 120px;">日期</th>
+							<th v-if="columns[1].visible" class="fixed-left col-date" style="width: 120px">日期</th>
 							<!-- 3. 客户 -->
-							<th v-if="columns[2].visible" class="fixed-left col-customer" style="width: 100px;">客户</th>
+							<th v-if="columns[2].visible" class="fixed-left col-customer" style="width: 100px">客户</th>
 							<!-- 4. 供应商/仓库 -->
-							<th v-if="columns[3].visible" class="fixed-left col-supplier" style="width: 200px;">供应商/仓库</th>
+							<th v-if="columns[3].visible" class="fixed-left col-supplier" style="width: 200px">供应商/仓库</th>
 							<!-- 5. 陆运车牌 -->
-							<th v-if="columns[4].visible" class="fixed-left col-land-car" style="width: 100px;">陆运车牌</th>
+							<th v-if="columns[4].visible" class="fixed-left col-land-car" style="width: 100px">陆运车牌</th>
 							<!-- 6. 审核状态 -->
-							<th v-if="columns[5].visible" style="width: 120px;">审核状态</th>
+							<th v-if="columns[5].visible" style="width: 120px">审核状态</th>
 							<!-- 7. 车队 -->
-							<th v-if="columns[6].visible" style="width: 100px;">车队</th>
+							<th v-if="columns[6].visible" style="width: 100px">车队</th>
 							<!-- 8. 陆运司机电话 -->
-							<th v-if="columns[7].visible" style="width: 100px;">陆运司机电话</th>
+							<th v-if="columns[7].visible" style="width: 100px">陆运司机电话</th>
 							<!-- 9. 陆地司机姓名 -->
-							<th v-if="columns[8].visible" style="width: 100px;">陆地司机姓名</th>
+							<th v-if="columns[8].visible" style="width: 100px">陆地司机姓名</th>
 							<!-- 10. 海运柜号 -->
-							<th v-if="columns[9].visible" style="width: 100px;">海运柜号</th>
+							<th v-if="columns[9].visible" style="width: 100px">海运柜号</th>
 							<!-- 11. 海运司机电话 -->
-							<th v-if="columns[10].visible" style="width: 100px;">海运司机电话</th>
+							<th v-if="columns[10].visible" style="width: 100px">海运司机电话</th>
 							<!-- 12. 海运公司 -->
-							<th v-if="columns[11].visible" style="width: 100px;">海运公司</th>
+							<th v-if="columns[11].visible" style="width: 100px">海运公司</th>
 							<!-- 13. 总货款 -->
-							<th v-if="columns[12].visible" style="width: 100px;">总货款</th>
+							<th v-if="columns[12].visible" style="width: 100px">总货款</th>
 							<!-- 14. 总吨位 -->
-							<th v-if="columns[13].visible" style="width: 120px;">总吨位</th>
+							<th v-if="columns[13].visible" style="width: 120px">总吨位</th>
 							<!-- 15. 陆运费 -->
-							<th v-if="columns[14].visible" style="width: 100px;">陆运费</th>
+							<th v-if="columns[14].visible" style="width: 100px">陆运费</th>
 							<!-- 16. 海运费 -->
-							<th v-if="columns[15].visible" style="width: 100px;">海运费</th>
+							<th v-if="columns[15].visible" style="width: 100px">海运费</th>
 							<!-- 17. 总利润(含税) -->
-							<th v-if="columns[16].visible" style="width: 120px;">总利润(含税)</th>
+							<th v-if="columns[16].visible" style="width: 120px">总利润(含税)</th>
 							<!-- 18. 总利润(不含税) -->
-							<th v-if="columns[17].visible" style="width: 120px;">总利润(不含税)</th>
+							<th v-if="columns[17].visible" style="width: 120px">总利润(不含税)</th>
 							<!-- 19. 销售经理 -->
-							<th v-if="columns[18].visible" style="width: 100px;">销售经理</th>
+							<th v-if="columns[18].visible" style="width: 100px">销售经理</th>
 							<!-- 20. 录入员 -->
-							<th v-if="columns[19].visible" style="width: 120px;">录入员</th>
+							<th v-if="columns[19].visible" style="width: 120px">录入员</th>
 							<!-- 21. 备注 -->
 							<th v-if="columns[20].visible">备注</th>
 							<!-- 22. 附件 -->
-							<th v-if="columns[21].visible" style="width: 150px;">附件</th>
+							<th v-if="columns[21].visible" style="width: 150px">附件</th>
 							<!-- 23. 收到条附件 -->
-							<th v-if="columns[22].visible" style="width: 150px;">收到条附件</th>
+							<th v-if="columns[22].visible" style="width: 150px">收到条附件</th>
 							<!-- 24. 是否可编辑 -->
-							<th v-if="columns[23].visible" style="width: 100px;">是否可编辑</th>
+							<th v-if="columns[23].visible" style="width: 100px">是否可编辑</th>
 							<!-- 25. 客户是否含税 -->
-							<th v-if="columns[24].visible" style="width: 120px;">客户是否含税</th>
+							<th v-if="columns[24].visible" style="width: 120px">客户是否含税</th>
 							<!-- 26. 供应商是否开票 -->
-							<th v-if="columns[25].visible" style="width: 120px;">供应商是否开票</th>
+							<th v-if="columns[25].visible" style="width: 120px">供应商是否开票</th>
 							<!-- 右侧操作栏 -->
-							<th class="fixed-right col-order-action" style="width: 320px;">订单操作</th>
+							<th class="fixed-right col-order-action" style="width: 320px">订单操作</th>
 						</tr>
 					</thead>
 					<tbody>
-						<tr
-							v-for="(row, index) in paginatedData"
-							:key="row.id"
-							:style="getRowStyle(row)"
-							:class="{ 'stripe-row': index % 2 === 1 }"
-						>
+						<tr v-for="(row, index) in paginatedData" :key="row.id" :style="getRowStyle(row)" :class="{ 'stripe-row': index % 2 === 1 }">
 							<!-- 行操作 -->
 							<td class="fixed-left col-row-action">
 								<!-- 查看按钮 -->
@@ -124,14 +114,7 @@
 									</el-button>
 									<el-dropdown-menu slot="dropdown">
 										<el-dropdown-item command="handleUpdate">
-											<el-button
-												size="mini"
-												type="primary"
-												:disabled="!row.isedit || row.isAdjust < 0 || isOrderExpired(row.addtime)"
-												:title="isOrderExpired(row.addtime) ? '订单已超过7天，无法修改' : ''"
-											>
-												修 改
-											</el-button>
+											<el-button size="mini" type="primary" :disabled="!row.isedit || row.isAdjust < 0 || isOrderExpired(row.addtime)" :title="isOrderExpired(row.addtime) ? '订单已超过7天，无法修改' : ''">修 改</el-button>
 										</el-dropdown-item>
 										<el-dropdown-item command="handleDelete">
 											<el-button size="mini" type="danger" v-once>删 除</el-button>
@@ -163,12 +146,7 @@
 									<div class="supplier-warehouse-container">
 										<span v-if="row._uniqueSuppliers.length === 0 && row._uniqueWarehouses.length === 0" class="empty-item" v-once>-</span>
 										<span v-else>
-											<span
-												v-for="supplier in row._uniqueSuppliers"
-												:key="`supplier-${supplier.supplierID}`"
-												class="supplier-name"
-												@click="updateOrderItemVisibleSupplierInvoice(row, supplier.supplierID)"
-											>
+											<span v-for="supplier in row._uniqueSuppliers" :key="`supplier-${supplier.supplierID}`" class="supplier-name" @click="updateOrderItemVisibleSupplierInvoice(row, supplier.supplierID)">
 												{{ supplier.supplier }}
 											</span>
 											<!-- 显示预处理的仓库列表 -->
@@ -184,12 +162,7 @@
 							<!-- 6. 审核状态 -->
 							<td v-if="columns[5].visible">
 								<div v-if="row.checkState === '已审核'">
-									<StateTag
-										:state-title="row.checkState"
-										:state-mapper="{ 2: '已审核' }"
-										@click.native="hasPermission(['finance', 'admin']) && handleReCheck(row)"
-										:style="{ cursor: hasPermission(['finance', 'admin']) ? 'pointer' : 'default' }"
-									/>
+									<StateTag :state-title="row.checkState" :state-mapper="{ 2: '已审核' }" @click.native="hasPermission(['finance', 'admin']) && handleReCheck(row)" :style="{ cursor: hasPermission(['finance', 'admin']) ? 'pointer' : 'default' }" />
 								</div>
 								<div v-else>
 									<el-button v-if="hasPermission(['finance', 'admin'])" type="text" size="mini" @click="handleCheck(row)">
@@ -242,11 +215,7 @@
 							<!-- 23. 收到条附件 -->
 							<td v-if="columns[22].visible">
 								<div v-if="Array.isArray(row.attachmentList)">
-									<CheckFiles
-										:attachmentList="row.attachmentList"
-										:flag="'receiveProof'"
-										@needToUpdate="value => handleUpdateFilePath(value, row)"
-									/>
+									<CheckFiles :attachmentList="row.attachmentList" :flag="'receiveProof'" @needToUpdate="value => handleUpdateFilePath(value, row)" />
 								</div>
 								<div v-else>
 									<el-tag type="danger" v-once>加载错误</el-tag>
@@ -386,16 +355,7 @@
 
 				<!-- 开票记录表格 -->
 				<div class="invoice-table-container">
-					<u-table
-						v-loading="customerInvoiceListLoading"
-						:data="customerInvoiceList"
-						border
-						stripe
-						class="invoice-table compact-table"
-						size="small"
-						:header-cell-style="{ background: '#f8f9fa', color: '#495057', fontWeight: 600 }"
-						:row-class-name="getInvoiceRowClassName"
-					>
+					<u-table v-loading="customerInvoiceListLoading" :data="customerInvoiceList" border stripe class="invoice-table compact-table" size="small" :header-cell-style="{ background: '#f8f9fa', color: '#495057', fontWeight: 600 }" :row-class-name="getInvoiceRowClassName">
 						<el-table-column prop="orderDate" label="日期" align="center" width="170">
 							<template #default>
 								<div class="date-cell">
@@ -509,14 +469,7 @@
 
 						<!-- 该供应商的开票记录表格 -->
 						<div class="supplier-table-container">
-							<u-table
-								:data="group.invoices"
-								border
-								stripe
-								size="small"
-								class="supplier-invoice-table"
-								:header-cell-style="{ background: '#f8f9fa', color: '#495057', fontWeight: 600 }"
-							>
+							<u-table :data="group.invoices" border stripe size="small" class="supplier-invoice-table" :header-cell-style="{ background: '#f8f9fa', color: '#495057', fontWeight: 600 }">
 								<el-table-column prop="orderDate" label="日期" align="center" width="170">
 									<template #default>
 										<div class="date-cell">

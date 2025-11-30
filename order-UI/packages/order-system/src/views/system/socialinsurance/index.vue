@@ -60,202 +60,202 @@
 			"
 			@selection-change="handleSelectionChange"
 		>
-		<el-table-column label="id" align="center" prop="id" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.id }}</div>
-					<span>{{ scope.row.id }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[0].visible" label="部门" align="center" prop="depName" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.depName }}</div>
-					<span>{{ scope.row.depName }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[1].visible" label="姓名" align="center" prop="employeeName" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.employeeName }}</div>
-					<span>{{ scope.row.employeeName }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[2].visible" label="人员编号" align="center" prop="employeeID" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.employeeID }}</div>
-					<span>{{ scope.row.employeeID }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[3].visible" label="社保缴纳基数" align="center" prop="basicSocialInsurance" show-overflow-tooltip width="110">
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.basicSocialInsurance }}</div>
-					<span>{{ scope.row.basicSocialInsurance }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[4].visible" label="公积金基数" align="center" prop="basicHousingFund" width="110" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.basicHousingFund }}</div>
-					<span>{{ scope.row.basicHousingFund }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[5].visible" label="缴费时间" align="center" prop="insuranceDate" width="120" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.insuranceDate }}</div>
-					<span>{{ scope.row.insuranceDate }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column label="社保增减员情况" v-if="columns[6].visible" align="center">
-			<el-table-column label="是否增员" align="center" prop="isRecruiting" show-overflow-tooltip>
+			<el-table-column label="id" align="center" prop="id" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.isRecruiting }}</div>
-						<span>{{ scope.row.isRecruiting }}</span>
+						<div slot="content">{{ scope.row.id }}</div>
+						<span>{{ scope.row.id }}</span>
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column label="是否减员" align="center" prop="isDepletion" show-overflow-tooltip>
+			<el-table-column v-if="columns[0].visible" label="部门" align="center" prop="depName" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.isDepletion }}</div>
-						<span>{{ scope.row.isDepletion }}</span>
+						<div slot="content">{{ scope.row.depName }}</div>
+						<span>{{ scope.row.depName }}</span>
 					</el-tooltip>
 				</template>
 			</el-table-column>
-		</el-table-column>
-		<el-table-column label="基本医疗保险" v-if="columns[7].visible" align="center">
-			<el-table-column label="个人缴纳" align="center" prop="healthySecuritySelf">
+			<el-table-column v-if="columns[1].visible" label="姓名" align="center" prop="employeeName" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.healthySecuritySelf }}</div>
-						<span>{{ scope.row.healthySecuritySelf }}</span>
+						<div slot="content">{{ scope.row.employeeName }}</div>
+						<span>{{ scope.row.employeeName }}</span>
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column label="公司缴纳" align="center" prop="healthySecurityCompany">
+			<el-table-column v-if="columns[2].visible" label="人员编号" align="center" prop="employeeID" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.healthySecurityCompany }}</div>
-						<span>{{ scope.row.healthySecurityCompany }}</span>
+						<div slot="content">{{ scope.row.employeeID }}</div>
+						<span>{{ scope.row.employeeID }}</span>
 					</el-tooltip>
 				</template>
 			</el-table-column>
-		</el-table-column>
-		<el-table-column v-if="columns[8].visible" label="工伤保险" align="center" prop="injuryInsurance">
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.injuryInsurance }}</div>
-					<span>{{ scope.row.injuryInsurance }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column label="失业保险" v-if="columns[9].visible" align="center">
-			<el-table-column label="个人缴纳" align="center" prop="unemploymentSecuritySelf">
+			<el-table-column v-if="columns[3].visible" label="社保缴纳基数" align="center" prop="basicSocialInsurance" show-overflow-tooltip width="110">
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.unemploymentSecuritySelf }}</div>
-						<span>{{ scope.row.unemploymentSecuritySelf }}</span>
+						<div slot="content">{{ scope.row.basicSocialInsurance }}</div>
+						<span>{{ scope.row.basicSocialInsurance }}</span>
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column label="公司缴纳" align="center" prop="unemploymentSecurityCompany">
+			<el-table-column v-if="columns[4].visible" label="公积金基数" align="center" prop="basicHousingFund" width="110" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.unemploymentSecurityCompany }}</div>
-						<span>{{ scope.row.unemploymentSecurityCompany }}</span>
+						<div slot="content">{{ scope.row.basicHousingFund }}</div>
+						<span>{{ scope.row.basicHousingFund }}</span>
 					</el-tooltip>
 				</template>
 			</el-table-column>
-		</el-table-column>
-		<el-table-column label="养老保险" v-if="columns[10].visible" align="center">
-			<el-table-column label="个人缴纳" align="center" prop="retirementSecuritySelf">
+			<el-table-column v-if="columns[5].visible" label="缴费时间" align="center" prop="insuranceDate" width="120" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.retirementSecuritySelf }}</div>
-						<span>{{ scope.row.retirementSecuritySelf }}</span>
+						<div slot="content">{{ scope.row.insuranceDate }}</div>
+						<span>{{ scope.row.insuranceDate }}</span>
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column label="公司缴纳" align="center" prop="retirementSecurityCompany">
+			<el-table-column label="社保增减员情况" v-if="columns[6].visible" align="center">
+				<el-table-column label="是否增员" align="center" prop="isRecruiting" show-overflow-tooltip>
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">{{ scope.row.isRecruiting }}</div>
+							<span>{{ scope.row.isRecruiting }}</span>
+						</el-tooltip>
+					</template>
+				</el-table-column>
+				<el-table-column label="是否减员" align="center" prop="isDepletion" show-overflow-tooltip>
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">{{ scope.row.isDepletion }}</div>
+							<span>{{ scope.row.isDepletion }}</span>
+						</el-tooltip>
+					</template>
+				</el-table-column>
+			</el-table-column>
+			<el-table-column label="基本医疗保险" v-if="columns[7].visible" align="center">
+				<el-table-column label="个人缴纳" align="center" prop="healthySecuritySelf">
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">{{ scope.row.healthySecuritySelf }}</div>
+							<span>{{ scope.row.healthySecuritySelf }}</span>
+						</el-tooltip>
+					</template>
+				</el-table-column>
+				<el-table-column label="公司缴纳" align="center" prop="healthySecurityCompany">
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">{{ scope.row.healthySecurityCompany }}</div>
+							<span>{{ scope.row.healthySecurityCompany }}</span>
+						</el-tooltip>
+					</template>
+				</el-table-column>
+			</el-table-column>
+			<el-table-column v-if="columns[8].visible" label="工伤保险" align="center" prop="injuryInsurance">
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.retirementSecurityCompany }}</div>
-						<span>{{ scope.row.retirementSecurityCompany }}</span>
+						<div slot="content">{{ scope.row.injuryInsurance }}</div>
+						<span>{{ scope.row.injuryInsurance }}</span>
 					</el-tooltip>
 				</template>
 			</el-table-column>
-		</el-table-column>
-		<el-table-column label="大额医保" v-if="columns[11].visible" align="center">
-			<el-table-column label="个人缴纳" align="center" prop="largeMedicalSecuritySelf">
+			<el-table-column label="失业保险" v-if="columns[9].visible" align="center">
+				<el-table-column label="个人缴纳" align="center" prop="unemploymentSecuritySelf">
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">{{ scope.row.unemploymentSecuritySelf }}</div>
+							<span>{{ scope.row.unemploymentSecuritySelf }}</span>
+						</el-tooltip>
+					</template>
+				</el-table-column>
+				<el-table-column label="公司缴纳" align="center" prop="unemploymentSecurityCompany">
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">{{ scope.row.unemploymentSecurityCompany }}</div>
+							<span>{{ scope.row.unemploymentSecurityCompany }}</span>
+						</el-tooltip>
+					</template>
+				</el-table-column>
+			</el-table-column>
+			<el-table-column label="养老保险" v-if="columns[10].visible" align="center">
+				<el-table-column label="个人缴纳" align="center" prop="retirementSecuritySelf">
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">{{ scope.row.retirementSecuritySelf }}</div>
+							<span>{{ scope.row.retirementSecuritySelf }}</span>
+						</el-tooltip>
+					</template>
+				</el-table-column>
+				<el-table-column label="公司缴纳" align="center" prop="retirementSecurityCompany">
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">{{ scope.row.retirementSecurityCompany }}</div>
+							<span>{{ scope.row.retirementSecurityCompany }}</span>
+						</el-tooltip>
+					</template>
+				</el-table-column>
+			</el-table-column>
+			<el-table-column label="大额医保" v-if="columns[11].visible" align="center">
+				<el-table-column label="个人缴纳" align="center" prop="largeMedicalSecuritySelf">
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">{{ scope.row.largeMedicalSecuritySelf }}</div>
+							<span>{{ scope.row.largeMedicalSecuritySelf }}</span>
+						</el-tooltip>
+					</template>
+				</el-table-column>
+				<el-table-column label="公司缴纳" align="center" prop="largeMedicalSecurityCompany">
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">{{ scope.row.largeMedicalSecurityCompany }}</div>
+							<span>{{ scope.row.largeMedicalSecurityCompany }}</span>
+						</el-tooltip>
+					</template>
+				</el-table-column>
+			</el-table-column>
+			<el-table-column label="公积金缴纳" v-if="columns[12].visible" align="center">
+				<el-table-column label="个人缴纳" align="center" prop="housingFundSelf">
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">{{ scope.row.housingFundSelf }}</div>
+							<span>{{ scope.row.housingFundSelf }}</span>
+						</el-tooltip>
+					</template>
+				</el-table-column>
+				<el-table-column label="公司缴纳" align="center" prop="housingFundCompany">
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<div slot="content">{{ scope.row.housingFundCompany }}</div>
+							<span>{{ scope.row.housingFundCompany }}</span>
+						</el-tooltip>
+					</template>
+				</el-table-column>
+			</el-table-column>
+			<el-table-column v-if="columns[13].visible" label="个人缴费总额" align="center" prop="sumSelf" width="120">
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.largeMedicalSecuritySelf }}</div>
-						<span>{{ scope.row.largeMedicalSecuritySelf }}</span>
+						<div slot="content">{{ scope.row.sumSelf }}</div>
+						<span>{{ scope.row.sumSelf }}</span>
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column label="公司缴纳" align="center" prop="largeMedicalSecurityCompany">
+			<el-table-column v-if="columns[14].visible" label="公司缴费总额" align="center" prop="sumCompany" width="120">
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.largeMedicalSecurityCompany }}</div>
-						<span>{{ scope.row.largeMedicalSecurityCompany }}</span>
+						<div slot="content">{{ scope.row.sumCompany }}</div>
+						<span>{{ scope.row.sumCompany }}</span>
 					</el-tooltip>
 				</template>
 			</el-table-column>
-		</el-table-column>
-		<el-table-column label="公积金缴纳" v-if="columns[12].visible" align="center">
-			<el-table-column label="个人缴纳" align="center" prop="housingFundSelf">
+			<el-table-column label="备注" align="center" prop="comments" width="120">
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.housingFundSelf }}</div>
-						<span>{{ scope.row.housingFundSelf }}</span>
+						<div slot="content">{{ scope.row.comments }}</div>
+						<span>{{ scope.row.comments }}</span>
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column label="公司缴纳" align="center" prop="housingFundCompany">
-				<template #default="scope">
-					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.housingFundCompany }}</div>
-						<span>{{ scope.row.housingFundCompany }}</span>
-					</el-tooltip>
-				</template>
-			</el-table-column>
-		</el-table-column>
-		<el-table-column v-if="columns[13].visible" label="个人缴费总额" align="center" prop="sumSelf" width="120">
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.sumSelf }}</div>
-					<span>{{ scope.row.sumSelf }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[14].visible" label="公司缴费总额" align="center" prop="sumCompany" width="120">
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.sumCompany }}</div>
-					<span>{{ scope.row.sumCompany }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column label="备注" align="center" prop="comments" width="120">
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.comments }}</div>
-					<span>{{ scope.row.comments }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
 				<template slot-scope="scope">
 					<el-button v-hasPermi="['system:socialinsurance:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
@@ -324,18 +324,7 @@
 		</el-dialog>
 
 		<!--    添加社保基金人员个体信息-->
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="社保基金人员个体信息"
-			:visible.sync="addSocialDialogVisible"
-			width="85%"
-			append-to-body
-		>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="社保基金人员个体信息" :visible.sync="addSocialDialogVisible" width="85%" append-to-body>
 			<el-row>
 				<el-form ref="form" :model="form" :rules="rules" label-width="140px">
 					<el-col :span="8">
@@ -452,18 +441,7 @@
 
 		<!-- 添加导入对话框 -->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="upload.title" :visible.sync="upload.open" width="400px" append-to-body>
-			<el-upload
-				ref="upload"
-				:limit="1"
-				accept=".xlsx, .xls"
-				:headers="upload.headers"
-				:action="upload.url"
-				:disabled="upload.isUploading"
-				:on-progress="handleFileUploadProgress"
-				:on-success="handleFileSuccess"
-				:auto-upload="false"
-				drag
-			>
+			<el-upload ref="upload" :limit="1" accept=".xlsx, .xls" :headers="upload.headers" :action="upload.url" :disabled="upload.isUploading" :on-progress="handleFileUploadProgress" :on-success="handleFileSuccess" :auto-upload="false" drag>
 				<i class="el-icon-upload"></i>
 				<div class="el-upload__text">
 					将文件拖到此处，或
@@ -484,16 +462,7 @@
 </template>
 
 <script>
-import {
-	addSocialInsurance,
-	batchAddSocialInsurance,
-	delSocialInsurance,
-	getSocialInsurance,
-	listSocialInsurance,
-	updateSocialInsurance,
-	importData,
-	importTemplate
-} from '@/api/system/socialInsurance';
+import { addSocialInsurance, batchAddSocialInsurance, delSocialInsurance, getSocialInsurance, listSocialInsurance, updateSocialInsurance, importData, importTemplate } from '@/api/system/socialInsurance';
 import { excludeParams } from '@/api/tool/exclude';
 
 export default {
