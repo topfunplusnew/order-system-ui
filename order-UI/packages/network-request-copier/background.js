@@ -44,14 +44,18 @@ chrome.webRequest.onBeforeRequest.addListener(
 		}
 
 		// 存储请求信息
-		requestStore.set(requestId, {
+		const requestInfo = {
 			requestId: requestId,
 			method: details.method,
 			url: details.url,
 			requestBody: requestBody,
 			timestamp: Date.now(),
-			requestHeaders: [] // 将在 onBeforeSendHeaders 中更新
-		});
+			requestHeaders: [], // 将在 onBeforeSendHeaders 中更新
+			responseBody: null, // 将在 content script 中更新
+			responseData: null // 解析后的响应数据
+		};
+		requestStore.set(requestId, requestInfo);
+		console.log('[Background] Request stored:', requestId, details.method, details.url);
 
 		// 限制存储大小
 		if (requestStore.size > MAX_STORE_SIZE) {
@@ -138,6 +142,97 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 		} else if (request.action === 'clearRequests') {
 			requestStore.clear();
 			sendResponse({ success: true });
+		} else if (request.action === 'updateResponse') {
+			// 更新响应数据（来自 content script）
+			const { requestKey, responseData } = request;
+			console.log('[Background] Updating response for key:', requestKey);
+			console.log('[Background] Response URL:', responseData?.url);
+			console.log('[Background] Response status:', responseData?.status);
+			console.log('[Background] Response body type:', typeof responseData?.body);
+			console.log('[Background] Current requestStore size:', requestStore.size);
+
+			// 查找匹配的请求并更新响应数据
+			// 使用更灵活的匹配方式：URL 可能不完全一致（可能有查询参数顺序不同等）
+			let matched = false;
+
+			// 首先尝试精确匹配
+			for (const [requestId, requestData] of requestStore.entries()) {
+				const storedKey = `${requestData.method}:${requestData.url}`;
+				const incomingKey = requestKey;
+
+				console.log('[Background] Comparing:', storedKey, 'vs', incomingKey);
+
+				// 精确匹配
+				if (storedKey === incomingKey) {
+					requestData.responseBody = responseData.bodyText;
+					requestData.responseData = responseData.body;
+					requestData.responseHeaders = Object.entries(responseData.headers || {}).map(([name, value]) => ({
+						name: name,
+						value: value
+					}));
+					if (!requestData.statusCode) {
+						requestData.statusCode = responseData.status;
+					}
+					matched = true;
+					console.log('[Background] Matched request (exact):', requestId, requestData.url);
+					break;
+				}
+			}
+
+			// 如果精确匹配失败，尝试模糊匹配
+			if (!matched) {
+				console.log('[Background] Exact match failed, trying fuzzy match...');
+				for (const [requestId, requestData] of requestStore.entries()) {
+					// 模糊匹配：比较 URL 路径和查询参数（忽略顺序）
+					try {
+						const storedUrl = new URL(requestData.url);
+						const incomingUrl = new URL(responseData.url);
+
+						// 比较路径和方法
+						if (requestData.method === responseData.method && storedUrl.pathname === incomingUrl.pathname && storedUrl.host === incomingUrl.host) {
+							// 比较查询参数
+							const storedParams = new URLSearchParams(storedUrl.search);
+							const incomingParams = new URLSearchParams(incomingUrl.search);
+
+							let paramsMatch = true;
+							for (const [key, value] of storedParams.entries()) {
+								if (incomingParams.get(key) !== value) {
+									paramsMatch = false;
+									break;
+								}
+							}
+
+							if (paramsMatch && storedParams.toString().length === incomingParams.toString().length) {
+								requestData.responseBody = responseData.bodyText;
+								requestData.responseData = responseData.body;
+								requestData.responseHeaders = Object.entries(responseData.headers || {}).map(([name, value]) => ({
+									name: name,
+									value: value
+								}));
+								if (!requestData.statusCode) {
+									requestData.statusCode = responseData.status;
+								}
+								matched = true;
+								console.log('[Background] Matched request (fuzzy):', requestId, requestData.url);
+								break;
+							}
+						}
+					} catch (e) {
+						// URL 解析失败，跳过
+						console.warn('[Background] URL parse error:', e);
+					}
+				}
+			}
+
+			if (!matched) {
+				console.warn('[Background] No matching request found for:', requestKey);
+				console.warn('[Background] Available requests in store:');
+				for (const [requestId, requestData] of requestStore.entries()) {
+					console.warn('[Background]   -', requestId, `${requestData.method}:${requestData.url}`);
+				}
+			}
+
+			sendResponse({ success: true });
 		} else if (request.action === 'copyRequest') {
 			// 复制请求信息到剪贴板
 			const requestData = requestStore.get(request.requestId);
@@ -147,7 +242,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 					url: requestData.url,
 					requestBody: requestData.requestBody,
 					responseHeaders: requestData.responseHeaders,
-					statusCode: requestData.statusCode
+					statusCode: requestData.statusCode,
+					responseData: requestData.responseData,
+					responseBody: requestData.responseBody
 				};
 
 				// 格式化数据
@@ -212,7 +309,8 @@ function formatRequestData(data, format = 'json') {
 				请求载荷: data.requestBody,
 				响应结构: {
 					状态码: data.statusCode,
-					响应头: data.responseHeaders
+					响应头: data.responseHeaders,
+					响应数据: data.responseData || data.responseBody || null
 				}
 			},
 			null,
@@ -227,7 +325,7 @@ function formatRequestData(data, format = 'json') {
 		return curl;
 	} else {
 		// 简单文本格式
-		return `请求方法: ${data.method}\n请求地址: ${decodedUrl}\n请求载荷: ${JSON.stringify(data.requestBody, null, 2)}\n响应结构: ${JSON.stringify({ 状态码: data.statusCode, 响应头: data.responseHeaders }, null, 2)}`;
+		return `请求方法: ${data.method}\n请求地址: ${decodedUrl}\n请求载荷: ${JSON.stringify(data.requestBody, null, 2)}\n响应结构: ${JSON.stringify({ 状态码: data.statusCode, 响应头: data.responseHeaders, 响应数据: data.responseData || data.responseBody || null }, null, 2)}`;
 	}
 }
 

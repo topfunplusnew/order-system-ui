@@ -190,7 +190,8 @@ function copyRequestInfo(requestId) {
 				请求载荷: data.requestBody,
 				响应结构: {
 					状态码: data.statusCode,
-					响应头: data.responseHeaders
+					响应头: data.responseHeaders,
+					响应数据: data.responseData || data.responseBody || null
 				}
 			};
 

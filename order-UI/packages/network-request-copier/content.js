@@ -1,20 +1,180 @@
 // 注入到页面的脚本，用于显示请求列表和复制功能
+console.log('[Content Script] Network Request Copier content script loaded');
 
 // 创建浮动按钮
 let floatingButton = null;
 let requestListPanel = null;
 
-// 监听来自 background 的消息
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-	if (request.action === 'copyToClipboard') {
-		copyToClipboard(request.text);
-		sendResponse({ success: true });
-	} else if (request.action === 'showRequestList') {
-		showRequestList();
-		sendResponse({ success: true });
+// 存储响应数据的映射（使用 URL + method 作为 key）
+const responseStore = new Map();
+
+// 注入拦截脚本到页面上下文
+function injectScript() {
+	try {
+		if (typeof chrome === 'undefined' || !chrome || !chrome.runtime || typeof chrome.runtime.getURL !== 'function') {
+			console.error('[Content Script] chrome.runtime.getURL is not available');
+			return;
+		}
+
+		// 检查是否已经注入过
+		if (window.__NETWORK_REQUEST_COPIER_INJECTED__) {
+			console.log('[Content Script] inject.js already injected, skipping');
+			return;
+		}
+
+		const script = document.createElement('script');
+		script.src = chrome.runtime.getURL('inject.js');
+		script.onload = function () {
+			console.log('[Content Script] inject.js loaded successfully at', new Date().toISOString());
+			window.__NETWORK_REQUEST_COPIER_INJECTED__ = true;
+			this.remove();
+		};
+		script.onerror = function () {
+			console.error('[Content Script] Failed to load inject.js');
+		};
+
+		const target = document.head || document.documentElement;
+		if (target) {
+			target.appendChild(script);
+			console.log('[Content Script] inject.js injection initiated at', new Date().toISOString());
+		} else {
+			console.error('[Content Script] Cannot find injection target (head or documentElement)');
+		}
+	} catch (error) {
+		console.error('[Content Script] Error injecting script:', error);
 	}
-	return true;
+}
+
+// 监听来自注入脚本的消息
+window.addEventListener('message', function (event) {
+	// 只处理来自我们自己的消息
+	if (event.source !== window || !event.data || event.data.type !== 'NETWORK_REQUEST_COPIER_RESPONSE') {
+		return;
+	}
+
+	console.log('[Content Script] Received message from inject script:', event.data);
+
+	// 转发给 background script
+	if (typeof chrome !== 'undefined' && chrome && chrome.runtime && typeof chrome.runtime.sendMessage !== 'undefined') {
+		chrome.runtime
+			.sendMessage({
+				action: 'updateResponse',
+				requestKey: event.data.requestKey,
+				responseData: event.data.responseData
+			})
+			.then(() => {
+				console.log('[Content Script] Successfully forwarded response to background');
+			})
+			.catch(err => {
+				console.warn('[Content Script] Failed to forward response to background:', err);
+			});
+	} else {
+		console.warn('[Content Script] chrome.runtime.sendMessage is not available');
+	}
 });
+
+// 立即注入脚本，不等待任何事件
+// 因为 content script 在 document_start 时运行，我们需要尽快注入拦截脚本
+(function () {
+	// 尝试立即注入
+	if (document.head || document.documentElement) {
+		injectScript();
+	} else {
+		// 如果 head 和 documentElement 都不存在，使用 MutationObserver 等待
+		const observer = new MutationObserver(function (mutations, obs) {
+			if (document.head || document.documentElement) {
+				injectScript();
+				obs.disconnect();
+			}
+		});
+
+		// 观察 document 的变化
+		if (document.documentElement) {
+			observer.observe(document.documentElement, {
+				childList: true,
+				subtree: true
+			});
+		} else {
+			// 如果 documentElement 也不存在，观察 document 本身
+			observer.observe(document, {
+				childList: true,
+				subtree: true
+			});
+		}
+
+		// 设置超时，确保即使观察失败也能尝试注入
+		setTimeout(function () {
+			observer.disconnect();
+			if (document.head || document.documentElement) {
+				injectScript();
+			} else {
+				console.error('[Content Script] Cannot inject script: document.head and document.documentElement are not available');
+			}
+		}, 100);
+	}
+})();
+
+// 注意：拦截逻辑已移至 inject.js，在页面上下文中执行
+
+// 监听来自 background 的消息
+// 确保 chrome.runtime 和 onMessage 都可用
+(function () {
+	// 使用最安全的方式检查
+	if (typeof chrome === 'undefined') {
+		console.warn('[Content Script] chrome is undefined');
+		return;
+	}
+
+	if (!chrome || typeof chrome !== 'object') {
+		console.warn('[Content Script] chrome is not an object');
+		return;
+	}
+
+	if (!chrome.runtime || typeof chrome.runtime !== 'object') {
+		console.warn('[Content Script] chrome.runtime is not available');
+		return;
+	}
+
+	if (!chrome.runtime.onMessage || typeof chrome.runtime.onMessage.addListener !== 'function') {
+		console.warn('[Content Script] chrome.runtime.onMessage.addListener is not available');
+		return;
+	}
+
+	// 现在安全地使用
+	try {
+		chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+			try {
+				if (request && request.action === 'copyToClipboard') {
+					if (typeof copyToClipboard === 'function') {
+						copyToClipboard(request.text);
+						sendResponse({ success: true });
+					} else {
+						console.error('[Content Script] copyToClipboard function is not defined');
+						sendResponse({ success: false, error: 'copyToClipboard function not found' });
+					}
+				} else if (request && request.action === 'showRequestList') {
+					if (typeof showRequestList === 'function') {
+						showRequestList();
+						sendResponse({ success: true });
+					} else {
+						console.error('[Content Script] showRequestList function is not defined');
+						sendResponse({ success: false, error: 'showRequestList function not found' });
+					}
+				}
+				return true;
+			} catch (error) {
+				console.error('[Content Script] Error handling message:', error);
+				if (typeof sendResponse === 'function') {
+					sendResponse({ success: false, error: error.message });
+				}
+				return true;
+			}
+		});
+		console.log('[Content Script] Message listener registered successfully');
+	} catch (error) {
+		console.error('[Content Script] Failed to register message listener:', error);
+	}
+})();
 
 // 创建浮动按钮
 function createFloatingButton() {
@@ -132,9 +292,13 @@ function showRequestList() {
 	});
 
 	document.getElementById('clear-btn').addEventListener('click', () => {
-		chrome.runtime.sendMessage({ action: 'clearRequests' }, () => {
-			loadRequestList();
-		});
+		if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.sendMessage) {
+			chrome.runtime.sendMessage({ action: 'clearRequests' }, () => {
+				loadRequestList();
+			});
+		} else {
+			console.error('[Content Script] chrome.runtime.sendMessage is not available');
+		}
 	});
 
 	document.getElementById('refresh-btn').addEventListener('click', () => {
@@ -157,13 +321,17 @@ function loadRequestList() {
 
 	content.innerHTML = '<div style="text-align: center; padding: 20px; color: #999;">加载中...</div>';
 
-	chrome.runtime.sendMessage({ action: 'getAllRequests' }, response => {
-		if (response && response.success) {
-			renderRequestList(response.data);
-		} else {
-			content.innerHTML = '<div style="text-align: center; padding: 20px; color: #f56c6c;">加载失败</div>';
-		}
-	});
+	if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.sendMessage) {
+		chrome.runtime.sendMessage({ action: 'getAllRequests' }, response => {
+			if (response && response.success) {
+				renderRequestList(response.data || []);
+			} else {
+				content.innerHTML = '<div style="text-align: center; padding: 20px; color: #f56c6c;">加载失败：' + (response?.error || '未知错误') + '</div>';
+			}
+		});
+	} else {
+		content.innerHTML = '<div style="text-align: center; padding: 20px; color: #f56c6c;">chrome.runtime 不可用</div>';
+	}
 }
 
 // 解析URL参数
@@ -306,6 +474,12 @@ function decodeUrl(url) {
 
 // 复制请求信息
 function copyRequestInfo(requestId) {
+	if (typeof chrome === 'undefined' || !chrome.runtime || !chrome.runtime.sendMessage) {
+		console.error('[Content Script] chrome.runtime.sendMessage is not available');
+		showToast('复制失败：chrome.runtime 不可用', 'error');
+		return;
+	}
+
 	chrome.runtime.sendMessage({ action: 'getRequest', requestId: requestId }, response => {
 		if (response && response.success && response.data) {
 			const data = response.data;
@@ -319,7 +493,8 @@ function copyRequestInfo(requestId) {
 				请求载荷: data.requestBody,
 				响应结构: {
 					状态码: data.statusCode,
-					响应头: data.responseHeaders
+					响应头: data.responseHeaders,
+					响应数据: data.responseData || data.responseBody || null
 				}
 			};
 
@@ -392,6 +567,10 @@ function initFloatingButton() {
 	}
 }
 
+// 立即执行拦截器设置（不等待 DOM 加载）
+console.log('[Content Script] Interceptors installed');
+
+// 页面加载完成后创建浮动按钮
 if (document.readyState === 'loading') {
 	document.addEventListener('DOMContentLoaded', initFloatingButton);
 } else {
