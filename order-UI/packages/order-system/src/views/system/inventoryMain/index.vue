@@ -1489,8 +1489,36 @@ export default {
 		 * @description: 更新运输方式选择状态。
 		 *              根据 isLand 和 isSea 的状态更新 form.transportMode，用于表单校验。
 		 *              在下一个 tick 中触发表单字段的校验。
+		 *              当取消勾选时，清除对应运输方式的表单项。
 		 */
 		updateTransportMode() {
+			// 如果取消勾选陆运，清除陆运相关字段
+			if (!this.isLand) {
+				this.form.landCarID = '';
+				this.form.landCarNo = '';
+				this.form.landDriverName = '';
+				this.form.landDriverTel = '';
+				this.form.landBankNo = '';
+				this.form.landBankName = '';
+				this.form.fleet = '';
+				// 清除校验状态
+				if (this.$refs.form) {
+					this.$refs.form.clearValidate(['landCarNo', 'fleet']);
+				}
+			}
+			// 如果取消勾选海运，清除海运相关字段
+			if (!this.isSea) {
+				this.form.seaCarID = '';
+				this.form.seaCarNo = '';
+				this.form.seaDriverName = '';
+				this.form.seaDriverTel = '';
+				this.form.seaBankNo = '';
+				this.form.seaBankName = '';
+				// 清除校验状态
+				if (this.$refs.form) {
+					this.$refs.form.clearValidate(['seaCarNo', 'seaDriverName', 'seaDriverTel', 'seaBankNo', 'seaBankName']);
+				}
+			}
 			this.form.transportMode = this.isLand || this.isSea ? 'selected' : '';
 			this.$nextTick(() => {
 				if (this.$refs.form) {
