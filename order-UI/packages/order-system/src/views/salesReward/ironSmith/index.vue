@@ -25,9 +25,6 @@
 				<el-form-item label="奖励接收人" prop="rewardReceiver">
 					<el-input v-model="queryParams.rewardReceiver" placeholder="请输入奖励接收人" clearable @keyup.enter.native="handleQuery" />
 				</el-form-item>
-				<el-form-item label="客户名称" prop="customerName">
-					<el-input v-model="queryParams.customerName" placeholder="请输入客户名称" clearable @keyup.enter.native="handleQuery" />
-				</el-form-item>
 				<el-form-item label="审核状态" prop="auditState">
 					<el-select v-model="queryParams.auditState" placeholder="请选择审核状态" clearable>
 						<el-option label="未审核" value="未审核" />
@@ -376,7 +373,6 @@ export default {
 				incentiveType: '铁匠',
 				orderId: null,
 				rewardReceiver: null,
-				customerName: null,
 				auditState: null,
 				paymentStatus: null,
 				orderDateBegin: null,

@@ -1,0 +1,83 @@
+---
+ruleName: Vue2 表单数据残留终极避雷规则
+description: 杜绝弹窗/抽屉/动态表单关闭或切换时字段残留导致的数据串改、校验残留等所有经典坑
+severity: error
+globs: **/*.vue
+---
+
+# 禁止直接用 this.form = {} 或手写空对象来“清空”表单（引用相同，残留超严重）
+disallow:
+  - this\.form\s*=\s*\{\s*\}
+  - this\.form\s*=\s*\{\s*[a-zA-Z0-9_]+\s*:\s*[^}]+}
+message: |
+  严禁直接写 this.form = {} 或手写空对象清表单！
+  正确做法：
+  1. 把初始表单写成方法：getInitForm() { return { ... } }
+  2. 清空时用：this.form = this.getInitForm()
+  或：this.form = Object.assign({}, this.$options.data().form)
+
+# 打开编辑时禁止直接 this.form = row（直接引用，污染原数据）
+disallow:
+  - this\.form\s*=\s*row\b
+  - this\.form\s*=\s*scope\.row\b
+  - this\.form\s*=\s*record\b
+message: |
+  严禁直接 this.form = row，会污染列表原始数据！
+  必须深拷贝：
+  this.form = JSON.parse(JSON.stringify(row))
+
+# 关闭弹窗必须强制重置表单（不然后端字段会残留）
+require:
+  - pattern: handleClose|closeDialog|beforeClose|onClosed
+    mustContain:
+      - this\.form\s*=\s*(this\.getInitForm|this\.\$options\.data\(\)\.|JSON\.parse|Object\.assign)
+      - resetFields|clearValidate
+    message: |
+      关闭弹窗必须强制重置表单和校验！
+      正确示例：
+      handleClose() {
+        this.dialogVisible = false
+        this.$nextTick(() => {
+          this.form = this.getInitForm()
+          this.$refs.form?.resetFields()
+        })
+      }
+
+# 动态表单字段切换必须删除无关字段（否则提交会带多余字段）
+require:
+  - pattern: watch
+    contains: form\.type|form\.category|form\.rewardType
+    mustContain:
+      - delete\s+this\.form\.
+    message: |
+      动态切换表单类型时，必须 delete 掉另一组的无关字段！
+      示例：
+      watch: {
+        'form.type'(val) {
+          if (val === 1) delete this.form.fieldB
+          if (val === 2) delete this.form.fieldA
+        }
+      }
+
+# 新增时必须使用全新对象，不能复用编辑的对象
+require:
+  - pattern: handleAdd|openAdd|add
+    mustContain:
+      - this\.form\s*=\s*this\.getInitForm
+      - this\.form\s*=\s*Object\.assign
+      - this\.form\s*=\s*JSON\.parse
+    message: 点击“新增”必须给一个全新的表单对象，不能带着上一次编辑的残留！
+
+# 所有表单都必须有 resetFields（ElementUI 官方推荐）
+require:
+  - pattern: <el-form
+    mustContainInFile:
+      - resetFields|clearValidate
+    message: 使用了 <el-form> 但没看到 resetFields / clearValidate，极大概率会残留校验错误！
+
+# 推荐写法自动高亮（保存时会绿色提示）
+allow:
+  - this\.form\s*=\s*this\.getInitForm\(\)
+  - this\.form\s*=\s*JSON\.parse\(JSON\.stringify
+  - this\.\$nextTick\(\s*=>\s*\{\s*this\.\$refs\[.*\]\.resetFields
+message: 正确！这是最安全的表单清理写法，继续保持！✨
