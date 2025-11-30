@@ -145,7 +145,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[7].visible" label="订单利润" align="center" prop="orderProfit" width="120" show-overflow-tooltip>
+			<el-table-column v-if="columns[7].visible" label="订单不含税利润" align="center" prop="orderProfit" width="120" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.orderProfit }}</div>
@@ -153,7 +153,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[8].visible" label="综合利润" align="center" prop="comprehensiveProfit" width="120" show-overflow-tooltip>
+			<el-table-column v-if="columns[8].visible" label="综合单车利润" align="center" prop="comprehensiveProfit" width="120" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.comprehensiveProfit }}</div>
@@ -174,7 +174,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[11].visible" label="支付金额" align="center" prop="paymentAmount" width="120" show-overflow-tooltip>
+			<el-table-column v-if="columns[11].visible" label="实际支付金额" align="center" prop="paymentAmount" width="120" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.paymentAmount || '-' }}</div>
@@ -278,22 +278,22 @@
 						<el-form-item label="奖励原因" prop="rewardReason">
 							<el-input v-model="form.rewardReason" placeholder="请输入奖励原因" />
 						</el-form-item>
-						<el-form-item label="订单利润" prop="orderProfit">
-							<el-input-number v-model="form.orderProfit" :precision="2" placeholder="请输入订单利润" style="width: 100%"></el-input-number>
+						<el-form-item label="订单不含税利润" prop="orderProfit">
+							<el-input v-model="form.orderProfit" placeholder="请输入订单不含税利润" style="width: 100%"></el-input>
 						</el-form-item>
-						<el-form-item label="厂家返利折扣金额" prop="manufacturerRebateDiscountAmount">
-							<el-input-number v-model="form.manufacturerRebateDiscountAmount" :precision="2" placeholder="请输入厂家返利折扣金额" style="width: 100%"></el-input-number>
+						<el-form-item label="厂家返利及降价合计" prop="manufacturerRebateDiscountAmount">
+							<el-input v-model="form.manufacturerRebateDiscountAmount" placeholder="请输入厂家返利及降价合计" style="width: 100%"></el-input>
 						</el-form-item>
 					</el-col>
 					<el-col :span="12">
-						<el-form-item label="承兑折扣利润" prop="acceptanceDiscountProfit">
-							<el-input-number v-model="form.acceptanceDiscountProfit" :precision="2" placeholder="请输入承兑折扣利润" style="width: 100%"></el-input-number>
+						<el-form-item label="承兑贴息收益" prop="acceptanceDiscountProfit">
+							<el-input v-model="form.acceptanceDiscountProfit" placeholder="请输入承兑贴息收益" style="width: 100%"></el-input>
 						</el-form-item>
-						<el-form-item label="客户厂家佣金金额" prop="customerManufacturerCommissionAmount">
-							<el-input-number v-model="form.customerManufacturerCommissionAmount" :precision="2" placeholder="请输入客户厂家佣金金额" style="width: 100%"></el-input-number>
+						<el-form-item label="客户及厂家佣金合计" prop="customerManufacturerCommissionAmount">
+							<el-input v-model="form.customerManufacturerCommissionAmount" placeholder="请输入客户及厂家佣金合计" style="width: 100%"></el-input>
 						</el-form-item>
-						<el-form-item label="综合利润" prop="comprehensiveProfit">
-							<el-input-number v-model="form.comprehensiveProfit" :precision="2" placeholder="综合利润" disabled style="width: 100%"></el-input-number>
+						<el-form-item label="综合单车利润" prop="comprehensiveProfit">
+							<el-input v-model="form.comprehensiveProfit" placeholder="综合单车利润" disabled style="width: 100%"></el-input>
 						</el-form-item>
 						<el-form-item label="利润是否达标" prop="isTargetReached">
 							<el-radio-group v-model="form.isTargetReached">
@@ -302,10 +302,10 @@
 							</el-radio-group>
 						</el-form-item>
 						<el-form-item label="奖励金额" prop="rewardAmount">
-							<el-input-number v-model="form.rewardAmount" :precision="2" placeholder="请输入奖励金额" style="width: 100%"></el-input-number>
+							<el-input v-model="form.rewardAmount" placeholder="请输入奖励金额" style="width: 100%"></el-input>
 						</el-form-item>
-						<el-form-item label="支付金额" prop="paymentAmount">
-							<el-input-number v-model="form.paymentAmount" :precision="2" placeholder="请输入支付金额" style="width: 100%"></el-input-number>
+						<el-form-item label="实际支付金额" prop="paymentAmount">
+							<el-input v-model="form.paymentAmount" placeholder="请输入实际支付金额" style="width: 100%"></el-input>
 						</el-form-item>
 						<el-form-item label="奖励日期" prop="rewardDate">
 							<el-date-picker v-model="form.rewardDate" clearable type="date" value-format="yyyy-MM-dd" placeholder="请选择奖励日期" style="width: 100%"></el-date-picker>
@@ -375,7 +375,126 @@ export default {
 				orderId: [{ required: true, message: '请选择订单', trigger: 'change' }],
 				personnelIdentity: [{ required: true, message: '请选择人员身份', trigger: 'change' }],
 				rewardReceiver: [{ required: true, message: '请输入奖励接收人', trigger: 'blur' }],
-				rewardAmount: [{ required: true, message: '请输入奖励金额', trigger: 'blur' }]
+				rewardAmount: [
+					{ required: true, message: '请输入奖励金额', trigger: 'blur' },
+					{
+						validator: (rule, value, callback) => {
+							if (value === null || value === undefined || value === '') {
+								callback(new Error('请输入奖励金额'));
+								return;
+							}
+							const numStr = String(value).trim();
+							if (!/^-?(\d+\.?\d*|\.\d+)$/.test(numStr)) {
+								callback(new Error('只能输入数字，可以输入负数'));
+							} else {
+								callback();
+							}
+						},
+						trigger: 'blur'
+					}
+				],
+				orderProfit: [
+					{
+						validator: (rule, value, callback) => {
+							if (value === null || value === undefined || value === '') {
+								callback();
+								return;
+							}
+							const numStr = String(value).trim();
+							if (!/^-?(\d+\.?\d*|\.\d+)$/.test(numStr)) {
+								callback(new Error('只能输入数字，可以输入负数'));
+							} else {
+								callback();
+							}
+						},
+						trigger: 'blur'
+					}
+				],
+				manufacturerRebateDiscountAmount: [
+					{
+						validator: (rule, value, callback) => {
+							if (value === null || value === undefined || value === '') {
+								callback();
+								return;
+							}
+							const numStr = String(value).trim();
+							if (!/^-?(\d+\.?\d*|\.\d+)$/.test(numStr)) {
+								callback(new Error('只能输入数字，可以输入负数'));
+							} else {
+								callback();
+							}
+						},
+						trigger: 'blur'
+					}
+				],
+				acceptanceDiscountProfit: [
+					{
+						validator: (rule, value, callback) => {
+							if (value === null || value === undefined || value === '') {
+								callback();
+								return;
+							}
+							const numStr = String(value).trim();
+							if (!/^-?(\d+\.?\d*|\.\d+)$/.test(numStr)) {
+								callback(new Error('只能输入数字，可以输入负数'));
+							} else {
+								callback();
+							}
+						},
+						trigger: 'blur'
+					}
+				],
+				customerManufacturerCommissionAmount: [
+					{
+						validator: (rule, value, callback) => {
+							if (value === null || value === undefined || value === '') {
+								callback();
+								return;
+							}
+							const numStr = String(value).trim();
+							if (!/^-?(\d+\.?\d*|\.\d+)$/.test(numStr)) {
+								callback(new Error('只能输入数字，可以输入负数'));
+							} else {
+								callback();
+							}
+						},
+						trigger: 'blur'
+					}
+				],
+				comprehensiveProfit: [
+					{
+						validator: (rule, value, callback) => {
+							if (value === null || value === undefined || value === '') {
+								callback();
+								return;
+							}
+							const numStr = String(value).trim();
+							if (!/^-?(\d+\.?\d*|\.\d+)$/.test(numStr)) {
+								callback(new Error('只能输入数字，可以输入负数'));
+							} else {
+								callback();
+							}
+						},
+						trigger: 'blur'
+					}
+				],
+				paymentAmount: [
+					{
+						validator: (rule, value, callback) => {
+							if (value === null || value === undefined || value === '') {
+								callback();
+								return;
+							}
+							const numStr = String(value).trim();
+							if (!/^-?(\d+\.?\d*|\.\d+)$/.test(numStr)) {
+								callback(new Error('只能输入数字，可以输入负数'));
+							} else {
+								callback();
+							}
+						},
+						trigger: 'blur'
+					}
+				]
 			},
 			columns: [
 				{ key: 0, label: 'ID', visible: true },
@@ -385,11 +504,11 @@ export default {
 				{ key: 4, label: '人员身份', visible: true },
 				{ key: 5, label: '奖励接收人', visible: true },
 				{ key: 6, label: '奖励原因', visible: true },
-				{ key: 7, label: '订单利润', visible: true },
-				{ key: 8, label: '综合利润', visible: true },
+				{ key: 7, label: '订单不含税利润', visible: true },
+				{ key: 8, label: '综合单车利润', visible: true },
 				{ key: 9, label: '利润是否达标', visible: true },
 				{ key: 10, label: '奖励金额', visible: true },
-				{ key: 11, label: '支付金额', visible: true },
+				{ key: 11, label: '实际支付金额', visible: true },
 				{ key: 12, label: '奖励日期', visible: true },
 				{ key: 13, label: '审核状态', visible: true },
 				{ key: 14, label: '审核人', visible: true },
@@ -400,11 +519,12 @@ export default {
 	watch: {
 		form: {
 			handler() {
-				const orderProfit = Number(this.form.orderProfit) || 0;
-				const manufacturerRebateDiscountAmount = Number(this.form.manufacturerRebateDiscountAmount) || 0;
-				const acceptanceDiscountProfit = Number(this.form.acceptanceDiscountProfit) || 0;
-				const customerManufacturerCommissionAmount = Number(this.form.customerManufacturerCommissionAmount) || 0;
-				this.form.comprehensiveProfit = orderProfit + manufacturerRebateDiscountAmount + acceptanceDiscountProfit - customerManufacturerCommissionAmount;
+				const orderProfit = parseFloat(this.form.orderProfit) || 0;
+				const manufacturerRebateDiscountAmount = parseFloat(this.form.manufacturerRebateDiscountAmount) || 0;
+				const acceptanceDiscountProfit = parseFloat(this.form.acceptanceDiscountProfit) || 0;
+				const customerManufacturerCommissionAmount = parseFloat(this.form.customerManufacturerCommissionAmount) || 0;
+				const result = orderProfit + manufacturerRebateDiscountAmount + acceptanceDiscountProfit - customerManufacturerCommissionAmount;
+				this.form.comprehensiveProfit = isNaN(result) ? '' : result;
 			},
 			deep: true
 		}
