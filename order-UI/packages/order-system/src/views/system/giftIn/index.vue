@@ -127,79 +127,64 @@
 						</el-form-item>
 					</el-col>
 
-					<el-col :span="24">
+					<!-- 对方类型和对方信息同行 -->
+					<el-col :span="12">
 						<el-form-item label="对方类型">
 							<el-select v-model="companyType" placeholder="请选择" style="width: 100%">
 								<el-option v-for="item in OTHER_TYPE()" :key="item.value" :label="item.label" :value="item.value" />
 							</el-select>
 						</el-form-item>
 					</el-col>
-
-					<el-col :span="24">
+					<el-col :span="12">
 						<el-form-item label="对方信息" prop="fromInfo">
-							<el-row :gutter="10">
-								<el-col :span="20">
-									<el-input v-model="form.fromInfo" placeholder="请输入对方信息" />
-								</el-col>
-								<el-col :span="4">
-									<SearchOption :limit-info="{ companyType: companyType }" :get-data="listCompany" query-info="companyName" query-label="公司名称" :query-name="companyName" @update:queryName="handleUpdateCompanyName" @commitBack="handleCommitBackCompany">
-										<template #table-columns>
-											<el-table-column :label="companyType" align="center" prop="companyName" />
-											<el-table-column label="老板姓名" align="center" prop="leader" />
-											<el-table-column label="老板电话" align="center" prop="leaderTel" />
-											<el-table-column label="区域" align="center" prop="region" />
-											<el-table-column label="销售经理" align="center" prop="salesManager" />
-										</template>
-									</SearchOption>
-								</el-col>
-							</el-row>
+							<el-input v-model="form.fromInfo" placeholder="请输入对方信息" />
 						</el-form-item>
 					</el-col>
 
+					<!-- 物品名称单独一行 -->
 					<el-col :span="24">
 						<el-form-item label="物品名称" prop="itemName">
 							<el-input v-model="form.itemName" placeholder="请输入物品名称" />
 						</el-form-item>
 					</el-col>
 
+					<!-- 数量和单位同行 -->
 					<el-col :span="12">
 						<el-form-item label="数量" prop="quantity">
 							<el-input v-model="form.quantity" placeholder="请输入数量" />
 						</el-form-item>
 					</el-col>
-
-					<el-col :span="10">
+					<el-col :span="12">
 						<el-form-item label="单位" prop="unit">
-							<el-select v-model="form.unit" placeholder="请选择单位" style="width: 100%">
+							<el-select v-model="form.unit" placeholder="请选择单位" style="width: 100%; height: 32px">
 								<el-option v-for="dict in dict.type.gift_unit" :key="dict.value" :label="dict.label" :value="dict.value" />
 							</el-select>
 						</el-form-item>
 					</el-col>
 
-					<el-col :span="12">
+					<!-- 预估价值、经办人、收礼方式三列布局 -->
+					<el-col :span="8">
 						<el-form-item label="预估价值" prop="estimatedValue">
 							<el-input v-model="form.estimatedValue" placeholder="请输入预估价值" />
 						</el-form-item>
 					</el-col>
-
-					<el-col :span="12">
+					<el-col :span="8">
 						<el-form-item label="经办人" prop="handler">
 							<el-input v-model="form.handler" placeholder="请输入经办人" />
 						</el-form-item>
 					</el-col>
-
-					<el-col :span="12">
+					<el-col :span="8">
 						<el-form-item label="收礼方式" prop="receiveMethod">
 							<el-input v-model="form.receiveMethod" placeholder="请输入收礼方式" />
 						</el-form-item>
 					</el-col>
 
+					<!-- 付款时间和备注各占一行 -->
 					<el-col :span="24">
 						<el-form-item label="付款时间" prop="payTime">
 							<el-date-picker v-model="form.payTime" clearable type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="请选择付款时间" style="width: 100%" />
 						</el-form-item>
 					</el-col>
-
 					<el-col :span="24">
 						<el-form-item label="备注" prop="remark">
 							<el-input v-model="form.remark" type="textarea" placeholder="请输入内容" :rows="3" />
