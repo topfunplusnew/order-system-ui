@@ -20,8 +20,8 @@
 			<el-form-item label="收礼人员" prop="recipientReceiver">
 				<el-input v-model="queryParams.recipientReceiver" placeholder="请输入收礼人员" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
-			<el-form-item label="物品名称" prop="itemName">
-				<el-input v-model="queryParams.itemName" placeholder="请输入物品名称" clearable @keyup.enter.native="handleQuery" />
+			<el-form-item label="礼品来源" prop="itemName">
+				<el-input v-model="queryParams.itemName" placeholder="请输入礼品来源" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 
 			<el-form-item>
@@ -90,7 +90,7 @@
 
 			<el-table-column v-if="columns[4].visible" label="收礼人员" align="center" prop="recipientReceiver" width="120" show-overflow-tooltip />
 
-			<el-table-column v-if="columns[5].visible" label="物品名称" align="center" prop="itemName" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[5].visible" label="礼品来源" align="center" prop="itemName" width="120" show-overflow-tooltip />
 
 			<el-table-column v-if="columns[6].visible" label="数量" align="center" prop="quantity" width="80" show-overflow-tooltip />
 
@@ -164,15 +164,15 @@
 					</el-col>
 
 					<el-col :span="24">
-						<el-form-item label="物品名称" prop="itemName">
+						<el-form-item label="礼品来源" prop="itemName">
 							<el-row :gutter="10">
 								<el-col :span="20">
 									<el-input v-model="form.itemName" placeholder="从入库记录自动获取" readonly />
 								</el-col>
 								<el-col :span="2">
-									<SearchOption :get-data="listGiftInWithRemaining" query-info="itemName" query-label="物品名称" :query-name="itemName" @update:queryName="handleUpdateItemName" @commitBack="handleCommitBackItem">
+									<SearchOption :get-data="listGiftInWithRemaining" query-info="itemName" query-label="礼品来源" :query-name="itemName" @update:queryName="handleUpdateItemName" @commitBack="handleCommitBackItem">
 										<template #table-columns>
-											<el-table-column label="物品名称" align="center" prop="itemName" />
+											<el-table-column label="礼品来源" align="center" prop="itemName" />
 											<el-table-column label="数量" align="center" prop="quantity" />
 											<el-table-column label="预估价值/购买金额" align="center" prop="estimatedValue" />
 											<el-table-column label="剩余数量" align="center" prop="remainingQuantity" />
@@ -276,7 +276,7 @@ export default {
 				outMethod: [{ required: true, message: '请选择出库方式', trigger: 'blur' }],
 				companyName: [{ required: true, message: '请输入公司名称', trigger: 'blur' }],
 				recipientReceiver: [{ required: true, message: '请输入收礼人员', trigger: 'blur' }],
-				itemName: [{ required: true, message: '请输入物品名称', trigger: 'blur' }],
+				itemName: [{ required: true, message: '请输入礼品来源', trigger: 'blur' }],
 				quantity: [
 					{ required: true, message: '请输入数量', trigger: 'blur' },
 					{
@@ -307,7 +307,7 @@ export default {
 				{ key: 2, label: `出库方式`, visible: true },
 				{ key: 3, label: `公司名称`, visible: true },
 				{ key: 4, label: `收礼人员`, visible: true },
-				{ key: 5, label: `物品名称`, visible: true },
+				{ key: 5, label: `礼品来源`, visible: true },
 				{ key: 6, label: `数量`, visible: true },
 				{ key: 7, label: `预估价值`, visible: true },
 				{ key: 8, label: `经办人`, visible: true },
@@ -387,7 +387,7 @@ export default {
 					this.giftOutList.forEach((item, index) => {
 						const sourceId = (item && item.giftSource) || (item && item.inId);
 						console.log(`出库记录 ${index + 1} (ID: ${item.id}):`, {
-							物品名称: item.itemName,
+							礼品来源: item.itemName,
 							giftSource: item.giftSource,
 							inId: item.inId,
 							入库ID: sourceId || '无'
