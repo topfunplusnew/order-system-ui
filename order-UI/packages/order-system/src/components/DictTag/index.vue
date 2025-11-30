@@ -2,12 +2,7 @@
 	<div>
 		<template v-for="(item, index) in options">
 			<template v-if="values.includes(item.value)">
-				<span
-					v-if="(item.raw.listClass == 'default' || item.raw.listClass == '') && (item.raw.cssClass == '' || item.raw.cssClass == null)"
-					:key="item.value"
-					:index="index"
-					:class="item.raw.cssClass"
-				>
+				<span v-if="(item.raw.listClass == 'default' || item.raw.listClass == '') && (item.raw.cssClass == '' || item.raw.cssClass == null)" :key="item.value" :index="index" :class="item.raw.cssClass">
 					{{ item.label + ' ' }}
 				</span>
 				<el-tag v-else :key="item.value" :disable-transitions="true" :index="index" :type="item.raw.listClass == 'primary' ? '' : item.raw.listClass" :class="item.raw.cssClass">

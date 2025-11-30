@@ -5,18 +5,7 @@
 				<a-empty description="暂无库存数据" />
 			</div>
 			<div v-else>
-				<el-table
-					id="inventoryPrintBox"
-					border
-					:data="inventoryList"
-					max-height="700"
-					:cell-style="cellStyle"
-					:span-method="spanMethod"
-					:row-class-name="tableRowClassName"
-					size="mini"
-					show-summary
-					:summary-method="getSummaries"
-				>
+				<el-table id="inventoryPrintBox" border :data="inventoryList" max-height="700" :cell-style="cellStyle" :span-method="spanMethod" :row-class-name="tableRowClassName" size="mini" show-summary :summary-method="getSummaries">
 					<el-table-column label="日期" align="center" prop="storeDate" show-overflow-tooltip width="80">
 						<template slot-scope="scope">
 							<span v-if="scope.row.type === 'flag'" style="text-align: left; font-weight: bold">备注：{{ scope.row.comments }}</span>

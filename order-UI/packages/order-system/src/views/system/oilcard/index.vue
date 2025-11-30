@@ -144,18 +144,7 @@
 		</el-dialog>
 
 		<!--    加油卡充值弹窗-->
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="加油卡充值"
-			:visible.sync="moneyDialogVisible"
-			width="500px"
-			append-to-body
-		>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="加油卡充值" :visible.sync="moneyDialogVisible" width="500px" append-to-body>
 			<el-form :model="moneyInfo" :rules="moneyRules" label-width="200px" @keyup.enter.native="submitMoney" @submit.native.prevent="submitMoney" ref="moneyFormRef" size="mini">
 				<el-form-item label="加油卡卡号" prop="oilCardNo">
 					<el-row>
@@ -163,17 +152,7 @@
 							<el-input v-model="moneyInfo.oilCardNo" placeholder="请输入加油卡卡号" @input="handleInputTrim($event, 'moneyInfo', 'oilCardNo')" />
 						</el-col>
 						<el-col :span="3">
-							<SearchOption
-								:get-data="listOilCard"
-								title="选择加油卡"
-								icon="el-icon-search"
-								:limit-info="{ oilType: '主卡' }"
-								@commitBack="handleCommitBack"
-								@update:queryName="handleUpdateQueryName"
-								:query-name="queryCard"
-								query-info="oilCardNo"
-								query-label="加油卡卡号"
-							>
+							<SearchOption :get-data="listOilCard" title="选择加油卡" icon="el-icon-search" :limit-info="{ oilType: '主卡' }" @commitBack="handleCommitBack" @update:queryName="handleUpdateQueryName" :query-name="queryCard" query-info="oilCardNo" query-label="加油卡卡号">
 								<template #table-columns>
 									<el-table-column prop="oilCardNo" label="加油卡卡号" />
 									<el-table-column prop="moneyAmount" label="加油卡余额" />
@@ -198,15 +177,7 @@
 						<el-input v-model="moneyInfo.acountsName" placeholder="请输入银行开户名" @input="handleInputTrim($event, 'moneyInfo', 'acountsName')" />
 					</el-col>
 					<el-col :span="4">
-						<SearchOption
-							:limit-info="{ acountsType: '己方公司' }"
-							:get-data="listBankAccount"
-							:query-name="queryBankAcount"
-							query-label="户名查找"
-							query-info="acountsName"
-							@commitBack="handleCommitBackBankAcount"
-							@update:queryName="handleUpdateQueryBankAcount"
-						>
+						<SearchOption :limit-info="{ acountsType: '己方公司' }" :get-data="listBankAccount" :query-name="queryBankAcount" query-label="户名查找" query-info="acountsName" @commitBack="handleCommitBackBankAcount" @update:queryName="handleUpdateQueryBankAcount">
 							<template #table-columns>
 								<el-table-column label="账户类型" align="center" prop="acountsType" />
 								<el-table-column label="己方公司" align="center" prop="displayName" />
@@ -222,14 +193,7 @@
 					<el-input v-model="moneyInfo.bankNo" placeholder="请输入银行账号" @input="handleInputTrim($event, 'moneyInfo', 'bankNo')" />
 				</el-form-item>
 				<el-form-item label="附件" prop="bankName">
-					<UploadFilesButton
-						ref="attachmentUploader"
-						:table-name="'oilcard'"
-						:record-id="moneyInfo.id"
-						:attachment-type="'附件'"
-						:initial-attachments="(form.params && form.params.attachments) || []"
-						@files-updated="handleAttachmentFilesUpdated"
-					/>
+					<UploadFilesButton ref="attachmentUploader" :table-name="'oilcard'" :record-id="moneyInfo.id" :attachment-type="'附件'" :initial-attachments="(form.params && form.params.attachments) || []" @files-updated="handleAttachmentFilesUpdated" />
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -239,27 +203,8 @@
 		</el-dialog>
 
 		<!--    加油卡操作功能-->
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="加油卡操作"
-			:visible.sync="optionVisible"
-			width="500px"
-			append-to-body
-		>
-			<el-form
-				ref="oilCardForm"
-				:model="oilCardOption"
-				:rules="optionRules"
-				label-width="200px"
-				size="mini"
-				@keyup.enter.native="submitOilCardOption"
-				@submit.native.prevent="submitOilCardOption"
-			>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="加油卡操作" :visible.sync="optionVisible" width="500px" append-to-body>
+			<el-form ref="oilCardForm" :model="oilCardOption" :rules="optionRules" label-width="200px" size="mini" @keyup.enter.native="submitOilCardOption" @submit.native.prevent="submitOilCardOption">
 				<el-form-item label="消费类型" prop="type">
 					<el-radio v-model="oilCardOption.type" :label="OilCardOptionType.MAIN_TO_SUB">主卡分配</el-radio>
 					<el-radio v-model="oilCardOption.type" :label="OilCardOptionType.SUB_TO_SUB">副卡圈存</el-radio>
@@ -270,15 +215,7 @@
 							<el-input disabled v-model="oilCardOption.oilMainCardNo" placeholder="请选择" />
 						</el-col>
 						<el-col :span="4">
-							<SearchOption
-								:get-data="listOilCard"
-								query-info="oilCardNo"
-								:query-name="queryOilCard"
-								query-label="油卡账号查询"
-								:limit-info="{ oilType: '主卡' }"
-								@commitBack="handleCommitBackOilCard"
-								@update:queryName="handleCommitBackQueryOilCard"
-							>
+							<SearchOption :get-data="listOilCard" query-info="oilCardNo" :query-name="queryOilCard" query-label="油卡账号查询" :limit-info="{ oilType: '主卡' }" @commitBack="handleCommitBackOilCard" @update:queryName="handleCommitBackQueryOilCard">
 								<template #table-columns>
 									<el-table-column label="加油卡卡号" align="center" prop="oilCardNo" />
 									<el-table-column label="当前金额" align="center" prop="moneyAmount" />
@@ -293,15 +230,7 @@
 							<el-input disabled v-model="oilCardOption.oilSecondCardNo" placeholder="请选择" />
 						</el-col>
 						<el-col :span="4">
-							<SearchOption
-								:get-data="listOilCard"
-								query-info="oilCardNo"
-								:query-name="queryOilCardOther"
-								query-label="油卡账号查询"
-								:limit-info="{ oilType: '副卡' }"
-								@commitBack="handleCommitBackOilCardOther"
-								@update:queryName="handleCommitBackQueryOilCardOther"
-							>
+							<SearchOption :get-data="listOilCard" query-info="oilCardNo" :query-name="queryOilCardOther" query-label="油卡账号查询" :limit-info="{ oilType: '副卡' }" @commitBack="handleCommitBackOilCardOther" @update:queryName="handleCommitBackQueryOilCardOther">
 								<template #table-columns>
 									<el-table-column label="加油卡卡号" align="center" prop="oilCardNo" />
 									<el-table-column label="当前金额" align="center" prop="moneyAmount" />
@@ -312,11 +241,7 @@
 				</el-form-item>
 
 				<el-form-item :label="oilCardOption.type === OilCardOptionType.MAIN_TO_SUB ? `分配金额` : `圈存金额`" prop="rechargeMoney">
-					<el-input
-						v-model="oilCardOption.rechargeMoney"
-						:placeholder="oilCardOption.type === OilCardOptionType.MAIN_TO_SUB ? `请输入分配金额` : `请输入圈存金额`"
-						@input="handleInputTrim($event, 'oilCardOption', 'rechargeMoney')"
-					/>
+					<el-input v-model="oilCardOption.rechargeMoney" :placeholder="oilCardOption.type === OilCardOptionType.MAIN_TO_SUB ? `请输入分配金额` : `请输入圈存金额`" @input="handleInputTrim($event, 'oilCardOption', 'rechargeMoney')" />
 				</el-form-item>
 				<el-form-item label="备注" prop="comments">
 					<el-input v-model="oilCardOption.comments" placeholder="请输入备注" @input="handleInputTrim($event, 'oilCardOption', 'comments')" />

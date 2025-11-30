@@ -7,17 +7,7 @@
 					<el-input v-model="deptName" placeholder="请输入部门名称" clearable size="mini" prefix-icon="el-icon-search" style="margin-bottom: 20px" />
 				</div>
 				<div class="head-container">
-					<el-tree
-						ref="tree"
-						:data="deptOptions"
-						:props="defaultProps"
-						:expand-on-click-node="false"
-						:filter-node-method="filterNode"
-						node-key="id"
-						default-expand-all
-						highlight-current
-						@node-click="handleNodeClick"
-					/>
+					<el-tree ref="tree" :data="deptOptions" :props="defaultProps" :expand-on-click-node="false" :filter-node-method="filterNode" node-key="id" default-expand-all highlight-current @node-click="handleNodeClick" />
 				</div>
 			</el-col>
 			<!--用户数据-->
@@ -35,15 +25,7 @@
 						</el-select>
 					</el-form-item>
 					<el-form-item label="创建时间">
-						<el-date-picker
-							v-model="dateRange"
-							style="width: 240px"
-							value-format="yyyy-MM-dd HH:mm:ss"
-							type="daterange"
-							range-separator="-"
-							start-placeholder="开始日期"
-							end-placeholder="结束日期"
-						></el-date-picker>
+						<el-date-picker v-model="dateRange" style="width: 240px" value-format="yyyy-MM-dd HH:mm:ss" type="daterange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
 					</el-form-item>
 					<el-form-item>
 						<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -481,30 +463,8 @@
 		</el-dialog>
 
 		<!-- 用户导入对话框 -->
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="false"
-			:title="upload.title"
-			:visible.sync="upload.open"
-			width="400px"
-			append-to-body
-		>
-			<el-upload
-				ref="upload"
-				:limit="1"
-				accept=".xlsx, .xls"
-				:headers="upload.headers"
-				:action="upload.url + '?updateSupport=' + upload.updateSupport"
-				:disabled="upload.isUploading"
-				:on-progress="handleFileUploadProgress"
-				:on-success="handleFileSuccess"
-				:auto-upload="false"
-				drag
-			>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="upload.title" :visible.sync="upload.open" width="400px" append-to-body>
+			<el-upload ref="upload" :limit="1" accept=".xlsx, .xls" :headers="upload.headers" :action="upload.url + '?updateSupport=' + upload.updateSupport" :disabled="upload.isUploading" :on-progress="handleFileUploadProgress" :on-success="handleFileSuccess" :auto-upload="false" drag>
 				<i class="el-icon-upload"></i>
 				<div class="el-upload__text">
 					将文件拖到此处，或
@@ -526,17 +486,7 @@
 		</el-dialog>
 
 		<!--    查看个人信息-->
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="用户信息查看"
-			:visible.sync="checkUserDialogVisible"
-			width="30%"
-		>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="用户信息查看" :visible.sync="checkUserDialogVisible" width="30%">
 			<el-descriptions class="margin-top" title="用户信息查看" :column="3" border>
 				<el-descriptions-item>
 					<template slot="label">

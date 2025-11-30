@@ -1,31 +1,10 @@
 <template>
 	<div>
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="false"
-			v-bind="$attrs"
-			title="选择审核人员"
-			v-on="$listeners"
-			@open="onOpen"
-		>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" v-bind="$attrs" title="选择审核人员" v-on="$listeners" @open="onOpen">
 			<el-row>
 				<el-col :span="6">
 					<Fonts content="请选择部门" />
-					<el-tree
-						ref="tree"
-						:data="deptOptions"
-						:props="defaultProps"
-						:expand-on-click-node="false"
-						:filter-node-method="filterNode"
-						node-key="id"
-						default-expand-all
-						highlight-current
-						@node-click="handleNodeClick"
-					/>
+					<el-tree ref="tree" :data="deptOptions" :props="defaultProps" :expand-on-click-node="false" :filter-node-method="filterNode" node-key="id" default-expand-all highlight-current @node-click="handleNodeClick" />
 				</el-col>
 				<el-col :span="18">
 					<Fonts content="请选择部门人员" />

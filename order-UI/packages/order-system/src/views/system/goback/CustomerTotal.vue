@@ -9,15 +9,7 @@
 				<el-form-item label="客户" prop="customer">
 					<el-row>
 						<el-col :span="4">
-							<SearchOption
-								:limit-info="{ companyType: PUBLIC_DICT_TYPE.CUSTOMER }"
-								:get-data="listCompany"
-								query-info="companyName"
-								query-label="公司名称"
-								:query-name="companyName"
-								@update:queryName="handleUpdateCompanyName"
-								@commitBack="handleCommitBackCompany"
-							>
+							<SearchOption :limit-info="{ companyType: PUBLIC_DICT_TYPE.CUSTOMER }" :get-data="listCompany" query-info="companyName" query-label="公司名称" :query-name="companyName" @update:queryName="handleUpdateCompanyName" @commitBack="handleCommitBackCompany">
 								<template #table-columns>
 									<el-table-column :label="PUBLIC_DICT_TYPE.CUSTOMER" align="center" prop="companyName" />
 									<el-table-column label="老板姓名" align="center" prop="leader" />

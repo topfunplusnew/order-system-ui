@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>网络请求复制器</title>
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
+
+		body {
+			width: 600px;
+			min-height: 300px;
+			padding: 16px;
+			margin: 0;
+			font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+			font-size: 14px;
+			box-sizing: border-box;
+		}
+
+		html {
+			width: 600px;
+			box-sizing: border-box;
+			padding-bottom: 50px;
+		}
+
+		.header {
+			margin-bottom: 16px;
+			padding-bottom: 12px;
+			border-bottom: 1px solid #e0e0e0;
+			width: 100%;
+			box-sizing: border-box;
+		}
+
+		.header h2 {
+			font-size: 18px;
+			color: #333;
+			margin-bottom: 8px;
+		}
+
+		.actions {
+			display: flex;
+			gap: 8px;
+			margin-bottom: 16px;
+			width: 100%;
+			box-sizing: border-box;
+		}
+
+		.btn {
+			padding: 6px 12px;
+			border: none;
+			border-radius: 4px;
+			cursor: pointer;
+			font-size: 12px;
+			transition: background 0.3s;
+		}
+
+		.btn-primary {
+			background: #409EFF;
+			color: white;
+		}
+
+		.btn-primary:hover {
+			background: #66b1ff;
+		}
+
+		.btn-danger {
+			background: #f56c6c;
+			color: white;
+		}
+
+		.btn-danger:hover {
+			background: #f78989;
+		}
+
+		.request-list {
+			max-height: 400px;
+			width: 100%;
+			box-sizing: border-box;
+		}
+
+		.request-item {
+			border: 1px solid #e0e0e0;
+			border-radius: 4px;
+			padding: 12px;
+			margin-bottom: 8px;
+			background: #fafafa;
+			word-wrap: break-word;
+			width: 100%;
+			box-sizing: border-box;
+		}
+
+		.request-header {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			margin-bottom: 8px;
+			flex-wrap: wrap;
+		}
+
+		.method-badge {
+			padding: 2px 8px;
+			border-radius: 4px;
+			font-size: 11px;
+			font-weight: bold;
+			color: white;
+		}
+
+		.method-get { background: #67c23a; }
+		.method-post { background: #409EFF; }
+		.method-put { background: #e6a23c; }
+		.method-delete { background: #f56c6c; }
+		.method-patch { background: #909399; }
+
+		.status-badge {
+			padding: 2px 8px;
+			border-radius: 4px;
+			font-size: 11px;
+			color: white;
+		}
+
+		.status-success { background: #67c23a; }
+		.status-error { background: #f56c6c; }
+		.status-warning { background: #e6a23c; }
+
+		.request-url {
+			flex: 1;
+			font-size: 12px;
+			color: #666;
+			word-break: break-all;
+			margin-bottom: 8px;
+		}
+
+		.request-url-full {
+			display: block;
+			width: 100%;
+			max-width: 100%;
+			font-size: 12px;
+			color: #333;
+			word-break: break-all;
+			margin-bottom: 8px;
+			overflow-wrap: break-word;
+			box-sizing: border-box;
+		}
+
+		.request-params {
+			margin-top: 8px;
+			padding: 8px;
+			background: #f5f5f5;
+			border-radius: 4px;
+			font-size: 11px;
+			overflow-x: hidden;
+			word-wrap: break-word;
+			width: 100%;
+			max-width: 100%;
+			box-sizing: border-box;
+		}
+
+		.request-params-title {
+			font-weight: bold;
+			color: #666;
+			margin-bottom: 4px;
+		}
+
+		.request-param-item {
+			padding: 2px 0;
+			color: #333;
+			word-break: break-all;
+		}
+
+		.request-param-key {
+			color: #409EFF;
+			font-weight: 500;
+		}
+
+		.request-param-value {
+			color: #67c23a;
+			margin-left: 4px;
+		}
+
+		.request-time {
+			font-size: 11px;
+			color: #999;
+			margin-top: 8px;
+		}
+
+		.empty-state {
+			text-align: center;
+			padding: 40px 20px;
+			color: #999;
+		}
+
+		.loading {
+			text-align: center;
+			padding: 20px;
+			color: #999;
+		}
+	</style>
+</head>
+<body>
+	<div class="header">
+		<h2>网络请求复制器</h2>
+		<div class="actions">
+			<button id="refresh-btn" class="btn btn-primary">刷新</button>
+			<button id="clear-btn" class="btn btn-danger">清空</button>
+		</div>
+	</div>
+	<div id="request-list" class="request-list">
+		<div class="loading">加载中...</div>
+	</div>
+
+	<script src="popup.js"></script>
+</body>
+</html>
+

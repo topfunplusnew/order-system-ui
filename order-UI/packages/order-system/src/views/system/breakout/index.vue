@@ -55,15 +55,7 @@
 			<!-- 新增毁损金额列 -->
 			<el-table-column v-if="columns[9].visible" label="毁损金额" align="center" show-overflow-tooltip>
 				<template slot-scope="scope">
-					{{
-						(
-							(scope.row.sourceInventoryDetail.length || 0) *
-							(scope.row.sourceInventoryDetail.width || 0) *
-							(scope.row.sourceInventoryDetail.paymentUnload || 0) *
-							(scope.row.outAmount || 0) *
-							0.000001
-						).toFixed(2)
-					}}
+					{{ ((scope.row.sourceInventoryDetail.length || 0) * (scope.row.sourceInventoryDetail.width || 0) * (scope.row.sourceInventoryDetail.paymentUnload || 0) * (scope.row.outAmount || 0) * 0.000001).toFixed(2) }}
 				</template>
 			</el-table-column>
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="80">
@@ -112,17 +104,7 @@
 						<el-input size="mini" v-model="secondForm.storeHouseName" placeholder="请输入仓库名称" />
 					</el-col>
 					<el-col :span="8">
-						<SearchOption
-							:get-data="listStoreHouse"
-							icon="el-icon-s-home"
-							:limit-info="{}"
-							query-label="仓库名称"
-							query-info="storeHouseName"
-							:query-name="queryStore"
-							@commitBack="value => handleCommitBackInventory(value)"
-							@update:queryName="handleUpdateQueryNameStore"
-							:is-page="false"
-						>
+						<SearchOption :get-data="listStoreHouse" icon="el-icon-s-home" :limit-info="{}" query-label="仓库名称" query-info="storeHouseName" :query-name="queryStore" @commitBack="value => handleCommitBackInventory(value)" @update:queryName="handleUpdateQueryNameStore" :is-page="false">
 							<template #table-columns>
 								<el-table-column label="仓库名称" align="center" prop="storeHouseName" />
 								<el-table-column label="地址" align="center" prop="address" />
@@ -152,15 +134,7 @@
 							</el-col>
 							<el-col :span="4">
 								<!--搜索银行卡信息-->
-								<SearchOption
-									:limit-info="{ carType: '陆运' }"
-									:get-data="listCars"
-									query-label="车牌搜索"
-									query-info="carNo"
-									:query-name="queryLandCar"
-									@commitBack="handleCommitBackCar"
-									@update:queryName="handleChangeCar"
-								>
+								<SearchOption :limit-info="{ carType: '陆运' }" :get-data="listCars" query-label="车牌搜索" query-info="carNo" :query-name="queryLandCar" @commitBack="handleCommitBackCar" @update:queryName="handleChangeCar">
 									<template #table-columns>
 										<el-table-column label="车牌" align="center" prop="carNo" />
 										<el-table-column label="司机" align="center" prop="driver" />
@@ -192,15 +166,7 @@
 								<el-input v-model="secondForm.fleet" type="text" size="mini" placeholder="请输入车队" />
 							</el-col>
 							<el-col :span="4">
-								<SearchOption
-									:limit-info="{}"
-									:get-data="listFleet"
-									query-label="车队名称"
-									query-info="fname"
-									:query-name="queryFleet"
-									@commitBack="handleCommitBackFleet"
-									@update:queryName="handleChangeFleet"
-								>
+								<SearchOption :limit-info="{}" :get-data="listFleet" query-label="车队名称" query-info="fname" :query-name="queryFleet" @commitBack="handleCommitBackFleet" @update:queryName="handleChangeFleet">
 									<template #table-columns>
 										<el-table-column label="车队名称" align="center" prop="fname" />
 										<el-table-column label="车队经理" align="center" prop="fleader" />
@@ -222,15 +188,7 @@
 								<el-input v-model="secondForm.seaCarNo" type="text" size="mini" placeholder="请输入柜号" style="width: 120px" />
 							</el-col>
 							<el-col :span="4">
-								<SearchOption
-									:limit-info="{ carType: '海运' }"
-									:get-data="listCars"
-									query-label="车牌"
-									query-info="carNo"
-									:query-name="querySeaCars"
-									@commitBack="handleCommitBackSeaCar"
-									@update:queryName="handleChangeSeaCar"
-								>
+								<SearchOption :limit-info="{ carType: '海运' }" :get-data="listCars" query-label="车牌" query-info="carNo" :query-name="querySeaCars" @commitBack="handleCommitBackSeaCar" @update:queryName="handleChangeSeaCar">
 									<template #table-columns>
 										<el-table-column label="车牌" align="center" prop="carNo" />
 										<el-table-column label="司机" align="center" prop="driver" />
@@ -268,15 +226,7 @@
 				</el-row>
 
 				<!--        与订单一致-->
-				<el-table
-					size="mini"
-					:data="inventoryDetailList"
-					show-summary
-					:summary-method="getSummary"
-					:row-class-name="rowInventoryDetailIndex"
-					@selection-change="handleInventoryDetailSelectionChange"
-					ref="inventoryDetail"
-				>
+				<el-table size="mini" :data="inventoryDetailList" show-summary :summary-method="getSummary" :row-class-name="rowInventoryDetailIndex" @selection-change="handleInventoryDetailSelectionChange" ref="inventoryDetail">
 					<el-table-column type="selection" width="90" align="center" />
 					<el-table-column label="序号" align="center" prop="index" width="50" />
 					<el-table-column label="供应商" width="200">
@@ -377,14 +327,7 @@
 					</el-table-column>
 					<el-table-column label="包数" prop="packs" width="150">
 						<template #default="scope">
-							<el-input
-								size="mini"
-								type="number"
-								@input="() => calculatePacks(scope)"
-								v-model.lazy="scope.row.packs"
-								:placeholder="scope.row.piecesPerPack <= 0 ? '请先输入每包片数' : '请输入包数'"
-								:disabled="scope.row.piecesPerPack <= 0"
-							/>
+							<el-input size="mini" type="number" @input="() => calculatePacks(scope)" v-model.lazy="scope.row.packs" :placeholder="scope.row.piecesPerPack <= 0 ? '请先输入每包片数' : '请输入包数'" :disabled="scope.row.piecesPerPack <= 0" />
 						</template>
 					</el-table-column>
 
@@ -396,14 +339,7 @@
 
 					<el-table-column label="出厂单价" prop="price" width="150">
 						<template #default="scope">
-							<el-input
-								size="mini"
-								type="number"
-								v-model="scope.row.price"
-								@input="scope.row.sundryCost > 0 ? calculatePrice(scope) : ''"
-								:placeholder="scope.row.pieces <= 0 ? '请先完善出厂片数' : '请输入出厂单价'"
-								:disabled="scope.row.pieces <= 0"
-							/>
+							<el-input size="mini" type="number" v-model="scope.row.price" @input="scope.row.sundryCost > 0 ? calculatePrice(scope) : ''" :placeholder="scope.row.pieces <= 0 ? '请先完善出厂片数' : '请输入出厂单价'" :disabled="scope.row.pieces <= 0" />
 						</template>
 					</el-table-column>
 					<el-table-column label="出厂是否含税" prop="isIncludeTaxFactory" width="150">
@@ -416,14 +352,7 @@
 					</el-table-column>
 					<el-table-column label="杂费" prop="sundryCost" width="150">
 						<template #default="scope">
-							<el-input
-								size="mini"
-								type="number"
-								v-model.lazy="scope.row.sundryCost"
-								@input="() => calculatePrice(scope)"
-								:placeholder="scope.row.price <= 0 ? '请先完善出厂单价' : '请输入杂费'"
-								:disabled="scope.row.price <= 0"
-							/>
+							<el-input size="mini" type="number" v-model.lazy="scope.row.sundryCost" @input="() => calculatePrice(scope)" :placeholder="scope.row.price <= 0 ? '请先完善出厂单价' : '请输入杂费'" :disabled="scope.row.price <= 0" />
 						</template>
 					</el-table-column>
 					<el-table-column label="出厂货款" prop="paymentFactory" width="150">
@@ -438,13 +367,7 @@
 					<!--					</el-table-column>-->
 					<el-table-column label="存货价" prop="paymentUnload" width="150">
 						<template #default="scope">
-							<el-input
-								size="mini"
-								type="number"
-								v-model.lazy="scope.row.paymentUnload"
-								placeholder="请输入存货价"
-								@input="scope.row.paymentsWithSundry > 0 ? calculatePayment(scope) : ''"
-							/>
+							<el-input size="mini" type="number" v-model.lazy="scope.row.paymentUnload" placeholder="请输入存货价" @input="scope.row.paymentsWithSundry > 0 ? calculatePayment(scope) : ''" />
 						</template>
 					</el-table-column>
 					<el-table-column label="库存是否含税" prop="isIncludeTaxSale" width="150">
@@ -473,23 +396,12 @@
 					</el-table-column>
 					<el-table-column label="陆运费单价" prop="landFreightPrice" width="150" v-if="isLand">
 						<template #default="scope">
-							<el-input
-								size="mini"
-								v-model.lazy="scope.row.landFreightPrice"
-								@input="() => (scope.row.additionalFees > 0 ? calculateLandFreight(scope) : '')"
-								placeholder="请输入陆运费单价"
-							/>
+							<el-input size="mini" v-model.lazy="scope.row.landFreightPrice" @input="() => (scope.row.additionalFees > 0 ? calculateLandFreight(scope) : '')" placeholder="请输入陆运费单价" />
 						</template>
 					</el-table-column>
 					<el-table-column label="加费" prop="additionalFees" width="150">
 						<template #default="scope">
-							<el-input
-								size="mini"
-								v-model.lazy="scope.row.additionalFees"
-								@input="() => calculateLandFreight(scope)"
-								:placeholder="scope.row.landFreightPrice <= 0 ? '请先完善陆运费单价' : '请输入加费'"
-								:disabled="scope.row.landFreightPrice <= 0"
-							/>
+							<el-input size="mini" v-model.lazy="scope.row.additionalFees" @input="() => calculateLandFreight(scope)" :placeholder="scope.row.landFreightPrice <= 0 ? '请先完善陆运费单价' : '请输入加费'" :disabled="scope.row.landFreightPrice <= 0" />
 						</template>
 					</el-table-column>
 					<el-table-column label="陆运费" prop="landFreight" width="150" v-if="isLand" disabled>
@@ -559,18 +471,7 @@
 			</div>
 		</el-dialog>
 
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="true"
-			title="库存信息"
-			:visible.sync="inventoryInfoVisible"
-			width="900px"
-			append-to-body
-		>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="true" title="库存信息" :visible.sync="inventoryInfoVisible" width="900px" append-to-body>
 			<el-descriptions title="库存详情" border size="mini">
 				<el-descriptions-item label="陆地车号">
 					{{ inventoryInfo.landCarNo }}
@@ -925,9 +826,7 @@ export default {
 		},
 		calculatePaymentFactory(scope) {
 			scope.row.paymentFactory =
-				scope.row.isIncludeTaxFactory === 0
-					? fix((scope.row.length * scope.row.width * scope.row.pieces) / (1000000 * scope.row.price) + Number(scope.row.sundryCost))
-					: fix((scope.row.length * scope.row.width * scope.row.pieces * scope.row.price) / (1000000 + scope.row.sundryCost));
+				scope.row.isIncludeTaxFactory === 0 ? fix((scope.row.length * scope.row.width * scope.row.pieces) / (1000000 * scope.row.price) + Number(scope.row.sundryCost)) : fix((scope.row.length * scope.row.width * scope.row.pieces * scope.row.price) / (1000000 + scope.row.sundryCost));
 		},
 		calculatePrice(scope) {
 			// 计算出厂货款
@@ -944,14 +843,7 @@ export default {
 				} else if (scope.row.isIncludeTaxFactory === 0 && scope.row.isIncludeTaxSale === 1) {
 					return fix(scope.row.payments / 1.075 - scope.row.paymentFactory - scope.row.landFreight - scope.row.seaFreight - scope.row.otherCost);
 				} else {
-					return fix(
-						scope.row.payments -
-							scope.row.paymentFactory -
-							scope.row.landFreight * 1.075 -
-							scope.row.seaFreight -
-							((scope.row.height * scope.row.length * scope.row.width * scope.row.pieces) / 1000000 / 20) * 0.5 -
-							scope.row.otherCost
-					);
+					return fix(scope.row.payments - scope.row.paymentFactory - scope.row.landFreight * 1.075 - scope.row.seaFreight - ((scope.row.height * scope.row.length * scope.row.width * scope.row.pieces) / 1000000 / 20) * 0.5 - scope.row.otherCost);
 				}
 			}
 

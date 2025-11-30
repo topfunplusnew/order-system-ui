@@ -1,15 +1,5 @@
 <template>
-	<el-dialog
-		:modal="false"
-		v-dialogDrag
-		v-dialogDragWidth
-		v-dialogDragHeight
-		:close-on-click-modal="false"
-		:show-close="false"
-		title="原订单信息"
-		:visible.sync="currentOrderItemInfoVisible"
-		width="68%"
-	>
+	<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="原订单信息" :visible.sync="currentOrderItemInfoVisible" width="68%">
 		<el-row>
 			<el-card class="box-card" shadow="hover">
 				<OrderInfos :orderInfo="currentOrderItemInfo" />

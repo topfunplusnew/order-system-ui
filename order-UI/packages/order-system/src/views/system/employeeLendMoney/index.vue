@@ -246,17 +246,7 @@
 		</InfoDialog>
 
 		<!--    导出弹窗-->
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="请选择导出时间段"
-			:visible.sync="dialogVisible"
-			width="30%"
-		>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="请选择导出时间段" :visible.sync="dialogVisible" width="30%">
 			<el-form ref="queryForm" :model="queryParams" size="mini" label-width="200px">
 				<el-form-item label="开始时间" prop="beginTime">
 					<el-date-picker v-model="queryParams.beginTime" type="date" placeholder="选择时间" value-format="yyyy-MM-dd" size="mini"></el-date-picker>
@@ -272,18 +262,7 @@
 		</el-dialog>
 
 		<!--    收回资金的弹窗-->
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="收回资金操作"
-			:visible.sync="giveRecoverMoneyShow"
-			width="40%"
-			append-to-body
-		>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="收回资金操作" :visible.sync="giveRecoverMoneyShow" width="40%" append-to-body>
 			<el-row>
 				<el-form :model="recoverMoneyEntity" label-width="120" :rules="receiveRules">
 					<el-form-item label="收回账户" prop="acountsName">
@@ -461,18 +440,7 @@
 		</el-dialog>
 
 		<!--    修改记录的修改-->
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="false"
-			:title="recoverMoneyTitle"
-			:visible.sync="recoverMoneyOpen"
-			width="500px"
-			append-to-body
-		>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="recoverMoneyTitle" :visible.sync="recoverMoneyOpen" width="500px" append-to-body>
 			<el-form ref="recover_form" :model="recoverMoneyForm" :rules="recoverMoneyRules" label-width="80px">
 				<el-form-item label="收回金额" prop="moneyAmount">
 					<el-input v-model="recoverMoneyForm.moneyAmount" placeholder="请输入收回金额" />

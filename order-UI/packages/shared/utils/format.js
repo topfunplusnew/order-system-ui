@@ -5,7 +5,6 @@ export const formatNumber = (num, decimals = 2) => {
 	return Number(num).toFixed(decimals);
 };
 
-export const formatCurrency = (num) => {
+export const formatCurrency = num => {
 	return `¥${formatNumber(num)}`;
 };
-

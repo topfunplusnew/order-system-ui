@@ -110,15 +110,7 @@ export default {
 						<el-input v-model="form.oilCardNo" placeholder="请输入加油卡卡号" />
 					</el-col>
 					<el-col :span="4">
-						<SearchOption
-							:get-data="listOilCard"
-							query-info="oilCardNo"
-							:query-name="queryOilCard"
-							query-label="油卡账号查询"
-							:limit-info="{ oilType: '主卡' }"
-							@commitBack="handleCommitBackOilCard"
-							@update:queryName="handleCommitBackQueryOilCard"
-						>
+						<SearchOption :get-data="listOilCard" query-info="oilCardNo" :query-name="queryOilCard" query-label="油卡账号查询" :limit-info="{ oilType: '主卡' }" @commitBack="handleCommitBackOilCard" @update:queryName="handleCommitBackQueryOilCard">
 							<template #table-columns>
 								<el-table-column label="加油卡卡号" align="center" prop="oilCardNo" />
 								<el-table-column label="当前金额" align="center" prop="moneyAmount" />

@@ -64,70 +64,70 @@
 					"
 					@selection-change="handleSelectionChange"
 				>
-				<el-table-column v-if="columns[0].visible" label="级别编码" align="center" prop="levelNo" show-overflow-tooltip>
-					<template #default="scope">
-						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-							<div slot="content">{{ scope.row.levelNo }}</div>
-							<span>{{ scope.row.levelNo }}</span>
-						</el-tooltip>
-					</template>
-				</el-table-column>
-				<el-table-column v-if="columns[1].visible" label="级别名称" align="center" prop="levelName" show-overflow-tooltip>
-					<template #default="scope">
-						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-							<div slot="content">{{ scope.row.levelName }}</div>
-							<span>{{ scope.row.levelName }}</span>
-						</el-tooltip>
-					</template>
-				</el-table-column>
-				<el-table-column v-if="columns[2].visible" label="分类编号" align="center" prop="categoryNo" show-overflow-tooltip>
-					<template #default="scope">
-						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-							<div slot="content">{{ scope.row.categoryNo }}</div>
-							<span>{{ scope.row.categoryNo }}</span>
-						</el-tooltip>
-					</template>
-				</el-table-column>
-				<el-table-column v-if="columns[3].visible" label="分类名称" align="center" prop="categoryName" show-overflow-tooltip>
-					<template #default="scope">
-						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-							<div slot="content">{{ scope.row.categoryName }}</div>
-							<span>{{ scope.row.categoryName }}</span>
-						</el-tooltip>
-					</template>
-				</el-table-column>
-				<el-table-column v-if="columns[4].visible" label="厚度" align="center" prop="height" show-overflow-tooltip>
-					<template #default="scope">
-						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-							<div slot="content">{{ scope.row.height }}</div>
-							<span>{{ scope.row.height }}</span>
-						</el-tooltip>
-					</template>
-				</el-table-column>
-				<el-table-column v-if="columns[5].visible" label="长度" align="center" prop="length" show-overflow-tooltip>
-					<template #default="scope">
-						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-							<div slot="content">{{ scope.row.length }}</div>
-							<span>{{ scope.row.length }}</span>
-						</el-tooltip>
-					</template>
-				</el-table-column>
-				<el-table-column v-if="columns[6].visible" label="宽度" align="center" prop="width" show-overflow-tooltip>
-					<template #default="scope">
-						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-							<div slot="content">{{ scope.row.width }}</div>
-							<span>{{ scope.row.width }}</span>
-						</el-tooltip>
-					</template>
-				</el-table-column>
-				<el-table-column v-if="columns[7].visible" label="吨位差" align="center" prop="tonnage" show-overflow-tooltip>
-					<template #default="scope">
-						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-							<div slot="content">{{ scope.row.tonnage }}</div>
-							<span>{{ scope.row.tonnage }}</span>
-						</el-tooltip>
-					</template>
-				</el-table-column>
+					<el-table-column v-if="columns[0].visible" label="级别编码" align="center" prop="levelNo" show-overflow-tooltip>
+						<template #default="scope">
+							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+								<div slot="content">{{ scope.row.levelNo }}</div>
+								<span>{{ scope.row.levelNo }}</span>
+							</el-tooltip>
+						</template>
+					</el-table-column>
+					<el-table-column v-if="columns[1].visible" label="级别名称" align="center" prop="levelName" show-overflow-tooltip>
+						<template #default="scope">
+							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+								<div slot="content">{{ scope.row.levelName }}</div>
+								<span>{{ scope.row.levelName }}</span>
+							</el-tooltip>
+						</template>
+					</el-table-column>
+					<el-table-column v-if="columns[2].visible" label="分类编号" align="center" prop="categoryNo" show-overflow-tooltip>
+						<template #default="scope">
+							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+								<div slot="content">{{ scope.row.categoryNo }}</div>
+								<span>{{ scope.row.categoryNo }}</span>
+							</el-tooltip>
+						</template>
+					</el-table-column>
+					<el-table-column v-if="columns[3].visible" label="分类名称" align="center" prop="categoryName" show-overflow-tooltip>
+						<template #default="scope">
+							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+								<div slot="content">{{ scope.row.categoryName }}</div>
+								<span>{{ scope.row.categoryName }}</span>
+							</el-tooltip>
+						</template>
+					</el-table-column>
+					<el-table-column v-if="columns[4].visible" label="厚度" align="center" prop="height" show-overflow-tooltip>
+						<template #default="scope">
+							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+								<div slot="content">{{ scope.row.height }}</div>
+								<span>{{ scope.row.height }}</span>
+							</el-tooltip>
+						</template>
+					</el-table-column>
+					<el-table-column v-if="columns[5].visible" label="长度" align="center" prop="length" show-overflow-tooltip>
+						<template #default="scope">
+							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+								<div slot="content">{{ scope.row.length }}</div>
+								<span>{{ scope.row.length }}</span>
+							</el-tooltip>
+						</template>
+					</el-table-column>
+					<el-table-column v-if="columns[6].visible" label="宽度" align="center" prop="width" show-overflow-tooltip>
+						<template #default="scope">
+							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+								<div slot="content">{{ scope.row.width }}</div>
+								<span>{{ scope.row.width }}</span>
+							</el-tooltip>
+						</template>
+					</el-table-column>
+					<el-table-column v-if="columns[7].visible" label="吨位差" align="center" prop="tonnage" show-overflow-tooltip>
+						<template #default="scope">
+							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+								<div slot="content">{{ scope.row.tonnage }}</div>
+								<span>{{ scope.row.tonnage }}</span>
+							</el-tooltip>
+						</template>
+					</el-table-column>
 					<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
 						<template slot-scope="scope">
 							<el-button v-hasPermi="['system:productlevel:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
@@ -140,17 +140,7 @@
 
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 		<!--    添加产品分类的弹窗-->
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="添加产品分类"
-			:visible.sync="addCategoryOpen"
-			width="600px"
-		>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="添加产品分类" :visible.sync="addCategoryOpen" width="600px">
 			<el-row>
 				<el-col :span="12">
 					<el-row>
@@ -202,17 +192,7 @@
 		</el-dialog>
 
 		<!--    添加产品级别的弹窗-->
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="添加产品级别"
-			:visible.sync="addProductLevelVisible"
-			width="600px"
-		>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="添加产品级别" :visible.sync="addProductLevelVisible" width="600px">
 			<!--      添加产品级别的表单-->
 			<el-form ref="productForm" :model="addCategoryModel" size="mini" label-width="120px" :rules="rules" @keyup.enter.native="submitAddLevel" @submit.native.prevent="submitAddLevel">
 				<el-form-item label="分类" prop="categoryName">

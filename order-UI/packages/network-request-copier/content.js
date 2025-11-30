@@ -1,0 +1,946 @@
+// 注入到页面的脚本，用于显示请求列表和复制功能
+console.log('[Content Script] Network Request Copier content script loaded');
+
+// 创建浮动按钮
+let floatingButton = null;
+let requestListPanel = null;
+
+// 存储响应数据的映射（使用 URL + method 作为 key）
+const responseStore = new Map();
+
+// 注入拦截脚本到页面上下文
+function injectScript() {
+	try {
+		if (typeof chrome === 'undefined' || !chrome || !chrome.runtime || typeof chrome.runtime.getURL !== 'function') {
+			console.error('[Content Script] chrome.runtime.getURL is not available');
+			return;
+		}
+
+		// 检查是否已经注入过
+		if (window.__NETWORK_REQUEST_COPIER_INJECTED__) {
+			console.log('[Content Script] inject.js already injected, skipping');
+			return;
+		}
+
+		const script = document.createElement('script');
+		script.src = chrome.runtime.getURL('inject.js');
+		script.onload = function () {
+			console.log('[Content Script] inject.js loaded successfully at', new Date().toISOString());
+			window.__NETWORK_REQUEST_COPIER_INJECTED__ = true;
+			this.remove();
+		};
+		script.onerror = function () {
+			console.error('[Content Script] Failed to load inject.js');
+		};
+
+		const target = document.head || document.documentElement;
+		if (target) {
+			target.appendChild(script);
+			console.log('[Content Script] inject.js injection initiated at', new Date().toISOString());
+		} else {
+			console.error('[Content Script] Cannot find injection target (head or documentElement)');
+		}
+	} catch (error) {
+		console.error('[Content Script] Error injecting script:', error);
+	}
+}
+
+// 监听来自注入脚本的消息
+window.addEventListener('message', function (event) {
+	// 只处理来自我们自己的消息
+	if (event.source !== window || !event.data || event.data.type !== 'NETWORK_REQUEST_COPIER_RESPONSE') {
+		return;
+	}
+
+	console.log('[Content Script] Received message from inject script:', event.data);
+
+	// 转发给 background script
+	if (typeof chrome !== 'undefined' && chrome && chrome.runtime && typeof chrome.runtime.sendMessage !== 'undefined') {
+		chrome.runtime
+			.sendMessage({
+				action: 'updateResponse',
+				requestKey: event.data.requestKey,
+				responseData: event.data.responseData
+			})
+			.then(() => {
+				console.log('[Content Script] Successfully forwarded response to background');
+			})
+			.catch(err => {
+				console.warn('[Content Script] Failed to forward response to background:', err);
+			});
+	} else {
+		console.warn('[Content Script] chrome.runtime.sendMessage is not available');
+	}
+});
+
+// 立即注入脚本，不等待任何事件
+// 因为 content script 在 document_start 时运行，我们需要尽快注入拦截脚本
+(function () {
+	// 尝试立即注入
+	if (document.head || document.documentElement) {
+		injectScript();
+	} else {
+		// 如果 head 和 documentElement 都不存在，使用 MutationObserver 等待
+		const observer = new MutationObserver(function (mutations, obs) {
+			if (document.head || document.documentElement) {
+				injectScript();
+				obs.disconnect();
+			}
+		});
+
+		// 观察 document 的变化
+		if (document.documentElement) {
+			observer.observe(document.documentElement, {
+				childList: true,
+				subtree: true
+			});
+		} else {
+			// 如果 documentElement 也不存在，观察 document 本身
+			observer.observe(document, {
+				childList: true,
+				subtree: true
+			});
+		}
+
+		// 设置超时，确保即使观察失败也能尝试注入
+		setTimeout(function () {
+			observer.disconnect();
+			if (document.head || document.documentElement) {
+				injectScript();
+			} else {
+				console.error('[Content Script] Cannot inject script: document.head and document.documentElement are not available');
+			}
+		}, 100);
+	}
+})();
+
+// 注意：拦截逻辑已移至 inject.js，在页面上下文中执行
+
+// 监听来自 background 的消息
+// 确保 chrome.runtime 和 onMessage 都可用
+(function () {
+	// 使用最安全的方式检查
+	if (typeof chrome === 'undefined') {
+		console.warn('[Content Script] chrome is undefined');
+		return;
+	}
+
+	if (!chrome || typeof chrome !== 'object') {
+		console.warn('[Content Script] chrome is not an object');
+		return;
+	}
+
+	if (!chrome.runtime || typeof chrome.runtime !== 'object') {
+		console.warn('[Content Script] chrome.runtime is not available');
+		return;
+	}
+
+	if (!chrome.runtime.onMessage || typeof chrome.runtime.onMessage.addListener !== 'function') {
+		console.warn('[Content Script] chrome.runtime.onMessage.addListener is not available');
+		return;
+	}
+
+	// 现在安全地使用
+	try {
+		chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+			try {
+				if (request && request.action === 'copyToClipboard') {
+					if (typeof copyToClipboard === 'function') {
+						copyToClipboard(request.text);
+						sendResponse({ success: true });
+					} else {
+						console.error('[Content Script] copyToClipboard function is not defined');
+						sendResponse({ success: false, error: 'copyToClipboard function not found' });
+					}
+				} else if (request && request.action === 'showRequestList') {
+					if (typeof showRequestList === 'function') {
+						showRequestList();
+						sendResponse({ success: true });
+					} else {
+						console.error('[Content Script] showRequestList function is not defined');
+						sendResponse({ success: false, error: 'showRequestList function not found' });
+					}
+				}
+				return true;
+			} catch (error) {
+				console.error('[Content Script] Error handling message:', error);
+				if (typeof sendResponse === 'function') {
+					sendResponse({ success: false, error: error.message });
+				}
+				return true;
+			}
+		});
+		console.log('[Content Script] Message listener registered successfully');
+	} catch (error) {
+		console.error('[Content Script] Failed to register message listener:', error);
+	}
+})();
+
+// 创建浮动按钮
+function createFloatingButton() {
+	if (floatingButton) {
+		return;
+	}
+
+	floatingButton = document.createElement('div');
+	floatingButton.id = 'network-request-copier-btn';
+	floatingButton.innerHTML = '📋';
+	floatingButton.style.cssText = `
+		position: fixed;
+		bottom: 20px;
+		right: 20px;
+		width: 50px;
+		height: 50px;
+		background: #409EFF;
+		color: white;
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		cursor: pointer;
+		z-index: 999999;
+		box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+		font-size: 24px;
+		user-select: none;
+	`;
+	floatingButton.addEventListener('click', showRequestList);
+	document.body.appendChild(floatingButton);
+}
+
+// 显示请求列表面板
+function showRequestList() {
+	if (requestListPanel) {
+		requestListPanel.style.display = requestListPanel.style.display === 'none' ? 'block' : 'none';
+		return;
+	}
+
+	// 创建面板
+	requestListPanel = document.createElement('div');
+	requestListPanel.id = 'network-request-copier-panel';
+	requestListPanel.style.cssText = `
+		position: fixed;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		width: 900px;
+		max-height: 80vh;
+		background: white;
+		border-radius: 8px;
+		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+		z-index: 1000000;
+		display: flex;
+		flex-direction: column;
+		font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+		overflow-x: hidden;
+		box-sizing: border-box;
+	`;
+
+	// 创建头部
+	const header = document.createElement('div');
+	header.style.cssText = `
+		padding: 16px;
+		border-bottom: 1px solid #e0e0e0;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		background: #f5f5f5;
+		border-radius: 8px 8px 0 0;
+	`;
+	header.innerHTML = `
+		<h3 style="margin: 0; font-size: 18px; color: #333;">网络请求列表</h3>
+		<div>
+			<button id="refresh-btn" style="margin-right: 8px; padding: 6px 12px; background: #409EFF; color: white; border: none; border-radius: 4px; cursor: pointer;">刷新</button>
+			<button id="clear-btn" style="margin-right: 8px; padding: 6px 12px; background: #f56c6c; color: white; border: none; border-radius: 4px; cursor: pointer;">清空</button>
+			<button id="close-btn" style="padding: 6px 12px; background: #909399; color: white; border: none; border-radius: 4px; cursor: pointer;">关闭</button>
+		</div>
+	`;
+
+	// 创建内容区域
+	const content = document.createElement('div');
+	content.id = 'request-list-content';
+	content.style.cssText = `
+		padding: 16px;
+		overflow-y: auto;
+		overflow-x: hidden;
+		flex: 1;
+		width: 100%;
+		max-width: 100%;
+		box-sizing: border-box;
+	`;
+
+	// 创建遮罩层
+	const overlay = document.createElement('div');
+	overlay.style.cssText = `
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background: rgba(0, 0, 0, 0.5);
+		z-index: 999999;
+	`;
+
+	requestListPanel.appendChild(header);
+	requestListPanel.appendChild(content);
+	document.body.appendChild(overlay);
+	document.body.appendChild(requestListPanel);
+
+	// 绑定事件
+	document.getElementById('close-btn').addEventListener('click', () => {
+		requestListPanel.style.display = 'none';
+		overlay.style.display = 'none';
+	});
+
+	document.getElementById('clear-btn').addEventListener('click', () => {
+		if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.sendMessage) {
+			chrome.runtime.sendMessage({ action: 'clearRequests' }, () => {
+				loadRequestList();
+			});
+		} else {
+			console.error('[Content Script] chrome.runtime.sendMessage is not available');
+		}
+	});
+
+	document.getElementById('refresh-btn').addEventListener('click', () => {
+		loadRequestList();
+	});
+
+	overlay.addEventListener('click', () => {
+		requestListPanel.style.display = 'none';
+		overlay.style.display = 'none';
+	});
+
+	// 加载请求列表
+	loadRequestList();
+}
+
+// 加载请求列表
+function loadRequestList() {
+	const content = document.getElementById('request-list-content');
+	if (!content) return;
+
+	content.innerHTML = '<div style="text-align: center; padding: 20px; color: #999;">加载中...</div>';
+
+	if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.sendMessage) {
+		chrome.runtime.sendMessage({ action: 'getAllRequests' }, response => {
+			if (response && response.success) {
+				renderRequestList(response.data || []);
+			} else {
+				content.innerHTML = '<div style="text-align: center; padding: 20px; color: #f56c6c;">加载失败：' + (response?.error || '未知错误') + '</div>';
+			}
+		});
+	} else {
+		content.innerHTML = '<div style="text-align: center; padding: 20px; color: #f56c6c;">chrome.runtime 不可用</div>';
+	}
+}
+
+// 解析URL参数
+function parseUrlParams(url) {
+	if (!url) return null;
+	try {
+		const urlObj = new URL(url);
+		const params = {};
+		if (urlObj.search) {
+			const searchParams = new URLSearchParams(urlObj.search);
+			for (const [key, value] of searchParams.entries()) {
+				// 尝试解码参数值
+				try {
+					params[decodeURIComponent(key)] = decodeURIComponent(value);
+				} catch (e) {
+					params[key] = value;
+				}
+			}
+		}
+		return Object.keys(params).length > 0 ? params : null;
+	} catch (e) {
+		return null;
+	}
+}
+
+// HTML转义函数
+function escapeHtml(text) {
+	const div = document.createElement('div');
+	div.textContent = text;
+	return div.innerHTML;
+}
+
+// 渲染请求列表
+function renderRequestList(requests) {
+	const content = document.getElementById('request-list-content');
+	if (!content) return;
+
+	if (requests.length === 0) {
+		content.innerHTML = '<div style="text-align: center; padding: 20px; color: #999;">暂无请求数据</div>';
+		return;
+	}
+
+	let html = '<div style="display: flex; flex-direction: column; gap: 12px;">';
+
+	requests.forEach(req => {
+		const methodColor = getMethodColor(req.method);
+		const statusColor = req.statusCode >= 200 && req.statusCode < 300 ? '#67c23a' : req.statusCode >= 400 ? '#f56c6c' : '#e6a23c';
+
+		// 解码URL用于显示
+		let displayUrl = req.url;
+		try {
+			displayUrl = decodeURIComponent(req.url);
+		} catch (e) {
+			// 如果解码失败，使用原始URL
+		}
+
+		// 解析URL参数
+		const params = parseUrlParams(req.url);
+		let paramsHtml = '';
+		if (params) {
+			paramsHtml =
+				'<div style="margin-top: 8px; padding: 8px; background: #f5f5f5; border-radius: 4px; font-size: 11px; overflow-x: hidden; word-wrap: break-word; width: 100%; max-width: 100%; box-sizing: border-box;"><div style="font-weight: bold; color: #666; margin-bottom: 4px;">查询参数：</div>';
+			for (const [key, value] of Object.entries(params)) {
+				paramsHtml += `<div style="padding: 2px 0; word-break: break-all; width: 100%; max-width: 100%; overflow-wrap: break-word; box-sizing: border-box;"><span style="color: #409EFF; font-weight: 500;">${escapeHtml(key)}</span>: <span style="color: #67c23a; margin-left: 4px;">${escapeHtml(
+					value
+				)}</span></div>`;
+			}
+			paramsHtml += '</div>';
+		}
+
+		html += `
+			<div style="border: 1px solid #e0e0e0; border-radius: 4px; padding: 12px; background: #fafafa; overflow-x: hidden; word-wrap: break-word; width: 100%; max-width: 100%; box-sizing: border-box;">
+				<div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; width: 100%; max-width: 100%; box-sizing: border-box;">
+					<span style="padding: 2px 8px; background: ${methodColor}; color: white; border-radius: 4px; font-size: 12px; font-weight: bold; flex-shrink: 0;">${req.method}</span>
+					${req.statusCode ? `<span style="padding: 2px 8px; background: ${statusColor}; color: white; border-radius: 4px; font-size: 12px; flex-shrink: 0;">${req.statusCode}</span>` : ''}
+					<button class="copy-btn" data-request-id="${req.requestId}" style="padding: 4px 12px; background: #409EFF; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; margin-left: auto; flex-shrink: 0; margin-right: 4px;">复制</button>
+					<button class="copy-image-btn" data-request-id="${req.requestId}" style="padding: 4px 12px; background: #67c23a; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; flex-shrink: 0;">复制图片</button>
+				</div>
+				<div style="font-size: 12px; color: #333; word-break: break-all; margin-bottom: 8px; overflow-x: hidden; width: 100%; max-width: 100%; overflow-wrap: break-word; box-sizing: border-box;">${escapeHtml(displayUrl)}</div>
+				${paramsHtml}
+				<div style="font-size: 11px; color: #999; margin-top: 8px;">${new Date(req.timestamp).toLocaleString()}</div>
+			</div>
+		`;
+	});
+
+	html += '</div>';
+	content.innerHTML = html;
+
+	// 绑定复制按钮事件
+	content.querySelectorAll('.copy-btn').forEach(btn => {
+		btn.addEventListener('click', e => {
+			const requestId = e.target.getAttribute('data-request-id');
+			copyRequestInfo(requestId);
+		});
+	});
+
+	// 绑定复制图片按钮事件
+	content.querySelectorAll('.copy-image-btn').forEach(btn => {
+		btn.addEventListener('click', e => {
+			const requestId = e.target.getAttribute('data-request-id');
+			copyRequestAsImage(requestId);
+		});
+	});
+}
+
+// 获取请求方法的颜色
+function getMethodColor(method) {
+	const colors = {
+		GET: '#67c23a',
+		POST: '#409EFF',
+		PUT: '#e6a23c',
+		DELETE: '#f56c6c',
+		PATCH: '#909399'
+	};
+	return colors[method] || '#909399';
+}
+
+// 解码URL，去除URL编码
+function decodeUrl(url) {
+	if (!url) return url;
+	try {
+		// 尝试解码整个URL
+		return decodeURIComponent(url);
+	} catch (e) {
+		// 如果解码失败，尝试分段解码
+		try {
+			const urlObj = new URL(url);
+			// 解码查询参数
+			if (urlObj.search) {
+				const params = new URLSearchParams(urlObj.search);
+				const decodedParams = new URLSearchParams();
+				for (const [key, value] of params.entries()) {
+					try {
+						decodedParams.append(decodeURIComponent(key), decodeURIComponent(value));
+					} catch (err) {
+						decodedParams.append(key, value);
+					}
+				}
+				urlObj.search = decodedParams.toString();
+				return urlObj.toString();
+			}
+			return url;
+		} catch (err) {
+			// 如果都失败了，返回原始URL
+			return url;
+		}
+	}
+}
+
+// 复制请求信息
+function copyRequestInfo(requestId) {
+	if (typeof chrome === 'undefined' || !chrome.runtime || !chrome.runtime.sendMessage) {
+		console.error('[Content Script] chrome.runtime.sendMessage is not available');
+		showToast('复制失败：chrome.runtime 不可用', 'error');
+		return;
+	}
+
+	chrome.runtime.sendMessage({ action: 'getRequest', requestId: requestId }, response => {
+		if (response && response.success && response.data) {
+			const data = response.data;
+
+			// 解码URL
+			const decodedUrl = decodeUrl(data.url);
+
+			const copyData = {
+				请求方法: data.method,
+				请求地址: decodedUrl,
+				请求载荷: data.requestBody,
+				响应结构: {
+					状态码: data.statusCode,
+					响应头: data.responseHeaders,
+					响应数据: data.responseData || data.responseBody || null
+				}
+			};
+
+			const formatted = JSON.stringify(copyData, null, 2);
+			copyToClipboard(formatted);
+
+			// 显示提示
+			showToast('已复制到剪贴板');
+		} else {
+			showToast('复制失败：请求数据不存在', 'error');
+		}
+	});
+}
+
+// 复制请求信息为图片
+function copyRequestAsImage(requestId) {
+	if (typeof chrome === 'undefined' || !chrome.runtime || !chrome.runtime.sendMessage) {
+		console.error('[Content Script] chrome.runtime.sendMessage is not available');
+		showToast('复制失败：chrome.runtime 不可用', 'error');
+		return;
+	}
+
+	chrome.runtime.sendMessage({ action: 'getRequest', requestId: requestId }, response => {
+		if (response && response.success && response.data) {
+			const data = response.data;
+			generateRequestImage(data)
+				.then(() => {
+					showToast('图片已复制到剪贴板');
+				})
+				.catch(err => {
+					console.error('[Content Script] Failed to copy image:', err);
+					showToast('复制图片失败：' + err.message, 'error');
+				});
+		} else {
+			showToast('复制失败：请求数据不存在', 'error');
+		}
+	});
+}
+
+// 生成请求信息图片
+async function generateRequestImage(data) {
+	// 解码URL
+	const decodedUrl = decodeUrl(data.url);
+
+	// 准备要显示的内容（使用对象来标记每行的类型和缩进）
+	const contentLines = [];
+
+	// 标题
+	contentLines.push({ text: '网络请求信息', type: 'title' });
+	contentLines.push({ text: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', type: 'separator' });
+	contentLines.push({ text: '', type: 'empty' });
+
+	// 请求方法
+	contentLines.push({ text: '请求方法: ' + data.method, type: 'label' });
+
+	// 请求地址（可能需要换行）
+	contentLines.push({ text: '请求地址: ' + decodedUrl, type: 'url' });
+	contentLines.push({ text: '', type: 'empty' });
+
+	// 请求载荷
+	contentLines.push({ text: '请求载荷:', type: 'section' });
+	const requestBodyLines = formatDataForImageLines(data.requestBody, 2);
+	requestBodyLines.forEach(line => {
+		contentLines.push({ text: line.text, type: line.type, indent: line.indent });
+	});
+	contentLines.push({ text: '', type: 'empty' });
+
+	// 响应结构
+	contentLines.push({ text: '响应结构:', type: 'section' });
+	contentLines.push({ text: '  状态码: ' + (data.statusCode || 'N/A'), type: 'label', indent: 2 });
+	contentLines.push({ text: '  响应头:', type: 'section', indent: 2 });
+	const headerLines = formatHeadersForImageLines(data.responseHeaders, 4);
+	headerLines.forEach(line => {
+		contentLines.push({ text: line.text, type: line.type, indent: line.indent });
+	});
+	contentLines.push({ text: '  响应数据:', type: 'section', indent: 2 });
+	const responseLines = formatDataForImageLines(data.responseData || data.responseBody || null, 2);
+	responseLines.forEach(line => {
+		contentLines.push({ text: line.text, type: line.type, indent: (line.indent || 0) + 2 });
+	});
+	contentLines.push({ text: '', type: 'empty' });
+
+	// 时间
+	contentLines.push({ text: '时间: ' + new Date(data.timestamp).toLocaleString(), type: 'label' });
+
+	// 创建 Canvas
+	const canvas = document.createElement('canvas');
+	const ctx = canvas.getContext('2d');
+
+	// 设置字体
+	const fontSize = 13;
+	const lineHeight = 22;
+	const padding = 24;
+	const indentSize = 20; // 每级缩进的大小
+	const fontFamily = 'Consolas, Monaco, "Courier New", monospace';
+	const maxLineWidth = 1400; // 最大宽度
+
+	ctx.font = `${fontSize}px ${fontFamily}`;
+
+	// 计算文本宽度和高度（考虑换行和缩进）
+	let maxWidth = 0;
+	const allLines = [];
+
+	contentLines.forEach(item => {
+		const indent = item.indent || 0;
+		const indentStr = ' '.repeat(indent);
+		const fullText = indentStr + item.text;
+
+		const metrics = ctx.measureText(fullText);
+		const lineWidth = metrics.width;
+		const availableWidth = maxLineWidth - padding * 2;
+
+		if (lineWidth > availableWidth && item.text) {
+			// 需要换行（对于长URL或长字符串）
+			const words = item.text.split('');
+			let currentLine = '';
+			for (let i = 0; i < words.length; i++) {
+				const testLine = currentLine + words[i];
+				const testFullText = indentStr + testLine;
+				const testMetrics = ctx.measureText(testFullText);
+				if (testMetrics.width > availableWidth && currentLine !== '') {
+					allLines.push({ text: indentStr + currentLine, type: item.type, indent: indent });
+					maxWidth = Math.max(maxWidth, ctx.measureText(indentStr + currentLine).width);
+					currentLine = words[i];
+				} else {
+					currentLine = testLine;
+				}
+			}
+			if (currentLine) {
+				allLines.push({ text: indentStr + currentLine, type: item.type, indent: indent });
+				maxWidth = Math.max(maxWidth, ctx.measureText(indentStr + currentLine).width);
+			}
+		} else {
+			allLines.push({ text: fullText, type: item.type, indent: indent });
+			maxWidth = Math.max(maxWidth, lineWidth);
+		}
+	});
+
+	const textWidth = Math.min(maxWidth + padding * 2, maxLineWidth);
+	const textHeight = allLines.length * lineHeight + padding * 2;
+
+	canvas.width = textWidth;
+	canvas.height = textHeight;
+
+	// 重新设置字体
+	ctx.font = `${fontSize}px ${fontFamily}`;
+
+	// 绘制背景
+	ctx.fillStyle = '#ffffff';
+	ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+	// 绘制边框
+	ctx.strokeStyle = '#e0e0e0';
+	ctx.lineWidth = 1;
+	ctx.strokeRect(0, 0, canvas.width, canvas.height);
+
+	// 绘制标题背景
+	ctx.fillStyle = '#409EFF';
+	ctx.fillRect(0, 0, canvas.width, lineHeight + padding);
+
+	// 绘制文本（带颜色区分）
+	let y = padding + fontSize;
+
+	// 颜色定义
+	const colors = {
+		title: '#ffffff',
+		separator: '#ffffff',
+		label: '#333333',
+		url: '#409EFF',
+		section: '#666666',
+		key: '#881391', // JSON key 颜色（紫色）
+		string: '#1A1AA6', // JSON string 颜色（蓝色）
+		number: '#1C00CF', // JSON number 颜色（深蓝）
+		boolean: '#0D22AA', // JSON boolean 颜色
+		null: '#808080', // JSON null 颜色（灰色）
+		empty: '#ffffff',
+		default: '#333333'
+	};
+
+	allLines.forEach((item, index) => {
+		const line = typeof item === 'string' ? item : item.text;
+		const type = typeof item === 'string' ? 'default' : item.type || 'default';
+
+		// 根据类型设置颜色和字体
+		if (index === 0) {
+			// 标题
+			ctx.fillStyle = colors.title;
+			ctx.font = `bold ${fontSize + 2}px ${fontFamily}`;
+		} else if (index === 1) {
+			// 分隔线
+			ctx.fillStyle = colors.separator;
+			ctx.font = `${fontSize}px ${fontFamily}`;
+		} else {
+			// 根据内容类型设置颜色
+			let fillColor = colors[type] || colors.default;
+
+			// 对于JSON内容，尝试识别类型
+			if (type === 'default' || !colors[type]) {
+				// 尝试识别JSON语法
+				const trimmed = line.trim();
+				if (trimmed.match(/^"[^"]+":/)) {
+					// JSON key
+					fillColor = colors.key;
+				} else if (trimmed.match(/^".*"$/)) {
+					// JSON string value
+					fillColor = colors.string;
+				} else if (trimmed.match(/^-?\d+\.?\d*$/)) {
+					// JSON number
+					fillColor = colors.number;
+				} else if (trimmed === 'true' || trimmed === 'false') {
+					// JSON boolean
+					fillColor = colors.boolean;
+				} else if (trimmed === 'null') {
+					// JSON null
+					fillColor = colors.null;
+				} else {
+					fillColor = colors[type] || colors.default;
+				}
+			}
+
+			ctx.fillStyle = fillColor;
+			ctx.font = `${fontSize}px ${fontFamily}`;
+		}
+
+		ctx.fillText(line, padding, y);
+		y += lineHeight;
+	});
+
+	// 将 Canvas 转换为 Blob
+	return new Promise((resolve, reject) => {
+		canvas.toBlob(blob => {
+			if (!blob) {
+				reject(new Error('Failed to create image blob'));
+				return;
+			}
+
+			// 复制到剪贴板
+			if (navigator.clipboard && navigator.clipboard.write) {
+				const clipboardItem = new ClipboardItem({ 'image/png': blob });
+				navigator.clipboard
+					.write([clipboardItem])
+					.then(() => {
+						resolve();
+					})
+					.catch(err => {
+						reject(err);
+					});
+			} else {
+				// 降级方案：下载图片
+				const url = URL.createObjectURL(blob);
+				const a = document.createElement('a');
+				a.href = url;
+				a.download = 'request-info.png';
+				a.click();
+				URL.revokeObjectURL(url);
+				resolve();
+			}
+		}, 'image/png');
+	});
+}
+
+// 格式化数据用于图片显示（返回行数组，每行包含文本、类型和缩进）
+function formatDataForImageLines(data, baseIndent = 0) {
+	if (data === null || data === undefined) {
+		return [{ text: 'null', type: 'null', indent: baseIndent }];
+	}
+
+	if (typeof data === 'string') {
+		// 尝试解析为 JSON
+		try {
+			const parsed = JSON.parse(data);
+			return formatJsonLines(parsed, baseIndent);
+		} catch (e) {
+			// 不是JSON，作为普通字符串返回
+			return [{ text: data, type: 'string', indent: baseIndent }];
+		}
+	}
+
+	if (typeof data === 'object') {
+		return formatJsonLines(data, baseIndent);
+	}
+
+	return [{ text: String(data), type: 'default', indent: baseIndent }];
+}
+
+// 格式化JSON为行数组（保持正确的缩进）
+function formatJsonLines(obj, baseIndent = 0, indentStep = 2) {
+	const lines = [];
+
+	if (obj === null) {
+		lines.push({ text: 'null', type: 'null', indent: baseIndent });
+		return lines;
+	}
+
+	if (Array.isArray(obj)) {
+		if (obj.length === 0) {
+			lines.push({ text: '[]', type: 'default', indent: baseIndent });
+			return lines;
+		}
+		lines.push({ text: '[', type: 'default', indent: baseIndent });
+		obj.forEach((item, index) => {
+			const itemLines = formatJsonLines(item, baseIndent + indentStep, indentStep);
+			// 最后一个元素不需要逗号
+			if (index < obj.length - 1) {
+				itemLines[itemLines.length - 1].text += ',';
+			}
+			lines.push(...itemLines);
+		});
+		lines.push({ text: ']', type: 'default', indent: baseIndent });
+		return lines;
+	}
+
+	if (typeof obj === 'object') {
+		const keys = Object.keys(obj);
+		if (keys.length === 0) {
+			lines.push({ text: '{}', type: 'default', indent: baseIndent });
+			return lines;
+		}
+		lines.push({ text: '{', type: 'default', indent: baseIndent });
+		keys.forEach((key, index) => {
+			const value = obj[key];
+			const keyLine = `"${key}":`;
+			const indent = baseIndent + indentStep;
+
+			// 处理值
+			if (value === null || value === undefined || typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+				// 简单值，可以放在同一行
+				let valueStr;
+				if (typeof value === 'string') {
+					valueStr = `"${value}"`;
+				} else if (value === null) {
+					valueStr = 'null';
+				} else {
+					valueStr = String(value);
+				}
+				const lineText = `${keyLine} ${valueStr}${index < keys.length - 1 ? ',' : ''}`;
+				lines.push({ text: lineText, type: 'key', indent: indent });
+			} else {
+				// 复杂值（对象或数组），需要多行
+				lines.push({ text: keyLine, type: 'key', indent: indent });
+				const valueLines = formatJsonLines(value, indent, indentStep);
+				if (index < keys.length - 1) {
+					valueLines[valueLines.length - 1].text += ',';
+				}
+				lines.push(...valueLines);
+			}
+		});
+		lines.push({ text: '}', type: 'default', indent: baseIndent });
+		return lines;
+	}
+
+	// 基本类型
+	let text = String(obj);
+	if (typeof obj === 'string') {
+		text = `"${obj}"`;
+	}
+	lines.push({ text: text, type: typeof obj, indent: baseIndent });
+	return lines;
+}
+
+// 格式化响应头用于图片显示（返回行数组）
+function formatHeadersForImageLines(headers, baseIndent = 0) {
+	if (!headers || !Array.isArray(headers)) {
+		return [{ text: 'null', type: 'null', indent: baseIndent }];
+	}
+
+	return headers.map(h => ({
+		text: `${h.name}: ${h.value}`,
+		type: 'label',
+		indent: baseIndent
+	}));
+}
+
+// 复制到剪贴板
+function copyToClipboard(text) {
+	const textarea = document.createElement('textarea');
+	textarea.value = text;
+	textarea.style.position = 'fixed';
+	textarea.style.opacity = '0';
+	document.body.appendChild(textarea);
+	textarea.select();
+	document.execCommand('copy');
+	document.body.removeChild(textarea);
+}
+
+// 显示提示
+function showToast(message, type = 'success') {
+	const toast = document.createElement('div');
+	toast.textContent = message;
+	toast.style.cssText = `
+		position: fixed;
+		top: 20px;
+		right: 20px;
+		padding: 12px 24px;
+		background: ${type === 'error' ? '#f56c6c' : '#67c23a'};
+		color: white;
+		border-radius: 4px;
+		z-index: 1000001;
+		box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+		font-size: 14px;
+	`;
+	document.body.appendChild(toast);
+
+	setTimeout(() => {
+		toast.style.opacity = '0';
+		toast.style.transition = 'opacity 0.3s';
+		setTimeout(() => {
+			document.body.removeChild(toast);
+		}, 300);
+	}, 2000);
+}
+
+// 页面加载完成后创建浮动按钮
+function initFloatingButton() {
+	if (document.body) {
+		createFloatingButton();
+	} else {
+		// 如果 body 还不存在，等待 DOM 加载
+		const observer = new MutationObserver((mutations, obs) => {
+			if (document.body) {
+				createFloatingButton();
+				obs.disconnect();
+			}
+		});
+		observer.observe(document.documentElement, {
+			childList: true,
+			subtree: true
+		});
+	}
+}
+
+// 立即执行拦截器设置（不等待 DOM 加载）
+console.log('[Content Script] Interceptors installed');
+
+// 页面加载完成后创建浮动按钮
+if (document.readyState === 'loading') {
+	document.addEventListener('DOMContentLoaded', initFloatingButton);
+} else {
+	initFloatingButton();
+}

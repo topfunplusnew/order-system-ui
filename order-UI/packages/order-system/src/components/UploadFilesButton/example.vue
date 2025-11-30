@@ -12,15 +12,7 @@
 		<!-- 自定义配置 -->
 		<div style="margin: 20px 0">
 			<label>自定义配置：</label>
-			<UploadFilesButton
-				:max-files="5"
-				:max-file-size="20"
-				accept-types="image/*,.pdf,.doc,.docx"
-				flag="customFlag"
-				:extra-info="{ moduleId: 123, type: 'payment' }"
-				@files-updated="handleFilesUpdated"
-				ref="uploadButtonCustom"
-			/>
+			<UploadFilesButton :max-files="5" :max-file-size="20" accept-types="image/*,.pdf,.doc,.docx" flag="customFlag" :extra-info="{ moduleId: 123, type: 'payment' }" @files-updated="handleFilesUpdated" ref="uploadButtonCustom" />
 		</div>
 
 		<!-- 表单中使用 -->

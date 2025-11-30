@@ -164,16 +164,7 @@
 								<el-input disabled v-model="moneyBackInfo.acountsName" placeholder="请选择" />
 							</el-col>
 							<el-col :span="3">
-								<SearchOption
-									:get-data="listBankAccount"
-									icon="el-icon-search"
-									:limit-info="{ acountsType: '己方公司' }"
-									query-label="户名查找"
-									query-info="acountsName"
-									:query-name="queryBank"
-									@commitBack="handleCommitBackBankAcount"
-									@update:queryName="handleUpdateQueryBankAcount"
-								>
+								<SearchOption :get-data="listBankAccount" icon="el-icon-search" :limit-info="{ acountsType: '己方公司' }" query-label="户名查找" query-info="acountsName" :query-name="queryBank" @commitBack="handleCommitBackBankAcount" @update:queryName="handleUpdateQueryBankAcount">
 									<template #table-columns>
 										<el-table-column label="己方公司" align="center" prop="displayName" />
 										<el-table-column label="开户行" align="center" prop="bankName" />

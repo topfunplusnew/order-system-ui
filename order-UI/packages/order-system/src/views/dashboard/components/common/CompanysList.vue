@@ -139,17 +139,17 @@ export default {
 		handleFilterOrders(row) {
 			// 查找相同对方ID的所有记录（可能我方公司不同）
 			const sameIdRows = this.companyTotalInfo.filter(item => item.id === row.id);
-			
+
 			// 合并所有相同ID的记录的total
 			const mergedTotal = sameIdRows.reduce((sum, item) => {
 				return sum + (Number(item.total) || 0);
 			}, 0);
-			
+
 			// 合并票点金额（取平均值或第一个，这里取第一个的票点）
 			const mergedTicketPointAmount = sameIdRows.reduce((sum, item) => {
 				return sum + (Number(item.ticketPointAmount) || 0);
 			}, 0);
-			
+
 			// 创建一个合并后的row对象，保留原始row的其他属性
 			const mergedRow = {
 				...row,
@@ -159,7 +159,7 @@ export default {
 				_mergedRows: sameIdRows,
 				_isMerged: sameIdRows.length > 1
 			};
-			
+
 			this.$bus.$emit('update-goods-order-company', mergedRow);
 			// 维护开票金额 - 使用合并后的总金额
 			this.$store.dispatch('excel/clearInvoiceAmount');
@@ -178,15 +178,18 @@ export default {
 			sessionStorage.setItem('companyList_selected_company_id', companyId);
 			// 存储合并信息，供生成发票时使用
 			if (sameIdRows.length > 1) {
-				sessionStorage.setItem('merged_company_info', JSON.stringify({
-					companyId: companyId,
-					rows: sameIdRows.map(item => ({
-						us: item.us,
-						total: item.total,
-						ticketPoint: item.ticketPoint,
-						ticketPointAmount: item.ticketPointAmount
-					}))
-				}));
+				sessionStorage.setItem(
+					'merged_company_info',
+					JSON.stringify({
+						companyId: companyId,
+						rows: sameIdRows.map(item => ({
+							us: item.us,
+							total: item.total,
+							ticketPoint: item.ticketPoint,
+							ticketPointAmount: item.ticketPointAmount
+						}))
+					})
+				);
 			} else {
 				sessionStorage.removeItem('merged_company_info');
 			}

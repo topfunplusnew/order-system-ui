@@ -113,13 +113,7 @@
 </template>
 
 <script>
-import {
-	listVirtualBankAccountChange,
-	getVirtualBankAccountChange,
-	delVirtualBankAccountChange,
-	addVirtualBankAccountChange,
-	updateVirtualBankAccountChange
-} from '@/api/system/virtualBankAccountChange';
+import { listVirtualBankAccountChange, getVirtualBankAccountChange, delVirtualBankAccountChange, addVirtualBankAccountChange, updateVirtualBankAccountChange } from '@/api/system/virtualBankAccountChange';
 
 export default {
 	name: 'VirtualBankAccountChange',

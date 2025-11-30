@@ -21,7 +21,7 @@ function openDB() {
 				const store = db.createObjectStore(STORE_OPERATED, { keyPath: 'companyId' });
 				// 不需要额外的索引，因为主键就是公司ID
 			}
-			
+
 			// 创建Sheet操作记录表，使用复合键作为主键
 			if (!db.objectStoreNames.contains(STORE_SHEETS)) {
 				const sheetStore = db.createObjectStore(STORE_SHEETS, { keyPath: 'sheetKey' });
@@ -85,10 +85,9 @@ export async function clearAllOperatedRecords() {
 
 // 导入模板数据，提取公司ID并初始化已操作状态（新文件导入时清空所有数据）
 export async function importTemplateCompanies(templateList = [], fileId = null) {
-
 	// 先清空所有现有数据
 	await clearAllOperatedRecords();
-	
+
 	// 如果提供了文件ID，清空该文件的所有Sheet操作记录
 	if (fileId) {
 		await clearSheetRecordsByFileId(fileId);
@@ -120,7 +119,6 @@ export async function importTemplateCompanies(templateList = [], fileId = null) 
 
 // 更新模板数据，提取公司ID并更新已操作状态（同一文件的不同工作表，不清空现有数据）
 export async function updateTemplateCompanies(templateList = []) {
-
 	const db = await openDB();
 	const tx = db.transaction([STORE_OPERATED], 'readwrite');
 	const store = tx.objectStore(STORE_OPERATED);
@@ -132,7 +130,7 @@ export async function updateTemplateCompanies(templateList = []) {
 		const companyId = extractCompanyId(tpl);
 		if (companyId && !companyIds.has(companyId)) {
 			companyIds.add(companyId);
-			
+
 			// 检查是否已存在该公司的记录
 			try {
 				const existingRecord = await promisifyRequest(store.get(companyId));
@@ -233,7 +231,6 @@ export async function markCompaniesOperated(companyIds) {
 
 // 获取所有已操作状态映射（以公司ID为键）
 export async function getOperatedMap() {
-
 	const db = await openDB();
 	const tx = db.transaction([STORE_OPERATED], 'readonly');
 	const store = tx.objectStore(STORE_OPERATED);
@@ -260,7 +257,6 @@ export async function getOperatedMap() {
 
 // 调试函数：查看所有已操作记录
 export async function debugGetAllOperatedRecords() {
-
 	const db = await openDB();
 	const tx = db.transaction([STORE_OPERATED], 'readonly');
 	const store = tx.objectStore(STORE_OPERATED);
@@ -297,11 +293,11 @@ export async function isSheetOperated(fileId, sheetName) {
 		console.warn('isSheetOperated: 缺少必要参数');
 		return false;
 	}
-	
+
 	const db = await openDB();
 	const tx = db.transaction([STORE_SHEETS], 'readonly');
 	const store = tx.objectStore(STORE_SHEETS);
-	
+
 	try {
 		const sheetKey = generateSheetKey(fileId, sheetName);
 		const record = await promisifyRequest(store.get(sheetKey));
@@ -322,11 +318,11 @@ export async function markSheetOperated(fileId, sheetName) {
 		console.warn('markSheetOperated: 缺少必要参数');
 		return;
 	}
-	
+
 	const db = await openDB();
 	const tx = db.transaction([STORE_SHEETS], 'readwrite');
 	const store = tx.objectStore(STORE_SHEETS);
-	
+
 	try {
 		const sheetKey = generateSheetKey(fileId, sheetName);
 		const record = {
@@ -352,12 +348,12 @@ export async function clearSheetRecordsByFileId(fileId) {
 		console.warn('clearSheetRecordsByFileId: 缺少文件ID参数');
 		return;
 	}
-	
+
 	const db = await openDB();
 	const tx = db.transaction([STORE_SHEETS], 'readwrite');
 	const store = tx.objectStore(STORE_SHEETS);
 	const index = store.index('fileId');
-	
+
 	try {
 		// 获取所有匹配的记录
 		const records = await new Promise((resolve, reject) => {
@@ -365,12 +361,12 @@ export async function clearSheetRecordsByFileId(fileId) {
 			req.onsuccess = () => resolve(req.result);
 			req.onerror = e => reject(e.target.error);
 		});
-		
+
 		// 删除所有匹配的记录
 		for (const record of records) {
 			store.delete(record.sheetKey);
 		}
-		
+
 		await waitTransaction(tx);
 	} catch (error) {
 		console.error('clearSheetRecordsByFileId: 清空失败', error);
@@ -386,23 +382,21 @@ export async function getOperatedSheetsByFileId(fileId) {
 		console.warn('getOperatedSheetsByFileId: 缺少文件ID参数');
 		return [];
 	}
-	
+
 	const db = await openDB();
 	const tx = db.transaction([STORE_SHEETS], 'readonly');
 	const store = tx.objectStore(STORE_SHEETS);
 	const index = store.index('fileId');
-	
+
 	try {
 		const records = await new Promise((resolve, reject) => {
 			const req = index.getAll(fileId);
 			req.onsuccess = () => resolve(req.result);
 			req.onerror = e => reject(e.target.error);
 		});
-		
-		const operatedSheets = records
-			.filter(record => record.operated)
-			.map(record => record.sheetName);
-		
+
+		const operatedSheets = records.filter(record => record.operated).map(record => record.sheetName);
+
 		return operatedSheets;
 	} catch (error) {
 		console.error('getOperatedSheetsByFileId: 获取失败', error);
@@ -419,7 +413,7 @@ export async function debugGetAllSheetRecords() {
 	const tx = db.transaction([STORE_SHEETS], 'readonly');
 	const store = tx.objectStore(STORE_SHEETS);
 	const records = [];
-	
+
 	await new Promise((resolve, reject) => {
 		const req = store.openCursor();
 		req.onsuccess = e => {
@@ -431,9 +425,9 @@ export async function debugGetAllSheetRecords() {
 		};
 		req.onerror = e => reject(e.target.error);
 	});
-	
+
 	await waitTransaction(tx);
 	db.close();
-	
+
 	return records;
 }

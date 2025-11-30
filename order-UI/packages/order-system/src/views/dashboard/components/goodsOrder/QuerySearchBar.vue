@@ -3,19 +3,7 @@
 		<!-- 用 v-show 避免 $refs 丢失 -->
 		<el-form v-show="isConfigLoaded" id="top-search-form-item" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150">
 			<el-form-item v-if="shouldShowField('dateRange')" label="时间范围">
-				<el-date-picker
-					v-model="dateRange"
-					type="daterange"
-					range-separator="至"
-					start-placeholder="开始日期"
-					end-placeholder="结束日期"
-					value-format="yyyy-MM-dd"
-					size="mini"
-					class="date-range-280"
-					unlink-panels
-					:clearable="true"
-					@change="onDateRangeChange"
-				/>
+				<el-date-picker v-model="dateRange" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" size="mini" class="date-range-280" unlink-panels :clearable="true" @change="onDateRangeChange" />
 			</el-form-item>
 			<el-form-item v-if="shouldShowField('id')" label="ID" prop="id">
 				<el-input v-model="queryParams.id" placeholder="请输入订单ID" clearable size="mini" class="input-short" @keyup.enter.native="handleQuery"></el-input>

@@ -5,12 +5,7 @@
 		<br />
 
 		<!-- 订单修改记录查看 -->
-		<OrderHistoryCheck
-			:check-history-order-visible="checkHistoryOrderVisible"
-			:order-history-info-list="orderHistoryInfoList"
-			:current-info="currentOrderItemInfo"
-			@close="closeOrderHistoryCheck"
-		/>
+		<OrderHistoryCheck :check-history-order-visible="checkHistoryOrderVisible" :order-history-info-list="orderHistoryInfoList" :current-info="currentOrderItemInfo" @close="closeOrderHistoryCheck" />
 
 		<!-- 右侧工具栏 -->
 		<div class="toolbar-wrapper">
@@ -123,14 +118,7 @@
 									<el-button size="mini" type="text">操作</el-button>
 									<el-dropdown-menu slot="dropdown">
 										<el-dropdown-item command="handleUpdate">
-											<el-button
-												size="mini"
-												type="primary"
-												:disabled="!row.isedit || row.isAdjust < 0 || isOrderExpired(row.addtime)"
-												:title="isOrderExpired(row.addtime) ? '订单已超过7天，无法修改' : ''"
-											>
-												修改
-											</el-button>
+											<el-button size="mini" type="primary" :disabled="!row.isedit || row.isAdjust < 0 || isOrderExpired(row.addtime)" :title="isOrderExpired(row.addtime) ? '订单已超过7天，无法修改' : ''">修改</el-button>
 										</el-dropdown-item>
 										<el-dropdown-item command="handleDelete">
 											<el-button size="mini" type="danger" :disabled="!hasPermission(['admin'])">删除</el-button>
@@ -158,12 +146,7 @@
 									<div class="supplier-warehouse-container">
 										<span v-if="row._uniqueSuppliers.length === 0 && row._uniqueWarehouses.length === 0" class="empty-item">-</span>
 										<span v-else>
-											<span
-												v-for="supplier in row._uniqueSuppliers"
-												:key="`supplier-${supplier.supplierID}`"
-												class="supplier-name"
-												@click="hasPermission(['finance']) && updateOrderItemVisibleSupplierInvoice(row, supplier.supplierID)"
-											>
+											<span v-for="supplier in row._uniqueSuppliers" :key="`supplier-${supplier.supplierID}`" class="supplier-name" @click="hasPermission(['finance']) && updateOrderItemVisibleSupplierInvoice(row, supplier.supplierID)">
 												{{ supplier.supplier }}
 											</span>
 											<span v-for="warehouse in row._uniqueWarehouses" :key="`warehouse-${warehouse.storeHouseID}`" class="warehouse-name">
@@ -178,12 +161,7 @@
 
 							<td v-if="columns[5].visible">
 								<div v-if="row.checkState === '已审核'">
-									<StateTag
-										:state-title="row.checkState"
-										:state-mapper="{ 2: '已审核' }"
-										@click.native="hasPermission(['finance', 'admin']) && handleReCheck(row)"
-										:style="{ cursor: hasPermission(['finance', 'admin']) ? 'pointer' : 'default' }"
-									/>
+									<StateTag :state-title="row.checkState" :state-mapper="{ 2: '已审核' }" @click.native="hasPermission(['finance', 'admin']) && handleReCheck(row)" :style="{ cursor: hasPermission(['finance', 'admin']) ? 'pointer' : 'default' }" />
 								</div>
 								<div v-else>
 									<el-button v-if="hasPermission(['finance', 'admin'])" type="text" size="mini" @click="handleCheck(row)">审核</el-button>
@@ -360,16 +338,7 @@
 				</div>
 
 				<div class="invoice-table-container">
-					<el-table
-						v-loading="customerInvoiceListLoading"
-						:data="customerInvoiceList"
-						border
-						stripe
-						class="invoice-table compact-table"
-						size="small"
-						:header-cell-style="{ background: '#f8f9fa', color: '#495057', fontWeight: 600 }"
-						:row-class-name="getInvoiceRowClassName"
-					>
+					<el-table v-loading="customerInvoiceListLoading" :data="customerInvoiceList" border stripe class="invoice-table compact-table" size="small" :header-cell-style="{ background: '#f8f9fa', color: '#495057', fontWeight: 600 }" :row-class-name="getInvoiceRowClassName">
 						<el-table-column prop="orderDate" label="日期" align="center" width="170" show-overflow-tooltip>
 							<template #default>
 								<div class="date-cell">
@@ -479,14 +448,7 @@
 						</div>
 
 						<div class="supplier-table-container">
-							<el-table
-								:data="group.invoices"
-								border
-								stripe
-								size="small"
-								class="supplier-invoice-table"
-								:header-cell-style="{ background: '#f8f9fa', color: '#495057', fontWeight: 600 }"
-							>
+							<el-table :data="group.invoices" border stripe size="small" class="supplier-invoice-table" :header-cell-style="{ background: '#f8f9fa', color: '#495057', fontWeight: 600 }">
 								<el-table-column prop="orderDate" label="日期" align="center" width="170" show-overflow-tooltip>
 									<template #default>
 										<div class="date-cell">

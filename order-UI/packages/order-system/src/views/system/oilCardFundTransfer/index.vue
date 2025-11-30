@@ -50,72 +50,72 @@
 			"
 			@selection-change="handleSelectionChange"
 		>
-		<el-table-column v-if="columns[0].visible" label="id" align="center" prop="id" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.id }}</div>
-					<span>{{ scope.row.id }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[1].visible" label="加油卡卡号1" align="center" prop="oilMainCardNo" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.oilMainCardNo }}</div>
-					<span>{{ scope.row.oilMainCardNo }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[2].visible" label="加油卡卡号2" align="center" prop="oilSecondCardNo" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.oilSecondCardNo }}</div>
-					<span>{{ scope.row.oilSecondCardNo }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[3].visible" label="消费类型" align="center" prop="rechargeMoney" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">
+			<el-table-column v-if="columns[0].visible" label="id" align="center" prop="id" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.id }}</div>
+						<span>{{ scope.row.id }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[1].visible" label="加油卡卡号1" align="center" prop="oilMainCardNo" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.oilMainCardNo }}</div>
+						<span>{{ scope.row.oilMainCardNo }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[2].visible" label="加油卡卡号2" align="center" prop="oilSecondCardNo" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.oilSecondCardNo }}</div>
+						<span>{{ scope.row.oilSecondCardNo }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[3].visible" label="消费类型" align="center" prop="rechargeMoney" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">
+							<el-tag size="mini" :type="scope.row.type | typeFilter">{{ scope.row.type | statusFilter }}</el-tag>
+						</div>
 						<el-tag size="mini" :type="scope.row.type | typeFilter">{{ scope.row.type | statusFilter }}</el-tag>
-					</div>
-					<el-tag size="mini" :type="scope.row.type | typeFilter">{{ scope.row.type | statusFilter }}</el-tag>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[4].visible" label="操作金额" align="center" prop="rechargeMoney" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.rechargeMoney }}</div>
-					<span>{{ scope.row.rechargeMoney }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[5].visible" label="操作时间" align="center" prop="rechargeDate" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.rechargeDate }}</div>
-					<span>{{ scope.row.rechargeDate }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[6].visible" label="操作人员姓名" align="center" prop="rechargeName">
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.rechargeName }}</div>
-					<span>{{ scope.row.rechargeName }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[7].visible" label="备注" align="center" prop="comments">
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.comments }}</div>
-					<span>{{ scope.row.comments }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[4].visible" label="操作金额" align="center" prop="rechargeMoney" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.rechargeMoney }}</div>
+						<span>{{ scope.row.rechargeMoney }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[5].visible" label="操作时间" align="center" prop="rechargeDate" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.rechargeDate }}</div>
+						<span>{{ scope.row.rechargeDate }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[6].visible" label="操作人员姓名" align="center" prop="rechargeName">
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.rechargeName }}</div>
+						<span>{{ scope.row.rechargeName }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[7].visible" label="备注" align="center" prop="comments">
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.comments }}</div>
+						<span>{{ scope.row.comments }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
 				<template slot-scope="scope">
 					<el-button v-hasPermi="['system:oilcardfundtransfer:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
@@ -139,15 +139,7 @@
 							<el-input disabled v-model="form.oilMainCardNo" placeholder="请选择" />
 						</el-col>
 						<el-col :span="4">
-							<SearchOption
-								:get-data="listOilCard"
-								query-info="oilCardNo"
-								:query-name="queryOilCard"
-								query-label="油卡账号查询"
-								:limit-info="{ oilType: '主卡' }"
-								@commitBack="handleCommitBackOilCard"
-								@update:queryName="handleCommitBackQueryOilCard"
-							>
+							<SearchOption :get-data="listOilCard" query-info="oilCardNo" :query-name="queryOilCard" query-label="油卡账号查询" :limit-info="{ oilType: '主卡' }" @commitBack="handleCommitBackOilCard" @update:queryName="handleCommitBackQueryOilCard">
 								<template #table-columns>
 									<el-table-column label="加油卡卡号" align="center" prop="oilCardNo" />
 									<el-table-column label="当前金额" align="center" prop="moneyAmount" />
@@ -162,15 +154,7 @@
 							<el-input disabled v-model="form.oilSecondCardNo" placeholder="请选择" />
 						</el-col>
 						<el-col :span="4">
-							<SearchOption
-								:get-data="listOilCard"
-								query-info="oilCardNo"
-								:query-name="queryOilCardOther"
-								query-label="油卡账号查询"
-								:limit-info="{ oilType: '副卡' }"
-								@commitBack="handleCommitBackOilCardOther"
-								@update:queryName="handleCommitBackQueryOilCardOther"
-							>
+							<SearchOption :get-data="listOilCard" query-info="oilCardNo" :query-name="queryOilCardOther" query-label="油卡账号查询" :limit-info="{ oilType: '副卡' }" @commitBack="handleCommitBackOilCardOther" @update:queryName="handleCommitBackQueryOilCardOther">
 								<template #table-columns>
 									<el-table-column label="加油卡卡号" align="center" prop="oilCardNo" />
 									<el-table-column label="当前金额" align="center" prop="moneyAmount" />

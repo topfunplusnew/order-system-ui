@@ -350,18 +350,7 @@ export default {
 			// 使用 lodash 的 map 方法遍历分组数据
 			return _.map(this.groupedByDriverAndBank, group => {
 				// 构建基础表单数据模板
-				const baseFormData = _.pick(this.offsetForm, [
-					'sourceBankNo',
-					'sourceAccountName',
-					'sourceBankName',
-					'sourceCompanyType',
-					'sourceId',
-					'targetCompanyType',
-					'transactionTime',
-					'remarks',
-					'userId',
-					'userName'
-				]);
+				const baseFormData = _.pick(this.offsetForm, ['sourceBankNo', 'sourceAccountName', 'sourceBankName', 'sourceCompanyType', 'sourceId', 'targetCompanyType', 'transactionTime', 'remarks', 'userId', 'userName']);
 
 				// 合并分组特定数据
 				return _.assign(baseFormData, {

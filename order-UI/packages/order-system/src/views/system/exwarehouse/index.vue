@@ -5,15 +5,7 @@
 				<el-input v-model="queryParams.storeHouseName" placeholder="请输入仓库名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="出库日期">
-				<el-date-picker
-					v-model="dateRange"
-					style="width: 240px"
-					value-format="yyyy-MM-dd HH:mm:ss"
-					type="daterange"
-					range-separator="-"
-					start-placeholder="开始日期"
-					end-placeholder="结束日期"
-				></el-date-picker>
+				<el-date-picker v-model="dateRange" style="width: 240px" value-format="yyyy-MM-dd HH:mm:ss" type="daterange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -154,16 +146,8 @@
 							<i class="el-icon-arrow-down el-icon--right"></i>
 						</span>
 						<el-dropdown-menu slot="dropdown">
-							<el-dropdown-item
-								:disabled="scope.row.ordersNo === '二次加工' || scope.row.ordersNo === '货物破损'"
-								@click.native="scope.row.ordersNo !== '二次加工' && scope.row.ordersNo !== '货物破损' && checkOrderInfo(scope.row)"
-							>
-								<el-tooltip
-									class="item"
-									effect="dark"
-									:content="scope.row.ordersNo === '二次加工' || scope.row.ordersNo === '货物破损' ? '特殊货物无法查看' : '查看订单信息'"
-									placement="top-start"
-								>
+							<el-dropdown-item :disabled="scope.row.ordersNo === '二次加工' || scope.row.ordersNo === '货物破损'" @click.native="scope.row.ordersNo !== '二次加工' && scope.row.ordersNo !== '货物破损' && checkOrderInfo(scope.row)">
+								<el-tooltip class="item" effect="dark" :content="scope.row.ordersNo === '二次加工' || scope.row.ordersNo === '货物破损' ? '特殊货物无法查看' : '查看订单信息'" placement="top-start">
 									<span>查看订单信息</span>
 								</el-tooltip>
 							</el-dropdown-item>
@@ -198,17 +182,7 @@
 			</div>
 		</el-dialog>
 
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="查看库存信息"
-			:visible.sync="checkInventoryVisible"
-			width="100%"
-		>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="查看库存信息" :visible.sync="checkInventoryVisible" width="100%">
 			<el-descriptions title="库存详情" border size="mini">
 				<el-descriptions-item label="备注">
 					{{ inventoryInfo.remark || '-' }}

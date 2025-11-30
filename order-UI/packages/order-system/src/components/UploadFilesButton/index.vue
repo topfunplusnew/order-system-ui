@@ -222,9 +222,7 @@ export default {
 			this.uploadedFiles = [...attachments].filter(file => file.flag === this.flag);
 			console.log(`attachments`, attachments);
 			console.log(`this.flag`, this.flag);
-			const attachmentIds = attachments
-				.map(file => file.id)
-				.filter(id => id);
+			const attachmentIds = attachments.map(file => file.id).filter(id => id);
 
 			// 将初始附件ID添加到全局池（不清空，避免覆盖其他组件的ID）
 			if (attachmentIds.length > 0) {

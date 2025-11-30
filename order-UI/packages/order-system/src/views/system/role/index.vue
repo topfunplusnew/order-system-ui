@@ -13,15 +13,7 @@
 				</el-select>
 			</el-form-item>
 			<el-form-item label="创建时间">
-				<el-date-picker
-					v-model="dateRange"
-					style="width: 240px"
-					value-format="yyyy-MM-dd HH:mm:ss"
-					type="daterange"
-					range-separator="-"
-					start-placeholder="开始日期"
-					end-placeholder="结束日期"
-				></el-date-picker>
+				<el-date-picker v-model="dateRange" style="width: 240px" value-format="yyyy-MM-dd HH:mm:ss" type="daterange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -119,16 +111,7 @@
 					<el-checkbox v-model="menuExpand" @change="handleCheckedTreeExpand($event, 'menu')">展开/折叠</el-checkbox>
 					<el-checkbox v-model="menuNodeAll" @change="handleCheckedTreeNodeAll($event, 'menu')">全选/全不选</el-checkbox>
 					<el-checkbox v-model="form.menuCheckStrictly" @change="handleCheckedTreeConnect($event, 'menu')">父子联动</el-checkbox>
-					<el-tree
-						ref="menu"
-						class="tree-border"
-						:data="menuOptions"
-						show-checkbox
-						node-key="id"
-						:check-strictly="!form.menuCheckStrictly"
-						empty-text="加载中，请稍候"
-						:props="defaultProps"
-					></el-tree>
+					<el-tree ref="menu" class="tree-border" :data="menuOptions" show-checkbox node-key="id" :check-strictly="!form.menuCheckStrictly" empty-text="加载中，请稍候" :props="defaultProps"></el-tree>
 				</el-form-item>
 				<el-form-item label="备注">
 					<el-input v-model="form.remark" type="textarea" placeholder="请输入内容"></el-input>
@@ -141,18 +124,7 @@
 		</el-dialog>
 
 		<!-- 分配角色数据权限对话框 -->
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="false"
-			:title="title"
-			:visible.sync="openDataScope"
-			width="30%"
-			append-to-body
-		>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="openDataScope" width="30%" append-to-body>
 			<el-form :model="form" label-width="140px">
 				<el-form-item label="角色名称">
 					<el-input v-model="form.roleName" :disabled="true" />
@@ -192,17 +164,7 @@
 					<el-checkbox v-model="deptExpand" @change="handleCheckedTreeExpand($event, 'dept')">展开/折叠</el-checkbox>
 					<el-checkbox v-model="deptNodeAll" @change="handleCheckedTreeNodeAll($event, 'dept')">全选/全不选</el-checkbox>
 					<el-checkbox v-model="form.deptCheckStrictly" @change="handleCheckedTreeConnect($event, 'dept')">父子联动</el-checkbox>
-					<el-tree
-						ref="dept"
-						class="tree-border"
-						:data="deptOptions"
-						show-checkbox
-						default-expand-all
-						node-key="id"
-						:check-strictly="!form.deptCheckStrictly"
-						empty-text="加载中，请稍候"
-						:props="defaultProps"
-					></el-tree>
+					<el-tree ref="dept" class="tree-border" :data="deptOptions" show-checkbox default-expand-all node-key="id" :check-strictly="!form.deptCheckStrictly" empty-text="加载中，请稍候" :props="defaultProps"></el-tree>
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">

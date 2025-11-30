@@ -13,15 +13,7 @@
 				</el-select>
 			</el-form-item>
 			<el-form-item label="创建时间">
-				<el-date-picker
-					v-model="dateRange"
-					style="width: 240px"
-					value-format="yyyy-MM-dd HH:mm:ss"
-					type="daterange"
-					range-separator="-"
-					start-placeholder="开始日期"
-					end-placeholder="结束日期"
-				></el-date-picker>
+				<el-date-picker v-model="dateRange" style="width: 240px" value-format="yyyy-MM-dd HH:mm:ss" type="daterange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -128,10 +120,10 @@
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="80px">
 				<el-form-item label="字典名称" prop="dictName">
-					<el-input v-model="form.dictName" placeholder="请输入字典名称"  @keyup.enter.native="handleQuery" />
+					<el-input v-model="form.dictName" placeholder="请输入字典名称" @keyup.enter.native="handleQuery" />
 				</el-form-item>
 				<el-form-item label="字典类型" prop="dictType">
-					<el-input v-model="form.dictType" placeholder="请输入字典类型"  @keyup.enter.native="handleQuery" />
+					<el-input v-model="form.dictType" placeholder="请输入字典类型" @keyup.enter.native="handleQuery" />
 				</el-form-item>
 				<el-form-item label="状态" prop="status">
 					<el-radio-group v-model="form.status">
@@ -139,7 +131,7 @@
 					</el-radio-group>
 				</el-form-item>
 				<el-form-item label="备注" prop="remark">
-					<el-input v-model="form.remark" type="textarea" placeholder="请输入内容"  @keyup.enter.native="handleQuery"></el-input>
+					<el-input v-model="form.remark" type="textarea" placeholder="请输入内容" @keyup.enter.native="handleQuery"></el-input>
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">

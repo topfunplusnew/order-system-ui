@@ -55,128 +55,128 @@
 			@header-dragend="changeColWidth"
 			@selection-change="handleSelectionChange"
 		>
-		<el-table-column label="ID" align="center" prop="id" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.id }}</div>
-					<span>{{ scope.row.id }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[0].visible" label="日期" align="center" prop="invoiceDate" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ parseTime(scope.row.invoiceDate, '{y}-{m}-{d}') }}</div>
-					<span>{{ parseTime(scope.row.invoiceDate, '{y}-{m}-{d}') }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[4].visible" label="开票方公司名称" align="center" prop="Supplier" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.Supplier }}</div>
-					<span>{{ scope.row.Supplier }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[1].visible" label="开票金额" align="center" prop="invoiceAmount" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.invoiceAmount }}</div>
-					<span>{{ scope.row.invoiceAmount }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[2].visible" label="开票方票点" align="center" prop="supplierTicketPoint" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.supplierTicketPoint }}</div>
-					<span>{{ scope.row.supplierTicketPoint }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[3].visible" label="开票方票点金额" align="center" prop="supplierPointAmount" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.supplierPointAmount | changeNumber(changeLength) }}</div>
-					<span>{{ scope.row.supplierPointAmount | changeNumber(changeLength) }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[5].visible" label="收票方公司名称" align="center" prop="customer" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.customer }}</div>
-					<span>{{ scope.row.customer }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[6].visible" label="票据单位名称" align="center" prop="invoiceCompanyName" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.invoiceCompanyName }}</div>
-					<span>{{ scope.row.invoiceCompanyName }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[7].visible" label="收票方票点" align="center" prop="customerTicketPoint" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.customerTicketPoint }}</div>
-					<span>{{ scope.row.customerTicketPoint }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[8].visible" label="收票方票点金额" align="center" prop="customerPointAmount" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.customerPointAmount | changeNumber(changeLength) }}</div>
-					<span>{{ scope.row.customerPointAmount | changeNumber(changeLength) }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column label="票点差额" align="center" prop="pointAmountDifference" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.pointAmountDifference }}</div>
-					<span>{{ scope.row.pointAmountDifference }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[11].visible" label="实际开票金额" align="center" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.extraInfo && scope.row.extraInfo.actualInvoiceAmount }}</div>
-					<span>{{ scope.row.extraInfo && scope.row.extraInfo.actualInvoiceAmount }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[12].visible" label="实际开票时间" align="center" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ parseTime(scope.row.extraInfo && scope.row.extraInfo.actualInvoiceTime, '{y}-{m}-{d}') }}</div>
-					<span>{{ parseTime(scope.row.extraInfo && scope.row.extraInfo.actualInvoiceTime, '{y}-{m}-{d}') }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[13].visible" label="当月欠票金额" align="center" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.extraInfo && scope.row.extraInfo.currentMonthOweInvoiceAmount }}</div>
-					<span>{{ scope.row.extraInfo && scope.row.extraInfo.currentMonthOweInvoiceAmount }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[14].visible" label="额外备注" align="center" show-overflow-tooltip>
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.extraInfo && scope.row.extraInfo.comment }}</div>
-					<span>{{ scope.row.extraInfo && scope.row.extraInfo.comment }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<!-- 2025-11-4 去除订单信息查看 -->
-		<!-- <el-table-column v-if="columns[9].visible" label="订单信息" align="center" prop="isOrderTax" width="180" show-overflow-tooltip>
+			<el-table-column label="ID" align="center" prop="id" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.id }}</div>
+						<span>{{ scope.row.id }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[0].visible" label="日期" align="center" prop="invoiceDate" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ parseTime(scope.row.invoiceDate, '{y}-{m}-{d}') }}</div>
+						<span>{{ parseTime(scope.row.invoiceDate, '{y}-{m}-{d}') }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[4].visible" label="开票方公司名称" align="center" prop="Supplier" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.Supplier }}</div>
+						<span>{{ scope.row.Supplier }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[1].visible" label="开票金额" align="center" prop="invoiceAmount" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.invoiceAmount }}</div>
+						<span>{{ scope.row.invoiceAmount }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[2].visible" label="开票方票点" align="center" prop="supplierTicketPoint" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.supplierTicketPoint }}</div>
+						<span>{{ scope.row.supplierTicketPoint }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[3].visible" label="开票方票点金额" align="center" prop="supplierPointAmount" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.supplierPointAmount | changeNumber(changeLength) }}</div>
+						<span>{{ scope.row.supplierPointAmount | changeNumber(changeLength) }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[5].visible" label="收票方公司名称" align="center" prop="customer" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.customer }}</div>
+						<span>{{ scope.row.customer }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[6].visible" label="票据单位名称" align="center" prop="invoiceCompanyName" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.invoiceCompanyName }}</div>
+						<span>{{ scope.row.invoiceCompanyName }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[7].visible" label="收票方票点" align="center" prop="customerTicketPoint" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.customerTicketPoint }}</div>
+						<span>{{ scope.row.customerTicketPoint }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[8].visible" label="收票方票点金额" align="center" prop="customerPointAmount" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.customerPointAmount | changeNumber(changeLength) }}</div>
+						<span>{{ scope.row.customerPointAmount | changeNumber(changeLength) }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column label="票点差额" align="center" prop="pointAmountDifference" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.pointAmountDifference }}</div>
+						<span>{{ scope.row.pointAmountDifference }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[11].visible" label="实际开票金额" align="center" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.extraInfo && scope.row.extraInfo.actualInvoiceAmount }}</div>
+						<span>{{ scope.row.extraInfo && scope.row.extraInfo.actualInvoiceAmount }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[12].visible" label="实际开票时间" align="center" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ parseTime(scope.row.extraInfo && scope.row.extraInfo.actualInvoiceTime, '{y}-{m}-{d}') }}</div>
+						<span>{{ parseTime(scope.row.extraInfo && scope.row.extraInfo.actualInvoiceTime, '{y}-{m}-{d}') }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[13].visible" label="当月欠票金额" align="center" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.extraInfo && scope.row.extraInfo.currentMonthOweInvoiceAmount }}</div>
+						<span>{{ scope.row.extraInfo && scope.row.extraInfo.currentMonthOweInvoiceAmount }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[14].visible" label="额外备注" align="center" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.extraInfo && scope.row.extraInfo.comment }}</div>
+						<span>{{ scope.row.extraInfo && scope.row.extraInfo.comment }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<!-- 2025-11-4 去除订单信息查看 -->
+			<!-- <el-table-column v-if="columns[9].visible" label="订单信息" align="center" prop="isOrderTax" width="180" show-overflow-tooltip>
 			<template slot-scope="scope">
 				<el-row v-if="scope.row.isOrderTax === 0">无关联订单</el-row>
 				<el-row v-else>
@@ -184,70 +184,54 @@
 				</el-row>
 			</template>
 		</el-table-column> -->
-		<el-table-column label="银行回执单" align="center" prop="attachmentList">
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
-					<div slot="content" @click.stop>
+			<el-table-column label="银行回执单" align="center" prop="attachmentList">
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
+						<div slot="content" @click.stop>
+							<div v-if="Array.isArray(scope.row.attachmentList)">
+								<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'attachmentList'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getInvoiceOther, updateInvoiceOther)" />
+							</div>
+							<div v-else>
+								<el-tag type="danger">加载错误</el-tag>
+							</div>
+						</div>
 						<div v-if="Array.isArray(scope.row.attachmentList)">
-							<CheckFiles
-								:attachmentList="scope.row.attachmentList"
-								:flag="'attachmentList'"
-								@needToUpdate="value => handleUpdateFilePath(value, scope.row, getInvoiceOther, updateInvoiceOther)"
-							/>
+							<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'attachmentList'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getInvoiceOther, updateInvoiceOther)" />
 						</div>
 						<div v-else>
 							<el-tag type="danger">加载错误</el-tag>
 						</div>
-					</div>
-					<div v-if="Array.isArray(scope.row.attachmentList)">
-						<CheckFiles
-							:attachmentList="scope.row.attachmentList"
-							:flag="'attachmentList'"
-							@needToUpdate="value => handleUpdateFilePath(value, scope.row, getInvoiceOther, updateInvoiceOther)"
-						/>
-					</div>
-					<div v-else>
-						<el-tag type="danger">加载错误</el-tag>
-					</div>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column label="发票单" align="center" prop="attachmentList">
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
-					<div slot="content" @click.stop>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column label="发票单" align="center" prop="attachmentList">
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
+						<div slot="content" @click.stop>
+							<div v-if="Array.isArray(scope.row.attachmentList)">
+								<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'invoiceAttachmentList'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getInvoiceOther, updateInvoiceOther)" />
+							</div>
+							<div v-else>
+								<el-tag type="danger">加载错误</el-tag>
+							</div>
+						</div>
 						<div v-if="Array.isArray(scope.row.attachmentList)">
-							<CheckFiles
-								:attachmentList="scope.row.attachmentList"
-								:flag="'invoiceAttachmentList'"
-								@needToUpdate="value => handleUpdateFilePath(value, scope.row, getInvoiceOther, updateInvoiceOther)"
-							/>
+							<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'invoiceAttachmentList'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getInvoiceOther, updateInvoiceOther)" />
 						</div>
 						<div v-else>
 							<el-tag type="danger">加载错误</el-tag>
 						</div>
-					</div>
-					<div v-if="Array.isArray(scope.row.attachmentList)">
-						<CheckFiles
-							:attachmentList="scope.row.attachmentList"
-							:flag="'invoiceAttachmentList'"
-							@needToUpdate="value => handleUpdateFilePath(value, scope.row, getInvoiceOther, updateInvoiceOther)"
-						/>
-					</div>
-					<div v-else>
-						<el-tag type="danger">加载错误</el-tag>
-					</div>
-				</el-tooltip>
-			</template>
-		</el-table-column>
-		<el-table-column v-if="columns[10].visible" label="备注" align="center" prop="comments">
-			<template #default="scope">
-				<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-					<div slot="content">{{ scope.row.comments }}</div>
-					<span>{{ scope.row.comments }}</span>
-				</el-tooltip>
-			</template>
-		</el-table-column>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[10].visible" label="备注" align="center" prop="comments">
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.comments }}</div>
+						<span>{{ scope.row.comments }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="180px" fixed="right">
 				<template slot-scope="scope">
 					<el-button size="mini" type="text" @click="handleAddExtraInfo(scope.row)">补充信息</el-button>
@@ -365,22 +349,10 @@
 							<el-date-picker v-model="form.extraInfo.actualInvoiceTime" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 						</el-form-item>
 						<el-form-item label="银行回执附件">
-							<UploadFilesButton
-								ref="paymentReceiptsUpload"
-								flag="paymentReceipts"
-								:extra-info="{ moduleType: 'invoiceOther', formId: form.id }"
-								:initial-attachments="(form.params && form.params.paymentReceipts) || []"
-								@files-updated="handleAttachmentFilesUpdated"
-							/>
+							<UploadFilesButton ref="paymentReceiptsUpload" flag="paymentReceipts" :extra-info="{ moduleType: 'invoiceOther', formId: form.id }" :initial-attachments="(form.params && form.params.paymentReceipts) || []" @files-updated="handleAttachmentFilesUpdated" />
 						</el-form-item>
 						<el-form-item label="发票单">
-							<UploadFilesButton
-								ref="invoiceAttachmentsUpload"
-								flag="invoiceAttachments"
-								:extra-info="{ moduleType: 'invoiceOther', formId: form.id }"
-								:initial-attachments="(form.params && form.params.invoiceAttachments) || []"
-								@files-updated="handleAttachmentFilesUpdated"
-							/>
+							<UploadFilesButton ref="invoiceAttachmentsUpload" flag="invoiceAttachments" :extra-info="{ moduleType: 'invoiceOther', formId: form.id }" :initial-attachments="(form.params && form.params.invoiceAttachments) || []" @files-updated="handleAttachmentFilesUpdated" />
 						</el-form-item>
 						<el-form-item label="备注" prop="comments">
 							<el-input v-model="form.comments" placeholder="请输入备注" />

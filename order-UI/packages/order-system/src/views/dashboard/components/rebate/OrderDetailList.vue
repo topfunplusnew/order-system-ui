@@ -75,8 +75,8 @@ export default {
 			:data="filterSelectedList"
 			:cell-style="
 				() => {
-				return { padding: '.5px' };
-			}
+					return { padding: '.5px' };
+				}
 			"
 			max-height="700"
 			size="mini"

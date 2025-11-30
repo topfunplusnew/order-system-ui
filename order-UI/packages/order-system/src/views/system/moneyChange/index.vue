@@ -8,17 +8,7 @@
 				</el-select>
 			</el-form-item>
 			<el-form-item label="时间范围">
-				<el-date-picker
-					v-model="queryParams.dateRange"
-					type="daterange"
-					range-separator="至"
-					start-placeholder="开始日期"
-					end-placeholder="结束日期"
-					value-format="yyyy-MM-dd"
-					:default-time="['00:00:00', '23:59:59']"
-					style="width: 240px"
-					size="mini"
-				/>
+				<el-date-picker v-model="queryParams.dateRange" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" :default-time="['00:00:00', '23:59:59']" style="width: 240px" size="mini" />
 			</el-form-item>
 			<el-form-item label="目标查询日期">
 				<el-date-picker v-model="queryParams.params.targetDate" type="date" placeholder="选择日期" value-format="yyyy-MM-dd" style="width: 240px" size="mini" />
@@ -246,9 +236,7 @@ export default {
 		formatDateTime(dateStr) {
 			if (!dateStr) return '';
 			const date = new Date(dateStr);
-			return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(
-				date.getMinutes()
-			).padStart(2, '0')}`;
+			return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
 		},
 
 		getBackupTypeClass(type) {

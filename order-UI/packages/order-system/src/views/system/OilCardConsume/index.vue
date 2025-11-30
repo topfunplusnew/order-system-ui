@@ -64,11 +64,7 @@
 			<el-table-column v-if="columns[10].visible" label="加油小票附件" align="center" prop="attachmentOiladd" show-overflow-tooltip>
 				<template #default="scope">
 					<div v-if="Array.isArray(scope.row.attachmentList)">
-						<CheckFiles
-							:attachmentList="scope.row.attachmentList"
-							:flag="'attachmentOiladd'"
-							@needToUpdate="value => handleUpdateFilePath(value, scope.row, getOilCardConsume, updateOilCardConsume)"
-						/>
+						<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'attachmentOiladd'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getOilCardConsume, updateOilCardConsume)" />
 					</div>
 					<div v-else>
 						<el-tag type="danger">加载错误</el-tag>
@@ -184,13 +180,7 @@
 					<el-input v-model="form.endCardSurplus" placeholder="请输入加油卡余额" />
 				</el-form-item>
 				<el-form-item label="加油小票附件" prop="attachmentOiladd">
-					<UploadFilesButton
-						ref="attachmentUpload"
-						flag="attachmentOiladd"
-						:extra-info="{ moduleType: 'oilCardConsume', formId: form.id }"
-						:initial-attachments="form.attachmentList || []"
-						@files-updated="handleAttachmentFilesUpdated"
-					/>
+					<UploadFilesButton ref="attachmentUpload" flag="attachmentOiladd" :extra-info="{ moduleType: 'oilCardConsume', formId: form.id }" :initial-attachments="form.attachmentList || []" @files-updated="handleAttachmentFilesUpdated" />
 				</el-form-item>
 				<el-form-item label="备注" prop="comments">
 					<el-input v-model="form.comments" placeholder="请输入备注" />

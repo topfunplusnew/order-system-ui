@@ -74,46 +74,7 @@ export default {
 			 */
 			// 默认支持的文件类型
 
-			default: () => [
-				'bmp',
-				'gif',
-				'jpg',
-				'jpeg',
-				'png',
-				'tif',
-				'tiff',
-				'heic',
-				'heif',
-				'doc',
-				'docx',
-				'xls',
-				'xlsx',
-				'ppt',
-				'pptx',
-				'pdf',
-				'html',
-				'htm',
-				'txt',
-				'rtf',
-				'csv',
-				'rar',
-				'zip',
-				'gz',
-				'bz2',
-				'7z',
-				'mp4',
-				'avi',
-				'rmvb',
-				'mov',
-				'wmv',
-				'mkv',
-				'mp3',
-				'wav',
-				'wma',
-				'm4a',
-				'eml',
-				'msg'
-			]
+			default: () => ['bmp', 'gif', 'jpg', 'jpeg', 'png', 'tif', 'tiff', 'heic', 'heif', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'pdf', 'html', 'htm', 'txt', 'rtf', 'csv', 'rar', 'zip', 'gz', 'bz2', '7z', 'mp4', 'avi', 'rmvb', 'mov', 'wmv', 'mkv', 'mp3', 'wav', 'wma', 'm4a', 'eml', 'msg']
 		},
 		// 是否显示提示
 		isShowTip: {

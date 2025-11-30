@@ -219,36 +219,15 @@ export default {
 					<td>当月未入账金额结余=①+②-③+④</td>
 					<td>
 						￥
-						{{
-							calculateUnaccountedAmount(
-								dailyProfitStatistics.systemRebateReceivableDay,
-								dailyProfitStatistics.systemPriceReductionReceivableDay,
-								dailyProfitStatistics.systemCustomerCommissionPayableDay,
-								dailyProfitStatistics.systemTicketPointDiffDay
-							)
-						}}
+						{{ calculateUnaccountedAmount(dailyProfitStatistics.systemRebateReceivableDay, dailyProfitStatistics.systemPriceReductionReceivableDay, dailyProfitStatistics.systemCustomerCommissionPayableDay, dailyProfitStatistics.systemTicketPointDiffDay) }}
 					</td>
 					<td>
 						￥
-						{{
-							calculateUnaccountedAmount(
-								dailyProfitStatistics.systemRebateReceivableMonth,
-								dailyProfitStatistics.systemPriceReductionReceivableMonth,
-								dailyProfitStatistics.systemCustomerCommissionPayableMonth,
-								dailyProfitStatistics.systemTicketPointDiffMonth
-							)
-						}}
+						{{ calculateUnaccountedAmount(dailyProfitStatistics.systemRebateReceivableMonth, dailyProfitStatistics.systemPriceReductionReceivableMonth, dailyProfitStatistics.systemCustomerCommissionPayableMonth, dailyProfitStatistics.systemTicketPointDiffMonth) }}
 					</td>
 					<td>
 						￥
-						{{
-							calculateUnaccountedAmount(
-								dailyProfitStatistics.systemRebateReceivableYear,
-								dailyProfitStatistics.systemPriceReductionReceivableYear,
-								dailyProfitStatistics.systemCustomerCommissionPayableYear,
-								dailyProfitStatistics.systemTicketPointDiffYear
-							)
-						}}
+						{{ calculateUnaccountedAmount(dailyProfitStatistics.systemRebateReceivableYear, dailyProfitStatistics.systemPriceReductionReceivableYear, dailyProfitStatistics.systemCustomerCommissionPayableYear, dailyProfitStatistics.systemTicketPointDiffYear) }}
 					</td>
 				</tr>
 
@@ -269,12 +248,7 @@ export default {
 						{{
 							calculateProfitToday(
 								dailyProfit,
-								calculateUnaccountedAmountNoFix(
-									dailyProfitStatistics.systemRebateReceivableDay,
-									dailyProfitStatistics.systemPriceReductionReceivableDay,
-									dailyProfitStatistics.systemCustomerCommissionPayableDay,
-									dailyProfitStatistics.systemTicketPointDiffDay
-								),
+								calculateUnaccountedAmountNoFix(dailyProfitStatistics.systemRebateReceivableDay, dailyProfitStatistics.systemPriceReductionReceivableDay, dailyProfitStatistics.systemCustomerCommissionPayableDay, dailyProfitStatistics.systemTicketPointDiffDay),
 								dailyProfitStatistics.systemRebateLastMonthSettlementDay
 							)
 						}}
@@ -284,12 +258,7 @@ export default {
 						{{
 							calculateProfitToday(
 								dailyProfit,
-								calculateUnaccountedAmountNoFix(
-									dailyProfitStatistics.systemRebateReceivableMonth,
-									dailyProfitStatistics.systemPriceReductionReceivableMonth,
-									dailyProfitStatistics.systemCustomerCommissionPayableMonth,
-									dailyProfitStatistics.systemTicketPointDiffMonth
-								),
+								calculateUnaccountedAmountNoFix(dailyProfitStatistics.systemRebateReceivableMonth, dailyProfitStatistics.systemPriceReductionReceivableMonth, dailyProfitStatistics.systemCustomerCommissionPayableMonth, dailyProfitStatistics.systemTicketPointDiffMonth),
 								dailyProfitStatistics.systemRebateLastMonthSettlementMonth
 							)
 						}}
@@ -299,12 +268,7 @@ export default {
 						{{
 							calculateProfitToday(
 								dailyProfit,
-								calculateUnaccountedAmountNoFix(
-									dailyProfitStatistics.systemRebateReceivableYear,
-									dailyProfitStatistics.systemPriceReductionReceivableYear,
-									dailyProfitStatistics.systemCustomerCommissionPayableYear,
-									dailyProfitStatistics.systemTicketPointDiffYear
-								),
+								calculateUnaccountedAmountNoFix(dailyProfitStatistics.systemRebateReceivableYear, dailyProfitStatistics.systemPriceReductionReceivableYear, dailyProfitStatistics.systemCustomerCommissionPayableYear, dailyProfitStatistics.systemTicketPointDiffYear),
 								dailyProfitStatistics.systemRebateLastMonthSettlementYear
 							)
 						}}

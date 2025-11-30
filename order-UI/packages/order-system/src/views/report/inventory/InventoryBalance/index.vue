@@ -29,7 +29,11 @@
 			border
 			size="mini"
 			style="width: 100%"
-			:cell-style="() => { return { padding: '2px' }; }"
+			:cell-style="
+				() => {
+					return { padding: '2px' };
+				}
+			"
 			show-summary
 			:summary-method="getSummaries"
 		>
@@ -194,4 +198,3 @@ export default {
 	padding: 20px;
 }
 </style>
-

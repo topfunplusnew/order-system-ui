@@ -6,7 +6,7 @@
 		<el-form id="top-search-form-item" :model="query" label-width="150px" class="filter-form">
 			<div class="form-row">
 				<el-form-item label="车牌号">
-					<el-input v-model="query.carNo" placeholder="请输入车牌号" size="mini" clearable  @keyup.enter.native="fetchData"/>
+					<el-input v-model="query.carNo" placeholder="请输入车牌号" size="mini" clearable @keyup.enter.native="fetchData" />
 				</el-form-item>
 				<el-form-item label="开始时间">
 					<el-date-picker v-model="query.startTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="选择开始时间" clearable size="mini" />

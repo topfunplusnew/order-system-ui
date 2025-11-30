@@ -78,18 +78,7 @@ export default {
 
 <template>
 	<div>
-		<el-upload
-			ref="upload"
-			class="upload-demo"
-			action="#"
-			:show-file-list="false"
-			multiple
-			:http-request="handleUpload"
-			:limit="1"
-			:file-list="fileList"
-			:on-progress="handleProgress"
-			:disabled="uploading"
-		>
+		<el-upload ref="upload" class="upload-demo" action="#" :show-file-list="false" multiple :http-request="handleUpload" :limit="1" :file-list="fileList" :on-progress="handleProgress" :disabled="uploading">
 			<div :class="['file-container', variant === 'empty' ? 'file-container-empty' : '']">
 				<div class="file-icon">
 					<el-icon class="el-icon-plus"></el-icon>
@@ -143,7 +132,7 @@ export default {
 		white-space: nowrap;
 		overflow: hidden;
 		max-width: 80px;
-		
+
 		.upload-text {
 			display: inline-block;
 		}
@@ -168,7 +157,7 @@ export default {
 		font-weight: 500;
 		font-size: 14px;
 		color: #409eff;
-		
+
 		.upload-text {
 			display: inline-block;
 		}
@@ -183,7 +172,7 @@ export default {
 ::v-deep .upload-demo {
 	display: inline-block;
 	width: 100%;
-	
+
 	.el-upload {
 		display: block;
 		width: 100%;

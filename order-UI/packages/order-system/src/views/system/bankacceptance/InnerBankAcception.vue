@@ -107,15 +107,7 @@
 								</el-col>
 								<el-col :span="4">
 									<!-- 选择的是客户或者供应商名称-->
-									<SearchOption
-										:limit-info="{ companyType: type }"
-										:get-data="listCompany"
-										query-info="companyName"
-										query-label="公司名称"
-										:query-name="companyName"
-										@update:queryName="handleUpdateCompanyName"
-										@commitBack="handleCommitBackCompany"
-									>
+									<SearchOption :limit-info="{ companyType: type }" :get-data="listCompany" query-info="companyName" query-label="公司名称" :query-name="companyName" @update:queryName="handleUpdateCompanyName" @commitBack="handleCommitBackCompany">
 										<template #table-columns>
 											<el-table-column :label="type" align="center" prop="companyName" />
 											<el-table-column label="老板姓名" align="center" prop="leader" />

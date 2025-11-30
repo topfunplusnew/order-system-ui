@@ -51,9 +51,7 @@ export default {
 			return fix(((this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces) / 1000000) * this.orderItemInfo.price + Number(this.orderItemInfo.sundryCost));
 		},
 		payments00() {
-			return fix(
-				((this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.outPieces) / 1000000) * this.orderItemInfo.paymentUnload + Number(this.orderItemInfo.paymentsWithSundry)
-			);
+			return fix(((this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.outPieces) / 1000000) * this.orderItemInfo.paymentUnload + Number(this.orderItemInfo.paymentsWithSundry));
 		},
 		// todo  长度宽度高度过低 会计算吨位为0
 		tonnage00() {
@@ -73,9 +71,7 @@ export default {
 			return fix((this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces * this.orderItemInfo.price) / 1000000 + Number(this.orderItemInfo.sundryCost));
 		},
 		payments10() {
-			return fix(
-				(this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.outPieces * this.orderItemInfo.paymentUnload) / 1000000 + Number(this.orderItemInfo.paymentsWithSundry)
-			);
+			return fix((this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.outPieces * this.orderItemInfo.paymentUnload) / 1000000 + Number(this.orderItemInfo.paymentsWithSundry));
 		},
 		tonnage10() {
 			return fix(((this.orderItemInfo.height - this.orderItemInfo.erro) * this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces) / 1000000 / 20 / 20);
@@ -94,9 +90,7 @@ export default {
 			return fix(((this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces) / 1000000) * this.orderItemInfo.price + Number(this.orderItemInfo.sundryCost));
 		},
 		payments01() {
-			return fix(
-				(this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.outPieces * this.orderItemInfo.paymentUnload) / 1000000 + Number(this.orderItemInfo.paymentsWithSundry)
-			);
+			return fix((this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.outPieces * this.orderItemInfo.paymentUnload) / 1000000 + Number(this.orderItemInfo.paymentsWithSundry));
 		},
 		tonnage01() {
 			return fix(((this.orderItemInfo.height - this.orderItemInfo.erro) * this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces) / 1000000 / 20 / 20);
@@ -115,9 +109,7 @@ export default {
 			return fix((this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces * this.orderItemInfo.price) / 1000000 + Number(this.orderItemInfo.sundryCost));
 		},
 		payments11() {
-			return fix(
-				(this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.outPieces * this.orderItemInfo.paymentUnload) / 1000000 + Number(this.orderItemInfo.paymentsWithSundry)
-			);
+			return fix((this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.outPieces * this.orderItemInfo.paymentUnload) / 1000000 + Number(this.orderItemInfo.paymentsWithSundry));
 		},
 		tonnage11() {
 			return fix(((this.orderItemInfo.height - this.orderItemInfo.erro) * this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces) / 1000000 / 20 / 20);
@@ -292,16 +284,7 @@ export default {
 				<span class="text-bold">供应商</span>
 				<hr />
 				<el-input v-model="orderItemInfo.supplier" placeholder="请输入供应商" disabled />
-				<SearchOption
-					:get-data="listCompany"
-					icon="el-icon-user"
-					:limit-info="{ companyType: '供应商' }"
-					query-info="companyName"
-					query-label="供应商名称"
-					:query-name="querySupplier"
-					@commitBack="handleCommitBackCompany"
-					@update:queryName="handleUpdateQueryName"
-				>
+				<SearchOption :get-data="listCompany" icon="el-icon-user" :limit-info="{ companyType: '供应商' }" query-info="companyName" query-label="供应商名称" :query-name="querySupplier" @commitBack="handleCommitBackCompany" @update:queryName="handleUpdateQueryName">
 					<template #table-columns>
 						<el-table-column label="供应商名称" align="center" prop="companyName" />
 						<el-table-column label="联系人" align="center" prop="relationName" />
@@ -313,19 +296,10 @@ export default {
 				<span class="text-bold">产品名称</span>
 				<hr />
 				<el-input v-model="orderItemInfo.levelName" type="text" placeholder="请输入产品名称" />
-				<SearchOption
-					:get-data="listProductLevel"
-					icon="el-icon-search"
-					:limit-info="{}"
-					query-info="levelName"
-					query-label="产品级别名称"
-					:query-name="queryStore"
-					@commitBack="handleCommitBackProductLevel"
-					@update:queryName="handleUpdateQueryNameStore"
-				>
+				<SearchOption :get-data="listProductLevel" icon="el-icon-search" :limit-info="{}" query-info="levelName" query-label="产品级别名称" :query-name="queryStore" @commitBack="handleCommitBackProductLevel" @update:queryName="handleUpdateQueryNameStore">
 					<template #table-columns>
 						<el-table-column label="级别编码" align="center" prop="levelNo" />
-            <el-table-column label="级别名称" align="center" prop="levelName" width="150"/>
+						<el-table-column label="级别名称" align="center" prop="levelName" width="150" />
 						<el-table-column label="分类编号" align="center" prop="categoryNo" />
 						<el-table-column label="分类名称" align="center" prop="categoryName" />
 						<el-table-column label="厚度" align="center" prop="height" />

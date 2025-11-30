@@ -1,21 +1,7 @@
 import { parseTime } from '@/utils/ruoyi';
 
 export class PaymentApply {
-	constructor({
-		fundsDate = parseTime(new Date()),
-		payType = '',
-		moneyAmount = 0,
-		otherAcountsName = '',
-		otherBankNo = '',
-		companyName = '',
-		companyId = null,
-		companyType = '',
-		reason = '',
-		applyPerson = '',
-		applyPersonID = '',
-		comments = '',
-		extraInfo = null
-	} = {}) {
+	constructor({ fundsDate = parseTime(new Date()), payType = '', moneyAmount = 0, otherAcountsName = '', otherBankNo = '', companyName = '', companyId = null, companyType = '', reason = '', applyPerson = '', applyPersonID = '', comments = '', extraInfo = null } = {}) {
 		this.fundsDate = fundsDate;
 		this.payType = payType;
 		this.moneyAmount = moneyAmount;
