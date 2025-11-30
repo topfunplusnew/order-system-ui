@@ -627,7 +627,12 @@ export default {
 		},
 		// 判断是否禁用补充信息按钮
 		isSupplementDisabled(row) {
-			// 如果 paymentAmount 或 rewardDate 任意一个不为空，则认为补充信息不为空，禁用按钮
+			// 只有在该行数据已经审核的前提下，如果补充信息不为空，才需要禁用
+			// 如果该行数据没有审核，补充信息按钮应该常亮（不禁用）
+			if (row.auditState !== '已审核') {
+				return false; // 未审核时不禁用
+			}
+			// 已审核时，如果补充信息不为空，则禁用
 			const hasPaymentAmount = row.paymentAmount != null && row.paymentAmount !== '';
 			const hasRewardDate = row.rewardDate != null && row.rewardDate !== '';
 			return hasPaymentAmount || hasRewardDate;
