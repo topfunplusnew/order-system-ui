@@ -3,6 +3,7 @@ import { batchPayment } from '../../../../api/system/payment';
 import { BankAcceptanceType, TableName } from '../../../../api/tool/enums';
 import { parseTime } from '../../../../utils/ruoyi';
 import _ from 'lodash';
+import { sum, round } from 'mathjs';
 
 export var mixin_order_freight_payment = {
 	data: function () {
@@ -70,7 +71,7 @@ export var mixin_order_freight_payment = {
 			this.batchPaymentList = _.cloneDeep(filteredList);
 
 			// 计算总运费
-			this.total_freight = _.sumBy(filteredList, item => Number(item.moneyAmount));
+			this.total_freight = sum(filteredList.map(item => Number(item.moneyAmount)));
 
 			// 合并展示数据（用于弹窗展示，不影响原始selectedList）
 			this.displayFreightList = this.mergeFreight(filteredList);
@@ -80,15 +81,15 @@ export var mixin_order_freight_payment = {
 		},
 		// 司机相同的运费信息合并为一条运费信息
 		mergeFreight(list) {
-			// 按司机ID分组（使用 driverId 或 companyId，优先使用 driverId）
-			const groupedByDriver = _.groupBy(list, item => item.driverId || item.companyId);
+			// 按司机ID分组
+			const groupedByDriver = _.groupBy(list, item => item.companyId);
 
 			// 合并每个司机的运费信息
 			return _.map(groupedByDriver, items => {
 				const firstItem = items[0];
 
 				// 计算总金额（保留3位小数）
-				const totalAmount = Number(_.sumBy(items, item => Number(item.moneyAmount)).toFixed(3));
+				const totalAmount = round(sum(items.map(item => Number(item.moneyAmount))), 3);
 
 				// 合并备注（去重并连接）
 				const comments = _.chain(items)
@@ -196,8 +197,8 @@ export var mixin_order_freight_payment = {
 				// 取第一个项目作为基础数据（所有同司机的项目共享这些字段）
 				const firstItem = items[0];
 
-				// 计算总金额（使用 lodash sumBy 并保留3位小数）
-				const totalAmount = Number(_.sumBy(items, item => Number(item.moneyAmount)).toFixed(3));
+				// 计算总金额（使用 mathjs 并保留3位小数）
+				const totalAmount = round(sum(items.map(item => Number(item.moneyAmount))), 3);
 
 				// 生成所有运费记录的引用
 				const tableReferences = _.map(items, item => ({
