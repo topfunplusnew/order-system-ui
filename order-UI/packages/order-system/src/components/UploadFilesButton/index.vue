@@ -146,7 +146,7 @@ export default {
 		// 单个文件大小限制（MB）
 		maxFileSize: {
 			type: Number,
-			default: 10
+			default: 1024
 		},
 		// 上传标识
 		flag: {
