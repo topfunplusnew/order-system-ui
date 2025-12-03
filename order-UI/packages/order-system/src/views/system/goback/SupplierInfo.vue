@@ -415,8 +415,8 @@ export default {
 								// 准备当天借方和贷方明细列表 (用于弹窗)
 								const condition = detail => {
 									const amount = number(detail.moneyAmount || 0);
-									const lender = isDebit(detail.debitCredit) ? abs(amount) : 0;
-									const borrower = isCredit(detail.debitCredit) ? abs(amount) : 0;
+									const lender = -amount;
+									const borrower = amount;
 
 									return {
 										date: detail.operateDate,
