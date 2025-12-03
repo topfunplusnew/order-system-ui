@@ -22,6 +22,10 @@
 				<el-button @click="prevPage" :disabled="currentPage === 1" size="small">上一页</el-button>
 				<span class="page-info">第 {{ currentPage }} 页 / 共 {{ totalPages }} 页</span>
 				<el-button @click="nextPage" :disabled="currentPage >= totalPages" size="small">下一页</el-button>
+				<el-button type="primary" @click="handleExport" size="small" :disabled="bodyData.length === 0" style="margin-left: 20px">
+					<i class="el-icon-download"></i>
+					导出Excel
+				</el-button>
 			</div>
 		</div>
 	</div>
@@ -33,6 +37,7 @@ import { moduleNames, System_Option_Type, TableName } from '@/api/tool/enums';
 import _ from 'lodash';
 import { MultiList, TableConfig } from '../backup.config';
 import { getUuid } from '@/utils/trash/utils';
+import * as XLSX from 'xlsx';
 
 // 定义高亮背景色
 const HIGHLIGHT_COLOR = '#fff3cd'; // 一个淡黄色，类似 Bootstrap 的 warning 背景色
@@ -495,6 +500,14 @@ export default {
 				}
 				return result;
 			}
+			// 如果是删除操作，只显示删除行，不显示修改前和差额
+			if (operationType === '删除') {
+				const deleteRow = { status: '删除', ...original };
+				if (!this.isRowEmpty(deleteRow, columns)) {
+					result.push(deleteRow);
+				}
+				return result;
+			}
 			// 非新增操作：显示修改前
 			if (operationType !== '新增') {
 				const originalRow = { status: '修改前', ...original };
@@ -793,6 +806,122 @@ export default {
 			}
 
 			return null;
+		},
+		// 获取所有数据的合并表格数据（用于导出）
+		getAllMergedTableDataForExport() {
+			if (!this.bodyData || this.bodyData.length === 0) {
+				return [];
+			}
+
+			const allData = [];
+			this.bodyData.forEach((body, bodyIdx) => {
+				const recordIndex = bodyIdx + 1;
+				const recordLabel = `${this.moduleNames[body.moduleName]}信息[${recordIndex}]`;
+				const bodyData = this.getMergedTableData(body);
+
+				bodyData.forEach((row, rowIdx) => {
+					if (!row) return;
+
+					allData.push({
+						...row,
+						recordLabel: rowIdx === 0 ? recordLabel : '',
+						recordIndex: bodyIdx,
+						bodyRef: body
+					});
+				});
+			});
+
+			return allData;
+		},
+		// 获取所有数据的合并表格列配置（用于导出）
+		getAllMergedTableColumnsForExport() {
+			if (!this.bodyData || this.bodyData.length === 0) {
+				return [];
+			}
+
+			const columnMap = new Map();
+			this.bodyData.forEach(body => {
+				const columns = this.getMergedTableColumns(body);
+				columns.forEach(col => {
+					if (!columnMap.has(col.prop)) {
+						columnMap.set(col.prop, col);
+					}
+				});
+			});
+
+			return Array.from(columnMap.values());
+		},
+		// 导出Excel
+		handleExport() {
+			try {
+				// 获取所有数据（不仅仅是当前页）
+				const allData = this.getAllMergedTableDataForExport();
+				const allColumns = this.getAllMergedTableColumnsForExport();
+
+				if (allData.length === 0) {
+					this.$message.warning('暂无数据可导出');
+					return;
+				}
+
+				// 构建表头：记录、状态 + 动态列
+				const headers = ['记录', '状态'];
+				allColumns.forEach(col => {
+					headers.push(col.label);
+				});
+
+				// 构建数据行
+				const rows = allData.map(row => {
+					const rowData = [row.recordLabel || '', row.status || ''];
+					allColumns.forEach(col => {
+						// 使用 formatter 格式化数据
+						let cellValue = row[col.prop];
+						if (col.formatter) {
+							try {
+								cellValue = col.formatter(row, { property: col.prop }, cellValue, 0);
+							} catch (error) {
+								console.error(`格式化字段 ${col.prop} 时出错:`, error);
+								cellValue = cellValue === null || typeof cellValue === 'undefined' ? '-' : String(cellValue);
+							}
+						} else {
+							cellValue = cellValue === null || typeof cellValue === 'undefined' ? '-' : String(cellValue);
+						}
+						rowData.push(cellValue);
+					});
+					return rowData;
+				});
+
+				// 创建工作表数据
+				const worksheetData = [headers, ...rows];
+
+				// 创建工作表
+				const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+
+				// 设置列宽
+				const colWidths = headers.map((header, index) => {
+					// 记录列和状态列设置固定宽度
+					if (index === 0) return { wch: 25 }; // 记录列
+					if (index === 1) return { wch: 12 }; // 状态列
+					return { wch: 15 }; // 其他列
+				});
+				worksheet['!cols'] = colWidths;
+
+				// 创建工作簿
+				const workbook = XLSX.utils.book_new();
+				const sheetName = this.moduleNames[this.moduleName] || '模块修改记录';
+				XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
+
+				// 生成文件名
+				const now = new Date();
+				const dateStr = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}`;
+				const fileName = `${sheetName}_${dateStr}.xlsx`;
+
+				// 下载文件
+				XLSX.writeFile(workbook, fileName);
+				this.$message.success('导出成功');
+			} catch (error) {
+				console.error('导出Excel失败:', error);
+				this.$message.error('导出失败，请重试');
+			}
 		}
 	}
 };

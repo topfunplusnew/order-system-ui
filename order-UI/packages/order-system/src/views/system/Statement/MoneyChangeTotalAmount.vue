@@ -4,7 +4,7 @@ import { fix } from 'order-system/src/api/tool/format';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import ChooseModule from '@/views/dashboard/backuplog/ChooseModule.vue';
 import { TableName } from '@/api/tool/enums';
-import { getFundChangeDetail } from '@/api/system/sql';
+import { getBackupInfoV2 } from '@/api/system/statement';
 import * as echarts from 'echarts';
 import _ from 'lodash';
 import { subtract, add, format, abs, compare } from 'mathjs';
@@ -305,7 +305,7 @@ export default {
 			};
 			// 获取变动明细 这里的接口是测试接口 后续需要换成 getBackupInfoV1 接口
 			// getBackupInfoV1
-			getFundChangeDetail(query).then(res => {
+			getBackupInfoV2(query).then(res => {
 				if (_.isEmpty(res.rows)) {
 					this.$message.warning('该模块没有变动信息');
 					return;

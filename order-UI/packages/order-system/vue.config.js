@@ -32,7 +32,7 @@ module.exports = {
 				//k8s
 				// target: 'https://devlop.order.project.k3s.ixuni.win/',
 				// target: 'http://42.193.124.39:27454/',
-				target: `http://123.57.37.74:60036/`,
+				target: `http://60.205.5.253:60036/`,
 				changeOrigin: true,
 				pathRewrite: {
 					['^' + process.env.VUE_APP_BASE_API]: ''

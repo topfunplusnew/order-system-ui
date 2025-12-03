@@ -434,6 +434,22 @@ export function getBackupInfoV1(query) {
 }
 
 /**
+ * 资金变动模块根据模块名获取数据
+ * @param {Object} query
+ * @param {string} query.variableName - 资金变动中的变量名
+ * @param {string} query.backupDate - 年月日字符串，想要看的那一天（后端是实际上会返回制定日期+前N天的数据，N为数据固定时间）
+ * @param {string} query.firstTargetDate - 第一个,页面上左侧的日期,示意图上的B
+ * @param {string} query.secondTargetDate - 第二个,页面上右侧的日期,示意图上的C
+ */
+export function getBackupInfoV2(query) {
+	return request({
+		url: '/system/backuplog/getBackupInfoV2',
+		method: 'get',
+		params: query
+	});
+}
+
+/**
  * 获取每日利润
  * @param {Object} query
  * @param {string} query.endTime - 结束时间
