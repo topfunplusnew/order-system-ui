@@ -715,5 +715,52 @@ export const TableConfig = {
 				}
 			}
 		}
+	},
+
+	// 出库
+	[TableName.EX_WAREHOUSE]: {
+		mappers: {
+			storeHouseName: '仓库名称',
+			outDirection: '出库方向',
+			outDate: '出库日期',
+			outAmount: '出库量',
+			ordersNo: '订单编号',
+			storeID: '库存ID',
+			storeHouseid: '仓库ID',
+			delFlag: '删除标志',
+			addtime: '添加时间',
+			userId: '用户ID',
+			UserName: '用户名'
+		},
+		params: [{ name: 'outAmount', label: '出库量' }],
+		extraParams: [],
+		options(key, value) {
+			switch (key) {
+				case 'outDirection': {
+					if (value && value !== '二次加工' && value !== '破损出库') {
+						return `${value}[客户]`;
+					}
+					if (value === '二次加工') {
+						return '二次入库出库';
+					}
+					if (value === '破损出库') {
+						return '存货毁损';
+					}
+					return value;
+				}
+				case 'delFlag': {
+					if (value === 0) {
+						return '正常';
+					}
+					if (value === 1) {
+						return '已删除';
+					}
+					return value;
+				}
+				default: {
+					return value;
+				}
+			}
+		}
 	}
 };

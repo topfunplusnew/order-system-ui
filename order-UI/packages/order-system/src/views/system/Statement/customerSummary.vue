@@ -65,7 +65,7 @@
 			<el-table-column v-if="columns[6].visible" show-overflow-tooltip label="借方(客户提货)" align="center" prop="positiveSum" width="140" />
 			<el-table-column v-if="columns[7].visible" show-overflow-tooltip label="贷方(收客户款)" align="center" prop="negativeSum" width="140">
 				<template slot-scope="scope">
-					{{ Math.abs(scope.row.negativeSum) }}
+					{{ scope.row.negativeSum }}
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[8].visible" show-overflow-tooltip label="平账金额" align="center" prop="balanceaccountsAmount" width="140" />
@@ -76,7 +76,7 @@
 			</el-table-column>
 			<el-table-column v-if="columns[10].visible" show-overflow-tooltip label="期末余额" align="center" prop="endingBalance" width="140">
 				<template slot-scope="scope">
-					{{ formatBalance(Math.abs(scope.row.endingBalance)) }}
+					{{ formatBalance(scope.row.endingBalance) }}
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[11].visible" show-overflow-tooltip label="业务经理" align="center" prop="dailyReceiveMoney" width="140" />

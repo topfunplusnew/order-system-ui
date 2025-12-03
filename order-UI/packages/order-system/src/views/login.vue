@@ -114,7 +114,7 @@ export default {
 						.dispatch('Login', this.loginForm)
 						.then(() => {
 							// 清除localStorage
-							localStorage.clear();
+							// localStorage.clear();
 							this.$router.push({ path: this.redirect || '/' }).catch(() => {});
 						})
 						.catch(() => {

@@ -61,6 +61,8 @@
 			:data="computedTableData"
 			size="mini"
 			max-height="750"
+			show-summary
+			:summary-method="getSummaries"
 			:cell-style="
 				() => {
 					return { padding: '1.5px' };
@@ -1043,6 +1045,31 @@ export default {
 		handleViewOrder(row) {
 			this.currentOrder = row;
 			this.orderDetailVisible = true;
+		},
+		// 表格合计方法
+		getSummaries(param) {
+			const { columns, data } = param;
+			const sums = [];
+			const sumFields = ['profitNoTax', 'commissionAmount', 'verifiedCommission', 'actualCustomerCommission'];
+			columns.forEach((column, index) => {
+				if (index === 0) {
+					sums[index] = '合计';
+					return;
+				}
+				if (index === 1) {
+					sums[index] = '';
+					return;
+				}
+				const prop = column.property;
+				if (sumFields.includes(prop)) {
+					const values = data.map(item => number(item[prop] || 0));
+					const total = values.length > 0 ? sum(values) : 0;
+					sums[index] = total.toFixed(2);
+				} else {
+					sums[index] = '';
+				}
+			});
+			return sums;
 		}
 	}
 };

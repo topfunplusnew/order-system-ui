@@ -56,7 +56,7 @@ export function formatSupplierBalance(amount) {
 	if (amount === 0) {
 		return '0';
 	}
-	return amount < 0 ? '[借] ' + fix_2(amount) : '[贷] ' + fix_2(Math.abs(amount));
+	return amount < 0 ? '[借] ' + fix_2(Math.abs(amount)) : '[贷] ' + fix_2(Math.abs(amount));
 }
 
 /**

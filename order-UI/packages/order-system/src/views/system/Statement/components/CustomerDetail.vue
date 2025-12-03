@@ -355,12 +355,12 @@ export default {
 				<!--        这两列应该是根据moneyAmount字段的正负进行判断-->
 				<el-table-column show-overflow-tooltip label="借方(客户提货+买票点)" align="center" prop="positiveSum" width="140">
 					<template slot-scope="scope">
-						{{ scope.row.moneyAmount > 0 ? abs(scope.row.moneyAmount) : '-' }}
+						{{ isDebit(scope.row.debitCredit) ? scope.row.moneyAmount : '-' }}
 					</template>
 				</el-table-column>
 				<el-table-column show-overflow-tooltip label="贷方(收客户款)" align="center" prop="negativeSum" width="140">
 					<template slot-scope="scope">
-						{{ scope.row.moneyAmount > 0 ? '-' : abs(scope.row.moneyAmount) }}
+						{{ isCredit(scope.row.debitCredit) ? -scope.row.moneyAmount : '-' }}
 					</template>
 				</el-table-column>
 

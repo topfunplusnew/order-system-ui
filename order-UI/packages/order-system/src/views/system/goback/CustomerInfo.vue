@@ -84,9 +84,9 @@
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<template slot="content">
-							<span>{{ abs(scope.row.lender) }}</span>
+							<span>{{ scope.row.lender }}</span>
 						</template>
-						<span>{{ abs(scope.row.lender) }}</span>
+						<span>{{ scope.row.lender }}</span>
 					</el-tooltip>
 				</template>
 			</el-table-column>
@@ -96,11 +96,11 @@
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<template slot="content">
-							<span style="margin-right: 10px">{{ abs(scope.row.borrower) }}</span>
+							<span style="margin-right: 10px">{{ scope.row.borrower }}</span>
 							<i class="el-icon-s-order" style="cursor: pointer" @click="handleCheckBorrowerDetailList(scope.row)"></i>
 						</template>
 						<div style="display: flex; align-items: center; justify-content: center">
-							<span style="margin-right: 5px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{ abs(scope.row.borrower) }}</span>
+							<span style="margin-right: 5px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{ scope.row.borrower }}</span>
 							<i v-if="scope.row.borrowerList && scope.row.borrowerList.length > 0" class="el-icon-s-order" style="cursor: pointer; flex-shrink: 0; margin-left: 5px" @click.stop="handleCheckBorrowerDetailList(scope.row)"></i>
 						</div>
 					</el-tooltip>
@@ -412,8 +412,8 @@ export default {
 								}
 								const condition = detail => {
 									const amount = number(detail.moneyAmount || 0);
-									const lender = isDebit(detail.debitCredit) ? abs(amount) : 0;
-									const borrower = isCredit(detail.debitCredit) ? abs(amount) : 0;
+									const lender = amount;
+									const borrower = -amount;
 									return {
 										date: detail.operateDate,
 										payNo: detail.payNo,
