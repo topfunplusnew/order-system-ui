@@ -69,11 +69,11 @@
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<template slot="content">
 							<span>
-								{{ abs(scope.row.lender) }}
+								{{ scope.row.lender }}
 							</span>
 						</template>
 						<span>
-							{{ abs(scope.row.lender) }}
+							{{ scope.row.lender }}
 						</span>
 					</el-tooltip>
 				</template>
@@ -82,7 +82,7 @@
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<template slot="content">
-							<span style="margin-right: 10px">{{ abs(scope.row.borrower) }}</span>
+							<span style="margin-right: 10px">{{ scope.row.borrower }}</span>
 							<i class="el-icon-s-order" style="cursor: pointer" @click="handleCheckBorrowerDetailList(scope.row)"></i>
 						</template>
 						<div style="display: flex; align-items: center; justify-content: center">
