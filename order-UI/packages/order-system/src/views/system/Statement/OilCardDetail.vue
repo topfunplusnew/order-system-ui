@@ -116,7 +116,7 @@ export default {
 
 			this.totalRecharge = records.filter(item => item.tableName === 'oilrecharge').reduce((sum, item) => sum + item.changeAmount, 0);
 
-			this.totalConsume = records.filter(item => item.tableName === 'oilcardconsume').reduce((sum, item) => sum + Math.abs(item.changeAmount), 0);
+			this.totalConsume = records.filter(item => item.tableName === 'oilcardconsume').reduce((sum, item) => sum + item.changeAmount, 0);
 
 			this.currentBalance = records.length > 0 ? records[records.length - 1].runningBalance : 0;
 		},

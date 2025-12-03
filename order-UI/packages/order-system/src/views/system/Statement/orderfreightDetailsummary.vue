@@ -82,7 +82,7 @@
 			<!-- 贷方 -->
 			<el-table-column v-if="columns[5].visible" label="贷方" align="center" prop="negativeSum" width="160" show-overflow-tooltip>
 				<template slot-scope="scope">
-					{{ fix(Math.abs(scope.row.negativeSum)) }}
+					{{ fix(scope.row.negativeSum) }}
 				</template>
 			</el-table-column>
 

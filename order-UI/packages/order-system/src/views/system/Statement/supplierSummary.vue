@@ -64,7 +64,7 @@
 			<el-table-column v-if="columns[6].visible" show-overflow-tooltip label="借方(付供应商货款)" align="center" prop="positiveSum" width="140" />
 			<el-table-column v-if="columns[7].visible" show-overflow-tooltip label="贷方(从厂家提货)" align="center" prop="negativeSum" width="140">
 				<template slot-scope="scope">
-					{{ Math.abs(scope.row.negativeSum) }}
+					{{ scope.row.negativeSum }}
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[8].visible" show-overflow-tooltip label="平账金额" align="center" prop="balanceaccountsAmount" width="140" />
