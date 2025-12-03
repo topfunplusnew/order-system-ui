@@ -258,8 +258,8 @@
 				<el-table-column label="变动片数" align="center">
 					<template #default="scope">
 						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-							<div slot="content">{{ Math.abs(scope.row.change_amount) }}</div>
-							<span>{{ Math.abs(scope.row.change_amount) }}</span>
+							<div slot="content">{{ scope.row.change_amount }}</div>
+							<span>{{ scope.row.change_amount }}</span>
 						</el-tooltip>
 					</template>
 				</el-table-column>
