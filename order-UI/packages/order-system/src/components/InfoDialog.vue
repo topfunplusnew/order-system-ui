@@ -8,7 +8,7 @@ export default {
 		title: String,
 		width: {
 			type: String,
-			default: '1350px'
+			default: '1500px'
 		}
 	},
 	data() {

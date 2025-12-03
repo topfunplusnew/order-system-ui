@@ -320,60 +320,20 @@
 		<!--    一键付运费的弹窗-->
 		<InfoDialog :visible="freightOnceVisible" title="一键付运费" @close="freightOnceVisible = false">
 			<template #info>
-				<!--        输入我方信息-->
 				<div class="order-freight-body">
-					<!--          运费信息-->
-					<div class="order-freight-info">
-						<el-collapse v-model="activeNames">
-							<el-collapse-item v-for="(item, index) in displayFreightList" :key="index" :title="'运费信息(' + (index + 1) + ')'" :name="index + ''">
-								<el-card class="box-card">
-									<div>
-										<el-descriptions :title="'运费信息(' + (index + 1) + ')'">
-											<el-descriptions-item label="司机">
-												{{ item.driverName }}
-											</el-descriptions-item>
-											<el-descriptions-item label="车牌号">
-												{{ item.carNo }}
-											</el-descriptions-item>
-											<el-descriptions-item label="车队">
-												{{ item.fleet }}
-											</el-descriptions-item>
-											<el-descriptions-item label="运费">
-												{{ item.moneyAmount }}
-											</el-descriptions-item>
-											<el-descriptions-item label="运输类型">
-												<el-tag size="mini">
-													{{ item.freightType }}
-												</el-tag>
-											</el-descriptions-item>
-											<el-descriptions-item label="开户名">
-												{{ item.otherAcountsName }}
-											</el-descriptions-item>
-											<el-descriptions-item label="开户行">
-												{{ item.otherBankName }}
-											</el-descriptions-item>
-											<el-descriptions-item label="银行账号">
-												{{ item.otherBankNo }}
-											</el-descriptions-item>
-										</el-descriptions>
-									</div>
-								</el-card>
-							</el-collapse-item>
-						</el-collapse>
-					</div>
-					<!--          我方付款信息-->
+					<!--          上方：我方付款信息（inline表单）-->
 					<div class="order-freight-self-info">
-						<el-form ref="freightPaymentOnceForm" :model="freightSelfOnceInfo" :rules="freightSelfOnceInfoRules" label-width="120px">
+						<el-form ref="freightPaymentOnceForm" :model="freightSelfOnceInfo" :rules="freightSelfOnceInfoRules" :inline="true" label-width="120px">
 							<el-form-item label="支付类型" prop="payType">
 								<el-cascader v-model="freightSelfOnceInfo.payType" :options="paymentTypeTree" :props="props" />
 							</el-form-item>
 							<el-form-item label="我方户名" prop="selfAccountsName">
 								<el-row>
-									<el-col :span="10">
+									<el-col :span="18">
 										<el-input v-model="freightSelfOnceInfo.selfAccountsName" placeholder="请输入我方户名" />
 									</el-col>
 									<!--   自定义组件查找-->
-									<el-col :span="3">
+									<el-col :span="6">
 										<SearchOption
 											:get-data="listBankAccount"
 											title="银行卡信息"
@@ -405,22 +365,30 @@
 							<el-form-item label="我方开户行" prop="selfBankName">
 								<el-input v-model="freightSelfOnceInfo.selfBankName" placeholder="请输入我方开户行" />
 							</el-form-item>
-
-							<!-- 运费总和展示区域 -->
-							<div class="total-freight-section">
-								<div class="total-freight-label">运费总和</div>
-								<div class="total-freight-amount">{{ fix(total_freight) }}</div>
-							</div>
-
 							<el-form-item>
-								<div class="order-freight-submit">
-									<el-button type="success" size="medium" @click="submitFreightOnce">一键付运费</el-button>
-								</div>
+								<el-button type="success" size="medium" @click="submitFreightOnce">一键付运费</el-button>
 							</el-form-item>
 						</el-form>
 					</div>
+					<!--          下方：运费信息表格-->
+					<div class="order-freight-info">
+						<el-table :data="displayFreightList" border size="mini" max-height="400px" style="width: 100%" show-summary :summary-method="getFreightSummary">
+							<el-table-column type="index" label="序号" width="80" align="center" />
+							<el-table-column label="司机" prop="driverName" min-width="150" align="center" show-overflow-tooltip />
+							<el-table-column label="车牌号" prop="carNo" min-width="150" align="center" show-overflow-tooltip />
+							<el-table-column label="车队" prop="fleet" min-width="150" align="center" show-overflow-tooltip />
+							<el-table-column label="运费" prop="moneyAmount" min-width="150" align="center" show-overflow-tooltip />
+							<el-table-column label="运输类型" prop="freightType" min-width="150" align="center" show-overflow-tooltip>
+								<template #default="scope">
+									<el-tag size="mini">{{ scope.row.freightType }}</el-tag>
+								</template>
+							</el-table-column>
+							<el-table-column label="开户名" prop="otherAcountsName" min-width="180" align="center" show-overflow-tooltip />
+							<el-table-column label="开户行" prop="otherBankName" min-width="180" align="center" show-overflow-tooltip />
+							<el-table-column label="银行账号" prop="otherBankNo" min-width="220" align="center" show-overflow-tooltip />
+						</el-table>
+					</div>
 				</div>
-				<!--        然后是一个按钮 表示一键付运费-->
 			</template>
 		</InfoDialog>
 
@@ -1152,57 +1120,54 @@ export default {
 		cancelFillFreight() {
 			this.fillFreightVisible = false;
 			this.resetFillFreightForm();
+		},
+		// 表格合计方法
+		getFreightSummary(param) {
+			const { columns, data } = param;
+			const sums = [];
+			columns.forEach((column, index) => {
+				if (index === 0) {
+					sums[index] = '合计';
+					return;
+				}
+				if (column.property === 'moneyAmount') {
+					// 计算运费总和
+					const values = data.map(item => Number(item[column.property]) || 0);
+					const sum = values.reduce((prev, curr) => {
+						return prev + curr;
+					}, 0);
+					sums[index] = this.fix(sum);
+				} else {
+					sums[index] = '';
+				}
+			});
+			return sums;
 		}
 	}
 };
 </script>
 <style scoped>
-/* 一键付运费弹窗布局与滚动优化，仅样式调整，不改业务结构 */
+/* 一键付运费弹窗布局 - 上下布局 */
 .order-freight-body {
-	/* 改为网格布局，避免内容撑高弹窗 */
-	display: grid;
-	grid-template-columns: 1.1fr 0.9fr;
+	/* 上下布局 */
+	display: flex;
+	flex-direction: column;
 	gap: 16px;
-	/* 固定内部可视高度，内部滚动 */
 	height: 68vh;
 	min-height: 420px;
 	overflow: hidden;
-	padding-right: 4px;
-	/* 预留滚动条空间，避免抖动 */
 }
 
-.order-freight-info,
+/* 上方：我方付款信息表单（inline） */
 .order-freight-self-info {
-	min-width: 0;
-	/* 防止子元素溢出 */
-}
-
-.order-freight-info {
-	/* 左侧面板可滚动 */
-	height: 100%;
-	overflow: auto;
-	padding-right: 4px;
-}
-
-.order-freight-self-info {
-	/* 右侧面板使用列布局，表单滚动，按钮吸底 */
-	height: 100%;
-	display: flex;
-	flex-direction: column;
+	flex-shrink: 0;
 	background: #fafafa;
-	border-left: 1px solid #f0f0f0;
-	padding: 16px 16px 0 16px;
+	border: 1px solid #f0f0f0;
+	border-radius: 4px;
+	padding: 16px;
 }
 
-/* 让表单在右侧面板中自适应滚动 */
-.order-freight-self-info ::v-deep .el-form {
-	height: 100%;
-	display: flex;
-	flex-direction: column;
-	padding-right: 4px;
-}
-
-/* 优化表单标签样式 */
+/* 优化inline表单样式 */
 .order-freight-self-info ::v-deep .el-form-item__label {
 	font-weight: 500;
 	color: #606266;
@@ -1210,117 +1175,22 @@ export default {
 
 .order-freight-self-info ::v-deep .el-form-item {
 	margin-bottom: 16px;
+	margin-right: 20px;
 }
 
-/* 运费总和展示区域 - 醒目样式 */
-.total-freight-section {
-	margin: 20px 0;
-	padding: 20px;
-	background: linear-gradient(135deg, #093b61 0%, #156fb2 100%);
-	border-radius: 8px;
-	box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-	text-align: center;
-	color: #fff;
-}
-
-.total-freight-label {
-	font-size: 14px;
-	font-weight: 500;
-	margin-bottom: 8px;
-	opacity: 0.95;
-	letter-spacing: 0.5px;
-}
-
-.total-freight-amount {
-	font-size: 32px;
-	font-weight: bold;
-	line-height: 1.2;
-	text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-	font-family: 'Arial', 'Microsoft YaHei', sans-serif;
-}
-
-/* 将按钮区域吸底并加柔和分隔效果 */
-.order-freight-submit {
-	margin-top: auto;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	position: sticky;
-	bottom: 0;
-	background: linear-gradient(to top, rgba(250, 250, 250, 1), rgba(250, 250, 250, 0.92));
-	padding: 16px 0 12px;
-	border-top: 1px solid #eee;
-}
-
-/* 优化左侧卡片与折叠面板的紧凑感 */
-.order-freight-info ::v-deep .el-collapse {
-	border: none;
-}
-
-.order-freight-info ::v-deep .el-collapse-item {
-	margin-bottom: 12px;
-	border: 1px solid #e4e7ed;
-	border-radius: 6px;
+/* 下方：运费信息表格 */
+.order-freight-info {
+	flex: 1;
+	min-height: 0;
 	overflow: hidden;
-}
-
-.order-freight-info ::v-deep .el-collapse-item__header {
-	padding: 12px 16px;
-	font-size: 14px;
-	font-weight: 500;
-	background-color: #f5f7fa;
-	color: #303133;
-	border-bottom: 1px solid #e4e7ed;
-}
-
-.order-freight-info ::v-deep .el-collapse-item__header:hover {
-	background-color: #ecf5ff;
-}
-
-.order-freight-info ::v-deep .el-collapse-item__wrap {
-	border-bottom: none;
-}
-
-.order-freight-info ::v-deep .el-collapse-item__content {
-	padding: 0;
-}
-
-.order-freight-info ::v-deep .el-card {
-	border: none;
-	box-shadow: none;
-	margin: 0;
-}
-
-.order-freight-info ::v-deep .el-card__body {
+	border: 1px solid #f0f0f0;
+	border-radius: 4px;
 	padding: 16px;
+	background: #fff;
 }
 
-.order-freight-info ::v-deep .el-descriptions {
-	background-color: #fff;
-}
-
-.order-freight-info ::v-deep .el-descriptions__title {
-	font-size: 15px;
-	font-weight: 600;
-	color: #303133;
-	margin-bottom: 12px;
-}
-
-.order-freight-info ::v-deep .el-descriptions__label {
-	color: #606266;
-	width: 100px;
-	font-weight: 500;
-	/* 控制标签宽度，提升可读性 */
-}
-
-.order-freight-info ::v-deep .el-descriptions__content {
-	color: #303133;
-}
-
-.order-freight-info ::v-deep .el-tag.el-tag--mini {
-	line-height: 20px;
-	height: 20px;
-	padding: 0 8px;
+.order-freight-info ::v-deep .el-table {
+	height: 100%;
 }
 
 /* 表单输入宽度与组件对齐优化 */
@@ -1328,19 +1198,5 @@ export default {
 .order-freight-self-info ::v-deep .el-cascader,
 .order-freight-self-info ::v-deep .el-select {
 	width: 100%;
-}
-
-/* 小屏幕降级为单列布局 */
-@media (max-width: 1366px) {
-	.order-freight-body {
-		grid-template-columns: 1fr;
-		height: 75vh;
-	}
-
-	.order-freight-self-info {
-		border-left: none;
-		border-top: 1px solid #f0f0f0;
-		padding-top: 12px;
-	}
 }
 </style>
