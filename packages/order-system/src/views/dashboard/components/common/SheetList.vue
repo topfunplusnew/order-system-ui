@@ -28,7 +28,6 @@ export default {
 		InvoiceBody,
 		// CompanyInformation,
 		SelectGoods,
-		SheetItem,
 		DragDiv
 	},
 	mixins: [mixin_excel_server],
