@@ -682,6 +682,10 @@ export default {
 					this.form.customerManufacturerCommissionAmount = orderData.customerManufacturerCommissionAmount;
 					this.form.comprehensiveProfit = orderData.comprehensiveProfit;
 					this.form.paymentAmount = orderData.paymentAmount;
+					// 自动填充销售是否含税字段
+					if (orderData.isIncludeTaxSale !== undefined && orderData.isIncludeTaxSale !== null) {
+						this.form.salesTaxIncluded = orderData.isIncludeTaxSale === 1 ? 1 : 0;
+					}
 				}
 			});
 		},
