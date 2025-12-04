@@ -248,11 +248,20 @@
 						<el-form-item label="对方银行账户类型" v-if="form.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE">
 							<BankType ref="otherSelectedBankType" :option-baned="true" :baned="true" :select-type="form.otherBankCardType" @updateSelectedType="changeOtherBankType" style="width: 100%" />
 						</el-form-item>
-						<el-form-item label="对方户名" prop="otherAcountsName" v-if="form.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE">
-							<el-input disabled v-model="form.otherAcountsName" placeholder="请选择" style="width: 100%" />
+						<el-form-item label="对方户名" prop="otherAcountsName">
+							<el-input
+								v-if="isPaymentFee"
+								v-model="form.otherAcountsName"
+								placeholder="请输入对方户名"
+								style="width: 100%"
+							/>
+							<el-input v-else disabled v-model="form.otherAcountsName" placeholder="请选择" style="width: 100%" />
 						</el-form-item>
-						<el-form-item label="对方账号" prop="otherBankNo" v-if="form.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE">
-							<div style="width: 100%; display: flex">
+						<el-form-item label="对方账号" prop="otherBankNo">
+							<div v-if="isPaymentFee" style="width: 100%">
+								<el-input v-model="form.otherBankNo" placeholder="请输入对方账号" style="width: 100%" />
+							</div>
+							<div v-else style="width: 100%; display: flex">
 								<el-input disabled v-model="form.otherBankNo" placeholder="请选择" style="flex: 1; margin-right: 8px" />
 								<SearchOption
 									:get-data="listBankAccount"
@@ -279,8 +288,9 @@
 								</SearchOption>
 							</div>
 						</el-form-item>
-						<el-form-item label="对方开户行" prop="otherBankName" v-if="form.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE">
-							<el-input disabled v-model="form.otherBankName" placeholder="请选择" style="width: 100%" />
+						<el-form-item label="对方开户行" prop="otherBankName">
+							<el-input v-if="isPaymentFee" v-model="form.otherBankName" placeholder="请输入对方开户行" style="width: 100%" />
+							<el-input v-else disabled v-model="form.otherBankName" placeholder="请选择" style="width: 100%" />
 						</el-form-item>
 						<el-form-item label="银行卡流水编号" prop="transactionHistory">
 							<el-input v-model="form.transactionHistory" placeholder="请输入银行卡流水编号" style="width: 100%" />
@@ -443,8 +453,38 @@ export default {
 				selfBankNo: [{ required: true, message: '我方账号不能为空', trigger: 'blur' }],
 				selfBankName: [{ required: true, message: '我方开户行不能为空', trigger: 'blur' }],
 				companyName: [{ required: true, message: '对方公司名称不能为空', trigger: 'blur' }],
-				otherAcountsName: [{ required: true, message: '对方户名不能为空', trigger: 'blur' }],
-				otherBankNo: [{ required: true, message: '对方账号不能为空', trigger: 'blur' }]
+				otherAcountsName: [
+					{
+						validator: (rule, value, callback) => {
+							if (this.form.companyType === PAYMENT_TARGET_TYPE.PAYMENT_FEE) {
+								callback();
+								return;
+							}
+							if (!value) {
+								callback(new Error('对方户名不能为空'));
+								return;
+							}
+							callback();
+						},
+						trigger: 'blur'
+					}
+				],
+				otherBankNo: [
+					{
+						validator: (rule, value, callback) => {
+							if (this.form.companyType === PAYMENT_TARGET_TYPE.PAYMENT_FEE) {
+								callback();
+								return;
+							}
+							if (!value) {
+								callback(new Error('对方账号不能为空'));
+								return;
+							}
+							callback();
+						},
+						trigger: 'blur'
+					}
+				]
 			},
 			columns: [
 				{ key: 0, label: `日期`, visible: true },

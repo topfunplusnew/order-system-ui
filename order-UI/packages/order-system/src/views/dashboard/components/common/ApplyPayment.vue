@@ -338,6 +338,17 @@
 						<el-input v-model="form.otherBankName" placeholder="请输入对方开户行" disabled />
 					</el-form-item>
 				</el-row>
+				<el-row v-if="value === PAYMENT_TARGET_TYPE.PAYMENT_FEE">
+					<el-form-item label="对方户名" prop="otherAccountsName">
+						<el-input v-model="form.otherAccountsName" placeholder="请输入对方户名" />
+					</el-form-item>
+					<el-form-item label="对方账号" prop="otherBankNo">
+						<el-input v-model="form.otherBankNo" placeholder="请输入对方账号" />
+					</el-form-item>
+					<el-form-item label="对方开户行" prop="otherBankName">
+						<el-input v-model="form.otherBankName" placeholder="请输入对方开户行" />
+					</el-form-item>
+				</el-row>
 				<el-form-item label="付款原因" prop="reason">
 					<el-input v-model="form.reason" type="textarea" placeholder="请输入内容" />
 				</el-form-item>

@@ -313,7 +313,7 @@
 				</el-form-item>
 				<el-row :gutter="40">
 					<!-- 左列 -->
-					<el-col :span="form.companyType === PAYMENT_TARGET_TYPE.PAYMENT_FEE ? 24 : 12">
+					<el-col :span="12">
 						<el-form-item label="日期" prop="fundsDate">
 							<el-date-picker v-model="form.fundsDate" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss" style="width: 100%"></el-date-picker>
 						</el-form-item>
@@ -412,18 +412,25 @@
 					</el-col>
 
 					<!-- 右列 -->
-					<el-col :span="form.companyType === PAYMENT_TARGET_TYPE.PAYMENT_FEE ? 24 : 12">
+					<el-col :span="12">
 						<el-form-item v-if="form.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE" label="对方银行账户类型">
 							<BankType ref="otherSelectedBankType" :option-baned="true" :baned="true" :select-type="form.otherBankCardType" @updateSelectedType="changeOtherBankType" style="width: 100%" />
 						</el-form-item>
 
 						<!-- 选择供应商 -->
-						<el-form-item v-if="form.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE" label="对方户名" prop="otherAccountsName">
-							<el-input disabled v-model="form.otherAccountsName" placeholder="请选择" style="width: 100%" />
+						<el-form-item label="对方户名" prop="otherAccountsName">
+							<el-input
+								v-if="isPaymentFee"
+								v-model="form.otherAccountsName"
+								placeholder="请输入对方户名"
+								style="width: 100%"
+							/>
+							<el-input v-else disabled v-model="form.otherAccountsName" placeholder="请选择" style="width: 100%" />
 						</el-form-item>
 
-						<el-form-item v-if="form.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE" label="对方账号" prop="otherBankNo">
-							<el-row>
+						<el-form-item label="对方账号" prop="otherBankNo">
+							<el-input v-if="isPaymentFee" v-model="form.otherBankNo" placeholder="请输入对方账号" style="width: 100%" />
+							<el-row v-else>
 								<el-col :span="22">
 									<el-input disabled v-model="form.otherBankNo" placeholder="请选择" style="width: 100%" />
 								</el-col>
@@ -453,8 +460,9 @@
 							</el-row>
 						</el-form-item>
 
-						<el-form-item v-if="form.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE" label="对方开户行" prop="otherBankName">
-							<el-input disabled v-model="form.otherBankName" placeholder="请选择" style="width: 100%" />
+						<el-form-item label="对方开户行" prop="otherBankName">
+							<el-input v-if="isPaymentFee" v-model="form.otherBankName" placeholder="请输入对方开户行" style="width: 100%" />
+							<el-input v-else disabled v-model="form.otherBankName" placeholder="请选择" style="width: 100%" />
 						</el-form-item>
 
 						<el-form-item label="附件" prop="attachmentIds">
@@ -795,8 +803,17 @@ export default {
 				],
 				otherBankNo: [
 					{
-						required: true,
-						message: '请输入对方账号',
+						validator: (rule, value, callback) => {
+							if (this.form.companyType === PAYMENT_TARGET_TYPE.PAYMENT_FEE) {
+								callback();
+								return;
+							}
+							if (!value) {
+								callback(new Error('请输入对方账号'));
+							} else {
+								callback();
+							}
+						},
 						trigger: 'blur'
 					}
 				]
@@ -904,6 +921,9 @@ export default {
 	computed: {
 		PAYMENT_TARGET_TYPE() {
 			return PAYMENT_TARGET_TYPE;
+		},
+		isPaymentFee() {
+			return this.form ? this.form.companyType === PAYMENT_TARGET_TYPE.PAYMENT_FEE : false;
 		},
 		BankAcceptanceType() {
 			return BankAcceptanceType;
