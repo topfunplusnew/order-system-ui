@@ -152,168 +152,165 @@
 					<el-form-item v-if="form && form.id != null" label="收款编码">
 						<el-input v-model="form.code" disabled style="width: 100%" />
 					</el-form-item>
-					<!--        第一列-->
-					<el-col :span="isPaymentFee ? 24 : 12">
-						<el-form-item label="日期" prop="fundsDate">
-							<el-date-picker v-model="form.fundsDate" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="请选择日期" style="width: 100%" />
-						</el-form-item>
-						<el-form-item label="收款类型" prop="receiveType">
-							<el-cascader v-model="form.receiveType" :options="paymentTypeTree" :props="props" style="width: 100%" />
-						</el-form-item>
-						<el-form-item label="金额" prop="moneyAmount">
-							<el-input v-model="form.moneyAmount" placeholder="请输入金额" style="width: 100%" />
-						</el-form-item>
-						<!--  对方银行卡的消费类型 (承兑户或者现金户)-->
-						<el-form-item label="我方银行账户类型">
-							<BankType
-								ref="selfSelectedBankType"
-								:bill-type="BankAcceptanceType.PAY_TYPE.RECEIVE"
-								:select-type="form.selfBankCardType"
-								:external-bankacceptance-info="form.params.bankacceptance"
-								@updateSelectedType="changeSelfBankType"
-								@updateBankAcceptance="handleBankAcceptanceUpdate"
-								style="width: 100%"
-							/>
-						</el-form-item>
-						<el-form-item label="我方户名" prop="selfAcountsName">
-							<div style="width: 100%; display: flex">
-								<el-input disabled v-model="form.selfAcountsName" placeholder="请选择" style="flex: 1; margin-right: 8px" />
-								<SearchOption
-									:get-data="listBankAccount"
-									title="银行卡信息"
-									icon="el-icon-search"
-									:limit-info="{
-										acountsType: '己方公司'
-									}"
-									:query-name="bankQuery"
-									query-info="acountsName"
-									query-label="户名查询"
-									width="1000px"
-									@commitBack="handleCallBack"
-									@update:queryName="handleCommitBackBank"
-								>
-									<template #table-columns>
-										<el-table-column label="账户类型" align="center" prop="acountsType" width="100" />
-										<el-table-column label="开户名称(户名)" align="center" prop="acountsName" width="300" />
-										<el-table-column label="账号(银行账号)" align="center" prop="bankNo" width="300" />
-										<el-table-column label="开户行" align="center" prop="bankName" width="300" />
-										<el-table-column label="己方公司" align="center" prop="displayName" width="300" />
-									</template>
-								</SearchOption>
-							</div>
-						</el-form-item>
-						<el-form-item label="我方账号" prop="selfBankNo">
-							<el-input disabled v-model="form.selfBankNo" placeholder="请选择" style="width: 100%" />
-						</el-form-item>
-						<el-form-item label="我方开户行" prop="selfBankName">
-							<el-input disabled v-model="form.selfBankName" placeholder="请选择" style="width: 100%" />
-						</el-form-item>
-						<el-form-item label="对方类型(请确认)">
-							<el-tooltip content="请注意选择正确的对方公司类型!" placement="top" effect="dark">
-								<el-select v-model="form.companyType" placeholder="请选择" style="width: 100%">
-									<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
-								</el-select>
-							</el-tooltip>
-						</el-form-item>
-						<el-form-item v-if="form.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE && form.companyType !== PUBLIC_DICT_TYPE.EMPLOYEE" :label="form.companyType === PAYMENT_TARGET_TYPE.DRIVER ? PUBLIC_DICT_TYPE.DRIVER : '对方公司名称'" prop="companyName">
-							<div style="width: 100%; display: flex">
-								<el-input disabled v-model="form.companyName" placeholder="请选择" style="flex: 1; margin-right: 8px" />
-								<SearchOption v-if="form.companyType === PAYMENT_TARGET_TYPE.DRIVER" :limit-info="{}" :get-data="listCars" query-info="carNo" query-label="车牌/柜号" :query-name="carName" @update:queryName="handleUpdateCarName" @commitBack="handleCommitBackCar">
-									<template #table-columns>
-										<el-table-column label="车牌/柜号" align="center" prop="carNo" width="220" />
-										<el-table-column label="司机姓名/海运公司" align="center" prop="driver" width="220" />
-										<el-table-column label="司机电话" align="center" prop="tel" width="200" />
-										<el-table-column label="户名" align="center" prop="acountsName" width="200" />
-										<el-table-column label="银行账号" align="center" prop="bankNo" width="200" />
-										<el-table-column label="开户行" align="center" prop="bankName" width="200" />
-										<el-table-column label="运输类型" align="center" prop="carType" width="200" />
-									</template>
-								</SearchOption>
-								<SearchOption v-else :limit-info="{ companyType: form.companyType }" :get-data="listCompany" query-info="companyName" query-label="公司名称" :query-name="companyName" @update:queryName="handleUpdateCompanyName" @commitBack="handleCommitBackCompany">
-									<template #table-columns>
-										<el-table-column :label="value" align="center" prop="companyName" />
-										<el-table-column label="公司类型" align="center" prop="companyType" />
-										<el-table-column label="老板姓名" align="center" prop="leader" />
-										<el-table-column label="老板电话" align="center" prop="leaderTel" />
-										<el-table-column label="区域" align="center" prop="region" />
-										<el-table-column label="销售经理" align="center" prop="salesManager" />
-									</template>
-								</SearchOption>
-							</div>
-						</el-form-item>
-					</el-col>
+					<el-row :gutter="40">
+						<!-- 左列 -->
+						<el-col :span="12">
+							<el-form-item label="日期" prop="fundsDate">
+								<el-date-picker v-model="form.fundsDate" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="请选择日期" style="width: 100%" />
+							</el-form-item>
+							<el-form-item label="收款类型" prop="receiveType">
+								<el-cascader v-model="form.receiveType" :options="paymentTypeTree" :props="props" style="width: 100%" />
+							</el-form-item>
+							<el-form-item label="金额" prop="moneyAmount">
+								<el-input v-model="form.moneyAmount" placeholder="请输入金额" style="width: 100%" />
+							</el-form-item>
+							<!--  对方银行卡的消费类型 (承兑户或者现金户)-->
+							<el-form-item label="我方银行账户类型">
+								<BankType
+									ref="selfSelectedBankType"
+									:bill-type="BankAcceptanceType.PAY_TYPE.RECEIVE"
+									:select-type="form.selfBankCardType"
+									:external-bankacceptance-info="form.params.bankacceptance"
+									@updateSelectedType="changeSelfBankType"
+									@updateBankAcceptance="handleBankAcceptanceUpdate"
+									style="width: 100%"
+								/>
+							</el-form-item>
+							<el-form-item label="我方户名" prop="selfAcountsName">
+								<div style="width: 100%; display: flex">
+									<el-input disabled v-model="form.selfAcountsName" placeholder="请选择" style="flex: 1; margin-right: 8px" />
+									<SearchOption
+										:get-data="listBankAccount"
+										title="银行卡信息"
+										icon="el-icon-search"
+										:limit-info="{
+											acountsType: '己方公司'
+										}"
+										:query-name="bankQuery"
+										query-info="acountsName"
+										query-label="户名查询"
+										width="1000px"
+										@commitBack="handleCallBack"
+										@update:queryName="handleCommitBackBank"
+									>
+										<template #table-columns>
+											<el-table-column label="账户类型" align="center" prop="acountsType" width="100" />
+											<el-table-column label="开户名称(户名)" align="center" prop="acountsName" width="300" />
+											<el-table-column label="账号(银行账号)" align="center" prop="bankNo" width="300" />
+											<el-table-column label="开户行" align="center" prop="bankName" width="300" />
+											<el-table-column label="己方公司" align="center" prop="displayName" width="300" />
+										</template>
+									</SearchOption>
+								</div>
+							</el-form-item>
+							<el-form-item label="我方账号" prop="selfBankNo">
+								<el-input disabled v-model="form.selfBankNo" placeholder="请选择" style="width: 100%" />
+							</el-form-item>
+							<el-form-item label="我方开户行" prop="selfBankName">
+								<el-input disabled v-model="form.selfBankName" placeholder="请选择" style="width: 100%" />
+							</el-form-item>
+							<el-form-item label="对方类型(请确认)">
+								<el-tooltip content="请注意选择正确的对方公司类型!" placement="top" effect="dark">
+									<el-select v-model="form.companyType" placeholder="请选择" style="width: 100%">
+										<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+									</el-select>
+								</el-tooltip>
+							</el-form-item>
+							<el-form-item v-if="form.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE && form.companyType !== PUBLIC_DICT_TYPE.EMPLOYEE" :label="form.companyType === PAYMENT_TARGET_TYPE.DRIVER ? PUBLIC_DICT_TYPE.DRIVER : '对方公司名称'" prop="companyName">
+								<div style="width: 100%; display: flex">
+									<el-input disabled v-model="form.companyName" placeholder="请选择" style="flex: 1; margin-right: 8px" />
+									<SearchOption v-if="form.companyType === PAYMENT_TARGET_TYPE.DRIVER" :limit-info="{}" :get-data="listCars" query-info="carNo" query-label="车牌/柜号" :query-name="carName" @update:queryName="handleUpdateCarName" @commitBack="handleCommitBackCar">
+										<template #table-columns>
+											<el-table-column label="车牌/柜号" align="center" prop="carNo" width="220" />
+											<el-table-column label="司机姓名/海运公司" align="center" prop="driver" width="220" />
+											<el-table-column label="司机电话" align="center" prop="tel" width="200" />
+											<el-table-column label="户名" align="center" prop="acountsName" width="200" />
+											<el-table-column label="银行账号" align="center" prop="bankNo" width="200" />
+											<el-table-column label="开户行" align="center" prop="bankName" width="200" />
+											<el-table-column label="运输类型" align="center" prop="carType" width="200" />
+										</template>
+									</SearchOption>
+									<SearchOption v-else :limit-info="{ companyType: form.companyType }" :get-data="listCompany" query-info="companyName" query-label="公司名称" :query-name="companyName" @update:queryName="handleUpdateCompanyName" @commitBack="handleCommitBackCompany">
+										<template #table-columns>
+											<el-table-column :label="value" align="center" prop="companyName" />
+											<el-table-column label="公司类型" align="center" prop="companyType" />
+											<el-table-column label="老板姓名" align="center" prop="leader" />
+											<el-table-column label="老板电话" align="center" prop="leaderTel" />
+											<el-table-column label="区域" align="center" prop="region" />
+											<el-table-column label="销售经理" align="center" prop="salesManager" />
+										</template>
+									</SearchOption>
+								</div>
+							</el-form-item>
+						</el-col>
 
-					<!--        第二列-->
-					<el-col :span="isPaymentFee ? 24 : 12" class="receive-second-col">
-						<el-form-item label="对方银行账户类型" v-if="form.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE">
-							<BankType ref="otherSelectedBankType" :option-baned="true" :baned="true" :select-type="form.otherBankCardType" @updateSelectedType="changeOtherBankType" style="width: 100%" />
-						</el-form-item>
-						<el-form-item label="对方户名" prop="otherAcountsName">
-							<el-input
-								v-if="isPaymentFee"
-								v-model="form.otherAcountsName"
-								placeholder="请输入对方户名"
-								style="width: 100%"
-							/>
-							<el-input v-else disabled v-model="form.otherAcountsName" placeholder="请选择" style="width: 100%" />
-						</el-form-item>
-						<el-form-item label="对方账号" prop="otherBankNo">
-							<div v-if="isPaymentFee" style="width: 100%">
-								<el-input v-model="form.otherBankNo" placeholder="请输入对方账号" style="width: 100%" />
-							</div>
-							<div v-else style="width: 100%; display: flex">
-								<el-input disabled v-model="form.otherBankNo" placeholder="请选择" style="flex: 1; margin-right: 8px" />
-								<SearchOption
-									:get-data="listBankAccount"
-									title="银行卡信息"
-									icon="el-icon-search"
-									query-label="户名查找"
-									query-info="acountsName"
-									:query-name="queryCustomerBank"
-									:limit-info="{ acountsType: form.companyType }"
-									width="1100px"
-									@update:queryName="handleUpdateQueryNameCustomer"
-									@commitBack="handleCallBackCompany"
-									:extra-params="{
-										companyId: form.companyId,
-										companyType: form.companyType
-									}"
-								>
-									<template #table-columns>
-										<el-table-column label="账户类型" align="center" prop="acountsType" width="100" />
-										<el-table-column label="开户名称(户名)" align="center" prop="acountsName" width="300" />
-										<el-table-column label="账号(银行账号)" align="center" prop="bankNo" width="300" />
-										<el-table-column label="开户行" align="center" prop="bankName" width="300" />
-									</template>
-								</SearchOption>
-							</div>
-						</el-form-item>
-						<el-form-item label="对方开户行" prop="otherBankName">
-							<el-input v-if="isPaymentFee" v-model="form.otherBankName" placeholder="请输入对方开户行" style="width: 100%" />
-							<el-input v-else disabled v-model="form.otherBankName" placeholder="请选择" style="width: 100%" />
-						</el-form-item>
-						<el-form-item label="银行卡流水编号" prop="transactionHistory">
-							<el-input v-model="form.transactionHistory" placeholder="请输入银行卡流水编号" style="width: 100%" />
-						</el-form-item>
-						<el-form-item label="银行卡流水编号附件">
-							<UploadFilesButton
-								ref="attachmentUploader"
-								flag="transactionHistoryAttachment"
-								accept-types="image/*,.pdf,.jpg,.jpeg,.png,.gif,.bmp,.doc,.docx,.xls,.xlsx"
-								:extra-info="{ moduleType: 'receiveMoney', formId: form.id }"
-								:initial-attachments="form.attachmentList || []"
-								@files-updated="handleAttachmentFilesUpdated"
-								style="width: 100%"
-							/>
-						</el-form-item>
-						<!-- 2025-11-1 录入人员不用录入了 -->
-						<!-- <el-form-item label="录入人员" prop="userName">
+						<!-- 右列 -->
+						<el-col :span="12" class="receive-second-col">
+							<el-form-item label="对方银行账户类型" v-if="form.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE">
+								<BankType ref="otherSelectedBankType" :option-baned="true" :baned="true" :select-type="form.otherBankCardType" @updateSelectedType="changeOtherBankType" style="width: 100%" />
+							</el-form-item>
+							<el-form-item label="对方户名" prop="otherAcountsName">
+								<el-input v-if="isPaymentFee" v-model="form.otherAcountsName" placeholder="请输入对方户名" style="width: 100%" />
+								<el-input v-else disabled v-model="form.otherAcountsName" placeholder="请选择" style="width: 100%" />
+							</el-form-item>
+							<el-form-item label="对方账号" prop="otherBankNo">
+								<div v-if="isPaymentFee" style="width: 100%">
+									<el-input v-model="form.otherBankNo" placeholder="请输入对方账号" style="width: 100%" />
+								</div>
+								<div v-else style="width: 100%; display: flex">
+									<el-input disabled v-model="form.otherBankNo" placeholder="请选择" style="flex: 1; margin-right: 8px" />
+									<SearchOption
+										:get-data="listBankAccount"
+										title="银行卡信息"
+										icon="el-icon-search"
+										query-label="户名查找"
+										query-info="acountsName"
+										:query-name="queryCustomerBank"
+										:limit-info="{ acountsType: form.companyType }"
+										width="1100px"
+										@update:queryName="handleUpdateQueryNameCustomer"
+										@commitBack="handleCallBackCompany"
+										:extra-params="{
+											companyId: form.companyId,
+											companyType: form.companyType
+										}"
+									>
+										<template #table-columns>
+											<el-table-column label="账户类型" align="center" prop="acountsType" width="100" />
+											<el-table-column label="开户名称(户名)" align="center" prop="acountsName" width="300" />
+											<el-table-column label="账号(银行账号)" align="center" prop="bankNo" width="300" />
+											<el-table-column label="开户行" align="center" prop="bankName" width="300" />
+										</template>
+									</SearchOption>
+								</div>
+							</el-form-item>
+							<el-form-item label="对方开户行" prop="otherBankName">
+								<el-input v-if="isPaymentFee" v-model="form.otherBankName" placeholder="请输入对方开户行" style="width: 100%" />
+								<el-input v-else disabled v-model="form.otherBankName" placeholder="请选择" style="width: 100%" />
+							</el-form-item>
+							<el-form-item label="银行卡流水编号" prop="transactionHistory">
+								<el-input v-model="form.transactionHistory" placeholder="请输入银行卡流水编号" style="width: 100%" />
+							</el-form-item>
+							<el-form-item label="银行卡流水编号附件">
+								<UploadFilesButton
+									ref="attachmentUploader"
+									flag="transactionHistoryAttachment"
+									accept-types="image/*,.pdf,.jpg,.jpeg,.png,.gif,.bmp,.doc,.docx,.xls,.xlsx"
+									:extra-info="{ moduleType: 'receiveMoney', formId: form.id }"
+									:initial-attachments="form.attachmentList || []"
+									@files-updated="handleAttachmentFilesUpdated"
+									style="width: 100%"
+								/>
+							</el-form-item>
+							<!-- 2025-11-1 录入人员不用录入了 -->
+							<!-- <el-form-item label="录入人员" prop="userName">
 							<el-input v-model="form.userName" placeholder="请输入录入人员" style="width: 100%" />
 						</el-form-item> -->
-						<el-form-item label="备注" prop="comments">
-							<el-input v-model="form.comments" placeholder="请输入备注" style="width: 100%" />
-						</el-form-item>
-					</el-col>
+							<el-form-item label="备注" prop="comments">
+								<el-input v-model="form.comments" placeholder="请输入备注" style="width: 100%" />
+							</el-form-item>
+						</el-col>
+					</el-row>
 				</el-form>
 			</div>
 			<div slot="footer" class="dialog-footer">
