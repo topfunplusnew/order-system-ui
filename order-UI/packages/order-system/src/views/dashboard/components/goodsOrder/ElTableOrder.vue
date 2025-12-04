@@ -11,6 +11,7 @@ import { mixin_order_add } from '@/views/dashboard/mixins/order/order_addOrder';
 import { mixin_order_adjustOrder } from '@/views/dashboard/mixins/order/order_adjustOrder';
 import { mixin_order_base } from '@/views/dashboard/mixins/order/order_base';
 import { mixin_order_deliverGoods } from '@/views/dashboard/mixins/order/order_deliverGoods';
+import { mixin_order_freeApply } from '@/views/dashboard/mixins/order/order_freeApply';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import reLength from '@/views/dashboard/mixins/reLength';
 import GOODS_ORDER from '../../../../components/NeedToShow/GOODS_ORDER.vue';
@@ -69,7 +70,9 @@ export default {
 		// 发货单
 		mixin_order_deliverGoods,
 		// 订单修改记录查看
-		mixin_order_orderHistory
+		mixin_order_orderHistory,
+		// 运费申请功能
+		mixin_order_freeApply
 	],
 	props: {
 		// 是否为调整单
@@ -168,6 +171,8 @@ export default {
 		this.$bus.$on('refreshList', () => {
 			this.getList();
 		});
+		// 监听订单添加成功事件，自动创建运费申请
+		this.$bus.$on('orderAddedSuccess', this.handleOrderAddedSuccess);
 		// 绑定表格滚动事件
 		this.$nextTick(() => {
 			this.bindTableScroll();
@@ -175,6 +180,7 @@ export default {
 	},
 	beforeDestroy() {
 		this.$bus.$off('refreshList');
+		this.$bus.$off('orderAddedSuccess', this.handleOrderAddedSuccess);
 		// 移除滚动事件监听
 		this.unbindTableScroll();
 		// 取消滚动事件的 RAF
@@ -987,6 +993,39 @@ export default {
 		closeImportResult() {
 			this.importResultVisible = false;
 			this.importResultMessage = '';
+		},
+		// 处理订单添加成功事件，自动创建运费申请
+		handleOrderAddedSuccess(orderData) {
+			// 检查是否有陆运费
+			if (orderData.landFreight && Number(orderData.landFreight) > 0 && orderData.landCarID) {
+				const landFreightRow = {
+					sourceId: orderData.id,
+					source: '订单',
+					transportType: 'land',
+					freight: orderData.landFreight,
+					carId: orderData.landCarID,
+					fleet: orderData.fleet
+				};
+				// 延迟执行，确保订单列表已刷新
+				this.$nextTick(() => {
+					this.handleApplyLandFree(landFreightRow);
+				});
+			}
+			// 检查是否有海运费
+			if (orderData.seaFreight && Number(orderData.seaFreight) > 0 && orderData.seaCarID) {
+				const seaFreightRow = {
+					sourceId: orderData.id,
+					source: '订单',
+					transportType: 'sea',
+					freight: orderData.seaFreight,
+					carId: orderData.seaCarID,
+					fleet: orderData.fleet
+				};
+				// 延迟执行，确保订单列表已刷新
+				this.$nextTick(() => {
+					this.handleApplySeaFree(seaFreightRow);
+				});
+			}
 		}
 	}
 };

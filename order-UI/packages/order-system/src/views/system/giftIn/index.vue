@@ -14,20 +14,20 @@
 				</el-tooltip>
 			</el-form-item>
 
-			<el-form-item label="经办人" prop="handler">
-				<el-input v-model="queryParams.handler" placeholder="请输入经办人" clearable @keyup.enter.native="handleQuery" />
+			<el-form-item label="存货地点" prop="inventoryLocation">
+				<el-input v-model="queryParams.inventoryLocation" placeholder="请输入存货地点" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 
-			<el-form-item label="客户" prop="fromInfo">
-				<el-input v-model="queryParams.fromInfo" placeholder="请输入客户" clearable @keyup.enter.native="handleQuery" />
-			</el-form-item>
-
-			<el-form-item label="收礼方式" prop="receiveMethod">
-				<el-input v-model="queryParams.receiveMethod" placeholder="请输入收礼方式" clearable @keyup.enter.native="handleQuery" />
+			<el-form-item label="对方信息" prop="fromInfo">
+				<el-input v-model="queryParams.fromInfo" placeholder="请输入对方信息" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 
 			<el-form-item label="物品名称" prop="itemName">
 				<el-input v-model="queryParams.itemName" placeholder="请输入物品名称" clearable @keyup.enter.native="handleQuery" />
+			</el-form-item>
+
+			<el-form-item label="经办人" prop="handler">
+				<el-input v-model="queryParams.handler" placeholder="请输入经办人" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 
 			<el-form-item>
@@ -64,7 +64,7 @@
 
 			<el-table-column v-if="columns[0].visible" label="ID" align="center" prop="id" width="80" show-overflow-tooltip />
 
-			<el-table-column v-if="columns[1].visible" label="入库日期" align="center" prop="inDate" width="160" show-overflow-tooltip>
+			<el-table-column v-if="columns[1].visible" label="日期" align="center" prop="inDate" width="160" show-overflow-tooltip>
 				<template #default="scope">
 					<span>{{ parseTime(scope.row.inDate, '{y}-{m}-{d}') }}</span>
 				</template>
@@ -76,11 +76,11 @@
 				</template>
 			</el-table-column>
 
-			<el-table-column v-if="columns[3].visible" label="对方信息" align="center" prop="fromInfo" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[3].visible" label="存货地点" align="center" prop="inventoryLocation" width="120" show-overflow-tooltip />
 
-			<el-table-column v-if="columns[4].visible" label="物品名称" align="center" prop="itemName" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[4].visible" label="对方信息" align="center" prop="fromInfo" width="120" show-overflow-tooltip />
 
-			<el-table-column v-if="columns[5].visible" label="数量" align="center" prop="quantity" width="80" show-overflow-tooltip />
+			<el-table-column v-if="columns[5].visible" label="物品名称" align="center" prop="itemName" width="120" show-overflow-tooltip />
 
 			<el-table-column v-if="columns[6].visible" label="单位" align="center" prop="unit" width="80" show-overflow-tooltip>
 				<template #default="scope">
@@ -88,13 +88,39 @@
 				</template>
 			</el-table-column>
 
-			<el-table-column v-if="columns[7].visible" label="预估价值/购买金额" align="center" prop="estimatedValue" width="130" show-overflow-tooltip />
+			<el-table-column v-if="columns[7].visible" label="数量" align="center" prop="quantity" width="80" show-overflow-tooltip />
 
-			<el-table-column v-if="columns[8].visible" label="经办人" align="center" prop="handler" width="100" show-overflow-tooltip />
+			<el-table-column v-if="columns[8].visible" label="单价" align="center" prop="unitPrice" width="100" show-overflow-tooltip>
+				<template #default="scope">
+					<span>{{ scope.row.unitPrice ? Number(scope.row.unitPrice).toFixed(2) : '-' }}</span>
+				</template>
+			</el-table-column>
 
-			<el-table-column v-if="columns[9].visible" label="收礼方式" align="center" prop="receiveMethod" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[9].visible" label="金额" align="center" prop="estimatedValue" width="100" show-overflow-tooltip>
+				<template #default="scope">
+					<span>{{ scope.row.estimatedValue !== null && scope.row.estimatedValue !== undefined ? Number(scope.row.estimatedValue).toFixed(2) : '-' }}</span>
+				</template>
+			</el-table-column>
 
-			<el-table-column v-if="columns[10].visible" label="付款时间" align="center" prop="payTime" width="160" show-overflow-tooltip />
+			<el-table-column v-if="columns[10].visible" label="经办人" align="center" prop="handler" width="100" show-overflow-tooltip />
+
+			<el-table-column v-if="columns[11].visible" label="本批次剩余可用数量" align="center" prop="remainingQuantity" width="140" show-overflow-tooltip>
+				<template #default="scope">
+					<span>{{ scope.row.remainingQuantity !== null && scope.row.remainingQuantity !== undefined ? scope.row.remainingQuantity : '-' }}</span>
+				</template>
+			</el-table-column>
+
+			<el-table-column v-if="columns[12].visible" label="现在剩余金额价值" align="center" prop="remainingValue" width="140" show-overflow-tooltip>
+				<template #default="scope">
+					<span>{{ scope.row.remainingValue ? Number(scope.row.remainingValue).toFixed(2) : '-' }}</span>
+				</template>
+			</el-table-column>
+
+			<el-table-column v-if="columns[13].visible" label="付款时间" align="center" prop="payTime" width="160" show-overflow-tooltip>
+				<template #default="scope">
+					<span>{{ scope.row.payTime ? parseTime(scope.row.payTime, '{y}-{m}-{d} {h}:{i}') : '-' }}</span>
+				</template>
+			</el-table-column>
 
 			<el-table-column label="备注" align="center" prop="remark" width="120" show-overflow-tooltip />
 
@@ -110,11 +136,11 @@
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加/修改弹窗 -->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="title" :visible.sync="open" :width="dialogWidth" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="title" :visible.sync="open" :width="dialogWidth" append-to-body @close="handleClose">
 			<el-form ref="form" :model="form" :rules="rules" label-width="120px">
 				<el-row :gutter="20">
 					<el-col :span="24">
-						<el-form-item label="入库日期" prop="inDate">
+						<el-form-item label="日期" prop="inDate">
 							<el-date-picker v-model="form.inDate" clearable type="date" value-format="yyyy-MM-dd" placeholder="请选择入库日期" style="width: 100%" />
 						</el-form-item>
 					</el-col>
@@ -127,6 +153,12 @@
 						</el-form-item>
 					</el-col>
 
+					<el-col :span="24">
+						<el-form-item label="存货地点" prop="inventoryLocation">
+							<el-input v-model="form.inventoryLocation" placeholder="请输入存货地点" />
+						</el-form-item>
+					</el-col>
+
 					<!-- 对方类型和对方信息同行 -->
 					<el-col :span="12">
 						<el-form-item label="对方类型">
@@ -135,9 +167,25 @@
 							</el-select>
 						</el-form-item>
 					</el-col>
+
 					<el-col :span="12">
-						<el-form-item label="对方信息" prop="fromInfo">
-							<el-input v-model="form.fromInfo" placeholder="请输入对方信息" />
+						<el-form-item label="公司名称" prop="companyName">
+							<el-row :gutter="10">
+								<el-col :span="20">
+									<el-input v-model="form.companyName" placeholder="请输入公司名称" />
+								</el-col>
+								<el-col :span="2">
+									<SearchOption :limit-info="{ companyType: companyType }" :get-data="listCompany" query-info="companyName" query-label="公司名称" :query-name="companyName" @update:queryName="handleUpdateCompanyName" @commitBack="handleCommitBackCompany">
+										<template #table-columns>
+											<el-table-column :label="companyType" align="center" prop="companyName" />
+											<el-table-column label="老板姓名" align="center" prop="leader" />
+											<el-table-column label="老板电话" align="center" prop="leaderTel" />
+											<el-table-column label="区域" align="center" prop="region" />
+											<el-table-column label="销售经理" align="center" prop="salesManager" />
+										</template>
+									</SearchOption>
+								</el-col>
+							</el-row>
 						</el-form-item>
 					</el-col>
 
@@ -148,43 +196,45 @@
 						</el-form-item>
 					</el-col>
 
-					<!-- 数量和单位同行 -->
-					<el-col :span="12">
-						<el-form-item label="数量" prop="quantity">
-							<el-input v-model="form.quantity" placeholder="请输入数量" />
-						</el-form-item>
-					</el-col>
+					<!-- 单位、数量、单价、金额四列布局 -->
 					<el-col :span="12">
 						<el-form-item label="单位" prop="unit">
-							<el-select v-model="form.unit" placeholder="请选择单位" style="width: 100%; height: 32px">
+							<el-select v-model="form.unit" placeholder="请选择单位" style="width: 100%">
 								<el-option v-for="dict in dict.type.gift_unit" :key="dict.value" :label="dict.label" :value="dict.value" />
 							</el-select>
 						</el-form-item>
 					</el-col>
-
-					<!-- 预估价值、经办人、收礼方式三列布局 -->
-					<el-col :span="8">
-						<el-form-item label="预估价值" prop="estimatedValue">
-							<el-input v-model="form.estimatedValue" placeholder="请输入预估价值" />
+					<el-col :span="12">
+						<el-form-item label="数量" prop="quantity">
+							<el-input v-model="form.quantity" placeholder="请输入数量" @input="calculateAmount" />
 						</el-form-item>
 					</el-col>
-					<el-col :span="8">
+					<el-col :span="12">
+						<el-form-item label="单价" prop="unitPrice">
+							<el-input v-model="form.unitPrice" placeholder="请输入单价" @input="calculateAmount" />
+						</el-form-item>
+					</el-col>
+					<el-col :span="12">
+						<el-form-item label="金额" prop="estimatedValue">
+							<el-input v-model="form.estimatedValue" placeholder="自动计算" disabled />
+						</el-form-item>
+					</el-col>
+
+					<!-- 经办人单独一行 -->
+					<el-col :span="24">
 						<el-form-item label="经办人" prop="handler">
 							<el-input v-model="form.handler" placeholder="请输入经办人" />
 						</el-form-item>
 					</el-col>
-					<el-col :span="8">
-						<el-form-item label="收礼方式" prop="receiveMethod">
-							<el-input v-model="form.receiveMethod" placeholder="请输入收礼方式" />
-						</el-form-item>
-					</el-col>
 
-					<!-- 付款时间和备注各占一行 -->
+					<!-- 付款时间单独一行 -->
 					<el-col :span="24">
 						<el-form-item label="付款时间" prop="payTime">
 							<el-date-picker v-model="form.payTime" clearable type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="请选择付款时间" style="width: 100%" />
 						</el-form-item>
 					</el-col>
+
+					<!-- 备注单独一行 -->
 					<el-col :span="24">
 						<el-form-item label="备注" prop="remark">
 							<el-input v-model="form.remark" type="textarea" placeholder="请输入内容" :rows="3" />
@@ -209,11 +259,12 @@ import { listCompany } from '../../../api/system/company';
 import { mixin_gift_in_fill } from './giftIn_fill';
 import SearchOption from '../../../components/SearchOption.vue';
 import { OTHER_TYPE } from '../../../utils/order';
+import { multiply, round, divide } from 'mathjs';
 
 export default {
 	name: 'GiftIn',
 	components: { SearchOption },
-	dicts: ['order_gift_in_method', 'gift_unit'],
+	// dicts: ['gift_unit'],
 	mixins: [mixin_printHTML, mixin_gift_in_fill],
 	data() {
 		return {
@@ -232,43 +283,44 @@ export default {
 				pageSize: 20,
 				inDate: null,
 				inMethod: null,
+				inventoryLocation: null,
 				fromInfo: null,
 				itemName: null,
-				quantity: null,
-				estimatedValue: null,
-				handler: null,
-				receiveMethod: null
+				handler: null
 			},
 			form: {},
 			rules: {
 				inDate: [{ required: true, message: '请选择入库日期', trigger: 'blur' }],
 				inMethod: [{ required: true, message: '请选择入库方式', trigger: 'blur' }],
+				inventoryLocation: [{ required: true, message: '请输入存货地点', trigger: 'blur' }],
 				fromInfo: [{ required: true, message: '请输入对方信息', trigger: 'blur' }],
 				itemName: [{ required: true, message: '请输入物品名称', trigger: 'blur' }],
+				unit: [{ required: true, message: '请选择单位', trigger: 'change' }],
 				quantity: [
 					{ required: true, message: '请输入数量', trigger: 'blur' },
 					{ pattern: /^\d+(\.\d+)?$/, message: '请输入有效数字', trigger: 'blur' }
 				],
-				unit: [{ required: true, message: '请选择单位', trigger: 'change' }],
-				estimatedValue: [
-					{ required: true, message: '请输入预估价值', trigger: 'blur' },
+				unitPrice: [
+					{ required: true, message: '请输入单价', trigger: 'blur' },
 					{ pattern: /^\d+(\.\d{1,2})?$/, message: '请输入有效的金额格式', trigger: 'blur' }
 				],
-				handler: [{ required: true, message: '请输入经办人', trigger: 'blur' }],
-				receiveMethod: [{ required: true, message: '请输入收礼方式', trigger: 'blur' }]
+				handler: [{ required: true, message: '请输入经办人', trigger: 'blur' }]
 			},
 			columns: [
 				{ key: 0, label: `ID`, visible: true },
-				{ key: 1, label: `入库日期`, visible: true },
+				{ key: 1, label: `日期`, visible: true },
 				{ key: 2, label: `入库方式`, visible: true },
-				{ key: 3, label: `对方信息`, visible: true },
-				{ key: 4, label: `物品名称`, visible: true },
-				{ key: 5, label: `数量`, visible: true },
+				{ key: 3, label: `存货地点`, visible: true },
+				{ key: 4, label: `对方信息`, visible: true },
+				{ key: 5, label: `物品名称`, visible: true },
 				{ key: 6, label: `单位`, visible: true },
-				{ key: 7, label: `预估价值/购买金额`, visible: true },
-				{ key: 8, label: `经办人`, visible: true },
-				{ key: 9, label: `收礼方式`, visible: true },
-				{ key: 10, label: `付款时间`, visible: true }
+				{ key: 7, label: `数量`, visible: true },
+				{ key: 8, label: `单价`, visible: true },
+				{ key: 9, label: `金额`, visible: true },
+				{ key: 10, label: `经办人`, visible: true },
+				{ key: 11, label: `本批次剩余可用数量`, visible: true },
+				{ key: 12, label: `现在剩余金额价值`, visible: true },
+				{ key: 13, label: `付款时间`, visible: true }
 			],
 			companyType: '供应商',
 			dialogWidth: window.innerWidth > 768 ? '600px' : '95%'
@@ -325,31 +377,54 @@ export default {
 					this.loading = false;
 				});
 		},
-		cancel() {
-			this.open = false;
-			this.reset();
-		},
-		reset() {
-			this.form = {
+		getInitForm() {
+			return {
 				id: null,
 				inDate: null,
 				inMethod: null,
+				inventoryLocation: null,
 				fromInfo: null,
 				itemName: null,
-				quantity: null,
 				unit: null,
+				quantity: null,
+				unitPrice: null,
 				estimatedValue: null,
+				remainingQuantity: null,
+				remainingValue: null,
 				handler: null,
-				receiveMethod: null,
 				payTime: null,
+				remark: null,
 				updateTime: null,
 				updateBy: null,
 				createTime: null,
-				createBy: null,
-				remark: null
+				createBy: null
 			};
+		},
+		cancel() {
+			this.open = false;
+			this.handleClose();
+		},
+		handleClose() {
+			this.$nextTick(() => {
+				this.form = this.getInitForm();
+				this.companyType = '供应商';
+				this.$refs.form?.resetFields();
+			});
+		},
+		reset() {
+			this.form = this.getInitForm();
 			this.companyType = '供应商';
-			this.resetForm('form');
+			this.$refs.form?.resetFields();
+		},
+		calculateAmount() {
+			const quantity = Number(this.form.quantity) || 0;
+			const unitPrice = Number(this.form.unitPrice) || 0;
+			if (quantity > 0 && unitPrice > 0) {
+				const result = multiply(quantity, unitPrice);
+				this.$set(this.form, 'estimatedValue', round(result, 2));
+			} else {
+				this.$set(this.form, 'estimatedValue', null);
+			}
 		},
 		handleQuery() {
 			this.queryParams.pageNum = 1;
@@ -366,12 +441,12 @@ export default {
 			this.multiple = !selection.length;
 		},
 		handleAdd() {
-			this.reset();
+			this.form = this.getInitForm();
+			this.companyType = '供应商';
 			this.open = true;
 			this.title = '添加购入礼品信息';
 		},
 		handleUpdate(row) {
-			this.reset();
 			const id = row.id || this.ids;
 			getGiftIn(id)
 				.then(response => {
@@ -379,11 +454,23 @@ export default {
 						this.$message.error('获取礼品入库信息失败，数据为空');
 						return;
 					}
-					this.form = response.data;
-					// 确保日期格式正确（日期选择器需要 yyyy-MM-dd HH:mm:ss 格式）
+					this.form = JSON.parse(JSON.stringify(response.data));
+					// 确保日期格式正确
 					if (this.form.inDate) {
 						const formattedDate = this.formatDateTime(this.form.inDate);
 						this.$set(this.form, 'inDate', formattedDate);
+					}
+					// 如果后端返回的是 estimatedValue，需要转换为 unitPrice
+					if (this.form.estimatedValue && !this.form.unitPrice && this.form.quantity && this.form.quantity > 0) {
+						this.$set(this.form, 'unitPrice', round(divide(this.form.estimatedValue, this.form.quantity), 2));
+					}
+					// 如果没有金额但有数量和单价，计算金额
+					if (!this.form.estimatedValue && this.form.quantity && this.form.unitPrice) {
+						this.calculateAmount();
+					}
+					// 兼容旧数据：如果有 storeLocation，转换为 inventoryLocation
+					if (this.form.storeLocation && !this.form.inventoryLocation) {
+						this.$set(this.form, 'inventoryLocation', this.form.storeLocation);
 					}
 					this.$nextTick(() => {
 						this.open = true;

@@ -846,7 +846,18 @@ export default {
 			let json = _.cloneDeep(this.orderInfo);
 			if (!this.isEditingOrder.id) {
 				addGoodsOrder(json)
-					.then(() => resolve())
+					.then(res => {
+						// 订单添加成功后，发送事件通知父组件自动创建运费申请
+						if (res && res.data) {
+							const orderData = res.data;
+							// 检查是否有运费需要申请
+							if ((orderData.landFreight && Number(orderData.landFreight) > 0 && orderData.landCarID) || (orderData.seaFreight && Number(orderData.seaFreight) > 0 && orderData.seaCarID)) {
+								// 通过事件总线发送订单添加成功事件
+								this.$bus.$emit('orderAddedSuccess', orderData);
+							}
+						}
+						resolve();
+					})
 					.catch(() => reject());
 			} else {
 				// 从sessionStorage中读取修改原因

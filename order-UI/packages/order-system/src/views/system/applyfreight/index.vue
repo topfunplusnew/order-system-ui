@@ -1,11 +1,11 @@
 <script>
-import { getOrderFreightList } from '@/api/system/orderFreight';
+import { getOrderFreightList, listOrderFreight } from '@/api/system/orderFreight';
 import { mixin_order_freeApply } from '../../dashboard/mixins/order/order_freeApply';
 import { common_dialog } from '../../dashboard/mixins/common/common_dialog';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
 import { getGoodsOrder } from '@/api/system/goodsOrder';
 import GOODS_ORDER from '@/components/NeedToShow/GOODS_ORDER.vue';
-import { APPLY_FREIGHT_SOURCE_TYPE } from '@/api/tool/enums';
+import { APPLY_FREIGHT_SOURCE_TYPE, FreightSource } from '@/api/tool/enums';
 import { getInventoryMain } from '@/api/system/inventoryMain';
 import INVENTORY from '@/components/NeedToShow/INVENTORY.vue';
 import CheckFiles from '@/components/CheckFiles.vue';

@@ -45,6 +45,7 @@
 				</el-form-item>
 			</el-form>
 		</div>
+
 		<!-- 右侧工具栏 -->
 		<div class="toolbar-wrapper">
 			<right-toolbar :show-search.sync="showSearch" :columns="columns" @queryTable="getList">
@@ -535,102 +536,6 @@
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="信息" :visible.sync="infoVisible" width="900px" append-to-body>
 			<component :is="Components" :need-to-show-info="needToShowInfo" />
 		</el-dialog>
-
-		<!--     查看运费信息弹窗-->
-		<InfoDialog :visible.sync="viewFreightVisible" title="查看运费信息" :width="'1100px'" @close="closeViewFreight">
-			<template #info>
-				<div class="order-freight-body">
-					<!-- 左侧：运费信息展示区域 -->
-					<div class="order-freight-info">
-						<el-collapse v-model="activeNames">
-							<el-collapse-item v-for="(item, index) in viewFreightList" :key="index" :title="'运费信息(' + (index + 1) + ')'" :name="index + ''">
-								<el-card class="box-card">
-									<div>
-										<el-descriptions :title="'运费信息(' + (index + 1) + ')'" :column="2" border>
-											<el-descriptions-item label="运费ID" :span="1">{{ item.id }}</el-descriptions-item>
-											<el-descriptions-item label="运费类型" :span="1">
-												<el-tag size="mini">{{ item.freightType }}</el-tag>
-											</el-descriptions-item>
-											<el-descriptions-item label="司机/海运公司" :span="1">{{ item.driverName || '-' }}</el-descriptions-item>
-											<el-descriptions-item label="车牌号/柜号" :span="1">{{ item.carNo || '-' }}</el-descriptions-item>
-											<el-descriptions-item label="车队" :span="1">{{ item.fleet || '-' }}</el-descriptions-item>
-											<el-descriptions-item label="运费金额" :span="1">
-												<span style="color: #f56c6c; font-weight: bold">{{ item.moneyAmount || 0 }}</span>
-											</el-descriptions-item>
-											<el-descriptions-item label="已付金额" :span="1">
-												<span style="color: #67c23a; font-weight: bold">{{ item.paidAmount || 0 }}</span>
-											</el-descriptions-item>
-											<el-descriptions-item label="支付状态" :span="1">
-												<el-tag :type="item.paymentState === '已支付' ? 'success' : 'danger'" size="mini">
-													{{ item.paymentState || '未支付' }}
-												</el-tag>
-											</el-descriptions-item>
-											<el-descriptions-item label="运费来源" :span="1">
-												<el-tag size="mini">{{ item.source === 'goodsorder' ? '订单' : item.source || '-' }}</el-tag>
-											</el-descriptions-item>
-											<el-descriptions-item label="对方户名" :span="1">{{ item.otherAcountsName || '-' }}</el-descriptions-item>
-											<el-descriptions-item label="对方账号" :span="1">{{ item.otherBankNo || '-' }}</el-descriptions-item>
-											<el-descriptions-item label="对方开户行" :span="1">{{ item.otherBankName || '-' }}</el-descriptions-item>
-											<el-descriptions-item label="申请人员" :span="1">{{ item.applyUserName || '-' }}</el-descriptions-item>
-											<el-descriptions-item label="申请日期" :span="1">{{ item.applyDate || '-' }}</el-descriptions-item>
-											<el-descriptions-item label="付款人员" :span="1">{{ item.payUserName || '-' }}</el-descriptions-item>
-											<el-descriptions-item label="付款日期" :span="1">{{ item.payDate || '-' }}</el-descriptions-item>
-											<el-descriptions-item label="备注" :span="2">{{ item.comments || item.content || '-' }}</el-descriptions-item>
-											<!-- 付款信息 -->
-											<el-descriptions-item label="付款信息" :span="2">
-												<div v-if="item.payment" style="margin-top: 8px">
-													<el-descriptions :column="2" border size="mini">
-														<el-descriptions-item label="付款编码" :span="1">{{ item.payment.code || '-' }}</el-descriptions-item>
-														<el-descriptions-item label="付款日期" :span="1">{{ item.payment.fundsDate || '-' }}</el-descriptions-item>
-														<el-descriptions-item label="付款类型" :span="1">{{ item.payment.payType || '-' }}</el-descriptions-item>
-														<el-descriptions-item label="付款金额" :span="1">
-															<span style="color: #67c23a; font-weight: bold">{{ item.payment.moneyAmount || 0 }}</span>
-														</el-descriptions-item>
-														<el-descriptions-item label="我方银行类型" :span="1">{{ item.payment.selfBankCardType || '-' }}</el-descriptions-item>
-														<el-descriptions-item label="对方银行类型" :span="1">
-															{{ item.payment.otherBankCardType || '-' }}
-														</el-descriptions-item>
-														<el-descriptions-item label="对方户名" :span="1">{{ item.payment.otherAccountsName || '-' }}</el-descriptions-item>
-														<el-descriptions-item label="对方账号" :span="1">{{ item.payment.otherBankNo || '-' }}</el-descriptions-item>
-														<el-descriptions-item label="对方开户行" :span="1">{{ item.payment.otherBankName || '-' }}</el-descriptions-item>
-														<el-descriptions-item label="复核状态" :span="1">
-															<el-tag :type="item.payment.auditState === '1' ? 'success' : 'info'" size="mini">
-																{{ item.payment.auditState === '1' ? '已复核' : '未复核' }}
-															</el-tag>
-														</el-descriptions-item>
-														<el-descriptions-item label="付款备注" :span="2">{{ item.payment.comments || '-' }}</el-descriptions-item>
-													</el-descriptions>
-												</div>
-												<span v-else>-</span>
-											</el-descriptions-item>
-										</el-descriptions>
-									</div>
-								</el-card>
-							</el-collapse-item>
-						</el-collapse>
-					</div>
-					<!-- 右侧：我方信息和运费合计 -->
-					<div class="order-freight-self-info">
-						<el-form label-width="120px">
-							<el-form-item label="我方户名">
-								<el-input :value="selfBankInfo.selfAcountsName" disabled />
-							</el-form-item>
-							<el-form-item label="我方账号">
-								<el-input :value="selfBankInfo.selfBankNo" disabled />
-							</el-form-item>
-							<el-form-item label="我方开户行">
-								<el-input :value="selfBankInfo.selfBankName" disabled />
-							</el-form-item>
-							<!-- 运费总和展示区域 -->
-							<div class="total-freight-section">
-								<div class="total-freight-label">运费总和</div>
-								<div class="total-freight-amount">{{ fix(totalFreightAmount) }}</div>
-							</div>
-						</el-form>
-					</div>
-				</div>
-			</template>
-		</InfoDialog>
 	</div>
 </template>
 
@@ -880,6 +785,7 @@ export default {
 			viewFreightVisible: false, // 查看运费信息弹窗显示状态
 			viewFreightList: [], // 查看的运费信息列表
 			activeNames: [], // 折叠面板激活项
+			currentFreightId: null, // 当前过滤的运费ID
 			// 导入结果弹窗
 			importResultVisible: false,
 			importResultMessage: '',
@@ -1019,7 +925,16 @@ export default {
 
 	created() {
 		this.reset();
-		this.getList();
+		// 检查路由查询参数中是否有运费ID
+		const { freightId } = this.$route.query;
+		if (freightId) {
+			// 如果有运费ID，查询并过滤显示对应的付款记录
+			this.currentFreightId = freightId;
+			this.queryByFreightId(freightId);
+		} else {
+			// 正常查询
+			this.getList();
+		}
 		if (localStorage.getItem('payment-columns') === 'null' || !localStorage.getItem('payment-columns')) {
 			// 设置localStorage
 			localStorage.setItem('payment-columns', JSON.stringify(this.columns));
@@ -1316,6 +1231,59 @@ export default {
 				// 		console.error('获取背书人/被背书人账户信息失败:', error);
 				// 	});
 			}
+		},
+		/** 根据运费ID查询付款记录 */
+		queryByFreightId(freightId) {
+			this.loading = true;
+			this.currentFreightId = freightId;
+			// 查询所有付款记录
+			listPayment({
+				pageNum: 1,
+				pageSize: 10000 // 设置一个较大的值以获取所有记录
+			})
+				.then(response => {
+					const allPayments = Array.isArray(response.rows) ? response.rows : [];
+					// 过滤出包含该运费ID的付款记录
+					const filteredPayments = allPayments.filter(payment => {
+						if (!payment.tableReferences || !Array.isArray(payment.tableReferences)) {
+							return false;
+						}
+						// 检查 tableReferences 中是否有该运费ID
+						return payment.tableReferences.some(ref => ref.refTableName === TableName.ORDER_FREIGHT && ref.refTableId === Number(freightId));
+					});
+					// 规范化 auditState
+					filteredPayments.forEach(r => {
+						if (r && (r.auditState === null || r.auditState === undefined || r.auditState === '0' || r.auditState === 0 || r.auditState === false)) {
+							r.auditState = '0';
+						} else if (r && (r.auditState === '1' || r.auditState === 1 || r.auditState === true)) {
+							r.auditState = '1';
+						}
+					});
+					this.paymentList = filteredPayments;
+					this.total = filteredPayments.length;
+					this.loading = false;
+					// 提示用户
+					if (filteredPayments.length > 0) {
+						this.$message.success(`已查询到运费ID为 ${freightId} 的 ${filteredPayments.length} 条支付记录`);
+					} else {
+						this.$message.warning(`未查询到运费ID为 ${freightId} 的支付记录`);
+					}
+				})
+				.catch(error => {
+					console.error('查询付款记录失败:', error);
+					this.$message.error('查询付款记录失败');
+					this.loading = false;
+				});
+		},
+		/** 清除运费ID过滤，恢复正常模式 */
+		clearFreightIdFilter() {
+			this.currentFreightId = null;
+			// 清除路由查询参数
+			if (this.$router && this.$route.query.freightId) {
+				this.$router.replace({ path: this.$route.path });
+			}
+			// 恢复正常查询
+			this.getList();
 		},
 		/** 查询付款信息列表 */
 		getList() {
@@ -1964,7 +1932,9 @@ export default {
 			this.importResultMessage = '';
 		},
 		// 查看运费信息相关方法
-		// 打开查看运费信息弹窗
+		// 跳转到运费支付页面并带上运费ID
+		// 查看运费信息相关方法
+		// 跳转到运费支付页面并带上运费ID
 		handleViewFreightInfo(row) {
 			//
 
@@ -1979,35 +1949,15 @@ export default {
 				return;
 			}
 
-			// 批量查询运费信息
-			this.viewFreightList = [];
-			this.viewFreightVisible = true;
-			this.activeNames = []; // 重置展开项
-
-			// 使用 Promise.all 并行查询所有运费信息
-			Promise.all(_.map(freightIds, id => getOrderFreight(id)))
-				.then(responses => {
-					// 提取所有成功返回的运费数据
-					this.viewFreightList = _.chain(responses)
-						.map('data')
-						.filter(data => data)
-						.value();
-
-					if (_.isEmpty(this.viewFreightList)) {
-						this.$message.warning('未查询到运费信息');
-						this.viewFreightVisible = false;
-					} else {
-						// 默认展开第一项
-						this.$nextTick(() => {
-							this.activeNames = ['0'];
-						});
+			// 跳转到正确的运费管理页面路径
+			if (this.$router) {
+				this.$router.push({
+					path: '/order/freight/OrderFreight',
+					query: {
+						freightId: freightIds[0]
 					}
-				})
-				.catch(error => {
-					console.error('查询运费信息失败:', error);
-					this.$message.error('查询运费信息失败');
-					this.viewFreightVisible = false;
 				});
+			}
 		},
 		// 关闭查看运费信息弹窗
 		closeViewFreight() {

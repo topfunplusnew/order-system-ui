@@ -166,10 +166,26 @@ export var mixin_order_freight_payment = {
 							const submitPayments = _.castArray(paymentData);
 							batchPayment(submitPayments)
 								.then(() => {
-									this.$message.success('一键运费付款成功');
+									this.$message.success('一键运费付款成功，已自动生成付款信息');
 									this.resetFreightSelfOnceInfo();
 									this.freightOnceVisible = false;
 									this.getList();
+									// 支付成功后，跳转到付款信息页面
+									// 替换原来的路由跳转代码
+									// if (this.$router) {
+									//     if (this.batchPaymentList && this.batchPaymentList.length > 0) {
+									//         // 跳转到运费记录列表页面，并传递第一个运费记录的ID
+									//         this.$router.push({
+									//             path: '/system/orderFreight/list',
+									//             query: {
+									//                 ids: this.batchPaymentList[0].tID
+									//             }
+									//         });
+									//     } else {
+									//         // 如果没有运费记录，直接跳转到运费记录列表页面
+									//         this.$router.push('/system/orderFreight/list');
+									//     }
+									// }
 								})
 								.catch(error => {
 									console.error('付款失败:', error);

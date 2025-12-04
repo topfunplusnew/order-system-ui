@@ -26,8 +26,22 @@
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+				<el-button icon="el-icon-refresh-left" size="mini" @click="resetQuery">重置查询</el-button>
 			</el-form-item>
 		</el-form>
+
+		<!-- 运费ID过滤提示 -->
+		<div v-if="currentFreightId" class="freight-filter-banner">
+			<el-alert :title="`当前正在查看运费ID为 ${currentFreightId} 的运费记录`" type="info" :closable="false" show-icon>
+				<template slot="title">
+					<span>
+						当前正在查看运费ID为
+						<strong>{{ currentFreightId }}</strong>
+						的运费记录
+					</span>
+				</template>
+			</el-alert>
+		</div>
 
 		<el-row :gutter="10" class="mb8">
 			<!-- 刷新按钮-->
@@ -674,7 +688,9 @@ export default {
 				]
 			},
 			// 运费修正搜索字段
-			queryBankAccount: '' // 银行账户搜索字段
+			queryBankAccount: '', // 银行账户搜索字段
+			currentFreightId: null, // 当前过滤的运费ID（可能是单个ID或数组）
+			currentFreightIds: [] // 当前过滤的运费ID数组
 		};
 	},
 	computed: {
@@ -718,13 +734,31 @@ export default {
 				this.selectAllOffset = newVal;
 			},
 			immediate: true
+		},
+		// 监听路由中的 freightId 参数变化
+		'$route.query.freightId': {
+			handler(newFreightId, oldFreightId) {
+				// 当 freightId 从无到有，或者从一个值变为另一个值时，触发查询
+				if (newFreightId && newFreightId !== oldFreightId) {
+					this.queryByFreightId(newFreightId);
+				} else if (!newFreightId && oldFreightId) {
+					// 当 freightId 被清除时，恢复正常查询
+					this.currentFreightId = null;
+					this.currentFreightIds = [];
+					this.getList();
+				}
+			},
+			immediate: false
 		}
 	},
 	created() {
 		// 拿到地址栏中的参数
-		const { fundsDate, driver } = this.$route.query;
-		// 如果存在
-		if (fundsDate && driver) {
+		const { fundsDate, driver, freightId } = this.$route.query;
+		// 如果存在运费ID
+		if (freightId) {
+			// 根据运费ID查询对应的运费记录
+			this.queryByFreightId(freightId);
+		} else if (fundsDate && driver) {
 			// 拿取地址中的参数 查询list
 			this.getQueryParams(fundsDate, driver);
 		} else {
@@ -740,9 +774,13 @@ export default {
 		}
 	},
 	mounted() {
-		if (Object.keys(this.$route.query).length) {
+		// 只清除 fundsDate 和 driver 参数，保留 freightId 参数
+		const { fundsDate, driver, freightId } = this.$route.query;
+		if ((fundsDate || driver) && !freightId) {
+			// 如果有 fundsDate 或 driver 参数但没有 freightId，清除这些参数
 			this.$router.replace({ path: this.$route.path });
 		}
+		// 如果有 freightId，保留它，不清除
 	},
 	methods: {
 		fix,
@@ -824,6 +862,62 @@ export default {
 					this.$message.warning('未查询到付款时间为' + fundsDate + '司机名称为' + driver + '的运费信息');
 				}
 			});
+		},
+		/** 根据运费ID查询运费记录 */
+		queryByFreightId(freightId) {
+			this.loading = true;
+			// 将运费ID转换为数组格式（支持单个ID或多个ID）
+			let freightIds = [];
+			if (Array.isArray(freightId)) {
+				freightIds = freightId;
+			} else if (typeof freightId === 'string' && freightId.includes(',')) {
+				// 如果是逗号分隔的字符串，转换为数组
+				freightIds = freightId
+					.split(',')
+					.map(id => id.trim())
+					.filter(id => id);
+			} else {
+				// 单个ID
+				freightIds = [freightId];
+			}
+			// 保存当前过滤的运费ID
+			this.currentFreightId = freightIds.length === 1 ? freightIds[0] : freightIds.join(',');
+			this.currentFreightIds = freightIds.map(id => Number(id));
+			// 构建查询参数，确保 params[ids] 数组被正确序列化
+			// 后端期望格式：params[ids]=998&params[ids]=997&params[ids]=996
+			// 使用 params.ids 数组，tansParams 函数会将其序列化为多个相同参数名
+			const queryParams = {
+				pageNum: 1,
+				pageSize: 10000,
+				params: {
+					ids: this.currentFreightIds
+				}
+			};
+			listOrderFreight(queryParams)
+				.then(response => {
+					const freights = Array.isArray(response.rows) ? response.rows : [];
+					this.orderFreightList = freights;
+					this.total = response.total || freights.length;
+					this.loading = false;
+					// 提示用户
+					if (freights.length > 0) {
+						const idsStr = freightIds.join(', ');
+						this.$message.success(`已查询到运费ID为 ${idsStr} 的 ${freights.length} 条运费记录`);
+					} else {
+						const idsStr = freightIds.join(', ');
+						this.$message.warning(`未查询到运费ID为 ${idsStr} 的运费记录`);
+					}
+				})
+				.catch(error => {
+					console.error('查询运费记录失败:', error);
+					this.$message.error('查询运费记录失败');
+					this.loading = false;
+				});
+		},
+		/** 清除运费ID过滤，恢复正常模式（已废弃，使用 resetQuery 代替） */
+		clearFreightIdFilter() {
+			// 直接调用重置查询方法
+			this.resetQuery();
 		},
 		// 填充我方银行卡账户类型
 		handleBankTypeSelf(value) {
@@ -922,12 +1016,63 @@ export default {
 		},
 		/** 重置按钮操作 */
 		resetQuery() {
+			// 1. 清空运费ID过滤状态
+			this.currentFreightId = null;
+			this.currentFreightIds = [];
+
+			// 2. 重置表单
 			this.resetForm('queryForm');
-			// 显式重置支付时间范围相关字段
-			this.queryParams.paymentDateRange = null;
-			this.queryParams.params.payDateStartTime = null;
-			this.queryParams.params.payDateEndTime = null;
-			this.handleQuery();
+
+			// 3. 重置查询参数
+			this.queryParams = {
+				pageNum: 1,
+				pageSize: 20,
+				ordersNo: null,
+				freightType: null,
+				moneyAmount: null,
+				selfAcountsName: null,
+				selfBankNo: null,
+				selfBankName: null,
+				otherAcountsName: null,
+				otherBankNo: null,
+				otherBankName: null,
+				content: null,
+				paymentState: null,
+				driverName: null,
+				driverId: null,
+				carNo: null,
+				fleet: null,
+				applyUserId: null,
+				applyUserName: null,
+				applyDate: null,
+				isedit: null,
+				payUserId: null,
+				payUserName: null,
+				payDate: null,
+				paymentDateRange: null,
+				params: {
+					payDateStartTime: null,
+					payDateEndTime: null
+				}
+			};
+
+			// 4. 重置日期范围
+			this.dateRange = [];
+
+			// 5. 清除路由中的 freightId 参数
+			if (this.$router && this.$route.query.freightId) {
+				const newQuery = { ...this.$route.query };
+				delete newQuery.freightId;
+				this.$router.replace({
+					path: this.$route.path,
+					query: newQuery
+				});
+			}
+
+			// 6. 重新查询
+			this.$nextTick(() => {
+				this.getList();
+			});
 		},
 		// 多选框选中数据
 		handleSelectionChange(selection) {
@@ -1147,6 +1292,21 @@ export default {
 };
 </script>
 <style scoped>
+/* 运费ID过滤提示横幅 */
+.freight-filter-banner {
+	margin-bottom: 12px;
+}
+
+.freight-filter-banner ::v-deep .el-alert {
+	padding: 8px 16px;
+}
+
+.freight-filter-banner ::v-deep .el-alert__title {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
 /* 一键付运费弹窗布局 - 上下布局 */
 .order-freight-body {
 	/* 上下布局 */
