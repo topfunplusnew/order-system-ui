@@ -931,7 +931,7 @@ export default {
 					// 不分页的导出
 					noPage: true
 				},
-				`detail_all_${new Date().getTime()}.xlsx`
+				`库存明细全量_${new Date().getTime()}.xlsx`
 			);
 		},
 		/**

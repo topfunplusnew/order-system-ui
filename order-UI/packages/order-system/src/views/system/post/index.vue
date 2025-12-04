@@ -293,7 +293,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`post_${new Date().getTime()}.xlsx`
+				`岗位列表_${new Date().getTime()}.xlsx`
 			);
 		}
 	}

@@ -883,7 +883,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`invoiceOut_${new Date().getTime()}.xlsx`
+				`非票销项_${new Date().getTime()}.xlsx`
 			);
 		},
 		/** 查看按钮操作 */

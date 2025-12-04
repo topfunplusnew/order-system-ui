@@ -143,7 +143,7 @@ export default {
 		/** 导出按钮操作 */
 		handleExport() {
 			// 使用模拟地址，因为后端还没有完善
-			this.download('/statistics/export/todaySelfCompanyMoneySummary?endTime=' + this.queryParams.endTime, null, `selfCompanyMoneySummary_${new Date().getTime()}.xlsx`);
+			this.download('/statistics/export/todaySelfCompanyMoneySummary?endTime=' + this.queryParams.endTime, null, `本司资金日报_${new Date().getTime()}.xlsx`);
 		}
 	}
 };

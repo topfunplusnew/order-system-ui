@@ -1030,7 +1030,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`socialInsurance_${new Date().getTime()}.xlsx`
+				`社保公积金_${new Date().getTime()}.xlsx`
 			);
 		},
 		/** 导入按钮操作 */

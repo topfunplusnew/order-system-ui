@@ -262,7 +262,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`StoreHouse_${new Date().getTime()}.xlsx`
+				`仓库列表_${new Date().getTime()}.xlsx`
 			);
 		}
 	}

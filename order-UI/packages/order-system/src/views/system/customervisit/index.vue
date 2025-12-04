@@ -608,7 +608,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`CustomerVisit_${new Date().getTime()}.xlsx`
+				`客户拜访_${new Date().getTime()}.xlsx`
 			);
 		}
 	}

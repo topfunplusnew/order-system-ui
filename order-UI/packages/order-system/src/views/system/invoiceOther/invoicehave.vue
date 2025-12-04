@@ -1000,7 +1000,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`invoiceOther_${new Date().getTime()}.xlsx`
+				`其他票据(含票)_${new Date().getTime()}.xlsx`
 			);
 		},
 

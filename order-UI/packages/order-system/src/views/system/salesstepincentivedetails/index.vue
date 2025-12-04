@@ -532,7 +532,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`salesstepincentivedetails_${new Date().getTime()}.xlsx`
+				`销售阶梯奖励_${new Date().getTime()}.xlsx`
 			);
 		}
 	}
