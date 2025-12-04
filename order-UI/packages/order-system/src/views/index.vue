@@ -211,8 +211,8 @@
 							<el-table-column prop="dailyProfit" label="利润总额">
 								<el-table-column prop="dailyExpense" label="费用合计"></el-table-column>
 							</el-table-column>
-							<el-table-column :label="`￥${dailyProfit}`">
-								<el-table-column :label="`￥${dailyExpense}`"></el-table-column>
+							<el-table-column :label="`￥${dailyProfit && dailyProfit.dailyProfit ? dailyProfit.dailyProfit : 0}`">
+								<el-table-column :label="`￥${dailyExpense || 0}`"></el-table-column>
 							</el-table-column>
 						</el-table-column>
 					</el-table>
@@ -323,6 +323,7 @@ import { parseTime } from '@/utils/ruoyi';
 import { mapGetters } from 'vuex';
 import { deleteExport, downloadFileByName, getAllExportList, startExportAll, syncExportAll } from '../api/system/oncedownload/index';
 import webSocketManager from '@/utils/websocket';
+import { subtract, add, sum, round, number, log, divide, pow } from 'mathjs';
 
 export default {
 	name: 'Index',
@@ -522,16 +523,10 @@ export default {
 					return;
 				}
 				// 排除其他非数字列
-				const values = data.map(item => Number(item[column.property]));
-				if (!values.every(value => isNaN(value))) {
-					sums[index] = values.reduce((prev, curr) => {
-						const value = Number(curr);
-						if (!isNaN(value)) {
-							return prev + curr;
-						} else {
-							return prev;
-						}
-					}, 0);
+				const values = data.map(item => number(item[column.property]) || 0);
+				if (values.length > 0 && values.some(value => !isNaN(value) && value !== 0)) {
+					const total = sum(values);
+					sums[index] = round(total, 2);
 				} else {
 					sums[index] = '';
 				}
@@ -640,9 +635,14 @@ export default {
 		handleProfitSearch() {
 			this.dailyProfit = [];
 			getDailyProfit(this.queryParamsHome).then(res => {
-				this.dailyProfit = res.data.dailyProfit;
-				this.dailyExpense = res.data.dailyExpense;
-				this.moneyAmount = res.data.dailyProfit - res.data.dailyExpense;
+				const profit = round(number(res.data.dailyProfit) || 0, 2);
+				const expense = round(number(res.data.dailyExpense) || 0, 2);
+				this.dailyProfit = {
+					dailyProfit: profit,
+					dailyExpense: expense
+				};
+				this.dailyExpense = expense;
+				this.moneyAmount = round(subtract(profit, expense), 2);
 			});
 		},
 		getList() {
@@ -673,10 +673,12 @@ export default {
 		},
 		formatSize(bytes) {
 			if (bytes === 0) return '0 B';
-			const k = 1024;
+			const k = number(1024);
 			const sizes = ['B', 'KB', 'MB', 'GB'];
-			const i = Math.floor(Math.log(bytes) / Math.log(k));
-			return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+			const logValue = divide(log(number(bytes)), log(k));
+			const i = Math.floor(logValue);
+			const size = divide(number(bytes), pow(k, i));
+			return round(size, 2) + ' ' + sizes[i];
 		},
 		formatDate(date) {
 			return date.split(' ')[0];
