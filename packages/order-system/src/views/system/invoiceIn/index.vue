@@ -39,7 +39,7 @@
 			</right-toolbar>
 		</el-row>
 		<div>
-			<ExcelImport />
+			<ExcelImport mode="in" />
 		</div>
 		<el-table
 			id="printBox"
@@ -223,8 +223,22 @@
 							<i class="el-icon-arrow-down el-icon--right"></i>
 						</el-button>
 						<el-dropdown-menu slot="dropdown">
-							<el-dropdown-item v-hasPermi="['system:invoicein:edit']" command="edit">修改</el-dropdown-item>
-							<el-dropdown-item v-hasPermi="['system:invoicein:remove']" command="delete" divided>删除</el-dropdown-item>
+							<el-dropdown-item v-hasPermi="['system:invoicein:edit']" :disabled="isBatchLocked(scope.row)" command="edit">
+								<template v-if="isBatchLocked(scope.row)">
+									<el-tooltip :content="getBatchLockTip()" placement="top">
+										<span>修改</span>
+									</el-tooltip>
+								</template>
+								<template v-else>修改</template>
+							</el-dropdown-item>
+							<el-dropdown-item v-hasPermi="['system:invoicein:remove']" :disabled="isBatchLocked(scope.row)" command="delete" divided>
+								<template v-if="isBatchLocked(scope.row)">
+									<el-tooltip :content="getBatchLockTip()" placement="top">
+										<span>删除</span>
+									</el-tooltip>
+								</template>
+								<template v-else>删除</template>
+							</el-dropdown-item>
 							<el-dropdown-item v-hasPermi="['system:tableeditmessage:list']" command="viewEditReason">查看修改原因</el-dropdown-item>
 						</el-dropdown-menu>
 					</el-dropdown>
@@ -520,8 +534,21 @@ export default {
 			return getInvoiceIn;
 		},
 		listCompany,
+		getBatchLockTip() {
+			return '该发票由批量开票生成，请前往批量开票界面管理';
+		},
+		isBatchLocked(row) {
+			return !!(row && row.batchInvoiceId);
+		},
+		hasLockedSelection() {
+			return Array.isArray(this.ids) && this.ids.length > 0 && this.invoiceInList.some(item => this.ids.includes(item.id) && this.isBatchLocked(item));
+		},
 		// 下拉菜单命令处理
 		handleCommand(command, row) {
+			if (this.isBatchLocked(row) && (command === 'edit' || command === 'delete')) {
+				this.$message.warning(this.getBatchLockTip());
+				return;
+			}
 			switch (command) {
 				case 'edit':
 					this.handleUpdate(row);
@@ -786,6 +813,15 @@ export default {
 		handleDelete(row) {
 			// 如果传入了 row 参数，则是单行删除；否则是批量删除
 			const invoiceIds = row ? [row.id] : this.ids;
+
+			if (row && this.isBatchLocked(row)) {
+				this.$message.warning(this.getBatchLockTip());
+				return;
+			}
+			if (!row && this.hasLockedSelection()) {
+				this.$message.warning(this.getBatchLockTip());
+				return;
+			}
 
 			if (!invoiceIds || invoiceIds.length === 0) {
 				this.$message.warning('请选择要删除的数据');
