@@ -70,11 +70,17 @@
 
 			<el-table-column label="入库ID" align="center" width="100" show-overflow-tooltip>
 				<template #default="scope">
-					<span>{{ scope.row.giftSource || scope.row.inId || '-' }}</span>
+					<span>{{ scope.row.inId || scope.row.giftSource || '-' }}</span>
 				</template>
 			</el-table-column>
 
 			<el-table-column v-if="columns[1].visible" label="出库日期" align="center" prop="outDate" width="160" show-overflow-tooltip>
+				<template #default="scope">
+					<span>{{ parseTime(scope.row.outDate, '{y}-{m}-{d}') }}</span>
+				</template>
+			</el-table-column>
+
+			<el-table-column v-if="columns[1].visible" label="日期" align="center" prop="outDate" width="160" show-overflow-tooltip>
 				<template #default="scope">
 					<span>{{ parseTime(scope.row.outDate, '{y}-{m}-{d}') }}</span>
 				</template>
@@ -86,19 +92,31 @@
 				</template>
 			</el-table-column>
 
-			<el-table-column v-if="columns[3].visible" label="公司名称" align="center" prop="companyName" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[3].visible" label="出库地点" align="center" prop="outLocation" width="120" show-overflow-tooltip />
 
-			<el-table-column v-if="columns[4].visible" label="收礼人员" align="center" prop="recipientReceiver" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[4].visible" label="领用原因" align="center" prop="useReason" width="120" show-overflow-tooltip />
 
-			<el-table-column v-if="columns[5].visible" label="礼品来源" align="center" prop="itemName" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[5].visible" label="物品名称" align="center" prop="itemName" width="120" show-overflow-tooltip />
 
-			<el-table-column v-if="columns[6].visible" label="数量" align="center" prop="quantity" width="80" show-overflow-tooltip />
+			<el-table-column v-if="columns[6].visible" label="规格" align="center" prop="specification" width="100" show-overflow-tooltip />
 
-			<el-table-column v-if="columns[7].visible" label="预估价值" align="center" prop="estimatedValue" width="100" show-overflow-tooltip />
+			<el-table-column v-if="columns[7].visible" label="数量" align="center" prop="quantity" width="80" show-overflow-tooltip />
 
-			<el-table-column v-if="columns[8].visible" label="经办人" align="center" prop="handler" width="100" show-overflow-tooltip />
+			<el-table-column v-if="columns[8].visible" label="单价" align="center" prop="unitPrice" width="100" show-overflow-tooltip>
+				<template #default="scope">
+					<span>{{ scope.row.unitPrice ? Number(scope.row.unitPrice).toFixed(2) : '-' }}</span>
+				</template>
+			</el-table-column>
 
-			<el-table-column v-if="columns[9].visible" label="备注" align="center" prop="remark" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[9].visible" label="金额" align="center" prop="estimatedValue" width="100" show-overflow-tooltip>
+				<template #default="scope">
+					<span>{{ scope.row.estimatedValue ? Number(scope.row.estimatedValue).toFixed(2) : '-' }}</span>
+				</template>
+			</el-table-column>
+
+			<el-table-column v-if="columns[10].visible" label="领用人" align="center" prop="recipientReceiver" width="120" show-overflow-tooltip />
+
+			<el-table-column v-if="columns[11].visible" label="备注" align="center" prop="remark" width="120" show-overflow-tooltip />
 
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="150" fixed="right">
 				<template #default="scope">
@@ -129,8 +147,20 @@
 					</el-col>
 
 					<el-col :span="12">
+						<el-form-item label="出库地点" prop="outLocation">
+							<el-input v-model="form.outLocation" placeholder="请输入出库地点" />
+						</el-form-item>
+					</el-col>
+
+					<el-col :span="24">
+						<el-form-item label="领用原因" prop="useReason">
+							<el-input v-model="form.useReason" placeholder="请输入领用原因" />
+						</el-form-item>
+					</el-col>
+
+					<el-col :span="12">
 						<el-form-item label="对方类型">
-							<el-select v-model="companyType" placeholder="请选择" style="width: 100%">
+							<el-select v-model="companyType" placeholder="请选择" style="width: 100%" @change="handleCompanyTypeChange">
 								<el-option v-for="item in OTHER_TYPE()" :key="item.value" :label="item.label" :value="item.value"></el-option>
 							</el-select>
 						</el-form-item>
@@ -164,15 +194,15 @@
 					</el-col>
 
 					<el-col :span="24">
-						<el-form-item label="礼品来源" prop="itemName">
+						<el-form-item label="物品名称" prop="itemName">
 							<el-row :gutter="10">
 								<el-col :span="20">
 									<el-input v-model="form.itemName" placeholder="从入库记录自动获取" readonly />
 								</el-col>
 								<el-col :span="2">
-									<SearchOption :get-data="listGiftInWithRemaining" query-info="itemName" query-label="礼品来源" :query-name="itemName" @update:queryName="handleUpdateItemName" @commitBack="handleCommitBackItem">
+									<SearchOption :get-data="listGiftInWithRemaining" query-info="itemName" query-label="物品名称" :query-name="itemName" @update:queryName="handleUpdateItemName" @commitBack="handleCommitBackItem">
 										<template #table-columns>
-											<el-table-column label="礼品来源" align="center" prop="itemName" />
+											<el-table-column label="物品名称" align="center" prop="itemName" />
 											<el-table-column label="数量" align="center" prop="quantity" />
 											<el-table-column label="预估价值/购买金额" align="center" prop="estimatedValue" />
 											<el-table-column label="剩余数量" align="center" prop="remainingQuantity" />
@@ -185,14 +215,46 @@
 					</el-col>
 
 					<el-col :span="12">
+						<el-form-item label="规格" prop="specification">
+							<el-input v-model="form.specification" placeholder="请输入规格" />
+						</el-form-item>
+					</el-col>
+
+					<!--					<el-col :span="12">-->
+					<!--						<el-form-item label="单位" prop="unit">-->
+					<!--							<el-select v-model="form.unit" placeholder="请选择单位" style="width: 100%">-->
+					<!--								<el-option v-for="dict in dict.type.gift_unit" :key="dict.value" :label="dict.label" :value="dict.value" />-->
+					<!--							</el-select>-->
+					<!--						</el-form-item>-->
+					<!--					</el-col>-->
+
+					<el-col :span="12">
 						<el-form-item label="数量" prop="quantity">
-							<el-input v-model="form.quantity" placeholder="请输入数量" />
+							<el-input v-model="form.quantity" placeholder="请输入数量" @blur="handleQuantityBlur" />
 						</el-form-item>
 					</el-col>
 
 					<el-col :span="12">
-						<el-form-item label="预估价值" prop="estimatedValue">
-							<el-input v-model="form.estimatedValue" placeholder="请输入预估价值" />
+						<el-form-item label="剩余数量">
+							<el-input :value="remainingQuantity !== null && remainingQuantity !== undefined ? remainingQuantity : '请先选择物品名称'" readonly placeholder="剩余数量" />
+						</el-form-item>
+					</el-col>
+
+					<el-col :span="12">
+						<el-form-item label="单价" prop="unitPrice">
+							<el-input v-model="form.unitPrice" placeholder="请输入单价" @input="calculateAmount" />
+						</el-form-item>
+					</el-col>
+
+					<el-col :span="12">
+						<el-form-item label="金额" prop="estimatedValue">
+							<el-input v-model="form.estimatedValue" placeholder="自动计算或手动输入" @input="calculateAmountFromValue" />
+						</el-form-item>
+					</el-col>
+
+					<el-col :span="12">
+						<el-form-item label="领用人" prop="recipientReceiver">
+							<el-input v-model="form.recipientReceiver" placeholder="请输入领用人" />
 						</el-form-item>
 					</el-col>
 
@@ -226,12 +288,12 @@ import { listCompany } from '../../../api/system/company';
 import { listGiftIn, getGiftIn } from '@/api/system/giftIn';
 import { mixin_gift_out_fill } from './giftOut_fill';
 import { OTHER_TYPE } from '../../../utils/order';
-import { subtract, round, add } from 'mathjs';
+import { subtract, round, add, multiply, divide } from 'mathjs';
 
 export default {
 	name: 'GiftOut',
 	components: { SearchOption },
-	dicts: ['order_gift_out_method'],
+	dicts: ['order_gift_out_method', 'gift_unit'],
 	mixins: [mixin_printHTML, mixin_gift_out_fill],
 	data() {
 		return {
@@ -261,15 +323,21 @@ export default {
 				pageSize: 20,
 				outDate: null,
 				outMethod: null,
+				outLocation: null,
+				useReason: null,
 				companyName: null,
 				recipientReceiver: null,
 				itemName: null,
+				specification: null,
 				quantity: null,
+				unitPrice: null,
 				estimatedValue: null,
 				handler: null
 			},
 			// 表单参数
-			form: {},
+			form: {
+				unit: null
+			},
 			// 表单校验
 			rules: {
 				outDate: [{ required: true, message: '请选择出库日期', trigger: 'blur' }],
@@ -290,7 +358,18 @@ export default {
 								callback(new Error('数量必须为正整数且大于等于1'));
 								return;
 							}
-							callback();
+							// 如果有入库ID，检查库存数量
+							if (this.form.inId && this.form.itemName) {
+								this.checkStockQuantity(this.form.inId, num, this.form.id)
+									.then(() => {
+										callback();
+									})
+									.catch(error => {
+										callback(new Error(error));
+									});
+							} else {
+								callback();
+							}
 						},
 						trigger: 'blur'
 					}
@@ -303,18 +382,22 @@ export default {
 			},
 			columns: [
 				{ key: 0, label: `ID`, visible: true },
-				{ key: 1, label: `出库日期`, visible: true },
+				{ key: 1, label: `日期`, visible: true },
 				{ key: 2, label: `出库方式`, visible: true },
-				{ key: 3, label: `公司名称`, visible: true },
-				{ key: 4, label: `收礼人员`, visible: true },
-				{ key: 5, label: `礼品来源`, visible: true },
-				{ key: 6, label: `数量`, visible: true },
-				{ key: 7, label: `预估价值`, visible: true },
-				{ key: 8, label: `经办人`, visible: true },
-				{ key: 9, label: `备注`, visible: true }
+				{ key: 3, label: `出库地点`, visible: true },
+				{ key: 4, label: `领用原因`, visible: true },
+				{ key: 5, label: `物品名称`, visible: true },
+				{ key: 6, label: `规格`, visible: true },
+				{ key: 7, label: `数量`, visible: true },
+				{ key: 8, label: `单价`, visible: true },
+				{ key: 9, label: `金额`, visible: true },
+				{ key: 10, label: `领用人`, visible: true },
+				{ key: 11, label: `备注`, visible: true }
 			],
 			companyType: '供应商',
-			dialogWidth: window.innerWidth > 768 ? '600px' : '95%'
+			dialogWidth: window.innerWidth > 768 ? '600px' : '95%',
+			// 剩余数量
+			remainingQuantity: null
 		};
 	},
 	created() {
@@ -341,7 +424,7 @@ export default {
 				// 计算每个入库记录的出库数量
 				const outQuantityMap = new Map();
 				giftOutList.forEach(outItem => {
-					// 兼容giftSource和inId两种字段名
+					// 兼容giftSource和inId两种字段名，确保正确匹配入库ID
 					const sourceId = (outItem && outItem.giftSource) || (outItem && outItem.inId);
 					if (sourceId) {
 						const inId = String(sourceId);
@@ -353,7 +436,10 @@ export default {
 				// 为每个入库记录添加剩余数量
 				const result = giftInList.map(item => {
 					const inQty = Number(item.quantity) || 0;
-					const outQty = outQuantityMap.get(String(item.id)) || 0;
+					// 使用入库记录的ID来匹配出库记录
+					const inId = String(item.id);
+					const outQty = outQuantityMap.get(inId) || 0;
+					// 计算剩余数量 = 入库数量 - 已出库数量
 					const remainingQty = subtract(inQty, outQty);
 					const remainingQtyNum = remainingQty > 0 ? remainingQty : 0;
 					return {
@@ -414,10 +500,15 @@ export default {
 				id: null,
 				outDate: null,
 				outMethod: null,
+				outLocation: null,
+				useReason: null,
 				companyName: null,
 				recipientReceiver: null,
 				itemName: null,
+				specification: null,
+				unit: null,
 				quantity: null,
+				unitPrice: null,
 				estimatedValue: null,
 				handler: null,
 				updateTime: null,
@@ -432,6 +523,7 @@ export default {
 			this.companyType = '供应商';
 			this.companyName = '';
 			this.itemName = '';
+			this.remainingQuantity = null;
 			this.resetForm('form');
 		},
 		/** 搜索按钮操作 */
@@ -491,6 +583,24 @@ export default {
 					if (this.form.itemName) {
 						this.itemName = this.form.itemName;
 					}
+					// 确保 recipientInfo 存在
+					if (!this.form.recipientInfo && this.form.companyName) {
+						// 如果已有公司名称但没有ID，可能需要重新选择
+						this.$message.warning('请重新选择客户信息以确保数据完整性');
+					}
+					// 如果后端返回了 estimatedValue 但没有 unitPrice，根据数量和金额计算单价
+					if (this.form.estimatedValue && !this.form.unitPrice && this.form.quantity && this.form.quantity > 0) {
+						const result = divide(this.form.estimatedValue, this.form.quantity);
+						this.$set(this.form, 'unitPrice', round(result, 2));
+					}
+					// 如果没有金额但有数量和单价，计算金额
+					if (!this.form.estimatedValue && this.form.quantity && this.form.unitPrice) {
+						this.calculateAmount();
+					}
+					// 计算并显示剩余数量
+					if (this.form.inId) {
+						this.calculateRemainingQuantity(this.form.inId);
+					}
 					this.$nextTick(() => {
 						this.open = true;
 						this.title = '修改礼品出库信息';
@@ -515,6 +625,19 @@ export default {
 					if (submitData.inId && !submitData.giftSource) {
 						submitData.giftSource = submitData.inId;
 					}
+					// 字段映射：确保 recipientType 从 companyType 正确映射
+					if (this.companyType && !submitData.recipientType) {
+						submitData.recipientType = this.companyType;
+					}
+					// 验证必填字段
+					if (!submitData.recipientInfo) {
+						this.$message.warning('请选择客户信息');
+						return;
+					}
+					if (!submitData.itemName || !submitData.inId) {
+						this.$message.warning('请选择礼品来源');
+						return;
+					}
 					// 验证库存：如果有入库ID，检查剩余数量是否足够
 					if (submitData.inId && submitData.quantity) {
 						this.validateStock(submitData.inId, submitData.quantity, submitData.id)
@@ -524,7 +647,11 @@ export default {
 							.catch(error => {
 								this.$message.error(error || '批次库存不足或操作失败，请重试！');
 							});
+					} else if (submitData.inId) {
+						// 有入库ID但没有数量，也需要验证
+						this.$message.warning('请输入出库数量');
 					} else {
+						// 没有入库ID的情况，直接提交（可能是手动输入的礼品来源）
 						this.doSubmit(submitData);
 					}
 				} else {
@@ -558,16 +685,86 @@ export default {
 				}
 			});
 		},
+		/** 检查库存数量（用于表单验证） */
+		checkStockQuantity(inId, outQuantity, currentOutId) {
+			return Promise.all([getGiftIn(inId), listGiftOut({ pageNum: 1, pageSize: 10000 })]).then(([inResponse, outResponse]) => {
+				const giftInData = inResponse && inResponse.data;
+				if (!giftInData) {
+					return Promise.reject('未找到对应的入库记录');
+				}
+				const inQty = Number(giftInData.quantity) || 0;
+				const giftOutList = (outResponse && outResponse.rows) || [];
+				// 计算已出库数量（排除当前正在编辑的记录）
+				let totalOutQty = 0;
+				giftOutList.forEach(outItem => {
+					const sourceId = (outItem && outItem.giftSource) || (outItem && outItem.inId);
+					if (sourceId && String(sourceId) === String(inId) && outItem.id !== currentOutId) {
+						totalOutQty = add(totalOutQty, Number(outItem.quantity) || 0);
+					}
+				});
+				// 计算剩余数量
+				const remainingQty = subtract(inQty, totalOutQty);
+				const remainingQtyNum = remainingQty > 0 ? remainingQty : 0;
+				// 更新显示的剩余数量
+				this.$set(this, 'remainingQuantity', round(remainingQtyNum, 2));
+				// 验证剩余数量是否足够
+				if (remainingQtyNum < outQuantity) {
+					return Promise.reject(`库存不足，剩余：${round(remainingQtyNum, 2)}`);
+				}
+			});
+		},
+		/** 计算剩余数量并更新显示 */
+		calculateRemainingQuantity(inId) {
+			if (!inId) {
+				this.$set(this, 'remainingQuantity', null);
+				return;
+			}
+			Promise.all([getGiftIn(inId), listGiftOut({ pageNum: 1, pageSize: 10000 })])
+				.then(([inResponse, outResponse]) => {
+					const giftInData = inResponse && inResponse.data;
+					if (!giftInData) {
+						this.$set(this, 'remainingQuantity', null);
+						return;
+					}
+					const inQty = Number(giftInData.quantity) || 0;
+					const giftOutList = (outResponse && outResponse.rows) || [];
+					// 计算已出库数量
+					let totalOutQty = 0;
+					giftOutList.forEach(outItem => {
+						const sourceId = (outItem && outItem.giftSource) || (outItem && outItem.inId);
+						if (sourceId && String(sourceId) === String(inId)) {
+							totalOutQty = add(totalOutQty, Number(outItem.quantity) || 0);
+						}
+					});
+					// 计算剩余数量
+					const remainingQty = subtract(inQty, totalOutQty);
+					const remainingQtyNum = remainingQty > 0 ? remainingQty : 0;
+					this.$set(this, 'remainingQuantity', round(remainingQtyNum, 2));
+				})
+				.catch(error => {
+					console.error('计算剩余数量失败:', error);
+					this.$set(this, 'remainingQuantity', null);
+				});
+		},
 		/** 执行提交 */
 		doSubmit(submitData) {
+			// 显示加载状态
+			const loadingInstance = this.$loading({
+				lock: true,
+				text: this.form.id != null ? '正在修改...' : '正在新增...',
+				spinner: 'el-icon-loading',
+				background: 'rgba(0, 0, 0, 0.7)'
+			});
 			if (this.form.id != null) {
 				updateGiftOut(submitData)
 					.then(response => {
+						loadingInstance.close();
 						this.$modal.msgSuccess('修改成功');
 						this.open = false;
 						this.getList();
 					})
 					.catch(error => {
+						loadingInstance.close();
 						const errorMsg = (error && error.response && error.response.data && error.response.data.msg) || (error && error.response && error.response.data && error.response.data.message) || (error && error.message) || '修改失败，请稍后重试';
 						this.$message.error(errorMsg);
 						console.error('修改礼品出库信息失败:', error);
@@ -576,11 +773,13 @@ export default {
 			} else {
 				addGiftOut(submitData)
 					.then(response => {
+						loadingInstance.close();
 						this.$modal.msgSuccess('新增成功');
 						this.open = false;
 						this.getList();
 					})
 					.catch(error => {
+						loadingInstance.close();
 						const errorMsg = (error && error.response && error.response.data && error.response.data.msg) || (error && error.response && error.response.data && error.response.data.message) || (error && error.message) || '新增失败，请稍后重试';
 						this.$message.error(errorMsg);
 						console.error('新增礼品出库信息失败:', error);
@@ -612,6 +811,46 @@ export default {
 				},
 				`giftOut_${this.parseTime(new Date(), '{y}{m}{d}_{h}{i}{s}')}.xlsx`
 			);
+		},
+		/** 对方类型变化处理 */
+		handleCompanyTypeChange(value) {
+			// 当对方类型变化时，同步更新 form.recipientType
+			if (value) {
+				this.$set(this.form, 'recipientType', value);
+			}
+		},
+		/** 数量输入失焦处理 */
+		handleQuantityBlur() {
+			// 当数量变化时，重新计算剩余数量（用于实时显示）
+			if (this.form.inId) {
+				this.calculateRemainingQuantity(this.form.inId);
+			}
+			// 如果数量和单价都有值，计算金额
+			if (this.form.quantity && this.form.unitPrice) {
+				this.calculateAmount();
+			}
+		},
+		/** 根据数量和单价计算金额 */
+		calculateAmount() {
+			const quantity = Number(this.form.quantity) || 0;
+			const unitPrice = Number(this.form.unitPrice) || 0;
+			if (quantity > 0 && unitPrice > 0) {
+				const result = multiply(quantity, unitPrice);
+				this.$set(this.form, 'estimatedValue', round(result, 2));
+			} else {
+				this.$set(this.form, 'estimatedValue', null);
+			}
+		},
+		/** 根据金额和数量计算单价 */
+		calculateAmountFromValue() {
+			const quantity = Number(this.form.quantity) || 0;
+			const estimatedValue = Number(this.form.estimatedValue) || 0;
+			if (quantity > 0 && estimatedValue > 0) {
+				const result = divide(estimatedValue, quantity);
+				this.$set(this.form, 'unitPrice', round(result, 2));
+			} else if (!estimatedValue) {
+				this.$set(this.form, 'unitPrice', null);
+			}
 		},
 		/** 格式化日期时间 */
 		formatDateTime(dateTime) {
