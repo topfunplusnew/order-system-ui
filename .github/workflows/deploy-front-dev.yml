@@ -50,11 +50,24 @@ jobs:
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -H ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
       
+      - name: 准备目标目录权限
+        run: |
+          echo "准备目标目录..."
+          ssh -i ~/.ssh/deploy_key \
+            -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
+            ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} \
+            "mkdir -p ${{ secrets.DEPLOY_PATH }} && \
+             chmod -R 755 ${{ secrets.DEPLOY_PATH }} && \
+             find ${{ secrets.DEPLOY_PATH }} -type d -exec chmod 755 {} \; && \
+             find ${{ secrets.DEPLOY_PATH }} -type f -exec chmod 644 {} \; || true"
+      
       - name: 通过 Rsync 部署到服务器
         run: |
           echo "开始部署到服务器..."
           echo "目标: ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:${{ secrets.DEPLOY_PATH }}"
           rsync -avz --delete --progress \
+            --inplace \
             --no-perms --no-owner --no-group \
             --chmod=Du=rwx,Dgo=rx,Fu=rw,Fgo=r \
             -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
