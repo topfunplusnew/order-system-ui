@@ -420,12 +420,7 @@
 
 						<!-- 选择供应商 -->
 						<el-form-item label="对方户名" prop="otherAccountsName">
-							<el-input
-								v-if="isPaymentFee"
-								v-model="form.otherAccountsName"
-								placeholder="请输入对方户名"
-								style="width: 100%"
-							/>
+							<el-input v-if="isPaymentFee" v-model="form.otherAccountsName" placeholder="请输入对方户名" style="width: 100%" />
 							<el-input v-else disabled v-model="form.otherAccountsName" placeholder="请选择" style="width: 100%" />
 						</el-form-item>
 
