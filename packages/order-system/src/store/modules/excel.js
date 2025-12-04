@@ -19,7 +19,9 @@ const state = {
 	sellerTempInfo: [],
 	// 导入模板数据（按购买方/销方）
 	purchaseTemplateData: [],
-	sellerTemplateData: []
+	sellerTemplateData: [],
+	// 批量开票批次校验信息
+	batchMetaMap: {}
 };
 
 const mutations = {
@@ -108,6 +110,12 @@ const mutations = {
 	},
 	CLEAR_SELLER_TEMPLATE: state => {
 		state.sellerTemplateData = [];
+	},
+	SET_BATCH_META_MAP: (state, data) => {
+		state.batchMetaMap = data || {};
+	},
+	CLEAR_BATCH_META_MAP: state => {
+		state.batchMetaMap = {};
 	}
 };
 
@@ -176,6 +184,12 @@ const actions = {
 	},
 	clearSellerTemplateData({ commit }) {
 		commit('CLEAR_SELLER_TEMPLATE');
+	},
+	setBatchMetaMap({ commit }, data) {
+		commit('SET_BATCH_META_MAP', data);
+	},
+	clearBatchMetaMap({ commit }) {
+		commit('CLEAR_BATCH_META_MAP');
 	}
 };
 

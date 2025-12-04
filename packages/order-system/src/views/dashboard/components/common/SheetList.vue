@@ -1,13 +1,23 @@
 <script>
+import { create, all } from 'mathjs';
 import { getCompany } from '@/api/system/company';
 import CompanysList from '@/views/dashboard/components/common/CompanysList.vue';
 // import CompanyInformation from '@/views/dashboard/components/common/CompanyInformation.vue';
 import InvoiceBody from '@/views/dashboard/components/common/InvoiceBody.vue';
 import SelectGoods from '@/views/dashboard/components/common/SelectGoods.vue';
-import SheetItem from '@/views/dashboard/components/common/SheetItem.vue';
 import { mixin_excel_server } from '@/views/dashboard/components/common/utils/excelServer';
 import DragDiv from '@/components/DragDiv/index.vue';
-import { importTemplateCompanies, updateTemplateCompanies, getOperatedMap, extractCompanyId, isSheetOperated, markSheetOperated, clearSheetRecordsByFileId } from '@/api/excelTemplateStore';
+import { getOperatedMap } from '@/api/excelTemplateStore';
+import {
+	listBatchInvoiceIn,
+	listBatchInvoiceOut,
+	deleteBatchInvoiceInByVoucher,
+	deleteBatchInvoiceInById,
+	deleteBatchInvoiceInInvoice,
+	deleteBatchInvoiceOutByVoucher,
+	deleteBatchInvoiceOutById,
+	deleteBatchInvoiceOutInvoice
+} from '@/api/system/batchInvoice';
 
 // 默认导出组件
 export default {
@@ -18,37 +28,38 @@ export default {
 		InvoiceBody,
 		// CompanyInformation,
 		SelectGoods,
-		SheetItem,
 		DragDiv
 	},
 	mixins: [mixin_excel_server],
 	// 接收文件读取到的sheetList 渲染出来给用户看 并且可以选择看哪一个
 	props: {
-		// sheet列表
-		sheetList: {
-			type: Array,
-			default: () => {
-				return [];
-			}
-		},
-		// 工作簿引用（用于大文件懒加载）
-		workbookRef: {
-			type: Object,
-			default: null
-		},
-		// 是否为大文件
-		isLargeFile: {
-			type: Boolean,
-			default: false
-		},
-		// 当前文件标识
-		currentFileId: {
+		mode: {
 			type: String,
-			default: null
+			default: 'in',
+			validator: value => ['in', 'out'].includes(value)
+		},
+		initialVoucher: {
+			type: String,
+			default: ''
 		}
 	},
 	data() {
 		return {
+			math: null,
+			listLoading: false,
+			batchList: [],
+			queryForm: {
+				voucher: '',
+				sellerName: '',
+				buyerName: '',
+				invoiced: null
+			},
+			pagination: {
+				pageNum: 1,
+				pageSize: 10,
+				total: 0
+			},
+			currentVoucher: '',
 			// 左上角供应商的信息
 			companyInfo: {},
 			// 本批开的票点
@@ -87,25 +98,21 @@ export default {
 			// 已操作映射（来自 IndexedDB）
 			templateOperatedMap: {},
 			// 当前Sheet名称
-			currentSheetName: null,
-			// 是否为新文件导入（true: 新文件，false: 同一文件的不同工作表）
-			isNewFileImport: true
+			// currentSheetName 已废弃
 		};
 	},
 	watch: {
-		// 监听文件标识变化
-		currentFileId: {
-			handler(newFileId, oldFileId) {
-				if (newFileId && newFileId !== oldFileId) {
-					// 文件标识发生变化，说明是新文件导入
-					this.isNewFileImport = true;
-				} else if (newFileId && newFileId === oldFileId) {
-					// 文件标识相同，说明是同一文件的不同工作表
-					this.isNewFileImport = false;
-				}
+		initialVoucher: {
+			handler(value) {
+				this.queryForm.voucher = value || '';
+				this.pagination.pageNum = 1;
+				this.fetchBatchList();
 			},
 			immediate: true
 		}
+	},
+	created() {
+		this.math = create(all, { number: 'BigNumber', precision: 64 });
 	},
 	mounted() {
 		// 支持外部触发"继续上次开票"
@@ -134,6 +141,158 @@ export default {
 		this.$bus.$off('excel:operated-updated');
 	},
 	methods: {
+		getApiHandlers() {
+			if (this.mode === 'out') {
+				return {
+					list: listBatchInvoiceOut,
+					deleteVoucher: deleteBatchInvoiceOutByVoucher,
+					deleteRecord: deleteBatchInvoiceOutById,
+					deleteInvoice: deleteBatchInvoiceOutInvoice
+				};
+			}
+			return {
+				list: listBatchInvoiceIn,
+				deleteVoucher: deleteBatchInvoiceInByVoucher,
+				deleteRecord: deleteBatchInvoiceInById,
+				deleteInvoice: deleteBatchInvoiceInInvoice
+			};
+		},
+		async fetchBatchList() {
+			const api = this.getApiHandlers();
+			if (!api || !api.list) {
+				return;
+			}
+			this.listLoading = true;
+			const query = {
+				pageNum: this.pagination.pageNum,
+				pageSize: this.pagination.pageSize
+			};
+			if (this.queryForm.voucher) {
+				query.voucher = this.queryForm.voucher;
+			}
+			if (this.queryForm.sellerName) {
+				query.sellerName = this.queryForm.sellerName;
+			}
+			if (this.queryForm.buyerName) {
+				query.buyerName = this.queryForm.buyerName;
+			}
+			if (this.queryForm.invoiced !== null && this.queryForm.invoiced !== undefined && this.queryForm.invoiced !== '') {
+				query.invoiced = this.queryForm.invoiced;
+			}
+			try {
+				const res = await api.list(query);
+				this.batchList = res?.rows || [];
+				this.pagination.total = res?.total || 0;
+			} catch (error) {
+				console.error('加载批量导入记录失败:', error);
+				this.$message.error('加载批量导入记录失败');
+			} finally {
+				this.listLoading = false;
+			}
+		},
+		handleQuery() {
+			this.pagination.pageNum = 1;
+			this.fetchBatchList();
+		},
+		handleResetSearch() {
+			this.queryForm = {
+				voucher: '',
+				sellerName: '',
+				buyerName: '',
+				invoiced: null
+			};
+			this.pagination.pageNum = 1;
+			this.fetchBatchList();
+		},
+		handlePagination({ page, limit }) {
+			this.pagination.pageNum = page;
+			this.pagination.pageSize = limit;
+			this.fetchBatchList();
+		},
+		handleDeleteVoucher(row) {
+			const api = this.getApiHandlers();
+			if (!row || !row.voucher || !api.deleteVoucher) {
+				return;
+			}
+			this.$modal
+				.confirm(`是否确认删除凭证号【${row.voucher}】的全部导入记录？该操作会级联删除已生成的发票。`)
+				.then(() => api.deleteVoucher(row.voucher))
+				.then(() => {
+					this.$message.success('删除成功');
+					this.fetchBatchList();
+				})
+				.catch(() => {});
+		},
+		handleDeleteRecord(row) {
+			const api = this.getApiHandlers();
+			if (!row || row.id === undefined || !api.deleteRecord) {
+				return;
+			}
+			this.$modal
+				.confirm(`是否确认删除导入记录 ID【${row.id}】？对应的发票数据也会被删除。`)
+				.then(() => api.deleteRecord(row.id))
+				.then(() => {
+					this.$message.success('删除成功');
+					this.fetchBatchList();
+				})
+				.catch(() => {});
+		},
+		handleDeleteInvoice(row) {
+			const api = this.getApiHandlers();
+			const invoiceId = row?.invoiceId;
+			if (!invoiceId || !api.deleteInvoice) {
+				this.$message.warning('该记录暂无已生成的发票');
+				return;
+			}
+			this.$modal
+				.confirm(`是否仅删除导入记录 ID【${row.id}】已生成的发票？导入数据将被保留，可重新开票。`)
+				.then(() => api.deleteInvoice(invoiceId))
+				.then(() => {
+					this.$message.success('操作成功');
+					this.fetchBatchList();
+				})
+				.catch(() => {});
+		},
+		hasInvoiceInfo(row) {
+			return !!(row && row.invoiceId);
+		},
+		async handleOpenBatch(row) {
+			if (!row || !row.voucher) {
+				this.$message.warning('未找到有效的批次号');
+				return;
+			}
+			this.reset();
+			this.handleClearPurchaseInfo();
+			this.handleClearSellerInfo();
+			this.currentVoucher = row.voucher;
+			const batchRows = await this.fetchVoucherDetails(row.voucher);
+			if (!batchRows || batchRows.length === 0) {
+				this.$message.warning('该批次暂无明细数据');
+				return;
+			}
+			this.currentVersion = Date.now();
+			await this.processExcelData(batchRows);
+			this.invoiceAllVisible = true;
+			this.saveBatchInvoiceSession({ voucher: row.voucher });
+		},
+		async fetchVoucherDetails(voucher) {
+			const api = this.getApiHandlers();
+			if (!api || !api.list) {
+				return [];
+			}
+			try {
+				const res = await api.list({
+					voucher,
+					pageNum: 1,
+					pageSize: 1000
+				});
+				return res?.rows || [];
+			} catch (error) {
+				console.error('加载批次详情失败:', error);
+				this.$message.error('加载批次详情失败');
+				return [];
+			}
+		},
 		// 保存当前批量开票会话（模板/聚合/统计/已生成列表）
 		saveBatchInvoiceSession(extra = {}) {
 			try {
@@ -191,208 +350,41 @@ export default {
 			}
 		},
 		/**
-		 * 对某一个excel点击打开的函数
-		 * @param excelItem 选中的某一个excel 例:信息汇总表
-		 * @param excelIndex 选中的excel的索引 例:0
+		 * 处理批量数据
+		 * @param {Array} rows - 批次明细
 		 */
-		async handleInvoiceAll(excelItem, excelIndex) {
-			// 检查当前Sheet是否已被操作过
-			const sheetName = excelItem;
-			const isCurrentSheetOperated = await isSheetOperated(this.currentFileId, sheetName);
-
-			// 保存 isNewFileImport 的值，因为 reset() 会重置它
-			const wasNewFileImport = this.isNewFileImport;
-
-			// 先清除
-			this.reset();
-			// 清除购买方和销方的信息
-			this.handleClearPurchaseInfo();
-			this.handleClearSellerInfo();
-
-			// 在reset之后重新设置当前Sheet名称
-			this.currentSheetName = sheetName;
-
-			// 恢复 isNewFileImport 的值
-			this.isNewFileImport = wasNewFileImport;
-
-			// 显示加载状态
-			const loadingInstance = this.$loading({
-				lock: true,
-				text: '正在处理数据，请稍候...',
-				spinner: 'el-icon-loading',
-				background: 'rgba(0, 0, 0, 0.7)'
-			});
-
-			// 使用setTimeout来确保loading能够显示
-			setTimeout(async () => {
-				try {
-					let excelInfo;
-
-					// 如果是大文件，需要懒加载数据
-					if (this.isLargeFile && this.workbookRef) {
-						excelInfo = await this.loadSheetData(excelIndex);
-					} else {
-						excelInfo = this.handleReadExcel();
-					}
-
-					// 本次导入版本：使用时间戳
-					this.currentVersion = Date.now();
-					await this.processExcelData(excelInfo, excelIndex);
-					// 将模板公司数据导入到 IndexedDB
-					try {
-						const templates = (this.$store.state.excel.purchaseTemplateData || []).concat(this.$store.state.excel.sellerTemplateData || []);
-
-						if (this.isNewFileImport) {
-							await importTemplateCompanies(templates, this.currentFileId);
-						} else if (!isCurrentSheetOperated) {
-							// 同一文件但Sheet未操作过，清空数据并导入
-							await importTemplateCompanies(templates, this.currentFileId);
-						} else {
-							// 同一文件且Sheet已操作过，保持现有数据
-							await updateTemplateCompanies(templates);
-						}
-
-						this.templateOperatedMap = await getOperatedMap();
-					} catch (err) {
-						console.error('导入模板公司数据至 IndexedDB 失败:', err);
-					}
-					// 打开弹窗
-					this.invoiceAllVisible = true;
-					// 首次打开后，保存一次会话
-					this.saveBatchInvoiceSession();
-					// 发送当前文件ID和Sheet名称到子组件
-					this.$bus.$emit('sheet-info-updated', {
-						fileId: this.currentFileId,
-						sheetName: this.currentSheetName
-					});
-
-					// 标记当前Sheet为已操作（因为用户已经打开了批量开票弹窗）
-					try {
-						await markSheetOperated(this.currentFileId, this.currentSheetName);
-					} catch (e) {
-						console.error('SheetList: 标记Sheet已操作失败:', e);
-					}
-
-					// 第一次处理后，标记为非新文件导入
-					if (this.isNewFileImport) {
-						this.isNewFileImport = false;
-					}
-				} catch (error) {
-					console.error('处理Excel数据失败:', error);
-					this.$message.error('处理数据时发生错误，请重试');
-				} finally {
-					loadingInstance.close();
-				}
-			}, 100);
-		},
-		/**
-		 * 懒加载Sheet数据（用于大文件）
-		 * @param {number} sheetIndex - Sheet索引
-		 * @returns {Array} - 加载的数据
-		 */
-		async loadSheetData(sheetIndex) {
-			if (!this.workbookRef) {
-				throw new Error('工作簿引用不存在');
-			}
-
-			const sheetName = this.workbookRef.SheetNames[sheetIndex];
-			const sheet = this.workbookRef.Sheets[sheetName];
-
-			// 对于大文件，分批读取数据
-			const data = await this.readSheetInBatches(sheet);
-
-			// 创建类似于原始结构的数组
-			const result = [];
-			for (let i = 0; i < this.sheetList.length; i++) {
-				if (i === sheetIndex) {
-					result.push(data);
-				} else {
-					result.push([]);
-				}
-			}
-
-			return result;
-		},
-		/**
-		 * 分批读取Sheet数据
-		 * @param {Object} sheet - Sheet对象
-		 * @returns {Array} - 读取的数据
-		 */
-		async readSheetInBatches(sheet) {
-			const { utils } = await import('xlsx');
-
-			// 获取数据范围
-			const range = utils.decode_range(sheet['!ref'] || 'A1:A1');
-			const totalRows = range.e.r - range.s.r + 1;
-
-			// 如果数据量不大，直接读取
-			if (totalRows <= 1000) {
-				return utils.sheet_to_json(sheet);
-			}
-
-			// 分批读取
-			const batchSize = 500;
-			const result = [];
-
-			for (let startRow = range.s.r + 1; startRow <= range.e.r; startRow += batchSize) {
-				const endRow = Math.min(startRow + batchSize - 1, range.e.r);
-
-				// 创建临时范围
-				const tempRange = {
-					s: { r: range.s.r, c: range.s.c },
-					e: { r: endRow, c: range.e.c }
-				};
-
-				// 创建临时Sheet
-				const tempSheet = {};
-				tempSheet['!ref'] = utils.encode_range(tempRange);
-
-				// 复制数据
-				for (let row = range.s.r; row <= endRow; row++) {
-					for (let col = range.s.c; col <= range.e.c; col++) {
-						const cellAddr = utils.encode_cell({ r: row, c: col });
-						if (sheet[cellAddr]) {
-							tempSheet[cellAddr] = sheet[cellAddr];
-						}
-					}
-				}
-
-				const batchData = utils.sheet_to_json(tempSheet);
-				result.push(...batchData);
-
-				// 给UI一点时间更新
-				await new Promise(resolve => setTimeout(resolve, 10));
-			}
-
-			return result;
-		},
-		/**
-		 * 处理Excel数据的通用方法
-		 * @param {Array} excelInfo - Excel数据
-		 * @param {number} excelIndex - 选中的索引
-		 */
-		async processExcelData(excelInfo, excelIndex) {
+		async processExcelData(rows = []) {
 			let arr = [];
 			let purchaseMap = new Map();
 			let sellerMap = new Map();
 
-			// 需要销售方id 销售方的名称和类型 以及购买方id  购买方类型 和名称
-			for (let item of excelInfo[excelIndex]) {
-				if (item['销方ID'] && !/^\d+$/.test(item['销方ID'])) {
-					this.$message.error('导入的excel格式有误,请仔细阅读excel模板中的注意！');
-					return;
+			for (let item of rows) {
+				const mapped = this.mapperParams(item);
+				if (mapped) {
+					arr.push(mapped);
 				}
-				arr.push(this.mapperParams(item)); // 映射关系
 			}
 
 			// 过滤掉arr中 属性全部为undefined的元素
-			arr = arr.filter(item => !Object.values(item).every(value => !value));
+			arr = arr.filter(item => item && !Object.values(item).every(value => value === undefined || value === null));
 			// 检查excel中是否有同时存在的
 			let ok = arr.every(item => this.purchaseHandler(item));
 			if (!ok) {
 				this.$message.error('存在订单中存在购买方和销方的信息，请检查');
 				return;
 			}
+			// 构建批次校验信息
+			const batchMetaMap = {};
+			arr.forEach(element => {
+				const batchId = element.batchInvoiceId || element.id;
+				if (batchId && batchMetaMap[batchId] === undefined) {
+					batchMetaMap[batchId] = {
+						totalAmount: element.total || 0,
+						voucher: element.voucher || this.currentVoucher
+					};
+				}
+			});
+			this.$store.dispatch('excel/setBatchMetaMap', batchMetaMap);
 			// 对数组每一个进行遍历 收集元素
 			arr.forEach(element => {
 				// 判断对方是否是购买方
@@ -415,16 +407,16 @@ export default {
 				const _onlyKey = id + us;
 				// 获取当前 Map 中的记录，如果存在则累加总数，不存在则直接插入
 				const _existing = map.get(_onlyKey);
-				// 如果存在id 并且 我方名称不一样
 				if (_existing) {
-					_existing.total += element.total; // 累加 total
-					_existing.ticketPointAmount += element.ticketPointAmount; // 累加票点金额
+					const totalSum = this.math.add(this.math.bignumber(_existing.total || 0), this.math.bignumber(element.total || 0));
+					const ticketSum = this.math.add(this.math.bignumber(_existing.ticketPointAmount || 0), this.math.bignumber(element.ticketPointAmount || 0));
+					_existing.total = Number(this.math.format(totalSum, { precision: 12, notation: 'fixed' }));
+					_existing.ticketPointAmount = Number(this.math.format(ticketSum, { precision: 12, notation: 'fixed' }));
 				} else {
 					map.set(_onlyKey, {
 						id,
 						type,
 						name,
-						// 己方公司名称
 						us,
 						total: element.total,
 						ticketPoint: element.ticketPoint,
@@ -453,14 +445,43 @@ export default {
 			this.handleStoreSellerInfo(this.sellerTotalInfo);
 			// 保存一次会话快照
 			this.saveBatchInvoiceSession();
+			getOperatedMap().then(map => (this.templateOperatedMap = map || {}));
 		},
-		// 映射关系 这里可以自定义
+		// 映射关系
 		mapperParams(item) {
-			const ticketPoint = Number(item['票点']) || 0; // 获取票点，默认为0
-			const totalAmount = Number(item['价税合计']) || 0; // 获取价税合计
+			if (!item) return null;
+			// 已结构化的后端数据
+			if (item.sellerId !== undefined || item.purchaseId !== undefined || item.batchInvoiceId) {
+				const totalAmount = Number(item.totalAmount ?? item.total ?? item.invoiceAmount ?? 0);
+				const ticketPoint = Number(item.taxPoint ?? item.ticketPoint ?? 0);
+				const ticketPointAmountRaw = item.ticketPointAmount;
+				const normalizedTicketPointAmount =
+					ticketPointAmountRaw !== undefined && ticketPointAmountRaw !== null
+						? Number(ticketPointAmountRaw)
+						: this.calculateTicketPointAmount(totalAmount, ticketPoint);
 
-			// 计算票点金额：票点金额 = 开票金额 / (1 + 票点) * 票点
-			const ticketPointAmount = totalAmount > 0 && ticketPoint > 0 ? (totalAmount / (1 + ticketPoint)) * ticketPoint : 0;
+				return {
+					sellerId: Number(item.sellerId) || 0,
+					sellerName: item.sellerName || '',
+					sellerType: item.sellerType || '',
+					purchaseId: Number(item.buyerId ?? item.purchaseId) || 0,
+					purchaseType: item.buyerType ?? item.purchaseType ?? '',
+					purchaseName: item.buyerName ?? item.purchaseName ?? '',
+					total: Number(totalAmount),
+					ticketPoint: ticketPoint,
+					ticketPointAmount: Number(normalizedTicketPointAmount),
+					batchInvoiceId: item.batchInvoiceId || item.id || null,
+					voucher: item.voucher || '',
+					comments: item.comments || '',
+					params: item.params || {},
+					id: item.id
+				};
+			}
+
+			// Excel 原始数据（中文表头）
+			const ticketPoint = Number(item['票点']) || 0;
+			const totalAmount = Number(item['价税合计']) || 0;
+			const ticketPointAmount = this.calculateTicketPointAmount(totalAmount, ticketPoint);
 
 			return {
 				sellerId: item['销方ID'],
@@ -471,8 +492,22 @@ export default {
 				purchaseName: item['购买方名称'],
 				total: totalAmount,
 				ticketPoint: ticketPoint,
-				ticketPointAmount: Number(ticketPointAmount.toFixed(2)) // 保留两位小数
+				ticketPointAmount: Number(ticketPointAmount.toFixed(2))
 			};
+		},
+		calculateTicketPointAmount(totalAmount, ticketPoint) {
+			const total = this.math ? this.math.bignumber(totalAmount || 0) : totalAmount || 0;
+			const rate = this.math ? this.math.bignumber(ticketPoint || 0) : ticketPoint || 0;
+			if (this.math) {
+				if (this.math.equal(rate, this.math.bignumber(0))) {
+					return 0;
+				}
+				const denominator = this.math.add(this.math.bignumber(1), rate);
+				const fraction = this.math.divide(total, denominator);
+				const result = this.math.multiply(fraction, rate);
+				return Number(this.math.format(result, { precision: 12, notation: 'fixed' }));
+			}
+			return totalAmount > 0 && ticketPoint > 0 ? (totalAmount / (1 + ticketPoint)) * ticketPoint : 0;
 		},
 		// 计算统计信息
 		calculateStatistics(dataArray) {
@@ -674,6 +709,7 @@ export default {
 			// 清除模板数据
 			this.$store.dispatch('excel/clearPurchaseTemplateData');
 			this.$store.dispatch('excel/clearSellerTemplateData');
+			this.$store.dispatch('excel/clearBatchMetaMap');
 			// 重置统计信息
 			this.statisticsInfo = {
 				purchaseStats: {
@@ -687,10 +723,6 @@ export default {
 			};
 			// 发布事件 组件中清除自己状态
 			this.$bus.$emit('invoice-clear');
-			// 重置文件标识状态
-			this.isNewFileImport = true;
-			// 重置当前Sheet名称
-			this.currentSheetName = null;
 		}
 	}
 };
@@ -698,13 +730,79 @@ export default {
 
 <template>
 	<div>
-		<!--    Excel Sheet的选择列表-->
-		<div class="sheet-container">
-			<!--      点击某一个sheet-->
-			<SheetItem v-for="(item, index) in sheetList" :key="item" :title="item" @click.native="handleInvoiceAll(item, index)" />
+		<div class="batch-manager">
+			<el-card class="batch-card" shadow="never">
+				<el-form :inline="true" size="mini" class="batch-search-form">
+					<el-form-item label="凭证号">
+						<el-input v-model="queryForm.voucher" placeholder="支持模糊查询" clearable />
+					</el-form-item>
+					<el-form-item label="销方名称">
+						<el-input v-model="queryForm.sellerName" placeholder="支持模糊查询" clearable />
+					</el-form-item>
+					<el-form-item label="购买方名称">
+						<el-input v-model="queryForm.buyerName" placeholder="支持模糊查询" clearable />
+					</el-form-item>
+					<el-form-item label="是否已开票">
+						<el-select v-model="queryForm.invoiced" placeholder="全部" clearable>
+							<el-option label="全部" :value="null" />
+							<el-option label="是" :value="true" />
+							<el-option label="否" :value="false" />
+						</el-select>
+					</el-form-item>
+					<el-form-item>
+						<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">查询</el-button>
+						<el-button type="warning" icon="el-icon-refresh" size="mini" @click="handleResetSearch">重置</el-button>
+					</el-form-item>
+				</el-form>
+
+				<el-table
+					:data="batchList"
+					size="mini"
+					border
+					:loading="listLoading"
+					style="width: 100%"
+					:cell-style="
+						() => {
+							return { padding: '4px' };
+						}
+					"
+				>
+					<el-table-column label="ID" align="center" prop="id" width="80" />
+					<el-table-column label="批次号" align="center" prop="voucher" min-width="140" show-overflow-tooltip />
+					<el-table-column label="销方名称" align="center" prop="sellerName" min-width="160" show-overflow-tooltip />
+					<el-table-column label="购买方名称" align="center" prop="buyerName" min-width="160" show-overflow-tooltip />
+					<el-table-column label="价税合计" align="center" prop="totalAmount" width="120" show-overflow-tooltip />
+					<el-table-column label="票点" align="center" prop="taxPoint" width="80" show-overflow-tooltip />
+					<el-table-column label="已开票" align="center" prop="invoiced" width="90">
+						<template #default="scope">
+							<el-tag size="mini" :type="scope.row.invoiced ? 'success' : 'info'">{{ scope.row.invoiced ? '是' : '否' }}</el-tag>
+						</template>
+					</el-table-column>
+					<el-table-column label="导入时间" align="center" prop="createTime" width="160" show-overflow-tooltip />
+					<el-table-column label="操作" align="center" width="260">
+						<template #default="scope">
+							<el-button type="text" size="mini" @click="handleOpenBatch(scope.row)">发起开票</el-button>
+							<el-button type="text" size="mini" @click="handleDeleteVoucher(scope.row)">整批删除</el-button>
+							<el-button type="text" size="mini" @click="handleDeleteRecord(scope.row)">删除导入</el-button>
+							<el-tooltip v-if="!hasInvoiceInfo(scope.row)" effect="dark" content="暂无已生成的发票" placement="top">
+								<span>
+									<el-button type="text" size="mini" :disabled="true">仅删发票</el-button>
+								</span>
+							</el-tooltip>
+							<el-button v-else type="text" size="mini" @click="handleDeleteInvoice(scope.row)">仅删发票</el-button>
+						</template>
+					</el-table-column>
+				</el-table>
+				<pagination
+					v-show="pagination.total > 0"
+					:total="pagination.total"
+					:page.sync="pagination.pageNum"
+					:limit.sync="pagination.pageSize"
+					@pagination="handlePagination"
+				/>
+			</el-card>
 		</div>
 
-		<!--    批量开票的弹窗-->
 		<div>
 			<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="批量开票" fullscreen :visible.sync="invoiceAllVisible" append-to-body>
 				<div class="invoice-container">
@@ -808,12 +906,22 @@ export default {
 </template>
 
 <style scoped lang="scss">
-.sheet-container {
-	display: flex;
-	flex-direction: row;
-	flex-wrap: wrap;
-	gap: 12px;
+.batch-manager {
 	margin-bottom: 20px;
+}
+
+.batch-card {
+	::v-deep .el-card__body {
+		padding: 16px;
+	}
+}
+
+.batch-search-form {
+	margin-bottom: 12px;
+
+	.el-form-item {
+		margin-bottom: 8px;
+	}
 }
 
 .bold-text {

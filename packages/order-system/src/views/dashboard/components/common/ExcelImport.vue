@@ -2,43 +2,41 @@
 
 <script>
 import SheetList from '@/views/dashboard/components/common/SheetList.vue';
-import { mixin_excel_server } from '@/views/dashboard/components/common/utils/excelServer';
-import { read, utils, writeFile } from 'xlsx';
+import { importBatchInvoiceInData, importBatchInvoiceOutData } from '@/api/system/batchInvoice';
+
+const API_CONFIG = {
+	in: {
+		importData: importBatchInvoiceInData,
+		templatePath: 'system/batchInvoiceIn/importTemplate'
+	},
+	out: {
+		importData: importBatchInvoiceOutData,
+		templatePath: 'system/batchInvoiceOut/importTemplate'
+	}
+};
 
 export default {
 	name: 'ExcelImport',
 	components: { SheetList },
-	mixins: [mixin_excel_server],
+	props: {
+		mode: {
+			type: String,
+			default: 'in',
+			validator: value => ['in', 'out'].includes(value)
+		}
+	},
 	data() {
 		return {
-			// 是否显示excel 展示框
 			dialogVisible: false,
-			fileList: [], // 上传文件列表
-			tableHead: [], // 表头
-			tableData: [], // 表数据
-			// 要读取哪一个sheet 默认是读取第一个sheet
-			sheetIndex: 1,
-			// sheet列表
-			sheetList: [],
-			// 批量开票的弹窗
-			invoiceAllVisible: false,
-			// 当前的操作步骤
+			uploadLoading: false,
 			currentStep: 1,
-			// 数据处理状态
-			isProcessing: false,
-			// 大文件处理配置
-			largeFileConfig: {
-				maxRowsPerBatch: 1000, // 每批处理的最大行数
-				maxMemoryRows: 5000, // 内存中最大保存行数
-				showProgressAfter: 2000 // 超过多少行显示进度条
-			},
-			// 工作簿引用（用于大文件懒加载）
-			workbookRef: null,
-			// 是否为大文件
-			isLargeFile: false,
-			// 当前文件标识（用于区分是否为新文件）
-			currentFileId: null
+			initialVoucher: ''
 		};
+	},
+	computed: {
+		modeLabel() {
+			return this.mode === 'out' ? '销项' : '进项';
+		}
 	},
 	methods: {
 		// 恢复上次开票流程，直接打开批量开票全屏弹窗
@@ -48,303 +46,69 @@ export default {
 				this.$message.info('暂无上次开票会话');
 				return;
 			}
-			// 通知 SheetList 恢复
 			this.$bus.$emit('excel:resume');
-			// 打开sheet选择弹窗（SheetList 内会再打开全屏）
 			this.dialogVisible = true;
 		},
-		// 点击后上传 通过主动调用ref
+		// 点击后上传
 		handleUpload() {
-			// 清空状态
 			this.clearState();
-			// 清空上次上传的文件
-			this.$refs.fileInput.value = '';
-			// 触发input的点击事件
-			this.$refs.fileInput.click();
-		},
-
-		// 生成文件标识
-		generateFileId(file) {
-			// 基于文件名、大小和修改时间生成唯一标识
-			const fileInfo = `${file.name}_${file.size}_${file.lastModified}`;
-			// 使用简单的哈希算法生成短标识
-			let hash = 0;
-			for (let i = 0; i < fileInfo.length; i++) {
-				const char = fileInfo.charCodeAt(i);
-				hash = (hash << 5) - hash + char;
-				hash = hash & hash; // 转换为32位整数
+			if (this.$refs.fileInput) {
+				this.$refs.fileInput.value = '';
+				this.$refs.fileInput.click();
 			}
-			return Math.abs(hash).toString(36);
 		},
-		/**
-		 * excel的读写操作 如果后期excel大小过于大在这里优化
-		 * @param e Event
-		 */
+		handleManage() {
+			this.initialVoucher = '';
+			this.dialogVisible = true;
+		},
+		getApiConfig() {
+			return API_CONFIG[this.mode] || API_CONFIG.in;
+		},
+		isExcelFile(file) {
+			if (!file || !file.name) return false;
+			const parts = file.name.split('.');
+			const ext = parts.length > 1 ? parts[parts.length - 1].toLowerCase() : '';
+			return ['xls', 'xlsx'].includes(ext);
+		},
 		async onChange(e) {
-			// 清除状态
-			this.handleClearExcel();
-
-			if (e.target.files.length === 0) {
+			const files = (e && e.target && e.target.files) || [];
+			if (!files.length) {
 				this.$message.warning('请选择文件,当前没有选择任何文件!!');
-				return false;
+				return;
 			}
-			// 获取上传的第一个文件
-			const file = e.target.files[0];
-
-			if (!this.checkFileType(file)) {
-				this.$message.warning(`文件格式不正确, 请上传xls/xlsx格式文件!`);
-				return false;
+			const file = files[0];
+			if (!this.isExcelFile(file)) {
+				this.$message.warning('文件格式不正确, 请上传xls/xlsx格式文件!');
+				return;
 			}
-
-			// 检查文件大小
-			const fileSizeMB = file.size / (1024 * 1024);
-			if (fileSizeMB > 50) {
-				const confirmed = await this.$confirm(`文件大小为 ${fileSizeMB.toFixed(2)}MB，较大的文件可能需要较长时间处理。是否继续？`, '文件较大提示', {
-					confirmButtonText: '继续处理',
-					cancelButtonText: '取消',
-					type: 'warning'
-				}).catch(() => false);
-
-				if (!confirmed) return false;
-			}
-
-			this.isProcessing = true;
-
-			// 显示处理进度
-			const loadingInstance = this.$loading({
-				lock: true,
-				text: '正在读取Excel文件，请稍候...',
-				spinner: 'el-icon-loading',
-				background: 'rgba(0, 0, 0, 0.7)'
-			});
-
+			const formData = new FormData();
+			formData.append('file', file);
+			const { importData } = this.getApiConfig();
+			this.uploadLoading = true;
 			try {
-				const result = await this.readExcelFile(file);
-				if (result) {
-					// 生成文件标识（基于文件名、大小和修改时间）
-					this.currentFileId = this.generateFileId(file);
-					this.dialogVisible = true;
-				}
+				const res = await importData(formData);
+				const voucher = res?.data?.voucher || '';
+				this.initialVoucher = voucher;
+				this.$message.success(res?.msg || '导入成功');
+				this.dialogVisible = true;
 			} catch (error) {
-				console.error('读取excel发生异常:', error);
-				this.$message.error('读取Excel文件失败，请检查文件格式是否正确');
+				const msg = (error && error.msg) || '导入失败，请稍后再试';
+				this.$message.error(msg);
 			} finally {
-				this.isProcessing = false;
-				loadingInstance.close();
-			}
-		},
-		/**
-		 * 优化的Excel文件读取方法 - 支持大文件处理
-		 * @param {File} file - 要读取的文件
-		 * @returns {Promise<boolean>} - 是否读取成功
-		 */
-		readExcelFile(file) {
-			return new Promise((resolve, reject) => {
-				const fileReader = new FileReader();
-
-				fileReader.onload = async ev => {
-					try {
-						const data = ev.target.result;
-						const workbook = read(data, { type: 'binary' });
-
-						// 首先检查所有Sheet的数据量
-						const sheetInfo = await this.analyzeWorkbook(workbook);
-
-						// 如果数据量过大，使用分批处理
-						if (sheetInfo.totalRows > this.largeFileConfig.maxMemoryRows) {
-							await this.handleLargeFile(workbook, sheetInfo);
-						} else {
-							await this.handleNormalFile(workbook);
-						}
-
-						resolve(true);
-					} catch (error) {
-						console.error('读取Excel失败:', error);
-						reject(error);
-					}
-				};
-
-				fileReader.onerror = () => {
-					reject(new Error('文件读取失败'));
-				};
-
-				fileReader.readAsBinaryString(file);
-			});
-		},
-		/**
-		 * 分析工作簿中的数据量
-		 * @param {Object} workbook - xlsx工作簿对象
-		 * @returns {Object} - 分析结果
-		 */
-		analyzeWorkbook(workbook) {
-			const sheetInfo = {
-				sheets: [],
-				totalRows: 0,
-				largeSheets: []
-			};
-
-			workbook.SheetNames.forEach(sheetName => {
-				const sheet = workbook.Sheets[sheetName];
-				const range = utils.decode_range(sheet['!ref'] || 'A1:A1');
-				const rowCount = range.e.r - range.s.r + 1;
-
-				const info = {
-					name: sheetName,
-					rowCount: rowCount,
-					isLarge: rowCount > this.largeFileConfig.maxRowsPerBatch
-				};
-
-				sheetInfo.sheets.push(info);
-				sheetInfo.totalRows += rowCount;
-
-				if (info.isLarge) {
-					sheetInfo.largeSheets.push(info);
+				this.uploadLoading = false;
+				if (e && e.target) {
+					e.target.value = '';
 				}
-			});
-
-			return sheetInfo;
-		},
-		/**
-		 * 处理大文件 - 分批读取
-		 * @param {Object} workbook - xlsx工作簿对象
-		 * @param {Object} sheetInfo - Sheet信息
-		 */
-		async handleLargeFile(workbook, sheetInfo) {
-			this.$message.warning(`检测到大量数据(${sheetInfo.totalRows}行)，将采用优化模式处理，这可能需要一些时间...`);
-
-			// 对于大文件，我们只读取Sheet名称和基本信息，实际数据在用户选择时再读取
-			this.sheetList = [];
-			this.tableData = [];
-
-			workbook.SheetNames.forEach((sheetName, index) => {
-				this.sheetList.push(sheetName);
-				// 对于大文件，我们暂时只存储空数组，在选择Sheet时再加载数据
-				this.tableData.push([]);
-			});
-
-			// 存储工作簿引用以便后续使用
-			this.workbookRef = workbook;
-			this.isLargeFile = true;
-
-			// 不在这里存储到Vuex，等用户选择Sheet时再处理
-		},
-		/**
-		 * 处理普通大小的文件
-		 * @param {Object} workbook - xlsx工作簿对象
-		 */
-		async handleNormalFile(workbook) {
-			this.sheetList = [];
-			this.tableData = [];
-
-			workbook.SheetNames.forEach(item => {
-				this.sheetList.push(item);
-				this.tableData.push(utils.sheet_to_json(workbook.Sheets[item]));
-			});
-
-			// 存储到Vuex
-			this.handleStoreExcel(this.tableData);
-			this.isLargeFile = false;
-		},
-		// 校验一下文件类型
-		checkFileType(file) {
-			const fileName = file.name.split('.');
-			const fileExt = fileName[fileName.length - 1];
-			return ['xls', 'xlsx'].indexOf(fileExt) >= 0;
-		},
-		// 清除状态
-		clearState() {
-			this.sheetList = [];
-			this.tableData = [];
-			// 清除大文件相关状态
-			this.workbookRef = null;
-			this.isLargeFile = false;
-			this.isProcessing = false;
+			}
 		},
 		// 下载模板
 		downloadTemplate() {
-			// 模板数据
-			const templateData = [
-				{
-					销方ID: 0,
-					销方类型: '己方公司',
-					销方名称: '我方科技有限公司',
-					购买方ID: 1001,
-					购买方类型: '客户',
-					购买方名称: '客户公司A',
-					价税合计: 10000.0,
-					票点: 0.03
-				},
-				{
-					销方ID: 2001,
-					销方类型: '客户',
-					销方名称: '客户公司B',
-					购买方ID: 0,
-					购买方类型: '己方公司',
-					购买方名称: '我方科技有限公司',
-					价税合计: 10000.0,
-					票点: 0.05
-				},
-				{
-					销方ID: 2002,
-					销方类型: '供应商',
-					销方名称: '供应商公司B',
-					购买方ID: 0,
-					购买方类型: '己方公司',
-					购买方名称: '我方科技有限公司',
-					价税合计: 10000.0,
-					票点: 0.02
-				}
-			];
-
-			// 创建工作簿
-			const wb = utils.book_new();
-
-			// 将数据转换为工作表
-			const ws = utils.json_to_sheet(templateData);
-
-			// 在数据下方添加说明信息
-			const notes = [
-				['注：请将此段说明删除整段删除后再进行导入开票的操作！'],
-				['数据填写规范说明：'],
-				['1. ID规则：'],
-				['   - 当类型为"己方公司"时，对应的ID必须为0'],
-				['   - 其他类型的ID必须为非0的数字'],
-				['2. 类型规则：'],
-				['   - 类型只能为：己方公司、客户、供应商'],
-				['   - 销方和购买方不能同时为己方公司'],
-				['   - 销方和购买方不能同时为除己方公司外的其他类型'],
-				['3. 金额规则：'],
-				['   - 价税合计必须保留两位小数'],
-				['4. 票点规则：'],
-				['   - 票点为小数格式，例如：0.03表示3%'],
-				['   - 票点金额将自动计算：票点金额 = 开票金额 / (1 + 票点) * 票点'],
-				['   - 如不需要票点，可填写0'],
-				['']
-			];
-
-			// 计算数据的行数
-			const dataRowCount = templateData.length;
-
-			// 在数据下方添加说明
-			utils.sheet_add_aoa(ws, notes, { origin: `A${dataRowCount + 3}` });
-
-			// 设置列宽
-			const colWidth = [
-				{ wch: 12 }, // 销方ID
-				{ wch: 12 }, // 销方类型
-				{ wch: 25 }, // 销方名称
-				{ wch: 12 }, // 购买方ID
-				{ wch: 12 }, // 购买方类型
-				{ wch: 25 }, // 购买方名称
-				{ wch: 15 }, // 价税合计
-				{ wch: 10 } // 票点
-			];
-			ws['!cols'] = colWidth;
-
-			// 将工作表添加到工作簿
-			utils.book_append_sheet(wb, ws, '开票模板');
-			// 下载文件
-			writeFile(wb, '批量开票模板.xlsx');
+			const { templatePath } = this.getApiConfig();
+			const filename = `批量${this.modeLabel}开票模板_${Date.now()}.xlsx`;
+			this.download(templatePath, {}, filename);
+		},
+		clearState() {
+			this.initialVoucher = '';
 		}
 	}
 };
@@ -377,23 +141,23 @@ export default {
 			<div class="right-section">
 				<div class="action-buttons">
 					<el-button class="compact-btn download-btn" type="primary" icon="el-icon-download" size="small" @click="downloadTemplate">下载模板</el-button>
-					<el-button class="compact-btn upload-btn" type="success" icon="el-icon-upload" size="small" @click="handleUpload">批量开票</el-button>
-					<input ref="fileInput" type="file" class="file-input-hidden" multiple @change="onChange" />
+				<el-button class="compact-btn upload-btn" type="success" icon="el-icon-upload" size="small" :loading="uploadLoading" @click="handleUpload">导入Excel</el-button>
+				<el-button class="compact-btn manage-btn" type="info" icon="el-icon-document" size="small" @click="handleManage">管理导入记录</el-button>
+				<input ref="fileInput" type="file" class="file-input-hidden" @change="onChange" />
 				</div>
 			</div>
 		</div>
 
 		<!-- 批量开票弹窗 -->
 		<div>
-			<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="请选择该excel中的一个工作表后进行批量开票" :visible.sync="dialogVisible" width="500px" class="sheet-select-dialog">
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="`批量${modeLabel}开票导入记录`" :visible.sync="dialogVisible" width="80%" class="sheet-select-dialog">
 				<div class="dialog-content">
-					<div class="dialog-tip" :class="{ 'large-file-tip': isLargeFile }">
-						<i :class="isLargeFile ? 'el-icon-warning' : 'el-icon-info'"></i>
-						<span v-if="!isLargeFile">检测到Excel文件中包含多个工作表，请选择需要处理的工作表</span>
-						<span v-else>检测到大文件，已启用优化模式。选择工作表时将自动分批加载数据</span>
+				<div class="dialog-tip">
+					<i class="el-icon-info"></i>
+					<span>批量导入记录已经改为后端分页存储，可在下方列表中查询、删除或发起开票。</span>
 					</div>
 					<el-card class="sheet-card">
-						<SheetList :sheet-list="sheetList" :workbook-ref="workbookRef" :is-large-file="isLargeFile" :current-file-id="currentFileId" />
+					<SheetList :mode="mode" :initial-voucher="initialVoucher" />
 					</el-card>
 				</div>
 				<span slot="footer" class="dialog-footer">
@@ -640,6 +404,15 @@ export default {
 			&::before {
 				display: none;
 			}
+		}
+	}
+
+	&.manage-btn {
+		background: linear-gradient(135deg, #909399 0%, #606266 100%);
+		border: none;
+
+		&:hover {
+			background: linear-gradient(135deg, #7f8287 0%, #505257 100%);
 		}
 	}
 }
