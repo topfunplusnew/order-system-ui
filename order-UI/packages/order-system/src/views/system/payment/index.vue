@@ -254,7 +254,7 @@
 							</el-tooltip>
 						</template>
 					</el-table-column>
-					<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="200" fixed="right">
+					<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="120" fixed="right">
 						<template slot-scope="scope">
 							<el-dropdown @command="command => handleCommand(command, scope.row)">
 								<el-button type="primary" size="mini">
@@ -278,7 +278,7 @@
 		</div>
 
 		<!-- 分页组件 -->
-		<div class="pagination-wrapper" v-fixed="{ position: 'bottom', zIndex: 1000 }">
+		<div class="pagination-wrapper" v-fixed="{ position: 'bottom', zIndex: 100 }">
 			<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" :page-sizes="[10, 20, 50, 100, 200, 500]" layout="total, sizes, prev, pager, next, jumper" background @pagination="getList" />
 		</div>
 
@@ -1151,27 +1151,27 @@ export default {
 			});
 		},
 		// 固定表格头
-		fixTableHeader() {
-			this.$nextTick(() => {
-				const table = this.$refs.paymentTable;
-				if (!table || !table.$el) return;
-
-				// 查找表格头元素
-				const headerWrapper = table.$el.querySelector('.el-table__header-wrapper');
-				if (headerWrapper && !headerWrapper._fixedApplied) {
-					// 应用 v-fixed 指令（使用 sticky 模式，适合表头）
-					fixedDirective.inserted(headerWrapper, {
-						value: {
-							mode: 'sticky',
-							position: 'top',
-							offset: 0,
-							zIndex: 999
-						}
-					});
-					headerWrapper._fixedApplied = true;
-				}
-			});
-		},
+		// fixTableHeader() {
+		// 	this.$nextTick(() => {
+		// 		const table = this.$refs.paymentTable;
+		// 		if (!table || !table.$el) return;
+		//
+		// 		// 查找表格头元素
+		// 		const headerWrapper = table.$el.querySelector('.el-table__header-wrapper');
+		// 		if (headerWrapper && !headerWrapper._fixedApplied) {
+		// 			// 应用 v-fixed 指令（使用 sticky 模式，适合表头）
+		// 			fixedDirective.inserted(headerWrapper, {
+		// 				value: {
+		// 					mode: 'sticky',
+		// 					position: 'top',
+		// 					offset: 0,
+		// 					zIndex: 999
+		// 				}
+		// 			});
+		// 			headerWrapper._fixedApplied = true;
+		// 		}
+		// 	});
+		// },
 		// 下拉菜单命令处理
 		handleCommand(command, row) {
 			switch (command) {
