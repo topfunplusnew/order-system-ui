@@ -86,7 +86,8 @@
 					<el-table-column v-if="columns[8].visible" label="对方开户行" align="center" prop="otherBankName" width="180" show-overflow-tooltip />
 					<el-table-column label="备注" align="center" prop="comments" width="165" show-overflow-tooltip />
 					<el-table-column label="银行卡流水编号" align="center" prop="transactionHistory" width="165" show-overflow-tooltip />
-					<el-table-column label="录入人员" align="center" prop="userName" width="120" show-overflow-tooltip />
+					<!-- 2025-11-1 录入人员不用录入了 -->
+					<!-- <el-table-column label="录入人员" align="center" prop="userName" width="120" show-overflow-tooltip /> -->
 					<el-table-column label="银行卡流水附件" align="center" prop="attachmentList" width="165" fixed="right">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
@@ -295,9 +296,10 @@
 								style="width: 100%"
 							/>
 						</el-form-item>
-						<el-form-item label="录入人员" prop="userName">
+						<!-- 2025-11-1 录入人员不用录入了 -->
+						<!-- <el-form-item label="录入人员" prop="userName">
 							<el-input v-model="form.userName" placeholder="请输入录入人员" style="width: 100%" />
-						</el-form-item>
+						</el-form-item> -->
 						<el-form-item label="备注" prop="comments">
 							<el-input v-model="form.comments" placeholder="请输入备注" style="width: 100%" />
 						</el-form-item>

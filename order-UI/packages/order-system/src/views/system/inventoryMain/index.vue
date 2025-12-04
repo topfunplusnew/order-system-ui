@@ -7,9 +7,10 @@
 			<el-form-item v-if="shouldShowField('storeDateRange')" label="入库日期" prop="storeDateRange">
 				<el-date-picker v-model="queryParams.storeDateRange" type="daterange" value-format="yyyy-MM-dd" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" clearable @change="handleDateRangeChange" />
 			</el-form-item>
-			<el-form-item v-if="shouldShowField('userName')" label="录入人员" prop="userName">
+			<!-- 2025-11-1 录入人员不用录入了 -->
+			<!-- <el-form-item v-if="shouldShowField('userName')" label="录入人员" prop="userName">
 				<el-input v-model="queryParams.userName" class="input-standard" placeholder="录入人员" clearable @keyup.enter.native="handleQuery" @input="val => (queryParams.UserName = val)" />
-			</el-form-item>
+			</el-form-item> -->
 			<el-form-item v-if="shouldShowField('supplier')" label="供应商" prop="supplier">
 				<el-input v-model="queryParams.params.detail_supplier" class="input-standard" placeholder="请输入供应商" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
@@ -308,14 +309,15 @@
 											</el-tooltip>
 										</template>
 									</el-table-column>
-									<el-table-column v-if="columns[18].visible" show-overflow-tooltip label="录入人员" align="center" prop="userName" width="120">
+									<!-- 2025-11-1 录入人员不用录入了 -->
+									<!-- <el-table-column v-if="columns[18].visible" show-overflow-tooltip label="录入人员" align="center" prop="userName" width="120">
 										<template #default="scope">
 											<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 												<div slot="content">{{ scope.row.userName }}</div>
 												<span>{{ scope.row.userName }}</span>
 											</el-tooltip>
 										</template>
-									</el-table-column>
+									</el-table-column> -->
 									<el-table-column v-if="columns[19].visible" show-overflow-tooltip label="附件" align="center" prop="path" width="150" fixed="right">
 										<template #default="scope">
 											<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">

@@ -1326,9 +1326,10 @@ export default {
 								style="width: 100%"
 							/>
 						</el-form-item>
-						<el-form-item label="录入人员" prop="userName">
+						<!-- 2025-11-1 录入人员不用录入了 -->
+						<!-- <el-form-item label="录入人员" prop="userName">
 							<el-input v-model="generatePaymentForm.userName" placeholder="请输入录入人员" style="width: 100%" />
-						</el-form-item>
+						</el-form-item> -->
 						<el-form-item label="备注" prop="comments">
 							<el-input v-model="generatePaymentForm.comments" placeholder="请输入备注" style="width: 100%" />
 						</el-form-item>

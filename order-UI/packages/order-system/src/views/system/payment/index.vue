@@ -239,14 +239,15 @@
 							</el-tooltip>
 						</template>
 					</el-table-column>
-					<el-table-column label="录入人员" align="center" prop="userName" width="120" v-if="columns[17] && columns[17].visible" show-overflow-tooltip>
+					<!-- 2025-11-1 录入人员不用录入了 -->
+					<!-- <el-table-column label="录入人员" align="center" prop="userName" width="120" v-if="columns[17] && columns[17].visible" show-overflow-tooltip>
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.userName }}</div>
 								<span>{{ scope.row.userName }}</span>
 							</el-tooltip>
 						</template>
-					</el-table-column>
+					</el-table-column> -->
 					<el-table-column label="复核状态" align="center" class-name="small-padding fixed-width" width="80" fixed="right">
 						<template slot-scope="scope">
 							<el-tooltip :content="hasAuditPermission ? '点击切换复核状态' : '您没有复核权限'" placement="top">
@@ -466,9 +467,10 @@
 						<el-form-item label="银行卡流水附件" prop="attachmentIds" class="fixed-col-right">
 							<UploadFilesButton ref="transactionHistoryUpload" flag="transactionHistoryAttachmentList" :extra-info="{ moduleType: 'payment', formId: form.id }" :initial-attachments="form.attachmentList || []" @files-updated="handleAttachmentFilesUpdated" style="width: 100%" />
 						</el-form-item>
-						<el-form-item label="录入人员" prop="userName">
+						<!-- 2025-11-1 录入人员不用录入了 -->
+						<!-- <el-form-item label="录入人员" prop="userName">
 							<el-input v-model="form.userName" placeholder="请输入录入人员" style="width: 100%" />
-						</el-form-item>
+						</el-form-item> -->
 						<el-form-item label="备注" prop="comments">
 							<el-input v-model="form.comments" placeholder="请输入备注" style="width: 100%" />
 						</el-form-item>
