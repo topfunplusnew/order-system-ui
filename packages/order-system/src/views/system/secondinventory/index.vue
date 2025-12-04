@@ -2047,7 +2047,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`二次出库列表_${new Date().getTime()}.xlsx`
+				`加工后出库货物_${new Date().getTime()}.xlsx`
 			);
 		},
 		/**

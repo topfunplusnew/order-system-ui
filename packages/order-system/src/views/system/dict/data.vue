@@ -388,7 +388,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`字典数据_${new Date().getTime()}.xlsx`
+				`字典_${new Date().getTime()}.xlsx`
 			);
 		}
 	}

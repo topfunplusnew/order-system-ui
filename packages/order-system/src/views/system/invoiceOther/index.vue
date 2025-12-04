@@ -942,7 +942,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`其他票据_${new Date().getTime()}.xlsx`
+				`商家直接给客户开发票_${new Date().getTime()}.xlsx`
 			);
 		},
 		handleCheck(row) {

@@ -268,7 +268,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`公司列表_${new Date().getTime()}.xlsx`
+				`客户管理_${new Date().getTime()}.xlsx`
 			);
 		},
 

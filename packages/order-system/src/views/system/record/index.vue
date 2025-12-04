@@ -1752,7 +1752,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`往来流水_${new Date().getTime()}.xlsx`
+				`现金记账_${new Date().getTime()}.xlsx`
 			);
 		},
 		// 关闭表单时清除localStorage和sessionStorage中的承兑信息填写状态

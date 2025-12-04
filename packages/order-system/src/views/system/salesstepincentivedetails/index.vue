@@ -528,11 +528,11 @@ export default {
 		/** 导出按钮操作 */
 		handleExport() {
 			this.download(
-				'system/salessingorderincentivedetails/export',
+				'system/salesstepincentivedetails/export',
 				{
 					...this.queryParams
 				},
-				`销售阶梯激励明细_${new Date().getTime()}.xlsx`
+				`台阶制_${new Date().getTime()}.xlsx`
 			);
 		}
 	}

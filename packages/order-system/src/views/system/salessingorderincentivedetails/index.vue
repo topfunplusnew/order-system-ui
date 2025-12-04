@@ -484,11 +484,11 @@ export default {
 		/** 导出按钮操作 */
 		handleExport() {
 			this.download(
-				'system/salesstepincentivedetails/export',
+				'system/salessingorderincentivedetails/export',
 				{
 					...this.queryParams
 				},
-				`销售订单激励明细_${new Date().getTime()}.xlsx`
+				`唱单制_${new Date().getTime()}.xlsx`
 			);
 		}
 	}

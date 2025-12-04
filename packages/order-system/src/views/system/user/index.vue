@@ -1147,7 +1147,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`用户列表_${new Date().getTime()}.xlsx`
+				`用户_${new Date().getTime()}.xlsx`
 			);
 		},
 		/** 导入按钮操作 */

@@ -812,7 +812,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`进项发票_${new Date().getTime()}.xlsx`
+				`发票购入信息_${new Date().getTime()}.xlsx`
 			);
 		}
 	}

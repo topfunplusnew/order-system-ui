@@ -2602,7 +2602,7 @@ export default {
 			XLSX.utils.book_append_sheet(workbook, worksheet, '库存列表');
 
 			// 生成文件名
-			const fileName = `库存列表_${parseTime(new Date(), '{y}{m}{d}_{h}{i}{s}')}.xlsx`;
+			const fileName = `库存_${parseTime(new Date(), '{y}{m}{d}_{h}{i}{s}')}.xlsx`;
 
 			// 下载文件
 			XLSX.writeFile(workbook, fileName);
@@ -2619,7 +2619,7 @@ export default {
 					// 不分页的导出
 					noPage: true
 				},
-				`库存全量_${new Date().getTime()}.xlsx`
+				`库存_${new Date().getTime()}.xlsx`
 			);
 		},
 		/**

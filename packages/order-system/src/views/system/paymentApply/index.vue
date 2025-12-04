@@ -840,7 +840,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`付款申请_${new Date().getTime()}.xlsx`
+				`付款信息_${new Date().getTime()}.xlsx`
 			);
 		}
 	}

@@ -256,7 +256,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`参数配置_${new Date().getTime()}.xlsx`
+				`参数_${new Date().getTime()}.xlsx`
 			);
 		},
 		/** 刷新缓存按钮操作 */

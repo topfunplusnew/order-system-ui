@@ -814,7 +814,7 @@ export default {
 			// showOrder: 平时查看给true
 			exportParams.params.showOrder = true;
 
-			this.download('system/ordercommission/export', exportParams, `厂家佣金_${new Date().getTime()}.xlsx`);
+			this.download('system/ordercommission/export', exportParams, `订单佣金信息_${new Date().getTime()}.xlsx`);
 		},
 		changePaymentApplyInfoVisible() {
 			this.needMoney = 0;

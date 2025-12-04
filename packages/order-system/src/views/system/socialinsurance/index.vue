@@ -1030,7 +1030,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`社保缴费_${new Date().getTime()}.xlsx`
+				`社保基金_${new Date().getTime()}.xlsx`
 			);
 		},
 		/** 导入按钮操作 */

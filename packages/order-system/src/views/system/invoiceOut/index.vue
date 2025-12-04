@@ -824,7 +824,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`销项发票_${new Date().getTime()}.xlsx`
+				`发票卖出信息_${new Date().getTime()}.xlsx`
 			);
 		}
 	}

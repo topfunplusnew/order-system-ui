@@ -568,7 +568,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`礼品入库_${this.parseTime(new Date(), '{y}{m}{d}_{h}{i}{s}')}.xlsx`
+				`购入礼品信息_${this.parseTime(new Date(), '{y}{m}{d}_{h}{i}{s}')}.xlsx`
 			);
 		}
 	}

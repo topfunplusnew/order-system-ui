@@ -542,7 +542,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`出库记录_${new Date().getTime()}.xlsx`
+				`出库_${new Date().getTime()}.xlsx`
 			);
 		}
 	}

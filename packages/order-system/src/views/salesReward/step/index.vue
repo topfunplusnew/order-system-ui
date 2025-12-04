@@ -844,7 +844,7 @@ export default {
 				exportParams.rewardDateBegin = this.daterangeRewardDate[0];
 				exportParams.rewardDateEnd = this.daterangeRewardDate[1];
 			}
-			this.download('system/salesReward/export', exportParams, `台阶奖励_${new Date().getTime()}.xlsx`);
+			this.download('system/salesReward/export', exportParams, `销售奖励_${new Date().getTime()}.xlsx`);
 		}
 	}
 };

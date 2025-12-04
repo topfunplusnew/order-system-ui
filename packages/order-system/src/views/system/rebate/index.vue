@@ -1537,7 +1537,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`返利汇总_${new Date().getTime()}.xlsx`
+				`供应商返利_${new Date().getTime()}.xlsx`
 			);
 		},
 		handleExport2() {

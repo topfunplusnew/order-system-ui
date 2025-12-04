@@ -368,7 +368,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`保证金收取_${new Date().getTime()}.xlsx`
+				`保证金_${new Date().getTime()}.xlsx`
 			);
 		},
 		/** 日期范围选择处理 */
