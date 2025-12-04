@@ -1944,6 +1944,8 @@ export default {
 		// 查看运费信息相关方法
 		// 打开查看运费信息弹窗
 		handleViewFreightInfo(row) {
+			//
+
 			// 从 tableReferences 中提取运费ID列表
 			const freightIds = _.chain(row.tableReferences)
 				.filter(ref => ref.refTableName === TableName.ORDER_FREIGHT && ref.refTableId)

@@ -346,7 +346,7 @@ export default {
 							},
 							{ itemTotalLender: 0, itemTotalBorrower: 0 } // 初始值
 						);
-						return [itemTotalLender, itemTotalBorrower];
+						return [-itemTotalLender, itemTotalBorrower];
 					};
 
 					if (Array.isArray(res.rows)) {

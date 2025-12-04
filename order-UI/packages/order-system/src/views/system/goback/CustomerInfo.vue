@@ -364,7 +364,8 @@ export default {
 						},
 						{ itemTotalLender: 0, itemTotalBorrower: 0 } // 初始值
 					);
-					return [itemTotalLender, itemTotalBorrower];
+					// 需要取反
+					return [itemTotalLender, -itemTotalBorrower];
 				};
 
 				if (Array.isArray(res.data)) {
