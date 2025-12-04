@@ -490,7 +490,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`vehicles_${new Date().getTime()}.xlsx`
+				`车辆信息_${new Date().getTime()}.xlsx`
 			);
 		},
 		/** 查看附件按钮操作 */

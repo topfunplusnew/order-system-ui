@@ -546,7 +546,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`fixedAssets_${new Date().getTime()}.xlsx`
+				`固定资产_${new Date().getTime()}.xlsx`
 			);
 		}
 	}

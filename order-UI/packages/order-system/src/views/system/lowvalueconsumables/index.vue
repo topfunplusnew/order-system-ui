@@ -538,7 +538,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`lowvalueconsumables_${new Date().getTime()}.xlsx`
+				`低值易耗品_${new Date().getTime()}.xlsx`
 			);
 		}
 	}

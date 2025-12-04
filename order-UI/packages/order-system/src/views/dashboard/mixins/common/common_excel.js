@@ -3,14 +3,14 @@ import FileSaver from 'file-saver';
 
 export const common_excel = {
 	methods: {
-		excelExport(unnecessaryColumns = [], fileName = 'table') {
+	excelExport(unnecessaryColumns = [], fileName = '表格导出') {
 			// 延迟执行，确保DOM完全渲染
 			this.$nextTick(() => {
 				this._performExcelExport(unnecessaryColumns, fileName);
 			});
 		},
 
-		_performExcelExport(unnecessaryColumns = [], fileName = 'table') {
+	_performExcelExport(unnecessaryColumns = [], fileName = '表格导出') {
 			// 尝试多个可能的表格ID
 			const possibleTableIds = ['#educe-table', '#printBox'];
 			let table = null;
@@ -92,7 +92,8 @@ export const common_excel = {
 			var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
 
 			try {
-				FileSaver.saveAs(new Blob([wbout], { type: 'application/octet-stream' }), `${fileName}.xlsx`);
+				const safeFileName = fileName || '表格导出';
+				FileSaver.saveAs(new Blob([wbout], { type: 'application/octet-stream' }), `${safeFileName || '表格导出'}.xlsx`);
 			} catch (e) {
 				if (typeof console !== 'undefined') console.log(e, wbout);
 			}

@@ -874,7 +874,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`productLevel_${new Date().getTime()}.xlsx`
+				`产品等级_${new Date().getTime()}.xlsx`
 			);
 		}
 	}

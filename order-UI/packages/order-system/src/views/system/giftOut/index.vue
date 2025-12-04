@@ -809,7 +809,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`giftOut_${this.parseTime(new Date(), '{y}{m}{d}_{h}{i}{s}')}.xlsx`
+				`礼品出库_${this.parseTime(new Date(), '{y}{m}{d}_{h}{i}{s}')}.xlsx`
 			);
 		},
 		/** 对方类型变化处理 */

@@ -343,7 +343,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`payment_${new Date().getTime()}.xlsx`
+				`收款记录_${new Date().getTime()}.xlsx`
 			);
 		}
 	}

@@ -746,7 +746,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`bankAccount_${new Date().getTime()}.xlsx`
+				`银行账户_${new Date().getTime()}.xlsx`
 			);
 		}
 	}

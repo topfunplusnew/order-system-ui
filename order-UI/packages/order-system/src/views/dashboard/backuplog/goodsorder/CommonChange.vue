@@ -913,7 +913,7 @@ export default {
 				// 生成文件名
 				const now = new Date();
 				const dateStr = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}`;
-				const fileName = `${sheetName}_${dateStr}.xlsx`;
+				const fileName = `${sheetName || '模块修改记录'}_${dateStr}.xlsx`;
 
 				// 下载文件
 				XLSX.writeFile(workbook, fileName);

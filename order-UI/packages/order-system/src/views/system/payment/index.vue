@@ -1878,7 +1878,7 @@ export default {
 					...this.queryParams,
 					payType: this.queryParams.payType?.join('-')
 				},
-				`payment_${new Date().getTime()}.xlsx`
+				`付款记录_${new Date().getTime()}.xlsx`
 			);
 		},
 		// 下载导入模板

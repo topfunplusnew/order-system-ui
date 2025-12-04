@@ -185,7 +185,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`logininfor_${new Date().getTime()}.xlsx`
+				`登录日志_${new Date().getTime()}.xlsx`
 			);
 		}
 	}

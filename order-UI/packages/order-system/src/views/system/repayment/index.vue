@@ -380,7 +380,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`repayment_${new Date().getTime()}.xlsx`
+				`还款计划_${new Date().getTime()}.xlsx`
 			);
 		}
 	}

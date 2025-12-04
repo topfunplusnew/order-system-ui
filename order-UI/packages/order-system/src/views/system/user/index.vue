@@ -1147,7 +1147,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`user_${new Date().getTime()}.xlsx`
+				`用户列表_${new Date().getTime()}.xlsx`
 			);
 		},
 		/** 导入按钮操作 */
@@ -1157,7 +1157,7 @@ export default {
 		},
 		/** 下载模板操作 */
 		importTemplate() {
-			this.download('system/user/importTemplate', {}, `user_template_${new Date().getTime()}.xlsx`);
+			this.download('system/user/importTemplate', {}, `用户导入模板_${new Date().getTime()}.xlsx`);
 		},
 		// 文件上传中处理
 		handleFileUploadProgress() {

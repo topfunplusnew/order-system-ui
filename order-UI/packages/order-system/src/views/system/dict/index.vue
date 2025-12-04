@@ -304,7 +304,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`type_${new Date().getTime()}.xlsx`
+				`字典类型_${new Date().getTime()}.xlsx`
 			);
 		},
 		/** 刷新缓存按钮操作 */
