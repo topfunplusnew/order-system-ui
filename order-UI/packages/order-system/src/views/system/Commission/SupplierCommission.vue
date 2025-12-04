@@ -183,8 +183,8 @@
 				<el-form-item label="其他付款金额" prop="otherPaymentAmount">
 					<el-input v-model="batchForm.otherPaymentAmount" placeholder="请输入其他付款金额" />
 				</el-form-item>
-				<el-form-item label="差异原因" prop="difference_reason">
-					<el-input v-model="batchForm.difference_reason" placeholder="请输入差异原因" type="textarea" :rows="3" />
+				<el-form-item label="差异原因" prop="differenceReason">
+					<el-input v-model="batchForm.differenceReason" placeholder="请输入差异原因" type="textarea" :rows="3" />
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -449,7 +449,7 @@ export default {
 			batchForm: {
 				commissionUnitPrice: '',
 				otherPaymentAmount: '',
-				difference_reason: '',
+				differenceReason: '',
 				extraInfo: {
 					var: '',
 					rebate: '',
@@ -861,7 +861,7 @@ export default {
 			this.batchForm = {
 				commissionUnitPrice: '',
 				otherPaymentAmount: '',
-				difference_reason: '',
+				differenceReason: '',
 				extraInfo: {
 					var: '',
 					rebate: '',
@@ -895,7 +895,7 @@ export default {
 					orderDetailId: row.orderDetailId,
 					commissionUnitPrice: number(this.batchForm.commissionUnitPrice || 0),
 					otherPaymentAmount: number(this.batchForm.otherPaymentAmount || 0),
-					difference_reason: this.batchForm.difference_reason,
+					differenceReason: this.batchForm.differenceReason,
 					extraInfo: {
 						var: this.batchForm.extraInfo.var,
 						rebate: this.batchForm.extraInfo.rebate,

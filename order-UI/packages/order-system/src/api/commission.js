@@ -48,7 +48,7 @@ export function getCommission(id) {
  * @param {number} data.orderDetailId - 订单详情ID
  * @param {number} data.commissionUnitPrice - 佣金单价
  * @param {number} [data.otherPaymentAmount] - 其他付款金额
- * @param {string} [data.difference_reason] - 差异原因
+ * @param {string} [data.differenceReason] - 差异原因
  * @param {Object} [data.extraInfo] - 额外信息对象
  * @returns {Promise} 返回新增结果的Promise对象
  */
@@ -68,7 +68,7 @@ export function addCommission(data) {
  * @param {number} [data.orderDetailId] - 订单详情ID
  * @param {number} [data.commissionUnitPrice] - 佣金单价
  * @param {number} [data.otherPaymentAmount] - 其他付款金额
- * @param {string} [data.difference_reason] - 差异原因
+ * @param {string} [data.differenceReason] - 差异原因
  * @param {Object} [data.extraInfo] - 额外信息对象
  * @returns {Promise} 返回更新结果的Promise对象
  */
@@ -87,7 +87,7 @@ export function updateCommission(data) {
  * @param {number} data[].orderDetailId - 订单详情ID
  * @param {number} data[].commissionUnitPrice - 佣金单价
  * @param {number} data[].otherPaymentAmount - 其他付款金额
- * @param {string} data[].difference_reason - 差异原因
+ * @param {string} data[].differenceReason - 差异原因
  * @param {Object} data[].extraInfo - 额外信息对象
  * @param {string} data[].extraInfo.var - 变量
  * @param {string} data[].extraInfo.rebate - 折扣百分比
@@ -101,7 +101,7 @@ export function updateCommission(data) {
  *     orderDetailId: 2,
  *     commissionUnitPrice: 1.200,
  *     otherPaymentAmount: 200.000,
- *     difference_reason: "计算错误已修正",
+ *     differenceReason: "计算错误已修正",
  *     extraInfo: {
  *       var: "var1",
  *       rebate: "2%",
