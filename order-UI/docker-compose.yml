@@ -18,6 +18,10 @@ services:
       - ${FRONTEND_NGINX_CONFIG:-./nginx.conf}:/opt/front/nginx.conf.template:ro
       # 挂载日志目录
       - ${FRONTEND_LOG_DIR:-./logs/frontend}:/opt/front/log
+      # 挂载网站目录（可选）
+      # 如果不设置 FRONTEND_WEB_DIR 或设置为空，则使用临时目录（不会覆盖镜像内的文件）
+      # 如果需要挂载外部目录，请在 .env 文件中设置 FRONTEND_WEB_DIR，例如：FRONTEND_WEB_DIR=./dist
+      - ${FRONTEND_WEB_DIR:-./.tmp/html}:/opt/front/html
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "nginx -t && pgrep nginx > /dev/null"]
