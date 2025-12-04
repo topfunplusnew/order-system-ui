@@ -8,7 +8,7 @@ import { getUuid } from '@/utils/trash/utils';
 import { TableName } from '@/api/tool/enums';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import { batchInvoice } from '@/api/system/excel';
-import { markCompanyOperated, markCompaniesOperated, debugGetAllOperatedRecords, markSheetOperated } from '@/api/excelTemplateStore';
+import { markCompanyOperated } from '@/api/excelTemplateStore';
 import INVOICE_OUT from '@/components/NeedToShow/INVOICE_OUT.vue';
 import INVOICE_IN from '@/components/NeedToShow/INVOICE_IN.vue';
 
@@ -40,10 +40,7 @@ export default {
 			supplierId: null,
 			// 票点信息
 			currentTicketPoint: 0,
-			currentTicketPointAmount: 0,
-			// 当前文件ID和Sheet名称（用于标记Sheet操作）
-			currentFileId: null,
-			currentSheetName: null
+			currentTicketPointAmount: 0
 		};
 	},
 	created() {
@@ -76,7 +73,7 @@ export default {
 			}
 		},
 		// 创建发票对象的工具函数
-		createInvoiceObject(params) {
+		createInvoiceObject(params, extra = {}) {
 			const { invoiceDate, invoiceObject, invoiceAmount, companyType, companyName, companyID, invoiceCompanyName, ticketPoint = 0, ticketPointAmount, isOrderTax, comments } = params;
 			return {
 				invoiceDate,
@@ -94,7 +91,8 @@ export default {
 				params: {
 					uuid: getUuid(),
 					tableName: companyType === PUBLIC_DICT_TYPE.CUSTOMER ? TableName.INVOICE_OUT : TableName.INVOICE_IN
-				}
+				},
+				...extra
 			};
 		},
 
@@ -132,6 +130,9 @@ export default {
 				this.$message.error('开票信息为空');
 				return;
 			}
+			if (!this.validateBatchAmounts(filteredInvoices)) {
+				return;
+			}
 
 			const res = await batchInvoice(filteredInvoices);
 			if (!res.data && !res.rows) {
@@ -160,17 +161,12 @@ export default {
 				sessionStorage.removeItem('us');
 				// 标记公司为已操作——放在清理事件之前，避免 sessionStorage 被清空
 				try {
-					// 调试：先查看所有已操作记录
-					await debugGetAllOperatedRecords();
-
 					// 优先根据 CompanysList 选中行的公司ID精确标记
 					const selectedCompanyId = sessionStorage.getItem('companyList_selected_company_id');
 					console.log('selectedCompanyId', selectedCompanyId);
 					if (selectedCompanyId && selectedCompanyId !== 'null' && selectedCompanyId !== 'undefined') {
 						await markCompanyOperated(Number(selectedCompanyId));
 						console.log('已标记公司为已操作:', selectedCompanyId);
-						// 再次查看记录确认更新
-						await debugGetAllOperatedRecords();
 						this.$nextTick(() => {
 							this.$bus.$emit('excel:operated-updated', { companyIds: [Number(selectedCompanyId)] });
 						});
@@ -196,21 +192,6 @@ export default {
 					console.error('标记公司已操作失败:', e);
 				}
 
-				// 标记当前Sheet为已操作
-				try {
-					// 使用本地存储的文件ID和Sheet名称
-					if (this.currentFileId && this.currentSheetName) {
-						await markSheetOperated(this.currentFileId, this.currentSheetName);
-					} else {
-						console.warn('InvoiceBody: 无法标记Sheet为已操作：缺少文件ID或Sheet名称', {
-							fileId: this.currentFileId,
-							sheetName: this.currentSheetName
-						});
-					}
-				} catch (e) {
-					console.error('InvoiceBody: 标记Sheet已操作失败:', e);
-				}
-
 				// 广播清理事件（放在回写之后）
 				this.$bus.$emit('invoice-clear');
 				this.$message.success('本批开票成功');
@@ -224,6 +205,41 @@ export default {
 					this.handleInvoiceError(result, filteredInvoices);
 				}, 1000);
 			}
+		},
+
+		validateBatchAmounts(invoices = []) {
+			const metaMap = this.$store?.state?.excel?.batchMetaMap || {};
+			if (!invoices.length) {
+				return true;
+			}
+			const sums = {};
+			invoices.forEach(item => {
+				const batchId = item?.batchInvoiceId;
+				if (!batchId) {
+					return;
+				}
+				if (!sums[batchId]) {
+					sums[batchId] = this.math.bignumber(0);
+				}
+				sums[batchId] = this.math.add(sums[batchId], this.math.bignumber(item.invoiceAmount || 0));
+			});
+
+			for (const batchId of Object.keys(sums)) {
+				const meta = metaMap[batchId];
+				if (!meta || meta.totalAmount === undefined || meta.totalAmount === null) {
+					this.$message.error(`批次 ${batchId} 缺少导入金额，请重新载入批次数据`);
+					return false;
+				}
+				const expected = this.math.bignumber(meta.totalAmount || 0);
+				const diff = this.math.subtract(sums[batchId], expected);
+				if (!this.math.equal(this.math.round(diff, 2), this.math.bignumber(0))) {
+					const sumFormatted = Number(this.math.format(sums[batchId], { precision: 12, notation: 'fixed' })).toFixed(2);
+					const expectedFormatted = Number(this.math.format(expected, { precision: 12, notation: 'fixed' })).toFixed(2);
+					this.$message.error(`批次 ${batchId} 的开票金额 ${sumFormatted} 与导入金额 ${expectedFormatted} 不一致`);
+					return false;
+				}
+			}
+			return true;
 		},
 
 		// 处理开票错误详情
@@ -427,19 +443,25 @@ export default {
 					}
 
 					// 生成发票对象（本次使用的金额 used）
-					const invoice = this.createInvoiceObject({
-						invoiceDate: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
-						invoiceObject: invoiceObject || sessionStorage.getItem('us') || '',
-						invoiceAmount: Number(this.math.format(used, { precision: 2, notation: 'fixed' })),
-						companyType: companyTypeConst,
-						companyName: companyName,
-						companyID: companyID,
-						invoiceCompanyName: companyName,
-						ticketPoint: tpl.ticketPoint || tpl.ticketPointAmount || 0,
-						ticketPointAmount: Number(this.math.format(this.math.multiply(used, b(tpl.ticketPoint || 0)), { precision: 2, notation: 'fixed' })),
-						isOrderTax: order.id,
-						comments: this.comment
-					});
+					const invoice = this.createInvoiceObject(
+						{
+							invoiceDate: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
+							invoiceObject: invoiceObject || sessionStorage.getItem('us') || '',
+							invoiceAmount: Number(this.math.format(used, { precision: 2, notation: 'fixed' })),
+							companyType: companyTypeConst,
+							companyName: companyName,
+							companyID: companyID,
+							invoiceCompanyName: companyName,
+							ticketPoint: tpl.ticketPoint || tpl.ticketPointAmount || 0,
+							ticketPointAmount: Number(this.math.format(this.math.multiply(used, b(tpl.ticketPoint || 0)), { precision: 2, notation: 'fixed' })),
+							isOrderTax: order.id,
+							comments: this.comment
+						},
+						{
+							batchInvoiceId: tpl.batchInvoiceId || tpl.id || null,
+							batchVoucher: tpl.voucher || this.currentVoucher || ''
+						}
+					);
 					resultInvoices.push(invoice);
 					// 更新订单剩余和模板剩余
 					remaining = this.math.subtract(remaining, used);
@@ -563,6 +585,7 @@ export default {
 			sessionStorage.removeItem('companyList_selected_company_id');
 			sessionStorage.removeItem('merged_company_info'); // 清理合并信息
 			this.$store.dispatch('excel/clearInvoiceAmount');
+			this.$store.dispatch('excel/clearBatchMetaMap');
 			// 重置开票列表
 			this.$store.dispatch('excel/clearSelectedInvoiceList');
 			// 清除右上角公司信息
@@ -574,11 +597,6 @@ export default {
 			this.currentTicketPointAmount = 0;
 		});
 
-		// 监听Sheet信息更新事件
-		this.$bus.$on('sheet-info-updated', payload => {
-			this.currentFileId = payload.fileId;
-			this.currentSheetName = payload.sheetName;
-		});
 		// 监听生成发票的触发（由 SelectGoods 发出）
 		this.$bus.$on('generate-invoice', this.generateInvoicesByTemplates);
 	},

@@ -1,4 +1,5 @@
 <script>
+import { create, all } from 'mathjs';
 import { getGoodsOrder } from '@/api/system/goodsOrder';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import { batchInvoice } from '@/api/system/excel';
@@ -6,6 +7,8 @@ import INVOICE_OUT from '@/components/NeedToShow/INVOICE_OUT.vue';
 import { TableName } from '@/api/tool/enums';
 import INVOICE_IN from '@/components/NeedToShow/INVOICE_IN.vue';
 import GOODS_ORDER from '@/components/NeedToShow/GOODS_ORDER.vue';
+
+const math = create(all, { number: 'BigNumber', precision: 64 });
 
 export default {
 	name: 'ReadyList',
@@ -45,6 +48,9 @@ export default {
 			const invoices = this.list.filter(item => item !== null);
 			if (invoices.length === 0) {
 				this.$message.error('开票信息为空');
+				return;
+			}
+			if (!this.validateBatchAmounts(invoices)) {
 				return;
 			}
 			const res = await batchInvoice(invoices);
@@ -123,6 +129,37 @@ export default {
 		},
 		handleReject() {
 			return Promise.resolve();
+		},
+		validateBatchAmounts(invoices = []) {
+			const metaMap = this.$store?.state?.excel?.batchMetaMap || {};
+			if (!invoices.length) {
+				return true;
+			}
+			const sums = {};
+			invoices.forEach(item => {
+				const batchId = item?.batchInvoiceId;
+				if (!batchId) return;
+				if (!sums[batchId]) {
+					sums[batchId] = math.bignumber(0);
+				}
+				sums[batchId] = math.add(sums[batchId], math.bignumber(item.invoiceAmount || 0));
+			});
+			for (const batchId of Object.keys(sums)) {
+				const meta = metaMap[batchId];
+				if (!meta || meta.totalAmount === undefined || meta.totalAmount === null) {
+					this.$message.error(`批次 ${batchId} 缺少导入金额，请重新载入批次数据`);
+					return false;
+				}
+				const expected = math.bignumber(meta.totalAmount || 0);
+				const diff = math.subtract(sums[batchId], expected);
+				if (!math.equal(math.round(diff, 2), math.bignumber(0))) {
+					const sumFormatted = Number(math.format(sums[batchId], { precision: 12, notation: 'fixed' })).toFixed(2);
+					const expectedFormatted = Number(math.format(expected, { precision: 12, notation: 'fixed' })).toFixed(2);
+					this.$message.error(`批次 ${batchId} 的开票金额 ${sumFormatted} 与导入金额 ${expectedFormatted} 不一致`);
+					return false;
+				}
+			}
+			return true;
 		},
 		// 检查是否开成功了
 		checkInvoice(data) {
