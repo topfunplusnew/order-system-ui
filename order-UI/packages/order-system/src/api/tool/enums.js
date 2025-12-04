@@ -119,7 +119,9 @@ export const moduleNames = Object.freeze({
 	inventory_detail: '库存明细',
 	bankacceptance: '商业票据',
 	ordercommission: '订单佣金',
-	deposit_money: '保证金'
+	deposit_money: '保证金',
+	// init 特殊处理 init显示期初
+	init: '期初'
 });
 
 // 报表所用类型
