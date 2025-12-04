@@ -49,9 +49,11 @@ COPY nginx.conf /opt/front/nginx.conf.template
 # 同时保留默认位置作为后备
 COPY nginx.conf /etc/nginx/templates/default.conf.template
 
-# 复制启动脚本
+# 复制启动脚本并修复行尾符（Windows CRLF -> Linux LF）
 COPY docker-entrypoint.sh /docker-entrypoint.sh
-RUN chmod +x /docker-entrypoint.sh
+RUN tr -d '\r' < /docker-entrypoint.sh > /docker-entrypoint.sh.tmp && \
+    mv /docker-entrypoint.sh.tmp /docker-entrypoint.sh && \
+    chmod +x /docker-entrypoint.sh
 
 # 暴露端口（默认正式环境端口，实际由环境变量控制）
 EXPOSE 40085 40081

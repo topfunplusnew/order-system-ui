@@ -1,0 +1,69 @@
+name: 构建并部署到开发环境
+
+on:
+  push:
+    branches:
+      - front-dev
+  workflow_dispatch: # 允许手动触发
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v3
+      
+      - name: 设置 Node.js 环境
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.20.6'
+          cache: 'yarn'
+      
+      - name: 安装 Yarn
+        run: npm install -g yarn
+      
+      - name: 配置 Yarn 镜像源
+        run: yarn config set registry https://mirrors.cloud.tencent.com/npm/
+      
+      - name: 安装依赖
+        run: yarn install --frozen-lockfile --ignore-engines
+      
+      - name: 构建项目
+        run: yarn build
+        env:
+          NODE_ENV: production
+      
+      - name: 验证构建产物
+        run: |
+          if [ ! -d "packages/order-system/dist" ]; then
+            echo "错误: 构建产物目录不存在"
+            exit 1
+          fi
+          echo "构建成功，文件列表:"
+          ls -la packages/order-system/dist/
+      
+      - name: 配置 SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
+      
+      - name: 通过 Rsync 部署到服务器
+        run: |
+          echo "开始部署到服务器..."
+          echo "目标: ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:${{ secrets.DEPLOY_PATH }}"
+          rsync -avz --delete --progress \
+            -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
+            packages/order-system/dist/ \
+            ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:${{ secrets.DEPLOY_PATH }}/
+          echo "部署完成！"
+      
+      - name: 部署完成通知
+        run: |
+          echo "✅ 部署完成！"
+          echo "构建时间: $(date '+%Y-%m-%d %H:%M:%S')"
+          echo "提交信息: ${{ github.event.head_commit.message }}"
+          echo "提交作者: ${{ github.event.head_commit.author.name }}"
+
