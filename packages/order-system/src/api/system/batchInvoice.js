@@ -21,7 +21,10 @@ export function importBatchInvoiceInData(data) {
 	return request({
 		url: `${BASE_IN}/importData`,
 		method: 'post',
-		data
+		data,
+		headers: {
+			'Content-Type': 'multipart/form-data'
+		}
 	});
 }
 
@@ -68,7 +71,10 @@ export function importBatchInvoiceOutData(data) {
 	return request({
 		url: `${BASE_OUT}/importData`,
 		method: 'post',
-		data
+		data,
+		headers: {
+			'Content-Type': 'multipart/form-data'
+		}
 	});
 }
 
