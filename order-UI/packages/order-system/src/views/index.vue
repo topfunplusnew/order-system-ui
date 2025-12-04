@@ -512,25 +512,64 @@ export default {
 		getSummaries(param) {
 			const { columns, data } = param;
 			const sums = [];
+
+			// 需要合计的数字列（根据 prop 属性判断）
+			const summaryColumns = ['arrears', 'profit', 'profitNoTax', 'payments', 'paymentFactory', 'tonnage', 'freight'];
+
+			// 排除合计的列（非数字列）
+			const excludeColumns = ['id', 'orderDate', 'companyName', 'salesman', 'clerk', 'landCarNo', 'seaCarNo', 'fleet'];
+
+			// 确保 sums 数组长度与 columns 数组长度一致，先初始化为空字符串
+			for (let i = 0; i < columns.length; i++) {
+				sums[i] = '';
+			}
+
+			// 如果没有数据，直接返回
+			if (!data || data.length === 0) {
+				sums[0] = '合计';
+				return sums;
+			}
+
 			columns.forEach((column, index) => {
+				// 第一列显示"合计"
 				if (index === 0) {
 					sums[index] = '合计';
 					return;
 				}
-				// 排除柜号列（seaCarNo）的求和
-				if (column.property === 'seaCarNo') {
+
+				// 如果没有 property，跳过
+				if (!column.property) {
 					sums[index] = '';
 					return;
 				}
-				// 排除其他非数字列
-				const values = data.map(item => number(item[column.property]) || 0);
-				if (values.length > 0 && values.some(value => !isNaN(value) && value !== 0)) {
-					const total = sum(values);
-					sums[index] = round(total, 2);
+
+				// 排除柜号列（seaCarNo）和其他非数字列
+				if (excludeColumns.includes(column.property)) {
+					sums[index] = '';
+					return;
+				}
+
+				// 只对需要合计的数字列进行计算
+				if (summaryColumns.includes(column.property)) {
+					const values = data.map(item => {
+						const value = item[column.property];
+						// 转换为数字，如果转换失败则返回0
+						const numValue = number(value);
+						return isNaN(numValue) ? 0 : numValue;
+					});
+
+					// 计算总和
+					if (values.length > 0) {
+						const total = sum(values);
+						sums[index] = round(total, 2);
+					} else {
+						sums[index] = '';
+					}
 				} else {
 					sums[index] = '';
 				}
 			});
+
 			return sums;
 		},
 		// 一键下载
