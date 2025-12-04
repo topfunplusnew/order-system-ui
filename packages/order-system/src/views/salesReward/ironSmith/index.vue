@@ -291,6 +291,12 @@
 						<el-form-item label="综合单车利润" prop="comprehensiveProfit">
 							<el-input v-model="form.comprehensiveProfit" placeholder="综合单车利润" disabled style="width: 100%"></el-input>
 						</el-form-item>
+						<el-form-item label="是否含税" prop="salesTaxIncluded">
+							<el-radio-group v-model="form.salesTaxIncluded">
+								<el-radio :label="0">否</el-radio>
+								<el-radio :label="1">是</el-radio>
+							</el-radio-group>
+						</el-form-item>
 						<el-form-item label="利润是否达标" prop="isTargetReached">
 							<el-radio-group v-model="form.isTargetReached">
 								<el-radio :label="0">未达标</el-radio>
@@ -497,6 +503,7 @@ export default {
 						trigger: 'blur'
 					}
 				],
+				salesTaxIncluded: [{ required: true, message: '请选择是否含税', trigger: 'change' }],
 				paymentAmount: [
 					{
 						validator: (rule, value, callback) => {
@@ -720,6 +727,7 @@ export default {
 				acceptanceDiscountProfit: null,
 				customerManufacturerCommissionAmount: null,
 				comprehensiveProfit: null,
+				salesTaxIncluded: 0,
 				paymentAmount: null,
 				isTargetReached: 1,
 				rewardAmount: null,
@@ -785,6 +793,8 @@ export default {
 			getSalesReward(id).then(response => {
 				this.form = response.data;
 				this.form.isTargetReached = response.data.isTargetReached;
+				const serverSalesTaxIncluded = response?.data?.salesTaxIncluded;
+				this.form.salesTaxIncluded = serverSalesTaxIncluded === 1 ? 1 : 0;
 				this.open = true;
 				this.title = '修改铁匠奖励';
 			});
