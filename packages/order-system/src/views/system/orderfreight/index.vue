@@ -1140,7 +1140,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`orderFreight_${new Date().getTime()}.xlsx`
+				`订单运费_${new Date().getTime()}.xlsx`
 			);
 		},
 		// 运费修正相关方法

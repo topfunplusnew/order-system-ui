@@ -613,7 +613,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`bankAcceptance_${new Date().getTime()}.xlsx`
+				`承兑发放_${new Date().getTime()}.xlsx`
 			);
 		}
 	}

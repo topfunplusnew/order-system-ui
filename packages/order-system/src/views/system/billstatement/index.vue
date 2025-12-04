@@ -525,7 +525,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`bankAcceptance_${new Date().getTime()}.xlsx`
+				`票据对账_${new Date().getTime()}.xlsx`
 			);
 		}
 	}

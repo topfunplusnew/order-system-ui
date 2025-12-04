@@ -726,7 +726,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`borrowedMoney_${new Date().getTime()}.xlsx`
+				`外部借款_${new Date().getTime()}.xlsx`
 			);
 		}
 	}

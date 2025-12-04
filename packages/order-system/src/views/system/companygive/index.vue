@@ -843,7 +843,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`company_${new Date().getTime()}.xlsx`
+				`供应商资料_${new Date().getTime()}.xlsx`
 			);
 		}
 	}

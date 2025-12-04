@@ -456,7 +456,7 @@ export default {
 		},
 		/** 导出按钮操作 */
 		handleExport() {
-			this.download('system/bankAccount/exportSelfMoneySummary?endDate=' + (this.queryParams.endDate ? this.queryParams.endDate : ''), null, `selfMoneySummary_${new Date().getTime()}.xlsx`);
+			this.download('system/bankAccount/exportSelfMoneySummary?endDate=' + (this.queryParams.endDate ? this.queryParams.endDate : ''), null, `自有资金汇总_${new Date().getTime()}.xlsx`);
 		},
 		/**
 		 * 处理排序序号输入，只允许输入数字

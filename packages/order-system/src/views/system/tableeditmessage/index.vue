@@ -245,7 +245,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`tableEditMessage_${new Date().getTime()}.xlsx`
+				`表编辑记录_${new Date().getTime()}.xlsx`
 			);
 		}
 	}

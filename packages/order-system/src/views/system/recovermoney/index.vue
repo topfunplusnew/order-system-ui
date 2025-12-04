@@ -365,7 +365,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`recoverMoney_${new Date().getTime()}.xlsx`
+				`收回款_${new Date().getTime()}.xlsx`
 			);
 		}
 	}

@@ -139,7 +139,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`inventory_out_${new Date().getTime()}.xlsx`
+				`出库统计_${new Date().getTime()}.xlsx`
 			);
 		}
 	}

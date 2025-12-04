@@ -418,7 +418,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`BalanceAccounts_${new Date().getTime()}.xlsx`
+				`平账记录_${new Date().getTime()}.xlsx`
 			);
 		}
 	}

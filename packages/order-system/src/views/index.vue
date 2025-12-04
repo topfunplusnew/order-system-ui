@@ -610,7 +610,7 @@ export default {
 							date: date,
 							exportEmptyData: exportEmptyData
 						},
-						`FullReport_${new Date().getTime()}.zip`
+						`全量报表_${new Date().getTime()}.zip`
 					);
 				})
 				.catch(() => {
@@ -699,7 +699,7 @@ export default {
 					startTime: this.queryParams.startTime,
 					endTime: this.queryParams.endTime
 				},
-				`todayOrderList${new Date().getTime()}.xlsx`
+				`今日订单列表${new Date().getTime()}.xlsx`
 			);
 		},
 		handleClose() {

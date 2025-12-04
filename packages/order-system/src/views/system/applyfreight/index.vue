@@ -254,7 +254,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`orderFreight_${new Date().getTime()}.xlsx`
+				`运费台账_${new Date().getTime()}.xlsx`
 			);
 		}
 	},

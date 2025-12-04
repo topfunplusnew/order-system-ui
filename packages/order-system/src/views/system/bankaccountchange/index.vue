@@ -267,7 +267,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`bankAccountChange_${new Date().getTime()}.xlsx`
+				`银行账号变动_${new Date().getTime()}.xlsx`
 			);
 		}
 	}

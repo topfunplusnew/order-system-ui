@@ -1320,7 +1320,7 @@ export default {
 				params.endTime = null;
 			}
 			params.receiveType = this.queryParams.receiveType?.join('-');
-			this.download('system/receiveMoney/export', params, `receiveMoney_${new Date().getTime()}.xlsx`);
+			this.download('system/receiveMoney/export', params, `收款记录_${new Date().getTime()}.xlsx`);
 		},
 		// 下载导入模板
 		handleDownloadTemplate() {

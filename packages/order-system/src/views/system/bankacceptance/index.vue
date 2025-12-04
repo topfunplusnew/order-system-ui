@@ -621,7 +621,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`bankAcceptance_${new Date().getTime()}.xlsx`
+				`银行承兑_${new Date().getTime()}.xlsx`
 			);
 		}
 	}

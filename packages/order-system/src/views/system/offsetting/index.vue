@@ -433,7 +433,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`Offsetting_${new Date().getTime()}.xlsx`
+				`冲抵款_${new Date().getTime()}.xlsx`
 			);
 		}
 	}

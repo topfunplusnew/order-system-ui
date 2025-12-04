@@ -765,7 +765,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`carApply_${new Date().getTime()}.xlsx`
+				`车辆申请_${new Date().getTime()}.xlsx`
 			);
 		},
 		/** 派车审核操作 */

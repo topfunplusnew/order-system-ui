@@ -584,7 +584,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`bankAcceptance_${new Date().getTime()}.xlsx`
+				`内部承兑_${new Date().getTime()}.xlsx`
 			);
 		}
 	}

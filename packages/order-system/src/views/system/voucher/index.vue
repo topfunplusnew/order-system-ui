@@ -371,7 +371,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`voucher_${new Date().getTime()}.xlsx`
+				`凭证列表_${new Date().getTime()}.xlsx`
 			);
 		}
 	}

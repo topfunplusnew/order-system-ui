@@ -745,7 +745,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`oilCard_${new Date().getTime()}.xlsx`
+				`油卡明细_${new Date().getTime()}.xlsx`
 			);
 		}
 	}

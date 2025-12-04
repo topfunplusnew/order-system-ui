@@ -285,7 +285,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`auditInfo_${new Date().getTime()}.xlsx`
+				`审核记录_${new Date().getTime()}.xlsx`
 			);
 		}
 	}
