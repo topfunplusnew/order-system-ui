@@ -71,7 +71,7 @@
 					<span style="color: #1c84c6; font-size: 12px">请先注意选择正确的对方公司类型!</span>
 				</el-form-item>
 
-				<el-form-item v-if="value && value !== PUBLIC_DICT_TYPE.EMPLOYEE && value !== PAYMENT_TARGET_TYPE.PAYMENT_FEE" :label="value === PUBLIC_DICT_TYPE.DRIVER ? '司机' : '对方公司'" prop="companyName">
+				<el-form-item v-if="value && value !== PUBLIC_DICT_TYPE.EMPLOYEE && value !== PAYMENT_TARGET_TYPE.PAYMENT_FEE" :label="value === PUBLIC_DICT_TYPE.DRIVER ? PUBLIC_DICT_TYPE.DRIVER : PUBLIC_DICT_TYPE.OTHER_COMPANY" prop="companyName">
 					<el-row>
 						<el-col :span="22">
 							<el-input disabled v-model="form.companyName" placeholder="请选择" style="width: 100%" />
@@ -427,6 +427,16 @@ export default {
 		hasTableReferences() {
 			return this.tableReferences && this.tableReferences.length > 0;
 		},
+		// 下拉框选项 - 使用枚举
+		options() {
+			return [
+				{ value: PUBLIC_DICT_TYPE.CUSTOMER, label: PUBLIC_DICT_TYPE.CUSTOMER },
+				{ value: PUBLIC_DICT_TYPE.SUPPLIER, label: PUBLIC_DICT_TYPE.SUPPLIER },
+				{ value: PUBLIC_DICT_TYPE.DRIVER, label: PUBLIC_DICT_TYPE.DRIVER },
+				{ value: PUBLIC_DICT_TYPE.EMPLOYEE, label: PUBLIC_DICT_TYPE.EMPLOYEE },
+				{ value: PAYMENT_TARGET_TYPE.PAYMENT_FEE, label: PAYMENT_TARGET_TYPE.PAYMENT_FEE }
+			];
+		},
 		rules() {
 			// 基础校验规则 - 两种场景都需要的校验
 			const baseRules = {
@@ -513,14 +523,6 @@ export default {
 			bankInputDisabled: false,
 			// 本地存储的 key
 			localStorageKey: 'paymentApplyForm',
-			// 下拉框选项
-			options: [
-				{ value: '客户', label: '客户' },
-				{ value: '供应商', label: '供应商' },
-				{ value: '司机', label: '司机' },
-				{ value: '员工', label: '员工' },
-				{ value: '支付费用', label: '支付费用' }
-			],
 			value: '', // 对方类型
 			queryOther: '', // 其他搜索参数
 			queryCompany: '', // 公司搜索参数
@@ -703,7 +705,13 @@ export default {
 				companyName: [{ required: true, message: '对方公司不能为空', trigger: 'change' }]
 			};
 			// 如果是客户、供应商、司机或员工，则需要校验银行账号信息
-			if (['客户', '供应商', '司机', '员工'].includes(this.value) && !this.bankInputDisabled) {
+			const needBankAccountTypes = [
+				PUBLIC_DICT_TYPE.CUSTOMER,
+				PUBLIC_DICT_TYPE.SUPPLIER,
+				PUBLIC_DICT_TYPE.DRIVER,
+				PUBLIC_DICT_TYPE.EMPLOYEE
+			];
+			if (needBankAccountTypes.includes(this.value) && !this.bankInputDisabled) {
 				rules.otherBankNo = [{ required: true, message: '对方账号不能为空', trigger: 'change' }];
 			}
 			return rules;
@@ -893,6 +901,7 @@ export default {
 				console.error('加载表单信息失败', error);
 			}
 		},
+		// 提交
 		handleProcess(that) {
 			return new Promise((resolve, reject) => {
 				this.$refs['form'].validate(valid => {
