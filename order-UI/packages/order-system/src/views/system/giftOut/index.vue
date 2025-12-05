@@ -7,9 +7,6 @@
 			<el-form-item label="经办人" prop="handler">
 				<el-input v-model="queryParams.handler" placeholder="请输入经办人" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
-			<el-form-item label="客户" prop="companyName">
-				<el-input v-model="queryParams.companyName" placeholder="请输入客户" clearable @keyup.enter.native="handleQuery" />
-			</el-form-item>
 			<el-form-item label="出库方式" prop="outMethod">
 				<el-tooltip class="item" effect="dark" content="出库方式可在字典中进行修改" placement="top">
 					<el-select v-model="queryParams.outMethod" placeholder="请选择出库方式" clearable @keyup.enter.native="handleQuery">
@@ -66,57 +63,43 @@
 		>
 			<el-table-column type="selection" width="55" align="center" />
 
-			<el-table-column v-if="columns[0].visible" label="ID" align="center" prop="id" width="80" show-overflow-tooltip />
-
-			<el-table-column label="入库ID" align="center" width="100" show-overflow-tooltip>
-				<template #default="scope">
-					<span>{{ scope.row.inId || scope.row.giftSource || '-' }}</span>
-				</template>
-			</el-table-column>
-
-			<el-table-column v-if="columns[1].visible" label="出库日期" align="center" prop="outDate" width="160" show-overflow-tooltip>
+			<el-table-column v-if="columns[0].visible" label="日期" align="center" prop="outDate" width="160" show-overflow-tooltip>
 				<template #default="scope">
 					<span>{{ parseTime(scope.row.outDate, '{y}-{m}-{d}') }}</span>
 				</template>
 			</el-table-column>
 
-			<el-table-column v-if="columns[1].visible" label="日期" align="center" prop="outDate" width="160" show-overflow-tooltip>
-				<template #default="scope">
-					<span>{{ parseTime(scope.row.outDate, '{y}-{m}-{d}') }}</span>
-				</template>
-			</el-table-column>
-
-			<el-table-column v-if="columns[2].visible" label="出库方式" align="center" prop="outMethod" width="100" show-overflow-tooltip>
+			<el-table-column v-if="columns[1].visible" label="出库方式" align="center" prop="outMethod" width="100" show-overflow-tooltip>
 				<template #default="scope">
 					<dict-tag :options="dict.type.order_gift_out_method" :value="scope.row.outMethod" />
 				</template>
 			</el-table-column>
 
-			<el-table-column v-if="columns[3].visible" label="出库地点" align="center" prop="outLocation" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[2].visible" label="出库地点" align="center" prop="outLocation" width="120" show-overflow-tooltip />
 
-			<el-table-column v-if="columns[4].visible" label="领用原因" align="center" prop="useReason" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[3].visible" label="领用原因" align="center" prop="useReason" width="120" show-overflow-tooltip />
 
-			<el-table-column v-if="columns[5].visible" label="物品名称" align="center" prop="itemName" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[4].visible" label="物品名称" align="center" prop="itemName" width="120" show-overflow-tooltip />
 
-			<el-table-column v-if="columns[6].visible" label="规格" align="center" prop="specification" width="100" show-overflow-tooltip />
+			<el-table-column v-if="columns[5].visible" label="规格" align="center" prop="specification" width="100" show-overflow-tooltip />
 
-			<el-table-column v-if="columns[7].visible" label="数量" align="center" prop="quantity" width="80" show-overflow-tooltip />
+			<el-table-column v-if="columns[6].visible" label="数量" align="center" prop="quantity" width="80" show-overflow-tooltip />
 
-			<el-table-column v-if="columns[8].visible" label="单价" align="center" prop="unitPrice" width="100" show-overflow-tooltip>
+			<el-table-column v-if="columns[7].visible" label="单价" align="center" prop="unitPrice" width="100" show-overflow-tooltip>
 				<template #default="scope">
 					<span>{{ scope.row.unitPrice ? Number(scope.row.unitPrice).toFixed(2) : '-' }}</span>
 				</template>
 			</el-table-column>
 
-			<el-table-column v-if="columns[9].visible" label="金额" align="center" prop="estimatedValue" width="100" show-overflow-tooltip>
+			<el-table-column v-if="columns[8].visible" label="金额" align="center" prop="estimatedValue" width="100" show-overflow-tooltip>
 				<template #default="scope">
 					<span>{{ scope.row.estimatedValue ? Number(scope.row.estimatedValue).toFixed(2) : '-' }}</span>
 				</template>
 			</el-table-column>
 
-			<el-table-column v-if="columns[10].visible" label="领用人" align="center" prop="recipientReceiver" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[9].visible" label="领用人" align="center" prop="recipientReceiver" width="120" show-overflow-tooltip />
 
-			<el-table-column v-if="columns[11].visible" label="备注" align="center" prop="remark" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[10].visible" label="备注" align="center" prop="remark" width="120" show-overflow-tooltip />
 
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="150" fixed="right">
 				<template #default="scope">
@@ -155,35 +138,6 @@
 					<el-col :span="24">
 						<el-form-item label="领用原因" prop="useReason">
 							<el-input v-model="form.useReason" placeholder="请输入领用原因" />
-						</el-form-item>
-					</el-col>
-
-					<el-col :span="12">
-						<el-form-item label="对方类型">
-							<el-select v-model="companyType" placeholder="请选择" style="width: 100%" @change="handleCompanyTypeChange">
-								<el-option v-for="item in OTHER_TYPE()" :key="item.value" :label="item.label" :value="item.value"></el-option>
-							</el-select>
-						</el-form-item>
-					</el-col>
-
-					<el-col :span="24">
-						<el-form-item label="公司名称" prop="companyName">
-							<el-row :gutter="10">
-								<el-col :span="20">
-									<el-input v-model="form.companyName" placeholder="请输入公司名称" />
-								</el-col>
-								<el-col :span="2">
-									<SearchOption :limit-info="{ companyType: companyType }" :get-data="listCompany" query-info="companyName" query-label="公司名称" :query-name="companyName" @update:queryName="handleUpdateCompanyName" @commitBack="handleCommitBackCompany">
-										<template #table-columns>
-											<el-table-column :label="companyType" align="center" prop="companyName" />
-											<el-table-column label="老板姓名" align="center" prop="leader" />
-											<el-table-column label="老板电话" align="center" prop="leaderTel" />
-											<el-table-column label="区域" align="center" prop="region" />
-											<el-table-column label="销售经理" align="center" prop="salesManager" />
-										</template>
-									</SearchOption>
-								</el-col>
-							</el-row>
 						</el-form-item>
 					</el-col>
 
@@ -284,10 +238,8 @@ import { listGiftOut, getGiftOut, delGiftOut, addGiftOut, updateGiftOut } from '
 import { parseTime } from '../../../utils/ruoyi';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
 import SearchOption from '../../../components/SearchOption.vue';
-import { listCompany } from '../../../api/system/company';
 import { listGiftIn, getGiftIn } from '@/api/system/giftIn';
 import { mixin_gift_out_fill } from './giftOut_fill';
-import { OTHER_TYPE } from '../../../utils/order';
 import { subtract, round, add, multiply, divide } from 'mathjs';
 
 export default {
@@ -325,7 +277,6 @@ export default {
 				outMethod: null,
 				outLocation: null,
 				useReason: null,
-				companyName: null,
 				recipientReceiver: null,
 				itemName: null,
 				specification: null,
@@ -342,7 +293,6 @@ export default {
 			rules: {
 				outDate: [{ required: true, message: '请选择出库日期', trigger: 'blur' }],
 				outMethod: [{ required: true, message: '请选择出库方式', trigger: 'blur' }],
-				companyName: [{ required: true, message: '请输入公司名称', trigger: 'blur' }],
 				recipientReceiver: [{ required: true, message: '请输入收礼人员', trigger: 'blur' }],
 				itemName: [{ required: true, message: '请输入礼品来源', trigger: 'blur' }],
 				quantity: [
@@ -381,20 +331,18 @@ export default {
 				handler: [{ required: true, message: '请输入经办人', trigger: 'blur' }]
 			},
 			columns: [
-				{ key: 0, label: `ID`, visible: true },
-				{ key: 1, label: `日期`, visible: true },
-				{ key: 2, label: `出库方式`, visible: true },
-				{ key: 3, label: `出库地点`, visible: true },
-				{ key: 4, label: `领用原因`, visible: true },
-				{ key: 5, label: `物品名称`, visible: true },
-				{ key: 6, label: `规格`, visible: true },
-				{ key: 7, label: `数量`, visible: true },
-				{ key: 8, label: `单价`, visible: true },
-				{ key: 9, label: `金额`, visible: true },
-				{ key: 10, label: `领用人`, visible: true },
-				{ key: 11, label: `备注`, visible: true }
+				{ key: 0, label: `日期`, visible: true },
+				{ key: 1, label: `出库方式`, visible: true },
+				{ key: 2, label: `出库地点`, visible: true },
+				{ key: 3, label: `领用原因`, visible: true },
+				{ key: 4, label: `物品名称`, visible: true },
+				{ key: 5, label: `规格`, visible: true },
+				{ key: 6, label: `数量`, visible: true },
+				{ key: 7, label: `单价`, visible: true },
+				{ key: 8, label: `金额`, visible: true },
+				{ key: 9, label: `领用人`, visible: true },
+				{ key: 10, label: `备注`, visible: true }
 			],
-			companyType: '供应商',
 			dialogWidth: window.innerWidth > 768 ? '600px' : '95%',
 			// 剩余数量
 			remainingQuantity: null
@@ -409,10 +357,6 @@ export default {
 		window.removeEventListener('resize', this.updateDialogWidth);
 	},
 	methods: {
-		OTHER_TYPE() {
-			return OTHER_TYPE;
-		},
-		listCompany,
 		listGiftIn,
 		getGiftIn,
 		parseTime,
@@ -502,7 +446,6 @@ export default {
 				outMethod: null,
 				outLocation: null,
 				useReason: null,
-				companyName: null,
 				recipientReceiver: null,
 				itemName: null,
 				specification: null,
@@ -516,12 +459,8 @@ export default {
 				createTime: null,
 				createBy: null,
 				remark: null,
-				recipientInfo: null,
-				recipientType: null,
 				inId: null
 			};
-			this.companyType = '供应商';
-			this.companyName = '';
 			this.itemName = '';
 			this.remainingQuantity = null;
 			this.resetForm('form');
@@ -572,21 +511,9 @@ export default {
 						const formattedDate = this.formatDateTime(this.form.outDate);
 						this.$set(this.form, 'outDate', formattedDate);
 					}
-					// 根据recipientType设置companyType，用于下拉框显示
-					if (this.form.recipientType) {
-						this.companyType = this.form.recipientType;
-					}
-					// 设置companyName和itemName用于SearchOption组件
-					if (this.form.companyName) {
-						this.companyName = this.form.companyName;
-					}
+					// 设置itemName用于SearchOption组件
 					if (this.form.itemName) {
 						this.itemName = this.form.itemName;
-					}
-					// 确保 recipientInfo 存在
-					if (!this.form.recipientInfo && this.form.companyName) {
-						// 如果已有公司名称但没有ID，可能需要重新选择
-						this.$message.warning('请重新选择客户信息以确保数据完整性');
 					}
 					// 如果后端返回了 estimatedValue 但没有 unitPrice，根据数量和金额计算单价
 					if (this.form.estimatedValue && !this.form.unitPrice && this.form.quantity && this.form.quantity > 0) {
@@ -625,15 +552,7 @@ export default {
 					if (submitData.inId && !submitData.giftSource) {
 						submitData.giftSource = submitData.inId;
 					}
-					// 字段映射：确保 recipientType 从 companyType 正确映射
-					if (this.companyType && !submitData.recipientType) {
-						submitData.recipientType = this.companyType;
-					}
 					// 验证必填字段
-					if (!submitData.recipientInfo) {
-						this.$message.warning('请选择客户信息');
-						return;
-					}
 					if (!submitData.itemName || !submitData.inId) {
 						this.$message.warning('请选择礼品来源');
 						return;
@@ -811,13 +730,6 @@ export default {
 				},
 				`giftOut_${this.parseTime(new Date(), '{y}{m}{d}_{h}{i}{s}')}.xlsx`
 			);
-		},
-		/** 对方类型变化处理 */
-		handleCompanyTypeChange(value) {
-			// 当对方类型变化时，同步更新 form.recipientType
-			if (value) {
-				this.$set(this.form, 'recipientType', value);
-			}
 		},
 		/** 数量输入失焦处理 */
 		handleQuantityBlur() {

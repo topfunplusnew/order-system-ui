@@ -18,10 +18,6 @@
 				<el-input v-model="queryParams.inventoryLocation" placeholder="请输入存货地点" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 
-			<el-form-item label="对方信息" prop="fromInfo">
-				<el-input v-model="queryParams.fromInfo" placeholder="请输入对方信息" clearable @keyup.enter.native="handleQuery" />
-			</el-form-item>
-
 			<el-form-item label="物品名称" prop="itemName">
 				<el-input v-model="queryParams.itemName" placeholder="请输入物品名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
@@ -78,9 +74,7 @@
 
 			<el-table-column v-if="columns[3].visible" label="存货地点" align="center" prop="inventoryLocation" width="120" show-overflow-tooltip />
 
-			<el-table-column v-if="columns[4].visible" label="对方信息" align="center" prop="fromInfo" width="120" show-overflow-tooltip />
-
-			<el-table-column v-if="columns[5].visible" label="物品名称" align="center" prop="itemName" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[4].visible" label="物品名称" align="center" prop="itemName" width="120" show-overflow-tooltip />
 
 			<el-table-column v-if="columns[6].visible" label="单位" align="center" prop="unit" width="80" show-overflow-tooltip>
 				<template #default="scope">
@@ -159,33 +153,9 @@
 						</el-form-item>
 					</el-col>
 
-					<!-- 对方类型和对方信息同行 -->
-					<el-col :span="12">
-						<el-form-item label="对方类型">
-							<el-select v-model="companyType" placeholder="请选择" style="width: 100%">
-								<el-option v-for="item in OTHER_TYPE()" :key="item.value" :label="item.label" :value="item.value" />
-							</el-select>
-						</el-form-item>
-					</el-col>
-
-					<el-col :span="12">
-						<el-form-item label="公司名称" prop="companyName">
-							<el-row :gutter="10">
-								<el-col :span="20">
-									<el-input v-model="form.companyName" placeholder="请输入公司名称" />
-								</el-col>
-								<el-col :span="2">
-									<SearchOption :limit-info="{ companyType: companyType }" :get-data="listCompany" query-info="companyName" query-label="公司名称" :query-name="companyName" @update:queryName="handleUpdateCompanyName" @commitBack="handleCommitBackCompany">
-										<template #table-columns>
-											<el-table-column :label="companyType" align="center" prop="companyName" />
-											<el-table-column label="老板姓名" align="center" prop="leader" />
-											<el-table-column label="老板电话" align="center" prop="leaderTel" />
-											<el-table-column label="区域" align="center" prop="region" />
-											<el-table-column label="销售经理" align="center" prop="salesManager" />
-										</template>
-									</SearchOption>
-								</el-col>
-							</el-row>
+					<el-col :span="24">
+						<el-form-item label="对方信息" prop="fromInfo">
+							<el-input v-model="form.fromInfo" placeholder="请输入对方信息" />
 						</el-form-item>
 					</el-col>
 
@@ -264,7 +234,7 @@ import { multiply, round, divide } from 'mathjs';
 export default {
 	name: 'GiftIn',
 	components: { SearchOption },
-	// dicts: ['gift_unit'],
+	dicts: ['order_gift_in_method', 'gift_unit'],
 	mixins: [mixin_printHTML, mixin_gift_in_fill],
 	data() {
 		return {
@@ -322,7 +292,7 @@ export default {
 				{ key: 12, label: `现在剩余金额价值`, visible: true },
 				{ key: 13, label: `付款时间`, visible: true }
 			],
-			companyType: '供应商',
+			// companyType: '供应商',
 			dialogWidth: window.innerWidth > 768 ? '600px' : '95%'
 		};
 	},
@@ -349,6 +319,9 @@ export default {
 		},
 		listCompany,
 		parseTime,
+		handleCompanyNameInput(value) {
+			this.$set(this.form, 'fromInfo', value);
+		},
 		updateDialogWidth() {
 			this.dialogWidth = window.innerWidth > 768 ? '600px' : '95%';
 		},
@@ -384,6 +357,7 @@ export default {
 				inMethod: null,
 				inventoryLocation: null,
 				fromInfo: null,
+				// companyName: null,
 				itemName: null,
 				unit: null,
 				quantity: null,
@@ -407,13 +381,13 @@ export default {
 		handleClose() {
 			this.$nextTick(() => {
 				this.form = this.getInitForm();
-				this.companyType = '供应商';
+				// this.companyType = '供应商';
 				this.$refs.form?.resetFields();
 			});
 		},
 		reset() {
 			this.form = this.getInitForm();
-			this.companyType = '供应商';
+			// this.companyType = '供应商';
 			this.$refs.form?.resetFields();
 		},
 		calculateAmount() {
@@ -442,7 +416,7 @@ export default {
 		},
 		handleAdd() {
 			this.form = this.getInitForm();
-			this.companyType = '供应商';
+			// this.companyType = '供应商';
 			this.open = true;
 			this.title = '添加购入礼品信息';
 		},
@@ -471,6 +445,10 @@ export default {
 					// 兼容旧数据：如果有 storeLocation，转换为 inventoryLocation
 					if (this.form.storeLocation && !this.form.inventoryLocation) {
 						this.$set(this.form, 'inventoryLocation', this.form.storeLocation);
+					}
+					// 编辑时，如果有 fromInfo，同步到 companyName 用于回显
+					if (this.form.fromInfo && !this.form.companyName) {
+						this.$set(this.form, 'companyName', this.form.fromInfo);
 					}
 					this.$nextTick(() => {
 						this.open = true;
@@ -522,8 +500,13 @@ export default {
 		submitForm() {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
+					// 创建提交数据副本，移除后端不支持的字段
+					const submitData = JSON.parse(JSON.stringify(this.form));
+					delete submitData.inventoryLocation;
+					delete submitData.companyName;
+
 					if (this.form.id != null) {
-						updateGiftIn(this.form)
+						updateGiftIn(submitData)
 							.then(response => {
 								this.$modal.msgSuccess('修改成功');
 								this.open = false;
@@ -534,7 +517,7 @@ export default {
 								console.error('修改礼品入库信息失败:', error);
 							});
 					} else {
-						addGiftIn(this.form)
+						addGiftIn(submitData)
 							.then(response => {
 								this.$modal.msgSuccess('新增成功');
 								this.open = false;

@@ -9,7 +9,10 @@ export var mixin_gift_in_fill = {
 			this.companyName = value;
 		},
 		handleCommitBackCompany(value) {
-			this.form.fromInfo = value.companyName;
+			if (value && value.companyName) {
+				this.$set(this.form, 'fromInfo', value.companyName);
+				this.$set(this.form, 'companyName', value.companyName);
+			}
 		}
 	}
 };
