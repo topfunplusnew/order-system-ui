@@ -65,6 +65,16 @@ jobs:
              mkdir -p ${{ secrets.DEPLOY_PATH }}/html && \
              mkdir -p ~/.rsync-tmp || true"
       
+      - name: 修复目标目录权限
+        run: |
+          echo "修复目标目录权限..."
+          ssh -i ~/.ssh/deploy_key \
+            -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
+            ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} \
+            "sudo chown -R ${{ secrets.DEPLOY_USER }}:${{ secrets.DEPLOY_USER }} ${{ secrets.DEPLOY_PATH }} && \
+             sudo chmod -R 755 ${{ secrets.DEPLOY_PATH }} || true"
+      
       - name: 通过 Rsync 部署到服务器
         run: |
           echo "开始部署到服务器..."
