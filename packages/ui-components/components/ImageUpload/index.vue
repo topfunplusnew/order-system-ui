@@ -44,6 +44,7 @@
 import { getToken } from '@order-system/shared/utils/auth';
 
 export default {
+	name: 'ImageUpload',
 	props: {
 		value: [String, Object, Array],
 		// 图片数量限制

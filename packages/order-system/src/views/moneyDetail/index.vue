@@ -46,9 +46,6 @@ import { getUserConfig, saveUserConfig } from '@/api/user-config/index.js';
 export default {
 	name: 'MoneyDetail',
 	components: { RightToolbar },
-	methods: {
-		getUserConfig,
-		saveUserConfig,
 	data() {
 		return {
 			loading: false,
@@ -69,6 +66,8 @@ export default {
 		this.getList();
 	},
 	methods: {
+		getUserConfig: getUserConfig,
+		saveUserConfig: saveUserConfig,
 		initDefaultDate() {
 			// 默认今天
 			const today = new Date();

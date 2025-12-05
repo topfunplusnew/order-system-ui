@@ -101,8 +101,8 @@ export default {
 		this.getList();
 	},
 	methods: {
-		getUserConfig,
-		saveUserConfig,
+		getUserConfig: getUserConfig,
+		saveUserConfig: saveUserConfig,
 		// 获取今天的日期字符串（格式：yyyy-MM-dd）
 		getTodayDate() {
 			const today = new Date();
