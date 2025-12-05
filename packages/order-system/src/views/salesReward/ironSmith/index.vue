@@ -387,6 +387,8 @@ export default {
 			form: {},
 			queryGoodsOrder: '',
 			querySearchGoodsOrder: '',
+			orderSaleManager: null, // 订单的销售经理
+			orderUserName: null, // 订单的录入人员
 			rules: {
 				orderId: [{ required: true, message: '请选择订单', trigger: 'change' }],
 				orderDate: [{ required: true, message: '请选择订单日期', trigger: 'change' }],
@@ -586,6 +588,12 @@ export default {
 				this.form.comprehensiveProfit = isNaN(result) ? '' : this.formatAmountValue(result);
 			},
 			deep: true
+		},
+		'form.personnelIdentity'(newVal) {
+			// 当人员身份变化时，自动填充奖励接收人
+			if (newVal && (this.orderSaleManager || this.orderUserName)) {
+				this.fillRewardReceiver();
+			}
 		}
 	},
 	created() {
@@ -647,6 +655,9 @@ export default {
 		},
 		handleCommitBackGoodsOrder(val) {
 			this.form.orderId = val.id;
+			// 保存订单的录入人员和销售经理信息
+			this.orderSaleManager = val.saleManager || null;
+			this.orderUserName = val.userName || null;
 			this.handleLoadOrderData();
 		},
 		handleUpdateSearchGoodsOrder(val) {
@@ -687,8 +698,21 @@ export default {
 					if (orderData.isIncludeTaxSale !== undefined && orderData.isIncludeTaxSale !== null) {
 						this.form.salesTaxIncluded = orderData.isIncludeTaxSale === 1 ? 1 : 0;
 					}
+					// 根据人员身份自动填充奖励接收人
+					this.fillRewardReceiver();
 				}
 			});
+		},
+		// 根据人员身份填充奖励接收人
+		fillRewardReceiver() {
+			if (!this.form.personnelIdentity) {
+				return;
+			}
+			if (this.form.personnelIdentity === '销售经理' && this.orderSaleManager) {
+				this.form.rewardReceiver = this.orderSaleManager;
+			} else if (this.form.personnelIdentity === '录入员' && this.orderUserName) {
+				this.form.rewardReceiver = this.orderUserName;
+			}
 		},
 		getList() {
 			this.loading = true;
@@ -740,6 +764,8 @@ export default {
 				remark: null
 			};
 			this.queryGoodsOrder = '';
+			this.orderSaleManager = null;
+			this.orderUserName = null;
 			this.resetForm('form');
 		},
 		handleSupplement(row) {
