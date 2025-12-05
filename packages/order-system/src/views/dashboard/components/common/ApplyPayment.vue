@@ -71,7 +71,7 @@
 					<span style="color: #1c84c6; font-size: 12px">请先注意选择正确的对方公司类型!</span>
 				</el-form-item>
 
-				<el-form-item v-if="value && value !== PUBLIC_DICT_TYPE.EMPLOYEE && value !== PAYMENT_TARGET_TYPE.PAYMENT_FEE" :label="value === PUBLIC_DICT_TYPE.DRIVER ? PUBLIC_DICT_TYPE.DRIVER : PUBLIC_DICT_TYPE.OTHER_COMPANY" prop="companyName">
+				<el-form-item v-if="value && value !== PUBLIC_DICT_TYPE.EMPLOYEE && value !== PAYMENT_TARGET_TYPE.PAYMENT_FEE" :label="value === PUBLIC_DICT_TYPE.DRIVER ? PUBLIC_DICT_TYPE.DRIVER : '对方公司'" prop="companyName">
 					<el-row>
 						<el-col :span="22">
 							<el-input disabled v-model="form.companyName" placeholder="请选择" style="width: 100%" />
@@ -705,12 +705,7 @@ export default {
 				companyName: [{ required: true, message: '对方公司不能为空', trigger: 'change' }]
 			};
 			// 如果是客户、供应商、司机或员工，则需要校验银行账号信息
-			const needBankAccountTypes = [
-				PUBLIC_DICT_TYPE.CUSTOMER,
-				PUBLIC_DICT_TYPE.SUPPLIER,
-				PUBLIC_DICT_TYPE.DRIVER,
-				PUBLIC_DICT_TYPE.EMPLOYEE
-			];
+			const needBankAccountTypes = [PUBLIC_DICT_TYPE.CUSTOMER, PUBLIC_DICT_TYPE.SUPPLIER, PUBLIC_DICT_TYPE.DRIVER, PUBLIC_DICT_TYPE.EMPLOYEE];
 			if (needBankAccountTypes.includes(this.value) && !this.bankInputDisabled) {
 				rules.otherBankNo = [{ required: true, message: '对方账号不能为空', trigger: 'change' }];
 			}

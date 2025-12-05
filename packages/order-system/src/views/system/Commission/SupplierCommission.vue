@@ -988,11 +988,14 @@ export default {
 							// 转换extraInfo为tableReferences
 							tableReferences:
 								firstApplication.extraInfo && firstApplication.extraInfo.sourceInfos
-									? firstApplication.extraInfo.sourceInfos.map(source => ({
-											refTableName: source.tableName,
-											refTableId: source.tableId,
-											amount: moneyAmount
-									  }))
+									? firstApplication.extraInfo.sourceInfos.map(source => {
+											const selectedItem = this.selections.find(item => item.id === source.tableId);
+											return {
+												refTableName: source.tableName,
+												refTableId: source.tableId,
+												amount: number(selectedItem?.verifiedCommission || 0)
+											};
+									  })
 									: []
 						};
 
