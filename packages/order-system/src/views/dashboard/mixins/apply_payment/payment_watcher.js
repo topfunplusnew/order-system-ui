@@ -1,11 +1,10 @@
 import { listBankAccount } from '../../../../api/system/bankAccount';
 import { PAYMENT_TARGET_TYPE } from '@/api/tool/enums';
-import { PaymentOptions, PUBLIC_DICT_TYPE, TableName } from '../../../../api/tool/enums';
+import { PUBLIC_DICT_TYPE, TableName } from '../../../../api/tool/enums';
 import { listSubject } from '../../../../api/system/subject';
 export var mixin_payment_watcher = {
 	data: function () {
 		return {
-			options: PaymentOptions,
 			value: '客户'
 		};
 	},
