@@ -141,7 +141,7 @@
 						<!--					<el-button :disabled="!scope.row.id || scope.row.id === '0'" type="text" size="mini" @click="handleApplyPayment(scope.row)">申请付款</el-button>-->
 						<el-button type="text" size="mini" @click="handleDelete(scope.row)">删除</el-button>
 
-						<el-button type="text" size="mini" @click="handleApplyPayment(scope.row)">申请付款</el-button>
+						<el-button :disabled="scope.row.paymentApply != null" type="text" size="mini" @click="handleApplyPayment(scope.row)">申请付款</el-button>
 					</div>
 				</template>
 			</el-table-column>
