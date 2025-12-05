@@ -37,6 +37,8 @@
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :visible.sync="dialogVisible" title="预览" width="800" append-to-body>
 			<img :src="dialogImageUrl" style="display: block; max-width: 100%; margin: 0 auto" />
 		</el-dialog>
+
+		<!-- 测试 -->
 	</div>
 </template>
 
