@@ -1,0 +1,78 @@
+version: '3.8'
+
+services:
+  # 前端服务（订单管理系统）
+  order-system-frontend:
+    image: registry.superslash.cn/order-system-ui:latest
+    container_name: order-system-frontend
+    ports:
+      - "${FRONTEND_PORT:-40085}:40085"
+      - "${FRONTEND_PORT_STAGE:-40081}:40081"
+    environment:
+      - NODE_ENV=production
+      - HOST_IP=${HOST_IP:-host.docker.internal}
+      - BACKEND_PORT=${BACKEND_PORT:-30181}
+      - FRONTEND_PORT=${FRONTEND_PORT:-40085}
+    volumes:
+      # 挂载 nginx 配置（可选，用于自定义配置）
+      - ${FRONTEND_NGINX_CONFIG:-./nginx.conf}:/opt/front/nginx.conf.template:ro
+      # 挂载日志目录
+      - ${FRONTEND_LOG_DIR:-./logs/frontend}:/opt/front/log
+      # 挂载网站目录（可选）
+      # 如果不设置 FRONTEND_WEB_DIR 或设置为空，则使用临时目录（不会覆盖镜像内的文件）
+      # 如果需要挂载外部目录，请在 .env 文件中设置 FRONTEND_WEB_DIR，例如：FRONTEND_WEB_DIR=./dist
+      - ${FRONTEND_WEB_DIR:-./.tmp/html}:/opt/front/html
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "nginx -t && pgrep nginx > /dev/null"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+    networks:
+      - order-system-network
+    depends_on:
+      - request-logger
+
+  # 请求日志服务
+  request-logger:
+    build:
+      context: ./packages/request-logger
+      dockerfile: Dockerfile
+    container_name: request-logger
+    ports:
+      - "${LOGGER_PORT:-3001}:3001"
+    environment:
+      - NODE_ENV=production
+      - LOGGER_PORT=3001
+      - LOGGER_HOST=0.0.0.0
+      # 日志配置
+      - LOG_DIR=/app/logs
+      - LOG_FILENAME=YYYY/MM/DD/request.log
+      - LOG_MAX_SIZE=10485760  # 10MB
+      - LOG_MAX_FILES=${LOG_MAX_FILES:-7}        # 保留天数，默认7天
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      # 清理配置
+      - LOG_CLEANUP_ENABLED=${LOG_CLEANUP_ENABLED:-true}
+      - LOG_CLEANUP_INTERVAL=3600000  # 1小时
+      - LOG_MAX_TOTAL_SIZE=104857600  # 100MB
+      - LOG_MIN_FILES=3
+      # 过滤配置
+      - LOG_SUCCESS=${LOG_SUCCESS:-true}
+    volumes:
+      # 挂载日志目录到宿主机，方便查看和备份
+      - ${LOGGER_LOG_DIR:-./logs/request-logger}:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3001/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    networks:
+      - order-system-network
+
+networks:
+  order-system-network:
+    driver: bridge
+
