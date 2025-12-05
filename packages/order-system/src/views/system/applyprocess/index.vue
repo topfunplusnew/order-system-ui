@@ -852,6 +852,13 @@ export default {
 				}
 				this.generatePaymentForm.params.attachmentIds = uploadParams.params.attachmentIds;
 			}
+		},
+		// 表格行样式类名
+		tableRowClassName({ row }) {
+			if (!row.tableReferences) {
+				return 'highlight-row';
+			}
+			return '';
 		}
 	}
 };
@@ -971,6 +978,7 @@ export default {
 			v-loading="loading"
 			:data="paymentList"
 			border
+			:row-class-name="tableRowClassName"
 			:cell-style="
 				() => {
 					return { padding: '.5px' };
@@ -1355,5 +1363,9 @@ export default {
 .apply-list-scroll {
 	max-height: 500px;
 	overflow: auto;
+}
+
+::v-deep .highlight-row {
+	background-color: #f0f9f0;
 }
 </style>
