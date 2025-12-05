@@ -20,19 +20,10 @@ import plugins from './plugins'; // plugins
 import router from './router';
 import store from './store';
 // 分页组件
-import Pagination from '@/components/Pagination';
-// 自定义表格工具组件
-import RightToolbar from '@/components/RightToolbar';
-// 富文本组件
-import Editor from '@/components/Editor';
-// 文件上传组件
-import FileUpload from '@/components/FileUpload';
-// 图片上传组件
-import ImageUpload from '@/components/ImageUpload';
-// 图片预览组件
-import ImagePreview from '@/components/ImagePreview';
-// 字典标签组件
-import DictTag from '@/components/DictTag';
+import { Pagination, RightToolbar, Editor, FileUpload, ImageUpload, ImagePreview, DictTag } from '@order-system/ui-components';
+// 为 RightToolbar 注入 API 函数
+import { getUserConfig, saveUserConfig } from '@/api/user-config/index.js';
+import { ShowColumnsType } from '@/api/tool/user-config.js';
 // 头部标签组件
 import VueMeta from 'vue-meta';
 // 字典数据组件
@@ -184,7 +175,21 @@ export const isNull = val => {
 // 全局组件挂载
 Vue.component('DictTag', DictTag);
 Vue.component('Pagination', Pagination);
-Vue.component('RightToolbar', RightToolbar);
+// RightToolbar 需要注入 API 函数，创建一个包装组件
+Vue.component('RightToolbar', {
+	extends: RightToolbar,
+	props: {
+		// 如果父组件没有传入，使用默认的 API 函数
+		getUserConfig: {
+			type: Function,
+			default: getUserConfig
+		},
+		saveUserConfig: {
+			type: Function,
+			default: saveUserConfig
+		}
+	}
+});
 Vue.component('Editor', Editor);
 Vue.component('FileUpload', FileUpload);
 Vue.component('ImageUpload', ImageUpload);
