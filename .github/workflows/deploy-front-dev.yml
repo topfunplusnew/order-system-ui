@@ -88,6 +88,27 @@ jobs:
             ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:${{ secrets.DEPLOY_PATH }}/
           echo "部署完成！"
       
+      - name: 验证部署并重新加载 Nginx
+        run: |
+          echo "验证部署文件..."
+          ssh -i ~/.ssh/deploy_key \
+            -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
+            ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} \
+            "ls -la ${{ secrets.DEPLOY_PATH }}/index.html && echo '✓ 部署文件验证成功'"
+          
+          echo "尝试重新加载 Nginx..."
+          ssh -i ~/.ssh/deploy_key \
+            -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
+            ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} \
+            "CONTAINER_ID=\$(docker ps --filter 'ancestor=registry.superslash.cn/order-system-ui:latest' --format '{{.ID}}' | head -n1) && \
+             if [ -n \"\$CONTAINER_ID\" ]; then \
+               docker exec \$CONTAINER_ID nginx -s reload && echo '✓ Nginx 重新加载成功'; \
+             else \
+               echo '⚠ 未找到运行中的容器，请手动检查'; \
+             fi" || echo "⚠ Nginx 重新加载失败，但文件已部署"
+      
       - name: 部署完成通知
         run: |
           echo "✅ 部署完成！"
