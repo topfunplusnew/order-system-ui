@@ -66,8 +66,12 @@ export default {
 		this.getList();
 	},
 	methods: {
-		getUserConfig: getUserConfig,
-		saveUserConfig: saveUserConfig,
+		getUserConfig(...args) {
+			return getUserConfig(...args);
+		},
+		saveUserConfig(...args) {
+			return saveUserConfig(...args);
+		},
 		initDefaultDate() {
 			// 默认今天
 			const today = new Date();
