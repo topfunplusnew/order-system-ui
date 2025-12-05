@@ -102,12 +102,12 @@ jobs:
             -o StrictHostKeyChecking=no \
             -o UserKnownHostsFile=/dev/null \
             ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} \
-            "CONTAINER_ID=\$(docker ps --filter 'ancestor=registry.superslash.cn/order-system-ui:latest' --format '{{.ID}}' | head -n1) && \
+            "CONTAINER_ID=\$(sudo docker ps --filter 'ancestor=registry.superslash.cn/order-system-ui:latest' --format '{{.ID}}' | head -n1) && \
              if [ -n \"\$CONTAINER_ID\" ]; then \
-               docker exec \$CONTAINER_ID nginx -s reload && echo '✓ Nginx 重新加载成功'; \
+               sudo docker exec \$CONTAINER_ID nginx -s reload && echo '✓ Nginx 重新加载成功'; \
              else \
                echo '⚠ 未找到运行中的容器，请手动检查'; \
-             fi" || echo "⚠ Nginx 重新加载失败，但文件已部署"
+             fi" || echo "⚠ Nginx 重新加载失败，但文件已部署（文件已通过挂载同步，通常无需重新加载）"
       
       - name: 部署完成通知
         run: |
