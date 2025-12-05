@@ -13,8 +13,18 @@ export HOST_IP
 export BACKEND_PORT=${BACKEND_PORT:-30181}
 export FRONTEND_PORT=${FRONTEND_PORT:-40085}
 
-# 2. 确定网站根目录
-# 优先使用环境变量，否则使用挂载目录，最后使用默认
+# 2. 处理网站根目录
+# 如果挂载了 /opt/front/html 但目录为空，从镜像内复制文件
+if [ -d "/opt/front/html" ] && [ ! "$(ls -A /opt/front/html 2>/dev/null)" ]; then
+    if [ -d "/usr/share/nginx/html" ] && [ "$(ls -A /usr/share/nginx/html 2>/dev/null)" ]; then
+        echo "📦 挂载目录为空，正在从镜像内复制文件..."
+        cp -a /usr/share/nginx/html/. /opt/front/html/ 2>/dev/null || \
+        cp -r /usr/share/nginx/html/* /opt/front/html/ 2>/dev/null || true
+        echo "✓ 文件已复制到挂载目录"
+    fi
+fi
+
+# 确定网站根目录：优先使用环境变量，否则使用挂载目录，最后使用默认
 if [ -n "$FRONTEND_WEB_ROOT" ]; then
     WEB_ROOT="$FRONTEND_WEB_ROOT"
 elif [ -d "/opt/front/html" ] && [ "$(ls -A /opt/front/html 2>/dev/null)" ]; then
