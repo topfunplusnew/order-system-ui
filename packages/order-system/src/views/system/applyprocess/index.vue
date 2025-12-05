@@ -859,6 +859,15 @@ export default {
 				return 'highlight-row';
 			}
 			return '';
+		},
+		// 表格行样式
+		tableRowStyle({ row }) {
+			if (row.tableReferences) {
+				return {
+					backgroundColor: '#f5f5f5'
+				};
+			}
+			return {};
 		}
 	}
 };
@@ -979,6 +988,7 @@ export default {
 			:data="paymentList"
 			border
 			:row-class-name="tableRowClassName"
+			:row-style="tableRowStyle"
 			:cell-style="
 				() => {
 					return { padding: '.5px' };
@@ -1365,7 +1375,37 @@ export default {
 	overflow: auto;
 }
 
-::v-deep .highlight-row {
-	background-color: #f5f5f5;
+// 高亮行样式，确保优先级高于悬停和斑马纹
+::v-deep .el-table__body-wrapper .el-table__body tr.highlight-row {
+	background-color: #f5f5f5 !important;
+
+	&:hover {
+		background-color: #f5f5f5 !important;
+	}
+
+	&:nth-child(even) {
+		background-color: #f5f5f5 !important;
+	}
+
+	td {
+		background-color: #f5f5f5 !important;
+	}
+}
+
+// 固定列的高亮行样式
+::v-deep .el-table__fixed-body-wrapper .el-table__body tr.highlight-row {
+	background-color: #f5f5f5 !important;
+
+	&:hover {
+		background-color: #f5f5f5 !important;
+	}
+
+	&:nth-child(even) {
+		background-color: #f5f5f5 !important;
+	}
+
+	td {
+		background-color: #f5f5f5 !important;
+	}
 }
 </style>

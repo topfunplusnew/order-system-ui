@@ -1556,7 +1556,7 @@ textarea::placeholder,
 			// 表格行样式（严格按照LayUI配置）
 			tr {
 				border-bottom: 1px solid $table-border-color !important;
-				background-color: $table-body-bg !important;
+				background-color: $table-body-bg; // 移除 !important，允许通过 row-style 覆盖
 
 				// 表格行悬停效果（禁用默认悬停）（LayUI配置）
 				&:hover {
