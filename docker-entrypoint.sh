@@ -107,7 +107,12 @@ fi
 
 # 如果找到配置文件模板，则处理环境变量替换
 if [ -n "$CONFIG_TEMPLATE" ]; then
-    envsubst '${HOST_IP} ${BACKEND_PORT} ${FRONTEND_PORT} ${FRONTEND_WEB_ROOT}' < "$CONFIG_TEMPLATE" > /etc/nginx/conf.d/default.conf
+    # 使用 sed 替换环境变量（更可靠的方法）
+    sed -e "s|\${HOST_IP}|${HOST_IP}|g" \
+        -e "s|\${BACKEND_PORT}|${BACKEND_PORT}|g" \
+        -e "s|\${FRONTEND_PORT}|${FRONTEND_PORT}|g" \
+        -e "s|\${FRONTEND_WEB_ROOT}|${FRONTEND_WEB_ROOT}|g" \
+        "$CONFIG_TEMPLATE" > /etc/nginx/conf.d/default.conf
     echo "配置文件已生成: /etc/nginx/conf.d/default.conf"
     echo "网站根目录: $FRONTEND_WEB_ROOT"
 else
