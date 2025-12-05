@@ -1366,6 +1366,6 @@ export default {
 }
 
 ::v-deep .highlight-row {
-	background-color: #f0f9f0;
+	background-color: #f5f5f5;
 }
 </style>
