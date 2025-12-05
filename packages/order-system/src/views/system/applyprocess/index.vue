@@ -855,7 +855,7 @@ export default {
 		},
 		// 表格行样式类名
 		tableRowClassName({ row }) {
-			if (!row.tableReferences) {
+			if (row.tableReferences) {
 				return 'highlight-row';
 			}
 			return '';
