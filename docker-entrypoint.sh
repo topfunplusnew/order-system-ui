@@ -42,8 +42,12 @@ if [ -n "$CONFIG_TEMPLATE" ]; then
     echo "使用配置文件模板: $CONFIG_TEMPLATE"
     
     # 使用 sed 替换变量（使用 | 作为分隔符避免路径中的 / 冲突）
-    # 注意：在 sh 中，变量需要用双引号包裹以确保正确展开
-    sed -e "s|\${HOST_IP}|${HOST_IP}|g" \
+    # 先处理带默认值的语法 ${VAR:-default}，再处理普通变量 ${VAR}
+    sed -e "s|\${FRONTEND_WEB_ROOT:-[^}]*}|${FRONTEND_WEB_ROOT}|g" \
+        -e "s|\${HOST_IP:-[^}]*}|${HOST_IP}|g" \
+        -e "s|\${BACKEND_PORT:-[^}]*}|${BACKEND_PORT}|g" \
+        -e "s|\${FRONTEND_PORT:-[^}]*}|${FRONTEND_PORT}|g" \
+        -e "s|\${HOST_IP}|${HOST_IP}|g" \
         -e "s|\${BACKEND_PORT}|${BACKEND_PORT}|g" \
         -e "s|\${FRONTEND_PORT}|${FRONTEND_PORT}|g" \
         -e "s|\${FRONTEND_WEB_ROOT}|${FRONTEND_WEB_ROOT}|g" \
