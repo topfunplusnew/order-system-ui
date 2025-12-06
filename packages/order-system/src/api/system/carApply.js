@@ -65,3 +65,12 @@ export function auditCarApply(id, auditState) {
 		}
 	});
 }
+
+// 更新车辆使用申请补充信息
+export function supplementCarApply(data) {
+	return request({
+		url: '/system/carApply/supplement',
+		method: 'put',
+		data: data
+	});
+}

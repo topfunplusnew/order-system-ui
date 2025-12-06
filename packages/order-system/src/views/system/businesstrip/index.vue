@@ -175,13 +175,13 @@
 											<el-input size="mini" disabled v-model="scope.row.carNo" />
 										</el-col>
 										<el-col :span="4">
-											<SearchOption :limit-info="{}" :get-data="listCarApply" :query-name="queryCarApply" query-info="carNo" query-label="车牌" @commitBack="value => handleCommitBackCarApply(value, scope)" @update:queryName="handleQueryCarApply">
+											<SearchOption :limit-info="{ auditState: '审核通过' }" :get-data="listCarApply" :query-name="queryCarApply" query-info="carNo" query-label="车牌" @commitBack="value => handleCommitBackCarApply(value, scope)" @update:queryName="handleQueryCarApply">
 												<template #table-columns>
 													<el-table-column label="申请人" prop="applyUser" />
 													<el-table-column label="部门" prop="department" />
 													<el-table-column label="车牌" prop="carNo" />
 													<el-table-column label="用车时间" prop="startTime" />
-													<el-table-column label="还车时间" prop="endTime" />
+													<el-table-column label="审核状态" prop="auditState" />
 												</template>
 											</SearchOption>
 										</el-col>
