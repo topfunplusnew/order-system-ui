@@ -143,7 +143,7 @@ export default {
 					return new Date(a.backupTime) - new Date(b.backupTime);
 				})
 				.reverse();
-			return Object.entries(_.groupBy(actualResult, item => item.uuid)).map(entries => _.groupBy(entries[1], item => item.tableName));
+			return Object.entries(_.groupBy(actualResult, item => item.id)).map(entries => _.groupBy(entries[1], item => item.tableName));
 		},
 		bodyData() {
 			return this.renderData.map(backlog => {
