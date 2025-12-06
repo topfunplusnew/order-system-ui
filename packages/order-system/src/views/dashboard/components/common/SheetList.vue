@@ -438,35 +438,42 @@ export default {
 			this.saveBatchInvoiceSession();
 			getOperatedMap().then(map => (this.templateOperatedMap = map || {}));
 		},
-		// 映射关系
+		// 映射参数：将后端数据或Excel原始数据转换为统一格式
 		mapperParams(item) {
 			if (!item) return null;
 			// 已结构化的后端数据
 			if (item.sellerId !== undefined || item.purchaseId !== undefined || item.batchInvoiceId) {
-				const totalAmount = Number(item.totalAmount ?? item.total ?? item.invoiceAmount ?? 0);
-				const ticketPoint = Number(item.taxPoint ?? item.ticketPoint ?? 0);
-				const ticketPointAmountRaw = item.ticketPointAmount;
-				const normalizedTicketPointAmount = ticketPointAmountRaw !== undefined && ticketPointAmountRaw !== null ? Number(ticketPointAmountRaw) : this.calculateTicketPointAmount(totalAmount, ticketPoint);
-
-				return {
-					sellerId: Number(item.sellerId) || 0,
-					sellerName: item.sellerName || '',
-					sellerType: item.sellerType || '',
-					purchaseId: Number(item.buyerId ?? item.purchaseId) || 0,
-					purchaseType: item.buyerType ?? item.purchaseType ?? '',
-					purchaseName: item.buyerName ?? item.purchaseName ?? '',
-					total: Number(totalAmount),
-					ticketPoint: ticketPoint,
-					ticketPointAmount: Number(normalizedTicketPointAmount),
-					batchInvoiceId: item.batchInvoiceId || item.id || null,
-					voucher: item.voucher || '',
-					comments: item.comments || '',
-					params: item.params || {},
-					id: item.id
-				};
+				return this.mapStructuredData(item);
 			}
-
 			// Excel 原始数据（中文表头）
+			return this.mapExcelData(item);
+		},
+		// 映射已结构化的后端数据
+		mapStructuredData(item) {
+			const totalAmount = Number(item.totalAmount ?? item.total ?? item.invoiceAmount ?? 0);
+			const ticketPoint = Number(item.taxPoint ?? item.ticketPoint ?? 0);
+			const ticketPointAmountRaw = item.ticketPointAmount;
+			const normalizedTicketPointAmount = ticketPointAmountRaw !== undefined && ticketPointAmountRaw !== null ? Number(ticketPointAmountRaw) : this.calculateTicketPointAmount(totalAmount, ticketPoint);
+
+			return {
+				sellerId: Number(item.sellerId) || 0,
+				sellerName: item.sellerName || '',
+				sellerType: item.sellerType || '',
+				purchaseId: Number(item.buyerId ?? item.purchaseId) || 0,
+				purchaseType: item.buyerType ?? item.purchaseType ?? '',
+				purchaseName: item.buyerName ?? item.purchaseName ?? '',
+				total: Number(totalAmount),
+				ticketPoint: ticketPoint,
+				ticketPointAmount: Number(normalizedTicketPointAmount),
+				batchInvoiceId: item.batchInvoiceId || item.id || null,
+				voucher: item.voucher || '',
+				comments: item.comments || '',
+				params: item.params || {},
+				id: item.id
+			};
+		},
+		// 映射Excel原始数据
+		mapExcelData(item) {
 			const ticketPoint = Number(item['票点']) || 0;
 			const totalAmount = Number(item['价税合计']) || 0;
 			const ticketPointAmount = this.calculateTicketPointAmount(totalAmount, ticketPoint);
@@ -675,30 +682,32 @@ export default {
 			this.$bus.$emit('select-goods-row:update');
 		},
 
-		// 关闭的逻辑 要清除所有状态
+		// 关闭弹窗并清除所有状态
 		handleClose() {
 			this.reset();
 			this.invoiceAllVisible = false;
 		},
+		// 重置所有状态
 		reset() {
-			// sessionStorage
+			// 清除sessionStorage
+			this.clearSessionStorage();
+			// 清除组件状态
+			this.clearComponentState();
+			// 清除Vuex状态
+			this.clearVuexState();
+			// 发布清除事件
+			this.$bus.$emit('invoice-clear');
+		},
+		// 清除sessionStorage
+		clearSessionStorage() {
 			sessionStorage.removeItem('us');
 			sessionStorage.removeItem('invoiceAmount');
-			// 清除左上角公司信息
+		},
+		// 清除组件状态
+		clearComponentState() {
 			this.handleResetCompanyInfo();
-			// 清除订单列表的数据
 			this.handleResetOrderList();
-			// 重置公司筛选结果
 			this.handleReset();
-			// 清除票点
-			this.$store.dispatch('excel/clearTicketPoint');
-			// 清除备注
-			this.$store.dispatch('excel/clearComment');
-			// 清除模板数据
-			this.$store.dispatch('excel/clearPurchaseTemplateData');
-			this.$store.dispatch('excel/clearSellerTemplateData');
-			this.$store.dispatch('excel/clearBatchMetaMap');
-			// 重置统计信息
 			this.statisticsInfo = {
 				purchaseStats: {
 					suppliers: { total: 0, count: 0 },
@@ -709,8 +718,14 @@ export default {
 					customers: { total: 0, count: 0 }
 				}
 			};
-			// 发布事件 组件中清除自己状态
-			this.$bus.$emit('invoice-clear');
+		},
+		// 清除Vuex状态
+		clearVuexState() {
+			this.$store.dispatch('excel/clearTicketPoint');
+			this.$store.dispatch('excel/clearComment');
+			this.$store.dispatch('excel/clearPurchaseTemplateData');
+			this.$store.dispatch('excel/clearSellerTemplateData');
+			this.$store.dispatch('excel/clearBatchMetaMap');
 		}
 	}
 };

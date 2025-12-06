@@ -49,7 +49,7 @@ export default {
 			this.$bus.$emit('excel:resume');
 			this.dialogVisible = true;
 		},
-		// 点击后上传
+		// 点击上传按钮
 		handleUpload() {
 			this.clearState();
 			if (this.$refs.fileInput) {
@@ -57,19 +57,23 @@ export default {
 				this.$refs.fileInput.click();
 			}
 		},
+		// 打开管理记录弹窗
 		handleManage() {
 			this.initialVoucher = '';
 			this.dialogVisible = true;
 		},
+		// 获取API配置
 		getApiConfig() {
 			return API_CONFIG[this.mode] || API_CONFIG.in;
 		},
+		// 判断是否为Excel文件
 		isExcelFile(file) {
 			if (!file || !file.name) return false;
 			const parts = file.name.split('.');
 			const ext = parts.length > 1 ? parts[parts.length - 1].toLowerCase() : '';
 			return ['xls', 'xlsx'].includes(ext);
 		},
+		// 文件选择变化处理
 		async onChange(e) {
 			const files = (e && e.target && e.target.files) || [];
 			if (!files.length) {
@@ -81,6 +85,14 @@ export default {
 				this.$message.warning('文件格式不正确, 请上传xls/xlsx格式文件!');
 				return;
 			}
+			await this.uploadFile(file);
+			// 清空文件输入框
+			if (e && e.target) {
+				e.target.value = '';
+			}
+		},
+		// 上传文件
+		async uploadFile(file) {
 			const formData = new FormData();
 			formData.append('file', file);
 			const { importData } = this.getApiConfig();
@@ -96,9 +108,6 @@ export default {
 				this.$message.error(msg);
 			} finally {
 				this.uploadLoading = false;
-				if (e && e.target) {
-					e.target.value = '';
-				}
 			}
 		},
 		// 下载模板

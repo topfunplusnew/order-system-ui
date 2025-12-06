@@ -193,6 +193,13 @@ export default {
 
 			// 扣除金额 这里要判断一下 如果是客户 扣除的是总货款 如果是供应商 扣除的出厂货款之和
 			this.multipleMoney(selection);
+
+			// 选中订单后自动生成发票
+			if (selection && selection.length > 0) {
+				this.$nextTick(() => {
+					this.autoGenerateInvoice();
+				});
+			}
 		},
 		// 筛选订单列表 主要是用于当左侧选择某个公司后要选择对应公司的订单
 		handleFilterOrders(value) {
@@ -361,9 +368,20 @@ export default {
 			this.getList();
 		},
 
-		// 生成发票（占位，暂未实现）
+		// 自动生成发票（选中订单后自动触发）
+		autoGenerateInvoice() {
+			// 延迟一小段时间，确保金额计算完成
+			setTimeout(() => {
+				this.$bus.$emit('generate-invoice');
+			}, 100);
+		},
+		// 手动生成发票（保留作为备用）
 		generateInvoice() {
-			// 触发事件，由 InvoiceBody 去处理生成发票的逻辑
+			const selectedOrders = this.$store.getters.selectedOrder || [];
+			if (!selectedOrders || selectedOrders.length === 0) {
+				this.$message.warning('请先选择订单');
+				return;
+			}
 			this.$bus.$emit('generate-invoice');
 		},
 		// 重置搜索条件
@@ -420,9 +438,9 @@ export default {
 <template>
 	<div>
 		<QuerySearchBar :query-params="queryParams" :visible-fields="searchBarFields" @updateQuery="handleQuery" />
-		<!-- 操作按钮：刷新 + 生成发票（右对齐） -->
+		<!-- 操作按钮：手动生成发票（备用，选中订单后会自动生成） -->
 		<div class="select-actions">
-			<el-button type="primary" size="mini" @click="generateInvoice">生成发票</el-button>
+			<el-button type="primary" size="mini" @click="generateInvoice">手动生成发票</el-button>
 		</div>
 		<!--    订单列表主体-->
 		<el-table

@@ -300,44 +300,13 @@ export default {
 
 		/**
 		 * 生成发票（按模板分配）
-		 *
-		 * 概要：
-		 *  - 从 Vuex 读取当前选中的订单（selectedOrder）和模板数据（purchaseTemplateData + sellerTemplateData）。
-		 *  - 如果组件通过 CompanyList 已经选定了某个公司（this.supplierId），则优先筛选出该公司的模板（优先匹配 seller，再匹配 purchase；当偏好为客户时优先匹配 sellerType 为客户的模板）。
-		 *  - 使用深拷贝的模板池（templatePool）进行分配：对每个订单，依次从模板池取出模板行，计算本次使用金额 used = min(templateAmount, orderRemaining)，为该 used 金额生成一条发票对象并加入结果数组。
-		 *  - 模板支持部分消耗：每次使用后将模板剩余写回 templatePool（不回写 Vuex），订单剩余减少，直到订单被完全抵扣或模板耗尽。
-		 *  - 处理完成后将生成的发票列表写入 Vuex（excel/setSelectedInvoiceList）并通过 this.$message 显示生成条数。
-		 *
-		 * 输入（隐式）：
-		 *  - this.$store.getters.selectedOrder: 选中的订单数组（必须包含 order.allPayments 和 order.params.totalInvoiceAmount 等字段）。
-		 *  - this.$store.state.excel.purchaseTemplateData / sellerTemplateData: 模板数组，模板行需包含 total、sellerId、sellerType、purchaseId 等字段。
-		 *  - this.supplierId / this.invoiceType: （可选）来自 CompanyList 的当前检索公司和偏好类型，用以筛选模板。
-		 *
-		 * 输出/副作用：
-		 *  - 将生成的发票数组写入 Vuex（dispatch('excel/setSelectedInvoiceList', resultInvoices)）。
-		 *  - 在页面上通过 this.$message.success 显示生成数量。
-		 *
-		 * 算法要点（按订单循环）：
-		 *  1. 计算订单剩余 remaining = allPayments - params.totalInvoiceAmount（使用 BigNumber 精度运算）。
-		 *  2. 遍历 templatePool：
-		 *     - 若 tpl.total 为 0 则跳过；否则 used = min(tpl.total, remaining)。
-		 *     - 使用 used 生成一条发票对象（invoiceAmount = used，票点按 used 计算）。
-		 *     - 将模板剩余 tpl.total -= used（写回 templatePool），将 remaining -= used。
-		 *     - 若 remaining <= 0，标记订单完成并跳出模板循环，继续处理下一个订单。
-		 *  3. 所有订单处理结束后，将结果提交到 Vuex 并回显。
-		 *
-		 * 备注/边界情况：
-		 *  - 若未选中订单或无模板数据，会使用 this.$message.warning 提示并返回。
-		 *  - 模板部分消耗只在内存拷贝上进行，不会修改 Vuex 中原始模板数据；如需持久化消耗，请告知。
-		 *
-		 * @returns {void}
+		 * 从订单和模板数据中自动生成发票列表
 		 */
 		generateInvoicesByTemplates() {
 			// 获取当前选择订单
 			const orders = this.$store.getters.selectedOrder || [];
 			if (!orders || orders.length === 0) {
-				this.$message.warning('请先选择订单后再生成发票');
-				return;
+				return; // 静默返回，避免频繁提示
 			}
 			// 读取并合并模板数据（购买方+销方）
 			const purchaseTemplates = this.$store.state.excel.purchaseTemplateData || [];
@@ -481,10 +450,12 @@ export default {
 			}
 
 			// 将生成的发票列表写入 Vuex，触发界面更新
-			this.$store.dispatch('excel/setSelectedInvoiceList', resultInvoices);
-			this.$message.success(`生成 ${resultInvoices.length} 条发票记录`);
-			// 保存生成结果到本地，便于恢复
-			this.saveGeneratedInvoicesSession();
+			if (resultInvoices.length > 0) {
+				this.$store.dispatch('excel/setSelectedInvoiceList', resultInvoices);
+				this.$message.success(`已自动生成 ${resultInvoices.length} 条发票记录`);
+				// 保存生成结果到本地，便于恢复
+				this.saveGeneratedInvoicesSession();
+			}
 		},
 
 		// 分配金额的具体函数 选择某一个订单后要扣钱
