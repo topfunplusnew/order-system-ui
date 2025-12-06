@@ -163,65 +163,51 @@
 							<el-form-item label="出车前车况" prop="startCarState">
 								<el-input v-model="form.startCarState" placeholder="外观是否有划痕、磕碰、掉漆、内部是否清洁" />
 							</el-form-item>
-							<el-form-item label="回来后里程" prop="endMile">
-								<el-input v-model="form.endMile" placeholder="请输入回来后里程" />
+							<el-form-item label="是否携带油卡" prop="isUseOilCard">
+								<el-radio v-model="form.isUseOilCard" :label="1">是</el-radio>
+								<el-radio v-model="form.isUseOilCard" :label="0">否</el-radio>
 							</el-form-item>
-							<el-form-item label="回来后车况" prop="endCarState">
-								<el-input v-model="form.endCarState" placeholder="是否洗车、内部是否清洁" />
-							</el-form-item>
-							<el-form-item label="用车里程数" prop="miles">
-								<el-input v-model="form.miles" placeholder="请输入用车里程数" />
-							</el-form-item>
-							<el-form-item label="回程停靠位置" prop="backStopPlace">
-								<el-input v-model="form.backStopPlace" placeholder="请输入回程停靠位置" />
-							</el-form-item>
-							<el-form-item label="行程中违法次数" prop="violationsCount">
-								<el-input type="number" v-model="form.violationsCount" placeholder="请输入行程中违法次数" />
-							</el-form-item>
-							<el-form-item label="违章罚款金额金额" prop="fine">
-								<el-input type="number" v-model="form.fine" placeholder="请输入违章罚款金额金额" />
-							</el-form-item>
-							<el-form-item label="行程中是否维修/保养" prop="isMaintenance">
-								<el-radio v-model="form.isMaintenance" label="是">是</el-radio>
-								<el-radio v-model="form.isMaintenance" label="否">否</el-radio>
-							</el-form-item>
-							<el-form-item v-if="form.isMaintenance === '是'" label="保养金额" prop="maintenanceMoney">
-								<el-input v-model="form.maintenanceMoney" placeholder="请输入保养金额" />
-							</el-form-item>
-							<el-form-item v-if="form.isMaintenance === '是'" label="维修金额" prop="repairMoney ">
-								<el-input v-model="form.repairMoney" placeholder="请输入维修金额" />
-							</el-form-item>
-							<el-form-item label="行程中使用加油卡加油次数" prop="refuelingFrequency">
-								<el-input type="number" v-model="form.refuelingFrequency" placeholder="请输入行程中使用加油卡加油次数" />
+							<el-form-item v-if="form.isUseOilCard === 1" label="携带油卡列表">
+								<el-row :gutter="10" class="mb8">
+									<el-col :span="1.5">
+										<el-button size="mini" type="primary" @click="handleAddOilCard">添加</el-button>
+									</el-col>
+									<el-col :span="1.5">
+										<el-button size="mini" type="danger" @click="handleDeleteOilCard">删除</el-button>
+									</el-col>
+								</el-row>
+								<el-table size="mini" :data="form.oilCardBindings || []" :row-class-name="rowOilCardBindingIndex" @selection-change="handleOilCardBindingSelectionChange">
+									<el-table-column type="selection" width="90" align="center" />
+									<el-table-column label="序号" align="center" prop="index" />
+									<el-table-column label="油卡卡号" align="center">
+										<template #default="scope">
+											<el-row>
+												<el-col :span="20">
+													<el-input size="mini" disabled v-model="scope.row.oilCardNo" />
+												</el-col>
+												<el-col :span="4">
+													<SearchOption :limit-info="{}" :get-data="listOilCard" query-label="油卡卡号" :query-name="queryOilCardBinding" query-info="oilCardNo" @commitBack="value => handleCommitBackOilCardBinding(value, scope)" @update:queryName="handleQueryOilCardBinding">
+														<template #table-columns>
+															<el-table-column label="油卡卡号" prop="oilCardNo" />
+															<el-table-column label="油卡类型" prop="oilType" />
+															<el-table-column label="当前金额" prop="moneyAmount" />
+														</template>
+													</SearchOption>
+												</el-col>
+											</el-row>
+										</template>
+									</el-table-column>
+								</el-table>
 							</el-form-item>
 						</el-col>
 						<el-col :span="8">
-							<el-form-item label="现金加油次数" prop="cashRefuelingFrequency">
-								<el-input type="number" v-model="form.cashRefuelingFrequency" placeholder="现金加油次数" />
-							</el-form-item>
 							<!--              在行程中使用加油卡的加油次数和派车人之间加入4列，“加油金额、加油卡余额、加油小票是否交回公司、现金加油”。-->
-							<el-form-item label="加油金额" prop="refuelingMoney">
-								<el-input type="number" v-model="form.refuelingMoney" placeholder="请输入加油金额" />
-							</el-form-item>
-							<el-form-item label="加油卡余额" prop="oilCardBalance">
-								<el-input type="number" v-model="form.oilCardBalance" placeholder="请输入加油卡余额" />
-							</el-form-item>
-							<el-form-item label="加油小票是否交回公司" prop="isTicketReturned">
-								<el-radio v-model="form.isTicketReturned" label="是">是</el-radio>
-								<el-radio v-model="form.isTicketReturned" label="否">否</el-radio>
-							</el-form-item>
-							<el-form-item label="现金加油" prop="cashRefueling">
-								<el-input type="number" v-model="form.cashRefueling" placeholder="请输入行程中使用加油卡加油次数" />
-							</el-form-item>
 
 							<el-form-item label="派车人" prop="dispatchPerson">
 								<el-input v-model="form.dispatchPerson" placeholder="请输入派车人" />
 							</el-form-item>
 							<el-form-item label="备注" prop="comments">
-								<el-input v-model="form.comments" placeholder="请输入备注" />
-							</el-form-item>
-							<el-form-item label="附件" prop="attachmentList">
-								<UploadFilesButton flag="attachments" @files-updated="handleAttachmentFilesUpdated" :initial-attachments="form.attachmentList || []" />
+								<el-input v-model="form.comments" type="textarea" placeholder="请输入备注" />
 							</el-form-item>
 						</el-col>
 					</el-row>
