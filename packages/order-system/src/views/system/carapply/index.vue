@@ -161,9 +161,9 @@
 						</el-col>
 						<el-col :span="8">
 							<el-form-item label="出车前车况" prop="startCarState">
-								<el-checkbox-group v-model="form.startCarStateList">
-									<el-checkbox v-for="item in carStateOptions" :key="item.value" :label="item.value">{{ item.label }}</el-checkbox>
-								</el-checkbox-group>
+								<el-select v-model="form.startCarStateList" multiple placeholder="请选择出车前车况" style="width: 100%">
+									<el-option v-for="item in carStateOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
+								</el-select>
 							</el-form-item>
 							<el-form-item label="回来后里程" prop="endMile">
 								<el-input v-model="form.endMile" placeholder="请输入回来后里程" />
