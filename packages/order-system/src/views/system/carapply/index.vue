@@ -94,7 +94,7 @@
 					</div>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[29].visible" label="审核状态" align="center" prop="auditState" width="120px" show-overflow-tooltip>
+			<el-table-column v-if="columns[29].visible" label="审核状态" align="center" prop="auditState" width="300px" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<el-switch
 						v-hasPermi="['system:carapply:audit']"
