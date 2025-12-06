@@ -623,18 +623,16 @@ export default {
 	height: 100%;
 	display: flex;
 	flex-direction: column;
-	box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-	border: 1px solid #ebeef5;
-	border-radius: 6px;
-
-	&:hover {
-		box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.12);
-	}
+	box-shadow: none;
+	border: none;
+	background: transparent;
+	overflow: hidden;
 
 	::v-deep .el-card__header {
 		padding: 12px 16px;
-		border-bottom: 1px solid #ebeef5;
+		border-bottom: 1px solid rgba(0, 0, 0, 0.08);
 		flex-shrink: 0;
+		background: transparent;
 
 		.card-header {
 			margin: 0;
@@ -647,6 +645,7 @@ export default {
 		overflow: hidden;
 		display: flex;
 		flex-direction: column;
+		background: transparent;
 	}
 }
 
@@ -668,7 +667,7 @@ export default {
 	padding: 12px;
 	background-color: #f8f9fa;
 	border-radius: 4px;
-	border-left: 4px solid #409eff;
+	border: none;
 }
 
 .info-item {
@@ -705,10 +704,10 @@ export default {
 	overflow-y: auto;
 	min-height: 0;
 	margin-bottom: 16px;
-	border: 1px solid #ebeef5;
-	border-radius: 4px;
+	border: none;
+	border-radius: 0;
 	padding: 8px;
-	background-color: #fafbfc;
+	background-color: transparent;
 
 	/* 美化滚动条 */
 	&::-webkit-scrollbar {
@@ -735,7 +734,7 @@ export default {
 	justify-content: center;
 	align-items: center;
 	padding: 12px 0;
-	border-top: 1px solid #ebeef5;
+	border-top: none;
 
 	.invoice-button {
 		min-width: 120px;
