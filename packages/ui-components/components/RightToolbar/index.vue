@@ -211,7 +211,7 @@ export default {
 			}
 		},
 
-		async saveUserConfig() {
+		async doSaveUserConfig() {
 			if (!this.tableName || this.columns.length === 0 || !this.saveUserConfig) return;
 			try {
 				const config = this.columns.reduce((obj, col) => {
@@ -287,7 +287,7 @@ export default {
 				});
 			});
 			// 保存配置
-			this.saveUserConfig();
+			this.doSaveUserConfig();
 			// 关闭下拉菜单
 			if (this.$refs.columnDropdown) {
 				this.$refs.columnDropdown.hide();
@@ -312,7 +312,7 @@ export default {
 			// 设置新的定时器，300ms 后执行保存
 			this.saveTimer = setTimeout(() => {
 				this.$emit('column-change', { index, column: this.columns[index], visible: this.columns[index].visible });
-				this.saveUserConfig();
+				this.doSaveUserConfig();
 				this.saveTimer = null;
 			}, 300);
 		},
@@ -332,7 +332,7 @@ export default {
 				this.columns.forEach((col, index) => {
 					this.$emit('column-change', { index, column: col, visible: col.visible });
 				});
-				this.saveUserConfig();
+				this.doSaveUserConfig();
 				this.saveTimer = null;
 			}, 300);
 		},
