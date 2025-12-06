@@ -96,7 +96,16 @@
 			</el-table-column>
 			<el-table-column v-if="columns[29].visible" label="审核状态" align="center" prop="auditState" width="120px" show-overflow-tooltip>
 				<template slot-scope="scope">
-					<el-tag :type="scope.row.auditState === '审核通过' ? 'success' : scope.row.auditState === '审核不通过' ? 'danger' : 'info'">
+					<el-switch
+						v-hasPermi="['system:carapply:audit']"
+						v-model="scope.row.auditState"
+						:active-value="'审核通过'"
+						:inactive-value="null"
+						active-text="已审核"
+						inactive-text="待审核"
+						@change="(value) => handleAuditStateChange(scope.row, value)"
+					></el-switch>
+					<el-tag v-if="!checkPermi(['system:carapply:audit'])" :type="scope.row.auditState === '审核通过' ? 'success' : scope.row.auditState === '审核不通过' ? 'danger' : 'info'">
 						{{ scope.row.auditState || '待审核' }}
 					</el-tag>
 				</template>
@@ -106,7 +115,6 @@
 				<template slot-scope="scope">
 					<el-button v-hasPermi="['system:carapply:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
 					<el-button v-hasPermi="['system:carapply:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
-					<el-button v-hasPermi="['system:carapply:audit']" size="mini" type="warning" @click="handleAudit(scope.row)" v-if="scope.row.auditState === null">派车审核</el-button>
 					<el-button size="mini" type="success" @click="handleSupplement(scope.row)">补充信息</el-button>
 				</template>
 			</el-table-column>
@@ -292,6 +300,7 @@ import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import { listVehicles } from '../../../api/system/vehicles';
 import { excludeParams } from '../../../api/tool/exclude';
 import { parseTime } from 'order-system/src/utils/ruoyi';
+import { checkPermi } from '@/utils/permission';
 
 export default {
 	name: 'CarApply',
@@ -808,42 +817,22 @@ export default {
 				`车辆申请_${new Date().getTime()}.xlsx`
 			);
 		},
-		/** 派车审核操作 */
-		handleAudit(row) {
-			this.$antdconfirm({
-				title: '请选择审核结果',
-				content: '点击确定按钮后，将执行审核操作',
-				okText: '审核通过',
-				cancelText: '审核不通过',
-				onOk: () => {
-					return new Promise((resolve, reject) => {
-						auditCarApply(row.id, '审核通过')
-							.then(() => {
-								this.$modal.msgSuccess('审核通过成功');
-								this.getList();
-								resolve();
-							})
-							.catch(() => {
-								this.$modal.msgError('审核通过失败');
-								reject();
-							});
-					});
-				},
-				onCancel: () => {
-					return new Promise((resolve, reject) => {
-						auditCarApply(row.id, '审核不通过')
-							.then(() => {
-								this.$modal.msgSuccess('审核不通过成功');
-								this.getList();
-								resolve();
-							})
-							.catch(() => {
-								this.$modal.msgError('审核不通过失败');
-								reject();
-							});
-					});
-				}
-			});
+		/** 审核状态开关变化处理 */
+		handleAuditStateChange(row, value) {
+			const oldValue = row.auditState;
+			const auditState = value === '审核通过' ? '审核通过' : null;
+			const message = auditState === '审核通过' ? '审核通过成功' : '取消审核成功';
+			
+			auditCarApply(row.id, auditState)
+				.then(() => {
+					this.$modal.msgSuccess(message);
+					this.getList();
+				})
+				.catch(() => {
+					// 如果失败，恢复原状态
+					this.$set(row, 'auditState', oldValue);
+					this.$modal.msgError(auditState === '审核通过' ? '审核通过失败' : '取消审核失败');
+				});
 		},
 		// 统一附件处理方法
 		handleAttachmentFilesUpdated(uploadParams) {
