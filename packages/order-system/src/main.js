@@ -1,68 +1,77 @@
+// ========== Vue 核心 ==========
 import Vue from 'vue';
+import VueCompositionAPI from '@vue/composition-api';
+import VueMeta from 'vue-meta';
 
-import Cookies from 'js-cookie';
-
-import Element, { Loading, MessageBox } from 'element-ui';
-import './assets/styles/element-variables.scss';
-import './element-variables.scss';
-
-import { getConfigKey } from '@/api/system/config';
-import { getDicts } from '@/api/system/dict/data';
-import '@/assets/styles/index.scss'; // global css
-import '@/assets/styles/ruoyi.scss'; // ruoyi css
-import { download, downloadByGetMethod, onceDownload } from '@/utils/request';
-import { addDateRange, handleTree, parseTime, resetForm, selectDictLabel, selectDictLabels } from '@/utils/ruoyi';
-import App from './App.vue';
-import './assets/icons'; // icon
-import directive from './directive'; // directive
-import './permission'; // permission control
-import plugins from './plugins'; // plugins
+// ========== Vue 路由和状态管理 ==========
 import router from './router';
 import store from './store';
-// 分页组件
-import { Pagination, RightToolbar, Editor, FileUpload, ImageUpload, ImagePreview, DictTag } from '@order-system/ui-components';
-// 为 RightToolbar 注入 API 函数
+
+// ========== 第三方库 ==========
+import Cookies from 'js-cookie';
+import print from 'print-js';
+
+// ========== UI 框架 ==========
+import Element, { MessageBox } from 'element-ui';
+import Antd, { message } from 'ant-design-vue';
+import { UTable, UTableColumn } from 'umy-ui';
+import VForm from 'vform-builds';
+
+// ========== 应用入口和布局 ==========
+import App from './App.vue';
+
+// ========== API ==========
+import { getConfigKey } from '@/api/system/config';
+import { getDicts } from '@/api/system/dict/data';
 import { getUserConfig, saveUserConfig } from '@/api/user-config/index.js';
-import { ShowColumnsType } from '@/api/tool/user-config.js';
-// 头部标签组件
-import VueMeta from 'vue-meta';
-// 字典数据组件
+
+// ========== 工具函数 ==========
+import service from './utils/request';
+import { download, downloadByGetMethod, onceDownload } from '@/utils/request';
+import { addDateRange, handleTree, parseTime, resetForm, selectDictLabel, selectDictLabels } from '@/utils/ruoyi';
+import { Logger } from '@/utils/order/logger';
+import { checkVersion } from './utils/versionChecker';
+
+// ========== 共享 UI 组件 ==========
+import { Pagination, RightToolbar, Editor, FileUpload, ImageUpload, ImagePreview, DictTag } from '@order-system/ui-components';
+
+// ========== 业务组件 ==========
 import DictData from '@/components/DictData';
 import ModelPlugin from './components/ModelDialog';
-// 引入表格横向滚动插件
-import horizontalScroll from 'el-table-horizontal-scroll';
-// 打印
-import print from 'print-js';
-import 'print-js/dist/print.css';
-// 表单生成器
-import VForm from 'vform-builds'; // 引入VForm库
-import 'vform-builds/dist/VFormDesigner.css'; // 引入VForm样式
-import service from './utils/request';
-import { Logger } from '@/utils/order/logger';
-// 虚拟滚动
-import VueVirtualScroller from 'vue-virtual-scroller';
-import 'vue-virtual-scroller/dist/vue-virtual-scroller.css';
 import DatePickerDialog from './views/dashboard/components/common/DatePickerDialog.vue';
-import Antd, { message } from 'ant-design-vue';
-import 'ant-design-vue/dist/antd.css';
-
-// 漫游组件
-import 'vue-tour/dist/vue-tour.css';
-import VueTour from 'vue-tour';
-import keepAliveDialog from '@/views/dashboard/mixins/keepAliveDialog';
-// 引入通用弹窗混入和组件
-import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 import CustomTableColumn from '@/components/CustomTableColumn/index.vue';
-// 引入列显隐控制混入
+
+// ========== 混入 ==========
+import keepAliveDialog from '@/views/dashboard/mixins/keepAliveDialog';
+import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import { columnVisibilityMixin } from '@/mixins/columnVisibilityMixin';
-// 全局注册弹窗拖拽与位置重算指令
+
+// ========== 指令 ==========
+import directive from './directive';
 import elDragDialog from '@/views/dashboard/directive/dialog/drugDialog';
 import elRelenDialog from '@/views/dashboard/directive/dialog/relenDialog';
-import { checkVersion } from './utils/versionChecker';
-import { UTable, UTableColumn } from 'umy-ui';
-import 'umy-ui/lib/theme-chalk/index.css'; // 引入样式
+
+// ========== 插件 ==========
+import plugins from './plugins';
+import horizontalScroll from 'el-table-horizontal-scroll';
+import VueVirtualScroller from 'vue-virtual-scroller';
+import VueTour from 'vue-tour';
 import FitColumnPlugin from 'v-fit-columns';
+
+// ========== 样式 ==========
+import './assets/styles/element-variables.scss';
+import './element-variables.scss';
+import '@/assets/styles/index.scss';
+import '@/assets/styles/ruoyi.scss';
+import './assets/icons';
+import './permission';
+import 'print-js/dist/print.css';
+import 'vform-builds/dist/VFormDesigner.css';
+import 'vue-virtual-scroller/dist/vue-virtual-scroller.css';
+import 'ant-design-vue/dist/antd.css';
+import 'vue-tour/dist/vue-tour.css';
+import 'umy-ui/lib/theme-chalk/index.css';
 
 message.config({
 	top: '10px',
@@ -150,9 +159,6 @@ Vue.prototype.$datePicker = function () {
 		});
 	});
 };
-
-// 引入composition-api写法
-import VueCompositionAPI from '@vue/composition-api';
 
 Vue.use(VueCompositionAPI);
 // 全局注册 keepAliveDialog 混入，使 system 目录下组件自动应用
