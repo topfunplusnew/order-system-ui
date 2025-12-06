@@ -43,6 +43,9 @@ export const TableConfig = {
 			{ name: 'allFreightPrice', label: '平均运费单价(元)' }
 		],
 		extraParams: [],
+		// 子表配置：用于资金变动数据中展开显示订单明细
+		subTableField: 'orderDetailList',
+		subTableConfig: TableName.ORDER_DETAIL, // 子表使用订单明细的配置
 		options(key, value) {
 			switch (key) {
 				case 'isAdjusted': {

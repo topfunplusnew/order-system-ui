@@ -2,10 +2,23 @@
 	<div>
 		<div class="body">
 			<div id="scrollContainer" class="scroll-area">
-				<el-table v-if="allMergedTableData.length > 0" :data="allMergedTableData" :span-method="getAllSpanMethod" :cell-style="getAllMergedCellStyle" border style="width: 100%">
-					<el-table-column label="记录" width="180" align="center">
+				<el-table v-if="allMergedTableData.length > 0" :data="allMergedTableData" :span-method="getAllSpanMethod" :cell-style="getAllMergedCellStyle" border style="width: 100%" row-key="rowKey">
+					<el-table-column label="记录" width="180" align="center" fixed="left">
 						<template slot-scope="scope">
 							<span>{{ scope.row.recordLabel }}</span>
+						</template>
+					</el-table-column>
+					<!-- 展开列：用于显示订单明细，放在记录列之后 -->
+					<el-table-column v-if="hasOrderDetailList" type="expand" width="50" align="center">
+						<template slot-scope="scope">
+							<div v-if="shouldShowOrderDetail(scope.row)" class="order-detail-expand-wrapper">
+								<div v-if="getOrderDetailList(scope.row).length > 0" class="order-detail-expand">
+									<el-table :data="getOrderDetailList(scope.row)" border size="mini" style="width: 100%">
+										<el-table-column v-for="col in orderDetailColumns" :key="col.prop" :prop="col.prop" :label="col.label" :formatter="col.formatter" align="center" show-overflow-tooltip />
+									</el-table>
+								</div>
+								<div v-else class="no-detail-data">暂无明细数据</div>
+							</div>
 						</template>
 					</el-table-column>
 					<el-table-column label="状态" width="120" align="center">
@@ -220,7 +233,8 @@ export default {
 						...row,
 						recordLabel: rowIdx === 0 ? recordLabel : '',
 						recordIndex: bodyIdx,
-						bodyRef: body
+						bodyRef: body,
+						rowKey: `row-${bodyIdx}-${rowIdx}` // 添加唯一标识用于展开
 					});
 				});
 			});
@@ -244,6 +258,35 @@ export default {
 			});
 
 			return Array.from(columnMap.values());
+		},
+		// 判断是否有订单明细数据需要展开
+		hasOrderDetailList() {
+			return this.moduleName === TableName.GOODS_ORDER && TableConfig[TableName.GOODS_ORDER]?.subTableField;
+		},
+		// 获取订单明细的列配置
+		orderDetailColumns() {
+			if (!this.hasOrderDetailList) return [];
+			const subTableConfig = TableConfig[TableName.ORDER_DETAIL];
+			if (!subTableConfig || !subTableConfig.mappers) return [];
+
+			const mappers = subTableConfig.mappers || {};
+			return Object.keys(mappers).map(key => ({
+				prop: key,
+				label: mappers[key],
+				formatter: (row, column, cellValue) => {
+					const value = cellValue;
+					if (typeof subTableConfig.options !== 'function') {
+						return value === null || typeof value === 'undefined' ? '-' : String(value);
+					}
+					try {
+						const formattedValue = subTableConfig.options(key, value);
+						return formattedValue === null || typeof formattedValue === 'undefined' ? '-' : formattedValue;
+					} catch (error) {
+						console.error(`格式化字段 ${key} 的值 ${value} 时出错:`, error);
+						return value === null || typeof value === 'undefined' ? '-' : String(value);
+					}
+				}
+			}));
 		}
 	},
 	watch: {
@@ -290,6 +333,37 @@ export default {
 		},
 		handleReject() {
 			return Promise.resolve();
+		},
+		// 判断是否应该显示订单明细（只在主表行显示）
+		shouldShowOrderDetail(row) {
+			return row && row.groupType === 'main';
+		},
+		// 获取订单明细列表
+		getOrderDetailList(row) {
+			if (!this.hasOrderDetailList || !row || !row.itemRef || !this.shouldShowOrderDetail(row)) {
+				return [];
+			}
+
+			const item = row.itemRef;
+			const subTableField = TableConfig[TableName.GOODS_ORDER]?.subTableField || 'orderDetailList';
+			let detailList = [];
+
+			// 根据状态获取对应的明细数据
+			if (row.status === '修改前' && item.originalInfo) {
+				detailList = item.originalInfo[subTableField] || [];
+			} else if (row.status === '修改后' && item.changedInfo) {
+				detailList = item.changedInfo[subTableField] || [];
+			} else if (row.status === '新增' && item.changedInfo) {
+				detailList = item.changedInfo[subTableField] || [];
+			} else if (row.status === '删除' && item.originalInfo) {
+				detailList = item.originalInfo[subTableField] || [];
+			} else if (row.status === '差额') {
+				// 差额行不显示明细
+				return [];
+			}
+
+			// 确保返回数组
+			return Array.isArray(detailList) ? detailList : [];
 		},
 		// --- 判断差异是否有意义 (用于决定是否高亮) ---
 		isMeaningfulDifference(diffValue) {
@@ -993,5 +1067,60 @@ header > span > span {
 	padding: 2px 4px;
 	border-radius: 3px;
 	margin-left: 4px;
+}
+
+// 订单明细展开区域样式
+.order-detail-expand-wrapper {
+	padding: 0;
+	margin: 0;
+}
+
+.order-detail-expand {
+	padding: 10px 20px;
+	background-color: #f5f7fa;
+}
+
+.detail-title {
+	font-size: 14px;
+	font-weight: bold;
+	color: #303133;
+	margin-bottom: 10px;
+	padding: 8px 0;
+	border-bottom: 1px solid #e4e7ed;
+}
+
+.order-detail-expand .el-table {
+	background-color: #fff;
+}
+
+.no-detail-data {
+	padding: 20px;
+	text-align: center;
+	color: #909399;
+	font-size: 14px;
+}
+
+// 调整展开行的显示
+::v-deep .el-table__expanded-cell {
+	padding: 0 !important;
+}
+
+// 展开行中，第一列（记录列）保持正常显示，其他列隐藏
+::v-deep .el-table__body-wrapper .el-table__body tr.el-table__expanded-row {
+	td:first-child {
+		display: table-cell;
+		padding: 8px;
+		text-align: center;
+		border: 1px solid #dfe6ec;
+	}
+	// 展开列（第二列）显示展开内容
+	td:nth-child(2) {
+		display: table-cell;
+		padding: 0;
+	}
+	// 其他列隐藏
+	td:not(:first-child):not(:nth-child(2)) {
+		display: none;
+	}
 }
 </style>
