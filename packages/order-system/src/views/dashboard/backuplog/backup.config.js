@@ -4,78 +4,80 @@ import { TableName } from '@/api/tool/enums';
 export const MultiList = [TableName.INVENTORDETAIL, TableName.ORDER_DETAIL];
 export const TableConfig = {
 	// 订单主表
-	[TableName.GOODS_ORDER]: {
-		mappers: {
-			orderDate: '订单日期',
-			customer: '客户名称',
-			landCarNo: '陆运车牌号',
-			landDriverTel: '陆运司机电话',
-			landDriverName: '陆运司机姓名',
-			seaCarNo: '海运车牌号',
-			seaDriverTel: '海运公司电话',
-			seaDriverName: '海运公司名称',
-			checkState: '审核状态',
-			invoiceState: '开票状态',
-			landBankName: '陆运司机开户行',
-			landBankNo: '陆运司机银行账号',
-			seaBankName: '海运公司开户行',
-			seaBankNo: '海运公司银行账号',
-			saleManager: '销售经理',
-			fleet: '车队',
-			isAdjusted: '是否已调整',
-			adjustDate: '调整日期',
-			isAdjust: '是否调整单',
-			comments: '备注',
-			landFreight: '陆运运费(元)',
-			seaFreight: '海运运费(元)',
-			supplierNames: '供应商名称',
-			allPayments: '总货款金额(元)',
-			allPaymentFactory: '出厂货款(元)',
-			allTonnage: '总吨位(吨)',
-			allFreightPrice: '平均运费单价(元)'
-		},
-		params: [
-			{ name: 'landFreight', label: '陆运运费(元)' },
-			{ name: 'seaFreight', label: '海运运费(元)' },
-			{ name: 'allPayments', label: '总货款金额(元)' },
-			{ name: 'allPaymentFactory', label: '出厂货款(元)' },
-			{ name: 'allTonnage', label: '总吨位(吨)' },
-			{ name: 'allFreightPrice', label: '平均运费单价(元)' }
-		],
-		extraParams: [],
-		options(key, value) {
-			switch (key) {
-				case 'isAdjusted': {
-					if (value === 0) {
-						return '否';
-					}
-					if (value === 1) {
-						return '是';
-					}
-					break;
-				}
-				case 'isAdjust': {
-					if (value > 0) {
-						return '调整单';
-					}
-					if (value === 0) {
-						return '原订单';
-					}
-					if (value < 0) {
-						return '负数单';
-					}
-					break;
-				}
-				default: {
-					return value;
-				}
-			}
-		}
-	},
+	// [TableName.GOODS_ORDER]: {
+	// 	mappers: {
+	// 		orderDate: '订单日期',
+	// 		customer: '客户名称',
+	// 		landCarNo: '陆运车牌号',
+	// 		landDriverTel: '陆运司机电话',
+	// 		landDriverName: '陆运司机姓名',
+	// 		seaCarNo: '海运车牌号',
+	// 		seaDriverTel: '海运公司电话',
+	// 		seaDriverName: '海运公司名称',
+	// 		checkState: '审核状态',
+	// 		invoiceState: '开票状态',
+	// 		landBankName: '陆运司机开户行',
+	// 		landBankNo: '陆运司机银行账号',
+	// 		seaBankName: '海运公司开户行',
+	// 		seaBankNo: '海运公司银行账号',
+	// 		saleManager: '销售经理',
+	// 		fleet: '车队',
+	// 		isAdjusted: '是否已调整',
+	// 		adjustDate: '调整日期',
+	// 		isAdjust: '是否调整单',
+	// 		comments: '备注',
+	// 		landFreight: '陆运运费(元)',
+	// 		seaFreight: '海运运费(元)',
+	// 		supplierNames: '供应商名称',
+	// 		allPayments: '总货款金额(元)',
+	// 		allPaymentFactory: '出厂货款(元)',
+	// 		allTonnage: '总吨位(吨)',
+	// 		allFreightPrice: '平均运费单价(元)'
+	// 	},
+	// 	params: [
+	// 		{ name: 'landFreight', label: '陆运运费(元)' },
+	// 		{ name: 'seaFreight', label: '海运运费(元)' },
+	// 		{ name: 'allPayments', label: '总货款金额(元)' },
+	// 		{ name: 'allPaymentFactory', label: '出厂货款(元)' },
+	// 		{ name: 'allTonnage', label: '总吨位(吨)' },
+	// 		{ name: 'allFreightPrice', label: '平均运费单价(元)' }
+	// 	],
+	// 	extraParams: [],
+	// 	options(key, value) {
+	// 		switch (key) {
+	// 			case 'isAdjusted': {
+	// 				if (value === 0) {
+	// 					return '否';
+	// 				}
+	// 				if (value === 1) {
+	// 					return '是';
+	// 				}
+	// 				break;
+	// 			}
+	// 			case 'isAdjust': {
+	// 				if (value > 0) {
+	// 					return '调整单';
+	// 				}
+	// 				if (value === 0) {
+	// 					return '原订单';
+	// 				}
+	// 				if (value < 0) {
+	// 					return '负数单';
+	// 				}
+	// 				break;
+	// 			}
+	// 			default: {
+	// 				return value;
+	// 			}
+	// 		}
+	// 	}
+	// },
 
 	// 订单货物
-	[TableName.ORDER_DETAIL]: {
+	[TableName.GOODS_ORDER]: {
 		mappers: {
+			customer: '客户名称',
+			carNumber: '车牌号',
 			supplier: '供应商',
 			levelName: '产品级别',
 			countingUnit: '计量单位',
@@ -107,9 +109,6 @@ export const TableConfig = {
 			factoryCommission: '厂家佣金',
 			factoryRebateAmount: '计提厂家返利金额',
 			factoryDiscountAmount: '计提厂家降价金额',
-			comments: '备注',
-			customer: '客户名称',
-			carNumber: '车牌号',
 			driverPhone: '司机电话',
 			seaFreightNumber: '海运单号',
 			seaFreightCompanyPhone: '海运公司电话',
@@ -127,7 +126,8 @@ export const TableConfig = {
 			isAdjust: '调整状态',
 			adjustDate: '调整日期',
 			isAudit: '是否审核',
-			exWarehouseDate: '出库日期'
+			exWarehouseDate: '出库日期',
+			comments: '备注'
 		},
 		params: [
 			{ name: 'packs', label: '包数' },
@@ -217,40 +217,40 @@ export const TableConfig = {
 	},
 
 	// 库存主表
-	[TableName.INVENTORMAIN]: {
-		mappers: {
-			storeHouseName: '仓库名称',
-			storeDate: '入库日期',
-			landCarNo: '陆运车牌号',
-			landDriverTel: '陆运司机电话',
-			landDriverName: '陆运司机姓名',
-			seaCarNo: '海运车牌号',
-			seaDriverTel: '海运司机电话',
-			seaDriverName: '海运司机姓名',
-			landBankNo: '陆运银行账号',
-			seaBankNo: '海运银行账号',
-			landBankName: '陆运开户行',
-			seaBankName: '海运开户行',
-			allTonnage: '总吨位',
-			allFreightPrice: '平均运费单价',
-			fleet: '车队',
-			checkState: '审核状态'
-		},
-		params: [
-			{ name: 'allTonnage', label: '总吨位' },
-			{ name: 'allFreightPrice', label: '平均运费单价' }
-		],
-		options(key, value) {
-			switch (key) {
-				default: {
-					return value;
-				}
-			}
-		}
-	},
+	// [TableName.INVENTORMAIN]: {
+	// 	mappers: {
+	// 		storeHouseName: '仓库名称',
+	// 		storeDate: '入库日期',
+	// 		landCarNo: '陆运车牌号',
+	// 		landDriverTel: '陆运司机电话',
+	// 		landDriverName: '陆运司机姓名',
+	// 		seaCarNo: '海运车牌号',
+	// 		seaDriverTel: '海运司机电话',
+	// 		seaDriverName: '海运司机姓名',
+	// 		landBankNo: '陆运银行账号',
+	// 		seaBankNo: '海运银行账号',
+	// 		landBankName: '陆运开户行',
+	// 		seaBankName: '海运开户行',
+	// 		allTonnage: '总吨位',
+	// 		allFreightPrice: '平均运费单价',
+	// 		fleet: '车队',
+	// 		checkState: '审核状态'
+	// 	},
+	// 	params: [
+	// 		{ name: 'allTonnage', label: '总吨位' },
+	// 		{ name: 'allFreightPrice', label: '平均运费单价' }
+	// 	],
+	// 	options(key, value) {
+	// 		switch (key) {
+	// 			default: {
+	// 				return value;
+	// 			}
+	// 		}
+	// 	}
+	// },
 
 	// 库存子表货物
-	[TableName.INVENTORDETAIL]: {
+	[TableName.INVENTORMAIN]: {
 		mappers: {
 			storeHouseName: '仓库名称',
 			storeDate: '入库日期',
