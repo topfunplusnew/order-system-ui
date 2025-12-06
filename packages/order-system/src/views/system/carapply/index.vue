@@ -199,6 +199,12 @@
 									</el-table-column>
 								</el-table>
 							</el-form-item>
+							<el-form-item label="派车人" prop="dispatchPerson">
+								<el-input v-model="form.dispatchPerson" placeholder="请输入派车人" />
+							</el-form-item>
+							<el-form-item label="备注" prop="comments">
+								<el-input v-model="form.comments" type="textarea" placeholder="请输入备注" />
+							</el-form-item>
 						</el-col>
 						<el-col :span="8">
 							<!--              在行程中使用加油卡的加油次数和派车人之间加入4列，“加油金额、加油卡余额、加油小票是否交回公司、现金加油”。-->
