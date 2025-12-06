@@ -119,7 +119,7 @@
 			<div>
 				<el-form ref="form" :model="form" :rules="rules" label-width="160px">
 					<el-row>
-						<el-col :span="8">
+						<el-col :span="12">
 							<el-form-item label="申请时间" prop="applyDate">
 								<el-date-picker v-model="form.applyDate" type="datetime" placeholder="选择申请时间" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 							</el-form-item>
@@ -159,7 +159,7 @@
 								<el-input v-model="form.startMile" placeholder="请输入出车前里程" />
 							</el-form-item>
 						</el-col>
-						<el-col :span="8">
+						<el-col :span="12">
 							<el-form-item label="出车前车况" prop="startCarState">
 								<el-input v-model="form.startCarState" placeholder="外观是否有划痕、磕碰、掉漆、内部是否清洁" />
 							</el-form-item>
