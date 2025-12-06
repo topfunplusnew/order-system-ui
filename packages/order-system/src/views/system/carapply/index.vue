@@ -161,9 +161,7 @@
 						</el-col>
 						<el-col :span="8">
 							<el-form-item label="出车前车况" prop="startCarState">
-								<el-select v-model="form.startCarStateList" multiple placeholder="请选择出车前车况" style="width: 100%">
-									<el-option v-for="item in carStateOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
-								</el-select>
+								<el-input v-model="form.startCarState" placeholder="外观是否有划痕、磕碰、掉漆、内部是否清洁" />
 							</el-form-item>
 							<el-form-item label="回来后里程" prop="endMile">
 								<el-input v-model="form.endMile" placeholder="请输入回来后里程" />
@@ -423,8 +421,8 @@ export default {
 				startCarState: [
 					{
 						required: true,
-						message: '请选择出车前车况',
-						trigger: 'change'
+						message: '请输入出车前车况',
+						trigger: 'blur'
 					}
 				],
 				isUseOilCard: [
@@ -495,17 +493,6 @@ export default {
 			// 补充信息相关
 			supplementOpen: false,
 			supplementForm: {},
-			// 车况选项（可配置）
-			carStateOptions: [
-				{ label: '外观完好', value: '外观完好' },
-				{ label: '有划痕', value: '有划痕' },
-				{ label: '有磕碰', value: '有磕碰' },
-				{ label: '掉漆', value: '掉漆' },
-				{ label: '内部清洁', value: '内部清洁' },
-				{ label: '内部不清洁', value: '内部不清洁' },
-				{ label: '胎压正常', value: '胎压正常' },
-				{ label: '胎压异常', value: '胎压异常' }
-			],
 			// 油卡绑定相关
 			checkedOilCardBindings: [],
 			queryOilCardBinding: '',
@@ -693,7 +680,6 @@ export default {
 				applyPurpose: null,
 				startMile: null,
 				startCarState: null,
-				startCarStateList: [],
 				dispatchPerson: null,
 				comments: null,
 				oilCardBindings: [],
@@ -763,25 +749,16 @@ export default {
 			this.reset();
 			const id = row.id || this.ids;
 			getCarApply(id).then(response => {
-				const data = response.data;
-				// 处理出车前车况：将字符串转换为多选数组
-				if (data.startCarState) {
-					this.form.startCarStateList = data.startCarState.split('、').filter(item => item.trim());
-				} else {
-					this.form.startCarStateList = [];
-				}
-
 				this.form = {
-					...data,
-					startCarStateList: this.form.startCarStateList,
-					oilCardBindings: data.oilCardBindings || [],
+					...response.data,
+					oilCardBindings: response.data.oilCardBindings || [],
 					params: {
-						...data.params,
-						attachmentIds: data.attachmentList ? data.attachmentList.map(item => item.id) : []
+						...response.data.params,
+						attachmentIds: response.data.attachmentList ? response.data.attachmentList.map(item => item.id) : []
 					}
 				};
 				// 确保 attachmentList 是一个数组
-				this.form.attachmentList = data.attachmentList || [];
+				this.form.attachmentList = response.data.attachmentList || [];
 				this.open = true;
 				this.title = '修改车辆使用申请';
 			});
@@ -790,12 +767,6 @@ export default {
 		submitForm() {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
-					// 处理出车前车况：将多选数组转换为字符串
-					if (this.form.startCarStateList && this.form.startCarStateList.length > 0) {
-						this.form.startCarState = this.form.startCarStateList.join('、');
-					} else {
-						this.form.startCarState = '';
-					}
 
 					// 处理油卡绑定：如果未携带油卡，清空油卡绑定列表
 					if (this.form.isUseOilCard === 0) {
