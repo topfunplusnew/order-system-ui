@@ -561,6 +561,7 @@ export default {
 	methods: {
 		parseTime,
 		listVehicles,
+		checkPermi,
 		/**
 		 * 更新表单中的附件列表
 		 * @param {Array} newAttachmentList - 最新的附件列表
