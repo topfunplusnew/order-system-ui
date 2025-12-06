@@ -242,7 +242,7 @@ export default {
 
 		<!-- 公司列表表格 -->
 		<div class="table-wrapper">
-			<el-table :data="companyTotalInfo" :row-style="handleRowClassName" :cell-style="() => ({ padding: '2px' })" size="mini" style="width: 100%" border>
+			<el-table :data="companyTotalInfo" :row-style="handleRowClassName" :cell-style="() => ({ padding: '2px' })" size="mini" style="width: 100%">
 				<!--多选框-->
 				<el-table-column label="操作">
 					<template slot-scope="scope">
@@ -294,7 +294,7 @@ export default {
 	flex-direction: column;
 }
 
-/* 表格包装器样式 - 支持水平滚动 */
+/* 表格包装器样式 - 仅保留必要的行分割 */
 .table-wrapper {
 	overflow-x: auto;
 	overflow-y: visible;
@@ -319,78 +319,125 @@ export default {
 		border-radius: 4px;
 	}
 
-	/* 确保表格在滚动时保持良好的显示效果 */
+	/* 表格样式 - 紧凑设计，仅保留行分割 */
 	.el-table {
 		white-space: nowrap;
+		border: none;
+
+		::v-deep .el-table__header-wrapper {
+			.el-table__header {
+				th {
+					padding: 6px 0;
+					border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+					border-right: none;
+					background: transparent;
+					font-size: 12px;
+					font-weight: 600;
+
+					&:last-child {
+						border-right: none;
+					}
+				}
+			}
+		}
+
+		::v-deep .el-table__body-wrapper {
+			overflow-y: visible !important;
+			max-height: none !important;
+
+			.el-table__body {
+				td {
+					padding: 4px 0;
+					border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+					border-right: none;
+					font-size: 12px;
+
+					&:last-child {
+						border-right: none;
+					}
+				}
+
+				tr:hover {
+					background-color: rgba(64, 158, 255, 0.04);
+				}
+
+				tr:last-child td {
+					border-bottom: none;
+				}
+			}
+		}
 	}
 }
 
-/* 统计信息样式 */
+/* 统计信息样式 - 紧凑设计 */
 .statistics-summary {
-	margin-bottom: 12px;
+	margin-bottom: 8px;
 	flex-shrink: 0;
 }
 
 .statistics-card {
-	border-radius: 6px;
-	border: 1px solid #e4e7ed;
+	border-radius: 4px;
+	border: none;
+	background: transparent;
 
 	::v-deep .el-card__header {
-		padding: 8px 12px;
-		background: linear-gradient(135deg, #f8fbff 0%, #f0f7ff 100%);
-		border-bottom: 1px solid #e4e7ed;
+		padding: 6px 10px;
+		background: transparent;
+		border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 	}
 
 	::v-deep .el-card__body {
-		padding: 10px 12px;
+		padding: 8px 10px;
+		background: transparent;
 	}
 }
 
 .statistics-header {
 	display: flex;
 	align-items: center;
-	gap: 6px;
+	gap: 4px;
 	font-size: 12px;
 	font-weight: 600;
 	color: #409eff;
 
 	i {
-		font-size: 14px;
+		font-size: 13px;
 	}
 }
 
 .statistics-content {
 	display: flex;
 	flex-direction: column;
-	gap: 6px;
+	gap: 4px;
 }
 
 .stat-item {
 	display: flex;
 	align-items: center;
-	gap: 8px;
-	padding: 4px 8px;
-	border-radius: 4px;
-	font-size: 12px;
+	gap: 6px;
+	padding: 3px 6px;
+	border-radius: 3px;
+	font-size: 11px;
 	background: #f5f7fa;
 
 	.stat-label {
 		font-weight: 500;
 		color: #606266;
-		min-width: 50px;
+		min-width: 45px;
 	}
 
 	.stat-count {
 		color: #909399;
-		font-size: 11px;
-		padding: 1px 6px;
+		font-size: 10px;
+		padding: 1px 5px;
 		background: #e4e7ed;
-		border-radius: 10px;
+		border-radius: 8px;
 	}
 
 	.stat-amount {
 		font-weight: bold;
 		margin-left: auto;
+		font-size: 11px;
 	}
 
 	&.supplier-stat .stat-amount {

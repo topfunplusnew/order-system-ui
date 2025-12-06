@@ -13,7 +13,30 @@ import { listBatchInvoiceIn, listBatchInvoiceOut, deleteBatchInvoiceInByVoucher,
 // 默认导出组件
 export default {
 	name: 'SheetList',
-	computed: {},
+	computed: {
+		// 判断当前应该显示购买方还是销方
+		currentSide() {
+			const hasPurchase = this.purchaseTotalInfo && this.purchaseTotalInfo.length > 0;
+			const hasSeller = this.sellerTotalInfo && this.sellerTotalInfo.length > 0;
+			// 优先显示购买方，如果购买方有数据就显示购买方，否则显示销方
+			return hasPurchase ? 'purchase' : hasSeller ? 'seller' : 'purchase';
+		},
+		// 当前显示的公司列表数据
+		currentCompanyTotalInfo() {
+			return this.currentSide === 'purchase' ? this.purchaseTotalInfo : this.sellerTotalInfo;
+		},
+		// 当前显示的统计信息
+		currentStatisticsInfo() {
+			if (this.currentSide === 'purchase') {
+				return this.statisticsInfo ? this.statisticsInfo.purchaseStats : { suppliers: { total: 0, count: 0 }, customers: { total: 0, count: 0 } };
+			}
+			return this.statisticsInfo ? this.statisticsInfo.sellerStats : { suppliers: { total: 0, count: 0 }, customers: { total: 0, count: 0 } };
+		},
+		// 当前显示的标题
+		currentSideTitle() {
+			return this.currentSide === 'purchase' ? '购买方信息' : '销方信息';
+		}
+	},
 	components: {
 		CompanysList,
 		InvoiceBody,
@@ -592,53 +615,38 @@ export default {
 			const purchaseTempData = this.$store.getters.purchaseTempInfo || [];
 			const sellerTempData = this.$store.getters.sellerTempInfo || [];
 
-			// 筛选购买方信息
-			this.purchaseTotalInfo = purchaseTempData.filter(item => {
-				// 我方公司筛选
-				if (this.myCompany && item.us) {
-					if (item.us.indexOf(this.myCompany) === -1) {
-						return false;
+			// 通用筛选函数
+			const filterItems = items => {
+				return items.filter(item => {
+					// 我方公司筛选
+					if (this.myCompany && item.us) {
+						if (item.us.indexOf(this.myCompany) === -1) {
+							return false;
+						}
 					}
-				}
-				// 对方公司筛选
-				if (this.otherCompany && item.name) {
-					if (item.name.indexOf(this.otherCompany) === -1) {
-						return false;
+					// 对方公司筛选
+					if (this.otherCompany && item.name) {
+						if (item.name.indexOf(this.otherCompany) === -1) {
+							return false;
+						}
 					}
-				}
-				// 已操作状态筛选
-				if (this.operatedStatus !== null) {
-					const isOperated = this.isCompanyOperated(item);
-					if (isOperated !== this.operatedStatus) {
-						return false;
+					// 已操作状态筛选
+					if (this.operatedStatus !== null) {
+						const isOperated = this.isCompanyOperated(item);
+						if (isOperated !== this.operatedStatus) {
+							return false;
+						}
 					}
-				}
-				return true;
-			});
+					return true;
+				});
+			};
 
-			// 筛选销方信息
-			this.sellerTotalInfo = sellerTempData.filter(item => {
-				// 我方公司筛选
-				if (this.myCompany && item.us) {
-					if (item.us.indexOf(this.myCompany) === -1) {
-						return false;
-					}
-				}
-				// 对方公司筛选
-				if (this.otherCompany && item.name) {
-					if (item.name.indexOf(this.otherCompany) === -1) {
-						return false;
-					}
-				}
-				// 已操作状态筛选
-				if (this.operatedStatus !== null) {
-					const isOperated = this.isCompanyOperated(item);
-					if (isOperated !== this.operatedStatus) {
-						return false;
-					}
-				}
-				return true;
-			});
+			// 根据当前显示的一方进行筛选
+			if (this.currentSide === 'purchase') {
+				this.purchaseTotalInfo = filterItems(purchaseTempData);
+			} else {
+				this.sellerTotalInfo = filterItems(sellerTempData);
+			}
 		},
 
 		//查看某一个公司的信息
@@ -668,8 +676,12 @@ export default {
 		},
 		// 重置筛选结果
 		handleReset() {
-			this.purchaseTotalInfo = this.$store.getters.purchaseTempInfo;
-			this.sellerTotalInfo = this.$store.getters.sellerTempInfo;
+			// 根据当前显示的一方重置数据
+			if (this.currentSide === 'purchase') {
+				this.purchaseTotalInfo = this.$store.getters.purchaseTempInfo || [];
+			} else {
+				this.sellerTotalInfo = this.$store.getters.sellerTempInfo || [];
+			}
 			// 清空搜索条件
 			this.myCompany = null;
 			this.otherCompany = null;
@@ -760,7 +772,7 @@ export default {
 			</el-form>
 
 			<!-- 数据表格 -->
-			<el-table :data="batchList" size="mini" border :loading="listLoading" style="width: 100%" class="batch-table" :cell-style="() => ({ padding: '6px 4px' })" :header-cell-style="() => ({ background: '#f5f7fa', color: '#606266', fontWeight: '600' })">
+			<el-table :data="batchList" size="mini" :loading="listLoading" style="width: 100%" class="batch-table" :cell-style="() => ({ padding: '6px 4px' })" :header-cell-style="() => ({ background: '#f5f7fa', color: '#606266', fontWeight: '600' })">
 				<el-table-column label="ID" align="center" prop="id" width="70" />
 				<el-table-column label="批次号" align="center" prop="voucher" min-width="140" show-overflow-tooltip />
 				<el-table-column label="销方名称" align="center" prop="sellerName" min-width="150" show-overflow-tooltip />
@@ -799,7 +811,7 @@ export default {
 		</div>
 
 		<div>
-			<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="批量开票" fullscreen :visible.sync="invoiceAllVisible" append-to-body>
+			<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="批量开票" fullscreen :visible.sync="invoiceAllVisible" append-to-body class="invoice-dialog">
 				<div class="invoice-container">
 					<!-- 上下布局：上面是 CompanysList + InvoiceBody（DragDiv），下面是 SelectGoods -->
 					<div class="invoice-layout">
@@ -844,26 +856,23 @@ export default {
 												</el-form>
 
 												<div class="company-lists">
-													<el-divider>
-														<span class="bold-text">购买方信息</span>
-													</el-divider>
+													<div v-if="currentCompanyTotalInfo && currentCompanyTotalInfo.length > 0" class="section-title-wrapper">
+														<div class="section-title">
+															<span class="title-icon"></span>
+															<span class="title-text">{{ currentSideTitle }}</span>
+														</div>
+													</div>
 													<CompanysList
-														side="purchase"
-														:company-total-info="purchaseTotalInfo"
-														:statistics-info="statisticsInfo ? statisticsInfo.purchaseStats : { suppliers: { total: 0, count: 0 }, customers: { total: 0, count: 0 } }"
+														v-if="currentCompanyTotalInfo && currentCompanyTotalInfo.length > 0"
+														:side="currentSide"
+														:company-total-info="currentCompanyTotalInfo"
+														:statistics-info="currentStatisticsInfo"
 														:operated-map="templateOperatedMap"
 														@handleCheck="handleCheck"
 													/>
-													<el-divider>
-														<span class="bold-text">销方信息</span>
-													</el-divider>
-													<CompanysList
-														side="seller"
-														:company-total-info="sellerTotalInfo"
-														:statistics-info="statisticsInfo ? statisticsInfo.sellerStats : { suppliers: { total: 0, count: 0 }, customers: { total: 0, count: 0 } }"
-														:operated-map="templateOperatedMap"
-														@handleCheck="handleCheck"
-													/>
+													<div v-else class="empty-company-list">
+														<el-empty description="暂无公司数据" :image-size="100" />
+													</div>
 												</div>
 											</el-card>
 										</div>
@@ -911,7 +920,7 @@ export default {
 /* 搜索表单样式 */
 .batch-search-form {
 	padding: 12px 0 16px 0;
-	border-bottom: 1px solid #ebeef5;
+	border-bottom: none;
 	margin-bottom: 16px;
 
 	.el-form-item {
@@ -933,13 +942,49 @@ export default {
 	}
 }
 
-/* 表格样式 */
+/* 表格样式 - 仅保留必要的行分割 */
 .batch-table {
-	border-radius: 6px;
-	overflow: hidden;
+	::v-deep .el-table {
+		border: none;
+	}
+
+	::v-deep .el-table__header-wrapper {
+		.el-table__header {
+			th {
+				border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+				border-right: none;
+				background: transparent;
+
+				&:last-child {
+					border-right: none;
+				}
+			}
+		}
+	}
+
+	::v-deep .el-table__body-wrapper {
+		.el-table__body {
+			td {
+				border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+				border-right: none;
+
+				&:last-child {
+					border-right: none;
+				}
+			}
+
+			tr:hover {
+				background-color: rgba(64, 158, 255, 0.04);
+			}
+
+			tr:last-child td {
+				border-bottom: none;
+			}
+		}
+	}
 
 	&::before {
-		display: none; // 移除表格底部边框线
+		display: none;
 	}
 }
 
@@ -1007,6 +1052,32 @@ export default {
 	line-height: 20px;
 }
 
+/* 批量开票弹窗样式 - 移除边框 */
+.invoice-dialog {
+	::v-deep .el-dialog {
+		border: none;
+		box-shadow: none;
+		background: #f5f7fa;
+	}
+
+	::v-deep .el-dialog__header {
+		border-bottom: none;
+		padding: 16px 20px;
+		background: transparent;
+	}
+
+	::v-deep .el-dialog__body {
+		padding: 0;
+		background: transparent;
+	}
+
+	::v-deep .el-dialog__footer {
+		border-top: none;
+		padding: 12px 20px;
+		background: transparent;
+	}
+}
+
 /* 开票弹窗相关的样式 */
 .invoice-container {
 	height: calc(100vh - 100px);
@@ -1014,7 +1085,7 @@ export default {
 	overflow: hidden;
 	display: flex;
 	flex-direction: column;
-	background: #f5f7fa;
+	background: transparent;
 }
 
 /* 新的上下布局 */
@@ -1039,6 +1110,10 @@ export default {
 	min-height: 0;
 	display: flex;
 	flex-direction: column;
+	border: 1px solid rgba(0, 0, 0, 0.12);
+	border-radius: 8px;
+	background: #ffffff;
+	overflow: hidden;
 }
 
 .column-section {
@@ -1057,6 +1132,10 @@ export default {
 	height: 100%;
 	display: flex;
 	flex-direction: column;
+	border: 1px solid rgba(0, 0, 0, 0.12);
+	border-radius: 8px;
+	background: #ffffff;
+	overflow: hidden;
 }
 
 /* 左侧区域样式 */
@@ -1087,22 +1166,21 @@ export default {
 	}
 }
 
-/* 卡片通用样式 - 简化边框，减少嵌套感 */
+/* 卡片通用样式 - 移除边框，由外层区域边框控制 */
 .full-height-card {
 	height: 100%;
 	display: flex;
 	flex-direction: column;
 	border: none !important;
 	box-shadow: none !important;
-	background: #fff;
-	border-radius: 8px;
+	background: transparent;
+	overflow: hidden;
 
 	::v-deep .el-card__header {
-		padding: 10px 16px;
-		border-bottom: 1px solid #eef1f6;
+		padding: 12px 16px;
+		border-bottom: 1px solid rgba(0, 0, 0, 0.08);
 		flex-shrink: 0;
-		background: linear-gradient(135deg, #f8fafc 0%, #fff 100%);
-		border-radius: 8px 8px 0 0;
+		background: transparent;
 	}
 
 	::v-deep .el-card__body {
@@ -1111,7 +1189,7 @@ export default {
 		overflow: hidden;
 		display: flex;
 		flex-direction: column;
-		background: #fff;
+		background: transparent;
 	}
 }
 
@@ -1150,41 +1228,58 @@ export default {
 	}
 }
 
-/* 公司列表样式 - 统一使用单一滚动条 */
+/* 公司列表样式 - 不显示滚动条，完全展示所有内容 */
 .company-lists {
 	flex: 1;
-	overflow-y: auto;
-	overflow-x: hidden;
+	overflow: visible;
 	min-height: 0;
 	padding-right: 4px;
 
-	.el-divider {
+	/* 区域标题样式 - 紧凑美化设计 */
+	.section-title-wrapper {
 		margin: 12px 0 10px 0;
+		position: relative;
+		display: flex;
+		align-items: center;
 
-		.el-divider__text {
-			background-color: #fff;
-			padding: 0 12px;
-			color: #409eff;
-			font-weight: 500;
+		&::before {
+			content: '';
+			position: absolute;
+			left: 0;
+			right: 0;
+			top: 50%;
+			height: 1px;
+			background: linear-gradient(to right, rgba(64, 158, 255, 0.2) 0%, rgba(64, 158, 255, 0.15) 50%, transparent 100%);
+			z-index: 0;
 		}
-	}
 
-	/* 统一美化滚动条样式 */
-	&::-webkit-scrollbar {
-		width: 6px;
-	}
+		.section-title {
+			position: relative;
+			z-index: 1;
+			background: #ffffff;
+			padding: 4px 12px 4px 8px;
+			border-radius: 4px;
+			border-left: 3px solid #409eff;
+			display: inline-flex;
+			align-items: center;
+			gap: 6px;
+			box-shadow: 0 1px 2px rgba(64, 158, 255, 0.1);
 
-	&::-webkit-scrollbar-thumb {
-		background: #c0c4cc;
-		border-radius: 3px;
+			.title-icon {
+				width: 4px;
+				height: 4px;
+				background: #409eff;
+				border-radius: 50%;
+				flex-shrink: 0;
+			}
 
-		&:hover {
-			background: #909399;
+			.title-text {
+				color: #409eff;
+				font-size: 13px;
+				font-weight: 600;
+				line-height: 1;
+			}
 		}
-	}
-
-	&::-webkit-scrollbar-track {
-		background: transparent;
 	}
 }
 
@@ -1243,10 +1338,6 @@ export default {
 		min-height: 400px;
 	}
 
-	.company-lists {
-		max-height: 300px;
-	}
-
 	.select-goods-wrapper {
 		height: 400px;
 	}
@@ -1271,10 +1362,6 @@ export default {
 
 	.section-wrapper {
 		min-height: 350px;
-	}
-
-	.company-lists {
-		max-height: 250px;
 	}
 }
 
@@ -1329,8 +1416,7 @@ export default {
 /* 新的公司列表全屏布局优化 */
 .company-list-section-full {
 	.company-lists {
-		// 增加表格的最大高度以适应更大的空间
-		max-height: calc(100vh - 300px);
+		// 移除高度限制，让表格完全显示所有内容，不出现滚动条
 
 		// 为每个公司列表分配更多空间
 		> div {
@@ -1345,8 +1431,8 @@ export default {
 	// 优化搜索表单的间距
 	.search-form {
 		margin-bottom: 16px;
-		border-bottom: 1px solid #ebeef5;
-		padding-bottom: 12px;
+		border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+		padding-bottom: 16px;
 	}
 
 	// 优化分割线样式
@@ -1354,6 +1440,15 @@ export default {
 		&:first-of-type {
 			margin-top: 8px;
 		}
+	}
+
+	// 空状态样式
+	.empty-company-list {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 200px;
+		padding: 40px 20px;
 	}
 }
 </style>
