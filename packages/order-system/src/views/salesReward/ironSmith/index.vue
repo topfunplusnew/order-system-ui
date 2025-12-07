@@ -162,7 +162,12 @@
 					<el-tag :type="scope.row.isTargetReached === 1 ? 'success' : 'info'">{{ scope.row.isTargetReached === 1 ? '达标' : '未达标' }}</el-tag>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[10].visible" label="奖励金额" align="center" prop="rewardAmount" width="120" show-overflow-tooltip>
+			<el-table-column v-if="columns[10].visible" label="是否含税" align="center" prop="salesTaxIncluded" width="100" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tag :type="scope.row.salesTaxIncluded === 1 ? 'success' : 'info'">{{ scope.row.salesTaxIncluded === 1 ? '是' : '否' }}</el-tag>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[11].visible" label="奖励金额" align="center" prop="rewardAmount" width="120" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ formatAmount(scope.row.rewardAmount) }}</div>
@@ -170,7 +175,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[11].visible" label="实际支付金额" align="center" prop="paymentAmount" width="120" show-overflow-tooltip>
+			<el-table-column v-if="columns[12].visible" label="实际支付金额" align="center" prop="paymentAmount" width="120" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.paymentAmount ? formatAmount(scope.row.paymentAmount) : '-' }}</div>
@@ -178,7 +183,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[12].visible" label="奖励日期" align="center" prop="rewardDate" width="180" show-overflow-tooltip>
+			<el-table-column v-if="columns[13].visible" label="奖励日期" align="center" prop="rewardDate" width="180" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.rewardDate ? parseTime(scope.row.rewardDate, '{y}-{m}-{d}') : '-' }}</div>
@@ -186,12 +191,12 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[13].visible" label="审核状态" align="center" prop="auditState" width="100" show-overflow-tooltip>
+			<el-table-column v-if="columns[14].visible" label="审核状态" align="center" prop="auditState" width="100" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tag :type="scope.row.auditState === '已审核' ? 'success' : 'warning'">{{ scope.row.auditState }}</el-tag>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[14].visible" label="审核人" align="center" prop="auditUserName" width="100" show-overflow-tooltip>
+			<el-table-column v-if="columns[15].visible" label="审核人" align="center" prop="auditUserName" width="100" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.auditUserName || '-' }}</div>
@@ -199,7 +204,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[15].visible" label="操作" align="center" class-name="small-padding fixed-width" width="400" fixed="right">
+			<el-table-column v-if="columns[16].visible" label="操作" align="center" class-name="small-padding fixed-width" width="400" fixed="right">
 				<template #default="scope">
 					<el-button size="mini" type="text" @click="handleCheckOrder(scope.row)">查看订单</el-button>
 					<el-button v-hasPermi="['system:salesReward:edit']" size="mini" type="text" icon="el-icon-edit" :disabled="scope.row.auditState === '已审核'" @click="handleUpdate(scope.row)">修改</el-button>
@@ -568,12 +573,13 @@ export default {
 				{ key: 7, label: '订单不含税利润', visible: true },
 				{ key: 8, label: '综合单车利润', visible: true },
 				{ key: 9, label: '利润是否达标', visible: true },
-				{ key: 10, label: '奖励金额', visible: true },
-				{ key: 11, label: '实际支付金额', visible: true },
-				{ key: 12, label: '奖励日期', visible: true },
-				{ key: 13, label: '审核状态', visible: true },
-				{ key: 14, label: '审核人', visible: true },
-				{ key: 15, label: '操作', visible: true }
+				{ key: 10, label: '是否含税', visible: true },
+				{ key: 11, label: '奖励金额', visible: true },
+				{ key: 12, label: '实际支付金额', visible: true },
+				{ key: 13, label: '奖励日期', visible: true },
+				{ key: 14, label: '审核状态', visible: true },
+				{ key: 15, label: '审核人', visible: true },
+				{ key: 16, label: '操作', visible: true }
 			]
 		};
 	},
