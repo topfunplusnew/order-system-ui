@@ -8,7 +8,10 @@ import { getUuid } from '@/utils/trash/utils';
 import { TableName } from '@/api/tool/enums';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import { batchInvoice } from '@/api/system/excel';
-import { markCompanyOperated } from '@/api/excelTemplateStore';
+import {
+	batchUpdateBatchInvoiceInInvoiced,
+	batchUpdateBatchInvoiceOutInvoiced
+} from '@/api/system/batchInvoice';
 import INVOICE_OUT from '@/components/NeedToShow/INVOICE_OUT.vue';
 import INVOICE_IN from '@/components/NeedToShow/INVOICE_IN.vue';
 
@@ -16,7 +19,12 @@ export default {
 	name: 'QueueInvoiceList',
 	components: { InvoiceItem },
 	mixins: [common_dialog],
-	props: {},
+	props: {
+		mode: {
+			type: String,
+			default: 'in'
+		}
+	},
 	watch: {
 		// 监听选择订单的变化
 		selectedOrder: {
@@ -50,27 +58,16 @@ export default {
 		PUBLIC_DICT_TYPE() {
 			return PUBLIC_DICT_TYPE;
 		},
-		...mapGetters(['selectedInvoiceList', 'selectedOrder', 'ticketPoint', 'comment', 'invoiceAmount']),
+		...mapGetters(['selectedInvoiceList', 'selectedOrder', 'ticketPoint', 'comment', 'invoiceAmount', 'batchDetailRows']),
 		// 是否已有生成的发票列表，用于控制“开具发票”按钮是否可用
 		hasGeneratedInvoices() {
 			return Array.isArray(this.selectedInvoiceList) && this.selectedInvoiceList.length > 0;
 		}
 	},
 	methods: {
-		// 保存当前生成结果到本地（与 BatchInvoicePanel 会话格式兼容）
-		saveGeneratedInvoicesSession() {
-			try {
-				const raw = localStorage.getItem('batch-invoice-session');
-				const base = raw ? JSON.parse(raw) : {};
-				// 保持版本号（timestamp）不变，仅更新已生成清单
-				const payload = {
-					...base,
-					generatedInvoices: this.$store?.getters?.selectedInvoiceList || []
-				};
-				localStorage.setItem('batch-invoice-session', JSON.stringify(payload));
-			} catch (e) {
-				console.error('保存开票生成结果失败:', e);
-			}
+		// 获取更新开票状态的API
+		getUpdateInvoicedApi() {
+			return this.mode === 'out' ? batchUpdateBatchInvoiceOutInvoiced : batchUpdateBatchInvoiceInInvoiced;
 		},
 		// 创建发票对象的工具函数
 		createInvoiceObject(params, extra = {}) {
@@ -148,6 +145,18 @@ export default {
 
 			// 如果成功
 			if (result.flag) {
+				// 收集需要更新的批次记录ID
+				const batchIds = filteredInvoices.map(inv => inv.batchInvoiceId).filter(id => id != null);
+				// 调用后端API更新开票状态
+				if (batchIds.length > 0) {
+					try {
+						const updateApi = this.getUpdateInvoicedApi();
+						await updateApi(batchIds, true);
+					} catch (e) {
+						console.error('更新后端开票状态失败:', e);
+					}
+				}
+
 				// 告诉订单列表重新加载
 				this.$bus.$emit('select-goods:update');
 
@@ -156,47 +165,19 @@ export default {
 					this.$store.dispatch('excel/clearSelectedInvoiceList');
 					this.$store.dispatch('excel/clearInvoiceAmount');
 				}
+
 				// 清理 sessionStorage 中的临时开票数据
 				sessionStorage.removeItem('invoiceAmount');
 				sessionStorage.removeItem('us');
-				// 标记公司为已操作——放在清理事件之前，避免 sessionStorage 被清空
-				try {
-					// 优先根据 InvoiceCompanysList 选中行的公司ID精确标记
-					const selectedCompanyId = sessionStorage.getItem('companyList_selected_company_id');
-					console.log('selectedCompanyId', selectedCompanyId);
-					if (selectedCompanyId && selectedCompanyId !== 'null' && selectedCompanyId !== 'undefined') {
-						await markCompanyOperated(Number(selectedCompanyId));
-						console.log('已标记公司为已操作:', selectedCompanyId);
-						this.$nextTick(() => {
-							this.$bus.$emit('excel:operated-updated', { companyIds: [Number(selectedCompanyId)] });
-						});
-					} else {
-						// 退化为根据当前公司信息批量标记
-						let companyId = null;
-						if (this.invoiceType === this.PUBLIC_DICT_TYPE.SUPPLIER && this.supplierId) {
-							companyId = this.supplierId;
-						}
-						if (this.invoiceType === this.PUBLIC_DICT_TYPE.CUSTOMER) {
-							const anyOrder = (this.$store.getters.selectedOrder || [])[0];
-							companyId = anyOrder ? anyOrder.customerID : null;
-						}
-						if (companyId !== null && companyId !== undefined) {
-							await markCompanyOperated(Number(companyId));
-							console.log('已根据公司ID标记为已操作:', companyId);
-							this.$nextTick(() => {
-								this.$bus.$emit('excel:operated-updated', { companyIds: [Number(companyId)] });
-							});
-						}
-					}
-				} catch (e) {
-					console.error('标记公司已操作失败:', e);
-				}
+				sessionStorage.removeItem('companyList_selected_company_id');
+				sessionStorage.removeItem('merged_company_info');
 
-				// 广播清理事件（放在回写之后）
+				// 广播清理事件
 				this.$bus.$emit('invoice-clear');
 				this.$message.success('本批开票成功');
-				// 成功后保存一次快照，记录清空后的状态
-				this.saveGeneratedInvoicesSession();
+
+				// 通知父组件刷新数据
+				this.$bus.$emit('batch-invoice:refresh');
 			} else {
 				this.$message.error('本批开票有误 请检查错误信息后重新提交');
 
@@ -208,10 +189,24 @@ export default {
 		},
 
 		validateBatchAmounts(invoices = []) {
-			const metaMap = this.$store?.state?.excel?.batchMetaMap || {};
 			if (!invoices.length) {
 				return true;
 			}
+			// 从 batchDetailRows 构建校验信息
+			const batchDetailRows = this.$store?.getters?.batchDetailRows || [];
+			if (!batchDetailRows.length) {
+				return true; // 无原始数据时跳过校验
+			}
+
+			// 构建每个批次记录ID的预期金额映射
+			const expectedAmountMap = {};
+			batchDetailRows.forEach(row => {
+				if (row.id && !row.invoiced) {
+					expectedAmountMap[row.id] = Number(row.total || 0);
+				}
+			});
+
+			// 计算每个批次记录的开票金额
 			const sums = {};
 			invoices.forEach(item => {
 				const batchId = item?.batchInvoiceId;
@@ -224,18 +219,18 @@ export default {
 				sums[batchId] = this.math.add(sums[batchId], this.math.bignumber(item.invoiceAmount || 0));
 			});
 
+			// 校验金额是否一致
 			for (const batchId of Object.keys(sums)) {
-				const meta = metaMap[batchId];
-				if (!meta || meta.totalAmount === undefined || meta.totalAmount === null) {
-					this.$message.error(`批次 ${batchId} 缺少导入金额，请重新载入批次数据`);
-					return false;
+				const expectedAmount = expectedAmountMap[batchId];
+				if (expectedAmount === undefined) {
+					continue; // 跳过无法校验的记录
 				}
-				const expected = this.math.bignumber(meta.totalAmount || 0);
+				const expected = this.math.bignumber(expectedAmount);
 				const diff = this.math.subtract(sums[batchId], expected);
 				if (!this.math.equal(this.math.round(diff, 2), this.math.bignumber(0))) {
 					const sumFormatted = Number(this.math.format(sums[batchId], { precision: 12, notation: 'fixed' })).toFixed(2);
 					const expectedFormatted = Number(this.math.format(expected, { precision: 12, notation: 'fixed' })).toFixed(2);
-					this.$message.error(`批次 ${batchId} 的开票金额 ${sumFormatted} 与导入金额 ${expectedFormatted} 不一致`);
+					this.$message.error(`批次记录 ${batchId} 的开票金额 ${sumFormatted} 与导入金额 ${expectedFormatted} 不一致`);
 					return false;
 				}
 			}
@@ -299,119 +294,97 @@ export default {
 		},
 
 		/**
-		 * 生成发票（按模板分配）
-		 * 从订单和模板数据中自动生成发票列表
+		 * 生成发票（按批次数据分配）
+		 * 从订单和后端批次数据中自动生成发票列表
 		 */
 		generateInvoicesByTemplates() {
-			// 获取当前选择订单
 			const orders = this.$store.getters.selectedOrder || [];
 			if (!orders || orders.length === 0) {
-				return; // 静默返回，避免频繁提示
-			}
-			// 读取并合并模板数据（购买方+销方）
-			const purchaseTemplates = this.$store.state.excel.purchaseTemplateData || [];
-			const sellerTemplates = this.$store.state.excel.sellerTemplateData || [];
-			const templates = purchaseTemplates.concat(sellerTemplates);
-			if (!templates || templates.length === 0) {
-				this.$message.warning('暂无模板数据，无法生成发票');
 				return;
 			}
-			// 这部分逻辑是筛选公司 使用该公司模板数据
+
+			// 从 Vuex 获取批次详情数据（已从后端获取）
+			const batchRows = this.$store.getters.batchDetailRows || [];
+			if (!batchRows || batchRows.length === 0) {
+				this.$message.warning('暂无批次数据，无法生成发票');
+				return;
+			}
+
+			// 筛选未开票的记录
 			const selectedCompanyId = this.supplierId;
-			const preferInvoiceType = this.invoiceType; // PUBLIC_DICT_TYPE
-			const isCustomerTypeStr = s => {
-				if (!s) return false;
-				try {
-					const lower = String(s).toLowerCase();
-					return lower.includes('客户') || lower.includes('customer');
-				} catch (e) {
-					return false;
-				}
-			};
-			let filtered = templates;
+			let filtered = batchRows.filter(row => !row.invoiced);
+
+			// 按公司ID筛选
 			if (selectedCompanyId) {
-				// 优先按销方 id 过滤；当偏好为 CUSTOMER 时，优先匹配 sellerType 为客户的模板
-				let sellerMatches = templates.filter(tpl => tpl && tpl.sellerId && String(tpl.sellerId) === String(selectedCompanyId));
+				const sellerMatches = filtered.filter(row => row.sellerId && String(row.sellerId) === String(selectedCompanyId));
 				if (sellerMatches.length > 0) {
-					if (preferInvoiceType === this.PUBLIC_DICT_TYPE.CUSTOMER) {
-						const customerSellerMatches = sellerMatches.filter(tpl => isCustomerTypeStr(tpl.sellerType));
-						if (customerSellerMatches.length > 0) sellerMatches = customerSellerMatches;
-					}
 					filtered = sellerMatches;
 				} else {
-					// 尝试按购买方 id 过滤
-					const purchaseMatches = templates.filter(tpl => tpl && tpl.purchaseId && String(tpl.purchaseId) === String(selectedCompanyId));
-					if (purchaseMatches.length > 0) filtered = purchaseMatches;
+					const purchaseMatches = filtered.filter(row => row.purchaseId && String(row.purchaseId) === String(selectedCompanyId));
+					if (purchaseMatches.length > 0) {
+						filtered = purchaseMatches;
+					}
 				}
 			}
-			// 深拷贝模板，避免修改原始 Vuex 数据
-			let templatePool = filtered.map(t => ({ ...t }));
-			// 生成发票列表
+
+			if (filtered.length === 0) {
+				this.$message.warning('该公司暂无未开票的批次记录');
+				return;
+			}
+
+			// 深拷贝批次数据，避免修改原始数据
+			const templatePool = filtered.map(t => ({ ...t }));
 			const resultInvoices = [];
-			// 使用 mathjs BigNumber 做精确计算
 			const b = v => this.math.bignumber(v || 0);
-			for (let order of orders) {
-				// 每个订单的 remainingAmount 是订单的已开票金额(allPayments)
-				let remaining = b(order.allPayments - order.params.totalInvoiceAmount || 0);
+
+			for (const order of orders) {
+				let remaining = b(order.allPayments - (order.params?.totalInvoiceAmount || 0));
 				let orderFullyInvoiced = false;
-				// 如果订单的剩余开票金额等于0
+
 				if (this.math.equal(remaining, b(0))) {
-					continue; // 跳过该订单，继续下一个订单
+					continue;
 				}
+
 				for (let i = 0; i < templatePool.length; i++) {
 					const tpl = templatePool[i];
 					let tplAmount = b(tpl.total || 0);
-					// 没有可用模板金额则跳过
+
 					if (this.math.equal(tplAmount, b(0))) continue;
-					// 计算本次要使用的金额：used = min(tplAmount, remaining)
-					let used;
-					if (this.math.largerEq(tplAmount, remaining)) {
-						used = remaining;
-					} else {
-						used = tplAmount;
-					}
-					// 根据模板行判断 companyType/companyID/companyName：优先判断销方（sellerId），否则判断购买方（purchaseId）
+
+					const used = this.math.largerEq(tplAmount, remaining) ? remaining : tplAmount;
+
+					// 确定公司信息
 					let companyTypeConst = this.invoiceType;
 					let companyID = tpl.sellerId || tpl.purchaseId || null;
-					let companyName = tpl.sellerName || tpl.purchaseName || tpl.invoiceCompanyName;
-					// 根据模板确定我方公司名称（invoiceObject）
-					// 当sellerId=0时，sellerName是我方公司；当purchaseId=0时，purchaseName是我方公司
+					let companyName = tpl.sellerName || tpl.purchaseName || '';
 					let invoiceObject = null;
+
 					if (tpl.sellerId && Number(tpl.sellerId) !== 0) {
 						companyTypeConst = tpl.sellerType;
 						companyID = tpl.sellerId;
 						companyName = tpl.sellerName || companyName;
-						// 对方是销方，我方是购买方
 						invoiceObject = tpl.purchaseName || null;
 					} else if (tpl.purchaseId && Number(tpl.purchaseId) !== 0) {
 						companyTypeConst = tpl.purchaseType;
 						companyID = tpl.purchaseId;
 						companyName = tpl.purchaseName || companyName;
-						// 对方是购买方，我方是销方
 						invoiceObject = tpl.sellerName || null;
 					}
 
-					// 如果模板中没有明确的我方公司信息，则使用sessionStorage中的值
+					// 从 sessionStorage 获取我方公司信息
 					if (!invoiceObject) {
 						const storedUs = sessionStorage.getItem('us');
 						if (storedUs) {
 							try {
-								// 尝试解析为JSON数组（合并情况）
 								const parsedUs = JSON.parse(storedUs);
-								if (Array.isArray(parsedUs) && parsedUs.length > 0) {
-									// 如果是数组，使用第一个（或者可以根据模板匹配，这里简化处理）
-									invoiceObject = parsedUs[0];
-								} else {
-									invoiceObject = storedUs;
-								}
+								invoiceObject = Array.isArray(parsedUs) && parsedUs.length > 0 ? parsedUs[0] : storedUs;
 							} catch (e) {
-								// 不是JSON，直接使用字符串
 								invoiceObject = storedUs;
 							}
 						}
 					}
 
-					// 生成发票对象（本次使用的金额 used）
+					// 生成发票对象
 					const invoice = this.createInvoiceObject(
 						{
 							invoiceDate: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
@@ -421,40 +394,34 @@ export default {
 							companyName: companyName,
 							companyID: companyID,
 							invoiceCompanyName: companyName,
-							ticketPoint: tpl.ticketPoint || tpl.ticketPointAmount || 0,
+							ticketPoint: tpl.ticketPoint || 0,
 							ticketPointAmount: Number(this.math.format(this.math.multiply(used, b(tpl.ticketPoint || 0)), { precision: 2, notation: 'fixed' })),
 							isOrderTax: order.id,
 							comments: this.comment
 						},
 						{
-							batchInvoiceId: tpl.batchInvoiceId || tpl.id || null,
-							batchVoucher: tpl.voucher || this.currentVoucher || ''
+							batchInvoiceId: tpl.id || null,
+							batchVoucher: tpl.voucher || ''
 						}
 					);
 					resultInvoices.push(invoice);
-					// 更新订单剩余和模板剩余
+
+					// 更新剩余金额
 					remaining = this.math.subtract(remaining, used);
-					const tplRemainAfter = this.math.subtract(tplAmount, used);
-					// 将剩余模板金额写回 pool（转为普通数字），便于后续继续使用
-					templatePool[i].total = Number(this.math.format(tplRemainAfter, { precision: 2, notation: 'fixed' }));
-					// 如果订单已被完全抵扣，则结束当前订单的模板匹配
+					templatePool[i].total = Number(this.math.format(this.math.subtract(tplAmount, used), { precision: 2, notation: 'fixed' }));
+
 					if (this.math.largerEq(b(0), remaining) || this.math.equal(remaining, b(0))) {
 						orderFullyInvoiced = true;
 						break;
 					}
-					// 否则继续使用下一个模板行
 				}
 
-				// 如果订单在模板循环后被标记为已开完，则继续下一个订单
 				if (orderFullyInvoiced) continue;
 			}
 
-			// 将生成的发票列表写入 Vuex，触发界面更新
 			if (resultInvoices.length > 0) {
 				this.$store.dispatch('excel/setSelectedInvoiceList', resultInvoices);
 				this.$message.success(`已自动生成 ${resultInvoices.length} 条发票记录`);
-				// 保存生成结果到本地，便于恢复
-				this.saveGeneratedInvoicesSession();
 			}
 		},
 
@@ -554,9 +521,8 @@ export default {
 			sessionStorage.removeItem('invoiceAmount');
 			sessionStorage.removeItem('us');
 			sessionStorage.removeItem('companyList_selected_company_id');
-			sessionStorage.removeItem('merged_company_info'); // 清理合并信息
+			sessionStorage.removeItem('merged_company_info');
 			this.$store.dispatch('excel/clearInvoiceAmount');
-			this.$store.dispatch('excel/clearBatchMetaMap');
 			// 重置开票列表
 			this.$store.dispatch('excel/clearSelectedInvoiceList');
 			// 清除右上角公司信息

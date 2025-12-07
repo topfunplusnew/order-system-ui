@@ -2,13 +2,19 @@
 import { create, all } from 'mathjs';
 import { getCompany } from '@/api/system/company';
 import InvoiceCompanysList from '@/views/dashboard/components/common/InvoiceCompanysList.vue';
-// import CompanyInformation from '@/views/dashboard/components/common/CompanyInformation.vue';
 import QueueInvoiceList from '@/views/dashboard/components/common/QueueInvoiceList.vue';
 import SelectGoods from '@/views/dashboard/components/common/SelectGoods.vue';
-import { mixin_excel_server } from '@/views/dashboard/components/common/utils/excelServer';
 import DragDiv from '@/components/DragDiv/index.vue';
-import { getOperatedMap } from '@/api/excelTemplateStore';
-import { listBatchInvoiceIn, listBatchInvoiceOut, deleteBatchInvoiceInByVoucher, deleteBatchInvoiceInById, deleteBatchInvoiceInInvoice, deleteBatchInvoiceOutByVoucher, deleteBatchInvoiceOutById, deleteBatchInvoiceOutInvoice } from '@/api/system/batchInvoice';
+import {
+	listBatchInvoiceIn,
+	listBatchInvoiceOut,
+	deleteBatchInvoiceInByVoucher,
+	deleteBatchInvoiceInById,
+	deleteBatchInvoiceInInvoice,
+	deleteBatchInvoiceOutByVoucher,
+	deleteBatchInvoiceOutById,
+	deleteBatchInvoiceOutInvoice
+} from '@/api/system/batchInvoice';
 
 // 默认导出组件
 export default {
@@ -18,7 +24,6 @@ export default {
 		currentSide() {
 			const hasPurchase = this.purchaseTotalInfo && this.purchaseTotalInfo.length > 0;
 			const hasSeller = this.sellerTotalInfo && this.sellerTotalInfo.length > 0;
-			// 优先显示购买方，如果购买方有数据就显示购买方，否则显示销方
 			return hasPurchase ? 'purchase' : hasSeller ? 'seller' : 'purchase';
 		},
 		// 当前显示的公司列表数据
@@ -40,12 +45,9 @@ export default {
 	components: {
 		InvoiceCompanysList,
 		QueueInvoiceList,
-		// CompanyInformation,
 		SelectGoods,
 		DragDiv
 	},
-	mixins: [mixin_excel_server],
-	// 接收文件读取到的sheetList 渲染出来给用户看 并且可以选择看哪一个
 	props: {
 		mode: {
 			type: String,
@@ -74,45 +76,32 @@ export default {
 				total: 0
 			},
 			currentVoucher: '',
-			// 左上角供应商的信息
 			companyInfo: {},
-			// 本批开的票点
-			// 订单选择弹窗
 			invoiceAllVisible: false,
-			// 供应商价税合计表
 			invoiceSupplierList: [],
-			// 购买方统计
+			// 购买方统计（从后端获取）
 			purchaseTotalInfo: [],
-			// 销方统计
+			// 销方统计（从后端获取）
 			sellerTotalInfo: [],
+			// 原始批次数据（从后端获取）
+			batchDetailRows: [],
 			// 我方公司搜索字段
 			myCompany: null,
 			// 对方公司搜索字段
 			otherCompany: null,
 			// 已操作状态搜索字段（null: 全部, true: 已操作, false: 未操作）
 			operatedStatus: null,
-			// 减去的金额
-			minusValue: 0,
 			// 统计信息
 			statisticsInfo: {
-				// 购买方统计
 				purchaseStats: {
-					suppliers: { total: 0, count: 0 }, // 供应商作为购买方的统计
-					customers: { total: 0, count: 0 } // 客户作为购买方的统计
+					suppliers: { total: 0, count: 0 },
+					customers: { total: 0, count: 0 }
 				},
-				// 销方统计
 				sellerStats: {
-					suppliers: { total: 0, count: 0 }, // 供应商作为销方的统计
-					customers: { total: 0, count: 0 } // 客户作为销方的统计
+					suppliers: { total: 0, count: 0 },
+					customers: { total: 0, count: 0 }
 				}
-			},
-			// 模板数据（按对方身份拆分）
-			// 本次导入的版本号（时间戳）
-			currentVersion: null,
-			// 已操作映射（来自 IndexedDB）
-			templateOperatedMap: {}
-			// 当前Sheet名称
-			// currentSheetName 已废弃
+			}
 		};
 	},
 	watch: {
@@ -129,30 +118,11 @@ export default {
 		this.math = create(all, { number: 'BigNumber', precision: 64 });
 	},
 	mounted() {
-		// 支持外部触发"继续上次开票"
-		this.$bus.$on('excel:resume', this.openFromSession);
-		// 监听已操作状态变更，实时刷新映射
-		this.$bus.$on('excel:operated-updated', async payload => {
-			const { companyIds } = payload || {};
-			// 乐观更新：先把传入的公司ID标记为已操作
-			if (Array.isArray(companyIds) && companyIds.length > 0) {
-				const nextMap = { ...(this.templateOperatedMap || {}) };
-				companyIds.forEach(id => (nextMap[id] = true));
-				this.templateOperatedMap = nextMap;
-			}
-			// 再从 IndexedDB 拉一次，确保最终一致
-			try {
-				const map = await getOperatedMap();
-				this.templateOperatedMap = map || {};
-				this.$nextTick(() => {});
-			} catch (e) {
-				console.error('刷新已操作映射失败:', e);
-			}
-		});
+		// 监听开票成功事件，刷新数据
+		this.$bus.$on('batch-invoice:refresh', this.handleRefreshBatchData);
 	},
 	beforeDestroy() {
-		this.$bus.$off('excel:resume', this.openFromSession);
-		this.$bus.$off('excel:operated-updated');
+		this.$bus.$off('batch-invoice:refresh', this.handleRefreshBatchData);
 	},
 	methods: {
 		getApiHandlers() {
@@ -270,25 +240,27 @@ export default {
 		hasInvoiceInfo(row) {
 			return !!(row && row.invoiceId);
 		},
+		// 打开批量开票全屏弹窗
 		async handleOpenBatch(row) {
 			if (!row || !row.voucher) {
 				this.$message.warning('未找到有效的批次号');
 				return;
 			}
 			this.reset();
-			this.handleClearPurchaseInfo();
-			this.handleClearSellerInfo();
 			this.currentVoucher = row.voucher;
+			// 从后端获取批次详情
 			const batchRows = await this.fetchVoucherDetails(row.voucher);
 			if (!batchRows || batchRows.length === 0) {
 				this.$message.warning('该批次暂无明细数据');
 				return;
 			}
-			this.currentVersion = Date.now();
-			await this.processExcelData(batchRows);
+			// 保存原始数据
+			this.batchDetailRows = batchRows;
+			// 处理并聚合数据
+			this.processAndAggregateData(batchRows);
 			this.invoiceAllVisible = true;
-			this.saveBatchInvoiceSession({ voucher: row.voucher });
 		},
+		// 从后端获取批次详情
 		async fetchVoucherDetails(voucher) {
 			const api = this.getApiHandlers();
 			if (!api || !api.list) {
@@ -307,173 +279,104 @@ export default {
 				return [];
 			}
 		},
-		// 保存当前批量开票会话（模板/聚合/统计/已生成列表）
-		saveBatchInvoiceSession(extra = {}) {
-			try {
-				const payload = {
-					purchaseTemplateData: this.$store?.state?.excel?.purchaseTemplateData || [],
-					sellerTemplateData: this.$store?.state?.excel?.sellerTemplateData || [],
-					purchaseTotalInfo: this.purchaseTotalInfo || [],
-					sellerTotalInfo: this.sellerTotalInfo || [],
-					statisticsInfo: this.statisticsInfo || {},
-					generatedInvoices: this.$store?.getters?.selectedInvoiceList || [],
-					timestamp: Date.now(),
-					...extra
-				};
-				localStorage.setItem('batch-invoice-session', JSON.stringify(payload));
-			} catch (e) {
-				console.error('保存批量开票会话失败:', e);
+		// 刷新批次数据（开票成功后调用）
+		async handleRefreshBatchData() {
+			if (!this.currentVoucher) {
+				return;
 			}
-		},
-		// 从本地恢复批量开票会话，并直接打开全屏弹窗
-		openFromSession() {
-			try {
-				const raw = localStorage.getItem('batch-invoice-session');
-				if (!raw) {
-					this.$message.info('暂无上次开票会话');
-					return;
-				}
-				const session = JSON.parse(raw);
-				// 恢复版本号
-				this.currentVersion = session && session.timestamp ? session.timestamp : null;
-				// 恢复模板到 Vuex
-				if (Array.isArray(session.purchaseTemplateData)) {
-					this.$store.dispatch('excel/setPurchaseTemplateData', session.purchaseTemplateData);
-				}
-				if (Array.isArray(session.sellerTemplateData)) {
-					this.$store.dispatch('excel/setSellerTemplateData', session.sellerTemplateData);
-				}
-				// 恢复聚合与统计
-				this.purchaseTotalInfo = Array.isArray(session.purchaseTotalInfo) ? session.purchaseTotalInfo : [];
-				this.sellerTotalInfo = Array.isArray(session.sellerTotalInfo) ? session.sellerTotalInfo : [];
-				this.statisticsInfo = session.statisticsInfo || {
-					purchaseStats: { suppliers: { total: 0, count: 0 }, customers: { total: 0, count: 0 } },
-					sellerStats: { suppliers: { total: 0, count: 0 }, customers: { total: 0, count: 0 } }
-				};
-				// 恢复已生成的发票清单（如有）
-				if (Array.isArray(session.generatedInvoices)) {
-					this.$store.dispatch('excel/setSelectedInvoiceList', session.generatedInvoices);
-				}
-				// 打开全屏弹窗
-				this.invoiceAllVisible = true;
-				// 加载已操作映射
-				getOperatedMap().then(map => (this.templateOperatedMap = map || {}));
-			} catch (e) {
-				console.error('恢复批量开票会话失败:', e);
-				this.$message.error('无法恢复上次开票会话');
+			const batchRows = await this.fetchVoucherDetails(this.currentVoucher);
+			if (batchRows && batchRows.length > 0) {
+				this.batchDetailRows = batchRows;
+				this.processAndAggregateData(batchRows);
 			}
+			// 同时刷新列表
+			this.fetchBatchList();
 		},
-		/**
-		 * 处理批量数据
-		 * @param {Array} rows - 批次明细
-		 */
-		async processExcelData(rows = []) {
-			let arr = [];
+		// 处理并聚合后端数据（纯计算，不存入 Vuex）
+		processAndAggregateData(rows = []) {
 			let purchaseMap = new Map();
 			let sellerMap = new Map();
+			const arr = [];
 
-			for (let item of rows) {
-				const mapped = this.mapperParams(item);
+			for (const item of rows) {
+				const mapped = this.mapBackendData(item);
 				if (mapped) {
 					arr.push(mapped);
 				}
 			}
 
-			// 过滤掉arr中 属性全部为undefined的元素
-			arr = arr.filter(item => item && !Object.values(item).every(value => value === undefined || value === null));
-			// 检查excel中是否有同时存在的
-			let ok = arr.every(item => this.purchaseHandler(item));
-			if (!ok) {
-				this.$message.error('存在订单中存在购买方和销方的信息，请检查');
+			// 过滤无效数据
+			const validArr = arr.filter(item => item && !Object.values(item).every(v => v === undefined || v === null));
+
+			// 检查数据有效性
+			const isValid = validArr.every(item => this.validateCompanyData(item));
+			if (!isValid) {
+				this.$message.error('数据中存在同时包含购买方和销方信息的记录，请检查');
 				return;
 			}
-			// 构建批次校验信息
-			const batchMetaMap = {};
-			arr.forEach(element => {
-				const batchId = element.batchInvoiceId || element.id;
-				if (batchId && batchMetaMap[batchId] === undefined) {
-					batchMetaMap[batchId] = {
-						totalAmount: element.total || 0,
-						voucher: element.voucher || this.currentVoucher
-					};
-				}
-			});
-			this.$store.dispatch('excel/setBatchMetaMap', batchMetaMap);
-			// 对数组每一个进行遍历 收集元素
-			arr.forEach(element => {
-				// 判断对方是否是购买方
+
+			// 聚合公司信息
+			validArr.forEach(element => {
+				// 判断对方是否是购买方（sellerId 为 0 表示对方是购买方）
 				const isPurchase = element.sellerId === 0;
-				// 根据判断选择 Map
 				const map = isPurchase ? purchaseMap : sellerMap;
-				// 购买方或销售方的 id
 				const id = isPurchase ? element.purchaseId : element.sellerId;
-				// 购买方或销售方的 name
 				const name = isPurchase ? element.purchaseName : element.sellerName;
-				// 购买方或销售方的 type
 				const type = isPurchase ? element.purchaseType : element.sellerType;
-				// 必然有一方是我方 对方如果是购买方 那么我方就是销售方 反之一样
+				// 我方公司名称
 				const us = isPurchase ? element.sellerName : element.purchaseName;
-				// 确保 id 不为 undefined 或空值
+
 				if (id == null || id === '') {
-					return; // 跳过当前元素
+					return;
 				}
-				// 唯一键
-				const _onlyKey = id + us;
-				// 获取当前 Map 中的记录，如果存在则累加总数，不存在则直接插入
+
+				// 唯一键：公司ID + 我方公司
+				const _onlyKey = id + '::' + us;
 				const _existing = map.get(_onlyKey);
 				if (_existing) {
-					const totalSum = this.math.add(this.math.bignumber(_existing.total || 0), this.math.bignumber(element.total || 0));
-					const ticketSum = this.math.add(this.math.bignumber(_existing.ticketPointAmount || 0), this.math.bignumber(element.ticketPointAmount || 0));
-					_existing.total = Number(this.math.format(totalSum, { precision: 12, notation: 'fixed' }));
-					_existing.ticketPointAmount = Number(this.math.format(ticketSum, { precision: 12, notation: 'fixed' }));
+					// 累加金额（仅累加未开票的记录）
+					if (!element.invoiced) {
+						const totalSum = this.math.add(this.math.bignumber(_existing.total || 0), this.math.bignumber(element.total || 0));
+						const ticketSum = this.math.add(this.math.bignumber(_existing.ticketPointAmount || 0), this.math.bignumber(element.ticketPointAmount || 0));
+						_existing.total = Number(this.math.format(totalSum, { precision: 12, notation: 'fixed' }));
+						_existing.ticketPointAmount = Number(this.math.format(ticketSum, { precision: 12, notation: 'fixed' }));
+					}
+					// 记录相关的批次ID
+					if (!_existing.batchIds.includes(element.id)) {
+						_existing.batchIds.push(element.id);
+					}
+					// 更新已操作状态（只要有一条已开票，就标记为已操作）
+					if (element.invoiced) {
+						_existing.invoiced = true;
+					}
 				} else {
 					map.set(_onlyKey, {
 						id,
 						type,
 						name,
 						us,
-						total: element.total,
+						total: element.invoiced ? 0 : element.total,
 						ticketPoint: element.ticketPoint,
-						ticketPointAmount: element.ticketPointAmount
+						ticketPointAmount: element.invoiced ? 0 : element.ticketPointAmount,
+						invoiced: element.invoiced || false,
+						batchIds: [element.id]
 					});
 				}
 			});
+
 			this.purchaseTotalInfo = Array.from(purchaseMap.values());
 			this.sellerTotalInfo = Array.from(sellerMap.values());
 
-			// 保存模板原始数据到 Vuex，按对方身份拆分
-			this.$store.dispatch(
-				'excel/setPurchaseTemplateData',
-				arr.filter(e => e && e.sellerId === 0)
-			);
-			this.$store.dispatch(
-				'excel/setSellerTemplateData',
-				arr.filter(e => e && e.sellerId !== 0)
-			);
-
 			// 计算统计信息
-			this.calculateStatistics(arr);
+			this.calculateStatistics(validArr);
 
-			// 暂存购买方和销方的信息
-			this.handleStorePurchaseInfo(this.purchaseTotalInfo);
-			this.handleStoreSellerInfo(this.sellerTotalInfo);
-			// 保存一次会话快照
-			this.saveBatchInvoiceSession();
-			getOperatedMap().then(map => (this.templateOperatedMap = map || {}));
+			// 存储原始数据供 QueueInvoiceList 使用
+			this.$store.dispatch('excel/setBatchDetailRows', validArr);
 		},
-		// 映射参数：将后端数据或Excel原始数据转换为统一格式
-		mapperParams(item) {
+		// 映射后端数据为统一格式
+		mapBackendData(item) {
 			if (!item) return null;
-			// 已结构化的后端数据
-			if (item.sellerId !== undefined || item.purchaseId !== undefined || item.batchInvoiceId) {
-				return this.mapStructuredData(item);
-			}
-			// Excel 原始数据（中文表头）
-			return this.mapExcelData(item);
-		},
-		// 映射已结构化的后端数据
-		mapStructuredData(item) {
-			const totalAmount = Number(item.totalAmount ?? item.total ?? item.invoiceAmount ?? 0);
+			const totalAmount = Number(item.totalAmount ?? item.total ?? 0);
 			const ticketPoint = Number(item.taxPoint ?? item.ticketPoint ?? 0);
 			const ticketPointAmountRaw = item.ticketPointAmount;
 			const normalizedTicketPointAmount = ticketPointAmountRaw !== undefined && ticketPointAmountRaw !== null ? Number(ticketPointAmountRaw) : this.calculateTicketPointAmount(totalAmount, ticketPoint);
@@ -485,34 +388,16 @@ export default {
 				purchaseId: Number(item.buyerId ?? item.purchaseId) || 0,
 				purchaseType: item.buyerType ?? item.purchaseType ?? '',
 				purchaseName: item.buyerName ?? item.purchaseName ?? '',
-				total: Number(totalAmount),
-				ticketPoint: ticketPoint,
-				ticketPointAmount: Number(normalizedTicketPointAmount),
-				batchInvoiceId: item.batchInvoiceId || item.id || null,
-				voucher: item.voucher || '',
-				comments: item.comments || '',
-				params: item.params || {},
-				id: item.id
-			};
-		},
-		// 映射Excel原始数据
-		mapExcelData(item) {
-			const ticketPoint = Number(item['票点']) || 0;
-			const totalAmount = Number(item['价税合计']) || 0;
-			const ticketPointAmount = this.calculateTicketPointAmount(totalAmount, ticketPoint);
-
-			return {
-				sellerId: item['销方ID'],
-				sellerName: item['销方名称'],
-				sellerType: item['销方类型'],
-				purchaseId: item['购买方ID'],
-				purchaseType: item['购买方类型'],
-				purchaseName: item['购买方名称'],
 				total: totalAmount,
 				ticketPoint: ticketPoint,
-				ticketPointAmount: Number(ticketPointAmount.toFixed(2))
+				ticketPointAmount: normalizedTicketPointAmount,
+				id: item.id,
+				voucher: item.voucher || '',
+				invoiced: item.invoiced || false,
+				invoiceId: item.invoiceId || null
 			};
 		},
+		// 计算票点金额
 		calculateTicketPointAmount(totalAmount, ticketPoint) {
 			const total = this.math ? this.math.bignumber(totalAmount || 0) : totalAmount || 0;
 			const rate = this.math ? this.math.bignumber(ticketPoint || 0) : ticketPoint || 0;
@@ -529,7 +414,6 @@ export default {
 		},
 		// 计算统计信息
 		calculateStatistics(dataArray) {
-			// 重置统计信息
 			this.statisticsInfo = {
 				purchaseStats: {
 					suppliers: { total: 0, count: 0 },
@@ -541,49 +425,51 @@ export default {
 				}
 			};
 
-			// 用唯一 ID 去重计数，避免同一公司被重复计数
 			const purchaseSupplierIds = new Set();
 			const purchaseCustomerIds = new Set();
 			const sellerSupplierIds = new Set();
 			const sellerCustomerIds = new Set();
 
 			dataArray.forEach(element => {
+				// 只统计未开票的记录
+				if (element.invoiced) {
+					return;
+				}
 				const amount = Number(element.total) || 0;
 
-				// 统计购买方（排除己方公司）
+				// 统计购买方
 				if (element.purchaseType && element.purchaseType !== '己方公司') {
 					const pid = element.purchaseId;
 					if (element.purchaseType === '供应商') {
 						this.statisticsInfo.purchaseStats.suppliers.total += amount;
-						if (pid !== undefined && pid !== null && pid !== '' && Number(pid) !== 0) {
+						if (pid && Number(pid) !== 0) {
 							purchaseSupplierIds.add(String(pid));
 						}
 					} else if (element.purchaseType === '客户') {
 						this.statisticsInfo.purchaseStats.customers.total += amount;
-						if (pid !== undefined && pid !== null && pid !== '' && Number(pid) !== 0) {
+						if (pid && Number(pid) !== 0) {
 							purchaseCustomerIds.add(String(pid));
 						}
 					}
 				}
 
-				// 统计销方（排除己方公司）
+				// 统计销方
 				if (element.sellerType && element.sellerType !== '己方公司') {
 					const sid = element.sellerId;
 					if (element.sellerType === '供应商') {
 						this.statisticsInfo.sellerStats.suppliers.total += amount;
-						if (sid !== undefined && sid !== null && sid !== '' && Number(sid) !== 0) {
+						if (sid && Number(sid) !== 0) {
 							sellerSupplierIds.add(String(sid));
 						}
 					} else if (element.sellerType === '客户') {
 						this.statisticsInfo.sellerStats.customers.total += amount;
-						if (sid !== undefined && sid !== null && sid !== '' && Number(sid) !== 0) {
+						if (sid && Number(sid) !== 0) {
 							sellerCustomerIds.add(String(sid));
 						}
 					}
 				}
 			});
 
-			// 用去重后的 ID 数量作为 count
 			this.statisticsInfo.purchaseStats.suppliers.count = purchaseSupplierIds.size;
 			this.statisticsInfo.purchaseStats.customers.count = purchaseCustomerIds.size;
 			this.statisticsInfo.sellerStats.suppliers.count = sellerSupplierIds.size;
@@ -595,25 +481,17 @@ export default {
 			this.statisticsInfo.sellerStats.suppliers.total = Number(this.statisticsInfo.sellerStats.suppliers.total.toFixed(2));
 			this.statisticsInfo.sellerStats.customers.total = Number(this.statisticsInfo.sellerStats.customers.total.toFixed(2));
 		},
-		// 对公司进行校验
-		purchaseHandler(item) {
-			// 如果都为0
+		// 校验公司数据有效性
+		validateCompanyData(item) {
 			if (item.purchaseId === 0 && item.sellerId === 0) {
 				return false;
-				// 如果购买方和销方的id都不为0
-			} else return !(item.purchaseId !== 0 && item.sellerId !== 0);
-		},
-		// 判断公司是否已操作
-		isCompanyOperated(row) {
-			if (!row || !row.id) return false;
-			const companyId = Number(row.id);
-			return !!(companyId && this.templateOperatedMap && this.templateOperatedMap[companyId]);
+			}
+			return !(item.purchaseId !== 0 && item.sellerId !== 0);
 		},
 		// 弹窗左侧供应商列表的筛选
 		handleFilter() {
-			// 从暂存数据中获取原始数据
-			const purchaseTempData = this.$store.getters.purchaseTempInfo || [];
-			const sellerTempData = this.$store.getters.sellerTempInfo || [];
+			// 重新从原始数据聚合
+			this.processAndAggregateData(this.batchDetailRows);
 
 			// 通用筛选函数
 			const filterItems = items => {
@@ -630,10 +508,9 @@ export default {
 							return false;
 						}
 					}
-					// 已操作状态筛选
+					// 已操作状态筛选（基于后端的 invoiced 字段）
 					if (this.operatedStatus !== null) {
-						const isOperated = this.isCompanyOperated(item);
-						if (isOperated !== this.operatedStatus) {
+						if (item.invoiced !== this.operatedStatus) {
 							return false;
 						}
 					}
@@ -641,15 +518,15 @@ export default {
 				});
 			};
 
-			// 根据当前显示的一方进行筛选
+			// 应用筛选
 			if (this.currentSide === 'purchase') {
-				this.purchaseTotalInfo = filterItems(purchaseTempData);
+				this.purchaseTotalInfo = filterItems(this.purchaseTotalInfo);
 			} else {
-				this.sellerTotalInfo = filterItems(sellerTempData);
+				this.sellerTotalInfo = filterItems(this.sellerTotalInfo);
 			}
 		},
 
-		//查看某一个公司的信息
+		// 查看某一个公司的信息
 		handleCheck(row) {
 			this.handleResetCompanyInfo();
 			this.companyInfo.supplierLoading = true;
@@ -676,12 +553,8 @@ export default {
 		},
 		// 重置筛选结果
 		handleReset() {
-			// 根据当前显示的一方重置数据
-			if (this.currentSide === 'purchase') {
-				this.purchaseTotalInfo = this.$store.getters.purchaseTempInfo || [];
-			} else {
-				this.sellerTotalInfo = this.$store.getters.sellerTempInfo || [];
-			}
+			// 重新从原始数据聚合
+			this.processAndAggregateData(this.batchDetailRows);
 			// 清空搜索条件
 			this.myCompany = null;
 			this.otherCompany = null;
@@ -714,12 +587,19 @@ export default {
 		clearSessionStorage() {
 			sessionStorage.removeItem('us');
 			sessionStorage.removeItem('invoiceAmount');
+			sessionStorage.removeItem('companyList_selected_company_id');
+			sessionStorage.removeItem('merged_company_info');
 		},
 		// 清除组件状态
 		clearComponentState() {
 			this.handleResetCompanyInfo();
 			this.handleResetOrderList();
-			this.handleReset();
+			this.purchaseTotalInfo = [];
+			this.sellerTotalInfo = [];
+			this.batchDetailRows = [];
+			this.myCompany = null;
+			this.otherCompany = null;
+			this.operatedStatus = null;
 			this.statisticsInfo = {
 				purchaseStats: {
 					suppliers: { total: 0, count: 0 },
@@ -735,9 +615,9 @@ export default {
 		clearVuexState() {
 			this.$store.dispatch('excel/clearTicketPoint');
 			this.$store.dispatch('excel/clearComment');
-			this.$store.dispatch('excel/clearPurchaseTemplateData');
-			this.$store.dispatch('excel/clearSellerTemplateData');
-			this.$store.dispatch('excel/clearBatchMetaMap');
+			this.$store.dispatch('excel/clearBatchDetailRows');
+			this.$store.dispatch('excel/clearSelectedInvoiceList');
+			this.$store.dispatch('excel/clearInvoiceAmount');
 		}
 	}
 };
@@ -867,7 +747,8 @@ export default {
 														:side="currentSide"
 														:company-total-info="currentCompanyTotalInfo"
 														:statistics-info="currentStatisticsInfo"
-														:operated-map="templateOperatedMap"
+														:mode="mode"
+														:voucher="currentVoucher"
 														@handleCheck="handleCheck"
 													/>
 													<div v-else class="empty-company-list">
@@ -881,7 +762,7 @@ export default {
 
 								<template #right>
 									<div class="section-wrapper">
-										<QueueInvoiceList />
+										<QueueInvoiceList :mode="mode" />
 									</div>
 								</template>
 							</DragDiv>
