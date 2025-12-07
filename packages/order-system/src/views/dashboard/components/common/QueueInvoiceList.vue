@@ -8,10 +8,6 @@ import { getUuid } from '@/utils/trash/utils';
 import { TableName } from '@/api/tool/enums';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import { batchInvoice } from '@/api/system/excel';
-import {
-	batchUpdateBatchInvoiceInInvoiced,
-	batchUpdateBatchInvoiceOutInvoiced
-} from '@/api/system/batchInvoice';
 import INVOICE_OUT from '@/components/NeedToShow/INVOICE_OUT.vue';
 import INVOICE_IN from '@/components/NeedToShow/INVOICE_IN.vue';
 
@@ -65,10 +61,6 @@ export default {
 		}
 	},
 	methods: {
-		// 获取更新开票状态的API
-		getUpdateInvoicedApi() {
-			return this.mode === 'out' ? batchUpdateBatchInvoiceOutInvoiced : batchUpdateBatchInvoiceInInvoiced;
-		},
 		// 创建发票对象的工具函数
 		createInvoiceObject(params, extra = {}) {
 			const { invoiceDate, invoiceObject, invoiceAmount, companyType, companyName, companyID, invoiceCompanyName, ticketPoint = 0, ticketPointAmount, isOrderTax, comments } = params;
@@ -145,18 +137,6 @@ export default {
 
 			// 如果成功
 			if (result.flag) {
-				// 收集需要更新的批次记录ID
-				const batchIds = filteredInvoices.map(inv => inv.batchInvoiceId).filter(id => id != null);
-				// 调用后端API更新开票状态
-				if (batchIds.length > 0) {
-					try {
-						const updateApi = this.getUpdateInvoicedApi();
-						await updateApi(batchIds, true);
-					} catch (e) {
-						console.error('更新后端开票状态失败:', e);
-					}
-				}
-
 				// 告诉订单列表重新加载
 				this.$bus.$emit('select-goods:update');
 
@@ -166,7 +146,7 @@ export default {
 					this.$store.dispatch('excel/clearInvoiceAmount');
 				}
 
-				// 清理 sessionStorage 中的临时开票数据
+				// 清理 sessionStorage 中的临时数据
 				sessionStorage.removeItem('invoiceAmount');
 				sessionStorage.removeItem('us');
 				sessionStorage.removeItem('companyList_selected_company_id');
@@ -176,7 +156,7 @@ export default {
 				this.$bus.$emit('invoice-clear');
 				this.$message.success('本批开票成功');
 
-				// 通知父组件刷新数据
+				// 通知父组件刷新数据（从后端重新获取列表，invoiced 状态会自动更新）
 				this.$bus.$emit('batch-invoice:refresh');
 			} else {
 				this.$message.error('本批开票有误 请检查错误信息后重新提交');
