@@ -243,9 +243,9 @@
 				<el-form-item label="我方开票主体" prop="invoiceObject">
 					<el-input v-model="form.invoiceObject" placeholder="请输入我方开票主体" />
 				</el-form-item>
-				<el-form-item label="开票金额" prop="invoiceAmount">
-					<el-input v-model="form.invoiceAmount" placeholder="请输入开票金额" />
-				</el-form-item>
+			<el-form-item label="开票金额" prop="invoiceAmount">
+				<el-input v-model="form.invoiceAmount" placeholder="请输入开票金额" @input="handleInvoiceAmountInput" />
+			</el-form-item>
 				<el-form-item label="对方公司类型">
 					<el-select v-model="form.companyType" placeholder="请选择">
 						<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
@@ -272,12 +272,12 @@
 				<el-form-item label="票据单位名称" prop="invoiceCompanyName">
 					<el-input v-model="form.invoiceCompanyName" placeholder="请输入票据单位名称" />
 				</el-form-item>
-				<el-form-item label="票点" prop="ticketPoint">
-					<el-input v-model="form.ticketPoint" placeholder="请输入票点" />
-				</el-form-item>
-				<el-form-item label="票点金额" prop="ticketPointAmount">
-					<el-input v-model="invoiceAmount" placeholder="请输入票点金额" />
-				</el-form-item>
+			<el-form-item label="票点" prop="ticketPoint">
+				<el-input v-model="form.ticketPoint" placeholder="请输入票点" @input="handleTicketPointInput" />
+			</el-form-item>
+			<el-form-item label="票点金额" prop="ticketPointAmount">
+				<el-input v-model="form.ticketPointAmount" placeholder="请输入票点金额" @input="handleTicketPointAmountInput" @blur="handleTicketPointAmountBlur" />
+			</el-form-item>
 				<el-form-item label="开票日期" prop="extraInfo.actualInvoiceTime">
 					<el-date-picker v-model="form.extraInfo.actualInvoiceTime" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 				</el-form-item>
@@ -352,25 +352,39 @@ import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfi
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import INVOICE_OUT from '@/components/NeedToShow/INVOICE_OUT.vue';
+import { multiply, format, number } from 'mathjs';
 
 export default {
 	name: 'NoneInvoiceOut',
 	components: { CheckFiles, UploadFilesButton, SearchOption },
 	mixins: [mixin_printHTML, reLength, mixin_checkfile, common_dialog],
 	data() {
-		// 金额格式验证（最多两位小数）
-		const validateAmount = (rule, value, callback) => {
-			if (value === '' || value === null || value === undefined) {
-				callback(new Error('请输入金额'));
-			} else {
-				const reg = /^(\d+)(\.\d{1,2})?$/;
-				if (!reg.test(value)) {
-					callback(new Error('金额格式不正确，最多两位小数'));
+			// 金额格式验证（最多两位小数）
+			const validateAmount = (rule, value, callback) => {
+				if (value === '' || value === null || value === undefined) {
+					callback(new Error('请输入金额'));
 				} else {
-					callback();
+					const reg = /^(\d+)(\.\d{1,2})?$/;
+					if (!reg.test(value)) {
+						callback(new Error('金额格式不正确，最多两位小数'));
+					} else {
+						callback();
+					}
 				}
-			}
-		};
+			};
+			// 票点金额格式验证（最多8位小数）
+			const validateTicketPointAmount = (rule, value, callback) => {
+				if (value === '' || value === null || value === undefined) {
+					callback(new Error('请输入票点金额'));
+				} else {
+					const reg = /^(\d+)(\.\d{1,8})?$/;
+					if (!reg.test(value)) {
+						callback(new Error('票点金额格式不正确，最多8位小数'));
+					} else {
+						callback();
+					}
+				}
+			};
 		return {
 			// 遮罩层
 			loading: true,
@@ -456,14 +470,18 @@ export default {
 						trigger: 'blur'
 					}
 				],
-				ticketPoint: [{ required: true, message: '请输入票点', trigger: 'blur' }],
-				ticketPointAmount: [
-					{
-						required: true,
-						message: '请输入票点金额',
-						trigger: 'blur'
-					}
-				]
+			ticketPoint: [{ required: true, message: '请输入票点', trigger: 'blur' }],
+			ticketPointAmount: [
+				{
+					required: true,
+					message: '请输入票点金额',
+					trigger: 'blur'
+				},
+				{
+					validator: validateTicketPointAmount,
+					trigger: 'blur'
+				}
+			]
 			},
 			columns: [
 				{ key: 0, label: `开票日期`, visible: true },
@@ -521,20 +539,12 @@ export default {
 				pageSize: 20,
 				tableName: TableName.INVOICE_OUT,
 				tid: null
-			}
+			},
+			// 是否手动修改过票点金额
+			isTicketPointAmountManual: false
 		};
 	},
-	computed: {
-		// 票点金额 开票金额*票点
-		invoiceAmount: {
-			set(val) {
-				this.form.ticketPointAmount = val;
-			},
-			get() {
-				return Number(this.form.invoiceAmount * this.form.ticketPoint).toFixed(3);
-			}
-		}
-	},
+	computed: {},
 	watch: {
 		columns: {
 			handler: function (newVal) {
@@ -542,12 +552,28 @@ export default {
 			},
 			deep: true
 		},
-		// 监听
-		form: {
-			handler() {
-				this.invoiceAmount = this.form.invoiceAmount * this.form.ticketPoint;
+		// 监听开票金额和票点，自动计算票点金额
+		'form.invoiceAmount': {
+			handler(newVal, oldVal) {
+				// 只有在未手动修改且两个值都存在时才自动计算
+				if (!this.isTicketPointAmountManual && newVal && this.form.ticketPoint) {
+					const calculated = multiply(Number(newVal), Number(this.form.ticketPoint));
+					const formatted = format(calculated, { precision: 8 });
+					this.form.ticketPointAmount = String(formatted).replace(/\.?0+$/, '');
+				}
 			},
-			deep: true
+			immediate: false
+		},
+		'form.ticketPoint': {
+			handler(newVal, oldVal) {
+				// 只有在未手动修改且两个值都存在时才自动计算
+				if (!this.isTicketPointAmountManual && newVal && this.form.invoiceAmount) {
+					const calculated = multiply(Number(this.form.invoiceAmount), Number(newVal));
+					const formatted = format(calculated, { precision: 8 });
+					this.form.ticketPointAmount = String(formatted).replace(/\.?0+$/, '');
+				}
+			},
+			immediate: false
 		}
 	},
 	created() {
@@ -688,6 +714,7 @@ export default {
 					comment: null
 				}
 			};
+			this.isTicketPointAmountManual = false;
 			this.resetForm('form');
 		},
 		/** 搜索按钮操作 */
@@ -747,12 +774,18 @@ export default {
 							},
 							inputErrorMessage: '修改原因不能为空'
 						})
-							.then(({ value }) => {
-								// 将修改原因保存到sessionStorage
-								sessionStorage.setItem('editReason_invoiceOut', value);
-								// 打开编辑表单
-								this.reset();
+						.then(({ value }) => {
+							// 将修改原因保存到sessionStorage
+							sessionStorage.setItem('editReason_invoiceOut', value);
+							// 打开编辑表单
+							this.reset();
+							// 编辑时保持原有票点金额，先标记为手动修改，避免watch触发自动计算
+							if (invoiceOutData.ticketPointAmount) {
+								this.isTicketPointAmountManual = true;
+							}
+							this.$nextTick(() => {
 								this.form = invoiceOutData;
+							});
 								// 处理附件列表 - 统一放入params.attachmentIds
 								if (this.form.attachmentList && Array.isArray(this.form.attachmentList)) {
 									if (!this.form.params) {
@@ -774,7 +807,13 @@ export default {
 					} else {
 						// 不需要修改原因，直接打开编辑
 						this.reset();
-						this.form = invoiceOutData;
+						// 编辑时保持原有票点金额，先标记为手动修改，避免watch触发自动计算
+						if (invoiceOutData.ticketPointAmount) {
+							this.isTicketPointAmountManual = true;
+						}
+						this.$nextTick(() => {
+							this.form = invoiceOutData;
+						});
 						if (this.form.attachmentList && Array.isArray(this.form.attachmentList)) {
 							if (!this.form.params) {
 								this.form.params = {};
@@ -909,6 +948,45 @@ export default {
 			});
 		},
 
+		// 开票金额输入处理，自动计算票点金额
+		handleInvoiceAmountInput() {
+			if (!this.isTicketPointAmountManual && this.form.invoiceAmount && this.form.ticketPoint) {
+				this.$nextTick(() => {
+					const calculated = multiply(Number(this.form.invoiceAmount), Number(this.form.ticketPoint));
+					const formatted = format(calculated, { precision: 8 });
+					this.form.ticketPointAmount = String(formatted).replace(/\.?0+$/, '');
+				});
+			}
+		},
+		// 票点输入处理，自动计算票点金额
+		handleTicketPointInput() {
+			if (!this.isTicketPointAmountManual && this.form.invoiceAmount && this.form.ticketPoint) {
+				this.$nextTick(() => {
+					const calculated = multiply(Number(this.form.invoiceAmount), Number(this.form.ticketPoint));
+					const formatted = format(calculated, { precision: 8 });
+					this.form.ticketPointAmount = String(formatted).replace(/\.?0+$/, '');
+				});
+			}
+		},
+		// 票点金额输入处理
+		handleTicketPointAmountInput() {
+			this.isTicketPointAmountManual = true;
+		},
+		// 票点金额失焦校验
+		handleTicketPointAmountBlur() {
+			if (this.form.ticketPointAmount) {
+				const value = String(this.form.ticketPointAmount);
+				// 检查小数位数
+				const decimalPart = value.split('.')[1];
+				if (decimalPart && decimalPart.length > 8) {
+					this.$message.warning('票点金额小数位不能超过8位，请手动修改');
+					// 截取前8位小数，使用mathjs格式化
+					const num = number(this.form.ticketPointAmount);
+					const formatted = format(num, { precision: 8 });
+					this.form.ticketPointAmount = String(formatted).replace(/\.?0+$/, '');
+				}
+			}
+		},
 		/** 补充信息操作 */
 		handleAddExtraInfo(row) {
 			this.currentRow = row;
