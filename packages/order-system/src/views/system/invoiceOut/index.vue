@@ -42,7 +42,7 @@
 			</right-toolbar>
 		</el-row>
 		<div>
-			<BatchInvoicePanel mode="out" />
+			<ExcelImport mode="out" />
 		</div>
 		<el-table
 			id="printBox"
@@ -310,12 +310,12 @@ import UploadFilesButton from '@/components/UploadFilesButton/index.vue';
 import reLength from '../../dashboard/mixins/reLength';
 import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfile';
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
-import BatchInvoicePanel from '@/views/dashboard/components/common/BatchInvoicePanel.vue';
+import ExcelImport from '@/views/dashboard/components/common/ExcelImport.vue';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 
 export default {
 	name: 'InvoiceOut',
-	components: { CheckFiles, UploadFilesButton, CheckOrder, SearchOption, BatchInvoicePanel },
+	components: { CheckFiles, UploadFilesButton, CheckOrder, SearchOption, ExcelImport },
 	mixins: [mixin_printHTML, reLength, mixin_checkfile, common_dialog],
 	data() {
 		return {
