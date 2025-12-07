@@ -58,7 +58,8 @@ module.exports = {
 				// 支持引用共享包
 				'@shared': resolve(__dirname, '../shared'),
 				'@ui-components': resolve(__dirname, '../ui-components'),
-				'@config': resolve(__dirname, '../config')
+				'@config': resolve(__dirname, '../config'),
+				'@order-system/code-less': resolve(__dirname, '../code-less')
 			}
 		},
 		plugins: [
