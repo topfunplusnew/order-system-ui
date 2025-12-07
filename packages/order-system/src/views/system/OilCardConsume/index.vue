@@ -212,6 +212,20 @@ export default {
 				callback();
 			}
 		};
+		// 校验加油卡余额：允许负数，不限制位数
+		const validateEndCardSurplus = (rule, value, callback) => {
+			if (value === '' || value === null || value === undefined) {
+				callback(new Error('该字段不能为空'));
+			} else {
+				const numValue = String(value);
+				// 允许负数、整数或小数，不限制位数
+				if (!/^-?\d+(\.\d+)?$/.test(numValue)) {
+					callback(new Error('请输入数字，可以为负数'));
+				} else {
+					callback();
+				}
+			}
+		};
 		return {
 			loading: true,
 			ids: [],
@@ -255,7 +269,7 @@ export default {
 				refuelingNumber: [{ required: true, trigger: 'blur', validator: validateNumber }],
 				unitPrice: [{ required: true, trigger: 'blur', validator: validateNumber }],
 				refuelingMoney: [{ required: true, trigger: 'blur', validator: validateNumber }],
-				endCardSurplus: [{ required: true, trigger: 'blur', validator: validateNumber }],
+				endCardSurplus: [{ required: true, trigger: 'blur', validator: validateEndCardSurplus }],
 				receiptReturned: [{ required: true, message: '请选择加油小票是否交回', trigger: 'change' }]
 			},
 			columns: [
