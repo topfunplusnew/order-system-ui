@@ -208,8 +208,6 @@ export default {
 		const validateNumber = (rule, value, callback) => {
 			if (value === '' || value === null) {
 				callback(new Error('该字段不能为空'));
-			} else if (!/(^[1-9](\d+)?(\.\d{1,2})?$)|(^0$)|(^\d\.\d{1,2}$)/.test(value)) {
-				callback(new Error('请输入数字，最多两位小数'));
 			} else {
 				callback();
 			}
