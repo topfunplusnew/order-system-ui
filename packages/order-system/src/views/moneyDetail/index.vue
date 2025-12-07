@@ -11,13 +11,13 @@
 		</el-form>
 
 		<el-row :gutter="10" class="mb8">
-			<right-toolbar :showSearch.sync="showSearch" @queryTable="getList">
+			<RightToolbar :showSearch.sync="showSearch" :getUserConfig="getUserConfig" :saveUserConfig="saveUserConfig" @queryTable="getList">
 				<template #export>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-folder-opened" size="mini" @click="handleExport">导出</el-button>
 					</el-col>
 				</template>
-			</right-toolbar>
+			</RightToolbar>
 		</el-row>
 
 		<el-table v-loading="loading" :data="moneyDetailList" border size="mini" style="margin-top: 10px">
@@ -41,10 +41,11 @@
 
 <script>
 import { listMoneyDetail } from '@/api/moneyDetail';
-import rightToolbar from '@/components/RightToolbar';
+import { RightToolbar } from '@order-system/ui-components';
+import { getUserConfig, saveUserConfig } from '@/api/user-config/index.js';
 export default {
 	name: 'MoneyDetail',
-	components: { rightToolbar },
+	components: { RightToolbar },
 	data() {
 		return {
 			loading: false,
@@ -65,6 +66,12 @@ export default {
 		this.getList();
 	},
 	methods: {
+		getUserConfig(...args) {
+			return getUserConfig(...args);
+		},
+		saveUserConfig(...args) {
+			return saveUserConfig(...args);
+		},
 		initDefaultDate() {
 			// 默认今天
 			const today = new Date();

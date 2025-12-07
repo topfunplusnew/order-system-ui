@@ -852,6 +852,22 @@ export default {
 				}
 				this.generatePaymentForm.params.attachmentIds = uploadParams.params.attachmentIds;
 			}
+		},
+		// 表格行样式类名
+		tableRowClassName({ row }) {
+			if (row.tableReferences) {
+				return 'highlight-row';
+			}
+			return '';
+		},
+		// 表格行样式
+		tableRowStyle({ row }) {
+			if (row.tableReferences) {
+				return {
+					backgroundColor: '#f5f5f5'
+				};
+			}
+			return {};
 		}
 	}
 };
@@ -971,6 +987,8 @@ export default {
 			v-loading="loading"
 			:data="paymentList"
 			border
+			:row-class-name="tableRowClassName"
+			:row-style="tableRowStyle"
 			:cell-style="
 				() => {
 					return { padding: '.5px' };
@@ -1355,5 +1373,39 @@ export default {
 .apply-list-scroll {
 	max-height: 500px;
 	overflow: auto;
+}
+
+// 高亮行样式，确保优先级高于悬停和斑马纹
+::v-deep .el-table__body-wrapper .el-table__body tr.highlight-row {
+	background-color: #f5f5f5 !important;
+
+	&:hover {
+		background-color: #f5f5f5 !important;
+	}
+
+	&:nth-child(even) {
+		background-color: #f5f5f5 !important;
+	}
+
+	td {
+		background-color: #f5f5f5 !important;
+	}
+}
+
+// 固定列的高亮行样式
+::v-deep .el-table__fixed-body-wrapper .el-table__body tr.highlight-row {
+	background-color: #f5f5f5 !important;
+
+	&:hover {
+		background-color: #f5f5f5 !important;
+	}
+
+	&:nth-child(even) {
+		background-color: #f5f5f5 !important;
+	}
+
+	td {
+		background-color: #f5f5f5 !important;
+	}
 }
 </style>

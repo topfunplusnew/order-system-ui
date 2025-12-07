@@ -13,13 +13,13 @@
 		</el-form>
 
 		<!-- 表格工具栏 -->
-		<right-toolbar :columns="columns" @queryTable="getList">
+		<RightToolbar :columns="columns" :getUserConfig="getUserConfig" :saveUserConfig="saveUserConfig" tableName="inventoryBalance-columns" @queryTable="getList">
 			<template #export>
 				<el-col :span="1.5">
 					<el-button v-hasPermi="['system:inventoryStatistics:exportWarehouseBalance']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport">导出</el-button>
 				</el-col>
 			</template>
-		</right-toolbar>
+		</RightToolbar>
 
 		<!-- 表格区域 -->
 		<el-table
@@ -51,7 +51,8 @@
 <script>
 import { getWarehouseBalance, exportWarehouseBalance } from '@/api/system/StoreHouse';
 import { download } from '@/utils/request';
-import RightToolbar from '@/components/RightToolbar';
+import { RightToolbar } from '@order-system/ui-components';
+import { getUserConfig, saveUserConfig } from '@/api/user-config/index.js';
 
 export default {
 	name: 'InventoryBalance',
@@ -100,6 +101,12 @@ export default {
 		this.getList();
 	},
 	methods: {
+		getUserConfig(...args) {
+			return getUserConfig(...args);
+		},
+		saveUserConfig(...args) {
+			return saveUserConfig(...args);
+		},
 		// 获取今天的日期字符串（格式：yyyy-MM-dd）
 		getTodayDate() {
 			const today = new Date();

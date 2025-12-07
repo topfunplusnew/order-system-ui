@@ -71,7 +71,7 @@
 					<span style="color: #1c84c6; font-size: 12px">请先注意选择正确的对方公司类型!</span>
 				</el-form-item>
 
-				<el-form-item v-if="value && value !== PUBLIC_DICT_TYPE.EMPLOYEE && value !== PAYMENT_TARGET_TYPE.PAYMENT_FEE" :label="value === PUBLIC_DICT_TYPE.DRIVER ? '司机' : '对方公司'" prop="companyName">
+				<el-form-item v-if="value && value !== PUBLIC_DICT_TYPE.EMPLOYEE && value !== PAYMENT_TARGET_TYPE.PAYMENT_FEE" :label="value === PUBLIC_DICT_TYPE.DRIVER ? PUBLIC_DICT_TYPE.DRIVER : '对方公司'" prop="companyName">
 					<el-row>
 						<el-col :span="22">
 							<el-input disabled v-model="form.companyName" placeholder="请选择" style="width: 100%" />
@@ -373,11 +373,10 @@ import { mixin_payment_fill } from '../../mixins/apply_payment/payment_fill';
 import { isNull } from '../../../../main';
 import { mixin_receive_money_subject } from '../../mixins/receivemoney/receive_money_subject';
 import { parseTime } from '@/utils/ruoyi';
-import { PAYMENT_TARGET_TYPE } from '@/api/tool/enums';
+import { PAYMENT_TARGET_TYPE, PUBLIC_DICT_TYPE } from '@/api/tool/enums';
 import { mixin_bankType } from '@/views/dashboard/mixins/common/common_bankType';
 import { addBadBetPayment } from '@/api/system/payment';
 import _ from 'lodash';
-import { PUBLIC_DICT_TYPE } from '@/utils/order';
 import { listCars } from '@/api/system/cars';
 
 export default {
@@ -426,6 +425,16 @@ export default {
 		// 判断是否存在表关联数据，如果存在则金额不可修改
 		hasTableReferences() {
 			return this.tableReferences && this.tableReferences.length > 0;
+		},
+		// 下拉框选项 - 使用枚举
+		options() {
+			return [
+				{ value: this.PUBLIC_DICT_TYPE.CUSTOMER, label: this.PUBLIC_DICT_TYPE.CUSTOMER },
+				{ value: this.PUBLIC_DICT_TYPE.SUPPLIER, label: this.PUBLIC_DICT_TYPE.SUPPLIER },
+				{ value: this.PUBLIC_DICT_TYPE.DRIVER, label: this.PUBLIC_DICT_TYPE.DRIVER },
+				{ value: this.PUBLIC_DICT_TYPE.EMPLOYEE, label: this.PUBLIC_DICT_TYPE.EMPLOYEE },
+				{ value: this.PAYMENT_TARGET_TYPE.PAYMENT_FEE, label: this.PAYMENT_TARGET_TYPE.PAYMENT_FEE }
+			];
 		},
 		rules() {
 			// 基础校验规则 - 两种场景都需要的校验
@@ -513,14 +522,6 @@ export default {
 			bankInputDisabled: false,
 			// 本地存储的 key
 			localStorageKey: 'paymentApplyForm',
-			// 下拉框选项
-			options: [
-				{ value: '客户', label: '客户' },
-				{ value: '供应商', label: '供应商' },
-				{ value: '司机', label: '司机' },
-				{ value: '员工', label: '员工' },
-				{ value: '支付费用', label: '支付费用' }
-			],
 			value: '', // 对方类型
 			queryOther: '', // 其他搜索参数
 			queryCompany: '', // 公司搜索参数
@@ -576,6 +577,40 @@ export default {
 		isNull,
 		listCompany,
 		listBankAccount,
+		// 根据对方类型返回相应的校验规则
+		getOpponentTypeRules() {
+			if (!this.value) {
+				return {};
+			}
+
+			const dictType = this.PUBLIC_DICT_TYPE;
+			const targetType = this.PAYMENT_TARGET_TYPE;
+
+			// 支付费用：不需要校验对方银行卡信息
+			if (this.value === targetType.PAYMENT_FEE) {
+				return {};
+			}
+
+			const rules = {};
+
+			// 客户、供应商、司机：需要校验对方公司
+			if ([dictType.CUSTOMER, dictType.SUPPLIER, dictType.DRIVER].includes(this.value)) {
+				rules.companyName = [{ required: true, message: '对方公司或司机名称不能为空', trigger: 'change' }];
+			}
+
+			// 客户、供应商、司机、员工：需要校验对方户名
+			if ([dictType.CUSTOMER, dictType.SUPPLIER, dictType.DRIVER, dictType.EMPLOYEE].includes(this.value)) {
+				rules.otherAccountsName = [{ required: true, message: '对方户名不能为空', trigger: 'blur' }];
+			}
+
+			// 客户、供应商、司机、员工：需要校验银行账号信息（如果未禁用银行卡输入）
+			const needBankAccountTypes = [dictType.CUSTOMER, dictType.SUPPLIER, dictType.DRIVER, dictType.EMPLOYEE];
+			if (needBankAccountTypes.includes(this.value) && !this.bankInputDisabled) {
+				rules.otherBankNo = [{ required: true, message: '对方账号不能为空', trigger: 'change' }];
+			}
+
+			return rules;
+		},
 		buildTableReferences() {
 			// 优先使用新的 tableReferences 结构
 			if (this.tableReferences && this.tableReferences.length > 0) {
@@ -692,21 +727,6 @@ export default {
 		handleDriverSelect(value) {
 			this.form.companyName = value.carNo;
 			this.form.companyId = value.id;
-		},
-		// 根据对方类型返回相应的校验规则
-		getOpponentTypeRules() {
-			if (!this.value || this.value === PAYMENT_TARGET_TYPE.PAYMENT_FEE) {
-				return {};
-			}
-			// 如果选择了对方类型且不是支付费用，则需要校验对方公司
-			const rules = {
-				companyName: [{ required: true, message: '对方公司不能为空', trigger: 'change' }]
-			};
-			// 如果是客户、供应商、司机或员工，则需要校验银行账号信息
-			if (['客户', '供应商', '司机', '员工'].includes(this.value) && !this.bankInputDisabled) {
-				rules.otherBankNo = [{ required: true, message: '对方账号不能为空', trigger: 'change' }];
-			}
-			return rules;
 		},
 		// 正常付款申请
 		submitForm() {
@@ -893,6 +913,7 @@ export default {
 				console.error('加载表单信息失败', error);
 			}
 		},
+		// 提交
 		handleProcess(that) {
 			return new Promise((resolve, reject) => {
 				this.$refs['form'].validate(valid => {

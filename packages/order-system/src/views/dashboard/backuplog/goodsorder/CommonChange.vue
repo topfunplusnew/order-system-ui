@@ -2,10 +2,28 @@
 	<div>
 		<div class="body">
 			<div id="scrollContainer" class="scroll-area">
-				<el-table v-if="allMergedTableData.length > 0" :data="allMergedTableData" :span-method="getAllSpanMethod" :cell-style="getAllMergedCellStyle" border style="width: 100%">
+				<el-table v-if="allMergedTableData.length > 0" :data="allMergedTableData" :span-method="getAllSpanMethod" :cell-style="getAllMergedCellStyle" :row-class-name="getRowClassName" border style="width: 100%" row-key="rowKey" show-summary :summary-method="getSummaryMethod">
 					<el-table-column label="记录" width="180" align="center">
 						<template slot-scope="scope">
 							<span>{{ scope.row.recordLabel }}</span>
+						</template>
+					</el-table-column>
+					<!-- 展开列：用于显示订单明细，放在记录列之后 -->
+					<el-table-column v-if="hasOrderDetailList" type="expand" width="50" align="center">
+						<template slot-scope="scope">
+							<div v-if="shouldShowOrderDetail(scope.row)" class="order-detail-expand-wrapper">
+								<div v-if="getOrderDetailList(scope.row).length > 0" class="order-detail-expand">
+									<el-table :data="getOrderDetailList(scope.row)" border size="mini" style="width: 100%" show-summary :summary-method="getOrderDetailSummaryMethod" :cell-style="getOrderDetailCellStyle">
+										<el-table-column label="状态" width="100" align="center">
+											<template slot-scope="scope">
+												<span>{{ scope.row.status }}</span>
+											</template>
+										</el-table-column>
+										<el-table-column v-for="col in orderDetailColumns" :key="col.prop" :prop="col.prop" :label="col.label" :formatter="col.formatter" align="center" show-overflow-tooltip />
+									</el-table>
+								</div>
+								<div v-else class="no-detail-data">暂无明细数据</div>
+							</div>
 						</template>
 					</el-table-column>
 					<el-table-column label="状态" width="120" align="center">
@@ -143,7 +161,17 @@ export default {
 					return new Date(a.backupTime) - new Date(b.backupTime);
 				})
 				.reverse();
-			return Object.entries(_.groupBy(actualResult, item => item.uuid)).map(entries => _.groupBy(entries[1], item => item.tableName));
+			// 按 id + backupType + tableName 进行分组
+			const groupKey = item => {
+				const id = item.id;
+				const backupType = item.backupType;
+				const tableName = item.tableName;
+				if (!id || !backupType || !tableName) {
+					throw new Error(`分组字段缺失: id=${id}, backupType=${backupType}, tableName=${tableName}`);
+				}
+				return `${id}_${backupType}_${tableName}`;
+			};
+			return Object.entries(_.groupBy(actualResult, groupKey)).map(entries => _.groupBy(entries[1], item => item.tableName));
 		},
 		bodyData() {
 			return this.renderData.map(backlog => {
@@ -210,7 +238,8 @@ export default {
 						...row,
 						recordLabel: rowIdx === 0 ? recordLabel : '',
 						recordIndex: bodyIdx,
-						bodyRef: body
+						bodyRef: body,
+						rowKey: `row-${bodyIdx}-${rowIdx}` // 添加唯一标识用于展开
 					});
 				});
 			});
@@ -234,6 +263,78 @@ export default {
 			});
 
 			return Array.from(columnMap.values());
+		},
+		// 判断是否有订单明细数据需要展开
+		hasOrderDetailList() {
+			return this.moduleName === TableName.GOODS_ORDER && TableConfig[TableName.GOODS_ORDER]?.subTableField;
+		},
+		// 获取订单明细的列配置
+		orderDetailColumns() {
+			if (!this.hasOrderDetailList) return [];
+			const subTableConfig = TableConfig[TableName.ORDER_DETAIL];
+			if (!subTableConfig || !subTableConfig.mappers) return [];
+
+			const mappers = subTableConfig.mappers || {};
+			return Object.keys(mappers).map(key => ({
+				prop: key,
+				label: mappers[key],
+				formatter: (row, column, cellValue) => {
+					// 如果是差额行，使用 getDiffValue 方法格式化
+					if (row.status === '差额') {
+						return this.getDiffValue(row, key);
+					}
+
+					const value = cellValue;
+					if (typeof subTableConfig.options !== 'function') {
+						return value === null || typeof value === 'undefined' ? '-' : String(value);
+					}
+					try {
+						const formattedValue = subTableConfig.options(key, value);
+						return formattedValue === null || typeof formattedValue === 'undefined' ? '-' : formattedValue;
+					} catch (error) {
+						console.error(`格式化字段 ${key} 的值 ${value} 时出错:`, error);
+						return value === null || typeof value === 'undefined' ? '-' : String(value);
+					}
+				}
+			}));
+		},
+		// 获取数字列字段集合（用于合计计算）
+		numericColumns() {
+			if (!this.paginatedData || this.paginatedData.length === 0) return new Set();
+			
+			const numericFields = new Set();
+			this.paginatedData.forEach(body => {
+				// 从配置中获取需要计算的数字字段（params 中的字段）
+				const config = TableConfig[body.moduleName];
+				if (config && config.params) {
+					config.params.forEach(param => {
+						numericFields.add(param.name);
+					});
+				}
+				// 如果有子表配置，也添加子表的数字字段
+				if (body.multiModuleName) {
+					const subConfig = TableConfig[body.multiModuleName];
+					if (subConfig && subConfig.params) {
+						subConfig.params.forEach(param => {
+							numericFields.add(param.name);
+						});
+					}
+				}
+			});
+			return numericFields;
+		},
+		// 获取订单明细的数字列字段集合（用于合计计算）
+		orderDetailNumericColumns() {
+			if (!this.hasOrderDetailList) return new Set();
+			
+			const subTableConfig = TableConfig[TableName.ORDER_DETAIL];
+			if (!subTableConfig || !subTableConfig.params) return new Set();
+			
+			const numericFields = new Set();
+			subTableConfig.params.forEach(param => {
+				numericFields.add(param.name);
+			});
+			return numericFields;
 		}
 	},
 	watch: {
@@ -280,6 +381,81 @@ export default {
 		},
 		handleReject() {
 			return Promise.resolve();
+		},
+		// 判断是否应该显示订单明细（只在差额行显示）
+		shouldShowOrderDetail(row) {
+			return row && row.groupType === 'main' && row.status === '差额';
+		},
+		// 获取订单明细列表（包含修改前、修改后、差额）
+		getOrderDetailList(row) {
+			if (!this.hasOrderDetailList || !row || !row.itemRef || !this.shouldShowOrderDetail(row)) {
+				return [];
+			}
+
+			// 只在差额行展开时显示明细差异
+			if (row.status !== '差额') {
+				return [];
+			}
+
+			const item = row.itemRef;
+			const subTableField = TableConfig[TableName.GOODS_ORDER]?.subTableField || 'orderDetailList';
+			const originalList = item.originalInfo?.[subTableField] || [];
+			const changedList = item.changedInfo?.[subTableField] || [];
+			const columns = this.orderDetailColumns;
+
+			// 显示修改前、修改后和差额
+			const result = [];
+			const maxLength = Math.max(originalList.length, changedList.length);
+
+			for (let i = 0; i < maxLength; i++) {
+				const originalDetail = originalList[i] || {};
+				const changedDetail = changedList[i] || {};
+				const diff = this.calculateDifferences(originalDetail, changedDetail);
+
+				// 显示修改前
+				if (originalDetail && Object.keys(originalDetail).length > 0) {
+					const originalRow = {
+						status: '修改前',
+						...originalDetail,
+						itemRef: { originalInfo: originalDetail, changedInfo: null }
+					};
+					if (!this.isRowEmpty(originalRow, columns)) {
+						result.push(originalRow);
+					}
+				}
+
+				// 显示修改后
+				if (changedDetail && Object.keys(changedDetail).length > 0) {
+					const changedRow = {
+						status: '修改后',
+						...changedDetail,
+						itemRef: { originalInfo: originalDetail, changedInfo: changedDetail }
+					};
+					if (!this.isRowEmpty(changedRow, columns)) {
+						result.push(changedRow);
+					}
+				}
+
+				// 显示差额（如果有差异）
+				if (Object.keys(diff).length > 0) {
+					const diffRow = {
+						status: '差额',
+						...diff,
+						itemRef: { originalInfo: originalDetail, changedInfo: changedDetail }
+					};
+					const hasMeaningfulDiff = columns.some(col => {
+						if (col.prop !== 'status') {
+							return this.isMeaningfulDifference(diffRow[col.prop]);
+						}
+						return false;
+					});
+					if (hasMeaningfulDiff && !this.isRowEmpty(diffRow, columns)) {
+						result.push(diffRow);
+					}
+				}
+			}
+
+			return result;
 		},
 		// --- 判断差异是否有意义 (用于决定是否高亮) ---
 		isMeaningfulDifference(diffValue) {
@@ -807,6 +983,156 @@ export default {
 
 			return null;
 		},
+		// 合计行计算方法
+		getSummaryMethod({ columns, data }) {
+			const sums = [];
+			const numericFields = this.numericColumns;
+			
+			columns.forEach((column, index) => {
+				// 第一列（记录列）显示"合计"
+				if (index === 0) {
+					sums[index] = '合计';
+					return;
+				}
+				
+				// 展开列、状态列不计算合计
+				if (column.type === 'expand' || column.property === 'status') {
+					sums[index] = '';
+					return;
+				}
+
+				const property = column.property;
+				if (!property) {
+					sums[index] = '';
+					return;
+				}
+
+				// 判断是否为数字列
+				const isNumeric = numericFields.has(property);
+				
+				if (!isNumeric) {
+					sums[index] = '';
+					return;
+				}
+
+				// 计算数字列的合计
+				const values = data
+					.map(item => {
+						// 只对"修改后"和"新增"状态的数据进行合计，跳过"修改前"、"删除"、"差额"
+						if (item.status === '修改前' || item.status === '删除' || item.status === '差额') {
+							return null;
+						}
+						const value = item[property];
+						// 转换为数字
+						if (value === null || value === undefined || value === '') {
+							return null;
+						}
+						const numValue = Number(value);
+						return isFinite(numValue) ? numValue : null;
+					})
+					.filter(val => val !== null);
+
+				if (values.length === 0) {
+					sums[index] = '';
+				} else {
+					const sum = values.reduce((prev, curr) => {
+						return prev + curr;
+					}, 0);
+					// 保留2位小数
+					sums[index] = sum.toFixed(2);
+				}
+			});
+
+			// 第一列显示"合计"
+			sums[0] = '合计';
+			return sums;
+		},
+		// 订单明细表格合计行计算方法
+		getOrderDetailSummaryMethod({ columns, data }) {
+			const sums = [];
+			const numericFields = this.orderDetailNumericColumns;
+			
+			columns.forEach((column, index) => {
+				// 第一列显示"合计"
+				if (index === 0) {
+					sums[index] = '合计';
+					return;
+				}
+
+				const property = column.property;
+				if (!property) {
+					sums[index] = '';
+					return;
+				}
+
+				// 判断是否为数字列
+				const isNumeric = numericFields.has(property);
+				
+				if (!isNumeric) {
+					sums[index] = '';
+					return;
+				}
+
+				// 计算数字列的合计
+				const values = data
+					.map(item => {
+						// 只对"修改后"和"新增"状态的数据进行合计，跳过"修改前"、"删除"、"差额"
+						if (item.status === '修改前' || item.status === '删除' || item.status === '差额') {
+							return null;
+						}
+						const value = item[property];
+						// 转换为数字
+						if (value === null || value === undefined || value === '') {
+							return null;
+						}
+						const numValue = Number(value);
+						return isFinite(numValue) ? numValue : null;
+					})
+					.filter(val => val !== null);
+
+				if (values.length === 0) {
+					sums[index] = '';
+				} else {
+					const sum = values.reduce((prev, curr) => {
+						return prev + curr;
+					}, 0);
+					// 保留2位小数
+					sums[index] = sum.toFixed(2);
+				}
+			});
+
+			return sums;
+		},
+		// 订单明细表格单元格样式（用于高亮差异）
+		getOrderDetailCellStyle({ row, column, rowIndex, columnIndex }) {
+			if (!row || !row.itemRef) {
+				return null;
+			}
+
+			// 如果是差额行，不需要高亮
+			if (row.status === '差额') {
+				return null;
+			}
+
+			// 获取差异属性集合
+			const diffProps = this.getAndCacheDiffProps(row.itemRef, false);
+
+			// 检查当前列的属性名是否存在于差异集合中
+			if (column.property && diffProps.has(column.property)) {
+				// 如果是差异列，应用高亮背景色
+				return { backgroundColor: HIGHLIGHT_COLOR };
+			}
+
+			return null;
+		},
+		// 获取行的 class 名称（用于控制展开图标的显示）
+		getRowClassName({ row, rowIndex }) {
+			// 只有差额行才显示展开图标
+			if (row && row.status === '差额' && this.hasOrderDetailList && row.groupType === 'main') {
+				return 'expandable-row';
+			}
+			return 'non-expandable-row';
+		},
 		// 获取所有数据的合并表格数据（用于导出）
 		getAllMergedTableDataForExport() {
 			if (!this.bodyData || this.bodyData.length === 0) {
@@ -983,5 +1309,88 @@ header > span > span {
 	padding: 2px 4px;
 	border-radius: 3px;
 	margin-left: 4px;
+}
+
+// 订单明细展开区域样式
+.order-detail-expand-wrapper {
+	padding: 0;
+	margin: 0;
+}
+
+.order-detail-expand {
+	padding: 10px 20px;
+	background-color: #f5f7fa;
+}
+
+.detail-title {
+	font-size: 14px;
+	font-weight: bold;
+	color: #303133;
+	margin-bottom: 10px;
+	padding: 8px 0;
+	border-bottom: 1px solid #e4e7ed;
+}
+
+.order-detail-expand .el-table {
+	background-color: #fff;
+}
+
+.no-detail-data {
+	padding: 20px;
+	text-align: center;
+	color: #909399;
+	font-size: 14px;
+}
+
+// 调整展开行的显示
+::v-deep .el-table__expanded-cell {
+	padding: 0 !important;
+}
+
+// 展开行中，第一列（记录列）保持正常显示，其他列隐藏
+::v-deep .el-table__body-wrapper .el-table__body tr.el-table__expanded-row {
+	td:first-child {
+		display: table-cell;
+		padding: 8px;
+		text-align: center;
+		border: 1px solid #dfe6ec;
+	}
+	// 展开列（第二列）显示展开内容
+	td:nth-child(2) {
+		display: table-cell;
+		padding: 0;
+	}
+	// 其他列隐藏
+	td:not(:first-child):not(:nth-child(2)) {
+		display: none;
+	}
+}
+
+// 隐藏非差额行的展开图标
+::v-deep .non-expandable-row {
+	.el-table__expand-column .el-table__expand-icon {
+		display: none !important;
+	}
+}
+
+// 显示差额行的展开图标并居中
+::v-deep .expandable-row {
+	.el-table__expand-column {
+		text-align: center;
+		.el-table__expand-icon {
+			display: inline-block;
+		}
+	}
+}
+
+// 确保展开列内容居中
+::v-deep .el-table__expand-column {
+	text-align: center;
+	.cell {
+		text-align: center;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
 }
 </style>

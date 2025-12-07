@@ -75,7 +75,17 @@ export default {
 					}
 				}
 			}
-			return Object.entries(_.groupBy(_data, item => item.uuid)).map(entries => {
+			// 按 id + backupType + tableName 进行分组
+			const groupKey = item => {
+				const id = item.id;
+				const backupType = item.backupType;
+				const tableName = item.tableName;
+				if (!id || !backupType || !tableName) {
+					throw new Error(`分组字段缺失: id=${id}, backupType=${backupType}, tableName=${tableName}`);
+				}
+				return `${id}_${backupType}_${tableName}`;
+			};
+			return Object.entries(_.groupBy(_data, groupKey)).map(entries => {
 				return _.groupBy(entries[1], item => item.tableName);
 			});
 		}

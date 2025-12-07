@@ -1,15 +1,113 @@
-<!-- 
-  这是一个占位文件，组件需要从 order-system/src/components/Pagination 复制
-  为了保持结构完整性，这里先创建占位文件
--->
 <template>
-	<div class="pagination-container">
-		<!-- 组件内容将从原位置复制 -->
+	<div :class="{ hidden: hidden }" class="pagination-container">
+		<el-pagination :background="background" :current-page.sync="currentPage" :page-size.sync="pageSize" :layout="layout" :page-sizes="pageSizes" :pager-count="pagerCount" :total="total" v-bind="$attrs" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
 	</div>
 </template>
 
 <script>
+import { scrollTo } from '@order-system/shared/utils/scroll-to';
+
 export default {
-	name: 'Pagination'
+	name: 'Pagination',
+	props: {
+		total: {
+			required: true,
+			type: Number
+		},
+		page: {
+			type: Number,
+			default: 1
+		},
+		limit: {
+			type: Number,
+			default: 20
+		},
+		pageSizes: {
+			type: Array,
+			default() {
+				return [20, 50, 100, 500, 1000, 10000];
+			}
+		},
+		// 移动端页码按钮的数量端默认值5
+		pagerCount: {
+			type: Number,
+			default: document.body.clientWidth < 992 ? 5 : 7
+		},
+		layout: {
+			type: String,
+			default: 'total, sizes, prev, pager, next, jumper'
+		},
+		background: {
+			type: Boolean,
+			default: true
+		},
+		autoScroll: {
+			type: Boolean,
+			default: true
+		},
+		hidden: {
+			type: Boolean,
+			default: false
+		}
+	},
+	data() {
+		return {};
+	},
+	computed: {
+		currentPage: {
+			get() {
+				return this.page;
+			},
+			set(val) {
+				this.$emit('update:page', val);
+			}
+		},
+		pageSize: {
+			get() {
+				return this.limit;
+			},
+			set(val) {
+				this.$emit('update:limit', val);
+			}
+		}
+	},
+	methods: {
+		handleSizeChange(val) {
+			if (this.currentPage * val > this.total) {
+				this.currentPage = 1;
+			}
+			this.$emit('pagination', { page: this.currentPage, limit: val });
+			if (this.autoScroll) {
+				scrollTo(0, 800);
+			}
+		},
+		handleCurrentChange(val) {
+			this.$emit('pagination', { page: val, limit: this.pageSize });
+			if (this.autoScroll) {
+				scrollTo(0, 800);
+			}
+		}
+	}
 };
 </script>
+
+<style scoped>
+.pagination-container {
+	width: 100%;
+	display: block;
+	background: #fff;
+	padding: 10px 0;
+	text-align: left;
+}
+
+.pagination-container.hidden {
+	display: none;
+}
+
+/* 确保分页组件内容在一行展示 */
+.pagination-container >>> .el-pagination {
+	display: inline-block;
+	vertical-align: middle;
+	white-space: nowrap;
+}
+</style>

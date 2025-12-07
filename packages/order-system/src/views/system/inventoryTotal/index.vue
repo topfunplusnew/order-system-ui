@@ -289,7 +289,7 @@
 import { listInventoryMain } from '@/api/system/inventoryMain';
 import { inventorySummary } from '../../../api/system/statement';
 import { listInventoryDetails } from '../../../api/system/inventoryMain';
-import Pagination from '@/components/Pagination';
+import { Pagination } from '@order-system/ui-components';
 import { multiply, divide, round } from 'mathjs';
 
 export default {

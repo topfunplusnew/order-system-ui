@@ -49,10 +49,10 @@ export default {
 	},
 	computed: {
 		columnHeaderFix() {
-			return `日期:` + (this.changeForm.endTime ? this.changeForm.endTime : '未选择日期') + `(${this.targetRightDate === null ? '' : this.targetRightDate}固定截取)`;
+			return this.targetRightDate || '未选择日期';
 		},
 		columnHeaderChange() {
-			return `日期:` + (this.changeForm.endTime ? this.changeForm.endTime : '未选择日期') + `(${this.targetLeftDate === null ? '' : this.targetLeftDate}当日截取)`;
+			return this.targetLeftDate || '未选择日期';
 		},
 		// 差异汇总统计（使用 math.js 进行高精度计算）
 		diffSummary() {
@@ -169,8 +169,9 @@ export default {
 				if (!leftData[i] || !rightData[i]) continue;
 
 				// 使用 math.js 进行高精度计算
-				const leftValue = Number(leftData[i].anotherValue || 0);
-				const rightValue = Number(rightData[i].anotherValue || 0);
+				// 使用本日资金总额（anotherLabel）而不是资金变动金额（anotherValue）
+				const leftValue = Number(leftData[i].anotherLabel || 0);
+				const rightValue = Number(rightData[i].anotherLabel || 0);
 				const diffValue = subtract(leftValue, rightValue);
 				const absDiffValue = abs(diffValue);
 
@@ -402,7 +403,7 @@ export default {
 				},
 				series: [
 					{
-						name: '当日截取',
+						name: this.targetLeftDate || '当日截取',
 						type: 'bar',
 						data: this.chartData.leftValues,
 						itemStyle: {
@@ -417,7 +418,7 @@ export default {
 						}
 					},
 					{
-						name: '固定截取',
+						name: this.targetRightDate || '固定截取',
 						type: 'bar',
 						data: this.chartData.rightValues,
 						itemStyle: {
@@ -674,14 +675,14 @@ export default {
 									</div>
 									<div class="diff-item-body">
 										<div class="diff-value-item">
-											<span class="diff-value-label">当日截取:</span>
+											<span class="diff-value-label">{{ targetLeftDate || '当日截取' }}:</span>
 											<span class="diff-value left-value">{{ item.leftValue }}</span>
 										</div>
 										<div class="diff-arrow">
 											<i class="el-icon-right"></i>
 										</div>
 										<div class="diff-value-item">
-											<span class="diff-value-label">固定截取:</span>
+											<span class="diff-value-label">{{ targetRightDate || '固定截取' }}:</span>
 											<span class="diff-value right-value">{{ item.rightValue }}</span>
 										</div>
 									</div>

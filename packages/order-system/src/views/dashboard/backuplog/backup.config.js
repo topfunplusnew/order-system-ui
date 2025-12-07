@@ -43,6 +43,9 @@ export const TableConfig = {
 			{ name: 'allFreightPrice', label: '平均运费单价(元)' }
 		],
 		extraParams: [],
+		// 子表配置：用于资金变动数据中展开显示订单明细
+		subTableField: 'orderDetailList',
+		subTableConfig: TableName.ORDER_DETAIL, // 子表使用订单明细的配置
 		options(key, value) {
 			switch (key) {
 				case 'isAdjusted': {
@@ -76,6 +79,8 @@ export const TableConfig = {
 	// 订单货物
 	[TableName.ORDER_DETAIL]: {
 		mappers: {
+			customer: '客户名称',
+			carNumber: '车牌号',
 			supplier: '供应商',
 			levelName: '产品级别',
 			countingUnit: '计量单位',
@@ -107,9 +112,6 @@ export const TableConfig = {
 			factoryCommission: '厂家佣金',
 			factoryRebateAmount: '计提厂家返利金额',
 			factoryDiscountAmount: '计提厂家降价金额',
-			comments: '备注',
-			customer: '客户名称',
-			carNumber: '车牌号',
 			driverPhone: '司机电话',
 			seaFreightNumber: '海运单号',
 			seaFreightCompanyPhone: '海运公司电话',
@@ -127,7 +129,8 @@ export const TableConfig = {
 			isAdjust: '调整状态',
 			adjustDate: '调整日期',
 			isAudit: '是否审核',
-			exWarehouseDate: '出库日期'
+			exWarehouseDate: '出库日期',
+			comments: '备注'
 		},
 		params: [
 			{ name: 'packs', label: '包数' },

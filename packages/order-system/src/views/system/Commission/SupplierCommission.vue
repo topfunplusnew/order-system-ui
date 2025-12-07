@@ -158,7 +158,7 @@
 						<el-button type="text" size="mini" @click="handleViewOrder(scope.row)">查看订单</el-button>
 						<el-button type="text" size="mini" @click="handleEdit(scope.row)">{{ scope.row.id ? '修改佣金信息' : '填写佣金信息' }}</el-button>
 						<el-button :disabled="scope.row.id === null" type="text" size="mini" @click="handleDelete(scope.row)">删除</el-button>
-						<el-button :disabled="scope.row.id === null" type="text" size="mini" @click="handleApplyPayment(scope.row)">申请付款</el-button>
+						<el-button :disabled="scope.row.id === null || scope.row.paymentApply != null" type="text" size="mini" @click="handleApplyPayment(scope.row)">申请付款</el-button>
 					</div>
 				</template>
 			</el-table-column>
@@ -988,11 +988,14 @@ export default {
 							// 转换extraInfo为tableReferences
 							tableReferences:
 								firstApplication.extraInfo && firstApplication.extraInfo.sourceInfos
-									? firstApplication.extraInfo.sourceInfos.map(source => ({
-											refTableName: source.tableName,
-											refTableId: source.tableId,
-											amount: moneyAmount
-									  }))
+									? firstApplication.extraInfo.sourceInfos.map(source => {
+											const selectedItem = this.selections.find(item => item.id === source.tableId);
+											return {
+												refTableName: source.tableName,
+												refTableId: source.tableId,
+												amount: number(selectedItem?.verifiedCommission || 0)
+											};
+									  })
 									: []
 						};
 

@@ -1,7 +1,7 @@
 <!--excel导入组件 对外展示为一个按钮-->
 
 <script>
-import SheetList from '@/views/dashboard/components/common/SheetList.vue';
+import BatchInvoicePanel from '@/views/dashboard/components/common/BatchInvoicePanel.vue';
 import { importBatchInvoiceInData, importBatchInvoiceOutData } from '@/api/system/batchInvoice';
 
 const API_CONFIG = {
@@ -16,8 +16,8 @@ const API_CONFIG = {
 };
 
 export default {
-	name: 'ExcelImport',
-	components: { SheetList },
+	name: 'InvoiceOptionPanel',
+	components: { BatchInvoicePanel },
 	props: {
 		mode: {
 			type: String,
@@ -49,7 +49,7 @@ export default {
 			this.$bus.$emit('excel:resume');
 			this.dialogVisible = true;
 		},
-		// 点击后上传
+		// 点击上传按钮
 		handleUpload() {
 			this.clearState();
 			if (this.$refs.fileInput) {
@@ -57,19 +57,23 @@ export default {
 				this.$refs.fileInput.click();
 			}
 		},
+		// 打开管理记录弹窗
 		handleManage() {
 			this.initialVoucher = '';
 			this.dialogVisible = true;
 		},
+		// 获取API配置
 		getApiConfig() {
 			return API_CONFIG[this.mode] || API_CONFIG.in;
 		},
+		// 判断是否为Excel文件
 		isExcelFile(file) {
 			if (!file || !file.name) return false;
 			const parts = file.name.split('.');
 			const ext = parts.length > 1 ? parts[parts.length - 1].toLowerCase() : '';
 			return ['xls', 'xlsx'].includes(ext);
 		},
+		// 文件选择变化处理
 		async onChange(e) {
 			const files = (e && e.target && e.target.files) || [];
 			if (!files.length) {
@@ -81,6 +85,14 @@ export default {
 				this.$message.warning('文件格式不正确, 请上传xls/xlsx格式文件!');
 				return;
 			}
+			await this.uploadFile(file);
+			// 清空文件输入框
+			if (e && e.target) {
+				e.target.value = '';
+			}
+		},
+		// 上传文件
+		async uploadFile(file) {
 			const formData = new FormData();
 			formData.append('file', file);
 			const { importData } = this.getApiConfig();
@@ -96,9 +108,6 @@ export default {
 				this.$message.error(msg);
 			} finally {
 				this.uploadLoading = false;
-				if (e && e.target) {
-					e.target.value = '';
-				}
 			}
 		},
 		// 下载模板
@@ -137,28 +146,25 @@ export default {
 				</el-steps>
 			</div>
 
-			<!-- 右侧操作按钮 -->
+			<!-- 右侧操作按钮 - 水平布局 -->
 			<div class="right-section">
-				<div class="action-buttons">
-					<el-button class="compact-btn download-btn" type="primary" icon="el-icon-download" size="small" @click="downloadTemplate">下载模板</el-button>
-				<el-button class="compact-btn upload-btn" type="success" icon="el-icon-upload" size="small" :loading="uploadLoading" @click="handleUpload">导入Excel</el-button>
-				<el-button class="compact-btn manage-btn" type="info" icon="el-icon-document" size="small" @click="handleManage">管理导入记录</el-button>
+				<el-button class="action-btn download-btn" type="primary" icon="el-icon-download" size="small" @click="downloadTemplate">下载模板</el-button>
+				<el-button class="action-btn upload-btn" type="success" icon="el-icon-upload2" size="small" :loading="uploadLoading" @click="handleUpload">导入Excel</el-button>
+				<el-button class="action-btn manage-btn" type="warning" icon="el-icon-folder-opened" size="small" @click="handleManage">管理记录</el-button>
 				<input ref="fileInput" type="file" class="file-input-hidden" @change="onChange" />
-				</div>
 			</div>
 		</div>
 
 		<!-- 批量开票弹窗 -->
 		<div>
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="`批量${modeLabel}开票导入记录`" :visible.sync="dialogVisible" width="80%" class="sheet-select-dialog">
+			<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="`批量${modeLabel}开票导入记录`" :visible.sync="dialogVisible" width="80%" class="sheet-select-dialog batch-import-dialog">
 				<div class="dialog-content">
-				<div class="dialog-tip">
-					<i class="el-icon-info"></i>
-					<span>批量导入记录已经改为后端分页存储，可在下方列表中查询、删除或发起开票。</span>
+					<div class="dialog-tip">
+						<i class="el-icon-info"></i>
+						<span>批量导入记录已改为后端分页存储，可在下方列表中查询、删除或发起开票。</span>
 					</div>
-					<el-card class="sheet-card">
-					<SheetList :mode="mode" :initial-voucher="initialVoucher" />
-					</el-card>
+					<!-- 直接放置 BatchInvoicePanel，不再套 el-card -->
+					<BatchInvoicePanel :mode="mode" :initial-voucher="initialVoucher" />
 				</div>
 				<span slot="footer" class="dialog-footer">
 					<el-button @click="dialogVisible = false">关 闭</el-button>
@@ -177,19 +183,19 @@ export default {
 	/* 确保占用一整行 */
 }
 
-/* 主容器样式 - 固定高度120px */
+/* 主容器样式 */
 .excel-import-container {
-	height: 120px;
-	background: linear-gradient(135deg, #f8fbff 0%, #f0f7ff 100%);
-	border: 1px solid #e1ecf4;
-	border-radius: 8px;
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+	height: 72px;
+	background: linear-gradient(135deg, #fff 0%, #f8fbff 100%);
+	border: 1px solid #d9ecff;
+	border-radius: 10px;
+	box-shadow: 0 2px 12px rgba(67, 158, 253, 0.08);
 	transition: all 0.3s ease;
 	position: relative;
 	overflow: hidden;
 	display: flex;
 	align-items: center;
-	padding: 0 20px;
+	padding: 0 24px;
 
 	&::before {
 		content: '';
@@ -197,52 +203,38 @@ export default {
 		top: 0;
 		left: 0;
 		right: 0;
-		height: 2px;
-		background: linear-gradient(90deg, #409eff 0%, #67c23a 50%, #e6a23c 100%);
+		height: 3px;
+		background: linear-gradient(90deg, #439efd 0%, #67c8ff 50%, #5dade2 100%);
 	}
 
 	&:hover {
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-		border-color: #c6e2ff;
+		box-shadow: 0 4px 16px rgba(67, 158, 253, 0.15);
+		border-color: #b3d8ff;
 	}
 }
 
-/* 左侧区域 - 标题和描述 */
+/* 左侧区域 - 标题 */
 .left-section {
-	flex: 0 0 180px;
-	/* 从200px减少到180px */
+	flex: 0 0 160px;
 
 	.header-content {
 		display: flex;
 		align-items: center;
-		gap: 12px;
+		gap: 10px;
 
 		.header-icon {
-			font-size: 28px;
-			color: #409eff;
-			animation: pulse 2s infinite;
+			font-size: 24px;
+			color: #439efd;
 			flex-shrink: 0;
 		}
 
 		.header-text {
 			.header-title {
 				margin: 0;
-				font-size: 16px;
+				font-size: 15px;
 				font-weight: 600;
-				color: #2c3e50;
-				line-height: 1.2;
-				background: linear-gradient(45deg, #409eff, #67c23a);
-				-webkit-background-clip: text;
-				-webkit-text-fill-color: transparent;
-				background-clip: text;
-			}
-
-			.header-description {
-				color: #606266;
-				font-size: 12px;
-				line-height: 1.3;
-				margin-top: 2px;
-				display: block;
+				color: #303133;
+				line-height: 1.4;
 			}
 		}
 	}
@@ -251,46 +243,40 @@ export default {
 /* 中间区域 - 步骤展示 */
 .middle-section {
 	flex: 1;
-	padding: 0 30px;
+	padding: 0 24px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	min-width: 0;
-	/* 确保flex能够正确收缩 */
 }
 
 .compact-steps {
 	width: 100%;
 	max-width: none;
-	/* 移除最大宽度限制，让步骤条占满可用空间 */
 
 	::v-deep .el-steps--simple {
 		display: flex;
 		justify-content: space-between;
-		/* 让步骤均匀分布 */
 	}
 
 	::v-deep .el-step {
 		flex: 1;
-		/* 让每个步骤占用相等空间 */
 		display: flex;
 		justify-content: center;
 	}
 
 	::v-deep .el-step__head {
-		width: 24px;
-		/* 稍微增大图标尺寸 */
-		height: 24px;
+		width: 22px;
+		height: 22px;
 
 		.el-step__icon {
-			width: 24px;
-			height: 24px;
-			font-size: 13px;
-			/* 相应增大字体 */
+			width: 22px;
+			height: 22px;
+			font-size: 12px;
 
 			&.is-process {
-				background: #409eff;
-				border-color: #409eff;
+				background: #439efd;
+				border-color: #439efd;
 			}
 
 			&.is-finish {
@@ -301,30 +287,25 @@ export default {
 	}
 
 	::v-deep .el-step__main {
-		margin-left: 8px;
-		/* 增加间距 */
+		margin-left: 6px;
 
 		.el-step__title {
-			font-size: 13px;
-			/* 稍微增大字体 */
+			font-size: 12px;
 			font-weight: 500;
-			color: #303133;
+			color: #606266;
 			line-height: 1.2;
-			margin-top: 2px;
 			white-space: nowrap;
-			/* 防止文字换行 */
 		}
 	}
 
 	::v-deep .el-step__line {
 		background: #e4e7ed;
 		height: 1px;
-		top: 12px;
-		/* 调整线条位置 */
+		top: 11px;
 	}
 
 	::v-deep .el-step.is-process .el-step__line {
-		background: #409eff;
+		background: #439efd;
 	}
 
 	::v-deep .el-step.is-finish .el-step__line {
@@ -332,87 +313,63 @@ export default {
 	}
 }
 
-/* 右侧区域 - 操作按钮 */
+/* 右侧区域 - 水平按钮布局 */
 .right-section {
-	flex: 0 0 160px;
-	/* 从180px减少到160px */
+	flex: 0 0 auto;
 	display: flex;
-	flex-direction: column;
 	align-items: center;
-	gap: 8px;
+	gap: 10px;
 }
 
-.action-buttons {
-	display: flex;
-	gap: 8px;
-	flex-wrap: wrap;
-	justify-content: center;
-}
-
-.compact-btn {
-	min-width: 80px;
-	height: 32px;
-	font-size: 12px;
+/* 操作按钮样式 */
+.action-btn {
+	height: 34px;
+	padding: 0 14px;
+	font-size: 13px;
 	font-weight: 500;
-	border-radius: 4px;
-	transition: all 0.3s ease;
-	position: relative;
-	overflow: hidden;
-
-	&::before {
-		content: '';
-		position: absolute;
-		top: 0;
-		left: -100%;
-		width: 100%;
-		height: 100%;
-		background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-		transition: left 0.4s ease;
-	}
-
-	&:hover::before {
-		left: 100%;
-	}
+	border-radius: 6px;
+	transition: all 0.25s ease;
+	border: none;
+	white-space: nowrap;
 
 	&:not(:disabled):hover {
-		transform: translateY(-1px);
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+		transform: translateY(-2px);
 	}
 
 	&.download-btn {
-		background: linear-gradient(135deg, #409eff 0%, #36a3f7 100%);
-		border: none;
+		background: linear-gradient(135deg, #439efd 0%, #5dade2 100%);
+		box-shadow: 0 3px 8px rgba(67, 158, 253, 0.3);
 
 		&:hover {
-			background: linear-gradient(135deg, #36a3f7 0%, #2a91e0 100%);
+			background: linear-gradient(135deg, #5dade2 0%, #3498db 100%);
+			box-shadow: 0 5px 14px rgba(67, 158, 253, 0.4);
 		}
 	}
 
 	&.upload-btn {
-		background: linear-gradient(135deg, #67c23a 0%, #5cb030 100%);
-		border: none;
+		background: linear-gradient(135deg, #67c23a 0%, #5cb85c 100%);
+		box-shadow: 0 3px 8px rgba(103, 194, 58, 0.3);
 
 		&:hover:not(:disabled) {
-			background: linear-gradient(135deg, #5cb030 0%, #529b2e 100%);
+			background: linear-gradient(135deg, #5cb85c 0%, #4cae4c 100%);
+			box-shadow: 0 5px 14px rgba(103, 194, 58, 0.4);
 		}
 
 		&:disabled {
 			background: #c0c4cc;
+			box-shadow: none;
 			cursor: not-allowed;
 			transform: none;
-
-			&::before {
-				display: none;
-			}
 		}
 	}
 
 	&.manage-btn {
-		background: linear-gradient(135deg, #909399 0%, #606266 100%);
-		border: none;
+		background: linear-gradient(135deg, #e6a23c 0%, #f5a623 100%);
+		box-shadow: 0 3px 8px rgba(230, 162, 60, 0.3);
 
 		&:hover {
-			background: linear-gradient(135deg, #7f8287 0%, #505257 100%);
+			background: linear-gradient(135deg, #f5a623 0%, #e09520 100%);
+			box-shadow: 0 5px 14px rgba(230, 162, 60, 0.4);
 		}
 	}
 }
@@ -441,32 +398,43 @@ export default {
 	}
 }
 
-/* 弹窗样式保持不变 */
-.sheet-select-dialog {
+/* 批量导入弹窗样式优化 */
+.batch-import-dialog {
 	::v-deep .el-dialog {
 		border-radius: 8px;
 		overflow: hidden;
+		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
 	}
 
 	::v-deep .el-dialog__header {
-		background: linear-gradient(135deg, #f8fbff 0%, #f0f7ff 100%);
-		border-bottom: 1px solid #e1ecf4;
-		padding: 16px 20px;
+		background: linear-gradient(135deg, #439efd 0%, #5dade2 100%);
+		padding: 16px 24px;
+		border-bottom: none;
 	}
 
 	::v-deep .el-dialog__title {
 		font-weight: 600;
-		color: #2c3e50;
-		font-size: 14px;
+		color: #fff;
+		font-size: 16px;
+	}
+
+	::v-deep .el-dialog__headerbtn .el-dialog__close {
+		color: #fff;
+
+		&:hover {
+			color: #f0f0f0;
+		}
 	}
 
 	::v-deep .el-dialog__body {
-		padding: 20px;
+		padding: 20px 24px;
+		background: #fafbfc;
 	}
 
 	::v-deep .el-dialog__footer {
-		border-top: 1px solid #e4e7ed;
-		padding: 12px 20px;
+		border-top: 1px solid #ebeef5;
+		padding: 14px 24px;
+		background: #fff;
 		text-align: center;
 	}
 }
@@ -475,38 +443,20 @@ export default {
 	.dialog-tip {
 		display: flex;
 		align-items: center;
-		gap: 6px;
-		padding: 8px 12px;
-		border-radius: 4px;
-		margin-bottom: 12px;
-		font-size: 12px;
-		transition: all 0.3s ease;
-
-		&:not(.large-file-tip) {
-			background: rgba(64, 158, 255, 0.1);
-			border: 1px solid #c6e2ff;
-			color: #409eff;
-		}
-
-		&.large-file-tip {
-			background: rgba(230, 162, 60, 0.1);
-			border: 1px solid #f0c78a;
-			color: #e6a23c;
-		}
+		gap: 8px;
+		padding: 10px 14px;
+		border-radius: 6px;
+		margin-bottom: 16px;
+		font-size: 13px;
+		background: linear-gradient(135deg, #e8f4fd 0%, #d6eaff 100%);
+		border: none;
+		color: #0066cc;
+		box-shadow: 0 1px 3px rgba(0, 102, 204, 0.1);
 
 		i {
-			font-size: 14px;
-			flex-shrink: 0;
+			font-size: 16px;
+			color: #409eff;
 		}
-	}
-}
-
-.sheet-card {
-	border-radius: 6px;
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-
-	::v-deep .el-card__body {
-		padding: 12px;
 	}
 }
 
@@ -644,3 +594,4 @@ export default {
 	}
 }
 </style>
+

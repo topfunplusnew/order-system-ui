@@ -98,11 +98,7 @@
 								query-label="加油卡卡号"
 								:query-name="oilCardNoQuery"
 								@update:queryName="value => (oilCardNoQuery = value)"
-								@commitBack="
-									value => {
-										form.oilCardNo = value.oilCardNo;
-									}
-								"
+								@commitBack="handleOilCardSelect"
 							>
 								<template #table-columns>
 									<el-table-column label="加油卡卡号" align="center" prop="oilCardNo" />
@@ -114,73 +110,69 @@
 						</el-col>
 					</el-row>
 				</el-form-item>
-				<el-form-item label="使用加油卡时间" prop="useDate">
-					<el-date-picker v-model="form.useDate" type="datetime" placeholder="选择使用加油卡时间" value-format="yyyy-MM-dd HH:mm:ss" />
-				</el-form-item>
-				<el-form-item label="使用加油卡车辆车牌号" prop="carNo">
+				<el-form-item label="车辆派出记录" prop="carApplyId">
 					<el-row>
 						<el-col :span="20">
-							<el-input v-model="form.carNo" placeholder="请输入使用加油卡车辆车牌号" />
+							<el-input v-model="form.carApplyDisplay" disabled placeholder="请选择车辆派出记录" />
 						</el-col>
 						<el-col :span="4">
 							<SearchOption
-								:limit-info="{}"
-								:get-data="listVehicles"
-								query-info="licensePlate"
-								query-label="车牌号"
-								:query-name="carNo"
-								@update:queryName="value => (carNo = value)"
-								@commitBack="
-									value => {
-										form.carNo = value.licensePlate;
-									}
-								"
+								:limit-info="{ auditState: '审核通过' }"
+								:get-data="listCarApply"
+								query-info="carNo"
+								query-label="车牌"
+								:query-name="queryCarApply"
+								@update:queryName="value => (queryCarApply = value)"
+								@commitBack="handleCommitBackCarApply"
 							>
 								<template #table-columns>
-									<el-table-column label="车辆型号" align="center" prop="model" show-overflow-tooltip />
-									<el-table-column label="车牌号" align="center" prop="licensePlate" show-overflow-tooltip />
-									<el-table-column label="购买时间" align="center" prop="purchaseDate" width="180" show-overflow-tooltip>
-										<template slot-scope="scope">
-											<span>{{ parseTime(scope.row.purchaseDate, '{y}-{m}-{d}') }}</span>
-										</template>
-									</el-table-column>
-									<el-table-column label="行驶里程" align="center" prop="mileage" show-overflow-tooltip />
-									<el-table-column label="保养金额" align="center" prop="maintenanceCost" show-overflow-tooltip />
-									<el-table-column label="保养日期" align="center" prop="maintenanceDate" width="180" show-overflow-tooltip>
-										<template slot-scope="scope">
-											<span>{{ parseTime(scope.row.maintenanceDate, '{y}-{m}-{d}') }}</span>
-										</template>
-									</el-table-column>
-									<el-table-column label="保险金额" align="center" show-overflow-tooltip></el-table-column>
+									<el-table-column label="申请人" prop="applyUser" />
+									<el-table-column label="部门" prop="department" />
+									<el-table-column label="车牌" prop="carNo" />
+									<el-table-column label="用车时间" prop="startTime" />
+									<el-table-column label="审核状态" prop="auditState" />
 								</template>
 							</SearchOption>
 						</el-col>
 					</el-row>
 				</el-form-item>
-				<el-form-item
-					label=" 期初余额
-                  "
-					prop="startCardSurplus"
-				>
-					<el-input v-model="form.startCardSurplus" placeholder="请输入期初余额" />
+				<el-form-item label="使用加油卡时间" prop="useDate">
+					<el-date-picker v-model="form.useDate" type="datetime" placeholder="选择使用加油卡时间" value-format="yyyy-MM-dd HH:mm:ss" />
+				</el-form-item>
+				<el-form-item label="使用加油卡车辆车牌号" prop="carNo">
+					<el-input v-model="form.carNo" disabled placeholder="选择车辆派出记录后自动填充" />
+				</el-form-item>
+				<el-form-item label="地点和事由" prop="locationReason">
+					<el-input v-model="form.locationReason" placeholder="请输入地点和事由" />
+				</el-form-item>
+				<el-form-item label="期初余额" prop="startCardSurplus">
+					<el-input v-model="form.startCardSurplus" placeholder="选择油卡时自动计算，允许手动修改" />
+				</el-form-item>
+				<el-form-item label="用加油卡加油次数" prop="refuelingCount">
+					<el-input type="number" v-model="form.refuelingCount" placeholder="请输入用加油卡加油次数" />
 				</el-form-item>
 				<el-form-item label="加油量" prop="refuelingNumber">
-					<el-input v-model="form.refuelingNumber" placeholder="请输入加油量" />
+					<el-input v-model="form.refuelingNumber" placeholder="请输入加油量" @blur="calculateRefuelingMoney" />
 				</el-form-item>
 				<el-form-item label="单价" prop="unitPrice">
-					<el-input v-model="form.unitPrice" placeholder="请输入单价" />
+					<el-input v-model="form.unitPrice" placeholder="请输入单价" @blur="calculateRefuelingMoney" />
 				</el-form-item>
 				<el-form-item label="加油金额(元）" prop="refuelingMoney">
-					<el-input v-model="form.refuelingMoney" placeholder="请输入加油金额(元）" />
+					<el-input v-model="form.refuelingMoney" placeholder="填完加油量和单价后自动计算，允许修改" @blur="calculateEndCardSurplus" />
 				</el-form-item>
 				<el-form-item label="充值金额(元）" prop="rechargeMoney">
 					<el-input v-model="form.rechargeMoney" placeholder="请输入充值金额(元）" />
 				</el-form-item>
 				<el-form-item label="加油卡余额" prop="endCardSurplus">
-					<el-input v-model="form.endCardSurplus" placeholder="请输入加油卡余额" />
+					<el-input v-model="form.endCardSurplus" placeholder="填完加油金额和期初余额后自动计算，允许修改" />
+				</el-form-item>
+				<el-form-item label="加油小票是否交回" prop="receiptReturned">
+					<el-radio v-model="form.receiptReturned" label="是">是</el-radio>
+					<el-radio v-model="form.receiptReturned" label="否">否</el-radio>
 				</el-form-item>
 				<el-form-item label="加油小票附件" prop="attachmentOiladd">
 					<UploadFilesButton ref="attachmentUpload" flag="attachmentOiladd" :extra-info="{ moduleType: 'oilCardConsume', formId: form.id }" :initial-attachments="form.attachmentList || []" @files-updated="handleAttachmentFilesUpdated" />
+					<span style="color: red;">* 必填</span>
 				</el-form-item>
 				<el-form-item label="备注" prop="comments">
 					<el-input v-model="form.comments" placeholder="请输入备注" />
@@ -201,7 +193,9 @@ import CheckFiles from '@/components/CheckFiles.vue';
 import { mixin_checkfile } from '@/views/dashboard/mixins/checkfiles/mixin_checkfile';
 import UploadFilesButton from '@/components/UploadFilesButton/index.vue';
 import SearchOption from '@/components/SearchOption.vue';
-import { listOilCard } from '@/api/system/oilCard';
+import { listOilCard, getOilCard } from '@/api/system/oilCard';
+import { listCarApply } from '@/api/system/carApply';
+import { multiply, subtract } from 'mathjs';
 import { parseTime } from '../../../utils/ruoyi';
 import { listVehicles } from '../../../api/system/vehicles';
 
@@ -258,15 +252,19 @@ export default {
 			},
 			form: {},
 			rules: {
+				carApplyId: [{ required: true, message: '请选择车辆派出记录', trigger: 'change' }],
 				oilCardNo: [{ required: true, message: '加油卡卡号不能为空', trigger: 'blur' }],
-				useDate: [{ required: true, message: '使用时间不能为空', trigger: 'blur' }],
+				useDate: [{ required: true, message: '使用时间不能为空', trigger: 'change' }],
 				carNo: [{ required: true, message: '车牌号不能为空', trigger: 'blur' }],
+				locationReason: [{ required: false }],
 				startCardSurplus: [{ required: true, trigger: 'blur', validator: validateNumber }],
+				refuelingCount: [{ required: true, message: '用加油卡加油次数不能为空', trigger: 'blur' }],
 				refuelingNumber: [{ required: true, trigger: 'blur', validator: validateNumber }],
 				unitPrice: [{ required: true, trigger: 'blur', validator: validateNumber }],
 				refuelingMoney: [{ required: true, trigger: 'blur', validator: validateNumber }],
-				rechargeMoney: [{ required: true, trigger: 'blur', validator: validateNumber }],
-				endCardSurplus: [{ required: true, trigger: 'blur', validator: validateNumber }]
+				rechargeMoney: [{ required: false }],
+				endCardSurplus: [{ required: true, trigger: 'blur', validator: validateNumber }],
+				receiptReturned: [{ required: true, message: '请选择加油小票是否交回', trigger: 'change' }]
 			},
 			columns: [
 				{ key: 0, label: `id`, visible: true },
@@ -283,7 +281,9 @@ export default {
 				{ key: 11, label: `备注`, visible: true }
 			],
 			oilCardNoQuery: null,
-			carNo: null
+			carNo: null,
+			queryCarApply: '',
+			carApplyDisplay: ''
 		};
 	},
 	// 展示与隐藏
@@ -310,6 +310,7 @@ export default {
 		updateOilCardConsume,
 		getOilCardConsume,
 		listVehicles,
+		listCarApply,
 		// 附件更新处理
 		handleAttachmentFilesUpdated(uploadParams) {
 			if (uploadParams && uploadParams.params && uploadParams.params.attachmentIds) {
@@ -343,16 +344,20 @@ export default {
 		reset() {
 			this.form = {
 				id: null,
+				carApplyId: null,
 				bTripId: null,
 				oilCardNo: null,
 				useDate: parseTime(new Date()),
 				carNo: null,
+				locationReason: null,
 				startCardSurplus: null,
+				refuelingCount: 1,
 				refuelingNumber: null,
 				unitPrice: null,
 				refuelingMoney: null,
-				rechargeMoney: null,
+				rechargeMoney: '0',
 				endCardSurplus: null,
+				receiptReturned: '是',
 				comments: null,
 				addtime: null,
 				userId: null,
@@ -363,10 +368,49 @@ export default {
 					attachmentIds: []
 				}
 			};
+			this.carApplyDisplay = '';
 			this.resetForm('form');
 			// 清除上传组件状态
 			if (this.$refs.attachmentUpload) {
 				this.$refs.attachmentUpload.clearUploadedFiles();
+			}
+		},
+		// 车辆派出引用回调
+		handleCommitBackCarApply(value) {
+			this.form.carApplyId = value.id;
+			this.form.carNo = value.carNo;
+			this.form.useDate = value.startTime;
+			this.carApplyDisplay = `${value.carNo} - ${value.applyUser}`;
+		},
+		// 选择油卡时自动填充期初余额
+		handleOilCardSelect(value) {
+			this.form.oilCardNo = value.oilCardNo;
+			// 获取油卡详细信息，自动填充期初余额
+			if (value.id) {
+				getOilCard(value.id).then(res => {
+					if (res.data && res.data.moneyAmount) {
+						this.form.startCardSurplus = String(res.data.moneyAmount);
+					}
+				});
+			}
+		},
+		// 自动计算加油金额（加油量 * 单价）
+		calculateRefuelingMoney() {
+			if (this.form.refuelingNumber && this.form.unitPrice) {
+				const refuelingNumber = Number(this.form.refuelingNumber) || 0;
+				const unitPrice = Number(this.form.unitPrice) || 0;
+				const result = multiply(refuelingNumber, unitPrice);
+				this.form.refuelingMoney = String(Number(result.toFixed(2)));
+				this.calculateEndCardSurplus();
+			}
+		},
+		// 自动计算加油卡余额（期初余额 - 加油金额）
+		calculateEndCardSurplus() {
+			if (this.form.startCardSurplus && this.form.refuelingMoney) {
+				const startCardSurplus = Number(this.form.startCardSurplus) || 0;
+				const refuelingMoney = Number(this.form.refuelingMoney) || 0;
+				const result = subtract(startCardSurplus, refuelingMoney);
+				this.form.endCardSurplus = String(Number(result.toFixed(2)));
 			}
 		},
 		/** 搜索按钮操作 */
@@ -412,14 +456,30 @@ export default {
 		submitForm() {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
+					// 校验附件是否上传
+					if (!this.form.params || !this.form.params.attachmentIds || this.form.params.attachmentIds.length === 0) {
+						this.$message.error('请上传加油小票附件');
+						return;
+					}
+
+					const data = { ...this.form };
+					// 确保params存在
+					if (!data.params) {
+						data.params = {};
+					}
+					// 如果通过上传组件已设置了 attachmentIds，则保持；否则从 attachmentList 获取
+					if (!data.params.attachmentIds && this.form.attachmentList) {
+						data.params.attachmentIds = this.form.attachmentList.map(item => item.id);
+					}
+
 					if (this.form.id != null) {
-						updateOilCardConsume(this.form).then(() => {
+						updateOilCardConsume(data).then(() => {
 							this.$modal.msgSuccess('修改成功');
 							this.open = false;
 							this.getList();
 						});
 					} else {
-						addOilCardConsume(this.form).then(() => {
+						addOilCardConsume(data).then(() => {
 							this.$modal.msgSuccess('新增成功');
 							this.open = false;
 							this.getList();

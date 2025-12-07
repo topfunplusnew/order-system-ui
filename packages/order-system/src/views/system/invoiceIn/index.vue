@@ -39,7 +39,7 @@
 			</right-toolbar>
 		</el-row>
 		<div>
-			<ExcelImport mode="in" />
+			<InvoiceOptionPanel mode="in" />
 		</div>
 		<el-table
 			id="printBox"
@@ -313,10 +313,6 @@
 			<ApplyPayment :table-name="TableName.INVOICE_IN" :t-i-d="tID" :need-money="needMoney" :need-info="{}" @changeOpen="changePaymentApplyInfoVisible" />
 		</el-dialog>
 
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="true" title="查看订单信息" :visible.sync="checkOrderInfoVisible" width="70%" append-to-body>
-			<OrderInfos :order-info="orderInfo" />
-		</el-dialog>
-
 		<!-- 查看修改原因弹窗 -->
 		<el-dialog title="查看修改原因" :visible.sync="editReasonDialogVisible" width="800px" append-to-body>
 			<el-table :data="editReasonList" style="width: 100%">
@@ -340,19 +336,20 @@ import { TableName } from '@/api/tool/enums';
 import { excludeParams } from '@/api/tool/exclude';
 import { addReason } from '@/api/system/user';
 import { getGoodsOrder } from '@/api/system/goodsOrder';
-import OrderInfos from '@/views/dashboard/components/goodsOrder/OrderInfos.vue';
+import CheckOrder from '@/views/dashboard/components/goodsOrder/CheckOrder.vue';
 import CheckFiles from '../../../components/CheckFiles.vue';
 import UploadFilesButton from '@/components/UploadFilesButton/index.vue';
 import reLength from '../../dashboard/mixins/reLength';
 import { getInvoiceIn, updateInvoiceIn } from '../../../api/system/invoiceIn';
 import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfile';
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
-import ExcelImport from '@/views/dashboard/components/common/ExcelImport.vue';
+import InvoiceOptionPanel from '@/views/dashboard/components/common/InvoiceOptionPanel.vue';
+import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 
 export default {
 	name: 'InvoiceIn',
-	components: { CheckFiles, UploadFilesButton, OrderInfos, ApplyPayment, SearchOption, ExcelImport },
-	mixins: [mixin_printHTML, reLength, mixin_checkfile],
+	components: { CheckFiles, UploadFilesButton, CheckOrder, ApplyPayment, SearchOption, InvoiceOptionPanel },
+	mixins: [mixin_printHTML, reLength, mixin_checkfile, common_dialog],
 	data() {
 		return {
 			// 遮罩层
@@ -395,8 +392,6 @@ export default {
 			},
 			// 表单参数
 			form: {},
-			orderInfo: {},
-			checkOrderInfoVisible: false,
 			// 表单校验
 			rules: {
 				invoiceDate: [
@@ -588,17 +583,38 @@ export default {
 			this.companyName = val;
 		},
 		handleCommitBackCompany(val) {
-			console.log(val);
 			this.form.companyName = val.companyName;
 			this.form.companyID = val.id;
 			this.form.companyType = val.companyType;
 		},
+		// 查看订单信息
 		checkOrderInfo(row) {
-			// 发请求 查看订单信息
-			getGoodsOrder(row.isOrderTax).then(res => {
-				this.orderInfo = res.data;
-				this.checkOrderInfoVisible = true;
-			});
+			if (!row || !row.isOrderTax || row.isOrderTax === 0) {
+				this.$message.warning('该发票无关联订单');
+				return;
+			}
+			getGoodsOrder(row.isOrderTax)
+				.then(res => {
+					if (!res || !res.data) {
+						this.$message.error('获取订单信息失败');
+						return;
+					}
+					const orderInfo = res.data;
+					// 使用 openDialog 打开 CheckOrder 组件
+					this.openDialog(
+						CheckOrder,
+						'查看订单详情',
+						'100%',
+						{
+							orderInfo: orderInfo
+						},
+						true
+					);
+				})
+				.catch(error => {
+					console.error('获取订单信息失败:', error);
+					this.$message.error('获取订单信息失败，请重试');
+				});
 		},
 		// 添加付款申请
 		addPaymentApplyInfos(row) {

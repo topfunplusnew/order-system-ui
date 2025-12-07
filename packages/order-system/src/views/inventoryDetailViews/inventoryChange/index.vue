@@ -101,7 +101,7 @@
 import { inventoryChangeDetails } from '@/api/inventory';
 import { getInventoryMainByDetailId } from '@/api/system/detail';
 import { getExWarehouse } from '@/api/system/exWarehouse';
-import Pagination from '@/components/Pagination';
+import { Pagination } from '@order-system/ui-components';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import INVENTORY from '@/components/NeedToShow/INVENTORY.vue';
 import WAREHOUSE from '../../../components/NeedToShow/WAREHOUSE.vue';

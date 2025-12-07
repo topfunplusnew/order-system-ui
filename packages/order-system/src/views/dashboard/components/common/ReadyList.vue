@@ -77,7 +77,7 @@ export default {
 					// 清理 sessionStorage 中可能的临时开票数据
 					sessionStorage.removeItem('invoiceAmount');
 					sessionStorage.removeItem('us');
-					// 广播一个统一的清理事件，InvoiceBody 等组件会监听并做局部清理
+					// 广播一个统一的清理事件，QueueInvoiceList 等组件会监听并做局部清理
 					this.$bus.$emit('invoice-clear');
 					this.$message.success('本批开票成功');
 					resolve();

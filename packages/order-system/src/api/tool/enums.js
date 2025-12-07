@@ -11,7 +11,9 @@ export const PUBLIC_DICT_TYPE = {
 	// 其他
 	OTHER: '其他',
 	// 己方公司
-	SELF_COMPANY: '己方公司'
+	SELF_COMPANY: '己方公司',
+	// 对方公司
+	OTHER_COMPANY: '对方公司'
 };
 
 export const YES_OR_NO = Object.freeze({

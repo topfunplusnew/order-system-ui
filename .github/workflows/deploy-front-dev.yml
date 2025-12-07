@@ -65,6 +65,16 @@ jobs:
              mkdir -p ${{ secrets.DEPLOY_PATH }}/html && \
              mkdir -p ~/.rsync-tmp || true"
       
+      - name: 修复目标目录权限
+        run: |
+          echo "修复目标目录权限..."
+          ssh -i ~/.ssh/deploy_key \
+            -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
+            ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} \
+            "sudo chown -R ${{ secrets.DEPLOY_USER }}:${{ secrets.DEPLOY_USER }} ${{ secrets.DEPLOY_PATH }} && \
+             sudo chmod -R 755 ${{ secrets.DEPLOY_PATH }} || true"
+      
       - name: 通过 Rsync 部署到服务器
         run: |
           echo "开始部署到服务器..."
@@ -77,6 +87,27 @@ jobs:
             packages/order-system/dist/ \
             ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:${{ secrets.DEPLOY_PATH }}/
           echo "部署完成！"
+      
+      - name: 验证部署并重新加载 Nginx
+        run: |
+          echo "验证部署文件..."
+          ssh -i ~/.ssh/deploy_key \
+            -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
+            ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} \
+            "ls -la ${{ secrets.DEPLOY_PATH }}/index.html && echo '✓ 部署文件验证成功'"
+          
+          echo "尝试重新加载 Nginx..."
+          ssh -i ~/.ssh/deploy_key \
+            -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
+            ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} \
+            "CONTAINER_ID=\$(sudo docker ps --filter 'ancestor=registry.superslash.cn/order-system-ui:latest' --format '{{.ID}}' | head -n1) && \
+             if [ -n \"\$CONTAINER_ID\" ]; then \
+               sudo docker exec \$CONTAINER_ID nginx -s reload && echo '✓ Nginx 重新加载成功'; \
+             else \
+               echo '⚠ 未找到运行中的容器，请手动检查'; \
+             fi" || echo "⚠ Nginx 重新加载失败，但文件已部署（文件已通过挂载同步，通常无需重新加载）"
       
       - name: 部署完成通知
         run: |

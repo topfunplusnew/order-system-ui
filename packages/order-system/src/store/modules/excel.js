@@ -1,4 +1,4 @@
-import Vue from 'vue';
+// 维护开票金额的模块
 
 const state = {
 	// 读取的excel数据sheets列表
@@ -65,26 +65,19 @@ const mutations = {
 	ADD_INVOICE_AMOUNT: (state, data) => {
 		// 开票金额不能为负数
 		if (data < 0) {
-			throw new Error('开票金额不能为负数');
+			console.error('开票金额不能为负数');
+			return;
 		}
-
-		// state.invoiceAmount += data;
-		Vue.set(state, 'invoiceAmount', state.invoiceAmount + data);
+		state.invoiceAmount = state.invoiceAmount + data;
 	},
 	// 扣除开票金额
-	MULTI_INVOICE_AMOUNT: (state, data) => {
+	SUBTRACT_INVOICE_AMOUNT: (state, data) => {
 		// 开票金额不能为负数
 		if (data < 0) {
-			throw new Error('开票金额不能为负数');
+			console.error('开票金额不能为负数');
+			return;
 		}
-
-		// 不能超过原有的钱
-		if (state.invoiceAmount - data < 0) {
-			throw new Error('超出开票金额');
-		}
-
-		// state.invoiceAmount -= data;
-		Vue.set(state, 'invoiceAmount', state.invoiceAmount - data);
+		state.invoiceAmount = state.invoiceAmount - data;
 	},
 
 	SET_PURCHASE_TEMP_INFO: (state, data) => {
@@ -139,7 +132,6 @@ const actions = {
 	clearComment({ commit }) {
 		commit('CLEAR_COMMENT');
 	},
-
 	setSelectedOrders({ commit }, data) {
 		commit('SET_SELECTED_ORDERS', data);
 	},
@@ -158,7 +150,12 @@ const actions = {
 	clearInvoiceAmount({ commit }) {
 		commit('CLEAR_INVOICE_AMOUNT');
 	},
-
+	addInvoiceAmount({ commit }, data) {
+		commit('ADD_INVOICE_AMOUNT', data);
+	},
+	subtractInvoiceAmount({ commit }, data) {
+		commit('SUBTRACT_INVOICE_AMOUNT', data);
+	},
 	setPurchaseTempInfo({ commit }, data) {
 		commit('SET_PURCHASE_TEMP_INFO', data);
 	},
@@ -171,8 +168,6 @@ const actions = {
 	clearSellerTempInfo({ commit }) {
 		commit('CLEAR_SELLER_TEMP_INFO');
 	},
-
-	// template data for purchase/seller (from imported excel)
 	setPurchaseTemplateData({ commit }, data) {
 		commit('SET_PURCHASE_TEMPLATE', data);
 	},

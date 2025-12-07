@@ -1,31 +1,45 @@
 <script>
 import { create, all } from 'mathjs';
 import { getCompany } from '@/api/system/company';
-import CompanysList from '@/views/dashboard/components/common/CompanysList.vue';
+import InvoiceCompanysList from '@/views/dashboard/components/common/InvoiceCompanysList.vue';
 // import CompanyInformation from '@/views/dashboard/components/common/CompanyInformation.vue';
-import InvoiceBody from '@/views/dashboard/components/common/InvoiceBody.vue';
+import QueueInvoiceList from '@/views/dashboard/components/common/QueueInvoiceList.vue';
 import SelectGoods from '@/views/dashboard/components/common/SelectGoods.vue';
 import { mixin_excel_server } from '@/views/dashboard/components/common/utils/excelServer';
 import DragDiv from '@/components/DragDiv/index.vue';
 import { getOperatedMap } from '@/api/excelTemplateStore';
-import {
-	listBatchInvoiceIn,
-	listBatchInvoiceOut,
-	deleteBatchInvoiceInByVoucher,
-	deleteBatchInvoiceInById,
-	deleteBatchInvoiceInInvoice,
-	deleteBatchInvoiceOutByVoucher,
-	deleteBatchInvoiceOutById,
-	deleteBatchInvoiceOutInvoice
-} from '@/api/system/batchInvoice';
+import { listBatchInvoiceIn, listBatchInvoiceOut, deleteBatchInvoiceInByVoucher, deleteBatchInvoiceInById, deleteBatchInvoiceInInvoice, deleteBatchInvoiceOutByVoucher, deleteBatchInvoiceOutById, deleteBatchInvoiceOutInvoice } from '@/api/system/batchInvoice';
 
 // 默认导出组件
 export default {
-	name: 'SheetList',
-	computed: {},
+	name: 'BatchInvoicePanel',
+	computed: {
+		// 判断当前应该显示购买方还是销方
+		currentSide() {
+			const hasPurchase = this.purchaseTotalInfo && this.purchaseTotalInfo.length > 0;
+			const hasSeller = this.sellerTotalInfo && this.sellerTotalInfo.length > 0;
+			// 优先显示购买方，如果购买方有数据就显示购买方，否则显示销方
+			return hasPurchase ? 'purchase' : hasSeller ? 'seller' : 'purchase';
+		},
+		// 当前显示的公司列表数据
+		currentCompanyTotalInfo() {
+			return this.currentSide === 'purchase' ? this.purchaseTotalInfo : this.sellerTotalInfo;
+		},
+		// 当前显示的统计信息
+		currentStatisticsInfo() {
+			if (this.currentSide === 'purchase') {
+				return this.statisticsInfo ? this.statisticsInfo.purchaseStats : { suppliers: { total: 0, count: 0 }, customers: { total: 0, count: 0 } };
+			}
+			return this.statisticsInfo ? this.statisticsInfo.sellerStats : { suppliers: { total: 0, count: 0 }, customers: { total: 0, count: 0 } };
+		},
+		// 当前显示的标题
+		currentSideTitle() {
+			return this.currentSide === 'purchase' ? '购买方信息' : '销方信息';
+		}
+	},
 	components: {
-		CompanysList,
-		InvoiceBody,
+		InvoiceCompanysList,
+		QueueInvoiceList,
 		// CompanyInformation,
 		SelectGoods,
 		DragDiv
@@ -96,7 +110,7 @@ export default {
 			// 本次导入的版本号（时间戳）
 			currentVersion: null,
 			// 已操作映射（来自 IndexedDB）
-			templateOperatedMap: {},
+			templateOperatedMap: {}
 			// 当前Sheet名称
 			// currentSheetName 已废弃
 		};
@@ -447,38 +461,42 @@ export default {
 			this.saveBatchInvoiceSession();
 			getOperatedMap().then(map => (this.templateOperatedMap = map || {}));
 		},
-		// 映射关系
+		// 映射参数：将后端数据或Excel原始数据转换为统一格式
 		mapperParams(item) {
 			if (!item) return null;
 			// 已结构化的后端数据
 			if (item.sellerId !== undefined || item.purchaseId !== undefined || item.batchInvoiceId) {
-				const totalAmount = Number(item.totalAmount ?? item.total ?? item.invoiceAmount ?? 0);
-				const ticketPoint = Number(item.taxPoint ?? item.ticketPoint ?? 0);
-				const ticketPointAmountRaw = item.ticketPointAmount;
-				const normalizedTicketPointAmount =
-					ticketPointAmountRaw !== undefined && ticketPointAmountRaw !== null
-						? Number(ticketPointAmountRaw)
-						: this.calculateTicketPointAmount(totalAmount, ticketPoint);
-
-				return {
-					sellerId: Number(item.sellerId) || 0,
-					sellerName: item.sellerName || '',
-					sellerType: item.sellerType || '',
-					purchaseId: Number(item.buyerId ?? item.purchaseId) || 0,
-					purchaseType: item.buyerType ?? item.purchaseType ?? '',
-					purchaseName: item.buyerName ?? item.purchaseName ?? '',
-					total: Number(totalAmount),
-					ticketPoint: ticketPoint,
-					ticketPointAmount: Number(normalizedTicketPointAmount),
-					batchInvoiceId: item.batchInvoiceId || item.id || null,
-					voucher: item.voucher || '',
-					comments: item.comments || '',
-					params: item.params || {},
-					id: item.id
-				};
+				return this.mapStructuredData(item);
 			}
-
 			// Excel 原始数据（中文表头）
+			return this.mapExcelData(item);
+		},
+		// 映射已结构化的后端数据
+		mapStructuredData(item) {
+			const totalAmount = Number(item.totalAmount ?? item.total ?? item.invoiceAmount ?? 0);
+			const ticketPoint = Number(item.taxPoint ?? item.ticketPoint ?? 0);
+			const ticketPointAmountRaw = item.ticketPointAmount;
+			const normalizedTicketPointAmount = ticketPointAmountRaw !== undefined && ticketPointAmountRaw !== null ? Number(ticketPointAmountRaw) : this.calculateTicketPointAmount(totalAmount, ticketPoint);
+
+			return {
+				sellerId: Number(item.sellerId) || 0,
+				sellerName: item.sellerName || '',
+				sellerType: item.sellerType || '',
+				purchaseId: Number(item.buyerId ?? item.purchaseId) || 0,
+				purchaseType: item.buyerType ?? item.purchaseType ?? '',
+				purchaseName: item.buyerName ?? item.purchaseName ?? '',
+				total: Number(totalAmount),
+				ticketPoint: ticketPoint,
+				ticketPointAmount: Number(normalizedTicketPointAmount),
+				batchInvoiceId: item.batchInvoiceId || item.id || null,
+				voucher: item.voucher || '',
+				comments: item.comments || '',
+				params: item.params || {},
+				id: item.id
+			};
+		},
+		// 映射Excel原始数据
+		mapExcelData(item) {
 			const ticketPoint = Number(item['票点']) || 0;
 			const totalAmount = Number(item['价税合计']) || 0;
 			const ticketPointAmount = this.calculateTicketPointAmount(totalAmount, ticketPoint);
@@ -597,53 +615,38 @@ export default {
 			const purchaseTempData = this.$store.getters.purchaseTempInfo || [];
 			const sellerTempData = this.$store.getters.sellerTempInfo || [];
 
-			// 筛选购买方信息
-			this.purchaseTotalInfo = purchaseTempData.filter(item => {
-				// 我方公司筛选
-				if (this.myCompany && item.us) {
-					if (item.us.indexOf(this.myCompany) === -1) {
-						return false;
+			// 通用筛选函数
+			const filterItems = items => {
+				return items.filter(item => {
+					// 我方公司筛选
+					if (this.myCompany && item.us) {
+						if (item.us.indexOf(this.myCompany) === -1) {
+							return false;
+						}
 					}
-				}
-				// 对方公司筛选
-				if (this.otherCompany && item.name) {
-					if (item.name.indexOf(this.otherCompany) === -1) {
-						return false;
+					// 对方公司筛选
+					if (this.otherCompany && item.name) {
+						if (item.name.indexOf(this.otherCompany) === -1) {
+							return false;
+						}
 					}
-				}
-				// 已操作状态筛选
-				if (this.operatedStatus !== null) {
-					const isOperated = this.isCompanyOperated(item);
-					if (isOperated !== this.operatedStatus) {
-						return false;
+					// 已操作状态筛选
+					if (this.operatedStatus !== null) {
+						const isOperated = this.isCompanyOperated(item);
+						if (isOperated !== this.operatedStatus) {
+							return false;
+						}
 					}
-				}
-				return true;
-			});
+					return true;
+				});
+			};
 
-			// 筛选销方信息
-			this.sellerTotalInfo = sellerTempData.filter(item => {
-				// 我方公司筛选
-				if (this.myCompany && item.us) {
-					if (item.us.indexOf(this.myCompany) === -1) {
-						return false;
-					}
-				}
-				// 对方公司筛选
-				if (this.otherCompany && item.name) {
-					if (item.name.indexOf(this.otherCompany) === -1) {
-						return false;
-					}
-				}
-				// 已操作状态筛选
-				if (this.operatedStatus !== null) {
-					const isOperated = this.isCompanyOperated(item);
-					if (isOperated !== this.operatedStatus) {
-						return false;
-					}
-				}
-				return true;
-			});
+			// 根据当前显示的一方进行筛选
+			if (this.currentSide === 'purchase') {
+				this.purchaseTotalInfo = filterItems(purchaseTempData);
+			} else {
+				this.sellerTotalInfo = filterItems(sellerTempData);
+			}
 		},
 
 		//查看某一个公司的信息
@@ -673,8 +676,12 @@ export default {
 		},
 		// 重置筛选结果
 		handleReset() {
-			this.purchaseTotalInfo = this.$store.getters.purchaseTempInfo;
-			this.sellerTotalInfo = this.$store.getters.sellerTempInfo;
+			// 根据当前显示的一方重置数据
+			if (this.currentSide === 'purchase') {
+				this.purchaseTotalInfo = this.$store.getters.purchaseTempInfo || [];
+			} else {
+				this.sellerTotalInfo = this.$store.getters.sellerTempInfo || [];
+			}
 			// 清空搜索条件
 			this.myCompany = null;
 			this.otherCompany = null;
@@ -687,30 +694,32 @@ export default {
 			this.$bus.$emit('select-goods-row:update');
 		},
 
-		// 关闭的逻辑 要清除所有状态
+		// 关闭弹窗并清除所有状态
 		handleClose() {
 			this.reset();
 			this.invoiceAllVisible = false;
 		},
+		// 重置所有状态
 		reset() {
-			// sessionStorage
+			// 清除sessionStorage
+			this.clearSessionStorage();
+			// 清除组件状态
+			this.clearComponentState();
+			// 清除Vuex状态
+			this.clearVuexState();
+			// 发布清除事件
+			this.$bus.$emit('invoice-clear');
+		},
+		// 清除sessionStorage
+		clearSessionStorage() {
 			sessionStorage.removeItem('us');
 			sessionStorage.removeItem('invoiceAmount');
-			// 清除左上角公司信息
+		},
+		// 清除组件状态
+		clearComponentState() {
 			this.handleResetCompanyInfo();
-			// 清除订单列表的数据
 			this.handleResetOrderList();
-			// 重置公司筛选结果
 			this.handleReset();
-			// 清除票点
-			this.$store.dispatch('excel/clearTicketPoint');
-			// 清除备注
-			this.$store.dispatch('excel/clearComment');
-			// 清除模板数据
-			this.$store.dispatch('excel/clearPurchaseTemplateData');
-			this.$store.dispatch('excel/clearSellerTemplateData');
-			this.$store.dispatch('excel/clearBatchMetaMap');
-			// 重置统计信息
 			this.statisticsInfo = {
 				purchaseStats: {
 					suppliers: { total: 0, count: 0 },
@@ -721,8 +730,14 @@ export default {
 					customers: { total: 0, count: 0 }
 				}
 			};
-			// 发布事件 组件中清除自己状态
-			this.$bus.$emit('invoice-clear');
+		},
+		// 清除Vuex状态
+		clearVuexState() {
+			this.$store.dispatch('excel/clearTicketPoint');
+			this.$store.dispatch('excel/clearComment');
+			this.$store.dispatch('excel/clearPurchaseTemplateData');
+			this.$store.dispatch('excel/clearSellerTemplateData');
+			this.$store.dispatch('excel/clearBatchMetaMap');
 		}
 	}
 };
@@ -730,83 +745,75 @@ export default {
 
 <template>
 	<div>
+		<!-- 批次管理区域 - 简化结构，移除多余边框 -->
 		<div class="batch-manager">
-			<el-card class="batch-card" shadow="never">
-				<el-form :inline="true" size="mini" class="batch-search-form">
-					<el-form-item label="凭证号">
-						<el-input v-model="queryForm.voucher" placeholder="支持模糊查询" clearable />
-					</el-form-item>
-					<el-form-item label="销方名称">
-						<el-input v-model="queryForm.sellerName" placeholder="支持模糊查询" clearable />
-					</el-form-item>
-					<el-form-item label="购买方名称">
-						<el-input v-model="queryForm.buyerName" placeholder="支持模糊查询" clearable />
-					</el-form-item>
-					<el-form-item label="是否已开票">
-						<el-select v-model="queryForm.invoiced" placeholder="全部" clearable>
-							<el-option label="全部" :value="null" />
-							<el-option label="是" :value="true" />
-							<el-option label="否" :value="false" />
-						</el-select>
-					</el-form-item>
-					<el-form-item>
-						<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">查询</el-button>
-						<el-button type="warning" icon="el-icon-refresh" size="mini" @click="handleResetSearch">重置</el-button>
-					</el-form-item>
-				</el-form>
+			<!-- 搜索表单 -->
+			<el-form :inline="true" size="mini" class="batch-search-form">
+				<el-form-item label="凭证号">
+					<el-input v-model="queryForm.voucher" placeholder="支持模糊查询" clearable />
+				</el-form-item>
+				<el-form-item label="销方名称">
+					<el-input v-model="queryForm.sellerName" placeholder="支持模糊查询" clearable />
+				</el-form-item>
+				<el-form-item label="购买方名称">
+					<el-input v-model="queryForm.buyerName" placeholder="支持模糊查询" clearable />
+				</el-form-item>
+				<el-form-item label="是否已开票">
+					<el-select v-model="queryForm.invoiced" placeholder="全部" clearable>
+						<el-option label="全部" :value="null" />
+						<el-option label="是" :value="true" />
+						<el-option label="否" :value="false" />
+					</el-select>
+				</el-form-item>
+				<el-form-item>
+					<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">查询</el-button>
+					<el-button type="warning" icon="el-icon-refresh" size="mini" @click="handleResetSearch">重置</el-button>
+				</el-form-item>
+			</el-form>
 
-				<el-table
-					:data="batchList"
-					size="mini"
-					border
-					:loading="listLoading"
-					style="width: 100%"
-					:cell-style="
-						() => {
-							return { padding: '4px' };
-						}
-					"
-				>
-					<el-table-column label="ID" align="center" prop="id" width="80" />
-					<el-table-column label="批次号" align="center" prop="voucher" min-width="140" show-overflow-tooltip />
-					<el-table-column label="销方名称" align="center" prop="sellerName" min-width="160" show-overflow-tooltip />
-					<el-table-column label="购买方名称" align="center" prop="buyerName" min-width="160" show-overflow-tooltip />
-					<el-table-column label="价税合计" align="center" prop="totalAmount" width="120" show-overflow-tooltip />
-					<el-table-column label="票点" align="center" prop="taxPoint" width="80" show-overflow-tooltip />
-					<el-table-column label="已开票" align="center" prop="invoiced" width="90">
-						<template #default="scope">
-							<el-tag size="mini" :type="scope.row.invoiced ? 'success' : 'info'">{{ scope.row.invoiced ? '是' : '否' }}</el-tag>
-						</template>
-					</el-table-column>
-					<el-table-column label="导入时间" align="center" prop="createTime" width="160" show-overflow-tooltip />
-					<el-table-column label="操作" align="center" width="260">
-						<template #default="scope">
-							<el-button type="text" size="mini" @click="handleOpenBatch(scope.row)">发起开票</el-button>
-							<el-button type="text" size="mini" @click="handleDeleteVoucher(scope.row)">整批删除</el-button>
-							<el-button type="text" size="mini" @click="handleDeleteRecord(scope.row)">删除导入</el-button>
-							<el-tooltip v-if="!hasInvoiceInfo(scope.row)" effect="dark" content="暂无已生成的发票" placement="top">
-								<span>
-									<el-button type="text" size="mini" :disabled="true">仅删发票</el-button>
-								</span>
-							</el-tooltip>
-							<el-button v-else type="text" size="mini" @click="handleDeleteInvoice(scope.row)">仅删发票</el-button>
-						</template>
-					</el-table-column>
-				</el-table>
-				<pagination
-					v-show="pagination.total > 0"
-					:total="pagination.total"
-					:page.sync="pagination.pageNum"
-					:limit.sync="pagination.pageSize"
-					@pagination="handlePagination"
-				/>
-			</el-card>
+			<!-- 数据表格 -->
+			<el-table :data="batchList" size="mini" :loading="listLoading" style="width: 100%" class="batch-table" :cell-style="() => ({ padding: '6px 4px' })" :header-cell-style="() => ({ background: '#f5f7fa', color: '#606266', fontWeight: '600' })">
+				<el-table-column label="ID" align="center" prop="id" width="70" />
+				<el-table-column label="批次号" align="center" prop="voucher" min-width="140" show-overflow-tooltip />
+				<el-table-column label="销方名称" align="center" prop="sellerName" min-width="150" show-overflow-tooltip />
+				<el-table-column label="购买方名称" align="center" prop="buyerName" min-width="150" show-overflow-tooltip />
+				<el-table-column label="价税合计" align="center" prop="totalAmount" width="110" show-overflow-tooltip>
+					<template #default="scope">
+						<span class="amount-text">{{ scope.row.totalAmount }}</span>
+					</template>
+				</el-table-column>
+				<el-table-column label="票点" align="center" prop="taxPoint" width="70" show-overflow-tooltip />
+				<el-table-column label="已开票" align="center" prop="invoiced" width="80">
+					<template #default="scope">
+						<el-tag size="mini" :type="scope.row.invoiced ? 'success' : 'info'" effect="light">
+							{{ scope.row.invoiced ? '是' : '否' }}
+						</el-tag>
+					</template>
+				</el-table-column>
+				<el-table-column label="导入时间" align="center" prop="createTime" width="150" show-overflow-tooltip />
+				<el-table-column label="操作" align="center" width="300" fixed="right">
+					<template #default="scope">
+						<el-button type="text" size="mini" class="action-btn primary" @click="handleOpenBatch(scope.row)">发起开票</el-button>
+						<el-button type="text" size="mini" class="action-btn danger" @click="handleDeleteVoucher(scope.row)">整批删除</el-button>
+						<el-button type="text" size="mini" class="action-btn warning" @click="handleDeleteRecord(scope.row)">删除导入</el-button>
+						<el-tooltip v-if="!hasInvoiceInfo(scope.row)" effect="dark" content="暂无已生成的发票" placement="top">
+							<span>
+								<el-button type="text" size="mini" class="action-btn" :disabled="true">仅删发票</el-button>
+							</span>
+						</el-tooltip>
+						<el-button v-else type="text" size="mini" class="action-btn info" @click="handleDeleteInvoice(scope.row)">仅删发票</el-button>
+					</template>
+				</el-table-column>
+			</el-table>
+
+			<!-- 分页 -->
+			<pagination v-show="pagination.total > 0" :total="pagination.total" :page.sync="pagination.pageNum" :limit.sync="pagination.pageSize" @pagination="handlePagination" />
 		</div>
 
 		<div>
-			<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="批量开票" fullscreen :visible.sync="invoiceAllVisible" append-to-body>
+			<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="批量开票" fullscreen :visible.sync="invoiceAllVisible" append-to-body class="invoice-dialog">
 				<div class="invoice-container">
-					<!-- 上下布局：上面是 CompanysList + InvoiceBody（DragDiv），下面是 SelectGoods -->
+					<!-- 上下布局：上面是 InvoiceCompanysList + QueueInvoiceList（DragDiv），下面是 SelectGoods -->
 					<div class="invoice-layout">
 						<!-- 上半部分：公司列表和开票信息（左右布局，使用DragDiv） -->
 						<div class="top-section">
@@ -849,26 +856,23 @@ export default {
 												</el-form>
 
 												<div class="company-lists">
-													<el-divider>
-														<span class="bold-text">购买方信息</span>
-													</el-divider>
-													<CompanysList
-														side="purchase"
-														:company-total-info="purchaseTotalInfo"
-														:statistics-info="statisticsInfo ? statisticsInfo.purchaseStats : { suppliers: { total: 0, count: 0 }, customers: { total: 0, count: 0 } }"
+													<div v-if="currentCompanyTotalInfo && currentCompanyTotalInfo.length > 0" class="section-title-wrapper">
+														<div class="section-title">
+															<span class="title-icon"></span>
+															<span class="title-text">{{ currentSideTitle }}</span>
+														</div>
+													</div>
+													<InvoiceCompanysList
+														v-if="currentCompanyTotalInfo && currentCompanyTotalInfo.length > 0"
+														:side="currentSide"
+														:company-total-info="currentCompanyTotalInfo"
+														:statistics-info="currentStatisticsInfo"
 														:operated-map="templateOperatedMap"
 														@handleCheck="handleCheck"
 													/>
-													<el-divider>
-														<span class="bold-text">销方信息</span>
-													</el-divider>
-													<CompanysList
-														side="seller"
-														:company-total-info="sellerTotalInfo"
-														:statistics-info="statisticsInfo ? statisticsInfo.sellerStats : { suppliers: { total: 0, count: 0 }, customers: { total: 0, count: 0 } }"
-														:operated-map="templateOperatedMap"
-														@handleCheck="handleCheck"
-													/>
+													<div v-else class="empty-company-list">
+														<el-empty description="暂无公司数据" :image-size="100" />
+													</div>
 												</div>
 											</el-card>
 										</div>
@@ -877,7 +881,7 @@ export default {
 
 								<template #right>
 									<div class="section-wrapper">
-										<InvoiceBody />
+										<QueueInvoiceList />
 									</div>
 								</template>
 							</DragDiv>
@@ -906,21 +910,129 @@ export default {
 </template>
 
 <style scoped lang="scss">
+/* 批次管理区域 - 简化后的样式 */
 .batch-manager {
-	margin-bottom: 20px;
+	background: #fff;
+	border-radius: 8px;
+	padding: 0;
 }
 
-.batch-card {
-	::v-deep .el-card__body {
-		padding: 16px;
+/* 搜索表单样式 */
+.batch-search-form {
+	padding: 12px 0 16px 0;
+	border-bottom: none;
+	margin-bottom: 16px;
+
+	.el-form-item {
+		margin-bottom: 0;
+		margin-right: 16px;
+	}
+
+	.el-form-item__label {
+		color: #606266;
+		font-weight: 500;
+	}
+
+	.el-input {
+		width: 160px;
+	}
+
+	.el-select {
+		width: 100px;
 	}
 }
 
-.batch-search-form {
-	margin-bottom: 12px;
+/* 表格样式 - 仅保留必要的行分割 */
+.batch-table {
+	::v-deep .el-table {
+		border: none;
+	}
 
-	.el-form-item {
-		margin-bottom: 8px;
+	::v-deep .el-table__header-wrapper {
+		.el-table__header {
+			th {
+				border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+				border-right: none;
+				background: transparent;
+
+				&:last-child {
+					border-right: none;
+				}
+			}
+		}
+	}
+
+	::v-deep .el-table__body-wrapper {
+		.el-table__body {
+			td {
+				border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+				border-right: none;
+
+				&:last-child {
+					border-right: none;
+				}
+			}
+
+			tr:hover {
+				background-color: rgba(64, 158, 255, 0.04);
+			}
+
+			tr:last-child td {
+				border-bottom: none;
+			}
+		}
+	}
+
+	&::before {
+		display: none;
+	}
+}
+
+/* 金额文字样式 */
+.amount-text {
+	color: #e6a23c;
+	font-weight: 600;
+}
+
+/* 操作按钮样式 */
+.action-btn {
+	padding: 4px 8px;
+	margin: 0 2px;
+	border-radius: 4px;
+	font-size: 12px;
+	transition: all 0.2s ease;
+
+	&.primary {
+		color: #409eff;
+		&:hover {
+			background: rgba(64, 158, 255, 0.1);
+		}
+	}
+
+	&.danger {
+		color: #f56c6c;
+		&:hover {
+			background: rgba(245, 108, 108, 0.1);
+		}
+	}
+
+	&.warning {
+		color: #e6a23c;
+		&:hover {
+			background: rgba(230, 162, 60, 0.1);
+		}
+	}
+
+	&.info {
+		color: #909399;
+		&:hover {
+			background: rgba(144, 147, 153, 0.1);
+		}
+	}
+
+	&:disabled {
+		color: #c0c4cc;
+		cursor: not-allowed;
 	}
 }
 
@@ -940,13 +1052,40 @@ export default {
 	line-height: 20px;
 }
 
+/* 批量开票弹窗样式 - 移除边框 */
+.invoice-dialog {
+	::v-deep .el-dialog {
+		border: none;
+		box-shadow: none;
+		background: #f5f7fa;
+	}
+
+	::v-deep .el-dialog__header {
+		border-bottom: none;
+		padding: 16px 20px;
+		background: transparent;
+	}
+
+	::v-deep .el-dialog__body {
+		padding: 0;
+		background: transparent;
+	}
+
+	::v-deep .el-dialog__footer {
+		border-top: none;
+		padding: 12px 20px;
+		background: transparent;
+	}
+}
+
 /* 开票弹窗相关的样式 */
 .invoice-container {
-	height: calc(100vh - 120px);
-	padding: 0 20px;
+	height: calc(100vh - 100px);
+	padding: 0 16px;
 	overflow: hidden;
 	display: flex;
 	flex-direction: column;
+	background: transparent;
 }
 
 /* 新的上下布局 */
@@ -971,6 +1110,10 @@ export default {
 	min-height: 0;
 	display: flex;
 	flex-direction: column;
+	border: 1px solid rgba(0, 0, 0, 0.12);
+	border-radius: 8px;
+	background: #ffffff;
+	overflow: hidden;
 }
 
 .column-section {
@@ -989,6 +1132,10 @@ export default {
 	height: 100%;
 	display: flex;
 	flex-direction: column;
+	border: 1px solid rgba(0, 0, 0, 0.12);
+	border-radius: 8px;
+	background: #ffffff;
+	overflow: hidden;
 }
 
 /* 左侧区域样式 */
@@ -1019,24 +1166,30 @@ export default {
 	}
 }
 
-/* 卡片通用样式 */
+/* 卡片通用样式 - 移除边框，由外层区域边框控制 */
 .full-height-card {
 	height: 100%;
 	display: flex;
 	flex-direction: column;
+	border: none !important;
+	box-shadow: none !important;
+	background: transparent;
+	overflow: hidden;
 
 	::v-deep .el-card__header {
 		padding: 12px 16px;
-		border-bottom: 1px solid #ebeef5;
+		border-bottom: 1px solid rgba(0, 0, 0, 0.08);
 		flex-shrink: 0;
+		background: transparent;
 	}
 
 	::v-deep .el-card__body {
 		flex: 1;
-		padding: 16px;
+		padding: 12px 16px;
 		overflow: hidden;
 		display: flex;
 		flex-direction: column;
+		background: transparent;
 	}
 }
 
@@ -1075,66 +1228,86 @@ export default {
 	}
 }
 
-/* 公司列表样式 */
+/* 公司列表样式 - 不显示滚动条，完全展示所有内容 */
 .company-lists {
 	flex: 1;
-	overflow-y: auto;
-	overflow-x: visible; /* 允许子元素水平滚动 */
+	overflow: visible;
 	min-height: 0;
+	padding-right: 4px;
 
-	.el-divider {
-		margin: 16px 0 12px 0;
+	/* 区域标题样式 - 紧凑美化设计 */
+	.section-title-wrapper {
+		margin: 12px 0 10px 0;
+		position: relative;
+		display: flex;
+		align-items: center;
 
-		.el-divider__text {
-			background-color: #f5f7fa;
+		&::before {
+			content: '';
+			position: absolute;
+			left: 0;
+			right: 0;
+			top: 50%;
+			height: 1px;
+			background: linear-gradient(to right, rgba(64, 158, 255, 0.2) 0%, rgba(64, 158, 255, 0.15) 50%, transparent 100%);
+			z-index: 0;
 		}
-	}
 
-	/* 美化滚动条 */
-	&::-webkit-scrollbar {
-		width: 16px;
-	}
+		.section-title {
+			position: relative;
+			z-index: 1;
+			background: #ffffff;
+			padding: 4px 12px 4px 8px;
+			border-radius: 4px;
+			border-left: 3px solid #409eff;
+			display: inline-flex;
+			align-items: center;
+			gap: 6px;
+			box-shadow: 0 1px 2px rgba(64, 158, 255, 0.1);
 
-	&::-webkit-scrollbar-thumb {
-		background: #dcdfe6;
-		border-radius: 13px;
+			.title-icon {
+				width: 4px;
+				height: 4px;
+				background: #409eff;
+				border-radius: 50%;
+				flex-shrink: 0;
+			}
 
-		&:hover {
-			background: #c0c4cc;
+			.title-text {
+				color: #409eff;
+				font-size: 13px;
+				font-weight: 600;
+				line-height: 1;
+			}
 		}
-	}
-
-	&::-webkit-scrollbar-track {
-		background: transparent;
-		width: 10px;
 	}
 }
 
-/* 订单选择组件包装 */
+/* 订单选择组件包装 - 统一滚动条 */
 .select-goods-wrapper {
 	flex: 1;
 	overflow-y: auto;
 	overflow-x: hidden;
 	min-height: 0;
-	max-height: calc(50vh - 100px); /* 设置最大高度，减去头部和间距 */
+	max-height: calc(50vh - 80px);
+	padding-right: 4px;
 
-	/* 美化滚动条 */
+	/* 统一美化滚动条样式 */
 	&::-webkit-scrollbar {
-		width: 8px;
+		width: 6px;
 	}
 
 	&::-webkit-scrollbar-thumb {
-		background: #dcdfe6;
-		border-radius: 4px;
+		background: #c0c4cc;
+		border-radius: 3px;
 
 		&:hover {
-			background: #c0c4cc;
+			background: #909399;
 		}
 	}
 
 	&::-webkit-scrollbar-track {
-		background: #f5f7fa;
-		border-radius: 4px;
+		background: transparent;
 	}
 }
 
@@ -1165,10 +1338,6 @@ export default {
 		min-height: 400px;
 	}
 
-	.company-lists {
-		max-height: 300px;
-	}
-
 	.select-goods-wrapper {
 		height: 400px;
 	}
@@ -1193,10 +1362,6 @@ export default {
 
 	.section-wrapper {
 		min-height: 350px;
-	}
-
-	.company-lists {
-		max-height: 250px;
 	}
 }
 
@@ -1234,22 +1399,10 @@ export default {
 /* 弹窗底部按钮样式 */
 .dialog-footer {
 	text-align: center;
-	padding: 16px 0;
-	border-top: 1px solid #ebeef5;
+	padding: 12px 0;
 
 	.el-button {
 		min-width: 80px;
-	}
-}
-
-/* 优化卡片阴影和边框 */
-.full-height-card {
-	box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-	border: 1px solid #ebeef5;
-	border-radius: 6px;
-
-	&:hover {
-		box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.12);
 	}
 }
 
@@ -1263,8 +1416,7 @@ export default {
 /* 新的公司列表全屏布局优化 */
 .company-list-section-full {
 	.company-lists {
-		// 增加表格的最大高度以适应更大的空间
-		max-height: calc(100vh - 300px);
+		// 移除高度限制，让表格完全显示所有内容，不出现滚动条
 
 		// 为每个公司列表分配更多空间
 		> div {
@@ -1279,8 +1431,8 @@ export default {
 	// 优化搜索表单的间距
 	.search-form {
 		margin-bottom: 16px;
-		border-bottom: 1px solid #ebeef5;
-		padding-bottom: 12px;
+		border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+		padding-bottom: 16px;
 	}
 
 	// 优化分割线样式
@@ -1288,6 +1440,15 @@ export default {
 		&:first-of-type {
 			margin-top: 8px;
 		}
+	}
+
+	// 空状态样式
+	.empty-company-list {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 200px;
+		padding: 40px 20px;
 	}
 }
 </style>
