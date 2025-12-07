@@ -358,7 +358,7 @@ export default {
 								acc.itemTotalLender = add(acc.itemTotalLender, amount);
 							} else if (isCredit(customerDetail.debitCredit)) {
 								// 贷方：客户欠款减少
-								acc.itemTotalBorrower = subtract(acc.itemTotalBorrower, -amount);
+								acc.itemTotalBorrower = add(acc.itemTotalBorrower, -amount);
 							}
 							return acc;
 						},
