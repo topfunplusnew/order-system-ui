@@ -369,7 +369,7 @@ export default {
 							{ itemTotalLender: 0, itemTotalBorrower: 0 } // 初始值
 						);
 						// 借方取反
-						return [-itemTotalLender, itemTotalBorrower];
+						return [itemTotalLender, itemTotalBorrower];
 					};
 
 					if (Array.isArray(res.data)) {
