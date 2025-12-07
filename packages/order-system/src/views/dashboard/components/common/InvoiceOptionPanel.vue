@@ -16,7 +16,7 @@ const API_CONFIG = {
 };
 
 export default {
-	name: 'ExcelImport',
+	name: 'InvoiceOptionPanel',
 	components: { BatchInvoicePanel },
 	props: {
 		mode: {
