@@ -658,6 +658,13 @@ export default {
 			// 保存订单的录入人员和销售经理信息
 			this.orderSaleManager = val.saleManager || null;
 			this.orderUserName = val.userName || null;
+			// 自动填充销售是否含税字段：检查smailOrderDetails中是否有任意一条isIncludeTaxSale为1
+			if (val.smailOrderDetails && Array.isArray(val.smailOrderDetails) && val.smailOrderDetails.length > 0) {
+				const hasIncludeTax = val.smailOrderDetails.some(item => item.isIncludeTaxSale === 1);
+				this.form.salesTaxIncluded = hasIncludeTax ? 1 : 0;
+			} else {
+				this.form.salesTaxIncluded = 0;
+			}
 			this.handleLoadOrderData();
 		},
 		handleUpdateSearchGoodsOrder(val) {
@@ -692,14 +699,10 @@ export default {
 					this.form.manufacturerRebateDiscountAmount = orderData.manufacturerRebateDiscountAmount;
 					this.form.acceptanceDiscountProfit = orderData.acceptanceDiscountProfit;
 					this.form.customerManufacturerCommissionAmount = orderData.customerManufacturerCommissionAmount;
-					this.form.comprehensiveProfit = orderData.comprehensiveProfit;
-					this.form.paymentAmount = orderData.paymentAmount;
-					// 自动填充销售是否含税字段
-					if (orderData.isIncludeTaxSale !== undefined && orderData.isIncludeTaxSale !== null) {
-						this.form.salesTaxIncluded = orderData.isIncludeTaxSale === 1 ? 1 : 0;
-					}
-					// 根据人员身份自动填充奖励接收人
-					this.fillRewardReceiver();
+				this.form.comprehensiveProfit = orderData.comprehensiveProfit;
+				this.form.paymentAmount = orderData.paymentAmount;
+				// 根据人员身份自动填充奖励接收人
+				this.fillRewardReceiver();
 				}
 			});
 		},
