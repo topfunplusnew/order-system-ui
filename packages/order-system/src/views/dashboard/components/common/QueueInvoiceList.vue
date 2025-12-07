@@ -119,9 +119,6 @@ export default {
 				this.$message.error('开票信息为空');
 				return;
 			}
-			if (!this.validateBatchAmounts(filteredInvoices)) {
-				return;
-			}
 
 			const res = await batchInvoice(filteredInvoices);
 			if (!res.data && !res.rows) {
@@ -166,55 +163,6 @@ export default {
 					this.handleInvoiceError(result, filteredInvoices);
 				}, 1000);
 			}
-		},
-
-		validateBatchAmounts(invoices = []) {
-			if (!invoices.length) {
-				return true;
-			}
-			// 从 batchDetailRows 构建校验信息
-			const batchDetailRows = this.$store?.getters?.batchDetailRows || [];
-			if (!batchDetailRows.length) {
-				return true; // 无原始数据时跳过校验
-			}
-
-			// 构建每个批次记录ID的预期金额映射
-			const expectedAmountMap = {};
-			batchDetailRows.forEach(row => {
-				if (row.id && !row.invoiced) {
-					expectedAmountMap[row.id] = Number(row.total || 0);
-				}
-			});
-
-			// 计算每个批次记录的开票金额
-			const sums = {};
-			invoices.forEach(item => {
-				const batchId = item?.batchInvoiceId;
-				if (!batchId) {
-					return;
-				}
-				if (!sums[batchId]) {
-					sums[batchId] = this.math.bignumber(0);
-				}
-				sums[batchId] = this.math.add(sums[batchId], this.math.bignumber(item.invoiceAmount || 0));
-			});
-
-			// 校验金额是否一致
-			for (const batchId of Object.keys(sums)) {
-				const expectedAmount = expectedAmountMap[batchId];
-				if (expectedAmount === undefined) {
-					continue; // 跳过无法校验的记录
-				}
-				const expected = this.math.bignumber(expectedAmount);
-				const diff = this.math.subtract(sums[batchId], expected);
-				if (!this.math.equal(this.math.round(diff, 2), this.math.bignumber(0))) {
-					const sumFormatted = Number(this.math.format(sums[batchId], { precision: 12, notation: 'fixed' })).toFixed(2);
-					const expectedFormatted = Number(this.math.format(expected, { precision: 12, notation: 'fixed' })).toFixed(2);
-					this.$message.error(`批次记录 ${batchId} 的开票金额 ${sumFormatted} 与导入金额 ${expectedFormatted} 不一致`);
-					return false;
-				}
-			}
-			return true;
 		},
 
 		// 处理开票错误详情
