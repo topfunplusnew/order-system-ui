@@ -44,8 +44,6 @@ const getters = {
 	freightInfo: state => state.trash.freightInfo,
 	// 出差信息中的部门信息
 	deptName: state => state.trash.deptName,
-	// excel数据
-	excelData: state => state.excel.excelData,
 	// 公共票点
 	ticketPoint: state => state.excel.ticketPoint,
 	// 备注
@@ -56,10 +54,12 @@ const getters = {
 	selectedInvoiceList: state => state.excel.selectedInvoiceList,
 	// 开票的金额
 	invoiceAmount: state => state.excel.invoiceAmount,
-	// 暂存购买的信息
-	purchaseTempInfo: state => state.excel.purchaseTempInfo,
-	sellerTempInfo: state => state.excel.sellerTempInfo,
-	companyList: state => state.excel.companyList,
+	// 批量开票详情数据
+	batchDetailRows: state => state.excel.batchDetailRows,
+	// 当前批量开票凭证号
+	currentVoucher: state => state.excel.currentVoucher,
+	// 当前批量开票模式
+	currentMode: state => state.excel.currentMode,
 
 	// 下载进度
 	downloadProgress: state => state.downloadOnce.percent,

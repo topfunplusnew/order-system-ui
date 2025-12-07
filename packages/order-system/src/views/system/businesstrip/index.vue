@@ -175,7 +175,7 @@
 											<el-input size="mini" disabled v-model="scope.row.carNo" />
 										</el-col>
 										<el-col :span="4">
-											<SearchOption :limit-info="{ auditState: '审核通过' }" :get-data="listCarApply" :query-name="queryCarApply" query-info="carNo" query-label="车牌" @commitBack="value => handleCommitBackCarApply(value, scope)" @update:queryName="handleQueryCarApply">
+											<SearchOption :limit-info="{ auditState: '已审核' }" :get-data="listCarApply" :query-name="queryCarApply" query-info="carNo" query-label="车牌" @commitBack="value => handleCommitBackCarApply(value, scope)" @update:queryName="handleQueryCarApply">
 												<template #table-columns>
 													<el-table-column label="申请人" prop="applyUser" />
 													<el-table-column label="部门" prop="department" />
@@ -253,8 +253,8 @@
 			</keep-alive>
 		</el-dialog>
 
-		<!-- 修改未审核通过车辆列表弹窗 -->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :visible.sync="notPassedCarDialogVisible" title="未审核通过的车辆" width="80%" height="600px">
+		<!-- 未审核车辆列表弹窗 -->
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :visible.sync="notPassedCarDialogVisible" title="未审核的车辆" width="80%" height="600px">
 			<el-table :data="notPassedCarList" border>
 				<el-table-column label="申请人" prop="applyUser" />
 				<el-table-column label="车牌号" prop="carNo" />
@@ -262,7 +262,7 @@
 				<el-table-column label="还车时间" prop="endTime" />
 				<el-table-column label="审核状态" prop="auditState">
 					<template slot-scope="scope">
-						<el-tag type="danger">{{ scope.row.auditState || '审核中' }}</el-tag>
+						<el-tag type="danger">{{ scope.row.auditState || '未审核' }}</el-tag>
 					</template>
 				</el-table-column>
 			</el-table>
@@ -421,7 +421,7 @@ export default {
 			checkedCars: [],
 			queryCarApply: '',
 
-			// 未审核通过车辆列表相关
+			// 未审核车辆列表相关
 			notPassedCarDialogVisible: false,
 			notPassedCarList: [],
 			// 报销人搜索字段
@@ -607,7 +607,7 @@ export default {
 						reject();
 						return;
 					}
-					this.$message.warning('存在未通过审核的车辆，请先等待车辆审核通过');
+					this.$message.warning('存在未审核的车辆，请先等待车辆审核');
 					// 存在未通过审核的车辆
 					this.notPassedCarList = res.data.notPassedCarApplyList;
 					this.notPassedCarDialogVisible = true;

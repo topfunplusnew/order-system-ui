@@ -117,7 +117,7 @@
 						</el-col>
 						<el-col :span="4">
 							<SearchOption
-								:limit-info="{ auditState: '审核通过' }"
+								:limit-info="{ auditState: '已审核' }"
 								:get-data="listCarApply"
 								query-info="carNo"
 								query-label="车牌"

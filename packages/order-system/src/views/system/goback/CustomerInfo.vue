@@ -416,7 +416,7 @@ export default {
 									const lender = amount;
 									const borrower = -amount;
 									return {
-										date: detail.operateDate,
+										date: date,
 										payNo: detail.payNo,
 										lender: fix(lender),
 										borrower: fix(borrower),

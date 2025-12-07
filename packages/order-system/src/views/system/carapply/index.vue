@@ -99,14 +99,14 @@
 					<el-switch
 						v-hasPermi="['system:carapply:audit']"
 						v-model="scope.row.auditState"
-						:active-value="'审核通过'"
-						:inactive-value="null"
+						:active-value="'已审核'"
+						:inactive-value="'未审核'"
 						active-text="已审核"
-						inactive-text="待审核"
+						inactive-text="未审核"
 						@change="(value) => handleAuditStateChange(scope.row, value)"
 					></el-switch>
-					<el-tag v-if="!checkPermi(['system:carapply:audit'])" :type="scope.row.auditState === '审核通过' ? 'success' : scope.row.auditState === '审核不通过' ? 'danger' : 'info'">
-						{{ scope.row.auditState || '待审核' }}
+					<el-tag v-if="!checkPermi(['system:carapply:audit'])" :type="scope.row.auditState === '已审核' ? 'success' : 'info'">
+						{{ scope.row.auditState || '未审核' }}
 					</el-tag>
 				</template>
 			</el-table-column>
@@ -821,8 +821,9 @@ export default {
 		/** 审核状态开关变化处理 */
 		handleAuditStateChange(row, value) {
 			const oldValue = row.auditState;
-			const auditState = value === '审核通过' ? '审核通过' : null;
-			const message = auditState === '审核通过' ? '审核通过成功' : '取消审核成功';
+			// 审核状态只有 "已审核" 和 "未审核" 两种
+			const auditState = value === '已审核' ? '已审核' : '未审核';
+			const message = auditState === '已审核' ? '审核成功' : '取消审核成功';
 			
 			auditCarApply(row.id, auditState)
 				.then(() => {
@@ -832,7 +833,7 @@ export default {
 				.catch(() => {
 					// 如果失败，恢复原状态
 					this.$set(row, 'auditState', oldValue);
-					this.$modal.msgError(auditState === '审核通过' ? '审核通过失败' : '取消审核失败');
+					this.$modal.msgError(auditState === '已审核' ? '审核失败' : '取消审核失败');
 				});
 		},
 		// 统一附件处理方法

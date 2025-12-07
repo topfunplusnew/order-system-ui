@@ -39,15 +39,10 @@ export default {
 		}
 	},
 	methods: {
-		// 恢复上次开票流程，直接打开批量开票全屏弹窗
+		// 查看开票记录（打开管理记录弹窗）
 		resumeLast() {
-			const raw = localStorage.getItem('batch-invoice-session');
-			if (!raw) {
-				this.$message.info('暂无上次开票会话');
-				return;
-			}
-			this.$bus.$emit('excel:resume');
-			this.dialogVisible = true;
+			this.$message.info('请在管理记录中查看和继续开票');
+			this.handleManage();
 		},
 		// 点击上传按钮
 		handleUpload() {
