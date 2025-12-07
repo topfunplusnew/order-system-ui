@@ -27,10 +27,15 @@ export default {
 				};
 			}
 		},
-		// 来自父组件（BatchInvoicePanel）的 IndexedDB 已操作映射：{ 'id::name': true/false }
-		operatedMap: {
-			type: Object,
-			default: () => ({})
+		// 当前批量开票模式
+		mode: {
+			type: String,
+			default: 'in'
+		},
+		// 当前批量开票凭证号
+		voucher: {
+			type: String,
+			default: ''
 		}
 	},
 	data() {
@@ -40,41 +45,34 @@ export default {
 		};
 	},
 	computed: {
-		// 从 Vuex 获取模板数据
-		purchaseTemplateData() {
-			return this.$store.state.excel.purchaseTemplateData || [];
-		},
-		sellerTemplateData() {
-			return this.$store.state.excel.sellerTemplateData || [];
+		// 从 Vuex 获取批次详情数据
+		batchDetailRows() {
+			return this.$store.getters.batchDetailRows || [];
 		},
 		selectedTemplateData() {
-			return this.side === 'purchase' ? this.purchaseTemplateData : this.sellerTemplateData;
+			// 根据 side 筛选批次数据
+			if (this.side === 'purchase') {
+				return this.batchDetailRows.filter(row => row.sellerId === 0);
+			}
+			return this.batchDetailRows.filter(row => row.sellerId !== 0);
 		}
 	},
 	mounted() {
 		// 重置行的样式
 		this.$bus.$on('select-goods-row:update', () => (this.selectedRowId = null));
-
-		// 监听已操作状态更新事件
-		this.$bus.$on('excel:operated-updated', payload => {
-			// 强制重新渲染组件以显示最新状态
-			this.$forceUpdate();
-		});
 	},
 	beforeDestroy() {
-		// 清除事件监听 防止内存泄漏
-		this.$bus.$off('select-goods:update'); // 清理事件监听
-		this.$bus.$off('excel:operated-updated'); // 清理已操作状态更新监听
+		this.$bus.$off('select-goods-row:update');
 	},
 	methods: {
-		// 获取公司ID（直接使用row.id作为公司ID）
+		// 获取公司ID
 		getCompanyId(row) {
 			if (!row) return null;
 			return Number(row.id) || null;
 		},
+		// 判断是否已操作（基于后端返回的 invoiced 字段）
 		isOperated(row) {
-			const companyId = this.getCompanyId(row);
-			return !!(companyId && this.operatedMap && this.operatedMap[companyId]);
+			return !!(row && row.invoiced);
 		},
 		openTemplateViewer() {
 			// 仅在有数据时打开

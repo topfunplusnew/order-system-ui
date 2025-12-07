@@ -1,36 +1,25 @@
 // 维护开票金额的模块
 
 const state = {
-	// 读取的excel数据sheets列表
-	excelData: [],
 	// 公共票点
 	ticketPoint: 0,
 	// 公共备注
 	comment: '',
 	// 打开的批量开票页面 已经选中的订单列表
 	selectedOrders: [],
-	// 选中的批量开票的列表 需要对订单列表进行处理 差一个选中订单后对订单的数据处理为开票的信息 然后交给右边组件进行批处理
+	// 选中的批量开票的列表
 	selectedInvoiceList: [],
 	// 开票金额 用于判断是否超过了金额 超过不允许开票
 	invoiceAmount: 0,
-	// 购买方临时信息存储 类型为数组
-	purchaseTempInfo: [],
-	// 卖家临时信息存储 类型为数组
-	sellerTempInfo: [],
-	// 导入模板数据（按购买方/销方）
-	purchaseTemplateData: [],
-	sellerTemplateData: [],
-	// 批量开票批次校验信息
-	batchMetaMap: {}
+	// 批量开票详情数据（从后端获取，用于生成发票）
+	batchDetailRows: [],
+	// 当前批量开票的凭证号
+	currentVoucher: '',
+	// 当前批量开票的模式（in/out）
+	currentMode: 'in'
 };
 
 const mutations = {
-	SET_EXCEL_DATA: (state, data) => {
-		state.excelData = data;
-	},
-	CLEAR_EXCEL_DATA: state => {
-		state.excelData = [];
-	},
 	SET_TICKET_POINT: (state, data) => {
 		state.ticketPoint = data;
 	},
@@ -61,71 +50,51 @@ const mutations = {
 	CLEAR_INVOICE_AMOUNT: state => {
 		state.invoiceAmount = 0;
 	},
-	// 加上开票金额
 	ADD_INVOICE_AMOUNT: (state, data) => {
-		// 开票金额不能为负数
 		if (data < 0) {
 			console.error('开票金额不能为负数');
 			return;
 		}
 		state.invoiceAmount = state.invoiceAmount + data;
 	},
-	// 扣除开票金额
 	SUBTRACT_INVOICE_AMOUNT: (state, data) => {
-		// 开票金额不能为负数
 		if (data < 0) {
 			console.error('开票金额不能为负数');
 			return;
 		}
 		state.invoiceAmount = state.invoiceAmount - data;
 	},
-
-	SET_PURCHASE_TEMP_INFO: (state, data) => {
-		state.purchaseTempInfo = data;
+	SET_BATCH_DETAIL_ROWS: (state, data) => {
+		state.batchDetailRows = data || [];
 	},
-	CLEAR_PURCHASE_TEMP_INFO: state => {
-		state.purchaseTempInfo = [];
+	CLEAR_BATCH_DETAIL_ROWS: state => {
+		state.batchDetailRows = [];
 	},
-	SET_SELLER_TEMP_INFO: (state, data) => {
-		state.sellerTempInfo = data;
+	SET_CURRENT_VOUCHER: (state, data) => {
+		state.currentVoucher = data || '';
 	},
-	CLEAR_SELLER_TEMP_INFO: state => {
-		state.sellerTempInfo = [];
+	SET_CURRENT_MODE: (state, data) => {
+		state.currentMode = data || 'in';
 	},
-	SET_PURCHASE_TEMPLATE: (state, data) => {
-		state.purchaseTemplateData = data;
-	},
-	CLEAR_PURCHASE_TEMPLATE: state => {
-		state.purchaseTemplateData = [];
-	},
-	SET_SELLER_TEMPLATE: (state, data) => {
-		state.sellerTemplateData = data;
-	},
-	CLEAR_SELLER_TEMPLATE: state => {
-		state.sellerTemplateData = [];
-	},
-	SET_BATCH_META_MAP: (state, data) => {
-		state.batchMetaMap = data || {};
-	},
-	CLEAR_BATCH_META_MAP: state => {
-		state.batchMetaMap = {};
+	// 更新批次详情中某条记录的开票状态
+	UPDATE_BATCH_ROW_INVOICED: (state, { id, invoiced, invoiceId }) => {
+		const row = state.batchDetailRows.find(r => r.id === id);
+		if (row) {
+			row.invoiced = invoiced;
+			if (invoiceId) {
+				row.invoiceId = invoiceId;
+			}
+		}
 	}
 };
 
 const actions = {
-	setExcelData({ commit }, data) {
-		commit('SET_EXCEL_DATA', data);
-	},
-	clearExcelData({ commit }) {
-		commit('CLEAR_EXCEL_DATA');
-	},
 	setTicketPoint({ commit }, data) {
 		commit('SET_TICKET_POINT', data);
 	},
 	clearTicketPoint({ commit }) {
 		commit('CLEAR_TICKET_POINT');
 	},
-
 	setComment({ commit }, data) {
 		commit('SET_COMMENT', data);
 	},
@@ -156,35 +125,20 @@ const actions = {
 	subtractInvoiceAmount({ commit }, data) {
 		commit('SUBTRACT_INVOICE_AMOUNT', data);
 	},
-	setPurchaseTempInfo({ commit }, data) {
-		commit('SET_PURCHASE_TEMP_INFO', data);
+	setBatchDetailRows({ commit }, data) {
+		commit('SET_BATCH_DETAIL_ROWS', data);
 	},
-	clearPurchaseTempInfo({ commit }) {
-		commit('CLEAR_PURCHASE_TEMP_INFO');
+	clearBatchDetailRows({ commit }) {
+		commit('CLEAR_BATCH_DETAIL_ROWS');
 	},
-	setSellerTempInfo({ commit }, data) {
-		commit('SET_SELLER_TEMP_INFO', data);
+	setCurrentVoucher({ commit }, data) {
+		commit('SET_CURRENT_VOUCHER', data);
 	},
-	clearSellerTempInfo({ commit }) {
-		commit('CLEAR_SELLER_TEMP_INFO');
+	setCurrentMode({ commit }, data) {
+		commit('SET_CURRENT_MODE', data);
 	},
-	setPurchaseTemplateData({ commit }, data) {
-		commit('SET_PURCHASE_TEMPLATE', data);
-	},
-	clearPurchaseTemplateData({ commit }) {
-		commit('CLEAR_PURCHASE_TEMPLATE');
-	},
-	setSellerTemplateData({ commit }, data) {
-		commit('SET_SELLER_TEMPLATE', data);
-	},
-	clearSellerTemplateData({ commit }) {
-		commit('CLEAR_SELLER_TEMPLATE');
-	},
-	setBatchMetaMap({ commit }, data) {
-		commit('SET_BATCH_META_MAP', data);
-	},
-	clearBatchMetaMap({ commit }) {
-		commit('CLEAR_BATCH_META_MAP');
+	updateBatchRowInvoiced({ commit }, payload) {
+		commit('UPDATE_BATCH_ROW_INVOICED', payload);
 	}
 };
 
