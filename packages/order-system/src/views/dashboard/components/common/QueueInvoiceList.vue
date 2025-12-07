@@ -223,7 +223,7 @@ export default {
 
 		/**
 		 * 生成发票（按批次数据分配）
-		 * 从订单和后端批次数据中自动生成发票列表
+		 * 模板金额是原子性的，不可拆分，能拼几条拼几条
 		 */
 		generateInvoicesByTemplates() {
 			const orders = this.$store.getters.selectedOrder || [];
@@ -231,7 +231,7 @@ export default {
 				return;
 			}
 
-			// 从 Vuex 获取批次详情数据（已从后端获取）
+			// 从 Vuex 获取批次详情数据
 			const batchRows = this.$store.getters.batchDetailRows || [];
 			if (!batchRows || batchRows.length === 0) {
 				this.$message.warning('暂无批次数据，无法生成发票');
@@ -260,26 +260,36 @@ export default {
 				return;
 			}
 
-			// 深拷贝批次数据，避免修改原始数据
-			const templatePool = filtered.map(t => ({ ...t }));
+			// 深拷贝批次数据，标记是否已使用
+			const templatePool = filtered.map(t => ({ ...t, _used: false }));
 			const resultInvoices = [];
 			const b = v => this.math.bignumber(v || 0);
 
 			for (const order of orders) {
 				let remaining = b(order.allPayments - (order.params?.totalInvoiceAmount || 0));
-				let orderFullyInvoiced = false;
 
 				if (this.math.equal(remaining, b(0))) {
 					continue;
 				}
 
+				// 遍历模板，找出能完整使用的（金额 <= 剩余金额）
 				for (let i = 0; i < templatePool.length; i++) {
 					const tpl = templatePool[i];
-					let tplAmount = b(tpl.total || 0);
 
-					if (this.math.equal(tplAmount, b(0))) continue;
+					// 跳过已使用或金额为0的模板
+					if (tpl._used || this.math.equal(b(tpl.total || 0), b(0))) {
+						continue;
+					}
 
-					const used = this.math.largerEq(tplAmount, remaining) ? remaining : tplAmount;
+					const tplAmount = b(tpl.total || 0);
+
+					// 模板金额大于剩余金额，跳过（不拆分）
+					if (this.math.larger(tplAmount, remaining)) {
+						continue;
+					}
+
+					// 使用整个模板金额（原子性，不拆分）
+					const used = tplAmount;
 
 					// 确定公司信息
 					let companyTypeConst = this.invoiceType;
@@ -334,22 +344,22 @@ export default {
 					);
 					resultInvoices.push(invoice);
 
-					// 更新剩余金额
+					// 标记模板已使用，更新剩余金额
+					templatePool[i]._used = true;
 					remaining = this.math.subtract(remaining, used);
-					templatePool[i].total = Number(this.math.format(this.math.subtract(tplAmount, used), { precision: 2, notation: 'fixed' }));
 
+					// 如果剩余金额为0，结束当前订单的匹配
 					if (this.math.largerEq(b(0), remaining) || this.math.equal(remaining, b(0))) {
-						orderFullyInvoiced = true;
 						break;
 					}
 				}
-
-				if (orderFullyInvoiced) continue;
 			}
 
 			if (resultInvoices.length > 0) {
 				this.$store.dispatch('excel/setSelectedInvoiceList', resultInvoices);
 				this.$message.success(`已自动生成 ${resultInvoices.length} 条发票记录`);
+			} else {
+				this.$message.warning('没有找到合适的批次记录来生成发票');
 			}
 		},
 
