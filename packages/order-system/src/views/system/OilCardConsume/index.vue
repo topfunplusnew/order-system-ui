@@ -282,8 +282,7 @@ export default {
 			],
 			oilCardNoQuery: null,
 			carNo: null,
-			queryCarApply: '',
-			carApplyDisplay: ''
+			queryCarApply: ''
 		};
 	},
 	// 展示与隐藏
@@ -345,6 +344,7 @@ export default {
 			this.form = {
 				id: null,
 				carApplyId: null,
+				carApplyDisplay: null,
 				bTripId: null,
 				oilCardNo: null,
 				useDate: parseTime(new Date()),
@@ -368,7 +368,6 @@ export default {
 					attachmentIds: []
 				}
 			};
-			this.carApplyDisplay = '';
 			this.resetForm('form');
 			// 清除上传组件状态
 			if (this.$refs.attachmentUpload) {
@@ -380,7 +379,8 @@ export default {
 			this.form.carApplyId = value.id;
 			this.form.carNo = value.carNo;
 			this.form.useDate = value.startTime;
-			this.carApplyDisplay = `${value.carNo} - ${value.applyUser}`;
+			// 修复：设置 form.carApplyDisplay 而不是 this.carApplyDisplay，展示车辆派出id
+			this.form.carApplyDisplay = String(value.id);
 		},
 		// 选择油卡时自动填充期初余额
 		handleOilCardSelect(value) {
@@ -443,6 +443,8 @@ export default {
 			getOilCardConsume(id).then(response => {
 				this.form = {
 					...response.data,
+					// 如果有 carApplyId，显示它
+					carApplyDisplay: response.data.carApplyId ? String(response.data.carApplyId) : null,
 					params: {
 						...response.data.params,
 						attachmentIds: response.data.attachmentList ? response.data.attachmentList.map(item => item.id) : []
