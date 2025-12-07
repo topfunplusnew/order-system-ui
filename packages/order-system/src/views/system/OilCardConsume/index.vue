@@ -57,11 +57,10 @@
 			<el-table-column v-if="columns[5].visible" label="加油量" align="center" prop="refuelingNumber" width="110" show-overflow-tooltip />
 			<el-table-column v-if="columns[6].visible" label="单价" align="center" prop="unitPrice" width="110" show-overflow-tooltip />
 			<el-table-column v-if="columns[7].visible" label="加油金额(元）" align="center" prop="refuelingMoney" width="110" show-overflow-tooltip />
-			<el-table-column v-if="columns[8].visible" label="充值金额(元）" align="center" prop="rechargeMoney" width="110" show-overflow-tooltip />
-			<el-table-column v-if="columns[9].visible" label="加油卡余额" align="center" prop="endCardSurplus" width="110" show-overflow-tooltip />
+			<el-table-column v-if="columns[8].visible" label="加油卡余额" align="center" prop="endCardSurplus" width="110" show-overflow-tooltip />
 			<!--      <el-table-column label="加油小票附件" align="center" prop="attachmentOiladd" v-if="columns[10].visible"-->
 			<!--                       width="300px"/>-->
-			<el-table-column v-if="columns[10].visible" label="加油小票附件" align="center" prop="attachmentOiladd" show-overflow-tooltip>
+			<el-table-column v-if="columns[9].visible" label="加油小票附件" align="center" prop="attachmentOiladd" show-overflow-tooltip>
 				<template #default="scope">
 					<div v-if="Array.isArray(scope.row.attachmentList)">
 						<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'attachmentOiladd'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getOilCardConsume, updateOilCardConsume)" />
@@ -71,7 +70,7 @@
 					</div>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[11].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
+			<el-table-column v-if="columns[10].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
 				<template slot-scope="scope">
 					<el-button v-hasPermi="['system:oilcardconsume:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
@@ -146,7 +145,7 @@
 					<el-input v-model="form.locationReason" placeholder="请输入地点和事由" />
 				</el-form-item>
 				<el-form-item label="期初余额" prop="startCardSurplus">
-					<el-input v-model="form.startCardSurplus" placeholder="选择油卡时自动计算，允许手动修改" />
+					<el-input v-model="form.startCardSurplus" placeholder="选择油卡时自动计算，允许手动修改" @blur="calculateEndCardSurplus" />
 				</el-form-item>
 				<el-form-item label="用加油卡加油次数" prop="refuelingCount">
 					<el-input type="number" v-model="form.refuelingCount" placeholder="请输入用加油卡加油次数" />
@@ -159,9 +158,6 @@
 				</el-form-item>
 				<el-form-item label="加油金额(元）" prop="refuelingMoney">
 					<el-input v-model="form.refuelingMoney" placeholder="填完加油量和单价后自动计算，允许修改" @blur="calculateEndCardSurplus" />
-				</el-form-item>
-				<el-form-item label="充值金额(元）" prop="rechargeMoney">
-					<el-input v-model="form.rechargeMoney" placeholder="请输入充值金额(元）" />
 				</el-form-item>
 				<el-form-item label="加油卡余额" prop="endCardSurplus">
 					<el-input v-model="form.endCardSurplus" placeholder="填完加油金额和期初余额后自动计算，允许修改" />
@@ -241,7 +237,6 @@ export default {
 				refuelingNumber: null,
 				unitPrice: null,
 				refuelingMoney: null,
-				rechargeMoney: null,
 				endCardSurplus: null,
 				attachmentOiladd: null,
 				comments: null,
@@ -262,7 +257,6 @@ export default {
 				refuelingNumber: [{ required: true, trigger: 'blur', validator: validateNumber }],
 				unitPrice: [{ required: true, trigger: 'blur', validator: validateNumber }],
 				refuelingMoney: [{ required: true, trigger: 'blur', validator: validateNumber }],
-				rechargeMoney: [{ required: false }],
 				endCardSurplus: [{ required: true, trigger: 'blur', validator: validateNumber }],
 				receiptReturned: [{ required: true, message: '请选择加油小票是否交回', trigger: 'change' }]
 			},
@@ -275,10 +269,9 @@ export default {
 				{ key: 5, label: `加油量`, visible: true },
 				{ key: 6, label: `单价`, visible: true },
 				{ key: 7, label: `加油金额（元）`, visible: true },
-				{ key: 8, label: `充值金额（元）`, visible: true },
-				{ key: 9, label: `加油卡余额`, visible: true },
-				{ key: 10, label: `加油小票附件`, visible: true },
-				{ key: 11, label: `备注`, visible: true }
+				{ key: 8, label: `加油卡余额`, visible: true },
+				{ key: 9, label: `加油小票附件`, visible: true },
+				{ key: 10, label: `备注`, visible: true }
 			],
 			oilCardNoQuery: null,
 			carNo: null,
@@ -355,7 +348,6 @@ export default {
 				refuelingNumber: null,
 				unitPrice: null,
 				refuelingMoney: null,
-				rechargeMoney: '0',
 				endCardSurplus: null,
 				receiptReturned: '是',
 				comments: null,
