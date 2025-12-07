@@ -561,12 +561,15 @@ export default {
 <style scoped lang="scss">
 .invoice-body-wrapper {
 	height: 100%;
+	max-height: 100%;
 	display: flex;
 	flex-direction: column;
+	overflow: hidden;
 }
 
 .invoice-card {
 	height: 100%;
+	max-height: 100%;
 	display: flex;
 	flex-direction: column;
 	box-shadow: none;
@@ -587,6 +590,7 @@ export default {
 
 	::v-deep .el-card__body {
 		flex: 1;
+		min-height: 0;
 		padding: 16px;
 		overflow: hidden;
 		display: flex;
@@ -597,8 +601,10 @@ export default {
 
 .invoice-content {
 	height: 100%;
+	min-height: 0;
 	display: flex;
 	flex-direction: column;
+	overflow: hidden;
 }
 
 .bold-text {
@@ -608,7 +614,7 @@ export default {
 }
 
 .info-section {
-	flex-shrink: 0;
+	flex: 0 0 auto;
 	margin-bottom: 16px;
 	padding: 12px;
 	background-color: #f8f9fa;
@@ -647,8 +653,9 @@ export default {
 
 .invoice-list {
 	flex: 1;
-	overflow-y: auto;
 	min-height: 0;
+	max-height: calc(100% - 140px); /* 减去 info-section 和 options 的高度 */
+	overflow-y: auto;
 	margin-bottom: 16px;
 	border: none;
 	border-radius: 0;
@@ -675,7 +682,7 @@ export default {
 }
 
 .options {
-	flex-shrink: 0;
+	flex: 0 0 auto;
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -705,10 +712,6 @@ export default {
 @media screen and (max-width: 1200px) {
 	.info-section {
 		padding: 10px;
-	}
-
-	.invoice-list {
-		min-height: 200px;
 	}
 }
 
@@ -747,7 +750,6 @@ export default {
 
 	.invoice-list {
 		margin-bottom: 12px;
-		min-height: 150px;
 	}
 
 	.options {
