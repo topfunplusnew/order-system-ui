@@ -13,7 +13,7 @@ import INVOICE_OUT from '@/components/NeedToShow/INVOICE_OUT.vue';
 import INVOICE_IN from '@/components/NeedToShow/INVOICE_IN.vue';
 
 export default {
-	name: 'InvoiceBody',
+	name: 'QueueInvoiceList',
 	components: { InvoiceItem },
 	mixins: [common_dialog],
 	props: {},
@@ -57,7 +57,7 @@ export default {
 		}
 	},
 	methods: {
-		// 保存当前生成结果到本地（与 SheetList 会话格式兼容）
+		// 保存当前生成结果到本地（与 BatchInvoicePanel 会话格式兼容）
 		saveGeneratedInvoicesSession() {
 			try {
 				const raw = localStorage.getItem('batch-invoice-session');
@@ -161,7 +161,7 @@ export default {
 				sessionStorage.removeItem('us');
 				// 标记公司为已操作——放在清理事件之前，避免 sessionStorage 被清空
 				try {
-					// 优先根据 CompanysList 选中行的公司ID精确标记
+					// 优先根据 InvoiceCompanysList 选中行的公司ID精确标记
 					const selectedCompanyId = sessionStorage.getItem('companyList_selected_company_id');
 					console.log('selectedCompanyId', selectedCompanyId);
 					if (selectedCompanyId && selectedCompanyId !== 'null' && selectedCompanyId !== 'undefined') {

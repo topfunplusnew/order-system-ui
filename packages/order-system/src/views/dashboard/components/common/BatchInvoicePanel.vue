@@ -1,9 +1,9 @@
 <script>
 import { create, all } from 'mathjs';
 import { getCompany } from '@/api/system/company';
-import CompanysList from '@/views/dashboard/components/common/CompanysList.vue';
+import InvoiceCompanysList from '@/views/dashboard/components/common/InvoiceCompanysList.vue';
 // import CompanyInformation from '@/views/dashboard/components/common/CompanyInformation.vue';
-import InvoiceBody from '@/views/dashboard/components/common/InvoiceBody.vue';
+import QueueInvoiceList from '@/views/dashboard/components/common/QueueInvoiceList.vue';
 import SelectGoods from '@/views/dashboard/components/common/SelectGoods.vue';
 import { mixin_excel_server } from '@/views/dashboard/components/common/utils/excelServer';
 import DragDiv from '@/components/DragDiv/index.vue';
@@ -12,7 +12,7 @@ import { listBatchInvoiceIn, listBatchInvoiceOut, deleteBatchInvoiceInByVoucher,
 
 // 默认导出组件
 export default {
-	name: 'SheetList',
+	name: 'BatchInvoicePanel',
 	computed: {
 		// 判断当前应该显示购买方还是销方
 		currentSide() {
@@ -38,8 +38,8 @@ export default {
 		}
 	},
 	components: {
-		CompanysList,
-		InvoiceBody,
+		InvoiceCompanysList,
+		QueueInvoiceList,
 		// CompanyInformation,
 		SelectGoods,
 		DragDiv
@@ -813,7 +813,7 @@ export default {
 		<div>
 			<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="批量开票" fullscreen :visible.sync="invoiceAllVisible" append-to-body class="invoice-dialog">
 				<div class="invoice-container">
-					<!-- 上下布局：上面是 CompanysList + InvoiceBody（DragDiv），下面是 SelectGoods -->
+					<!-- 上下布局：上面是 InvoiceCompanysList + QueueInvoiceList（DragDiv），下面是 SelectGoods -->
 					<div class="invoice-layout">
 						<!-- 上半部分：公司列表和开票信息（左右布局，使用DragDiv） -->
 						<div class="top-section">
@@ -862,7 +862,7 @@ export default {
 															<span class="title-text">{{ currentSideTitle }}</span>
 														</div>
 													</div>
-													<CompanysList
+													<InvoiceCompanysList
 														v-if="currentCompanyTotalInfo && currentCompanyTotalInfo.length > 0"
 														:side="currentSide"
 														:company-total-info="currentCompanyTotalInfo"
@@ -881,7 +881,7 @@ export default {
 
 								<template #right>
 									<div class="section-wrapper">
-										<InvoiceBody />
+										<QueueInvoiceList />
 									</div>
 								</template>
 							</DragDiv>

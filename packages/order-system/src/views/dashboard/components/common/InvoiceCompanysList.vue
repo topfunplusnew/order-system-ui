@@ -5,7 +5,7 @@ import { getCompany } from '../../../../api/system/company';
 import _ from 'lodash';
 
 export default {
-	name: 'CompanysList',
+	name: 'InvoiceCompanysList',
 	mixins: [common_dialog],
 	props: {
 		side: {
@@ -27,7 +27,7 @@ export default {
 				};
 			}
 		},
-		// 来自父组件（SheetList）的 IndexedDB 已操作映射：{ 'id::name': true/false }
+		// 来自父组件（BatchInvoicePanel）的 IndexedDB 已操作映射：{ 'id::name': true/false }
 		operatedMap: {
 			type: Object,
 			default: () => ({})

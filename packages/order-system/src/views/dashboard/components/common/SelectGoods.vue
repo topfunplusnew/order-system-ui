@@ -278,14 +278,14 @@ export default {
 				if (removedRows.length !== 0) {
 					money = this.calculateMoney(removedRows, this.type);
 					if (money && money > 0) {
-						this.$store.commit('excel/ADD_INVOICE_AMOUNT', money);
+						this.$store.dispatch('excel/addInvoiceAmount', money);
 					}
 				}
 				if (addedRows.length !== 0) {
 					money = this.calculateMoney(addedRows, this.type);
 
 					if (money && money > 0) {
-						this.$store.commit('excel/MULTI_INVOICE_AMOUNT', money);
+						this.$store.dispatch('excel/subtractInvoiceAmount', money);
 					}
 				}
 			} catch (err) {
