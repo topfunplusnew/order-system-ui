@@ -65,40 +65,26 @@
 					{{ scope.row.isUseOilCard === 1 ? '是' : '否' }}
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[5].visible" label="油卡号" align="center" prop="oilCard" show-overflow-tooltip />
-			<el-table-column v-if="columns[6].visible" label="随同乘车人员" align="center" prop="peers" show-overflow-tooltip />
-			<el-table-column v-if="columns[7].visible" label="用车时间" align="center" prop="startTime" show-overflow-tooltip />
-			<el-table-column v-if="columns[8].visible" label="还车时间" align="center" prop="endTime" show-overflow-tooltip />
-			<el-table-column v-if="columns[9].visible" label="用车事由" align="center" prop="applyPurpose" show-overflow-tooltip />
-			<el-table-column v-if="columns[10].visible" label="出车前里程" align="center" prop="startMile" show-overflow-tooltip />
-			<el-table-column v-if="columns[11].visible" label="出车前车况" align="center" prop="startCarState" show-overflow-tooltip />
-			<el-table-column v-if="columns[12].visible" label="回来后里程" align="center" prop="endMile" show-overflow-tooltip />
-			<el-table-column v-if="columns[13].visible" label="回来后车况" align="center" prop="endCarState" show-overflow-tooltip />
-			<el-table-column v-if="columns[14].visible" label="用车里程数" align="center" prop="miles" show-overflow-tooltip />
-			<el-table-column v-if="columns[15].visible" label="回程停靠位置" align="center" prop="backStopPlace" show-overflow-tooltip />
-			<el-table-column v-if="columns[16].visible" label="行程中违法次数" align="center" prop="violationsCount" show-overflow-tooltip />
-			<el-table-column v-if="columns[17].visible" label="违章罚款金额" align="center" prop="fine" show-overflow-tooltip />
-			<el-table-column v-if="columns[18].visible" label="行程中是否维修/保养" align="center" prop="isMaintenance" show-overflow-tooltip />
-			<el-table-column v-if="columns[19].visible" label="保养金额" align="center" prop="maintenanceMoney" show-overflow-tooltip />
-			<el-table-column v-if="columns[20].visible" label="维修金额" align="center" prop="repairMoney" show-overflow-tooltip />
-			<el-table-column v-if="columns[21].visible" label="用加油卡加油次数" align="center" prop="refuelingFrequency" show-overflow-tooltip />
-			<el-table-column v-if="columns[22].visible" label="加油金额" align="center" prop="refuelingMoney" show-overflow-tooltip />
-			<el-table-column v-if="columns[23].visible" label="现金加油次数" align="center" prop="cashRefuelingFrequency" show-overflow-tooltip />
-			<el-table-column v-if="columns[24].visible" label="加油小票是否交回公司" align="center" prop="isTicketReturned" show-overflow-tooltip />
-			<el-table-column v-if="columns[25].visible" label="加油小票附件" align="center" prop="refuelingReceipt" show-overflow-tooltip>
-				<template slot-scope="scope">
-					<div v-if="Array.isArray(scope.row.attachmentList)">
-						<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'refuelingReceipt'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getCarApply, updateCarApply)" />
-					</div>
-					<div v-else>
-						<el-tag type="danger">加载错误</el-tag>
-					</div>
-				</template>
-			</el-table-column>
-			<el-table-column v-if="columns[26].visible" label="现金加油金额" align="center" prop="cashRefueling" show-overflow-tooltip />
-			<el-table-column v-if="columns[27].visible" label="派车人" align="center" prop="dispatchPerson" show-overflow-tooltip />
-			<el-table-column v-if="columns[28].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
-			<el-table-column v-if="columns[29].visible" label="附件" align="center" prop="attachmentList" show-overflow-tooltip>
+			<el-table-column v-if="columns[5].visible" label="随同乘车人员" align="center" prop="peers" show-overflow-tooltip />
+			<el-table-column v-if="columns[6].visible" label="用车时间" align="center" prop="startTime" show-overflow-tooltip />
+			<el-table-column v-if="columns[7].visible" label="还车时间" align="center" prop="endTime" show-overflow-tooltip />
+			<el-table-column v-if="columns[8].visible" label="用车事由" align="center" prop="applyPurpose" show-overflow-tooltip />
+			<el-table-column v-if="columns[9].visible" label="出车前里程" align="center" prop="startMile" show-overflow-tooltip />
+			<el-table-column v-if="columns[10].visible" label="出车前车况" align="center" prop="startCarState" show-overflow-tooltip />
+			<el-table-column v-if="columns[11].visible" label="回来后里程" align="center" prop="endMile" show-overflow-tooltip />
+			<el-table-column v-if="columns[12].visible" label="回来后车况" align="center" prop="endCarState" show-overflow-tooltip />
+			<el-table-column v-if="columns[13].visible" label="用车里程数" align="center" prop="miles" show-overflow-tooltip />
+			<el-table-column v-if="columns[14].visible" label="回程停靠位置" align="center" prop="backStopPlace" show-overflow-tooltip />
+			<el-table-column v-if="columns[15].visible" label="行程中违法次数" align="center" prop="violationsCount" show-overflow-tooltip />
+			<el-table-column v-if="columns[16].visible" label="违章罚款金额" align="center" prop="fine" show-overflow-tooltip />
+			<el-table-column v-if="columns[17].visible" label="行程中是否维修/保养" align="center" prop="isMaintenance" show-overflow-tooltip />
+			<el-table-column v-if="columns[18].visible" label="保养金额" align="center" prop="maintenanceMoney" show-overflow-tooltip />
+			<el-table-column v-if="columns[19].visible" label="维修金额" align="center" prop="repairMoney" show-overflow-tooltip />
+			<el-table-column v-if="columns[20].visible" label="现金加油次数" align="center" prop="cashRefuelingFrequency" show-overflow-tooltip />
+			<el-table-column v-if="columns[21].visible" label="现金加油金额" align="center" prop="cashRefueling" show-overflow-tooltip />
+			<el-table-column v-if="columns[22].visible" label="派车人" align="center" prop="dispatchPerson" show-overflow-tooltip />
+			<el-table-column v-if="columns[23].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
+			<el-table-column v-if="columns[24].visible" label="附件" align="center" prop="attachmentList" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<div v-if="Array.isArray(scope.row.attachmentList)">
 						<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'attachments'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getCarApply, updateCarApply)" />
@@ -108,7 +94,7 @@
 					</div>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[30].visible" label="审核状态" align="center" prop="auditState" width="300px" show-overflow-tooltip>
+			<el-table-column v-if="columns[25].visible" label="审核状态" align="center" prop="auditState" width="300px" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<el-switch
 						v-hasPermi="['system:carapply:audit']"
@@ -449,32 +435,27 @@ export default {
 				{ key: 2, label: '部门', visible: true },
 				{ key: 3, label: '车牌', visible: true },
 				{ key: 4, label: '是否携带油卡', visible: true },
-				{ key: 5, label: '油卡号', visible: true },
-				{ key: 6, label: '随同乘车人员', visible: true },
-				{ key: 7, label: '用车时间', visible: true },
-				{ key: 8, label: '还车时间', visible: true },
-				{ key: 9, label: '用车事由', visible: true },
-				{ key: 10, label: '出车前里程', visible: true },
-				{ key: 11, label: '出车前车况', visible: true },
-				{ key: 12, label: '回来后里程', visible: true },
-				{ key: 13, label: '回来后车况', visible: true },
-				{ key: 14, label: '用车里程数', visible: true },
-				{ key: 15, label: '回程停靠位置', visible: true },
-				{ key: 16, label: '行程中违法次数', visible: true },
-				{ key: 17, label: '违章罚款金额', visible: true },
-				{ key: 18, label: '行程中是否维修/保养', visible: true },
-				{ key: 19, label: '保养金额', visible: true },
-				{ key: 20, label: '维修金额', visible: true },
-				{ key: 21, label: '用加油卡加油次数', visible: true },
-				{ key: 22, label: '加油金额', visible: true },
-				{ key: 23, label: '现金加油次数', visible: true },
-				{ key: 24, label: '加油小票是否交回公司', visible: true },
-				{ key: 25, label: '加油小票附件', visible: true },
-				{ key: 26, label: '现金加油金额', visible: true },
-				{ key: 27, label: '派车人', visible: true },
-				{ key: 28, label: '备注', visible: true },
-				{ key: 29, label: '附件', visible: true },
-				{ key: 30, label: '审核状态', visible: true }
+				{ key: 5, label: '随同乘车人员', visible: true },
+				{ key: 6, label: '用车时间', visible: true },
+				{ key: 7, label: '还车时间', visible: true },
+				{ key: 8, label: '用车事由', visible: true },
+				{ key: 9, label: '出车前里程', visible: true },
+				{ key: 10, label: '出车前车况', visible: true },
+				{ key: 11, label: '回来后里程', visible: true },
+				{ key: 12, label: '回来后车况', visible: true },
+				{ key: 13, label: '用车里程数', visible: true },
+				{ key: 14, label: '回程停靠位置', visible: true },
+				{ key: 15, label: '行程中违法次数', visible: true },
+				{ key: 16, label: '违章罚款金额', visible: true },
+				{ key: 17, label: '行程中是否维修/保养', visible: true },
+				{ key: 18, label: '保养金额', visible: true },
+				{ key: 19, label: '维修金额', visible: true },
+				{ key: 20, label: '现金加油次数', visible: true },
+				{ key: 21, label: '现金加油金额', visible: true },
+				{ key: 22, label: '派车人', visible: true },
+				{ key: 23, label: '备注', visible: true },
+				{ key: 24, label: '附件', visible: true },
+				{ key: 25, label: '审核状态', visible: true }
 			],
 
 			queryItemsOilCard: {
