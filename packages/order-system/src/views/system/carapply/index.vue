@@ -278,9 +278,9 @@
 						<el-form-item v-if="Number(supplementForm.cashRefuelingFrequency) > 0" label="现金加油金额" prop="cashRefueling">
 							<el-input v-model="supplementForm.cashRefueling" placeholder="请输入现金加油金额" @input="handleNumberInput($event, 'cashRefueling', 'supplementForm')" />
 						</el-form-item>
-						<el-form-item label="附件" prop="attachmentList">
-							<UploadFilesButton flag="attachments" @files-updated="handleSupplementAttachmentFilesUpdated" :initial-attachments="supplementForm.attachmentList || []" />
-						</el-form-item>
+					<el-form-item label="附件" prop="attachmentList">
+						<UploadFilesButton ref="supplementAttachmentUpload" flag="attachments" @files-updated="handleSupplementAttachmentFilesUpdated" :initial-attachments="supplementForm.attachmentList || []" />
+					</el-form-item>
 					</el-col>
 				</el-row>
 			</el-form>
@@ -904,9 +904,10 @@ export default {
 			const id = row.id || this.ids;
 			getCarApply(id).then(response => {
 				const attachmentList = response.data.attachmentList || [];
-				// 筛选普通附件
+				// 筛选普通附件（flag === 'attachments'）
 				const generalAttachments = attachmentList.filter(item => item.flag === 'attachments');
 				
+				// 先设置表单数据，确保 attachmentList 正确设置
 				this.supplementForm = {
 					id: response.data.id,
 					endTime: response.data.endTime,
@@ -928,11 +929,25 @@ export default {
 						attachmentIds: generalAttachments.map(item => item.id)
 					}
 				};
+				
+				// 打开弹窗
 				this.supplementOpen = true;
+				
+				// 弹窗打开后，确保附件组件正确初始化
+				this.$nextTick(() => {
+					if (this.$refs.supplementAttachmentUpload) {
+						// 手动设置附件列表，确保组件正确初始化
+						this.$refs.supplementAttachmentUpload.setAttachments(generalAttachments);
+					}
+				});
 			});
 		},
 		cancelSupplement() {
 			this.supplementOpen = false;
+			// 清除上传组件状态
+			if (this.$refs.supplementAttachmentUpload) {
+				this.$refs.supplementAttachmentUpload.clearUploadedFiles();
+			}
 			this.resetSupplement();
 		},
 		submitSupplementForm() {
