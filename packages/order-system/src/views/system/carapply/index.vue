@@ -76,12 +76,22 @@
 			<el-table-column v-if="columns[17].visible" label="行程中是否维修/保养" align="center" prop="isMaintenance" show-overflow-tooltip />
 			<el-table-column v-if="columns[18].visible" label="保养金额" align="center" prop="maintenanceMoney" show-overflow-tooltip />
 			<el-table-column v-if="columns[19].visible" label="维修金额" align="center" prop="repairMoney" show-overflow-tooltip />
-			<el-table-column v-if="columns[20].visible" label="行程中使用加油卡加油次数" align="center" prop="refuelingFrequency" show-overflow-tooltip />
-			<el-table-column v-if="columns[21].visible" label="加油金额" align="center" prop="refuelingMoney" show-overflow-tooltip />
-			<el-table-column v-if="columns[22].visible" label="现金加油次数" align="center" prop="cashRefuelingFrequency" show-overflow-tooltip />
-			<el-table-column v-if="columns[23].visible" label="加油卡余额" align="center" prop="oilCardBalance" show-overflow-tooltip />
-			<el-table-column v-if="columns[24].visible" label="加油小票是否交回公司" align="center" prop="isTicketReturned" show-overflow-tooltip />
-			<el-table-column v-if="columns[25].visible" label="现金加油金额" align="center" prop="cashRefueling" show-overflow-tooltip />
+			<el-table-column v-if="columns[20].visible" label="现金加油次数" align="center" prop="cashRefuelingFrequency" show-overflow-tooltip />
+			<el-table-column v-if="columns[21].visible" label="现金加油金额" align="center" prop="cashRefueling" show-overflow-tooltip />
+			<el-table-column v-if="columns[22].visible" label="行程中使用加油卡加油次数" align="center" prop="refuelingFrequency" show-overflow-tooltip />
+			<el-table-column v-if="columns[23].visible" label="加油金额" align="center" prop="refuelingMoney" show-overflow-tooltip />
+			<el-table-column v-if="columns[24].visible" label="加油卡余额" align="center" prop="oilCardBalance" show-overflow-tooltip />
+			<el-table-column v-if="columns[30].visible" label="加油小票是否交回公司" align="center" prop="isTicketReturned" show-overflow-tooltip />
+			<el-table-column v-if="columns[31].visible" label="加油小票" align="center" prop="oilTicketAttachmentList" show-overflow-tooltip>
+				<template slot-scope="scope">
+					<div v-if="Array.isArray(scope.row.oilTicketAttachmentList)">
+						<CheckFiles :attachmentList="scope.row.oilTicketAttachmentList" :flag="'oilTicket'" @needToUpdate="value => handleUpdateOilTicketFilePath(value, scope.row, getCarApply, updateCarApply)" />
+					</div>
+					<div v-else>
+						<el-tag type="danger">加载错误</el-tag>
+					</div>
+				</template>
+			</el-table-column>
 			<el-table-column v-if="columns[26].visible" label="派车人" align="center" prop="dispatchPerson" show-overflow-tooltip />
 			<el-table-column v-if="columns[27].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
 			<el-table-column v-if="columns[28].visible" label="附件" align="center" prop="attachmentList" show-overflow-tooltip>
@@ -163,9 +173,9 @@
 							<el-form-item label="用车事由" prop="applyPurpose">
 								<el-input v-model="form.applyPurpose" placeholder="请输入用车事由" />
 							</el-form-item>
-							<el-form-item label="出车前里程" prop="startMile">
-								<el-input v-model="form.startMile" placeholder="请输入出车前里程" />
-							</el-form-item>
+						<el-form-item label="出车前里程" prop="startMile">
+							<el-input v-model="form.startMile" placeholder="请输入出车前里程" @input="handleStartMileInput" />
+						</el-form-item>
 						</el-col>
 						<el-col :span="12">
 							<el-form-item label="出车前车况" prop="startCarState">
@@ -235,10 +245,10 @@
 							<el-input v-model="supplementForm.backStopPlace" placeholder="请输入回程停靠位置" />
 						</el-form-item>
 						<el-form-item label="回来后里程" prop="endMile">
-							<el-input v-model="supplementForm.endMile" placeholder="请输入回来后里程" />
+							<el-input v-model="supplementForm.endMile" placeholder="请输入回来后里程" @input="handleEndMileInput" />
 						</el-form-item>
 						<el-form-item label="用车里程数" prop="miles">
-							<el-input v-model="supplementForm.miles" placeholder="请输入用车里程数" />
+							<el-input v-model="supplementForm.miles" placeholder="请输入用车里程数" readonly />
 						</el-form-item>
 						<el-form-item label="回来后车况" prop="endCarState">
 							<el-input v-model="supplementForm.endCarState" type="textarea" placeholder="外观完好，需清洗，左后胎压正常" />
@@ -250,24 +260,40 @@
 							<el-radio v-model="supplementForm.isMaintenance" label="否">否</el-radio>
 						</el-form-item>
 						<el-form-item v-if="supplementForm.isMaintenance === '是'" label="保养金额" prop="maintenanceMoney">
-							<el-input v-model="supplementForm.maintenanceMoney" placeholder="请输入保养金额" />
+							<el-input v-model="supplementForm.maintenanceMoney" placeholder="请输入保养金额" @input="handleMaintenanceMoneyInput" />
 						</el-form-item>
 						<el-form-item v-if="supplementForm.isMaintenance === '是'" label="维修金额" prop="repairMoney">
-							<el-input v-model="supplementForm.repairMoney" placeholder="请输入维修金额" />
+							<el-input v-model="supplementForm.repairMoney" placeholder="请输入维修金额" @input="handleRepairMoneyInput" />
 						</el-form-item>
 						<el-form-item label="行程中违法次数" prop="violationsCount">
-							<el-input type="number" v-model="supplementForm.violationsCount" placeholder="请输入行程中违法次数" />
+							<el-input v-model="supplementForm.violationsCount" placeholder="请输入行程中违法次数" @input="handleViolationsCountInput" />
 						</el-form-item>
 						<el-form-item label="违章罚款金额" prop="fine">
-							<el-input type="number" v-model="supplementForm.fine" placeholder="请输入违章罚款金额" />
+							<el-input v-model="supplementForm.fine" placeholder="请输入违章罚款金额" @input="handleFineInput" />
 						</el-form-item>
 					</el-col>
 					<el-col :span="8">
 						<el-form-item label="现金加油次数" prop="cashRefuelingFrequency">
-							<el-input type="number" v-model="supplementForm.cashRefuelingFrequency" placeholder="请输入现金加油次数" />
+							<el-input v-model="supplementForm.cashRefuelingFrequency" placeholder="请输入现金加油次数" @input="handleCashRefuelingFrequencyInput" />
 						</el-form-item>
 						<el-form-item v-if="supplementForm.cashRefuelingFrequency > 0" label="现金加油金额" prop="cashRefueling">
-							<el-input type="number" v-model="supplementForm.cashRefueling" placeholder="请输入现金加油金额" />
+							<el-input v-model="supplementForm.cashRefueling" placeholder="请输入现金加油金额" @input="handleCashRefuelingInput" />
+						</el-form-item>
+						<el-form-item label="行程中使用加油卡加油次数" prop="refuelingFrequency">
+							<el-input v-model="supplementForm.refuelingFrequency" placeholder="请输入行程中使用加油卡加油次数" @input="handleRefuelingFrequencyInput" />
+						</el-form-item>
+						<el-form-item label="加油金额" prop="refuelingMoney">
+							<el-input v-model="supplementForm.refuelingMoney" placeholder="请输入加油金额" @input="handleRefuelingMoneyInput" />
+						</el-form-item>
+						<el-form-item label="加油卡余额" prop="oilCardBalance">
+							<el-input v-model="supplementForm.oilCardBalance" placeholder="请输入加油卡余额" @input="handleOilCardBalanceInput" />
+						</el-form-item>
+						<el-form-item label="加油小票是否交回公司" prop="isTicketReturned">
+							<el-radio v-model="supplementForm.isTicketReturned" label="是">是</el-radio>
+							<el-radio v-model="supplementForm.isTicketReturned" label="否">否</el-radio>
+						</el-form-item>
+						<el-form-item label="加油小票" prop="oilTicketAttachmentList">
+							<UploadFilesButton flag="oilTicket" @files-updated="handleOilTicketAttachmentFilesUpdated" :initial-attachments="supplementForm.oilTicketAttachmentList || []" />
 						</el-form-item>
 						<el-form-item label="附件" prop="attachmentList">
 							<UploadFilesButton flag="attachments" @files-updated="handleSupplementAttachmentFilesUpdated" :initial-attachments="supplementForm.attachmentList || []" />
@@ -301,6 +327,7 @@ import { listVehicles } from '../../../api/system/vehicles';
 import { excludeParams } from '../../../api/tool/exclude';
 import { parseTime } from 'order-system/src/utils/ruoyi';
 import { checkPermi } from '@/utils/permission';
+import { subtract } from 'mathjs';
 
 export default {
 	name: 'CarApply',
@@ -446,16 +473,17 @@ export default {
 				{ key: 17, label: '行程中是否维修/保养', visible: true },
 				{ key: 18, label: '保养金额', visible: true },
 				{ key: 19, label: '维修金额', visible: true },
-				{ key: 20, label: '行程中使用加油卡加油次数', visible: true },
-				{ key: 21, label: '加油金额', visible: true },
-				{ key: 22, label: '现金加油次数', visible: true },
-				{ key: 23, label: '加油卡余额', visible: true },
-				{ key: 24, label: '加油小票是否交回公司', visible: true },
-				{ key: 25, label: '现金加油金额', visible: true },
-				{ key: 26, label: '派车人', visible: true },
-				{ key: 27, label: '备注', visible: true },
-				{ key: 28, label: '附件路径', visible: true },
-				{ key: 29, label: '审核状态', visible: true }
+				{ key: 20, label: '现金加油次数', visible: true },
+				{ key: 21, label: '现金加油金额', visible: true },
+				{ key: 22, label: '行程中使用加油卡加油次数', visible: true },
+				{ key: 23, label: '加油金额', visible: true },
+				{ key: 24, label: '加油卡余额', visible: true },
+				{ key: 25, label: '派车人', visible: true },
+				{ key: 26, label: '备注', visible: true },
+				{ key: 27, label: '附件路径', visible: true },
+				{ key: 28, label: '审核状态', visible: true },
+				{ key: 29, label: '加油小票是否交回公司', visible: true },
+				{ key: 30, label: '加油小票', visible: true }
 			],
 
 			queryItemsOilCard: {
@@ -484,6 +512,7 @@ export default {
 			// 补充信息相关
 			supplementOpen: false,
 			supplementForm: {},
+			currentStartMile: null, // 当前出车前里程，用于计算用车里程数
 			// 油卡绑定相关
 			checkedOilCardBindings: [],
 			queryOilCardBinding: '',
@@ -706,6 +735,11 @@ export default {
 				fine: '0',
 				cashRefuelingFrequency: 0,
 				cashRefueling: null,
+				refuelingFrequency: null,
+				refuelingMoney: null,
+				oilCardBalance: null,
+				isTicketReturned: '否',
+				oilTicketAttachmentList: [],
 				attachmentList: [],
 				params: {
 					attachmentIds: []
@@ -881,12 +915,19 @@ export default {
 					fine: response.data.fine || '0',
 					cashRefuelingFrequency: response.data.cashRefuelingFrequency || 0,
 					cashRefueling: response.data.cashRefueling,
+					refuelingFrequency: response.data.refuelingFrequency,
+					refuelingMoney: response.data.refuelingMoney,
+					oilCardBalance: response.data.oilCardBalance,
+					isTicketReturned: response.data.isTicketReturned || '否',
+					oilTicketAttachmentList: response.data.oilTicketAttachmentList || [],
 					attachmentList: response.data.attachmentList || [],
 					params: {
 						...response.data.params,
 						attachmentIds: response.data.attachmentList ? response.data.attachmentList.map(item => item.id) : []
 					}
 				};
+				// 设置出车前里程用于计算
+				this.currentStartMile = response.data.startMile;
 				this.supplementOpen = true;
 			});
 		},
@@ -903,6 +944,9 @@ export default {
 					}
 					if (!data.params.attachmentIds && this.supplementForm.attachmentList) {
 						data.params.attachmentIds = this.supplementForm.attachmentList.map(item => item.id);
+					}
+					if (!data.params.oilTicketAttachmentIds && this.supplementForm.oilTicketAttachmentList) {
+						data.params.oilTicketAttachmentIds = this.supplementForm.oilTicketAttachmentList.map(item => item.id);
 					}
 					supplementCarApply(excludeParams(data, this.$exclude)).then(() => {
 						this.$modal.msgSuccess('补充信息提交成功');
@@ -953,6 +997,95 @@ export default {
 		},
 		handleQueryOilCardBinding(val) {
 			this.queryOilCardBinding = val;
+		},
+		// 处理出车前里程输入，只允许数字（包括负数和小数）
+		handleStartMileInput(value) {
+			this.form.startMile = value.replace(/[^\d.-]/g, '');
+		},
+		// 处理回来后里程输入，只允许数字（包括负数和小数），并自动计算用车里程数
+		handleEndMileInput(value) {
+			this.supplementForm.endMile = value.replace(/[^\d.-]/g, '');
+			this.calculateMiles();
+		},
+		// 计算用车里程数
+		calculateMiles() {
+			const startMile = this.currentStartMile || this.form.startMile;
+			const endMile = this.supplementForm.endMile;
+			if (startMile && endMile) {
+				try {
+					const start = parseFloat(startMile);
+					const end = parseFloat(endMile);
+					if (!isNaN(start) && !isNaN(end)) {
+						this.supplementForm.miles = subtract(end, start).toString();
+					}
+				} catch (e) {
+					console.error('计算用车里程数失败:', e);
+				}
+			}
+		},
+		// 处理现金加油次数输入，只允许数字
+		handleCashRefuelingFrequencyInput(value) {
+			this.supplementForm.cashRefuelingFrequency = value.replace(/[^\d.-]/g, '');
+		},
+		// 处理现金加油金额输入，只允许数字（包括负数和小数）
+		handleCashRefuelingInput(value) {
+			this.supplementForm.cashRefueling = value.replace(/[^\d.-]/g, '');
+		},
+		// 处理行程中使用加油卡加油次数输入，只允许数字
+		handleRefuelingFrequencyInput(value) {
+			this.supplementForm.refuelingFrequency = value.replace(/[^\d.-]/g, '');
+		},
+		// 处理加油金额输入，只允许数字（包括负数和小数）
+		handleRefuelingMoneyInput(value) {
+			this.supplementForm.refuelingMoney = value.replace(/[^\d.-]/g, '');
+		},
+		// 处理加油卡余额输入，只允许数字（包括负数和小数）
+		handleOilCardBalanceInput(value) {
+			this.supplementForm.oilCardBalance = value.replace(/[^\d.-]/g, '');
+		},
+		// 处理行程中违法次数输入，只允许数字
+		handleViolationsCountInput(value) {
+			this.supplementForm.violationsCount = value.replace(/[^\d.-]/g, '');
+		},
+		// 处理违章罚款金额输入，只允许数字（包括负数和小数）
+		handleFineInput(value) {
+			this.supplementForm.fine = value.replace(/[^\d.-]/g, '');
+		},
+		// 处理保养金额输入，只允许数字（包括负数和小数）
+		handleMaintenanceMoneyInput(value) {
+			this.supplementForm.maintenanceMoney = value.replace(/[^\d.-]/g, '');
+		},
+		// 处理维修金额输入，只允许数字（包括负数和小数）
+		handleRepairMoneyInput(value) {
+			this.supplementForm.repairMoney = value.replace(/[^\d.-]/g, '');
+		},
+		// 处理加油小票附件更新
+		handleOilTicketAttachmentFilesUpdated(uploadParams) {
+			if (uploadParams && uploadParams.params && uploadParams.params.attachmentIds) {
+				if (!this.supplementForm.params) {
+					this.supplementForm.params = {};
+				}
+				if (!this.supplementForm.params.oilTicketAttachmentIds) {
+					this.supplementForm.params.oilTicketAttachmentIds = [];
+				}
+				this.supplementForm.params.oilTicketAttachmentIds = uploadParams.params.attachmentIds;
+				this.supplementForm.oilTicketAttachmentList = uploadParams.attachmentList || [];
+			}
+		},
+		// 处理表格中加油小票附件的更新
+		handleUpdateOilTicketFilePath(attachments, row, onGet, onUpdate) {
+			onGet(row.id).then(res => {
+				const data = {
+					...res.data,
+					params: {
+						...res.data.params,
+						oilTicketAttachmentIds: attachments.map(item => item.id)
+					}
+				};
+				onUpdate(data).then(() => {
+					this.getList();
+				});
+			});
 		}
 	}
 };

@@ -83,7 +83,7 @@
 
 		<!-- 添加或修改加油卡消费信息对话框 -->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="700px" append-to-body>
-			<el-form ref="form" :model="form" :rules="rules" label-width="130px">
+			<el-form ref="form" :model="form" :rules="rules" label-width="200px">
 				<el-form-item label="加油卡卡号" prop="oilCardNo">
 					<el-row>
 						<el-col :span="20">
