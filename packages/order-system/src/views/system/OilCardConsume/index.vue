@@ -191,7 +191,7 @@ import UploadFilesButton from '@/components/UploadFilesButton/index.vue';
 import SearchOption from '@/components/SearchOption.vue';
 import { listOilCard, getOilCard } from '@/api/system/oilCard';
 import { listCarApply } from '@/api/system/carApply';
-import { multiply, subtract } from 'mathjs';
+import { create, all } from 'mathjs';
 import { parseTime } from '../../../utils/ruoyi';
 import { listVehicles } from '../../../api/system/vehicles';
 
@@ -401,20 +401,22 @@ export default {
 		// 自动计算加油金额（加油量 * 单价）
 		calculateRefuelingMoney() {
 			if (this.form.refuelingNumber && this.form.unitPrice) {
-				const refuelingNumber = Number(this.form.refuelingNumber) || 0;
-				const unitPrice = Number(this.form.unitPrice) || 0;
-				const result = multiply(refuelingNumber, unitPrice);
-				this.form.refuelingMoney = String(Number(result.toFixed(2)));
+				const math = create(all, { number: 'BigNumber', precision: 64 });
+				const refuelingNumber = math.bignumber(this.form.refuelingNumber || 0);
+				const unitPrice = math.bignumber(this.form.unitPrice || 0);
+				const result = math.multiply(refuelingNumber, unitPrice);
+				this.form.refuelingMoney = String(math.format(result, { precision: 2, notation: 'fixed' }));
 				this.calculateEndCardSurplus();
 			}
 		},
 		// 自动计算加油卡余额（期初余额 - 加油金额）
 		calculateEndCardSurplus() {
 			if (this.form.startCardSurplus && this.form.refuelingMoney) {
-				const startCardSurplus = Number(this.form.startCardSurplus) || 0;
-				const refuelingMoney = Number(this.form.refuelingMoney) || 0;
-				const result = subtract(startCardSurplus, refuelingMoney);
-				this.form.endCardSurplus = String(Number(result.toFixed(2)));
+				const math = create(all, { number: 'BigNumber', precision: 64 });
+				const startCardSurplus = math.bignumber(this.form.startCardSurplus || 0);
+				const refuelingMoney = math.bignumber(this.form.refuelingMoney || 0);
+				const result = math.subtract(startCardSurplus, refuelingMoney);
+				this.form.endCardSurplus = String(math.format(result, { precision: 2, notation: 'fixed' }));
 			}
 		},
 		/** 搜索按钮操作 */

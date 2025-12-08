@@ -318,7 +318,7 @@ import { listVehicles } from '../../../api/system/vehicles';
 import { excludeParams } from '../../../api/tool/exclude';
 import { parseTime } from 'order-system/src/utils/ruoyi';
 import { checkPermi } from '@/utils/permission';
-import { subtract } from 'mathjs';
+import { create, all } from 'mathjs';
 
 export default {
 	name: 'CarApply',
@@ -997,10 +997,11 @@ export default {
 			const startMile = this.supplementForm.startMile;
 			const endMile = this.supplementForm.endMile;
 			if (startMile !== null && startMile !== '' && endMile !== null && endMile !== '') {
-				const start = Number(startMile) || 0;
-				const end = Number(endMile) || 0;
-				const result = subtract(end, start);
-				this.supplementForm.miles = String(result);
+				const math = create(all, { number: 'BigNumber', precision: 64 });
+				const start = math.bignumber(startMile || 0);
+				const end = math.bignumber(endMile || 0);
+				const result = math.subtract(end, start);
+				this.supplementForm.miles = String(math.format(result, { precision: 2, notation: 'fixed' }));
 			}
 		},
 		// 油卡绑定相关方法
