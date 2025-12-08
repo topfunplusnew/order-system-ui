@@ -278,21 +278,8 @@
 						<el-form-item label="违章罚款金额" prop="fine">
 							<el-input v-model="supplementForm.fine" placeholder="请输入违章罚款金额" @input="handleNumberInput($event, 'fine', 'supplementForm')" />
 						</el-form-item>
-						<el-form-item label="用加油卡加油次数" prop="refuelingFrequency">
-							<el-input v-model="supplementForm.refuelingFrequency" placeholder="请输入用加油卡加油次数" @input="handleNumberInput($event, 'refuelingFrequency', 'supplementForm')" />
-						</el-form-item>
-						<el-form-item v-if="Number(supplementForm.refuelingFrequency) > 0" label="加油金额" prop="refuelingMoney">
-							<el-input v-model="supplementForm.refuelingMoney" placeholder="请输入加油金额" @input="handleNumberInput($event, 'refuelingMoney', 'supplementForm')" />
-						</el-form-item>
 					</el-col>
 					<el-col :span="8">
-						<el-form-item label="加油小票是否交回公司" prop="isTicketReturned">
-							<el-radio v-model="supplementForm.isTicketReturned" label="是">是</el-radio>
-							<el-radio v-model="supplementForm.isTicketReturned" label="否">否</el-radio>
-						</el-form-item>
-						<el-form-item label="加油小票附件" prop="refuelingReceiptList">
-							<UploadFilesButton flag="refuelingReceipt" @files-updated="handleRefuelingReceiptFilesUpdated" :initial-attachments="supplementForm.refuelingReceiptList || []" />
-						</el-form-item>
 						<el-form-item label="现金加油次数" prop="cashRefuelingFrequency">
 							<el-input v-model="supplementForm.cashRefuelingFrequency" placeholder="请输入现金加油次数" @input="handleNumberInput($event, 'cashRefuelingFrequency', 'supplementForm')" />
 						</el-form-item>
@@ -564,20 +551,6 @@ export default {
 				],
 				violationsCount: [{ required: true, message: '请输入行程中违法次数', trigger: 'blur' }],
 				fine: [{ required: true, message: '请输入违章罚款金额', trigger: 'blur' }],
-				refuelingFrequency: [{ required: true, message: '请输入用加油卡加油次数', trigger: 'blur' }],
-				refuelingMoney: [
-					{
-						validator: (rule, value, callback) => {
-							if (Number(this.supplementForm.refuelingFrequency) > 0 && !value) {
-								callback(new Error('请输入加油金额'));
-							} else {
-								callback();
-							}
-						},
-						trigger: 'blur'
-					}
-				],
-				isTicketReturned: [{ required: true, message: '请选择加油小票是否交回公司', trigger: 'change' }],
 				cashRefuelingFrequency: [{ required: true, message: '请输入现金加油次数', trigger: 'blur' }],
 				cashRefueling: [
 					{
@@ -764,16 +737,11 @@ export default {
 				repairMoney: null,
 				violationsCount: '0',
 				fine: '0',
-				refuelingFrequency: '0',
-				refuelingMoney: null,
-				isTicketReturned: '否',
 				cashRefuelingFrequency: '0',
 				cashRefueling: null,
 				attachmentList: [],
-				refuelingReceiptList: [],
 				params: {
-					attachmentIds: [],
-					refuelingReceiptIds: []
+					attachmentIds: []
 				}
 			};
 			this.resetForm('supplementForm');
@@ -933,9 +901,8 @@ export default {
 			const id = row.id || this.ids;
 			getCarApply(id).then(response => {
 				const attachmentList = response.data.attachmentList || [];
-				// 分离附件和加油小票附件
+				// 筛选普通附件
 				const generalAttachments = attachmentList.filter(item => item.flag === 'attachments');
-				const refuelingReceipts = attachmentList.filter(item => item.flag === 'refuelingReceipt');
 				
 				this.supplementForm = {
 					id: response.data.id,
@@ -950,17 +917,12 @@ export default {
 					repairMoney: response.data.repairMoney,
 					violationsCount: response.data.violationsCount || '0',
 					fine: response.data.fine || '0',
-					refuelingFrequency: response.data.refuelingFrequency || '0',
-					refuelingMoney: response.data.refuelingMoney,
-					isTicketReturned: response.data.isTicketReturned || '否',
 					cashRefuelingFrequency: response.data.cashRefuelingFrequency || '0',
 					cashRefueling: response.data.cashRefueling,
 					attachmentList: generalAttachments,
-					refuelingReceiptList: refuelingReceipts,
 					params: {
 						...response.data.params,
-						attachmentIds: generalAttachments.map(item => item.id),
-						refuelingReceiptIds: refuelingReceipts.map(item => item.id)
+						attachmentIds: generalAttachments.map(item => item.id)
 					}
 				};
 				this.supplementOpen = true;
@@ -977,15 +939,12 @@ export default {
 					if (!data.params) {
 						data.params = {};
 					}
-					// 合并普通附件和加油小票附件ID
+					// 获取附件ID
 					const attachmentIds = data.params.attachmentIds || this.supplementForm.attachmentList?.map(item => item.id) || [];
-					const refuelingReceiptIds = data.params.refuelingReceiptIds || this.supplementForm.refuelingReceiptList?.map(item => item.id) || [];
-					data.params.attachmentIds = [...attachmentIds, ...refuelingReceiptIds];
+					data.params.attachmentIds = attachmentIds;
 					
 					// 移除临时字段
 					delete data.attachmentList;
-					delete data.refuelingReceiptList;
-					delete data.params.refuelingReceiptIds;
 					
 					supplementCarApply(excludeParams(data, this.$exclude)).then(() => {
 						this.$modal.msgSuccess('补充信息提交成功');
@@ -1001,15 +960,6 @@ export default {
 					this.supplementForm.params = {};
 				}
 				this.supplementForm.params.attachmentIds = uploadParams.params.attachmentIds;
-			}
-		},
-		// 加油小票附件上传回调
-		handleRefuelingReceiptFilesUpdated(uploadParams) {
-			if (uploadParams && uploadParams.params && uploadParams.params.attachmentIds) {
-				if (!this.supplementForm.params) {
-					this.supplementForm.params = {};
-				}
-				this.supplementForm.params.refuelingReceiptIds = uploadParams.params.attachmentIds;
 			}
 		},
 		// 数字输入处理（允许负数和小数）
