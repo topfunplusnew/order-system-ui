@@ -20,7 +20,8 @@ export default {
 <template>
 	<div>
 		<el-descriptions title="开票信息" :column="5" border size="mini">
-			<el-descriptions-item label="发票编号">{{ needToShowInfo.code }}</el-descriptions-item>
+			<!-- 后端说没有code 删除了 -->
+			<!-- <el-descriptions-item label="发票编号">{{ needToShowInfo.code }}</el-descriptions-item> -->
 			<el-descriptions-item label="开票日期">{{ needToShowInfo.invoiceDate }}</el-descriptions-item>
 			<el-descriptions-item label="我方收票实体">{{ needToShowInfo.invoiceObject }}</el-descriptions-item>
 			<el-descriptions-item label="开票金额">{{ needToShowInfo.invoiceAmount }}</el-descriptions-item>

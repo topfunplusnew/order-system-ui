@@ -548,6 +548,14 @@ export default {
 				this.invoiceAmount = this.form.invoiceAmount * this.form.ticketPoint;
 			},
 			deep: true
+		},
+		// 监听公司类型变化，清除公司名称和ID
+		'form.companyType'(newVal, oldVal) {
+			if (newVal !== oldVal && oldVal !== null && oldVal !== undefined) {
+				delete this.form.companyName;
+				delete this.form.companyID;
+				this.companyName = '';
+			}
 		}
 	},
 	created() {

@@ -84,9 +84,8 @@
 			<el-table-column v-if="columns[21].visible" label="用加油卡加油次数" align="center" prop="refuelingFrequency" show-overflow-tooltip />
 			<el-table-column v-if="columns[22].visible" label="加油金额" align="center" prop="refuelingMoney" show-overflow-tooltip />
 			<el-table-column v-if="columns[23].visible" label="现金加油次数" align="center" prop="cashRefuelingFrequency" show-overflow-tooltip />
-			<el-table-column v-if="columns[24].visible" label="加油卡余额" align="center" prop="oilCardBalance" show-overflow-tooltip />
-			<el-table-column v-if="columns[25].visible" label="加油小票是否交回公司" align="center" prop="isTicketReturned" show-overflow-tooltip />
-			<el-table-column v-if="columns[26].visible" label="加油小票附件" align="center" prop="refuelingReceipt" show-overflow-tooltip>
+			<el-table-column v-if="columns[24].visible" label="加油小票是否交回公司" align="center" prop="isTicketReturned" show-overflow-tooltip />
+			<el-table-column v-if="columns[25].visible" label="加油小票附件" align="center" prop="refuelingReceipt" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<div v-if="Array.isArray(scope.row.attachmentList)">
 						<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'refuelingReceipt'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getCarApply, updateCarApply)" />
@@ -96,10 +95,10 @@
 					</div>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[27].visible" label="现金加油金额" align="center" prop="cashRefueling" show-overflow-tooltip />
-			<el-table-column v-if="columns[28].visible" label="派车人" align="center" prop="dispatchPerson" show-overflow-tooltip />
-			<el-table-column v-if="columns[29].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
-			<el-table-column v-if="columns[30].visible" label="附件" align="center" prop="attachmentList" show-overflow-tooltip>
+			<el-table-column v-if="columns[26].visible" label="现金加油金额" align="center" prop="cashRefueling" show-overflow-tooltip />
+			<el-table-column v-if="columns[27].visible" label="派车人" align="center" prop="dispatchPerson" show-overflow-tooltip />
+			<el-table-column v-if="columns[28].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
+			<el-table-column v-if="columns[29].visible" label="附件" align="center" prop="attachmentList" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<div v-if="Array.isArray(scope.row.attachmentList)">
 						<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'attachments'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getCarApply, updateCarApply)" />
@@ -109,7 +108,7 @@
 					</div>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[31].visible" label="审核状态" align="center" prop="auditState" width="300px" show-overflow-tooltip>
+			<el-table-column v-if="columns[30].visible" label="审核状态" align="center" prop="auditState" width="300px" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<el-switch
 						v-hasPermi="['system:carapply:audit']"
@@ -287,9 +286,6 @@
 						</el-form-item>
 					</el-col>
 					<el-col :span="8">
-						<el-form-item label="加油卡余额" prop="oilCardBalance">
-							<el-input v-model="supplementForm.oilCardBalance" placeholder="请输入加油卡余额" @input="handleNumberInput($event, 'oilCardBalance', 'supplementForm')" />
-						</el-form-item>
 						<el-form-item label="加油小票是否交回公司" prop="isTicketReturned">
 							<el-radio v-model="supplementForm.isTicketReturned" label="是">是</el-radio>
 							<el-radio v-model="supplementForm.isTicketReturned" label="否">否</el-radio>
@@ -485,14 +481,13 @@ export default {
 				{ key: 21, label: '用加油卡加油次数', visible: true },
 				{ key: 22, label: '加油金额', visible: true },
 				{ key: 23, label: '现金加油次数', visible: true },
-				{ key: 24, label: '加油卡余额', visible: true },
-				{ key: 25, label: '加油小票是否交回公司', visible: true },
-				{ key: 26, label: '加油小票附件', visible: true },
-				{ key: 27, label: '现金加油金额', visible: true },
-				{ key: 28, label: '派车人', visible: true },
-				{ key: 29, label: '备注', visible: true },
-				{ key: 30, label: '附件', visible: true },
-				{ key: 31, label: '审核状态', visible: true }
+				{ key: 24, label: '加油小票是否交回公司', visible: true },
+				{ key: 25, label: '加油小票附件', visible: true },
+				{ key: 26, label: '现金加油金额', visible: true },
+				{ key: 27, label: '派车人', visible: true },
+				{ key: 28, label: '备注', visible: true },
+				{ key: 29, label: '附件', visible: true },
+				{ key: 30, label: '审核状态', visible: true }
 			],
 
 			queryItemsOilCard: {
@@ -771,7 +766,6 @@ export default {
 				fine: '0',
 				refuelingFrequency: '0',
 				refuelingMoney: null,
-				oilCardBalance: null,
 				isTicketReturned: '否',
 				cashRefuelingFrequency: '0',
 				cashRefueling: null,
@@ -958,7 +952,6 @@ export default {
 					fine: response.data.fine || '0',
 					refuelingFrequency: response.data.refuelingFrequency || '0',
 					refuelingMoney: response.data.refuelingMoney,
-					oilCardBalance: response.data.oilCardBalance,
 					isTicketReturned: response.data.isTicketReturned || '否',
 					cashRefuelingFrequency: response.data.cashRefuelingFrequency || '0',
 					cashRefueling: response.data.cashRefueling,
