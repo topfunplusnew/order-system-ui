@@ -109,23 +109,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[5].visible" label="银行开户名" align="center" prop="acountsName" show-overflow-tooltip>
-				<template #default="scope">
-					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.acountsName }}</div>
-						<span>{{ scope.row.acountsName }}</span>
-					</el-tooltip>
-				</template>
-			</el-table-column>
-			<el-table-column v-if="columns[6].visible" label="银行账号" align="center" prop="bankNo" show-overflow-tooltip>
-				<template #default="scope">
-					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.bankNo }}</div>
-						<span>{{ scope.row.bankNo }}</span>
-					</el-tooltip>
-				</template>
-			</el-table-column>
-			<el-table-column v-if="columns[7].visible" label="充值人员姓名" align="center" prop="rechargeName" show-overflow-tooltip>
+			<el-table-column v-if="columns[5].visible" label="充值人员姓名" align="center" prop="rechargeName" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.rechargeName }}</div>
@@ -133,7 +117,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[8].visible" label="充值附件" align="center" prop="attachment" show-overflow-tooltip>
+			<el-table-column v-if="columns[6].visible" label="充值附件" align="center" prop="attachment" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
 						<div slot="content" @click.stop>
@@ -153,7 +137,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[9].visible" label="备注" align="center" prop="comments">
+			<el-table-column v-if="columns[7].visible" label="备注" align="center" prop="comments">
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.comments }}</div>
@@ -324,11 +308,9 @@ export default {
 				{ key: 2, label: `充值类型`, visible: true },
 				{ key: 3, label: `充值金额`, visible: true },
 				{ key: 4, label: `充值时间`, visible: true },
-				{ key: 5, label: `银行开户名`, visible: true },
-				{ key: 6, label: `银行账号`, visible: true },
-				{ key: 7, label: `充值人员姓名`, visible: true },
-				{ key: 8, label: `充值附件`, visible: true },
-				{ key: 9, label: `备注`, visible: true }
+				{ key: 5, label: `充值人员姓名`, visible: true },
+				{ key: 6, label: `充值附件`, visible: true },
+				{ key: 7, label: `备注`, visible: true }
 			],
 			tid: '',
 			paymentApplyVisible: false,

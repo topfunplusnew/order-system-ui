@@ -172,26 +172,6 @@
 				<el-form-item label="姓名" prop="rechargeName">
 					<el-input v-model="moneyInfo.rechargeName" disabled placeholder="请输入姓名" />
 				</el-form-item>
-				<el-form-item v-if="moneyInfo.rechargeType === '银行卡'" label="银行开户名" prop="acountsName">
-					<el-col :span="10">
-						<el-input v-model="moneyInfo.acountsName" placeholder="请输入银行开户名" @input="handleInputTrim($event, 'moneyInfo', 'acountsName')" />
-					</el-col>
-					<el-col :span="4">
-						<SearchOption :limit-info="{ acountsType: '己方公司' }" :get-data="listBankAccount" :query-name="queryBankAcount" query-label="户名查找" query-info="acountsName" @commitBack="handleCommitBackBankAcount" @update:queryName="handleUpdateQueryBankAcount">
-							<template #table-columns>
-								<el-table-column label="账户类型" align="center" prop="acountsType" />
-								<el-table-column label="己方公司" align="center" prop="displayName" />
-								<el-table-column label="开户名称(户名)" align="center" prop="acountsName" />
-								<el-table-column label="账号(银行账号)" align="center" prop="bankNo" />
-								<el-table-column label="开户行" align="center" prop="bankName" />
-								<el-table-column label="公司名称" align="center" prop="companyName" />
-							</template>
-						</SearchOption>
-					</el-col>
-				</el-form-item>
-				<el-form-item v-if="moneyInfo.rechargeType === '银行卡'" label="银行账号" prop="bankNo">
-					<el-input v-model="moneyInfo.bankNo" placeholder="请输入银行账号" @input="handleInputTrim($event, 'moneyInfo', 'bankNo')" />
-				</el-form-item>
 				<el-form-item label="附件" prop="bankName">
 					<UploadFilesButton ref="attachmentUploader" :table-name="'oilcard'" :record-id="moneyInfo.id" :attachment-type="'附件'" :initial-attachments="(form.params && form.params.attachments) || []" @files-updated="handleAttachmentFilesUpdated" />
 				</el-form-item>
