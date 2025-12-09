@@ -42,3 +42,37 @@ export function delGiftOut(id) {
 		method: 'delete'
 	});
 }
+
+// 退回礼品出库信息
+export function returnGiftOut(data) {
+	const { id, quantity, inLocation, remark, handler } = data;
+	return request({
+		url: '/system/giftOut/reGiftStockOut',
+		method: 'put',
+		params: {
+			id: id,
+			quantity: quantity,
+			inLocation: inLocation,
+			remark: remark,
+			handler: handler
+		}
+	});
+}
+
+// 查看再入库详情（退回记录会显示在这里）
+export function getGiftOutReInDetail(id) {
+	return request({
+		url: '/system/giftOut/reGiftStockIn/',
+		method: 'get',
+		params: { id: id }
+	});
+}
+
+// 查看出库详情
+export function getGiftOutOutDetail(id) {
+	return request({
+		url: '/system/giftOut/selectGiftStockOut',
+		method: 'get',
+		params: { id: id }
+	});
+}

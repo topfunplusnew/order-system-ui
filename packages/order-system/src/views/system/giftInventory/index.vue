@@ -33,23 +33,30 @@
 
 		<el-table id="printBox" v-loading="loading" v-horizontal-scroll="'always'" :data="giftStockList" border size="mini" :cell-style="{ padding: '.5px' }">
 			<el-table-column v-if="columns[0] && columns[0].visible" label="序号" type="index" width="60" align="center" />
-			<el-table-column v-if="columns[1] && columns[1].visible" label="物品名称" prop="itemName" min-width="150" show-overflow-tooltip />
-			<el-table-column v-if="columns[2] && columns[2].visible" label="入库日期" prop="inDate" width="120" align="center">
+			<el-table-column v-if="columns[1] && columns[1].visible" label="日期" prop="inDate" width="120" align="center">
 				<template #default="scope">
 					<span>{{ parseTime(scope.row.inDate, '{y}-{m}-{d}') }}</span>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[3] && columns[3].visible" label="入库方式" prop="inMethod" width="120" align="center">
+			<el-table-column v-if="columns[2] && columns[2].visible" label="存货地点" prop="inventoryLocation" width="120" align="center" show-overflow-tooltip />
+			<el-table-column v-if="columns[3] && columns[3].visible" label="物品名称" prop="itemName" min-width="150" show-overflow-tooltip />
+			<el-table-column v-if="columns[4] && columns[4].visible" label="规格" prop="unit" width="80" align="center" show-overflow-tooltip />
+			<!-- 剩余数量 (remainingQuantity)：当前批次礼品的可用库存数量，计算公式 = 入库数量 - 已出库数量 -->
+			<el-table-column v-if="columns[5] && columns[5].visible" label="剩余数量" prop="remainingQuantity" width="100" align="center">
 				<template #default="scope">
-					<dict-tag :options="dict.type.order_gift_in_method" :value="scope.row.inMethod" />
+					<span>{{ formatInteger(scope.row.remainingQuantity) }}</span>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[4] && columns[4].visible" label="单位" prop="unit" width="80" align="center" />
-			<el-table-column v-if="columns[5] && columns[5].visible" label="入库数量" prop="quantity" width="100" align="center" />
-			<el-table-column v-if="columns[6] && columns[6].visible" label="预估价值" prop="estimatedValue" width="120" align="center" />
-			<el-table-column v-if="columns[7] && columns[7].visible" label="剩余数量" prop="remainingQuantity" width="100" align="center" />
-			<el-table-column v-if="columns[8] && columns[8].visible" label="剩余价值" prop="remainingValue" width="120" align="center" />
-			<el-table-column v-if="columns[9] && columns[9].visible" label="经办人" prop="handler" width="100" align="center" />
+			<el-table-column v-if="columns[6] && columns[6].visible" label="单价" prop="unitPrice" width="100" align="center">
+				<template #default="scope">
+					<span>{{ formatCurrency(scope.row.unitPrice) }}</span>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[7] && columns[7].visible" label="金额" prop="remainingValue" width="120" align="center">
+				<template #default="scope">
+					<span>{{ formatCurrency(scope.row.remainingValue) }}</span>
+				</template>
+			</el-table-column>
 		</el-table>
 
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
@@ -82,15 +89,13 @@ export default {
 			},
 			columns: [
 				{ key: 0, label: '序号', visible: true },
-				{ key: 1, label: '物品名称', visible: true },
-				{ key: 2, label: '入库日期', visible: true },
-				{ key: 3, label: '入库方式', visible: true },
-				{ key: 4, label: '单位', visible: true },
-				{ key: 5, label: '入库数量', visible: true },
-				{ key: 6, label: '预估价值', visible: true },
-				{ key: 7, label: '剩余数量', visible: true },
-				{ key: 8, label: '剩余价值', visible: true },
-				{ key: 9, label: '经办人', visible: true }
+				{ key: 1, label: '日期', visible: true },
+				{ key: 2, label: '存货地点', visible: true },
+				{ key: 3, label: '物品名称', visible: true },
+				{ key: 4, label: '规格', visible: true },
+				{ key: 5, label: '剩余数量', visible: true },
+				{ key: 6, label: '单价', visible: true },
+				{ key: 7, label: '金额', visible: true }
 			]
 		};
 	},
@@ -110,6 +115,20 @@ export default {
 	},
 	methods: {
 		parseTime,
+		formatCurrency(value) {
+			if (value === null || value === undefined || value === '') {
+				return '-';
+			}
+			const num = Number(value);
+			return isNaN(num) ? '-' : num.toFixed(2);
+		},
+		formatInteger(value) {
+			if (value === null || value === undefined || value === '') {
+				return '-';
+			}
+			const num = Number(value);
+			return isNaN(num) ? '-' : Math.floor(num);
+		},
 		initColumns() {
 			const savedColumns = localStorage.getItem('giftInventory-columns');
 			if (!savedColumns || savedColumns === 'null') {
@@ -129,12 +148,11 @@ export default {
 			const itemName = this.queryParams.itemName;
 			const inDate = this.queryParams.inDate;
 			const params = { ...baseParams };
+			params.params = {};
 			if (itemName) params.itemName = itemName;
 			if (inDate) {
-				params.params = {
-					beginInDate: `${inDate} 00:00:00`,
-					endInDate: `${inDate} 23:59:59`
-				};
+				params.params.beginInDate = `${inDate} 00:00:00`;
+				params.params.endInDate = `${inDate} 23:59:59`;
 			}
 			return params;
 		},
@@ -157,49 +175,84 @@ export default {
 					this.loading = false;
 				});
 		},
+		/**
+		 * 计算库存信息
+		 * 剩余数量计算公式：剩余数量 = 入库数量 - 已出库数量
+		 */
 		calculateStock(giftInList, giftOutList) {
 			const stockMap = new Map();
+			// 遍历入库记录，初始化库存信息
 			giftInList.forEach(item => {
 				if (!item || item.id === null || item.id === undefined) {
 					return;
 				}
+				// 入库数量 (quantity)：存储在 giftIn 表的 quantity 字段，表示一次性入库操作的总量
 				const inQty = Number(item.quantity) || 0;
+				const estimatedVal = Number(item.estimatedValue) || 0;
+				// 计算单价：优先使用后端返回的 unitPrice，如果没有则计算（单价 = 金额 / 数量）
+				let unitPrice = 0;
+				if (item.unitPrice !== null && item.unitPrice !== undefined && item.unitPrice !== '') {
+					unitPrice = Number(item.unitPrice) || 0;
+				} else if (inQty > 0) {
+					unitPrice = divide(estimatedVal, inQty);
+				}
 				stockMap.set(String(item.id), {
 					id: item.id,
 					itemName: item.itemName || '',
 					inDate: item.inDate || '',
-					inMethod: item.inMethod || '',
+					inventoryLocation: item.inventoryLocation || '',
 					unit: item.unit || '',
 					quantity: inQty,
-					estimatedValue: Number(item.estimatedValue) || 0,
-					handler: item.handler || '',
+					estimatedValue: estimatedVal,
+					unitPrice: round(unitPrice, 2),
 					outQuantity: 0
 				});
 			});
+			// 遍历出库记录，累加已出库数量
+			let matchedOutCount = 0;
+			let unmatchedOutCount = 0;
 			giftOutList.forEach(outItem => {
-				if (!outItem || !outItem.giftSource) {
+				if (!outItem) {
 					return;
 				}
-				const giftInId = String(outItem.giftSource);
+				const sourceId = outItem.inId !== null && outItem.inId !== undefined ? outItem.inId : null;
+				if (!sourceId) {
+					unmatchedOutCount++;
+					return;
+				}
+				const giftInId = String(sourceId);
 				const stockItem = stockMap.get(giftInId);
 				if (stockItem) {
 					const outQty = Number(outItem.quantity) || 0;
 					stockItem.outQuantity = add(stockItem.outQuantity, outQty);
+					matchedOutCount++;
+				} else {
+					unmatchedOutCount++;
 				}
 			});
+			// 计算剩余数量和剩余价值
 			const stockList = Array.from(stockMap.values()).map(item => {
-				const inQty = item.quantity;
-				const outQty = item.outQuantity;
-				const estimatedVal = item.estimatedValue;
+				// 入库数量：存储在 giftIn 表的 quantity 字段，表示一次性入库操作的总量
+				const inQty = Number(item.quantity) || 0;
+				// 已出库数量
+				const outQty = Number(item.outQuantity) || 0;
+				// 剩余数量 (remainingQuantity)：当前批次礼品的可用库存数量，计算公式 = 入库数量 - 已出库数量
 				const remainingQty = subtract(inQty, outQty);
 				const remainingQtyNum = remainingQty > 0 ? remainingQty : 0;
-				const unitValue = inQty > 0 ? divide(estimatedVal, inQty) : 0;
-				const remainingVal = multiply(remainingQtyNum, unitValue);
-				return {
+				// 单价
+				const unitPrice = Number(item.unitPrice) || 0;
+				// 计算剩余价值：剩余数量 * 单价
+				const remainingVal = remainingQtyNum > 0 && unitPrice > 0 
+					? multiply(remainingQtyNum, unitPrice) 
+					: 0;
+				const result = {
 					...item,
+					quantity: round(inQty, 2),
 					remainingQuantity: round(remainingQtyNum, 2),
+					unitPrice: round(unitPrice, 2),
 					remainingValue: round(remainingVal, 2)
 				};
+				return result;
 			});
 			const { pageNum, pageSize } = this.queryParams;
 			const start = (pageNum - 1) * pageSize;
