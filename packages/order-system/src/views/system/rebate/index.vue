@@ -930,6 +930,20 @@ export default {
 				this.$refs.multipleTable.clearSelection();
 			}
 		},
+		// 重写mixin中的通过供应商选择货物方法，添加供应商自动填充功能
+		handleSelectOrderDetailChange(selection) {
+			this.goods = [];
+			this.goods = selection;
+
+			// 从选择的货物中获取供应商信息，用于自动填充
+			if (!_.isEmpty(selection)) {
+				this.currentSelectedSupplier = selection[0].supplier;
+			}
+
+			this.orderGoodsListVisible = false;
+			this.orderBySupplierVisible = false;
+			this.submitSelectOrderDetail();
+		},
 		// 重写mixin中的确认选择货物方法，添加供应商自动填充功能
 		submitSelectOrderDetail() {
 			this.form.orderDetailIds = [];
@@ -939,16 +953,18 @@ export default {
 			}
 
 			// 自动填充供应商信息（基于已选择的货物）
-			if (this.currentSelectedSupplier) {
-				this.form.supplier = this.currentSelectedSupplier;
+			// 优先使用 currentSelectedSupplier，如果没有则从 goods 中获取
+			const supplierName = this.currentSelectedSupplier || this.goods[0]?.supplier;
+			if (supplierName) {
+				this.form.supplier = supplierName;
 
 				// 尝试找到供应商ID（如果货物数据中包含supplierID）
 				const firstGood = this.goods[0];
-				if (firstGood.supplierID) {
+				if (firstGood?.supplierID) {
 					this.form.supplierID = firstGood.supplierID;
 				}
 
-				this.$message.success(`已自动填充供应商：${this.currentSelectedSupplier}`);
+				this.$message.success(`已自动填充供应商：${supplierName}`);
 			}
 
 			// 推入id数组

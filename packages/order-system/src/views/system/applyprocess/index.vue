@@ -704,7 +704,7 @@ export default {
 			this.currentPaymentApplyId = row.id;
 			// 重置表单
 			this.generatePaymentForm = {
-				fundsDate: row.fundsDate || parseTime(new Date()),
+				fundsDate: parseTime(new Date()),
 				payType: null,
 				moneyAmount: row.moneyAmount || null,
 				selfBankCardType: BankAcceptanceType.BANK_CASH,

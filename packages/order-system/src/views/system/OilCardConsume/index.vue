@@ -57,11 +57,10 @@
 			<el-table-column v-if="columns[5].visible" label="加油量" align="center" prop="refuelingNumber" width="110" show-overflow-tooltip />
 			<el-table-column v-if="columns[6].visible" label="单价" align="center" prop="unitPrice" width="110" show-overflow-tooltip />
 			<el-table-column v-if="columns[7].visible" label="加油金额(元）" align="center" prop="refuelingMoney" width="110" show-overflow-tooltip />
-			<el-table-column v-if="columns[8].visible" label="充值金额(元）" align="center" prop="rechargeMoney" width="110" show-overflow-tooltip />
-			<el-table-column v-if="columns[9].visible" label="加油卡余额" align="center" prop="endCardSurplus" width="110" show-overflow-tooltip />
+			<el-table-column v-if="columns[8].visible" label="加油卡余额" align="center" prop="endCardSurplus" width="110" show-overflow-tooltip />
 			<!--      <el-table-column label="加油小票附件" align="center" prop="attachmentOiladd" v-if="columns[10].visible"-->
 			<!--                       width="300px"/>-->
-			<el-table-column v-if="columns[10].visible" label="加油小票附件" align="center" prop="attachmentOiladd" show-overflow-tooltip>
+			<el-table-column v-if="columns[9].visible" label="加油小票附件" align="center" prop="attachmentOiladd" show-overflow-tooltip>
 				<template #default="scope">
 					<div v-if="Array.isArray(scope.row.attachmentList)">
 						<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'attachmentOiladd'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getOilCardConsume, updateOilCardConsume)" />
@@ -71,7 +70,7 @@
 					</div>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[11].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
+			<el-table-column v-if="columns[10].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
 				<template slot-scope="scope">
 					<el-button v-hasPermi="['system:oilcardconsume:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
@@ -84,7 +83,7 @@
 
 		<!-- 添加或修改加油卡消费信息对话框 -->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="700px" append-to-body>
-			<el-form ref="form" :model="form" :rules="rules" label-width="130px">
+			<el-form ref="form" :model="form" :rules="rules" label-width="200px">
 				<el-form-item label="加油卡卡号" prop="oilCardNo">
 					<el-row>
 						<el-col :span="20">
@@ -146,7 +145,7 @@
 					<el-input v-model="form.locationReason" placeholder="请输入地点和事由" />
 				</el-form-item>
 				<el-form-item label="期初余额" prop="startCardSurplus">
-					<el-input v-model="form.startCardSurplus" placeholder="选择油卡时自动计算，允许手动修改" />
+					<el-input v-model="form.startCardSurplus" placeholder="选择油卡时自动计算，允许手动修改" @blur="calculateEndCardSurplus" />
 				</el-form-item>
 				<el-form-item label="用加油卡加油次数" prop="refuelingCount">
 					<el-input type="number" v-model="form.refuelingCount" placeholder="请输入用加油卡加油次数" />
@@ -159,9 +158,6 @@
 				</el-form-item>
 				<el-form-item label="加油金额(元）" prop="refuelingMoney">
 					<el-input v-model="form.refuelingMoney" placeholder="填完加油量和单价后自动计算，允许修改" @blur="calculateEndCardSurplus" />
-				</el-form-item>
-				<el-form-item label="充值金额(元）" prop="rechargeMoney">
-					<el-input v-model="form.rechargeMoney" placeholder="请输入充值金额(元）" />
 				</el-form-item>
 				<el-form-item label="加油卡余额" prop="endCardSurplus">
 					<el-input v-model="form.endCardSurplus" placeholder="填完加油金额和期初余额后自动计算，允许修改" />
@@ -195,7 +191,7 @@ import UploadFilesButton from '@/components/UploadFilesButton/index.vue';
 import SearchOption from '@/components/SearchOption.vue';
 import { listOilCard, getOilCard } from '@/api/system/oilCard';
 import { listCarApply } from '@/api/system/carApply';
-import { multiply, subtract } from 'mathjs';
+import { create, all } from 'mathjs';
 import { parseTime } from '../../../utils/ruoyi';
 import { listVehicles } from '../../../api/system/vehicles';
 
@@ -212,10 +208,22 @@ export default {
 		const validateNumber = (rule, value, callback) => {
 			if (value === '' || value === null) {
 				callback(new Error('该字段不能为空'));
-			} else if (!/(^[1-9](\d+)?(\.\d{1,2})?$)|(^0$)|(^\d\.\d{1,2}$)/.test(value)) {
-				callback(new Error('请输入数字，最多两位小数'));
 			} else {
 				callback();
+			}
+		};
+		// 校验加油卡余额：允许负数，不限制位数
+		const validateEndCardSurplus = (rule, value, callback) => {
+			if (value === '' || value === null || value === undefined) {
+				callback(new Error('该字段不能为空'));
+			} else {
+				const numValue = String(value);
+				// 允许负数、整数或小数，不限制位数
+				if (!/^-?\d+(\.\d+)?$/.test(numValue)) {
+					callback(new Error('请输入数字，可以为负数'));
+				} else {
+					callback();
+				}
 			}
 		};
 		return {
@@ -241,7 +249,6 @@ export default {
 				refuelingNumber: null,
 				unitPrice: null,
 				refuelingMoney: null,
-				rechargeMoney: null,
 				endCardSurplus: null,
 				attachmentOiladd: null,
 				comments: null,
@@ -262,8 +269,7 @@ export default {
 				refuelingNumber: [{ required: true, trigger: 'blur', validator: validateNumber }],
 				unitPrice: [{ required: true, trigger: 'blur', validator: validateNumber }],
 				refuelingMoney: [{ required: true, trigger: 'blur', validator: validateNumber }],
-				rechargeMoney: [{ required: false }],
-				endCardSurplus: [{ required: true, trigger: 'blur', validator: validateNumber }],
+				endCardSurplus: [{ required: true, trigger: 'blur', validator: validateEndCardSurplus }],
 				receiptReturned: [{ required: true, message: '请选择加油小票是否交回', trigger: 'change' }]
 			},
 			columns: [
@@ -275,15 +281,13 @@ export default {
 				{ key: 5, label: `加油量`, visible: true },
 				{ key: 6, label: `单价`, visible: true },
 				{ key: 7, label: `加油金额（元）`, visible: true },
-				{ key: 8, label: `充值金额（元）`, visible: true },
-				{ key: 9, label: `加油卡余额`, visible: true },
-				{ key: 10, label: `加油小票附件`, visible: true },
-				{ key: 11, label: `备注`, visible: true }
+				{ key: 8, label: `加油卡余额`, visible: true },
+				{ key: 9, label: `加油小票附件`, visible: true },
+				{ key: 10, label: `备注`, visible: true }
 			],
 			oilCardNoQuery: null,
 			carNo: null,
-			queryCarApply: '',
-			carApplyDisplay: ''
+			queryCarApply: ''
 		};
 	},
 	// 展示与隐藏
@@ -345,6 +349,7 @@ export default {
 			this.form = {
 				id: null,
 				carApplyId: null,
+				carApplyDisplay: null,
 				bTripId: null,
 				oilCardNo: null,
 				useDate: parseTime(new Date()),
@@ -355,7 +360,6 @@ export default {
 				refuelingNumber: null,
 				unitPrice: null,
 				refuelingMoney: null,
-				rechargeMoney: '0',
 				endCardSurplus: null,
 				receiptReturned: '是',
 				comments: null,
@@ -368,7 +372,6 @@ export default {
 					attachmentIds: []
 				}
 			};
-			this.carApplyDisplay = '';
 			this.resetForm('form');
 			// 清除上传组件状态
 			if (this.$refs.attachmentUpload) {
@@ -380,7 +383,8 @@ export default {
 			this.form.carApplyId = value.id;
 			this.form.carNo = value.carNo;
 			this.form.useDate = value.startTime;
-			this.carApplyDisplay = `${value.carNo} - ${value.applyUser}`;
+			// 修复：设置 form.carApplyDisplay 而不是 this.carApplyDisplay，展示车辆派出id
+			this.form.carApplyDisplay = String(value.id);
 		},
 		// 选择油卡时自动填充期初余额
 		handleOilCardSelect(value) {
@@ -397,20 +401,22 @@ export default {
 		// 自动计算加油金额（加油量 * 单价）
 		calculateRefuelingMoney() {
 			if (this.form.refuelingNumber && this.form.unitPrice) {
-				const refuelingNumber = Number(this.form.refuelingNumber) || 0;
-				const unitPrice = Number(this.form.unitPrice) || 0;
-				const result = multiply(refuelingNumber, unitPrice);
-				this.form.refuelingMoney = String(Number(result.toFixed(2)));
+				const math = create(all, { number: 'BigNumber', precision: 64 });
+				const refuelingNumber = math.bignumber(this.form.refuelingNumber || 0);
+				const unitPrice = math.bignumber(this.form.unitPrice || 0);
+				const result = math.multiply(refuelingNumber, unitPrice);
+				this.form.refuelingMoney = String(math.format(result, { precision: 2, notation: 'fixed' }));
 				this.calculateEndCardSurplus();
 			}
 		},
 		// 自动计算加油卡余额（期初余额 - 加油金额）
 		calculateEndCardSurplus() {
 			if (this.form.startCardSurplus && this.form.refuelingMoney) {
-				const startCardSurplus = Number(this.form.startCardSurplus) || 0;
-				const refuelingMoney = Number(this.form.refuelingMoney) || 0;
-				const result = subtract(startCardSurplus, refuelingMoney);
-				this.form.endCardSurplus = String(Number(result.toFixed(2)));
+				const math = create(all, { number: 'BigNumber', precision: 64 });
+				const startCardSurplus = math.bignumber(this.form.startCardSurplus || 0);
+				const refuelingMoney = math.bignumber(this.form.refuelingMoney || 0);
+				const result = math.subtract(startCardSurplus, refuelingMoney);
+				this.form.endCardSurplus = String(math.format(result, { precision: 2, notation: 'fixed' }));
 			}
 		},
 		/** 搜索按钮操作 */
@@ -443,6 +449,8 @@ export default {
 			getOilCardConsume(id).then(response => {
 				this.form = {
 					...response.data,
+					// 如果有 carApplyId，显示它
+					carApplyDisplay: response.data.carApplyId ? String(response.data.carApplyId) : null,
 					params: {
 						...response.data.params,
 						attachmentIds: response.data.attachmentList ? response.data.attachmentList.map(item => item.id) : []

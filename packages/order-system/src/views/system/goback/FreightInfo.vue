@@ -340,13 +340,13 @@ export default {
 									acc.itemTotalLender = add(acc.itemTotalLender, -amount);
 								} else if (isCredit(customerDetail.debitCredit)) {
 									// 贷方：司机欠款增加
-									acc.itemTotalBorrower = subtract(acc.itemTotalBorrower, amount);
+									acc.itemTotalBorrower = add(acc.itemTotalBorrower, amount);
 								}
 								return acc;
 							},
 							{ itemTotalLender: 0, itemTotalBorrower: 0 } // 初始值
 						);
-						return [-itemTotalLender, itemTotalBorrower];
+						return [itemTotalLender, itemTotalBorrower];
 					};
 
 					if (Array.isArray(res.rows)) {

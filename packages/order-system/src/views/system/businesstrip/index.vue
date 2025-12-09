@@ -295,6 +295,7 @@ import { common_dialog } from '../../dashboard/mixins/common/common_dialog';
 import { listVehicles } from '@/api/system/vehicles';
 import COMPANY_CAR from '@/components/NeedToShow/COMPANY_CAR.vue';
 import { listUser } from '@/api/system/user';
+import { create, all } from 'mathjs';
 
 export default {
 	name: 'BusinessTrip',
@@ -583,9 +584,13 @@ export default {
 							this.needMoney = 0;
 							// 如果有报销项，则计算报销项的总金额
 						} else {
+							const math = create(all, { number: 'BigNumber', precision: 64 });
+							let total = math.bignumber(0);
 							res.data.tripReimbursementList.forEach(item => {
-								this.needMoney += item.itemCost;
+								const itemCost = math.bignumber(item.itemCost || 0);
+								total = math.add(total, itemCost);
 							});
+							this.needMoney = Number(math.format(total, { precision: 2, notation: 'fixed' }));
 						}
 					}
 					this.tID = row.id;
@@ -658,7 +663,11 @@ export default {
 
 				// 如果该项费用已经存在，则累加
 				if (existingItem) {
-					existingItem.itemCost = Number(existingItem.itemCost) + Number(cost);
+					const math = create(all, { number: 'BigNumber', precision: 64 });
+					const existingCost = math.bignumber(existingItem.itemCost || 0);
+					const newCost = math.bignumber(cost || 0);
+					const total = math.add(existingCost, newCost);
+					existingItem.itemCost = Number(math.format(total, { precision: 2, notation: 'fixed' }));
 				} else {
 					// 否则添加新的费用项
 					this.tripReimbursementList.push({

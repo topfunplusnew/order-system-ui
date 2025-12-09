@@ -691,7 +691,7 @@ export default {
 		</div>
 
 		<div>
-			<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="批量开票" fullscreen :visible.sync="invoiceAllVisible" append-to-body class="invoice-dialog">
+			<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="`批量开票 - 批次：${currentVoucher || ''}`" fullscreen :visible.sync="invoiceAllVisible" append-to-body class="invoice-dialog">
 				<div class="invoice-container">
 					<!-- 上下布局：上面是 InvoiceCompanysList + QueueInvoiceList（DragDiv），下面是 SelectGoods -->
 					<div class="invoice-layout">
