@@ -71,7 +71,9 @@ export const TableName = Object.freeze({
 	INVENTORDETAIL: 'inventory_detail',
 	DAILY: 'daily',
 	ORDERCOMMISION: 'ordercommission',
-	DEPOSITMONEY: 'deposit_money'
+	DEPOSITMONEY: 'deposit_money',
+	// 期初
+	INIT: 'init'
 });
 
 // 给根据表明和id批量查询使用

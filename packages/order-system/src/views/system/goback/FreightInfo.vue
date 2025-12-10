@@ -404,6 +404,7 @@ export default {
 										tableName: detail.tableName,
 										debitCredit: detail.debitCredit,
 										moneyAmountLocal: fix_2(amount),
+										companyId: detail.companyId,
 										summary: Array.isArray(detail.summary) ? detail.summary.join('、') : detail.summary
 									};
 								};
@@ -442,7 +443,7 @@ export default {
 		},
 		handleSearch(row) {
 			// 拿到表名和id
-			const { tableName, payNo } = row;
+			const { tableName, payNo, companyId } = row;
 			if (!tableName || !payNo) {
 				this.$message.warning('该行数据有误:模块名或者凭证号不存在');
 				return;
@@ -458,7 +459,7 @@ export default {
 					{
 						ids: payNo,
 						isDetail: false,
-						companyId: this.searchForm.companyId,
+						companyId: companyId,
 						companyType: PUBLIC_DICT_TYPE.DRIVER // 运费模块标识
 					},
 					false
