@@ -60,14 +60,14 @@
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<template slot="content">
 							<div v-for="(item, index) in scope.row.lenderList" :key="index">
-								<span style="color: red; margin-right: 6px">[{{ getOrAdvancedModule([item.tableName], scope.row.flag) }}]</span>
+								<span style="color: red; margin-right: 6px">[{{ getOrAdvancedModule([item.tableName], item.flag) }}]</span>
 								<span style="margin-right: 7px">{{ item.lender }}</span>
 								<i class="el-icon-s-order" style="cursor: pointer" @click="handleCheckDetail(item)"></i>
 							</div>
 						</template>
 						<div>
 							<div v-for="(item, index) in scope.row.lenderList" :key="index">
-								<span style="color: red; margin-right: 6px">[{{ getOrAdvancedModule([item.tableName], scope.row.flag) }}]</span>
+								<span style="color: red; margin-right: 6px">[{{ getOrAdvancedModule([item.tableName], item.flag) }}]</span>
 								<span style="margin-right: 7px">{{ item.lender }}</span>
 								<i class="el-icon-s-order" style="cursor: pointer" @click="handleCheckDetail(item)"></i>
 							</div>
@@ -429,6 +429,7 @@ export default {
 										debitCredit: detail.debitCredit,
 										moneyAmountLocal: fix(amount),
 										companyId: detail.companyId,
+										flag: detail.flag,
 										summary: Array.isArray(detail.summary) ? detail.summary.join('、') : detail.summary
 									};
 								};

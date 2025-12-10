@@ -149,10 +149,13 @@ export function getOrAdvancedModule(moduleName, flag = 'default') {
 	if (!moduleName) {
 		throw new Error('isAdvancedModule moduleName is required');
 	}
+	console.log (moduleName, flag)
+
 	// 如果模块不属于高级 并且 没有传递flag 或者flag 是 default
 	if (!moduleNames.advanced.modules.includes(moduleName) && (!flag || flag === 'default')) {
 		return moduleNames[moduleName];
 	}
+
 	return moduleNames.advanced.spec[moduleName][flag];
 }
 
