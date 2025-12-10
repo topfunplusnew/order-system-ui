@@ -60,14 +60,14 @@
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<template slot="content">
 							<div v-for="(item, index) in scope.row.lenderList" :key="index">
-								<span style="color: red; margin-right: 6px">[{{ moduleNames[item.tableName] }}]</span>
+								<span style="color: red; margin-right: 6px">[{{ getOrAdvancedModule([item.tableName]) }}]</span>
 								<span style="margin-right: 7px">{{ item.lender }}</span>
 								<i class="el-icon-s-order" style="cursor: pointer" @click="handleCheckDetail(item)"></i>
 							</div>
 						</template>
 						<div>
 							<div v-for="(item, index) in scope.row.lenderList" :key="index">
-								<span style="color: red; margin-right: 6px">[{{ moduleNames[item.tableName] }}]</span>
+								<span style="color: red; margin-right: 6px">[{{ getOrAdvancedModule([item.tableName]) }}]</span>
 								<span style="margin-right: 7px">{{ item.lender }}</span>
 								<i class="el-icon-s-order" style="cursor: pointer" @click="handleCheckDetail(item)"></i>
 							</div>
@@ -193,7 +193,7 @@ import { common_excel } from '@/views/dashboard/mixins/common/common_excel';
 import { getSupplierSubjectDetailSomeDay, getSupplierSubjectDetailSummary } from '@/api/system/statement';
 import { aggregateByDay, fix } from '@/api/tool/format';
 import { getFunction } from '@/utils/order/mapper';
-import { moduleNames, TableName } from '@/api/tool/enums';
+import { moduleNames, TableName, getOrAdvancedModule } from '@/api/tool/enums';
 import GOODS_ORDER from '@/components/NeedToShow/GOODS_ORDER.vue';
 import PAYMENT from '@/components/NeedToShow/PAYMENT.vue';
 import INVOICE_IN from '@/components/NeedToShow/INVOICE_IN.vue';
@@ -269,6 +269,7 @@ export default {
 		subtract,
 		number,
 		formatBalance,
+		getOrAdvancedModule,
 		// 查询方法
 		getList() {
 			this.$refs['form']?.validate(valid => {

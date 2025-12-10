@@ -123,8 +123,36 @@ export const moduleNames = Object.freeze({
 	ordercommission: '订单佣金',
 	deposit_money: '保证金',
 	// init 特殊处理 init显示期初
-	init: '期初'
+	init: '期初',
+	// 特殊处理 一个对象，针对于有二级分类的模块使用 只有对于有二级分类的模块使用
+	advanced: {
+		// 需要进行特殊处理的表
+		modules: ['goodsorder', 'receivemoney'],
+		spec: {
+			goodsorder: {
+				original_order: '订单',
+				positive_adjust: '调整单'
+			},
+			receivemoney: {
+				futures_margin: '期货保证金',
+				factory_commission: '厂家佣金',
+				deposit: '押金',
+				personal_loan: '个人借款'
+			}
+		}
+	}
 });
+// 判断某个模块是否有二级模块分类
+export function getOrAdvancedModule(moduleName, flag = 'default') {
+	if (!moduleName) {
+		throw new Error('isAdvancedModule moduleName is required');
+	}
+	// 如果模块不属于高级 并且 没有传递flag 或者flag 是 default
+	if (!moduleNames.advanced.modules.includes(moduleName) && (!flag || flag === 'default')) {
+		return moduleNames[moduleName];
+	}
+	return moduleNames.advanced.spec[moduleName][flag];
+}
 
 // 报表所用类型
 export const ReportType = Object.freeze({
