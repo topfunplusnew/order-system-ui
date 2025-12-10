@@ -641,7 +641,7 @@ export default {
 				this.addDictInfo.dictLabel = this.tempCategoryInfo.categoryName;
 				this.addDictInfo.dictValue = this.tempCategoryInfo.levelNo;
 				this.addDictInfo.dictCode = this.tempCategoryInfo.dictCode;
-				this.addDictInfo.dictSort = this.tempCategoryInfo.dictCode;
+				this.addDictInfo.dictSort = this.tempCategoryInfo.dictSort;
 				updateData(this.addDictInfo).then(() => {
 					this.$message.success('修改成功~');
 					this.getList();
@@ -654,6 +654,7 @@ export default {
 				this.addDictInfo.dictValue = this.tempCategoryInfo.levelNo;
 				// 字典类型为 'order_product_categories'
 				this.addDictInfo.dictType = 'order_product_categories';
+				this.addDictInfo.dictSort = Math.max(...this.dictList.map(item => item.dictSort)) + 1;
 				addData(this.addDictInfo).then(() => {
 					this.$message.success('添加成功~');
 					this.getList();
