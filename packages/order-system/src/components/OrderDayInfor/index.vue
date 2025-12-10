@@ -216,7 +216,10 @@ export default {
 										type: 'data'
 									},
 									item,
-									orderInfoToAdd
+									{
+										...orderInfoToAdd,
+										comments: item.comments
+									}
 								);
 							})
 						);
