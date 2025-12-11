@@ -60,9 +60,9 @@ export function returnGiftOut(data) {
 }
 
 // 查看再入库详情（退回记录会显示在这里）
-export function getGiftOutReInDetail(id) {
+export function getGiftOutInDetail(id) {
 	return request({
-		url: '/system/giftOut/reGiftStockIn/',
+		url: '/system/giftOut/reGiftStockIn',
 		method: 'get',
 		params: { id: id }
 	});
