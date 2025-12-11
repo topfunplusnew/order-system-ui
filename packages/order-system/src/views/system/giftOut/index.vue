@@ -153,6 +153,7 @@
 											<el-table-column label="存货地点" align="center" prop="inventoryLocation" width="120" show-overflow-tooltip />
 											<el-table-column label="物品名称" align="center" prop="itemName" min-width="120" show-overflow-tooltip />
 											<el-table-column label="单位" align="center" prop="unit" width="80" />
+											<el-table-column label="入库数量" align="center" prop="quantity" width="100" />
 											<el-table-column label="现在数量" align="center" prop="remainingQuantity" width="100" />
 											<el-table-column label="单价" align="center" prop="unitPrice" width="100">
 												<template #default="scope">
