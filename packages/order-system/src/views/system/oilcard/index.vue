@@ -146,6 +146,9 @@
 		<!--    加油卡充值弹窗-->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="加油卡充值" :visible.sync="moneyDialogVisible" width="500px" append-to-body>
 			<el-form :model="moneyInfo" :rules="moneyRules" label-width="200px" @keyup.enter.native="submitMoney" @submit.native.prevent="submitMoney" ref="moneyFormRef" size="mini">
+				<el-form-item label="充值时间" prop="rechargeDate">
+					<el-date-picker v-model="moneyInfo.rechargeDate" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="请选择充值时间" style="width: 100%" />
+				</el-form-item>
 				<el-form-item label="加油卡卡号" prop="oilCardNo">
 					<el-row>
 						<el-col :span="10">
@@ -161,16 +164,11 @@
 						</el-col>
 					</el-row>
 				</el-form-item>
-				<el-form-item label="请选择充值方式" prop="rechargeType">
-					<el-select v-model="moneyInfo.rechargeType" placeholder="请选择充值方式">
-						<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
-					</el-select>
-				</el-form-item>
 				<el-form-item label="请输入充值金额" prop="rechargeMoney">
 					<el-input v-model="moneyInfo.rechargeMoney" placeholder="请输入充值金额" @input="handleInputTrim($event, 'moneyInfo', 'rechargeMoney')" />
 				</el-form-item>
-				<el-form-item label="姓名" prop="rechargeName">
-					<el-input v-model="moneyInfo.rechargeName" disabled placeholder="请输入姓名" />
+				<el-form-item label="备注" prop="comments">
+					<el-input v-model="moneyInfo.comments" placeholder="请输入备注" />
 				</el-form-item>
 				<el-form-item label="附件" prop="bankName">
 					<UploadFilesButton ref="attachmentUploader" :table-name="'oilcard'" :record-id="moneyInfo.id" :attachment-type="'附件'" :initial-attachments="(form.params && form.params.attachments) || []" @files-updated="handleAttachmentFilesUpdated" />
@@ -325,7 +323,6 @@ export default {
 			moneyDialogVisible: false,
 			moneyInfo: {
 				oilCardNo: '',
-				rechargeType: '',
 				rechargeMoney: '',
 				rechargeDate: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
 				rechargeName: '',
@@ -335,16 +332,6 @@ export default {
 				comments: ''
 			},
 			activeName: 'first',
-			options: [
-				{
-					value: '现金',
-					label: '现金'
-				},
-				{
-					value: '银行卡',
-					label: '银行卡'
-				}
-			],
 			queryBankAcount: '',
 			oilCardOption: {},
 			optionVisible: false,
@@ -398,11 +385,11 @@ export default {
 						trigger: 'blur'
 					}
 				],
-				rechargeType: [
+				rechargeDate: [
 					{
 						required: true,
-						message: '请选择充值方式',
-						trigger: 'blur'
+						message: '请选择充值时间',
+						trigger: 'change'
 					}
 				],
 				rechargeMoney: [

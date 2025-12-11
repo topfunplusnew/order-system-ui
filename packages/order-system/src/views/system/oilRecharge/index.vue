@@ -48,36 +48,7 @@
 			"
 			@selection-change="handleSelectionChange"
 		>
-			<el-table-column label="id" align="center" prop="id" show-overflow-tooltip>
-				<template #default="scope">
-					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.id }}</div>
-						<span>{{ scope.row.id }}</span>
-					</el-tooltip>
-				</template>
-			</el-table-column>
-			<el-table-column v-if="columns[0].visible" label="审核状态" align="center" prop="checkState" width="160px" show-overflow-tooltip>
-				<template #default="scope">
-					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">
-							<PaymentFlag :business-object="scope.row">
-								<template #extra="{ status, type }">
-									<!-- 根据状态展示操作按钮 -->
-									<el-button v-if="type === 'paymentApply' && status === '未申请'" size="mini" type="text" @click="addPaymentApply(scope.row)">申请付款</el-button>
-								</template>
-							</PaymentFlag>
-						</div>
-						<PaymentFlag :business-object="scope.row">
-							<template #extra="{ status, type }">
-								<!-- 根据状态展示操作按钮 -->
-								<el-button v-if="type === 'paymentApply' && status === '未申请'" size="mini" type="text" @click="addPaymentApply(scope.row)">申请付款</el-button>
-							</template>
-						</PaymentFlag>
-					</el-tooltip>
-				</template>
-			</el-table-column>
-			<!--      <el-table-column label="出差编号UUID" align="center" prop="bTripId"/>-->
-			<el-table-column v-if="columns[1].visible" label="加油卡卡号" align="center" prop="oilCardNo" show-overflow-tooltip>
+			<el-table-column v-if="columns[0].visible" label="加油卡卡号" align="center" prop="oilCardNo" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.oilCardNo }}</div>
@@ -85,15 +56,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[2].visible" label="充值类型" align="center" prop="rechargeType" show-overflow-tooltip>
-				<template #default="scope">
-					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.rechargeType }}</div>
-						<span>{{ scope.row.rechargeType }}</span>
-					</el-tooltip>
-				</template>
-			</el-table-column>
-			<el-table-column v-if="columns[3].visible" label="充值金额" align="center" prop="rechargeMoney" show-overflow-tooltip>
+			<el-table-column v-if="columns[1].visible" label="充值金额" align="center" prop="rechargeMoney" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.rechargeMoney }}</div>
@@ -101,7 +64,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[4].visible" label="充值时间" align="center" prop="rechargeDate" show-overflow-tooltip>
+			<el-table-column v-if="columns[2].visible" label="充值时间" align="center" prop="rechargeDate" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.rechargeDate }}</div>
@@ -109,15 +72,15 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[5].visible" label="充值人员姓名" align="center" prop="rechargeName" show-overflow-tooltip>
+			<el-table-column v-if="columns[3].visible" label="备注" align="center" prop="comments">
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.rechargeName }}</div>
-						<span>{{ scope.row.rechargeName }}</span>
+						<div slot="content">{{ scope.row.comments }}</div>
+						<span>{{ scope.row.comments }}</span>
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[6].visible" label="充值附件" align="center" prop="attachment" show-overflow-tooltip>
+			<el-table-column v-if="columns[4].visible" label="附件" align="center" prop="attachment" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
 						<div slot="content" @click.stop>
@@ -134,14 +97,6 @@
 						<div v-else>
 							<el-tag type="danger">加载错误</el-tag>
 						</div>
-					</el-tooltip>
-				</template>
-			</el-table-column>
-			<el-table-column v-if="columns[7].visible" label="备注" align="center" prop="comments">
-				<template #default="scope">
-					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.comments }}</div>
-						<span>{{ scope.row.comments }}</span>
 					</el-tooltip>
 				</template>
 			</el-table-column>
@@ -303,14 +258,11 @@ export default {
 				]
 			},
 			columns: [
-				{ key: 0, label: `审核状态`, visible: true },
-				{ key: 1, label: `加油卡卡号`, visible: true },
-				{ key: 2, label: `充值类型`, visible: true },
-				{ key: 3, label: `充值金额`, visible: true },
-				{ key: 4, label: `充值时间`, visible: true },
-				{ key: 5, label: `充值人员姓名`, visible: true },
-				{ key: 6, label: `充值附件`, visible: true },
-				{ key: 7, label: `备注`, visible: true }
+				{ key: 0, label: `加油卡卡号`, visible: true },
+				{ key: 1, label: `充值金额`, visible: true },
+				{ key: 2, label: `充值时间`, visible: true },
+				{ key: 3, label: `备注`, visible: true },
+				{ key: 4, label: `附件`, visible: true }
 			],
 			tid: '',
 			paymentApplyVisible: false,
