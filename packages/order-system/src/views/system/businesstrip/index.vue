@@ -157,7 +157,7 @@
 						<!--            车辆信息-->
 						<el-row :gutter="10" class="mb8">
 							<el-col :span="1.5">
-								<el-button size="mini" type="primary" @click="handleAddCars">添加</el-button>
+								<el-button size="mini" type="primary" @click="handleOpenCarApplyDialog">添加车辆派出信息</el-button>
 							</el-col>
 							<el-col :span="1.5">
 								<el-button size="mini" type="danger" @click="handleDeleteCars">删除</el-button>
@@ -168,32 +168,24 @@
 						<el-table size="mini" :data="carsList" :row-class-name="rowCarsIndex" @selection-change="handleCarsSelectionChange">
 							<el-table-column type="selection" width="90" align="center" />
 							<el-table-column label="序号" align="center" prop="index" />
-							<el-table-column label="车牌号" align="center">
+							<el-table-column label="申请时间" align="center" prop="applyDate" show-overflow-tooltip />
+							<el-table-column label="申请人" align="center" prop="applyUser" show-overflow-tooltip />
+							<el-table-column label="部门" align="center" prop="department" show-overflow-tooltip />
+							<el-table-column label="车牌" align="center" prop="carNo" show-overflow-tooltip />
+							<el-table-column label="用车时间" align="center" prop="startTime" show-overflow-tooltip />
+							<el-table-column label="还车时间" align="center" prop="endTime" show-overflow-tooltip />
+							<el-table-column label="用车事由" align="center" prop="applyPurpose" show-overflow-tooltip />
+							<el-table-column label="审核状态" align="center" prop="auditState" show-overflow-tooltip />
+							<el-table-column label="操作" align="center" width="120">
 								<template #default="scope">
-									<el-row>
-										<el-col :span="20">
-											<el-input size="mini" disabled v-model="scope.row.carNo" />
-										</el-col>
-										<el-col :span="4">
-											<SearchOption :limit-info="{ auditState: '已审核' }" :get-data="listCarApply" :query-name="queryCarApply" query-info="carNo" query-label="车牌" @commitBack="value => handleCommitBackCarApply(value, scope)" @update:queryName="handleQueryCarApply">
-												<template #table-columns>
-													<el-table-column label="申请人" prop="applyUser" />
-													<el-table-column label="部门" prop="department" />
-													<el-table-column label="车牌" prop="carNo" />
-													<el-table-column label="用车时间" prop="startTime" />
-													<el-table-column label="审核状态" prop="auditState" />
-												</template>
-											</SearchOption>
-										</el-col>
-									</el-row>
+									<el-button type="text" size="mini" @click="handleCheckCar(scope.row)">查看车辆信息</el-button>
 								</template>
 							</el-table-column>
-							<el-table-column label="车辆信息" align="center">
-								<template #default="scope">
-									<el-button v-if="scope.row.carNo" type="text" size="mini" @click="handleCheckCar(scope.row)">查看车辆信息</el-button>
-									<el-button v-else type="text" size="mini">请先引用车辆</el-button>
-								</template>
-							</el-table-column>
+							<template #empty>
+								<div style="padding: 20px; text-align: center">
+									<el-button type="primary" size="mini" @click="handleOpenCarApplyDialog">添加车辆派出信息</el-button>
+								</div>
+							</template>
 						</el-table>
 					</el-row>
 					<hr />
@@ -249,7 +241,7 @@
 		<!--    付款申请弹窗-->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="提示" :visible.sync="applyForPaymentDialogVisible" width="60%">
 			<keep-alive>
-				<ApplyPayment :table-name="TableName.BUSINESS_TRIP" :t-i-d="tID" :need-info="{}" :need-money="needMoney" @changeOpen="changePaymentApplyInfoVisible" />
+				<ApplyPayment ref="applyPaymentRef" :table-name="TableName.BUSINESS_TRIP" :t-i-d="tID" :need-info="{}" :need-money="needMoney" :extra-information="applyPaymentExtraInfo" @changeOpen="changePaymentApplyInfoVisible" />
 			</keep-alive>
 		</el-dialog>
 
@@ -266,6 +258,60 @@
 					</template>
 				</el-table-column>
 			</el-table>
+		</el-dialog>
+
+		<!-- 选择车辆派出信息弹窗 -->
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="选择车辆派出信息" :visible.sync="carApplyDialogVisible" width="90%" append-to-body>
+			<el-form ref="carApplyQueryForm" :model="carApplyQueryParams" size="mini" :inline="true" label-width="100px">
+				<el-form-item label="申请时间" prop="applyDateRange">
+					<el-date-picker v-model="carApplyQueryParams.applyDateRange" type="datetimerange" range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" value-format="yyyy-MM-dd HH:mm:ss" @change="handleCarApplyQuery"></el-date-picker>
+				</el-form-item>
+				<el-form-item label="车牌" prop="carNo">
+					<el-input v-model="carApplyQueryParams.carNo" placeholder="请输入车牌" clearable @keyup.enter.native="handleCarApplyQuery" />
+				</el-form-item>
+				<el-form-item label="申请人" prop="applyUser">
+					<el-input v-model="carApplyQueryParams.applyUser" placeholder="请输入申请人" clearable @keyup.enter.native="handleCarApplyQuery" />
+				</el-form-item>
+				<el-form-item>
+					<el-button type="primary" icon="el-icon-search" size="mini" @click="handleCarApplyQuery">搜索</el-button>
+					<el-button icon="el-icon-refresh" size="mini" @click="resetCarApplyQuery">重置</el-button>
+				</el-form-item>
+			</el-form>
+			<el-table
+				v-loading="carApplyLoading"
+				size="mini"
+				border
+				:data="carApplyList"
+				:cell-style="
+					() => {
+						return { padding: '1.5px' };
+					}
+				"
+			>
+				<el-table-column label="申请时间" align="center" prop="applyDate" show-overflow-tooltip />
+				<el-table-column label="申请人" align="center" prop="applyUser" show-overflow-tooltip />
+				<el-table-column label="部门" align="center" prop="department" show-overflow-tooltip />
+				<el-table-column label="车牌" align="center" prop="carNo" show-overflow-tooltip />
+				<el-table-column label="用车时间" align="center" prop="startTime" show-overflow-tooltip />
+				<el-table-column label="还车时间" align="center" prop="endTime" show-overflow-tooltip />
+				<el-table-column label="用车事由" align="center" prop="applyPurpose" show-overflow-tooltip />
+				<el-table-column label="审核状态" align="center" prop="auditState" show-overflow-tooltip>
+					<template slot-scope="scope">
+						<el-tag :type="scope.row.auditState === '已审核' ? 'success' : 'info'">{{ scope.row.auditState || '未审核' }}</el-tag>
+					</template>
+				</el-table-column>
+				<el-table-column label="操作" align="center" width="120" fixed="right">
+					<template slot-scope="scope">
+						<el-button size="mini" type="primary" :disabled="isCarApplySelected(scope.row.id)" @click="handleSelectCarApply(scope.row)">
+							{{ isCarApplySelected(scope.row.id) ? '已选择' : '选择' }}
+						</el-button>
+					</template>
+				</el-table-column>
+			</el-table>
+			<pagination v-show="carApplyTotal > 0" :total="carApplyTotal" :page.sync="carApplyQueryParams.pageNum" :limit.sync="carApplyQueryParams.pageSize" @pagination="getCarApplyList" />
+			<div slot="footer" class="dialog-footer">
+				<el-button @click="carApplyDialogVisible = false">关 闭</el-button>
+			</div>
 		</el-dialog>
 	</div>
 </template>
@@ -296,6 +342,7 @@ import { listVehicles } from '@/api/system/vehicles';
 import COMPANY_CAR from '@/components/NeedToShow/COMPANY_CAR.vue';
 import { listUser } from '@/api/system/user';
 import { create, all } from 'mathjs';
+import { getConfigValue } from '../../system/Statement/data/config_get';
 
 export default {
 	name: 'BusinessTrip',
@@ -312,6 +359,10 @@ export default {
 	},
 	mixins: [mixin_printHTML, common_dialog, mixin_business_trip_add, mixin_business_trip_update, mixin_business_trip_car_apply],
 	data() {
+		// Create math instance locally for initialization
+		const math = create(all, { number: 'BigNumber', precision: 64 });
+		const zeroFormatted = Number(math.format(math.bignumber(0), { precision: 2, notation: 'fixed' }));
+
 		return {
 			loading: true,
 			ids: [],
@@ -389,8 +440,9 @@ export default {
 
 			// 发起付款申请的
 			applyForPaymentDialogVisible: false,
+			applyPaymentExtraInfo: {}, // 用于传递给ApplyPayment组件的额外信息
 			tID: '',
-			needMoney: 0,
+			needMoney: zeroFormatted,
 			isRecharge: '',
 			oilCardConsumeInfo: {
 				oilCardNo: '',
@@ -420,13 +472,29 @@ export default {
 
 			carsList: [],
 			checkedCars: [],
-			queryCarApply: '',
 
 			// 未审核车辆列表相关
 			notPassedCarDialogVisible: false,
 			notPassedCarList: [],
 			// 报销人搜索字段
-			queryEmployee: ''
+			queryEmployee: '',
+
+			// 车辆派出信息选择弹窗相关
+			carApplyDialogVisible: false,
+			carApplyLoading: false,
+			carApplyList: [],
+			carApplyTotal: 0,
+			carApplyQueryParams: {
+				pageNum: 1,
+				pageSize: 10,
+				auditState: '已审核',
+				carNo: null,
+				applyUser: null,
+				applyDateRange: null,
+				params: {}
+			},
+			// 创建一个全局的 mathjs 实例用于高精度计算
+			math: math
 		};
 	},
 	// 展示与隐藏
@@ -470,6 +538,7 @@ export default {
 	methods: {
 		listCarApply,
 		listUser,
+		getConfigValue,
 		// 搜索报销人信息的回调
 		handleQueryEmployee(val) {
 			this.queryEmployee = val;
@@ -575,26 +644,51 @@ export default {
 					}
 					// 如果没有报销单，则默认为0
 					if (!res.data.tripReimbursementList) {
-						this.needMoney = 0;
+						this.needMoney = Number(this.math.format(this.math.bignumber(0), { precision: 2, notation: 'fixed' }));
 
 						// 获取该出差项的报销项
 					} else {
 						// 如果没有报销项，则默认为0
 						if (res.data.tripReimbursementList.length <= 0) {
-							this.needMoney = 0;
+							this.needMoney = Number(this.math.format(this.math.bignumber(0), { precision: 2, notation: 'fixed' }));
 							// 如果有报销项，则计算报销项的总金额
 						} else {
-							const math = create(all, { number: 'BigNumber', precision: 64 });
-							let total = math.bignumber(0);
+							let total = this.math.bignumber(0);
 							res.data.tripReimbursementList.forEach(item => {
-								const itemCost = math.bignumber(item.itemCost || 0);
-								total = math.add(total, itemCost);
+								const itemCost = this.math.bignumber(item.itemCost || 0);
+								total = this.math.add(total, itemCost);
 							});
-							this.needMoney = Number(math.format(total, { precision: 2, notation: 'fixed' }));
+							this.needMoney = Number(this.math.format(total, { precision: 2, notation: 'fixed' }));
 						}
 					}
 					this.tID = row.id;
-					this.applyForPaymentDialogVisible = true;
+
+					// 获取支付类型配置
+					const configKey = {
+						configKey: 'order.businessTrip_payType'
+					};
+
+					getConfigValue(configKey)
+						.then(({ configValue }) => {
+							// 收集当前行的附件信息和支付类型并传递给ApplyPayment组件
+							this.applyPaymentExtraInfo = {
+								attachments: row.attachmentList || [],
+								payType: configValue ? configValue.split('-') : [] // 将字符串转换为数组格式
+							};
+
+							// 将extraInformation作为props传递给ApplyPayment组件
+							this.applyForPaymentDialogVisible = true;
+						})
+						.catch(error => {
+							console.error('获取支付类型配置失败:', error);
+							// 即使获取支付类型失败，也要继续执行付款申请流程
+							// 收集当前行的附件信息并传递给ApplyPayment组件
+							this.applyPaymentExtraInfo = {
+								attachments: row.attachmentList || []
+							};
+							// 将extraInformation作为props传递给ApplyPayment组件
+							this.applyForPaymentDialogVisible = true;
+						});
 				});
 			});
 		},
@@ -625,8 +719,9 @@ export default {
 			scope.row.item = value;
 		},
 		changePaymentApplyInfoVisible() {
-			this.needMoney = 0;
+			this.needMoney = Number(this.math.format(this.math.bignumber(0), { precision: 2, notation: 'fixed' }));
 			this.applyForPaymentDialogVisible = false;
+			this.applyPaymentExtraInfo = {}; // 重置额外信息
 			this.getList();
 		},
 		handleCarsSelectionChange(selection) {
@@ -634,14 +729,6 @@ export default {
 		},
 		rowCarsIndex({ row, rowIndex }) {
 			row.index = rowIndex + 1;
-		},
-		handleAddCars() {
-			let obj = {
-				id: null,
-				carNo: null
-			};
-			// 将初始化对象添加到 carsList
-			this.carsList.push(obj);
 		},
 		handleDeleteCars() {
 			if (this.checkedCars.length === 0) {
@@ -654,48 +741,132 @@ export default {
 				});
 			}
 		},
-		handleCommitBackCarApply(value, scope) {
-			scope.row.id = value.id;
-			scope.row.carNo = value.carNo;
+		// 打开车辆派出信息选择弹窗
+		handleOpenCarApplyDialog() {
+			this.carApplyDialogVisible = true;
+			this.resetCarApplyQuery();
+			this.getCarApplyList();
+		},
+		// 查询车辆派出信息列表
+		getCarApplyList() {
+			this.carApplyLoading = true;
+			// 构建查询参数，处理时间范围
+			const queryParams = { ...this.carApplyQueryParams };
+			// 处理时间范围参数
+			if (queryParams.applyDateRange && queryParams.applyDateRange.length === 2) {
+				if (!queryParams.params) {
+					queryParams.params = {};
+				}
+				queryParams.params['applyDateStartTime'] = queryParams.applyDateRange[0];
+				queryParams.params['applyDateEndTime'] = queryParams.applyDateRange[1];
+			} else {
+				// 如果没有选择时间，清除时间参数
+				if (queryParams.params) {
+					delete queryParams.params['applyDateStartTime'];
+					delete queryParams.params['applyDateEndTime'];
+				}
+			}
+			// 移除前端使用的 applyDateRange，不发送到后端
+			delete queryParams.applyDateRange;
 
-			function addReimbursementItem(item, cost) {
+			listCarApply(queryParams)
+				.then(response => {
+					this.carApplyList = response.rows || [];
+					this.carApplyTotal = response.total || 0;
+					this.carApplyLoading = false;
+				})
+				.catch(() => {
+					this.carApplyLoading = false;
+				});
+		},
+		// 车辆派出信息搜索
+		handleCarApplyQuery() {
+			this.carApplyQueryParams.pageNum = 1;
+			this.getCarApplyList();
+		},
+		// 获取默认时间范围（最近两个月）
+		getDefaultDateRange() {
+			const end = new Date();
+			const start = new Date();
+			start.setMonth(start.getMonth() - 2);
+			return [this.formatDateTime(start), this.formatDateTime(end)];
+		},
+		// 格式化日期时间为 yyyy-MM-dd HH:mm:ss
+		formatDateTime(date) {
+			const year = date.getFullYear();
+			const month = String(date.getMonth() + 1).padStart(2, '0');
+			const day = String(date.getDate()).padStart(2, '0');
+			const hours = String(date.getHours()).padStart(2, '0');
+			const minutes = String(date.getMinutes()).padStart(2, '0');
+			const seconds = String(date.getSeconds()).padStart(2, '0');
+			return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+		},
+		// 重置车辆派出信息查询
+		resetCarApplyQuery() {
+			// 默认选择最近两个月
+			const defaultDateRange = this.getDefaultDateRange();
+			this.carApplyQueryParams = {
+				pageNum: 1,
+				pageSize: 10,
+				auditState: '已审核',
+				carNo: null,
+				applyUser: null,
+				applyDateRange: defaultDateRange,
+				params: {
+					applyDateStartTime: defaultDateRange[0],
+					applyDateEndTime: defaultDateRange[1]
+				}
+			};
+			this.resetForm('carApplyQueryForm');
+		},
+		// 判断车辆申请是否已选择
+		isCarApplySelected(carApplyId) {
+			return this.carsList.some(item => item.id === carApplyId);
+		},
+		// 选择车辆派出信息
+		handleSelectCarApply(row) {
+			if (this.isCarApplySelected(row.id)) {
+				this.$message.warning('该车辆派出信息已选择');
+				return;
+			}
+			// 将车辆派出信息添加到列表
+			this.carsList.push({
+				id: row.id,
+				carNo: row.carNo,
+				applyDate: row.applyDate,
+				applyUser: row.applyUser,
+				department: row.department,
+				startTime: row.startTime,
+				endTime: row.endTime,
+				applyPurpose: row.applyPurpose,
+				auditState: row.auditState
+			});
+			this.$message.success('添加成功');
+
+			// 自动添加相关费用到报销项
+			const addReimbursementItem = (item, cost) => {
+				if (!cost || cost === 0) return;
 				const existingItem = this.tripReimbursementList.find(reimbursement => reimbursement.item === item);
-
-				// 如果该项费用已经存在，则累加
 				if (existingItem) {
-					const math = create(all, { number: 'BigNumber', precision: 64 });
-					const existingCost = math.bignumber(existingItem.itemCost || 0);
-					const newCost = math.bignumber(cost || 0);
-					const total = math.add(existingCost, newCost);
-					existingItem.itemCost = Number(math.format(total, { precision: 2, notation: 'fixed' }));
+					const existingCost = this.math.bignumber(existingItem.itemCost || 0);
+					const newCost = this.math.bignumber(cost || 0);
+					const total = this.math.add(existingCost, newCost);
+					existingItem.itemCost = Number(this.math.format(total, { precision: 2, notation: 'fixed' }));
 				} else {
-					// 否则添加新的费用项
 					this.tripReimbursementList.push({
 						item: item,
 						itemCost: cost
 					});
 				}
-			}
+			};
 
-			// 引用车辆的时候需要将费用置于小项中
-			if (value.fine) {
-				addReimbursementItem.call(this, '规章费用', value.fine);
+			// 如果有加油费用，自动添加到报销项
+			if (row.refuelingMoney) {
+				addReimbursementItem('加油费用', row.refuelingMoney);
 			}
-			if (value.refuelingMoney) {
-				addReimbursementItem.call(this, '加油费用', value.refuelingMoney);
+			if (row.cashRefueling) {
+				addReimbursementItem('现金加油费用', row.cashRefueling);
 			}
-			if (value.cashRefueling) {
-				addReimbursementItem.call(this, '现金加油费用', value.cashRefueling);
-			}
-			if (value.repairMoney) {
-				addReimbursementItem.call(this, '维修费用', value.repairMoney);
-			}
-			if (value.maintenanceMoney) {
-				addReimbursementItem.call(this, '保养费用', value.maintenanceMoney);
-			}
-		},
-		handleQueryCarApply(value) {
-			this.queryCarApply = value;
 		},
 		handleCheckCar(row) {
 			listVehicles({ licensePlate: row.carNo }).then(res => {
@@ -751,11 +922,13 @@ export default {
 				updateTime: null,
 				delFlag: null,
 				params: {
-					attachmentIds: []
+					attachmentIds: [],
+					carApplyIds: []
 				}
 			};
 			this.tripReimbursementList = [];
 			this.carsList = [];
+			this.checkedCars = [];
 			this.resetForm('form');
 			// 清除上传组件状态
 			if (this.$refs.attachmentUpload) {
@@ -801,7 +974,7 @@ export default {
 		handleAddTripReimbursement() {
 			const obj = {};
 			obj.item = '';
-			obj.itemCost = '';
+			obj.itemCost = Number(this.math.format(this.math.bignumber(0), { precision: 2, notation: 'fixed' }));
 			obj.comments = '';
 			obj.addtime = '';
 			obj.userId = '';
@@ -813,13 +986,13 @@ export default {
 		handleDeleteTripReimbursement() {
 			if (this.checkedTripReimbursement.length === 0) {
 				this.$modal.msgError('请先选择要删除的出差报销数据');
-			} else {
-				const tripReimbursementList = this.tripReimbursementList;
-				const checkedTripReimbursement = this.checkedTripReimbursement;
-				this.tripReimbursementList = tripReimbursementList.filter(function (item) {
-					return checkedTripReimbursement.indexOf(item.index) === -1;
-				});
+				return;
 			}
+			const tripReimbursementList = this.tripReimbursementList;
+			const checkedTripReimbursement = this.checkedTripReimbursement;
+			this.tripReimbursementList = tripReimbursementList.filter(function (item) {
+				return checkedTripReimbursement.indexOf(item.index) === -1;
+			});
 		},
 		/** 复选框选中数据 */
 		handleTripReimbursementSelectionChange(selection) {

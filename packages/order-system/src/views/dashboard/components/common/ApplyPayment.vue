@@ -7,7 +7,7 @@
 			<!-- 只有当付款申请的时候才会填写该字段，类型后端填充 -->
 			<template v-if="!isPayment">
 				<el-form-item label="支付类型" prop="payType">
-					<el-cascader :disabled="isPayment" v-model="form.payType" :options="paymentTypeTree" :props="props" style="width: 100%" />
+					<el-cascader :disabled="inputDisabled || isPayment" v-model="form.payType" :options="paymentTypeTree" :props="props" style="width: 100%" />
 				</el-form-item>
 			</template>
 			<el-form-item label="金额" prop="moneyAmount">
@@ -478,7 +478,7 @@ export default {
 				tableName: null,
 				// 新的核心字段
 				fundsDate: parseTime(new Date()),
-				payType: null,
+				payType: [],
 				moneyAmount: null,
 				// 银行卡类型
 				selfBankCardType: null,
@@ -516,7 +516,7 @@ export default {
 				// 新增：表关联数组
 				tableReferences: []
 			},
-			// 禁用输入框
+			// 禁用支付类型输入框
 			inputDisabled: false,
 			// 禁用银行卡输入 因为现金支付不需要银行卡信息
 			bankInputDisabled: false,
@@ -563,6 +563,32 @@ export default {
 							this.form.moneyAmount = totalAmount;
 						}
 					}
+				}
+			},
+			deep: true,
+			immediate: true
+		},
+		// 监听 extraInformation 变化，自动填充附件和支付类型
+		extraInformation: {
+			handler(newExtraInfo) {
+				// 如果 extraInformation 中包含附件信息，则自动填充到表单中
+				if (newExtraInfo && newExtraInfo.attachments && Array.isArray(newExtraInfo.attachments)) {
+					// 设置附件列表
+					this.form.attachmentList = [...newExtraInfo.attachments];
+					// 设置附件ID数组
+					if (!this.form.params) {
+						this.form.params = {};
+					}
+					this.form.params.attachmentIds = newExtraInfo.attachments.map(attachment => attachment.id);
+				}
+				// 如果 extraInformation 中包含支付类型信息，则自动填充到表单中，并禁用支付类型选择
+				if (newExtraInfo && newExtraInfo.payType) {
+					this.$set(this.form, 'payType', newExtraInfo.payType);
+					// 禁用支付类型选择
+					this.inputDisabled = true;
+				} else {
+					// 如果没有支付类型信息，则启用支付类型选择
+					this.inputDisabled = false;
 				}
 			},
 			deep: true,

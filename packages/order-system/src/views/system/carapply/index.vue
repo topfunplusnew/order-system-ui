@@ -102,15 +102,7 @@
 			</el-table-column>
 			<el-table-column v-if="columns[26].visible" label="审核状态" align="center" prop="auditState" width="300px" show-overflow-tooltip>
 				<template slot-scope="scope">
-					<el-switch
-						v-hasPermi="['system:carapply:audit']"
-						v-model="scope.row.auditState"
-						:active-value="'已审核'"
-						:inactive-value="'未审核'"
-						active-text="已审核"
-						inactive-text="未审核"
-						@change="(value) => handleAuditStateChange(scope.row, value)"
-					></el-switch>
+					<el-switch v-hasPermi="['system:carapply:audit']" v-model="scope.row.auditState" :active-value="'已审核'" :inactive-value="'未审核'" active-text="已审核" inactive-text="未审核" @change="value => handleAuditStateChange(scope.row, value)"></el-switch>
 					<el-tag v-if="!checkPermi(['system:carapply:audit'])" :type="scope.row.auditState === '已审核' ? 'success' : 'info'">
 						{{ scope.row.auditState || '未审核' }}
 					</el-tag>
@@ -200,7 +192,15 @@
 													<el-input size="mini" disabled v-model="scope.row.oilCardNo" />
 												</el-col>
 												<el-col :span="4">
-													<SearchOption :limit-info="{}" :get-data="listOilCard" query-label="油卡卡号" :query-name="queryOilCardBinding" query-info="oilCardNo" @commitBack="value => handleCommitBackOilCardBinding(value, scope)" @update:queryName="handleQueryOilCardBinding">
+													<SearchOption
+														:limit-info="{}"
+														:get-data="listOilCard"
+														query-label="油卡卡号"
+														:query-name="queryOilCardBinding"
+														query-info="oilCardNo"
+														@commitBack="value => handleCommitBackOilCardBinding(value, scope)"
+														@update:queryName="handleQueryOilCardBinding"
+													>
 														<template #table-columns>
 															<el-table-column label="油卡卡号" prop="oilCardNo" />
 															<el-table-column label="油卡类型" prop="oilType" />
@@ -278,9 +278,9 @@
 						<el-form-item v-if="Number(supplementForm.cashRefuelingFrequency) > 0" label="现金加油金额" prop="cashRefueling">
 							<el-input v-model="supplementForm.cashRefueling" placeholder="请输入现金加油金额" @input="handleNumberInput($event, 'cashRefueling', 'supplementForm')" />
 						</el-form-item>
-					<el-form-item label="附件" prop="attachmentList">
-						<UploadFilesButton ref="supplementAttachmentUpload" flag="attachments" @files-updated="handleSupplementAttachmentFilesUpdated" :initial-attachments="supplementForm.attachmentList || []" />
-					</el-form-item>
+						<el-form-item label="附件" prop="attachmentList">
+							<UploadFilesButton ref="supplementAttachmentUpload" flag="attachments" @files-updated="handleSupplementAttachmentFilesUpdated" :initial-attachments="supplementForm.attachmentList || []" />
+						</el-form-item>
 					</el-col>
 				</el-row>
 			</el-form>
@@ -716,7 +716,8 @@ export default {
 				updateTime: null,
 				delFlag: null,
 				params: {
-					attachmentIds: []
+					attachmentIds: [],
+					carApplyIds: []
 				}
 			};
 			this.resetForm('form');
@@ -795,7 +796,6 @@ export default {
 		submitForm() {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
-
 					// 处理油卡绑定：如果未携带油卡，清空油卡绑定列表
 					if (this.form.isUseOilCard === 0) {
 						this.form.oilCardBindings = [];
@@ -860,7 +860,7 @@ export default {
 			// 审核状态只有 "已审核" 和 "未审核" 两种
 			const auditState = value === '已审核' ? '已审核' : '未审核';
 			const message = auditState === '已审核' ? '审核成功' : '取消审核成功';
-			
+
 			auditCarApply(row.id, auditState)
 				.then(() => {
 					this.$modal.msgSuccess(message);
@@ -906,7 +906,7 @@ export default {
 				const attachmentList = response.data.attachmentList || [];
 				// 筛选普通附件（flag === 'attachments'）
 				const generalAttachments = attachmentList.filter(item => item.flag === 'attachments');
-				
+
 				// 先设置表单数据，确保 attachmentList 正确设置
 				this.supplementForm = {
 					id: response.data.id,
@@ -929,10 +929,10 @@ export default {
 						attachmentIds: generalAttachments.map(item => item.id)
 					}
 				};
-				
+
 				// 打开弹窗
 				this.supplementOpen = true;
-				
+
 				// 弹窗打开后，确保附件组件正确初始化
 				this.$nextTick(() => {
 					if (this.$refs.supplementAttachmentUpload) {
@@ -960,10 +960,10 @@ export default {
 					// 获取附件ID
 					const attachmentIds = data.params.attachmentIds || this.supplementForm.attachmentList?.map(item => item.id) || [];
 					data.params.attachmentIds = attachmentIds;
-					
+
 					// 移除临时字段
 					delete data.attachmentList;
-					
+
 					supplementCarApply(excludeParams(data, this.$exclude)).then(() => {
 						this.$modal.msgSuccess('补充信息提交成功');
 						this.supplementOpen = false;

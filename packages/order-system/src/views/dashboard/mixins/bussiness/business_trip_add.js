@@ -1,6 +1,5 @@
 import { excludeParams } from '../../../../api/tool/exclude';
 import { addBusinessTrip, updateBusinessTrip } from '../../../../api/system/BusinessTrip';
-import { updateCarApply, updateCarApplyBatch } from '../../../../api/system/carApply';
 import { getUuid } from '../../../../utils/trash/utils';
 
 // 出差添加信息模块
@@ -72,13 +71,11 @@ export var mixin_business_trip_add = {
 			// **选中状态清空**
 			this.checkedCars = [];
 
-			// **查询状态重置**
-			this.queryCarApply = '';
-
-			// **用户反馈（可选）**
-			if (process.env.NODE_ENV === 'development') {
-				console.log('✅ 车辆数据已清除');
+			// **清空表单中的车辆申请ID列表**
+			if (!this.form.params) {
+				this.form.params = {};
 			}
+			this.form.params.carApplyIds = [];
 		},
 		// 新增操作
 		handleAdd() {
@@ -131,44 +128,48 @@ export var mixin_business_trip_add = {
 				formData.params.attachmentIds = this.form.attachmentList.map(item => item.id);
 			}
 
+			// **车辆申请ID处理：根据是否使用车辆设置carApplyIds**
+			if (useCar) {
+				const carApplyIds = this.carsList
+					.map(item => item.id)
+					.filter(id => id != null && id !== undefined && !isNaN(Number(id)))
+					.map(id => Number(id));
+
+				// 校验车辆申请ID数组
+				if (carApplyIds.length === 0) {
+					this.$message.error('请至少选择一个有效的车辆申请');
+					return;
+				}
+
+				formData.params.carApplyIds = carApplyIds;
+			} else {
+				// 不使用车辆时，传入空数组以清空原有关联（编辑场景）
+				// 新增场景下传入空数组或不传都可以
+				if (isEdit) {
+					formData.params.carApplyIds = [];
+				}
+			}
+
 			// 编辑逻辑
 			if (isEdit) {
 				updateBusinessTrip(excludeParams(formData, this.$exclude))
 					.then(() => {
-						if (useCar) {
-							const body = {
-								bTripId: this.form.id,
-								carApplyIds: this.carsList.map(item => item.id).join(',')
-							};
-							updateCarApplyBatch(body).then(() => {
-								handleSuccess('车辆信息修改成功');
-							});
-						} else {
-							handleSuccess('修改成功');
-						}
+						handleSuccess('修改成功');
 					})
 					.catch(err => {
 						console.error('编辑失败:', err);
+						this.$message.error(err?.msg || '编辑失败');
 					});
 			} else {
 				// 新增逻辑
 				addBusinessTrip({ ...formData, UUID: this.UUID })
-					.then(res => {
-						if (useCar) {
-							const body = {
-								bTripId: res.data.id,
-								carApplyIds: this.carsList.map(item => item.id).join(',')
-							};
-							// 提交车辆信息
-							updateCarApplyBatch(body).then(() => {
-								handleSuccess('车辆信息提交成功');
-							});
-						} else {
-							handleSuccess('提交成功，本次无车辆使用信息');
-						}
+					.then(() => {
+						const message = useCar ? '提交成功' : '提交成功，本次无车辆使用信息';
+						handleSuccess(message);
 					})
 					.catch(err => {
 						console.error('新增失败:', err);
+						this.$message.error(err?.msg || '新增失败');
 					});
 			}
 		},
@@ -178,6 +179,7 @@ export var mixin_business_trip_add = {
 		 * 当用户选择使用车辆时，必须满足以下条件：
 		 * 1. 车辆列表不能为空
 		 * 2. 每行车辆信息必须完整填写
+		 * 3. 车辆申请ID必须是有效的数字
 		 *
 		 * **设计模式：** 策略模式 - 将不同的校验规则封装成独立的校验函数
 		 * **错误处理：** 提供精确的错误定位，便于用户快速修正
@@ -202,6 +204,14 @@ export var mixin_business_trip_add = {
 				}
 			}
 
+			// **车辆申请ID有效性校验**
+			const validCarApplyIds = this.carsList.map(item => item.id).filter(id => id != null && id !== undefined && !isNaN(Number(id)) && Number(id) > 0);
+
+			if (validCarApplyIds.length === 0) {
+				this.$message.error('请至少选择一个有效的车辆申请');
+				return false;
+			}
+
 			// **业务逻辑校验通过**
 			return true;
 		},
@@ -220,8 +230,15 @@ export var mixin_business_trip_add = {
 		 */
 		validateSingleCar(car, rowNumber) {
 			// **车辆ID校验：业务关联完整性**
-			if (!car.id) {
+			if (!car.id || car.id === null || car.id === undefined) {
 				this.$message.error(`第${rowNumber}行车辆未选择，请点击搜索按钮选择车辆`);
+				return false;
+			}
+
+			// **车辆ID有效性校验：必须是有效的数字**
+			const carId = Number(car.id);
+			if (isNaN(carId) || carId <= 0 || !Number.isInteger(carId)) {
+				this.$message.error(`第${rowNumber}行车辆申请ID无效，请重新选择车辆`);
 				return false;
 			}
 
@@ -231,23 +248,6 @@ export var mixin_business_trip_add = {
 				return false;
 			}
 			return true;
-		},
-
-		/**
-		 * **车牌号格式校验：数据格式规范化**
-		 *
-		 * **正则表达式设计：**
-		 * - 支持新能源车牌（8位）和普通车牌（7位）
-		 * - 符合国标GB36001-2016规范
-		 *
-		 * @param {string} carNo - 车牌号
-		 * @returns {boolean} 格式校验结果
-		 */
-		validateCarNumber(carNo) {
-			// **车牌号正则：兼容多种车牌格式**
-			const carNumberRegex = /^[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领A-Z]{1}[A-Z]{1}[A-Z0-9]{4,5}[A-Z0-9挂学警港澳]{1}$/;
-
-			return carNumberRegex.test(carNo.trim());
 		},
 
 		// 上传的回调函数
