@@ -45,7 +45,7 @@
 			<el-table-column v-if="columns[3] && columns[3].visible" label="物品名称" prop="itemName" min-width="150" show-overflow-tooltip />
 			<el-table-column v-if="columns[4] && columns[4].visible" label="规格" prop="unit" width="80" align="center" show-overflow-tooltip />
 			<!-- 剩余数量 (remainingQuantity)：当前批次礼品的可用库存数量，计算公式 = 入库数量 - 已出库数量 -->
-			<el-table-column v-if="columns[5] && columns[5].visible" label="剩余数量" prop="remainingQuantity" width="100" align="center">
+			<el-table-column v-if="columns[5] && columns[5].visible" label="数量" prop="remainingQuantity" width="100" align="center">
 				<template #default="scope">
 					<span>{{ formatInteger(scope.row.remainingQuantity) }}</span>
 				</template>
@@ -105,7 +105,7 @@ export default {
 				{ key: 2, label: '存货地点', visible: true },
 				{ key: 3, label: '物品名称', visible: true },
 				{ key: 4, label: '规格', visible: true },
-				{ key: 5, label: '剩余数量', visible: true },
+				{ key: 5, label: '数量', visible: true },
 				{ key: 6, label: '单价', visible: true },
 				{ key: 7, label: '金额', visible: true }
 			]
