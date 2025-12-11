@@ -85,6 +85,7 @@ export default {
 				{
 					// beginTime: this.queryParams.beginTime,
 					endTime: this.queryParams.endTime
+
 				},
 				`运费报表${parseTime(new Date().getTime())}.xlsx`
 			);

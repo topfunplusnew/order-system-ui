@@ -1,17 +1,5 @@
 <template>
 	<div class="app-container">
-		<!-- 时间选择对话框 -->
-		<el-dialog title="选择查询时间" :visible.sync="dateDialogVisible" width="500px" :close-on-click-modal="false" :close-on-press-escape="false" :show-close="false">
-			<el-form ref="dateForm" :model="dateForm" label-width="100px">
-				<el-form-item label="入库日期" prop="inDate" :rules="[{ required: true, message: '请选择入库日期', trigger: 'change' }]">
-					<el-date-picker v-model="dateForm.inDate" type="date" placeholder="请选择入库日期" value-format="yyyy-MM-dd" style="width: 100%" />
-				</el-form-item>
-			</el-form>
-			<div slot="footer" class="dialog-footer">
-				<el-button type="primary" @click="handleDateConfirm">确定</el-button>
-			</div>
-		</el-dialog>
-
 		<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="120px">
 			<el-form-item label="物品名称" prop="itemName">
 				<el-input v-model="queryParams.itemName" placeholder="请输入物品名称" clearable @keyup.enter.native="handleQuery" />
@@ -95,16 +83,12 @@ export default {
 	name: 'GiftInventory',
 	dicts: ['order_gift_in_method'],
 	mixins: [mixin_printHTML, common_excel],
-	data() {
+		data() {
 		return {
 			loading: false,
 			showSearch: true,
 			total: 0,
 			giftStockList: [],
-			dateDialogVisible: false,
-			dateForm: {
-				inDate: null
-			},
 			queryParams: {
 				pageNum: 1,
 				pageSize: 20,
@@ -128,7 +112,9 @@ export default {
 	},
 	created() {
 		this.initColumns();
-		this.dateDialogVisible = true;
+		// 默认选择当天日期并自动查询
+		this.queryParams.inDate = this.getTodayDate();
+		this.getList();
 	},
 	mounted() {
 		// 确保金额列始终显示
@@ -163,6 +149,14 @@ export default {
 	},
 	methods: {
 		parseTime,
+		// 获取当天日期，格式：yyyy-MM-dd
+		getTodayDate() {
+			const today = new Date();
+			const year = today.getFullYear();
+			const month = String(today.getMonth() + 1).padStart(2, '0');
+			const day = String(today.getDate()).padStart(2, '0');
+			return `${year}-${month}-${day}`;
+		},
 		formatCurrency(value) {
 			if (value === null || value === undefined || value === '') {
 				return '-';
@@ -276,39 +270,19 @@ export default {
 			}
 		},
 		handleQuery() {
-			if (!this.queryParams.inDate) {
-				this.$message.warning('请先选择入库日期');
-				this.dateDialogVisible = true;
-				return;
-			}
 			this.queryParams.pageNum = 1;
 			this.getList();
 		},
 		resetQuery() {
 			this.queryParams.id = null;
 			this.queryParams.itemName = null;
-			this.queryParams.inDate = null;
+			this.queryParams.inDate = this.getTodayDate();
 			this.queryParams.inventoryLocation = null;
 			this.queryParams.unit = null;
-			this.dateForm.inDate = null;
 			this.resetForm('queryForm');
-			this.dateDialogVisible = true;
-		},
-		handleDateConfirm() {
-			this.$refs.dateForm.validate((valid) => {
-				if (valid) {
-					this.queryParams.inDate = this.dateForm.inDate;
-					this.dateDialogVisible = false;
-					this.getList();
-				}
-			});
+			this.getList();
 		},
 		handleExport() {
-			if (!this.queryParams.inDate) {
-				this.$message.warning('请先选择入库日期');
-				this.dateDialogVisible = true;
-				return;
-			}
 			const queryParams = this.buildQueryParams();
 			this.download(
 				'system/gift/export',
