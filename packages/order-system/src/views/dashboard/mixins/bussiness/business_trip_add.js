@@ -230,13 +230,6 @@ export var mixin_business_trip_add = {
 				this.$message.error(`第${rowNumber}行车牌号不能为空`);
 				return false;
 			}
-
-			// **数据格式校验：车牌号格式检查**
-			if (!this.validateCarNumber(car.carNo)) {
-				this.$message.error(`第${rowNumber}行车牌号格式不正确：${car.carNo}`);
-				return false;
-			}
-
 			return true;
 		},
 
