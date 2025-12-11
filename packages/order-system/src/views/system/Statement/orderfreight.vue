@@ -147,12 +147,17 @@ export default {
 						"
 					>
 						<el-table-column label="序号" align="center" type="index" width="50" show-overflow-tooltip />
-						<el-table-column show-overflow-tooltip label="时间" align="center" width="140">
-							<template slot-scope="">
-								{{ queryParams.endTime }}
-							</template>
-						</el-table-column>
-						<el-table-column v-if="columns[1].visible" label="收款人姓名" align="center" width="200" show-overflow-tooltip>
+					<el-table-column show-overflow-tooltip label="时间" align="center" width="140">
+						<template slot-scope="">
+							{{ queryParams.endTime }}
+						</template>
+					</el-table-column>
+					<el-table-column v-if="columns[0].visible" label="车号" align="center" width="200" prop="carNo" show-overflow-tooltip>
+						<template slot-scope="scope">
+							{{ formatTextValue(scope.row.carNo) }}
+						</template>
+					</el-table-column>
+					<el-table-column v-if="columns[1].visible" label="收款人姓名" align="center" width="200" show-overflow-tooltip>
 							<template slot-scope="scope">
 								{{ formatTextValue(scope.row.otherAcountsName) }}
 							</template>
