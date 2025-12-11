@@ -34,7 +34,7 @@ export async function getConfigValue(key) {
 
 		// 返回科目名称和配置值
 		return {
-			subjectName: result[0].title,
+			subjectName: result[0]?.title,
 			configValue
 		};
 	} catch (error) {

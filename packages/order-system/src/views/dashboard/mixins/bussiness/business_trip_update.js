@@ -1,5 +1,4 @@
 import { getBusinessTrip } from '../../../../api/system/BusinessTrip';
-import { listCarApply } from '../../../../api/system/carApply';
 // 出差的修改模块
 export var mixin_business_trip_update = {
 	data: function () {
@@ -26,19 +25,28 @@ export var mixin_business_trip_update = {
 					this.form.params.attachmentIds = this.form.attachmentList.map(item => item.id);
 				}
 
-				// 查询该出差id下的用车信息
-				listCarApply({ bTripId: id }).then(res => {
-					if (res.rows.length === 0) {
-						this.useCar = '否';
-						this.$message.info('本出差信息无车辆使用记录');
-					} else {
-						this.useCar = '是';
-						this.$message.success('查询到本出差信息有车辆使用记录，已自动填充');
-						this.carsList = res.rows;
-					}
-				});
+				// 处理车辆派出信息：使用后端返回的 carApplyList
+				const carApplyList = response.data.carApplyList || [];
+				if (carApplyList.length === 0) {
+					this.useCar = '否';
+					this.carsList = [];
+				} else {
+					this.useCar = '是';
+					// 将后端返回的车辆申请数据映射到表格显示格式
+					this.carsList = carApplyList.map(item => ({
+						id: item.id,
+						carNo: item.carNo,
+						applyDate: item.applyDate,
+						applyUser: item.applyUser,
+						department: item.department,
+						startTime: item.startTime,
+						endTime: item.endTime,
+						applyPurpose: item.applyPurpose,
+						auditState: item.auditState
+					}));
+				}
 				// 报销项信息保存状态
-				this.tripReimbursementList = response.data.tripReimbursementList;
+				this.tripReimbursementList = response.data.tripReimbursementList || [];
 				this.title = '修改出差';
 				this.open = true;
 			});
