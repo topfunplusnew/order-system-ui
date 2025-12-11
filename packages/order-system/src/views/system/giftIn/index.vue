@@ -273,11 +273,11 @@
 						<span>{{ scope.row.unitPrice ? Number(scope.row.unitPrice).toFixed(2) : '-' }}</span>
 					</template>
 				</el-table-column>
-<!--				<el-table-column label="金额" align="center" prop="estimatedValue" width="100" show-overflow-tooltip>-->
-<!--					<template #default="scope">-->
-<!--						<span>{{ scope.row.estimatedValue ? Number(scope.row.estimatedValue).toFixed(2) : '-' }}</span>-->
-<!--					</template>-->
-<!--				</el-table-column>-->
+				<el-table-column label="金额" align="center" prop="estimatedValue" width="100" show-overflow-tooltip>
+					<template #default="scope">
+						<span>{{ calculateDetailAmount(scope.row) }}</span>
+					</template>
+				</el-table-column>
 				<el-table-column label="经办人" align="center" prop="handler" width="100" show-overflow-tooltip />
 				<el-table-column label="备注" align="center" prop="remark" show-overflow-tooltip />
 			</el-table>
@@ -309,6 +309,11 @@
 				<el-table-column label="单价" align="center" prop="unitPrice" width="100" show-overflow-tooltip>
 					<template #default="scope">
 						<span>{{ scope.row.unitPrice ? Number(scope.row.unitPrice).toFixed(2) : '-' }}</span>
+					</template>
+				</el-table-column>
+				<el-table-column label="金额" align="center" prop="estimatedValue" width="100" show-overflow-tooltip>
+					<template #default="scope">
+						<span>{{ calculateDetailAmount(scope.row) }}</span>
 					</template>
 				</el-table-column>
 			</el-table>
@@ -830,6 +835,19 @@ export default {
 
 			// 返回格式化的金额
 			return numValue.toFixed(2);
+		},
+		// 计算金额：优先使用 estimatedValue，否则根据数量和单价计算
+		calculateDetailAmount(row) {
+			if (row.estimatedValue !== null && row.estimatedValue !== undefined && row.estimatedValue !== '') {
+				return this.formatCurrency(row.estimatedValue);
+			}
+			const quantity = Number(row.quantity) || 0;
+			const unitPrice = Number(row.unitPrice) || 0;
+			if (quantity > 0 && unitPrice > 0) {
+				const result = multiply(quantity, unitPrice);
+				return this.formatCurrency(result);
+			}
+			return '-';
 		},
 		handleUpdate(row) {
 			const id = row.id || this.ids;

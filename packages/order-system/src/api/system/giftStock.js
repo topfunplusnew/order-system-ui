@@ -28,6 +28,16 @@ export function saveGiftStock(data) {
 }
 
 // 导出礼品库存列表
+export function exportGiftStock(query) {
+	return request({
+		url: '/system/giftStock/export',
+		method: 'post',
+		params: query,
+		responseType: 'blob'
+	});
+}
+
+// 导出礼品库存列表（兼容旧接口）
 export function exportGift(query) {
 	return request({
 		url: '/system/gift/export',
