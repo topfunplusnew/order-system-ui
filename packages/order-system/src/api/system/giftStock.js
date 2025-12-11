@@ -1,5 +1,14 @@
 import request from '@/utils/request';
 
+// 查询礼品列表（用于选择物品）
+export function listGift(query) {
+	return request({
+		url: '/system/gift/list',
+		method: 'get',
+		params: query
+	});
+}
+
 export function listGiftStock(query) {
 	return request({
 		url: '/system/giftStock/list',
@@ -15,5 +24,15 @@ export function saveGiftStock(data) {
 		url: '/system/giftStock/save',
 		method: 'post',
 		data: data
+	});
+}
+
+// 导出礼品库存列表
+export function exportGift(query) {
+	return request({
+		url: '/system/gift/export',
+		method: 'post',
+		params: query,
+		responseType: 'blob'
 	});
 }

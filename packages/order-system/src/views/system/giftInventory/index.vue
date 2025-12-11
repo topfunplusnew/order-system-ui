@@ -7,6 +7,9 @@
 			<el-form-item label="入库日期" prop="inDate">
 				<el-date-picker v-model="queryParams.inDate" type="date" placeholder="请选择入库日期" value-format="yyyy-MM-dd" clearable />
 			</el-form-item>
+			<el-form-item label="存货地点" prop="inventoryLocation">
+				<el-input v-model="queryParams.inventoryLocation" placeholder="请输入存货地点" clearable @keyup.enter.native="handleQuery" />
+			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
 				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -35,7 +38,7 @@
 			<el-table-column v-if="columns[0] && columns[0].visible" label="序号" type="index" width="60" align="center" />
 			<el-table-column v-if="columns[1] && columns[1].visible" label="日期" prop="inDate" width="120" align="center">
 				<template #default="scope">
-					<span>{{ parseTime(scope.row.inDate, '{y}-{m}-{d}') }}</span>
+					<span>{{ scope.row.inDate ? parseTime(scope.row.inDate, '{y}-{m}-{d}') : '-' }}</span>
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[2] && columns[2].visible" label="存货地点" prop="inventoryLocation" width="120" align="center" show-overflow-tooltip />
@@ -58,18 +61,24 @@
 				</template>
 			</el-table-column>
 		</el-table>
+		
+		<!-- 空数据提示 -->
+		<div v-if="!loading && giftStockList.length === 0" style="text-align: center; padding: 40px; color: #909399;">
+			<i class="el-icon-info" style="font-size: 48px; margin-bottom: 16px;"></i>
+			<p>暂无库存数据</p>
+			<p style="font-size: 12px; margin-top: 8px;">请检查查询条件或联系管理员</p>
+		</div>
 
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 	</div>
 </template>
 
 <script>
-import { listGiftIn } from '@/api/system/giftIn';
-import { listGiftOut } from '@/api/system/giftOut';
 import { parseTime } from '../../../utils/ruoyi';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
 import { common_excel } from '../../dashboard/mixins/common/common_excel';
-import { subtract, multiply, divide, round, add } from 'mathjs';
+import { listGiftIn, getGiftInOutDetail } from '@/api/system/giftIn';
+import { subtract, multiply, max } from 'mathjs';
 
 export default {
 	name: 'GiftInventory',
@@ -84,8 +93,11 @@ export default {
 			queryParams: {
 				pageNum: 1,
 				pageSize: 20,
+				id: null,
 				itemName: null,
-				inDate: null
+				inDate: null,
+				inventoryLocation: null,
+				unit: null
 			},
 			columns: [
 				{ key: 0, label: '序号', visible: true },
@@ -144,133 +156,154 @@ export default {
 			}
 		},
 		buildQueryParams() {
-			const baseParams = { pageNum: 1, pageSize: 10000 };
-			const itemName = this.queryParams.itemName;
-			const inDate = this.queryParams.inDate;
-			const params = { ...baseParams };
-			params.params = {};
-			if (itemName) params.itemName = itemName;
-			if (inDate) {
-				params.params.beginInDate = `${inDate} 00:00:00`;
-				params.params.endInDate = `${inDate} 23:59:59`;
+			const params = {
+				pageNum: this.queryParams.pageNum,
+				pageSize: this.queryParams.pageSize
+			};
+			// 只传递有值的参数，避免传递 null/undefined/空字符串
+			if (this.queryParams.id !== null && this.queryParams.id !== undefined && this.queryParams.id !== '') {
+				params.id = this.queryParams.id;
+			}
+			if (this.queryParams.itemName && this.queryParams.itemName.trim() !== '') {
+				params.itemName = this.queryParams.itemName.trim();
+			}
+			if (this.queryParams.inDate && this.queryParams.inDate.trim() !== '') {
+				params.inDate = this.queryParams.inDate.trim();
+			}
+			if (this.queryParams.inventoryLocation && this.queryParams.inventoryLocation.trim() !== '') {
+				params.inventoryLocation = this.queryParams.inventoryLocation.trim();
+			}
+			if (this.queryParams.unit && this.queryParams.unit.trim() !== '') {
+				params.unit = this.queryParams.unit.trim();
 			}
 			return params;
 		},
-		getList() {
+		// 获取所有出库记录（通过入库ID查询每个入库记录对应的出库记录）
+		async getAllOutList(inList) {
+			const promises = inList.map(async (inItem) => {
+				try {
+					const response = await getGiftInOutDetail(inItem.id);
+					let data = [];
+					if (response) {
+						if (Array.isArray(response)) {
+							data = response;
+						} else if (Array.isArray(response.data)) {
+							data = response.data;
+						} else if (Array.isArray(response.rows)) {
+							data = response.rows;
+						} else if (response.data && Array.isArray(response.data.rows)) {
+							data = response.data.rows;
+						} else if (response.data && Array.isArray(response.data.data)) {
+							data = response.data.data;
+						} else if (response.data) {
+							data = Array.isArray(response.data) ? response.data : [response.data];
+						}
+					}
+					return data.map(item => ({
+						...item,
+						inId: inItem.id
+					}));
+				} catch (error) {
+					if (error && error.response && error.response.status === 404) {
+						console.warn(`入库记录 ${inItem.id} 的出库详情接口不存在，跳过出库数据获取`);
+					}
+					return [];
+				}
+			});
+			const results = await Promise.all(promises);
+			return results.flat();
+		},
+		// 计算剩余数量：剩余数量 = 入库数量 - 出库数量
+		calculateRemaining(inList, outList) {
+			return inList.map(inItem => {
+				const id = inItem.id;
+				const idStr = String(id);
+
+				// 计算总出库数量（匹配出库记录中 inId 等于当前入库记录 id 的所有记录）
+				const matchedOutList = outList.filter(o => {
+					const sourceId = o && o.inId;
+					const sourceIdStr = sourceId ? String(sourceId) : null;
+					return sourceId && sourceIdStr === idStr;
+				});
+				
+				const outQty = matchedOutList.reduce((sum, o) => {
+					const qty = Number(o.quantity || o.outQuantity || 0);
+					return sum + qty;
+				}, 0);
+
+				// 入库数量
+				const inQty = Number(inItem.quantity || 0);
+
+				// 计算剩余数量 = 入库数量 - 出库数量
+				const remainingQty = max(0, subtract(inQty, outQty));
+
+				// 计算剩余金额 = 剩余数量 * 单价
+				const unitPrice = Number(inItem.unitPrice || 0);
+				const remainingValue = multiply(remainingQty, unitPrice);
+
+				return {
+					...inItem,
+					remainingQuantity: remainingQty,
+					remainingValue: remainingValue
+				};
+			});
+		},
+		async getList() {
 			this.loading = true;
-			const queryParams = this.buildQueryParams();
-			Promise.all([listGiftIn(queryParams), listGiftOut(queryParams)])
-				.then(([inResponse, outResponse]) => {
-					const giftInList = ((inResponse && inResponse.rows) || []).filter(item => item && item.id !== null && item.id !== undefined);
-					const giftOutList = (outResponse && outResponse.rows) || [];
-					this.calculateStock(giftInList, giftOutList);
-				})
-				.catch(error => {
+			try {
+				const queryParams = this.buildQueryParams();
+				// 1. 获取入库列表
+				const inResponse = await listGiftIn(queryParams);
+				let inList = (inResponse && inResponse.rows) || [];
+
+				if (inList.length === 0) {
 					this.giftStockList = [];
 					this.total = 0;
-					this.$message.error('获取库存数据失败');
-					console.error('获取库存数据失败:', error);
-				})
-				.finally(() => {
 					this.loading = false;
-				});
-		},
-		/**
-		 * 计算库存信息
-		 * 剩余数量计算公式：剩余数量 = 入库数量 - 已出库数量
-		 */
-		calculateStock(giftInList, giftOutList) {
-			const stockMap = new Map();
-			// 遍历入库记录，初始化库存信息
-			giftInList.forEach(item => {
-				if (!item || item.id === null || item.id === undefined) {
 					return;
 				}
-				// 入库数量 (quantity)：存储在 giftIn 表的 quantity 字段，表示一次性入库操作的总量
-				const inQty = Number(item.quantity) || 0;
-				const estimatedVal = Number(item.estimatedValue) || 0;
-				// 计算单价：优先使用后端返回的 unitPrice，如果没有则计算（单价 = 金额 / 数量）
-				let unitPrice = 0;
-				if (item.unitPrice !== null && item.unitPrice !== undefined && item.unitPrice !== '') {
-					unitPrice = Number(item.unitPrice) || 0;
-				} else if (inQty > 0) {
-					unitPrice = divide(estimatedVal, inQty);
+
+				// 2. 获取所有出库记录（通过入库ID查询每个入库记录对应的出库记录）
+				let outList = [];
+				try {
+					outList = await this.getAllOutList(inList);
+				} catch (error) {
+					console.warn('获取出库列表失败，将跳过出库数量计算:', error);
 				}
-				stockMap.set(String(item.id), {
-					id: item.id,
-					itemName: item.itemName || '',
-					inDate: item.inDate || '',
-					inventoryLocation: item.inventoryLocation || '',
-					unit: item.unit || '',
-					quantity: inQty,
-					estimatedValue: estimatedVal,
-					unitPrice: round(unitPrice, 2),
-					outQuantity: 0
-				});
-			});
-			// 遍历出库记录，累加已出库数量
-			let matchedOutCount = 0;
-			let unmatchedOutCount = 0;
-			giftOutList.forEach(outItem => {
-				if (!outItem) {
-					return;
-				}
-				const sourceId = outItem.inId !== null && outItem.inId !== undefined ? outItem.inId : null;
-				if (!sourceId) {
-					unmatchedOutCount++;
-					return;
-				}
-				const giftInId = String(sourceId);
-				const stockItem = stockMap.get(giftInId);
-				if (stockItem) {
-					const outQty = Number(outItem.quantity) || 0;
-					stockItem.outQuantity = add(stockItem.outQuantity, outQty);
-					matchedOutCount++;
-				} else {
-					unmatchedOutCount++;
-				}
-			});
-			// 计算剩余数量和剩余价值
-			const stockList = Array.from(stockMap.values()).map(item => {
-				// 入库数量：存储在 giftIn 表的 quantity 字段，表示一次性入库操作的总量
-				const inQty = Number(item.quantity) || 0;
-				// 已出库数量
-				const outQty = Number(item.outQuantity) || 0;
-				// 剩余数量 (remainingQuantity)：当前批次礼品的可用库存数量，计算公式 = 入库数量 - 已出库数量
-				const remainingQty = subtract(inQty, outQty);
-				const remainingQtyNum = remainingQty > 0 ? remainingQty : 0;
-				// 单价
-				const unitPrice = Number(item.unitPrice) || 0;
-				// 计算剩余价值：剩余数量 * 单价
-				const remainingVal = remainingQtyNum > 0 && unitPrice > 0 
-					? multiply(remainingQtyNum, unitPrice) 
-					: 0;
-				const result = {
-					...item,
-					quantity: round(inQty, 2),
-					remainingQuantity: round(remainingQtyNum, 2),
-					unitPrice: round(unitPrice, 2),
-					remainingValue: round(remainingVal, 2)
-				};
-				return result;
-			});
-			const { pageNum, pageSize } = this.queryParams;
-			const start = (pageNum - 1) * pageSize;
-			this.giftStockList = stockList.slice(start, start + pageSize);
-			this.total = stockList.length;
+
+				// 3. 计算剩余数量：剩余数量 = 入库数量 - 出库数量
+				this.giftStockList = this.calculateRemaining(inList, outList);
+				this.total = (inResponse && inResponse.total) || 0;
+			} catch (error) {
+				console.error('获取库存数据异常:', error);
+				this.giftStockList = [];
+				this.total = 0;
+				const errorMsg = error?.response?.data?.msg || error?.response?.data?.message || error?.message || '获取库存数据失败';
+				this.$message.error(errorMsg);
+			} finally {
+				this.loading = false;
+			}
 		},
 		handleQuery() {
 			this.queryParams.pageNum = 1;
 			this.getList();
 		},
 		resetQuery() {
+			this.queryParams.id = null;
 			this.queryParams.itemName = null;
 			this.queryParams.inDate = null;
+			this.queryParams.inventoryLocation = null;
+			this.queryParams.unit = null;
 			this.resetForm('queryForm');
 			this.handleQuery();
 		},
 		handleExport() {
-			this.excelExport([], `礼品库存_${this.parseTime(new Date(), '{y}{m}{d}_{h}{i}{s}')}`);
+			const queryParams = this.buildQueryParams();
+			this.download(
+				'system/giftIn/export',
+				queryParams,
+				`礼品库存_${this.parseTime(new Date(), '{y}{m}{d}_{h}{i}{s}')}.xlsx`
+			);
 		}
 	}
 };
