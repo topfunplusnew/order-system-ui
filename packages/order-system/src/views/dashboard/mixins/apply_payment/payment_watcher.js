@@ -134,7 +134,8 @@ export var mixin_payment_watcher = {
 				if (val.__customizeSubjectName) {
 					this.form.payType = val.__customizeSubjectName;
 					// 如果是出差聚合 禁用
-					this.inputDisabled = true;
+					// TODO 这还需要改一下
+					// this.inputDisabled = true;
 				}
 				if (val.__attachments && Array.isArray(val.__attachments)) {
 					// 设置附件列表
