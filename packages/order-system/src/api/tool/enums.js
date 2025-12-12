@@ -17,8 +17,8 @@ export const PUBLIC_DICT_TYPE = {
 };
 
 export const YES_OR_NO = Object.freeze({
-	YES: 1,
-	NO: 0
+	YES: "1",
+	NO: "0"
 });
 
 export const CAR_TYPE = Object.freeze({
