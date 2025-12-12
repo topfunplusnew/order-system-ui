@@ -112,33 +112,33 @@
 
 		<!-- 添加或修改加油卡充值信息对话框 -->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
-			<el-form ref="form" :model="form" :rules="rules" label-width="80px">
+			<el-form ref="form" :model="form" :rules="rules" label-width="200px" size="mini">
+				<el-form-item label="充值时间" prop="rechargeDate">
+					<el-date-picker v-model="form.rechargeDate" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="请选择充值时间" style="width: 100%" />
+				</el-form-item>
 				<el-form-item label="加油卡卡号" prop="oilCardNo">
 					<el-row>
 						<el-col :span="10">
-							<el-input disabled v-model="form.oilCardNo" placeholder="请选择" />
+							<el-input v-model="form.oilCardNo" placeholder="请输入加油卡卡号" @input="handleInputTrim($event, 'form', 'oilCardNo')" />
 						</el-col>
-						<el-col :span="4">
-							<SearchOption :get-data="listOilCard" query-info="oilCardNo" :query-name="queryOilCard" query-label="油卡账号查询" :limit-info="{ oilType: '主卡' }" @commitBack="handleCommitBackOilCard" @update:queryName="handleCommitBackQueryOilCard">
+						<el-col :span="3">
+							<SearchOption :get-data="listOilCard" title="选择加油卡" icon="el-icon-search" :limit-info="{ oilType: '主卡' }" @commitBack="handleCommitBackOilCard" @update:queryName="handleCommitBackQueryOilCard" :query-name="queryOilCard" query-info="oilCardNo" query-label="加油卡卡号">
 								<template #table-columns>
-									<el-table-column label="加油卡卡号" align="center" prop="oilCardNo" />
-									<el-table-column label="当前金额" align="center" prop="moneyAmount" />
+									<el-table-column prop="oilCardNo" label="加油卡卡号" />
+									<el-table-column prop="moneyAmount" label="加油卡余额" />
 								</template>
 							</SearchOption>
 						</el-col>
 					</el-row>
 				</el-form-item>
-				<el-form-item label="充值金额" prop="rechargeMoney">
-					<el-input v-model="form.rechargeMoney" placeholder="请输入充值金额" />
-				</el-form-item>
-				<el-form-item label="充值人员姓名" prop="rechargeName">
-					<el-input v-model="form.rechargeName" disabled placeholder="请输入充值人员姓名" />
-				</el-form-item>
-				<el-form-item label="充值附件" prop="attachment">
-					<UploadFilesButton ref="attachmentUpload" flag="attachment" :initial-attachments="(form.params && form.params.attachments) || []" :extra-info="{ moduleType: 'oilRecharge', formId: form.id }" @files-updated="handleAttachmentFilesUpdated" />
+				<el-form-item label="请输入充值金额" prop="rechargeMoney">
+					<el-input v-model="form.rechargeMoney" placeholder="请输入充值金额" @input="handleInputTrim($event, 'form', 'rechargeMoney')" />
 				</el-form-item>
 				<el-form-item label="备注" prop="comments">
 					<el-input v-model="form.comments" placeholder="请输入备注" />
+				</el-form-item>
+				<el-form-item label="附件" prop="attachment">
+					<UploadFilesButton ref="attachmentUpload" flag="attachment" :initial-attachments="(form.params && form.params.attachments) || []" :extra-info="{ moduleType: 'oilRecharge', formId: form.id }" @files-updated="handleAttachmentFilesUpdated" />
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -225,8 +225,10 @@ export default {
 			},
 			// 表单参数
 			form: {
-				rechargeName: '',
-				rechargeDate: parseTime(new Date()),
+				oilCardNo: null,
+				rechargeMoney: null,
+				rechargeDate: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
+				comments: null,
 				rechargeType: '银行卡'
 			},
 			// 表单校验
@@ -234,8 +236,15 @@ export default {
 				oilCardNo: [
 					{
 						required: true,
-						message: '请输入加油卡卡号',
+						message: '加油卡卡号不能为空',
 						trigger: 'blur'
+					}
+				],
+				rechargeDate: [
+					{
+						required: true,
+						message: '请选择充值时间',
+						trigger: 'change'
 					}
 				],
 				rechargeMoney: [
@@ -342,10 +351,9 @@ export default {
 				oilCardNo: null,
 				rechargeType: '银行卡',
 				rechargeMoney: null,
-				rechargeDate: parseTime(new Date()),
+				rechargeDate: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
 				acountsName: null,
 				bankNo: null,
-				rechargeName: null,
 				comments: null,
 				addtime: null,
 				userId: null,
@@ -375,8 +383,6 @@ export default {
 		handleAdd() {
 			this.reset();
 			this.open = true;
-			// 填充充值人员姓名
-			this.form.rechargeName = this.trueName;
 			this.title = '添加加油卡充值信息';
 		},
 		/** 修改按钮操作 */
