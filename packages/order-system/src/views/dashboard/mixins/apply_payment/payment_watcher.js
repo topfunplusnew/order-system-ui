@@ -133,6 +133,17 @@ export var mixin_payment_watcher = {
 				}
 				if (val.__customizeSubjectName) {
 					this.form.payType = val.__customizeSubjectName;
+					// 如果是出差聚合 禁用
+					this.inputDisabled = true;
+				}
+				if (val.__attachments && Array.isArray(val.__attachments)) {
+					// 设置附件列表
+					this.form.attachmentList = [...val.__attachments];
+					// 设置附件ID数组
+					if (!this.form.params) {
+						this.form.params = {};
+					}
+					this.form.params.attachmentIds = val.__attachments.map(attachment => attachment.id);
 				}
 			},
 			deep: true,

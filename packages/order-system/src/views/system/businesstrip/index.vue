@@ -672,8 +672,8 @@ export default {
 						.then(({ configValue }) => {
 							// 收集当前行的附件信息和支付类型并传递给ApplyPayment组件
 							this.applyPaymentExtraInfo = {
-								attachments: row.attachmentList || [],
-								payType: configValue ? configValue.split('-') : [] // 将字符串转换为数组格式
+								__attachments: row.attachmentList || [],
+								__customizeSubjectName: configValue ? configValue.split('-') : [] // 将字符串转换为数组格式
 							};
 
 							// 将extraInformation作为props传递给ApplyPayment组件
@@ -684,7 +684,7 @@ export default {
 							// 即使获取支付类型失败，也要继续执行付款申请流程
 							// 收集当前行的附件信息并传递给ApplyPayment组件
 							this.applyPaymentExtraInfo = {
-								attachments: row.attachmentList || []
+								__attachments: row.attachmentList || []
 							};
 							// 将extraInformation作为props传递给ApplyPayment组件
 							this.applyForPaymentDialogVisible = true;
