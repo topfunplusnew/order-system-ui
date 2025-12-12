@@ -132,6 +132,7 @@ export var mixin_payment_watcher = {
 					this.form.id = val.__referenceId;
 				}
 				if (val.__customizeSubjectName) {
+					console.log(`val.__customizeSubjectName`, val.__customizeSubjectName);
 					this.form.payType = val.__customizeSubjectName;
 					// 如果是出差聚合 禁用
 					this.inputDisabled = true;
