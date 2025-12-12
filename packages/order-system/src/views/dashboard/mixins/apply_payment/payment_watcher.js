@@ -87,7 +87,7 @@ export var mixin_payment_watcher = {
 				// 如果传入的必须自动填充的金额大于0 则自动填充 且无法修改
 				if (this.needMoney >= 0) {
 					this.form.moneyAmount = Number(this.needMoney).toFixed(2);
-					this.inputDisabled = true;
+					// this.inputDisabled = true;
 				}
 			},
 			deep: true,
@@ -134,8 +134,7 @@ export var mixin_payment_watcher = {
 				if (val.__customizeSubjectName) {
 					this.form.payType = val.__customizeSubjectName;
 					// 如果是出差聚合 禁用
-					// TODO 这还需要改一下
-					// this.inputDisabled = true;
+					this.inputDisabled = true;
 				}
 				if (val.__attachments && Array.isArray(val.__attachments)) {
 					// 设置附件列表
