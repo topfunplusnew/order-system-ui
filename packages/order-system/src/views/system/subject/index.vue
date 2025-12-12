@@ -429,7 +429,10 @@ export default {
 						this.form.parentId = row.parentId;
 					}
 					getSubject(row.id).then(response => {
-						this.form = _.cloneDeep(response.data);
+						this.form = _.cloneDeep({
+							...response.data,
+							STATUS: response.data.STATUS == YES_OR_NO.YES ? 0 : 1
+						});
 						this.open = true;
 						this.title = '修改科目';
 					});
