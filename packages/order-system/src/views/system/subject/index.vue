@@ -72,8 +72,8 @@
 					<el-table-column label="是否禁用" prop="STATUS" align="center" width="100" show-overflow-tooltip>
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-								<div slot="content">{{ scope.row.STATUS === YES_OR_NO.YES ? '是' : '否' }}</div>
-								<span v-if="scope.row.STATUS === YES_OR_NO.YES">是</span>
+								<div slot="content">{{ scope.row.STATUS == YES_OR_NO.YES ? '是' : '否' }}</div>
+								<span v-if="scope.row.STATUS == YES_OR_NO.YES">是</span>
 								<span v-else>否</span>
 							</el-tooltip>
 						</template>
