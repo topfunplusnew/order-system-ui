@@ -13,7 +13,9 @@ export const PUBLIC_DICT_TYPE = {
 	// 己方公司
 	SELF_COMPANY: '己方公司',
 	// 对方公司
-	OTHER_COMPANY: '对方公司'
+	OTHER_COMPANY: '对方公司',
+	// 运费聚合
+	FREIGHT_AGGREGATE: '运费聚合'
 };
 
 export const YES_OR_NO = Object.freeze({

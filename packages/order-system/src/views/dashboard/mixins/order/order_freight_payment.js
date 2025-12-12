@@ -1,6 +1,6 @@
 // 运费一键申请
 import { batchPayment } from '../../../../api/system/payment';
-import { BankAcceptanceType, TableName } from '../../../../api/tool/enums';
+import { BankAcceptanceType, PUBLIC_DICT_TYPE, TableName } from '../../../../api/tool/enums';
 import { parseTime } from '../../../../utils/ruoyi';
 import _ from 'lodash';
 import { sum, round } from 'mathjs';
@@ -243,8 +243,10 @@ export var mixin_order_freight_payment = {
 					otherBankNo: firstItem.otherBankNo,
 					otherBankName: firstItem.otherBankName,
 					companyName: firstItem.companyName,
-					companyId: firstItem.companyId,
-					companyType: firstItem.companyType,
+					// 运费聚合时 companyId 为 null
+					companyId: null,
+					// 运费聚合
+					companyType: PUBLIC_DICT_TYPE.FREIGHT_AGGREGATE,
 					comments: comments || firstItem.comments || '',
 					userId: this.$store.getters.userId,
 					UserName: this.$store.getters.name,

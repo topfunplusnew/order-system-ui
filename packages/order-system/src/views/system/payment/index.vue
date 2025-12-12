@@ -267,8 +267,8 @@
 									<el-dropdown-item v-if="scope.row.paymentState === PAYMENT_STATE.UNPAID" v-hasPermi="['system:payment:edit']" command="payment">付款</el-dropdown-item>
 									<el-dropdown-item v-else-if="scope.row.paymentState === PAYMENT_STATE.PAID" disabled command="paid">已付款</el-dropdown-item>
 									<el-dropdown-item v-else disabled command="applying">申请中</el-dropdown-item>
-									<el-dropdown-item v-hasPermi="['system:payment:edit']" :disabled="scope.row.paymentState === PAYMENT_STATE.UNPAID || (scope.row.paymentState === PAYMENT_STATE.PAID && scope.row.auditState === '1')" command="edit" divided>编辑</el-dropdown-item>
-									<el-dropdown-item v-hasPermi="['system:payment:remove']" :disabled="scope.row.paymentState === PAYMENT_STATE.PAID && scope.row.auditState === '1'" command="delete">删除</el-dropdown-item>
+									<el-dropdown-item v-hasPermi="['system:payment:edit']" :disabled="isEditDisabled(scope.row)" command="edit" divided>编辑</el-dropdown-item>
+									<el-dropdown-item v-hasPermi="['system:payment:remove']" :disabled="isDeleteDisabled(scope.row)" command="delete">删除</el-dropdown-item>
 									<el-dropdown-item v-hasPermi="['system:tableeditmessage:list']" command="viewEditReason">查看修改原因</el-dropdown-item>
 									<el-dropdown-item v-if="hasTableReference(scope.row, TableName.ORDER_FREIGHT)" command="viewFreightInfo" divided>查看运费信息</el-dropdown-item>
 								</el-dropdown-menu>
@@ -984,6 +984,19 @@ export default {
 		listCompany,
 		hasTableReference,
 		fix,
+		// 判断编辑按钮是否禁用的封装函数
+		isEditDisabled(row) {
+			// 未支付状态或已付款且已复核的记录不允许编辑 运费聚合的记录不允许编辑
+			const isUnpaid = row.paymentState === PAYMENT_STATE.UNPAID 
+			const isPaid = row.paymentState === PAYMENT_STATE.PAID && row.auditState === '1';
+			const isFreightAggregate = row.companyType === PUBLIC_DICT_TYPE.FREIGHT_AGGREGATE;
+			return isUnpaid || isPaid || isFreightAggregate;
+		},
+		// 判断删除按钮是否禁用的封装函数
+		isDeleteDisabled(row) {
+			// 已付款且已复核的记录不允许删除
+			return row.paymentState === PAYMENT_STATE.PAID && row.auditState === '1';
+		},
 		// 分片渲染数据
 		renderDataInChunks(data) {
 			// 如果正在渲染，先取消
