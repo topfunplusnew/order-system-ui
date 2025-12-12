@@ -73,7 +73,7 @@
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.STATUS == YES_OR_NO.YES ? '否' : '是' }}</div>
-								<span v-if="scope.row.STATUS == YES_OR_NO.YES">是</span>
+								<span v-if="scope.row.STATUS == YES_OR_NO.NO">是</span>
 								<span v-else>否</span>
 							</el-tooltip>
 						</template>
