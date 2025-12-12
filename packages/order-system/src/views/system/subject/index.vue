@@ -196,7 +196,7 @@ export default {
 				STATUS: null
 			},
 			// 表单参数
-			form: { type: '', STATUS: 0 }, // 默认否
+			form: { type: '', STATUS: YES_OR_NO.YES }, // 默认否
 			titleOptions: [],
 			columns: [
 				{ key: 0, label: `科目名称`, visible: true },
@@ -377,7 +377,7 @@ export default {
 				subjectNo: null,
 				parentId: null,
 				orderNum: null,
-				STATUS: 0, // 默认否
+				STATUS: YES_OR_NO.YES, // 默认否
 				createBy: null,
 				createTime: null,
 				updateBy: null,
@@ -429,10 +429,7 @@ export default {
 						this.form.parentId = row.parentId;
 					}
 					getSubject(row.id).then(response => {
-						this.form = _.cloneDeep({
-							...response.data,
-							STATUS: response.data.STATUS == YES_OR_NO.YES ? 0 : 1
-						});
+						this.form = _.cloneDeep(response.data);
 						this.open = true;
 						this.title = '修改科目';
 					});
