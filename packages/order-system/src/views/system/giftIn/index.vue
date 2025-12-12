@@ -155,10 +155,30 @@
 								<el-col :span="4">
 									<SearchOption :limit-info="{}" :get-data="listGift" query-info="itemName" query-label="物品名称" :query-name="itemName" @update:queryName="handleUpdateItemName" @commitBack="handleCommitBackGift">
 										<template #table-columns>
-											<el-table-column label="物品名称" align="center" prop="itemName" />
-											<el-table-column label="单位" align="center" prop="unit" />
-											<el-table-column label="剩余数量" align="center" prop="remainingQuantity" />
-											<el-table-column label="单价" align="center" prop="unitPrice" />
+											<el-table-column label="入库日期" align="center" prop="inDate" width="110">
+												<template #default="scope">
+													<span>{{ scope.row.inDate ? parseTime(scope.row.inDate, '{y}-{m}-{d}') : '-' }}</span>
+												</template>
+											</el-table-column>
+											<el-table-column label="存货地点" align="center" prop="inventoryLocation" width="120" show-overflow-tooltip />
+											<el-table-column label="物品名称" align="center" prop="itemName" min-width="120" show-overflow-tooltip />
+											<el-table-column label="单位" align="center" prop="unit" width="80" />
+											<el-table-column label="入库数量" align="center" prop="quantity" width="100">
+												<template #default="scope">
+													<span>{{ scope.row.quantity !== null && scope.row.quantity !== undefined ? scope.row.quantity : '-' }}</span>
+												</template>
+											</el-table-column>
+											<el-table-column label="剩余数量" align="center" prop="remainingQuantity" width="100" />
+											<el-table-column label="单价" align="center" prop="unitPrice" width="100">
+												<template #default="scope">
+													<span>{{ scope.row.unitPrice ? Number(scope.row.unitPrice).toFixed(2) : '-' }}</span>
+												</template>
+											</el-table-column>
+											<el-table-column label="金额" align="center" prop="remainingValue" width="120">
+												<template #default="scope">
+													<span>{{ scope.row.remainingValue ? Number(scope.row.remainingValue).toFixed(2) : '-' }}</span>
+												</template>
+											</el-table-column>
 										</template>
 									</SearchOption>
 								</el-col>
@@ -218,7 +238,7 @@
 		<!-- 退回弹窗 -->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="退回购入礼品信息" :visible.sync="returnOpen" width="600px" append-to-body @close="handleReturnClose">
 			<el-form ref="returnForm" :model="returnForm" :rules="returnRules" label-width="120px">
-				<el-form-item label="原本数量">
+				<el-form-item label="现在的数量">
 					<el-input :value="returnForm.originalQuantity || 0" disabled />
 				</el-form-item>
 				<el-form-item label="退回数量" prop="quantity">
@@ -273,11 +293,11 @@
 						<span>{{ scope.row.unitPrice ? Number(scope.row.unitPrice).toFixed(2) : '-' }}</span>
 					</template>
 				</el-table-column>
-<!--				<el-table-column label="金额" align="center" prop="estimatedValue" width="100" show-overflow-tooltip>-->
-<!--					<template #default="scope">-->
-<!--						<span>{{ scope.row.estimatedValue ? Number(scope.row.estimatedValue).toFixed(2) : '-' }}</span>-->
-<!--					</template>-->
-<!--				</el-table-column>-->
+				<el-table-column label="金额" align="center" prop="estimatedValue" width="100" show-overflow-tooltip>
+					<template #default="scope">
+						<span>{{ calculateDetailAmount(scope.row) }}</span>
+					</template>
+				</el-table-column>
 				<el-table-column label="经办人" align="center" prop="handler" width="100" show-overflow-tooltip />
 				<el-table-column label="备注" align="center" prop="remark" show-overflow-tooltip />
 			</el-table>
@@ -311,6 +331,11 @@
 						<span>{{ scope.row.unitPrice ? Number(scope.row.unitPrice).toFixed(2) : '-' }}</span>
 					</template>
 				</el-table-column>
+				<el-table-column label="金额" align="center" prop="estimatedValue" width="100" show-overflow-tooltip>
+					<template #default="scope">
+						<span>{{ calculateDetailAmount(scope.row) }}</span>
+					</template>
+				</el-table-column>
 			</el-table>
 			<div v-else-if="viewDetailData && !Array.isArray(viewDetailData)" style="padding: 20px;">
 				<el-descriptions :column="2" border>
@@ -327,7 +352,7 @@
 
 <script>
 import { listGiftIn, getGiftIn, delGiftIn, addGiftIn, updateGiftIn, returnGiftIn, getGiftInReInDetail, getGiftInOutDetail } from '@/api/system/giftIn';
-import { listGift } from '@/api/system/giftStock';
+import { listGift as listGiftApi } from '@/api/system/giftStock';
 import { parseTime } from '../../../utils/ruoyi';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
 import { mixin_gift_in_fill } from './giftIn_fill';
@@ -488,7 +513,20 @@ export default {
 	},
 	methods: {
 		parseTime,
-		listGift,
+		// 包装 listGift 函数，计算金额字段
+		async listGift(query) {
+			const response = await listGiftApi(query);
+			// 如果没有金额字段，则计算：剩余数量 × 单价
+			if (response && response.rows) {
+				response.rows = response.rows.map(item => {
+					if (!item.remainingValue && item.remainingQuantity !== undefined && item.unitPrice !== undefined) {
+						item.remainingValue = Number(multiply(Number(item.remainingQuantity) || 0, Number(item.unitPrice) || 0).toFixed(2));
+					}
+					return item;
+				});
+			}
+			return response;
+		},
 		updateDialogWidth() {
 			this.dialogWidth = window.innerWidth > 768 ? '600px' : '95%';
 		},
@@ -688,9 +726,11 @@ export default {
 				// 强关联：在入库列表中显示已出库数量
 				inItem.outQuantity = outQty;
 				
-				console.log(`📊 入库记录 ID=${id}, 物品=${inItem.itemName}, 入库数量=${inQty}, 已出库数量=${outQty}, 退回数量=${retQty}`);
-
-				// 不再计算和设置 remainingQuantity/remainingValue（根据规范4：入库界面移除 remainingQuantity / remainingValue）
+				// 计算剩余数量：剩余数量 = 入库数量 - 出库数量 + 退回数量（退回 = 再入库）
+				const remainingQty = subtract(add(inQty, retQty), outQty);
+				inItem.remainingQuantity = remainingQty;
+				
+				console.log(`📊 入库记录 ID=${id}, 物品=${inItem.itemName}, 入库数量=${inQty}, 已出库数量=${outQty}, 退回数量=${retQty}, 剩余数量=${remainingQty}`);
 
 				return inItem;
 			});
@@ -830,6 +870,19 @@ export default {
 
 			// 返回格式化的金额
 			return numValue.toFixed(2);
+		},
+		// 计算金额：优先使用 estimatedValue，否则根据数量和单价计算
+		calculateDetailAmount(row) {
+			if (row.estimatedValue !== null && row.estimatedValue !== undefined && row.estimatedValue !== '') {
+				return this.formatCurrency(row.estimatedValue);
+			}
+			const quantity = Number(row.quantity) || 0;
+			const unitPrice = Number(row.unitPrice) || 0;
+			if (quantity > 0 && unitPrice > 0) {
+				const result = multiply(quantity, unitPrice);
+				return this.formatCurrency(result);
+			}
+			return '-';
 		},
 		handleUpdate(row) {
 			const id = row.id || this.ids;
@@ -1082,11 +1135,11 @@ export default {
 		handleReturn(row) {
 			this.returnForm = this.getInitReturnForm();
 			this.returnForm.id = row.id;
-			// 使用入库数量作为原始数量（根据规范4：不再使用 remainingQuantity）
-			const originalQty = Number(row.quantity) || 0;
-			this.$set(this.returnForm, 'originalQuantity', originalQty);
-			// 初始化退回后总数等于原始数量
-			this.$set(this.returnForm, 'totalAfterReturn', originalQty);
+			// 使用剩余数量（现在的数量）作为原始数量
+			const currentQty = Number(row.remainingQuantity !== undefined ? row.remainingQuantity : row.quantity) || 0;
+			this.$set(this.returnForm, 'originalQuantity', currentQty);
+			// 初始化退回后总数等于现在的数量
+			this.$set(this.returnForm, 'totalAfterReturn', currentQty);
 			this.returnOpen = true;
 		},
 		handleReturnClose() {

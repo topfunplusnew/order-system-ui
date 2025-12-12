@@ -145,11 +145,27 @@
 								<el-col :span="4">
 									<SearchOption :limit-info="{}" :get-data="listGiftIn" query-info="itemName" query-label="物品名称" :query-name="itemName" @update:queryName="handleUpdateItemName" @commitBack="handleCommitBackItem">
 										<template #table-columns>
-											<el-table-column label="物品名称" align="center" prop="itemName" />
-											<el-table-column label="单位" align="center" prop="unit" />
-											<el-table-column label="入库数量" align="center" prop="quantity" />
-											<el-table-column label="单价" align="center" prop="unitPrice" />
-											<el-table-column label="经办人" align="center" prop="handler" />
+											<el-table-column label="入库日期" align="center" prop="inDate" width="110">
+												<template #default="scope">
+													<span>{{ scope.row.inDate ? parseTime(scope.row.inDate, '{y}-{m}-{d}') : '-' }}</span>
+												</template>
+											</el-table-column>
+											<el-table-column label="存货地点" align="center" prop="inventoryLocation" width="120" show-overflow-tooltip />
+											<el-table-column label="物品名称" align="center" prop="itemName" min-width="120" show-overflow-tooltip />
+											<el-table-column label="单位" align="center" prop="unit" width="80" />
+											<el-table-column label="入库数量" align="center" prop="quantity" width="100" />
+											<el-table-column label="现在数量" align="center" prop="remainingQuantity" width="100" />
+											<el-table-column label="单价" align="center" prop="unitPrice" width="100">
+												<template #default="scope">
+													<span>{{ scope.row.unitPrice ? Number(scope.row.unitPrice).toFixed(2) : '-' }}</span>
+												</template>
+											</el-table-column>
+											<el-table-column label="金额" align="center" prop="estimatedValue" width="120">
+												<template #default="scope">
+													<span>{{ scope.row.estimatedValue ? Number(scope.row.estimatedValue).toFixed(2) : '-' }}</span>
+												</template>
+											</el-table-column>
+											<el-table-column label="经办人" align="center" prop="handler" width="100" />
 										</template>
 									</SearchOption>
 								</el-col>
@@ -223,7 +239,7 @@
 <!--				<el-table-column label="ID" align="center" prop="id" width="80" show-overflow-tooltip />-->
 				<el-table-column label="日期" align="center" prop="inDate" width="120" show-overflow-tooltip>
 					<template #default="scope">
-						<span>{{ scope.row.inDate ? parseTime(scope.row.inDate, '{y}-{m}-{d}') : '-' }}</span>
+						<span>{{ formatInDate(scope.row.inDate) }}</span>
 					</template>
 				</el-table-column>
 				<el-table-column label="入库方式" align="center" prop="inMethod" width="100" show-overflow-tooltip>
@@ -246,11 +262,11 @@
 						<span>{{ scope.row.unitPrice ? Number(scope.row.unitPrice).toFixed(2) : '-' }}</span>
 					</template>
 				</el-table-column>
-<!--				<el-table-column label="金额" align="center" prop="estimatedValue" width="100" show-overflow-tooltip>-->
-<!--					<template #default="scope">-->
-<!--						<span>{{ scope.row.estimatedValue ? Number(scope.row.estimatedValue).toFixed(2) : '-' }}</span>-->
-<!--					</template>-->
-<!--				</el-table-column>-->
+				<el-table-column label="金额" align="center" prop="estimatedValue" width="100" show-overflow-tooltip>
+					<template #default="scope">
+						<span>{{ formatAmount(scope.row.estimatedValue, scope.row.quantity, scope.row.unitPrice) }}</span>
+					</template>
+				</el-table-column>
 				<el-table-column label="经办人" align="center" prop="handler" width="100" show-overflow-tooltip />
 <!--				<el-table-column label="付款时间" align="center" prop="payTime" width="160" show-overflow-tooltip>-->
 <!--					<template #default="scope">-->
@@ -261,12 +277,12 @@
 			</el-table>
 			<!-- 再入库详情表格 -->
 			<el-table v-else-if="viewDetailTitle === '查看再入库详情' && viewDetailData && Array.isArray(viewDetailData) && viewDetailData.length > 0" :data="viewDetailData" border size="mini" max-height="500" v-loading="viewDetailLoading">
-				<el-table-column label="ID" align="center" prop="id" width="80" show-overflow-tooltip />
-				<el-table-column label="入库日期" align="center" prop="inDate" width="120" show-overflow-tooltip>
-					<template #default="scope">
-						<span>{{ scope.row.inDate ? parseTime(scope.row.inDate, '{y}-{m}-{d}') : '-' }}</span>
-					</template>
-				</el-table-column>
+<!--				<el-table-column label="ID" align="center" prop="id" width="80" show-overflow-tooltip />-->
+<!--				<el-table-column label="入库日期" align="center" prop="inDate" width="120" show-overflow-tooltip>-->
+<!--					<template #default="scope">-->
+<!--						<span>{{ formatInDate(scope.row.inDate || scope.row.date || scope.row.inboundDate) }}</span>-->
+<!--					</template>-->
+<!--				</el-table-column>-->
 				<el-table-column label="入库方式" align="center" prop="inMethod" width="100" show-overflow-tooltip>
 					<template #default="scope">
 						<dict-tag :options="dict.type.order_gift_in_method" :value="scope.row.inMethod" />
@@ -288,7 +304,7 @@
 				</el-table-column>
 				<el-table-column label="金额" align="center" prop="estimatedValue" width="100" show-overflow-tooltip>
 					<template #default="scope">
-						<span>{{ scope.row.estimatedValue ? Number(scope.row.estimatedValue).toFixed(2) : '-' }}</span>
+						<span>{{ formatAmount(scope.row.estimatedValue || scope.row.amount || scope.row.value, scope.row.quantity, scope.row.unitPrice) }}</span>
 					</template>
 				</el-table-column>
 				<el-table-column label="经办人" align="center" prop="handler" width="100" show-overflow-tooltip />
@@ -519,12 +535,16 @@ export default {
 			const response = await listGiftInApi(params);
 			console.log('listGiftIn 响应:', response);
 
-			// 确保返回的数据中包含 id 字段（入库记录ID）
+			// 确保返回的数据中包含 id 字段（入库记录ID）和金额字段
 			if (response && response.rows) {
 				response.rows = response.rows.map(item => {
 					// 确保每条记录都有 id 字段，用于后续设置 inId
 					if (!item.id && item.inId) {
 						item.id = item.inId;
+					}
+					// 如果没有金额字段，则计算：数量 × 单价
+					if (!item.estimatedValue && item.quantity && item.unitPrice) {
+						item.estimatedValue = Number(multiply(Number(item.quantity) || 0, Number(item.unitPrice) || 0).toFixed(2));
 					}
 					return item;
 				});
@@ -1027,15 +1047,15 @@ export default {
 			// 手动输入金额时不自动计算
 		},
 		/** 格式化金额 */
-		formatAmount() {
-			// 失去焦点时格式化为两位小数
-			if (this.form.estimatedValue !== null && this.form.estimatedValue !== undefined && this.form.estimatedValue !== '') {
-				const num = Number(this.form.estimatedValue);
-				if (!isNaN(num)) {
-					this.$set(this.form, 'estimatedValue', round(num, 2));
-				}
-			}
-		},
+		// formatAmount() {
+		// 	// 失去焦点时格式化为两位小数
+		// 	if (this.form.estimatedValue !== null && this.form.estimatedValue !== undefined && this.form.estimatedValue !== '') {
+		// 		const num = Number(this.form.estimatedValue);
+		// 		if (!isNaN(num)) {
+		// 			this.$set(this.form, 'estimatedValue', round(num, 2));
+		// 		}
+		// 	}
+		// },
 		/** 格式化日期时间 */
 		formatDateTime(dateTime) {
 			if (!dateTime) return '';
@@ -1186,6 +1206,10 @@ export default {
 					}
 					this.viewDetailData = data || [];
 					console.log('解析后的再入库详情数据:', this.viewDetailData);
+					if (this.viewDetailData && this.viewDetailData.length > 0) {
+						console.log('第一条数据的所有字段:', Object.keys(this.viewDetailData[0]));
+						console.log('第一条数据的完整内容:', JSON.stringify(this.viewDetailData[0], null, 2));
+					}
 					if (!this.viewDetailData || this.viewDetailData.length === 0) {
 						this.$message.warning('暂无再入库详情数据');
 					}
@@ -1258,6 +1282,43 @@ export default {
 				.finally(() => {
 					this.viewDetailLoading = false;
 				});
+		},
+		/** 格式化入库日期 */
+		formatInDate(dateValue) {
+			if (!dateValue && dateValue !== 0) return '-';
+			// 如果已经是 yyyy-MM-dd 格式，直接返回
+			if (typeof dateValue === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dateValue)) {
+				return dateValue;
+			}
+			// 如果是 yyyy-MM-dd HH:mm:ss 格式，提取日期部分
+			if (typeof dateValue === 'string' && /^\d{4}-\d{2}-\d{2}/.test(dateValue)) {
+				return dateValue.split(' ')[0];
+			}
+			// 使用 parseTime 格式化
+			try {
+				const formatted = this.parseTime(dateValue, '{y}-{m}-{d}');
+				return formatted || dateValue || '-';
+			} catch (e) {
+				console.warn('日期格式化失败:', dateValue, e);
+				return dateValue || '-';
+			}
+		},
+		/** 格式化金额（如果没有金额字段，根据数量和单价计算） */
+		formatAmount(estimatedValue, quantity, unitPrice) {
+			// 如果有金额字段，直接使用
+			if (estimatedValue !== null && estimatedValue !== undefined && estimatedValue !== '') {
+				const num = Number(estimatedValue);
+				return isNaN(num) ? '-' : num.toFixed(2);
+			}
+			// 如果没有金额但有数量和单价，计算金额
+			if (quantity && unitPrice) {
+				const qty = Number(quantity) || 0;
+				const price = Number(unitPrice) || 0;
+				if (qty > 0 && price > 0) {
+					return round(multiply(qty, price), 2).toFixed(2);
+				}
+			}
+			return '-';
 		}
 	}
 };
