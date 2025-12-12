@@ -568,32 +568,6 @@ export default {
 			deep: true,
 			immediate: true
 		},
-		// 监听 extraInformation 变化，自动填充附件和支付类型
-		extraInformation: {
-			handler(newExtraInfo) {
-				// 如果 extraInformation 中包含附件信息，则自动填充到表单中
-				if (newExtraInfo && newExtraInfo.attachments && Array.isArray(newExtraInfo.attachments)) {
-					// 设置附件列表
-					this.form.attachmentList = [...newExtraInfo.attachments];
-					// 设置附件ID数组
-					if (!this.form.params) {
-						this.form.params = {};
-					}
-					this.form.params.attachmentIds = newExtraInfo.attachments.map(attachment => attachment.id);
-				}
-				// 如果 extraInformation 中包含支付类型信息，则自动填充到表单中，并禁用支付类型选择
-				if (newExtraInfo && newExtraInfo.payType) {
-					this.$set(this.form, 'payType', newExtraInfo.payType);
-					// 禁用支付类型选择
-					this.inputDisabled = true;
-				} else {
-					// 如果没有支付类型信息，则启用支付类型选择
-					this.inputDisabled = false;
-				}
-			},
-			deep: true,
-			immediate: true
-		}
 	},
 	mounted() {
 		this.loadForm();
