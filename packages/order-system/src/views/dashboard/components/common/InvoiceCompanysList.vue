@@ -54,11 +54,17 @@ export default {
 			return this.$store.getters.batchDetailRows || [];
 		},
 		selectedTemplateData() {
-			// 根据 side 筛选批次数据
-			if (this.side === 'purchase') {
-				return this.batchDetailRows.filter(row => row.sellerId === 0);
+			// 先根据凭证号筛选，只显示当前批次的模板数据
+			let filtered = this.batchDetailRows;
+			if (this.voucher) {
+				filtered = filtered.filter(row => row.voucher === this.voucher);
 			}
-			return this.batchDetailRows.filter(row => row.sellerId !== 0);
+			
+			// 再根据 side 筛选批次数据
+			if (this.side === 'purchase') {
+				return filtered.filter(row => row.sellerId === 0);
+			}
+			return filtered.filter(row => row.sellerId !== 0);
 		},
 		// 根据发票类型返回不同的模板列配置（按照Excel模板列顺序）
 		templateColumns() {
@@ -344,17 +350,26 @@ export default {
 		</div>
 
 		<!-- 查看模板数据弹窗 -->
-		<el-dialog :modal="false" title="模板数据预览" :visible.sync="viewTemplateVisible" width="800px" append-to-body>
-			<el-table :data="selectedTemplateData" size="mini" :max-height="700" border>
-				<el-table-column prop="sellerId" label="销方ID" width="90" />
-				<el-table-column prop="sellerName" label="销方名称" width="160" />
-				<el-table-column prop="sellerType" label="销方类型" width="90" />
-				<el-table-column prop="purchaseId" label="购买方ID" width="90" />
-				<el-table-column prop="purchaseName" label="购买方名称" width="160" />
-				<el-table-column prop="purchaseType" label="购买方类型" width="100" />
-				<el-table-column prop="total" label="价税合计" width="110" />
-				<el-table-column prop="ticketPoint" label="票点" width="80" />
-				<el-table-column prop="ticketPointAmount" label="票点金额" width="110" />
+		<el-dialog :modal="false" :title="templateDialogTitle" :visible.sync="viewTemplateVisible" width="1000px" append-to-body>
+			<el-table :data="selectedTemplateData" size="mini" :max-height="700" border :cell-style="() => ({ padding: '6px 4px' })" :header-cell-style="() => ({ background: '#f5f7fa', color: '#606266', fontWeight: '600' })">
+				<el-table-column label="ID" align="center" prop="id" width="70" />
+				<el-table-column label="批次号" align="center" prop="voucher" min-width="140" show-overflow-tooltip />
+				<el-table-column label="销方名称" align="center" prop="sellerName" min-width="150" show-overflow-tooltip />
+				<el-table-column label="购买方名称" align="center" prop="purchaseName" min-width="150" show-overflow-tooltip />
+				<el-table-column label="价税合计" align="center" prop="total" width="110" show-overflow-tooltip>
+					<template #default="scope">
+						<span class="amount-text">{{ scope.row.total }}</span>
+					</template>
+				</el-table-column>
+				<el-table-column label="票点" align="center" prop="ticketPoint" width="70" show-overflow-tooltip />
+				<el-table-column label="已开票" align="center" prop="invoiced" width="80">
+					<template #default="scope">
+						<el-tag size="mini" :type="scope.row.invoiced ? 'success' : 'info'" effect="light">
+							{{ scope.row.invoiced ? '是' : '否' }}
+						</el-tag>
+					</template>
+				</el-table-column>
+				<el-table-column v-if="selectedTemplateData.some(row => row.createTime)" label="导入时间" align="center" prop="createTime" width="150" show-overflow-tooltip />
 			</el-table>
 			<div class="template-info" v-if="selectedTemplateData.length > 0">
 				<el-alert
@@ -702,5 +717,10 @@ export default {
 			margin: 0;
 		}
 	}
+}
+
+.amount-text {
+	color: #303133;
+	font-weight: 500;
 }
 </style>
