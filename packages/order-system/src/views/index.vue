@@ -206,7 +206,7 @@
 					</el-form>
 				</el-row>
 				<el-row>
-					<el-table height="130" :empty-text="' '" :data="[dailyProfit]">
+					<el-table :empty-text="' '" :data="[]" :show-header="true" class="header-only-table">
 						<el-table-column :label="`￥${moneyAmount}`" align="center">
 							<el-table-column prop="dailyProfit" label="利润总额">
 								<el-table-column prop="dailyExpense" label="费用合计"></el-table-column>
@@ -1199,6 +1199,17 @@ export default {
 	font-size: 14px !important;
 	font-weight: 600;
 	color: #606266;
+}
+
+/* 利润表格只显示表头样式 */
+.header-only-table {
+	::v-deep .el-table__body-wrapper {
+		display: none;
+	}
+
+	::v-deep .el-table__header-wrapper {
+		border-bottom: 1px solid #ebeef5;
+	}
 }
 
 /* 下载日志弹窗样式 */
