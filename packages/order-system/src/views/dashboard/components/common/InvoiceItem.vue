@@ -96,10 +96,15 @@ export default {
 <template>
 	<div class="invoice-item-wrapper">
 		<div class="invoice-card" ref="invoiceItem" @click="handleCheckInvoice">
+			<!-- 默认显示：公司名称和金额 -->
 			<div class="invoice-header">
 				<div class="company-info">
 					<i class="el-icon-office-building company-icon"></i>
 					<span class="company-name">{{ invoice.companyName || '未知公司' }}</span>
+				</div>
+				<div class="invoice-amount-compact">
+					<span class="amount-label">金额：</span>
+					<span class="amount-value">{{ formattedInvoiceAmount }}</span>
 				</div>
 				<div class="invoice-type">
 					<el-tag :type="invoice.companyType === '客户' ? 'success' : 'warning'" size="mini" effect="light">
@@ -108,6 +113,7 @@ export default {
 				</div>
 			</div>
 
+			<!-- 展开内容：详细信息 -->
 			<div class="invoice-content">
 				<div class="amount-info">
 					<div class="amount-item">
@@ -125,6 +131,10 @@ export default {
 					<div class="amount-item" v-if="invoice.isOrderTax">
 						<span class="label">对应订单ID：</span>
 						<span class="value ticket-amount">{{ invoice.isOrderTax }}</span>
+					</div>
+					<div class="amount-item" v-if="invoice.batchInvoiceId">
+						<span class="label">对应模板ID：</span>
+						<span class="value ticket-amount">{{ invoice.batchInvoiceId }}</span>
 					</div>
 				</div>
 			</div>
@@ -170,6 +180,9 @@ export default {
 					</span>
 					<span v-else>无</span>
 				</el-descriptions-item>
+				<el-descriptions-item label="对应模板ID" v-if="invoice.batchInvoiceId">
+					<span class="template-id">{{ invoice.batchInvoiceId }}</span>
+				</el-descriptions-item>
 				<el-descriptions-item label="票点" v-if="invoice.ticketPoint > 0">
 					<span class="ticket-info">{{ formattedTicketPoint }}</span>
 				</el-descriptions-item>
@@ -197,18 +210,28 @@ export default {
 	background: #ffffff;
 	border: 1px solid #e4e7ed;
 	border-radius: 6px;
-	padding: 12px;
+	padding: 0;
 	cursor: pointer;
 	transition: all 0.3s ease;
 	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+	height: 60px;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
 
 	&:hover {
+		height: auto;
+		min-height: 60px;
+		padding: 12px;
 		border-color: #409eff;
 		box-shadow: 0 2px 12px rgba(64, 158, 255, 0.15);
 		transform: translateY(-1px);
 	}
 
 	&.active {
+		height: auto;
+		min-height: 60px;
+		padding: 12px;
 		border-color: #409eff;
 		box-shadow: 0 0 8px rgba(64, 158, 255, 0.25);
 	}
@@ -218,38 +241,79 @@ export default {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	margin-bottom: 8px;
-	padding-bottom: 6px;
-	border-bottom: 1px solid #f5f7fa;
+	padding: 12px;
+	height: 60px;
+	box-sizing: border-box;
 
 	.company-info {
 		display: flex;
 		align-items: center;
 		gap: 6px;
+		flex: 1;
+		min-width: 0;
 
 		.company-icon {
 			color: #409eff;
 			font-size: 14px;
+			flex-shrink: 0;
 		}
 
 		.company-name {
 			font-weight: 600;
 			color: #303133;
 			font-size: 13px;
-			max-width: 120px;
 			overflow: hidden;
 			text-overflow: ellipsis;
 			white-space: nowrap;
 		}
 	}
 
+	.invoice-amount-compact {
+		display: flex;
+		align-items: center;
+		gap: 4px;
+		flex-shrink: 0;
+		margin-left: 12px;
+
+		.amount-label {
+			font-size: 12px;
+			color: #909399;
+		}
+
+		.amount-value {
+			font-size: 14px;
+			font-weight: 600;
+			color: #67c23a;
+		}
+	}
+
 	.invoice-type {
 		flex-shrink: 0;
+		display: none;
+	}
+}
+
+.invoice-card:hover > .invoice-header,
+.invoice-card.active > .invoice-header {
+	padding: 0;
+	margin-bottom: 8px;
+	padding-bottom: 6px;
+	border-bottom: 1px solid #f5f7fa;
+	height: auto;
+
+	.invoice-amount-compact {
+		display: none;
+	}
+
+	.invoice-type {
+		display: block;
 	}
 }
 
 .invoice-content {
 	margin-bottom: 8px;
+	display: none;
+	padding: 0 12px;
 
 	.amount-info {
 		display: flex;
@@ -291,10 +355,16 @@ export default {
 	}
 }
 
+.invoice-card:hover > .invoice-content,
+.invoice-card.active > .invoice-content {
+	display: block;
+}
+
 .invoice-actions {
-	display: flex;
+	display: none;
+	flex: 0 0 auto;
 	justify-content: center;
-	padding-top: 6px;
+	padding: 6px 12px 0;
 	border-top: 1px solid #f5f7fa;
 
 	.view-btn {
@@ -307,6 +377,11 @@ export default {
 			background-color: rgba(64, 158, 255, 0.1);
 		}
 	}
+}
+
+.invoice-card:hover > .invoice-actions,
+.invoice-card.active > .invoice-actions {
+	display: flex;
 }
 
 /* 弹窗样式 */
@@ -379,6 +454,12 @@ export default {
 .ticket-amount-info {
 	color: #e6a23c;
 	font-weight: 600;
+	font-size: 13px;
+}
+
+.template-id {
+	color: #909399;
+	font-weight: 500;
 	font-size: 13px;
 }
 

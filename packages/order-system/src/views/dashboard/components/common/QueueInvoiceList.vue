@@ -312,12 +312,12 @@ export default {
 			orders.forEach(order => {
 				let remaining = 0;
 				if (this.invoiceType === PUBLIC_DICT_TYPE.CUSTOMER) {
-					// 客户模式：使用总货款
+					// 客户模式：使用总货款减去已开票金额
 					const allPayments = b(order.allPayments || 0);
 					const totalInvoiceAmount = b(order.params?.totalInvoiceAmount || 0);
 					remaining = Number(this.math.format(this.math.subtract(allPayments, totalInvoiceAmount), { precision: 2, notation: 'fixed' }));
 				} else if (this.invoiceType === PUBLIC_DICT_TYPE.SUPPLIER) {
-					// 供应商模式：使用出厂货款之和
+					// 供应商模式：使用出厂货款之和减去已开票金额
 					if (order.smailOrderDetails && Array.isArray(order.smailOrderDetails)) {
 						const supplierDetails = order.smailOrderDetails.filter(detail => detail.supplierID === selectedCompanyId);
 						let totalFactoryPayment = b(0);

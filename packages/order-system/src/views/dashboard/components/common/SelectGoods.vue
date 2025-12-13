@@ -134,14 +134,15 @@ export default {
 		});
 		// 接受分配剩余金额传入的关于客户或者供应商的筛选
 		this.$bus.$on('update-goods-order-company', value => {
-			// 筛选订单列表
-			this.handleFilterOrders(value);
-			// 赋值
-			this.checkFlag = value;
+			// 暂存type和id
 			// 赋值类型
 			this.type = value.type;
 			// 赋值id 用于查找供应商
 			this.id = value.id;
+			// 筛选订单列表
+			this.handleFilterOrders();
+			// 赋值
+			this.checkFlag = value;
 			// 取消禁用多选框
 			this.isBaned = false;
 		});
@@ -246,7 +247,7 @@ export default {
 			}
 		},
 		// 筛选订单列表 主要是用于当左侧选择某个公司后要选择对应公司的订单
-		handleFilterOrders(value) {
+		handleFilterOrders() {
 			// 检索前清空已生成的发票列表和选中的订单
 			this.$store.dispatch('excel/clearSelectedInvoiceList');
 			this.$store.dispatch('excel/clearSelectedOrders');
@@ -255,23 +256,22 @@ export default {
 				this.$refs.goodsTable.clearSelection();
 			}
 			this.preOrderList = [];
-			
-			// 不合法
-			if (value.id < 0) this.refresh();
-			// 什么都不选 就只getList
-			if (!value.id) this.refresh();
-			value.type === PUBLIC_DICT_TYPE.CUSTOMER ? this.handleCustomerFilter(value.id) : this.handleSupplierFilter(value.id);
+			if (!this.id) this.refresh();
+			this.handleFilterByCompany();
 		},
-		// 对客户的筛选
-		async handleCustomerFilter(companyId) {
-			if (!companyId) {
-				this.$message.warning('非法id!');
-			}
+		// 根据公司信息进行筛选
+		async handleFilterByCompany() {
 			try {
+				if (this.type === PUBLIC_DICT_TYPE.CUSTOMER) {
 				// 赋值搜索条件
-				this.queryParams.customerID = companyId;
-				// 2025-2-13 订单搜索需要传入companyType
-				this.queryParams.params.BatchInsertInvoiceCompanyType = PUBLIC_DICT_TYPE.CUSTOMER;
+					this.queryParams.customerID = this.id;
+					// 2025-2-13 订单搜索需要传入companyType
+					this.queryParams.params.BatchInsertInvoiceCompanyType = PUBLIC_DICT_TYPE.CUSTOMER;
+				} else if (this.type === PUBLIC_DICT_TYPE.SUPPLIER) {
+					// 赋值搜索条件
+					this.queryParams.params.supplierId = this.id;
+					this.queryParams.params.BatchInsertInvoiceCompanyType = PUBLIC_DICT_TYPE.SUPPLIER;
+				}
 				// 强制更新vue 在更新数据后依赖于 DOM 的最新状态，比如获取某个元素的大小、位置等
 				await this.$nextTick();
 				// 获取订单列表
@@ -279,27 +279,6 @@ export default {
 				// 设置点击了检索标记
 				this.hasClicked = true;
 				// 查询完订单列表后清除搜索条件
-				this.resetParams();
-			} catch (err) {
-				console.error('Error fetching list:', err);
-			}
-		},
-		// 对供应商的筛选
-		async handleSupplierFilter(companyId) {
-			if (!companyId) {
-				this.$message.warning('非法id!');
-			}
-			try {
-				// 赋值数据
-				this.queryParams.params.supplierId = companyId;
-				// 2025-2-13 订单搜索需要传入companyType
-				this.queryParams.params.BatchInsertInvoiceCompanyType = PUBLIC_DICT_TYPE.SUPPLIER;
-				// 强制更新vue
-				await this.$nextTick();
-				// 获取列表
-				await this.getList();
-				// 设置点击了检索标记
-				this.hasClicked = true;
 				this.resetParams();
 			} catch (err) {
 				console.error('Error fetching list:', err);
@@ -329,12 +308,16 @@ export default {
 			// 计算要扣除的钱
 			let money = 0;
 			try {
+
+				// 如果是取消勾选
 				if (removedRows.length !== 0) {
 					money = this.calculateMoney(removedRows, this.type);
 					if (money && money > 0) {
 						this.$store.dispatch('excel/addInvoiceAmount', money);
 					}
 				}
+
+				// 如果是勾选某一行
 				if (addedRows.length !== 0) {
 					money = this.calculateMoney(addedRows, this.type);
 
@@ -405,11 +388,10 @@ export default {
 
 			return Number(this.math.format(money, { precision: 2, notation: 'fixed' }));
 		},
-
+		// 顶部点击搜索
 		handleQuery(value) {
-			// this.queryParams = value;
 			Object.assign(this.queryParams, value);
-			this.getList();
+			this.handleFilterByCompany();
 		},
 		// 多选框是否禁用
 		selectable() {
@@ -425,8 +407,6 @@ export default {
 			this.resetParams();
 			this.getList();
 		},
-
-
 		// 自动生成发票（选中订单后自动触发）
 		autoGenerateInvoice() {
 			// 延迟一小段时间，确保金额计算完成
