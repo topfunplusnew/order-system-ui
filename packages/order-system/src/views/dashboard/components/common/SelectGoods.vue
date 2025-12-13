@@ -23,40 +23,6 @@ export default {
 				const remaining = this.math.subtract(allPayments, totalInvoiceAmount);
 				return Number(this.math.format(remaining, { precision: 2, notation: 'fixed' }));
 			};
-		},
-		// 获取当前检索公司的可用批次数据总金额
-		currentCompanyBatchTotal() {
-			if (!this.batchDetailRows || this.batchDetailRows.length === 0 || !this.id) {
-				return 0;
-			}
-
-			let totalAmount = this.math.bignumber(0);
-
-			// 根据公司类型和ID筛选相关的批次数据
-			const relevantBatches = this.batchDetailRows.filter(row => {
-				// 只计算未开票的记录
-				if (row.invoiced) {
-					return false;
-				}
-
-				// 根据公司类型匹配
-				if (this.type === PUBLIC_DICT_TYPE.CUSTOMER) {
-					// 客户模式：查找购买方ID匹配的记录
-					return row.purchaseId && String(row.purchaseId) === String(this.id);
-				} else if (this.type === PUBLIC_DICT_TYPE.SUPPLIER) {
-					// 供应商模式：查找销方ID匹配的记录
-					return row.sellerId && String(row.sellerId) === String(this.id);
-				}
-
-				return false;
-			});
-
-			// 累加所有相关批次的金额
-			relevantBatches.forEach(batch => {
-				totalAmount = this.math.add(totalAmount, this.math.bignumber(batch.total || 0));
-			});
-
-			return Number(this.math.format(totalAmount, { precision: 2, notation: 'fixed' }));
 		}
 	},
 	watch: {
@@ -220,12 +186,6 @@ export default {
 				this.$message.warning('请先检索一个公司!');
 				this.$refs.goodsTable.clearSelection();
 				this.isBaned = true;
-				return;
-			}
-
-			// 校验批次数据是否足够
-			if (!this.validateBatchAmount(selection)) {
-				this.$refs.goodsTable.clearSelection();
 				return;
 			}
 
@@ -410,53 +370,6 @@ export default {
 			this.getList();
 		},
 
-		// 校验批次数据金额是否足够
-		validateBatchAmount(selection) {
-			if (!selection || selection.length === 0) {
-				return true; // 没有选中订单，无需校验
-			}
-
-			// 计算选中订单的总货款
-			const selectedOrdersTotal = this.calculateOrdersTotal(selection);
-			const batchTotal = this.currentCompanyBatchTotal;
-
-			// 如果批次数据总金额小于选中订单的总货款，不允许选择
-			if (batchTotal < selectedOrdersTotal) {
-				const companyName = this.checkFlag?.name || '当前公司';
-				this.$message.error(
-					`批次数据不足！${companyName}的可用批次金额为 ¥${batchTotal.toFixed(2)}，` +
-					`但选中订单的总货款为 ¥${selectedOrdersTotal.toFixed(2)}，请调整选择或补充批次数据。`
-				);
-				return false;
-			}
-
-			return true;
-		},
-
-		// 计算选中订单的总货款
-		calculateOrdersTotal(selection) {
-			let totalAmount = this.math.bignumber(0);
-
-			selection.forEach(order => {
-				if (this.type === PUBLIC_DICT_TYPE.CUSTOMER) {
-					// 客户模式：使用总货款
-					totalAmount = this.math.add(totalAmount, this.math.bignumber(order.allPayments || 0));
-				} else if (this.type === PUBLIC_DICT_TYPE.SUPPLIER) {
-					// 供应商模式：使用出厂货款之和
-					if (order.smailOrderDetails && Array.isArray(order.smailOrderDetails)) {
-						// 过滤出当前供应商的明细
-						const supplierDetails = order.smailOrderDetails.filter(detail =>
-							detail.supplierID === this.id
-						);
-						supplierDetails.forEach(detail => {
-							totalAmount = this.math.add(totalAmount, this.math.bignumber(detail.paymentFactory || 0));
-						});
-					}
-				}
-			});
-
-			return Number(this.math.format(totalAmount, { precision: 2, notation: 'fixed' }));
-		},
 
 		// 自动生成发票（选中订单后自动触发）
 		autoGenerateInvoice() {

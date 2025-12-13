@@ -182,6 +182,10 @@ export default {
 				return this.math.add(sum, itemAmount);
 			}, this.math.bignumber(0));
 
+			// 计算该公司在模板数据中的未开票金额总和（剩余开票金额）
+			const companyId = this.getCompanyId(row);
+			const templateTotal = this.calculateCompanyTemplateTotal(companyId, row.type);
+
 			// 创建一个合并后的row对象，保留原始row的其他属性
 			const mergedRow = {
 				...row,
@@ -193,9 +197,10 @@ export default {
 			};
 
 			this.$bus.$emit('update-goods-order-company', mergedRow);
-			// 维护开票金额 - 使用合并后的总金额
+			// 维护开票金额 - 使用模板数据中的未开票金额总和（剩余开票金额）
+			const templateTotalNumber = Number(this.math.format(templateTotal, { precision: 2, notation: 'fixed' }));
 			this.$store.dispatch('excel/clearInvoiceAmount');
-			this.$store.dispatch('excel/setInvoiceAmount', mergedTotal);
+			this.$store.dispatch('excel/setInvoiceAmount', Math.max(0, templateTotalNumber)); // 确保不为负数
 			// 需要暂存我方实体 - 如果有多条记录，存储所有我方公司信息
 			if (sameIdRows.length > 1) {
 				// 存储所有我方公司名称的数组
@@ -204,9 +209,8 @@ export default {
 			} else {
 				sessionStorage.setItem('us', row.us || '');
 			}
-			sessionStorage.setItem('invoiceAmount', mergedTotal);
-			// 存储当前选中行的公司ID，供 InvoiceBody 精确回写
-			const companyId = this.getCompanyId(row);
+			sessionStorage.setItem('invoiceAmount', Math.max(0, templateTotalNumber));
+			// 存储当前选中行的公司ID，供 InvoiceBody 精确回写（使用上面已声明的 companyId）
 			sessionStorage.setItem('companyList_selected_company_id', companyId);
 			// 存储合并信息，供生成发票时使用
 			if (sameIdRows.length > 1) {
@@ -228,6 +232,41 @@ export default {
 			// 方便变颜色
 			this.selectedRowId = row.id;
 			// 不在检索时标记，由开具发票成功后由上层写入映射
+		},
+		// 计算该公司在模板数据中的未开票金额总和
+		calculateCompanyTemplateTotal(companyId, companyType) {
+			if (!companyId || !this.batchDetailRows || this.batchDetailRows.length === 0) {
+				return this.math.bignumber(0);
+			}
+
+			let totalAmount = this.math.bignumber(0);
+
+			// 筛选出该公司对应的未开票模板数据
+			const relevantTemplates = this.batchDetailRows.filter(tpl => {
+				// 只计算未开票的记录
+				if (tpl.invoiced) {
+					return false;
+				}
+
+				// 根据公司类型匹配
+				// companyType 可能是 "客户" 或 "供应商"
+				if (companyType === '客户' || companyType === 'Customer') {
+					// 客户模式：查找购买方ID匹配的记录
+					return tpl.purchaseId && String(tpl.purchaseId) === String(companyId);
+				} else if (companyType === '供应商' || companyType === 'Supplier') {
+					// 供应商模式：查找销方ID匹配的记录
+					return tpl.sellerId && String(tpl.sellerId) === String(companyId);
+				}
+
+				return false;
+			});
+
+			// 累加所有相关模板的金额
+			relevantTemplates.forEach(tpl => {
+				totalAmount = this.math.add(totalAmount, this.math.bignumber(tpl.total || 0));
+			});
+
+			return totalAmount;
 		},
 		// 点击某一行变颜色的函数
 		handleRowClassName({ row }) {
