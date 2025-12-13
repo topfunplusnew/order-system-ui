@@ -3,10 +3,14 @@ import CompanyInformation from './CompanyInformation.vue';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import { getCompany } from '../../../../api/system/company';
 import _ from 'lodash';
+import { create, all } from 'mathjs';
 
 export default {
 	name: 'InvoiceCompanysList',
 	mixins: [common_dialog],
+	created() {
+		this.math = create(all, { number: 'BigNumber', precision: 64 });
+	},
 	props: {
 		side: {
 			type: String, // 'purchase' | 'seller'
@@ -55,6 +59,34 @@ export default {
 				return this.batchDetailRows.filter(row => row.sellerId === 0);
 			}
 			return this.batchDetailRows.filter(row => row.sellerId !== 0);
+		},
+		// 根据发票类型返回不同的模板列配置（按照Excel模板列顺序）
+		templateColumns() {
+			if (this.mode === 'in') {
+				// 进项票模板列（按照Excel模板顺序：销方ID、销方类型、销方名称、购买方名称、价税合计、票点）
+				return [
+					{ prop: 'sellerId', label: '销方ID', minWidth: '90' },
+					{ prop: 'sellerType', label: '销方类型', minWidth: '100' },
+					{ prop: 'sellerName', label: '销方名称', minWidth: '160' },
+					{ prop: 'purchaseName', label: '购买方名称', minWidth: '160' },
+					{ prop: 'total', label: '价税合计', minWidth: '110' },
+					{ prop: 'ticketPoint', label: '票点', minWidth: '80' }
+				];
+			} else {
+				// 销项票模板列（按照Excel模板顺序：销方名称、购买方ID、购买方类型、购买方名称、价税合计、票点）
+				return [
+					{ prop: 'sellerName', label: '销方名称', minWidth: '160' },
+					{ prop: 'purchaseId', label: '购买方ID', minWidth: '90' },
+					{ prop: 'purchaseType', label: '购买方类型', minWidth: '100' },
+					{ prop: 'purchaseName', label: '购买方名称', minWidth: '160' },
+					{ prop: 'total', label: '价税合计', minWidth: '110' },
+					{ prop: 'ticketPoint', label: '票点', minWidth: '80' }
+				];
+			}
+		},
+		// 模板预览弹窗标题
+		templateDialogTitle() {
+			return this.mode === 'in' ? '进项票模板数据预览' : '销项票模板数据预览';
 		}
 	},
 	mounted() {
@@ -138,21 +170,23 @@ export default {
 			// 查找相同对方ID的所有记录（可能我方公司不同）
 			const sameIdRows = this.companyTotalInfo.filter(item => item.id === row.id);
 
-			// 合并所有相同ID的记录的total
+			// 合并所有相同ID的记录的total - 使用mathjs进行精确计算
 			const mergedTotal = sameIdRows.reduce((sum, item) => {
-				return sum + (Number(item.total) || 0);
-			}, 0);
+				const itemTotal = this.math.bignumber(item.total || 0);
+				return this.math.add(sum, itemTotal);
+			}, this.math.bignumber(0));
 
-			// 合并票点金额（取平均值或第一个，这里取第一个的票点）
+			// 合并票点金额 - 使用mathjs进行精确计算
 			const mergedTicketPointAmount = sameIdRows.reduce((sum, item) => {
-				return sum + (Number(item.ticketPointAmount) || 0);
-			}, 0);
+				const itemAmount = this.math.bignumber(item.ticketPointAmount || 0);
+				return this.math.add(sum, itemAmount);
+			}, this.math.bignumber(0));
 
 			// 创建一个合并后的row对象，保留原始row的其他属性
 			const mergedRow = {
 				...row,
-				total: mergedTotal,
-				ticketPointAmount: mergedTicketPointAmount,
+				total: Number(this.math.format(mergedTotal, { precision: 2, notation: 'fixed' })),
+				ticketPointAmount: Number(this.math.format(mergedTicketPointAmount, { precision: 2, notation: 'fixed' })),
 				// 标记这是合并后的数据，包含所有我方公司信息
 				_mergedRows: sameIdRows,
 				_isMerged: sameIdRows.length > 1
@@ -266,18 +300,36 @@ export default {
 		</div>
 
 		<!-- 查看模板数据弹窗 -->
-		<el-dialog :modal="false" title="模板数据预览" :visible.sync="viewTemplateVisible" width="800px" append-to-body>
-			<el-table :data="selectedTemplateData" size="mini" height="400px" border>
-				<el-table-column prop="sellerId" label="销方ID" width="90" />
-				<el-table-column prop="sellerName" label="销方名称" width="160" />
-				<el-table-column prop="sellerType" label="销方类型" width="90" />
-				<el-table-column prop="purchaseId" label="购买方ID" width="90" />
-				<el-table-column prop="purchaseName" label="购买方名称" width="160" />
-				<el-table-column prop="purchaseType" label="购买方类型" width="100" />
-				<el-table-column prop="total" label="价税合计" width="110" />
-				<el-table-column prop="ticketPoint" label="票点" width="80" />
-				<el-table-column prop="ticketPointAmount" label="票点金额" width="110" />
+		<el-dialog :modal="false" :title="templateDialogTitle" :visible.sync="viewTemplateVisible" width="1000px" append-to-body>
+			<el-table :data="selectedTemplateData" size="mini" height="400px" border stripe>
+				<el-table-column
+					v-for="column in templateColumns"
+					:key="column.prop"
+					:prop="column.prop"
+					:label="column.label"
+					:min-width="column.minWidth"
+					show-overflow-tooltip
+				>
+					<template slot-scope="scope">
+						<!-- 特殊处理开票状态列 -->
+						<span v-if="column.prop === 'invoiced'">
+							<el-tag size="mini" :type="scope.row.invoiced ? 'success' : 'warning'">
+								{{ scope.row.invoiced ? '已开票' : '未开票' }}
+							</el-tag>
+						</span>
+						<!-- 其他列正常显示 -->
+						<span v-else>{{ scope.row[column.prop] }}</span>
+					</template>
+				</el-table-column>
 			</el-table>
+			<div class="template-info" v-if="selectedTemplateData.length > 0">
+				<el-alert
+					:title="`共 ${selectedTemplateData.length} 条${mode === 'in' ? '进项票' : '销项票'}数据`"
+					type="info"
+					:closable="false"
+					show-icon
+				/>
+			</div>
 			<span slot="footer" class="dialog-footer">
 				<el-button size="mini" @click="viewTemplateVisible = false">关闭</el-button>
 			</span>
@@ -582,6 +634,38 @@ export default {
 		/* 优化滚动条在小屏幕上的显示 */
 		&::-webkit-scrollbar {
 			height: 6px;
+		}
+	}
+}
+
+/* 模板信息样式 */
+.template-info {
+	margin-top: 16px;
+
+	.el-alert {
+		::v-deep .el-alert__title {
+			font-weight: 600;
+		}
+	}
+}
+
+/* 模板预览表格样式优化 */
+::v-deep .el-dialog {
+	.el-table {
+		width: 100%;
+
+		.el-table__header th {
+			background-color: #f5f7fa;
+			color: #606266;
+			font-weight: 600;
+		}
+
+		.el-table__body td {
+			color: #303133;
+		}
+
+		.el-tag {
+			margin: 0;
 		}
 	}
 }
