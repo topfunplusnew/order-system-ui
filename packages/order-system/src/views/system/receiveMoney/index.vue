@@ -246,8 +246,8 @@
 
 						<!-- 右列 -->
 						<el-col :span="12" class="receive-second-col">
-							<el-form-item label="对方银行账户类型" v-if="form.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE">
-								<BankType ref="otherSelectedBankType" :option-baned="true" :baned="true" :select-type="form.otherBankCardType" @updateSelectedType="changeOtherBankType" style="width: 100%" />
+							<el-form-item label="对方银行账户类型">
+								<BankType ref="otherSelectedBankType" :option-baned="true" :baned="form.companyType === PAYMENT_TARGET_TYPE.PAYMENT_FEE" :select-type="form.otherBankCardType" @updateSelectedType="changeOtherBankType" style="width: 100%" />
 							</el-form-item>
 							<el-form-item label="对方户名" prop="otherAcountsName">
 								<el-input v-if="isPaymentFee" v-model="form.otherAcountsName" placeholder="请输入对方户名" style="width: 100%" />
@@ -713,6 +713,10 @@ export default {
 					this.$refs.otherSelectedBankType.resetComponentState();
 				}
 			});
+		},
+		// 选择对方银行账户类型
+		changeOtherBankType(value) {
+			this.form.otherBankCardType = value;
 		},
 		// 清理上传组件状态
 		clearUploaderState() {

@@ -414,8 +414,8 @@
 
 					<!-- 右列 -->
 					<el-col :span="12">
-						<el-form-item v-if="form.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE" label="对方银行账户类型">
-							<BankType ref="otherSelectedBankType" :option-baned="true" :baned="true" :select-type="form.otherBankCardType" @updateSelectedType="changeOtherBankType" style="width: 100%" />
+						<el-form-item label="对方银行账户类型">
+							<BankType ref="otherSelectedBankType" :option-baned="true" :baned="form.companyType === PAYMENT_TARGET_TYPE.PAYMENT_FEE" :select-type="form.otherBankCardType" @updateSelectedType="changeOtherBankType" style="width: 100%" />
 						</el-form-item>
 
 						<!-- 选择供应商 -->
@@ -1184,6 +1184,10 @@ export default {
 		changeCustomSelfBankType(value) {
 			this.chooseInfo.otherBankCardType = value;
 			this.chooseInfo.selfBankCardType = value;
+		},
+		// 选择对方银行账户类型
+		changeOtherBankType(value) {
+			this.form.otherBankCardType = value;
 		},
 		// 处理承兑信息更新，自动填充我方户名和对方户名
 		handleBankAcceptanceUpdate(acceptanceData) {
