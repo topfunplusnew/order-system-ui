@@ -350,7 +350,7 @@ export default {
 		</div>
 
 		<!-- 查看模板数据弹窗 -->
-		<el-dialog :modal="false" :title="templateDialogTitle" :visible.sync="viewTemplateVisible" width="1000px" append-to-body>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="templateDialogTitle" :visible.sync="viewTemplateVisible" width="1000px" append-to-body>
 			<el-table :data="selectedTemplateData" size="mini" :max-height="700" border :cell-style="() => ({ padding: '6px 4px' })" :header-cell-style="() => ({ background: '#f5f7fa', color: '#606266', fontWeight: '600' })">
 				<el-table-column label="ID" align="center" prop="id" width="70" />
 				<el-table-column label="批次号" align="center" prop="voucher" min-width="140" show-overflow-tooltip />

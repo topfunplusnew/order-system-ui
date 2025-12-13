@@ -514,7 +514,11 @@ export default {
 			<el-table-column show-overflow-tooltip label="ID" align="center" prop="id" />
 			<el-table-column show-overflow-tooltip label="日期" align="center" prop="orderDate" />
 			<el-table-column show-overflow-tooltip label="客户" align="center" prop="customer" />
-			<el-table-column show-overflow-tooltip label="供应商/仓库" align="center" prop="supplierNames" width="200"></el-table-column>
+			<el-table-column show-overflow-tooltip label="供应商/仓库" align="center" prop="supplierNames" width="200">
+				<template #default="scope">
+					<div>{{ scope.row.supplierNames }}</div>
+				</template>
+			</el-table-column>
 			<el-table-column show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo" />
 			<el-table-column show-overflow-tooltip label="陆运司机电话" align="center" prop="landDriverTel" width="100px" />
 			<el-table-column show-overflow-tooltip label="陆地司机姓名" align="center" prop="landDriverName" width="100px" />

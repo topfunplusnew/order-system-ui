@@ -306,6 +306,8 @@ export default {
 
 			const resultInvoices = [];
 			const b = v => this.math.bignumber(v || 0);
+			// 记录未用完的模板数据（原子性要求：必须用完）
+			const unfinishedTemplates = [];
 
 			// 为每个订单计算剩余货款（用于限制发票金额）
 			const orderRemainingMap = new Map();
@@ -456,11 +458,34 @@ export default {
 					// 更新模板剩余金额（减少已使用的金额）
 					tplRemaining = this.math.subtract(tplRemaining, invoiceAmount);
 				}
+
+				// 检查模板数据是否用完（原子性要求：必须用完）
+				const remainingAmount = Number(this.math.format(tplRemaining, { precision: 2, notation: 'fixed' }));
+				if (remainingAmount > 0.01) { // 允许0.01的误差（浮点数精度问题）
+					// 记录未用完的模板数据
+					unfinishedTemplates.push({
+						id: tpl.id,
+						voucher: tpl.voucher || '',
+						total: tpl.total || 0,
+						remaining: remainingAmount,
+						companyName: tpl.sellerName || tpl.purchaseName || '未知公司'
+					});
+				}
 			}
 
 			if (resultInvoices.length > 0) {
 				this.$store.dispatch('excel/setSelectedInvoiceList', resultInvoices);
 				this.$message.success(`已自动生成 ${resultInvoices.length} 条发票记录`);
+				
+				// 检查是否有未用完的模板数据（原子性要求）
+				if (unfinishedTemplates.length > 0) {
+					const templateInfo = unfinishedTemplates.map(t => 
+						`模板ID ${t.id}（${t.companyName}）剩余 ¥${t.remaining.toFixed(2)}`
+					).join('；');
+					this.$message.warning(
+						`以下模板数据未用完，请继续选择订单完成开票：${templateInfo}`
+					);
+				}
 			} else {
 				this.$message.warning('没有找到合适的批次记录来生成发票');
 			}
