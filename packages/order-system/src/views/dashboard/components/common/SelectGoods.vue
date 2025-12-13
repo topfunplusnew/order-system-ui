@@ -14,7 +14,7 @@ export default {
 	mixins: [common_dialog],
 	computed: {
 		// 拿出需要的
-		...mapGetters(['ticketPoint', 'comment', 'batchDetailRows']),
+		...mapGetters(['ticketPoint', 'comment', 'batchDetailRows', 'selectedInvoiceList']),
 		// 计算剩余开票金额的方法
 		calculateRemainingAmount() {
 			return row => {
@@ -23,6 +23,49 @@ export default {
 				const remaining = this.math.subtract(allPayments, totalInvoiceAmount);
 				return Number(this.math.format(remaining, { precision: 2, notation: 'fixed' }));
 			};
+		},
+		// 实时计算剩余开票金额（基于模板数据中的未开票金额总和）
+		remainingInvoiceAmount() {
+			if (!this.id || !this.batchDetailRows || this.batchDetailRows.length === 0) {
+				return 0;
+			}
+
+			// 筛选出该公司对应的未开票模板数据
+			const relevantTemplates = this.batchDetailRows.filter(tpl => {
+				// 只计算未开票的记录
+				if (tpl.invoiced) {
+					return false;
+				}
+
+				// 根据公司类型匹配
+				if (this.type === PUBLIC_DICT_TYPE.CUSTOMER) {
+					// 客户模式：查找购买方ID匹配的记录
+					return tpl.purchaseId && String(tpl.purchaseId) === String(this.id);
+				} else if (this.type === PUBLIC_DICT_TYPE.SUPPLIER) {
+					// 供应商模式：查找销方ID匹配的记录
+					return tpl.sellerId && String(tpl.sellerId) === String(this.id);
+				}
+
+				return false;
+			});
+
+			// 计算模板数据总金额
+			let totalAmount = this.math.bignumber(0);
+			relevantTemplates.forEach(tpl => {
+				totalAmount = this.math.add(totalAmount, this.math.bignumber(tpl.total || 0));
+			});
+
+			// 减去已生成的发票金额
+			if (this.selectedInvoiceList && this.selectedInvoiceList.length > 0) {
+				const generatedAmount = this.selectedInvoiceList.reduce((sum, invoice) => {
+					return this.math.add(sum, this.math.bignumber(invoice.invoiceAmount || 0));
+				}, this.math.bignumber(0));
+				totalAmount = this.math.subtract(totalAmount, generatedAmount);
+			}
+
+			const result = Number(this.math.format(totalAmount, { precision: 2, notation: 'fixed' }));
+			// 确保不为负数
+			return Math.max(0, result);
 		}
 	},
 	watch: {
@@ -204,6 +247,15 @@ export default {
 		},
 		// 筛选订单列表 主要是用于当左侧选择某个公司后要选择对应公司的订单
 		handleFilterOrders(value) {
+			// 检索前清空已生成的发票列表和选中的订单
+			this.$store.dispatch('excel/clearSelectedInvoiceList');
+			this.$store.dispatch('excel/clearSelectedOrders');
+			// 清空当前选中的订单
+			if (this.$refs.goodsTable) {
+				this.$refs.goodsTable.clearSelection();
+			}
+			this.preOrderList = [];
+			
 			// 不合法
 			if (value.id < 0) this.refresh();
 			// 什么都不选 就只getList
@@ -361,6 +413,10 @@ export default {
 		},
 		// 多选框是否禁用
 		selectable() {
+			// 如果剩余开票金额为0，禁用选择器
+			if (this.remainingInvoiceAmount <= 0) {
+				return false;
+			}
 			return !this.isBaned;
 		},
 		// 重新拉取数据

@@ -333,119 +333,129 @@ export default {
 
 			// 以模板数据为主，遍历每个模板数据
 			for (const tpl of filtered) {
-				const tplAmount = b(tpl.total || 0);
-				if (this.math.equal(tplAmount, b(0))) {
+				let tplRemaining = b(tpl.total || 0); // 模板剩余金额
+				if (this.math.equal(tplRemaining, b(0))) {
 					continue; // 跳过金额为0的模板
 				}
 
-				// 找到匹配的订单（根据公司ID匹配）
-				let matchedOrder = null;
-				for (const order of orders) {
-					// 检查模板数据是否匹配当前订单的公司
-					let isMatched = false;
-					if (this.invoiceType === PUBLIC_DICT_TYPE.CUSTOMER) {
-						// 客户模式：检查购买方ID是否匹配
-						isMatched = tpl.purchaseId && String(tpl.purchaseId) === String(order.customerID);
-					} else if (this.invoiceType === PUBLIC_DICT_TYPE.SUPPLIER) {
-						// 供应商模式：检查销方ID是否匹配
-						isMatched = tpl.sellerId && String(tpl.sellerId) === String(selectedCompanyId);
-						// 还需要检查订单明细中是否包含该供应商
-						if (isMatched && order.smailOrderDetails) {
-							isMatched = order.smailOrderDetails.some(detail => detail.supplierID === selectedCompanyId);
+				// 一个模板数据可以分配给多个订单，直到模板金额用完
+				while (this.math.larger(tplRemaining, b(0))) {
+					// 找到匹配的订单（根据公司ID匹配）
+					let matchedOrder = null;
+					for (const order of orders) {
+						// 检查模板数据是否匹配当前订单的公司
+						let isMatched = false;
+						if (this.invoiceType === PUBLIC_DICT_TYPE.CUSTOMER) {
+							// 客户模式：检查购买方ID是否匹配
+							isMatched = tpl.purchaseId && String(tpl.purchaseId) === String(order.customerID);
+						} else if (this.invoiceType === PUBLIC_DICT_TYPE.SUPPLIER) {
+							// 供应商模式：检查销方ID是否匹配
+							isMatched = tpl.sellerId && String(tpl.sellerId) === String(selectedCompanyId);
+							// 还需要检查订单明细中是否包含该供应商
+							if (isMatched && order.smailOrderDetails) {
+								isMatched = order.smailOrderDetails.some(detail => detail.supplierID === selectedCompanyId);
+							}
+						}
+
+						if (isMatched) {
+							const remaining = orderRemainingMap.get(order.id) || 0;
+							// 如果订单还有剩余货款，可以使用
+							if (remaining > 0) {
+								matchedOrder = order;
+								break;
+							}
 						}
 					}
 
-					if (isMatched) {
-						const remaining = orderRemainingMap.get(order.id) || 0;
-						// 如果订单还有剩余货款，可以使用
-						if (remaining > 0) {
-							matchedOrder = order;
-							break;
+					// 如果没有匹配的订单，跳出循环
+					if (!matchedOrder) {
+						break;
+					}
+
+					// 获取订单剩余货款
+					const orderRemaining = b(orderRemainingMap.get(matchedOrder.id) || 0);
+					
+					// 如果订单剩余开票金额为0或负数，跳出循环
+					if (this.math.smallerEq(orderRemaining, b(0))) {
+						break;
+					}
+					
+					// 发票金额 = min(模板剩余金额, 订单剩余开票金额)
+					let invoiceAmount = tplRemaining;
+					if (this.math.larger(tplRemaining, orderRemaining)) {
+						// 如果模板剩余金额大于订单剩余开票金额，使用订单剩余开票金额
+						invoiceAmount = orderRemaining;
+					}
+
+					// 确定公司信息
+					let companyTypeConst = this.invoiceType;
+					let companyID = tpl.sellerId || tpl.purchaseId || null;
+					let companyName = tpl.sellerName || tpl.purchaseName || '';
+					let invoiceObject = null;
+
+					if (tpl.sellerId && Number(tpl.sellerId) !== 0) {
+						companyTypeConst = tpl.sellerType;
+						companyID = tpl.sellerId;
+						companyName = tpl.sellerName || companyName;
+						invoiceObject = tpl.purchaseName || null;
+					} else if (tpl.purchaseId && Number(tpl.purchaseId) !== 0) {
+						companyTypeConst = tpl.purchaseType;
+						companyID = tpl.purchaseId;
+						companyName = tpl.purchaseName || companyName;
+						invoiceObject = tpl.sellerName || null;
+					}
+
+					// 从 sessionStorage 获取我方公司信息
+					if (!invoiceObject) {
+						const storedUs = sessionStorage.getItem('us');
+						if (storedUs) {
+							try {
+								const parsedUs = JSON.parse(storedUs);
+								invoiceObject = Array.isArray(parsedUs) && parsedUs.length > 0 ? parsedUs[0] : storedUs;
+							} catch (e) {
+								invoiceObject = storedUs;
+							}
 						}
 					}
-				}
 
-				// 如果没有匹配的订单，跳过该模板
-				if (!matchedOrder) {
-					continue;
-				}
+					// 计算票点金额（使用实际发票金额计算）
+					const actualInvoiceAmount = Number(this.math.format(invoiceAmount, { precision: 2, notation: 'fixed' }));
+					let ticketPointAmount = 0;
+					if (this.math.larger(b(tpl.ticketPoint || 0), b(0))) {
+						const denominator = this.math.add(b(1), b(tpl.ticketPoint || 0));
+						const fraction = this.math.divide(invoiceAmount, denominator);
+						ticketPointAmount = Number(this.math.format(this.math.multiply(fraction, b(tpl.ticketPoint || 0)), { precision: 2, notation: 'fixed' }));
+					}
 
-				// 获取订单剩余货款
-				const orderRemaining = b(orderRemainingMap.get(matchedOrder.id) || 0);
-				
-				// 发票金额 = 模板金额，但不能超过订单剩余货款
-				let invoiceAmount = tplAmount;
-				if (this.math.larger(tplAmount, orderRemaining)) {
-					// 如果模板金额大于订单剩余货款，使用订单剩余货款（这种情况应该避免，但做保护处理）
-					invoiceAmount = orderRemaining;
-					this.$message.warning(`模板金额 ${Number(this.math.format(tplAmount, { precision: 2, notation: 'fixed' }))} 超过订单剩余货款 ${Number(this.math.format(orderRemaining, { precision: 2, notation: 'fixed' }))}，已调整为订单剩余货款`);
-				}
-
-				// 确定公司信息
-				let companyTypeConst = this.invoiceType;
-				let companyID = tpl.sellerId || tpl.purchaseId || null;
-				let companyName = tpl.sellerName || tpl.purchaseName || '';
-				let invoiceObject = null;
-
-				if (tpl.sellerId && Number(tpl.sellerId) !== 0) {
-					companyTypeConst = tpl.sellerType;
-					companyID = tpl.sellerId;
-					companyName = tpl.sellerName || companyName;
-					invoiceObject = tpl.purchaseName || null;
-				} else if (tpl.purchaseId && Number(tpl.purchaseId) !== 0) {
-					companyTypeConst = tpl.purchaseType;
-					companyID = tpl.purchaseId;
-					companyName = tpl.purchaseName || companyName;
-					invoiceObject = tpl.sellerName || null;
-				}
-
-				// 从 sessionStorage 获取我方公司信息
-				if (!invoiceObject) {
-					const storedUs = sessionStorage.getItem('us');
-					if (storedUs) {
-						try {
-							const parsedUs = JSON.parse(storedUs);
-							invoiceObject = Array.isArray(parsedUs) && parsedUs.length > 0 ? parsedUs[0] : storedUs;
-						} catch (e) {
-							invoiceObject = storedUs;
+					// 生成发票对象
+					const invoice = this.createInvoiceObject(
+						{
+							invoiceDate: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
+							invoiceObject: invoiceObject || sessionStorage.getItem('us') || '',
+							invoiceAmount: actualInvoiceAmount,
+							companyType: companyTypeConst,
+							companyName: companyName,
+							companyID: companyID,
+							invoiceCompanyName: companyName,
+							ticketPoint: tpl.ticketPoint || 0,
+							ticketPointAmount: ticketPointAmount,
+							isOrderTax: matchedOrder.id,
+							comments: this.comment
+						},
+						{
+							batchInvoiceId: tpl.id || null,
+							batchVoucher: tpl.voucher || ''
 						}
-					}
+					);
+					resultInvoices.push(invoice);
+
+					// 更新订单剩余货款（减少已使用的金额）
+					const newRemaining = this.math.subtract(orderRemaining, invoiceAmount);
+					orderRemainingMap.set(matchedOrder.id, Number(this.math.format(newRemaining, { precision: 2, notation: 'fixed' })));
+					
+					// 更新模板剩余金额（减少已使用的金额）
+					tplRemaining = this.math.subtract(tplRemaining, invoiceAmount);
 				}
-
-				// 计算票点金额（使用实际发票金额计算）
-				const actualInvoiceAmount = Number(this.math.format(invoiceAmount, { precision: 2, notation: 'fixed' }));
-				let ticketPointAmount = 0;
-				if (this.math.larger(b(tpl.ticketPoint || 0), b(0))) {
-					const denominator = this.math.add(b(1), b(tpl.ticketPoint || 0));
-					const fraction = this.math.divide(invoiceAmount, denominator);
-					ticketPointAmount = Number(this.math.format(this.math.multiply(fraction, b(tpl.ticketPoint || 0)), { precision: 2, notation: 'fixed' }));
-				}
-
-				// 生成发票对象
-				const invoice = this.createInvoiceObject(
-					{
-						invoiceDate: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
-						invoiceObject: invoiceObject || sessionStorage.getItem('us') || '',
-						invoiceAmount: actualInvoiceAmount,
-						companyType: companyTypeConst,
-						companyName: companyName,
-						companyID: companyID,
-						invoiceCompanyName: companyName,
-						ticketPoint: tpl.ticketPoint || 0,
-						ticketPointAmount: ticketPointAmount,
-						isOrderTax: matchedOrder.id,
-						comments: this.comment
-					},
-					{
-						batchInvoiceId: tpl.id || null,
-						batchVoucher: tpl.voucher || ''
-					}
-				);
-				resultInvoices.push(invoice);
-
-				// 更新订单剩余货款（减少已使用的金额）
-				const newRemaining = this.math.subtract(orderRemaining, invoiceAmount);
-				orderRemainingMap.set(matchedOrder.id, Number(this.math.format(newRemaining, { precision: 2, notation: 'fixed' })));
 			}
 
 			if (resultInvoices.length > 0) {

@@ -196,6 +196,11 @@ export default {
 				_isMerged: sameIdRows.length > 1
 			};
 
+			// 检索前清空已生成的发票列表
+			this.$store.dispatch('excel/clearSelectedInvoiceList');
+			// 清空选中的订单列表
+			this.$store.dispatch('excel/clearSelectedOrders');
+			
 			this.$bus.$emit('update-goods-order-company', mergedRow);
 			// 维护开票金额 - 使用模板数据中的未开票金额总和（剩余开票金额）
 			const templateTotalNumber = Number(this.math.format(templateTotal, { precision: 2, notation: 'fixed' }));

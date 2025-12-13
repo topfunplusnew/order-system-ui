@@ -675,6 +675,7 @@ export default {
 		handleQuery() {
 			this.pageNum = 1;
 			this.getAuditList();
+			this.getUnProcessedAuditList();
 		},
 		// 判断当前用户是否是审核人
 		isCurrentUserAuditor(row) {
