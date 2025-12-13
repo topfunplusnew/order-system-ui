@@ -482,7 +482,7 @@ export default {
 						</ExpandCursor>
 					</template>
 				</el-table-column>
-				<el-table-column label="供应商" align="center" prop="supplier" :min-width="columnWidths.supplier">
+				<el-table-column label="供应商" align="center" prop="supplier" :min-width="columnWidths.supplier" show-overflow-tooltip>
 					<template slot-scope="scope">
 						<ExpandCursor>
 							{{ scope.row.supplier }}
