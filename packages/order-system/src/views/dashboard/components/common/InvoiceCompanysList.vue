@@ -300,27 +300,17 @@ export default {
 		</div>
 
 		<!-- 查看模板数据弹窗 -->
-		<el-dialog :modal="false" :title="templateDialogTitle" :visible.sync="viewTemplateVisible" width="1000px" append-to-body>
-			<el-table :data="selectedTemplateData" size="mini" height="400px" border stripe>
-				<el-table-column
-					v-for="column in templateColumns"
-					:key="column.prop"
-					:prop="column.prop"
-					:label="column.label"
-					:min-width="column.minWidth"
-					show-overflow-tooltip
-				>
-					<template slot-scope="scope">
-						<!-- 特殊处理开票状态列 -->
-						<span v-if="column.prop === 'invoiced'">
-							<el-tag size="mini" :type="scope.row.invoiced ? 'success' : 'warning'">
-								{{ scope.row.invoiced ? '已开票' : '未开票' }}
-							</el-tag>
-						</span>
-						<!-- 其他列正常显示 -->
-						<span v-else>{{ scope.row[column.prop] }}</span>
-					</template>
-				</el-table-column>
+		<el-dialog :modal="false" title="模板数据预览" :visible.sync="viewTemplateVisible" width="800px" append-to-body>
+			<el-table :data="selectedTemplateData" size="mini" :max-height="700" border>
+				<el-table-column prop="sellerId" label="销方ID" width="90" />
+				<el-table-column prop="sellerName" label="销方名称" width="160" />
+				<el-table-column prop="sellerType" label="销方类型" width="90" />
+				<el-table-column prop="purchaseId" label="购买方ID" width="90" />
+				<el-table-column prop="purchaseName" label="购买方名称" width="160" />
+				<el-table-column prop="purchaseType" label="购买方类型" width="100" />
+				<el-table-column prop="total" label="价税合计" width="110" />
+				<el-table-column prop="ticketPoint" label="票点" width="80" />
+				<el-table-column prop="ticketPointAmount" label="票点金额" width="110" />
 			</el-table>
 			<div class="template-info" v-if="selectedTemplateData.length > 0">
 				<el-alert
