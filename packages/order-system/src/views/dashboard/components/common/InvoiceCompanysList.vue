@@ -267,7 +267,7 @@ export default {
 
 		<!-- 查看模板数据弹窗 -->
 		<el-dialog :modal="false" title="模板数据预览" :visible.sync="viewTemplateVisible" width="800px" append-to-body>
-			<el-table :data="selectedTemplateData" size="mini" height="400px" border>
+			<el-table :data="selectedTemplateData" size="mini" :max-height="700" border>
 				<el-table-column prop="sellerId" label="销方ID" width="90" />
 				<el-table-column prop="sellerName" label="销方名称" width="160" />
 				<el-table-column prop="sellerType" label="销方类型" width="90" />
