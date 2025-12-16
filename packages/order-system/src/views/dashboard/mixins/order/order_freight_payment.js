@@ -205,11 +205,11 @@ export var mixin_order_freight_payment = {
 		},
 		// 转换为新的API数据结构
 		transformToNewPaymentStructure() {
-			// 按司机ID分组运费信息
-			const groupedByDriver = _.groupBy(this.batchPaymentList, 'companyId');
+			// 按运费日期+对方银行账号分组运费信息
+			const groupedByDateAndBank = _.groupBy(this.batchPaymentList, item => `${item.applyDate}_${item.otherBankNo}`);
 
-			// 将每个司机的运费信息转换为付款记录
-			return _.map(groupedByDriver, (items, driverId) => {
+			// 将每个分组的运费信息转换为付款记录
+			return _.map(groupedByDateAndBank, (items, groupKey) => {
 				// 取第一个项目作为基础数据（所有同司机的项目共享这些字段）
 				const firstItem = items[0];
 
