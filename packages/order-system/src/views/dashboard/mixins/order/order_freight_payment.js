@@ -206,7 +206,7 @@ export var mixin_order_freight_payment = {
 		// 转换为新的API数据结构
 		transformToNewPaymentStructure() {
 			// 按运费日期+对方银行账号分组运费信息
-			const groupedByDateAndBank = _.groupBy(this.batchPaymentList, item => `${item.applyDate}_${item.otherBankNo}`);
+			const groupedByDateAndBank = _.groupBy(this.batchPaymentList, `otherBankNo`);
 
 			// 将每个分组的运费信息转换为付款记录
 			return _.map(groupedByDateAndBank, (items, groupKey) => {
