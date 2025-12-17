@@ -79,12 +79,12 @@ export var mixin_order_freight_payment = {
 			// 打开运费付款页面
 			this.freightOnceVisible = true;
 		},
-		// 司机相同的运费信息合并为一条运费信息
+		// 按对方银行账号合并运费信息为一条记录
 		mergeFreight(list) {
-			const groupedByDriver = _.groupBy(list, item => item.otherBankNo);
+			const groupedByBankNo = _.groupBy(list, item => item.otherBankNo);
 
-			// 合并每个司机的运费信息
-			return _.map(groupedByDriver, items => {
+			// 合并每个银行账号的运费信息
+			return _.map(groupedByBankNo, items => {
 				const firstItem = items[0];
 
 				// 计算总金额（保留3位小数）
@@ -161,7 +161,7 @@ export var mixin_order_freight_payment = {
 						onOk: () => {
 							// 转换为新的API数据结构
 							const paymentData = this.transformToNewPaymentStructure();
-							// 确保是数组格式（如果是多个司机，需要分别提交每个司机的付款）
+							// 确保是数组格式（如果是多个银行账号分组，需要分别提交每个分组的付款）
 							const submitPayments = _.castArray(paymentData);
 							batchPayment(submitPayments)
 								.then(() => {
@@ -204,12 +204,12 @@ export var mixin_order_freight_payment = {
 		},
 		// 转换为新的API数据结构
 		transformToNewPaymentStructure() {
-			// 按运费日期+对方银行账号分组运费信息
-			const groupedByDateAndBank = _.groupBy(this.batchPaymentList, `otherBankNo`);
+			// 按对方银行账号分组运费信息
+			const groupedByBankNo = _.groupBy(this.batchPaymentList, 'otherBankNo');
 
 			// 将每个分组的运费信息转换为付款记录
-			return _.map(groupedByDateAndBank, (items, groupKey) => {
-				// 取第一个项目作为基础数据（所有同司机的项目共享这些字段）
+			return _.map(groupedByBankNo, (items, bankNo) => {
+				// 取第一个项目作为基础数据（所有同银行账号的项目共享这些字段）
 				const firstItem = items[0];
 
 				// 计算总金额（使用 mathjs 并保留3位小数）
