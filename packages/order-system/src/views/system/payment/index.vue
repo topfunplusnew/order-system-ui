@@ -1944,20 +1944,13 @@ export default {
 			this.importResultMessage = '';
 		},
 		// 查看运费信息相关方法
-		// 跳转到运费支付页面并带上运费ID
-		// 查看运费信息相关方法
-		// 跳转到运费支付页面并带上运费ID
+		// 跳转到运费支付页面并带上对方银行卡号
 		handleViewFreightInfo(row) {
-			//
+			// 获取对方银行卡号
+			const otherBankNo = row.otherBankNo;
 
-			// 从 tableReferences 中提取运费ID列表
-			const freightIds = _.chain(row.tableReferences)
-				.filter(ref => ref.refTableName === TableName.ORDER_FREIGHT && ref.refTableId)
-				.map('refTableId')
-				.value();
-
-			if (_.isEmpty(freightIds)) {
-				this.$message.warning('未找到关联的运费信息');
+			if (!otherBankNo) {
+				this.$message.warning('未找到对方银行卡号信息');
 				return;
 			}
 
@@ -1966,7 +1959,7 @@ export default {
 				this.$router.push({
 					path: '/order/freight/OrderFreight',
 					query: {
-						freightId: freightIds[0]
+						otherBankNo: otherBankNo
 					}
 				});
 			}
