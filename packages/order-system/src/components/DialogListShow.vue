@@ -5,7 +5,7 @@
 			<el-row>
 				<el-table :data="showInfoList" :loading="loading" height="450px" size="mini" border :cell-style="cellStyle">
 					<template #append>
-						<AddBankAccounts :company-info="companyInfo" :current-row="currentRowData" @callGetList="refreshList" />
+						<AddBankAccounts :company-info="companyInfo" :car-no="companyInfo.carNo" @callGetList="refreshList" />
 					</template>
 					<slot name="column"></slot>
 				</el-table>
@@ -34,6 +34,11 @@ export default {
 			default: () => { }
 		},
 		queryObject: {
+			type: Object,
+			default: () => ({})
+		},
+		// 公司信息
+		companyInfo: {
 			type: Object,
 			default: () => ({})
 		}
@@ -84,6 +89,10 @@ export default {
 				this.total = response.total;
 				this.loading = false;
 			});
+		},
+		// 刷新列表
+		refreshList() {
+			this.fetchData(this.queryObject);
 		},
 		cellStyle() {
 			return { padding: '.5px' };

@@ -150,7 +150,7 @@
 						<el-form-item label="物品名称" prop="itemName">
 							<el-row :gutter="10">
 								<el-col :span="18">
-									<el-input v-model="form.itemName" placeholder="从礼品库存选择或手动输入" />
+									<el-input v-model="form.itemName" placeholder="手动输入" />
 								</el-col>
 								
 							</el-row>
