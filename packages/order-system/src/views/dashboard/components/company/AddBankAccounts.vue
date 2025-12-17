@@ -1,9 +1,11 @@
 <script>
+import { listCompany } from '../../../../api/system/company';
 import { excludeParams } from '../../../../api/tool/exclude';
 import { addBankAccount } from '../../../../api/system/bankAccount';
 
 export default {
 	name: 'AddBankAccounts',
+	components: {},
 	props: {
 		companyType: {
 			type: String,
@@ -16,23 +18,37 @@ export default {
 			default() {
 				return {};
 			}
-		},
-		// 传入的车牌号，用于自动填充
-		carNo: {
-			type: String,
-			default: ''
 		}
 	},
 	data() {
 		return {
 			dialogVisible: false,
+			// 搜索字段
+			queryCompany: '',
+			queryCompanyGive: '',
+			queryCarsBank: '',
 			title: '',
 			options: [
-				{ value: '己方公司', label: '己方公司' },
-				{ value: '客户', label: '客户' },
-				{ value: '供应商', label: '供应商' },
-				{ value: '司机', label: '司机' },
-				{ value: '其他', label: '其他' }
+				{
+					value: '己方公司',
+					label: '己方公司'
+				},
+				{
+					value: '客户',
+					label: '客户'
+				},
+				{
+					value: '供应商',
+					label: '供应商'
+				},
+				{
+					value: '司机',
+					label: '司机'
+				},
+				{
+					value: '其他',
+					label: '其他'
+				}
 			],
 			form: {},
 			// 表单校验
@@ -44,6 +60,13 @@ export default {
 						trigger: 'blur'
 					}
 				],
+				// bankName: [
+				// 	{
+				// 		required: true,
+				// 		message: '开户行不能为空',
+				// 		trigger: 'blur'
+				// 	}
+				// ],
 				acountsName: [
 					{
 						required: true,
@@ -58,10 +81,17 @@ export default {
 						trigger: 'blur'
 					}
 				],
-				carNo: [
+				companyName: [
 					{
 						required: true,
-						message: '车牌号不能为空',
+						message: '公司名称不能为空',
+						trigger: 'blur'
+					}
+				],
+				companyType: [
+					{
+						required: true,
+						message: '公司类型不能为空',
 						trigger: 'blur'
 					}
 				]
@@ -74,6 +104,7 @@ export default {
 		}
 	},
 	watch: {
+		// 监听传入的公司信息 自动将账户类型和id赋值
 		computedCompanyInfo: {
 			handler(val) {
 				console.log(val);
@@ -83,26 +114,15 @@ export default {
 		}
 	},
 	methods: {
+		listCompany,
 		// 添加银行卡信息 这里需要选择客户或者供应商进行绑定
 		handleAddBankAccount() {
 			this.reset();
-
-			// 优先从传入的公司信息填充数据
-			if (this.computedCompanyInfo) {
-				// 填充表单字段
-				this.form.acountsType = this.companyType || this.computedCompanyInfo.companyType || this.computedCompanyInfo.acountsType || '司机';
-				this.form.companyId = this.computedCompanyInfo.id || this.computedCompanyInfo.companyId;
-				this.form.companyName = this.computedCompanyInfo.companyName || '';
-				this.form.bankNo = this.computedCompanyInfo.bankNo || ''; // 如果有银行账号，填充
-				this.form.acountsName = this.computedCompanyInfo.acountsName || ''; // 默认填充账户名称
-				this.form.bankName = this.computedCompanyInfo.bankName || ''; // 默认填充开户行
-			}
-
-			// 自动填充车牌号（从 prop 传入）
-			if (this.carNo) {
-				this.form.carNo = this.carNo;
-			}
-
+			// 填充公司信息 公司类型和id
+			// 优先使用传入的 companyType prop，如果没有则使用 companyInfo 中的类型，最后默认为"司机"
+			this.form.acountsType = this.companyType || this.computedCompanyInfo.companyType || this.computedCompanyInfo.acountsType || '司机';
+			this.form.companyId = this.computedCompanyInfo.id || this.computedCompanyInfo.companyId;
+			this.form.companyName = this.computedCompanyInfo.companyName;
 			// 打开弹窗
 			this.dialogVisible = true;
 		},
@@ -114,7 +134,8 @@ export default {
 		reset() {
 			this.form = {
 				id: null,
-				carNo: null,  // 新增车牌号字段
+				companyName: null,
+				companyId: null,
 				bankName: null,
 				acountsName: null,
 				bankNo: null,
@@ -123,9 +144,7 @@ export default {
 				comments: null,
 				delFlag: null
 			};
-			this.$nextTick(() => {
-				this.$refs['form'] && this.$refs['form'].resetFields();  // 重置表单字段
-			});
+			this.resetForm('form');
 		},
 		submitForm() {
 			this.$refs['form'].validate(valid => {
@@ -143,46 +162,45 @@ export default {
 };
 </script>
 
-
 <template>
 	<div>
-		<!-- 新增银行卡信息 -->
+		<!--      新增银行卡信息-->
 		<div class="add-bank-account">
-			<el-button v-hasPermi="['system:company:add']" type="text" size="mini" icon="el-icon-plus"
-				@click="handleAddBankAccount">新增银行卡信息</el-button>
+			<el-button v-hasPermi="['system:company:add']" type="text" size="mini" icon="el-icon-plus" @click="handleAddBankAccount">新增银行卡信息</el-button>
 		</div>
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="提示" :visible.sync="dialogVisible"
-			width="50%" append-to-body :close-on-click-modal="false" :close-on-press-escape="false">
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="提示" :visible.sync="dialogVisible" width="50%" append-to-body :close-on-click-modal="false" :close-on-press-escape="false">
 			<div>
 				<el-form ref="form" :model="form" :rules="rules" label-width="120px">
-					<!-- 账号类型 -->
 					<el-form-item v-show="false" label="账号类型" prop="acountsType">
 						<el-select v-model="form.acountsType" placeholder="请选择账号类型">
 							<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
 						</el-select>
 					</el-form-item>
-
-					<!-- 车牌号（隐藏，自动填充） -->
-					<el-form-item v-show="false" label="车牌号" prop="carNo">
-						<el-input v-model="form.carNo" placeholder="请输入车牌号" />
+					<el-form-item label="公司名称" prop="companyName">
+						<el-row>
+							<el-col :span="24">
+								<el-input v-model="form.companyName" placeholder="请输入公司名称" />
+							</el-col>
+						</el-row>
 					</el-form-item>
-
-					<!-- 户名（隐藏，自动填充） -->
-					<el-form-item v-show="false" label="户名" prop="acountsName">
-						<el-input v-model="form.acountsName" placeholder="请输入户名" />
+					<el-form-item label="户名" prop="acountsName">
+						<!--          如果是司机 那么就选择-->
+						<el-row v-if="form.acountsType === '司机'">
+							<el-col :span="20">
+								<el-input v-model="form.acountsName" placeholder="请输入户名" />
+							</el-col>
+						</el-row>
+						<el-row v-else>
+							<el-input v-model="form.acountsName" placeholder="请输入户名" />
+						</el-row>
 					</el-form-item>
-
-					<!-- 银行账号 -->
 					<el-form-item label="银行账号" prop="bankNo">
 						<el-input v-model="form.bankNo" placeholder="请输入银行账号" />
 					</el-form-item>
-
-					<!-- 开户行 -->
 					<el-form-item label="开户行" prop="bankName">
 						<el-input v-model="form.bankName" placeholder="请输入开户行" />
 					</el-form-item>
 				</el-form>
-
 				<div slot="footer" class="dialog-footer" style="text-align: center">
 					<el-button type="primary" @click="submitForm">确 定</el-button>
 					<el-button @click="cancel">取 消</el-button>
@@ -191,7 +209,6 @@ export default {
 		</el-dialog>
 	</div>
 </template>
-
 
 <style scoped lang="scss">
 .add-bank-account {
