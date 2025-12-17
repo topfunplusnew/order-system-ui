@@ -193,7 +193,7 @@
 
 					<el-col :span="12">
 						<el-form-item label="金额" prop="estimatedValue">
-							<el-input v-model="form.estimatedValue" placeholder="自动计算或手动输入" @input="handleAmountInput" @blur="formatAmount" />
+							<el-input v-model="form.estimatedValue" placeholder="自动计算" disabled />
 						</el-form-item>
 					</el-col>
 
@@ -218,6 +218,16 @@
 
 		<!-- 退回弹窗 -->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="退回礼品出库信息" :visible.sync="returnOpen" width="600px" append-to-body @close="handleReturnClose">
+			<el-form-item label="退回日期" prop="localDate">
+  <el-date-picker
+    v-model="returnForm.localDate"
+    type="date"
+    placeholder="请选择退回日期"
+    style="width: 100%"
+    value-format="yyyy-MM-dd"
+    clearable
+  />
+</el-form-item>
 			<el-form ref="returnForm" :model="returnForm" :rules="returnRules" label-width="120px">
 				<el-form-item label="原本数量">
 					<el-input :value="returnForm.originalQuantity || 0" disabled />
@@ -434,10 +444,6 @@ export default {
 					}
 				],
 				unitPrice: [{ required: true, message: '请输入单价', trigger: 'blur' }],
-				estimatedValue: [
-					{ required: true, message: '请输入预估价值', trigger: 'blur' },
-					{ pattern: /^\d+(\.\d{1,2})?$/, message: '请输入有效的金额格式', trigger: 'blur' }
-				],
 				handler: [
 					{ required: true, message: '请输入领用人', trigger: 'blur' },
 					{ max: 20, message: '领用人长度不能超过20个字符', trigger: 'blur' }
@@ -877,6 +883,9 @@ export default {
 						this.$message.warning('请输入领用原因');
 						return;
 					}
+
+					// 确保金额被正确计算
+					this.calculateAmount();
 
 					// 直接提交
 					if (submitData.quantity) {

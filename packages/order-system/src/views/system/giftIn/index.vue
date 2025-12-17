@@ -150,38 +150,9 @@
 						<el-form-item label="物品名称" prop="itemName">
 							<el-row :gutter="10">
 								<el-col :span="18">
-									<el-input v-model="form.itemName" placeholder="从礼品库存选择或手动输入" />
+									<el-input v-model="form.itemName" placeholder="手动输入" />
 								</el-col>
-								<el-col :span="4">
-									<SearchOption :limit-info="{}" :get-data="listGift" query-info="itemName" query-label="物品名称" :query-name="itemName" @update:queryName="handleUpdateItemName" @commitBack="handleCommitBackGift">
-										<template #table-columns>
-											<el-table-column label="入库日期" align="center" prop="inDate" width="110">
-												<template #default="scope">
-													<span>{{ scope.row.inDate ? parseTime(scope.row.inDate, '{y}-{m}-{d}') : '-' }}</span>
-												</template>
-											</el-table-column>
-											<el-table-column label="存货地点" align="center" prop="inventoryLocation" width="120" show-overflow-tooltip />
-											<el-table-column label="物品名称" align="center" prop="itemName" min-width="120" show-overflow-tooltip />
-											<el-table-column label="单位" align="center" prop="unit" width="80" />
-											<el-table-column label="入库数量" align="center" prop="quantity" width="100">
-												<template #default="scope">
-													<span>{{ scope.row.quantity !== null && scope.row.quantity !== undefined ? scope.row.quantity : '-' }}</span>
-												</template>
-											</el-table-column>
-											<el-table-column label="剩余数量" align="center" prop="remainingQuantity" width="100" />
-											<el-table-column label="单价" align="center" prop="unitPrice" width="100">
-												<template #default="scope">
-													<span>{{ scope.row.unitPrice ? Number(scope.row.unitPrice).toFixed(2) : '-' }}</span>
-												</template>
-											</el-table-column>
-											<el-table-column label="金额" align="center" prop="remainingValue" width="120">
-												<template #default="scope">
-													<span>{{ scope.row.remainingValue ? Number(scope.row.remainingValue).toFixed(2) : '-' }}</span>
-												</template>
-											</el-table-column>
-										</template>
-									</SearchOption>
-								</el-col>
+								
 							</el-row>
 						</el-form-item>
 					</el-col>
@@ -207,11 +178,18 @@
 						</el-form-item>
 					</el-col>
 
+					<!-- 将原来的金额输入框替换为以下代码 -->
 					<el-col :span="12">
 						<el-form-item label="金额" prop="estimatedValue">
-							<el-input v-model="form.estimatedValue" placeholder="自动计算或手动输入" @input="handleAmountInput" @blur="formatAmount" />
+							<el-input
+								v-model="form.estimatedValue"
+								placeholder="自动计算"
+								readonly
+								disabled
+							/>
 						</el-form-item>
 					</el-col>
+
 
 					<!-- 经办人单独一行 -->
 					<el-col :span="24">
@@ -427,21 +405,21 @@ export default {
 				{ required: false, message: '请输入单价', trigger: 'blur' },
 				{ pattern: /^\d+(\.\d{1,2})?$/, message: '请输入有效的金额格式', trigger: 'blur' }
 			],
-			estimatedValue: [
-				{ required: true, message: '请输入预估价值/购买金额', trigger: 'blur' },
-				{ validator: (rule, value, callback) => {
-					if (value === null || value === undefined || value === '') {
-						callback(new Error('请输入预估价值/购买金额'));
-						return;
-					}
-					const num = Number(value);
-					if (isNaN(num)) {
-						callback(new Error('预估价值必须是有效数字'));
-						return;
-					}
-					callback();
-				}, trigger: 'blur' }
-			],
+			// estimatedValue: [
+			// 	{ required: true, message: '请输入预估价值/购买金额', trigger: 'blur' },
+			// 	{ validator: (rule, value, callback) => {
+			// 		if (value === null || value === undefined || value === '') {
+			// 			callback(new Error('请输入预估价值/购买金额'));
+			// 			return;
+			// 		}
+			// 		const num = Number(value);
+			// 		if (isNaN(num)) {
+			// 			callback(new Error('预估价值必须是有效数字'));
+			// 			return;
+			// 		}
+			// 		callback();
+			// 	}, trigger: 'blur' }
+			// ],
 			handler: [
 				{ required: true, message: '请输入经办人', trigger: 'blur' },
 				{ max: 20, message: '经办人长度不能超过20个字符', trigger: 'blur' }
@@ -997,32 +975,31 @@ export default {
 		submitForm() {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
-					// 提交前确保金额已计算
-					if (this.form.quantity && this.form.unitPrice) {
-						this.calculateAmount();
-					}
+					// 总是根据数量和单价计算金额，无视用户输入
+					this.calculateAmount();
+
 					// 创建提交数据副本，严格按照文档字段提交
 					const submitData = JSON.parse(JSON.stringify(this.form));
-					
+
 					// 移除前端临时字段
 					delete submitData.companyName;
-					
+
 					// 确保必填字段符合文档要求
 					// 文档必填：inDate, inMethod, itemName, quantity, estimatedValue, handler
-					if (!submitData.inDate || !submitData.inMethod || !submitData.itemName || 
-						!submitData.quantity || submitData.estimatedValue === null || submitData.estimatedValue === undefined || 
+					if (!submitData.inDate || !submitData.inMethod || !submitData.itemName ||
+						!submitData.quantity || submitData.estimatedValue === null || submitData.estimatedValue === undefined ||
 						!submitData.handler) {
 						this.$message.error('请填写所有必填字段');
 						return;
 					}
-					
+
 					// 确保 quantity 是整数且 >= 1（文档要求：integer, minimum: 1）
 					submitData.quantity = parseInt(submitData.quantity);
 					if (isNaN(submitData.quantity) || submitData.quantity < 1) {
 						this.$message.error('数量必须是大于等于1的整数');
 						return;
 					}
-					
+
 					// 处理单价：转换为数字类型，保留两位小数
 					if (submitData.unitPrice !== null && submitData.unitPrice !== undefined && submitData.unitPrice !== '') {
 						submitData.unitPrice = Number(submitData.unitPrice);
@@ -1033,27 +1010,17 @@ export default {
 						// 保留两位小数
 						submitData.unitPrice = round(submitData.unitPrice, 2);
 					}
-					
+
 					// 确保 estimatedValue 是数字类型（文档要求：number），保留两位小数
-					if (submitData.estimatedValue === '' || submitData.estimatedValue === null || submitData.estimatedValue === undefined) {
-						// 如果有数量和单价，计算金额
-						if (submitData.quantity && submitData.unitPrice) {
-							const result = multiply(Number(submitData.quantity), Number(submitData.unitPrice));
-							submitData.estimatedValue = round(result, 2);
-						} else {
-							this.$message.error('请输入预估价值/购买金额');
-							return;
-						}
+					// 不再依赖用户输入，而是基于数量和单价计算
+					if (submitData.quantity && submitData.unitPrice) {
+						const result = multiply(Number(submitData.quantity), Number(submitData.unitPrice));
+						submitData.estimatedValue = round(result, 2);
 					} else {
-						submitData.estimatedValue = Number(submitData.estimatedValue);
-						if (isNaN(submitData.estimatedValue)) {
-							this.$message.error('预估价值必须是有效数字');
-							return;
-						}
-						// 保留两位小数
-						submitData.estimatedValue = round(submitData.estimatedValue, 2);
+						this.$message.error('请输入数量和单价以计算金额');
+						return;
 					}
-					
+
 					// 字段长度限制（按照文档）
 					if (submitData.inMethod && submitData.inMethod.length > 255) {
 						this.$message.error('入库方式长度不能超过255个字符');
@@ -1075,12 +1042,7 @@ export default {
 						this.$message.error('收礼方式长度不能超过50个字符');
 						return;
 					}
-					
-					// 移除文档中不存在的字段（如果后端不支持）
-					// 注意：inventoryLocation, unit, unitPrice 在代码中使用，但文档中没有
-					// 如果后端实际支持这些字段，则保留；如果不支持，需要删除
-					// 这里先保留，如果后端报错再删除
-					
+
 					if (this.form.id != null) {
 						updateGiftIn(submitData)
 							.then(response => {
@@ -1109,6 +1071,7 @@ export default {
 				}
 			});
 		},
+
 		handleDelete(row) {
 			const ids = row.id || this.ids;
 			const count = Array.isArray(ids) ? ids.length : 1;

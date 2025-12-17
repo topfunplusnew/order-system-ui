@@ -121,7 +121,8 @@
 
 		<!--    查看银行卡组件-->
 		<keep-alive>
-			<DialogListShow :title="'司机银行卡信息'" :get-data="listBankAccount" :query-object="queryObject" :visible.sync="driverBankAccout">
+			<DialogListShow :title="'司机银行卡信息'" :get-data="listBankAccount" :query-object="queryObject" 
+				:company-info="currentCarInfo" :visible.sync="driverBankAccout">
 				<template #column>
 					<el-table-column label="账号类型" align="center" prop="acountsType" />
 					<el-table-column label="开户行" align="center" prop="bankName" />
@@ -260,7 +261,9 @@ export default {
 			queryCars: '',
 			// 查询对象
 			queryObject: {},
-			driverBankAccout: false
+			driverBankAccout: false,
+			// 当前选中的车辆信息，用于新增银行卡时自动填充
+			currentCarInfo: {}
 		};
 	},
 	// 展示与隐藏
@@ -309,6 +312,17 @@ export default {
 			console.log(`row`, row);
 			this.queryObject = {
 				companyId: row.id,
+				acountsType: '司机'
+			};
+			// 保存当前车辆信息，用于新增银行卡时填充
+			this.currentCarInfo = {
+				id: row.id,
+				companyId: row.id,
+				companyName: row.driver || '',
+				carNo: row.carNo || '',
+				acountsName: row.acountsName || row.driver || '',
+				bankNo: row.bankNo || '',
+				bankName: row.bankName || '',
 				acountsType: '司机'
 			};
 			// 查询该银行卡
