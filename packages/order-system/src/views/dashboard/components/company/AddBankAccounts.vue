@@ -107,7 +107,7 @@ export default {
 		// 监听传入的公司信息 自动将账户类型和id赋值
 		computedCompanyInfo: {
 			handler(val) {
-				console.log(val);
+				console.log(`传入类型`, val);
 			},
 			deep: true,
 			immediate: true
@@ -176,7 +176,8 @@ export default {
 							<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
 						</el-select>
 					</el-form-item>
-					<el-form-item label="公司名称" prop="companyName">
+					<!-- 如果是司机 就隐藏公司名称 -->
+					<el-form-item label="公司名称" prop="companyName" v-if="computedCompanyInfo.acountsType !== '司机'">
 						<el-row>
 							<el-col :span="24">
 								<el-input v-model="form.companyName" placeholder="请输入公司名称" />
@@ -184,13 +185,7 @@ export default {
 						</el-row>
 					</el-form-item>
 					<el-form-item label="户名" prop="acountsName">
-						<!--          如果是司机 那么就选择-->
-						<el-row v-if="form.acountsType === '司机'">
-							<el-col :span="20">
-								<el-input v-model="form.acountsName" placeholder="请输入户名" />
-							</el-col>
-						</el-row>
-						<el-row v-else>
+						<el-row>
 							<el-input v-model="form.acountsName" placeholder="请输入户名" />
 						</el-row>
 					</el-form-item>
