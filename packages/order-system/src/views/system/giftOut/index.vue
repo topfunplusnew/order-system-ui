@@ -73,7 +73,7 @@
 
 			<el-table-column v-if="columns[4].visible" label="物品名称" align="center" prop="itemName" width="120" show-overflow-tooltip />
 
-			<el-table-column v-if="columns[5].visible" label="规格" align="center" prop="unit" width="100" show-overflow-tooltip />
+			<el-table-column v-if="columns[5].visible" label="单位" align="center" prop="unit" width="100" show-overflow-tooltip />
 
 			<el-table-column v-if="columns[6].visible" label="数量" align="center" prop="quantity" width="80" show-overflow-tooltip />
 
@@ -98,8 +98,8 @@
 					<el-button v-hasPermi="['system:giftOut:edit']" size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)">修改</el-button>
 					<el-button v-hasPermi="['system:giftOut:remove']" size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)">删除</el-button>
 					<el-button size="mini" type="text" icon="el-icon-refresh-left" @click="handleReturn(scope.row)">退回</el-button>
-					<el-button size="mini" type="text" icon="el-icon-view" @click="handleViewInDetail(scope.row)">查看哪次入库信息</el-button>
-					<el-button size="mini" type="text" icon="el-icon-view" @click="handleViewReInDetail(scope.row)">查看再入库详情</el-button>
+					<el-button size="mini" type="text" icon="el-icon-view" @click="handleViewInDetail(scope.row)">查看初始入库信息</el-button>
+					<el-button size="mini" type="text" icon="el-icon-view" :disabled="!scope.row.hasReInDetails" @click="handleViewReInDetail(scope.row)">查看再入库详情</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -140,7 +140,7 @@
 						<el-form-item label="物品名称" prop="itemName">
 							<el-row :gutter="10">
 								<el-col :span="18">
-									<el-input v-model="form.itemName" placeholder="从入库记录选择或手动输入" maxlength="255" />
+									<el-input v-model="form.itemName" placeholder="从入库记录选择或手动输入" maxlength="255" disabled />
 								</el-col>
 								<el-col :span="4">
 									<SearchOption :limit-info="{}" :get-data="listGiftIn" query-info="itemName" query-label="物品名称" :query-name="itemName" @update:queryName="handleUpdateItemName" @commitBack="handleCommitBackItem">
@@ -154,7 +154,7 @@
 											<el-table-column label="物品名称" align="center" prop="itemName" min-width="120" show-overflow-tooltip />
 											<el-table-column label="单位" align="center" prop="unit" width="80" />
 											<el-table-column label="入库数量" align="center" prop="quantity" width="100" />
-											<el-table-column label="现在数量" align="center" prop="remainingQuantity" width="100" />
+											<el-table-column label="剩余量" align="center" prop="remainingQuantity" width="100" />
 											<el-table-column label="单价" align="center" prop="unitPrice" width="100">
 												<template #default="scope">
 													<span>{{ scope.row.unitPrice ? Number(scope.row.unitPrice).toFixed(2) : '-' }}</span>
@@ -174,8 +174,8 @@
 					</el-col>
 
 					<el-col :span="12">
-						<el-form-item label="规格" prop="unit">
-							<el-input v-model="form.unit" placeholder="从入库记录自动获取或手动输入" maxlength="255" />
+						<el-form-item label="单位" prop="unit">
+							<el-input v-model="form.unit" placeholder="从入库记录自动获取或手动输入" maxlength="255" disabled />
 						</el-form-item>
 					</el-col>
 
@@ -187,7 +187,7 @@
 
 					<el-col :span="12">
 						<el-form-item label="单价" prop="unitPrice">
-							<el-input v-model="form.unitPrice" placeholder="从入库记录自动获取或手动输入" />
+							<el-input v-model="form.unitPrice" placeholder="从入库记录自动获取或手动输入" disabled />
 						</el-form-item>
 					</el-col>
 
@@ -199,7 +199,9 @@
 
 					<el-col :span="12">
 						<el-form-item label="领用人" prop="handler">
-							<el-input v-model="form.handler" placeholder="请输入领用人" maxlength="20" />
+							<el-select v-model="form.handler" placeholder="请选择领用人" style="width: 100%" filterable clearable>
+								<el-option v-for="user in userList" :key="user.userId" :label="user.nickName || user.userName" :value="user.nickName || user.userName" />
+							</el-select>
 						</el-form-item>
 					</el-col>
 
@@ -218,17 +220,12 @@
 
 		<!-- 退回弹窗 -->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="退回礼品出库信息" :visible.sync="returnOpen" width="600px" append-to-body @close="handleReturnClose">
-			<el-form-item label="退回日期" prop="localDate">
-  <el-date-picker
-    v-model="returnForm.localDate"
-    type="date"
-    placeholder="请选择退回日期"
-    style="width: 100%"
-    value-format="yyyy-MM-dd"
-    clearable
-  />
-</el-form-item>
 			<el-form ref="returnForm" :model="returnForm" :rules="returnRules" label-width="120px">
+				<!-- 在退回弹窗中添加的 localDate 字段缺少绑定 -->
+				<el-form-item label="退回日期" prop="localDate">
+					<el-date-picker v-model="returnForm.localDate" type="date" placeholder="请选择退回日期" style="width: 100%" value-format="yyyy-MM-dd" clearable />
+				</el-form-item>
+
 				<el-form-item label="原本数量">
 					<el-input :value="returnForm.originalQuantity || 0" disabled />
 				</el-form-item>
@@ -243,89 +240,84 @@
 		</el-dialog>
 
 		<!-- 查看详情弹窗 -->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="viewDetailTitle" :visible.sync="viewDetailVisible" width="1000px"  append-to-body>
-			<!-- 查看哪次入库信息表格 -->
-			<el-table v-if="viewDetailTitle === '查看哪次入库信息' && viewDetailData && Array.isArray(viewDetailData) && viewDetailData.length > 0" :data="viewDetailData" border size="mini" max-height="500" v-loading="viewDetailLoading" style="width: 100%">
-<!--				<el-table-column label="ID" align="center" prop="id" width="80" show-overflow-tooltip />-->
-				<el-table-column label="日期" align="center" prop="inDate" width="120" show-overflow-tooltip>
-					<template #default="scope">
-						<span>{{ formatInDate(scope.row.inDate) }}</span>
-					</template>
-				</el-table-column>
-				<el-table-column label="入库方式" align="center" prop="inMethod" width="100" show-overflow-tooltip>
-					<template #default="scope">
-						<dict-tag :options="dict.type.order_gift_in_method" :value="scope.row.inMethod" />
-					</template>
-				</el-table-column>
-				<el-table-column label="存货地点" align="center" prop="inventoryLocation" width="120" show-overflow-tooltip />
-				<el-table-column label="对方信息" align="center" prop="fromInfo" width="120" show-overflow-tooltip />
-				<el-table-column label="物品名称" align="center" prop="itemName" width="120" show-overflow-tooltip />
-
-				<el-table-column label="单位" align="center" prop="unit" width="80" show-overflow-tooltip>
-					<template #default="scope">
-						<span>{{ scope.row.unit || '-' }}</span>
-					</template>
-				</el-table-column>
-				<el-table-column label="数量" align="center" prop="quantity" width="100" show-overflow-tooltip />
-				<el-table-column label="单价" align="center" prop="unitPrice" width="100" show-overflow-tooltip>
-					<template #default="scope">
-						<span>{{ scope.row.unitPrice ? Number(scope.row.unitPrice).toFixed(2) : '-' }}</span>
-					</template>
-				</el-table-column>
-				<el-table-column label="金额" align="center" prop="estimatedValue" width="100" show-overflow-tooltip>
-					<template #default="scope">
-						<span>{{ formatAmount(scope.row.estimatedValue, scope.row.quantity, scope.row.unitPrice) }}</span>
-					</template>
-				</el-table-column>
-				<el-table-column label="经办人" align="center" prop="handler" width="100" show-overflow-tooltip />
-<!--				<el-table-column label="付款时间" align="center" prop="payTime" width="160" show-overflow-tooltip>-->
-<!--					<template #default="scope">-->
-<!--						<span>{{ scope.row.payTime ? parseTime(scope.row.payTime, '{y}-{m}-{d} {h}:{i}:{s}') : '-' }}</span>-->
-<!--					</template>-->
-<!--				</el-table-column>-->
-				<el-table-column label="备注" align="center" prop="remark" show-overflow-tooltip />
-			</el-table>
-			<!-- 再入库详情表格 -->
-			<el-table v-else-if="viewDetailTitle === '查看再入库详情' && viewDetailData && Array.isArray(viewDetailData) && viewDetailData.length > 0" :data="viewDetailData" border size="mini" max-height="500" v-loading="viewDetailLoading">
-<!--				<el-table-column label="ID" align="center" prop="id" width="80" show-overflow-tooltip />-->
-<!--				<el-table-column label="入库日期" align="center" prop="inDate" width="120" show-overflow-tooltip>-->
-<!--					<template #default="scope">-->
-<!--						<span>{{ formatInDate(scope.row.inDate || scope.row.date || scope.row.inboundDate) }}</span>-->
-<!--					</template>-->
-<!--				</el-table-column>-->
-				<el-table-column label="入库方式" align="center" prop="inMethod" width="100" show-overflow-tooltip>
-					<template #default="scope">
-						<dict-tag :options="dict.type.order_gift_in_method" :value="scope.row.inMethod" />
-					</template>
-				</el-table-column>
-				<el-table-column label="存货地点" align="center" prop="inventoryLocation" width="120" show-overflow-tooltip />
-				<el-table-column label="对方信息" align="center" prop="fromInfo" width="120" show-overflow-tooltip />
-				<el-table-column label="物品名称" align="center" prop="itemName" width="120" show-overflow-tooltip />
-				<el-table-column label="单位" align="center" prop="unit" width="80" show-overflow-tooltip>
-					<template #default="scope">
-						<span>{{ scope.row.unit || '-' }}</span>
-					</template>
-				</el-table-column>
-				<el-table-column label="数量" align="center" prop="quantity" width="100" show-overflow-tooltip />
-				<el-table-column label="单价" align="center" prop="unitPrice" width="100" show-overflow-tooltip>
-					<template #default="scope">
-						<span>{{ scope.row.unitPrice ? Number(scope.row.unitPrice).toFixed(2) : '-' }}</span>
-					</template>
-				</el-table-column>
-				<el-table-column label="金额" align="center" prop="estimatedValue" width="100" show-overflow-tooltip>
-					<template #default="scope">
-						<span>{{ formatAmount(scope.row.estimatedValue || scope.row.amount || scope.row.value, scope.row.quantity, scope.row.unitPrice) }}</span>
-					</template>
-				</el-table-column>
-				<el-table-column label="经办人" align="center" prop="handler" width="100" show-overflow-tooltip />
-				<el-table-column label="备注" align="center" prop="remark" show-overflow-tooltip />
-			</el-table>
-			<div v-else-if="viewDetailData && !Array.isArray(viewDetailData)" style="padding: 20px">
-				<el-descriptions :column="2" border>
-					<el-descriptions-item v-for="(value, key) in viewDetailData" :key="key" :label="key">{{ value }}</el-descriptions-item>
-				</el-descriptions>
+		<!-- 查看详情弹窗 -->
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="viewDetailTitle" :visible.sync="viewDetailVisible" width="1000px" append-to-body>
+			<!-- 查看初始入库信息表格 -->
+			<div v-if="viewDetailTitle === '查看初始入库信息'">
+				<el-table v-if="viewDetailData && Array.isArray(viewDetailData) && viewDetailData.length > 0" :data="viewDetailData" border size="mini" max-height="500" v-loading="viewDetailLoading" style="width: 100%">
+					<el-table-column label="日期" align="center" prop="inDate" width="120" show-overflow-tooltip>
+						<template #default="scope">
+							<span>{{ formatInDate(scope.row.inDate) }}</span>
+						</template>
+					</el-table-column>
+					<el-table-column label="入库方式" align="center" prop="inMethod" width="100" show-overflow-tooltip>
+						<template #default="scope">
+							<dict-tag :options="dict.type.order_gift_in_method" :value="scope.row.inMethod" />
+						</template>
+					</el-table-column>
+					<el-table-column label="存货地点" align="center" prop="inventoryLocation" width="120" show-overflow-tooltip />
+					<el-table-column label="对方信息" align="center" prop="fromInfo" width="120" show-overflow-tooltip />
+					<el-table-column label="物品名称" align="center" prop="itemName" width="120" show-overflow-tooltip />
+					<el-table-column label="单位" align="center" prop="unit" width="80" show-overflow-tooltip>
+						<template #default="scope">
+							<span>{{ scope.row.unit || '-' }}</span>
+						</template>
+					</el-table-column>
+					<el-table-column label="数量" align="center" prop="quantity" width="100" show-overflow-tooltip />
+					<el-table-column label="单价" align="center" prop="unitPrice" width="100" show-overflow-tooltip>
+						<template #default="scope">
+							<span>{{ scope.row.unitPrice ? Number(scope.row.unitPrice).toFixed(2) : '-' }}</span>
+						</template>
+					</el-table-column>
+					<el-table-column label="金额" align="center" prop="estimatedValue" width="100" show-overflow-tooltip>
+						<template #default="scope">
+							<span>{{ formatAmount(scope.row.estimatedValue, scope.row.quantity, scope.row.unitPrice) }}</span>
+						</template>
+					</el-table-column>
+					<el-table-column label="经办人" align="center" prop="handler" width="100" show-overflow-tooltip />
+					<el-table-column label="备注" align="center" prop="remark" show-overflow-tooltip />
+				</el-table>
+				<div v-else-if="!viewDetailLoading && (!viewDetailData || (Array.isArray(viewDetailData) && viewDetailData.length === 0))" style="padding: 20px; text-align: center; color: #909399">暂无数据</div>
 			</div>
-			<div v-else-if="!viewDetailLoading && (!viewDetailData || (Array.isArray(viewDetailData) && viewDetailData.length === 0))" style="padding: 20px; text-align: center; color: #909399">暂无数据</div>
+
+			<!-- 再入库详情表格 -->
+			<div v-else-if="viewDetailTitle === '查看再入库详情'">
+				<el-table v-if="viewDetailData && Array.isArray(viewDetailData) && viewDetailData.length > 0" :data="viewDetailData" border size="mini" max-height="500" v-loading="viewDetailLoading">
+					<el-table-column label="入库方式" align="center" prop="inMethod" width="100" show-overflow-tooltip>
+						<template #default="scope">
+							<dict-tag :options="dict.type.order_gift_in_method" :value="scope.row.inMethod" />
+						</template>
+					</el-table-column>
+					<el-table-column label="存货地点" align="center" prop="inventoryLocation" width="120" show-overflow-tooltip />
+					<el-table-column label="对方信息" align="center" prop="fromInfo" width="120" show-overflow-tooltip />
+					<el-table-column label="物品名称" align="center" prop="itemName" width="120" show-overflow-tooltip />
+					<el-table-column label="单位" align="center" prop="unit" width="80" show-overflow-tooltip>
+						<template #default="scope">
+							<span>{{ scope.row.unit || '-' }}</span>
+						</template>
+					</el-table-column>
+					<el-table-column label="数量" align="center" prop="quantity" width="100" show-overflow-tooltip />
+					<el-table-column label="单价" align="center" prop="unitPrice" width="100" show-overflow-tooltip>
+						<template #default="scope">
+							<span>{{ scope.row.unitPrice ? Number(scope.row.unitPrice).toFixed(2) : '-' }}</span>
+						</template>
+					</el-table-column>
+					<el-table-column label="金额" align="center" prop="estimatedValue" width="100" show-overflow-tooltip>
+						<template #default="scope">
+							<span>{{ formatAmount(scope.row.estimatedValue || scope.row.amount || scope.row.value, scope.row.quantity, scope.row.unitPrice) }}</span>
+						</template>
+					</el-table-column>
+					<el-table-column label="经办人" align="center" prop="handler" width="100" show-overflow-tooltip />
+					<el-table-column label="备注" align="center" prop="remark" show-overflow-tooltip />
+				</el-table>
+				<div v-else-if="viewDetailData && !Array.isArray(viewDetailData)" style="padding: 20px">
+					<el-descriptions :column="2" border>
+						<el-descriptions-item v-for="(value, key) in viewDetailData" :key="key" :label="key">{{ value }}</el-descriptions-item>
+					</el-descriptions>
+				</div>
+				<div v-else-if="!viewDetailLoading && (!viewDetailData || (Array.isArray(viewDetailData) && viewDetailData.length === 0))" style="padding: 20px; text-align: center; color: #909399">暂无数据</div>
+			</div>
+
 			<div slot="footer" class="dialog-footer">
 				<el-button @click="viewDetailVisible = false">关 闭</el-button>
 			</div>
@@ -334,6 +326,7 @@
 </template>
 
 <script>
+import { listUser } from '@/api/system/user';
 import { listGiftOut, getGiftOut, delGiftOut, addGiftOut, updateGiftOut, returnGiftOut, getGiftOutReInDetail, getGiftOutInDetail, getGiftOutOutDetail } from '@/api/system/giftOut';
 import { parseTime } from '../../../utils/ruoyi';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
@@ -349,6 +342,7 @@ export default {
 	mixins: [mixin_printHTML, mixin_gift_out_fill],
 	data() {
 		return {
+			userList: [],
 			// 遮罩层
 			loading: true,
 			// 选中数组
@@ -455,7 +449,7 @@ export default {
 				{ key: 2, label: `出库地点`, visible: true },
 				{ key: 3, label: `领用原因`, visible: true },
 				{ key: 4, label: `物品名称`, visible: true },
-				{ key: 5, label: `规格`, visible: true },
+				{ key: 5, label: `单位`, visible: true },
 				{ key: 6, label: `数量`, visible: true },
 				{ key: 7, label: `单价`, visible: true },
 				{ key: 8, label: `金额`, visible: true },
@@ -472,7 +466,8 @@ export default {
 				totalAfterReturn: null,
 				inLocation: null,
 				remark: null,
-				handler: null
+				handler: null,
+				localDate: null
 			},
 			returnRules: {
 				quantity: [
@@ -507,6 +502,7 @@ export default {
 		};
 	},
 	created() {
+		this.getUsers();
 		this.getList();
 		this.updateDialogWidth();
 		window.addEventListener('resize', this.updateDialogWidth);
@@ -557,10 +553,22 @@ export default {
 			}
 
 			return response;
-		}
-		,
+		},
 		getGiftIn,
 		parseTime,
+		getUsers() {
+			// 这里需要根据你系统的用户API进行调整
+			// 示例使用 Ruoyi 的用户接口
+
+			listUser({ pageSize: 1000 })
+				.then(response => {
+					this.userList = response.rows || [];
+				})
+				.catch(error => {
+					console.error('获取用户列表失败:', error);
+					this.$message.error('获取用户列表失败');
+				});
+		},
 		// 已废弃：listGiftInWithRemaining，改为使用 listGift（规范5：出库选择物品时使用 /system/gift/list）
 		async listGiftInWithRemaining(query) {
 			try {
@@ -693,6 +701,7 @@ export default {
 			this.dialogWidth = window.innerWidth > 768 ? '600px' : '95%';
 		},
 		/** 查询礼品出库信息列表 */
+		/** 查询礼品出库信息列表 */
 		getList() {
 			this.loading = true;
 			this.queryParams.params = {};
@@ -702,10 +711,11 @@ export default {
 			}
 
 			listGiftOut(this.queryParams)
-				.then(response => {
+				.then(async response => {
 					const rows = (response && response.rows) || [];
-					// 自动计算金额：如果estimatedValue为空，根据数量和单价计算
-					this.giftOutList = rows.map(item => {
+					// 处理数据并检查每条记录是否有再入库详情
+					const processedRows = [];
+					for (const item of rows) {
 						if (!item.estimatedValue && item.quantity && item.unitPrice) {
 							const qty = Number(item.quantity) || 0;
 							const price = Number(item.unitPrice) || 0;
@@ -713,8 +723,11 @@ export default {
 								item.estimatedValue = round(multiply(qty, price), 2);
 							}
 						}
-						return item;
-					});
+						// 检查是否有再入库详情
+						item.hasReInDetails = await this.checkHasReInDetails(item.id);
+						processedRows.push(item);
+					}
+					this.giftOutList = processedRows;
 					this.total = (response && response.total) || 0;
 				})
 				.catch(error => {
@@ -724,6 +737,35 @@ export default {
 				.finally(() => {
 					this.loading = false;
 				});
+		},
+		/** 检查出库记录是否有再入库详情 */
+		/** 检查出库记录是否有再入库详情 */
+		async checkHasReInDetails(id) {
+			try {
+				const response = await getGiftOutOutDetail(id);
+				let data = null;
+				if (response) {
+					if (Array.isArray(response)) {
+						data = response;
+					} else if (Array.isArray(response.data)) {
+						data = response.data;
+					} else if (Array.isArray(response.rows)) {
+						data = response.rows;
+					} else if (response.data && Array.isArray(response.data.rows)) {
+						data = response.data.rows;
+					} else if (response.data && Array.isArray(response.data.data)) {
+						data = response.data.data;
+					} else if (response.data) {
+						data = Array.isArray(response.data) ? response.data : [response.data];
+					}
+				}
+				// 如果有数据则返回 true，否则返回 false
+				return data && data.length > 0;
+			} catch (error) {
+				// 出错时默认返回 false，按钮保持禁用状态
+				console.warn('检查再入库详情失败:', error);
+				return false;
+			}
 		},
 		/** 获取初始表单 */
 		getInitForm() {
@@ -1111,7 +1153,8 @@ export default {
 				totalAfterReturn: null,
 				inLocation: null,
 				remark: null,
-				handler: null
+				handler: null,
+				localDate: null
 			};
 		},
 
@@ -1156,7 +1199,8 @@ export default {
 
 					const submitData = {
 						id: Number(this.returnForm.id),
-						quantity: quantity
+						quantity: quantity,
+						localDate: this.returnForm.localDate // 确保包含 localDate 字段
 					};
 
 					console.log('提交退回数据:', submitData);
@@ -1241,7 +1285,7 @@ export default {
 					this.viewDetailLoading = false;
 				});
 		},
-		/** 查看哪次入库信息（根据出库 id 查询来源入库记录，可选功能） */
+		/** 查看初始入库信息（根据出库 id 查询来源入库记录，可选功能） */
 		handleViewInDetail(row) {
 			const id = Number(row.id);
 			if (!id || isNaN(id)) {
@@ -1250,7 +1294,7 @@ export default {
 			}
 			this.viewDetailLoading = true;
 			this.viewDetailVisible = true;
-			this.viewDetailTitle = '查看哪次入库信息';
+			this.viewDetailTitle = '查看初始入库信息';
 			this.viewDetailData = null;
 			getGiftOutInDetail(id)
 				.then(response => {

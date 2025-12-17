@@ -45,16 +45,14 @@ export function delGiftOut(id) {
 
 // 退回礼品出库信息
 export function returnGiftOut(data) {
-	const { id, quantity, inLocation, remark, handler } = data;
+	const { id, quantity, localDate } = data;
 	return request({
 		url: '/system/giftOut/reGiftStockOut',
 		method: 'put',
 		params: {
 			id: id,
 			quantity: quantity,
-			inLocation: inLocation,
-			remark: remark,
-			handler: handler
+			localDate: localDate
 		}
 	});
 }

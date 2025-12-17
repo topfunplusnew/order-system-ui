@@ -14,10 +14,6 @@
 				</el-tooltip>
 			</el-form-item>
 
-<!--			<el-form-item label="存货地点" prop="inventoryLocation">-->
-<!--				<el-input v-model="queryParams.inventoryLocation" placeholder="请输入存货地点" clearable @keyup.enter.native="handleQuery" />-->
-<!--			</el-form-item>-->
-
 			<el-form-item label="物品名称" prop="itemName">
 				<el-input v-model="queryParams.itemName" placeholder="请输入物品名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
@@ -106,8 +102,8 @@
 					<el-button v-hasPermi="['system:giftIn:edit']" size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)">修改</el-button>
 					<el-button v-hasPermi="['system:giftIn:remove']" size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)">删除</el-button>
 					<el-button size="mini" type="text" icon="el-icon-refresh-left" @click="handleReturn(scope.row)">退回</el-button>
-					<el-button size="mini" type="text" icon="el-icon-view" @click="handleViewReInDetail(scope.row)">查看再入库详情</el-button>
-					<el-button size="mini" type="text" icon="el-icon-view" @click="handleViewOutDetail(scope.row)">查看出库详情</el-button>
+					<el-button size="mini" type="text" icon="el-icon-view" :disabled="!canViewReInDetail(scope.row)" @click="handleViewReInDetail(scope.row)">查看再入库详情</el-button>
+					<el-button size="mini" type="text" icon="el-icon-view" :disabled="!canViewOutDetail(scope.row)" @click="handleViewOutDetail(scope.row)">查看出库详情</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -152,7 +148,6 @@
 								<el-col :span="18">
 									<el-input v-model="form.itemName" placeholder="手动输入" />
 								</el-col>
-								
 							</el-row>
 						</el-form-item>
 					</el-col>
@@ -181,15 +176,9 @@
 					<!-- 将原来的金额输入框替换为以下代码 -->
 					<el-col :span="12">
 						<el-form-item label="金额" prop="estimatedValue">
-							<el-input
-								v-model="form.estimatedValue"
-								placeholder="自动计算"
-								readonly
-								disabled
-							/>
+							<el-input v-model="form.estimatedValue" placeholder="自动计算" readonly disabled />
 						</el-form-item>
 					</el-col>
-
 
 					<!-- 经办人单独一行 -->
 					<el-col :span="24">
@@ -216,7 +205,11 @@
 		<!-- 退回弹窗 -->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="退回购入礼品信息" :visible.sync="returnOpen" width="600px" append-to-body @close="handleReturnClose">
 			<el-form ref="returnForm" :model="returnForm" :rules="returnRules" label-width="120px">
-				<el-form-item label="现在的数量">
+				<el-form-item label="退回时间" prop="localDate">
+					<el-date-picker v-model="returnForm.localDate" type="date" value-format="yyyy-MM-dd" placeholder="请选择退回时间" style="width: 100%"></el-date-picker>
+				</el-form-item>
+
+				<el-form-item label="剩余数量">
 					<el-input :value="returnForm.originalQuantity || 0" disabled />
 				</el-form-item>
 				<el-form-item label="退回数量" prop="quantity">
@@ -243,11 +236,6 @@
 			<!-- 再入库详情表格 -->
 			<el-table v-if="viewDetailTitle === '查看再入库详情' && viewDetailData && Array.isArray(viewDetailData) && viewDetailData.length > 0" :data="viewDetailData" border size="mini" max-height="500" v-loading="viewDetailLoading">
 				<el-table-column label="ID" align="center" prop="id" width="80" show-overflow-tooltip />
-<!--				<el-table-column label="日期" align="center" prop="inDate" width="120" show-overflow-tooltip>-->
-<!--					<template #default="scope">-->
-<!--						<span>{{ scope.row.inDate ? parseTime(scope.row.inDate, '{y}-{m}-{d}') : '-' }}</span>-->
-<!--					</template>-->
-<!--				</el-table-column>-->
 				<el-table-column label="入库方式" align="center" prop="inMethod" width="100" show-overflow-tooltip>
 					<template #default="scope">
 						<dict-tag :options="dict.type.order_gift_in_method" :value="scope.row.inMethod" />
@@ -281,7 +269,7 @@
 			</el-table>
 			<!-- 出库详情表格 -->
 			<el-table v-else-if="viewDetailTitle === '查看出库详情' && viewDetailData && Array.isArray(viewDetailData) && viewDetailData.length > 0" :data="viewDetailData" border size="mini" max-height="500" v-loading="viewDetailLoading">
-				<el-table-column label="ID" align="center" prop="id" width="80" show-overflow-tooltip />
+				<el-table-column v-if="false" label="ID" align="center" prop="id" width="80" />
 				<el-table-column label="出库日期" align="center" prop="outDate" width="120" show-overflow-tooltip>
 					<template #default="scope">
 						<span>{{ scope.row.outDate ? parseTime(scope.row.outDate, '{y}-{m}-{d}') : '-' }}</span>
@@ -293,7 +281,8 @@
 					</template>
 				</el-table-column>
 				<el-table-column label="出库地点" align="center" prop="outLocation" width="120" show-overflow-tooltip />
-				<el-table-column label="物品名称" align="center" prop="itemName"  show-overflow-tooltip />
+
+				<el-table-column label="物品名称" align="center" prop="itemName" show-overflow-tooltip />
 				<el-table-column label="单位" align="center" prop="unit" width="80" show-overflow-tooltip>
 					<template #default="scope">
 						<span>{{ scope.row.unit || '-' }}</span>
@@ -314,13 +303,15 @@
 						<span>{{ calculateDetailAmount(scope.row) }}</span>
 					</template>
 				</el-table-column>
+				<el-table-column label="经办人" align="center" prop="handler" width="100" show-overflow-tooltip />
+				<el-table-column label="备注" align="center" prop="remark" show-overflow-tooltip />
 			</el-table>
-			<div v-else-if="viewDetailData && !Array.isArray(viewDetailData)" style="padding: 20px;">
+			<div v-else-if="viewDetailData && !Array.isArray(viewDetailData)" style="padding: 20px">
 				<el-descriptions :column="2" border>
 					<el-descriptions-item v-for="(value, key) in viewDetailData" :key="key" :label="key">{{ value }}</el-descriptions-item>
 				</el-descriptions>
 			</div>
-			<div v-else-if="!viewDetailLoading && (!viewDetailData || (Array.isArray(viewDetailData) && viewDetailData.length === 0))" style="padding: 20px; text-align: center; color: #909399;">暂无数据</div>
+			<div v-else-if="!viewDetailLoading && (!viewDetailData || (Array.isArray(viewDetailData) && viewDetailData.length === 0))" style="padding: 20px; text-align: center; color: #909399">暂无数据</div>
 			<div slot="footer" class="dialog-footer">
 				<el-button @click="viewDetailVisible = false">关 闭</el-button>
 			</div>
@@ -344,6 +335,8 @@ export default {
 	components: { SearchOption },
 	data() {
 		return {
+			reInDetailMap: {}, // 存储每个入库记录是否有再入库详情
+			outDetailMap: {},
 			loading: true,
 			ids: [],
 			single: true,
@@ -355,81 +348,69 @@ export default {
 			open: false,
 			daterangeInDate: [],
 			itemName: '',
-		queryParams: {
-			pageNum: 1,
-			pageSize: 20,
-			inDate: null,
-			inMethod: null,
-			inventoryLocation: null,
-			fromInfo: null,
-			itemName: null,
-			handler: null,
-			remark: null,
-			receiveMethod: null
-		},
+			queryParams: {
+				pageNum: 1,
+				pageSize: 20,
+				inDate: null,
+				inMethod: null,
+				inventoryLocation: null,
+				fromInfo: null,
+				itemName: null,
+				handler: null,
+				remark: null,
+				receiveMethod: null
+			},
 			form: {},
-		rules: {
-			inDate: [{ required: true, message: '请选择入库日期', trigger: 'blur' }],
-			inMethod: [
-				{ required: true, message: '请选择入库方式', trigger: 'blur' },
-				{ max: 255, message: '入库方式长度不能超过255个字符', trigger: 'blur' }
-			],
-			inventoryLocation: [{ required: false, message: '请输入存货地点', trigger: 'blur' }],
-			fromInfo: [
-				{ required: false, message: '请输入对方信息', trigger: 'blur' },
-				{ max: 255, message: '对方信息长度不能超过255个字符', trigger: 'blur' }
-			],
-			itemName: [
-				{ required: true, message: '请输入物品名称', trigger: 'blur' },
-				{ max: 255, message: '物品名称长度不能超过255个字符', trigger: 'blur' }
-			],
-			unit: [{ required: false, message: '请选择单位', trigger: 'change' }],
-			// 入库数量：存储在 giftIn 表的 quantity 字段，表示一次性入库操作的总量
-			// 文档要求：integer, minimum: 1
-			quantity: [
-				{ required: true, message: '请输入入库数量', trigger: 'blur' },
-				{ validator: (rule, value, callback) => {
-					if (!value) {
-						callback(new Error('请输入入库数量'));
-						return;
+			rules: {
+				inDate: [{ required: true, message: '请选择入库日期', trigger: 'blur' }],
+				inMethod: [
+					{ required: true, message: '请选择入库方式', trigger: 'blur' },
+					{ max: 255, message: '入库方式长度不能超过255个字符', trigger: 'blur' }
+				],
+				inventoryLocation: [{ required: false, message: '请输入存货地点', trigger: 'blur' }],
+				fromInfo: [
+					{ required: false, message: '请输入对方信息', trigger: 'blur' },
+					{ max: 255, message: '对方信息长度不能超过255个字符', trigger: 'blur' }
+				],
+				itemName: [
+					{ required: true, message: '请输入物品名称', trigger: 'blur' },
+					{ max: 255, message: '物品名称长度不能超过255个字符', trigger: 'blur' }
+				],
+				unit: [{ required: false, message: '请选择单位', trigger: 'change' }],
+				// 入库数量：存储在 giftIn 表的 quantity 字段，表示一次性入库操作的总量
+				// 文档要求：integer, minimum: 1
+				quantity: [
+					{ required: true, message: '请输入入库数量', trigger: 'blur' },
+					{
+						validator: (rule, value, callback) => {
+							if (!value) {
+								callback(new Error('请输入入库数量'));
+								return;
+							}
+							const num = Number(value);
+							if (isNaN(num) || !Number.isInteger(num) || num < 1) {
+								callback(new Error('数量必须是大于等于1的整数'));
+								return;
+							}
+							callback();
+						},
+						trigger: 'blur'
 					}
-					const num = Number(value);
-					if (isNaN(num) || !Number.isInteger(num) || num < 1) {
-						callback(new Error('数量必须是大于等于1的整数'));
-						return;
-					}
-					callback();
-				}, trigger: 'blur' }
-			],
-			unitPrice: [
-				{ required: false, message: '请输入单价', trigger: 'blur' },
-				{ pattern: /^\d+(\.\d{1,2})?$/, message: '请输入有效的金额格式', trigger: 'blur' }
-			],
-			// estimatedValue: [
-			// 	{ required: true, message: '请输入预估价值/购买金额', trigger: 'blur' },
-			// 	{ validator: (rule, value, callback) => {
-			// 		if (value === null || value === undefined || value === '') {
-			// 			callback(new Error('请输入预估价值/购买金额'));
-			// 			return;
-			// 		}
-			// 		const num = Number(value);
-			// 		if (isNaN(num)) {
-			// 			callback(new Error('预估价值必须是有效数字'));
-			// 			return;
-			// 		}
-			// 		callback();
-			// 	}, trigger: 'blur' }
-			// ],
-			handler: [
-				{ required: true, message: '请输入经办人', trigger: 'blur' },
-				{ max: 20, message: '经办人长度不能超过20个字符', trigger: 'blur' }
-			],
-			receiveMethod: [
-				{ required: false, message: '请输入收礼方式', trigger: 'blur' },
-				{ max: 50, message: '收礼方式长度不能超过50个字符', trigger: 'blur' }
-			],
-			remark: [{ required: false, message: '请输入备注', trigger: 'blur' }]
-		},
+				],
+				unitPrice: [
+					{ required: false, message: '请输入单价', trigger: 'blur' },
+					{ pattern: /^\d+(\.\d{1,2})?$/, message: '请输入有效的金额格式', trigger: 'blur' }
+				],
+				handler: [
+					{ required: true, message: '请输入经办人', trigger: 'blur' },
+					{ max: 20, message: '经办人长度不能超过20个字符', trigger: 'blur' }
+				],
+				receiveMethod: [
+					{ required: false, message: '请输入收礼方式', trigger: 'blur' },
+					{ max: 50, message: '收礼方式长度不能超过50个字符', trigger: 'blur' }
+				],
+				remark: [{ required: false, message: '请输入备注', trigger: 'blur' }]
+			},
 			columns: [
 				{ key: 0, label: `日期`, visible: true },
 				{ key: 1, label: `入库方式`, visible: true },
@@ -442,7 +423,6 @@ export default {
 				{ key: 8, label: `金额`, visible: true },
 				{ key: 9, label: `经办人`, visible: true }
 			],
-			// companyType: '供应商',
 			dialogWidth: window.innerWidth > 768 ? '600px' : '95%',
 			viewDetailVisible: false,
 			viewDetailTitle: '',
@@ -453,29 +433,28 @@ export default {
 			returnRules: {
 				quantity: [
 					{ required: true, message: '请输入退回数量', trigger: 'blur' },
-					{ validator: (rule, value, callback) => {
-						if (!value) {
-							callback(new Error('请输入退回数量'));
-							return;
-						}
-						const num = Number(value);
-						if (isNaN(num) || !Number.isInteger(num) || num < 1) {
-							callback(new Error('退回数量必须是大于等于1的整数'));
-							return;
-						}
-						callback();
-					}, trigger: 'blur' }
+					{
+						validator: (rule, value, callback) => {
+							if (!value) {
+								callback(new Error('请输入退回数量'));
+								return;
+							}
+							const num = Number(value);
+							if (isNaN(num) || !Number.isInteger(num) || num < 1) {
+								callback(new Error('退回数量必须是大于等于1的整数'));
+								return;
+							}
+							callback();
+						},
+						trigger: 'blur'
+					}
 				],
 				outLocation: [
 					{ required: true, message: '请输入出库地点', trigger: 'blur' },
 					{ max: 255, message: '出库地点长度不能超过255个字符', trigger: 'blur' }
 				],
-				handler: [
-					{ max: 20, message: '经办人长度不能超过20个字符', trigger: 'blur' }
-				],
-				remark: [
-					{ required: true, message: '请输入备注', trigger: 'blur' }
-				]
+				handler: [{ max: 20, message: '经办人长度不能超过20个字符', trigger: 'blur' }],
+				remark: [{ required: true, message: '请输入备注', trigger: 'blur' }]
 			}
 		};
 	},
@@ -483,8 +462,6 @@ export default {
 		this.getList();
 		this.updateDialogWidth();
 		window.addEventListener('resize', this.updateDialogWidth);
-		// 调试：检查字典数据是否加载
-
 	},
 	beforeDestroy() {
 		window.removeEventListener('resize', this.updateDialogWidth);
@@ -516,14 +493,18 @@ export default {
 				this.queryParams.params['beginInDate'] = this.daterangeInDate[0] + ' 00:00:00';
 				this.queryParams.params['endInDate'] = this.daterangeInDate[1] + ' 23:59:59';
 			}
-			// 文档中查询接口的参数都是可选的,不需要强制必填
 
 			try {
 				// 1. 获取入库列表
 				const inResponse = await listGiftIn(this.queryParams);
-				let inList = (inResponse && inResponse.rows) || [];
 
-				//  自动计算金额（修复金额列不显示的真正原因）
+				if (!inResponse) {
+					throw new Error('接口返回数据为空');
+				}
+
+				let inList = inResponse.rows || [];
+
+				// 自动计算金额
 				inList = inList.map(item => {
 					if (!item.estimatedValue) {
 						const qty = Number(item.quantity) || 0;
@@ -533,69 +514,95 @@ export default {
 					return item;
 				});
 
-				// 2. 获取所有出库记录（通过入库ID查询每个入库记录对应的出库记录）
+				// 2. 获取所有出库记录
 				let outList = [];
 				try {
 					outList = await this.getAllOutList(inList);
+					// 更新出库详情映射
+					this.outDetailMap = {};
+					outList.forEach(item => {
+						if (item.inId) {
+							this.$set(this.outDetailMap, item.inId, true);
+						}
+					});
 				} catch (error) {
 					console.warn('获取出库列表失败，将跳过出库数量计算:', error);
+					this.$message.warning('部分出库数据加载失败');
 				}
 
-				// 3. 获取当前页的退回记录（退回 = 再入库，通过再入库详情接口获取）
+				// 3. 获取当前页的退回记录（再入库记录）
 				let retList = [];
 				try {
 					retList = await this.getAllReturnList(inList);
+					// 更新再入库详情映射
+					this.reInDetailMap = {};
+					retList.forEach(item => {
+						if (item.inId) {
+							this.$set(this.reInDetailMap, item.inId, true);
+						}
+					});
 				} catch (error) {
 					console.warn('获取退回列表失败，将跳过退回数量计算:', error);
+					this.$message.warning('部分退回数据加载失败');
 				}
 
-				// 4. 计算剩余数量：剩余数量 = 入库数量 - 出库数量 + 退回数量（退回 = 再入库）
+				// 4. 计算剩余数量
 				this.giftInList = this.calculateRemaining(inList, outList, retList);
-				this.total = (inResponse && inResponse.total) || 0;
+				this.total = inResponse.total || 0;
 
 				// 调试输出
 				if (this.giftInList.length > 0) {
 					console.log('✓ 最终返回的数据示例:', this.giftInList[0]);
-					console.log('✓ 已出库数量字段值:', this.giftInList[0].outQuantity);
-					// 检查所有记录的 outQuantity 字段
-					const hasOutQuantity = this.giftInList.some(item => item.outQuantity !== undefined && item.outQuantity !== null);
-					console.log('✓ 是否有记录包含 outQuantity 字段:', hasOutQuantity);
-					if (hasOutQuantity) {
-						const outQuantityList = this.giftInList.map(item => ({
-							id: item.id,
-							itemName: item.itemName,
-							outQuantity: item.outQuantity
-						}));
-						console.log('✓ 所有记录的已出库数量:', outQuantityList);
-					}
 				}
 			} catch (error) {
-				this.$message.error('数据加载失败，请稍后重试');
 				console.error('获取礼品入库列表失败:', error);
+
+				// 更详细的错误处理
+				if (error && error.response) {
+					const status = error.response.status;
+					const errorMsg = error.response.data?.msg || error.response.data?.message;
+
+					switch (status) {
+						case 500:
+							this.$message.error('服务器内部错误，请联系管理员');
+							break;
+						case 403:
+							this.$message.error('权限不足，无法访问数据');
+							break;
+						default:
+							this.$message.error(errorMsg || `数据加载失败 (${status})`);
+					}
+				} else if (error && error.request) {
+					this.$message.error('网络连接异常，请检查网络设置');
+				} else {
+					this.$message.error(error.message || '数据加载失败，请稍后重试');
+				}
 			} finally {
 				this.loading = false;
 			}
 		},
-		// 获取所有出库记录（通过入库ID查询每个入库记录对应的出库记录）
+
+		// 获取所有出库记录
 		async getAllOutList(inList) {
-			// 遍历当前页的入库记录，获取每个记录的出库详情
-			const promises = inList.map(async (inItem) => {
+			const promises = inList.map(async inItem => {
 				try {
 					const response = await getGiftInOutDetail(inItem.id);
 					let data = [];
 					if (response) {
 						if (Array.isArray(response)) {
 							data = response;
-						} else if (Array.isArray(response.data)) {
-							data = response.data;
+						} else if (response.data) {
+							if (Array.isArray(response.data)) {
+								data = response.data;
+							} else if (Array.isArray(response.data.rows)) {
+								data = response.data.rows;
+							} else if (Array.isArray(response.data.data)) {
+								data = response.data.data;
+							} else {
+								data = [response.data];
+							}
 						} else if (Array.isArray(response.rows)) {
 							data = response.rows;
-						} else if (response.data && Array.isArray(response.data.rows)) {
-							data = response.data.rows;
-						} else if (response.data && Array.isArray(response.data.data)) {
-							data = response.data.data;
-						} else if (response.data) {
-							data = Array.isArray(response.data) ? response.data : [response.data];
 						}
 					}
 					// 为每条出库记录添加 inId 字段，用于关联入库记录
@@ -616,36 +623,36 @@ export default {
 			const results = await Promise.all(promises);
 			return results.flat();
 		},
-		// 获取所有退回记录（退回 = 再入库，所以通过再入库详情接口获取）
+		// 获取所有退回记录
 		async getAllReturnList(inList) {
-			// 遍历当前页的入库记录，获取每个记录的再入库详情
-			// 注意：退回操作会作为再入库记录显示在"查看再入库详情"中
-			const promises = inList.map(async (inItem) => {
+			const promises = inList.map(async inItem => {
 				try {
 					const response = await getGiftInReInDetail(inItem.id);
 					let data = [];
 					if (response) {
 						if (Array.isArray(response)) {
 							data = response;
-						} else if (Array.isArray(response.data)) {
-							data = response.data;
+						} else if (response.data) {
+							if (Array.isArray(response.data)) {
+								data = response.data;
+							} else if (Array.isArray(response.data.rows)) {
+								data = response.data.rows;
+							} else if (Array.isArray(response.data.data)) {
+								data = response.data.data;
+							} else {
+								data = [response.data];
+							}
 						} else if (Array.isArray(response.rows)) {
 							data = response.rows;
-						} else if (response.data && Array.isArray(response.data.rows)) {
-							data = response.data.rows;
-						} else if (response.data && Array.isArray(response.data.data)) {
-							data = response.data.data;
-						} else if (response.data) {
-							data = Array.isArray(response.data) ? response.data : [response.data];
 						}
 					}
-					// 为每条再入库记录（包含退回记录）添加 inId 字段，用于关联入库记录
+					// 为每条再入库记录添加 inId 字段
 					return data.map(item => ({
 						...item,
 						inId: inItem.id
 					}));
 				} catch (error) {
-					// 如果接口404或不存在，静默处理，不影响列表加载
+					// 如果接口404或不存在，静默处理
 					if (error && error.response && error.response.status === 404) {
 						console.warn(`入库记录 ${inItem.id} 的再入库详情接口不存在，跳过退回数据获取`);
 					} else {
@@ -658,39 +665,24 @@ export default {
 			return results.flat();
 		},
 		// 计算剩余数量
-		// 公式：剩余数量 = 入库数量 - 出库数量 + 退回数量（退回 = 再入库）
 		calculateRemaining(inList, outList, retList) {
-			console.log('🔍 开始计算已出库数量，入库记录数:', inList.length, '出库记录数:', outList.length);
-			
 			return inList.map(inItem => {
 				const id = inItem.id;
 				const idStr = String(id);
 
-				// 计算总出库数量（强关联：显示已出库数量）
-				// 匹配出库记录中 inId 等于当前入库记录 id 的所有记录
+				// 计算总出库数量
 				const matchedOutList = outList.filter(o => {
 					const sourceId = o && o.inId;
 					const sourceIdStr = sourceId ? String(sourceId) : null;
-					const isMatch = sourceId && sourceIdStr === idStr;
-					
-					// 详细日志：显示匹配过程
-					if (id === 8 || id === 7 || id === 5 || id === 4 || id === 3) {
-						console.log(`🔍 匹配检查: 入库ID=${id}(${typeof id}), 出库ID=${o?.id}, 出库inId=${sourceId}(${typeof sourceId}), 是否匹配=${isMatch}`);
-					}
-					
-					if (isMatch) {
-						console.log(`✓ 找到匹配的出库记录: 入库ID=${id}, 出库ID=${o.id}, 出库数量=${o.quantity || o.outQuantity || 0}`);
-					}
-					return isMatch;
+					return sourceId && sourceIdStr === idStr;
 				});
-				
+
 				const outQty = matchedOutList.reduce((sum, o) => {
 					const qty = Number(o.quantity || o.outQuantity || 0);
-					console.log(`  累加出库数量: ${qty}, 当前总和: ${sum}, 累加后: ${add(sum, qty)}`);
 					return add(sum, qty);
 				}, 0);
 
-				// 计算总退回数量（退回 = 再入库，所以从再入库详情中获取）
+				// 计算总退回数量
 				const retQty = retList
 					.filter(r => r.inId && String(r.inId) === String(id))
 					.reduce((sum, r) => {
@@ -698,17 +690,15 @@ export default {
 						return add(sum, qty);
 					}, 0);
 
-				// 入库数量（第一次入库的数量）
+				// 入库数量
 				const inQty = Number(inItem.quantity || 0);
 
-				// 强关联：在入库列表中显示已出库数量
+				// 设置已出库数量
 				inItem.outQuantity = outQty;
-				
-				// 计算剩余数量：剩余数量 = 入库数量 - 出库数量 + 退回数量（退回 = 再入库）
+
+				// 计算剩余数量
 				const remainingQty = subtract(add(inQty, retQty), outQty);
 				inItem.remainingQuantity = remainingQty;
-				
-				console.log(`📊 入库记录 ID=${id}, 物品=${inItem.itemName}, 入库数量=${inQty}, 已出库数量=${outQty}, 退回数量=${retQty}, 剩余数量=${remainingQty}`);
 
 				return inItem;
 			});
@@ -722,8 +712,6 @@ export default {
 				fromInfo: null,
 				itemName: null,
 				unit: null,
-				// 入库数量 (quantity)：存储在 giftIn 表的 quantity 字段，表示一次性入库操作的总量
-				// 文档要求：integer, minimum: 1
 				quantity: null,
 				unitPrice: '',
 				estimatedValue: '',
@@ -744,13 +732,13 @@ export default {
 				quantity: null,
 				outLocation: null,
 				handler: null,
-				remark: null
+				remark: null,
+				localDate: null
 			};
 		},
 		calculateReturnTotal() {
 			const originalQty = Number(this.returnForm.originalQuantity) || 0;
 			const returnQty = Number(this.returnForm.quantity) || 0;
-			// 退回后总数 = 原始数量 + 退回数量（因为退回是增加库存）
 			const totalAfterReturn = originalQty + returnQty;
 			this.$set(this.returnForm, 'totalAfterReturn', totalAfterReturn);
 		},
@@ -761,54 +749,33 @@ export default {
 		handleClose() {
 			this.$nextTick(() => {
 				this.form = this.getInitForm();
-				// this.companyType = '供应商';
 				this.$refs.form?.resetFields();
 			});
 		},
 		reset() {
 			this.form = this.getInitForm();
-			// this.companyType = '供应商';
 			this.$refs.form?.resetFields();
 		},
 		handleUnitPriceInput() {
-			// 输入时触发金额计算
 			this.calculateAmount();
 		},
 		formatUnitPrice() {
-			// 失去焦点时格式化为两位小数
 			if (this.form.unitPrice !== null && this.form.unitPrice !== undefined && this.form.unitPrice !== '') {
 				const num = Number(this.form.unitPrice);
 				if (!isNaN(num)) {
 					this.$set(this.form, 'unitPrice', round(num, 2).toFixed(2));
-					// 格式化后重新计算金额
 					this.calculateAmount();
 				}
 			}
 		},
-		handleAmountInput() {
-			// 手动输入金额时不自动计算
-		},
-		formatAmount() {
-			// 失去焦点时格式化为两位小数
-			if (this.form.estimatedValue !== null && this.form.estimatedValue !== undefined && this.form.estimatedValue !== '') {
-				const num = Number(this.form.estimatedValue);
-				if (!isNaN(num)) {
-					this.$set(this.form, 'estimatedValue', round(num, 2).toFixed(2));
-				}
-			}
-		},
 		calculateAmount() {
-			// 根据数量和单价自动计算金额
-			// 文档要求：quantity 是 integer, estimatedValue 是 number
 			const quantity = Number(this.form.quantity) || 0;
 			const unitPrice = Number(this.form.unitPrice) || 0;
 
 			if (quantity > 0 && unitPrice > 0) {
 				const result = multiply(quantity, unitPrice);
-				// 文档要求 estimatedValue 是 number 类型，显示时保留两位小数
 				this.$set(this.form, 'estimatedValue', round(result, 2).toFixed(2));
 			} else if (!this.form.estimatedValue || this.form.estimatedValue === '' || this.form.estimatedValue === 0 || this.form.estimatedValue === '0.00') {
-				// 如果金额为空或0，且无法计算，则设为空字符串
 				this.$set(this.form, 'estimatedValue', '');
 			}
 		},
@@ -828,28 +795,22 @@ export default {
 		},
 		handleAdd() {
 			this.form = this.getInitForm();
-			// this.companyType = '供应商';
 			this.open = true;
 			this.title = '添加购入礼品信息';
 		},
 		formatCurrency(value) {
-			// 处理空值和无效值
 			if (value === null || value === undefined || value === '' || value === 'null' || value === 'undefined') {
 				return '-';
 			}
 
-			// 转换为数字
 			const numValue = typeof value === 'string' ? parseFloat(value) : Number(value);
 
-			// 检查是否为有效数字
 			if (isNaN(numValue)) {
 				return '-';
 			}
 
-			// 返回格式化的金额
 			return numValue.toFixed(2);
 		},
-		// 计算金额：优先使用 estimatedValue，否则根据数量和单价计算
 		calculateDetailAmount(row) {
 			if (row.estimatedValue !== null && row.estimatedValue !== undefined && row.estimatedValue !== '') {
 				return this.formatCurrency(row.estimatedValue);
@@ -878,7 +839,7 @@ export default {
 						this.$set(this.form, 'inDate', formattedDate);
 					}
 
-					// 处理金额数据 - 文档要求是 number 类型，显示时保留两位小数
+					// 处理金额数据
 					if (this.form.estimatedValue !== null && this.form.estimatedValue !== undefined) {
 						const num = Number(this.form.estimatedValue);
 						if (!isNaN(num)) {
@@ -890,7 +851,7 @@ export default {
 						this.$set(this.form, 'estimatedValue', '');
 					}
 
-					// 处理单价数据 - 显示时保留两位小数
+					// 处理单价数据
 					if (this.form.unitPrice !== null && this.form.unitPrice !== undefined) {
 						const num = Number(this.form.unitPrice);
 						if (!isNaN(num)) {
@@ -915,14 +876,9 @@ export default {
 						this.calculateAmount();
 					}
 
-					// 兼容旧数据：如果有 storeLocation，转换为 inventoryLocation
+					// 兼容旧数据
 					if (this.form.storeLocation && !this.form.inventoryLocation) {
 						this.$set(this.form, 'inventoryLocation', this.form.storeLocation);
-					}
-
-					// 编辑时，如果有 fromInfo，同步到 companyName 用于回显
-					if (this.form.fromInfo && !this.form.companyName) {
-						this.$set(this.form, 'companyName', this.form.fromInfo);
 					}
 
 					this.$nextTick(() => {
@@ -935,37 +891,28 @@ export default {
 					console.error('获取礼品入库信息失败:', error);
 				});
 		},
-		/** 格式化日期时间 */
 		formatDateTime(dateTime) {
 			if (!dateTime) return '';
-			// 如果已经是字符串格式 yyyy-MM-dd，直接返回
 			if (typeof dateTime === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dateTime)) {
 				return dateTime;
 			}
-			// 如果是字符串格式 yyyy-MM-dd HH:mm:ss，提取日期部分
 			if (typeof dateTime === 'string' && /^\d{4}-\d{2}-\d{2}/.test(dateTime)) {
-				// 提取日期部分（yyyy-MM-dd）
 				const datePart = dateTime.split(' ')[0];
 				if (/^\d{4}-\d{2}-\d{2}$/.test(datePart)) {
 					return datePart;
 				}
-				// 尝试解析并格式化
 				const date = new Date(dateTime.replace(/-/g, '/'));
 				if (!isNaN(date.getTime())) {
 					return this.parseTime(date, '{y}-{m}-{d}');
 				}
 			}
-			// 如果是时间戳，转换为字符串格式
 			if (typeof dateTime === 'number') {
-				// 判断是秒级还是毫秒级时间戳
 				const timestamp = dateTime.toString().length === 10 ? dateTime * 1000 : dateTime;
 				return this.parseTime(timestamp, '{y}-{m}-{d}');
 			}
-			// 如果是 Date 对象，转换为字符串格式
 			if (dateTime instanceof Date) {
 				return this.parseTime(dateTime, '{y}-{m}-{d}');
 			}
-			// 尝试解析字符串日期
 			const date = new Date(dateTime);
 			if (!isNaN(date.getTime())) {
 				return this.parseTime(date, '{y}-{m}-{d}');
@@ -975,44 +922,36 @@ export default {
 		submitForm() {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
-					// 总是根据数量和单价计算金额，无视用户输入
 					this.calculateAmount();
 
-					// 创建提交数据副本，严格按照文档字段提交
 					const submitData = JSON.parse(JSON.stringify(this.form));
 
-					// 移除前端临时字段
 					delete submitData.companyName;
 
-					// 确保必填字段符合文档要求
-					// 文档必填：inDate, inMethod, itemName, quantity, estimatedValue, handler
-					if (!submitData.inDate || !submitData.inMethod || !submitData.itemName ||
-						!submitData.quantity || submitData.estimatedValue === null || submitData.estimatedValue === undefined ||
-						!submitData.handler) {
+					// 确保必填字段符合要求
+					if (!submitData.inDate || !submitData.inMethod || !submitData.itemName || !submitData.quantity || submitData.estimatedValue === null || submitData.estimatedValue === undefined || !submitData.handler) {
 						this.$message.error('请填写所有必填字段');
 						return;
 					}
 
-					// 确保 quantity 是整数且 >= 1（文档要求：integer, minimum: 1）
+					// 确保 quantity 是整数且 >= 1
 					submitData.quantity = parseInt(submitData.quantity);
 					if (isNaN(submitData.quantity) || submitData.quantity < 1) {
 						this.$message.error('数量必须是大于等于1的整数');
 						return;
 					}
 
-					// 处理单价：转换为数字类型，保留两位小数
+					// 处理单价
 					if (submitData.unitPrice !== null && submitData.unitPrice !== undefined && submitData.unitPrice !== '') {
 						submitData.unitPrice = Number(submitData.unitPrice);
 						if (isNaN(submitData.unitPrice)) {
 							this.$message.error('单价必须是有效数字');
 							return;
 						}
-						// 保留两位小数
 						submitData.unitPrice = round(submitData.unitPrice, 2);
 					}
 
-					// 确保 estimatedValue 是数字类型（文档要求：number），保留两位小数
-					// 不再依赖用户输入，而是基于数量和单价计算
+					// 确保 estimatedValue 是数字类型
 					if (submitData.quantity && submitData.unitPrice) {
 						const result = multiply(Number(submitData.quantity), Number(submitData.unitPrice));
 						submitData.estimatedValue = round(result, 2);
@@ -1021,7 +960,7 @@ export default {
 						return;
 					}
 
-					// 字段长度限制（按照文档）
+					// 字段长度限制
 					if (submitData.inMethod && submitData.inMethod.length > 255) {
 						this.$message.error('入库方式长度不能超过255个字符');
 						return;
@@ -1071,7 +1010,6 @@ export default {
 				}
 			});
 		},
-
 		handleDelete(row) {
 			const ids = row.id || this.ids;
 			const count = Array.isArray(ids) ? ids.length : 1;
@@ -1098,10 +1036,8 @@ export default {
 		handleReturn(row) {
 			this.returnForm = this.getInitReturnForm();
 			this.returnForm.id = row.id;
-			// 使用剩余数量（现在的数量）作为原始数量
 			const currentQty = Number(row.remainingQuantity !== undefined ? row.remainingQuantity : row.quantity) || 0;
 			this.$set(this.returnForm, 'originalQuantity', currentQty);
-			// 初始化退回后总数等于现在的数量
 			this.$set(this.returnForm, 'totalAfterReturn', currentQty);
 			this.returnOpen = true;
 		},
@@ -1114,13 +1050,13 @@ export default {
 		submitReturnForm() {
 			this.$refs['returnForm'].validate(valid => {
 				if (valid) {
-					// 创建提交数据副本
 					const submitData = {
 						id: Number(this.returnForm.id),
 						quantity: parseInt(this.returnForm.quantity),
 						outLocation: this.returnForm.outLocation || '',
 						handler: this.returnForm.handler || '',
-						remark: this.returnForm.remark || ''
+						remark: this.returnForm.remark || '',
+						localDate: this.returnForm.localDate
 					};
 
 					// 验证必填字段
@@ -1151,7 +1087,6 @@ export default {
 						return;
 					}
 
-					console.log('提交退回数据:', submitData);
 					returnGiftIn(submitData)
 						.then(response => {
 							this.$modal.msgSuccess('退回成功');
@@ -1172,59 +1107,80 @@ export default {
 				}
 			});
 		},
+		// 判断是否可以查看再入库详情
+		// 判断是否可以查看再入库详情
+		canViewReInDetail(row) {
+			// 检查是否有再入库详情数据
+			return !!this.reInDetailMap[row.id];
+		},
+
+		// 判断是否可以查看出库详情
+		canViewOutDetail(row) {
+			// 检查是否有出库详情数据
+			return !!this.outDetailMap[row.id];
+		},
 		handleViewReInDetail(row) {
 			const id = Number(row.id);
 			if (!id || isNaN(id)) {
 				this.$message.error('无效的入库ID');
 				return;
 			}
+
 			this.viewDetailLoading = true;
 			this.viewDetailVisible = true;
 			this.viewDetailTitle = '查看再入库详情';
 			this.viewDetailData = [];
+
 			getGiftInReInDetail(id)
 				.then(response => {
-					console.log('再入库详情接口响应:', response);
-					// 处理多种可能的响应结构
-					let data = null;
+					let data = [];
 					if (response) {
 						if (Array.isArray(response)) {
 							data = response;
-						} else if (Array.isArray(response.data)) {
-							data = response.data;
+						} else if (response.data) {
+							if (Array.isArray(response.data)) {
+								data = response.data;
+							} else if (Array.isArray(response.data.rows)) {
+								data = response.data.rows;
+							} else if (Array.isArray(response.data.data)) {
+								data = response.data.data;
+							} else {
+								data = [response.data];
+							}
 						} else if (Array.isArray(response.rows)) {
 							data = response.rows;
-						} else if (response.data && Array.isArray(response.data.rows)) {
-							data = response.data.rows;
-						} else if (response.data && Array.isArray(response.data.data)) {
-							data = response.data.data;
-						} else if (response.data) {
-							data = Array.isArray(response.data) ? response.data : [response.data];
 						}
 					}
-					this.viewDetailData = data || [];
-					console.log('解析后的再入库详情数据:', this.viewDetailData);
-					// 调试：打印第一条数据的字段名
-					if (this.viewDetailData && this.viewDetailData.length > 0) {
-						console.log('第一条数据的字段:', Object.keys(this.viewDetailData[0]));
-						console.log('第一条数据的数量字段值:', this.viewDetailData[0].quantity, this.viewDetailData[0]);
-					}
+
+					this.viewDetailData = data;
+
 					if (!this.viewDetailData || this.viewDetailData.length === 0) {
-						this.$message.warning('暂无再入库详情数据');
+						this.$message.info('暂无再入库详情数据');
 					}
 				})
 				.catch(error => {
 					console.error('获取再入库详情失败:', error);
+
 					if (error && error.response) {
-						const errorMsg = error.response.data?.msg || error.response.data?.message || '获取再入库详情失败';
-						if (error.response.status === 404) {
-							this.$message.warning('该接口暂未实现，请联系后端开发人员');
-						} else {
-							this.$message.error(errorMsg);
+						const status = error.response.status;
+						const errorMsg = error.response.data?.msg || error.response.data?.message;
+
+						switch (status) {
+							case 404:
+								this.$message.info('暂无再入库详情数据');
+								break;
+							case 500:
+								this.$message.error('服务器内部错误，请联系管理员');
+								break;
+							default:
+								this.$message.error(errorMsg || `获取再入库详情失败 (${status})`);
 						}
+					} else if (error && error.request) {
+						this.$message.error('网络连接异常，请检查网络设置');
 					} else {
-						this.$message.error('获取再入库详情失败，请稍后重试');
+						this.$message.error(error.message || '获取再入库详情失败');
 					}
+
 					this.viewDetailData = [];
 				})
 				.finally(() => {
@@ -1233,52 +1189,66 @@ export default {
 		},
 		handleViewOutDetail(row) {
 			const id = row.id;
+			if (!id) {
+				this.$message.error('无效的入库ID');
+				return;
+			}
+
 			this.viewDetailLoading = true;
 			this.viewDetailVisible = true;
 			this.viewDetailTitle = '查看出库详情';
+			this.viewDetailData = [];
+
 			getGiftInOutDetail(id)
 				.then(response => {
-					console.log('出库详情接口响应:', response);
-					// 处理多种可能的响应结构
-					let data = null;
+					let data = [];
 					if (response) {
 						if (Array.isArray(response)) {
 							data = response;
-						} else if (Array.isArray(response.data)) {
-							data = response.data;
+						} else if (response.data) {
+							if (Array.isArray(response.data)) {
+								data = response.data;
+							} else if (Array.isArray(response.data.rows)) {
+								data = response.data.rows;
+							} else if (Array.isArray(response.data.data)) {
+								data = response.data.data;
+							} else {
+								data = [response.data];
+							}
 						} else if (Array.isArray(response.rows)) {
 							data = response.rows;
-						} else if (response.data && Array.isArray(response.data.rows)) {
-							data = response.data.rows;
-						} else if (response.data && Array.isArray(response.data.data)) {
-							data = response.data.data;
-						} else if (response.data) {
-							data = Array.isArray(response.data) ? response.data : [response.data];
 						}
 					}
-					this.viewDetailData = data || [];
-					console.log('解析后的出库详情数据:', this.viewDetailData);
-					// 调试：打印第一条数据的字段名
-					if (this.viewDetailData && this.viewDetailData.length > 0) {
-						console.log('第一条数据的字段:', Object.keys(this.viewDetailData[0]));
-						console.log('第一条数据的数量字段值:', this.viewDetailData[0].quantity, this.viewDetailData[0]);
-					}
-					if (!this.viewDetailData || (Array.isArray(this.viewDetailData) && this.viewDetailData.length === 0)) {
-						this.$message.warning('暂无出库详情数据');
+
+					this.viewDetailData = data;
+
+					if (!this.viewDetailData || this.viewDetailData.length === 0) {
+						this.$message.info('暂无出库详情数据');
 					}
 				})
 				.catch(error => {
-					if (error && error.response) {
-						const errorMsg = error.response.data?.msg || error.response.data?.message || '获取出库详情失败';
-						if (error.response.status === 404) {
-							this.$message.warning('该接口暂未实现，请联系后端开发人员');
-						} else {
-							this.$message.error(errorMsg);
-						}
-					} else {
-						this.$message.error('获取出库详情失败，请稍后重试');
-					}
 					console.error('获取出库详情失败:', error);
+
+					if (error && error.response) {
+						const status = error.response.status;
+						const errorMsg = error.response.data?.msg || error.response.data?.message;
+
+						switch (status) {
+							case 404:
+								this.$message.info('暂无出库详情数据');
+								break;
+							case 500:
+								this.$message.error('服务器内部错误，请联系管理员');
+								break;
+							default:
+								this.$message.error(errorMsg || `获取出库详情失败 (${status})`);
+						}
+					} else if (error && error.request) {
+						this.$message.error('网络连接异常，请检查网络设置');
+					} else {
+						this.$message.error(error.message || '获取出库详情失败');
+					}
+
 					this.viewDetailData = [];
 				})
 				.finally(() => {

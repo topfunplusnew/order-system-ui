@@ -60,13 +60,18 @@
 					<span>{{ formatCurrency(scope.row.remainingValue) }}</span>
 				</template>
 			</el-table-column>
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="120">
+				<template #default="scope">
+					<el-button v-hasPermi="['system:gift:remove']" size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)">删除</el-button>
+				</template>
+			</el-table-column>
 		</el-table>
-		
+
 		<!-- 空数据提示 -->
-		<div v-if="!loading && giftStockList.length === 0" style="text-align: center; padding: 40px; color: #909399;">
-			<i class="el-icon-info" style="font-size: 48px; margin-bottom: 16px;"></i>
+		<div v-if="!loading && giftStockList.length === 0" style="text-align: center; padding: 40px; color: #909399">
+			<i class="el-icon-info" style="font-size: 48px; margin-bottom: 16px"></i>
 			<p>暂无库存数据</p>
-			<p style="font-size: 12px; margin-top: 8px;">请检查查询条件或联系管理员</p>
+			<p style="font-size: 12px; margin-top: 8px">请检查查询条件或联系管理员</p>
 		</div>
 
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
@@ -77,13 +82,13 @@
 import { parseTime } from '../../../utils/ruoyi';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
 import { common_excel } from '../../dashboard/mixins/common/common_excel';
-import { listGift } from '@/api/system/giftStock';
+import { listGift, delGift } from '@/api/system/giftStock';
 
 export default {
 	name: 'GiftInventory',
 	dicts: ['order_gift_in_method'],
 	mixins: [mixin_printHTML, common_excel],
-		data() {
+	data() {
 		return {
 			loading: false,
 			showSearch: true,
@@ -284,11 +289,39 @@ export default {
 		},
 		handleExport() {
 			const queryParams = this.buildQueryParams();
-			this.download(
-				'system/gift/export',
-				queryParams,
-				`礼品库存_${this.parseTime(new Date(), '{y}{m}{d}_{h}{i}{s}')}.xlsx`
-			);
+			this.download('system/gift/export', queryParams, `礼品库存_${this.parseTime(new Date(), '{y}{m}{d}_{h}{i}{s}')}.xlsx`);
+		},
+		/** 删除按钮操作 */
+		handleDelete(row) {
+			console.log('删除行数据:', row);
+
+			// 尝试多种ID字段的可能性
+			const id = row.id || row.itemId || row.giftId || row.ID;
+
+			if (!id) {
+				this.$message.error('无效的数据ID，请检查数据结构');
+				return;
+			}
+
+			this.$confirm(`是否确认删除礼品库存编号为"${id}"的数据项?`, '警告', {
+				confirmButtonText: '确定',
+				cancelButtonText: '取消',
+				type: 'warning'
+			})
+				.then(() => {
+					return delGift(id);
+				})
+				.then(() => {
+					this.getList();
+					this.$message.success('删除成功');
+				})
+				.catch(error => {
+					if (error !== 'cancel') {
+						console.error('删除失败:', error);
+						const errorMsg = error?.response?.data?.msg || error?.message || '删除失败';
+						this.$message.error(errorMsg);
+					}
+				});
 		}
 	}
 };
