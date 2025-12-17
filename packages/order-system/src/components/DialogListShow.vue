@@ -1,14 +1,16 @@
 <template>
 	<div>
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" v-bind="$attrs" :title="title" v-on="$listeners" @open="onOpen">
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false"
+			v-bind="$attrs" :title="title" v-on="$listeners" @open="onOpen">
 			<el-row>
 				<el-table :data="showInfoList" :loading="loading" height="450px" size="mini" border :cell-style="cellStyle">
 					<template #append>
-						<AddBankAccounts :company-info="queryObject" @callGetList="handleChangeBank" />
+						<AddBankAccounts :company-info="companyInfo" :current-row="currentRowData" @callGetList="refreshList" />
 					</template>
 					<slot name="column"></slot>
 				</el-table>
-				<pagination v-show="total > 0" :total="total" :current-page.sync="queryParams.pageNum" :page-size.sync="queryParams.pageSize" @pagination="fetchData" />
+				<pagination v-show="total > 0" :total="total" :current-page.sync="queryParams.pageNum"
+					:page-size.sync="queryParams.pageSize" @pagination="fetchData" />
 			</el-row>
 			<template #footer>
 				<el-button @click="close">取消</el-button>
@@ -29,7 +31,7 @@ export default {
 		title: String,
 		getData: {
 			type: Function,
-			default: () => {}
+			default: () => { }
 		},
 		queryObject: {
 			type: Object,
