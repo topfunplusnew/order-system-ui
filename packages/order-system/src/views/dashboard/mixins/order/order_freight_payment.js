@@ -81,8 +81,7 @@ export var mixin_order_freight_payment = {
 		},
 		// 司机相同的运费信息合并为一条运费信息
 		mergeFreight(list) {
-			// 按司机ID分组
-			const groupedByDriver = _.groupBy(list, item => item.companyId);
+			const groupedByDriver = _.groupBy(list, item => item.otherBankNo);
 
 			// 合并每个司机的运费信息
 			return _.map(groupedByDriver, items => {
