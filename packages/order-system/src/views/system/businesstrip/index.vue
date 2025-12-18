@@ -54,7 +54,7 @@
 			<el-table-column v-if="columns[4].visible" label="出差结束时间" align="center" prop="endtime" show-overflow-tooltip />
 			<el-table-column v-if="columns[5].visible" label="附件" align="center" prop="attachmentList" show-overflow-tooltip>
 				<template #default="scope">
-					<CheckFiles :attachment-list="scope.row.attachmentList" flag="attachmentList" @needToUpdate="value => handleUpdateAttachments(value, scope.row)" />
+					<CheckFiles :attachment-list="scope.row.attachmentList" flag="attachments" @needToUpdate="value => handleUpdateAttachments(value, scope.row)" />
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[6].visible" label="是否已报销" align="center" prop="isReimburse" show-overflow-tooltip>
@@ -134,7 +134,7 @@
 						</el-col>
 						<el-col :span="12">
 							<el-form-item label="附件" prop="attachmentList">
-								<UploadFilesButton flag="attachments" @files-updated="handleAttachmentFilesUpdated" :initial-attachments="form.attachmentList || []" />
+								<UploadFilesButton ref="attachmentUpload" flag="attachments" @files-updated="handleAttachmentFilesUpdated" :initial-attachments="form.attachmentList || []" />
 							</el-form-item>
 							<el-form-item label="备注" prop="comments">
 								<el-input v-model="form.comments" type="textarea" placeholder="请输入内容" />
