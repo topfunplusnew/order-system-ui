@@ -76,8 +76,8 @@
 			<el-table-column v-if="columns[7].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="260px" fixed="right">
 				<template slot-scope="scope">
-					<el-button :disabled="scope.row.checkState === PAYMENT_APPLY_STATE.V1.CHECKED" v-hasPermi="['system:businesstrip:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
-					<el-button v-hasPermi="['system:businesstrip:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
+					<el-button :disabled="scope.row.checkState === PAYMENT_APPLY_STATE.V1.CHECKED || (scope.row.payment && Object.keys(scope.row.payment).length > 0)" v-hasPermi="['system:businesstrip:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
+					<el-button :disabled="scope.row.payment && Object.keys(scope.row.payment).length > 0" v-hasPermi="['system:businesstrip:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
