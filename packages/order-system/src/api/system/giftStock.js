@@ -8,6 +8,14 @@ export function listGift(query) {
 		params: query
 	});
 }
+// 删除礼品库存
+// 在 @/api/system/giftStock.js 中确认 delGift 方法定义正确
+export function delGift(ids) {
+	return request({
+		url: `/system/gift/${ids}`,
+		method: 'delete'
+	});
+}
 
 export function listGiftStock(query) {
 	return request({
