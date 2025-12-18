@@ -3,7 +3,7 @@
 		<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
 			<!--      时间查询-->
 			<el-form-item label="日期范围" prop="dateRange">
-				<el-date-picker v-model="dateRange" type="datetimerange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd HH:mm:ss" @change="handleDateRangeChange" />
+				<el-date-picker v-model="dateRange" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" @change="handleDateRangeChange" />
 			</el-form-item>
 			<el-form-item label="对方公司" prop="companyName">
 				<el-input v-model="queryParams.companyName" placeholder="请输入对方公司名称" clearable @keyup.enter.native="handleQuery" />
@@ -726,6 +726,19 @@ export default {
 			// 去重
 			this.form.params.attachmentIds = [...new Set(allIds)];
 		},
+		// 格式化日期范围，按照 InvoiceOut.vue 的做法
+		formatDateRange() {
+			if (this.dateRange && this.dateRange.length === 2) {
+				// 开始时间：如果只有日期没有时间，添加 00:00:00
+				if (String(this.dateRange[0]).length === 10) {
+					this.dateRange[0] += ' 00:00:00';
+				}
+				// 结束时间：如果只有日期没有时间，添加 23:59:59
+				if (String(this.dateRange[1]).length === 10) {
+					this.dateRange[1] += ' 23:59:59';
+				}
+			}
+		},
 		/** 查询发票购入信息列表 */
 		getList() {
 			this.loading = true;
@@ -800,6 +813,8 @@ export default {
 		},
 		/** 搜索按钮操作 */
 		handleQuery() {
+			// 按照 InvoiceOut.vue 的做法处理时间范围
+			this.formatDateRange();
 			this.queryParams.pageNum = 1;
 			this.getList();
 		},
