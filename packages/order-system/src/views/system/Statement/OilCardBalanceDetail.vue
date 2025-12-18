@@ -5,7 +5,15 @@
 		<el-row>
 			<el-form id="top-search-form-item" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
 				<el-form-item label="油卡号">
-					<el-input v-model="queryParams.oilCardNo" placeholder="请输入油卡号" clearable size="mini" @keyup.enter.native="fetchOilCardDetails" />
+					<div style="display: flex; align-items: center">
+						<el-input v-model="queryParams.oilCardNo" placeholder="请输入油卡号" clearable size="mini" @keyup.enter.native="fetchOilCardDetails" style="width: 200px" />
+						<!-- 添加油卡搜索按钮 -->
+						<search-option ref="oilCardSearch" :get-data="getOilCardList" :limit-info="oilCardLimitInfo" query-info="oilCardNo" query-label="油卡号" title="选择油卡" query-name="" width="60%" @commitBack="handleSelectOilCard" style="margin-left: 5px">
+							<template #table-columns>
+								<el-table-column prop="oilCardNo" label="油卡编号" align="center" />
+							</template>
+						</search-option>
+					</div>
 				</el-form-item>
 				<el-form-item label="时间" prop="beginTime">
 					<el-date-picker v-model="queryParams.beginTime" type="date" size="mini" value-format="yyyy-MM-dd" placeholder="选择日期"></el-date-picker>
@@ -29,6 +37,7 @@
 				</template>
 			</right-toolbar>
 		</el-row>
+
 		<!-- 表格展示 -->
 		<el-table id="printBox" :data="oilCardDetails" border stripe size="mini" style="width: 100%">
 			<!-- 序号列 -->
@@ -56,6 +65,7 @@
 					{{ scope.row.tableName === 'oilrecharge' ? '充值' : scope.row.tableName === 'oilcardfundtransfer' ? '分配或圈存' : '消费' }}
 				</template>
 			</el-table-column>
+
 			<!-- 余额 -->
 			<el-table-column v-if="columns[4].visible" prop="runningBalance" label="余额 (元)" align="center" show-overflow-tooltip>
 				<template #default="scope">
@@ -63,14 +73,14 @@
 				</template>
 			</el-table-column>
 
-			<!--      这里可能需要动态展示，因为只有副卡用得到这一列-->
+			<!-- 这里可能需要动态展示，因为只有副卡用得到这一列-->
 			<el-table-column v-if="oilFundType === OilCardType.SUB" prop="runningVirtualBalance" label="累计待圈存金额 (元)" align="center" show-overflow-tooltip>
 				<template #default="scope">
 					{{ scope.row.runningVirtualBalance || `无` }}
 				</template>
 			</el-table-column>
 
-			<!--      这里也需要动态展示，如果是tableName = oilcardfundtransfer需要展示类型-->
+			<!-- 这里也需要动态展示，如果是tableName = oilcardfundtransfer需要展示类型-->
 			<el-table-column prop="type" label="消费类型" align="center" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<el-tag v-if="scope.row.tableName === TableName.OIL_CARD_FUND_TRANSFER" size="mini" :type="scope.row.type | typeFilter">{{ scope.row.type | statusFilter }}</el-tag>
@@ -132,9 +142,14 @@ import { getCarApply } from '@/api/system/carApply';
 import CAR_APPLY from '@/components/NeedToShow/CAR_APPLY.vue';
 import { listOilCard } from '@/api/system/oilCard';
 import { OilCardOptionType, OilCardType, TableName } from '@/api/tool/enums';
+// 导入 SearchOption 组件
+import SearchOption from '@/components/SearchOption.vue';
 
 export default {
 	name: 'OilCardBalanceDetail',
+	components: {
+		SearchOption
+	},
 	computed: {
 		TableName() {
 			return TableName;
@@ -167,7 +182,10 @@ export default {
 			needToShowInfo: null,
 
 			// 操作类型 只用作区分
-			oilFundType: null
+			oilFundType: null,
+
+			// 油卡搜索相关配置
+			oilCardLimitInfo: {}
 		};
 	},
 	created() {
@@ -196,6 +214,18 @@ export default {
 		}
 	},
 	methods: {
+		// 获取油卡列表数据的方法
+		getOilCardList(params) {
+			return listOilCard(params);
+		},
+
+		// 处理选择油卡后的回调
+		handleSelectOilCard(row) {
+			if (row && row.oilCardNo) {
+				this.queryParams.oilCardNo = row.oilCardNo;
+			}
+		},
+
 		async fetchOilCardDetails() {
 			// 先获取一下油卡的类型
 			const query = { oilCardNo: this.queryParams.oilCardNo };
@@ -297,5 +327,13 @@ export default {
 
 .dialog-footer {
 	text-align: right;
+}
+::v-deep .el-dialog {
+	max-height: 500px; // 设置最大高度
+}
+
+::v-deep .el-dialog__body {
+	max-height: 400px; // 设置内容区域最大高度
+	overflow-y: auto; // 超出时显示滚动条
 }
 </style>
