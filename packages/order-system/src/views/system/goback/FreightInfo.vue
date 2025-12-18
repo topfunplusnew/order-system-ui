@@ -49,14 +49,14 @@
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<template slot="content">
 							<div v-for="(item, index) in scope.row.lenderList" :key="index">
-								<span style="color: red; margin-right: 6px">[{{ getOrAdvancedModule([item.tableName], scope.row.flag) }}]</span>
+								<span style="color: red; margin-right: 6px">[{{ getOrAdvancedModule([item.tableName], item.flag) }}]</span>
 								<span style="margin-right: 7px">{{ item.lender }}</span>
 								<i class="el-icon-s-order" style="cursor: pointer" @click="handleCheckDetail(item)"></i>
 							</div>
 						</template>
 						<div>
 							<div v-for="(item, index) in scope.row.lenderList" :key="index">
-								<span style="color: red; margin-right: 6px">[{{ getOrAdvancedModule([item.tableName], scope.row.flag) }}]</span>
+								<span style="color: red; margin-right: 6px">[{{ getOrAdvancedModule([item.tableName], item.flag) }}]</span>
 								<span style="margin-right: 7px">{{ item.lender }}</span>
 								<i class="el-icon-s-order" style="cursor: pointer" @click="handleCheckDetail(item)"></i>
 							</div>
@@ -404,6 +404,8 @@ export default {
 										tableName: detail.tableName,
 										debitCredit: detail.debitCredit,
 										moneyAmountLocal: fix_2(amount),
+										companyId: detail.companyId,
+										flag: detail.flag,
 										summary: Array.isArray(detail.summary) ? detail.summary.join('、') : detail.summary
 									};
 								};
@@ -442,7 +444,7 @@ export default {
 		},
 		handleSearch(row) {
 			// 拿到表名和id
-			const { tableName, payNo } = row;
+			const { tableName, payNo, companyId } = row;
 			if (!tableName || !payNo) {
 				this.$message.warning('该行数据有误:模块名或者凭证号不存在');
 				return;
@@ -458,7 +460,7 @@ export default {
 					{
 						ids: payNo,
 						isDetail: false,
-						companyId: this.searchForm.companyId,
+						companyId: companyId,
 						companyType: PUBLIC_DICT_TYPE.DRIVER // 运费模块标识
 					},
 					false

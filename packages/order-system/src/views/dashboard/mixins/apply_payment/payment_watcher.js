@@ -64,7 +64,7 @@ export var mixin_payment_watcher = {
 						payType: val.payType,
 						companyName: val.companyName,
 						attachmentList: val.attachmentList,
-						comment: val.comment,
+						comments: val.comments,
 						remark: val.remark,
 						reason: val.reason
 					});
@@ -87,7 +87,7 @@ export var mixin_payment_watcher = {
 				// 如果传入的必须自动填充的金额大于0 则自动填充 且无法修改
 				if (this.needMoney >= 0) {
 					this.form.moneyAmount = Number(this.needMoney).toFixed(2);
-					this.inputDisabled = true;
+					// this.inputDisabled = true;
 				}
 			},
 			deep: true,
@@ -132,7 +132,21 @@ export var mixin_payment_watcher = {
 					this.form.id = val.__referenceId;
 				}
 				if (val.__customizeSubjectName) {
-					this.form.payType = val.__customizeSubjectName;
+					console.log(`val.__customizeSubjectName`, val.__customizeSubjectName);
+					this.$nextTick(() => {
+						this.form.payType = val.__customizeSubjectName;
+						// 如果是出差聚合 禁用
+						this.inputDisabled = true;
+					});
+				}
+				if (val.__attachments && Array.isArray(val.__attachments)) {
+					// 设置附件列表
+					this.form.attachmentList = [...val.__attachments];
+					// 设置附件ID数组
+					if (!this.form.params) {
+						this.form.params = {};
+					}
+					this.form.params.attachmentIds = val.__attachments.map(attachment => attachment.id);
 				}
 			},
 			deep: true,

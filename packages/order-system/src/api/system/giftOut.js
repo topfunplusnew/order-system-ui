@@ -45,16 +45,14 @@ export function delGiftOut(id) {
 
 // 退回礼品出库信息
 export function returnGiftOut(data) {
-	const { id, quantity, inLocation, remark, handler } = data;
+	const { id, quantity, localDate } = data;
 	return request({
 		url: '/system/giftOut/reGiftStockOut',
 		method: 'put',
 		params: {
 			id: id,
 			quantity: quantity,
-			inLocation: inLocation,
-			remark: remark,
-			handler: handler
+			localDate: localDate
 		}
 	});
 }
@@ -63,6 +61,15 @@ export function returnGiftOut(data) {
 export function getGiftOutReInDetail(id) {
 	return request({
 		url: '/system/giftOut/reGiftStockIn/',
+		method: 'get',
+		params: { id: id }
+	});
+}
+
+// 根据出库id查看来自的入库信息
+export function getGiftOutInDetail(id) {
+	return request({
+		url: '/system/giftOut/reGiftStockIn',
 		method: 'get',
 		params: { id: id }
 	});

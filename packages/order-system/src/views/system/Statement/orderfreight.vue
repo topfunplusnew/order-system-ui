@@ -25,7 +25,6 @@ export default {
 				{ key: 0, label: `车号`, visible: true },
 				{ key: 1, label: `收款人姓名`, visible: true },
 				{ key: 2, label: `收款银行卡号`, visible: true },
-				{ key: 3, label: `收款司机`, visible: true },
 				{ key: 4, label: `上日欠运费`, visible: true },
 				{ key: 5, label: `当日应付运费`, visible: true },
 				{ key: 6, label: `本日付款金额`, visible: true },
@@ -42,6 +41,15 @@ export default {
 			statementList: [],
 			dialogVisible: false
 		};
+	},
+	computed: {
+		// 根据 key 值查找对应的 column 的 visible 属性
+		getColumnByKey() {
+			return key => {
+				const col = this.columns.find(col => col.key === key);
+				return col ? col.visible : false;
+			};
+		}
 	},
 	created() {
 		getOrderFreight(this.queryParams).then(res => {
@@ -85,6 +93,7 @@ export default {
 				{
 					// beginTime: this.queryParams.beginTime,
 					endTime: this.queryParams.endTime
+
 				},
 				`运费报表${parseTime(new Date().getTime())}.xlsx`
 			);
@@ -152,81 +161,79 @@ export default {
 								{{ queryParams.endTime }}
 							</template>
 						</el-table-column>
-						<el-table-column v-if="columns[1].visible" label="收款人姓名" align="center" width="200" show-overflow-tooltip>
+						<el-table-column v-if="getColumnByKey(0)" label="车号" align="center" width="200" prop="carNo" show-overflow-tooltip>
+							<template slot-scope="scope">
+								{{ formatTextValue(scope.row.carNo) }}
+							</template>
+						</el-table-column>
+						<el-table-column v-if="getColumnByKey(1)" label="收款人姓名" align="center" width="200" show-overflow-tooltip>
 							<template slot-scope="scope">
 								{{ formatTextValue(scope.row.otherAcountsName) }}
 							</template>
 						</el-table-column>
-						<el-table-column v-if="columns[2].visible" label="收款银行卡号" align="center" width="200" show-overflow-tooltip>
+						<el-table-column v-if="getColumnByKey(2)" label="收款银行卡号" align="center" width="200" show-overflow-tooltip>
 							<template slot-scope="scope">
 								{{ formatTextValue(scope.row.otherBankNo) }}
 							</template>
 						</el-table-column>
-
-						<el-table-column v-if="columns[3].visible" label="收款司机" align="center" width="200" show-overflow-tooltip>
-							<template slot-scope="scope">
-								{{ formatTextValue(scope.row.driverName) }}
-							</template>
-						</el-table-column>
-
-						<el-table-column v-if="columns[4].visible" label="上日欠运费" align="center" width="200" show-overflow-tooltip>
+						<el-table-column v-if="getColumnByKey(4)" label="上日欠运费" align="center" width="200" show-overflow-tooltip>
 							<template slot-scope="scope">
 								{{ formatNumberValue(scope.row.previousDayUnpaidAmount) }}
 							</template>
 						</el-table-column>
-						<el-table-column v-if="columns[5].visible" label="当日应付运费" align="center" width="200" show-overflow-tooltip>
+						<el-table-column v-if="getColumnByKey(5)" label="当日应付运费" align="center" width="200" show-overflow-tooltip>
 							<template slot-scope="scope">
 								{{ formatNumberValue(scope.row.dailyTotalAmount) }}
 							</template>
 						</el-table-column>
-						<el-table-column v-if="columns[6].visible" label="本日付款金额" align="center" width="200" show-overflow-tooltip>
+						<el-table-column v-if="getColumnByKey(6)" label="本日付款金额" align="center" width="200" show-overflow-tooltip>
 							<template slot-scope="scope">
 								{{ formatNumberValue(scope.row.dailyPaidAmount) }}
 							</template>
 						</el-table-column>
-						<el-table-column v-if="columns[7].visible" label="本日欠款余额" align="center" width="200" show-overflow-tooltip>
+						<el-table-column v-if="getColumnByKey(7)" label="本日欠款余额" align="center" width="200" show-overflow-tooltip>
 							<template slot-scope="scope">
 								{{ calculateBalance(scope.row.previousDayUnpaidAmount, scope.row.dailyTotalAmount, -scope.row.dailyPaidAmount) }}
 							</template>
 						</el-table-column>
 
-						<el-table-column v-if="columns[8].visible" label="上月结转欠款金额" align="center" width="200" show-overflow-tooltip>
+						<el-table-column v-if="getColumnByKey(8)" label="上月结转欠款金额" align="center" width="200" show-overflow-tooltip>
 							<template slot-scope="scope">
 								{{ formatNumberValue(scope.row.previousMonthUnpaidAmount) }}
 							</template>
 						</el-table-column>
-						<el-table-column v-if="columns[9].visible" label="本月付款金额合计" align="center" width="200" show-overflow-tooltip>
+						<el-table-column v-if="getColumnByKey(9)" label="本月付款金额合计" align="center" width="200" show-overflow-tooltip>
 							<template slot-scope="scope">
 								{{ formatNumberValue(scope.row.monthlyPaidAmount) }}
 							</template>
 						</el-table-column>
-						<el-table-column v-if="columns[10].visible" label="本月累计应付运费" align="center" width="200" show-overflow-tooltip>
+						<el-table-column v-if="getColumnByKey(10)" label="本月累计应付运费" align="center" width="200" show-overflow-tooltip>
 							<template slot-scope="scope">
 								{{ formatNumberValue(scope.row.monthlyTotalAmount) }}
 							</template>
 						</el-table-column>
-						<el-table-column v-if="columns[11].visible" label="本月欠款金额" align="center" width="200" show-overflow-tooltip>
+						<el-table-column v-if="getColumnByKey(11)" label="本月欠款金额" align="center" width="200" show-overflow-tooltip>
 							<template slot-scope="scope">
 								{{ calculateBalance(scope.row.previousMonthUnpaidAmount, scope.row.monthlyTotalAmount, -scope.row.monthlyPaidAmount) }}
 							</template>
 						</el-table-column>
 
-						<el-table-column v-if="columns[12].visible" label="上年结转欠款金额" align="center" width="200" show-overflow-tooltip>
+						<el-table-column v-if="getColumnByKey(12)" label="上年结转欠款金额" align="center" width="200" show-overflow-tooltip>
 							<template slot-scope="scope">
 								{{ formatNumberValue(scope.row.previousYearUnpaidAmount) }}
 							</template>
 						</el-table-column>
-						<el-table-column v-if="columns[13].visible" label="本年付款金额合计" align="center" width="200" show-overflow-tooltip>
+						<el-table-column v-if="getColumnByKey(13)" label="本年付款金额合计" align="center" width="200" show-overflow-tooltip>
 							<template slot-scope="scope">
 								{{ formatNumberValue(scope.row.yearlyPaidAmount) }}
 							</template>
 						</el-table-column>
-						<el-table-column v-if="columns[14].visible" label="本年累计应付运费" align="center" width="200" show-overflow-tooltip>
+						<el-table-column v-if="getColumnByKey(14)" label="本年累计应付运费" align="center" width="200" show-overflow-tooltip>
 							<template slot-scope="scope">
 								{{ formatNumberValue(scope.row.yearlyTotalAmount) }}
 							</template>
 						</el-table-column>
-						<el-table-column v-if="columns[15].visible" label="本年欠款金额" align="center" width="200" show-overflow-tooltip>
+						<el-table-column v-if="getColumnByKey(15)" label="本年欠款金额" align="center" width="200" show-overflow-tooltip>
 							<template slot-scope="scope">
 								{{ calculateBalance(scope.row.previousYearUnpaidAmount, scope.row.yearlyTotalAmount, -scope.row.yearlyPaidAmount) }}
 							</template>

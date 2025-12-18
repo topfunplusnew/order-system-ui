@@ -219,7 +219,10 @@ export default {
 										type: 'data'
 									},
 									detailItem,
-									inventoryInfoToAdd
+									{
+										...inventoryInfoToAdd,
+										comments: item.comments
+									}
 								);
 							})
 						);

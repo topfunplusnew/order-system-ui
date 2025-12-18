@@ -68,12 +68,12 @@
 							</el-tooltip>
 						</template>
 					</el-table-column>
-					<!-- 新增是否禁用列 -->
+					<!-- 新增是否禁用列 1为不禁用 0为禁用 -->
 					<el-table-column label="是否禁用" prop="STATUS" align="center" width="100" show-overflow-tooltip>
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-								<div slot="content">{{ scope.row.STATUS === YES_OR_NO.YES ? '是' : '否' }}</div>
-								<span v-if="scope.row.STATUS === YES_OR_NO.YES">是</span>
+								<div slot="content">{{ scope.row.STATUS == YES_OR_NO.YES ? '否' : '是' }}</div>
+								<span v-if="scope.row.STATUS == YES_OR_NO.NO">是</span>
 								<span v-else>否</span>
 							</el-tooltip>
 						</template>
@@ -159,6 +159,7 @@ import '@riophae/vue-treeselect/dist/vue-treeselect.css';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
 import { YES_OR_NO } from '@/api/tool/enums';
 import { Modal } from 'ant-design-vue'; // 引入antd Modal
+import _ from 'lodash';
 
 export default {
 	name: 'Subject',
@@ -195,7 +196,7 @@ export default {
 				STATUS: null
 			},
 			// 表单参数
-			form: { type: '', STATUS: 0 }, // 默认否
+			form: { type: '', STATUS: YES_OR_NO.YES }, // 默认否
 			titleOptions: [],
 			columns: [
 				{ key: 0, label: `科目名称`, visible: true },
@@ -376,7 +377,7 @@ export default {
 				subjectNo: null,
 				parentId: null,
 				orderNum: null,
-				STATUS: 0, // 默认否
+				STATUS: YES_OR_NO.YES, // 默认否
 				createBy: null,
 				createTime: null,
 				updateBy: null,
@@ -428,10 +429,7 @@ export default {
 						this.form.parentId = row.parentId;
 					}
 					getSubject(row.id).then(response => {
-						this.form = {
-							...response.data,
-							STATUS: Number(response.data.STATUS)
-						};
+						this.form = _.cloneDeep(response.data);
 						this.open = true;
 						this.title = '修改科目';
 					});

@@ -14,7 +14,7 @@ export default {
 	mixins: [common_dialog],
 	computed: {
 		// 拿出需要的
-		...mapGetters(['ticketPoint', 'comment']),
+		...mapGetters(['ticketPoint', 'comment', 'batchDetailRows', 'selectedInvoiceList']),
 		// 计算剩余开票金额的方法
 		calculateRemainingAmount() {
 			return row => {
@@ -23,6 +23,49 @@ export default {
 				const remaining = this.math.subtract(allPayments, totalInvoiceAmount);
 				return Number(this.math.format(remaining, { precision: 2, notation: 'fixed' }));
 			};
+		},
+		// 实时计算剩余开票金额（基于模板数据中的未开票金额总和）
+		remainingInvoiceAmount() {
+			if (!this.id || !this.batchDetailRows || this.batchDetailRows.length === 0) {
+				return 0;
+			}
+
+			// 筛选出该公司对应的未开票模板数据
+			const relevantTemplates = this.batchDetailRows.filter(tpl => {
+				// 只计算未开票的记录
+				if (tpl.invoiced) {
+					return false;
+				}
+
+				// 根据公司类型匹配
+				if (this.type === PUBLIC_DICT_TYPE.CUSTOMER) {
+					// 客户模式：查找购买方ID匹配的记录
+					return tpl.purchaseId && String(tpl.purchaseId) === String(this.id);
+				} else if (this.type === PUBLIC_DICT_TYPE.SUPPLIER) {
+					// 供应商模式：查找销方ID匹配的记录
+					return tpl.sellerId && String(tpl.sellerId) === String(this.id);
+				}
+
+				return false;
+			});
+
+			// 计算模板数据总金额
+			let totalAmount = this.math.bignumber(0);
+			relevantTemplates.forEach(tpl => {
+				totalAmount = this.math.add(totalAmount, this.math.bignumber(tpl.total || 0));
+			});
+
+			// 减去已生成的发票金额
+			if (this.selectedInvoiceList && this.selectedInvoiceList.length > 0) {
+				const generatedAmount = this.selectedInvoiceList.reduce((sum, invoice) => {
+					return this.math.add(sum, this.math.bignumber(invoice.invoiceAmount || 0));
+				}, this.math.bignumber(0));
+				totalAmount = this.math.subtract(totalAmount, generatedAmount);
+			}
+
+			const result = Number(this.math.format(totalAmount, { precision: 2, notation: 'fixed' }));
+			// 确保不为负数
+			return Math.max(0, result);
 		}
 	},
 	watch: {
@@ -91,14 +134,15 @@ export default {
 		});
 		// 接受分配剩余金额传入的关于客户或者供应商的筛选
 		this.$bus.$on('update-goods-order-company', value => {
-			// 筛选订单列表
-			this.handleFilterOrders(value);
-			// 赋值
-			this.checkFlag = value;
+			// 暂存type和id
 			// 赋值类型
 			this.type = value.type;
 			// 赋值id 用于查找供应商
 			this.id = value.id;
+			// 筛选订单列表
+			this.handleFilterOrders();
+			// 赋值
+			this.checkFlag = value;
 			// 取消禁用多选框
 			this.isBaned = false;
 		});
@@ -188,6 +232,7 @@ export default {
 				this.isBaned = true;
 				return;
 			}
+
 			// 由vuex维护选中的订单列表 以便于其他组件使用
 			this.$store.dispatch('excel/setSelectedOrders', selection);
 
@@ -202,23 +247,31 @@ export default {
 			}
 		},
 		// 筛选订单列表 主要是用于当左侧选择某个公司后要选择对应公司的订单
-		handleFilterOrders(value) {
-			// 不合法
-			if (value.id < 0) this.refresh();
-			// 什么都不选 就只getList
-			if (!value.id) this.refresh();
-			value.type === PUBLIC_DICT_TYPE.CUSTOMER ? this.handleCustomerFilter(value.id) : this.handleSupplierFilter(value.id);
-		},
-		// 对客户的筛选
-		async handleCustomerFilter(companyId) {
-			if (!companyId) {
-				this.$message.warning('非法id!');
+		handleFilterOrders() {
+			// 检索前清空已生成的发票列表和选中的订单
+			this.$store.dispatch('excel/clearSelectedInvoiceList');
+			this.$store.dispatch('excel/clearSelectedOrders');
+			// 清空当前选中的订单
+			if (this.$refs.goodsTable) {
+				this.$refs.goodsTable.clearSelection();
 			}
+			this.preOrderList = [];
+			if (!this.id) this.refresh();
+			this.handleFilterByCompany();
+		},
+		// 根据公司信息进行筛选
+		async handleFilterByCompany() {
 			try {
+				if (this.type === PUBLIC_DICT_TYPE.CUSTOMER) {
 				// 赋值搜索条件
-				this.queryParams.customerID = companyId;
-				// 2025-2-13 订单搜索需要传入companyType
-				this.queryParams.params.BatchInsertInvoiceCompanyType = PUBLIC_DICT_TYPE.CUSTOMER;
+					this.queryParams.customerID = this.id;
+					// 2025-2-13 订单搜索需要传入companyType
+					this.queryParams.params.BatchInsertInvoiceCompanyType = PUBLIC_DICT_TYPE.CUSTOMER;
+				} else if (this.type === PUBLIC_DICT_TYPE.SUPPLIER) {
+					// 赋值搜索条件
+					this.queryParams.params.supplierId = this.id;
+					this.queryParams.params.BatchInsertInvoiceCompanyType = PUBLIC_DICT_TYPE.SUPPLIER;
+				}
 				// 强制更新vue 在更新数据后依赖于 DOM 的最新状态，比如获取某个元素的大小、位置等
 				await this.$nextTick();
 				// 获取订单列表
@@ -226,27 +279,6 @@ export default {
 				// 设置点击了检索标记
 				this.hasClicked = true;
 				// 查询完订单列表后清除搜索条件
-				this.resetParams();
-			} catch (err) {
-				console.error('Error fetching list:', err);
-			}
-		},
-		// 对供应商的筛选
-		async handleSupplierFilter(companyId) {
-			if (!companyId) {
-				this.$message.warning('非法id!');
-			}
-			try {
-				// 赋值数据
-				this.queryParams.params.supplierId = companyId;
-				// 2025-2-13 订单搜索需要传入companyType
-				this.queryParams.params.BatchInsertInvoiceCompanyType = PUBLIC_DICT_TYPE.SUPPLIER;
-				// 强制更新vue
-				await this.$nextTick();
-				// 获取列表
-				await this.getList();
-				// 设置点击了检索标记
-				this.hasClicked = true;
 				this.resetParams();
 			} catch (err) {
 				console.error('Error fetching list:', err);
@@ -269,18 +301,23 @@ export default {
 				this.$message.warning('参数有误：已开票金额小于0');
 				return;
 			}
+
 			// 更新选择的订单
 			this.preOrderList = orders;
 
 			// 计算要扣除的钱
 			let money = 0;
 			try {
+
+				// 如果是取消勾选
 				if (removedRows.length !== 0) {
 					money = this.calculateMoney(removedRows, this.type);
 					if (money && money > 0) {
 						this.$store.dispatch('excel/addInvoiceAmount', money);
 					}
 				}
+
+				// 如果是勾选某一行
 				if (addedRows.length !== 0) {
 					money = this.calculateMoney(addedRows, this.type);
 
@@ -351,14 +388,17 @@ export default {
 
 			return Number(this.math.format(money, { precision: 2, notation: 'fixed' }));
 		},
-
+		// 顶部点击搜索
 		handleQuery(value) {
-			// this.queryParams = value;
 			Object.assign(this.queryParams, value);
-			this.getList();
+			this.handleFilterByCompany();
 		},
 		// 多选框是否禁用
 		selectable() {
+			// 如果剩余开票金额为0，禁用选择器
+			if (this.remainingInvoiceAmount <= 0) {
+				return false;
+			}
 			return !this.isBaned;
 		},
 		// 重新拉取数据
@@ -367,7 +407,6 @@ export default {
 			this.resetParams();
 			this.getList();
 		},
-
 		// 自动生成发票（选中订单后自动触发）
 		autoGenerateInvoice() {
 			// 延迟一小段时间，确保金额计算完成
@@ -475,7 +514,11 @@ export default {
 			<el-table-column show-overflow-tooltip label="ID" align="center" prop="id" />
 			<el-table-column show-overflow-tooltip label="日期" align="center" prop="orderDate" />
 			<el-table-column show-overflow-tooltip label="客户" align="center" prop="customer" />
-			<el-table-column show-overflow-tooltip label="供应商/仓库" align="center" prop="supplierNames" width="200"></el-table-column>
+			<el-table-column show-overflow-tooltip label="供应商/仓库" align="center" prop="supplierNames" width="200">
+				<template #default="scope">
+					<div>{{ scope.row.supplierNames }}</div>
+				</template>
+			</el-table-column>
 			<el-table-column show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo" />
 			<el-table-column show-overflow-tooltip label="陆运司机电话" align="center" prop="landDriverTel" width="100px" />
 			<el-table-column show-overflow-tooltip label="陆地司机姓名" align="center" prop="landDriverName" width="100px" />

@@ -340,7 +340,7 @@ export default {
 							</td>
 							<td>{{ item.pieces }}</td>
 							<td>{{ item.packs }}</td>
-							<td>{{ item.price }}</td>
+							<td>{{ item.paymentUnload }}</td>
 							<td>
 								{{ item.isIncludeTaxFactory === 0 ? '否' : '是' }}
 							</td>

@@ -20,6 +20,10 @@ export var mixin_business_trip_car_apply = {
 		closeAll() {
 			this.active = 0;
 			this.open = false;
+			// 清除上传组件状态
+			if (this.$refs.attachmentUpload) {
+				this.$refs.attachmentUpload.clearUploadedFiles();
+			}
 		}
 	}
 };

@@ -48,6 +48,10 @@ import BUSSNIESS_TRIP from '@/components/NeedToShow/BUSSNIESS_TRIP.vue';
 import { getOrderMainByDetailId } from '@/api/system/orderDetail';
 // 根据表名  获取对应的get函数方法
 export function getFunction(tableName) {
+	if (tableName === TableName.INIT){
+		console.warn('期初数据不进行查询');
+		return;
+	}
 	switch (tableName) {
 		// 订单列表
 		case TableName.GOODS_ORDER:

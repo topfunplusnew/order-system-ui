@@ -7,7 +7,7 @@
 			<!-- 只有当付款申请的时候才会填写该字段，类型后端填充 -->
 			<template v-if="!isPayment">
 				<el-form-item label="支付类型" prop="payType">
-					<el-cascader :disabled="isPayment" v-model="form.payType" :options="paymentTypeTree" :props="props" style="width: 100%" />
+					<el-cascader :disabled="inputDisabled || isPayment" v-model="form.payType" :options="paymentTypeTree" :props="props" style="width: 100%" />
 				</el-form-item>
 			</template>
 			<el-form-item label="金额" prop="moneyAmount">
@@ -478,7 +478,7 @@ export default {
 				tableName: null,
 				// 新的核心字段
 				fundsDate: parseTime(new Date()),
-				payType: null,
+				payType: [],
 				moneyAmount: null,
 				// 银行卡类型
 				selfBankCardType: null,
@@ -516,7 +516,7 @@ export default {
 				// 新增：表关联数组
 				tableReferences: []
 			},
-			// 禁用输入框
+			// 禁用支付类型输入框
 			inputDisabled: false,
 			// 禁用银行卡输入 因为现金支付不需要银行卡信息
 			bankInputDisabled: false,
@@ -567,7 +567,7 @@ export default {
 			},
 			deep: true,
 			immediate: true
-		}
+		},
 	},
 	mounted() {
 		this.loadForm();

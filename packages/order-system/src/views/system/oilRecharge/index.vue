@@ -48,36 +48,7 @@
 			"
 			@selection-change="handleSelectionChange"
 		>
-			<el-table-column label="id" align="center" prop="id" show-overflow-tooltip>
-				<template #default="scope">
-					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.id }}</div>
-						<span>{{ scope.row.id }}</span>
-					</el-tooltip>
-				</template>
-			</el-table-column>
-			<el-table-column v-if="columns[0].visible" label="审核状态" align="center" prop="checkState" width="160px" show-overflow-tooltip>
-				<template #default="scope">
-					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">
-							<PaymentFlag :business-object="scope.row">
-								<template #extra="{ status, type }">
-									<!-- 根据状态展示操作按钮 -->
-									<el-button v-if="type === 'paymentApply' && status === '未申请'" size="mini" type="text" @click="addPaymentApply(scope.row)">申请付款</el-button>
-								</template>
-							</PaymentFlag>
-						</div>
-						<PaymentFlag :business-object="scope.row">
-							<template #extra="{ status, type }">
-								<!-- 根据状态展示操作按钮 -->
-								<el-button v-if="type === 'paymentApply' && status === '未申请'" size="mini" type="text" @click="addPaymentApply(scope.row)">申请付款</el-button>
-							</template>
-						</PaymentFlag>
-					</el-tooltip>
-				</template>
-			</el-table-column>
-			<!--      <el-table-column label="出差编号UUID" align="center" prop="bTripId"/>-->
-			<el-table-column v-if="columns[1].visible" label="加油卡卡号" align="center" prop="oilCardNo" show-overflow-tooltip>
+			<el-table-column v-if="columns[0].visible" label="加油卡卡号" align="center" prop="oilCardNo" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.oilCardNo }}</div>
@@ -85,15 +56,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[2].visible" label="充值类型" align="center" prop="rechargeType" show-overflow-tooltip>
-				<template #default="scope">
-					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.rechargeType }}</div>
-						<span>{{ scope.row.rechargeType }}</span>
-					</el-tooltip>
-				</template>
-			</el-table-column>
-			<el-table-column v-if="columns[3].visible" label="充值金额" align="center" prop="rechargeMoney" show-overflow-tooltip>
+			<el-table-column v-if="columns[1].visible" label="充值金额" align="center" prop="rechargeMoney" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.rechargeMoney }}</div>
@@ -101,7 +64,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[4].visible" label="充值时间" align="center" prop="rechargeDate" show-overflow-tooltip>
+			<el-table-column v-if="columns[2].visible" label="充值时间" align="center" prop="rechargeDate" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.rechargeDate }}</div>
@@ -109,15 +72,15 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[5].visible" label="充值人员姓名" align="center" prop="rechargeName" show-overflow-tooltip>
+			<el-table-column v-if="columns[3].visible" label="备注" align="center" prop="comments">
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.rechargeName }}</div>
-						<span>{{ scope.row.rechargeName }}</span>
+						<div slot="content">{{ scope.row.comments }}</div>
+						<span>{{ scope.row.comments }}</span>
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[6].visible" label="充值附件" align="center" prop="attachment" show-overflow-tooltip>
+			<el-table-column v-if="columns[4].visible" label="附件" align="center" prop="attachment" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
 						<div slot="content" @click.stop>
@@ -137,14 +100,6 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[7].visible" label="备注" align="center" prop="comments">
-				<template #default="scope">
-					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.comments }}</div>
-						<span>{{ scope.row.comments }}</span>
-					</el-tooltip>
-				</template>
-			</el-table-column>
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="150px">
 				<template slot-scope="scope">
 					<!--					<el-button v-hasPermi="['system:oilrecharge:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>-->
@@ -157,33 +112,33 @@
 
 		<!-- 添加或修改加油卡充值信息对话框 -->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
-			<el-form ref="form" :model="form" :rules="rules" label-width="80px">
+			<el-form ref="form" :model="form" :rules="rules" label-width="200px" size="mini">
+				<el-form-item label="充值时间" prop="rechargeDate">
+					<el-date-picker v-model="form.rechargeDate" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="请选择充值时间" style="width: 100%" />
+				</el-form-item>
 				<el-form-item label="加油卡卡号" prop="oilCardNo">
 					<el-row>
 						<el-col :span="10">
-							<el-input disabled v-model="form.oilCardNo" placeholder="请选择" />
+							<el-input v-model="form.oilCardNo" placeholder="请输入加油卡卡号" @input="handleInputTrim($event, 'form', 'oilCardNo')" />
 						</el-col>
-						<el-col :span="4">
-							<SearchOption :get-data="listOilCard" query-info="oilCardNo" :query-name="queryOilCard" query-label="油卡账号查询" :limit-info="{ oilType: '主卡' }" @commitBack="handleCommitBackOilCard" @update:queryName="handleCommitBackQueryOilCard">
+						<el-col :span="3">
+							<SearchOption :get-data="listOilCard" title="选择加油卡" icon="el-icon-search" :limit-info="{ oilType: '主卡' }" @commitBack="handleCommitBackOilCard" @update:queryName="handleCommitBackQueryOilCard" :query-name="queryOilCard" query-info="oilCardNo" query-label="加油卡卡号">
 								<template #table-columns>
-									<el-table-column label="加油卡卡号" align="center" prop="oilCardNo" />
-									<el-table-column label="当前金额" align="center" prop="moneyAmount" />
+									<el-table-column prop="oilCardNo" label="加油卡卡号" />
+									<el-table-column prop="moneyAmount" label="加油卡余额" />
 								</template>
 							</SearchOption>
 						</el-col>
 					</el-row>
 				</el-form-item>
-				<el-form-item label="充值金额" prop="rechargeMoney">
-					<el-input v-model="form.rechargeMoney" placeholder="请输入充值金额" />
-				</el-form-item>
-				<el-form-item label="充值人员姓名" prop="rechargeName">
-					<el-input v-model="form.rechargeName" disabled placeholder="请输入充值人员姓名" />
-				</el-form-item>
-				<el-form-item label="充值附件" prop="attachment">
-					<UploadFilesButton ref="attachmentUpload" flag="attachment" :initial-attachments="(form.params && form.params.attachments) || []" :extra-info="{ moduleType: 'oilRecharge', formId: form.id }" @files-updated="handleAttachmentFilesUpdated" />
+				<el-form-item label="请输入充值金额" prop="rechargeMoney">
+					<el-input v-model="form.rechargeMoney" placeholder="请输入充值金额" @input="handleInputTrim($event, 'form', 'rechargeMoney')" />
 				</el-form-item>
 				<el-form-item label="备注" prop="comments">
 					<el-input v-model="form.comments" placeholder="请输入备注" />
+				</el-form-item>
+				<el-form-item label="附件" prop="attachment">
+					<UploadFilesButton ref="attachmentUpload" flag="attachment" :initial-attachments="(form.params && form.params.attachments) || []" :extra-info="{ moduleType: 'oilRecharge', formId: form.id }" @files-updated="handleAttachmentFilesUpdated" />
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -270,8 +225,10 @@ export default {
 			},
 			// 表单参数
 			form: {
-				rechargeName: '',
-				rechargeDate: parseTime(new Date()),
+				oilCardNo: null,
+				rechargeMoney: null,
+				rechargeDate: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
+				comments: null,
 				rechargeType: '银行卡'
 			},
 			// 表单校验
@@ -279,8 +236,15 @@ export default {
 				oilCardNo: [
 					{
 						required: true,
-						message: '请输入加油卡卡号',
+						message: '加油卡卡号不能为空',
 						trigger: 'blur'
+					}
+				],
+				rechargeDate: [
+					{
+						required: true,
+						message: '请选择充值时间',
+						trigger: 'change'
 					}
 				],
 				rechargeMoney: [
@@ -303,14 +267,11 @@ export default {
 				]
 			},
 			columns: [
-				{ key: 0, label: `审核状态`, visible: true },
-				{ key: 1, label: `加油卡卡号`, visible: true },
-				{ key: 2, label: `充值类型`, visible: true },
-				{ key: 3, label: `充值金额`, visible: true },
-				{ key: 4, label: `充值时间`, visible: true },
-				{ key: 5, label: `充值人员姓名`, visible: true },
-				{ key: 6, label: `充值附件`, visible: true },
-				{ key: 7, label: `备注`, visible: true }
+				{ key: 0, label: `加油卡卡号`, visible: true },
+				{ key: 1, label: `充值金额`, visible: true },
+				{ key: 2, label: `充值时间`, visible: true },
+				{ key: 3, label: `备注`, visible: true },
+				{ key: 4, label: `附件`, visible: true }
 			],
 			tid: '',
 			paymentApplyVisible: false,
@@ -390,10 +351,9 @@ export default {
 				oilCardNo: null,
 				rechargeType: '银行卡',
 				rechargeMoney: null,
-				rechargeDate: parseTime(new Date()),
+				rechargeDate: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
 				acountsName: null,
 				bankNo: null,
-				rechargeName: null,
 				comments: null,
 				addtime: null,
 				userId: null,
@@ -423,8 +383,6 @@ export default {
 		handleAdd() {
 			this.reset();
 			this.open = true;
-			// 填充充值人员姓名
-			this.form.rechargeName = this.trueName;
 			this.title = '添加加油卡充值信息';
 		},
 		/** 修改按钮操作 */

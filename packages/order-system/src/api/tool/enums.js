@@ -13,12 +13,14 @@ export const PUBLIC_DICT_TYPE = {
 	// 己方公司
 	SELF_COMPANY: '己方公司',
 	// 对方公司
-	OTHER_COMPANY: '对方公司'
+	OTHER_COMPANY: '对方公司',
+	// 运费聚合
+	FREIGHT_AGGREGATE: '运费聚合'
 };
 
 export const YES_OR_NO = Object.freeze({
-	YES: 1,
-	NO: 0
+	YES: "1",
+	NO: "0"
 });
 
 export const CAR_TYPE = Object.freeze({
@@ -71,7 +73,9 @@ export const TableName = Object.freeze({
 	INVENTORDETAIL: 'inventory_detail',
 	DAILY: 'daily',
 	ORDERCOMMISION: 'ordercommission',
-	DEPOSITMONEY: 'deposit_money'
+	DEPOSITMONEY: 'deposit_money',
+	// 期初
+	INIT: 'init'
 });
 
 // 给根据表明和id批量查询使用
@@ -147,10 +151,13 @@ export function getOrAdvancedModule(moduleName, flag = 'default') {
 	if (!moduleName) {
 		throw new Error('isAdvancedModule moduleName is required');
 	}
+	console.log (moduleName, flag)
+
 	// 如果模块不属于高级 并且 没有传递flag 或者flag 是 default
 	if (!moduleNames.advanced.modules.includes(moduleName) && (!flag || flag === 'default')) {
 		return moduleNames[moduleName];
 	}
+
 	return moduleNames.advanced.spec[moduleName][flag];
 }
 

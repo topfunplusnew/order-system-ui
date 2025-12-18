@@ -690,7 +690,8 @@ export default {
 			// 运费修正搜索字段
 			queryBankAccount: '', // 银行账户搜索字段
 			currentFreightId: null, // 当前过滤的运费ID（可能是单个ID或数组）
-			currentFreightIds: [] // 当前过滤的运费ID数组
+			currentFreightIds: [], // 当前过滤的运费ID数组
+			currentOtherBankNo: null // 当前过滤的对方银行卡号
 		};
 	},
 	computed: {
@@ -749,13 +750,30 @@ export default {
 				}
 			},
 			immediate: false
+		},
+		// 监听路由中的 otherBankNo 参数变化
+		'$route.query.otherBankNo': {
+			handler(newOtherBankNo, oldOtherBankNo) {
+				// 当 otherBankNo 从无到有，或者从一个值变为另一个值时，触发查询
+				if (newOtherBankNo && newOtherBankNo !== oldOtherBankNo) {
+					this.queryByOtherBankNo(newOtherBankNo);
+				} else if (!newOtherBankNo && oldOtherBankNo) {
+					// 当 otherBankNo 被清除时，恢复正常查询
+					this.currentOtherBankNo = null;
+					this.getList();
+				}
+			},
+			immediate: false
 		}
 	},
 	created() {
 		// 拿到地址栏中的参数
-		const { fundsDate, driver, freightId } = this.$route.query;
-		// 如果存在运费ID
-		if (freightId) {
+		const { fundsDate, driver, freightId, otherBankNo } = this.$route.query;
+		// 如果存在对方银行卡号
+		if (otherBankNo) {
+			// 根据对方银行卡号查询对应的运费记录
+			this.queryByOtherBankNo(otherBankNo);
+		} else if (freightId) {
 			// 根据运费ID查询对应的运费记录
 			this.queryByFreightId(freightId);
 		} else if (fundsDate && driver) {
@@ -774,13 +792,13 @@ export default {
 		}
 	},
 	mounted() {
-		// 只清除 fundsDate 和 driver 参数，保留 freightId 参数
-		const { fundsDate, driver, freightId } = this.$route.query;
-		if ((fundsDate || driver) && !freightId) {
-			// 如果有 fundsDate 或 driver 参数但没有 freightId，清除这些参数
+		// 只清除 fundsDate 和 driver 参数，保留 freightId 和 otherBankNo 参数
+		const { fundsDate, driver, freightId, otherBankNo } = this.$route.query;
+		if ((fundsDate || driver) && !freightId && !otherBankNo) {
+			// 如果有 fundsDate 或 driver 参数但没有 freightId 和 otherBankNo，清除这些参数
 			this.$router.replace({ path: this.$route.path });
 		}
-		// 如果有 freightId，保留它，不清除
+		// 如果有 freightId 或 otherBankNo，保留它们，不清除
 	},
 	methods: {
 		fix,
@@ -914,6 +932,36 @@ export default {
 					this.loading = false;
 				});
 		},
+		/** 根据对方银行卡号查询运费记录 */
+		queryByOtherBankNo(otherBankNo) {
+			this.loading = true;
+			// 保存当前过滤的银行卡号
+			this.currentOtherBankNo = otherBankNo;
+			// 构建查询参数
+			const queryParams = {
+				pageNum: 1,
+				pageSize: 10000,
+				otherBankNo: otherBankNo
+			};
+			listOrderFreight(queryParams)
+				.then(response => {
+					const freights = Array.isArray(response.rows) ? response.rows : [];
+					this.orderFreightList = freights;
+					this.total = response.total || freights.length;
+					this.loading = false;
+					// 提示用户
+					if (freights.length > 0) {
+						this.$message.success(`已查询到对方银行卡号为 ${otherBankNo} 的 ${freights.length} 条运费记录`);
+					} else {
+						this.$message.warning(`未查询到对方银行卡号为 ${otherBankNo} 的运费记录`);
+					}
+				})
+				.catch(error => {
+					console.error('查询运费记录失败:', error);
+					this.$message.error('查询运费记录失败');
+					this.loading = false;
+				});
+		},
 		/** 清除运费ID过滤，恢复正常模式（已废弃，使用 resetQuery 代替） */
 		clearFreightIdFilter() {
 			// 直接调用重置查询方法
@@ -1016,9 +1064,10 @@ export default {
 		},
 		/** 重置按钮操作 */
 		resetQuery() {
-			// 1. 清空运费ID过滤状态
+			// 1. 清空运费ID和银行卡号过滤状态
 			this.currentFreightId = null;
 			this.currentFreightIds = [];
+			this.currentOtherBankNo = null;
 
 			// 2. 重置表单
 			this.resetForm('queryForm');
@@ -1059,10 +1108,11 @@ export default {
 			// 4. 重置日期范围
 			this.dateRange = [];
 
-			// 5. 清除路由中的 freightId 参数
-			if (this.$router && this.$route.query.freightId) {
+			// 5. 清除路由中的 freightId 和 otherBankNo 参数
+			if (this.$router && (this.$route.query.freightId || this.$route.query.otherBankNo)) {
 				const newQuery = { ...this.$route.query };
 				delete newQuery.freightId;
+				delete newQuery.otherBankNo;
 				this.$router.replace({
 					path: this.$route.path,
 					query: newQuery

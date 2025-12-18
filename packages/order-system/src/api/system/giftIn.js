@@ -45,7 +45,7 @@ export function delGiftIn(id) {
 
 // 退回购入礼品信息
 export function returnGiftIn(data) {
-	const { id, quantity, outLocation, remark, handler } = data;
+	const { id, quantity, outLocation, remark, handler, localDate } = data;
 	return request({
 		url: '/system/giftIn/sendBack',
 		method: 'put',
@@ -54,7 +54,8 @@ export function returnGiftIn(data) {
 			quantity: quantity,
 			outLocation: outLocation,
 			remark: remark,
-			handler: handler
+			handler: handler,
+			localDate: localDate
 		}
 	});
 }
@@ -67,7 +68,6 @@ export function getGiftInReInDetail(id) {
 		params: { id: id }
 	});
 }
-
 
 // 查看出库详情
 export function getGiftInOutDetail(id) {

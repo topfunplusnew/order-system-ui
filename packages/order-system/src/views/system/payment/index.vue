@@ -267,8 +267,8 @@
 									<el-dropdown-item v-if="scope.row.paymentState === PAYMENT_STATE.UNPAID" v-hasPermi="['system:payment:edit']" command="payment">付款</el-dropdown-item>
 									<el-dropdown-item v-else-if="scope.row.paymentState === PAYMENT_STATE.PAID" disabled command="paid">已付款</el-dropdown-item>
 									<el-dropdown-item v-else disabled command="applying">申请中</el-dropdown-item>
-									<el-dropdown-item v-hasPermi="['system:payment:edit']" :disabled="scope.row.paymentState === PAYMENT_STATE.UNPAID || (scope.row.paymentState === PAYMENT_STATE.PAID && scope.row.auditState === '1')" command="edit" divided>编辑</el-dropdown-item>
-									<el-dropdown-item v-hasPermi="['system:payment:remove']" :disabled="scope.row.paymentState === PAYMENT_STATE.PAID && scope.row.auditState === '1'" command="delete">删除</el-dropdown-item>
+									<el-dropdown-item v-hasPermi="['system:payment:edit']" :disabled="isEditDisabled(scope.row)" command="edit" divided>编辑</el-dropdown-item>
+									<el-dropdown-item v-hasPermi="['system:payment:remove']" :disabled="isDeleteDisabled(scope.row)" command="delete">删除</el-dropdown-item>
 									<el-dropdown-item v-hasPermi="['system:tableeditmessage:list']" command="viewEditReason">查看修改原因</el-dropdown-item>
 									<el-dropdown-item v-if="hasTableReference(scope.row, TableName.ORDER_FREIGHT)" command="viewFreightInfo" divided>查看运费信息</el-dropdown-item>
 								</el-dropdown-menu>
@@ -414,8 +414,8 @@
 
 					<!-- 右列 -->
 					<el-col :span="12">
-						<el-form-item v-if="form.companyType !== PAYMENT_TARGET_TYPE.PAYMENT_FEE" label="对方银行账户类型">
-							<BankType ref="otherSelectedBankType" :option-baned="true" :baned="true" :select-type="form.otherBankCardType" @updateSelectedType="changeOtherBankType" style="width: 100%" />
+						<el-form-item label="对方银行账户类型">
+							<BankType ref="otherSelectedBankType" :option-baned="true" :baned="form.companyType === PAYMENT_TARGET_TYPE.PAYMENT_FEE" :select-type="form.otherBankCardType" @updateSelectedType="changeOtherBankType" style="width: 100%" />
 						</el-form-item>
 
 						<!-- 选择供应商 -->
@@ -984,6 +984,19 @@ export default {
 		listCompany,
 		hasTableReference,
 		fix,
+		// 判断编辑按钮是否禁用的封装函数
+		isEditDisabled(row) {
+			// 未支付状态或已付款且已复核的记录不允许编辑 运费聚合的记录不允许编辑
+			const isUnpaid = row.paymentState === PAYMENT_STATE.UNPAID 
+			const isPaid = row.paymentState === PAYMENT_STATE.PAID && row.auditState === '1';
+			const isFreightAggregate = row.companyType === PUBLIC_DICT_TYPE.FREIGHT_AGGREGATE;
+			return isUnpaid || isPaid || isFreightAggregate;
+		},
+		// 判断删除按钮是否禁用的封装函数
+		isDeleteDisabled(row) {
+			// 已付款且已复核的记录不允许删除
+			return row.paymentState === PAYMENT_STATE.PAID && row.auditState === '1';
+		},
 		// 分片渲染数据
 		renderDataInChunks(data) {
 			// 如果正在渲染，先取消
@@ -1171,6 +1184,10 @@ export default {
 		changeCustomSelfBankType(value) {
 			this.chooseInfo.otherBankCardType = value;
 			this.chooseInfo.selfBankCardType = value;
+		},
+		// 选择对方银行账户类型
+		changeOtherBankType(value) {
+			this.form.otherBankCardType = value;
 		},
 		// 处理承兑信息更新，自动填充我方户名和对方户名
 		handleBankAcceptanceUpdate(acceptanceData) {
@@ -1927,20 +1944,13 @@ export default {
 			this.importResultMessage = '';
 		},
 		// 查看运费信息相关方法
-		// 跳转到运费支付页面并带上运费ID
-		// 查看运费信息相关方法
-		// 跳转到运费支付页面并带上运费ID
+		// 跳转到运费支付页面并带上对方银行卡号
 		handleViewFreightInfo(row) {
-			//
+			// 获取对方银行卡号
+			const otherBankNo = row.otherBankNo;
 
-			// 从 tableReferences 中提取运费ID列表
-			const freightIds = _.chain(row.tableReferences)
-				.filter(ref => ref.refTableName === TableName.ORDER_FREIGHT && ref.refTableId)
-				.map('refTableId')
-				.value();
-
-			if (_.isEmpty(freightIds)) {
-				this.$message.warning('未找到关联的运费信息');
+			if (!otherBankNo) {
+				this.$message.warning('未找到对方银行卡号信息');
 				return;
 			}
 
@@ -1949,7 +1959,7 @@ export default {
 				this.$router.push({
 					path: '/order/freight/OrderFreight',
 					query: {
-						freightId: freightIds[0]
+						otherBankNo: otherBankNo
 					}
 				});
 			}

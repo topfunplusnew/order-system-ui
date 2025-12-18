@@ -55,9 +55,52 @@ export default {
 			return PUBLIC_DICT_TYPE;
 		},
 		...mapGetters(['selectedInvoiceList', 'selectedOrder', 'ticketPoint', 'comment', 'invoiceAmount', 'batchDetailRows']),
-		// 是否已有生成的发票列表，用于控制“开具发票”按钮是否可用
+		// 是否已有生成的发票列表，用于控制"开具发票"按钮是否可用
 		hasGeneratedInvoices() {
 			return Array.isArray(this.selectedInvoiceList) && this.selectedInvoiceList.length > 0;
+		},
+		// 实时计算剩余开票金额（基于模板数据中的未开票金额总和）
+		remainingInvoiceAmount() {
+			if (!this.supplierId || !this.batchDetailRows || this.batchDetailRows.length === 0) {
+				return 0;
+			}
+
+			// 筛选出该公司对应的未开票模板数据
+			const relevantTemplates = this.batchDetailRows.filter(tpl => {
+				// 只计算未开票的记录
+				if (tpl.invoiced) {
+					return false;
+				}
+
+				// 根据发票类型匹配
+				if (this.invoiceType === PUBLIC_DICT_TYPE.CUSTOMER) {
+					// 客户模式：查找购买方ID匹配的记录
+					return tpl.purchaseId && String(tpl.purchaseId) === String(this.supplierId);
+				} else if (this.invoiceType === PUBLIC_DICT_TYPE.SUPPLIER) {
+					// 供应商模式：查找销方ID匹配的记录
+					return tpl.sellerId && String(tpl.sellerId) === String(this.supplierId);
+				}
+
+				return false;
+			});
+
+			// 计算模板数据总金额
+			let totalAmount = this.math.bignumber(0);
+			relevantTemplates.forEach(tpl => {
+				totalAmount = this.math.add(totalAmount, this.math.bignumber(tpl.total || 0));
+			});
+
+			// 减去已生成的发票金额
+			if (this.selectedInvoiceList && this.selectedInvoiceList.length > 0) {
+				const generatedAmount = this.selectedInvoiceList.reduce((sum, invoice) => {
+					return this.math.add(sum, this.math.bignumber(invoice.invoiceAmount || 0));
+				}, this.math.bignumber(0));
+				totalAmount = this.math.subtract(totalAmount, generatedAmount);
+			}
+
+			const result = Number(this.math.format(totalAmount, { precision: 2, notation: 'fixed' }));
+			// 确保不为负数
+			return Math.max(0, result);
 		}
 	},
 	methods: {
@@ -222,12 +265,13 @@ export default {
 		},
 
 		/**
-		 * 生成发票（按批次数据分配）
-		 * 模板金额是原子性的，不可拆分，能拼几条拼几条
+		 * 生成发票（以模板数据为主）
+		 * 每个模板数据生成一张发票，发票金额以模板数据为准，但不能超过订单的剩余货款
 		 */
 		generateInvoicesByTemplates() {
 			const orders = this.$store.getters.selectedOrder || [];
 			if (!orders || orders.length === 0) {
+				this.$message.warning('请先选择订单');
 				return;
 			}
 
@@ -260,36 +304,90 @@ export default {
 				return;
 			}
 
-			// 深拷贝批次数据，标记是否已使用
-			const templatePool = filtered.map(t => ({ ...t, _used: false }));
 			const resultInvoices = [];
 			const b = v => this.math.bignumber(v || 0);
+			// 记录未用完的模板数据（原子性要求：必须用完）
+			const unfinishedTemplates = [];
 
-			for (const order of orders) {
-				let remaining = b(order.allPayments - (order.params?.totalInvoiceAmount || 0));
+			// 为每个订单计算剩余货款（用于限制发票金额）
+			const orderRemainingMap = new Map();
+			orders.forEach(order => {
+				let remaining = 0;
+				if (this.invoiceType === PUBLIC_DICT_TYPE.CUSTOMER) {
+					// 客户模式：使用总货款减去已开票金额
+					const allPayments = b(order.allPayments || 0);
+					const totalInvoiceAmount = b(order.params?.totalInvoiceAmount || 0);
+					remaining = Number(this.math.format(this.math.subtract(allPayments, totalInvoiceAmount), { precision: 2, notation: 'fixed' }));
+				} else if (this.invoiceType === PUBLIC_DICT_TYPE.SUPPLIER) {
+					// 供应商模式：使用出厂货款之和减去已开票金额
+					if (order.smailOrderDetails && Array.isArray(order.smailOrderDetails)) {
+						const supplierDetails = order.smailOrderDetails.filter(detail => detail.supplierID === selectedCompanyId);
+						let totalFactoryPayment = b(0);
+						supplierDetails.forEach(detail => {
+							totalFactoryPayment = this.math.add(totalFactoryPayment, b(detail.paymentFactory || 0));
+						});
+						const totalInvoiceAmount = b(order.params?.totalInvoiceAmount || 0);
+						remaining = Number(this.math.format(this.math.subtract(totalFactoryPayment, totalInvoiceAmount), { precision: 2, notation: 'fixed' }));
+					}
+				}
+				orderRemainingMap.set(order.id, remaining);
+			});
 
-				if (this.math.equal(remaining, b(0))) {
-					continue;
+			// 以模板数据为主，遍历每个模板数据
+			for (const tpl of filtered) {
+				let tplRemaining = b(tpl.total || 0); // 模板剩余金额
+				if (this.math.equal(tplRemaining, b(0))) {
+					continue; // 跳过金额为0的模板
 				}
 
-				// 遍历模板，找出能完整使用的（金额 <= 剩余金额）
-				for (let i = 0; i < templatePool.length; i++) {
-					const tpl = templatePool[i];
+				// 一个模板数据可以分配给多个订单，直到模板金额用完
+				while (this.math.larger(tplRemaining, b(0))) {
+					// 找到匹配的订单（根据公司ID匹配）
+					let matchedOrder = null;
+					for (const order of orders) {
+						// 检查模板数据是否匹配当前订单的公司
+						let isMatched = false;
+						if (this.invoiceType === PUBLIC_DICT_TYPE.CUSTOMER) {
+							// 客户模式：检查购买方ID是否匹配
+							isMatched = tpl.purchaseId && String(tpl.purchaseId) === String(order.customerID);
+						} else if (this.invoiceType === PUBLIC_DICT_TYPE.SUPPLIER) {
+							// 供应商模式：检查销方ID是否匹配
+							isMatched = tpl.sellerId && String(tpl.sellerId) === String(selectedCompanyId);
+							// 还需要检查订单明细中是否包含该供应商
+							if (isMatched && order.smailOrderDetails) {
+								isMatched = order.smailOrderDetails.some(detail => detail.supplierID === selectedCompanyId);
+							}
+						}
 
-					// 跳过已使用或金额为0的模板
-					if (tpl._used || this.math.equal(b(tpl.total || 0), b(0))) {
-						continue;
+						if (isMatched) {
+							const remaining = orderRemainingMap.get(order.id) || 0;
+							// 如果订单还有剩余货款，可以使用
+							if (remaining > 0) {
+								matchedOrder = order;
+								break;
+							}
+						}
 					}
 
-					const tplAmount = b(tpl.total || 0);
-
-					// 模板金额大于剩余金额，跳过（不拆分）
-					if (this.math.larger(tplAmount, remaining)) {
-						continue;
+					// 如果没有匹配的订单，跳出循环
+					if (!matchedOrder) {
+						break;
 					}
 
-					// 使用整个模板金额（原子性，不拆分）
-					const used = tplAmount;
+					// 获取订单剩余货款
+					const orderRemaining = b(orderRemainingMap.get(matchedOrder.id) || 0);
+					
+					// 如果订单剩余开票金额为0或负数，跳出循环
+					if (this.math.smallerEq(orderRemaining, b(0))) {
+						break;
+					}
+					
+					// 发票金额 = min(模板剩余金额, 订单剩余开票金额)
+					let invoiceAmount = tplRemaining;
+					if (this.math.larger(tplRemaining, orderRemaining)) {
+						// 如果模板剩余金额大于订单剩余开票金额，使用订单剩余开票金额
+						invoiceAmount = orderRemaining;
+					}
 
 					// 确定公司信息
 					let companyTypeConst = this.invoiceType;
@@ -322,19 +420,28 @@ export default {
 						}
 					}
 
+					// 计算票点金额（使用实际发票金额计算）
+					const actualInvoiceAmount = Number(this.math.format(invoiceAmount, { precision: 2, notation: 'fixed' }));
+					let ticketPointAmount = 0;
+					if (this.math.larger(b(tpl.ticketPoint || 0), b(0))) {
+						const denominator = this.math.add(b(1), b(tpl.ticketPoint || 0));
+						const fraction = this.math.divide(invoiceAmount, denominator);
+						ticketPointAmount = Number(this.math.format(this.math.multiply(fraction, b(tpl.ticketPoint || 0)), { precision: 2, notation: 'fixed' }));
+					}
+
 					// 生成发票对象
 					const invoice = this.createInvoiceObject(
 						{
 							invoiceDate: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
 							invoiceObject: invoiceObject || sessionStorage.getItem('us') || '',
-							invoiceAmount: Number(this.math.format(used, { precision: 2, notation: 'fixed' })),
+							invoiceAmount: actualInvoiceAmount,
 							companyType: companyTypeConst,
 							companyName: companyName,
 							companyID: companyID,
 							invoiceCompanyName: companyName,
 							ticketPoint: tpl.ticketPoint || 0,
-							ticketPointAmount: Number(this.math.format(this.math.multiply(used, b(tpl.ticketPoint || 0)), { precision: 2, notation: 'fixed' })),
-							isOrderTax: order.id,
+							ticketPointAmount: ticketPointAmount,
+							isOrderTax: matchedOrder.id,
 							comments: this.comment
 						},
 						{
@@ -344,20 +451,41 @@ export default {
 					);
 					resultInvoices.push(invoice);
 
-					// 标记模板已使用，更新剩余金额
-					templatePool[i]._used = true;
-					remaining = this.math.subtract(remaining, used);
+					// 更新订单剩余货款（减少已使用的金额）
+					const newRemaining = this.math.subtract(orderRemaining, invoiceAmount);
+					orderRemainingMap.set(matchedOrder.id, Number(this.math.format(newRemaining, { precision: 2, notation: 'fixed' })));
+					
+					// 更新模板剩余金额（减少已使用的金额）
+					tplRemaining = this.math.subtract(tplRemaining, invoiceAmount);
+				}
 
-					// 如果剩余金额为0，结束当前订单的匹配
-					if (this.math.largerEq(b(0), remaining) || this.math.equal(remaining, b(0))) {
-						break;
-					}
+				// 检查模板数据是否用完（原子性要求：必须用完）
+				const remainingAmount = Number(this.math.format(tplRemaining, { precision: 2, notation: 'fixed' }));
+				if (remainingAmount > 0.01) { // 允许0.01的误差（浮点数精度问题）
+					// 记录未用完的模板数据
+					unfinishedTemplates.push({
+						id: tpl.id,
+						voucher: tpl.voucher || '',
+						total: tpl.total || 0,
+						remaining: remainingAmount,
+						companyName: tpl.sellerName || tpl.purchaseName || '未知公司'
+					});
 				}
 			}
 
 			if (resultInvoices.length > 0) {
 				this.$store.dispatch('excel/setSelectedInvoiceList', resultInvoices);
 				this.$message.success(`已自动生成 ${resultInvoices.length} 条发票记录`);
+				
+				// 检查是否有未用完的模板数据（原子性要求）
+				if (unfinishedTemplates.length > 0) {
+					const templateInfo = unfinishedTemplates.map(t => 
+						`模板ID ${t.id}（${t.companyName}）剩余 ¥${t.remaining.toFixed(2)}`
+					).join('；');
+					this.$message.warning(
+						`以下模板数据未用完，请继续选择订单完成开票：${templateInfo}`
+					);
+				}
 			} else {
 				this.$message.warning('没有找到合适的批次记录来生成发票');
 			}
@@ -500,7 +628,7 @@ export default {
 					</div>
 					<div class="info-item">
 						<span class="info-label">剩余开票金额：</span>
-						<span class="money">{{ Number(invoiceAmount).toFixed(2) || '暂无' }}</span>
+						<span class="money">{{ remainingInvoiceAmount.toFixed(2) || '暂无' }}</span>
 					</div>
 				</div>
 				<div class="invoice-list">

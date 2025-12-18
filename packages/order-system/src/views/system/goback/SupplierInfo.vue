@@ -60,14 +60,14 @@
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<template slot="content">
 							<div v-for="(item, index) in scope.row.lenderList" :key="index">
-								<span style="color: red; margin-right: 6px">[{{ getOrAdvancedModule([item.tableName], scope.row.flag) }}]</span>
+								<span style="color: red; margin-right: 6px">[{{ getOrAdvancedModule([item.tableName], item.flag) }}]</span>
 								<span style="margin-right: 7px">{{ item.lender }}</span>
 								<i class="el-icon-s-order" style="cursor: pointer" @click="handleCheckDetail(item)"></i>
 							</div>
 						</template>
 						<div>
 							<div v-for="(item, index) in scope.row.lenderList" :key="index">
-								<span style="color: red; margin-right: 6px">[{{ getOrAdvancedModule([item.tableName], scope.row.flag) }}]</span>
+								<span style="color: red; margin-right: 6px">[{{ getOrAdvancedModule([item.tableName], item.flag) }}]</span>
 								<span style="margin-right: 7px">{{ item.lender }}</span>
 								<i class="el-icon-s-order" style="cursor: pointer" @click="handleCheckDetail(item)"></i>
 							</div>
@@ -428,6 +428,8 @@ export default {
 										tableName: detail.tableName,
 										debitCredit: detail.debitCredit,
 										moneyAmountLocal: fix(amount),
+										companyId: detail.companyId,
+										flag: detail.flag,
 										summary: Array.isArray(detail.summary) ? detail.summary.join('、') : detail.summary
 									};
 								};
@@ -435,7 +437,7 @@ export default {
 								const borrowerList = item.map(condition).filter(detail => isCredit(detail.debitCredit));
 
 								return {
-									supplierName: _.cloneDeep(this.searchForm.supplier),
+									supplierName: map[date]?.companyName,
 									operateDate: date, // 日期列使用分组的key
 									payNo: '', // 主表该列现在显示明细，留空或移除
 									lender: map[date].lender,
@@ -467,11 +469,12 @@ export default {
 		},
 		handleSearch(row) {
 			// 拿到表名和id
-			const { tableName, payNo } = row;
+			const { tableName, payNo, companyId } = row;
 			if (!tableName || !payNo) {
 				this.$message.warning('该行数据有误:模块名或者凭证号不存在');
 				return;
 			}
+
 			// 这里因为订单和库存需要特殊展示 额外判断
 			if (isGoodsOrderDisplay(tableName)) {
 				// 订单模块：将payNo数组传递给弹窗
@@ -482,7 +485,7 @@ export default {
 					{
 						ids: payNo,
 						isDetail: true,
-						companyId: this.searchForm.companyId,
+						companyId: companyId,
 						companyType: PUBLIC_DICT_TYPE.SUPPLIER
 					},
 					false

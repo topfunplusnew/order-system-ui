@@ -20,42 +20,49 @@ export default {
 		getDataList() {
 			listSubject({}, true).then(res => {
 				this.paymentTypeOptions = res.data;
-				this.makeTree();
+				this.$nextTick(() => {
+					this.makeTree();
+				});
 			});
 			this.dialogVisible = true;
 		},
 		makeTree() {
 			// 找到根节点 通过筛选出parentId为0的元素
-			this.paymentTypeTree = this.paymentTypeOptions.filter(item => item.parentId === 0);
+			this.paymentTypeTree = this.paymentTypeOptions
+				.filter(item => item.parentId === 0)
+				.sort((a, b) => {
+					return a.orderNum - b.orderNum;
+				});
 			// 循环每一个根节点，找他们的子节点
 			this.paymentTypeTree.forEach(root => {
-				this.findChildren(root);
+				this.findChildren(root, '');
 			});
 		},
-		findChildren(parent) {
+		findChildren(parent, fullSubjectString) {
+			// 叶子节点存储路径 用于查找
+			parent.fullSubjectString = fullSubjectString + parent.title + '-' || '';
 			// 对传入根节点的子数组进行操作
-			parent.children = this.paymentTypeOptions.filter(item => item.parentId === parent.id);
+			parent.children = this.paymentTypeOptions
+				.filter(item => item.parentId === parent.id)
+				.sort((a, b) => {
+					return a.orderNum - b.orderNum;
+				});
 			parent.children.forEach(child => {
-				this.findChildren(child); // 递归处理子节点
+				this.findChildren(child, parent.fullSubjectString); // 递归处理子节点
 			});
-
 			// 如果子节点为空，则删除 children 属性
 			if (parent.children.length === 0) {
 				delete parent.children;
 			}
+			parent.fullSubjectString = parent.fullSubjectString?.slice(0, -1);
 		},
 		// 点击某个节点
 		handleNodeClick(value) {
-			// 查找该节点的父节点
-			const parent = this.paymentTypeOptions.find(item => item.id === value.parentId);
-			if (parent !== undefined) {
-				// 拼接类型
-				if (value.type !== parent.title) {
-					// 不是一级节点拼接三层
-					this.type = value.type + parent.title + value.title;
-				} else {
-					this.type = value.type + value.title;
-				}
+			// 使用 fullSubjectString 获取完整科目路径
+			if (value.fullSubjectString) {
+				this.type = value.fullSubjectString;
+			} else {
+				this.type = value.title;
 			}
 		},
 		submitSubject() {
@@ -79,4 +86,9 @@ export default {
 	</div>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+::v-deep .el-dialog__body {
+	max-height: 60vh;
+	overflow-y: auto;
+}
+</style>

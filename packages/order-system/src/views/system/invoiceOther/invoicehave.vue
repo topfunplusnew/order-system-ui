@@ -1,7 +1,7 @@
 <template>
 	<div class="app-container">
 		<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
-			<el-form-item label="开票日期" prop="invoiceDate">
+			<el-form-item label="日期范围" prop="invoiceDate">
 				<el-date-picker v-model="dateRange" type="daterange" start-placeholder="开始日期" end-placeholder="结束日期" range-separator="至" value-format="yyyy-MM-dd" unlink-panels style="width: 240px" />
 			</el-form-item>
 			<el-form-item label="开票单位" prop="invoiceCompanyName">
@@ -714,6 +714,19 @@ export default {
 				this.checkOrderInfoVisible = true;
 			});
 		},
+		// 格式化日期范围，按照 QuerySearchBar.vue 的做法
+		formatDateRange() {
+			if (this.dateRange && this.dateRange.length === 2) {
+				// 开始时间：如果只有日期没有时间，添加 00:00:00
+				if (String(this.dateRange[0]).length === 10) {
+					this.dateRange[0] += ' 00:00:00';
+				}
+				// 结束时间：如果只有日期没有时间，添加 23:59:59
+				if (String(this.dateRange[1]).length === 10) {
+					this.dateRange[1] += ' 23:59:59';
+				}
+			}
+		},
 		/** 查询商家直接给客户开发票列表 */
 		getList() {
 			this.loading = true;
@@ -781,6 +794,8 @@ export default {
 		},
 		/** 搜索按钮操作 */
 		handleQuery() {
+			// 按照 QuerySearchBar.vue 的做法处理时间范围
+			this.formatDateRange();
 			this.queryParams.pageNum = 1;
 			this.getList();
 		},

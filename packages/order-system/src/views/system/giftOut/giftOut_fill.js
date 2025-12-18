@@ -8,71 +8,62 @@ export var mixin_gift_out_fill = {
 		handleUpdateItemName(value) {
 			this.itemName = value;
 		},
+// 替换原有的 handleCommitBackItem 方法
 		handleCommitBackItem(selectedItem) {
 			if (selectedItem) {
 				const isEditMode = this.form && this.form.id != null;
-				console.log('[handleCommitBackItem] 模式:', isEditMode ? '编辑模式' : '新增模式', '出库ID:', this.form?.id);
-				
-				// 同步物品名称
+
+				// 同步物品名称（从入库记录获取）
 				this.$set(this.form, 'itemName', selectedItem.itemName || '');
-				// 同步入库ID（关键步骤，用于关联入库记录）
-				this.$set(this.form, 'inId', selectedItem.id);
-				
-				// ⭐ 编辑模式下：不覆盖 unit 和 unitPrice，保持原有值
-				// 新增模式下：从入库记录同步 unit 和 unitPrice
+
+				// 设置入库记录ID（inId）- 用于关联入库记录
+				// 优先使用 id 字段，如果没有则尝试使用其他可能的字段
+				let inId = null;
+				if (selectedItem.id) {
+					inId = Number(selectedItem.id);
+				} else if (selectedItem.inId) {
+					inId = Number(selectedItem.inId);
+				}
+
+				if (inId && !isNaN(inId) && inId > 0) {
+					this.$set(this.form, 'inId', inId);
+					console.log('设置入库记录ID (inId):', inId, '来源数据:', selectedItem);
+				} else {
+					console.warn('无法从选中项获取有效的入库记录ID:', selectedItem);
+					// 如果无法获取 inId，清空它（允许手动输入物品名称时不关联入库记录）
+					this.$set(this.form, 'inId', null);
+				}
+
+				// 新增模式：从入库记录同步单位、单价等信息
+				// 修改：使用 /system/giftIn/list 接口，返回的是入库记录数据
 				if (!isEditMode) {
-					// 新增模式：同步单位（规格）
+					// 从入库记录获取单位
 					this.$set(this.form, 'unit', selectedItem.unit || '');
-					// 同步单价（优先使用入库记录的单价）
-					const unitPrice = selectedItem.unitPrice !== null && selectedItem.unitPrice !== undefined 
-						? Number(selectedItem.unitPrice) 
-						: (selectedItem.estimatedValue && selectedItem.quantity 
-							? Number(selectedItem.estimatedValue) / Number(selectedItem.quantity) 
-							: 0);
-					this.$set(this.form, 'unitPrice', unitPrice);
-					console.log('[handleCommitBackItem] 新增模式 - 已设置 unit:', selectedItem.unit, 'unitPrice:', unitPrice);
-				} else {
-					// 编辑模式：只更新 originalUnit 和 originalUnitPrice（用于后续校验）
-					// 但不覆盖 form.unit 和 form.unitPrice（保持用户当前编辑的值）
-					const unitPrice = selectedItem.unitPrice !== null && selectedItem.unitPrice !== undefined 
-						? Number(selectedItem.unitPrice) 
-						: (selectedItem.estimatedValue && selectedItem.quantity 
-							? Number(selectedItem.estimatedValue) / Number(selectedItem.quantity) 
-							: 0);
-					this.originalUnit = selectedItem.unit;
-					this.originalUnitPrice = unitPrice;
-					console.log('[handleCommitBackItem] 编辑模式 - 已更新 originalUnit:', this.originalUnit, 'originalUnitPrice:', this.originalUnitPrice);
-					console.log('[handleCommitBackItem] 编辑模式 - 保持 form.unit:', this.form.unit, 'form.unitPrice:', this.form.unitPrice);
-				}
-				
-				// 同步存货地点（如果有）
-				if (selectedItem.inventoryLocation) {
-					this.$set(this.form, 'inventoryLocation', selectedItem.inventoryLocation);
-				}
-				// 如果有数量，根据数量和单价自动计算金额
-				if (this.form.quantity) {
-					const { multiply, round } = require('mathjs');
-					const quantity = Number(this.form.quantity) || 0;
-					const price = this.form.unitPrice || 0;
-					if (quantity > 0 && price > 0) {
-						const result = multiply(quantity, price);
-						this.$set(this.form, 'estimatedValue', round(result, 2));
+
+					// 从入库记录获取单价：优先使用入库记录的单价，否则根据金额和数量计算
+					const { divide, round } = require('mathjs');
+					let unitPrice = 0;
+					if (selectedItem.unitPrice !== null && selectedItem.unitPrice !== undefined && selectedItem.unitPrice !== '') {
+						unitPrice = Number(selectedItem.unitPrice);
+					} else if (selectedItem.estimatedValue && selectedItem.quantity) {
+						const estimatedValue = Number(selectedItem.estimatedValue) || 0;
+						const quantity = Number(selectedItem.quantity) || 0;
+						if (quantity > 0) {
+							unitPrice = round(divide(estimatedValue, quantity), 2);
+						}
 					}
-				} else if (selectedItem.estimatedValue && !isEditMode) {
-					// 新增模式下，如果没有数量，使用入库记录的预估价值作为参考
-					this.$set(this.form, 'estimatedValue', Number(selectedItem.estimatedValue) || 0);
+					this.$set(this.form, 'unitPrice', unitPrice > 0 ? unitPrice : null);
+
+					// 注意：出库数量需要用户手动输入，不能自动填充
 				}
-				// 更新显示的剩余数量（优先使用 selectedItem 中的剩余数量，如果没有则重新计算）
-				if (selectedItem.remainingQuantity !== null && selectedItem.remainingQuantity !== undefined) {
-					this.$set(this, 'remainingQuantity', selectedItem.remainingQuantity);
-					this.$set(this.form, 'remainingQuantity', selectedItem.remainingQuantity);
-				} else {
-					// 如果没有，则重新计算
-					this.calculateRemainingQuantity(selectedItem.id);
+
+				// 如果已有出库数量，自动计算金额
+				if (this.form.quantity && this.form.unitPrice) {
+					this.calculateAmount();
 				}
-				// 触发 Vue 响应式更新
-				this.$forceUpdate();
 			}
 		}
+
 	}
+
 };

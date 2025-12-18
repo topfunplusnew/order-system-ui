@@ -2,11 +2,8 @@
 	<div class="app-container">
 		<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
 			<!--      时间查询-->
-			<el-form-item label="开票开始日期" prop="beginTime">
-				<el-date-picker v-model="queryParams.beginTime" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss" />
-			</el-form-item>
-			<el-form-item label="开票结束日期" prop="endTime">
-				<el-date-picker v-model="queryParams.endTime" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss" />
+			<el-form-item label="日期范围" prop="dateRange">
+				<el-date-picker v-model="dateRange" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" style="width: 240px" />
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -370,6 +367,7 @@ export default {
 			title: '',
 			// 是否显示弹出层
 			open: false,
+			dateRange: [],
 			// 查询参数
 			queryParams: {
 				pageNum: 1,
@@ -386,6 +384,8 @@ export default {
 				isOrderTax: -1,
 				comments: null,
 				addtime: null,
+				beginTime: null,
+				endTime: null,
 				userId: null,
 				UserName: null,
 				delFlag: null
@@ -570,9 +570,30 @@ export default {
 				this.editReasonTotal = response.total;
 			});
 		},
+		// 格式化日期范围，按照 QuerySearchBar.vue 的做法
+		formatDateRange() {
+			if (this.dateRange && this.dateRange.length === 2) {
+				// 开始时间：如果只有日期没有时间，添加 00:00:00
+				if (String(this.dateRange[0]).length === 10) {
+					this.dateRange[0] += ' 00:00:00';
+				}
+				// 结束时间：如果只有日期没有时间，添加 23:59:59
+				if (String(this.dateRange[1]).length === 10) {
+					this.dateRange[1] += ' 23:59:59';
+				}
+			}
+		},
 		/** 查询发票购入信息列表 */
 		getList() {
 			this.loading = true;
+			// 通过 dateRange 给 beginTime 和 endTime 赋值
+			if (this.dateRange && this.dateRange.length === 2) {
+				this.queryParams.beginTime = this.dateRange[0];
+				this.queryParams.endTime = this.dateRange[1];
+			} else {
+				this.queryParams.beginTime = null;
+				this.queryParams.endTime = null;
+			}
 			listInvoiceIn(this.queryParams).then(response => {
 				this.invoiceInList = response.rows;
 				this.total = response.total;
@@ -669,12 +690,15 @@ export default {
 		},
 		/** 搜索按钮操作 */
 		handleQuery() {
+			// 按照 QuerySearchBar.vue 的做法处理时间范围
+			this.formatDateRange();
 			this.queryParams.pageNum = 1;
 			this.getList();
 		},
 		/** 重置按钮操作 */
 		resetQuery() {
 			this.resetForm('queryForm');
+			this.dateRange = [];
 			this.handleQuery();
 		},
 		// 多选框选中数据
