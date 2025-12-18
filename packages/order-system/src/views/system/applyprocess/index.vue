@@ -446,7 +446,8 @@ export default {
 				payType: clonedPaymentApplyInfo.payType.split('-') || [],
 				attachmentList: clonedPaymentApplyInfo.attachmentList,
 				reason: clonedPaymentApplyInfo.reason,
-				comment: clonedPaymentApplyInfo.comment,
+				// 票的额外信息和 返利的实收详情里面有comment，其他的都是comments字段 
+				comments: clonedPaymentApplyInfo.comments,
 				remark: clonedPaymentApplyInfo.remark
 			};
 			// 额外信息

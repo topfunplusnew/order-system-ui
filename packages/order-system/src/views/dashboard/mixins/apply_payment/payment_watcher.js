@@ -64,7 +64,7 @@ export var mixin_payment_watcher = {
 						payType: val.payType,
 						companyName: val.companyName,
 						attachmentList: val.attachmentList,
-						comment: val.comment,
+						comments: val.comments,
 						remark: val.remark,
 						reason: val.reason
 					});
