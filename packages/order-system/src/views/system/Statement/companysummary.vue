@@ -73,7 +73,7 @@
 			<el-table-column v-if="columns[9].visible" show-overflow-tooltip label="本月发货金额合计" align="center" prop="monthlyOrderPayments" width="140" />
 			<el-table-column v-if="columns[10].visible" show-overflow-tooltip label="本月购入票点" align="center" prop="monthlyInvoiceAmount" width="140" />
 			<el-table-column v-if="columns[11].visible" show-overflow-tooltip label="本月回款金额" align="center" prop="monthlyReceiveMoney" width="140" />
-			<el-table-column v-if="columns[12].visible" show-overflow-tooltip label="本月欠款" align="center" prop="amountOwedThisMonth" width="140">
+			<el-table-column v-if="columns[12].visible" show-overflow-tooltip label="本月欠款金额" align="center" prop="amountOwedThisMonth" width="140">
 				<template slot-scope="scope">
 					{{ fix_2(Number(scope.row.previousMonthCarryover) + Number(scope.row.monthlyOrderPayments) + Number(scope.row.monthlyInvoiceAmount) - Number(scope.row.monthlyReceiveMoney)) }}
 				</template>
@@ -156,7 +156,7 @@ export default {
 				{ key: 9, label: '本月发货金额合计', visible: true },
 				{ key: 10, label: '本月购入票点', visible: true },
 				{ key: 11, label: '本月回款金额', visible: true },
-				{ key: 12, label: '本月欠款', visible: true },
+				{ key: 12, label: '本月欠款金额', visible: true },
 				{ key: 13, label: '本月客户利润', visible: true },
 				{ key: 14, label: '上年结转', visible: true },
 				{ key: 15, label: '本年发货金额', visible: true },
