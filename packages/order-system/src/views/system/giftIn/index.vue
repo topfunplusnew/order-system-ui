@@ -97,13 +97,26 @@
 
 			<el-table-column label="备注" align="center" prop="remark" width="120" show-overflow-tooltip />
 
-			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="400" fixed="right">
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="170" fixed="right">
 				<template #default="scope">
+					<!-- 保留修改和删除按钮 -->
 					<el-button v-hasPermi="['system:giftIn:edit']" size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)">修改</el-button>
 					<el-button v-hasPermi="['system:giftIn:remove']" size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)">删除</el-button>
-					<el-button size="mini" type="text" icon="el-icon-refresh-left" @click="handleReturn(scope.row)">退回</el-button>
-					<el-button size="mini" type="text" icon="el-icon-view" :disabled="!canViewReInDetail(scope.row)" @click="handleViewReInDetail(scope.row)">查看再入库详情</el-button>
-					<el-button size="mini" type="text" icon="el-icon-view" :disabled="!canViewOutDetail(scope.row)" @click="handleViewOutDetail(scope.row)">查看出库详情</el-button>
+
+					<!-- 添加更多按钮 -->
+					<el-dropdown trigger="click" style="margin-left: 5px">
+						<span class="el-dropdown-link">
+							更多
+							<i class="el-icon-arrow-down el-icon--right"></i>
+						</span>
+						<template #dropdown>
+							<el-dropdown-menu>
+								<el-dropdown-item @click.native="handleReturn(scope.row)">退回</el-dropdown-item>
+								<el-dropdown-item :disabled="!canViewReInDetail(scope.row)" @click.native="handleViewReInDetail(scope.row)">查看再入库详情</el-dropdown-item>
+								<el-dropdown-item :disabled="!canViewOutDetail(scope.row)" @click.native="handleViewOutDetail(scope.row)">查看出库详情</el-dropdown-item>
+							</el-dropdown-menu>
+						</template>
+					</el-dropdown>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -305,6 +318,11 @@
 				</el-table-column>
 				<el-table-column label="经办人" align="center" prop="handler" width="100" show-overflow-tooltip />
 				<el-table-column label="备注" align="center" prop="remark" show-overflow-tooltip />
+				<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="100">
+					<template #default="scope">
+						<el-button size="mini" type="text" icon="el-icon-delete" @click="handleDeleteOutDetail(scope.row)">删除</el-button>
+					</template>
+				</el-table-column>
 			</el-table>
 			<div v-else-if="viewDetailData && !Array.isArray(viewDetailData)" style="padding: 20px">
 				<el-descriptions :column="2" border>
@@ -335,6 +353,7 @@ export default {
 	components: { SearchOption },
 	data() {
 		return {
+			currentViewRow: null,
 			reInDetailMap: {}, // 存储每个入库记录是否有再入库详情
 			outDetailMap: {},
 			loading: true,
@@ -467,6 +486,48 @@ export default {
 		window.removeEventListener('resize', this.updateDialogWidth);
 	},
 	methods: {
+		// 在 methods 中添加以下方法
+		async handleDeleteOutDetail(row) {
+			try {
+				await this.$modal.confirm('确定要删除这条出库记录吗？');
+
+				// 调用删除接口，这里假设你有一个 deleteGiftOut 方法
+				// 注意：根据你的需求调整 API 调用方式
+				const response = await this.deleteGiftOutById(row.id);
+
+				if (response) {
+					this.$modal.msgSuccess('删除成功');
+					// 重新加载出库详情数据
+					this.refreshOutDetailView();
+				}
+			} catch (error) {
+				if (error !== 'cancel') {
+					console.error('删除出库记录失败:', error);
+					this.$message.error('删除失败: ' + (error.message || '未知错误'));
+				}
+			}
+		},
+
+		// 刷新出库详情视图
+		refreshOutDetailView() {
+			// 重新获取当前显示的详情数据
+			if (this.currentViewRow) {
+				if (this.viewDetailTitle === '查看出库详情') {
+					this.handleViewOutDetail(this.currentViewRow);
+				} else if (this.viewDetailTitle === '查看再入库详情') {
+					this.handleViewReInDetail(this.currentViewRow);
+				}
+			}
+		},
+
+		// 删除出库记录的API方法（需要在 import 部分引入相应的 API）
+		async deleteGiftOutById(id) {
+			// 这里需要根据实际的 API 接口进行调整
+			// 假设你有一个 API 可以删除出库记录
+			// 示例：
+			// return delGiftOut(id); // 需要在 api 文件中定义此方法
+			return Promise.resolve(); // 临时占位符
+		},
 		parseTime,
 		// 包装 listGift 函数，计算金额字段
 		async listGift(query) {
@@ -1119,7 +1180,9 @@ export default {
 			// 检查是否有出库详情数据
 			return !!this.outDetailMap[row.id];
 		},
+		// 修改 handleViewReInDetail 方法
 		handleViewReInDetail(row) {
+			this.currentViewRow = row; // 保存当前行
 			const id = Number(row.id);
 			if (!id || isNaN(id)) {
 				this.$message.error('无效的入库ID');
@@ -1187,7 +1250,9 @@ export default {
 					this.viewDetailLoading = false;
 				});
 		},
+		// 修改 handleViewOutDetail 方法
 		handleViewOutDetail(row) {
+			this.currentViewRow = row; // 保存当前行
 			const id = row.id;
 			if (!id) {
 				this.$message.error('无效的入库ID');
@@ -1260,6 +1325,10 @@ export default {
 </script>
 
 <style scoped>
+.el-dropdown-menu {
+	min-width: 150px;
+}
+
 .el-dialog {
 	max-height: 90vh;
 	overflow-y: auto;

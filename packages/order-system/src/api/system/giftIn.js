@@ -34,6 +34,13 @@ export function updateGiftIn(data) {
 		data: data
 	});
 }
+// 在 api/system/giftIn.js 中添加
+export function delGiftOut(giftOutId) {
+	return request({
+		url: `/system/gift/${giftOutId}`,
+		method: 'delete'
+	});
+}
 
 // 删除购入礼品信息
 export function delGiftIn(id) {

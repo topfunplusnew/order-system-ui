@@ -93,13 +93,26 @@
 
 			<el-table-column v-if="columns[10].visible" label="备注" align="center" prop="remark" width="120" show-overflow-tooltip />
 
-			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="500" fixed="right">
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="170" fixed="right">
 				<template #default="scope">
+					<!-- 保留修改和删除按钮 -->
 					<el-button v-hasPermi="['system:giftOut:edit']" size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)">修改</el-button>
 					<el-button v-hasPermi="['system:giftOut:remove']" size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)">删除</el-button>
-					<el-button size="mini" type="text" icon="el-icon-refresh-left" @click="handleReturn(scope.row)">退回</el-button>
-					<el-button size="mini" type="text" icon="el-icon-view" @click="handleViewInDetail(scope.row)">查看初始入库信息</el-button>
-					<el-button size="mini" type="text" icon="el-icon-view" :disabled="!scope.row.hasReInDetails" @click="handleViewReInDetail(scope.row)">查看再入库详情</el-button>
+
+					<!-- 添加更多按钮 -->
+					<el-dropdown trigger="click" style="margin-left: 5px">
+						<span class="el-dropdown-link">
+							更多
+							<i class="el-icon-arrow-down el-icon--right"></i>
+						</span>
+						<template #dropdown>
+							<el-dropdown-menu>
+								<el-dropdown-item @click.native="handleReturn(scope.row)">退回</el-dropdown-item>
+								<el-dropdown-item @click.native="handleViewInDetail(scope.row)">查看初始入库信息</el-dropdown-item>
+								<el-dropdown-item :disabled="!scope.row.hasReInDetails" @click.native="handleViewReInDetail(scope.row)">查看再入库详情</el-dropdown-item>
+							</el-dropdown-menu>
+						</template>
+					</el-dropdown>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -309,6 +322,13 @@
 					</el-table-column>
 					<el-table-column label="经办人" align="center" prop="handler" width="100" show-overflow-tooltip />
 					<el-table-column label="备注" align="center" prop="remark" show-overflow-tooltip />
+
+					<!-- 添加删除按钮列 -->
+					<el-table-column label="操作" align="center" width="100">
+						<template #default="scope">
+							<el-button size="mini" type="text" icon="el-icon-delete" @click="handleDeleteReInDetail(scope.row)">删除</el-button>
+						</template>
+					</el-table-column>
 				</el-table>
 				<div v-else-if="viewDetailData && !Array.isArray(viewDetailData)" style="padding: 20px">
 					<el-descriptions :column="2" border>
@@ -317,15 +337,13 @@
 				</div>
 				<div v-else-if="!viewDetailLoading && (!viewDetailData || (Array.isArray(viewDetailData) && viewDetailData.length === 0))" style="padding: 20px; text-align: center; color: #909399">暂无数据</div>
 			</div>
-
-			<div slot="footer" class="dialog-footer">
-				<el-button @click="viewDetailVisible = false">关 闭</el-button>
-			</div>
 		</el-dialog>
 	</div>
 </template>
 
 <script>
+import request from '@/utils/request';
+
 import { listUser } from '@/api/system/user';
 import { listGiftOut, getGiftOut, delGiftOut, addGiftOut, updateGiftOut, returnGiftOut, getGiftOutReInDetail, getGiftOutInDetail, getGiftOutOutDetail } from '@/api/system/giftOut';
 import { parseTime } from '../../../utils/ruoyi';
@@ -342,6 +360,7 @@ export default {
 	mixins: [mixin_printHTML, mixin_gift_out_fill],
 	data() {
 		return {
+			currentViewRow: null,
 			userList: [],
 			// 遮罩层
 			loading: true,
@@ -511,6 +530,34 @@ export default {
 		window.removeEventListener('resize', this.updateDialogWidth);
 	},
 	methods: {
+		// 删除再入库详情记录
+		async handleDeleteReInDetail(row) {
+			try {
+				// 确认删除操作
+				const confirmResult = await this.$modal.confirm('确定要删除这条再入库记录吗？');
+
+				if (confirmResult) {
+					// 调用接口删除记录
+					const response = await this.deleteGiftById(row.id);
+
+					if (response) {
+						this.$modal.msgSuccess('删除成功');
+
+						// 刷新当前查看详情的数据
+						this.handleViewReInDetail(this.currentViewRow);
+					}
+				}
+			} catch (error) {
+				console.error('删除再入库记录失败:', error);
+				if (error && error.response) {
+					const errorMsg = error.response.data?.msg || error.response.data?.message || '删除失败';
+					this.$message.error(errorMsg);
+				} else {
+					this.$message.error('删除失败，请稍后重试');
+				}
+			}
+		},
+
 		// 包装 listGiftIn 函数，确保参数正确传递
 		async listGiftIn(query) {
 			// 将 SearchOption 组件传递的 page 转换为 pageNum
@@ -740,6 +787,7 @@ export default {
 		},
 		/** 检查出库记录是否有再入库详情 */
 		/** 检查出库记录是否有再入库详情 */
+		// 检查出库记录是否有再入库详情
 		async checkHasReInDetails(id) {
 			try {
 				const response = await getGiftOutOutDetail(id);
@@ -767,6 +815,7 @@ export default {
 				return false;
 			}
 		},
+
 		/** 获取初始表单 */
 		getInitForm() {
 			return {
@@ -1228,11 +1277,13 @@ export default {
 		},
 		/** 查看再入库详情 */
 		handleViewReInDetail(row) {
+			this.currentViewRow = row; // 保存当前行
 			const id = Number(row.id);
 			if (!id || isNaN(id)) {
 				this.$message.error('无效的出库ID');
 				return;
 			}
+
 			this.viewDetailLoading = true;
 			this.viewDetailVisible = true;
 			this.viewDetailTitle = '查看再入库详情';
