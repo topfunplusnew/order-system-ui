@@ -384,6 +384,7 @@ export default {
 							// 上年结转的余额 (供应商：正数表示我们欠供应商，负数表示供应商欠我们)
 							let currentBalance = number(lastYearDetail.moneyAmount || 0);
 							let sourceData = _.cloneDeep(res.data);
+							const supperName = _.cloneDeep(res.data[0].companyName);
 
 							// 对订单和库存数据进行合并预处理
 							sourceData = mergeSpecialTableData(sourceData);
@@ -399,7 +400,8 @@ export default {
 								[itemTotalLender, itemTotalBorrower] = calculateLenderAndBorrower(dayData);
 								map[date] = {
 									lender: fix(itemTotalLender),
-									borrower: fix(itemTotalBorrower)
+									borrower: fix(itemTotalBorrower),
+									companyName: supperName
 								};
 							}
 							this.tableData = Object.keys(sourceData).map(date => {

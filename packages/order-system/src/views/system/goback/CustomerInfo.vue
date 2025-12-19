@@ -379,6 +379,7 @@ export default {
 						let nowMoney = number(0);
 						let currentBalance = number(lastYearDetail.moneyAmount || 0);
 						let sourceData = _.cloneDeep(res.data);
+						const customer = _.cloneDeep(res.data[0].companyName);
 
 						// 对订单和库存数据进行合并预处理
 						sourceData = mergeSpecialTableData(sourceData);
@@ -392,7 +393,8 @@ export default {
 							[itemTotalLender, itemTotalBorrower] = calculateLenderAndBorrower(dayData);
 							map[date] = {
 								lender: fix(itemTotalLender),
-								borrower: fix(itemTotalBorrower)
+								borrower: fix(itemTotalBorrower),
+								companyName: customer
 							};
 						}
 						// 维护表格数据
