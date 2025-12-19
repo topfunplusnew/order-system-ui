@@ -531,7 +531,7 @@ export default {
 				this.form.ticketPointAmount = val;
 			},
 			get() {
-				return Number(this.form.invoiceAmount * this.form.ticketPoint).toFixed(3);
+				return Number(this.form.invoiceAmount * this.form.ticketPoint).toFixed(2);
 			}
 		}
 	},
@@ -545,7 +545,7 @@ export default {
 		// 监听
 		form: {
 			handler() {
-				this.invoiceAmount = this.form.invoiceAmount * this.form.ticketPoint;
+				this.invoiceAmount = Number(this.form.invoiceAmount * this.form.ticketPoint).toFixed(2);
 			},
 			deep: true
 		},

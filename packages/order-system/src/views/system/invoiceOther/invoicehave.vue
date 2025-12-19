@@ -429,7 +429,7 @@ import { listCompany } from '@/api/system/company';
 import { listGoodsOrder } from '@/api/system/goodsOrder';
 import { addDateRange, parseTime } from '@/utils/ruoyi';
 import OrderInfos from '../../dashboard/components/goodsOrder/OrderInfos.vue';
-import { fix } from '../../../api/tool/format';
+import { fix_2 } from '../../../api/tool/format';
 import reLength from '../../dashboard/mixins/reLength';
 import CheckFiles from '../../../components/CheckFiles.vue';
 import UploadFilesButton from '@/components/UploadFilesButton/index.vue';
@@ -619,7 +619,7 @@ export default {
 		},
 		form: {
 			handler() {
-				this.form.supplierPointAmount = fix(this.form.supplierTicketPoint * this.form.invoiceAmount);
+				this.form.supplierPointAmount = fix_2(this.form.supplierTicketPoint * this.form.invoiceAmount);
 				this.form.customerPointAmount = fix(this.form.customerTicketPoint * this.form.invoiceAmount);
 			},
 			deep: true,

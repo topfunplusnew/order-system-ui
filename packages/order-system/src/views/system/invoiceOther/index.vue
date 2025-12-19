@@ -408,7 +408,7 @@ import { listCompany } from '@/api/system/company';
 import { addDateRange, parseTime } from '@/utils/ruoyi';
 import CheckFiles from '../../../components/CheckFiles.vue';
 import UploadFilesButton from '@/components/UploadFilesButton/index.vue';
-import { fix } from '../../../api/tool/format';
+import { fix_2 } from '../../../api/tool/format';
 import reLength from '../../dashboard/mixins/reLength';
 import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfile';
 import { getInvoiceOther, updateInvoiceOther } from '../../../api/system/invoiceOther';
@@ -604,7 +604,7 @@ export default {
 		},
 		form: {
 			handler() {
-				this.form.supplierPointAmount = fix(this.form.supplierTicketPoint * this.form.invoiceAmount);
+				this.form.supplierPointAmount = fix_2(this.form.supplierTicketPoint * this.form.invoiceAmount);
 				this.form.customerPointAmount = fix(this.form.customerTicketPoint * this.form.invoiceAmount);
 			},
 			deep: true,

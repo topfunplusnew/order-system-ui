@@ -129,8 +129,8 @@
 			<el-table-column v-if="columns[7].visible" label="票点金额" align="center" prop="ticketPointAmount" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.ticketPointAmount }}</div>
-						<span>{{ scope.row.ticketPointAmount }}</span>
+						<div slot="content">{{ scope.row.ticketPointAmount | changeNumber(changeLength) }}</div>
+						<span>{{ scope.row.ticketPointAmount | changeNumber(changeLength) }}</span>
 					</el-tooltip>
 				</template>
 			</el-table-column>
@@ -596,7 +596,7 @@ export default {
 			},
 			get() {
 				// 保留两位小数
-				return Number(this.form.invoiceAmount * this.form.ticketPoint).toFixed(3);
+				return Number(this.form.invoiceAmount * this.form.ticketPoint).toFixed(2);
 			}
 		}
 	},
@@ -609,7 +609,7 @@ export default {
 		},
 		form: {
 			handler() {
-				this.invoiceAmount = Number(this.form.invoiceAmount * this.form.ticketPoint).toFixed(3);
+				this.invoiceAmount = Number(this.form.invoiceAmount * this.form.ticketPoint).toFixed(2);
 			},
 			deep: true
 		},

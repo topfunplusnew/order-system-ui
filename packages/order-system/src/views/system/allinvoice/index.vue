@@ -62,7 +62,11 @@
 			<el-table-column v-if="columns[4].visible" label="公司名称" align="center" prop="companyName" width="140" show-overflow-tooltip />
 			<el-table-column v-if="columns[5].visible" label="开票单位名称" align="center" prop="invoiceCompanyName" width="140" show-overflow-tooltip />
 			<el-table-column v-if="columns[6].visible" label="票点" align="center" prop="ticketPoint" width="140" show-overflow-tooltip />
-			<el-table-column v-if="columns[7].visible" label="票点收入" align="center" prop="ticketPointIncomeAmount" width="140" show-overflow-tooltip />
+			<el-table-column v-if="columns[7].visible" label="票点收入" align="center" prop="ticketPointIncomeAmount" width="140" show-overflow-tooltip>
+				<template #default="scope">
+					{{ scope.row.ticketPointIncomeAmount | changeNumber(changeLength) }}
+				</template>
+			</el-table-column>
 			<el-table-column v-if="columns[8].visible" label="是否为订单税" align="center" prop="isOrderTax" width="140" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<el-tag :type="scope.row.isOrderTax === 0 ? 'danger' : 'success'" disable-transitions>
@@ -74,8 +78,16 @@
 			<el-table-column v-if="columns[10].visible" label="公司名称" align="center" prop="costCompanyName" width="140" show-overflow-tooltip />
 			<el-table-column v-if="columns[11].visible" label="开票单位名称" align="center" prop="costInvoiceCompanyName" width="140" show-overflow-tooltip />
 			<el-table-column v-if="columns[12].visible" label="票点" align="center" prop="ticketPointCost" width="140" show-overflow-tooltip />
-			<el-table-column v-if="columns[13].visible" label="票点成本" align="center" prop="ticketPointCostAmount" width="140" show-overflow-tooltip />
-			<el-table-column v-if="columns[14].visible" label="票点差额" align="center" prop="ticketPointDifference" width="140" show-overflow-tooltip />
+			<el-table-column v-if="columns[13].visible" label="票点成本" align="center" prop="ticketPointCostAmount" width="140" show-overflow-tooltip>
+				<template #default="scope">
+					{{ scope.row.ticketPointCostAmount | changeNumber(changeLength) }}
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[14].visible" label="票点差额" align="center" prop="ticketPointDifference" width="140" show-overflow-tooltip>
+				<template #default="scope">
+					{{ scope.row.ticketPointDifference}}
+				</template>
+			</el-table-column>
 			<el-table-column v-if="columns[15].visible" label="实际开票金额" align="center" prop="allPayments" width="140" show-overflow-tooltip />
 			<el-table-column v-if="columns[16].visible" label="实际开票日期" align="center" prop="orderDate" width="140" show-overflow-tooltip>
 				<template #default="scope">
@@ -149,11 +161,12 @@ import { TableName } from '@/api/tool/enums';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import { parseTime } from '@/utils/ruoyi';
 import { add, number } from 'mathjs';
+import reLength from '../../dashboard/mixins/reLength';
 
 export default {
 	name: 'AllInvoice',
 	components: {},
-	mixins: [mixin_printHTML],
+	mixins: [mixin_printHTML, reLength],
 	data() {
 		// 获取当日日期字符串
 		const today = parseTime(new Date(), '{y}-{m}-{d}');
