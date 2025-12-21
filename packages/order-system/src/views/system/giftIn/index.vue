@@ -248,7 +248,7 @@
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="viewDetailTitle" :visible.sync="viewDetailVisible" width="1200px" append-to-body>
 			<!-- 再入库详情表格 -->
 			<el-table v-if="viewDetailTitle === '查看再入库详情' && viewDetailData && Array.isArray(viewDetailData) && viewDetailData.length > 0" :data="viewDetailData" border size="mini" max-height="500" v-loading="viewDetailLoading">
-				<el-table-column label="ID" align="center" prop="id" width="80" show-overflow-tooltip />
+				<el-table-column label="ID" v-if="false" align="center" prop="id" width="80" show-overflow-tooltip />
 				<el-table-column label="入库方式" align="center" prop="inMethod" width="100" show-overflow-tooltip>
 					<template #default="scope">
 						<dict-tag :options="dict.type.order_gift_in_method" :value="scope.row.inMethod" />
@@ -1044,7 +1044,7 @@ export default {
 		handleDelete(row) {
 			const ids = row.id || this.ids;
 			const count = Array.isArray(ids) ? ids.length : 1;
-			const message = count > 1 ? `是否确认删除选中的${count}条购入礼品信息？` : `是否确认删除购入礼品信息编号为"${ids}"的数据项？`;
+			const message = count > 1 ? `是否确认删除选中的${count}条购入礼品信息？` : `是否确认删除购入礼品信息数据项？`;
 
 			this.$modal
 				.confirm(message)
@@ -1138,7 +1138,7 @@ export default {
 				}
 			});
 		},
-		// 判断是否可以查看再入库详情
+
 		// 判断是否可以查看再入库详情
 		canViewReInDetail(row) {
 			// 检查是否有再入库详情数据
@@ -1299,7 +1299,7 @@ export default {
 			}
 
 			this.$modal
-				.confirm(`是否确认删除编号为"${id}"的再入库记录？`)
+				.confirm(`是否确认删除再入库记录？`)
 				.then(() => {
 					return delGift(id);
 				})
