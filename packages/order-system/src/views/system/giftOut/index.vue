@@ -350,6 +350,7 @@ import { parseTime } from '../../../utils/ruoyi';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
 import SearchOption from '../../../components/SearchOption.vue';
 import { getGiftIn, listGiftIn as listGiftInApi, getGiftInReInDetail } from '@/api/system/giftIn';
+import { delGift } from '@/api/system/giftStock';
 import { mixin_gift_out_fill } from './giftOut_fill';
 import { subtract, round, add, multiply, divide } from 'mathjs';
 
@@ -534,21 +535,23 @@ export default {
 		async handleDeleteReInDetail(row) {
 			try {
 				// 确认删除操作
-				const confirmResult = await this.$modal.confirm('确定要删除这条再入库记录吗？');
+				await this.$modal.confirm('确定要删除这条再入库记录吗？');
 
-				if (confirmResult) {
-					// 调用接口删除记录
-					const response = await this.deleteGiftById(row.id);
+				// 调用接口删除记录
+				await delGift(row.id);
 
-					if (response) {
-						this.$modal.msgSuccess('删除成功');
+				this.$modal.msgSuccess('删除成功');
 
-						// 刷新当前查看详情的数据
-						this.handleViewReInDetail(this.currentViewRow);
-					}
+				// 刷新当前查看详情的数据
+				if (this.currentViewRow) {
+					this.handleViewReInDetail(this.currentViewRow);
 				}
 			} catch (error) {
 				console.error('删除再入库记录失败:', error);
+				if (error === 'cancel') {
+					// 用户取消删除，不显示错误
+					return;
+				}
 				if (error && error.response) {
 					const errorMsg = error.response.data?.msg || error.response.data?.message || '删除失败';
 					this.$message.error(errorMsg);
