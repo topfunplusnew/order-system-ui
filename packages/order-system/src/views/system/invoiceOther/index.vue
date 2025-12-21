@@ -605,7 +605,7 @@ export default {
 		form: {
 			handler() {
 				this.form.supplierPointAmount = fix_2(this.form.supplierTicketPoint * this.form.invoiceAmount);
-				this.form.customerPointAmount = fix(this.form.customerTicketPoint * this.form.invoiceAmount);
+				this.form.customerPointAmount = fix_2(this.form.customerTicketPoint * this.form.invoiceAmount);
 			},
 			deep: true,
 			immediate: true
