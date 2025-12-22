@@ -234,7 +234,6 @@
 		<!-- 退回弹窗 -->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="退回礼品出库信息" :visible.sync="returnOpen" width="600px" append-to-body @close="handleReturnClose">
 			<el-form ref="returnForm" :model="returnForm" :rules="returnRules" label-width="120px">
-				<!-- 在退回弹窗中添加的 localDate 字段缺少绑定 -->
 				<el-form-item label="退回日期" prop="localDate">
 					<el-date-picker v-model="returnForm.localDate" type="date" placeholder="请选择退回日期" style="width: 100%" value-format="yyyy-MM-dd" clearable />
 				</el-form-item>
@@ -252,7 +251,6 @@
 			</div>
 		</el-dialog>
 
-		<!-- 查看详情弹窗 -->
 		<!-- 查看详情弹窗 -->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="viewDetailTitle" :visible.sync="viewDetailVisible" width="1000px" append-to-body>
 			<!-- 查看初始入库信息表格 -->
@@ -350,6 +348,7 @@ import { parseTime } from '../../../utils/ruoyi';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
 import SearchOption from '../../../components/SearchOption.vue';
 import { getGiftIn, listGiftIn as listGiftInApi, getGiftInReInDetail } from '@/api/system/giftIn';
+import { delGift } from '@/api/system/giftStock';
 import { mixin_gift_out_fill } from './giftOut_fill';
 import { subtract, round, add, multiply, divide } from 'mathjs';
 
@@ -489,6 +488,7 @@ export default {
 				localDate: null
 			},
 			returnRules: {
+				localDate: [{ required: true, message: '请选择退回日期', trigger: 'change' }],
 				quantity: [
 					{ required: true, message: '请输入退回数量', trigger: 'blur' },
 					{
@@ -532,28 +532,40 @@ export default {
 	methods: {
 		// 删除再入库详情记录
 		async handleDeleteReInDetail(row) {
+			// 验证 row 和 row.id 是否存在
+			if (!row || !row.id) {
+				this.$modal.msgError('无效的记录数据，无法删除');
+				return;
+			}
+
 			try {
 				// 确认删除操作
-				const confirmResult = await this.$modal.confirm('确定要删除这条再入库记录吗？');
+				await this.$modal.confirm('确定要删除这条再入库记录吗？');
 
-				if (confirmResult) {
-					// 调用接口删除记录
-					const response = await this.deleteGiftById(row.id);
+				// 调用接口删除记录
+				await delGift(row.id);
 
-					if (response) {
-						this.$modal.msgSuccess('删除成功');
+				this.$modal.msgSuccess('删除成功');
 
-						// 刷新当前查看详情的数据
-						this.handleViewReInDetail(this.currentViewRow);
-					}
+				// 刷新当前查看详情的数据
+				if (this.currentViewRow) {
+					this.handleViewReInDetail(this.currentViewRow);
 				}
 			} catch (error) {
+				// Element UI MessageBox 取消时会 reject，错误通常是 'cancel' 字符串
+				if (error === 'cancel' || (error && error.toString && error.toString().includes('cancel'))) {
+					// 用户取消删除，不显示错误，静默返回
+					return;
+				}
+				// 其他错误（网络错误、服务器错误等）
 				console.error('删除再入库记录失败:', error);
-				if (error && error.response) {
-					const errorMsg = error.response.data?.msg || error.response.data?.message || '删除失败';
-					this.$message.error(errorMsg);
+				if (error && error.response && error.response.data) {
+					const errorMsg = error.response.data.msg || error.response.data.message || '删除失败';
+					this.$modal.msgError(errorMsg);
+				} else if (error && error.message) {
+					this.$modal.msgError(error.message);
 				} else {
-					this.$message.error('删除失败，请稍后重试');
+					this.$modal.msgError('删除失败，请稍后重试');
 				}
 			}
 		},
@@ -748,7 +760,6 @@ export default {
 			this.dialogWidth = window.innerWidth > 768 ? '600px' : '95%';
 		},
 		/** 查询礼品出库信息列表 */
-		/** 查询礼品出库信息列表 */
 		getList() {
 			this.loading = true;
 			this.queryParams.params = {};
@@ -786,8 +797,6 @@ export default {
 				});
 		},
 		/** 检查出库记录是否有再入库详情 */
-		/** 检查出库记录是否有再入库详情 */
-		// 检查出库记录是否有再入库详情
 		async checkHasReInDetails(id) {
 			try {
 				const response = await getGiftOutOutDetail(id);
@@ -1101,7 +1110,7 @@ export default {
 		handleDelete(row) {
 			const ids = row.id || this.ids;
 			const count = Array.isArray(ids) ? ids.length : 1;
-			const message = count > 1 ? `是否确认删除选中的${count}条礼品出库信息？` : `是否确认删除礼品出库信息编号为"${ids}"的数据项？`;
+			const message = count > 1 ? `是否确认删除选中的${count}条礼品出库信息？` : `是否确认删除礼品出库信息的数据项？`;
 
 			this.$modal
 				.confirm(message)
