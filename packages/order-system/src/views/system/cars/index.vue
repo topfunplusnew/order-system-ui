@@ -187,16 +187,16 @@ export default {
 									callback(new Error('车牌号不能为空'));
 									return;
 								}
-								const maxLength = 8;
+								const maxLength = 20;
 								if (value.length > maxLength) {
 									callback(new Error(`车牌长度不能超过${maxLength}位`));
 									return;
 								}
 
-								// 车牌号格式校验：省份简称（中文）+ 字母和数字
-								const platePattern = /^[\u4e00-\u9fa5]+[A-Za-z0-9]*$/;
+								// 车牌号格式校验：允许中文、大写字母、数字、英文括号
+								const platePattern = /^[\u4e00-\u9fa5A-Z0-9()]+$/;
 								if (!platePattern.test(value)) {
-									callback(new Error('车牌号格式不正确，应为省份简称（中文）+ 字母数字组合'));
+									callback(new Error('车牌号只能包含汉字、大写字母、数字和英文括号'));
 									return;
 								}
 
@@ -337,26 +337,26 @@ export default {
 			// 1. 清除所有空格
 			let cleanedValue = value.replace(/\s+/g, '');
 
-			// 2. 车牌号格式校验：省份简称（中文）+ 字母和数字
-			// 匹配模式：1个或多个中文字符 + 字母和数字的组合
-			const platePattern = /^[\u4e00-\u9fa5]+[A-Za-z0-9]*$/;
+			// 2. 车牌号格式校验：允许中文、大写字母、数字、英文括号
+			// 匹配模式：汉字、字母、数字、英文括号的组合
+			const platePattern = /^[\u4e00-\u9fa5A-Za-z0-9()]*$/;
 
 			if (cleanedValue && !platePattern.test(cleanedValue)) {
-				// 提取有效字符：保留中文字符和字母数字
-				const validChars = cleanedValue.match(/[\u4e00-\u9fa5A-Za-z0-9]/g);
+				// 提取有效字符：保留中文字符、字母、数字和英文括号
+				const validChars = cleanedValue.match(/[\u4e00-\u9fa5A-Za-z0-9()]/g);
 				if (validChars) {
 					cleanedValue = validChars.join('');
 				} else {
 					cleanedValue = '';
 				}
-				this.$message.warning('车牌号只能包含省份简称（中文）和字母数字');
+				this.$message.warning('车牌号只能包含汉字、大写字母、数字和英文括号');
 			}
 
 			// 3. 将字母转为大写
 			cleanedValue = cleanedValue.toUpperCase();
 
 			// 4. 限制车牌长度
-			const maxLength = 8;
+			const maxLength = 20;
 			if (cleanedValue.length > maxLength) {
 				this.$message.warning(`车牌长度不能超过${maxLength}位`);
 				cleanedValue = cleanedValue.substring(0, maxLength);
@@ -465,7 +465,7 @@ export default {
 				if (valid) {
 					// 提交前再次校验车牌/柜号长度（仅对陆运）
 					if (this.form.carType === '陆运') {
-						const maxLength = 8;
+						const maxLength = 20;
 						if (this.form.carNo && this.form.carNo.length > maxLength) {
 							this.$message.error(`车牌长度不能超过${maxLength}位`);
 							return;
