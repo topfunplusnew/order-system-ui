@@ -58,7 +58,7 @@
 		<el-table id="printBox" v-loading="loading" v-horizontal-scroll="'always'" border :data="giftInList" size="mini" :cell-style="() => ({ padding: '1px' })" @selection-change="handleSelectionChange">
 			<el-table-column type="selection" width="55" align="center" />
 
-			<el-table-column v-if="columns[0].visible" label="日期" align="center" prop="inDate" width="120" show-overflow-tooltip>
+			<el-table-column v-if="columns[0].visible" label="日期" align="center" prop="inDate" width="160" show-overflow-tooltip>
 				<template #default="scope">
 					<span>{{ parseTime(scope.row.inDate, '{y}-{m}-{d}') }}</span>
 				</template>
@@ -248,7 +248,7 @@
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="viewDetailTitle" :visible.sync="viewDetailVisible" width="1200px" append-to-body>
 			<!-- 再入库详情表格 -->
 			<el-table v-if="viewDetailTitle === '查看再入库详情' && viewDetailData && Array.isArray(viewDetailData) && viewDetailData.length > 0" :data="viewDetailData" border size="mini" max-height="500" v-loading="viewDetailLoading">
-				<el-table-column label="ID" align="center" prop="id" width="80" show-overflow-tooltip />
+				<el-table-column label="ID" v-if="false" align="center" prop="id" width="80" show-overflow-tooltip />
 				<el-table-column label="入库方式" align="center" prop="inMethod" width="100" show-overflow-tooltip>
 					<template #default="scope">
 						<dict-tag :options="dict.type.order_gift_in_method" :value="scope.row.inMethod" />
@@ -279,6 +279,11 @@
 				</el-table-column>
 				<el-table-column label="经办人" align="center" prop="handler" width="100" show-overflow-tooltip />
 				<el-table-column label="备注" align="center" prop="remark" show-overflow-tooltip />
+				<el-table-column label="操作" align="center" width="100" fixed="right">
+					<template #default="scope">
+						<el-button v-hasPermi="['system:giftIn:remove']" size="mini" type="text" icon="el-icon-delete" @click="handleDeleteReInDetail(scope.row)">删除</el-button>
+					</template>
+				</el-table-column>
 			</el-table>
 			<!-- 出库详情表格 -->
 			<el-table v-else-if="viewDetailTitle === '查看出库详情' && viewDetailData && Array.isArray(viewDetailData) && viewDetailData.length > 0" :data="viewDetailData" border size="mini" max-height="500" v-loading="viewDetailLoading">
@@ -318,11 +323,6 @@
 				</el-table-column>
 				<el-table-column label="经办人" align="center" prop="handler" width="100" show-overflow-tooltip />
 				<el-table-column label="备注" align="center" prop="remark" show-overflow-tooltip />
-				<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="100">
-					<template #default="scope">
-						<el-button size="mini" type="text" icon="el-icon-delete" @click="handleDeleteOutDetail(scope.row)">删除</el-button>
-					</template>
-				</el-table-column>
 			</el-table>
 			<div v-else-if="viewDetailData && !Array.isArray(viewDetailData)" style="padding: 20px">
 				<el-descriptions :column="2" border>
@@ -339,7 +339,7 @@
 
 <script>
 import { listGiftIn, getGiftIn, delGiftIn, addGiftIn, updateGiftIn, returnGiftIn, getGiftInReInDetail, getGiftInOutDetail } from '@/api/system/giftIn';
-import { listGift as listGiftApi } from '@/api/system/giftStock';
+import { listGift as listGiftApi, delGift } from '@/api/system/giftStock';
 import { parseTime } from '../../../utils/ruoyi';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
 import { mixin_gift_in_fill } from './giftIn_fill';
@@ -486,28 +486,6 @@ export default {
 		window.removeEventListener('resize', this.updateDialogWidth);
 	},
 	methods: {
-		// 在 methods 中添加以下方法
-		async handleDeleteOutDetail(row) {
-			try {
-				await this.$modal.confirm('确定要删除这条出库记录吗？');
-
-				// 调用删除接口，这里假设你有一个 deleteGiftOut 方法
-				// 注意：根据你的需求调整 API 调用方式
-				const response = await this.deleteGiftOutById(row.id);
-
-				if (response) {
-					this.$modal.msgSuccess('删除成功');
-					// 重新加载出库详情数据
-					this.refreshOutDetailView();
-				}
-			} catch (error) {
-				if (error !== 'cancel') {
-					console.error('删除出库记录失败:', error);
-					this.$message.error('删除失败: ' + (error.message || '未知错误'));
-				}
-			}
-		},
-
 		// 刷新出库详情视图
 		refreshOutDetailView() {
 			// 重新获取当前显示的详情数据
@@ -520,14 +498,6 @@ export default {
 			}
 		},
 
-		// 删除出库记录的API方法（需要在 import 部分引入相应的 API）
-		async deleteGiftOutById(id) {
-			// 这里需要根据实际的 API 接口进行调整
-			// 假设你有一个 API 可以删除出库记录
-			// 示例：
-			// return delGiftOut(id); // 需要在 api 文件中定义此方法
-			return Promise.resolve(); // 临时占位符
-		},
 		parseTime,
 		// 包装 listGift 函数，计算金额字段
 		async listGift(query) {
@@ -1074,7 +1044,7 @@ export default {
 		handleDelete(row) {
 			const ids = row.id || this.ids;
 			const count = Array.isArray(ids) ? ids.length : 1;
-			const message = count > 1 ? `是否确认删除选中的${count}条购入礼品信息？` : `是否确认删除购入礼品信息的数据项？`;
+			const message = count > 1 ? `是否确认删除选中的${count}条购入礼品信息？` : `是否确认删除购入礼品信息数据项？`;
 
 			this.$modal
 				.confirm(message)
@@ -1168,7 +1138,7 @@ export default {
 				}
 			});
 		},
-		// 判断是否可以查看再入库详情
+
 		// 判断是否可以查看再入库详情
 		canViewReInDetail(row) {
 			// 检查是否有再入库详情数据
@@ -1318,6 +1288,37 @@ export default {
 				})
 				.finally(() => {
 					this.viewDetailLoading = false;
+				});
+		},
+		// 删除再入库详情
+		handleDeleteReInDetail(row) {
+			const id = row.id;
+			if (!id) {
+				this.$message.error('无效的记录ID');
+				return;
+			}
+
+			this.$modal
+				.confirm(`是否确认删除再入库记录？`)
+				.then(() => {
+					return delGift(id);
+				})
+				.then(() => {
+					this.$modal.msgSuccess('删除成功');
+					// 刷新再入库详情数据
+					if (this.currentViewRow) {
+						this.handleViewReInDetail(this.currentViewRow);
+					}
+					// 刷新主列表
+					this.getList();
+				})
+				.catch(error => {
+					if (error && error.response) {
+						const errorMsg = error.response.data?.msg || error.response.data?.message || '删除失败';
+						this.$message.error(errorMsg);
+					} else if (error !== 'cancel') {
+						this.$message.error('删除失败，请稍后重试');
+					}
 				});
 		}
 	}
