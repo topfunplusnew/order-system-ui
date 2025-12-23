@@ -1,0 +1,14 @@
+graph TD
+    subgraph "Statement (报表)"
+        OFDS["orderfreightDetailsummary.vue (运费科目汇总账)"] -- "uuid-1: 调用接口" --> API_S["api/system/statement.js (getOrderFreightDetailSummary)"]
+        OFDS -- "uuid-2: 格式化余额" --> UTIL_U["utils/trash/utils.js (formatBalance)"]
+    end
+
+    subgraph "GoBack (往来明细)"
+        FI["FreightInfo.vue (往来明细/运费明细)"] -- "uuid-3: 参考逻辑" --> OFDS
+        FI -- "uuid-4: 表格借贷展示逻辑" --> FI_TABLE["表格显示 (借方lender, 贷方borrower)"]
+    end
+
+    subgraph "Common (公共工具)"
+        UTIL_U -- "uuid-5: 判断借贷标识" --> IS_DC["isDebit / isCredit"]
+    end

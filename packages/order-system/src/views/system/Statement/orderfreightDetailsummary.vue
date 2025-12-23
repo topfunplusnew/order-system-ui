@@ -74,10 +74,18 @@
 			</el-table-column>
 
 			<!-- 初期余额 -->
-			<el-table-column v-if="columns[3].visible" label="初期余额" align="center" prop="beginningBalance" width="160" show-overflow-tooltip />
+			<el-table-column v-if="columns[3].visible" label="初期余额" align="center" prop="beginningBalance" width="160" show-overflow-tooltip>
+				<template slot-scope="scope">
+					{{ formatBalance(scope.row.beginningBalance) }}
+				</template>
+			</el-table-column>
 
 			<!-- 借方 -->
-			<el-table-column v-if="columns[4].visible" label="借方" align="center" prop="positiveSum" width="160" show-overflow-tooltip />
+			<el-table-column v-if="columns[4].visible" label="借方" align="center" prop="positiveSum" width="160" show-overflow-tooltip>
+				<template slot-scope="scope">
+					{{ fix(-scope.row.positiveSum) }}
+				</template>
+			</el-table-column>
 
 			<!-- 贷方 -->
 			<el-table-column v-if="columns[5].visible" label="贷方" align="center" prop="negativeSum" width="160" show-overflow-tooltip>
