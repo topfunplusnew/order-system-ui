@@ -23,6 +23,9 @@
 				<el-form-item label="票据号码" prop="bankacceptanceBillNo">
 					<el-input v-model="queryParams.params.bankacceptanceBillNo" class="input-medium" placeholder="请输入票据号码" clearable @keyup.enter.native="handleQuery" />
 				</el-form-item>
+				<el-form-item label="备注" prop="comments">
+					<el-input v-model="queryParams.comments" class="input-medium" placeholder="请输入备注" clearable @keyup.enter.native="handleQuery" />
+				</el-form-item>
 				<el-form-item>
 					<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
 				</el-form-item>
