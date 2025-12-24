@@ -84,7 +84,7 @@
 		</div>
 		<!--    </div>-->
 		<!-- 付款信息表格 -->
-		<div class="table-container" v-loading="loading">
+		<div class="table-container" v-loading="loading" style="margin-bottom: 60px;">
 			<!-- 渲染进度提示 -->
 			<div v-if="isRendering" class="rendering-progress">
 				<el-progress :percentage="renderProgress" :status="renderProgress === 100 ? 'success' : null" :stroke-width="6"></el-progress>
@@ -280,7 +280,7 @@
 		</div>
 
 		<!-- 分页组件 -->
-		<div class="pagination-wrapper" v-fixed="{ position: 'bottom', zIndex: 100 }">
+		<div class="pagination-wrapper">
 			<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" :page-sizes="[10, 20, 50, 100, 200, 500]" layout="total, sizes, prev, pager, next, jumper" background @pagination="getList" />
 		</div>
 
@@ -944,6 +944,21 @@ export default {
 		this.fixTableHeader();
 		// 计算表格高度
 		this.calculateTableHeight();
+	},
+	activated() {
+		// KeepAlive 激活时，强制显示分页组件
+		this.$nextTick(() => {
+			const paginationWrapper = this.$el?.querySelector('.pagination-wrapper');
+			if (paginationWrapper) {
+				// 强制重新计算样式，确保分页组件可见
+				paginationWrapper.style.display = 'block';
+				paginationWrapper.style.visibility = 'visible';
+				// 触发一次 resize 事件，让浏览器重新计算布局
+				window.dispatchEvent(new Event('resize'));
+			}
+			// 重新计算表格高度
+			this.calculateTableHeight();
+		});
 	},
 	updated() {
 		// 数据更新后重新固定表格头
@@ -2035,6 +2050,7 @@ export default {
 .table-container {
 	position: relative;
 	margin-top: 12px; // 与固定顶部区域保持间距
+	margin-bottom: 60px; // 为固定的分页栏预留底部空间
 
 	.rendering-progress {
 		position: absolute;
@@ -2165,11 +2181,16 @@ export default {
 
 /* 分页区域优化 */
 .pagination-wrapper {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	right: 0;
 	margin-top: 20px;
 	padding: 12px 20px;
 	background-color: #ffffff;
 	border-top: 1px solid #ebeef5;
 	text-align: right;
+	z-index: 1000;
 	box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.03), 0 -1px 6px rgba(0, 0, 0, 0.04);
 }
 
