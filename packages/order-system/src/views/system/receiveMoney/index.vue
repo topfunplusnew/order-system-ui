@@ -63,7 +63,7 @@
 			</right-toolbar>
 		</div>
 		<!-- 收款信息表格 -->
-		<div class="table-container" v-loading="loading">
+		<div class="table-container" v-loading="loading" style="flex: 1; margin-bottom: 60px;">
 			<!-- 渲染进度提示 -->
 			<div v-if="isRendering" class="rendering-progress">
 				<el-progress :percentage="renderProgress" :status="renderProgress === 100 ? 'success' : null" :stroke-width="6"></el-progress>
@@ -1397,6 +1397,8 @@ export default {
 	position: relative;
 	overflow: visible;
 	min-height: 90vh;
+	display: flex;
+	flex-direction: column;
 }
 
 .app-container.mask-overlay {
@@ -1626,12 +1628,16 @@ export default {
 
 /* 分页区域优化 */
 .pagination-wrapper {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	right: 0;
 	margin-top: 20px;
 	padding: 12px 20px;
 	background-color: #ffffff;
 	border-top: 1px solid #ebeef5;
 	text-align: right;
-
+	z-index: 1000;
 	box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.03), 0 -1px 6px rgba(0, 0, 0, 0.04);
 }
 
