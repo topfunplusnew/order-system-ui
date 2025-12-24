@@ -43,27 +43,27 @@
 
 		<!-- 表格 -->
 		<el-table id="printBox" v-loading="loading" :data="giftStockList" border size="mini" v-horizontal-scroll="'always'" :cell-style="{ padding: '.5px' }">
-			<el-table-column v-if="columns[0].visible" label="序号" type="index" width="60" align="center" />
+			<el-table-column v-if="columns[0] && columns[0].visible" label="序号" type="index" width="60" align="center" />
 
-			<el-table-column v-if="columns[1].visible" label="日期" prop="inDate" width="120" align="center">
+			<el-table-column v-if="columns[1] && columns[1].visible" label="日期" prop="inDate" width="120" align="center">
 				<template #default="scope">
 					{{ scope.row.inDate ? parseTime(scope.row.inDate, '{y}-{m}-{d}') : '-' }}
 				</template>
 			</el-table-column>
 
-			<el-table-column v-if="columns[2].visible" label="存货地点" prop="inventoryLocation" width="120" align="center" show-overflow-tooltip />
+			<el-table-column v-if="columns[2] && columns[2].visible" label="存货地点" prop="inventoryLocation" width="120" align="center" show-overflow-tooltip />
 
-			<el-table-column v-if="columns[3].visible" label="物品名称" prop="itemName" min-width="150" show-overflow-tooltip />
+			<el-table-column v-if="columns[3] && columns[3].visible" label="物品名称" prop="itemName" min-width="150" show-overflow-tooltip />
 
-			<el-table-column v-if="columns[4].visible" label="规格" prop="unit" width="80" align="center" />
+			<el-table-column v-if="columns[4] && columns[4].visible" label="单位" prop="unit" width="80" align="center" />
 
-			<el-table-column v-if="columns[5].visible" label="数量" prop="remainingQuantity" width="100" align="center">
+			<el-table-column v-if="columns[5] && columns[5].visible" label="数量" prop="remainingQuantity" width="100" align="center">
 				<template #default="scope">
 					{{ formatInteger(scope.row.remainingQuantity) }}
 				</template>
 			</el-table-column>
 
-			<el-table-column v-if="columns[6].visible" label="单价" prop="unitPrice" width="100" align="center">
+			<el-table-column v-if="columns[6] && columns[6].visible" label="单价" prop="unitPrice" width="100" align="center">
 				<template #default="scope">
 					{{ formatCurrency(scope.row.unitPrice) }}
 				</template>
@@ -115,7 +115,7 @@ export default {
 				{ label: '日期', visible: true },
 				{ label: '存货地点', visible: true },
 				{ label: '物品名称', visible: true },
-				{ label: '规格', visible: true },
+				{ label: '单位', visible: true },
 				{ label: '数量', visible: true },
 				{ label: '单价', visible: true }
 			]
@@ -132,10 +132,16 @@ export default {
 			return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 		},
 		formatCurrency(val) {
+			if (val === null || val === undefined || val === '') {
+				return '-';
+			}
 			const num = Number(val);
 			return isNaN(num) ? '-' : num.toFixed(2);
 		},
 		formatInteger(val) {
+			if (val === null || val === undefined || val === '') {
+				return '-';
+			}
 			const num = Number(val);
 			return isNaN(num) ? '-' : Math.floor(num);
 		},
@@ -150,11 +156,19 @@ export default {
 			this.loading = true;
 			try {
 				const res = await listGift(this.buildQueryParams());
-				this.giftStockList = (res.rows || []).map(item => ({
-					...item,
-					remainingValue: Number(item.remainingQuantity || 0) * Number(item.unitPrice || 0)
-				}));
-				this.total = res.total || 0;
+				this.giftStockList = (res.rows || []).map(item => {
+					const quantity = Number(item.remainingQuantity);
+					const price = Number(item.unitPrice);
+					const remainingValue = !isNaN(quantity) && !isNaN(price) ? quantity * price : 0;
+					return {
+						...item,
+						remainingValue
+					};
+				});
+				this.total = Number(res.total) || 0;
+			} catch (error) {
+				console.error('获取礼品库存列表失败:', error);
+				this.$message.error('获取礼品库存列表失败，请稍后重试');
 			} finally {
 				this.loading = false;
 			}
@@ -164,8 +178,15 @@ export default {
 			this.getList();
 		},
 		resetQuery() {
-			this.resetForm('queryForm');
+			// 安全地重置表单，避免表单隐藏时 ref 不存在
+			if (this.$refs.queryForm) {
+				this.resetForm('queryForm');
+			}
+			// 手动重置查询参数
+			this.queryParams.itemName = null;
 			this.queryParams.inDate = this.getTodayDate();
+			this.queryParams.inventoryLocation = null;
+			this.queryParams.pageNum = 1;
 			this.getList();
 		},
 		handleExport() {

@@ -71,7 +71,7 @@
 
 			<el-table-column v-if="columns[3].visible" label="领用原因" align="center" prop="getReason" width="120" show-overflow-tooltip />
 
-			<el-table-column v-if="columns[4].visible" label="物品名称" align="center" prop="itemName" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[4].visible" label="物品名称" align="center" prop="itemName" show-overflow-tooltip />
 
 			<el-table-column v-if="columns[5].visible" label="单位" align="center" prop="unit" width="100" show-overflow-tooltip />
 
@@ -91,7 +91,7 @@
 
 			<el-table-column v-if="columns[9].visible" label="领用人" align="center" prop="handler" width="120" show-overflow-tooltip />
 
-			<el-table-column v-if="columns[10].visible" label="备注" align="center" prop="remark" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[10].visible" label="备注" align="center" prop="remark" show-overflow-tooltip />
 
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="170" fixed="right">
 				<template #default="scope">
@@ -322,7 +322,7 @@
 					<el-table-column label="备注" align="center" prop="remark" show-overflow-tooltip />
 
 					<!-- 添加删除按钮列 -->
-					<el-table-column label="操作" align="center" width="100">
+					<el-table-column label="操作" align="center">
 						<template #default="scope">
 							<el-button size="mini" type="text" icon="el-icon-delete" @click="handleDeleteReInDetail(scope.row)">删除</el-button>
 						</template>
@@ -1110,7 +1110,7 @@ export default {
 		handleDelete(row) {
 			const ids = row.id || this.ids;
 			const count = Array.isArray(ids) ? ids.length : 1;
-			const message = count > 1 ? `是否确认删除选中的${count}条礼品出库信息？` : `是否确认删除礼品出库信息编号为"${ids}"的数据项？`;
+			const message = count > 1 ? `是否确认删除选中的${count}条礼品出库信息？` : `是否确认删除礼品出库信息的数据项？`;
 
 			this.$modal
 				.confirm(message)

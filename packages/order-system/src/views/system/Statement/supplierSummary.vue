@@ -60,8 +60,16 @@
 					{{ Number(scope.row.beginningBalance) !== 0 ? (Number(scope.row.beginningBalance) > 0 ? '借方' : '贷方') : '平' }}
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[5].visible" show-overflow-tooltip label="期初余额" align="center" prop="beginningBalance" width="140" />
-			<el-table-column v-if="columns[6].visible" show-overflow-tooltip label="借方(付供应商货款)" align="center" prop="positiveSum" width="140" />
+			<el-table-column v-if="columns[5].visible" show-overflow-tooltip label="期初余额" align="center" prop="beginningBalance" width="140">
+				<template slot-scope="scope">
+					{{ formatBalance(scope.row.beginningBalance) }}
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[6].visible" show-overflow-tooltip label="借方(付供应商货款)" align="center" prop="positiveSum" width="140">
+				<template slot-scope="scope">
+					{{ fix(-scope.row.positiveSum) }}
+				</template>
+			</el-table-column>
 			<el-table-column v-if="columns[7].visible" show-overflow-tooltip label="贷方(从厂家提货)" align="center" prop="negativeSum" width="140">
 				<template slot-scope="scope">
 					{{ scope.row.negativeSum }}
@@ -99,6 +107,7 @@ import { parseTime } from '../../../utils/ruoyi';
 import { getConfigValue } from './data/config_get';
 import { formatBalance } from '../../../utils/trash/utils';
 import { common_excel } from '@/views/dashboard/mixins/common/common_excel';
+import { fix } from '@/api/tool/format';
 
 export default {
 	name: 'CustomerSummary',
@@ -146,6 +155,7 @@ export default {
 	},
 	methods: {
 		formatBalance,
+		fix,
 		/** 查询向外部借出款信息列表 */
 		async getList() {
 			// 获取供应商科目余额汇总表数据 填充到表格中

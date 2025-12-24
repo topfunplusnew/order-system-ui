@@ -87,7 +87,7 @@
 
 			<el-table-column v-if="columns[7].visible" label="单价" align="center" prop="unitPrice" width="100" show-overflow-tooltip />
 
-			<el-table-column v-if="columns[8].visible" label="金额" align="center" prop="estimatedValue" width="100" show-overflow-tooltip>
+			<el-table-column v-if="columns[8].visible" label="金额" align="center" prop="estimatedValue" show-overflow-tooltip>
 				<template #default="scope">
 					<span>{{ formatCurrency(scope.row.estimatedValue) }}</span>
 				</template>
@@ -95,7 +95,7 @@
 
 			<el-table-column v-if="columns[9].visible" label="经办人" align="center" prop="handler" width="100" show-overflow-tooltip />
 
-			<el-table-column label="备注" align="center" prop="remark" width="120" show-overflow-tooltip />
+			<el-table-column label="备注" align="center" prop="remark" show-overflow-tooltip />
 
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="170" fixed="right">
 				<template #default="scope">

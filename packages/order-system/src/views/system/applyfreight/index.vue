@@ -295,6 +295,7 @@ export default {
 				<el-select v-model="queryParams.paymentState" placeholder="请选择支付状态" clearable @keyup.enter.native="handleQuery">
 					<el-option label="已支付" value="已支付"></el-option>
 					<el-option label="未支付" value="未支付"></el-option>
+					<el-option label="未申请" value="未申请"></el-option>
 				</el-select>
 			</el-form-item>
 			<el-form-item>
