@@ -202,14 +202,14 @@ export default {
 								{{ formatNumberValue(scope.row.previousMonthUnpaidAmount) }}
 							</template>
 						</el-table-column>
-						<el-table-column v-if="getColumnByKey(9)" label="本月付款金额合计" align="center" width="200" show-overflow-tooltip>
-							<template slot-scope="scope">
-								{{ formatNumberValue(scope.row.monthlyPaidAmount) }}
-							</template>
-						</el-table-column>
 						<el-table-column v-if="getColumnByKey(10)" label="本月累计应付运费" align="center" width="200" show-overflow-tooltip>
 							<template slot-scope="scope">
 								{{ formatNumberValue(scope.row.monthlyTotalAmount) }}
+							</template>
+						</el-table-column>
+						<el-table-column v-if="getColumnByKey(9)" label="本月付款金额合计" align="center" width="200" show-overflow-tooltip>
+							<template slot-scope="scope">
+								{{ formatNumberValue(scope.row.monthlyPaidAmount) }}
 							</template>
 						</el-table-column>
 						<el-table-column v-if="getColumnByKey(11)" label="本月欠款金额" align="center" width="200" show-overflow-tooltip>
@@ -223,14 +223,14 @@ export default {
 								{{ formatNumberValue(scope.row.previousYearUnpaidAmount) }}
 							</template>
 						</el-table-column>
-						<el-table-column v-if="getColumnByKey(13)" label="本年付款金额合计" align="center" width="200" show-overflow-tooltip>
-							<template slot-scope="scope">
-								{{ formatNumberValue(scope.row.yearlyPaidAmount) }}
-							</template>
-						</el-table-column>
 						<el-table-column v-if="getColumnByKey(14)" label="本年累计应付运费" align="center" width="200" show-overflow-tooltip>
 							<template slot-scope="scope">
 								{{ formatNumberValue(scope.row.yearlyTotalAmount) }}
+							</template>
+						</el-table-column>
+						<el-table-column v-if="getColumnByKey(13)" label="本年付款金额合计" align="center" width="200" show-overflow-tooltip>
+							<template slot-scope="scope">
+								{{ formatNumberValue(scope.row.yearlyPaidAmount) }}
 							</template>
 						</el-table-column>
 						<el-table-column v-if="getColumnByKey(15)" label="本年欠款金额" align="center" width="200" show-overflow-tooltip>
