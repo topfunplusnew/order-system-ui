@@ -1642,7 +1642,7 @@ export default {
 /* 分页区域优化 */
 .pagination-wrapper {
 	position: fixed;
-	bottom: 0;
+	bottom: 30px;
 	left: 0;
 	right: 0;
 	padding: 12px 20px;
