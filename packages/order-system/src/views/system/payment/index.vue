@@ -2185,11 +2185,12 @@ export default {
 	bottom: 0;
 	left: 0;
 	right: 0;
-	margin-top: 20px;
 	padding: 12px 20px;
 	background-color: #ffffff;
 	border-top: 1px solid #ebeef5;
-	text-align: right;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 	z-index: 1000;
 	box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.03), 0 -1px 6px rgba(0, 0, 0, 0.04);
 }
