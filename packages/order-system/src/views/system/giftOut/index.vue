@@ -117,6 +117,7 @@
 			</el-table-column>
 		</el-table>
 
+		<!-- 分页（使用 noPage 获取全部数据，保留分页组件用于显示） -->
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改礼品出库信息对话框 -->
@@ -570,22 +571,9 @@ export default {
 			}
 		},
 
-		// 包装 listGiftIn 函数，确保参数正确传递
+		// 包装 listGiftIn 函数，确保参数正确传递（使用 noPage 获取全部数据）
 		async listGiftIn(query) {
-			// 将 SearchOption 组件传递的 page 转换为 pageNum
-			const params = { ...query };
-			if (params.page !== undefined && params.pageNum === undefined) {
-				params.pageNum = params.page;
-				delete params.page;
-			}
-			// 确保 pageSize 存在
-			if (!params.pageSize) {
-				params.pageSize = 20;
-			}
-			// 确保 pageNum 存在
-			if (!params.pageNum) {
-				params.pageNum = 1;
-			}
+			const params = { ...query, noPage: true };
 			// 移除空值参数，避免后端报错（虽然文档标记为 required，但实际应该是查询条件）
 			Object.keys(params).forEach(key => {
 				if (params[key] === null || params[key] === undefined || params[key] === '') {
@@ -619,7 +607,7 @@ export default {
 			// 这里需要根据你系统的用户API进行调整
 			// 示例使用 Ruoyi 的用户接口
 
-			listUser({ pageSize: 1000 })
+			listUser({ noPage: true })
 				.then(response => {
 					this.userList = response.rows || [];
 				})
@@ -640,17 +628,16 @@ export default {
 				try {
 					const inIds = inList.map(item => item.id).filter(Boolean);
 					if (inIds.length > 0) {
-						// 尝试按 inId 查询，如果后端不支持则查询第一页并在内存中过滤
+						// 尝试按 inId 查询，如果后端不支持则查询全部并在内存中过滤
 						try {
 							const outResponse = await listGiftOut({
-								pageNum: 1,
-								pageSize: 1000,
+								noPage: true,
 								inId: inIds.join(',')
 							});
 							outList = outResponse?.rows || [];
 						} catch (error) {
-							// 如果后端不支持 inId 参数，只查询第一页并在内存中过滤
-							const outResponse = await listGiftOut({ pageNum: 1, pageSize: 100 });
+							// 如果后端不支持 inId 参数，查询全部并在内存中过滤
+							const outResponse = await listGiftOut({ noPage: true });
 							const allOutList = outResponse?.rows || [];
 							// 只保留与当前入库记录相关的出库记录
 							outList = allOutList.filter(outItem => {
@@ -768,7 +755,9 @@ export default {
 				this.queryParams.params['endOutDate'] = this.daterangeOutDate[1] + ' 23:59:59';
 			}
 
-			listGiftOut(this.queryParams)
+			// 使用 noPage 获取全部数据，不分页
+			const params = { ...this.queryParams, noPage: true };
+			listGiftOut(params)
 				.then(async response => {
 					const rows = (response && response.rows) || [];
 					// 处理数据并检查每条记录是否有再入库详情
@@ -786,7 +775,8 @@ export default {
 						processedRows.push(item);
 					}
 					this.giftOutList = processedRows;
-					this.total = (response && response.total) || 0;
+					// 使用 noPage 时，total 设置为实际返回的数据长度
+					this.total = processedRows.length;
 				})
 				.catch(error => {
 					this.$message.error('数据加载失败，请稍后重试');
@@ -868,7 +858,6 @@ export default {
 		},
 		/** 搜索按钮操作 */
 		handleQuery() {
-			this.queryParams.pageNum = 1;
 			this.getList();
 		},
 		/** 重置按钮操作 */

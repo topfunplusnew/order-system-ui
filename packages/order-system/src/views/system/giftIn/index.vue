@@ -121,7 +121,7 @@
 			</el-table-column>
 		</el-table>
 
-		<!-- 分页 -->
+		<!-- 分页（使用 noPage 获取全部数据，保留分页组件用于显示） -->
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加/修改弹窗 -->
@@ -526,8 +526,9 @@ export default {
 			}
 
 			try {
-				// 1. 获取入库列表
-				const inResponse = await listGiftIn(this.queryParams);
+				// 1. 获取入库列表（使用 noPage 获取全部数据，不分页）
+				const params = { ...this.queryParams, noPage: true };
+				const inResponse = await listGiftIn(params);
 
 				if (!inResponse) {
 					throw new Error('接口返回数据为空');
@@ -579,7 +580,8 @@ export default {
 
 				// 4. 计算剩余数量
 				this.giftInList = this.calculateRemaining(inList, outList, retList);
-				this.total = inResponse.total || 0;
+				// 使用 noPage 时，total 设置为实际返回的数据长度
+				this.total = this.giftInList.length;
 
 				// 调试输出
 				if (this.giftInList.length > 0) {
@@ -1059,7 +1061,9 @@ export default {
 			this.download(
 				'system/giftIn/export',
 				{
-					...this.queryParams
+					...this.queryParams,
+					// 不分页的导出
+					noPage: true
 				},
 				`购入礼品信息_${this.parseTime(new Date(), '{y}{m}{d}_{h}{i}{s}')}.xlsx`
 			);

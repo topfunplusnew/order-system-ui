@@ -83,6 +83,7 @@
 			<p>暂无库存数据</p>
 		</div>
 
+		<!-- 分页（使用 noPage 获取全部数据，保留分页组件用于显示） -->
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 	</div>
 </template>
@@ -146,7 +147,7 @@ export default {
 			return isNaN(num) ? '-' : Math.floor(num);
 		},
 		buildQueryParams() {
-			const params = { pageNum: this.queryParams.pageNum, pageSize: this.queryParams.pageSize };
+			const params = { noPage: true };
 			if (this.queryParams.itemName) params.itemName = this.queryParams.itemName.trim();
 			if (this.queryParams.inDate) params.inDate = this.queryParams.inDate;
 			if (this.queryParams.inventoryLocation) params.inventoryLocation = this.queryParams.inventoryLocation.trim();
@@ -165,7 +166,8 @@ export default {
 						remainingValue
 					};
 				});
-				this.total = Number(res.total) || 0;
+				// 使用 noPage 时，total 设置为实际返回的数据长度
+				this.total = this.giftStockList.length;
 			} catch (error) {
 				console.error('获取礼品库存列表失败:', error);
 				this.$message.error('获取礼品库存列表失败，请稍后重试');
@@ -190,7 +192,9 @@ export default {
 			this.getList();
 		},
 		handleExport() {
-			this.download('system/gift/export', this.buildQueryParams(), `礼品库存_${this.parseTime(new Date(), '{y}{m}{d}_{h}{i}{s}')}.xlsx`);
+			const params = this.buildQueryParams();
+			// 导出时也使用 noPage 获取全部数据
+			this.download('system/gift/export', params, `礼品库存_${this.parseTime(new Date(), '{y}{m}{d}_{h}{i}{s}')}.xlsx`);
 		}
 	}
 };
