@@ -10,6 +10,9 @@
 			<el-form-item label="票据号码" prop="billNo">
 				<el-input v-model="queryParams.billNo" placeholder="请输入票据号码" @keyup.enter.native="handleQuery" />
 			</el-form-item>
+			<el-form-item label="我方承兑账户" prop="billAccount">
+				<el-input v-model="queryParams.billAccount" placeholder="请输入我方承兑账户" @keyup.enter.native="handleQuery" />
+			</el-form-item>
 			<el-form-item label="排序方式">
 				<el-select v-model="queryParams.isOrderBybillNo" placeholder="请选择排序方式" size="mini" clearable @keyup.enter.native="handleQuery">
 					<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
