@@ -66,8 +66,8 @@
 			<el-table-column v-if="columns[2].visible" label="初期方向" align="center" width="160" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<div v-if="scope">
-						<span v-if="scope.row.beginningBalance > 0">贷</span>
-						<span v-else-if="scope.row.beginningBalance < 0">借</span>
+						<span v-if="scope.row.beginningBalance < 0">贷</span>
+						<span v-else-if="scope.row.beginningBalance > 0">借</span>
 						<span v-else>平</span>
 					</div>
 				</template>
@@ -98,8 +98,8 @@
 			<el-table-column v-if="columns[7].visible" label="期末方向" align="center" prop="initialBalanceDirection" width="160" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<div v-if="scope">
-						<span v-if="scope.row.endingBalance > 0">贷</span>
-						<span v-else-if="scope.row.endingBalance < 0">借</span>
+						<span v-if="scope.row.endingBalance < 0">贷</span>
+						<span v-else-if="scope.row.endingBalance > 0">借</span>
 						<span v-else>平</span>
 					</div>
 				</template>
