@@ -1551,6 +1551,11 @@ export default {
 						return;
 					}
 					const paymentData = response.data;
+					// 校验后端的银行卡类型是否存在，如果不存在 直接报错
+					if (!paymentData.selfBankCardType || !paymentData.otherBankCardType) {
+						this.$message.error('后端接口错误：该付款信息缺少我方或者对方银行卡类型,请联系管理员');
+						return;
+					}
 					// 判断是否需要填写修改原因
 					if (paymentData && paymentData.shouldTrackEditReason === true) {
 						// 需要填写修改原因
@@ -1833,13 +1838,6 @@ export default {
 								if (this.$refs.transactionHistoryUpload) {
 									this.$refs.transactionHistoryUpload.clearUploadedFiles();
 								}
-								// 由于返回了新的id，需要刷新列表并保持选中状态
-								this.getList().then(() => {
-									// 如果需要保持选中状态，可以根据返回的新id来处理
-									if (response.data && response.data.id) {
-										// 可以根据需要添加选中逻辑
-									}
-								});
 							})
 							.catch(error => {
 								console.error('修改付款记录失败:', error);
@@ -2000,6 +1998,12 @@ export default {
 		closeViewFreight() {
 			this.viewFreightVisible = false;
 			this.viewFreightList = [];
+		},
+		// 多选框选中数据
+		handleSelectionChange(selection) {
+			this.ids = selection.map(item => item.id);
+			this.single = selection.length !== 1;
+			this.multiple = !selection.length;
 		}
 	}
 };

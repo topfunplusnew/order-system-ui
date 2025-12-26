@@ -1050,6 +1050,11 @@ export default {
 					}
 
 					const receiveMoneyData = response.data;
+					// 校验后端的银行卡类型是否存在，如果不存在 直接报错
+					if (!receiveMoneyData.selfBankCardType || !receiveMoneyData.otherBankCardType) {
+						this.$message.error('后端接口错误：该收款信息缺少我方或者对方银行卡类型,请联系管理员');
+						return;
+					}
 
 					// 判断是否需要填写修改原因
 					if (receiveMoneyData && receiveMoneyData.shouldTrackEditReason === true) {
@@ -1406,6 +1411,12 @@ export default {
 		closeImportResult() {
 			this.importResultVisible = false;
 			this.importResultMessage = '';
+		},
+		// 多选框选中数据
+		handleSelectionChange(selection) {
+			this.ids = selection.map(item => item.id);
+			this.single = selection.length !== 1;
+			this.multiple = !selection.length;
 		}
 	}
 };
