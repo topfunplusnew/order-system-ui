@@ -1095,31 +1095,46 @@ export default {
 		performReceiveMoneyEdit(receiveMoneyData) {
 			this.reset();
 			// 使用 $nextTick 确保组件渲染完成后再设置银行账户类型和其他属性
+		this.$nextTick(() => {
+			// 先保存字段，避免 watch 监听器清空它们
+			const savedCompanyName = receiveMoneyData.companyName;
+			const savedCompanyId = receiveMoneyData.companyId;
+			const savedOtherAcountsName = receiveMoneyData.otherAcountsName;
+			const savedOtherBankNo = receiveMoneyData.otherBankNo;
+			const savedOtherBankName = receiveMoneyData.otherBankName;
+			// 保留表单结构，特别是 params.attachmentIds 和 params.bankacceptance
+			Object.assign(this.form, {
+				...receiveMoneyData,
+				params: {
+					...receiveMoneyData.params,
+					attachmentIds: receiveMoneyData.attachmentList ? receiveMoneyData.attachmentList.map(item => item.id) : [],
+					bankacceptance: receiveMoneyData.params?.bankacceptance || null
+				}
+			});
+			// 如果 companyType 发生了变化，watch 可能已经清空了字段，需要恢复
+			// 使用 $nextTick 确保 watch 执行完毕后再恢复值
 			this.$nextTick(() => {
-				// 先保存 companyName，避免 watch 监听器清空它
-				const savedCompanyName = receiveMoneyData.companyName;
-				const savedCompanyId = receiveMoneyData.companyId;
-				// 保留表单结构，特别是 params.attachmentIds 和 params.bankacceptance
-				Object.assign(this.form, {
-					...receiveMoneyData,
-					params: {
-						...receiveMoneyData.params,
-						attachmentIds: receiveMoneyData.attachmentList ? receiveMoneyData.attachmentList.map(item => item.id) : [],
-						bankacceptance: receiveMoneyData.params?.bankacceptance || null
-					}
-				});
-				// 如果 companyType 发生了变化，watch 可能已经清空了 companyName，需要恢复
-				// 使用 $nextTick 确保 watch 执行完毕后再恢复值
-				this.$nextTick(() => {
-					// 确保 companyName 和 companyId 被正确赋值（包括 0 值）
-					// 使用 hasOwnProperty 或 in 操作符检查属性是否存在，而不是判断值是否为 falsy
-					if (receiveMoneyData.hasOwnProperty('companyName')) {
-						this.form.companyName = savedCompanyName;
-					}
-					if (receiveMoneyData.hasOwnProperty('companyId')) {
-						this.form.companyId = savedCompanyId;
-					}
-				});
+				// 确保 companyName 和 companyId 被正确赋值（包括 0 值）
+				// 使用 hasOwnProperty 或 in 操作符检查属性是否存在，而不是判断值是否为 falsy
+				if (receiveMoneyData.hasOwnProperty('companyName')) {
+					this.form.companyName = savedCompanyName;
+				}
+				if (receiveMoneyData.hasOwnProperty('companyId')) {
+					this.form.companyId = savedCompanyId;
+				}
+			// 当 companyType 为"支付费用"时，恢复对方户名等字段
+			if (receiveMoneyData.companyType === PAYMENT_TARGET_TYPE.PAYMENT_FEE) {
+				if (receiveMoneyData.hasOwnProperty('otherAcountsName')) {
+					this.form.otherAcountsName = savedOtherAcountsName;
+				}
+				if (receiveMoneyData.hasOwnProperty('otherBankNo')) {
+					this.form.otherBankNo = savedOtherBankNo;
+				}
+				if (receiveMoneyData.hasOwnProperty('otherBankName')) {
+					this.form.otherBankName = savedOtherBankName;
+				}
+			}
+			});
 				// 处理银行账户类型
 				let flag = false;
 				if (!receiveMoneyData.bankacceptanceId) {

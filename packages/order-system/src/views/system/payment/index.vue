@@ -1596,9 +1596,13 @@ export default {
 			this.reset();
 			// 使用 $nextTick 确保组件渲染完成后再设置银行账户类型和其他属性
 			this.$nextTick(() => {
-				// 先保存 companyName，避免 watch 监听器清空它
+				// 先保存字段，避免 watch 监听器清空它们
 				const savedCompanyName = paymentData.companyName;
 				const savedCompanyId = paymentData.companyId;
+				// 处理字段名拼写差异：后端可能返回 otherAcountsName（少一个c）或 otherAccountsName（正确拼写）
+				const savedOtherAccountsName = paymentData.otherAccountsName || paymentData.otherAcountsName;
+				const savedOtherBankNo = paymentData.otherBankNo;
+				const savedOtherBankName = paymentData.otherBankName;
 				// 保留表单结构，特别是 params.attachmentIds 和 params.bankacceptance
 				Object.assign(this.form, {
 					...paymentData,
@@ -1608,7 +1612,7 @@ export default {
 						bankacceptance: paymentData.params?.bankacceptance || null
 					}
 				});
-				// 如果 companyType 发生了变化，watch 可能已经清空了 companyName，需要恢复
+				// 如果 companyType 发生了变化，watch 可能已经清空了字段，需要恢复
 				// 使用 $nextTick 确保 watch 执行完毕后再恢复值
 				this.$nextTick(() => {
 					// 确保 companyName 和 companyId 被正确赋值（包括 0 值）
@@ -1619,6 +1623,19 @@ export default {
 					if (paymentData.hasOwnProperty('companyId')) {
 						this.form.companyId = savedCompanyId;
 					}
+				// 当 companyType 为"支付费用"时，恢复对方户名等字段
+				if (paymentData.companyType === PAYMENT_TARGET_TYPE.PAYMENT_FEE) {
+					// 处理字段名拼写差异（后端可能返回拼写错误的字段名）
+					if (paymentData.hasOwnProperty('otherAccountsName') || paymentData.hasOwnProperty('otherAcountsName')) {
+						this.form.otherAccountsName = savedOtherAccountsName;
+					}
+					if (paymentData.hasOwnProperty('otherBankNo')) {
+						this.form.otherBankNo = savedOtherBankNo;
+					}
+					if (paymentData.hasOwnProperty('otherBankName')) {
+						this.form.otherBankName = savedOtherBankName;
+					}
+				}
 				});
 				// 处理银行账户类型
 				let flag = false;
