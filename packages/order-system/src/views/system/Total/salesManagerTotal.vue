@@ -6,11 +6,8 @@
 		</el-row>
 		<hr color="#e6e6e6" />
 		<el-form id="top-search-form-item" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
-			<el-form-item label="开始时间" prop="beginTime">
-				<el-date-picker v-model="queryParams.beginTime" type="datetime" placeholder="请选择开始时间" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
-			</el-form-item>
-			<el-form-item label="结束时间" prop="endTime">
-				<el-date-picker v-model="queryParams.endTime" type="datetime" placeholder="请选择结束时间" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+			<el-form-item label="日期范围" prop="dateRange">
+				<el-date-picker v-model="dateRange" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" style="width: 240px" />
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -82,6 +79,9 @@ export default {
 	name: 'SalesManagerTotal',
 	mixins: [mixin_printHTML],
 	data() {
+		const lastYearDate = this.getlastYearDate();
+		const defaultStartDate = parseTime(lastYearDate, '{y}-{m}-{d}');
+		const defaultEndDate = parseTime(new Date(), '{y}-{m}-{d}');
 		return {
 			// 遮罩层
 			loading: true,
@@ -91,12 +91,14 @@ export default {
 			title: '',
 			// 是否显示弹出层
 			open: false,
+			// 日期范围
+			dateRange: [defaultStartDate, defaultEndDate],
 			// 查询参数
 			queryParams: {
 				pageNum: 1,
 				pageSize: 50,
-				beginTime: parseTime(this.getlastYearDate(), '{y}-{m}-{d} {h}:{i}:{s}'),
-				endTime: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}')
+				beginTime: null,
+				endTime: null
 			},
 			// 表单校验
 			columns: [
@@ -109,6 +111,12 @@ export default {
 		};
 	},
 	created() {
+		// 初始化时格式化日期范围并设置查询参数
+		this.formatDateRange();
+		if (this.dateRange && this.dateRange.length === 2) {
+			this.queryParams.beginTime = this.dateRange[0];
+			this.queryParams.endTime = this.dateRange[1];
+		}
 		this.getList();
 	},
 	methods: {
@@ -118,9 +126,30 @@ export default {
 			lastYearDate.setFullYear(currentDate.getFullYear() - 1);
 			return lastYearDate;
 		},
+		// 格式化日期范围，按照 invoiceIn/index.vue 的做法
+		formatDateRange() {
+			if (this.dateRange && this.dateRange.length === 2) {
+				// 开始时间：如果只有日期没有时间，添加 00:00:00
+				if (String(this.dateRange[0]).length === 10) {
+					this.dateRange[0] += ' 00:00:00';
+				}
+				// 结束时间：如果只有日期没有时间，添加 23:59:59
+				if (String(this.dateRange[1]).length === 10) {
+					this.dateRange[1] += ' 23:59:59';
+				}
+			}
+		},
 		/** 查询向外部借出款信息列表 */
 		getList() {
 			this.loading = true;
+			// 通过 dateRange 给 beginTime 和 endTime 赋值
+			if (this.dateRange && this.dateRange.length === 2) {
+				this.queryParams.beginTime = this.dateRange[0];
+				this.queryParams.endTime = this.dateRange[1];
+			} else {
+				this.queryParams.beginTime = null;
+				this.queryParams.endTime = null;
+			}
 			getSalesManagerTotal(this.queryParams).then(response => {
 				this.totalList = response.rows;
 				this.total = response.total;
@@ -129,6 +158,8 @@ export default {
 		},
 		/** 搜索按钮操作 */
 		handleQuery() {
+			// 按照 invoiceIn/index.vue 的做法处理时间范围
+			this.formatDateRange();
 			this.queryParams.pageNum = 1;
 			this.getList();
 		},
@@ -142,7 +173,7 @@ export default {
 					startTime: this.queryParams.beginTime,
 					endTime: this.queryParams.endTime
 				},
-				`销售经理统计${new Date().getTime()}.xlsx`
+				`销售经理统计_${new Date().getTime()}.xlsx`
 			);
 			this.dialogVisible = false;
 		},
