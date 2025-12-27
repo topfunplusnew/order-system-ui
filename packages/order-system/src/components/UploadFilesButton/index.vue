@@ -214,16 +214,11 @@ export default {
 			if (!attachments || !Array.isArray(attachments) || attachments.length === 0) {
 				return;
 			}
-
 			// 清空当前组件的文件列表
 			this.uploadedFiles = [];
-
 			// 设置初始附件到组件本地
 			this.uploadedFiles = [...attachments].filter(file => file.flag === this.flag);
-			console.log(`attachments`, attachments);
-			console.log(`this.flag`, this.flag);
 			const attachmentIds = attachments.map(file => file.id).filter(id => id);
-
 			// 将初始附件ID添加到全局池（不清空，避免覆盖其他组件的ID）
 			if (attachmentIds.length > 0) {
 				attachmentIds.forEach(id => {
