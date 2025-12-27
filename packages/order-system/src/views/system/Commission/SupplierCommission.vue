@@ -984,6 +984,10 @@ export default {
 							addTime: currentTime,
 							userId: this.id || '',
 							userName: this.trueName || '',
+							// 附件信息
+							params: {
+								attachmentIds: firstApplication.params?.attachmentIds || []
+							},
 							// 转换extraInfo为tableReferences
 							tableReferences:
 								firstApplication.extraInfo && firstApplication.extraInfo.sourceInfos

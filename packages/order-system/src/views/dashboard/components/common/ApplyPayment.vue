@@ -751,6 +751,7 @@ export default {
 				this.$message.success('付款申请提交成功');
 				this.$emit('getApplyPayment', formData);
 				this.$emit('changeOpen');
+				this.reset();
 				return;
 			}
 
