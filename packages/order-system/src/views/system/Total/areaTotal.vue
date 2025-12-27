@@ -48,8 +48,8 @@
 		>
 			<el-table-column v-if="columns[0].visible" label="日期" align="center" prop="time" show-overflow-tooltip />
 			<el-table-column v-if="columns[1].visible" label="区域" align="center" prop="region" show-overflow-tooltip />
-			<el-table-column v-if="columns[3].visible" label="发货车数" align="center" prop="uniqueOrderCount" show-overflow-tooltip></el-table-column>
-			<el-table-column v-if="columns[2].visible" label="不含税利润" align="center" prop="totalProfit" show-overflow-tooltip />
+			<el-table-column v-if="columns[2].visible" label="发货车数" align="center" prop="uniqueOrderCount" show-overflow-tooltip />
+			<el-table-column v-if="columns[3].visible" label="不含税利润" align="center" prop="totalProfit" show-overflow-tooltip />
 		</el-table>
 
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />

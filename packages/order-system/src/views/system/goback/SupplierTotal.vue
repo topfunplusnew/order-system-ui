@@ -45,7 +45,7 @@
 				<el-form-item>
 					<el-button type="primary" @click="getList" size="mini">查询</el-button>
 					<el-button @click="reset" size="mini">刷新</el-button>
-					<el-button type="success" @click="excelExport(['查看供应商信息'])" size="mini">导出Excel</el-button>
+					<el-button type="success" @click="excelExport(['查看供应商信息'], '供应商余额管理')" size="mini">导出Excel</el-button>
 				</el-form-item>
 			</el-form>
 		</div>
