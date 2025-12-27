@@ -57,13 +57,16 @@
 				<el-col :span="1.5">
 					<el-button v-hasPermi="['system:salesReward:remove']" type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete">删除</el-button>
 				</el-col>
-				<el-col :span="1.5">
-					<el-button v-hasPermi="['system:salesReward:export']" type="warning" plain icon="el-icon-download" size="mini" @click="handleExport">导出</el-button>
-				</el-col>
+
 				<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
 					<template #print>
 						<el-col :span="1.5">
 							<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
+						</el-col>
+					</template>
+					<template #export>
+						<el-col :span="1.5">
+							<el-button v-hasPermi="['system:salesReward:export']" plain icon="el-icon-download" size="mini" @click="handleExport">导出</el-button>
 						</el-col>
 					</template>
 				</right-toolbar>
@@ -704,10 +707,10 @@ export default {
 					this.form.manufacturerRebateDiscountAmount = orderData.manufacturerRebateDiscountAmount;
 					this.form.acceptanceDiscountProfit = orderData.acceptanceDiscountProfit;
 					this.form.customerManufacturerCommissionAmount = orderData.customerManufacturerCommissionAmount;
-				this.form.comprehensiveProfit = orderData.comprehensiveProfit;
-				this.form.paymentAmount = orderData.paymentAmount;
-				// 根据人员身份自动填充奖励接收人
-				this.fillRewardReceiver();
+					this.form.comprehensiveProfit = orderData.comprehensiveProfit;
+					this.form.paymentAmount = orderData.paymentAmount;
+					// 根据人员身份自动填充奖励接收人
+					this.fillRewardReceiver();
 				}
 			});
 		},
