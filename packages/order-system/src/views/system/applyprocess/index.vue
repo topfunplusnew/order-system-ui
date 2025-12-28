@@ -96,7 +96,7 @@ export default {
 				{ key: 8, label: `申请人`, visible: true },
 				{ key: 9, label: `备注`, visible: true },
 				{ key: 10, label: `附件`, visible: true },
-				{ key: 11, label: `审核流程`, visible: true }
+				{ key: 11, label: `操作`, visible: true }
 			],
 			// 查看付款信息的
 			checkInfoDialogVisible: false,
@@ -113,6 +113,8 @@ export default {
 					label: '仅我需要审核'
 				}
 			],
+			// 显示搜索条件
+			showSearch: true,
 			// 筛选限制值
 			select: '',
 			// 折叠面板默认打开
@@ -870,6 +872,16 @@ export default {
 				};
 			}
 			return {};
+		},
+		/** 导出按钮操作 */
+		handleExport() {
+			this.download(
+				'system/paymentApply/export',
+				{
+					...this.queryParams
+				},
+				`付款申请信息_${new Date().getTime()}.xlsx`
+			);
 		}
 	}
 };
@@ -923,65 +935,86 @@ export default {
 			</el-form-item>
 		</el-form>
 
-		<el-row :gutter="10" class="mb8">
-			<el-col :span="1.5">
-				<el-button size="mini" @click="refresh">刷新</el-button>
-			</el-col>
-			<el-col :span="1.5">
-				<el-button size="mini" @click="handleLearn">查看教程</el-button>
-			</el-col>
+		<!-- 右侧工具栏 -->
+		<div class="toolbar-wrapper">
+			<right-toolbar :show-search.sync="showSearch" :columns="columns" @queryTable="getAuditList">
+				<template #left>
+					<div class="toolbar-left">
+						<el-row :gutter="10" class="mb8">
+							<!-- 刷新按钮-->
+							<el-col :span="1.5">
+								<el-button icon="el-icon-refresh" size="mini" @click="refresh">刷新</el-button>
+							</el-col>
+							<el-col :span="1.5">
+								<el-button size="mini" @click="handleLearn">查看教程</el-button>
+							</el-col>
+							<!--      解开了新增付款信息-->
+							<el-col :span="1.5">
+								<el-button type="danger" size="mini" @click="handleAdd">申请日常费用报销</el-button>
+							</el-col>
+						</el-row>
+					</div>
+				</template>
+				<template #print>
+					<el-col :span="1.5">
+						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML" :disabled="paymentList.length === 0" />
+					</el-col>
+				</template>
+				<!--        导出-->
+				<template #export>
+					<el-col :span="1.5">
+						<el-button v-hasPermi="['system:paymentapply:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport" :disabled="paymentList.length === 0" />
+					</el-col>
+				</template>
+			</right-toolbar>
+		</div>
 
-			<el-col :span="1.5">
-				<el-button size="mini" type="danger" @click="handleAdd">申请日常费用报销</el-button>
-			</el-col>
+		<el-col :span="1.5" style="position: fixed; bottom: 20px; right: 20px; z-index: 100">
+			<el-popover placement="top-start" trigger="hover" width="1000" title="待提交或已驳回的付款申请">
+				<template #reference>
+					<el-button type="success" size="mini" id="step-3">
+						<a-icon type="unordered-list" />
+						<span style="margin-left: 6px">查看待提交/驳回的申请</span>
+					</el-button>
+				</template>
+				<a-anchor>
+					<div class="apply-list-scroll">
+						<a-list item-layout="horizontal" :data-source="alreadyApplyList" :pagination="pagination">
+							<!--  eslint-disable-next-line-->
+							<a-list-item slot="renderItem" slot-scope="item, index">
+								<a slot="actions" @click="reApply(item, true)">修改填写</a>
+								<a slot="actions" @click="handleCheck(item)">查看详情</a>
+								<a slot="actions" @click="submitReApplyInfo(item)">提交</a>
+								<a slot="actions" @click="handleDeleteApply(item)" style="color: #f56c6c">删除</a>
+								<a-list-item-meta>
+									<template slot="title">
+										<div class="apply-item-title">
+											<span class="apply-reason">{{ item.reason || '无原因' }}</span>
+											<a-tag color="blue" style="margin-left: 8px">{{ item.payType || '类型未知' }}</a-tag>
+											<a-tag color="red">￥{{ item.moneyAmount }}</a-tag>
+										</div>
+									</template>
+									<template slot="description">
+										<div class="apply-item-desc">
+											<div>提交时间：{{ item.addTime }}</div>
+											<div>申请人：{{ item.applyPerson }}</div>
+											<div>公司：{{ item.companyType }} - {{ item.companyName }}</div>
+											<div v-if="item.otherBankNo">对方账号：{{ item.otherBankNo }}</div>
+											<div v-else-if="item.otherAccountsName || item.otherAccountsName">对方户名：{{ item.otherAccountsName || item.otherAccountsName }}</div>
+											<div v-if="Array.isArray(item.attachmentList)">附件：{{ item.attachmentList.length }} 个</div>
+										</div>
+									</template>
+								</a-list-item-meta>
 
-			<el-col :span="1.5" style="position: fixed; bottom: 20px; right: 20px; z-index: 100">
-				<el-popover placement="top-start" trigger="hover" width="1000" title="待提交或已驳回的付款申请">
-					<template #reference>
-						<el-button type="success" size="mini" id="step-3">
-							<a-icon type="unordered-list" />
-							<span style="margin-left: 6px">查看待提交/驳回的申请</span>
-						</el-button>
-					</template>
-					<a-anchor>
-						<div class="apply-list-scroll">
-							<a-list item-layout="horizontal" :data-source="alreadyApplyList" :pagination="pagination">
-								<!--  eslint-disable-next-line-->
-								<a-list-item slot="renderItem" slot-scope="item, index">
-									<a slot="actions" @click="reApply(item, true)">修改填写</a>
-									<a slot="actions" @click="handleCheck(item)">查看详情</a>
-									<a slot="actions" @click="submitReApplyInfo(item)">提交</a>
-									<a slot="actions" @click="handleDeleteApply(item)" style="color: #f56c6c">删除</a>
-									<a-list-item-meta>
-										<template slot="title">
-											<div class="apply-item-title">
-												<span class="apply-reason">{{ item.reason || '无原因' }}</span>
-												<a-tag color="blue" style="margin-left: 8px">{{ item.payType || '类型未知' }}</a-tag>
-												<a-tag color="red">￥{{ item.moneyAmount }}</a-tag>
-											</div>
-										</template>
-										<template slot="description">
-											<div class="apply-item-desc">
-												<div>提交时间：{{ item.addTime }}</div>
-												<div>申请人：{{ item.applyPerson }}</div>
-												<div>公司：{{ item.companyType }} - {{ item.companyName }}</div>
-												<div v-if="item.otherBankNo">对方账号：{{ item.otherBankNo }}</div>
-												<div v-else-if="item.otherAccountsName || item.otherAccountsName">对方户名：{{ item.otherAccountsName || item.otherAccountsName }}</div>
-												<div v-if="Array.isArray(item.attachmentList)">附件：{{ item.attachmentList.length }} 个</div>
-											</div>
-										</template>
-									</a-list-item-meta>
-
-									<div style="margin: 5px">
-										<a-tag :color="getTagColor(item.checkState)">{{ item.checkState }}</a-tag>
-									</div>
-								</a-list-item>
-							</a-list>
-						</div>
-					</a-anchor>
-				</el-popover>
-			</el-col>
-		</el-row>
+								<div style="margin: 5px">
+									<a-tag :color="getTagColor(item.checkState)">{{ item.checkState }}</a-tag>
+								</div>
+							</a-list-item>
+						</a-list>
+					</div>
+				</a-anchor>
+			</el-popover>
+		</el-col>
 
 		<!--    放置付款信息列表-->
 		<el-table
