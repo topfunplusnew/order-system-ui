@@ -199,7 +199,7 @@
 						</el-form-item>
 					</el-col>
 
-					<el-col :span="12">
+					<el-col :span="24">
 						<el-form-item label="单价" prop="unitPrice">
 							<el-input v-model="form.unitPrice" placeholder="从入库记录自动获取或手动输入" disabled />
 						</el-form-item>

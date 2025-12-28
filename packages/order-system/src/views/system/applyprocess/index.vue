@@ -1020,6 +1020,7 @@ export default {
 		<el-table
 			id="printBox"
 			v-loading="loading"
+			v-horizontal-scroll="'always'"
 			:data="paymentList"
 			border
 			:row-class-name="tableRowClassName"
