@@ -875,13 +875,20 @@ export default {
 		},
 		/** 导出按钮操作 */
 		handleExport() {
-			this.download(
-				'system/paymentApply/export',
-				{
-					...this.queryParams
-				},
-				`付款申请信息_${new Date().getTime()}.xlsx`
-			);
+			// 处理导出参数，确保与 list 接口参数格式一致
+			const exportParams = {};
+			Object.keys(this.queryParams).forEach(key => {
+				if (key !== 'params') {
+					exportParams[key] = this.queryParams[key];
+				}
+			});
+			// 将 params.checkStateList 展开成正确的格式
+			if (this.queryParams.params && Array.isArray(this.queryParams.params.checkStateList)) {
+				this.queryParams.params.checkStateList.forEach((item, index) => {
+					exportParams[`params[checkStateList][${index}]`] = item;
+				});
+			}
+			this.download('system/paymentApply/export', exportParams, `付款申请信息_${new Date().getTime()}.xlsx`);
 		}
 	}
 };
