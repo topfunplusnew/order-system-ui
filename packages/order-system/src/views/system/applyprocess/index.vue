@@ -1,7 +1,7 @@
 <!--付款审核流程页面 需求:渲染需要付款的信息列表，付款信息中有多个审核流程 提供按钮筛选仅
 当前账号需要审核的流程 审核的过程调用修改接口-->
 <script>
-import { getPaymentApply, listPaymentApply, submitPaymentApply, delPaymentApply } from '@/api/system/paymentApply';
+import { getPaymentApply, listPaymentApply, submitPaymentApply, delPaymentApply, exportPaymentApply } from '@/api/system/paymentApply';
 import { addPayment, generatePaymentFromApply } from '@/api/system/payment';
 import StepInfo from '@/views/dashboard/components/applyProcess/StepInfo.vue';
 import { mapGetters } from 'vuex';
@@ -875,20 +875,21 @@ export default {
 		},
 		/** 导出按钮操作 */
 		handleExport() {
-			// 处理导出参数，确保与 list 接口参数格式一致
-			const exportParams = {};
-			Object.keys(this.queryParams).forEach(key => {
-				if (key !== 'params') {
-					exportParams[key] = this.queryParams[key];
-				}
-			});
-			// 将 params.checkStateList 展开成正确的格式
-			if (this.queryParams.params && Array.isArray(this.queryParams.params.checkStateList)) {
-				this.queryParams.params.checkStateList.forEach((item, index) => {
-					exportParams[`params[checkStateList][${index}]`] = item;
+			// 使用与 list 接口相同的参数格式
+			const data = _.cloneDeep(this.queryParams);
+			exportPaymentApply(data)
+				.then(res => {
+					const blob = new Blob([res], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+					const link = document.createElement('a');
+					link.href = window.URL.createObjectURL(blob);
+					link.download = `付款申请信息_${new Date().getTime()}.xlsx`;
+					link.click();
+					window.URL.revokeObjectURL(link.href);
+				})
+				.catch(error => {
+					this.$message.error('导出失败，请重试');
+					console.error('导出失败:', error);
 				});
-			}
-			this.download('system/paymentApply/export', exportParams, `付款申请信息_${new Date().getTime()}.xlsx`);
 		}
 	}
 };

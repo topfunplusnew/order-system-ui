@@ -63,3 +63,14 @@ export function submitPaymentApply(id) {
 		}
 	});
 }
+
+// 导出付款申请信息
+export function exportPaymentApply(data) {
+	return request({
+		url: '/system/paymentApply/export',
+		method: 'post',
+		data: data,
+		responseType: 'blob',
+		timeout: 600000
+	});
+}
