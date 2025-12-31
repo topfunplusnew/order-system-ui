@@ -308,7 +308,7 @@
 					<el-input v-model="form.ticketPoint" placeholder="请输入票点" />
 				</el-form-item>
 				<el-form-item label="票点金额" prop="ticketPointAmount">
-					<el-input v-model="invoiceAmount" placeholder="请输入票点金额" />
+					<el-input v-model="form.ticketPointAmount" placeholder="请输入票点金额" />
 				</el-form-item>
 				<!--        新增开票日期 需要单独的接口来进行新增操作-->
 				<el-form-item label="开票日期" prop="extraInfo.actualInvoiceTime">
@@ -588,16 +588,6 @@ export default {
 	computed: {
 		TableName() {
 			return TableName;
-		},
-		// 票点金额 开票金额*票点
-		invoiceAmount: {
-			set(val) {
-				this.form.ticketPointAmount = val;
-			},
-			get() {
-				// 保留两位小数
-				return Number(this.form.invoiceAmount * this.form.ticketPoint).toFixed(2);
-			}
 		}
 	},
 	watch: {
@@ -607,11 +597,16 @@ export default {
 			},
 			deep: true
 		},
-		form: {
-			handler() {
-				this.invoiceAmount = Number(this.form.invoiceAmount * this.form.ticketPoint).toFixed(2);
-			},
-			deep: true
+		// 监听开票金额和票点变化,自动计算票点金额
+		'form.invoiceAmount': function(newVal) {
+			if (newVal && this.form.ticketPoint) {
+				this.form.ticketPointAmount = Number(newVal * this.form.ticketPoint).toFixed(2);
+			}
+		},
+		'form.ticketPoint': function(newVal) {
+			if (newVal && this.form.invoiceAmount) {
+				this.form.ticketPointAmount = Number(this.form.invoiceAmount * newVal).toFixed(2);
+			}
 		},
 		// 监听公司类型变化，清除公司名称和ID
 		'form.companyType'(newVal, oldVal) {

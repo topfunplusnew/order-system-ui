@@ -262,7 +262,7 @@
 					<el-input v-model="form.ticketPoint" placeholder="请输入票点" />
 				</el-form-item>
 				<el-form-item label="票点金额" prop="ticketPointAmount">
-					<el-input v-model="invoiceAmount" placeholder="请输入票点金额" />
+					<el-input v-model="form.ticketPointAmount" placeholder="请输入票点金额" />
 				</el-form-item>
 				<el-form-item label="银行回执附件">
 					<UploadFilesButton ref="paymentReceiptsUpload" flag="paymentReceipts" :initial-attachments="(form.params && form.params.paymentReceiptsAttachments) || []" :extra-info="{ moduleType: 'invoiceOut', formId: form.id }" @files-updated="handlePaymentReceiptsFilesUpdated" />
@@ -454,17 +454,7 @@ export default {
 			}
 		};
 	},
-	computed: {
-		// 票点金额 开票金额*票点
-		invoiceAmount: {
-			set(val) {
-				this.form.ticketPointAmount = val;
-			},
-			get() {
-				return Number(this.form.invoiceAmount * this.form.ticketPoint).toFixed(2);
-			}
-		}
-	},
+	computed: {},
 	watch: {
 		columns: {
 			handler: function (newVal) {
@@ -472,12 +462,16 @@ export default {
 			},
 			deep: true
 		},
-		// 监听
-		form: {
-			handler() {
-				this.invoiceAmount = Number(this.form.invoiceAmount * this.form.ticketPoint).toFixed(2);
-			},
-			deep: true
+		// 监听开票金额和票点变化,自动计算票点金额
+		'form.invoiceAmount': function(newVal) {
+			if (newVal && this.form.ticketPoint) {
+				this.form.ticketPointAmount = Number(newVal * this.form.ticketPoint).toFixed(2);
+			}
+		},
+		'form.ticketPoint': function(newVal) {
+			if (newVal && this.form.invoiceAmount) {
+				this.form.ticketPointAmount = Number(this.form.invoiceAmount * newVal).toFixed(2);
+			}
 		}
 	},
 	created() {
