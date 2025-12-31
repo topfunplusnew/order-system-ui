@@ -582,7 +582,8 @@ export default {
 				pageSize: 20,
 				tableName: TableName.INVOICE_IN,
 				tid: null
-			}
+			},
+			isFirstLoad: false
 		};
 	},
 	computed: {
@@ -599,12 +600,12 @@ export default {
 		},
 		// 监听开票金额和票点变化,自动计算票点金额
 		'form.invoiceAmount': function(newVal) {
-			if (newVal && this.form.ticketPoint) {
+			if (!this.isFirstLoad && newVal && this.form.ticketPoint) {
 				this.form.ticketPointAmount = Number(newVal * this.form.ticketPoint).toFixed(2);
 			}
 		},
 		'form.ticketPoint': function(newVal) {
-			if (newVal && this.form.invoiceAmount) {
+			if (!this.isFirstLoad && newVal && this.form.invoiceAmount) {
 				this.form.ticketPointAmount = Number(this.form.invoiceAmount * newVal).toFixed(2);
 			}
 		},
@@ -843,6 +844,7 @@ export default {
 		/** 新增按钮操作 */
 		handleAdd() {
 			this.reset();
+			this.isFirstLoad = false;
 			this.open = true;
 			this.title = '添加发票购入信息';
 		},
@@ -1037,7 +1039,21 @@ export default {
 		// 执行无发票购入编辑操作的逻辑
 		performNoneInvoiceInEdit(invoiceInData) {
 			this.reset();
-			this.form = invoiceInData;
+			this.isFirstLoad = true;
+			this.form = {
+				...invoiceInData,
+				params: {
+					...invoiceInData.params,
+					paymentReceiptsIds: invoiceInData.paymentReceiptsList ? invoiceInData.paymentReceiptsList.map(item => item.id) : [],
+					invoiceAttachmentsIds: invoiceInData.invoiceAttachmentsList ? invoiceInData.invoiceAttachmentsList.map(item => item.id) : []
+				}
+			};
+			// 使用 setTimeout 或 $nextTick 确保渲染完成后重置标记
+			this.$nextTick(() => {
+				this.isFirstLoad = false;
+			});
+			this.open = true;
+			this.title = '修改发票购入信息';
 
 			// 处理附件列表，分别提取不同类型的附件
 			if (this.form.attachmentList && Array.isArray(this.form.attachmentList)) {

@@ -521,7 +521,8 @@ export default {
 				pageSize: 20,
 				tableName: TableName.INVOICE_OUT,
 				tid: null
-			}
+			},
+			isFirstLoad: false
 		};
 	},
 	computed: {},
@@ -534,12 +535,12 @@ export default {
 		},
 		// 监听开票金额和票点变化,自动计算票点金额
 		'form.invoiceAmount': function(newVal) {
-			if (newVal && this.form.ticketPoint) {
+			if (!this.isFirstLoad && newVal && this.form.ticketPoint) {
 				this.form.ticketPointAmount = Number(newVal * this.form.ticketPoint).toFixed(2);
 			}
 		},
 		'form.ticketPoint': function(newVal) {
-			if (newVal && this.form.invoiceAmount) {
+			if (!this.isFirstLoad && newVal && this.form.invoiceAmount) {
 				this.form.ticketPointAmount = Number(this.form.invoiceAmount * newVal).toFixed(2);
 			}
 		},
@@ -730,6 +731,7 @@ export default {
 		/** 新增按钮操作 */
 		handleAdd() {
 			this.reset();
+			this.isFirstLoad = false;
 			// 设置日期默认为今天
 			const now = new Date();
 			const year = now.getFullYear();
@@ -769,6 +771,7 @@ export default {
 								sessionStorage.setItem('editReason_invoiceOut', value);
 								// 打开编辑表单
 								this.reset();
+								this.isFirstLoad = true;
 								this.form = invoiceOutData;
 								// 处理附件列表 - 统一放入params.attachmentIds
 								if (this.form.attachmentList && Array.isArray(this.form.attachmentList)) {
@@ -782,6 +785,9 @@ export default {
 									}
 									this.form.params.attachmentIds = [];
 								}
+								this.$nextTick(() => {
+									this.isFirstLoad = false;
+								});
 								this.open = true;
 								this.title = '修改发票卖出信息';
 							})
@@ -791,6 +797,7 @@ export default {
 					} else {
 						// 不需要修改原因，直接打开编辑
 						this.reset();
+						this.isFirstLoad = true;
 						this.form = invoiceOutData;
 						if (this.form.attachmentList && Array.isArray(this.form.attachmentList)) {
 							if (!this.form.params) {
@@ -803,6 +810,9 @@ export default {
 							}
 							this.form.params.attachmentIds = [];
 						}
+						this.$nextTick(() => {
+							this.isFirstLoad = false;
+						});
 						this.open = true;
 						this.title = '修改发票卖出信息';
 					}

@@ -480,7 +480,8 @@ export default {
 				pageSize: 20,
 				tableName: TableName.INVOICE_IN,
 				tid: null
-			}
+			},
+			isFirstLoad: false
 		};
 	},
 	computed: {
@@ -498,12 +499,12 @@ export default {
 		},
 		// 监听开票金额和票点变化,自动计算票点金额
 		'form.invoiceAmount': function(newVal) {
-			if (newVal && this.form.ticketPoint) {
+			if (!this.isFirstLoad && newVal && this.form.ticketPoint) {
 				this.form.ticketPointAmount = Number(newVal * this.form.ticketPoint).toFixed(2);
 			}
 		},
 		'form.ticketPoint': function(newVal) {
-			if (newVal && this.form.invoiceAmount) {
+			if (!this.isFirstLoad && newVal && this.form.invoiceAmount) {
 				this.form.ticketPointAmount = Number(this.form.invoiceAmount * newVal).toFixed(2);
 			}
 		}
@@ -706,6 +707,7 @@ export default {
 		/** 新增按钮操作 */
 		handleAdd() {
 			this.reset();
+			this.isFirstLoad = false;
 			this.open = true;
 			this.title = '添加发票购入信息';
 		},
@@ -759,6 +761,7 @@ export default {
 		// 执行发票购入编辑操作的逻辑
 		performInvoiceInEdit(invoiceInData) {
 			this.reset();
+			this.isFirstLoad = true;
 			this.form = {
 				...invoiceInData,
 				params: {
@@ -767,6 +770,9 @@ export default {
 					invoiceAttachmentsIds: invoiceInData.invoiceAttachmentsList ? invoiceInData.invoiceAttachmentsList.map(item => item.id) : []
 				}
 			};
+			this.$nextTick(() => {
+				this.isFirstLoad = false;
+			});
 			this.open = true;
 			this.title = '修改发票购入信息';
 		}, // 银行回执附件处理
