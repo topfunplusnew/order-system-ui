@@ -98,6 +98,26 @@ export const companyConfig = {
 			}
 		},
 		{
+			prop: 'relationTel',
+			label: '联系电话',
+			width: 120,
+			align: 'center',
+			showOverflowTooltip: false, // 禁用默认 tooltip，使用自定义 popover
+			autoWidth: true, // 开启自适应宽度
+			minWidth: 110,
+			maxWidth: 160,
+			includeInForm: true,
+			formConfig: {
+				show: true,
+				type: 'input',
+				order: 5,
+				sortIndex: 5, // 表单项排序索引
+				col: { span: 12 },
+				placeholder: '请输入联系电话',
+				rules: [optionalPhoneRule()] // 使用可选手机号验证规则
+			}
+		},
+		{
 			prop: 'salesManager',
 			label: '销售经理',
 			width: 120,
@@ -110,31 +130,11 @@ export const companyConfig = {
 			formConfig: {
 				show: true,
 				type: 'input',
-				order: 5,
-				sortIndex: 5, // 表单项排序索引
-				col: { span: 12 },
-				placeholder: '请输入销售经理',
-				rules: [{ required: true, message: '请输入销售经理', trigger: 'blur' }, stringRule(), maxLengthRule(20)]
-			}
-		},
-		{
-			prop: 'relationTel',
-			label: '电话',
-			width: 120,
-			align: 'center',
-			showOverflowTooltip: false, // 禁用默认 tooltip，使用自定义 popover
-			autoWidth: true, // 开启自适应宽度
-			minWidth: 110,
-			maxWidth: 160,
-			includeInForm: true,
-			formConfig: {
-				show: true,
-				type: 'input',
 				order: 6,
 				sortIndex: 6, // 表单项排序索引
 				col: { span: 12 },
-				placeholder: '请输入联系人电话',
-				rules: [optionalPhoneRule()] // 使用可选手机号验证规则
+				placeholder: '请输入销售经理',
+				rules: [{ required: true, message: '请输入销售经理', trigger: 'blur' }, stringRule(), maxLengthRule(20)]
 			}
 		},
 		{
