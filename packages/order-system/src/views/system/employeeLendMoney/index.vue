@@ -341,17 +341,14 @@
 						<el-form-item label="金额" prop="moneyAmount">
 							<el-input v-model="form.moneyAmount" placeholder="请输入保证金金额" />
 						</el-form-item>
-						<el-form-item label="对象" prop="target">
-							<el-input v-model="form.target" placeholder="请输入对象(员工姓名、公司名称)" />
+						<el-form-item label="对象" prop="targetType">
+							<el-select v-model="form.targetType" placeholder="请选择对象类型" @change="onTargetTypeChange">
+								<el-option :label="'员工'" :value="PUBLIC_DICT_TYPE.EMPLOYEE"></el-option>
+								<el-option :label="'客户'" :value="PUBLIC_DICT_TYPE.CUSTOMER"></el-option>
+								<el-option :label="'供应商'" :value="PUBLIC_DICT_TYPE.SUPPLIER"></el-option>
+								<el-option :label="'司机'" :value="PUBLIC_DICT_TYPE.DRIVER"></el-option>
+							</el-select>
 						</el-form-item>
-						<!-- 
-											<el-form-item label="对方类型" prop="targetType">
-												<el-select v-model="form.targetType" placeholder="请选择对方类型">
-													<el-option :label="'员工'" :value="PUBLIC_DICT_TYPE.EMPLOYEE"></el-option>
-													<el-option :label="'供应商'" :value="PUBLIC_DICT_TYPE.SUPPLIER"></el-option>
-													<el-option :label="'客户'" :value="PUBLIC_DICT_TYPE.CUSTOMER"></el-option>
-												</el-select>
-											</el-form-item> -->
 						<el-form-item label="对方账户" prop="targetAcountsName">
 							<el-row>
 								<el-col :span="10">
@@ -362,9 +359,7 @@
 										title="对方账户"
 										:get-data="listBankAccount"
 										icon="el-icon-search"
-										:limit-info="{
-											acountsType: PUBLIC_DICT_TYPE.EMPLOYEE
-										}"
+										:limit-info="targetAccountLimitInfo"
 										query-label="户名查找"
 										query-info="acountsName"
 										:query-name="queryBank"
@@ -372,10 +367,7 @@
 										@update:queryName="handleUpdateQueryName"
 									>
 										<template #table-columns>
-											<el-table-column label="员工户名" align="center" prop="acountsName" />
-											<el-table-column label="开户行" align="center" prop="bankName" />
-											<el-table-column label="开户名" align="center" prop="acountsName" />
-											<el-table-column label="账号" align="center" prop="bankNo" />
+											<el-table-column v-for="column in targetAccountColumns" :key="column.prop" :label="column.label" :prop="column.prop" :align="column.align" />
 										</template>
 									</SearchOption>
 								</el-col>
@@ -492,6 +484,28 @@ export default {
 		},
 		PUBLIC_DICT_TYPE() {
 			return PUBLIC_DICT_TYPE;
+		},
+		// 根据对象类型动态计算银行卡筛选条件
+		targetAccountLimitInfo() {
+			return {
+				acountsType: this.form.targetType || PUBLIC_DICT_TYPE.EMPLOYEE
+			};
+		},
+		// 根据对象类型动态计算表格列配置
+		targetAccountColumns() {
+			const typeMap = {
+				[PUBLIC_DICT_TYPE.EMPLOYEE]: '员工',
+				[PUBLIC_DICT_TYPE.CUSTOMER]: '客户',
+				[PUBLIC_DICT_TYPE.SUPPLIER]: '供应商',
+				[PUBLIC_DICT_TYPE.DRIVER]: '司机'
+			};
+			const label = typeMap[this.form.targetType] || '户名';
+			return [
+				{ label: label, prop: 'acountsName', align: 'center' },
+				{ label: '开户行', prop: 'bankName', align: 'center' },
+				{ label: '开户名', prop: 'acountsName', align: 'center' },
+				{ label: '账号', prop: 'bankNo', align: 'center' }
+			];
 		}
 	},
 	components: { ApplyPayment, SearchOption, InfoDialog },
@@ -502,6 +516,8 @@ export default {
 			loading: true,
 			ids: [],
 			showSearch: true,
+			// 标志位：是否为用户主动操作（用于区分数据加载和用户选择）
+			isUserAction: false,
 			// 表格中的数据
 			total: 0,
 			// 表格中的数据
@@ -625,12 +641,10 @@ export default {
 				targetType: [
 					{
 						required: true,
-						message: '对象类型不能为空',
-						trigger: 'blur'
+						message: '对象不能为空',
+						trigger: 'change'
 					}
 				],
-
-				target: [{ required: true, message: '对象不能为空', trigger: 'blur' }],
 
 				moneyAmount: [
 					{
@@ -812,6 +826,20 @@ export default {
 	created() {
 		this.getList();
 	},
+	watch: {
+		// 监听对象类型变化，清空已选择的账户信息（只有用户主动选择时才清空）
+		'form.targetType': function(newVal, oldVal) {
+			if (newVal !== oldVal && this.isUserAction) {
+				// 清空账户相关信息
+				this.form.targetAcountsName = null;
+				this.form.targetBankNo = null;
+				this.form.targetBankNoId = null;
+				this.form.targetBankName = null;
+				// 重置查询参数
+				this.queryBank = null;
+			}
+		}
+	},
 	methods: {
 		listBankAccount,
 		getList() {
@@ -855,6 +883,8 @@ export default {
 		// 修改按钮操作
 		handleUpdate(row) {
 			this.reset();
+			// 设置为非用户操作，避免数据加载时触发watch
+			this.isUserAction = false;
 			const id = row.id || this.ids;
 			getLendMoney(id).then(response => {
 				this.form = response.data;
@@ -920,7 +950,8 @@ export default {
 			this.reset();
 			this.open = true;
 			this.title = '添加向外部借出款信息';
-			// 默认对方类型可选，若需要默认值可加如下行
+			// 默认对象类型为员工（设置为用户操作，因为这是默认值）
+			this.isUserAction = true;
 			this.form.targetType = this.PUBLIC_DICT_TYPE.EMPLOYEE;
 		},
 		/** 提交按钮 */
@@ -1008,6 +1039,9 @@ export default {
 			this.form.targetBankNoId = val.id;
 			this.form.targetBankName = val.bankName;
 			this.form.targetAcountsName = val.acountsName;
+
+			// 填充companyName 到 target上
+			this.form.target = val.companyName;
 		},
 		handleUpdateQueryName(val) {
 			this.queryBank = val;
@@ -1020,6 +1054,10 @@ export default {
 		// 修改对方账户类型
 		changeCustomSelfBankType(value) {
 			this.recoverMoneyEntity.selfBankCardType = value;
+		},
+		// 对象类型变化处理（用户主动选择）
+		onTargetTypeChange(value) {
+			this.isUserAction = true;
 		},
 		// 收回资金 首先添加借出款收回信息
 		RecoverMoney() {
