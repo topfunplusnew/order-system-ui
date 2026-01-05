@@ -8,47 +8,28 @@
 		:show-close="false"
 		:title="dialogTitle"
 		:visible.sync="dialogVisible"
+		@open="fetchHistory(true)"
 		width="900px"
 		append-to-body
 	>
 		<el-table v-loading="loading" :data="historyList" style="width: 100%">
 			<el-table-column type="index" label="#" width="50" />
-			<el-table-column label="修改时间" width="180" show-overflow-tooltip>
-				<template slot-scope="scope">
-					{{ scope.row.updateTime || scope.row.createTime || '-' }}
-				</template>
-			</el-table-column>
-			<el-table-column label="修改人" width="120" show-overflow-tooltip>
-				<template slot-scope="scope">
-					{{ scope.row.updateBy || scope.row.createBy || '-' }}
-				</template>
-			</el-table-column>
-			<el-table-column prop="remark" label="备注" show-overflow-tooltip />
-			<el-table-column label="详情" width="80">
-				<template slot-scope="scope">
-					<el-button size="mini" type="text" @click="openDetail(scope.row)">查看</el-button>
-				</template>
-			</el-table-column>
+			<el-table-column prop="id" label="记录ID" width="90" show-overflow-tooltip />
+			<el-table-column prop="bankAccountId" label="银行卡ID" width="100" show-overflow-tooltip />
+			<el-table-column prop="companyId" label="公司ID" width="90" show-overflow-tooltip />
+			<el-table-column prop="acountsType" label="类型" width="90" show-overflow-tooltip />
+			<el-table-column prop="acountsName" label="开户名" min-width="160" show-overflow-tooltip />
+			<el-table-column prop="bankNo" label="银行账号" min-width="170" show-overflow-tooltip />
+			<el-table-column prop="bankName" label="开户行" min-width="120" show-overflow-tooltip />
+			<el-table-column prop="companyName" label="公司名称/车牌号" min-width="120" show-overflow-tooltip />
+			<el-table-column prop="displayName" label="我方公司" min-width="120" show-overflow-tooltip />
+			<el-table-column prop="comments" label="备注" min-width="120" show-overflow-tooltip />
+			<el-table-column prop="isPublicAccount" label="公私户" width="80" show-overflow-tooltip />
+			<el-table-column prop="sort" label="排序" width="70" show-overflow-tooltip />
+			<el-table-column prop="createBy" label="操作人" width="120" show-overflow-tooltip />
+			<el-table-column prop="createTime" label="操作时间" width="170" show-overflow-tooltip />
+			<el-table-column prop="operationType" label="操作类型" width="100" show-overflow-tooltip />
 		</el-table>
-
-		<el-dialog
-			:modal="false"
-			v-dialogDrag
-			v-dialogDragWidth
-			v-dialogDragHeight
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="历史记录详情"
-			:visible.sync="detailVisible"
-			width="700px"
-			append-to-body
-		>
-			<pre style="margin: 0; max-height: 60vh; overflow: auto; white-space: pre-wrap">{{ detailText }}</pre>
-			<div slot="footer" class="dialog-footer">
-				<el-button type="primary" @click="detailVisible = false">确 定</el-button>
-				<el-button @click="detailVisible = false">取 消</el-button>
-			</div>
-		</el-dialog>
 
 		<div slot="footer" class="dialog-footer">
 			<el-button type="primary" @click="dialogVisible = false">确 定</el-button>
@@ -81,8 +62,7 @@ export default {
 			loading: false,
 			historyList: [],
 			lastLoadedId: null,
-			detailVisible: false,
-			detailText: ''
+			lastLoadedVisibleId: null
 		};
 	},
 	computed: {
@@ -102,10 +82,10 @@ export default {
 	watch: {
 		visible(val) {
 			if (val) {
-				this.fetchHistory();
+				this.fetchHistory(true);
 			} else {
-				this.detailVisible = false;
-				this.detailText = '';
+				this.historyList = [];
+				this.lastLoadedVisibleId = null;
 			}
 		},
 		bankAccountId() {
@@ -115,10 +95,6 @@ export default {
 		}
 	},
 	methods: {
-		openDetail(row) {
-			this.detailText = row ? JSON.stringify(row, null, 2) : '';
-			this.detailVisible = true;
-		},
 		normalizeHistoryList(res) {
 			const candidates = [res?.data, res?.rows, res?.data?.rows, res?.data?.data];
 			const list = candidates.find(item => Array.isArray(item));
@@ -127,12 +103,14 @@ export default {
 		fetchHistory(force = false) {
 			if (!this.bankAccountId) return;
 			if (!force && String(this.lastLoadedId) === String(this.bankAccountId)) return;
+			if (!force && String(this.lastLoadedVisibleId) === String(this.bankAccountId)) return;
 
 			this.loading = true;
 			getBankAccountHistory(this.bankAccountId)
 				.then(res => {
 					this.historyList = this.normalizeHistoryList(res);
 					this.lastLoadedId = this.bankAccountId;
+					this.lastLoadedVisibleId = this.bankAccountId;
 					if ((this.historyList || []).length === 0) {
 						this.$message.warning('未查询到银行卡历史记录');
 					}
