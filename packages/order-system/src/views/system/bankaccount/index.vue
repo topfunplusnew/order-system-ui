@@ -89,6 +89,7 @@
 				<template slot-scope="scope">
 					<el-row>
 						<el-button size="mini" type="text" @click="checkBankChangeFlow(scope.row)">变动流水</el-button>
+						<el-button v-if="scope.row.historyCount > 0" size="mini" type="text" @click="openBankAccountHistory(scope.row)">查看银行卡历史</el-button>
 					</el-row>
 				</template>
 			</el-table-column>
@@ -255,6 +256,9 @@
 				<el-button @click="bankChangeDialogVisible = false">取 消</el-button>
 			</div>
 		</el-dialog>
+
+		<!-- 银行卡历史记录 -->
+		<BankAccountHistoryDialog :visible.sync="bankAccountHistoryVisible" :bank-account-id="currentHistoryRow && currentHistoryRow.id" :bank-no="currentHistoryRow && currentHistoryRow.bankNo" />
 	</div>
 </template>
 
@@ -267,6 +271,7 @@ import { PUBLIC_DICT_TYPE } from '@/utils/order';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import keepAliveDialog from '@/views/dashboard/mixins/keepAliveDialog';
 import BankAccountChangeDash from '../Statement/bankAccountChangeDash.vue';
+import BankAccountHistoryDialog from './components/BankAccountHistoryDialog.vue';
 import { listUser } from '@/api/system/user';
 import { listCars } from '@/api/system/cars';
 import { excludeParams } from '@/api/tool/exclude';
@@ -274,7 +279,7 @@ import { listBankAccount } from '../../../api/system/bankAccount';
 
 export default {
 	name: 'BankAccount',
-	components: { SearchOption, BankAccountChangeDash },
+	components: { SearchOption, BankAccountChangeDash, BankAccountHistoryDialog },
 	mixins: [mixin_printHTML, keepAliveDialog],
 	data() {
 		return {
@@ -462,7 +467,10 @@ export default {
 			queryCompanyGive: '',
 			queryCompany: '',
 			// 银行卡搜索组件
-			queryBankAccount: ''
+			queryBankAccount: '',
+			// 银行卡历史记录弹窗
+			bankAccountHistoryVisible: false,
+			currentHistoryRow: null
 		};
 	},
 	computed: {
@@ -535,6 +543,11 @@ export default {
 				this.bankAcountTotal = res.total;
 				this.bankChangeDialogVisible = true;
 			});
+		},
+		// 查看银行卡历史记录
+		openBankAccountHistory(row) {
+			this.currentHistoryRow = row || null;
+			this.bankAccountHistoryVisible = true;
 		},
 		// 分页的请求
 		getBankAcountChangeList() {

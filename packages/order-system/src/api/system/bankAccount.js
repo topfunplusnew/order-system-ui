@@ -88,3 +88,11 @@ export function updateBankAccountSort(data) {
 		data: data
 	});
 }
+
+// 查询银行卡修改历史记录
+export function getBankAccountHistory(id) {
+	return request({
+		url: '/system/bankAccount/history/' + id,
+		method: 'get'
+	});
+}
