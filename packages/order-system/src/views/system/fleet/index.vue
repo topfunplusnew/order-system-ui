@@ -80,14 +80,8 @@
 			</el-table-column>
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
 				<template #default="scope">
-					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">
-							<el-button v-hasPermi="['system:fleet:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">编辑</el-button>
-							<el-button v-hasPermi="['system:fleet:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
-						</div>
-						<el-button v-hasPermi="['system:fleet:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">编辑</el-button>
-						<el-button v-hasPermi="['system:fleet:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
-					</el-tooltip>
+					<el-button v-hasPermi="['system:fleet:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">编辑</el-button>
+					<el-button v-hasPermi="['system:fleet:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
