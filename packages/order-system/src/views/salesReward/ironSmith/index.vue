@@ -186,7 +186,15 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[13].visible" label="奖励日期" align="center" prop="rewardDate" width="180" show-overflow-tooltip>
+			<el-table-column v-if="columns[13].visible" label="合计金额" align="center" width="120" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ getRewardPayTotalAmount(scope.row) }}</div>
+						<span>{{ getRewardPayTotalAmount(scope.row) }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[14].visible" label="奖励日期" align="center" prop="rewardDate" width="180" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.rewardDate ? parseTime(scope.row.rewardDate, '{y}-{m}-{d}') : '-' }}</div>
@@ -194,12 +202,12 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[14].visible" label="审核状态" align="center" prop="auditState" width="100" show-overflow-tooltip>
+			<el-table-column v-if="columns[15].visible" label="审核状态" align="center" prop="auditState" width="100" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tag :type="scope.row.auditState === '已审核' ? 'success' : 'warning'">{{ scope.row.auditState }}</el-tag>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[15].visible" label="审核人" align="center" prop="auditUserName" width="100" show-overflow-tooltip>
+			<el-table-column v-if="columns[16].visible" label="审核人" align="center" prop="auditUserName" width="100" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.auditUserName || '-' }}</div>
@@ -207,7 +215,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[16].visible" label="操作" align="center" class-name="small-padding fixed-width" width="400" fixed="right">
+			<el-table-column v-if="columns[17].visible" label="操作" align="center" class-name="small-padding fixed-width" width="400" fixed="right">
 				<template #default="scope">
 					<el-button size="mini" type="text" @click="handleCheckOrder(scope.row)">查看订单</el-button>
 					<el-button v-hasPermi="['system:salesReward:edit']" size="mini" type="text" icon="el-icon-edit" :disabled="scope.row.auditState === '已审核'" @click="handleUpdate(scope.row)">修改</el-button>
@@ -359,6 +367,7 @@ import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import GOODS_ORDER from '@/components/NeedToShow/GOODS_ORDER.vue';
 import SearchOption from '@/components/SearchOption.vue';
 import _ from 'lodash';
+import { add, bignumber, format } from 'mathjs';
 
 export default {
 	name: 'IronSmithReward',
@@ -579,10 +588,11 @@ export default {
 				{ key: 10, label: '是否含税', visible: true },
 				{ key: 11, label: '奖励金额', visible: true },
 				{ key: 12, label: '实际支付金额', visible: true },
-				{ key: 13, label: '奖励日期', visible: true },
-				{ key: 14, label: '审核状态', visible: true },
-				{ key: 15, label: '审核人', visible: true },
-				{ key: 16, label: '操作', visible: true }
+				{ key: 13, label: '合计金额', visible: true },
+				{ key: 14, label: '奖励日期', visible: true },
+				{ key: 15, label: '审核状态', visible: true },
+				{ key: 16, label: '审核人', visible: true },
+				{ key: 17, label: '操作', visible: true }
 			]
 		};
 	},
@@ -632,6 +642,18 @@ export default {
 				return value;
 			}
 			return parseFloat(num.toFixed(2));
+		},
+		// 奖励金额 + 实际支付金额（合计列，高精度）
+		getRewardPayTotalAmount(row) {
+			const rewardAmount = row?.rewardAmount;
+			const paymentAmount = row?.paymentAmount;
+			const isRewardEmpty = rewardAmount === null || rewardAmount === undefined || rewardAmount === '';
+			const isPaymentEmpty = paymentAmount === null || paymentAmount === undefined || paymentAmount === '';
+			if (isRewardEmpty && isPaymentEmpty) return '-';
+			const rewardNum = Number(rewardAmount);
+			const paymentNum = Number(paymentAmount);
+			const total = add(bignumber(isNaN(rewardNum) ? 0 : rewardNum), bignumber(isNaN(paymentNum) ? 0 : paymentNum));
+			return format(total, { notation: 'fixed', precision: 2 });
 		},
 		// 格式化金额输入框字段
 		formatAmountField(fieldName) {
