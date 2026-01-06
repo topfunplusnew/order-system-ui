@@ -120,7 +120,7 @@ export var mixin_order_freight_payment = {
 			}
 			return {
 				// 构建对方信息
-				fundsDate: parseTime(new Date()),
+				fundsDate: this.freightSelfOnceInfo && this.freightSelfOnceInfo.fundsDate ? this.freightSelfOnceInfo.fundsDate : parseTime(new Date()),
 				tableName: TableName.ORDER_FREIGHT,
 				// 这里的表id是运费的id
 				tID: orderFreight.id,
@@ -232,7 +232,7 @@ export var mixin_order_freight_payment = {
 
 				// 构建付款记录对象
 				return {
-					fundsDate: parseTime(new Date()),
+					fundsDate: this.freightSelfOnceInfo && this.freightSelfOnceInfo.fundsDate ? this.freightSelfOnceInfo.fundsDate : parseTime(new Date()),
 					payType: this.freightSelfOnceInfo.payType ? this.freightSelfOnceInfo.payType.join('-') : '',
 					moneyAmount: totalAmount,
 					selfAccountsName: this.freightSelfOnceInfo.selfAccountsName,
@@ -258,6 +258,8 @@ export var mixin_order_freight_payment = {
 		// 重置
 		resetFreightSelfOnceInfo() {
 			this.freightSelfOnceInfo = {
+				payType: null,
+				fundsDate: parseTime(new Date()),
 				selfAccountsName: null,
 				selfBankNo: null,
 				selfBankName: null,
