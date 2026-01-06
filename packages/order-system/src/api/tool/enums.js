@@ -360,7 +360,8 @@ export function getTagColor(checkState) {
 
 export const APPLY_FREIGHT_SOURCE_TYPE = {
 	GOODS_ORDER: '订单',
-	INVENTORY_MAIN: '库存'
+	INVENTORY_MAIN: '库存',
+	ADJUST_ORDER: '调整单'
 };
 
 // 支出或者收入类型的枚举

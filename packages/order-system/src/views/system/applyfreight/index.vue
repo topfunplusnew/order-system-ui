@@ -193,6 +193,7 @@ export default {
 		},
 		// 查看该运费信息的订单或者库存的信息
 		viewOrderDetails(row) {
+			console.log(row);
 			// 如果该行的订单或者库存的id不存在,那么就报错
 			if (!row.sourceId) {
 				this.$message.error('该行数据有误, 订单编号或库存编号为空');
@@ -201,7 +202,9 @@ export default {
 
 			// 判断是订单产生的运费 还是库存产生的运费
 			switch (row.source) {
-				case APPLY_FREIGHT_SOURCE_TYPE.GOODS_ORDER: {
+				// 如果是订单或者调整单
+				case APPLY_FREIGHT_SOURCE_TYPE.GOODS_ORDER:
+				case APPLY_FREIGHT_SOURCE_TYPE.ADJUST_ORDER: {
 					getGoodsOrder(row.sourceId).then(res => {
 						if (!res.data) {
 							this.$message.error('该行为订单产生的运费,但获取订单信息有误!');
