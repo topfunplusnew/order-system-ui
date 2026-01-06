@@ -341,6 +341,9 @@
 							<el-form-item label="支付类型" prop="payType">
 								<el-cascader v-model="freightSelfOnceInfo.payType" :options="paymentTypeTree" :props="props" />
 							</el-form-item>
+							<el-form-item label="支付时间" prop="fundsDate">
+								<el-date-picker v-model="freightSelfOnceInfo.fundsDate" type="datetime" placeholder="请选择支付时间" value-format="yyyy-MM-dd HH:mm:ss" :clearable="false" />
+							</el-form-item>
 							<el-form-item label="我方户名" prop="selfAccountsName">
 								<el-row>
 									<el-col :span="18">
@@ -595,6 +598,7 @@ export default {
 			needInfo: {},
 			freightSelfOnceInfo: {
 				payType: null,
+				fundsDate: '',
 				selfAccountsName: '',
 				selfBankNo: '',
 				selfBankName: '',
