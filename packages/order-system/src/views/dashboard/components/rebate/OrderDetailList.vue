@@ -19,7 +19,11 @@ export default {
 			selectedList: [],
 			queryParams: {
 				pageNum: 1,
-				pageSize: 20
+				pageSize: 20,
+				params: {
+					// 订单日期排序：asc / desc
+					orderDateSort: null
+				}
 			}
 		};
 	},
@@ -49,6 +53,17 @@ export default {
 		// 对货物进行查询和筛选
 		handleQuery() {
 			this.$emit('handleQuery', this.queryParams);
+		},
+		/** 表格排序触发事件（服务端排序） */
+		handleSortChange({ prop, order }) {
+			// 只处理订单日期列排序
+			if (prop !== 'orderDate') return;
+
+			// ascending / descending / null
+			const sortVal = order === 'ascending' ? 'asc' : order === 'descending' ? 'desc' : null;
+			this.queryParams.params.orderDateSort = sortVal;
+			this.queryParams.pageNum = 1;
+			this.handleQuery();
 		}
 	}
 };
@@ -91,10 +106,11 @@ export default {
 			max-height="700"
 			size="mini"
 			@selection-change="handleSelectionChange"
+			@sort-change="handleSortChange"
 		>
 			<el-table-column type="selection" width="70" align="center" fixed="left" />
 			<el-table-column label="id" align="center" prop="id" min-width="80" />
-			<el-table-column label="订单日期" align="center" prop="orderDate" min-width="100" />
+			<el-table-column label="订单日期" align="center" prop="orderDate" min-width="100" sortable="custom" :sort-orders="['descending', 'ascending']" />
 			<el-table-column label="客户" align="center" prop="customer" min-width="120" />
 			<el-table-column label="供应商" align="center" prop="supplier" min-width="150" />
 			<el-table-column label="级别编码" align="center" prop="levelID" min-width="100" />
