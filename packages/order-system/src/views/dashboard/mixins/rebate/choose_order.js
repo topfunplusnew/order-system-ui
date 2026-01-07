@@ -12,6 +12,8 @@ export var mixin_choose_order = {
 			orderSelectVisible: false,
 			// 选择供应商出来的搜索
 			queryParamsSupplier: {
+				pageNum: 1,
+				pageSize: 20,
 				supplier: '',
 				params: {
 					beginTime: null,
@@ -57,14 +59,24 @@ export var mixin_choose_order = {
 			this.queryParamsSupplier.supplier = val.companyName;
 		},
 		getDetailBySupper(query) {
+			const baseQuery = query || {};
+			const pageNum = baseQuery.pageNum || this.queryParamsSupplier.pageNum || 1;
+			const pageSize = baseQuery.pageSize || this.queryParamsSupplier.pageSize || 20;
+			const supplier = this.queryParamsSupplier.supplier || baseQuery.supplier || '';
+			const beginTime = this.queryParamsSupplier.params?.beginTime || baseQuery.params?.beginTime || baseQuery['params[beginTime]'] || null;
+			const endTime = this.queryParamsSupplier.params?.endTime || baseQuery.params?.endTime || baseQuery['params[endTime]'] || null;
+
+			// ruoyi 的 tansParams 会把对象序列化成 params[xx]，这里直接按后端需要的入参名传递，避免 params 被覆盖/丢失
 			const qs = {
-				...query,
-				supplier: this.queryParamsSupplier.supplier,
-				params: {
-					beginTime: this.queryParamsSupplier.params.beginTime,
-					endTime: this.queryParamsSupplier.params.endTime
-				}
+				...baseQuery,
+				pageNum,
+				pageSize,
+				supplier,
+				'params[beginTime]': beginTime,
+				'params[endTime]': endTime
 			};
+			// 防止同时存在 params 对象导致重复/冲突
+			delete qs.params;
 			// 点击选择供应商和时间段后 查询列表 然后弹出选择货物详情
 			listOrderDetail(qs).then(res => {
 				if (!res.rows) {
@@ -78,6 +90,8 @@ export var mixin_choose_order = {
 		},
 		// 确认选择供应商
 		handleCommitSupplier() {
+			// 初次进入列表时保证走第一页，避免分页参数缺失
+			this.queryParamsSupplier.pageNum = 1;
 			this.getDetailBySupper(this.queryParamsSupplier);
 		},
 		// 2. 直接选择订单
