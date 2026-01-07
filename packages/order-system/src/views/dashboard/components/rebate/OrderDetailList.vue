@@ -30,6 +30,16 @@ export default {
 		}
 	},
 	methods: {
+		boolTag(val) {
+			if (val === 0 || val === '0' || val === false) return '否';
+			if (val === 1 || val === '1' || val === true) return '是';
+			if (val === '否' || val === '是') return val;
+			return '未知';
+		},
+		boolTagType(val) {
+			const text = this.boolTag(val);
+			return text === '否' ? 'danger' : text === '是' ? 'success' : 'info';
+		},
 		handleSelectionChange(selection) {
 			this.selectedList = selection;
 		},
@@ -99,8 +109,8 @@ export default {
 			<el-table-column label="出厂单价" align="center" prop="price" min-width="90" />
 			<el-table-column label="出厂是否含税" align="center" prop="isIncludeTaxFactory">
 				<template slot-scope="scope">
-					<el-tag :type="scope.row.isIncludeTaxFactory === '否' ? 'danger' : 'success'" disable-transitions>
-						{{ scope.row.isIncludeTaxFactory }}
+					<el-tag :type="boolTagType(scope.row.isIncludeTaxFactory)" disable-transitions>
+						{{ boolTag(scope.row.isIncludeTaxFactory) }}
 					</el-tag>
 				</template>
 			</el-table-column>
