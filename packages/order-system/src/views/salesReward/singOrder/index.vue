@@ -186,8 +186,8 @@
 			<el-table-column v-if="columns[12].visible" label="实际支付金额" align="center" prop="paymentAmount" width="120" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.paymentAmount ? formatAmount(scope.row.paymentAmount) : '-' }}</div>
-						<span>{{ scope.row.paymentAmount ? formatAmount(scope.row.paymentAmount) : '-' }}</span>
+						<div slot="content">{{ formatAmount(scope.row.paymentAmount) }}</div>
+						<span>{{ formatAmount(scope.row.paymentAmount) }}</span>
 					</el-tooltip>
 				</template>
 			</el-table-column>
@@ -212,7 +212,15 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[16].visible" label="操作" align="center" class-name="small-padding fixed-width" width="400" fixed="right">
+			<el-table-column v-if="columns[16].visible" label="备注" align="center" prop="remark" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.remark || '-' }}</div>
+						<span>{{ scope.row.remark || '-' }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[17].visible" label="操作" align="center" class-name="small-padding fixed-width" width="400" fixed="right">
 				<template #default="scope">
 					<el-button size="mini" type="text" @click="handleCheckOrder(scope.row)">查看订单</el-button>
 					<el-button v-hasPermi="['system:salesReward:edit']" size="mini" type="text" icon="el-icon-edit" :disabled="scope.row.auditState === '已审核'" @click="handleUpdate(scope.row)">修改</el-button>
@@ -588,7 +596,8 @@ export default {
 				{ key: 13, label: '奖励日期', visible: true },
 				{ key: 14, label: '审核状态', visible: true },
 				{ key: 15, label: '审核人', visible: true },
-				{ key: 16, label: '操作', visible: true }
+				{ key: 16, label: '备注', visible: true },
+				{ key: 17, label: '操作', visible: true }
 			]
 		};
 	},
@@ -643,7 +652,7 @@ export default {
 		getSummaries({ columns = [], data = [] }) {
 			const sums = (columns || []).map(() => '');
 			const firstDataColumnIndex = columns.findIndex(col => col.property);
-			sums[(firstDataColumnIndex > -1 ? firstDataColumnIndex : 0)] = '合计';
+			sums[firstDataColumnIndex > -1 ? firstDataColumnIndex : 0] = '合计';
 
 			const sumByProp = prop =>
 				(data || []).reduce((acc, row) => {
