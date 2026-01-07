@@ -28,6 +28,17 @@ graph TD
         ETO -- "uuid-14: 发货管理" --> M_DEL["mixin_order_deliverGoods.js"]
     end
 
+    subgraph "SalesReward (销售奖励管理)"
+        SR_API["api/salesReward/salesReward.js"]
+        SING["singOrder/index.vue (唱单奖励)"] -- "uuid-17: 调用接口" --> SR_API
+        IRON["ironSmith/index.vue (铁匠奖励)"] -- "uuid-18: 调用接口" --> SR_API
+        STEP["step/index.vue (台阶奖励)"] -- "uuid-19: 调用接口" --> SR_API
+        
+        SING -- "uuid-20: 查看关联订单" --> ETO
+        IRON -- "uuid-21: 查看关联订单" --> ETO
+        STEP -- "uuid-22: 查看关联订单" --> ETO
+    end
+
     subgraph "Views (外部引用)"
         ORDER_V["system/goodsorder/index.vue"] -- "uuid-15: 渲染核心订单列表" --> ETO
         ADJUST_V["system/adjustOrders/index.vue"] -- "uuid-16: 渲染调整单模式列表" --> ETO
