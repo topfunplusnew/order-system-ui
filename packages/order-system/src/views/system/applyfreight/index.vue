@@ -11,6 +11,23 @@ import INVENTORY from '@/components/NeedToShow/INVENTORY.vue';
 import CheckFiles from '@/components/CheckFiles.vue';
 import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfile';
 
+const createDefaultQueryParams = () => ({
+	startDate: null,
+	endDate: null,
+	paymentDateRange: null,
+	fleet: '',
+	seaDriverName: '',
+	carNo: '',
+	driverAccountName: '',
+	paymentState: '',
+	pageNum: 1,
+	pageSize: 20,
+	params: {
+		payDateStartTime: null,
+		payDateEndTime: null
+	}
+});
+
 export default {
 	name: 'ApplyFreight',
 	components: { CheckFiles },
@@ -22,21 +39,9 @@ export default {
 		const oneMonthLater = new Date();
 		oneMonthLater.setMonth(today.getMonth() + 1);
 		return {
-			queryParams: {
-				startDate: null,
-				endDate: null,
-				paymentDateRange: null,
-				fleet: '',
-				carNo: '',
-				driverAccountName: '',
-				paymentState: '',
-				pageNum: 1,
-				pageSize: 20,
-				params: {
-					payDateStartTime: null,
-					payDateEndTime: null
-				}
-			},
+			queryParams: createDefaultQueryParams(),
+			// 实际用于列表查询/分页/导出的一份参数，避免“搜索后重置表单”影响当前列表
+			listParams: createDefaultQueryParams(),
 			freightList: [],
 			loading: false,
 			total: 0,
@@ -123,6 +128,22 @@ export default {
 		}
 	},
 	methods: {
+		applyQueryParams(target, source) {
+			// 保持对象引用不变，避免表单/分页等组件状态异常
+			target.startDate = source.startDate;
+			target.endDate = source.endDate;
+			target.paymentDateRange = source.paymentDateRange;
+			target.fleet = source.fleet;
+			target.seaDriverName = source.seaDriverName;
+			target.carNo = source.carNo;
+			target.driverAccountName = source.driverAccountName;
+			target.paymentState = source.paymentState;
+			target.pageNum = source.pageNum;
+			target.pageSize = source.pageSize;
+			target.params = target.params || {};
+			target.params.payDateStartTime = source?.params?.payDateStartTime ?? null;
+			target.params.payDateEndTime = source?.params?.payDateEndTime ?? null;
+		},
 		formatDate(date) {
 			const year = date.getFullYear();
 			const month = (date.getMonth() + 1).toString().padStart(2, '0');
@@ -131,57 +152,50 @@ export default {
 		},
 		async getList() {
 			this.loading = true;
-			const response = await getOrderFreightList(this.queryParams);
+			const response = await getOrderFreightList(this.listParams);
 			if (response.code === 200) {
 				this.freightList = response.rows;
 				this.total = response.total;
 			}
 			this.loading = false;
 		},
-		handleQuery() {
-			this.queryParams.pageNum = 1;
+		async handleQuery() {
+			const nextListParams = JSON.parse(JSON.stringify(this.queryParams || {}));
+			nextListParams.params = nextListParams.params || {};
+			nextListParams.pageNum = 1;
 
 			// 处理一下时间 客户要求开始时间和结束时间都是同一天 前端拼接零点和二十四点
-			if (this.queryParams.startDate && this.queryParams.endDate) {
+			if (nextListParams.startDate && nextListParams.endDate) {
 				// 检查长度，yyyy-MM-dd 格式长度为10，如果长度超过10说明已经拼接过时间
-				if (this.queryParams.startDate.length === 10) {
-					this.queryParams.startDate = this.queryParams.startDate + ' 00:00:00';
+				if (nextListParams.startDate.length === 10) {
+					nextListParams.startDate = nextListParams.startDate + ' 00:00:00';
 				}
-				if (this.queryParams.endDate.length === 10) {
-					this.queryParams.endDate = this.queryParams.endDate + ' 23:59:59';
+				if (nextListParams.endDate.length === 10) {
+					nextListParams.endDate = nextListParams.endDate + ' 23:59:59';
 				}
 			}
 
 			// 处理支付时间范围
-			if (this.queryParams.paymentDateRange && Array.isArray(this.queryParams.paymentDateRange) && this.queryParams.paymentDateRange.length === 2) {
+			if (nextListParams.paymentDateRange && Array.isArray(nextListParams.paymentDateRange) && nextListParams.paymentDateRange.length === 2) {
 				// 时间范围选择器返回的是数组 [startDate, endDate]，直接使用日期字符串，精确到天
-				this.queryParams.params.payDateStartTime = this.queryParams.paymentDateRange[0];
-				this.queryParams.params.payDateEndTime = this.queryParams.paymentDateRange[1];
+				nextListParams.params.payDateStartTime = nextListParams.paymentDateRange[0];
+				nextListParams.params.payDateEndTime = nextListParams.paymentDateRange[1];
 			} else {
 				// 清空支付时间范围
-				this.queryParams.params.payDateStartTime = null;
-				this.queryParams.params.payDateEndTime = null;
+				nextListParams.params.payDateStartTime = null;
+				nextListParams.params.payDateEndTime = null;
 			}
 
-			this.getList();
+			this.applyQueryParams(this.listParams, nextListParams);
+			await this.getList();
+			// 搜索完成后重置表单展示内容（不影响当前列表的查询条件）
+			this.applyQueryParams(this.queryParams, createDefaultQueryParams());
 		},
 		resetQuery() {
-			this.queryParams = {
-				startDate: null,
-				endDate: null,
-				paymentDateRange: null,
-				fleet: '',
-				carNo: '',
-				driverAccountName: '',
-				paymentState: '',
-				pageNum: 1,
-				pageSize: 20,
-				params: {
-					payDateStartTime: null,
-					payDateEndTime: null
-				}
-			};
-			this.handleQuery();
+			const defaults = createDefaultQueryParams();
+			this.applyQueryParams(this.queryParams, defaults);
+			this.applyQueryParams(this.listParams, defaults);
+			this.getList();
 		},
 		viewAttachments(receiveProof) {
 			if (!receiveProof.trim()) {
@@ -255,7 +269,7 @@ export default {
 			this.download(
 				'/system/orderFreight/ledger/export',
 				{
-					...this.queryParams
+					...this.listParams
 				},
 				`运费台账_${new Date().getTime()}.xlsx`
 			);
@@ -376,7 +390,7 @@ export default {
 			</el-table-column>
 		</el-table>
 
-		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
+		<pagination v-show="total > 0" :total="total" :page.sync="listParams.pageNum" :limit.sync="listParams.pageSize" @pagination="getList" />
 
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="'附件查看'" :visible.sync="attachmentDialogVisible" width="50%" append-to-body>
 			<el-carousel :interval="5000" type="card" height="400px" v-if="imageAttachments.length">
