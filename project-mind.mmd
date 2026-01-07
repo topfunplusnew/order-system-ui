@@ -12,3 +12,23 @@ graph TD
     subgraph "Common (公共工具)"
         UTIL_U -- "uuid-5: 判断借贷标识" --> IS_DC["isDebit / isCredit"]
     end
+
+    subgraph "Dashboard (看板/订单)"
+        ETO["ElTableOrder.vue (订单管理列表核心)"] -- "uuid-6: 搜索过滤" --> QSB["QuerySearchBar.vue"]
+        ETO -- "uuid-7: 状态管理" --> STG["StateTag.vue"]
+        ETO -- "uuid-8: 数据导出 (xlsx)" --> XLSX_L["XLSX 库"]
+        ETO -- "uuid-9: 获取订单数据" --> API_GO["api/system/goodsOrder.js (listGoodsOrder)"]
+        ETO -- "uuid-10: 审核订单" --> API_AU["api/system/goodsOrder.js (auditGoodsOrder)"]
+    end
+
+    subgraph "Order Mixins (订单业务混入集)"
+        ETO -- "uuid-11: 基础列表/重置" --> M_BASE["mixin_order_base.js"]
+        ETO -- "uuid-12: 调整单业务" --> M_ADJ["mixin_order_adjustOrder.js"]
+        ETO -- "uuid-13: 开票管理" --> M_INV["mixin_order_Invoice.js"]
+        ETO -- "uuid-14: 发货管理" --> M_DEL["mixin_order_deliverGoods.js"]
+    end
+
+    subgraph "Views (外部引用)"
+        ORDER_V["system/goodsorder/index.vue"] -- "uuid-15: 渲染核心订单列表" --> ETO
+        ADJUST_V["system/adjustOrders/index.vue"] -- "uuid-16: 渲染调整单模式列表" --> ETO
+    end

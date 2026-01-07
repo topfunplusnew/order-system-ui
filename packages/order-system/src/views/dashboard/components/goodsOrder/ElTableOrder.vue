@@ -155,9 +155,17 @@ export default {
 		// 监听 loading 状态，当数据加载完成后确保滚动事件已绑定
 		loading(newVal, oldVal) {
 			if (oldVal === true && newVal === false) {
-				// 数据加载完成，确保滚动事件已绑定
+				// 数据加载完成，确保滚动事件已绑定并重新布局以显示合计行
 				this.$nextTick(() => {
 					this.bindTableScroll();
+					// 强制表格重绘，解决合计行不显示的问题
+					if (this.$refs.orderTable) {
+						this.$refs.orderTable.doLayout();
+					}
+					// 如果虚拟滚动引用存在，也确保表头同步
+					if (this.$refs.virtualScroll) {
+						this.$refs.virtualScroll.doHeaderLayout();
+					}
 				});
 			}
 		}
