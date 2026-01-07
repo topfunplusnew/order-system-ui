@@ -925,6 +925,10 @@ export default {
 			this.form.orderDetailIds = [];
 			// 重置当前选中的供应商
 			this.currentSelectedSupplier = null;
+			// 清空订单信息与明细，避免重新打开弹窗仍展示上一单数据
+			this.orderInfo = {};
+			this.orderDetailList = [];
+			this.nameFilters = [];
 			// 调用mixin中的toggleSelection方法
 			if (this.$refs.multipleTable) {
 				this.$refs.multipleTable.clearSelection();
