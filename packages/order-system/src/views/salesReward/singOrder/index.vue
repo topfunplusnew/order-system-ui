@@ -21,6 +21,9 @@
 						</SearchOption>
 					</el-col>
 				</el-form-item>
+				<el-form-item label="客户名称" prop="customerName">
+					<el-input v-model="queryParams.customerName" placeholder="请输入客户名称" clearable @keyup.enter.native="handleQuery" />
+				</el-form-item>
 				<el-form-item label="奖励接收人" prop="rewardReceiver">
 					<el-input v-model="queryParams.rewardReceiver" placeholder="请输入奖励接收人" clearable @keyup.enter.native="handleQuery" />
 				</el-form-item>
@@ -386,6 +389,7 @@ export default {
 				pageSize: 20,
 				incentiveType: '唱单',
 				orderId: null,
+				customerName: null,
 				rewardReceiver: null,
 				auditState: null,
 				paymentStatus: null,
