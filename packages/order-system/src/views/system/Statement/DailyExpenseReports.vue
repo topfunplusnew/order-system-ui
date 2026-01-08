@@ -44,12 +44,12 @@
 				<el-table-column prop="otherAccountsName" label="收款户名" v-if="columns[4].visible" />
 				<el-table-column prop="otherBankNo" label="收款账号" v-if="columns[5].visible" />
 				<el-table-column prop="expenseDate" label="时间" v-if="columns[6].visible" />
-				<el-table-column prop="remark" label="备注" v-if="columns[7].visible" />
-				<el-table-column label="附件" v-if="columns[8].visible" align="center" width="80">
+				<el-table-column label="附件" v-if="columns[7].visible" align="center" width="80">
 					<template slot-scope="scope">
 						<CheckFiles :attachmentList="scope.row.attachmentList || []" :flag="'attachments'" :isUpload="false" />
 					</template>
 				</el-table-column>
+				<el-table-column prop="remark" label="备注" v-if="columns[8].visible" />
 			</el-table>
 		</div>
 	</div>
@@ -82,8 +82,8 @@ export default {
 				{ key: 4, label: `收款户名`, visible: true },
 				{ key: 5, label: `收款账号`, visible: true },
 				{ key: 6, label: `时间`, visible: true },
-				{ key: 7, label: `备注`, visible: true },
-				{ key: 8, label: `附件`, visible: true }
+				{ key: 7, label: `附件`, visible: true },
+				{ key: 8, label: `备注`, visible: true }
 			]
 		};
 	},
