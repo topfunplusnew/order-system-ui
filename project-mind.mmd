@@ -43,3 +43,12 @@ graph TD
         ORDER_V["system/goodsorder/index.vue"] -- "uuid-15: 渲染核心订单列表" --> ETO
         ADJUST_V["system/adjustOrders/index.vue"] -- "uuid-16: 渲染调整单模式列表" --> ETO
     end
+    subgraph "OpenSpec (开发流程规格)"
+        OP_P["openspec/project.md (项目上下文)"] -- "uuid-23: 获取技术栈 & 规范" --> AGENT
+        OP_S["openspec/specs/ (需求文档(真理))"] -- "uuid-24: 驱动开发" --> AGENT
+        OP_C["openspec/changes/ (变更提案)"] -- "uuid-25: 规划变更" --> AGENT
+    end
+
+    subgraph "ApplyFreight (运费申请)"
+        AF_V["applyfreight/index.vue"] -- "uuid-26: 核心业务视图" --> OP_C
+    end
