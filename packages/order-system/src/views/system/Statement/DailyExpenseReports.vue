@@ -39,9 +39,17 @@
 				<el-table-column type="index" label="序号" width="80" />
 				<el-table-column prop="expenseType" label="对象" v-if="columns[0].visible" />
 				<el-table-column prop="expenseAmount" label="付款金额" v-if="columns[1].visible" />
-				<el-table-column prop="accountName" label="付款户名" v-if="columns[2].visible" />
-				<el-table-column prop="expenseDate" label="时间" v-if="columns[3].visible" />
-				<el-table-column prop="remark" label="备注" v-if="columns[4].visible" />
+				<el-table-column prop="selfAccountsName" label="付款户名" v-if="columns[2].visible" />
+				<el-table-column prop="selfBankNo" label="付款账号" v-if="columns[3].visible" />
+				<el-table-column prop="otherAccountsName" label="收款户名" v-if="columns[4].visible" />
+				<el-table-column prop="otherBankNo" label="收款账号" v-if="columns[5].visible" />
+				<el-table-column prop="expenseDate" label="时间" v-if="columns[6].visible" />
+				<el-table-column prop="remark" label="备注" v-if="columns[7].visible" />
+				<el-table-column label="附件" v-if="columns[8].visible" align="center" width="80">
+					<template slot-scope="scope">
+						<CheckFiles :attachmentList="scope.row.attachmentList || []" :flag="'attachments'" :isUpload="false" />
+					</template>
+				</el-table-column>
 			</el-table>
 		</div>
 	</div>
@@ -49,13 +57,15 @@
 
 <script>
 import { parseTime } from '@/utils/ruoyi';
-import { getDailyExpenseReports } from '@/api/system/statement';
+import { getExpensePaymentFormsByDate } from '@/api/system/statement';
 import { common_excel } from '@/views/dashboard/mixins/common/common_excel';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
+import CheckFiles from '@/components/CheckFiles.vue';
 
 export default {
 	name: 'DailyExpenseReports',
 	mixins: [common_excel, mixin_printHTML],
+	components: { CheckFiles },
 	data() {
 		return {
 			queryParams: {
@@ -68,17 +78,21 @@ export default {
 				{ key: 0, label: `对象`, visible: true },
 				{ key: 1, label: `付款金额`, visible: true },
 				{ key: 2, label: `付款户名`, visible: true },
-				{ key: 3, label: `时间`, visible: true },
-				{ key: 4, label: `备注`, visible: true }
+				{ key: 3, label: `付款账号`, visible: true },
+				{ key: 4, label: `收款户名`, visible: true },
+				{ key: 5, label: `收款账号`, visible: true },
+				{ key: 6, label: `时间`, visible: true },
+				{ key: 7, label: `备注`, visible: true },
+				{ key: 8, label: `附件`, visible: true }
 			]
 		};
 	},
 	methods: {
 		getList() {
 			this.loading = true;
-			getDailyExpenseReports(this.queryParams)
+			getExpensePaymentFormsByDate(this.queryParams)
 				.then(res => {
-					this.tableData = res.data;
+					this.tableData = res?.data || [];
 				})
 				.finally(() => {
 					this.loading = false;

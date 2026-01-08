@@ -20,8 +20,8 @@
 			</RightToolbar>
 		</el-row>
 
-		<el-table v-loading="loading" :data="moneyDetailList" border size="mini" style="margin-top: 10px">
-			<el-table-column label="序号" prop="id" width="60" align="center" show-overflow-tooltip />
+		<el-table v-loading="loading" :data="moneyDetailList" border size="mini" style="margin-top: 10px" show-summary :summary-method="getSummary">
+			<el-table-column type="index" label="序号" width="60" align="center" :index="indexMethod" />
 			<el-table-column label="支付日期" prop="paymentDate" align="center" show-overflow-tooltip />
 			<el-table-column label="支付类型" prop="paymentType" align="center" show-overflow-tooltip />
 			<el-table-column label="支付金额" prop="paymentAmount" align="center" show-overflow-tooltip />
@@ -43,6 +43,9 @@
 import { listMoneyDetail } from '@/api/moneyDetail';
 import { RightToolbar } from '@order-system/ui-components';
 import { getUserConfig, saveUserConfig } from '@/api/user-config/index.js';
+import { create, all } from 'mathjs';
+
+const math = create(all);
 export default {
 	name: 'MoneyDetail',
 	components: { RightToolbar },
@@ -114,7 +117,37 @@ export default {
 			this.getList();
 		},
 		handleExport() {
-			this.download('/system/expenseDetail/export', { ...this.queryParams }, `费用明细表_${new Date().getTime()}.xlsx`);
+			const { startDate, endDate } = this.queryParams;
+			this.download('/system/dailyExpense/export', { startDate, endDate }, `日常费用明细表_${new Date().getTime()}.xlsx`);
+		},
+		indexMethod(index) {
+			const pageNum = Number(this.queryParams?.pageNum || 1);
+			const pageSize = Number(this.queryParams?.pageSize || 20);
+			// (pageNum - 1) * pageSize + index + 1
+			return math.number(math.add(math.multiply(math.subtract(pageNum, 1), pageSize), math.add(index, 1)));
+		},
+		getSummary(param) {
+			const { columns, data } = param || {};
+			const safeData = data || [];
+			const sums = (columns || []).map(() => '');
+
+			(columns || []).forEach((column, index) => {
+				// 序号列显示“合计”
+				if (column.type === 'index' || column.label === '序号') {
+					sums[index] = '合计';
+					return;
+				}
+
+				if (column.property === 'paymentAmount') {
+					const total = (safeData || []).reduce((acc, item) => {
+						const v = Number(item?.paymentAmount || 0);
+						return math.add(acc, math.bignumber(Number.isFinite(v) ? v : 0));
+					}, math.bignumber(0));
+					sums[index] = math.format(total, { notation: 'fixed', precision: 2 });
+				}
+			});
+
+			return sums;
 		}
 	}
 };

@@ -7,7 +7,7 @@ import request from '@/utils/request';
  */
 export function listMoneyDetail(query) {
 	return request({
-		url: '/system/expenseDetail/list',
+		url: '/system/dailyExpense/list',
 		method: 'get',
 		params: query
 	});
@@ -20,7 +20,7 @@ export function listMoneyDetail(query) {
  */
 export function exportMoneyDetail(query) {
 	return request({
-		url: '/system/expenseDetail/export',
+		url: '/system/dailyExpense/export',
 		method: 'post',
 		params: query
 	});

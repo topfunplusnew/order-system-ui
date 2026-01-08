@@ -478,6 +478,19 @@ export function getDailyExpenseReports(query) {
 }
 
 /**
+ * 费用支出单据列表（按日期）
+ * @param {Object} query
+ * @returns
+ */
+export function getExpensePaymentFormsByDate(query) {
+	return request({
+		url: '/statistics/selectExpensePaymentFormsByDate',
+		method: 'get',
+		params: query
+	});
+}
+
+/**
  * 原系统数据统计模块的数据统计页面
  * @param {Object} query
  * @param {string} query.date - 结束时间
