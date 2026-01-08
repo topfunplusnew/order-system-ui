@@ -464,7 +464,7 @@ export function getDailyProfit(query) {
 }
 
 /**
- * 获取原系统日常费用日报表
+ * 获取原系统日常申请费用付款表
  * @param {Object} query
  * @param {string} query.endTime - 结束时间
  * @returns

@@ -15,7 +15,7 @@
 			</el-form-item>
 		</el-form>
 
-		<div class="report-title">费用日报表</div>
+		<div class="report-title">申请费用付款表</div>
 		<div class="date-display">
 			日期:
 			<span style="color: red">{{ queryParams.startTime }} 至 {{ queryParams.endTime }}</span>
