@@ -51,7 +51,13 @@ export default {
 			this.$emit('handleSelect', this.selectedList);
 		},
 		// 对货物进行查询和筛选
-		handleQuery() {
+		handleQuery(pagination) {
+			// pagination 组件会先触发 @pagination({page, limit})，再通过 .sync 更新 queryParams；
+			// 这里优先使用事件入参同步一次，避免 pageSize 仍是旧值（如 20）导致请求参数错误。
+			const pageNum = pagination?.page || this.queryParams.pageNum;
+			const pageSize = pagination?.limit || this.queryParams.pageSize;
+			this.queryParams.pageNum = pageNum;
+			this.queryParams.pageSize = pageSize;
 			this.$emit('handleQuery', this.queryParams);
 		},
 		/** 表格排序触发事件（服务端排序） */
