@@ -94,6 +94,33 @@ export const constantRoutes = [
 				meta: { title: '个人中心', icon: 'user' }
 			}
 		]
+	},
+	// 低代码开发系统
+	{
+		path: '/codeless',
+		component: Layout,
+		hidden: true,
+		redirect: '/codeless/index',
+		children: [
+			{
+				path: 'index',
+				component: () => import('@order-system/code-less/src/views/index.vue'),
+				name: 'CodelessIndex',
+				meta: { title: '低代码开发', icon: 'component' }
+			},
+			{
+				path: 'editor',
+				component: () => import('@order-system/code-less/src/views/editor.vue'),
+				name: 'CodelessEditor',
+				meta: { title: '页面编辑器', icon: 'edit' }
+			},
+			{
+				path: 'preview',
+				component: () => import('@order-system/code-less/src/views/preview.vue'),
+				name: 'CodelessPreview',
+				meta: { title: '页面预览', icon: 'eye-open' }
+			}
+		]
 	}
 ];
 

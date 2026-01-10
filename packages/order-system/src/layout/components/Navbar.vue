@@ -20,6 +20,12 @@
 							个人中心
 						</el-dropdown-item>
 					</router-link>
+					<router-link to="/codeless">
+						<el-dropdown-item>
+							<i class="el-icon-s-platform"></i>
+							低代码开发
+						</el-dropdown-item>
+					</router-link>
 					<el-dropdown-item divided @click.native="logout">
 						<span>
 							<i class="el-icon-switch-button"></i>
