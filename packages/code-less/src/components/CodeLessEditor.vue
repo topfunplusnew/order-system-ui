@@ -110,6 +110,10 @@
 <script>
 import { apiEndpointService, HTTP_METHODS } from '../services/apiEndpoint';
 
+// 冻结静态数据，避免 Vue 响应式系统干扰
+const MENU_ITEMS = Object.freeze([Object.freeze({ key: 'api-endpoint', label: 'API 接口管理', icon: 'el-icon-connection' })]);
+const FROZEN_HTTP_METHODS = Object.freeze([...HTTP_METHODS]);
+
 // 空表单模板
 function createEmptyForm() {
 	return {
@@ -126,12 +130,17 @@ function createEmptyForm() {
 	};
 }
 
+// 深拷贝，确保返回纯净对象
+function cloneDeep(obj) {
+	return JSON.parse(JSON.stringify(obj));
+}
+
 export default {
 	name: 'CodeLessEditor',
 	data() {
 		return {
 			activeMenu: 'api-endpoint',
-			menuItems: [{ key: 'api-endpoint', label: 'API 接口管理', icon: 'el-icon-connection' }],
+			menuItems: MENU_ITEMS,
 			loading: false,
 			tableData: [],
 			total: 0,
@@ -142,7 +151,7 @@ export default {
 			submitLoading: false,
 			isEdit: false,
 			editId: null,
-			httpMethods: HTTP_METHODS,
+			httpMethods: FROZEN_HTTP_METHODS,
 			form: createEmptyForm(),
 			formRules: {
 				name: [{ required: true, message: '请输入接口名称', trigger: 'blur' }],
@@ -173,7 +182,8 @@ export default {
 			try {
 				const query = this.searchKeyword ? { keyword: this.searchKeyword } : {};
 				const result = await apiEndpointService.getEndpointList(query, this.currentPage, this.pageSize);
-				this.tableData = result.rows || [];
+				// 使用 cloneDeep 确保数据是纯净对象，避免响应式冲突
+				this.tableData = cloneDeep(result.rows || []);
 				this.total = result.total || 0;
 			} catch (e) {
 				console.error('[CodeLess] 获取列表失败:', e);
