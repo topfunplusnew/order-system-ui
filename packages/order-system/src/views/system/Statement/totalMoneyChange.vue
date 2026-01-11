@@ -52,8 +52,8 @@ export default {
 				value
 			});
 			return [
-				createRow('资金总额=①+②-③-④+⑤+⑥+⑦-⑧-⑨+0号', this.calculateTotalBalance(data)),
-				createRow('0号库存金额', data.remainingInventoryAmount),
+				createRow('资金总额=①+②-③-④+⑤+⑥+⑦-⑧-⑨+⓪', this.calculateTotalBalance(data)),
+				createRow('⓪零号库存金额', data.remainingInventoryAmount),
 				createRow('①客户欠款合计数', data.companyTotalBalance),
 				createRow('②所有银行卡资金合计', data.selfCompanyTotalFunds),
 				createRow('③欠厂家货款', data.supplierTotalBalance),
@@ -81,7 +81,7 @@ export default {
 				remainingInventoryAmount: data.remainingInventoryAmount || 0
 			};
 
-			// 按照公式计算资金总额：①+②-③-④+⑤+⑥+⑦-⑧-⑨+0号
+			// 按照公式计算资金总额：①+②-③-④+⑤+⑥+⑦-⑧-⑨+⓪
 			const result = math.evaluate(
 				'companyTotalBalance + selfCompanyTotalFunds - supplierTotalBalance - driverUnpaidAmount + loanFromCompany + futuresMarginBalance + paymentMarginBalance - receiveMarginBalance - loanBalance + remainingInventoryAmount',
 				safeData
