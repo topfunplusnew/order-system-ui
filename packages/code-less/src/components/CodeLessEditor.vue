@@ -53,7 +53,7 @@
 					</el-table>
 
 					<div class="api-pagination">
-						<el-pagination background layout="total, sizes, prev, pager, next" :total="total" :page-size.sync="pageSize" :current-page.sync="currentPage" :page-sizes="[10, 20, 50]" @current-change="fetchList" @size-change="handleSizeChange" />
+						<el-pagination background layout="total, sizes, prev, pager, next" :total="total" :page-size="pageSize" :current-page="currentPage" :page-sizes="[10, 20, 50]" @current-change="handlePageChange" @size-change="handleSizeChange" />
 					</div>
 				</div>
 			</div>
@@ -182,6 +182,10 @@ export default {
 			} finally {
 				this.loading = false;
 			}
+		},
+		handlePageChange(page) {
+			this.currentPage = page;
+			this.fetchList();
 		},
 		handleSizeChange(size) {
 			this.pageSize = size;
