@@ -8,7 +8,8 @@
 	"description": "订单管理系统 - Monorepo 项目",
 	"prettier": "./.prettierrc.js",
 	"scripts": {
-		"order": "yarn workspace order-system dev",
+		"order": "concurrently -n \"CODELESS,ORDER\" -c \"cyan,yellow\" \"yarn codeless:dev\" \"yarn workspace order-system dev\"",
+		"order:only": "yarn workspace order-system dev",
 		"build": "yarn workspace order-system build:stage",
 		"build:prod": "yarn workspace order-system build:prod",
 		"build:ai": "yarn workspace order-system build:multi",
@@ -28,6 +29,7 @@
 		"node": ">=18.20.6"
 	},
 	"devDependencies": {
+		"concurrently": "^9.1.2",
 		"@babel/core": "^7.15.0",
 		"@babel/preset-env": "^7.15.0",
 		"@babel/preset-react": "^7.14.5",
