@@ -60,9 +60,7 @@ module.exports = {
 				// 支持引用共享包
 				'@shared': path.resolve(__dirname, '../shared'),
 				'@ui-components': path.resolve(__dirname, '../ui-components'),
-				'@config': path.resolve(__dirname, '../config'),
-				// 低代码平台包
-				'@code-less/platform': path.resolve(__dirname, '../code-less/src/index.js')
+				'@config': path.resolve(__dirname, '../config')
 			}
 		},
 		plugins: [
