@@ -1,7 +1,7 @@
 {
   "name": "@code-less/platform",
   "version": "1.0.0",
-  "main": "src/index.js",
+  "main": "index.js",
   "dependencies": {
     "axios": "^0.28.0",
     "core-js": "^3.0.0",
