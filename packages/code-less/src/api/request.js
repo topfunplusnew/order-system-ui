@@ -14,7 +14,6 @@ export function setRequest(request) {
  */
 export function getRequest() {
   if (!_request) {
-    // 允许在未初始化时通过全局变量获取 (作为 fallback)
     if (window.axios) return window.axios;
     throw new Error('CodeLess SDK: Request method not initialized. Please call setRequest() first.');
   }
