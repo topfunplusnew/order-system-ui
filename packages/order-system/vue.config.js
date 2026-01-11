@@ -17,6 +17,8 @@ module.exports = {
 	assetsDir: 'static',
 	lintOnSave: process.env.NODE_ENV === 'development',
 	productionSourceMap: false,
+	// 转译 monorepo 中的本地包
+	transpileDependencies: ['@code-less/platform'],
 	// webpack-dev-server 相关配置
 	devServer: {
 		host: '0.0.0.0',
@@ -59,7 +61,9 @@ module.exports = {
 				// 支持引用共享包
 				'@shared': resolve(__dirname, '../shared'),
 				'@ui-components': resolve(__dirname, '../ui-components'),
-				'@config': resolve(__dirname, '../config')
+				'@config': resolve(__dirname, '../config'),
+				// 低代码平台包
+				'@code-less/platform': resolve(__dirname, '../code-less/src')
 			}
 		},
 		plugins: [
