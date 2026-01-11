@@ -31,6 +31,7 @@
 		"url": "https://gitee.com/y_project/RuoYi-Vue.git"
 	},
 	"dependencies": {
+		"@code-less/platform": "*",
 		"@order-system/config": "*",
 		"@order-system/shared": "*",
 		"@order-system/ui-components": "*",

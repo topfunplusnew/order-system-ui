@@ -1,7 +1,8 @@
-// 简单的入口导出
-import CodeLessEditor from './components/CodeLessEditor.vue';
+import CodeLessSystemLayer from './components/CodeLessSystemLayer.vue';
+import CodeLessMenu from './components/CodeLessMenu.vue';
 import { setRequest } from './api/request';
 import { crud } from './utils/crud';
+import { apiEndpointService, HTTP_METHODS, ENDPOINT_STATUS } from './services/apiEndpoint';
 
 export default {
   /**
@@ -12,36 +13,40 @@ export default {
    * @param {object} options.router VueRouter实例，用于动态注册路由
    */
   install(Vue, options = {}) {
-    // 1. 注入请求实例
+    // 注入请求实例
     if (options.request) {
       setRequest(options.request);
     }
 
-    // 2. 注册全局组件
-    Vue.component('CodeLessEditor', CodeLessEditor);
-    
-    // 3. 挂载全局 CRUD 方法
-    Vue.prototype.$codelessCrud = crud;
+    // 注册全局组件
+    Vue.component('CodeLessSystemLayer', CodeLessSystemLayer);
+    Vue.component('CodeLessMenu', CodeLessMenu);
 
-    // 4. 动态注册路由
+    // 挂载全局方法
+    Vue.prototype.$codelessCrud = crud;
+    Vue.prototype.$codelessApi = apiEndpointService;
+
+    // 动态注册路由
     if (options.router) {
       const routes = [
         {
           path: '/codeless',
           name: 'CodeLess',
-          component: CodeLessEditor,
+          component: CodeLessSystemLayer,
           meta: { title: '低代码平台', icon: 'monitor' }
         }
       ];
-      
-      // Vue Router 3.x 使用 addRoutes
       options.router.addRoutes(routes);
       console.log('[CodeLess] 动态路由已注册: /codeless');
     }
   },
-  
+
   // 导出组件和工具，支持按需引入
-  CodeLessEditor,
+  CodeLessSystemLayer,
+  CodeLessMenu,
   crud,
+  apiEndpointService,
+  HTTP_METHODS,
+  ENDPOINT_STATUS,
   setRequest
 };

@@ -1,8 +1,7 @@
 import { getRequest } from './request';
 
 /**
- * 1. 查询数据接口 (Read / Search)
- * 对应 OpenAPI: POST /data/{schemaKey}/search
+ * 查询数据接口 (分页/筛选)
  * @param {string} schemaKey 模型标识
  * @param {object} params 查询参数 { page, pageSize, query }
  */
@@ -15,8 +14,7 @@ export function apiSearchData(schemaKey, params) {
 }
 
 /**
- * 2. 新增数据接口 (Create)
- * 对应 OpenAPI: POST /data/{schemaKey}
+ * 新增数据接口
  * @param {string} schemaKey 模型标识
  * @param {object} data 数据对象
  */
@@ -29,8 +27,7 @@ export function apiCreateData(schemaKey, data) {
 }
 
 /**
- * 3. 更新数据接口 (Update)
- * 对应 OpenAPI: PUT /data/{schemaKey}/{id}
+ * 更新数据接口
  * @param {string} schemaKey 模型标识
  * @param {string|number} id 数据ID
  * @param {object} data 更新的数据对象
@@ -44,8 +41,7 @@ export function apiUpdateData(schemaKey, id, data) {
 }
 
 /**
- * 4. 删除数据接口 (Delete)
- * 对应 OpenAPI: DELETE /data/{schemaKey}/{id}
+ * 删除数据接口
  * @param {string} schemaKey 模型标识
  * @param {string|number} id 数据ID
  */
