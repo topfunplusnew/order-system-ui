@@ -1,0 +1,207 @@
+openapi: 3.0.0
+info:
+  title: CodeLess Platform API
+  description: 低代码平台通用数据存储接口契约（伪后端定义）
+  version: 1.0.0
+servers:
+  - url: /api/codeless
+    description: 宿主系统提供的伪后端基础路径
+tags:
+  - name: Schema
+    description: 数据模型定义（元数据）
+  - name: Data
+    description: 通用数据操作
+paths:
+  # --- 模型定义接口 ---
+  /schemas:
+    get:
+      tags: [Schema]
+      summary: 获取所有模型定义
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SchemaDefinition'
+    post:
+      tags: [Schema]
+      summary: 创建新模型
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SchemaDefinition'
+      responses:
+        '200':
+          description: 创建成功
+
+  /schemas/{key}:
+    get:
+      tags: [Schema]
+      summary: 获取指定模型详情
+      parameters:
+        - name: key
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 成功
+    put:
+      tags: [Schema]
+      summary: 更新模型定义
+      parameters:
+        - name: key
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SchemaDefinition'
+      responses:
+        '200':
+          description: 更新成功
+    delete:
+      tags: [Schema]
+      summary: 删除模型
+      parameters:
+        - name: key
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 删除成功
+
+  # --- 通用数据接口 ---
+  /data/{schemaKey}/search:
+    post:
+      tags: [Data]
+      summary: 查询数据（分页/筛选）
+      parameters:
+        - name: schemaKey
+          in: path
+          required: true
+          description: 模型的唯一标识
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                page:
+                  type: integer
+                  default: 1
+                pageSize:
+                  type: integer
+                  default: 10
+                query:
+                  type: object
+                  description: 筛选条件
+      responses:
+        '200':
+          description: 成功返回分页数据
+
+  /data/{schemaKey}:
+    post:
+      tags: [Data]
+      summary: 新增数据
+      parameters:
+        - name: schemaKey
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: 动态数据对象
+      responses:
+        '200':
+          description: 创建成功
+
+  /data/{schemaKey}/{id}:
+    put:
+      tags: [Data]
+      summary: 更新数据
+      parameters:
+        - name: schemaKey
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: 更新成功
+    delete:
+      tags: [Data]
+      summary: 删除数据
+      parameters:
+        - name: schemaKey
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 删除成功
+
+components:
+  schemas:
+    SchemaDefinition:
+      type: object
+      required:
+        - key
+        - name
+        - fields
+      properties:
+        key:
+          type: string
+          description: 模型唯一标识 (如 'student')
+        name:
+          type: string
+          description: 模型显示名称 (如 '学生表')
+        fields:
+          type: array
+          description: 字段定义列表
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+              label:
+                type: string
+              type:
+                type: string
+                enum: [string, number, boolean, date, datetime]
