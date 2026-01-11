@@ -10,7 +10,28 @@
 					<el-date-picker v-model="searchForm.endDate" type="date" placeholder="请选择结束日期" value-format="yyyy-MM-dd" size="mini"></el-date-picker>
 				</el-form-item>
 				<el-form-item label="仓库名称" prop="warehouseName">
-					<el-input v-model="searchForm.warehouseName" placeholder="请输入仓库名称" clearable size="mini" @keyup.enter.native="getList"></el-input>
+					<el-row>
+						<el-col :span="20">
+							<el-input v-model="searchForm.warehouseName" placeholder="请输入仓库名称" clearable size="mini" @keyup.enter.native="getList"></el-input>
+						</el-col>
+						<el-col :span="4">
+							<SearchOption
+								:get-data="listStoreHouse"
+								icon="el-icon-search"
+								:limit-info="{}"
+								query-label="仓库名称"
+								query-info="storeHouseName"
+								:query-name="queryStoreHouseName"
+								@commitBack="handleCommitBackStoreHouse"
+								@update:queryName="value => (queryStoreHouseName = value)"
+							>
+								<template #table-columns>
+									<el-table-column label="仓库名称" align="center" prop="storeHouseName" />
+									<el-table-column label="地址" align="center" prop="address" />
+								</template>
+							</SearchOption>
+						</el-col>
+					</el-row>
 				</el-form-item>
 				<el-form-item>
 					<el-button type="primary" @click="getList" size="mini" v-hasPermi="['system:inventoryStatistics:warehouseFund']">查询</el-button>
@@ -105,14 +126,17 @@ import { Pagination } from '@order-system/ui-components';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import INVENTORY from '@/components/NeedToShow/INVENTORY.vue';
 import WAREHOUSE from '../../../components/NeedToShow/WAREHOUSE.vue';
+import SearchOption from '@/components/SearchOption.vue';
+import { listStoreHouse } from '@/api/system/StoreHouse';
 export default {
 	name: 'DetailInventoryChange',
-	components: { Pagination },
+	components: { Pagination, SearchOption },
 	mixins: [common_dialog],
 	data() {
 		return {
 			loading: false,
 			total: 0,
+			queryStoreHouseName: '',
 			searchForm: {
 				startDate: '',
 				endDate: '',
@@ -131,6 +155,10 @@ export default {
 		// this.getList();
 	},
 	methods: {
+		listStoreHouse,
+		handleCommitBackStoreHouse(value) {
+			this.searchForm.warehouseName = value?.storeHouseName || '';
+		},
 		handleExport() {
 			this.download(
 				'/system/inventoryStatistics/exportWarehouseFundChange',
