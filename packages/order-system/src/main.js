@@ -214,10 +214,10 @@ Vue.use(VueMeta);
 Vue.use(horizontalScroll);
 DictData.install();
 
-// 安装 CodeLess 低代码平台插件
+// 安装 CodeLess 插件
 Vue.use(CodeLess, {
-	request: service,
-	router: router
+  request: service, // 注入 axios 实例
+  router: router    // 注入 router 实例以启用动态路由
 });
 
 Vue.use(Element, {
