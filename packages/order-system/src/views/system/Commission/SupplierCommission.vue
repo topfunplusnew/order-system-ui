@@ -231,67 +231,6 @@
 				/>
 			</keep-alive>
 		</el-dialog>
-
-		<!-- 订单详情对话框 -->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" title="订单详情" :visible.sync="orderDetailVisible" width="80%">
-			<div v-if="currentOrder" class="order-detail-content">
-				<el-descriptions title="基本信息" :column="3" border size="mini">
-					<el-descriptions-item label="订单编号">{{ currentOrder.orderNo || '-' }}</el-descriptions-item>
-					<el-descriptions-item label="订单日期">{{ currentOrder.orderDate || '-' }}</el-descriptions-item>
-					<el-descriptions-item label="厂家名称">{{ currentOrder.companyName || '-' }}</el-descriptions-item>
-					<el-descriptions-item label="车牌号">{{ currentOrder.landCarNo || '-' }}</el-descriptions-item>
-					<el-descriptions-item label="产品名称">{{ currentOrder.levelName || '-' }}</el-descriptions-item>
-					<el-descriptions-item label="规格">{{ currentOrder.height || '-' }}×{{ currentOrder.length || '-' }}×{{ currentOrder.width || '-' }}</el-descriptions-item>
-				</el-descriptions>
-
-				<br />
-
-				<el-descriptions title="数量信息" :column="3" border size="mini">
-					<el-descriptions-item label="单位">{{ currentOrder.countingUnit || '-' }}</el-descriptions-item>
-					<el-descriptions-item label="每包片数">{{ currentOrder.piecesPerPack || '-' }}</el-descriptions-item>
-					<el-descriptions-item label="包数">{{ currentOrder.packs || '-' }}</el-descriptions-item>
-					<el-descriptions-item label="出厂片数">{{ currentOrder.pieces || '-' }}</el-descriptions-item>
-					<el-descriptions-item label="面积">{{ currentOrder.area || '-' }}</el-descriptions-item>
-					<el-descriptions-item label="备注">{{ currentOrder.comments || '-' }}</el-descriptions-item>
-				</el-descriptions>
-
-				<br />
-
-				<el-descriptions title="财务信息" :column="3" border size="mini">
-					<el-descriptions-item label="卸货价">{{ currentOrder.paymentUnload || '-' }}</el-descriptions-item>
-					<el-descriptions-item label="含税销售">{{ currentOrder.isIncludeTaxSale ? '含税' : '不含税' }}</el-descriptions-item>
-					<el-descriptions-item label="杂费">{{ currentOrder.sundryCost || '-' }}</el-descriptions-item>
-					<el-descriptions-item label="总货款">{{ currentOrder.payments || '-' }}</el-descriptions-item>
-					<el-descriptions-item label="利润">{{ currentOrder.profit || '-' }}</el-descriptions-item>
-					<el-descriptions-item label="不含税利润">{{ currentOrder.profitNoTax || '-' }}</el-descriptions-item>
-				</el-descriptions>
-
-				<br />
-
-				<el-descriptions title="佣金信息" :column="3" border size="mini">
-					<el-descriptions-item label="订单计提佣金">{{ currentOrder.commissionAmount || '-' }}</el-descriptions-item>
-					<el-descriptions-item label="佣金单价">{{ formatNumberWithoutTrailingZeros(currentOrder.commissionUnitPrice) }}</el-descriptions-item>
-					<el-descriptions-item label="其他付款金额">{{ formatNumberWithoutTrailingZeros(currentOrder.otherPaymentAmount) }}</el-descriptions-item>
-					<el-descriptions-item label="已验证佣金">{{ formatNumberWithoutTrailingZeros(currentOrder.verifiedCommission) }}</el-descriptions-item>
-					<el-descriptions-item label="实际厂家佣金">{{ formatNumberWithoutTrailingZeros(currentOrder.actualCustomerCommission) }}</el-descriptions-item>
-					<el-descriptions-item label="差异">{{ currentOrder.difference || '-' }}</el-descriptions-item>
-					<el-descriptions-item label="差异原因" :span="3">{{ currentOrder.differenceReason || '-' }}</el-descriptions-item>
-				</el-descriptions>
-
-				<br />
-
-				<el-descriptions title="支付信息" :column="3" border size="mini">
-					<el-descriptions-item label="支付日期">{{ currentOrder.fundDate || '-' }}</el-descriptions-item>
-					<el-descriptions-item label="支付状态">
-						<PaymentFlag :business-object="currentOrder" />
-					</el-descriptions-item>
-				</el-descriptions>
-			</div>
-
-			<div slot="footer" class="dialog-footer">
-				<el-button @click="orderDetailVisible = false">关闭</el-button>
-			</div>
-		</el-dialog>
 	</div>
 </template>
 
@@ -310,6 +249,9 @@ import { mapGetters } from 'vuex/dist/vuex.common.js';
 import { getDateRangeDays } from '@/utils';
 import _ from 'lodash';
 import { number, add, sum } from 'mathjs';
+import { getGoodsOrder, checkOrderByOrderNo } from '@/api/system/goodsOrder';
+import { getOrderMainByDetailId } from '@/api/system/orderDetail';
+import CheckOrder from '@/views/dashboard/components/goodsOrder/CheckOrder.vue';
 
 export default {
 	name: 'SUPPLIERCommission',
@@ -462,9 +404,9 @@ export default {
 				],
 				otherPaymentAmount: [{ pattern: /^-?\d+(\.\d{1,2})?$/, message: '格式不正确，最多保留2位小数', trigger: 'blur' }]
 			},
-			// 订单详情相关
-			orderDetailVisible: false,
-			currentOrder: null
+			// 查看订单（按 ElTableOrder 模式）
+			orderInfo: null,
+			orderDetailInfo: []
 		};
 	},
 	watch: {
@@ -1049,8 +991,54 @@ export default {
 
 		// 查看订单详情
 		handleViewOrder(row) {
-			this.currentOrder = row;
-			this.orderDetailVisible = true;
+			const orderId =
+				row?.goodsOrderId ||
+				row?.goodsOrderID ||
+				row?.goodsOrderid ||
+				row?.orderId ||
+				row?.orderID ||
+				row?.orderid ||
+				null;
+			const orderNo = row?.orderNo || null;
+			const orderDetailId = row?.orderDetailId || null;
+
+			const request =
+				orderId != null
+					? getGoodsOrder(orderId)
+					: orderDetailId != null
+						? getOrderMainByDetailId(orderDetailId)
+						: orderNo
+							? checkOrderByOrderNo(orderNo)
+							: null;
+
+			if (!request) {
+				this.$message.error('缺少订单信息，无法查看订单详情');
+				return;
+			}
+
+			request
+				.then(res => {
+					if (!res || !res.data) {
+						this.$message.error('获取订单信息失败');
+						return;
+					}
+					this.orderInfo = res.data;
+					this.orderDetailInfo = res.data.orderDetailList || [];
+					this.openDialog(
+						CheckOrder,
+						'查看订单详情',
+						'100%',
+						{
+							orderInfo: this.orderInfo,
+							orderDetailInfo: this.orderDetailInfo
+						},
+						true
+					);
+				})
+				.catch(error => {
+					console.error('获取订单信息失败:', error);
+					this.$message.error('获取订单信息失败，请重试');
+				});
 		},
 		// 表格合计方法
 		getSummaries(param) {
@@ -1080,10 +1068,3 @@ export default {
 	}
 };
 </script>
-
-<style scoped>
-.order-detail-content {
-	max-height: 60vh;
-	overflow-y: auto;
-}
-</style>
