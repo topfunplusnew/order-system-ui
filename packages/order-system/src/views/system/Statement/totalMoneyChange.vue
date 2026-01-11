@@ -22,6 +22,9 @@
 import { getMoneySummary } from '@/api/system/statement';
 import { parseTime } from '../../../utils/ruoyi';
 import { fix } from 'order-system/src/api/tool/format';
+import { create, all } from 'mathjs';
+
+const math = create(all, { number: 'BigNumber', precision: 64 });
 
 export default {
 	name: 'TotalMoneyChange',
@@ -49,7 +52,8 @@ export default {
 				value
 			});
 			return [
-				createRow('资金总额=①+②-③-④+⑤+⑥+⑦-⑧-⑨', this.calculateTotalBalance(data)),
+				createRow('资金总额=①+②-③-④+⑤+⑥+⑦-⑧-⑨+0号', this.calculateTotalBalance(data)),
+				createRow('0号库存金额', data.remainingInventoryAmount),
 				createRow('①客户欠款合计数', data.companyTotalBalance),
 				createRow('②所有银行卡资金合计', data.selfCompanyTotalFunds),
 				createRow('③欠厂家货款', data.supplierTotalBalance),
@@ -73,25 +77,21 @@ export default {
 				futuresMarginBalance: data.futuresMarginBalance || 0,
 				paymentMarginBalance: data.paymentMarginBalance || 0,
 				receiveMarginBalance: data.receiveMarginBalance || 0,
-				loanBalance: data.loanBalance || 0
+				loanBalance: data.loanBalance || 0,
+				remainingInventoryAmount: data.remainingInventoryAmount || 0
 			};
 
-			// 按照公式计算资金总额：① + ② - ③ - ④ + ⑤ + ⑥ + ⑦ - ⑧ - ⑨
-			const result =
-				safeData.companyTotalBalance + // ①客户欠款合计数
-				safeData.selfCompanyTotalFunds - // ②所有银行卡资金合计
-				safeData.supplierTotalBalance - // ③欠厂家货款
-				safeData.driverUnpaidAmount + // ④未支付运费合计
-				safeData.loanFromCompany + // ⑤其他应收-个人从公司借款
-				safeData.futuresMarginBalance + // ⑥期货保证金
-				safeData.paymentMarginBalance - // ⑦支付保证金
-				safeData.receiveMarginBalance - // ⑧收取保证金
-				safeData.loanBalance; // ⑨公司从外面借款合计
+			// 按照公式计算资金总额：①+②-③-④+⑤+⑥+⑦-⑧-⑨+0号
+			const result = math.evaluate(
+				'companyTotalBalance + selfCompanyTotalFunds - supplierTotalBalance - driverUnpaidAmount + loanFromCompany + futuresMarginBalance + paymentMarginBalance - receiveMarginBalance - loanBalance + remainingInventoryAmount',
+				safeData
+			);
 
-			return result.toFixed(2); // 保留两位小数
+			return math.format(result, { notation: 'fixed', precision: 2 });
 		},
 		formatValue(row, column, cellValue) {
-			return Number(cellValue).toFixed(2);
+			const num = Number(cellValue ?? 0);
+			return Number.isFinite(num) ? num.toFixed(2) : '0.00';
 		},
 		tableRowClassName({ rowIndex }) {
 			if (rowIndex === 0) {

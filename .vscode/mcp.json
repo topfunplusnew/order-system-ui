@@ -9,13 +9,10 @@
     ],
     "servers": {
         "API 文档": {
-            "command": "cmd",
+            "command": "bash",
             "args": [
-                "/c",
-                "npx",
-                "-y",
-                "apifox-mcp-server@latest",
-                "--project=4903004"
+                "-lc",
+                "npx -y apifox-mcp-server@latest --project=4903004"
             ],
             "env": {
                 "APIFOX_ACCESS_TOKEN": "APS-qZLwHy51jHm4jsHgZ0qhJuFt1EKIhUbL"
