@@ -73,7 +73,7 @@ export default {
 			return {
 				categories: this.diffList.map(item => {
 					// 简化标签名称，只保留关键信息
-					return item.label.replace(/^[①②③④⑤⑥⑦⑧]/g, '').replace(/---.*$/, '');
+					return item.label.replace(/^[①②③④⑤⑥⑦⑧⑨⓪]/g, '').replace(/---.*$/, '');
 				}),
 				leftValues: this.diffList.map(item => Number(item.leftValue)),
 				rightValues: this.diffList.map(item => Number(item.rightValue)),
@@ -212,26 +212,33 @@ export default {
 		},
 		// 计算总资产（使用 math.js 进行高精度计算）
 		calculateTotalBalance(data) {
-			// 使用 math.js 进行高精度计算，避免浮点数精度问题
-			// ①应收账款 + ②银行存款 + ③保证金 + ④其他应收 + ⑤库存 - ⑥应付账款(运费) - ⑦应付账款(货款) - ⑧其他应付款
-			// 使用 add 函数的多参数形式，一次性计算所有正数项的和
-			const positiveSum = add(
-				Number(data.companyTotalBalance || 0), // ①应收账款---客户欠款合计数
-				Number(data.selfCompanyTotalFunds || 0), // ②银行存款---公司所有银行资金合计
-				Number(data.futuresMarginBalance || 0), // ③保证金----期货保证金
-				Number(data.loanFromCompany || 0), // ④其他应收---个人或公司从我公司借款
-				Number(data.remainingInventoryAmount || 0) // ⑤库存
-			);
+			// 资金总额=①+②-③-④+⑤+⑥+⑦-⑧-⑨+⓪（与 totalMoneyChange 保持一致）
+			const safe = {
+				companyTotalBalance: Number(data?.companyTotalBalance || 0),
+				selfCompanyTotalFunds: Number(data?.selfCompanyTotalFunds || 0),
+				supplierTotalBalance: Number(data?.supplierTotalBalance || 0),
+				driverUnpaidAmount: Number(data?.driverUnpaidAmount || 0),
+				loanFromCompany: Number(data?.loanFromCompany || 0),
+				futuresMarginBalance: Number(data?.futuresMarginBalance || 0),
+				paymentMarginBalance: Number(data?.paymentMarginBalance || 0),
+				receiveMarginBalance: Number(data?.receiveMarginBalance || 0),
+				loanBalance: Number(data?.loanBalance || 0),
+				remainingInventoryAmount: Number(data?.remainingInventoryAmount || 0)
+			};
 
-			// 使用 add 函数的多参数形式，一次性计算所有负数项的和
-			const negativeSum = add(
-				Number(data.driverUnpaidAmount || 0), // ⑥应付账款---运费合计
-				Number(data.supplierTotalBalance || 0), // ⑦应付账款---欠厂家货款
-				Number(data.loanBalance || 0) // ⑧其他应付款---公司从外面借款合计
+			let result = add(
+				safe.companyTotalBalance,
+				safe.selfCompanyTotalFunds,
+				safe.loanFromCompany,
+				safe.futuresMarginBalance,
+				safe.paymentMarginBalance,
+				safe.remainingInventoryAmount
 			);
+			result = subtract(result, safe.supplierTotalBalance);
+			result = subtract(result, safe.driverUnpaidAmount);
+			result = subtract(result, safe.receiveMarginBalance);
+			result = subtract(result, safe.loanBalance);
 
-			const result = subtract(positiveSum, negativeSum);
-			// 使用 math.js 的 format 函数格式化为两位小数
 			return format(result, { notation: 'fixed', precision: 2 });
 		},
 		// 对数据进行格式化处理（使用 math.js 进行高精度计算）
@@ -270,19 +277,23 @@ export default {
 				loanBalance: calculateDifference('loanBalance'),
 				futuresMarginBalance: calculateDifference('futuresMarginBalance'),
 				loanFromCompany: calculateDifference('loanFromCompany'),
+				paymentMarginBalance: calculateDifference('paymentMarginBalance'),
+				receiveMarginBalance: calculateDifference('receiveMarginBalance'),
 				remainingInventoryAmount: calculateDifference('remainingInventoryAmount')
 			};
 
 			return [
-				createRow('资金总额（即股东权益）=①+②+③+④+⑤-⑥-⑦-⑧', this.calculateTotalBalance(startTimeMoney), this.calculateTotalBalance(endTimeMoney), this.calculateTotalBalance(data), null),
-				createRow('①应收账款---客户欠款合计数', startTimeMoney.companyTotalBalance, endTimeMoney.companyTotalBalance, data.companyTotalBalance, `companyTotalBalance`),
-				createRow('②银行存款---公司所有银行资金合计', startTimeMoney.selfCompanyTotalFunds, endTimeMoney.selfCompanyTotalFunds, data.selfCompanyTotalFunds, `selfCompanyTotalFunds`),
-				createRow('③保证金----期货保证金', startTimeMoney.futuresMarginBalance, endTimeMoney.futuresMarginBalance, data.futuresMarginBalance, `futuresMarginBalance`),
-				createRow('④其他应收---个人或公司从我公司借款', startTimeMoney.loanFromCompany, endTimeMoney.loanFromCompany, data.loanFromCompany, `loanFromCompany`),
-				createRow('⑤库存', startTimeMoney.remainingInventoryAmount, endTimeMoney.remainingInventoryAmount, data.remainingInventoryAmount, `remainingInventoryAmount`),
-				createRow('⑥应付账款---运费合计', startTimeMoney.driverUnpaidAmount, endTimeMoney.driverUnpaidAmount, data.driverUnpaidAmount, `driverUnpaidAmount`),
-				createRow('⑦应付账款---欠厂家货款', startTimeMoney.supplierTotalBalance, endTimeMoney.supplierTotalBalance, data.supplierTotalBalance, `supplierTotalBalance`),
-				createRow('⑧其他应付款---公司从外面借款合计', startTimeMoney.loanBalance, endTimeMoney.loanBalance, data.loanBalance, `loanBalance`)
+				createRow('资金总额=①+②-③-④+⑤+⑥+⑦-⑧-⑨+⓪', this.calculateTotalBalance(startTimeMoney), this.calculateTotalBalance(endTimeMoney), this.calculateTotalBalance(data), null),
+				createRow('①客户欠款合计数', startTimeMoney.companyTotalBalance, endTimeMoney.companyTotalBalance, data.companyTotalBalance, `companyTotalBalance`),
+				createRow('②所有银行卡资金合计', startTimeMoney.selfCompanyTotalFunds, endTimeMoney.selfCompanyTotalFunds, data.selfCompanyTotalFunds, `selfCompanyTotalFunds`),
+				createRow('⑤其他应收-个人从公司借款', startTimeMoney.loanFromCompany, endTimeMoney.loanFromCompany, data.loanFromCompany, `loanFromCompany`),
+				createRow('⑥期货保证金', startTimeMoney.futuresMarginBalance, endTimeMoney.futuresMarginBalance, data.futuresMarginBalance, `futuresMarginBalance`),
+				createRow('⑦支付保证金', startTimeMoney.paymentMarginBalance, endTimeMoney.paymentMarginBalance, data.paymentMarginBalance, `paymentMarginBalance`),
+				createRow('⓪零号库存金额', startTimeMoney.remainingInventoryAmount, endTimeMoney.remainingInventoryAmount, data.remainingInventoryAmount, `remainingInventoryAmount`),
+				createRow('③欠厂家货款', startTimeMoney.supplierTotalBalance, endTimeMoney.supplierTotalBalance, data.supplierTotalBalance, `supplierTotalBalance`),
+				createRow('④未支付运费合计', startTimeMoney.driverUnpaidAmount, endTimeMoney.driverUnpaidAmount, data.driverUnpaidAmount, `driverUnpaidAmount`),
+				createRow('⑧收取保证金', startTimeMoney.receiveMarginBalance, endTimeMoney.receiveMarginBalance, data.receiveMarginBalance, `receiveMarginBalance`),
+				createRow('⑨公司从外面借款合计', startTimeMoney.loanBalance, endTimeMoney.loanBalance, data.loanBalance, `loanBalance`)
 			];
 		},
 		// 点击差异项查看详情
@@ -508,13 +519,13 @@ export default {
 				} else if (rowIndex === 1) {
 					// 合并“资产类”行
 					return {
-						rowspan: 5, // 合并 5 行
+						rowspan: 6, // 合并 6 行
 						colspan: 1
 					};
-				} else if (rowIndex === 6) {
+				} else if (rowIndex === 7) {
 					// 合并“负债类”行
 					return {
-						rowspan: 3, // 合并 3 行
+						rowspan: 4, // 合并 4 行
 						colspan: 1
 					};
 				} else {
@@ -598,7 +609,7 @@ export default {
 									<!-- 合并"资产类" -->
 									<div v-if="scope.$index === 1">资产类</div>
 									<!-- 合并"负债类" -->
-									<div v-if="scope.$index === 6">负债类</div>
+									<div v-if="scope.$index === 7">负债类</div>
 								</template>
 							</el-table-column>
 							<el-table-column prop="label" label="项目" show-overflow-tooltip width="300px"></el-table-column>
@@ -634,7 +645,7 @@ export default {
 									<!-- 合并"资产类" -->
 									<div v-if="scope.$index === 1">资产类</div>
 									<!-- 合并"负债类" -->
-									<div v-if="scope.$index === 6">负债类</div>
+									<div v-if="scope.$index === 7">负债类</div>
 								</template>
 							</el-table-column>
 							<el-table-column prop="label" label="项目" show-overflow-tooltip width="300px"></el-table-column>
