@@ -439,25 +439,25 @@
 				<el-row v-if="isSea" style="margin: 3px 0">
 					<el-form-item label="柜号" prop="seaCarNo">
 						<el-row>
-							<el-col :span="20">
-								<el-input v-model="form.seaCarNo" type="text" size="mini" placeholder="请输入柜号" style="width: 120px" />
-							</el-col>
-							<el-col :span="4">
-								<SearchOption :limit-info="{ carType: '海运' }" :get-data="listCars" query-label="车牌" query-info="carNo" :query-name="querySeaCars" @commitBack="handleCommitBackSeaCar" @update:queryName="handleChangeSeaCar">
-									<template #table-columns>
-										<el-table-column label="车牌" align="center" prop="carNo" />
-										<el-table-column label="司机" align="center" prop="driver" />
-										<el-table-column label="司机电话" align="center" prop="tel" />
-										<el-table-column label="开户名" align="center" prop="acountsName" />
-										<el-table-column label="账号" align="center" prop="bankNo" />
-									</template>
-								</SearchOption>
-							</el-col>
+							<el-input v-model="form.seaCarNo" type="text" size="mini" placeholder="请输入柜号" style="width: 120px" />
 						</el-row>
 					</el-form-item>
 					<!--          todo 原为海运司机 现改为海运公司-->
 					<el-form-item label="海运公司" prop="seaDriverName">
-						<el-input v-model="form.seaDriverName" type="text" size="mini" placeholder="请输入海运公司" style="width: 130px" />
+						<el-col :span="20">
+							<el-input v-model="form.seaDriverName" type="text" size="mini" placeholder="请输入海运公司" style="width: 130px" />
+						</el-col>
+						<el-col :span="4">
+							<SearchOption :limit-info="{ carType: '海运' }" :get-data="listCars" query-label="车牌" query-info="carNo" :query-name="querySeaCars" @commitBack="handleCommitBackSeaCar" @update:queryName="handleChangeSeaCar">
+								<template #table-columns>
+									<el-table-column label="车牌" align="center" prop="carNo" />
+									<el-table-column label="司机" align="center" prop="driver" />
+									<el-table-column label="司机电话" align="center" prop="tel" />
+									<el-table-column label="开户名" align="center" prop="acountsName" />
+									<el-table-column label="账号" align="center" prop="bankNo" />
+								</template>
+							</SearchOption>
+						</el-col>
 					</el-form-item>
 					<el-form-item label="电话" prop="seaDriverTel">
 						<el-input v-model="form.seaDriverTel" type="text" size="mini" placeholder="请输入电话" style="width: 120px" />
