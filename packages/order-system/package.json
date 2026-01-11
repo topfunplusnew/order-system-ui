@@ -34,7 +34,7 @@
 		"@order-system/config": "*",
 		"@order-system/shared": "*",
 		"@order-system/ui-components": "*",
-		"@code-less/platform": "workspace:*",
+		"@code-less/platform": "1.0.0",
 		"@riophae/vue-treeselect": "0.4.0",
 		"@vue/composition-api": "^1.7.2",
 		"axios": "0.28.1",

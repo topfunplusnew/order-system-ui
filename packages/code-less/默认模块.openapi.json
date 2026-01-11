@@ -1,0 +1,320 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "默认模块",
+    "description": "",
+    "version": "1.0.0"
+  },
+  "tags": [],
+  "paths": {
+    "/system/user-config/{configKey}": {
+      "get": {
+        "summary": "获取单个配置",
+        "deprecated": false,
+        "description": "",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "configKey",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "example": "goodsorder-columns",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AjaxResult",
+                  "description": "操作消息提醒"
+                },
+                "example": {
+                  "": {}
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/system/user-config/batch": {
+      "post": {
+        "summary": "批量获取配置",
+        "deprecated": false,
+        "description": "",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "example": "dev-mode-admin-token-2025",
+            "schema": {
+              "type": "string",
+              "default": "dev-mode-admin-token-2025"
+            }
+          },
+          {
+            "name": "OSR",
+            "in": "header",
+            "description": "",
+            "example": "{{OSR}}",
+            "schema": {
+              "type": "string",
+              "default": "{{OSR}}"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserConfigBatchGetRequest",
+                "description": ""
+              },
+              "example": {
+                "keys": [
+                  "goodsorder-columns"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AjaxResult",
+                  "description": "操作消息提醒"
+                },
+                "example": {
+                  "": {}
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/system/user-config": {
+      "post": {
+        "summary": "写入配置",
+        "deprecated": false,
+        "description": "",
+        "tags": [],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserConfigSetRequest",
+                "description": ""
+              },
+              "example": {
+                "key": "goodsorder-columns",
+                "value": {
+                  "columns": {
+                    "id": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AjaxResult",
+                  "description": "操作消息提醒"
+                },
+                "example": {
+                  "": {}
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "summary": "删除配置",
+        "deprecated": false,
+        "description": "",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "example": "dev-mode-admin-token-2025",
+            "schema": {
+              "type": "string",
+              "default": "dev-mode-admin-token-2025"
+            }
+          },
+          {
+            "name": "OSR",
+            "in": "header",
+            "description": "",
+            "example": "{{OSR}}",
+            "schema": {
+              "type": "string",
+              "default": "{{OSR}}"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserConfigRemoveRequest",
+                "description": ""
+              },
+              "example": {
+                "keys": [
+                  "eu",
+                  "eu"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AjaxResult",
+                  "description": "操作消息提醒"
+                },
+                "example": {
+                  "": {}
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AjaxResult": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "object",
+            "properties": {}
+          }
+        }
+      },
+      "key": {
+        "type": "object",
+        "properties": {}
+      },
+      "UserConfigBatchGetRequest": {
+        "type": "object",
+        "properties": {
+          "keys": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "配置键列表"
+          }
+        },
+        "required": [
+          "keys"
+        ]
+      },
+      "MapObject": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "$ref": "#/components/schemas/key"
+          }
+        }
+      },
+      "UserConfigSetRequest": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "配置键"
+          },
+          "value": {
+            "$ref": "#/components/schemas/MapObject",
+            "description": "配置值"
+          }
+        },
+        "required": [
+          "key",
+          "value"
+        ]
+      },
+      "UserConfigRemoveRequest": {
+        "type": "object",
+        "properties": {
+          "keys": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "配置键列表"
+          }
+        },
+        "required": [
+          "keys"
+        ]
+      }
+    },
+    "responses": {},
+    "securitySchemes": {
+      "bearer": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  },
+  "servers": [],
+  "security": [
+    {
+      "bearer": []
+    }
+  ]
+}
