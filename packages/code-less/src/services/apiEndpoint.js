@@ -1,4 +1,4 @@
-import { crud } from '../utils/crud';
+import { localCrud } from '../utils/localStorage';
 import { Message } from 'element-ui';
 
 // 模型标识
@@ -30,8 +30,6 @@ function getCurrentTimestamp() {
 
 /**
  * 校验 API 端点数据
- * @param {object} data 端点数据
- * @returns {{ valid: boolean, message?: string }}
  */
 function validateEndpoint(data) {
   if (!data.name || !data.name.trim()) {
@@ -51,8 +49,6 @@ function validateEndpoint(data) {
 
 /**
  * 构建标准的 API 端点数据结构
- * @param {object} formData 表单数据
- * @returns {object} 标准化的端点数据
  */
 function buildEndpointData(formData) {
   return {
@@ -70,32 +66,26 @@ function buildEndpointData(formData) {
 }
 
 /**
- * API 端点管理服务
+ * API 端点管理服务（使用本地存储）
  */
 export const apiEndpointService = {
   /**
    * 获取 API 端点列表
-   * @param {object} query 查询条件
-   * @param {number} page 页码
-   * @param {number} pageSize 每页数量
    */
   async getEndpointList(query = {}, page = 1, pageSize = 10) {
-    return await crud.getList(SCHEMA_KEY, query, page, pageSize);
+    return await localCrud.getList(SCHEMA_KEY, query, page, pageSize);
   },
 
   /**
    * 创建 API 端点
-   * @param {object} formData 表单数据
    */
   async createEndpoint(formData) {
-    // 校验
     const validation = validateEndpoint(formData);
     if (!validation.valid) {
       Message.error(validation.message);
       return false;
     }
 
-    // 构建数据
     const endpointData = {
       id: generateId(),
       ...buildEndpointData(formData),
@@ -103,13 +93,13 @@ export const apiEndpointService = {
       updatedAt: getCurrentTimestamp()
     };
 
-    return await crud.create(SCHEMA_KEY, endpointData);
+    await localCrud.create(SCHEMA_KEY, endpointData);
+    Message.success('创建成功');
+    return true;
   },
 
   /**
    * 更新 API 端点
-   * @param {string} id 端点ID
-   * @param {object} formData 表单数据
    */
   async updateEndpoint(id, formData) {
     if (!id) {
@@ -117,28 +107,33 @@ export const apiEndpointService = {
       return false;
     }
 
-    // 校验
     const validation = validateEndpoint(formData);
     if (!validation.valid) {
       Message.error(validation.message);
       return false;
     }
 
-    // 构建更新数据
     const updateData = {
       ...buildEndpointData(formData),
       updatedAt: getCurrentTimestamp()
     };
 
-    return await crud.update(SCHEMA_KEY, id, updateData);
+    await localCrud.update(SCHEMA_KEY, id, updateData);
+    Message.success('更新成功');
+    return true;
   },
 
   /**
    * 删除 API 端点
-   * @param {string} id 端点ID
    */
   async deleteEndpoint(id) {
-    return await crud.remove(SCHEMA_KEY, id);
+    if (!id) {
+      Message.error('缺少端点ID');
+      return false;
+    }
+    await localCrud.remove(SCHEMA_KEY, id);
+    Message.success('删除成功');
+    return true;
   },
 
   /**
