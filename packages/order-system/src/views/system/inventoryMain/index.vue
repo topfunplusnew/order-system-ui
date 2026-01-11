@@ -237,23 +237,7 @@
 											</el-tooltip>
 										</template>
 									</el-table-column>
-									<el-table-column v-if="columns[9].visible" show-overflow-tooltip label="陆运银行卡号" align="center" prop="landBankNo" width="120">
-										<template #default="scope">
-											<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-												<div slot="content">{{ scope.row.landBankNo }}</div>
-												<span>{{ scope.row.landBankNo }}</span>
-											</el-tooltip>
-										</template>
-									</el-table-column>
-									<el-table-column v-if="columns[10].visible" show-overflow-tooltip label="陆运银行户名" align="center" prop="landBankName" width="120">
-										<template #default="scope">
-											<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-												<div slot="content">{{ scope.row.landBankName }}</div>
-												<span>{{ scope.row.landBankName }}</span>
-											</el-tooltip>
-										</template>
-									</el-table-column>
-									<el-table-column v-if="columns[11].visible" show-overflow-tooltip label="柜号" align="center" prop="seaCarNo" width="120">
+									<el-table-column v-if="columns[9].visible" show-overflow-tooltip label="柜号" align="center" prop="seaCarNo" width="120">
 										<template #default="scope">
 											<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 												<div slot="content">{{ scope.row.seaCarNo }}</div>
@@ -261,7 +245,7 @@
 											</el-tooltip>
 										</template>
 									</el-table-column>
-									<el-table-column v-if="columns[12].visible" show-overflow-tooltip label="海运司机电话" align="center" prop="seaDriverTel" width="150">
+									<el-table-column v-if="columns[10].visible" show-overflow-tooltip label="海运司机电话" align="center" prop="seaDriverTel" width="150">
 										<template #default="scope">
 											<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 												<div slot="content">{{ scope.row.seaDriverTel }}</div>
@@ -269,7 +253,7 @@
 											</el-tooltip>
 										</template>
 									</el-table-column>
-									<el-table-column v-if="columns[13].visible" show-overflow-tooltip label="海运公司" align="center" prop="seaDriverName" width="120">
+									<el-table-column v-if="columns[11].visible" show-overflow-tooltip label="海运公司" align="center" prop="seaDriverName" width="120">
 										<template #default="scope">
 											<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 												<div slot="content">{{ scope.row.seaDriverName }}</div>
@@ -277,23 +261,7 @@
 											</el-tooltip>
 										</template>
 									</el-table-column>
-									<el-table-column v-if="columns[14].visible" show-overflow-tooltip label="海运银行卡号" align="center" prop="seaBankNo" width="120">
-										<template #default="scope">
-											<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-												<div slot="content">{{ scope.row.seaBankNo }}</div>
-												<span>{{ scope.row.seaBankNo }}</span>
-											</el-tooltip>
-										</template>
-									</el-table-column>
-									<el-table-column v-if="columns[15].visible" show-overflow-tooltip label="海运银行户名" align="center" prop="seaBankName" width="120">
-										<template #default="scope">
-											<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-												<div slot="content">{{ scope.row.seaBankName }}</div>
-												<span>{{ scope.row.seaBankName }}</span>
-											</el-tooltip>
-										</template>
-									</el-table-column>
-									<el-table-column v-if="columns[16].visible" show-overflow-tooltip label="子项陆运费之和" align="center" prop="allLandFreight" width="150">
+									<el-table-column v-if="columns[12].visible" show-overflow-tooltip label="子项陆运费之和" align="center" prop="allLandFreight" width="150">
 										<template #default="scope">
 											<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 												<div slot="content">{{ scope.row.allLandFreight }}</div>
@@ -301,7 +269,7 @@
 											</el-tooltip>
 										</template>
 									</el-table-column>
-									<el-table-column v-if="columns[17].visible" show-overflow-tooltip label="子项海运费之和" align="center" prop="allSeaFreight">
+									<el-table-column v-if="columns[13].visible" show-overflow-tooltip label="子项海运费之和" align="center" prop="allSeaFreight">
 										<template #default="scope">
 											<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 												<div slot="content">{{ scope.row.allSeaFreight }}</div>
@@ -309,16 +277,15 @@
 											</el-tooltip>
 										</template>
 									</el-table-column>
-									<!-- 2025-11-1 录入人员不用录入了 -->
-									<!-- <el-table-column v-if="columns[18].visible" show-overflow-tooltip label="录入人员" align="center" prop="userName" width="120">
+									<el-table-column v-if="columns[14].visible" show-overflow-tooltip label="录入员" align="center" prop="userName" width="120">
 										<template #default="scope">
 											<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 												<div slot="content">{{ scope.row.userName }}</div>
 												<span>{{ scope.row.userName }}</span>
 											</el-tooltip>
 										</template>
-									</el-table-column> -->
-									<el-table-column v-if="columns[19].visible" show-overflow-tooltip label="附件" align="center" prop="path" width="150" fixed="right">
+									</el-table-column>
+									<el-table-column v-if="columns[15].visible" show-overflow-tooltip label="附件" align="center" prop="path" width="70" fixed="right">
 										<template #default="scope">
 											<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
 												<div slot="content" @click.stop>
@@ -338,7 +305,7 @@
 											</el-tooltip>
 										</template>
 									</el-table-column>
-									<el-table-column v-if="columns[20].visible" show-overflow-tooltip label="收到条附件" align="center" prop="receiveProof" width="150" fixed="right">
+									<el-table-column v-if="columns[16].visible" show-overflow-tooltip label="收到条附件" align="center" prop="receiveProof" width="70" fixed="right">
 										<template #default="scope">
 											<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
 												<div slot="content" @click.stop>
@@ -358,7 +325,7 @@
 											</el-tooltip>
 										</template>
 									</el-table-column>
-									<el-table-column v-if="columns[21].visible" label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="100">
+									<el-table-column v-if="columns[17].visible" label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="100">
 										<template slot-scope="scope">
 											<el-dropdown size="mini" trigger="hover" @command="command => handleCommand(command, scope.row)">
 												<el-button size="mini" type="text" @click.stop="handleCheckInventory(scope.row)">
@@ -448,12 +415,6 @@
 					<el-form-item label="电话">
 						<el-input disabled v-model="form.landDriverTel" type="text" size="mini" placeholder="请选择" style="width: 120px" />
 					</el-form-item>
-					<el-form-item label="银行卡号">
-						<el-input disabled v-model="form.landBankNo" type="text" size="mini" placeholder="请选择" style="width: 120px" />
-					</el-form-item>
-					<el-form-item label="开户行">
-						<el-input disabled v-model="form.landBankName" type="text" size="mini" placeholder="请选择" style="width: 120px" />
-					</el-form-item>
 					<!-- 添加车队 -->
 					<el-form-item label="车队" prop="fleet">
 						<el-row>
@@ -500,12 +461,6 @@
 					</el-form-item>
 					<el-form-item label="电话" prop="seaDriverTel">
 						<el-input v-model="form.seaDriverTel" type="text" size="mini" placeholder="请输入电话" style="width: 120px" />
-					</el-form-item>
-					<el-form-item label="银行卡号" prop="seaBankNo">
-						<el-input v-model="form.seaBankNo" type="text" size="mini" placeholder="请输入海运银行卡号" style="width: 120px" />
-					</el-form-item>
-					<el-form-item label="开户行" prop="seaBankName">
-						<el-input v-model="form.seaBankName" type="text" size="mini" placeholder="请输入海运开户行" style="width: 120px" />
 					</el-form-item>
 				</el-row>
 				<br />
@@ -991,23 +946,6 @@ export default {
 				callback();
 			}
 		};
-		// 自定义校验器：当选择海运时，银行卡号必填
-		const validateSeaBankNo = (rule, value, callback) => {
-			if (this.isSea && !value) {
-				callback(new Error('选择海运时，银行卡号不能为空'));
-			} else {
-				callback();
-			}
-		};
-		// 自定义校验器：当选择海运时，开户行必填
-		const validateSeaBankName = (rule, value, callback) => {
-			if (this.isSea && !value) {
-				callback(new Error('选择海运时，开户行不能为空'));
-			} else {
-				callback();
-			}
-		};
-
 		// 自定义校验器：确保至少选择一种运输方式
 		const validateTransportMode = (rule, value, callback) => {
 			if (!this.isLand && !this.isSea) {
@@ -1097,16 +1035,12 @@ export default {
 				{ key: 6, label: '陆运车牌', visible: true },
 				{ key: 7, label: '陆运司机电话', visible: true },
 				{ key: 8, label: '陆地司机姓名', visible: true },
-				{ key: 9, label: '陆运银行卡号', visible: true },
-				{ key: 10, label: '陆运银行户名', visible: true },
 				{ key: 11, label: '柜号', visible: true },
 				{ key: 12, label: '海运司机电话', visible: true },
 				{ key: 13, label: '海运公司', visible: true },
-				{ key: 14, label: '海运银行卡号', visible: true },
-				{ key: 15, label: '海运银行户名', visible: true },
 				{ key: 16, label: '子项陆运费之和', visible: true },
 				{ key: 17, label: '子项海运费之和', visible: true },
-				{ key: 18, label: '录入人员', visible: true },
+				{ key: 18, label: '录入员', visible: true },
 				{ key: 19, label: '附件', visible: true },
 				{ key: 20, label: '收到条附件', visible: true },
 				{ key: 21, label: '操作', visible: true }
@@ -1121,8 +1055,6 @@ export default {
 				seaCarNo: [{ validator: validateSeaCarNo, trigger: 'blur' }],
 				seaDriverName: [{ validator: validateSeaDriverName, trigger: 'blur' }],
 				seaDriverTel: [{ validator: validateSeaDriverTel, trigger: 'blur' }],
-				seaBankNo: [{ validator: validateSeaBankNo, trigger: 'blur' }],
-				seaBankName: [{ validator: validateSeaBankName, trigger: 'blur' }],
 				// 添加运输方式校验规则
 				transportMode: [{ validator: validateTransportMode, trigger: 'change' }]
 			},
@@ -1518,7 +1450,7 @@ export default {
 				this.form.seaBankName = '';
 				// 清除校验状态
 				if (this.$refs.form) {
-					this.$refs.form.clearValidate(['seaCarNo', 'seaDriverName', 'seaDriverTel', 'seaBankNo', 'seaBankName']);
+					this.$refs.form.clearValidate(['seaCarNo', 'seaDriverName', 'seaDriverTel']);
 				}
 			}
 			this.form.transportMode = this.isLand || this.isSea ? 'selected' : '';
