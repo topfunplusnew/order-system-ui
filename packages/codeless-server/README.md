@@ -163,11 +163,40 @@ proxy: {
 }
 ```
 
-### 启动顺序
+### 一键启动（推荐）
 
-1. 启动 MongoDB
-2. 启动 codeless-server: `npm run dev`
-3. 启动 order-system: `yarn order`
+在项目根目录执行：
+
+```bash
+# 同时启动 codeless-server 和 order-system，日志合并输出
+yarn order
+```
+
+日志输出示例：
+```
+[CODELESS] [MongoDB] 连接成功: mongodb://localhost:27017/codeless
+[CODELESS] [CodeLess Server] 服务已启动: http://localhost:3100
+[ORDER] App running at: http://localhost:40080/
+```
+
+### 单独启动
+
+```bash
+# 只启动 order-system（不启动 codeless-server）
+yarn order:only
+
+# 只启动 codeless-server
+yarn codeless:dev
+```
+
+### 启动前提
+
+确保 MongoDB 已启动：
+
+```bash
+# Docker 方式
+docker run -d -p 27017:27017 --name mongodb mongo:latest
+```
 
 ## 目录结构
 
