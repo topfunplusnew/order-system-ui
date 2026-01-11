@@ -17,19 +17,9 @@ export function apiSearchData(schemaKey, params) {
     url: `/system/user-config/${storageKey}`,
     method: 'get'
   }).then(res => {
-    // 解析存储的 JSON 数据
-    let allData = [];
-    try {
-      const rawValue = res.data || res.msg || '';
-      if (rawValue && typeof rawValue === 'string') {
-        allData = JSON.parse(rawValue);
-      } else if (Array.isArray(rawValue)) {
-        allData = rawValue;
-      }
-    } catch (e) {
-      allData = [];
-    }
-
+    // 获取数据，后端直接返回 JSON 对象
+    let allData = res.data || res.msg || [];
+    
     // 确保是数组
     if (!Array.isArray(allData)) {
       allData = [];
@@ -69,13 +59,8 @@ async function getAllData(schemaKey) {
       url: `/system/user-config/${storageKey}`,
       method: 'get'
     });
-    const rawValue = res.data || res.msg || '';
-    if (rawValue && typeof rawValue === 'string') {
-      return JSON.parse(rawValue);
-    } else if (Array.isArray(rawValue)) {
-      return rawValue;
-    }
-    return [];
+    const data = res.data || res.msg || [];
+    return Array.isArray(data) ? data : [];
   } catch (e) {
     return [];
   }
@@ -91,7 +76,7 @@ async function saveAllData(schemaKey, dataList) {
     method: 'post',
     data: {
       key: storageKey,
-      value: JSON.stringify(dataList)
+      value: dataList  // 直接传递 JSON 数组
     }
   });
 }
