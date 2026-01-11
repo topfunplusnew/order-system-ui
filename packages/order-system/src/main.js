@@ -37,6 +37,9 @@ import { Pagination, RightToolbar, Editor, FileUpload, ImageUpload, ImagePreview
 
 // ========== 业务组件 ==========
 import DictData from '@/components/DictData';
+
+// ========== CodeLess 低代码平台 ==========
+import CodeLess from '@code-less/platform';
 import ModelPlugin from './components/ModelDialog';
 import DatePickerDialog from './views/dashboard/components/common/DatePickerDialog.vue';
 import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
@@ -210,6 +213,13 @@ Vue.use(VueMeta);
 // 引入表格横向滚动插件
 Vue.use(horizontalScroll);
 DictData.install();
+
+// 安装 CodeLess 插件
+Vue.use(CodeLess, {
+  request: service, // 注入 axios 实例
+  router: router    // 注入 router 实例以启用动态路由
+});
+
 Vue.use(Element, {
 	size: Cookies.get('size') || 'medium' // set element-ui default size
 });
