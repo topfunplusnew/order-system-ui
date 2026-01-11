@@ -25,17 +25,17 @@ module.exports = {
 		port: port,
 		open: true,
 		proxy: {
+			// CodeLess 低代码平台 API -> 本地 NodeJS + MongoDB 服务
+			[process.env.VUE_APP_BASE_API + '/codeless']: {
+				target: 'http://localhost:3100',
+				changeOrigin: true,
+				pathRewrite: {
+					['^' + process.env.VUE_APP_BASE_API]: ''
+				}
+			},
+			// 其他 API -> 后端服务器
 			[process.env.VUE_APP_BASE_API]: {
-				// target: `http://223.254.129.240:60036`,
-				// target: `http://223.254.129.240:60035`,
-				// 以下为远程主机
-				// target: `http://172.20.193.200:8080/`,
-				// target: `http://172.20.182.31:30065/`,
-				//k8s
-				// target: 'https://devlop.order.project.k3s.ixuni.win/',
-				// target: 'http://42.193.124.39:27454/',
 				target: `http://60.205.5.253:60036/`,
-				// target: 'https://cjdevlop.order.project.k3s.ixuni.win/',
 				changeOrigin: true,
 				pathRewrite: {
 					['^' + process.env.VUE_APP_BASE_API]: ''
