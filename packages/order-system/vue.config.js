@@ -58,11 +58,11 @@ module.exports = {
 			alias: {
 				'@': resolve('src'),
 				// 支持引用共享包
-				'@shared': resolve(__dirname, '../shared'),
-				'@ui-components': resolve(__dirname, '../ui-components'),
-				'@config': resolve(__dirname, '../config'),
+				'@shared': path.resolve(__dirname, '../shared'),
+				'@ui-components': path.resolve(__dirname, '../ui-components'),
+				'@config': path.resolve(__dirname, '../config'),
 				// 低代码平台包
-				'@code-less/platform': resolve(__dirname, '../code-less/src')
+				'@code-less/platform': path.resolve(__dirname, '../code-less/src/index.js')
 			}
 		},
 		plugins: [
