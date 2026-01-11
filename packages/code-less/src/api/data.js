@@ -2,7 +2,7 @@ import { getRequest } from './request';
 
 /**
  * 基于 order-system 的 user-config 接口实现数据存储
- * 使用 key-value 模式，value 存储 JSON 数组
+ * 使用 key-value 模式，value 直接存储 JSON 数组
  */
 
 // 存储前缀，避免 key 冲突
@@ -17,7 +17,6 @@ function getStorageKey(schemaKey) {
 
 /**
  * 1. 查询数据接口 (Read / Search)
- * 使用 user-config 的 GET 接口获取数据，前端进行分页和过滤
  * @param {string} schemaKey 模型标识
  * @param {object} params 查询参数 { page, pageSize, query }
  */
@@ -27,19 +26,9 @@ export function apiSearchData(schemaKey, params) {
     url: `/system/user-config/${storageKey}`,
     method: 'get'
   }).then(res => {
-    // 解析存储的 JSON 数据
-    let allData = [];
-    try {
-      const rawValue = res.data || res.msg || '';
-      if (rawValue && typeof rawValue === 'string') {
-        allData = JSON.parse(rawValue);
-      } else if (Array.isArray(rawValue)) {
-        allData = rawValue;
-      }
-    } catch (e) {
-      allData = [];
-    }
-
+    // 获取数据，后端直接返回 JSON 对象
+    let allData = res.data || res.msg || [];
+    
     // 确保是数组
     if (!Array.isArray(allData)) {
       allData = [];
@@ -79,13 +68,8 @@ async function getAllData(schemaKey) {
       url: `/system/user-config/${storageKey}`,
       method: 'get'
     });
-    const rawValue = res.data || res.msg || '';
-    if (rawValue && typeof rawValue === 'string') {
-      return JSON.parse(rawValue);
-    } else if (Array.isArray(rawValue)) {
-      return rawValue;
-    }
-    return [];
+    const data = res.data || res.msg || [];
+    return Array.isArray(data) ? data : [];
   } catch (e) {
     return [];
   }
@@ -101,7 +85,7 @@ async function saveAllData(schemaKey, dataList) {
     method: 'post',
     data: {
       key: storageKey,
-      value: JSON.stringify(dataList)
+      value: dataList  // 直接传递 JSON 数组
     }
   });
 }
