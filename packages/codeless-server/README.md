@@ -11,42 +11,49 @@
 
 ## 快速开始
 
-### 1. 安装依赖
+### 1. 启动 MongoDB
+
+使用 Docker 启动带认证的 MongoDB：
+
+```bash
+docker run -d \
+  --name codeless-mongo \
+  -p 28017:27017 \
+  -e MONGO_INITDB_ROOT_USERNAME=order \
+  -e MONGO_INITDB_ROOT_PASSWORD=8fb5aa88-9041-4e7d-8211-51c86137743e \
+  mongo:latest
+```
+
+**MongoDB 配置信息：**
+
+| 配置项 | 值 |
+|--------|-----|
+| 端口 | 28017 |
+| 用户名 | order |
+| 密码 | 8fb5aa88-9041-4e7d-8211-51c86137743e |
+| 数据库 | codeless |
+
+### 2. 安装依赖
 
 ```bash
 cd packages/codeless-server
 npm install
 ```
 
-### 2. 配置环境变量
+### 3. 配置环境变量
 
 ```bash
 cp .env.example .env
 ```
 
-编辑 `.env` 文件：
+`.env` 文件内容：
 
 ```env
-# MongoDB 连接地址
-MONGODB_URI=mongodb://localhost:27017/codeless
+# MongoDB 连接配置
+MONGODB_URI=mongodb://order:8fb5aa88-9041-4e7d-8211-51c86137743e@localhost:28017/codeless?authSource=admin
 
 # 服务端口
 PORT=3100
-```
-
-### 3. 启动 MongoDB
-
-确保 MongoDB 服务已启动：
-
-```bash
-# macOS (Homebrew)
-brew services start mongodb-community
-
-# Linux (systemd)
-sudo systemctl start mongod
-
-# Docker
-docker run -d -p 27017:27017 --name mongodb mongo:latest
 ```
 
 ### 4. 启动服务
@@ -59,7 +66,47 @@ npm start
 npm run dev
 ```
 
-服务启动后访问：`http://localhost:3100`
+## 与前端集成
+
+### 一键启动（推荐）
+
+在项目根目录执行：
+
+```bash
+# 同时启动 codeless-server 和 order-system，日志合并输出
+yarn order
+```
+
+日志输出示例：
+```
+[CODELESS] [MongoDB] 连接成功: mongodb://order:***@localhost:28017/codeless
+[CODELESS] [CodeLess Server] 服务已启动: http://localhost:3100
+[ORDER] App running at: http://localhost:40080/
+```
+
+### 单独启动
+
+```bash
+# 只启动 order-system（不启动 codeless-server）
+yarn order:only
+
+# 只启动 codeless-server
+yarn codeless:dev
+```
+
+### 代理配置
+
+在 `order-system/vue.config.js` 中已配置代理：
+
+```javascript
+proxy: {
+  '/dev-api/codeless': {
+    target: 'http://localhost:3100',
+    changeOrigin: true,
+    pathRewrite: { '^/dev-api': '' }
+  }
+}
+```
 
 ## API 接口
 
@@ -147,55 +194,47 @@ MongoDB 中的文档结构：
 }
 ```
 
-## 与前端集成
+## Docker 命令参考
 
-### 代理配置
-
-在 `order-system/vue.config.js` 中已配置代理：
-
-```javascript
-proxy: {
-  '/dev-api/codeless': {
-    target: 'http://localhost:3100',
-    changeOrigin: true,
-    pathRewrite: { '^/dev-api': '' }
-  }
-}
-```
-
-### 一键启动（推荐）
-
-在项目根目录执行：
+### 启动 MongoDB
 
 ```bash
-# 同时启动 codeless-server 和 order-system，日志合并输出
-yarn order
+docker run -d \
+  --name codeless-mongo \
+  -p 28017:27017 \
+  -e MONGO_INITDB_ROOT_USERNAME=order \
+  -e MONGO_INITDB_ROOT_PASSWORD=8fb5aa88-9041-4e7d-8211-51c86137743e \
+  mongo:latest
 ```
 
-日志输出示例：
-```
-[CODELESS] [MongoDB] 连接成功: mongodb://localhost:27017/codeless
-[CODELESS] [CodeLess Server] 服务已启动: http://localhost:3100
-[ORDER] App running at: http://localhost:40080/
-```
-
-### 单独启动
+### 停止 MongoDB
 
 ```bash
-# 只启动 order-system（不启动 codeless-server）
-yarn order:only
-
-# 只启动 codeless-server
-yarn codeless:dev
+docker stop codeless-mongo
 ```
 
-### 启动前提
-
-确保 MongoDB 已启动：
+### 启动已停止的 MongoDB
 
 ```bash
-# Docker 方式
-docker run -d -p 27017:27017 --name mongodb mongo:latest
+docker start codeless-mongo
+```
+
+### 删除 MongoDB 容器
+
+```bash
+docker rm -f codeless-mongo
+```
+
+### 查看 MongoDB 日志
+
+```bash
+docker logs -f codeless-mongo
+```
+
+### 进入 MongoDB Shell
+
+```bash
+docker exec -it codeless-mongo mongosh -u order -p 8fb5aa88-9041-4e7d-8211-51c86137743e --authenticationDatabase admin
 ```
 
 ## 目录结构
@@ -213,7 +252,8 @@ codeless-server/
 │   │   └── documentService.js # 数据服务层
 │   └── routes/
 │       └── data.js           # API 路由
-├── .env.example
+├── .env                      # 环境变量（不提交到 git）
+├── .env.example              # 环境变量示例
 ├── .gitignore
 ├── package.json
 └── README.md
