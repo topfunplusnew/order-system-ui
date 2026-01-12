@@ -84,7 +84,6 @@
 		"@vue/cli-plugin-babel": "4.4.6",
 		"@vue/cli-plugin-eslint": "^5.0.0",
 		"@vue/cli-service": "4.4.6",
-		"@vue/runtime-dom": "^3.5.13",
 		"babel-plugin-dynamic-import-node": "2.3.3",
 		"chalk": "4.1.0",
 		"compression-webpack-plugin": "5.0.2",

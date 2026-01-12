@@ -7,9 +7,6 @@
 </template>
 
 <script>
-import { ref, watch } from 'vue';
-import FitColumnPlugin from 'v-fit-columns';
-
 export default {
 	name: 'FitTable',
 	inheritAttrs: false,
@@ -23,27 +20,10 @@ export default {
 			default: true
 		}
 	},
-	setup(props) {
-		const tableRef = ref(null);
-
-		// 监听数据变化，重新计算列宽
-		watch(
-			() => props.tableData,
-			() => {
-				if (props.fitColumns && tableRef.value) {
-					FitColumnPlugin.resize(tableRef.value);
-				}
-			}
-		);
-
-		const handleHeaderClick = (column, event) => {
-			$emit('header-click', column, event);
-		};
-
-		return {
-			tableRef,
-			handleHeaderClick
-		};
+	methods: {
+		handleHeaderClick(column, event) {
+			this.$emit('header-click', column, event);
+		}
 	}
 };
 </script>
