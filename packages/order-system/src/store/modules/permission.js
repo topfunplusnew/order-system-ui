@@ -4,6 +4,7 @@ import { getRouters } from '@/api/menu';
 import Layout from '@/layout/index';
 import ParentView from '@/components/ParentView';
 import InnerLink from '@/layout/components/InnerLink';
+import mockRouters from '@/mock/routers';
 
 /**
  * 后端菜单转前端路由的兜底规范化：
@@ -78,6 +79,12 @@ function joinRoutePath(base, sub) {
 	return normalizeRoutePath(`${baseStr}/${subStr}`);
 }
 
+function getRoutersWithMock() {
+	// 开发环境默认走 mock，方便你本地测试菜单（如需切回后端：把这里改为 false）
+	const useMock = process.env.NODE_ENV === 'development';
+	return useMock ? Promise.resolve(mockRouters) : getRouters();
+}
+
 const permission = {
 	state: {
 		routes: [],
@@ -125,7 +132,7 @@ const permission = {
 				}
 
 				// 向后端请求路由数据
-				getRouters()
+				getRoutersWithMock()
 					.then(res => {
 						try {
 							// 基于已有路由名做兜底去重，避免 addRoutes 直接跳过菜单路由
