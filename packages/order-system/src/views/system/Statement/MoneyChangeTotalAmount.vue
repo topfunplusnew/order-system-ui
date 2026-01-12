@@ -288,7 +288,7 @@ export default {
 				createRow('②所有银行卡资金合计', startTimeMoney.selfCompanyTotalFunds, endTimeMoney.selfCompanyTotalFunds, data.selfCompanyTotalFunds, `selfCompanyTotalFunds`),
 				createRow('⑤其他应收-个人/公司从公司借款', startTimeMoney.loanFromCompany, endTimeMoney.loanFromCompany, data.loanFromCompany, `loanFromCompany`),
 				createRow('⑥期货保证金', startTimeMoney.futuresMarginBalance, endTimeMoney.futuresMarginBalance, data.futuresMarginBalance, `futuresMarginBalance`),
-				createRow('⑦支付保证金', startTimeMoney.paymentMarginBalance, endTimeMoney.paymentMarginBalance, data.paymentMarginBalance, `paymentMarginBalance`),
+				createRow('⑦厂家保证金', startTimeMoney.paymentMarginBalance, endTimeMoney.paymentMarginBalance, data.paymentMarginBalance, `paymentMarginBalance`),
 				createRow('⓪库存金额', startTimeMoney.remainingInventoryAmount, endTimeMoney.remainingInventoryAmount, data.remainingInventoryAmount, `remainingInventoryAmount`),
 				createRow('③欠厂家货款', startTimeMoney.supplierTotalBalance, endTimeMoney.supplierTotalBalance, data.supplierTotalBalance, `supplierTotalBalance`),
 				createRow('④未支付运费合计', startTimeMoney.driverUnpaidAmount, endTimeMoney.driverUnpaidAmount, data.driverUnpaidAmount, `driverUnpaidAmount`),
