@@ -5,6 +5,79 @@ import Layout from '@/layout/index';
 import ParentView from '@/components/ParentView';
 import InnerLink from '@/layout/components/InnerLink';
 
+/**
+ * 后端菜单转前端路由的兜底规范化：
+ * - path: 将重复的 / 压缩为单个 /
+ * - name: 将 / 替换为 _，并在全局范围内保证唯一（重复则加前缀/后缀）
+ *
+ * 说明：这里不改变路由结构与 component/meta，只做必要的字符串规范化。
+ */
+function normalizeRoutePath(path) {
+	if (typeof path !== 'string') return path;
+	// 避免误伤外链（一般路由 path 不会出现 ://，但这里做兜底）
+	if (path.includes('://')) return path;
+	return path.replace(/\/{2,}/g, '/');
+}
+
+function sanitizeRouteName(name) {
+	if (typeof name !== 'string') return name;
+	// 去掉开头的 /，并把剩余的 / 替换为 _
+	const sanitized = name.replace(/^\/+/, '').replace(/\//g, '_');
+	return sanitized || name;
+}
+
+function ensureUniqueRouteName(baseName, usedNames, parentName) {
+	if (!baseName) return baseName;
+	if (!usedNames.has(baseName)) {
+		usedNames.add(baseName);
+		return baseName;
+	}
+
+	// 优先尝试加父级前缀（更可读）
+	const prefixed = parentName ? `${parentName}_${baseName}` : '';
+	if (prefixed && !usedNames.has(prefixed)) {
+		usedNames.add(prefixed);
+		return prefixed;
+	}
+
+	// 再使用数字后缀，直到唯一
+	let idx = 2;
+	let candidate = `${baseName}_${idx}`;
+	while (usedNames.has(candidate)) {
+		idx += 1;
+		candidate = `${baseName}_${idx}`;
+	}
+	usedNames.add(candidate);
+	return candidate;
+}
+
+function normalizeBackendRoutes(routes, usedNames, parentName = '') {
+	if (!Array.isArray(routes)) return routes;
+
+	routes.forEach(route => {
+		if (!route || typeof route !== 'object') return;
+
+		route.path = normalizeRoutePath(route.path);
+
+		if (route.name) {
+			const sanitizedName = sanitizeRouteName(route.name);
+			route.name = ensureUniqueRouteName(sanitizedName, usedNames, parentName);
+		}
+
+		if (Array.isArray(route.children) && route.children.length) {
+			normalizeBackendRoutes(route.children, usedNames, route.name || parentName);
+		}
+	});
+
+	return routes;
+}
+
+function joinRoutePath(base, sub) {
+	const baseStr = typeof base === 'string' ? base : '';
+	const subStr = typeof sub === 'string' ? sub : '';
+	return normalizeRoutePath(`${baseStr}/${subStr}`);
+}
+
 const permission = {
 	state: {
 		routes: [],
@@ -55,8 +128,18 @@ const permission = {
 				getRouters()
 					.then(res => {
 						try {
-							const sdata = JSON.parse(JSON.stringify(res.data));
-							const rdata = JSON.parse(JSON.stringify(res.data));
+							// 基于已有路由名做兜底去重，避免 addRoutes 直接跳过菜单路由
+							const existingRouteNames = new Set();
+							router.options.routes.forEach(route => {
+								if (route.name) existingRouteNames.add(route.name);
+							});
+
+							// 先对后端原始数据做一次规范化，确保 sdata/rdata 产物保持一致
+							const baseData = JSON.parse(JSON.stringify(res.data));
+							normalizeBackendRoutes(baseData, existingRouteNames);
+
+							const sdata = JSON.parse(JSON.stringify(baseData));
+							const rdata = JSON.parse(JSON.stringify(baseData));
 
 							// 过滤并转换路由
 							const sidebarRoutes = filterAsyncRouter(sdata);
@@ -72,12 +155,6 @@ const permission = {
 
 							// 统一在这里添加所有路由，避免重复
 							const allRoutesToAdd = [...asyncRoutes, ...rewriteRoutes];
-
-							// 清理现有路由名称，防止重复（Vue Router 3.x的限制）
-							const existingRouteNames = new Set();
-							router.options.routes.forEach(route => {
-								if (route.name) existingRouteNames.add(route.name);
-							});
 
 							// 过滤重复的路由
 							const filteredRoutes = allRoutesToAdd.filter(route => {
@@ -121,21 +198,7 @@ const permission = {
 
 // 遍历后台传来的路由字符串，转换为组件对象
 function filterAsyncRouter(asyncRouterMap, lastRouter = false, type = false) {
-	// 用于记录已存在的路由名称，避免重复
-	const existingNames = new Set();
-
 	return asyncRouterMap.filter(route => {
-		// 检查路由名称是否重复
-		if (route.name && existingNames.has(route.name)) {
-			console.warn(`[vue-router] 发现重复的路由名称: ${route.name}，已跳过`);
-			return false;
-		}
-
-		// 记录路由名称
-		if (route.name) {
-			existingNames.add(route.name);
-		}
-
 		if (type && route.children) {
 			route.children = filterChildren(route.children);
 		}
@@ -167,7 +230,7 @@ function filterChildren(childrenMap, lastRouter = false) {
 		if (el.children && el.children.length) {
 			if (el.component === 'ParentView' && !lastRouter) {
 				el.children.forEach(c => {
-					c.path = el.path + '/' + c.path;
+					c.path = joinRoutePath(el.path, c.path);
 					if (c.children && c.children.length) {
 						children = children.concat(filterChildren(c.children, c));
 						return;
@@ -178,7 +241,7 @@ function filterChildren(childrenMap, lastRouter = false) {
 			}
 		}
 		if (lastRouter) {
-			el.path = lastRouter.path + '/' + el.path;
+			el.path = joinRoutePath(lastRouter.path, el.path);
 			if (el.children && el.children.length) {
 				children = children.concat(filterChildren(el.children, el));
 				return;
