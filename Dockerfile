@@ -6,7 +6,10 @@ FROM node:18.20.6-alpine AS builder
 WORKDIR /app
 
 ENV YARN_CACHE_FOLDER=/app/.yarn-cache
-RUN npm config set registry https://mirrors.cloud.tencent.com/npm/
+
+# 设置 npm 和 yarn 的镜像源为阿里云（更稳定）
+RUN npm config set registry https://registry.npmmirror.com && \
+    yarn config set registry https://registry.npmmirror.com
 
 # 安装yarn（如果基础镜像没有）
 RUN if ! command -v yarn > /dev/null; then npm install -g yarn; fi
@@ -18,6 +21,7 @@ COPY packages/order-system/package.json ./packages/order-system/
 COPY packages/config/package.json ./packages/config/
 COPY packages/shared/package.json ./packages/shared/
 COPY packages/ui-components/package.json ./packages/ui-components/
+COPY packages/code-less/package.json ./packages/code-less/
 
 # 安装依赖（使用缓存）
 RUN yarn install-order
