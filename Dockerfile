@@ -18,6 +18,7 @@ COPY packages/order-system/package.json ./packages/order-system/
 COPY packages/config/package.json ./packages/config/
 COPY packages/shared/package.json ./packages/shared/
 COPY packages/ui-components/package.json ./packages/ui-components/
+COPY packages/code-less/package.json ./packages/code-less/
 
 # 安装依赖（使用缓存）
 RUN yarn install-order
