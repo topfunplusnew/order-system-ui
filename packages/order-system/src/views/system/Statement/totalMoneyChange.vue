@@ -58,7 +58,7 @@ export default {
 				createRow('②所有银行卡资金合计', data.selfCompanyTotalFunds),
 				createRow('③欠厂家货款', data.supplierTotalBalance),
 				createRow('④未支付运费合计', data.driverUnpaidAmount),
-				createRow('⑤其他应收-个人从公司借款', data.loanFromCompany),
+				createRow('⑤其他应收-个人/公司从公司借款', data.loanFromCompany),
 				createRow('⑥期货保证金', data.futuresMarginBalance),
 				createRow('⑦支付保证金', data.paymentMarginBalance),
 				createRow('⑧收取保证金', data.receiveMarginBalance),

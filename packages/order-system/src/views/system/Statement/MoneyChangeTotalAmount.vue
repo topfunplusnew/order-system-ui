@@ -286,7 +286,7 @@ export default {
 				createRow('资金总额=①+②-③-④+⑤+⑥+⑦-⑧-⑨+⓪', this.calculateTotalBalance(startTimeMoney), this.calculateTotalBalance(endTimeMoney), this.calculateTotalBalance(data), null),
 				createRow('①客户欠款合计数', startTimeMoney.companyTotalBalance, endTimeMoney.companyTotalBalance, data.companyTotalBalance, `companyTotalBalance`),
 				createRow('②所有银行卡资金合计', startTimeMoney.selfCompanyTotalFunds, endTimeMoney.selfCompanyTotalFunds, data.selfCompanyTotalFunds, `selfCompanyTotalFunds`),
-				createRow('⑤其他应收-个人从公司借款', startTimeMoney.loanFromCompany, endTimeMoney.loanFromCompany, data.loanFromCompany, `loanFromCompany`),
+				createRow('⑤其他应收-个人/公司从公司借款', startTimeMoney.loanFromCompany, endTimeMoney.loanFromCompany, data.loanFromCompany, `loanFromCompany`),
 				createRow('⑥期货保证金', startTimeMoney.futuresMarginBalance, endTimeMoney.futuresMarginBalance, data.futuresMarginBalance, `futuresMarginBalance`),
 				createRow('⑦支付保证金', startTimeMoney.paymentMarginBalance, endTimeMoney.paymentMarginBalance, data.paymentMarginBalance, `paymentMarginBalance`),
 				createRow('⓪库存金额', startTimeMoney.remainingInventoryAmount, endTimeMoney.remainingInventoryAmount, data.remainingInventoryAmount, `remainingInventoryAmount`),
