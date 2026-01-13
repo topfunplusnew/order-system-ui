@@ -165,8 +165,8 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[9].visible" label="运费来源" align="center" prop="source" width="100" show-overflow-tooltip>
-				<template #default="scope">
+			<el-table-column v-if="columns[9].visible" label="运费来源" align="center" prop="sourceType" width="100" show-overflow-tooltip>
+				<!-- <template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">
 							<span v-if="scope.row.source === FREIGHT_TYPE.GOODS_ORDER">订单</span>
@@ -175,7 +175,7 @@
 						<el-tag v-if="scope.row.source === FREIGHT_TYPE.GOODS_ORDER">订单</el-tag>
 						<el-tag v-if="scope.row.source === FREIGHT_TYPE.INVENTORY">库存</el-tag>
 					</el-tooltip>
-				</template>
+				</template> -->
 			</el-table-column>
 			<el-table-column v-if="columns[10].visible" label="支付状态" align="center" prop="paymentState" width="100" show-overflow-tooltip>
 				<template #default="scope">
