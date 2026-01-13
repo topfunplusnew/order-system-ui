@@ -470,12 +470,6 @@ export default {
 	},
 	created() {
 		this.getList();
-		if (localStorage.getItem('borrowedmoney-columns') === 'null' || !localStorage.getItem('borrowedmoney-columns')) {
-			// 设置localStorage
-			localStorage.setItem('borrowedmoney-columns', JSON.stringify(this.columns));
-		} else {
-			this.columns = JSON.parse(localStorage.getItem('borrowedmoney-columns'));
-		}
 		this.$store.dispatch('money/getTempBorrowedMoneyList');
 	},
 	computed: {
@@ -489,14 +483,7 @@ export default {
 		...mapGetters(['tempBorrowedMoneyList'])
 	},
 	// 展示与隐藏
-	watch: {
-		columns: {
-			handler: function (newVal) {
-				localStorage.setItem('borrowedmoney-columns', JSON.stringify(newVal));
-			},
-			deep: true
-		}
-	},
+	watch: {},
 	methods: {
 		listCompany,
 		listBankAccount,
