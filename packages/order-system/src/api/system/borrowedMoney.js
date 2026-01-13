@@ -50,3 +50,15 @@ export function getBorrowedMoneyByUuid(uuid) {
 		method: 'GET'
 	});
 }
+
+// 复核从外部借款信息
+export function borrowedMoneyAudit(params) {
+	return request({
+		url: '/system/borrowedmoney/audit',
+		method: 'put',
+		params: {
+			id: params.id,
+			auditStatus: params.auditStatus
+		}
+	});
+}

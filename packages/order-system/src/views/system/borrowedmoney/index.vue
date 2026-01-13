@@ -53,7 +53,17 @@
 			<el-table-column v-if="columns[6].visible" label="抵押担保" align="center" prop="mortgageGuarantee" show-overflow-tooltip />
 			<el-table-column v-if="columns[7].visible" label="打入账户" align="center" prop="acountsName" show-overflow-tooltip />
 			<el-table-column v-if="columns[8].visible" label="打入账号" align="center" prop="bankNo" show-overflow-tooltip />
+			<el-table-column v-if="columns[9] && columns[9].visible" label="已还款金额" align="center" prop="repaidAmount" show-overflow-tooltip />
+			<el-table-column v-if="columns[10] && columns[10].visible" label="未还款金额" align="center" prop="unrepaidAmount" show-overflow-tooltip />
+			<el-table-column v-if="columns[11] && columns[11].visible" label="已还款利息" align="center" prop="repaidInterest" show-overflow-tooltip />
 			<el-table-column label="备注" align="center" prop="comments" show-overflow-tooltip />
+			<el-table-column label="复核状态" align="center" class-name="small-padding fixed-width" width="80" fixed="right">
+				<template slot-scope="scope">
+					<el-tooltip :content="hasAuditPermission ? '点击切换复核状态' : '您没有复核权限'" placement="top">
+						<el-switch v-model="scope.row.auditState" :disabled="!hasAuditPermission" :active-value="'1'" :inactive-value="'0'" active-color="#13ce66" inactive-color="#ff4949" @change="value => hasAuditPermission && handleBorrowedMoneyAudit(scope.row, value)" />
+					</el-tooltip>
+				</template>
+			</el-table-column>
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="200px" fixed="right">
 				<template slot-scope="scope">
 					<el-button size="mini" type="text" @click="checkDetail(scope.row)">查看历史还款</el-button>
@@ -218,7 +228,7 @@
 </template>
 
 <script>
-import { listBorrowedMoney, getBorrowedMoney, delBorrowedMoney, addBorrowedMoney, updateBorrowedMoney } from '@/api/system/borrowedMoney';
+import { listBorrowedMoney, getBorrowedMoney, delBorrowedMoney, addBorrowedMoney, updateBorrowedMoney, borrowedMoneyAudit } from '@/api/system/borrowedMoney';
 import { mapGetters, mapState } from 'vuex';
 import { addRepayment, getRepaymentMoneyNoPage } from '@/api/system/repayment';
 import SearchOption from '@/components/SearchOption.vue';
@@ -230,6 +240,9 @@ import { excludeParams } from '@/api/tool/exclude';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
 import { mixin_bankType } from '../../dashboard/mixins/common/common_bankType';
 import InfoDialog from '@/components/InfoDialog.vue';
+import * as math from 'mathjs';
+import { checkPermi } from '@/utils/permission';
+import { debounce } from '@/utils/trash/utils';
 
 export default {
 	name: 'BorrowedMoney',
@@ -412,7 +425,10 @@ export default {
 				{ key: 5, label: `贷款年限`, visible: true },
 				{ key: 6, label: `抵押担保`, visible: true },
 				{ key: 7, label: `打入账户`, visible: true },
-				{ key: 8, label: `打入账号`, visible: true }
+				{ key: 8, label: `打入账号`, visible: true },
+				{ key: 9, label: `已还款金额`, visible: true },
+				{ key: 10, label: `未还款金额`, visible: true },
+				{ key: 11, label: `已还款利息`, visible: true }
 				/* {key: 9, label: `已还款标记`, visible: true},*/
 			],
 			// 还款弹窗
@@ -463,6 +479,10 @@ export default {
 		this.$store.dispatch('money/getTempBorrowedMoneyList');
 	},
 	computed: {
+		// 检查是否有复核权限（包含admin权限）
+		hasAuditPermission() {
+			return checkPermi(['system:borrowedmoney:audit']);
+		},
 		TableName() {
 			return TableName;
 		},
@@ -605,10 +625,75 @@ export default {
 				this.borrowedMoneyList = response.rows;
 				this.borrowedMoneyList.forEach(item => {
 					item.isEnd = item.isEnd ? '是' : '否';
+
+					// 规范化 auditState
+					if (item.auditState === null || item.auditState === undefined || item.auditState === '0' || item.auditState === 0 || item.auditState === false) {
+						item.auditState = '0';
+					} else if (item.auditState === '1' || item.auditState === 1 || item.auditState === true) {
+						item.auditState = '1';
+					}
+
+					// 计算已还款金额、未还款金额、已还款利息
+					try {
+						const moneyAmount = math.bignumber(item.moneyAmount || 0);
+						const unrepaidAmount = math.bignumber(item.unrepaidAmount || 0);
+						// 已还款金额 = moneyAmount - unrepaidAmount
+						item.repaidAmount = math.format(math.subtract(moneyAmount, unrepaidAmount), { notation: 'fixed', precision: 2 });
+						// 未还款金额 (格式化)
+						item.unrepaidAmount = math.format(unrepaidAmount, { notation: 'fixed', precision: 2 });
+
+						// 已还款利息 = repayments数组中ratio的求和
+						if (item.repayments && Array.isArray(item.repayments)) {
+							const totalInterest = item.repayments.reduce((sum, repayment) => {
+								return math.add(sum, math.bignumber(repayment.ratio || 0));
+							}, math.bignumber(0));
+							item.repaidInterest = math.format(totalInterest, { notation: 'fixed', precision: 2 });
+						} else {
+							item.repaidInterest = '0.00';
+						}
+					} catch (e) {
+						console.error('Calculation error:', e);
+						item.repaidAmount = '0.00';
+						item.repaidInterest = '0.00';
+					}
 				});
 				this.total = response.total;
 				this.loading = false;
 			});
+		},
+		// 复核操作
+		handleBorrowedMoneyAudit(row, e) {
+			// 检查是否有权限
+			if (!this.hasAuditPermission) {
+				this.$message({
+					type: 'warning',
+					message: '您没有复核权限！'
+				});
+				// 还原开关状态
+				row.auditState = e === '1' ? '0' : '1';
+				return;
+			}
+
+			const debouncedBorrowedMoneyAudit = debounce(function (row, auditStatus) {
+				borrowedMoneyAudit({ id: row.id, auditStatus })
+					.then(() => {
+						const message = auditStatus === '1' ? '复核成功!' : '取消复核!';
+						this.$message({
+							type: 'success',
+							message: message
+						});
+						this.getList();
+					})
+					.catch(() => {
+						// 如果API调用失败，还原开关状态
+						row.auditState = auditStatus === '1' ? '0' : '1';
+					});
+			}, 1000);
+
+			// 更新视图 (v-model already updated it, but just to be safe or if we want to manually control it)
+			// row.auditState = e;
+			// 调用防抖后的函数，传递最新的 row 和 auditStatus
+			debouncedBorrowedMoneyAudit.call(this, row, e);
 		},
 		// 取消按钮
 		cancel() {
