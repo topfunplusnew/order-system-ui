@@ -53,7 +53,17 @@
 			<el-table-column v-if="columns[6].visible" label="抵押担保" align="center" prop="mortgageGuarantee" show-overflow-tooltip />
 			<el-table-column v-if="columns[7].visible" label="打入账户" align="center" prop="acountsName" show-overflow-tooltip />
 			<el-table-column v-if="columns[8].visible" label="打入账号" align="center" prop="bankNo" show-overflow-tooltip />
+			<el-table-column v-if="columns[9].visible" label="已还款金额" align="center" prop="repaidAmount" show-overflow-tooltip />
+			<el-table-column v-if="columns[10].visible" label="未还款金额" align="center" prop="unrepaidAmount" show-overflow-tooltip />
+			<el-table-column v-if="columns[11].visible" label="已还款利息" align="center" prop="repaidInterest" show-overflow-tooltip />
 			<el-table-column label="备注" align="center" prop="comments" show-overflow-tooltip />
+			<el-table-column label="复核" align="center" class-name="small-padding fixed-width" width="80" fixed="right">
+				<template slot-scope="scope">
+					<el-tooltip :content="hasAuditPermission ? '点击切换复核状态' : '您没有复核权限'" placement="top">
+						<el-switch v-model="scope.row.auditState" :disabled="!hasAuditPermission" :active-value="'1'" :inactive-value="'0'" active-color="#13ce66" inactive-color="#ff4949" @change="value => hasAuditPermission && handleBorrowedMoneyAudit(scope.row, value)" />
+					</el-tooltip>
+				</template>
+			</el-table-column>
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="200px" fixed="right">
 				<template slot-scope="scope">
 					<el-button size="mini" type="text" @click="checkDetail(scope.row)">查看历史还款</el-button>
@@ -231,10 +241,15 @@ import { mixin_printHTML } from '../../dashboard/mixins/print';
 import { mixin_bankType } from '../../dashboard/mixins/common/common_bankType';
 import InfoDialog from '@/components/InfoDialog.vue';
 
+import { checkPermi } from '@/utils/permission';
+import { mixin_borrowedMoney_audit } from '../../dashboard/mixins/borrowedMoney/borrowedMoney_audit';
+import { create, all } from 'mathjs';
+const math = create(all);
+
 export default {
 	name: 'BorrowedMoney',
 	components: { InfoDialog, SearchOption },
-	mixins: [mixin_printHTML, mixin_bankType],
+	mixins: [mixin_printHTML, mixin_bankType, mixin_borrowedMoney_audit],
 	data() {
 		var validateloanNO = (rule, value, callback) => {
 			if (value === '') {
@@ -412,7 +427,10 @@ export default {
 				{ key: 5, label: `贷款年限`, visible: true },
 				{ key: 6, label: `抵押担保`, visible: true },
 				{ key: 7, label: `打入账户`, visible: true },
-				{ key: 8, label: `打入账号`, visible: true }
+				{ key: 8, label: `打入账号`, visible: true },
+				{ key: 9, label: `已还款金额`, visible: true },
+				{ key: 10, label: `未还款金额`, visible: true },
+				{ key: 11, label: `已还款利息`, visible: true }
 				/* {key: 9, label: `已还款标记`, visible: true},*/
 			],
 			// 还款弹窗
@@ -466,7 +484,10 @@ export default {
 		TableName() {
 			return TableName;
 		},
-		...mapGetters(['tempBorrowedMoneyList'])
+		...mapGetters(['tempBorrowedMoneyList']),
+		hasAuditPermission() {
+			return checkPermi(['system:borrowedmoney:audit']);
+		}
 	},
 	// 展示与隐藏
 	watch: {
@@ -605,6 +626,29 @@ export default {
 				this.borrowedMoneyList = response.rows;
 				this.borrowedMoneyList.forEach(item => {
 					item.isEnd = item.isEnd ? '是' : '否';
+
+					// 计算已还款金额 = 借入金额 - 未还款金额
+					const moneyAmount = math.bignumber(item.moneyAmount || 0);
+					const unrepaidAmount = math.bignumber(item.unrepaidAmount || 0);
+					item.repaidAmount = math.format(math.subtract(moneyAmount, unrepaidAmount), { notation: 'fixed', precision: 2 });
+					// 未还款金额
+					item.unrepaidAmount = math.format(unrepaidAmount, { notation: 'fixed', precision: 2 });
+
+					// 计算已还款利息 = repayment数组中ratio的加权求和
+					let interestSum = math.bignumber(0);
+					if (item.repayments && Array.isArray(item.repayments)) {
+						item.repayments.forEach(rep => {
+							interestSum = math.add(interestSum, math.bignumber(rep.ratio || 0));
+						});
+					}
+					item.repaidInterest = math.format(interestSum, { notation: 'fixed', precision: 2 });
+
+					// 复核状态处理
+					if (item.auditState === null || item.auditState === undefined || item.auditState === '0' || item.auditState === 0) {
+						item.auditState = '0';
+					} else {
+						item.auditState = '1';
+					}
 				});
 				this.total = response.total;
 				this.loading = false;
