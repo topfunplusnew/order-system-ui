@@ -3,6 +3,7 @@ import { getOrderSystemData } from '@/api/system/statement';
 import { parseTime } from '@/utils/ruoyi';
 import { common_excel } from '@/views/dashboard/mixins/common/common_excel';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
+import { add, subtract, number } from 'mathjs';
 
 export default {
 	name: 'OrderSystemData',
@@ -21,7 +22,32 @@ export default {
 				{ key: 5, label: '系统日常费用 (元)', visible: true }
 			],
 
-			orderSystemData: []
+			orderSystemData: {
+				systemGlassRevenueDay: 0,
+				systemGlassRevenueMonth: 0,
+				systemGlassRevenueYear: 0,
+				systemGlassCostDay: 0,
+				systemGlassCostMonth: 0,
+				systemGlassCostYear: 0,
+				systemPayableFreightDay: 0,
+				systemPayableFreightMonth: 0,
+				systemPayableFreightYear: 0,
+				systemInvoiceOutDay: 0,
+				systemInvoiceOutMonth: 0,
+				systemInvoiceOutYear: 0,
+				systemInvoiceInDay: 0,
+				systemInvoiceInMonth: 0,
+				systemInvoiceInYear: 0,
+				systemDailyExpenseDay: 0,
+				systemDailyExpenseMonth: 0,
+				systemDailyExpenseYear: 0,
+				systemActualReceivedRebateDay: 0,
+				systemActualReceivedRebateMonth: 0,
+				systemActualReceivedRebateYear: 0,
+				systemTotalDay: 0,
+				systemTotalMonth: 0,
+				systemTotalYear: 0
+			}
 		};
 	},
 	created() {
@@ -29,23 +55,44 @@ export default {
 	},
 	computed: {
 		dailyProfit() {
-			return this.orderSystemData.systemGlassRevenueDay - this.orderSystemData.systemGlassCostDay - this.orderSystemData.systemPayableFreightDay + this.orderSystemData.systemInvoiceOutDay - this.orderSystemData.systemInvoiceInDay - this.orderSystemData.systemDailyExpenseDay;
+			const d = this.orderSystemData || {};
+			let profit = subtract(number(d?.systemGlassRevenueDay || 0), number(d?.systemGlassCostDay || 0));
+			profit = subtract(profit, number(d?.systemPayableFreightDay || 0));
+			profit = add(profit, number(d?.systemInvoiceOutDay || 0));
+			profit = subtract(profit, number(d?.systemInvoiceInDay || 0));
+			profit = subtract(profit, number(d?.systemDailyExpenseDay || 0));
+			return number(profit);
 		},
 		monthlyProfit() {
-			return this.orderSystemData.systemGlassRevenueMonth - this.orderSystemData.systemGlassCostMonth - this.orderSystemData.systemPayableFreightMonth + this.orderSystemData.systemInvoiceOutMonth - this.orderSystemData.systemInvoiceInMonth - this.orderSystemData.systemDailyExpenseMonth;
+			const d = this.orderSystemData || {};
+			let profit = subtract(number(d?.systemGlassRevenueMonth || 0), number(d?.systemGlassCostMonth || 0));
+			profit = subtract(profit, number(d?.systemPayableFreightMonth || 0));
+			profit = add(profit, number(d?.systemInvoiceOutMonth || 0));
+			profit = subtract(profit, number(d?.systemInvoiceInMonth || 0));
+			profit = subtract(profit, number(d?.systemDailyExpenseMonth || 0));
+			return number(profit);
 		},
 		yearlyProfit() {
-			return this.orderSystemData.systemGlassRevenueYear - this.orderSystemData.systemGlassCostYear - this.orderSystemData.systemPayableFreightYear + this.orderSystemData.systemInvoiceOutYear - this.orderSystemData.systemInvoiceInYear - this.orderSystemData.systemDailyExpenseYear;
+			const d = this.orderSystemData || {};
+			let profit = subtract(number(d?.systemGlassRevenueYear || 0), number(d?.systemGlassCostYear || 0));
+			profit = subtract(profit, number(d?.systemPayableFreightYear || 0));
+			profit = add(profit, number(d?.systemInvoiceOutYear || 0));
+			profit = subtract(profit, number(d?.systemInvoiceInYear || 0));
+			profit = subtract(profit, number(d?.systemDailyExpenseYear || 0));
+			return number(profit);
 		}
 	},
 	methods: {
+		formatMoney(value) {
+			return number(value || 0).toFixed(2);
+		},
 		fetchOrderSystemData() {
 			getOrderSystemData(this.queryParams).then(res => {
 				if (!res.rows && !res.data) {
 					this.$message.error(res.msg || '获取后端数据失败');
 					return;
 				}
-				this.orderSystemData = res.data;
+				this.orderSystemData = res.data || {};
 			});
 		},
 		handleExport() {
@@ -89,45 +136,57 @@ export default {
 					<tbody>
 						<tr>
 							<td>加：订单系统玻璃收入</td>
-							<td>￥ {{ orderSystemData.systemGlassRevenueDay.toFixed(2) }}</td>
-							<td>￥ {{ orderSystemData.systemGlassRevenueMonth.toFixed(2) }}</td>
-							<td>￥ {{ orderSystemData.systemGlassRevenueYear.toFixed(2) }}</td>
+							<td>￥ {{ formatMoney(orderSystemData.systemGlassRevenueDay) }}</td>
+							<td>￥ {{ formatMoney(orderSystemData.systemGlassRevenueMonth) }}</td>
+							<td>￥ {{ formatMoney(orderSystemData.systemGlassRevenueYear) }}</td>
 						</tr>
 						<tr>
 							<td>减：订单系统玻璃成本</td>
-							<td>￥ {{ orderSystemData.systemGlassCostDay.toFixed(2) }}</td>
-							<td>￥ {{ orderSystemData.systemGlassCostMonth.toFixed(2) }}</td>
-							<td>￥ {{ orderSystemData.systemGlassCostYear.toFixed(2) }}</td>
+							<td>￥ {{ formatMoney(orderSystemData.systemGlassCostDay) }}</td>
+							<td>￥ {{ formatMoney(orderSystemData.systemGlassCostMonth) }}</td>
+							<td>￥ {{ formatMoney(orderSystemData.systemGlassCostYear) }}</td>
 						</tr>
 						<tr>
 							<td>减：订单系统应付运费</td>
-							<td>￥ {{ orderSystemData.systemPayableFreightDay.toFixed(2) }}</td>
-							<td>￥ {{ orderSystemData.systemPayableFreightMonth.toFixed(2) }}</td>
-							<td>￥ {{ orderSystemData.systemPayableFreightYear.toFixed(2) }}</td>
+							<td>￥ {{ formatMoney(orderSystemData.systemPayableFreightDay) }}</td>
+							<td>￥ {{ formatMoney(orderSystemData.systemPayableFreightMonth) }}</td>
+							<td>￥ {{ formatMoney(orderSystemData.systemPayableFreightYear) }}</td>
 						</tr>
 						<tr>
 							<td>加：订单系统票点收入</td>
-							<td>￥ {{ orderSystemData.systemInvoiceOutDay.toFixed(2) }}</td>
-							<td>￥ {{ orderSystemData.systemInvoiceOutMonth.toFixed(2) }}</td>
-							<td>￥ {{ orderSystemData.systemInvoiceOutYear.toFixed(2) }}</td>
+							<td>￥ {{ formatMoney(orderSystemData.systemInvoiceOutDay) }}</td>
+							<td>￥ {{ formatMoney(orderSystemData.systemInvoiceOutMonth) }}</td>
+							<td>￥ {{ formatMoney(orderSystemData.systemInvoiceOutYear) }}</td>
 						</tr>
 						<tr>
 							<td>减：订单系统票点成本</td>
-							<td>￥ {{ orderSystemData.systemInvoiceInDay.toFixed(2) }}</td>
-							<td>￥ {{ orderSystemData.systemInvoiceInMonth.toFixed(2) }}</td>
-							<td>￥ {{ orderSystemData.systemInvoiceInYear.toFixed(2) }}</td>
+							<td>￥ {{ formatMoney(orderSystemData.systemInvoiceInDay) }}</td>
+							<td>￥ {{ formatMoney(orderSystemData.systemInvoiceInMonth) }}</td>
+							<td>￥ {{ formatMoney(orderSystemData.systemInvoiceInYear) }}</td>
 						</tr>
 						<tr>
 							<td>减：订单系统管理费用</td>
-							<td>￥ {{ orderSystemData.systemDailyExpenseDay.toFixed(2) }}</td>
-							<td>￥ {{ orderSystemData.systemDailyExpenseMonth.toFixed(2) }}</td>
-							<td>￥ {{ orderSystemData.systemDailyExpenseYear.toFixed(2) }}</td>
+							<td>￥ {{ formatMoney(orderSystemData.systemDailyExpenseDay) }}</td>
+							<td>￥ {{ formatMoney(orderSystemData.systemDailyExpenseMonth) }}</td>
+							<td>￥ {{ formatMoney(orderSystemData.systemDailyExpenseYear) }}</td>
 						</tr>
 						<tr>
 							<td>订单系统利润</td>
-							<td>￥ {{ dailyProfit.toFixed(2) }}</td>
-							<td>￥ {{ monthlyProfit.toFixed(2) }}</td>
-							<td>￥ {{ yearlyProfit.toFixed(2) }}</td>
+							<td>￥ {{ formatMoney(dailyProfit) }}</td>
+							<td>￥ {{ formatMoney(monthlyProfit) }}</td>
+							<td>￥ {{ formatMoney(yearlyProfit) }}</td>
+						</tr>
+						<tr>
+							<td>实收返利金额</td>
+							<td>￥ {{ formatMoney(orderSystemData.systemActualReceivedRebateDay) }}</td>
+							<td>￥ {{ formatMoney(orderSystemData.systemActualReceivedRebateMonth) }}</td>
+							<td>￥ {{ formatMoney(orderSystemData.systemActualReceivedRebateYear) }}</td>
+						</tr>
+						<tr>
+							<td>合计</td>
+							<td>￥ {{ formatMoney(orderSystemData.systemTotalDay) }}</td>
+							<td>￥ {{ formatMoney(orderSystemData.systemTotalMonth) }}</td>
+							<td>￥ {{ formatMoney(orderSystemData.systemTotalYear) }}</td>
 						</tr>
 					</tbody>
 				</table>
