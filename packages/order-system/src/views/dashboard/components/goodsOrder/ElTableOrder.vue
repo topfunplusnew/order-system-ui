@@ -1093,7 +1093,7 @@ export default {
 <template>
 	<div>
 		<!--    这是框架自带的搜索模组，封装成了组件并且放在与index.vue同级目录下-->
-		<QuerySearchBar @updateQuery="handleGetQueryParamsDebounced" :is-adjust="isAdjustOrder" />
+		<QuerySearchBar @updateQuery="handleGetQueryParamsDebounced" :is-adjust="isAdjustOrder" :current-page-num="queryParams.pageNum" :current-page-size="queryParams.pageSize" />
 		<br />
 		<!--    订单修改记录查看-->
 		<div>

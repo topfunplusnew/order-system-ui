@@ -123,6 +123,14 @@ export default {
 		isAdjust: {
 			type: Boolean,
 			default: false
+		},
+		currentPageNum: {
+			type: Number,
+			default: 1
+		},
+		currentPageSize: {
+			type: Number,
+			default: 50
 		}
 	},
 	data() {
@@ -280,8 +288,9 @@ export default {
 			}
 		},
 		handleQuery() {
-			this.queryParams.pageNum = 1;
-			this.queryParams.pageSize = 50;
+			// 保留当前分页参数，不重置
+			this.queryParams.pageNum = this.currentPageNum;
+			this.queryParams.pageSize = this.currentPageSize;
 			if (Array.isArray(this.dateRange) && this.dateRange.length === 2) {
 				this.queryParams.orderDateStart = this.dateRange[0];
 				this.queryParams.orderDateEnd = this.dateRange[1];
@@ -294,13 +303,17 @@ export default {
 			this.$emit('updateQuery', queryData);
 		},
 		resetQuery() {
+			// 保存当前分页参数
+			const currentPageNum = this.currentPageNum;
+			const currentPageSize = this.currentPageSize;
+
 			if (this.$refs.queryForm) this.$refs.queryForm.resetFields();
 			Object.assign(this.queryParams, {
 				id: '',
 				orderDateStart: null,
 				orderDateEnd: null,
-				pageNum: 1,
-				pageSize: 50,
+				pageNum: currentPageNum,
+				pageSize: currentPageSize,
 				customer: '',
 				saleManager: '',
 				landDriverName: '',
