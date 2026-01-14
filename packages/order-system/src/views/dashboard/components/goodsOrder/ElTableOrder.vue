@@ -2418,17 +2418,26 @@ export default {
 }
 
 // 调整单行高亮：需要作用到 td（ElementUI 背景绘制在单元格上）
-::v-deep tr.adjust-row-1 > td {
-	background: #f0f0f0 !important;
+// 同时覆盖：主表体 / 左固定列 / 右固定列（它们是不同的 wrapper）
+::v-deep .el-table__body-wrapper tr.adjust-row-1 > td,
+::v-deep .el-table__fixed-body-wrapper tr.adjust-row-1 > td,
+::v-deep .el-table__fixed-right .el-table__fixed-body-wrapper tr.adjust-row-1 > td {
+	background-color: #e9e9e9 !important;
 }
-::v-deep tr.adjust-row-2 > td {
-	background: #f0f9eb !important;
+::v-deep .el-table__body-wrapper tr.adjust-row-2 > td,
+::v-deep .el-table__fixed-body-wrapper tr.adjust-row-2 > td,
+::v-deep .el-table__fixed-right .el-table__fixed-body-wrapper tr.adjust-row-2 > td {
+	background-color: #e1f3d8 !important;
 }
-::v-deep tr.adjust-row-3 > td {
-	background: #fdf6ec !important;
+::v-deep .el-table__body-wrapper tr.adjust-row-3 > td,
+::v-deep .el-table__fixed-body-wrapper tr.adjust-row-3 > td,
+::v-deep .el-table__fixed-right .el-table__fixed-body-wrapper tr.adjust-row-3 > td {
+	background-color: #faecd8 !important;
 }
-::v-deep tr.adjust-row-gt3 > td {
-	background: #ffcccc !important;
+::v-deep .el-table__body-wrapper tr.adjust-row-gt3 > td,
+::v-deep .el-table__fixed-body-wrapper tr.adjust-row-gt3 > td,
+::v-deep .el-table__fixed-right .el-table__fixed-body-wrapper tr.adjust-row-gt3 > td {
+	background-color: #fbc4c4 !important;
 }
 
 @keyframes fadeInRow {
