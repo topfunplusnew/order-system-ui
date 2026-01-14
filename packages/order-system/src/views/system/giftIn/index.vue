@@ -55,7 +55,7 @@
 		</el-row>
 
 		<!-- 数据表格 -->
-		<el-table id="printBox" v-loading="loading" v-horizontal-scroll="'always'" border :data="giftInList" size="mini" :cell-style="() => ({ padding: '1px' })" @selection-change="handleSelectionChange">
+		<el-table id="printBox" v-loading="loading" v-horizontal-scroll="'always'" border :data="giftInList" size="mini" :cell-style="() => ({ padding: '1px' })" @selection-change="handleSelectionChange" :summary-method="getQuantitySummaries" show-summary>
 			<el-table-column type="selection" width="55" align="center" />
 
 			<el-table-column v-if="columns[0].visible" label="日期" align="center" prop="inDate" width="160" show-overflow-tooltip>
@@ -420,6 +420,7 @@ export default {
 					{ required: false, message: '请输入单价', trigger: 'blur' },
 					{ pattern: /^\d+(\.\d{1,2})?$/, message: '请输入有效的金额格式', trigger: 'blur' }
 				],
+
 				handler: [
 					{ required: true, message: '请输入经办人', trigger: 'blur' },
 					{ max: 20, message: '经办人长度不能超过20个字符', trigger: 'blur' }
@@ -486,6 +487,37 @@ export default {
 		window.removeEventListener('resize', this.updateDialogWidth);
 	},
 	methods: {
+		getQuantitySummaries(param) {
+			const { columns, data } = param;
+			const sums = [];
+
+			columns.forEach((column, index) => {
+				if (index === 0) {
+					sums[index] = '合计';
+					return;
+				}
+
+				// 只对数量列进行合计
+				if (column.property === 'quantity') {
+					const values = data.map(item => Number(item.quantity || 0));
+					sums[index] = values.reduce((prev, curr) => {
+						const value = Number(curr);
+						if (!isNaN(value)) {
+							return prev + curr;
+						} else {
+							return prev;
+						}
+					}, 0);
+				}
+				// 其他列显示空白
+				else {
+					sums[index] = '';
+				}
+			});
+
+			return sums;
+		},
+
 		// 刷新出库详情视图
 		refreshOutDetailView() {
 			// 重新获取当前显示的详情数据
@@ -538,7 +570,7 @@ export default {
 
 				// 自动计算金额
 				inList = inList.map(item => {
-					if (!item.estimatedValue) {
+					if (!item.estimatedValue && item.quantity && item.unitPrice) {
 						const qty = Number(item.quantity) || 0;
 						const price = Number(item.unitPrice) || 0;
 						item.estimatedValue = Number((qty * price).toFixed(2));
@@ -808,7 +840,8 @@ export default {
 			if (quantity > 0 && unitPrice > 0) {
 				const result = multiply(quantity, unitPrice);
 				this.$set(this.form, 'estimatedValue', round(result, 2).toFixed(2));
-			} else if (!this.form.estimatedValue || this.form.estimatedValue === '' || this.form.estimatedValue === 0 || this.form.estimatedValue === '0.00') {
+			} else {
+				// 如果单价或数量为空或为0，不自动计算金额
 				this.$set(this.form, 'estimatedValue', '');
 			}
 		},
@@ -962,7 +995,7 @@ export default {
 					delete submitData.companyName;
 
 					// 确保必填字段符合要求
-					if (!submitData.inDate || !submitData.inMethod || !submitData.itemName || !submitData.quantity || submitData.estimatedValue === null || submitData.estimatedValue === undefined || !submitData.handler) {
+					if (!submitData.inDate || !submitData.inMethod || !submitData.itemName || !submitData.quantity || !submitData.handler) {
 						this.$message.error('请填写所有必填字段');
 						return;
 					}
@@ -989,8 +1022,8 @@ export default {
 						const result = multiply(Number(submitData.quantity), Number(submitData.unitPrice));
 						submitData.estimatedValue = round(result, 2);
 					} else {
-						this.$message.error('请输入数量和单价以计算金额');
-						return;
+						// 如果没有单价或数量，将金额设置为null或空
+						submitData.estimatedValue = null;
 					}
 
 					// 字段长度限制

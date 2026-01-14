@@ -42,7 +42,7 @@
 		</el-row>
 
 		<!-- 表格 -->
-		<el-table id="printBox" v-loading="loading" :data="giftStockList" border size="mini" v-horizontal-scroll="'always'" :cell-style="{ padding: '.5px' }">
+		<el-table id="printBox" v-loading="loading" :data="giftStockList" border size="mini" v-horizontal-scroll="'always'" :cell-style="{ padding: '.5px' }" :summary-method="getQuantitySummaries" show-summary>
 			<el-table-column v-if="columns[0] && columns[0].visible" label="序号" type="index" width="60" align="center" />
 
 			<el-table-column v-if="columns[1] && columns[1].visible" label="日期" prop="inDate" width="120" align="center">
@@ -127,6 +127,37 @@ export default {
 		this.getList();
 	},
 	methods: {
+		getQuantitySummaries(param) {
+			const { columns, data } = param;
+			const sums = [];
+
+			columns.forEach((column, index) => {
+				if (index === 0) {
+					sums[index] = '合计';
+					return;
+				}
+
+				// 只对数量列进行合计
+				if (column.property === 'remainingQuantity') {
+					const values = data.map(item => Number(item.remainingQuantity || 0));
+					sums[index] = values.reduce((prev, curr) => {
+						const value = Number(curr);
+						if (!isNaN(value)) {
+							return prev + curr;
+						} else {
+							return prev;
+						}
+					}, 0);
+				}
+				// 其他列显示空白
+				else {
+					sums[index] = '';
+				}
+			});
+
+			return sums;
+		},
+
 		parseTime,
 		getTodayDate() {
 			const d = new Date();

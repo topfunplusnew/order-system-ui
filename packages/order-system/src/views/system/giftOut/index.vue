@@ -12,6 +12,9 @@
 					</el-select>
 				</el-tooltip>
 			</el-form-item>
+			<el-form-item label="物品名称" prop="itemName">
+				<el-input v-model="queryParams.itemName" placeholder="请输入物品名称" clearable @keyup.enter.native="handleQuery" />
+			</el-form-item>
 
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -40,19 +43,7 @@
 			</right-toolbar>
 		</el-row>
 
-		<el-table
-			v-loading="loading"
-			v-horizontal-scroll="'always'"
-			:data="giftOutList"
-			border
-			size="mini"
-			:cell-style="
-				() => {
-					return { padding: '1px' };
-				}
-			"
-			@selection-change="handleSelectionChange"
-		>
+		<el-table v-loading="loading" v-horizontal-scroll="'always'" :data="giftOutList" border size="mini" :cell-style="() => ({ padding: '1px' })" @selection-change="handleSelectionChange" :show-summary="true" :summary-method="getSummaries">
 			<el-table-column type="selection" width="55" align="center" />
 
 			<el-table-column v-if="columns[0].visible" label="日期" align="center" prop="outDate" width="120" show-overflow-tooltip>
@@ -531,6 +522,21 @@ export default {
 		window.removeEventListener('resize', this.updateDialogWidth);
 	},
 	methods: {
+		getSummaries(param) {
+			const { columns, data } = param;
+			const sums = [];
+			columns.forEach((column, index) => {
+				if (index === 0) {
+					sums[index] = '合计';
+				} else if (column.property === 'quantity') {
+					const total = data.reduce((sum, item) => sum + Number(item.quantity || 0), 0);
+					sums[index] = total.toFixed(0); // 整数格式
+				} else {
+					sums[index] = '';
+				}
+			});
+			return sums;
+		},
 		// 删除再入库详情记录
 		async handleDeleteReInDetail(row) {
 			// 验证 row 和 row.id 是否存在
