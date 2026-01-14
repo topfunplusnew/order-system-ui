@@ -8,16 +8,16 @@ export default {
 	name: 'Fleetfreightsummary',
 	mixins: [mixin_printHTML],
 	data() {
+		const today = parseTime(new Date(), '{y}-{m}-{d}');
+		const thirtyDaysAgo = parseTime(new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000), '{y}-{m}-{d}');
 		return {
 			queryParams: {
-				// beginTime: parseTime(
-				// 	new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000),
-				// 	'{y}-{m}-{d}'
-				// ),
-				endTime: parseTime(new Date(), '{y}-{m}-{d}'),
+				beginTime: thirtyDaysAgo,
+				endTime: today,
 				pageNum: 1,
 				pageSize: 50
 			},
+			dateRange: [thirtyDaysAgo, today],
 			loading: '',
 			// 筛选栏目
 			columns: [
@@ -55,6 +55,14 @@ export default {
 		},
 		// 时间查询
 		handleQuery() {
+			// 处理时间范围
+			if (Array.isArray(this.dateRange) && this.dateRange.length === 2) {
+				this.queryParams.beginTime = this.dateRange[0];
+				this.queryParams.endTime = this.dateRange[1];
+			} else {
+				this.queryParams.beginTime = null;
+				this.queryParams.endTime = null;
+			}
 			this.getList();
 		},
 		refresh() {
@@ -62,11 +70,11 @@ export default {
 			this.handleQuery();
 		},
 		reset() {
-			// this.queryParams.beginTime = parseTime(
-			// 	new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000),
-			// 	'{y}-{m}-{d}'
-			// );
-			this.queryParams.endTime = parseTime(new Date(), '{y}-{m}-{d}');
+			const today = parseTime(new Date(), '{y}-{m}-{d}');
+			const thirtyDaysAgo = parseTime(new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000), '{y}-{m}-{d}');
+			this.dateRange = [thirtyDaysAgo, today];
+			this.queryParams.beginTime = thirtyDaysAgo;
+			this.queryParams.endTime = today;
 			this.queryParams.pageNum = 1;
 			this.queryParams.pageSize = 50;
 			this.handleQuery();
@@ -100,17 +108,8 @@ export default {
 			<!--    时间范围搜索行-->
 			<el-row>
 				<el-form id="top-search-form-item" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
-					<!--					<el-form-item label="时间" prop="companyName">-->
-					<!--						<el-date-picker-->
-					<!--							v-model="queryParams.beginTime"-->
-					<!--							type="date"-->
-					<!--							size="mini"-->
-					<!--							value-format="yyyy-MM-dd"-->
-					<!--							placeholder="选择日期"-->
-					<!--						></el-date-picker>-->
-					<!--					</el-form-item>-->
-					<el-form-item>
-						<el-date-picker v-model="queryParams.endTime" type="date" size="mini" value-format="yyyy-MM-dd" placeholder="选择日期"></el-date-picker>
+					<el-form-item label="时间范围">
+						<el-date-picker v-model="dateRange" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" size="mini" clearable></el-date-picker>
 					</el-form-item>
 					<el-form-item>
 						<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
