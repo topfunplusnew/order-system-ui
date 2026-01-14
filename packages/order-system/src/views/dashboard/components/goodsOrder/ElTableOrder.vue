@@ -378,6 +378,17 @@ export default {
 			}
 			return {};
 		},
+		// 调整单行高亮：ElementUI 的背景通常绘制在 td 上，使用 row-class-name + CSS 更稳定
+		getAdjustRowClassName({ row }) {
+			if (!this.isAdjustOrder) return '';
+			const adjust = Number(row && row.isAdjust);
+			if (!adjust) return '';
+			if (adjust < 0) return 'adjust-row-negative';
+			if (adjust === 1) return 'adjust-row-1';
+			if (adjust === 2) return 'adjust-row-2';
+			if (adjust === 3) return 'adjust-row-3';
+			return 'adjust-row-gt3';
+		},
 		// 获取客户开票列表
 		async getCustomerInvoiceList(orderId) {
 			this.customerInvoiceListLoading = true;
@@ -1557,7 +1568,7 @@ export default {
 			style="width: 100%"
 			:data="goodsOrderList"
 			tooltip-effect="light"
-			:row-style="rowStyle"
+			:row-class-name="getAdjustRowClassName"
 			show-summary
 			:summary-method="getSummary"
 			@header-dragend="onHeaderDragend"
@@ -2404,6 +2415,20 @@ export default {
 .fade-enter,
 .fade-leave-to {
 	opacity: 0;
+}
+
+// 调整单行高亮：需要作用到 td（ElementUI 背景绘制在单元格上）
+::v-deep tr.adjust-row-1 > td {
+	background: #f0f0f0 !important;
+}
+::v-deep tr.adjust-row-2 > td {
+	background: #f0f9eb !important;
+}
+::v-deep tr.adjust-row-3 > td {
+	background: #fdf6ec !important;
+}
+::v-deep tr.adjust-row-gt3 > td {
+	background: #ffcccc !important;
 }
 
 @keyframes fadeInRow {
