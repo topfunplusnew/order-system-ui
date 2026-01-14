@@ -1051,8 +1051,6 @@ export default {
 		},
 		/** 搜索按钮操作 */
 		handleQuery() {
-			this.queryParams.pageNum = 1;
-
 			// 处理支付时间范围
 			if (this.queryParams.paymentDateRange && Array.isArray(this.queryParams.paymentDateRange) && this.queryParams.paymentDateRange.length === 2) {
 				// 时间范围选择器返回的是数组 [startDate, endDate]，直接使用日期字符串，精确到天
@@ -1068,18 +1066,22 @@ export default {
 		},
 		/** 重置按钮操作 */
 		resetQuery() {
-			// 1. 清空运费ID和银行卡号过滤状态
+			// 1. 保存当前分页参数
+			const currentPageNum = this.queryParams.pageNum;
+			const currentPageSize = this.queryParams.pageSize;
+
+			// 2. 清空运费ID和银行卡号过滤状态
 			this.currentFreightId = null;
 			this.currentFreightIds = [];
 			this.currentOtherBankNo = null;
 
-			// 2. 重置表单
+			// 3. 重置表单
 			this.resetForm('queryForm');
 
-			// 3. 重置查询参数
+			// 4. 重置查询参数（保留分页参数）
 			this.queryParams = {
-				pageNum: 1,
-				pageSize: 20,
+				pageNum: currentPageNum,
+				pageSize: currentPageSize,
 				ordersNo: null,
 				freightType: null,
 				moneyAmount: null,
@@ -1109,10 +1111,10 @@ export default {
 				}
 			};
 
-			// 4. 重置日期范围
+			// 5. 重置日期范围
 			this.dateRange = [];
 
-			// 5. 清除路由中的 freightId 和 otherBankNo 参数
+			// 6. 清除路由中的 freightId 和 otherBankNo 参数
 			if (this.$router && (this.$route.query.freightId || this.$route.query.otherBankNo)) {
 				const newQuery = { ...this.$route.query };
 				delete newQuery.freightId;
@@ -1123,7 +1125,7 @@ export default {
 				});
 			}
 
-			// 6. 重新查询
+			// 7. 重新查询
 			this.$nextTick(() => {
 				this.getList();
 			});

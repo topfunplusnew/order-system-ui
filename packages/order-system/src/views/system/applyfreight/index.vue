@@ -162,7 +162,9 @@ export default {
 		async handleQuery() {
 			const nextListParams = JSON.parse(JSON.stringify(this.queryParams || {}));
 			nextListParams.params = nextListParams.params || {};
-			nextListParams.pageNum = 1;
+			// 保留当前的分页参数，避免搜索时重置分页
+			nextListParams.pageNum = this.listParams.pageNum;
+			nextListParams.pageSize = this.listParams.pageSize;
 
 			// 处理一下时间 客户要求开始时间和结束时间都是同一天 前端拼接零点和二十四点
 			if (nextListParams.startDate && nextListParams.endDate) {
@@ -189,12 +191,23 @@ export default {
 			this.applyQueryParams(this.listParams, nextListParams);
 			await this.getList();
 			// 搜索完成后重置表单展示内容（不影响当前列表的查询条件）
-			this.applyQueryParams(this.queryParams, createDefaultQueryParams());
+			const defaults = createDefaultQueryParams();
+			defaults.pageSize = this.listParams.pageSize; // 保留当前的分页大小
+			this.applyQueryParams(this.queryParams, defaults);
 		},
 		resetQuery() {
+			// 保存当前分页参数
+			const currentPageNum = this.listParams.pageNum;
+			const currentPageSize = this.listParams.pageSize;
+
 			const defaults = createDefaultQueryParams();
 			this.applyQueryParams(this.queryParams, defaults);
+
+			// 重置 listParams，但保留分页参数
 			this.applyQueryParams(this.listParams, defaults);
+			this.listParams.pageNum = currentPageNum;
+			this.listParams.pageSize = currentPageSize;
+
 			this.getList();
 		},
 		viewAttachments(receiveProof) {
