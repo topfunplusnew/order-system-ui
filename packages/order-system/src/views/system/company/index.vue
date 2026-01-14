@@ -8,6 +8,9 @@
 				<el-form-item label="联系人" prop="relationName">
 					<el-input v-model="queryParams.relationName" placeholder="请输入联系人名称" clearable @keyup.enter.native="handleQuery" @input="handleInputTrim($event, 'queryParams', 'relationName')" />
 				</el-form-item>
+				<el-form-item label="销售经理" prop="salesManager">
+					<el-input v-model="queryParams.salesManager" placeholder="请输入销售经理名称" clearable @keyup.enter.native="handleQuery" @input="handleInputTrim($event, 'queryParams', 'salesManager')" />
+				</el-form-item>
 				<el-form-item>
 					<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
 				</el-form-item>
