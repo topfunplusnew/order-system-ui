@@ -54,7 +54,7 @@ export function getBorrowedMoneyByUuid(uuid) {
 // 复核从外部借款信息
 export function borrowedMoneyAudit(params) {
 	return request({
-		url: '/system/borrowedmoney/audit',
+		url: '/system/borrowedMoney/audit',
 		method: 'put',
 		params: {
 			id: params.id,
