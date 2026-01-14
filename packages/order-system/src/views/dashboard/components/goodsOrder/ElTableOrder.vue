@@ -36,6 +36,46 @@ export default {
 	computed: {
 		PUBLIC_DICT_TYPE() {
 			return PUBLIC_DICT_TYPE;
+		},
+		// 调整单：使用 el-table + el-table-column（订单模式不变）
+		adjustTableColumns() {
+			const dataCols = [
+				{ idx: 0, label: 'ID', prop: 'id', fixed: 'left' },
+				{ idx: 1, label: '日期', prop: 'orderDate', fixed: 'left', width: 200 },
+				{ idx: 2, label: '客户', prop: 'customer', fixed: 'left', width: 196 },
+				{ idx: 3, label: '供应商/仓库', prop: 'supplierNames', fixed: 'left', width: 280 },
+				{ idx: 4, label: '陆运车牌', prop: 'landCarNo', fixed: 'left', width: 112 },
+				{ idx: 5, label: '审核', prop: 'checkState', width: 112 },
+				{ idx: 6, label: '车队', prop: 'fleet', width: 112 },
+				{ idx: 7, label: '陆运电话', prop: 'landDriverTel', width: 176 },
+				{ idx: 8, label: '司机', prop: 'landDriverName', width: 84 },
+				{ idx: 9, label: '海运柜号', prop: 'seaCarNo', width: 176 },
+				{ idx: 10, label: '海运电话', prop: 'seaDriverTel', width: 176 },
+				{ idx: 11, label: '海运公司', prop: 'seaDriverName', width: 168 },
+				{ idx: 12, label: '总货款', prop: 'allPayments', width: 144 },
+				{ idx: 13, label: '总吨位', prop: 'allTonnage', width: 80 },
+				{ idx: 14, label: '出厂货款', prop: 'allPaymentFactory', width: 144 },
+				{ idx: 15, label: '陆运费', prop: 'landFreight', width: 112 },
+				{ idx: 16, label: '海运费', prop: 'seaFreight', width: 112 },
+				{ idx: 17, label: '含税利润', prop: 'allProfit', width: 112 },
+				{ idx: 18, label: '不含税利润', prop: 'allProfitNoTax', width: 112 },
+				{ idx: 19, label: '销售经理', prop: 'saleManager', width: 112 },
+				{ idx: 20, label: '录入员', prop: 'userName', width: 84 },
+				{ idx: 21, label: '备注', prop: 'comments', width: 140 },
+				{ idx: 22, label: '出库单', prop: 'path', width: 84 },
+				{ idx: 23, label: '收到条附件', prop: 'receiveProof' },
+				{ idx: 24, label: '可否编辑', prop: 'isedit', width: 112 },
+				{ idx: 25, label: '客户含税', prop: 'customerTaxIncluded', width: 112 },
+				{ idx: 26, label: '出厂含税', prop: 'supplierTaxIncluded', width: 112 },
+				{ idx: 27, label: '审核人', prop: 'checkUserName', width: 112 }
+			];
+
+			return [
+				{ idx: 'index', label: '序号', fixed: 'left', width: 50, align: 'center' },
+				{ idx: 'rowActions', label: '行操作', fixed: 'left', width: 100, align: 'center' },
+				...dataCols.filter(col => this.columns[col.idx] && this.columns[col.idx].visible),
+				{ idx: 'orderActions', label: '订单操作', fixed: 'right', width: 250, align: 'center' }
+			];
 		}
 	},
 	components: {
@@ -1082,7 +1122,7 @@ export default {
 		</div>
 
 		<!--    订单表格  -->
-		<virtual-scroll ref="virtualScroll" :data="goodsOrderList" :item-size="30" key-prop="id" @change="orderDataAppendChange">
+		<virtual-scroll v-if="!isAdjustOrder" ref="virtualScroll" :data="goodsOrderList" :item-size="30" key-prop="id" @change="orderDataAppendChange">
 			<template slot-scope="{ headerCellFixedStyle, cellFixedStyle }">
 				<el-table
 					border
@@ -1505,6 +1545,145 @@ export default {
 				</el-table>
 			</template>
 		</virtual-scroll>
+		<el-table
+			v-else
+			border
+			ref="orderTable"
+			id="printBox"
+			:row-key="row => row.id"
+			v-loading="loading"
+			size="mini"
+			height="650"
+			style="width: 100%"
+			:data="goodsOrderList"
+			tooltip-effect="light"
+			:row-style="rowStyle"
+			show-summary
+			:summary-method="getSummary"
+			@header-dragend="onHeaderDragend"
+		>
+			<el-table-column v-for="col in adjustTableColumns" :key="col.idx" :label="col.label" :prop="col.prop" :width="col.width" :fixed="col.fixed" :align="col.align || 'center'" show-overflow-tooltip>
+				<template slot-scope="scope">
+					<!-- 序号 -->
+					<template v-if="col.idx === 'index'">
+						{{ scope.row && scope.row._rowIndex !== undefined && scope.row._rowIndex !== null ? scope.row._rowIndex : scope.$index + 1 }}
+					</template>
+					<!-- 行操作 -->
+					<template v-else-if="col.idx === 'rowActions'">
+						<el-dropdown size="mini" trigger="hover" @command="command => handleCommand(command, scope.row)">
+							<el-button size="mini" type="text" @click.stop="checkOrderItemInfo(scope.row)">
+								<span v-once>查看</span>
+								<i class="el-icon-arrow-down el-icon--right" />
+							</el-button>
+							<el-dropdown-menu slot="dropdown">
+								<el-dropdown-item v-hasPermi="['system:goodsorder:edit']" command="handleUpdate" :disabled="!scope.row.isedit || scope.row.isAdjust < 0 || isOrderExpired(scope.row.addtime)">
+									<span :title="isOrderExpired(scope.row.addtime) ? '订单已超过7天，无法修改' : ''">修改</span>
+								</el-dropdown-item>
+								<el-dropdown-item v-hasPermi="['system:goodsorder:remove']" command="handleDelete">
+									<span>删除</span>
+								</el-dropdown-item>
+								<el-dropdown-item :disabled="scope.row.historyCount === 0" divided command="checkHistoryList">
+									<span>修改记录</span>
+								</el-dropdown-item>
+							</el-dropdown-menu>
+						</el-dropdown>
+					</template>
+					<!-- 供应商/仓库 -->
+					<template v-else-if="col.idx === 3">
+						<div class="supplier-warehouse-container">
+							<span v-if="(scope.row._uniqueSuppliers || []).length === 0 && (scope.row._uniqueWarehouses || []).length === 0" class="empty-item">-</span>
+							<span v-else>
+								<span v-for="supplier in scope.row._uniqueSuppliers || []" :key="`supplier-${supplier.supplierID}`" class="supplier-name" @click="updateOrderItemVisibleSupplierInvoice(scope.row, supplier.supplierID)">
+									{{ supplier.supplier }}
+								</span>
+								<span v-for="warehouse in scope.row._uniqueWarehouses || []" :key="`warehouse-${warehouse.storeHouseID}`" class="warehouse-name">
+									{{ warehouse.storeHouseName }}
+								</span>
+							</span>
+						</div>
+					</template>
+					<!-- 审核 -->
+					<template v-else-if="col.idx === 5">
+						<el-row v-if="scope.row.checkState === '已审核'">
+							<StateTag :state-title="scope.row.checkState" :state-mapper="{ 2: '已审核' }" @click.native.stop="hasPermission(['finance', 'admin']) && handleReCheck(scope.row)" :style="{ cursor: hasPermission(['finance', 'admin']) ? 'pointer' : 'default' }" />
+						</el-row>
+						<el-row v-else>
+							<el-button v-if="hasPermission(['finance', 'admin'])" type="text" size="mini" @click.stop="handleCheck(scope.row)">
+								<span>审核</span>
+							</el-button>
+							<span v-else style="color: #909399; font-size: 12px">待审核</span>
+						</el-row>
+					</template>
+					<!-- 出库单 -->
+					<template v-else-if="col.idx === 22">
+						<div v-if="Array.isArray(scope.row.attachmentList)">
+							<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'path'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getGoodsOrder, updateGoodsOrder)" />
+						</div>
+						<el-tag v-else type="danger">加载错误</el-tag>
+					</template>
+					<!-- 收到条附件 -->
+					<template v-else-if="col.idx === 23">
+						<div v-if="Array.isArray(scope.row.attachmentList)">
+							<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'receiveProof'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getGoodsOrder, updateGoodsOrder)" />
+						</div>
+						<el-tag v-else type="danger">加载错误</el-tag>
+					</template>
+					<!-- 可否编辑 -->
+					<template v-else-if="col.idx === 24">
+						<StateTag :state-title="scope.row.isedit === 0 ? '否' : '是'" :state-mapper="{ 0: '否', 2: '是' }" />
+					</template>
+					<!-- 客户含税 -->
+					<template v-else-if="col.idx === 25">
+						<template v-if="hasInvoice(scope.row, PUBLIC_DICT_TYPE.CUSTOMER)">
+							<el-button type="text" size="mini" @click="showCustomerInvoiceList(scope.row)">{{ scope.row.customerInvoiceStatus }}</el-button>
+						</template>
+						<StateTag v-else :state-title="'否'" :state-mapper="{ 3: '否' }" />
+					</template>
+					<!-- 出厂含税 -->
+					<template v-else-if="col.idx === 26">
+						<template v-if="hasInvoice(scope.row, PUBLIC_DICT_TYPE.SUPPLIER)">
+							<el-button type="text" size="mini" @click="showSupplierInvoiceList(scope.row)">{{ scope.row.supplierInvoiceStatus }}</el-button>
+						</template>
+						<StateTag v-else :state-title="'否'" :state-mapper="{ 3: '否' }" />
+					</template>
+					<!-- 订单操作 -->
+					<template v-else-if="col.idx === 'orderActions'">
+						<div>
+							<el-button size="mini" :disabled="scope.row.isAdjusted !== 1" v-if="!isAdjustOrder" @click="handleCheckAdjust(scope.row)">查看调整单</el-button>
+							<el-button size="mini" :disabled="scope.row.isAdjusted === 1" @click="handleOrderItemInfo(scope.row)">调整单</el-button>
+							<el-button v-if="isAdjustOrder" size="mini" @click="handleCheckPrevious(scope.row)">查看原单据</el-button>
+							<el-button size="mini" @click="handleOrder1(scope.row)">发货单1</el-button>
+							<el-dropdown size="mini" trigger="click">
+								<el-button type="text" size="mini">
+									<span v-once>发货单</span>
+									<i class="el-icon-arrow-down el-icon--right" />
+								</el-button>
+								<el-dropdown-menu slot="dropdown">
+									<el-dropdown-item>
+										<el-button size="mini" @click="handleOrder2(scope.row)">发货单2</el-button>
+									</el-dropdown-item>
+									<el-dropdown-item>
+										<el-button size="mini" @click="handleOrder3(scope.row)">发货单3</el-button>
+									</el-dropdown-item>
+								</el-dropdown-menu>
+							</el-dropdown>
+						</div>
+					</template>
+					<!-- 默认展示 -->
+					<template v-else>
+						<template v-if="[12, 13, 14, 17, 18].includes(col.idx)">
+							{{ scope.row[col.prop] | changeNumber(changeLength) }}
+						</template>
+						<template v-else-if="[9, 10, 11].includes(col.idx)">
+							{{ scope.row[col.prop] || '无' }}
+						</template>
+						<template v-else>
+							{{ scope.row[col.prop] || (scope.row[col.prop] === 0 ? 0 : '') }}
+						</template>
+					</template>
+				</template>
+			</el-table-column>
+		</el-table>
 		<!--    分页组件-->
 		<pagination v-if="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
