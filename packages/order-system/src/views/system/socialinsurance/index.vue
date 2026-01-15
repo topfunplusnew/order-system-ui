@@ -845,8 +845,12 @@ export default {
 		sumSummary(form, type) {
 			let sum = 0;
 			for (const prop in form) {
+				// 排除 sumSelf 和 sumCompany 字段本身，避免重复计算
+				if (prop === 'sumSelf' || prop === 'sumCompany') {
+					continue;
+				}
 				if (prop.includes(type)) {
-					sum += Number(form[prop]);
+					sum += Number(form[prop]) || 0;
 				}
 			}
 			return Number(sum).toFixed(2);
