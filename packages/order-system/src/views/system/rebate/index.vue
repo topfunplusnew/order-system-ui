@@ -585,6 +585,7 @@ import { getUuid } from '../../../utils/trash/utils';
 import { parseTime } from '../../../utils/ruoyi';
 import QuerySearchBar from '../../dashboard/components/goodsOrder/QuerySearchBar.vue';
 import _ from 'lodash';
+import { add, multiply, divide, subtract, abs, number, round } from 'mathjs';
 
 export default {
 	name: 'Rebate',
@@ -818,7 +819,7 @@ export default {
 				return 0;
 			}
 			return this.goods.reduce((sum, item) => {
-				return sum + (item.length * item.width * item.pieces) / 1000000;
+				return add(sum, divide(multiply(multiply(number(item.length) || 0, number(item.width) || 0), number(item.pieces) || 0), 1000000));
 			}, 0);
 		},
 		// 计算重箱值
@@ -827,7 +828,7 @@ export default {
 				return 0;
 			}
 			return this.goods.reduce((sum, item) => {
-				return sum + (item.height * item.length * item.width * item.pieces) / 1000000 / 20;
+				return add(sum, divide(divide(multiply(multiply(multiply(number(item.height) || 0, number(item.length) || 0), number(item.width) || 0), number(item.pieces) || 0), 1000000), 20));
 			}, 0);
 		},
 		// 计算返利金额（支持手动编辑）
@@ -842,7 +843,7 @@ export default {
 					return this.form.rebate || 0;
 				}
 				const baseValue = this.form.rebateMethod === this.RebateType.Weight ? this.calculatedWeightBox : this.calculatedArea;
-				return fix(baseValue * this.form.unitPrice);
+				return fix(multiply(baseValue, number(this.form.unitPrice) || 0));
 			},
 			set(value) {
 				this.form.rebate = value;
@@ -850,10 +851,10 @@ export default {
 				let expectedValue = 0;
 				if (!_.isEmpty(this.goods) && this.form.unitPrice && this.form.rebateMethod) {
 					const baseValue = this.form.rebateMethod === this.RebateType.Weight ? this.calculatedWeightBox : this.calculatedArea;
-					expectedValue = fix(baseValue * this.form.unitPrice);
+					expectedValue = fix(multiply(baseValue, number(this.form.unitPrice) || 0));
 				}
 				// 如果用户输入的值与计算值不同，标记为手动编辑
-				this.isManualEditRebate = Number(value) !== expectedValue;
+				this.isManualEditRebate = number(value) !== expectedValue;
 			}
 		}
 	},
@@ -1017,7 +1018,7 @@ export default {
 			}
 
 			return detailList.reduce((total, item) => {
-				return total + (Number(item.actualReceived) || 0);
+				return add(total, number(item.actualReceived) || 0);
 			}, 0);
 		},
 		handleCommitBackCompanyGive(val) {
@@ -1069,7 +1070,7 @@ export default {
 			this.$refs.rebateForm.validate(valid => {
 				if (valid) {
 					const row = this.currentRebateRow;
-					const currentAmount = Number(this.rebateForm.amount);
+					const currentAmount = number(this.rebateForm.amount) || 0;
 					const date = this.rebateForm.date;
 
 					if (!row || !row.id) {
@@ -1092,10 +1093,10 @@ export default {
 
 							// 计算已累计返利金额
 							const existingTotal = existingDetailList.reduce((sum, item) => {
-								return sum + (Number(item.actualReceived) || 0);
+								return add(sum, number(item.actualReceived) || 0);
 							}, 0);
 
-							const newTotal = existingTotal + currentAmount;
+							const newTotal = add(existingTotal, currentAmount);
 
 							// 检查是否需要备注：单次金额超标或累计金额超标
 							const needRemark = currentAmount > originalAmount || newTotal > originalAmount;
@@ -1209,9 +1210,9 @@ export default {
 				if (index === 0) {
 					sums[index] = '合计';
 				} else if (column.property === 'actualReceived') {
-					const values = data.map(item => Number(item.actualReceived) || 0);
+					const values = data.map(item => number(item.actualReceived) || 0);
 					sums[index] = values.reduce((prev, curr) => {
-						return prev + curr;
+						return add(prev, curr);
 					}, 0);
 				} else {
 					sums[index] = '';
@@ -1250,7 +1251,7 @@ export default {
 						return;
 					}
 
-					const currentAmount = Number(this.editRebateDetailForm.amount);
+					const currentAmount = number(this.editRebateDetailForm.amount) || 0;
 					const originalAmount = this.currentRebateData.rebate; // 原返利金额
 
 					// 计算修改后的累计返利金额
@@ -1259,9 +1260,9 @@ export default {
 					const otherTotal = detailList
 						.filter((item, idx) => idx !== this.currentEditIndex)
 						.reduce((sum, item) => {
-							return sum + (Number(item.actualReceived) || 0);
+							return add(sum, number(item.actualReceived) || 0);
 						}, 0);
-					const newTotal = otherTotal + currentAmount;
+					const newTotal = add(otherTotal, currentAmount);
 
 					// 检查是否需要备注
 					const needRemark = currentAmount > originalAmount || newTotal > originalAmount;
@@ -1482,9 +1483,9 @@ export default {
 							if (!_.isEmpty(this.goods) && this.form.unitPrice && this.form.rebateMethod) {
 								// 计算当前应该的值
 								const baseValue = this.form.rebateMethod === this.RebateType.Weight ? this.calculatedWeightBox : this.calculatedArea;
-								const calculatedValue = fix(baseValue * this.form.unitPrice);
+								const calculatedValue = fix(multiply(baseValue, number(this.form.unitPrice) || 0));
 								// 如果计算值和服务器返回的值不一致，标记为手动编辑，使用服务器返回的值
-								if (Math.abs(Number(calculatedValue) - Number(originalRebate)) > 0.01) {
+								if (abs(subtract(number(calculatedValue), number(originalRebate))) > 0.01) {
 									this.isManualEditRebate = true;
 									this.form.rebate = originalRebate;
 								} else {
@@ -1515,7 +1516,7 @@ export default {
 				if (valid) {
 					// 确保 rebate 字段的值是最新的计算值（同步计算属性的值到 form.rebate）
 					if (this.calculatedRebate !== undefined && this.calculatedRebate !== null) {
-						this.form.rebate = Number(this.calculatedRebate) || 0;
+						this.form.rebate = number(this.calculatedRebate) || 0;
 					}
 					this.form.rebateMethod = this.form.rebateMethod === RebateType.Weight ? 1 : 2;
 					if (this.form.id != null) {

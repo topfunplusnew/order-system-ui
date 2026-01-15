@@ -464,6 +464,7 @@
 <script>
 import { addSocialInsurance, batchAddSocialInsurance, delSocialInsurance, getSocialInsurance, listSocialInsurance, updateSocialInsurance, importData, importTemplate } from '@/api/system/socialInsurance';
 import { excludeParams } from '@/api/tool/exclude';
+import { add, round, number } from 'mathjs';
 
 export default {
 	name: 'SocialInsurance',
@@ -850,10 +851,14 @@ export default {
 					continue;
 				}
 				if (prop.includes(type)) {
-					sum += Number(form[prop]) || 0;
+					sum = add(sum, number(form[prop]) || 0);
 				}
 			}
-			return Number(sum).toFixed(2);
+			// 公司缴纳总额需要加上工伤保险（工伤保险由公司全额缴纳）
+			if (type === 'Company' && form.injuryInsurance) {
+				sum = add(sum, number(form.injuryInsurance) || 0);
+			}
+			return round(sum, 2);
 		},
 		addSocial() {
 			this.open = true;
