@@ -6,7 +6,7 @@
 			</div>
 			<div v-else>
 				<el-table id="printBox" border :data="orderList" max-height="700" :cell-style="cellStyle" :span-method="spanMethod" :row-class-name="tableRowClassName" size="mini" show-summary :summary-method="getSummaries">
-					<el-table-column label="日期" align="center" prop="orderDate" show-overflow-tooltip width="50">
+					<el-table-column label="日期" align="center" prop="orderDate" show-overflow-tooltip width="150">
 						<template slot-scope="scope">
 							<span v-if="scope.row.type === 'flag'" style="text-align: left; font-weight: bold">备注：{{ scope.row.comments }}</span>
 							<span v-else>
@@ -14,8 +14,9 @@
 							</span>
 						</template>
 					</el-table-column>
-					<el-table-column label="客户" align="center" prop="customer" show-overflow-tooltip width="50" />
-					<el-table-column label="供应商" align="center" prop="supplier" show-overflow-tooltip width="50" />
+					<el-table-column label="客户" align="center" prop="customer" show-overflow-tooltip width="150" />
+					<el-table-column label="车牌号" align="center" prop="landCarNo" show-overflow-tooltip width="100" />
+					<el-table-column label="供应商" align="center" prop="supplier" show-overflow-tooltip width="100" />
 					<el-table-column label="仓库名称" align="center" prop="storeHouseName" show-overflow-tooltip>
 						<template slot-scope="scope">
 							{{ scope.row.storeHouseName ? scope.row.storeHouseName : '-' }}
