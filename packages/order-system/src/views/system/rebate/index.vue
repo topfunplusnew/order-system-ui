@@ -1467,7 +1467,7 @@ export default {
 				// 保存服务器返回的原始 rebate 值
 				const originalRebate = response.data.rebate || 0;
 				// 填充选择框（在 goods 加载前先设置，避免显示问题）
-				this.form.rebateMethod = response.data.rebateMethod === 1 ? RebateType.Weight : RebateType.Square;
+				this.form.rebateMethod = response.data.rebateMethod === "1" ? RebateType.Weight : RebateType.Square;
 				this.areaOrWeightBox = this.form.rebateMethod;
 				// 这里打开的时候要判断后端返回的数据 如果orderDetailIds有数据 那么要自动选择相关订单
 				if (!_.isEmpty(this.form.orderDetailIds)) {
