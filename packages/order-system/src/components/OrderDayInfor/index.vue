@@ -14,6 +14,7 @@
 							</span>
 						</template>
 					</el-table-column>
+					<el-table-column label="客户" align="center" prop="customer" show-overflow-tooltip width="50" />
 					<el-table-column label="供应商" align="center" prop="supplier" show-overflow-tooltip width="50" />
 					<el-table-column label="仓库名称" align="center" prop="storeHouseName" show-overflow-tooltip>
 						<template slot-scope="scope">
