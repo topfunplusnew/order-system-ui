@@ -345,15 +345,15 @@ export default {
 				}
 			}
 		},
-		'generatePaymentForm.companyType'(newVal) {
-			if (newVal === PAYMENT_TARGET_TYPE.PAYMENT_FEE) {
-				this.generatePaymentForm.companyName = null;
-				this.generatePaymentForm.companyId = null;
-				this.generatePaymentForm.otherAccountsName = null;
-				this.generatePaymentForm.otherBankNo = null;
-				this.generatePaymentForm.otherBankName = null;
-			}
-		}
+		// 'generatePaymentForm.companyType'(newVal) {
+		// 	if (newVal === PAYMENT_TARGET_TYPE.PAYMENT_FEE) {
+		// 		this.generatePaymentForm.companyName = null;
+		// 		this.generatePaymentForm.companyId = null;
+		// 		this.generatePaymentForm.otherAccountsName = null;
+		// 		this.generatePaymentForm.otherBankNo = null;
+		// 		this.generatePaymentForm.otherBankName = null;
+		// 	}
+		// }
 	},
 	created() {
 		if (localStorage.getItem('applyprocess-columns') === 'null' || !localStorage.getItem('applyprocess-columns')) {
