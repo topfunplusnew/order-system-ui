@@ -100,7 +100,7 @@
 			</el-table-column>
 			<el-table-column v-if="columns[11].visible" prop="moneyAmount" label="支出" align="right" show-overflow-tooltip>
 				<template #default="{ row }">
-					<span v-if="row.moneyAmount < 0" style="color: #f56c6c">￥{{ row.moneyAmount.toLocaleString('zh-CN', { minimumFractionDigits: 2 }) }}</span>
+					<span v-if="row.moneyAmount < 0" style="color: #f56c6c">￥{{ Math.abs(row.moneyAmount).toLocaleString('zh-CN', { minimumFractionDigits: 2 }) }}</span>
 					<span v-else>￥0.00</span>
 				</template>
 			</el-table-column>
