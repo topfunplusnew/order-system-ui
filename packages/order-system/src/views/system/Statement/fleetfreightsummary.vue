@@ -9,15 +9,12 @@ export default {
 	mixins: [mixin_printHTML],
 	data() {
 		const today = parseTime(new Date(), '{y}-{m}-{d}');
-		const thirtyDaysAgo = parseTime(new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000), '{y}-{m}-{d}');
 		return {
 			queryParams: {
-				beginTime: thirtyDaysAgo,
 				endTime: today,
 				pageNum: 1,
 				pageSize: 50
 			},
-			dateRange: [thirtyDaysAgo, today],
 			loading: '',
 			// 筛选栏目
 			columns: [
@@ -55,14 +52,7 @@ export default {
 		},
 		// 时间查询
 		handleQuery() {
-			// 处理时间范围
-			if (Array.isArray(this.dateRange) && this.dateRange.length === 2) {
-				this.queryParams.beginTime = this.dateRange[0];
-				this.queryParams.endTime = this.dateRange[1];
-			} else {
-				this.queryParams.beginTime = null;
-				this.queryParams.endTime = null;
-			}
+			this.queryParams.pageNum = 1;
 			this.getList();
 		},
 		refresh() {
@@ -71,9 +61,6 @@ export default {
 		},
 		reset() {
 			const today = parseTime(new Date(), '{y}-{m}-{d}');
-			const thirtyDaysAgo = parseTime(new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000), '{y}-{m}-{d}');
-			this.dateRange = [thirtyDaysAgo, today];
-			this.queryParams.beginTime = thirtyDaysAgo;
 			this.queryParams.endTime = today;
 			this.queryParams.pageNum = 1;
 			this.queryParams.pageSize = 50;
@@ -83,7 +70,6 @@ export default {
 			this.download(
 				'statistics/export/FleetFreightSummary',
 				{
-					beginTime: this.queryParams.beginTime,
 					endTime: this.queryParams.endTime
 				},
 				`车队运费报表${parseTime(new Date().getTime())}.xlsx`
@@ -105,11 +91,11 @@ export default {
 				<el-button type="primary" icon="el-icon-refresh" @click="refresh">刷新</el-button>
 			</el-row>
 			<hr color="#e6e6e6" />
-			<!--    时间范围搜索行-->
+			<!--    时间搜索行-->
 			<el-row>
 				<el-form id="top-search-form-item" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
-					<el-form-item label="时间范围">
-						<el-date-picker v-model="dateRange" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" size="mini" clearable></el-date-picker>
+					<el-form-item label="时间">
+						<el-date-picker v-model="queryParams.endTime" type="date" placeholder="请选择时间" value-format="yyyy-MM-dd" size="mini" clearable></el-date-picker>
 					</el-form-item>
 					<el-form-item>
 						<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -195,12 +181,9 @@ export default {
 				</el-row>
 			</el-row>
 		</div>
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="请选择导出时间段" :visible.sync="dialogVisible" width="30%">
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="请选择导出时间" :visible.sync="dialogVisible" width="30%">
 			<el-form ref="queryForm" :model="queryParams" size="mini" label-width="68px">
-				<el-form-item label="开始时间" prop="beginTime">
-					<el-date-picker v-model="queryParams.beginTime" type="date" placeholder="选择时间" value-format="yyyy-MM-dd" size="mini"></el-date-picker>
-				</el-form-item>
-				<el-form-item label="结束时间" prop="endTime">
+				<el-form-item label="时间" prop="endTime">
 					<el-date-picker v-model="queryParams.endTime" type="date" placeholder="选择时间" value-format="yyyy-MM-dd" size="mini"></el-date-picker>
 				</el-form-item>
 			</el-form>
