@@ -147,6 +147,7 @@ import { getDepositMoney } from '@/api/system/depositMoney';
 import DEPOSITMONEY from '@/components/NeedToShow/DEPOSITMONEY.vue';
 
 export default {
+	name: 'fundFlowDetailList',
 	components: { BankType, SearchOption },
 	mixins: [common_dialog],
 	data() {
