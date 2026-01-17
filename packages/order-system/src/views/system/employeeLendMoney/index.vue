@@ -263,7 +263,7 @@
 
 		<!--    收回资金的弹窗-->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="收回资金操作" :visible.sync="giveRecoverMoneyShow" width="600px" append-to-body>
-			<el-form :model="recoverMoneyEntity" label-width="120px" :rules="receiveRules">
+			<el-form ref="recoverForm" :model="recoverMoneyEntity" label-width="120px" :rules="receiveRules">
 				<el-form-item label="收回账户" prop="acountsName">
 					<el-row :gutter="8" type="flex">
 						<el-col :span="18">
@@ -1096,6 +1096,12 @@ export default {
 			this.initReviveMoneySelfAccountInfo(val.acountsName, val.bankNo, val.bankName, val.id);
 			this.recoverMoneyEntity.acountsName = val.acountsName;
 			this.recoverMoneyEntity.bankNo = val.bankNo;
+			// 清除相关字段的校验错误
+			this.$nextTick(() => {
+				if (this.$refs.recoverForm) {
+					this.$refs.recoverForm.clearValidate(['acountsName', 'bankNo']);
+				}
+			});
 		},
 		// 收回资金弹窗内的修改
 		handleUpdateRecoverMoney(row) {

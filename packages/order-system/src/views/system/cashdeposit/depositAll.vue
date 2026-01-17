@@ -595,6 +595,12 @@ export default {
 			this.initReviveMoneySelfAccountInfo(val.acountsName, val.bankNo, val.bankName, val.id);
 			this.recoverMoneyEntity.acountsName = val.acountsName;
 			this.recoverMoneyEntity.bankNo = val.bankNo;
+			// 清除相关字段的校验错误
+			this.$nextTick(() => {
+				if (this.$refs.recoverForm) {
+					this.$refs.recoverForm.clearValidate(['acountsName', 'bankNo']);
+				}
+			});
 		},
 		// 修改记录
 		checkDetail(row) {
