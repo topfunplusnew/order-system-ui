@@ -215,7 +215,7 @@
 				>
 					<el-table-column prop="" width="180">
 						<template #default="scope">
-							<span v-if="scope.$index === 0">贷款还款</span>
+							<span v-if="scope.$index === 0">贷款还款/付息还款</span>
 						</template>
 					</el-table-column>
 					<el-table-column prop="payDate" label="时间" width="180"></el-table-column>
