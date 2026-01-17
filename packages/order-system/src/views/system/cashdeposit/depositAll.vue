@@ -199,13 +199,13 @@
 
 		<!-- 收回资金弹窗 -->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="收回资金操作" :visible.sync="giveRecoverMoneyShow" width="600px" append-to-body>
-			<el-form :model="recoverMoneyEntity" :rules="recoverRules" ref="recoverForm" label-width="100px">
+			<el-form :model="recoverMoneyEntity" :rules="recoverRules" ref="recoverForm" label-width="120px">
 				<el-form-item label="收回账户" prop="acountsName">
-					<el-row :gutter="8">
-						<el-col :span="12">
+					<el-row :gutter="8" type="flex">
+						<el-col :span="18">
 							<el-input v-model="recoverMoneyEntity.acountsName" placeholder="请输入收回账户" />
 						</el-col>
-						<el-col :span="6">
+						<el-col :span="6" style="flex-shrink: 0;">
 							<SearchOption
 								:get-data="listBankAccount"
 								icon="el-icon-search"
@@ -231,7 +231,7 @@
 					<el-input v-model="recoverMoneyEntity.bankNo" placeholder="请输入收回账号" />
 				</el-form-item>
 				<el-form-item label="收回金额" prop="moneyAmount">
-					<el-input v-model="recoverMoneyEntity.moneyAmount" placeholder="请输入收回金额" style="width: 200px" />
+					<el-input v-model="recoverMoneyEntity.moneyAmount" placeholder="请输入收回金额" />
 				</el-form-item>
 				<el-form-item label="收回日期" prop="payDate">
 					<el-date-picker v-model="recoverMoneyEntity.recoverDate" type="datetime" placeholder="请选择收回日期" value-format="yyyy-MM-dd HH:mm:ss" style="width: 100%"></el-date-picker>
@@ -241,7 +241,7 @@
 				</el-form-item>
 				<el-form-item>
 					<el-button type="primary" @click="RecoverMoney">收款</el-button>
-					<el-button type="primary" @click="resetRecoverMoney">取消</el-button>
+					<el-button @click="resetRecoverMoney">取消</el-button>
 				</el-form-item>
 			</el-form>
 		</el-dialog>

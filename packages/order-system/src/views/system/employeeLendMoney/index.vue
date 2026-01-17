@@ -262,54 +262,52 @@
 		</el-dialog>
 
 		<!--    收回资金的弹窗-->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="收回资金操作" :visible.sync="giveRecoverMoneyShow" width="40%" append-to-body>
-			<el-row>
-				<el-form :model="recoverMoneyEntity" label-width="120" :rules="receiveRules">
-					<el-form-item label="收回账户" prop="acountsName">
-						<el-row>
-							<el-col :span="10">
-								<el-input v-model="recoverMoneyEntity.acountsName" placeholder="请输入收回账户" />
-							</el-col>
-							<el-col :span="4">
-								<SearchOption
-									:get-data="listBankAccount"
-									icon="el-icon-search"
-									:limit-info="{ acountsType: '己方公司' }"
-									query-label="户名查找"
-									query-info="acountsName"
-									:query-name="queryBank"
-									@commitBack="handleCommitBackBankAcountForm"
-									@update:queryName="handleUpdateQueryBankAcountForm"
-								>
-									<template #table-columns>
-										<el-table-column label="账户类型" align="center" prop="acountsType" />
-										<el-table-column label="己方公司" align="center" prop="displayName" />
-										<el-table-column label="开户行" align="center" prop="bankName" />
-										<el-table-column label="开户名" align="center" prop="acountsName" />
-										<el-table-column label="账号" align="center" prop="bankNo" />
-									</template>
-								</SearchOption>
-							</el-col>
-						</el-row>
-					</el-form-item>
-					<el-form-item label="收回账号" prop="bankNo">
-						<el-input v-model="recoverMoneyEntity.bankNo" placeholder="请输入收回账号" />
-					</el-form-item>
-					<el-form-item label="收回金额" prop="moneyAmount">
-						<el-input v-model="recoverMoneyEntity.moneyAmount" placeholder="请输入收回金额" />
-					</el-form-item>
-					<el-form-item label="收回日期" prop="payDate">
-						<el-date-picker v-model="recoverMoneyEntity.recoverDate" type="datetime" placeholder="请选择收回日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
-					</el-form-item>
-					<el-form-item label="备注信息" prop="comments">
-						<el-input v-model="recoverMoneyEntity.comments" placeholder="请输入备注信息" />
-					</el-form-item>
-					<el-form-item>
-						<el-button type="primary" @click="RecoverMoney">收款</el-button>
-						<el-button type="primary" @click="resetRecoverMoney">取消</el-button>
-					</el-form-item>
-				</el-form>
-			</el-row>
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="收回资金操作" :visible.sync="giveRecoverMoneyShow" width="600px" append-to-body>
+			<el-form :model="recoverMoneyEntity" label-width="120px" :rules="receiveRules">
+				<el-form-item label="收回账户" prop="acountsName">
+					<el-row :gutter="8" type="flex">
+						<el-col :span="18">
+							<el-input v-model="recoverMoneyEntity.acountsName" placeholder="请输入收回账户" />
+						</el-col>
+						<el-col :span="6" style="flex-shrink: 0;">
+							<SearchOption
+								:get-data="listBankAccount"
+								icon="el-icon-search"
+								:limit-info="{ acountsType: '己方公司' }"
+								query-label="户名查找"
+								query-info="acountsName"
+								:query-name="queryBank"
+								@commitBack="handleCommitBackBankAcountForm"
+								@update:queryName="handleUpdateQueryBankAcountForm"
+							>
+								<template #table-columns>
+									<el-table-column label="账户类型" align="center" prop="acountsType" />
+									<el-table-column label="己方公司" align="center" prop="displayName" />
+									<el-table-column label="开户行" align="center" prop="bankName" />
+									<el-table-column label="开户名" align="center" prop="acountsName" />
+									<el-table-column label="账号" align="center" prop="bankNo" />
+								</template>
+							</SearchOption>
+						</el-col>
+					</el-row>
+				</el-form-item>
+				<el-form-item label="收回账号" prop="bankNo">
+					<el-input v-model="recoverMoneyEntity.bankNo" placeholder="请输入收回账号" />
+				</el-form-item>
+				<el-form-item label="收回金额" prop="moneyAmount">
+					<el-input v-model="recoverMoneyEntity.moneyAmount" placeholder="请输入收回金额" />
+				</el-form-item>
+				<el-form-item label="收回日期" prop="payDate">
+					<el-date-picker v-model="recoverMoneyEntity.recoverDate" type="datetime" placeholder="请选择收回日期" value-format="yyyy-MM-dd HH:mm:ss" style="width: 100%"></el-date-picker>
+				</el-form-item>
+				<el-form-item label="备注信息" prop="comments">
+					<el-input v-model="recoverMoneyEntity.comments" placeholder="请输入备注信息" type="textarea" :rows="3" />
+				</el-form-item>
+				<el-form-item>
+					<el-button type="primary" @click="RecoverMoney">收款</el-button>
+					<el-button @click="resetRecoverMoney">取消</el-button>
+				</el-form-item>
+			</el-form>
 		</el-dialog>
 
 		<!--    付款申请-->
