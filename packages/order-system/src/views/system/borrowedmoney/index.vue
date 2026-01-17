@@ -132,9 +132,9 @@
 										<template #table-columns>
 											<el-table-column label="账户类型" align="center" prop="acountsType" />
 											<el-table-column label="己方公司" align="center" prop="displayName" />
+											<el-table-column label="银行户名" align="center" prop="acountsName" />
+											<el-table-column label="银行账号" align="center" prop="bankNo" />
 											<el-table-column label="开户行" align="center" prop="bankName" />
-											<el-table-column label="开户名" align="center" prop="acountsName" />
-											<el-table-column label="账号" align="center" prop="bankNo" />
 										</template>
 									</SearchOption>
 								</el-col>
@@ -185,7 +185,7 @@
 							</el-col>
 						</el-row>
 					</el-form-item>
-					<el-form-item label="开户行" prop="bankNo">
+					<el-form-item label="银行账号" prop="bankNo">
 						<el-input disabled v-model="moneyBackInfo.bankNo" placeholder="请选择" />
 					</el-form-item>
 					<el-form-item label="备注" prop="comments">
