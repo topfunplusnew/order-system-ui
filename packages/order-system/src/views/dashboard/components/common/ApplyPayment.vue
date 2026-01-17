@@ -15,7 +15,7 @@
 				<span v-if="hasTableReferences" style="color: #909399; font-size: 12px; line-height: 32px">牵扯到其他模块，金额不可修改</span>
 			</el-form-item>
 			<!-- 新加 当付款 为 坏账损失的时候 需要选择这两个字段 -->
-			<template v-if="isPayment">
+			<!-- <template v-if="isPayment">
 				<el-form-item label="我方户名" prop="selfAccountsName">
 					<el-row>
 						<el-col :span="22">
@@ -62,7 +62,7 @@
 				<el-form-item label="我方账号" prop="selfBankNo">
 					<el-input disabled v-model="form.selfBankNo" placeholder="请选择" style="width: 100%" />
 				</el-form-item>
-			</template>
+			</template> -->
 			<template v-if="!isPayment">
 				<el-form-item label="对方类型(请确认)">
 					<el-select v-model="value" placeholder="请选择" @change="handleOpponentTypeChange" style="width: 100%">
@@ -343,7 +343,7 @@
 		<div slot="footer" class="dialog-footer" style="text-align: center">
 			<!--      当类型为付款时,添加坏账损失信息-->
 			<template v-if="isPayment">
-				<el-button type="primary" @click="submitForm">确认付款</el-button>
+				<el-button type="primary" @click="submitForm">确认坏账</el-button>
 				<el-button @click="clear">取消</el-button>
 			</template>
 			<!--      当类型为付款申请的时候 正常添加付款申请-->
@@ -443,13 +443,10 @@ export default {
 				moneyAmount: [{ required: true, message: '付款金额不能为空', trigger: 'blur' }]
 			};
 
-			// 付款场景特有的校验规则
+			// 付款场景特有的校验规则（坏账损失不需要填写我方户名和账号）
 			if (this.isPayment) {
 				return {
-					...baseRules,
-					selfAccountsName: [{ required: true, message: '我方户名不能为空', trigger: 'change' }],
-					selfBankNo: [{ required: true, message: '我方账号不能为空', trigger: 'change' }],
-					selfBankName: [{ required: true, message: '我方开户行不能为空', trigger: 'change' }]
+					...baseRules
 				};
 			}
 			// 付款申请场景的校验规则
@@ -794,16 +791,14 @@ export default {
 				comments: null
 			};
 			const futuresNO = this.extraInformation.__futuresNO;
-			// 组装收回信息
+			// 组装收回信息（坏账损失不需要我方户名和账号）
 			Object.assign(json, {
 				futuresNO: futuresNO,
 				moneyAmount: formData.moneyAmount,
 				recoverDate: formData.fundsDate,
-				acountsName: formData.selfAccountsName,
-				bankNo: formData.selfBankNo,
 				comments: formData.comments
 			});
-			// 填充我方银行卡信息
+			// 提交坏账损失信息
 			addBadBetPayment(json).then(res => {
 				this.$message.success('付款成功');
 				// 清除附件组件状态

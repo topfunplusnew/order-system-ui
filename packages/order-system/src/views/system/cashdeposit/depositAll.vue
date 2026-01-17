@@ -193,7 +193,19 @@
 		<!-- 坏账损失 -->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="坏账损失" :visible.sync="applyDialogVisible" width="45%">
 			<keep-alive>
-				<ApplyPayment :extra-information="{ __futuresNO: currentFuturesNO }" :table-name="TableName.LEND_MONEY" :t-i-d="tid" :need-money="needMoney" :need-info="needInfo" @changeOpen="changeOpen" :money-input-disabled="false" />
+				<ApplyPayment
+					:extra-information="{
+						__customizeSubjectName: this.customizeSubjectName,
+						__isPayment: true,
+						__futuresNO: this.currentFuturesNO
+					}"
+					:table-name="TableName.LEND_MONEY"
+					:t-i-d="tid"
+					:need-money="needMoney"
+					:need-info="needInfo"
+					@changeOpen="changeOpen"
+					:money-input-disabled="false"
+				/>
 			</keep-alive>
 		</el-dialog>
 
@@ -374,6 +386,7 @@ export default {
 			tid: '',
 			needMoney: 0,
 			needInfo: {},
+			customizeSubjectName: null,
 			dialogHistoryVisible: false,
 			tableData: [],
 			detailTotal: 0,

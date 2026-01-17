@@ -239,7 +239,6 @@ export default {
 				selfBankName: [{ required: true, message: '己方开户行不能为空', trigger: 'blur' }],
 				otherAccountName: [{ required: true, message: '对方账户名不能为空', trigger: 'blur' }],
 				otherBankNo: [{ required: true, message: '对方账号不能为空', trigger: 'blur' }],
-				otherBankName: [{ required: true, message: '对方开户行不能为空', trigger: 'blur' }],
 				moneyAmount: [
 					{ required: true, message: '退款金额不能为空', trigger: 'blur' },
 					{ validator: validateAmount, trigger: 'blur' }
