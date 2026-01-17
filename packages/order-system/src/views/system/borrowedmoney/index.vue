@@ -199,7 +199,7 @@
 			</div>
 		</el-dialog>
 
-		<InfoDialog title="历史还款记录" :visible.sync="dialogHistoryVisible" :width="'620px'">
+		<InfoDialog title="历史还款记录" :visible.sync="dialogHistoryVisible" :width="'1020px'">
 			<template #info>
 				<el-table
 					v-if="tableData.length !== 0"
@@ -220,6 +220,8 @@
 					</el-table-column>
 					<el-table-column prop="payDate" label="时间" width="180"></el-table-column>
 					<el-table-column prop="moneyAmount" label="还款金额"></el-table-column>
+					<el-table-column prop="ratio" label="付息金额"></el-table-column>
+					<el-table-column prop="comments" label="备注"></el-table-column>
 				</el-table>
 				<pagination v-show="detailTotal > 0" :total="detailTotal" :page.sync="queryRepaymentParams.pageNum" :limit.sync="queryRepaymentParams.pageSize" @pagination="getRepaymentMoneyList" />
 			</template>
