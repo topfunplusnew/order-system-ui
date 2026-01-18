@@ -62,3 +62,11 @@ export function borrowedMoneyAudit(params) {
 		}
 	});
 }
+
+// 查询历史还款记录
+export function getRepaymentHistory(id) {
+	return request({
+		url: '/system/borrowedMoney/' + id + '/repaymentHistory',
+		method: 'get'
+	});
+}

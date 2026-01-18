@@ -211,26 +211,18 @@
 						}
 					"
 					border
-					:span-method="mergeCells"
+					v-horizontal-scroll="'always'"
 				>
-					<el-table-column prop="" width="180">
-						<template #default="scope">
-							<span v-if="scope.$index === 0">贷款还款/付息还款</span>
-						</template>
-					</el-table-column>
-					<el-table-column prop="payDate" label="时间" width="180"></el-table-column>
-					<el-table-column prop="moneyAmount" label="还款金额"></el-table-column>
-					<el-table-column prop="ratio" label="付息金额"></el-table-column>
-					<el-table-column prop="comments" label="备注"></el-table-column>
+					<el-table-column v-for="(column, index) in repaymentHistoryColumns" :key="index" :prop="column.prop" :label="column.label" :width="column.width" show-overflow-tooltip></el-table-column>
 				</el-table>
-				<pagination v-show="detailTotal > 0" :total="detailTotal" :page.sync="queryRepaymentParams.pageNum" :limit.sync="queryRepaymentParams.pageSize" @pagination="getRepaymentMoneyList" />
+				<div v-if="tableData.length === 0" style="text-align: center; padding: 20px;">暂无数据</div>
 			</template>
 		</InfoDialog>
 	</div>
 </template>
 
 <script>
-import { listBorrowedMoney, getBorrowedMoney, delBorrowedMoney, addBorrowedMoney, updateBorrowedMoney, borrowedMoneyAudit } from '@/api/system/borrowedMoney';
+import { listBorrowedMoney, getBorrowedMoney, delBorrowedMoney, addBorrowedMoney, updateBorrowedMoney, borrowedMoneyAudit, getRepaymentHistory } from '@/api/system/borrowedMoney';
 import { mapGetters, mapState } from 'vuex';
 import { addRepayment, getRepaymentMoneyNoPage } from '@/api/system/repayment';
 import SearchOption from '@/components/SearchOption.vue';
@@ -467,7 +459,8 @@ export default {
 			},
 			tableData: [],
 			detailTotal: 0,
-			dialogHistoryVisible: false
+			dialogHistoryVisible: false,
+			repaymentHistoryColumns: []
 		};
 	},
 	created() {
@@ -494,36 +487,50 @@ export default {
 			this.getRepaymentMoneyList(row);
 		},
 		getRepaymentMoneyList(row) {
-			// 查询
-			getRepaymentMoneyNoPage({
-				loanNO: row.loanNO,
-				...this.queryRepaymentParams
-			}).then(res => {
-				this.tableData = res.rows;
-				this.detailTotal = res.total;
-				if (res.rows.length === 0) {
-					this.$message.error('暂无数据');
+			if (!row || !row.id) {
+				this.$message.error('数据错误，无法查询');
+				return;
+			}
+			// 使用新接口查询历史还款记录
+			getRepaymentHistory(row.id).then(res => {
+				// 处理不同的响应格式：可能是 res.data、res.rows 或直接是数组
+				let data = [];
+				if (Array.isArray(res)) {
+					data = res;
+				} else if (res.data && Array.isArray(res.data)) {
+					data = res.data;
+				} else if (res.rows && Array.isArray(res.rows)) {
+					data = res.rows;
+				} else if (res.data && typeof res.data === 'object' && !Array.isArray(res.data)) {
+					// 如果返回的是单个对象，转换为数组
+					data = [res.data];
+				}
+				
+				this.tableData = data;
+				// 生成表格列
+				this.generateRepaymentHistoryColumns();
+				
+				if (this.tableData.length === 0) {
+					this.$message.info('暂无数据');
 				} else {
 					this.$message.success('查询成功');
-					this.dialogHistoryVisible = true;
 				}
+				this.dialogHistoryVisible = true;
+			}).catch(error => {
+				this.$message.error('查询失败：' + (error.msg || error.message || '未知错误'));
+				this.tableData = [];
+				this.repaymentHistoryColumns = [];
 			});
 		},
-		mergeCells({ row, column, rowIndex, columnIndex }) {
-			if (columnIndex === 0) {
-				// 合并第一列 "期货保证金收回"
-				if (rowIndex === 0) {
-					return {
-						rowspan: this.tableData.length,
-						colspan: 1
-					};
-				} else {
-					return {
-						rowspan: 0,
-						colspan: 0
-					};
-				}
-			}
+		// 生成历史还款记录表格列（只展示指定字段）
+		generateRepaymentHistoryColumns() {
+			this.repaymentHistoryColumns = [
+				{ prop: 'itemTypeName', label: '类型', width: null },
+				{ prop: 'payDate', label: '支付日期', width: 180 },
+				{ prop: 'amount', label: '金额', width: null },
+				{ prop: 'acountsName', label: '银行户名', width: null },
+				{ prop: 'bankNo', label: '银行账号', width: null }
+			];
 		},
 		// 处理还款的事件函数  这里应该先填写还款信息 然后在还款信息页面申请付款
 		handleGiveBackMoney(row) {
