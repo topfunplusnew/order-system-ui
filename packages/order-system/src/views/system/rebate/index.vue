@@ -35,6 +35,9 @@
 			<el-col :span="1.5">
 				<el-button v-hasPermi="['system:rebate:add']" type="danger" size="mini" @click="handleAdd">新增供应商返利信息</el-button>
 			</el-col>
+			<el-col :span="1.5">
+				<el-button type="primary" size="mini" @click="handleExportDetail">导出返利明细</el-button>
+			</el-col>
 			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
 				<template #print>
 					<el-col :span="1.5">
@@ -166,11 +169,12 @@
 			</el-table-column>
 
 			<!-- 操作 -->
-			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="200px">
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="250px">
 				<template slot-scope="scope">
 					<el-button size="mini" type="text" @click="handleRebate(scope.row)">返利</el-button>
 					<el-button v-hasPermi="['system:rebate:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
 					<el-button v-hasPermi="['system:rebate:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
+					<el-button size="mini" type="text" @click="handleExportDetailById(scope.row)">导出</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -1568,6 +1572,28 @@ export default {
 					...this.queryParams
 				},
 				`厂家(返利+降价+售后质量赔偿)_${new Date().getTime()}.xlsx`
+			);
+		},
+		/** 导出返利明细 */
+		handleExportDetail() {
+			this.download(
+				'system/Rebate/exportDetail',
+				{
+					...this.queryParams
+				},
+				`返利明细_${new Date().getTime()}.xlsx`
+			);
+		},
+		/** 根据返利ID导出明细 */
+		handleExportDetailById(row) {
+			if (!row || !row.id) {
+				this.$message.error('数据错误，无法导出');
+				return;
+			}
+			this.download(
+				`system/Rebate/exportDetail/${row.id}`,
+				{},
+				`返利明细_${row.id}_${new Date().getTime()}.xlsx`
 			);
 		}
 	}
