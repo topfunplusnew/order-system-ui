@@ -53,6 +53,8 @@
 			border
 			:data="socialInsuranceList"
 			size="mini"
+			show-summary
+			:summary-method="getSummaries"
 			:cell-style="
 				() => {
 					return { padding: '.5px' };
@@ -1080,6 +1082,33 @@ export default {
 		// 提交上传文件
 		submitFileForm() {
 			this.$refs.upload.submit();
+		},
+		// 合计行计算
+		getSummaries(param) {
+			const { columns, data } = param;
+			const sums = [];
+			columns.forEach((column, index) => {
+				if (index === 0) {
+					sums[index] = '合计';
+					return;
+				}
+				// 只计算 个人缴费总额(sumSelf) 和 公司缴费总额(sumCompany)
+				if (column.property === 'sumSelf' || column.property === 'sumCompany') {
+					const values = data.map(item => number(item[column.property]) || 0);
+					if (!values.every(value => isNaN(value))) {
+						let sum = 0;
+						values.forEach(value => {
+							sum = add(sum, value);
+						});
+						sums[index] = round(sum, 2);
+					} else {
+						sums[index] = '0.00';
+					}
+				} else {
+					sums[index] = '';
+				}
+			});
+			return sums;
 		}
 	}
 };
