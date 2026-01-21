@@ -234,7 +234,15 @@
 					</template>
 				</el-table-column>
 			</el-table-column>
-			<el-table-column v-if="columns[13].visible" label="个人缴费总额" align="center" prop="sumSelf" width="120">
+			<el-table-column v-if="columns[13].visible" label="生育保险" align="center" prop="maternityInsurance">
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.maternityInsurance }}</div>
+						<span>{{ scope.row.maternityInsurance }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[14].visible" label="个人缴费总额" align="center" prop="sumSelf" width="120">
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.sumSelf }}</div>
@@ -242,7 +250,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[14].visible" label="公司缴费总额" align="center" prop="sumCompany" width="120">
+			<el-table-column v-if="columns[15].visible" label="公司缴费总额" align="center" prop="sumCompany" width="120">
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.sumCompany }}</div>
@@ -314,6 +322,7 @@
 						<el-table-column prop="housingFundCompany" label="公司缴纳" width="120"></el-table-column>
 						<el-table-column prop="housingFundSelf" label="个人缴纳" width="120"></el-table-column>
 					</el-table-column>
+					<el-table-column label="生育保险" prop="maternityInsurance" width="120"></el-table-column>
 					<el-table-column label="个人缴纳总额" prop="sumSelf"></el-table-column>
 					<el-table-column label="公司缴纳总额" prop="sumCompany"></el-table-column>
 				</el-table-column>
@@ -421,14 +430,9 @@
 								<el-input v-model="form.housingFundCompany" placeholder="公司缴纳金额" />
 							</el-col>
 						</el-form-item>
-						<!--            <el-form-item label="公积金-公司" prop="housingFundCompany">-->
-						<!--            </el-form-item>-->
-						<!--          <el-form-item label="个人缴费总额" prop="sumSelf">-->
-						<!--            <el-input v-model="form.sumSelf" placeholder="请输入个人缴费总额"/>-->
-						<!--          </el-form-item>-->
-						<!--          <el-form-item label="公司缴费总额" prop="sumCompany">-->
-						<!--            <el-input v-model="form.sumCompany" placeholder="请输入公司缴费总额"/>-->
-						<!--          </el-form-item>-->
+						<el-form-item label="生育保险" prop="maternityInsurance">
+							<el-input v-model="form.maternityInsurance" placeholder="请输入生育保险缴纳金额" />
+						</el-form-item>
 						<el-form-item label="备注" prop="comments">
 							<el-input v-model="form.comments" placeholder="请输入备注" />
 						</el-form-item>
@@ -513,6 +517,7 @@ export default {
 				largeMedicalSecurityCompany: null,
 				housingFundSelf: null,
 				housingFundCompany: null,
+				maternityInsurance: null,
 				sumSelf: null,
 				sumCompany: null,
 				comments: null,
@@ -535,8 +540,9 @@ export default {
 				{ key: 10, label: `养老保险`, visible: true },
 				{ key: 11, label: `大额医保`, visible: true },
 				{ key: 12, label: `公积金`, visible: true },
-				{ key: 13, label: `个人缴费总额`, visible: true },
-				{ key: 14, label: `公司缴费总额`, visible: true }
+				{ key: 13, label: `生育保险`, visible: true },
+				{ key: 14, label: `个人缴费总额`, visible: true },
+				{ key: 15, label: `公司缴费总额`, visible: true }
 			],
 
 			// 表单参数
@@ -926,6 +932,7 @@ export default {
 				largeMedicalSecurityCompany: null,
 				housingFundSelf: null,
 				housingFundCompany: null,
+				maternityInsurance: null,
 				sumSelf: null,
 				sumCompany: null,
 				comments: null,
@@ -1087,13 +1094,14 @@ export default {
 		getSummaries(param) {
 			const { columns, data } = param;
 			const sums = [];
+			// 需要合计的字段
+			const sumFields = ['sumSelf', 'sumCompany', 'maternityInsurance'];
 			columns.forEach((column, index) => {
 				if (index === 0) {
 					sums[index] = '合计';
 					return;
 				}
-				// 只计算 个人缴费总额(sumSelf) 和 公司缴费总额(sumCompany)
-				if (column.property === 'sumSelf' || column.property === 'sumCompany') {
+				if (sumFields.includes(column.property)) {
 					const values = data.map(item => number(item[column.property]) || 0);
 					if (!values.every(value => isNaN(value))) {
 						let sum = 0;
