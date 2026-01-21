@@ -134,14 +134,35 @@
 					{{ formatNumberWithoutTrailingZeros(scope.row.actualCustomerCommission) }}
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[24].visible" show-overflow-tooltip label="支付日期" align="center" prop="fundDate" width="100" />
-			<el-table-column v-if="columns[25].visible" show-overflow-tooltip label="支付状态" align="center" width="120">
+			<el-table-column v-if="columns[24].visible" show-overflow-tooltip label="销售经理" align="center" prop="salesManager" width="100" />
+			<el-table-column v-if="columns[25].visible" show-overflow-tooltip label="客户佣金" align="center" prop="otherCommission" width="100">
+				<template slot-scope="scope">
+					{{ formatNumberWithoutTrailingZeros(scope.row.otherCommission) }}
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[26].visible" show-overflow-tooltip label="计提厂家返利" align="center" prop="factoryRebateAmount" width="120">
+				<template slot-scope="scope">
+					{{ formatNumberWithoutTrailingZeros(scope.row.factoryRebateAmount) }}
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[27].visible" show-overflow-tooltip label="计提厂家降价" align="center" prop="factoryDiscountAmount" width="120">
+				<template slot-scope="scope">
+					{{ formatNumberWithoutTrailingZeros(scope.row.factoryDiscountAmount) }}
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[28].visible" show-overflow-tooltip label="结余利润" align="center" prop="balanceProfit" width="100">
+				<template slot-scope="scope">
+					{{ formatNumberWithoutTrailingZeros(scope.row.balanceProfit) }}
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[29].visible" show-overflow-tooltip label="支付日期" align="center" prop="fundDate" width="100" />
+			<el-table-column v-if="columns[30].visible" show-overflow-tooltip label="支付状态" align="center" width="120">
 				<template slot-scope="scope">
 					<PaymentFlag :business-object="scope.row" />
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[26].visible" show-overflow-tooltip label="差异" align="center" prop="difference" width="100" />
-			<el-table-column v-if="columns[27].visible" show-overflow-tooltip label="差异原因" align="center" prop="differenceReason" width="150">
+			<el-table-column v-if="columns[31].visible" show-overflow-tooltip label="差异" align="center" prop="difference" width="100" />
+			<el-table-column v-if="columns[32].visible" show-overflow-tooltip label="差异原因" align="center" prop="differenceReason" width="150">
 				<template slot-scope="scope">
 					<el-button v-if="scope.row.difference && scope.row.difference !== 0" size="mini" type="text" @click="handleDifferenceReason(scope.row)">
 						{{ scope.row.differenceReason || '填写差异原因' }}
@@ -333,10 +354,15 @@ export default {
 				{ key: 21, label: '其他付款金额', visible: true },
 				{ key: 22, label: '已验证佣金', visible: true },
 				{ key: 23, label: '实际厂家佣金', visible: true },
-				{ key: 24, label: '支付日期', visible: true },
-				{ key: 25, label: '支付状态', visible: true },
-				{ key: 26, label: '差异', visible: true },
-				{ key: 27, label: '差异原因', visible: true }
+				{ key: 24, label: '销售经理', visible: true },
+				{ key: 25, label: '客户佣金', visible: true },
+				{ key: 26, label: '计提厂家返利', visible: true },
+				{ key: 27, label: '计提厂家降价', visible: true },
+				{ key: 28, label: '结余利润', visible: true },
+				{ key: 29, label: '支付日期', visible: true },
+				{ key: 30, label: '支付状态', visible: true },
+				{ key: 31, label: '差异', visible: true },
+				{ key: 32, label: '差异原因', visible: true }
 			],
 			loading: false,
 			tableData: [],
