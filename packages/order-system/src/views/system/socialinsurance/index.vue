@@ -862,9 +862,14 @@ export default {
 					sum = add(sum, number(form[prop]) || 0);
 				}
 			}
-			// 公司缴纳总额需要加上工伤保险（工伤保险由公司全额缴纳）
-			if (type === 'Company' && form.injuryInsurance) {
-				sum = add(sum, number(form.injuryInsurance) || 0);
+			// 公司缴纳总额需要加上工伤保险和生育保险（由公司全额缴纳）
+			if (type === 'Company') {
+				if (form.injuryInsurance) {
+					sum = add(sum, number(form.injuryInsurance) || 0);
+				}
+				if (form.maternityInsurance) {
+					sum = add(sum, number(form.maternityInsurance) || 0);
+				}
 			}
 			return round(sum, 2);
 		},
