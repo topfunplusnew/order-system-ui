@@ -43,7 +43,15 @@ export default {
 				systemTicketPointDiffYear: 0,
 				systemRebateLastMonthSettlementDay: 0,
 				systemRebateLastMonthSettlementMonth: 0,
-				systemRebateLastMonthSettlementYear: 0
+				systemRebateLastMonthSettlementYear: 0,
+				// 客户平账（日/月/年）
+				systemCustomerBalanceDay: 0,
+				systemCustomerBalanceMonth: 0,
+				systemCustomerBalanceYear: 0,
+				// 供应商平账（日/月/年）
+				systemSupplierBalanceDay: 0,
+				systemSupplierBalanceMonth: 0,
+				systemSupplierBalanceYear: 0
 			}
 		};
 	},
@@ -95,6 +103,14 @@ export default {
 		},
 		calculateProfitToday(a, b, c) {
 			return Number(a + b - c).toFixed(2);
+		},
+		// 计算平账：客户平账 - 供应商平账
+		calculateBalance(customerBalance, supplierBalance) {
+			return Number(customerBalance - supplierBalance);
+		},
+		// 计算本日应当利润：利润 + 实收返利 - 平账
+		calculateFinalProfit(profit, rebate, balance) {
+			return Number(profit + rebate - balance).toFixed(2);
 		},
 		getList() {
 			getDailyProfitStatistics(this.queryParams).then(res => {
@@ -234,42 +250,63 @@ export default {
 				<!-- 已入账部分 -->
 				<tr>
 					<td rowspan="1">已入账部分</td>
-					<td>减去上个月返利在本日入账的金额（订单系统上面供应商返利台账取数）</td>
-					<td>￥ {{ dailyProfitStatistics.systemRebateLastMonthSettlementDay }}</td>
-					<td>￥ {{ dailyProfitStatistics.systemRebateLastMonthSettlementMonth }}</td>
-					<td>￥ {{ dailyProfitStatistics.systemRebateLastMonthSettlementYear }}</td>
+					<td>加：实收返利金额（订单系统上面供应商返利台账取数）</td>
+					<td>￥ {{ dailyProfitStatistics.systemRebateLastMonthSettlementDay.toFixed(2) }}</td>
+					<td>￥ {{ dailyProfitStatistics.systemRebateLastMonthSettlementMonth.toFixed(2) }}</td>
+					<td>￥ {{ dailyProfitStatistics.systemRebateLastMonthSettlementYear.toFixed(2) }}</td>
+				</tr>
+
+				<!-- 平账部分 -->
+				<tr class="bg-blue">
+					<td rowspan="3">平账</td>
+					<td>客户平账</td>
+					<td>￥ {{ dailyProfitStatistics.systemCustomerBalanceDay.toFixed(2) }}</td>
+					<td>￥ {{ dailyProfitStatistics.systemCustomerBalanceMonth.toFixed(2) }}</td>
+					<td>￥ {{ dailyProfitStatistics.systemCustomerBalanceYear.toFixed(2) }}</td>
+				</tr>
+				<tr class="bg-blue">
+					<td>供应商平账</td>
+					<td>￥ {{ dailyProfitStatistics.systemSupplierBalanceDay.toFixed(2) }}</td>
+					<td>￥ {{ dailyProfitStatistics.systemSupplierBalanceMonth.toFixed(2) }}</td>
+					<td>￥ {{ dailyProfitStatistics.systemSupplierBalanceYear.toFixed(2) }}</td>
+				</tr>
+				<tr class="bg-blue">
+					<td>减：平账金额（客户平账-供应商平账）</td>
+					<td>￥ {{ calculateBalance(dailyProfitStatistics.systemCustomerBalanceDay, dailyProfitStatistics.systemSupplierBalanceDay).toFixed(2) }}</td>
+					<td>￥ {{ calculateBalance(dailyProfitStatistics.systemCustomerBalanceMonth, dailyProfitStatistics.systemSupplierBalanceMonth).toFixed(2) }}</td>
+					<td>￥ {{ calculateBalance(dailyProfitStatistics.systemCustomerBalanceYear, dailyProfitStatistics.systemSupplierBalanceYear).toFixed(2) }}</td>
 				</tr>
 
 				<!-- 本日应当利润 -->
 				<tr class="bg-orign">
-					<td colspan="2">本日应当利润</td>
+					<td colspan="2">本日应当利润（利润+实收返利-平账）</td>
 					<td>
 						￥
 						{{
-							calculateProfitToday(
+							calculateFinalProfit(
 								dailyProfit,
-								calculateUnaccountedAmountNoFix(dailyProfitStatistics.systemRebateReceivableDay, dailyProfitStatistics.systemPriceReductionReceivableDay, dailyProfitStatistics.systemCustomerCommissionPayableDay, dailyProfitStatistics.systemTicketPointDiffDay),
-								dailyProfitStatistics.systemRebateLastMonthSettlementDay
+								dailyProfitStatistics.systemRebateLastMonthSettlementDay,
+								calculateBalance(dailyProfitStatistics.systemCustomerBalanceDay, dailyProfitStatistics.systemSupplierBalanceDay)
 							)
 						}}
 					</td>
 					<td>
 						￥
 						{{
-							calculateProfitToday(
-								dailyProfit,
-								calculateUnaccountedAmountNoFix(dailyProfitStatistics.systemRebateReceivableMonth, dailyProfitStatistics.systemPriceReductionReceivableMonth, dailyProfitStatistics.systemCustomerCommissionPayableMonth, dailyProfitStatistics.systemTicketPointDiffMonth),
-								dailyProfitStatistics.systemRebateLastMonthSettlementMonth
+							calculateFinalProfit(
+								monthlyProfit,
+								dailyProfitStatistics.systemRebateLastMonthSettlementMonth,
+								calculateBalance(dailyProfitStatistics.systemCustomerBalanceMonth, dailyProfitStatistics.systemSupplierBalanceMonth)
 							)
 						}}
 					</td>
 					<td>
 						￥
 						{{
-							calculateProfitToday(
-								dailyProfit,
-								calculateUnaccountedAmountNoFix(dailyProfitStatistics.systemRebateReceivableYear, dailyProfitStatistics.systemPriceReductionReceivableYear, dailyProfitStatistics.systemCustomerCommissionPayableYear, dailyProfitStatistics.systemTicketPointDiffYear),
-								dailyProfitStatistics.systemRebateLastMonthSettlementYear
+							calculateFinalProfit(
+								yearlyProfit,
+								dailyProfitStatistics.systemRebateLastMonthSettlementYear,
+								calculateBalance(dailyProfitStatistics.systemCustomerBalanceYear, dailyProfitStatistics.systemSupplierBalanceYear)
 							)
 						}}
 					</td>
@@ -312,5 +349,9 @@ tr:hover {
 
 .bg-orign {
 	background-color: #ffc000;
+}
+
+.bg-blue {
+	background-color: #9bc2e6;
 }
 </style>
