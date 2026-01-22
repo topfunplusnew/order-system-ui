@@ -109,7 +109,13 @@ export default {
 			<tbody>
 				<!-- 订单系统利润 -->
 				<tr class="bg-yellow">
-					<td rowspan="7">订单系统利润</td>
+					<td rowspan="8">订单系统利润</td>
+					<td>加：当日新增入库</td>
+					<td>￥ {{ dailyProfitStatistics.systemNewInventoryDay.toFixed(2) }}</td>
+					<td>￥ {{ dailyProfitStatistics.systemNewInventoryMonth.toFixed(2) }}</td>
+					<td>￥ {{ dailyProfitStatistics.systemNewInventoryYear.toFixed(2) }}</td>
+				</tr>
+				<tr class="bg-yellow">
 					<td>加：订单系统玻璃收入</td>
 					<td>￥ {{ dailyProfitStatistics.systemGlassRevenueDay.toFixed(2) }}</td>
 					<td>￥ {{ dailyProfitStatistics.systemGlassRevenueMonth.toFixed(2) }}</td>
@@ -146,7 +152,7 @@ export default {
 					<td>￥ {{ dailyProfitStatistics.systemDailyExpenseYear.toFixed(2) }}</td>
 				</tr>
 				<tr class="bg-yellow">
-					<td>订单系统利润小计</td>
+					<td>订单系统利润</td>
 					<td>￥ {{ dailyProfitStatistics.systemProfitDay.toFixed(2) }}</td>
 					<td>￥ {{ dailyProfitStatistics.systemProfitMonth.toFixed(2) }}</td>
 					<td>￥ {{ dailyProfitStatistics.systemProfitYear.toFixed(2) }}</td>
@@ -154,23 +160,15 @@ export default {
 
 				<!-- 实收返利金额 -->
 				<tr class="bg-green">
-					<td colspan="2">加：实收返利金额</td>
+					<td colspan="2">实收返利金额</td>
 					<td>￥ {{ dailyProfitStatistics.systemActualReceivedRebateDay.toFixed(2) }}</td>
 					<td>￥ {{ dailyProfitStatistics.systemActualReceivedRebateMonth.toFixed(2) }}</td>
 					<td>￥ {{ dailyProfitStatistics.systemActualReceivedRebateYear.toFixed(2) }}</td>
 				</tr>
 
-				<!-- 当日新增入库 -->
-				<tr class="bg-blue">
-					<td colspan="2">当日新增入库</td>
-					<td>￥ {{ dailyProfitStatistics.systemNewInventoryDay.toFixed(2) }}</td>
-					<td>￥ {{ dailyProfitStatistics.systemNewInventoryMonth.toFixed(2) }}</td>
-					<td>￥ {{ dailyProfitStatistics.systemNewInventoryYear.toFixed(2) }}</td>
-				</tr>
-
 				<!-- 平账 -->
 				<tr class="bg-purple">
-					<td colspan="2">减：平账（客户平账 - 供应商平账）</td>
+					<td colspan="2">平账（客户平账 - 供应商平账）</td>
 					<td>￥ {{ dailyProfitStatistics.systemBalanceAccountsDay.toFixed(2) }}</td>
 					<td>￥ {{ dailyProfitStatistics.systemBalanceAccountsMonth.toFixed(2) }}</td>
 					<td>￥ {{ dailyProfitStatistics.systemBalanceAccountsYear.toFixed(2) }}</td>
