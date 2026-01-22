@@ -25,6 +25,9 @@
 			<el-col :span="1.5">
 				<el-button type="danger" size="mini" @click="addSocial">新增社保基金信息</el-button>
 			</el-col>
+			<el-col :span="1.5">
+				<el-button v-hasPermi="['system:socialinsurance:remove']" type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete">批量删除</el-button>
+			</el-col>
 			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
 				<template #print>
 					<el-col :span="1.5">
@@ -62,6 +65,7 @@
 			"
 			@selection-change="handleSelectionChange"
 		>
+			<el-table-column type="selection" width="50" align="center" />
 			<el-table-column label="id" align="center" prop="id" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
@@ -1034,11 +1038,15 @@ export default {
 		},
 		/** 删除按钮操作 */
 		handleDelete(row) {
-			const ids = row.id || this.ids;
+			const ids = row ? (row.id ? [row.id] : this.ids) : this.ids;
+			const confirmMsg = row && row.id ? '是否确认删除社保基金编号为"' + row.id + '"的数据项？' : '是否确认删除选中的 ' + ids.length + ' 条社保基金数据？';
+
 			this.$modal
-				.confirm('是否确认删除社保基金编号为"' + ids + '"的数据项？')
-				.then(function () {
-					return delSocialInsurance(ids);
+				.confirm(confirmMsg)
+				.then(() => {
+					// 批量删除：逐个调用删除接口
+					const deletePromises = ids.map(id => delSocialInsurance(id));
+					return Promise.all(deletePromises);
 				})
 				.then(() => {
 					this.getList();
