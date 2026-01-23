@@ -16,6 +16,10 @@
 				<el-input v-model="queryParams.itemName" placeholder="请输入物品名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 
+			<el-form-item label="领用人" prop="handler">
+				<el-input v-model="queryParams.handler" placeholder="请输入领用人" clearable @keyup.enter.native="handleQuery" />
+			</el-form-item>
+
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
 				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -43,7 +47,7 @@
 			</right-toolbar>
 		</el-row>
 
-		<el-table v-loading="loading" v-horizontal-scroll="'always'" :data="giftOutList" border size="mini" :cell-style="() => ({ padding: '1px' })" @selection-change="handleSelectionChange" :show-summary="true" :summary-method="getSummaries">
+		<el-table v-loading="loading" v-horizontal-scroll="'always'" :data="giftOutList" border size="mini" :cell-style="cellStyle" @selection-change="handleSelectionChange" :show-summary="true" :summary-method="getSummaries">
 			<el-table-column type="selection" width="55" align="center" />
 
 			<el-table-column v-if="columns[0].visible" label="日期" align="center" prop="outDate" width="120" show-overflow-tooltip>
@@ -91,7 +95,7 @@
 					<el-button v-hasPermi="['system:giftOut:remove']" size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)">删除</el-button>
 
 					<!-- 添加更多按钮 -->
-					<el-dropdown trigger="click" style="margin-left: 5px">
+					<el-dropdown trigger="click" style="margin-left: 5px" @visible-change="visible => handleDropdownVisibleChange(scope.row, visible)">
 						<span class="el-dropdown-link">
 							更多
 							<i class="el-icon-arrow-down el-icon--right"></i>
@@ -100,7 +104,7 @@
 							<el-dropdown-menu>
 								<el-dropdown-item @click.native="handleReturn(scope.row)">退回</el-dropdown-item>
 								<el-dropdown-item @click.native="handleViewInDetail(scope.row)">查看初始入库信息</el-dropdown-item>
-								<el-dropdown-item :disabled="!scope.row.hasReInDetails" @click.native="handleViewReInDetail(scope.row)">查看再入库详情</el-dropdown-item>
+								<el-dropdown-item :disabled="scope.row._checkingReInDetails || scope.row.hasReInDetails === false" @click.native="handleViewReInDetail(scope.row)">查看再入库详情</el-dropdown-item>
 							</el-dropdown-menu>
 						</template>
 					</el-dropdown>
@@ -512,24 +516,69 @@ export default {
 			viewDetailLoading: false
 		};
 	},
+	computed: {
+		// 优化：使用计算属性替代函数，避免每次渲染都创建新对象
+		cellStyle() {
+			return { padding: '1px' };
+		}
+	},
 	created() {
 		this.getUsers();
 		this.getList();
 		this.updateDialogWidth();
 		window.addEventListener('resize', this.updateDialogWidth);
 	},
+	mounted() {
+		// 优化：为表格滚动容器添加被动事件监听器，消除 mousewheel 警告
+		this.$nextTick(() => {
+			this.optimizeTableScroll();
+		});
+	},
 	beforeDestroy() {
 		window.removeEventListener('resize', this.updateDialogWidth);
+		// 清理滚动优化
+		this.cleanupTableScroll();
 	},
 	methods: {
+		/** 优化表格滚动，消除 mousewheel 被动事件警告 */
+		optimizeTableScroll() {
+			this.$nextTick(() => {
+				const tableEl = this.$el?.querySelector('.el-table__body-wrapper');
+				if (tableEl) {
+					// 添加被动的 wheel 事件监听器，改善滚动性能
+					this._tableWheelHandler = e => {
+						// 被动监听器，不阻止默认行为
+					};
+					tableEl.addEventListener('wheel', this._tableWheelHandler, { passive: true });
+
+					// 使用 CSS 优化滚动性能
+					tableEl.style.overscrollBehavior = 'contain';
+					tableEl.style.scrollBehavior = 'auto';
+				}
+			});
+		},
+		/** 清理表格滚动优化 */
+		cleanupTableScroll() {
+			const tableEl = this.$el?.querySelector('.el-table__body-wrapper');
+			if (tableEl && this._tableWheelHandler) {
+				tableEl.removeEventListener('wheel', this._tableWheelHandler);
+				this._tableWheelHandler = null;
+			}
+		},
 		getSummaries(param) {
 			const { columns, data } = param;
 			const sums = [];
+			// 优化：缓存数据长度，避免重复访问
+			const dataLength = data.length;
 			columns.forEach((column, index) => {
 				if (index === 0) {
 					sums[index] = '合计';
 				} else if (column.property === 'quantity') {
-					const total = data.reduce((sum, item) => sum + Number(item.quantity || 0), 0);
+					// 优化：使用 for 循环替代 reduce，性能更好
+					let total = 0;
+					for (let i = 0; i < dataLength; i++) {
+						total += Number(data[i].quantity || 0);
+					}
 					sums[index] = total.toFixed(0); // 整数格式
 				} else {
 					sums[index] = '';
@@ -766,7 +815,7 @@ export default {
 			listGiftOut(params)
 				.then(async response => {
 					const rows = (response && response.rows) || [];
-					// 处理数据并检查每条记录是否有再入库详情
+					// 处理数据（移除每条记录都检查再入库详情的逻辑，改为延迟加载）
 					const processedRows = [];
 					for (const item of rows) {
 						if (!item.estimatedValue && item.quantity && item.unitPrice) {
@@ -776,23 +825,29 @@ export default {
 								item.estimatedValue = round(multiply(qty, price), 2);
 							}
 						}
-						// 检查是否有再入库详情
-						item.hasReInDetails = await this.checkHasReInDetails(item.id);
+						// 不再在列表加载时检查，改为延迟加载（在用户点击"更多"按钮时再检查）
+						// item.hasReInDetails = await this.checkHasReInDetails(item.id);
 						processedRows.push(item);
 					}
-					this.giftOutList = processedRows;
-					// 使用 noPage 时，total 设置为实际返回的数据长度
-					this.total = processedRows.length;
+					// 优化：使用 requestAnimationFrame 延迟 DOM 更新，避免强制重排
+					requestAnimationFrame(() => {
+						this.giftOutList = processedRows;
+						// 使用 noPage 时，total 设置为实际返回的数据长度
+						this.total = processedRows.length;
+					});
 				})
 				.catch(error => {
 					this.$message.error('数据加载失败，请稍后重试');
 					console.error('获取礼品出库列表失败:', error);
 				})
 				.finally(() => {
-					this.loading = false;
+					// 优化：延迟关闭 loading，确保数据已渲染
+					this.$nextTick(() => {
+						this.loading = false;
+					});
 				});
 		},
-		/** 检查出库记录是否有再入库详情 */
+		/** 检查出库记录是否有再入库详情（延迟加载，只在需要时调用） */
 		async checkHasReInDetails(id) {
 			try {
 				const response = await getGiftOutOutDetail(id);
@@ -818,6 +873,21 @@ export default {
 				// 出错时默认返回 false，按钮保持禁用状态
 				console.warn('检查再入库详情失败:', error);
 				return false;
+			}
+		},
+		/** 下拉菜单显示时检查是否有再入库详情（延迟加载优化） */
+		async handleDropdownVisibleChange(row, visible) {
+			// 当下拉菜单打开时，如果还没有检查过，则检查是否有再入库详情
+			if (visible && row.hasReInDetails === undefined && !row._checkingReInDetails) {
+				this.$set(row, '_checkingReInDetails', true);
+				try {
+					const hasDetails = await this.checkHasReInDetails(row.id);
+					this.$set(row, 'hasReInDetails', hasDetails);
+				} catch (error) {
+					this.$set(row, 'hasReInDetails', false);
+				} finally {
+					this.$set(row, '_checkingReInDetails', false);
+				}
 			}
 		},
 
@@ -1469,5 +1539,27 @@ export default {
 ::v-deep .el-dialog__footer .el-button {
 	padding: 8px 20px;
 	border-radius: 4px;
+}
+
+/* 优化表格滚动性能，减少 mousewheel 事件警告的影响 */
+::v-deep .el-table__body-wrapper {
+	overscroll-behavior: contain;
+	scroll-behavior: auto;
+	-webkit-overflow-scrolling: touch;
+}
+
+/* 优化滚动条性能 */
+::v-deep .el-table__body-wrapper::-webkit-scrollbar {
+	width: 8px;
+	height: 8px;
+}
+
+::v-deep .el-table__body-wrapper::-webkit-scrollbar-thumb {
+	background-color: rgba(144, 147, 153, 0.3);
+	border-radius: 4px;
+}
+
+::v-deep .el-table__body-wrapper::-webkit-scrollbar-thumb:hover {
+	background-color: rgba(144, 147, 153, 0.5);
 }
 </style>

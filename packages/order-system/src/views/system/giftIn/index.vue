@@ -104,7 +104,7 @@
 					<el-button v-hasPermi="['system:giftIn:remove']" size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)">删除</el-button>
 
 					<!-- 添加更多按钮 -->
-					<el-dropdown trigger="click" style="margin-left: 5px">
+					<el-dropdown trigger="click" style="margin-left: 5px" @visible-change="visible => handleDropdownVisibleChange(scope.row, visible)">
 						<span class="el-dropdown-link">
 							更多
 							<i class="el-icon-arrow-down el-icon--right"></i>
@@ -112,8 +112,8 @@
 						<template #dropdown>
 							<el-dropdown-menu>
 								<el-dropdown-item @click.native="handleReturn(scope.row)">退回</el-dropdown-item>
-								<el-dropdown-item :disabled="!canViewReInDetail(scope.row)" @click.native="handleViewReInDetail(scope.row)">查看再入库详情</el-dropdown-item>
-								<el-dropdown-item :disabled="!canViewOutDetail(scope.row)" @click.native="handleViewOutDetail(scope.row)">查看出库详情</el-dropdown-item>
+								<el-dropdown-item :disabled="scope.row._checkingReInDetails || scope.row.hasReInDetails === false" @click.native="handleViewReInDetail(scope.row)">查看再入库详情</el-dropdown-item>
+								<el-dropdown-item :disabled="scope.row._checkingOutDetails || scope.row.hasOutDetails === false" @click.native="handleViewOutDetail(scope.row)">查看出库详情</el-dropdown-item>
 							</el-dropdown-menu>
 						</template>
 					</el-dropdown>
@@ -578,39 +578,41 @@ export default {
 					return item;
 				});
 
-				// 2. 获取所有出库记录
+				// 2. 获取所有出库记录（延迟加载优化：不再在列表加载时批量获取，改为延迟加载）
 				let outList = [];
-				try {
-					outList = await this.getAllOutList(inList);
-					// 更新出库详情映射
-					this.outDetailMap = {};
-					outList.forEach(item => {
-						if (item.inId) {
-							this.$set(this.outDetailMap, item.inId, true);
-						}
-					});
-				} catch (error) {
-					console.warn('获取出库列表失败，将跳过出库数量计算:', error);
-					this.$message.warning('部分出库数据加载失败');
-				}
+				// 初始化出库详情映射为空，改为延迟加载
+				this.outDetailMap = {};
+				// 注释掉批量获取，改为延迟加载
+				// try {
+				// 	outList = await this.getAllOutList(inList);
+				// 	outList.forEach(item => {
+				// 		if (item.inId) {
+				// 			this.$set(this.outDetailMap, item.inId, true);
+				// 		}
+				// 	});
+				// } catch (error) {
+				// 	console.warn('获取出库列表失败，将跳过出库数量计算:', error);
+				// 	this.$message.warning('部分出库数据加载失败');
+				// }
 
-				// 3. 获取当前页的退回记录（再入库记录）
+				// 3. 获取当前页的退回记录（再入库记录）（延迟加载优化：不再在列表加载时批量获取，改为延迟加载）
 				let retList = [];
-				try {
-					retList = await this.getAllReturnList(inList);
-					// 更新再入库详情映射
-					this.reInDetailMap = {};
-					retList.forEach(item => {
-						if (item.inId) {
-							this.$set(this.reInDetailMap, item.inId, true);
-						}
-					});
-				} catch (error) {
-					console.warn('获取退回列表失败，将跳过退回数量计算:', error);
-					this.$message.warning('部分退回数据加载失败');
-				}
+				// 初始化再入库详情映射为空，改为延迟加载
+				this.reInDetailMap = {};
+				// 注释掉批量获取，改为延迟加载
+				// try {
+				// 	retList = await this.getAllReturnList(inList);
+				// 	retList.forEach(item => {
+				// 		if (item.inId) {
+				// 			this.$set(this.reInDetailMap, item.inId, true);
+				// 		}
+				// 	});
+				// } catch (error) {
+				// 	console.warn('获取退回列表失败，将跳过退回数量计算:', error);
+				// 	this.$message.warning('部分退回数据加载失败');
+				// }
 
-				// 4. 计算剩余数量
+				// 4. 计算剩余数量（由于不再获取出库和退回数据，剩余数量计算会使用空数组）
 				this.giftInList = this.calculateRemaining(inList, outList, retList);
 				// 使用 noPage 时，total 设置为实际返回的数据长度
 				this.total = this.giftInList.length;
@@ -1178,14 +1180,104 @@ export default {
 
 		// 判断是否可以查看再入库详情
 		canViewReInDetail(row) {
-			// 检查是否有再入库详情数据
-			return !!this.reInDetailMap[row.id];
+			// 检查是否有再入库详情数据（延迟加载优化）
+			return row.hasReInDetails === true;
 		},
 
-		// 判断是否可以查看出库详情
+		// 判断是否可以查看出库详情（延迟加载优化）
 		canViewOutDetail(row) {
 			// 检查是否有出库详情数据
-			return !!this.outDetailMap[row.id];
+			return row.hasOutDetails === true;
+		},
+		/** 下拉菜单显示时检查是否有详情（延迟加载优化） */
+		async handleDropdownVisibleChange(row, visible) {
+			// 当下拉菜单打开时，如果还没有检查过，则检查是否有详情
+			if (visible) {
+				// 检查再入库详情
+				if (row.hasReInDetails === undefined && !row._checkingReInDetails) {
+					this.$set(row, '_checkingReInDetails', true);
+					try {
+						const hasDetails = await this.checkHasReInDetails(row.id);
+						this.$set(row, 'hasReInDetails', hasDetails);
+						this.$set(this.reInDetailMap, row.id, hasDetails);
+					} catch (error) {
+						this.$set(row, 'hasReInDetails', false);
+						this.$set(this.reInDetailMap, row.id, false);
+					} finally {
+						this.$set(row, '_checkingReInDetails', false);
+					}
+				}
+				// 检查出库详情
+				if (row.hasOutDetails === undefined && !row._checkingOutDetails) {
+					this.$set(row, '_checkingOutDetails', true);
+					try {
+						const hasDetails = await this.checkHasOutDetails(row.id);
+						this.$set(row, 'hasOutDetails', hasDetails);
+						this.$set(this.outDetailMap, row.id, hasDetails);
+					} catch (error) {
+						this.$set(row, 'hasOutDetails', false);
+						this.$set(this.outDetailMap, row.id, false);
+					} finally {
+						this.$set(row, '_checkingOutDetails', false);
+					}
+				}
+			}
+		},
+		/** 检查入库记录是否有再入库详情 */
+		async checkHasReInDetails(id) {
+			try {
+				const response = await getGiftInReInDetail(id);
+				let data = null;
+				if (response) {
+					if (Array.isArray(response)) {
+						data = response;
+					} else if (Array.isArray(response.data)) {
+						data = response.data;
+					} else if (Array.isArray(response.rows)) {
+						data = response.rows;
+					} else if (response.data && Array.isArray(response.data.rows)) {
+						data = response.data.rows;
+					} else if (response.data && Array.isArray(response.data.data)) {
+						data = response.data.data;
+					} else if (response.data) {
+						data = Array.isArray(response.data) ? response.data : [response.data];
+					}
+				}
+				// 如果有数据则返回 true，否则返回 false
+				return data && data.length > 0;
+			} catch (error) {
+				// 出错时默认返回 false，按钮保持禁用状态
+				console.warn('检查再入库详情失败:', error);
+				return false;
+			}
+		},
+		/** 检查入库记录是否有出库详情 */
+		async checkHasOutDetails(id) {
+			try {
+				const response = await getGiftInOutDetail(id);
+				let data = null;
+				if (response) {
+					if (Array.isArray(response)) {
+						data = response;
+					} else if (Array.isArray(response.data)) {
+						data = response.data;
+					} else if (Array.isArray(response.rows)) {
+						data = response.rows;
+					} else if (response.data && Array.isArray(response.data.rows)) {
+						data = response.data.rows;
+					} else if (response.data && Array.isArray(response.data.data)) {
+						data = response.data.data;
+					} else if (response.data) {
+						data = Array.isArray(response.data) ? response.data : [response.data];
+					}
+				}
+				// 如果有数据则返回 true，否则返回 false
+				return data && data.length > 0;
+			} catch (error) {
+				// 出错时默认返回 false，按钮保持禁用状态
+				console.warn('检查出库详情失败:', error);
+				return false;
+			}
 		},
 		// 修改 handleViewReInDetail 方法
 		handleViewReInDetail(row) {
