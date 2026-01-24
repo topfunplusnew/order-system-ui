@@ -112,7 +112,7 @@
 			</el-table-column>
 		</el-table>
 
-		<!-- 分页（使用 noPage 获取全部数据，保留分页组件用于显示） -->
+		<!-- 分页 -->
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改礼品出库信息对话框 -->
@@ -810,8 +810,8 @@ export default {
 				this.queryParams.params['endOutDate'] = this.daterangeOutDate[1] + ' 23:59:59';
 			}
 
-			// 使用 noPage 获取全部数据，不分页
-			const params = { ...this.queryParams, noPage: true };
+			// 使用分页参数，不再使用 noPage
+			const params = { ...this.queryParams };
 			listGiftOut(params)
 				.then(async response => {
 					const rows = (response && response.rows) || [];
@@ -832,8 +832,8 @@ export default {
 					// 优化：使用 requestAnimationFrame 延迟 DOM 更新，避免强制重排
 					requestAnimationFrame(() => {
 						this.giftOutList = processedRows;
-						// 使用 noPage 时，total 设置为实际返回的数据长度
-						this.total = processedRows.length;
+						// 使用后端返回的 total 字段作为总条数
+						this.total = response.total || processedRows.length;
 					});
 				})
 				.catch(error => {
