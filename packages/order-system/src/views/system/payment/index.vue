@@ -84,7 +84,7 @@
 		</div>
 		<!--    </div>-->
 		<!-- 付款信息表格 -->
-		<div class="table-container" v-loading="loading" style="margin-bottom: 60px;">
+		<div class="table-container" v-loading="loading" style="margin-bottom: 60px">
 			<!-- 渲染进度提示 -->
 			<div v-if="isRendering" class="rendering-progress">
 				<el-progress :percentage="renderProgress" :status="renderProgress === 100 ? 'success' : null" :stroke-width="6"></el-progress>
@@ -101,7 +101,7 @@
 							</el-tooltip>
 						</template>
 					</el-table-column>
-					<el-table-column label="日期" align="center" prop="fundsDate" width="120" v-if="columns[1].visible" show-overflow-tooltip>
+					<el-table-column label="日期" align="center" prop="fundsDate" width="220" v-if="columns[1].visible" show-overflow-tooltip>
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.fundsDate }}</div>
@@ -109,7 +109,7 @@
 							</el-tooltip>
 						</template>
 					</el-table-column>
-					<el-table-column label="支付类型" align="center" prop="payType" width="120" v-if="columns[2].visible" show-overflow-tooltip>
+					<el-table-column label="支付类型" align="center" prop="payType" width="220" v-if="columns[2].visible" show-overflow-tooltip>
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.payType }}</div>
@@ -1002,7 +1002,7 @@ export default {
 		// 判断编辑按钮是否禁用的封装函数
 		isEditDisabled(row) {
 			// 未支付状态或已付款且已复核的记录不允许编辑 运费聚合的记录不允许编辑
-			const isUnpaid = row.paymentState === PAYMENT_STATE.UNPAID 
+			const isUnpaid = row.paymentState === PAYMENT_STATE.UNPAID;
 			const isPaid = row.paymentState === PAYMENT_STATE.PAID && row.auditState === '1';
 			const isFreightAggregate = row.companyType === PUBLIC_DICT_TYPE.FREIGHT_AGGREGATE;
 			return isUnpaid || isPaid || isFreightAggregate;
@@ -1628,19 +1628,19 @@ export default {
 					if (paymentData.hasOwnProperty('companyId')) {
 						this.form.companyId = savedCompanyId;
 					}
-				// 当 companyType 为"支付费用"时，恢复对方户名等字段
-				if (paymentData.companyType === PAYMENT_TARGET_TYPE.PAYMENT_FEE) {
-					// 处理字段名拼写差异（后端可能返回拼写错误的字段名）
-					if (paymentData.hasOwnProperty('otherAccountsName') || paymentData.hasOwnProperty('otherAcountsName')) {
-						this.form.otherAccountsName = savedOtherAccountsName;
+					// 当 companyType 为"支付费用"时，恢复对方户名等字段
+					if (paymentData.companyType === PAYMENT_TARGET_TYPE.PAYMENT_FEE) {
+						// 处理字段名拼写差异（后端可能返回拼写错误的字段名）
+						if (paymentData.hasOwnProperty('otherAccountsName') || paymentData.hasOwnProperty('otherAcountsName')) {
+							this.form.otherAccountsName = savedOtherAccountsName;
+						}
+						if (paymentData.hasOwnProperty('otherBankNo')) {
+							this.form.otherBankNo = savedOtherBankNo;
+						}
+						if (paymentData.hasOwnProperty('otherBankName')) {
+							this.form.otherBankName = savedOtherBankName;
+						}
 					}
-					if (paymentData.hasOwnProperty('otherBankNo')) {
-						this.form.otherBankNo = savedOtherBankNo;
-					}
-					if (paymentData.hasOwnProperty('otherBankName')) {
-						this.form.otherBankName = savedOtherBankName;
-					}
-				}
 				});
 				// 处理银行账户类型
 				let flag = false;
