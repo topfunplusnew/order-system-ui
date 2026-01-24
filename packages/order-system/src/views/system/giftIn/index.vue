@@ -121,7 +121,7 @@
 			</el-table-column>
 		</el-table>
 
-		<!-- 分页（使用 noPage 获取全部数据，保留分页组件用于显示） -->
+		<!-- 分页 -->
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加/修改弹窗 -->
@@ -558,8 +558,8 @@ export default {
 			}
 
 			try {
-				// 1. 获取入库列表（使用 noPage 获取全部数据，不分页）
-				const params = { ...this.queryParams, noPage: true };
+				// 1. 获取入库列表（使用分页参数）
+				const params = { ...this.queryParams };
 				const inResponse = await listGiftIn(params);
 
 				if (!inResponse) {
@@ -614,8 +614,8 @@ export default {
 
 				// 4. 计算剩余数量（由于不再获取出库和退回数据，剩余数量计算会使用空数组）
 				this.giftInList = this.calculateRemaining(inList, outList, retList);
-				// 使用 noPage 时，total 设置为实际返回的数据长度
-				this.total = this.giftInList.length;
+				// 使用后端返回的 total 字段作为总条数
+				this.total = inResponse.total || this.giftInList.length;
 
 				// 调试输出
 				if (this.giftInList.length > 0) {
