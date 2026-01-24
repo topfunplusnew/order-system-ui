@@ -65,9 +65,11 @@
 					{{ scope.row.isUseOilCard === 1 ? '是' : '否' }}
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[5].visible" label="油卡号" align="center" width="100px">
+			<el-table-column v-if="columns[5].visible" label="油卡号" align="center" width="200px" show-overflow-tooltip>
 				<template slot-scope="scope">
-					<el-button v-if="scope.row.isUseOilCard === 1 && scope.row.oilCardBindings && scope.row.oilCardBindings.length > 0" size="mini" type="primary" @click="handleViewOilCards(scope.row)">查看油卡</el-button>
+					<span v-if="scope.row.isUseOilCard === 1 && scope.row.oilCardBindings && scope.row.oilCardBindings.length > 0">
+						{{ scope.row.oilCardBindings.map(item => item.oilCardNo).join('，') }}
+					</span>
 					<span v-else>-</span>
 				</template>
 			</el-table-column>
