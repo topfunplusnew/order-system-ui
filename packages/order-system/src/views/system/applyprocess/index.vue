@@ -345,7 +345,7 @@ export default {
 					}, 500);
 				}
 			}
-		},
+		}
 		// 'generatePaymentForm.companyType'(newVal) {
 		// 	if (newVal === PAYMENT_TARGET_TYPE.PAYMENT_FEE) {
 		// 		this.generatePaymentForm.companyName = null;
@@ -449,7 +449,7 @@ export default {
 				payType: clonedPaymentApplyInfo.payType.split('-') || [],
 				attachmentList: clonedPaymentApplyInfo.attachmentList,
 				reason: clonedPaymentApplyInfo.reason,
-				// 票的额外信息和 返利的实收详情里面有comment，其他的都是comments字段 
+				// 票的额外信息和 返利的实收详情里面有comment，其他的都是comments字段
 				comments: clonedPaymentApplyInfo.comments,
 				remark: clonedPaymentApplyInfo.remark
 			};
@@ -1048,7 +1048,11 @@ export default {
 			align="center"
 		>
 			<el-table-column v-if="columns[0].visible" prop="id" label="ID" width="80" show-overflow-tooltip></el-table-column>
-			<el-table-column v-if="columns[1].visible" prop="fundsDate" label="日期" width="150" show-overflow-tooltip></el-table-column>
+			<el-table-column v-if="columns[1].visible" label="日期" width="150" show-overflow-tooltip>
+				<template #default="scope">
+					{{ scope.row.payment ? scope.row.payment.fundsDate : '' }}
+				</template>
+			</el-table-column>
 			<el-table-column v-if="columns[2].visible" prop="payType" label="支付类型" width="150" show-overflow-tooltip></el-table-column>
 			<el-table-column v-if="columns[3].visible" prop="moneyAmount" label="金额" width="120" show-overflow-tooltip></el-table-column>
 			<el-table-column v-if="columns[4].visible" prop="otherBankNo" label="对方账号" width="300" show-overflow-tooltip></el-table-column>
