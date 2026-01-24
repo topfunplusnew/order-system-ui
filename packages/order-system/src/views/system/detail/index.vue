@@ -39,9 +39,6 @@
 			<el-form-item label="供应商" prop="supplier">
 				<el-input v-model="queryParams.supplier" placeholder="请输入供应商" clearable size="mini" @keyup.enter.native="handleQuery" />
 			</el-form-item>
-			<el-form-item label="级别编码" prop="levelID">
-				<el-input v-model="queryParams.levelID" placeholder="请输入级别编码" clearable size="mini" @keyup.enter.native="handleQuery" />
-			</el-form-item>
 			<el-form-item label="级别名称" prop="levelName" width="150">
 				<el-input v-model="queryParams.levelName" placeholder="请输入级别名称" clearable size="mini" @keyup.enter.native="handleQuery" />
 			</el-form-item>
@@ -54,11 +51,15 @@
 			<el-form-item label="宽度" prop="width">
 				<el-input v-model="queryParams.width" placeholder="请输入宽度" clearable size="mini" @keyup.enter.native="handleQuery" />
 			</el-form-item>
-			<el-form-item label="吨位" prop="tonnage">
-				<el-input v-model="queryParams.tonnage" placeholder="请输入吨位" clearable size="mini" @keyup.enter.native="handleQuery" />
+			<el-form-item label="剩余量" prop="actualPiecesOperator">
+				<el-select v-model="queryParams.actualPiecesOperator" placeholder="请选择" clearable size="mini" style="width: 80px">
+					<el-option label="≥" value="ge"></el-option>
+					<el-option label="≤" value="le"></el-option>
+					<el-option label="=" value="eq"></el-option>
+				</el-select>
 			</el-form-item>
-			<el-form-item label="剩余量" prop="actualPieces">
-				<el-input v-model="queryParams.actualPieces" placeholder="请输入剩余量" clearable size="mini" @keyup.enter.native="handleQuery" />
+			<el-form-item prop="actualPieces">
+				<el-input v-model="queryParams.actualPieces" placeholder="请输入剩余量" clearable size="mini" style="width: 120px" @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="入库单价" prop="paymentUnload">
 				<el-input v-model="queryParams.paymentUnload" placeholder="请输入入库单价" clearable size="mini" @keyup.enter.native="handleQuery" />
@@ -522,6 +523,7 @@ export default {
 				profit: null,
 				profitNoTax: null,
 				actualPieces: null,
+				actualPiecesOperator: null,
 				paymentsWithSundry: null,
 				additionalFees: null,
 				rebate: null,
