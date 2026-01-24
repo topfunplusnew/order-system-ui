@@ -103,7 +103,15 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[7].visible" label="存货价" align="center" prop="sourceInventoryDetail.paymentUnload" show-overflow-tooltip>
+			<el-table-column v-if="columns[7].visible" label="出库量" align="center" prop="outAmount" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.outAmount }}</div>
+						<span>{{ scope.row.outAmount }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[8].visible" label="存货价" align="center" prop="sourceInventoryDetail.paymentUnload" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.sourceInventoryDetail && scope.row.sourceInventoryDetail.paymentUnload }}</div>
@@ -111,11 +119,11 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[8].visible" label="出库量" align="center" prop="outAmount" show-overflow-tooltip>
+			<el-table-column v-if="columns[9].visible" label="原库存金额" align="center" prop="sourceInventoryDetail.payments" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.outAmount }}</div>
-						<span>{{ scope.row.outAmount }}</span>
+						<div slot="content">{{ scope.row.sourceInventoryDetail && scope.row.sourceInventoryDetail.price }}</div>
+						<span>{{ scope.row.sourceInventoryDetail && scope.row.sourceInventoryDetail.price }}</span>
 					</el-tooltip>
 				</template>
 			</el-table-column>
@@ -774,8 +782,9 @@ export default {
 				{ key: 4, label: `厚度`, visible: true },
 				{ key: 5, label: `长度`, visible: true },
 				{ key: 6, label: `宽度`, visible: true },
-				{ key: 7, label: `存货价`, visible: true },
-				{ key: 8, label: `出库量`, visible: true }
+				{ key: 7, label: `出库量`, visible: true },
+				{ key: 8, label: `存货价`, visible: true },
+				{ key: 9, label: `原库存金额`, visible: true }
 			],
 			isLand: false,
 			isSea: false,
