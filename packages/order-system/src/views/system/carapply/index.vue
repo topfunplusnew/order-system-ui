@@ -4,7 +4,6 @@
 			<el-form-item label="车牌" prop="carNo">
 				<el-input v-model="queryParams.carNo" placeholder="请输入车牌" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
-
 			<el-form-item label="用车时间" prop="startTime">
 				<el-date-picker v-model="queryParams.startTime" type="datetime" placeholder="选择用车时间" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 			</el-form-item>
@@ -14,6 +13,15 @@
 
 			<el-form-item label="派车人" prop="dispatchPerson">
 				<el-input v-model="queryParams.dispatchPerson" placeholder="请输入派车人" clearable @keyup.enter.native="handleQuery" />
+			</el-form-item>
+			<el-form-item label="申请人" prop="applyUser">
+				<el-input v-model="queryParams.applyUser" placeholder="请输入申请人" clearable @keyup.enter.native="handleQuery" />
+			</el-form-item>
+			<el-form-item label="审核状态" prop="auditState">
+				<el-select v-model="queryParams.auditState" placeholder="请选择审核状态" clearable>
+					<el-option label="已审核" value="已审核" />
+					<el-option label="未审核" value="未审核" />
+				</el-select>
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -358,6 +366,7 @@ export default {
 				bTripId: null,
 				applyDate: null,
 				applyUser: null,
+				auditState: null,
 				department: null,
 				carNo: null,
 				isUseOilCard: null,
