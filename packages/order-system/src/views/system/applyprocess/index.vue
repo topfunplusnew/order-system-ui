@@ -86,7 +86,7 @@ export default {
 			loading: false,
 			columns: [
 				{ key: 0, label: `ID`, visible: true },
-				{ key: 1, label: `日期`, visible: true },
+				{ key: 1, label: `申请日期`, visible: true },
 				{ key: 2, label: `支付类型`, visible: true },
 				{ key: 3, label: `金额`, visible: true },
 				{ key: 4, label: `对方账号`, visible: true },
@@ -1048,9 +1048,9 @@ export default {
 			align="center"
 		>
 			<el-table-column v-if="columns[0].visible" prop="id" label="ID" width="80" show-overflow-tooltip></el-table-column>
-			<el-table-column v-if="columns[1].visible" label="日期" width="150" show-overflow-tooltip>
+			<el-table-column v-if="columns[1].visible" label="申请日期" width="150" show-overflow-tooltip>
 				<template #default="scope">
-					{{ scope.row.payment ? scope.row.payment.fundsDate : '' }}
+					{{ scope.row.fundsDate }}
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[2].visible" prop="payType" label="支付类型" width="150" show-overflow-tooltip></el-table-column>
@@ -1071,7 +1071,7 @@ export default {
 					</div>
 				</template>
 			</el-table-column>
-			<el-table-column label="详情" fixed="right" width="100" align="center" show-overflow-tooltip>
+			<el-table-column label="付款详情" fixed="right" width="100" align="center" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<el-button type="text" size="mini" @click="handleCheckInfo(scope.row)">查看</el-button>
 				</template>
@@ -1127,8 +1127,8 @@ export default {
 				<el-descriptions-item label="公司名称">
 					{{ checkPaymentInfo.companyName }}
 				</el-descriptions-item>
-				<el-descriptions-item label="时间">
-					{{ checkPaymentInfo.fundsDate }}
+				<el-descriptions-item label="付款时间">
+					{{ checkPaymentInfo.payment ? checkPaymentInfo.payment.fundsDate : '' }}
 				</el-descriptions-item>
 				<el-descriptions-item label="对方账户名称">
 					{{ checkPaymentInfo.otherAccountsName }}
