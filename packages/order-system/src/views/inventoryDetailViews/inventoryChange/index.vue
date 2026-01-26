@@ -15,16 +15,7 @@
 							<el-input v-model="searchForm.warehouseName" placeholder="请输入仓库名称" clearable size="mini" @keyup.enter.native="getList"></el-input>
 						</el-col>
 						<el-col :span="4">
-							<SearchOption
-								:get-data="listStoreHouse"
-								icon="el-icon-search"
-								:limit-info="{}"
-								query-label="仓库名称"
-								query-info="storeHouseName"
-								:query-name="queryStoreHouseName"
-								@commitBack="handleCommitBackStoreHouse"
-								@update:queryName="value => (queryStoreHouseName = value)"
-							>
+							<SearchOption :get-data="listStoreHouse" icon="el-icon-search" :limit-info="{}" query-label="仓库名称" query-info="storeHouseName" :query-name="queryStoreHouseName" @commitBack="handleCommitBackStoreHouse" @update:queryName="value => (queryStoreHouseName = value)">
 								<template #table-columns>
 									<el-table-column label="仓库名称" align="center" prop="storeHouseName" />
 									<el-table-column label="地址" align="center" prop="address" />
@@ -163,7 +154,7 @@ export default {
 			this.download(
 				'/system/inventoryStatistics/exportWarehouseFundChange',
 				{
-					...this.queryParams
+					...this.searchForm
 				},
 				`库存明细变动_${new Date().getTime()}.xlsx`
 			);
