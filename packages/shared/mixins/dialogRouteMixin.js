@@ -1,50 +1,34 @@
 /**
  * 弹窗路由管理混入
  * 用于自动管理弹窗在路由切换时的隐藏和显示
- *
- * @deprecated 此文件已迁移到 @order-system/shared/mixins，建议直接使用共享包
- * import { dialogRouteMixin } from '@order-system/shared';
  */
+import dialogManager from '../managers/DialogManager';
 
-// 从共享包重新导出
-export { dialogRouteMixin } from '@order-system/shared';
-
-import dialogManager from '@/utils/dialogManager';
-
-// 保留原始导出以保持向后兼容
-const dialogRouteMixinLocal = {
+export const dialogRouteMixin = {
 	data() {
 		return {
-			// 当前组件的弹窗配置
 			dialogConfigs: [],
-			// 路由监听器
 			unwatchRoute: null
 		};
 	},
 
 	mounted() {
-		// 监听路由变化
 		this.unwatchRoute = this.$watch('$route', this.handleRouteChange, { immediate: false });
-
-		// 注册当前组件的弹窗
 		this.registerCurrentDialogs();
 	},
 
 	beforeDestroy() {
-		// 注销路由监听
 		if (this.unwatchRoute) {
 			this.unwatchRoute();
 		}
-
-		// 注销当前组件的弹窗
 		this.unregisterCurrentDialogs();
 	},
 
 	methods: {
 		/**
 		 * 注册弹窗
-		 * @param {string} dialogId - 弹窗唯一标识（建议使用组件名+弹窗用途）
-		 * @param {string} dialogProperty - 弹窗显示属性名（如 'open', 'visible', 'dialogVisible'）
+		 * @param {string} dialogId - 弹窗唯一标识
+		 * @param {string} dialogProperty - 弹窗显示属性名
 		 */
 		registerDialog(dialogId, dialogProperty = 'open') {
 			const routePath = this.$route.path;
@@ -57,7 +41,6 @@ const dialogRouteMixinLocal = {
 			this.dialogConfigs.push(config);
 			dialogManager.registerDialog(routePath, dialogId, this);
 
-			// 重写弹窗属性的 setter，用于监听状态变化
 			this.watchDialogProperty(dialogProperty, routePath, dialogId);
 		},
 
@@ -81,7 +64,6 @@ const dialogRouteMixinLocal = {
 			const routePath = this.$route.path;
 			dialogManager.unregisterDialog(routePath, dialogId);
 
-			// 从配置中移除
 			this.dialogConfigs = this.dialogConfigs.filter(config => config.dialogId !== dialogId);
 		},
 
@@ -126,3 +108,5 @@ const dialogRouteMixinLocal = {
 		}
 	}
 };
+
+export default dialogRouteMixin;

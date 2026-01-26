@@ -1,22 +1,11 @@
 /**
  * 全局弹窗状态管理器
  * 用于管理路由切换时弹窗的隐藏和恢复
- *
- * @deprecated 此文件已迁移到 @order-system/shared/managers，建议直接使用共享包
- * import { dialogManager, DialogManager } from '@order-system/shared';
  */
-
-// 从共享包重新导出
-export { dialogManager, DialogManager } from '@order-system/shared';
-
-// 保留原始导出以保持向后兼容
-class DialogManagerLocal {
+class DialogManager {
 	constructor() {
-		// 存储每个路由对应的弹窗状态
 		this.routeDialogStates = new Map();
-		// 当前路由
 		this.currentRoute = '';
-		// 路由监听器
 		this.routeWatchers = [];
 	}
 
@@ -34,7 +23,7 @@ class DialogManagerLocal {
 		this.routeDialogStates.get(routePath).set(dialogId, {
 			component: dialogComponent,
 			visible: false,
-			wasVisible: false // 记录路由切换前的状态
+			wasVisible: false
 		});
 	}
 
@@ -46,7 +35,6 @@ class DialogManagerLocal {
 	unregisterDialog(routePath, dialogId) {
 		if (this.routeDialogStates.has(routePath)) {
 			this.routeDialogStates.get(routePath).delete(dialogId);
-			// 如果该路由下没有弹窗了，删除整个路由记录
 			if (this.routeDialogStates.get(routePath).size === 0) {
 				this.routeDialogStates.delete(routePath);
 			}
@@ -77,9 +65,7 @@ class DialogManagerLocal {
 		if (this.routeDialogStates.has(fromRoute)) {
 			const dialogs = this.routeDialogStates.get(fromRoute);
 			dialogs.forEach((dialogState, dialogId) => {
-				// 保存当前状态
 				dialogState.wasVisible = dialogState.visible;
-				// 如果弹窗当前是显示的，则隐藏它
 				if (dialogState.visible && dialogState.component) {
 					this.hideDialog(dialogState.component);
 				}
@@ -91,17 +77,11 @@ class DialogManagerLocal {
 	 * 路由切换后恢复目标路由的弹窗状态
 	 * @param {string} toRoute - 进入的路由
 	 */
-	/**
-	 * 路由切换后恢复目标路由的弹窗状态
-	 * @param {string} toRoute - 进入的路由
-	 */
 	restoreDialogsOnRouteEnter(toRoute) {
 		if (this.routeDialogStates.has(toRoute)) {
 			const dialogs = this.routeDialogStates.get(toRoute);
 			dialogs.forEach((dialogState, dialogId) => {
-				// 如果之前是显示状态，则恢复显示
 				if (dialogState.wasVisible && dialogState.component) {
-					// 延迟执行，确保DOM更新完成
 					setTimeout(() => {
 						this.showDialog(dialogState.component);
 					}, 50);
@@ -115,7 +95,6 @@ class DialogManagerLocal {
 	 * @param {Object} component - 组件实例
 	 */
 	hideDialog(component) {
-		// 通用的隐藏方法，适配不同的弹窗属性名
 		const dialogProps = ['dialogVisible', 'visible', 'open', 'show'];
 
 		for (const prop of dialogProps) {
@@ -131,7 +110,6 @@ class DialogManagerLocal {
 	 * @param {Object} component - 组件实例
 	 */
 	showDialog(component) {
-		// 通用的显示方法，适配不同的弹窗属性名
 		const dialogProps = ['dialogVisible', 'visible', 'open', 'show'];
 
 		for (const prop of dialogProps) {
@@ -154,7 +132,6 @@ class DialogManagerLocal {
 
 		if (toRoute) {
 			this.currentRoute = toRoute;
-			// 延迟恢复，确保路由切换完成
 			setTimeout(() => {
 				this.restoreDialogsOnRouteEnter(toRoute);
 			}, 100);
@@ -185,5 +162,6 @@ class DialogManagerLocal {
 }
 
 // 导出单例实例
-const dialogManagerLocal = new DialogManagerLocal();
-export default dialogManagerLocal;
+const dialogManager = new DialogManager();
+export { DialogManager };
+export default dialogManager;

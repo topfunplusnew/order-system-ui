@@ -9,9 +9,13 @@ import ImageUpload from './components/ImageUpload';
 import FileUpload from './components/FileUpload';
 import ImagePreview from './components/ImagePreview';
 import Editor from './components/Editor';
+import Breadcrumb from './components/Breadcrumb';
+import Hamburger from './components/Hamburger';
+import Screenfull from './components/Screenfull';
+import ShowLabel from './components/ShowLabel';
 
 // 全局注册组件
-const components = [Pagination, RightToolbar, DictTag, SvgIcon, ImageUpload, FileUpload, ImagePreview, Editor];
+const components = [Pagination, RightToolbar, DictTag, SvgIcon, ImageUpload, FileUpload, ImagePreview, Editor, Breadcrumb, Hamburger, Screenfull, ShowLabel];
 
 const install = function (Vue) {
 	components.forEach(component => {
@@ -33,8 +37,12 @@ export default {
 	ImageUpload,
 	FileUpload,
 	ImagePreview,
-	Editor
+	Editor,
+	Breadcrumb,
+	Hamburger,
+	Screenfull,
+	ShowLabel
 };
 
 // 单独导出组件
-export { Pagination, RightToolbar, DictTag, SvgIcon, ImageUpload, FileUpload, ImagePreview, Editor };
+export { Pagination, RightToolbar, DictTag, SvgIcon, ImageUpload, FileUpload, ImagePreview, Editor, Breadcrumb, Hamburger, Screenfull, ShowLabel };

@@ -8,3 +8,4 @@ export * from './validate';
 export * from './date';
 export * from './format';
 export * from './scroll-to';
+export * from './common';

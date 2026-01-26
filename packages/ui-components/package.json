@@ -10,7 +10,8 @@
 	"dependencies": {
 		"@order-system/shared": "*",
 		"element-ui": "2.15.14",
-		"vue": "2.6.12"
+		"vue": "2.6.12",
+		"screenfull": "5.0.2"
 	},
 	"peerDependencies": {
 		"vue": "^2.6.12",

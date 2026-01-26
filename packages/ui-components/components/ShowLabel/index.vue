@@ -1,0 +1,85 @@
+<script>
+export default {
+	name: 'ShowLabel',
+	props: {
+		title: {
+			type: String,
+			default: ''
+		}
+	}
+};
+</script>
+
+<template>
+	<div>
+		<div class="tooltip-container">
+			<span class="text">
+				<slot name="icon" />
+				{{ title }}
+			</span>
+		</div>
+	</div>
+</template>
+
+<style scoped lang="scss">
+.tooltip-container {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	position: relative;
+	transition: all 0.3s;
+	background-color: rgb(255, 255, 255);
+	padding: 11px 18px;
+	border-radius: 12px;
+	cursor: pointer;
+}
+
+.text {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	font-size: 14px;
+	font-weight: 600;
+	color: rgb(0, 0, 0);
+}
+
+.svgIcon {
+	width: 16px;
+	height: auto;
+}
+
+.tooltip {
+	position: absolute;
+	top: 0;
+	left: 50%;
+	transform: translateX(-50%);
+	padding: 0.3em 0.6em;
+	opacity: 0;
+	pointer-events: none;
+	transition: all 0.3s;
+	background-color: rgb(255, 255, 255);
+	border-radius: 12px;
+	color: rgb(34, 34, 34);
+}
+
+.tooltip::before {
+	position: absolute;
+	content: '';
+	height: 0.6em;
+	width: 0.6em;
+	bottom: -0.2em;
+	left: 50%;
+	transform: translate(-50%) rotate(45deg);
+	background-color: rgb(255, 255, 255);
+}
+
+.tooltip-container:hover .tooltip {
+	top: -100%;
+	opacity: 1;
+	visibility: visible;
+	pointer-events: auto;
+}
+</style>
