@@ -1191,13 +1191,24 @@ export default {
 		},
 		/** 导出按钮操作 */
 		handleExport() {
-			this.download(
-				'system/orderFreight/export',
-				{
-					...this.queryParams
-				},
-				`订单运费_${new Date().getTime()}.xlsx`
-			);
+			// 构建导出参数
+			const exportParams = {
+				...this.queryParams
+			};
+
+			// 如果当前有运费ID筛选，则传递这些ID进行筛选导出
+			if (this.currentFreightIds && this.currentFreightIds.length > 0) {
+				// 传递逗号分隔的ID字符串到 params.ids
+				if (!exportParams.params) {
+					exportParams.params = {};
+				}
+				exportParams.params.ids = this.currentFreightIds.join(',');
+
+				// 提示用户正在导出筛选后的数据
+				this.$message.info(`正在导出运费ID为 ${this.currentFreightId} 的运费记录`);
+			}
+
+			this.download('system/orderFreight/export', exportParams, `订单运费_${new Date().getTime()}.xlsx`);
 		},
 		// 运费修正相关方法
 		// 打开运费修正弹窗
