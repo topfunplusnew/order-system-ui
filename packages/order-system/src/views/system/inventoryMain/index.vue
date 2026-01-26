@@ -23,6 +23,13 @@
 			<el-form-item v-if="shouldShowField('seaDriverName')" label="海运公司" prop="seaDriverName">
 				<el-input v-model="queryParams.seaDriverName" class="input-standard" placeholder="请输入海运公司" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
+			<el-form-item v-if="shouldShowField('checkState')" label="审核状态" prop="checkState">
+				<el-select v-model="queryParams.checkState" class="input-standard" placeholder="请选择审核状态" clearable @keyup.enter.native="handleQuery">
+					<el-option label="全部" value=""></el-option>
+					<el-option label="未审核" value="未审核"></el-option>
+					<el-option label="已审核" value="已审核"></el-option>
+				</el-select>
+			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
 				<el-button icon="el-icon-setting" size="mini" @click="openFieldSetting">自定义</el-button>
@@ -197,7 +204,7 @@
 													</el-row>
 													<el-row v-else>
 														<el-button v-if="hasPermission(['finance', 'admin'])" type="text" size="mini" @click.stop="handleCheck(scope.row)">审核</el-button>
-														<span v-else style="color: #909399; font-size: 12px">待审核</span>
+														<span v-else style="color: #909399; font-size: 12px">未审核</span>
 													</el-row>
 												</div>
 												<el-row v-if="scope.row.checkState === '已审核'">
@@ -206,7 +213,7 @@
 												<el-row v-else>
 													<el-row>
 														<el-button v-if="hasPermission(['finance', 'admin'])" type="text" size="mini" @click="handleCheck(scope.row)">审核</el-button>
-														<span v-else style="color: #909399; font-size: 12px">待审核</span>
+														<span v-else style="color: #909399; font-size: 12px">未审核</span>
 													</el-row>
 												</el-row>
 											</el-tooltip>
@@ -978,7 +985,8 @@ export default {
 				{ value: 'supplier', label: '供应商' },
 				{ value: 'goodsCompany', label: '货物来源' },
 				{ value: 'landCarNo', label: '陆运车牌' },
-				{ value: 'seaDriverName', label: '海运公司' }
+				{ value: 'seaDriverName', label: '海运公司' },
+				{ value: 'checkState', label: '审核状态' }
 			],
 			selectedFields: [],
 			// 总条数
@@ -1017,6 +1025,7 @@ export default {
 				allLandFreight: null,
 				allSeaFreight: null,
 				seaDriverName: null,
+				checkState: null, // 审核状态
 				params: {
 					main_storeDate_startTime: null,
 					main_storeDate_endTime: null,
@@ -1992,7 +2001,8 @@ export default {
 				goodsCompany: null,
 				allLandFreight: null,
 				allSeaFreight: null,
-				seaDriverName: null
+				seaDriverName: null,
+				checkState: null
 			});
 			// 清理 params 对象中的时间范围参数和供应商参数
 			if (this.queryParams.params) {
@@ -2454,7 +2464,7 @@ export default {
 				case 4: // 货物来源公司
 					return row.goodsCompany || '';
 				case 5: // 审核状态
-					return row.checkState || '待审核';
+					return row.checkState || '未审核';
 				case 6: // 陆运车牌
 					return row.landCarNo || '';
 				case 7: // 陆运司机电话
