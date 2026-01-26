@@ -154,7 +154,7 @@ export default {
 			this.download(
 				'/system/inventoryStatistics/exportWarehouseFundChange',
 				{
-					...this.queryParams
+					...this.searchForm
 				},
 				`库存明细变动_${new Date().getTime()}.xlsx`
 			);
