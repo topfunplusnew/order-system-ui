@@ -15,16 +15,7 @@
 							<el-input v-model="searchForm.warehouseName" placeholder="请输入仓库名称" clearable size="mini" @keyup.enter.native="getList"></el-input>
 						</el-col>
 						<el-col :span="4">
-							<SearchOption
-								:get-data="listStoreHouse"
-								icon="el-icon-search"
-								:limit-info="{}"
-								query-label="仓库名称"
-								query-info="storeHouseName"
-								:query-name="queryStoreHouseName"
-								@commitBack="handleCommitBackStoreHouse"
-								@update:queryName="value => (queryStoreHouseName = value)"
-							>
+							<SearchOption :get-data="listStoreHouse" icon="el-icon-search" :limit-info="{}" query-label="仓库名称" query-info="storeHouseName" :query-name="queryStoreHouseName" @commitBack="handleCommitBackStoreHouse" @update:queryName="value => (queryStoreHouseName = value)">
 								<template #table-columns>
 									<el-table-column label="仓库名称" align="center" prop="storeHouseName" />
 									<el-table-column label="地址" align="center" prop="address" />
@@ -34,7 +25,7 @@
 					</el-row>
 				</el-form-item>
 				<el-form-item>
-					<el-button type="primary" @click="getList" size="mini" v-hasPermi="['system:inventoryStatistics:warehouseFund']">查询</el-button>
+					<el-button type="primary" @click="handleQuery" size="mini" v-hasPermi="['system:inventoryStatistics:warehouseFund']">查询</el-button>
 					<el-button @click="reset" size="mini">重置</el-button>
 				</el-form-item>
 			</el-form>
@@ -95,7 +86,7 @@
 		</el-table>
 
 		<!-- 分页 -->
-		<pagination v-show="total > 0" :total="total" :current-page.sync="searchForm.pageNum" :page-size.sync="searchForm.pageSize" @pagination="getList" />
+		<pagination v-show="total > 0" :total="total" :page.sync="searchForm.pageNum" :limit.sync="searchForm.pageSize" @pagination="getList" />
 
 		<!-- 明细弹窗 -->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight title="明细信息" :visible.sync="detailVisible" width="500px" append-to-body>
@@ -180,14 +171,20 @@ export default {
 					this.loading = false;
 				});
 		},
+		handleQuery() {
+			// 查询时重置到第一页
+			this.searchForm.pageNum = 1;
+			this.getList();
+		},
 		reset() {
-			this.searchForm = {
+			// 使用 Object.assign 保持响应式
+			Object.assign(this.searchForm, {
 				startDate: '',
 				endDate: '',
 				warehouseName: '',
 				pageNum: 1,
 				pageSize: 20
-			};
+			});
 			this.getList();
 		},
 		async showDetail(item, type, row) {
