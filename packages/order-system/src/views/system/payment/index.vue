@@ -1974,22 +1974,25 @@ export default {
 			this.importResultMessage = '';
 		},
 		// 查看运费信息相关方法
-		// 跳转到运费支付页面并带上对方银行卡号
+		// 跳转到运费支付页面并带上运费ID
 		handleViewFreightInfo(row) {
-			// 获取对方银行卡号
-			const otherBankNo = row.otherBankNo;
+			// 从 tableReferences 中提取运费ID列表
+			const freightIds = _.chain(row.tableReferences)
+				.filter(ref => ref.refTableName === TableName.ORDER_FREIGHT && ref.refTableId)
+				.map('refTableId')
+				.value();
 
-			if (!otherBankNo) {
-				this.$message.warning('未找到对方银行卡号信息');
+			if (!freightIds || freightIds.length === 0) {
+				this.$message.warning('未找到关联的运费信息');
 				return;
 			}
 
-			// 跳转到正确的运费管理页面路径
+			// 跳转到正确的运费管理页面路径，传递整个运费ID数组（转为逗号分隔的字符串）
 			if (this.$router) {
 				this.$router.push({
 					path: '/order/freight/OrderFreight',
 					query: {
-						otherBankNo: otherBankNo
+						freightId: freightIds.join(',')
 					}
 				});
 			}
