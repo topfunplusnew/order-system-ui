@@ -41,10 +41,10 @@ export default {
 		adjustTableColumns() {
 			const dataCols = [
 				{ idx: 0, label: 'ID', prop: 'id', fixed: 'left' },
-				{ idx: 1, label: '日期', prop: 'orderDate', fixed: 'left', width: 200 },
+				{ idx: 1, label: '日期', prop: 'orderDate', fixed: 'left', width: 110 },
 				{ idx: 2, label: '客户', prop: 'customer', fixed: 'left', width: 196 },
 				{ idx: 3, label: '供应商/仓库', prop: 'supplierNames', fixed: 'left', width: 280 },
-				{ idx: 4, label: '陆运车牌', prop: 'landCarNo', fixed: 'left', width: 112 },
+				{ idx: 4, label: '陆运车牌', prop: 'landCarNo', width: 112 },
 				{ idx: 5, label: '审核', prop: 'checkState', width: 112 },
 				{ idx: 6, label: '车队', prop: 'fleet', width: 112 },
 				{ idx: 7, label: '陆运电话', prop: 'landDriverTel', width: 176 },
