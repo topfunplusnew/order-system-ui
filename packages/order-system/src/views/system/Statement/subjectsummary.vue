@@ -12,10 +12,7 @@ export default {
 		return {
 			queryParams: {
 				subjectName: '',
-				beginTime: parseTime(new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000), '{y}-{m}-{d}'),
 				endTime: parseTime(new Date(), '{y}-{m}-{d}')
-				// pageNum: 1,
-				// pageSize: 50
 			},
 			loading: false,
 			columns: [
@@ -32,8 +29,7 @@ export default {
 				{ key: 10, label: '占比', visible: true }
 			],
 
-			statementList: [],
-			dialogVisible: false
+			statementList: []
 		};
 	},
 	created() {
@@ -88,19 +84,14 @@ export default {
 		refresh() {
 			this.handleQuery();
 		},
-		handleSubmitTime() {
+		handleExport() {
 			this.download(
 				'statistics/export/subjectsummary',
 				{
-					beginTime: this.queryParams.beginTime,
 					endTime: this.queryParams.endTime
 				},
 				`费用科目汇总_${parseTime(new Date().getTime())}.xlsx`
 			);
-			this.dialogVisible = false;
-		},
-		handleExport() {
-			this.dialogVisible = true;
 		}
 	}
 };
@@ -117,10 +108,7 @@ export default {
 			<!--    时间范围搜索行-->
 			<el-row>
 				<el-form id="top-search-form-item" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
-					<el-form-item label="时间" prop="companyName">
-						<el-date-picker v-model="queryParams.beginTime" type="date" size="mini" value-format="yyyy-MM-dd" placeholder="选择日期"></el-date-picker>
-					</el-form-item>
-					<el-form-item>
+					<el-form-item label="日期" prop="endTime">
 						<el-date-picker v-model="queryParams.endTime" type="date" size="mini" value-format="yyyy-MM-dd" placeholder="选择日期"></el-date-picker>
 					</el-form-item>
 					<el-form-item label="科目">
@@ -205,20 +193,6 @@ export default {
 				</el-row>
 			</el-row>
 		</div>
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="请选择导出时间段" :visible.sync="dialogVisible" width="30%">
-			<el-form ref="queryForm" :model="queryParams" size="mini" label-width="68px">
-				<el-form-item label="开始时间" prop="beginTime">
-					<el-date-picker v-model="queryParams.beginTime" type="date" placeholder="选择时间" value-format="yyyy-MM-dd" size="mini"></el-date-picker>
-				</el-form-item>
-				<el-form-item label="结束时间" prop="endTime">
-					<el-date-picker v-model="queryParams.endTime" type="date" placeholder="选择时间" value-format="yyyy-MM-dd" size="mini"></el-date-picker>
-				</el-form-item>
-			</el-form>
-			<span slot="footer" class="dialog-footer">
-				<el-button @click="dialogVisible = false">取 消</el-button>
-				<el-button type="primary" @click="handleSubmitTime">导 出</el-button>
-			</span>
-		</el-dialog>
 	</div>
 </template>
 
