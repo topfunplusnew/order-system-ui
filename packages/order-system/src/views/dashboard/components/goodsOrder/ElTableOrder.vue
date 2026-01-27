@@ -37,13 +37,13 @@ export default {
 		PUBLIC_DICT_TYPE() {
 			return PUBLIC_DICT_TYPE;
 		},
-		// 调整单：使用 el-table + el-table-column（订单模式不变）
+		// 调整单：使用 el-table + el-table-column（订单模式不变），所有列不固定
 		adjustTableColumns() {
 			const dataCols = [
-				{ idx: 0, label: 'ID', prop: 'id', fixed: 'left' },
-				{ idx: 1, label: '日期', prop: 'orderDate', fixed: 'left', width: 110 },
-				{ idx: 2, label: '客户', prop: 'customer', fixed: 'left', width: 196 },
-				{ idx: 3, label: '供应商/仓库', prop: 'supplierNames', fixed: 'left', width: 280 },
+				{ idx: 0, label: 'ID', prop: 'id' },
+				{ idx: 1, label: '日期', prop: 'orderDate', width: 110 },
+				{ idx: 2, label: '客户', prop: 'customer', width: 196 },
+				{ idx: 3, label: '供应商/仓库', prop: 'supplierNames', width: 280 },
 				{ idx: 4, label: '陆运车牌', prop: 'landCarNo', width: 112 },
 				{ idx: 5, label: '审核', prop: 'checkState', width: 112 },
 				{ idx: 6, label: '车队', prop: 'fleet', width: 112 },
@@ -71,10 +71,10 @@ export default {
 			];
 
 			return [
-				{ idx: 'index', label: '序号', fixed: 'left', width: 50, align: 'center' },
-				{ idx: 'rowActions', label: '行操作', fixed: 'left', width: 100, align: 'center' },
+				{ idx: 'index', label: '序号', width: 50, align: 'center' },
+				{ idx: 'rowActions', label: '行操作', width: 100, align: 'center' },
 				...dataCols.filter(col => this.columns[col.idx] && this.columns[col.idx].visible),
-				{ idx: 'orderActions', label: '订单操作', fixed: 'right', width: 250, align: 'center' }
+				{ idx: 'orderActions', label: '订单操作', width: 250, align: 'center' }
 			];
 		}
 	},
