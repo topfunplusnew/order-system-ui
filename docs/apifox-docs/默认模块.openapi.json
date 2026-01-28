@@ -1,0 +1,411 @@
+{
+	"openapi": "3.0.1",
+	"info": {
+		"title": "默认模块",
+		"description": "",
+		"version": "1.0.0"
+	},
+	"tags": [],
+	"paths": {
+		"/statistics/getDailyProfitStatistics": {
+			"get": {
+				"summary": "本日应当利润",
+				"deprecated": false,
+				"description": "",
+				"tags": [],
+				"parameters": [
+					{
+						"name": "date",
+						"in": "query",
+						"description": "年月日字符串",
+						"required": false,
+						"example": "2025-02-08",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "Authorization",
+						"in": "header",
+						"description": "",
+						"example": "dev-mode-admin-token-2025",
+						"schema": {
+							"type": "string",
+							"default": "dev-mode-admin-token-2025"
+						}
+					},
+					{
+						"name": "OSR",
+						"in": "header",
+						"description": "",
+						"example": "{{OSR}}",
+						"schema": {
+							"type": "string",
+							"default": "{{OSR}}"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"msg": {
+											"type": "string"
+										},
+										"code": {
+											"type": "integer"
+										},
+										"data": {
+											"type": "object",
+											"properties": {
+												"systemGlassRevenueDay": {
+													"type": "number",
+													"title": "订单系统玻璃收入（当日）"
+												},
+												"systemGlassRevenueMonth": {
+													"type": "number",
+													"title": "订单系统玻璃收入（当月）"
+												},
+												"systemGlassRevenueYear": {
+													"type": "number",
+													"title": "订单系统玻璃收入（当年）"
+												},
+												"systemGlassCostDay": {
+													"type": "number",
+													"title": "订单系统玻璃成本（当日）"
+												},
+												"systemGlassCostMonth": {
+													"type": "number",
+													"title": "订单系统玻璃成本（当月）"
+												},
+												"systemGlassCostYear": {
+													"type": "number",
+													"title": "订单系统玻璃成本（当年）"
+												},
+												"systemPayableFreightDay": {
+													"type": "number",
+													"title": "订单系统应付运费（当日）"
+												},
+												"systemPayableFreightMonth": {
+													"type": "number",
+													"title": "订单系统应付运费（当月）"
+												},
+												"systemPayableFreightYear": {
+													"type": "number",
+													"title": "订单系统应付运费（当年）"
+												},
+												"systemInvoiceInDay": {
+													"type": "number",
+													"title": "订单系统票点成本（进项发票）（当日）"
+												},
+												"systemInvoiceInMonth": {
+													"type": "number",
+													"title": "订单系统票点成本（进项发票）（当月）"
+												},
+												"systemInvoiceInYear": {
+													"type": "number",
+													"title": "订单系统票点成本（进项发票）（当年）"
+												},
+												"systemInvoiceOutDay": {
+													"type": "number",
+													"title": "订单系统票点收入（销项发票）（当日）"
+												},
+												"systemInvoiceOutMonth": {
+													"type": "number",
+													"title": "订单系统票点收入（销项发票）（当月）"
+												},
+												"systemInvoiceOutYear": {
+													"type": "number",
+													"title": "订单系统票点收入（销项发票）（当年）"
+												},
+												"systemDailyExpenseDay": {
+													"type": "number",
+													"title": "订单系统管理费用（日常费用）（当日）"
+												},
+												"systemDailyExpenseMonth": {
+													"type": "number",
+													"title": "订单系统管理费用（日常费用）（当月）"
+												},
+												"systemDailyExpenseYear": {
+													"type": "number",
+													"title": "订单系统管理费用（日常费用）（当年）"
+												},
+												"systemActualReceivedRebateDay": {
+													"type": "number",
+													"title": "实收返利金额（当日）"
+												},
+												"systemActualReceivedRebateMonth": {
+													"type": "number",
+													"title": "实收返利金额（当月）"
+												},
+												"systemActualReceivedRebateYear": {
+													"type": "number",
+													"title": "实收返利金额（当年）"
+												},
+												"systemNewInventoryDay": {
+													"type": "number",
+													"title": "当日新增入库（当日）"
+												},
+												"systemNewInventoryMonth": {
+													"type": "number",
+													"title": "当日新增入库（当月）"
+												},
+												"systemNewInventoryYear": {
+													"type": "number",
+													"title": "当日新增入库（当年）"
+												},
+												"systemBalanceAccountsDay": {
+													"type": "number",
+													"title": "平账（客户-供应商）（当日）"
+												},
+												"systemBalanceAccountsMonth": {
+													"type": "number",
+													"title": "平账（客户-供应商）（当月）"
+												},
+												"systemBalanceAccountsYear": {
+													"type": "number",
+													"title": "平账（客户-供应商）（当年）"
+												},
+												"systemProfitDay": {
+													"type": "number",
+													"title": "订单系统利润（当日）"
+												},
+												"systemProfitMonth": {
+													"type": "number",
+													"title": "订单系统利润（当月）"
+												},
+												"systemProfitYear": {
+													"type": "number",
+													"title": "订单系统利润（当年）"
+												},
+												"systemTotalDay": {
+													"type": "number",
+													"title": "合计（当日）"
+												},
+												"systemTotalMonth": {
+													"type": "number",
+													"title": "合计（当月）"
+												},
+												"systemTotalYear": {
+													"type": "number",
+													"title": "合计（当年）"
+												},
+												"systemFactoryRebateReceivableDay": {
+													"type": "number",
+													"title": "应收厂家返利金额（当日）"
+												},
+												"systemFactoryRebateReceivableMonth": {
+													"type": "number",
+													"title": "应收厂家返利金额（当月）"
+												},
+												"systemFactoryRebateReceivableYear": {
+													"type": "number",
+													"title": "应收厂家返利金额（当年）"
+												},
+												"systemFactoryDiscountReceivableDay": {
+													"type": "number",
+													"title": "应收厂家降价金额（当日）"
+												},
+												"systemFactoryDiscountReceivableMonth": {
+													"type": "number",
+													"title": "应收厂家降价金额（当月）"
+												},
+												"systemFactoryDiscountReceivableYear": {
+													"type": "number",
+													"title": "应收厂家降价金额（当年）"
+												},
+												"systemCustomerCommissionPayableDay": {
+													"type": "number",
+													"title": "应付客户佣金金额（当日）"
+												},
+												"systemCustomerCommissionPayableMonth": {
+													"type": "number",
+													"title": "应付客户佣金金额（当月）"
+												},
+												"systemCustomerCommissionPayableYear": {
+													"type": "number",
+													"title": "应付客户佣金金额（当年）"
+												},
+												"systemFactoryCommissionPayableDay": {
+													"type": "number",
+													"title": "应付厂家佣金金额（当日）"
+												},
+												"systemFactoryCommissionPayableMonth": {
+													"type": "number",
+													"title": "应付厂家佣金金额（当月）"
+												},
+												"systemFactoryCommissionPayableYear": {
+													"type": "number",
+													"title": "应付厂家佣金金额（当年）"
+												},
+												"systemUnrecordedInvoiceAmountDay": {
+													"type": "number",
+													"title": "票点未入账金额（当日）"
+												},
+												"systemUnrecordedInvoiceAmountMonth": {
+													"type": "number",
+													"title": "票点未入账金额（当月）"
+												},
+												"systemUnrecordedInvoiceAmountYear": {
+													"type": "number",
+													"title": "票点未入账金额（当年）"
+												},
+												"systemUnrecordedBalanceDay": {
+													"type": "number",
+													"title": "未入账金额结余（当日）"
+												},
+												"systemUnrecordedBalanceMonth": {
+													"type": "number",
+													"title": "未入账金额结余（当月）"
+												},
+												"systemUnrecordedBalanceYear": {
+													"type": "number",
+													"title": "未入账金额结余（当年）"
+												},
+												"systemExpectedProfitDay": {
+													"type": "number",
+													"title": "本日应当利润（当日）"
+												},
+												"systemExpectedProfitMonth": {
+													"type": "number",
+													"title": "本日应当利润（当月）"
+												},
+												"systemExpectedProfitYear": {
+													"type": "number",
+													"title": "本日应当利润（当年）"
+												}
+											},
+											"required": [
+												"systemGlassRevenueDay",
+												"systemGlassRevenueMonth",
+												"systemGlassRevenueYear",
+												"systemGlassCostDay",
+												"systemGlassCostMonth",
+												"systemGlassCostYear",
+												"systemPayableFreightDay",
+												"systemPayableFreightMonth",
+												"systemPayableFreightYear",
+												"systemInvoiceInDay",
+												"systemInvoiceInMonth",
+												"systemInvoiceInYear",
+												"systemInvoiceOutDay",
+												"systemInvoiceOutMonth",
+												"systemInvoiceOutYear",
+												"systemDailyExpenseDay",
+												"systemDailyExpenseMonth",
+												"systemDailyExpenseYear",
+												"systemActualReceivedRebateDay",
+												"systemActualReceivedRebateMonth",
+												"systemActualReceivedRebateYear",
+												"systemNewInventoryDay",
+												"systemNewInventoryMonth",
+												"systemNewInventoryYear",
+												"systemBalanceAccountsDay",
+												"systemBalanceAccountsMonth",
+												"systemBalanceAccountsYear",
+												"systemProfitDay",
+												"systemProfitMonth",
+												"systemProfitYear",
+												"systemTotalDay",
+												"systemTotalMonth",
+												"systemTotalYear",
+												"systemFactoryRebateReceivableDay",
+												"systemFactoryRebateReceivableMonth",
+												"systemFactoryRebateReceivableYear",
+												"systemFactoryDiscountReceivableDay",
+												"systemFactoryDiscountReceivableMonth",
+												"systemFactoryDiscountReceivableYear",
+												"systemCustomerCommissionPayableDay",
+												"systemCustomerCommissionPayableMonth",
+												"systemCustomerCommissionPayableYear",
+												"systemFactoryCommissionPayableDay",
+												"systemFactoryCommissionPayableMonth",
+												"systemFactoryCommissionPayableYear",
+												"systemUnrecordedInvoiceAmountDay",
+												"systemUnrecordedInvoiceAmountMonth",
+												"systemUnrecordedInvoiceAmountYear",
+												"systemUnrecordedBalanceDay",
+												"systemUnrecordedBalanceMonth",
+												"systemUnrecordedBalanceYear",
+												"systemExpectedProfitDay",
+												"systemExpectedProfitMonth",
+												"systemExpectedProfitYear"
+											]
+										}
+									},
+									"required": ["msg", "code", "data"]
+								},
+								"example": {
+									"msg": "操作成功",
+									"code": 200,
+									"data": {
+										"systemGlassRevenueDay": 0,
+										"systemGlassRevenueMonth": 2650069.52,
+										"systemGlassRevenueYear": 2650069.52,
+										"systemGlassCostDay": 2006523.9,
+										"systemGlassCostMonth": 4461959.645,
+										"systemGlassCostYear": 4461959.645,
+										"systemPayableFreightDay": 44237.655,
+										"systemPayableFreightMonth": 88010.039,
+										"systemPayableFreightYear": 88010.039,
+										"systemInvoiceInDay": 749333326,
+										"systemInvoiceInMonth": 1370330322.8,
+										"systemInvoiceInYear": 1370330322.8,
+										"systemInvoiceOutDay": 120000001.2,
+										"systemInvoiceOutMonth": 120000001.2,
+										"systemInvoiceOutYear": 120000001.2,
+										"systemDailyExpenseDay": 0,
+										"systemDailyExpenseMonth": 800,
+										"systemDailyExpenseYear": 800,
+										"systemRebateReceivableDay": 0,
+										"systemRebateReceivableMonth": 3268.526,
+										"systemRebateReceivableYear": 3562.555,
+										"systemPriceReductionReceivableDay": 0,
+										"systemPriceReductionReceivableMonth": 0,
+										"systemPriceReductionReceivableYear": 0,
+										"systemCustomerCommissionPayableDay": 50,
+										"systemCustomerCommissionPayableMonth": 111,
+										"systemCustomerCommissionPayableYear": 111,
+										"systemTicketPointDiffDay": 30781.781,
+										"systemTicketPointDiffMonth": -463157.381,
+										"systemTicketPointDiffYear": -463157.381,
+										"systemRebateLastMonthSettlementDay": 600,
+										"systemRebateLastMonthSettlementMonth": 600,
+										"systemRebateLastMonthSettlementYear": 600,
+										"systemGlassRevenue": 0
+									}
+								}
+							}
+						},
+						"headers": {}
+					}
+				},
+				"security": [
+					{
+						"bearer": []
+					}
+				]
+			}
+		}
+	},
+	"components": {
+		"schemas": {},
+		"responses": {},
+		"securitySchemes": {
+			"bearer": {
+				"type": "http",
+				"scheme": "bearer"
+			}
+		}
+	},
+	"servers": [],
+	"security": [
+		{
+			"bearer": []
+		}
+	]
+}
