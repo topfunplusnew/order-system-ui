@@ -119,11 +119,11 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[9].visible" label="原库存金额" align="center" prop="sourceInventoryDetail.payments" show-overflow-tooltip>
+			<el-table-column v-if="columns[9].visible" label="原库存金额" align="center" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.sourceInventoryDetail && scope.row.sourceInventoryDetail.payments }}</div>
-						<span>{{ scope.row.sourceInventoryDetail && scope.row.sourceInventoryDetail.payments }}</span>
+						<div slot="content">{{ calcSourceInventoryAmount(scope.row) }}</div>
+						<span>{{ calcSourceInventoryAmount(scope.row) }}</span>
 					</el-tooltip>
 				</template>
 			</el-table-column>
@@ -652,6 +652,7 @@ import { PUBLIC_DICT_TYPE } from '@/utils/order';
 import { updateInventoryRowCalculations } from '../inventoryMain/inventoryCalculations';
 import { parseTime } from '@/utils/ruoyi';
 import _ from 'lodash';
+import { multiply, divide, round } from 'mathjs';
 import {
 	handlePriceInput as utilHandlePriceInput,
 	formatPriceInput as utilFormatPriceInput,
@@ -923,6 +924,18 @@ export default {
 		listFleet,
 		listCompany,
 		listProductLevel,
+		// 计算原库存金额：长度*宽度*出库量*存货价/1000000
+		calcSourceInventoryAmount(row) {
+			const detail = row.sourceInventoryDetail;
+			if (!detail) return '-';
+			const length = Number(detail.length) || 0;
+			const width = Number(detail.width) || 0;
+			const outAmount = Number(row.outAmount) || 0;
+			const paymentUnload = Number(detail.paymentUnload) || 0;
+			if (length === 0 || width === 0 || outAmount === 0 || paymentUnload === 0) return '-';
+			const result = divide(multiply(multiply(multiply(length, width), outAmount), paymentUnload), 1000000);
+			return round(result, 2);
+		},
 		// 附件更新处理
 		handleAttachmentFilesUpdated(uploadParams) {
 			// uploadParams 结构: { params: { attachmentIds: [1, 2, 3] } }
