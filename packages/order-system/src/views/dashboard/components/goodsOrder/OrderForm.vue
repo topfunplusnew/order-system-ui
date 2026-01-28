@@ -1286,8 +1286,8 @@ export default {
 			<!-- <el-form-item label="录入人员" prop="userName">
 	  <el-input v-model="orderInfo.userName" type="text" size="mini" placeholder="请输入录入人员" style="width: 110px" />
 	</el-form-item> -->
-			<el-form-item label="备注" prop="comments">
-				<el-input v-model="orderInfo.comments" type="text" size="mini" placeholder="请输入备注" @keyup.enter.native="handleBasicInfoEnter" />
+			<el-form-item label="其他信息" prop="comments">
+				<el-input v-model="orderInfo.comments" type="text" size="mini" placeholder="请输入其他信息" @keyup.enter.native="handleBasicInfoEnter" />
 			</el-form-item>
 			<el-form-item label="运输方式">
 				<el-checkbox v-model="isLand" @change="handleLandTransportChange">陆运</el-checkbox>
@@ -1704,9 +1704,9 @@ export default {
 						<el-input size="mini" v-model="scope.row.profitNoTax" placeholder="自动计算" disabled />
 					</template>
 				</el-table-column>
-				<el-table-column label="备注" prop="comments" width="250">
+				<el-table-column label="其他信息" prop="comments" width="250">
 					<template #default="scope">
-						<el-input size="mini" v-model="scope.row.comments" placeholder="请输入备注" :disabled="!scope.row.isEditing" />
+						<el-input size="mini" v-model="scope.row.comments" placeholder="请输入其他信息" :disabled="!scope.row.isEditing" />
 					</template>
 				</el-table-column>
 				<el-table-column label="物流利润" prop="logisticsProfit" width="90">
