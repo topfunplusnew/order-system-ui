@@ -94,9 +94,9 @@ export default {
 				{ key: 6, label: `对方公司`, visible: true },
 				{ key: 7, label: `付款原因`, visible: true },
 				{ key: 8, label: `申请人`, visible: true },
-				{ key: 9, label: `审核人`, visible: true },
-				{ key: 10, label: `备注`, visible: true },
-				{ key: 11, label: `附件`, visible: true },
+				{ key: 9, label: `备注`, visible: true },
+				{ key: 10, label: `附件`, visible: true },
+				{ key: 11, label: `审核人`, visible: true },
 				{ key: 12, label: `操作`, visible: true }
 			],
 			// 查看付款信息的
@@ -1074,13 +1074,8 @@ export default {
 			<el-table-column v-if="columns[6].visible" prop="companyName" label="对方公司" width="120" show-overflow-tooltip></el-table-column>
 			<el-table-column v-if="columns[7].visible" prop="reason" label="付款原因" width="120" show-overflow-tooltip></el-table-column>
 			<el-table-column v-if="columns[8].visible" prop="applyPerson" label="申请人" width="120" show-overflow-tooltip></el-table-column>
-			<el-table-column v-if="columns[9].visible" label="审核人" width="120" show-overflow-tooltip>
-				<template #default="scope">
-					{{ getLatestAuditor(scope.row.auditInfoList) }}
-				</template>
-			</el-table-column>
-			<el-table-column v-if="columns[10].visible" prop="comments" label="备注" width="120" show-overflow-tooltip></el-table-column>
-			<el-table-column v-if="columns[11].visible" prop="comments" label="附件" width="120" show-overflow-tooltip>
+			<el-table-column v-if="columns[9].visible" prop="comments" label="备注" width="120" show-overflow-tooltip></el-table-column>
+			<el-table-column v-if="columns[10].visible" prop="comments" label="附件" width="120" show-overflow-tooltip>
 				<template #default="scope">
 					<div v-if="Array.isArray(scope.row.attachmentList)">
 						<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'attachments'" :is-upload="false" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getPaymentApply, updatePaymentApply)" />
@@ -1111,6 +1106,11 @@ export default {
 					>
 						{{ scope.row.checkState }}
 					</el-tag>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[11].visible" label="审核人" width="120" fixed="right" align="center" show-overflow-tooltip>
+				<template #default="scope">
+					{{ getLatestAuditor(scope.row.auditInfoList) }}
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[12].visible" label="操作" show-overflow-tooltip align="center" fixed="right" width="260">
