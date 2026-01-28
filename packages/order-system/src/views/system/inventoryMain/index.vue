@@ -389,6 +389,9 @@
 				<el-form-item label="附件">
 					<UploadFilesButton ref="attachmentsUploader" flag="path" :extra-info="{ moduleType: 'inventoryMain', formId: form.id }" :initial-attachments="filteredPathAttachments" @files-updated="handleAttachmentsFilesUpdated" />
 				</el-form-item>
+				<el-form-item label="其他信息" prop="comments">
+					<el-input size="mini" v-model="form.comments" placeholder="请输入其他信息" />
+				</el-form-item>
 				<br />
 				<el-form-item label="运输方式" prop="transportMode" required>
 					<el-checkbox v-model="isLand" @change="updateTransportMode">陆运</el-checkbox>
@@ -782,10 +785,10 @@
 							<el-input size="mini" v-model="scope.row.profitNoTax" placeholder="自动计算" disabled />
 						</template>
 					</el-table-column>
-					<el-table-column label="其他信息" prop="comments" width="150">
+					<el-table-column label="备注" prop="comments" width="150">
 						<template #default="scope">
 							<!-- 添加 disabled 属性 -->
-							<el-input size="mini" v-model="scope.row.comments" placeholder="请输入其他信息" :disabled="!scope.row.isEditing" />
+							<el-input size="mini" v-model="scope.row.comments" placeholder="请输入备注" :disabled="!scope.row.isEditing" />
 						</template>
 					</el-table-column>
 					<el-table-column label="物流利润" prop="logisticsProfit" width="80">

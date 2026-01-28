@@ -1704,9 +1704,9 @@ export default {
 						<el-input size="mini" v-model="scope.row.profitNoTax" placeholder="自动计算" disabled />
 					</template>
 				</el-table-column>
-				<el-table-column label="其他信息" prop="comments" width="250">
+				<el-table-column label="备注" prop="comments" width="250">
 					<template #default="scope">
-						<el-input size="mini" v-model="scope.row.comments" placeholder="请输入其他信息" :disabled="!scope.row.isEditing" />
+						<el-input size="mini" v-model="scope.row.comments" placeholder="请输入备注" :disabled="!scope.row.isEditing" />
 					</template>
 				</el-table-column>
 				<el-table-column label="物流利润" prop="logisticsProfit" width="90">
