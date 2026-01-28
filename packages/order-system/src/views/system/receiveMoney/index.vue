@@ -66,7 +66,7 @@
 			</right-toolbar>
 		</div>
 		<!-- 收款信息表格 -->
-		<div class="table-container" v-loading="loading" style="flex: 1; margin-bottom: 60px;">
+		<div class="table-container" v-loading="loading" style="flex: 1; margin-bottom: 60px">
 			<!-- 渲染进度提示 -->
 			<div v-if="isRendering" class="rendering-progress">
 				<el-progress :percentage="renderProgress" :status="renderProgress === 100 ? 'success' : null" :stroke-width="6"></el-progress>
@@ -88,10 +88,10 @@
 					<el-table-column v-if="columns[7].visible" label="对方账号" align="center" prop="otherBankNo" width="190" show-overflow-tooltip />
 					<el-table-column v-if="columns[8].visible" label="对方开户行" align="center" prop="otherBankName" width="180" show-overflow-tooltip />
 					<el-table-column label="备注" align="center" prop="comments" width="165" show-overflow-tooltip />
-					<el-table-column label="银行卡流水编号" align="center" prop="transactionHistory" width="165" show-overflow-tooltip />
+					<el-table-column label="银行卡流水编号" align="center" prop="transactionHistory" show-overflow-tooltip />
 					<!-- 2025-11-1 录入人员不用录入了 -->
 					<!-- <el-table-column label="录入人员" align="center" prop="userName" width="120" show-overflow-tooltip /> -->
-					<el-table-column label="银行卡流水附件" align="center" prop="attachmentList" width="165" fixed="right">
+					<el-table-column label="银行卡流水附件" align="center" prop="attachmentList" fixed="right">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
 								<div slot="content" @click.stop>
@@ -1100,46 +1100,46 @@ export default {
 		performReceiveMoneyEdit(receiveMoneyData) {
 			this.reset();
 			// 使用 $nextTick 确保组件渲染完成后再设置银行账户类型和其他属性
-		this.$nextTick(() => {
-			// 先保存字段，避免 watch 监听器清空它们
-			const savedCompanyName = receiveMoneyData.companyName;
-			const savedCompanyId = receiveMoneyData.companyId;
-			const savedOtherAcountsName = receiveMoneyData.otherAcountsName;
-			const savedOtherBankNo = receiveMoneyData.otherBankNo;
-			const savedOtherBankName = receiveMoneyData.otherBankName;
-			// 保留表单结构，特别是 params.attachmentIds 和 params.bankacceptance
-			Object.assign(this.form, {
-				...receiveMoneyData,
-				params: {
-					...receiveMoneyData.params,
-					attachmentIds: receiveMoneyData.attachmentList ? receiveMoneyData.attachmentList.map(item => item.id) : [],
-					bankacceptance: receiveMoneyData.params?.bankacceptance || null
-				}
-			});
-			// 如果 companyType 发生了变化，watch 可能已经清空了字段，需要恢复
-			// 使用 $nextTick 确保 watch 执行完毕后再恢复值
 			this.$nextTick(() => {
-				// 确保 companyName 和 companyId 被正确赋值（包括 0 值）
-				// 使用 hasOwnProperty 或 in 操作符检查属性是否存在，而不是判断值是否为 falsy
-				if (receiveMoneyData.hasOwnProperty('companyName')) {
-					this.form.companyName = savedCompanyName;
-				}
-				if (receiveMoneyData.hasOwnProperty('companyId')) {
-					this.form.companyId = savedCompanyId;
-				}
-			// 当 companyType 为"支付费用"时，恢复对方户名等字段
-			if (receiveMoneyData.companyType === PAYMENT_TARGET_TYPE.PAYMENT_FEE) {
-				if (receiveMoneyData.hasOwnProperty('otherAcountsName')) {
-					this.form.otherAcountsName = savedOtherAcountsName;
-				}
-				if (receiveMoneyData.hasOwnProperty('otherBankNo')) {
-					this.form.otherBankNo = savedOtherBankNo;
-				}
-				if (receiveMoneyData.hasOwnProperty('otherBankName')) {
-					this.form.otherBankName = savedOtherBankName;
-				}
-			}
-			});
+				// 先保存字段，避免 watch 监听器清空它们
+				const savedCompanyName = receiveMoneyData.companyName;
+				const savedCompanyId = receiveMoneyData.companyId;
+				const savedOtherAcountsName = receiveMoneyData.otherAcountsName;
+				const savedOtherBankNo = receiveMoneyData.otherBankNo;
+				const savedOtherBankName = receiveMoneyData.otherBankName;
+				// 保留表单结构，特别是 params.attachmentIds 和 params.bankacceptance
+				Object.assign(this.form, {
+					...receiveMoneyData,
+					params: {
+						...receiveMoneyData.params,
+						attachmentIds: receiveMoneyData.attachmentList ? receiveMoneyData.attachmentList.map(item => item.id) : [],
+						bankacceptance: receiveMoneyData.params?.bankacceptance || null
+					}
+				});
+				// 如果 companyType 发生了变化，watch 可能已经清空了字段，需要恢复
+				// 使用 $nextTick 确保 watch 执行完毕后再恢复值
+				this.$nextTick(() => {
+					// 确保 companyName 和 companyId 被正确赋值（包括 0 值）
+					// 使用 hasOwnProperty 或 in 操作符检查属性是否存在，而不是判断值是否为 falsy
+					if (receiveMoneyData.hasOwnProperty('companyName')) {
+						this.form.companyName = savedCompanyName;
+					}
+					if (receiveMoneyData.hasOwnProperty('companyId')) {
+						this.form.companyId = savedCompanyId;
+					}
+					// 当 companyType 为"支付费用"时，恢复对方户名等字段
+					if (receiveMoneyData.companyType === PAYMENT_TARGET_TYPE.PAYMENT_FEE) {
+						if (receiveMoneyData.hasOwnProperty('otherAcountsName')) {
+							this.form.otherAcountsName = savedOtherAcountsName;
+						}
+						if (receiveMoneyData.hasOwnProperty('otherBankNo')) {
+							this.form.otherBankNo = savedOtherBankNo;
+						}
+						if (receiveMoneyData.hasOwnProperty('otherBankName')) {
+							this.form.otherBankName = savedOtherBankName;
+						}
+					}
+				});
 				// 处理银行账户类型
 				let flag = false;
 				if (!receiveMoneyData.bankacceptanceId) {
