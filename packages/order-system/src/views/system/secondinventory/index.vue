@@ -122,8 +122,8 @@
 			<el-table-column v-if="columns[9].visible" label="原库存金额" align="center" prop="sourceInventoryDetail.payments" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.sourceInventoryDetail && scope.row.sourceInventoryDetail.price }}</div>
-						<span>{{ scope.row.sourceInventoryDetail && scope.row.sourceInventoryDetail.price }}</span>
+						<div slot="content">{{ scope.row.sourceInventoryDetail && scope.row.sourceInventoryDetail.payments }}</div>
+						<span>{{ scope.row.sourceInventoryDetail && scope.row.sourceInventoryDetail.payments }}</span>
 					</el-tooltip>
 				</template>
 			</el-table-column>
