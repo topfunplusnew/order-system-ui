@@ -32,6 +32,9 @@
 			<!--      <el-form-item label="乡镇" prop="county">-->
 			<!--        <el-input v-model="queryParams.county" placeholder="请输入乡镇"/ @keyup.enter.native="handleQuery">-->
 			<!--      </el-form-item>-->
+			<el-form-item label="业务经理" prop="UserName">
+				<el-input v-model="queryParams.UserName" placeholder="请输入业务经理" clearable @keyup.enter.native="handleQuery" />
+			</el-form-item>
 			<el-form-item label="走访日期">
 				<el-date-picker v-model="dateRange" style="width: 240px" value-format="yyyy-MM-dd HH:mm:ss" type="daterange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
 			</el-form-item>
@@ -83,6 +86,14 @@
 		>
 			<el-table-column label="id" align="center" prop="id" fixed="left" show-overflow-tooltip />
 			<el-table-column label="走访日期" align="center" prop="visitDate" fixed="left" show-overflow-tooltip />
+			<el-table-column align="center" prop="userName" fixed="left" show-overflow-tooltip width="120px">
+				<template #header>
+					<span>业务经理</span>
+					<el-tooltip content="该列取值为行信息的录入人员" placement="top">
+						<i class="el-icon-question" style="margin-left: 4px; cursor: pointer; color: #909399"></i>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 			<el-table-column v-if="columns[0].visible" label="是否审核" align="center" prop="isCheckState" fixed="left" show-overflow-tooltip width="120px">
 				<template #default="scope">
 					<el-row v-if="scope.row.checkState === 1">
