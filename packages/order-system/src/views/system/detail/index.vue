@@ -53,8 +53,8 @@
 			</el-form-item>
 			<el-form-item label="剩余量" prop="actualPiecesOperator">
 				<el-select v-model="queryParams.actualPiecesOperator" placeholder="请选择" clearable size="mini" style="width: 80px">
-					<el-option label="≥" value="ge"></el-option>
-					<el-option label="≤" value="le"></el-option>
+					<el-option label="＞" value="gt"></el-option>
+					<el-option label="＜" value="lt"></el-option>
 					<el-option label="=" value="eq"></el-option>
 				</el-select>
 			</el-form-item>
