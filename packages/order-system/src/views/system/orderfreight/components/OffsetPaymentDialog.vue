@@ -54,6 +54,10 @@
 						<el-radio v-model="offsetForm.sourceCompanyType" label="供应商">供应商</el-radio>
 					</el-form-item>
 
+					<el-form-item label="支付类型" prop="sourcePaymentType">
+						<el-cascader v-model="offsetForm.sourcePaymentType" :options="paymentTypeTree" :props="props" placeholder="请选择支出方支付类型" style="width: 100%" />
+					</el-form-item>
+
 					<el-form-item label="支出方" prop="sourceId">
 						<el-row>
 							<el-col :span="16">
@@ -135,6 +139,7 @@ import { listCompany } from '@/api/system/company';
 import SearchOption from '@/components/SearchOption.vue';
 import { mapGetters } from 'vuex';
 import { TableName, PayType } from '../../../../api/tool/enums';
+import { mixin_payment_subject } from '../../../dashboard/mixins/payment/payment_subject';
 import _ from 'lodash';
 import { add, bignumber } from 'mathjs';
 
@@ -143,6 +148,7 @@ export default {
 	components: {
 		SearchOption
 	},
+	mixins: [mixin_payment_subject],
 	props: {
 		selectedFreights: {
 			type: Array,
@@ -159,6 +165,8 @@ export default {
 				transactionTime: null,
 				sourceCompanyType: '客户',
 				targetCompanyType: '司机',
+				sourcePaymentType: null,
+				targetPaymentType: '负债-应付账款-运费',
 				sourceId: null,
 				targetId: null,
 				sourceAccountName: '',
@@ -180,6 +188,7 @@ export default {
 			offsetRules: {
 				transactionTime: [{ required: true, message: '请选择交易时间', trigger: 'change' }],
 				sourceCompanyType: [{ required: true, message: '请选择支出方类型', trigger: 'change' }],
+				sourcePaymentType: [{ required: true, message: '请选择支付类型', trigger: 'change' }],
 				sourceId: [{ required: true, message: '请选择支出方', trigger: 'change' }],
 				sourceAccountName: [{ required: true, message: '请选择支出方户名', trigger: 'blur' }]
 			},
@@ -347,14 +356,16 @@ export default {
 
 		// 构造批量提交数据
 		buildBatchSubmitData() {
+			const payTypeValue = Array.isArray(this.offsetForm.sourcePaymentType) ? this.offsetForm.sourcePaymentType.join('-') : this.offsetForm.sourcePaymentType;
 			// 使用 lodash 的 map 方法遍历分组数据
 			return _.map(this.groupedByDriverAndBank, group => {
 				// 构建基础表单数据模板
-				const baseFormData = _.pick(this.offsetForm, ['sourceBankNo', 'sourceAccountName', 'sourceBankName', 'sourceCompanyType', 'sourceId', 'targetCompanyType', 'transactionTime', 'remarks', 'userId', 'userName']);
+				const baseFormData = _.pick(this.offsetForm, ['sourceBankNo', 'sourceAccountName', 'sourceBankName', 'sourceCompanyType', 'sourceId', 'targetCompanyType', 'targetPaymentType', 'transactionTime', 'remarks', 'userId', 'userName']);
 
 				// 合并分组特定数据
 				return _.assign(baseFormData, {
 					amount: group.totalAmount,
+					sourcePaymentType: payTypeValue,
 					params: {
 						attachmentIds: []
 					},

@@ -61,6 +61,16 @@
 				<!-- 保证金金额 -->
 				<el-table-column v-if="columns[3].visible" label="保证金金额" align="center" prop="moneyAmount" show-overflow-tooltip />
 				<el-table-column v-if="columns[12].visible" label="未收回金额" align="center" prop="unrecoveredAmount" show-overflow-tooltip />
+				<el-table-column v-if="columns[13].visible" label="收回金额" align="center" show-overflow-tooltip>
+					<template slot-scope="scope">
+						<span>{{ calculateRecoveredAmount(scope.row) }}</span>
+					</template>
+				</el-table-column>
+				<el-table-column v-if="columns[14].visible" label="累计坏账" align="center" show-overflow-tooltip>
+					<template slot-scope="scope">
+						<span>{{ calculateTotalBadDebt(scope.row) }}</span>
+					</template>
+				</el-table-column>
 
 				<!-- 对方账户 -->
 				<el-table-column v-if="columns[4].visible" label="对方账户" align="center" prop="targetAcountsName" show-overflow-tooltip />
@@ -240,7 +250,7 @@
 						<el-col :span="18">
 							<el-input v-model="recoverMoneyEntity.acountsName" placeholder="请输入收回账户" />
 						</el-col>
-						<el-col :span="6" style="flex-shrink: 0;">
+						<el-col :span="6" style="flex-shrink: 0">
 							<SearchOption
 								:get-data="listBankAccount"
 								icon="el-icon-search"
@@ -345,6 +355,7 @@ import { getSubjectLevelTree } from '@/api/system/subject';
 import { getConfigKey } from '@/api/system/config';
 import _ from 'lodash';
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
+import { subtract, bignumber, add } from 'mathjs';
 
 export default {
 	name: 'CashDeposit',
@@ -508,6 +519,24 @@ export default {
 				{ key: 1, label: '公司名称', visible: true },
 				{ key: 2, label: '对方类型', visible: true },
 				{ key: 3, label: '保证金金额', visible: true },
+				{
+					key: 12,
+					label: '未收回金额',
+					prop: 'unrecoveredAmount',
+					visible: true
+				},
+				{
+					key: 13,
+					label: '收回金额',
+					prop: 'recoveredAmount',
+					visible: true
+				},
+				{
+					key: 14,
+					label: '累计坏账',
+					prop: 'totalBadDebt',
+					visible: true
+				},
 				{ key: 4, label: '对方账户', visible: true },
 				{ key: 5, label: '对方账号', visible: true },
 				{ key: 6, label: '对方开户行', visible: true },
@@ -515,13 +544,7 @@ export default {
 				{ key: 8, label: '我方账号', visible: true },
 				{ key: 9, label: '我方开户行', visible: true },
 				{ key: 10, label: '支付期货保证金时间', visible: true },
-				{ key: 11, label: '是由', visible: true },
-				{
-					key: 12,
-					label: '未收回金额',
-					prop: 'unrecoveredAmount',
-					visible: true
-				}
+				{ key: 11, label: '是由', visible: true }
 			],
 			// 收回资金校验规则
 			recoverRules: {
@@ -888,6 +911,22 @@ export default {
 				},
 				`期货保证金_${new Date().getTime()}.xlsx`
 			);
+		},
+		// 计算收回金额 = 保证金金额 - 未收回金额
+		calculateRecoveredAmount(row) {
+			const moneyAmount = bignumber(row.moneyAmount || 0);
+			const unrecoveredAmount = bignumber(row.unrecoveredAmount || 0);
+			const recovered = subtract(moneyAmount, unrecoveredAmount);
+			return Number(recovered).toFixed(2);
+		},
+		// 计算累计坏账 = recoverMoneyList 数组中 moneyAmount 的合计
+		calculateTotalBadDebt(row) {
+			if (!row.recoverMoneyList || !Array.isArray(row.recoverMoneyList) || row.recoverMoneyList.length === 0) {
+				return '0.00';
+			}
+			const amounts = row.recoverMoneyList.map(item => bignumber(item.moneyAmount || 0));
+			const total = amounts.reduce((sum, amount) => add(sum, amount), bignumber(0));
+			return Number(total).toFixed(2);
 		}
 	}
 };

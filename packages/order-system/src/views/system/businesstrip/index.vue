@@ -207,7 +207,7 @@
 							<template slot-scope="scope">
 								<el-row>
 									<el-col :span="20">
-										<el-input v-model="scope.row.item" placeholder="请输入报销项" :disabled="scope.row.isDisabled" />
+										<el-input v-model="scope.row.item" placeholder="请输入报销项" disabled />
 									</el-col>
 									<el-col :span="4">
 										<SubjectOption @update:type="value => handleType(value, scope)" />

@@ -86,6 +86,22 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
+			<el-table-column v-if="columns[12].visible" label="收回金额" align="center" prop="recoveredAmount" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ calculateRecoveredAmount(scope.row) }}</div>
+						<span>{{ calculateRecoveredAmount(scope.row) }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[13].visible" label="累计坏账" align="center" prop="totalBadDebt" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ calculateTotalBadDebt(scope.row) }}</div>
+						<span>{{ calculateTotalBadDebt(scope.row) }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 			<el-table-column v-if="columns[3].visible" label="对方收借款账号" align="center" prop="targetBankNo" show-overflow-tooltip width="200">
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
@@ -269,7 +285,7 @@
 						<el-col :span="18">
 							<el-input v-model="recoverMoneyEntity.acountsName" placeholder="请输入收回账户" />
 						</el-col>
-						<el-col :span="6" style="flex-shrink: 0;">
+						<el-col :span="6" style="flex-shrink: 0">
 							<SearchOption
 								:get-data="listBankAccount"
 								icon="el-icon-search"
@@ -353,17 +369,7 @@
 									<el-input disabled v-model="form.targetAcountsName" placeholder="请选择" />
 								</el-col>
 								<el-col :span="3">
-									<SearchOption
-										title="对方账户"
-										:get-data="listBankAccount"
-										icon="el-icon-search"
-										:limit-info="targetAccountLimitInfo"
-										query-label="户名查找"
-										query-info="acountsName"
-										:query-name="queryBank"
-										@commitBack="handleCommitBack"
-										@update:queryName="handleUpdateQueryName"
-									>
+									<SearchOption title="对方账户" :get-data="listBankAccount" icon="el-icon-search" :limit-info="targetAccountLimitInfo" query-label="户名查找" query-info="acountsName" :query-name="queryBank" @commitBack="handleCommitBack" @update:queryName="handleUpdateQueryName">
 										<template #table-columns>
 											<el-table-column v-for="column in targetAccountColumns" :key="column.prop" :label="column.label" :prop="column.prop" :align="column.align" />
 										</template>
@@ -473,6 +479,7 @@ import { PUBLIC_DICT_TYPE } from '@/utils/order';
 import { getSubjectLevelTree } from '@/api/system/subject';
 import { getConfigKey } from '@/api/system/config';
 import _ from 'lodash';
+import { subtract, bignumber, add } from 'mathjs';
 
 export default {
 	name: 'EmployeeLendMoney',
@@ -560,6 +567,18 @@ export default {
 					key: 11,
 					label: '未收回金额',
 					prop: 'unrecoveredAmount',
+					visible: true
+				},
+				{
+					key: 12,
+					label: '收回金额',
+					prop: 'recoveredAmount',
+					visible: true
+				},
+				{
+					key: 13,
+					label: '累计坏账',
+					prop: 'totalBadDebt',
 					visible: true
 				},
 				{
@@ -826,7 +845,7 @@ export default {
 	},
 	watch: {
 		// 监听对象类型变化，清空已选择的账户信息（只有用户主动选择时才清空）
-		'form.targetType': function(newVal, oldVal) {
+		'form.targetType': function (newVal, oldVal) {
 			if (newVal !== oldVal && this.isUserAction) {
 				// 清空账户相关信息
 				this.form.targetAcountsName = null;
@@ -1193,6 +1212,22 @@ export default {
 				delFlag: null
 			};
 			this.resetForm('recover_form');
+		},
+		// 计算收回金额 = 借出金额 - 未收回金额
+		calculateRecoveredAmount(row) {
+			const moneyAmount = bignumber(row.moneyAmount || 0);
+			const unrecoveredAmount = bignumber(row.unrecoveredAmount || 0);
+			const recovered = subtract(moneyAmount, unrecoveredAmount);
+			return Number(recovered).toFixed(2);
+		},
+		// 计算累计坏账 = recoverMoneyList 数组中 moneyAmount 的合计
+		calculateTotalBadDebt(row) {
+			if (!row.recoverMoneyList || !Array.isArray(row.recoverMoneyList) || row.recoverMoneyList.length === 0) {
+				return '0.00';
+			}
+			const amounts = row.recoverMoneyList.map(item => bignumber(item.moneyAmount || 0));
+			const total = amounts.reduce((sum, amount) => add(sum, amount), bignumber(0));
+			return Number(total).toFixed(2);
 		}
 	}
 };

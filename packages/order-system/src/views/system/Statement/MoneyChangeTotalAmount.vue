@@ -172,7 +172,7 @@ export default {
 				// 使用本日资金总额（anotherLabel）而不是资金变动金额（anotherValue）
 				const leftValue = Number(leftData[i].anotherLabel || 0);
 				const rightValue = Number(rightData[i].anotherLabel || 0);
-				const diffValue = subtract(leftValue, rightValue);
+				const diffValue = subtract(rightValue, leftValue);
 				const absDiffValue = abs(diffValue);
 
 				// 如果存在差异（不允许任何误差），使用 math.js 的 compare 进行比较
@@ -226,14 +226,7 @@ export default {
 				remainingInventoryAmount: Number(data?.remainingInventoryAmount || 0)
 			};
 
-			let result = add(
-				safe.companyTotalBalance,
-				safe.selfCompanyTotalFunds,
-				safe.loanFromCompany,
-				safe.futuresMarginBalance,
-				safe.paymentMarginBalance,
-				safe.remainingInventoryAmount
-			);
+			let result = add(safe.companyTotalBalance, safe.selfCompanyTotalFunds, safe.loanFromCompany, safe.futuresMarginBalance, safe.paymentMarginBalance, safe.remainingInventoryAmount);
 			result = subtract(result, safe.supplierTotalBalance);
 			result = subtract(result, safe.driverUnpaidAmount);
 			result = subtract(result, safe.receiveMarginBalance);
@@ -250,7 +243,7 @@ export default {
 			const calculateDifference = field => {
 				const startValue = Number(startTimeMoney[field] || 0);
 				const endValue = Number(endTimeMoney[field] || 0);
-				return subtract(startValue, endValue);
+				return subtract(endValue, startValue);
 			};
 
 			// 格式化数值为两位小数（使用 math.js 的 format 函数）
@@ -481,7 +474,7 @@ export default {
 		calculateProfitChange(anotherLabel, value) {
 			const anotherLabelNum = Number(anotherLabel || 0);
 			const valueNum = Number(value || 0);
-			const result = subtract(anotherLabelNum, valueNum);
+			const result = subtract(valueNum, anotherLabelNum);
 			return format(result, { notation: 'fixed', precision: 2 });
 		},
 		// 判断差异值是否大于阈值（使用 math.js 进行高精度比较）
