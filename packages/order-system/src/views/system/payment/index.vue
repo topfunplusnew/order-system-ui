@@ -117,7 +117,7 @@
 							</el-tooltip>
 						</template>
 					</el-table-column>
-					<el-table-column label="对方公司" align="center" prop="companyName" width="120" v-if="columns[11].visible" show-overflow-tooltip>
+					<el-table-column label="对方公司" align="center" prop="companyName" width="120" v-if="columns[3].visible" show-overflow-tooltip>
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.companyName }}</div>
@@ -125,7 +125,7 @@
 							</el-tooltip>
 						</template>
 					</el-table-column>
-					<el-table-column label="对方公司类型" align="center" prop="companyType" width="130" v-if="columns[12].visible" show-overflow-tooltip>
+					<el-table-column label="对方公司类型" align="center" prop="companyType" width="130" v-if="columns[4].visible" show-overflow-tooltip>
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.companyType }}</div>
@@ -133,7 +133,7 @@
 							</el-tooltip>
 						</template>
 					</el-table-column>
-					<el-table-column label="金额" align="center" prop="moneyAmount" width="70" v-if="columns[3].visible" show-overflow-tooltip>
+					<el-table-column label="金额" align="center" prop="moneyAmount" width="70" v-if="columns[5].visible" show-overflow-tooltip>
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.moneyAmount }}</div>
@@ -141,7 +141,7 @@
 							</el-tooltip>
 						</template>
 					</el-table-column>
-					<el-table-column label="我方户名" align="center" prop="selfAccountsName" width="120" v-if="columns[4].visible" show-overflow-tooltip>
+					<el-table-column label="我方户名" align="center" prop="selfAccountsName" width="120" v-if="columns[6].visible" show-overflow-tooltip>
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.selfAccountsName }}</div>
@@ -149,7 +149,7 @@
 							</el-tooltip>
 						</template>
 					</el-table-column>
-					<el-table-column label="我方账号" align="center" prop="selfBankNo" width="180" v-if="columns[5].visible" show-overflow-tooltip>
+					<el-table-column label="我方账号" align="center" prop="selfBankNo" width="180" v-if="columns[7].visible" show-overflow-tooltip>
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.selfBankNo }}</div>
@@ -157,7 +157,7 @@
 							</el-tooltip>
 						</template>
 					</el-table-column>
-					<el-table-column label="我方开户行" align="center" prop="selfBankName" width="120" v-if="columns[6].visible" show-overflow-tooltip>
+					<el-table-column label="我方开户行" align="center" prop="selfBankName" width="120" v-if="columns[8].visible" show-overflow-tooltip>
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.selfBankName }}</div>
@@ -165,7 +165,7 @@
 							</el-tooltip>
 						</template>
 					</el-table-column>
-					<el-table-column label="对方户名" align="center" prop="otherAccountsName" width="120" v-if="columns[7].visible" show-overflow-tooltip>
+					<el-table-column label="对方户名" align="center" prop="otherAccountsName" width="120" v-if="columns[9].visible" show-overflow-tooltip>
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.otherAccountsName }}</div>
@@ -174,7 +174,7 @@
 						</template>
 					</el-table-column>
 					<!-- 对方账号列已经包含了 show-overflow-tooltip，可以正常显示 -->
-					<el-table-column label="对方账号" align="center" prop="otherBankNo" width="190" v-if="columns[8].visible" show-overflow-tooltip>
+					<el-table-column label="对方账号" align="center" prop="otherBankNo" width="190" v-if="columns[10].visible" show-overflow-tooltip>
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.otherBankNo }}</div>
@@ -183,7 +183,7 @@
 						</template>
 					</el-table-column>
 
-					<el-table-column label="对方开户行" align="center" prop="otherBankName" width="120" v-if="columns[9].visible" show-overflow-tooltip>
+					<el-table-column label="对方开户行" align="center" prop="otherBankName" width="120" v-if="columns[11].visible" show-overflow-tooltip>
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.otherBankName }}</div>
@@ -191,7 +191,7 @@
 							</el-tooltip>
 						</template>
 					</el-table-column>
-					<el-table-column label="支付状态" align="center" prop="paymentState" width="120" v-if="columns[10].visible" show-overflow-tooltip>
+					<el-table-column label="支付状态" align="center" prop="paymentState" width="120" v-if="columns[12].visible" show-overflow-tooltip>
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.paymentState }}</div>
@@ -240,15 +240,14 @@
 							</el-tooltip>
 						</template>
 					</el-table-column>
-					<!-- 2025-11-1 录入人员不用录入了 -->
-					<!-- <el-table-column label="录入人员" align="center" prop="userName" width="120" v-if="columns[17] && columns[17].visible" show-overflow-tooltip>
+					<el-table-column label="录入人员" align="center" prop="userName" width="120" v-if="columns[17] && columns[17].visible" show-overflow-tooltip>
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.userName }}</div>
 								<span>{{ scope.row.userName }}</span>
 							</el-tooltip>
 						</template>
-					</el-table-column> -->
+					</el-table-column>
 					<el-table-column label="复核状态" align="center" class-name="small-padding fixed-width" width="80" fixed="right">
 						<template slot-scope="scope">
 							<el-tooltip :content="hasAuditPermission ? '点击切换复核状态' : '您没有复核权限'" placement="top">
@@ -722,19 +721,18 @@ export default {
 				{ key: 0, label: ` id`, visible: true },
 				{ key: 1, label: `日期`, visible: true },
 				{ key: 2, label: `支付类型`, visible: true },
-				{ key: 3, label: `金额`, visible: true },
-				{ key: 4, label: `我方户名`, visible: true },
-				{ key: 5, label: `我方账号`, visible: true },
-				{ key: 6, label: `我方开户行`, visible: true },
-				{ key: 7, label: `对方户名`, visible: true },
-				{ key: 8, label: `对方账号`, visible: true },
-				{ key: 9, label: `对方开户行`, visible: true },
-				{ key: 10, label: `支付状态`, visible: true },
-				{ key: 11, label: `对方公司`, visible: true },
-				{ key: 12, label: `对方公司类型`, visible: true },
+				{ key: 3, label: `对方公司`, visible: true },
+				{ key: 4, label: `对方公司类型`, visible: true },
+				{ key: 5, label: `金额`, visible: true },
+				{ key: 6, label: `我方户名`, visible: true },
+				{ key: 7, label: `我方账号`, visible: true },
+				{ key: 8, label: `我方开户行`, visible: true },
+				{ key: 9, label: `对方户名`, visible: true },
+				{ key: 10, label: `对方账号`, visible: true },
+				{ key: 11, label: `对方开户行`, visible: true },
+				{ key: 12, label: `支付状态`, visible: true },
 				{ key: 13, label: `备注`, visible: true },
 				{ key: 14, label: `附件`, visible: true },
-				// 新增银行卡流水编号和附件列
 				{ key: 15, label: `银行卡流水编号`, visible: true },
 				{ key: 16, label: `银行卡流水附件`, visible: true },
 				{ key: 17, label: `录入人员`, visible: true }

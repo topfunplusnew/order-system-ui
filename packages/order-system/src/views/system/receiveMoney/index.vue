@@ -78,19 +78,18 @@
 					<el-table-column label="ID" align="center" prop="id" width="60" show-overflow-tooltip />
 					<el-table-column v-if="columns[0].visible" label="日期" align="center" prop="fundsDate" width="140" show-overflow-tooltip />
 					<el-table-column v-if="columns[1].visible" label="支付类型" align="center" prop="receiveType" width="180" show-overflow-tooltip />
-					<el-table-column v-if="columns[9].visible" label="对方公司名称" align="center" prop="companyName" width="165" show-overflow-tooltip />
-					<el-table-column v-if="columns[10].visible" label="对方公司类型" align="center" prop="companyType" width="140" show-overflow-tooltip />
-					<el-table-column v-if="columns[2].visible" label="金额" align="center" prop="moneyAmount" width="110" show-overflow-tooltip />
-					<el-table-column v-if="columns[3].visible" label="我方户名" align="center" prop="selfAcountsName" width="165" show-overflow-tooltip />
-					<el-table-column v-if="columns[4].visible" label="我方账号" align="center" prop="selfBankNo" width="180" show-overflow-tooltip />
-					<el-table-column v-if="columns[5].visible" label="我方开户行" align="center" prop="selfBankName" width="165" show-overflow-tooltip />
-					<el-table-column v-if="columns[6].visible" label="对方户名" align="center" prop="otherAcountsName" width="165" show-overflow-tooltip />
-					<el-table-column v-if="columns[7].visible" label="对方账号" align="center" prop="otherBankNo" width="190" show-overflow-tooltip />
-					<el-table-column v-if="columns[8].visible" label="对方开户行" align="center" prop="otherBankName" width="180" show-overflow-tooltip />
-					<el-table-column label="备注" align="center" prop="comments" width="165" show-overflow-tooltip />
-					<el-table-column label="银行卡流水编号" align="center" prop="transactionHistory" show-overflow-tooltip />
-					<!-- 2025-11-1 录入人员不用录入了 -->
-					<!-- <el-table-column label="录入人员" align="center" prop="userName" width="120" show-overflow-tooltip /> -->
+					<el-table-column v-if="columns[2].visible" label="对方公司名称" align="center" prop="companyName" width="165" show-overflow-tooltip />
+					<el-table-column v-if="columns[3].visible" label="对方公司类型" align="center" prop="companyType" width="140" show-overflow-tooltip />
+					<el-table-column v-if="columns[4].visible" label="金额" align="center" prop="moneyAmount" width="110" show-overflow-tooltip />
+					<el-table-column v-if="columns[5].visible" label="我方户名" align="center" prop="selfAcountsName" width="165" show-overflow-tooltip />
+					<el-table-column v-if="columns[6].visible" label="我方账号" align="center" prop="selfBankNo" width="180" show-overflow-tooltip />
+					<el-table-column v-if="columns[7].visible" label="我方开户行" align="center" prop="selfBankName" width="165" show-overflow-tooltip />
+					<el-table-column v-if="columns[8].visible" label="对方户名" align="center" prop="otherAcountsName" width="165" show-overflow-tooltip />
+					<el-table-column v-if="columns[9].visible" label="对方账号" align="center" prop="otherBankNo" width="190" show-overflow-tooltip />
+					<el-table-column v-if="columns[10].visible" label="对方开户行" align="center" prop="otherBankName" width="180" show-overflow-tooltip />
+					<el-table-column v-if="columns[11].visible" label="备注" align="center" prop="comments" width="165" show-overflow-tooltip />
+					<el-table-column v-if="columns[12].visible" label="银行卡流水编号" align="center" prop="transactionHistory" show-overflow-tooltip />
+					<el-table-column v-if="columns[13].visible" label="录入人员" align="center" prop="userName" width="120" show-overflow-tooltip />
 					<el-table-column label="银行卡流水附件" align="center" prop="attachmentList" fixed="right">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
@@ -489,16 +488,18 @@ export default {
 			columns: [
 				{ key: 0, label: `日期`, visible: true },
 				{ key: 1, label: `支付类型`, visible: true },
-				{ key: 2, label: `金额`, visible: true },
-				{ key: 3, label: `乙方户名`, visible: true },
-				{ key: 4, label: `我方账号`, visible: true },
-				{ key: 5, label: `我方开户行`, visible: true },
-				{ key: 6, label: `对方户名`, visible: true },
-				{ key: 7, label: `对方账号`, visible: true },
-				{ key: 8, label: `对方开户行`, visible: true },
-				{ key: 9, label: `对方公司名称`, visible: true },
-				{ key: 10, label: `对方公司类型`, visible: true },
-				{ key: 11, label: `录入人员`, visible: true }
+				{ key: 2, label: `对方公司名称`, visible: true },
+				{ key: 3, label: `对方公司类型`, visible: true },
+				{ key: 4, label: `金额`, visible: true },
+				{ key: 5, label: `我方户名`, visible: true },
+				{ key: 6, label: `我方账号`, visible: true },
+				{ key: 7, label: `我方开户行`, visible: true },
+				{ key: 8, label: `对方户名`, visible: true },
+				{ key: 9, label: `对方账号`, visible: true },
+				{ key: 10, label: `对方开户行`, visible: true },
+				{ key: 11, label: `备注`, visible: true },
+				{ key: 12, label: `银行卡流水编号`, visible: true },
+				{ key: 13, label: `录入人员`, visible: true }
 			],
 			// 列宽度配置
 			columnWidths: {
