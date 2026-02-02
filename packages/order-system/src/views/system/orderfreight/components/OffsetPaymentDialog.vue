@@ -45,10 +45,6 @@
 						<el-date-picker v-model="offsetForm.transactionTime" type="datetime" placeholder="选择交易时间" value-format="yyyy-MM-dd HH:mm:ss" style="width: 100%"></el-date-picker>
 					</el-form-item>
 
-					<el-form-item label="收入方类型">
-						<el-radio v-model="offsetForm.targetCompanyType" label="司机">司机</el-radio>
-					</el-form-item>
-
 					<el-form-item label="支出方类型" prop="sourceCompanyType">
 						<el-radio v-model="offsetForm.sourceCompanyType" label="客户">客户</el-radio>
 						<el-radio v-model="offsetForm.sourceCompanyType" label="供应商">供应商</el-radio>
@@ -138,7 +134,7 @@ import { listBankAccount, getBankAccount } from '@/api/system/bankAccount';
 import { listCompany } from '@/api/system/company';
 import SearchOption from '@/components/SearchOption.vue';
 import { mapGetters } from 'vuex';
-import { TableName, PayType } from '../../../../api/tool/enums';
+import { TableName, PayType, PUBLIC_DICT_TYPE } from '../../../../api/tool/enums';
 import { mixin_payment_subject } from '../../../dashboard/mixins/payment/payment_subject';
 import _ from 'lodash';
 import { add, bignumber } from 'mathjs';
@@ -164,7 +160,7 @@ export default {
 			offsetForm: {
 				transactionTime: null,
 				sourceCompanyType: '客户',
-				targetCompanyType: '司机',
+				targetCompanyType: PUBLIC_DICT_TYPE.FREIGHT_AGGREGATE,
 				sourcePaymentType: null,
 				targetPaymentType: '负债-应付账款-运费',
 				sourceId: null,
@@ -279,8 +275,9 @@ export default {
 				amount: this.totalAmount
 			});
 
-			// 默认展开所有分组 - 使用 lodash 获取键
-			this.activeNames = _.keys(this.groupedByDriverAndBank);
+			// 默认展开第一项 - 使用 lodash 获取第一个键
+			const firstKey = _.keys(this.groupedByDriverAndBank)[0];
+			this.activeNames = firstKey ? [firstKey] : [];
 		},
 
 		// 自动填充司机信息
@@ -375,7 +372,7 @@ export default {
 					targetBankNo: group.bankNo,
 					targetAccountName: group.accountName,
 					targetBankName: group.bankName,
-					targetId: group.driverId,
+					targetId: null,
 					// 关联的运费信息
 					tableReferences: _.map(group.freights, freight => ({
 						refTableName: TableName.ORDER_FREIGHT,
