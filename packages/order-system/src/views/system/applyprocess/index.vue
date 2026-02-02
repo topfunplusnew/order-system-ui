@@ -1085,12 +1085,12 @@ export default {
 					</div>
 				</template>
 			</el-table-column>
-			<el-table-column label="付款详情" fixed="right" width="100" align="center" show-overflow-tooltip>
+			<el-table-column label="付款详情" width="100" align="center" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<el-button type="text" size="mini" @click="handleCheckInfo(scope.row)">查看</el-button>
 				</template>
 			</el-table-column>
-			<el-table-column label="审核状态" align="center" fixed="right" show-overflow-tooltip>
+			<el-table-column label="审核状态" align="center" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<el-tag
 						:type="
@@ -1108,7 +1108,7 @@ export default {
 					</el-tag>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[11].visible" label="审核人" width="120" fixed="right" align="center" show-overflow-tooltip>
+			<el-table-column v-if="columns[11].visible" label="审核人" width="120" align="center" show-overflow-tooltip>
 				<template #default="scope">
 					{{ getLatestAuditor(scope.row.auditInfoList) }}
 				</template>
