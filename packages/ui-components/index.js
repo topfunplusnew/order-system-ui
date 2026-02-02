@@ -13,9 +13,10 @@ import Breadcrumb from './components/Breadcrumb';
 import Hamburger from './components/Hamburger';
 import Screenfull from './components/Screenfull';
 import ShowLabel from './components/ShowLabel';
+import OrderAdjustmentChangeTemplate from './components/OrderAdjustmentChangeTemplate';
 
 // 全局注册组件
-const components = [Pagination, RightToolbar, DictTag, SvgIcon, ImageUpload, FileUpload, ImagePreview, Editor, Breadcrumb, Hamburger, Screenfull, ShowLabel];
+const components = [Pagination, RightToolbar, DictTag, SvgIcon, ImageUpload, FileUpload, ImagePreview, Editor, Breadcrumb, Hamburger, Screenfull, ShowLabel, OrderAdjustmentChangeTemplate];
 
 const install = function (Vue) {
 	components.forEach(component => {
@@ -41,8 +42,9 @@ export default {
 	Breadcrumb,
 	Hamburger,
 	Screenfull,
-	ShowLabel
+	ShowLabel,
+	OrderAdjustmentChangeTemplate
 };
 
 // 单独导出组件
-export { Pagination, RightToolbar, DictTag, SvgIcon, ImageUpload, FileUpload, ImagePreview, Editor, Breadcrumb, Hamburger, Screenfull, ShowLabel };
+export { Pagination, RightToolbar, DictTag, SvgIcon, ImageUpload, FileUpload, ImagePreview, Editor, Breadcrumb, Hamburger, Screenfull, ShowLabel, OrderAdjustmentChangeTemplate };
