@@ -89,19 +89,19 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[3].visible" label="收入方" align="center" prop="targetCompanyName" show-overflow-tooltip width="180">
-				<template #default="scope">
-					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.targetCompanyName }}</div>
-						<span>{{ scope.row.targetCompanyName }}</span>
-					</el-tooltip>
-				</template>
-			</el-table-column>
-			<el-table-column v-if="columns[4].visible" label="支出方" align="center" prop="sourceCompanyName" show-overflow-tooltip width="180">
+			<el-table-column v-if="columns[3].visible" label="支出方" align="center" prop="sourceCompanyName" show-overflow-tooltip width="180">
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.sourceCompanyName }}</div>
 						<span>{{ scope.row.sourceCompanyName }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[4].visible" label="收入方" align="center" prop="targetCompanyName" show-overflow-tooltip width="180">
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.targetCompanyName }}</div>
+						<span>{{ scope.row.targetCompanyName }}</span>
 					</el-tooltip>
 				</template>
 			</el-table-column>
@@ -153,23 +153,15 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[11].visible" label="收入公司类型" align="center" prop="targetCompanyType" show-overflow-tooltip width="130">
+			<el-table-column v-if="columns[11].visible" label="支出方支付类型" align="center" prop="sourcePaymentType" show-overflow-tooltip width="180">
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.targetCompanyType }}</div>
-						<span>{{ scope.row.targetCompanyType }}</span>
+						<div slot="content">{{ scope.row.sourcePaymentType }}</div>
+						<span>{{ scope.row.sourcePaymentType }}</span>
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[12].visible" label="收入方支付类型" align="center" prop="targetPaymentType" show-overflow-tooltip width="180">
-				<template #default="scope">
-					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.targetPaymentType }}</div>
-						<span>{{ scope.row.targetPaymentType }}</span>
-					</el-tooltip>
-				</template>
-			</el-table-column>
-			<el-table-column v-if="columns[13].visible" label="支出方公司类型" align="center" prop="sourceCompanyType" show-overflow-tooltip width="130">
+			<el-table-column v-if="columns[12].visible" label="支出方公司类型" align="center" prop="sourceCompanyType" show-overflow-tooltip width="130">
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.sourceCompanyType }}</div>
@@ -177,11 +169,19 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[14].visible" label="支出方支付类型" align="center" prop="sourcePaymentType" show-overflow-tooltip width="180">
+			<el-table-column v-if="columns[13].visible" label="收入方支付类型" align="center" prop="targetPaymentType" show-overflow-tooltip width="180">
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.sourcePaymentType }}</div>
-						<span>{{ scope.row.sourcePaymentType }}</span>
+						<div slot="content">{{ scope.row.targetPaymentType }}</div>
+						<span>{{ scope.row.targetPaymentType }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[14].visible" label="收入公司类型" align="center" prop="targetCompanyType" show-overflow-tooltip width="130">
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.targetCompanyType }}</div>
+						<span>{{ scope.row.targetCompanyType }}</span>
 					</el-tooltip>
 				</template>
 			</el-table-column>
@@ -860,18 +860,18 @@ export default {
 				{ key: 0, label: 'ID', prop: 'id', visible: true },
 				{ key: 1, label: '交易时间', prop: 'transactionTime', visible: true },
 				{ key: 2, label: '金额', prop: 'amount', visible: true },
-				{ key: 3, label: '收入方', prop: 'targetCompanyName', visible: true },
-				{ key: 4, label: '支出方', prop: 'sourceCompanyName', visible: true },
+				{ key: 3, label: '支出方', prop: 'sourceCompanyName', visible: true },
+				{ key: 4, label: '收入方', prop: 'targetCompanyName', visible: true },
 				{ key: 5, label: '支付户名', prop: 'sourceAccountName', visible: true },
-				{ key: 6, label: '支出方开户行', prop: 'sourceBankName', visible: true },
-				{ key: 7, label: '支付账号', prop: 'sourceBankNo', visible: true },
+				{ key: 6, label: '支付账号', prop: 'sourceBankNo', visible: true },
+				{ key: 7, label: '支出方开户行', prop: 'sourceBankName', visible: true },
 				{ key: 8, label: '收款户名', prop: 'targetAccountName', visible: true },
 				{ key: 9, label: '收款账号', prop: 'targetBankNo', visible: true },
 				{ key: 10, label: '收入方开户行', prop: 'targetBankName', visible: true },
-				{ key: 11, label: '收入公司类型', prop: 'targetCompanyType', visible: true },
-				{ key: 12, label: '收入方支付类型', prop: 'targetPaymentType', visible: true },
-				{ key: 13, label: '支出方公司类型', prop: 'sourceCompanyType', visible: true },
-				{ key: 14, label: '支出方支付类型', prop: 'sourcePaymentType', visible: true },
+				{ key: 11, label: '支出方支付类型', prop: 'sourcePaymentType', visible: true },
+				{ key: 12, label: '支出方公司类型', prop: 'sourceCompanyType', visible: true },
+				{ key: 13, label: '收入方支付类型', prop: 'targetPaymentType', visible: true },
+				{ key: 14, label: '收入公司类型', prop: 'targetCompanyType', visible: true },
 				{ key: 15, label: '冲抵类型', prop: 'type', visible: true },
 				{ key: 16, label: '备注', prop: 'remarks', visible: true },
 				{ key: 17, label: '账户类型', prop: 'accountType', visible: true },
