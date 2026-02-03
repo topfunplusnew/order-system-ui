@@ -235,6 +235,8 @@ export default {
 				[TableName.CASH_RECORD]: OFFSETTING,
 				// 返利
 				[TableName.REBATE]: REBATE,
+				// 返利明细（使用相同的组件展示）
+				[TableName.REBATE_DETAIL]: REBATE,
 				// 货款
 				[TableName.INVENTORDETAIL]: INVENTORYDETAILVue,
 				// 货物

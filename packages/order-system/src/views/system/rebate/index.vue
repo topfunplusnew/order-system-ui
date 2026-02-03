@@ -569,7 +569,7 @@
 </template>
 
 <script>
-import { listRebate, getRebate, delRebate, addRebate, updateRebate } from '@/api/system/Rebate';
+import { listRebate, getRebate, delRebate, addRebate, updateRebate, getRebateByDetailId } from '@/api/system/Rebate';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import { RebateType, TableName } from '@/api/tool/enums';
 import { fix } from '@/api/tool/format';
@@ -585,7 +585,6 @@ import { mixin_rebate_fill } from '../../dashboard/mixins/rebate/rebate_fill';
 import { isNull } from '../../../main';
 import { listOrderDetailByIds } from '@/api/system/orderDetail';
 import { mixin_bankType } from '../../dashboard/mixins/common/common_bankType';
-import { getUuid } from '../../../utils/trash/utils';
 import { parseTime } from '../../../utils/ruoyi';
 import QuerySearchBar from '../../dashboard/components/goodsOrder/QuerySearchBar.vue';
 import _ from 'lodash';
@@ -1002,7 +1001,7 @@ export default {
 		},
 		// 获取最早的返利日期
 		getEarliestReceivedDate(row) {
-			const detailList = _.get(row, 'actualReceivedDetails.detailList', []);
+			const detailList = _.get(row, 'detailList', []) || [];
 			if (_.isEmpty(detailList)) {
 				return '未收到';
 			}
@@ -1016,7 +1015,7 @@ export default {
 		},
 		// 计算返利金额总和
 		getTotalReceivedAmount(row) {
-			const detailList = _.get(row, 'actualReceivedDetails.detailList', []);
+			const detailList = _.get(row, 'detailList', []) || [];
 			if (_.isEmpty(detailList)) {
 				return 0;
 			}
@@ -1045,8 +1044,8 @@ export default {
 		 *    - 获取完整的返利数据（包含已有的流水记录）
 		 *    - 计算累计返利金额
 		 *    - 检查是否需要备注（单次或累计金额超过原金额）
-		 *    - 创建新的流水记录项（包含uuid、金额、日期、备注）
-		 *    - 将新记录添加到 actualReceivedDetails.detailList 数组
+		 *    - 创建新的流水记录项（不传id表示新增，金额、日期、备注）
+		 *    - 将新记录添加到 detailList 数组
 		 *    - 调用 updateRebate 更新整个返利记录
 		 */
 		handleRebate(row) {
@@ -1093,7 +1092,7 @@ export default {
 							const originalAmount = res.data.rebate || row.rebate; // 原返利金额
 
 							// 获取已有的流水列表
-							const existingDetailList = _.get(res.data, 'actualReceivedDetails.detailList', []) || [];
+							const existingDetailList = _.get(res.data, 'detailList', []) || [];
 
 							// 计算已累计返利金额
 							const existingTotal = existingDetailList.reduce((sum, item) => {
@@ -1110,9 +1109,8 @@ export default {
 							 * @param {string} remark - 备注信息
 							 */
 							const processRebate = (remark = '') => {
-								// 创建新的流水记录项
+								// 创建新的流水记录项（不传id表示新增）
 								const newItem = {
-									uuid: getUuid(),
 									actualReceived: currentAmount,
 									actualReceivedDate: date, // date已经是格式化后的字符串，不需要再转换
 									comment: remark || null
@@ -1122,9 +1120,7 @@ export default {
 								const body = _.cloneDeep(res.data);
 
 								// 将新记录推入detailList
-								body.actualReceivedDetails = {
-									detailList: [...existingDetailList, newItem]
-								};
+								body.detailList = [...existingDetailList, newItem];
 
 								// 调用修改接口更新返利记录
 								updateRebate(body)
@@ -1191,7 +1187,7 @@ export default {
 					this.$modal.msgError('暂无该条数据');
 					return;
 				}
-				const detailList = _.get(res.data, 'actualReceivedDetails.detailList', []);
+				const detailList = _.get(res.data, 'detailList', []) || [];
 				if (_.isEmpty(detailList)) {
 					this.$modal.msgError('没有返利流水账');
 					return;
@@ -1272,9 +1268,10 @@ export default {
 					const needRemark = currentAmount > originalAmount || newTotal > originalAmount;
 
 					const processUpdate = (remark = '') => {
-						// 更新流水列表中的对应项
+						// 更新流水列表中的对应项（传入id表示更新）
+						const currentItem = detailList[this.currentEditIndex];
 						detailList[this.currentEditIndex] = {
-							...detailList[this.currentEditIndex],
+							id: currentItem.id, // 保留id用于更新
 							actualReceived: currentAmount,
 							actualReceivedDate: this.editRebateDetailForm.date,
 							comment: remark || this.editRebateDetailForm.comment || null
@@ -1282,9 +1279,7 @@ export default {
 
 						// 更新返利数据
 						const body = _.cloneDeep(this.currentRebateData);
-						body.actualReceivedDetails = {
-							detailList: detailList
-						};
+						body.detailList = detailList;
 
 						updateRebate(body).then(() => {
 							this.$modal.msgSuccess('修改成功');
@@ -1340,15 +1335,13 @@ export default {
 						return;
 					}
 
-					// 从流水列表中删除对应项
+					// 从流水列表中删除对应项（直接移除即可）
 					const detailList = _.cloneDeep(this.rebateDetailList);
 					detailList.splice(index, 1);
 
 					// 更新返利数据
 					const body = _.cloneDeep(this.currentRebateData);
-					body.actualReceivedDetails = {
-						detailList: detailList
-					};
+					body.detailList = detailList;
 
 					updateRebate(body).then(() => {
 						this.$modal.msgSuccess('删除成功');
@@ -1472,7 +1465,7 @@ export default {
 				// 保存服务器返回的原始 rebate 值
 				const originalRebate = response.data.rebate || 0;
 				// 填充选择框（在 goods 加载前先设置，避免显示问题）
-				this.form.rebateMethod = response.data.rebateMethod === "1" ? RebateType.Weight : RebateType.Square;
+				this.form.rebateMethod = response.data.rebateMethod === '1' ? RebateType.Weight : RebateType.Square;
 				this.areaOrWeightBox = this.form.rebateMethod;
 				// 这里打开的时候要判断后端返回的数据 如果orderDetailIds有数据 那么要自动选择相关订单
 				if (!_.isEmpty(this.form.orderDetailIds)) {
@@ -1590,11 +1583,7 @@ export default {
 				this.$message.error('数据错误，无法导出');
 				return;
 			}
-			this.download(
-				`system/Rebate/exportDetail/${row.id}`,
-				{},
-				`返利明细_${row.id}_${new Date().getTime()}.xlsx`
-			);
+			this.download(`system/Rebate/exportDetail/${row.id}`, {}, `返利明细_${row.id}_${new Date().getTime()}.xlsx`);
 		}
 	}
 };

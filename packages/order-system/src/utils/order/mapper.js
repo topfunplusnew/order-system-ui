@@ -25,7 +25,7 @@ import { getOrderDetail } from '../../api/system/orderDetail';
 import { getOrderFreight } from '../../api/system/orderFreight';
 import { getPayment } from '../../api/system/payment';
 import { getProductLevel } from '../../api/system/productLevel';
-import { getRebate } from '../../api/system/Rebate';
+import { getRebate, getRebateByDetailId } from '../../api/system/Rebate';
 import { getReceiveMoney } from '../../api/system/receiveMoney';
 import { getRecoverMoney } from '../../api/system/recoverMoney';
 import { getRepayment } from '../../api/system/repayment';
@@ -48,7 +48,7 @@ import BUSSNIESS_TRIP from '@/components/NeedToShow/BUSSNIESS_TRIP.vue';
 import { getOrderMainByDetailId } from '@/api/system/orderDetail';
 // 根据表名  获取对应的get函数方法
 export function getFunction(tableName) {
-	if (tableName === TableName.INIT){
+	if (tableName === TableName.INIT) {
 		console.warn('期初数据不进行查询');
 		return;
 	}
@@ -77,6 +77,9 @@ export function getFunction(tableName) {
 		// 返利信息
 		case TableName.REBATE:
 			return getRebate;
+		// 返利明细信息（通过明细ID获取完整的返利对象）
+		case TableName.REBATE_DETAIL:
+			return getRebateByDetailId;
 		// 库存的主表和从表
 		case TableName.INVENTORMAIN:
 			return getInventoryMain;

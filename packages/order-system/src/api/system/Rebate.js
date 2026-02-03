@@ -51,3 +51,15 @@ export function noPageListRebate(query) {
 		params: query
 	});
 }
+
+/**
+ * 通过明细ID获取返利回扣详细信息
+ * @param {Number} detailId - 返利明细ID (rebate_detail.id)
+ * @returns {Promise} 返回完整的返利信息（包含所有明细）
+ */
+export function getRebateByDetailId(detailId) {
+	return request({
+		url: '/system/Rebate/byDetailId/' + detailId,
+		method: 'get'
+	});
+}

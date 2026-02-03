@@ -1,0 +1,97 @@
+{
+	"openapi": "3.0.1",
+	"info": {
+		"title": "默认模块",
+		"description": "",
+		"version": "1.0.0"
+	},
+	"tags": [],
+	"paths": {
+		"/system/Rebate/byDetailId/{detailId}": {
+			"get": {
+				"summary": "通过明细ID获取返利回扣详细信息",
+				"deprecated": false,
+				"description": "",
+				"tags": [],
+				"parameters": [
+					{
+						"name": "detailId",
+						"in": "path",
+						"description": "返利明细ID (rebate_detail.id)",
+						"required": true,
+						"schema": {
+							"type": "integer"
+						}
+					},
+					{
+						"name": "Authorization",
+						"in": "header",
+						"description": "",
+						"example": "dev-mode-admin-token-2025",
+						"schema": {
+							"type": "string",
+							"default": "dev-mode-admin-token-2025"
+						}
+					},
+					{
+						"name": "OSR",
+						"in": "header",
+						"description": "",
+						"example": "{{OSR}}",
+						"schema": {
+							"type": "string",
+							"default": "{{OSR}}"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/AjaxResult",
+									"description": "完整的返利信息（包含所有明细）"
+								},
+								"example": {
+									"": {}
+								}
+							}
+						}
+					}
+				},
+				"security": [
+					{
+						"bearer": []
+					}
+				]
+			}
+		}
+	},
+	"components": {
+		"schemas": {
+			"AjaxResult": {
+				"type": "object",
+				"properties": {
+					"key": {
+						"type": "object",
+						"properties": {}
+					}
+				}
+			}
+		},
+		"responses": {},
+		"securitySchemes": {
+			"bearer": {
+				"type": "http",
+				"scheme": "bearer"
+			}
+		}
+	},
+	"servers": [],
+	"security": [
+		{
+			"bearer": []
+		}
+	]
+}

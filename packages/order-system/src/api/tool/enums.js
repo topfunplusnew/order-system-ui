@@ -19,8 +19,8 @@ export const PUBLIC_DICT_TYPE = {
 };
 
 export const YES_OR_NO = Object.freeze({
-	YES: "1",
-	NO: "0"
+	YES: '1',
+	NO: '0'
 });
 
 export const CAR_TYPE = Object.freeze({
@@ -63,6 +63,7 @@ export const TableName = Object.freeze({
 	PAYMENT: 'payment',
 	PRODUCT_LEVEL: 'productlevel',
 	REBATE: 'rebate',
+	REBATE_DETAIL: 'rebate_detail',
 	RECEIVE_MONEY: 'receivemoney',
 	RECOVER_MONEY: 'recovermoney',
 	REPAYMENT: 'repayment',
@@ -151,7 +152,7 @@ export function getOrAdvancedModule(moduleName, flag = 'default') {
 	if (!moduleName) {
 		throw new Error('isAdvancedModule moduleName is required');
 	}
-	console.log (moduleName, flag)
+	console.log(moduleName, flag);
 
 	// 如果模块不属于高级 并且 没有传递flag 或者flag 是 default
 	if (!moduleNames.advanced.modules.includes(moduleName) && (!flag || flag === 'default')) {
