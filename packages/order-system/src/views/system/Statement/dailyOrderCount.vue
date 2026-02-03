@@ -29,11 +29,53 @@ export default {
 			dialogVisible: false
 		};
 	},
+	computed: {
+		/**
+		 * 生成年份月份表头结构
+		 * @returns {Array} 返回按年份分组的月份数组，格式：[{year: '2025', months: [{month: '11', dateKey: '2025-11'}]}]
+		 */
+		yearMonthHeaders() {
+			if (!this.statementList || this.statementList.length === 0) {
+				return [];
+			}
+			// 收集所有唯一的 orderDateButMonth
+			const dateSet = new Set();
+			this.statementList.forEach(item => {
+				if (item.orderStatisticsList && Array.isArray(item.orderStatisticsList)) {
+					item.orderStatisticsList.forEach(stat => {
+						if (stat.orderDateButMonth) {
+							dateSet.add(stat.orderDateButMonth);
+						}
+					});
+				}
+			});
+			// 转换为数组并排序
+			const dateArray = Array.from(dateSet).sort();
+			// 按年份分组
+			const yearMap = {};
+			dateArray.forEach(dateKey => {
+				const [year, month] = dateKey.split('-');
+				if (!yearMap[year]) {
+					yearMap[year] = [];
+				}
+				yearMap[year].push({
+					month: month,
+					dateKey: dateKey
+				});
+			});
+			// 转换为数组格式，年份按降序排列，月份按升序排列
+			return Object.keys(yearMap)
+				.sort((a, b) => b.localeCompare(a))
+				.map(year => ({
+					year: year,
+					months: yearMap[year].sort((a, b) => a.dateKey.localeCompare(b.dateKey))
+				}));
+		}
+	},
 	created() {
 		this.calculateTimeParams();
 		getDailyOrderCount(this.queryParams).then(res => {
-			this.statementList = res.data;
-			this.handleData(this.statementList);
+			this.statementList = res.data || [];
 		});
 	},
 	watch: {
@@ -44,7 +86,9 @@ export default {
 		}
 	},
 	methods: {
-		// 根据选择的月份计算 beginTime 和 endTime
+		/**
+		 * 根据选择的月份计算 beginTime 和 endTime
+		 */
 		calculateTimeParams() {
 			if (!this.queryParams.selectedMonth) {
 				return;
@@ -65,45 +109,26 @@ export default {
 			const beginDate = new Date(beginYear, beginMonth, 1);
 			this.queryParams.beginTime = parseTime(beginDate, '{y}-{m}-{d}');
 		},
-		// 处理年份数据l
-		handleData(list, type) {
-			// 如果传入的不是数组
-			if (typeof list !== 'object') {
-				return;
+		/**
+		 * 根据 orderDateButMonth 获取对应的订单数量
+		 * @param {Object} row - 表格行数据
+		 * @param {String} dateKey - 日期键，格式：YYYY-MM
+		 * @returns {Number} 订单数量
+		 */
+		getOrderCountByDate(row, dateKey) {
+			if (!row.orderStatisticsList || !Array.isArray(row.orderStatisticsList)) {
+				return 0;
 			}
-			// flag 判断一下 如果是年份
-			if (type === 0) {
-				// 存放年份数据
-				const ist = new Set();
-				// 从传入的数组中填入年份
-				const handleItemList = itemList => {
-					itemList.forEach(item => {
-						const element = item.orderDateButMonth.split('-')[type];
-						// 如果已经存放过年份数据 就不存
-						if (!ist.has(element)) {
-							ist.add(element);
-						}
-					});
-				};
-
-				if (list.length > 0) {
-					handleItemList(list[0].orderStatisticsList);
-				}
-				return Array.from(ist);
-				// 处理月份数据
-			} else {
-				// 筛选函数
-				const handler = orderStatisticsList => {
-					return orderStatisticsList.filter(item => item.orderDateButMonth.split('-')[0] === type);
-				};
-				return handler(list[0].orderStatisticsList);
-			}
+			const stat = row.orderStatisticsList.find(item => item.orderDateButMonth === dateKey);
+			return stat ? stat.orderCount : 0;
 		},
-		// 时间查询
+		/**
+		 * 时间查询
+		 */
 		handleQuery() {
 			this.calculateTimeParams();
 			getDailyOrderCount(this.queryParams).then(res => {
-				this.statementList = res.data;
+				this.statementList = res.data || [];
 			});
 		},
 		refresh() {
@@ -188,18 +213,15 @@ export default {
 						<!--            联系方式-->
 						<el-table-column align="center" label="联系方式" prop="phone" show-overflow-tooltip></el-table-column>
 						<!--            年份信息 遍历年份数组-->
-						<template v-if="statementList.length !== 0">
-							<el-table-column v-for="(item, index) in handleData(statementList, 0)" :key="index" align="center" :label="item + `年`" show-overflow-tooltip>
+						<template v-if="yearMonthHeaders.length > 0">
+							<el-table-column v-for="(yearItem, yearIndex) in yearMonthHeaders" :key="yearItem.year" align="center" :label="yearItem.year + `年`" show-overflow-tooltip>
 								<!--              遍历月份 先拿到该年份下的月份数据 然后在下面进行遍历-->
-								<el-table-column v-for="(element, cols) in handleData(statementList, item)" :key="cols" label="发货量" align="center" width="100" show-overflow-tooltip>
+								<el-table-column v-for="(monthItem, monthIndex) in yearItem.months" :key="monthItem.dateKey" align="center" width="100" show-overflow-tooltip>
 									<template #header>
-										{{ element.orderDateButMonth.split('-')[1] + `月份` }}
+										{{ monthItem.month + `月份` }}
 									</template>
 									<template #default="scope">
-										<div v-if="scope.row.orderStatisticsList.length !== 0">
-											{{ scope.row.orderStatisticsList[index].orderCount }}
-										</div>
-										<div v-else>0</div>
+										{{ getOrderCountByDate(scope.row, monthItem.dateKey) }}
 									</template>
 								</el-table-column>
 							</el-table-column>
