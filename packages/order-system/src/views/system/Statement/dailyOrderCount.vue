@@ -21,9 +21,8 @@ export default {
 			loading: '',
 			columns: [
 				{ key: 0, label: `客户`, visible: true },
-				{ key: 1, label: `录入员`, visible: true },
-				{ key: 2, label: `区域`, visible: true },
-				{ key: 3, label: `联系方式`, visible: true }
+				{ key: 1, label: `销售经理`, visible: true },
+				{ key: 2, label: `区域`, visible: true }
 			],
 			statementList: [],
 			dialogVisible: false
@@ -193,8 +192,9 @@ export default {
 					<el-table
 						id="printBox"
 						v-loading="loading"
-						v-horizontal-scroll="'always'"
+						v-horizontal-scroll="'auto'"
 						border
+						fit
 						:data="statementList"
 						lazy
 						height="570px"
@@ -206,17 +206,15 @@ export default {
 						"
 					>
 						<el-table-column align="center">
-							<el-table-column v-if="columns[0].visible" label="客户" align="center" prop="companyName" width="200" show-overflow-tooltip />
-							<el-table-column v-if="columns[1].visible" label="录入员" align="driverName" prop="salesman" width="200" show-overflow-tooltip />
-							<el-table-column v-if="columns[2].visible" label="区域" align="center" prop="region" width="200" show-overflow-tooltip />
+							<el-table-column v-if="columns[0].visible" label="客户" align="center" prop="companyName" min-width="150" show-overflow-tooltip />
+							<el-table-column v-if="columns[1].visible" label="销售经理" align="center" prop="salesman" min-width="120" show-overflow-tooltip />
+							<el-table-column v-if="columns[2].visible" label="区域" align="center" prop="region" min-width="150" show-overflow-tooltip />
 						</el-table-column>
-						<!--            联系方式-->
-						<el-table-column align="center" label="联系方式" prop="phone" show-overflow-tooltip></el-table-column>
 						<!--            年份信息 遍历年份数组-->
 						<template v-if="yearMonthHeaders.length > 0">
 							<el-table-column v-for="(yearItem, yearIndex) in yearMonthHeaders" :key="yearItem.year" align="center" :label="yearItem.year + `年`" show-overflow-tooltip>
 								<!--              遍历月份 先拿到该年份下的月份数据 然后在下面进行遍历-->
-								<el-table-column v-for="(monthItem, monthIndex) in yearItem.months" :key="monthItem.dateKey" align="center" width="100" show-overflow-tooltip>
+								<el-table-column v-for="(monthItem, monthIndex) in yearItem.months" :key="monthItem.dateKey" align="center" min-width="80" show-overflow-tooltip>
 									<template #header>
 										{{ monthItem.month + `月份` }}
 									</template>

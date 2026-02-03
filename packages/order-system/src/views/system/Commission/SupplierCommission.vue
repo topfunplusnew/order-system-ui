@@ -161,7 +161,11 @@
 					<PaymentFlag :business-object="scope.row" />
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[31].visible" show-overflow-tooltip label="差异" align="center" prop="difference" width="100" />
+			<el-table-column v-if="columns[31].visible" show-overflow-tooltip label="差异" align="center" prop="difference" width="100">
+				<template slot-scope="scope">
+					{{ formatDifference(scope.row.difference) }}
+				</template>
+			</el-table-column>
 			<el-table-column v-if="columns[32].visible" show-overflow-tooltip label="差异原因" align="center" prop="differenceReason" width="150">
 				<template slot-scope="scope">
 					<el-button v-if="scope.row.difference && scope.row.difference !== 0" size="mini" type="text" @click="handleDifferenceReason(scope.row)">
@@ -269,7 +273,7 @@ import PaymentFlag from '@/components/PaymentFlag';
 import { mapGetters } from 'vuex/dist/vuex.common.js';
 import { getDateRangeDays } from '@/utils';
 import _ from 'lodash';
-import { number, add, sum } from 'mathjs';
+import { number, add, sum, round } from 'mathjs';
 import { getGoodsOrder, checkOrderByOrderNo } from '@/api/system/goodsOrder';
 import { getOrderMainByDetailId } from '@/api/system/orderDetail';
 import CheckOrder from '@/views/dashboard/components/goodsOrder/CheckOrder.vue';
@@ -491,6 +495,22 @@ export default {
 				}
 			}
 			return str;
+		},
+		/**
+		 * 格式化差异值，保留两位小数
+		 * @param {Number|String} value - 差异值
+		 * @returns {String} 格式化后的字符串
+		 */
+		formatDifference(value) {
+			if (value === null || value === undefined || value === '') {
+				return '-';
+			}
+			const num = number(value);
+			if (isNaN(num)) {
+				return value;
+			}
+			// 使用mathjs进行四舍五入，保留两位小数
+			return round(num, 2).toFixed(2);
 		},
 		onDateRangeChange(val) {
 			// 仅选择完整的时间段时触发搜索；清空时不触发
@@ -1017,25 +1037,11 @@ export default {
 
 		// 查看订单详情
 		handleViewOrder(row) {
-			const orderId =
-				row?.goodsOrderId ||
-				row?.goodsOrderID ||
-				row?.goodsOrderid ||
-				row?.orderId ||
-				row?.orderID ||
-				row?.orderid ||
-				null;
+			const orderId = row?.goodsOrderId || row?.goodsOrderID || row?.goodsOrderid || row?.orderId || row?.orderID || row?.orderid || null;
 			const orderNo = row?.orderNo || null;
 			const orderDetailId = row?.orderDetailId || null;
 
-			const request =
-				orderId != null
-					? getGoodsOrder(orderId)
-					: orderDetailId != null
-						? getOrderMainByDetailId(orderDetailId)
-						: orderNo
-							? checkOrderByOrderNo(orderNo)
-							: null;
+			const request = orderId != null ? getGoodsOrder(orderId) : orderDetailId != null ? getOrderMainByDetailId(orderDetailId) : orderNo ? checkOrderByOrderNo(orderNo) : null;
 
 			if (!request) {
 				this.$message.error('缺少订单信息，无法查看订单详情');
