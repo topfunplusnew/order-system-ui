@@ -1225,9 +1225,14 @@ export default {
 			if (!row.recoverMoneyList || !Array.isArray(row.recoverMoneyList) || row.recoverMoneyList.length === 0) {
 				return '0.00';
 			}
-			const amounts = row.recoverMoneyList.map(item => bignumber(item.moneyAmount || 0));
+			const amounts = row.recoverMoneyList.map(item => {
+				if (item.badDebtFlag !== 1 && item.badDebtFlag !== '1') {
+					return bignumber(0);
+				}
+				return bignumber(item.moneyAmount);
+			});
 			const total = amounts.reduce((sum, amount) => add(sum, amount), bignumber(0));
-			return Number(total).toFixed(2);
+			return total.toFixed(2);
 		}
 	}
 };
