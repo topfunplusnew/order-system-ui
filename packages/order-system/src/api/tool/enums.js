@@ -127,7 +127,7 @@ export const moduleNames = Object.freeze({
 	bankacceptance: '商业票据',
 	ordercommission: '订单佣金',
 	deposit_money: '保证金',
-	rebate_detail: '返利信息',
+	rebate_detail: '返利',
 	// init 特殊处理 init显示期初
 	init: '期初',
 	// 特殊处理 一个对象，针对于有二级分类的模块使用 只有对于有二级分类的模块使用
