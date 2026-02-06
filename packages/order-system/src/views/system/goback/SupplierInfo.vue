@@ -547,7 +547,10 @@ export default {
 				[TableName.INVOICE_OUT]: INVOICE_OUT,
 				[TableName.INVOICE_OTHER]: INVOICE_ORTHER,
 				[TableName.CASH_RECORD]: OFFSETTING,
+				// 返利
 				[TableName.REBATE]: REBATE,
+				// 返利明细（使用相同的组件展示）
+				[TableName.REBATE_DETAIL]: REBATE,
 				[TableName.INVENTORDETAIL]: INVENTORYDETAIL,
 				// 需要前端在这两个明细表上进行适配bankacceptance
 				[TableName.BANK_ACCOUNT_CHANGE]: BANK_ACCEPTANCE,
