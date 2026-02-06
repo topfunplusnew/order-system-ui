@@ -789,31 +789,31 @@ export default {
 					return row.allPayments || '';
 				case 13: // 总吨位
 					return row.allTonnage || '';
-				case 26: // 出厂货款
+				case 14: // 出厂货款
 					return row.allPaymentFactory || '';
-				case 14: // 陆运费
+				case 15: // 陆运费
 					return row.landFreight || '';
-				case 15: // 海运费
+				case 16: // 海运费
 					return row.seaFreight || '';
-				case 16: // 含税利润
+				case 17: // 含税利润
 					return row.allProfit || '';
-				case 17: // 不含税利润
+				case 18: // 不含税利润
 					return row.allProfitNoTax || '';
-				case 18: // 销售经理
+				case 19: // 销售经理
 					return row.saleManager || '';
-				case 19: // 录入员
+				case 20: // 录入员
 					return row.userName || '';
-				case 20: // 备注
+				case 21: // 备注
 					return row.comments || '';
-				case 21: // 出库单
+				case 22: // 出库单
 					return this.formatAttachments(row.attachmentList, 'path');
-				case 22: // 收到条附件
+				case 23: // 收到条附件
 					return this.formatAttachments(row.attachmentList, 'receiveProof');
-				case 23: // 可否编辑
+				case 24: // 可否编辑
 					return row.isedit === 0 ? '否' : '是';
-				case 24: // 客户含税
+				case 25: // 客户含税
 					return this.hasInvoice(row, this.PUBLIC_DICT_TYPE.CUSTOMER) ? row.customerInvoiceStatus : '否';
-				case 25: // 出厂含税
+				case 26: // 出厂含税
 					return this.hasInvoice(row, this.PUBLIC_DICT_TYPE.SUPPLIER) ? row.supplierInvoiceStatus : '否';
 				case 27: // 审核人
 					return row.checkUserName || '';
