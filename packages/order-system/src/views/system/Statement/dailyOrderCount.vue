@@ -62,9 +62,9 @@ export default {
 					dateKey: dateKey
 				});
 			});
-			// 转换为数组格式，年份按降序排列，月份按升序排列
+			// 转换为数组格式，年份按升序排列，月份按升序排列
 			return Object.keys(yearMap)
-				.sort((a, b) => b.localeCompare(a))
+				.sort((a, b) => a.localeCompare(b))
 				.map(year => ({
 					year: year,
 					months: yearMap[year].sort((a, b) => a.dateKey.localeCompare(b.dateKey))
