@@ -40,6 +40,8 @@ export default {
 			// 列宽度配置
 			columnWidths: {
 				action: '80px', // 操作列：按钮文字"货物返利"
+				orderDate: '100px', // 日期：日期格式通常较长
+				customer: '120px', // 客户：客户名称可能较长
 				storeHouseName: '70px', // 仓库名称：通常较短
 				supplier: '120px', // 供应商：公司名称可能较长
 				levelName: '120px', // 级别名称：级别名称通常不会太长
@@ -472,6 +474,20 @@ export default {
 				<el-table-column v-if="!ban" label="操作" align="center" class-name="small-padding fixed-width leave-alone" fixed="left" :min-width="columnWidths.action">
 					<template slot-scope="scope">
 						<el-button size="mini" type="warning" @click="handleMoneyBack(scope.row)">货物返利</el-button>
+					</template>
+				</el-table-column>
+				<el-table-column label="日期" align="center" prop="orderDate" show-overflow-tooltip :min-width="columnWidths.orderDate">
+					<template slot-scope="scope">
+						<ExpandCursor>
+							{{ scope.row.orderDate ? scope.row.orderDate : '-' }}
+						</ExpandCursor>
+					</template>
+				</el-table-column>
+				<el-table-column label="客户" align="center" prop="customer" show-overflow-tooltip :min-width="columnWidths.customer">
+					<template slot-scope="scope">
+						<ExpandCursor>
+							{{ scope.row.customer ? scope.row.customer : '-' }}
+						</ExpandCursor>
 					</template>
 				</el-table-column>
 				<el-table-column label="仓库名称" align="center" prop="storeHouseName" show-overflow-tooltip :min-width="columnWidths.storeHouseName">
