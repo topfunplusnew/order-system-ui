@@ -14,9 +14,7 @@
 			<el-form-item v-if="shouldShowField('supplier')" label="供应商" prop="supplier">
 				<el-input v-model="queryParams.params.detail_supplier" class="input-standard" placeholder="请输入供应商" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
-			<el-form-item v-if="shouldShowField('goodsCompany')" label="货物来源" prop="goodsCompany">
-				<el-input v-model="queryParams.goodsCompany" class="input-standard" placeholder="请输入货物来源公司" clearable @keyup.enter.native="handleQuery" />
-			</el-form-item>
+			<!-- 2026-02-06 删除货物来源公司搜索字段 -->
 			<el-form-item v-if="shouldShowField('landCarNo')" label="陆运车牌" prop="landCarNo">
 				<el-input v-model="queryParams.landCarNo" class="input-standard" placeholder="请输入陆运车牌" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
@@ -181,14 +179,6 @@
 											</el-tooltip>
 										</template>
 									</el-table-column>
-									<el-table-column v-if="columns[4].visible" show-overflow-tooltip label="货物来源公司" align="center" prop="goodsCompany" width="180">
-										<template #default="scope">
-											<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-												<div slot="content">{{ scope.row.goodsCompany }}</div>
-												<span>{{ scope.row.goodsCompany }}</span>
-											</el-tooltip>
-										</template>
-									</el-table-column>
 									<!-- 修改审核状态列 -->
 									<el-table-column v-if="columns[5].visible" show-overflow-tooltip label="审核状态" align="center" prop="checkState" width="150">
 										<template #default="scope">
@@ -228,15 +218,7 @@
 											</el-tooltip>
 										</template>
 									</el-table-column>
-									<el-table-column v-if="columns[7].visible" show-overflow-tooltip label="陆运司机电话" align="center" prop="landDriverTel" width="150">
-										<template #default="scope">
-											<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-												<div slot="content">{{ scope.row.landDriverTel }}</div>
-												<span>{{ scope.row.landDriverTel }}</span>
-											</el-tooltip>
-										</template>
-									</el-table-column>
-									<el-table-column v-if="columns[8].visible" show-overflow-tooltip label="陆地司机姓名" align="center" prop="landDriverName" width="120">
+									<el-table-column v-if="columns[7].visible" show-overflow-tooltip label="陆地司机姓名" align="center" prop="landDriverName" width="120">
 										<template #default="scope">
 											<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 												<div slot="content">{{ scope.row.landDriverName }}</div>
@@ -244,7 +226,7 @@
 											</el-tooltip>
 										</template>
 									</el-table-column>
-									<el-table-column v-if="columns[9].visible" show-overflow-tooltip label="柜号" align="center" prop="seaCarNo" width="120">
+									<el-table-column v-if="columns[8].visible" show-overflow-tooltip label="柜号" align="center" prop="seaCarNo" width="120">
 										<template #default="scope">
 											<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 												<div slot="content">{{ scope.row.seaCarNo }}</div>
@@ -252,19 +234,29 @@
 											</el-tooltip>
 										</template>
 									</el-table-column>
-									<el-table-column v-if="columns[10].visible" show-overflow-tooltip label="海运司机电话" align="center" prop="seaDriverTel" width="150">
-										<template #default="scope">
-											<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-												<div slot="content">{{ scope.row.seaDriverTel }}</div>
-												<span>{{ scope.row.seaDriverTel }}</span>
-											</el-tooltip>
-										</template>
-									</el-table-column>
-									<el-table-column v-if="columns[11].visible" show-overflow-tooltip label="海运公司" align="center" prop="seaDriverName" width="120">
+									<el-table-column v-if="columns[9].visible" show-overflow-tooltip label="海运公司" align="center" prop="seaDriverName" width="120">
 										<template #default="scope">
 											<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 												<div slot="content">{{ scope.row.seaDriverName }}</div>
 												<span>{{ scope.row.seaDriverName }}</span>
+											</el-tooltip>
+										</template>
+									</el-table-column>
+									<!-- 含税列 -->
+									<el-table-column v-if="columns[10].visible" show-overflow-tooltip label="含税" align="center" prop="isIncludeTaxSale" width="100">
+										<template #default="scope">
+											<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+												<div slot="content">{{ scope.row.isIncludeTaxSale === 1 ? '含税' : '不含税' }}</div>
+												<span>{{ scope.row.isIncludeTaxSale === 1 ? '含税' : '不含税' }}</span>
+											</el-tooltip>
+										</template>
+									</el-table-column>
+									<!-- 库存金额列 -->
+									<el-table-column v-if="columns[11].visible" show-overflow-tooltip label="库存金额" align="center" prop="payments" width="150">
+										<template #default="scope">
+											<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+												<div slot="content">{{ calculateTotalPayments(scope.row) }}</div>
+												<span>{{ calculateTotalPayments(scope.row) }}</span>
 											</el-tooltip>
 										</template>
 									</el-table-column>
@@ -276,7 +268,7 @@
 											</el-tooltip>
 										</template>
 									</el-table-column>
-									<el-table-column v-if="columns[13].visible" show-overflow-tooltip label="子项海运费之和" align="center" prop="allSeaFreight">
+									<el-table-column v-if="columns[13].visible" show-overflow-tooltip label="子项海运费之和" align="center" prop="allSeaFreight" width="150">
 										<template #default="scope">
 											<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 												<div slot="content">{{ scope.row.allSeaFreight }}</div>
@@ -332,7 +324,7 @@
 											</el-tooltip>
 										</template>
 									</el-table-column>
-									<el-table-column v-if="columns[17].visible" label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="100">
+									<el-table-column v-if="columns[16].visible" label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="100">
 										<template slot-scope="scope">
 											<el-dropdown size="mini" trigger="hover" @command="command => handleCommand(command, scope.row)">
 												<el-button size="mini" type="text" @click.stop="handleCheckInventory(scope.row)">
@@ -888,6 +880,7 @@ import INVENTORY from '@/components/NeedToShow/INVENTORY.vue';
 import { parseTime } from '@/utils/ruoyi';
 import _ from 'lodash'; // 引入 lodash
 import { updateInventoryRowCalculations } from './inventoryCalculations'; // 确保导入
+import { add, round } from 'mathjs'; // 引入 mathjs 用于高精度计算
 import DragDiv from '@/components/DragDiv/index.vue';
 // 前端Excel导出依赖
 import * as XLSX from 'xlsx';
@@ -986,7 +979,7 @@ export default {
 				{ value: 'storeDateRange', label: '入库日期' },
 				{ value: 'userName', label: '入库人员' },
 				{ value: 'supplier', label: '供应商' },
-				{ value: 'goodsCompany', label: '货物来源' },
+				// 2026-02-06 删除货物来源搜索字段
 				{ value: 'landCarNo', label: '陆运车牌' },
 				{ value: 'seaDriverName', label: '海运公司' },
 				{ value: 'checkState', label: '审核状态' }
@@ -1042,14 +1035,19 @@ export default {
 				{ key: 1, label: '仓库名称', visible: true },
 				{ key: 2, label: '入库日期', visible: true },
 				{ key: 3, label: '供应商', visible: true },
-				{ key: 4, label: '货物来源公司', visible: true },
+				// 2026-02-06 删除货物来源公司
 				{ key: 5, label: '审核状态', visible: true },
 				{ key: 6, label: '陆运车牌', visible: true },
-				{ key: 7, label: '陆运司机电话', visible: true },
+				// 2026-02-06 删除陆运司机电话
 				{ key: 8, label: '陆地司机姓名', visible: true },
 				{ key: 11, label: '柜号', visible: true },
-				{ key: 12, label: '海运司机电话', visible: true },
+				// 2026-02-06 删除海运司机电话
 				{ key: 13, label: '海运公司', visible: true },
+				// 2026-02-06 添加含税列
+				{ key: 22, label: '含税', visible: true },
+				// 2026-02-06 添加库存金额列
+				{ key: 23, label: '库存金额', visible: true },
+				// 子项运费之和列（含税、库存金额放在子项运费之和前面）
 				{ key: 16, label: '子项陆运费之和', visible: true },
 				{ key: 17, label: '子项海运费之和', visible: true },
 				{ key: 18, label: '录入员', visible: true },
@@ -1372,6 +1370,23 @@ export default {
 			});
 		},
 
+		/**
+		 * @description: 计算库存金额总和（从子项的 payments 字段求和）
+		 * @param {Object} row - 主表行数据
+		 * @returns {string} 格式化后的库存金额总和
+		 */
+		calculateTotalPayments(row) {
+			if (!row || !row.inventoryDetailList || !Array.isArray(row.inventoryDetailList) || row.inventoryDetailList.length === 0) {
+				return '0.00';
+			}
+			// 使用 mathjs 进行高精度求和
+			const total = row.inventoryDetailList.reduce((sum, item) => {
+				const payments = Number(item.payments) || 0;
+				return add(sum, payments);
+			}, 0);
+			// 四舍五入保留两位小数
+			return round(total, 2).toString();
+		},
 		/**
 		 * @description: 获取去重的供应商列表
 		 * @param {Array} inventoryDetailList - 库存详情数组
@@ -2464,14 +2479,12 @@ export default {
 					return row.storeDate ? parseTime(row.storeDate, '{y}-{m}-{d}') : '';
 				case 3: // 供应商
 					return this.formatSuppliers(row);
-				case 4: // 货物来源公司
-					return row.goodsCompany || '';
+				// 2026-02-06 删除货物来源公司
 				case 5: // 审核状态
 					return row.checkState || '未审核';
 				case 6: // 陆运车牌
 					return row.landCarNo || '';
-				case 7: // 陆运司机电话
-					return row.landDriverTel || '';
+				// 2026-02-06 删除陆运司机电话
 				case 8: // 陆地司机姓名
 					return row.landDriverName || '';
 				case 9: // 陆运银行卡号
@@ -2480,10 +2493,15 @@ export default {
 					return row.landBankName || '';
 				case 11: // 柜号
 					return row.seaCarNo || '';
-				case 12: // 海运司机电话
-					return row.seaDriverTel || '';
+				// 2026-02-06 删除海运司机电话
 				case 13: // 海运公司
 					return row.seaDriverName || '';
+				// 2026-02-06 添加含税列
+				case 22: // 含税
+					return row.isIncludeTaxSale === 1 ? '含税' : '不含税';
+				// 2026-02-06 添加库存金额列（从子项的 payments 求和）
+				case 23: // 库存金额
+					return this.calculateTotalPayments(row);
 				case 14: // 海运银行卡号
 					return row.seaBankNo || '';
 				case 15: // 海运银行户名
