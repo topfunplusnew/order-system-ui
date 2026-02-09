@@ -15,7 +15,7 @@
 					</el-select>
 				</el-form-item>
 				<el-form-item label="付款类型" prop="payType">
-					<el-cascader v-model="queryParams.payType" :options="paymentTypeTree" :props="props" @keyup.enter.native="handleQuery"></el-cascader>
+					<el-cascader v-model="queryParams.payType" :options="paymentTypeTree" :props="props" @keyup.enter.native="handleQuery" clearable></el-cascader>
 				</el-form-item>
 				<el-form-item label="我方户名" prop="selfAccountsName">
 					<el-input class="input-medium" v-model="queryParams.selfAccountsName" placeholder="请输入我方户名" clearable @keyup.enter.native="handleQuery" />
