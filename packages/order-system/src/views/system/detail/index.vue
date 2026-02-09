@@ -52,14 +52,14 @@
 				<el-input v-model="queryParams.width" placeholder="请输入宽度" clearable size="mini" @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="剩余量" prop="actualPiecesOperator">
-				<el-select v-model="queryParams.actualPiecesOperator" placeholder="请选择" clearable size="mini" style="width: 80px">
+				<el-select v-model="queryParams.params.actualPiecesOperator" placeholder="请选择" clearable size="mini" style="width: 80px">
 					<el-option label="＞" value="gt"></el-option>
 					<el-option label="＜" value="lt"></el-option>
 					<el-option label="=" value="eq"></el-option>
 				</el-select>
 			</el-form-item>
 			<el-form-item prop="actualPieces">
-				<el-input v-model="queryParams.actualPieces" placeholder="请输入剩余量" clearable size="mini" style="width: 120px" @keyup.enter.native="handleQuery" />
+				<el-input v-model="queryParams.params.actualPieces" placeholder="请输入剩余量" clearable size="mini" style="width: 120px" @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="入库单价" prop="paymentUnload">
 				<el-input v-model="queryParams.paymentUnload" placeholder="请输入入库单价" clearable size="mini" @keyup.enter.native="handleQuery" />
@@ -522,8 +522,6 @@ export default {
 				otherCost: null,
 				profit: null,
 				profitNoTax: null,
-				actualPieces: null,
-				actualPiecesOperator: null,
 				paymentsWithSundry: null,
 				additionalFees: null,
 				rebate: null,
@@ -534,7 +532,9 @@ export default {
 				params: {
 					main_storeHouseid: null,
 					main_storeDate_startTime: null,
-					main_storeDate_endTime: null
+					main_storeDate_endTime: null,
+					actualPiecesOperator: null,
+					actualPieces: null
 				}
 			},
 			// 表单参数

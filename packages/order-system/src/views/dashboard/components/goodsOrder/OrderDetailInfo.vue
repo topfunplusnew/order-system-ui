@@ -21,6 +21,14 @@ export default {
 		ban: {
 			type: Boolean,
 			default: false
+		},
+		/**
+		 * 隐藏的列配置，传入列的 prop 值数组
+		 * @type {Array<string>}
+		 */
+		hiddenColumns: {
+			type: Array,
+			default: () => []
 		}
 	},
 	computed: {
@@ -476,14 +484,14 @@ export default {
 						<el-button size="mini" type="warning" @click="handleMoneyBack(scope.row)">货物返利</el-button>
 					</template>
 				</el-table-column>
-				<el-table-column label="日期" align="center" prop="orderDate" show-overflow-tooltip :min-width="columnWidths.orderDate">
+				<el-table-column v-if="!hiddenColumns.includes('orderDate')" label="日期" align="center" prop="orderDate" show-overflow-tooltip :min-width="columnWidths.orderDate">
 					<template slot-scope="scope">
 						<ExpandCursor>
 							{{ scope.row.orderDate ? scope.row.orderDate : '-' }}
 						</ExpandCursor>
 					</template>
 				</el-table-column>
-				<el-table-column label="客户" align="center" prop="customer" show-overflow-tooltip :min-width="columnWidths.customer">
+				<el-table-column v-if="!hiddenColumns.includes('customer')" label="客户" align="center" prop="customer" show-overflow-tooltip :min-width="columnWidths.customer">
 					<template slot-scope="scope">
 						<ExpandCursor>
 							{{ scope.row.customer ? scope.row.customer : '-' }}
