@@ -5,29 +5,29 @@
 			<div class="offset-payment-info">
 				<el-card class="box-card">
 					<div slot="header" class="card-header">
-						<span>冲抵款分组信息（按司机+银行卡分组）</span>
+						<span>冲抵款分组信息（按对方银行卡号分组）</span>
 						<span class="total-amount-badge">总金额：{{ formatAmount(totalAmount) }}元</span>
 					</div>
 					<el-collapse v-model="activeNames">
-						<el-collapse-item v-for="(group, groupKey) in groupedByDriverAndBank" :key="groupKey" :name="groupKey">
+						<el-collapse-item v-for="(group, groupKey) in groupedByBankNo" :key="groupKey" :name="groupKey">
 							<template slot="title">
 								<div class="collapse-title">
-									<span class="driver-info">司机：{{ group.driverName }} | 银行卡：{{ group.bankNo }}</span>
+									<span class="driver-info">银行卡：{{ group.bankNo }} | 户名：{{ group.accountName || '-' }}</span>
 									<span class="amount-badge">{{ formatAmount(group.totalAmount) }}元</span>
 								</div>
 							</template>
 							<el-descriptions :column="2" size="mini" border>
-								<el-descriptions-item label="司机姓名">{{ group.driverName }}</el-descriptions-item>
-								<el-descriptions-item label="司机ID">{{ group.driverId }}</el-descriptions-item>
 								<el-descriptions-item label="账户名称">{{ group.accountName || '-' }}</el-descriptions-item>
 								<el-descriptions-item label="银行账号">{{ group.bankNo || '-' }}</el-descriptions-item>
 								<el-descriptions-item label="开户行">{{ group.bankName || '-' }}</el-descriptions-item>
+								<el-descriptions-item label="关联司机">{{ group.driverNames || '-' }}</el-descriptions-item>
 								<el-descriptions-item label="分组金额">{{ formatAmount(group.totalAmount) }}</el-descriptions-item>
 								<el-descriptions-item label="运费条数">{{ group.freights.length }}</el-descriptions-item>
 							</el-descriptions>
 
 							<el-divider content-position="left">运费明细</el-divider>
 							<el-table :data="group.freights" size="mini" border>
+								<el-table-column prop="driverName" label="司机" />
 								<el-table-column prop="carNo" label="车牌号" />
 								<el-table-column prop="moneyAmount" label="金额" />
 								<el-table-column prop="payDate" label="付款日期" />
@@ -210,30 +210,23 @@ export default {
 			const amounts = this.selectedFreights.map(freight => bignumber(freight.moneyAmount || 0));
 			return Number(amounts.reduce((sum, amount) => add(sum, amount), bignumber(0)));
 		},
-		// 按司机ID和银行卡号分组的数据（用于批量新增冲抵款）
-		groupedByDriverAndBank() {
-			// 使用 lodash 按组合键分组
-			const grouped = _.groupBy(this.selectedFreights, freight => {
-				const driverId = freight.driverId || freight.otherDriverId;
-				const bankNo = freight.otherBankNo;
-				return `${driverId}_${bankNo}`;
-			});
+		// 按对方银行卡号分组的数据（用于批量新增冲抵款）
+		groupedByBankNo() {
+			const grouped = _.groupBy(this.selectedFreights, freight => freight.otherBankNo || '_unknown_');
 
-			// 转换分组数据结构，添加汇总信息
 			return _.mapValues(grouped, (freights, groupKey) => {
 				const firstFreight = freights[0];
-				// 使用 mathjs 计算分组总金额
 				const amounts = freights.map(freight => bignumber(freight.moneyAmount || 0));
 				const totalAmount = Number(amounts.reduce((sum, amount) => add(sum, amount), bignumber(0)));
+				const driverNames = _.chain(freights).map('driverName').filter(Boolean).uniq().join('、').value() || '-';
 
 				return {
-					driverId: firstFreight.driverId || firstFreight.otherDriverId,
-					driverName: firstFreight.driverName || '未知司机',
 					bankNo: firstFreight.otherBankNo,
 					accountName: firstFreight.otherAcountsName,
 					bankName: firstFreight.otherBankName,
-					freights: freights,
-					totalAmount: totalAmount
+					driverNames,
+					freights,
+					totalAmount
 				};
 			});
 		}
@@ -276,7 +269,7 @@ export default {
 			});
 
 			// 默认展开第一项 - 使用 lodash 获取第一个键
-			const firstKey = _.keys(this.groupedByDriverAndBank)[0];
+			const firstKey = _.keys(this.groupedByBankNo)[0];
 			this.activeNames = firstKey ? [firstKey] : [];
 		},
 
@@ -354,8 +347,7 @@ export default {
 		// 构造批量提交数据
 		buildBatchSubmitData() {
 			const payTypeValue = Array.isArray(this.offsetForm.sourcePaymentType) ? this.offsetForm.sourcePaymentType.join('-') : this.offsetForm.sourcePaymentType;
-			// 使用 lodash 的 map 方法遍历分组数据
-			return _.map(this.groupedByDriverAndBank, group => {
+			return _.map(this.groupedByBankNo, group => {
 				// 构建基础表单数据模板
 				const baseFormData = _.pick(this.offsetForm, ['sourceBankNo', 'sourceAccountName', 'sourceBankName', 'sourceCompanyType', 'sourceId', 'targetCompanyType', 'targetPaymentType', 'transactionTime', 'remarks', 'userId', 'userName']);
 
