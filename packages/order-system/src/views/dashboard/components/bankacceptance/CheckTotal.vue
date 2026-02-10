@@ -1,4 +1,5 @@
 <script>
+import { add, round, bignumber } from 'mathjs';
 import InfoDialog from '../../../../components/InfoDialog.vue';
 import { listBankAcceptanceBalanceMoney } from '../../../../api/system/bankAcceptance';
 
@@ -26,40 +27,28 @@ export default {
 				this.totalVisible = true;
 			});
 		},
-		// 自定义列统计总函数
+		/**
+		 * 票据详情表格合计行
+		 * @param {Object} param - { columns, data }
+		 * @returns {string[]} 合计行每列的值
+		 */
 		getSummaries(param) {
 			const { columns, data } = param;
-			console.log(param);
 			const sums = [];
+			// 收入票据金额、收入贴息金额、支出票据金额、支出贴息金额 的列索引
+			const sumColumnIndexes = [10, 12, 16, 18];
 			columns.forEach((column, index) => {
 				if (index === 0) {
-					sums[index] = '统计';
+					sums[index] = '合计';
 					return;
 				}
-				const values = data.map(item => {
-					return Number(item[column.property]);
-				});
-
-				if (!values.every(value => isNaN(value))) {
-					// 对指定列进行计算
-					// if(index)
-					// 需要进行统计的索引列
-					const out_list = [9, 10, 11];
-					// index !== 9 && index !== 1 && index !== 16 && index !== 2
-					if (out_list.includes(index)) {
-						sums[index] = values.reduce((prev, curr) => {
-							const value = Number(curr);
-							if (!isNaN(value)) {
-								return prev + curr;
-							} else {
-								return prev;
-							}
-						}, 0);
-						sums[index] += ' ';
-					}
-				} else {
+				if (!sumColumnIndexes.includes(index)) {
 					sums[index] = '';
+					return;
 				}
+				const values = (data || []).map(item => Number(item[column.property]) || 0);
+				const total = values.reduce((acc, val) => add(acc, bignumber(val)), bignumber(0));
+				sums[index] = round(total, 2).toString();
 			});
 			return sums;
 		}

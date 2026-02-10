@@ -84,12 +84,13 @@
 					<el-table-column v-if="columns[5].visible" label="我方户名" align="center" prop="selfAcountsName" width="165" show-overflow-tooltip />
 					<el-table-column v-if="columns[6].visible" label="我方账号" align="center" prop="selfBankNo" width="180" show-overflow-tooltip />
 					<el-table-column v-if="columns[7].visible" label="我方开户行" align="center" prop="selfBankName" width="165" show-overflow-tooltip />
-					<el-table-column v-if="columns[8].visible" label="对方户名" align="center" prop="otherAcountsName" width="165" show-overflow-tooltip />
-					<el-table-column v-if="columns[9].visible" label="对方账号" align="center" prop="otherBankNo" width="190" show-overflow-tooltip />
-					<el-table-column v-if="columns[10].visible" label="对方开户行" align="center" prop="otherBankName" width="180" show-overflow-tooltip />
-					<el-table-column v-if="columns[11].visible" label="备注" align="center" prop="comments" width="165" show-overflow-tooltip />
-					<el-table-column v-if="columns[12].visible" label="银行卡流水编号" align="center" prop="transactionHistory" show-overflow-tooltip />
-					<el-table-column v-if="columns[13].visible" label="录入人员" align="center" prop="userName" width="120" show-overflow-tooltip />
+					<el-table-column v-if="columns[8].visible" label="我方账户类型" align="center" prop="selfBankCardType" width="120" show-overflow-tooltip />
+					<el-table-column v-if="columns[9].visible" label="对方户名" align="center" prop="otherAcountsName" width="165" show-overflow-tooltip />
+					<el-table-column v-if="columns[10].visible" label="对方账号" align="center" prop="otherBankNo" width="190" show-overflow-tooltip />
+					<el-table-column v-if="columns[11].visible" label="对方开户行" align="center" prop="otherBankName" width="180" show-overflow-tooltip />
+					<el-table-column v-if="columns[12].visible" label="备注" align="center" prop="comments" width="165" show-overflow-tooltip />
+					<el-table-column v-if="columns[13].visible" label="银行卡流水编号" align="center" prop="transactionHistory" show-overflow-tooltip />
+					<el-table-column v-if="columns[14].visible" label="录入人员" align="center" prop="userName" width="120" show-overflow-tooltip />
 					<el-table-column label="银行卡流水附件" align="center" prop="attachmentList" fixed="right">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
@@ -494,12 +495,13 @@ export default {
 				{ key: 5, label: `我方户名`, visible: true },
 				{ key: 6, label: `我方账号`, visible: true },
 				{ key: 7, label: `我方开户行`, visible: true },
-				{ key: 8, label: `对方户名`, visible: true },
-				{ key: 9, label: `对方账号`, visible: true },
-				{ key: 10, label: `对方开户行`, visible: true },
-				{ key: 11, label: `备注`, visible: true },
-				{ key: 12, label: `银行卡流水编号`, visible: true },
-				{ key: 13, label: `录入人员`, visible: true }
+				{ key: 8, label: `我方账户类型`, visible: true },
+				{ key: 9, label: `对方户名`, visible: true },
+				{ key: 10, label: `对方账号`, visible: true },
+				{ key: 11, label: `对方开户行`, visible: true },
+				{ key: 12, label: `备注`, visible: true },
+				{ key: 13, label: `银行卡流水编号`, visible: true },
+				{ key: 14, label: `录入人员`, visible: true }
 			],
 			// 列宽度配置
 			columnWidths: {
@@ -589,24 +591,26 @@ export default {
 			try {
 				const parsedColumns = JSON.parse(savedColumns);
 				// 确保 columns 数组完整且每个元素都有 visible 属性
-				if (Array.isArray(parsedColumns) && parsedColumns.length >= 12) {
+				if (Array.isArray(parsedColumns) && parsedColumns.length >= 15) {
 					// 确保所有必需的列都存在
 					this.columns = parsedColumns.map((col, index) => {
 						if (!col || typeof col.visible === 'undefined') {
-							// 如果列配置缺失，使用默认配置
 							const defaultColumns = [
 								{ key: 0, label: `日期`, visible: true },
 								{ key: 1, label: `支付类型`, visible: true },
-								{ key: 2, label: `金额`, visible: true },
-								{ key: 3, label: `乙方户名`, visible: true },
-								{ key: 4, label: `我方账号`, visible: true },
-								{ key: 5, label: `我方开户行`, visible: true },
-								{ key: 6, label: `对方户名`, visible: true },
-								{ key: 7, label: `对方账号`, visible: true },
-								{ key: 8, label: `对方开户行`, visible: true },
-								{ key: 9, label: `对方公司名称`, visible: true },
-								{ key: 10, label: `对方公司类型`, visible: true },
-								{ key: 11, label: `录入人员`, visible: true }
+								{ key: 2, label: `对方公司名称`, visible: true },
+								{ key: 3, label: `对方公司类型`, visible: true },
+								{ key: 4, label: `金额`, visible: true },
+								{ key: 5, label: `我方户名`, visible: true },
+								{ key: 6, label: `我方账号`, visible: true },
+								{ key: 7, label: `我方开户行`, visible: true },
+								{ key: 8, label: `我方账户类型`, visible: true },
+								{ key: 9, label: `对方户名`, visible: true },
+								{ key: 10, label: `对方账号`, visible: true },
+								{ key: 11, label: `对方开户行`, visible: true },
+								{ key: 12, label: `备注`, visible: true },
+								{ key: 13, label: `银行卡流水编号`, visible: true },
+								{ key: 14, label: `录入人员`, visible: true }
 							];
 							return defaultColumns[index] || col;
 						}

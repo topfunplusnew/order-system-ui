@@ -165,7 +165,15 @@
 							</el-tooltip>
 						</template>
 					</el-table-column>
-					<el-table-column label="对方户名" align="center" prop="otherAccountsName" width="120" v-if="columns[9].visible" show-overflow-tooltip>
+					<el-table-column label="我方账户类型" align="center" prop="selfBankCardType" width="120" v-if="columns[9].visible" show-overflow-tooltip>
+						<template #default="scope">
+							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+								<div slot="content">{{ scope.row.selfBankCardType }}</div>
+								<span>{{ scope.row.selfBankCardType }}</span>
+							</el-tooltip>
+						</template>
+					</el-table-column>
+					<el-table-column label="对方户名" align="center" prop="otherAccountsName" width="120" v-if="columns[10].visible" show-overflow-tooltip>
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.otherAccountsName }}</div>
@@ -174,7 +182,7 @@
 						</template>
 					</el-table-column>
 					<!-- 对方账号列已经包含了 show-overflow-tooltip，可以正常显示 -->
-					<el-table-column label="对方账号" align="center" prop="otherBankNo" width="190" v-if="columns[10].visible" show-overflow-tooltip>
+					<el-table-column label="对方账号" align="center" prop="otherBankNo" width="190" v-if="columns[11].visible" show-overflow-tooltip>
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.otherBankNo }}</div>
@@ -183,7 +191,7 @@
 						</template>
 					</el-table-column>
 
-					<el-table-column label="对方开户行" align="center" prop="otherBankName" width="120" v-if="columns[11].visible" show-overflow-tooltip>
+					<el-table-column label="对方开户行" align="center" prop="otherBankName" width="120" v-if="columns[12].visible" show-overflow-tooltip>
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.otherBankName }}</div>
@@ -191,7 +199,7 @@
 							</el-tooltip>
 						</template>
 					</el-table-column>
-					<el-table-column label="支付状态" align="center" prop="paymentState" width="120" v-if="columns[12].visible" show-overflow-tooltip>
+					<el-table-column label="支付状态" align="center" prop="paymentState" width="120" v-if="columns[13].visible" show-overflow-tooltip>
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.paymentState }}</div>
@@ -202,7 +210,7 @@
 						</template>
 					</el-table-column>
 
-					<el-table-column label="备注" align="center" prop="comments" width="120" v-if="columns[13].visible" show-overflow-tooltip>
+					<el-table-column label="备注" align="center" prop="comments" width="120" v-if="columns[14].visible" show-overflow-tooltip>
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.comments }}</div>
@@ -210,7 +218,7 @@
 							</el-tooltip>
 						</template>
 					</el-table-column>
-					<el-table-column label="附件" align="center" prop="attachmentList" width="120" v-if="columns[14].visible" show-overflow-tooltip>
+					<el-table-column label="附件" align="center" prop="attachmentList" width="120" v-if="columns[15].visible" show-overflow-tooltip>
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
 								<div slot="content" @click.stop>
@@ -221,7 +229,7 @@
 						</template>
 					</el-table-column>
 					<!-- 新增银行卡流水编号列 -->
-					<el-table-column label="银行卡流水编号" align="center" prop="transactionHistory" width="120" v-if="columns[15] && columns[15].visible" show-overflow-tooltip>
+					<el-table-column label="银行卡流水编号" align="center" prop="transactionHistory" width="120" v-if="columns[16] && columns[16].visible" show-overflow-tooltip>
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.transactionHistory }}</div>
@@ -230,7 +238,7 @@
 						</template>
 					</el-table-column>
 					<!-- 新增银行卡流水附件列 -->
-					<el-table-column label="银行卡流水附件" align="center" prop="transactionHistoryAttachmentList" width="120" v-if="columns[16] && columns[16].visible" fixed="right" show-overflow-tooltip>
+					<el-table-column label="银行卡流水附件" align="center" prop="transactionHistoryAttachmentList" width="120" v-if="columns[17] && columns[17].visible" fixed="right" show-overflow-tooltip>
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
 								<div slot="content" @click.stop>
@@ -240,7 +248,7 @@
 							</el-tooltip>
 						</template>
 					</el-table-column>
-					<el-table-column label="录入人员" align="center" prop="userName" width="120" v-if="columns[17] && columns[17].visible" show-overflow-tooltip>
+					<el-table-column label="录入人员" align="center" prop="userName" width="120" v-if="columns[18] && columns[18].visible" show-overflow-tooltip>
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.userName }}</div>
@@ -727,15 +735,16 @@ export default {
 				{ key: 6, label: `我方户名`, visible: true },
 				{ key: 7, label: `我方账号`, visible: true },
 				{ key: 8, label: `我方开户行`, visible: true },
-				{ key: 9, label: `对方户名`, visible: true },
-				{ key: 10, label: `对方账号`, visible: true },
-				{ key: 11, label: `对方开户行`, visible: true },
-				{ key: 12, label: `支付状态`, visible: true },
-				{ key: 13, label: `备注`, visible: true },
-				{ key: 14, label: `附件`, visible: true },
-				{ key: 15, label: `银行卡流水编号`, visible: true },
-				{ key: 16, label: `银行卡流水附件`, visible: true },
-				{ key: 17, label: `录入人员`, visible: true }
+				{ key: 9, label: `我方账户类型`, visible: true },
+				{ key: 10, label: `对方户名`, visible: true },
+				{ key: 11, label: `对方账号`, visible: true },
+				{ key: 12, label: `对方开户行`, visible: true },
+				{ key: 13, label: `支付状态`, visible: true },
+				{ key: 14, label: `备注`, visible: true },
+				{ key: 15, label: `附件`, visible: true },
+				{ key: 16, label: `银行卡流水编号`, visible: true },
+				{ key: 17, label: `银行卡流水附件`, visible: true },
+				{ key: 18, label: `录入人员`, visible: true }
 			],
 			// 顶部筛选框
 			queryPayment: {},
@@ -929,10 +938,14 @@ export default {
 			this.getList();
 		}
 		if (localStorage.getItem('payment-columns') === 'null' || !localStorage.getItem('payment-columns')) {
-			// 设置localStorage
 			localStorage.setItem('payment-columns', JSON.stringify(this.columns));
 		} else {
-			this.columns = JSON.parse(localStorage.getItem('payment-columns'));
+			const parsed = JSON.parse(localStorage.getItem('payment-columns'));
+			// 列数变更时（如新增我方账户类型）使用默认配置
+			this.columns = Array.isArray(parsed) && parsed.length === 19 ? parsed : this.columns;
+			if (!Array.isArray(parsed) || parsed.length !== 19) {
+				localStorage.setItem('payment-columns', JSON.stringify(this.columns));
+			}
 		}
 		// 监听窗口大小变化，重新计算表格高度
 		window.addEventListener('resize', this.handleResize);
