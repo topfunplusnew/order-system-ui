@@ -58,8 +58,8 @@
 					<el-option label="=" value="eq"></el-option>
 				</el-select>
 			</el-form-item>
-			<el-form-item prop="actualPieces">
-				<el-input v-model="queryParams.params.actualPieces" placeholder="请输入剩余量" clearable size="mini" style="width: 120px" @keyup.enter.native="handleQuery" />
+			<el-form-item prop="params.actualPiecesValue">
+				<el-input v-model="queryParams.params.actualPiecesValue" placeholder="请输入剩余量" clearable size="mini" style="width: 120px" @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="入库单价" prop="paymentUnload">
 				<el-input v-model="queryParams.paymentUnload" placeholder="请输入入库单价" clearable size="mini" @keyup.enter.native="handleQuery" />
@@ -534,7 +534,7 @@ export default {
 					main_storeDate_startTime: null,
 					main_storeDate_endTime: null,
 					actualPiecesOperator: null,
-					actualPieces: null
+					actualPiecesValue: null
 				}
 			},
 			// 表单参数
