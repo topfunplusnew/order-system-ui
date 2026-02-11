@@ -374,10 +374,25 @@ export function getBankCardChangeSummary(query) {
 }
 
 /**
- * 资金统计
- * @param {Object} query
- * @param {string} query.endTime - 结束时间
- * @returns
+ * 资金统计（获取指定日期的资金汇总数据）
+ * @param {Object} query - 查询参数
+ * @param {string} query.endTime - 统计日期，格式 yyyy-MM-dd
+ * @returns {Promise<Object>} 响应结构 { msg, code, data }
+ * @returns {string} return.msg - 提示信息
+ * @returns {number} return.code - 状态码，200 表示成功
+ * @returns {Object} return.data - 资金汇总数据
+ * @returns {number} return.data.companyTotalBalance - 客户欠款合计数（①）
+ * @returns {number} return.data.supplierTotalBalance - 欠厂家货款（③）
+ * @returns {number} return.data.companyTotalInvoiceAmount - 客户票点合计
+ * @returns {number} return.data.supplierTotalInvoiceAmount - 供应商票点合计
+ * @returns {number} return.data.driverUnpaidAmount - 未支付运费合计（④）
+ * @returns {number} return.data.selfCompanyTotalFunds - 所有银行卡资金合计（②）
+ * @returns {number} return.data.loanBalance - 公司从外面借款合计（⑨）
+ * @returns {number} return.data.futuresMarginBalance - 期货保证金（⑥）
+ * @returns {number} return.data.loanFromCompany - 其他应收-个人/公司从公司借款（⑤）
+ * @returns {number} return.data.paymentMarginBalance - 厂家保证金（⑦）
+ * @returns {number} return.data.receiveMarginBalance - 收取保证金（⑧）
+ * @returns {number} return.data.remainingInventoryAmount - 库存金额（⓪）
  */
 export function getMoneySummary(query) {
 	return request({
