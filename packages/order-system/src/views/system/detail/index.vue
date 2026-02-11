@@ -234,7 +234,15 @@
 									</el-tooltip>
 								</template>
 							</el-table-column>
-							<el-table-column v-if="columns[14].visible" label="库存是否含税" align="center" prop="isIncludeTaxSale" show-overflow-tooltip>
+							<el-table-column v-if="columns[14].visible" label="剩余库存" align="center" prop="remainingInventory" show-overflow-tooltip>
+								<template #default="scope">
+									<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+										<div slot="content">{{ calculateRemainingInventory(scope.row) }}</div>
+										<span>{{ calculateRemainingInventory(scope.row) }}</span>
+									</el-tooltip>
+								</template>
+							</el-table-column>
+							<el-table-column v-if="columns[15].visible" label="库存是否含税" align="center" prop="isIncludeTaxSale" show-overflow-tooltip>
 								<template #default="scope">
 									<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 										<div slot="content">{{ scope.row.isIncludeTaxSale === 1 ? '含税' : '不含税' }}</div>
@@ -242,7 +250,7 @@
 									</el-tooltip>
 								</template>
 							</el-table-column>
-							<el-table-column v-if="columns[15].visible" label="入库金额" align="center" prop="payments" show-overflow-tooltip>
+							<el-table-column v-if="columns[16].visible" label="入库金额" align="center" prop="payments" show-overflow-tooltip>
 								<template #default="scope">
 									<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 										<div slot="content">{{ scope.row.payments }}</div>
@@ -250,7 +258,7 @@
 									</el-tooltip>
 								</template>
 							</el-table-column>
-							<el-table-column v-if="columns[16].visible" label="误差" align="center" prop="erro" show-overflow-tooltip>
+							<el-table-column v-if="columns[17].visible" label="误差" align="center" prop="erro" show-overflow-tooltip>
 								<template #default="scope">
 									<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 										<div slot="content">{{ scope.row.erro }}</div>
@@ -258,7 +266,7 @@
 									</el-tooltip>
 								</template>
 							</el-table-column>
-							<el-table-column v-if="columns[17].visible" label="吨位" align="center" prop="tonnage" show-overflow-tooltip>
+							<el-table-column v-if="columns[18].visible" label="吨位" align="center" prop="tonnage" show-overflow-tooltip>
 								<template #default="scope">
 									<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 										<div slot="content">{{ scope.row.tonnage }}</div>
@@ -450,6 +458,7 @@ import SearchOption from '@/components/SearchOption.vue';
 import { listStoreHouse } from '@/api/system/StoreHouse';
 import DragDiv from '@/components/DragDiv/index.vue';
 import { fix_2 } from '@/api/tool/format';
+import { multiply, bignumber, round } from 'mathjs';
 // 前端Excel导出依赖
 import * as XLSX from 'xlsx';
 
@@ -554,10 +563,11 @@ export default {
 				{ key: 11, label: '每包片数', prop: 'piecesPerPack', visible: true },
 				{ key: 12, label: '包数', prop: 'packs', visible: true },
 				{ key: 13, label: '存货价', prop: 'paymentUnload', visible: true },
-				{ key: 14, label: '库存是否含税', prop: 'isIncludeTaxSale', visible: true },
-				{ key: 15, label: '入库金额', prop: 'payments', visible: true },
-				{ key: 16, label: '误差', prop: 'erro', visible: true },
-				{ key: 17, label: '吨位', prop: 'tonnage', visible: true }
+				{ key: 14, label: '剩余库存', prop: 'remainingInventory', visible: true },
+				{ key: 15, label: '库存是否含税', prop: 'isIncludeTaxSale', visible: true },
+				{ key: 16, label: '入库金额', prop: 'payments', visible: true },
+				{ key: 17, label: '误差', prop: 'erro', visible: true },
+				{ key: 18, label: '吨位', prop: 'tonnage', visible: true }
 			],
 			// 表单校验
 			rules: {
@@ -601,6 +611,15 @@ export default {
 				localStorage.setItem('detail-columns', JSON.stringify(this.columns));
 			} else {
 				this.columns = JSON.parse(localStorage.getItem('detail-columns'));
+				// 合并新增列（剩余库存），旧缓存需插入并顺延后续列 key
+				const hasRemainingInventory = this.columns.some(c => c.prop === 'remainingInventory');
+				if (!hasRemainingInventory) {
+					const insertIdx = this.columns.findIndex(c => c.key === 13) + 1;
+					this.columns.forEach(c => {
+						if (c.key >= 14) c.key += 1;
+					});
+					this.columns.splice(insertIdx >= 1 ? insertIdx : this.columns.length, 0, { key: 14, label: '剩余库存', prop: 'remainingInventory', visible: true });
+				}
 			}
 		},
 		// DragDiv 事件处理方法
@@ -884,13 +903,15 @@ export default {
 					return row.packs || '';
 				case 13: // 存货价
 					return row.paymentUnload || '';
-				case 14: // 库存是否含税
+				case 14: // 剩余库存
+					return this.calculateRemainingInventory(row);
+				case 15: // 库存是否含税
 					return row.isIncludeTaxSale === 1 ? '含税' : '不含税';
-				case 15: // 入库金额
+				case 16: // 入库金额
 					return row.payments || '';
-				case 16: // 误差
+				case 17: // 误差
 					return row.erro || '';
-				case 17: // 吨位
+				case 18: // 吨位
 					return row.tonnage || '';
 				default:
 					return '';
@@ -937,16 +958,31 @@ export default {
 			);
 		},
 		/**
+		 * 计算剩余库存：片数=剩余量*长度*宽度*存货价*0.000001，其他=剩余量*长度*宽度*存货价
+		 * @param {Object} row 行数据
+		 * @returns {string} 保留两位小数
+		 */
+		calculateRemainingInventory(row) {
+			const actualPieces = Number(row.actualPieces) || 0;
+			const length = Number(row.length) || 0;
+			const width = Number(row.width) || 0;
+			const paymentUnload = Number(row.paymentUnload) || 0;
+			const countingUnit = row.countingUnit || '';
+			const isPieces = countingUnit === '片数' || countingUnit === '片';
+			const base = multiply(multiply(multiply(bignumber(actualPieces), bignumber(length)), bignumber(width)), bignumber(paymentUnload));
+			const result = isPieces ? multiply(base, bignumber(0.000001)) : base;
+			return Number(round(result, 2)).toFixed(2);
+		},
+		/**
 		 * @description: 计算表格的合计行数据。
-		 *              针对入库金额 (payments) 和吨位 (tonnage) 进行合计。
-		 *              使用 fix_2 方法格式化合计结果。
+		 *              针对入库金额 (payments)、吨位 (tonnage)、剩余库存 (remainingInventory) 进行合计。
 		 * @param {object} param - Element UI 表格传递的参数，包含列配置 { columns } 和数据 { data }。
 		 * @returns {Array<string|number>} 计算得到的合计行数据数组。
 		 */
 		getSummary(param) {
 			const { columns, data } = param;
 			const sums = [];
-			const summaryColumns = ['payments', 'tonnage'];
+			const summaryColumns = ['payments', 'tonnage', 'remainingInventory'];
 			columns.forEach((column, index) => {
 				// 第一列显示"合计"文字
 				if (index === 0) {
@@ -956,7 +992,7 @@ export default {
 
 				// 如果列有property且在summaryColumns中，计算合计
 				if (column.property && summaryColumns.includes(column.property)) {
-					const values = data.map(item => Number(item[column.property]) || 0);
+					const values = column.property === 'remainingInventory' ? data.map(item => Number(this.calculateRemainingInventory(item)) || 0) : data.map(item => Number(item[column.property]) || 0);
 					if (!values.every(value => isNaN(value))) {
 						sums[index] = values.reduce((prev, curr) => {
 							const value = Number(curr) || 0;
@@ -967,8 +1003,8 @@ export default {
 							}
 						}, 0);
 						sums[index] = fix_2(sums[index]);
-						// 吨位不加单位，入库金额加单位
-						if (column.property === 'payments') {
+						// 吨位不加单位，入库金额和剩余库存加单位
+						if (column.property === 'payments' || column.property === 'remainingInventory') {
 							sums[index] += ' 元';
 						}
 					} else {
