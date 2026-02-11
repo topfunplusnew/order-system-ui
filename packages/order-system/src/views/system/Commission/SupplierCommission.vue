@@ -5,6 +5,9 @@
 			<el-form-item label="时间范围">
 				<el-date-picker v-model="dateRange" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" size="mini" style="width: 280px" unlink-panels :clearable="true" @change="onDateRangeChange" />
 			</el-form-item>
+			<el-form-item label="支付日期">
+				<el-date-picker v-model="fundDateRange" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" size="mini" style="width: 280px" unlink-panels :clearable="true" />
+			</el-form-item>
 			<el-form-item label="厂家名称" prop="companyName">
 				<el-input v-model="queryParams.companyName" placeholder="请输入厂家名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
@@ -323,6 +326,7 @@ export default {
 	data() {
 		return {
 			dateRange: [],
+			fundDateRange: [],
 			queryParams: {
 				companyName: '',
 				pageNum: 1,
@@ -583,7 +587,7 @@ export default {
 				startTime: start,
 				endTime: end
 			};
-			// 保留 dateRange，不清空组件
+			// 保留 dateRange、fundDateRange，不清空组件
 			this.getList();
 		},
 		// 查询数据
@@ -620,6 +624,10 @@ export default {
 				}
 				if (this.queryParams.endTime) {
 					queryParams.params.endTime = this.queryParams.endTime;
+				}
+				if (Array.isArray(this.fundDateRange) && this.fundDateRange.length === 2) {
+					queryParams.params.fundDateStart = this.fundDateRange[0];
+					queryParams.params.fundDateEnd = this.fundDateRange[1];
 				}
 				if (this.queryParams.isNoPay !== null && this.queryParams.isNoPay !== '') {
 					queryParams.params.isNoPay = this.queryParams.isNoPay;
@@ -791,6 +799,10 @@ export default {
 			}
 			if (this.queryParams.endTime) {
 				exportParams.params.endTime = this.queryParams.endTime;
+			}
+			if (Array.isArray(this.fundDateRange) && this.fundDateRange.length === 2) {
+				exportParams.params.fundDateStart = this.fundDateRange[0];
+				exportParams.params.fundDateEnd = this.fundDateRange[1];
 			}
 			if (this.queryParams.isNoPay !== null && this.queryParams.isNoPay !== '') {
 				exportParams.params.isNoPay = this.queryParams.isNoPay;
