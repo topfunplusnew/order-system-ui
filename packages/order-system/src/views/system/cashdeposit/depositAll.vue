@@ -300,6 +300,7 @@ import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import { ReceiveType } from '@/api/tool/enums';
 import InfoDialog from '@/components/InfoDialog.vue';
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
+import _ from 'lodash';
 import { subtract, bignumber } from 'mathjs';
 import { calculateTotalBadDebt } from '@/utils/lendMoney';
 
@@ -479,6 +480,7 @@ export default {
 		getList() {
 			this.loading = true;
 			const params = { ...this.queryParams };
+			if (_.isEmpty(params.type)) params.type = '厂家保证金和佣金';
 			listLendMoney(params)
 				.then(res => {
 					this.lendMoneyList = res.rows || [];
@@ -667,13 +669,9 @@ export default {
 		},
 		/** 导出按钮操作 */
 		handleExport() {
-			this.download(
-				'system/lendMoney/export',
-				{
-					...this.queryParams
-				},
-				`保证金汇总_${new Date().getTime()}.xlsx`
-			);
+			const params = { ...this.queryParams };
+			if (_.isEmpty(params.type)) params.type = '厂家保证金和佣金';
+			this.download('system/lendMoney/export', params, `保证金汇总_${new Date().getTime()}.xlsx`);
 		},
 		// 计算收回金额 = 金额 - 未收回金额
 		calculateRecoveredAmount(row) {
