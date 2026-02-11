@@ -479,7 +479,8 @@ import { PUBLIC_DICT_TYPE } from '@/utils/order';
 import { getSubjectLevelTree } from '@/api/system/subject';
 import { getConfigKey } from '@/api/system/config';
 import _ from 'lodash';
-import { subtract, bignumber, add } from 'mathjs';
+import { subtract, bignumber } from 'mathjs';
+import { calculateTotalBadDebt } from '@/utils/lendMoney';
 
 export default {
 	name: 'EmployeeLendMoney',
@@ -1220,20 +1221,7 @@ export default {
 			const recovered = subtract(moneyAmount, unrecoveredAmount);
 			return Number(recovered).toFixed(2);
 		},
-		// 计算累计坏账 = recoverMoneyList 数组中 moneyAmount 的合计
-		calculateTotalBadDebt(row) {
-			if (!row.recoverMoneyList || !Array.isArray(row.recoverMoneyList) || row.recoverMoneyList.length === 0) {
-				return '0.00';
-			}
-			const amounts = row.recoverMoneyList.map(item => {
-				if (item.badDebtFlag !== 1 && item.badDebtFlag !== '1') {
-					return bignumber(0);
-				}
-				return bignumber(item.moneyAmount);
-			});
-			const total = amounts.reduce((sum, amount) => add(sum, amount), bignumber(0));
-			return total.toFixed(2);
-		}
+		calculateTotalBadDebt
 	}
 };
 </script>

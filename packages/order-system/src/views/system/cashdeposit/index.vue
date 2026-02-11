@@ -355,7 +355,8 @@ import { getSubjectLevelTree } from '@/api/system/subject';
 import { getConfigKey } from '@/api/system/config';
 import _ from 'lodash';
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
-import { subtract, bignumber, add } from 'mathjs';
+import { subtract, bignumber } from 'mathjs';
+import { calculateTotalBadDebt } from '@/utils/lendMoney';
 
 export default {
 	name: 'CashDeposit',
@@ -919,15 +920,7 @@ export default {
 			const recovered = subtract(moneyAmount, unrecoveredAmount);
 			return Number(recovered).toFixed(2);
 		},
-		// 计算累计坏账 = recoverMoneyList 数组中 moneyAmount 的合计
-		calculateTotalBadDebt(row) {
-			if (!row.recoverMoneyList || !Array.isArray(row.recoverMoneyList) || row.recoverMoneyList.length === 0) {
-				return '0.00';
-			}
-			const amounts = row.recoverMoneyList.map(item => bignumber(item.moneyAmount || 0));
-			const total = amounts.reduce((sum, amount) => add(sum, amount), bignumber(0));
-			return Number(total).toFixed(2);
-		}
+		calculateTotalBadDebt
 	}
 };
 </script>
