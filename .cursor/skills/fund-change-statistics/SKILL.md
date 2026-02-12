@@ -678,7 +678,7 @@ export const AGGREGATOR_MAP = {
 };
 ```
 
-#### 2.3 模板组件结构 （可以参考 packages\ui-components\components\OrderAdjustmentChangeTemplate 的目录结构）
+#### 2.3 模板组件结构 （可以参考 packages\ui-components\components\OrderAdjustmentChangeTemplate 的目录结构，也就是每一个模板都需要用一个目录表示，目录中存放该模版的相关信息，同时OrderAdjustmentChangeTemplate还需要进行整改，所有的模板文件 如果不是按照以下标准编写，都需要进行重构）
 
 ```vue
 <script>
