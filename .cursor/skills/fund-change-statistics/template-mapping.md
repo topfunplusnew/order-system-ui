@@ -142,27 +142,25 @@ export default {
 
 ### compareData 数据格式
 
+`compareData` 即 **getByIds 接口返回的 `data` 数组**，每条为备份日志记录（backup log record）：
+
 ```javascript
 [
   {
-    recordId: '唯一记录ID',          // 用于分组
-    changeType: 'before',            // 'before' | 'after'
-    // 业务字段...
-    field1: 'value1',
-    field2: 'value2',
-    // 金额字段（用于计算差额）
-    amount: 1000.00
-  },
-  {
-    recordId: '唯一记录ID',
-    changeType: 'after',
-    // 业务字段...
-    field1: 'value1_new',
-    field2: 'value2_new',
-    amount: 1100.00
+    id: 146911,
+    tableName: 'inventory_main',
+    backupTime: '2026-02-09 14:28:25',
+    originalTargetTime: '2025-11-23 16:33:21',
+    changedTargetTime: '2025-11-23 16:33:21',
+    backupType: 'update',
+    originalInfo: { /* 修改前的完整业务数据 */ },
+    changedInfo: { /* 修改后的完整业务数据 */ },
+    originalInfoId: '71'
   }
 ]
 ```
+
+`originalInfo` / `changedInfo` 结构随 `tableName` 不同而不同，模板需通过 `mapBeforeRow`、`mapAfterRow`、`buildDiffFields` 进行字段映射与差额计算。
 
 ### 差额计算规则
 
@@ -175,28 +173,30 @@ export default {
 
 1. **复制模板**: 从 `InventoryChangeTemplate.vue` 复制基础结构
 2. **修改组件名**: 改为对应的模块名称
-3. **配置表格列**: 根据 Excel 表格配置对应的列
-4. **调整差额计算**: 根据业务逻辑调整 `calculateFieldDiff` 方法
-5. **添加汇总项**: 在 computed 中添加对应的汇总计算
+3. **配置 columns**: 根据 [field-reference.md](./field-reference.md) 及 Excel 表格配置表格列，差额列指定 `aggregator`（默认 `sum`，常用 `absSum`）及 `summaryLabel`
+4. **重写 buildDiffFields**: 从 `originalInfo` / `changedInfo` 计算差额字段，返回 key 与 columns 的 `prop` 一致
+5. **按需重写 mapBeforeRow / mapAfterRow**: 若需从原始结构提取或聚合成表格行字段
 6. **导入并注册**: 在主页面导入组件并添加到 `templateMap`
-7. **测试调用**: 使用 `openModuleDetail` 方法测试弹窗
+7. **测试调用**: 使用 `openModuleDetail(moduleName, res.data)`，传入 getByIds 的 `data`
 
 ## 常见问题
 
 ### Q1: 如何添加新的汇总项？
 
-在 computed 中添加：
+在 `columns` 中增加配置即可，`summaryMap` 会自动按 `aggregator` 计算：
 
 ```javascript
-computed: {
-  totalNewField() {
-    return this.tableData
-      .filter(item => item.rowType === 'diff')
-      .reduce((sum, item) => {
-        const value = Number(item.newFieldDiff || 0);
-        return format(add(sum, abs(value)), { notation: 'fixed', precision: 2 });
-      }, 0);
-  }
+columns() {
+  return [
+    // ...
+    { prop: 'newFieldDiff', label: '新字段差额', aggregator: 'absSum', summaryLabel: '新字段差额汇总' }
+  ];
+},
+buildDiffFields(original, changed) {
+  return {
+    // ...
+    newFieldDiff: this.calculateFieldDiff(changed.newField, original.newField)
+  };
 }
 ```
 

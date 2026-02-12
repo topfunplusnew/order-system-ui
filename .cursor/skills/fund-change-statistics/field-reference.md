@@ -2,6 +2,8 @@
 
 根据 `@docs/apifox-docs/系统修改变动统计表.xlsx`，以下是各模块的字段列表。
 
+**与 SKILL 衔接说明**：本文档列出的是**模板表格展示的目标字段**（即 `mapBeforeRow` / `mapAfterRow` 输出、`columns` 的 `prop`）。实际数据来自 getByIds 的 `originalInfo` / `changedInfo`，其字段名可能与下表不同（如 API 的 `storeDate` 映射为展示用的 `inboundTime`），需在 `mapBeforeRow` / `mapAfterRow` 中完成映射。差额字段（`xxxDiff`）在 `buildDiffFields` 中计算，其 key 需与 `columns` 中 `showSummary: true` 的 `prop` 一致。
+
 ## 入库管理
 
 | 字段名 | 说明 | 类型 | 示例值 |
@@ -227,7 +229,7 @@
 
 ## 使用建议
 
-1. **字段类型转换**: 从后端获取数据时，确保数字类型字段使用 `Number()` 转换
+1. **字段类型转换**: 从 `originalInfo` / `changedInfo` 取值时，数字类型字段使用 `Number()` 转换
 2. **日期格式化**: 使用 `dayjs` 或 `moment` 格式化日期
-3. **金额显示**: 使用 `format` 函数格式化金额，保留2位小数
+3. **金额计算与显示**: 差额计算使用 mathjs 的 `subtract`、`add` 等保证高精度，`format` 格式化保留 2 位小数（与 SKILL 规范一致）
 4. **空值处理**: 使用 `|| 0` 或 `?? 0` 处理可能为空的数值字段

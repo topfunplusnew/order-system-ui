@@ -11,6 +11,11 @@
 				<el-form-item label="支付类型" prop="receiveType">
 					<el-cascader v-model="queryParams.receiveType" :options="paymentTypeTree" :props="props" class="input-medium" clearable @keyup.enter.native="handleQuery" />
 				</el-form-item>
+				<el-form-item label="我方账户类型" prop="selfBankCardType">
+					<el-select v-model="queryParams.selfBankCardType" class="input-medium" placeholder="请选择我方账户类型" clearable @keyup.enter.native="handleQuery">
+						<el-option v-for="item in options_selfBankCardType" :key="item.value" :label="item.label" :value="item.value"></el-option>
+					</el-select>
+				</el-form-item>
 				<el-form-item label="我方户名" prop="selfAcountsName">
 					<el-input v-model="queryParams.selfAcountsName" class="input-medium" placeholder="请输入我方户名" clearable @keyup.enter.native="handleQuery" />
 				</el-form-item>
@@ -407,6 +412,7 @@ export default {
 				tableName: null,
 				tID: null,
 				moneyAmount: null,
+				selfBankCardType: null,
 				selfAcountsName: null,
 				selfBankNo: null,
 				selfBankName: null,
@@ -428,6 +434,10 @@ export default {
 					bankacceptanceBillNo: null
 				}
 			},
+			options_selfBankCardType: [
+				{ label: '银行活期存款', value: BankAcceptanceType.BANK_CASH },
+				{ label: '承兑', value: BankAcceptanceType.ACCEPTANCE }
+			],
 			// 时间范围选择器
 			dateRange: [],
 			// 表单参数

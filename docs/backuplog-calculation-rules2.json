@@ -1,0 +1,1012 @@
+{
+	"version": "3.0",
+	"description": "本规则用于反向计算getAllmoneySummary中的数据，通过遍历每一个实体逆向推算出getAllmoney，理论上从系统第一条sysBackupLog累计计算到最后一条，其值应与getAllmoneySummary的实时值等价",
+	"rules": [
+		{
+			"name": "入库管理库存变动差额(片)",
+			"outputKey": "remainingInventoryAmount",
+			"tableName": "inventory_main",
+			"category": "default",
+			"conditions": {},
+			"formula": "SUM(changed.$.inventoryDetailList[*].(length/1000)*(width/1000)*stockNumber*paymentUnload WHERE countingUnit!='其他') - SUM(original.$.inventoryDetailList[*].(length/1000)*(width/1000)*stockNumber*paymentUnload WHERE countingUnit!='其他')",
+			"comment": "入库增加库存金额: 计量单位为片时使用 长*宽*入库片数*卸货价"
+		},
+		{
+			"name": "入库管理库存变动差额(其他)",
+			"outputKey": "remainingInventoryAmount",
+			"tableName": "inventory_main",
+			"category": "default",
+			"conditions": {},
+			"formula": "SUM(changed.$.inventoryDetailList[*].stockNumber*paymentUnload WHERE countingUnit='其他') - SUM(original.$.inventoryDetailList[*].stockNumber*paymentUnload WHERE countingUnit='其他')",
+			"comment": "入库增加库存金额: 计量单位为其他时使用 入库量*卸货价"
+		},
+		{
+			"name": "订单库存变动差额",
+			"outputKey": "remainingInventoryAmount",
+			"tableName": "exwarehouse",
+			"category": "normal",
+			"conditions": {
+				"logicOperator": "AND",
+				"items": [
+					{
+						"source": "any",
+						"path": "$.ordersNo",
+						"operator": "!=",
+						"value": "货物破损"
+					},
+					{
+						"source": "any",
+						"path": "$.ordersNo",
+						"operator": "!=",
+						"value": "二次加工"
+					}
+				]
+			},
+			"formula": "(original.$.sourceInventoryDetail.length/1000)*(original.$.sourceInventoryDetail.width/1000)*original.$.outAmount*original.$.sourceInventoryDetail.paymentUnload - (changed.$.sourceInventoryDetail.length/1000)*(changed.$.sourceInventoryDetail.width/1000)*changed.$.outAmount*changed.$.sourceInventoryDetail.paymentUnload",
+			"comment": "普通出库(绑定订单)减少库存金额，使用sourceInventoryDetail计算单价"
+		},
+		{
+			"name": "破损出库库存变动金额",
+			"outputKey": "remainingInventoryAmount",
+			"tableName": "exwarehouse",
+			"category": "damage",
+			"conditions": {
+				"logicOperator": "AND",
+				"items": [
+					{
+						"source": "any",
+						"path": "$.ordersNo",
+						"operator": "==",
+						"value": "货物破损"
+					}
+				]
+			},
+			"formula": "(original.$.sourceInventoryDetail.length/1000)*(original.$.sourceInventoryDetail.width/1000)*original.$.outAmount*original.$.sourceInventoryDetail.paymentUnload - (changed.$.sourceInventoryDetail.length/1000)*(changed.$.sourceInventoryDetail.width/1000)*changed.$.outAmount*changed.$.sourceInventoryDetail.paymentUnload",
+			"comment": "破损出库减少库存金额，使用sourceInventoryDetail计算单价"
+		},
+		{
+			"name": "二次出库库存变动金额",
+			"outputKey": "remainingInventoryAmount",
+			"tableName": "exwarehouse",
+			"category": "secondary_process",
+			"conditions": {
+				"logicOperator": "AND",
+				"items": [
+					{
+						"source": "any",
+						"path": "$.ordersNo",
+						"operator": "==",
+						"value": "二次加工"
+					}
+				]
+			},
+			"formula": "(original.$.sourceInventoryDetail.length/1000)*(original.$.sourceInventoryDetail.width/1000)*original.$.outAmount*original.$.sourceInventoryDetail.paymentUnload - (changed.$.sourceInventoryDetail.length/1000)*(changed.$.sourceInventoryDetail.width/1000)*changed.$.outAmount*changed.$.sourceInventoryDetail.paymentUnload",
+			"comment": "二次加工出库减少库存金额，使用sourceInventoryDetail计算单价"
+		},
+		{
+			"name": "订单调整单客户变动差额",
+			"outputKey": "companyTotalBalance",
+			"tableName": "goodsorder",
+			"category": "default",
+			"conditions": {},
+			"formula": "changed.$.allPayments - original.$.allPayments",
+			"comment": "订单增加客户欠款"
+		},
+		{
+			"name": "收款客户变动差额",
+			"outputKey": "companyTotalBalance",
+			"tableName": "receivemoney",
+			"category": "default",
+			"conditions": {
+				"logicOperator": "AND",
+				"items": [
+					{
+						"source": "any",
+						"path": "$.companyType",
+						"operator": "==",
+						"value": "客户"
+					}
+				]
+			},
+			"formula": "original.$.moneyAmount - changed.$.moneyAmount",
+			"comment": "收款减少客户欠款"
+		},
+		{
+			"name": "付款客户变动差额",
+			"outputKey": "companyTotalBalance",
+			"tableName": "payment",
+			"category": "default",
+			"conditions": {
+				"logicOperator": "AND",
+				"items": [
+					{
+						"source": "any",
+						"path": "$.companyType",
+						"operator": "==",
+						"value": "客户"
+					}
+				]
+			},
+			"formula": "changed.$.moneyAmount - original.$.moneyAmount",
+			"comment": "退款给客户增加客户欠款"
+		},
+		{
+			"name": "平账客户变动差额(旧值)",
+			"outputKey": "companyTotalBalance",
+			"tableName": "balanceaccounts",
+			"category": "default",
+			"conditions": {
+				"logicOperator": "AND",
+				"items": [
+					{
+						"source": "original",
+						"path": "$.companyType",
+						"operator": "==",
+						"value": "客户"
+					}
+				]
+			},
+			"formula": "original.$.moneyAmount",
+			"comment": "撤销旧客户余额影响(INSERT时original为null自动不匹配)"
+		},
+		{
+			"name": "平账客户变动差额(新值)",
+			"outputKey": "companyTotalBalance",
+			"tableName": "balanceaccounts",
+			"category": "default",
+			"conditions": {
+				"logicOperator": "AND",
+				"items": [
+					{
+						"source": "changed",
+						"path": "$.companyType",
+						"operator": "==",
+						"value": "客户"
+					}
+				]
+			},
+			"formula": "0 - changed.$.moneyAmount",
+			"comment": "应用新客户余额影响(DELETE时changed为null自动不匹配)"
+		},
+		{
+			"name": "冲抵款客户变动差额(冲抵减少)",
+			"outputKey": "companyTotalBalance",
+			"tableName": "cash_record",
+			"category": "default",
+			"conditions": {
+				"logicOperator": "AND",
+				"items": [
+					{
+						"source": "any",
+						"path": "$.sourceCompanyType",
+						"operator": "==",
+						"value": "客户"
+					},
+					{
+						"source": "any",
+						"path": "$.type",
+						"operator": "!=",
+						"value": "transfer"
+					}
+				]
+			},
+			"formula": "original.$.amount - changed.$.amount",
+			"comment": "客户作为冲抵支出方，余额减少"
+		},
+		{
+			"name": "冲抵款客户变动差额(冲抵增加)",
+			"outputKey": "companyTotalBalance",
+			"tableName": "cash_record",
+			"category": "default",
+			"conditions": {
+				"logicOperator": "AND",
+				"items": [
+					{
+						"source": "any",
+						"path": "$.targetCompanyType",
+						"operator": "==",
+						"value": "客户"
+					},
+					{
+						"source": "any",
+						"path": "$.type",
+						"operator": "!=",
+						"value": "transfer"
+					}
+				]
+			},
+			"formula": "changed.$.amount - original.$.amount",
+			"comment": "客户作为冲抵收入方，余额增加"
+		},
+		{
+			"name": "票点客户变动差额(买入减少)",
+			"outputKey": "companyTotalBalance",
+			"tableName": "invoicein",
+			"displayTableName": "allinvoice",
+			"category": "default",
+			"conditions": {
+				"logicOperator": "AND",
+				"items": [
+					{
+						"source": "any",
+						"path": "$.companyType",
+						"operator": "==",
+						"value": "客户"
+					},
+					{
+						"source": "any",
+						"path": "$.isOrderTax",
+						"operator": "IN",
+						"value": [0, null]
+					}
+				]
+			},
+			"formula": "original.$.ticketPointAmount - changed.$.ticketPointAmount",
+			"comment": "客户售票，客户余额减少(贷方取反)"
+		},
+		{
+			"name": "票点客户变动差额(卖出增加)",
+			"outputKey": "companyTotalBalance",
+			"tableName": "invoiceout",
+			"displayTableName": "allinvoice",
+			"category": "default",
+			"conditions": {
+				"logicOperator": "AND",
+				"items": [
+					{
+						"source": "any",
+						"path": "$.companyType",
+						"operator": "==",
+						"value": "客户"
+					},
+					{
+						"source": "any",
+						"path": "$.isOrderTax",
+						"operator": "IN",
+						"value": [0, null]
+					}
+				]
+			},
+			"formula": "changed.$.ticketPointAmount - original.$.ticketPointAmount",
+			"comment": "客户购票，客户余额增加(借方)"
+		},
+		{
+			"name": "票点客户变动差额(第三方开票方减少)",
+			"outputKey": "companyTotalBalance",
+			"tableName": "invoiceother",
+			"displayTableName": "allinvoice",
+			"category": "default",
+			"conditions": {
+				"logicOperator": "AND",
+				"items": [
+					{
+						"source": "any",
+						"path": "$.supplierCompanyType",
+						"operator": "==",
+						"value": "客户"
+					}
+				]
+			},
+			"formula": "original.$.supplierPointAmount - changed.$.supplierPointAmount",
+			"comment": "客户作为开票方，客户余额减少(贷方取反)"
+		},
+		{
+			"name": "票点客户变动差额(第三方收票方增加)",
+			"outputKey": "companyTotalBalance",
+			"tableName": "invoiceother",
+			"displayTableName": "allinvoice",
+			"category": "default",
+			"conditions": {
+				"logicOperator": "AND",
+				"items": [
+					{
+						"source": "any",
+						"path": "$.customerCompanyType",
+						"operator": "==",
+						"value": "客户"
+					}
+				]
+			},
+			"formula": "changed.$.customerPointAmount - original.$.customerPointAmount",
+			"comment": "客户作为收票方，客户余额增加(借方)"
+		},
+		{
+			"name": "付款银行卡资金变动差额",
+			"outputKey": "selfCompanyTotalFunds",
+			"tableName": "payment",
+			"category": "default",
+			"conditions": {},
+			"formula": "original.$.moneyAmount - changed.$.moneyAmount",
+			"comment": "付款时己方银行账户支出"
+		},
+		{
+			"name": "收款银行卡资金变动差额",
+			"outputKey": "selfCompanyTotalFunds",
+			"tableName": "receivemoney",
+			"category": "default",
+			"conditions": {},
+			"formula": "changed.$.moneyAmount - original.$.moneyAmount",
+			"comment": "收款时己方银行账户收入"
+		},
+		{
+			"name": "借入款银行卡资金变动(借入收入)",
+			"outputKey": "selfCompanyTotalFunds",
+			"tableName": "borrowedmoney",
+			"category": "default",
+			"conditions": {},
+			"formula": "changed.$.moneyAmount - original.$.moneyAmount",
+			"comment": "借入款时己方银行账户收入"
+		},
+		{
+			"name": "借入款银行卡资金变动(还款本金支出)",
+			"outputKey": "selfCompanyTotalFunds",
+			"tableName": "borrowedmoney",
+			"category": "default",
+			"conditions": {},
+			"formula": "SUM(original.$.repayments[*].moneyAmount) - SUM(changed.$.repayments[*].moneyAmount)",
+			"comment": "还款本金时己方银行账户支出（通过主表repayments子列表计算）"
+		},
+		{
+			"name": "借入款银行卡资金变动(还款利息支出)",
+			"outputKey": "selfCompanyTotalFunds",
+			"tableName": "borrowedmoney",
+			"category": "default",
+			"conditions": {},
+			"formula": "SUM(original.$.repayments[*].ratio) - SUM(changed.$.repayments[*].ratio)",
+			"comment": "还款利息时己方银行账户支出（通过主表repayments子列表计算）"
+		},
+		{
+			"name": "从我司借款银行卡资金变动(借出支出)",
+			"outputKey": "selfCompanyTotalFunds",
+			"tableName": "lendmoney",
+			"category": "personal_loan",
+			"conditions": {
+				"logicOperator": "AND",
+				"items": [
+					{
+						"source": "any",
+						"path": "$.type",
+						"operator": "IS_NULL"
+					}
+				]
+			},
+			"formula": "original.$.moneyAmount - changed.$.moneyAmount",
+			"comment": "借出款-个人借款时己方银行账户支出"
+		},
+		{
+			"name": "期货保证金银行卡资金变动(借出支出)",
+			"outputKey": "selfCompanyTotalFunds",
+			"tableName": "lendmoney",
+			"category": "futures_margin",
+			"conditions": {
+				"logicOperator": "AND",
+				"items": [
+					{
+						"source": "any",
+						"path": "$.type",
+						"operator": "==",
+						"value": "期货保证金"
+					}
+				]
+			},
+			"formula": "original.$.moneyAmount - changed.$.moneyAmount",
+			"comment": "借出款-期货保证金时己方银行账户支出"
+		},
+		{
+			"name": "厂家保证金银行卡资金变动(厂家保证金借出支出)",
+			"outputKey": "selfCompanyTotalFunds",
+			"tableName": "lendmoney",
+			"category": "factory_deposit",
+			"conditions": {
+				"logicOperator": "AND",
+				"items": [
+					{
+						"source": "any",
+						"path": "$.type",
+						"operator": "==",
+						"value": "厂家保证金"
+					}
+				]
+			},
+			"formula": "original.$.moneyAmount - changed.$.moneyAmount",
+			"comment": "借出款-厂家保证金时己方银行账户支出"
+		},
+		{
+			"name": "厂家保证金银行卡资金变动(押金借出支出)",
+			"outputKey": "selfCompanyTotalFunds",
+			"tableName": "lendmoney",
+			"category": "factory_deposit",
+			"conditions": {
+				"logicOperator": "AND",
+				"items": [
+					{
+						"source": "any",
+						"path": "$.type",
+						"operator": "==",
+						"value": "押金"
+					}
+				]
+			},
+			"formula": "original.$.moneyAmount - changed.$.moneyAmount",
+			"comment": "借出款-押金时己方银行账户支出"
+		},
+		{
+			"name": "从我司借款银行卡资金变动(回收收入)",
+			"outputKey": "selfCompanyTotalFunds",
+			"tableName": "lendmoney",
+			"category": "personal_loan",
+			"conditions": {
+				"logicOperator": "AND",
+				"items": [
+					{
+						"source": "any",
+						"path": "$.type",
+						"operator": "IS_NULL"
+					}
+				]
+			},
+			"formula": "SUM(changed.$.recoverMoneyList[*].moneyAmount WHERE badDebtFlag!=1) - SUM(original.$.recoverMoneyList[*].moneyAmount WHERE badDebtFlag!=1)",
+			"comment": "回收个人借款(非坏账)时己方银行账户收入（通过主表recoverMoneyList子列表计算）"
+		},
+		{
+			"name": "期货保证金银行卡资金变动(回收收入)",
+			"outputKey": "selfCompanyTotalFunds",
+			"tableName": "lendmoney",
+			"category": "futures_margin",
+			"conditions": {
+				"logicOperator": "AND",
+				"items": [
+					{
+						"source": "any",
+						"path": "$.type",
+						"operator": "==",
+						"value": "期货保证金"
+					}
+				]
+			},
+			"formula": "SUM(changed.$.recoverMoneyList[*].moneyAmount WHERE badDebtFlag!=1) - SUM(original.$.recoverMoneyList[*].moneyAmount WHERE badDebtFlag!=1)",
+			"comment": "回收期货保证金(非坏账)时己方银行账户收入（通过主表recoverMoneyList子列表计算）"
+		},
+		{
+			"name": "厂家保证金银行卡资金变动(回收收入)",
+			"outputKey": "selfCompanyTotalFunds",
+			"tableName": "lendmoney",
+			"category": "factory_deposit",
+			"conditions": {
+				"logicOperator": "OR",
+				"items": [
+					{
+						"source": "any",
+						"path": "$.type",
+						"operator": "==",
+						"value": "厂家保证金"
+					},
+					{
+						"source": "any",
+						"path": "$.type",
+						"operator": "==",
+						"value": "押金"
+					}
+				]
+			},
+			"formula": "SUM(changed.$.recoverMoneyList[*].moneyAmount WHERE badDebtFlag!=1) - SUM(original.$.recoverMoneyList[*].moneyAmount WHERE badDebtFlag!=1)",
+			"comment": "回收厂家保证金/押金(非坏账)时己方银行账户收入（通过主表recoverMoneyList子列表计算）"
+		},
+		{
+			"name": "收取保证金银行卡资金变动(收取收入)",
+			"outputKey": "selfCompanyTotalFunds",
+			"tableName": "deposit_money",
+			"category": "default",
+			"conditions": {},
+			"formula": "changed.$.moneyAmount - original.$.moneyAmount",
+			"comment": "收取保证金时己方银行账户收入"
+		},
+		{
+			"name": "收取保证金银行卡资金变动(退还支出)",
+			"outputKey": "selfCompanyTotalFunds",
+			"tableName": "deposit_money",
+			"category": "default",
+			"conditions": {},
+			"formula": "SUM(original.$.depositRefundList[*].moneyAmount WHERE badDebtFlag!=1) - SUM(changed.$.depositRefundList[*].moneyAmount WHERE badDebtFlag!=1)",
+			"comment": "退还保证金(非坏账)时己方银行账户支出（通过主表depositRefundList子列表计算）"
+		},
+		{
+			"name": "订单调整单供应商变动差额",
+			"outputKey": "supplierTotalBalance",
+			"tableName": "goodsorder",
+			"category": "default",
+			"conditions": {},
+			"formula": "SUM(changed.$.orderDetailList[*].paymentFactory) - SUM(original.$.orderDetailList[*].paymentFactory)",
+			"comment": "订单增加供应商欠款(按明细汇总)"
+		},
+		{
+			"name": "付款供应商变动差额",
+			"outputKey": "supplierTotalBalance",
+			"tableName": "payment",
+			"category": "default",
+			"conditions": {
+				"logicOperator": "AND",
+				"items": [
+					{
+						"source": "any",
+						"path": "$.companyType",
+						"operator": "==",
+						"value": "供应商"
+					}
+				]
+			},
+			"formula": "original.$.moneyAmount - changed.$.moneyAmount",
+			"comment": "付款给供应商减少欠款"
+		},
+		{
+			"name": "收款供应商变动差额",
+			"outputKey": "supplierTotalBalance",
+			"tableName": "receivemoney",
+			"category": "default",
+			"conditions": {
+				"logicOperator": "AND",
+				"items": [
+					{
+						"source": "any",
+						"path": "$.companyType",
+						"operator": "==",
+						"value": "供应商"
+					}
+				]
+			},
+			"formula": "changed.$.moneyAmount - original.$.moneyAmount",
+			"comment": "供应商返款增加供应商余额"
+		},
+		{
+			"name": "平账供应商变动差额(旧值)",
+			"outputKey": "supplierTotalBalance",
+			"tableName": "balanceaccounts",
+			"category": "default",
+			"conditions": {
+				"logicOperator": "AND",
+				"items": [
+					{
+						"source": "original",
+						"path": "$.companyType",
+						"operator": "==",
+						"value": "供应商"
+					}
+				]
+			},
+			"formula": "original.$.moneyAmount",
+			"comment": "撤销旧供应商余额影响(INSERT时original为null自动不匹配)"
+		},
+		{
+			"name": "平账供应商变动差额(新值)",
+			"outputKey": "supplierTotalBalance",
+			"tableName": "balanceaccounts",
+			"category": "default",
+			"conditions": {
+				"logicOperator": "AND",
+				"items": [
+					{
+						"source": "changed",
+						"path": "$.companyType",
+						"operator": "==",
+						"value": "供应商"
+					}
+				]
+			},
+			"formula": "0 - changed.$.moneyAmount",
+			"comment": "应用新供应商余额影响(DELETE时changed为null自动不匹配)"
+		},
+		{
+			"name": "冲抵款供应商变动差额(冲抵支出增加)",
+			"outputKey": "supplierTotalBalance",
+			"tableName": "cash_record",
+			"category": "default",
+			"conditions": {
+				"logicOperator": "AND",
+				"items": [
+					{
+						"source": "any",
+						"path": "$.sourceCompanyType",
+						"operator": "==",
+						"value": "供应商"
+					},
+					{
+						"source": "any",
+						"path": "$.type",
+						"operator": "!=",
+						"value": "transfer"
+					}
+				]
+			},
+			"formula": "changed.$.amount - original.$.amount",
+			"comment": "供应商作为冲抵支出方，余额增加(冲抵退回)"
+		},
+		{
+			"name": "冲抵款供应商变动差额(冲抵收入减少)",
+			"outputKey": "supplierTotalBalance",
+			"tableName": "cash_record",
+			"category": "default",
+			"conditions": {
+				"logicOperator": "AND",
+				"items": [
+					{
+						"source": "any",
+						"path": "$.targetCompanyType",
+						"operator": "==",
+						"value": "供应商"
+					},
+					{
+						"source": "any",
+						"path": "$.type",
+						"operator": "!=",
+						"value": "transfer"
+					}
+				]
+			},
+			"formula": "original.$.amount - changed.$.amount",
+			"comment": "供应商作为冲抵收入方，余额减少(冲抵支付)"
+		},
+		{
+			"name": "票点供应商变动差额(买入增加)",
+			"outputKey": "supplierTotalBalance",
+			"tableName": "invoicein",
+			"displayTableName": "allinvoice",
+			"category": "default",
+			"conditions": {
+				"logicOperator": "AND",
+				"items": [
+					{
+						"source": "any",
+						"path": "$.companyType",
+						"operator": "==",
+						"value": "供应商"
+					},
+					{
+						"source": "any",
+						"path": "$.isOrderTax",
+						"operator": "IN",
+						"value": [0, null]
+					}
+				]
+			},
+			"formula": "changed.$.ticketPointAmount - original.$.ticketPointAmount",
+			"comment": "从供应商购票，供应商余额增加(贷方)"
+		},
+		{
+			"name": "票点供应商变动差额(卖出减少)",
+			"outputKey": "supplierTotalBalance",
+			"tableName": "invoiceout",
+			"displayTableName": "allinvoice",
+			"category": "default",
+			"conditions": {
+				"logicOperator": "AND",
+				"items": [
+					{
+						"source": "any",
+						"path": "$.companyType",
+						"operator": "==",
+						"value": "供应商"
+					},
+					{
+						"source": "any",
+						"path": "$.isOrderTax",
+						"operator": "IN",
+						"value": [0, null]
+					}
+				]
+			},
+			"formula": "original.$.ticketPointAmount - changed.$.ticketPointAmount",
+			"comment": "我方售票给供应商，供应商余额减少(借方取反)"
+		},
+		{
+			"name": "票点供应商变动差额(第三方开票方增加)",
+			"outputKey": "supplierTotalBalance",
+			"tableName": "invoiceother",
+			"displayTableName": "allinvoice",
+			"category": "default",
+			"conditions": {
+				"logicOperator": "AND",
+				"items": [
+					{
+						"source": "any",
+						"path": "$.supplierCompanyType",
+						"operator": "==",
+						"value": "供应商"
+					}
+				]
+			},
+			"formula": "changed.$.supplierPointAmount - original.$.supplierPointAmount",
+			"comment": "供应商作为开票方，供应商余额增加(贷方)"
+		},
+		{
+			"name": "票点供应商变动差额(第三方收票方减少)",
+			"outputKey": "supplierTotalBalance",
+			"tableName": "invoiceother",
+			"displayTableName": "allinvoice",
+			"category": "default",
+			"conditions": {
+				"logicOperator": "AND",
+				"items": [
+					{
+						"source": "any",
+						"path": "$.customerCompanyType",
+						"operator": "==",
+						"value": "供应商"
+					}
+				]
+			},
+			"formula": "original.$.customerPointAmount - changed.$.customerPointAmount",
+			"comment": "供应商作为收票方，供应商余额减少(借方取反)"
+		},
+		{
+			"name": "返利供应商变动差额",
+			"outputKey": "supplierTotalBalance",
+			"tableName": "rebate",
+			"category": "default",
+			"conditions": {},
+			"formula": "SUM(original.$.detailList[*].actualReceived) - SUM(changed.$.detailList[*].actualReceived)",
+			"comment": "返利减少供应商欠款(实收金额汇总，取反)"
+		},
+		{
+			"name": "入库管理供应商变动差额",
+			"outputKey": "supplierTotalBalance",
+			"tableName": "inventory_main",
+			"category": "default",
+			"conditions": {},
+			"formula": "SUM(changed.$.inventoryDetailList[*].paymentFactory) - SUM(original.$.inventoryDetailList[*].paymentFactory)",
+			"comment": "入库增加供应商欠款(按明细汇总出厂货款)"
+		},
+		{
+			"name": "订单运费变动差额(陆运)",
+			"outputKey": "driverUnpaidAmount",
+			"tableName": "goodsorder",
+			"category": "default",
+			"conditions": {},
+			"formula": "changed.$.landFreight - original.$.landFreight",
+			"comment": "订单陆运运费增加司机欠款"
+		},
+		{
+			"name": "订单运费变动差额(海运)",
+			"outputKey": "driverUnpaidAmount",
+			"tableName": "goodsorder",
+			"category": "default",
+			"conditions": {},
+			"formula": "changed.$.seaFreight - original.$.seaFreight",
+			"comment": "订单海运运费增加司机欠款"
+		},
+		{
+			"name": "付款运费变动差额",
+			"outputKey": "driverUnpaidAmount",
+			"tableName": "payment",
+			"category": "default",
+			"conditions": {
+				"logicOperator": "AND",
+				"items": [
+					{
+						"source": "any",
+						"path": "$.companyType",
+						"operator": "==",
+						"value": "司机"
+					}
+				]
+			},
+			"formula": "original.$.moneyAmount - changed.$.moneyAmount",
+			"comment": "支付司机运费减少欠款"
+		},
+		{
+			"name": "冲抵款运费变动差额",
+			"outputKey": "driverUnpaidAmount",
+			"tableName": "cash_record",
+			"category": "default",
+			"conditions": {
+				"logicOperator": "AND",
+				"items": [
+					{
+						"source": "any",
+						"path": "$.targetCompanyType",
+						"operator": "==",
+						"value": "司机"
+					},
+					{
+						"source": "any",
+						"path": "$.type",
+						"operator": "!=",
+						"value": "transfer"
+					}
+				]
+			},
+			"formula": "original.$.amount - changed.$.amount",
+			"comment": "冲抵支付司机运费减少欠款"
+		},
+		{
+			"name": "入库运费变动差额(陆运)",
+			"outputKey": "driverUnpaidAmount",
+			"tableName": "inventory_main",
+			"category": "default",
+			"conditions": {},
+			"formula": "changed.$.allLandFreight - original.$.allLandFreight",
+			"comment": "入库陆运运费增加司机欠款"
+		},
+		{
+			"name": "入库运费变动差额(海运)",
+			"outputKey": "driverUnpaidAmount",
+			"tableName": "inventory_main",
+			"category": "default",
+			"conditions": {},
+			"formula": "changed.$.allSeaFreight - original.$.allSeaFreight",
+			"comment": "入库海运运费增加司机欠款"
+		},
+		{
+			"name": "从我司借款变动(借出增加)",
+			"outputKey": "loanFromCompany",
+			"tableName": "lendmoney",
+			"category": "default",
+			"conditions": {
+				"logicOperator": "AND",
+				"items": [
+					{
+						"source": "any",
+						"path": "$.type",
+						"operator": "IS_NULL"
+					}
+				]
+			},
+			"formula": "changed.$.moneyAmount - original.$.moneyAmount",
+			"comment": "个人借款增加余额"
+		},
+		{
+			"name": "从我司借款变动(收回减少)",
+			"outputKey": "loanFromCompany",
+			"tableName": "lendmoney",
+			"category": "default",
+			"conditions": {
+				"logicOperator": "AND",
+				"items": [
+					{
+						"source": "any",
+						"path": "$.type",
+						"operator": "IS_NULL"
+					}
+				]
+			},
+			"formula": "SUM(original.$.recoverMoneyList[*].moneyAmount) - SUM(changed.$.recoverMoneyList[*].moneyAmount)",
+			"comment": "收回个人借款减少余额（通过主表recoverMoneyList子列表计算）"
+		},
+		{
+			"name": "期货保证金变动(借出增加)",
+			"outputKey": "futuresMarginBalance",
+			"tableName": "lendmoney",
+			"category": "default",
+			"conditions": {
+				"logicOperator": "AND",
+				"items": [
+					{
+						"source": "any",
+						"path": "$.type",
+						"operator": "==",
+						"value": "期货保证金"
+					}
+				]
+			},
+			"formula": "changed.$.moneyAmount - original.$.moneyAmount",
+			"comment": "借出期货保证金增加余额"
+		},
+		{
+			"name": "期货保证金变动(收回减少)",
+			"outputKey": "futuresMarginBalance",
+			"tableName": "lendmoney",
+			"category": "default",
+			"conditions": {
+				"logicOperator": "AND",
+				"items": [
+					{
+						"source": "any",
+						"path": "$.type",
+						"operator": "==",
+						"value": "期货保证金"
+					}
+				]
+			},
+			"formula": "SUM(original.$.recoverMoneyList[*].moneyAmount) - SUM(changed.$.recoverMoneyList[*].moneyAmount)",
+			"comment": "收回期货保证金减少余额（通过主表recoverMoneyList子列表计算）"
+		},
+		{
+			"name": "厂家保证金变动(厂家保证金借出增加)",
+			"outputKey": "paymentMarginBalance",
+			"tableName": "lendmoney",
+			"category": "default",
+			"conditions": {
+				"logicOperator": "AND",
+				"items": [
+					{
+						"source": "any",
+						"path": "$.type",
+						"operator": "==",
+						"value": "厂家保证金"
+					}
+				]
+			},
+			"formula": "changed.$.moneyAmount - original.$.moneyAmount",
+			"comment": "借出厂家保证金增加余额"
+		},
+		{
+			"name": "厂家保证金变动(押金借出增加)",
+			"outputKey": "paymentMarginBalance",
+			"tableName": "lendmoney",
+			"category": "default",
+			"conditions": {
+				"logicOperator": "AND",
+				"items": [
+					{
+						"source": "any",
+						"path": "$.type",
+						"operator": "==",
+						"value": "押金"
+					}
+				]
+			},
+			"formula": "changed.$.moneyAmount - original.$.moneyAmount",
+			"comment": "借出押金增加余额"
+		},
+		{
+			"name": "厂家保证金变动(收回减少)",
+			"outputKey": "paymentMarginBalance",
+			"tableName": "lendmoney",
+			"category": "default",
+			"conditions": {
+				"logicOperator": "OR",
+				"items": [
+					{
+						"source": "any",
+						"path": "$.type",
+						"operator": "==",
+						"value": "厂家保证金"
+					},
+					{
+						"source": "any",
+						"path": "$.type",
+						"operator": "==",
+						"value": "押金"
+					}
+				]
+			},
+			"formula": "SUM(original.$.recoverMoneyList[*].moneyAmount) - SUM(changed.$.recoverMoneyList[*].moneyAmount)",
+			"comment": "收回厂家保证金/押金减少余额（通过主表recoverMoneyList子列表计算）"
+		},
+		{
+			"name": "收取保证金变动(收取增加)",
+			"outputKey": "receiveMarginBalance",
+			"tableName": "deposit_money",
+			"category": "default",
+			"conditions": {},
+			"formula": "changed.$.moneyAmount - original.$.moneyAmount",
+			"comment": "收取保证金增加余额"
+		},
+		{
+			"name": "收取保证金变动(退还减少)",
+			"outputKey": "receiveMarginBalance",
+			"tableName": "deposit_money",
+			"category": "default",
+			"conditions": {},
+			"formula": "SUM(original.$.depositRefundList[*].moneyAmount) - SUM(changed.$.depositRefundList[*].moneyAmount)",
+			"comment": "退还保证金减少余额（通过主表depositRefundList子列表计算）"
+		},
+		{
+			"name": "公司从外面借款变动(借入增加)",
+			"outputKey": "loanBalance",
+			"tableName": "borrowedmoney",
+			"category": "default",
+			"conditions": {},
+			"formula": "changed.$.moneyAmount - original.$.moneyAmount",
+			"comment": "借入款增加贷款余额"
+		},
+		{
+			"name": "公司从外面借款变动(还款减少)",
+			"outputKey": "loanBalance",
+			"tableName": "borrowedmoney",
+			"category": "default",
+			"conditions": {},
+			"formula": "SUM(original.$.repayments[*].moneyAmount) - SUM(changed.$.repayments[*].moneyAmount)",
+			"comment": "还款本金减少贷款余额（通过主表repayments子列表计算）"
+		}
+	]
+}

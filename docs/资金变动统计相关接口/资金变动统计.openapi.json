@@ -1,0 +1,359 @@
+{
+	"openapi": "3.0.1",
+	"info": {
+		"title": "默认模块",
+		"description": "",
+		"version": "1.0.0"
+	},
+	"tags": [],
+	"paths": {
+		"/system/backuplog/v3/calculateAmounts": {
+			"get": {
+				"summary": "计算时间段内资金变动（三层Map）",
+				"deprecated": false,
+				"description": "",
+				"tags": [],
+				"parameters": [
+					{
+						"name": "backupDate",
+						"in": "query",
+						"description": "备份目标日期",
+						"required": true,
+						"example": "2026-02-05",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "firstTargetDate",
+						"in": "query",
+						"description": "查询起始日期",
+						"required": true,
+						"example": "2026-02-05",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "secondTargetDate",
+						"in": "query",
+						"description": "查询结束日期",
+						"required": true,
+						"example": "2026-02-09",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "Authorization",
+						"in": "header",
+						"description": "",
+						"example": "dev-mode-admin-token-2025",
+						"schema": {
+							"type": "string",
+							"default": "dev-mode-admin-token-2025"
+						}
+					},
+					{
+						"name": "OSR",
+						"in": "header",
+						"description": "",
+						"example": "{{OSR}}",
+						"schema": {
+							"type": "string",
+							"default": "{{OSR}}"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/AjaxResult",
+									"description": "Map<outputKey, Map<tableName, Map<category, amount>>>"
+								},
+								"example": {
+									"": {}
+								}
+							}
+						},
+						"headers": {}
+					}
+				},
+				"security": [
+					{
+						"bearer": []
+					}
+				]
+			}
+		},
+		"/system/backuplog/v3/filterIdsByCategory": {
+			"get": {
+				"summary": "根据三层分类筛选日志ID",
+				"deprecated": false,
+				"description": "",
+				"tags": [],
+				"parameters": [
+					{
+						"name": "outputKey",
+						"in": "query",
+						"description": "一级分类（输出键，如 remainingInventoryAmount）",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "tableName",
+						"in": "query",
+						"description": "二级分类（表名，如 inventory_detail）",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "category",
+						"in": "query",
+						"description": "三级分类（类别，如 库存金额增加）",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "backupDate",
+						"in": "query",
+						"description": "备份目标日期",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "firstTargetDate",
+						"in": "query",
+						"description": "查询起始日期",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "secondTargetDate",
+						"in": "query",
+						"description": "查询结束日期",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "Authorization",
+						"in": "header",
+						"description": "",
+						"example": "dev-mode-admin-token-2025",
+						"schema": {
+							"type": "string",
+							"default": "dev-mode-admin-token-2025"
+						}
+					},
+					{
+						"name": "OSR",
+						"in": "header",
+						"description": "",
+						"example": "{{OSR}}",
+						"schema": {
+							"type": "string",
+							"default": "{{OSR}}"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/AjaxResult",
+									"description": "匹配的日志ID列表"
+								},
+								"example": {
+									"": {}
+								}
+							}
+						}
+					}
+				},
+				"security": [
+					{
+						"bearer": []
+					}
+				]
+			}
+		},
+		"/system/backuplog/v3/getByIds": {
+			"post": {
+				"summary": "根据ID列表查询日志详情",
+				"deprecated": false,
+				"description": "",
+				"tags": [],
+				"parameters": [
+					{
+						"name": "Authorization",
+						"in": "header",
+						"description": "",
+						"example": "dev-mode-admin-token-2025",
+						"schema": {
+							"type": "string",
+							"default": "dev-mode-admin-token-2025"
+						}
+					},
+					{
+						"name": "OSR",
+						"in": "header",
+						"description": "",
+						"example": "{{OSR}}",
+						"schema": {
+							"type": "string",
+							"default": "{{OSR}}"
+						}
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/BackuplogQueryRequest",
+								"description": "包含ID列表的请求体"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/AjaxResult",
+									"description": "日志详情列表"
+								},
+								"example": {
+									"": {}
+								}
+							}
+						}
+					}
+				},
+				"security": [
+					{
+						"bearer": []
+					}
+				]
+			}
+		},
+		"/system/backuplog/v3/calculateByIds": {
+			"post": {
+				"summary": "根据ID列表计算资金变动",
+				"deprecated": false,
+				"description": "",
+				"tags": [],
+				"parameters": [
+					{
+						"name": "Authorization",
+						"in": "header",
+						"description": "",
+						"example": "dev-mode-admin-token-2025",
+						"schema": {
+							"type": "string",
+							"default": "dev-mode-admin-token-2025"
+						}
+					},
+					{
+						"name": "OSR",
+						"in": "header",
+						"description": "",
+						"example": "{{OSR}}",
+						"schema": {
+							"type": "string",
+							"default": "{{OSR}}"
+						}
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/BackuplogQueryRequest",
+								"description": "包含ID列表的请求体"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/AjaxResult",
+									"description": "Map<outputKey, Map<tableName, Map<category, amount>>>"
+								},
+								"example": {
+									"": {}
+								}
+							}
+						}
+					}
+				},
+				"security": [
+					{
+						"bearer": []
+					}
+				]
+			}
+		}
+	},
+	"components": {
+		"schemas": {
+			"AjaxResult": {
+				"type": "object",
+				"properties": {
+					"key": {
+						"type": "object",
+						"properties": {}
+					}
+				}
+			},
+			"BackuplogQueryRequest": {
+				"type": "object",
+				"properties": {
+					"ids": {
+						"type": "array",
+						"items": {
+							"type": "integer"
+						},
+						"description": "备份日志ID列表"
+					}
+				},
+				"required": ["ids"]
+			}
+		},
+		"responses": {},
+		"securitySchemes": {
+			"bearer": {
+				"type": "http",
+				"scheme": "bearer"
+			}
+		}
+	},
+	"servers": [],
+	"security": [
+		{
+			"bearer": []
+		}
+	]
+}

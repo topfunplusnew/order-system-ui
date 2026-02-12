@@ -10,11 +10,556 @@ description: 生成资金变动统计功能的模板组件和调用逻辑。当�
 ## 功能概述
 
 资金变动统计功能用于展示系统中各个模块的数据修改记录，通过"修改前"、"修改后"、"差额"三行对比，清晰展示数据变化。
-先调一个接口 拿总逻辑
-总逻辑的数 调一个接口 传tbn + flg
-传tbn+flg，返回若干id，id当一个数组 同时调俩接口，两个接口分别返回差额详情数据+底部小表格
 
-差额详情数据，就是本SKILL中，这些模板所使用的对比数据
+接口的详情定义在 docs\资金变动统计相关接口\资金变动统计.openapi.json 中（这些接口如果还没有实现，需要先实现）
+
+1、先调一个接口 拿总逻辑：
+接口地址 /system/backuplog/v3/calculateAmounts 
+响应结构（此结构为一个三层KEY的结构）：
+```json
+{
+    "msg": "操作成功",
+    "code": 200,
+    "data": {
+        "supplierTotalBalance": {
+            "inventory_main": {
+                "default": 0
+            },
+            "goodsorder": {
+                "default": 74681.41
+            },
+            "allinvoice": {
+                "default": 0
+            }
+        },
+        "companyTotalBalance": {
+            "goodsorder": {
+                "default": 75980.48
+            },
+            "receivemoney": {
+                "default": -230937
+            }
+        },
+        "remainingInventoryAmount": {
+            "inventory_main": {
+                "default": 0
+            },
+            "goodsorder": {
+                "default": 0
+            }
+        },
+        "selfCompanyTotalFunds": {
+            "payment": {
+                "default": -1045.08
+            },
+            "receivemoney": {
+                "default": 231027
+            }
+        },
+        "driverUnpaidAmount": {
+            "inventory_main": {
+                "default": 0
+            },
+            "goodsorder": {
+                "default": 2708.3
+            }
+        }
+    }
+}
+```
+
+通过上述接口返回的数据中，任意的一个对象组成的三级key（比如对于driverUnpaidAmount，三级key的三级分别为 driverUnpaidAmount、inventory_main、default 和 driverUnpaidAmount、goodsorder、default这两种）
+
+然后将三级结构，通过特定传递方式给/system/backuplog/v3/filterIdsByCategory接口传递：
+```sh
+curl --location --request GET 'http://60.205.5.253:60036/system/backuplog/v3/filterIdsByCategory?outputKey=supplierTotalBalance&tableName=inventory_main&category=default&backupDate=2026-02-05&firstTargetDate=2026-02-05&secondTargetDate=2026-02-09' \
+--header 'OSR;' \
+--header 'Authorization: Bearer dev-mode-admin-token-2025'
+```
+
+接口会返回若干id：
+```json
+{
+    "msg": "操作成功",
+    "code": 200,
+    "data": [
+        146911
+    ]
+}
+```
+
+2、然后将id作为一个数组 同时调俩接口
+两个接口分别返回差额详情数据：
+（1）接口地址 /system/backuplog/v3/getByIds
+响应结构定义（下面的originalinfo和changedinfo是基于订单这个模块，其他模块字段可能不同，但都会被封装到originalInfo和changedInfo中）：
+```json
+{
+    "msg": "操作成功",
+    "code": 200,
+    "data": [
+        {
+            "createBy": null,
+            "createTime": null,
+            "updateBy": null,
+            "updateTime": null,
+            "remark": null,
+            "selfBankCardType": null,
+            "otherBankCardType": null,
+            "id": 146911,
+            "tableName": "inventory_main",
+            "backupTime": "2026-02-09 14:28:25",
+            "originalTargetTime": "2025-11-23 16:33:21",
+            "changedTargetTime": "2025-11-23 16:33:21",
+            "backupType": "update",
+            "backupUserTruename": "刘振龙",
+            "backupUserId": 1050,
+            "originalInfo": {
+                "id": 71,
+                "fleet": "客户自提",
+                "params": {},
+                "remark": null,
+                "userId": 1018,
+                "addtime": "2025-11-23 16:37:04",
+                "delFlag": 0,
+                "comments": null,
+                "createBy": null,
+                "seaCarID": null,
+                "seaCarNo": null,
+                "showFlag": 0,
+                "updateBy": null,
+                "userName": "张璐鑫",
+                "landCarID": 1659,
+                "landCarNo": "冀ER7906",
+                "seaBankNo": null,
+                "storeDate": "2025-11-23 16:33:21",
+                "allTonnage": 7.72,
+                "checkState": "未审核",
+                "createTime": null,
+                "landBankNo": "6228481258976466378",
+                "updateTime": "2025-11-26 15:35:53",
+                "checkUserId": 1047,
+                "seaBankName": null,
+                "goodsCompany": null,
+                "landBankName": null,
+                "seaDriverTel": null,
+                "storeHouseid": 52,
+                "allSeaFreight": 0.0,
+                "landDriverTel": "18703394882",
+                "seaDriverName": null,
+                "allLandFreight": 3700.0,
+                "attachmentList": [
+                    {
+                        "id": 3456,
+                        "flag": "path",
+                        "params": {},
+                        "remark": null,
+                        "delFlag": 0,
+                        "createBy": "张蕊",
+                        "fileName": "订单单子.png",
+                        "filePath": "/profile/upload/2025/11/27/订单单子_20251127145026A033.png",
+                        "updateBy": null,
+                        "extraInfo": {},
+                        "createTime": "2025-11-27 14:50:26",
+                        "fileSuffix": "png",
+                        "updateTime": null,
+                        "selfBankCardType": null,
+                        "otherBankCardType": null
+                    },
+                    {
+                        "id": 3457,
+                        "flag": "path",
+                        "params": {},
+                        "remark": null,
+                        "delFlag": 0,
+                        "createBy": "张蕊",
+                        "fileName": "装车费.png",
+                        "filePath": "/profile/upload/2025/11/27/装车费_20251127145036A034.png",
+                        "updateBy": null,
+                        "extraInfo": {},
+                        "createTime": "2025-11-27 14:50:36",
+                        "fileSuffix": "png",
+                        "updateTime": null,
+                        "selfBankCardType": null,
+                        "otherBankCardType": null
+                    }
+                ],
+                "landDriverName": "黄英涛",
+                "storeHouseName": "于双成仓库",
+                "allFreightPrice": 0.0,
+                "selfBankCardType": null,
+                "metaDataTableName": "inventory_main",
+                "otherBankCardType": null,
+                "inventoryDetailList": [
+                    {
+                        "id": 185,
+                        "erro": 0.2,
+                        "index": 1,
+                        "packs": 2.0,
+                        "price": 16.4,
+                        "width": 2440.0,
+                        "height": 5.0,
+                        "length": 3660.0,
+                        "mainId": 71,
+                        "params": {},
+                        "pieces": 72.0,
+                        "profit": 100.0,
+                        "remark": null,
+                        "addtime": null,
+                        "delFlag": 0,
+                        "freight": 3700.0,
+                        "levelID": 9066,
+                        "tonnage": 7.72,
+                        "comments": "这到货费50/包 这车货卖给苏豫客户没钱 还剩4包货拉回沙河放在于双成库房 回来的运费总共2500元咱们承担，还有1000元的压车费，还有200的信息费",
+                        "createBy": null,
+                        "payments": "10545.02",
+                        "supplier": "周口项城苏豫",
+                        "updateBy": null,
+                        "levelName": "北玻Lowe160",
+                        "otherCost": null,
+                        "storeDate": "2025-11-23 16:33:21",
+                        "createTime": null,
+                        "seaFreight": null,
+                        "sundryCost": -3800.0,
+                        "supplierId": 1089,
+                        "updateTime": null,
+                        "landFreight": 3700.0,
+                        "profitNoTax": 100.0,
+                        "stockNumber": 72.0,
+                        "actualPieces": 0.0,
+                        "countingUnit": "片",
+                        "mainComments": null,
+                        "storeHouseid": null,
+                        "exWareHoustId": null,
+                        "paymentUnload": 16.4,
+                        "piecesPerPack": 36.0,
+                        "additionalFees": 3700.0,
+                        "paymentFactory": 6745.02,
+                        "storeHouseName": null,
+                        "logisticsProfit": null,
+                        "isIncludeTaxSale": 0,
+                        "landFreightPrice": null,
+                        "selfBankCardType": null,
+                        "factoryCommission": null,
+                        "metaDataTableName": "inventory_detail",
+                        "otherBankCardType": null,
+                        "customerCommission": null,
+                        "paymentsWithSundry": null,
+                        "factoryRebateAmount": null,
+                        "isIncludeTaxFactory": 0,
+                        "factoryDiscountAmount": null
+                    },
+                    {
+                        "id": 190,
+                        "erro": 0.0,
+                        "index": 2,
+                        "packs": 1.0,
+                        "price": 100.0,
+                        "width": 1.0,
+                        "height": 1.0,
+                        "length": 1.0,
+                        "mainId": 71,
+                        "params": {},
+                        "pieces": 1.0,
+                        "profit": -100.0,
+                        "remark": null,
+                        "addtime": null,
+                        "delFlag": 0,
+                        "freight": 0.0,
+                        "levelID": 15014,
+                        "tonnage": 0.0,
+                        "createBy": null,
+                        "payments": "0.00",
+                        "supplier": "于双成",
+                        "updateBy": null,
+                        "levelName": "装卸费",
+                        "otherCost": null,
+                        "storeDate": "2025-11-23 16:33:21",
+                        "createTime": null,
+                        "seaFreight": null,
+                        "sundryCost": null,
+                        "supplierId": 123,
+                        "updateTime": null,
+                        "landFreight": 0.0,
+                        "profitNoTax": -100.0,
+                        "stockNumber": 1.0,
+                        "actualPieces": 1.0,
+                        "countingUnit": "其他",
+                        "mainComments": null,
+                        "storeHouseid": null,
+                        "exWareHoustId": null,
+                        "paymentUnload": null,
+                        "piecesPerPack": 1.0,
+                        "additionalFees": null,
+                        "paymentFactory": 100.0,
+                        "storeHouseName": null,
+                        "logisticsProfit": null,
+                        "isIncludeTaxSale": 0,
+                        "landFreightPrice": null,
+                        "selfBankCardType": null,
+                        "factoryCommission": null,
+                        "metaDataTableName": "inventory_detail",
+                        "otherBankCardType": null,
+                        "customerCommission": null,
+                        "paymentsWithSundry": null,
+                        "factoryRebateAmount": null,
+                        "isIncludeTaxFactory": 0,
+                        "factoryDiscountAmount": null
+                    }
+                ],
+                "frontendAttachmentIds": []
+            },
+            "originalInfoId": "71",
+            "changedInfo": {
+                "id": 71,
+                "fleet": "客户自提",
+                "params": {},
+                "remark": null,
+                "userId": 1018,
+                "addtime": "2025-11-23 16:37:04",
+                "delFlag": 0,
+                "comments": null,
+                "createBy": null,
+                "seaCarID": null,
+                "seaCarNo": null,
+                "showFlag": 0,
+                "updateBy": null,
+                "userName": "张璐鑫",
+                "landCarID": 1659,
+                "landCarNo": "冀ER7906",
+                "seaBankNo": null,
+                "storeDate": "2025-11-23 16:33:21",
+                "allTonnage": 7.72,
+                "checkState": "未审核",
+                "createTime": null,
+                "landBankNo": "6228481258976466378",
+                "updateTime": "2026-02-09 14:28:24",
+                "checkUserId": 1047,
+                "seaBankName": null,
+                "goodsCompany": null,
+                "landBankName": null,
+                "seaDriverTel": null,
+                "storeHouseid": 52,
+                "allSeaFreight": 0.0,
+                "landDriverTel": "18703394882",
+                "seaDriverName": null,
+                "allLandFreight": 3700.0,
+                "attachmentList": [
+                    {
+                        "id": 3456,
+                        "flag": "path",
+                        "params": {},
+                        "remark": null,
+                        "delFlag": 0,
+                        "createBy": "张蕊",
+                        "fileName": "订单单子.png",
+                        "filePath": "/profile/upload/2025/11/27/订单单子_20251127145026A033.png",
+                        "updateBy": null,
+                        "extraInfo": {},
+                        "createTime": "2025-11-27 14:50:26",
+                        "fileSuffix": "png",
+                        "updateTime": null,
+                        "selfBankCardType": null,
+                        "otherBankCardType": null
+                    },
+                    {
+                        "id": 3457,
+                        "flag": "path",
+                        "params": {},
+                        "remark": null,
+                        "delFlag": 0,
+                        "createBy": "张蕊",
+                        "fileName": "装车费.png",
+                        "filePath": "/profile/upload/2025/11/27/装车费_20251127145036A034.png",
+                        "updateBy": null,
+                        "extraInfo": {},
+                        "createTime": "2025-11-27 14:50:36",
+                        "fileSuffix": "png",
+                        "updateTime": null,
+                        "selfBankCardType": null,
+                        "otherBankCardType": null
+                    }
+                ],
+                "landDriverName": "黄英涛",
+                "storeHouseName": "于双成仓库",
+                "allFreightPrice": 0.0,
+                "selfBankCardType": null,
+                "metaDataTableName": "inventory_main",
+                "otherBankCardType": null,
+                "inventoryDetailList": [
+                    {
+                        "id": 185,
+                        "erro": 0.2,
+                        "index": 1,
+                        "packs": 2.0,
+                        "price": 16.4,
+                        "width": 2440.0,
+                        "height": 5.0,
+                        "length": 3660.0,
+                        "mainId": 71,
+                        "params": {},
+                        "pieces": 72.0,
+                        "profit": 100.0,
+                        "remark": null,
+                        "addtime": null,
+                        "delFlag": 0,
+                        "freight": 3700.0,
+                        "levelID": 9066,
+                        "tonnage": 7.72,
+                        "comments": "这到货费50/包 这车货卖给苏豫客户没钱 还剩4包货拉回沙河放在于双成库房 回来的运费总共2500元咱们承担，还有1000元的压车费，还有200的信息费",
+                        "createBy": null,
+                        "payments": "10545.02",
+                        "supplier": "周口项城苏豫",
+                        "updateBy": null,
+                        "levelName": "北玻Lowe160",
+                        "otherCost": null,
+                        "storeDate": "2025-11-23 16:33:21",
+                        "createTime": null,
+                        "seaFreight": null,
+                        "sundryCost": -3800.0,
+                        "supplierId": 1089,
+                        "updateTime": null,
+                        "landFreight": 3700.0,
+                        "profitNoTax": 100.0,
+                        "stockNumber": 72.0,
+                        "actualPieces": 0.0,
+                        "countingUnit": "片",
+                        "mainComments": null,
+                        "storeHouseid": null,
+                        "exWareHoustId": null,
+                        "paymentUnload": 16.4,
+                        "piecesPerPack": 36.0,
+                        "additionalFees": 3700.0,
+                        "paymentFactory": 6745.02,
+                        "storeHouseName": null,
+                        "logisticsProfit": null,
+                        "isIncludeTaxSale": 0,
+                        "landFreightPrice": null,
+                        "selfBankCardType": null,
+                        "factoryCommission": null,
+                        "metaDataTableName": "inventory_detail",
+                        "otherBankCardType": null,
+                        "customerCommission": null,
+                        "paymentsWithSundry": null,
+                        "factoryRebateAmount": null,
+                        "isIncludeTaxFactory": 0,
+                        "factoryDiscountAmount": null
+                    },
+                    {
+                        "id": 190,
+                        "erro": 0.0,
+                        "index": 2,
+                        "packs": 1.0,
+                        "price": 100.0,
+                        "width": 1.0,
+                        "height": 1.0,
+                        "length": 1.0,
+                        "mainId": 71,
+                        "params": {},
+                        "pieces": 1.0,
+                        "profit": -100.0,
+                        "remark": null,
+                        "addtime": null,
+                        "delFlag": 0,
+                        "freight": 0.0,
+                        "levelID": 15014,
+                        "tonnage": 0.0,
+                        "createBy": null,
+                        "payments": "0.00",
+                        "supplier": "于双成",
+                        "updateBy": null,
+                        "levelName": "装卸费",
+                        "otherCost": null,
+                        "storeDate": "2025-11-23 16:33:21",
+                        "createTime": null,
+                        "seaFreight": null,
+                        "sundryCost": null,
+                        "supplierId": 123,
+                        "updateTime": null,
+                        "landFreight": 0.0,
+                        "profitNoTax": -100.0,
+                        "stockNumber": 0.0,
+                        "actualPieces": 0.0,
+                        "countingUnit": "其他",
+                        "mainComments": null,
+                        "storeHouseid": null,
+                        "exWareHoustId": null,
+                        "paymentUnload": null,
+                        "piecesPerPack": 1.0,
+                        "additionalFees": null,
+                        "paymentFactory": 100.0,
+                        "storeHouseName": null,
+                        "logisticsProfit": null,
+                        "isIncludeTaxSale": 0,
+                        "landFreightPrice": null,
+                        "selfBankCardType": null,
+                        "factoryCommission": null,
+                        "metaDataTableName": "inventory_detail",
+                        "otherBankCardType": null,
+                        "customerCommission": null,
+                        "paymentsWithSundry": null,
+                        "factoryRebateAmount": null,
+                        "isIncludeTaxFactory": 0,
+                        "factoryDiscountAmount": null
+                    }
+                ],
+                "frontendAttachmentIds": []
+            },
+            "uuid": "6112a1ff-a354-4ba2-a6e2-977ce5dc245e",
+            "version": 3
+        }
+    ]
+}
+```
+
+（2）通过调用/system/backuplog/v3/calculateByIds接口可以获取到底部小表格
+响应结构：
+```json
+{
+    "msg": "操作成功",
+    "code": 200,
+    "data": {
+        "supplierTotalBalance": {
+            "inventory_main": {
+                "default": 0
+            }
+        },
+        "remainingInventoryAmount": {
+            "inventory_main": {
+                "default": 0
+            }
+        },
+        "driverUnpaidAmount": {
+            "inventory_main": {
+                "default": 0
+            }
+        }
+    }
+}
+
+```
+
+差额详情数据，就是本SKILL中，这些模板所使用的对比数据。**模板组件接收的 `compareData` 即 getByIds 接口返回的 `data` 数组**。
+
+**单条备份记录（backup log record）结构**：
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| `id` | number | 备份日志主键 |
+| `tableName` | string | 业务表名（inventory_main、goodsorder、receivemoney、payment 等） |
+| `backupTime` | string | 备份操作时间 |
+| `originalTargetTime` | string | 修改前目标时间 |
+| `changedTargetTime` | string | 修改后目标时间 |
+| `backupType` | string | 备份类型：update、insert 等 |
+| `backupUserTruename` | string | 备份操作人姓名 |
+| `backupUserId` | number | 备份操作人 ID |
+| `originalInfo` | Object | **修改前的完整业务数据** |
+| `changedInfo` | Object | **修改后的完整业务数据** |
+| `originalInfoId` | string | 原业务记录 ID (可以通过业务表明+此id 联查到对应信息，本项目中有相关的函数) |
+| `uuid` | string | 记录唯一标识 |
+| `version` | number | 版本号 |
+
+`originalInfo` / `changedInfo` 的结构随 `tableName` 不同而不同，各模板需通过 `mapBeforeRow`、`mapAfterRow`、`buildDiffFields` 按业务表字段进行映射。
+
 底部小表格 就是在详情组件中，底部的统计信息
 
 ### 涉及模块
@@ -36,7 +581,7 @@ description: 生成资金变动统计功能的模板组件和调用逻辑。当�
 
 ### 步骤 1: 创建模板组件目录结构
 
-在 `packages/order-system/src/views/system/Statement/components/` 下创建：
+在 `packages\ui-components\components` 下创建：
 
 ```
 components/
@@ -58,43 +603,126 @@ components/
 
 ### 步骤 2: 模板组件通用结构
 
-每个模板组件遵循以下结构：
+每个模板组件遵循以下结构，**核心特性**：通过 `columns` 配置为每一列指定聚合公式（默认求和），实现摘要区的统一计算。
+
+#### 2.1 列配置与聚合器
+
+列配置 `columns` 中每个元素支持：
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| `prop` | string | 对应行数据的字段名 |
+| `label` | string | 表头标题 |
+| `width` | number/string | 列宽（可选） |
+| `fixed` | boolean | 是否固定列（可选） |
+| `aggregator` | string \| Function | 聚合方式，见下表 |
+| `summaryLabel` | string | 摘要区展示的标签，不填则用 `label` |
+| `showSummary` | boolean | 是否参与摘要计算，默认 `true`（非数值列通常为 `false`） |
+
+**聚合器（aggregator）**：
+
+| 值 | 说明 | 适用场景 |
+|----|------|----------|
+| `'sum'` | 求和（默认） | 金额类差额 |
+| `'absSum'` | 绝对值求和 | 需忽略正负的汇总 |
+| `'avg'` | 平均值 | 单价、比例等 |
+| `'max'` / `'min'` | 最大/最小值 | 极值统计 |
+| `'count'` | 计数（非空项） | 条数统计 |
+| `'none'` | 不参与聚合 | 仅展示列 |
+| `Function(values, context)` | 自定义函数 | 复杂公式 |
+
+**自定义聚合函数签名**：
+
+```javascript
+/**
+ * @param {number[]} values - 差额行该列的值（已转 number）
+ * @param {Object} context - { diffRows, precision }
+ * @returns {string} 格式化后的结果
+ */
+(values, context) => string
+```
+
+#### 2.2 内置聚合器工具
+
+在 `utils/fundChangeAggregators.js` 中维护，供各模板复用：
+
+```javascript
+import { format, add, subtract, abs, divide } from 'mathjs';
+import _ from 'lodash';
+
+/** 内置聚合器：求和 */
+export const sumAggregator = (values, { precision = 2 } = {}) =>
+  _.reduce(values, (acc, v) => format(add(acc, Number(v) || 0), { notation: 'fixed', precision }), 0);
+
+/** 内置聚合器：绝对值求和 */
+export const absSumAggregator = (values, { precision = 2 } = {}) =>
+  _.reduce(values, (acc, v) => format(add(acc, abs(Number(v) || 0)), { notation: 'fixed', precision }), 0);
+
+/** 内置聚合器：平均值 */
+export const avgAggregator = (values, { precision = 2 } = {}) => {
+  const arr = _.filter(_.map(values, v => (_.isNumber(v) ? v : Number(v))), v => !_.isNaN(v));
+  if (_.isEmpty(arr)) return format(0, { notation: 'fixed', precision });
+  const total = _.reduce(arr, (acc, v) => add(acc, v), 0);
+  return format(divide(total, arr.length), { notation: 'fixed', precision });
+};
+
+/** 聚合器映射，供模板按字符串引用 */
+export const AGGREGATOR_MAP = {
+  sum: sumAggregator,
+  absSum: absSumAggregator,
+  avg: avgAggregator,
+  max: (values) => format(_.max(_.map(values, v => Number(v) || 0)) || 0, { notation: 'fixed', precision: 2 }),
+  min: (values) => format(_.min(_.map(values, v => Number(v) || 0)) || 0, { notation: 'fixed', precision: 2 }),
+  count: (values) => String(_.filter(values, v => v != null && v !== '').length),
+  none: () => '-'
+};
+```
+
+#### 2.3 模板组件结构 （可以参考 packages\ui-components\components\OrderAdjustmentChangeTemplate 的目录结构）
 
 ```vue
 <script>
-import { format } from 'mathjs';
+import { format, subtract, add } from 'mathjs';
 import _ from 'lodash';
+import { AGGREGATOR_MAP } from '@/utils/fundChangeAggregators';
 
 export default {
   name: 'XxxTemplate',
   props: {
-    // 对比数据：包含修改前和修改后的数据
-    compareData: {
-      type: Array,
-      default: () => []
-    },
-    // 模块名称
-    moduleName: {
-      type: String,
-      default: ''
-    }
+    /** getByIds 接口返回的 data 数组，每项含 originalInfo、changedInfo */
+    compareData: { type: Array, default: () => [] },
+    moduleName: { type: String, default: '' }
   },
   data() {
-    return {
-      tableData: []
-    };
+    return { tableData: [] };
   },
   computed: {
-    // 计算差额汇总
-    totalDiff() {
-      // 使用 mathjs 进行高精度计算
-      return this.tableData.reduce((sum, item) => {
-        if (item.type === 'diff') {
-          // 根据具体字段计算
-          return format(add(sum, abs(item.amount || 0)), { notation: 'fixed', precision: 2 });
-        }
-        return sum;
-      }, 0);
+    /** 列配置：每列可指定 aggregator，默认 sum */
+    columns() {
+      return [
+        { prop: 'label', label: '类型', width: 100, fixed: true, showSummary: false },
+        { prop: 'customerDiff', label: '客户变动差额', aggregator: 'absSum', summaryLabel: '客户变动差额汇总' },
+        { prop: 'supplierDiff', label: '供应商变动差额', aggregator: 'absSum', summaryLabel: '供应商变动差额汇总' },
+        { prop: 'amount', label: '金额', aggregator: 'sum' }
+        // 自定义公式示例：{ prop: 'ratio', label: '占比', aggregator: (values, ctx) => format(divide(_.sum(values), ctx.diffRows.length), { notation: 'fixed', precision: 2 }) }
+      ];
+    },
+    /** 差额行 */
+    diffRows() {
+      return this.tableData.filter(r => r.rowType === 'diff');
+    },
+    /** 摘要映射：key 为 prop，value 为计算后的展示值 */
+    summaryMap() {
+      const map = {};
+      this.columns.forEach(col => {
+        if (col.showSummary === false) return;
+        const values = _.map(this.diffRows, col.prop).map(v => Number(v) || 0);
+        const agg = _.isFunction(col.aggregator)
+          ? col.aggregator
+          : (AGGREGATOR_MAP[col.aggregator] || AGGREGATOR_MAP.sum);
+        map[col.prop] = agg(values, { diffRows: this.diffRows, precision: 2 });
+      });
+      return map;
     }
   },
   created() {
@@ -102,131 +730,125 @@ export default {
   },
   methods: {
     /**
-     * 处理数据：将 compareData 转换为表格展示格式
-     * 每个修改记录包含三行：修改前、修改后、差额
+     * 处理数据：遍历 compareData（getByIds 的 data），每条记录生成修改前/修改后/差额三行
+     * 各模板可重写 mapBeforeRow、mapAfterRow、buildDiffFields 以适配不同 tableName 的 originalInfo/changedInfo 结构
      */
     processData() {
-      const grouped = _.groupBy(this.compareData, 'recordId');
       this.tableData = [];
-      
-      Object.keys(grouped).forEach(recordId => {
-        const records = grouped[recordId];
-        const beforeData = records.find(r => r.type === 'before') || {};
-        const afterData = records.find(r => r.type === 'after') || {};
-        
-        // 修改前
-        this.tableData.push({
-          ...beforeData,
-          rowType: 'before',
-          label: '修改前'
-        });
-        
-        // 修改后
-        this.tableData.push({
-          ...afterData,
-          rowType: 'after',
-          label: '修改后'
-        });
-        
-        // 差额（使用 mathjs 计算）
-        this.tableData.push({
-          rowType: 'diff',
-          label: '差额',
-          // 根据具体字段计算差额
-          amount: this.calculateDiff(afterData, beforeData)
-        });
+      (this.compareData || []).forEach((record, index) => {
+        const original = record.originalInfo || {};
+        const changed = record.changedInfo || {};
+        const beforeRow = { ...this.mapBeforeRow(original, record, index), rowType: 'before', label: `记录(${index + 1})`, subLabel: '修改前' };
+        const afterRow = { ...this.mapAfterRow(changed, record, index), rowType: 'after', label: '', subLabel: '修改后' };
+        const diffRow = { rowType: 'diff', label: '', subLabel: '差额', ...this.buildDiffFields(original, changed, record) };
+        this.tableData.push(beforeRow, afterRow, diffRow);
       });
     },
-    
-    /**
-     * 计算差额（使用 mathjs 保证高精度）
-     * @param {Object} after - 修改后数据
-     * @param {Object} before - 修改前数据
-     * @returns {number} 差额
-     */
-    calculateDiff(after, before) {
-      // 根据具体业务逻辑计算
-      // 示例：库存金额差额 = 修改后库存金额 - 修改前库存金额
-      const afterValue = Number(after.amount || 0);
-      const beforeValue = Number(before.amount || 0);
-      return format(subtract(afterValue, beforeValue), { notation: 'fixed', precision: 2 });
+    /** 将 originalInfo 转为表格行，可重写以按业务表字段映射 */
+    mapBeforeRow(info, record, index) {
+      return info;
     },
-    
-    /**
-     * 行样式设置
-     * @param {Object} row - 当前行数据
-     * @returns {string} CSS 类名
-     */
+    /** 将 changedInfo 转为表格行，可重写以按业务表字段映射 */
+    mapAfterRow(info, record, index) {
+      return info;
+    },
+    /** 计算差额行字段，各模板必须按 columns 中 showSummary 的 prop 实现 */
+    buildDiffFields(original, changed, record) {
+      return {
+        customerDiff: this.calculateFieldDiff(changed.customerAmount, original.customerAmount),
+        supplierDiff: this.calculateFieldDiff(changed.supplierAmount, original.supplierAmount),
+        amount: this.calculateFieldDiff(changed.amount, original.amount)
+      };
+    },
+    /** 计算单字段差额（mathjs 高精度） */
+    calculateFieldDiff(afterVal, beforeVal) {
+      const after = Number(afterVal || 0);
+      const before = Number(beforeVal || 0);
+      return format(subtract(after, before), { notation: 'fixed', precision: 2 });
+    },
     tableRowClassName({ row }) {
       if (row.rowType === 'before') return 'before-row';
       if (row.rowType === 'after') return 'after-row';
       if (row.rowType === 'diff') return 'diff-row';
       return '';
     },
-    
-    handleProcess() {
-      return Promise.resolve();
-    },
-    
-    handleReject() {
-      return Promise.resolve();
-    }
+    handleProcess() { return Promise.resolve(); },
+    handleReject() { return Promise.resolve(); }
   }
 };
 </script>
 
 <template>
   <div class="fund-change-template">
-    <el-table
-      :data="tableData"
-      border
-      :row-class-name="tableRowClassName"
-      style="width: 100%"
-    >
-      <el-table-column label="类型" prop="label" width="100" fixed />
-      <!-- 根据具体模块添加对应的列 -->
-      <el-table-column label="字段1" prop="field1" />
-      <el-table-column label="字段2" prop="field2" />
-      <!-- ... 更多列 ... -->
+    <el-table :data="tableData" border :row-class-name="tableRowClassName" style="width: 100%">
+      <el-table-column
+        v-for="col in columns"
+        :key="col.prop"
+        :prop="col.prop"
+        :label="col.label"
+        :width="col.width"
+        :fixed="col.fixed"
+      />
     </el-table>
-    
-    <div class="summary" v-if="totalDiff">
-      <span>差额汇总：{{ totalDiff }}</span>
+    <div class="summary-section" v-if="diffRows.length">
+      <div class="summary-item" v-for="col in columns.filter(c => c.showSummary !== false)" :key="col.prop">
+        <span class="summary-label">{{ col.summaryLabel || col.label }}：</span>
+        <span class="summary-value">{{ summaryMap[col.prop] }}</span>
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped lang="scss">
-.fund-change-template {
-  padding: 20px;
+.fund-change-template { padding: 20px; }
+::v-deep .before-row { background-color: #f0f9ff; }
+::v-deep .after-row { background-color: #fff7e6; }
+::v-deep .diff-row { background-color: #fff1f0; font-weight: bold; }
+.summary-section {
+  margin-top: 20px; padding: 10px; background: #f5f5f5; border-radius: 4px;
+  display: flex; flex-wrap: wrap; gap: 16px 24px;
 }
-
-// 修改前行样式
-::v-deep .before-row {
-  background-color: #f0f9ff;
-}
-
-// 修改后行样式
-::v-deep .after-row {
-  background-color: #fff7e6;
-}
-
-// 差额行样式
-::v-deep .diff-row {
-  background-color: #fff1f0;
-  font-weight: bold;
-}
-
-.summary {
-  margin-top: 20px;
-  padding: 10px;
-  background: #f5f5f5;
-  border-radius: 4px;
-  text-align: right;
-  font-size: 16px;
-  font-weight: bold;
-}
+.summary-item { font-size: 14px; }
+.summary-label { color: #606266; }
+.summary-value { font-weight: bold; margin-left: 4px; }
 </style>
+```
+
+#### 2.4 设计要点
+
+1. **列驱动**：表格列与摘要项由同一份 `columns` 配置生成，避免重复定义。
+2. **可扩展聚合**：通过 `aggregator` 支持内置类型和自定义函数，满足不同业务公式。
+3. **统一精度**：聚合器通过 `precision` 参数控制，保证与 mathjs 一致。
+4. **按需摘要**：`showSummary: false` 的列不参与摘要计算、不展示汇总行。
+
+#### 2.5 数据结构与扩展点
+
+`compareData` 即 getByIds 的 `data` 数组。每条记录含 `originalInfo`（修改前）、`changedInfo`（修改后），结构随 `tableName` 变化。
+
+| tableName | 主表字段示例 | 子表/嵌套 |
+|-----------|-------------|----------|
+| inventory_main | storeDate, storeHouseName, allLandFreight | inventoryDetailList |
+| goodsorder | allPayments, ordersNo | - |
+| receivemoney | moneyAmount, companyType | - |
+
+各模板需重写以下方法以适配本表结构：
+
+- **mapBeforeRow(info, record, index)**：从 `originalInfo` 提取/聚合成表格行字段。
+- **mapAfterRow(info, record, index)**：从 `changedInfo` 提取/聚合成表格行字段。
+- **buildDiffFields(original, changed, record)**：计算差额行各列值，返回对象 key 需与 `columns` 中参与摘要的 `prop` 一致。
+
+示例（inventory_main 主表字段直接透传）：
+
+```javascript
+mapBeforeRow(info) {
+  return { storeDate: info.storeDate, storeHouseName: info.storeHouseName, /* ... */ };
+},
+buildDiffFields(original, changed) {
+  return {
+    inventoryDiff: this.calcInventoryDetailDiff(original.inventoryDetailList, changed.inventoryDetailList),
+    freightDiff: this.calculateFieldDiff(changed.allLandFreight, original.allLandFreight)
+  };
+}
 ```
 
 ### 步骤 3: 在主页面中调用模板
@@ -370,6 +992,8 @@ processData(compareData) {
   // ...
 }
 ```
+
+### 5. 所有的代码，能够从order-system这个包中拆出就拆出，不要全部堆叠到order-system包，因为本项目采用monorepo管理，有shared包和ui-components包，可以将一些公共逻辑拆分到这里来
 
 ## 复用现有逻辑
 
