@@ -577,3 +577,68 @@ export function getTargetDates(backupDate) {
 		method: 'get'
 	});
 }
+
+// ========== 资金变动统计 v3 接口 ==========
+
+/**
+ * 计算时间段内资金变动（三层Map）
+ * @param {Object} query
+ * @param {string} query.backupDate - 备份目标日期
+ * @param {string} query.firstTargetDate - 查询起始日期
+ * @param {string} query.secondTargetDate - 查询结束日期
+ * @returns {Promise<{data: Object}>} data 结构为 Map<outputKey, Map<tableName, Map<category, amount>>>
+ */
+export function calculateAmountsV3(query) {
+	return request({
+		url: '/system/backuplog/v3/calculateAmounts',
+		method: 'get',
+		params: query
+	});
+}
+
+/**
+ * 根据三层分类筛选日志ID
+ * @param {Object} query
+ * @param {string} query.outputKey - 一级分类（如 remainingInventoryAmount）
+ * @param {string} query.tableName - 二级分类（如 inventory_main）
+ * @param {string} query.category - 三级分类（如 default）
+ * @param {string} query.backupDate - 备份目标日期
+ * @param {string} query.firstTargetDate - 查询起始日期
+ * @param {string} query.secondTargetDate - 查询结束日期
+ * @returns {Promise<{data: number[]}>}
+ */
+export function filterIdsByCategoryV3(query) {
+	return request({
+		url: '/system/backuplog/v3/filterIdsByCategory',
+		method: 'get',
+		params: query
+	});
+}
+
+/**
+ * 根据ID列表查询日志详情
+ * @param {Object} body
+ * @param {number[]} body.ids - 备份日志ID列表
+ * @returns {Promise<{data: Array}>} 每条含 originalInfo、changedInfo、tableName 等
+ */
+export function getBackuplogByIdsV3(body) {
+	return request({
+		url: '/system/backuplog/v3/getByIds',
+		method: 'post',
+		data: body
+	});
+}
+
+/**
+ * 根据ID列表计算资金变动（底部小表格）
+ * @param {Object} body
+ * @param {number[]} body.ids - 备份日志ID列表
+ * @returns {Promise<{data: Object}>}
+ */
+export function calculateByIdsV3(body) {
+	return request({
+		url: '/system/backuplog/v3/calculateByIds',
+		method: 'post',
+		data: body
+	});
+}

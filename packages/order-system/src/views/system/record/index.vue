@@ -19,6 +19,14 @@
 			<el-form-item label="承兑号" prop="bankacceptanceBillNo">
 				<el-input v-model="queryBankacceptanceBillNo" placeholder="请输入承兑号" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
+			<el-form-item label="账户类型" prop="accountType">
+				<el-select v-model="queryAccountType" placeholder="请选择账户类型" clearable @keyup.enter.native="handleQuery">
+					<el-option label="冲抵货款" value="-" />
+					<el-option label="活期互转" value="银行活期存款" />
+					<el-option label="承兑互转" value="承兑" />
+					<el-option label="银承互转" value="银承互转" />
+				</el-select>
+			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
 				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -948,7 +956,9 @@ export default {
 			},
 			// 查询相关变量
 			querySelfAccountName: null,
-			queryBankacceptanceBillNo: null
+			queryBankacceptanceBillNo: null,
+			// 账户类型：- 冲抵货款，银行活期存款 活期互转，承兑 承兑互转，银承互转 银承互转
+			queryAccountType: '-'
 		};
 	},
 	// 计算属性
@@ -1305,6 +1315,8 @@ export default {
 			if (this.queryBankacceptanceBillNo) {
 				this.queryParams.params['bankacceptanceBillNo'] = this.queryBankacceptanceBillNo;
 			}
+			// 账户类型直接作为 query 传递：- 冲抵货款，银行活期存款/承兑/银承互转 内部转账
+			this.queryParams.accountType = this.queryAccountType != null && this.queryAccountType !== '' ? this.queryAccountType : undefined;
 			listRecord(this.queryParams).then(response => {
 				this.recordList = response.rows;
 				this.total = response.total;
@@ -1427,6 +1439,7 @@ export default {
 			this.dateRange = [];
 			this.querySelfAccountName = null;
 			this.queryBankacceptanceBillNo = null;
+			this.queryAccountType = '-';
 			this.resetForm('queryForm');
 			this.handleQuery();
 		},

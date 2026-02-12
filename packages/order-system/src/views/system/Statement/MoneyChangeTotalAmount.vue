@@ -1,10 +1,9 @@
 <script>
-import { getMoneyChangeSummaryByDate, getTargetDates } from '@/api/system/statement';
+import { getMoneyChangeSummaryByDate, getTargetDates, calculateAmountsV3, filterIdsByCategoryV3, getBackuplogByIdsV3, calculateByIdsV3 } from '@/api/system/statement';
 import { fix } from 'order-system/src/api/tool/format';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import ChooseModule from '@/views/dashboard/backuplog/ChooseModule.vue';
 import { TableName } from '@/api/tool/enums';
-import { getBackupInfoV2 } from '@/api/system/statement';
 import * as echarts from 'echarts';
 import _ from 'lodash';
 import { subtract, add, format, abs, compare } from 'mathjs';
@@ -298,42 +297,78 @@ export default {
 			// 查看明细，传递项目名称
 			this.viewModuleDetail(item.moduleName, item.label);
 		},
-		// 查看模块详情
-		viewModuleDetail(moduleName, projectName) {
-			// 需要查询的表名 后端需要根据表名来获取对应的变动数据
-			// 这里默认是查询所有的表名 后续需要根据实际情况进行修改
-			const query = {
-				variableName: moduleName,
-				backupDate: this.changeForm.endTime,
-				firstTargetDate: this.targetLeftDate,
-				secondTargetDate: this.targetRightDate
-			};
-			// 获取变动明细 这里的接口是测试接口 后续需要换成 getBackupInfoV1 接口
-			// getBackupInfoV1
-			getBackupInfoV2(query).then(res => {
-				if (_.isEmpty(res.rows)) {
-					this.$message.warning('该模块没有变动信息');
-					return;
-				}
-				const tableNames = res.rows.map(item => item.tableName);
-				const uniqueTableNames = _.uniq(tableNames);
-				console.log(uniqueTableNames);
-				// 提取表名并去重，过滤掉不需要的表
-				const moduleList = _.without(uniqueTableNames, [TableName.ORDER_DETAIL, TableName.INVENTORDETAIL]);
-				// 使用项目名称作为弹窗标题
-				const dialogTitle = projectName || '请选择模块查看其详细资金变动';
-				this.openDialog(
-					ChooseModule,
-					dialogTitle,
-					'700px',
-					{
-						moduleList,
-						result: _.cloneDeep(res.rows)
-					},
-					false,
-					false
-				);
+		/**
+		 * 查看模块详情（v3 流程：calculateAmounts -> filterIdsByCategory -> getByIds + calculateByIds）
+		 * @param {string} moduleName - outputKey，如 companyTotalBalance
+		 * @param {string} projectName - 展示用项目名称
+		 */
+		async viewModuleDetail(moduleName, projectName) {
+			const backupDate = this.changeForm.endTime;
+			const firstTargetDate = this.targetLeftDate;
+			const secondTargetDate = this.targetRightDate;
+			if (!backupDate || !firstTargetDate || !secondTargetDate) {
+				this.$message.warning('请先选择查询日期');
+				return;
+			}
+			const baseQuery = { backupDate, firstTargetDate, secondTargetDate };
+			let amountsRes;
+			try {
+				amountsRes = await calculateAmountsV3(baseQuery);
+			} catch (e) {
+				this.$message.error('获取资金变动数据失败');
+				return;
+			}
+			const data = amountsRes?.data || {};
+			const triples = this.extractCategoryTriplesByOutputKey(data, moduleName);
+			if (_.isEmpty(triples)) {
+				this.$message.warning('该模块没有变动信息');
+				return;
+			}
+			const allIds = [];
+			for (const t of triples) {
+				const idsRes = await filterIdsByCategoryV3({ ...baseQuery, outputKey: t.outputKey, tableName: t.tableName, category: t.category });
+				const ids = idsRes?.data || [];
+				allIds.push(...ids);
+			}
+			const uniqueIds = _.uniq(allIds);
+			if (_.isEmpty(uniqueIds)) {
+				this.$message.warning('该模块没有变动信息');
+				return;
+			}
+			let detailRes;
+			let summaryRes;
+			try {
+				[detailRes, summaryRes] = await Promise.all([getBackuplogByIdsV3({ ids: uniqueIds }), calculateByIdsV3({ ids: uniqueIds })]);
+			} catch (e) {
+				this.$message.error('获取变动详情失败');
+				return;
+			}
+			const result = detailRes?.data || [];
+			const filtered = result.filter(r => r.tableName !== TableName.ORDER_DETAIL && r.tableName !== TableName.INVENTORDETAIL);
+			if (_.isEmpty(filtered)) {
+				this.$message.warning('该模块没有变动信息');
+				return;
+			}
+			const moduleList = _.uniq(filtered.map(r => r.tableName));
+			const dialogTitle = projectName || '请选择模块查看其详细资金变动';
+			this.openDialog(ChooseModule, dialogTitle, '700px', { moduleList, result: _.cloneDeep(filtered), summaryData: summaryRes?.data || {}, useV3Templates: true }, false, false);
+		},
+		/**
+		 * 从 calculateAmounts data 中提取指定 outputKey 的 (tableName, category) 组合
+		 * @param {Object} data
+		 * @param {string} outputKey
+		 * @returns {Array}
+		 */
+		extractCategoryTriplesByOutputKey(data, outputKey) {
+			if (!data || typeof data !== 'object' || !outputKey) return [];
+			const tableMap = data[outputKey];
+			if (!tableMap || typeof tableMap !== 'object') return [];
+			const triples = [];
+			_.forEach(tableMap, (categoryMap, tableName) => {
+				if (!categoryMap || typeof categoryMap !== 'object') return;
+				_.forEach(categoryMap, (_, category) => triples.push({ outputKey, tableName, category }));
 			});
+			return triples;
 		},
 		// Tab 切换处理
 		handleTabChange(tab) {

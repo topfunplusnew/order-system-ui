@@ -3,6 +3,7 @@ import { moduleNames, TableName } from 'order-system/src/api/tool/enums';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import { filtersFunc } from '@/views/dashboard/backuplog/goodsorder';
 import CommonChange from '@/views/dashboard/backuplog/goodsorder/CommonChange.vue';
+import { TABLE_TEMPLATE_MAP } from '@/views/system/Statement/fundChangeConfig';
 import _ from 'lodash';
 
 export default {
@@ -17,44 +18,32 @@ export default {
 		}
 	},
 	props: {
-		// 模块列表
-		moduleList: {
-			type: Array,
-			default: () => []
-		},
-		// 变动数据详细列表
-		result: {
-			type: Array,
-			default: () => []
-		}
+		moduleList: { type: Array, default: () => [] },
+		result: { type: Array, default: () => [] },
+		/** 底部统计（calculateByIds 返回），v3 模板使用 */
+		summaryData: { type: Object, default: () => ({}) },
+		/** 是否使用 v3 资金变动模板（OrderAdjustmentTemplate 等） */
+		useV3Templates: { type: Boolean, default: false }
 	},
 	methods: {
 		filtersFunc,
 		/**
-		 * 弹出的弹窗点击某一个模块 可以查看该模块的详细变动信息
-		 * @param moduleName  表名
+		 * 点击模块查看详细变动信息
+		 * @param {string} moduleName - 表名
 		 */
 		handleCheckModule(moduleName) {
-			if (!moduleName) {
-				this.$log.warn('handleCheckModule函数执行,未传入模块名参数');
-			}
-			// 对模块名进行处理
+			if (!moduleName) return;
 			const tableName = filtersFunc(moduleName);
 			const data = _.groupBy(this.result, 'tableName')[tableName] || [];
-			if (!_.isEmpty(data)) {
-				this.openDialog(
-					CommonChange,
-					'模块修改记录',
-					'1500px',
-					{
-						compareData: data,
-						moduleName: tableName
-					},
-					false
-				);
-			} else {
+			if (_.isEmpty(data)) {
 				this.$message.warning('组件数据有误,ChooseModule');
+				return;
 			}
+			const templateConfig = this.useV3Templates ? TABLE_TEMPLATE_MAP[tableName] : null;
+			const Component = templateConfig?.component || CommonChange;
+			const title = templateConfig?.title || '模块修改记录';
+			const width = templateConfig?.width || '1500px';
+			this.openDialog(Component, title, width, { compareData: data, moduleName: tableName, summaryData: this.summaryData }, false);
 		},
 		handleProcess() {
 			return Promise.resolve();
