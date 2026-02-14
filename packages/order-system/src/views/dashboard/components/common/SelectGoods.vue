@@ -7,6 +7,7 @@ import { PUBLIC_DICT_TYPE } from '@/utils/order';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import OrderDisplay from '@/components/OrderDisplay/index.vue';
 import { create, all } from 'mathjs';
+import { parseTime } from '@/utils/ruoyi';
 
 export default {
 	name: 'SelectGoods',
@@ -158,6 +159,7 @@ export default {
 		this.$bus.$off('update-goods-order-company');
 	},
 	methods: {
+		parseTime,
 		// 查看订单详情（表头 + 明细）
 		async handleViewOrder(row) {
 			try {
@@ -263,7 +265,7 @@ export default {
 		async handleFilterByCompany() {
 			try {
 				if (this.type === PUBLIC_DICT_TYPE.CUSTOMER) {
-				// 赋值搜索条件
+					// 赋值搜索条件
 					this.queryParams.customerID = this.id;
 					// 2025-2-13 订单搜索需要传入companyType
 					this.queryParams.params.BatchInsertInvoiceCompanyType = PUBLIC_DICT_TYPE.CUSTOMER;
@@ -308,7 +310,6 @@ export default {
 			// 计算要扣除的钱
 			let money = 0;
 			try {
-
 				// 如果是取消勾选
 				if (removedRows.length !== 0) {
 					money = this.calculateMoney(removedRows, this.type);
@@ -512,7 +513,11 @@ export default {
 				</template>
 			</el-table-column>
 			<el-table-column show-overflow-tooltip label="ID" align="center" prop="id" />
-			<el-table-column show-overflow-tooltip label="日期" align="center" prop="orderDate" />
+			<el-table-column show-overflow-tooltip label="日期" align="center" prop="orderDate">
+				<template #default="scope">
+					{{ parseTime(scope.row.orderDate, '{y}-{m}-{d}') }}
+				</template>
+			</el-table-column>
 			<el-table-column show-overflow-tooltip label="客户" align="center" prop="customer" />
 			<el-table-column show-overflow-tooltip label="供应商/仓库" align="center" prop="supplierNames" width="200">
 				<template #default="scope">

@@ -5,16 +5,7 @@ import InvoiceCompanysList from '@/views/dashboard/components/common/InvoiceComp
 import QueueInvoiceList from '@/views/dashboard/components/common/QueueInvoiceList.vue';
 import SelectGoods from '@/views/dashboard/components/common/SelectGoods.vue';
 import DragDiv from '@/components/DragDiv/index.vue';
-import {
-	listBatchInvoiceIn,
-	listBatchInvoiceOut,
-	deleteBatchInvoiceInByVoucher,
-	deleteBatchInvoiceInById,
-	deleteBatchInvoiceInInvoice,
-	deleteBatchInvoiceOutByVoucher,
-	deleteBatchInvoiceOutById,
-	deleteBatchInvoiceOutInvoice
-} from '@/api/system/batchInvoice';
+import { listBatchInvoiceIn, listBatchInvoiceOut, deleteBatchInvoiceInByVoucher, deleteBatchInvoiceInById, deleteBatchInvoiceInInvoice, deleteBatchInvoiceOutByVoucher, deleteBatchInvoiceOutById, deleteBatchInvoiceOutInvoice } from '@/api/system/batchInvoice';
 
 // 默认导出组件
 export default {
@@ -736,15 +727,10 @@ export default {
 												</el-form>
 
 												<div class="company-lists">
-													<div v-if="currentCompanyTotalInfo && currentCompanyTotalInfo.length > 0" class="section-title-wrapper">
-														<div class="section-title">
-															<span class="title-icon"></span>
-															<span class="title-text">{{ currentSideTitle }}</span>
-														</div>
-													</div>
 													<InvoiceCompanysList
 														v-if="currentCompanyTotalInfo && currentCompanyTotalInfo.length > 0"
 														:side="currentSide"
+														:side-title="currentSideTitle"
 														:company-total-info="currentCompanyTotalInfo"
 														:statistics-info="currentStatisticsInfo"
 														:mode="mode"
@@ -1115,53 +1101,6 @@ export default {
 	overflow: visible;
 	min-height: 0;
 	padding-right: 4px;
-
-	/* 区域标题样式 - 紧凑美化设计 */
-	.section-title-wrapper {
-		margin: 12px 0 10px 0;
-		position: relative;
-		display: flex;
-		align-items: center;
-
-		&::before {
-			content: '';
-			position: absolute;
-			left: 0;
-			right: 0;
-			top: 50%;
-			height: 1px;
-			background: linear-gradient(to right, rgba(64, 158, 255, 0.2) 0%, rgba(64, 158, 255, 0.15) 50%, transparent 100%);
-			z-index: 0;
-		}
-
-		.section-title {
-			position: relative;
-			z-index: 1;
-			background: #ffffff;
-			padding: 4px 12px 4px 8px;
-			border-radius: 4px;
-			border-left: 3px solid #409eff;
-			display: inline-flex;
-			align-items: center;
-			gap: 6px;
-			box-shadow: 0 1px 2px rgba(64, 158, 255, 0.1);
-
-			.title-icon {
-				width: 4px;
-				height: 4px;
-				background: #409eff;
-				border-radius: 50%;
-				flex-shrink: 0;
-			}
-
-			.title-text {
-				color: #409eff;
-				font-size: 13px;
-				font-weight: 600;
-				line-height: 1;
-			}
-		}
-	}
 }
 
 /* 订单选择组件包装 - 统一滚动条 */

@@ -40,6 +40,11 @@ export default {
 		voucher: {
 			type: String,
 			default: ''
+		},
+		// 当前侧标题（购买方信息/销方信息）
+		sideTitle: {
+			type: String,
+			default: ''
 		}
 	},
 	data() {
@@ -59,7 +64,7 @@ export default {
 			if (this.voucher) {
 				filtered = filtered.filter(row => row.voucher === this.voucher);
 			}
-			
+
 			// 再根据 side 筛选批次数据
 			if (this.side === 'purchase') {
 				return filtered.filter(row => row.sellerId === 0);
@@ -206,7 +211,7 @@ export default {
 			this.$store.dispatch('excel/clearSelectedInvoiceList');
 			// 清空选中的订单列表
 			this.$store.dispatch('excel/clearSelectedOrders');
-			
+
 			this.$bus.$emit('update-goods-order-company', mergedRow);
 			// 维护开票金额 - 使用模板数据中的未开票金额总和（剩余开票金额）
 			const templateTotalNumber = Number(this.math.format(templateTotal, { precision: 2, notation: 'fixed' }));
@@ -299,27 +304,29 @@ export default {
 
 <template>
 	<div class="companies-list-wrapper">
-		<!-- 统计信息展示区域 -->
-		<div v-if="statisticsInfo.suppliers.count > 0 || statisticsInfo.customers.count > 0" class="statistics-summary">
-			<el-card class="statistics-card" shadow="never">
-				<div slot="header" class="statistics-header">
+		<!-- 销方/购买方信息 - 单行紧凑，无 divider -->
+		<div v-if="sideTitle && (statisticsInfo.suppliers.count > 0 || statisticsInfo.customers.count > 0)" class="statistics-summary">
+			<div class="statistics-row">
+				<span class="side-title">
+					<span class="title-dot"></span>
+					{{ sideTitle }}
+				</span>
+				<span class="statistics-title">
 					<i class="el-icon-s-data"></i>
-					<span>统计</span>
-					<el-button type="text" size="mini" @click="openTemplateViewer">查看模板数据（{{ side === 'purchase' ? '购买方' : '销方' }}）</el-button>
+					统计
+				</span>
+				<div v-if="statisticsInfo.suppliers.count > 0" class="stat-item supplier-stat">
+					<span class="stat-label">供应商:</span>
+					<span class="stat-count">{{ statisticsInfo.suppliers.count }}家</span>
+					<span class="stat-amount">¥{{ statisticsInfo.suppliers.total }}</span>
 				</div>
-				<div class="statistics-content">
-					<div v-if="statisticsInfo.suppliers.count > 0" class="stat-item supplier-stat">
-						<span class="stat-label">供应商:</span>
-						<span class="stat-count">{{ statisticsInfo.suppliers.count }}家</span>
-						<span class="stat-amount">累计价税合计：¥{{ statisticsInfo.suppliers.total }}</span>
-					</div>
-					<div v-if="statisticsInfo.customers.count > 0" class="stat-item customer-stat">
-						<span class="stat-label">客户:</span>
-						<span class="stat-count">{{ statisticsInfo.customers.count }}家</span>
-						<span class="stat-amount">累计价税合计：¥{{ statisticsInfo.customers.total }}</span>
-					</div>
+				<div v-if="statisticsInfo.customers.count > 0" class="stat-item customer-stat">
+					<span class="stat-label">客户:</span>
+					<span class="stat-count">{{ statisticsInfo.customers.count }}家</span>
+					<span class="stat-amount">¥{{ statisticsInfo.customers.total }}</span>
 				</div>
-			</el-card>
+				<el-button type="text" size="mini" class="view-template-btn" @click="openTemplateViewer">查看模版数据</el-button>
+			</div>
 		</div>
 
 		<!-- 公司列表表格 -->
@@ -372,12 +379,7 @@ export default {
 				<el-table-column v-if="selectedTemplateData.some(row => row.createTime)" label="导入时间" align="center" prop="createTime" width="150" show-overflow-tooltip />
 			</el-table>
 			<div class="template-info" v-if="selectedTemplateData.length > 0">
-				<el-alert
-					:title="`共 ${selectedTemplateData.length} 条${mode === 'in' ? '进项票' : '销项票'}数据`"
-					type="info"
-					:closable="false"
-					show-icon
-				/>
+				<el-alert :title="`共 ${selectedTemplateData.length} 条${mode === 'in' ? '进项票' : '销项票'}数据`" type="info" :closable="false" show-icon />
 			</div>
 			<span slot="footer" class="dialog-footer">
 				<el-button size="mini" @click="viewTemplateVisible = false">关闭</el-button>
@@ -468,53 +470,50 @@ export default {
 	}
 }
 
-/* 统计信息样式 - 紧凑设计 */
+/* 统计信息样式 - 单行紧凑布局，无 divider */
 .statistics-summary {
-	margin-bottom: 8px;
+	margin-bottom: 6px;
 	flex-shrink: 0;
 }
 
-.statistics-card {
-	border-radius: 4px;
-	border: none;
-	background: transparent;
+.statistics-row {
+	display: flex;
+	align-items: center;
+	gap: 12px 16px;
+	font-size: 12px;
+}
 
-	::v-deep .el-card__header {
-		padding: 6px 10px;
-		background: transparent;
-		border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-	}
+.side-title {
+	font-weight: 600;
+	color: #303133;
 
-	::v-deep .el-card__body {
-		padding: 8px 10px;
-		background: transparent;
+	.title-dot {
+		display: inline-block;
+		width: 4px;
+		height: 4px;
+		margin-right: 6px;
+		background: #409eff;
+		border-radius: 50%;
+		vertical-align: middle;
 	}
 }
 
-.statistics-header {
-	display: flex;
-	align-items: center;
-	gap: 4px;
-	font-size: 12px;
+.statistics-title {
 	font-weight: 600;
 	color: #409eff;
+	margin-right: 8px;
 
 	i {
 		font-size: 13px;
+		margin-right: 2px;
 	}
 }
 
-.statistics-content {
-	display: flex;
-	flex-direction: column;
-	gap: 4px;
-}
-
 .stat-item {
-	display: flex;
+	display: inline-flex;
 	align-items: center;
-	gap: 6px;
-	padding: 3px 6px;
+	gap: 4px;
+	padding: 2px 8px;
 	border-radius: 3px;
 	font-size: 11px;
 	background: #f5f7fa;
@@ -522,20 +521,18 @@ export default {
 	.stat-label {
 		font-weight: 500;
 		color: #606266;
-		min-width: 45px;
 	}
 
 	.stat-count {
 		color: #909399;
 		font-size: 10px;
-		padding: 1px 5px;
+		padding: 1px 4px;
 		background: #e4e7ed;
-		border-radius: 8px;
+		border-radius: 6px;
 	}
 
 	.stat-amount {
 		font-weight: bold;
-		margin-left: auto;
 		font-size: 11px;
 	}
 
@@ -546,6 +543,12 @@ export default {
 	&.customer-stat .stat-amount {
 		color: #67c23a;
 	}
+}
+
+.view-template-btn {
+	margin-left: auto;
+	padding: 2px 6px;
+	font-size: 11px;
 }
 
 .highlight-row {
@@ -630,48 +633,23 @@ export default {
 		}
 	}
 
-	.statistics-content {
-		gap: 4px;
+	.statistics-row {
+		gap: 8px 12px;
 	}
 
 	.stat-item {
-		padding: 3px 6px;
+		padding: 2px 6px;
 		font-size: 11px;
-
-		.stat-label {
-			min-width: 45px;
-		}
 	}
 }
 
 @media screen and (max-width: 480px) {
-	.statistics-card {
-		::v-deep .el-card__header {
-			padding: 6px 10px;
-		}
-
-		::v-deep .el-card__body {
-			padding: 8px 10px;
-		}
-	}
-
-	.statistics-header {
+	.statistics-row {
 		font-size: 11px;
-
-		i {
-			font-size: 12px;
-		}
 	}
 
-	.stat-item {
-		flex-direction: column;
-		align-items: flex-start;
-		gap: 4px;
-
-		.stat-amount {
-			margin-left: 0;
-			align-self: flex-end;
-		}
+	.statistics-title i {
+		font-size: 12px;
 	}
 
 	/* 在最小屏幕下进一步优化表格 */
