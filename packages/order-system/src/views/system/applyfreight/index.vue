@@ -241,7 +241,7 @@ export default {
 						this.openDialog(
 							GOODS_ORDER,
 							'订单信息',
-							'1000px',
+							'100%',
 							{
 								needToShowInfo: this.currentOrder
 							},
@@ -260,7 +260,7 @@ export default {
 						this.openDialog(
 							INVENTORY,
 							'库存信息',
-							'1000px',
+							'100%',
 							{
 								needToShowInfo: this.currentOrder
 							},
