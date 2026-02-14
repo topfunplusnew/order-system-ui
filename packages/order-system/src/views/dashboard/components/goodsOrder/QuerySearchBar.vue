@@ -56,13 +56,13 @@
 			</el-form-item>
 
 			<el-form-item v-if="shouldShowField('isIncludeTaxFactory')" label="供应商是否开票">
-				<el-select v-model="queryParams.params.isIncludeTaxFactory" placeholder="请选择" size="mini" clearable class="input-short">
+				<el-select v-model="queryParams.params.isIncludeTaxFactory" placeholder="请选择" size="mini" :clearable="!isFieldFixed('isIncludeTaxFactory')" :disabled="isFieldFixed('isIncludeTaxFactory')" class="input-short">
 					<el-option v-for="item in getOptionInvent()" :key="item.value" :label="item.label" :value="item.value" />
 				</el-select>
 			</el-form-item>
 
 			<el-form-item v-if="shouldShowField('isIncludeTaxSale')" label="客户是否开票">
-				<el-select v-model="queryParams.params.isIncludeTaxSale" placeholder="请选择" size="mini" clearable class="input-short">
+				<el-select v-model="queryParams.params.isIncludeTaxSale" placeholder="请选择" size="mini" :clearable="!isFieldFixed('isIncludeTaxSale')" :disabled="isFieldFixed('isIncludeTaxSale')" class="input-short">
 					<el-option v-for="item in getOptionInvent()" :key="item.value" :label="item.label" :value="item.value" />
 				</el-select>
 			</el-form-item>
@@ -85,7 +85,7 @@
 
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-				<el-button icon="el-icon-setting" size="mini" @click="openFieldSetting">自定义</el-button>
+				<el-button v-if="!hideFieldSetting" icon="el-icon-setting" size="mini" @click="openFieldSetting">自定义</el-button>
 				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
 			</el-form-item>
 		</el-form>
@@ -131,6 +131,16 @@ export default {
 		currentPageSize: {
 			type: Number,
 			default: 50
+		},
+		/** 可见字段列表，传入时覆盖用户配置，用于限制展示的搜索项 */
+		visibleFields: {
+			type: Array,
+			default: null
+		},
+		/** 固定字段值，传入的字段将锁定为指定值且不可编辑，如 { isIncludeTaxSale: 1, isIncludeTaxFactory: 1 } */
+		fixedFieldValues: {
+			type: Object,
+			default: null
 		}
 	},
 	data() {
@@ -191,8 +201,18 @@ export default {
 		};
 	},
 	computed: {
+		/** 实际用于展示的字段列表：visibleFields 优先，否则用 selectedFields；fixedFieldValues 的 key 会额外加入 */
+		effectiveShowFields() {
+			const base = Array.isArray(this.visibleFields) && this.visibleFields.length > 0 ? this.visibleFields : this.selectedFields || [];
+			const fixedKeys = this.fixedFieldValues ? Object.keys(this.fixedFieldValues) : [];
+			return _.uniq([...base, ...fixedKeys]);
+		},
 		shouldShowField() {
-			return fieldName => this.isConfigLoaded && Array.isArray(this.selectedFields) && this.selectedFields.includes(fieldName);
+			return fieldName => this.isConfigLoaded && Array.isArray(this.effectiveShowFields) && this.effectiveShowFields.includes(fieldName);
+		},
+		/** 是否隐藏自定义字段设置按钮（使用 visibleFields 时由父组件控制展示） */
+		hideFieldSetting() {
+			return Array.isArray(this.visibleFields) && this.visibleFields.length > 0;
 		}
 	},
 	watch: {
@@ -211,9 +231,24 @@ export default {
 
 	async created() {
 		await this.loadFieldSettings();
+		this.applyFixedFieldValues();
 		this.initializeDefaultQuery();
 	},
 	methods: {
+		/**
+		 * 判断字段是否被固定（锁定不可编辑）
+		 * @param {string} fieldName - 字段名，如 isIncludeTaxSale、isIncludeTaxFactory
+		 * @returns {boolean}
+		 */
+		isFieldFixed(fieldName) {
+			return !!(this.fixedFieldValues && Object.prototype.hasOwnProperty.call(this.fixedFieldValues, fieldName));
+		},
+		/** 将 fixedFieldValues 合并到 queryParams.params */
+		applyFixedFieldValues() {
+			if (this.fixedFieldValues && this.queryParams?.params) {
+				Object.assign(this.queryParams.params, this.fixedFieldValues);
+			}
+		},
 		getOptionInvent() {
 			return OptionInvent;
 		},
@@ -272,6 +307,7 @@ export default {
 					this.queryParams.orderDateStart = start;
 					this.queryParams.orderDateEnd = end;
 					const query = _.cloneDeep(this.queryParams);
+					if (this.fixedFieldValues && query?.params) Object.assign(query.params, this.fixedFieldValues);
 					this.formatOrderDateRange(query);
 					this.$nextTick(() => this.$emit('updateQuery', query));
 				}
@@ -298,7 +334,9 @@ export default {
 				this.queryParams.orderDateStart = null;
 				this.queryParams.orderDateEnd = null;
 			}
+			this.applyFixedFieldValues();
 			const queryData = _.cloneDeep(this.queryParams);
+			if (this.fixedFieldValues && queryData?.params) Object.assign(queryData.params, this.fixedFieldValues);
 			this.formatOrderDateRange(queryData);
 			this.$emit('updateQuery', queryData);
 		},
@@ -333,6 +371,7 @@ export default {
 				width: '',
 				height: ''
 			});
+			this.applyFixedFieldValues();
 			this.dateRange = [];
 			this.handleQuery();
 		},

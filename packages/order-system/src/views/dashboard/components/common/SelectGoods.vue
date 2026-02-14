@@ -111,8 +111,12 @@ export default {
 				'supplierNames', // 供应商
 				'landDriverName', // 司机名称
 				'landCarNo', // 车牌
-				'checkState' // 审核状态
-			]
+				'checkState', // 审核状态
+				'isIncludeTaxSale', // 客户是否开票（固定为是）
+				'isIncludeTaxFactory' // 供应商是否开票（固定为是）
+			],
+			// 开票字段固定为「是」，不可修改
+			searchBarFixedFieldValues: { isIncludeTaxSale: 1, isIncludeTaxFactory: 1 }
 		};
 	},
 	created() {
@@ -466,8 +470,8 @@ export default {
 				params: {
 					BatchInsertInvoiceCompanyType: PUBLIC_DICT_TYPE.CUSTOMER,
 					supplierId: null,
-					isIncludeTaxSale: null,
-					isIncludeTaxFactory: null
+					isIncludeTaxSale: 1,
+					isIncludeTaxFactory: 1
 				}
 			};
 		}
@@ -477,7 +481,7 @@ export default {
 
 <template>
 	<div>
-		<QuerySearchBar :query-params="queryParams" :visible-fields="searchBarFields" @updateQuery="handleQuery" />
+		<QuerySearchBar :query-params="queryParams" :visible-fields="searchBarFields" :fixed-field-values="searchBarFixedFieldValues" @updateQuery="handleQuery" />
 		<!-- 操作按钮：手动生成发票（备用，选中订单后会自动生成） -->
 		<div class="select-actions">
 			<el-button type="primary" size="mini" @click="generateInvoice">手动生成发票</el-button>
