@@ -762,7 +762,7 @@ export default {
 									<el-button class="header-button" type="text" @click="handleResetOrderList">重置筛选</el-button>
 								</div>
 								<div class="select-goods-wrapper">
-									<SelectGoods />
+									<SelectGoods :mode="mode" />
 								</div>
 							</el-card>
 						</div>
