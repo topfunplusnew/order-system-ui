@@ -6,6 +6,16 @@
 			<el-form-item label="日期" prop="balanceDate">
 				<el-date-picker v-model="queryParams.balanceDate" type="date" placeholder="选择日期" value-format="yyyy-MM-dd" clearable size="mini"></el-date-picker>
 			</el-form-item>
+			<el-form-item label="库存金额" prop="balanceOperator">
+				<el-select v-model="queryParams.balanceOperator" placeholder="请选择" clearable size="mini" style="width: 80px">
+					<el-option label="＞" value="gt"></el-option>
+					<el-option label="＜" value="lt"></el-option>
+					<el-option label="=" value="eq"></el-option>
+				</el-select>
+			</el-form-item>
+			<el-form-item prop="balanceValue">
+				<el-input v-model="queryParams.balanceValue" placeholder="请输入库存金额" clearable size="mini" style="width: 120px" @keyup.enter.native="handleQuery" />
+			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" size="mini" @click="handleQuery" v-hasPermi="['system:inventoryStatistics:warehouseBalance']">查询</el-button>
 				<el-button size="mini" @click="resetQuery">重置</el-button>
@@ -75,9 +85,10 @@ export default {
 			total: 0,
 			// 查询参数
 			queryParams: {
-				// TODO: 时间范围搜索字段待定，需要根据实际需求确定字段名
 				balanceDate: getTodayDate(),
-				warehouseName: ''
+				warehouseName: '',
+				balanceOperator: '',
+				balanceValue: ''
 			},
 			// 表格列配置
 			columns: [
@@ -136,7 +147,9 @@ export default {
 		resetQuery() {
 			this.queryParams = {
 				balanceDate: this.getTodayDate(),
-				warehouseName: ''
+				warehouseName: '',
+				balanceOperator: '',
+				balanceValue: ''
 			};
 			this.getList();
 		},
