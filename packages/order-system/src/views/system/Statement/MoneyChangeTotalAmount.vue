@@ -100,10 +100,16 @@ export default {
 				try {
 					this.isLoadingDates = true;
 					const response = await getTargetDates(value);
-					this.availableDates = response.data || [];
-					// 清空之前选择的左侧和右侧时间
-					this.targetLeftDate = null;
-					this.targetRightDate = null;
+					const dates = response.data || [];
+					this.availableDates = dates;
+					if (!_.isEmpty(dates)) {
+						// 左侧表格：最早时间；右侧表格：最晚时间
+						this.targetLeftDate = _.min(dates);
+						this.targetRightDate = _.max(dates);
+					} else {
+						this.targetLeftDate = null;
+						this.targetRightDate = null;
+					}
 				} catch (error) {
 					this.$message.error('获取可选时间列表失败');
 					console.error('获取可选时间列表失败:', error);
@@ -111,7 +117,6 @@ export default {
 					this.isLoadingDates = false;
 				}
 			} else {
-				// 如果清空了顶部时间，也清空下拉选项和选择的时间
 				this.availableDates = [];
 				this.targetLeftDate = null;
 				this.targetRightDate = null;

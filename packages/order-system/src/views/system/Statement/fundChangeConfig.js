@@ -7,13 +7,29 @@ import OrderAdjustmentTemplate from '../../../../../ui-components/components/Fun
 import InventoryChangeTemplate from '../../../../../ui-components/components/FundChangeTemplates/InventoryChangeTemplate/index.vue';
 import ReceiveMoneyTemplate from '../../../../../ui-components/components/FundChangeTemplates/ReceiveMoneyTemplate/index.vue';
 import PaymentTemplate from '../../../../../ui-components/components/FundChangeTemplates/PaymentTemplate/index.vue';
+import SecondOutboundTemplate from '../../../../../ui-components/components/FundChangeTemplates/SecondOutboundTemplate/index.vue';
+import TicketPointTemplate from '../../../../../ui-components/components/FundChangeTemplates/TicketPointTemplate/index.vue';
+import OffsetPaymentTemplate from '../../../../../ui-components/components/FundChangeTemplates/OffsetPaymentTemplate/index.vue';
+import BalanceAccountTemplate from '../../../../../ui-components/components/FundChangeTemplates/BalanceAccountTemplate/index.vue';
+import BorrowInTemplate from '../../../../../ui-components/components/FundChangeTemplates/BorrowInTemplate/index.vue';
+import BorrowFromCompanyTemplate from '../../../../../ui-components/components/FundChangeTemplates/BorrowFromCompanyTemplate/index.vue';
+import ReceiveDepositTemplate from '../../../../../ui-components/components/FundChangeTemplates/ReceiveDepositTemplate/index.vue';
 
 /** tableName -> { component, title, width } */
 export const TABLE_TEMPLATE_MAP = {
 	goodsorder: { component: OrderAdjustmentTemplate, title: '订单调整单变动详情', width: '1500px' },
 	inventory_main: { component: InventoryChangeTemplate, title: '入库管理变动详情', width: '1500px' },
+	exwarehouse: { component: SecondOutboundTemplate, title: '二次出库变动详情', width: '1200px' },
+	invoicein: { component: TicketPointTemplate, title: '票点变动详情', width: '1200px' },
+	invoiceout: { component: TicketPointTemplate, title: '票点变动详情', width: '1200px' },
+	invoiceother: { component: TicketPointTemplate, title: '票点变动详情', width: '1200px' },
 	receivemoney: { component: ReceiveMoneyTemplate, title: '收款变动详情', width: '1500px' },
-	payment: { component: PaymentTemplate, title: '付款变动详情', width: '1500px' }
+	payment: { component: PaymentTemplate, title: '付款变动详情', width: '1500px' },
+	cash_record: { component: OffsetPaymentTemplate, title: '冲抵款变动详情', width: '1200px' },
+	balanceaccounts: { component: BalanceAccountTemplate, title: '平账变动详情', width: '1200px' },
+	borrowedmoney: { component: BorrowInTemplate, title: '借入款管理变动详情', width: '1200px' },
+	lendmoney: { component: BorrowFromCompanyTemplate, title: '从我司借款变动详情', width: '1200px' },
+	deposit_money: { component: ReceiveDepositTemplate, title: '收取保证金变动详情', width: '1200px' }
 };
 
 /** outputKey 与资金变动模块名一致 */
