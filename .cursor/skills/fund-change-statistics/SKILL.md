@@ -1029,3 +1029,7 @@ processData(compareData) {
 3. 验证 mathjs 计算结果的精度
 4. 测试多条记录的展示效果
 5. 检查差额行的高亮样式
+
+
+
+特别注意，已经写好的一个案例 可以参考 packages\ui-components\components\FundChangeTemplates\InventoryChangeTemplate\index.vue 这个组件的模式（包括表格中主子表的展示（若有），和表格下方底部小表格的展示）

@@ -4,9 +4,8 @@
  * compareData 为 getByIds 返回的 data 数组
  * originalInfo/changedInfo 含 storeDate、storeHouseName、inventoryDetailList、allLandFreight 等
  */
-import { format, subtract } from 'mathjs';
+import { format, subtract, add } from 'mathjs';
 import _ from 'lodash';
-import { AGGREGATOR_MAP } from '@/utils/fundChangeAggregators';
 import { INVENTORY_MAIN_COLUMNS } from '@/utils/fundChangeExcelColumns';
 
 export default {
@@ -14,27 +13,39 @@ export default {
 	props: {
 		compareData: { type: Array, default: () => [] },
 		moduleName: { type: String, default: '' },
-		summaryData: { type: Object, default: () => ({}) }
+		summaryData: { type: Object, default: () => ({}) },
+		summaryModuleLabel: { type: String, default: '入库管理' }
 	},
 	data() {
 		return { tableData: [] };
 	},
 	computed: {
 		columns() {
-			return INVENTORY_MAIN_COLUMNS.map(c => (c.aggregator ? c : { ...c, showSummary: false }));
+			const excludeProps = ['inventoryDiff', 'supplierDiff', 'freightDiff'];
+			return INVENTORY_MAIN_COLUMNS.filter(c => !excludeProps.includes(c.prop)).map(c => (c.aggregator ? c : { ...c, showSummary: false }));
 		},
 		diffRows() {
 			return this.tableData.filter(r => r.rowType === 'diff');
 		},
-		summaryMap() {
-			const map = {};
-			this.columns.forEach(col => {
-				if (col.showSummary === false) return;
-				const values = _.map(this.diffRows, col.prop).map(v => Number(v) || 0);
-				const agg = _.isFunction(col.aggregator) ? col.aggregator : AGGREGATOR_MAP[col.aggregator] || AGGREGATOR_MAP.sum;
-				map[col.prop] = agg(values, { diffRows: this.diffRows, precision: 2 });
-			});
-			return map;
+		diffSummaryTableData() {
+			const prefix = this.summaryModuleLabel || '入库管理';
+			const inventoryDiff = format(
+				_.reduce(this.diffRows, (acc, r) => add(acc, Number(r.inventoryDiff) || 0), 0),
+				{ notation: 'fixed', precision: 2 }
+			);
+			const supplierDiff = format(
+				_.reduce(this.diffRows, (acc, r) => add(acc, Number(r.supplierDiff) || 0), 0),
+				{ notation: 'fixed', precision: 2 }
+			);
+			const freightDiff = format(
+				_.reduce(this.diffRows, (acc, r) => add(acc, Number(r.freightDiff) || 0), 0),
+				{ notation: 'fixed', precision: 2 }
+			);
+			return [
+				{ label: `${prefix}库存变动差额`, value: inventoryDiff },
+				{ label: `${prefix}供应商变动差额`, value: supplierDiff },
+				{ label: `${prefix}运费变动差额`, value: freightDiff }
+			];
 		}
 	},
 	created() {
@@ -49,20 +60,30 @@ export default {
 		}
 	},
 	methods: {
+		/** 一对修改前/修改后对应一条明细，每组末尾一行差额（记录级） */
 		processData() {
 			this.tableData = [];
-			(this.compareData || []).forEach((record, index) => {
+			(this.compareData || []).forEach((record, groupIndex) => {
 				const original = record.originalInfo || {};
 				const changed = record.changedInfo || {};
-				const beforeRow = { ...this.mapBeforeRow(original, record, index), rowType: 'before', label: `记录(${index + 1})`, subLabel: '修改前' };
-				const afterRow = { ...this.mapAfterRow(changed, record, index), rowType: 'after', label: '', subLabel: '修改后' };
-				const diffRow = { rowType: 'diff', label: '', subLabel: '差额', ...this.buildDiffFields(original, changed, record) };
-				this.tableData.push(beforeRow, afterRow, diffRow);
+				const origList = original.inventoryDetailList || [];
+				const chgList = changed.inventoryDetailList || [];
+				const detailCount = Math.max(origList.length, chgList.length, 1);
+				const groupRows = [];
+				for (let d = 0; d < detailCount; d++) {
+					const origDetail = origList[d] || {};
+					const chgDetail = chgList[d] || {};
+					groupRows.push({ ...this.mapDetailToRow(original, origDetail), rowType: 'before', groupIndex, detailIndex: d, subLabel: '修改前', groupRowCount: detailCount * 2 + 1 });
+					groupRows.push({ ...this.mapDetailToRow(changed, chgDetail), rowType: 'after', groupIndex, detailIndex: d, subLabel: '修改后', groupRowCount: detailCount * 2 + 1 });
+				}
+				groupRows.push({ rowType: 'diff', groupIndex, subLabel: '差额', groupRowCount: detailCount * 2 + 1, ...this.buildDiffFields(original, changed, record) });
+				groupRows[0].isGroupFirst = true;
+				this.tableData.push(...groupRows);
 			});
 		},
-		mapBeforeRow(info) {
-			const firstDetail = _.get(info, 'inventoryDetailList[0]', {});
-			const list = info.inventoryDetailList || [];
+		/** 单条明细映射为行数据 */
+		mapDetailToRow(info, detail) {
+			const list = [detail];
 			const factoryPay = this.sumDetailField(list, 'paymentFactory');
 			const stockAmt = this.calcStockAmount(list);
 			const totalFreight = Number(info.allLandFreight || 0) + Number(info.allSeaFreight || 0);
@@ -73,31 +94,31 @@ export default {
 				truckPlate: info.landCarNo,
 				seaCabinetNo: info.seaCarNo || '',
 				seaCompany: info.seaBankName || '',
-				supplierName: firstDetail.supplier || '',
-				gradeName: firstDetail.levelName || '',
-				countingUnit: firstDetail.countingUnit || '',
-				thickness: firstDetail.height,
-				length: firstDetail.length,
-				width: firstDetail.width,
-				piecesPerPack: firstDetail.piecesPerPack,
-				packs: firstDetail.packs,
-				factoryPieces: firstDetail.actualPieces ?? firstDetail.stockNumber,
-				factoryUnitPrice: firstDetail.price,
-				factoryTaxFlag: firstDetail.isIncludeTaxFactory ? '含税' : '不含税',
-				sundryCost: firstDetail.sundryCost ?? info.sundryCost,
+				supplierName: detail.supplier || '',
+				gradeName: detail.levelName || '',
+				countingUnit: detail.countingUnit || '',
+				thickness: detail.height,
+				length: detail.length,
+				width: detail.width,
+				piecesPerPack: detail.piecesPerPack,
+				packs: detail.packs,
+				factoryPieces: detail.actualPieces ?? detail.stockNumber,
+				factoryUnitPrice: detail.price,
+				factoryTaxFlag: detail.isIncludeTaxFactory ? '含税' : '不含税',
+				sundryCost: detail.sundryCost ?? info.sundryCost,
 				factoryPayment: factoryPay,
-				stockQuantity: firstDetail.stockNumber,
-				unloadPrice: firstDetail.paymentUnload,
-				stockTaxFlag: firstDetail.isIncludeTaxSale ? '含税' : '不含税',
+				stockQuantity: detail.stockNumber,
+				unloadPrice: detail.paymentUnload,
+				stockTaxFlag: detail.isIncludeTaxSale ? '含税' : '不含税',
 				stockAmount: format(stockAmt, { notation: 'fixed', precision: 2 }),
-				erro: firstDetail.erro,
+				erro: detail.erro,
 				tonnage: info.allTonnage,
-				landFreightPrice: firstDetail.landFreightPrice,
-				additionalFees: info.additionalFees ?? firstDetail.additionalFees,
+				landFreightPrice: detail.landFreightPrice,
+				additionalFees: info.additionalFees ?? detail.additionalFees,
 				landFreight: info.allLandFreight,
 				seaFreight: info.allSeaFreight,
 				totalFreight: format(totalFreight, { notation: 'fixed', precision: 2 }),
-				otherCost: firstDetail.otherCost,
+				otherCost: detail.otherCost,
 				profit: _.sumBy(list, d => Number(d.profit || 0)),
 				profitNoTax: _.sumBy(list, d => Number(d.profitNoTax || 0)),
 				inputUser: info.userName,
@@ -110,9 +131,6 @@ export default {
 				factoryRebateAmount: _.sumBy(list, d => Number(d.factoryRebateAmount || 0)),
 				factoryDiscountAmount: _.sumBy(list, d => Number(d.factoryDiscountAmount || 0))
 			};
-		},
-		mapAfterRow(info) {
-			return this.mapBeforeRow(info);
 		},
 		calcStockAmount(list) {
 			let total = 0;
@@ -147,11 +165,13 @@ export default {
 			};
 			return this.calculateFieldDiff(calc(chgList), calc(origList));
 		},
+		/** 记录级差额字段，差额行填充：出厂货款、库存金额、总运费及合计用字段 */
 		buildDiffFields(original, changed, _record) {
 			const inventoryDiff = this.calcInventoryDiff(original.inventoryDetailList, changed.inventoryDetailList);
 			const supplierDiff = this.sumOrderDetailDiff(original.inventoryDetailList || [], changed.inventoryDetailList || [], 'paymentFactory');
 			const freightDiff = this.calculateFieldDiff(Number(changed.allLandFreight || 0) + Number(changed.allSeaFreight || 0), Number(original.allLandFreight || 0) + Number(original.allSeaFreight || 0));
-			return { inventoryDiff, supplierDiff, freightDiff };
+			const stockQtyDiff = this.sumOrderDetailDiff(original.inventoryDetailList || [], changed.inventoryDetailList || [], 'stockNumber');
+			return { inventoryDiff, supplierDiff, freightDiff, factoryPayment: supplierDiff, stockQuantity: stockQtyDiff, stockAmount: inventoryDiff, totalFreight: freightDiff };
 		},
 		sumOrderDetailDiff(origList, chgList, field) {
 			const origSum = _.sumBy(origList || [], i => Number(_.get(i, field) || 0));
@@ -174,6 +194,38 @@ export default {
 		},
 		handleReject() {
 			return Promise.resolve();
+		},
+		/** 入库单列合并：每组首行合并该组所有行（明细数*2+差额） */
+		inboundSpanMethod({ row, columnIndex }) {
+			if (columnIndex !== 0) return [1, 1];
+			if (row.isGroupFirst) return [row.groupRowCount || 3, 1];
+			return [0, 0];
+		},
+		/** 表格合计行：出厂货款、库存金额、总运费的差额合计 */
+		getTableSummary(param) {
+			const { columns } = param;
+			const sums = [];
+			const diffRows = this.diffRows;
+			const factoryPaymentSum = format(
+				_.reduce(diffRows, (acc, r) => add(acc, Number(r.factoryPayment) || 0), 0),
+				{ notation: 'fixed', precision: 2 }
+			);
+			const stockAmountSum = format(
+				_.reduce(diffRows, (acc, r) => add(acc, Number(r.inventoryDiff) || 0), 0),
+				{ notation: 'fixed', precision: 2 }
+			);
+			const totalFreightSum = format(
+				_.reduce(diffRows, (acc, r) => add(acc, Number(r.freightDiff) || 0), 0),
+				{ notation: 'fixed', precision: 2 }
+			);
+			columns.forEach((col, index) => {
+				if (index === 0 || index === 1) sums.push('');
+				else if (col.property === 'factoryPayment') sums.push(factoryPaymentSum);
+				else if (col.property === 'stockAmount') sums.push(stockAmountSum);
+				else if (col.property === 'totalFreight') sums.push(totalFreightSum);
+				else sums.push('');
+			});
+			return sums;
 		}
 	}
 };
@@ -181,21 +233,29 @@ export default {
 
 <template>
 	<div class="fund-change-template">
-		<el-table :data="tableData" border :row-class-name="tableRowClassName" style="width: 100%">
-			<el-table-column width="150" fixed>
+		<el-table :data="tableData" border :row-class-name="tableRowClassName" :span-method="inboundSpanMethod" show-summary :summary-method="getTableSummary" style="width: 100%">
+			<el-table-column label="入库单" width="100" fixed class-name="inbound-col">
 				<template slot-scope="scope">
-					<div v-if="scope.row.label">{{ scope.row.label }}</div>
-					<div class="sub-label">{{ scope.row.subLabel }}</div>
+					<span v-if="scope.row.isGroupFirst">入库单（{{ scope.row.groupIndex + 1 }}）</span>
 				</template>
+			</el-table-column>
+			<el-table-column label="变更" width="80" fixed>
+				<template slot-scope="scope">{{ scope.row.subLabel }}</template>
 			</el-table-column>
 			<el-table-column v-for="col in columns" :key="col.prop" :prop="col.prop" :label="col.label" :width="col.width" />
 		</el-table>
-		<div class="summary-section" v-if="diffRows.length">
-			<div class="summary-item" v-for="col in columns.filter(c => c.showSummary !== false)" :key="col.prop">
-				<span class="summary-label">{{ col.summaryLabel || col.label }}：</span>
-				<span class="summary-value">{{ summaryMap[col.prop] }}</span>
-			</div>
-		</div>
+		<el-table v-if="diffRows.length" :data="diffSummaryTableData" border class="diff-summary-table" :show-header="false">
+			<el-table-column prop="label" width="280">
+				<template slot-scope="scope">
+					<span class="diff-summary-label">{{ scope.row.label }}</span>
+				</template>
+			</el-table-column>
+			<el-table-column prop="value" width="120" align="right">
+				<template slot-scope="scope">
+					<span class="diff-summary-value">{{ scope.row.value }}</span>
+				</template>
+			</el-table-column>
+		</el-table>
 	</div>
 </template>
 
@@ -208,34 +268,42 @@ export default {
 	color: #666;
 	margin-top: 4px;
 }
+::v-deep .inbound-col {
+	vertical-align: middle;
+	text-align: center;
+}
 ::v-deep .before-row {
 	background-color: #f0f9ff;
 }
-::v-deep .after-row {
-	background-color: #fff7e6;
+::v-deep .after-row td {
+	background-color: #fff3ca !important;
 }
 ::v-deep .diff-row {
 	background-color: #fff1f0;
 	font-weight: bold;
 }
-.summary-section {
-	margin-top: 20px;
-	padding: 10px;
-	background: #f5f5f5;
-	border-radius: 4px;
-	display: flex;
-	flex-wrap: wrap;
-	gap: 16px 24px;
-}
-.summary-item {
-	font-size: 14px;
-}
-.summary-label {
-	color: #606266;
-}
-.summary-value {
+::v-deep .el-table__footer td {
+	background-color: #fff8e6 !important;
 	font-weight: bold;
-	margin-left: 4px;
-	color: #f56c6c;
+}
+::v-deep .el-table__footer tr td {
+	padding: 8px 10px;
+	line-height: 1.5;
+	vertical-align: middle;
+	height: 38px !important;
+}
+.diff-summary-table {
+	margin-top: 16px;
+	width: auto !important;
+	.diff-summary-label {
+		text-align: left;
+	}
+	.diff-summary-value {
+		text-align: right;
+	}
+	::v-deep .el-table__body td {
+		background: #fff !important;
+		padding: 8px 12px;
+	}
 }
 </style>
