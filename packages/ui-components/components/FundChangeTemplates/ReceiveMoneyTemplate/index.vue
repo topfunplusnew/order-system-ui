@@ -6,6 +6,7 @@
 import { format, subtract } from 'mathjs';
 import _ from 'lodash';
 import { AGGREGATOR_MAP } from '@/utils/fundChangeAggregators';
+import { RECEIVEMONEY_COLUMNS } from '@/utils/fundChangeExcelColumns';
 
 export default {
 	name: 'ReceiveMoneyTemplate',
@@ -19,15 +20,7 @@ export default {
 	},
 	computed: {
 		columns() {
-			return [
-				{ prop: 'receiveDate', label: '收款日期', width: 120, showSummary: false },
-				{ prop: 'companyName', label: '客户/供应商', width: 150, showSummary: false },
-				{ prop: 'bankCardNo', label: '银行卡号', width: 150, showSummary: false },
-				{ prop: 'receiveAmount', label: '收款金额', width: 120, showSummary: false },
-				{ prop: 'customerDiff', label: '客户变动差额', aggregator: 'absSum', summaryLabel: '客户变动差额汇总' },
-				{ prop: 'supplierDiff', label: '供应商变动差额', aggregator: 'absSum', summaryLabel: '供应商变动差额汇总' },
-				{ prop: 'bankCardDiff', label: '银行卡资金变动', aggregator: 'absSum', summaryLabel: '银行卡资金变动汇总' }
-			];
+			return RECEIVEMONEY_COLUMNS.map(c => (c.aggregator ? c : { ...c, showSummary: false }));
 		},
 		diffRows() {
 			return this.tableData.filter(r => r.rowType === 'diff');
@@ -67,27 +60,29 @@ export default {
 			});
 		},
 		mapBeforeRow(info) {
+			const dt = info.receiveTime || info.addtime;
 			return {
-				receiveDate: info.receiveTime ? (info.receiveTime + '').slice(0, 10) : info.addtime ? (info.addtime + '').slice(0, 10) : '',
-				companyName: info.companyName || '',
-				bankCardNo: info.bankNo || '',
-				receiveAmount: info.moneyAmount
+				status: '已收款',
+				receiveDate: dt ? (dt + '').slice(0, 19) : '-',
+				paymentType: info.payType || '-',
+				companyName: info.companyName || '-',
+				companyType: info.companyType || '',
+				amount: info.moneyAmount,
+				selfAccountName: info.selfAccountName || info.bankName || '',
+				selfAccountNo: info.bankNo || '',
+				selfBankName: info.selfBankName || info.bankFullName || '',
+				otherAccountName: info.otherAccountName || '',
+				otherAccountNo: info.otherAccountNo || '',
+				otherBankName: info.otherBankName || '',
+				remark: info.remark || ''
 			};
 		},
 		mapAfterRow(info) {
-			return {
-				receiveDate: info.receiveTime ? (info.receiveTime + '').slice(0, 10) : info.addtime ? (info.addtime + '').slice(0, 10) : '',
-				companyName: info.companyName || '',
-				bankCardNo: info.bankNo || '',
-				receiveAmount: info.moneyAmount
-			};
+			return this.mapBeforeRow(info);
 		},
 		buildDiffFields(original, changed, _record) {
-			// 收款客户变动: original.moneyAmount - changed.moneyAmount
-			const customerDiff = _.get(original, 'companyType') === '客户' ? this.calculateFieldDiff(original.moneyAmount, changed.moneyAmount) : '0.00';
-			const supplierDiff = _.get(original, 'companyType') === '供应商' ? this.calculateFieldDiff(changed.moneyAmount, original.moneyAmount) : '0.00';
-			const bankCardDiff = this.calculateFieldDiff(changed.moneyAmount, original.moneyAmount);
-			return { customerDiff, supplierDiff, bankCardDiff };
+			const amountDiff = this.calculateFieldDiff(changed.moneyAmount, original.moneyAmount);
+			return { amountDiff };
 		},
 		calculateFieldDiff(afterVal, beforeVal) {
 			const after = Number(afterVal || 0);

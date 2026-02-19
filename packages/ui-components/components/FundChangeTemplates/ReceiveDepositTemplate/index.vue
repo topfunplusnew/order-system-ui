@@ -6,6 +6,7 @@
 import { format, subtract } from 'mathjs';
 import _ from 'lodash';
 import { AGGREGATOR_MAP } from '@/utils/fundChangeAggregators';
+import { DEPOSIT_MONEY_COLUMNS } from '@/utils/fundChangeExcelColumns';
 
 export default {
 	name: 'ReceiveDepositTemplate',
@@ -19,14 +20,7 @@ export default {
 	},
 	computed: {
 		columns() {
-			return [
-				{ prop: 'depositDate', label: '保证金日期', width: 120, showSummary: false },
-				{ prop: 'customerName', label: '客户名称', width: 120, showSummary: false },
-				{ prop: 'depositAmount', label: '保证金金额', width: 120, showSummary: false },
-				{ prop: 'bankCardNo', label: '银行卡号', width: 150, showSummary: false },
-				{ prop: 'bankCardDiff', label: '银行卡资金变动', aggregator: 'absSum', summaryLabel: '银行卡资金变动汇总' },
-				{ prop: 'receiveDepositDiff', label: '收取保证金变动', aggregator: 'absSum', summaryLabel: '收取保证金变动汇总' }
-			];
+			return DEPOSIT_MONEY_COLUMNS.map(c => (c.aggregator ? c : { ...c, showSummary: false }));
 		},
 		diffRows() {
 			return this.tableData.filter(r => r.rowType === 'diff');
@@ -71,26 +65,38 @@ export default {
 				this.tableData.push(beforeRow, afterRow, diffRow);
 			});
 		},
+		calcUnrefund(info) {
+			const total = Number(info.moneyAmount || 0);
+			const refunded = this.sumRefundNonBadDebt(info.depositRefundList);
+			return format(subtract(total, refunded), { notation: 'fixed', precision: 2 });
+		},
 		mapBeforeRow(info) {
 			return {
-				depositDate: info.addtime ? (info.addtime + '').slice(0, 10) : '',
-				customerName: info.companyName || '',
+				depositCompany: info.depositType || info.depositCompany || '',
+				objectType: info.companyType || info.objectType || '',
+				objectName: info.companyName || info.objectName || '',
 				depositAmount: info.moneyAmount,
-				bankCardNo: info.bankNo || ''
+				unrefundAmount: this.calcUnrefund(info),
+				otherAccountName: info.otherAccountName || '',
+				otherAccountNo: info.otherAccountNo || '',
+				otherBankName: info.otherBankName || '',
+				selfReceiveAccountName: info.selfAccountName || info.bankName || '',
+				selfAccountNo: info.bankNo || '',
+				selfBankName: info.selfBankName || info.bankFullName || '',
+				receiveTime: info.addtime ? (info.addtime + '').slice(0, 10) : '',
+				reason: info.reason || info.loanReason || '',
+				remark: info.remark || '',
+				operatorName: info.operatorName || info.createBy || ''
 			};
 		},
 		mapAfterRow(info) {
 			return this.mapBeforeRow(info);
 		},
 		buildDiffFields(original, changed, _record) {
-			// 收取：changed.moneyAmount - original.moneyAmount；退还：depositRefundList 增加则支出
 			const origReceive = Number(original.moneyAmount || 0);
 			const chgReceive = Number(changed.moneyAmount || 0);
-			const origRefund = this.sumRefundNonBadDebt(original.depositRefundList);
-			const chgRefund = this.sumRefundNonBadDebt(changed.depositRefundList);
-			const bankCardDiff = format(subtract(subtract(chgReceive, origReceive), subtract(chgRefund, origRefund)), { notation: 'fixed', precision: 2 });
-			const receiveDepositDiff = format(subtract(chgReceive, origReceive), { notation: 'fixed', precision: 2 });
-			return { bankCardDiff, receiveDepositDiff };
+			const depositDiff = format(subtract(chgReceive, origReceive), { notation: 'fixed', precision: 2 });
+			return { depositDiff };
 		},
 		tableRowClassName({ row }) {
 			if (row.rowType === 'before') return 'before-row';

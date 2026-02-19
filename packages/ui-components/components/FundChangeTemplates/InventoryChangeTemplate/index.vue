@@ -7,6 +7,7 @@
 import { format, subtract } from 'mathjs';
 import _ from 'lodash';
 import { AGGREGATOR_MAP } from '@/utils/fundChangeAggregators';
+import { INVENTORY_MAIN_COLUMNS } from '@/utils/fundChangeExcelColumns';
 
 export default {
 	name: 'InventoryChangeTemplate',
@@ -20,19 +21,7 @@ export default {
 	},
 	computed: {
 		columns() {
-			return [
-				{ prop: 'status', label: '状态', width: 90, showSummary: false },
-				{ prop: 'inboundTime', label: '入库时间', width: 120, showSummary: false },
-				{ prop: 'warehouse', label: '仓库', width: 120, showSummary: false },
-				{ prop: 'truckPlate', label: '陆运车牌', width: 100, showSummary: false },
-				{ prop: 'supplierName', label: '供应商', width: 120, showSummary: false },
-				{ prop: 'gradeName', label: '级别名称', width: 150, showSummary: false },
-				{ prop: 'factoryPayment', label: '出厂货款', width: 100, showSummary: false },
-				{ prop: 'allLandFreight', label: '陆运运费', width: 100, showSummary: false },
-				{ prop: 'inventoryDiff', label: '库存变动差额', aggregator: 'absSum', summaryLabel: '库存变动差额汇总' },
-				{ prop: 'supplierDiff', label: '供应商变动差额', aggregator: 'absSum', summaryLabel: '供应商变动差额汇总' },
-				{ prop: 'freightDiff', label: '运费变动差额', aggregator: 'absSum', summaryLabel: '运费变动差额汇总' }
-			];
+			return INVENTORY_MAIN_COLUMNS.map(c => (c.aggregator ? c : { ...c, showSummary: false }));
 		},
 		diffRows() {
 			return this.tableData.filter(r => r.rowType === 'diff');
@@ -73,29 +62,70 @@ export default {
 		},
 		mapBeforeRow(info) {
 			const firstDetail = _.get(info, 'inventoryDetailList[0]', {});
+			const list = info.inventoryDetailList || [];
+			const factoryPay = this.sumDetailField(list, 'paymentFactory');
+			const stockAmt = this.calcStockAmount(list);
+			const totalFreight = Number(info.allLandFreight || 0) + Number(info.allSeaFreight || 0);
 			return {
 				status: '已入库',
 				inboundTime: info.storeDate ? (info.storeDate + '').slice(0, 10) : '',
 				warehouse: info.storeHouseName,
 				truckPlate: info.landCarNo,
+				seaCabinetNo: info.seaCarNo || '',
+				seaCompany: info.seaBankName || '',
 				supplierName: firstDetail.supplier || '',
 				gradeName: firstDetail.levelName || '',
-				factoryPayment: this.sumDetailField(info.inventoryDetailList || [], 'paymentFactory'),
-				allLandFreight: info.allLandFreight
+				countingUnit: firstDetail.countingUnit || '',
+				thickness: firstDetail.height,
+				length: firstDetail.length,
+				width: firstDetail.width,
+				piecesPerPack: firstDetail.piecesPerPack,
+				packs: firstDetail.packs,
+				factoryPieces: firstDetail.actualPieces ?? firstDetail.stockNumber,
+				factoryUnitPrice: firstDetail.price,
+				factoryTaxFlag: firstDetail.isIncludeTaxFactory ? '含税' : '不含税',
+				sundryCost: firstDetail.sundryCost ?? info.sundryCost,
+				factoryPayment: factoryPay,
+				stockQuantity: firstDetail.stockNumber,
+				unloadPrice: firstDetail.paymentUnload,
+				stockTaxFlag: firstDetail.isIncludeTaxSale ? '含税' : '不含税',
+				stockAmount: format(stockAmt, { notation: 'fixed', precision: 2 }),
+				erro: firstDetail.erro,
+				tonnage: info.allTonnage,
+				landFreightPrice: firstDetail.landFreightPrice,
+				additionalFees: info.additionalFees ?? firstDetail.additionalFees,
+				landFreight: info.allLandFreight,
+				seaFreight: info.allSeaFreight,
+				totalFreight: format(totalFreight, { notation: 'fixed', precision: 2 }),
+				otherCost: firstDetail.otherCost,
+				profit: _.sumBy(list, d => Number(d.profit || 0)),
+				profitNoTax: _.sumBy(list, d => Number(d.profitNoTax || 0)),
+				inputUser: info.userName,
+				fleet: info.fleet,
+				remark: info.comments,
+				otherInfo: info.mainComments,
+				logisticsProfit: _.sumBy(list, d => Number(d.logisticsProfit || 0)),
+				customerCommission: _.sumBy(list, d => Number(d.customerCommission || 0)),
+				factoryCommission: _.sumBy(list, d => Number(d.factoryCommission || 0)),
+				factoryRebateAmount: _.sumBy(list, d => Number(d.factoryRebateAmount || 0)),
+				factoryDiscountAmount: _.sumBy(list, d => Number(d.factoryDiscountAmount || 0))
 			};
 		},
 		mapAfterRow(info) {
-			const firstDetail = _.get(info, 'inventoryDetailList[0]', {});
-			return {
-				status: '已入库',
-				inboundTime: info.storeDate ? (info.storeDate + '').slice(0, 10) : '',
-				warehouse: info.storeHouseName,
-				truckPlate: info.landCarNo,
-				supplierName: firstDetail.supplier || '',
-				gradeName: firstDetail.levelName || '',
-				factoryPayment: this.sumDetailField(info.inventoryDetailList || [], 'paymentFactory'),
-				allLandFreight: info.allLandFreight
-			};
+			return this.mapBeforeRow(info);
+		},
+		calcStockAmount(list) {
+			let total = 0;
+			(list || []).forEach(d => {
+				const unit = d.countingUnit || '';
+				const stock = Number(d.stockNumber || 0);
+				const price = Number(d.paymentUnload || 0);
+				const len = Number(d.length || 0) / 1000;
+				const w = Number(d.width || 0) / 1000;
+				if (unit === '其他') total += stock * price;
+				else total += len * w * stock * price;
+			});
+			return total;
 		},
 		sumDetailField(list, field) {
 			const sum = _.sumBy(list || [], i => Number(_.get(i, field) || 0));

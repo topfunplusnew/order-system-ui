@@ -6,6 +6,7 @@
 import { format, subtract } from 'mathjs';
 import _ from 'lodash';
 import { AGGREGATOR_MAP } from '@/utils/fundChangeAggregators';
+import { TICKET_POINT_COLUMNS } from '@/utils/fundChangeExcelColumns';
 
 export default {
 	name: 'TicketPointTemplate',
@@ -19,14 +20,7 @@ export default {
 	},
 	computed: {
 		columns() {
-			return [
-				{ prop: 'ticketType', label: '票点类型', width: 120, showSummary: false },
-				{ prop: 'customerName', label: '客户名称', width: 120, showSummary: false },
-				{ prop: 'supplierName', label: '供应商名称', width: 120, showSummary: false },
-				{ prop: 'ticketAmount', label: '票点金额', width: 100, showSummary: false },
-				{ prop: 'customerDiff', label: '客户变动差额', aggregator: 'absSum', summaryLabel: '客户变动差额汇总' },
-				{ prop: 'supplierDiff', label: '供应商变动差额', aggregator: 'absSum', summaryLabel: '供应商变动差额汇总' }
-			];
+			return TICKET_POINT_COLUMNS.map(c => (c.aggregator ? c : { ...c, showSummary: false }));
 		},
 		diffRows() {
 			return this.tableData.filter(r => r.rowType === 'diff');
@@ -72,10 +66,26 @@ export default {
 		},
 		mapBeforeRow(info, record, _index, tableName) {
 			return {
-				ticketType: this.getTicketType(tableName),
-				customerName: info.customer || info.Customer || '',
-				supplierName: info.Supplier || info.supplier || '',
-				ticketAmount: info.invoiceAmount
+				status: '已开票',
+				invoiceDate: info.invoiceDate ? (info.invoiceDate + '').slice(0, 10) : '',
+				selfSubject: info.selfSubject || info.selfCompanyName || '',
+				invoiceAmount: info.invoiceAmount,
+				incomeCompanyType: info.companyType || info.incomeCompanyType || '',
+				incomeCompanyName: info.companyName || info.customer || info.Customer || '',
+				incomeInvoiceUnit: info.invoiceUnitName || '',
+				incomePoint: info.pointRate,
+				incomePointAmount: info.customerPointAmount,
+				isOrderTax: info.isOrderTax,
+				costCompanyType: info.costCompanyType || '',
+				costCompanyName: info.Supplier || info.supplier || '',
+				costInvoiceUnit: info.costInvoiceUnitName || '',
+				costPoint: info.supplierPointRate,
+				costPointAmount: info.supplierPointAmount,
+				pointDiff: null,
+				actualInvoiceAmount: info.actualInvoiceAmount,
+				actualInvoiceDate: info.actualInvoiceDate ? (info.actualInvoiceDate + '').slice(0, 10) : '',
+				monthlyDebt: info.monthlyDebt,
+				remark: info.remark || ''
 			};
 		},
 		mapAfterRow(info, record, _index, tableName) {

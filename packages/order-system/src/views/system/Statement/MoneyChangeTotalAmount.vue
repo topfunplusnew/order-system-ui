@@ -1,5 +1,6 @@
 <script>
 import { getMoneyChangeSummaryByDate, getTargetDates, calculateAmountsV3, filterIdsByCategoryV3, getBackuplogByIdsV3, calculateByIdsV3 } from '@/api/system/statement';
+import { TOTAL_LOGIC_DETAIL_MAP } from './fundChangeConfig';
 import { fix } from 'order-system/src/api/tool/format';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import ChooseModule from '@/views/dashboard/backuplog/ChooseModule.vue';
@@ -7,6 +8,24 @@ import { TableName } from '@/api/tool/enums';
 import * as echarts from 'echarts';
 import _ from 'lodash';
 import { subtract, add, format, abs, compare } from 'mathjs';
+
+/**
+ * 总逻辑表格行配置（与 Excel「系统修改变动统计表260210」总逻辑 sheet 一致）
+ * outputKey 为 null 表示合计行；amountFormula 为 Excel 中金额列的计算公式描述
+ */
+const TOTAL_LOGIC_ROWS = [
+	{ outputKey: null, label: '资金总额=⓪+①+②-③-④+⑤+⑥+⑦-⑧-⑨', amountFormula: '⓪+①+②-③-④+⑤+⑥+⑦-⑧-⑨' },
+	{ outputKey: 'remainingInventoryAmount', label: '⓪库存金额变动', amountFormula: '入库管理库存变动差额-二次出库库存变动金额-订单库存变动差额-存货毁损变动差额' },
+	{ outputKey: 'companyTotalBalance', label: '①客户欠款变动', amountFormula: '订单调整单客户变动差额+票点客户变动差额-收款客户变动差额+付款客户变动差额-冲抵款客户变动差额-平账客户变动差额' },
+	{ outputKey: 'selfCompanyTotalFunds', label: '②所有银行卡资金变动', amountFormula: '收款银行卡资金变动差额-付款银行卡资金变动差额+借入款银行卡资金变动-从我司借款银行卡资金变动-期货保证金银行卡资金变动-厂家保证金银行卡资金变动+收取保证金银行卡资金变动' },
+	{ outputKey: 'supplierTotalBalance', label: '③欠厂家货款变动', amountFormula: '入库管理供应商变动差额+订单调整单供应商变动差额+票点供应商变动差额+收款供应商变动差额-付款客户变动差额-冲抵款供应商变动差额-平账供应商变动差额-返利供应商变动差额' },
+	{ outputKey: 'driverUnpaidAmount', label: '④未支付运费变动', amountFormula: '入库运费变动差额+订单运费变动差额-付款运费变动差额-冲抵款运费变动差额' },
+	{ outputKey: 'loanFromCompany', label: '⑤其他应收-个人/公司从公司借款变动', amountFormula: '从我司借款银行卡资金变动' },
+	{ outputKey: 'futuresMarginBalance', label: '⑥期货保证金变动', amountFormula: '期货保证金变动' },
+	{ outputKey: 'paymentMarginBalance', label: '⑦厂家保证金变动', amountFormula: '厂家保证金变动' },
+	{ outputKey: 'receiveMarginBalance', label: '⑧收取保证金变动', amountFormula: '收取保证金变动' },
+	{ outputKey: 'loanBalance', label: '⑨公司从外面借款变动', amountFormula: '公司从外面借款变动' }
+];
 
 export default {
 	name: 'MoneyChangeTotalAmount',
@@ -43,7 +62,11 @@ export default {
 			activeTab: 'card',
 
 			// ECharts 图表实例
-			diffChart: null
+			diffChart: null,
+
+			// 总逻辑表格数据（来自 calculateAmountsV3）
+			totalLogicTableData: [],
+			totalLogicLoading: false
 		};
 	},
 	computed: {
@@ -145,6 +168,9 @@ export default {
 				// 计算差异
 				this.calculateDiff();
 
+				// 获取总逻辑表格数据（calculateAmountsV3）
+				await this.fetchTotalLogicTableData();
+
 				// 如果当前在图表 tab，更新图表
 				if (this.activeTab === 'chart') {
 					this.$nextTick(() => {
@@ -213,6 +239,141 @@ export default {
 			};
 			const changeMoney = await getMoneyChangeSummaryByDate(query);
 			return changeMoney.data.originalData;
+		},
+		/**
+		 * 将 calculateAmountsV3 返回的三层嵌套结构展平为 { outputKey: sum }
+		 * @param {Object} data - calculateAmountsV3 的 data
+		 * @returns {Object}
+		 */
+		flattenCalculateAmounts(data) {
+			if (!data || typeof data !== 'object') return {};
+			const result = {};
+			_.forEach(data, (tableMap, outputKey) => {
+				let sum = 0;
+				_.forEach(tableMap, categoryMap => {
+					_.forEach(categoryMap, val => {
+						sum = add(sum, Number(val || 0));
+					});
+				});
+				result[outputKey] = sum;
+			});
+			return result;
+		},
+		/**
+		 * 根据展平后的金额计算资金总额（①+②-③-④+⑤+⑥+⑦-⑧-⑨+⓪）
+		 * @param {Object} flat - flattenCalculateAmounts 结果
+		 * @returns {string}
+		 */
+		calculateTotalFromFlat(flat) {
+			const safe = key => Number(flat[key] || 0);
+			let result = add(safe('companyTotalBalance'), safe('selfCompanyTotalFunds'), safe('loanFromCompany'), safe('futuresMarginBalance'), safe('paymentMarginBalance'), safe('remainingInventoryAmount'));
+			result = subtract(result, safe('supplierTotalBalance'));
+			result = subtract(result, safe('driverUnpaidAmount'));
+			result = subtract(result, safe('receiveMarginBalance'));
+			result = subtract(result, safe('loanBalance'));
+			return format(result, { notation: 'fixed', precision: 2 });
+		},
+		/**
+		 * 从三层嵌套结构中按配置提取某 tableName+category 的金额（category 为 '*' 时求和该 table 下全部）
+		 * @param {Object} categoryMap - tableMap[tableName]
+		 * @param {string} category - 'default' | '*' | 具体 category
+		 * @returns {number}
+		 */
+		extractAmountFromCategoryMap(categoryMap, category) {
+			if (!categoryMap) return 0;
+			if (category === '*') {
+				let sum = 0;
+				_.forEach(categoryMap, val => {
+					sum = add(sum, Number(val || 0));
+				});
+				return sum;
+			}
+			return Number(categoryMap[category] || 0);
+		},
+		/**
+		 * 构建金额列明细展示，每项返回 { text, clickable, tableName, category, label }
+		 * @param {Object} leftNested - 左日 calculateAmountsV3 data
+		 * @param {Object} rightNested - 右日 calculateAmountsV3 data
+		 * @param {string} outputKey
+		 * @param {function} formatNum - 数值格式化
+		 * @returns {Array<{text: string, clickable: boolean, tableName: string, category: string, label: string}>}
+		 */
+		buildAmountDetailParts(leftNested, rightNested, outputKey, formatNum) {
+			const config = TOTAL_LOGIC_DETAIL_MAP[outputKey];
+			if (!config || !Array.isArray(config)) return [];
+			const leftMap = leftNested?.[outputKey] || {};
+			const rightMap = rightNested?.[outputKey] || {};
+			const parts = [];
+			config.forEach(({ tableName, category, label, operator }, i) => {
+				const leftVal = this.extractAmountFromCategoryMap(leftMap[tableName], category);
+				const rightVal = this.extractAmountFromCategoryMap(rightMap[tableName], category);
+				const diffVal = subtract(rightVal, leftVal);
+				const diffStr = formatNum(diffVal);
+				const text = i === 0 ? `${label}(${diffStr})` : `${operator}${label}(${diffStr})`;
+				parts.push({
+					text,
+					clickable: compare(abs(Number(diffVal)), 0) === 1,
+					tableName,
+					category,
+					label
+				});
+			});
+			return parts;
+		},
+		/**
+		 * 获取总逻辑表格数据（调用 calculateAmountsV3 分别获取两个日期的数据）
+		 * 金额列：首行展示计算结果，其他行展示各组件明细（如：入库管理库存变动差额(xxx)-二次出库(xxx)...）
+		 */
+		async fetchTotalLogicTableData() {
+			const backupDate = this.changeForm.endTime;
+			const firstTargetDate = this.targetLeftDate;
+			const secondTargetDate = this.targetRightDate;
+			if (!backupDate || !firstTargetDate || !secondTargetDate) {
+				this.totalLogicTableData = [];
+				return;
+			}
+			this.totalLogicLoading = true;
+			const baseQuery = { backupDate };
+			let leftNested = {};
+			let rightNested = {};
+			try {
+				const [leftRes, rightRes] = await Promise.all([calculateAmountsV3({ ...baseQuery, firstTargetDate, secondTargetDate: firstTargetDate }), calculateAmountsV3({ ...baseQuery, firstTargetDate, secondTargetDate })]);
+				leftNested = leftRes?.data || {};
+				rightNested = rightRes?.data || {};
+			} catch (e) {
+				this.$message.error('获取总逻辑数据失败');
+				this.totalLogicTableData = [];
+				return;
+			} finally {
+				this.totalLogicLoading = false;
+			}
+			const rows = [];
+			const formatNum = v => format(Number(v || 0), { notation: 'fixed', precision: 2 });
+			const leftFlat = this.flattenCalculateAmounts(leftNested);
+			const rightFlat = this.flattenCalculateAmounts(rightNested);
+			TOTAL_LOGIC_ROWS.forEach((row, index) => {
+				const leftVal = row.outputKey ? Number(leftFlat[row.outputKey] || 0) : Number(this.calculateTotalFromFlat(leftFlat));
+				const rightVal = row.outputKey ? Number(rightFlat[row.outputKey] || 0) : Number(this.calculateTotalFromFlat(rightFlat));
+				const diffVal = subtract(rightVal, leftVal);
+				let amount;
+				let amountParts;
+				if (row.outputKey === null) {
+					amount = formatNum(diffVal);
+				} else {
+					amountParts = this.buildAmountDetailParts(leftNested, rightNested, row.outputKey, formatNum);
+					amount = _.isEmpty(amountParts) ? formatNum(diffVal) : null;
+				}
+				rows.push({
+					project: row.label,
+					amount,
+					amountParts,
+					amountFormula: row.amountFormula,
+					moduleName: row.outputKey,
+					rowIndex: index,
+					hasDiff: compare(abs(Number(diffVal)), 0) === 1
+				});
+			});
+			this.totalLogicTableData = rows;
 		},
 		// 计算总资产（使用 math.js 进行高精度计算）
 		calculateTotalBalance(data) {
@@ -293,14 +454,81 @@ export default {
 				createRow('⑨公司从外面借款合计', startTimeMoney.loanBalance, endTimeMoney.loanBalance, data.loanBalance, `loanBalance`)
 			];
 		},
-		// 点击差异项查看详情
-		handleDiffItemClick(item) {
-			if (!item.moduleName) {
-				console.warn('差异项没有模块名');
+		/**
+		 * 从 calculateAmounts data 中提取指定明细项的 (outputKey, tableName, category) 组合
+		 * @param {Object} data - calculateAmountsV3 的 data
+		 * @param {string} outputKey
+		 * @param {string} tableName
+		 * @param {string} category - '*' 表示取该 tableName 下所有 category
+		 * @returns {Array<{outputKey: string, tableName: string, category: string}>}
+		 */
+		getTriplesForDetailItem(data, outputKey, tableName, category) {
+			const tableMap = data?.[outputKey]?.[tableName];
+			if (!tableMap || typeof tableMap !== 'object') return [];
+			const triples = [];
+			if (category === '*') {
+				_.forEach(tableMap, (_, cat) => triples.push({ outputKey, tableName, category: cat }));
+			} else if (tableMap[category] != null) {
+				triples.push({ outputKey, tableName, category });
+			}
+			return triples;
+		},
+		/**
+		 * 点击明细项查看变动详情（v3 流程：calculateAmounts -> filterIdsByCategory -> getByIds + calculateByIds）
+		 * @param {Object} part - { tableName, category, label, clickable }
+		 * @param {Object} row - { moduleName: outputKey, project }
+		 */
+		async handleDetailItemClick(part, row) {
+			if (!part.clickable || !row.moduleName) return;
+			const outputKey = row.moduleName;
+			const backupDate = this.changeForm.endTime;
+			const firstTargetDate = this.targetLeftDate;
+			const secondTargetDate = this.targetRightDate;
+			if (!backupDate || !firstTargetDate || !secondTargetDate) {
+				this.$message.warning('请先选择查询日期');
 				return;
 			}
-			// 查看明细，传递项目名称
-			this.viewModuleDetail(item.moduleName, item.label);
+			const baseQuery = { backupDate, firstTargetDate, secondTargetDate };
+			let amountsRes;
+			try {
+				amountsRes = await calculateAmountsV3(baseQuery);
+			} catch (e) {
+				this.$message.error('获取资金变动数据失败');
+				return;
+			}
+			const data = amountsRes?.data || {};
+			const triples = this.getTriplesForDetailItem(data, outputKey, part.tableName, part.category);
+			if (_.isEmpty(triples)) {
+				this.$message.warning('该明细项没有变动信息');
+				return;
+			}
+			const allIds = [];
+			for (const t of triples) {
+				const idsRes = await filterIdsByCategoryV3({ ...baseQuery, outputKey: t.outputKey, tableName: t.tableName, category: t.category });
+				allIds.push(...(idsRes?.data || []));
+			}
+			const uniqueIds = _.uniq(allIds);
+			if (_.isEmpty(uniqueIds)) {
+				this.$message.warning('该明细项没有变动信息');
+				return;
+			}
+			let detailRes;
+			let summaryRes;
+			try {
+				[detailRes, summaryRes] = await Promise.all([getBackuplogByIdsV3({ ids: uniqueIds }), calculateByIdsV3({ ids: uniqueIds })]);
+			} catch (e) {
+				this.$message.error('获取变动详情失败');
+				return;
+			}
+			const result = detailRes?.data || [];
+			const filtered = result.filter(r => r.tableName !== TableName.ORDER_DETAIL && r.tableName !== TableName.INVENTORDETAIL);
+			if (_.isEmpty(filtered)) {
+				this.$message.warning('该明细项没有变动信息');
+				return;
+			}
+			const moduleList = _.uniq(filtered.map(r => r.tableName));
+			const dialogTitle = `${row.project} - ${part.label}`;
+			this.openDialog(ChooseModule, dialogTitle, '700px', { moduleList, result: _.cloneDeep(filtered), summaryData: summaryRes?.data || {}, useV3Templates: true }, false, false);
 		},
 		/**
 		 * 查看模块详情（v3 流程：calculateAmounts -> filterIdsByCategory -> getByIds + calculateByIds）
@@ -527,18 +755,6 @@ export default {
 		tableRowClassName({ row, rowIndex }) {
 			return this.diffRows.includes(rowIndex) ? 'diff-row' : '';
 		},
-		// 处理表格行点击事件
-		handleTableRowClick(row, column, event) {
-			// 获取行索引（检查两个表格的数据源）
-			const leftIndex = this.changeMoneyTableData.indexOf(row);
-			const rightIndex = this.fixedMoneyTableData.indexOf(row);
-			const rowIndex = leftIndex !== -1 ? leftIndex : rightIndex;
-			// 判断是否是差异行且有模块名
-			if (rowIndex !== -1 && this.diffRows.includes(rowIndex) && row.moduleName) {
-				// 调用查看模块详情，传递项目名称
-				this.viewModuleDetail(row.moduleName, row.label);
-			}
-		},
 		// 合并行和列的方法
 		objectSpanMethod({ row, column, rowIndex, columnIndex }) {
 			// 合并“科目名称”列
@@ -633,7 +849,7 @@ export default {
 						</el-col>
 					</el-row>
 					<br />
-					<el-table size="mini" :data="changeMoneyTableData" border class="money-table" :span-method="objectSpanMethod" :row-class-name="tableRowClassName" @row-click="handleTableRowClick">
+					<el-table size="mini" :data="changeMoneyTableData" border class="money-table" :span-method="objectSpanMethod" :row-class-name="tableRowClassName">
 						<el-table-column :label="columnHeaderChange" align="center" show-overflow-tooltip>
 							<el-table-column label="科目名称" show-overflow-tooltip>
 								<template slot-scope="scope">
@@ -669,7 +885,7 @@ export default {
 						</el-col>
 					</el-row>
 					<br />
-					<el-table size="mini" :data="fixedMoneyTableData" border class="money-table" :span-method="objectSpanMethod" :row-class-name="tableRowClassName" @row-click="handleTableRowClick">
+					<el-table size="mini" :data="fixedMoneyTableData" border class="money-table" :span-method="objectSpanMethod" :row-class-name="tableRowClassName">
 						<el-table-column :label="columnHeaderFix" align="center" show-overflow-tooltip>
 							<el-table-column label="科目名称" show-overflow-tooltip>
 								<template slot-scope="scope">
@@ -709,28 +925,27 @@ export default {
 						<el-tag v-if="diffSummary" type="warning" size="medium" class="diff-summary-tag">共发现 {{ diffSummary.totalCount }} 项差异</el-tag>
 					</div>
 					<el-tabs v-model="activeTab" @tab-click="handleTabChange">
-						<!-- 卡片对比 Tab -->
+						<!-- 总逻辑表格 Tab（样式与 Excel「系统修改变动统计表260210」总逻辑 sheet 一致） -->
 						<el-tab-pane label="卡片对比" name="card">
-							<div class="diff-content">
-								<div v-for="(item, index) in diffList" :key="index" class="diff-item" @click="handleDiffItemClick(item)">
-									<div class="diff-item-header">
-										<span class="diff-label">{{ item.label }}</span>
-										<el-tag :type="isDiffLarge(item.diffValue, 1000) ? 'danger' : 'warning'" size="medium" class="diff-value-tag">差异: {{ Number(item.diffValue) > 0 ? '+' : '' }}{{ item.diffValue }}</el-tag>
-									</div>
-									<div class="diff-item-body">
-										<div class="diff-value-item">
-											<span class="diff-value-label">{{ targetLeftDate || '当日截取' }}:</span>
-											<span class="diff-value left-value">{{ item.leftValue }}</span>
-										</div>
-										<div class="diff-arrow">
-											<i class="el-icon-right"></i>
-										</div>
-										<div class="diff-value-item">
-											<span class="diff-value-label">{{ targetRightDate || '固定截取' }}:</span>
-											<span class="diff-value right-value">{{ item.rightValue }}</span>
-										</div>
-									</div>
-								</div>
+							<div v-loading="totalLogicLoading" class="total-logic-table-wrap">
+								<el-table v-if="totalLogicTableData.length > 0" :data="totalLogicTableData" border size="mini" class="total-logic-table">
+									<el-table-column prop="project" label="项目" show-overflow-tooltip></el-table-column>
+									<el-table-column prop="amount" label="金额" align="right" show-overflow-tooltip>
+										<template slot-scope="scope">
+											<el-tooltip v-if="scope.row.amountFormula" :content="scope.row.amountFormula" placement="top" effect="light">
+												<div v-if="scope.row.amountParts && scope.row.amountParts.length" class="amount-multi-line">
+													<a v-for="(part, idx) in scope.row.amountParts" :key="idx" href="javascript:void(0)" :class="{ 'amount-clickable': part.clickable }" @click.prevent="handleDetailItemClick(part, scope.row)">{{ part.text }}</a>
+												</div>
+												<span v-else>{{ scope.row.amount }}</span>
+											</el-tooltip>
+											<div v-else-if="scope.row.amountParts && scope.row.amountParts.length" class="amount-multi-line">
+												<a v-for="(part, idx) in scope.row.amountParts" :key="idx" href="javascript:void(0)" :class="{ 'amount-clickable': part.clickable }" @click.prevent="handleDetailItemClick(part, scope.row)">{{ part.text }}</a>
+											</div>
+											<span v-else>{{ scope.row.amount }}</span>
+										</template>
+									</el-table-column>
+								</el-table>
+								<div v-else-if="!totalLogicLoading" class="total-logic-empty">请先选择日期并搜索后查看总逻辑表格</div>
 							</div>
 						</el-tab-pane>
 						<!-- 图表对比 Tab -->
@@ -785,8 +1000,34 @@ export default {
 	}
 }
 
-.diff-content {
+.total-logic-table-wrap {
 	margin-top: 20px;
+	min-height: 120px;
+}
+
+.total-logic-empty {
+	padding: 40px;
+	text-align: center;
+	color: #909399;
+	font-size: 14px;
+}
+
+.total-logic-table {
+	.amount-multi-line {
+		a {
+			display: block;
+			cursor: default;
+			color: inherit;
+			text-decoration: none;
+		}
+		a.amount-clickable {
+			cursor: pointer;
+			color: #409eff;
+		}
+		a.amount-clickable:hover {
+			text-decoration: underline;
+		}
+	}
 }
 
 .diff-item {
@@ -911,7 +1152,6 @@ export default {
 		.el-table__body {
 			tr.diff-row {
 				background-color: #ffeb3b !important;
-				cursor: pointer !important;
 
 				&:hover {
 					background-color: #ffd54f !important;
@@ -933,7 +1173,6 @@ export default {
 		.el-table__body {
 			tr.diff-row {
 				background-color: #ffeb3b !important;
-				cursor: pointer !important;
 
 				&:hover {
 					background-color: #ffd54f !important;

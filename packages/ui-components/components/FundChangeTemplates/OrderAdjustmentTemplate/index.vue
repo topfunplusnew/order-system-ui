@@ -6,6 +6,7 @@
 import { format, subtract } from 'mathjs';
 import _ from 'lodash';
 import { AGGREGATOR_MAP } from '@/utils/fundChangeAggregators';
+import { ORDER_ADJUSTMENT_COLUMNS } from '@/utils/fundChangeExcelColumns';
 
 export default {
 	name: 'OrderAdjustmentTemplate',
@@ -20,20 +21,7 @@ export default {
 	},
 	computed: {
 		columns() {
-			return [
-				{ prop: 'status', label: '状态', width: 100, showSummary: false },
-				{ prop: 'orderDate', label: '订单日期', width: 120, showSummary: false },
-				{ prop: 'customerName', label: '客户', width: 120, showSummary: false },
-				{ prop: 'truckPlate', label: '车牌', width: 100, showSummary: false },
-				{ prop: 'supplierName', label: '供应商', width: 120, showSummary: false },
-				{ prop: 'warehouse', label: '仓库', width: 100, showSummary: false },
-				{ prop: 'gradeName', label: '级别名称', width: 150, showSummary: false },
-				{ prop: 'allPayments', label: '总货款', width: 100, showSummary: false },
-				{ prop: 'customerDiff', label: '客户变动差额', aggregator: 'absSum', summaryLabel: '客户变动差额汇总' },
-				{ prop: 'supplierDiff', label: '供应商变动差额', aggregator: 'absSum', summaryLabel: '供应商变动差额汇总' },
-				{ prop: 'inventoryDiff', label: '库存变动差额', aggregator: 'absSum', summaryLabel: '库存变动差额汇总' },
-				{ prop: 'freightDiff', label: '运费变动差额', aggregator: 'absSum', summaryLabel: '运费变动差额汇总' }
-			];
+			return ORDER_ADJUSTMENT_COLUMNS.map(c => (c.aggregator ? c : { ...c, showSummary: false }));
 		},
 		diffRows() {
 			return this.tableData.filter(r => r.rowType === 'diff');
@@ -73,28 +61,26 @@ export default {
 			});
 		},
 		mapBeforeRow(info, _record, _index) {
+			const firstDetail = _.get(info, 'orderDetailList[0]', {});
+			const totalFreight = Number(info.landFreight || 0) + Number(info.seaFreight || 0);
 			return {
 				status: info.checkState,
 				orderDate: info.addtime ? (info.addtime + '').slice(0, 10) : '',
 				customerName: info.customer,
 				truckPlate: info.landCarNo,
+				seaCabinetNo: info.seaCarNo || '',
+				seaCompany: info.seaBankName || '',
 				supplierName: _.isArray(info.supplierNames) ? info.supplierNames.join(',') : info.supplierNames || '',
-				warehouse: '',
-				gradeName: '',
-				allPayments: info.allPayments
+				warehouse: info.storeHouseName || firstDetail.storeHouseName || '',
+				gradeName: firstDetail.levelName || '',
+				allPayments: info.allPayments,
+				landFreight: info.landFreight,
+				seaFreight: info.seaFreight,
+				totalFreight: format(totalFreight, { notation: 'fixed', precision: 2 })
 			};
 		},
 		mapAfterRow(info, _record, _index) {
-			return {
-				status: info.checkState,
-				orderDate: info.addtime ? (info.addtime + '').slice(0, 10) : '',
-				customerName: info.customer,
-				truckPlate: info.landCarNo,
-				supplierName: _.isArray(info.supplierNames) ? info.supplierNames.join(',') : info.supplierNames || '',
-				warehouse: '',
-				gradeName: '',
-				allPayments: info.allPayments
-			};
+			return this.mapBeforeRow(info, _record, _index);
 		},
 		buildDiffFields(original, changed, _record) {
 			const customerDiff = this.calculateFieldDiff(changed.allPayments, original.allPayments);

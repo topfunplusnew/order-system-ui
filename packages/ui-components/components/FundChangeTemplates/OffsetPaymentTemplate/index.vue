@@ -6,6 +6,7 @@
 import { format, subtract } from 'mathjs';
 import _ from 'lodash';
 import { AGGREGATOR_MAP } from '@/utils/fundChangeAggregators';
+import { CASH_RECORD_COLUMNS } from '@/utils/fundChangeExcelColumns';
 
 export default {
 	name: 'OffsetPaymentTemplate',
@@ -19,15 +20,7 @@ export default {
 	},
 	computed: {
 		columns() {
-			return [
-				{ prop: 'offsetDate', label: '冲抵日期', width: 120, showSummary: false },
-				{ prop: 'customerName', label: '客户名称', width: 120, showSummary: false },
-				{ prop: 'supplierName', label: '供应商名称', width: 120, showSummary: false },
-				{ prop: 'offsetAmount', label: '冲抵金额', width: 120, showSummary: false },
-				{ prop: 'offsetType', label: '冲抵类型', width: 120, showSummary: false },
-				{ prop: 'customerDiff', label: '客户变动差额', aggregator: 'absSum', summaryLabel: '客户变动差额汇总' },
-				{ prop: 'supplierDiff', label: '供应商变动差额', aggregator: 'absSum', summaryLabel: '供应商变动差额汇总' }
-			];
+			return CASH_RECORD_COLUMNS.map(c => (c.aggregator ? c : { ...c, showSummary: false }));
 		},
 		diffRows() {
 			return this.tableData.filter(r => r.rowType === 'diff');
@@ -67,39 +60,39 @@ export default {
 			});
 		},
 		mapBeforeRow(info) {
-			const srcType = info.sourceCompanyType || '';
-			const tgtType = info.targetCompanyType || '';
-			const custName = srcType === '客户' ? info.sourceCompanyName || '' : tgtType === '客户' ? info.targetCompanyName || '' : '';
-			const supName = srcType === '供应商' ? info.sourceCompanyName || '' : tgtType === '供应商' ? info.targetCompanyName || '' : '';
+			const srcName = info.sourceCompanyName || '';
+			const tgtName = info.targetCompanyName || '';
+			const payName = info.payAccountName || srcName;
+			const recName = info.receiveAccountName || tgtName;
+			const offsetTypeMap = { transfer: '内部转账', offset: '冲抵' };
 			return {
-				offsetDate: info.addtime ? (info.addtime + '').slice(0, 10) : '',
-				customerName: custName,
-				supplierName: supName,
-				offsetAmount: info.amount,
-				offsetType: info.type === 'transfer' ? '划转' : '冲抵'
+				status: '已冲抵',
+				tradeTime: info.addtime ? (info.addtime + '').slice(0, 10) : '',
+				amount: info.amount,
+				payerName: srcName,
+				receiverName: tgtName,
+				payAccountName: payName,
+				payAccountNo: info.payAccountNo || '',
+				payerBank: info.payerBankName || '',
+				receiveAccountName: recName,
+				receiveAccountNo: info.receiveAccountNo || '',
+				receiverBank: info.receiverBankName || '',
+				payerPayType: info.sourcePayType || '',
+				payerCompanyType: info.sourceCompanyType || '',
+				receiverPayType: info.targetPayType || '',
+				receiverCompanyType: info.targetCompanyType || '',
+				offsetType: offsetTypeMap[info.type] || info.type || '',
+				remark: info.remark || '',
+				accountType: info.accountType || '',
+				operatorName: info.operatorName || info.createBy || ''
 			};
 		},
 		mapAfterRow(info) {
 			return this.mapBeforeRow(info);
 		},
 		buildDiffFields(original, changed, _record) {
-			// 冲抵款：sourceCompanyType=客户时 customerDiff=original.amount-changed.amount；targetCompanyType=客户时 customerDiff=changed.amount-original.amount
-			const srcType = _.get(original, 'sourceCompanyType') || _.get(changed, 'sourceCompanyType');
-			const tgtType = _.get(original, 'targetCompanyType') || _.get(changed, 'targetCompanyType');
-			const isTransfer = _.get(original, 'type') === 'transfer' || _.get(changed, 'type') === 'transfer';
-			let customerDiff = '0.00';
-			let supplierDiff = '0.00';
-			if (!isTransfer) {
-				const origAmt = Number(original.amount || 0);
-				const chgAmt = Number(changed.amount || 0);
-				if (srcType === '客户' || tgtType === '客户') {
-					customerDiff = srcType === '客户' ? this.calculateFieldDiff(origAmt, chgAmt) : this.calculateFieldDiff(chgAmt, origAmt);
-				}
-				if (srcType === '供应商' || tgtType === '供应商') {
-					supplierDiff = srcType === '供应商' ? this.calculateFieldDiff(origAmt, chgAmt) : this.calculateFieldDiff(chgAmt, origAmt);
-				}
-			}
-			return { customerDiff, supplierDiff };
+			const amountDiff = this.calculateFieldDiff(changed.amount, original.amount);
+			return { amountDiff };
 		},
 		calculateFieldDiff(afterVal, beforeVal) {
 			const after = Number(afterVal || 0);

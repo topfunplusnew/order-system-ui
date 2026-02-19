@@ -6,6 +6,7 @@
 import { format, subtract, add } from 'mathjs';
 import _ from 'lodash';
 import { AGGREGATOR_MAP } from '@/utils/fundChangeAggregators';
+import { BORROWEDMONEY_COLUMNS } from '@/utils/fundChangeExcelColumns';
 
 export default {
 	name: 'BorrowInTemplate',
@@ -19,13 +20,7 @@ export default {
 	},
 	computed: {
 		columns() {
-			return [
-				{ prop: 'borrowDate', label: '借款日期', width: 120, showSummary: false },
-				{ prop: 'lenderName', label: '出借方名称', width: 120, showSummary: false },
-				{ prop: 'borrowAmount', label: '借款金额', width: 120, showSummary: false },
-				{ prop: 'bankCardNo', label: '银行卡号', width: 150, showSummary: false },
-				{ prop: 'bankCardDiff', label: '银行卡资金变动', aggregator: 'absSum', summaryLabel: '银行卡资金变动汇总' }
-			];
+			return BORROWEDMONEY_COLUMNS.map(c => (c.aggregator ? c : { ...c, showSummary: false }));
 		},
 		diffRows() {
 			return this.tableData.filter(r => r.rowType === 'diff');
@@ -70,12 +65,33 @@ export default {
 				this.tableData.push(beforeRow, afterRow, diffRow);
 			});
 		},
-		mapBeforeRow(info) {
+		calcRepaidAndUnrepaid(info) {
+			const repaid = _.sumBy(info.repayments || [], r => Number(r.moneyAmount || 0));
+			const principal = Number(info.moneyAmount || 0);
+			const repaidInterest = _.sumBy(info.repayments || [], r => Number(r.ratio || 0));
+			const unrepaid = subtract(principal, repaid);
 			return {
-				borrowDate: info.addtime ? (info.addtime + '').slice(0, 10) : '',
-				lenderName: info.lenderName || info.companyName || '',
+				repaidAmount: format(repaid, { notation: 'fixed', precision: 2 }),
+				unrepaidAmount: format(unrepaid, { notation: 'fixed', precision: 2 }),
+				repaidInterest: format(repaidInterest, { notation: 'fixed', precision: 2 })
+			};
+		},
+		mapBeforeRow(info) {
+			const { repaidAmount, unrepaidAmount, repaidInterest } = this.calcRepaidAndUnrepaid(info);
+			return {
+				id: info.id,
+				lenderSource: info.lenderName || info.companyName || '',
 				borrowAmount: info.moneyAmount,
-				bankCardNo: info.bankNo || ''
+				interestRate: info.interestRate,
+				grantDate: info.grantDate ? (info.grantDate + '').slice(0, 10) : '',
+				loanYears: info.loanYears,
+				mortgage: info.mortgage || '',
+				intoAccount: info.intoAccountName || info.bankName || '',
+				intoAccountNo: info.bankNo || info.intoAccountNo || '',
+				repaidAmount,
+				unrepaidAmount: format(unrepaidAmount, { notation: 'fixed', precision: 2 }),
+				repaidInterest,
+				remark: info.remark || ''
 			};
 		},
 		mapAfterRow(info) {

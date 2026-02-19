@@ -6,6 +6,7 @@
 import { format, subtract } from 'mathjs';
 import _ from 'lodash';
 import { AGGREGATOR_MAP } from '@/utils/fundChangeAggregators';
+import { LENDMONEY_COLUMNS } from '@/utils/fundChangeExcelColumns';
 
 export default {
 	name: 'BorrowFromCompanyTemplate',
@@ -19,14 +20,7 @@ export default {
 	},
 	computed: {
 		columns() {
-			return [
-				{ prop: 'borrowDate', label: '借款日期', width: 120, showSummary: false },
-				{ prop: 'borrowerName', label: '借款人名称', width: 120, showSummary: false },
-				{ prop: 'borrowAmount', label: '借款金额', width: 120, showSummary: false },
-				{ prop: 'bankCardNo', label: '银行卡号', width: 150, showSummary: false },
-				{ prop: 'bankCardDiff', label: '银行卡资金变动', aggregator: 'absSum', summaryLabel: '银行卡资金变动汇总' },
-				{ prop: 'receivableDiff', label: '其他应收变动', aggregator: 'absSum', summaryLabel: '其他应收变动汇总' }
-			];
+			return LENDMONEY_COLUMNS.map(c => (c.aggregator ? c : { ...c, showSummary: false }));
 		},
 		diffRows() {
 			return this.tableData.filter(r => r.rowType === 'diff');
@@ -72,25 +66,39 @@ export default {
 			});
 		},
 		mapBeforeRow(info) {
+			const recover = this.sumRecoverNonBadDebt(info.recoverMoneyList);
+			const badDebt = _.sumBy(
+				_.filter(info.recoverMoneyList || [], r => r.badDebtFlag === 1),
+				r => Number(r.moneyAmount || 0)
+			);
+			const unrecover = subtract(Number(info.moneyAmount || 0), add(recover, badDebt));
 			return {
-				borrowDate: info.addtime ? (info.addtime + '').slice(0, 10) : '',
 				borrowerName: info.borrowerName || info.companyName || '',
-				borrowAmount: info.moneyAmount,
-				bankCardNo: info.bankNo || ''
+				objectType: info.objectType || info.companyType || '',
+				lendAmount: info.moneyAmount,
+				recoverAmount: format(recover, { notation: 'fixed', precision: 2 }),
+				badDebtTotal: format(badDebt, { notation: 'fixed', precision: 2 }),
+				unrecoverAmount: format(unrecover, { notation: 'fixed', precision: 2 }),
+				otherAccountNo: info.otherAccountNo || info.otherBankNo || '',
+				otherAccountName: info.otherAccountName || info.otherBankName || '',
+				otherBankName: info.otherBankName || '',
+				selfPayAccountName: info.selfPayAccountName || info.bankName || '',
+				selfPayBankName: info.selfPayBankName || info.bankFullName || '',
+				selfPayAccountNo: info.bankNo || '',
+				payTime: info.addtime ? (info.addtime + '').slice(0, 10) : '',
+				loanReason: info.loanReason || info.remark || ''
 			};
 		},
 		mapAfterRow(info) {
 			return this.mapBeforeRow(info);
 		},
 		buildDiffFields(original, changed, _record) {
-			// 借出：original.moneyAmount - changed.moneyAmount（银行卡支出）；回收：recoverMoneyList 增加则银行卡收入
 			const origLoan = Number(original.moneyAmount || 0);
 			const chgLoan = Number(changed.moneyAmount || 0);
 			const origRecover = this.sumRecoverNonBadDebt(original.recoverMoneyList);
 			const chgRecover = this.sumRecoverNonBadDebt(changed.recoverMoneyList);
 			const bankCardDiff = format(subtract(subtract(origLoan, chgLoan), subtract(chgRecover, origRecover)), { notation: 'fixed', precision: 2 });
-			const receivableDiff = format(subtract(chgLoan, origLoan), { notation: 'fixed', precision: 2 });
-			return { bankCardDiff, receivableDiff };
+			return { bankCardDiff };
 		},
 		tableRowClassName({ row }) {
 			if (row.rowType === 'before') return 'before-row';

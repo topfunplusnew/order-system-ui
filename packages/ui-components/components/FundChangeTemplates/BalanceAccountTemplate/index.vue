@@ -6,6 +6,7 @@
 import { format, subtract } from 'mathjs';
 import _ from 'lodash';
 import { AGGREGATOR_MAP } from '@/utils/fundChangeAggregators';
+import { BALANCEACCOUNTS_COLUMNS } from '@/utils/fundChangeExcelColumns';
 
 export default {
 	name: 'BalanceAccountTemplate',
@@ -19,15 +20,7 @@ export default {
 	},
 	computed: {
 		columns() {
-			return [
-				{ prop: 'balanceDate', label: '平账日期', width: 120, showSummary: false },
-				{ prop: 'customerName', label: '客户名称', width: 120, showSummary: false },
-				{ prop: 'supplierName', label: '供应商名称', width: 120, showSummary: false },
-				{ prop: 'balanceAmount', label: '平账金额', width: 120, showSummary: false },
-				{ prop: 'balanceType', label: '平账类型', width: 100, showSummary: false },
-				{ prop: 'customerDiff', label: '客户变动差额', aggregator: 'absSum', summaryLabel: '客户变动差额汇总' },
-				{ prop: 'supplierDiff', label: '供应商变动差额', aggregator: 'absSum', summaryLabel: '供应商变动差额汇总' }
-			];
+			return BALANCEACCOUNTS_COLUMNS.map(c => (c.aggregator ? c : { ...c, showSummary: false }));
 		},
 		diffRows() {
 			return this.tableData.filter(r => r.rowType === 'diff');
@@ -67,32 +60,21 @@ export default {
 			});
 		},
 		mapBeforeRow(info) {
-			const cType = info.companyType || '';
-			const companyName = info.companyName || '';
 			return {
-				balanceDate: info.addtime ? (info.addtime + '').slice(0, 10) : '',
-				customerName: cType === '客户' ? companyName : '',
-				supplierName: cType === '供应商' ? companyName : '',
-				balanceAmount: info.moneyAmount,
-				balanceType: cType === '客户' ? '客户平账' : cType === '供应商' ? '供应商平账' : ''
+				status: '已平账',
+				operateTime: info.addtime ? (info.addtime + '').slice(0, 19) : '',
+				amount: info.moneyAmount,
+				companyName: info.companyName || '',
+				companyType: info.companyType || '',
+				remark: info.remark || ''
 			};
 		},
 		mapAfterRow(info) {
 			return this.mapBeforeRow(info);
 		},
 		buildDiffFields(original, changed, _record) {
-			// 平账客户：新值影响 -changed.moneyAmount，旧值 original.moneyAmount；差额 = -chg - (-orig) = orig - chg
-			const cType = _.get(changed, 'companyType') || _.get(original, 'companyType');
-			const origAmt = Number(original.moneyAmount || 0);
-			const chgAmt = Number(changed.moneyAmount || 0);
-			let customerDiff = '0.00';
-			let supplierDiff = '0.00';
-			if (cType === '客户') {
-				customerDiff = this.calculateFieldDiff(origAmt, chgAmt);
-			} else if (cType === '供应商') {
-				supplierDiff = this.calculateFieldDiff(origAmt, chgAmt);
-			}
-			return { customerDiff, supplierDiff };
+			const amountDiff = this.calculateFieldDiff(changed.moneyAmount, original.moneyAmount);
+			return { amountDiff };
 		},
 		calculateFieldDiff(afterVal, beforeVal) {
 			const after = Number(afterVal || 0);

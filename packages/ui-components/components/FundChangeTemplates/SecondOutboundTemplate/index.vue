@@ -6,6 +6,7 @@
 import { format, subtract } from 'mathjs';
 import _ from 'lodash';
 import { AGGREGATOR_MAP } from '@/utils/fundChangeAggregators';
+import { EXWAREHOUSE_COLUMNS } from '@/utils/fundChangeExcelColumns';
 
 export default {
 	name: 'SecondOutboundTemplate',
@@ -19,19 +20,7 @@ export default {
 	},
 	computed: {
 		columns() {
-			return [
-				{ prop: 'warehouse', label: '仓库名称', width: 120, showSummary: false },
-				{ prop: 'outboundDirection', label: '出库方向', width: 120, showSummary: false },
-				{ prop: 'outboundDate', label: '变动日期(出库)', width: 120, showSummary: false },
-				{ prop: 'gradeName', label: '产品级别', width: 150, showSummary: false },
-				{ prop: 'thickness', label: '厚度', width: 80, showSummary: false },
-				{ prop: 'length', label: '长度', width: 80, showSummary: false },
-				{ prop: 'width', label: '宽度', width: 80, showSummary: false },
-				{ prop: 'outboundQuantity', label: '出库量', width: 100, showSummary: false },
-				{ prop: 'stockPrice', label: '存货价', width: 100, showSummary: false },
-				{ prop: 'originalInventoryAmount', label: '原库存金额', width: 120, showSummary: false },
-				{ prop: 'inventoryDiff', label: '库存变动差额', aggregator: 'absSum', summaryLabel: '库存变动差额汇总' }
-			];
+			return EXWAREHOUSE_COLUMNS.map(c => (c.aggregator ? c : { ...c, showSummary: false }));
 		},
 		diffRows() {
 			return this.tableData.filter(r => r.rowType === 'diff');
@@ -81,6 +70,7 @@ export default {
 			if (unit === '其他') invAmt = stock * price;
 			else invAmt = len * w * Number(info.outAmount || 0) * price;
 			return {
+				secondaryStatus: info.outState === 1 ? '已入库' : '',
 				warehouse: info.storeHouseName,
 				outboundDirection: info.outDirection === '二次加工' ? '二次入库出库' : info.outDirection || '',
 				outboundDate: info.outDate ? (info.outDate + '').slice(0, 10) : '',

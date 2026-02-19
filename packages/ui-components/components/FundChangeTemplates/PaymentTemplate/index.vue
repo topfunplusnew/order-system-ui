@@ -6,6 +6,7 @@
 import { format, subtract } from 'mathjs';
 import _ from 'lodash';
 import { AGGREGATOR_MAP } from '@/utils/fundChangeAggregators';
+import { PAYMENT_COLUMNS } from '@/utils/fundChangeExcelColumns';
 
 export default {
 	name: 'PaymentTemplate',
@@ -19,16 +20,7 @@ export default {
 	},
 	computed: {
 		columns() {
-			return [
-				{ prop: 'paymentDate', label: '付款日期', width: 120, showSummary: false },
-				{ prop: 'companyName', label: '客户/供应商', width: 150, showSummary: false },
-				{ prop: 'paymentAmount', label: '付款金额', width: 120, showSummary: false },
-				{ prop: 'freightAmount', label: '运费金额', width: 100, showSummary: false },
-				{ prop: 'customerDiff', label: '客户变动差额', aggregator: 'absSum', summaryLabel: '客户变动差额汇总' },
-				{ prop: 'supplierDiff', label: '供应商变动差额', aggregator: 'absSum', summaryLabel: '供应商变动差额汇总' },
-				{ prop: 'bankCardDiff', label: '银行卡资金变动', aggregator: 'absSum', summaryLabel: '银行卡资金变动汇总' },
-				{ prop: 'freightDiff', label: '运费变动差额', aggregator: 'absSum', summaryLabel: '运费变动差额汇总' }
-			];
+			return PAYMENT_COLUMNS.map(c => (c.aggregator ? c : { ...c, showSummary: false }));
 		},
 		diffRows() {
 			return this.tableData.filter(r => r.rowType === 'diff');
@@ -68,28 +60,29 @@ export default {
 			});
 		},
 		mapBeforeRow(info) {
+			const dt = info.payTime || info.addtime;
 			return {
-				paymentDate: info.payTime ? (info.payTime + '').slice(0, 10) : info.addtime ? (info.addtime + '').slice(0, 10) : '',
-				companyName: info.companyName || '',
-				paymentAmount: info.moneyAmount,
-				freightAmount: info.landFreight || info.seaFreight || ''
+				status: '已付款',
+				paymentDate: dt ? (dt + '').slice(0, 19) : '-',
+				paymentType: info.payType || '-',
+				companyName: info.companyName || '-',
+				companyType: info.companyType || '',
+				amount: info.moneyAmount,
+				selfAccountName: info.selfAccountName || info.bankName || '',
+				selfAccountNo: info.bankNo || '',
+				selfBankName: info.selfBankName || info.bankFullName || '',
+				otherAccountName: info.otherAccountName || '',
+				otherAccountNo: info.otherAccountNo || '',
+				otherBankName: info.otherBankName || '',
+				remark: info.remark || ''
 			};
 		},
 		mapAfterRow(info) {
-			return {
-				paymentDate: info.payTime ? (info.payTime + '').slice(0, 10) : info.addtime ? (info.addtime + '').slice(0, 10) : '',
-				companyName: info.companyName || '',
-				paymentAmount: info.moneyAmount,
-				freightAmount: info.landFreight || info.seaFreight || ''
-			};
+			return this.mapBeforeRow(info);
 		},
 		buildDiffFields(original, changed, _record) {
-			// 付款客户: changed.moneyAmount - original.moneyAmount
-			const customerDiff = _.get(original, 'companyType') === '客户' ? this.calculateFieldDiff(changed.moneyAmount, original.moneyAmount) : '0.00';
-			const supplierDiff = _.get(original, 'companyType') === '供应商' ? this.calculateFieldDiff(original.moneyAmount, changed.moneyAmount) : '0.00';
-			const bankCardDiff = this.calculateFieldDiff(original.moneyAmount, changed.moneyAmount);
-			const freightDiff = _.get(original, 'companyType') === '司机' ? this.calculateFieldDiff(original.moneyAmount, changed.moneyAmount) : '0.00';
-			return { customerDiff, supplierDiff, bankCardDiff, freightDiff };
+			const amountDiff = this.calculateFieldDiff(original.moneyAmount, changed.moneyAmount);
+			return { amountDiff };
 		},
 		calculateFieldDiff(afterVal, beforeVal) {
 			const after = Number(afterVal || 0);
