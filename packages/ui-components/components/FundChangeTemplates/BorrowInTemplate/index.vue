@@ -14,7 +14,7 @@ export default {
 		compareData: { type: Array, default: () => [] },
 		moduleName: { type: String, default: '' },
 		summaryData: { type: Object, default: () => ({}) },
-		summaryModuleLabel: { type: String, default: '借入款' }
+		summaryModuleLabel: { type: String, default: '借入款管理' }
 	},
 	data() {
 		return { tableData: [] };
@@ -28,7 +28,7 @@ export default {
 			return this.tableData.filter(r => r.rowType === 'diff');
 		},
 		diffSummaryTableData() {
-			const prefix = this.summaryModuleLabel || '借入款';
+			const prefix = this.summaryModuleLabel || '借入款管理';
 			const bankCardDiff = format(
 				_.reduce(this.diffRows, (acc, r) => add(acc, Number(r.borrowAmount) || 0), 0),
 				{ notation: 'fixed', precision: 2 }
@@ -142,9 +142,9 @@ export default {
 <template>
 	<div class="fund-change-template">
 		<el-table :data="tableData" border :row-class-name="tableRowClassName" :span-method="recordSpanMethod" show-summary :summary-method="getTableSummary" style="width: 100%">
-			<el-table-column label="记录" width="100" fixed class-name="record-col">
+			<el-table-column :label="summaryModuleLabel" width="100" fixed class-name="record-col">
 				<template slot-scope="scope">
-					<span v-if="scope.row.isRecordFirst">记录（{{ scope.row.recordIndex }}）</span>
+					<span v-if="scope.row.isRecordFirst">{{ summaryModuleLabel }}（{{ scope.row.recordIndex }}）</span>
 				</template>
 			</el-table-column>
 			<el-table-column label="变更" width="80" fixed>
