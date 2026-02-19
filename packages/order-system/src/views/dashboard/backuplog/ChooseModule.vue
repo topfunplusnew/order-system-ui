@@ -15,6 +15,9 @@ export default {
 		},
 		moduleNames() {
 			return moduleNames;
+		},
+		resultByTableName() {
+			return _.groupBy(this.result || [], 'tableName');
 		}
 	},
 	props: {
@@ -27,14 +30,16 @@ export default {
 	},
 	methods: {
 		filtersFunc,
-		/**
-		 * 点击模块查看详细变动信息
-		 * @param {string} moduleName - 表名
-		 */
+		getTemplateConfig(rawTableName) {
+			return TABLE_TEMPLATE_MAP[filtersFunc(rawTableName)] || null;
+		},
+		getModuleData(rawTableName) {
+			return this.resultByTableName[rawTableName] || [];
+		},
 		handleCheckModule(moduleName) {
 			if (!moduleName) return;
 			const tableName = filtersFunc(moduleName);
-			const data = _.groupBy(this.result, 'tableName')[tableName] || [];
+			const data = this.getModuleData(moduleName);
 			if (_.isEmpty(data)) {
 				this.$message.warning('组件数据有误,ChooseModule');
 				return;
@@ -56,43 +61,44 @@ export default {
 </script>
 
 <template>
-	<div>
-		<div class="container">
-			<ul class="module-list">
-				<li class="module-item" v-for="(item, index) in moduleList" :key="index" @click="handleCheckModule(item)">
-					{{ moduleNames[item] }}
-				</li>
-			</ul>
+	<div class="choose-module-container">
+		<div v-for="(item, index) in moduleList" :key="index" class="module-section">
+			<div class="module-header" @click="handleCheckModule(item)">
+				{{ moduleNames[item] || item }}
+			</div>
+			<div v-if="useV3Templates && getTemplateConfig(item) && getModuleData(item).length" class="module-template-wrap">
+				<component :is="getTemplateConfig(item).component" :compare-data="getModuleData(item)" :module-name="filtersFunc(item)" :summary-data="summaryData" :summary-only="true" />
+			</div>
 		</div>
 	</div>
 </template>
 
 <style scoped lang="scss">
-.module-list {
-	list-style: none;
-	padding: 0;
-	display: flex;
-	flex-wrap: wrap;
-	gap: 20px;
-}
-
-.module-item {
-	width: 150px;
-	padding: 10px;
-	margin-bottom: 10px;
-	background: #0073e6;
-	color: white;
-	border-radius: 4px;
-	cursor: pointer;
-	text-align: center;
-	transition: background 0.3s;
-}
-
-.module-item:hover {
-	background: #005bb5;
-}
-
-.module-item.selected {
-	background: #004494;
+.choose-module-container {
+	.module-section {
+		margin-bottom: 24px;
+		&:last-child {
+			margin-bottom: 0;
+		}
+	}
+	.module-header {
+		padding: 10px 16px;
+		margin-bottom: 12px;
+		background: #0073e6;
+		color: white;
+		border-radius: 4px;
+		cursor: pointer;
+		font-weight: 500;
+		transition: background 0.3s;
+		&:hover {
+			background: #005bb5;
+		}
+	}
+	.module-template-wrap {
+		padding: 0 8px 8px;
+		border: 1px solid #e4e7ed;
+		border-radius: 4px;
+		background: #fafafa;
+	}
 }
 </style>
