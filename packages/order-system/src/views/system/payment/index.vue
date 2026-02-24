@@ -293,7 +293,7 @@
 
 		<!-- 分页组件 -->
 		<div class="pagination-wrapper">
-			<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" :page-sizes="[10, 20, 50, 100, 200, 500]" layout="total, sizes, prev, pager, next, jumper" background @pagination="getList" />
+			<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" :page-sizes="[10, 20, 50, 100, 200, 500, 10000]" layout="total, sizes, prev, pager, next, jumper" background @pagination="getList" />
 		</div>
 
 		<!-- 导入结果弹窗 -->

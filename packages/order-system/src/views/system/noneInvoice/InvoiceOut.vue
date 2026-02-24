@@ -4,6 +4,9 @@
 			<el-form-item label="日期范围" prop="beginTime">
 				<el-date-picker v-model="dateRange" style="width: 240px" value-format="yyyy-MM-dd" type="daterange" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
 			</el-form-item>
+			<el-form-item label="我方开票主体" prop="invoiceObject">
+				<el-input v-model="queryParams.invoiceObject" placeholder="请输入我方开票主体" clearable @keyup.enter.native="handleQuery" />
+			</el-form-item>
 			<el-form-item label="对方公司" prop="companyName">
 				<el-input v-model="queryParams.companyName" placeholder="请输入对方公司名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
@@ -75,14 +78,6 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[4].visible" label="对方公司名称" align="center" prop="companyName" width="200" show-overflow-tooltip>
-				<template #default="scope">
-					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.companyName }}</div>
-						<span>{{ scope.row.companyName }}</span>
-					</el-tooltip>
-				</template>
-			</el-table-column>
 			<el-table-column v-if="columns[1].visible" label="我方开票主体" align="center" prop="invoiceObject" width="160" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
@@ -104,6 +99,14 @@
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.companyType }}</div>
 						<span>{{ scope.row.companyType }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[4].visible" label="对方公司名称" align="center" prop="companyName" width="200" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.companyName }}</div>
+						<span>{{ scope.row.companyName }}</span>
 					</el-tooltip>
 				</template>
 			</el-table-column>
@@ -307,16 +310,28 @@
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="'补充发票信息'" :visible.sync="extraInfoDialogVisible" width="500px" append-to-body>
 			<el-form ref="extraInfoForm" :model="currentExtraInfo" :rules="extraInfoRules" label-width="120px">
 				<el-form-item label="实际开票金额" prop="actualInvoiceAmount">
-					<el-input v-model="currentExtraInfo.actualInvoiceAmount" placeholder="请输入实际开票金额"></el-input>
+					<div style="display: flex; align-items: center">
+						<el-input v-model="currentExtraInfo.actualInvoiceAmount" placeholder="请输入实际开票金额" style="flex: 1"></el-input>
+						<el-button size="mini" style="margin-left: 8px" @click="clearExtraInfoField('actualInvoiceAmount')">清空</el-button>
+					</div>
 				</el-form-item>
 				<el-form-item label="实际开票时间" prop="actualInvoiceTime">
-					<el-date-picker v-model="currentExtraInfo.actualInvoiceTime" type="datetime" placeholder="请选择实际开票时间" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+					<div style="display: flex; align-items: center">
+						<el-date-picker v-model="currentExtraInfo.actualInvoiceTime" type="datetime" placeholder="请选择实际开票时间" value-format="yyyy-MM-dd HH:mm:ss" style="flex: 1"></el-date-picker>
+						<el-button size="mini" style="margin-left: 8px" @click="clearExtraInfoField('actualInvoiceTime')">清空</el-button>
+					</div>
 				</el-form-item>
 				<el-form-item label="当月欠票金额" prop="currentMonthOweInvoiceAmount">
-					<el-input v-model="currentExtraInfo.currentMonthOweInvoiceAmount" placeholder="请输入当月欠票金额"></el-input>
+					<div style="display: flex; align-items: center">
+						<el-input v-model="currentExtraInfo.currentMonthOweInvoiceAmount" placeholder="请输入当月欠票金额" style="flex: 1"></el-input>
+						<el-button size="mini" style="margin-left: 8px" @click="clearExtraInfoField('currentMonthOweInvoiceAmount')">清空</el-button>
+					</div>
 				</el-form-item>
 				<el-form-item label="备注" prop="comment">
-					<el-input v-model="currentExtraInfo.comment" type="textarea" placeholder="请输入备注信息（选填）"></el-input>
+					<div style="display: flex; align-items: center">
+						<el-input v-model="currentExtraInfo.comment" type="textarea" placeholder="请输入备注信息（选填）" style="flex: 1"></el-input>
+						<el-button size="mini" style="margin-left: 8px" @click="clearExtraInfoField('comment')">清空</el-button>
+					</div>
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -467,10 +482,10 @@ export default {
 			},
 			columns: [
 				{ key: 0, label: `开票日期`, visible: true },
-				{ key: 4, label: `公司名称`, visible: true }, // 调整位置
 				{ key: 1, label: `我方收票主体`, visible: true },
 				{ key: 2, label: `开票金额`, visible: true },
 				{ key: 3, label: `公司类别`, visible: true },
+				{ key: 4, label: `公司名称`, visible: true },
 				{ key: 5, label: `票据单位名称`, visible: true },
 				{ key: 6, label: `票点`, visible: true },
 				{ key: 7, label: `票点金额`, visible: true },
@@ -499,6 +514,7 @@ export default {
 			orderInfo: {},
 			// 补充信息对话框
 			extraInfoDialogVisible: false,
+			extraInfoSkipValidate: false,
 			currentExtraInfo: {},
 			currentRow: null,
 			extraInfoRules: {
@@ -534,12 +550,12 @@ export default {
 			deep: true
 		},
 		// 监听开票金额和票点变化,自动计算票点金额
-		'form.invoiceAmount': function(newVal) {
+		'form.invoiceAmount': function (newVal) {
 			if (!this.isFirstLoad && newVal && this.form.ticketPoint) {
 				this.form.ticketPointAmount = Number(newVal * this.form.ticketPoint).toFixed(2);
 			}
 		},
-		'form.ticketPoint': function(newVal) {
+		'form.ticketPoint': function (newVal) {
 			if (!this.isFirstLoad && newVal && this.form.invoiceAmount) {
 				this.form.ticketPointAmount = Number(this.form.invoiceAmount * newVal).toFixed(2);
 			}
@@ -718,6 +734,7 @@ export default {
 			this.resetForm('queryForm');
 			this.dateRange = [];
 			this.queryParams.companyName = null;
+			this.queryParams.invoiceObject = null;
 			this.queryParams.invoiceCompanyName = null;
 			this.queryParams.params.isInvoiced = null;
 			this.handleQuery();
@@ -939,6 +956,7 @@ export default {
 		/** 补充信息操作 */
 		handleAddExtraInfo(row) {
 			this.currentRow = row;
+			this.extraInfoSkipValidate = false;
 			// 确保extraInfo存在
 			this.currentExtraInfo = row.extraInfo
 				? { ...row.extraInfo }
@@ -950,9 +968,28 @@ export default {
 				  };
 			this.extraInfoDialogVisible = true;
 		},
+		clearExtraInfoField(field) {
+			this.$set(this.currentExtraInfo, field, null);
+			this.extraInfoSkipValidate = true;
+		},
 
 		/** 保存补充信息 */
 		saveExtraInfo() {
+			if (this.extraInfoSkipValidate) {
+				if (this.currentRow) {
+					updateInvoiceOutExtra(this.currentRow.id, this.currentExtraInfo)
+						.then(() => {
+							this.$modal.msgSuccess('补充信息更新成功');
+							this.extraInfoDialogVisible = false;
+							this.extraInfoSkipValidate = false;
+							this.getList();
+						})
+						.catch(error => {
+							this.$modal.msgError('更新失败: ' + error);
+						});
+				}
+				return;
+			}
 			this.$refs['extraInfoForm'].validate(valid => {
 				if (valid) {
 					if (this.currentRow) {
@@ -960,6 +997,7 @@ export default {
 							.then(() => {
 								this.$modal.msgSuccess('补充信息更新成功');
 								this.extraInfoDialogVisible = false;
+								this.extraInfoSkipValidate = false;
 								this.getList();
 							})
 							.catch(error => {

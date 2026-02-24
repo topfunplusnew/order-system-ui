@@ -4,8 +4,8 @@
 			<el-form-item label="日期范围" prop="invoiceDate">
 				<el-date-picker v-model="dateRange" style="width: 240px" value-format="yyyy-MM-dd HH:mm:ss" type="daterange" start-placeholder="开始日期" end-placeholder="结束日期" />
 			</el-form-item>
-			<el-form-item label="开票单位" prop="invoiceCompanyName">
-				<el-input v-model="queryParams.invoiceCompanyName" placeholder="请输入开票单位" clearable @keyup.enter.native="handleQuery" />
+			<el-form-item label="票据单位名称" prop="invoiceCompanyName">
+				<el-input v-model="queryParams.invoiceCompanyName" placeholder="请输入票据单位名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="对方名称" prop="mixCompanyName">
 				<el-input v-model="queryParams.params.mixCompanyName" placeholder="可搜索供应商或客户名称" clearable @keyup.enter.native="handleQuery" />
@@ -369,16 +369,28 @@
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="'补充发票信息'" :visible.sync="extraInfoDialogVisible" width="500px" append-to-body>
 			<el-form ref="extraInfoForm" :model="currentExtraInfo" :rules="extraInfoRules" label-width="120px">
 				<el-form-item label="实际开票金额" prop="actualInvoiceAmount">
-					<el-input v-model="currentExtraInfo.actualInvoiceAmount" placeholder="请输入实际开票金额"></el-input>
+					<div style="display: flex; align-items: center">
+						<el-input v-model="currentExtraInfo.actualInvoiceAmount" placeholder="请输入实际开票金额" style="flex: 1"></el-input>
+						<el-button size="mini" style="margin-left: 8px" @click="clearExtraInfoField('actualInvoiceAmount')">清空</el-button>
+					</div>
 				</el-form-item>
 				<el-form-item label="实际开票时间" prop="actualInvoiceTime">
-					<el-date-picker v-model="currentExtraInfo.actualInvoiceTime" type="datetime" placeholder="请选择实际开票时间" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+					<div style="display: flex; align-items: center">
+						<el-date-picker v-model="currentExtraInfo.actualInvoiceTime" type="datetime" placeholder="请选择实际开票时间" value-format="yyyy-MM-dd HH:mm:ss" style="flex: 1"></el-date-picker>
+						<el-button size="mini" style="margin-left: 8px" @click="clearExtraInfoField('actualInvoiceTime')">清空</el-button>
+					</div>
 				</el-form-item>
 				<el-form-item label="当月欠票金额" prop="currentMonthOweInvoiceAmount">
-					<el-input v-model="currentExtraInfo.currentMonthOweInvoiceAmount" placeholder="请输入当月欠票金额"></el-input>
+					<div style="display: flex; align-items: center">
+						<el-input v-model="currentExtraInfo.currentMonthOweInvoiceAmount" placeholder="请输入当月欠票金额" style="flex: 1"></el-input>
+						<el-button size="mini" style="margin-left: 8px" @click="clearExtraInfoField('currentMonthOweInvoiceAmount')">清空</el-button>
+					</div>
 				</el-form-item>
 				<el-form-item label="备注" prop="comment">
-					<el-input v-model="currentExtraInfo.comment" type="textarea" placeholder="请输入备注信息（选填）"></el-input>
+					<div style="display: flex; align-items: center">
+						<el-input v-model="currentExtraInfo.comment" type="textarea" placeholder="请输入备注信息（选填）" style="flex: 1"></el-input>
+						<el-button size="mini" style="margin-left: 8px" @click="clearExtraInfoField('comment')">清空</el-button>
+					</div>
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -570,6 +582,7 @@ export default {
 				{ key: 14, label: `额外备注`, visible: true }
 			],
 			extraInfoDialogVisible: false,
+			extraInfoSkipValidate: false,
 			currentExtraInfo: {},
 			currentRow: null,
 			extraInfoRules: {
@@ -983,6 +996,7 @@ export default {
 		},
 		handleAddExtraInfo(row) {
 			this.currentRow = row;
+			this.extraInfoSkipValidate = false;
 			this.currentExtraInfo = row.extraInfo
 				? { ...row.extraInfo }
 				: {
@@ -993,7 +1007,26 @@ export default {
 				  };
 			this.extraInfoDialogVisible = true;
 		},
+		clearExtraInfoField(field) {
+			this.$set(this.currentExtraInfo, field, null);
+			this.extraInfoSkipValidate = true;
+		},
 		saveExtraInfo() {
+			if (this.extraInfoSkipValidate) {
+				if (this.currentRow) {
+					updateInvoiceOtherExtra(this.currentRow.id, this.currentExtraInfo)
+						.then(() => {
+							this.$modal.msgSuccess('补充信息更新成功');
+							this.extraInfoDialogVisible = false;
+							this.extraInfoSkipValidate = false;
+							this.getList();
+						})
+						.catch(error => {
+							this.$modal.msgError('更新失败: ' + error);
+						});
+				}
+				return;
+			}
 			this.$refs['extraInfoForm'].validate(valid => {
 				if (valid) {
 					if (this.currentRow) {
@@ -1001,6 +1034,7 @@ export default {
 							.then(() => {
 								this.$modal.msgSuccess('补充信息更新成功');
 								this.extraInfoDialogVisible = false;
+								this.extraInfoSkipValidate = false;
 								this.getList();
 							})
 							.catch(error => {

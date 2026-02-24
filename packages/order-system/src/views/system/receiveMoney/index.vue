@@ -71,7 +71,7 @@
 			</right-toolbar>
 		</div>
 		<!-- 收款信息表格 -->
-		<div class="table-container" v-loading="loading" style="flex: 1; margin-bottom: 60px">
+		<div class="table-container" v-loading="loading">
 			<!-- 渲染进度提示 -->
 			<div v-if="isRendering" class="rendering-progress">
 				<el-progress :percentage="renderProgress" :status="renderProgress === 100 ? 'success' : null" :stroke-width="6"></el-progress>
@@ -79,7 +79,7 @@
 			</div>
 
 			<div class="table-wrapper" id="printBox">
-				<el-table id="printBox" ref="table" v-loading="loading" border :data="receiveMoneyList" size="mini" @selection-change="handleSelectionChange" height="calc(90vh - 300px)">
+				<el-table id="printBox" ref="table" v-loading="loading" v-horizontal-scroll="'always'" border :data="receiveMoneyList" :height="tableHeight" size="mini" @selection-change="handleSelectionChange">
 					<el-table-column label="ID" align="center" prop="id" width="60" show-overflow-tooltip />
 					<el-table-column v-if="columns[0].visible" label="日期" align="center" prop="fundsDate" width="140" show-overflow-tooltip />
 					<el-table-column v-if="columns[1].visible" label="支付类型" align="center" prop="receiveType" width="180" show-overflow-tooltip />
@@ -128,7 +128,7 @@
 
 		<!-- 分页组件 -->
 		<div class="pagination-wrapper">
-			<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" :page-sizes="[10, 20, 50, 100, 200, 500]" layout="total, sizes, prev, pager, next, jumper" background @pagination="getList" />
+			<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" :page-sizes="[10, 20, 50, 100, 200, 500, 10000]" layout="total, sizes, prev, pager, next, jumper" background @pagination="getList" />
 		</div>
 
 		<!-- 导入结果弹窗 -->
@@ -557,7 +557,8 @@ export default {
 			importResultVisible: false,
 			importResultMessage: '',
 			// 窗口大小变化防抖定时器
-			resizeTimer: null
+			resizeTimer: null,
+			tableHeight: 600
 		};
 	},
 	watch: {
@@ -640,6 +641,9 @@ export default {
 		// 监听窗口大小变化，重新计算表格高度
 		window.addEventListener('resize', this.handleResize);
 	},
+	mounted() {
+		this.calculateTableHeight();
+	},
 	activated() {
 		// KeepAlive 激活时，强制显示分页组件
 		this.$nextTick(() => {
@@ -651,6 +655,7 @@ export default {
 				// 触发一次 resize 事件，让浏览器重新计算布局
 				window.dispatchEvent(new Event('resize'));
 			}
+			this.calculateTableHeight();
 		});
 	},
 	beforeDestroy() {
@@ -726,15 +731,31 @@ export default {
 		},
 		// 处理窗口大小变化
 		handleResize() {
-			// 使用防抖，避免频繁触发
 			if (this.resizeTimer) {
 				clearTimeout(this.resizeTimer);
 			}
 			this.resizeTimer = setTimeout(() => {
-				// 表格布局已由原生 table 处理，无需额外操作
+				this.calculateTableHeight();
 			}, 100);
 		},
-		// 重置BankType组件状态
+		calculateTableHeight() {
+			this.$nextTick(() => {
+				if (!this.$el) return;
+
+				const windowHeight = window.innerHeight;
+				const paginationWrapper = this.$el.querySelector('.pagination-wrapper');
+				const bottomHeight = paginationWrapper ? paginationWrapper.getBoundingClientRect().height : 0;
+				const tableContainer = this.$el.querySelector('.table-container');
+
+				if (!tableContainer) return;
+
+				const containerTop = tableContainer.getBoundingClientRect().top;
+				const containerMarginBottom = parseInt(window.getComputedStyle(tableContainer).marginBottom, 10) || 0;
+				const availableHeight = windowHeight - containerTop - bottomHeight - containerMarginBottom - 20;
+
+				this.tableHeight = Math.max(300, Math.min(650, availableHeight));
+			});
+		},
 		resetBankTypeComponents() {
 			this.$nextTick(() => {
 				if (this.$refs.selfSelectedBankType?.resetComponentState) {
@@ -1456,6 +1477,7 @@ export default {
 	min-height: 90vh;
 	display: flex;
 	flex-direction: column;
+	padding-bottom: 80px;
 }
 
 .app-container.mask-overlay {
@@ -1537,6 +1559,8 @@ export default {
 /* ============================= */
 .table-container {
 	position: relative;
+	margin-top: 12px;
+	margin-bottom: 60px;
 
 	.rendering-progress {
 		position: absolute;
@@ -1557,9 +1581,8 @@ export default {
 	}
 
 	.table-wrapper {
+		position: relative;
 		width: 100%;
-		max-height: 750px;
-		overflow: auto;
 
 		border: 1px solid #e4e7ed;
 		border-radius: 6px;
