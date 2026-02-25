@@ -350,12 +350,12 @@ export default {
 				<!--        这两列应该是根据moneyAmount字段的正负进行判断-->
 				<el-table-column show-overflow-tooltip label="借方发生额(付供应商货款)" align="center" width="140">
 					<template slot-scope="scope">
-						{{ isDebit(scope.row.debitCredit) ? -scope.row.moneyAmount : '-' }}
+						{{ scope.row.moneyAmountLocal > 0 ? Math.abs(scope.row.moneyAmount) : scope.row.moneyAmountLocal < 0 ? 0 : '-' }}
 					</template>
 				</el-table-column>
 				<el-table-column show-overflow-tooltip label="贷方(在供应商那里提货)" align="center" width="140">
 					<template slot-scope="scope">
-						{{ isCredit(scope.row.debitCredit) ? scope.row.moneyAmount : '-' }}
+						{{ scope.row.moneyAmountLocal < 0 ? scope.row.moneyAmount : scope.row.moneyAmountLocal > 0 ? 0 : '-' }}
 					</template>
 				</el-table-column>
 

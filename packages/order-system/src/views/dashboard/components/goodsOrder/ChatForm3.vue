@@ -27,11 +27,11 @@ export default {
 		// 所有明细的货款之和
 		detailPaymentsSum() {
 			if (!this.itemList || this.itemList.length === 0) return 0;
-			return this.itemList.reduce((sum, item) => sum + (Number(item.payments) || 0), 0);
+			return Math.floor(this.itemList.reduce((sum, item) => sum + (Number(item.payments) || 0), 0));
 		},
 		// 合计欠款
 		totalPayments() {
-			return Number(this.moneyAmount) - this.detailPaymentsSum;
+			return Math.floor(Number(this.moneyAmount) - this.detailPaymentsSum);
 		}
 	},
 	created() {
@@ -354,28 +354,28 @@ export default {
 							</td>
 							<td>{{ item.pieces }}</td>
 							<td>{{ item.packs }}</td>
-							<td>{{ item.paymentUnload }}</td>
+							<td>{{ Math.floor(item.paymentUnload) }}</td>
 							<td>
 								{{ item.isIncludeTaxFactory === 0 ? '否' : '是' }}
 							</td>
-							<td>{{ item.paymentsWithSundry }}</td>
-							<td>{{ item.payments }}</td>
+							<td>{{ Math.floor(item.paymentsWithSundry) }}</td>
+							<td>{{ Math.floor(item.payments) }}</td>
 						</tr>
 					</template>
 					<tr>
 						<td style="text-align: left">本次货款</td>
 						<td colspan="5" style="text-align: left">大写:{{ numToChineseUppercase(detailPaymentsSum) }}</td>
-						<td>{{ (detailPaymentsSum || 0).toFixed(2) }}</td>
+						<td>{{ detailPaymentsSum || 0 }}</td>
 					</tr>
 					<tr>
 						<td style="text-align: left">欠款</td>
-						<td colspan="5" style="text-align: left">大写:{{ numToChineseUppercase(moneyAmount || 0) }}</td>
-						<td>{{ (totalPayments || 0).toFixed(2) }}</td>
+						<td colspan="5" style="text-align: left">大写:{{ numToChineseUppercase(Math.floor(moneyAmount) || 0) }}</td>
+						<td>{{ totalPayments || 0 }}</td>
 					</tr>
 					<tr>
 						<td style="text-align: left">合计欠款</td>
-						<td colspan="5" style="text-align: left">大写:{{ numToChineseUppercase(moneyAmount) }}</td>
-						<td>{{ (moneyAmount || 0).toFixed(2) }}</td>
+						<td colspan="5" style="text-align: left">大写:{{ numToChineseUppercase(Math.floor(moneyAmount)) }}</td>
+						<td>{{ Math.floor(moneyAmount) || 0 }}</td>
 					</tr>
 					<tr>
 						<td colspan="7" style="text-align: left">

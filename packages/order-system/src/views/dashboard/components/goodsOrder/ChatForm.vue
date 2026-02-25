@@ -29,11 +29,11 @@ export default {
 		// 所有明细的货款之和
 		detailPaymentsSum() {
 			if (!this.itemList || this.itemList.length === 0) return 0;
-			return this.itemList.reduce((sum, item) => sum + (Number(item.payments) || 0), 0);
+			return Math.floor(this.itemList.reduce((sum, item) => sum + (Number(item.payments) || 0), 0));
 		},
 		// 余款
 		totalPayments() {
-			return Number(this.moneyAmount) - this.detailPaymentsSum;
+			return Math.floor(Number(this.moneyAmount) - this.detailPaymentsSum);
 		}
 	},
 	created() {
@@ -357,12 +357,12 @@ export default {
 							<td>{{ item.width }}</td>
 							<td>{{ item.pieces }}</td>
 							<td>{{ item.packs }}</td>
-							<td>{{ item.paymentUnload }}</td>
+							<td>{{ Math.floor(item.paymentUnload) }}</td>
 							<td>
 								{{ item.isIncludeTaxSale === 0 ? '否' : '是' }}
 							</td>
-							<td>{{ item.paymentsWithSundry }}</td>
-							<td>{{ item.payments }}</td>
+							<td>{{ Math.floor(item.paymentsWithSundry) }}</td>
+							<td>{{ Math.floor(item.payments) }}</td>
 							<td>{{ currentOrderInfo.landCarNo || currentOrderInfo.seaCarNo }}</td>
 							<td v-if="currentOrderInfo.seaCarNo">{{ currentOrderInfo.seaDriverName }}</td>
 						</tr>
@@ -371,26 +371,26 @@ export default {
 					<tr>
 						<td style="text-align: center">货款</td>
 						<td colspan="8" />
-						<td>{{ (detailPaymentsSum || 0).toFixed(2) }}</td>
+						<td>{{ detailPaymentsSum || 0 }}</td>
 						<td />
 					</tr>
 					<tr>
 						<td style="text-align: center">余款</td>
 						<td colspan="8" />
-						<td>{{ (totalPayments || 0).toFixed(2) }}</td>
+						<td>{{ totalPayments || 0 }}</td>
 						<td />
 					</tr>
 					<tr>
 						<!-- 货款 + 余额-->
 						<td style="text-align: center">货款合计</td>
 						<td colspan="8" />
-						<td>{{ (moneyAmount || 0).toFixed(2) }}</td>
+						<td>{{ Math.floor(moneyAmount) || 0 }}</td>
 						<td />
 					</tr>
 					<tr>
 						<!--          合计只有一个大写-->
 						<td style="text-align: center">合计</td>
-						<td colspan="8">大写：{{ numToChineseUppercase(moneyAmount) }}</td>
+						<td colspan="8">大写：{{ numToChineseUppercase(Math.floor(moneyAmount)) }}</td>
 						<td />
 						<td />
 					</tr>
