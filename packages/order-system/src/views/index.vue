@@ -276,7 +276,7 @@
 								<span class="filename">{{ item.fileName }}</span>
 							</a-space>
 						</a-col>
-						<a-col :span="6" class="date">{{ formatDate(item.lastModifiedTime) }}</a-col>
+						<a-col :span="6" class="date">{{ formatDate(item.createTime) }}</a-col>
 						<a-col :span="3" class="size">{{ formatSize(item.size) }}</a-col>
 						<a-col :span="3" class="actions">
 							<a-space>

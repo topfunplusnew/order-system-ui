@@ -11,6 +11,12 @@ export default {
 			default() {
 				return {};
 			}
+		},
+		hiddenColumns: {
+			type: Array,
+			default() {
+				return [];
+			}
 		}
 	},
 	methods: {
@@ -27,7 +33,7 @@ export default {
 <template>
 	<div>
 		<OrderInfos :order-info="needToShowInfo" />
-		<OrderDetailInfo :order-detail-info-list="needToShowInfo.orderDetailList" :ban="true" />
+		<OrderDetailInfo :order-detail-info-list="needToShowInfo.orderDetailList" :ban="true" :hidden-columns="hiddenColumns" />
 	</div>
 </template>
 

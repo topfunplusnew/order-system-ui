@@ -243,7 +243,8 @@ export default {
 							'订单信息',
 							'100%',
 							{
-								needToShowInfo: this.currentOrder
+								needToShowInfo: this.currentOrder,
+								hiddenColumns: ['orderDate']
 							},
 							false
 						);

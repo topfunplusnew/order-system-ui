@@ -52,7 +52,7 @@ export default {
 				customer: '120px', // 客户：客户名称可能较长
 				storeHouseName: '70px', // 仓库名称：通常较短
 				supplier: '120px', // 供应商：公司名称可能较长
-				levelName: '120px', // 级别名称：级别名称通常不会太长
+				levelName: '150px', // 级别名称：级别名称通常不会太长
 				countingUnit: '65px', // 计量单位：单位名称较短
 				height: '45px', // 厚度：数字较短
 				length: '45px', // 长度：数字较短
@@ -61,17 +61,17 @@ export default {
 				packs: '45px', // 包数：数字较短
 				pieces: '60px', // 出厂片数：数字
 				price: '60px', // 出厂单价：价格数字
-				isIncludeTaxFactory: '80px', // 出厂是否含税："是/否"标签
+				isIncludeTaxFactory: '60px', // 出厂是否含税："是/否"标签
 				sundryCost: '70px', // 杂费：金额数字
 				paymentFactory: '100px', // 出厂货款：金额数字
 				actualPieces: '60px', // 卸货片数：数字
 				paymentUnload: '60px', // 卸货价：价格数字
-				isIncludeTaxSale: '80px', // 销售是否含税："是/否"标签
+				isIncludeTaxSale: '60px', // 销售是否含税："是/否"标签
 				paymentsWithSundry: '70px', // 总货款杂费：金额数字
 				payments: '100px', // 总货款：金额数字
 				erro: '50px', // 误差：数字较短
 				tonnage: '70px', // 吨位：数字+单位
-				landFreightPrice: '90px', // 陆运费单价：价格数字
+				landFreightPrice: '70px', // 陆运费单价：价格数字
 				additionalFees: '60px', // 加费：金额数字
 				landFreight: '90px', // 陆运费：金额数字
 				seaFreight: '90px', // 海运费：金额数字

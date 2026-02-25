@@ -92,23 +92,24 @@
 				</template>
 			</el-table-column>
 			<!-- 将收入、支出、余额列移到时间列之后 -->
-			<el-table-column v-if="columns[10].visible" prop="moneyAmount" label="收入" align="right" show-overflow-tooltip>
+			<el-table-column v-if="columns[10].visible" prop="moneyAmount" label="收入" align="right" width="140" show-overflow-tooltip>
 				<template #default="{ row }">
 					<span v-if="row.moneyAmount > 0" style="color: #67c23a">￥{{ row.moneyAmount.toLocaleString('zh-CN', { minimumFractionDigits: 2 }) }}</span>
 					<span v-else>￥0.00</span>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[11].visible" prop="moneyAmount" label="支出" align="right" show-overflow-tooltip>
+			<el-table-column v-if="columns[11].visible" prop="moneyAmount" label="支出" align="right" width="140" show-overflow-tooltip>
 				<template #default="{ row }">
 					<span v-if="row.moneyAmount < 0" style="color: #f56c6c">￥{{ Math.abs(row.moneyAmount).toLocaleString('zh-CN', { minimumFractionDigits: 2 }) }}</span>
 					<span v-else>￥0.00</span>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[12].visible" prop="balance" label="余额" align="right" show-overflow-tooltip>
+			<el-table-column v-if="columns[12].visible" prop="balance" label="余额" align="right" width="140" show-overflow-tooltip>
 				<template #default="{ row }">
 					<span :style="{ color: row.balance >= 0 ? '#67c23a' : '#f56c6c' }">￥{{ row.balance.toLocaleString('zh-CN', { minimumFractionDigits: 2 }) }}</span>
 				</template>
 			</el-table-column>
+			<el-table-column v-if="columns[13].visible" prop="selfAccountName" label="我方卡户名" align="center" width="180" show-overflow-tooltip></el-table-column>
 			<el-table-column v-if="columns[2].visible" prop="payNO" label="凭证号数" show-overflow-tooltip></el-table-column>
 			<el-table-column v-if="columns[3].visible" prop="changeType" label="类型（收款/付款）" show-overflow-tooltip></el-table-column>
 			<el-table-column v-if="columns[4].visible" prop="displayPayType" label="支付类型" show-overflow-tooltip width="200"></el-table-column>
@@ -174,6 +175,7 @@ export default {
 				{ key: 10, label: `收入`, visible: true },
 				{ key: 11, label: `支出`, visible: true },
 				{ key: 12, label: `余额`, visible: true },
+				{ key: 13, label: `我方卡户名`, visible: true },
 				{ key: 2, label: `凭证号数`, visible: true },
 				{ key: 3, label: `类型（收款/付款）`, visible: true },
 				{ key: 4, label: `支付类型`, visible: true },

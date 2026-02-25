@@ -1035,25 +1035,19 @@ export default {
 				{ key: 1, label: '仓库名称', visible: true },
 				{ key: 2, label: '入库日期', visible: true },
 				{ key: 3, label: '供应商', visible: true },
-				// 2026-02-06 删除货物来源公司
 				{ key: 5, label: '审核状态', visible: true },
 				{ key: 6, label: '陆运车牌', visible: true },
-				// 2026-02-06 删除陆运司机电话
-				{ key: 8, label: '陆地司机姓名', visible: true },
-				{ key: 11, label: '柜号', visible: true },
-				// 2026-02-06 删除海运司机电话
-				{ key: 13, label: '海运公司', visible: true },
-				// 2026-02-06 添加含税列
-				{ key: 22, label: '含税', visible: true },
-				// 2026-02-06 添加库存金额列
-				{ key: 23, label: '库存金额', visible: true },
-				// 子项运费之和列（含税、库存金额放在子项运费之和前面）
-				{ key: 16, label: '子项陆运费之和', visible: true },
-				{ key: 17, label: '子项海运费之和', visible: true },
-				{ key: 18, label: '录入员', visible: true },
-				{ key: 19, label: '附件', visible: true },
-				{ key: 20, label: '收到条附件', visible: true },
-				{ key: 21, label: '操作', visible: true }
+				{ key: 7, label: '陆地司机姓名', visible: true },
+				{ key: 8, label: '柜号', visible: true },
+				{ key: 9, label: '海运公司', visible: true },
+				{ key: 10, label: '含税', visible: true },
+				{ key: 11, label: '库存金额', visible: true },
+				{ key: 12, label: '子项陆运费之和', visible: true },
+				{ key: 13, label: '子项海运费之和', visible: true },
+				{ key: 14, label: '录入员', visible: true },
+				{ key: 15, label: '附件', visible: true },
+				{ key: 16, label: '收到条附件', visible: true },
+				{ key: 17, label: '操作', visible: true }
 			],
 			// 表单校验
 			rules: {

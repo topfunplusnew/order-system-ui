@@ -115,7 +115,7 @@ service.interceptors.response.use(
 		logRequestSuccess(res.config, res);
 
 		// 未设置状态码则默认成功状态
-		const code = res.data.code || 200;
+		const code = res.data.code != null ? res.data.code : 200;
 		// 获取错误信息
 		const msg = errorCode[code] || res.data.msg || errorCode['default'];
 		// 二进制数据则直接返回
@@ -127,7 +127,9 @@ service.interceptors.response.use(
 		}
 
 		// 在所有可能的返回路径中都要检查loadingInstance是否存在
-		if (code === 401) {
+		// 将code转为数字进行比较，兼容字符串和数字类型
+		const numericCode = Number(code);
+		if (numericCode === 401) {
 			if (loadingInstance) {
 				loadingInstance.close();
 			}
@@ -149,19 +151,19 @@ service.interceptors.response.use(
 					});
 			}
 			return Promise.reject('无效的会话，或者会话已过期，请重新登录。');
-		} else if (code === 500) {
+		} else if (numericCode === 500) {
 			if (loadingInstance) {
 				loadingInstance.close();
 			}
 			Message({ message: msg, type: 'error' });
 			return Promise.reject(new Error(msg));
-		} else if (code === 601) {
+		} else if (numericCode === 601) {
 			if (loadingInstance) {
 				loadingInstance.close();
 			}
 			Message({ message: msg, type: 'warning' });
 			return Promise.reject('error');
-		} else if (code !== 200) {
+		} else if (numericCode !== 200) {
 			if (loadingInstance) {
 				loadingInstance.close();
 			}
