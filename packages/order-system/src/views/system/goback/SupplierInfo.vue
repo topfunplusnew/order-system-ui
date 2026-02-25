@@ -80,11 +80,11 @@
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<template slot="content">
 							<span>
-								{{ scope.row.lender }}
+								{{ scope.row.moneyAmountLocal < 0 ? 0 : scope.row.lender }}
 							</span>
 						</template>
 						<span>
-							{{ scope.row.lender }}
+							{{ scope.row.moneyAmountLocal < 0 ? 0 : scope.row.lender }}
 						</span>
 					</el-tooltip>
 				</template>
@@ -93,11 +93,11 @@
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<template slot="content">
-							<span style="margin-right: 10px">{{ scope.row.borrower }}</span>
+							<span style="margin-right: 10px">{{ scope.row.moneyAmountLocal > 0 ? 0 : scope.row.borrower }}</span>
 							<i class="el-icon-s-order" style="cursor: pointer" @click="handleCheckBorrowerDetailList(scope.row)"></i>
 						</template>
 						<div style="display: flex; align-items: center; justify-content: center">
-							<span style="margin-right: 5px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{ scope.row.borrower }}</span>
+							<span style="margin-right: 5px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{ scope.row.moneyAmountLocal > 0 ? 0 : scope.row.borrower }}</span>
 							<i v-if="scope.row.borrowerList && scope.row.borrowerList.length > 0" class="el-icon-s-order" style="cursor: pointer; flex-shrink: 0; margin-left: 5px" @click.stop="handleCheckBorrowerDetailList(scope.row)"></i>
 						</div>
 					</el-tooltip>
@@ -149,16 +149,16 @@
 				<el-table-column prop="lender" label="借方(供应商欠款减少)" show-overflow-tooltip>
 					<template #default="scope">
 						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-							<template slot="content">{{ scope.row.lender }}</template>
-							<span>{{ scope.row.lender }}</span>
+							<template slot="content">{{ scope.row.moneyAmountLocal < 0 ? 0 : scope.row.lender }}</template>
+							<span>{{ scope.row.moneyAmountLocal < 0 ? 0 : scope.row.lender }}</span>
 						</el-tooltip>
 					</template>
 				</el-table-column>
 				<el-table-column prop="borrower" label="贷方(供应商欠款增加)" show-overflow-tooltip>
 					<template #default="scope">
 						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-							<template slot="content">{{ scope.row.borrower }}</template>
-							<span>{{ scope.row.borrower }}</span>
+							<template slot="content">{{ scope.row.moneyAmountLocal > 0 ? 0 : scope.row.borrower }}</template>
+							<span>{{ scope.row.moneyAmountLocal > 0 ? 0 : scope.row.borrower }}</span>
 						</el-tooltip>
 					</template>
 				</el-table-column>
