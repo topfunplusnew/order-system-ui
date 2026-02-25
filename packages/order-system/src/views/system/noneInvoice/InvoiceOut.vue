@@ -14,10 +14,11 @@
 				<el-input v-model="queryParams.invoiceCompanyName" placeholder="请输入票据单位名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="是否已开发票" prop="isInvoiced">
-				<el-select v-model="queryParams.params.isInvoiced" placeholder="请选择" clearable @keyup.enter.native="handleQuery">
+				<el-select v-model="invoiceStatus" placeholder="请选择" clearable @change="handleInvoiceStatusChange">
 					<el-option label="全部" value="" />
-					<el-option label="已开发票" value="true" />
-					<el-option label="未开发票" value="false" />
+					<el-option label="已开发票" value="invoiced" />
+					<el-option label="未开发票" value="notInvoiced" />
+					<el-option label="部分开票" value="partial" />
 				</el-select>
 			</el-form-item>
 			<el-form-item>
@@ -389,6 +390,8 @@ export default {
 		return {
 			// 遮罩层
 			loading: true,
+			// 开票状态筛选
+			invoiceStatus: '',
 			// 选中数组
 			ids: [],
 			// 非单个禁用
@@ -584,6 +587,22 @@ export default {
 		updateInvoiceOut,
 		getInvoiceOut,
 		listCompany,
+		handleInvoiceStatusChange(value) {
+			if (value === 'invoiced') {
+				this.queryParams.params.isInvoiced = 'true';
+				this.queryParams.params.hasOweAmount = null;
+			} else if (value === 'notInvoiced') {
+				this.queryParams.params.isInvoiced = 'false';
+				this.queryParams.params.hasOweAmount = null;
+			} else if (value === 'partial') {
+				this.queryParams.params.isInvoiced = 'true';
+				this.queryParams.params.hasOweAmount = 'true';
+			} else {
+				this.queryParams.params.isInvoiced = null;
+				this.queryParams.params.hasOweAmount = null;
+			}
+			this.handleQuery();
+		},
 		// 下拉菜单命令处理
 		handleCommand(command, row) {
 			switch (command) {
@@ -733,10 +752,12 @@ export default {
 		resetQuery() {
 			this.resetForm('queryForm');
 			this.dateRange = [];
+			this.invoiceStatus = '';
 			this.queryParams.companyName = null;
 			this.queryParams.invoiceObject = null;
 			this.queryParams.invoiceCompanyName = null;
 			this.queryParams.params.isInvoiced = null;
+			this.queryParams.params.hasOweAmount = null;
 			this.handleQuery();
 		},
 		// 多选框选中数据

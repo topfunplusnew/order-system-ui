@@ -14,9 +14,11 @@
 				<el-input v-model="queryParams.params.mixCompanyName" placeholder="可搜索供应商或客户名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="开票状态" prop="isInvoiced">
-				<el-select v-model="queryParams.params.isInvoiced" placeholder="请选择开票状态" clearable @keyup.enter.native="handleQuery" style="width: 150px">
-					<el-option label="已开票" value="true" />
-					<el-option label="未开票" value="false" />
+				<el-select v-model="invoiceStatus" placeholder="请选择开票状态" clearable @change="handleInvoiceStatusChange" style="width: 150px">
+					<el-option label="全部" value="" />
+					<el-option label="已开票" value="invoiced" />
+					<el-option label="未开票" value="notInvoiced" />
+					<el-option label="部分开票" value="partial" />
 				</el-select>
 			</el-form-item>
 			<el-form-item>
@@ -473,6 +475,8 @@ export default {
 		return {
 			// 枚举常量，供模板使用
 			PUBLIC_DICT_TYPE,
+			// 开票状态筛选
+			invoiceStatus: '',
 			// 遮罩层
 			loading: true,
 			// 选中数组
@@ -658,6 +662,22 @@ export default {
 		listCompany,
 		getInvoiceOther,
 		updateInvoiceOther,
+		handleInvoiceStatusChange(value) {
+			if (value === 'invoiced') {
+				this.queryParams.params.isInvoiced = 'true';
+				this.queryParams.params.hasOweAmount = null;
+			} else if (value === 'notInvoiced') {
+				this.queryParams.params.isInvoiced = 'false';
+				this.queryParams.params.hasOweAmount = null;
+			} else if (value === 'partial') {
+				this.queryParams.params.isInvoiced = 'true';
+				this.queryParams.params.hasOweAmount = 'true';
+			} else {
+				this.queryParams.params.isInvoiced = null;
+				this.queryParams.params.hasOweAmount = null;
+			}
+			this.handleQuery();
+		},
 		// 下拉菜单命令处理
 		handleCommand(command, row) {
 			switch (command) {
@@ -816,14 +836,15 @@ export default {
 			this.getList();
 		},
 		/** 重置按钮操作 */
-		/** 重置按钮操作 */
 		resetQuery() {
 			this.resetForm('queryForm');
 			this.dateRange = [];
+			this.invoiceStatus = '';
 			this.queryParams.invoiceCompanyName = null;
 			this.queryParams.Supplier = null;
 			this.queryParams.params.mixCompanyName = null;
 			this.queryParams.params.isInvoiced = null;
+			this.queryParams.params.hasOweAmount = null;
 			this.handleQuery();
 		},
 		// 多选框选中数据
