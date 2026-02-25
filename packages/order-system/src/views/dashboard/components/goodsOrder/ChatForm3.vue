@@ -10,6 +10,10 @@ export default {
 		orderInfo: {
 			type: Object,
 			default: function () {}
+		},
+		mergedOrderDetails: {
+			type: Array,
+			default: () => null
 		}
 	},
 	data() {
@@ -20,41 +24,51 @@ export default {
 		};
 	},
 	computed: {
+		// 所有明细的货款之和
+		detailPaymentsSum() {
+			if (!this.itemList || this.itemList.length === 0) return 0;
+			return this.itemList.reduce((sum, item) => sum + (Number(item.payments) || 0), 0);
+		},
 		// 合计欠款
 		totalPayments() {
-			return Number(this.moneyAmount) - Number(this.orderInfo.allPayments);
+			return Number(this.moneyAmount) - this.detailPaymentsSum;
 		}
 	},
 	created() {
-		// 查询该订单的货物
-		const orderNos = this.currentOrderInfo?.smailOrderDetails.map(item => {
-			return item.ordersNo;
-		});
-		// 根据ordersNo 批量查询订单货物
-		listOrderDetailByOrderNos(orderNos).then(res => {
-			this.itemList = res.rows;
-		});
-		// 查询客户余额 指定时间结转 日期为当前时间
-		const currentDateTime = new Date(this.currentOrderInfo.orderDate);
-		// 获取下一天的凌晨时间
-		const nextDayMidnight = new Date(currentDateTime);
-		nextDayMidnight.setDate(currentDateTime.getDate() + 1);
-		nextDayMidnight.setHours(0, 0, 0, 0); // 设置时间为午夜
-		const query = {
-			beginTime: parseTime(nextDayMidnight),
-			companyId: this.currentOrderInfo.customerID
-		};
-		// 查询客户余额
-		getCustomerSubjectDetailSomeDay(query).then(res => {
-			this.moneyAmount = res.data.moneyAmount;
-		});
+		if (this.mergedOrderDetails && this.mergedOrderDetails.length > 0) {
+			this.itemList = this.mergedOrderDetails;
+			this.loadCustomerMoneyNextDay();
+		} else {
+			this.loadOrderDetails();
+		}
 	},
 	mounted() {
 		console.log(this.currentOrderInfo);
 	},
 	methods: {
 		fix,
-		numToChineseUppercase,
+		loadOrderDetails() {
+			const orderNos = this.currentOrderInfo?.smailOrderDetails.map(item => {
+				return item.ordersNo;
+			});
+			listOrderDetailByOrderNos(orderNos).then(res => {
+				this.itemList = res.rows;
+			});
+			this.loadCustomerMoneyNextDay();
+		},
+		loadCustomerMoneyNextDay() {
+			const currentDateTime = new Date(this.currentOrderInfo.orderDate);
+			const nextDayMidnight = new Date(currentDateTime);
+			nextDayMidnight.setDate(currentDateTime.getDate() + 1);
+			nextDayMidnight.setHours(0, 0, 0, 0);
+			const query = {
+				beginTime: parseTime(nextDayMidnight),
+				companyId: this.currentOrderInfo.customerID
+			};
+			getCustomerSubjectDetailSomeDay(query).then(res => {
+				this.moneyAmount = res.data.moneyAmount;
+			});
+		},
 		printHTML() {
 			this.$print({
 				printable: 'printBoxs',
@@ -350,8 +364,8 @@ export default {
 					</template>
 					<tr>
 						<td style="text-align: left">本次货款</td>
-						<td colspan="5" style="text-align: left">大写:{{ numToChineseUppercase(orderInfo.allPayments) }}</td>
-						<td>{{ (orderInfo.allPayments || 0).toFixed(2) }}</td>
+						<td colspan="5" style="text-align: left">大写:{{ numToChineseUppercase(detailPaymentsSum) }}</td>
+						<td>{{ (detailPaymentsSum || 0).toFixed(2) }}</td>
 					</tr>
 					<tr>
 						<td style="text-align: left">欠款</td>

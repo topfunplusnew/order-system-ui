@@ -2,11 +2,11 @@
 	<div>
 		<el-row>
 			<!--      发货单1-->
-			<ChatForm v-if="givenType === 1" :order-info="orderGivenInfo" />
+			<ChatForm v-if="givenType === 1" :order-info="orderGivenInfo" :merged-order-details="mergedOrderDetails" />
 			<!--      发货单2-->
-			<ChatForm2 v-if="givenType === 2" :order-info="orderGivenInfo" />
+			<ChatForm2 v-if="givenType === 2" :order-info="orderGivenInfo" :merged-order-details="mergedOrderDetails" />
 			<!--      发货单3-->
-			<ChatForm3 v-if="givenType === 3" :order-info="orderGivenInfo" />
+			<ChatForm3 v-if="givenType === 3" :order-info="orderGivenInfo" :merged-order-details="mergedOrderDetails" />
 		</el-row>
 	</div>
 </template>
@@ -27,6 +27,11 @@ export default {
 		// 发货单相关订单的信息
 		orderGivenInfo: {
 			type: Object
+		},
+		// 合并后的订单详情列表
+		mergedOrderDetails: {
+			type: Array,
+			default: () => []
 		}
 	},
 	computed: {

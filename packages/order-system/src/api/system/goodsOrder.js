@@ -20,6 +20,14 @@ export function getGoodsOrder(id) {
 	});
 }
 
+// 查询订单的所有发货单
+export function getSameDayOrders(id) {
+	return request({
+		url: '/system/goodsOrder/' + id + '/sameDayOrders',
+		method: 'get'
+	});
+}
+
 // 新增订单
 export function addGoodsOrder(data) {
 	return request({
