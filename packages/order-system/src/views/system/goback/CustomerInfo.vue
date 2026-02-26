@@ -79,24 +79,6 @@
 				</template>
 			</el-table-column>
 
-			<!-- 任务10：同日同时存在【订单】和【调整单】时，订单/调整单金额拆分为两列展示 -->
-			<el-table-column prop="orderMoneyAmount" label="[订单]订单金额" width="140" show-overflow-tooltip>
-				<template #default="scope">
-					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<template slot="content">{{ scope.row.orderMoneyAmount }}</template>
-						<span>{{ scope.row.orderMoneyAmount }}</span>
-					</el-tooltip>
-				</template>
-			</el-table-column>
-			<el-table-column prop="adjustMoneyAmount" label="[调整单]调整单金额" width="140" show-overflow-tooltip>
-				<template #default="scope">
-					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<template slot="content">{{ scope.row.adjustMoneyAmount }}</template>
-						<span>{{ scope.row.adjustMoneyAmount }}</span>
-					</el-tooltip>
-				</template>
-			</el-table-column>
-
 			<!--      借方总款-->
 			<el-table-column prop="lender" label="借方（客户欠款增加）" show-overflow-tooltip>
 				<template #default="scope">
@@ -105,21 +87,6 @@
 							<span>{{ scope.row.moneyAmountLocal < 0 ? 0 : scope.row.lender }}</span>
 						</template>
 						<span>{{ scope.row.moneyAmountLocal < 0 ? 0 : scope.row.lender }}</span>
-					</el-tooltip>
-				</template>
-			</el-table-column>
-
-			<!--      贷方总款-->
-			<el-table-column prop="borrower" label="贷方（客户欠款减少）" show-overflow-tooltip>
-				<template #default="scope">
-					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<template slot="content">
-							<span style="margin-right: 10px">{{ scope.row.moneyAmountLocal > 0 ? 0 : scope.row.borrower }}</span>
-						</template>
-						<div style="display: flex; align-items: center; justify-content: center">
-							<span style="margin-right: 5px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{ scope.row.moneyAmountLocal > 0 ? 0 : scope.row.borrower }}</span>
-							<i v-if="scope.row.borrowerList && scope.row.borrowerList.length > 0" class="el-icon-s-order" style="cursor: pointer; flex-shrink: 0; margin-left: 5px" @click.stop="handleCheckBorrowerDetailList(scope.row)"></i>
-						</div>
 					</el-tooltip>
 				</template>
 			</el-table-column>
