@@ -51,7 +51,8 @@ export var mixin_order_deliverGoods = {
 							orderGivenInfo: row,
 							mergedOrderDetails: allOrderDetails
 						},
-						true
+						true,
+						false
 					);
 				} else {
 					this.$message.warning('暂无发货单数据');
