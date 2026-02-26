@@ -1,0 +1,97 @@
+{
+	"openapi": "3.0.1",
+	"info": {
+		"title": "默认模块",
+		"description": "",
+		"version": "1.0.0"
+	},
+	"tags": [],
+	"paths": {
+		"/system/goodsOrder/{id}/sameDayOrders": {
+			"get": {
+				"summary": "查询同一天、同一客户的所有订单列表",
+				"deprecated": false,
+				"description": "<p>\n根据传入的订单ID，获取该订单的客户和日期，返回该客户在同一天的所有订单。\n</p>",
+				"tags": [],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"description": "",
+						"required": true,
+						"schema": {
+							"type": "integer"
+						}
+					},
+					{
+						"name": "Authorization",
+						"in": "header",
+						"description": "",
+						"example": "dev-mode-admin-token-2025",
+						"schema": {
+							"type": "string",
+							"default": "dev-mode-admin-token-2025"
+						}
+					},
+					{
+						"name": "OSR",
+						"in": "header",
+						"description": "",
+						"example": "{{OSR}}",
+						"schema": {
+							"type": "string",
+							"default": "{{OSR}}"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/AjaxResult",
+									"description": "操作消息提醒"
+								},
+								"example": {
+									"": {}
+								}
+							}
+						}
+					}
+				},
+				"security": [
+					{
+						"bearer": []
+					}
+				]
+			}
+		}
+	},
+	"components": {
+		"schemas": {
+			"AjaxResult": {
+				"type": "object",
+				"properties": {
+					"key": {
+						"type": "object",
+						"properties": {}
+					}
+				}
+			}
+		},
+		"responses": {},
+		"securitySchemes": {
+			"bearer": {
+				"type": "http",
+				"scheme": "bearer"
+			}
+		}
+	},
+	"servers": [],
+	"security": [
+		{
+			"bearer": []
+		}
+	]
+}

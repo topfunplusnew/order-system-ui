@@ -39,7 +39,8 @@ export var mixin_order_deliverGoods = {
 		async handleOrder2(row) {
 			try {
 				const res = await getSameDayOrders(row.id);
-				if (res.code === 200 && res.data && res.data.length > 1) {
+				console.log(res);
+				if (res.code === 200 && res.data && res.data.length > 0) {
 					const allOrderDetails = [];
 					res.data.forEach(order => {
 						if (order.orderDetailList && order.orderDetailList.length > 0) {
@@ -52,7 +53,7 @@ export var mixin_order_deliverGoods = {
 						'1050px',
 						{
 							type: 2,
-							orderGivenInfo: res.data[1],
+							orderGivenInfo: row,
 							mergedOrderDetails: allOrderDetails
 						},
 						true
@@ -68,7 +69,7 @@ export var mixin_order_deliverGoods = {
 		async handleOrder3(row) {
 			try {
 				const res = await getSameDayOrders(row.id);
-				if (res.code === 200 && res.data && res.data.length > 2) {
+				if (res.code === 200 && res.data && res.data.length > 0) {
 					const allOrderDetails = [];
 					res.data.forEach(order => {
 						if (order.orderDetailList && order.orderDetailList.length > 0) {
@@ -81,7 +82,7 @@ export var mixin_order_deliverGoods = {
 						'1050px',
 						{
 							type: 3,
-							orderGivenInfo: res.data[2],
+							orderGivenInfo: row,
 							mergedOrderDetails: allOrderDetails
 						},
 						true
