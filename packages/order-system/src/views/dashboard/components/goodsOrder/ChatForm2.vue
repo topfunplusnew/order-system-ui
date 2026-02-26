@@ -369,7 +369,7 @@ export default {
 							<td>{{ item.packs }}</td>
 							<td>{{ fix_2(item.paymentUnload || 0) }}</td>
 							<td>
-								{{ item.isIncludeTaxFactory === 0 ? '否' : '是' }}
+								{{ item.isIncludeTaxSale === 0 ? '否' : '是' }}
 							</td>
 							<td>{{ Math.floor(item.paymentsWithSundry) }}</td>
 							<td>{{ Math.floor(item.payments) }}</td>

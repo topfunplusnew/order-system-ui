@@ -379,8 +379,8 @@ export default {
 							</td>
 							<td>{{ Math.floor(item.paymentsWithSundry) }}</td>
 							<td>{{ Math.floor(item.payments) }}</td>
-							<td>{{ currentOrderInfo.landCarNo || currentOrderInfo.seaCarNo }}</td>
-							<td v-if="currentOrderInfo.seaCarNo">{{ currentOrderInfo.seaDriverName }}</td>
+							<td>{{ item.landCarNo || item.seaCarNo }}</td>
+							<td v-if="item.seaCarNo">{{ item.seaDriverName }}</td>
 						</tr>
 					</template>
 					<!--  这里是货物的列表 要根据订单货物的列表来渲染-->
