@@ -499,7 +499,7 @@ import { PaymentState, PAYMENT_STATE } from '../../../api/tool/enums';
 import CheckOrderInfo from '../../dashboard/components/orderfreight/CheckOrderInfo.vue';
 import { mixin_order_freight_fill } from './orderFreightFill';
 import { FREIGHT_TYPE, mixin_freight_payment } from '@/views/dashboard/mixins/freight/freight_payment';
-import { fix } from '../../../api/tool/format';
+import { fix_2 } from '../../../api/tool/format';
 import { common_dialog } from '../../dashboard/mixins/common/common_dialog';
 import { listGoodsOrder } from '@/api/system/goodsOrder';
 import { isNull } from '@/main';
@@ -805,7 +805,7 @@ export default {
 		// 如果有 freightId 或 otherBankNo，保留它们，不清除
 	},
 	methods: {
-		fix,
+		fix_2,
 		listFleet,
 		listData,
 		listBankAccount,
@@ -1348,7 +1348,8 @@ export default {
 					const sum = values.reduce((prev, curr) => {
 						return prev + curr;
 					}, 0);
-					sums[index] = this.fix(sum);
+					// ä»»åŠ¡3ï¼šä¸€é”®ä»˜è¿è´¹ - åˆè®¡ä¿ç•™ 2 ä½å°æ•°ï¼ˆfix ä¸º 4 ä½ï¼‰
+					sums[index] = this.fix_2(sum);
 				} else {
 					sums[index] = '';
 				}

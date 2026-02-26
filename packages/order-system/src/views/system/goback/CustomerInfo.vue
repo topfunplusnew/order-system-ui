@@ -79,6 +79,24 @@
 				</template>
 			</el-table-column>
 
+			<!-- 任务10：同日同时存在【订单】和【调整单】时，订单/调整单金额拆分为两列展示 -->
+			<el-table-column prop="orderMoneyAmount" label="[订单]订单金额" width="140" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<template slot="content">{{ scope.row.orderMoneyAmount }}</template>
+						<span>{{ scope.row.orderMoneyAmount }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column prop="adjustMoneyAmount" label="[调整单]调整单金额" width="140" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<template slot="content">{{ scope.row.adjustMoneyAmount }}</template>
+						<span>{{ scope.row.adjustMoneyAmount }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+
 			<!--      借方总款-->
 			<el-table-column prop="lender" label="借方（客户欠款增加）" show-overflow-tooltip>
 				<template #default="scope">
@@ -212,7 +230,7 @@ import { PUBLIC_DICT_TYPE } from '@/utils/order';
 import { listCompany } from '@/api/system/company';
 import { common_excel } from '@/views/dashboard/mixins/common/common_excel';
 import { getCustomerSubjectDetailSomeDay, getCustomerSubjectDetailSummary } from '@/api/system/statement';
-import { fix, fix_2 } from '@/api/tool/format';
+import { fix_2 } from '@/api/tool/format';
 import { getFunction } from '@/utils/order/mapper';
 import { moduleNames, TableName, getOrAdvancedModule } from '@/api/tool/enums';
 import GOODS_ORDER from '@/components/NeedToShow/GOODS_ORDER.vue';
@@ -406,9 +424,10 @@ export default {
 						for (let date in sourceData) {
 							dayData = _.cloneDeep(sourceData[date]);
 							[itemTotalLender, itemTotalBorrower] = calculateLenderAndBorrower(dayData);
+							// 任务2：往来明细/借贷方金额统一改为 2 位小数展示（原 fix 为 4 位）
 							map[date] = {
-								lender: fix(itemTotalLender),
-								borrower: fix(itemTotalBorrower),
+								lender: fix_2(itemTotalLender),
+								borrower: fix_2(itemTotalBorrower),
 								companyName: customer
 							};
 						}
@@ -436,8 +455,8 @@ export default {
 									return {
 										date: date,
 										payNo: detail.payNo,
-										lender: fix(lender),
-										borrower: fix(borrower),
+										lender: fix_2(lender),
+										borrower: fix_2(borrower),
 										tableName: detail.tableName,
 										debitCredit: detail.debitCredit,
 										moneyAmountLocal: fix_2(amount),
@@ -448,9 +467,30 @@ export default {
 								};
 								const lenderList = item.map(condition).filter(detail => isDebit(detail.debitCredit));
 								const borrowerList = item.map(condition).filter(detail => isCredit(detail.debitCredit));
+
+								// 任务10：同日同时存在【订单】和【调整单】时，分别统计订单/调整单的借方金额用于拆列展示（复用 getOrAdvancedModule 区分类型）
+								const { orderMoneyAmount, adjustMoneyAmount } = item.reduce(
+									(acc, detail) => {
+										if (detail.tableName !== TableName.GOODS_ORDER || !isDebit(detail.debitCredit)) {
+											return acc;
+										}
+
+										const moduleName = getOrAdvancedModule([detail.tableName], detail.flag);
+										const amount = number(detail.moneyAmount || 0);
+										if (moduleName === moduleNames.goodsorder) {
+											acc.orderMoneyAmount = add(acc.orderMoneyAmount, amount);
+										} else if (moduleName === moduleNames.advanced.spec.goodsorder.positive_adjust) {
+											acc.adjustMoneyAmount = add(acc.adjustMoneyAmount, amount);
+										}
+										return acc;
+									},
+									{ orderMoneyAmount: 0, adjustMoneyAmount: 0 }
+								);
 								return {
 									customerName: map[date]?.companyName,
 									date: date,
+									orderMoneyAmount: fix_2(orderMoneyAmount),
+									adjustMoneyAmount: fix_2(adjustMoneyAmount),
 									lender: map[date].lender,
 									borrower: map[date].borrower,
 									moneyAmountLocal: fix_2(add(currentBalance, nowMoney)),

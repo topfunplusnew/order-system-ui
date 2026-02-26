@@ -191,7 +191,7 @@ import { PUBLIC_DICT_TYPE } from '@/utils/order';
 import { listCompany } from '@/api/system/company';
 import { common_excel } from '@/views/dashboard/mixins/common/common_excel';
 import { getSupplierSubjectDetailSomeDay, getSupplierSubjectDetailSummary } from '@/api/system/statement';
-import { aggregateByDay, fix } from '@/api/tool/format';
+import { fix_2 } from '@/api/tool/format';
 import { getFunction } from '@/utils/order/mapper';
 import { moduleNames, TableName, getOrAdvancedModule } from '@/api/tool/enums';
 import GOODS_ORDER from '@/components/NeedToShow/GOODS_ORDER.vue';
@@ -398,9 +398,10 @@ export default {
 							for (let date in sourceData) {
 								dayData = _.cloneDeep(sourceData[date]);
 								[itemTotalLender, itemTotalBorrower] = calculateLenderAndBorrower(dayData);
+								// 任务2：往来明细/借贷方金额统一改为 2 位小数展示（原 fix 为 4 位）
 								map[date] = {
-									lender: fix(itemTotalLender),
-									borrower: fix(itemTotalBorrower),
+									lender: fix_2(itemTotalLender),
+									borrower: fix_2(itemTotalBorrower),
 									companyName: supperName
 								};
 							}
@@ -425,11 +426,11 @@ export default {
 									return {
 										date: date,
 										payNo: detail.payNo,
-										lender: fix(lender),
-										borrower: fix(borrower),
+										lender: fix_2(lender),
+										borrower: fix_2(borrower),
 										tableName: detail.tableName,
 										debitCredit: detail.debitCredit,
-										moneyAmountLocal: fix(amount),
+										moneyAmountLocal: fix_2(amount),
 										companyId: detail.companyId,
 										flag: detail.flag,
 										summary: Array.isArray(detail.summary) ? detail.summary.join('、') : detail.summary
@@ -444,7 +445,7 @@ export default {
 									payNo: '', // 主表该列现在显示明细，留空或移除
 									lender: map[date].lender,
 									borrower: map[date].borrower,
-									moneyAmountLocal: fix(add(currentBalance, nowMoney)),
+									moneyAmountLocal: fix_2(add(currentBalance, nowMoney)),
 									lenderList, // 借方明细列表 (弹窗用)
 									borrowerList // 贷方明细列表 (弹窗用)
 								};

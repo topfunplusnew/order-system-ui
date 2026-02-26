@@ -219,9 +219,15 @@ export function mergeSpecialTableData(sourceData) {
 	// 对订单或者库存的数据按日期和类型进行分组
 	const groupedSpecialData = _.groupBy(specialData, item => {
 		const date = item.operateDate.match(/^(\d{4}-\d{2}-\d{2})/)[1];
-		const type = isGoodsOrderDisplay(item.tableName) ? 'order' : 'inventory';
-		const groupKey = `${date}_${type}`;
-		return groupKey;
+		const isOrder = isGoodsOrderDisplay(item.tableName);
+
+		// 任务10：goodsorder 同日同时存在【订单/调整单】时，需要按 flag 拆分分组，避免被合并后无法区分
+		if (isOrder) {
+			const flag = item.flag || 'default';
+			return `${date}_order_${flag}`;
+		}
+
+		return `${date}_inventory`;
 	});
 
 	const mergedData = _.flatMap(groupedSpecialData, items => {

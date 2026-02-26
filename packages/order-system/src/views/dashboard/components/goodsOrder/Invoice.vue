@@ -11,6 +11,13 @@
 				<el-form-item label="开票金额" prop="invoiceAmount">
 					<el-input v-model="form.invoiceAmount" placeholder="请输入开票金额" />
 				</el-form-item>
+				<!-- 任务5：补充【票点/票点金额】输入项，并按 invoiceOut/index.vue 的监听逻辑自动计算 -->
+				<el-form-item label="票点" prop="ticketPoint">
+					<el-input v-model="form.ticketPoint" placeholder="请输入票点" />
+				</el-form-item>
+				<el-form-item label="票点金额" prop="ticketPointAmount">
+					<el-input v-model="form.ticketPointAmount" placeholder="请输入票点金额" />
+				</el-form-item>
 				<el-form-item label="公司名称" prop="companyName">
 					<el-row>
 						<el-col :span="10">
@@ -56,7 +63,6 @@ import { checkOrderAllinvoice } from '@/api/system/goodsOrder';
 import { addInvoiceOut } from '@/api/system/invoiceOut';
 import { excludeParams } from '@/api/tool/exclude';
 import { listCompany } from '@/api/system/company';
-import { fix } from '@/api/tool/format';
 import { PUBLIC_DICT_TYPE } from '../../../../utils/order';
 
 export default {
@@ -165,18 +171,16 @@ export default {
 		}
 	},
 	watch: {
-		// 监听开票金额不能超过总货款
-		form: {
-			handler() {
-				// 不能超越货款
-				if (this.form.ticketPointAmount > this.maxInvent) {
-					this.$modal.msgError('客户开票金额不能超过订单总货款');
-					this.resetMoney();
-				}
-				// 填充票点金额
-				this.form.ticketPointAmount = fix(Number(this.form.ticketPoint) * Number(this.form.invoiceAmount));
-			},
-			deep: true
+		// 任务5：监听开票金额/票点变化，自动计算票点金额（与 system/invoiceOut/index.vue 保持一致）
+		'form.invoiceAmount': function (newVal) {
+			if (newVal && this.form.ticketPoint) {
+				this.form.ticketPointAmount = Number(newVal * this.form.ticketPoint).toFixed(2);
+			}
+		},
+		'form.ticketPoint': function (newVal) {
+			if (newVal && this.form.invoiceAmount) {
+				this.form.ticketPointAmount = Number(this.form.invoiceAmount * newVal).toFixed(2);
+			}
 		}
 	},
 	created() {

@@ -57,6 +57,12 @@
 		>
 			<!-- 序号 -->
 			<el-table-column v-if="columns[0].visible" label="序号" align="center" type="index" width="160" show-overflow-tooltip />
+			<!-- 任务9：表格左侧新增【日期】列，取顶部搜索开始/结束时间拼接展示（不精确到秒） -->
+			<el-table-column label="日期" align="center" width="260" show-overflow-tooltip>
+				<template slot-scope="scope">
+					{{ queryDateRangeText }}
+				</template>
+			</el-table-column>
 			<!-- 车牌号 -->
 			<el-table-column v-if="columns[6].visible" label="车牌号" align="center" prop="carNo" width="110" show-overflow-tooltip />
 			<!-- 司机姓名 -->
@@ -218,7 +224,15 @@ export default {
 			endTime: ''
 		};
 	},
-	computed: {},
+	computed: {
+		// 任务9：顶部搜索的开始/结束时间拼成：YYYY-MM-DD 00:00:00至YYYY-MM-DD 23:59:59
+		queryDateRangeText() {
+			const begin = this.queryParams?.beginTime ? String(this.queryParams.beginTime).slice(0, 10) : '';
+			const end = this.queryParams?.endTime ? String(this.queryParams.endTime).slice(0, 10) : '';
+			if (!begin || !end) return '-';
+			return `${begin} 00:00:00至${end} 23:59:59`;
+		}
+	},
 	created() {
 		this.getList();
 	},

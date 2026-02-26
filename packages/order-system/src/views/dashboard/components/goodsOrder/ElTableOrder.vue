@@ -786,19 +786,48 @@ export default {
 				case 11: // 海运公司
 					return row.seaDriverName || '无';
 				case 12: // 总货款
-					return row.allPayments || '';
+					// 任务1：前端 Excel 导出 - 将数字字符串转为 Number，确保导出到 Excel 后可直接运算
+					if (row.allPayments === null || row.allPayments === undefined || row.allPayments === '') return '';
+					{
+						const num = Number(String(row.allPayments).replace(/,/g, '').trim());
+						return isNaN(num) ? row.allPayments : num;
+					}
 				case 13: // 总吨位
-					return row.allTonnage || '';
+					if (row.allTonnage === null || row.allTonnage === undefined || row.allTonnage === '') return '';
+					{
+						const num = Number(String(row.allTonnage).replace(/,/g, '').trim());
+						return isNaN(num) ? row.allTonnage : num;
+					}
 				case 14: // 出厂货款
-					return row.allPaymentFactory || '';
+					if (row.allPaymentFactory === null || row.allPaymentFactory === undefined || row.allPaymentFactory === '') return '';
+					{
+						const num = Number(String(row.allPaymentFactory).replace(/,/g, '').trim());
+						return isNaN(num) ? row.allPaymentFactory : num;
+					}
 				case 15: // 陆运费
-					return row.landFreight || '';
+					if (row.landFreight === null || row.landFreight === undefined || row.landFreight === '') return '';
+					{
+						const num = Number(String(row.landFreight).replace(/,/g, '').trim());
+						return isNaN(num) ? row.landFreight : num;
+					}
 				case 16: // 海运费
-					return row.seaFreight || '';
+					if (row.seaFreight === null || row.seaFreight === undefined || row.seaFreight === '') return '';
+					{
+						const num = Number(String(row.seaFreight).replace(/,/g, '').trim());
+						return isNaN(num) ? row.seaFreight : num;
+					}
 				case 17: // 含税利润
-					return row.allProfit || '';
+					if (row.allProfit === null || row.allProfit === undefined || row.allProfit === '') return '';
+					{
+						const num = Number(String(row.allProfit).replace(/,/g, '').trim());
+						return isNaN(num) ? row.allProfit : num;
+					}
 				case 18: // 不含税利润
-					return row.allProfitNoTax || '';
+					if (row.allProfitNoTax === null || row.allProfitNoTax === undefined || row.allProfitNoTax === '') return '';
+					{
+						const num = Number(String(row.allProfitNoTax).replace(/,/g, '').trim());
+						return isNaN(num) ? row.allProfitNoTax : num;
+					}
 				case 19: // 销售经理
 					return row.saleManager || '';
 				case 20: // 录入员

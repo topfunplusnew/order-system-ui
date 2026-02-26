@@ -393,17 +393,22 @@ export default {
 	height: 100%;
 	display: flex;
 	flex-direction: column;
+	min-height: 0;
 }
 
 /* 表格包装器样式 - 仅保留必要的行分割 */
 .table-wrapper {
+	/* 任务7：批量开票【购买方信息】区域表格增加滚动条，避免内容被卡片 body 裁剪导致显示不全 */
+	flex: 1;
+	min-height: 0;
 	overflow-x: auto;
-	overflow-y: visible;
+	overflow-y: auto;
 	width: 100%;
 
 	/* 美化水平滚动条 */
 	&::-webkit-scrollbar {
 		height: 8px;
+		width: 8px;
 	}
 
 	&::-webkit-scrollbar-thumb {

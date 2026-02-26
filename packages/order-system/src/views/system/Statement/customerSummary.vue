@@ -52,6 +52,12 @@
 				}
 			"
 		>
+			<!-- 任务9：表格左侧新增【日期】列，取顶部搜索开始/结束时间拼接展示（不精确到秒） -->
+			<el-table-column label="日期" align="center" width="260" show-overflow-tooltip>
+				<template slot-scope="scope">
+					{{ queryDateRangeText }}
+				</template>
+			</el-table-column>
 			<el-table-column v-if="columns[0].visible" show-overflow-tooltip label="科目编码" align="center" prop="subjectNo" width="140" />
 			<el-table-column v-if="columns[1].visible" show-overflow-tooltip label="科目名称" align="center" prop="subjectName" width="140" />
 			<el-table-column v-if="columns[2].visible" show-overflow-tooltip label="客户编号" align="center" prop="companyId" width="140" />
@@ -147,6 +153,15 @@ export default {
 
 			dialogVisible: false
 		};
+	},
+	computed: {
+		// 任务9：顶部搜索的开始/结束时间拼成：YYYY-MM-DD 00:00:00至YYYY-MM-DD 23:59:59
+		queryDateRangeText() {
+			const begin = this.queryParams?.beginTime ? String(this.queryParams.beginTime).slice(0, 10) : '';
+			const end = this.queryParams?.endTime ? String(this.queryParams.endTime).slice(0, 10) : '';
+			if (!begin || !end) return '-';
+			return `${begin} 00:00:00至${end} 23:59:59`;
+		}
 	},
 	created() {
 		this.getList();

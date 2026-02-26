@@ -137,14 +137,15 @@
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
 						<div slot="content" @click.stop>
 							<div v-if="Array.isArray(scope.row.attachmentList)">
-								<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'attachmentList'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getInvoiceOut, updateInvoiceOut)" />
+								<!-- 任务5：修复“发票卖出信息确认”附件列无法点击/不展示（flag 与上传保持一致） -->
+								<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'paymentReceipts'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getInvoiceOut, updateInvoiceOut)" />
 							</div>
 							<div v-else>
 								<el-tag type="danger">加载错误</el-tag>
 							</div>
 						</div>
 						<div v-if="Array.isArray(scope.row.attachmentList)">
-							<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'attachmentList'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getInvoiceOut, updateInvoiceOut)" />
+							<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'paymentReceipts'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getInvoiceOut, updateInvoiceOut)" />
 						</div>
 						<div v-else>
 							<el-tag type="danger">加载错误</el-tag>
@@ -157,14 +158,14 @@
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
 						<div slot="content" @click.stop>
 							<div v-if="Array.isArray(scope.row.attachmentList)">
-								<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'attachmentList'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getInvoiceOut, updateInvoiceOut)" />
+								<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'invoiceAttachments'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getInvoiceOut, updateInvoiceOut)" />
 							</div>
 							<div v-else>
 								<el-tag type="danger">加载错误</el-tag>
 							</div>
 						</div>
 						<div v-if="Array.isArray(scope.row.attachmentList)">
-							<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'attachmentList'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getInvoiceOut, updateInvoiceOut)" />
+							<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'invoiceAttachments'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getInvoiceOut, updateInvoiceOut)" />
 						</div>
 						<div v-else>
 							<el-tag type="danger">加载错误</el-tag>
@@ -464,12 +465,12 @@ export default {
 			deep: true
 		},
 		// 监听开票金额和票点变化,自动计算票点金额
-		'form.invoiceAmount': function(newVal) {
+		'form.invoiceAmount': function (newVal) {
 			if (!this.isFirstLoad && newVal && this.form.ticketPoint) {
 				this.form.ticketPointAmount = Number(newVal * this.form.ticketPoint).toFixed(2);
 			}
 		},
-		'form.ticketPoint': function(newVal) {
+		'form.ticketPoint': function (newVal) {
 			if (!this.isFirstLoad && newVal && this.form.invoiceAmount) {
 				this.form.ticketPointAmount = Number(this.form.invoiceAmount * newVal).toFixed(2);
 			}
@@ -748,17 +749,22 @@ export default {
 			// 处理附件列表，分别提取不同类型的附件
 			if (this.form.attachmentList && Array.isArray(this.form.attachmentList)) {
 				// 分别筛选出不同类型的附件
-				const paymentReceiptsAttachments = this.form.attachmentList.filter(item => item.flag === 'attachmentList');
-				const invoiceAttachments = this.form.attachmentList.filter(item => item.flag === 'attachmentList');
+				// 任务5：修复“发票卖出信息确认”附件列无法点击/不展示（与上传 flag 保持一致：paymentReceipts / invoiceAttachments）
+				const paymentReceiptsAttachments = this.form.attachmentList.filter(item => item.flag === 'paymentReceipts');
+				const invoiceAttachments = this.form.attachmentList.filter(item => item.flag === 'invoiceAttachments');
 
 				// 确保 params 对象存在
 				if (!this.form.params) {
 					this.form.params = {};
 				}
 
-				// 设置分类的附件数据（注意：invoiceOut 使用的都是 attachmentList flag）
+				// 设置分类的附件数据
 				this.form.params.paymentReceiptsAttachments = paymentReceiptsAttachments;
 				this.form.params.invoiceAttachments = invoiceAttachments;
+
+				// 初始化各自附件ID，避免只更新一种附件时覆盖另一种附件
+				this.form.params.paymentReceiptsAttachmentIds = paymentReceiptsAttachments.map(item => item.id);
+				this.form.params.invoiceAttachmentsAttachmentIds = invoiceAttachments.map(item => item.id);
 
 				// 设置所有附件ID
 				this.form.params.attachmentIds = this.form.attachmentList.map(item => item.id);

@@ -47,6 +47,8 @@ export default {
 	},
 	methods: {
 		fix,
+		// 任务8：模板中直接调用 numToChineseUppercase，需要挂到 methods 上避免“未定义/不是函数”报错
+		numToChineseUppercase,
 		loadOrderDetails() {
 			const orderNos = this.currentOrderInfo?.smailOrderDetails.map(item => {
 				return item.ordersNo;

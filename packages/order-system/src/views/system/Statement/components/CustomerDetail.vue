@@ -26,12 +26,15 @@ import { listCompany } from '@/api/system/company';
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
 import { formatBalance, isDebit, isCredit } from '@/utils/trash/utils';
 import { common_excel } from '@/views/dashboard/mixins/common/common_excel';
+import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
+import { isGoodsOrderDisplay } from '@/api/system/goodsOrder';
+import OrderDayInfo from '@/components/OrderDayInfor/index.vue';
 import { number, add, subtract, abs } from 'mathjs';
 
 export default {
 	name: 'CustomerDetail',
 	components: { SearchOption, TotalTag },
-	mixins: [common_excel],
+	mixins: [common_excel, common_dialog],
 	data() {
 		return {
 			searchForm: {
@@ -201,6 +204,25 @@ export default {
 			const { tableName, payNo } = row;
 			if (!tableName || !payNo) {
 				this.$message.warning('该行数据有误:模块名或者凭证号不存在');
+				return;
+			}
+
+			// 任务6：ORDER_DETAIL 按“订单模式”展示（参考 CustomerInfo.vue / SupplierInfo.vue）
+			if (isGoodsOrderDisplay(tableName)) {
+				const ids = Array.isArray(payNo) ? payNo : [payNo];
+				this.openDialog(
+					OrderDayInfo,
+					'订单信息',
+					'1500px',
+					{
+						ids,
+						isDetail: tableName === TableName.ORDER_DETAIL,
+						companyId: Number(this.searchForm.companyId),
+						companyType: PUBLIC_DICT_TYPE.CUSTOMER
+					},
+					false,
+					false
+				);
 				return;
 			}
 			// 根据tableName动态获取某个JS模块

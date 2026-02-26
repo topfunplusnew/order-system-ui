@@ -2494,16 +2494,29 @@ export default {
 				case 22: // 含税
 					return row.isIncludeTaxSale === 1 ? '含税' : '不含税';
 				// 2026-02-06 添加库存金额列（从子项的 payments 求和）
-				case 23: // 库存金额
-					return this.calculateTotalPayments(row);
+				case 23: // ä»»åŠ¡1ï¼šå‰ç«¯ Excel å¯¼å‡º - åº“å­˜é‡‘é¢è¾“å‡ºä¸º Numberï¼Œä¿è¯ Excel å¯ç›´æŽ¥è¿ç®— // 库存金额
+				{
+					const raw = this.calculateTotalPayments(row);
+					if (raw === null || raw === undefined || raw === '') return '';
+					const num = Number(String(raw).replace(/,/g, '').trim());
+					return isNaN(num) ? raw : num;
+				}
 				case 14: // 海运银行卡号
 					return row.seaBankNo || '';
 				case 15: // 海运银行户名
 					return row.seaBankName || '';
 				case 16: // 子项陆运费之和
-					return row.allLandFreight || '';
+					if (row.allLandFreight === null || row.allLandFreight === undefined || row.allLandFreight === '') return '';
+					{
+						const num = Number(String(row.allLandFreight).replace(/,/g, '').trim());
+						return isNaN(num) ? row.allLandFreight : num;
+					}
 				case 17: // 子项海运费之和
-					return row.allSeaFreight || '';
+					if (row.allSeaFreight === null || row.allSeaFreight === undefined || row.allSeaFreight === '') return '';
+					{
+						const num = Number(String(row.allSeaFreight).replace(/,/g, '').trim());
+						return isNaN(num) ? row.allSeaFreight : num;
+					}
 				case 18: // 录入人员
 					return row.userName || '';
 				case 19: // 附件
