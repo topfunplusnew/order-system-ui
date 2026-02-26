@@ -108,11 +108,11 @@
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<template slot="content">
 							<span :class="{ negative: scope.row.moneyAmountLocal < 0 }">
-								{{ formatBalance(scope.row.moneyAmountLocal) }}
+								{{ formatBalanceByDebitCredit(scope.row.moneyAmountLocal, scope.row.moneyAmountLocal > 0 ? 'd' : 'c') }}
 							</span>
 						</template>
 						<span :class="{ negative: scope.row.moneyAmountLocal < 0 }">
-							{{ formatBalance(scope.row.moneyAmountLocal) }}
+							{{ formatBalanceByDebitCredit(scope.row.moneyAmountLocal, scope.row.moneyAmountLocal > 0 ? 'd' : 'c') }}
 						</span>
 					</el-tooltip>
 				</template>
@@ -149,24 +149,28 @@
 				<el-table-column prop="lender" label="借方(供应商欠款减少)" show-overflow-tooltip>
 					<template #default="scope">
 						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-							<template slot="content">{{ scope.row.moneyAmountLocal < 0 ? 0 : scope.row.lender }}</template>
-							<span>{{ scope.row.moneyAmountLocal < 0 ? 0 : scope.row.lender }}</span>
+							<template slot="content">
+								<span>{{ isDebit(scope.row.debitCredit) ? scope.row.lender : 0 }}</span>
+							</template>
+							<span>{{ isDebit(scope.row.debitCredit) ? scope.row.lender : 0 }}</span>
 						</el-tooltip>
 					</template>
 				</el-table-column>
 				<el-table-column prop="borrower" label="贷方(供应商欠款增加)" show-overflow-tooltip>
 					<template #default="scope">
 						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-							<template slot="content">{{ scope.row.moneyAmountLocal > 0 ? 0 : scope.row.borrower }}</template>
-							<span>{{ scope.row.moneyAmountLocal > 0 ? 0 : scope.row.borrower }}</span>
+							<template slot="content">
+								<span>{{ isCredit(scope.row.debitCredit) ? scope.row.borrower : 0 }}</span>
+							</template>
+							<span>{{ isCredit(scope.row.debitCredit) ? scope.row.borrower : 0 }}</span>
 						</el-tooltip>
 					</template>
 				</el-table-column>
 				<el-table-column prop="moneyAmountLocal" label="余额本币" show-overflow-tooltip>
 					<template #default="scope">
 						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-							<template slot="content">{{ formatBalance(scope.row.moneyAmountLocal) }}</template>
-							<span>{{ formatBalance(scope.row.moneyAmountLocal) }}</span>
+							<template slot="content">{{ formatBalanceByDebitCredit(scope.row.moneyAmountLocal, scope.row.debitCredit) }}</template>
+							<span>{{ formatBalanceByDebitCredit(scope.row.moneyAmountLocal, scope.row.debitCredit) }}</span>
 						</el-tooltip>
 					</template>
 				</el-table-column>
@@ -209,7 +213,7 @@ import RECEIVE_MONEY from '@/components/NeedToShow/RECEIVE_MONEY.vue';
 import INVENTORYDETAIL from '@/components/NeedToShow/INVENTORYDETAIL.vue';
 import ORDER_DETAIL from '@/components/NeedToShow/ORDER_DETAIL.vue';
 import BALANCEACCOUNT from '@/components/NeedToShow/BALANCEACCOUNT.vue';
-import { formatBalance, isDebit, isCredit } from '@/utils/trash/utils';
+import { formatBalanceByDebitCredit, isDebit, isCredit } from '@/utils/trash/utils';
 import _ from 'lodash';
 import { isGoodsOrderDisplay, isInventoryDisplay, mergeSpecialTableData } from '@/api/system/goodsOrder';
 import InventoryDayInfo from '@/components/InventoryDayInfo/index.vue';
@@ -262,15 +266,16 @@ export default {
 		}
 	},
 	methods: {
-		formatBalance,
+		formatBalanceByDebitCredit,
 		fix,
 		listCompany,
 		abs,
 		add,
 		subtract,
 		number,
-		formatBalance,
 		getOrAdvancedModule,
+		isDebit,
+		isCredit,
 		// 查询方法
 		getList() {
 			this.$refs['form']?.validate(valid => {
