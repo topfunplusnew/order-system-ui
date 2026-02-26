@@ -300,14 +300,28 @@ export default {
 						}
 					}
 
-					const range = document.createRange();
-					range.selectNodeContents(tableClone);
-					const selection = window.getSelection();
-					selection.removeAllRanges();
-					selection.addRange(range);
-					document.execCommand('copy');
-					selection.removeAllRanges();
-					this.$message.success('内容已复制到剪贴板');
+					// 任务11：修复发货单复制内容按钮在降级方案下复制失败（execCommand 需要选中 DOM 内节点）
+					const hiddenWrapper = document.createElement('div');
+					hiddenWrapper.style.position = 'fixed';
+					hiddenWrapper.style.pointerEvents = 'none';
+					hiddenWrapper.style.opacity = '0';
+					hiddenWrapper.style.left = '-9999px';
+					hiddenWrapper.style.top = '0';
+					hiddenWrapper.appendChild(tableClone);
+					document.body.appendChild(hiddenWrapper);
+
+					try {
+						const range = document.createRange();
+						range.selectNodeContents(hiddenWrapper);
+						const selection = window.getSelection();
+						selection.removeAllRanges();
+						selection.addRange(range);
+						document.execCommand('copy');
+						selection.removeAllRanges();
+						this.$message.success('内容已复制到剪贴板');
+					} finally {
+						document.body.removeChild(hiddenWrapper);
+					}
 				} catch (fallbackError) {
 					console.error('降级复制方案也失败:', fallbackError);
 					this.$message.error('复制失败，请手动选择内容复制');

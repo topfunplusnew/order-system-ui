@@ -230,7 +230,8 @@ import { PUBLIC_DICT_TYPE } from '@/utils/order';
 import { listCompany } from '@/api/system/company';
 import { common_excel } from '@/views/dashboard/mixins/common/common_excel';
 import { getCustomerSubjectDetailSomeDay, getCustomerSubjectDetailSummary } from '@/api/system/statement';
-import { fix_2 } from '@/api/tool/format';
+// 任务12：修复 fix 未定义导致页面运行时报错（ReferenceError: fix is not defined）
+import { fix, fix_2 } from '@/api/tool/format';
 import { getFunction } from '@/utils/order/mapper';
 import { moduleNames, TableName, getOrAdvancedModule } from '@/api/tool/enums';
 import GOODS_ORDER from '@/components/NeedToShow/GOODS_ORDER.vue';
