@@ -4,6 +4,7 @@ import { fix, fix_2, numToChineseUppercase } from '../../../../api/tool/format';
 import { listOrderDetailByOrderNos } from '@/api/system/orderDetail';
 import { parseTime } from '../../../../utils/ruoyi';
 import { getCustomerSubjectDetailSomeDay } from '@/api/system/statement';
+import _ from 'lodash';
 
 export default {
 	name: 'ChatForm2',
@@ -33,6 +34,39 @@ export default {
 		// 合计欠款
 		totalPayments() {
 			return Math.floor(Number(this.moneyAmount) - this.detailPaymentsSum);
+		},
+		/**
+		 * 是否存在海运柜号（从明细中判断）
+		 * @returns {boolean}
+		 */
+		hasSeaCarNo() {
+			return (
+				Array.isArray(this.itemList) &&
+				_.some(this.itemList, function (item) {
+					return !!(item && item.seaCarNo);
+				})
+			);
+		},
+		/**
+		 * 是否存在陆运车号（从明细中判断）
+		 * @returns {boolean}
+		 */
+		hasLandCarNo() {
+			return (
+				Array.isArray(this.itemList) &&
+				_.some(this.itemList, function (item) {
+					return !!(item && item.landCarNo);
+				})
+			);
+		},
+		/**
+		 * 车号/柜号列表头显示文案（从明细字段判断）
+		 * @returns {string}
+		 */
+		carNoColumnLabel() {
+			if (this.hasLandCarNo && this.hasSeaCarNo) return '车号/柜号';
+			if (this.hasSeaCarNo) return '柜号';
+			return '车号';
 		}
 	},
 	created() {
@@ -342,7 +376,6 @@ export default {
 			<div class="invoice-header">
 				<div>客户：{{ orderInfo.customer }}</div>
 				<div>日期：{{ orderInfo.orderDate }}</div>
-				<div>车号：{{ orderInfo.landCarNo }}</div>
 				<div>单据编号：{{ orderInfo.code }}</div>
 			</div>
 
@@ -356,6 +389,8 @@ export default {
 						<th>发票</th>
 						<th>费用</th>
 						<th>金额</th>
+						<th>{{ carNoColumnLabel }}</th>
+						<th v-if="hasSeaCarNo">海运公司</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -373,25 +408,27 @@ export default {
 							</td>
 							<td>{{ Math.floor(item.paymentsWithSundry) }}</td>
 							<td>{{ Math.floor(item.payments) }}</td>
+							<td>{{ item.landCarNo || item.seaCarNo }}</td>
+							<td v-if="item.seaCarNo">{{ item.seaDriverName }}</td>
 						</tr>
 					</template>
 					<tr>
 						<td style="text-align: left">本次货款</td>
 						<td colspan="5" style="text-align: left">大写:{{ numToChineseUppercase(detailPaymentsSum) }}</td>
-						<td>{{ detailPaymentsSum || 0 }}</td>
+						<td :colspan="hasSeaCarNo ? 3 : 2">{{ detailPaymentsSum || 0 }}</td>
 					</tr>
 					<tr>
 						<td style="text-align: left">欠款</td>
 						<td colspan="5" style="text-align: left">大写:{{ numToChineseUppercase(Math.floor(moneyAmount) || 0) }}</td>
-						<td>{{ totalPayments || 0 }}</td>
+						<td :colspan="hasSeaCarNo ? 3 : 2">{{ totalPayments || 0 }}</td>
 					</tr>
 					<tr>
 						<td style="text-align: left">合计欠款</td>
 						<td colspan="5" style="text-align: left">大写:{{ numToChineseUppercase(Math.floor(moneyAmount)) }}</td>
-						<td>{{ Math.floor(moneyAmount) || 0 }}</td>
+						<td :colspan="hasSeaCarNo ? 3 : 2">{{ Math.floor(moneyAmount) || 0 }}</td>
 					</tr>
 					<tr>
-						<td colspan="7" style="text-align: left">
+						<td :colspan="hasSeaCarNo ? 9 : 8" style="text-align: left">
 							<p>注：</p>
 							<p>1. 玻璃为易碎品，请当面验货，出现问题由司当面解决，收货后出现一切质量问题，由客户自负，我公司概不负责。</p>
 							<p>2. 此单据等同合同，客户收货后具有法律效力，若发生经济纠纷，由供货方所在地法庭处理。</p>

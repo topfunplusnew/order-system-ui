@@ -35,6 +35,18 @@ export default {
 		// 余款
 		totalPayments() {
 			return Math.floor(Number(this.moneyAmount) - this.detailPaymentsSum);
+		},
+		// 任务14：发货单1/2/3 车号/柜号、海运公司等明细字段，统一从每条明细中取值（不取主表字段）
+		hasSeaCarNo() {
+			return Array.isArray(this.itemList) && this.itemList.some(item => !!item?.seaCarNo);
+		},
+		hasLandCarNo() {
+			return Array.isArray(this.itemList) && this.itemList.some(item => !!item?.landCarNo);
+		},
+		carNoColumnLabel() {
+			if (this.hasLandCarNo && this.hasSeaCarNo) return '车号/柜号';
+			if (this.hasSeaCarNo) return '柜号';
+			return '车号';
 		}
 	},
 	created() {
@@ -359,8 +371,8 @@ export default {
 						<th>是否含税价</th>
 						<th>其他费用</th>
 						<th>金额</th>
-						<th>{{ currentOrderInfo.landCarNo ? `车号` : `柜号` }}</th>
-						<th v-if="currentOrderInfo.seaCarNo">{{ `海运公司` }}</th>
+						<th>{{ carNoColumnLabel }}</th>
+						<th v-if="hasSeaCarNo">{{ `海运公司` }}</th>
 					</tr>
 				</thead>
 				<tbody>
