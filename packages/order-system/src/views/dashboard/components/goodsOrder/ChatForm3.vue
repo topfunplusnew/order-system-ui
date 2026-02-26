@@ -1,5 +1,6 @@
 <script>
-import { fix, numToChineseUppercase } from '../../../../api/tool/format';
+// 任务13：发货单1/2/3 单价不再取整，改为保留两位小数展示
+import { fix, fix_2, numToChineseUppercase } from '../../../../api/tool/format';
 import { listOrderDetailByOrderNos } from '@/api/system/orderDetail';
 import { parseTime } from '../../../../utils/ruoyi';
 import { getCustomerSubjectDetailSomeDay } from '@/api/system/statement';
@@ -47,6 +48,7 @@ export default {
 	},
 	methods: {
 		fix,
+		fix_2,
 		// 任务8：模板中直接调用 numToChineseUppercase，需要挂到 methods 上避免“未定义/不是函数”报错
 		numToChineseUppercase,
 		loadOrderDetails() {
@@ -370,7 +372,7 @@ export default {
 							</td>
 							<td>{{ item.pieces }}</td>
 							<td>{{ item.packs }}</td>
-							<td>{{ Math.floor(item.paymentUnload) }}</td>
+							<td>{{ fix_2(item.paymentUnload || 0) }}</td>
 							<td>
 								{{ item.isIncludeTaxFactory === 0 ? '否' : '是' }}
 							</td>

@@ -4,7 +4,8 @@ import { numToChineseUppercase } from '@/api/tool/format';
 import { getCustomerSubjectDetailSomeDay } from '@/api/system/statement';
 import { parseTime } from '@/utils/ruoyi';
 import { listOrderDetailByOrderNos } from '@/api/system/orderDetail';
-import { fix } from '../../../../api/tool/format';
+// 任务13：发货单1/2/3 单价不再取整，改为保留两位小数展示
+import { fix, fix_2 } from '../../../../api/tool/format';
 
 export default {
 	name: 'ChatForm',
@@ -46,6 +47,7 @@ export default {
 	},
 	methods: {
 		fix,
+		fix_2,
 		loadOrderDetails() {
 			const orderNos = this.currentOrderInfo?.smailOrderDetails.map(item => {
 				return item.ordersNo;
@@ -371,7 +373,7 @@ export default {
 							<td>{{ item.width }}</td>
 							<td>{{ item.pieces }}</td>
 							<td>{{ item.packs }}</td>
-							<td>{{ Math.floor(item.paymentUnload) }}</td>
+							<td>{{ fix_2(item.paymentUnload || 0) }}</td>
 							<td>
 								{{ item.isIncludeTaxSale === 0 ? '否' : '是' }}
 							</td>
