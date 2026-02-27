@@ -256,6 +256,11 @@
 												{{ !scope.row.seaCarNo ? '无' : scope.row.seaCarNo }}
 											</template>
 										</el-table-column>
+										<el-table-column show-overflow-tooltip label="订单来源" align="center" width="100">
+											<template #default="scope">
+												{{ scope.row.isAdjust > 0 ? '调整单' : '订单' }}
+											</template>
+										</el-table-column>
 										<el-table-column show-overflow-tooltip label="审核状态" align="center" prop="checkState" width="120" />
 										<el-table-column show-overflow-tooltip label="销售经理" align="center" prop="saleManager" />
 										<el-table-column show-overflow-tooltip label="销售是否含税" align="center" width="100">
