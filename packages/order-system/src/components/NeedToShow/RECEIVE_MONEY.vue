@@ -100,9 +100,9 @@ export default {
 				<el-descriptions-item label="金额" label-class-name="money-label">
 					<span style="color: #67c23a; font-weight: bold">{{ needToShowInfo.moneyAmount }} 元</span>
 				</el-descriptions-item>
-				<el-descriptions-item label="对方户名">{{ needToShowInfo.otherAcountsName || '暂无' }}</el-descriptions-item>
+				<el-descriptions-item label="对方户名">{{ needToShowInfo.otherAccountsName || '暂无' }}</el-descriptions-item>
 				<!-- 任务4：在收款信息的 el-descriptions 中补充展示【我方银行卡号】 -->
-				<el-descriptions-item label="我方银行卡号">{{ needToShowInfo.selfBankNo || '暂无' }}</el-descriptions-item>
+				<el-descriptions-item label="我方户名">{{ needToShowInfo.selfAccountsName || '暂无' }}</el-descriptions-item>
 				<el-descriptions-item label="操作人员">{{ needToShowInfo.userName }}</el-descriptions-item>
 				<el-descriptions-item label="备注">
 					<el-tag v-if="needToShowInfo.comments" size="small" type="success">{{ needToShowInfo.comments }}</el-tag>

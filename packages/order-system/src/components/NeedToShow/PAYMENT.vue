@@ -109,11 +109,11 @@ export default {
 					</el-tag>
 					<span v-else>暂无</span>
 				</el-descriptions-item>
-				<el-descriptions-item label="对方户名">{{ needToShowInfo.otherAcountsName || '暂无' }}</el-descriptions-item>
+				<el-descriptions-item label="对方户名">{{ needToShowInfo.otherAccountsName || '暂无' }}</el-descriptions-item>
 				<el-descriptions-item label="对方银行账号">{{ needToShowInfo.otherBankNo || '暂无' }}</el-descriptions-item>
 				<el-descriptions-item label="对方开户行">{{ needToShowInfo.otherBankName || '暂无' }}</el-descriptions-item>
 				<!-- 任务4：在付款信息的 el-descriptions 中补充展示【我方银行卡号】 -->
-				<el-descriptions-item label="我方银行卡号">{{ needToShowInfo.selfBankNo || '暂无' }}</el-descriptions-item>
+				<el-descriptions-item label="我方户名">{{ needToShowInfo.selfAccountsName || '暂无' }}</el-descriptions-item>
 				<el-descriptions-item label="操作人员">{{ needToShowInfo.userName }}</el-descriptions-item>
 				<el-descriptions-item label="备注" :span="3">
 					<el-tag v-if="needToShowInfo.comments" size="small" type="info">{{ needToShowInfo.comments }}</el-tag>
