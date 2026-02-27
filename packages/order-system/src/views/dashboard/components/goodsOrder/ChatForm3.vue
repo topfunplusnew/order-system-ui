@@ -5,6 +5,7 @@ import { listOrderDetailByOrderNos } from '@/api/system/orderDetail';
 import { parseTime } from '../../../../utils/ruoyi';
 import { getCustomerSubjectDetailSomeDay } from '@/api/system/statement';
 import _ from 'lodash';
+import { round, number, sum, subtract } from 'mathjs';
 
 export default {
 	name: 'ChatForm3',
@@ -26,14 +27,15 @@ export default {
 		};
 	},
 	computed: {
-		// 所有明细的货款之和
+		/** 所有明细的货款之和（基于每行四舍五入取整后的值求和） */
 		detailPaymentsSum() {
 			if (!this.itemList || this.itemList.length === 0) return 0;
-			return Math.floor(this.itemList.reduce((sum, item) => sum + (Number(item.payments) || 0), 0));
+			const roundedValues = this.itemList.map(item => round(number(item.payments) || 0));
+			return sum(roundedValues);
 		},
-		// 合计欠款
+		/** 欠款 = 合计欠款 - 本次货款（均基于四舍五入后的值） */
 		totalPayments() {
-			return Math.floor(Number(this.moneyAmount) - this.detailPaymentsSum);
+			return subtract(round(number(this.moneyAmount) || 0), this.detailPaymentsSum);
 		},
 		/**
 		 * 是否存在海运柜号（从明细中判断）
@@ -411,8 +413,8 @@ export default {
 							<td>
 								{{ item.isIncludeTaxSale === 0 ? '否' : '是' }}
 							</td>
-							<td>{{ Math.floor(item.paymentsWithSundry) }}</td>
-							<td>{{ Math.floor(item.payments) }}</td>
+							<td>{{ Math.round(item.paymentsWithSundry) }}</td>
+							<td>{{ Math.round(item.payments) }}</td>
 							<td>{{ item.landCarNo || item.seaCarNo }}</td>
 							<td v-if="item.seaCarNo">{{ item.seaDriverName }}</td>
 						</tr>
@@ -429,8 +431,8 @@ export default {
 					</tr>
 					<tr>
 						<td style="text-align: left">合计欠款</td>
-						<td colspan="5" style="text-align: left">大写:{{ numToChineseUppercase(Math.floor(moneyAmount)) }}</td>
-						<td :colspan="hasSeaCarNo ? 3 : 2">{{ Math.floor(moneyAmount) || 0 }}</td>
+						<td colspan="5" style="text-align: left">大写:{{ numToChineseUppercase(Math.round(moneyAmount)) }}</td>
+						<td :colspan="hasSeaCarNo ? 3 : 2">{{ Math.round(moneyAmount) || 0 }}</td>
 					</tr>
 					<tr>
 						<td :colspan="hasSeaCarNo ? 9 : 8" style="text-align: left">

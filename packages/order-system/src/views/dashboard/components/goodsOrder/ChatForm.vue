@@ -6,6 +6,7 @@ import { parseTime } from '@/utils/ruoyi';
 import { listOrderDetailByOrderNos } from '@/api/system/orderDetail';
 // 任务13：发货单1/2/3 单价不再取整，改为保留两位小数展示
 import { fix, fix_2 } from '../../../../api/tool/format';
+import { round, number, sum, subtract } from 'mathjs';
 
 export default {
 	name: 'ChatForm',
@@ -27,14 +28,15 @@ export default {
 		};
 	},
 	computed: {
-		// 所有明细的货款之和
+		/** 所有明细的货款之和（基于每行四舍五入取整后的值求和） */
 		detailPaymentsSum() {
 			if (!this.itemList || this.itemList.length === 0) return 0;
-			return Math.floor(this.itemList.reduce((sum, item) => sum + (Number(item.payments) || 0), 0));
+			const roundedValues = this.itemList.map(item => round(number(item.payments) || 0));
+			return sum(roundedValues);
 		},
-		// 余款
+		/** 余款 = 货款合计 - 本次货款（均基于四舍五入后的值） */
 		totalPayments() {
-			return Math.floor(Number(this.moneyAmount) - this.detailPaymentsSum);
+			return subtract(round(number(this.moneyAmount) || 0), this.detailPaymentsSum);
 		},
 		// 任务14：发货单1/2/3 车号/柜号、海运公司等明细字段，统一从每条明细中取值（不取主表字段）
 		hasSeaCarNo() {
@@ -389,8 +391,8 @@ export default {
 							<td>
 								{{ item.isIncludeTaxSale === 0 ? '否' : '是' }}
 							</td>
-							<td>{{ Math.floor(item.paymentsWithSundry) }}</td>
-							<td>{{ Math.floor(item.payments) }}</td>
+							<td>{{ Math.round(item.paymentsWithSundry) }}</td>
+							<td>{{ Math.round(item.payments) }}</td>
 							<td>{{ item.landCarNo || item.seaCarNo }}</td>
 							<td v-if="item.seaCarNo">{{ item.seaDriverName }}</td>
 						</tr>
@@ -412,13 +414,13 @@ export default {
 						<!-- 货款 + 余额-->
 						<td style="text-align: center">货款合计</td>
 						<td colspan="8" />
-						<td>{{ Math.floor(moneyAmount) || 0 }}</td>
+						<td>{{ Math.round(moneyAmount) || 0 }}</td>
 						<td />
 					</tr>
 					<tr>
 						<!--          合计只有一个大写-->
 						<td style="text-align: center">合计</td>
-						<td colspan="8">大写：{{ numToChineseUppercase(Math.floor(moneyAmount)) }}</td>
+						<td colspan="8">大写：{{ numToChineseUppercase(Math.round(moneyAmount)) }}</td>
 						<td />
 						<td />
 					</tr>

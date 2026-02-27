@@ -57,7 +57,7 @@
 			@selection-change="handleSelectionChange"
 		>
 			<el-table-column v-if="columns[0].visible" label="操作日期" align="center" prop="operateDate" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[1].visible" label="票据种类" align="center" prop="billCategory" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[1].visible" label="我方承兑账户" align="center" prop="billAccount" width="120" show-overflow-tooltip />
 			<el-table-column v-if="columns[2].visible" label="票据号码" align="center" prop="billNo" width="120" show-overflow-tooltip>
 				<!--        点击后出来一个台账-->
 				<template #default="scope">
@@ -66,15 +66,16 @@
 			</el-table-column>
 			<el-table-column v-if="columns[3].visible" label="出票日期" align="center" prop="issueDate" width="120" show-overflow-tooltip />
 			<el-table-column v-if="columns[4].visible" label="到期日期" align="center" prop="dueDate" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[5].visible" label="我方承兑账户" align="center" prop="billAccount" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[5].visible" label="票据种类" align="center" prop="billCategory" width="120" show-overflow-tooltip />
 			<el-table-column v-if="columns[6].visible" label="票据交易日期" align="center" prop="billDate" width="120" show-overflow-tooltip />
 			<el-table-column v-if="columns[7].visible" label="背书事由" align="center" prop="reason" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[8].visible" label="背书人" align="center" prop="endorserName" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[9].visible" label="票据金额" align="center" prop="billAmount" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[10].visible" label="贴息点数" align="center" prop="inDiscountPoints" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[11].visible" label="贴息金额" align="center" prop="inDiscountAmount" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[12].visible" label="来源" align="center" prop="origin" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[13].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
+			<el-table-column v-if="columns[8].visible" label="对方承兑账户" align="center" prop="endorserName" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[9].visible" label="分类" align="center" prop="billType" width="100" show-overflow-tooltip />
+			<el-table-column v-if="columns[10].visible" label="票据金额" align="center" prop="billAmount" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[11].visible" label="贴息点数" align="center" prop="inDiscountPoints" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[12].visible" label="贴息金额" align="center" prop="inDiscountAmount" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[13].visible" label="来源" align="center" prop="origin" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[14].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
 
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="150px" fixed="right">
 				<template slot-scope="scope">
@@ -253,14 +254,15 @@ export default {
 			},
 			columns: [
 				{ label: '操作日期', visible: true },
-				{ label: '票据种类', visible: true },
+				{ label: '我方承兑账户', visible: true },
 				{ label: '票据号码', visible: true },
 				{ label: '出票日期', visible: true },
 				{ label: '到期日期', visible: true },
-				{ label: '我方承兑账户', visible: true },
+				{ label: '票据种类', visible: true },
 				{ label: '票据交易日期', visible: true },
 				{ label: '背书事由', visible: true },
-				{ label: '背书人', visible: true },
+				{ label: '对方承兑账户', visible: true },
+				{ label: '分类', visible: true },
 				{ label: '票据金额', visible: true },
 				{ label: '贴息点数', visible: true },
 				{ label: '贴息金额', visible: true },
@@ -447,7 +449,7 @@ export default {
 					// 对指定列进行计算
 					// if(index)
 					// 需要进行统计的索引列
-					const out_list = [9, 10, 11];
+					const out_list = [10, 11, 12];
 					// index !== 9 && index !== 1 && index !== 16 && index !== 2
 					if (out_list.includes(index)) {
 						sums[index] = values.reduce((prev, curr) => {

@@ -63,7 +63,15 @@
 									</el-tooltip>
 								</template>
 							</el-table-column>
-							<el-table-column v-if="columns[0].visible" prop="orderDate" label="日期" show-overflow-tooltip>
+							<el-table-column v-if="columns[0].visible" prop="orderSource" label="订单来源" width="90" show-overflow-tooltip>
+								<template #default="scope">
+									<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+										<div slot="content">{{ scope.row.orderSource }}</div>
+										<span>{{ scope.row.orderSource }}</span>
+									</el-tooltip>
+								</template>
+							</el-table-column>
+							<el-table-column v-if="columns[1].visible" prop="orderDate" label="日期" show-overflow-tooltip>
 								<template #default="scope">
 									<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 										<div slot="content">{{ scope.row.orderDate }}</div>
@@ -71,7 +79,7 @@
 									</el-tooltip>
 								</template>
 							</el-table-column>
-							<el-table-column v-if="columns[1].visible" prop="companyName" label="客户" show-overflow-tooltip>
+							<el-table-column v-if="columns[2].visible" prop="companyName" label="客户" show-overflow-tooltip>
 								<template #default="scope">
 									<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 										<div slot="content">{{ scope.row.companyName }}</div>
@@ -79,7 +87,7 @@
 									</el-tooltip>
 								</template>
 							</el-table-column>
-							<el-table-column v-if="columns[2].visible" prop="salesman" label="业务员" show-overflow-tooltip>
+							<el-table-column v-if="columns[3].visible" prop="salesman" label="业务员" show-overflow-tooltip>
 								<template #default="scope">
 									<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 										<div slot="content">{{ scope.row.salesman }}</div>
@@ -87,7 +95,7 @@
 									</el-tooltip>
 								</template>
 							</el-table-column>
-							<el-table-column v-if="columns[3].visible" prop="arrears" label="欠款" show-overflow-tooltip>
+							<el-table-column v-if="columns[4].visible" prop="arrears" label="欠款" show-overflow-tooltip>
 								<template #default="scope">
 									<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 										<div slot="content">{{ scope.row.arrears }}</div>
@@ -95,7 +103,7 @@
 									</el-tooltip>
 								</template>
 							</el-table-column>
-							<el-table-column v-if="columns[4].visible" prop="profit" label="含税利润" show-overflow-tooltip>
+							<el-table-column v-if="columns[5].visible" prop="profit" label="含税利润" show-overflow-tooltip>
 								<template #default="scope">
 									<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 										<div slot="content">{{ scope.row.profit }}</div>
@@ -103,7 +111,7 @@
 									</el-tooltip>
 								</template>
 							</el-table-column>
-							<el-table-column v-if="columns[5].visible" prop="profitNoTax" label="不含税利润" width="110" show-overflow-tooltip>
+							<el-table-column v-if="columns[6].visible" prop="profitNoTax" label="不含税利润" width="110" show-overflow-tooltip>
 								<template #default="scope">
 									<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 										<div slot="content">{{ scope.row.profitNoTax }}</div>
@@ -111,7 +119,7 @@
 									</el-tooltip>
 								</template>
 							</el-table-column>
-							<el-table-column v-if="columns[6].visible" prop="payments" label="总货款" show-overflow-tooltip>
+							<el-table-column v-if="columns[7].visible" prop="payments" label="总货款" show-overflow-tooltip>
 								<template #default="scope">
 									<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 										<div slot="content">{{ scope.row.payments }}</div>
@@ -119,7 +127,7 @@
 									</el-tooltip>
 								</template>
 							</el-table-column>
-							<el-table-column v-if="columns[7].visible" prop="paymentFactory" label="出厂货款" show-overflow-tooltip>
+							<el-table-column v-if="columns[8].visible" prop="paymentFactory" label="出厂货款" show-overflow-tooltip>
 								<template #default="scope">
 									<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 										<div slot="content">{{ scope.row.paymentFactory }}</div>
@@ -127,7 +135,7 @@
 									</el-tooltip>
 								</template>
 							</el-table-column>
-							<el-table-column v-if="columns[8].visible" prop="tonnage" label="吨位" show-overflow-tooltip>
+							<el-table-column v-if="columns[9].visible" prop="tonnage" label="吨位" show-overflow-tooltip>
 								<template #default="scope">
 									<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 										<div slot="content">{{ scope.row.tonnage }}</div>
@@ -135,7 +143,7 @@
 									</el-tooltip>
 								</template>
 							</el-table-column>
-							<el-table-column v-if="columns[9].visible" prop="clerk" label="内勤" show-overflow-tooltip>
+							<el-table-column v-if="columns[10].visible" prop="clerk" label="内勤" show-overflow-tooltip>
 								<template #default="scope">
 									<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 										<div slot="content">{{ scope.row.clerk }}</div>
@@ -143,7 +151,7 @@
 									</el-tooltip>
 								</template>
 							</el-table-column>
-							<el-table-column v-if="columns[10].visible" prop="landCarNo" label="陆运车牌" show-overflow-tooltip>
+							<el-table-column v-if="columns[11].visible" prop="landCarNo" label="陆运车牌" show-overflow-tooltip>
 								<template #default="scope">
 									<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 										<div slot="content">{{ scope.row.landCarNo !== null ? scope.row.landCarNo : '无' }}</div>
@@ -154,7 +162,7 @@
 									</el-tooltip>
 								</template>
 							</el-table-column>
-							<el-table-column v-if="columns[11].visible" prop="seaCarNo" label="柜号" show-overflow-tooltip>
+							<el-table-column v-if="columns[12].visible" prop="seaCarNo" label="柜号" show-overflow-tooltip>
 								<template #default="scope">
 									<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 										<div slot="content">{{ scope.row.seaCarNo !== null ? scope.row.seaCarNo : '无' }}</div>
@@ -165,7 +173,7 @@
 									</el-tooltip>
 								</template>
 							</el-table-column>
-							<el-table-column v-if="columns[12].visible" prop="fleet" label="车队" show-overflow-tooltip>
+							<el-table-column v-if="columns[13].visible" prop="fleet" label="车队" show-overflow-tooltip>
 								<template #default="scope">
 									<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 										<div slot="content">{{ scope.row.fleet }}</div>
@@ -173,7 +181,7 @@
 									</el-tooltip>
 								</template>
 							</el-table-column>
-							<el-table-column v-if="columns[13].visible" prop="freight" label="运费" show-overflow-tooltip>
+							<el-table-column v-if="columns[14].visible" prop="freight" label="运费" show-overflow-tooltip>
 								<template #default="scope">
 									<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 										<div slot="content">{{ scope.row.freight }}</div>
@@ -381,20 +389,21 @@ export default {
 			tableData: [],
 			total: 0,
 			columns: [
-				{ key: 0, label: `日期`, visible: true },
-				{ key: 1, label: `客户`, visible: true },
-				{ key: 2, label: `录入员`, visible: true },
-				{ key: 3, label: `欠款`, visible: true },
-				{ key: 4, label: `含税利润`, visible: true },
-				{ key: 5, label: `不含税利润`, visible: true },
-				{ key: 6, label: `总货款`, visible: true },
-				{ key: 7, label: `出厂货款`, visible: true },
-				{ key: 8, label: `吨位`, visible: true },
-				{ key: 9, label: `内勤`, visible: true },
-				{ key: 10, label: `陆运车牌`, visible: true },
-				{ key: 11, label: `柜号`, visible: true },
-				{ key: 12, label: `车队`, visible: true },
-				{ key: 13, label: `运费`, visible: true }
+				{ key: 0, label: `订单来源`, visible: true },
+				{ key: 1, label: `日期`, visible: true },
+				{ key: 2, label: `客户`, visible: true },
+				{ key: 3, label: `录入员`, visible: true },
+				{ key: 4, label: `欠款`, visible: true },
+				{ key: 5, label: `含税利润`, visible: true },
+				{ key: 6, label: `不含税利润`, visible: true },
+				{ key: 7, label: `总货款`, visible: true },
+				{ key: 8, label: `出厂货款`, visible: true },
+				{ key: 9, label: `吨位`, visible: true },
+				{ key: 10, label: `内勤`, visible: true },
+				{ key: 11, label: `陆运车牌`, visible: true },
+				{ key: 12, label: `柜号`, visible: true },
+				{ key: 13, label: `车队`, visible: true },
+				{ key: 14, label: `运费`, visible: true }
 			],
 			dailyProfit: null,
 			dailyExpense: null,
@@ -517,7 +526,7 @@ export default {
 			const summaryColumns = ['arrears', 'profit', 'profitNoTax', 'payments', 'paymentFactory', 'tonnage', 'freight'];
 
 			// 排除合计的列（非数字列）
-			const excludeColumns = ['id', 'orderDate', 'companyName', 'salesman', 'clerk', 'landCarNo', 'seaCarNo', 'fleet'];
+			const excludeColumns = ['id', 'orderSource', 'orderDate', 'companyName', 'salesman', 'clerk', 'landCarNo', 'seaCarNo', 'fleet'];
 
 			// 确保 sums 数组长度与 columns 数组长度一致，先初始化为空字符串
 			for (let i = 0; i < columns.length; i++) {
