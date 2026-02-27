@@ -21,7 +21,7 @@
 			</el-form-item>
 			<el-form-item label="账户类型" prop="accountType">
 				<el-select v-model="queryAccountType" placeholder="请选择账户类型" clearable @keyup.enter.native="handleQuery">
-					<el-option label="冲抵货款" value="冲抵货款" />
+					<el-option label="冲抵货款" value="-" />
 					<el-option label="活期互转" value="银行活期存款" />
 					<el-option label="承兑互转" value="承兑" />
 					<el-option label="银承互转" value="银承互转" />
