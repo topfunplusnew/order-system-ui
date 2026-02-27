@@ -158,12 +158,14 @@ export default {
 		// 搜索
 		async handleChangeSearch() {
 			try {
-				// 并行获取左右两侧的数据
-				const [left, right] = await Promise.all([this.getChangeData(this.changeForm.endTime, this.targetLeftDate), this.getChangeData(this.changeForm.endTime, this.targetRightDate)]);
-
-				// 格式化数据
+				// 顺序获取左右两侧的数据
+				const left = await this.getChangeData(this.changeForm.endTime, this.targetLeftDate);
 				this.fixedMoneyTableData = this.formatTableData(left);
+				console.log('fixedMoneyTableData', this.fixedMoneyTableData);
+
+				const right = await this.getChangeData(this.changeForm.endTime, this.targetRightDate);
 				this.changeMoneyTableData = this.formatTableData(right);
+				console.log('changeMoneyTableData', this.changeMoneyTableData);
 
 				// 计算差异
 				this.calculateDiff();
