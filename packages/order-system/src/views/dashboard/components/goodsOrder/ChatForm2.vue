@@ -400,7 +400,7 @@ export default {
 								{{ item.levelName }} - {{ item.height }} x {{ item.length }} x
 								{{ item.width }}
 							</td>
-							<td>{{ item.pieces }}</td>
+							<td>{{ item.actualPieces }}</td>
 							<td>{{ item.packs }}</td>
 							<td>{{ fix_2(item.paymentUnload || 0) }}</td>
 							<td>
