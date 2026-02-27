@@ -83,10 +83,8 @@
 			<el-table-column prop="lender" label="借方（客户欠款增加）" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<template slot="content">
-							<span>{{ scope.row.moneyAmountLocal < 0 ? 0 : scope.row.lender }}</span>
-						</template>
-						<span>{{ scope.row.moneyAmountLocal < 0 ? 0 : scope.row.lender }}</span>
+						<template slot="content">{{ scope.row.lender }}</template>
+						<span>{{ scope.row.lender }}</span>
 					</el-tooltip>
 				</template>
 			</el-table-column>
@@ -111,14 +109,8 @@
 			<el-table-column prop="moneyAmountLocal" label="余额本币" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<template slot="content">
-							<span :class="{ negative: scope.row.moneyAmountLocal < 0 }">
-								{{ formatBalanceByDebitCredit(scope.row.moneyAmountLocal, scope.row.moneyAmountLocal > 0 ? 'd' : 'c') }}
-							</span>
-						</template>
-						<span :class="{ negative: scope.row.moneyAmountLocal < 0 }">
-							{{ formatBalanceByDebitCredit(scope.row.moneyAmountLocal, scope.row.moneyAmountLocal > 0 ? 'd' : 'c') }}
-						</span>
+						<template slot="content">{{ formatBalanceByDebitCredit(scope.row.moneyAmountLocal, scope.row.debitCredit || (scope.row.moneyAmountLocal > 0 ? 'd' : 'c')) }}</template>
+						<span :class="{ negative: scope.row.moneyAmountLocal < 0 }">{{ formatBalanceByDebitCredit(scope.row.moneyAmountLocal, scope.row.debitCredit || (scope.row.moneyAmountLocal > 0 ? 'd' : 'c')) }}</span>
 					</el-tooltip>
 				</template>
 			</el-table-column>
