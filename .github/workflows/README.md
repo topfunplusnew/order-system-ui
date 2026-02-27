@@ -8,7 +8,7 @@
 
 ## 配置 GitHub Secrets
 
-在 GitHub 仓库设置中配置以下 Secrets（Settings → Secrets and variables → Actions）：
+在 GitHub 仓库设置中配置以下 Secrets（Settings → Secrets and variables → Actions）：  d 
 
 ### 必需的 Secrets
 

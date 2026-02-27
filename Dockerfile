@@ -56,7 +56,7 @@ RUN tr -d '\r' < /docker-entrypoint.sh > /docker-entrypoint.sh.tmp && \
     chmod +x /docker-entrypoint.sh
 
 # 暴露端口（默认正式环境端口，实际由环境变量控制）
-EXPOSE 40085 40081
+EXPOSE 40085 40081 40082
 
 # 启动脚本
 ENTRYPOINT ["/docker-entrypoint.sh"]
