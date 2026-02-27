@@ -419,7 +419,7 @@ export default {
 					</tr>
 					<tr>
 						<td style="text-align: left">欠款</td>
-						<td colspan="5" style="text-align: left">大写:{{ numToChineseUppercase(Math.floor(moneyAmount) || 0) }}</td>
+						<td colspan="5" style="text-align: left">大写:{{ numToChineseUppercase(totalPayments) }}</td>
 						<td :colspan="hasSeaCarNo ? 3 : 2">{{ totalPayments || 0 }}</td>
 					</tr>
 					<tr>
