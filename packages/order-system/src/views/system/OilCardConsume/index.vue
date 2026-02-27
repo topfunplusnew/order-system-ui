@@ -70,7 +70,8 @@
 					</div>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[10].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
+			<el-table-column v-if="columns[10].visible" label="录入人员" align="center" prop="userName" show-overflow-tooltip />
+			<el-table-column v-if="columns[11].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
 				<template slot-scope="scope">
 					<el-button v-hasPermi="['system:oilcardconsume:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
@@ -90,15 +91,7 @@
 							<el-input v-model="form.oilCardNo" placeholder="请输入加油卡卡号" />
 						</el-col>
 						<el-col :span="4">
-							<SearchOption
-								:limit-info="{}"
-								:get-data="listOilCard"
-								query-info="oilCardNo"
-								query-label="加油卡卡号"
-								:query-name="oilCardNoQuery"
-								@update:queryName="value => (oilCardNoQuery = value)"
-								@commitBack="handleOilCardSelect"
-							>
+							<SearchOption :limit-info="{}" :get-data="listOilCard" query-info="oilCardNo" query-label="加油卡卡号" :query-name="oilCardNoQuery" @update:queryName="value => (oilCardNoQuery = value)" @commitBack="handleOilCardSelect">
 								<template #table-columns>
 									<el-table-column label="加油卡卡号" align="center" prop="oilCardNo" />
 									<el-table-column label="加油卡类型" align="center" prop="oilType" />
@@ -115,15 +108,7 @@
 							<el-input v-model="form.carApplyDisplay" disabled placeholder="请选择车辆派出记录" />
 						</el-col>
 						<el-col :span="4">
-							<SearchOption
-								:limit-info="{ auditState: '已审核' }"
-								:get-data="listCarApply"
-								query-info="carNo"
-								query-label="车牌"
-								:query-name="queryCarApply"
-								@update:queryName="value => (queryCarApply = value)"
-								@commitBack="handleCommitBackCarApply"
-							>
+							<SearchOption :limit-info="{ auditState: '已审核' }" :get-data="listCarApply" query-info="carNo" query-label="车牌" :query-name="queryCarApply" @update:queryName="value => (queryCarApply = value)" @commitBack="handleCommitBackCarApply">
 								<template #table-columns>
 									<el-table-column label="申请人" prop="applyUser" />
 									<el-table-column label="部门" prop="department" />
@@ -168,7 +153,7 @@
 				</el-form-item>
 				<el-form-item label="加油小票附件" prop="attachmentOiladd">
 					<UploadFilesButton ref="attachmentUpload" flag="attachmentOiladd" :extra-info="{ moduleType: 'oilCardConsume', formId: form.id }" :initial-attachments="form.attachmentList || []" @files-updated="handleAttachmentFilesUpdated" />
-					<span style="color: red;">* 必填</span>
+					<span style="color: red">* 必填</span>
 				</el-form-item>
 				<el-form-item label="备注" prop="comments">
 					<el-input v-model="form.comments" placeholder="请输入备注" />
@@ -283,7 +268,8 @@ export default {
 				{ key: 7, label: `加油金额（元）`, visible: true },
 				{ key: 8, label: `加油卡余额`, visible: true },
 				{ key: 9, label: `加油小票附件`, visible: true },
-				{ key: 10, label: `备注`, visible: true }
+				{ key: 10, label: `录入人员`, visible: true },
+				{ key: 11, label: `备注`, visible: true }
 			],
 			oilCardNoQuery: null,
 			carNo: null,

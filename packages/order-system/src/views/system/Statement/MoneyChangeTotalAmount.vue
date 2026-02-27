@@ -742,7 +742,7 @@ export default {
 		calculateProfitChange(anotherLabel, value) {
 			const anotherLabelNum = Number(anotherLabel || 0);
 			const valueNum = Number(value || 0);
-			const result = subtract(valueNum, anotherLabelNum);
+			const result = subtract(anotherLabelNum, valueNum);
 			return format(result, { notation: 'fixed', precision: 2 });
 		},
 		// 判断差异值是否大于阈值（使用 math.js 进行高精度比较）

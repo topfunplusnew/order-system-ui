@@ -12,6 +12,15 @@ export function listGoodsOrder(query) {
 	});
 }
 
+// 查询订单列表(含完整子表)
+export function listWithFullDetail(query) {
+	return request({
+		url: '/system/goodsOrder/listWithFullDetail',
+		method: 'get',
+		params: query
+	});
+}
+
 // 查询订单详细
 export function getGoodsOrder(id) {
 	return request({

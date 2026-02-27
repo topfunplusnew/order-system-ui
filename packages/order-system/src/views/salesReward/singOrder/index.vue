@@ -244,34 +244,46 @@
 								<el-input v-model="form.orderId" disabled placeholder="请选择关联订单" />
 							</el-col>
 							<el-col :span="4">
-								<SearchOption :limit-info="{}" :get-data="listGoodsOrder" query-info="customer" query-label="客户名称" :query-name="queryGoodsOrder" @update:queryName="handleUpdateGoodsOrder" @commitBack="handleCommitBackGoodsOrder">
+								<SearchOption :limit-info="{}" :get-data="listWithFullDetail" query-info="customer" query-label="客户名称" :query-name="queryGoodsOrder" @update:queryName="handleUpdateGoodsOrder" @commitBack="handleCommitBackGoodsOrder">
 									<template #table-columns>
 										<el-table-column show-overflow-tooltip label="ID" align="center" prop="id" fixed="left" />
-										<el-table-column show-overflow-tooltip label="日期" align="center" prop="orderDate" fixed="left" />
+										<el-table-column show-overflow-tooltip label="日期" align="center" prop="orderDate" fixed="left" width="160" />
 										<el-table-column show-overflow-tooltip label="客户" align="center" prop="customer" fixed="left" />
 										<el-table-column show-overflow-tooltip label="供应商" align="center" prop="supplierNames" fixed="left" />
 										<el-table-column show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo" />
-										<el-table-column show-overflow-tooltip label="陆运司机电话" align="center" prop="landDriverTel" width="100px" />
-										<el-table-column show-overflow-tooltip label="陆地司机姓名" align="center" prop="landDriverName" width="100px" />
 										<el-table-column show-overflow-tooltip label="柜号" align="center" prop="seaCarNo">
 											<template #default="scope">
 												{{ !scope.row.seaCarNo ? '无' : scope.row.seaCarNo }}
 											</template>
 										</el-table-column>
-										<el-table-column show-overflow-tooltip label="海运司机电话" align="center" prop="seaDriverTel" width="100px">
-											<template #default="scope">
-												{{ !scope.row.seaDriverTel ? '无' : scope.row.seaDriverTel }}
-											</template>
-										</el-table-column>
-										<el-table-column show-overflow-tooltip label="海运公司" align="center" prop="seaDriverName" width="100px">
-											<template #default="scope">
-												{{ !scope.row.seaDriverName ? '无' : scope.row.seaDriverName }}
-											</template>
-										</el-table-column>
+										<el-table-column show-overflow-tooltip label="审核状态" align="center" prop="checkState" width="120" />
 										<el-table-column show-overflow-tooltip label="销售经理" align="center" prop="saleManager" />
-										<el-table-column show-overflow-tooltip label="车队" align="center" prop="fleet" />
-										<el-table-column show-overflow-tooltip label="审核状态" align="center" prop="checkState" width="120"></el-table-column>
-										<el-table-column show-overflow-tooltip label="开票状态" align="center" prop="invoiceState" width="120px"></el-table-column>
+										<el-table-column show-overflow-tooltip label="销售是否含税" align="center" width="100">
+											<template #default="scope">
+												{{ getIsIncludeTaxSale(scope.row) }}
+											</template>
+										</el-table-column>
+										<el-table-column show-overflow-tooltip label="不含税利润" align="center" prop="allProfitNoTax" width="100" />
+										<el-table-column show-overflow-tooltip label="客户佣金" align="center" width="100">
+											<template #default="scope">
+												{{ getCustomerCommission(scope.row) }}
+											</template>
+										</el-table-column>
+										<el-table-column show-overflow-tooltip label="厂家佣金" align="center" width="100">
+											<template #default="scope">
+												{{ getFactoryCommission(scope.row) }}
+											</template>
+										</el-table-column>
+										<el-table-column show-overflow-tooltip label="计提厂家返利金额" align="center" width="120">
+											<template #default="scope">
+												{{ getFactoryRebateAmount(scope.row) }}
+											</template>
+										</el-table-column>
+										<el-table-column show-overflow-tooltip label="计提厂家降价金额" align="center" width="120">
+											<template #default="scope">
+												{{ getFactoryDiscountAmount(scope.row) }}
+											</template>
+										</el-table-column>
 										<el-table-column show-overflow-tooltip label="备注" align="center" prop="comments" />
 									</template>
 								</SearchOption>
@@ -367,7 +379,7 @@
 import { listSalesReward, getSalesReward, delSalesReward, addSalesReward, updateSalesReward, auditSalesReward, getOrderRewardData, supplementSalesReward } from '@/api/salesReward/salesReward';
 import { parseTime } from '@/utils/ruoyi';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
-import { getGoodsOrder, listGoodsOrder } from '@/api/system/goodsOrder';
+import { getGoodsOrder, listGoodsOrder, listWithFullDetail } from '@/api/system/goodsOrder';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import GOODS_ORDER from '@/components/NeedToShow/GOODS_ORDER.vue';
 import SearchOption from '@/components/SearchOption.vue';
@@ -626,6 +638,41 @@ export default {
 	methods: {
 		parseTime,
 		listGoodsOrder,
+		listWithFullDetail,
+		// 获取订单子表汇总数据
+		getOrderDetailSummary(row, field) {
+			if (!row.orderDetailList || row.orderDetailList.length === 0) return null;
+			return row.orderDetailList[0][field];
+		},
+		// 销售是否含税显示
+		getIsIncludeTaxSale(row) {
+			const val = this.getOrderDetailSummary(row, 'isIncludeTaxSale');
+			return val === 1 ? '是' : '否';
+		},
+		// 不含税利润（从主表）
+		getProfitNoTax(row) {
+			return row.allProfitNoTax;
+		},
+		// 客户佣金汇总
+		getCustomerCommission(row) {
+			if (!row.orderDetailList || row.orderDetailList.length === 0) return null;
+			return row.orderDetailList.reduce((sum, item) => sum + (Number(item.customerCommission) || 0), 0);
+		},
+		// 厂家佣金汇总
+		getFactoryCommission(row) {
+			if (!row.orderDetailList || row.orderDetailList.length === 0) return null;
+			return row.orderDetailList.reduce((sum, item) => sum + (Number(item.factoryCommission) || 0), 0);
+		},
+		// 计提厂家返利金额汇总
+		getFactoryRebateAmount(row) {
+			if (!row.orderDetailList || row.orderDetailList.length === 0) return null;
+			return row.orderDetailList.reduce((sum, item) => sum + (Number(item.factoryRebateAmount) || 0), 0);
+		},
+		// 计提厂家降价金额汇总
+		getFactoryDiscountAmount(row) {
+			if (!row.orderDetailList || row.orderDetailList.length === 0) return null;
+			return row.orderDetailList.reduce((sum, item) => sum + (Number(item.factoryDiscountAmount) || 0), 0);
+		},
 		// 格式化金额显示（保留两位小数）
 		formatAmount(value) {
 			if (value === null || value === undefined || value === '') {
