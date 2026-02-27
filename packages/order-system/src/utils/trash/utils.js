@@ -111,3 +111,18 @@ export function formatBalanceByDebitCredit(amount, debitCredit) {
 	}
 	return fix_2(amount);
 }
+
+/**
+ * 明细弹窗专用：根据贷方金额判断余额本币的借贷方向
+ * 贷方 < 0 时余额显示 [借]，否则按原 debitCredit 正常展示
+ * @param {number} moneyAmountLocal - 余额本币
+ * @param {number|string} borrower - 贷方金额
+ * @param {string} debitCredit - 原始借贷标识
+ * @returns {string} 格式化后的余额显示
+ */
+export function formatDetailBalance(moneyAmountLocal, borrower, debitCredit) {
+	if (Number(borrower) < 0) {
+		return formatBalanceByDebitCredit(moneyAmountLocal, 'd');
+	}
+	return formatBalanceByDebitCredit(moneyAmountLocal, debitCredit);
+}

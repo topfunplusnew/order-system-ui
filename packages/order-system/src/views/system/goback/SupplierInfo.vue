@@ -134,6 +134,20 @@
 						</el-tooltip>
 					</template>
 				</el-table-column>
+				<el-table-column prop="summary" label="摘要" width="300" show-overflow-tooltip>
+					<template #default="scope">
+						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+							<template slot="content">
+								<span style="color: red">[{{ getOrAdvancedModule([scope.row.tableName], scope.row.flag) }}]</span>
+								<span v-if="scope.row.summary">{{ scope.row.summary }}</span>
+							</template>
+							<div>
+								<span style="color: red">[{{ getOrAdvancedModule([scope.row.tableName], scope.row.flag) }}]</span>
+								<span v-if="scope.row.summary">{{ scope.row.summary }}</span>
+							</div>
+						</el-tooltip>
+					</template>
+				</el-table-column>
 				<el-table-column prop="lender" label="借方(供应商欠款减少)" show-overflow-tooltip>
 					<template #default="scope">
 						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
@@ -154,11 +168,12 @@
 						</el-tooltip>
 					</template>
 				</el-table-column>
+				<!-- 明细弹窗余额：贷方 < 0 显示 [借]，否则正常展示 -->
 				<el-table-column prop="moneyAmountLocal" label="余额本币" show-overflow-tooltip>
 					<template #default="scope">
 						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-							<template slot="content">{{ formatBalanceByDebitCredit(scope.row.moneyAmountLocal, scope.row.debitCredit) }}</template>
-							<span>{{ formatBalanceByDebitCredit(scope.row.moneyAmountLocal, scope.row.debitCredit) }}</span>
+							<template slot="content">{{ formatDetailBalance(scope.row.moneyAmountLocal, scope.row.borrower, scope.row.debitCredit) }}</template>
+							<span>{{ formatDetailBalance(scope.row.moneyAmountLocal, scope.row.borrower, scope.row.debitCredit) }}</span>
 						</el-tooltip>
 					</template>
 				</el-table-column>
@@ -201,7 +216,7 @@ import RECEIVE_MONEY from '@/components/NeedToShow/RECEIVE_MONEY.vue';
 import INVENTORYDETAIL from '@/components/NeedToShow/INVENTORYDETAIL.vue';
 import ORDER_DETAIL from '@/components/NeedToShow/ORDER_DETAIL.vue';
 import BALANCEACCOUNT from '@/components/NeedToShow/BALANCEACCOUNT.vue';
-import { formatBalanceByDebitCredit, isDebit, isCredit } from '@/utils/trash/utils';
+import { formatBalanceByDebitCredit, formatDetailBalance, isDebit, isCredit } from '@/utils/trash/utils';
 import _ from 'lodash';
 import { isGoodsOrderDisplay, isInventoryDisplay, mergeSpecialTableData } from '@/api/system/goodsOrder';
 import InventoryDayInfo from '@/components/InventoryDayInfo/index.vue';
@@ -255,6 +270,7 @@ export default {
 	},
 	methods: {
 		formatBalanceByDebitCredit,
+		formatDetailBalance,
 		fix,
 		listCompany,
 		abs,
@@ -311,7 +327,7 @@ export default {
 					return;
 				}
 				const values = data.map(item => number(item[column.property]));
-				const exclude = ['operateDate', 'payNo', 'lender', 'borrower'];
+				const exclude = ['operateDate', 'payNo', 'summary', 'lender', 'borrower'];
 				if (exclude.includes(column.property)) {
 					sums[index] = '';
 					return;

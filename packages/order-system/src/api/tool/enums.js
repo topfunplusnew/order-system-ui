@@ -148,15 +148,24 @@ export const moduleNames = Object.freeze({
 		}
 	}
 });
-// 判断某个模块是否有二级模块分类
+/**
+ * 判断某个模块是否有二级模块分类，返回对应的模块显示名称
+ * @param {string|string[]} moduleName - 模块名称
+ * @param {string} flag - 二级分类标识，默认 'default'
+ * @returns {string} 模块显示名称
+ */
 export function getOrAdvancedModule(moduleName, flag = 'default') {
 	if (!moduleName) {
 		throw new Error('isAdvancedModule moduleName is required');
 	}
-	console.log(moduleName, flag);
 
-	// 如果模块不属于高级 并且 没有传递flag 或者flag 是 default
-	if (!moduleNames.advanced.modules.includes(moduleName) && (!flag || flag === 'default')) {
+	// 非高级模块，直接返回普通模块名称
+	if (!moduleNames.advanced.modules.includes(moduleName)) {
+		return moduleNames[moduleName];
+	}
+
+	// 高级模块但没有指定具体flag，返回普通名称
+	if (!flag || flag === 'default') {
 		return moduleNames[moduleName];
 	}
 
