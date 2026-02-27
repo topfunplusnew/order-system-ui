@@ -158,14 +158,13 @@ export default {
 		// 搜索
 		async handleChangeSearch() {
 			try {
-				// 顺序获取左右两侧的数据
-				const left = await this.getChangeData(this.changeForm.endTime, this.targetLeftDate);
-				this.fixedMoneyTableData = this.formatTableData(left);
-				console.log('fixedMoneyTableData', this.fixedMoneyTableData);
+				// 左侧：backupDate=targetLeftDate, targetDate=targetLeftDate（当日截取）
+				const left = await this.getChangeData(this.targetLeftDate, this.targetLeftDate);
+				this.changeMoneyTableData = this.formatTableData(left);
 
+				// 右侧：backupDate=changeForm.endTime, targetDate=targetRightDate（数据固定后）
 				const right = await this.getChangeData(this.changeForm.endTime, this.targetRightDate);
-				this.changeMoneyTableData = this.formatTableData(right);
-				console.log('changeMoneyTableData', this.changeMoneyTableData);
+				this.fixedMoneyTableData = this.formatTableData(right);
 
 				// 计算差异
 				this.calculateDiff();
@@ -189,8 +188,8 @@ export default {
 			this.diffRows = [];
 			this.diffModules = [];
 			this.diffList = [];
-			const leftData = leftTableData || this.fixedMoneyTableData;
-			const rightData = rightTableData || this.changeMoneyTableData;
+			const leftData = leftTableData || this.changeMoneyTableData;
+			const rightData = rightTableData || this.fixedMoneyTableData;
 			if (!leftData || !rightData || leftData.length === 0 || rightData.length === 0) {
 				return;
 			}
