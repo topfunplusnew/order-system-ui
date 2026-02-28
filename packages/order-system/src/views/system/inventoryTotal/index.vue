@@ -25,8 +25,8 @@
 			<el-form-item label="仓库名称" prop="storeHouseName">
 				<el-input v-model="queryParams.storeHouseName" placeholder="请输入仓库名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
-			<el-form-item label="截止时间" prop="endTime">
-				<el-date-picker v-model="queryParams.endTime" type="datetime" placeholder="选择截止时间" value-format="yyyy-MM-dd HH:mm:ss" clearable />
+			<el-form-item label="时间" prop="endTime">
+				<el-date-picker v-model="queryParams.endTime" type="date" placeholder="选择时间" value-format="yyyy-MM-dd" clearable />
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>

@@ -64,7 +64,7 @@ export function listBankAcceptanceBalanceMoney(query) {
 /**
  * 查询票据余额列表
  * @param {Object} query - 查询参数
- * @param {string} [query.endTime] - 截止日期
+ * @param {string} [query.operateDate] - 截止日期
  * @param {number} [query.pageNum] - 页码
  * @param {number} [query.pageSize] - 每页条数
  * @returns {Promise<{total: number, rows: Array<{billNo: string, billAccount: string, balance: number, issueDate: string, dueDate: string}>}>}

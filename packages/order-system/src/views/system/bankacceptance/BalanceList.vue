@@ -1,8 +1,8 @@
 <template>
 	<div class="app-container">
 		<el-form id="top-search-form-item" v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
-			<el-form-item label="截止日期" prop="endTime">
-				<el-date-picker v-model="queryParams.endTime" type="datetime" placeholder="选择截止日期" value-format="yyyy-MM-dd HH:mm:ss" clearable />
+			<el-form-item label="日期" prop="operateDate">
+				<el-date-picker v-model="queryParams.operateDate" type="date" placeholder="选择截止日期" value-format="yyyy-MM-dd" clearable />
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -54,7 +54,7 @@ export default {
 			queryParams: {
 				pageNum: 1,
 				pageSize: 20,
-				endTime: ''
+				operateDate: ''
 			},
 			columns: [
 				{ label: '票号', visible: true },
@@ -88,14 +88,14 @@ export default {
 			this.queryParams = {
 				pageNum: 1,
 				pageSize: 20,
-				endTime: ''
+				operateDate: ''
 			};
 			this.$refs.queryForm?.resetFields();
 			this.handleQuery();
 		},
 		/** 导出 */
 		handleExport() {
-			this.download('/system/bankAcceptance/balanceList', { ...this.queryParams }, `票据余额表_${new Date().getTime()}.xlsx`);
+			this.download('/system/bankAcceptance/exportBalance', { ...this.queryParams }, `票据余额表_${new Date().getTime()}.xlsx`);
 		},
 		/**
 		 * 合计行计算（余额列）

@@ -34,23 +34,22 @@
 				<el-table id="printBox" :data="tableData" border stripe size="mini">
 					<el-table-column type="index" label="序号" width="50" />
 					<el-table-column v-if="columns[0].visible" prop="date" label="日期" />
-					<el-table-column v-if="columns[1].visible" prop="acountsName" label="户名" />
-					<el-table-column v-if="columns[2].visible" prop="bankNo" label="银行账号" />
-					<el-table-column v-if="columns[3].visible" prop="displayName" label="展示名称" />
-					<el-table-column v-if="columns[4].visible" prop="bankCardType" label="银行卡类别" />
-					<el-table-column v-if="columns[5].visible" label="资金日报部分">
+					<el-table-column v-if="columns[1].visible" prop="displayName" label="己方公司" />
+					<el-table-column v-if="columns[2].visible" prop="acountsName" label="开户名称" />
+					<el-table-column v-if="columns[3].visible" prop="bankNo" label="银行账号" />
+					<el-table-column v-if="columns[4].visible" label="资金日报部分">
 						<el-table-column prop="previousBalance" label="上日余额" />
 						<el-table-column prop="totalIncome" label="本日收款" />
 						<el-table-column prop="totalExpense" label="本日付款" />
 						<el-table-column prop="currentBalance" label="本日余额" />
 					</el-table-column>
-					<el-table-column v-if="columns[6].visible" label="资金月报部分">
+					<el-table-column v-if="columns[5].visible" label="资金月报部分">
 						<el-table-column prop="previousMonthBalance" label="上月余额" />
 						<el-table-column prop="monthlyIncome" label="本月收款" />
 						<el-table-column prop="monthlyExpense" label="本月付款" />
 						<el-table-column prop="monthlyBalance" label="本月余额" />
 					</el-table-column>
-					<el-table-column v-if="columns[7].visible" label="资金年报部分">
+					<el-table-column v-if="columns[6].visible" label="资金年报部分">
 						<el-table-column prop="previousYearBalance" label="上年余额" />
 						<el-table-column prop="yearlyIncome" label="本年收款" />
 						<el-table-column prop="yearlyExpense" label="本年付款" />
@@ -81,13 +80,12 @@ export default {
 			// 隐藏列信息
 			columns: [
 				{ key: 0, label: `日期`, visible: true },
-				{ key: 1, label: `户名`, visible: true },
-				{ key: 2, label: `银行账号`, visible: true },
-				{ key: 3, label: `展示名称`, visible: true },
-				{ key: 4, label: `银行卡类别`, visible: true },
-				{ key: 5, label: `资金日报部分`, visible: true },
-				{ key: 6, label: `资金月报部分`, visible: true },
-				{ key: 7, label: `资金年报部分`, visible: true }
+				{ key: 1, label: `己方公司`, visible: true },
+				{ key: 2, label: `开户名称`, visible: true },
+				{ key: 3, label: `银行账号`, visible: true },
+				{ key: 4, label: `资金日报部分`, visible: true },
+				{ key: 5, label: `资金月报部分`, visible: true },
+				{ key: 6, label: `资金年报部分`, visible: true }
 			]
 		};
 	},
@@ -101,11 +99,12 @@ export default {
 	},
 	created() {
 		this.fetchData();
-		if (localStorage.getItem('selfCompanyMoneySummary-columns') === 'null' || !localStorage.getItem('selfCompanyMoneySummary-columns')) {
-			localStorage.setItem('selfCompanyMoneySummary-columns', JSON.stringify(this.columns));
-		} else {
-			this.columns = JSON.parse(localStorage.getItem('selfCompanyMoneySummary-columns'));
+		const saved = localStorage.getItem('selfCompanyMoneySummary-columns');
+		if (saved && saved !== 'null') {
+			const parsed = JSON.parse(saved);
+			this.columns = Array.isArray(parsed) && parsed.length === this.columns.length ? parsed : this.columns;
 		}
+		localStorage.setItem('selfCompanyMoneySummary-columns', JSON.stringify(this.columns));
 	},
 	methods: {
 		formatDate(date) {
