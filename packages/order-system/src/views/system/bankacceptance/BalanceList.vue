@@ -4,6 +4,16 @@
 			<el-form-item label="日期" prop="operateDate">
 				<el-date-picker v-model="queryParams.operateDate" type="date" placeholder="选择截止日期" value-format="yyyy-MM-dd" clearable />
 			</el-form-item>
+			<el-form-item label="余额" prop="balanceOperator">
+				<el-select v-model="queryParams.balanceOperator" placeholder="请选择" clearable size="mini" style="width: 80px">
+					<el-option label="＞" value="gt" />
+					<el-option label="＜" value="lt" />
+					<el-option label="=" value="eq" />
+				</el-select>
+			</el-form-item>
+			<el-form-item prop="balanceValue">
+				<el-input v-model="queryParams.balanceValue" placeholder="请输入余额" clearable size="mini" style="width: 120px" @keyup.enter.native="handleQuery" />
+			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
 				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -54,7 +64,9 @@ export default {
 			queryParams: {
 				pageNum: 1,
 				pageSize: 20,
-				operateDate: ''
+				operateDate: '',
+				balanceOperator: '',
+				balanceValue: ''
 			},
 			columns: [
 				{ label: '票号', visible: true },
@@ -88,7 +100,9 @@ export default {
 			this.queryParams = {
 				pageNum: 1,
 				pageSize: 20,
-				operateDate: ''
+				operateDate: '',
+				balanceOperator: '',
+				balanceValue: ''
 			};
 			this.$refs.queryForm?.resetFields();
 			this.handleQuery();
