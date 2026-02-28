@@ -72,57 +72,68 @@
 		</div>
 		<!-- 收款信息表格 -->
 		<div class="table-container" v-loading="loading">
-			<!-- 渲染进度提示 -->
-			<div v-if="isRendering" class="rendering-progress">
-				<el-progress :percentage="renderProgress" :status="renderProgress === 100 ? 'success' : null" :stroke-width="6"></el-progress>
-				<span class="progress-text">正在渲染数据: {{ renderedData.length }} / {{ paginatedData.length }}</span>
-			</div>
-
 			<div class="table-wrapper" id="printBox">
-				<el-table id="printBox" ref="table" v-loading="loading" v-horizontal-scroll="'always'" border :data="receiveMoneyList" :height="tableHeight" size="mini" @selection-change="handleSelectionChange">
-					<el-table-column label="ID" align="center" prop="id" width="60" show-overflow-tooltip />
-					<el-table-column v-if="columns[0].visible" label="日期" align="center" prop="fundsDate" width="140" show-overflow-tooltip />
-					<el-table-column v-if="columns[1].visible" label="支付类型" align="center" prop="receiveType" width="180" show-overflow-tooltip />
-					<el-table-column v-if="columns[2].visible" label="对方公司名称" align="center" prop="companyName" width="165" show-overflow-tooltip />
-					<el-table-column v-if="columns[3].visible" label="对方公司类型" align="center" prop="companyType" width="140" show-overflow-tooltip />
-					<el-table-column v-if="columns[4].visible" label="金额" align="center" prop="moneyAmount" width="110" show-overflow-tooltip />
-					<el-table-column v-if="columns[5].visible" label="我方户名" align="center" prop="selfAcountsName" width="165" show-overflow-tooltip />
-					<el-table-column v-if="columns[6].visible" label="我方账号" align="center" prop="selfBankNo" width="180" show-overflow-tooltip />
-					<el-table-column v-if="columns[7].visible" label="我方开户行" align="center" prop="selfBankName" width="165" show-overflow-tooltip />
-					<el-table-column v-if="columns[8].visible" label="我方账户类型" align="center" prop="selfBankCardType" width="120" show-overflow-tooltip />
-					<el-table-column v-if="columns[9].visible" label="对方户名" align="center" prop="otherAcountsName" width="165" show-overflow-tooltip />
-					<el-table-column v-if="columns[10].visible" label="对方账号" align="center" prop="otherBankNo" width="190" show-overflow-tooltip />
-					<el-table-column v-if="columns[11].visible" label="对方开户行" align="center" prop="otherBankName" width="180" show-overflow-tooltip />
-					<el-table-column v-if="columns[12].visible" label="备注" align="center" prop="comments" width="165" show-overflow-tooltip />
-					<el-table-column v-if="columns[13].visible" label="银行卡流水编号" align="center" prop="transactionHistory" show-overflow-tooltip />
-					<el-table-column v-if="columns[14].visible" label="录入人员" align="center" prop="userName" width="120" show-overflow-tooltip />
-					<el-table-column label="银行卡流水附件" align="center" prop="attachmentList" fixed="right">
-						<template #default="scope">
-							<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
-								<div slot="content" @click.stop>
-									<CheckFiles :attachmentList="scope.row.attachmentList" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getReceiveMoney(), updateReceiveMoney())" flag="transactionHistoryAttachment" />
-								</div>
-								<!-- 这是封装的一个通用组件 可以直接传入url 组件效果为一个按钮 点击后可以查看附件-->
-								<CheckFiles :attachmentList="scope.row.attachmentList" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getReceiveMoney(), updateReceiveMoney())" flag="transactionHistoryAttachment" />
-							</el-tooltip>
-						</template>
-					</el-table-column>
-					<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="150">
-						<template slot-scope="scope">
-							<el-dropdown @command="command => handleCommand(command, scope.row)">
-								<el-button type="primary" size="mini">
-									操作
-									<i class="el-icon-arrow-down el-icon--right"></i>
-								</el-button>
-								<el-dropdown-menu slot="dropdown">
-									<el-dropdown-item v-hasPermi="['system:receivemoney:edit']" command="edit">修改</el-dropdown-item>
-									<el-dropdown-item v-hasPermi="['system:receivemoney:remove']" command="delete" divided>删除</el-dropdown-item>
-									<el-dropdown-item v-hasPermi="['system:tableeditmessage:list']" command="viewEditReason">查看修改原因</el-dropdown-item>
-								</el-dropdown-menu>
-							</el-dropdown>
-						</template>
-					</el-table-column>
-				</el-table>
+				<virtual-scroll ref="virtualScroll" :data="receiveMoneyList" :item-size="30" key-prop="id" @change="receiveMoneyDataAppendChange">
+					<template slot-scope="{ headerCellFixedStyle, cellFixedStyle }">
+						<el-table
+							id="printBox"
+							ref="table"
+							v-loading="loading"
+							v-horizontal-scroll="'always'"
+							border
+							:data="virtualReceiveMoneyList"
+							:height="tableHeight"
+							size="mini"
+							@selection-change="handleSelectionChange"
+							:headerCellStyle="headerCellFixedStyle"
+							:cellStyle="cellFixedStyle"
+							@header-dragend="onHeaderDragend"
+						>
+							<el-table-column label="ID" align="center" prop="id" width="60" show-overflow-tooltip />
+							<el-table-column v-if="columns[0].visible" label="日期" align="center" prop="fundsDate" width="140" show-overflow-tooltip />
+							<el-table-column v-if="columns[1].visible" label="支付类型" align="center" prop="receiveType" width="180" show-overflow-tooltip />
+							<el-table-column v-if="columns[2].visible" label="对方公司名称" align="center" prop="companyName" width="165" show-overflow-tooltip />
+							<el-table-column v-if="columns[3].visible" label="对方公司类型" align="center" prop="companyType" width="140" show-overflow-tooltip />
+							<el-table-column v-if="columns[4].visible" label="金额" align="center" prop="moneyAmount" width="110" show-overflow-tooltip />
+							<el-table-column v-if="columns[5].visible" label="我方户名" align="center" prop="selfAcountsName" width="165" show-overflow-tooltip />
+							<el-table-column v-if="columns[6].visible" label="我方账号" align="center" prop="selfBankNo" width="180" show-overflow-tooltip />
+							<el-table-column v-if="columns[7].visible" label="我方开户行" align="center" prop="selfBankName" width="165" show-overflow-tooltip />
+							<el-table-column v-if="columns[8].visible" label="我方账户类型" align="center" prop="selfBankCardType" width="120" show-overflow-tooltip />
+							<el-table-column v-if="columns[9].visible" label="对方户名" align="center" prop="otherAcountsName" width="165" show-overflow-tooltip />
+							<el-table-column v-if="columns[10].visible" label="对方账号" align="center" prop="otherBankNo" width="190" show-overflow-tooltip />
+							<el-table-column v-if="columns[11].visible" label="对方开户行" align="center" prop="otherBankName" width="180" show-overflow-tooltip />
+							<el-table-column v-if="columns[12].visible" label="备注" align="center" prop="comments" width="165" show-overflow-tooltip />
+							<el-table-column v-if="columns[13].visible" label="银行卡流水编号" align="center" prop="transactionHistory" show-overflow-tooltip />
+							<el-table-column v-if="columns[14].visible" label="录入人员" align="center" prop="userName" width="120" show-overflow-tooltip />
+							<VirtualColumn label="银行卡流水附件" align="center" prop="attachmentList" vfixed="right">
+								<template #default="scope">
+									<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
+										<div slot="content" @click.stop>
+											<CheckFiles :attachmentList="scope.row.attachmentList" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getReceiveMoney(), updateReceiveMoney())" flag="transactionHistoryAttachment" />
+										</div>
+										<!-- 这是封装的一个通用组件 可以直接传入url 组件效果为一个按钮 点击后可以查看附件-->
+										<CheckFiles :attachmentList="scope.row.attachmentList" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getReceiveMoney(), updateReceiveMoney())" flag="transactionHistoryAttachment" />
+									</el-tooltip>
+								</template>
+							</VirtualColumn>
+							<VirtualColumn label="操作" align="center" class-name="small-padding fixed-width" vfixed="right" width="150">
+								<template slot-scope="scope">
+									<el-dropdown @command="command => handleCommand(command, scope.row)">
+										<el-button type="primary" size="mini">
+											操作
+											<i class="el-icon-arrow-down el-icon--right"></i>
+										</el-button>
+										<el-dropdown-menu slot="dropdown">
+											<el-dropdown-item v-hasPermi="['system:receivemoney:edit']" command="edit">修改</el-dropdown-item>
+											<el-dropdown-item v-hasPermi="['system:receivemoney:remove']" command="delete" divided>删除</el-dropdown-item>
+											<el-dropdown-item v-hasPermi="['system:tableeditmessage:list']" command="viewEditReason">查看修改原因</el-dropdown-item>
+										</el-dropdown-menu>
+									</el-dropdown>
+								</template>
+							</VirtualColumn>
+						</el-table>
+					</template>
+				</virtual-scroll>
 			</div>
 		</div>
 
@@ -350,6 +361,7 @@ import { mixin_bankType } from '../../dashboard/mixins/common/common_bankType';
 import { getBankAcceptance } from '@/api/system/bankAcceptance';
 import { parseTime } from '@/utils/ruoyi';
 import { mixin_payment_subject } from '../../dashboard/mixins/payment/payment_subject';
+import VirtualScroll, { VirtualColumn } from 'el-table-virtual-scroll';
 
 export default {
 	name: 'ReceiveMoney',
@@ -365,13 +377,9 @@ export default {
 		},
 		PUBLIC_DICT_TYPE() {
 			return PUBLIC_DICT_TYPE;
-		},
-		// 分页后的数据（后端已分页，直接使用列表数据）
-		paginatedData() {
-			return this.receiveMoneyList;
 		}
 	},
-	components: { BankType, CheckFiles, UploadFilesButton, SearchOption },
+	components: { BankType, CheckFiles, UploadFilesButton, SearchOption, VirtualScroll, VirtualColumn },
 	mixins: [mixin_printHTML, mixin_receive_money_fill, mixin_checkfile, mixin_bankType, mixin_payment_subject],
 	data() {
 		return {
@@ -533,12 +541,8 @@ export default {
 				attachment: '180px',
 				action: '150px'
 			},
-			// 分片渲染相关
-			renderedData: [],
-			isRendering: false,
-			renderProgress: 0,
-			renderChunkSize: 50,
-			renderTimer: null,
+			// 虚拟滚动当前渲染的数据
+			virtualReceiveMoneyList: [],
 			// 银行卡查询
 			bankQuery: '',
 			// 查看修改原因相关
@@ -568,18 +572,19 @@ export default {
 			},
 			deep: true
 		},
-		// 监听分页数据变化，触发分片渲染
-		paginatedData: {
-			handler(newData) {
-				if (newData && newData.length > 0) {
-					this.renderDataInChunks(newData);
-				} else {
-					this.renderedData = [];
-					this.isRendering = false;
-					this.renderProgress = 0;
-				}
-			},
-			immediate: true
+		// 加载完成后绑定滚动事件并刷新布局
+		loading(newVal, oldVal) {
+			if (oldVal === true && newVal === false) {
+				this.$nextTick(() => {
+					this.bindTableScroll();
+					if (this.$refs.table) {
+						this.$refs.table.doLayout();
+					}
+					if (this.$refs.virtualScroll) {
+						this.$refs.virtualScroll.doHeaderLayout();
+					}
+				});
+			}
 		},
 		// 监听对方类型 切换类型时清空已填充的值
 		'form.companyType'(newVal, oldVal) {
@@ -643,6 +648,9 @@ export default {
 	},
 	mounted() {
 		this.calculateTableHeight();
+		this.$nextTick(() => {
+			this.bindTableScroll();
+		});
 	},
 	activated() {
 		// KeepAlive 激活时，强制显示分页组件
@@ -666,68 +674,50 @@ export default {
 			clearTimeout(this.resizeTimer);
 			this.resizeTimer = null;
 		}
-		// 清理渲染定时器
-		if (this.renderTimer) {
-			cancelAnimationFrame(this.renderTimer);
-			this.renderTimer = null;
+		this.unbindTableScroll();
+		if (this._scrollRafId) {
+			cancelAnimationFrame(this._scrollRafId);
+			this._scrollRafId = null;
 		}
 	},
 	methods: {
-		// 分片渲染数据
-		renderDataInChunks(data) {
-			// 如果正在渲染，先取消
-			if (this.renderTimer) {
-				cancelAnimationFrame(this.renderTimer);
-				this.renderTimer = null;
+		/** @param {Array} renderData - 虚拟滚动当前可视区域渲染的数据 */
+		receiveMoneyDataAppendChange(renderData) {
+			this.virtualReceiveMoneyList = renderData;
+		},
+		/** 表头拖动结束后更新虚拟滚动表头布局 */
+		onHeaderDragend() {
+			if (this.$refs.virtualScroll) {
+				this.$refs.virtualScroll.doHeaderLayout();
 			}
-
-			const total = data.length;
-
-			// 如果数据量很小，直接一次性渲染
-			if (total <= this.renderChunkSize) {
-				this.renderedData = [...data];
-				this.isRendering = false;
-				this.renderProgress = 0;
-				return;
-			}
-
-			// 重置状态
-			this.renderedData = [];
-			this.isRendering = true;
-			this.renderProgress = 0;
-
-			let currentIndex = 0;
-
-			const renderChunk = () => {
-				// 计算本次要渲染的数据范围
-				const endIndex = Math.min(currentIndex + this.renderChunkSize, total);
-				const chunk = data.slice(currentIndex, endIndex);
-
-				// 添加到已渲染数据
-				this.renderedData = [...this.renderedData, ...chunk];
-
-				// 更新进度
-				currentIndex = endIndex;
-				this.renderProgress = Math.round((currentIndex / total) * 100);
-
-				// 如果还有数据未渲染，继续下一批
-				if (currentIndex < total) {
-					this.renderTimer = requestAnimationFrame(renderChunk);
-				} else {
-					// 渲染完成
-					this.isRendering = false;
-					this.renderProgress = 100;
-					this.renderTimer = null;
-
-					// 延迟隐藏进度条，让用户看到完成状态
-					setTimeout(() => {
-						this.renderProgress = 0;
-					}, 500);
+		},
+		/** 绑定表格滚动事件 */
+		bindTableScroll() {
+			this.$nextTick(() => {
+				const table = this.$refs.table;
+				if (table && table.bodyWrapper) {
+					if (this._handleTableScroll) {
+						table.bodyWrapper.removeEventListener('scroll', this._handleTableScroll);
+					}
+					this._handleTableScroll = () => {
+						if (this._scrollRafId) {
+							cancelAnimationFrame(this._scrollRafId);
+						}
+						this._scrollRafId = requestAnimationFrame(() => {
+							this._scrollRafId = null;
+						});
+					};
+					table.bodyWrapper.addEventListener('scroll', this._handleTableScroll, { passive: true });
 				}
-			};
-
-			// 开始渲染
-			this.renderTimer = requestAnimationFrame(renderChunk);
+			});
+		},
+		/** 移除表格滚动事件监听 */
+		unbindTableScroll() {
+			const table = this.$refs.table;
+			if (table && table.bodyWrapper && this._handleTableScroll) {
+				table.bodyWrapper.removeEventListener('scroll', this._handleTableScroll);
+				this._handleTableScroll = null;
+			}
 		},
 		// 处理窗口大小变化
 		handleResize() {
@@ -1561,24 +1551,6 @@ export default {
 	position: relative;
 	margin-top: 12px;
 	margin-bottom: 60px;
-
-	.rendering-progress {
-		position: absolute;
-		inset: 0 0 auto 0;
-		z-index: 1000;
-		background: rgba(255, 255, 255, 0.95);
-		padding: 12px 20px;
-
-		border-bottom: 1px solid #ebeef5;
-		backdrop-filter: blur(4px);
-
-		.progress-text {
-			margin-top: 6px;
-			font-size: 12px;
-			text-align: center;
-			color: #606266;
-		}
-	}
 
 	.table-wrapper {
 		position: relative;

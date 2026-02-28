@@ -958,7 +958,7 @@ export default {
 			querySelfAccountName: null,
 			queryBankacceptanceBillNo: null,
 			// 账户类型：冲抵货款，银行活期存款 活期互转，承兑 承兑互转，银承互转 银承互转
-			queryAccountType: '冲抵货款'
+			queryAccountType: ''
 		};
 	},
 	// 计算属性
