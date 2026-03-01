@@ -97,10 +97,11 @@ export default {
 					return;
 				}
 
-				// 获取title和header内容
+				// 获取title、header、表格、底部注
 				const titleEl = container.querySelector('.invoice-title');
 				const headerEl = container.querySelector('.invoice-header');
 				const tableEl = container.querySelector('#copyTable');
+				const footerNoteEl = container.querySelector('.footer-note');
 
 				if (!tableEl) {
 					this.$message.error('未找到表格');
@@ -180,7 +181,10 @@ export default {
 					}
 				}
 
-				// 创建一个包含样式的 HTML 字符串
+				// 创建完整复制内容（表格 + 底部注）
+				const footerNoteHtml = footerNoteEl ? footerNoteEl.cloneNode(true).outerHTML : '';
+				const fullCloneHtml = tableClone.outerHTML + (footerNoteHtml ? footerNoteHtml : '');
+
 				const htmlContent = `
 					<html>
 						<head>
@@ -216,13 +220,16 @@ export default {
 							</style>
 						</head>
 						<body>
-							${tableClone.outerHTML}
+							${fullCloneHtml}
 						</body>
 					</html>
 				`;
 
-				// 创建纯文本版本（备用）
-				const textContent = tableClone.innerText || tableClone.textContent;
+				// 创建纯文本版本（含底部注）
+				const textWrapper = document.createElement('div');
+				textWrapper.appendChild(tableClone.cloneNode(true));
+				if (footerNoteEl) textWrapper.appendChild(footerNoteEl.cloneNode(true));
+				const textContent = textWrapper.innerText || textWrapper.textContent;
 
 				// 使用 Clipboard API 复制
 				const clipboardItem = new ClipboardItem({
@@ -246,6 +253,7 @@ export default {
 					const titleEl = container.querySelector('.invoice-title');
 					const headerEl = container.querySelector('.invoice-header');
 					const tableEl = container.querySelector('#copyTable');
+					const footerNoteEl = container.querySelector('.footer-note');
 
 					if (!tableEl) {
 						this.$message.error('未找到表格');
@@ -324,6 +332,7 @@ export default {
 					hiddenWrapper.style.left = '-9999px';
 					hiddenWrapper.style.top = '0';
 					hiddenWrapper.appendChild(tableClone);
+					if (footerNoteEl) hiddenWrapper.appendChild(footerNoteEl.cloneNode(true));
 					document.body.appendChild(hiddenWrapper);
 
 					try {
