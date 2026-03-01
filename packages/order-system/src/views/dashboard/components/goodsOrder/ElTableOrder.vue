@@ -729,28 +729,28 @@ export default {
 		},
 
 		/**
+		 * 数字类型列 key 集合，导出时需设为 Excel 数值型以支持计算
+		 * @returns {number[]}
+		 */
+		getNumericColKeys() {
+			return [0, 12, 13, 14, 15, 16, 17, 18];
+		},
+
+		/**
 		 * 生成Excel数据
-		 * @returns {Object} 包含表头和数据的对象
+		 * @returns {Object} 包含表头、数据行、数字列索引
 		 * 时间复杂度: O(n×m), 空间复杂度: O(n×m)
 		 */
 		generateExcelData() {
-			// 获取可见列配置
 			const visibleColumns = this.columns.filter(col => col.visible);
-
-			// 生成表头
 			const headers = visibleColumns.map(col => col.label);
+			const numericColIndices = visibleColumns.map((col, idx) => (this.getNumericColKeys().includes(col.key) ? idx : -1)).filter(idx => idx >= 0);
 
-			// 生成数据行
 			const rows = this.goodsOrderList.map(row => {
-				return visibleColumns.map(col => {
-					return this.formatCellValue(row, col.key);
-				});
+				return visibleColumns.map(col => this.formatCellValue(row, col.key));
 			});
 
-			return {
-				headers,
-				rows
-			};
+			return { headers, rows, numericColIndices };
 		},
 
 		/**
@@ -762,7 +762,9 @@ export default {
 		formatCellValue(row, colKey) {
 			switch (colKey) {
 				case 0: // ID
-					return row.id || '';
+					if (row.id === null || row.id === undefined || row.id === '') return '';
+					const idNum = Number(row.id);
+					return isNaN(idNum) ? row.id : idNum;
 				case 1: // 日期
 					return row.orderDate ? parseTime(row.orderDate, '{y}-{m}-{d}') : '';
 				case 2: // 客户
@@ -893,40 +895,46 @@ export default {
 
 		/**
 		 * 下载Excel文件
-		 * @param {Object} data - Excel数据
+		 * @param {Object} data - Excel数据 { headers, rows, numericColIndices }
 		 */
 		downloadExcel(data) {
-			// 创建工作表数据
 			const worksheetData = [data.headers, ...data.rows];
-
-			// 创建工作表
 			const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
 
-			// 设置列宽（可选优化）
-			const colWidths = data.headers.map(() => ({ wch: 15 }));
-			worksheet['!cols'] = colWidths;
+			// 数字列显式设为 Excel 数值类型，支持公式计算
+			const numericColIndices = data.numericColIndices || [];
+			const colToLetter = n => (n >= 26 ? colToLetter(Math.floor(n / 26) - 1) : '') + String.fromCharCode(65 + (n % 26));
+			for (let r = 1; r < worksheetData.length; r++) {
+				numericColIndices.forEach(colIdx => {
+					const cellRef = colToLetter(colIdx) + (r + 1);
+					const raw = worksheetData[r][colIdx];
+					if (raw !== '' && raw !== null && raw !== undefined) {
+						const num = typeof raw === 'number' ? raw : Number(String(raw).replace(/,/g, '').trim());
+						worksheet[cellRef] = !isNaN(num) ? { t: 'n', v: num, z: '#,##0.00' } : worksheet[cellRef];
+					}
+				});
+			}
 
-			// 创建工作簿
+			worksheet['!cols'] = data.headers.map(() => ({ wch: 15 }));
+
 			const workbook = XLSX.utils.book_new();
-			XLSX.utils.book_append_sheet(workbook, worksheet, '订单列表');
+			const baseName = this.isAdjustOrder ? '调整单' : '订单';
+			XLSX.utils.book_append_sheet(workbook, worksheet, `${baseName}列表`);
 
-			// 生成文件名
-			const fileName = `订单列表_${parseTime(new Date(), '{y}{m}{d}_{h}{i}{s}')}.xlsx`;
-
-			// 下载文件
+			const fileName = `${baseName}列表_${parseTime(new Date(), '{y}{m}{d}_{h}{i}{s}')}.xlsx`;
 			XLSX.writeFile(workbook, fileName);
 		},
 		// 订单列表 不分页的导出
 		handleExportNoPage() {
+			const baseName = this.isAdjustOrder ? '调整单' : '订单';
 			this.download(
 				'system/goodsOrder/export',
 				{
 					...this.queryParams,
 					isAdjust: this.isAdjustOrder ? -1 : 0,
-					// 不分页的导出
 					noPage: true
 				},
-				`订单列表_${new Date().getTime()}.xlsx`
+				`${baseName}列表_${new Date().getTime()}.xlsx`
 			);
 		},
 		// 表头拖动结束后更新虚拟滚动表头布局

@@ -524,11 +524,11 @@ export default {
 		/** 导出按钮操作 */
 		handleExport() {
 			this.download(
-				'system/bankAcceptance/export',
+				'system/bankAcceptance/exportAll',
 				{
 					...this.queryParams
 				},
-				`票据对账_${new Date().getTime()}.xlsx`
+				`票据流水账_${new Date().getTime()}.xlsx`
 			);
 		}
 	}
