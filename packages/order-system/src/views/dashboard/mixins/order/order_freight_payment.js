@@ -103,8 +103,8 @@ export var mixin_order_freight_payment = {
 					moneyAmount: totalAmount,
 					comments: comments || firstItem.comments || '',
 					carNo: firstItem.carNo,
-					// 确保保留所有展示需要的字段
-					driverName: firstItem.driverName || firstItem.companyName || '',
+					customer: firstItem.customer || '',
+					driverName: firstItem.driverName || '',
 					driverId: firstItem.driverId || firstItem.companyId || '',
 					fleet: firstItem.fleet || '',
 					freightType: firstItem.freightType || ''
