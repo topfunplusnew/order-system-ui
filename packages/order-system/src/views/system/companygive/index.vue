@@ -250,7 +250,6 @@ import AddBankAccounts from '../../dashboard/components/company/AddBankAccounts.
 import { checkCarsIsExit } from '@/api/system/cars';
 import { PUBLIC_DICT_TYPE } from '../../../api/tool/enums';
 import _ from 'lodash';
-import BankManage from '../company/options/BankManage.vue';
 
 export default {
 	name: 'CompanyGive',

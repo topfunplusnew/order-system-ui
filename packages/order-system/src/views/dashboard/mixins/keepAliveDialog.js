@@ -27,6 +27,8 @@ export default {
 
 		// 处理动态创建的弹窗（common_dialog）
 		if (this._dialogConfigs && this._dialogConfigs.length > 0) {
+			const name = this.$options.name || this.$options._componentTag || 'anonymous';
+			console.log('[keepAliveDialog] deactivated 隐藏弹窗', name, 'count:', this._dialogConfigs.length);
 			this._keepAliveStates._dynamicDialogs = [...this._dialogConfigs];
 			// 隐藏所有动态弹窗
 			if (this._hideAllDialogs) {
@@ -48,6 +50,9 @@ export default {
 
 		// 恢复动态创建的弹窗
 		if (this._keepAliveStates._dynamicDialogs) {
+			const name = this.$options.name || this.$options._componentTag || 'anonymous';
+			const count = this._keepAliveStates._dynamicDialogs.length;
+			console.log('[keepAliveDialog] activated 恢复弹窗', name, 'count:', count);
 			// 恢复弹窗配置
 			this._dialogConfigs = [...this._keepAliveStates._dynamicDialogs];
 			// 重新创建弹窗实例
@@ -65,6 +70,8 @@ export default {
 	// 组件销毁时清理动态弹窗
 	beforeDestroy() {
 		if (this._dialogInstances && this._dialogInstances.length > 0) {
+			const name = this.$options.name || this.$options._componentTag || 'anonymous';
+			console.log('[keepAliveDialog] beforeDestroy 清除弹窗（组件被销毁）', name, 'count:', this._dialogInstances.length);
 			this._dialogInstances.forEach(instance => {
 				if (instance.$el && instance.$el.parentNode) {
 					instance.$el.parentNode.removeChild(instance.$el);
