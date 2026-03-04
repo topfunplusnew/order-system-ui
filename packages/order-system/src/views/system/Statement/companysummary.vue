@@ -39,57 +39,59 @@
 			</right-toolbar>
 		</el-row>
 
-		<el-table
-			id="printBox"
-			v-loading="loading"
-			v-horizontal-scroll="'always'"
-			border
-			:data="tableData"
-			size="mini"
-			:cell-style="
-				() => {
-					return { padding: '1.5px' };
-				}
-			"
-		>
-			<el-table-column v-if="columns[0].visible" show-overflow-tooltip label="序号" align="center" prop="index" width="140" />
-			<el-table-column show-overflow-tooltip label="时间" align="center" width="140">
-				<template slot-scope="">
-					{{ queryParams.endTime }}
-				</template>
-			</el-table-column>
-			<el-table-column v-if="columns[1].visible" show-overflow-tooltip label="客户名称" align="center" prop="companyName" width="140" />
-			<el-table-column v-if="columns[2].visible" show-overflow-tooltip label="上日欠款结转" align="center" prop="previousDayCarryover" width="140" />
-			<el-table-column v-if="columns[3].visible" show-overflow-tooltip label="本日发货金额" align="center" prop="dailyOrderPayments" width="140" />
-			<el-table-column v-if="columns[4].visible" show-overflow-tooltip label="本日票点金额" align="center" prop="dailyInvoiceAmount" width="140" />
-			<el-table-column v-if="columns[5].visible" show-overflow-tooltip label="本日回款金额" align="center" prop="dailyReceiveMoney" width="140" />
-			<el-table-column v-if="columns[6].visible" show-overflow-tooltip label="本日欠款余额" align="center" prop="amountOwedToday" width="140">
-				<template slot-scope="scope">
-					{{ fix_2(Number(scope.row.previousDayCarryover) + Number(scope.row.dailyOrderPayments) + Number(scope.row.dailyInvoiceAmount) - Number(scope.row.dailyReceiveMoney)) }}
-				</template>
-			</el-table-column>
-			<el-table-column v-if="columns[7].visible" show-overflow-tooltip label="本日客户利润" align="center" prop="dailyProfit" width="140" />
-			<el-table-column v-if="columns[8].visible" show-overflow-tooltip label="上月欠款金额结转" align="center" prop="previousMonthCarryover" width="140" />
-			<el-table-column v-if="columns[9].visible" show-overflow-tooltip label="本月发货金额合计" align="center" prop="monthlyOrderPayments" width="140" />
-			<el-table-column v-if="columns[10].visible" show-overflow-tooltip label="本月购入票点" align="center" prop="monthlyInvoiceAmount" width="140" />
-			<el-table-column v-if="columns[11].visible" show-overflow-tooltip label="本月回款金额" align="center" prop="monthlyReceiveMoney" width="140" />
-			<el-table-column v-if="columns[12].visible" show-overflow-tooltip label="本月欠款金额" align="center" prop="amountOwedThisMonth" width="140">
-				<template slot-scope="scope">
-					{{ fix_2(Number(scope.row.previousMonthCarryover) + Number(scope.row.monthlyOrderPayments) + Number(scope.row.monthlyInvoiceAmount) - Number(scope.row.monthlyReceiveMoney)) }}
-				</template>
-			</el-table-column>
-			<el-table-column v-if="columns[13].visible" show-overflow-tooltip label="本月客户利润" align="center" prop="monthlyProfit" width="140" />
-			<el-table-column v-if="columns[14].visible" show-overflow-tooltip label="上年结转" align="center" prop="previousYearCarryover" width="140" />
-			<el-table-column v-if="columns[15].visible" show-overflow-tooltip label="本年发货金额" align="center" prop="yearlyOrderPayments" width="140" />
-			<el-table-column v-if="columns[16].visible" show-overflow-tooltip label="本年票点" align="center" prop="yearlyInvoiceAmount" width="140" />
-			<el-table-column v-if="columns[17].visible" show-overflow-tooltip label="本年回款金额" align="center" prop="yearlyReceiveMoney" width="140" />
-			<el-table-column v-if="columns[18].visible" show-overflow-tooltip label="本年利润" align="center" prop="yearlyProfit" width="140" />
-			<el-table-column v-if="columns[19].visible" show-overflow-tooltip label="欠款" align="center" prop="arrearsThisYear" width="140">
-				<template slot-scope="scope">
-					{{ fix_2(Number(scope.row.previousYearCarryover) + Number(scope.row.yearlyOrderPayments) + Number(scope.row.yearlyInvoiceAmount) - Number(scope.row.yearlyReceiveMoney)) }}
-				</template>
-			</el-table-column>
-		</el-table>
+		<virtual-scroll ref="virtualScroll" :data="tableData" :item-size="30" key-prop="_vid" @change="tableDataAppendChange">
+			<template slot-scope="{ headerCellFixedStyle, cellFixedStyle }">
+				<el-table
+					id="printBox"
+					v-loading="loading"
+					v-horizontal-scroll="'always'"
+					border
+					:data="virtualTableData"
+					size="mini"
+					height="600"
+					:headerCellStyle="headerCellFixedStyle"
+					:cell-style="(row, column, rowIndex, columnIndex) => ({ padding: '1.5px', ...((cellFixedStyle && cellFixedStyle(row, column, rowIndex, columnIndex)) || {}) })"
+				>
+					<el-table-column v-if="columns[0].visible" show-overflow-tooltip label="序号" align="center" prop="index" width="140" />
+					<el-table-column show-overflow-tooltip label="时间" align="center" width="140">
+						<template slot-scope="">
+							{{ queryParams.endTime }}
+						</template>
+					</el-table-column>
+					<el-table-column v-if="columns[1].visible" show-overflow-tooltip label="客户名称" align="center" prop="companyName" width="140" />
+					<el-table-column v-if="columns[2].visible" show-overflow-tooltip label="上日欠款结转" align="center" prop="previousDayCarryover" width="140" />
+					<el-table-column v-if="columns[3].visible" show-overflow-tooltip label="本日发货金额" align="center" prop="dailyOrderPayments" width="140" />
+					<el-table-column v-if="columns[4].visible" show-overflow-tooltip label="本日票点金额" align="center" prop="dailyInvoiceAmount" width="140" />
+					<el-table-column v-if="columns[5].visible" show-overflow-tooltip label="本日回款金额" align="center" prop="dailyReceiveMoney" width="140" />
+					<el-table-column v-if="columns[6].visible" show-overflow-tooltip label="本日欠款余额" align="center" prop="amountOwedToday" width="140">
+						<template slot-scope="scope">
+							{{ fix_2(Number(scope.row.previousDayCarryover) + Number(scope.row.dailyOrderPayments) + Number(scope.row.dailyInvoiceAmount) - Number(scope.row.dailyReceiveMoney)) }}
+						</template>
+					</el-table-column>
+					<el-table-column v-if="columns[7].visible" show-overflow-tooltip label="本日客户利润" align="center" prop="dailyProfit" width="140" />
+					<el-table-column v-if="columns[8].visible" show-overflow-tooltip label="上月欠款金额结转" align="center" prop="previousMonthCarryover" width="140" />
+					<el-table-column v-if="columns[9].visible" show-overflow-tooltip label="本月发货金额合计" align="center" prop="monthlyOrderPayments" width="140" />
+					<el-table-column v-if="columns[10].visible" show-overflow-tooltip label="本月购入票点" align="center" prop="monthlyInvoiceAmount" width="140" />
+					<el-table-column v-if="columns[11].visible" show-overflow-tooltip label="本月回款金额" align="center" prop="monthlyReceiveMoney" width="140" />
+					<el-table-column v-if="columns[12].visible" show-overflow-tooltip label="本月欠款金额" align="center" prop="amountOwedThisMonth" width="140">
+						<template slot-scope="scope">
+							{{ fix_2(Number(scope.row.previousMonthCarryover) + Number(scope.row.monthlyOrderPayments) + Number(scope.row.monthlyInvoiceAmount) - Number(scope.row.monthlyReceiveMoney)) }}
+						</template>
+					</el-table-column>
+					<el-table-column v-if="columns[13].visible" show-overflow-tooltip label="本月客户利润" align="center" prop="monthlyProfit" width="140" />
+					<el-table-column v-if="columns[14].visible" show-overflow-tooltip label="上年结转" align="center" prop="previousYearCarryover" width="140" />
+					<el-table-column v-if="columns[15].visible" show-overflow-tooltip label="本年发货金额" align="center" prop="yearlyOrderPayments" width="140" />
+					<el-table-column v-if="columns[16].visible" show-overflow-tooltip label="本年票点" align="center" prop="yearlyInvoiceAmount" width="140" />
+					<el-table-column v-if="columns[17].visible" show-overflow-tooltip label="本年回款金额" align="center" prop="yearlyReceiveMoney" width="140" />
+					<el-table-column v-if="columns[18].visible" show-overflow-tooltip label="本年利润" align="center" prop="yearlyProfit" width="140" />
+					<el-table-column v-if="columns[19].visible" show-overflow-tooltip label="欠款" align="center" prop="arrearsThisYear" width="140">
+						<template slot-scope="scope">
+							{{ fix_2(Number(scope.row.previousYearCarryover) + Number(scope.row.yearlyOrderPayments) + Number(scope.row.yearlyInvoiceAmount) - Number(scope.row.yearlyReceiveMoney)) }}
+						</template>
+					</el-table-column>
+				</el-table>
+			</template>
+		</virtual-scroll>
 
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="请选择导出时间" :visible.sync="dialogVisible" width="30%">
@@ -121,9 +123,12 @@ import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import { getCompanySummary } from '../../../api/system/statement';
 import { parseTime } from '../../../utils/ruoyi';
 import { fix_2 } from '../../../api/tool/format';
+import VirtualScroll from 'el-table-virtual-scroll';
+
 export default {
 	name: 'Companysummary',
 	dicts: ['order_target_type'],
+	components: { VirtualScroll },
 	mixins: [mixin_printHTML],
 	data() {
 		return {
@@ -131,6 +136,7 @@ export default {
 			loading: true,
 			total: 0,
 			tableData: [],
+			virtualTableData: [],
 			// 弹出层标题
 			title: '',
 			// 是否显示弹出层
@@ -177,11 +183,18 @@ export default {
 		getList() {
 			this.loading = true;
 			getCompanySummary(this.queryParams).then(response => {
-				console.log(response);
-				this.tableData = response.rows;
+				const rows = response.rows || [];
+				const base = (this.queryParams.pageNum - 1) * this.queryParams.pageSize;
+				this.tableData = rows.map((r, i) => ({ ...r, _vid: base + i }));
 				this.total = response.total;
 				this.loading = false;
+				this.$nextTick(() => {
+					if (this.$refs.virtualScroll) this.$refs.virtualScroll.doHeaderLayout();
+				});
 			});
+		},
+		tableDataAppendChange(renderData) {
+			this.virtualTableData = renderData;
 		},
 		handleCheckCarNoFreight(row) {
 			console.log(row);

@@ -42,92 +42,94 @@
 		</el-row>
 
 		<!-- 运费报表表格 -->
-		<el-table
-			id="printBox"
-			v-loading="loading"
-			v-horizontal-scroll="'always'"
-			border
-			:data="lendMoneyList"
-			size="mini"
-			:cell-style="
-				() => {
-					return { padding: '1.5px' };
-				}
-			"
-		>
-			<!-- 序号 -->
-			<el-table-column v-if="columns[0].visible" label="序号" align="center" type="index" width="160" show-overflow-tooltip />
-			<!-- 任务9：表格左侧新增【日期】列，取顶部搜索开始/结束时间拼接展示（不精确到秒） -->
-			<el-table-column label="日期" align="center" width="260" show-overflow-tooltip>
-				<template slot-scope="scope">
-					{{ queryDateRangeText }}
-				</template>
-			</el-table-column>
-			<!-- 车牌号 -->
-			<el-table-column v-if="columns[6].visible" label="车牌号" align="center" prop="carNo" width="110" show-overflow-tooltip />
-			<!-- 司机姓名 -->
-			<el-table-column v-if="columns[1].visible" label="司机姓名" align="center" prop="companyName" width="110" show-overflow-tooltip />
+		<virtual-scroll ref="virtualScroll" :data="lendMoneyList" :item-size="30" key-prop="_vid" @change="lendMoneyDataAppendChange">
+			<template slot-scope="{ headerCellFixedStyle, cellFixedStyle }">
+				<el-table
+					id="printBox"
+					v-loading="loading"
+					v-horizontal-scroll="'always'"
+					border
+					:data="virtualLendMoneyList"
+					size="mini"
+					height="600"
+					:headerCellStyle="headerCellFixedStyle"
+					:cell-style="(row, column, rowIndex, columnIndex) => ({ padding: '1.5px', ...((cellFixedStyle && cellFixedStyle(row, column, rowIndex, columnIndex)) || {}) })"
+				>
+					<!-- 序号 -->
+					<el-table-column v-if="columns[0].visible" label="序号" align="center" type="index" width="160" show-overflow-tooltip />
+					<!-- 任务9：表格左侧新增【日期】列，取顶部搜索开始/结束时间拼接展示（不精确到秒） -->
+					<el-table-column label="日期" align="center" width="260" show-overflow-tooltip>
+						<template slot-scope="scope">
+							{{ queryDateRangeText }}
+						</template>
+					</el-table-column>
+					<!-- 车牌号 -->
+					<el-table-column v-if="columns[6].visible" label="车牌号" align="center" prop="carNo" width="110" show-overflow-tooltip />
+					<!-- 司机姓名 -->
+					<el-table-column v-if="columns[1].visible" label="司机姓名" align="center" prop="companyName" width="110" show-overflow-tooltip />
 
-			<!-- 初期方向 -->
-			<el-table-column v-if="columns[2].visible" label="初期方向" align="center" width="160" show-overflow-tooltip>
-				<template slot-scope="scope">
-					<div v-if="scope">
-						<span v-if="scope.row.beginningBalance < 0">贷</span>
-						<span v-else-if="scope.row.beginningBalance > 0">借</span>
-						<span v-else>平</span>
-					</div>
-				</template>
-			</el-table-column>
+					<!-- 初期方向 -->
+					<el-table-column v-if="columns[2].visible" label="初期方向" align="center" width="160" show-overflow-tooltip>
+						<template slot-scope="scope">
+							<div v-if="scope">
+								<span v-if="scope.row.beginningBalance < 0">贷</span>
+								<span v-else-if="scope.row.beginningBalance > 0">借</span>
+								<span v-else>平</span>
+							</div>
+						</template>
+					</el-table-column>
 
-			<!-- 初期余额 -->
-			<el-table-column v-if="columns[3].visible" label="初期余额" align="center" prop="beginningBalance" width="160" show-overflow-tooltip>
-				<template slot-scope="scope">
-					{{ formatBalance(scope.row.beginningBalance) }}
-				</template>
-			</el-table-column>
+					<!-- 初期余额 -->
+					<el-table-column v-if="columns[3].visible" label="初期余额" align="center" prop="beginningBalance" width="160" show-overflow-tooltip>
+						<template slot-scope="scope">
+							{{ formatBalance(scope.row.beginningBalance) }}
+						</template>
+					</el-table-column>
 
-			<!-- 借方 -->
-			<el-table-column v-if="columns[4].visible" label="借方" align="center" prop="positiveSum" width="160" show-overflow-tooltip>
-				<template slot-scope="scope">
-					{{ fix(-scope.row.positiveSum) }}
-				</template>
-			</el-table-column>
+					<!-- 借方 -->
+					<el-table-column v-if="columns[4].visible" label="借方" align="center" prop="positiveSum" width="160" show-overflow-tooltip>
+						<template slot-scope="scope">
+							{{ fix(-scope.row.positiveSum) }}
+						</template>
+					</el-table-column>
 
-			<!-- 贷方 -->
-			<el-table-column v-if="columns[5].visible" label="贷方" align="center" prop="negativeSum" width="160" show-overflow-tooltip>
-				<template slot-scope="scope">
-					{{ fix(scope.row.negativeSum) }}
-				</template>
-			</el-table-column>
+					<!-- 贷方 -->
+					<el-table-column v-if="columns[5].visible" label="贷方" align="center" prop="negativeSum" width="160" show-overflow-tooltip>
+						<template slot-scope="scope">
+							{{ fix(scope.row.negativeSum) }}
+						</template>
+					</el-table-column>
 
-			<!-- 期末方向 -->
-			<el-table-column v-if="columns[7].visible" label="期末方向" align="center" prop="initialBalanceDirection" width="160" show-overflow-tooltip>
-				<template slot-scope="scope">
-					<div v-if="scope">
-						<span v-if="scope.row.endingBalance < 0">贷</span>
-						<span v-else-if="scope.row.endingBalance > 0">借</span>
-						<span v-else>平</span>
-					</div>
-				</template>
-			</el-table-column>
+					<!-- 期末方向 -->
+					<el-table-column v-if="columns[7].visible" label="期末方向" align="center" prop="initialBalanceDirection" width="160" show-overflow-tooltip>
+						<template slot-scope="scope">
+							<div v-if="scope">
+								<span v-if="scope.row.endingBalance < 0">贷</span>
+								<span v-else-if="scope.row.endingBalance > 0">借</span>
+								<span v-else>平</span>
+							</div>
+						</template>
+					</el-table-column>
 
-			<!-- 期末余额 -->
-			<el-table-column v-if="columns[8].visible" label="期末余额" align="center" prop="endingBalance" width="160" show-overflow-tooltip>
-				<template slot-scope="scope">
-					{{ formatBalance(scope.row.endingBalance) }}
-				</template>
-			</el-table-column>
+					<!-- 期末余额 -->
+					<el-table-column v-if="columns[8].visible" label="期末余额" align="center" prop="endingBalance" width="160" show-overflow-tooltip>
+						<template slot-scope="scope">
+							{{ formatBalance(scope.row.endingBalance) }}
+						</template>
+					</el-table-column>
 
-			<!-- 录入员 -->
-			<el-table-column v-if="columns[9].visible" label="录入员" align="center" prop="salesman" width="160" show-overflow-tooltip />
+					<!-- 录入员 -->
+					<el-table-column v-if="columns[9].visible" label="录入员" align="center" prop="salesman" width="160" show-overflow-tooltip />
 
-			<!-- 操作 -->
-			<!--			<el-table-column label="操作" align="center" prop="driverName" width="150" fixed="right">-->
-			<!--				<template slot-scope="scope">-->
-			<!--					<FreightDetail :detail="scope.row" />-->
-			<!--				</template>-->
-			<!--			</el-table-column>-->
-		</el-table>
+					<!-- 操作 -->
+					<!--			<el-table-column label="操作" align="center" prop="driverName" width="150" fixed="right">-->
+					<!--				<template slot-scope="scope">-->
+					<!--					<FreightDetail :detail="scope.row" />-->
+					<!--				</template>-->
+					<!--			</el-table-column>-->
+				</el-table>
+			</template>
+		</virtual-scroll>
 
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
@@ -163,10 +165,11 @@ import { parseTime } from '../../../utils/ruoyi';
 import { fix } from 'order-system/src/api/tool/format';
 import { formatBalance } from '../../../utils/trash/utils';
 import { common_excel } from '@/views/dashboard/mixins/common/common_excel';
+import VirtualScroll from 'el-table-virtual-scroll';
 
 export default {
 	name: 'LendMoney',
-	components: {},
+	components: { VirtualScroll },
 	dicts: ['order_target_type'],
 	mixins: [mixin_printHTML, common_excel],
 	data() {
@@ -175,6 +178,7 @@ export default {
 			loading: true,
 			total: 0,
 			lendMoneyList: [],
+			virtualLendMoneyList: [],
 			// 弹出层标题
 			title: '',
 			// 是否显示弹出层
@@ -243,10 +247,18 @@ export default {
 		getList() {
 			this.loading = true;
 			getOrderFreightDetailSummary(this.queryParams).then(response => {
-				this.lendMoneyList = response.rows;
+				const rows = response.rows || [];
+				const base = (this.queryParams.pageNum - 1) * this.queryParams.pageSize;
+				this.lendMoneyList = rows.map((r, i) => ({ ...r, _vid: base + i }));
 				this.total = response.total;
 				this.loading = false;
+				this.$nextTick(() => {
+					if (this.$refs.virtualScroll) this.$refs.virtualScroll.doHeaderLayout();
+				});
 			});
+		},
+		lendMoneyDataAppendChange(renderData) {
+			this.virtualLendMoneyList = renderData;
 		},
 		// 运费明细获取
 		handleCheckCarNoFreight(row) {
