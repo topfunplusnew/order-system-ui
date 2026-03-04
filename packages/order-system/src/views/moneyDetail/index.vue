@@ -26,6 +26,7 @@
 			<el-table-column label="支付类型" prop="paymentType" align="center" show-overflow-tooltip />
 			<el-table-column label="支付金额" prop="paymentAmount" align="center" show-overflow-tooltip />
 			<el-table-column label="对方公司" prop="otherCompany" align="center" show-overflow-tooltip />
+			<el-table-column label="对方户名" prop="otherAccountName" align="center" show-overflow-tooltip />
 			<el-table-column label="对方账号" prop="otherAccountNo" align="center" show-overflow-tooltip />
 			<el-table-column label="对方开户行" prop="otherBankName" align="center" show-overflow-tooltip />
 			<el-table-column label="己方户名" prop="selfAccountName" align="center" show-overflow-tooltip />
