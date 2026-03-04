@@ -3,9 +3,11 @@ import { getFleetFreightSummary } from '../../../api/system/statement';
 import { parseTime } from '../../../utils/ruoyi';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
 import { fix } from '../../../api/tool/format';
+import VirtualScroll from 'el-table-virtual-scroll';
 
 export default {
 	name: 'Fleetfreightsummary',
+	components: { VirtualScroll },
 	mixins: [mixin_printHTML],
 	data() {
 		const today = parseTime(new Date(), '{y}-{m}-{d}');
@@ -34,6 +36,7 @@ export default {
 			],
 			total: 0,
 			statementList: [],
+			virtualStatementList: [],
 			dialogVisible: false
 		};
 	},
@@ -45,10 +48,18 @@ export default {
 		getList() {
 			this.loading = true;
 			getFleetFreightSummary(this.queryParams).then(res => {
-				this.statementList = res.rows;
+				const rows = res.rows || [];
+				const base = (this.queryParams.pageNum - 1) * this.queryParams.pageSize;
+				this.statementList = rows.map((r, i) => ({ ...r, _vid: base + i }));
 				this.total = res.total;
 				this.loading = false;
+				this.$nextTick(() => {
+					if (this.$refs.virtualScroll) this.$refs.virtualScroll.doHeaderLayout();
+				});
 			});
+		},
+		statementDataAppendChange(renderData) {
+			this.virtualStatementList = renderData;
 		},
 		// 时间查询
 		handleQuery() {
@@ -120,61 +131,62 @@ export default {
 					</right-toolbar>
 
 					<!--          报表主体-->
-					<el-table
-						id="printBox"
-						v-loading="loading"
-						v-horizontal-scroll="'always'"
-						border
-						:data="statementList"
-						height="450px"
-						size="mini"
-						:cell-style="
-							() => {
-								return { padding: '2px' };
-							}
-						"
-					>
-						<!-- 司机信息 -->
-						<el-table-column v-if="columns[0].visible" label="司机信息" align="center" show-overflow-tooltip>
-							<el-table-column label="车队" align="center" prop="fleet" width="200" show-overflow-tooltip />
-						</el-table-column>
+					<virtual-scroll ref="virtualScroll" :data="statementList" :item-size="30" key-prop="_vid" @change="statementDataAppendChange">
+						<template slot-scope="{ headerCellFixedStyle, cellFixedStyle }">
+							<el-table
+								id="printBox"
+								v-loading="loading"
+								v-horizontal-scroll="'always'"
+								border
+								:data="virtualStatementList"
+								height="450"
+								size="mini"
+								:headerCellStyle="headerCellFixedStyle"
+								:cell-style="(row, column, rowIndex, columnIndex) => ({ padding: '2px', ...((cellFixedStyle && cellFixedStyle(row, column, rowIndex, columnIndex)) || {}) })"
+							>
+								<!-- 司机信息 -->
+								<el-table-column v-if="columns[0].visible" label="司机信息" align="center" show-overflow-tooltip>
+									<el-table-column label="车队" align="center" prop="fleet" width="200" show-overflow-tooltip />
+								</el-table-column>
 
-						<!-- 运费日报 -->
-						<el-table-column label="运费日报" align="center" show-overflow-tooltip>
-							<el-table-column v-if="columns[1].visible" label="上日欠运费" align="center" prop="previousDebtAmountToday" width="200" show-overflow-tooltip />
-							<el-table-column v-if="columns[2].visible" label="当日应付运费" align="center" prop="unpaidAmountToday" width="200" show-overflow-tooltip />
-							<el-table-column v-if="columns[3].visible" label="本日付款金额" align="center" prop="paidAmountToday" width="200" show-overflow-tooltip />
-							<el-table-column v-if="columns[4].visible" label="本日欠款余额" align="center" prop="debtAmountToday" width="200" show-overflow-tooltip>
-								<template slot-scope="scope">
-									{{ fix(scope.row.debtAmountToday) }}
-								</template>
-							</el-table-column>
-						</el-table-column>
+								<!-- 运费日报 -->
+								<el-table-column label="运费日报" align="center" show-overflow-tooltip>
+									<el-table-column v-if="columns[1].visible" label="上日欠运费" align="center" prop="previousDebtAmountToday" width="200" show-overflow-tooltip />
+									<el-table-column v-if="columns[2].visible" label="当日应付运费" align="center" prop="unpaidAmountToday" width="200" show-overflow-tooltip />
+									<el-table-column v-if="columns[3].visible" label="本日付款金额" align="center" prop="paidAmountToday" width="200" show-overflow-tooltip />
+									<el-table-column v-if="columns[4].visible" label="本日欠款余额" align="center" prop="debtAmountToday" width="200" show-overflow-tooltip>
+										<template slot-scope="scope">
+											{{ fix(scope.row.debtAmountToday) }}
+										</template>
+									</el-table-column>
+								</el-table-column>
 
-						<!-- 运费月报 -->
-						<el-table-column label="运费月报" align="center" show-overflow-tooltip>
-							<el-table-column v-if="columns[5].visible" label="上月结转欠款全额" align="center" prop="previousDebtAmountThisMonth" width="200" show-overflow-tooltip />
-							<el-table-column v-if="columns[7].visible" label="本月累计应付运费" align="center" prop="unpaidAmountThisMonth" width="200" show-overflow-tooltip />
-							<el-table-column v-if="columns[6].visible" label="本月付款金额合计" align="center" prop="paidAmountThisMonth" width="200" show-overflow-tooltip />
-							<el-table-column v-if="columns[8].visible" label="本月欠款金额" align="center" prop="debtAmountThisMonth" width="200" show-overflow-tooltip>
-								<template slot-scope="scope">
-									{{ fix(scope.row.debtAmountThisMonth) }}
-								</template>
-							</el-table-column>
-						</el-table-column>
+								<!-- 运费月报 -->
+								<el-table-column label="运费月报" align="center" show-overflow-tooltip>
+									<el-table-column v-if="columns[5].visible" label="上月结转欠款全额" align="center" prop="previousDebtAmountThisMonth" width="200" show-overflow-tooltip />
+									<el-table-column v-if="columns[7].visible" label="本月累计应付运费" align="center" prop="unpaidAmountThisMonth" width="200" show-overflow-tooltip />
+									<el-table-column v-if="columns[6].visible" label="本月付款金额合计" align="center" prop="paidAmountThisMonth" width="200" show-overflow-tooltip />
+									<el-table-column v-if="columns[8].visible" label="本月欠款金额" align="center" prop="debtAmountThisMonth" width="200" show-overflow-tooltip>
+										<template slot-scope="scope">
+											{{ fix(scope.row.debtAmountThisMonth) }}
+										</template>
+									</el-table-column>
+								</el-table-column>
 
-						<!-- 运费年报 -->
-						<el-table-column label="运费年报" align="center" show-overflow-tooltip>
-							<el-table-column v-if="columns[9].visible" label="上年结转欠款金额" align="center" prop="previousDebtAmountThisYear" width="200" show-overflow-tooltip />
-							<el-table-column v-if="columns[11].visible" label="本年累计应付运费" align="center" prop="unpaidAmountThisYear" width="200" show-overflow-tooltip />
-							<el-table-column v-if="columns[10].visible" label="本年付款金额合计" align="center" prop="paidAmountThisYear" width="200" show-overflow-tooltip />
-							<el-table-column v-if="columns[12].visible" label="本年欠款金额" align="center" prop="debtAmountThisYear" width="200" show-overflow-tooltip>
-								<template slot-scope="scope">
-									{{ fix(scope.row.debtAmountThisYear) }}
-								</template>
-							</el-table-column>
-						</el-table-column>
-					</el-table>
+								<!-- 运费年报 -->
+								<el-table-column label="运费年报" align="center" show-overflow-tooltip>
+									<el-table-column v-if="columns[9].visible" label="上年结转欠款金额" align="center" prop="previousDebtAmountThisYear" width="200" show-overflow-tooltip />
+									<el-table-column v-if="columns[11].visible" label="本年累计应付运费" align="center" prop="unpaidAmountThisYear" width="200" show-overflow-tooltip />
+									<el-table-column v-if="columns[10].visible" label="本年付款金额合计" align="center" prop="paidAmountThisYear" width="200" show-overflow-tooltip />
+									<el-table-column v-if="columns[12].visible" label="本年欠款金额" align="center" prop="debtAmountThisYear" width="200" show-overflow-tooltip>
+										<template slot-scope="scope">
+											{{ fix(scope.row.debtAmountThisYear) }}
+										</template>
+									</el-table-column>
+								</el-table-column>
+							</el-table>
+						</template>
+					</virtual-scroll>
 
 					<!--          分页-->
 					<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />

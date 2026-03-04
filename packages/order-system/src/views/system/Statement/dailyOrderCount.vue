@@ -3,9 +3,11 @@
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import { getDailyOrderCount } from '@/api/system/statement';
 import { parseTime } from '@/utils/ruoyi';
+import VirtualScroll from 'el-table-virtual-scroll';
 
 export default {
 	name: 'DailyOrderCount',
+	components: { VirtualScroll },
 	mixins: [mixin_printHTML],
 	data() {
 		// 默认选择当前月份
@@ -25,6 +27,7 @@ export default {
 				{ key: 2, label: `区域`, visible: true }
 			],
 			statementList: [],
+			virtualStatementList: [],
 			dialogVisible: false
 		};
 	},
@@ -74,7 +77,11 @@ export default {
 	created() {
 		this.calculateTimeParams();
 		getDailyOrderCount(this.queryParams).then(res => {
-			this.statementList = res.data || [];
+			const data = res.data || [];
+			this.statementList = data.map((r, i) => ({ ...r, _vid: i }));
+			this.$nextTick(() => {
+				if (this.$refs.virtualScroll) this.$refs.virtualScroll.doHeaderLayout();
+			});
 		});
 	},
 	watch: {
@@ -124,10 +131,17 @@ export default {
 		/**
 		 * 时间查询
 		 */
+		statementDataAppendChange(renderData) {
+			this.virtualStatementList = renderData;
+		},
 		handleQuery() {
 			this.calculateTimeParams();
 			getDailyOrderCount(this.queryParams).then(res => {
-				this.statementList = res.data || [];
+				const data = res.data || [];
+				this.statementList = data.map((r, i) => ({ ...r, _vid: i }));
+				this.$nextTick(() => {
+					if (this.$refs.virtualScroll) this.$refs.virtualScroll.doHeaderLayout();
+				});
 			});
 		},
 		refresh() {
@@ -189,42 +203,41 @@ export default {
 					</right-toolbar>
 
 					<!-- todo表格 大数据 -->
-					<el-table
-						id="printBox"
-						v-loading="loading"
-						v-horizontal-scroll="'auto'"
-						border
-						fit
-						:data="statementList"
-						lazy
-						height="570px"
-						size="mini"
-						:cell-style="
-							() => {
-								return { padding: '2px' };
-							}
-						"
-					>
-						<el-table-column align="center">
-							<el-table-column v-if="columns[0].visible" label="客户" align="center" prop="companyName" min-width="150" show-overflow-tooltip />
-							<el-table-column v-if="columns[1].visible" label="销售经理" align="center" prop="salesman" min-width="120" show-overflow-tooltip />
-							<el-table-column v-if="columns[2].visible" label="区域" align="center" prop="region" min-width="150" show-overflow-tooltip />
-						</el-table-column>
-						<!--            年份信息 遍历年份数组-->
-						<template v-if="yearMonthHeaders.length > 0">
-							<el-table-column v-for="(yearItem, yearIndex) in yearMonthHeaders" :key="yearItem.year" align="center" :label="yearItem.year + `年`" show-overflow-tooltip>
-								<!--              遍历月份 先拿到该年份下的月份数据 然后在下面进行遍历-->
-								<el-table-column v-for="(monthItem, monthIndex) in yearItem.months" :key="monthItem.dateKey" align="center" min-width="80" show-overflow-tooltip>
-									<template #header>
-										{{ monthItem.month + `月份` }}
-									</template>
-									<template #default="scope">
-										{{ getOrderCountByDate(scope.row, monthItem.dateKey) }}
-									</template>
+					<virtual-scroll ref="virtualScroll" :data="statementList" :item-size="30" key-prop="_vid" @change="statementDataAppendChange">
+						<template slot-scope="{ headerCellFixedStyle, cellFixedStyle }">
+							<el-table
+								id="printBox"
+								v-loading="loading"
+								v-horizontal-scroll="'auto'"
+								border
+								:data="virtualStatementList"
+								height="570"
+								size="mini"
+								:headerCellStyle="headerCellFixedStyle"
+								:cell-style="(row, column, rowIndex, columnIndex) => ({ padding: '2px', ...((cellFixedStyle && cellFixedStyle(row, column, rowIndex, columnIndex)) || {}) })"
+							>
+								<el-table-column align="center">
+									<el-table-column v-if="columns[0].visible" label="客户" align="center" prop="companyName" min-width="150" show-overflow-tooltip />
+									<el-table-column v-if="columns[1].visible" label="销售经理" align="center" prop="salesman" min-width="120" show-overflow-tooltip />
+									<el-table-column v-if="columns[2].visible" label="区域" align="center" prop="region" min-width="150" show-overflow-tooltip />
 								</el-table-column>
-							</el-table-column>
+								<!--            年份信息 遍历年份数组-->
+								<template v-if="yearMonthHeaders.length > 0">
+									<el-table-column v-for="(yearItem, yearIndex) in yearMonthHeaders" :key="yearItem.year" align="center" :label="yearItem.year + `年`" show-overflow-tooltip>
+										<!--              遍历月份 先拿到该年份下的月份数据 然后在下面进行遍历-->
+										<el-table-column v-for="(monthItem, monthIndex) in yearItem.months" :key="monthItem.dateKey" align="center" min-width="80" show-overflow-tooltip>
+											<template #header>
+												{{ monthItem.month + `月份` }}
+											</template>
+											<template #default="scope">
+												{{ getOrderCountByDate(scope.row, monthItem.dateKey) }}
+											</template>
+										</el-table-column>
+									</el-table-column>
+								</template>
+							</el-table>
 						</template>
-					</el-table>
+					</virtual-scroll>
 				</el-row>
 			</el-row>
 		</div>

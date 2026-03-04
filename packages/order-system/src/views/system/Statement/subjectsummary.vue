@@ -4,9 +4,11 @@ import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import { parseTime } from '@/utils/ruoyi';
 import { getSubjectSummary } from '../../../api/system/statement';
 import { fix } from '../../../api/tool/format';
+import VirtualScroll from 'el-table-virtual-scroll';
 
 export default {
 	name: 'Subjectsummary',
+	components: { VirtualScroll },
 	mixins: [mixin_printHTML],
 	data() {
 		return {
@@ -29,15 +31,20 @@ export default {
 				{ key: 10, label: '占比', visible: true }
 			],
 
-			statementList: []
+			statementList: [],
+			virtualStatementList: []
 		};
 	},
 	created() {
 		this.loading = true;
 		getSubjectSummary(this.queryParams).then(res => {
 			if (Reflect.has(res, 'data')) {
-				this.statementList = res.data.detail;
+				const detail = res.data.detail || [];
+				this.statementList = detail.map((r, i) => ({ ...r, _vid: i }));
 				this.loading = false;
+				this.$nextTick(() => {
+					if (this.$refs.virtualScroll) this.$refs.virtualScroll.doHeaderLayout();
+				});
 			} else {
 				this.statementList = [];
 				this.loading = false;
@@ -46,8 +53,9 @@ export default {
 	},
 	methods: {
 		getSummaries(param) {
-			const { columns, data } = param;
+			const { columns } = param;
 			const sums = {};
+			const data = this.statementList; // 虚拟滚动下 param.data 仅为可见行，合计需用完整数据
 
 			columns.forEach(column => {
 				if (column.property === 'daySum' || column.property === 'monthSum' || column.property === 'yearSum') {
@@ -68,13 +76,20 @@ export default {
 				}
 			});
 		},
+		statementDataAppendChange(renderData) {
+			this.virtualStatementList = renderData;
+		},
 		// 时间查询
 		handleQuery() {
 			getSubjectSummary(this.queryParams).then(res => {
 				this.loading = true;
 				if (Reflect.has(res, 'data')) {
-					this.statementList = res.data.detail;
+					const detail = res.data.detail || [];
+					this.statementList = detail.map((r, i) => ({ ...r, _vid: i }));
 					this.loading = false;
+					this.$nextTick(() => {
+						if (this.$refs.virtualScroll) this.$refs.virtualScroll.doHeaderLayout();
+					});
 				} else {
 					this.statementList = [];
 					this.loading = false;
@@ -135,61 +150,62 @@ export default {
 							</el-col>
 						</template>
 					</right-toolbar>
-					<el-table
-						id="printBox"
-						v-loading="loading"
-						v-horizontal-scroll="'always'"
-						fit
-						border
-						:data="statementList"
-						show-summary
-						:summary-method="getSummaries"
-						size="mini"
-						:cell-style="
-							() => {
-								return { padding: '2px' };
-							}
-						"
-					>
-						<!-- 费用科目汇总和费用占比 -->
-						<el-table-column v-if="columns[0].visible" label="费用科目汇总和费用占比" align="center">
-							<!-- 费用科目名称 -->
-							<el-table-column v-if="columns[1].visible" label="费用科目名称" align="center" prop="payType" width="300" />
+					<virtual-scroll ref="virtualScroll" :data="statementList" :item-size="30" key-prop="_vid" @change="statementDataAppendChange">
+						<template slot-scope="{ headerCellFixedStyle, cellFixedStyle }">
+							<el-table
+								id="printBox"
+								v-loading="loading"
+								v-horizontal-scroll="'always'"
+								border
+								:data="virtualStatementList"
+								height="600"
+								show-summary
+								:summary-method="getSummaries"
+								size="mini"
+								:headerCellStyle="headerCellFixedStyle"
+								:cell-style="(row, column, rowIndex, columnIndex) => ({ padding: '2px', ...((cellFixedStyle && cellFixedStyle(row, column, rowIndex, columnIndex)) || {}) })"
+							>
+								<!-- 费用科目汇总和费用占比 -->
+								<el-table-column v-if="columns[0].visible" label="费用科目汇总和费用占比" align="center">
+									<!-- 费用科目名称 -->
+									<el-table-column v-if="columns[1].visible" label="费用科目名称" align="center" prop="payType" width="300" />
 
-							<!-- 费用日报 -->
-							<el-table-column v-if="columns[2].visible" label="费用日报" align="center" prop="carNo">
-								<!-- 付款金额 -->
-								<el-table-column v-if="columns[3].visible" label="付款金额" align="center" prop="daySum" width="300" />
+									<!-- 费用日报 -->
+									<el-table-column v-if="columns[2].visible" label="费用日报" align="center" prop="carNo">
+										<!-- 付款金额 -->
+										<el-table-column v-if="columns[3].visible" label="付款金额" align="center" prop="daySum" width="300" />
 
-								<!-- 占比 -->
-								<el-table-column v-if="columns[4].visible" label="占比" align="center" prop="dayPercentage" width="300">
-									<template #default="scope">{{ (scope.row.dayPercentage * 100).toFixed(2) }}%</template>
+										<!-- 占比 -->
+										<el-table-column v-if="columns[4].visible" label="占比" align="center" prop="dayPercentage" width="300">
+											<template #default="scope">{{ (scope.row.dayPercentage * 100).toFixed(2) }}%</template>
+										</el-table-column>
+									</el-table-column>
+
+									<!-- 费用月报 -->
+									<el-table-column v-if="columns[5].visible" label="费用月报" align="center" prop="carNo">
+										<!-- 付款金额 -->
+										<el-table-column v-if="columns[6].visible" label="付款金额" align="center" prop="monthSum" width="300" />
+
+										<!-- 占比 -->
+										<el-table-column v-if="columns[7].visible" label="占比" align="center" prop="monthPercentage" width="300">
+											<template #default="scope">{{ (scope.row.monthPercentage * 100).toFixed(2) }}%</template>
+										</el-table-column>
+									</el-table-column>
+
+									<!-- 费用年报 -->
+									<el-table-column v-if="columns[8].visible" label="费用年报" align="center" prop="carNo">
+										<!-- 付款金额 -->
+										<el-table-column v-if="columns[9].visible" label="付款金额" align="center" prop="yearSum" width="300" />
+
+										<!-- 占比 -->
+										<el-table-column v-if="columns[10].visible" label="占比" align="center" prop="yearPercentage" width="300">
+											<template #default="scope">{{ (scope.row.yearPercentage * 100).toFixed(2) }}%</template>
+										</el-table-column>
+									</el-table-column>
 								</el-table-column>
-							</el-table-column>
-
-							<!-- 费用月报 -->
-							<el-table-column v-if="columns[5].visible" label="费用月报" align="center" prop="carNo">
-								<!-- 付款金额 -->
-								<el-table-column v-if="columns[6].visible" label="付款金额" align="center" prop="monthSum" width="300" />
-
-								<!-- 占比 -->
-								<el-table-column v-if="columns[7].visible" label="占比" align="center" prop="monthPercentage" width="300">
-									<template #default="scope">{{ (scope.row.monthPercentage * 100).toFixed(2) }}%</template>
-								</el-table-column>
-							</el-table-column>
-
-							<!-- 费用年报 -->
-							<el-table-column v-if="columns[8].visible" label="费用年报" align="center" prop="carNo">
-								<!-- 付款金额 -->
-								<el-table-column v-if="columns[9].visible" label="付款金额" align="center" prop="yearSum" width="300" />
-
-								<!-- 占比 -->
-								<el-table-column v-if="columns[10].visible" label="占比" align="center" prop="yearPercentage" width="300">
-									<template #default="scope">{{ (scope.row.yearPercentage * 100).toFixed(2) }}%</template>
-								</el-table-column>
-							</el-table-column>
-						</el-table-column>
-					</el-table>
+							</el-table>
+						</template>
+					</virtual-scroll>
 				</el-row>
 			</el-row>
 		</div>
