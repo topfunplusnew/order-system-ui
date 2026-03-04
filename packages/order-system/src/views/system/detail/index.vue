@@ -162,7 +162,7 @@
 									</el-tooltip>
 								</template>
 							</el-table-column>
-							<el-table-column v-if="columns[5].visible" label="剩余量" align="center" prop="actualPieces" show-overflow-tooltip>
+							<el-table-column v-if="columns[5].visible" label="剩余量(片)" align="center" prop="actualPieces" show-overflow-tooltip>
 								<template #default="scope">
 									<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 										<div slot="content">{{ scope.row.actualPieces }}</div>

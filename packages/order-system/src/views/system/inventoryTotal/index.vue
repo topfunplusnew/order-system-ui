@@ -136,7 +136,7 @@
 						</el-tooltip>
 					</template>
 				</el-table-column>
-				<el-table-column label="总入库量" prop="totalStockIn" align="center">
+				<el-table-column label="总入库量(片)" prop="totalStockIn" align="center">
 					<template #default="scope">
 						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 							<div slot="content">{{ scope.row.totalStockIn }}</div>
@@ -144,7 +144,7 @@
 						</el-tooltip>
 					</template>
 				</el-table-column>
-				<el-table-column label="总出库量" prop="totalStockOut" align="center">
+				<el-table-column label="总出库量(片)" prop="totalStockOut" align="center">
 					<template #default="scope">
 						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 							<div slot="content">{{ scope.row.totalStockOut }}</div>
@@ -152,7 +152,7 @@
 						</el-tooltip>
 					</template>
 				</el-table-column>
-				<el-table-column label="剩余量" prop="totalRemaining" align="center">
+				<el-table-column label="剩余量(片)" prop="totalRemaining" align="center">
 					<template #default="scope">
 						<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 							<div slot="content">{{ scope.row.totalRemaining }}</div>
