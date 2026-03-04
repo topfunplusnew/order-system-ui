@@ -62,6 +62,18 @@ export default {
 	methods: {
 		fix,
 		fix_2,
+		/**
+		 * 将底部注 div 转为表格 HTML，使每条备注各占一行，粘贴到 Excel 时不会落入单一大单元格
+		 * @param {HTMLElement} footerNoteEl - 底部注 DOM
+		 * @param {number} colCount - 表格列数（用于 colspan）
+		 * @returns {string}
+		 */
+		buildFooterNoteTableHtml(footerNoteEl, colCount) {
+			const paragraphs = footerNoteEl ? Array.from(footerNoteEl.querySelectorAll('p')).map(p => p.textContent.trim()) : [];
+			if (paragraphs.length === 0) return '';
+			const rows = paragraphs.map(p => `<tr><td colspan="${colCount}" style="text-align:left;padding:4px;font-size:12px;border:1px solid #000;">${p}</td></tr>`).join('');
+			return `<table style="width:100%;border-collapse:collapse;margin-top:10px;"><tbody>${rows}</tbody></table>`;
+		},
 		loadOrderDetails() {
 			const orderNos = this.currentOrderInfo?.smailOrderDetails.map(item => {
 				return item.ordersNo;
@@ -181,9 +193,9 @@ export default {
 					}
 				}
 
-				// 创建完整复制内容（表格 + 底部注）
-				const footerNoteHtml = footerNoteEl ? footerNoteEl.cloneNode(true).outerHTML : '';
-				const fullCloneHtml = tableClone.outerHTML + (footerNoteHtml ? footerNoteHtml : '');
+				// 底部注转为表格行，避免粘贴到 Excel 时整块内容落入一个单元格导致单元格过高
+				const footerNoteHtml = footerNoteEl ? this.buildFooterNoteTableHtml(footerNoteEl, colCount) : '';
+				const fullCloneHtml = tableClone.outerHTML + (footerNoteHtml || '');
 
 				const htmlContent = `
 					<html>
@@ -225,10 +237,14 @@ export default {
 					</html>
 				`;
 
-				// 创建纯文本版本（含底部注）
+				// 创建纯文本版本（含底部注，使用表格结构保证每行独立）
 				const textWrapper = document.createElement('div');
 				textWrapper.appendChild(tableClone.cloneNode(true));
-				if (footerNoteEl) textWrapper.appendChild(footerNoteEl.cloneNode(true));
+				if (footerNoteHtml) {
+					const noteDiv = document.createElement('div');
+					noteDiv.innerHTML = footerNoteHtml;
+					textWrapper.appendChild(noteDiv.firstElementChild);
+				}
 				const textContent = textWrapper.innerText || textWrapper.textContent;
 
 				// 使用 Clipboard API 复制
@@ -325,6 +341,7 @@ export default {
 					}
 
 					// 任务11：修复发货单复制内容按钮在降级方案下复制失败（execCommand 需要选中 DOM 内节点）
+					const fallbackFooterHtml = footerNoteEl ? this.buildFooterNoteTableHtml(footerNoteEl, colCount) : '';
 					const hiddenWrapper = document.createElement('div');
 					hiddenWrapper.style.position = 'fixed';
 					hiddenWrapper.style.pointerEvents = 'none';
@@ -332,7 +349,11 @@ export default {
 					hiddenWrapper.style.left = '-9999px';
 					hiddenWrapper.style.top = '0';
 					hiddenWrapper.appendChild(tableClone);
-					if (footerNoteEl) hiddenWrapper.appendChild(footerNoteEl.cloneNode(true));
+					if (fallbackFooterHtml) {
+						const noteDiv = document.createElement('div');
+						noteDiv.innerHTML = fallbackFooterHtml;
+						hiddenWrapper.appendChild(noteDiv.firstElementChild);
+					}
 					document.body.appendChild(hiddenWrapper);
 
 					try {
