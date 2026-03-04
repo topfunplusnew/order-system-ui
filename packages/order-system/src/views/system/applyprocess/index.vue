@@ -447,66 +447,60 @@ export default {
 				this.total = res.total;
 			});
 		},
-		// 修改已经提交的 待提交或者驳回的付款申请记录 isEdit=true时为修改原有信息
+		/** 修改已经提交的 待提交或者驳回的付款申请记录，调用详情接口获取完整数据再填充表单 */
 		reApply(paymentApplyInfo, isEdit = true) {
-			const clonedPaymentApplyInfo = _.cloneDeep(paymentApplyInfo);
-			// 需要自动填充的信息
-			this.needInfo = {
-				bankNo: clonedPaymentApplyInfo.otherBankNo,
-				acountsName: clonedPaymentApplyInfo.otherAccountsName,
-				bankName: clonedPaymentApplyInfo.otherBankName,
-				companyName: clonedPaymentApplyInfo.companyName,
-				companyType: clonedPaymentApplyInfo.companyType,
-				companyId: clonedPaymentApplyInfo.companyId,
-				// 对于员工类型的时候 这个是有值的 其他时候没值
-				employeeId: clonedPaymentApplyInfo.companyId,
-				payType: clonedPaymentApplyInfo.payType.split('-') || [],
-				attachmentList: clonedPaymentApplyInfo.attachmentList,
-				reason: clonedPaymentApplyInfo.reason,
-				// 票的额外信息和 返利的实收详情里面有comment，其他的都是comments字段
-				comments: clonedPaymentApplyInfo.comments,
-				remark: clonedPaymentApplyInfo.remark
-			};
-			// 额外信息
-			this.extraInformation = {
-				__companyType: isEdit ? clonedPaymentApplyInfo.companyType : '',
-				__referenceId: clonedPaymentApplyInfo.id
-			};
-			if (isEdit) {
-				this.openDialog(
-					ApplyPayment,
-					'付款申请(点击确认后将保存数据,点击提交后信息进入审核流程)',
-					'650px',
-					{
-						tableName: clonedPaymentApplyInfo.tableName,
-						// 关联表的主键ID
-						tID: clonedPaymentApplyInfo.tid,
-						// 需要自动填充的钱
-						needMoney: clonedPaymentApplyInfo.moneyAmount,
-						// 需要自动填充的信息 包含 对方户名:acountsName 对方账号 bankNo 对方开户行 bankName 对方公司 companyName
+			const applyId = paymentApplyInfo?.id;
+			if (!applyId) {
+				this.$message.error('付款申请信息不存在');
+				return;
+			}
+			// 修改填写时调用与查看详情相同的详情接口
+			getPaymentApply(applyId)
+				.then(res => {
+					if (!res.data) {
+						this.$message.error('付款申请信息不存在');
+						return;
+					}
+					const data = res.data;
+					const payTypeArr = data.payType ? String(data.payType).split('-') : [];
+					this.needInfo = {
+						bankNo: data.otherBankNo,
+						acountsName: data.otherAccountsName,
+						bankName: data.otherBankName,
+						companyName: data.companyName,
+						companyType: data.companyType,
+						companyId: data.companyId,
+						employeeId: data.companyId,
+						payType: payTypeArr,
+						attachmentList: data.attachmentList || [],
+						reason: data.reason,
+						comments: data.comments,
+						remark: data.remark,
+						fundsDate: data.fundsDate,
+						moneyAmount: data.moneyAmount
+					};
+					this.extraInformation = {
+						__companyType: isEdit ? data.companyType : '',
+						__referenceId: data.id
+					};
+					const tableName = data.metaDataTableName || 'paymentapply';
+					const dialogProps = {
+						tableName,
+						tID: data.id,
+						needMoney: data.moneyAmount,
 						needInfo: this.needInfo,
-						// 是否禁用金额输入框
-						moneyInputDisabled: true,
-						// 是否为多个付款申请
-						isMulti: false,
 						isOtherButtonDisabled: true,
 						extraInformation: this.extraInformation
-					},
-					false
-				);
-			} else {
-				this.openDialog(ApplyPayment, '付款申请(点击确认后将保存数据,点击提交后信息进入审核流程)', '650px', {
-					tableName: clonedPaymentApplyInfo.tableName,
-					// 关联表的主键ID
-					tID: clonedPaymentApplyInfo.tid,
-					// 需要自动填充的钱
-					needMoney: clonedPaymentApplyInfo.moneyAmount,
-					// 需要自动填充的信息 包含 对方户名:acountsName 对方账号 bankNo 对方开户行 bankName 对方公司 companyName
-					needInfo: this.needInfo,
-					isOtherButtonDisabled: true,
-					extraInformation: this.extraInformation
+					};
+					if (isEdit) {
+						dialogProps.moneyInputDisabled = true;
+						dialogProps.isMulti = false;
+					}
+					this.openDialog(ApplyPayment, '付款申请(点击确认后将保存数据,点击提交后信息进入审核流程)', '650px', dialogProps, false);
+				})
+				.catch(() => {
+					this.$message.error('获取付款申请详情失败');
 				});
-			}
 		},
 		handleCheck(item) {
 			// 查看付款申请详细

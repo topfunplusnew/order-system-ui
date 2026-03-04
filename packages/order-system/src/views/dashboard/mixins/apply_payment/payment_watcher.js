@@ -60,14 +60,17 @@ export var mixin_payment_watcher = {
 		needInfo: {
 			handler(val) {
 				if (JSON.stringify(this.needInfo) !== '{}') {
-					Object.assign(this.form, {
+					const baseFields = {
 						payType: val.payType,
 						companyName: val.companyName,
 						attachmentList: val.attachmentList,
 						comments: val.comments,
 						remark: val.remark,
 						reason: val.reason
-					});
+					};
+					if (val.fundsDate != null) baseFields.fundsDate = val.fundsDate;
+					if (val.moneyAmount != null) baseFields.moneyAmount = Number(val.moneyAmount);
+					Object.assign(this.form, baseFields);
 					// 先填充运费信息
 					this.fillFreightInfo();
 					// 然后处理银行卡信息，避免重复触发
@@ -178,16 +181,24 @@ export var mixin_payment_watcher = {
 					companyId: companyId
 				};
 				listBankAccount(search).then(res => {
-					// 如果没有查到 那么就提示 并且清空数据
 					if (res.rows.length === 0) {
-						Object.assign(this.form, {
-							otherAccountsName: '',
-							otherBankNo: '',
-							otherBankName: '',
-							selfAcountsName: '',
-							selfBankNo: '',
-							selfBankName: ''
-						});
+						// 搜索无结果时，若有 needInfo 中的直接银行信息则使用，否则清空
+						if (this.needInfo.acountsName || this.needInfo.bankNo || this.needInfo.bankName) {
+							Object.assign(this.form, {
+								otherAccountsName: this.needInfo.acountsName || '',
+								otherBankNo: this.needInfo.bankNo || '',
+								otherBankName: this.needInfo.bankName || ''
+							});
+						} else {
+							Object.assign(this.form, {
+								otherAccountsName: '',
+								otherBankNo: '',
+								otherBankName: '',
+								selfAcountsName: '',
+								selfBankNo: '',
+								selfBankName: ''
+							});
+						}
 					} else {
 						// 如果是己方的银行卡 填充己方银行卡信息
 						if (this.needInfo.companyId === 0) {
