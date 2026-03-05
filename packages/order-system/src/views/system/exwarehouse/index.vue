@@ -320,7 +320,7 @@
 /* eslint-disable */
 import { listExWarehouse, delExWarehouse, addExWarehouse, updateExWarehouse } from '@/api/system/exWarehouse';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
-import { addDateRange, parseTime } from '@/utils/ruoyi';
+import { parseTime } from '@/utils/ruoyi';
 import { getInventoryMainByDetailId } from '../../../api/system/detail';
 import { listOrderDetailByOrderNos } from '../../../api/system/orderDetail';
 import OrderDetailInfo from '../../dashboard/components/goodsOrder/OrderDetailInfo.vue';
@@ -361,7 +361,9 @@ export default {
 				addtime: null,
 				userId: null,
 				UserName: null,
-				isOrder: true
+				isOrder: true,
+				outDateStart: null,
+				outDateEnd: null
 			},
 			// 表单参数
 			form: {},
@@ -383,13 +385,16 @@ export default {
 			checkInventoryVisible: false
 		};
 	},
-	// 展示与隐藏
 	watch: {
 		columns: {
 			handler: function (newVal) {
 				localStorage.setItem('exwarehouse-columns', JSON.stringify(newVal));
 			},
 			deep: true
+		},
+		dateRange(val) {
+			this.queryParams.outDateStart = (val && val[0]) || null;
+			this.queryParams.outDateEnd = (val && val[1]) || null;
 		}
 	},
 	created() {
@@ -449,8 +454,7 @@ export default {
 		/** 查询出库列表 */
 		getList() {
 			this.loading = true;
-			// this.dateRange
-			listExWarehouse(addDateRange(this.queryParams, this.dateRange)).then(response => {
+			listExWarehouse(this.queryParams).then(response => {
 				this.exWarehouseList = response.rows;
 				this.total = response.total;
 				this.loading = false;
@@ -487,6 +491,8 @@ export default {
 		/** 重置按钮操作 */
 		resetQuery() {
 			this.dateRange = [];
+			this.queryParams.outDateStart = null;
+			this.queryParams.outDateEnd = null;
 			this.resetForm('queryForm');
 			this.handleQuery();
 		},
