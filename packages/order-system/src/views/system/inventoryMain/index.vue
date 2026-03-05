@@ -570,7 +570,7 @@
 						<template #default="scope">
 							<!-- 添加 disabled 属性 -->
 							<el-radio-group v-model="scope.row.countingUnit" size="mini" :disabled="!scope.row.isEditing" @change="() => recalculateAll(scope)" class="horizontal-radio-group">
-								<el-radio label="片" class="horizontal-radio">片数</el-radio>
+								<el-radio label="片数" class="horizontal-radio">片数</el-radio>
 								<el-radio label="其他" class="horizontal-radio">其他</el-radio>
 							</el-radio-group>
 						</template>
@@ -1543,10 +1543,14 @@ export default {
 				console.log(`保存时包含${deletedDetails.length}条已标记删除的数据`);
 			}
 
-			// 构造新的库存信息（包含正常数据和已删除数据）
+			// 构造新的库存信息，发送后端时计量单位统一为片数
+			const normalizedDetails = allDetails.map(d => ({
+				...d,
+				countingUnit: d.countingUnit === '片' ? '片数' : d.countingUnit || '片数'
+			}));
 			const newInventoryInfo = {
 				...this.form,
-				inventoryDetailList: allDetails
+				inventoryDetailList: normalizedDetails
 			};
 			// 计算总运费等主表信息
 			newInventoryInfo.allLandFreight = this.isLand ? this.visibleInventoryDetailList.reduce((prev, curr) => Number(prev) + Number(curr.landFreight || 0), 0) : 0;
@@ -2104,6 +2108,7 @@ export default {
 				this.inventoryDetailList = response.data.inventoryDetailList.map((item, index) => {
 					const processedItem = {
 						...item,
+						countingUnit: item.countingUnit === '片' ? '片数' : item.countingUnit || '片数',
 						index: index + 1, // 设置唯一索引
 						isEditing: false, // 初始为非编辑状态
 						isDeleted: item.isDeleted !== undefined ? item.isDeleted : false, // 确保 isDeleted 字段存在
@@ -2163,10 +2168,13 @@ export default {
 						this.$message.error('请添加库存明细');
 						return;
 					}
-					// 填充已删除的行信息
+					// 填充已删除的行信息，发送后端时计量单位统一为片数
 					const deletedDetails = _.cloneDeep(this.deletedInventoryDetailList);
-					// 合并正常数据和已删除数据
-					this.form.inventoryDetailList = [..._.cloneDeep(this.visibleInventoryDetailList), ...deletedDetails];
+					const rawDetails = [..._.cloneDeep(this.visibleInventoryDetailList), ...deletedDetails];
+					this.form.inventoryDetailList = rawDetails.map(d => ({
+						...d,
+						countingUnit: d.countingUnit === '片' ? '片数' : d.countingUnit || '片数'
+					}));
 					this.form.allLandFreight = this.isLand ? this.visibleInventoryDetailList.reduce((prev, curr) => fix(Number(prev) + Number(curr.landFreight || 0)), 0) : 0;
 					this.form.allSeaFreight = this.isSea ? this.visibleInventoryDetailList.reduce((prev, curr) => fix(Number(prev) + Number(curr.seaFreight || 0)), 0) : 0;
 					const apiCall = this.form.id ? updateInventoryMain : addInventoryMain;
@@ -2251,7 +2259,7 @@ export default {
 				supplierId: '',
 				levelID: '',
 				levelName: '',
-				countingUnit: '片',
+				countingUnit: '片数',
 				height: '',
 				length: '',
 				width: '',
@@ -2494,8 +2502,7 @@ export default {
 				case 22: // 含税
 					return row.isIncludeTaxSale === 1 ? '含税' : '不含税';
 				// 2026-02-06 添加库存金额列（从子项的 payments 求和）
-				case 23: // ä»»åŠ¡1ï¼šå‰ç«¯ Excel å¯¼å‡º - åº“å­˜é‡‘é¢è¾“å‡ºä¸º Numberï¼Œä¿è¯ Excel å¯ç›´æŽ¥è¿ç®— // 库存金额
-				{
+				case 23: { // ä»»åŠ¡1ï¼šå‰ç«¯ Excel å¯¼å‡º - åº“å­˜é‡‘é¢è¾“å‡ºä¸º Numberï¼Œä¿è¯ Excel å¯ç›´æŽ¥è¿ç®— // 库存金额
 					const raw = this.calculateTotalPayments(row);
 					if (raw === null || raw === undefined || raw === '') return '';
 					const num = Number(String(raw).replace(/,/g, '').trim());

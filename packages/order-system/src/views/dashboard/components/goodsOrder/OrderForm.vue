@@ -276,6 +276,7 @@ export default {
 						}
 						const processedItem = {
 							...item,
+							countingUnit: item.countingUnit === '片' ? '片数' : item.countingUnit || '片数',
 							isEditing: false,
 							isDeleted: item.isDeleted !== undefined ? item.isDeleted : false, // 确保 isDeleted 字段存在
 							isAdd: false // 从后端加载的数据标记为非新增
@@ -364,10 +365,14 @@ export default {
 				console.log(`保存时包含${deletedDetails.length}条已标记删除的数据`);
 			}
 
-			// 构造新的订单信息（包含正常数据和已删除数据）
+			// 构造新的订单信息，发送后端时计量单位统一为片数
+			const normalizedDetails = allDetails.map(d => ({
+				...d,
+				countingUnit: d.countingUnit === '片' ? '片数' : d.countingUnit || '片数'
+			}));
 			const newOrderInfo = {
 				...this.orderInfo,
-				orderDetailList: allDetails
+				orderDetailList: normalizedDetails
 			};
 			if (this.isEditingOrder.id) {
 				newOrderInfo.id = this.isEditingOrder.id;
@@ -499,7 +504,7 @@ export default {
 				customerID: '',
 				levelID: '',
 				levelName: '',
-				countingUnit: '片',
+				countingUnit: '片数',
 				height: '',
 				length: '',
 				width: '',
@@ -755,6 +760,7 @@ export default {
 			scope.row.levelID = val.levelID;
 			scope.row.levelName = val.levelName;
 			scope.row.erro = val.erro;
+			scope.row.countingUnit = val.countingUnit === '片' ? '片数' : val.countingUnit || '片数';
 			// 填充出厂单价（库存为填充存货价）
 			// TODO 这里改为填充出厂价格
 			scope.row.price = val.paymentUnload;
@@ -1009,7 +1015,7 @@ export default {
 			scope.row.customerID = '';
 			scope.row.levelID = '';
 			scope.row.levelName = '';
-			scope.row.countingUnit = '片';
+			scope.row.countingUnit = '片数';
 			scope.row.height = '';
 			scope.row.length = '';
 			scope.row.width = '';
@@ -1491,7 +1497,7 @@ export default {
 				<el-table-column label="计量单位" prop="countingUnit" width="92" class-name="counting-unit-column">
 					<template #default="scope">
 						<el-radio-group v-model="scope.row.countingUnit" size="mini" :disabled="!scope.row.isEditing" @change="() => recalculateAll(scope)" class="horizontal-radio-group">
-							<el-radio label="片" class="horizontal-radio">片数</el-radio>
+							<el-radio label="片数" class="horizontal-radio">片数</el-radio>
 							<el-radio label="其他" class="horizontal-radio">其他</el-radio>
 						</el-radio-group>
 					</template>

@@ -371,7 +371,7 @@
 					<el-table-column label="计量单位" prop="countingUnit" width="92" class-name="counting-unit-column">
 						<template #default="scope">
 							<el-radio-group v-model="scope.row.countingUnit" size="mini" :disabled="scope.row.shouldDel || !scope.row.isEditing" @change="() => recalculateAll(scope)" class="horizontal-radio-group">
-								<el-radio label="片" class="horizontal-radio">片数</el-radio>
+								<el-radio label="片数" class="horizontal-radio">片数</el-radio>
 								<el-radio label="其他" class="horizontal-radio">其他</el-radio>
 							</el-radio-group>
 						</template>
@@ -1042,7 +1042,7 @@ export default {
 						pieces: row.outAmount,
 						isEditing: true,
 						hasError: false,
-						countingUnit: '片',
+						countingUnit: '片数',
 						payments: '',
 						manuallyEditedPieces: true, // 标记为已手动设置，避免被自动计算覆盖
 						stockNumber: 0,
@@ -1126,8 +1126,10 @@ export default {
 							this.inventoryDetailList = [];
 
 							// 第一行：显示原始库存信息作为参考（只读）
+							const src = row.sourceInventoryDetail || {};
 							const referenceItem = {
 								...row.sourceInventoryDetail,
+								countingUnit: src.countingUnit === '片' ? '片数' : src.countingUnit || '片数',
 								index: 1, // 设置唯一索引
 								supplier: '己方公司',
 								pieces: row.outAmount, // 显示出库数量
@@ -1151,6 +1153,7 @@ export default {
 								const editableItems = data.inventoryDetailList.map((item, index) => {
 									const processedItem = {
 										...item,
+										countingUnit: item.countingUnit === '片' ? '片数' : item.countingUnit || '片数',
 										index: index + 2, // 设置唯一索引（从2开始，因为第一行是参考行）
 										isEditing: false,
 										hasError: false,
@@ -1322,7 +1325,7 @@ export default {
 			scope.row.supplierId = '';
 			scope.row.levelID = '';
 			scope.row.levelName = '';
-			scope.row.countingUnit = '片';
+			scope.row.countingUnit = '片数';
 			scope.row.height = '';
 			scope.row.length = '';
 			scope.row.width = '';
@@ -1418,7 +1421,7 @@ export default {
 				supplierId: '',
 				levelID: '',
 				levelName: '',
-				countingUnit: '片',
+				countingUnit: '片数',
 				height: '',
 				length: '',
 				width: '',
@@ -1633,8 +1636,12 @@ export default {
 						exWareHoustId: this.secondForm.exWareHoustId
 					}));
 
-				// 合并正常数据和已删除数据
-				this.secondForm.inventoryDetailList = [..._.cloneDeep(validInventoryItems), ...deletedDetails];
+				// 合并正常数据和已删除数据，发送后端时计量单位统一为片数
+				const rawDetails = [..._.cloneDeep(validInventoryItems), ...deletedDetails];
+				this.secondForm.inventoryDetailList = rawDetails.map(d => ({
+					...d,
+					countingUnit: d.countingUnit === '片' ? '片数' : d.countingUnit || '片数'
+				}));
 
 				// 计算总陆运费和总海运费（只计算可见行）
 				this.secondForm.allLandFreight = this.isLand ? this.visibleInventoryDetailList.reduce((prev, curr) => Number(prev) + Number(curr.landFreight || 0), 0) : 0;
@@ -1804,10 +1811,15 @@ export default {
 				console.log(`保存时包含${deletedDetails.length}条已标记删除的数据`);
 			}
 
-			// 构造新的库存信息（包含正常数据和已删除数据，但排除 shouldDel 为 true 的项）
+			// 构造新的库存信息，发送后端时计量单位统一为片数
+			const filteredDetails = allDetails.filter(item => !item.shouldDel);
+			const normalizedDetails = filteredDetails.map(d => ({
+				...d,
+				countingUnit: d.countingUnit === '片' ? '片数' : d.countingUnit || '片数'
+			}));
 			const newInventoryInfo = {
 				...this.secondForm,
-				inventoryDetailList: allDetails.filter(item => !item.shouldDel)
+				inventoryDetailList: normalizedDetails
 			};
 			// 计算总运费等主表信息（只计算可见行）
 			newInventoryInfo.allLandFreight = this.isLand ? this.visibleInventoryDetailList.reduce((prev, curr) => Number(prev) + Number(curr.landFreight || 0), 0) : 0;

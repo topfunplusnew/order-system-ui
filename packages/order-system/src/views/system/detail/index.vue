@@ -783,14 +783,15 @@ export default {
 		submitForm() {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
+					const submitForm = { ...this.form, countingUnit: this.form.countingUnit === '片' ? '片数' : this.form.countingUnit || '片数' };
 					if (this.form.id != null) {
-						updateDetail(this.form).then(() => {
+						updateDetail(submitForm).then(() => {
 							this.$modal.msgSuccess('修改成功');
 							this.open = false;
 							this.getList();
 						});
 					} else {
-						addDetail(this.form).then(() => {
+						addDetail(submitForm).then(() => {
 							this.$modal.msgSuccess('新增成功');
 							this.open = false;
 							this.getList();

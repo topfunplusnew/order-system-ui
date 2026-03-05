@@ -189,7 +189,7 @@ export default {
 				<div class="order-item">
 					<span class="text-bold">计量单位</span>
 					<hr />
-					<el-radio v-model="orderItemInfo.countingUnit" label="片">片数</el-radio>
+					<el-radio v-model="orderItemInfo.countingUnit" label="片数">片数</el-radio>
 					<el-radio v-model="orderItemInfo.countingUnit" label="其他">其他</el-radio>
 				</div>
 				<div class="order-item">

@@ -295,7 +295,7 @@
 					<el-table-column label="计量单位" prop="countingUnit" width="150">
 						<template #default="scope">
 							<el-radio-group v-model="scope.row.countingUnit" size="mini">
-								<el-radio label="片">片数</el-radio>
+								<el-radio label="片数">片数</el-radio>
 								<el-radio label="其他">其他</el-radio>
 							</el-radio-group>
 						</template>
@@ -891,7 +891,7 @@ export default {
 			scope.row.supplierId = '';
 			scope.row.levelID = '';
 			scope.row.levelName = '';
-			scope.row.countingUnit = '片';
+			scope.row.countingUnit = '片数';
 			scope.row.height = '';
 			scope.row.length = '';
 			scope.row.width = '';
@@ -948,7 +948,7 @@ export default {
 			obj.supplierId = '';
 			obj.levelID = '';
 			obj.levelName = '';
-			obj.countingUnit = '片';
+			obj.countingUnit = '片数';
 			obj.height = '';
 			obj.length = '';
 			obj.width = '';
@@ -1000,7 +1000,10 @@ export default {
 		submitSecond() {
 			this.$refs['secondForm'].validate(valid => {
 				if (valid) {
-					this.secondForm.inventoryDetailList = this.inventoryDetailList;
+					this.secondForm.inventoryDetailList = this.inventoryDetailList.map(d => ({
+						...d,
+						countingUnit: d.countingUnit === '片' ? '片数' : d.countingUnit || '片数'
+					}));
 					// 计算陆运费
 					this.secondForm.allLandFreight = this.isLand ? this.inventoryDetailList.reduce((prev, curr) => prev + curr.landFreight, 0) : 0;
 					// 计算海运费
