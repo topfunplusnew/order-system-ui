@@ -100,9 +100,9 @@ export default {
 				<el-descriptions-item label="金额" label-class-name="money-label">
 					<span style="color: #67c23a; font-weight: bold">{{ needToShowInfo.moneyAmount }} 元</span>
 				</el-descriptions-item>
-				<el-descriptions-item label="对方户名">{{ needToShowInfo.otherAccountsName || '暂无' }}</el-descriptions-item>
+				<el-descriptions-item label="对方户名">{{ needToShowInfo.otherAcountsName || '暂无' }}</el-descriptions-item>
 				<el-descriptions-item label="对方账号">{{ needToShowInfo.otherBankNo || '暂无' }}</el-descriptions-item>
-				<el-descriptions-item label="我方户名">{{ needToShowInfo.selfAccountsName || '暂无' }}</el-descriptions-item>
+				<el-descriptions-item label="我方户名">{{ needToShowInfo.selfAcountsName || '暂无' }}</el-descriptions-item>
 				<el-descriptions-item label="操作人员">{{ needToShowInfo.userName }}</el-descriptions-item>
 				<el-descriptions-item label="备注">
 					<el-tag v-if="needToShowInfo.comments" size="small" type="success">{{ needToShowInfo.comments }}</el-tag>
