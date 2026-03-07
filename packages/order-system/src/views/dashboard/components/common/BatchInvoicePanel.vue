@@ -385,7 +385,8 @@ export default {
 				id: item.id,
 				voucher: item.voucher || '',
 				invoiced: item.invoiced || false,
-				invoiceId: item.invoiceId || null
+				invoiceId: item.invoiceId || null,
+				invoiceDate: item.invoiceDate || null
 			};
 		},
 		// 计算票点金额
@@ -654,6 +655,7 @@ export default {
 					</template>
 				</el-table-column>
 				<el-table-column label="票点" align="center" prop="taxPoint" width="70" show-overflow-tooltip />
+				<el-table-column label="开票时间" align="center" prop="invoiceDate" width="160" show-overflow-tooltip />
 				<el-table-column label="已开票" align="center" prop="invoiced" width="80">
 					<template #default="scope">
 						<el-tag size="mini" :type="scope.row.invoiced ? 'success' : 'info'" effect="light">

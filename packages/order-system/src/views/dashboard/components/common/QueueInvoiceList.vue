@@ -376,12 +376,12 @@ export default {
 
 					// 获取订单剩余货款
 					const orderRemaining = b(orderRemainingMap.get(matchedOrder.id) || 0);
-					
+
 					// 如果订单剩余开票金额为0或负数，跳出循环
 					if (this.math.smallerEq(orderRemaining, b(0))) {
 						break;
 					}
-					
+
 					// 发票金额 = min(模板剩余金额, 订单剩余开票金额)
 					let invoiceAmount = tplRemaining;
 					if (this.math.larger(tplRemaining, orderRemaining)) {
@@ -429,10 +429,10 @@ export default {
 						ticketPointAmount = Number(this.math.format(this.math.multiply(fraction, b(tpl.ticketPoint || 0)), { precision: 2, notation: 'fixed' }));
 					}
 
-					// 生成发票对象
+					// 生成发票对象，优先使用批次导入时的开票时间
 					const invoice = this.createInvoiceObject(
 						{
-							invoiceDate: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
+							invoiceDate: tpl.invoiceDate || parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
 							invoiceObject: invoiceObject || sessionStorage.getItem('us') || '',
 							invoiceAmount: actualInvoiceAmount,
 							companyType: companyTypeConst,
@@ -454,14 +454,15 @@ export default {
 					// 更新订单剩余货款（减少已使用的金额）
 					const newRemaining = this.math.subtract(orderRemaining, invoiceAmount);
 					orderRemainingMap.set(matchedOrder.id, Number(this.math.format(newRemaining, { precision: 2, notation: 'fixed' })));
-					
+
 					// 更新模板剩余金额（减少已使用的金额）
 					tplRemaining = this.math.subtract(tplRemaining, invoiceAmount);
 				}
 
 				// 检查模板数据是否用完（原子性要求：必须用完）
 				const remainingAmount = Number(this.math.format(tplRemaining, { precision: 2, notation: 'fixed' }));
-				if (remainingAmount > 0.01) { // 允许0.01的误差（浮点数精度问题）
+				if (remainingAmount > 0.01) {
+					// 允许0.01的误差（浮点数精度问题）
 					// 记录未用完的模板数据
 					unfinishedTemplates.push({
 						id: tpl.id,
@@ -476,15 +477,11 @@ export default {
 			if (resultInvoices.length > 0) {
 				this.$store.dispatch('excel/setSelectedInvoiceList', resultInvoices);
 				this.$message.success(`已自动生成 ${resultInvoices.length} 条发票记录`);
-				
+
 				// 检查是否有未用完的模板数据（原子性要求）
 				if (unfinishedTemplates.length > 0) {
-					const templateInfo = unfinishedTemplates.map(t => 
-						`模板ID ${t.id}（${t.companyName}）剩余 ¥${t.remaining.toFixed(2)}`
-					).join('；');
-					this.$message.warning(
-						`以下模板数据未用完，请继续选择订单完成开票：${templateInfo}`
-					);
+					const templateInfo = unfinishedTemplates.map(t => `模板ID ${t.id}（${t.companyName}）剩余 ¥${t.remaining.toFixed(2)}`).join('；');
+					this.$message.warning(`以下模板数据未用完，请继续选择订单完成开票：${templateInfo}`);
 				}
 			} else {
 				this.$message.warning('没有找到合适的批次记录来生成发票');
