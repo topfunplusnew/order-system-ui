@@ -97,14 +97,11 @@
 			<el-table-column v-if="columns[0].visible" label="是否审核" align="center" prop="isCheckState" fixed="left" show-overflow-tooltip width="120px">
 				<template #default="scope">
 					<el-row v-if="scope.row.checkState === 1">
-						<el-tag type="success">
-							{{ scope.row.checkState === 0 ? '未审核' : '已审核' }}
-						</el-tag>
+						<el-tag type="success">已审核</el-tag>
+						<el-button v-hasPermi="['system:customervisit:audit']" type="text" size="mini" @click="handleReCheck(scope.row)">取消审核</el-button>
 					</el-row>
 					<el-row v-else>
-						<el-row>
-							<el-button v-hasPermi="['system:customervisit:audit']" type="text" size="mini" @click="handleCheck(scope.row)">审核</el-button>
-						</el-row>
+						<el-button v-hasPermi="['system:customervisit:audit']" type="text" size="mini" @click="handleCheck(scope.row)">审核</el-button>
 					</el-row>
 				</template>
 			</el-table-column>
@@ -466,10 +463,8 @@ export default {
 		changeDis(e) {
 			this.district = e;
 		},
-		// 走访记录审核
+		/** 走访记录审核 */
 		handleCheck(row) {
-			console.log(row);
-			// 弹出确认和取消
 			this.$antdconfirm({
 				title: '提示',
 				content: '是否审核该信息?',
@@ -488,6 +483,29 @@ export default {
 				},
 				onCancel: () => {
 					this.$message.info('已取消审核操作');
+				}
+			});
+		},
+		/** 取消审核，传递 isaudit 为 false */
+		handleReCheck(row) {
+			this.$antdconfirm({
+				title: '提示',
+				content: '是否取消审核该信息?',
+				okText: '确定',
+				cancelText: '取消',
+				type: 'warning',
+				zIndex: 2600,
+				onOk: async () => {
+					try {
+						await auditCustomerVisit({ id: row.id, isaudit: false });
+						this.$message.success('取消审核成功');
+						this.getList();
+					} catch {
+						this.$message.error('取消审核失败，请重试');
+					}
+				},
+				onCancel: () => {
+					this.$message.info('已取消操作');
 				}
 			});
 		},

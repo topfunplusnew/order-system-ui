@@ -81,7 +81,7 @@ export const TOTAL_LOGIC_DETAIL_MAP = {
 		{ tableName: 'goodsorder', category: '*', label: '订单调整单供应商变动差额', operator: '+' },
 		{ tableName: 'allinvoice', category: '*', label: '票点供应商变动差额', operator: '+' },
 		{ tableName: 'receivemoney', category: '*', label: '收款供应商变动差额', operator: '+' },
-		{ tableName: 'payment', category: '*', label: '付款客户变动差额', operator: '-' },
+		{ tableName: 'payment', category: '*', label: '付款供应商变动差额', operator: '-' },
 		{ tableName: 'cash_record', category: '*', label: '冲抵款供应商变动差额', operator: '-' },
 		{ tableName: 'balanceaccounts', category: '*', label: '平账供应商变动差额', operator: '-' },
 		{ tableName: 'rebate', category: '*', label: '返利供应商变动差额', operator: '-' }

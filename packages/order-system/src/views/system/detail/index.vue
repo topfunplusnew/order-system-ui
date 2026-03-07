@@ -677,17 +677,17 @@ export default {
 		fetchStore() {
 			this.getStoreList();
 		},
-		// 左侧树的点击
+		/**
+		 * @description: 左侧仓库树点击，带上当前分页参数和搜索条件进行查询
+		 * @param {Object} data - 点击的仓库节点数据
+		 */
 		handleNodeClick(data) {
-			this.loading = true;
-			listDetail({
-				params: {
-					main_storeHouseid: data.id
-				}
-			}).then(res => {
-				this.detailList = res.rows;
-				this.loading = false;
-			});
+			if (!this.queryParams.params) {
+				this.$set(this.queryParams, 'params', {});
+			}
+			this.queryParams.params.main_storeHouseid = data.id;
+			this.storeHouseName = data.label;
+			this.getList();
 		},
 		/** 查询库存子列表 */
 		getList() {
