@@ -19,11 +19,16 @@
 				<el-form-item label="我方户名" prop="selfAcountsName">
 					<el-input v-model="queryParams.selfAcountsName" class="input-medium" placeholder="请输入我方户名" clearable @keyup.enter.native="handleQuery" />
 				</el-form-item>
-				<el-form-item label="对方户名" prop="otherAcountsName">
-					<el-input v-model="queryParams.otherAcountsName" class="input-medium" placeholder="请输入对方户名" clearable @keyup.enter.native="handleQuery" />
+				<el-form-item label="对象类型" prop="companyType">
+					<el-select v-model="queryParams.companyType" class="input-medium" placeholder="请选择对方公司类型" clearable @keyup.enter.native="handleQuery">
+						<el-option v-for="item in options_companyType" :key="item.value" :label="item.label" :value="item.value" />
+					</el-select>
 				</el-form-item>
 				<el-form-item label="对方公司名称" prop="companyName">
 					<el-input v-model="queryParams.companyName" class="input-medium" placeholder="请输入对方公司名称" clearable @keyup.enter.native="handleQuery" />
+				</el-form-item>
+				<el-form-item label="对方户名" prop="otherAcountsName">
+					<el-input v-model="queryParams.otherAcountsName" class="input-medium" placeholder="请输入对方户名" clearable @keyup.enter.native="handleQuery" />
 				</el-form-item>
 				<el-form-item label="票据号码" prop="bankacceptanceBillNo">
 					<el-input v-model="queryParams.params.bankacceptanceBillNo" class="input-medium" placeholder="请输入票据号码" clearable @keyup.enter.native="handleQuery" />
@@ -386,8 +391,15 @@ export default {
 			// 遮罩层
 			loading: true,
 			defaultCompanyType: PAYMENT_TARGET_TYPE.CUSTOMER,
-			// 对方类型选项（直接使用 form.companyType 绑定）
+			// 对方类型选项（与 payment 保持一致）
 			options: [
+				{ value: PAYMENT_TARGET_TYPE.CUSTOMER, label: PUBLIC_DICT_TYPE.CUSTOMER },
+				{ value: PAYMENT_TARGET_TYPE.SUPPLIER, label: PUBLIC_DICT_TYPE.SUPPLIER },
+				{ value: PAYMENT_TARGET_TYPE.DRIVER, label: PUBLIC_DICT_TYPE.DRIVER },
+				{ value: PAYMENT_TARGET_TYPE.PAYMENT_FEE, label: PAYMENT_TARGET_TYPE.PAYMENT_FEE },
+				{ value: PUBLIC_DICT_TYPE.EMPLOYEE, label: PUBLIC_DICT_TYPE.EMPLOYEE }
+			],
+			options_companyType: [
 				{ value: PAYMENT_TARGET_TYPE.CUSTOMER, label: PUBLIC_DICT_TYPE.CUSTOMER },
 				{ value: PAYMENT_TARGET_TYPE.SUPPLIER, label: PUBLIC_DICT_TYPE.SUPPLIER },
 				{ value: PAYMENT_TARGET_TYPE.DRIVER, label: PUBLIC_DICT_TYPE.DRIVER },
@@ -1049,6 +1061,7 @@ export default {
 			this.dateRange = [];
 			// 重置级联选择器
 			this.queryParams.receiveType = [];
+			this.queryParams.companyType = null;
 			// 确保 params 对象存在并重置
 			if (!this.queryParams.params) {
 				this.queryParams.params = {};
