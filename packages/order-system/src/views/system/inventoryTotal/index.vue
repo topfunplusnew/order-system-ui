@@ -13,14 +13,14 @@
 			<el-form-item label="分类名称" prop="categoryName">
 				<el-input v-model="queryParams.categoryName" placeholder="请输入分类名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
-			<el-form-item label="长度" prop="height">
-				<el-input v-model="queryParams.height" placeholder="请输入长度" clearable @keyup.enter.native="handleQuery" />
+			<el-form-item label="厚度" prop="height">
+				<el-input v-model="queryParams.height" placeholder="请输入厚度" clearable @keyup.enter.native="handleQuery" />
+			</el-form-item>
+			<el-form-item label="长度" prop="length">
+				<el-input v-model="queryParams.length" placeholder="请输入长度" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="宽度" prop="width">
 				<el-input v-model="queryParams.width" placeholder="请输入宽度" clearable @keyup.enter.native="handleQuery" />
-			</el-form-item>
-			<el-form-item label="厚度" prop="length">
-				<el-input v-model="queryParams.length" placeholder="请输入厚度" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="仓库名称" prop="storeHouseName">
 				<el-input v-model="queryParams.storeHouseName" placeholder="请输入仓库名称" clearable @keyup.enter.native="handleQuery" />

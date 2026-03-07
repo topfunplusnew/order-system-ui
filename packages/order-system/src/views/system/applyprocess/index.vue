@@ -1064,9 +1064,9 @@ export default {
 			</el-table-column>
 			<el-table-column v-if="columns[2].visible" prop="payType" label="支付类型" width="150" show-overflow-tooltip></el-table-column>
 			<el-table-column v-if="columns[3].visible" prop="moneyAmount" label="金额" width="120" show-overflow-tooltip></el-table-column>
-			<el-table-column v-if="columns[4].visible" prop="otherAccountsName" label="对方户名" width="200" show-overflow-tooltip></el-table-column>
-			<el-table-column v-if="columns[5].visible" prop="otherBankNo" label="对方账号" width="300" show-overflow-tooltip></el-table-column>
-			<el-table-column v-if="columns[6].visible" prop="otherBankName" label="对方开户行" width="300" show-overflow-tooltip></el-table-column>
+			<el-table-column v-if="columns[4].visible" prop="otherAccountsName" label="对方户名" width="100" show-overflow-tooltip></el-table-column>
+			<el-table-column v-if="columns[5].visible" prop="otherBankNo" label="对方账号" width="180" show-overflow-tooltip></el-table-column>
+			<el-table-column v-if="columns[6].visible" prop="otherBankName" label="对方开户行" width="160" show-overflow-tooltip></el-table-column>
 			<el-table-column v-if="columns[7].visible" prop="companyName" label="对方公司" width="120" show-overflow-tooltip></el-table-column>
 			<el-table-column v-if="columns[8].visible" prop="reason" label="付款原因" width="120" show-overflow-tooltip></el-table-column>
 			<el-table-column v-if="columns[9].visible" prop="applyPerson" label="申请人" width="120" show-overflow-tooltip></el-table-column>
