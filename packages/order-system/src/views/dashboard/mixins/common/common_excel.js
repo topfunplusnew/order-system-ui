@@ -1,6 +1,47 @@
 import * as XLSX from 'xlsx';
 import FileSaver from 'file-saver';
 
+/**
+ * 从单元格文本中解析数字（支持 "1,234.56"、"[借] 1,234.56"、"[贷] 1,234.56"、"1,234.56 元" 等格式）
+ * [借] 表示正数，[贷] 表示负数
+ * @returns {number|null} 解析出的数字，无法解析时返回 null
+ */
+function parseNumericFromText(text) {
+	if (text == null || typeof text !== 'string') return null;
+	const str = String(text).trim();
+	const creditMatch = str.match(/^\[贷\]\s*(.+)$/);
+	let cleaned = str
+		.replace(/^\[[^\]]*\]\s*/g, '')
+		.replace(/\s*元\s*$/g, '')
+		.replace(/,/g, '')
+		.trim();
+	if (!cleaned) return null;
+	const num = Number(cleaned);
+	if (!Number.isFinite(num)) return null;
+	if (creditMatch) return -Math.abs(num);
+	return num;
+}
+
+/** 为工作表中可解析为数字的单元格设置 Excel 数字格式，便于计算 */
+function applyNumberFormatToSheet(ws) {
+	if (!ws || !ws['!ref']) return;
+	const range = XLSX.utils.decode_range(ws['!ref']);
+	for (let R = range.s.r; R <= range.e.r; R++) {
+		for (let C = range.s.c; C <= range.e.c; C++) {
+			const addr = XLSX.utils.encode_cell({ r: R, c: C });
+			const cell = ws[addr];
+			if (!cell || cell.t === 'n') continue;
+			const raw = cell.v;
+			const parsed = parseNumericFromText(raw != null ? String(raw) : '');
+			if (parsed !== null) {
+				cell.t = 'n';
+				cell.v = parsed;
+				cell.z = '#,##0.00';
+			}
+		}
+	}
+}
+
 export const common_excel = {
 	methods: {
 		excelExport(unnecessaryColumns = [], fileName = 'table') {
@@ -82,14 +123,13 @@ export const common_excel = {
 			// 1. 生成Excel工作簿对象，使用过滤后的新表格
 			var wb = XLSX.utils.table_to_book(newTable, { raw: true });
 
-			// 2. 设置列宽
-			// 获取工作表
+			// 2. 设置列宽并应用数字格式
 			var ws = wb.Sheets[wb.SheetNames[0]];
-			// 设置列宽（单位：字符宽度）
 			ws['!cols'] = new Array(newTable.rows[0].cells.length).fill({ width: 40 });
+			applyNumberFormatToSheet(ws);
 
-			// 3. 获取二进制字符串作为输出
-			var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+			// 3. 获取二进制字符串作为输出（cellNF 确保数字格式写入以便 Excel 计算）
+			var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array', cellNF: true });
 
 			try {
 				FileSaver.saveAs(new Blob([wbout], { type: 'application/octet-stream' }), `${fileName}.xlsx`);
