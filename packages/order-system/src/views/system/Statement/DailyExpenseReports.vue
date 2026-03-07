@@ -30,7 +30,7 @@
 			<!--        导出-->
 			<template #export>
 				<el-col :span="1.5">
-					<el-button v-hasPermi="['system:bankaccount:export']" plain icon="el-icon-folder-opened" size="mini" @click="excelExport([''])"></el-button>
+					<el-button v-hasPermi="['system:bankaccount:export']" plain icon="el-icon-folder-opened" size="mini" @click="excelExport([], '申请费用付款表')"></el-button>
 				</el-col>
 			</template>
 		</right-toolbar>
