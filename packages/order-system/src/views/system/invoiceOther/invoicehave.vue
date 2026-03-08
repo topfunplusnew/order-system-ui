@@ -85,7 +85,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[4].visible" label="供应商公司名称" align="center" prop="Supplier" show-overflow-tooltip width="200">
+			<el-table-column v-if="columns[2].visible" label="供应商公司名称" align="center" prop="Supplier" show-overflow-tooltip width="200">
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.Supplier }}</div>
@@ -93,7 +93,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[2].visible" label="供应商票点" align="center" prop="supplierTicketPoint" show-overflow-tooltip>
+			<el-table-column v-if="columns[3].visible" label="供应商票点" align="center" prop="supplierTicketPoint" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.supplierTicketPoint }}</div>
@@ -101,7 +101,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[3].visible" label="供应商票点金额" align="center" prop="supplierPointAmount" show-overflow-tooltip>
+			<el-table-column v-if="columns[4].visible" label="供应商票点金额" align="center" prop="supplierPointAmount" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.supplierPointAmount | changeNumber(changeLength) }}</div>
