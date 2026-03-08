@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 	<div class="app-container">
 		<el-form id="top-search-form-item" :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch && isConfigLoaded" label-width="150">
 			<el-form-item v-if="shouldShowField('storeHouseName')" label="仓库名称" prop="storeHouseName">
@@ -180,7 +180,7 @@
 										</template>
 									</el-table-column>
 									<!-- 修改审核状态列 -->
-									<el-table-column v-if="columns[5].visible" show-overflow-tooltip label="审核状态" align="center" prop="checkState" width="150">
+									<el-table-column v-if="columns[4].visible" show-overflow-tooltip label="审核状态" align="center" prop="checkState" width="150">
 										<template #default="scope">
 											<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
 												<div slot="content" @click.stop>
@@ -210,7 +210,7 @@
 										</template>
 									</el-table-column>
 
-									<el-table-column v-if="columns[6].visible" show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo" width="120">
+									<el-table-column v-if="columns[5].visible" show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo" width="120">
 										<template #default="scope">
 											<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 												<div slot="content">{{ scope.row.landCarNo }}</div>
@@ -218,7 +218,7 @@
 											</el-tooltip>
 										</template>
 									</el-table-column>
-									<el-table-column v-if="columns[7].visible" show-overflow-tooltip label="陆地司机姓名" align="center" prop="landDriverName" width="120">
+									<el-table-column v-if="columns[6].visible" show-overflow-tooltip label="陆地司机姓名" align="center" prop="landDriverName" width="120">
 										<template #default="scope">
 											<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 												<div slot="content">{{ scope.row.landDriverName }}</div>
@@ -226,7 +226,7 @@
 											</el-tooltip>
 										</template>
 									</el-table-column>
-									<el-table-column v-if="columns[8].visible" show-overflow-tooltip label="柜号" align="center" prop="seaCarNo" width="120">
+									<el-table-column v-if="columns[7].visible" show-overflow-tooltip label="柜号" align="center" prop="seaCarNo" width="120">
 										<template #default="scope">
 											<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 												<div slot="content">{{ scope.row.seaCarNo }}</div>
@@ -234,7 +234,7 @@
 											</el-tooltip>
 										</template>
 									</el-table-column>
-									<el-table-column v-if="columns[9].visible" show-overflow-tooltip label="海运公司" align="center" prop="seaDriverName" width="120">
+									<el-table-column v-if="columns[8].visible" show-overflow-tooltip label="海运公司" align="center" prop="seaDriverName" width="120">
 										<template #default="scope">
 											<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 												<div slot="content">{{ scope.row.seaDriverName }}</div>
@@ -243,7 +243,7 @@
 										</template>
 									</el-table-column>
 									<!-- 含税列 -->
-									<el-table-column v-if="columns[10].visible" show-overflow-tooltip label="含税" align="center" prop="isIncludeTaxSale" width="100">
+									<el-table-column v-if="columns[9].visible" show-overflow-tooltip label="含税" align="center" prop="isIncludeTaxSale" width="100">
 										<template #default="scope">
 											<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 												<div slot="content">{{ scope.row.isIncludeTaxSale === 1 ? '含税' : '不含税' }}</div>
@@ -252,7 +252,7 @@
 										</template>
 									</el-table-column>
 									<!-- 库存金额列 -->
-									<el-table-column v-if="columns[11].visible" show-overflow-tooltip label="库存金额" align="center" prop="payments" width="150">
+									<el-table-column v-if="columns[10].visible" show-overflow-tooltip label="库存金额" align="center" prop="payments" width="150">
 										<template #default="scope">
 											<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 												<div slot="content">{{ calculateTotalPayments(scope.row) }}</div>
@@ -260,7 +260,7 @@
 											</el-tooltip>
 										</template>
 									</el-table-column>
-									<el-table-column v-if="columns[12].visible" show-overflow-tooltip label="子项陆运费之和" align="center" prop="allLandFreight" width="150">
+									<el-table-column v-if="columns[11].visible" show-overflow-tooltip label="子项陆运费之和" align="center" prop="allLandFreight" width="150">
 										<template #default="scope">
 											<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 												<div slot="content">{{ scope.row.allLandFreight }}</div>
@@ -268,7 +268,7 @@
 											</el-tooltip>
 										</template>
 									</el-table-column>
-									<el-table-column v-if="columns[13].visible" show-overflow-tooltip label="子项海运费之和" align="center" prop="allSeaFreight" width="150">
+									<el-table-column v-if="columns[12].visible" show-overflow-tooltip label="子项海运费之和" align="center" prop="allSeaFreight" width="150">
 										<template #default="scope">
 											<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 												<div slot="content">{{ scope.row.allSeaFreight }}</div>
@@ -276,7 +276,7 @@
 											</el-tooltip>
 										</template>
 									</el-table-column>
-									<el-table-column v-if="columns[14].visible" show-overflow-tooltip label="录入员" align="center" prop="userName" width="120">
+									<el-table-column v-if="columns[13].visible" show-overflow-tooltip label="录入员" align="center" prop="userName" width="120">
 										<template #default="scope">
 											<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 												<div slot="content">{{ scope.row.userName }}</div>
@@ -284,7 +284,7 @@
 											</el-tooltip>
 										</template>
 									</el-table-column>
-									<el-table-column v-if="columns[15].visible" show-overflow-tooltip label="附件" align="center" prop="path" width="70" fixed="right">
+									<el-table-column v-if="columns[14].visible" show-overflow-tooltip label="附件" align="center" prop="path" width="70" fixed="right">
 										<template #default="scope">
 											<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
 												<div slot="content" @click.stop>
@@ -304,7 +304,7 @@
 											</el-tooltip>
 										</template>
 									</el-table-column>
-									<el-table-column v-if="columns[16].visible" show-overflow-tooltip label="收到条附件" align="center" prop="receiveProof" width="70" fixed="right">
+									<el-table-column v-if="columns[15].visible" show-overflow-tooltip label="收到条附件" align="center" prop="receiveProof" width="70" fixed="right">
 										<template #default="scope">
 											<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
 												<div slot="content" @click.stop>
@@ -2448,7 +2448,7 @@ export default {
 		 */
 		generateExcelData() {
 			// 获取可见列配置
-			const visibleColumns = this.columns.filter(col => col.visible && col.key !== 21); // 排除操作列
+			const visibleColumns = this.columns.filter(col => col.visible && col.key !== 17); // 排除操作列
 
 			// 生成表头
 			const headers = visibleColumns.map(col => col.label);
@@ -2486,49 +2486,38 @@ export default {
 					return row.checkState || '未审核';
 				case 6: // 陆运车牌
 					return row.landCarNo || '';
-				// 2026-02-06 删除陆运司机电话
-				case 8: // 陆地司机姓名
+				case 7: // 陆地司机姓名
 					return row.landDriverName || '';
-				case 9: // 陆运银行卡号
-					return row.landBankNo || '';
-				case 10: // 陆运银行户名
-					return row.landBankName || '';
-				case 11: // 柜号
+				case 8: // 柜号
 					return row.seaCarNo || '';
-				// 2026-02-06 删除海运司机电话
-				case 13: // 海运公司
+				case 9: // 海运公司
 					return row.seaDriverName || '';
-				// 2026-02-06 添加含税列
-				case 22: // 含税
+				case 10: // 含税
 					return row.isIncludeTaxSale === 1 ? '含税' : '不含税';
-				// 2026-02-06 添加库存金额列（从子项的 payments 求和）
-				case 23: { // ä»»åŠ¡1ï¼šå‰ç«¯ Excel å¯¼å‡º - åº“å­˜é‡‘é¢è¾“å‡ºä¸º Numberï¼Œä¿è¯ Excel å¯ç›´æŽ¥è¿ç®— // 库存金额
+				case 11: {
+					// 库存金额
 					const raw = this.calculateTotalPayments(row);
 					if (raw === null || raw === undefined || raw === '') return '';
 					const num = Number(String(raw).replace(/,/g, '').trim());
 					return isNaN(num) ? raw : num;
 				}
-				case 14: // 海运银行卡号
-					return row.seaBankNo || '';
-				case 15: // 海运银行户名
-					return row.seaBankName || '';
-				case 16: // 子项陆运费之和
+				case 12: // 子项陆运费之和
 					if (row.allLandFreight === null || row.allLandFreight === undefined || row.allLandFreight === '') return '';
 					{
 						const num = Number(String(row.allLandFreight).replace(/,/g, '').trim());
 						return isNaN(num) ? row.allLandFreight : num;
 					}
-				case 17: // 子项海运费之和
+				case 13: // 子项海运费之和
 					if (row.allSeaFreight === null || row.allSeaFreight === undefined || row.allSeaFreight === '') return '';
 					{
 						const num = Number(String(row.allSeaFreight).replace(/,/g, '').trim());
 						return isNaN(num) ? row.allSeaFreight : num;
 					}
-				case 18: // 录入人员
+				case 14: // 录入员
 					return row.userName || '';
-				case 19: // 附件
+				case 15: // 附件
 					return this.formatAttachments(row.attachmentList, 'path');
-				case 20: // 收到条附件
+				case 16: // 收到条附件
 					return this.formatAttachments(row.attachmentList, 'receiveProof');
 				default:
 					return '';
