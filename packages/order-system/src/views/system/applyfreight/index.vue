@@ -1,5 +1,5 @@
 <script>
-import { getOrderFreightList, listOrderFreight } from '@/api/system/orderFreight';
+import { getOrderFreightList, getOrderFreight, updateOrderFreight } from '@/api/system/orderFreight';
 import { mixin_order_freeApply } from '../../dashboard/mixins/order/order_freeApply';
 import { common_dialog } from '../../dashboard/mixins/common/common_dialog';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
@@ -52,73 +52,25 @@ export default {
 			orderDetailsDialogVisible: false,
 			currentOrder: null,
 			columns: [
-				{
-					key: 0,
-					label: '运费状态',
-					prop: 'paymentState',
-					visible: true
-				},
-				{ key: 1, label: '支付时间', prop: 'paymentDate', visible: true },
-				{
-					key: 2,
-					label: '运输类型',
-					prop: 'transportType',
-					visible: true
-				},
-				{
-					key: 3,
-					label: '订单日期',
-					prop: 'documentDate',
-					visible: true
-				},
-				{
-					key: 4,
-					label: '客户/仓库名称',
-					prop: 'customerOrStorehouseName',
-					visible: true
-				},
-				{ key: 5, label: '录入员', prop: 'entryUser', visible: true },
-				{ key: 6, label: '车队/海运公司', prop: 'fleet', visible: true },
-				{ key: 7, label: '车牌号/柜号', prop: 'carNo', visible: true },
-				{ key: 8, label: '吨位', prop: 'tonnage', visible: true },
-				{
-					key: 9,
-					label: '平均运费价格',
-					prop: 'averageFreightPrice',
-					visible: true
-				},
-				{ key: 10, label: '运费', prop: 'freight', visible: true },
-				{
-					key: 11,
-					label: '司机户名',
-					prop: 'driverAccountName',
-					visible: true
-				},
-				{
-					key: 12,
-					label: '司机银行账号',
-					prop: 'driverBankNo',
-					visible: true
-				},
-				{ key: 13, label: '订单来源', prop: 'source', visible: true },
-				{
-					key: 14,
-					label: '订单状态',
-					prop: 'checkState',
-					visible: true
-				},
-				{
-					key: 15,
-					label: '收到条',
-					prop: 'receiveProof',
-					visible: true
-				},
-				{
-					key: 16,
-					label: '已支付金额',
-					prop: 'paidAmount',
-					visible: true
-				}
+				{ key: 0, label: '订单来源', prop: 'source', visible: true },
+				{ key: 1, label: '订单日期', prop: 'documentDate', visible: true },
+				{ key: 2, label: '客户/仓库名称', prop: 'customerOrStorehouseName', visible: true },
+				{ key: 3, label: '车牌号/柜号', prop: 'carNo', visible: true },
+				{ key: 4, label: '吨位', prop: 'tonnage', visible: true },
+				{ key: 5, label: '平均运费价格', prop: 'averageFreightPrice', visible: true },
+				{ key: 6, label: '运费', prop: 'freight', visible: true },
+				{ key: 7, label: '司机户名', prop: 'driverAccountName', visible: true },
+				{ key: 8, label: '司机银行账号', prop: 'driverBankNo', visible: true },
+				{ key: 9, label: '录入员', prop: 'entryUser', visible: true },
+				{ key: 10, label: '销售经理', prop: 'salesManager', visible: true },
+				{ key: 11, label: '车队', prop: 'fleet', visible: true },
+				{ key: 12, label: '海运公司', prop: 'shippingCompany', visible: true },
+				{ key: 13, label: '运输类型', prop: 'transportType', visible: true },
+				{ key: 14, label: '运费状态', prop: 'paymentState', visible: true },
+				{ key: 15, label: '支付时间', prop: 'paymentDate', visible: true },
+				{ key: 16, label: '订单状态', prop: 'checkState', visible: true },
+				{ key: 17, label: '收到条', prop: 'receiveProof', visible: true },
+				{ key: 18, label: '已支付金额', prop: 'paidAmount', visible: true }
 			]
 		};
 	},
@@ -349,51 +301,41 @@ export default {
 			</el-col>
 		</el-row>
 		<el-table id="printBox" :data="freightList" v-loading="loading" border fit size="mini" style="width: 100%; margin-top: 20px">
-			<el-table-column v-if="columns[0].visible" show-overflow-tooltip prop="paymentState" label="运费状态" align="center" width="60" />
-			<el-table-column v-if="columns[1].visible" show-overflow-tooltip prop="paymentDate" label="支付时间" align="center" width="120" />
-			<el-table-column v-if="columns[2].visible" show-overflow-tooltip label="运输类型" align="center" width="60">
+			<el-table-column v-if="columns[0].visible" show-overflow-tooltip prop="source" label="订单来源" align="center" width="80" />
+			<el-table-column v-if="columns[1].visible" show-overflow-tooltip prop="documentDate" label="订单日期" align="center" width="120" />
+			<el-table-column v-if="columns[2].visible" show-overflow-tooltip prop="customerOrStorehouseName" label="客户/仓库名称" align="center" width="150" />
+			<el-table-column v-if="columns[3].visible" show-overflow-tooltip prop="carNo" label="车牌号/柜号" align="center" width="120" />
+			<el-table-column v-if="columns[4].visible" show-overflow-tooltip prop="tonnage" label="吨位" align="center" width="70">
+				<template #default="scope">{{ scope.row.transportType === 'sea' ? '-' : scope.row.tonnage }}</template>
+			</el-table-column>
+			<el-table-column v-if="columns[5].visible" show-overflow-tooltip prop="averageFreightPrice" label="平均运费价格" align="center" width="90" />
+			<el-table-column v-if="columns[6].visible" show-overflow-tooltip prop="freight" label="运费" align="center" width="100" />
+			<el-table-column v-if="columns[7].visible" show-overflow-tooltip prop="driverAccountName" label="司机户名" align="center" width="120" />
+			<el-table-column v-if="columns[8].visible" show-overflow-tooltip prop="driverBankNo" label="司机银行账号" align="center" width="180" />
+			<el-table-column v-if="columns[9].visible" show-overflow-tooltip prop="entryUser" label="录入员" align="center" width="80" />
+			<el-table-column v-if="columns[10].visible" show-overflow-tooltip prop="salesManager" label="销售经理" align="center" width="100" />
+			<el-table-column v-if="columns[11].visible" show-overflow-tooltip prop="fleet" label="车队" align="center" width="80">
+				<template #default="scope">{{ scope.row.transportType === 'sea' ? '-' : scope.row.fleet }}</template>
+			</el-table-column>
+			<el-table-column v-if="columns[12].visible" show-overflow-tooltip prop="shippingCompany" label="海运公司" align="center" width="120">
+				<template #default="scope">{{ scope.row.transportType === 'sea' ? scope.row.shippingCompany || scope.row.driverName || '' : '-' }}</template>
+			</el-table-column>
+			<el-table-column v-if="columns[13].visible" show-overflow-tooltip label="运输类型" align="center" width="70">
 				<template #default="scope">
-					<span
-						:class="{
-							'sea-transport': scope.row.transportType === 'sea',
-							'land-transport': scope.row.transportType === 'land'
-						}"
-					>
+					<span :class="{ 'sea-transport': scope.row.transportType === 'sea', 'land-transport': scope.row.transportType === 'land' }">
 						{{ scope.row.transportType === 'sea' ? '海运' : '陆运' }}
 					</span>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[3].visible" show-overflow-tooltip prop="documentDate" label="订单日期" align="center" width="120" />
-			<el-table-column v-if="columns[13].visible" show-overflow-tooltip prop="source" label="订单来源" align="center" width="60" />
-			<el-table-column v-if="columns[14].visible" show-overflow-tooltip prop="checkState" label="订单状态" align="center" width="100" />
-			<el-table-column v-if="columns[4].visible" show-overflow-tooltip prop="customerOrStorehouseName" label="客户/仓库名称" align="center" width="150" />
-			<el-table-column v-if="columns[5].visible" show-overflow-tooltip prop="entryUser" label="录入员" align="center" width="60" />
-			<el-table-column v-if="columns[6].visible" show-overflow-tooltip prop="fleet" label="车队" align="center" width="80">
-				<template #default="scope">
-					{{ scope.row.transportType === 'sea' ? '无' : scope.row.fleet }}
-				</template>
-			</el-table-column>
-			<el-table-column v-if="columns[6].visible" show-overflow-tooltip prop="driverName" label="海运公司" align="center" width="120">
-				<template #default="scope">
-					{{ scope.row.transportType === 'sea' ? scope.row.driverName : '无' }}
-				</template>
-			</el-table-column>
-			<el-table-column v-if="columns[7].visible" show-overflow-tooltip prop="carNo" label="车牌号/柜号" align="center" width="120" />
-			<el-table-column v-if="columns[8].visible" show-overflow-tooltip prop="tonnage" label="吨位" align="center" width="100">
-				<template #default="scope">
-					{{ scope.row.transportType === 'sea' ? '无' : scope.row.tonnage }}
-				</template>
-			</el-table-column>
-			<el-table-column v-if="columns[9].visible" show-overflow-tooltip prop="averageFreightPrice" label="平均运费价格" align="center" width="120" />
-			<el-table-column v-if="columns[10].visible" show-overflow-tooltip prop="freight" label="运费" align="center" width="100" />
-			<el-table-column v-if="columns[11].visible" show-overflow-tooltip prop="driverAccountName" label="司机户名" align="center" width="120" />
-			<el-table-column v-if="columns[12].visible" show-overflow-tooltip prop="driverBankNo" label="司机银行账号" align="center" width="180" />
-			<el-table-column v-if="columns[15].visible" show-overflow-tooltip label="收到条" align="center" fixed="right" width="120">
+			<el-table-column v-if="columns[14].visible" show-overflow-tooltip prop="paymentState" label="运费状态" align="center" width="80" />
+			<el-table-column v-if="columns[15].visible" show-overflow-tooltip prop="paymentDate" label="支付时间" align="center" width="120" />
+			<el-table-column v-if="columns[16].visible" show-overflow-tooltip prop="checkState" label="订单状态" align="center" width="100" />
+			<el-table-column v-if="columns[17].visible" show-overflow-tooltip label="收到条" align="center" fixed="right" width="70">
 				<template #default="scope">
 					<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'receiveProof'" :is-upload="false" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getOrderFreight, updateOrderFreight)" />
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[16].visible" show-overflow-tooltip prop="paidAmount" label="已支付金额" align="center" fixed="right" width="120" />
+			<el-table-column v-if="columns[18].visible" show-overflow-tooltip prop="paidAmount" label="已支付金额" align="center" fixed="right" width="90" />
 			<el-table-column show-overflow-tooltip label="操作" align="center" class-name="small-padding fixed-width" width="220" fixed="right">
 				<template #default="scope">
 					<div>
