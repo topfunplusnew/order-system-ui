@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<div class="app-container">
 		<el-form id="top-search-form-item" :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch && isConfigLoaded" label-width="150">
 			<el-form-item v-if="shouldShowField('storeHouseName')" label="仓库名称" prop="storeHouseName">
@@ -284,7 +284,15 @@
 											</el-tooltip>
 										</template>
 									</el-table-column>
-									<el-table-column v-if="columns[14].visible" show-overflow-tooltip label="附件" align="center" prop="path" width="70" fixed="right">
+									<el-table-column v-if="columns[14].visible" show-overflow-tooltip label="不含税利润" align="center" prop="profitNoTax" width="120">
+										<template #default="scope">
+											<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+												<div slot="content">{{ calculateTotalProfitNoTax(scope.row) }}</div>
+												<span>{{ calculateTotalProfitNoTax(scope.row) }}</span>
+											</el-tooltip>
+										</template>
+									</el-table-column>
+									<el-table-column v-if="columns[15].visible" show-overflow-tooltip label="附件" align="center" prop="path" width="70" fixed="right">
 										<template #default="scope">
 											<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
 												<div slot="content" @click.stop>
@@ -304,7 +312,7 @@
 											</el-tooltip>
 										</template>
 									</el-table-column>
-									<el-table-column v-if="columns[15].visible" show-overflow-tooltip label="收到条附件" align="center" prop="receiveProof" width="70" fixed="right">
+									<el-table-column v-if="columns[16].visible" show-overflow-tooltip label="收到条附件" align="center" prop="receiveProof" width="70" fixed="right">
 										<template #default="scope">
 											<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
 												<div slot="content" @click.stop>
@@ -324,7 +332,7 @@
 											</el-tooltip>
 										</template>
 									</el-table-column>
-									<el-table-column v-if="columns[16].visible" label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="100">
+									<el-table-column v-if="columns[17].visible" label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="100">
 										<template slot-scope="scope">
 											<el-dropdown size="mini" trigger="hover" @command="command => handleCommand(command, scope.row)">
 												<el-button size="mini" type="text" @click.stop="handleCheckInventory(scope.row)">
@@ -1045,6 +1053,7 @@ export default {
 				{ key: 12, label: '子项陆运费之和', visible: true },
 				{ key: 13, label: '子项海运费之和', visible: true },
 				{ key: 14, label: '录入员', visible: true },
+				{ key: 18, label: '不含税利润', visible: true },
 				{ key: 15, label: '附件', visible: true },
 				{ key: 16, label: '收到条附件', visible: true },
 				{ key: 17, label: '操作', visible: true }
@@ -1379,6 +1388,21 @@ export default {
 				return add(sum, payments);
 			}, 0);
 			// 四舍五入保留两位小数
+			return round(total, 2).toString();
+		},
+		/**
+		 * 计算不含税利润总和（从子项 inventoryDetailList 的 profitNoTax 求和）
+		 * @param {Object} row - 主表行数据
+		 * @returns {string} 格式化后的不含税利润总和
+		 */
+		calculateTotalProfitNoTax(row) {
+			if (!row || !row.inventoryDetailList || !Array.isArray(row.inventoryDetailList) || row.inventoryDetailList.length === 0) {
+				return '0.00';
+			}
+			const total = row.inventoryDetailList.reduce((sum, item) => {
+				const val = Number(item.profitNoTax) || 0;
+				return add(sum, val);
+			}, 0);
 			return round(total, 2).toString();
 		},
 		/**
@@ -2515,6 +2539,13 @@ export default {
 					}
 				case 14: // 录入员
 					return row.userName || '';
+				case 18: {
+					// 不含税利润
+					const raw = this.calculateTotalProfitNoTax(row);
+					if (raw === null || raw === undefined || raw === '') return '';
+					const num = Number(String(raw).replace(/,/g, '').trim());
+					return isNaN(num) ? raw : num;
+				}
 				case 15: // 附件
 					return this.formatAttachments(row.attachmentList, 'path');
 				case 16: // 收到条附件
