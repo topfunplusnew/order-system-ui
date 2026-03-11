@@ -431,9 +431,6 @@
 					<el-form-item label="对方开户行">
 						<el-input v-model="fillFreightForm.otherBankName" placeholder="请输入对方开户行或点击上方搜索自动填充" />
 					</el-form-item>
-					<el-form-item label="司机姓名" prop="driverName">
-						<el-input disabled v-model="fillFreightForm.driverName" placeholder="自动填充" />
-					</el-form-item>
 					<el-form-item label="车队" prop="fleet">
 						<el-col :span="20">
 							<el-input disabled v-model="fillFreightForm.fleet" placeholder="自动填充" />
@@ -1202,8 +1199,6 @@ export default {
 				otherAcountsName: row.otherAcountsName || null,
 				otherBankNo: row.otherBankNo || null,
 				otherBankName: row.otherBankName || null,
-				driverName: row.driverName || null,
-				driverId: row.driverId || null,
 				carNo: row.carNo || null,
 				fleet: row.fleet || null,
 				applyDate: row.applyDate || null,
@@ -1225,8 +1220,6 @@ export default {
 				otherAcountsName: null,
 				otherBankNo: null,
 				otherBankName: null,
-				driverName: null,
-				driverId: null,
 				carNo: null,
 				fleet: null,
 				applyDate: null,

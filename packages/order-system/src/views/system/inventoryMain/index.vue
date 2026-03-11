@@ -332,7 +332,8 @@
 											</el-tooltip>
 										</template>
 									</el-table-column>
-									<el-table-column v-if="columns[17].visible" label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="100">
+									<el-table-column v-if="columns[17].visible" show-overflow-tooltip label="审核人员" align="center" prop="checkUserName" width="100" fixed="right" />
+									<el-table-column v-if="columns[18].visible" label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="100">
 										<template slot-scope="scope">
 											<el-dropdown size="mini" trigger="hover" @command="command => handleCommand(command, scope.row)">
 												<el-button size="mini" type="text" @click.stop="handleCheckInventory(scope.row)">
@@ -1056,6 +1057,7 @@ export default {
 				{ key: 18, label: '不含税利润', visible: true },
 				{ key: 15, label: '附件', visible: true },
 				{ key: 16, label: '收到条附件', visible: true },
+				{ key: 19, label: '审核人员', visible: true },
 				{ key: 17, label: '操作', visible: true }
 			],
 			// 表单校验
@@ -2550,6 +2552,8 @@ export default {
 					return this.formatAttachments(row.attachmentList, 'path');
 				case 16: // 收到条附件
 					return this.formatAttachments(row.attachmentList, 'receiveProof');
+				case 19: // 审核人员
+					return row.checkUserName || '';
 				default:
 					return '';
 			}
