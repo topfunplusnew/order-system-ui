@@ -56,26 +56,54 @@
 			"
 			@selection-change="handleSelectionChange"
 		>
-			<el-table-column v-if="columns[0].visible" label="操作日期" align="center" prop="operateDate" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[1].visible" label="我方承兑账户" align="center" prop="billAccount" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[2].visible" label="票据号码" align="center" prop="billNo" width="120" show-overflow-tooltip>
-				<!--        点击后出来一个台账-->
+			<el-table-column v-if="(columns[0] && columns[0].visible) !== false" label="票据交易日期" align="center" prop="billDate" width="120" show-overflow-tooltip />
+			<el-table-column v-if="(columns[1] && columns[1].visible) !== false" label="分类" align="center" prop="billType" width="100" show-overflow-tooltip />
+			<el-table-column v-if="(columns[2] && columns[2].visible) !== false" label="票据号码" align="center" prop="billNo" width="120" show-overflow-tooltip>
 				<template #default="scope">
 					<CheckTotal :row="scope.row" />
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[3].visible" label="出票日期" align="center" prop="issueDate" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[4].visible" label="到期日期" align="center" prop="dueDate" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[5].visible" label="票据种类" align="center" prop="billCategory" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[6].visible" label="票据交易日期" align="center" prop="billDate" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[7].visible" label="背书事由" align="center" prop="reason" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[8].visible" label="对方承兑账户" align="center" prop="endorserName" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[9].visible" label="分类" align="center" prop="billType" width="100" show-overflow-tooltip />
-			<el-table-column v-if="columns[10].visible" label="票据金额" align="center" prop="billAmount" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[11].visible" label="贴息点数" align="center" prop="inDiscountPoints" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[12].visible" label="贴息金额" align="center" prop="inDiscountAmount" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[13].visible" label="来源" align="center" prop="origin" width="120" show-overflow-tooltip />
-			<el-table-column v-if="columns[14].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
+			<el-table-column v-if="(columns[3] && columns[3].visible) !== false" label="我方承兑账户" align="center" prop="billAccount" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[4].visible" label="出票日期" align="center" prop="issueDate" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[5].visible" label="到期日期" align="center" prop="dueDate" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[6].visible" label="票据种类" align="center" prop="billCategory" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[7].visible" label="收票事由" align="center" prop="reason" width="120" show-overflow-tooltip>
+				<template #default="scope">{{ scope.row.billType === '收入' ? scope.row.reason : '' }}</template>
+			</el-table-column>
+			<el-table-column v-if="columns[8].visible" label="收入票据来源" align="center" prop="origin" width="120" show-overflow-tooltip>
+				<template #default="scope">{{ scope.row.billType === '收入' ? scope.row.origin : '' }}</template>
+			</el-table-column>
+			<el-table-column v-if="columns[9].visible" label="背书人" align="center" prop="endorserName" width="120" show-overflow-tooltip>
+				<template #default="scope">{{ scope.row.billType === '收入' ? scope.row.endorserName : '' }}</template>
+			</el-table-column>
+			<el-table-column v-if="columns[10].visible" label="收入票据金额" align="center" prop="billAmount" width="120" show-overflow-tooltip>
+				<template #default="scope">{{ scope.row.billType === '收入' ? scope.row.billAmount : '' }}</template>
+			</el-table-column>
+			<el-table-column v-if="columns[11].visible" label="收入贴息点数" align="center" prop="inDiscountPoints" width="120" show-overflow-tooltip>
+				<template #default="scope">{{ scope.row.billType === '收入' ? scope.row.inDiscountPoints : '' }}</template>
+			</el-table-column>
+			<el-table-column v-if="columns[12].visible" label="收入贴息金额" align="center" prop="inDiscountAmount" width="120" show-overflow-tooltip>
+				<template #default="scope">{{ scope.row.billType === '收入' ? scope.row.inDiscountAmount : '' }}</template>
+			</el-table-column>
+			<el-table-column v-if="columns[13].visible" label="背书事由" align="center" prop="reason" width="120" show-overflow-tooltip>
+				<template #default="scope">{{ scope.row.billType === '支出' ? scope.row.reason : '' }}</template>
+			</el-table-column>
+			<el-table-column v-if="columns[14].visible" label="支出票据去向" align="center" prop="origin" width="120" show-overflow-tooltip>
+				<template #default="scope">{{ scope.row.billType === '支出' ? scope.row.origin : '' }}</template>
+			</el-table-column>
+			<el-table-column v-if="columns[15].visible" label="被背书人" align="center" prop="endorserName" width="120" show-overflow-tooltip>
+				<template #default="scope">{{ scope.row.billType === '支出' ? scope.row.endorserName : '' }}</template>
+			</el-table-column>
+			<el-table-column v-if="columns[16].visible" label="支出票据金额" align="center" prop="billAmount" width="120" show-overflow-tooltip>
+				<template #default="scope">{{ scope.row.billType === '支出' ? scope.row.billAmount : '' }}</template>
+			</el-table-column>
+			<el-table-column v-if="columns[17].visible" label="支付贴息点数" align="center" prop="inDiscountPoints" width="120" show-overflow-tooltip>
+				<template #default="scope">{{ scope.row.billType === '支出' ? scope.row.inDiscountPoints : '' }}</template>
+			</el-table-column>
+			<el-table-column v-if="columns[18].visible" label="支付贴息金额" align="center" prop="inDiscountAmount" width="120" show-overflow-tooltip>
+				<template #default="scope">{{ scope.row.billType === '支出' ? scope.row.inDiscountAmount : '' }}</template>
+			</el-table-column>
+			<el-table-column v-if="columns[19].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
 
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="150px" fixed="right">
 				<template slot-scope="scope">
@@ -103,11 +131,10 @@
 							<el-radio v-model="type" label="客户">客户</el-radio>
 							<el-radio v-model="type" label="供应商">供应商</el-radio>
 						</el-form-item>
-						<el-form-item label="背书人" prop="endorserName">
+						<el-form-item label="对方承兑账户" prop="endorserName">
 							<el-row>
 								<el-col :span="20">
-									<!--                  v-model="form.endorser"-->
-									<el-input disabled placeholder="请输入背书人" v-model="form.endorserName" />
+									<el-input disabled placeholder="请输入对方承兑账户" v-model="form.endorserName" />
 								</el-col>
 								<el-col :span="4">
 									<!-- 选择的是客户或者供应商名称-->
@@ -253,20 +280,25 @@ export default {
 				isInternalTransfer: 1
 			},
 			columns: [
-				{ label: '操作日期', visible: true },
-				{ label: '我方承兑账户', visible: true },
+				{ label: '票据交易日期', visible: true },
+				{ label: '分类', visible: true },
 				{ label: '票据号码', visible: true },
+				{ label: '我方承兑账户', visible: true },
 				{ label: '出票日期', visible: true },
 				{ label: '到期日期', visible: true },
 				{ label: '票据种类', visible: true },
-				{ label: '票据交易日期', visible: true },
+				{ label: '收票事由', visible: true },
+				{ label: '收入票据来源', visible: true },
+				{ label: '背书人', visible: true },
+				{ label: '收入票据金额', visible: true },
+				{ label: '收入贴息点数', visible: true },
+				{ label: '收入贴息金额', visible: true },
 				{ label: '背书事由', visible: true },
-				{ label: '对方承兑账户', visible: true },
-				{ label: '分类', visible: true },
-				{ label: '票据金额', visible: true },
-				{ label: '贴息点数', visible: true },
-				{ label: '贴息金额', visible: true },
-				{ label: '来源', visible: true },
+				{ label: '支出票据去向', visible: true },
+				{ label: '被背书人', visible: true },
+				{ label: '支出票据金额', visible: true },
+				{ label: '支付贴息点数', visible: true },
+				{ label: '支付贴息金额', visible: true },
 				{ label: '备注', visible: true }
 			],
 			// 表单参数
@@ -322,7 +354,7 @@ export default {
 						trigger: 'blur'
 					}
 				],
-				endorserName: [{ required: true, message: '请输入背书人', trigger: 'blur' }],
+				endorserName: [{ required: true, message: '请输入对方承兑账户', trigger: 'blur' }],
 				// 添加校验
 				billAccount: [
 					{
@@ -387,14 +419,7 @@ export default {
 			companyName: ''
 		};
 	},
-	// 展示与隐藏
 	watch: {
-		columns: {
-			handler: function (newVal) {
-				localStorage.setItem('bankacceptance-columns', JSON.stringify(newVal));
-			},
-			deep: true
-		},
 		// 贴息金额的自动计算
 		form: {
 			handler() {
@@ -406,12 +431,6 @@ export default {
 
 	created() {
 		this.getList();
-		if (localStorage.getItem('bankacceptance-columns') === 'null' || !localStorage.getItem('bankacceptance-columns')) {
-			// 设置localStorage
-			localStorage.setItem('bankacceptance-columns', JSON.stringify(this.columns));
-		} else {
-			this.columns = JSON.parse(localStorage.getItem('bankacceptance-columns'));
-		}
 	},
 	methods: {
 		listCompany,
@@ -432,36 +451,30 @@ export default {
 		handleCommitBack(val) {
 			this.form.billAccount = val.acountsName;
 		},
-		// 自定义列统计总函数
+		// 自定义列统计总函数（收入/支出分别统计）
 		getSummaries(param) {
 			const { columns, data } = param;
 			const sums = [];
+			const sumByType = (prop, billType) =>
+				(data || []).reduce((prev, row) => {
+					if (billType && row.billType !== billType) return prev;
+					const v = Number(row[prop]);
+					return prev + (isNaN(v) ? 0 : v);
+				}, 0);
 			columns.forEach((column, index) => {
 				if (index === 0) {
 					sums[index] = '统计';
 					return;
 				}
-				const values = data.map(item => {
-					return Number(item[column.property]);
-				});
-
-				if (!values.every(value => isNaN(value))) {
-					// 对指定列进行计算
-					// if(index)
-					// 需要进行统计的索引列
-					const out_list = [10, 11, 12];
-					// index !== 9 && index !== 1 && index !== 16 && index !== 2
-					if (out_list.includes(index)) {
-						sums[index] = values.reduce((prev, curr) => {
-							const value = Number(curr);
-							if (!isNaN(value)) {
-								return prev + curr;
-							} else {
-								return prev;
-							}
-						}, 0);
-						sums[index] += ' ';
-					}
+				const label = column.label || '';
+				if (['收入票据金额', '收入贴息点数', '收入贴息金额'].includes(label)) {
+					const prop = { 收入票据金额: 'billAmount', 收入贴息点数: 'inDiscountPoints', 收入贴息金额: 'inDiscountAmount' }[label];
+					sums[index] = sumByType(prop, '收入');
+					if (label !== '收入贴息点数') sums[index] = Number(sums[index]).toFixed(2);
+				} else if (['支出票据金额', '支付贴息点数', '支付贴息金额'].includes(label)) {
+					const prop = { 支出票据金额: 'billAmount', 支付贴息点数: 'inDiscountPoints', 支付贴息金额: 'inDiscountAmount' }[label];
+					sums[index] = sumByType(prop, '支出');
+					if (label !== '支付贴息点数') sums[index] = Number(sums[index]).toFixed(2);
 				} else {
 					sums[index] = '';
 				}

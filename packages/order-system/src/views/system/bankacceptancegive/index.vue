@@ -41,27 +41,22 @@
 
 		<el-table v-loading="loading" v-horizontal-scroll="'always'" id="printBox" border :data="bankAcceptanceList" size="mini" show-summary :summary-method="getSummaries" :cell-style="() => ({ padding: '.5px' })" @selection-change="handleSelectionChange">
 			<el-table-column v-if="columns[0].visible" label="ID" align="center" prop="id" show-overflow-tooltip />
-
 			<el-table-column v-if="columns[1].visible" label="操作日期" align="center" prop="operateDate" show-overflow-tooltip />
-			<el-table-column v-if="columns[2].visible" label="票据种类" align="center" prop="billCategory" show-overflow-tooltip />
-			<el-table-column v-if="columns[3].visible" label="票据号码" align="center" prop="billNo" show-overflow-tooltip>
+			<el-table-column v-if="columns[2].visible" label="票据号码" align="center" prop="billNo" show-overflow-tooltip>
 				<template #default="scope">
 					<CheckTotal :row="scope.row" />
 				</template>
 			</el-table-column>
-
-			<el-table-column v-if="columns[4].visible" label="收票事由" align="center" prop="reason" show-overflow-tooltip />
-			<el-table-column v-if="columns[5].visible" label="背书人" align="center" prop="endorserName" show-overflow-tooltip />
-
-			<el-table-column v-if="columns[6].visible" label="出票日期" align="center" prop="issueDate" show-overflow-tooltip />
-			<el-table-column v-if="columns[7].visible" label="到期日期" align="center" prop="dueDate" show-overflow-tooltip />
-			<el-table-column v-if="columns[8].visible" label="我方承兑账户" align="center" prop="billAccount" show-overflow-tooltip />
-			<el-table-column v-if="columns[9].visible" label="票据交易日期" align="center" prop="billDate" show-overflow-tooltip />
-
-			<el-table-column v-if="columns[10].visible" label="票据金额" align="center" prop="billAmount" show-overflow-tooltip />
-			<el-table-column v-if="columns[11].visible" label="贴息点数" align="center" prop="inDiscountPoints" show-overflow-tooltip />
-			<el-table-column v-if="columns[12].visible" label="贴息金额" align="center" prop="inDiscountAmount" show-overflow-tooltip />
-
+			<el-table-column v-if="columns[3].visible" label="背书事由" align="center" prop="reason" show-overflow-tooltip />
+			<el-table-column v-if="columns[4].visible" label="我方承兑账户" align="center" prop="billAccount" show-overflow-tooltip />
+			<el-table-column v-if="columns[5].visible" label="被背书人" align="center" prop="endorserName" show-overflow-tooltip />
+			<el-table-column v-if="columns[6].visible" label="票据金额" align="center" prop="billAmount" show-overflow-tooltip />
+			<el-table-column v-if="columns[7].visible" label="贴息点数" align="center" prop="inDiscountPoints" show-overflow-tooltip />
+			<el-table-column v-if="columns[8].visible" label="贴息金额" align="center" prop="inDiscountAmount" show-overflow-tooltip />
+			<el-table-column v-if="columns[9].visible" label="出票日期" align="center" prop="issueDate" show-overflow-tooltip />
+			<el-table-column v-if="columns[10].visible" label="到期日期" align="center" prop="dueDate" show-overflow-tooltip />
+			<el-table-column v-if="columns[11].visible" label="票据交易日期" align="center" prop="billDate" show-overflow-tooltip />
+			<el-table-column v-if="columns[12].visible" label="票据种类" align="center" prop="billCategory" show-overflow-tooltip />
 			<el-table-column v-if="columns[13].visible" label="来源" align="center" prop="origin" show-overflow-tooltip />
 			<el-table-column v-if="columns[14].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
 
@@ -431,8 +426,8 @@ export default {
 				if (!values.every(value => isNaN(value))) {
 					// 对指定列进行计算
 					// if(index)
-					// 需要进行统计的索引列
-					const out_list = [9, 10, 11];
+					// 需要进行统计的索引列（票据金额、贴息点数、贴息金额）
+					const out_list = [6, 7, 8];
 					// index !== 9 && index !== 1 && index !== 16 && index !== 2
 					if (out_list.includes(index)) {
 						const sum = values.reduce((prev, curr) => {
