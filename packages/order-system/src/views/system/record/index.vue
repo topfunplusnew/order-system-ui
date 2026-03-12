@@ -81,6 +81,16 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
+			<el-table-column v-if="columns[17].visible" label="账户类型" align="center" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ handleDisplayType(scope.row, scope.row.type) }}</div>
+						<div>
+							{{ handleDisplayType(scope.row, scope.row.type) }}
+						</div>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 			<el-table-column v-if="columns[1].visible" label="交易时间" align="center" prop="transactionTime" width="180" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
@@ -208,16 +218,6 @@
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.remarks }}</div>
 						<span>{{ scope.row.remarks }}</span>
-					</el-tooltip>
-				</template>
-			</el-table-column>
-			<el-table-column v-if="columns[17].visible" label="账户类型" align="center" show-overflow-tooltip>
-				<template #default="scope">
-					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ handleDisplayType(scope.row, scope.row.type) }}</div>
-						<div>
-							{{ handleDisplayType(scope.row, scope.row.type) }}
-						</div>
 					</el-tooltip>
 				</template>
 			</el-table-column>

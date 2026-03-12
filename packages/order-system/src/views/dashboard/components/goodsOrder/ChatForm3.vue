@@ -125,11 +125,10 @@ export default {
 					return;
 				}
 
-				// 获取title、header、表格、底部注
+				// 获取title、header、表格（注已纳入表格内，参考ChatForm2避免Excel单元格过长）
 				const titleEl = container.querySelector('.invoice-title');
 				const headerEl = container.querySelector('.invoice-header');
 				const tableEl = container.querySelector('#copyTable');
-				const footerNoteEl = container.querySelector('.footer-note');
 
 				if (!tableEl) {
 					this.$message.error('未找到表格');
@@ -209,10 +208,6 @@ export default {
 					}
 				}
 
-				// 创建完整复制内容（表格 + 底部注）
-				const footerNoteHtml = footerNoteEl ? footerNoteEl.cloneNode(true).outerHTML : '';
-				const fullCloneHtml = tableClone.outerHTML + (footerNoteHtml || '');
-
 				const htmlContent = `
 					<html>
 						<head>
@@ -222,6 +217,7 @@ export default {
 									width: 100%;
 									border-collapse: collapse;
 									margin-bottom: 10px;
+									table-layout: fixed;
 								}
 								table, th, td {
 									border: 1px solid #000;
@@ -230,6 +226,8 @@ export default {
 									text-align: center;
 									padding: 4px;
 									font-size: 14px;
+									word-wrap: break-word;
+									word-break: break-word;
 								}
 								td[style*="text-align: center"] {
 									text-align: center !important;
@@ -240,27 +238,15 @@ export default {
 								table p {
 									padding: 2px;
 								}
-								.footer-note {
-									font-size: 12px;
-									margin-top: 20px;
-									line-height: 1.5;
-								}
-								.footer-note p {
-									margin: 5px 0;
-								}
 							</style>
 						</head>
 						<body>
-							${fullCloneHtml}
+							${tableClone.outerHTML}
 						</body>
 					</html>
 				`;
 
-				// 创建纯文本版本（含底部注）
-				const textWrapper = document.createElement('div');
-				textWrapper.appendChild(tableClone.cloneNode(true));
-				if (footerNoteEl) textWrapper.appendChild(footerNoteEl.cloneNode(true));
-				const textContent = textWrapper.innerText || textWrapper.textContent;
+				const textContent = tableClone.innerText || tableClone.textContent;
 
 				// 使用 Clipboard API 复制
 				const clipboardItem = new ClipboardItem({
@@ -284,7 +270,6 @@ export default {
 					const titleEl = container.querySelector('.invoice-title');
 					const headerEl = container.querySelector('.invoice-header');
 					const tableEl = container.querySelector('#copyTable');
-					const footerNoteEl = container.querySelector('.footer-note');
 
 					if (!tableEl) {
 						this.$message.error('未找到表格');
@@ -363,7 +348,6 @@ export default {
 					hiddenWrapper.style.left = '-9999px';
 					hiddenWrapper.style.top = '0';
 					hiddenWrapper.appendChild(tableClone);
-					if (footerNoteEl) hiddenWrapper.appendChild(footerNoteEl.cloneNode(true));
 					document.body.appendChild(hiddenWrapper);
 
 					try {
@@ -451,14 +435,15 @@ export default {
 						<td colspan="5" style="text-align: left">大写:{{ numToChineseUppercase(Math.round(moneyAmount)) }}</td>
 						<td :colspan="hasSeaCarNo ? 3 : 2">{{ Math.round(moneyAmount) || 0 }}</td>
 					</tr>
+					<tr>
+						<td :colspan="hasSeaCarNo ? 9 : 8" style="text-align: left">
+							<p>注：</p>
+							<p>1. 玻璃为易碎品，请当面验货，出现问题由司当面解决，收货后出现一切质量问题，由客户自负，我公司概不负责。</p>
+							<p>2. 此单据等同合同，客户收货后具有法律效力，若发生经济纠纷，由供货方所在地法庭处理。</p>
+						</td>
+					</tr>
 				</tbody>
 			</table>
-
-			<div class="footer-note" style="margin-top: 5px; padding: 20px 0; font-size: 16px; line-height: 2.5">
-				<p style="margin: 5px 0">注：</p>
-				<p style="margin: 5px 0">1. 玻璃为易碎品，请当面验货，出现问题由司当面解决，收货后出现一切质量问题，由客户自负，我公司概不负责。</p>
-				<p style="margin: 5px 0">2. 此单据等同合同，客户收货后具有法律效力，若发生经济纠纷，由供货方所在地法庭处理。</p>
-			</div>
 		</div>
 	</div>
 </template>
@@ -510,15 +495,5 @@ td {
 	text-align: center;
 	padding: 4px;
 	font-size: 14px;
-}
-
-.footer-note {
-	font-size: 12px;
-	margin-top: 20px;
-	line-height: 1.5;
-}
-
-.footer-note p {
-	margin: 5px 0;
 }
 </style>
