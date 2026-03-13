@@ -85,6 +85,44 @@ export default {
 	methods: {
 		fix,
 		fix_2,
+		isFirstFooterNote(paragraphText) {
+			return /^\s*1(?:\.|\)|\u3001|\uff0e)/.test(paragraphText);
+		},
+		getExcelNoteCellStyle(paragraphText) {
+			const styles = ['text-align:left', 'padding:4px', 'font-size:12px', 'border:1px solid #000', 'vertical-align:top', 'white-space:normal', 'word-break:break-word', 'line-height:1.6'];
+			if (this.isFirstFooterNote(paragraphText)) {
+				styles.push('height:72pt', 'min-height:96px', 'mso-height-source:userset');
+			}
+			return styles.join(';');
+		},
+		expandFooterNoteRowsForExcel(tableClone, colCount) {
+			const noteRow = Array.from(tableClone.querySelectorAll('tbody tr')).find(row => {
+				const noteCell = row.querySelector('td');
+				return row.children.length === 1 && noteCell && noteCell.querySelectorAll('p').length > 0;
+			});
+			if (!noteRow) return;
+
+			const noteCell = noteRow.querySelector('td');
+			const paragraphs = Array.from(noteCell.querySelectorAll('p'))
+				.map(p => p.textContent.trim())
+				.filter(Boolean);
+			if (paragraphs.length === 0) return;
+
+			const colspan = noteCell.getAttribute('colspan') || String(colCount);
+			const fragment = document.createDocumentFragment();
+			paragraphs.forEach(text => {
+				const row = document.createElement('tr');
+				const cell = document.createElement('td');
+				cell.setAttribute('colspan', colspan);
+				cell.style.cssText = this.getExcelNoteCellStyle(text);
+				cell.textContent = text;
+				row.appendChild(cell);
+				fragment.appendChild(row);
+			});
+
+			noteRow.parentNode.insertBefore(fragment, noteRow);
+			noteRow.parentNode.removeChild(noteRow);
+		},
 		loadOrderDetails() {
 			const orderNos = this.currentOrderInfo?.smailOrderDetails.map(item => {
 				return item.ordersNo;
@@ -204,6 +242,8 @@ export default {
 				}
 
 				// 创建一个包含样式的 HTML 字符串
+				this.expandFooterNoteRowsForExcel(tableClone, colCount);
+
 				const htmlContent = `
 					<html>
 						<head>
@@ -335,6 +375,8 @@ export default {
 					}
 
 					// 任务11：修复发货单2复制内容按钮在降级方案下复制失败（execCommand 需要选中 DOM 内节点）
+					this.expandFooterNoteRowsForExcel(tableClone, colCount);
+
 					const hiddenWrapper = document.createElement('div');
 					hiddenWrapper.style.position = 'fixed';
 					hiddenWrapper.style.pointerEvents = 'none';

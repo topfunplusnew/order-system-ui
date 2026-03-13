@@ -62,6 +62,16 @@ export default {
 	methods: {
 		fix,
 		fix_2,
+		isFirstFooterNote(paragraphText) {
+			return /^\s*1(?:\.|\)|\u3001|\uff0e)/.test(paragraphText);
+		},
+		getExcelNoteCellStyle(paragraphText) {
+			const styles = ['text-align:left', 'padding:4px', 'font-size:12px', 'border:1px solid #000', 'vertical-align:top', 'white-space:normal', 'word-break:break-word', 'line-height:1.6'];
+			if (this.isFirstFooterNote(paragraphText)) {
+				styles.push('height:72pt', 'min-height:96px', 'mso-height-source:userset');
+			}
+			return styles.join(';');
+		},
 		/**
 		 * 将底部注 div 转为表格 HTML，使每条备注各占一行，粘贴到 Excel 时不会落入单一大单元格
 		 * @param {HTMLElement} footerNoteEl - 底部注 DOM
@@ -71,8 +81,8 @@ export default {
 		buildFooterNoteTableHtml(footerNoteEl, colCount) {
 			const paragraphs = footerNoteEl ? Array.from(footerNoteEl.querySelectorAll('p')).map(p => p.textContent.trim()) : [];
 			if (paragraphs.length === 0) return '';
-			const rows = paragraphs.map(p => `<tr><td colspan="${colCount}" style="text-align:left;padding:4px;font-size:12px;border:1px solid #000;">${p}</td></tr>`).join('');
-			return `<table style="width:100%;border-collapse:collapse;margin-top:10px;"><tbody>${rows}</tbody></table>`;
+			const rows = paragraphs.map(p => `<tr><td colspan="${colCount}" style="${this.getExcelNoteCellStyle(p)}">${p}</td></tr>`).join('');
+			return `<table style="width:100%;border-collapse:collapse;margin-top:10px;table-layout:fixed;"><tbody>${rows}</tbody></table>`;
 		},
 		loadOrderDetails() {
 			const orderNos = this.currentOrderInfo?.smailOrderDetails.map(item => {
