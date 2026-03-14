@@ -55,7 +55,7 @@
 			<el-col :span="1.5">
 				<el-button v-hasPermi="['system:customervisit:add']" type="danger" plain icon="el-icon-plus" size="mini" @click="handleAdd">新增走访记录</el-button>
 			</el-col>
-			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList" tableName="customervisit-columns">
 				<template #print>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
@@ -393,12 +393,6 @@ export default {
 	},
 	// 展示与隐藏
 	watch: {
-		columns: {
-			handler: function (newVal) {
-				localStorage.setItem('customervisit-columns', JSON.stringify(newVal));
-			},
-			deep: true
-		},
 		form: {
 			handler: function (newVal) {
 				console.log(newVal);
@@ -445,12 +439,6 @@ export default {
 				this.provinceList = res;
 			});
 		this.getList();
-		if (localStorage.getItem('customervisit-columns') === 'null' || !localStorage.getItem('customervisit-columns')) {
-			// 设置localStorage
-			localStorage.setItem('customervisit-columns', JSON.stringify(this.columns));
-		} else {
-			this.columns = JSON.parse(localStorage.getItem('customervisit-columns'));
-		}
 	},
 	methods: {
 		// 城市变化

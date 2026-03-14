@@ -20,7 +20,7 @@
 			<el-col :span="1.5">
 				<el-button v-hasPermi="['system:offsetting:add']" type="danger" size="mini" @click="handleAdd">新增冲抵货款信息</el-button>
 			</el-col>
-			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList" tableName="offseting-columns">
 				<template #print>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-printer" size="mini" @click="printJSON"></el-button>
@@ -298,11 +298,6 @@ export default {
 	},
 	created() {
 		this.getList();
-		if (localStorage.getItem('offseting-columns') === 'null' || !localStorage.getItem('offseting-columns')) {
-			localStorage.setItem('offseting-columns', JSON.stringify(this.columns));
-		} else {
-			this.columns = JSON.parse(localStorage.getItem('offseting-columns'));
-		}
 	},
 	methods: {
 		listCompany,

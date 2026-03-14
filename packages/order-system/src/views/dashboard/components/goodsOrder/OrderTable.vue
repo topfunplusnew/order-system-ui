@@ -9,7 +9,7 @@
 
 		<!-- 右侧工具栏 -->
 		<div class="toolbar-wrapper">
-			<right-toolbar :columns="columns" @queryTable="getList">
+			<right-toolbar :columns="columns" @queryTable="getList" table-name="views-dashboard-components-goods-order-order-table-columns">
 				<!-- 左侧新增订单按钮 -->
 				<template #left>
 					<div class="toolbar-left">

@@ -27,7 +27,7 @@
 				<el-button v-hasPermi="['system:invoiceout:remove']" type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete">批量删除</el-button>
 			</el-col>
 
-			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList" tableName="order-invoiceout-columns">
 				<template #print>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
@@ -458,12 +458,6 @@ export default {
 	},
 	computed: {},
 	watch: {
-		columns: {
-			handler: function (newVal) {
-				localStorage.setItem('order-invoiceout-columns', JSON.stringify(newVal));
-			},
-			deep: true
-		},
 		// 监听开票金额和票点变化,自动计算票点金额
 		'form.invoiceAmount': function (newVal) {
 			if (!this.isFirstLoad && newVal && this.form.ticketPoint) {
@@ -478,12 +472,6 @@ export default {
 	},
 	created() {
 		this.getList();
-		if (localStorage.getItem('order-invoiceout-columns') === 'null' || !localStorage.getItem('order-invoiceout-columns')) {
-			// 设置localStorage
-			localStorage.setItem('order-invoiceout-columns', JSON.stringify(this.columns));
-		} else {
-			this.columns = JSON.parse(localStorage.getItem('order-invoiceout-columns'));
-		}
 	},
 	methods: {
 		updateInvoiceOut,

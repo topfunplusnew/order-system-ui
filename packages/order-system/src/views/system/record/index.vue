@@ -34,7 +34,7 @@
 		</el-form>
 
 		<el-row>
-			<right-toolbar :columns="columns" @queryTable="getList">
+			<right-toolbar :columns="columns" @queryTable="getList" table-name="views-system-record-index-columns">
 				<template #left>
 					<el-col :span="1.5">
 						<el-button v-hasPermi="['system:record:add']" type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd">新增</el-button>

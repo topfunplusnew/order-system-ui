@@ -23,7 +23,7 @@
 			<el-col :span="1.5">
 				<el-button type="success" size="mini" @click="handleOption">加油卡操作</el-button>
 			</el-col>
-			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList" tableName="oilcard-columns">
 				<template #print>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
@@ -427,23 +427,12 @@ export default {
 		...mapGetters(['trueName'])
 	},
 	watch: {
-		columns: {
-			handler: function (newVal) {
-				localStorage.setItem('oilcard-columns', JSON.stringify(newVal));
-			},
-			deep: true
-		},
 		isMain(val) {
 			console.log(val);
 		}
 	},
 	created() {
 		this.getList();
-		if (localStorage.getItem('oilcard-columns') === 'null' || !localStorage.getItem('oilcard-columns')) {
-			localStorage.setItem('oilcard-columns', JSON.stringify(this.columns));
-		} else {
-			this.columns = JSON.parse(localStorage.getItem('oilcard-columns'));
-		}
 	},
 	methods: {
 		// 附件更新处理

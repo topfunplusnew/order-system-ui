@@ -34,7 +34,7 @@
 			</el-form-item>
 		</el-form>
 		<el-row>
-			<right-toolbar :show-search.sync="showSearch" :columns="columns" @queryTable="getList">
+			<right-toolbar :show-search.sync="showSearch" :columns="columns" @queryTable="getList" table-name="views-system-inventory-total-index-columns">
 				<template #export>
 					<el-col :span="1.5">
 						<el-button v-hasPermi="['system:invoiceother:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport" />

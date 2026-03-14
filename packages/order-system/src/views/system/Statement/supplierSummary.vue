@@ -23,7 +23,7 @@
 		<hr color="#e6e6e6" />
 		<el-row style="font-weight: bold; font-size: 20px; margin: 0 30px">供应商科目余额汇总表</el-row>
 		<el-row :gutter="10" class="mb8">
-			<right-toolbar :columns="columns" @queryTable="getList">
+			<right-toolbar :columns="columns" @queryTable="getList" table-name="views-system-statement-supplier-summary-columns">
 				<template #print>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML" />

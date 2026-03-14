@@ -53,7 +53,7 @@
 
 		<!-- 右侧工具栏 -->
 		<div class="toolbar-wrapper">
-			<right-toolbar :show-search.sync="showSearch" :columns="columns" @queryTable="getList">
+			<right-toolbar :show-search.sync="showSearch" :columns="columns" @queryTable="getList" tableName="payment-columns">
 				<template #left>
 					<div class="toolbar-left">
 						<el-row :gutter="10" class="mb8">
@@ -899,12 +899,6 @@ export default {
 	// 展示与隐藏
 	// 在现有的 watch 对象中添加新的监听器
 	watch: {
-		columns: {
-			handler: function (newVal) {
-				localStorage.setItem('payment-columns', JSON.stringify(newVal));
-			},
-			deep: true
-		},
 		/** 数据加载完成后重新绑定滚动和布局 */
 		loading(newVal, oldVal) {
 			if (oldVal === true && newVal === false) {
@@ -954,16 +948,7 @@ export default {
 			// 正常查询
 			this.getList();
 		}
-		if (localStorage.getItem('payment-columns') === 'null' || !localStorage.getItem('payment-columns')) {
-			localStorage.setItem('payment-columns', JSON.stringify(this.columns));
-		} else {
-			const parsed = JSON.parse(localStorage.getItem('payment-columns'));
-			// 列数变更时（如新增我方账户类型）使用默认配置
-			this.columns = Array.isArray(parsed) && parsed.length === 19 ? parsed : this.columns;
-			if (!Array.isArray(parsed) || parsed.length !== 19) {
-				localStorage.setItem('payment-columns', JSON.stringify(this.columns));
-			}
-		}
+
 		// 监听窗口大小变化，重新计算表格高度
 		window.addEventListener('resize', this.handleResize);
 	},

@@ -21,7 +21,7 @@
 			<el-col :span="1.5">
 				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
 			</el-col>
-			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList" tableName="oilcardfundtransfer-columns">
 				<template #print>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
@@ -297,22 +297,8 @@ export default {
 		};
 	},
 	// 展示与隐藏
-	watch: {
-		columns: {
-			handler: function (newVal) {
-				localStorage.setItem('oilcardfundtransfer-columns', JSON.stringify(newVal));
-			},
-			deep: true
-		}
-	},
 	created() {
 		this.getList();
-		if (localStorage.getItem('oilcardfundtransfer-columns') === 'null' || !localStorage.getItem('oilcardfundtransfer-columns')) {
-			// 设置localStorage
-			localStorage.setItem('oilcardfundtransfer-columns', JSON.stringify(this.columns));
-		} else {
-			this.columns = JSON.parse(localStorage.getItem('oilcardfundtransfer-columns'));
-		}
 	},
 	filters: {
 		statusFilter(type) {

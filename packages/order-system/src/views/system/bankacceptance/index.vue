@@ -25,7 +25,7 @@
 			<!-- <el-col :span="1.5">
 				<el-button v-hasPermi="['system:bankacceptance:add']" type="danger" size="mini" @click="handleAdd">添加收入商业票据</el-button>
 			</el-col> -->
-			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList" tableName="bankacceptance-columns">
 				<template #print>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
@@ -402,12 +402,6 @@ export default {
 	},
 	// 展示与隐藏
 	watch: {
-		columns: {
-			handler: function (newVal) {
-				localStorage.setItem('bankacceptance-columns', JSON.stringify(newVal));
-			},
-			deep: true
-		},
 		// 贴息金额的自动计算
 		form: {
 			handler() {
@@ -419,12 +413,6 @@ export default {
 
 	created() {
 		this.getList();
-		if (localStorage.getItem('bankacceptance-columns') === 'null' || !localStorage.getItem('bankacceptance-columns')) {
-			// 设置localStorage
-			localStorage.setItem('bankacceptance-columns', JSON.stringify(this.columns));
-		} else {
-			this.columns = JSON.parse(localStorage.getItem('bankacceptance-columns'));
-		}
 	},
 	methods: {
 		listCompany,

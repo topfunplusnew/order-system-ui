@@ -46,7 +46,7 @@
 					<el-col :span="1.5">
 						<el-button v-hasPermi="['system:user:export']" type="warning" plain icon="el-icon-download" size="mini" @click="handleExport">导出</el-button>
 					</el-col>
-					<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList"></right-toolbar>
+					<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList" tableName="user-columns"></right-toolbar>
 				</el-row>
 
 				<el-table
@@ -896,12 +896,6 @@ export default {
 		};
 	},
 	watch: {
-		columns: {
-			handler: function (newVal) {
-				localStorage.setItem('user-columns', JSON.stringify(newVal));
-			},
-			deep: true
-		},
 		// 根据名称筛选部门树
 		deptName(val) {
 			this.$refs.tree.filter(val);
@@ -910,12 +904,6 @@ export default {
 	created() {
 		this.getList();
 
-		if (localStorage.getItem('user-columns') === 'null' || !localStorage.getItem('user-columns')) {
-			// 设置localStorage
-			localStorage.setItem('user-columns', JSON.stringify(this.columns));
-		} else {
-			this.columns = JSON.parse(localStorage.getItem('user-columns'));
-		}
 		this.getDeptTree();
 		this.getConfigKey('sys.user.initPassword').then(response => {
 			this.initPassword = response.msg;

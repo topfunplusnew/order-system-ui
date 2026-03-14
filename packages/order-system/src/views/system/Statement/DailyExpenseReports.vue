@@ -21,7 +21,7 @@
 			<span style="color: red">{{ queryParams.startTime }} 至 {{ queryParams.endTime }}</span>
 		</div>
 
-		<right-toolbar :columns="columns" @queryTable="getList">
+		<right-toolbar :columns="columns" @queryTable="getList" table-name="views-system-statement-daily-expense-reports-columns">
 			<template #print>
 				<el-col :span="1.5">
 					<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>

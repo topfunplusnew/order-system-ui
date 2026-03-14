@@ -69,9 +69,6 @@ export default {
 			type: String,
 			default: ShowColumnsType.CHECKBOX
 		},
-		beforeUnmount() {
-			this.open = false;
-		},
 		showSearch: {
 			type: Boolean,
 			default: true
@@ -86,7 +83,7 @@ export default {
 		},
 		tableName: {
 			type: String,
-			default: 'goodsorder-columns'
+			default: ''
 		}
 	},
 	data() {
@@ -146,6 +143,7 @@ export default {
 		this.tryLoadConfig();
 	},
 	beforeDestroy() {
+		this.open = false;
 		// 清理防抖定时器
 		if (this.saveTimer) {
 			clearTimeout(this.saveTimer);
@@ -182,18 +180,17 @@ export default {
 			try {
 				const configKey = `column_config_${this.tableName}`;
 				const response = await getUserConfig(configKey);
-				if (!response?.data) return;
+				const savedConfig = this.parseUserConfigData(response?.data);
+				if (savedConfig && this.applySavedConfig(savedConfig)) {
+					this.configLoaded = true;
+					return;
+				}
 
-				const savedConfig = typeof response.data === 'string' ? JSON.parse(response.data) : response.data;
-
-				this.columns.forEach((column, index) => {
-					if (column.label && Object.prototype.hasOwnProperty.call(savedConfig, column.label)) {
-						this.$set(this.columns[index], 'visible', !!savedConfig[column.label]);
-					}
-				});
-
+				const migratedConfig = await this.migrateLegacyColumnConfig(configKey);
+				if (migratedConfig) {
+					this.applySavedConfig(migratedConfig);
+				}
 				this.configLoaded = true;
-				this.$forceUpdate();
 			} catch (error) {
 				console.warn('加载列配置失败:', error);
 			}
@@ -202,14 +199,96 @@ export default {
 		async saveUserConfig() {
 			if (!this.tableName || this.columns.length === 0) return;
 			try {
-				const config = this.columns.reduce((obj, col) => {
-					if (col.label) obj[col.label] = !!col.visible;
-					return obj;
-				}, {});
+				const config = this.buildColumnConfig();
 				const configKey = `column_config_${this.tableName}`;
 				await saveUserConfig(configKey, config);
 			} catch (error) {
 				console.warn('保存列配置失败:', error);
+			}
+		},
+
+		parseUserConfigData(data) {
+			if (!data) return null;
+			if (typeof data === 'string') {
+				try {
+					return JSON.parse(data);
+				} catch (error) {
+					console.warn('解析列配置失败:', error);
+					return null;
+				}
+			}
+			return data;
+		},
+
+		buildColumnConfig() {
+			return this.columns.reduce((obj, col) => {
+				if (col.label) obj[col.label] = !!col.visible;
+				return obj;
+			}, {});
+		},
+
+		applySavedConfig(savedConfig) {
+			if (!savedConfig || typeof savedConfig !== 'object') return false;
+			let hasMatchedConfig = false;
+
+			this.columns.forEach((column, index) => {
+				if (column.label && Object.prototype.hasOwnProperty.call(savedConfig, column.label)) {
+					this.$set(this.columns[index], 'visible', !!savedConfig[column.label]);
+					hasMatchedConfig = true;
+				}
+			});
+
+			if (hasMatchedConfig) {
+				this.$forceUpdate();
+			}
+
+			return hasMatchedConfig;
+		},
+
+		async migrateLegacyColumnConfig(configKey) {
+			if (typeof window === 'undefined' || !window.localStorage) return null;
+
+			const legacyRaw = window.localStorage.getItem(this.tableName);
+			if (!legacyRaw || legacyRaw === 'null') return null;
+
+			try {
+				const legacyColumns = JSON.parse(legacyRaw);
+				if (!Array.isArray(legacyColumns)) {
+					return null;
+				}
+
+				const visibilityMap = new Map();
+				legacyColumns.forEach(column => {
+					const columnKeys = [column.label, column.prop, column.key].filter(value => value !== undefined && value !== null);
+					columnKeys.forEach(columnKey => {
+						const normalizedKey = String(columnKey);
+						if (!visibilityMap.has(normalizedKey)) {
+							visibilityMap.set(normalizedKey, column.visible !== false);
+						}
+					});
+				});
+
+				const migratedConfig = {};
+				this.columns.forEach(column => {
+					if (!column.label) return;
+					const candidates = [column.label, column.prop, column.key].filter(value => value !== undefined && value !== null).map(value => String(value));
+					const matchedKey = candidates.find(candidate => visibilityMap.has(candidate));
+					if (matchedKey) {
+						migratedConfig[column.label] = visibilityMap.get(matchedKey);
+					}
+				});
+
+				if (Object.keys(migratedConfig).length === 0) {
+					window.localStorage.removeItem(this.tableName);
+					return null;
+				}
+
+				await saveUserConfig(configKey, migratedConfig);
+				window.localStorage.removeItem(this.tableName);
+				return migratedConfig;
+			} catch (error) {
+				console.warn('迁移旧列配置失败:', error);
+				return null;
 			}
 		},
 

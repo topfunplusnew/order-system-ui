@@ -27,7 +27,7 @@
 			<el-col :span="1.5">
 				<BankAccountChangeDash />
 			</el-col>
-			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList" tableName="bankaccount-columns">
 				<template #print>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
@@ -490,21 +490,8 @@ export default {
 			}
 		}
 	},
-	watch: {
-		columns: {
-			handler: function (newVal) {
-				localStorage.setItem('bankaccount-columns', JSON.stringify(newVal));
-			},
-			deep: true
-		}
-	},
 	created() {
 		this.getList();
-		if (localStorage.getItem('bankaccount-columns') === 'null' || !localStorage.getItem('bankaccount-columns')) {
-			localStorage.setItem('bankaccount-columns', JSON.stringify(this.columns));
-		} else {
-			this.columns = JSON.parse(localStorage.getItem('bankaccount-columns'));
-		}
 	},
 	filters: {
 		// values 为被筛选的数据 prop为自定义传入的属性

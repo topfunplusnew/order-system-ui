@@ -24,7 +24,7 @@
 		</el-form>
 
 		<el-row :gutter="10" class="mb8">
-			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList" tableName="detail-inventory-out-columns">
 				<template #export>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-download" size="mini" @click="handleExport" v-hasPermi="['system:inventoryStatistics:exportOut']"></el-button>
@@ -81,26 +81,10 @@ export default {
 			]
 		};
 	},
-	watch: {
-		columns: {
-			handler(newVal) {
-				localStorage.setItem('detail-inventory-out-columns', JSON.stringify(newVal));
-			},
-			deep: true
-		}
-	},
 	created() {
 		this.getList();
-		this.storeDisplayColumns();
 	},
 	methods: {
-		storeDisplayColumns() {
-			if (localStorage.getItem('detail-inventory-out-columns') === 'null' || !localStorage.getItem('detail-inventory-out-columns')) {
-				localStorage.setItem('detail-inventory-out-columns', JSON.stringify(this.columns));
-			} else {
-				this.columns = JSON.parse(localStorage.getItem('detail-inventory-out-columns'));
-			}
-		},
 		getList() {
 			this.loading = true;
 			const params = {

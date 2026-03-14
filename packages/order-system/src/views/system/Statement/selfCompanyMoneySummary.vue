@@ -17,7 +17,7 @@
 		<el-row style="margin-top: 20px">
 			<el-col :span="24">
 				<el-row :gutter="10" class="mb8">
-					<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="fetchData">
+					<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="fetchData" tableName="selfCompanyMoneySummary-columns">
 						<template #print>
 							<el-col :span="1.5">
 								<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
@@ -89,22 +89,8 @@ export default {
 			]
 		};
 	},
-	watch: {
-		columns: {
-			handler: function (newVal) {
-				localStorage.setItem('selfCompanyMoneySummary-columns', JSON.stringify(newVal));
-			},
-			deep: true
-		}
-	},
 	created() {
 		this.fetchData();
-		const saved = localStorage.getItem('selfCompanyMoneySummary-columns');
-		if (saved && saved !== 'null') {
-			const parsed = JSON.parse(saved);
-			this.columns = Array.isArray(parsed) && parsed.length === this.columns.length ? parsed : this.columns;
-		}
-		localStorage.setItem('selfCompanyMoneySummary-columns', JSON.stringify(this.columns));
 	},
 	methods: {
 		formatDate(date) {

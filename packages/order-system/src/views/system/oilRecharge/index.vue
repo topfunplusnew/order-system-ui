@@ -19,7 +19,7 @@
 			<el-col :span="1.5">
 				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
 			</el-col>
-			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList" tableName="oilrecharge-columns">
 				<template #print>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
@@ -122,7 +122,17 @@
 							<el-input v-model="form.oilCardNo" placeholder="请输入加油卡卡号" @input="handleInputTrim($event, 'form', 'oilCardNo')" />
 						</el-col>
 						<el-col :span="3">
-							<SearchOption :get-data="listOilCard" title="选择加油卡" icon="el-icon-search" :limit-info="{ oilType: '主卡' }" @commitBack="handleCommitBackOilCard" @update:queryName="handleCommitBackQueryOilCard" :query-name="queryOilCard" query-info="oilCardNo" query-label="加油卡卡号">
+							<SearchOption
+								:get-data="listOilCard"
+								title="选择加油卡"
+								icon="el-icon-search"
+								:limit-info="{ oilType: '主卡' }"
+								@commitBack="handleCommitBackOilCard"
+								@update:queryName="handleCommitBackQueryOilCard"
+								:query-name="queryOilCard"
+								query-info="oilCardNo"
+								query-label="加油卡卡号"
+							>
 								<template #table-columns>
 									<el-table-column prop="oilCardNo" label="加油卡卡号" />
 									<el-table-column prop="moneyAmount" label="加油卡余额" />
@@ -280,22 +290,9 @@ export default {
 		};
 	},
 	// 展示与隐藏
-	watch: {
-		columns: {
-			handler: function (newVal) {
-				localStorage.setItem('oilrecharge-columns', JSON.stringify(newVal));
-			},
-			deep: true
-		}
-	},
 	created() {
 		this.getList();
-		if (localStorage.getItem('oilrecharge-columns') === 'null' || !localStorage.getItem('oilrecharge-columns')) {
-			// 设置localStorage
-			localStorage.setItem('oilrecharge-columns', JSON.stringify(this.columns));
-		} else {
-			this.columns = JSON.parse(localStorage.getItem('oilrecharge-columns'));
-		}
+
 		this.resetQuery();
 	},
 	methods: {

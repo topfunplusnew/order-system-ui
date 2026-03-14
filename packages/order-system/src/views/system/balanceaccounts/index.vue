@@ -25,7 +25,7 @@
 			<el-col :span="1.5">
 				<el-button v-hasPermi="['system:balanceaccounts:add']" type="danger" size="mini" @click="handleAdd">新增平账信息</el-button>
 			</el-col>
-			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList" tableName="balanceaccounts-columns">
 				<template #print>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
@@ -269,24 +269,11 @@ export default {
 		};
 	},
 	// 展示与隐藏
-	watch: {
-		columns: {
-			handler: function (newVal) {
-				localStorage.setItem('balanceaccounts-columns', JSON.stringify(newVal));
-			},
-			deep: true
-		}
-	},
 	created() {
 		this.getList();
 		// 获取平账信息
 		this.$store.dispatch('balanceaccounts/getbalanceaccountsList');
 		// 控制隐藏列
-		if (localStorage.getItem('balanceaccounts-columns') === 'null' || !localStorage.getItem('balanceaccounts-columns')) {
-			localStorage.setItem('balanceaccounts-columns', JSON.stringify(this.columns));
-		} else {
-			this.columns = JSON.parse(localStorage.getItem('balanceaccounts-columns'));
-		}
 	},
 	methods: {
 		listCompany,

@@ -26,7 +26,7 @@
 
 			<!-- 右侧工具栏 -->
 			<div class="toolbar-wrapper">
-				<right-toolbar :show-search.sync="showSearch" :columns="columns" @queryTable="getList">
+				<right-toolbar :show-search.sync="showSearch" :columns="columns" @queryTable="getList" tableName="paymentapply-columns">
 					<!-- 左侧操作按钮 -->
 					<template #left>
 						<div class="toolbar-left">
@@ -433,12 +433,6 @@ export default {
 	// 展示与隐藏
 	// 在现有的 watch 对象中添加新的监听器
 	watch: {
-		columns: {
-			handler: function (newVal) {
-				localStorage.setItem('paymentapply-columns', JSON.stringify(newVal));
-			},
-			deep: true
-		},
 		// 监听公司ID变化，当选择了客户时自动切换为供应商类型
 		'form.companyId'(newVal) {
 			// 只有在当前是客户类型且选择了公司时才自动切换
@@ -464,46 +458,7 @@ export default {
 	created() {
 		this.getList();
 		// 获取本地显示隐藏列的存储，以便于下一次用户打开的时候读取喜好
-		const savedColumns = localStorage.getItem('paymentapply-columns');
-		if (savedColumns && savedColumns !== 'null') {
-			try {
-				const parsedColumns = JSON.parse(savedColumns);
-				// 确保 columns 数组完整且每个元素都有 visible 属性
-				if (Array.isArray(parsedColumns) && parsedColumns.length >= 13) {
-					// 确保所有必需的列都存在
-					this.columns = parsedColumns.map((col, index) => {
-						if (!col || typeof col.visible === 'undefined') {
-							// 如果列配置缺失，使用默认配置
-							const defaultColumns = [
-								{ key: 0, label: `日期`, visible: true },
-								{ key: 1, label: `支付类型`, visible: true },
-								{ key: 2, label: `金额`, visible: true },
-								{ key: 3, label: `对方户名`, visible: true },
-								{ key: 4, label: `对方账号`, visible: true },
-								{ key: 5, label: `对方开户行`, visible: true },
-								{ key: 6, label: `对方公司`, visible: true },
-								{ key: 7, label: `对方公司类型`, visible: true },
-								{ key: 8, label: `付款原因`, visible: true },
-								{ key: 9, label: `附件`, visible: true },
-								{ key: 10, label: `申请人`, visible: true },
-								{ key: 11, label: `审核状态`, visible: true },
-								{ key: 12, label: `备注`, visible: true }
-							];
-							return defaultColumns[index] || col;
-						}
-						return col;
-					});
-				} else {
-					// 如果解析的列配置不完整，使用默认配置
-					localStorage.setItem('paymentapply-columns', JSON.stringify(this.columns));
-				}
-			} catch (error) {
-				console.error('解析列配置失败:', error);
-				localStorage.setItem('paymentapply-columns', JSON.stringify(this.columns));
-			}
-		} else {
-			localStorage.setItem('paymentapply-columns', JSON.stringify(this.columns));
-		}
+
 		listSubject({}, true).then(res => {
 			this.subjectTree = this.handleTree(res.data, 'id', 'parentId');
 			this.OneLevelOption = this.subjectTree;

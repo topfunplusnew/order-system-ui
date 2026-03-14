@@ -22,7 +22,7 @@
 			<el-col :span="1.5">
 				<el-button v-hasPermi="['system:company:add']" type="danger" size="mini" @click="handleAdd">新增客户信息</el-button>
 			</el-col>
-			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList" tableName="company-columns">
 				<template #print>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
@@ -288,12 +288,6 @@ export default {
 		}
 	},
 	watch: {
-		columns: {
-			handler(newVal) {
-				localStorage.setItem('company-columns', JSON.stringify(newVal));
-			},
-			deep: true
-		},
 		'form.province'(val) {
 			this.provinceList.forEach(item => {
 				if (item.name === val) {
@@ -311,12 +305,7 @@ export default {
 	},
 	created() {
 		this.getList();
-		const stored = localStorage.getItem('company-columns');
-		if (stored && stored !== 'null') {
-			this.columns = JSON.parse(stored);
-		} else {
-			localStorage.setItem('company-columns', JSON.stringify(this.columns));
-		}
+
 		fetch('/area.json')
 			.then(res => res.json())
 			.then(res => {

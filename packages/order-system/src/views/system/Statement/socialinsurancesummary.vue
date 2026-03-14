@@ -33,7 +33,7 @@
 			<el-col :span="1.5">
 				<el-button type="danger" size="mini" @click="addSocial">新增社保基金信息</el-button>
 			</el-col>
-			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList" tableName="socialinsurance-columns">
 				<template #print>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
@@ -588,22 +588,8 @@ export default {
 	},
 	computed: {},
 	// 展示与隐藏
-	watch: {
-		columns: {
-			handler: function (newVal) {
-				localStorage.setItem('socialinsurance-columns', JSON.stringify(newVal));
-			},
-			deep: true
-		}
-	},
 	created() {
 		this.getList();
-		if (localStorage.getItem('socialinsurance-columns') === 'null' || !localStorage.getItem('socialinsurance-columns')) {
-			// 设置localStorage
-			localStorage.setItem('socialinsurance-columns', JSON.stringify(this.columns));
-		} else {
-			this.columns = JSON.parse(localStorage.getItem('socialinsurance-columns'));
-		}
 	},
 	methods: {
 		// 2025-2-25 添加增删改查相关代码

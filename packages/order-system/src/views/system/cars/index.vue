@@ -15,7 +15,7 @@
 			<el-col :span="1.5">
 				<el-button v-hasPermi="['system:cars:add']" type="danger" size="mini" @click="handleAdd">添加车辆信息</el-button>
 			</el-col>
-			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList" tableName="car-columns">
 				<template #print>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
@@ -121,8 +121,7 @@
 
 		<!--    查看银行卡组件-->
 		<keep-alive>
-			<DialogListShow :title="'司机银行卡信息'" :get-data="listBankAccount" :query-object="queryObject" 
-				:company-info="currentCarInfo" :visible.sync="driverBankAccout">
+			<DialogListShow :title="'司机银行卡信息'" :get-data="listBankAccount" :query-object="queryObject" :company-info="currentCarInfo" :visible.sync="driverBankAccout">
 				<template #column>
 					<el-table-column label="账号类型" align="center" prop="acountsType" />
 					<el-table-column label="开户行" align="center" prop="bankName" />
@@ -268,12 +267,6 @@ export default {
 	},
 	// 展示与隐藏
 	watch: {
-		columns: {
-			handler: function (newVal) {
-				localStorage.setItem('car-columns', JSON.stringify(newVal));
-			},
-			deep: true
-		},
 		'form.carType': {
 			handler: function (newVal) {
 				// 当选择海运时，清空车牌号字段
@@ -285,11 +278,6 @@ export default {
 	},
 	created() {
 		this.getList();
-		if (localStorage.getItem('car-columns') === 'null' || !localStorage.getItem('car-columns')) {
-			localStorage.setItem('car-columns', JSON.stringify(this.columns));
-		} else {
-			this.columns = JSON.parse(localStorage.getItem('car-columns'));
-		}
 	},
 	methods: {
 		// 处理输入框禁止输入空格

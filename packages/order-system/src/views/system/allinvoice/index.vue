@@ -19,7 +19,7 @@
 			<el-col :span="1.5">
 				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
 			</el-col>
-			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList" tableName="allinvoice-columns">
 				<template #print>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
@@ -85,7 +85,7 @@
 			</el-table-column>
 			<el-table-column v-if="columns[14].visible" label="票点差额" align="center" prop="ticketPointDifference" width="140" show-overflow-tooltip>
 				<template #default="scope">
-					{{ scope.row.ticketPointDifference}}
+					{{ scope.row.ticketPointDifference }}
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[15].visible" label="实际开票金额" align="center" prop="allPayments" width="140" show-overflow-tooltip />
@@ -257,22 +257,8 @@ export default {
 		}
 	},
 	// 展示与隐藏
-	watch: {
-		columns: {
-			handler: function (newVal) {
-				localStorage.setItem('allinvoice-columns', JSON.stringify(newVal));
-			},
-			deep: true
-		}
-	},
 	created() {
 		this.getList();
-		if (localStorage.getItem('allinvoice-columns') === 'null' || !localStorage.getItem('allinvoice-columns')) {
-			// 设置localStorage
-			localStorage.setItem('allinvoice-columns', JSON.stringify(this.columns));
-		} else {
-			this.columns = JSON.parse(localStorage.getItem('allinvoice-columns'));
-		}
 	},
 	methods: {
 		parseTime,

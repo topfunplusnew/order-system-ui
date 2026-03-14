@@ -37,7 +37,7 @@
 			<el-col :span="1.5">
 				<el-button type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete">批量删除</el-button>
 			</el-col>
-			<right-toolbar :showSearch.sync="showSearch" :columns="tableColumns" @queryTable="getList" @column-change="handleColumnChange">
+			<right-toolbar :showSearch.sync="showSearch" :columns="tableColumns" tableName="depositMoney-columns" @queryTable="getList" @column-change="handleColumnChange">
 				<template #print>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
@@ -165,7 +165,6 @@ import { BankAcceptanceType } from '@/api/tool/enums';
 import { validateAmount } from '@/api/tool';
 import { createConfigManager } from '@/utils/configManager';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
-import { tableColumnMixin } from '@/mixins/tableColumnMixin';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import columnConfig from './base/columns.js';
 import DepositMoneyForm from './base/DepositMoneyForm.vue';
@@ -177,7 +176,7 @@ export default {
 	components: {
 		SearchOption
 	},
-	mixins: [common_dialog, tableColumnMixin, mixin_printHTML],
+	mixins: [common_dialog, mixin_printHTML],
 	data() {
 		return {
 			// 配置管理器
@@ -251,6 +250,12 @@ export default {
 	computed: {
 		BankAcceptanceType() {
 			return BankAcceptanceType;
+		},
+		visibleColumns() {
+			if (!Array.isArray(this.tableColumns)) {
+				return [];
+			}
+			return this.tableColumns.filter(column => column.visible !== false);
 		}
 	},
 	created() {
@@ -260,13 +265,26 @@ export default {
 		this.getList();
 	},
 	methods: {
-		getStorageKey() {
-			return 'depositMoney-columns';
-		},
-
 		// 获取默认表单数据
 		getDefaultFormData() {
 			return this.configManager ? this.configManager.getDefaultForm() : {};
+		},
+
+		handleColumnChange({ index, visible }) {
+			if (index >= 0 && index < this.tableColumns.length) {
+				this.$set(this.tableColumns[index], 'visible', visible);
+			}
+		},
+
+		getColumnProps(column) {
+			if (this.configManager && typeof this.configManager.getColumnProps === 'function') {
+				return this.configManager.getColumnProps(column);
+			}
+
+			const props = { ...column };
+			delete props.key;
+			delete props.visible;
+			return props;
 		},
 
 		/** 查询保证金收取信息列表 */

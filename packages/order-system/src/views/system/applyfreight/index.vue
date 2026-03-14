@@ -286,7 +286,7 @@ export default {
 
 		<el-row>
 			<el-col>
-				<right-toolbar :columns="columns" @queryTable="getList">
+				<right-toolbar :columns="columns" @queryTable="getList" table-name="views-system-applyfreight-index-columns">
 					<template #print>
 						<el-col :span="1.5">
 							<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>

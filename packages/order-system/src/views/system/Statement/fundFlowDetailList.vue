@@ -70,7 +70,7 @@
 		</el-form>
 
 		<el-row :gutter="10" class="mb8">
-			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="fetchStatementData">
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="fetchStatementData" tableName="fundflowdetail-columns">
 				<template #export>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-folder-opened" size="mini" @click="handleExport">导出</el-button>
@@ -346,25 +346,11 @@ export default {
 			this.download(`${baseUrl}?${params.toString()}`, {}, `资金流水明细_${new Date().getTime()}.xlsx`);
 		}
 	},
-	watch: {
-		columns: {
-			handler: function (newVal) {
-				localStorage.setItem('fundflowdetail-columns', JSON.stringify(newVal));
-			},
-			deep: true
-		}
-	},
 	created() {
 		const today = new Date().toISOString().split('T')[0]; // 获取 YYYY-MM-DD 格式的当前日期
 		this.query.dateRange = [today, today];
 		this.query.startTime = today;
 		this.query.endTime = today; // 同时也将结束时间设为今天
-
-		if (localStorage.getItem('fundflowdetail-columns') === 'null' || !localStorage.getItem('fundflowdetail-columns')) {
-			localStorage.setItem('fundflowdetail-columns', JSON.stringify(this.columns));
-		} else {
-			this.columns = JSON.parse(localStorage.getItem('fundflowdetail-columns'));
-		}
 	}
 };
 </script>

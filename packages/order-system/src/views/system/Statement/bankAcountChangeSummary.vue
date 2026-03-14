@@ -110,7 +110,7 @@ export default {
 			<el-row>
 				<el-row style="font-weight: bold; font-size: 20px; margin: 0 30px">资金日报表</el-row>
 				<el-row>
-					<right-toolbar :columns="columns">
+					<right-toolbar :columns="columns" table-name="views-system-statement-bank-acount-change-summary-columns">
 						<template #print>
 							<el-col :span="1.5">
 								<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>

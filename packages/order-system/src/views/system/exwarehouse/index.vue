@@ -16,7 +16,7 @@
 			<el-col :span="1.5">
 				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
 			</el-col>
-			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList" tableName="exwarehouse-columns">
 				<template #print>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
@@ -386,12 +386,6 @@ export default {
 		};
 	},
 	watch: {
-		columns: {
-			handler: function (newVal) {
-				localStorage.setItem('exwarehouse-columns', JSON.stringify(newVal));
-			},
-			deep: true
-		},
 		dateRange(val) {
 			this.queryParams.outDateStart = (val && val[0]) || null;
 			this.queryParams.outDateEnd = (val && val[1]) || null;
@@ -399,12 +393,6 @@ export default {
 	},
 	created() {
 		this.getList();
-		if (localStorage.getItem('exwarehouse-columns') === 'null' || !localStorage.getItem('exwarehouse-columns')) {
-			// 设置localStorage
-			localStorage.setItem('exwarehouse-columns', JSON.stringify(this.columns));
-		} else {
-			this.columns = JSON.parse(localStorage.getItem('exwarehouse-columns'));
-		}
 	},
 	methods: {
 		computedAmount(row) {

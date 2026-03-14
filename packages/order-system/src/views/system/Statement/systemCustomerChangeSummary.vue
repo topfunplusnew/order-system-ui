@@ -15,7 +15,7 @@
 		<hr color="#e6e6e6" />
 		<el-row style="font-weight: bold; font-size: 20px; margin: 0 30px">客户当日发生业务统计表</el-row>
 		<el-row :gutter="10" class="mb8">
-			<right-toolbar :columns="columns" @queryTable="getList">
+			<right-toolbar :columns="columns" @queryTable="getList" table-name="views-system-statement-system-customer-change-summary-columns">
 				<template #export>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>

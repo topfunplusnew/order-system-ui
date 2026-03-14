@@ -16,7 +16,7 @@
 			<el-col :span="1.5">
 				<el-button type="danger" size="mini" @click="handleAdd">新增固定资产信息</el-button>
 			</el-col>
-			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList" tableName="fixedassets-columns">
 				<template #print>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
@@ -386,25 +386,11 @@ export default {
 		};
 	},
 	// 展示与隐藏
-	watch: {
-		columns: {
-			handler: function (newVal) {
-				localStorage.setItem('fixedassets-columns', JSON.stringify(newVal));
-			},
-			deep: true
-		}
-	},
 	created() {
 		// 获取信息
 		this.getList();
 		this.$store.dispatch('fixedassets/getFixedassetsList');
 		this.loading = false;
-		if (localStorage.getItem('fixedassets-columns') === 'null' || !localStorage.getItem('fixedassets-columns')) {
-			// 设置localStorage
-			localStorage.setItem('fixedassets-columns', JSON.stringify(this.columns));
-		} else {
-			this.columns = JSON.parse(localStorage.getItem('fixedassets-columns'));
-		}
 	},
 	computed: {
 		...mapGetters(['fixedassetsList'])

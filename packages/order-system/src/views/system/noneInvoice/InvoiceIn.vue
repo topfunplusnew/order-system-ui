@@ -31,7 +31,7 @@
 			<el-col :span="1.5">
 				<el-button size="mini" @click="resetQuery">刷新</el-button>
 			</el-col>
-			<right-toolbar :show-search.sync="showSearch" :columns="columns" @queryTable="getList">
+			<right-toolbar :show-search.sync="showSearch" :columns="columns" @queryTable="getList" tableName="none-invoicein-columns">
 				<template #print>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML" />
@@ -608,12 +608,6 @@ export default {
 		}
 	},
 	watch: {
-		columns: {
-			handler: function (newVal) {
-				localStorage.setItem('none-invoicein-columns', JSON.stringify(newVal));
-			},
-			deep: true
-		},
 		// 监听开票金额和票点变化,自动计算票点金额
 		'form.invoiceAmount': function (newVal) {
 			if (!this.isFirstLoad && newVal && this.form.ticketPoint) {
@@ -654,27 +648,6 @@ export default {
 			{ key: 13, label: `当月欠票金额`, visible: true },
 			{ key: 14, label: `额外备注`, visible: true }
 		];
-		try {
-			const savedColumnsStr = localStorage.getItem('none-invoicein-columns');
-			if (savedColumnsStr && savedColumnsStr !== 'null') {
-				const savedColumns = JSON.parse(savedColumnsStr);
-				if (Array.isArray(savedColumns) && savedColumns.length > 0) {
-					this.columns = defaultColumns.map(defaultCol => {
-						const savedCol = savedColumns.find(col => col && col.key === defaultCol.key);
-						return savedCol || defaultCol;
-					});
-				} else {
-					this.columns = defaultColumns;
-				}
-			} else {
-				this.columns = defaultColumns;
-			}
-			localStorage.setItem('none-invoicein-columns', JSON.stringify(this.columns));
-		} catch (error) {
-			console.error('读取columns配置失败:', error);
-			this.columns = defaultColumns;
-			localStorage.setItem('none-invoicein-columns', JSON.stringify(defaultColumns));
-		}
 	},
 	methods: {
 		parseTime,

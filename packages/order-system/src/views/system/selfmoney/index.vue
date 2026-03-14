@@ -29,7 +29,7 @@
 
 		<!-- 右侧工具栏 -->
 		<div class="toolbar-wrapper">
-			<right-toolbar :show-search.sync="showSearch" :columns="columns" @queryTable="getList">
+			<right-toolbar :show-search.sync="showSearch" :columns="columns" @queryTable="getList" table-name="views-system-selfmoney-index-columns">
 				<!-- 左侧操作按钮 -->
 				<template #left>
 					<div class="toolbar-left">

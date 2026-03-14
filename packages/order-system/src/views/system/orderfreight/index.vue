@@ -61,7 +61,7 @@
 				<el-button :disabled="offsetSelections.length <= 0" size="mini" type="warning" @click="handleOffsetPayment">一键冲抵款</el-button>
 			</el-col>
 
-			<right-toolbar :show-search.sync="showSearch" :columns="columns" @queryTable="getList">
+			<right-toolbar :show-search.sync="showSearch" :columns="columns" @queryTable="getList" tableName="freight-columns">
 				<template #print>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML" />
@@ -701,12 +701,6 @@ export default {
 		}
 	},
 	watch: {
-		columns: {
-			handler: function (newVal) {
-				localStorage.setItem('freight-columns', JSON.stringify(newVal));
-			},
-			deep: true
-		},
 		isOffsetIndeterminate: {
 			handler(newVal) {
 				this.selectAllOffset = newVal;
@@ -761,12 +755,6 @@ export default {
 			this.getList();
 		}
 		// 设置本地存储
-		if (localStorage.getItem('freight-columns') === 'null' || !localStorage.getItem('freight-columns')) {
-			// 设置localStorage
-			localStorage.setItem('freight-columns', JSON.stringify(this.columns));
-		} else {
-			this.columns = JSON.parse(localStorage.getItem('freight-columns'));
-		}
 	},
 	mounted() {
 		// 只清除 fundsDate 和 driver 参数，保留 freightId 和 otherBankNo 参数

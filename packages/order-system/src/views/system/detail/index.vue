@@ -74,7 +74,7 @@
 			<!-- <el-col :span="1.5">
 				<el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport" v-hasPermi="['system:detail:export']">导出</el-button>
 			</el-col> -->
-			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList" tableName="detail-columns">
 				<template #print>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
@@ -587,41 +587,12 @@ export default {
 			breakInfo: {}
 		};
 	},
-	watch: {
-		/**
-		 * @description: 监听列配置的变化，并将其保存到 localStorage
-		 * @param {Array} newVal 新的列配置
-		 */
-		columns: {
-			handler: function (newVal) {
-				localStorage.setItem('detail-columns', JSON.stringify(newVal));
-			},
-			deep: true
-		}
-	},
 	created() {
 		this.getList();
 		this.fetchStore();
-		this.storeDisplayColumns();
 	},
 	methods: {
 		listStoreHouse,
-		storeDisplayColumns() {
-			if (localStorage.getItem('detail-columns') === 'null' || !localStorage.getItem('detail-columns')) {
-				localStorage.setItem('detail-columns', JSON.stringify(this.columns));
-			} else {
-				this.columns = JSON.parse(localStorage.getItem('detail-columns'));
-				// 合并新增列（剩余库存），旧缓存需插入并顺延后续列 key
-				const hasRemainingInventory = this.columns.some(c => c.prop === 'remainingInventory');
-				if (!hasRemainingInventory) {
-					const insertIdx = this.columns.findIndex(c => c.key === 13) + 1;
-					this.columns.forEach(c => {
-						if (c.key >= 14) c.key += 1;
-					});
-					this.columns.splice(insertIdx >= 1 ? insertIdx : this.columns.length, 0, { key: 14, label: '剩余库存', prop: 'remainingInventory', visible: true });
-				}
-			}
-		},
 		// DragDiv 事件处理方法
 		handleDragStart() {
 			// 拖拽开始时的处理逻辑

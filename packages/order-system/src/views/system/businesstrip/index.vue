@@ -18,7 +18,7 @@
 			<el-col :span="1.5">
 				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
 			</el-col>
-			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList" tableName="BusinessTrip-columns">
 				<template #print>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
@@ -499,12 +499,6 @@ export default {
 	},
 	// 展示与隐藏
 	watch: {
-		columns: {
-			handler: function (newVal) {
-				localStorage.setItem('BusinessTrip-columns', JSON.stringify(newVal));
-			},
-			deep: true
-		},
 		// 监听是否携带了油卡 如果携带，那么要打开填写加油卡消费记录的弹窗
 		'carApplyForm.isUseOilCard': {
 			handler: function () {
@@ -518,12 +512,6 @@ export default {
 		listDept().then(response => {
 			this.deptOptions = this.handleTree(response.data, 'deptId');
 		});
-		if (localStorage.getItem('BusinessTrip-columns') === 'null' || !localStorage.getItem('BusinessTrip-columns')) {
-			// 设置localStorage
-			localStorage.setItem('BusinessTrip-columns', JSON.stringify(this.columns));
-		} else {
-			this.columns = JSON.parse(localStorage.getItem('BusinessTrip-columns'));
-		}
 	},
 	computed: {
 		PAYMENT_APPLY_STATE() {

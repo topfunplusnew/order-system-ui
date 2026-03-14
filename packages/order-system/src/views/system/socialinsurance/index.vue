@@ -28,7 +28,7 @@
 			<el-col :span="1.5">
 				<el-button v-hasPermi="['system:socialinsurance:remove']" type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete">批量删除</el-button>
 			</el-col>
-			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList" tableName="socialinsurance-columns">
 				<template #print>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-printer" size="mini" @click="printJSON"></el-button>
@@ -794,12 +794,6 @@ export default {
 	computed: {},
 	// 展示与隐藏
 	watch: {
-		columns: {
-			handler: function (newVal) {
-				localStorage.setItem('socialinsurance-columns', JSON.stringify(newVal));
-			},
-			deep: true
-		},
 		'form.isRecruiting': {
 			handler: function (newVal) {
 				// 与 this.form.isDepletion为互斥字段
@@ -810,12 +804,6 @@ export default {
 	},
 	created() {
 		this.getList();
-		if (localStorage.getItem('socialinsurance-columns') === 'null' || !localStorage.getItem('socialinsurance-columns')) {
-			// 设置localStorage
-			localStorage.setItem('socialinsurance-columns', JSON.stringify(this.columns));
-		} else {
-			this.columns = JSON.parse(localStorage.getItem('socialinsurance-columns'));
-		}
 	},
 	methods: {
 		addSocialInsure() {

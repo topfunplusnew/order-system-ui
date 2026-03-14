@@ -19,7 +19,7 @@
 		<hr color="#e6e6e6" />
 		<el-row style="font-weight: bold; font-size: 20px; margin: 0 30px">贷款管理台账</el-row>
 		<el-row :gutter="10" class="mb8">
-			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList" table-name="views-system-statement-borrowed-money-summary-columns">
 				<template #print>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>

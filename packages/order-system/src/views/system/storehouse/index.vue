@@ -18,7 +18,7 @@
 			<el-col :span="1.5">
 				<el-button v-hasPermi="['system:storehouse:add']" type="danger" size="mini" @click="handleAdd">添加仓库商信息</el-button>
 			</el-col>
-			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList" tableName="storehouse-columns">
 				<template #print>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
@@ -131,22 +131,8 @@ export default {
 		};
 	},
 	// 展示与隐藏
-	watch: {
-		columns: {
-			handler: function (newVal) {
-				localStorage.setItem('storehouse-columns', JSON.stringify(newVal));
-			},
-			deep: true
-		}
-	},
 	created() {
 		this.getList();
-		if (localStorage.getItem('storehouse-columns') === 'null' || !localStorage.getItem('storehouse-columns')) {
-			// 设置localStorage
-			localStorage.setItem('storehouse-columns', JSON.stringify(this.columns));
-		} else {
-			this.columns = JSON.parse(localStorage.getItem('storehouse-columns'));
-		}
 	},
 	methods: {
 		// 处理输入框禁止输入空格

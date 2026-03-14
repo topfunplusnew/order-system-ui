@@ -333,12 +333,6 @@ export default {
 	watch: {
 		// 监听刷新标记
 		checked: {
-			columns: {
-				handler: function (newVal) {
-					localStorage.setItem('applyprocess-columns', JSON.stringify(newVal));
-				},
-				deep: true
-			},
 			handler(val) {
 				if (val !== '') {
 					setTimeout(() => {
@@ -359,12 +353,6 @@ export default {
 		// }
 	},
 	created() {
-		if (localStorage.getItem('applyprocess-columns') === 'null' || !localStorage.getItem('applyprocess-columns')) {
-			// 设置localStorage
-			localStorage.setItem('applyprocess-columns', JSON.stringify(this.columns));
-		} else {
-			this.columns = JSON.parse(localStorage.getItem('applyprocess-columns'));
-		}
 		this.getAuditList();
 		this.getUnProcessedAuditList();
 	},
@@ -959,7 +947,7 @@ export default {
 
 		<!-- 右侧工具栏 -->
 		<div class="toolbar-wrapper">
-			<right-toolbar :show-search.sync="showSearch" :columns="columns" @queryTable="getAuditList">
+			<right-toolbar :show-search.sync="showSearch" :columns="columns" @queryTable="getAuditList" tableName="applyprocess-columns">
 				<template #left>
 					<div class="toolbar-left">
 						<el-row :gutter="10" class="mb8">

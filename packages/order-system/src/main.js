@@ -45,7 +45,6 @@ import CustomTableColumn from '@/components/CustomTableColumn/index.vue';
 // ========== 混入 ==========
 import keepAliveDialog from '@/views/dashboard/mixins/keepAliveDialog';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
-import { columnVisibilityMixin } from '@/mixins/columnVisibilityMixin';
 
 // ========== 指令 ==========
 import directive from './directive';
@@ -165,8 +164,6 @@ Vue.use(VueCompositionAPI);
 Vue.mixin(keepAliveDialog);
 // 全局注册通用弹窗混入
 Vue.mixin(common_dialog);
-// 全局注册列显隐控制混入
-Vue.mixin(columnVisibilityMixin);
 // 全局指令（若指令文件包含 install 则可直接 use；此处双保险显式注册）
 Vue.use(elDragDialog.install ? elDragDialog : { install: v => v.directive('el-drag-dialog', elDragDialog) });
 Vue.use(elRelenDialog.install ? elRelenDialog : { install: v => v.directive('el-relen-dialog', elRelenDialog) });

@@ -13,7 +13,7 @@
 		</el-form>
 
 		<el-row :gutter="10" class="mb8">
-			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList" tableName="secondinventory-columns">
 				<template #print>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
@@ -882,12 +882,6 @@ export default {
 		 * @description: 监听列配置的变化，并将其保存到 localStorage
 		 * @param {Array} newVal 新的列配置
 		 */
-		columns: {
-			handler: function (newVal) {
-				localStorage.setItem('secondinventory-columns', JSON.stringify(newVal));
-			},
-			deep: true
-		},
 		/**
 		 * @description: 监听陆运选择状态，如果选择陆运且存在运输错误提示，则清除错误提示
 		 * @param {boolean} val 陆运是否被选择
@@ -912,11 +906,6 @@ export default {
 	 */
 	created() {
 		this.getList();
-		if (localStorage.getItem('secondinventory-columns') === 'null' || !localStorage.getItem('secondinventory-columns')) {
-			localStorage.setItem('secondinventory-columns', JSON.stringify(this.columns));
-		} else {
-			this.columns = JSON.parse(localStorage.getItem('secondinventory-columns'));
-		}
 	},
 	methods: {
 		listStoreHouse,

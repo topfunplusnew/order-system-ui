@@ -30,7 +30,7 @@
 			<el-button :disabled="batchFillDisabled" size="mini" type="primary" icon="el-icon-edit" @click="handleBatchFill">批量填写佣金</el-button>
 		</el-row>
 		<el-row :gutter="10" class="mb8">
-			<right-toolbar :columns="columns" @queryTable="getList">
+			<right-toolbar :columns="columns" @queryTable="getList" tableName="customer-commission-columns">
 				<template #print>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML" />
@@ -417,12 +417,6 @@ export default {
 		};
 	},
 	watch: {
-		columns: {
-			handler: function (newVal) {
-				localStorage.setItem('customer-commission-columns', JSON.stringify(newVal));
-			},
-			deep: true
-		},
 		isAllBatchSelected: {
 			handler(newVal) {
 				this.selectAllBatch = newVal;
@@ -447,11 +441,6 @@ export default {
 		}
 
 		this.getList(); // 页面加载时获取数据
-		if (localStorage.getItem('customer-commission-columns') === 'null' || !localStorage.getItem('customer-commission-columns')) {
-			localStorage.setItem('customer-commission-columns', JSON.stringify(this.columns));
-		} else {
-			this.columns = JSON.parse(localStorage.getItem('customer-commission-columns'));
-		}
 	},
 
 	methods: {

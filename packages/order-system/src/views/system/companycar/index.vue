@@ -15,7 +15,7 @@
 			<el-col :span="1.5">
 				<el-button v-hasPermi="['system:companycar:add']" type="danger" size="mini" @click="handleAdd">添加公司车辆信息</el-button>
 			</el-col>
-			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList" tableName="companycar-columns">
 				<template #print>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
@@ -109,21 +109,8 @@ export default {
 		};
 	},
 	// 展示与隐藏
-	watch: {
-		columns: {
-			handler: function (newVal) {
-				localStorage.setItem('companycar-columns', JSON.stringify(newVal));
-			},
-			deep: true
-		}
-	},
 	created() {
 		this.getList();
-		if (localStorage.getItem('companycar-columns') === 'null' || !localStorage.getItem('companycar-columns')) {
-			localStorage.setItem('companycar-columns', JSON.stringify(this.columns));
-		} else {
-			this.columns = JSON.parse(localStorage.getItem('companycar-columns'));
-		}
 	},
 
 	methods: {

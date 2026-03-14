@@ -54,7 +54,7 @@
 		</el-dialog>
 
 		<el-row>
-			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList" table-name="views-system-inventory-main-index-columns">
 				<template #left>
 					<el-row :gutter="10">
 						<el-col :span="1.5">

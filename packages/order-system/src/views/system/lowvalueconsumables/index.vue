@@ -16,7 +16,7 @@
 			<el-col :span="1.5">
 				<el-button type="danger" size="mini" @click="handleAdd">新增低值易耗品台账信息</el-button>
 			</el-col>
-			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList" tableName="lowvalueconsumables-columns">
 				<template #print>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
@@ -380,25 +380,11 @@ export default {
 		};
 	},
 	// 展示与隐藏
-	watch: {
-		columns: {
-			handler: function (newVal) {
-				localStorage.setItem('lowvalueconsumables-columns', JSON.stringify(newVal));
-			},
-			deep: true
-		}
-	},
 	created() {
 		// 获取信息
 		this.getList();
 		this.$store.dispatch('lowvalueconsumables/getFixedAssetsList');
 		this.loading = false;
-		if (localStorage.getItem('lowvalueconsumables-columns') === 'null' || !localStorage.getItem('lowvalueconsumables-columns')) {
-			// 设置localStorage
-			localStorage.setItem('lowvalueconsumables-columns', JSON.stringify(this.columns));
-		} else {
-			this.columns = JSON.parse(localStorage.getItem('lowvalueconsumables-columns'));
-		}
 	},
 	methods: {
 		printHTML() {

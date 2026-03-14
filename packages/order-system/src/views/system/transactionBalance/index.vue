@@ -19,10 +19,10 @@
 
 		<!-- 工具栏 -->
 		<el-row :gutter="10" class="mb8">
-			<right-toolbar :columns="columns" @queryTable="getList">
+			<right-toolbar :columns="columns" @queryTable="getList" table-name="views-system-transaction-balance-index-columns">
 				<!-- 不显示搜索按钮，减少误触 -->
 
-				<!--			<right-toolbar :columns="columns" @queryTable="getList">-->
+				<!--			<right-toolbar :columns="columns" @queryTable="getList" table-name="views-system-transaction-balance-index-columns-2">-->
 				<template #print>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>

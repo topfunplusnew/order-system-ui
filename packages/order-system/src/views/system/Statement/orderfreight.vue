@@ -141,7 +141,7 @@ export default {
 			<el-row>
 				<el-row style="font-weight: bold; font-size: 20px; margin: 0 30px">运费报表</el-row>
 				<el-row>
-					<right-toolbar :columns="columns">
+					<right-toolbar :columns="columns" table-name="views-system-statement-orderfreight-columns">
 						<template #print>
 							<el-col :span="1.5">
 								<el-button plain icon="el-icon-printer" size="mini" @click="printHTML" />

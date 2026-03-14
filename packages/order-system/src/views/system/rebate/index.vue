@@ -38,7 +38,7 @@
 			<el-col :span="1.5">
 				<el-button type="primary" size="mini" @click="handleExportDetail">导出返利明细</el-button>
 			</el-col>
-			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList" tableName="rebate-columns">
 				<template #print>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
@@ -863,12 +863,6 @@ export default {
 	},
 	created() {
 		this.getList();
-		if (localStorage.getItem('rebate-columns') === 'null' || !localStorage.getItem('rebate-columns')) {
-			// 设置localStorage
-			localStorage.setItem('rebate-columns', JSON.stringify(this.columns));
-		} else {
-			this.columns = JSON.parse(localStorage.getItem('rebate-columns'));
-		}
 	},
 	methods: {
 		isNull,

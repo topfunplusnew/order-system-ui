@@ -25,7 +25,7 @@
 			<el-col :span="1.5">
 				<el-button size="mini" type="danger" @click="handleAdd">添加押金</el-button>
 			</el-col>
-			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList" table-name="views-system-cashdeposit-depositself-columns">
 				<template #print>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
@@ -224,7 +224,7 @@
 						<el-col :span="18">
 							<el-input v-model="recoverMoneyEntity.acountsName" placeholder="请输入收回账户" />
 						</el-col>
-						<el-col :span="6" style="flex-shrink: 0;">
+						<el-col :span="6" style="flex-shrink: 0">
 							<SearchOption
 								:get-data="listBankAccount"
 								icon="el-icon-search"

@@ -28,7 +28,7 @@
 				<el-button v-hasPermi="['system:fleet:add']" type="danger" size="mini" @click="handleAdd">添加车队信息</el-button>
 			</el-col>
 
-			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList" tableName="fleet-columns">
 				<!--    打印    -->
 				<template #print>
 					<el-col :span="1.5">
@@ -171,23 +171,8 @@ export default {
 		};
 	},
 	// 展示与隐藏
-	watch: {
-		columns: {
-			handler: function (newVal) {
-				localStorage.setItem('fleet-columns', JSON.stringify(newVal));
-			},
-			deep: true
-		}
-	},
-
 	created() {
 		this.getList();
-		if (localStorage.getItem('fleet-columns') === 'null' || !localStorage.getItem('fleet-columns')) {
-			// 设置localStorage
-			localStorage.setItem('fleet-columns', JSON.stringify(this.columns));
-		} else {
-			this.columns = JSON.parse(localStorage.getItem('fleet-columns'));
-		}
 	},
 	methods: {
 		// 处理输入框禁止输入空格

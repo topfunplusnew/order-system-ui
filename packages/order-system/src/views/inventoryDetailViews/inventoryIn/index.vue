@@ -25,7 +25,7 @@
 
 		<el-row :gutter="10" class="mb8">
 			<!-- 只保留导出按钮和右侧工具栏 -->
-			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList" tableName="detail-inventory-in-columns">
 				<template #export>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-download" size="mini" @click="handleExport" v-hasPermi="['system:inventoryStatistics:exportIn']"></el-button>
@@ -152,30 +152,10 @@ export default {
 			]
 		};
 	},
-	watch: {
-		/**
-		 * @description: 监听列配置的变化，并将其保存到 localStorage
-		 * @param {Array} newVal 新的列配置
-		 */
-		columns: {
-			handler: function (newVal) {
-				localStorage.setItem('detail-inventory-in-columns', JSON.stringify(newVal));
-			},
-			deep: true
-		}
-	},
 	created() {
 		this.getList();
-		this.storeDisplayColumns();
 	},
 	methods: {
-		storeDisplayColumns() {
-			if (localStorage.getItem('detail-inventory-in-columns') === 'null' || !localStorage.getItem('detail-inventory-in-columns')) {
-				localStorage.setItem('detail-inventory-in-columns', JSON.stringify(this.columns));
-			} else {
-				this.columns = JSON.parse(localStorage.getItem('detail-inventory-in-columns'));
-			}
-		},
 		/** 查询列表 */
 		getList() {
 			this.loading = true;

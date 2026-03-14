@@ -19,7 +19,7 @@
 					<el-col :span="1.5">
 						<el-button v-hasPermi="['system:subject:add']" type="danger" size="mini" @click="handleAdd">2-添加科目信息</el-button>
 					</el-col>
-					<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
+					<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList" tableName="subject-columns">
 						<!--    打印    -->
 						<template #print>
 							<el-col :span="1.5">
@@ -268,12 +268,6 @@ export default {
 	},
 	watch: {
 		// 展示与隐藏
-		columns: {
-			handler: function (newVal) {
-				localStorage.setItem('subject-columns', JSON.stringify(newVal));
-			},
-			deep: true
-		},
 		formId: {
 			// handler不该用箭头函数 会拿不到this
 			handler: function (val) {
@@ -297,12 +291,7 @@ export default {
 	},
 	created() {
 		this.getList();
-		if (localStorage.getItem('subject-columns') === 'null' || !localStorage.getItem('subject-columns')) {
-			// 设置localStorage
-			localStorage.setItem('subject-columns', JSON.stringify(this.columns));
-		} else {
-			this.columns = JSON.parse(localStorage.getItem('subject-columns'));
-		}
+
 		// 获取科目分类列表
 		listSubject({}, false).then(response => {
 			this.titleOptions = [];

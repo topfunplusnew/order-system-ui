@@ -29,7 +29,7 @@
 		</el-row>
 
 		<el-row :gutter="10" class="mb8">
-			<right-toolbar :columns="columns" @queryTable="fetchOilCardDetails">
+			<right-toolbar :columns="columns" @queryTable="fetchOilCardDetails" table-name="views-system-statement-oil-card-balance-detail-columns">
 				<template #print>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML" />

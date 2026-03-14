@@ -14,7 +14,7 @@
 				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
 				<el-button type="danger" size="mini" @click="handleAdd">新增借入款信息</el-button>
 			</el-col>
-			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList" table-name="views-system-borrowedmoney-index-columns">
 				<template #print>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
@@ -215,7 +215,7 @@
 				>
 					<el-table-column v-for="(column, index) in repaymentHistoryColumns" :key="index" :prop="column.prop" :label="column.label" :width="column.width" show-overflow-tooltip></el-table-column>
 				</el-table>
-				<div v-if="tableData.length === 0" style="text-align: center; padding: 20px;">暂无数据</div>
+				<div v-if="tableData.length === 0" style="text-align: center; padding: 20px">暂无数据</div>
 			</template>
 		</InfoDialog>
 	</div>
@@ -492,35 +492,37 @@ export default {
 				return;
 			}
 			// 使用新接口查询历史还款记录
-			getRepaymentHistory(row.id).then(res => {
-				// 处理不同的响应格式：可能是 res.data、res.rows 或直接是数组
-				let data = [];
-				if (Array.isArray(res)) {
-					data = res;
-				} else if (res.data && Array.isArray(res.data)) {
-					data = res.data;
-				} else if (res.rows && Array.isArray(res.rows)) {
-					data = res.rows;
-				} else if (res.data && typeof res.data === 'object' && !Array.isArray(res.data)) {
-					// 如果返回的是单个对象，转换为数组
-					data = [res.data];
-				}
-				
-				this.tableData = data;
-				// 生成表格列
-				this.generateRepaymentHistoryColumns();
-				
-				if (this.tableData.length === 0) {
-					this.$message.info('暂无数据');
-				} else {
-					this.$message.success('查询成功');
-				}
-				this.dialogHistoryVisible = true;
-			}).catch(error => {
-				this.$message.error('查询失败：' + (error.msg || error.message || '未知错误'));
-				this.tableData = [];
-				this.repaymentHistoryColumns = [];
-			});
+			getRepaymentHistory(row.id)
+				.then(res => {
+					// 处理不同的响应格式：可能是 res.data、res.rows 或直接是数组
+					let data = [];
+					if (Array.isArray(res)) {
+						data = res;
+					} else if (res.data && Array.isArray(res.data)) {
+						data = res.data;
+					} else if (res.rows && Array.isArray(res.rows)) {
+						data = res.rows;
+					} else if (res.data && typeof res.data === 'object' && !Array.isArray(res.data)) {
+						// 如果返回的是单个对象，转换为数组
+						data = [res.data];
+					}
+
+					this.tableData = data;
+					// 生成表格列
+					this.generateRepaymentHistoryColumns();
+
+					if (this.tableData.length === 0) {
+						this.$message.info('暂无数据');
+					} else {
+						this.$message.success('查询成功');
+					}
+					this.dialogHistoryVisible = true;
+				})
+				.catch(error => {
+					this.$message.error('查询失败：' + (error.msg || error.message || '未知错误'));
+					this.tableData = [];
+					this.repaymentHistoryColumns = [];
+				});
 		},
 		// 生成历史还款记录表格列（只展示指定字段）
 		generateRepaymentHistoryColumns() {

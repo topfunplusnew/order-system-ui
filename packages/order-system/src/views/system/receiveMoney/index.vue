@@ -43,7 +43,7 @@
 			<!-- 右侧工具栏 -->
 		</div>
 		<div class="toolbar-wrapper">
-			<right-toolbar :show-search.sync="showSearch" :columns="columns" @queryTable="getList">
+			<right-toolbar :show-search.sync="showSearch" :columns="columns" @queryTable="getList" tableName="receivemoney-columns">
 				<template #left>
 					<div class="toolbar-left">
 						<el-row :gutter="10" class="mb8">
@@ -578,12 +578,6 @@ export default {
 		};
 	},
 	watch: {
-		columns: {
-			handler: function (newVal) {
-				localStorage.setItem('receivemoney-columns', JSON.stringify(newVal));
-			},
-			deep: true
-		},
 		// 加载完成后绑定滚动事件并刷新布局
 		loading(newVal, oldVal) {
 			if (oldVal === true && newVal === false) {
@@ -614,47 +608,7 @@ export default {
 		this.reset();
 		this.getList();
 		// 获取本地显示隐藏列的存储，以便于下一次用户打开的时候读取喜好
-		const savedColumns = localStorage.getItem('receivemoney-columns');
-		if (savedColumns && savedColumns !== 'null') {
-			try {
-				const parsedColumns = JSON.parse(savedColumns);
-				// 确保 columns 数组完整且每个元素都有 visible 属性
-				if (Array.isArray(parsedColumns) && parsedColumns.length >= 15) {
-					// 确保所有必需的列都存在
-					this.columns = parsedColumns.map((col, index) => {
-						if (!col || typeof col.visible === 'undefined') {
-							const defaultColumns = [
-								{ key: 0, label: `日期`, visible: true },
-								{ key: 1, label: `支付类型`, visible: true },
-								{ key: 2, label: `对方公司名称`, visible: true },
-								{ key: 3, label: `对方公司类型`, visible: true },
-								{ key: 4, label: `金额`, visible: true },
-								{ key: 5, label: `我方户名`, visible: true },
-								{ key: 6, label: `我方账号`, visible: true },
-								{ key: 7, label: `我方开户行`, visible: true },
-								{ key: 8, label: `我方账户类型`, visible: true },
-								{ key: 9, label: `对方户名`, visible: true },
-								{ key: 10, label: `对方账号`, visible: true },
-								{ key: 11, label: `对方开户行`, visible: true },
-								{ key: 12, label: `备注`, visible: true },
-								{ key: 13, label: `银行卡流水编号`, visible: true },
-								{ key: 14, label: `录入人员`, visible: true }
-							];
-							return defaultColumns[index] || col;
-						}
-						return col;
-					});
-				} else {
-					// 如果解析的列配置不完整，使用默认配置
-					localStorage.setItem('receivemoney-columns', JSON.stringify(this.columns));
-				}
-			} catch (error) {
-				console.error('解析列配置失败:', error);
-				localStorage.setItem('receivemoney-columns', JSON.stringify(this.columns));
-			}
-		} else {
-			localStorage.setItem('receivemoney-columns', JSON.stringify(this.columns));
-		}
+
 		// 监听窗口大小变化，重新计算表格高度
 		window.addEventListener('resize', this.handleResize);
 	},

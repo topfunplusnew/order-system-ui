@@ -22,7 +22,7 @@
 		</el-form>
 
 		<el-row :gutter="10" class="mb8">
-			<right-toolbar :columns="columns" @queryTable="fetchData">
+			<right-toolbar :columns="columns" @queryTable="fetchData" table-name="views-system-statement-cash-oil-recharge-columns">
 				<template #print>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML" />

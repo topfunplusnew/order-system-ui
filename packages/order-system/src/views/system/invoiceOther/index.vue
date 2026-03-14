@@ -29,7 +29,7 @@
 			<el-col :span="1.5">
 				<el-button v-hasPermi="['system:invoiceother:add']" type="danger" size="mini" @click="handleAdd">新增</el-button>
 			</el-col>
-			<right-toolbar :show-search.sync="showSearch" :columns="columns" @queryTable="getList">
+			<right-toolbar :show-search.sync="showSearch" :columns="columns" @queryTable="getList" tableName="invoiceother-columns">
 				<template #print>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML" />
@@ -613,12 +613,6 @@ export default {
 		};
 	},
 	watch: {
-		columns: {
-			handler: function (newVal) {
-				localStorage.setItem('invoiceother-columns', JSON.stringify(newVal));
-			},
-			deep: true
-		},
 		form: {
 			handler() {
 				this.form.supplierPointAmount = fix_2(this.form.supplierTicketPoint * this.form.invoiceAmount);
@@ -631,11 +625,6 @@ export default {
 	created() {
 		this.reset();
 		this.getList();
-		if (localStorage.getItem('invoiceother-columns') === 'null' || !localStorage.getItem('invoiceother-columns')) {
-			localStorage.setItem('invoiceother-columns', JSON.stringify(this.columns));
-		} else {
-			this.columns = JSON.parse(localStorage.getItem('invoiceother-columns'));
-		}
 	},
 	methods: {
 		parseTime,

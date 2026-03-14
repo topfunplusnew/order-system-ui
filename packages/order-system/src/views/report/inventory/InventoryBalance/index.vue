@@ -100,14 +100,7 @@ export default {
 	},
 	created() {
 		// 从localStorage恢复列配置
-		const savedColumns = localStorage.getItem('inventoryBalance-columns');
-		if (savedColumns) {
-			try {
-				this.columns = JSON.parse(savedColumns);
-			} catch (e) {
-				console.error('恢复列配置失败', e);
-			}
-		}
+
 		// 默认查询今天的数据
 		this.getList();
 	},
@@ -200,14 +193,6 @@ export default {
 				}
 			});
 			return sums;
-		}
-	},
-	watch: {
-		columns: {
-			handler(newVal) {
-				localStorage.setItem('inventoryBalance-columns', JSON.stringify(newVal));
-			},
-			deep: true
 		}
 	}
 };

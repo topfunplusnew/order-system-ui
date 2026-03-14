@@ -32,7 +32,7 @@
 			<el-col :span="2">
 				<el-button size="mini" type="danger" @click="handleAdd">添加厂家保证金</el-button>
 			</el-col>
-			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList" table-name="views-system-cashdeposit-deposit-all-columns">
 				<template #print>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>

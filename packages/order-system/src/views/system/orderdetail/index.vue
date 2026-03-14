@@ -12,7 +12,7 @@
 <!--			<el-col :span="1.5">-->
 <!--				<el-button v-hasPermi="['system:orderdetail:export']" type="warning" plain icon="el-icon-download" size="mini" @click="handleExport">导出订单数据</el-button>-->
 <!--			</el-col>-->
-<!--			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">-->
+<!--			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList" table-name="views-system-orderdetail-index-columns">-->
 <!--				<template #print>-->
 <!--					<el-col :span="1.5">-->
 <!--						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>-->

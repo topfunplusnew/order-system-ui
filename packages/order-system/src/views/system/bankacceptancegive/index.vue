@@ -25,7 +25,7 @@
 			<!-- <el-col :span="1.5">
 				<el-button v-hasPermi="['system:bankacceptance:add']" type="danger" size="mini" @click="handleAdd">添加支出商业票据</el-button>
 			</el-col> -->
-			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList" tableName="bankacceptancegive-columns">
 				<template #print>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
@@ -384,21 +384,10 @@ export default {
 	},
 	created() {
 		this.getList();
-		if (localStorage.getItem('bankacceptancegive-columns') === 'null' || !localStorage.getItem('bankacceptancegive-columns')) {
-			// 设置localStorage
-			localStorage.setItem('bankacceptancegive-columns', JSON.stringify(this.columns));
-		} else {
-			this.columns = JSON.parse(localStorage.getItem('bankacceptancegive-columns'));
-		}
+
 		// 创建防抖函数
 	},
 	watch: {
-		columns: {
-			handler: function (newVal) {
-				localStorage.setItem('bankacceptancegive-columns', JSON.stringify(newVal));
-			},
-			deep: true
-		},
 		// 贴息金额的自动计算
 		form: {
 			handler() {

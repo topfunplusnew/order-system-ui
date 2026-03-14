@@ -21,7 +21,7 @@
 			<el-col :span="1.5">
 				<el-button v-hasPermi="['system:invoicein:remove']" type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete">批量删除</el-button>
 			</el-col>
-			<right-toolbar :show-search.sync="showSearch" :columns="columns" @queryTable="getList">
+			<right-toolbar :show-search.sync="showSearch" :columns="columns" @queryTable="getList" tableName="invoicein-columns">
 				<template #print>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML" />
@@ -487,23 +487,16 @@ export default {
 	computed: {
 		TableName() {
 			return TableName;
-		},
-
+		}
 	},
 	watch: {
-		columns: {
-			handler: function (newVal) {
-				localStorage.setItem('invoicein-columns', JSON.stringify(newVal));
-			},
-			deep: true
-		},
 		// 监听开票金额和票点变化,自动计算票点金额
-		'form.invoiceAmount': function(newVal) {
+		'form.invoiceAmount': function (newVal) {
 			if (!this.isFirstLoad && newVal && this.form.ticketPoint) {
 				this.form.ticketPointAmount = Number(newVal * this.form.ticketPoint).toFixed(2);
 			}
 		},
-		'form.ticketPoint': function(newVal) {
+		'form.ticketPoint': function (newVal) {
 			if (!this.isFirstLoad && newVal && this.form.invoiceAmount) {
 				this.form.ticketPointAmount = Number(this.form.invoiceAmount * newVal).toFixed(2);
 			}
@@ -511,12 +504,6 @@ export default {
 	},
 	created() {
 		this.getList();
-		if (localStorage.getItem('invoicein-columns') === 'null' || !localStorage.getItem('invoicein-columns')) {
-			// 设置localStorage
-			localStorage.setItem('invoicein-columns', JSON.stringify(this.columns));
-		} else {
-			this.columns = JSON.parse(localStorage.getItem('invoicein-columns'));
-		}
 	},
 	methods: {
 		updateInvoiceIn() {

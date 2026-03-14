@@ -33,7 +33,7 @@
 			<el-col :span="1.5">
 				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
 			</el-col>
-			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList" tableName="inone-invoiceout-columns">
 				<template #print>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
@@ -546,12 +546,6 @@ export default {
 	},
 	computed: {},
 	watch: {
-		columns: {
-			handler: function (newVal) {
-				localStorage.setItem('inone-invoiceout-columns', JSON.stringify(newVal));
-			},
-			deep: true
-		},
 		// 监听开票金额和票点变化,自动计算票点金额
 		'form.invoiceAmount': function (newVal) {
 			if (!this.isFirstLoad && newVal && this.form.ticketPoint) {
@@ -575,12 +569,6 @@ export default {
 	created() {
 		this.reset();
 		this.getList();
-		if (localStorage.getItem('inone-invoiceout-columns') === 'null' || !localStorage.getItem('inone-invoiceout-columns')) {
-			// 设置localStorage
-			localStorage.setItem('inone-invoiceout-columns', JSON.stringify(this.columns));
-		} else {
-			this.columns = JSON.parse(localStorage.getItem('inone-invoiceout-columns'));
-		}
 	},
 	methods: {
 		parseTime,
