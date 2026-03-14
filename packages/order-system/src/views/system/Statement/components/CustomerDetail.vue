@@ -38,6 +38,7 @@ export default {
 	data() {
 		return {
 			searchForm: {
+				dateRange: [],
 				customer: null,
 				companyId: ''
 			},
@@ -73,6 +74,14 @@ export default {
 		abs,
 		isDebit,
 		isCredit,
+		getSelectedTimeRange() {
+			const [beginTime, endTime] = this.searchForm.dateRange || [];
+			if (!beginTime || !endTime) {
+				this.$message.warning('请选择时间范围');
+				return null;
+			}
+			return { beginTime, endTime };
+		},
 		// 查看明细 点击的时候 先让用户输入时间 然后拿该行数据的companyId查询该客户的明细账
 		handleCheck() {
 			// 清除一下状态
@@ -275,6 +284,63 @@ export default {
 			});
 		},
 		// 导出Excel
+		handleCheckByDateRange() {
+			const timeRange = this.getSelectedTimeRange();
+			if (!timeRange) return;
+			this.tableData = [];
+			const query = {
+				companyId: this.searchForm.companyId,
+				...timeRange
+			};
+			const key = {
+				configKey: 'order.customerDetailSummary.subjectNo'
+			};
+			getConfigValue(key).then(({ configValue, subjectName }) => {
+				if (!configValue || !subjectName) {
+					this.$message.warning('配置项信息查询有误');
+					return;
+				}
+				const body = {
+					beginTime: query.beginTime,
+					companyId: query.companyId
+				};
+				getCustomerSubjectDetailSomeDay(body).then(res => {
+					if (!res.data) {
+						this.$message.warning('上年结转数据不存在');
+						return;
+					}
+					const lastYearDetail = res.data;
+					this.tableData.push({
+						...lastYearDetail,
+						summary: '上年结转',
+						moneyAmountLocal: fix_2(number(lastYearDetail.moneyAmount || 0)),
+						subjectNo: configValue,
+						subjectName: subjectName
+					});
+					const config = {
+						configValue,
+						subjectName
+					};
+					this.checkCustomerDetail(query, lastYearDetail, config);
+				});
+			});
+		},
+		handleExportByDateRange() {
+			if (!this.searchForm.companyId) {
+				this.$message.warning('请先选择客户');
+				return;
+			}
+			const timeRange = this.getSelectedTimeRange();
+			if (!timeRange) return;
+			this.download(
+				'statistics/export/customerBalanceDetails',
+				{
+					...timeRange,
+					companyId: this.searchForm.companyId
+				},
+				`客户科目明细账_${parseTime(new Date().getTime())}.xlsx`
+			);
+		},
 		handleExport() {
 			if (!this.searchForm.companyId) {
 				this.$message.warning('请先选择客户');
@@ -300,6 +366,9 @@ export default {
 <template>
 	<div class="app-container">
 		<el-form id="top-search-form-item" :inline="true" :model="searchForm" class="demo-form-inline" size="mini" label-width="150px">
+			<el-form-item label="时间" prop="dateRange">
+				<el-date-picker v-model="searchForm.dateRange" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" size="mini" clearable />
+			</el-form-item>
 			<el-form-item label="客户" prop="customer">
 				<el-row>
 					<el-col :span="4">
@@ -334,6 +403,10 @@ export default {
 				</el-row>
 			</el-form-item>
 			<el-form-item>
+				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleCheckByDateRange">搜索</el-button>
+				<el-button type="success" icon="el-icon-folder-opened" size="mini" @click="handleExportByDateRange">导出Excel</el-button>
+			</el-form-item>
+			<el-form-item v-if="false">
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleCheck">搜索</el-button>
 				<el-button type="success" icon="el-icon-folder-opened" size="mini" @click="handleExport">导出Excel</el-button>
 			</el-form-item>

@@ -33,6 +33,7 @@ export default {
 	data() {
 		return {
 			searchForm: {
+				dateRange: [],
 				carNo: null,
 				driverId: ''
 			},
@@ -72,6 +73,14 @@ export default {
 		abs,
 		isDebit,
 		isCredit,
+		getSelectedTimeRange() {
+			const [beginTime, endTime] = this.searchForm.dateRange || [];
+			if (!beginTime || !endTime) {
+				this.$message.warning('请选择时间范围');
+				return null;
+			}
+			return { beginTime, endTime };
+		},
 		// 查看明细 点击的时候 先让用户输入时间 然后拿该行数据的companyId查询该司机的明细账
 		handleCheck() {
 			// 打开时间选择框
@@ -237,6 +246,59 @@ export default {
 			return components[tableName] || null; // 默认返回 null，如果没有匹配的 tableName
 		},
 		// 导出Excel
+		handleCheckByDateRange() {
+			const timeRange = this.getSelectedTimeRange();
+			if (!timeRange) return;
+			this.tableData = [];
+			const query = {
+				companyId: this.searchForm.driverId,
+				...timeRange
+			};
+			const key = {
+				configKey: 'order.freightDetailSummary.subjectNo'
+			};
+			getConfigValue(key).then(({ configValue, subjectName }) => {
+				const body = {
+					beginTime: query.beginTime,
+					carId: query.companyId
+				};
+				getFreightSubjectDetailSummarySomeDay(body).then(res => {
+					if (!res.data) {
+						this.$message.warning('上年结转数据不存在');
+						return;
+					}
+					const lastYearDetail = res.data;
+					this.tableData.push({
+						...lastYearDetail,
+						summary: '上年结转',
+						moneyAmountLocal: fix(number(lastYearDetail.moneyAmount || 0)),
+						subjectNo: configValue,
+						subjectName: subjectName
+					});
+					const config = {
+						configValue,
+						subjectName
+					};
+					this.checkFreightDetail(query, lastYearDetail, config);
+				});
+			});
+		},
+		handleExportByDateRange() {
+			if (!this.searchForm.driverId) {
+				this.$message.warning('请先选择车牌');
+				return;
+			}
+			const timeRange = this.getSelectedTimeRange();
+			if (!timeRange) return;
+			this.download(
+				'statistics/export/freightBalanceDetails',
+				{
+					...timeRange,
+					carId: this.searchForm.driverId
+				},
+				`运费科目明细表_${parseTime(new Date().getTime())}.xlsx`
+			);
+		},
 		handleExport() {
 			if (!this.searchForm.driverId) {
 				this.$message.warning('请先选择车牌');
@@ -263,6 +325,9 @@ export default {
 	<div>
 		<div class="app-container">
 			<el-form id="top-search-form-item" :inline="true" :model="searchForm" class="demo-form-inline" size="mini" label-width="150px">
+				<el-form-item label="时间" prop="dateRange">
+					<el-date-picker v-model="searchForm.dateRange" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" size="mini" clearable />
+				</el-form-item>
 				<el-form-item label="车牌" prop="carNo">
 					<el-row>
 						<el-col :span="4">
@@ -296,6 +361,10 @@ export default {
 					</el-row>
 				</el-form-item>
 				<el-form-item>
+					<el-button type="primary" icon="el-icon-search" size="mini" @click="handleCheckByDateRange">搜索</el-button>
+					<el-button type="success" icon="el-icon-folder-opened" size="mini" @click="handleExportByDateRange">导出Excel</el-button>
+				</el-form-item>
+				<el-form-item v-if="false">
 					<el-button type="primary" icon="el-icon-search" size="mini" @click="handleCheck">搜索</el-button>
 					<el-button type="success" icon="el-icon-folder-opened" size="mini" @click="handleExport">导出Excel</el-button>
 				</el-form-item>
