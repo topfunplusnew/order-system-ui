@@ -875,7 +875,6 @@ import { listFleet } from '../../../api/system/fleet';
 import { listInventory } from '../../../api/system/inventory';
 import { listProductLevel } from '../../../api/system/productLevel';
 import { listStoreHouse } from '../../../api/system/StoreHouse';
-import { fix, fix_2 } from '../../../api/tool/format';
 import SearchOption from '../../../components/SearchOption.vue';
 import UploadFilesButton from '@/components/UploadFilesButton/index.vue';
 import { _fill } from './fill';
@@ -1408,6 +1407,21 @@ export default {
 			return round(total, 2).toString();
 		},
 		/**
+		 * @description: 高精度汇总库存子项金额字段，避免使用 JS 浮点加法带来的精度误差
+		 * @param {string} field - 子项字段名，如 landFreight / seaFreight
+		 * @returns {number} 四舍五入到 2 位小数后的数值
+		 */
+		calculateDetailFreightTotal(field) {
+			if (!Array.isArray(this.visibleInventoryDetailList) || this.visibleInventoryDetailList.length === 0) {
+				return 0;
+			}
+			const total = this.visibleInventoryDetailList.reduce((sum, item) => {
+				const value = Number(item[field]) || 0;
+				return add(sum, value);
+			}, 0);
+			return Number(round(total, 2));
+		},
+		/**
 		 * @description: 获取去重的供应商列表
 		 * @param {Array} inventoryDetailList - 库存详情数组
 		 * @returns {Array} 去重后的供应商列表
@@ -1579,8 +1593,8 @@ export default {
 				inventoryDetailList: normalizedDetails
 			};
 			// 计算总运费等主表信息
-			newInventoryInfo.allLandFreight = this.isLand ? this.visibleInventoryDetailList.reduce((prev, curr) => Number(prev) + Number(curr.landFreight || 0), 0) : 0;
-			newInventoryInfo.allSeaFreight = this.isSea ? this.visibleInventoryDetailList.reduce((prev, curr) => Number(prev) + Number(curr.seaFreight || 0), 0) : 0;
+			newInventoryInfo.allLandFreight = this.isLand ? this.calculateDetailFreightTotal('landFreight') : 0;
+			newInventoryInfo.allSeaFreight = this.isSea ? this.calculateDetailFreightTotal('seaFreight') : 0;
 
 			this.addOrUpdateInventoryDetail(newInventoryInfo, rows, resolve, reject, row);
 		},
@@ -2201,8 +2215,8 @@ export default {
 						...d,
 						countingUnit: d.countingUnit === '片' ? '片数' : d.countingUnit || '片数'
 					}));
-					this.form.allLandFreight = this.isLand ? this.visibleInventoryDetailList.reduce((prev, curr) => fix(Number(prev) + Number(curr.landFreight || 0)), 0) : 0;
-					this.form.allSeaFreight = this.isSea ? this.visibleInventoryDetailList.reduce((prev, curr) => fix(Number(prev) + Number(curr.seaFreight || 0)), 0) : 0;
+					this.form.allLandFreight = this.isLand ? this.calculateDetailFreightTotal('landFreight') : 0;
+					this.form.allSeaFreight = this.isSea ? this.calculateDetailFreightTotal('seaFreight') : 0;
 					const apiCall = this.form.id ? updateInventoryMain : addInventoryMain;
 					const successMessage = this.form.id ? '修改成功' : '新增成功';
 					apiCall({
@@ -2751,27 +2765,14 @@ export default {
 
 				// 判断当前列是否需要合计
 				if (summaryColumns.includes(column.property)) {
-					// 计算该列的所有数据之和
-					const values = data.map(item => {
-						const value = item[column.property];
-						// 转换为数字，如果转换失败则返回0
-						const numValue = Number(value);
-						return isNaN(numValue) ? 0 : numValue;
-					});
-
-					// 计算总和
-					const sum = values.reduce((prev, curr) => {
-						return prev + curr;
+					// 计算总和（使用 mathjs 高精度加法）
+					const sum = data.reduce((prev, item) => {
+						const value = Number(item[column.property]) || 0;
+						return add(prev, value);
 					}, 0);
 
 					// 格式化显示（使用与数据列相同的格式）
-					if (column.property === 'tonnage') {
-						// 吨位保留2位小数
-						sums[index] = sum.toFixed(2);
-					} else {
-						// 金额类保留2位小数
-						sums[index] = sum.toFixed(2);
-					}
+					sums[index] = round(sum, 2).toFixed(2);
 				} else {
 					// 不需要合计的列显示空字符串
 					sums[index] = '';
