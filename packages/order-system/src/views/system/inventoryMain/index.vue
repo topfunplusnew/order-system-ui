@@ -1588,12 +1588,14 @@ export default {
 				...d,
 				countingUnit: d.countingUnit === '片' ? '片数' : d.countingUnit || '片数'
 			}));
+			const baseInventoryInfo = { ...this.form };
+			// 后端不再接收 allLandFreight，提交前移除该字段
+			delete baseInventoryInfo.allLandFreight;
 			const newInventoryInfo = {
-				...this.form,
+				...baseInventoryInfo,
 				inventoryDetailList: normalizedDetails
 			};
 			// 计算总运费等主表信息
-			newInventoryInfo.allLandFreight = this.isLand ? this.calculateDetailFreightTotal('landFreight') : 0;
 			newInventoryInfo.allSeaFreight = this.isSea ? this.calculateDetailFreightTotal('seaFreight') : 0;
 
 			this.addOrUpdateInventoryDetail(newInventoryInfo, rows, resolve, reject, row);
@@ -2215,15 +2217,17 @@ export default {
 						...d,
 						countingUnit: d.countingUnit === '片' ? '片数' : d.countingUnit || '片数'
 					}));
-					this.form.allLandFreight = this.isLand ? this.calculateDetailFreightTotal('landFreight') : 0;
 					this.form.allSeaFreight = this.isSea ? this.calculateDetailFreightTotal('seaFreight') : 0;
 					const apiCall = this.form.id ? updateInventoryMain : addInventoryMain;
 					const successMessage = this.form.id ? '修改成功' : '新增成功';
+					const submitPayload = { ...this.form };
+					// 后端不再接收 allLandFreight，提交前移除该字段
+					delete submitPayload.allLandFreight;
 					apiCall({
-						...this.form,
+						...submitPayload,
 						params: {
-							...this.form.params,
-							attachmentIds: this.form.params?.attachmentIds || []
+							...submitPayload.params,
+							attachmentIds: submitPayload.params?.attachmentIds || []
 						}
 					})
 						.then(() => {
