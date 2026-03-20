@@ -21,6 +21,8 @@ import OrderHistoryCheck from '@/views/dashboard/components/goodsOrder/OrderHist
 import OrderHistoryList from '@/views/dashboard/components/goodsOrder/OrderHistoryList.vue';
 import { parseTime } from '@/utils/ruoyi';
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
+import { batchDeleteUserConfig, getUserConfig, saveUserConfig } from '@/api/user-config';
+import { UserConfigKey } from '@/api/tool/user-config';
 import StateTag from '@/views/dashboard/components/common/StateTag.vue';
 import { auditGoodsOrder, listGoodsOrder, getHistoryGoodsOrder } from '../../../../api/system/goodsOrder';
 import CheckOrder from '@/views/dashboard/components/goodsOrder/CheckOrder.vue';
@@ -191,7 +193,8 @@ export default {
 
 			// 导入结果弹窗
 			importResultVisible: false,
-			importResultMessage: ''
+			importResultMessage: '',
+			activeOrderActionRowId: null
 		};
 	},
 	watch: {
@@ -214,6 +217,7 @@ export default {
 		}
 	},
 	created() {
+		this.initOrderActionRowState();
 		this.getList();
 		// 创建防抖的搜索方法，延迟 300ms 执行
 		this.handleGetQueryParamsDebounced = debounce(this.handleGetQueryParams, 300);
@@ -256,6 +260,124 @@ export default {
 		}
 	},
 	methods: {
+		normalizeOrderActionRowId(value) {
+			if (value === null || value === undefined || value === '') {
+				return null;
+			}
+			return String(value);
+		},
+		parseUserConfigValue(response) {
+			const configValue = response?.data?.value ?? response?.data ?? null;
+			if (typeof configValue !== 'string') {
+				return configValue;
+			}
+			try {
+				return JSON.parse(configValue);
+			} catch (error) {
+				return configValue;
+			}
+		},
+		extractOrderActionRowId(configValue) {
+			if (!configValue) {
+				return null;
+			}
+			if (typeof configValue === 'object') {
+				const nestedConfig = configValue.key;
+				if (nestedConfig && typeof nestedConfig === 'object') {
+					return this.normalizeOrderActionRowId(nestedConfig.id ?? nestedConfig.rowId ?? null);
+				}
+				return this.normalizeOrderActionRowId(configValue.id ?? configValue.rowId ?? null);
+			}
+			return this.normalizeOrderActionRowId(configValue);
+		},
+		isPageReload() {
+			if (typeof window === 'undefined' || !window.performance) {
+				return false;
+			}
+			if (typeof window.performance.getEntriesByType === 'function') {
+				const navigationEntries = window.performance.getEntriesByType('navigation');
+				if (Array.isArray(navigationEntries) && navigationEntries.length > 0) {
+					return navigationEntries[0].type === 'reload';
+				}
+			}
+			if (window.performance.navigation) {
+				return window.performance.navigation.type === 1;
+			}
+			return false;
+		},
+		async initOrderActionRowState() {
+			if (this.isPageReload()) {
+				await this.clearOrderActionRowState();
+				return;
+			}
+			await this.loadOrderActionRowState();
+		},
+		async loadOrderActionRowState() {
+			try {
+				const response = await getUserConfig(UserConfigKey.GOODS_ORDER_ACTIVE_ACTION_ROW);
+				const configValue = this.parseUserConfigValue(response);
+				this.activeOrderActionRowId = this.extractOrderActionRowId(configValue);
+			} catch (error) {
+				void error;
+				this.activeOrderActionRowId = null;
+			}
+		},
+		async clearOrderActionRowState() {
+			this.activeOrderActionRowId = null;
+			try {
+				await batchDeleteUserConfig([UserConfigKey.GOODS_ORDER_ACTIVE_ACTION_ROW]);
+			} catch (error) {
+				void error;
+			}
+		},
+		trackOrderActionRow(row) {
+			const rowId = this.normalizeOrderActionRowId(row && row.id);
+			if (!rowId) {
+				return;
+			}
+			this.activeOrderActionRowId = rowId;
+			saveUserConfig(UserConfigKey.GOODS_ORDER_ACTIVE_ACTION_ROW, {
+				key: {
+					id: rowId
+				}
+			}).catch(error => {
+				void error;
+			});
+		},
+		handleTrackedRowAction(methodName, row, ...args) {
+			this.trackOrderActionRow(row);
+			const handler = this[methodName];
+			if (typeof handler === 'function') {
+				return handler.call(this, row, ...args);
+			}
+			return undefined;
+		},
+		handleSupplierInvoiceClick(row, supplierId) {
+			this.trackOrderActionRow(row);
+			this.updateOrderItemVisibleSupplierInvoice(row, supplierId);
+		},
+		getOrderRowClassName({ row }) {
+			const classNames = [];
+			const currentRowId = this.normalizeOrderActionRowId(row && row.id);
+			if (currentRowId && currentRowId === this.activeOrderActionRowId) {
+				classNames.push('active-order-action-row');
+			}
+			const adjustClassName = this.getAdjustRowLevelClassName(row);
+			if (adjustClassName) {
+				classNames.push(adjustClassName);
+			}
+			return classNames.join(' ');
+		},
+		getAdjustRowLevelClassName(row) {
+			if (!this.isAdjustOrder) return '';
+			const adjust = Number(row && row.isAdjust);
+			if (!adjust) return '';
+			if (adjust < 0) return 'adjust-row-negative';
+			if (adjust === 1) return 'adjust-row-1';
+			if (adjust === 2) return 'adjust-row-2';
+			if (adjust === 3) return 'adjust-row-3';
+			return 'adjust-row-gt3';
+		},
 		orderDataAppendChange(renderData) {
 			// 直接使用虚拟滚动组件传递的数据，不要重新排序
 			// 虚拟滚动组件已经根据滚动位置计算好了可见区域的数据顺序
@@ -296,6 +418,7 @@ export default {
 		},
 		// 行操作中点击查看 查看当前行订单的信息
 		checkOrderItemInfo(row) {
+			this.trackOrderActionRow(row);
 			const id = row.id;
 			// 读取订单信息
 			getGoodsOrder(id)
@@ -350,6 +473,7 @@ export default {
 				});
 		},
 		handleCheck(row) {
+			this.trackOrderActionRow(row);
 			// 弹出确认和取消
 			this.$antdconfirm({
 				title: '提示',
@@ -383,14 +507,7 @@ export default {
 		},
 		// 调整单行高亮：ElementUI 的背景通常绘制在 td 上，使用 row-class-name + CSS 更稳定
 		getAdjustRowClassName({ row }) {
-			if (!this.isAdjustOrder) return '';
-			const adjust = Number(row && row.isAdjust);
-			if (!adjust) return '';
-			if (adjust < 0) return 'adjust-row-negative';
-			if (adjust === 1) return 'adjust-row-1';
-			if (adjust === 2) return 'adjust-row-2';
-			if (adjust === 3) return 'adjust-row-3';
-			return 'adjust-row-gt3';
+			return this.getOrderRowClassName({ row });
 		},
 		// 获取客户开票列表
 		async getCustomerInvoiceList(orderId) {
@@ -422,6 +539,7 @@ export default {
 
 		// 显示客户开票列表弹窗
 		showCustomerInvoiceList(row) {
+			this.trackOrderActionRow(row);
 			this.currentOrderInfo = row;
 			this.customerInvoiceListVisible = true;
 			this.getCustomerInvoiceList(row.id);
@@ -555,6 +673,7 @@ export default {
 
 		// 显示供应商开票列表弹窗
 		showSupplierInvoiceList(row) {
+			this.trackOrderActionRow(row);
 			this.currentOrderInfo = row;
 			this.supplierInvoiceListVisible = true;
 			this.getSupplierInvoiceList(row.id);
@@ -607,6 +726,7 @@ export default {
 		getGoodsOrder,
 		// 处理下拉菜单  使用的是事件委托
 		handleCommand(command, row) {
+			this.trackOrderActionRow(row);
 			// 根据不同操作委派不同的方法
 			switch (command) {
 				// 查看订单
@@ -651,6 +771,7 @@ export default {
 		},
 		// 查看调整单信息
 		handleCheckAdjust(row) {
+			this.trackOrderActionRow(row);
 			listGoodsOrder({ adjustOrderid: row.id }).then(res => {
 				// 筛选出不是负数的那一条订单数据
 				const adjustOrder = res.rows.filter(item => item.isAdjust !== -1)[0];
@@ -673,6 +794,7 @@ export default {
 		},
 		// 查看原订单的信息
 		handleCheckPrevious(row) {
+			this.trackOrderActionRow(row);
 			const { adjustOrderid } = row;
 			getGoodsOrder(adjustOrderid).then(res => {
 				this.openDialog(
@@ -687,6 +809,7 @@ export default {
 			});
 		},
 		handleReCheck(row) {
+			this.trackOrderActionRow(row);
 			this.$antdconfirm({
 				title: '是否取消审核',
 				okText: '确定',
@@ -1188,6 +1311,7 @@ export default {
 					tooltip-effect="light"
 					:headerCellStyle="headerCellFixedStyle"
 					:cellStyle="cellFixedStyle"
+					:row-class-name="getOrderRowClassName"
 					@header-dragend="onHeaderDragend"
 					show-summary
 					:summary-method="getSummary"
@@ -1257,7 +1381,7 @@ export default {
 									<div class="supplier-warehouse-container">
 										<span v-if="scope.row._uniqueSuppliers.length === 0 && scope.row._uniqueWarehouses.length === 0" class="empty-item">-</span>
 										<span v-else>
-											<span v-for="supplier in scope.row._uniqueSuppliers" :key="`supplier-${supplier.supplierID}`" class="supplier-name" @click="updateOrderItemVisibleSupplierInvoice(scope.row, supplier.supplierID)">
+											<span v-for="supplier in scope.row._uniqueSuppliers" :key="`supplier-${supplier.supplierID}`" class="supplier-name" @click="handleSupplierInvoiceClick(scope.row, supplier.supplierID)">
 												{{ supplier.supplier }}
 											</span>
 											<span v-for="warehouse in scope.row._uniqueWarehouses" :key="`warehouse-${warehouse.storeHouseID}`" class="warehouse-name">
@@ -1269,7 +1393,7 @@ export default {
 								<div ref="supplier-warehouse" class="supplier-warehouse-container">
 									<span v-if="scope.row._uniqueSuppliers.length === 0 && scope.row._uniqueWarehouses.length === 0" class="empty-item" v-once>-</span>
 									<span v-else>
-										<span v-for="supplier in scope.row._uniqueSuppliers" :key="`supplier-${supplier.supplierID}`" class="supplier-name" @click="updateOrderItemVisibleSupplierInvoice(scope.row, supplier.supplierID)">
+										<span v-for="supplier in scope.row._uniqueSuppliers" :key="`supplier-${supplier.supplierID}`" class="supplier-name" @click="handleSupplierInvoiceClick(scope.row, supplier.supplierID)">
 											{{ supplier.supplier }}
 										</span>
 										<!-- 显示预处理的仓库列表 -->
@@ -1571,10 +1695,10 @@ export default {
 						<template slot-scope="scope">
 							<div>
 								<el-button size="mini" :disabled="scope.row.isAdjusted !== 1" v-if="!isAdjustOrder" @click="handleCheckAdjust(scope.row)">查看调整单</el-button>
-								<el-button size="mini" :disabled="scope.row.isAdjusted === 1" @click="handleOrderItemInfo(scope.row)">调整单</el-button>
+								<el-button size="mini" :disabled="scope.row.isAdjusted === 1" @click="handleTrackedRowAction('handleOrderItemInfo', scope.row)">调整单</el-button>
 								<el-button v-if="isAdjustOrder" size="mini" @click="handleCheckPrevious(scope.row)">查看原单据</el-button>
 								<!-- 发货单操作：单独展示发货单1 + 下拉中的发货单2/3 -->
-								<el-button size="mini" @click="handleOrder1(scope.row)">发货单1</el-button>
+								<el-button size="mini" @click="handleTrackedRowAction('handleOrder1', scope.row)">发货单1</el-button>
 								<el-dropdown size="mini" trigger="click">
 									<el-button type="text" size="mini">
 										<span v-once>发货单</span>
@@ -1582,10 +1706,10 @@ export default {
 									</el-button>
 									<el-dropdown-menu slot="dropdown">
 										<el-dropdown-item>
-											<el-button size="mini" @click="handleOrder2(scope.row)">发货单2</el-button>
+											<el-button size="mini" @click="handleTrackedRowAction('handleOrder2', scope.row)">发货单2</el-button>
 										</el-dropdown-item>
 										<el-dropdown-item>
-											<el-button size="mini" @click="handleOrder3(scope.row)">发货单3</el-button>
+											<el-button size="mini" @click="handleTrackedRowAction('handleOrder3', scope.row)">发货单3</el-button>
 										</el-dropdown-item>
 									</el-dropdown-menu>
 								</el-dropdown>
@@ -1607,7 +1731,7 @@ export default {
 			style="width: 100%"
 			:data="goodsOrderList"
 			tooltip-effect="light"
-			:row-class-name="getAdjustRowClassName"
+			:row-class-name="getOrderRowClassName"
 			show-summary
 			:summary-method="getSummary"
 			@header-dragend="onHeaderDragend"
@@ -1643,7 +1767,7 @@ export default {
 						<div class="supplier-warehouse-container">
 							<span v-if="(scope.row._uniqueSuppliers || []).length === 0 && (scope.row._uniqueWarehouses || []).length === 0" class="empty-item">-</span>
 							<span v-else>
-								<span v-for="supplier in scope.row._uniqueSuppliers || []" :key="`supplier-${supplier.supplierID}`" class="supplier-name" @click="updateOrderItemVisibleSupplierInvoice(scope.row, supplier.supplierID)">
+								<span v-for="supplier in scope.row._uniqueSuppliers || []" :key="`supplier-${supplier.supplierID}`" class="supplier-name" @click="handleSupplierInvoiceClick(scope.row, supplier.supplierID)">
 									{{ supplier.supplier }}
 								</span>
 								<span v-for="warehouse in scope.row._uniqueWarehouses || []" :key="`warehouse-${warehouse.storeHouseID}`" class="warehouse-name">
@@ -1700,9 +1824,9 @@ export default {
 					<template v-else-if="col.idx === 'orderActions'">
 						<div>
 							<el-button size="mini" :disabled="scope.row.isAdjusted !== 1" v-if="!isAdjustOrder" @click="handleCheckAdjust(scope.row)">查看调整单</el-button>
-							<el-button size="mini" :disabled="scope.row.isAdjusted === 1" @click="handleOrderItemInfo(scope.row)">调整单</el-button>
+							<el-button size="mini" :disabled="scope.row.isAdjusted === 1" @click="handleTrackedRowAction('handleOrderItemInfo', scope.row)">调整单</el-button>
 							<el-button v-if="isAdjustOrder" size="mini" @click="handleCheckPrevious(scope.row)">查看原单据</el-button>
-							<el-button size="mini" @click="handleOrder1(scope.row)">发货单1</el-button>
+							<el-button size="mini" @click="handleTrackedRowAction('handleOrder1', scope.row)">发货单1</el-button>
 							<el-dropdown size="mini" trigger="click">
 								<el-button type="text" size="mini">
 									<span v-once>发货单</span>
@@ -1710,10 +1834,10 @@ export default {
 								</el-button>
 								<el-dropdown-menu slot="dropdown">
 									<el-dropdown-item>
-										<el-button size="mini" @click="handleOrder2(scope.row)">发货单2</el-button>
+										<el-button size="mini" @click="handleTrackedRowAction('handleOrder2', scope.row)">发货单2</el-button>
 									</el-dropdown-item>
 									<el-dropdown-item>
-										<el-button size="mini" @click="handleOrder3(scope.row)">发货单3</el-button>
+										<el-button size="mini" @click="handleTrackedRowAction('handleOrder3', scope.row)">发货单3</el-button>
 									</el-dropdown-item>
 								</el-dropdown-menu>
 							</el-dropdown>
@@ -2477,6 +2601,49 @@ export default {
 ::v-deep .el-table__fixed-body-wrapper tr.adjust-row-gt3 > td,
 ::v-deep .el-table__fixed-right .el-table__fixed-body-wrapper tr.adjust-row-gt3 > td {
 	background-color: #fbc4c4 !important;
+}
+
+::v-deep .el-table__body-wrapper tr.active-order-action-row > td,
+::v-deep .el-table__fixed-body-wrapper tr.active-order-action-row > td,
+::v-deep .el-table__fixed-right .el-table__fixed-body-wrapper tr.active-order-action-row > td {
+	background-color: #fff7e8 !important;
+	box-shadow: inset 0 1px 0 #e6a23c, inset 0 -1px 0 #e6a23c;
+}
+
+::v-deep .el-table__body-wrapper tr.active-order-action-row > td:first-child,
+::v-deep .el-table__fixed-body-wrapper tr.active-order-action-row > td:first-child,
+::v-deep .el-table__fixed-right .el-table__fixed-body-wrapper tr.active-order-action-row > td:first-child {
+	box-shadow: inset 3px 0 0 #e6a23c, inset 0 1px 0 #e6a23c, inset 0 -1px 0 #e6a23c;
+}
+
+::v-deep .el-table__body-wrapper tr.adjust-row-negative.active-order-action-row > td,
+::v-deep .el-table__fixed-body-wrapper tr.adjust-row-negative.active-order-action-row > td,
+::v-deep .el-table__fixed-right .el-table__fixed-body-wrapper tr.adjust-row-negative.active-order-action-row > td {
+	background-color: #f9dfdf !important;
+}
+
+::v-deep .el-table__body-wrapper tr.adjust-row-1.active-order-action-row > td,
+::v-deep .el-table__fixed-body-wrapper tr.adjust-row-1.active-order-action-row > td,
+::v-deep .el-table__fixed-right .el-table__fixed-body-wrapper tr.adjust-row-1.active-order-action-row > td {
+	background-color: #f3ead7 !important;
+}
+
+::v-deep .el-table__body-wrapper tr.adjust-row-2.active-order-action-row > td,
+::v-deep .el-table__fixed-body-wrapper tr.adjust-row-2.active-order-action-row > td,
+::v-deep .el-table__fixed-right .el-table__fixed-body-wrapper tr.adjust-row-2.active-order-action-row > td {
+	background-color: #e7f4dc !important;
+}
+
+::v-deep .el-table__body-wrapper tr.adjust-row-3.active-order-action-row > td,
+::v-deep .el-table__fixed-body-wrapper tr.adjust-row-3.active-order-action-row > td,
+::v-deep .el-table__fixed-right .el-table__fixed-body-wrapper tr.adjust-row-3.active-order-action-row > td {
+	background-color: #fbf0de !important;
+}
+
+::v-deep .el-table__body-wrapper tr.adjust-row-gt3.active-order-action-row > td,
+::v-deep .el-table__fixed-body-wrapper tr.adjust-row-gt3.active-order-action-row > td,
+::v-deep .el-table__fixed-right .el-table__fixed-body-wrapper tr.adjust-row-gt3.active-order-action-row > td {
+	background-color: #f8d2c5 !important;
 }
 
 @keyframes fadeInRow {

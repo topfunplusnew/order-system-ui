@@ -9,6 +9,8 @@ export const UserConfigKey = Object.freeze({
 	INVENTORY_SEARCH_COLUMNS: 'inventorySearch-columns',
 	// 订单列表列配置
 	GOODS_ORDER_TABLE_COLUMNS: 'goodsOrder-table-columns',
+	// 订单列表当前高亮行
+	GOODS_ORDER_ACTIVE_ACTION_ROW: 'goodsOrder-active-action-row',
 	// 库存列表列配置
 	INVENTORY_TABLE_COLUMNS: 'inventory-table-columns',
 	// 付款列表列配置

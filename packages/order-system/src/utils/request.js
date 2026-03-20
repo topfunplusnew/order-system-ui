@@ -31,6 +31,18 @@ export const excludeLoadingPaths = [
 	'/export/' // 所有导出相关路径
 ];
 
+// 涓嶉渶瑕佸叏灞€閿欒鎻愮ず鐨勬帴鍙ｅ墠缂€
+export const excludeErrorMessageUrls = ['http://localhost:40080/dev-api/system/user-config'];
+
+function isExcludedErrorMessageRequest(response) {
+	const responseUrl = response?.request?.responseURL || '';
+	const requestUrl = response?.config?.url || '';
+	return excludeErrorMessageUrls.some(url => {
+		const path = url.replace(/^https?:\/\/[^/]+/, '');
+		return responseUrl.startsWith(url) || requestUrl.startsWith(url) || responseUrl.includes(path) || requestUrl.startsWith(path) || url.endsWith(requestUrl);
+	});
+}
+
 let loadingInstance = null;
 // request拦截器
 service.interceptors.request.use(
@@ -155,7 +167,9 @@ service.interceptors.response.use(
 			if (loadingInstance) {
 				loadingInstance.close();
 			}
-			Message({ message: msg, type: 'error' });
+			if (!isExcludedErrorMessageRequest(res)) {
+				Message({ message: msg, type: 'error' });
+			}
 			return Promise.reject(new Error(msg));
 		} else if (numericCode === 601) {
 			if (loadingInstance) {
