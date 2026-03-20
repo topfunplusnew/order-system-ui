@@ -292,44 +292,24 @@
 											</el-tooltip>
 										</template>
 									</el-table-column>
-									<el-table-column v-if="columns[15].visible" show-overflow-tooltip label="附件" align="center" prop="path" width="70" fixed="right">
+									<el-table-column v-if="columns[15].visible" label="附件" align="center" prop="path" width="70" fixed="right">
 										<template #default="scope">
-											<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
-												<div slot="content" @click.stop>
-													<div v-if="Array.isArray(scope.row.attachmentList)">
-														<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'path'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getInventoryMain, updateInventoryMain)" />
-													</div>
-													<div v-else>
-														<el-tag type="danger">加载错误</el-tag>
-													</div>
-												</div>
-												<div v-if="Array.isArray(scope.row.attachmentList)">
-													<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'path'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getInventoryMain, updateInventoryMain)" />
-												</div>
-												<div v-else>
-													<el-tag type="danger">加载错误</el-tag>
-												</div>
-											</el-tooltip>
+											<div v-if="Array.isArray(scope.row.attachmentList)">
+												<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'path'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getInventoryMain, updateInventoryMain)" />
+											</div>
+											<div v-else>
+												<el-tag type="danger">加载错误</el-tag>
+											</div>
 										</template>
 									</el-table-column>
-									<el-table-column v-if="columns[16].visible" show-overflow-tooltip label="收到条附件" align="center" prop="receiveProof" width="70" fixed="right">
+									<el-table-column v-if="columns[16].visible" label="收到条附件" align="center" prop="receiveProof" width="70" fixed="right">
 										<template #default="scope">
-											<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
-												<div slot="content" @click.stop>
-													<div v-if="Array.isArray(scope.row.attachmentList)">
-														<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'receiveProof'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getInventoryMain, updateInventoryMain)" />
-													</div>
-													<div v-else>
-														<el-tag type="danger">加载错误</el-tag>
-													</div>
-												</div>
-												<div v-if="Array.isArray(scope.row.attachmentList)">
-													<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'receiveProof'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getInventoryMain, updateInventoryMain)" />
-												</div>
-												<div v-else>
-													<el-tag type="danger">加载错误</el-tag>
-												</div>
-											</el-tooltip>
+											<div v-if="Array.isArray(scope.row.attachmentList)">
+												<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'receiveProof'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getInventoryMain, updateInventoryMain)" />
+											</div>
+											<div v-else>
+												<el-tag type="danger">加载错误</el-tag>
+											</div>
 										</template>
 									</el-table-column>
 									<el-table-column v-if="columns[17].visible" show-overflow-tooltip label="审核人员" align="center" prop="checkUserName" width="100" fixed="right" />
