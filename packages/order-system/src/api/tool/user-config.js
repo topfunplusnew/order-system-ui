@@ -11,6 +11,8 @@ export const UserConfigKey = Object.freeze({
 	GOODS_ORDER_TABLE_COLUMNS: 'goodsOrder-table-columns',
 	// 订单列表当前高亮行
 	GOODS_ORDER_ACTIVE_ACTION_ROW: 'goodsOrder-active-action-row',
+	// 订单运费列表当前高亮行
+	ORDER_FREIGHT_ACTIVE_ACTION_ROW: 'orderfreight-active-action-row',
 	// 库存列表列配置
 	INVENTORY_TABLE_COLUMNS: 'inventory-table-columns',
 	// 付款列表列配置

@@ -76,7 +76,7 @@
 			</right-toolbar>
 		</el-row>
 
-		<el-table id="printBox" ref="multipleTable" v-horizontal-scroll="'always'" v-loading="loading" border :data="orderFreightList" max-height="600px" size="mini" @selection-change="handleSelectionChange">
+		<el-table id="printBox" ref="multipleTable" v-horizontal-scroll="'always'" v-loading="loading" border :data="orderFreightList" max-height="600px" size="mini" :row-class-name="getFreightRowClassName" @selection-change="handleSelectionChange">
 			<el-table-column type="selection" width="55" align="center" />
 			<el-table-column width="80" align="center" label="冲抵选择">
 				<template #header>
@@ -226,7 +226,7 @@
 			</el-table-column>
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="200">
 				<template slot-scope="scope">
-					<CheckOrderInfo :row="scope.row" />
+					<CheckOrderInfo :row="scope.row" :track-row="trackFreightActionRow" />
 					<el-button size="mini" type="warning" :disabled="scope.row.paymentState !== PAYMENT_STATE.PAID" @click="handleFillFreight(scope.row)">修正</el-button>
 					<el-button v-if="scope.row.isedit" v-hasPermi="['system:orderfreight:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
 					<el-button v-hasPermi="['system:orderfreight:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
@@ -477,6 +477,8 @@ import { fix_2 } from '../../../api/tool/format';
 import { common_dialog } from '../../dashboard/mixins/common/common_dialog';
 import { listGoodsOrder } from '@/api/system/goodsOrder';
 import { isNull } from '@/main';
+import { batchDeleteUserConfig, getUserConfig, saveUserConfig } from '@/api/user-config';
+import { UserConfigKey } from '@/api/tool/user-config';
 
 export default {
 	name: 'OrderFreight',
@@ -668,7 +670,9 @@ export default {
 			queryBankAccount: '', // 银行账户搜索字段
 			currentFreightId: null, // 当前过滤的运费ID（可能是单个ID或数组）
 			currentFreightIds: [], // 当前过滤的运费ID数组
-			currentOtherBankNo: null // 当前过滤的对方银行卡号
+			currentOtherBankNo: null, // 当前过滤的对方银行卡号
+			/** 操作列交互后持久化高亮：当前运费行 id（字符串，与用户配置一致） */
+			activeFreightActionRowId: null
 		};
 	},
 	computed: {
@@ -738,6 +742,7 @@ export default {
 		}
 	},
 	created() {
+		this.initFreightActionRowState();
 		// 拿到地址栏中的参数
 		const { fundsDate, driver, freightId, otherBankNo } = this.$route.query;
 		// 如果存在对方银行卡号
@@ -766,6 +771,125 @@ export default {
 		// 如果有 freightId 或 otherBankNo，保留它们，不清除
 	},
 	methods: {
+		/**
+		 * 将运费行主键规范为与用户配置一致的字符串，空值返回 null
+		 * @param {*} value 行 id
+		 * @returns {string|null}
+		 */
+		normalizeFreightActionRowId(value) {
+			if (value === null || value === undefined || value === '') {
+				return null;
+			}
+			return String(value);
+		},
+		/**
+		 * 解析 getUserConfig 返回体中的 value（支持 JSON 字符串）
+		 * @param {*} response 接口响应
+		 * @returns {*}
+		 */
+		parseUserConfigValue(response) {
+			const configValue = response?.data?.value ?? response?.data ?? null;
+			if (typeof configValue !== 'string') {
+				return configValue;
+			}
+			try {
+				return JSON.parse(configValue);
+			} catch (error) {
+				return configValue;
+			}
+		},
+		/**
+		 * 从用户配置对象中取出运费行 id（与订单列表 active 行结构一致：{ key: { id } }）
+		 * @param {*} configValue 配置值
+		 * @returns {string|null}
+		 */
+		extractFreightActionRowId(configValue) {
+			if (!configValue) {
+				return null;
+			}
+			if (typeof configValue === 'object') {
+				const nestedConfig = configValue.key;
+				if (nestedConfig && typeof nestedConfig === 'object') {
+					return this.normalizeFreightActionRowId(nestedConfig.id ?? nestedConfig.rowId ?? null);
+				}
+				return this.normalizeFreightActionRowId(configValue.id ?? configValue.rowId ?? null);
+			}
+			return this.normalizeFreightActionRowId(configValue);
+		},
+		/**
+		 * 是否为浏览器整页刷新（刷新时不恢复高亮并清理服务端配置）
+		 * @returns {boolean}
+		 */
+		isPageReload() {
+			if (typeof window === 'undefined' || !window.performance) {
+				return false;
+			}
+			if (typeof window.performance.getEntriesByType === 'function') {
+				const navigationEntries = window.performance.getEntriesByType('navigation');
+				if (Array.isArray(navigationEntries) && navigationEntries.length > 0) {
+					return navigationEntries[0].type === 'reload';
+				}
+			}
+			if (window.performance.navigation) {
+				return window.performance.navigation.type === 1;
+			}
+			return false;
+		},
+		/** 进入页面时恢复或清理运费列表操作行高亮 */
+		async initFreightActionRowState() {
+			if (this.isPageReload()) {
+				await this.clearFreightActionRowState();
+				return;
+			}
+			await this.loadFreightActionRowState();
+		},
+		/** 从用户配置加载要高亮的运费行 id */
+		async loadFreightActionRowState() {
+			try {
+				const response = await getUserConfig(UserConfigKey.ORDER_FREIGHT_ACTIVE_ACTION_ROW);
+				const configValue = this.parseUserConfigValue(response);
+				this.activeFreightActionRowId = this.extractFreightActionRowId(configValue);
+			} catch (error) {
+				void error;
+				this.activeFreightActionRowId = null;
+			}
+		},
+		/** 清除本地与服务端保存的运费操作行高亮 */
+		async clearFreightActionRowState() {
+			this.activeFreightActionRowId = null;
+			try {
+				await batchDeleteUserConfig([UserConfigKey.ORDER_FREIGHT_ACTIVE_ACTION_ROW]);
+			} catch (error) {
+				void error;
+			}
+		},
+		/**
+		 * 记录当前操作行并异步写入用户配置
+		 * @param {Object} row 表格行
+		 */
+		trackFreightActionRow(row) {
+			const rowId = this.normalizeFreightActionRowId(row && row.id);
+			if (!rowId) {
+				return;
+			}
+			this.activeFreightActionRowId = rowId;
+			saveUserConfig(UserConfigKey.ORDER_FREIGHT_ACTIVE_ACTION_ROW, {
+				key: {
+					id: rowId
+				}
+			}).catch(error => {
+				void error;
+			});
+		},
+		/**
+		 * Element Table 行类名：与 activeFreightActionRowId 匹配的行高亮
+		 * @param {{ row: Object }} param0 行参数
+		 * @returns {string}
+		 */
+		getFreightRowClassName({ row }) {
+			const currentRowId = this.normalizeFreightActionRowId(row && row.id);
+			return currentRowId && currentRowId === this.activeFreightActionRowId ? 'active-freight-action-row' : '';
+		},
 		fix_2,
 		listFleet,
 		listData,
@@ -1106,6 +1230,7 @@ export default {
 		},
 		/** 修改按钮操作 */
 		handleUpdate(row) {
+			this.trackFreightActionRow(row);
 			this.reset();
 			const id = row.id || this.ids;
 			getOrderFreight(id).then(response => {
@@ -1138,6 +1263,7 @@ export default {
 		},
 		/** 删除按钮操作 */
 		handleDelete(row) {
+			this.trackFreightActionRow(row);
 			const ids = row.id || this.ids;
 			this.$modal
 				.confirm('是否确认删除订单运费编号为"' + ids + '"的数据项？')
@@ -1174,6 +1300,7 @@ export default {
 		// 运费修正相关方法
 		// 打开运费修正弹窗
 		handleFillFreight(row) {
+			this.trackFreightActionRow(row);
 			this.resetFillFreightForm();
 			// 从行数据填充表单信息（除了金额）
 			this.fillFreightForm = {
@@ -1378,6 +1505,19 @@ export default {
 
 .order-freight-info ::v-deep .el-table {
 	height: 100%;
+}
+
+/* 操作行高亮：背景在 td 上，需覆盖主表体与右固定列 */
+#printBox ::v-deep .el-table__body-wrapper tr.active-freight-action-row > td,
+#printBox ::v-deep .el-table__fixed-body-wrapper tr.active-freight-action-row > td,
+#printBox ::v-deep .el-table__fixed-right .el-table__fixed-body-wrapper tr.active-freight-action-row > td {
+	background-color: #fff7e8 !important;
+	box-shadow: inset 0 1px 0 #e6a23c, inset 0 -1px 0 #e6a23c;
+}
+#printBox ::v-deep .el-table__body-wrapper tr.active-freight-action-row > td:first-child,
+#printBox ::v-deep .el-table__fixed-body-wrapper tr.active-freight-action-row > td:first-child,
+#printBox ::v-deep .el-table__fixed-right .el-table__fixed-body-wrapper tr.active-freight-action-row > td:first-child {
+	box-shadow: inset 3px 0 0 #e6a23c, inset 0 1px 0 #e6a23c, inset 0 -1px 0 #e6a23c;
 }
 
 /* 表单输入宽度与组件对齐优化 */

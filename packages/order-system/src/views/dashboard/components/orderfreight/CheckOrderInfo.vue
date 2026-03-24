@@ -16,6 +16,11 @@ export default {
 		row: {
 			type: Object,
 			default: () => {}
+		},
+		/** 点击「查看订单/库存信息」前回调，用于父级表格行高亮持久化 */
+		trackRow: {
+			type: Function,
+			default: null
 		}
 	},
 	data() {
@@ -37,6 +42,9 @@ export default {
 	methods: {
 		// 查看运费对应的订单单据信息
 		handleCheck(row) {
+			if (typeof this.trackRow === 'function') {
+				this.trackRow(row);
+			}
 			// 根据获取到的订单id获取订单详情
 			if (row.source === FREIGHT_TYPE.GOODS_ORDER) {
 				getGoodsOrder(row.sourceId).then(res => {
