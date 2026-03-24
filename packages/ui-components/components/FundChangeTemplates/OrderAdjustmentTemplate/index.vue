@@ -67,6 +67,16 @@ export default {
 	},
 	methods: {
 		/**
+		 * 统一税标识文案
+		 * @param {number|string|boolean} value - 原始税标识
+		 * @returns {string}
+		 */
+		formatTaxFlag(value) {
+			if (value === 1 || value === '1' || value === true) return '是';
+			if (value === 0 || value === '0' || value === false) return '否';
+			return '';
+		},
+		/**
 		 * 按 orderDetailList 展开，每明细一对 修改前/修改后，每组末尾一行差额
 		 */
 		processData() {
@@ -97,6 +107,9 @@ export default {
 		 */
 		mapDetailToRow(info, detail) {
 			const totalFreight = Number(info.landFreight || 0) + Number(info.seaFreight || 0);
+			const factoryPayment = Number(detail.paymentFactory || 0);
+			const sundryCost = Number(detail.sundryCost || info.sundryCost || 0);
+			const paymentsWithSundry = add(factoryPayment, sundryCost);
 			return {
 				status: info.checkState,
 				orderDate: info.addtime ? (info.addtime + '').slice(0, 10) : '',
@@ -107,10 +120,38 @@ export default {
 				supplierName: _.isArray(info.supplierNames) ? info.supplierNames.join(',') : info.supplierNames || '',
 				warehouse: detail.storeHouseName || info.storeHouseName || '',
 				gradeName: detail.levelName || '',
+				countingUnit: detail.countingUnit || '',
+				thickness: detail.height,
+				length: detail.length,
+				width: detail.width,
+				piecesPerPack: detail.piecesPerPack,
+				packs: detail.packs,
+				factoryPieces: detail.pieces,
+				factoryUnitPrice: detail.price,
+				factoryTaxFlag: this.formatTaxFlag(detail.isIncludeTaxFactory),
+				sundryCost: format(sundryCost, { notation: 'fixed', precision: 2 }),
+				factoryPayment: format(factoryPayment, { notation: 'fixed', precision: 2 }),
+				actualPieces: detail.actualPieces,
+				unloadPrice: detail.paymentUnload,
+				stockTaxFlag: this.formatTaxFlag(detail.isIncludeTaxSale),
+				paymentsWithSundry: format(paymentsWithSundry, { notation: 'fixed', precision: 2 }),
 				allPayments: info.allPayments,
+				erro: detail.erro,
+				tonnage: info.allTonnage,
+				landFreightPrice: detail.landFreightPrice,
+				additionalFees: info.additionalFees,
 				landFreight: info.landFreight,
 				seaFreight: info.seaFreight,
-				totalFreight: format(totalFreight, { notation: 'fixed', precision: 2 })
+				totalFreight: format(totalFreight, { notation: 'fixed', precision: 2 }),
+				otherCost: detail.otherCost,
+				profit: detail.profit,
+				profitNoTax: detail.profitNoTax,
+				logisticsProfit: detail.logisticsProfit,
+				customerCommission: detail.customerCommission,
+				factoryCommission: detail.factoryCommission,
+				factoryRebateAmount: detail.factoryRebateAmount,
+				factoryDiscountAmount: detail.factoryDiscountAmount,
+				remark: detail.comments || info.comments || ''
 			};
 		},
 		/**
