@@ -14,7 +14,8 @@ export default {
 		attachmentList: { type: Array, default: () => [] },
 		isUpload: { type: Boolean, default: true },
 		flag: { type: String, default: '' },
-		extraInfo: { type: Object, default: () => ({}) }
+		extraInfo: { type: Object, default: () => ({}) },
+		showTooltip: { type: Boolean, default: true }
 	},
 	data() {
 		return {
@@ -107,7 +108,7 @@ export default {
 	<div>
 		<!-- 有附件时显示图标；无附件时不展示任何内容（仍保留点击区域以便上传，可按需移除 @click） -->
 		<div class="attachment-entry" v-if="filteredAttachments.length > 0" @click="openAttachmentPanel">
-			<el-tooltip content="点击查看/上传附件" placement="top">
+			<el-tooltip content="点击查看/上传附件" placement="top" :disabled="!showTooltip">
 				<div class="attachment-icon-wrapper">
 					<i class="el-icon-picture" v-once />
 				</div>
