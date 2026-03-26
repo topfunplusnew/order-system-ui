@@ -54,6 +54,7 @@
 							query.bankCardType = value;
 						}
 					"
+					:select-type="query.bankCardType"
 					:baned="true"
 				/>
 			</el-form-item>
@@ -147,25 +148,31 @@ import dayjs from 'dayjs';
 import { getDepositMoney } from '@/api/system/depositMoney';
 import DEPOSITMONEY from '@/components/NeedToShow/DEPOSITMONEY.vue';
 
+const FUND_FLOW_DETAIL_LIST_STORAGE_KEY = 'fund-flow-detail-list-query';
+
+function createDefaultQuery() {
+	const today = dayjs().format('YYYY-MM-DD');
+	return {
+		dateRange: [today, today],
+		startTime: today,
+		endTime: today,
+		otherName: '',
+		otherAccountName: '',
+		ourBankNO: '',
+		bankCardType: ''
+	};
+}
+
 export default {
 	name: 'fundFlowDetailList',
 	components: { BankType, SearchOption },
 	mixins: [common_dialog],
 	data() {
-		const today = new Date().toISOString().split('T')[0];
 		return {
 			dayjs, // 将 dayjs 添加到 data 中，使其在模板中可用
 			queryBank: '',
 			showSearch: true,
-			query: {
-				dateRange: [],
-				startTime: '',
-				endTime: '',
-				otherName: '',
-				otherAccountName: '',
-				ourBankNO: '',
-				bankCardType: ''
-			},
+			query: createDefaultQuery(),
 			statementData: [], // 银行流水数据
 			loading: false, // 加载状态
 			// 隐藏列信息
@@ -189,6 +196,62 @@ export default {
 	},
 	methods: {
 		listBankAccount,
+		getStoredQuery() {
+			if (typeof window === 'undefined' || !window.localStorage) {
+				return null;
+			}
+			try {
+				const raw = window.localStorage.getItem(FUND_FLOW_DETAIL_LIST_STORAGE_KEY);
+				if (!raw) {
+					return null;
+				}
+				return JSON.parse(raw);
+			} catch (error) {
+				return null;
+			}
+		},
+		normalizeStoredQuery(storedQuery) {
+			const defaultQuery = createDefaultQuery();
+			if (!storedQuery || typeof storedQuery !== 'object') {
+				return defaultQuery;
+			}
+			const normalizedDateRange = Array.isArray(storedQuery.dateRange) && storedQuery.dateRange.length === 2 ? storedQuery.dateRange : defaultQuery.dateRange;
+			return {
+				...defaultQuery,
+				...storedQuery,
+				dateRange: normalizedDateRange,
+				startTime: normalizedDateRange[0] || '',
+				endTime: normalizedDateRange[1] || ''
+			};
+		},
+		applyQueryState(nextQuery) {
+			this.query = this.normalizeStoredQuery(nextQuery);
+		},
+		saveQueryToLocalStorage() {
+			if (typeof window === 'undefined' || !window.localStorage) {
+				return;
+			}
+			const queryToStore = this.normalizeStoredQuery(this.query);
+			try {
+				window.localStorage.setItem(FUND_FLOW_DETAIL_LIST_STORAGE_KEY, JSON.stringify(queryToStore));
+			} catch (error) {
+				void error;
+			}
+		},
+		clearStoredQuery() {
+			if (typeof window === 'undefined' || !window.localStorage) {
+				return;
+			}
+			window.localStorage.removeItem(FUND_FLOW_DETAIL_LIST_STORAGE_KEY);
+		},
+		restoreQueryFromLocalStorage() {
+			const storedQuery = this.getStoredQuery();
+			if (!storedQuery) {
+				return false;
+			}
+			this.applyQueryState(storedQuery);
+			return true;
+		},
 		handleCheckDetail(row) {
 			// 如果表名是receiveMoney（表示收款的）则通过接口根据UUID获取收款信息详细信息 展示收款信息后用户可以在这里再联查其他表
 			if (row.tableName === TableName.RECEIVE_MONEY) {
@@ -248,9 +311,7 @@ export default {
 		},
 		// 获取银行流水数据
 		fetchStatementData() {
-			// 清空
 			this.statementData = [];
-			// 将日期范围转换为 startTime 和 endTime
 			if (this.query.dateRange && this.query.dateRange.length === 2) {
 				this.query.startTime = this.query.dateRange[0];
 				this.query.endTime = this.query.dateRange[1];
@@ -258,57 +319,50 @@ export default {
 				this.query.startTime = '';
 				this.query.endTime = '';
 			}
-			// 报表中是必须都要传递 但这里后端不传也可以 按照开始时间 如果不传就是至今
 			if (!this.query.startTime || !this.query.endTime) {
 				this.$message.warning('请选择开始日期和结束日期');
 				return;
 			}
-
+			this.saveQueryToLocalStorage();
 			this.loading = true;
-			// 先查询上年指定时间结转
+
 			const query = {
 				startTime: this.query.startTime,
 				ourBankNO: this.query.ourBankNO,
 				bankCardType: this.query.bankCardType
 			};
-			findFundFlowBalanceInLocalCurrencyAtDate(query).then(async response => {
-				if (response.code === 200) {
-					const lastYearData = response.data;
-					if (!lastYearData) {
-						this.$message.error('查询上年结转数据失败');
-						return;
-					}
 
-					getFundFlowDetailList(this.query).then(res => {
-						if (res.code === 200) {
-							this.statementData = res.data;
-							this.statementData.unshift({
-								...lastYearData,
-								changeType: '上年结转'
-							});
-						} else {
-							this.$message.error(res.msg || '获取银行流水数据失败');
+			findFundFlowBalanceInLocalCurrencyAtDate(query)
+				.then(response => {
+					if (response.code !== 200) {
+						throw new Error(response.msg || '获取银行流水数据失败');
+					}
+					if (!response.data) {
+						throw new Error('查询上年结转数据失败');
+					}
+					return getFundFlowDetailList(this.query).then(res => {
+						if (res.code !== 200) {
+							throw new Error(res.msg || '获取银行流水数据失败');
 						}
+						this.statementData = res.data;
+						this.statementData.unshift({
+							...response.data,
+							changeType: '上年结转'
+						});
 					});
-				} else {
-					this.$message.error(response.msg || '获取银行流水数据失败');
-				}
-			});
-			this.loading = false;
+				})
+				.catch(error => {
+					this.$message.error(error.message || '获取银行流水数据失败');
+				})
+				.finally(() => {
+					this.loading = false;
+				});
 		},
 		// 重置查询条件
 		resetQuery() {
-			const today = new Date().toISOString().split('T')[0];
-			this.query = {
-				dateRange: [today, today],
-				startTime: today,
-				endTime: today,
-				ourBankNO: '',
-				bankCardType: '',
-				otherName: '',
-				otherAccountName: ''
-			};
+			this.query = createDefaultQuery();
 			this.statementData = [];
+			this.clearStoredQuery();
 		},
 		/** 导出按钮操作 */
 		handleExport() {
@@ -347,10 +401,10 @@ export default {
 		}
 	},
 	created() {
-		const today = new Date().toISOString().split('T')[0]; // 获取 YYYY-MM-DD 格式的当前日期
-		this.query.dateRange = [today, today];
-		this.query.startTime = today;
-		this.query.endTime = today; // 同时也将结束时间设为今天
+		const restored = this.restoreQueryFromLocalStorage();
+		if (restored) {
+			this.fetchStatementData();
+		}
 	}
 };
 </script>
