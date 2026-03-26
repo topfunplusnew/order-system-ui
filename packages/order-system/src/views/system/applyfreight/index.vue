@@ -5,11 +5,13 @@ import { common_dialog } from '../../dashboard/mixins/common/common_dialog';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
 import { getGoodsOrder } from '@/api/system/goodsOrder';
 import GOODS_ORDER from '@/components/NeedToShow/GOODS_ORDER.vue';
-import { APPLY_FREIGHT_SOURCE_TYPE, FreightSource } from '@/api/tool/enums';
+import { APPLY_FREIGHT_SOURCE_TYPE } from '@/api/tool/enums';
 import { getInventoryMain } from '@/api/system/inventoryMain';
 import INVENTORY from '@/components/NeedToShow/INVENTORY.vue';
 import CheckFiles from '@/components/CheckFiles.vue';
 import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfile';
+import { batchDeleteUserConfig, getUserConfig, saveUserConfig } from '@/api/user-config';
+import { UserConfigKey } from '@/api/tool/user-config';
 
 const createDefaultQueryParams = () => ({
 	startDate: null,
@@ -33,11 +35,6 @@ export default {
 	components: { CheckFiles },
 	mixins: [mixin_order_freeApply, common_dialog, mixin_printHTML, mixin_checkfile],
 	data() {
-		const today = new Date();
-		const oneMonthAgo = new Date();
-		oneMonthAgo.setMonth(today.getMonth() - 1);
-		const oneMonthLater = new Date();
-		oneMonthLater.setMonth(today.getMonth() + 1);
 		return {
 			queryParams: createDefaultQueryParams(),
 			// 实际用于列表查询/分页/导出的一份参数，避免“搜索后重置表单”影响当前列表
@@ -71,7 +68,8 @@ export default {
 				{ key: 16, label: '订单状态', prop: 'checkState', visible: true },
 				{ key: 17, label: '收到条', prop: 'receiveProof', visible: true },
 				{ key: 18, label: '已支付金额', prop: 'paidAmount', visible: true }
-			]
+			],
+			activeApplyFreightActionRowId: null
 		};
 	},
 	computed: {
@@ -80,6 +78,108 @@ export default {
 		}
 	},
 	methods: {
+		normalizeApplyFreightActionRowId(value) {
+			if (value === null || value === undefined || value === '') {
+				return null;
+			}
+			return String(value);
+		},
+		getApplyFreightActionRowIdentity(row) {
+			if (!row || typeof row !== 'object') {
+				return null;
+			}
+			const explicitRowId = row.id ?? row.orderFreightId ?? row.freightId;
+			if (explicitRowId !== null && explicitRowId !== undefined && explicitRowId !== '') {
+				return this.normalizeApplyFreightActionRowId(explicitRowId);
+			}
+			const identityParts = [row.source, row.sourceId, row.transportType, row.carId || row.carNo].filter(item => item !== null && item !== undefined && item !== '');
+			if (identityParts.length === 0) {
+				return null;
+			}
+			return identityParts.map(item => String(item)).join('::');
+		},
+		parseUserConfigValue(response) {
+			const configValue = response?.data?.value ?? response?.data ?? null;
+			if (typeof configValue !== 'string') {
+				return configValue;
+			}
+			try {
+				return JSON.parse(configValue);
+			} catch (error) {
+				return configValue;
+			}
+		},
+		extractApplyFreightActionRowId(configValue) {
+			if (!configValue) {
+				return null;
+			}
+			if (typeof configValue === 'object') {
+				const nestedConfig = configValue.key;
+				if (nestedConfig && typeof nestedConfig === 'object') {
+					return this.normalizeApplyFreightActionRowId(nestedConfig.id ?? nestedConfig.rowId ?? null);
+				}
+				return this.normalizeApplyFreightActionRowId(configValue.id ?? configValue.rowId ?? null);
+			}
+			return this.normalizeApplyFreightActionRowId(configValue);
+		},
+		isPageReload() {
+			if (typeof window === 'undefined' || !window.performance) {
+				return false;
+			}
+			if (typeof window.performance.getEntriesByType === 'function') {
+				const navigationEntries = window.performance.getEntriesByType('navigation');
+				if (Array.isArray(navigationEntries) && navigationEntries.length > 0) {
+					return navigationEntries[0].type === 'reload';
+				}
+			}
+			if (window.performance.navigation) {
+				return window.performance.navigation.type === 1;
+			}
+			return false;
+		},
+		async initApplyFreightActionRowState() {
+			if (this.isPageReload()) {
+				await this.clearApplyFreightActionRowState();
+				return;
+			}
+			await this.loadApplyFreightActionRowState();
+		},
+		async loadApplyFreightActionRowState() {
+			try {
+				const response = await getUserConfig(UserConfigKey.APPLY_FREIGHT_ACTIVE_ACTION_ROW);
+				const configValue = this.parseUserConfigValue(response);
+				this.activeApplyFreightActionRowId = this.extractApplyFreightActionRowId(configValue);
+			} catch (error) {
+				void error;
+				this.activeApplyFreightActionRowId = null;
+			}
+		},
+		async clearApplyFreightActionRowState() {
+			this.activeApplyFreightActionRowId = null;
+			try {
+				await batchDeleteUserConfig([UserConfigKey.APPLY_FREIGHT_ACTIVE_ACTION_ROW]);
+			} catch (error) {
+				void error;
+			}
+		},
+		trackApplyFreightActionRow(row) {
+			const rowId = this.getApplyFreightActionRowIdentity(row);
+			if (!rowId) {
+				return;
+			}
+			this.activeApplyFreightActionRowId = rowId;
+			saveUserConfig(UserConfigKey.APPLY_FREIGHT_ACTIVE_ACTION_ROW, {
+				key: {
+					id: rowId
+				}
+			}).catch(error => {
+				void error;
+			});
+		},
+		getApplyFreightRowClassName({ row }) {
+			const currentRowId = this.getApplyFreightActionRowIdentity(row);
+			return currentRowId && currentRowId === this.activeApplyFreightActionRowId ? 'active-apply-freight-action-row' : '';
+		},
 		applyQueryParams(target, source) {
 			// 保持对象引用不变，避免表单/分页等组件状态异常
 			target.startDate = source.startDate;
@@ -172,6 +272,7 @@ export default {
 		},
 		// 查看该运费信息的订单或者库存的信息
 		viewOrderDetails(row) {
+			this.trackApplyFreightActionRow(row);
 			console.log(row);
 			// 如果该行的订单或者库存的id不存在,那么就报错
 			if (!row.sourceId) {
@@ -225,6 +326,7 @@ export default {
 			}
 		},
 		handleApplyFreight(row) {
+			this.trackApplyFreightActionRow(row);
 			if (row.transportType === 'land') {
 				this.handleApplyLandFree(row);
 			} else if (row.transportType === 'sea') {
@@ -242,6 +344,7 @@ export default {
 		}
 	},
 	created() {
+		this.initApplyFreightActionRowState();
 		this.getList();
 	}
 };
@@ -300,7 +403,7 @@ export default {
 				</right-toolbar>
 			</el-col>
 		</el-row>
-		<el-table id="printBox" :data="freightList" v-loading="loading" border fit size="mini" style="width: 100%; margin-top: 20px">
+		<el-table id="printBox" :data="freightList" v-loading="loading" border fit size="mini" style="width: 100%; margin-top: 20px" :row-key="getApplyFreightActionRowIdentity" :row-class-name="getApplyFreightRowClassName">
 			<el-table-column v-if="columns[0].visible" show-overflow-tooltip prop="source" label="订单来源" align="center" width="80" />
 			<el-table-column v-if="columns[1].visible" show-overflow-tooltip prop="documentDate" label="订单日期" align="center" width="120" />
 			<el-table-column v-if="columns[2].visible" show-overflow-tooltip prop="customerOrStorehouseName" label="客户/仓库名称" align="center" width="150" />
@@ -372,5 +475,18 @@ export default {
 .land-transport {
 	font-weight: bold;
 	color: #e6a23c;
+}
+
+#printBox ::v-deep .el-table__body-wrapper tr.active-apply-freight-action-row > td,
+#printBox ::v-deep .el-table__fixed-body-wrapper tr.active-apply-freight-action-row > td,
+#printBox ::v-deep .el-table__fixed-right .el-table__fixed-body-wrapper tr.active-apply-freight-action-row > td {
+	background-color: #fff7e8 !important;
+	box-shadow: inset 0 1px 0 #e6a23c, inset 0 -1px 0 #e6a23c;
+}
+
+#printBox ::v-deep .el-table__body-wrapper tr.active-apply-freight-action-row > td:first-child,
+#printBox ::v-deep .el-table__fixed-body-wrapper tr.active-apply-freight-action-row > td:first-child,
+#printBox ::v-deep .el-table__fixed-right .el-table__fixed-body-wrapper tr.active-apply-freight-action-row > td:first-child {
+	box-shadow: inset 3px 0 0 #e6a23c, inset 0 1px 0 #e6a23c, inset 0 -1px 0 #e6a23c;
 }
 </style>

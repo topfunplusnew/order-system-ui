@@ -13,6 +13,8 @@ export const UserConfigKey = Object.freeze({
 	GOODS_ORDER_ACTIVE_ACTION_ROW: 'goodsOrder-active-action-row',
 	// 订单运费列表当前高亮行
 	ORDER_FREIGHT_ACTIVE_ACTION_ROW: 'orderfreight-active-action-row',
+	// 运费申请台账当前高亮行
+	APPLY_FREIGHT_ACTIVE_ACTION_ROW: 'applyfreight-active-action-row',
 	// 库存列表列配置
 	INVENTORY_TABLE_COLUMNS: 'inventory-table-columns',
 	// 付款列表列配置
