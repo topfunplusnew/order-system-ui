@@ -1003,7 +1003,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`未开票进项_${new Date().getTime()}.xlsx`
+				`我方购入信息_${new Date().getTime()}.xlsx`
 			);
 		},
 

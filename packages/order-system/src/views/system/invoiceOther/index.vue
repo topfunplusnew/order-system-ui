@@ -981,7 +981,7 @@ export default {
 				{
 					...this.queryParams
 				},
-				`商家直接给客户开发票_${new Date().getTime()}.xlsx`
+				`第三方进销项_${new Date().getTime()}.xlsx`
 			);
 		},
 		handleCheck(row) {
