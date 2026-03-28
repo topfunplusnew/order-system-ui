@@ -759,6 +759,7 @@ export default {
 				const hasIncludeTax = val.smailOrderDetails.some(item => item.isIncludeTaxSale === 1);
 				this.form.salesTaxIncluded = hasIncludeTax ? 1 : 0;
 			} else {
+				this.$message.error('该订单缺失关键信息，无法计算销售是否含税');
 				this.form.salesTaxIncluded = 0;
 			}
 			this.handleLoadOrderData();
