@@ -749,19 +749,14 @@ export default {
 		handleUpdateGoodsOrder(val) {
 			this.queryGoodsOrder = val;
 		},
+		/**
+		 * 订单选择回调：写入 orderId、销售经理/录入员，并拉取 getOrderRewardData 填充表单（含是否含税）
+		 * @param {Object} val - listWithFullDetail 选中的订单行
+		 */
 		handleCommitBackGoodsOrder(val) {
 			this.form.orderId = val.id;
-			// 保存订单的录入人员和销售经理信息
 			this.orderSaleManager = val.saleManager || null;
 			this.orderUserName = val.userName || null;
-			// 自动填充销售是否含税字段：检查smailOrderDetails中是否有任意一条isIncludeTaxSale为1
-			if (val.smailOrderDetails && Array.isArray(val.smailOrderDetails) && val.smailOrderDetails.length > 0) {
-				const hasIncludeTax = val.smailOrderDetails.some(item => item.isIncludeTaxSale === 1);
-				this.form.salesTaxIncluded = hasIncludeTax ? 1 : 0;
-			} else {
-				this.$message.error('该订单缺失关键信息，无法计算销售是否含税');
-				this.form.salesTaxIncluded = 0;
-			}
 			this.handleLoadOrderData();
 		},
 		handleUpdateSearchGoodsOrder(val) {
@@ -783,6 +778,7 @@ export default {
 				this.openDialog(GOODS_ORDER, '订单信息', '100%', { needToShowInfo: result.data }, false);
 			});
 		},
+		/** 根据订单 ID 请求 getOrderRewardData，回填表单字段（含接口返回的 salesTaxIncluded） */
 		handleLoadOrderData() {
 			if (!this.form.orderId) {
 				return;
@@ -798,7 +794,7 @@ export default {
 					this.form.customerManufacturerCommissionAmount = orderData.customerManufacturerCommissionAmount;
 					this.form.comprehensiveProfit = orderData.comprehensiveProfit;
 					this.form.paymentAmount = orderData.paymentAmount;
-					// 根据人员身份自动填充奖励接收人
+					this.form.salesTaxIncluded = orderData.salesTaxIncluded === 1 ? 1 : 0;
 					this.fillRewardReceiver();
 				}
 			});
