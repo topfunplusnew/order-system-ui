@@ -7,6 +7,7 @@
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" @click="handleSearch" size="mini">搜索</el-button>
+				<el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport">导出</el-button>
 			</el-form-item>
 		</el-form>
 
@@ -92,6 +93,19 @@ export default {
 		formatValue(row, column, cellValue) {
 			const num = Number(cellValue ?? 0);
 			return Number.isFinite(num) ? num.toFixed(2) : '0.00';
+		},
+		/**
+		 * 导出资金总额汇总
+		 * @returns {void}
+		 */
+		handleExport() {
+			this.download(
+				'statistics/export/getAllMoney',
+				{
+					endTime: this.searchForm.endTime
+				},
+				`资金总额_${this.searchForm.endTime || parseTime(new Date(), '{y}-{m}-{d}')}.xlsx`
+			);
 		},
 		tableRowClassName({ rowIndex }) {
 			if (rowIndex === 0) {

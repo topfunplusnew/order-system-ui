@@ -24,6 +24,7 @@
 
 				<el-form-item>
 					<el-button type="primary" icon="el-icon-search" size="mini" @click="fetchOilCardDetails">搜索</el-button>
+					<el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport">导出</el-button>
 				</el-form-item>
 			</el-form>
 		</el-row>
@@ -307,6 +308,21 @@ export default {
 				this.component = CAR_APPLY;
 				this.detailDialogVisible = true;
 			});
+		},
+		/**
+		 * 导出加油卡余额明细账
+		 * @returns {void}
+		 */
+		handleExport() {
+			this.download(
+				'system/oilCard/exportOilCardBalanceDetail',
+				{
+					oilCardNo: this.queryParams.oilCardNo,
+					beginTime: this.queryParams.beginTime,
+					endTime: this.queryParams.endTime
+				},
+				`油卡消费充值明细_${new Date().getTime()}.xlsx`
+			);
 		}
 	}
 };

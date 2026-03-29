@@ -114,6 +114,19 @@ export default {
 		resetQuery() {
 			this.queryParams.date = parseTime(new Date(), '{y}-{m}-{d}');
 			this.handleQuery();
+		},
+		/**
+		 * 导出本日应当利润（与当前查询日期一致）
+		 * @returns {void}
+		 */
+		handleExport() {
+			this.download(
+				'statistics/export/getDailyProfitStatistics',
+				{
+					date: this.queryParams.date
+				},
+				`本日应当利润_${this.queryParams.date || parseTime(new Date(), '{y}-{m}-{d}')}.xlsx`
+			);
 		}
 	}
 };
@@ -128,6 +141,7 @@ export default {
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
 				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+				<el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport">导出</el-button>
 			</el-form-item>
 		</el-form>
 

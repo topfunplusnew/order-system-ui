@@ -16,6 +16,7 @@
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
 				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+				<el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport">导出</el-button>
 			</el-form-item>
 		</el-form>
 
@@ -278,6 +279,24 @@ export default {
 			}
 
 			return value;
+		},
+		/**
+		 * 导出资金变动统计（与列表查询时间、目标日期一致）
+		 * @returns {void}
+		 */
+		handleExport() {
+			const startTime = this.queryParams.dateRange?.[0];
+			const endTime = this.queryParams.dateRange?.[1];
+			const targetDate = this.queryParams.params?.targetDate;
+			this.download(
+				'statistics/export/getAllMoneyChange',
+				{
+					startTime,
+					endTime,
+					targetDate
+				},
+				`资金变动详情_${this.parseTime(new Date())}.xlsx`
+			);
 		}
 	}
 };

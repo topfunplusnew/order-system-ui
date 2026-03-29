@@ -517,6 +517,21 @@ export default {
 		...mapGetters(['downloadProgress', 'downloadMessage'])
 	},
 	methods: {
+		/**
+		 * 一键下载压缩包文件名：xx年x月x日一键下载数据留档.zip
+		 * @param {string} dateStr - yyyy-MM-dd
+		 * @returns {string}
+		 */
+		buildOneClickArchiveZipName(dateStr) {
+			const parts = (dateStr || '').split('-');
+			if (parts.length !== 3) {
+				return `一键下载数据留档_${Date.now()}.zip`;
+			}
+			const y = parts[0];
+			const m = parseInt(parts[1], 10);
+			const d = parseInt(parts[2], 10);
+			return `${y}年${m}月${d}日一键下载数据留档.zip`;
+		},
 		// 自定义汇总方法，排除柜号列的求和
 		getSummaries(param) {
 			const { columns, data } = param;
@@ -619,7 +634,7 @@ export default {
 							date: date,
 							exportEmptyData: exportEmptyData
 						},
-						`全量报表_${new Date().getTime()}.zip`
+						this.buildOneClickArchiveZipName(date)
 					);
 				})
 				.catch(() => {

@@ -17,6 +17,9 @@
 			<el-form-item label="供应商/库房" prop="supplierOrWarehouse">
 				<el-input v-model="queryParams.supplierOrWarehouse" placeholder="请输入供应商/库房" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
+			<el-form-item label="入库库房" prop="storeHouseName">
+				<el-input v-model="queryParams.storeHouseName" placeholder="请输入入库库房" clearable @keyup.enter.native="handleQuery" />
+			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery" v-hasPermi="['system:inventoryStatistics:inStatistics']">搜索</el-button>
 				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -140,6 +143,7 @@ export default {
 			columns: [
 				{ label: '入库日期', prop: 'storeDate', visible: true },
 				{ label: '车号', prop: 'carNo', visible: true },
+				{ label: '入库库房', prop: 'storeHouseName', visible: true },
 				{ label: '供应商/库房', prop: 'supplierOrWarehouse', visible: true },
 				{ label: '产品级别', prop: 'levelName', visible: true },
 				{ label: '厚度', prop: 'height', visible: true },

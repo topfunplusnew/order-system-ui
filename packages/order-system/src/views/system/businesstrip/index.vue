@@ -46,6 +46,8 @@
 			"
 			@selection-change="handleSelectionChange"
 		>
+			<el-table-column type="selection" width="55" align="center" />
+			<el-table-column label="申请时间" align="center" width="250px" prop="paymentApply.fundsDate" show-overflow-tooltip />
 			<!--      <el-table-column label="报销人ID" align="center" prop="employeeID"/>-->
 			<el-table-column v-if="columns[0].visible" label="报销人" align="center" prop="employee" show-overflow-tooltip />
 			<el-table-column v-if="columns[1].visible" label="共同出差人员" align="center" prop="personnel" show-overflow-tooltip />
@@ -520,6 +522,10 @@ export default {
 		TableName() {
 			return TableName;
 		},
+		/** 付款申请通过后资金日期，用于报销行未带 fundsDate 时的展示 */
+		reimbursementFundsDateFallback() {
+			return (this.form && this.form.payment && this.form.payment.fundsDate) || '';
+		},
 		...mapGetters(['trueName']),
 		...mapGetters(['deptName'])
 	},
@@ -968,6 +974,7 @@ export default {
 			obj.userId = '';
 			obj.UserName = '';
 			obj.delFlag = '';
+			obj.fundsDate = '';
 			this.tripReimbursementList.push(obj);
 		},
 		/** 出差报销删除按钮操作 */

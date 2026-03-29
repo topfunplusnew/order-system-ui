@@ -395,8 +395,16 @@ export default {
 					<el-table-column show-overflow-tooltip label="科目编码" align="center" prop="subjectNo" width="140" />
 					<el-table-column show-overflow-tooltip label="科目名称" align="center" prop="subjectName" width="140" />
 					<el-table-column show-overflow-tooltip label="司机编号" align="center" prop="companyId" width="140" />
-					<el-table-column show-overflow-tooltip label="司机名称" align="center" prop="companyName" width="140" />
-					<el-table-column show-overflow-tooltip label="司机银行户名（对方真实收付款名称）" align="center" prop="otherAccountsName" width="140" />
+					<el-table-column show-overflow-tooltip label="车牌号" align="center" width="140">
+						<template slot-scope="scope">
+							{{ scope.row.carNo || scope.row.companyName || '-' }}
+						</template>
+					</el-table-column>
+					<el-table-column show-overflow-tooltip label="司机银行户名（对方真实收付款名称）" align="center" width="160">
+						<template slot-scope="scope">
+							{{ scope.row.otherAccountsName || scope.row.otherAcountsName || '-' }}
+						</template>
+					</el-table-column>
 					<el-table-column show-overflow-tooltip label="司机银行卡号" align="center" prop="otherBankNo" width="140" />
 
 					<el-table-column show-overflow-tooltip label="摘要" align="center" prop="summary" width="140" />

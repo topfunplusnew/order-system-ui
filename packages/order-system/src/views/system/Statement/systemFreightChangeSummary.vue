@@ -40,7 +40,11 @@
 			<el-table-column v-if="columns[1].visible" show-overflow-tooltip label="日期" align="center" prop="fundsDate" />
 			<el-table-column v-if="columns[2].visible" show-overflow-tooltip label="车牌号" align="center" prop="carNo" />
 			<el-table-column v-if="columns[3].visible" show-overflow-tooltip label="司机" align="center" prop="driver" />
-			<el-table-column v-if="columns[4].visible" show-overflow-tooltip label="车队" align="center" prop="fleet" />
+			<el-table-column v-if="columns[4].visible" show-overflow-tooltip label="车队" align="center">
+				<template slot-scope="scope">
+					{{ scope.row.fleet || scope.row.fleetName || scope.row.motorcadeName || '-' }}
+				</template>
+			</el-table-column>
 			<el-table-column v-if="columns[5].visible" show-overflow-tooltip label="上日应付运费" align="center" prop="previousDayUnpaidAmount" />
 			<el-table-column v-if="columns[6].visible" show-overflow-tooltip label="当日应付运费" align="center" prop="dailyTotalAmount" />
 			<el-table-column v-if="columns[7].visible" show-overflow-tooltip label="本日付费金额" align="center" prop="dailyPaidAmount" />

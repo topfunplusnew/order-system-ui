@@ -7,6 +7,7 @@
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" size="mini" @click="handleSearch">搜索</el-button>
+				<el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport">导出</el-button>
 			</el-form-item>
 		</el-form>
 
@@ -197,6 +198,23 @@ export default {
 				};
 			}
 			return {};
+		},
+		/**
+		 * 导出所选日期资金总额（与右侧表、接口 getMoneySummary 的 endTime 一致；左侧昨日需另接口时再扩展）
+		 * @returns {void}
+		 */
+		handleExport() {
+			if (!this.searchForm.endTime) {
+				this.$message.warning('请先选择日期');
+				return;
+			}
+			this.download(
+				'statistics/export/getAllMoney',
+				{
+					endTime: this.searchForm.endTime
+				},
+				`资金总额_${this.searchForm.endTime}.xlsx`
+			);
 		}
 	}
 };

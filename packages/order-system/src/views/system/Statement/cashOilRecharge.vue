@@ -17,6 +17,7 @@
 				<el-form-item>
 					<el-button type="primary" @click="fetchData" class="query-button" size="mini">查询</el-button>
 					<el-button @click="resetForm" class="reset-button" size="mini">重置</el-button>
+					<el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport">导出</el-button>
 				</el-form-item>
 			</div>
 		</el-form>
@@ -161,6 +162,21 @@ export default {
 					true
 				);
 			});
+		},
+		/**
+		 * 导出现金加油台账
+		 * @returns {void}
+		 */
+		handleExport() {
+			this.download(
+				'system/carApply/exportCashRefuelingLedger',
+				{
+					carNo: this.query.carNo,
+					startTime: this.query.startTime,
+					endTime: this.query.endTime
+				},
+				`现金加油台账_${new Date().getTime()}.xlsx`
+			);
 		}
 	}
 };

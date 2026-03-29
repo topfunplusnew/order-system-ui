@@ -17,6 +17,9 @@
 			<el-form-item label="客户/库房" prop="customerOrWarehouse">
 				<el-input v-model="queryParams.customerOrWarehouse" placeholder="请输入客户/库房" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
+			<el-form-item label="出库库房" prop="storeHouseName">
+				<el-input v-model="queryParams.storeHouseName" placeholder="请输入出库库房" clearable @keyup.enter.native="handleQuery" />
+			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery" v-hasPermi="['system:inventoryStatistics:outStatistics']">搜索</el-button>
 				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -44,7 +47,7 @@
 <style scoped lang="scss"></style>
 <script>
 import _ from 'lodash';
-import { listOutStatistics, exportOutStatistics } from '../../../api/inventory/index';
+import { listOutStatistics } from '../../../api/inventory/index';
 import { fix_2 } from '../../../api/tool/format';
 
 export default {
@@ -68,8 +71,9 @@ export default {
 			},
 			columns: [
 				{ label: '出库日期', prop: 'outDate', visible: true },
-				{ label: '车号', prop: 'carNo', visible: true },
 				{ label: '客户/库房', prop: 'customerOrWarehouse', visible: true },
+				{ label: '车号', prop: 'carNo', visible: true },
+				{ label: '出库库房', prop: 'storeHouseName', visible: true },
 				{ label: '产品级别', prop: 'levelName', visible: true },
 				{ label: '厚度', prop: 'height', visible: true },
 				{ label: '长度', prop: 'length', visible: true },
