@@ -61,6 +61,24 @@ export default {
 		}
 	},
 	methods: {
+		getDetailKey(detail = {}, index = 0) {
+			return detail.id != null ? `id:${detail.id}` : `idx:${index}`;
+		},
+		buildDetailPairs(origList = [], chgList = []) {
+			const pairMap = new Map();
+			origList.forEach((detail, index) => {
+				const key = this.getDetailKey(detail, index);
+				pairMap.set(key, { key, original: detail || {}, changed: {} });
+			});
+			chgList.forEach((detail, index) => {
+				const key = this.getDetailKey(detail, index);
+				const current = pairMap.get(key) || { key, original: {}, changed: {} };
+				current.changed = detail || {};
+				pairMap.set(key, current);
+			});
+			const pairs = Array.from(pairMap.values());
+			return pairs.length ? pairs : [{ key: 'empty:0', original: {}, changed: {} }];
+		},
 		/** 一对修改前/修改后对应一条明细，每组末尾一行差额（记录级） */
 		processData() {
 			this.tableData = [];
@@ -69,14 +87,13 @@ export default {
 				const changed = record.changedInfo || {};
 				const origList = original.inventoryDetailList || [];
 				const chgList = changed.inventoryDetailList || [];
-				const detailCount = Math.max(origList.length, chgList.length, 1);
+				const detailPairs = this.buildDetailPairs(origList, chgList);
+				const detailCount = detailPairs.length;
 				const groupRows = [];
-				for (let d = 0; d < detailCount; d++) {
-					const origDetail = origList[d] || {};
-					const chgDetail = chgList[d] || {};
-					groupRows.push({ ...this.mapDetailToRow(original, origDetail), rowType: 'before', groupIndex, detailIndex: d, subLabel: '修改前', groupRowCount: detailCount * 2 + 1 });
-					groupRows.push({ ...this.mapDetailToRow(changed, chgDetail), rowType: 'after', groupIndex, detailIndex: d, subLabel: '修改后', groupRowCount: detailCount * 2 + 1 });
-				}
+				detailPairs.forEach((pair, detailIndex) => {
+					groupRows.push({ ...this.mapDetailToRow(original, pair.original), rowType: 'before', groupIndex, detailIndex, subLabel: '修改前', groupRowCount: detailCount * 2 + 1 });
+					groupRows.push({ ...this.mapDetailToRow(changed, pair.changed), rowType: 'after', groupIndex, detailIndex, subLabel: '修改后', groupRowCount: detailCount * 2 + 1 });
+				});
 				groupRows.push({ rowType: 'diff', groupIndex, subLabel: '差额', groupRowCount: detailCount * 2 + 1, ...this.buildDiffFields(original, changed, record) });
 				groupRows[0].isGroupFirst = true;
 				this.tableData.push(...groupRows);
@@ -86,8 +103,10 @@ export default {
 		mapDetailToRow(info, detail) {
 			const list = [detail];
 			const factoryPay = this.sumDetailField(list, 'paymentFactory');
-			const stockAmt = this.calcStockAmount(list);
-			const totalFreight = Number(info.allLandFreight || 0) + Number(info.allSeaFreight || 0);
+			const stockAmt = Number(detail.payments != null ? detail.payments : this.calcStockAmount(list));
+			const landFreight = Number(detail.landFreight || 0);
+			const seaFreight = Number(detail.seaFreight || 0);
+			const totalFreight = Number(detail.freight != null ? detail.freight : add(landFreight, seaFreight));
 			return {
 				status: '已入库',
 				inboundTime: info.storeDate ? (info.storeDate + '').slice(0, 10) : '',
@@ -106,18 +125,18 @@ export default {
 				factoryPieces: detail.actualPieces ?? detail.stockNumber,
 				factoryUnitPrice: detail.price,
 				factoryTaxFlag: detail.isIncludeTaxFactory ? '含税' : '不含税',
-				sundryCost: detail.sundryCost ?? info.sundryCost,
+				sundryCost: detail.sundryCost,
 				factoryPayment: factoryPay,
 				stockQuantity: detail.stockNumber,
 				unloadPrice: detail.paymentUnload,
 				stockTaxFlag: detail.isIncludeTaxSale ? '含税' : '不含税',
 				stockAmount: format(stockAmt, { notation: 'fixed', precision: 2 }),
 				erro: detail.erro,
-				tonnage: info.allTonnage,
+				tonnage: detail.tonnage,
 				landFreightPrice: detail.landFreightPrice,
-				additionalFees: info.additionalFees ?? detail.additionalFees,
-				landFreight: info.allLandFreight,
-				seaFreight: info.allSeaFreight,
+				additionalFees: detail.additionalFees,
+				landFreight: format(landFreight, { notation: 'fixed', precision: 2 }),
+				seaFreight: format(seaFreight, { notation: 'fixed', precision: 2 }),
 				totalFreight: format(totalFreight, { notation: 'fixed', precision: 2 }),
 				otherCost: detail.otherCost,
 				profit: _.sumBy(list, d => Number(d.profit || 0)),
@@ -170,9 +189,17 @@ export default {
 		buildDiffFields(original, changed, _record) {
 			const inventoryDiff = this.calcInventoryDiff(original.inventoryDetailList, changed.inventoryDetailList);
 			const supplierDiff = this.sumOrderDetailDiff(original.inventoryDetailList || [], changed.inventoryDetailList || [], 'paymentFactory');
-			const freightDiff = this.calculateFieldDiff(Number(changed.allLandFreight || 0) + Number(changed.allSeaFreight || 0), Number(original.allLandFreight || 0) + Number(original.allSeaFreight || 0));
+			const freightDiff = this.sumDetailFreightDiff(original.inventoryDetailList || [], changed.inventoryDetailList || []);
 			const stockQtyDiff = this.sumOrderDetailDiff(original.inventoryDetailList || [], changed.inventoryDetailList || [], 'stockNumber');
 			return { inventoryDiff, supplierDiff, freightDiff, factoryPayment: supplierDiff, stockQuantity: stockQtyDiff, stockAmount: inventoryDiff, totalFreight: freightDiff };
+		},
+		sumDetailFreightDiff(origList, chgList) {
+			const sumFreight = list =>
+				_.sumBy(list || [], item => {
+					if (item.freight != null) return Number(item.freight || 0);
+					return Number(item.landFreight || 0) + Number(item.seaFreight || 0);
+				});
+			return this.calculateFieldDiff(sumFreight(chgList), sumFreight(origList));
 		},
 		sumOrderDetailDiff(origList, chgList, field) {
 			const origSum = _.sumBy(origList || [], i => Number(_.get(i, field) || 0));
