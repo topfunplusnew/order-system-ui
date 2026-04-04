@@ -126,6 +126,15 @@
 				<el-form-item label="使用加油卡车辆车牌号" prop="carNo">
 					<el-input v-model="form.carNo" disabled placeholder="选择车辆派出记录后自动填充" />
 				</el-form-item>
+				<el-form-item label="取卡时间" prop="takeCardTime">
+					<el-input v-model="form.takeCardTime" disabled placeholder="选择车辆派出记录后自动填充" />
+				</el-form-item>
+				<el-form-item label="还卡时间" prop="returnCardTime">
+					<el-input v-model="form.returnCardTime" disabled placeholder="选择车辆派出记录后自动填充" />
+				</el-form-item>
+				<el-form-item label="申请人" prop="applicant">
+					<el-input v-model="form.applicant" disabled placeholder="选择车辆派出记录后自动填充" />
+				</el-form-item>
 				<el-form-item label="地点和事由" prop="locationReason">
 					<el-input v-model="form.locationReason" placeholder="请输入地点和事由" />
 				</el-form-item>
@@ -326,6 +335,9 @@ export default {
 				oilCardNo: null,
 				useDate: parseTime(new Date()),
 				carNo: null,
+				takeCardTime: null,
+				returnCardTime: null,
+				applicant: null,
 				locationReason: null,
 				startCardSurplus: null,
 				refuelingCount: 1,
@@ -355,6 +367,9 @@ export default {
 			this.form.carApplyId = value.id;
 			this.form.carNo = value.carNo;
 			this.form.useDate = value.startTime;
+			this.form.takeCardTime = value.startTime || null;
+			this.form.returnCardTime = value.endTime || null;
+			this.form.applicant = value.applyUser || null;
 			// 修复：设置 form.carApplyDisplay 而不是 this.carApplyDisplay，展示车辆派出id
 			this.form.carApplyDisplay = String(value.id);
 		},

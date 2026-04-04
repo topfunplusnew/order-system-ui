@@ -6,7 +6,6 @@
 				<el-date-picker v-model="dateRange" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" size="mini" style="width: 280px" unlink-panels :clearable="true" @change="onDateRangeChange" />
 			</el-form-item>
 			<el-form-item label="支付日期">
-				c
 				<el-date-picker v-model="fundDateRange" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" size="mini" style="width: 280px" unlink-panels :clearable="true" />
 			</el-form-item>
 			<el-form-item label="厂家名称" prop="companyName">
@@ -102,75 +101,90 @@
 			<el-table-column v-if="columns[5].visible" show-overflow-tooltip label="高度" align="center" prop="height" width="100" />
 			<el-table-column v-if="columns[6].visible" show-overflow-tooltip label="长度" align="center" prop="length" width="100" />
 			<el-table-column v-if="columns[7].visible" show-overflow-tooltip label="宽度" align="center" prop="width" width="100" />
-			<el-table-column v-if="columns[8].visible" show-overflow-tooltip label="每包片数" align="center" prop="piecesPerPack" width="100" />
-			<el-table-column v-if="columns[9].visible" show-overflow-tooltip label="包数" align="center" prop="packs" width="100" />
-			<el-table-column v-if="columns[10].visible" show-overflow-tooltip label="出厂片数" align="center" prop="pieces" width="100" />
-			<el-table-column v-if="columns[11].visible" show-overflow-tooltip label="卸货价" align="center" prop="paymentUnload" width="100" />
-			<el-table-column v-if="columns[12].visible" show-overflow-tooltip label="含税销售" align="center" prop="isIncludeTaxSale" width="100">
+			<el-table-column v-if="columns[8].visible" show-overflow-tooltip label="出厂片数" align="center" prop="pieces" width="100" />
+			<el-table-column v-if="columns[9].visible" show-overflow-tooltip label="出厂单价" align="center" prop="paymentFactory" width="100">
+				<template slot-scope="scope">
+					{{ formatNumberWithoutTrailingZeros(scope.row.paymentFactory) }}
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[10].visible" show-overflow-tooltip label="采购含税" align="center" prop="isIncludeTaxFactory" width="100">
+				<template slot-scope="scope">
+					{{ formatTaxStatus(scope.row.isIncludeTaxFactory) }}
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[11].visible" show-overflow-tooltip label="杂费" align="center" prop="sundryCost" width="100" />
+			<el-table-column v-if="columns[12].visible" show-overflow-tooltip label="出厂货款" align="center" prop="paymentsWithSundry" width="100">
+				<template slot-scope="scope">
+					{{ formatNumberWithoutTrailingZeros(scope.row.paymentsWithSundry) }}
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[13].visible" show-overflow-tooltip label="卸货片数" align="center" prop="actualPieces" width="100" />
+			<el-table-column v-if="columns[14].visible" show-overflow-tooltip label="卸货价" align="center" prop="paymentUnload" width="100" />
+			<el-table-column v-if="columns[15].visible" show-overflow-tooltip label="含税销售" align="center" prop="isIncludeTaxSale" width="100">
 				<template slot-scope="scope">
 					{{ scope.row.isIncludeTaxSale ? '含税' : '不含税' }}
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[13].visible" show-overflow-tooltip label="杂费" align="center" prop="sundryCost" width="100" />
-			<el-table-column v-if="columns[14].visible" show-overflow-tooltip label="总货款" align="center" prop="payments" width="100" />
-			<el-table-column v-if="columns[15].visible" show-overflow-tooltip label="利润" align="center" prop="profit" width="100" />
-			<el-table-column v-if="columns[16].visible" show-overflow-tooltip label="不含税利润" align="center" prop="profitNoTax" width="100" />
-			<el-table-column v-if="columns[17].visible" show-overflow-tooltip label="备注" align="center" prop="comments" width="140" />
-			<el-table-column v-if="columns[18].visible" show-overflow-tooltip label="面积" align="center" prop="area" width="100" />
-			<el-table-column v-if="columns[19].visible" show-overflow-tooltip label="订单计提佣金" align="center" prop="commissionAmount" width="100" />
-			<el-table-column v-if="columns[20].visible" show-overflow-tooltip label="佣金单价" align="center" prop="commissionUnitPrice" width="100">
+			<el-table-column v-if="columns[16].visible" show-overflow-tooltip label="总货款" align="center" prop="payments" width="100" />
+			<el-table-column v-if="columns[17].visible" show-overflow-tooltip label="利润" align="center" prop="profit" width="100" />
+			<el-table-column v-if="columns[18].visible" show-overflow-tooltip label="不含税利润" align="center" prop="profitNoTax" width="100" />
+			<el-table-column v-if="columns[19].visible" show-overflow-tooltip label="备注" align="center" prop="comments" width="140" />
+			<el-table-column v-if="columns[20].visible" show-overflow-tooltip label="面积" align="center" prop="area" width="100" />
+			<el-table-column v-if="columns[21].visible" show-overflow-tooltip label="订单计提佣金" align="center" prop="commissionAmount" width="100" />
+			<el-table-column v-if="columns[22].visible" show-overflow-tooltip label="佣金单价" align="center" prop="commissionUnitPrice" width="100">
 				<template slot-scope="scope">
 					{{ formatNumberWithoutTrailingZeros(scope.row.commissionUnitPrice) }}
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[21].visible" show-overflow-tooltip label="其他付款金额" align="center" prop="otherPaymentAmount" width="100">
+			<el-table-column v-if="columns[23].visible" show-overflow-tooltip label="其他付款金额" align="center" prop="otherPaymentAmount" width="100">
 				<template slot-scope="scope">
 					{{ formatNumberWithoutTrailingZeros(scope.row.otherPaymentAmount) }}
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[22].visible" show-overflow-tooltip label="已验证佣金" align="center" prop="verifiedCommission" width="100">
+			<el-table-column v-if="columns[24].visible" show-overflow-tooltip label="已验证佣金" align="center" prop="verifiedCommission" width="100">
 				<template slot-scope="scope">
 					{{ formatNumberWithoutTrailingZeros(scope.row.verifiedCommission) }}
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[23].visible" show-overflow-tooltip label="实际厂家佣金" align="center" prop="actualCustomerCommission" width="100">
+			<el-table-column v-if="columns[25].visible" show-overflow-tooltip label="实际厂家佣金" align="center" prop="actualCustomerCommission" width="100">
 				<template slot-scope="scope">
 					{{ formatNumberWithoutTrailingZeros(scope.row.actualCustomerCommission) }}
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[24].visible" show-overflow-tooltip label="销售经理" align="center" prop="salesManager" width="100" />
-			<el-table-column v-if="columns[25].visible" show-overflow-tooltip label="客户佣金" align="center" prop="otherCommission" width="100">
+			<el-table-column v-if="columns[26].visible" show-overflow-tooltip label="销售经理" align="center" prop="salesManager" width="100" />
+			<el-table-column v-if="columns[27].visible" show-overflow-tooltip label="客户佣金" align="center" prop="otherCommission" width="100">
 				<template slot-scope="scope">
 					{{ formatNumberWithoutTrailingZeros(scope.row.otherCommission) }}
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[26].visible" show-overflow-tooltip label="计提厂家返利" align="center" prop="factoryRebateAmount" width="120">
+			<el-table-column v-if="columns[28].visible" show-overflow-tooltip label="计提厂家返利" align="center" prop="factoryRebateAmount" width="120">
 				<template slot-scope="scope">
 					{{ formatNumberWithoutTrailingZeros(scope.row.factoryRebateAmount) }}
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[27].visible" show-overflow-tooltip label="计提厂家降价" align="center" prop="factoryDiscountAmount" width="120">
+			<el-table-column v-if="columns[29].visible" show-overflow-tooltip label="计提厂家降价" align="center" prop="factoryDiscountAmount" width="120">
 				<template slot-scope="scope">
 					{{ formatNumberWithoutTrailingZeros(scope.row.factoryDiscountAmount) }}
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[28].visible" show-overflow-tooltip label="结余利润" align="center" prop="balanceProfit" width="100">
+			<el-table-column v-if="columns[30].visible" show-overflow-tooltip label="结余利润" align="center" prop="balanceProfit" width="100">
 				<template slot-scope="scope">
 					{{ formatNumberWithoutTrailingZeros(scope.row.balanceProfit) }}
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[29].visible" show-overflow-tooltip label="支付日期" align="center" prop="fundDate" width="100" />
-			<el-table-column v-if="columns[30].visible" show-overflow-tooltip label="支付状态" align="center" width="120">
+			<el-table-column v-if="columns[31].visible" show-overflow-tooltip label="支付日期" align="center" prop="fundDate" width="100" />
+			<el-table-column v-if="columns[32].visible" show-overflow-tooltip label="审核人" align="center" prop="reviewerName" width="120" />
+			<el-table-column v-if="columns[33].visible" show-overflow-tooltip label="支付状态" align="center" width="120">
 				<template slot-scope="scope">
 					<PaymentFlag :business-object="scope.row" />
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[31].visible" show-overflow-tooltip label="差异" align="center" prop="difference" width="100">
+			<el-table-column v-if="columns[34].visible" show-overflow-tooltip label="差异" align="center" prop="difference" width="100">
 				<template slot-scope="scope">
 					{{ formatDifference(scope.row.difference) }}
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[32].visible" show-overflow-tooltip label="差异原因" align="center" prop="differenceReason" width="150">
+			<el-table-column v-if="columns[35].visible" show-overflow-tooltip label="差异原因" align="center" prop="differenceReason" width="150">
 				<template slot-scope="scope">
 					<el-button v-if="scope.row.difference && scope.row.difference !== 0" size="mini" type="text" @click="handleDifferenceReason(scope.row)">
 						{{ scope.row.differenceReason || '填写差异原因' }}
@@ -310,11 +324,15 @@ export default {
 		// 处理表格数据，构造 PaymentFlag 组件需要的业务对象结构
 		computedTableData() {
 			return this.tableData.map(item => {
+				const paymentApply = this.getPaymentApplyData(item);
 				return {
 					...item,
-					// 构造 PaymentFlag 组件需要的业务对象结构
-					// 根据 fundDate 字段判断支付状态：有支付日期表示已支付，否则未支付
-					payment: {
+					paymentApply,
+					reviewerName: this.getAuditReviewerName({
+						...item,
+						paymentApply
+					}),
+					payment: item.payment || {
 						paymentState: item.fundDate ? '已支付' : '未支付'
 					}
 				};
@@ -347,31 +365,34 @@ export default {
 				{ key: 5, label: '高度', visible: true },
 				{ key: 6, label: '长度', visible: true },
 				{ key: 7, label: '宽度', visible: true },
-				{ key: 8, label: '每包片数', visible: true },
-				{ key: 9, label: '包数', visible: true },
-				{ key: 10, label: '出厂片数', visible: true },
-				{ key: 11, label: '卸货价', visible: true },
-				{ key: 12, label: '含税销售', visible: true },
-				{ key: 13, label: '杂费', visible: true },
-				{ key: 14, label: '总货款', visible: true },
-				{ key: 15, label: '利润', visible: true },
-				{ key: 16, label: '不含税利润', visible: true },
-				{ key: 17, label: '备注', visible: true },
-				{ key: 18, label: '面积', visible: true },
-				{ key: 19, label: '订单计提佣金', visible: true },
-				{ key: 20, label: '佣金单价', visible: true },
-				{ key: 21, label: '其他付款金额', visible: true },
-				{ key: 22, label: '已验证佣金', visible: true },
-				{ key: 23, label: '实际厂家佣金', visible: true },
-				{ key: 24, label: '销售经理', visible: true },
-				{ key: 25, label: '客户佣金', visible: true },
-				{ key: 26, label: '计提厂家返利', visible: true },
-				{ key: 27, label: '计提厂家降价', visible: true },
-				{ key: 28, label: '结余利润', visible: true },
-				{ key: 29, label: '支付日期', visible: true },
-				{ key: 30, label: '支付状态', visible: true },
-				{ key: 31, label: '差异', visible: true },
-				{ key: 32, label: '差异原因', visible: true }
+				{ key: 8, label: '出厂片数', visible: true },
+				{ key: 9, label: '出厂单价', visible: true },
+				{ key: 10, label: '采购含税', visible: true },
+				{ key: 11, label: '杂费', visible: true },
+				{ key: 12, label: '出厂货款', visible: true },
+				{ key: 13, label: '卸货片数', visible: true },
+				{ key: 14, label: '卸货价', visible: true },
+				{ key: 15, label: '含税销售', visible: true },
+				{ key: 16, label: '总货款', visible: true },
+				{ key: 17, label: '利润', visible: true },
+				{ key: 18, label: '不含税利润', visible: true },
+				{ key: 19, label: '备注', visible: true },
+				{ key: 20, label: '面积', visible: true },
+				{ key: 21, label: '订单计提佣金', visible: true },
+				{ key: 22, label: '佣金单价', visible: true },
+				{ key: 23, label: '其他付款金额', visible: true },
+				{ key: 24, label: '已验证佣金', visible: true },
+				{ key: 25, label: '实际厂家佣金', visible: true },
+				{ key: 26, label: '销售经理', visible: true },
+				{ key: 27, label: '客户佣金', visible: true },
+				{ key: 28, label: '计提厂家返利', visible: true },
+				{ key: 29, label: '计提厂家降价', visible: true },
+				{ key: 30, label: '结余利润', visible: true },
+				{ key: 31, label: '支付日期', visible: true },
+				{ key: 32, label: '审核人', visible: true },
+				{ key: 33, label: '支付状态', visible: true },
+				{ key: 34, label: '差异', visible: true },
+				{ key: 35, label: '差异原因', visible: true }
 			],
 			loading: false,
 			tableData: [],
@@ -505,6 +526,33 @@ export default {
 			}
 			// 使用mathjs进行四舍五入，保留两位小数
 			return round(num, 2).toFixed(2);
+		},
+		formatTaxStatus(value) {
+			if (value === null || value === undefined || value === '') {
+				return '-';
+			}
+			return Number(value) === 1 ? '是' : '否';
+		},
+		getPaymentApplyData(row) {
+			if (!row || typeof row !== 'object') {
+				return null;
+			}
+			return row.paymentApply || row.paymentapply || row.payment_apply || null;
+		},
+		getAuditInfoList(row) {
+			const paymentApply = this.getPaymentApplyData(row);
+			const rawAuditInfo = paymentApply?.auditInfoList || paymentApply?.auditinfo || paymentApply?.auditInfo || paymentApply?.auditinfoList || row?.auditInfoList || row?.auditinfo || row?.auditInfo;
+			if (Array.isArray(rawAuditInfo)) {
+				return rawAuditInfo;
+			}
+			return rawAuditInfo ? [rawAuditInfo] : [];
+		},
+		getAuditReviewerName(row) {
+			const latestAudit = this.getAuditInfoList(row)
+				.filter(item => item && (item.checkState || item.status) !== PAYMENT_APPLY_STATE.V2.ING && (item.checkState || item.status) !== '审核中')
+				.sort((a, b) => Number(b.id || 0) - Number(a.id || 0))[0];
+
+			return latestAudit?.UserName || latestAudit?.userName || latestAudit?.auditUserName || '-';
 		},
 		onDateRangeChange(val) {
 			// 仅选择完整的时间段时触发搜索；清空时不触发

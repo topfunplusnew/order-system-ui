@@ -58,7 +58,16 @@
 			<!-- 现金加油金额 -->
 			<el-table-column v-if="columns[6].visible" label="现金加油金额" prop="cashRefueling" align="center" show-overflow-tooltip>
 				<template #default="scope">
-					<span class="amount">{{ scope.row.cashRefueling.toFixed(2) }}</span>
+					<span class="amount">{{ Number(scope.row.cashRefueling || 0).toFixed(2) }}</span>
+				</template>
+			</el-table-column>
+
+			<el-table-column v-if="columns[7].visible" label="附件" align="center" prop="attachmentList" show-overflow-tooltip>
+				<template #default="scope">
+					<div v-if="Array.isArray(scope.row.attachmentList)">
+						<CheckFiles :attachmentList="scope.row.attachmentList" :flag="'attachments'" @needToUpdate="value => handleUpdateFilePath(value, scope.row, getCarApply, updateCarApply)" />
+					</div>
+					<div v-else>-</div>
 				</template>
 			</el-table-column>
 
@@ -90,10 +99,14 @@ import { common_dialog } from '../../dashboard/mixins/common/common_dialog';
 import { listVehicles } from '../../../api/system/vehicles';
 import COMPANY_CAR from '../../../components/NeedToShow/COMPANY_CAR.vue'; // 假设 API 函数路径
 import { mixin_printHTML } from '../../dashboard/mixins/print';
+import CheckFiles from '@/components/CheckFiles.vue';
+import { mixin_checkfile } from '@/views/dashboard/mixins/checkfiles/mixin_checkfile';
+import { getCarApply, updateCarApply } from '@/api/system/carApply';
 
 export default {
 	name: 'CashOilCardSummary',
-	mixins: [common_dialog, mixin_printHTML],
+	components: { CheckFiles },
+	mixins: [common_dialog, mixin_printHTML, mixin_checkfile],
 	data() {
 		return {
 			query: {
@@ -112,7 +125,8 @@ export default {
 				{ key: 3, label: '开始时间', visible: true },
 				{ key: 4, label: '结束时间', visible: true },
 				{ key: 5, label: '现金加油次数', visible: true },
-				{ key: 6, label: '现金加油金额', visible: true }
+				{ key: 6, label: '现金加油金额', visible: true },
+				{ key: 7, label: '附件', visible: true }
 			]
 		};
 	},
@@ -120,6 +134,8 @@ export default {
 		this.fetchData();
 	},
 	methods: {
+		getCarApply,
+		updateCarApply,
 		async fetchData() {
 			console.log('查询条件:', this.query);
 
