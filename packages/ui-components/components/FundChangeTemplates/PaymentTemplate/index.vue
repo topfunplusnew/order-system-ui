@@ -49,6 +49,18 @@ export default {
 		}
 	},
 	methods: {
+		pickFirstValue(info, keys = [], defaultValue = '') {
+			for (const key of keys) {
+				const value = info?.[key];
+				if (value !== undefined && value !== null && value !== '') {
+					return value;
+				}
+			}
+			return defaultValue;
+		},
+		formatDateTime(value) {
+			return value ? String(value).slice(0, 19) : '-';
+		},
 		processData() {
 			this.tableData = [];
 			(this.compareData || []).forEach((record, index) => {
@@ -61,21 +73,21 @@ export default {
 			});
 		},
 		mapBeforeRow(info) {
-			const dt = info.payTime || info.addtime;
+			const dt = this.pickFirstValue(info, ['fundsDate', 'payTime', 'changedTargetTime', 'addtime']);
 			return {
-				status: '已付款',
-				paymentDate: dt ? (dt + '').slice(0, 19) : '-',
+				status: this.pickFirstValue(info, ['paymentState'], '已付款'),
+				paymentDate: this.formatDateTime(dt),
 				paymentType: info.payType || '-',
 				companyName: info.companyName || '-',
 				companyType: info.companyType || '',
 				amount: info.moneyAmount,
-				selfAccountName: info.selfAccountName || info.bankName || '',
-				selfAccountNo: info.bankNo || '',
-				selfBankName: info.selfBankName || info.bankFullName || '',
-				otherAccountName: info.otherAccountName || '',
-				otherAccountNo: info.otherAccountNo || '',
-				otherBankName: info.otherBankName || '',
-				remark: info.remark || ''
+				selfAccountName: this.pickFirstValue(info, ['selfAccountsName', 'selfAcountsName', 'selfAccountName', 'bankName'], ''),
+				selfAccountNo: this.pickFirstValue(info, ['selfBankNo', 'bankNo'], ''),
+				selfBankName: this.pickFirstValue(info, ['selfBankName', 'bankFullName'], ''),
+				otherAccountName: this.pickFirstValue(info, ['otherAccountsName', 'otherAcountsName', 'otherAccountName'], ''),
+				otherAccountNo: this.pickFirstValue(info, ['otherBankNo', 'otherAccountNo'], ''),
+				otherBankName: this.pickFirstValue(info, ['otherBankName'], ''),
+				remark: this.pickFirstValue(info, ['comments', 'remark'], '')
 			};
 		},
 		mapAfterRow(info) {

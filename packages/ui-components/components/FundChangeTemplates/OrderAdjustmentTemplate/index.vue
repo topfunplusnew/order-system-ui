@@ -66,6 +66,24 @@ export default {
 		}
 	},
 	methods: {
+		getDetailKey(detail = {}, index = 0) {
+			return detail.id != null ? `id:${detail.id}` : `idx:${index}`;
+		},
+		buildDetailPairs(origList = [], chgList = []) {
+			const pairMap = new Map();
+			origList.forEach((detail, index) => {
+				const key = this.getDetailKey(detail, index);
+				pairMap.set(key, { key, original: detail || {}, changed: {} });
+			});
+			chgList.forEach((detail, index) => {
+				const key = this.getDetailKey(detail, index);
+				const current = pairMap.get(key) || { key, original: {}, changed: {} };
+				current.changed = detail || {};
+				pairMap.set(key, current);
+			});
+			const pairs = Array.from(pairMap.values());
+			return pairs.length ? pairs : [{ key: 'empty:0', original: {}, changed: {} }];
+		},
 		/**
 		 * 统一税标识文案
 		 * @param {number|string|boolean} value - 原始税标识
@@ -86,14 +104,13 @@ export default {
 				const changed = record.changedInfo || {};
 				const origList = original.orderDetailList || [];
 				const chgList = changed.orderDetailList || [];
-				const detailCount = Math.max(origList.length, chgList.length, 1);
+				const detailPairs = this.buildDetailPairs(origList, chgList);
+				const detailCount = detailPairs.length;
 				const groupRows = [];
-				for (let d = 0; d < detailCount; d++) {
-					const origDetail = origList[d] || {};
-					const chgDetail = chgList[d] || {};
-					groupRows.push({ ...this.mapDetailToRow(original, origDetail), rowType: 'before', groupIndex, detailIndex: d, subLabel: '修改前', groupRowCount: detailCount * 2 + 1 });
-					groupRows.push({ ...this.mapDetailToRow(changed, chgDetail), rowType: 'after', groupIndex, detailIndex: d, subLabel: '修改后', groupRowCount: detailCount * 2 + 1 });
-				}
+				detailPairs.forEach((pair, detailIndex) => {
+					groupRows.push({ ...this.mapDetailToRow(original, pair.original), rowType: 'before', groupIndex, detailIndex, subLabel: '修改前', groupRowCount: detailCount * 2 + 1 });
+					groupRows.push({ ...this.mapDetailToRow(changed, pair.changed), rowType: 'after', groupIndex, detailIndex, subLabel: '修改后', groupRowCount: detailCount * 2 + 1 });
+				});
 				groupRows.push({ rowType: 'diff', groupIndex, subLabel: '差额', groupRowCount: detailCount * 2 + 1, ...this.buildDiffFields(original, changed, record) });
 				groupRows[0].isGroupFirst = true;
 				this.tableData.push(...groupRows);
@@ -106,18 +123,20 @@ export default {
 		 * @returns {Object} 行数据
 		 */
 		mapDetailToRow(info, detail) {
-			const totalFreight = Number(info.landFreight || 0) + Number(info.seaFreight || 0);
+			const landFreight = Number(detail.landFreight != null ? detail.landFreight : info.landFreight || 0);
+			const seaFreight = Number(detail.seaFreight != null ? detail.seaFreight : info.seaFreight || 0);
+			const totalFreight = Number(detail.freight != null ? detail.freight : add(landFreight, seaFreight));
 			const factoryPayment = Number(detail.paymentFactory || 0);
-			const sundryCost = Number(detail.sundryCost || info.sundryCost || 0);
-			const paymentsWithSundry = add(factoryPayment, sundryCost);
+			const sundryCost = Number(detail.sundryCost || 0);
+			const paymentsWithSundry = Number(detail.paymentsWithSundry != null ? detail.paymentsWithSundry : add(factoryPayment, sundryCost));
 			return {
 				status: info.checkState,
-				orderDate: info.addtime ? (info.addtime + '').slice(0, 10) : '',
-				customerName: info.customer,
-				truckPlate: info.landCarNo,
+				orderDate: info.orderDate ? String(info.orderDate).slice(0, 10) : info.addtime ? String(info.addtime).slice(0, 10) : '',
+				customerName: detail.customer || info.customer,
+				truckPlate: detail.carNumber || info.landCarNo,
 				seaCabinetNo: info.seaCarNo || '',
 				seaCompany: info.seaBankName || '',
-				supplierName: _.isArray(info.supplierNames) ? info.supplierNames.join(',') : info.supplierNames || '',
+				supplierName: detail.supplier || (_.isArray(info.supplierNames) ? info.supplierNames.join(',') : info.supplierNames || ''),
 				warehouse: detail.storeHouseName || info.storeHouseName || '',
 				gradeName: detail.levelName || '',
 				countingUnit: detail.countingUnit || '',
@@ -135,13 +154,13 @@ export default {
 				unloadPrice: detail.paymentUnload,
 				stockTaxFlag: this.formatTaxFlag(detail.isIncludeTaxSale),
 				paymentsWithSundry: format(paymentsWithSundry, { notation: 'fixed', precision: 2 }),
-				allPayments: info.allPayments,
+				allPayments: detail.payments != null ? format(Number(detail.payments || 0), { notation: 'fixed', precision: 2 }) : '',
 				erro: detail.erro,
-				tonnage: info.allTonnage,
+				tonnage: detail.tonnage,
 				landFreightPrice: detail.landFreightPrice,
-				additionalFees: info.additionalFees,
-				landFreight: info.landFreight,
-				seaFreight: info.seaFreight,
+				additionalFees: detail.additionalFees,
+				landFreight: landFreight ? format(landFreight, { notation: 'fixed', precision: 2 }) : '0.00',
+				seaFreight: seaFreight ? format(seaFreight, { notation: 'fixed', precision: 2 }) : '0.00',
 				totalFreight: format(totalFreight, { notation: 'fixed', precision: 2 }),
 				otherCost: detail.otherCost,
 				profit: detail.profit,
@@ -162,12 +181,20 @@ export default {
 		 * @returns {Object}
 		 */
 		buildDiffFields(original, changed, _record) {
-			const allPaymentsDiff = this.calculateFieldDiff(changed.allPayments, original.allPayments);
-			const freightDiff = this.calculateFieldDiff(Number(changed.landFreight || 0) + Number(changed.seaFreight || 0), Number(original.landFreight || 0) + Number(original.seaFreight || 0));
-			const customerDiff = this.calculateFieldDiff(changed.allPayments, original.allPayments);
+			const allPaymentsDiff = this.sumOrderDetailDiff(original.orderDetailList || [], changed.orderDetailList || [], 'payments');
+			const freightDiff = this.sumDetailFreightDiff(original.orderDetailList || [], changed.orderDetailList || []);
+			const customerDiff = this.sumOrderDetailDiff(original.orderDetailList || [], changed.orderDetailList || [], 'payments');
 			const supplierDiff = this.sumOrderDetailDiff(original.orderDetailList || [], changed.orderDetailList || [], 'paymentFactory');
 			const inventoryDiff = '0.00';
 			return { allPayments: allPaymentsDiff, totalFreight: freightDiff, customerDiff, supplierDiff, inventoryDiff, freightDiff };
+		},
+		sumDetailFreightDiff(origList, chgList) {
+			const sumFreight = list =>
+				_.sumBy(list || [], item => {
+					if (item.freight != null) return Number(item.freight || 0);
+					return Number(item.landFreight || 0) + Number(item.seaFreight || 0);
+				});
+			return this.calculateFieldDiff(sumFreight(chgList), sumFreight(origList));
 		},
 		/**
 		 * 明细列表某字段差额

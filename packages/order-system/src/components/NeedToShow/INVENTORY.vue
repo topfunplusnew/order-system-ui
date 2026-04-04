@@ -4,6 +4,10 @@ import { fix_2 } from '../../api/tool/format';
 export default {
 	name: 'INVENTORY',
 	props: {
+		title: {
+			type: String,
+			default: '库存信息'
+		},
 		needToShowInfo: {
 			type: Object,
 			default: () => ({})
@@ -61,7 +65,7 @@ export default {
 <template>
 	<div class="inventory-container">
 		<el-card class="inventory-card" shadow="hover" size="mini">
-			<el-descriptions title="库存信息" size="mini" border :column="5">
+			<el-descriptions :title="title" size="mini" border :column="5">
 				<el-descriptions-item label="入库日期">
 					{{ needToShowInfo.storeDate ? new Date(needToShowInfo.storeDate).toLocaleDateString() : '-' }}
 				</el-descriptions-item>

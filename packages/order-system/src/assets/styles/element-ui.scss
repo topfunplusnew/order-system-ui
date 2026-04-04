@@ -2083,7 +2083,11 @@ textarea::placeholder,
 }
 
 .sidebar-menu .el-submenu__title .el-submenu__icon-arrow {
-	color: #ddd !important;
+	color: #606266 !important;
+}
+
+.sidebar-menu .el-submenu.is-opened > .el-submenu__title .el-submenu__icon-arrow {
+	color: #303133 !important;
 }
 
 .sidebar-menu .el-menu-item i,
