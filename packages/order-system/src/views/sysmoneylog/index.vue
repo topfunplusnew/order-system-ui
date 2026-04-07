@@ -200,7 +200,7 @@ export default {
 			return {};
 		},
 		/**
-		 * 导出所选日期资金总额（与右侧表、接口 getMoneySummary 的 endTime 一致；左侧昨日需另接口时再扩展）
+		 * 导出所选日期对应的资金变动明细（区间为昨日到当日）
 		 * @returns {void}
 		 */
 		handleExport() {
@@ -208,12 +208,12 @@ export default {
 				this.$message.warning('请先选择日期');
 				return;
 			}
+			const startTime = this.getYesterday(this.searchForm.endTime);
+			const endTime = this.searchForm.endTime;
 			this.download(
-				'statistics/export/getAllMoney',
-				{
-					endTime: this.searchForm.endTime
-				},
-				`资金总额_${this.searchForm.endTime}.xlsx`
+				`statistics/export/getAllMoneyChange?startTime=${startTime}&endTime=${endTime}`,
+				null,
+				`资金变动详情_${endTime}.xlsx`
 			);
 		}
 	}
