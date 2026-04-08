@@ -30,10 +30,7 @@ export default {
 			dialogVisible: false,
 			uploadLoading: false,
 			currentStep: 1,
-			initialVoucher: '',
-			invoiceDateDialogVisible: false,
-			invoiceDate: null,
-			invoiceDateForImport: null
+			initialVoucher: ''
 		};
 	},
 	computed: {
@@ -47,21 +44,9 @@ export default {
 			this.$message.info('请在管理记录中查看和继续开票');
 			this.handleManage();
 		},
-		// 点击上传按钮：先弹出日期选择，确认后再选文件
+		// 点击上传按钮：直接选择文件
 		handleUpload() {
 			this.clearState();
-			this.invoiceDate = null;
-			this.invoiceDateForImport = null;
-			this.invoiceDateDialogVisible = true;
-		},
-		// 日期选择弹窗确认后打开文件选择
-		handleInvoiceDateConfirm() {
-			if (!this.invoiceDate) {
-				this.$message.warning('请选择开票日期');
-				return;
-			}
-			this.invoiceDateForImport = this.invoiceDate;
-			this.invoiceDateDialogVisible = false;
 			this.$nextTick(() => {
 				if (this.$refs.fileInput) {
 					this.$refs.fileInput.value = '';
@@ -103,15 +88,14 @@ export default {
 				e.target.value = '';
 			}
 		},
-		// 上传文件，将 invoiceDate 通过 params 传给后端
+		// 上传文件，只传 file 给后端
 		async uploadFile(file) {
 			const formData = new FormData();
 			formData.append('file', file);
 			const { importData } = this.getApiConfig();
-			const params = this.invoiceDateForImport ? { invoiceDate: this.invoiceDateForImport } : {};
 			this.uploadLoading = true;
 			try {
-				const res = await importData(formData, params);
+				const res = await importData(formData);
 				const voucher = res?.data?.voucher || '';
 				this.initialVoucher = voucher;
 				this.$message.success(res?.msg || '导入成功');
@@ -121,7 +105,6 @@ export default {
 				this.$message.error(msg);
 			} finally {
 				this.uploadLoading = false;
-				this.invoiceDateForImport = null;
 			}
 		},
 		// 下载模板
@@ -168,19 +151,6 @@ export default {
 				<input ref="fileInput" type="file" class="file-input-hidden" @change="onChange" />
 			</div>
 		</div>
-
-		<!-- 选择开票日期弹窗（导入前必选） -->
-		<el-dialog title="选择开票日期" :visible.sync="invoiceDateDialogVisible" width="400px" append-to-body>
-			<el-form label-width="100px">
-				<el-form-item label="开票日期" required>
-					<el-date-picker v-model="invoiceDate" type="datetime" placeholder="选择日期时间" value-format="yyyy-MM-dd HH:mm:ss" style="width: 100%" />
-				</el-form-item>
-			</el-form>
-			<span slot="footer">
-				<el-button @click="invoiceDateDialogVisible = false">取 消</el-button>
-				<el-button type="primary" @click="handleInvoiceDateConfirm">确 定</el-button>
-			</span>
-		</el-dialog>
 
 		<!-- 批量开票弹窗 -->
 		<div>

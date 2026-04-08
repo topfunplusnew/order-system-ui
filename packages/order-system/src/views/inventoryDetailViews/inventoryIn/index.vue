@@ -142,8 +142,8 @@ export default {
 			// 列信息
 			columns: [
 				{ label: '入库日期', prop: 'storeDate', visible: true },
-				{ label: '车号', prop: 'carNo', visible: true },
 				{ label: '入库库房', prop: 'storeHouseName', visible: true },
+				{ label: '车号', prop: 'carNo', visible: true },
 				{ label: '供应商/库房', prop: 'supplierOrWarehouse', visible: true },
 				{ label: '产品级别', prop: 'levelName', visible: true },
 				{ label: '厚度', prop: 'height', visible: true },

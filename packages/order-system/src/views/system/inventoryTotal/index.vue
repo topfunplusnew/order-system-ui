@@ -321,7 +321,9 @@ export default {
 				pageSize: 20,
 				startDate: '',
 				endDate: '',
-				levelID: ''
+				levelID: '',
+				storeHouseName: '',
+				paymentUnload: ''
 			},
 			inventoryMainList: [],
 			changeLogVisible: false,
@@ -384,7 +386,9 @@ export default {
 					pageSize: 20,
 					startDate: beginTime,
 					endDate: endTime,
-					levelID: row.levelID
+					levelID: row.levelID,
+					storeHouseName: row.storeHouseName || '',
+					paymentUnload: row.paymentUnload ?? row.price ?? ''
 				};
 				this.getChangeLogData();
 				this.changeLogVisible = true;

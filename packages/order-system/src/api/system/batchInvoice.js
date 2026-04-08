@@ -20,15 +20,13 @@ export function listBatchInvoiceIn(query) {
 /**
  * 导入批量进项开票 Excel
  * @param {FormData} data - 包含 file 的 FormData
- * @param {Object} [params] - 额外参数，如 { invoiceDate }
  * @returns {Promise}
  */
-export function importBatchInvoiceInData(data, params) {
+export function importBatchInvoiceInData(data) {
 	return request({
 		url: `${BASE_IN}/importData`,
 		method: 'post',
 		data,
-		params: params || {},
 		headers: {
 			'Content-Type': 'multipart/form-data'
 		}
@@ -77,15 +75,13 @@ export function listBatchInvoiceOut(query) {
 /**
  * 导入批量销项开票 Excel
  * @param {FormData} data - 包含 file 的 FormData
- * @param {Object} [params] - 额外参数，如 { invoiceDate }
  * @returns {Promise}
  */
-export function importBatchInvoiceOutData(data, params) {
+export function importBatchInvoiceOutData(data) {
 	return request({
 		url: `${BASE_OUT}/importData`,
 		method: 'post',
 		data,
-		params: params || {},
 		headers: {
 			'Content-Type': 'multipart/form-data'
 		}

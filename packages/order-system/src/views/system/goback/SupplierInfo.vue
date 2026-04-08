@@ -32,7 +32,7 @@
 				</el-form-item>
 				<el-form-item>
 					<el-button type="primary" @click="getList" size="mini">查询</el-button>
-					<el-button type="success" @click="excelExport([], '供应商明细')" size="mini">导出Excel</el-button>
+					<el-button type="success" @click="handleExport" size="mini">导出Excel</el-button>
 				</el-form-item>
 			</el-form>
 		</div>
@@ -317,6 +317,19 @@ export default {
 				companyId: null
 			});
 			this.tableData = [];
+		},
+		handleExport() {
+			this.$refs['form']?.validate(valid => {
+				if (!valid) {
+					return;
+				}
+				const params = new URLSearchParams({
+					beginTime: `${this.searchForm.startTime} 00:00:00`,
+					endTime: `${this.searchForm.endTime} 23:59:59`,
+					companyId: String(this.searchForm.companyId)
+				});
+				this.download(`/statistics/export/supplierTrafficDetail?${params.toString()}`, {}, `供应商明细_${new Date().getTime()}.xlsx`);
+			});
 		},
 		getSummaries(param) {
 			const { columns, data } = param;
