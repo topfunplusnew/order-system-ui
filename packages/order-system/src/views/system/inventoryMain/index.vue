@@ -2436,35 +2436,16 @@ export default {
 			console.log(`selection identifiers`, this.checkedInventoryDetail);
 		},
 		/**
-		 * @description: 处理导出库存主列表数据按钮操作（前端Excel导出）。
-		 *              使用 XLSX 库在前端生成 Excel 文件。
+		 * @description: 处理导出库存主列表数据按钮操作，改为后端导出目录接口。
 		 */
 		handleExport() {
-			try {
-				// 开始导出提示
-				this.$message({
-					message: '正在生成Excel文件，请稍候...',
-					type: 'info'
-				});
-
-				// 生成Excel数据
-				const excelData = this.generateExcelData();
-
-				// 创建工作簿并下载
-				this.downloadExcel(excelData);
-
-				// 成功提示
-				this.$message({
-					message: 'Excel文件导出成功！',
-					type: 'success'
-				});
-			} catch (error) {
-				console.error('Excel导出失败:', error);
-				this.$message({
-					message: 'Excel导出失败，请重试',
-					type: 'error'
-				});
-			}
+			this.download(
+				'system/inventoryMain/exportDirectory',
+				{
+					...this.queryParams
+				},
+				`库存目录_${new Date().getTime()}.xlsx`
+			);
 		},
 		/**
 		 * 生成Excel数据

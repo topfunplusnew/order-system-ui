@@ -825,33 +825,17 @@ export default {
 				}
 			});
 		},
-		// 表格的导出 - 前端Excel导出
+		// 订单目录导出改为后端接口，参数与列表查询保持一致
 		handleExport() {
-			try {
-				// 开始导出提示
-				this.$message({
-					message: '正在生成Excel文件，请稍候...',
-					type: 'info'
-				});
-
-				// 生成Excel数据
-				const excelData = this.generateExcelData();
-
-				// 创建工作簿并下载
-				this.downloadExcel(excelData);
-
-				// 成功提示
-				this.$message({
-					message: 'Excel文件导出成功！',
-					type: 'success'
-				});
-			} catch (error) {
-				console.error('Excel导出失败:', error);
-				this.$message({
-					message: 'Excel导出失败，请重试',
-					type: 'error'
-				});
-			}
+			const baseName = this.isAdjustOrder ? '调整单' : '订单';
+			this.download(
+				'system/goodsOrder/exportDirectory',
+				{
+					...this.queryParams,
+					isAdjust: this.isAdjustOrder ? -1 : 0
+				},
+				`${baseName}目录_${new Date().getTime()}.xlsx`
+			);
 		},
 
 		/**
