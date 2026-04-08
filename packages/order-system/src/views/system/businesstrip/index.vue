@@ -7,6 +7,12 @@
 			<el-form-item label="返回时间" prop="endtime">
 				<el-date-picker v-model="queryParams.endtime" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 			</el-form-item>
+			<el-form-item label="报销人" prop="employee">
+				<el-input v-model="queryParams.employee" placeholder="请输入报销人" clearable @keyup.enter.native="handleQuery" />
+			</el-form-item>
+			<el-form-item label="共同出差人员" prop="personnel">
+				<el-input v-model="queryParams.personnel" placeholder="请输入共同出差人员" clearable @keyup.enter.native="handleQuery" />
+			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
 			</el-form-item>
