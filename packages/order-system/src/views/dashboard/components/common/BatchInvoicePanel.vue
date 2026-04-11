@@ -1097,12 +1097,26 @@ export default {
 	}
 }
 
-/* 公司列表样式 - 不显示滚动条，完全展示所有内容 */
+/* 公司列表样式 - 客户较多时允许纵向滚动 */
 .company-lists {
 	flex: 1;
-	overflow: visible;
+	overflow-y: auto;
+	overflow-x: hidden;
 	min-height: 0;
 	padding-right: 4px;
+
+	&::-webkit-scrollbar {
+		width: 6px;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		background: #dcdfe6;
+		border-radius: 4px;
+	}
+
+	&::-webkit-scrollbar-track {
+		background: #f5f7fa;
+	}
 }
 
 /* 订单选择组件包装 - 统一滚动条 */

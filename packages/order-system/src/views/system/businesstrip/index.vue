@@ -58,14 +58,19 @@
 			<el-table-column v-if="columns[0].visible" label="报销人" align="center" prop="employee" show-overflow-tooltip />
 			<el-table-column v-if="columns[1].visible" label="共同出差人员" align="center" prop="personnel" show-overflow-tooltip />
 			<el-table-column v-if="columns[2].visible" label="部门" align="center" prop="deptName" show-overflow-tooltip />
-			<el-table-column v-if="columns[3].visible" label="出差时间" align="center" prop="starttime" show-overflow-tooltip />
-			<el-table-column v-if="columns[4].visible" label="出差结束时间" align="center" prop="endtime" show-overflow-tooltip />
-			<el-table-column v-if="columns[5].visible" label="附件" align="center" prop="attachmentList" show-overflow-tooltip>
+			<el-table-column v-if="columns[3].visible" label="车牌号" align="center" show-overflow-tooltip>
+				<template #default="scope">
+					{{ getBusinessTripCarNos(scope.row) }}
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[4].visible" label="出差时间" align="center" prop="starttime" show-overflow-tooltip />
+			<el-table-column v-if="columns[5].visible" label="出差结束时间" align="center" prop="endtime" show-overflow-tooltip />
+			<el-table-column v-if="columns[6].visible" label="附件" align="center" prop="attachmentList" show-overflow-tooltip>
 				<template #default="scope">
 					<CheckFiles :attachment-list="scope.row.attachmentList" flag="attachments" @needToUpdate="value => handleUpdateAttachments(value, scope.row)" />
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[6].visible" label="是否已报销" align="center" prop="isReimburse" show-overflow-tooltip>
+			<el-table-column v-if="columns[7].visible" label="是否已报销" align="center" prop="isReimburse" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<StateTag :state-title="scope.row.isReimburse === 0 ? '否' : '是'" :state-mapper="{ 0: '否', 2: '是' }" />
 				</template>
@@ -81,7 +86,7 @@
 				</template>
 			</el-table-column>
 
-			<el-table-column v-if="columns[7].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
+			<el-table-column v-if="columns[8].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="260px" fixed="right">
 				<template slot-scope="scope">
 					<el-button :disabled="scope.row.checkState === PAYMENT_APPLY_STATE.V1.CHECKED || (scope.row.payment && Object.keys(scope.row.payment).length > 0)" v-hasPermi="['system:businesstrip:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
@@ -437,11 +442,12 @@ export default {
 				{ key: 0, label: `报销人`, visible: true },
 				{ key: 1, label: `共同出差人员`, visible: true },
 				{ key: 2, label: `部门`, visible: true },
-				{ key: 3, label: `出差时间`, visible: true },
-				{ key: 4, label: `出差结束时间`, visible: true },
-				{ key: 5, label: `附件地址`, visible: true },
-				{ key: 6, label: `是否已报销`, visible: true },
-				{ key: 7, label: `备注`, visible: true }
+				{ key: 3, label: `车牌号`, visible: true },
+				{ key: 4, label: `出差时间`, visible: true },
+				{ key: 5, label: `出差结束时间`, visible: true },
+				{ key: 6, label: `附件地址`, visible: true },
+				{ key: 7, label: `是否已报销`, visible: true },
+				{ key: 8, label: `备注`, visible: true }
 			],
 			// 当前步骤
 			active: 0,
@@ -539,6 +545,11 @@ export default {
 		listCarApply,
 		listUser,
 		getConfigValue,
+		getBusinessTripCarNos(row) {
+			const carApplyList = Array.isArray(row?.carApplyList) ? row.carApplyList : [];
+			const carNos = [...new Set(carApplyList.map(item => item?.carNo || item?.licensePlate || item?.vehicleNo || '').filter(Boolean))];
+			return carNos.length ? carNos.join(' / ') : '-';
+		},
 		// 搜索报销人信息的回调
 		handleQueryEmployee(val) {
 			this.queryEmployee = val;

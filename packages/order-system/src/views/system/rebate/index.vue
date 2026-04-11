@@ -296,140 +296,29 @@
 		</el-dialog>
 
 		<!--    选择订单详情 点击返利货物后面的选择订单打开的弹窗 -->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="true" title="订单选择" :visible.sync="orderDialogVisible" width="65%">
-			<el-row>
+		<el-dialog
+			:modal="false"
+			v-dialogDrag
+			v-dialogDragWidth
+			v-dialogDragHeight
+			:close-on-click-modal="false"
+			:show-close="true"
+			title="订单选择"
+			:visible.sync="orderDialogVisible"
+			width="460px"
+			custom-class="order-select-dialog"
+		>
+			<el-row class="order-select-actions">
 				<el-button type="primary" size="mini" @click="selectBySupplier">根据供应商选择</el-button>
-				<el-button type="primary" size="mini" @click="handleOpenSelectOrder">选择订单</el-button>
+				<el-button type="primary" size="mini" @click="handleOpenSelectOrder">搜索全部订单明细</el-button>
 			</el-row>
 			<hr />
-			<el-row>
-				<el-row>
-					<!--  展示订单信息的组件  orderInfo-->
-					<OrderInfos :orderInfo="orderInfo" />
-				</el-row>
-				<el-row>
-					<el-row>
-						<span style="font-weight: bolder">货物详情列表</span>
-					</el-row>
-					<!-- 订单选择的货物-->
-					<el-row>
-						<el-button :disabled="goods.length === 0" type="success" size="mini" @click="submitSelectOrderDetail">选择所选货物</el-button>
-						<el-table
-							ref="multipleTable"
-							border
-							:data="orderDetailList"
-							max-height="700"
-							size="mini"
-							:cell-style="
-								() => {
-									return { padding: '.5px' };
-								}
-							"
-							:row-class-name="getRowClassName"
-							@selection-change="handleSelectionChangeOrderDetail"
-						>
-							<el-table-column type="selection" width="55" align="center" fixed="left" :selectable="checkSupplierSelectable" />
-							<el-table-column label="订单日期" align="center" prop="orderDate" fixed="left" />
-							<el-table-column label="客户" align="center" prop="customer" />
-							<el-table-column label="供应商" align="center" prop="supplier" :filters="nameFilters" :filter-method="filterName" filter-placement="bottom" filterable />
-							<el-table-column label="级别名称" align="center" prop="levelName" width="150" />
-							<el-table-column label="计量单位" align="center" prop="countingUnit" />
-							<el-table-column label="厚度" align="center" prop="height" />
-							<el-table-column label="长度" align="center" prop="length" />
-							<el-table-column label="宽度" align="center" prop="width" />
-							<el-table-column label="出厂片数" align="center" prop="pieces" />
-							<el-table-column label="每包片数" align="center" prop="piecesPerPack" />
-							<el-table-column label="包数" align="center" prop="packs" />
-							<el-table-column label="出厂单价" align="center" prop="price" />
-							<el-table-column label="出厂是否含税" align="center" prop="isIncludeTaxFactory">
-								<template slot-scope="scope">
-									<el-tag disable-transitions>{{ scope.row.isIncludeTaxFactory === 0 ? '否' : '是' }}</el-tag>
-								</template>
-							</el-table-column>
-							<el-table-column label="杂费" align="center" prop="sundryCost" />
-							<el-table-column label="出厂货款" align="center" prop="paymentFactory" />
-							<el-table-column label="卸货价" align="center" prop="paymentUnload" />
-							<el-table-column label="销售是否含税" align="center" prop="isIncludeTaxSale">
-								<template slot-scope="scope">
-									<el-tag disable-transitions>{{ scope.row.isIncludeTaxSale === 0 ? '否' : '是' }}</el-tag>
-								</template>
-							</el-table-column>
-							<el-table-column label="总货款" align="center" prop="payments" />
-							<el-table-column label="误差" align="center" prop="erro" />
-							<el-table-column label="吨位" align="center" prop="tonnage" />
-							<el-table-column label="陆运费单价" align="center" prop="landFreightPrice" />
-							<el-table-column label="陆运费" align="center" prop="landFreight" />
-							<el-table-column label="海运费" align="center" prop="seaFreight" />
-							<el-table-column label="总运费" align="center" prop="freight" />
-							<el-table-column label="其他费用" align="center" prop="otherCost" />
-							<el-table-column label="利润" align="center" prop="profit" />
-							<el-table-column label="不含税利润" align="center" prop="profitNoTax" />
-							<el-table-column label="卸货片数" align="center" prop="actualPieces" />
-							<el-table-column label="总货款杂费" align="center" prop="paymentsWithSundry" />
-							<el-table-column label="加费" align="center" prop="additionalFees" />
-							<el-table-column label="仓库名称" align="center" prop="storeHouseName" />
-							<el-table-column label="物流利润" align="center" prop="logisticsProfit" />
-							<el-table-column label="客户佣金" align="center" prop="customerCommission" />
-						</el-table>
-					</el-row>
-				</el-row>
-			</el-row>
+			<el-alert title="可按供应商筛选订单明细，或直接搜索全部订单明细并多选后填充返利货物。" type="info" :closable="false" />
 		</el-dialog>
 
-		<!--    两种方式中点击第二种直接选择订单进行返利-->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="true" title="选择订单" :visible.sync="orderSelectVisible" width="70%">
-			<QuerySearchBar @updateQuery="handleGetQueryParams" />
-			<el-table
-				v-loading="loading"
-				fit
-				border
-				:data="selectOrdersList"
-				max-height="750"
-				size="mini"
-				:cell-style="
-					() => {
-						return { padding: '2px' };
-					}
-				"
-				@selection-change="handleSelectionChangeOrders"
-			>
-				<el-table-column show-overflow-tooltip label="行操作" align="center" class-name="small-padding fixed-width" width="200px" fixed="left">
-					<template slot-scope="scope">
-						<el-button size="mini" type="text" @click="handleSelectOrderItem(scope.row)">选择</el-button>
-						<el-button size="mini" type="text" @click="checkOrderInfo(scope.row)">查看订单</el-button>
-					</template>
-				</el-table-column>
-				<el-table-column show-overflow-tooltip label="ID" align="center" prop="id" fixed="left" />
-				<el-table-column show-overflow-tooltip label="日期" align="center" prop="orderDate" fixed="left" />
-				<el-table-column show-overflow-tooltip label="客户" align="center" prop="customer" fixed="left" />
-				<!--        供应商可筛选 多选-->
-				<el-table-column show-overflow-tooltip label="供应商" align="center" prop="supplierNames" fixed="left" />
-				<el-table-column show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo" />
-				<el-table-column show-overflow-tooltip label="陆运司机电话" align="center" prop="landDriverTel" width="100px" />
-				<el-table-column show-overflow-tooltip label="陆地司机姓名" align="center" prop="landDriverName" width="100px" />
-				<el-table-column show-overflow-tooltip label="柜号" align="center" prop="seaCarNo">
-					<template #default="scope">
-						{{ isNull(scope.row.seaCarNo) }}
-					</template>
-				</el-table-column>
-				<el-table-column show-overflow-tooltip label="海运司机电话" align="center" prop="seaDriverTel">
-					<template #default="scope">
-						{{ isNull(scope.row.seaDriverTel) }}
-					</template>
-				</el-table-column>
-				<el-table-column show-overflow-tooltip label="海运公司" align="center" prop="seaDriverName" width="100px">
-					<template #default="scope">
-						{{ isNull(scope.row.seaDriverTel) }}
-					</template>
-				</el-table-column>
-				<el-table-column show-overflow-tooltip label="销售经理" align="center" prop="saleManager" />
-				<el-table-column show-overflow-tooltip label="车队" align="center" prop="fleet" />
-				<el-table-column show-overflow-tooltip label="审核状态" align="center" prop="checkState" width="120"></el-table-column>
-				<el-table-column show-overflow-tooltip label="开票状态" align="center" prop="invoiceState" width="120px"></el-table-column>
-				<!--				<el-table-column show-overflow-tooltip label="打款状态" align="center" prop="paymentState" width="120px"></el-table-column>-->
-				<el-table-column show-overflow-tooltip label="备注" align="center" prop="comments" />
-			</el-table>
-			<pagination v-show="orderTotal > 0" :total="orderTotal" :page.sync="queryOrderParams.pageNum" :limit.sync="queryOrderParams.pageSize" @pagination="selectOrderItem" />
+		<!--    第二种方式：直接搜索全部订单明细并多选 -->
+		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="true" title="选择订单明细" :visible.sync="orderSelectVisible" width="80%">
+			<OrderDetailList v-if="orderSelectVisible" :order-detail-list="directOrderDetailList" :total="directOrderDetailTotal" @handleSelect="handleSelectOrderDetailChange" @handleQuery="value => getDirectOrderDetailList(value)" />
 		</el-dialog>
 
 		<!--    查看已经选择的货物-->
@@ -437,14 +326,6 @@
 			<template #info>
 				<!--        订单货物详情的展示组件-->
 				<OrderDetailInfo :orderDetailInfoList="goods" :ban="true" />
-			</template>
-		</InfoDialog>
-
-		<!--    查看订单信息-->
-		<InfoDialog title="查看订单信息" :visible.sync="orderVisible" @update:visible="orderVisible = false">
-			<template #info>
-				<OrderInfos :orderInfo="checkOrderInformation" />
-				<OrderDetailInfo :orderDetailInfoList="checkOrderInformation.orderDetailList" :ban="true" />
 			</template>
 		</InfoDialog>
 
@@ -569,11 +450,10 @@
 </template>
 
 <script>
-import { listRebate, getRebate, delRebate, addRebate, updateRebate, getRebateByDetailId } from '@/api/system/Rebate';
+import { listRebate, getRebate, delRebate, addRebate, updateRebate } from '@/api/system/Rebate';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import { RebateType, TableName } from '@/api/tool/enums';
 import { fix } from '@/api/tool/format';
-import OrderInfos from '@/views/dashboard/components/goodsOrder/OrderInfos.vue';
 import OrderDetailInfo from '@/views/dashboard/components/goodsOrder/OrderDetailInfo.vue';
 import { listBankAccount } from '@/api/system/bankAccount';
 import { listCompany } from '@/api/system/company';
@@ -586,19 +466,16 @@ import { isNull } from '../../../main';
 import { listOrderDetailByIds } from '@/api/system/orderDetail';
 import { mixin_bankType } from '../../dashboard/mixins/common/common_bankType';
 import { parseTime } from '../../../utils/ruoyi';
-import QuerySearchBar from '../../dashboard/components/goodsOrder/QuerySearchBar.vue';
 import _ from 'lodash';
 import { add, multiply, divide, subtract, abs, number, round } from 'mathjs';
 
 export default {
 	name: 'Rebate',
 	components: {
-		QuerySearchBar,
 		OrderDetailList,
 		InfoDialog,
 		SearchOption,
-		OrderDetailInfo,
-		OrderInfos
+		OrderDetailInfo
 	},
 	mixins: [mixin_printHTML, mixin_choose_order, mixin_rebate_fill, mixin_bankType],
 	data() {
@@ -621,8 +498,6 @@ export default {
 			showSearch: true,
 			// 总条数
 			total: 0,
-			// 弹出的订单列表页的总条数
-			orderTotal: 0,
 			// 返利回扣表格数据
 			RebateList: [],
 			// 弹出层标题
@@ -660,10 +535,6 @@ export default {
 					// 是否收到返利筛选框 Y/N
 					isReceivedRebate: null
 				}
-			},
-			queryOrderParams: {
-				pageNum: 1,
-				pageSize: 20
 			},
 			// 表单参数
 			form: {},
@@ -765,17 +636,10 @@ export default {
 				{ key: 7, label: `收到返利日期`, visible: true },
 				{ key: 8, label: `收到返利金额`, visible: true }
 			],
-			// 订单详情列表 级联
-			orderDetailList: [],
 			orderDialogVisible: false,
-			// 订单个人信息和订单详情信息
-			orderInfo: {},
 			// 搜索供应商
 			queryCompanyGive: '',
 			queryCompany: '',
-
-			// 订单选择的框
-			selectOrdersList: [],
 
 			// 选择重箱还是面积
 			areaOrWeightBox: RebateType.Weight,
@@ -923,27 +787,27 @@ export default {
 			this.form.orderDetailIds = [];
 			// 重置当前选中的供应商
 			this.currentSelectedSupplier = null;
-			// 清空订单信息与明细，避免重新打开弹窗仍展示上一单数据
-			this.orderInfo = {};
-			this.orderDetailList = [];
-			this.nameFilters = [];
-			// 调用mixin中的toggleSelection方法
-			if (this.$refs.multipleTable) {
-				this.$refs.multipleTable.clearSelection();
-			}
+			this.directOrderDetailList = [];
+			this.directOrderDetailTotal = 0;
 		},
 		// 重写mixin中的通过供应商选择货物方法，添加供应商自动填充功能
 		handleSelectOrderDetailChange(selection) {
+			const selectedSuppliers = [...new Set((selection || []).map(item => item?.supplier).filter(Boolean))];
+			if (selectedSuppliers.length > 1) {
+				this.$message.warning('供应商返利只能选择同一供应商的订单明细，请重新选择');
+				return;
+			}
 			this.goods = [];
 			this.goods = selection;
 
 			// 从选择的货物中获取供应商信息，用于自动填充
 			if (!_.isEmpty(selection)) {
-				this.currentSelectedSupplier = selection[0].supplier;
+				this.currentSelectedSupplier = selectedSuppliers[0] || selection[0].supplier;
 			}
 
 			this.orderGoodsListVisible = false;
 			this.orderBySupplierVisible = false;
+			this.orderSelectVisible = false;
 			this.submitSelectOrderDetail();
 		},
 		// 重写mixin中的确认选择货物方法，添加供应商自动填充功能
@@ -962,8 +826,9 @@ export default {
 
 				// 尝试找到供应商ID（如果货物数据中包含supplierID）
 				const firstGood = this.goods[0];
-				if (firstGood?.supplierID) {
-					this.form.supplierID = firstGood.supplierID;
+				const supplierId = firstGood?.supplierID || firstGood?.supplierId || firstGood?.supplier_id || null;
+				if (supplierId) {
+					this.form.supplierID = supplierId;
 				}
 
 				this.$message.success(`已自动填充供应商：${supplierName}`);
@@ -1351,11 +1216,6 @@ export default {
 				})
 				.catch(() => {});
 		},
-		// 订单选择的搜索模组
-		handleGetQueryParams(value) {
-			this.queryOrderParams = value;
-			this.selectOrderItem();
-		},
 		/** 查询返利回扣列表 */
 		getList() {
 			this.loading = true;
@@ -1624,6 +1484,15 @@ export default {
 		.el-tag {
 			opacity: 0.6;
 		}
+	}
+}
+
+::v-deep .order-select-dialog {
+	.order-select-actions {
+		display: flex;
+		justify-content: center;
+		flex-wrap: wrap;
+		gap: 12px;
 	}
 }
 </style>

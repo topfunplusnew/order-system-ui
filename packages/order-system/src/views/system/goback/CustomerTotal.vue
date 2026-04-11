@@ -93,6 +93,14 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
+			<el-table-column prop="currentMonthShipmentTrips" label="截至今日本月发货车次" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.currentMonthShipmentTrips == null ? 0 : scope.row.currentMonthShipmentTrips }}</div>
+						<span>{{ scope.row.currentMonthShipmentTrips == null ? 0 : scope.row.currentMonthShipmentTrips }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
 			<el-table-column label="查看客户信息" align="center" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">

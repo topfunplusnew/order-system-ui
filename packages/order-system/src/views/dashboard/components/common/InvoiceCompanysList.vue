@@ -448,8 +448,8 @@ export default {
 		}
 
 		::v-deep .el-table__body-wrapper {
-			overflow-y: visible !important;
-			max-height: none !important;
+			overflow-y: auto !important;
+			max-height: 100% !important;
 
 			.el-table__body {
 				td {

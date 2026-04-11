@@ -1,4 +1,3 @@
-import { getGoodsOrder, listGoodsOrder } from '../../../../api/system/goodsOrder';
 import { fix } from '../../../../api/tool/format';
 import { listOrderDetail } from '@/api/system/orderDetail';
 import { RebateType } from '@/api/tool/enums';
@@ -10,6 +9,9 @@ export var mixin_choose_order = {
 			goods: [],
 			// 点击选择订单后 选择订单的显示
 			orderSelectVisible: false,
+			// 直接搜索全部订单明细的列表
+			directOrderDetailList: [],
+			directOrderDetailTotal: 0,
 			// 选择供应商出来的搜索
 			queryParamsSupplier: {
 				pageNum: 1,
@@ -41,18 +43,34 @@ export var mixin_choose_order = {
 	methods: {
 		handleOpenSelectOrder() {
 			this.orderSelectVisible = true;
-		},
-		// 点击选择订单
-		selectOrderItem() {
-			listGoodsOrder(this.queryOrderParams).then(res => {
-				this.selectOrdersList = res.rows;
-				this.orderTotal = res.total;
+			this.getDirectOrderDetailList({
+				pageNum: 1,
+				pageSize: 20,
+				params: {
+					orderDateSort: null
+				}
 			});
 		},
 		// 两种方式 一种是直接选订单 另一种是先选供应商 再选订单
 		// 1.根据供应商选择
 		selectBySupplier() {
 			this.orderBySupplierVisible = true;
+		},
+		// 2. 直接搜索全部订单明细
+		getDirectOrderDetailList(query) {
+			const baseQuery = query || {};
+			const requestQuery = {
+				...baseQuery,
+				pageNum: baseQuery.pageNum || 1,
+				pageSize: baseQuery.pageSize || 20,
+				params: {
+					...(baseQuery.params || {})
+				}
+			};
+			listOrderDetail(requestQuery).then(res => {
+				this.directOrderDetailList = res.rows || [];
+				this.directOrderDetailTotal = res.total || 0;
+			});
 		},
 		// 供应商自动填充
 		handleCommitCompany(val) {
@@ -94,41 +112,6 @@ export var mixin_choose_order = {
 			// 初次进入列表时保证走第一页，避免分页参数缺失
 			this.queryParamsSupplier.pageNum = 1;
 			this.getDetailBySupper(this.queryParamsSupplier);
-		},
-		// 2. 直接选择订单
-		// 点击选择订单弹出的订单列表页选择某个订单 需要自动填充信息
-		handleSelectOrderItem(row) {
-			// 先重新重置选中的货物信息
-			this.goods = [];
-			// 获取订单信息 拿到货物的信息
-			getGoodsOrder(row.id).then(res => {
-				// 拿到订单的信息
-				this.orderInfo = res.data;
-				// 拿到订单的货物信息
-				this.orderDetailList = res.data.orderDetailList;
-				// 补充供应商信息
-				this.nameFilters = this.orderDetailList.map(item => {
-					return {
-						text: item.supplier,
-						value: item.supplier
-					};
-				});
-				// 关闭弹窗
-				this.orderSelectVisible = false;
-			});
-		},
-		// 查看订单信息
-		checkOrderInfo(row) {
-			getGoodsOrder(row.id).then(res => {
-				this.checkOrderInformation = res.data;
-				this.orderVisible = true;
-			});
-		},
-		// 这个多选框每次都会返回一个数组 表示当前已经选中的货物
-		// 订单多选
-		handleSelectionChangeOrders(selection) {
-			this.goods = [];
-			this.goods = selection;
 		},
 		// 多选某个货物
 		handleSelectionChangeOrderDetail(selection) {
