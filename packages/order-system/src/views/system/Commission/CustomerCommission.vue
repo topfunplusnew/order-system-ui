@@ -83,9 +83,9 @@
 			<el-table-column v-if="columns[6].visible" show-overflow-tooltip label="长度" align="center" prop="length" width="100" />
 			<el-table-column v-if="columns[7].visible" show-overflow-tooltip label="宽度" align="center" prop="width" width="100" />
 			<el-table-column v-if="columns[8].visible" show-overflow-tooltip label="出厂片数" align="center" prop="pieces" width="100" />
-			<el-table-column v-if="columns[9].visible" show-overflow-tooltip label="出厂单价" align="center" prop="paymentFactory" width="100">
+			<el-table-column v-if="columns[9].visible" show-overflow-tooltip label="出厂单价" align="center" prop="price" width="100">
 				<template slot-scope="scope">
-					{{ formatNumberWithoutTrailingZeros(scope.row.paymentFactory) }}
+					{{ formatNumberWithoutTrailingZeros(scope.row.price) }}
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[10].visible" show-overflow-tooltip label="采购含税" align="center" prop="isIncludeTaxFactory" width="100">
@@ -94,9 +94,9 @@
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[11].visible" show-overflow-tooltip label="杂费" align="center" prop="sundryCost" width="100" />
-			<el-table-column v-if="columns[12].visible" show-overflow-tooltip label="出厂货款" align="center" prop="paymentsWithSundry" width="100">
+			<el-table-column v-if="columns[12].visible" show-overflow-tooltip label="出厂货款" align="center" prop="paymentFactory" width="100">
 				<template slot-scope="scope">
-					{{ formatNumberWithoutTrailingZeros(scope.row.paymentsWithSundry) }}
+					{{ formatNumberWithoutTrailingZeros(scope.row.paymentFactory) }}
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[13].visible" show-overflow-tooltip label="卸货片数" align="center" prop="actualPieces" width="100" />
