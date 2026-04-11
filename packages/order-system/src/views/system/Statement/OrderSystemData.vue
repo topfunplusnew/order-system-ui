@@ -87,13 +87,12 @@ export default {
 			});
 		},
 		handleExport() {
-			this.$prompt('请选择日期', '提示', {
-				confirmButtonText: '确定',
-				cancelButtonText: '取消',
-				inputType: 'date'
-			}).then(({ value: date }) => {
-				this.download('/statistics/export/getSystemMultiDimensionData?date=' + date, null, `数据统计_${new Date().getTime()}.xlsx`);
-			});
+			const date = this.queryParams.date;
+			if (!date) {
+				this.$message.warning('请先选择日期');
+				return;
+			}
+			this.download('/statistics/export/getSystemMultiDimensionData?date=' + date, null, `数据统计_${new Date().getTime()}.xlsx`);
 		}
 	}
 };
