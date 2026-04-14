@@ -1353,7 +1353,10 @@ export default {
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 								<div slot="content">{{ scope.row.customer }}</div>
-								<span>{{ scope.row.customer }}</span>
+								<span class="customer-cell">
+									<span>{{ scope.row.customer }}</span>
+									<i v-if="!isAdjustOrder && scope.row._updatedAfter24Hours" class="el-icon-warning-outline customer-update-icon" title="该订单在创建超过24小时后有过修改"></i>
+								</span>
 							</el-tooltip>
 						</template>
 					</VirtualColumn>
@@ -1745,6 +1748,13 @@ export default {
 								</el-dropdown-item>
 							</el-dropdown-menu>
 						</el-dropdown>
+					</template>
+					<!-- 客户 -->
+					<template v-else-if="col.idx === 2">
+						<span class="customer-cell">
+							<span>{{ scope.row.customer }}</span>
+							<i v-if="!isAdjustOrder && scope.row._updatedAfter24Hours" class="el-icon-warning-outline customer-update-icon" title="该订单在创建超过24小时后有过修改"></i>
+						</span>
 					</template>
 					<!-- 供应商/仓库 -->
 					<template v-else-if="col.idx === 3">
@@ -2661,5 +2671,17 @@ export default {
 	* {
 		pointer-events: auto !important;
 	}
+}
+
+.customer-cell {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+}
+
+.customer-update-icon {
+	color: #e6a23c;
+	font-size: 14px;
+	flex-shrink: 0;
 }
 </style>

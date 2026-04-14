@@ -1,6 +1,8 @@
 import _ from 'lodash';
 import { listGoodsOrder } from '../../../../api/system/goodsOrder';
 
+const ORDER_UPDATE_ALERT_THRESHOLD = 24 * 60 * 60 * 1000;
+
 /**
  * 订单基类
  */
@@ -187,6 +189,7 @@ export var mixin_order_base = {
 
 				// 添加序号字段：从起始序号开始，每条数据递增
 				processedOrder._rowIndex = startIndex + index + 1;
+				processedOrder._updatedAfter24Hours = this.isOrderUpdatedAfter24Hours(order.addtime, order.updateTime);
 
 				// 预处理供应商和仓库信息
 				if (order.smailOrderDetails && Array.isArray(order.smailOrderDetails)) {
@@ -205,6 +208,19 @@ export var mixin_order_base = {
 				// 注意：如果后续需要修改订单数据，需要先解冻或使用新对象
 				return Object.freeze(processedOrder);
 			});
+		},
+		isOrderUpdatedAfter24Hours(addtime, updateTime) {
+			if (!addtime || !updateTime) {
+				return false;
+			}
+
+			const addTimestamp = new Date(addtime).getTime();
+			const updateTimestamp = new Date(updateTime).getTime();
+			if (Number.isNaN(addTimestamp) || Number.isNaN(updateTimestamp)) {
+				return false;
+			}
+
+			return updateTimestamp > addTimestamp && updateTimestamp - addTimestamp > ORDER_UPDATE_ALERT_THRESHOLD;
 		},
 		/**
 		 * 获取去重的供应商列表

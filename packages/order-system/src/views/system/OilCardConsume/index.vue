@@ -53,6 +53,10 @@
 			<el-table-column v-if="columns[1].visible" label="加油卡卡号" align="center" prop="oilCardNo" width="110" show-overflow-tooltip />
 			<el-table-column v-if="columns[2].visible" label="使用加油卡时间" align="center" prop="useDate" width="110" show-overflow-tooltip />
 			<el-table-column v-if="columns[3].visible" label="使用加油卡车辆车牌号" align="center" prop="carNo" width="110" show-overflow-tooltip />
+			<el-table-column v-if="columns[12].visible" label="取卡时间" align="center" prop="takeCardTime" width="160" show-overflow-tooltip />
+			<el-table-column v-if="columns[13].visible" label="还卡时间" align="center" prop="returnCardTime" width="160" show-overflow-tooltip />
+			<el-table-column v-if="columns[14].visible" label="申请人" align="center" prop="applicant" width="110" show-overflow-tooltip />
+			<el-table-column v-if="columns[15].visible" label="地点和事由" align="center" prop="locationReason" width="200" show-overflow-tooltip />
 			<el-table-column v-if="columns[4].visible" label="期初余额" align="center" prop="startCardSurplus" width="110" show-overflow-tooltip />
 			<el-table-column v-if="columns[5].visible" label="加油量" align="center" prop="refuelingNumber" width="110" show-overflow-tooltip />
 			<el-table-column v-if="columns[6].visible" label="单价" align="center" prop="unitPrice" width="110" show-overflow-tooltip />
@@ -278,7 +282,11 @@ export default {
 				{ key: 8, label: `加油卡余额`, visible: true },
 				{ key: 9, label: `加油小票附件`, visible: true },
 				{ key: 10, label: `录入人员`, visible: true },
-				{ key: 11, label: `备注`, visible: true }
+				{ key: 11, label: `备注`, visible: true },
+				{ key: 12, label: `取卡时间`, visible: true },
+				{ key: 13, label: `还卡时间`, visible: true },
+				{ key: 14, label: `申请人`, visible: true },
+				{ key: 15, label: `地点和事由`, visible: true }
 			],
 			oilCardNoQuery: null,
 			carNo: null,

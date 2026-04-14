@@ -98,11 +98,15 @@ export default {
 		</el-descriptions>
 
 		<h4 style="font-weight: bold">加油卡消费信息</h4>
-		<el-table :data="needToShowInfo.oilCardConsumes" style="width: 100%" border>
+		<el-table :data="needToShowInfo.oilCardConsumes || []" style="width: 100%" border>
 			<el-table-column prop="oilCardNo" label="油卡号" />
 			<el-table-column prop="useDate" label="使用日期" />
 			<el-table-column prop="carNo" label="车牌号" />
 			<el-table-column prop="startCardSurplus" label="开始卡余额" />
+			<el-table-column prop="takeCardTime" label="取卡时间" />
+			<el-table-column prop="returnCardTime" label="还卡时间" />
+			<el-table-column prop="applicant" label="申请人" />
+			<el-table-column prop="locationReason" label="地点和事由" />
 			<el-table-column prop="refuelingNumber" label="加油次数" />
 			<el-table-column prop="unitPrice" label="单价" />
 			<el-table-column prop="refuelingMoney" label="加油金额" />

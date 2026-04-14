@@ -67,7 +67,7 @@
 
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
-		<InfoDialog title="历史还款记录" :visible.sync="dialogHistoryVisible" :width="'620px'">
+		<InfoDialog title="历史还款记录" :visible.sync="dialogHistoryVisible" :width="'980px'">
 			<template #info>
 				<el-table
 					v-if="tableData.length !== 0"
@@ -87,7 +87,10 @@
 						</template>
 					</el-table-column>
 					<el-table-column prop="recoverDate" label="时间" width="180" show-overflow-tooltip></el-table-column>
-					<el-table-column prop="moneyAmount" label="收回金额" show-overflow-tooltip></el-table-column>
+					<el-table-column prop="moneyAmount" label="收回金额" width="120" show-overflow-tooltip></el-table-column>
+					<el-table-column prop="acountsName" label="户名" width="180" show-overflow-tooltip></el-table-column>
+					<el-table-column prop="bankNo" label="账号" width="200" show-overflow-tooltip></el-table-column>
+					<el-table-column prop="comments" label="备注" show-overflow-tooltip></el-table-column>
 				</el-table>
 				<pagination v-show="detailTotal > 0" :total="detailTotal" :page.sync="queryRepaymentParams.pageNum" :limit.sync="queryRepaymentParams.pageSize" @pagination="getRepaymentMoneyList" />
 			</template>

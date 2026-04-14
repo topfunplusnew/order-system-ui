@@ -578,6 +578,13 @@ export default {
 				this.checkInfoDialogVisible = true;
 			});
 		},
+		getPaymentPayerName() {
+			const paymentInfo = this.checkPaymentInfo && this.checkPaymentInfo.payment;
+			if (!paymentInfo) {
+				return '暂无';
+			}
+			return paymentInfo.payUserName || paymentInfo.payUser || paymentInfo.userName || this.checkPaymentInfo.payUserName || '暂无';
+		},
 		// 查看某一行的审核流程信息
 		handleCheckApplyInfo(row) {
 			if (!row.id) {
@@ -1132,6 +1139,9 @@ export default {
 				</el-descriptions-item>
 				<el-descriptions-item label="付款时间">
 					{{ checkPaymentInfo.payment ? checkPaymentInfo.payment.fundsDate : '' }}
+				</el-descriptions-item>
+				<el-descriptions-item label="付款人">
+					{{ getPaymentPayerName() }}
 				</el-descriptions-item>
 				<el-descriptions-item label="对方账户名称">
 					{{ checkPaymentInfo.otherAccountsName }}
