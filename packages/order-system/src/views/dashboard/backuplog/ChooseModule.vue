@@ -4,6 +4,7 @@ import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import { filtersFunc } from '@/views/dashboard/backuplog/goodsorder';
 import CommonChange from '@/views/dashboard/backuplog/goodsorder/CommonChange.vue';
 import { TABLE_TEMPLATE_MAP } from '@/views/system/Statement/fundChangeConfig';
+import { isUnifiedTicketPointTableName, UNIFIED_TICKET_POINT_MODULE_KEY, UNIFIED_TICKET_POINT_MODULE_LABEL } from '@/utils/fundChange/ticketPoint';
 import _ from 'lodash';
 
 export default {
@@ -15,6 +16,22 @@ export default {
 		},
 		moduleNames() {
 			return moduleNames;
+		},
+		normalizedModuleList() {
+			if (!this.useV3Templates) return this.moduleList || [];
+			const normalized = [];
+			let hasUnifiedTicketPointModule = false;
+			(this.moduleList || []).forEach(item => {
+				if (isUnifiedTicketPointTableName(item) && item !== UNIFIED_TICKET_POINT_MODULE_KEY) {
+					if (!hasUnifiedTicketPointModule) {
+						normalized.push(UNIFIED_TICKET_POINT_MODULE_KEY);
+						hasUnifiedTicketPointModule = true;
+					}
+					return;
+				}
+				if (!normalized.includes(item)) normalized.push(item);
+			});
+			return normalized;
 		},
 		resultByTableName() {
 			return _.groupBy(this.result || [], 'tableName');
@@ -31,14 +48,23 @@ export default {
 	methods: {
 		filtersFunc,
 		getTemplateConfig(rawTableName) {
-			return TABLE_TEMPLATE_MAP[filtersFunc(rawTableName)] || null;
+			return TABLE_TEMPLATE_MAP[rawTableName] || TABLE_TEMPLATE_MAP[filtersFunc(rawTableName)] || null;
 		},
 		getModuleData(rawTableName) {
+			if (this.useV3Templates && rawTableName === UNIFIED_TICKET_POINT_MODULE_KEY) {
+				return (this.result || []).filter(item => isUnifiedTicketPointTableName(item.tableName) && item.tableName !== UNIFIED_TICKET_POINT_MODULE_KEY);
+			}
 			return this.resultByTableName[rawTableName] || [];
+		},
+		getDisplayModuleName(rawTableName) {
+			if (this.useV3Templates && isUnifiedTicketPointTableName(rawTableName)) {
+				return UNIFIED_TICKET_POINT_MODULE_LABEL;
+			}
+			return this.moduleNames[rawTableName] || rawTableName;
 		},
 		handleCheckModule(moduleName) {
 			if (!moduleName) return;
-			const tableName = filtersFunc(moduleName);
+			const tableName = moduleName === UNIFIED_TICKET_POINT_MODULE_KEY ? UNIFIED_TICKET_POINT_MODULE_KEY : filtersFunc(moduleName);
 			const data = this.getModuleData(moduleName);
 			if (_.isEmpty(data)) {
 				this.$message.warning('组件数据有误,ChooseModule');
@@ -48,7 +74,11 @@ export default {
 			const Component = templateConfig?.component || CommonChange;
 			const title = templateConfig?.title || '模块修改记录';
 			const width = templateConfig?.width || '1500px';
-			this.openDialog(Component, title, width, { compareData: data, moduleName: tableName, summaryData: this.summaryData }, false);
+			const componentProps = { compareData: data, moduleName: tableName, summaryData: this.summaryData };
+			if (this.useV3Templates && moduleName === UNIFIED_TICKET_POINT_MODULE_KEY) {
+				componentProps.summaryModuleLabel = UNIFIED_TICKET_POINT_MODULE_LABEL;
+			}
+			this.openDialog(Component, title, width, componentProps, false);
 		},
 		handleProcess() {
 			return Promise.resolve();
@@ -62,12 +92,19 @@ export default {
 
 <template>
 	<div class="choose-module-container">
-		<div v-for="(item, index) in moduleList" :key="index" class="module-section">
+		<div v-for="(item, index) in normalizedModuleList" :key="index" class="module-section">
 			<div class="module-header" @click="handleCheckModule(item)">
-				{{ moduleNames[item] || item }}
+				{{ getDisplayModuleName(item) }}
 			</div>
 			<div v-if="useV3Templates && getTemplateConfig(item) && getModuleData(item).length" class="module-template-wrap">
-				<component :is="getTemplateConfig(item).component" :compare-data="getModuleData(item)" :module-name="filtersFunc(item)" :summary-data="summaryData" :summary-only="true" />
+				<component
+					:is="getTemplateConfig(item).component"
+					:compare-data="getModuleData(item)"
+					:module-name="item === UNIFIED_TICKET_POINT_MODULE_KEY ? UNIFIED_TICKET_POINT_MODULE_KEY : filtersFunc(item)"
+					:summary-data="summaryData"
+					:summary-module-label="item === UNIFIED_TICKET_POINT_MODULE_KEY ? UNIFIED_TICKET_POINT_MODULE_LABEL : undefined"
+					:summary-only="true"
+				/>
 			</div>
 		</div>
 	</div>

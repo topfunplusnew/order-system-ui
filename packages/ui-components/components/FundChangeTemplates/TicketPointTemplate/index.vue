@@ -4,9 +4,10 @@
  * invoicein/invoiceout/invoiceother 表：customer、Supplier、invoiceAmount、customerPointAmount、supplierPointAmount 等
  * 范式：记录(x) 合并 3 行，排除 customerDiff、supplierDiff，diff-summary-table 展示 2 行
  */
-import { format, subtract, add } from 'mathjs';
+import { format, add } from 'mathjs';
 import _ from 'lodash';
 import { TICKET_POINT_COLUMNS } from '@/utils/fundChangeExcelColumns';
+import { buildTicketPointDiffFields, mapTicketPointRecordToRow, resolveTicketPointSummaryLabel } from '@/utils/fundChange/ticketPoint';
 
 export default {
 	name: 'TicketPointTemplate',
@@ -21,6 +22,9 @@ export default {
 		return { tableData: [] };
 	},
 	computed: {
+		resolvedSummaryModuleLabel() {
+			return resolveTicketPointSummaryLabel(this.moduleName, this.summaryModuleLabel);
+		},
 		columns() {
 			const excludeProps = ['customerDiff', 'supplierDiff'];
 			return TICKET_POINT_COLUMNS.filter(c => !excludeProps.includes(c.prop)).map(c => (c.aggregator ? c : { ...c, showSummary: false }));
@@ -29,7 +33,7 @@ export default {
 			return this.tableData.filter(r => r.rowType === 'diff');
 		},
 		diffSummaryTableData() {
-			const prefix = this.summaryModuleLabel || '票点';
+			const prefix = this.resolvedSummaryModuleLabel;
 			const customerDiff = format(
 				_.reduce(this.diffRows, (acc, r) => add(acc, Number(r.customerDiff) || 0), 0),
 				{ notation: 'fixed', precision: 2 }
@@ -69,55 +73,13 @@ export default {
 			});
 		},
 		mapBeforeRow(info, _record, _index, _tableName) {
-			return {
-				status: '已开票',
-				invoiceDate: info.invoiceDate ? (info.invoiceDate + '').slice(0, 10) : '',
-				selfSubject: info.selfSubject || info.selfCompanyName || '',
-				invoiceAmount: info.invoiceAmount,
-				incomeCompanyType: info.companyType || info.incomeCompanyType || '',
-				incomeCompanyName: info.companyName || info.customer || info.Customer || '',
-				incomeInvoiceUnit: info.invoiceUnitName || '',
-				incomePoint: info.pointRate,
-				incomePointAmount: info.customerPointAmount,
-				isOrderTax: info.isOrderTax,
-				costCompanyType: info.costCompanyType || '',
-				costCompanyName: info.Supplier || info.supplier || '',
-				costInvoiceUnit: info.costInvoiceUnitName || '',
-				costPoint: info.supplierPointRate,
-				costPointAmount: info.supplierPointAmount,
-				pointDiff: null,
-				actualInvoiceAmount: info.actualInvoiceAmount,
-				actualInvoiceDate: info.actualInvoiceDate ? (info.actualInvoiceDate + '').slice(0, 10) : '',
-				monthlyDebt: info.monthlyDebt,
-				remark: info.remark || ''
-			};
+			return mapTicketPointRecordToRow(info);
 		},
 		mapAfterRow(info, record, index, tableName) {
 			return this.mapBeforeRow(info, record, index, tableName);
 		},
 		buildDiffFields(original, changed, record, tableName) {
-			const custPointOrig = Number(original.customerPointAmount || 0);
-			const custPointChg = Number(changed.customerPointAmount || 0);
-			const supPointOrig = Number(original.supplierPointAmount || 0);
-			const supPointChg = Number(changed.supplierPointAmount || 0);
-			let customerDiff = '0.00';
-			let supplierDiff = '0.00';
-			if (tableName === 'invoicein') {
-				customerDiff = this.calculateFieldDiff(custPointOrig, custPointChg);
-				supplierDiff = this.calculateFieldDiff(supPointChg, supPointOrig);
-			} else if (tableName === 'invoiceout') {
-				customerDiff = this.calculateFieldDiff(custPointChg, custPointOrig);
-				supplierDiff = this.calculateFieldDiff(supPointOrig, supPointChg);
-			} else {
-				customerDiff = this.calculateFieldDiff(custPointChg, custPointOrig);
-				supplierDiff = this.calculateFieldDiff(supPointChg, supPointOrig);
-			}
-			return { customerDiff, supplierDiff };
-		},
-		calculateFieldDiff(afterVal, beforeVal) {
-			const after = Number(afterVal || 0);
-			const before = Number(beforeVal || 0);
-			return format(subtract(after, before), { notation: 'fixed', precision: 2 });
+			return buildTicketPointDiffFields(original, changed, tableName || record.tableName || this.moduleName);
 		},
 		tableRowClassName({ row }) {
 			if (row.rowType === 'before') return 'before-row';
@@ -143,9 +105,9 @@ export default {
 <template>
 	<div class="fund-change-template">
 		<el-table v-if="!summaryOnly" :data="tableData" border :row-class-name="tableRowClassName" :span-method="recordSpanMethod" style="width: 100%">
-			<el-table-column :label="summaryModuleLabel" width="100" fixed class-name="record-col">
+			<el-table-column :label="resolvedSummaryModuleLabel" width="100" fixed class-name="record-col">
 				<template slot-scope="scope">
-					<span v-if="scope.row.isRecordFirst">{{ summaryModuleLabel }}（{{ scope.row.recordIndex }}）</span>
+					<span v-if="scope.row.isRecordFirst">{{ resolvedSummaryModuleLabel }}（{{ scope.row.recordIndex }}）</span>
 				</template>
 			</el-table-column>
 			<el-table-column label="变更" width="80" fixed>

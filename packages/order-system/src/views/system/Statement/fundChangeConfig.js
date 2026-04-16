@@ -20,6 +20,7 @@ export const TABLE_TEMPLATE_MAP = {
 	goodsorder: { component: OrderAdjustmentTemplate, title: '订单调整单变动详情', width: '1500px' },
 	inventory_main: { component: InventoryChangeTemplate, title: '入库管理变动详情', width: '1500px' },
 	exwarehouse: { component: SecondOutboundTemplate, title: '二次出库变动详情', width: '1200px' },
+	allinvoice: { component: TicketPointTemplate, title: '票点变动详情', width: '1200px' },
 	invoicein: { component: TicketPointTemplate, title: '票点变动详情', width: '1200px' },
 	invoiceout: { component: TicketPointTemplate, title: '票点变动详情', width: '1200px' },
 	invoiceother: { component: TicketPointTemplate, title: '票点变动详情', width: '1200px' },
