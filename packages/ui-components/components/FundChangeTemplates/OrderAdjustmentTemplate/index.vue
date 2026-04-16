@@ -4,9 +4,10 @@
  * compareData 为 getByIds 返回的 data 数组，每项含 originalInfo、changedInfo、orderDetailList
  * 按 orderDetailList 展开，每明细一对 修改前/修改后，每组末尾一行差额
  */
-import { format, subtract, add } from 'mathjs';
+import { format, add } from 'mathjs';
 import _ from 'lodash';
 import { ORDER_ADJUSTMENT_COLUMNS } from '@/utils/fundChangeExcelColumns';
+import { buildOrderAdjustmentDiffFields, formatOrderAdjustmentAmount, resolveOrderAdjustmentPaymentsWithSundry } from '@/utils/fundChange/orderAdjustment';
 
 export default {
 	name: 'OrderAdjustmentTemplate',
@@ -128,7 +129,7 @@ export default {
 			const totalFreight = Number(detail.freight != null ? detail.freight : add(landFreight, seaFreight));
 			const factoryPayment = Number(detail.paymentFactory || 0);
 			const sundryCost = Number(detail.sundryCost || 0);
-			const paymentsWithSundry = Number(detail.paymentsWithSundry != null ? detail.paymentsWithSundry : add(factoryPayment, sundryCost));
+			const paymentsWithSundry = resolveOrderAdjustmentPaymentsWithSundry(detail);
 			return {
 				status: info.checkState,
 				orderDate: info.orderDate ? String(info.orderDate).slice(0, 10) : info.addtime ? String(info.addtime).slice(0, 10) : '',
@@ -153,7 +154,7 @@ export default {
 				actualPieces: detail.actualPieces,
 				unloadPrice: detail.paymentUnload,
 				stockTaxFlag: this.formatTaxFlag(detail.isIncludeTaxSale),
-				paymentsWithSundry: format(paymentsWithSundry, { notation: 'fixed', precision: 2 }),
+				paymentsWithSundry: formatOrderAdjustmentAmount(paymentsWithSundry),
 				allPayments: detail.payments != null ? format(Number(detail.payments || 0), { notation: 'fixed', precision: 2 }) : '',
 				erro: detail.erro,
 				tonnage: detail.tonnage,
@@ -174,50 +175,14 @@ export default {
 			};
 		},
 		/**
-		 * 差额行字段：填主表 allPayments、totalFreight，以及 diff-summary-table 用的 4 项
+		 * 差额行字段：填充出厂货款、总货款杂费、总货款、总运费，以及 diff-summary-table 用的 4 项
 		 * @param {Object} original - 修改前
 		 * @param {Object} changed - 修改后
 		 * @param {Object} _record - 备份记录
 		 * @returns {Object}
 		 */
 		buildDiffFields(original, changed, _record) {
-			const allPaymentsDiff = this.sumOrderDetailDiff(original.orderDetailList || [], changed.orderDetailList || [], 'payments');
-			const freightDiff = this.sumDetailFreightDiff(original.orderDetailList || [], changed.orderDetailList || []);
-			const customerDiff = this.sumOrderDetailDiff(original.orderDetailList || [], changed.orderDetailList || [], 'payments');
-			const supplierDiff = this.sumOrderDetailDiff(original.orderDetailList || [], changed.orderDetailList || [], 'paymentFactory');
-			const inventoryDiff = '0.00';
-			return { allPayments: allPaymentsDiff, totalFreight: freightDiff, customerDiff, supplierDiff, inventoryDiff, freightDiff };
-		},
-		sumDetailFreightDiff(origList, chgList) {
-			const sumFreight = list =>
-				_.sumBy(list || [], item => {
-					if (item.freight != null) return Number(item.freight || 0);
-					return Number(item.landFreight || 0) + Number(item.seaFreight || 0);
-				});
-			return this.calculateFieldDiff(sumFreight(chgList), sumFreight(origList));
-		},
-		/**
-		 * 明细列表某字段差额
-		 * @param {Array} origList - 修改前明细
-		 * @param {Array} chgList - 修改后明细
-		 * @param {string} field - 字段名
-		 * @returns {string}
-		 */
-		sumOrderDetailDiff(origList, chgList, field) {
-			const origSum = _.sumBy(origList || [], i => Number(_.get(i, field) || 0));
-			const chgSum = _.sumBy(chgList || [], i => Number(_.get(i, field) || 0));
-			return this.calculateFieldDiff(chgSum, origSum);
-		},
-		/**
-		 * 计算单字段差额（mathjs 高精度）
-		 * @param {number|string} afterVal
-		 * @param {number|string} beforeVal
-		 * @returns {string}
-		 */
-		calculateFieldDiff(afterVal, beforeVal) {
-			const after = Number(afterVal || 0);
-			const before = Number(beforeVal || 0);
-			return format(subtract(after, before), { notation: 'fixed', precision: 2 });
+			return buildOrderAdjustmentDiffFields(original, changed);
 		},
 		tableRowClassName({ row }) {
 			if (row.rowType === 'before') return 'before-row';
@@ -242,7 +207,7 @@ export default {
 			return [0, 0];
 		},
 		/**
-		 * 表格合计行：allPayments、totalFreight 差额合计
+		 * 表格合计行：出厂货款、总货款杂费、总货款、总运费差额合计
 		 * @param {Object} param - { columns }
 		 * @returns {string[]}
 		 */
@@ -250,6 +215,14 @@ export default {
 			const { columns } = param;
 			const sums = [];
 			const diffRows = this.diffRows;
+			const factoryPaymentSum = format(
+				_.reduce(diffRows, (acc, r) => add(acc, Number(r.factoryPayment) || 0), 0),
+				{ notation: 'fixed', precision: 2 }
+			);
+			const paymentsWithSundrySum = format(
+				_.reduce(diffRows, (acc, r) => add(acc, Number(r.paymentsWithSundry) || 0), 0),
+				{ notation: 'fixed', precision: 2 }
+			);
 			const allPaymentsSum = format(
 				_.reduce(diffRows, (acc, r) => add(acc, Number(r.allPayments) || 0), 0),
 				{ notation: 'fixed', precision: 2 }
@@ -260,6 +233,8 @@ export default {
 			);
 			columns.forEach((col, index) => {
 				if (index === 0 || index === 1) sums.push('');
+				else if (col.property === 'factoryPayment') sums.push(factoryPaymentSum);
+				else if (col.property === 'paymentsWithSundry') sums.push(paymentsWithSundrySum);
 				else if (col.property === 'allPayments') sums.push(allPaymentsSum);
 				else if (col.property === 'totalFreight') sums.push(totalFreightSum);
 				else sums.push('');
