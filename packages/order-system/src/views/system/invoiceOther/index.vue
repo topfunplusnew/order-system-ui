@@ -428,6 +428,7 @@ import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfi
 import { getInvoiceOther, updateInvoiceOther } from '../../../api/system/invoiceOther';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import INVOICE_ORTHER from '@/components/NeedToShow/INVOICE_ORTHER.vue';
+import { normalizeInvoiceOtherDateRange } from '@/views/system/invoiceOther/invoiceOther.query';
 
 export default {
 	name: 'InvoiceOther',
@@ -703,22 +704,12 @@ export default {
 				this.form.params.attachmentIds = uploadParams.params.attachmentIds;
 			}
 		},
-		// 格式化日期范围，按照 QuerySearchBar.vue 的做法
-		formatDateRange() {
-			if (this.dateRange && this.dateRange.length === 2) {
-				// 开始时间：如果只有日期没有时间，添加 00:00:00
-				if (String(this.dateRange[0]).length === 10) {
-					this.dateRange[0] += ' 00:00:00';
-				}
-				// 结束时间：如果只有日期没有时间，添加 23:59:59
-				if (String(this.dateRange[1]).length === 10) {
-					this.dateRange[1] += ' 23:59:59';
-				}
-			}
+		getNormalizedDateRange() {
+			return normalizeInvoiceOtherDateRange(this.dateRange);
 		},
 		getList() {
 			this.loading = true;
-			listInvoiceOther(addDateRange(this.queryParams, this.dateRange)).then(response => {
+			listInvoiceOther(addDateRange(this.queryParams, this.getNormalizedDateRange())).then(response => {
 				this.invoiceOtherList = response.rows;
 				this.total = response.total;
 				this.loading = false;
@@ -775,8 +766,6 @@ export default {
 			this.resetForm('form');
 		},
 		handleQuery() {
-			// 按照 QuerySearchBar.vue 的做法处理时间范围
-			this.formatDateRange();
 			this.queryParams.pageNum = 1;
 			this.getList();
 		},
