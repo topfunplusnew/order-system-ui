@@ -446,13 +446,14 @@ import { listCompany } from '@/api/system/company';
 import { listGoodsOrder } from '@/api/system/goodsOrder';
 import { addDateRange, parseTime } from '@/utils/ruoyi';
 import OrderInfos from '../../dashboard/components/goodsOrder/OrderInfos.vue';
-import { fix_2 } from '../../../api/tool/format';
+import { fix, fix_2 } from '../../../api/tool/format';
 import reLength from '../../dashboard/mixins/reLength';
 import CheckFiles from '../../../components/CheckFiles.vue';
 import UploadFilesButton from '@/components/UploadFilesButton/index.vue';
 import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfile';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import INVOICE_ORTHER from '@/components/NeedToShow/INVOICE_ORTHER.vue';
+import { normalizeCustomerPointAmountForSubmit } from './invoicehave.submit';
 
 export default {
 	name: 'InvoiceOtherHave',
@@ -793,8 +794,8 @@ export default {
 				supplierCompanyType: PUBLIC_DICT_TYPE.SUPPLIER,
 				// 客户公司类型：固定为客户
 				customerCompanyType: PUBLIC_DICT_TYPE.CUSTOMER,
-				customerTicketPoint: null,
-				customerPointAmount: null,
+				customerTicketPoint: 0,
+				customerPointAmount: 0,
 				type: 'customerTicketPointIsZero',
 				comments: null,
 				editReason: null, // 添加修改原因字段
@@ -958,6 +959,7 @@ export default {
 
 					// 移除不应该提交给后端的字段
 					delete submitData.attachmentList;
+					submitData.customerPointAmount = normalizeCustomerPointAmountForSubmit(submitData.customerPointAmount);
 
 					if (this.form.id != null) {
 						// 编辑时，从sessionStorage获取修改原因
