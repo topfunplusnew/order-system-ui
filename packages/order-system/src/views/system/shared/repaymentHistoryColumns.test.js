@@ -1,0 +1,13 @@
+import { describe, expect, test } from '@jest/globals';
+import { repaymentHistoryColumns } from '@/views/system/shared/repaymentHistoryColumns';
+
+describe('repayment history columns', () => {
+	test('includes account name and comments in the history dialog columns', () => {
+		expect(repaymentHistoryColumns).toEqual([
+			{ prop: 'recoverDate', label: '时间', width: 180 },
+			{ prop: 'moneyAmount', label: '收回金额', width: 120 },
+			{ prop: 'acountsName', label: '户名账号', width: 180 },
+			{ prop: 'comments', label: '备注', width: null }
+		]);
+	});
+});

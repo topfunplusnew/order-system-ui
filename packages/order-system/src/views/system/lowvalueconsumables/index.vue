@@ -125,7 +125,15 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[10].visible" label="低值易耗品台账清理时间" align="center" prop="scrapDate" show-overflow-tooltip>
+			<el-table-column v-if="columns[10].visible" label="使用人" align="center" prop="usePerson" show-overflow-tooltip>
+				<template #default="scope">
+					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+						<div slot="content">{{ scope.row.usePerson }}</div>
+						<span>{{ scope.row.usePerson }}</span>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[11].visible" label="低值易耗品台账清理时间" align="center" prop="scrapDate" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.scrapDate }}</div>
@@ -133,7 +141,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[11].visible" label="清理/变卖价值" align="center" prop="saleAmount" show-overflow-tooltip>
+			<el-table-column v-if="columns[12].visible" label="清理/变卖价值" align="center" prop="saleAmount" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.saleAmount }}</div>
@@ -141,7 +149,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[12].visible" label="备注" align="center" prop="comments" show-overflow-tooltip>
+			<el-table-column v-if="columns[13].visible" label="备注" align="center" prop="comments" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.comments }}</div>
@@ -197,6 +205,9 @@
 						<el-form-item label="使用部门" prop="department">
 							<el-input v-model="form.department" placeholder="请输入使用部门" />
 						</el-form-item>
+						<el-form-item label="使用人" prop="usePerson">
+							<el-input v-model="form.usePerson" placeholder="请输入使用人" />
+						</el-form-item>
 						<el-form-item label="低值易耗品台账清理时间" prop="scrapDate">
 							<el-date-picker v-model="form.scrapDate" type="datetime" placeholder="低值易耗品台账清理时间" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 						</el-form-item>
@@ -221,6 +232,7 @@
 import { listFixedAssets, getFixedAssets, delFixedAssets, addFixedAssets, updateFixedAssets } from '@/api/system/fixedAssets';
 import { excludeParams } from '@/api/tool/exclude';
 import { addDateRange } from '@/utils/ruoyi';
+import { createLowvalueconsumablesColumns, createLowvalueconsumablesForm, createLowvalueconsumablesRules } from '@/views/system/lowvalueconsumables/lowvalueconsumables.config';
 
 export default {
 	name: 'lowvalueconsumables',
@@ -254,117 +266,8 @@ export default {
 			// 表单参数
 			form: {},
 			// 表单校验
-			rules: {
-				// 添加校验
-				buyDate: [
-					{
-						required: true,
-						message: '购入日期不能为空',
-						trigger: 'blur'
-					}
-				],
-				assetNo: [
-					{
-						required: true,
-						message: '资产编号不能为空',
-						trigger: 'blur'
-					}
-				],
-				assetName: [
-					{
-						required: true,
-						message: '资产名称不能为空',
-						trigger: 'blur'
-					}
-				],
-				specification: [
-					{
-						required: true,
-						message: '规格型号不能为空',
-						trigger: 'blur'
-					}
-				],
-				number: [{ required: true, message: '数量不能为空', trigger: 'blur' }],
-				measurementUnit: [
-					{
-						required: true,
-						message: '计量单位不能为空',
-						trigger: 'blur'
-					}
-				],
-				amountIncludeTax: [
-					{
-						required: true,
-						message: '含税金额不能为空',
-						trigger: 'blur'
-					},
-					{
-						validator: (rule, value, callback) => {
-							if (!/^\d+(\.\d{1,2})?$/.test(value)) {
-								callback(new Error('金额只能为数字且小数点后最多两位'));
-							} else {
-								callback();
-							}
-						},
-						trigger: 'blur'
-					}
-				],
-				amountNoTax: [
-					{
-						required: true,
-						message: '不含税金额不能为空',
-						trigger: 'blur'
-					},
-					{
-						validator: (rule, value, callback) => {
-							if (!/^\d+(\.\d{1,2})?$/.test(value)) {
-								callback(new Error('金额只能为数字且小数点后最多两位'));
-							} else {
-								callback();
-							}
-						},
-						trigger: 'blur'
-					}
-				],
-				account: [
-					{
-						required: true,
-						message: '户名名称不能为空',
-						trigger: 'blur'
-					}
-				],
-				department: [
-					{
-						required: true,
-						message: '使用部门不能为空',
-						trigger: 'blur'
-					}
-				],
-				scrapDate: [],
-				saleDate: [
-					{
-						required: true,
-						message: '销售日期不能为空',
-						trigger: 'blur'
-					}
-				],
-				saleAmount: []
-			},
-			columns: [
-				{ key: 0, label: `购入日期`, visible: true },
-				{ key: 1, label: `资产编号`, visible: true },
-				{ key: 2, label: `资产名称`, visible: true },
-				{ key: 3, label: `规格型号`, visible: true },
-				{ key: 4, label: `数量`, visible: true },
-				{ key: 5, label: `计量单位`, visible: true },
-				{ key: 6, label: `含税金额`, visible: true },
-				{ key: 7, label: `不含税金额`, visible: true },
-				{ key: 8, label: `户名名称`, visible: true },
-				{ key: 9, label: `使用部门`, visible: true },
-				{ key: 10, label: `低值易耗品台账清理时间`, visible: true },
-				{ key: 11, label: `清理/变卖价值`, visible: true },
-				{ key: 12, label: `备注`, visible: true }
-			],
+			rules: createLowvalueconsumablesRules(),
+			columns: createLowvalueconsumablesColumns(),
 			// 开始时间
 			timesQuery: {
 				beginTime: '',
@@ -410,28 +313,7 @@ export default {
 		},
 		// 表单重置
 		reset() {
-			this.form = {
-				id: null,
-				buyDate: null,
-				assetNo: null,
-				assetName: null,
-				specification: null,
-				number: null,
-				measurementUnit: null,
-				amountIncludeTax: null,
-				amountNoTax: null,
-				account: null,
-				department: null,
-				scrapDate: null,
-				saleAmount: null,
-				comments: null,
-				addtime: null,
-				userId: null,
-				UserName: null,
-				updateTime: null,
-				delFlag: null,
-				type: 1
-			};
+			this.form = createLowvalueconsumablesForm();
 			this.dateRange = [];
 			this.resetForm('form');
 		},
@@ -463,7 +345,7 @@ export default {
 			this.reset();
 			const id = row.id || this.ids;
 			getFixedAssets(id).then(response => {
-				this.form = response.data;
+				this.form = { ...createLowvalueconsumablesForm(), ...response.data };
 				this.open = true;
 				this.title = '修改低值易耗品台账';
 			});
