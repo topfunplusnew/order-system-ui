@@ -159,7 +159,7 @@ export default {
 		async handleChangeSearch() {
 			try {
 				// 左侧：backupDate=targetLeftDate, targetDate=targetLeftDate（当日截取）
-				const left = await this.getChangeData(this.targetLeftDate, this.targetLeftDate);
+				const left = await this.getChangeData(this.changeForm.endTime, this.targetLeftDate);
 				this.changeMoneyTableData = this.formatTableData(left);
 
 				// 右侧：backupDate=changeForm.endTime, targetDate=targetRightDate（数据固定后）
