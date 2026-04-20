@@ -353,7 +353,7 @@
 						<el-form-item label="客户开票名称" prop="invoiceCompanyName">
 							<el-input v-model="form.invoiceCompanyName" placeholder="请输入客户开票名称" />
 						</el-form-item>
-						<el-form-item label="开票日期" prop="invoiceDate">
+						<el-form-item label="开票日期" prop="extraInfo.actualInvoiceTime">
 							<el-date-picker v-model="form.extraInfo.actualInvoiceTime" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 						</el-form-item>
 						<!-- 银行回执单附件-->
