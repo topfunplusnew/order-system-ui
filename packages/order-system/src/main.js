@@ -57,7 +57,6 @@ import plugins from './plugins';
 import horizontalScroll from 'el-table-horizontal-scroll';
 import VueVirtualScroller from 'vue-virtual-scroller';
 import VueTour from 'vue-tour';
-import FitColumnPlugin from 'v-fit-columns';
 
 // ========== 样式 ==========
 import './assets/styles/element-variables.scss';
@@ -83,7 +82,6 @@ Vue.use(VueTour);
 Vue.use(Antd);
 Vue.use(VueVirtualScroller);
 Vue.use(ModelPlugin);
-Vue.use(FitColumnPlugin);
 window.axios = service;
 Vue.prototype.getDicts = getDicts;
 Vue.prototype.getConfigKey = getConfigKey;
@@ -166,7 +164,12 @@ Vue.mixin(keepAliveDialog);
 // 全局注册通用弹窗混入
 Vue.mixin(common_dialog);
 // 全局注册 el-table 自动列宽混入
-Vue.mixin(createTableAutoWidthMixin());
+Vue.mixin(
+	createTableAutoWidthMixin({
+		padding: 8,
+		emptyContentMaxWidth: 200
+	})
+);
 // 全局指令（若指令文件包含 install 则可直接 use；此处双保险显式注册）
 Vue.use(elDragDialog.install ? elDragDialog : { install: v => v.directive('el-drag-dialog', elDragDialog) });
 Vue.use(elRelenDialog.install ? elRelenDialog : { install: v => v.directive('el-relen-dialog', elRelenDialog) });

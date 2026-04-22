@@ -143,7 +143,7 @@ export function isAutoWidthExcludedColumn(column, cells = []) {
 		return true;
 	}
 
-	if (column.width !== undefined && column.width !== null && column.width !== '' && !column[AUTO_WIDTH_MANAGED_KEY]) {
+	if (typeof column.className === 'string' && (column.className.includes('leave-alone') || column.className.includes('fixed-width'))) {
 		return true;
 	}
 

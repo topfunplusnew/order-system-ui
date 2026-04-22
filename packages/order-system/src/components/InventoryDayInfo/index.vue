@@ -6,7 +6,7 @@
 			</div>
 			<div v-else>
 				<el-table id="inventoryPrintBox" border :data="inventoryList" max-height="700" :cell-style="cellStyle" :span-method="spanMethod" :row-class-name="tableRowClassName" size="mini" show-summary :summary-method="getSummaries">
-					<el-table-column label="日期" align="center" prop="storeDate" show-overflow-tooltip width="80">
+					<el-table-column label="日期" align="center" prop="storeDate" show-overflow-tooltip min-width="80">
 						<template slot-scope="scope">
 							<span v-if="scope.row.type === 'flag'" style="text-align: left; font-weight: bold">备注：{{ scope.row.comments }}</span>
 							<span v-else>
@@ -14,43 +14,43 @@
 							</span>
 						</template>
 					</el-table-column>
-					<el-table-column label="仓库名称" align="center" prop="storeHouseName" show-overflow-tooltip width="100" />
-					<el-table-column label="供应商" align="center" prop="supplier" show-overflow-tooltip width="120" />
+					<el-table-column label="仓库名称" align="center" prop="storeHouseName" show-overflow-tooltip min-width="100" />
+					<el-table-column label="供应商" align="center" prop="supplier" show-overflow-tooltip min-width="120" />
 					<el-table-column label="级别名称" align="center" prop="levelName" min-width="150" />
-					<el-table-column label="计量单位" align="center" prop="countingUnit" show-overflow-tooltip width="70" />
-					<el-table-column label="厚度" align="center" prop="height" show-overflow-tooltip width="50" />
-					<el-table-column label="长度" align="center" prop="length" show-overflow-tooltip width="50" />
-					<el-table-column label="宽度" align="center" prop="width" show-overflow-tooltip width="50" />
-					<el-table-column label="每包片数" align="center" prop="piecesPerPack" show-overflow-tooltip width="70" />
-					<el-table-column label="包数" align="center" prop="packs" show-overflow-tooltip width="50" />
-					<el-table-column label="出厂片数" align="center" prop="pieces" show-overflow-tooltip width="70" />
-					<el-table-column label="入库量" align="center" prop="stockNumber" show-overflow-tooltip width="70" />
-					<el-table-column label="出厂单价" align="center" prop="price" show-overflow-tooltip width="70" />
-					<el-table-column label="是否含税" align="center" prop="isIncludeTaxFactory" show-overflow-tooltip width="80">
+					<el-table-column label="计量单位" align="center" prop="countingUnit" show-overflow-tooltip min-width="70" />
+					<el-table-column label="厚度" align="center" prop="height" show-overflow-tooltip min-width="50" />
+					<el-table-column label="长度" align="center" prop="length" show-overflow-tooltip min-width="50" />
+					<el-table-column label="宽度" align="center" prop="width" show-overflow-tooltip min-width="50" />
+					<el-table-column label="每包片数" align="center" prop="piecesPerPack" show-overflow-tooltip min-width="70" />
+					<el-table-column label="包数" align="center" prop="packs" show-overflow-tooltip min-width="50" />
+					<el-table-column label="出厂片数" align="center" prop="pieces" show-overflow-tooltip min-width="70" />
+					<el-table-column label="入库量" align="center" prop="stockNumber" show-overflow-tooltip min-width="70" />
+					<el-table-column label="出厂单价" align="center" prop="price" show-overflow-tooltip min-width="70" />
+					<el-table-column label="是否含税" align="center" prop="isIncludeTaxFactory" show-overflow-tooltip min-width="80">
 						<template slot-scope="scope">
 							<el-tag disable-transitions>{{ scope.row.isIncludeTaxFactory == 0 ? '否' : '是' }}</el-tag>
 						</template>
 					</el-table-column>
-					<el-table-column label="杂费" align="center" prop="sundryCost" show-overflow-tooltip width="60" />
-					<el-table-column label="出厂货款" align="center" prop="paymentFactory" show-overflow-tooltip width="90" />
-					<el-table-column label="存货价" align="center" prop="paymentUnload" show-overflow-tooltip width="70" />
-					<el-table-column label="出库是否含税" align="center" prop="isIncludeTaxSale" show-overflow-tooltip width="80">
+					<el-table-column label="杂费" align="center" prop="sundryCost" show-overflow-tooltip min-width="60" />
+					<el-table-column label="出厂货款" align="center" prop="paymentFactory" show-overflow-tooltip min-width="90" />
+					<el-table-column label="存货价" align="center" prop="paymentUnload" show-overflow-tooltip min-width="70" />
+					<el-table-column label="出库是否含税" align="center" prop="isIncludeTaxSale" show-overflow-tooltip min-width="80">
 						<template slot-scope="scope">
 							<el-tag disable-transitions>{{ scope.row.isIncludeTaxSale == 0 ? '否' : '是' }}</el-tag>
 						</template>
 					</el-table-column>
-					<el-table-column label="总货款" align="center" prop="payments" show-overflow-tooltip width="90" />
-					<el-table-column label="误差" align="center" prop="erro" show-overflow-tooltip width="50" />
-					<el-table-column label="吨位" align="center" prop="tonnage" show-overflow-tooltip width="60" />
-					<el-table-column label="陆运费" align="center" prop="landFreight" show-overflow-tooltip width="70" />
-					<el-table-column label="海运费" align="center" prop="seaFreight" show-overflow-tooltip width="70" />
-					<el-table-column label="总运费" align="center" prop="freight" show-overflow-tooltip width="80" />
-					<el-table-column label="其他费用" align="center" prop="otherCost" show-overflow-tooltip width="70" />
-					<el-table-column label="利润" align="center" prop="profit" show-overflow-tooltip width="70" />
-					<el-table-column label="不含税利润" align="center" prop="profitNoTax" show-overflow-tooltip width="90" />
-					<el-table-column label="备注" align="center" prop="comments" show-overflow-tooltip width="100" />
-					<el-table-column label="车队" align="center" prop="fleet" show-overflow-tooltip width="80" />
-					<el-table-column label="审核状态" align="center" prop="checkState" show-overflow-tooltip width="80">
+					<el-table-column label="总货款" align="center" prop="payments" show-overflow-tooltip min-width="90" />
+					<el-table-column label="误差" align="center" prop="erro" show-overflow-tooltip min-width="50" />
+					<el-table-column label="吨位" align="center" prop="tonnage" show-overflow-tooltip min-width="60" />
+					<el-table-column label="陆运费" align="center" prop="landFreight" show-overflow-tooltip min-width="70" />
+					<el-table-column label="海运费" align="center" prop="seaFreight" show-overflow-tooltip min-width="70" />
+					<el-table-column label="总运费" align="center" prop="freight" show-overflow-tooltip min-width="80" />
+					<el-table-column label="其他费用" align="center" prop="otherCost" show-overflow-tooltip min-width="70" />
+					<el-table-column label="利润" align="center" prop="profit" show-overflow-tooltip min-width="70" />
+					<el-table-column label="不含税利润" align="center" prop="profitNoTax" show-overflow-tooltip min-width="90" />
+					<el-table-column label="备注" align="center" prop="comments" show-overflow-tooltip min-width="100" />
+					<el-table-column label="车队" align="center" prop="fleet" show-overflow-tooltip min-width="80" />
+					<el-table-column label="审核状态" align="center" prop="checkState" show-overflow-tooltip min-width="80">
 						<template slot-scope="scope">
 							<el-tag v-if="scope.row.checkState" :color="getStatusColor(scope.row.checkState)" disable-transitions>
 								{{ scope.row.checkState }}
@@ -58,7 +58,7 @@
 							<span v-else>-</span>
 						</template>
 					</el-table-column>
-					<el-table-column label="操作员" align="center" prop="userName" show-overflow-tooltip width="80" />
+					<el-table-column label="操作员" align="center" prop="userName" show-overflow-tooltip min-width="80" />
 				</el-table>
 			</div>
 		</a-spin>

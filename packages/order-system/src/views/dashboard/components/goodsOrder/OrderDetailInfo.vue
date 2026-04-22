@@ -207,7 +207,10 @@ export default {
 
 			if (this.$refs.tableRef) {
 				try {
-					applyAutoWidthToTable(this.$refs.tableRef, { padding: 8 });
+					applyAutoWidthToTable(this.$refs.tableRef, {
+						padding: 8,
+						emptyContentMaxWidth: 200
+					});
 					this.$refs.tableRef.doLayout();
 				} catch (error) {
 					console.warn('调整列宽失败:', error);

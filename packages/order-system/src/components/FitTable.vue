@@ -52,7 +52,10 @@ export default {
 				}
 
 				this.$nextTick(() => {
-					applyAutoWidthToTable(this.$refs.table);
+					applyAutoWidthToTable(this.$refs.table, {
+						padding: 8,
+						emptyContentMaxWidth: 200
+					});
 				});
 			}, 60);
 		},

@@ -67,7 +67,7 @@ describe('applyAutoWidthToTable', () => {
 		expect(tableVm.$el.querySelector(`col[name="${columnId}"]`).getAttribute('width')).toBe('196');
 	});
 
-	test('skips explicit-width and interactive action columns', () => {
+	test('auto fits explicit-width data columns but skips interactive action columns', () => {
 		const explicitId = 'el-table_1_column_2';
 		const actionId = 'el-table_1_column_3';
 		const tableVm = createTableVm(
@@ -96,11 +96,44 @@ describe('applyAutoWidthToTable', () => {
 				</table>
 			`
 		);
+		const explicitHeaderCell = tableVm.$el.querySelector(`th.${explicitId} .cell`);
+		const explicitBodyCell = tableVm.$el.querySelector(`td.${explicitId} .cell`);
+
+		defineScrollWidth(explicitHeaderCell, 60);
+		defineScrollWidth(explicitBodyCell, 220);
 
 		applyAutoWidthToTable(tableVm);
 
-		expect(tableVm.$el.querySelector(`col[name="${explicitId}"]`).hasAttribute('width')).toBe(false);
+		expect(tableVm.store.states.columns[0].width).toBe(228);
+		expect(tableVm.$el.querySelector(`col[name="${explicitId}"]`).getAttribute('width')).toBe('228');
 		expect(tableVm.$el.querySelector(`col[name="${actionId}"]`).hasAttribute('width')).toBe(false);
+	});
+
+	test('keeps leave-alone columns at explicit width', () => {
+		const columnId = 'el-table_1_column_12';
+		const tableVm = createTableVm(
+			[{ id: columnId, type: 'default', property: 'status', width: 140 }],
+			`
+				<table>
+					<colgroup><col name="${columnId}" /></colgroup>
+					<thead>
+						<tr>
+							<th class="${columnId} leave-alone"><div class="cell">状态</div></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td class="${columnId} leave-alone"><div class="cell">已审核</div></td>
+						</tr>
+					</tbody>
+				</table>
+			`
+		);
+
+		applyAutoWidthToTable(tableVm);
+
+		expect(tableVm.store.states.columns[0].width).toBe(140);
+		expect(tableVm.$el.querySelector(`col[name="${columnId}"]`).hasAttribute('width')).toBe(false);
 	});
 
 	test('reapplies width when the function runs again after data changes', () => {

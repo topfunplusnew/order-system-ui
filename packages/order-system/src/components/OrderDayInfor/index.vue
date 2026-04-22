@@ -6,7 +6,7 @@
 			</div>
 			<div v-else>
 				<el-table id="printBox" border :data="orderList" max-height="700" :cell-style="cellStyle" :span-method="spanMethod" :row-class-name="tableRowClassName" size="mini" show-summary :summary-method="getSummaries">
-					<el-table-column label="日期" align="center" prop="orderDate" show-overflow-tooltip width="150">
+					<el-table-column label="日期" align="center" prop="orderDate" show-overflow-tooltip min-width="150">
 						<template slot-scope="scope">
 							<span v-if="scope.row.type === 'flag'" style="text-align: left; font-weight: bold">备注：{{ scope.row.comments }}</span>
 							<span v-else>
@@ -14,23 +14,23 @@
 							</span>
 						</template>
 					</el-table-column>
-					<el-table-column label="客户" align="center" prop="customer" show-overflow-tooltip width="150" />
-					<el-table-column label="车牌号" align="center" prop="landCarNo" show-overflow-tooltip width="100" />
-					<el-table-column label="供应商" align="center" prop="supplier" show-overflow-tooltip width="100" />
+					<el-table-column label="客户" align="center" prop="customer" show-overflow-tooltip min-width="150" />
+					<el-table-column label="车牌号" align="center" prop="landCarNo" show-overflow-tooltip min-width="100" />
+					<el-table-column label="供应商" align="center" prop="supplier" show-overflow-tooltip min-width="100" />
 					<el-table-column label="仓库名称" align="center" prop="storeHouseName" show-overflow-tooltip>
 						<template slot-scope="scope">
 							{{ scope.row.storeHouseName ? scope.row.storeHouseName : '-' }}
 						</template>
 					</el-table-column>
 					<el-table-column label="级别名称" align="center" prop="levelName" min-width="120" />
-					<el-table-column label="计量单位" align="center" prop="countingUnit" show-overflow-tooltip width="70" />
-					<el-table-column label="厚度" align="center" prop="height" show-overflow-tooltip width="50" />
-					<el-table-column label="长度" align="center" prop="length" show-overflow-tooltip width="50" />
-					<el-table-column label="宽度" align="center" prop="width" show-overflow-tooltip width="50" />
-					<el-table-column label="每包片数" align="center" prop="piecesPerPack" show-overflow-tooltip width="70" />
-					<el-table-column label="包数" align="center" prop="packs" show-overflow-tooltip width="50" />
-					<el-table-column label="出厂片数" align="center" prop="pieces" show-overflow-tooltip width="70" />
-					<el-table-column label="出厂单价" align="center" prop="price" show-overflow-tooltip width="70" />
+					<el-table-column label="计量单位" align="center" prop="countingUnit" show-overflow-tooltip min-width="70" />
+					<el-table-column label="厚度" align="center" prop="height" show-overflow-tooltip min-width="50" />
+					<el-table-column label="长度" align="center" prop="length" show-overflow-tooltip min-width="50" />
+					<el-table-column label="宽度" align="center" prop="width" show-overflow-tooltip min-width="50" />
+					<el-table-column label="每包片数" align="center" prop="piecesPerPack" show-overflow-tooltip min-width="70" />
+					<el-table-column label="包数" align="center" prop="packs" show-overflow-tooltip min-width="50" />
+					<el-table-column label="出厂片数" align="center" prop="pieces" show-overflow-tooltip min-width="70" />
+					<el-table-column label="出厂单价" align="center" prop="price" show-overflow-tooltip min-width="70" />
 					<el-table-column label="出厂是否含税" align="center" prop="isIncludeTaxFactory" show-overflow-tooltip>
 						<template slot-scope="scope">
 							<el-tag disable-transitions>{{ scope.row.isIncludeTaxFactory == 0 ? '否' : '是' }}</el-tag>
@@ -46,23 +46,23 @@
 						</template>
 					</el-table-column>
 					<el-table-column label="总货款杂费" align="center" prop="paymentsWithSundry" show-overflow-tooltip />
-					<el-table-column label="总货款" align="center" prop="payments" show-overflow-tooltip width="100px" />
-					<el-table-column label="误差" align="center" prop="erro" show-overflow-tooltip width="50px" />
-					<el-table-column label="吨位" align="center" prop="tonnage" show-overflow-tooltip width="50px" />
-					<el-table-column label="陆运费单价" align="center" prop="landFreightPrice" show-overflow-tooltip width="50px" />
-					<el-table-column label="加费" align="center" prop="additionalFees" show-overflow-tooltip width="50px" />
-					<el-table-column label="陆运费" align="center" prop="landFreight" show-overflow-tooltip width="50px" />
-					<el-table-column label="海运费" align="center" prop="seaFreight" show-overflow-tooltip width="50px" />
-					<el-table-column label="总运费" align="center" prop="freight" show-overflow-tooltip width="100px" />
-					<el-table-column label="其他费用" align="center" prop="otherCost" show-overflow-tooltip width="50px" />
-					<el-table-column label="利润" align="center" prop="profit" show-overflow-tooltip width="90px" />
-					<el-table-column label="不含税利润" align="center" prop="profitNoTax" show-overflow-tooltip width="90px" />
-					<el-table-column label="备注" align="center" prop="comments" show-overflow-tooltip width="50px" />
-					<el-table-column label="物流利润" align="center" prop="logisticsProfit" show-overflow-tooltip width="50px" />
-					<el-table-column label="客户佣金" align="center" prop="customerCommission" show-overflow-tooltip width="50px" />
-					<el-table-column label="厂家佣金" align="center" prop="factoryCommission" show-overflow-tooltip width="50px" />
-					<el-table-column label="计提厂家返利金额" align="center" prop="factoryRebateAmount" show-overflow-tooltip width="50px" />
-					<el-table-column label="计提厂家降价金额" align="center" prop="factoryDiscountAmount" show-overflow-tooltip width="50px" />
+					<el-table-column label="总货款" align="center" prop="payments" show-overflow-tooltip min-width="100" />
+					<el-table-column label="误差" align="center" prop="erro" show-overflow-tooltip min-width="50" />
+					<el-table-column label="吨位" align="center" prop="tonnage" show-overflow-tooltip min-width="50" />
+					<el-table-column label="陆运费单价" align="center" prop="landFreightPrice" show-overflow-tooltip min-width="50" />
+					<el-table-column label="加费" align="center" prop="additionalFees" show-overflow-tooltip min-width="50" />
+					<el-table-column label="陆运费" align="center" prop="landFreight" show-overflow-tooltip min-width="50" />
+					<el-table-column label="海运费" align="center" prop="seaFreight" show-overflow-tooltip min-width="50" />
+					<el-table-column label="总运费" align="center" prop="freight" show-overflow-tooltip min-width="100" />
+					<el-table-column label="其他费用" align="center" prop="otherCost" show-overflow-tooltip min-width="50" />
+					<el-table-column label="利润" align="center" prop="profit" show-overflow-tooltip min-width="90" />
+					<el-table-column label="不含税利润" align="center" prop="profitNoTax" show-overflow-tooltip min-width="90" />
+					<el-table-column label="备注" align="center" prop="comments" show-overflow-tooltip min-width="50" />
+					<el-table-column label="物流利润" align="center" prop="logisticsProfit" show-overflow-tooltip min-width="50" />
+					<el-table-column label="客户佣金" align="center" prop="customerCommission" show-overflow-tooltip min-width="50" />
+					<el-table-column label="厂家佣金" align="center" prop="factoryCommission" show-overflow-tooltip min-width="50" />
+					<el-table-column label="计提厂家返利金额" align="center" prop="factoryRebateAmount" show-overflow-tooltip min-width="50" />
+					<el-table-column label="计提厂家降价金额" align="center" prop="factoryDiscountAmount" show-overflow-tooltip min-width="50" />
 				</el-table>
 			</div>
 		</a-spin>
