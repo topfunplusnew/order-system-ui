@@ -1,14 +1,12 @@
 <!-- src/components/FitTable.vue -->
 <template>
-	<el-table :data="tableData" v-bind="$attrs" class="fit-table" @header-click="handleHeaderClick">
-		<!-- 组件内容 -->
+	<el-table ref="table" :data="tableData" v-bind="$attrs" class="fit-table" :data-auto-width-disabled="fitColumns ? null : 'true'" @header-click="handleHeaderClick">
 		<slot />
 	</el-table>
 </template>
 
 <script>
-import { ref, watch } from 'vue';
-import FitColumnPlugin from 'v-fit-columns';
+import { applyAutoWidthToTable } from '@/utils/tableAutoWidth';
 
 export default {
 	name: 'FitTable',
@@ -23,27 +21,44 @@ export default {
 			default: true
 		}
 	},
-	setup(props) {
-		const tableRef = ref(null);
-
-		// 监听数据变化，重新计算列宽
-		watch(
-			() => props.tableData,
-			() => {
-				if (props.fitColumns && tableRef.value) {
-					FitColumnPlugin.resize(tableRef.value);
-				}
-			}
-		);
-
-		const handleHeaderClick = (column, event) => {
-			$emit('header-click', column, event);
-		};
-
+	data() {
 		return {
-			tableRef,
-			handleHeaderClick
+			autoWidthTimer: null
 		};
+	},
+	watch: {
+		tableData() {
+			this.scheduleAutoWidth();
+		},
+		fitColumns() {
+			this.scheduleAutoWidth();
+		}
+	},
+	mounted() {
+		this.scheduleAutoWidth();
+	},
+	updated() {
+		this.scheduleAutoWidth();
+	},
+	beforeDestroy() {
+		clearTimeout(this.autoWidthTimer);
+	},
+	methods: {
+		scheduleAutoWidth() {
+			clearTimeout(this.autoWidthTimer);
+			this.autoWidthTimer = setTimeout(() => {
+				if (!this.fitColumns || !this.$refs.table) {
+					return;
+				}
+
+				this.$nextTick(() => {
+					applyAutoWidthToTable(this.$refs.table);
+				});
+			}, 60);
+		},
+		handleHeaderClick(column, event) {
+			this.$emit('header-click', column, event);
+		}
 	}
 };
 </script>

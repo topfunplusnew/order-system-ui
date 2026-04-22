@@ -207,3 +207,8 @@ aside {
 	filter: brightness(0.02);
 	transform: scaleY(1.75) translateY(-10%);
 }
+
+.el-table.r-table .cell {
+	padding-left: 4px !important;
+	padding-right: 4px !important;
+}

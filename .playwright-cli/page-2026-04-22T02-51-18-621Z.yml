@@ -1,0 +1,13 @@
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - heading "订单管理系统" [level=1] [ref=e4]
+    - generic [ref=e5]:
+      - heading " 用户登录" [level=5] [ref=e6]:
+        - generic [ref=e7]: 
+        - text: 用户登录
+      - textbox "账号" [ref=e11]
+      - textbox "密码" [ref=e15]
+      - button "登 录" [ref=e18] [cursor=pointer]:
+        - generic [ref=e19]: 登 录
+    - generic [ref=e20]: 温馨提示：推荐使用IE9以上浏览器以及360极速模式。
+  - text: 
