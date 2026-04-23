@@ -312,7 +312,7 @@
 			</keep-alive>
 		</el-dialog>
 
-		<InfoDialog title="历史还款记录" :visible.sync="dialogHistoryVisible" :width="'980px'">
+		<InfoDialog title="历史还款记录" :visible.sync="dialogHistoryVisible" :width="'620px'">
 			<template #info>
 				<el-table
 					v-if="tableData.length !== 0"
@@ -331,7 +331,8 @@
 							<span v-if="scope.$index === 0">厂家保证金收回</span>
 						</template>
 					</el-table-column>
-					<el-table-column v-for="column in repaymentHistoryColumns" :key="column.prop" :prop="column.prop" :label="column.label" :width="column.width" show-overflow-tooltip></el-table-column>
+					<el-table-column prop="recoverDate" label="时间" width="180"></el-table-column>
+					<el-table-column prop="moneyAmount" label="收回金额"></el-table-column>
 				</el-table>
 				<pagination v-show="detailTotal > 0" :total="detailTotal" :page.sync="queryRepaymentParams.pageNum" :limit.sync="queryRepaymentParams.pageSize" @pagination="getRepaymentMoneyList" />
 			</template>
@@ -360,7 +361,6 @@ import { PUBLIC_DICT_TYPE } from '@/utils/order';
 import InfoDialog from '@/components/InfoDialog.vue';
 import { subtract, bignumber } from 'mathjs';
 import { calculateTotalBadDebt } from '@/utils/lendMoney';
-import { repaymentHistoryColumns } from '@/views/system/shared/repaymentHistoryColumns';
 
 export default {
 	name: 'CashDepositFactory',
@@ -596,8 +596,7 @@ export default {
 				pageSize: 20
 			},
 			dialogHistoryVisible: false,
-			tableData: [],
-			repaymentHistoryColumns
+			tableData: []
 		};
 	},
 	created() {

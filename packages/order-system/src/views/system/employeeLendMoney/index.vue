@@ -209,7 +209,7 @@
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!--    查看历史收回-->
-		<InfoDialog title="历史还款记录" :visible.sync="dialogHistoryVisible" :width="'980px'">
+		<InfoDialog title="历史还款记录" :visible.sync="dialogHistoryVisible" :width="'620px'">
 			<template #info>
 				<el-table
 					v-if="recoverMoneyList.length !== 0"
@@ -233,11 +233,19 @@
 							</el-tooltip>
 						</template>
 					</el-table-column>
-					<el-table-column v-for="column in repaymentHistoryColumns" :key="column.prop" :prop="column.prop" :label="column.label" :width="column.width" show-overflow-tooltip>
+					<el-table-column prop="recoverDate" label="时间" width="180">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-								<div slot="content">{{ scope.row[column.prop] }}</div>
-								<span>{{ scope.row[column.prop] }}</span>
+								<div slot="content">{{ scope.row.recoverDate }}</div>
+								<span>{{ scope.row.recoverDate }}</span>
+							</el-tooltip>
+						</template>
+					</el-table-column>
+					<el-table-column prop="moneyAmount" label="收回金额">
+						<template #default="scope">
+							<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
+								<div slot="content">{{ scope.row.moneyAmount }}</div>
+								<span>{{ scope.row.moneyAmount }}</span>
 							</el-tooltip>
 						</template>
 					</el-table-column>
@@ -473,7 +481,6 @@ import { getConfigKey } from '@/api/system/config';
 import _ from 'lodash';
 import { subtract, bignumber } from 'mathjs';
 import { calculateTotalBadDebt } from '@/utils/lendMoney';
-import { repaymentHistoryColumns } from '@/views/system/shared/repaymentHistoryColumns';
 
 export default {
 	name: 'EmployeeLendMoney',
@@ -628,7 +635,6 @@ export default {
 			},
 			// 详细的还款记录
 			recoverMoneyList: [],
-			repaymentHistoryColumns,
 			dialogVisible: false,
 			// 查看信息的分页
 			detailTotal: 0,
