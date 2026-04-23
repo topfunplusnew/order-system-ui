@@ -30,7 +30,6 @@ import service from './utils/request';
 import { download, downloadByGetMethod, onceDownload } from '@/utils/request';
 import { addDateRange, handleTree, parseTime, resetForm, selectDictLabel, selectDictLabels } from '@/utils/ruoyi';
 import { Logger } from '@/utils/order/logger';
-import { createTableAutoWidthMixin } from '@/utils/tableAutoWidth';
 import { checkVersion } from './utils/versionChecker';
 
 // ========== 共享 UI 组件 ==========
@@ -163,6 +162,7 @@ Vue.use(VueCompositionAPI);
 Vue.mixin(keepAliveDialog);
 // 全局注册通用弹窗混入
 Vue.mixin(common_dialog);
+<<<<<<< HEAD
 // 全局注册 el-table 自动列宽混入
 Vue.mixin(
 	createTableAutoWidthMixin({
@@ -170,6 +170,8 @@ Vue.mixin(
 		emptyContentMaxWidth: 200
 	})
 );
+=======
+>>>>>>> parent of e123aa4a (yes)
 // 全局指令（若指令文件包含 install 则可直接 use；此处双保险显式注册）
 Vue.use(elDragDialog.install ? elDragDialog : { install: v => v.directive('el-drag-dialog', elDragDialog) });
 Vue.use(elRelenDialog.install ? elRelenDialog : { install: v => v.directive('el-relen-dialog', elRelenDialog) });

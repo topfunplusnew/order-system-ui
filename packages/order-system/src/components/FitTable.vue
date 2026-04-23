@@ -1,12 +1,14 @@
 <!-- src/components/FitTable.vue -->
 <template>
-	<el-table ref="table" :data="tableData" v-bind="$attrs" class="fit-table" :data-auto-width-disabled="fitColumns ? null : 'true'" @header-click="handleHeaderClick">
+	<el-table :data="tableData" v-bind="$attrs" class="fit-table" @header-click="handleHeaderClick">
+		<!-- 组件内容 -->
 		<slot />
 	</el-table>
 </template>
 
 <script>
-import { applyAutoWidthToTable } from '@/utils/tableAutoWidth';
+import { ref, watch } from 'vue';
+import FitColumnPlugin from 'v-fit-columns';
 
 export default {
 	name: 'FitTable',
@@ -21,36 +23,10 @@ export default {
 			default: true
 		}
 	},
-	data() {
-		return {
-			autoWidthTimer: null
-		};
-	},
-	watch: {
-		tableData() {
-			this.scheduleAutoWidth();
-		},
-		fitColumns() {
-			this.scheduleAutoWidth();
-		}
-	},
-	mounted() {
-		this.scheduleAutoWidth();
-	},
-	updated() {
-		this.scheduleAutoWidth();
-	},
-	beforeDestroy() {
-		clearTimeout(this.autoWidthTimer);
-	},
-	methods: {
-		scheduleAutoWidth() {
-			clearTimeout(this.autoWidthTimer);
-			this.autoWidthTimer = setTimeout(() => {
-				if (!this.fitColumns || !this.$refs.table) {
-					return;
-				}
+	setup(props) {
+		const tableRef = ref(null);
 
+<<<<<<< HEAD
 				this.$nextTick(() => {
 					applyAutoWidthToTable(this.$refs.table, {
 						padding: 8,
@@ -62,6 +38,26 @@ export default {
 		handleHeaderClick(column, event) {
 			this.$emit('header-click', column, event);
 		}
+=======
+		// 监听数据变化，重新计算列宽
+		watch(
+			() => props.tableData,
+			() => {
+				if (props.fitColumns && tableRef.value) {
+					FitColumnPlugin.resize(tableRef.value);
+				}
+			}
+		);
+
+		const handleHeaderClick = (column, event) => {
+			$emit('header-click', column, event);
+		};
+
+		return {
+			tableRef,
+			handleHeaderClick
+		};
+>>>>>>> parent of e123aa4a (yes)
 	}
 };
 </script>

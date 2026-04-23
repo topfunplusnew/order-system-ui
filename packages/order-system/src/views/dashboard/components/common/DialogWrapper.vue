@@ -1,20 +1,5 @@
 <template>
-	<el-dialog
-		v-if="internalVisible"
-		:modal="false"
-		v-dialogDrag
-		v-el-relen-dialog
-		:title="dialogTitle"
-		:visible.sync="internalVisible"
-		:width="dialogWidth"
-		append-to-body
-		:close-on-click-modal="false"
-		:close-on-press-escape="false"
-		:destroy-on-close="false"
-		@open="handleOpen"
-		@opened="handleOpened"
-		@close="handleClose"
-	>
+	<el-dialog v-if="internalVisible" :modal="false" v-dialogDrag v-el-relen-dialog :title="dialogTitle" :visible.sync="internalVisible" :width="dialogWidth" append-to-body :close-on-click-modal="false" :close-on-press-escape="false" :destroy-on-close="false" @close="handleClose">
 		<keep-alive>
 			<component :is="currentComponent" :key="dialogKey" ref="dynamicComponent" v-bind="dialogProps" />
 		</keep-alive>
@@ -149,35 +134,6 @@ export default {
 				this.$emit('close', callback);
 			} else {
 				Message.warning('组件未实现handleReject方法');
-			}
-		},
-		handleOpened() {
-			this.$nextTick(() => {
-				if (typeof window !== 'undefined') {
-					window.dispatchEvent(new Event('resize'));
-				}
-
-				this.invokeDialogOpenedHooks(this.$refs.dynamicComponent);
-			});
-		},
-		handleOpen() {
-			this.$nextTick(() => {
-				this.invokeDialogOpenedHooks(this.$refs.dynamicComponent);
-			});
-		},
-		invokeDialogOpenedHooks(componentInstance) {
-			if (!componentInstance) {
-				return;
-			}
-
-			if (typeof componentInstance.handleDialogOpened === 'function') {
-				componentInstance.handleDialogOpened();
-			}
-
-			if (Array.isArray(componentInstance.$children)) {
-				componentInstance.$children.forEach(child => {
-					this.invokeDialogOpenedHooks(child);
-				});
 			}
 		},
 		// 确认按钮 提醒父组件执行相关的逻辑
