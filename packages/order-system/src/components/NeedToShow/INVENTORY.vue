@@ -1,5 +1,6 @@
 <script>
 import { fix_2 } from '../../api/tool/format';
+import { applyAutoWidthToTable } from '@/utils/tableAutoWidth';
 
 export default {
 	name: 'INVENTORY',
@@ -13,7 +14,111 @@ export default {
 			default: () => ({})
 		}
 	},
+	data() {
+		return {
+			autoFitTimers: [],
+			handleResize: null,
+			containerResizeHandler: null,
+			containerResizeObserver: null
+		};
+	},
+	watch: {
+		'needToShowInfo.inventoryDetailList': {
+			handler() {
+				this.scheduleAutoFitPasses();
+			},
+			deep: true,
+			immediate: true
+		}
+	},
+	mounted() {
+		this.scheduleAutoFitPasses();
+
+		this.handleResize = this.debounce(() => {
+			this.fitColumns();
+		}, 300);
+		window.addEventListener('resize', this.handleResize);
+
+		this.containerResizeHandler = this.debounce(() => {
+			if (this.$el && this.$el.offsetParent !== null) {
+				this.fitColumns();
+			}
+		}, 120);
+
+		if (typeof ResizeObserver !== 'undefined' && this.$el) {
+			this.containerResizeObserver = new ResizeObserver(() => {
+				this.containerResizeHandler();
+			});
+			this.containerResizeObserver.observe(this.$el);
+		}
+	},
+	activated() {
+		this.scheduleAutoFitPasses();
+	},
+	beforeDestroy() {
+		this.clearAutoFitTimers();
+
+		if (this.handleResize) {
+			window.removeEventListener('resize', this.handleResize);
+		}
+
+		if (this.containerResizeObserver) {
+			this.containerResizeObserver.disconnect();
+			this.containerResizeObserver = null;
+		}
+	},
 	methods: {
+		clearAutoFitTimers() {
+			this.autoFitTimers.forEach(timer => clearTimeout(timer));
+			this.autoFitTimers = [];
+		},
+		scheduleAutoFitPasses() {
+			this.clearAutoFitTimers();
+
+			[0, 80, 160, 240, 320, 420, 520, 720].forEach(delay => {
+				const timer = setTimeout(() => {
+					this.fitColumns();
+				}, delay);
+				this.autoFitTimers.push(timer);
+			});
+		},
+		fitColumns() {
+			const tableRef = this.$refs.tableRef;
+			const inventoryDetailList = this.needToShowInfo && this.needToShowInfo.inventoryDetailList;
+			if (!tableRef || !Array.isArray(inventoryDetailList) || inventoryDetailList.length === 0) {
+				return;
+			}
+
+			this.$nextTick(() => {
+				requestAnimationFrame(() => {
+					if (!this.$refs.tableRef) {
+						return;
+					}
+
+					try {
+						this.$refs.tableRef.doLayout();
+						applyAutoWidthToTable(this.$refs.tableRef, { padding: 8 });
+						this.$refs.tableRef.doLayout();
+					} catch (error) {
+						console.warn('库存明细列宽调整失败:', error);
+					}
+				});
+			});
+		},
+		handleDialogOpened() {
+			this.scheduleAutoFitPasses();
+		},
+		debounce(func, wait) {
+			let timeout;
+			return function executedFunction(...args) {
+				const later = () => {
+					clearTimeout(timeout);
+					func.apply(this, args);
+				};
+				clearTimeout(timeout);
+				timeout = setTimeout(later, wait);
+			};
+		},
 		handleProcess() {
 			return Promise.resolve();
 		},
@@ -87,6 +192,7 @@ export default {
 			</el-row>
 			<!--      库存个体信息-->
 			<el-table
+				ref="tableRef"
 				:data="needToShowInfo.inventoryDetailList"
 				:cell-style="
 					() => {
@@ -100,7 +206,7 @@ export default {
 				style="width: 100%"
 				border
 			>
-				<el-table-column prop="supplier" label="供应商" width="150" />
+				<el-table-column prop="supplier" label="供应商" min-width="150" />
 				<el-table-column label="级别名称" align="center" prop="levelName" show-overflow-tooltip />
 				<el-table-column label="计量单位" align="center" prop="countingUnit" show-overflow-tooltip />
 				<el-table-column label="厚度" align="center" prop="height" show-overflow-tooltip />

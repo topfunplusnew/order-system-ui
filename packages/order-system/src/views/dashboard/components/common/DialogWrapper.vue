@@ -1,5 +1,20 @@
 <template>
-	<el-dialog v-if="internalVisible" :modal="false" v-dialogDrag v-el-relen-dialog :title="dialogTitle" :visible.sync="internalVisible" :width="dialogWidth" append-to-body :close-on-click-modal="false" :close-on-press-escape="false" :destroy-on-close="false" @close="handleClose">
+	<el-dialog
+		v-if="internalVisible"
+		:modal="false"
+		v-dialogDrag
+		v-el-relen-dialog
+		:title="dialogTitle"
+		:visible.sync="internalVisible"
+		:width="dialogWidth"
+		append-to-body
+		:close-on-click-modal="false"
+		:close-on-press-escape="false"
+		:destroy-on-close="false"
+		@open="handleOpen"
+		@opened="handleOpened"
+		@close="handleClose"
+	>
 		<keep-alive>
 			<component :is="currentComponent" :key="dialogKey" ref="dynamicComponent" v-bind="dialogProps" />
 		</keep-alive>
@@ -13,6 +28,7 @@
 
 <script>
 import { Message } from 'element-ui';
+import { invokeDialogOpenedHooks } from '@/utils/dialogOpenedHooks';
 export default {
 	props: {
 		// 弹窗是否可见
@@ -135,6 +151,20 @@ export default {
 			} else {
 				Message.warning('组件未实现handleReject方法');
 			}
+		},
+		handleOpened() {
+			this.$nextTick(() => {
+				if (typeof window !== 'undefined') {
+					window.dispatchEvent(new Event('resize'));
+				}
+
+				invokeDialogOpenedHooks(this.$refs.dynamicComponent);
+			});
+		},
+		handleOpen() {
+			this.$nextTick(() => {
+				invokeDialogOpenedHooks(this.$refs.dynamicComponent);
+			});
 		},
 		// 确认按钮 提醒父组件执行相关的逻辑
 		handleConfirm() {

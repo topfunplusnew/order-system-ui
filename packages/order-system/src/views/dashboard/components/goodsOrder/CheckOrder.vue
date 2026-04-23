@@ -19,7 +19,7 @@
 			<el-descriptions-item label="海运司机电话">{{ orderInfo.seaDriverTel }}</el-descriptions-item>
 			<el-descriptions-item label="车队">{{ orderInfo.fleet }}</el-descriptions-item>
 		</el-descriptions>
-		<OrderDetailInfo :order-detail-info-list="orderInfo.orderDetailList" :hidden-columns="['orderDate', 'customer']"></OrderDetailInfo>
+		<OrderDetailInfo :order-detail-info-list="orderInfo.orderDetailList" :hidden-columns="['orderDate', 'customer']" :enable-auto-width="true"></OrderDetailInfo>
 		<el-descriptions border>
 			<el-descriptions-item label="备注">{{ orderInfo.comments }}</el-descriptions-item>
 		</el-descriptions>

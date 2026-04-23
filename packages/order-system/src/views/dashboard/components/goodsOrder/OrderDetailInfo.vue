@@ -9,6 +9,7 @@ import { listBankAccount } from '@/api/system/bankAccount';
 import { fix, fix_2 } from '@/api/tool/format';
 import { RebateType } from '@/api/tool/enums';
 import ExpandCursor from '../common/ExpandCursor.vue';
+import { applyAutoWidthToTable } from '@/utils/tableAutoWidth';
 
 export default {
 	name: 'OrderDetailInfo',
@@ -19,6 +20,10 @@ export default {
 			default: () => []
 		},
 		ban: {
+			type: Boolean,
+			default: false
+		},
+		enableAutoWidth: {
 			type: Boolean,
 			default: false
 		},
@@ -45,6 +50,9 @@ export default {
 			addMoneyBackVisible: false,
 			// 控制表格展开行的keys
 			expandRowKeys: [],
+			autoFitTimers: [],
+			containerResizeHandler: null,
+			containerResizeObserver: null,
 			// 列宽度配置
 			columnWidths: {
 				action: '80px', // 操作列：按钮文字"货物返利"
@@ -122,46 +130,73 @@ export default {
 		orderDetailInfoList: {
 			handler(newVal) {
 				this.updateExpandRows(newVal);
-				// 数据变化后重新计算列宽
-				if (newVal && newVal.length > 0) {
-					this.$nextTick(() => {
-						this.$nextTick(() => {
-							this.fitColumns();
-						});
-					});
+				if (this.enableAutoWidth) {
+					this.scheduleAutoFitPasses();
 				}
 			},
 			immediate: true
 		}
 	},
 	mounted() {
-		// 组件挂载后，等待DOM渲染完成再调整列宽
-		this.$nextTick(() => {
-			this.$nextTick(() => {
-				setTimeout(() => {
-					if (this.filteredOrderDetailInfoList && this.filteredOrderDetailInfoList.length > 0) {
-						this.fitColumns();
-					}
-				}, 100);
-			});
-		});
+		if (!this.enableAutoWidth) {
+			return;
+		}
+
+		this.scheduleAutoFitPasses();
 
 		// 监听窗口大小变化，重新调整列宽
 		this.handleResize = this.debounce(() => {
 			this.fitColumns();
 		}, 300);
 		window.addEventListener('resize', this.handleResize);
+
+		this.containerResizeHandler = this.debounce(() => {
+			if (this.$el && this.$el.offsetParent !== null) {
+				this.fitColumns();
+			}
+		}, 120);
+
+		if (typeof ResizeObserver !== 'undefined' && this.$el) {
+			this.containerResizeObserver = new ResizeObserver(() => {
+				this.containerResizeHandler();
+			});
+			this.containerResizeObserver.observe(this.$el);
+		}
 	},
 	beforeDestroy() {
+		this.clearAutoFitTimers();
 		// 移除窗口大小变化监听
 		if (this.handleResize) {
 			window.removeEventListener('resize', this.handleResize);
+		}
+		if (this.containerResizeObserver) {
+			this.containerResizeObserver.disconnect();
+			this.containerResizeObserver = null;
 		}
 	},
 	// 不再需要在 created 中请求字典，返利方式已硬编码
 	methods: {
 		listBankAccount,
 		listCompany,
+		clearAutoFitTimers() {
+			this.autoFitTimers.forEach(timer => clearTimeout(timer));
+			this.autoFitTimers = [];
+		},
+		scheduleAutoFitPasses() {
+			if (!this.enableAutoWidth) {
+				this.clearAutoFitTimers();
+				return;
+			}
+
+			this.clearAutoFitTimers();
+
+			[0, 80, 160, 240, 320, 420, 520, 720].forEach(delay => {
+				const timer = setTimeout(() => {
+					this.fitColumns();
+				}, delay);
+				this.autoFitTimers.push(timer);
+			});
+		},
 		// 更新默认展开的行
 		updateExpandRows(list) {
 			// 默认展开所有行，显示备注内容
@@ -173,6 +208,10 @@ export default {
 		},
 		// 原生列宽自动调整方法
 		fitColumns() {
+			if (!this.enableAutoWidth) {
+				return;
+			}
+
 			if (!this.$refs.tableRef) {
 				return;
 			}
@@ -185,130 +224,14 @@ export default {
 			// 先调用表格的 doLayout 方法，确保表格布局完成
 			this.$refs.tableRef.doLayout();
 
-			// 使用 requestAnimationFrame 确保在浏览器下一次重绘时执行
-			requestAnimationFrame(() => {
-				setTimeout(() => {
-					if (this.$refs.tableRef) {
-						try {
-							this.autoFitColumns();
-						} catch (error) {
-							console.warn('调整列宽失败:', error);
-						}
-					}
-				}, 80);
-			});
-		},
-		// 自动调整列宽 —— 不增加任何额外内外边距（纯文本宽度）
-		autoFitColumns() {
-			const tableRef = this.$refs.tableRef;
-			if (!tableRef) return;
-
-			// 保证表格结构完整
-			tableRef.doLayout();
-
-			this.$nextTick(() => {
-				requestAnimationFrame(() => {
-					const tableEl = tableRef.$el;
-					if (!tableEl) return;
-
-					const colgroup = tableEl.querySelector('colgroup');
-					if (!colgroup) return;
-
-					const cols = Array.from(colgroup.querySelectorAll('col'));
-					const tableColumns = tableRef.columns || [];
-
-					const measureCache = new Map();
-
-					// ——核心：仅纯文本计算，不添加任何内外边距——
-					const measureText = (text, style, weight = null) => {
-						if (!text) return 0;
-
-						const key = `${text}|${weight}`;
-						if (measureCache.has(key)) return measureCache.get(key);
-
-						const div = document.createElement('div');
-						div.style.cssText = `
-          position:absolute;
-          visibility:hidden;
-          white-space:nowrap;
-          font-size:${style.fontSize};
-          font-family:${style.fontFamily};
-          font-weight:${weight || style.fontWeight};
-          padding:0;
-          margin:0;
-          border:0;
-          box-sizing:content-box;
-          left:-9999px;
-          top:-9999px;
-        `;
-
-						div.textContent = text;
-
-						document.body.appendChild(div);
-						const width = div.offsetWidth; // 不加任何附加值
-						document.body.removeChild(div);
-
-						measureCache.set(key, width);
-						return width;
-					};
-
-					cols.forEach((col, colIndex) => {
-						const column = tableColumns[colIndex];
-						if (!column) return;
-
-						// 跳过特殊列（序号、多选、展开、操作列）
-						if (column.type === 'selection' || column.type === 'index' || column.type === 'expand' || column.className === 'leave-alone') {
-							return;
-						}
-
-						const colName = col.getAttribute('name');
-						if (!colName) return;
-
-						const headerCell = tableEl.querySelector(`th.${colName} .cell`);
-						if (!headerCell) return;
-
-						const bodyCell = tableEl.querySelector(`td.${colName} .cell`);
-						const refCell = bodyCell || headerCell;
-
-						const style = window.getComputedStyle(refCell);
-
-						let maxW = 0;
-
-						// ① 测量表头
-						if (column.label) {
-							maxW = Math.max(maxW, measureText(column.label, style, '500'));
-						}
-
-						// ② 测量数据
-						const prop = column.property;
-						if (prop && this.filteredOrderDetailInfoList) {
-							this.filteredOrderDetailInfoList.forEach(row => {
-								const val = row[prop];
-
-								if (val === null || val === undefined) return;
-
-								let text = '';
-								if (typeof val === 'number') {
-									text = Number.isInteger(val) ? String(val) : val.toString();
-								} else {
-									text = String(val);
-								}
-
-								if (text) {
-									maxW = Math.max(maxW, measureText(text, style));
-								}
-							});
-						}
-
-						// 不加 padding，不加 margin，不加 extra —— 完全真实宽度
-						col.width = maxW;
-						column.realWidth = maxW;
-					});
-
-					// 最终布局一次
-					tableRef.doLayout();
-				});
-			});
+			if (this.$refs.tableRef) {
+				try {
+					applyAutoWidthToTable(this.$refs.tableRef, { padding: 8 });
+					this.$refs.tableRef.doLayout();
+				} catch (error) {
+					console.warn('调整列宽失败:', error);
+				}
+			}
 		},
 
 		// 防抖函数
@@ -326,9 +249,9 @@ export default {
 		// 处理表头点击事件（如果需要）
 		handleHeaderClick(column, event) {
 			// 表头点击后重新调整列宽
-			this.$nextTick(() => {
-				this.fitColumns();
-			});
+			if (this.enableAutoWidth) {
+				this.scheduleAutoFitPasses();
+			}
 		},
 		tableRowClassName({ row }) {
 			// 所有行都显示展开图标
@@ -441,9 +364,14 @@ export default {
 		// 处理展开行变化
 		handleExpandChange(row, expandedRows) {
 			// 展开/收起行后重新调整列宽
-			this.$nextTick(() => {
-				this.fitColumns();
-			});
+			if (this.enableAutoWidth) {
+				this.scheduleAutoFitPasses();
+			}
+		},
+		handleDialogOpened() {
+			if (this.enableAutoWidth) {
+				this.scheduleAutoFitPasses();
+			}
 		},
 		// 处理表格滚动（可选，用于某些场景下的列宽调整）
 		handleTableScroll() {
@@ -464,6 +392,7 @@ export default {
 		<el-row>
 			<el-table
 				ref="tableRef"
+				class="order-detail-table"
 				border
 				:data="filteredOrderDetailInfoList"
 				row-key="id"
@@ -1017,6 +946,11 @@ export default {
 }
 
 /* 固定表头样式 - 确保表头在滚动时保持固定 */
+::v-deep .order-detail-table .cell {
+	padding-left: 4px !important;
+	padding-right: 4px !important;
+}
+
 ::v-deep .el-table__header-wrapper {
 	position: sticky !important;
 	top: 0 !important;
