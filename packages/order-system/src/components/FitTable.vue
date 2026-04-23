@@ -28,10 +28,7 @@ export default {
 
 <<<<<<< HEAD
 				this.$nextTick(() => {
-					applyAutoWidthToTable(this.$refs.table, {
-						padding: 8,
-						emptyContentMaxWidth: 200
-					});
+					applyAutoWidthToTable(this.$refs.table);
 				});
 			}, 60);
 		},

@@ -63,7 +63,7 @@
 									</el-tooltip>
 								</template>
 							</el-table-column>
-							<el-table-column v-if="columns[0].visible" prop="orderSource" label="订单来源" min-width="90" show-overflow-tooltip>
+							<el-table-column v-if="columns[0].visible" prop="orderSource" label="订单来源" width="90" show-overflow-tooltip>
 								<template #default="scope">
 									<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 										<div slot="content">{{ scope.row.orderSource }}</div>
@@ -111,7 +111,7 @@
 									</el-tooltip>
 								</template>
 							</el-table-column>
-							<el-table-column v-if="columns[6].visible" prop="profitNoTax" label="不含税利润" min-width="110" show-overflow-tooltip>
+							<el-table-column v-if="columns[6].visible" prop="profitNoTax" label="不含税利润" width="110" show-overflow-tooltip>
 								<template #default="scope">
 									<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 										<div slot="content">{{ scope.row.profitNoTax }}</div>
