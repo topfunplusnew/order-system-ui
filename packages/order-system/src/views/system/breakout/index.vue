@@ -470,96 +470,14 @@
 				<el-button @click="cancelSecond">取 消</el-button>
 			</div>
 		</el-dialog>
-
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="true" title="库存信息" :visible.sync="inventoryInfoVisible" width="900px" append-to-body>
-			<el-descriptions title="库存详情" border size="mini">
-				<el-descriptions-item label="陆地车号">
-					{{ inventoryInfo.landCarNo }}
-				</el-descriptions-item>
-				<el-descriptions-item label="陆地司机姓名">
-					{{ inventoryInfo.landDriverName }}
-				</el-descriptions-item>
-				<el-descriptions-item label="陆地司机电话">
-					{{ inventoryInfo.landDriverTel }}
-				</el-descriptions-item>
-				<el-descriptions-item label="陆地运费">
-					{{ inventoryInfo.landFreight }}
-				</el-descriptions-item>
-				<el-descriptions-item label="陆地运费单价">
-					{{ inventoryInfo.landFreightPrice }}
-				</el-descriptions-item>
-				<el-descriptions-item label="长度">
-					{{ inventoryInfo.length }}
-				</el-descriptions-item>
-				<el-descriptions-item label="宽度">
-					{{ inventoryInfo.width }}
-				</el-descriptions-item>
-				<el-descriptions-item label="厚度">
-					{{ inventoryInfo.height }}
-				</el-descriptions-item>
-				<el-descriptions-item label="吨位">
-					{{ inventoryInfo.freight }}
-				</el-descriptions-item>
-				<el-descriptions-item label="单位">
-					{{ inventoryInfo.countingUnit }}
-				</el-descriptions-item>
-				<el-descriptions-item label="误差">
-					{{ inventoryInfo.erro }}
-				</el-descriptions-item>
-				<el-descriptions-item label="等级名称">
-					{{ inventoryInfo.levelName }}
-				</el-descriptions-item>
-				<el-descriptions-item label="其他费用">
-					{{ inventoryInfo.otherCost }}
-				</el-descriptions-item>
-				<el-descriptions-item label="包数">
-					{{ inventoryInfo.packs }}
-				</el-descriptions-item>
-				<el-descriptions-item label="出厂货款">
-					{{ inventoryInfo.paymentFactory }}
-				</el-descriptions-item>
-				<el-descriptions-item label="卸货付款">
-					{{ inventoryInfo.paymentUnload }}
-				</el-descriptions-item>
-				<el-descriptions-item label="总货款">
-					{{ inventoryInfo.payments }}
-				</el-descriptions-item>
-				<el-descriptions-item label="产品级别">
-					{{ inventoryInfo.levelName }}
-				</el-descriptions-item>
-				<el-descriptions-item label="产品级别">
-					{{ inventoryInfo.levelName }}
-				</el-descriptions-item>
-				<el-descriptions-item label="剩余库存量">
-					{{ inventoryInfo.stockNumber }}
-				</el-descriptions-item>
-				<el-descriptions-item label="供应商">
-					{{ inventoryInfo.supplier }}
-				</el-descriptions-item>
-				<el-descriptions-item label="重量">
-					{{ inventoryInfo.tonnage }}
-				</el-descriptions-item>
-				<el-descriptions-item label="库存编号">
-					{{ inventoryInfo.stockNumber }}
-				</el-descriptions-item>
-				<el-descriptions-item label="存储日期">
-					{{ inventoryInfo.storeDate }}
-				</el-descriptions-item>
-				<el-descriptions-item label="仓库名称">
-					{{ inventoryInfo.storeHouseName }}
-				</el-descriptions-item>
-				<el-descriptions-item label="杂费">
-					{{ inventoryInfo.sundryCost }}
-				</el-descriptions-item>
-			</el-descriptions>
-		</el-dialog>
 	</div>
 </template>
 
 <script>
 import { addExWarehouse, delExWarehouse, getExWarehouse, listExWarehouse, updateExWarehouse } from '@/api/system/exWarehouse';
 import { excludeParams } from '@/api/tool/exclude';
-import { getDetail } from '../../../api/system/detail';
+import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
+import { getDetail, getInventoryMainByDetailId } from '../../../api/system/detail';
 import { listStoreHouse } from '../../../api/system/StoreHouse';
 import { listCars } from '../../../api/system/cars';
 import { listFleet } from '../../../api/system/fleet';
@@ -570,11 +488,12 @@ import SearchOption from '../../../components/SearchOption.vue';
 import { _fill } from './fill';
 import { updateInventoryMain, addInventoryMain } from '../../../api/system/inventoryMain';
 import { parseTime } from '@/utils/ruoyi';
+import INVENTORY from '@/components/NeedToShow/INVENTORY.vue';
 
 export default {
 	name: 'BreakOut',
 	components: { SearchOption },
-	mixins: [_fill],
+	mixins: [_fill, common_dialog],
 	data() {
 		return {
 			loading: true,
@@ -614,11 +533,9 @@ export default {
 				{ key: 8, label: `出库量`, visible: true },
 				{ key: 9, label: `毁损金额`, visible: true } // 新增
 			],
-			inventoryInfoVisible: false,
 			isLand: false,
 			isSea: false,
 			inventoryDetailList: [],
-			inventoryInfo: {},
 			secondInventoryVisible: false,
 			queryStore: '',
 			queryLandCar: '',
@@ -714,14 +631,13 @@ export default {
 		},
 		// 查看库存信息 查询当前行的库存信息
 		checkInvoInfo(row) {
-			getDetail(row.storeID).then(res => {
-				// 做一下空值校验
-				if (!res.data) {
-					this.$message.error('该货物没有库存信息');
-					return;
-				}
-				this.inventoryInfo = res.data;
-				this.inventoryInfoVisible = true;
+			if (!row.storeID) {
+				this.$message.warning('查看库存时发生错误，改行数据没有storeID');
+				return;
+			}
+
+			getInventoryMainByDetailId(row.storeID).then(res => {
+				this.openDialog(INVENTORY, '查看库存信息', '100%', { needToShowInfo: res.data || {} }, false, false);
 			});
 		},
 		// 破损后入库 应该出来一个破损后入库的页面 和货物入库一样
