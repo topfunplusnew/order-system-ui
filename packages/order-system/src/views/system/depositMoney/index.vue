@@ -65,7 +65,7 @@
 			</el-table-column>
 		</u-table>
 
-		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
+		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="handlePagination" />
 
 		<!-- 退款管理弹窗 -->
 		<el-dialog v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" title="退款管理" :visible.sync="refundDialogVisible" width="80%" append-to-body>
@@ -166,6 +166,7 @@ import { validateAmount } from '@/api/tool';
 import { createConfigManager } from '@/utils/configManager';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
+import { createDepositMoneyQueryParams, syncDepositMoneyPagination } from '@/views/system/depositMoney/depositMoney.pagination';
 import columnConfig from './base/columns.js';
 import DepositMoneyForm from './base/DepositMoneyForm.vue';
 import { listBankAccount } from '@/api/system/bankAccount';
@@ -205,20 +206,7 @@ export default {
 			// 日期范围
 			dateRange: [],
 			// 查询参数
-			queryParams: {
-				pageNum: 1,
-				pageSize: 10,
-				depositCompany: null,
-				type: null,
-				targetType: null,
-				target: null,
-				reason: null,
-				comments: null,
-				params: {
-					beginTime: null,
-					endTime: null
-				}
-			},
+			queryParams: createDepositMoneyQueryParams(),
 			// 退款相关
 			refundDialogVisible: false,
 			refundFormVisible: false,
@@ -305,23 +293,14 @@ export default {
 			this.queryParams.pageNum = 1;
 			this.getList();
 		},
+		handlePagination(pagination) {
+			syncDepositMoneyPagination(this.queryParams, pagination);
+			this.getList();
+		},
 		resetQuery() {
 			this.resetForm('queryForm');
 			this.dateRange = null;
-			this.queryParams = {
-				pageNum: 1,
-				pageSize: 10,
-				depositCompany: null,
-				type: null,
-				targetType: null,
-				target: null,
-				reason: null,
-				comments: null,
-				params: {
-					beginTime: null,
-					endTime: null
-				}
-			};
+			this.queryParams = createDepositMoneyQueryParams();
 			this.handleQuery();
 		},
 		/** 多选框选中数据 */
