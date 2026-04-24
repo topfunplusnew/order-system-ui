@@ -51,6 +51,7 @@ import { listBankAcceptanceBalance } from '@/api/system/bankAcceptance';
 import CheckTotal from '../../dashboard/components/bankacceptance/CheckTotal.vue';
 import { Pagination } from '@order-system/ui-components';
 import { add, round, bignumber } from 'mathjs';
+import { createBalanceListQueryParams } from '@/views/system/bankacceptance/BalanceList.query';
 
 export default {
 	name: 'BankAcceptanceBalanceList',
@@ -61,13 +62,7 @@ export default {
 			showSearch: true,
 			total: 0,
 			balanceList: [],
-			queryParams: {
-				pageNum: 1,
-				pageSize: 20,
-				operateDate: '',
-				balanceOperator: '',
-				balanceValue: ''
-			},
+			queryParams: createBalanceListQueryParams(),
 			columns: [
 				{ label: '票号', visible: true },
 				{ label: '我方承兑账户', visible: true },
@@ -97,14 +92,8 @@ export default {
 		},
 		/** 重置 */
 		resetQuery() {
-			this.queryParams = {
-				pageNum: 1,
-				pageSize: 20,
-				operateDate: '',
-				balanceOperator: '',
-				balanceValue: ''
-			};
 			this.$refs.queryForm?.resetFields();
+			this.queryParams = createBalanceListQueryParams();
 			this.handleQuery();
 		},
 		/** 导出 */
