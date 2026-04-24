@@ -119,6 +119,7 @@ import INVENTORY from '@/components/NeedToShow/INVENTORY.vue';
 import WAREHOUSE from '../../../components/NeedToShow/WAREHOUSE.vue';
 import SearchOption from '@/components/SearchOption.vue';
 import { listStoreHouse } from '@/api/system/StoreHouse';
+import { createInventoryChangeSearchForm } from '@/views/inventoryDetailViews/inventoryChange/index.query';
 export default {
 	name: 'DetailInventoryChange',
 	components: { Pagination, SearchOption },
@@ -128,13 +129,7 @@ export default {
 			loading: false,
 			total: 0,
 			queryStoreHouseName: '',
-			searchForm: {
-				startDate: '',
-				endDate: '',
-				warehouseName: '',
-				pageNum: 1,
-				pageSize: 20
-			},
+			searchForm: createInventoryChangeSearchForm(),
 			tableData: [],
 			detailVisible: false,
 			detailRow: null,
@@ -143,7 +138,7 @@ export default {
 		};
 	},
 	created() {
-		// this.getList();
+		this.getList();
 	},
 	methods: {
 		listStoreHouse,
@@ -178,13 +173,7 @@ export default {
 		},
 		reset() {
 			// 使用 Object.assign 保持响应式
-			Object.assign(this.searchForm, {
-				startDate: '',
-				endDate: '',
-				warehouseName: '',
-				pageNum: 1,
-				pageSize: 20
-			});
+			Object.assign(this.searchForm, createInventoryChangeSearchForm());
 			this.getList();
 		},
 		async showDetail(item, type, row) {
