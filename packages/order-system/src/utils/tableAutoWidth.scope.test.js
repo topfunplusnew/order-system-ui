@@ -24,4 +24,25 @@ describe('table auto width scope', () => {
 		expect(source).toContain('enableAutoWidth');
 		expect(source).toContain('default: false');
 	});
+
+	test('OrderDetailInfo keeps 4px horizontal padding after auto width is enabled', () => {
+		const detailInfoPath = path.resolve(__dirname, '../views/dashboard/components/goodsOrder/OrderDetailInfo.vue');
+		const source = fs.readFileSync(detailInfoPath, 'utf8');
+
+		expect(source).toContain(':cell-style="getTableCellStyle"');
+		expect(source).toContain(':header-cell-style="getTableHeaderCellStyle"');
+		expect(source).toContain("padding: this.enableAutoWidth ? '0 4px' : '0'");
+		expect(source).toContain('::v-deep .order-detail-table.auto-width-enabled .cell');
+		expect(source).toContain('box-sizing: border-box !important;');
+		expect(source).toContain('::v-deep .order-detail-table.auto-width-enabled .expand-cursor-wrapper');
+		expect(source).toContain('::v-deep .order-detail-table.auto-width-enabled .expand-cursor-wrapper.has-overflow .text-container');
+		expect(source).toContain('::v-deep .order-detail-table.auto-width-enabled .expand-cursor-wrapper .expand-button');
+	});
+
+	test('OrderDetailInfo passes centered text alignment into ExpandCursor for table cells', () => {
+		const detailInfoPath = path.resolve(__dirname, '../views/dashboard/components/goodsOrder/OrderDetailInfo.vue');
+		const source = fs.readFileSync(detailInfoPath, 'utf8');
+
+		expect(source).toContain('<ExpandCursor text-align="center">');
+	});
 });

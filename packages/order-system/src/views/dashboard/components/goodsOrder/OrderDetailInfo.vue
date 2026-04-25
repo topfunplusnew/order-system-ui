@@ -253,6 +253,18 @@ export default {
 				this.scheduleAutoFitPasses();
 			}
 		},
+		getTableCellStyle() {
+			return {
+				padding: this.enableAutoWidth ? '0 4px' : '0',
+				textAlign: 'center'
+			};
+		},
+		getTableHeaderCellStyle() {
+			return {
+				padding: this.enableAutoWidth ? '0 4px' : '0',
+				textAlign: 'center'
+			};
+		},
 		tableRowClassName({ row }) {
 			// 所有行都显示展开图标
 			return 'expandable-row';
@@ -392,14 +404,14 @@ export default {
 		<el-row>
 			<el-table
 				ref="tableRef"
-				class="order-detail-table"
+				:class="['order-detail-table', { 'auto-width-enabled': enableAutoWidth }]"
 				border
 				:data="filteredOrderDetailInfoList"
 				row-key="id"
 				max-height="700"
 				fit
-				:cell-style="() => ({ padding: '0', textAlign: 'center' })"
-				:header-cell-style="{ padding: '0', textAlign: 'center' }"
+				:cell-style="getTableCellStyle"
+				:header-cell-style="getTableHeaderCellStyle"
 				size="mini"
 				show-summary
 				:summary-method="getSummaries"
@@ -415,14 +427,14 @@ export default {
 				</el-table-column>
 				<el-table-column v-if="!hiddenColumns.includes('orderDate')" label="日期" align="center" prop="orderDate" show-overflow-tooltip :min-width="columnWidths.orderDate">
 					<template slot-scope="scope">
-						<ExpandCursor>
+						<ExpandCursor text-align="center">
 							{{ scope.row.orderDate ? scope.row.orderDate : '-' }}
 						</ExpandCursor>
 					</template>
 				</el-table-column>
 				<el-table-column v-if="!hiddenColumns.includes('customer')" label="客户" align="center" prop="customer" show-overflow-tooltip :min-width="columnWidths.customer">
 					<template slot-scope="scope">
-						<ExpandCursor>
+						<ExpandCursor text-align="center">
 							{{ scope.row.customer ? scope.row.customer : '-' }}
 						</ExpandCursor>
 					</template>
@@ -430,77 +442,77 @@ export default {
 				<el-table-column label="仓库名称" align="center" prop="storeHouseName" show-overflow-tooltip :min-width="columnWidths.storeHouseName">
 					<!--          如果有 显示 如果没有 显示- -->
 					<template slot-scope="scope">
-						<ExpandCursor>
+						<ExpandCursor text-align="center">
 							{{ scope.row.storeHouseName ? scope.row.storeHouseName : '-' }}
 						</ExpandCursor>
 					</template>
 				</el-table-column>
 				<el-table-column label="供应商" align="center" prop="supplier" :min-width="columnWidths.supplier" show-overflow-tooltip>
 					<template slot-scope="scope">
-						<ExpandCursor>
+						<ExpandCursor text-align="center">
 							{{ scope.row.supplier }}
 						</ExpandCursor>
 					</template>
 				</el-table-column>
 				<el-table-column label="级别名称" align="center" prop="levelName" show-overflow-tooltip :min-width="columnWidths.levelName">
 					<template slot-scope="scope">
-						<ExpandCursor>
+						<ExpandCursor text-align="center">
 							{{ scope.row.levelName }}
 						</ExpandCursor>
 					</template>
 				</el-table-column>
 				<el-table-column label="计量单位" align="center" prop="countingUnit" show-overflow-tooltip :min-width="columnWidths.countingUnit">
 					<template slot-scope="scope">
-						<ExpandCursor>
+						<ExpandCursor text-align="center">
 							{{ scope.row.countingUnit }}
 						</ExpandCursor>
 					</template>
 				</el-table-column>
 				<el-table-column label="厚度" align="center" prop="height" :min-width="columnWidths.height">
 					<template slot-scope="scope">
-						<ExpandCursor>
+						<ExpandCursor text-align="center">
 							{{ scope.row.height }}
 						</ExpandCursor>
 					</template>
 				</el-table-column>
 				<el-table-column label="长度" align="center" prop="length" :min-width="columnWidths.length">
 					<template slot-scope="scope">
-						<ExpandCursor>
+						<ExpandCursor text-align="center">
 							{{ scope.row.length }}
 						</ExpandCursor>
 					</template>
 				</el-table-column>
 				<el-table-column label="宽度" align="center" prop="width" :min-width="columnWidths.width">
 					<template slot-scope="scope">
-						<ExpandCursor>
+						<ExpandCursor text-align="center">
 							{{ scope.row.width }}
 						</ExpandCursor>
 					</template>
 				</el-table-column>
 				<el-table-column label="每包片数" align="center" prop="piecesPerPack" :min-width="columnWidths.piecesPerPack">
 					<template slot-scope="scope">
-						<ExpandCursor>
+						<ExpandCursor text-align="center">
 							{{ scope.row.piecesPerPack }}
 						</ExpandCursor>
 					</template>
 				</el-table-column>
 				<el-table-column label="包数" align="center" prop="packs" :min-width="columnWidths.packs">
 					<template slot-scope="scope">
-						<ExpandCursor>
+						<ExpandCursor text-align="center">
 							{{ scope.row.packs }}
 						</ExpandCursor>
 					</template>
 				</el-table-column>
 				<el-table-column label="出厂片数" align="center" prop="pieces" :min-width="columnWidths.pieces">
 					<template slot-scope="scope">
-						<ExpandCursor>
+						<ExpandCursor text-align="center">
 							{{ scope.row.pieces }}
 						</ExpandCursor>
 					</template>
 				</el-table-column>
 				<el-table-column label="出厂单价" align="center" prop="price" show-overflow-tooltip :min-width="columnWidths.price">
 					<template slot-scope="scope">
-						<ExpandCursor>
+						<ExpandCursor text-align="center">
 							{{ scope.row.price }}
 						</ExpandCursor>
 					</template>
@@ -508,126 +520,126 @@ export default {
 
 				<el-table-column label="出厂是否含税" align="center" prop="isIncludeTaxFactory" show-overflow-tooltip :min-width="columnWidths.isIncludeTaxFactory">
 					<template slot-scope="scope">
-						<ExpandCursor>
+						<ExpandCursor text-align="center">
 							<el-tag disable-transitions>{{ scope.row.isIncludeTaxFactory == 0 ? '否' : '是' }}</el-tag>
 						</ExpandCursor>
 					</template>
 				</el-table-column>
 				<el-table-column label="杂费" align="center" prop="sundryCost" :min-width="columnWidths.sundryCost">
 					<template slot-scope="scope">
-						<ExpandCursor>
+						<ExpandCursor text-align="center">
 							{{ scope.row.sundryCost }}
 						</ExpandCursor>
 					</template>
 				</el-table-column>
 				<el-table-column label="出厂货款" align="center" prop="paymentFactory" show-overflow-tooltip :min-width="columnWidths.paymentFactory">
 					<template slot-scope="scope">
-						<ExpandCursor>
+						<ExpandCursor text-align="center">
 							{{ scope.row.paymentFactory }}
 						</ExpandCursor>
 					</template>
 				</el-table-column>
 				<el-table-column label="卸货片数" align="center" prop="actualPieces" show-overflow-tooltip :min-width="columnWidths.actualPieces">
 					<template slot-scope="scope">
-						<ExpandCursor>
+						<ExpandCursor text-align="center">
 							{{ scope.row.actualPieces }}
 						</ExpandCursor>
 					</template>
 				</el-table-column>
 				<el-table-column label="卸货价" align="center" prop="paymentUnload" show-overflow-tooltip :min-width="columnWidths.paymentUnload">
 					<template slot-scope="scope">
-						<ExpandCursor>
+						<ExpandCursor text-align="center">
 							{{ scope.row.paymentUnload }}
 						</ExpandCursor>
 					</template>
 				</el-table-column>
 				<el-table-column label="销售是否含税" align="center" prop="isIncludeTaxSale" show-overflow-tooltip :min-width="columnWidths.isIncludeTaxSale">
 					<template slot-scope="scope">
-						<ExpandCursor>
+						<ExpandCursor text-align="center">
 							<el-tag disable-transitions>{{ scope.row.isIncludeTaxSale == 0 ? '否' : '是' }}</el-tag>
 						</ExpandCursor>
 					</template>
 				</el-table-column>
 				<el-table-column label="总货款杂费" align="center" prop="paymentsWithSundry" show-overflow-tooltip :min-width="columnWidths.paymentsWithSundry">
 					<template slot-scope="scope">
-						<ExpandCursor>
+						<ExpandCursor text-align="center">
 							{{ scope.row.paymentsWithSundry }}
 						</ExpandCursor>
 					</template>
 				</el-table-column>
 				<el-table-column label="总货款" align="center" prop="payments" show-overflow-tooltip :min-width="columnWidths.payments">
 					<template slot-scope="scope">
-						<ExpandCursor>
+						<ExpandCursor text-align="center">
 							{{ scope.row.payments }}
 						</ExpandCursor>
 					</template>
 				</el-table-column>
 				<el-table-column label="误差" align="center" prop="erro" show-overflow-tooltip :min-width="columnWidths.erro">
 					<template slot-scope="scope">
-						<ExpandCursor>
+						<ExpandCursor text-align="center">
 							{{ scope.row.erro }}
 						</ExpandCursor>
 					</template>
 				</el-table-column>
 				<el-table-column label="吨位" align="center" prop="tonnage" show-overflow-tooltip :min-width="columnWidths.tonnage">
 					<template slot-scope="scope">
-						<ExpandCursor>
+						<ExpandCursor text-align="center">
 							{{ scope.row.tonnage }}
 						</ExpandCursor>
 					</template>
 				</el-table-column>
 				<el-table-column label="陆运费单价" align="center" prop="landFreightPrice" show-overflow-tooltip :min-width="columnWidths.landFreightPrice">
 					<template slot-scope="scope">
-						<ExpandCursor>
+						<ExpandCursor text-align="center">
 							{{ scope.row.landFreightPrice }}
 						</ExpandCursor>
 					</template>
 				</el-table-column>
 				<el-table-column label="加费" align="center" prop="additionalFees" show-overflow-tooltip :min-width="columnWidths.additionalFees">
 					<template slot-scope="scope">
-						<ExpandCursor>
+						<ExpandCursor text-align="center">
 							{{ scope.row.additionalFees }}
 						</ExpandCursor>
 					</template>
 				</el-table-column>
 				<el-table-column label="陆运费" align="center" prop="landFreight" show-overflow-tooltip :min-width="columnWidths.landFreight">
 					<template slot-scope="scope">
-						<ExpandCursor>
+						<ExpandCursor text-align="center">
 							{{ scope.row.landFreight }}
 						</ExpandCursor>
 					</template>
 				</el-table-column>
 				<el-table-column label="海运费" align="center" prop="seaFreight" show-overflow-tooltip :min-width="columnWidths.seaFreight">
 					<template slot-scope="scope">
-						<ExpandCursor>
+						<ExpandCursor text-align="center">
 							{{ scope.row.seaFreight }}
 						</ExpandCursor>
 					</template>
 				</el-table-column>
 				<el-table-column label="总运费" align="center" prop="freight" show-overflow-tooltip :min-width="columnWidths.freight">
 					<template slot-scope="scope">
-						<ExpandCursor>
+						<ExpandCursor text-align="center">
 							{{ scope.row.freight }}
 						</ExpandCursor>
 					</template>
 				</el-table-column>
 				<el-table-column label="其他费用" align="center" prop="otherCost" show-overflow-tooltip :min-width="columnWidths.otherCost">
 					<template slot-scope="scope">
-						<ExpandCursor>
+						<ExpandCursor text-align="center">
 							{{ scope.row.otherCost }}
 						</ExpandCursor>
 					</template>
 				</el-table-column>
 				<el-table-column label="利润" align="center" prop="profit" show-overflow-tooltip :min-width="columnWidths.profit">
 					<template slot-scope="scope">
-						<ExpandCursor>
+						<ExpandCursor text-align="center">
 							{{ scope.row.profit }}
 						</ExpandCursor>
 					</template>
 				</el-table-column>
 				<el-table-column label="不含税利润" align="center" prop="profitNoTax" show-overflow-tooltip :min-width="columnWidths.profitNoTax">
 					<template slot-scope="scope">
-						<ExpandCursor>
+						<ExpandCursor text-align="center">
 							{{ scope.row.profitNoTax }}
 						</ExpandCursor>
 					</template>
@@ -635,35 +647,35 @@ export default {
 
 				<el-table-column label="物流利润" align="center" prop="logisticsProfit" show-overflow-tooltip :min-width="columnWidths.logisticsProfit">
 					<template slot-scope="scope">
-						<ExpandCursor>
+						<ExpandCursor text-align="center">
 							{{ scope.row.logisticsProfit }}
 						</ExpandCursor>
 					</template>
 				</el-table-column>
 				<el-table-column label="客户佣金" align="center" prop="customerCommission" show-overflow-tooltip :min-width="columnWidths.customerCommission">
 					<template slot-scope="scope">
-						<ExpandCursor>
+						<ExpandCursor text-align="center">
 							{{ scope.row.customerCommission }}
 						</ExpandCursor>
 					</template>
 				</el-table-column>
 				<el-table-column label="厂家佣金" align="center" prop="factoryCommission" show-overflow-tooltip :min-width="columnWidths.factoryCommission">
 					<template slot-scope="scope">
-						<ExpandCursor>
+						<ExpandCursor text-align="center">
 							{{ scope.row.factoryCommission }}
 						</ExpandCursor>
 					</template>
 				</el-table-column>
 				<el-table-column label="计提厂家返利金额" align="center" prop="factoryRebateAmount" show-overflow-tooltip :min-width="columnWidths.factoryRebateAmount">
 					<template slot-scope="scope">
-						<ExpandCursor>
+						<ExpandCursor text-align="center">
 							{{ scope.row.factoryRebateAmount }}
 						</ExpandCursor>
 					</template>
 				</el-table-column>
 				<el-table-column label="计提厂家降价金额" align="center" prop="factoryDiscountAmount" show-overflow-tooltip :min-width="columnWidths.factoryDiscountAmount">
 					<template slot-scope="scope">
-						<ExpandCursor>
+						<ExpandCursor text-align="center">
 							{{ scope.row.factoryDiscountAmount }}
 						</ExpandCursor>
 					</template>
@@ -812,6 +824,9 @@ export default {
 
 	/* 单元格内容容器 - 零间距，内容紧贴 */
 	.cell {
+		width: 100% !important;
+		max-width: 100% !important;
+		box-sizing: border-box !important;
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -836,6 +851,9 @@ export default {
 		line-height: 1.1 !important;
 
 		.cell {
+			width: 100% !important;
+			max-width: 100% !important;
+			box-sizing: border-box !important;
 			text-align: center !important;
 			padding: 0 !important;
 			margin: 0 !important;
@@ -855,6 +873,9 @@ export default {
 		line-height: 1.1 !important;
 
 		.cell {
+			width: 100% !important;
+			max-width: 100% !important;
+			box-sizing: border-box !important;
 			text-align: center !important;
 			padding: 0 !important;
 			margin: 0 !important;
@@ -875,6 +896,9 @@ export default {
 			line-height: 1.1 !important;
 
 			.cell {
+				width: 100% !important;
+				max-width: 100% !important;
+				box-sizing: border-box !important;
 				text-align: center !important;
 				padding: 0 !important;
 				margin: 0 !important;
@@ -946,9 +970,49 @@ export default {
 }
 
 /* 固定表头样式 - 确保表头在滚动时保持固定 */
-::v-deep .order-detail-table .cell {
+::v-deep .order-detail-table.auto-width-enabled .cell {
+	width: 100% !important;
+	max-width: 100% !important;
 	padding-left: 4px !important;
 	padding-right: 4px !important;
+	box-sizing: border-box !important;
+	text-align: center !important;
+	display: flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+}
+
+::v-deep .order-detail-table.auto-width-enabled .expand-cursor-wrapper {
+	width: 100% !important;
+	max-width: 100% !important;
+	display: flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+}
+
+::v-deep .order-detail-table.auto-width-enabled .expand-cursor-wrapper.has-overflow .text-container {
+	padding-right: 0 !important;
+}
+
+::v-deep .order-detail-table.auto-width-enabled .expand-cursor-wrapper .text-container {
+	flex: 0 1 100% !important;
+	width: 100% !important;
+	max-width: 100% !important;
+	text-align: center !important;
+	display: flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+}
+
+::v-deep .order-detail-table.auto-width-enabled .expand-cursor-wrapper .text-content {
+	width: auto !important;
+	max-width: 100% !important;
+	text-align: center !important;
+	display: inline-block !important;
+}
+
+::v-deep .order-detail-table.auto-width-enabled .expand-cursor-wrapper .expand-button {
+	display: none !important;
 }
 
 ::v-deep .el-table__header-wrapper {
