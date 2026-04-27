@@ -2218,10 +2218,10 @@ export default {
 /* 分页区域优化 */
 .pagination-wrapper {
 	position: fixed;
-	bottom: 30px;
+	bottom: 15px;
 	left: 0;
 	right: 0;
-	padding: 12px 20px;
+	padding: 10px 20px;
 	background-color: #ffffff;
 	border-top: 1px solid #ebeef5;
 	display: flex;
