@@ -89,9 +89,16 @@
 		</div>
 		<!--    </div>-->
 		<!-- 付款信息表格 -->
-		<div class="table-container" v-loading="loading" style="margin-bottom: 60px">
+		<div class="table-container" v-loading="loading">
 			<div class="table-wrapper" id="printBox">
-				<virtual-scroll ref="virtualScroll" :data="paymentList" :item-size="30" key-prop="id" @change="paymentDataAppendChange">
+				<virtual-scroll
+				ref="virtualScroll"
+				class="payment-virtual-scroll"
+				:data="paymentList"
+				:item-size="30"
+				key-prop="id"
+				@change="paymentDataAppendChange"
+			>
 					<template slot-scope="{ headerCellFixedStyle, cellFixedStyle }">
 						<el-table
 							id="printBox"
@@ -904,6 +911,7 @@ export default {
 			if (oldVal === true && newVal === false) {
 				this.$nextTick(() => {
 					this.bindTableScroll();
+					this.calculateTableHeight();
 					if (this.$refs.paymentTable) {
 						this.$refs.paymentTable.doLayout();
 					}
@@ -912,6 +920,9 @@ export default {
 					}
 				});
 			}
+		},
+		showSearch() {
+			this.$nextTick(() => this.calculateTableHeight());
 		},
 		'form.companyType'(newVal, oldVal) {
 			// 如果类型发生变化（不是初始化），清空相关字段
@@ -1082,32 +1093,27 @@ export default {
 				this.calculateTableHeight();
 			}, 100);
 		},
-		// 计算表格高度
+		/**
+		 * 根据表格外层 flex 分配高度设置 el-table 固定高度：区域始终撑满、数据多只在表体滚动，不撑开整页。
+		 * @returns {void}
+		 */
 		calculateTableHeight() {
 			this.$nextTick(() => {
 				if (!this.$el) return;
-
-				// 获取视口高度
-				const windowHeight = window.innerHeight;
-				// 获取搜索栏高度
-				const fixedTopSection = this.$el.querySelector('.fixed-top-section');
-				const topHeight = fixedTopSection ? fixedTopSection.getBoundingClientRect().height : 0;
-				// 获取分页栏高度
-				const paginationWrapper = this.$el.querySelector('.pagination-wrapper');
-				const bottomHeight = paginationWrapper ? paginationWrapper.getBoundingClientRect().height : 0;
-				// 获取表格容器的位置和边距
-				const tableContainer = this.$el.querySelector('.table-container');
-				if (!tableContainer) return;
-
-				const containerRect = tableContainer.getBoundingClientRect();
-				const containerTop = containerRect.top;
-				const containerMarginBottom = parseInt(window.getComputedStyle(tableContainer).marginBottom) || 0;
-
-				// 计算可用高度：视口高度 - 表格容器顶部位置 - 分页栏高度 - 容器底部边距 - 预留间距（20px）
-				const availableHeight = windowHeight - containerTop - bottomHeight - containerMarginBottom - 20;
-
-				// 设置表格高度，最小300px，最大650px
-				this.tableHeight = Math.max(300, Math.min(650, availableHeight));
+				const run = () => {
+					if (!this.$el) return;
+					const wrap = this.$el.querySelector('.table-container .table-wrapper');
+					if (!wrap) return;
+					const h = wrap.clientHeight;
+					if (h > 0) {
+						this.tableHeight = Math.max(200, h);
+					}
+				};
+				run();
+				requestAnimationFrame(() => {
+					run();
+					requestAnimationFrame(run);
+				});
 			});
 		},
 		// 固定表格头
@@ -2019,10 +2025,15 @@ export default {
 
 .app-container {
 	position: relative;
-	overflow: visible;
-	min-height: 90vh;
+	display: flex;
+	flex-direction: column;
+	height: calc(100vh - 84px);
+	max-height: calc(100vh - 84px);
+	min-height: 0;
+	overflow: hidden;
 	background: #f8f9fb;
 	font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+	padding-bottom: 80px; // 为固定分页条留出主内容区底部空间
 }
 
 .app-container.mask-overlay {
@@ -2049,6 +2060,7 @@ export default {
 
 /* 工具栏 */
 .toolbar-wrapper {
+	flex-shrink: 0;
 	margin-bottom: 6px;
 
 	.toolbar-left {
@@ -2066,6 +2078,7 @@ export default {
 
 /* 固定顶部区域 */
 .fixed-top-section {
+	flex-shrink: 0;
 	background-color: #f8f9fb;
 	padding: 12px 0;
 }
@@ -2073,15 +2086,33 @@ export default {
 /* 表格容器 */
 .table-container {
 	position: relative;
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+	min-height: 0;
+	overflow: hidden;
 	margin-top: 12px; // 与固定顶部区域保持间距
-	margin-bottom: 60px; // 为固定的分页栏预留底部空间
 
 	.table-wrapper {
 		position: relative;
+		display: flex;
+		flex-direction: column;
+		flex: 1;
+		min-height: 0;
 		width: 100%;
+		overflow: hidden;
 		border: 1px solid #e0e6ed;
 		border-radius: 8px;
 		background: #fff;
+
+		.payment-virtual-scroll {
+			flex: 1;
+			min-height: 0;
+			width: 100%;
+			display: flex;
+			flex-direction: column;
+			overflow: hidden;
+		}
 
 		.native-table {
 			width: 100%;
@@ -2200,12 +2231,6 @@ export default {
 	box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.03), 0 -1px 6px rgba(0, 0, 0, 0.04);
 }
 
-/* 为固定元素添加占位空间，避免内容被遮挡 */
-.app-container {
-	// 为固定的分页栏预留底部空间
-	padding-bottom: 80px;
-}
-
 /* 运费弹窗 */
 .order-freight-body {
 	display: grid;
@@ -2280,10 +2305,6 @@ export default {
 }
 
 @media screen and (max-width: 768px) {
-	.table-wrapper {
-		max-height: 500px;
-	}
-
 	.column-hidden-mobile {
 		display: none;
 	}
