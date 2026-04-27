@@ -390,10 +390,13 @@ export default {
 
 <style scoped lang="scss">
 .companies-list-wrapper {
+	flex: 1;
+	width: 100%;
+	min-height: 0;
 	height: 100%;
 	display: flex;
 	flex-direction: column;
-	min-height: 0;
+	overflow: hidden;
 }
 
 /* 表格包装器样式 - 仅保留必要的行分割 */
@@ -448,9 +451,6 @@ export default {
 		}
 
 		::v-deep .el-table__body-wrapper {
-			overflow-y: auto !important;
-			max-height: 100% !important;
-
 			.el-table__body {
 				td {
 					padding: 4px 0;

@@ -1005,6 +1005,17 @@ export default {
 	border-radius: 8px;
 	background: #ffffff;
 	overflow: hidden;
+	min-height: 0;
+}
+
+/* 全屏弹窗内左侧公司列表：占满可分配高度，避免被 overflow:hidden 裁切且无滚动 */
+.section-wrapper .company-list-section-full {
+	flex: 1;
+	min-height: 0;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
 }
 
 /* 左侧区域样式 */
@@ -1038,6 +1049,7 @@ export default {
 /* 卡片通用样式 - 移除边框，由外层区域边框控制 */
 .full-height-card {
 	height: 100%;
+	min-height: 0;
 	display: flex;
 	flex-direction: column;
 	border: none !important;
@@ -1054,6 +1066,7 @@ export default {
 
 	::v-deep .el-card__body {
 		flex: 1;
+		min-height: 0;
 		padding: 12px 16px;
 		overflow: hidden;
 		display: flex;
@@ -1097,26 +1110,14 @@ export default {
 	}
 }
 
-/* 公司列表样式 - 客户较多时允许纵向滚动 */
+/* 公司列表区域：不自身滚动，由子组件内 .table-wrapper 出现纵向滚动条，避免双滚动与裁切 */
 .company-lists {
 	flex: 1;
-	overflow-y: auto;
-	overflow-x: hidden;
 	min-height: 0;
-	padding-right: 4px;
-
-	&::-webkit-scrollbar {
-		width: 6px;
-	}
-
-	&::-webkit-scrollbar-thumb {
-		background: #dcdfe6;
-		border-radius: 4px;
-	}
-
-	&::-webkit-scrollbar-track {
-		background: #f5f7fa;
-	}
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	padding-right: 0;
 }
 
 /* 订单选择组件包装 - 统一滚动条 */
@@ -1252,9 +1253,6 @@ export default {
 /* 新的公司列表全屏布局优化 */
 .company-list-section-full {
 	.company-lists {
-		// 移除高度限制，让表格完全显示所有内容，不出现滚动条
-
-		// 为每个公司列表分配更多空间
 		> div {
 			margin-bottom: 12px;
 
