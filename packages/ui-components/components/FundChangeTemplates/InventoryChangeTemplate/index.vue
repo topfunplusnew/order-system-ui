@@ -96,6 +96,7 @@ export default {
 				});
 				groupRows.push({ rowType: 'diff', groupIndex, subLabel: '差额', groupRowCount: detailCount * 2 + 1, ...this.buildDiffFields(original, changed, record) });
 				groupRows[0].isGroupFirst = true;
+				groupRows[0].backupTime = _.toString(record.backupTime || '').slice(0, 10);
 				this.tableData.push(...groupRows);
 			});
 		},
@@ -264,7 +265,10 @@ export default {
 		<el-table v-if="!summaryOnly" :data="tableData" border :row-class-name="tableRowClassName" :span-method="inboundSpanMethod" show-summary :summary-method="getTableSummary" style="width: 100%">
 			<el-table-column label="入库单" width="100" fixed class-name="inbound-col">
 				<template slot-scope="scope">
-					<span v-if="scope.row.isGroupFirst">入库单（{{ scope.row.groupIndex + 1 }}）</span>
+					<template v-if="scope.row.isGroupFirst">
+						<div>入库单（{{ scope.row.groupIndex + 1 }}）</div>
+						<div v-if="scope.row.backupTime" class="backup-time">{{ scope.row.backupTime }}</div>
+					</template>
 				</template>
 			</el-table-column>
 			<el-table-column label="变更" width="80" fixed>
@@ -299,6 +303,11 @@ export default {
 ::v-deep .inbound-col {
 	vertical-align: middle;
 	text-align: center;
+}
+.backup-time {
+	margin-top: 4px;
+	font-size: 12px;
+	color: #909399;
 }
 ::v-deep .before-row {
 	background-color: #f0f9ff;

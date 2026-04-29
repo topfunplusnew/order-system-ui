@@ -54,7 +54,8 @@ export default {
 			(this.compareData || []).forEach((record, index) => {
 				const original = record.originalInfo || {};
 				const changed = record.changedInfo || {};
-				const beforeRow = { ...this.mapBeforeRow(original, record, index), rowType: 'before', isRecordFirst: true, recordIndex: index + 1, subLabel: '修改前' };
+				const backupTime = _.toString(record.backupTime || '').slice(0, 10);
+				const beforeRow = { ...this.mapBeforeRow(original, record, index), rowType: 'before', isRecordFirst: true, recordIndex: index + 1, backupTime, subLabel: '修改前' };
 				const afterRow = { ...this.mapAfterRow(changed, record, index), rowType: 'after', subLabel: '修改后' };
 				const diffRow = { rowType: 'diff', subLabel: '差额', ...this.buildDiffFields(original, changed, record) };
 				this.tableData.push(beforeRow, afterRow, diffRow);
@@ -150,7 +151,10 @@ export default {
 		<el-table v-if="!summaryOnly" :data="tableData" border :row-class-name="tableRowClassName" :span-method="recordSpanMethod" show-summary :summary-method="getTableSummary" style="width: 100%">
 			<el-table-column :label="summaryModuleLabel" width="100" fixed class-name="record-col">
 				<template slot-scope="scope">
-					<span v-if="scope.row.isRecordFirst">{{ summaryModuleLabel }}（{{ scope.row.recordIndex }}）</span>
+					<template v-if="scope.row.isRecordFirst">
+						<div>{{ summaryModuleLabel }}（{{ scope.row.recordIndex }}）</div>
+						<div v-if="scope.row.backupTime" class="backup-time">{{ scope.row.backupTime }}</div>
+					</template>
 				</template>
 			</el-table-column>
 			<el-table-column label="变更" width="80" fixed>
@@ -180,6 +184,11 @@ export default {
 ::v-deep .record-col {
 	vertical-align: middle;
 	text-align: center;
+}
+.backup-time {
+	margin-top: 4px;
+	font-size: 12px;
+	color: #909399;
 }
 ::v-deep .before-row {
 	background-color: #f0f9ff;
