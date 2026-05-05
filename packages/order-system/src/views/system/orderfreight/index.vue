@@ -439,9 +439,6 @@
 					<el-form-item label="申请日期" prop="applyDate">
 						<el-date-picker v-model="fillFreightForm.applyDate" type="datetime" placeholder="请选择申请日期" value-format="yyyy-MM-dd HH:mm:ss" />
 					</el-form-item>
-					<el-form-item label="付款日期" prop="payDate">
-						<el-date-picker v-model="fillFreightForm.payDate" type="datetime" placeholder="请选择付款日期" value-format="yyyy-MM-dd HH:mm:ss" />
-					</el-form-item>
 					<el-form-item label="备注" prop="comments">
 						<el-input v-model="fillFreightForm.comments" placeholder="请输入备注" />
 					</el-form-item>
@@ -461,7 +458,7 @@ import SearchOption from '@/components/SearchOption.vue';
 import { listBankAccount } from '@/api/system/bankAccount';
 import ApplyPayment from '@/views/dashboard/components/common/ApplyPayment.vue';
 import { TableName } from '@/api/tool/enums';
-import { addDateRange } from '@/utils/ruoyi';
+import { addDateRange, parseTime } from '@/utils/ruoyi';
 import { listData } from '@/api/system/dict/data';
 import { listFleet } from '@/api/system/fleet';
 import { excludeParams } from '@/api/tool/exclude';
@@ -655,13 +652,6 @@ export default {
 					{
 						required: true,
 						message: '请选择申请日期',
-						trigger: 'blur'
-					}
-				],
-				payDate: [
-					{
-						required: true,
-						message: '请选择付款日期',
 						trigger: 'blur'
 					}
 				]
@@ -1298,7 +1288,10 @@ export default {
 			this.download('system/orderFreight/export', exportParams, `订单运费_${new Date().getTime()}.xlsx`);
 		},
 		// 运费修正相关方法
-		// 打开运费修正弹窗
+		/**
+		 * 打开运费修正弹窗：带出 Row 基础信息，金额留空；申请日期默认为当天。
+		 * @param {Record<string, *>} row 当前运费表格行
+		 */
 		handleFillFreight(row) {
 			this.trackFreightActionRow(row);
 			this.resetFillFreightForm();
@@ -1317,13 +1310,12 @@ export default {
 				driverId: row.driverId || null,
 				carNo: row.carNo || null,
 				fleet: row.fleet || null,
-				applyDate: row.applyDate || null,
-				payDate: row.payDate || null,
+				applyDate: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
 				comments: row.comments || null
 			};
 			this.fillFreightVisible = true;
 		},
-		// 重置运费修正表单
+		/** 重置运费修正表单与校验状态 */
 		resetFillFreightForm() {
 			this.fillFreightForm = {
 				sourceId: null,
@@ -1340,7 +1332,6 @@ export default {
 				carNo: null,
 				fleet: null,
 				applyDate: null,
-				payDate: null,
 				comments: null
 			};
 			if (this.$refs.fillFreightFormRef) {
