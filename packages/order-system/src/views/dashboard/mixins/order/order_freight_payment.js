@@ -34,8 +34,10 @@ export var mixin_order_freight_payment = {
 				return;
 			}
 
-			// 筛选未支付的运费记录（没有payment对象或payment为null就是未支付）
-			const unpaidRows = _.filter(rows, row => !row.payment || row.payment === null);
+			// 筛选未支付的运费记录（paymentId/paymentApplyId/cashRecordId 都为 null）
+			const unpaidRows = _.filter(rows, row =>
+				row.paymentId === null && row.paymentApplyId === null && row.cashRecordId === null
+			);
 
 			if (_.isEmpty(unpaidRows)) {
 				this.$message.warning('当前没有未支付付款信息');
