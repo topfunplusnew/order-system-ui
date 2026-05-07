@@ -30,9 +30,10 @@ import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import { isGoodsOrderDisplay } from '@/api/system/goodsOrder';
 import OrderDayInfo from '@/components/OrderDayInfor/index.vue';
 import { number, add, subtract, abs } from 'mathjs';
+import _ from 'lodash';
 
 export default {
-	name: 'CustomerDetail',
+	name: 'detailCustomer',
 	components: { SearchOption, TotalTag },
 	mixins: [common_excel, common_dialog],
 	data() {
@@ -63,6 +64,20 @@ export default {
 			return PUBLIC_DICT_TYPE;
 		}
 	},
+	watch: {
+		'searchForm.companyId'(id) {
+			if (!id) {
+				this.tags = null;
+				return;
+			}
+			this.fetchSummaryTags();
+		},
+		'searchForm.dateRange'() {
+			if (this.searchForm.companyId) {
+				this.fetchSummaryTags();
+			}
+		}
+	},
 
 	methods: {
 		fix_2,
@@ -74,6 +89,40 @@ export default {
 		abs,
 		isDebit,
 		isCredit,
+		/**
+		 * 构造财务汇总接口 query（startTime/endTime）；无有效日期时不传时间表示历史累计
+		 * @param {string[]} dateRange - Element 日期范围 [begin, end]
+		 * @returns {Object}
+		 */
+		buildFinancialSummaryParams(dateRange) {
+			const [begin, end] = dateRange || [];
+			return _.pickBy({ startTime: begin, endTime: end }, v => v != null && v !== '');
+		},
+		/**
+		 * 拉取顶部五个汇总字段
+		 * @param {Object} [timeOverride] - 含 beginTime/endTime 时优先（与明细弹窗/查询一致），否则用顶栏日期
+		 * @returns {void}
+		 */
+		fetchSummaryTags(timeOverride) {
+			const companyId = this.searchForm.companyId;
+			if (!companyId) {
+				this.tags = null;
+				return;
+			}
+			const hasOverride =
+				timeOverride &&
+				((timeOverride.beginTime != null && timeOverride.beginTime !== '') ||
+					(timeOverride.endTime != null && timeOverride.endTime !== ''));
+			const params = hasOverride
+				? _.pickBy(
+						{ startTime: timeOverride.beginTime, endTime: timeOverride.endTime },
+						v => v != null && v !== ''
+				  )
+				: this.buildFinancialSummaryParams(this.searchForm.dateRange);
+			getCustomerFiveParams(companyId, params).then(res => {
+				this.tags = res?.data ?? null;
+			});
+		},
 		getSelectedTimeRange() {
 			const [beginTime, endTime] = this.searchForm.dateRange || [];
 			if (!beginTime || !endTime) {
@@ -198,8 +247,8 @@ export default {
 					});
 					// 添加到上年结转数据的后面
 					this.tableData = this.tableData.concat(append);
-					// 查询该客户的五个tag的值
-					this.getCustomerTags(query.companyId);
+					// 查询该客户的五个tag（与本次明细时间区间一致）
+					this.fetchSummaryTags(query);
 					// 打开弹窗
 					this.dialogVisible = true;
 				} catch (err) {
@@ -275,13 +324,6 @@ export default {
 				[TableName.BALANCEACCOUNT]: BALANCEACCOUNT
 			};
 			return components[tableName] || null; // 默认返回 null，如果没有匹配的 tableName
-		},
-		// 查询某个客户的五个字段
-		getCustomerTags(companyId) {
-			// 发送请求查询五个字段
-			getCustomerFiveParams(companyId).then(res => {
-				this.tags = res.data || null;
-			});
 		},
 		// 导出Excel
 		handleCheckByDateRange() {

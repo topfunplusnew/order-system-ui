@@ -1,4 +1,5 @@
 // 报表
+import _ from 'lodash';
 import request from '@/utils/request';
 
 // 运费报表
@@ -156,13 +157,20 @@ export function getCustomerSubjectDetailSomeDay(query) {
 }
 
 /**
- * 查询客户五个字段
- * @param {number} companyId - 公司ID
+ * 查询客户财务汇总五个字段（GET /statistics/companydetailfinancialsummary/{companyId}）
+ * 不传 query 或仅空对象：历史全量累计；可传 startTime/endTime 及单独一端，含义以后端为准。
+ * @param {number|string} companyId - 公司 ID
+ * @param {Object} [query] - 查询参数，字段名与接口一致
+ * @param {string} [query.startTime] - 开始日期 yyyy-MM-dd
+ * @param {string} [query.endTime] - 结束日期 yyyy-MM-dd
+ * @returns {Promise}
  */
-export function getCustomerFiveParams(companyId) {
+export function getCustomerFiveParams(companyId, query) {
+	const params = _.pickBy(query || {}, v => v != null && v !== '');
 	return request({
 		url: '/statistics/companydetailfinancialsummary/' + companyId,
-		method: 'get'
+		method: 'get',
+		params
 	});
 }
 
