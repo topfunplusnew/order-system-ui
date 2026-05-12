@@ -389,7 +389,7 @@ import _ from 'lodash';
 import { add, bignumber, format } from 'mathjs';
 
 export default {
-	name: 'ironSmith',
+	name: 'IronSmith',
 	components: { SearchOption },
 	mixins: [mixin_printHTML, common_dialog],
 	data() {
@@ -636,6 +636,7 @@ export default {
 	},
 	created() {
 		this.getList();
+		console.log(this.$route.name, this.$options.name)
 	},
 	methods: {
 		parseTime,
