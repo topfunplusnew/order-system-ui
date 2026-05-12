@@ -141,7 +141,7 @@ import SearchOption from '../../../components/SearchOption.vue';
 import { listCompany } from '../../../api/system/company';
 
 export default {
-	name: 'BalanceAccounts',
+	name: 'balanceaccounts',
 	components: { SearchOption },
 	computed: {
 		company() {

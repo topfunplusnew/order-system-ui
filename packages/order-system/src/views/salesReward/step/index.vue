@@ -387,7 +387,7 @@ import SearchOption from '@/components/SearchOption.vue';
 import { add, bignumber, format } from 'mathjs';
 
 export default {
-	name: 'StepReward',
+	name: 'step',
 	components: { SearchOption },
 	mixins: [mixin_printHTML, common_dialog],
 	data() {

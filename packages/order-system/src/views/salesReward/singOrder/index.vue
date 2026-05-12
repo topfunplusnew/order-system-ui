@@ -391,7 +391,7 @@ import SearchOption from '@/components/SearchOption.vue';
 import { add, bignumber, format } from 'mathjs';
 
 export default {
-	name: 'SingOrderReward',
+	name: 'singOrder',
 	components: { SearchOption },
 	mixins: [mixin_printHTML, common_dialog],
 	data() {

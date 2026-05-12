@@ -11,8 +11,6 @@
 				<el-form-item label="供应商" prop="supplier">
 					<el-input v-model="queryParams.supplier" placeholder="请输入供应商" clearable @keyup.enter.native="handleQuery" />
 				</el-form-item>
-			</el-row>
-			<el-row>
 				<el-form-item label="是否收到返利" prop="isReceivedRebate">
 					<el-select v-model="queryParams.params.isReceivedRebate" placeholder="请选择" clearable @keyup.enter.native="handleQuery">
 						<el-option label="全部" value="" />
