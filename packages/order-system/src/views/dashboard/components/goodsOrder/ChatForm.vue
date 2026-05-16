@@ -31,12 +31,13 @@ export default {
 		/** 所有明细的货款之和（基于每行四舍五入取整后的值求和） */
 		detailPaymentsSum() {
 			if (!this.itemList || this.itemList.length === 0) return 0;
-			const roundedValues = this.itemList.map(item => round(number(item.payments) || 0));
-			return sum(roundedValues);
+			const roundedValues = this.itemList.map(item => number(item.payments) || 0);
+			console.log(`roundedValues`, sum(roundedValues));
+			return round(sum(roundedValues));
 		},
 		/** 余款 = 货款合计 - 本次货款（均基于四舍五入后的值） */
 		totalPayments() {
-			return subtract(round(number(this.moneyAmount) || 0), this.detailPaymentsSum);
+			return subtract(round(number(this.moneyAmount) || 0), round(this.detailPaymentsSum));
 		},
 		// 任务14：发货单1/2/3 车号/柜号、海运公司等明细字段，统一从每条明细中取值（不取主表字段）
 		hasSeaCarNo() {
