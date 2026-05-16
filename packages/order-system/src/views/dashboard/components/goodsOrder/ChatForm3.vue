@@ -27,15 +27,15 @@ export default {
 		};
 	},
 	computed: {
-		/** 所有明细的货款之和（基于每行四舍五入取整后的值求和） */
+		/** 所有明细的货款之和（先求和再四舍五入取整） */
 		detailPaymentsSum() {
 			if (!this.itemList || this.itemList.length === 0) return 0;
-			const roundedValues = this.itemList.map(item => round(number(item.payments) || 0));
-			return sum(roundedValues);
+			const roundedValues = this.itemList.map(item => number(item.payments) || 0);
+			return round(sum(roundedValues));
 		},
 		/** 欠款 = 合计欠款 - 本次货款（均基于四舍五入后的值） */
 		totalPayments() {
-			return subtract(round(number(this.moneyAmount) || 0), this.detailPaymentsSum);
+			return subtract(round(number(this.moneyAmount) || 0), round(this.detailPaymentsSum));
 		},
 		/**
 		 * 是否存在海运柜号（从明细中判断）
