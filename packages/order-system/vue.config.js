@@ -33,6 +33,7 @@ module.exports = {
 				// target: 'https://devlop.order.project.k3s.ixuni.win/',
 				// target: 'http://42.193.124.39:27454/',
 				target: `http://60.205.5.253:60036/`,
+				// target: `http://localhost:8080/`,
 				// target: 'https://cjdevlop.order.project.k3s.ixuni.win/',
 				changeOrigin: true,
 				pathRewrite: {
