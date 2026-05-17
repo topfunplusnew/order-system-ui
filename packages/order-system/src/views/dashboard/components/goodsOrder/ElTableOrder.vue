@@ -401,13 +401,46 @@ export default {
 		handleColumnRefresh(updatedColumns) {
 			// 更新表格列的显示状态
 			this.columns = [...updatedColumns];
+			this.scheduleRefreshTableLayout();
 			// 触发表格重新加载
 			this.getList();
 		},
 		onColumnChange({ index, column, visible }) {
-			// 可以在这里处理列可见性变化的逻辑
-			// 例如：更新列配置或执行其他相关操作
 			this.$set(this.columns, index, { ...column, visible });
+			this.scheduleRefreshTableLayout();
+		},
+		/**
+		 * 显隐列变更后合并刷新表格布局（避免 RightToolbar 批量 emit 时重复计算）
+		 */
+		scheduleRefreshTableLayout() {
+			if (this.columnsUpdateRafId) {
+				cancelAnimationFrame(this.columnsUpdateRafId);
+			}
+			this.columnsUpdateRafId = requestAnimationFrame(() => {
+				this.columnsUpdateRafId = null;
+				this.$nextTick(() => {
+					this.refreshTableLayoutAfterColumnsChange();
+				});
+			});
+		},
+		/**
+		 * 显隐列后重算 el-table 与虚拟滚动固定列布局
+		 */
+		refreshTableLayoutAfterColumnsChange() {
+			const table = this.$refs.orderTable;
+			if (table && typeof table.doLayout === 'function') {
+				table.doLayout();
+			}
+			const virtualScroll = this.$refs.virtualScroll;
+			if (!virtualScroll) {
+				return;
+			}
+			if (typeof virtualScroll.doHeaderLayout === 'function') {
+				virtualScroll.doHeaderLayout();
+			}
+			if (typeof virtualScroll.update === 'function') {
+				virtualScroll.update();
+			}
 		},
 		// 检查用户是否具有指定权限
 		hasPermission(roles) {
@@ -1049,10 +1082,7 @@ export default {
 		},
 		// 表头拖动结束后更新虚拟滚动表头布局
 		onHeaderDragend() {
-			// 使用自定义列，改变列宽度后，需要手动更新table头部
-			if (this.$refs.virtualScroll) {
-				this.$refs.virtualScroll.doHeaderLayout();
-			}
+			this.refreshTableLayoutAfterColumnsChange();
 		},
 		/**
 		 * 计算表格合计行
