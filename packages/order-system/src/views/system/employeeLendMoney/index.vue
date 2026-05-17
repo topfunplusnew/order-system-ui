@@ -25,7 +25,7 @@
 			<el-col :span="1.5">
 				<el-button size="mini" type="danger" @click="handleAdd">添加借出款信息</el-button>
 			</el-col>
-			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList" table-name="views-system-employee-lend-money-index-columns">
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList" @column-change="onColumnChange" @column-refresh="handleColumnRefresh" tableName="employee-lend-money-columns">
 				<template #print>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
@@ -42,6 +42,7 @@
 
 		<!--    数据表格 主要是借出款记录-->
 		<el-table
+			ref="lendMoneyTable"
 			id="printBox"
 			v-loading="loading"
 			v-horizontal-scroll="'always'"
@@ -78,7 +79,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[11].visible" label="未收回金额" align="center" prop="unrecoveredAmount" show-overflow-tooltip>
+			<el-table-column v-if="columns[3].visible" label="未收回金额" align="center" prop="unrecoveredAmount" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.unrecoveredAmount }}</div>
@@ -86,7 +87,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[12].visible" label="收回金额" align="center" prop="recoveredAmount" show-overflow-tooltip>
+			<el-table-column v-if="columns[4].visible" label="收回金额" align="center" prop="recoveredAmount" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ calculateRecoveredAmount(scope.row) }}</div>
@@ -94,7 +95,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[13].visible" label="累计坏账" align="center" prop="totalBadDebt" show-overflow-tooltip>
+			<el-table-column v-if="columns[5].visible" label="累计坏账" align="center" prop="totalBadDebt" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ calculateTotalBadDebt(scope.row) }}</div>
@@ -102,7 +103,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[3].visible" label="对方收借款账号" align="center" prop="targetBankNo" show-overflow-tooltip width="200">
+			<el-table-column v-if="columns[6].visible" label="对方收借款账号" align="center" prop="targetBankNo" show-overflow-tooltip width="200">
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.targetBankNo }}</div>
@@ -110,7 +111,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[4].visible" label="对方户名" align="center" prop="targetAcountsName" show-overflow-tooltip>
+			<el-table-column v-if="columns[7].visible" label="对方户名" align="center" prop="targetAcountsName" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.targetAcountsName }}</div>
@@ -118,7 +119,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[5].visible" label="对方开户行" align="center" prop="targetBankName" show-overflow-tooltip>
+			<el-table-column v-if="columns[8].visible" label="对方开户行" align="center" prop="targetBankName" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.targetBankName }}</div>
@@ -126,7 +127,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[6].visible" label="我方支付借款账户名称" align="center" prop="selfAcountsName" show-overflow-tooltip>
+			<el-table-column v-if="columns[9].visible" label="我方支付借款账户名称" align="center" prop="selfAcountsName" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.selfAcountsName }}</div>
@@ -134,7 +135,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[7].visible" label="我方支付借款开户行" align="center" prop="selfBankName" show-overflow-tooltip>
+			<el-table-column v-if="columns[10].visible" label="我方支付借款开户行" align="center" prop="selfBankName" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.selfBankName }}</div>
@@ -142,7 +143,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[8].visible" label="我方付款账号" align="center" prop="selfBankNo" show-overflow-tooltip width="200">
+			<el-table-column v-if="columns[11].visible" label="我方付款账号" align="center" prop="selfBankNo" show-overflow-tooltip width="200">
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.selfBankNo }}</div>
@@ -150,7 +151,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[9].visible" label="支付员工/外面公司在我公司借款时间" align="center" prop="futuresDate" show-overflow-tooltip>
+			<el-table-column v-if="columns[12].visible" label="支付员工/外面公司在我公司借款时间" align="center" prop="futuresDate" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.futuresDate }}</div>
@@ -158,7 +159,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[10].visible" label="借款事由" align="center" prop="reason" show-overflow-tooltip>
+			<el-table-column v-if="columns[13].visible" label="借款事由" align="center" prop="reason" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.reason }}</div>
@@ -548,76 +549,22 @@ export default {
 			title: '',
 			open: false,
 			// 表单校验
+			// 下标与表格列顺序、key 一一对应，供显隐列与 v-if="columns[n]" 使用
 			columns: [
 				{ key: 0, label: '借款人', prop: 'target', visible: true },
-				{ key: 1, label: '对象', prop: 'targetType', visible: true },
-				{
-					key: 2,
-					label: '借入金额',
-					prop: 'moneyAmount',
-					visible: true
-				},
-				{
-					key: 11,
-					label: '未收回金额',
-					prop: 'unrecoveredAmount',
-					visible: true
-				},
-				{
-					key: 12,
-					label: '收回金额',
-					prop: 'recoveredAmount',
-					visible: true
-				},
-				{
-					key: 13,
-					label: '累计坏账',
-					prop: 'totalBadDebt',
-					visible: true
-				},
-				{
-					key: 3,
-					label: '对方收借款账号',
-					prop: 'targetBankNo',
-					visible: true
-				},
-				{
-					key: 4,
-					label: '对方户名',
-					prop: 'targetAcountsName',
-					visible: true
-				},
-				{
-					key: 5,
-					label: '对方开户行',
-					prop: 'targetBankName',
-					visible: true
-				},
-				{
-					key: 6,
-					label: '我方支付借款账户名称',
-					prop: 'selfAcountsName',
-					visible: true
-				},
-				{
-					key: 7,
-					label: '我方支付借款开户行',
-					prop: 'selfBankName',
-					visible: true
-				},
-				{
-					key: 8,
-					label: '我方付款账号',
-					prop: 'selfBankNo',
-					visible: true
-				},
-				{
-					key: 9,
-					label: '支付员工/外面公司在我公司借款时间',
-					prop: 'futuresDate',
-					visible: true
-				},
-				{ key: 10, label: '借款事由', prop: 'reason', visible: true }
+				{ key: 1, label: '对象类型', prop: 'targetType', visible: true },
+				{ key: 2, label: '借出金额', prop: 'moneyAmount', visible: true },
+				{ key: 3, label: '未收回金额', prop: 'unrecoveredAmount', visible: true },
+				{ key: 4, label: '收回金额', prop: 'recoveredAmount', visible: true },
+				{ key: 5, label: '累计坏账', prop: 'totalBadDebt', visible: true },
+				{ key: 6, label: '对方收借款账号', prop: 'targetBankNo', visible: true },
+				{ key: 7, label: '对方户名', prop: 'targetAcountsName', visible: true },
+				{ key: 8, label: '对方开户行', prop: 'targetBankName', visible: true },
+				{ key: 9, label: '我方支付借款账户名称', prop: 'selfAcountsName', visible: true },
+				{ key: 10, label: '我方支付借款开户行', prop: 'selfBankName', visible: true },
+				{ key: 11, label: '我方付款账号', prop: 'selfBankNo', visible: true },
+				{ key: 12, label: '支付员工/外面公司在我公司借款时间', prop: 'futuresDate', visible: true },
+				{ key: 13, label: '借款事由', prop: 'reason', visible: true }
 			],
 
 			// 搜索参数
@@ -837,6 +784,16 @@ export default {
 	},
 	created() {
 		this.getList();
+		this.refreshTableLayoutDebounced = _.debounce(() => {
+			this.$nextTick(() => {
+				this.refreshTableLayout();
+			});
+		}, 80);
+	},
+	beforeDestroy() {
+		if (this.refreshTableLayoutDebounced) {
+			this.refreshTableLayoutDebounced.cancel();
+		}
 	},
 	watch: {
 		// 监听对象类型变化，清空已选择的账户信息（只有用户主动选择时才清空）
@@ -854,6 +811,29 @@ export default {
 	},
 	methods: {
 		listBankAccount,
+		/**
+		 * 显隐列变更
+		 * @param {{ index: number, column: Object, visible: boolean }} payload
+		 */
+		onColumnChange({ index, column, visible }) {
+			this.$set(this.columns, index, { ...column, visible });
+			this.refreshTableLayoutDebounced();
+		},
+		/**
+		 * 刷新列配置后重算表格布局
+		 * @param {Array} updatedColumns
+		 */
+		handleColumnRefresh(updatedColumns) {
+			this.columns = [...updatedColumns];
+			this.refreshTableLayoutDebounced();
+		},
+		/** 显隐列后重算 el-table 布局 */
+		refreshTableLayout() {
+			const table = this.$refs.lendMoneyTable;
+			if (table && typeof table.doLayout === 'function') {
+				table.doLayout();
+			}
+		},
 		getList() {
 			this.loading = true;
 			listLendMoney(this.queryParams).then(response => {
