@@ -1,5 +1,5 @@
 import { getBankAcceptance } from '../../../../api/system/bankAcceptance';
-import { CHECK_STATE, TableName } from '../../../../api/tool/enums';
+import { TableName } from '../../../../api/tool/enums';
 import { excludeParams } from '../../../../api/tool/exclude'; // 导入 excludeParams 方法
 import _ from 'lodash';
 import { updateGoodsOrderAttachments } from '@/api/system/goodsOrder';
@@ -34,87 +34,150 @@ import { updateInventoryAttachments } from '@/api/system/inventoryMain';
 export var mixin_checkfile = {
 	methods: {
 		/**
-		 * 处理文件更新回调逻辑
-		 * @param {String} value - 上传后的文件路径或文件值
+		 * 从 CheckFiles 回传的附件对象列表提取 id
+		 * @param {Array<Object>} attachmentList
+		 * @returns {Array<number|string>}
+		 */
+		extractAttachmentIds(attachmentList) {
+			if (!Array.isArray(attachmentList)) {
+				return [];
+			}
+			return attachmentList.map(item => item && item.id).filter(id => id !== null && id !== undefined);
+		},
+		/**
+		 * 解析附件更新应走的业务分支（订单 / 库存 / 通用 onUpdate）
+		 * @param {Object} row - 表格行数据
+		 * @param {Function} onGet - 父组件传入的详情查询方法（仅用于识别业务类型）
+		 * @returns {'goodsOrder'|'inventory'|'generic'}
+		 */
+		resolveAttachmentUpdateStrategy(row, onGet) {
+			const tableName = row && row.metaDataTableName;
+			if (tableName && this.isGoodsOrderTable(tableName)) {
+				return 'goodsOrder';
+			}
+			if (tableName && this.isInventoryTable(tableName)) {
+				return 'inventory';
+			}
+			// 列表行可能无 metaDataTableName，用 onGet 函数名兜底（如 ElTableOrder 传入 getGoodsOrder）
+			if (typeof onGet === 'function' && onGet.name === 'getGoodsOrder') {
+				return 'goodsOrder';
+			}
+			if (typeof onGet === 'function' && onGet.name === 'getInventoryMain') {
+				return 'inventory';
+			}
+			return 'generic';
+		},
+		/**
+		 * 处理文件更新回调逻辑（上传 / 删除后同步 attachmentIds）
+		 * @param {Array<Object>} value - CheckFiles 合并后的整单附件对象列表
 		 * @param {Object} row - 当前行的数据对象
-		 * @param {String} prop - 要更新的属性字段名称
-		 * @param {Function} onGet - 获取文件记录的接口方法，需返回 Promise
-		 * @param {Function} onUpdate - 更新文件记录的接口方法，需返回 Promise
+		 * @param {Function} onGet - 获取详情（新逻辑不再用于拉附件列表，保留参数兼容旧调用方）
+		 * @param {Function} onUpdate - 通用模块的更新接口方法
 		 */
 		handleUpdateFilePath(value, row, onGet, onUpdate) {
-			// 检查 onGet 和 onUpdate 是否为函数
-			if (typeof onGet !== 'function' || typeof onUpdate !== 'function') {
-				this.$message.error('组件内部错误！请检查传入的参数类型。');
+			if (typeof onUpdate !== 'function') {
+				this.$message.error('组件内部错误！请检查传入的 onUpdate 参数类型。');
 				return;
 			}
-			// 调用 onGet 方法获取文件记录
-			onGet(row.id).then(async res => {
-				const deepData = _.cloneDeep(res.data);
-				const extingFile = (deepData?.attachmentList || []).map(item => item.id) || [];
-				const set = new Set([...value.map(item => item.id), ...extingFile]);
-				const updatedFiles = [...set];
-				// 将获取的记录与新的字段值组合
-				let data = {
-					...deepData,
-					params: {
-						...deepData.params,
-						attachmentIds: updatedFiles
-					}
-				};
-				// 去除无用的属性
-				data = excludeParams(data, this.$exclude);
-				// 如果包含这个表名 并且在表的列表中 那么需要单独处理
-				if (`metaDataTableName` in deepData && this.isTableInList(deepData.metaDataTableName)) {
-					// 对于票据的单独处理
-					if (`bankacceptanceId` in deepData && deepData.bankacceptanceId) {
-						data.params.bankacceptance = _.cloneDeep(await getBankAcceptance(deepData.bankacceptanceId)).data;
-					}
-				}
 
-				// 对于已审核订单的特殊处理，如果已经审核 并且模块是订单，那么就需要调用另一个接口来进行上传
-				if (`metaDataTableName` in deepData && this.isGoodsOrderTable(deepData.metaDataTableName)) {
-					// TODO 这里后端要求去掉限制，只要是订单模块，无论是否审核 都调用后续接口
-					//  如果是已审核的订单
-					// if (deepData.checkState === CHECK_STATE.CHECKED) {
-					//     const payload = {
-					//         goodsOrderId: deepData.id,
-					//         attachmentIds: data.params.attachmentIds
-					//     };
-					//     updateGoodsOrderAttachments(payload).then(() => {
-					//         this.$message.success('更新订单附件成功~');
-					//     });
-					//     return;
-					// }
-					// 要加限制就注释以下代码
-					const payload = {
-						goodsOrderId: deepData.id,
-						attachmentIds: data.params.attachmentIds
-					};
-					updateGoodsOrderAttachments(payload).then(() => {
-						this.$message.success('更新订单附件成功~');
-					});
-					return;
-				}
+			const attachmentIds = this.extractAttachmentIds(value);
+			const strategy = this.resolveAttachmentUpdateStrategy(row, onGet);
 
-				// 对于已出库库存的特殊处理
-				if (`metaDataTableName` in deepData && this.isInventoryTable(deepData.metaDataTableName)) {
-					const payload = {
-						inventoryMainId: deepData.id,
-						attachmentIds: data.params.attachmentIds
-					};
-					updateInventoryAttachments(payload).then(() => {
-						this.$message.success('更新库存附件成功~');
-					});
-					return;
-				}
-				// 这里如果传递editReason给一个固定值 就可以进行修改
-				data.editReason = 'f871391c-0e97-43e5-89f9-a97837e57a22';
-				// 调用 onUpdate 方法更新文件记录
-				onUpdate(data).then(() => {
-					this.$message.success('操作成功！');
-					// 刷新数据列表
-					// this.getList();
+			// ---------- 新逻辑：不再 onGet 拉详情，直接用前端合并后的 attachmentIds 更新 ----------
+			if (strategy === 'goodsOrder') {
+				updateGoodsOrderAttachments({
+					goodsOrderId: row.id,
+					attachmentIds
+				}).then(() => {
+					this.$message.success('更新订单附件成功~');
 				});
+				return;
+			}
+
+			if (strategy === 'inventory') {
+				updateInventoryAttachments({
+					inventoryMainId: row.id,
+					attachmentIds
+				}).then(() => {
+					this.$message.success('更新库存附件成功~');
+				});
+				return;
+			}
+
+			this.runGenericAttachmentUpdate(row, attachmentIds, onUpdate);
+			return;
+
+			// ---------- 旧逻辑（保留注释）：onGet 拉最新 attachmentList 再与弹窗列表做并集 ----------
+			// if (typeof onGet !== 'function' || typeof onUpdate !== 'function') {
+			// 	this.$message.error('组件内部错误！请检查传入的参数类型。');
+			// 	return;
+			// }
+			// onGet(row.id).then(async res => {
+			// 	const deepData = _.cloneDeep(res.data);
+			// 	const extingFile = (deepData?.attachmentList || []).map(item => item.id) || [];
+			// 	const set = new Set([...value.map(item => item.id), ...extingFile]);
+			// 	const updatedFiles = [...set];
+			// 	let data = {
+			// 		...deepData,
+			// 		params: {
+			// 			...deepData.params,
+			// 			attachmentIds: updatedFiles
+			// 		}
+			// 	};
+			// 	data = excludeParams(data, this.$exclude);
+			// 	if (`metaDataTableName` in deepData && this.isTableInList(deepData.metaDataTableName)) {
+			// 		if (`bankacceptanceId` in deepData && deepData.bankacceptanceId) {
+			// 			data.params.bankacceptance = _.cloneDeep(await getBankAcceptance(deepData.bankacceptanceId)).data;
+			// 		}
+			// 	}
+			// 	if (`metaDataTableName` in deepData && this.isGoodsOrderTable(deepData.metaDataTableName)) {
+			// 		const payload = {
+			// 			goodsOrderId: deepData.id,
+			// 			attachmentIds: data.params.attachmentIds
+			// 		};
+			// 		updateGoodsOrderAttachments(payload).then(() => {
+			// 			this.$message.success('更新订单附件成功~');
+			// 		});
+			// 		return;
+			// 	}
+			// 	if (`metaDataTableName` in deepData && this.isInventoryTable(deepData.metaDataTableName)) {
+			// 		const payload = {
+			// 			inventoryMainId: deepData.id,
+			// 			attachmentIds: data.params.attachmentIds
+			// 		};
+			// 		updateInventoryAttachments(payload).then(() => {
+			// 			this.$message.success('更新库存附件成功~');
+			// 		});
+			// 		return;
+			// 	}
+			// 	data.editReason = 'f871391c-0e97-43e5-89f9-a97837e57a22';
+			// 	onUpdate(data).then(() => {
+			// 		this.$message.success('操作成功！');
+			// 	});
+			// });
+		},
+		/**
+		 * 非订单/库存模块：用行数据 + attachmentIds 调 onUpdate
+		 * @param {Object} row
+		 * @param {Array<number|string>} attachmentIds
+		 * @param {Function} onUpdate
+		 */
+		async runGenericAttachmentUpdate(row, attachmentIds, onUpdate) {
+			let data = {
+				..._.cloneDeep(row),
+				params: {
+					...(row.params || {}),
+					attachmentIds
+				}
+			};
+			data = excludeParams(data, this.$exclude);
+			const tableName = row.metaDataTableName;
+			if (tableName && this.isTableInList(tableName) && row.bankacceptanceId) {
+				data.params.bankacceptance = _.cloneDeep((await getBankAcceptance(row.bankacceptanceId)).data);
+			}
+			data.editReason = 'f871391c-0e97-43e5-89f9-a97837e57a22';
+			onUpdate(data).then(() => {
+				this.$message.success('操作成功！');
 			});
 		},
 		isTableInList(tableName) {

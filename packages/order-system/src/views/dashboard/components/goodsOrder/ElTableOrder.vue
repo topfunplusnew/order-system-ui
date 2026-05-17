@@ -1674,7 +1674,7 @@ export default {
 							</el-tooltip>
 						</template>
 					</VirtualColumn>
-					<!-- 22. 出库单 -->
+					<!-- 22. 出库单 / 23. 收到条：CheckFiles 删附件不调 DELETE，合并整单 attachmentList 后走 handleUpdateFilePath → PUT /system/goodsOrder/attachments -->
 					<VirtualColumn v-if="columns[23].visible" show-overflow-tooltip label="出库单" align="center" prop="path" width="84">
 						<template #default="scope">
 							<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">

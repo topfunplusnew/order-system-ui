@@ -2,7 +2,8 @@
 <!-- 如果一个列需要展示文件 那么就可以用这个组件-->
 <script>
 import { check_file } from '../views/dashboard/mixins/utils/check_file';
-import { addAttachments, deleteAttachments } from '@/api/system/attachments';
+import { addAttachments } from '@/api/system/attachments';
+// import { deleteAttachments } from '@/api/system/attachments'; // 已废弃：删除改由父级更新 attachmentIds，不再单独调 DELETE
 import FileItems from './FileItems.vue';
 import FileShowItem from './FileShowItem.vue';
 
@@ -65,7 +66,8 @@ export default {
 				const response = await addAttachments(file, { flag: this.flag, extraInfo: this.extraInfo });
 				if (response.code === 200 && response.data) {
 					this.checkFileList.push(response.data);
-					this.$emit('needToUpdate', [...this.checkFileList]);
+					// 合并其他 flag 附件后通知父级，避免只提交当前列附件导致其它类型被覆盖
+					this.$emit('needToUpdate', this.buildMergedAttachmentListForEmit());
 				} else {
 					throw new Error(response.msg || '上传失败');
 				}
@@ -73,6 +75,14 @@ export default {
 				console.error('文件上传失败:', e);
 				this.$message.error('文件上传失败: ' + (e.message || '未知错误'));
 			}
+		},
+		/**
+		 * 合并当前 flag 弹窗内附件 + 行上其它 flag 附件，供父级一次性更新 attachmentIds
+		 * @returns {Array<Object>}
+		 */
+		buildMergedAttachmentListForEmit() {
+			const otherFlagItems = (this.attachmentList || []).filter(item => item && item.flag !== this.flag);
+			return [...otherFlagItems, ...this.checkFileList];
 		},
 		handleDeleteFile(attachment) {
 			this.$antdconfirm({
@@ -84,9 +94,11 @@ export default {
 				zIndex: 2600,
 				onOk: async () => {
 					try {
-						await deleteAttachments(attachment.id);
+						// 旧逻辑：先 DELETE /system/attachments/{id}，再由父级 onGet 拉单合并 attachmentIds
+						// await deleteAttachments(attachment.id);
+						// 新逻辑：仅从当前弹窗列表移除，合并整单附件后由父级 PUT 更新关联（后端负责解绑/清理）
 						this.checkFileList = this.checkFileList.filter(i => i.id !== attachment.id);
-						this.$emit('needToUpdate', [...this.checkFileList]);
+						this.$emit('needToUpdate', this.buildMergedAttachmentListForEmit());
 						this.$message.success('文件删除成功！');
 					} catch (e) {
 						console.error('文件删除失败:', e);
