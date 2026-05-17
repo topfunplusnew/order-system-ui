@@ -65,9 +65,15 @@ export default {
 				this.$message.info('文件上传中，请稍候...');
 				const response = await addAttachments(file, { flag: this.flag, extraInfo: this.extraInfo });
 				if (response.code === 200 && response.data) {
-					this.checkFileList.push(response.data);
-					// 合并其他 flag 附件后通知父级，避免只提交当前列附件导致其它类型被覆盖
-					this.$emit('needToUpdate', this.buildMergedAttachmentListForEmit());
+					const snapshotCheckFileList = [...this.checkFileList];
+					const addedFile = response.data;
+					this.checkFileList.push(addedFile);
+					try {
+						await this.invokeNeedToUpdate(this.buildMergedAttachmentListForEmit());
+					} catch (updateErr) {
+						this.checkFileList = snapshotCheckFileList;
+						throw updateErr;
+					}
 				} else {
 					throw new Error(response.msg || '上传失败');
 				}
@@ -84,6 +90,19 @@ export default {
 			const otherFlagItems = (this.attachmentList || []).filter(item => item && item.flag !== this.flag);
 			return [...otherFlagItems, ...this.checkFileList];
 		},
+		/**
+		 * 调用父级 needToUpdate 并等待 Promise（父级 handleUpdateFilePath 需 return 接口 Promise）
+		 * @param {Array<Object>} mergedList
+		 * @returns {Promise<void>}
+		 */
+		invokeNeedToUpdate(mergedList) {
+			const listener = this.$listeners.needToUpdate;
+			if (!listener) {
+				return Promise.resolve();
+			}
+			const handler = Array.isArray(listener) ? listener[listener.length - 1] : listener;
+			return Promise.resolve(handler(mergedList));
+		},
 		handleDeleteFile(attachment) {
 			this.$antdconfirm({
 				title: '系统提示',
@@ -93,14 +112,16 @@ export default {
 				type: 'warning',
 				zIndex: 2600,
 				onOk: async () => {
+					const snapshotCheckFileList = [...this.checkFileList];
 					try {
 						// 旧逻辑：先 DELETE /system/attachments/{id}，再由父级 onGet 拉单合并 attachmentIds
 						// await deleteAttachments(attachment.id);
-						// 新逻辑：仅从当前弹窗列表移除，合并整单附件后由父级 PUT 更新关联（后端负责解绑/清理）
-						this.checkFileList = this.checkFileList.filter(i => i.id !== attachment.id);
-						this.$emit('needToUpdate', this.buildMergedAttachmentListForEmit());
+						// 新逻辑：先乐观移除，更新失败则恢复快照
+						this.checkFileList = snapshotCheckFileList.filter(i => i.id !== attachment.id);
+						await this.invokeNeedToUpdate(this.buildMergedAttachmentListForEmit());
 						this.$message.success('文件删除成功！');
 					} catch (e) {
+						this.checkFileList = snapshotCheckFileList;
 						console.error('文件删除失败:', e);
 						this.$message.error('文件删除失败: ' + (e.message || '未知错误'));
 					}

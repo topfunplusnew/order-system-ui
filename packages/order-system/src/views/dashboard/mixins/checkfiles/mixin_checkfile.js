@@ -77,35 +77,32 @@ export var mixin_checkfile = {
 		handleUpdateFilePath(value, row, onGet, onUpdate) {
 			if (typeof onUpdate !== 'function') {
 				this.$message.error('组件内部错误！请检查传入的 onUpdate 参数类型。');
-				return;
+				return Promise.reject(new Error('onUpdate 参数无效'));
 			}
 
 			const attachmentIds = this.extractAttachmentIds(value);
 			const strategy = this.resolveAttachmentUpdateStrategy(row, onGet);
 
-			// ---------- 新逻辑：不再 onGet 拉详情，直接用前端合并后的 attachmentIds 更新 ----------
+			// ---------- 新逻辑：不再 onGet 拉详情，直接用前端合并后的 attachmentIds 更新（返回 Promise 供 CheckFiles 失败回滚） ----------
 			if (strategy === 'goodsOrder') {
-				updateGoodsOrderAttachments({
+				return updateGoodsOrderAttachments({
 					goodsOrderId: row.id,
 					attachmentIds
 				}).then(() => {
 					this.$message.success('更新订单附件成功~');
 				});
-				return;
 			}
 
 			if (strategy === 'inventory') {
-				updateInventoryAttachments({
+				return updateInventoryAttachments({
 					inventoryMainId: row.id,
 					attachmentIds
 				}).then(() => {
 					this.$message.success('更新库存附件成功~');
 				});
-				return;
 			}
 
-			this.runGenericAttachmentUpdate(row, attachmentIds, onUpdate);
-			return;
+			return this.runGenericAttachmentUpdate(row, attachmentIds, onUpdate);
 
 			// ---------- 旧逻辑（保留注释）：onGet 拉最新 attachmentList 再与弹窗列表做并集 ----------
 			// if (typeof onGet !== 'function' || typeof onUpdate !== 'function') {
@@ -176,7 +173,7 @@ export var mixin_checkfile = {
 				data.params.bankacceptance = _.cloneDeep((await getBankAcceptance(row.bankacceptanceId)).data);
 			}
 			data.editReason = 'f871391c-0e97-43e5-89f9-a97837e57a22';
-			onUpdate(data).then(() => {
+			return onUpdate(data).then(() => {
 				this.$message.success('操作成功！');
 			});
 		},
