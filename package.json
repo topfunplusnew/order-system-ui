@@ -20,7 +20,9 @@
 		"prettier": "prettier --write \"**/*.{js,vue,json,md,ts,tsx,jsx,css,scss,html}\"",
 		"prettier:check": "prettier --check \"**/*.{js,vue,json,md,ts,tsx,jsx,css,scss,html}\"",
 		"logger": "yarn workspace @order-system/request-logger start",
-		"logger:dev": "yarn workspace @order-system/request-logger dev"
+		"logger:dev": "yarn workspace @order-system/request-logger dev",
+		"scan:table-columns": "node scripts/scan-table-id-addtime-columns.js",
+		"scan:table-columns:json": "node scripts/scan-table-id-addtime-columns.js --json"
 	},
 	"engines": {
 		"node": ">=18.20.6"
