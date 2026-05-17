@@ -26,6 +26,19 @@ export function deleteExport(fileName) {
 	});
 }
 
+/**
+ * 批量删除导出文件（一键清空当前列表）
+ * @param {Array<number|string>} ids - 导出文件 id 列表
+ * @returns {Promise}
+ */
+export function batchDeleteExport(ids) {
+	return service({
+		url: '/system/allExport/delete',
+		method: 'delete',
+		data: ids
+	});
+}
+
 export function downloadFileByName(fileName) {
 	return service({
 		url: '/system/allExport/download',

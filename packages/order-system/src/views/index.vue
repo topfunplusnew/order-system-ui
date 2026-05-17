@@ -268,6 +268,16 @@
 						</a-form-item>
 						<a-form-item>
 							<a-button type="primary" :loading="fileListLoading" @click="handleFileSearch">搜索</a-button>
+							<a-button
+								type="danger"
+								:loading="clearAllExportLoading"
+								:disabled="!fileList.length"
+								v-hasPermi="['system:exportfile:remove']"
+								style="margin-left: 8px"
+								@click="handleClearAllExportFiles"
+							>
+								一键清空
+							</a-button>
 						</a-form-item>
 					</a-form>
 				</div>
@@ -276,7 +286,7 @@
 				<span class="title">共 {{ fileList.length }} 个文件</span>
 			</div>
 			<a-list :data-source="fileList" class="file-list" :loading="fileListLoading" style="max-height: 450px; overflow-y: scroll">
-				<a-list-item v-for="(item, index) in fileList" :key="index">
+				<a-list-item v-for="item in fileList" :key="item.id || item.fileName">
 					<a-row type="flex" justify="space-between" align="middle" style="width: 100%">
 						<a-col :span="12">
 							<a-space>
@@ -329,7 +339,8 @@ import { getDailyProfit, getDeliveryList } from '../api/system/statement';
 import { mixin_printHTML } from './dashboard/mixins/print';
 import { parseTime } from '@/utils/ruoyi';
 import { mapGetters } from 'vuex';
-import { deleteExport, downloadFileByName, getAllExportList, startExportAll, syncExportAll } from '../api/system/oncedownload/index';
+import { batchDeleteExport, deleteExport, downloadFileByName, getAllExportList, startExportAll, syncExportAll } from '../api/system/oncedownload/index';
+import { compact, map } from 'lodash';
 import webSocketManager from '@/utils/websocket';
 import { subtract, add, sum, round, number, log, divide, pow } from 'mathjs';
 
@@ -411,6 +422,7 @@ export default {
 			dialogVisible: false,
 			fileListVisible: false,
 			fileListLoading: false, // 添加文件列表加载状态
+			clearAllExportLoading: false,
 			fileList: [], // 修改为空数组，由接口获取
 			fileSearchForm: {
 				startTime: formatDateTime(weekAgo),
@@ -800,6 +812,48 @@ export default {
 					} catch (error) {
 						console.error('删除文件失败:', error);
 						self.$message.error(`删除失败: ${file.fileName}`);
+					}
+				}
+			});
+		},
+		/**
+		 * 从当前列表提取导出文件 id
+		 * @returns {Array<number|string>}
+		 */
+		collectExportFileIds() {
+			return compact(map(this.fileList || [], item => item && item.id));
+		},
+		/**
+		 * 一键清空当前可下载文件列表
+		 */
+		handleClearAllExportFiles() {
+			const ids = this.collectExportFileIds();
+			if (!ids.length) {
+				this.$message.warning('当前没有可删除的文件');
+				return;
+			}
+			const self = this;
+			this.$antdconfirm({
+				title: '确认一键清空',
+				content: `是否确认删除当前列表中的 ${ids.length} 个文件？此操作不可恢复。`,
+				okText: '确认清空',
+				okType: 'danger',
+				cancelText: '取消',
+				async onOk() {
+					self.clearAllExportLoading = true;
+					try {
+						const res = await batchDeleteExport(ids);
+						if (res.code === 200) {
+							self.$message.success(`已清空 ${ids.length} 个文件`);
+							await self.getFileList();
+						} else {
+							self.$message.error(res.msg || '一键清空失败');
+						}
+					} catch (error) {
+						console.error('一键清空失败:', error);
+						self.$message.error('一键清空失败');
+					} finally {
+						self.clearAllExportLoading = false;
 					}
 				}
 			});
