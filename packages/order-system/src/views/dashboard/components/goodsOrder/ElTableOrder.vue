@@ -28,7 +28,7 @@ import { auditGoodsOrder, listGoodsOrder, getHistoryGoodsOrder } from '../../../
 import CheckOrder from '@/views/dashboard/components/goodsOrder/CheckOrder.vue';
 // 前端Excel导出依赖
 import * as XLSX from 'xlsx';
-import { debounce, throttle } from 'lodash';
+import { debounce, map, throttle } from 'lodash';
 import VirtualScroll, { VirtualColumn } from 'el-table-virtual-scroll';
 import { requestAnimationFrame } from 'vue-count-to/src/requestAnimationFrame';
 import { download } from '@/utils/request';
@@ -81,6 +81,10 @@ export default {
 				}),
 				{ idx: 'orderActions', label: '订单操作', width: 250, align: 'center' }
 			];
+		},
+		/** 列显隐签名，变更时强制重建 virtual-scroll 以同步 VirtualColumn */
+		virtualTableColumnsKey() {
+			return map(this.columns, col => (col.visible ? 1 : 0)).join('');
 		}
 	},
 	components: {
@@ -188,6 +192,8 @@ export default {
 			saveColumnsDebounced: null,
 			// 用于批量更新 DOM 的 RAF ID
 			columnsUpdateRafId: null,
+			// 显隐列重渲染前暂存的虚拟滚动位置 [scrollTop, scrollLeft]
+			pendingVirtualScrollPos: null,
 			// 搜索查询参数的防抖函数
 			handleGetQueryParamsDebounced: null,
 
@@ -413,6 +419,7 @@ export default {
 		 * 显隐列变更后合并刷新表格布局（避免 RightToolbar 批量 emit 时重复计算）
 		 */
 		scheduleRefreshTableLayout() {
+			this.cacheVirtualScrollPositionBeforeRerender();
 			if (this.columnsUpdateRafId) {
 				cancelAnimationFrame(this.columnsUpdateRafId);
 			}
@@ -424,23 +431,62 @@ export default {
 			});
 		},
 		/**
-		 * 显隐列后重算 el-table 与虚拟滚动固定列布局
+		 * 在 virtual-scroll 因列显隐被销毁前缓存滚动位置
 		 */
-		refreshTableLayoutAfterColumnsChange() {
-			const table = this.$refs.orderTable;
-			if (table && typeof table.doLayout === 'function') {
-				table.doLayout();
-			}
-			const virtualScroll = this.$refs.virtualScroll;
-			if (!virtualScroll) {
+		cacheVirtualScrollPositionBeforeRerender() {
+			if (this.isAdjustOrder || this.pendingVirtualScrollPos) {
 				return;
 			}
-			if (typeof virtualScroll.doHeaderLayout === 'function') {
-				virtualScroll.doHeaderLayout();
+			const virtualScroll = this.$refs.virtualScroll;
+			if (virtualScroll && virtualScroll.scroller) {
+				this.pendingVirtualScrollPos = [virtualScroll.scroller.scrollTop, virtualScroll.scroller.scrollLeft];
 			}
-			if (typeof virtualScroll.update === 'function') {
-				virtualScroll.update();
+		},
+		/**
+		 * 显隐列后重建虚拟滚动表格并重算布局
+		 */
+		refreshTableLayoutAfterColumnsChange() {
+			if (this.isAdjustOrder) {
+				const table = this.$refs.orderTable;
+				if (table && typeof table.doLayout === 'function') {
+					table.doLayout();
+				}
+				return;
 			}
+			this.$nextTick(() => {
+				this.restoreVirtualScrollPosition();
+				this.bindTableScroll();
+				const table = this.$refs.orderTable;
+				if (table && typeof table.doLayout === 'function') {
+					table.doLayout();
+				}
+				const virtualScroll = this.$refs.virtualScroll;
+				if (!virtualScroll) {
+					return;
+				}
+				if (typeof virtualScroll.doHeaderLayout === 'function') {
+					virtualScroll.doHeaderLayout();
+				}
+				if (typeof virtualScroll.update === 'function') {
+					virtualScroll.update();
+				}
+			});
+		},
+		/**
+		 * 列显隐重渲染后恢复虚拟滚动位置
+		 */
+		restoreVirtualScrollPosition() {
+			const pendingPos = this.pendingVirtualScrollPos;
+			if (!pendingPos) {
+				return;
+			}
+			this.pendingVirtualScrollPos = null;
+			const virtualScroll = this.$refs.virtualScroll;
+			if (!virtualScroll || !virtualScroll.scroller) {
+				return;
+			}
+			virtualScroll.scroller.scrollTop = pendingPos[0];
+			virtualScroll.scroller.scrollLeft = pendingPos[1];
 		},
 		// 检查用户是否具有指定权限
 		hasPermission(roles) {
@@ -1309,7 +1355,7 @@ export default {
 		</div>
 
 		<!--    订单表格  -->
-		<virtual-scroll v-if="!isAdjustOrder" ref="virtualScroll" :data="goodsOrderList" :item-size="30" key-prop="id" @change="orderDataAppendChange">
+		<virtual-scroll v-if="!isAdjustOrder" :key="virtualTableColumnsKey" ref="virtualScroll" :data="goodsOrderList" :item-size="30" key-prop="id" @change="orderDataAppendChange">
 			<template slot-scope="{ headerCellFixedStyle, cellFixedStyle }">
 				<el-table
 					border

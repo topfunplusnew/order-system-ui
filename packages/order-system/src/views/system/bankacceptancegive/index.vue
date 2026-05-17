@@ -25,7 +25,7 @@
 			<!-- <el-col :span="1.5">
 				<el-button v-hasPermi="['system:bankacceptance:add']" type="danger" size="mini" @click="handleAdd">添加支出商业票据</el-button>
 			</el-col> -->
-			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList" tableName="bankacceptancegive-columns">
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList" @column-change="onColumnChange" @column-refresh="handleColumnRefresh" tableName="bankacceptancegive-columns">
 				<template #print>
 					<el-col :span="1.5">
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
@@ -39,7 +39,7 @@
 			</right-toolbar>
 		</el-row>
 
-		<el-table v-loading="loading" v-horizontal-scroll="'always'" id="printBox" border :data="bankAcceptanceList" size="mini" show-summary :summary-method="getSummaries" :cell-style="() => ({ padding: '.5px' })" @selection-change="handleSelectionChange">
+		<el-table ref="bankAcceptanceTable" v-loading="loading" v-horizontal-scroll="'always'" id="printBox" border :data="bankAcceptanceList" size="mini" show-summary :summary-method="getSummaries" :cell-style="() => ({ padding: '.5px' })" @selection-change="handleSelectionChange">
 			<el-table-column v-if="columns[0].visible" label="ID" align="center" prop="id" show-overflow-tooltip />
 			<el-table-column v-if="columns[1].visible" label="操作日期" align="center" prop="operateDate" show-overflow-tooltip />
 			<el-table-column v-if="columns[2].visible" label="票据号码" align="center" prop="billNo" show-overflow-tooltip>
@@ -245,22 +245,23 @@ export default {
 				// 新增字段：区分是否是内部转账票据，支出票据默认为0（非内部转账）
 				isInternalTransfer: 0
 			},
+			// 与表格 columns[n] 下标、表头 label 严格一一对应（供显隐列与持久化）
 			columns: [
-				{ key: 0, label: `ID`, visible: true }, // 新增 ID
-				{ key: 1, label: `操作日期`, visible: true },
-				{ key: 2, label: `票据种类`, visible: true },
-				{ key: 3, label: `票据号码`, visible: true },
-				{ key: 4, label: `收票事由`, visible: true }, // 新增 收票事由
-				{ key: 5, label: `背书人`, visible: true }, // 新增 背书人
-				{ key: 6, label: `出票日期`, visible: true },
-				{ key: 7, label: `到期日期`, visible: true },
-				{ key: 8, label: `我方承兑账户`, visible: true },
-				{ key: 9, label: `票据交易日期`, visible: true }, // 将原 "票据日期" 修改为 "票据交易日期"
-				{ key: 10, label: `票据金额`, visible: true },
-				{ key: 11, label: `贴息点数`, visible: true },
-				{ key: 12, label: `贴息金额`, visible: true },
-				{ key: 13, label: `来源`, visible: true },
-				{ key: 14, label: `备注`, visible: true }
+				{ key: 0, label: 'ID', visible: true },
+				{ key: 1, label: '操作日期', visible: true },
+				{ key: 2, label: '票据号码', visible: true },
+				{ key: 3, label: '背书事由', visible: true },
+				{ key: 4, label: '我方承兑账户', visible: true },
+				{ key: 5, label: '被背书人', visible: true },
+				{ key: 6, label: '票据金额', visible: true },
+				{ key: 7, label: '贴息点数', visible: true },
+				{ key: 8, label: '贴息金额', visible: true },
+				{ key: 9, label: '出票日期', visible: true },
+				{ key: 10, label: '到期日期', visible: true },
+				{ key: 11, label: '票据交易日期', visible: true },
+				{ key: 12, label: '票据种类', visible: true },
+				{ key: 13, label: '来源', visible: true },
+				{ key: 14, label: '备注', visible: true }
 			],
 			// 表单参数
 			form: {},
@@ -384,8 +385,16 @@ export default {
 	},
 	created() {
 		this.getList();
-
-		// 创建防抖函数
+		this.refreshTableLayoutDebounced = _.debounce(() => {
+			this.$nextTick(() => {
+				this.refreshTableLayout();
+			});
+		}, 80);
+	},
+	beforeDestroy() {
+		if (this.refreshTableLayoutDebounced) {
+			this.refreshTableLayoutDebounced.cancel();
+		}
 	},
 	watch: {
 		// 贴息金额的自动计算
@@ -399,40 +408,52 @@ export default {
 	methods: {
 		listCompany,
 		listBankAccount,
+		/**
+		 * 显隐列变更同步配置
+		 * @param {{ index: number, column: Object, visible: boolean }} payload
+		 */
+		onColumnChange({ index, column, visible }) {
+			this.$set(this.columns, index, { ...column, visible });
+			this.refreshTableLayoutDebounced();
+		},
+		/**
+		 * 从服务端重新加载列配置后刷新表格
+		 * @param {Array} updatedColumns
+		 */
+		handleColumnRefresh(updatedColumns) {
+			this.columns = [...updatedColumns];
+			this.refreshTableLayoutDebounced();
+		},
+		/** 显隐列后重算表格布局 */
+		refreshTableLayout() {
+			const table = this.$refs.bankAcceptanceTable;
+			if (table && typeof table.doLayout === 'function') {
+				table.doLayout();
+			}
+		},
 		// 自定义列统计总函数
 		getSummaries(param) {
 			const { columns, data } = param;
 			const sums = [];
+			const summaryProps = ['billAmount', 'inDiscountPoints', 'inDiscountAmount'];
 			columns.forEach((column, index) => {
 				if (index === 0) {
 					sums[index] = '统计';
 					return;
 				}
-				const values = data.map(item => {
-					return Number(item[column.property]);
-				});
-
-				if (!values.every(value => isNaN(value))) {
-					// 对指定列进行计算
-					// if(index)
-					// 需要进行统计的索引列（票据金额、贴息点数、贴息金额）
-					const out_list = [6, 7, 8];
-					// index !== 9 && index !== 1 && index !== 16 && index !== 2
-					if (out_list.includes(index)) {
-						const sum = values.reduce((prev, curr) => {
-							const value = Number(curr);
-							if (!isNaN(value)) {
-								return prev + curr;
-							} else {
-								return prev;
-							}
-						}, 0);
-						// 保留两位小数
-						sums[index] = Number(sum).toFixed(2);
-					}
-				} else {
-					sums[index] = '';
+				if (!column.property || !summaryProps.includes(column.property)) {
+					return;
 				}
+				const values = data.map(item => Number(item[column.property]));
+				if (values.every(value => isNaN(value))) {
+					sums[index] = '';
+					return;
+				}
+				const sum = values.reduce((prev, curr) => {
+					const value = Number(curr);
+					return isNaN(value) ? prev : prev + value;
+				}, 0);
+				sums[index] = Number(sum).toFixed(2);
 			});
 			return sums;
 		},
