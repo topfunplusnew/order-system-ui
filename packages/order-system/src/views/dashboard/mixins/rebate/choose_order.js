@@ -1,6 +1,7 @@
-import { fix } from '../../../../api/tool/format';
+// 以下 import 仅被已注释的旧版 submitSelectOrderDetail 使用，保留备查
+// import { fix } from '../../../../api/tool/format';
 import { listOrderDetail } from '@/api/system/orderDetail';
-import { RebateType } from '@/api/tool/enums';
+// import { RebateType } from '@/api/tool/enums';
 
 export var mixin_choose_order = {
 	data() {
@@ -22,16 +23,16 @@ export var mixin_choose_order = {
 					endTime: null
 				}
 			},
-			// 供应商筛选  供应商列表名称 可以通过list拿
-			nameFilters: [],
+			// 供应商筛选  供应商列表名称 可以通过list拿（rebate/index 未使用）
+			// nameFilters: [],
 			// 已经选择的订单货物弹窗
 			orderGoodsVisible: false,
-			// 已选择的货物列表
-			orderDetailInfoList: [],
-			// 查看订单详情
-			checkOrderInformation: {},
-			// 查看订单信息
-			orderVisible: false,
+			// 已选择的货物列表（rebate/index 使用 goods，未使用本字段）
+			// orderDetailInfoList: [],
+			// 查看订单详情（rebate/index 未使用）
+			// checkOrderInformation: {},
+			// 查看订单信息（rebate/index 未使用）
+			// orderVisible: false,
 			// 选择供应商
 			orderBySupplierVisible: false,
 			// 筛选的订单详情列表
@@ -113,71 +114,65 @@ export var mixin_choose_order = {
 			this.queryParamsSupplier.pageNum = 1;
 			this.getDetailBySupper(this.queryParamsSupplier);
 		},
+		// 以下方法已在 rebate/index.vue 中重写，混入内保留注释备查
 		// 多选某个货物
-		handleSelectionChangeOrderDetail(selection) {
-			this.goods = [];
-			this.goods = selection;
-		},
+		// handleSelectionChangeOrderDetail(selection) {
+		// 	this.goods = [];
+		// 	this.goods = selection;
+		// },
 		// 选择需要返利的订单进行返利
-		handleSelectOrderDetailChange(selection) {
-			this.goods = [];
-			this.goods = selection;
-			this.orderGoodsListVisible = false;
-			this.orderBySupplierVisible = false;
-			this.submitSelectOrderDetail();
-		},
+		// handleSelectOrderDetailChange(selection) {
+		// 	this.goods = [];
+		// 	this.goods = selection;
+		// 	this.orderGoodsListVisible = false;
+		// 	this.orderBySupplierVisible = false;
+		// 	this.submitSelectOrderDetail();
+		// },
 		// 查看已选择的货物
 		checkSelectedGoods() {
 			this.orderGoodsVisible = true;
 		},
-		// 确认选择 货物的列表 点击后 会把goods数组中的id 放到form中
-		// 计算重箱和面积并且将选择的货物放入body
-		submitSelectOrderDetail() {
-			this.form.orderDetailIds = [];
-			if (!this.goods || this.goods.length < 0) {
-				this.$message.info('请选择货物');
-				return;
-			}
-			// 计算重箱和面积的和
-			const result = this.goods.reduce(
-				(prev, next) => {
-					// 累加面积 - 修改计算公式为：长度*宽度*出场片数/1000000
-					prev.area += (next.length * next.width * next.pieces) / 1000000;
-					// 累加重箱
-					prev.weightBox += (next.height * next.length * next.width * next.pieces) / 1000000 / 20;
-					return prev;
-				},
-				{ area: 0, weightBox: 0 } // 初始值
-			);
-			// 推入id数组
-			this.goods.forEach(item => {
-				this.form.orderDetailIds.push(item.id);
-			});
-			// 判断一下是重箱还是面积
-			if (this.form.rebateMethod === RebateType.Weight) {
-				this.form.weightBox = result.weightBox || 0;
-			} else {
-				this.form.area = result.area || 0;
-			}
-			// 修复精度
-			this.form.rebate = fix((this.form.area || this.form.weightBox) * this.form.unitPrice);
-			this.orderDialogVisible = false;
-		},
+		// 确认选择货物的列表（旧版：原生运算，已由 rebate/index.vue 的 mathjs 版本替代）
+		// submitSelectOrderDetail() {
+		// 	this.form.orderDetailIds = [];
+		// 	if (!this.goods || this.goods.length < 0) {
+		// 		this.$message.info('请选择货物');
+		// 		return;
+		// 	}
+		// 	const result = this.goods.reduce(
+		// 		(prev, next) => {
+		// 			prev.area += (next.length * next.width * next.pieces) / 1000000;
+		// 			prev.weightBox += (next.height * next.length * next.width * next.pieces) / 1000000 / 20;
+		// 			return prev;
+		// 		},
+		// 		{ area: 0, weightBox: 0 }
+		// 	);
+		// 	this.goods.forEach(item => {
+		// 		this.form.orderDetailIds.push(item.id);
+		// 	});
+		// 	if (this.form.rebateMethod === RebateType.Weight) {
+		// 		this.form.weightBox = result.weightBox || 0;
+		// 	} else {
+		// 		this.form.area = result.area || 0;
+		// 	}
+		// 	this.form.rebate = fix((this.form.area || this.form.weightBox) * this.form.unitPrice);
+		// 	this.orderDialogVisible = false;
+		// },
 		// 清空已选择的货物
-		refreshSelectedGoods() {
-			this.goods = [];
-			this.form.orderDetailIds = [];
-			this.toggleSelection();
-		},
-		// 清除选择
-		toggleSelection(rows) {
-			if (rows) {
-				rows.forEach(row => {
-					this.$refs.multipleTable.toggleRowSelection(row);
-				});
-			} else {
-				this.$refs.multipleTable.clearSelection();
-			}
-		}
+		// refreshSelectedGoods() {
+		// 	this.goods = [];
+		// 	this.form.orderDetailIds = [];
+		// 	this.toggleSelection();
+		// },
+		// 清除选择（仅被上方已注释的 refreshSelectedGoods 调用）
+		// toggleSelection(rows) {
+		// 	if (rows) {
+		// 		rows.forEach(row => {
+		// 			this.$refs.multipleTable.toggleRowSelection(row);
+		// 		});
+		// 	} else {
+		// 		this.$refs.multipleTable.clearSelection();
+		// 	}
+		// }
 	}
 };

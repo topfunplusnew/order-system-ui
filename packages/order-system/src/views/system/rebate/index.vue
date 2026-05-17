@@ -459,7 +459,7 @@ import SearchOption from '@/components/SearchOption.vue';
 import InfoDialog from '../../../components/InfoDialog.vue';
 import OrderDetailList from '../../dashboard/components/rebate/OrderDetailList.vue';
 import { mixin_choose_order } from '../../dashboard/mixins/rebate/choose_order';
-import { mixin_rebate_fill } from '../../dashboard/mixins/rebate/rebate_fill';
+// import { mixin_rebate_fill } from '../../dashboard/mixins/rebate/rebate_fill';
 import { isNull } from '../../../main';
 import { listOrderDetailByIds } from '@/api/system/orderDetail';
 import { mixin_bankType } from '../../dashboard/mixins/common/common_bankType';
@@ -475,7 +475,7 @@ export default {
 		SearchOption,
 		OrderDetailInfo
 	},
-	mixins: [mixin_printHTML, mixin_choose_order, mixin_rebate_fill, mixin_bankType],
+	mixins: [mixin_printHTML, mixin_choose_order, mixin_bankType],
 	data() {
 		return {
 			// 遮罩层
@@ -577,6 +577,13 @@ export default {
 					{
 						required: true,
 						message: '返利类型不能为空',
+						trigger: 'change'
+					}
+				],
+				rebateMethod: [
+					{
+						required: true,
+						message: '返利方式不能为空',
 						trigger: 'change'
 					}
 				],
@@ -730,55 +737,40 @@ export default {
 		isNull,
 		listCompany,
 		listBankAccount,
-		// 为不同供应商的行添加样式
-		getRowClassName({ row, rowIndex }) {
-			// 如果有选中的供应商，且当前行的供应商不匹配，添加禁用样式
-			if (this.currentSelectedSupplier && row.supplier !== this.currentSelectedSupplier) {
-				return 'disabled-row';
-			}
-			return '';
-		},
-		// 供应商一致性检查 - 控制checkbox是否可选
-		checkSupplierSelectable(row, index) {
-			// 如果还没有选中任何货物，所有行都可选
-			if (!this.currentSelectedSupplier) {
-				return true;
-			}
-			// 如果已经选中了供应商，只有相同供应商的行才可选
-			return row.supplier === this.currentSelectedSupplier;
-		},
-		// 重写mixin中的多选某个货物方法，添加供应商一致性检查
-		handleSelectionChangeOrderDetail(selection) {
-			// 如果没有选中任何货物，清空当前供应商
-			if (_.isEmpty(selection)) {
-				this.currentSelectedSupplier = null;
-				this.goods = [];
-				return;
-			}
-
-			// 如果是第一次选择，设置当前供应商
-			if (!this.currentSelectedSupplier) {
-				this.currentSelectedSupplier = selection[0].supplier;
-			}
-
-			// 过滤出相同供应商的货物
-			const validSelection = selection.filter(item => item.supplier === this.currentSelectedSupplier);
-
-			// 如果过滤后的选择与原选择不同，说明有跨供应商选择，需要提示用户
-			if (validSelection.length !== selection.length) {
-				this.$message.warning(`只能选择供应商为"${this.currentSelectedSupplier}"的货物，已自动过滤其他供应商的货物`);
-
-				// 重新设置表格选择状态
-				this.$nextTick(() => {
-					this.$refs.multipleTable.clearSelection();
-					validSelection.forEach(row => {
-						this.$refs.multipleTable.toggleRowSelection(row, true);
-					});
-				});
-			}
-
-			this.goods = validSelection;
-		},
+		// 以下方法原用于本页 el-table 多选，现由 OrderDetailList 组件内选择，未绑定模板故注释
+		// getRowClassName({ row, rowIndex }) {
+		// 	if (this.currentSelectedSupplier && row.supplier !== this.currentSelectedSupplier) {
+		// 		return 'disabled-row';
+		// 	}
+		// 	return '';
+		// },
+		// checkSupplierSelectable(row, index) {
+		// 	if (!this.currentSelectedSupplier) {
+		// 		return true;
+		// 	}
+		// 	return row.supplier === this.currentSelectedSupplier;
+		// },
+		// handleSelectionChangeOrderDetail(selection) {
+		// 	if (_.isEmpty(selection)) {
+		// 		this.currentSelectedSupplier = null;
+		// 		this.goods = [];
+		// 		return;
+		// 	}
+		// 	if (!this.currentSelectedSupplier) {
+		// 		this.currentSelectedSupplier = selection[0].supplier;
+		// 	}
+		// 	const validSelection = selection.filter(item => item.supplier === this.currentSelectedSupplier);
+		// 	if (validSelection.length !== selection.length) {
+		// 		this.$message.warning(`只能选择供应商为"${this.currentSelectedSupplier}"的货物，已自动过滤其他供应商的货物`);
+		// 		this.$nextTick(() => {
+		// 			this.$refs.multipleTable.clearSelection();
+		// 			validSelection.forEach(row => {
+		// 				this.$refs.multipleTable.toggleRowSelection(row, true);
+		// 			});
+		// 		});
+		// 	}
+		// 	this.goods = validSelection;
+		// },
 		// 重写mixin中的清空已选择的货物方法，添加供应商状态重置
 		refreshSelectedGoods() {
 			this.goods = [];
@@ -1237,6 +1229,7 @@ export default {
 				rebateDate: null,
 				rebate: null,
 				rebateType: null,
+				rebateMethod: null,
 				// 我方银行卡账户类型
 				selfBankCardType: null,
 				inAcountsName: null,
