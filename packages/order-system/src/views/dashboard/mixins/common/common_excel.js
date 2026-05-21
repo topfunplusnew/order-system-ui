@@ -44,14 +44,26 @@ function applyNumberFormatToSheet(ws) {
 
 export const common_excel = {
 	methods: {
-		excelExport(unnecessaryColumns = [], fileName = 'table') {
+		/**
+		 * 导出当前页面表格为 Excel
+		 * @param {Array<string>} unnecessaryColumns - 需要排除的列名
+		 * @param {string} fileName - 导出文件名
+		 * @param {{ skipNumberFormat?: boolean }} [options] - skipNumberFormat 为 true 时保留 [借]/[贷] 文本格式
+		 */
+		excelExport(unnecessaryColumns = [], fileName = 'table', options = {}) {
 			// 延迟执行，确保DOM完全渲染
 			this.$nextTick(() => {
-				this._performExcelExport(unnecessaryColumns, fileName);
+				this._performExcelExport(unnecessaryColumns, fileName, options);
 			});
 		},
 
-		_performExcelExport(unnecessaryColumns = [], fileName = 'table') {
+		/**
+		 * 执行 Excel 导出
+		 * @param {Array<string>} unnecessaryColumns - 需要排除的列名
+		 * @param {string} fileName - 导出文件名
+		 * @param {{ skipNumberFormat?: boolean }} [options] - 导出选项
+		 */
+		_performExcelExport(unnecessaryColumns = [], fileName = 'table', options = {}) {
 			// 尝试多个可能的表格ID
 			const possibleTableIds = ['#educe-table', '#printBox'];
 			let table = null;
@@ -126,7 +138,9 @@ export const common_excel = {
 			// 2. 设置列宽并应用数字格式
 			var ws = wb.Sheets[wb.SheetNames[0]];
 			ws['!cols'] = new Array(newTable.rows[0].cells.length).fill({ width: 40 });
-			applyNumberFormatToSheet(ws);
+			if (!options.skipNumberFormat) {
+				applyNumberFormatToSheet(ws);
+			}
 
 			// 3. 获取二进制字符串作为输出（cellNF 确保数字格式写入以便 Excel 计算）
 			var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array', cellNF: true });
