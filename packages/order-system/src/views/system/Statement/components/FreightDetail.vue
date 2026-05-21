@@ -27,7 +27,7 @@ import { common_excel } from '@/views/dashboard/mixins/common/common_excel';
 import { number, add, subtract, abs } from 'mathjs';
 
 export default {
-	name: 'FreightDetail',
+	name: 'detailFreight',
 	components: { SearchOption, TotalTag },
 	mixins: [common_excel],
 	data() {

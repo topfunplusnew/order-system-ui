@@ -168,7 +168,7 @@ import { common_excel } from '@/views/dashboard/mixins/common/common_excel';
 import VirtualScroll from 'el-table-virtual-scroll';
 
 export default {
-	name: 'LendMoney',
+	name: 'OrderfreightDetailsummary',
 	components: { VirtualScroll },
 	dicts: ['order_target_type'],
 	mixins: [mixin_printHTML, common_excel],

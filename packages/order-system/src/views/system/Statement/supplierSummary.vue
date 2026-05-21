@@ -116,7 +116,7 @@ import { common_excel } from '@/views/dashboard/mixins/common/common_excel';
 import { fix } from '@/api/tool/format';
 
 export default {
-	name: 'CustomerSummary',
+	name: 'SupplierSummary',
 	components: {},
 	dicts: ['order_target_type'],
 	mixins: [mixin_printHTML, common_excel],
