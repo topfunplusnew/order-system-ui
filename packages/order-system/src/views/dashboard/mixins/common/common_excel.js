@@ -9,6 +9,8 @@ import FileSaver from 'file-saver';
 function parseNumericFromText(text) {
 	if (text == null || typeof text !== 'string') return null;
 	const str = String(text).trim();
+	// [借]/[贷] 格式保持文本展示，不转为正负数
+	if (/^\[(借|贷)\]/.test(str)) return null;
 	const creditMatch = str.match(/^\[贷\]\s*(.+)$/);
 	let cleaned = str
 		.replace(/^\[[^\]]*\]\s*/g, '')
@@ -36,7 +38,7 @@ function applyNumberFormatToSheet(ws) {
 			if (parsed !== null) {
 				cell.t = 'n';
 				cell.v = parsed;
-				cell.z = '#,##0.00';
+				cell.z = Number.isInteger(parsed) ? '#,##0' : '#,##0.00';
 			}
 		}
 	}
@@ -48,7 +50,7 @@ export const common_excel = {
 		 * 导出当前页面表格为 Excel
 		 * @param {Array<string>} unnecessaryColumns - 需要排除的列名
 		 * @param {string} fileName - 导出文件名
-		 * @param {{ skipNumberFormat?: boolean }} [options] - skipNumberFormat 为 true 时保留 [借]/[贷] 文本格式
+		 * @param {{ skipNumberFormat?: boolean, getSummaryRow?: (headers: string[]) => Array<string|number> }} [options] - 导出选项
 		 */
 		excelExport(unnecessaryColumns = [], fileName = 'table', options = {}) {
 			// 延迟执行，确保DOM完全渲染
@@ -61,7 +63,7 @@ export const common_excel = {
 		 * 执行 Excel 导出
 		 * @param {Array<string>} unnecessaryColumns - 需要排除的列名
 		 * @param {string} fileName - 导出文件名
-		 * @param {{ skipNumberFormat?: boolean }} [options] - 导出选项
+		 * @param {{ skipNumberFormat?: boolean, getSummaryRow?: (headers: string[]) => Array<string|number> }} [options] - 导出选项
 		 */
 		_performExcelExport(unnecessaryColumns = [], fileName = 'table', options = {}) {
 			// 尝试多个可能的表格ID
@@ -118,6 +120,7 @@ export const common_excel = {
 				}
 			});
 			newTable.appendChild(newHeaderRow);
+			const exportHeaders = Array.from(newHeaderRow.children).map(th => th.textContent.trim());
 
 			// 遍历原表格的每一行，过滤掉不需要的列
 			dataRows.forEach(row => {
@@ -132,6 +135,21 @@ export const common_excel = {
 				});
 				newTable.appendChild(newRow);
 			});
+
+			// 追加合计行
+			if (typeof options.getSummaryRow === 'function') {
+				const summaryCells = options.getSummaryRow(exportHeaders) || [];
+				if (summaryCells.length) {
+					const summaryRow = document.createElement('tr');
+					summaryCells.forEach(text => {
+						const newCell = document.createElement('td');
+						newCell.textContent = text == null ? '' : String(text);
+						summaryRow.appendChild(newCell);
+					});
+					newTable.appendChild(summaryRow);
+				}
+			}
+
 			// 1. 生成Excel工作簿对象，使用过滤后的新表格
 			var wb = XLSX.utils.table_to_book(newTable, { raw: true });
 

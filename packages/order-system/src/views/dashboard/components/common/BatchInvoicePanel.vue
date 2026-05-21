@@ -251,19 +251,34 @@ export default {
 			this.processAndAggregateData(batchRows);
 			this.invoiceAllVisible = true;
 		},
-		// 从后端获取批次详情
+		// 从后端分页拉取批次全量详情（无条数上限）
 		async fetchVoucherDetails(voucher) {
 			const api = this.getApiHandlers();
 			if (!api || !api.list) {
 				return [];
 			}
+			const pageSize = 500;
+			let pageNum = 1;
+			let allRows = [];
+			let total = 0;
 			try {
-				const res = await api.list({
-					voucher,
-					pageNum: 1,
-					pageSize: 1000
-				});
-				return res?.rows || [];
+				while (true) {
+					const res = await api.list({ voucher, pageNum, pageSize });
+					const rows = res?.rows || [];
+					total = Number(res?.total) || 0;
+					allRows = allRows.concat(rows);
+					if (!rows.length) {
+						break;
+					}
+					if (rows.length < pageSize) {
+						break;
+					}
+					if (total > 0 && allRows.length >= total) {
+						break;
+					}
+					pageNum++;
+				}
+				return allRows;
 			} catch (error) {
 				console.error('加载批次详情失败:', error);
 				this.$message.error('加载批次详情失败');

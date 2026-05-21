@@ -50,7 +50,9 @@ export default {
 	data() {
 		return {
 			selectedRowId: null,
-			viewTemplateVisible: false
+			viewTemplateVisible: false,
+			templatePageNum: 1,
+			templatePageSize: 20
 		};
 	},
 	computed: {
@@ -98,6 +100,15 @@ export default {
 		// 模板预览弹窗标题
 		templateDialogTitle() {
 			return this.mode === 'in' ? '进项票模板数据预览' : '销项票模板数据预览';
+		},
+		/** 模板预览总条数 */
+		templateTotal() {
+			return this.selectedTemplateData.length;
+		},
+		/** 当前页模板预览数据 */
+		paginatedTemplateData() {
+			const start = (this.templatePageNum - 1) * this.templatePageSize;
+			return this.selectedTemplateData.slice(start, start + this.templatePageSize);
 		}
 	},
 	mounted() {
@@ -118,12 +129,20 @@ export default {
 			return !!(row && row.invoiced);
 		},
 		openTemplateViewer() {
-			// 仅在有数据时打开
 			if (!this.selectedTemplateData || this.selectedTemplateData.length === 0) {
 				this.$message.info('暂无模板数据');
 				return;
 			}
+			this.templatePageNum = 1;
 			this.viewTemplateVisible = true;
+		},
+		/**
+		 * 模板预览分页切换
+		 * @param {{ page: number, limit: number }} param - 分页参数
+		 */
+		handleTemplatePagination({ page, limit }) {
+			this.templatePageNum = page;
+			this.templatePageSize = limit;
 		},
 		handleCheck(row) {
 			const { id, type } = row;
@@ -358,7 +377,7 @@ export default {
 
 		<!-- 查看模板数据弹窗 -->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :title="templateDialogTitle" :visible.sync="viewTemplateVisible" width="1000px" append-to-body>
-			<el-table :data="selectedTemplateData" size="mini" :max-height="700" border :cell-style="() => ({ padding: '6px 4px' })" :header-cell-style="() => ({ background: '#f5f7fa', color: '#606266', fontWeight: '600' })">
+			<el-table :data="paginatedTemplateData" size="mini" :max-height="700" border :cell-style="() => ({ padding: '6px 4px' })" :header-cell-style="() => ({ background: '#f5f7fa', color: '#606266', fontWeight: '600' })">
 				<el-table-column label="ID" align="center" prop="id" width="70" />
 				<el-table-column label="批次号" align="center" prop="voucher" min-width="140" show-overflow-tooltip />
 				<el-table-column label="销方名称" align="center" prop="sellerName" min-width="150" show-overflow-tooltip />
@@ -378,8 +397,9 @@ export default {
 				</el-table-column>
 				<el-table-column v-if="selectedTemplateData.some(row => row.createTime)" label="导入时间" align="center" prop="createTime" width="150" show-overflow-tooltip />
 			</el-table>
-			<div class="template-info" v-if="selectedTemplateData.length > 0">
-				<el-alert :title="`共 ${selectedTemplateData.length} 条${mode === 'in' ? '进项票' : '销项票'}数据`" type="info" :closable="false" show-icon />
+			<pagination v-show="templateTotal > 0" :total="templateTotal" :page.sync="templatePageNum" :limit.sync="templatePageSize" @pagination="handleTemplatePagination" />
+			<div class="template-info" v-if="templateTotal > 0">
+				<el-alert :title="`共 ${templateTotal} 条${mode === 'in' ? '进项票' : '销项票'}数据`" type="info" :closable="false" show-icon />
 			</div>
 			<span slot="footer" class="dialog-footer">
 				<el-button size="mini" @click="viewTemplateVisible = false">关闭</el-button>

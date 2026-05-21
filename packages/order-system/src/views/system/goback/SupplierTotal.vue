@@ -45,7 +45,7 @@
 				<el-form-item>
 					<el-button type="primary" @click="getList" size="mini">查询</el-button>
 					<el-button @click="reset" size="mini">刷新</el-button>
-					<el-button type="success" @click="excelExport(['查看供应商信息'], '供应商余额管理')" size="mini">导出Excel</el-button>
+					<el-button type="success" @click="handleExcelExport" size="mini">导出Excel</el-button>
 				</el-form-item>
 			</el-form>
 		</div>
@@ -101,6 +101,8 @@ import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import COMPANY from '@/components/NeedToShow/COMPANY.vue';
 import { common_excel } from '@/views/dashboard/mixins/common/common_excel';
 import { formatBalance } from '@/utils/trash/utils';
+import _ from 'lodash';
+import { add } from 'mathjs';
 
 export default {
 	name: 'SUPPLIERTotal',
@@ -150,6 +152,25 @@ export default {
 	methods: {
 		formatBalance,
 		listCompany,
+		/**
+		 * 导出 Excel：余额列保持借贷格式，末尾追加合计行
+		 */
+		handleExcelExport() {
+			this.excelExport(['查看供应商信息'], '供应商余额管理', { getSummaryRow: this.buildExportSummaryRow });
+		},
+		/**
+		 * 构建导出合计行
+		 * @param {string[]} headers - 导出表头
+		 * @returns {Array<string|number>} 合计行单元格值
+		 */
+		buildExportSummaryRow(headers) {
+			const totalBalance = _.reduce(this.tableData || [], (sum, row) => add(sum, row.moneyAmount || 0), 0);
+			return headers.map(header => {
+				if (header === '日期') return '合计';
+				if (header === '余额') return formatBalance(Number(totalBalance));
+				return '';
+			});
+		},
 		// 查询方法
 		getList() {
 			this.$refs['form']?.validate(valid => {

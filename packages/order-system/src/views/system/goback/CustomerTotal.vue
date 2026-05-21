@@ -125,6 +125,8 @@ import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import COMPANY from '@/components/NeedToShow/COMPANY.vue';
 import { common_excel } from '@/views/dashboard/mixins/common/common_excel';
 import { formatBalance } from '@/utils/trash/utils';
+import _ from 'lodash';
+import { add } from 'mathjs';
 
 export default {
 	name: 'CustomerTotal',
@@ -175,10 +177,25 @@ export default {
 		formatBalance,
 		listCompany,
 		/**
-		 * 导出 Excel，余额列保持 [借]/[贷] 文本格式
+		 * 导出 Excel：余额列保持借贷格式，发货车次为数值，末尾追加合计行
 		 */
 		handleExcelExport() {
-			this.excelExport(['查看客户信息'], '客户余额管理', { skipNumberFormat: true });
+			this.excelExport(['查看客户信息'], '客户余额管理', { getSummaryRow: this.buildExportSummaryRow });
+		},
+		/**
+		 * 构建导出合计行
+		 * @param {string[]} headers - 导出表头
+		 * @returns {Array<string|number>} 合计行单元格值
+		 */
+		buildExportSummaryRow(headers) {
+			const totalBalance = _.reduce(this.tableData || [], (sum, row) => add(sum, row.moneyAmount || 0), 0);
+			const totalTrips = _.reduce(this.tableData || [], (sum, row) => add(sum, row.currentMonthShipmentTrips ?? 0), 0);
+			return headers.map(header => {
+				if (header === '日期') return '合计';
+				if (header === '余额') return formatBalance(Number(totalBalance));
+				if (header === '截至今日本月发货车次') return Number(totalTrips);
+				return '';
+			});
 		},
 		// 查询方法
 		getList() {
