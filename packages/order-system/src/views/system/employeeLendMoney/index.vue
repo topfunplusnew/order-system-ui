@@ -254,22 +254,6 @@
 			</template>
 		</InfoDialog>
 
-		<!--    导出弹窗-->
-		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="请选择导出时间段" :visible.sync="dialogVisible" width="30%">
-			<el-form ref="queryForm" :model="queryParams" size="mini" label-width="200px">
-				<el-form-item label="开始时间" prop="beginTime">
-					<el-date-picker v-model="queryParams.beginTime" type="date" placeholder="选择时间" value-format="yyyy-MM-dd" size="mini"></el-date-picker>
-				</el-form-item>
-				<el-form-item label="结束时间" prop="endTime">
-					<el-date-picker v-model="queryParams.endTime" type="date" placeholder="选择时间" value-format="yyyy-MM-dd" size="mini"></el-date-picker>
-				</el-form-item>
-			</el-form>
-			<span slot="footer" class="dialog-footer">
-				<el-button @click="dialogVisible = false">取 消</el-button>
-				<el-button type="primary" @click="handleSubmitTime">导 出</el-button>
-			</span>
-		</el-dialog>
-
 		<!--    收回资金的弹窗-->
 		<el-dialog :modal="false" v-dialogDrag v-dialogDragWidth v-dialogDragHeight :close-on-click-modal="false" :show-close="false" title="收回资金操作" :visible.sync="giveRecoverMoneyShow" width="600px" append-to-body>
 			<el-form ref="recoverForm" :model="recoverMoneyEntity" label-width="120px" :rules="receiveRules">
@@ -576,7 +560,6 @@ export default {
 			// 详细的还款记录
 			recoverMoneyList: [],
 			repaymentHistoryColumns,
-			dialogVisible: false,
 			// 查看信息的分页
 			detailTotal: 0,
 			queryRepaymentParams: {
@@ -1003,19 +986,11 @@ export default {
 		refresh() {
 			this.getList();
 		},
-		handleSubmitTime() {
-			this.download(
-				'statistics/export/lendMoney',
-				{
-					...this.queryParams
-				},
-				`从我司借款${parseTime(new Date().getTime())}.xlsx`
-			);
-			this.dialogVisible = false;
-		},
-		/** 导出按钮操作 */
+		/**
+		 * 导出表格数据，直接使用顶部搜索条件（含开始/结束时间）
+		 */
 		handleExport() {
-			this.dialogVisible = true;
+			this.download('system/lendMoney/export', { ...this.queryParams }, `从我司借款${parseTime(new Date().getTime())}.xlsx`);
 		},
 		changeOpen() {
 			this.needMoney = 0;
