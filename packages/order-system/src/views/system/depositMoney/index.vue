@@ -82,7 +82,7 @@
 				<el-table-column prop="otherBankName" label="对方开户行" width="150" show-overflow-tooltip />
 				<el-table-column prop="moneyAmount" label="退款金额" width="120" align="right" show-overflow-tooltip />
 				<el-table-column prop="comments" label="备注" show-overflow-tooltip />
-				<el-table-column prop="UserName" label="操作人员" width="100" show-overflow-tooltip />
+				<el-table-column prop="userName" label="操作人员" width="100" show-overflow-tooltip />
 				<el-table-column label="操作" align="center" width="150">
 					<template slot-scope="scope">
 						<el-button size="mini" type="text" @click="handleUpdateRefund(scope.row)">修改</el-button>

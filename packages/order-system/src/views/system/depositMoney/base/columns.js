@@ -291,8 +291,8 @@ export default {
 			showOverflowTooltip: true
 		},
 		{
-			key: 'UserName',
-			prop: 'UserName',
+			key: 'userName',
+			prop: 'userName',
 			label: '操作人员',
 			visible: true,
 			includeInForm: false,
