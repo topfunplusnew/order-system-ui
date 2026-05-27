@@ -94,7 +94,6 @@
 							:cellStyle="cellFixedStyle"
 							@header-dragend="onHeaderDragend"
 						>
-							<el-table-column label="ID" align="center" prop="id" width="60" show-overflow-tooltip />
 							<el-table-column v-if="columns[0].visible" label="日期" align="center" prop="fundsDate" width="140" show-overflow-tooltip />
 							<el-table-column v-if="columns[1].visible" label="支付类型" align="center" prop="receiveType" width="180" show-overflow-tooltip />
 							<el-table-column v-if="columns[2].visible" label="对方公司名称" align="center" prop="companyName" width="165" show-overflow-tooltip />
@@ -109,7 +108,11 @@
 							<el-table-column v-if="columns[11].visible" label="对方开户行" align="center" prop="otherBankName" width="180" show-overflow-tooltip />
 							<el-table-column v-if="columns[12].visible" label="备注" align="center" prop="comments" width="165" show-overflow-tooltip />
 							<el-table-column v-if="columns[13].visible" label="银行卡流水编号" align="center" prop="transactionHistory" show-overflow-tooltip />
-							<el-table-column v-if="columns[14].visible" label="录入人员" align="center" prop="userName" width="120" show-overflow-tooltip />
+							<el-table-column v-if="columns[14] && columns[14].visible" label="ID" align="center" prop="id" width="80" show-overflow-tooltip />
+							<el-table-column v-if="columns[15] && columns[15].visible" label="新增时间" align="center" prop="addtime" width="170" show-overflow-tooltip />
+							<el-table-column v-if="columns[16] && columns[16].visible" label="最后修改时间" align="center" prop="updateTime" width="170" show-overflow-tooltip />
+							<el-table-column v-if="columns[17] && columns[17].visible" label="新增人" align="center" prop="userName" width="120" show-overflow-tooltip />
+							<el-table-column v-if="columns[18] && columns[18].visible" label="最后修改人" align="center" prop="updateByUserName" width="120" show-overflow-tooltip />
 							<VirtualColumn label="银行卡流水附件" align="center" prop="attachmentList" vfixed="right">
 								<template #default="scope">
 									<el-tooltip effect="light" placement="top" enterable :open-delay="1000" :hide-after="0" popper-class="interactive-tooltip">
@@ -531,7 +534,11 @@ export default {
 				{ key: 11, label: `对方开户行`, visible: true },
 				{ key: 12, label: `备注`, visible: true },
 				{ key: 13, label: `银行卡流水编号`, visible: true },
-				{ key: 14, label: `录入人员`, visible: true }
+				{ key: 14, label: `ID`, visible: true },
+				{ key: 15, label: `新增时间`, visible: true },
+				{ key: 16, label: `最后修改时间`, visible: true },
+				{ key: 17, label: `新增人`, visible: true },
+				{ key: 18, label: `最后修改人`, visible: true }
 			],
 			// 列宽度配置
 			columnWidths: {

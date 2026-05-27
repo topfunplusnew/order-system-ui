@@ -73,14 +73,6 @@
 			@selection-change="handleSelectionChange"
 		>
 			<el-table-column type="selection" width="55" align="center" />
-			<el-table-column v-if="columns[0].visible" label="ID" align="center" prop="id" show-overflow-tooltip>
-				<template #default="scope">
-					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.id }}</div>
-						<span>{{ scope.row.id }}</span>
-					</el-tooltip>
-				</template>
-			</el-table-column>
 			<el-table-column v-if="columns[17].visible" label="账户类型" align="center" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
@@ -221,14 +213,18 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[18].visible" label="操作人员姓名" align="center" prop="userName" show-overflow-tooltip>
+			<el-table-column v-if="columns[0].visible" label="ID" align="center" prop="id" width="80" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.userName }}</div>
-						<span>{{ scope.row.userName }}</span>
+						<div slot="content">{{ scope.row.id }}</div>
+						<span>{{ scope.row.id }}</span>
 					</el-tooltip>
 				</template>
 			</el-table-column>
+			<el-table-column v-if="columns[18] && columns[18].visible" label="新增时间" align="center" prop="addtime" width="170" show-overflow-tooltip />
+			<el-table-column v-if="columns[19] && columns[19].visible" label="最后修改时间" align="center" prop="updateTime" width="170" show-overflow-tooltip />
+			<el-table-column v-if="columns[20] && columns[20].visible" label="新增人" align="center" prop="userName" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[21] && columns[21].visible" label="最后修改人" align="center" prop="updateByUserName" width="120" show-overflow-tooltip />
 			<!-- 附件列 -->
 			<el-table-column label="附件" align="center" prop="attachment">
 				<template #default="scope">
@@ -884,7 +880,10 @@ export default {
 				{ key: 15, label: '冲抵类型', prop: 'type', visible: true },
 				{ key: 16, label: '备注', prop: 'remarks', visible: true },
 				{ key: 17, label: '账户类型', prop: 'accountType', visible: true },
-				{ key: 18, label: '操作人员姓名', prop: 'userName', visible: true }
+				{ key: 18, label: '新增时间', prop: 'addtime', visible: true },
+				{ key: 19, label: '最后修改时间', prop: 'updateTime', visible: true },
+				{ key: 20, label: '新增人', prop: 'userName', visible: true },
+				{ key: 21, label: '最后修改人', prop: 'updateByUserName', visible: true }
 			],
 			// 表单校验
 			rules: {

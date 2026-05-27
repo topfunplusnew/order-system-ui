@@ -155,6 +155,11 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
+			<el-table-column v-if="columns[9] && columns[9].visible" label="ID" align="center" prop="id" width="80" show-overflow-tooltip />
+			<el-table-column v-if="columns[10] && columns[10].visible" label="新增时间" align="center" prop="addtime" width="170" show-overflow-tooltip />
+			<el-table-column v-if="columns[11] && columns[11].visible" label="最后修改时间" align="center" prop="updateTime" width="170" show-overflow-tooltip />
+			<el-table-column v-if="columns[12] && columns[12].visible" label="新增人" align="center" prop="userName" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[13] && columns[13].visible" label="最后修改人" align="center" prop="updateByUserName" width="120" show-overflow-tooltip />
 
 			<!-- 返利流水 -->
 			<el-table-column label="返利流水" align="center" show-overflow-tooltip>
@@ -639,7 +644,12 @@ export default {
 				{ key: 5, label: `金额`, visible: true },
 				{ key: 6, label: `返利原因`, visible: true },
 				{ key: 7, label: `收到返利日期`, visible: true },
-				{ key: 8, label: `收到返利金额`, visible: true }
+				{ key: 8, label: `收到返利金额`, visible: true },
+				{ key: 9, label: `ID`, visible: true },
+				{ key: 10, label: `新增时间`, visible: true },
+				{ key: 11, label: `最后修改时间`, visible: true },
+				{ key: 12, label: `新增人`, visible: true },
+				{ key: 13, label: `最后修改人`, visible: true }
 			],
 			orderDialogVisible: false,
 			// 搜索供应商

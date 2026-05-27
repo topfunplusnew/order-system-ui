@@ -57,14 +57,6 @@
 			@header-dragend="changeColWidth"
 			@selection-change="handleSelectionChange"
 		>
-			<el-table-column label="ID" align="center" prop="id" show-overflow-tooltip>
-				<template #default="scope">
-					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-						<div slot="content">{{ scope.row.id }}</div>
-						<span>{{ scope.row.id }}</span>
-					</el-tooltip>
-				</template>
-			</el-table-column>
 			<el-table-column v-if="columns[0].visible" label="日期" align="center" prop="invoiceDate" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
@@ -234,6 +226,11 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
+			<el-table-column v-if="columns[15] && columns[15].visible" label="ID" align="center" prop="id" width="80" show-overflow-tooltip />
+			<el-table-column v-if="columns[16] && columns[16].visible" label="新增时间" align="center" prop="addtime" width="170" show-overflow-tooltip />
+			<el-table-column v-if="columns[17] && columns[17].visible" label="最后修改时间" align="center" prop="updateTime" width="170" show-overflow-tooltip />
+			<el-table-column v-if="columns[18] && columns[18].visible" label="新增人" align="center" prop="userName" width="120" show-overflow-tooltip />
+			<el-table-column v-if="columns[19] && columns[19].visible" label="最后修改人" align="center" prop="updateByUserName" width="120" show-overflow-tooltip />
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="180px" fixed="right">
 				<template slot-scope="scope">
 					<el-button size="mini" type="text" @click="handleAddExtraInfo(scope.row)">补充信息</el-button>
@@ -584,7 +581,12 @@ export default {
 				{ key: 11, label: `实际开票金额`, visible: true },
 				{ key: 12, label: `实际开票时间`, visible: true },
 				{ key: 13, label: `当月欠票金额`, visible: true },
-				{ key: 14, label: `额外备注`, visible: true }
+				{ key: 14, label: `额外备注`, visible: true },
+				{ key: 15, label: `ID`, visible: true },
+				{ key: 16, label: `新增时间`, visible: true },
+				{ key: 17, label: `最后修改时间`, visible: true },
+				{ key: 18, label: `新增人`, visible: true },
+				{ key: 19, label: `最后修改人`, visible: true }
 			],
 			extraInfoDialogVisible: false,
 			extraInfoSkipValidate: false,

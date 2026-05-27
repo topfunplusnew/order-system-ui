@@ -114,14 +114,6 @@
 							:cellStyle="cellFixedStyle"
 							@header-dragend="onHeaderDragend"
 						>
-							<el-table-column label="id" align="center" prop="id" v-if="columns[0].visible" show-overflow-tooltip>
-								<template #default="scope">
-									<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-										<div slot="content">{{ scope.row.id }}</div>
-										<span>{{ scope.row.id }}</span>
-									</el-tooltip>
-								</template>
-							</el-table-column>
 							<el-table-column label="日期" align="center" prop="fundsDate" width="220" v-if="columns[1].visible" show-overflow-tooltip>
 								<template #default="scope">
 									<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
@@ -269,14 +261,18 @@
 									</el-tooltip>
 								</template>
 							</VirtualColumn>
-							<el-table-column label="录入人员" align="center" prop="userName" width="120" v-if="columns[18] && columns[18].visible" show-overflow-tooltip>
+							<el-table-column label="ID" align="center" prop="id" width="80" v-if="columns[0].visible" show-overflow-tooltip>
 								<template #default="scope">
 									<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
-										<div slot="content">{{ scope.row.userName }}</div>
-										<span>{{ scope.row.userName }}</span>
+										<div slot="content">{{ scope.row.id }}</div>
+										<span>{{ scope.row.id }}</span>
 									</el-tooltip>
 								</template>
 							</el-table-column>
+							<el-table-column v-if="columns[18] && columns[18].visible" label="新增时间" align="center" prop="addtime" width="170" show-overflow-tooltip />
+							<el-table-column v-if="columns[19] && columns[19].visible" label="最后修改时间" align="center" prop="updateTime" width="170" show-overflow-tooltip />
+							<el-table-column v-if="columns[20] && columns[20].visible" label="新增人" align="center" prop="userName" width="120" show-overflow-tooltip />
+							<el-table-column v-if="columns[21] && columns[21].visible" label="最后修改人" align="center" prop="updateByUserName" width="120" show-overflow-tooltip />
 							<VirtualColumn label="复核状态" align="center" class-name="small-padding fixed-width" width="80" vfixed="right">
 								<template slot-scope="scope">
 									<el-tooltip :content="hasAuditPermission ? '点击切换复核状态' : '您没有复核权限'" placement="top">
@@ -757,7 +753,7 @@ export default {
 				]
 			},
 			columns: [
-				{ key: 0, label: ` id`, visible: true },
+				{ key: 0, label: `ID`, visible: true },
 				{ key: 1, label: `日期`, visible: true },
 				{ key: 2, label: `支付类型`, visible: true },
 				{ key: 3, label: `对方公司`, visible: true },
@@ -775,7 +771,10 @@ export default {
 				{ key: 15, label: `附件`, visible: true },
 				{ key: 16, label: `银行卡流水编号`, visible: true },
 				{ key: 17, label: `银行卡流水附件`, visible: true },
-				{ key: 18, label: `录入人员`, visible: true }
+				{ key: 18, label: `新增时间`, visible: true },
+				{ key: 19, label: `最后修改时间`, visible: true },
+				{ key: 20, label: `新增人`, visible: true },
+				{ key: 21, label: `最后修改人`, visible: true }
 			],
 			// 顶部筛选框
 			queryPayment: {},
