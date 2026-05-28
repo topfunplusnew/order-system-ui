@@ -57,6 +57,8 @@
 			border
 			:data="carApplyList"
 			size="mini"
+			:row-key="getCarApplyRowKey"
+			:row-class-name="getCarApplyRowClassName"
 			:cell-style="
 				() => {
 					return { padding: '1.5px' };
@@ -64,6 +66,7 @@
 			"
 			@selection-change="handleSelectionChange"
 		>
+			<el-table-column type="selection" width="50" align="center" fixed="left" />
 			<el-table-column v-if="columns[0].visible" label="申请时间" align="center" prop="applyDate" show-overflow-tooltip />
 			<el-table-column v-if="columns[1].visible" label="申请人" align="center" prop="applyUser" show-overflow-tooltip />
 			<el-table-column v-if="columns[2].visible" label="部门" align="center" prop="department" show-overflow-tooltip />
@@ -354,6 +357,7 @@ export default {
 			total: 0,
 			// 车辆使用申请表格数据
 			carApplyList: [],
+			selectedCarApplyRowIds: [],
 			deptOptions: [],
 			// 弹出层标题
 			title: '',
@@ -594,6 +598,19 @@ export default {
 		checkPermi,
 		getCarApply,
 		updateCarApply,
+		getCarApplyRowKey(row) {
+			return row && row.id;
+		},
+		normalizeCarApplyRowId(id) {
+			if (id === null || id === undefined || id === '') {
+				return '';
+			}
+			return String(id);
+		},
+		getCarApplyRowClassName({ row }) {
+			const rowId = this.normalizeCarApplyRowId(row && row.id);
+			return rowId && this.selectedCarApplyRowIds.includes(rowId) ? 'active-car-apply-row' : '';
+		},
 		/**
 		 * 更新表单中的附件列表
 		 * @param {Array} newAttachmentList - 最新的附件列表
@@ -760,6 +777,7 @@ export default {
 		// 多选框选中数据
 		handleSelectionChange(selection) {
 			this.ids = selection.map(item => item.id);
+			this.selectedCarApplyRowIds = selection.map(item => this.normalizeCarApplyRowId(item.id)).filter(Boolean);
 			this.single = selection.length !== 1;
 			this.multiple = !selection.length;
 		},
@@ -980,7 +998,7 @@ export default {
 		// 数字输入处理（允许负数和小数）
 		handleNumberInput(value, field, formName) {
 			// 过滤非数字字符，允许负号和小数点
-			const filtered = value.replace(/[^0-9.\-]/g, '');
+			const filtered = value.replace(/[^0-9.-]/g, '');
 			// 处理多个小数点和负号的情况
 			let result = '';
 			let hasDecimal = false;
@@ -1061,3 +1079,18 @@ export default {
 	}
 };
 </script>
+
+<style scoped>
+#printBox ::v-deep .el-table__body-wrapper tr.active-car-apply-row > td,
+#printBox ::v-deep .el-table__fixed-body-wrapper tr.active-car-apply-row > td,
+#printBox ::v-deep .el-table__fixed-right .el-table__fixed-body-wrapper tr.active-car-apply-row > td {
+	background-color: #fff7e8 !important;
+	box-shadow: inset 0 1px 0 #e6a23c, inset 0 -1px 0 #e6a23c;
+}
+
+#printBox ::v-deep .el-table__body-wrapper tr.active-car-apply-row > td:first-child,
+#printBox ::v-deep .el-table__fixed-body-wrapper tr.active-car-apply-row > td:first-child,
+#printBox ::v-deep .el-table__fixed-right .el-table__fixed-body-wrapper tr.active-car-apply-row > td:first-child {
+	box-shadow: inset 3px 0 0 #e6a23c, inset 0 1px 0 #e6a23c, inset 0 -1px 0 #e6a23c;
+}
+</style>
