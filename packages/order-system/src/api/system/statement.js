@@ -641,6 +641,7 @@ export function getBackuplogByIdsV3(body) {
  * 根据ID列表计算资金变动（底部小表格）
  * @param {Object} body
  * @param {number[]} body.ids - 备份日志ID列表
+ * @param {string} body.targetTime - 页面顶部日期查询的日期
  * @returns {Promise<{data: Object}>}
  */
 export function calculateByIdsV3(body) {

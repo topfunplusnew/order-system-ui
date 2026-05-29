@@ -516,7 +516,7 @@ export default {
 			let detailRes;
 			let summaryRes;
 			try {
-				[detailRes, summaryRes] = await Promise.all([getBackuplogByIdsV3({ ids: uniqueIds }), calculateByIdsV3({ ids: uniqueIds })]);
+				[detailRes, summaryRes] = await Promise.all([getBackuplogByIdsV3({ ids: uniqueIds }), calculateByIdsV3({ ids: uniqueIds, targetTime: backupDate })]);
 			} catch (e) {
 				this.$message.error('获取变动详情失败');
 				return;
@@ -572,7 +572,7 @@ export default {
 			let detailRes;
 			let summaryRes;
 			try {
-				[detailRes, summaryRes] = await Promise.all([getBackuplogByIdsV3({ ids: uniqueIds }), calculateByIdsV3({ ids: uniqueIds })]);
+				[detailRes, summaryRes] = await Promise.all([getBackuplogByIdsV3({ ids: uniqueIds }), calculateByIdsV3({ ids: uniqueIds, targetTime: backupDate })]);
 			} catch (e) {
 				this.$message.error('获取变动详情失败');
 				return;
