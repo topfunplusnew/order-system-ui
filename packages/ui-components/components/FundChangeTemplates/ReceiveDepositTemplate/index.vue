@@ -7,6 +7,7 @@
 import { format, subtract, add } from 'mathjs';
 import _ from 'lodash';
 import { DEPOSIT_MONEY_COLUMNS } from '@/utils/fundChangeExcelColumns';
+import { buildBackendSummaryRows } from '@/utils/fundChange/backendSummary';
 
 export default {
 	name: 'ReceiveDepositTemplate',
@@ -30,11 +31,7 @@ export default {
 		},
 		diffSummaryTableData() {
 			const prefix = this.summaryModuleLabel || '收取保证金';
-			const depositDiff = format(
-				_.reduce(this.diffRows, (acc, r) => add(acc, Number(r.depositAmount) || 0), 0),
-				{ notation: 'fixed', precision: 2 }
-			);
-			return [{ label: `${prefix}保证金变动差额`, value: depositDiff }];
+			return buildBackendSummaryRows(this.summaryData, 'deposit_money', prefix);
 		}
 	},
 	created() {

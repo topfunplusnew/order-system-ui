@@ -7,6 +7,7 @@
 import { format, subtract, add } from 'mathjs';
 import _ from 'lodash';
 import { EXWAREHOUSE_COLUMNS } from '@/utils/fundChangeExcelColumns';
+import { buildBackendSummaryRows } from '@/utils/fundChange/backendSummary';
 
 export default {
 	name: 'SecondOutboundTemplate',
@@ -30,11 +31,7 @@ export default {
 		},
 		diffSummaryTableData() {
 			const prefix = this.summaryModuleLabel || '二次出库';
-			const inventoryDiff = format(
-				_.reduce(this.diffRows, (acc, r) => add(acc, Number(r.originalInventoryAmount) || 0), 0),
-				{ notation: 'fixed', precision: 2 }
-			);
-			return [{ label: `${prefix}库存变动差额`, value: inventoryDiff }];
+			return buildBackendSummaryRows(this.summaryData, 'exwarehouse', prefix);
 		}
 	},
 	created() {

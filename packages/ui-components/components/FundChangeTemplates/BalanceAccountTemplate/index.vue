@@ -7,6 +7,7 @@
 import { format, subtract, add } from 'mathjs';
 import _ from 'lodash';
 import { BALANCEACCOUNTS_COLUMNS } from '@/utils/fundChangeExcelColumns';
+import { buildBackendSummaryRows } from '@/utils/fundChange/backendSummary';
 
 export default {
 	name: 'BalanceAccountTemplate',
@@ -30,11 +31,7 @@ export default {
 		},
 		diffSummaryTableData() {
 			const prefix = this.summaryModuleLabel || '平账';
-			const amountDiff = format(
-				_.reduce(this.diffRows, (acc, r) => add(acc, Number(r.amount) || 0), 0),
-				{ notation: 'fixed', precision: 2 }
-			);
-			return [{ label: `${prefix}金额变动差额`, value: amountDiff }];
+			return buildBackendSummaryRows(this.summaryData, 'balanceaccounts', prefix);
 		}
 	},
 	created() {

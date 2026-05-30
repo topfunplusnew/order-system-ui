@@ -7,6 +7,7 @@
 import { format, subtract, add } from 'mathjs';
 import _ from 'lodash';
 import { CASH_RECORD_COLUMNS } from '@/utils/fundChangeExcelColumns';
+import { buildBackendSummaryRows } from '@/utils/fundChange/backendSummary';
 
 export default {
 	name: 'OffsetPaymentTemplate',
@@ -30,11 +31,7 @@ export default {
 		},
 		diffSummaryTableData() {
 			const prefix = this.summaryModuleLabel || '冲抵款';
-			const amountDiff = format(
-				_.reduce(this.diffRows, (acc, r) => add(acc, Number(r.amount) || 0), 0),
-				{ notation: 'fixed', precision: 2 }
-			);
-			return [{ label: `${prefix}金额变动差额`, value: amountDiff }];
+			return buildBackendSummaryRows(this.summaryData, 'cash_record', prefix);
 		}
 	},
 	created() {

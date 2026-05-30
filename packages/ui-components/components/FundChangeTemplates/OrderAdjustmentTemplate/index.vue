@@ -8,6 +8,7 @@ import { format, add } from 'mathjs';
 import _ from 'lodash';
 import { ORDER_ADJUSTMENT_COLUMNS } from '@/utils/fundChangeExcelColumns';
 import { buildOrderAdjustmentDiffFields, formatOrderAdjustmentAmount, resolveOrderAdjustmentPaymentsWithSundry } from '@/utils/fundChange/orderAdjustment';
+import { buildBackendSummaryRows } from '@/utils/fundChange/backendSummary';
 
 export default {
 	name: 'OrderAdjustmentTemplate',
@@ -31,28 +32,7 @@ export default {
 		},
 		diffSummaryTableData() {
 			const prefix = this.summaryModuleLabel || '订单调整单';
-			const customerDiff = format(
-				_.reduce(this.diffRows, (acc, r) => add(acc, Number(r.customerDiff) || 0), 0),
-				{ notation: 'fixed', precision: 2 }
-			);
-			const supplierDiff = format(
-				_.reduce(this.diffRows, (acc, r) => add(acc, Number(r.supplierDiff) || 0), 0),
-				{ notation: 'fixed', precision: 2 }
-			);
-			const inventoryDiff = format(
-				_.reduce(this.diffRows, (acc, r) => add(acc, Number(r.inventoryDiff) || 0), 0),
-				{ notation: 'fixed', precision: 2 }
-			);
-			const freightDiff = format(
-				_.reduce(this.diffRows, (acc, r) => add(acc, Number(r.freightDiff) || 0), 0),
-				{ notation: 'fixed', precision: 2 }
-			);
-			return [
-				{ label: `${prefix}客户变动差额`, value: customerDiff },
-				{ label: `${prefix}供应商变动差额`, value: supplierDiff },
-				{ label: `${prefix}库存变动差额`, value: inventoryDiff },
-				{ label: `${prefix}运费变动差额`, value: freightDiff }
-			];
+			return buildBackendSummaryRows(this.summaryData, 'goodsorder', prefix, ['companyTotalBalance', 'supplierTotalBalance', 'remainingInventoryAmount', 'driverUnpaidAmount']);
 		}
 	},
 	created() {

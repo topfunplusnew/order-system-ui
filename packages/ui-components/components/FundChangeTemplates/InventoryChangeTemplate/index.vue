@@ -7,6 +7,7 @@
 import { format, subtract, add } from 'mathjs';
 import _ from 'lodash';
 import { INVENTORY_MAIN_COLUMNS } from '@/utils/fundChangeExcelColumns';
+import { buildBackendSummaryRows } from '@/utils/fundChange/backendSummary';
 
 export default {
 	name: 'InventoryChangeTemplate',
@@ -30,23 +31,7 @@ export default {
 		},
 		diffSummaryTableData() {
 			const prefix = this.summaryModuleLabel || '入库管理';
-			const inventoryDiff = format(
-				_.reduce(this.diffRows, (acc, r) => add(acc, Number(r.inventoryDiff) || 0), 0),
-				{ notation: 'fixed', precision: 2 }
-			);
-			const supplierDiff = format(
-				_.reduce(this.diffRows, (acc, r) => add(acc, Number(r.supplierDiff) || 0), 0),
-				{ notation: 'fixed', precision: 2 }
-			);
-			const freightDiff = format(
-				_.reduce(this.diffRows, (acc, r) => add(acc, Number(r.freightDiff) || 0), 0),
-				{ notation: 'fixed', precision: 2 }
-			);
-			return [
-				{ label: `${prefix}库存变动差额`, value: inventoryDiff },
-				{ label: `${prefix}供应商变动差额`, value: supplierDiff },
-				{ label: `${prefix}运费变动差额`, value: freightDiff }
-			];
+			return buildBackendSummaryRows(this.summaryData, 'inventory_main', prefix, ['remainingInventoryAmount', 'supplierTotalBalance', 'driverUnpaidAmount']);
 		}
 	},
 	created() {

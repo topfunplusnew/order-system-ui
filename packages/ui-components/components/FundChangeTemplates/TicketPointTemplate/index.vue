@@ -8,6 +8,7 @@ import { format, add } from 'mathjs';
 import _ from 'lodash';
 import { TICKET_POINT_COLUMNS } from '@/utils/fundChangeExcelColumns';
 import { buildTicketPointDiffFields, mapTicketPointRecordToRow, resolveTicketPointSummaryLabel } from '@/utils/fundChange/ticketPoint';
+import { buildBackendSummaryRows } from '@/utils/fundChange/backendSummary';
 
 export default {
 	name: 'TicketPointTemplate',
@@ -34,18 +35,7 @@ export default {
 		},
 		diffSummaryTableData() {
 			const prefix = this.resolvedSummaryModuleLabel;
-			const customerDiff = format(
-				_.reduce(this.diffRows, (acc, r) => add(acc, Number(r.customerDiff) || 0), 0),
-				{ notation: 'fixed', precision: 2 }
-			);
-			const supplierDiff = format(
-				_.reduce(this.diffRows, (acc, r) => add(acc, Number(r.supplierDiff) || 0), 0),
-				{ notation: 'fixed', precision: 2 }
-			);
-			return [
-				{ label: `${prefix}客户变动差额`, value: customerDiff },
-				{ label: `${prefix}供应商变动差额`, value: supplierDiff }
-			];
+			return buildBackendSummaryRows(this.summaryData, this.moduleName, prefix, ['companyTotalBalance', 'supplierTotalBalance']);
 		}
 	},
 	created() {

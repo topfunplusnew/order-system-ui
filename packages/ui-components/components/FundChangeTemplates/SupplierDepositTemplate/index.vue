@@ -6,6 +6,7 @@
  */
 import { format, subtract, add } from 'mathjs';
 import _ from 'lodash';
+import { buildBackendSummaryRows } from '@/utils/fundChange/backendSummary';
 
 export default {
 	name: 'SupplierDepositTemplate',
@@ -32,11 +33,7 @@ export default {
 		},
 		diffSummaryTableData() {
 			const prefix = this.summaryModuleLabel || '厂家保证金';
-			const supplierDepositDiff = format(
-				_.reduce(this.diffRows, (acc, r) => add(acc, Number(r.depositAmount) || 0), 0),
-				{ notation: 'fixed', precision: 2 }
-			);
-			return [{ label: `${prefix}变动差额`, value: supplierDepositDiff }];
+			return buildBackendSummaryRows(this.summaryData, 'lendmoney', prefix, ['paymentMarginBalance']);
 		}
 	},
 	created() {

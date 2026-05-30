@@ -7,6 +7,7 @@
 import { format, subtract, add } from 'mathjs';
 import _ from 'lodash';
 import { BORROWEDMONEY_COLUMNS } from '@/utils/fundChangeExcelColumns';
+import { buildBackendSummaryRows } from '@/utils/fundChange/backendSummary';
 
 export default {
 	name: 'BorrowInTemplate',
@@ -30,11 +31,7 @@ export default {
 		},
 		diffSummaryTableData() {
 			const prefix = this.summaryModuleLabel || '借入款管理';
-			const bankCardDiff = format(
-				_.reduce(this.diffRows, (acc, r) => add(acc, Number(r.borrowAmount) || 0), 0),
-				{ notation: 'fixed', precision: 2 }
-			);
-			return [{ label: `${prefix}银行卡资金变动差额`, value: bankCardDiff }];
+			return buildBackendSummaryRows(this.summaryData, 'borrowedmoney', prefix);
 		}
 	},
 	created() {
