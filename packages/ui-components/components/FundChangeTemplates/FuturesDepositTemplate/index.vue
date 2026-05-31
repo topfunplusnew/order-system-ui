@@ -14,7 +14,8 @@ export default {
 		compareData: { type: Array, default: () => [] },
 		moduleName: { type: String, default: '' },
 		summaryData: { type: Object, default: () => ({}) },
-		summaryModuleLabel: { type: String, default: '期货保证金' }
+		summaryModuleLabel: { type: String, default: '期货保证金' },
+		summaryOnly: { type: Boolean, default: false }
 	},
 	data() {
 		return { tableData: [] };
@@ -121,7 +122,7 @@ export default {
 
 <template>
 	<div class="fund-change-template">
-		<el-table :data="tableData" border :row-class-name="tableRowClassName" :span-method="recordSpanMethod" show-summary :summary-method="getTableSummary" style="width: 100%">
+		<el-table v-if="!summaryOnly" :data="tableData" border :row-class-name="tableRowClassName" :span-method="recordSpanMethod" show-summary :summary-method="getTableSummary" style="width: 100%">
 			<el-table-column :label="summaryModuleLabel" width="100" fixed class-name="record-col">
 				<template slot-scope="scope">
 					<template v-if="scope.row.isRecordFirst">
@@ -135,7 +136,7 @@ export default {
 			</el-table-column>
 			<el-table-column v-for="col in columns" :key="col.prop" :prop="col.prop" :label="col.label" :width="col.width" />
 		</el-table>
-		<el-table v-if="diffRows.length" :data="diffSummaryTableData" border class="diff-summary-table" :show-header="false">
+		<el-table v-if="diffRows.length" :data="diffSummaryTableData" border class="diff-summary-table" :show-header="false" :class="{ 'summary-only': summaryOnly }">
 			<el-table-column prop="label" width="280">
 				<template slot-scope="scope">
 					<span class="diff-summary-label">{{ scope.row.label }}</span>
@@ -196,5 +197,8 @@ export default {
 		background: #fff !important;
 		padding: 8px 12px;
 	}
+}
+.diff-summary-table.summary-only {
+	margin-top: 0;
 }
 </style>

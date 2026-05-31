@@ -475,6 +475,48 @@ export default {
 			return triples;
 		},
 		/**
+		 * 按三层分类获取日志，并保留每条日志所属的资金变动业务上下文。
+		 * 同一日志可能命中多个 category，需要复制记录分别进入不同模板分组。
+		 * @param {Object} baseQuery
+		 * @param {Array<{outputKey: string, tableName: string, category: string}>} triples
+		 * @param {string} targetTime
+		 * @returns {Promise<{records: Array, moduleContexts: Array, summaryData: Object}>}
+		 */
+		async fetchFundChangeDetailPayload(baseQuery, triples, targetTime) {
+			const contextsById = new Map();
+			const allIds = [];
+			for (const t of triples) {
+				const idsRes = await filterIdsByCategoryV3({ ...baseQuery, outputKey: t.outputKey, tableName: t.tableName, category: t.category });
+				(idsRes?.data || []).forEach(id => {
+					allIds.push(id);
+					const idKey = String(id);
+					if (!contextsById.has(idKey)) contextsById.set(idKey, []);
+					contextsById.get(idKey).push(t);
+				});
+			}
+			const uniqueIds = _.uniq(allIds);
+			if (_.isEmpty(uniqueIds)) return { records: [], moduleContexts: [], summaryData: {} };
+
+			const [detailRes, summaryRes] = await Promise.all([getBackuplogByIdsV3({ ids: uniqueIds }), calculateByIdsV3({ ids: uniqueIds, targetTime })]);
+			const result = detailRes?.data || [];
+			const filtered = result.filter(r => r.tableName !== TableName.ORDER_DETAIL && r.tableName !== TableName.INVENTORDETAIL);
+			const records = [];
+			filtered.forEach(record => {
+				const contexts = contextsById.get(String(record.id)) || [{ outputKey: '', tableName: record.tableName, category: '*' }];
+				contexts.forEach(context => {
+					records.push({
+						...record,
+						__fundChangeContext: context
+					});
+				});
+			});
+			const moduleContexts = _.uniqWith(
+				records.map(record => record.__fundChangeContext),
+				(a, b) => a.outputKey === b.outputKey && a.tableName === b.tableName && a.category === b.category
+			);
+			return { records, moduleContexts, summaryData: summaryRes?.data || {} };
+		},
+		/**
 		 * 点击明细项查看变动详情（v3 流程：calculateAmounts -> filterIdsByCategory -> getByIds + calculateByIds）
 		 * @param {Object} part - { tableName, category, label, clickable }
 		 * @param {Object} row - { moduleName: outputKey, project }
@@ -503,33 +545,19 @@ export default {
 				this.$message.warning('该明细项没有变动信息');
 				return;
 			}
-			const allIds = [];
-			for (const t of triples) {
-				const idsRes = await filterIdsByCategoryV3({ ...baseQuery, outputKey: t.outputKey, tableName: t.tableName, category: t.category });
-				allIds.push(...(idsRes?.data || []));
-			}
-			const uniqueIds = _.uniq(allIds);
-			if (_.isEmpty(uniqueIds)) {
-				this.$message.warning('该明细项没有变动信息');
-				return;
-			}
-			let detailRes;
-			let summaryRes;
+			let payload;
 			try {
-				[detailRes, summaryRes] = await Promise.all([getBackuplogByIdsV3({ ids: uniqueIds }), calculateByIdsV3({ ids: uniqueIds, targetTime: backupDate })]);
+				payload = await this.fetchFundChangeDetailPayload(baseQuery, triples, backupDate);
 			} catch (e) {
 				this.$message.error('获取变动详情失败');
 				return;
 			}
-			const result = detailRes?.data || [];
-			const filtered = result.filter(r => r.tableName !== TableName.ORDER_DETAIL && r.tableName !== TableName.INVENTORDETAIL);
-			if (_.isEmpty(filtered)) {
+			if (_.isEmpty(payload.records)) {
 				this.$message.warning('该明细项没有变动信息');
 				return;
 			}
-			const moduleList = _.uniq(filtered.map(r => r.tableName));
 			const dialogTitle = `${row.project} - ${part.label}`;
-			this.openDialog(ChooseModule, dialogTitle, '700px', { moduleList, result: _.cloneDeep(filtered), summaryData: summaryRes?.data || {}, useV3Templates: true }, false, false);
+			this.openDialog(ChooseModule, dialogTitle, '700px', { moduleContexts: payload.moduleContexts, result: _.cloneDeep(payload.records), summaryData: payload.summaryData, useV3Templates: true }, false, false);
 		},
 		/**
 		 * 查看模块详情（v3 流程：calculateAmounts -> filterIdsByCategory -> getByIds + calculateByIds）
@@ -558,34 +586,19 @@ export default {
 				this.$message.warning('该模块没有变动信息');
 				return;
 			}
-			const allIds = [];
-			for (const t of triples) {
-				const idsRes = await filterIdsByCategoryV3({ ...baseQuery, outputKey: t.outputKey, tableName: t.tableName, category: t.category });
-				const ids = idsRes?.data || [];
-				allIds.push(...ids);
-			}
-			const uniqueIds = _.uniq(allIds);
-			if (_.isEmpty(uniqueIds)) {
-				this.$message.warning('该模块没有变动信息');
-				return;
-			}
-			let detailRes;
-			let summaryRes;
+			let payload;
 			try {
-				[detailRes, summaryRes] = await Promise.all([getBackuplogByIdsV3({ ids: uniqueIds }), calculateByIdsV3({ ids: uniqueIds, targetTime: backupDate })]);
+				payload = await this.fetchFundChangeDetailPayload(baseQuery, triples, backupDate);
 			} catch (e) {
 				this.$message.error('获取变动详情失败');
 				return;
 			}
-			const result = detailRes?.data || [];
-			const filtered = result.filter(r => r.tableName !== TableName.ORDER_DETAIL && r.tableName !== TableName.INVENTORDETAIL);
-			if (_.isEmpty(filtered)) {
+			if (_.isEmpty(payload.records)) {
 				this.$message.warning('该模块没有变动信息');
 				return;
 			}
-			const moduleList = _.uniq(filtered.map(r => r.tableName));
 			const dialogTitle = projectName || '请选择模块查看其详细资金变动';
-			this.openDialog(ChooseModule, dialogTitle, '700px', { moduleList, result: _.cloneDeep(filtered), summaryData: summaryRes?.data || {}, useV3Templates: true }, false, false);
+			this.openDialog(ChooseModule, dialogTitle, '700px', { moduleContexts: payload.moduleContexts, result: _.cloneDeep(payload.records), summaryData: payload.summaryData, useV3Templates: true }, false, false);
 		},
 		/**
 		 * 从 calculateAmounts data 中提取指定 outputKey 的 (tableName, category) 组合

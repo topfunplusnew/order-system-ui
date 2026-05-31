@@ -32,8 +32,15 @@ import OrderDayInfo from '@/components/OrderDayInfor/index.vue';
 import { number, add, subtract, abs } from 'mathjs';
 import _ from 'lodash';
 
+const customerDetailPageCache = {
+	searchForm: null,
+	companyName: null,
+	tags: null,
+	tableData: null
+};
+
 export default {
-	name: 'detailCustomer',
+	name: 'DetailCustomer',
 	components: { SearchOption, TotalTag },
 	mixins: [common_excel, common_dialog],
 	data() {
@@ -58,6 +65,12 @@ export default {
 			// 五个字段 tags
 			tags: null
 		};
+	},
+	created() {
+		this.restorePageCache();
+	},
+	beforeDestroy() {
+		this.savePageCache();
 	},
 	computed: {
 		PUBLIC_DICT_TYPE() {
@@ -89,6 +102,19 @@ export default {
 		abs,
 		isDebit,
 		isCredit,
+		savePageCache() {
+			customerDetailPageCache.searchForm = _.cloneDeep(this.searchForm);
+			customerDetailPageCache.companyName = this.companyName;
+			customerDetailPageCache.tags = _.cloneDeep(this.tags);
+			customerDetailPageCache.tableData = _.cloneDeep(this.tableData);
+		},
+		restorePageCache() {
+			if (!customerDetailPageCache.searchForm) return;
+			this.searchForm = _.cloneDeep(customerDetailPageCache.searchForm);
+			this.companyName = customerDetailPageCache.companyName;
+			this.tags = _.cloneDeep(customerDetailPageCache.tags);
+			this.tableData = _.cloneDeep(customerDetailPageCache.tableData || []);
+		},
 		/**
 		 * 构造财务汇总接口 query（startTime/endTime）；无有效日期时不传时间表示历史累计
 		 * @param {string[]} dateRange - Element 日期范围 [begin, end]
@@ -109,16 +135,8 @@ export default {
 				this.tags = null;
 				return;
 			}
-			const hasOverride =
-				timeOverride &&
-				((timeOverride.beginTime != null && timeOverride.beginTime !== '') ||
-					(timeOverride.endTime != null && timeOverride.endTime !== ''));
-			const params = hasOverride
-				? _.pickBy(
-						{ startTime: timeOverride.beginTime, endTime: timeOverride.endTime },
-						v => v != null && v !== ''
-				  )
-				: this.buildFinancialSummaryParams(this.searchForm.dateRange);
+			const hasOverride = timeOverride && ((timeOverride.beginTime != null && timeOverride.beginTime !== '') || (timeOverride.endTime != null && timeOverride.endTime !== ''));
+			const params = hasOverride ? _.pickBy({ startTime: timeOverride.beginTime, endTime: timeOverride.endTime }, v => v != null && v !== '') : this.buildFinancialSummaryParams(this.searchForm.dateRange);
 			getCustomerFiveParams(companyId, params).then(res => {
 				this.tags = res?.data ?? null;
 			});
@@ -133,8 +151,6 @@ export default {
 		},
 		// 查看明细 点击的时候 先让用户输入时间 然后拿该行数据的companyId查询该客户的明细账
 		handleCheck() {
-			// 清除一下状态
-			this.tableData = [];
 			// 打开时间选择框
 			this.$datePicker().then(res => {
 				// 组装查询条件 分别为开始时间 结束时间 客户id
@@ -167,20 +183,22 @@ export default {
 						// 拿到上年的数据
 						const lastYearDetail = res.data;
 						// 把上年结转的数据放在最前面 并且摘要为上年结转
-						this.tableData.push({
-							...lastYearDetail,
-							summary: '上年结转',
-							moneyAmountLocal: fix_2(number(lastYearDetail.moneyAmount || 0)),
-							subjectNo: configValue,
-							subjectName: subjectName
-						});
+						const baseRows = [
+							{
+								...lastYearDetail,
+								summary: '上年结转',
+								moneyAmountLocal: fix_2(number(lastYearDetail.moneyAmount || 0)),
+								subjectNo: configValue,
+								subjectName: subjectName
+							}
+						];
 						// 参数 包含配置值 和 科目名称
 						const config = {
 							configValue,
 							subjectName
 						};
 						// 查询客户明细账
-						this.checkCustomerDetail(query, lastYearDetail, config);
+						this.checkCustomerDetail(query, lastYearDetail, config, baseRows);
 					});
 				});
 			});
@@ -190,9 +208,10 @@ export default {
 		 * @param {Object} query
 		 * @param {Object} lastYearDetail
 		 * @param {Object} config
+		 * @param {Object[]} [baseRows]
 		 * @returns {void}
 		 */
-		checkCustomerDetail(query, lastYearDetail, config) {
+		checkCustomerDetail(query, lastYearDetail, config, baseRows) {
 			// 查询客户明细账
 			getCustomerSubjectDetailSummary(query).then(res => {
 				if (!res.rows && !res.data) {
@@ -200,12 +219,13 @@ export default {
 					return;
 				}
 				try {
+					const rows = res.data || res.rows || [];
 					// 上年结转的余额
 					let currentBalance = number(lastYearDetail.moneyAmount || 0);
 					// 累计金额
 					let nowMoney = number(0);
 					// 拿到汇总账
-					const append = res.data.map(item => {
+					const append = rows.map(item => {
 						// 金额累计计算 - 根据 debitCredit 判断借贷方向
 						const amount = number(item.moneyAmount || 0);
 						if (item.debitCredit && (isDebit(item.debitCredit) || isCredit(item.debitCredit))) {
@@ -246,7 +266,8 @@ export default {
 						}
 					});
 					// 添加到上年结转数据的后面
-					this.tableData = this.tableData.concat(append);
+					this.tableData = (baseRows || []).concat(append);
+					this.savePageCache();
 					// 查询该客户的五个tag（与本次明细时间区间一致）
 					this.fetchSummaryTags(query);
 					// 打开弹窗
@@ -329,7 +350,6 @@ export default {
 		handleCheckByDateRange() {
 			const timeRange = this.getSelectedTimeRange();
 			if (!timeRange) return;
-			this.tableData = [];
 			const query = {
 				companyId: this.searchForm.companyId,
 				...timeRange
@@ -352,18 +372,20 @@ export default {
 						return;
 					}
 					const lastYearDetail = res.data;
-					this.tableData.push({
-						...lastYearDetail,
-						summary: '上年结转',
-						moneyAmountLocal: fix_2(number(lastYearDetail.moneyAmount || 0)),
-						subjectNo: configValue,
-						subjectName: subjectName
-					});
+					const baseRows = [
+						{
+							...lastYearDetail,
+							summary: '上年结转',
+							moneyAmountLocal: fix_2(number(lastYearDetail.moneyAmount || 0)),
+							subjectNo: configValue,
+							subjectName: subjectName
+						}
+					];
 					const config = {
 						configValue,
 						subjectName
 					};
-					this.checkCustomerDetail(query, lastYearDetail, config);
+					this.checkCustomerDetail(query, lastYearDetail, config, baseRows);
 				});
 			});
 		},

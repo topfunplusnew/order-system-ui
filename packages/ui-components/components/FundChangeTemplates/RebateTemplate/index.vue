@@ -1,20 +1,21 @@
 <script>
 /**
- * 厂家保证金变动详情模板
- * lendmoney 表 type=厂家保证金/押金：moneyAmount、recoverMoneyList[].moneyAmount
- * 范式：记录(x) 合并 3 行，排除 bankCardDiff、supplierDepositDiff，buildDiffFields 填 depositAmount，diff-summary-table 展示
+ * 返利变动详情模板
+ * rebate 表：rebate、supplier、rebateDate、detailList[].actualReceived 等
+ * 范式：记录(x) 合并 3 行，差额行展示返利金额变化，底部小表使用后端 supplierTotalBalance/rebate 汇总。
  */
 import { format, subtract, add } from 'mathjs';
 import _ from 'lodash';
+import { REBATE_COLUMNS } from '@/utils/fundChangeExcelColumns';
 import { buildBackendSummaryRows } from '@/utils/fundChange/backendSummary';
 
 export default {
-	name: 'SupplierDepositTemplate',
+	name: 'RebateTemplate',
 	props: {
 		compareData: { type: Array, default: () => [] },
 		moduleName: { type: String, default: '' },
 		summaryData: { type: Object, default: () => ({}) },
-		summaryModuleLabel: { type: String, default: '厂家保证金' },
+		summaryModuleLabel: { type: String, default: '返利' },
 		summaryOnly: { type: Boolean, default: false }
 	},
 	data() {
@@ -22,19 +23,15 @@ export default {
 	},
 	computed: {
 		columns() {
-			return [
-				{ prop: 'depositDate', label: '保证金日期', width: 120, showSummary: false },
-				{ prop: 'supplierName', label: '厂家名称', width: 120, showSummary: false },
-				{ prop: 'depositAmount', label: '保证金金额', width: 120 },
-				{ prop: 'bankCardNo', label: '银行卡号', width: 150, showSummary: false }
-			];
+			const excludeProps = ['supplierDiff'];
+			return REBATE_COLUMNS.filter(c => !excludeProps.includes(c.prop)).map(c => (c.aggregator ? c : { ...c, showSummary: false }));
 		},
 		diffRows() {
 			return this.tableData.filter(r => r.rowType === 'diff');
 		},
 		diffSummaryTableData() {
-			const prefix = this.summaryModuleLabel || '厂家保证金';
-			return buildBackendSummaryRows(this.summaryData, 'lendmoney', prefix, ['paymentMarginBalance']);
+			const prefix = this.summaryModuleLabel || '返利';
+			return buildBackendSummaryRows(this.summaryData, 'rebate', prefix, ['supplierTotalBalance']);
 		}
 	},
 	created() {
@@ -49,11 +46,29 @@ export default {
 		}
 	},
 	methods: {
-		sumRecoverNonBadDebt(list) {
-			return _.sumBy(
-				_.filter(list || [], r => r.badDebtFlag !== 1),
-				r => Number(r.moneyAmount || 0)
-			);
+		formatDate(value) {
+			return value ? String(value).slice(0, 10) : '';
+		},
+		formatAmount(value) {
+			return format(Number(value || 0), { notation: 'fixed', precision: 2 });
+		},
+		formatRebateMethod(value) {
+			if (value === 2 || value === '2' || value === '面积') return '面积';
+			if (value === 1 || value === '1' || value === '重箱') return '重箱';
+			return value || '';
+		},
+		getDetailList(info = {}) {
+			return info.detailList || info.rebateDetailList || [];
+		},
+		sumReceivedAmount(info = {}) {
+			return _.reduce(this.getDetailList(info), (acc, item) => add(acc, Number(item.actualReceived ?? item.moneyAmount ?? 0) || 0), 0);
+		},
+		getEarliestReceivedDate(info = {}) {
+			const dates = this.getDetailList(info)
+				.map(item => item.actualReceivedDate || item.receivedDate || item.rebateDate)
+				.filter(Boolean)
+				.sort();
+			return dates[0] ? this.formatDate(dates[0]) : '未收到';
 		},
 		processData() {
 			this.tableData = [];
@@ -61,28 +76,36 @@ export default {
 				const original = record.originalInfo || {};
 				const changed = record.changedInfo || {};
 				const backupTime = _.toString(record.backupTime || '').slice(0, 10);
-				const beforeRow = { ...this.mapBeforeRow(original, record, index), rowType: 'before', isRecordFirst: true, recordIndex: index + 1, backupTime, subLabel: '修改前' };
-				const afterRow = { ...this.mapAfterRow(changed, record, index), rowType: 'after', subLabel: '修改后' };
-				const diffRow = { rowType: 'diff', subLabel: '差额', ...this.buildDiffFields(original, changed, record) };
+				const beforeRow = { ...this.mapBeforeRow(original), rowType: 'before', isRecordFirst: true, recordIndex: index + 1, backupTime, subLabel: '修改前' };
+				const afterRow = { ...this.mapAfterRow(changed), rowType: 'after', subLabel: '修改后' };
+				const diffRow = { rowType: 'diff', subLabel: '差额', ...this.buildDiffFields(original, changed) };
 				this.tableData.push(beforeRow, afterRow, diffRow);
 			});
 		},
 		mapBeforeRow(info) {
+			const receivedAmount = this.sumReceivedAmount(info);
 			return {
-				depositDate: info.addtime ? (info.addtime + '').slice(0, 10) : '',
-				supplierName: info.companyName || info.borrowerName || '',
-				depositAmount: info.moneyAmount,
-				bankCardNo: info.bankNo || ''
+				rebateDate: this.formatDate(info.rebateDate),
+				rebateType: info.rebateType || '',
+				supplierName: info.supplier || info.supplierName || info.companyName || '',
+				rebateMethod: this.formatRebateMethod(info.rebateMethod),
+				unitPrice: info.unitPrice,
+				rebateAmount: info.rebate,
+				rebateReason: info.rebateReason || '',
+				receivedDate: this.getEarliestReceivedDate(info),
+				receivedAmount: receivedAmount ? this.formatAmount(receivedAmount) : '未收到',
+				remark: info.comments || info.remark || ''
 			};
 		},
 		mapAfterRow(info) {
 			return this.mapBeforeRow(info);
 		},
-		buildDiffFields(original, changed, _record) {
-			const origLoan = Number(original.moneyAmount || 0);
-			const chgLoan = Number(changed.moneyAmount || 0);
-			const supplierDepositDiff = format(subtract(chgLoan, origLoan), { notation: 'fixed', precision: 2 });
-			return { depositAmount: supplierDepositDiff };
+		buildDiffFields(original, changed) {
+			const supplierDiff = format(subtract(Number(changed.rebate || 0), Number(original.rebate || 0)), { notation: 'fixed', precision: 2 });
+			return {
+				rebateAmount: supplierDiff,
+				supplierDiff
+			};
 		},
 		tableRowClassName({ row }) {
 			if (row.rowType === 'before') return 'before-row';
@@ -103,18 +126,15 @@ export default {
 		},
 		getTableSummary(param) {
 			const { columns } = param;
-			const sums = [];
-			const diffRows = this.diffRows;
 			const amountSum = format(
-				_.reduce(diffRows, (acc, r) => add(acc, Number(r.depositAmount) || 0), 0),
+				_.reduce(this.diffRows, (acc, r) => add(acc, Number(r.rebateAmount) || 0), 0),
 				{ notation: 'fixed', precision: 2 }
 			);
-			columns.forEach((col, index) => {
-				if (index === 0 || index === 1) sums.push('');
-				else if (col.property === 'depositAmount') sums.push(amountSum);
-				else sums.push('');
+			return columns.map((col, index) => {
+				if (index === 0 || index === 1) return '';
+				if (col.property === 'rebateAmount') return amountSum;
+				return '';
 			});
-			return sums;
 		}
 	}
 };
@@ -184,6 +204,9 @@ export default {
 	vertical-align: middle;
 	height: 38px !important;
 }
+.diff-summary-table.summary-only {
+	margin-top: 0;
+}
 .diff-summary-table {
 	margin-top: 16px;
 	width: auto !important;
@@ -197,8 +220,5 @@ export default {
 		background: #fff !important;
 		padding: 8px 12px;
 	}
-}
-.diff-summary-table.summary-only {
-	margin-top: 0;
 }
 </style>

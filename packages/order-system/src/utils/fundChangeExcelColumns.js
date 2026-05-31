@@ -314,3 +314,18 @@ export const DEPOSIT_MONEY_COLUMNS = [
 	{ prop: 'operatorName', label: '操作人员', width: 100 },
 	{ prop: 'depositDiff', label: '保证金变动差额', aggregator: 'absSum', summaryLabel: '保证金变动差额汇总' }
 ];
+
+/** 返利：计提返利日期, 类型, 供应商, 返利方式, 单价, 金额, 返利原因, 收到返利日期, 收到返利金额 */
+export const REBATE_COLUMNS = [
+	{ prop: 'rebateDate', label: '计提返利日期', width: 150 },
+	{ prop: 'rebateType', label: '类型', width: 120 },
+	{ prop: 'supplierName', label: '供应商', width: 150 },
+	{ prop: 'rebateMethod', label: '返利方式', width: 100 },
+	{ prop: 'unitPrice', label: '（返利/降价）单价', width: 140 },
+	{ prop: 'rebateAmount', label: '金额', width: 120, showSummary: false },
+	{ prop: 'rebateReason', label: '返利原因', width: 180 },
+	{ prop: 'receivedDate', label: '收到返利日期', width: 150 },
+	{ prop: 'receivedAmount', label: '收到返利金额', width: 130 },
+	{ prop: 'remark', label: '备注', width: 160 },
+	{ prop: 'supplierDiff', label: '供应商变动差额', aggregator: 'absSum', summaryLabel: '供应商变动差额汇总' }
+];
