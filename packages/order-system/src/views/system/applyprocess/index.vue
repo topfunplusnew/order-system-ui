@@ -935,8 +935,8 @@ export default {
 			</el-form-item>
 			<el-form-item label="付款状态" prop="paymentStatus">
 				<el-select clearable v-model="queryParams.paymentStatus" placeholder="请选择付款状态">
-					<el-option label="未付款" :value="PAYMENT_STATE.UNPAID"></el-option>
-					<el-option label="已付款" :value="PAYMENT_STATE.PAID"></el-option>
+					<el-option label="未付款" value="未付款"></el-option>
+					<el-option label="已付款" value="已付款"></el-option>
 				</el-select>
 			</el-form-item>
 			<el-form-item label="审核状态" prop="checkState" id="step-1">
