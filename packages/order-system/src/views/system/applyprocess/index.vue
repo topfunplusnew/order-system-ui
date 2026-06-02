@@ -940,7 +940,7 @@ export default {
 				</el-select>
 			</el-form-item>
 			<el-form-item label="审核状态" prop="checkState" id="step-1">
-				<el-select clearable @keyup.enter.native="handleQuery" v-model="queryParams.params.checkStateList" placeholder="请选择审核状态" multiple style="max-width: 220px" :collapse-tags="true" :collapse-tags-tooltip="true">
+				<el-select class="check-state-select" clearable @keyup.enter.native="handleQuery" v-model="queryParams.params.checkStateList" placeholder="请选择审核状态" multiple :collapse-tags="true" :collapse-tags-tooltip="true">
 					<el-option label="审核中" value="审核中"></el-option>
 					<el-option label="通过" value="通过"></el-option>
 					<el-option label="未通过" value="未通过"></el-option>
@@ -1447,6 +1447,22 @@ export default {
 .apply-list-scroll {
 	max-height: 500px;
 	overflow: auto;
+}
+
+::v-deep #top-search-form-item #step-1 .check-state-select {
+	width: 180px !important;
+	max-width: calc(100vw - 160px) !important;
+
+	.el-input {
+		width: 100% !important;
+	}
+}
+
+@media (max-width: 768px) {
+	::v-deep #top-search-form-item #step-1 .check-state-select {
+		width: 100% !important;
+		max-width: 100% !important;
+	}
 }
 
 // 高亮行样式，确保优先级高于悬停和斑马纹
