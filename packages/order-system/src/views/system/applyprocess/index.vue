@@ -213,6 +213,7 @@ export default {
 				companyName: '',
 				companyId: '',
 				companyType: '',
+				paymentStatus: '',
 				reason: '',
 				applyPerson: '',
 				params: {
@@ -672,6 +673,7 @@ export default {
 				companyName: '',
 				companyId: '',
 				companyType: '',
+				paymentStatus: '',
 				reason: '',
 				applyPerson: '',
 				params: {
@@ -930,6 +932,12 @@ export default {
 			</el-form-item>
 			<el-form-item label="申请人" prop="applyPerson">
 				<el-input clearable @keyup.enter.native="handleQuery" v-model="queryParams.applyPerson" placeholder="请输入申请人"></el-input>
+			</el-form-item>
+			<el-form-item label="付款状态" prop="paymentStatus">
+				<el-select clearable v-model="queryParams.paymentStatus" placeholder="请选择付款状态">
+					<el-option label="未付款" :value="PAYMENT_STATE.UNPAID"></el-option>
+					<el-option label="已付款" :value="PAYMENT_STATE.PAID"></el-option>
+				</el-select>
 			</el-form-item>
 			<el-form-item label="审核状态" prop="checkState" id="step-1">
 				<el-select clearable @keyup.enter.native="handleQuery" v-model="queryParams.params.checkStateList" placeholder="请选择审核状态" multiple style="max-width: 220px" :collapse-tags="true" :collapse-tags-tooltip="true">

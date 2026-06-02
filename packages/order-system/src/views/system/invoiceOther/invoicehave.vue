@@ -219,7 +219,7 @@
 			<el-table-column v-if="columns[15] && columns[15].visible" label="最后修改时间" align="center" prop="updateTime" width="170" show-overflow-tooltip />
 			<el-table-column v-if="columns[16] && columns[16].visible" label="新增人" align="center" prop="userName" width="120" show-overflow-tooltip />
 			<el-table-column v-if="columns[17] && columns[17].visible" label="最后修改人" align="center" prop="updateByUserName" width="120" show-overflow-tooltip />
-			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="180px">
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="180px" fixed="right">
 				<template slot-scope="scope">
 					<el-button size="mini" type="text" @click="handleAddExtraInfo(scope.row)">补充信息</el-button>
 					<el-dropdown @command="command => handleCommand(command, scope.row)">

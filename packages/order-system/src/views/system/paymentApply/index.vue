@@ -18,6 +18,11 @@
 				<el-form-item label="对方公司" prop="companyName">
 					<el-input v-model="queryParams.companyName" placeholder="请输入对方公司" clearable @keyup.enter.native="handleQuery" />
 				</el-form-item>
+				<el-form-item label="付款状态" prop="paymentState">
+					<el-select v-model="queryParams.paymentState" placeholder="请选择付款状态" clearable>
+						<el-option v-for="item in paymentStateOptions" :key="item.value" :label="item.label" :value="item.value" />
+					</el-select>
+				</el-form-item>
 				<el-form-item>
 					<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
 					<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -299,7 +304,7 @@ import { listSubject } from '@/api/system/subject';
 import SearchOption from '@/components/SearchOption.vue';
 import { listCompany } from '@/api/system/company';
 import NeedToShowInfo from '@/components/NeedToShowInfo.vue';
-import { TableName } from '@/api/tool/enums';
+import { TableName, PaymentState } from '@/api/tool/enums';
 import { getOrderFreight } from '@/api/system/orderFreight';
 import { getBorrowedMoney } from '@/api/system/borrowedMoney';
 import { findFileExtension } from '@/utils/trash/utils';
@@ -353,6 +358,7 @@ export default {
 				companyName: null,
 				companyId: null,
 				companyType: null,
+				paymentState: null,
 				reason: null,
 				attachmentList: [],
 				applyPerson: null,
@@ -369,6 +375,8 @@ export default {
 			form: {},
 			// 表单校验
 			rules: {},
+			// 付款状态选项
+			paymentStateOptions: PaymentState,
 			columns: [
 				{ key: 0, label: `日期`, visible: true },
 				{ key: 1, label: `支付类型`, visible: true },
