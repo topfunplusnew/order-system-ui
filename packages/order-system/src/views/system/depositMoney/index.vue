@@ -46,7 +46,7 @@
 				<!--        导出-->
 				<template #export>
 					<el-col :span="1.5">
-						<el-button v-hasPermi="['system:depositMoney:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
+						<el-button v-hasPermi="['system:depositmoney:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
 					</el-col>
 				</template>
 			</right-toolbar>
