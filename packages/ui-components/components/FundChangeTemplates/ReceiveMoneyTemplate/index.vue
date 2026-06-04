@@ -8,6 +8,8 @@ import { format, subtract, add } from 'mathjs';
 import _ from 'lodash';
 import { RECEIVEMONEY_COLUMNS } from '@/utils/fundChangeExcelColumns';
 import { buildBackendSummaryRows } from '@/utils/fundChange/backendSummary';
+import { buildDateScopedRecordRows } from '@/utils/fundChange/dateScopedRows';
+import { getFundChangeTemplateDateFields } from '@/utils/fundChange/dateScopeFields';
 
 export default {
 	name: 'ReceiveMoneyTemplate',
@@ -17,7 +19,8 @@ export default {
 		summaryData: { type: Object, default: () => ({}) },
 		summaryModuleLabel: { type: String, default: '收款' },
 		/** 仅展示差额汇总表 */
-		summaryOnly: { type: Boolean, default: false }
+		summaryOnly: { type: Boolean, default: false },
+		targetDate: { type: String, default: '' }
 	},
 	data() {
 		return { tableData: [] };
@@ -44,6 +47,9 @@ export default {
 				this.processData();
 			},
 			deep: true
+		},
+		targetDate() {
+			this.processData();
 		}
 	},
 	methods: {
@@ -65,10 +71,17 @@ export default {
 				const original = record.originalInfo || {};
 				const changed = record.changedInfo || {};
 				const backupTime = _.toString(record.backupTime || '').slice(0, 10);
-				const beforeRow = { ...this.mapBeforeRow(original, record, index), rowType: 'before', isRecordFirst: true, recordIndex: index + 1, backupTime, subLabel: '修改前' };
-				const afterRow = { ...this.mapAfterRow(changed, record, index), rowType: 'after', subLabel: '修改后' };
-				const diffRow = { rowType: 'diff', subLabel: '差额', ...this.buildDiffFields(original, changed, record) };
-				this.tableData.push(beforeRow, afterRow, diffRow);
+				const rows = buildDateScopedRecordRows({
+					original,
+					changed,
+					targetDate: this.targetDate,
+					backupType: record.backupType,
+					dateFields: getFundChangeTemplateDateFields(this.$options.name),
+					beforeRow: { ...this.mapBeforeRow(original, record, index), recordIndex: index + 1, backupTime },
+					afterRow: { ...this.mapAfterRow(changed, record, index), recordIndex: index + 1, backupTime },
+					buildDiffFields: (scopedOriginal, scopedChanged) => this.buildDiffFields(scopedOriginal, scopedChanged, record)
+				});
+				this.tableData.push(...rows);
 			});
 		},
 		mapBeforeRow(info) {
@@ -115,7 +128,7 @@ export default {
 		},
 		recordSpanMethod({ row, columnIndex }) {
 			if (columnIndex !== 0) return [1, 1];
-			if (row.isRecordFirst) return [3, 1];
+			if (row.isRecordFirst) return [row.recordRowCount || 3, 1];
 			return [0, 0];
 		},
 		getTableSummary(param) {

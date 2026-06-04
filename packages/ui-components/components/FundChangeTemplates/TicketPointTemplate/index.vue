@@ -9,6 +9,8 @@ import _ from 'lodash';
 import { TICKET_POINT_COLUMNS } from '@/utils/fundChangeExcelColumns';
 import { buildTicketPointDiffFields, mapTicketPointRecordToRow, resolveTicketPointSummaryLabel } from '@/utils/fundChange/ticketPoint';
 import { buildBackendSummaryRows } from '@/utils/fundChange/backendSummary';
+import { buildDateScopedRecordRows } from '@/utils/fundChange/dateScopedRows';
+import { getFundChangeTemplateDateFields } from '@/utils/fundChange/dateScopeFields';
 
 export default {
 	name: 'TicketPointTemplate',
@@ -17,7 +19,8 @@ export default {
 		moduleName: { type: String, default: '' },
 		summaryData: { type: Object, default: () => ({}) },
 		summaryModuleLabel: { type: String, default: '票点' },
-		summaryOnly: { type: Boolean, default: false }
+		summaryOnly: { type: Boolean, default: false },
+		targetDate: { type: String, default: '' }
 	},
 	data() {
 		return { tableData: [] };
@@ -47,6 +50,9 @@ export default {
 				this.processData();
 			},
 			deep: true
+		},
+		targetDate() {
+			this.processData();
 		}
 	},
 	methods: {
@@ -57,10 +63,17 @@ export default {
 				const changed = record.changedInfo || {};
 				const tname = record.tableName || this.moduleName;
 				const backupTime = _.toString(record.backupTime || '').slice(0, 10);
-				const beforeRow = { ...this.mapBeforeRow(original, record, index, tname), rowType: 'before', isRecordFirst: true, recordIndex: index + 1, backupTime, subLabel: '修改前' };
-				const afterRow = { ...this.mapAfterRow(changed, record, index, tname), rowType: 'after', subLabel: '修改后' };
-				const diffRow = { rowType: 'diff', subLabel: '差额', ...this.buildDiffFields(original, changed, record, tname) };
-				this.tableData.push(beforeRow, afterRow, diffRow);
+				const rows = buildDateScopedRecordRows({
+					original,
+					changed,
+					targetDate: this.targetDate,
+					backupType: record.backupType,
+					dateFields: getFundChangeTemplateDateFields(this.$options.name),
+					beforeRow: { ...this.mapBeforeRow(original, record, index, tname), recordIndex: index + 1, backupTime },
+					afterRow: { ...this.mapAfterRow(changed, record, index, tname), recordIndex: index + 1, backupTime },
+					buildDiffFields: (scopedOriginal, scopedChanged) => this.buildDiffFields(scopedOriginal, scopedChanged, record, tname)
+				});
+				this.tableData.push(...rows);
 			});
 		},
 		mapBeforeRow(info, _record, _index, _tableName) {
@@ -86,7 +99,7 @@ export default {
 		},
 		recordSpanMethod({ row, columnIndex }) {
 			if (columnIndex !== 0) return [1, 1];
-			if (row.isRecordFirst) return [3, 1];
+			if (row.isRecordFirst) return [row.recordRowCount || 3, 1];
 			return [0, 0];
 		}
 	}

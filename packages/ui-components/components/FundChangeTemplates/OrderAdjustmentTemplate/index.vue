@@ -9,6 +9,8 @@ import _ from 'lodash';
 import { ORDER_ADJUSTMENT_COLUMNS } from '@/utils/fundChangeExcelColumns';
 import { buildOrderAdjustmentDiffFields, formatOrderAdjustmentAmount, resolveOrderAdjustmentPaymentsWithSundry } from '@/utils/fundChange/orderAdjustment';
 import { buildBackendSummaryRows } from '@/utils/fundChange/backendSummary';
+import { buildDateScopedDiffFields, filterDetailPairsByScope, getScopedRowCount, getScopedRowTypes, resolveDateScopedChange } from '@/utils/fundChange/dateScopedRows';
+import { getFundChangeTemplateDateFields } from '@/utils/fundChange/dateScopeFields';
 
 export default {
 	name: 'OrderAdjustmentTemplate',
@@ -17,7 +19,8 @@ export default {
 		moduleName: { type: String, default: '' },
 		summaryData: { type: Object, default: () => ({}) },
 		summaryModuleLabel: { type: String, default: '订单调整单' },
-		summaryOnly: { type: Boolean, default: false }
+		summaryOnly: { type: Boolean, default: false },
+		targetDate: { type: String, default: '' }
 	},
 	data() {
 		return { tableData: [] };
@@ -44,6 +47,9 @@ export default {
 				this.processData();
 			},
 			deep: true
+		},
+		targetDate() {
+			this.processData();
 		}
 	},
 	methods: {
@@ -85,14 +91,20 @@ export default {
 				const changed = record.changedInfo || {};
 				const origList = original.orderDetailList || [];
 				const chgList = changed.orderDetailList || [];
-				const detailPairs = this.buildDetailPairs(origList, chgList);
+				const scope = resolveDateScopedChange(original, changed, this.targetDate, getFundChangeTemplateDateFields(this.$options.name));
+				const rowTypes = getScopedRowTypes(scope, record.backupType);
+				if (!rowTypes.length) return;
+				const detailPairs = filterDetailPairsByScope(this.buildDetailPairs(origList, chgList), scope, record.backupType);
+				if (!detailPairs.length) return;
 				const detailCount = detailPairs.length;
+				const groupRowCount = getScopedRowCount(scope, detailCount, record.backupType);
 				const groupRows = [];
 				detailPairs.forEach((pair, detailIndex) => {
-					groupRows.push({ ...this.mapDetailToRow(original, pair.original), rowType: 'before', groupIndex, detailIndex, subLabel: '修改前', groupRowCount: detailCount * 2 + 1 });
-					groupRows.push({ ...this.mapDetailToRow(changed, pair.changed), rowType: 'after', groupIndex, detailIndex, subLabel: '修改后', groupRowCount: detailCount * 2 + 1 });
+					if (rowTypes.includes('before')) groupRows.push({ ...this.mapDetailToRow(original, pair.original), rowType: 'before', groupIndex, detailIndex, subLabel: '修改前', groupRowCount });
+					if (rowTypes.includes('after')) groupRows.push({ ...this.mapDetailToRow(changed, pair.changed), rowType: 'after', groupIndex, detailIndex, subLabel: '修改后', groupRowCount });
 				});
-				groupRows.push({ rowType: 'diff', groupIndex, subLabel: '差额', groupRowCount: detailCount * 2 + 1, ...this.buildDiffFields(original, changed, record) });
+				const diffFields = buildDateScopedDiffFields(original, changed, scope, (scopedOriginal, scopedChanged) => this.buildDiffFields(scopedOriginal, scopedChanged, record));
+				groupRows.push({ rowType: 'diff', groupIndex, subLabel: '差额', groupRowCount, ...diffFields });
 				groupRows[0].isGroupFirst = true;
 				groupRows[0].backupTime = _.toString(record.backupTime || '').slice(0, 10);
 				this.tableData.push(...groupRows);

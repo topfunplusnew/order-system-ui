@@ -41,6 +41,8 @@ export default {
 		result: { type: Array, default: () => [] },
 		/** 底部统计（calculateByIds 返回），v3 模板使用 */
 		summaryData: { type: Object, default: () => ({}) },
+		/** 当前资金变动明细按哪个目标日期展示 */
+		targetDate: { type: String, default: '' },
 		/** 兼容旧调用；资金变动详情统一使用 FundChangeTemplates */
 		useV3Templates: { type: Boolean, default: false }
 	},
@@ -113,7 +115,7 @@ export default {
 			const Component = templateConfig.component;
 			const title = templateConfig.title || `${option.label}变动详情`;
 			const width = templateConfig?.width || '1500px';
-			const componentProps = { compareData: data, moduleName: option.tableName, summaryData: this.summaryData, summaryModuleLabel: option.label };
+			const componentProps = { compareData: data, moduleName: option.tableName, summaryData: this.summaryData, summaryModuleLabel: option.label, targetDate: this.targetDate };
 			this.openDialog(Component, title, width, componentProps, false);
 		},
 		handleProcess() {
@@ -133,7 +135,7 @@ export default {
 				{{ getDisplayModuleName(item) }}
 			</div>
 			<div v-if="getTemplateConfig(item) && getModuleData(item).length" class="module-template-wrap">
-				<component :is="getTemplateConfig(item).component" :compare-data="getModuleData(item)" :module-name="item.tableName" :summary-data="summaryData" :summary-module-label="item.label" :summary-only="true" />
+				<component :is="getTemplateConfig(item).component" :compare-data="getModuleData(item)" :module-name="item.tableName" :summary-data="summaryData" :summary-module-label="item.label" :summary-only="true" :target-date="targetDate" />
 			</div>
 		</div>
 	</div>

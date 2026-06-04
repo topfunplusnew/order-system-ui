@@ -547,7 +547,7 @@ export default {
 			}
 			let payload;
 			try {
-				payload = await this.fetchFundChangeDetailPayload(baseQuery, triples, backupDate);
+				payload = await this.fetchFundChangeDetailPayload(baseQuery, triples, firstTargetDate);
 			} catch (e) {
 				this.$message.error('获取变动详情失败');
 				return;
@@ -557,7 +557,7 @@ export default {
 				return;
 			}
 			const dialogTitle = `${row.project} - ${part.label}`;
-			this.openDialog(ChooseModule, dialogTitle, '700px', { moduleContexts: payload.moduleContexts, result: _.cloneDeep(payload.records), summaryData: payload.summaryData, useV3Templates: true }, false, false);
+			this.openDialog(ChooseModule, dialogTitle, '700px', { moduleContexts: payload.moduleContexts, result: _.cloneDeep(payload.records), summaryData: payload.summaryData, targetDate: firstTargetDate, useV3Templates: true }, false, false);
 		},
 		/**
 		 * 查看模块详情（v3 流程：calculateAmounts -> filterIdsByCategory -> getByIds + calculateByIds）
@@ -588,7 +588,7 @@ export default {
 			}
 			let payload;
 			try {
-				payload = await this.fetchFundChangeDetailPayload(baseQuery, triples, backupDate);
+				payload = await this.fetchFundChangeDetailPayload(baseQuery, triples, firstTargetDate);
 			} catch (e) {
 				this.$message.error('获取变动详情失败');
 				return;
@@ -598,7 +598,7 @@ export default {
 				return;
 			}
 			const dialogTitle = projectName || '请选择模块查看其详细资金变动';
-			this.openDialog(ChooseModule, dialogTitle, '700px', { moduleContexts: payload.moduleContexts, result: _.cloneDeep(payload.records), summaryData: payload.summaryData, useV3Templates: true }, false, false);
+			this.openDialog(ChooseModule, dialogTitle, '700px', { moduleContexts: payload.moduleContexts, result: _.cloneDeep(payload.records), summaryData: payload.summaryData, targetDate: firstTargetDate, useV3Templates: true }, false, false);
 		},
 		/**
 		 * 从 calculateAmounts data 中提取指定 outputKey 的 (tableName, category) 组合
