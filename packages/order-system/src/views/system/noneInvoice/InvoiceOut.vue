@@ -10,7 +10,7 @@
 			<el-form-item label="对方公司" prop="companyName">
 				<el-input v-model="queryParams.companyName" placeholder="请输入对方公司名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
-			<el-form-item label="开票单位" prop="invoiceCompanyName">
+			<el-form-item label="票据单位名称" prop="invoiceCompanyName">
 				<el-input v-model="queryParams.invoiceCompanyName" placeholder="请输入票据单位名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="是否已开发票" prop="isInvoiced">

@@ -7,6 +7,9 @@
 			<el-form-item label="票据单位名称" prop="invoiceCompanyName">
 				<el-input v-model="queryParams.invoiceCompanyName" placeholder="请输入票据单位名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
+			<el-form-item label="开票方公司名称" prop="Supplier">
+				<el-input v-model="queryParams.Supplier" placeholder="请输入开票方公司名称" clearable @keyup.enter.native="handleQuery" />
+			</el-form-item>
 			<el-form-item label="对方名称" prop="mixCompanyName">
 				<el-input v-model="queryParams.params.mixCompanyName" placeholder="可搜索供应商或客户名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
@@ -777,6 +780,7 @@ export default {
 			this.dateRange = [];
 			this.invoiceStatus = '';
 			this.queryParams.invoiceCompanyName = null;
+			this.queryParams.Supplier = null;
 			this.queryParams.params.mixCompanyName = null;
 			this.queryParams.params.isInvoiced = null;
 			this.queryParams.params.hasOweAmount = null;
