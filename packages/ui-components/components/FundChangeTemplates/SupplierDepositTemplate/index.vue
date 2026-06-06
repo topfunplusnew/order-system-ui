@@ -2,13 +2,14 @@
 /**
  * 厂家保证金变动详情模板
  * lendmoney 表 type=厂家保证金/押金：moneyAmount、recoverMoneyList[].moneyAmount
- * 范式：记录(x) 合并 3 行，排除 bankCardDiff、supplierDepositDiff，buildDiffFields 填 depositAmount，diff-summary-table 展示
+ * 范式：记录(x) 合并 3 行，排除隐藏差额和备注列，diff-summary-table 展示
  */
-import { format, subtract, add } from 'mathjs';
 import _ from 'lodash';
+import { FACTORY_MARGIN_COLUMNS } from '@/utils/fundChangeExcelColumns';
 import { buildBackendSummaryRows } from '@/utils/fundChange/backendSummary';
 import { buildDateScopedRecordRows } from '@/utils/fundChange/dateScopedRows';
 import { getFundChangeTemplateDateFields } from '@/utils/fundChange/dateScopeFields';
+import { buildSupplierDepositDiffFields, mapSupplierDepositRecordToRow, sumSupplierDepositDiffRows, SUPPLIER_DEPOSIT_SUMMARY_PROPS } from '@/utils/fundChange/supplierDeposit';
 
 export default {
 	name: 'SupplierDepositTemplate',
@@ -25,12 +26,7 @@ export default {
 	},
 	computed: {
 		columns() {
-			return [
-				{ prop: 'depositDate', label: '保证金日期', width: 120, showSummary: false },
-				{ prop: 'supplierName', label: '厂家名称', width: 120, showSummary: false },
-				{ prop: 'depositAmount', label: '保证金金额', width: 120 },
-				{ prop: 'bankCardNo', label: '银行卡号', width: 150, showSummary: false }
-			];
+			return FACTORY_MARGIN_COLUMNS.filter(column => !['amountDiff', 'remark'].includes(column.prop)).map(column => (SUPPLIER_DEPOSIT_SUMMARY_PROPS.includes(column.prop) ? column : { ...column, showSummary: false }));
 		},
 		diffRows() {
 			return this.tableData.filter(r => r.rowType === 'diff');
@@ -55,12 +51,6 @@ export default {
 		}
 	},
 	methods: {
-		sumRecoverNonBadDebt(list) {
-			return _.sumBy(
-				_.filter(list || [], r => r.badDebtFlag !== 1),
-				r => Number(r.moneyAmount || 0)
-			);
-		},
 		processData() {
 			this.tableData = [];
 			(this.compareData || []).forEach((record, index) => {
@@ -81,21 +71,13 @@ export default {
 			});
 		},
 		mapBeforeRow(info) {
-			return {
-				depositDate: info.addtime ? (info.addtime + '').slice(0, 10) : '',
-				supplierName: info.companyName || info.borrowerName || '',
-				depositAmount: info.moneyAmount,
-				bankCardNo: info.bankNo || ''
-			};
+			return mapSupplierDepositRecordToRow(info);
 		},
 		mapAfterRow(info) {
 			return this.mapBeforeRow(info);
 		},
 		buildDiffFields(original, changed, _record) {
-			const origLoan = Number(original.moneyAmount || 0);
-			const chgLoan = Number(changed.moneyAmount || 0);
-			const supplierDepositDiff = format(subtract(chgLoan, origLoan), { notation: 'fixed', precision: 2 });
-			return { depositAmount: supplierDepositDiff };
+			return buildSupplierDepositDiffFields(original, changed);
 		},
 		tableRowClassName({ row }) {
 			if (row.rowType === 'before') return 'before-row';
@@ -118,13 +100,10 @@ export default {
 			const { columns } = param;
 			const sums = [];
 			const diffRows = this.diffRows;
-			const amountSum = format(
-				_.reduce(diffRows, (acc, r) => add(acc, Number(r.depositAmount) || 0), 0),
-				{ notation: 'fixed', precision: 2 }
-			);
+			const amountSums = sumSupplierDepositDiffRows(diffRows);
 			columns.forEach((col, index) => {
 				if (index === 0 || index === 1) sums.push('');
-				else if (col.property === 'depositAmount') sums.push(amountSum);
+				else if (SUPPLIER_DEPOSIT_SUMMARY_PROPS.includes(col.property)) sums.push(amountSums[col.property]);
 				else sums.push('');
 			});
 			return sums;

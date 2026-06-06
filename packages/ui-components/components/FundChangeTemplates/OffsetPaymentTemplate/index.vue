@@ -74,29 +74,29 @@ export default {
 		mapBeforeRow(info) {
 			const srcName = info.sourceCompanyName || '';
 			const tgtName = info.targetCompanyName || '';
-			const payName = info.payAccountName || srcName;
-			const recName = info.receiveAccountName || tgtName;
-			const offsetTypeMap = { transfer: '内部转账', offset: '冲抵' };
+			const payName = info.payAccountName || info.sourceAccountName || srcName;
+			const recName = info.receiveAccountName || info.targetAccountName || tgtName;
+			const offsetTypeMap = { transfer: '内部转账', offset: '冲抵', cash_record: '冲抵' };
 			return {
 				status: '已冲抵',
-				tradeTime: info.addtime ? (info.addtime + '').slice(0, 10) : '',
+				tradeTime: info.transactionTime ? (info.transactionTime + '').slice(0, 10) : info.addtime ? (info.addtime + '').slice(0, 10) : '',
 				amount: info.amount,
 				payerName: srcName,
 				receiverName: tgtName,
 				payAccountName: payName,
-				payAccountNo: info.payAccountNo || '',
-				payerBank: info.payerBankName || '',
+				payAccountNo: info.payAccountNo || info.sourceBankNo || '',
+				payerBank: info.payerBankName || info.sourceBankName || '',
 				receiveAccountName: recName,
-				receiveAccountNo: info.receiveAccountNo || '',
-				receiverBank: info.receiverBankName || '',
-				payerPayType: info.sourcePayType || '',
+				receiveAccountNo: info.receiveAccountNo || info.targetBankNo || '',
+				receiverBank: info.receiverBankName || info.targetBankName || '',
+				payerPayType: info.sourcePayType || info.sourcePaymentType || '',
 				payerCompanyType: info.sourceCompanyType || '',
-				receiverPayType: info.targetPayType || '',
+				receiverPayType: info.targetPayType || info.targetPaymentType || '',
 				receiverCompanyType: info.targetCompanyType || '',
 				offsetType: offsetTypeMap[info.type] || info.type || '',
-				remark: info.remark || '',
+				remark: info.remarks || info.remark || '',
 				accountType: info.accountType || '',
-				operatorName: info.operatorName || info.createBy || ''
+				operatorName: info.operatorName || info.userName || info.createBy || ''
 			};
 		},
 		mapAfterRow(info) {

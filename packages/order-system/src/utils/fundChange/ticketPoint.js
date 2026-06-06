@@ -1,4 +1,4 @@
-import { format, subtract } from 'mathjs';
+import { format, subtract, add } from 'mathjs';
 
 export const UNIFIED_TICKET_POINT_MODULE_KEY = 'allinvoice';
 export const UNIFIED_TICKET_POINT_MODULE_LABEL = '发票往来';
@@ -116,4 +116,9 @@ export function buildTicketPointDiffFields(original = {}, changed = {}, tableNam
 	}
 
 	return { customerDiff: totalDiff, supplierDiff: '0.00' };
+}
+
+export function sumTicketPointIncomeDiffRows(rows = []) {
+	const total = rows.reduce((acc, row) => add(acc, Number(row.customerDiff || 0)), 0);
+	return format(total, { notation: 'fixed', precision: 2 });
 }

@@ -2,14 +2,14 @@
 /**
  * 借入款管理变动详情模板
  * borrowedmoney 表：moneyAmount、repayments[].moneyAmount、repayments[].ratio
- * 范式：记录(x) 合并 3 行，排除 bankCardDiff，buildDiffFields 填 borrowAmount，diff-summary-table 展示
+ * 范式：记录(x) 合并 3 行，排除 bankCardDiff，buildDiffFields 填 moneyAmount，diff-summary-table 展示
  */
-import { format, subtract, add } from 'mathjs';
 import _ from 'lodash';
 import { BORROWEDMONEY_COLUMNS } from '@/utils/fundChangeExcelColumns';
 import { buildBackendSummaryRows } from '@/utils/fundChange/backendSummary';
 import { buildDateScopedRecordRows } from '@/utils/fundChange/dateScopedRows';
 import { getFundChangeTemplateDateFields } from '@/utils/fundChange/dateScopeFields';
+import { buildBorrowInDiffFields, mapBorrowInRecordToRow, sumBorrowInDiffRows } from '@/utils/fundChange/borrowIn';
 
 export default {
 	name: 'BorrowInTemplate',
@@ -71,49 +71,14 @@ export default {
 				this.tableData.push(...rows);
 			});
 		},
-		calcRepaidAndUnrepaid(info) {
-			const repaid = _.sumBy(info.repayments || [], r => Number(r.moneyAmount || 0));
-			const principal = Number(info.moneyAmount || 0);
-			const repaidInterest = _.sumBy(info.repayments || [], r => Number(r.ratio || 0));
-			const unrepaid = subtract(principal, repaid);
-			return {
-				repaidAmount: format(repaid, { notation: 'fixed', precision: 2 }),
-				unrepaidAmount: format(unrepaid, { notation: 'fixed', precision: 2 }),
-				repaidInterest: format(repaidInterest, { notation: 'fixed', precision: 2 })
-			};
-		},
 		mapBeforeRow(info) {
-			const { repaidAmount, unrepaidAmount, repaidInterest } = this.calcRepaidAndUnrepaid(info);
-			return {
-				id: info.id,
-				lenderSource: info.lenderName || info.companyName || '',
-				borrowAmount: info.moneyAmount,
-				interestRate: info.interestRate,
-				grantDate: info.grantDate ? (info.grantDate + '').slice(0, 10) : '',
-				loanYears: info.loanYears,
-				mortgage: info.mortgage || '',
-				intoAccount: info.intoAccountName || info.bankName || '',
-				intoAccountNo: info.bankNo || info.intoAccountNo || '',
-				repaidAmount,
-				unrepaidAmount,
-				repaidInterest,
-				remark: info.remark || ''
-			};
+			return mapBorrowInRecordToRow(info);
 		},
 		mapAfterRow(info) {
 			return this.mapBeforeRow(info);
 		},
 		buildDiffFields(original, changed, _record) {
-			// 借入款：moneyAmount增加、还款减少银行卡
-			const origPrincipal = Number(original.moneyAmount || 0);
-			const chgPrincipal = Number(changed.moneyAmount || 0);
-			const origRepayP = _.sumBy(original.repayments || [], r => Number(r.moneyAmount || 0));
-			const chgRepayP = _.sumBy(changed.repayments || [], r => Number(r.moneyAmount || 0));
-			const origRepayI = _.sumBy(original.repayments || [], r => Number(r.ratio || 0));
-			const chgRepayI = _.sumBy(changed.repayments || [], r => Number(r.ratio || 0));
-			const diff = add(subtract(chgPrincipal, origPrincipal), add(subtract(origRepayP, chgRepayP), subtract(origRepayI, chgRepayI)));
-			const bankCardDiff = format(diff, { notation: 'fixed', precision: 2 });
-			return { borrowAmount: bankCardDiff };
+			return buildBorrowInDiffFields(original, changed);
 		},
 		tableRowClassName({ row }) {
 			if (row.rowType === 'before') return 'before-row';
@@ -136,13 +101,10 @@ export default {
 			const { columns } = param;
 			const sums = [];
 			const diffRows = this.diffRows;
-			const amountSum = format(
-				_.reduce(diffRows, (acc, r) => add(acc, Number(r.borrowAmount) || 0), 0),
-				{ notation: 'fixed', precision: 2 }
-			);
+			const amountSum = sumBorrowInDiffRows(diffRows);
 			columns.forEach((col, index) => {
 				if (index === 0 || index === 1) sums.push('');
-				else if (col.property === 'borrowAmount') sums.push(amountSum);
+				else if (col.property === 'moneyAmount') sums.push(amountSum);
 				else sums.push('');
 			});
 			return sums;

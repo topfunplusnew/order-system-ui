@@ -3,6 +3,7 @@ import {
 	buildTicketPointDiffFields,
 	mapTicketPointRecordToRow,
 	resolveTicketPointSummaryLabel,
+	sumTicketPointIncomeDiffRows,
 	UNIFIED_TICKET_POINT_MODULE_LABEL
 } from '@/utils/fundChange/ticketPoint';
 
@@ -89,5 +90,9 @@ describe('ticketPoint fund change helpers', () => {
 	test('uses unified summary label for invoice-related modules', () => {
 		expect(resolveTicketPointSummaryLabel('invoiceout', '发票卖出')).toBe(UNIFIED_TICKET_POINT_MODULE_LABEL);
 		expect(resolveTicketPointSummaryLabel('allinvoice', '发票买入')).toBe(UNIFIED_TICKET_POINT_MODULE_LABEL);
+	});
+
+	test('sums customer diff rows for ticket point income summary', () => {
+		expect(sumTicketPointIncomeDiffRows([{ customerDiff: '214.78' }, { customerDiff: '-14.78' }, { supplierDiff: '99.00' }])).toBe('200.00');
 	});
 });

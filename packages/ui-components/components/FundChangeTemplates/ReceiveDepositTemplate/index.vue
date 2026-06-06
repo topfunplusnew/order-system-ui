@@ -2,14 +2,14 @@
 /**
  * 收取保证金变动详情模板
  * deposit_money 表：moneyAmount、depositRefundList[].moneyAmount
- * 范式：记录(x) 合并 3 行，排除 depositDiff，buildDiffFields 填 depositAmount，diff-summary-table 展示
+ * 范式：记录(x) 合并 3 行，排除 depositDiff，diff-summary-table 展示
  */
-import { format, subtract, add } from 'mathjs';
 import _ from 'lodash';
 import { DEPOSIT_MONEY_COLUMNS } from '@/utils/fundChangeExcelColumns';
 import { buildBackendSummaryRows } from '@/utils/fundChange/backendSummary';
 import { buildDateScopedRecordRows } from '@/utils/fundChange/dateScopedRows';
 import { getFundChangeTemplateDateFields } from '@/utils/fundChange/dateScopeFields';
+import { buildReceiveDepositDiffFields, mapReceiveDepositRecordToRow, RECEIVE_DEPOSIT_SUMMARY_PROPS, sumReceiveDepositDiffRows } from '@/utils/fundChange/receiveDeposit';
 
 export default {
 	name: 'ReceiveDepositTemplate',
@@ -27,7 +27,7 @@ export default {
 	computed: {
 		columns() {
 			const excludeProps = ['depositDiff'];
-			return DEPOSIT_MONEY_COLUMNS.filter(c => !excludeProps.includes(c.prop)).map(c => (c.aggregator ? c : { ...c, showSummary: false }));
+			return DEPOSIT_MONEY_COLUMNS.filter(c => !excludeProps.includes(c.prop)).map(c => (RECEIVE_DEPOSIT_SUMMARY_PROPS.includes(c.prop) ? c : { ...c, showSummary: false }));
 		},
 		diffRows() {
 			return this.tableData.filter(r => r.rowType === 'diff');
@@ -52,12 +52,6 @@ export default {
 		}
 	},
 	methods: {
-		sumRefundNonBadDebt(list) {
-			return _.sumBy(
-				_.filter(list || [], r => r.badDebtFlag !== 1),
-				r => Number(r.moneyAmount || 0)
-			);
-		},
 		processData() {
 			this.tableData = [];
 			(this.compareData || []).forEach((record, index) => {
@@ -77,38 +71,14 @@ export default {
 				this.tableData.push(...rows);
 			});
 		},
-		calcUnrefund(info) {
-			const total = Number(info.moneyAmount || 0);
-			const refunded = this.sumRefundNonBadDebt(info.depositRefundList);
-			return format(subtract(total, refunded), { notation: 'fixed', precision: 2 });
-		},
 		mapBeforeRow(info) {
-			return {
-				depositCompany: info.depositType || info.depositCompany || '',
-				objectType: info.companyType || info.objectType || '',
-				objectName: info.companyName || info.objectName || '',
-				depositAmount: info.moneyAmount,
-				unrefundAmount: this.calcUnrefund(info),
-				otherAccountName: info.otherAccountName || '',
-				otherAccountNo: info.otherAccountNo || '',
-				otherBankName: info.otherBankName || '',
-				selfReceiveAccountName: info.selfAccountName || info.bankName || '',
-				selfAccountNo: info.bankNo || '',
-				selfBankName: info.selfBankName || info.bankFullName || '',
-				receiveTime: info.addtime ? (info.addtime + '').slice(0, 10) : '',
-				reason: info.reason || info.loanReason || '',
-				remark: info.remark || '',
-				operatorName: info.operatorName || info.createBy || ''
-			};
+			return mapReceiveDepositRecordToRow(info);
 		},
 		mapAfterRow(info) {
 			return this.mapBeforeRow(info);
 		},
 		buildDiffFields(original, changed, _record) {
-			const origReceive = Number(original.moneyAmount || 0);
-			const chgReceive = Number(changed.moneyAmount || 0);
-			const depositDiff = format(subtract(chgReceive, origReceive), { notation: 'fixed', precision: 2 });
-			return { depositAmount: depositDiff };
+			return buildReceiveDepositDiffFields(original, changed);
 		},
 		tableRowClassName({ row }) {
 			if (row.rowType === 'before') return 'before-row';
@@ -131,13 +101,10 @@ export default {
 			const { columns } = param;
 			const sums = [];
 			const diffRows = this.diffRows;
-			const amountSum = format(
-				_.reduce(diffRows, (acc, r) => add(acc, Number(r.depositAmount) || 0), 0),
-				{ notation: 'fixed', precision: 2 }
-			);
+			const amountSums = sumReceiveDepositDiffRows(diffRows);
 			columns.forEach((col, index) => {
 				if (index === 0 || index === 1) sums.push('');
-				else if (col.property === 'depositAmount') sums.push(amountSum);
+				else if (RECEIVE_DEPOSIT_SUMMARY_PROPS.includes(col.property)) sums.push(amountSums[col.property]);
 				else sums.push('');
 			});
 			return sums;

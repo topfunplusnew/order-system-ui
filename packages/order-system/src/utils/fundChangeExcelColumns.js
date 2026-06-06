@@ -142,18 +142,18 @@ export const BALANCEACCOUNTS_COLUMNS = [
 /** 借入款管理：id, 贷款来源, 借入金额, 贷款利率, 贷款发放日期, 贷款年限, 抵押担保, 打入账户, 打入账号, 已还款金额, 未还款金额, 已还款利息, 备注 */
 export const BORROWEDMONEY_COLUMNS = [
 	{ prop: 'id', label: 'id', width: 80 },
-	{ prop: 'lenderSource', label: '贷款来源', width: 120 },
-	{ prop: 'borrowAmount', label: '借入金额', width: 120, showSummary: false },
-	{ prop: 'interestRate', label: '贷款利率', width: 100 },
-	{ prop: 'grantDate', label: '贷款发放日期', width: 120 },
-	{ prop: 'loanYears', label: '贷款年限', width: 90 },
-	{ prop: 'mortgage', label: '抵押担保', width: 120 },
-	{ prop: 'intoAccount', label: '打入账户', width: 150 },
-	{ prop: 'intoAccountNo', label: '打入账号', width: 180 },
+	{ prop: 'origin', label: '贷款来源', width: 120 },
+	{ prop: 'moneyAmount', label: '借入金额', width: 120, showSummary: false },
+	{ prop: 'ratio', label: '贷款利率', width: 100 },
+	{ prop: 'loanDate', label: '贷款发放日期', width: 120 },
+	{ prop: 'loanDuring', label: '贷款年限', width: 90 },
+	{ prop: 'mortgageGuarantee', label: '抵押担保', width: 120 },
+	{ prop: 'acountsName', label: '打入账户', width: 150 },
+	{ prop: 'bankNo', label: '打入账号', width: 180 },
 	{ prop: 'repaidAmount', label: '已还款金额', width: 120 },
 	{ prop: 'unrepaidAmount', label: '未还款金额', width: 120 },
 	{ prop: 'repaidInterest', label: '已还款利息', width: 120 },
-	{ prop: 'remark', label: '备注', width: 150 },
+	{ prop: 'comments', label: '备注', width: 150 },
 	{ prop: 'bankCardDiff', label: '银行卡资金变动', aggregator: 'absSum', summaryLabel: '银行卡资金变动汇总' }
 ];
 
@@ -315,7 +315,7 @@ export const DEPOSIT_MONEY_COLUMNS = [
 	{ prop: 'depositDiff', label: '保证金变动差额', aggregator: 'absSum', summaryLabel: '保证金变动差额汇总' }
 ];
 
-/** 返利：计提返利日期, 类型, 供应商, 返利方式, 单价, 金额, 返利原因, 收到返利日期, 收到返利金额 */
+/** 返利：计提返利日期, 类型, 供应商, 返利方式, 单价, 金额, 返利原因, 收到返利日期, 收到返利金额, 实收返利时间, 实收金额, 备注 */
 export const REBATE_COLUMNS = [
 	{ prop: 'rebateDate', label: '计提返利日期', width: 150 },
 	{ prop: 'rebateType', label: '类型', width: 120 },
@@ -326,6 +326,8 @@ export const REBATE_COLUMNS = [
 	{ prop: 'rebateReason', label: '返利原因', width: 180 },
 	{ prop: 'receivedDate', label: '收到返利日期', width: 150 },
 	{ prop: 'receivedAmount', label: '收到返利金额', width: 130 },
+	{ prop: 'actualReceivedTime', label: '实收返利时间', width: 160 },
+	{ prop: 'actualReceivedAmount', label: '实收金额', width: 120, showSummary: false },
 	{ prop: 'remark', label: '备注', width: 160 },
 	{ prop: 'supplierDiff', label: '供应商变动差额', aggregator: 'absSum', summaryLabel: '供应商变动差额汇总' }
 ];

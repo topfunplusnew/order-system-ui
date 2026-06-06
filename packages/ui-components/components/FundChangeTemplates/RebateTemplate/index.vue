@@ -4,12 +4,10 @@
  * rebate 表：rebate、supplier、rebateDate、detailList[].actualReceived 等
  * 范式：记录(x) 合并 3 行，差额行展示返利金额变化，底部小表使用后端 supplierTotalBalance/rebate 汇总。
  */
-import { format, subtract, add } from 'mathjs';
 import _ from 'lodash';
 import { REBATE_COLUMNS } from '@/utils/fundChangeExcelColumns';
 import { buildBackendSummaryRows } from '@/utils/fundChange/backendSummary';
-import { buildDateScopedRecordRows } from '@/utils/fundChange/dateScopedRows';
-import { getFundChangeTemplateDateFields } from '@/utils/fundChange/dateScopeFields';
+import { buildRebateRecordRows, REBATE_SUMMARY_PROPS, sumRebateDiffRows } from '@/utils/fundChange/rebate';
 
 export default {
 	name: 'RebateTemplate',
@@ -27,7 +25,7 @@ export default {
 	computed: {
 		columns() {
 			const excludeProps = ['supplierDiff'];
-			return REBATE_COLUMNS.filter(c => !excludeProps.includes(c.prop)).map(c => (c.aggregator ? c : { ...c, showSummary: false }));
+			return REBATE_COLUMNS.filter(c => !excludeProps.includes(c.prop)).map(c => (REBATE_SUMMARY_PROPS.includes(c.prop) ? c : { ...c, showSummary: false }));
 		},
 		diffRows() {
 			return this.tableData.filter(r => r.rowType === 'diff');
@@ -52,73 +50,22 @@ export default {
 		}
 	},
 	methods: {
-		formatDate(value) {
-			return value ? String(value).slice(0, 10) : '';
-		},
-		formatAmount(value) {
-			return format(Number(value || 0), { notation: 'fixed', precision: 2 });
-		},
-		formatRebateMethod(value) {
-			if (value === 2 || value === '2' || value === '面积') return '面积';
-			if (value === 1 || value === '1' || value === '重箱') return '重箱';
-			return value || '';
-		},
-		getDetailList(info = {}) {
-			return info.detailList || info.rebateDetailList || [];
-		},
-		sumReceivedAmount(info = {}) {
-			return _.reduce(this.getDetailList(info), (acc, item) => add(acc, Number(item.actualReceived ?? item.moneyAmount ?? 0) || 0), 0);
-		},
-		getEarliestReceivedDate(info = {}) {
-			const dates = this.getDetailList(info)
-				.map(item => item.actualReceivedDate || item.receivedDate || item.rebateDate)
-				.filter(Boolean)
-				.sort();
-			return dates[0] ? this.formatDate(dates[0]) : '未收到';
-		},
 		processData() {
 			this.tableData = [];
 			(this.compareData || []).forEach((record, index) => {
 				const original = record.originalInfo || {};
 				const changed = record.changedInfo || {};
 				const backupTime = _.toString(record.backupTime || '').slice(0, 10);
-				const rows = buildDateScopedRecordRows({
+				const rows = buildRebateRecordRows({
 					original,
 					changed,
 					targetDate: this.targetDate,
 					backupType: record.backupType,
-					dateFields: getFundChangeTemplateDateFields(this.$options.name),
-					beforeRow: { ...this.mapBeforeRow(original), recordIndex: index + 1, backupTime },
-					afterRow: { ...this.mapAfterRow(changed), recordIndex: index + 1, backupTime },
-					buildDiffFields: (scopedOriginal, scopedChanged) => this.buildDiffFields(scopedOriginal, scopedChanged)
+					recordIndex: index + 1,
+					backupTime
 				});
 				this.tableData.push(...rows);
 			});
-		},
-		mapBeforeRow(info) {
-			const receivedAmount = this.sumReceivedAmount(info);
-			return {
-				rebateDate: this.formatDate(info.rebateDate),
-				rebateType: info.rebateType || '',
-				supplierName: info.supplier || info.supplierName || info.companyName || '',
-				rebateMethod: this.formatRebateMethod(info.rebateMethod),
-				unitPrice: info.unitPrice,
-				rebateAmount: info.rebate,
-				rebateReason: info.rebateReason || '',
-				receivedDate: this.getEarliestReceivedDate(info),
-				receivedAmount: receivedAmount ? this.formatAmount(receivedAmount) : '未收到',
-				remark: info.comments || info.remark || ''
-			};
-		},
-		mapAfterRow(info) {
-			return this.mapBeforeRow(info);
-		},
-		buildDiffFields(original, changed) {
-			const supplierDiff = format(subtract(Number(changed.rebate || 0), Number(original.rebate || 0)), { notation: 'fixed', precision: 2 });
-			return {
-				rebateAmount: supplierDiff,
-				supplierDiff
-			};
 		},
 		tableRowClassName({ row }) {
 			if (row.rowType === 'before') return 'before-row';
@@ -139,13 +86,10 @@ export default {
 		},
 		getTableSummary(param) {
 			const { columns } = param;
-			const amountSum = format(
-				_.reduce(this.diffRows, (acc, r) => add(acc, Number(r.rebateAmount) || 0), 0),
-				{ notation: 'fixed', precision: 2 }
-			);
+			const amountSums = sumRebateDiffRows(this.diffRows);
 			return columns.map((col, index) => {
 				if (index === 0 || index === 1) return '';
-				if (col.property === 'rebateAmount') return amountSum;
+				if (REBATE_SUMMARY_PROPS.includes(col.property)) return amountSums[col.property];
 				return '';
 			});
 		}
@@ -164,7 +108,7 @@ export default {
 					</template>
 				</template>
 			</el-table-column>
-			<el-table-column label="变更" width="80" fixed>
+			<el-table-column label="状态" width="80" fixed>
 				<template slot-scope="scope">{{ scope.row.subLabel }}</template>
 			</el-table-column>
 			<el-table-column v-for="col in columns" :key="col.prop" :prop="col.prop" :label="col.label" :width="col.width" />

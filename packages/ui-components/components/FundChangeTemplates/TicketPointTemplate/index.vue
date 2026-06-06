@@ -4,10 +4,9 @@
  * invoicein/invoiceout/invoiceother 表：customer、Supplier、invoiceAmount、customerPointAmount、supplierPointAmount 等
  * 范式：记录(x) 合并 3 行，排除 customerDiff、supplierDiff，diff-summary-table 展示 2 行
  */
-import { format, add } from 'mathjs';
 import _ from 'lodash';
 import { TICKET_POINT_COLUMNS } from '@/utils/fundChangeExcelColumns';
-import { buildTicketPointDiffFields, mapTicketPointRecordToRow, resolveTicketPointSummaryLabel } from '@/utils/fundChange/ticketPoint';
+import { buildTicketPointDiffFields, mapTicketPointRecordToRow, resolveTicketPointSummaryLabel, sumTicketPointIncomeDiffRows } from '@/utils/fundChange/ticketPoint';
 import { buildBackendSummaryRows } from '@/utils/fundChange/backendSummary';
 import { buildDateScopedRecordRows } from '@/utils/fundChange/dateScopedRows';
 import { getFundChangeTemplateDateFields } from '@/utils/fundChange/dateScopeFields';
@@ -101,6 +100,15 @@ export default {
 			if (columnIndex !== 0) return [1, 1];
 			if (row.isRecordFirst) return [row.recordRowCount || 3, 1];
 			return [0, 0];
+		},
+		getTableSummary(param) {
+			const { columns } = param;
+			const incomePointAmountSum = sumTicketPointIncomeDiffRows(this.diffRows);
+			return columns.map((col, index) => {
+				if (index === 0 || index === 1) return '';
+				if (col.property === 'incomePointAmount') return incomePointAmountSum;
+				return '';
+			});
 		}
 	}
 };
@@ -108,7 +116,7 @@ export default {
 
 <template>
 	<div class="fund-change-template">
-		<el-table v-if="!summaryOnly" :data="tableData" border :row-class-name="tableRowClassName" :span-method="recordSpanMethod" style="width: 100%">
+		<el-table v-if="!summaryOnly" :data="tableData" border :row-class-name="tableRowClassName" :span-method="recordSpanMethod" show-summary :summary-method="getTableSummary" style="width: 100%">
 			<el-table-column :label="resolvedSummaryModuleLabel" width="100" fixed class-name="record-col">
 				<template slot-scope="scope">
 					<template v-if="scope.row.isRecordFirst">
@@ -159,6 +167,16 @@ export default {
 ::v-deep .diff-row {
 	background-color: #fff1f0;
 	font-weight: bold;
+}
+::v-deep .el-table__footer td {
+	background-color: #fff8e6 !important;
+	font-weight: bold;
+}
+::v-deep .el-table__footer tr td {
+	padding: 8px 10px;
+	line-height: 1.5;
+	vertical-align: middle;
+	height: 38px !important;
 }
 .diff-summary-table.summary-only {
 	margin-top: 0;

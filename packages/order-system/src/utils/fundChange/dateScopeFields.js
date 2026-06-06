@@ -5,13 +5,13 @@ export const FUND_CHANGE_TEMPLATE_DATE_FIELDS = Object.freeze({
 	TicketPointTemplate: ['invoiceDate'],
 	ReceiveMoneyTemplate: ['fundsDate'],
 	PaymentTemplate: ['fundsDate'],
-	OffsetPaymentTemplate: ['addtime'],
+	OffsetPaymentTemplate: ['transactionTime'],
 	BalanceAccountTemplate: ['addtime'],
-	BorrowInTemplate: ['grantDate'],
+	BorrowInTemplate: ['loanDate'],
 	BorrowFromCompanyTemplate: ['addtime'],
-	ReceiveDepositTemplate: ['addtime'],
-	FuturesDepositTemplate: ['addtime'],
-	SupplierDepositTemplate: ['addtime'],
+	ReceiveDepositTemplate: ['depositDate'],
+	FuturesDepositTemplate: ['futuresDate'],
+	SupplierDepositTemplate: ['futuresDate'],
 	RebateTemplate: ['rebateDate']
 });
 
