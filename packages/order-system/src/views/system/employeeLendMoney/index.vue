@@ -55,6 +55,7 @@
 				}
 			"
 		>
+			<el-table-column label="ID" align="center" prop="id" width="80" show-overflow-tooltip />
 			<el-table-column v-if="columns[0].visible" label="借款人" align="center" prop="target" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">

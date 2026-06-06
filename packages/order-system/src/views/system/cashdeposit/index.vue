@@ -42,6 +42,7 @@
 
 		<template>
 			<el-table id="printBox" v-loading="loading" v-horizontal-scroll="'always'" border :data="lendMoneyList" size="mini" :cell-style="() => ({ padding: '1px' })" @selection-change="handleSelectionChange">
+				<el-table-column label="ID" align="center" prop="id" width="80" show-overflow-tooltip />
 				<!-- 期货保证金公司 -->
 				<el-table-column v-if="columns[0].visible" label="期货保证金公司" align="center" prop="futuresMarginCompany" show-overflow-tooltip>
 					<template slot-scope="scope">

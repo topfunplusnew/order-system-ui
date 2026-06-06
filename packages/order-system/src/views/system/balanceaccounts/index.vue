@@ -54,6 +54,7 @@
 			"
 			@selection-change="handleSelectionChange"
 		>
+			<el-table-column label="ID" align="center" prop="id" width="80" show-overflow-tooltip />
 			<el-table-column v-if="columns[0].visible" label="操作时间" align="center" prop="operateDate" show-overflow-tooltip />
 			<el-table-column v-if="columns[1].visible" label="金额" align="center" prop="moneyAmount" show-overflow-tooltip />
 			<el-table-column v-if="columns[2].visible" label="对方公司" align="center" prop="companyName" show-overflow-tooltip />

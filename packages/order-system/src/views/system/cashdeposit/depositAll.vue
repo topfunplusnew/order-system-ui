@@ -50,6 +50,7 @@
 		<!-- 表格 -->
 		<el-table id="printBox" v-loading="loading" v-horizontal-scroll="'always'" border :data="lendMoneyList" size="mini" :cell-style="() => ({ padding: '1px' })" @selection-change="handleSelectionChange">
 			<el-table-column type="selection" width="40" />
+			<el-table-column label="ID" prop="id" align="center" width="80" show-overflow-tooltip />
 			<el-table-column v-if="colVisible(0)" label="类型" prop="type" align="center" width="110" />
 			<el-table-column v-if="colVisible(1)" :label="companyLabel" prop="futuresMarginCompany" align="center" show-overflow-tooltip>
 				<template #default="{ row }">
