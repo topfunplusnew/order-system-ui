@@ -103,6 +103,7 @@ import { common_excel } from '@/views/dashboard/mixins/common/common_excel';
 import { formatBalance } from '@/utils/trash/utils';
 import _ from 'lodash';
 import { add } from 'mathjs';
+import { buildExportQuery } from './exportUtils';
 
 export default {
 	name: 'SUPPLIERTotal',
@@ -153,10 +154,22 @@ export default {
 		formatBalance,
 		listCompany,
 		/**
-		 * 导出 Excel：余额列保持借贷格式，末尾追加合计行
+		 * 调用后端接口导出 Excel
 		 */
 		handleExcelExport() {
-			this.excelExport(['查看供应商信息'], '供应商余额管理', { getSummaryRow: this.buildExportSummaryRow });
+			this.$refs['form']?.validate(valid => {
+				if (!valid) {
+					return;
+				}
+				const query = buildExportQuery({
+					endTime: this.searchForm.endTime,
+					companyId: this.searchForm.companyId,
+					balanceCompare: this.searchForm.balanceCompare,
+					balanceValue: this.searchForm.balanceValue,
+					creditType: this.searchForm.creditType
+				});
+				this.download(`/statistics/export/supplierbalance?${query}`, {}, `供应商余额管理_${new Date().getTime()}.xlsx`);
+			});
 		},
 		/**
 		 * 构建导出合计行

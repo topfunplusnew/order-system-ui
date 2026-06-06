@@ -222,6 +222,7 @@ import { isGoodsOrderDisplay, isInventoryDisplay, mergeSpecialTableData } from '
 import InventoryDayInfo from '@/components/InventoryDayInfo/index.vue';
 import OrderDayInfor from '@/components/OrderDayInfor/index.vue';
 import { abs, add, subtract, number } from 'mathjs';
+import { buildExportQuery } from './exportUtils';
 
 export default {
 	name: 'SupplierInfo',
@@ -323,12 +324,12 @@ export default {
 				if (!valid) {
 					return;
 				}
-				const params = new URLSearchParams({
-					beginTime: `${this.searchForm.startTime} 00:00:00`,
-					endTime: `${this.searchForm.endTime} 23:59:59`,
-					companyId: String(this.searchForm.companyId)
+				const query = buildExportQuery({
+					beginTime: this.searchForm.startTime,
+					endTime: this.searchForm.endTime,
+					companyId: this.searchForm.companyId
 				});
-				this.download(`/statistics/export/supplierTrafficDetail?${params.toString()}`, {}, `供应商明细_${new Date().getTime()}.xlsx`);
+				this.download(`/statistics/export/supplierTrafficDetail?${query}`, {}, `供应商明细_${new Date().getTime()}.xlsx`);
 			});
 		},
 		getSummaries(param) {
