@@ -32,8 +32,8 @@ module.exports = {
 				//k8s
 				// target: 'https://devlop.order.project.k3s.ixuni.win/',
 				// target: 'http://42.193.124.39:27454/',
-				target: `http://60.205.5.253:60036/`,  // 主要用这个
-				// target: 'https://cjdemo.order.project.k3s.ixuni.win/',
+				// target: `http://60.205.5.253:60036/`,  // 主要用这个
+				target: 'https://cjdemo.order.project.k3s.ixuni.win/',
 				// target: `http://localhost:8080/`,
 				// target: 'https://cjdevlop.order.project.k3s.ixuni.win/',
 				changeOrigin: true,
