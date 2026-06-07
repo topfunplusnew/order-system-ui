@@ -34,7 +34,7 @@
 		</el-form>
 
 		<el-row>
-			<right-toolbar :columns="columns" @queryTable="getList" table-name="views-system-record-index-columns">
+			<right-toolbar :columns="columns" @queryTable="getList" @column-change="onColumnChange" @column-refresh="handleColumnRefresh" table-name="views-system-record-index-columns">
 				<template #left>
 					<el-col :span="1.5">
 						<el-button v-hasPermi="['system:record:add']" type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd">新增</el-button>
@@ -58,8 +58,9 @@
 		</el-row>
 
 		<el-table
-			width="100%"
 			id="printBox"
+			ref="recordTable"
+			width="100%"
 			v-loading="loading"
 			v-horizontal-scroll="'always'"
 			:data="recordList"
@@ -99,7 +100,7 @@
 					</el-tooltip>
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[3].visible" label="支出方" align="center" prop="sourceCompanyName" show-overflow-tooltip width="180">
+			<el-table-column v-if="columns[3].visible" label="支出方" align="center" prop="sourceCompanyName" show-overflow-tooltip min-width="180">
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
 						<div slot="content">{{ scope.row.sourceCompanyName }}</div>
@@ -957,7 +958,8 @@ export default {
 			querySelfAccountName: null,
 			queryBankacceptanceBillNo: null,
 			// 账户类型：冲抵货款，银行活期存款 活期互转，承兑 承兑互转，银承互转 银承互转
-			queryAccountType: ''
+			queryAccountType: '',
+			refreshTableLayoutTimer: null
 		};
 	},
 	// 计算属性
@@ -1024,6 +1026,10 @@ export default {
 		this.clearSavedInternalTransferForm();
 	},
 	beforeDestroy() {
+		if (this.refreshTableLayoutTimer) {
+			clearTimeout(this.refreshTableLayoutTimer);
+			this.refreshTableLayoutTimer = null;
+		}
 		// 顶层生命周期清理（原 methods 内实现迁移到此）
 		this.clearAcceptanceFillStatus();
 		if (this.$refs.otherSelectBankType && this.$refs.otherSelectBankType.forceClearAcceptanceInfo) {
@@ -1054,6 +1060,37 @@ export default {
 		updateRecord,
 		getRecord,
 		...mapActions('bankAcceptance', ['setAccountTypeSelection', 'resetDualSelection', 'clearRoleSelection', 'saveInternalTransferFormData', 'clearInternalTransferFormData']),
+		/**
+		 * 显隐列变更后同步列状态并重算表格布局，避免 Element UI 复用旧列宽。
+		 * @param {{ index: number, column: Object, visible: boolean }} payload
+		 */
+		onColumnChange({ index, column, visible }) {
+			this.$set(this.columns, index, { ...column, visible });
+			this.scheduleRefreshTableLayout();
+		},
+		/**
+		 * 刷新列配置后重算表格布局。
+		 * @param {Array} updatedColumns
+		 */
+		handleColumnRefresh(updatedColumns) {
+			this.columns = [...updatedColumns];
+			this.scheduleRefreshTableLayout();
+		},
+		scheduleRefreshTableLayout() {
+			if (this.refreshTableLayoutTimer) {
+				clearTimeout(this.refreshTableLayoutTimer);
+			}
+			this.refreshTableLayoutTimer = setTimeout(() => {
+				this.refreshTableLayoutTimer = null;
+				this.$nextTick(this.refreshTableLayout);
+			}, 80);
+		},
+		refreshTableLayout() {
+			const table = this.$refs.recordTable;
+			if (table && typeof table.doLayout === 'function') {
+				table.doLayout();
+			}
+		},
 		// 下拉菜单命令处理
 		handleCommand(command, row) {
 			switch (command) {
