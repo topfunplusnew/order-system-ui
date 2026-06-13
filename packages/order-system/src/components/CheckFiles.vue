@@ -32,6 +32,7 @@ export default {
 		},
 		imgList() {
 			const imageTypes = ['.jpeg', '.jpg', '.png', '.svg', '.gif', '.bmp', '.webp'];
+			console.log('this.checkFileList', this.checkFileList);
 			return this.checkFileList.filter(item => item && item.filePath && imageTypes.includes(`.${(item.fileSuffix || '').toLowerCase()}`)).map(item => item.filePath);
 		}
 	},

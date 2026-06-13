@@ -38,7 +38,7 @@
 		</div>
 
 		<!-- 表格区域 -->
-		<el-table id="educe-table" :data="tableData" border style="width: 100%" v-loading="loading" size="mini">
+		<el-table id="educe-table" :data="tableData" border style="width: 100%" v-loading="loading" size="mini" show-summary :summary-method="getSummaries">
 			<el-table-column prop="operateDate" label="日期" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
@@ -217,6 +217,7 @@ import INVENTORYDETAIL from '@/components/NeedToShow/INVENTORYDETAIL.vue';
 import ORDER_DETAIL from '@/components/NeedToShow/ORDER_DETAIL.vue';
 import BALANCEACCOUNT from '@/components/NeedToShow/BALANCEACCOUNT.vue';
 import { formatBalanceByDebitCredit, formatDetailBalance, isDebit, isCredit } from '@/utils/trash/utils';
+import { buildAmountSummaries, formatDebitCreditAmount } from '@/utils/tableSummary';
 import _ from 'lodash';
 import { isGoodsOrderDisplay, isInventoryDisplay, mergeSpecialTableData } from '@/api/system/goodsOrder';
 import InventoryDayInfo from '@/components/InventoryDayInfo/index.vue';
@@ -333,35 +334,19 @@ export default {
 			});
 		},
 		getSummaries(param) {
-			const { columns, data } = param;
-			const sums = [];
-			columns.forEach((column, index) => {
-				if (index === 0) {
-					sums[index] = '总价';
-					return;
+			return buildAmountSummaries({
+				...param,
+				amountProps: ['lender', 'borrower', 'moneyAmountLocal'],
+				getColumnValue: (row, column) => {
+					if (column.property === 'moneyAmountLocal') {
+						return row.moneyAmountLocal;
+					}
+					return undefined;
 				}
-				const values = data.map(item => number(item[column.property]));
-				const exclude = ['operateDate', 'payNo', 'summary', 'lender', 'borrower'];
-				if (exclude.includes(column.property)) {
-					sums[index] = '';
-					return;
-				}
-				if (!values.every(value => isNaN(value))) {
-					sums[index] = values.reduce((prev, curr) => {
-						const value = number(curr);
-						if (!isNaN(value)) {
-							return add(prev, curr);
-						} else {
-							return prev;
-						}
-					}, 0);
-					sums[index] += ' 元';
-				} else {
-					sums[index] = '';
-				}
+			}).map((summary, index) => {
+				const column = param.columns[index];
+				return column.property === 'moneyAmountLocal' && summary !== '' ? formatDebitCreditAmount(summary) : summary;
 			});
-
-			return sums;
 		}, // 贷方查看明细的弹窗
 		handleCheckBorrowerDetailList(row) {
 			this.detailList = row.borrowerList;

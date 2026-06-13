@@ -31,7 +31,7 @@
 					</right-toolbar>
 				</el-row>
 
-				<el-table id="printBox" :data="tableData" border stripe size="mini">
+				<el-table id="printBox" :data="tableData" border stripe size="mini" show-summary :summary-method="getSummaries">
 					<el-table-column type="index" label="序号" width="50" />
 					<el-table-column v-if="columns[0].visible" prop="date" label="日期" />
 					<el-table-column v-if="columns[1].visible" prop="displayName" label="己方公司" />
@@ -64,6 +64,7 @@
 <script>
 import { getTodaySelfCompanyMoneySummary } from '@/api/system/statement';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
+import { buildAmountSummaries } from '@/utils/tableSummary';
 
 export default {
 	mixins: [mixin_printHTML],
@@ -129,6 +130,12 @@ export default {
 		handleExport() {
 			// 使用模拟地址，因为后端还没有完善
 			this.download('/statistics/export/todaySelfCompanyMoneySummary?endTime=' + this.queryParams.endTime, null, `己方资金汇总_${new Date().getTime()}.xlsx`);
+		},
+		getSummaries(param) {
+			return buildAmountSummaries({
+				...param,
+				amountProps: ['previousBalance', 'totalIncome', 'totalExpense', 'currentBalance', 'previousMonthBalance', 'monthlyIncome', 'monthlyExpense', 'monthlyBalance', 'previousYearBalance', 'yearlyIncome', 'yearlyExpense', 'yearlyBalance']
+			});
 		}
 	}
 };

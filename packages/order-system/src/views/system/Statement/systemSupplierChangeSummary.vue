@@ -30,6 +30,8 @@
 			border
 			:data="tableData"
 			size="mini"
+			show-summary
+			:summary-method="getSummaries"
 			:cell-style="
 				() => {
 					return { padding: '1.5px' };
@@ -49,7 +51,7 @@
 			<el-table-column v-if="columns[6].visible" show-overflow-tooltip label="当日付款金额" align="center" prop="dailyReceiveMoney" />
 			<el-table-column v-if="columns[7].visible" show-overflow-tooltip label="当日欠款金额" align="center">
 				<template slot-scope="scope">
-					{{ fix(Number(scope.row.previousDayCarryover) + Number(scope.row.dailyOrderPayments) + Number(scope.row.dailyInvoiceAmount) - Number(scope.row.dailyReceiveMoney)) }}
+					{{ fix(getDailyDebtAmount(scope.row)) }}
 				</template>
 			</el-table-column>
 		</el-table>
@@ -72,6 +74,7 @@
 import { parseTime } from '../../../utils/ruoyi';
 import { fix } from '../../../api/tool/format';
 import { getTodaySupplierSummary } from '../../../api/system/statement';
+import { buildAmountSummaries } from '@/utils/tableSummary';
 export default {
 	name: 'SystemSupplierChangeSummary',
 	data() {
@@ -100,6 +103,21 @@ export default {
 	},
 	methods: {
 		fix,
+		getDailyDebtAmount(row) {
+			return Number(row.previousDayCarryover) + Number(row.dailyOrderPayments) + Number(row.dailyInvoiceAmount) - Number(row.dailyReceiveMoney);
+		},
+		getSummaries(param) {
+			return buildAmountSummaries({
+				...param,
+				amountProps: ['previousDayCarryover', 'dailyOrderPayments', 'dailyInvoiceAmount', 'dailyReceiveMoney'],
+				getColumnValue: (row, column) => {
+					if (column.label === '当日欠款金额') {
+						return this.getDailyDebtAmount(row);
+					}
+					return undefined;
+				}
+			});
+		},
 		getList() {
 			this.loading = true;
 			getTodaySupplierSummary(this.queryParams).then(response => {

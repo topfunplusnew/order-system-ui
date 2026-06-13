@@ -71,6 +71,8 @@
 				border
 				:data="bankAccountList"
 				size="mini"
+				show-summary
+				:summary-method="getSummaries"
 				:cell-style="
 					() => {
 						return { padding: '.5px' };
@@ -151,6 +153,7 @@
 import { listCompany } from '@/api/system/company';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import { listBankAccount, listBankAccountSelf, updateBankAccountSort } from '../../../api/system/bankAccount';
+import { buildAmountSummaries } from '@/utils/tableSummary';
 
 export default {
 	name: 'SelfMoney',
@@ -457,6 +460,12 @@ export default {
 		/** 导出按钮操作 */
 		handleExport() {
 			this.download('system/bankAccount/exportSelfMoneySummary?endDate=' + (this.queryParams.endDate ? this.queryParams.endDate : ''), null, `自有资金汇总_${new Date().getTime()}.xlsx`);
+		},
+		getSummaries(param) {
+			return buildAmountSummaries({
+				...param,
+				amountProps: ['sumMoney']
+			});
 		},
 		/**
 		 * 处理排序序号输入，只允许输入数字

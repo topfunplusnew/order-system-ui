@@ -30,6 +30,8 @@
 			border
 			:data="tableData"
 			size="mini"
+			show-summary
+			:summary-method="getSummaries"
 			:cell-style="
 				() => {
 					return { padding: '1.5px' };
@@ -79,6 +81,7 @@
 import { parseTime } from '../../../utils/ruoyi';
 import { fix } from '../../../api/tool/format';
 import { getTodayFreightSummary } from '../../../api/system/statement';
+import { buildAmountSummaries } from '@/utils/tableSummary';
 export default {
 	name: 'SystemFreightChangeSummary',
 	data() {
@@ -108,6 +111,12 @@ export default {
 	},
 	methods: {
 		fix,
+		getSummaries(param) {
+			return buildAmountSummaries({
+				...param,
+				amountProps: ['previousDayUnpaidAmount', 'dailyTotalAmount', 'dailyPaidAmount', 'dailyUnpaidAmount']
+			});
+		},
 		getList() {
 			this.loading = true;
 			getTodayFreightSummary(this.queryParams).then(res => {

@@ -51,7 +51,7 @@
 		</div>
 
 		<!-- 表格区域 -->
-		<el-table id="educe-table" :data="tableData" border style="width: 100%" v-loading="loading" size="mini">
+		<el-table id="educe-table" :data="tableData" border style="width: 100%" v-loading="loading" size="mini" show-summary :summary-method="getSummaries">
 			<el-table-column prop="time" label="日期" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tooltip effect="light" placement="top" enterable :open-delay="1000">
@@ -101,6 +101,7 @@ import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import COMPANY from '@/components/NeedToShow/COMPANY.vue';
 import { common_excel } from '@/views/dashboard/mixins/common/common_excel';
 import { formatBalance } from '@/utils/trash/utils';
+import { buildAmountSummaries } from '@/utils/tableSummary';
 import _ from 'lodash';
 import { add } from 'mathjs';
 import { buildExportQuery } from './exportUtils';
@@ -182,6 +183,15 @@ export default {
 				if (header === '日期') return '合计';
 				if (header === '余额') return formatBalance(Number(totalBalance));
 				return '';
+			});
+		},
+		getSummaries(param) {
+			return buildAmountSummaries({
+				...param,
+				amountProps: ['moneyAmount']
+			}).map((summary, index) => {
+				const column = param.columns[index];
+				return column.property === 'moneyAmount' && summary !== '' ? formatBalance(Number(summary)) : summary;
 			});
 		},
 		// 查询方法
