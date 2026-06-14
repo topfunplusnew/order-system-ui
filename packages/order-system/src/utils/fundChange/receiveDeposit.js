@@ -1,4 +1,5 @@
 import { add, format, subtract } from 'mathjs';
+import { CHANGE_ROW_SCOPE, getScopedRowCount, getScopedRowTypes, normalizeFundChangeDate } from '@/utils/fundChange/dateScopedRows';
 
 export const RECEIVE_DEPOSIT_SUMMARY_PROPS = Object.freeze(['depositAmount', 'unrefundAmount']);
 
@@ -19,9 +20,44 @@ function sumRefundMoney(list = []) {
 }
 
 function resolveUnrefundAmount(info = {}) {
-	const hasUnrefundedAmount = info.unrefundedAmount !== undefined && info.unrefundedAmount !== null && info.unrefundedAmount !== '';
-	if (hasUnrefundedAmount) return Number(info.unrefundedAmount || 0);
 	return subtract(Number(info.moneyAmount || 0), sumRefundMoney(info.depositRefundList));
+}
+
+function getRefundDate(refund = {}) {
+	return firstDefined(refund.refundDate, refund.payDate, refund.addtime, '');
+}
+
+function hasRecordData(info = {}) {
+	return Object.keys(info || {}).length > 0;
+}
+
+function hasScopedRefundDate(info = {}, targetDate = '') {
+	const normalizedTargetDate = normalizeFundChangeDate(targetDate);
+	if (!normalizedTargetDate) return hasRecordData(info);
+	return (info.depositRefundList || []).some(refund => normalizeFundChangeDate(getRefundDate(refund)) === normalizedTargetDate);
+}
+
+function hasScopedMainDate(info = {}, targetDate = '') {
+	const normalizedTargetDate = normalizeFundChangeDate(targetDate);
+	if (!normalizedTargetDate) return hasRecordData(info);
+	return [info.depositDate].some(date => normalizeFundChangeDate(date) === normalizedTargetDate);
+}
+
+export function hasReceiveDepositScopedData(info = {}, targetDate = '') {
+	if (!hasRecordData(info)) return false;
+	if (!normalizeFundChangeDate(targetDate)) return true;
+	return hasScopedMainDate(info, targetDate) || hasScopedRefundDate(info, targetDate);
+}
+
+export function resolveReceiveDepositScopedChange(original = {}, changed = {}, targetDate = '') {
+	const normalizedTargetDate = normalizeFundChangeDate(targetDate);
+	if (!normalizedTargetDate) return CHANGE_ROW_SCOPE.BOTH;
+	const beforeMatches = hasReceiveDepositScopedData(original, targetDate);
+	const afterMatches = hasReceiveDepositScopedData(changed, targetDate);
+	if (beforeMatches && afterMatches) return CHANGE_ROW_SCOPE.BOTH;
+	if (beforeMatches) return CHANGE_ROW_SCOPE.BEFORE;
+	if (afterMatches) return CHANGE_ROW_SCOPE.AFTER;
+	return CHANGE_ROW_SCOPE.NONE;
 }
 
 export function mapReceiveDepositRecordToRow(info = {}) {
@@ -52,6 +88,21 @@ export function buildReceiveDepositDiffFields(original = {}, changed = {}) {
 		diffFields[prop] = format(subtract(Number(afterRow[prop] || 0), Number(beforeRow[prop] || 0)), { notation: 'fixed', precision: 2 });
 		return diffFields;
 	}, {});
+}
+
+export function buildReceiveDepositRecordRows({ original = {}, changed = {}, targetDate = '', backupType = '', recordIndex, backupTime } = {}) {
+	const scope = resolveReceiveDepositScopedChange(original, changed, targetDate);
+	const rowTypes = getScopedRowTypes(scope, backupType);
+	if (!rowTypes.length) return [];
+
+	const recordRowCount = getScopedRowCount(scope, 1, backupType);
+	const rows = [];
+	if (rowTypes.includes('before')) rows.push({ ...mapReceiveDepositRecordToRow(original), recordIndex, backupTime, rowType: 'before', subLabel: '修改前', recordRowCount });
+	if (rowTypes.includes('after')) rows.push({ ...mapReceiveDepositRecordToRow(changed), recordIndex, backupTime, rowType: 'after', subLabel: '修改后', recordRowCount });
+
+	rows.push({ rowType: 'diff', subLabel: '差额', recordRowCount, ...buildReceiveDepositDiffFields(original, changed) });
+	rows[0].isRecordFirst = true;
+	return rows;
 }
 
 export function sumReceiveDepositDiffRows(rows = []) {

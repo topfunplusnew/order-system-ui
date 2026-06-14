@@ -7,9 +7,7 @@
 import _ from 'lodash';
 import { DEPOSIT_MONEY_COLUMNS } from '@/utils/fundChangeExcelColumns';
 import { buildBackendSummaryRows } from '@/utils/fundChange/backendSummary';
-import { buildDateScopedRecordRows } from '@/utils/fundChange/dateScopedRows';
-import { getFundChangeTemplateDateFields } from '@/utils/fundChange/dateScopeFields';
-import { buildReceiveDepositDiffFields, mapReceiveDepositRecordToRow, RECEIVE_DEPOSIT_SUMMARY_PROPS, sumReceiveDepositDiffRows } from '@/utils/fundChange/receiveDeposit';
+import { buildReceiveDepositRecordRows, RECEIVE_DEPOSIT_SUMMARY_PROPS, sumReceiveDepositDiffRows } from '@/utils/fundChange/receiveDeposit';
 
 export default {
 	name: 'ReceiveDepositTemplate',
@@ -58,27 +56,16 @@ export default {
 				const original = record.originalInfo || {};
 				const changed = record.changedInfo || {};
 				const backupTime = _.toString(record.backupTime || '').slice(0, 10);
-				const rows = buildDateScopedRecordRows({
+				const rows = buildReceiveDepositRecordRows({
 					original,
 					changed,
 					targetDate: this.targetDate,
 					backupType: record.backupType,
-					dateFields: getFundChangeTemplateDateFields(this.$options.name),
-					beforeRow: { ...this.mapBeforeRow(original, record, index), recordIndex: index + 1, backupTime },
-					afterRow: { ...this.mapAfterRow(changed, record, index), recordIndex: index + 1, backupTime },
-					buildDiffFields: (scopedOriginal, scopedChanged) => this.buildDiffFields(scopedOriginal, scopedChanged, record)
+					recordIndex: index + 1,
+					backupTime
 				});
 				this.tableData.push(...rows);
 			});
-		},
-		mapBeforeRow(info) {
-			return mapReceiveDepositRecordToRow(info);
-		},
-		mapAfterRow(info) {
-			return this.mapBeforeRow(info);
-		},
-		buildDiffFields(original, changed, _record) {
-			return buildReceiveDepositDiffFields(original, changed);
 		},
 		tableRowClassName({ row }) {
 			if (row.rowType === 'before') return 'before-row';
