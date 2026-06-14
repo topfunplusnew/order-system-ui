@@ -48,6 +48,11 @@ export default {
 		showImgSrc(p) {
 			return process.env.VUE_APP_BASE_API + p;
 		},
+		showImgAlt(p) {
+			const src = this.showImgSrc(p);
+			if (/^https?:\/\//i.test(src)) return src;
+			return new URL(src, window.location.origin).href;
+		},
 		openAttachmentPanel() {
 			this.checkFileList = [...this.filteredAttachments];
 			this.dialogVisible = true;
@@ -174,7 +179,7 @@ export default {
 				<div class="img-list">
 					<!-- 只渲染checkFileList中的图片 -->
 					<div class="img-wrapper">
-						<img v-for="(item, index) in imgList" :key="index" :src="showImgSrc(item)" alt="该附件无图片/图片无法查看" class="preview-img" />
+						<img v-for="(item, index) in imgList" :key="index" :src="showImgSrc(item)" :alt="showImgAlt(item)" class="preview-img" />
 					</div>
 				</div>
 			</div>
