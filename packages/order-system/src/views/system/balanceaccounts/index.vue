@@ -60,6 +60,9 @@
 			<el-table-column v-if="columns[2].visible" label="对方公司" align="center" prop="companyName" show-overflow-tooltip />
 			<el-table-column label="对方公司类型" align="center" prop="companyType" v-if="columns[3].visible" show-overflow-tooltip></el-table-column>
 			<el-table-column v-if="columns[4].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
+			<el-table-column v-if="columns[5] && columns[5].visible" label="新增时间" align="center" prop="addtime" width="170" show-overflow-tooltip />
+			<el-table-column v-if="columns[6] && columns[6].visible" label="最后修改时间" align="center" prop="updateTime" width="170" show-overflow-tooltip />
+			<el-table-column v-if="columns[7] && columns[7].visible" label="最后修改人" align="center" prop="updateByUserName" width="120" show-overflow-tooltip />
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
 				<template slot-scope="scope">
 					<el-button v-hasPermi="['system:balanceaccounts:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">编辑</el-button>
@@ -203,7 +206,10 @@ export default {
 				{ key: 1, label: `金额`, visible: true },
 				{ key: 2, label: `对方公司`, visible: true },
 				{ key: 3, label: `对方公司类型`, visible: true },
-				{ key: 4, label: `备注`, visible: true }
+				{ key: 4, label: `备注`, visible: true },
+				{ key: 5, label: `新增时间`, visible: true },
+				{ key: 6, label: `最后修改时间`, visible: true },
+				{ key: 7, label: `最后修改人`, visible: true }
 			],
 			// 表单校验
 			rules: {
