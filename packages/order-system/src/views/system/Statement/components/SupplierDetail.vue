@@ -466,6 +466,11 @@ export default {
 						{{ formatBalance(scope.row.moneyAmountLocal != null ? scope.row.moneyAmountLocal : 0) }}
 					</template>
 				</el-table-column>
+				<el-table-column show-overflow-tooltip label="账户类型" align="center" prop="accountType" width="140">
+					<template slot-scope="scope">
+						{{ scope.row.accountType || '-' }}
+					</template>
+				</el-table-column>
 				<el-table-column show-overflow-tooltip label="我方收款户名" align="center" prop="selfAccountsName" width="140" />
 				<el-table-column show-overflow-tooltip label="我方银行账号" align="center" prop="selfBankNo" width="140" />
 				<el-table-column show-overflow-tooltip label="我方开户行地址" align="center" prop="selfBankName" width="140" />
