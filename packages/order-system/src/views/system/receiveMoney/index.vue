@@ -89,6 +89,7 @@
 							:data="virtualReceiveMoneyList"
 							:height="tableHeight"
 							size="mini"
+							:row-class-name="getCompanyTypeRowClassName"
 							@selection-change="handleSelectionChange"
 							:headerCellStyle="headerCellFixedStyle"
 							:cellStyle="cellFixedStyle"
@@ -127,7 +128,7 @@
 							<VirtualColumn label="操作" align="center" class-name="small-padding fixed-width" vfixed="right" width="150">
 								<template slot-scope="scope">
 									<el-dropdown @command="command => handleCommand(command, scope.row)">
-										<el-button type="primary" size="mini">
+										<el-button type="primary" size="mini" @click="setCompanyTypeActiveRow(scope.row)">
 											操作
 											<i class="el-icon-arrow-down el-icon--right"></i>
 										</el-button>
@@ -421,6 +422,7 @@ export default {
 			total: 0,
 			// 收款信息表格数据
 			receiveMoneyList: [],
+			activeCompanyTypeRowId: null,
 			// 弹出层标题
 			title: '',
 			// 是否显示弹出层
@@ -664,6 +666,27 @@ export default {
 				this.$refs.virtualScroll.doHeaderLayout();
 			}
 		},
+		getCompanyTypeRowClassName({ row }) {
+			if (!row || !row.companyType) {
+				return '';
+			}
+			if (row.id !== this.activeCompanyTypeRowId) {
+				return '';
+			}
+			if (row.companyType === PAYMENT_TARGET_TYPE.CUSTOMER || row.companyType === PUBLIC_DICT_TYPE.CUSTOMER) {
+				return 'company-type-customer-active-row';
+			}
+			if (row.companyType === PAYMENT_TARGET_TYPE.SUPPLIER || row.companyType === PUBLIC_DICT_TYPE.SUPPLIER) {
+				return 'company-type-supplier-active-row';
+			}
+			return '';
+		},
+		setCompanyTypeActiveRow(row) {
+			if (!row || !row.id) {
+				return;
+			}
+			this.activeCompanyTypeRowId = row.id;
+		},
 		/** 绑定表格滚动事件 */
 		bindTableScroll() {
 			this.$nextTick(() => {
@@ -752,6 +775,7 @@ export default {
 		},
 		// 下拉菜单命令处理
 		handleCommand(command, row) {
+			this.setCompanyTypeActiveRow(row);
 			switch (command) {
 				case 'edit':
 					this.handleUpdate(row);
@@ -1121,21 +1145,21 @@ export default {
 				this.$nextTick(() => {
 					// 确保 companyName 和 companyId 被正确赋值（包括 0 值）
 					// 使用 hasOwnProperty 或 in 操作符检查属性是否存在，而不是判断值是否为 falsy
-					if (receiveMoneyData.hasOwnProperty('companyName')) {
+					if (Object.prototype.hasOwnProperty.call(receiveMoneyData, 'companyName')) {
 						this.form.companyName = savedCompanyName;
 					}
-					if (receiveMoneyData.hasOwnProperty('companyId')) {
+					if (Object.prototype.hasOwnProperty.call(receiveMoneyData, 'companyId')) {
 						this.form.companyId = savedCompanyId;
 					}
 					// 当 companyType 为"支付费用"时，恢复对方户名等字段
 					if (receiveMoneyData.companyType === PAYMENT_TARGET_TYPE.PAYMENT_FEE) {
-						if (receiveMoneyData.hasOwnProperty('otherAcountsName')) {
+						if (Object.prototype.hasOwnProperty.call(receiveMoneyData, 'otherAcountsName')) {
 							this.form.otherAcountsName = savedOtherAcountsName;
 						}
-						if (receiveMoneyData.hasOwnProperty('otherBankNo')) {
+						if (Object.prototype.hasOwnProperty.call(receiveMoneyData, 'otherBankNo')) {
 							this.form.otherBankNo = savedOtherBankNo;
 						}
-						if (receiveMoneyData.hasOwnProperty('otherBankName')) {
+						if (Object.prototype.hasOwnProperty.call(receiveMoneyData, 'otherBankName')) {
 							this.form.otherBankName = savedOtherBankName;
 						}
 					}
@@ -1650,6 +1674,29 @@ export default {
 			transform: translateZ(0);
 		}
 	}
+}
+
+::v-deep .el-table__body-wrapper tr.company-type-customer-active-row > td,
+::v-deep .el-table__fixed-body-wrapper tr.company-type-customer-active-row > td,
+::v-deep .el-table__fixed-right .el-table__fixed-body-wrapper tr.company-type-customer-active-row > td {
+	background-color: #fff7e8 !important;
+	box-shadow: inset 0 1px 0 #e6a23c, inset 0 -1px 0 #e6a23c;
+}
+
+::v-deep .el-table__body-wrapper tr.company-type-supplier-active-row > td,
+::v-deep .el-table__fixed-body-wrapper tr.company-type-supplier-active-row > td,
+::v-deep .el-table__fixed-right .el-table__fixed-body-wrapper tr.company-type-supplier-active-row > td {
+	background-color: #fff7e8 !important;
+	box-shadow: inset 0 1px 0 #e6a23c, inset 0 -1px 0 #e6a23c;
+}
+
+::v-deep .el-table__body-wrapper tr.company-type-customer-active-row > td:first-child,
+::v-deep .el-table__fixed-body-wrapper tr.company-type-customer-active-row > td:first-child,
+::v-deep .el-table__fixed-right .el-table__fixed-body-wrapper tr.company-type-customer-active-row > td:first-child,
+::v-deep .el-table__body-wrapper tr.company-type-supplier-active-row > td:first-child,
+::v-deep .el-table__fixed-body-wrapper tr.company-type-supplier-active-row > td:first-child,
+::v-deep .el-table__fixed-right .el-table__fixed-body-wrapper tr.company-type-supplier-active-row > td:first-child {
+	box-shadow: inset 3px 0 0 #e6a23c, inset 0 1px 0 #e6a23c, inset 0 -1px 0 #e6a23c;
 }
 
 /* 分页区域优化 */
