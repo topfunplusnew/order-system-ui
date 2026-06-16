@@ -97,7 +97,7 @@ export default {
 				};
 				// 查询科目信息
 				const key = {
-					configKey: 'order.customerDetailSummary.subjectNo'
+					configKey: 'order.supplierDetailSummary.subjectNo'
 				};
 				getConfigValue(key).then(({ configValue, subjectName }) => {
 					if (!configValue || !subjectName) {
