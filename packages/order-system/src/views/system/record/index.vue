@@ -10,6 +10,12 @@
 			<el-form-item label="支出方" prop="sourceCompanyName">
 				<el-input v-model="queryParams.sourceCompanyName" placeholder="请输入收入方公司名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
+			<el-form-item label="支付户名" prop="sourceAccountName">
+				<el-input v-model="queryParams.sourceAccountName" placeholder="请输入支付户名" clearable @keyup.enter.native="handleQuery" />
+			</el-form-item>
+			<el-form-item label="收款户名" prop="targetAccountName">
+				<el-input v-model="queryParams.targetAccountName" placeholder="请输入收款户名" clearable @keyup.enter.native="handleQuery" />
+			</el-form-item>
 			<el-form-item label="备注" prop="remarks">
 				<el-input v-model="queryParams.remarks" placeholder="请输入备注" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
@@ -858,7 +864,9 @@ export default {
 				UserName: null,
 				delFlag: null,
 				sourceCompanyName: null,
-				targetCompanyName: null
+				targetCompanyName: null,
+				sourceAccountName: null,
+				targetAccountName: null
 			},
 			// 表单参数
 			form: {},
