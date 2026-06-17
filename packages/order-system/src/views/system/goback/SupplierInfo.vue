@@ -1,4 +1,4 @@
-<template>
+/Users/zhangming/Code/Projects/order-system-ui/packages/order-system/src/views/system/goback/SupplierInfo.vue<template>
 	<div class="customer-info">
 		<!-- 搜索区域 -->
 		<div class="search-area">
@@ -334,18 +334,17 @@ export default {
 			});
 		},
 		getSummaries(param) {
+			const { data, columns } = param;
 			return buildAmountSummaries({
 				...param,
-				amountProps: ['lender', 'borrower', 'moneyAmountLocal'],
-				getColumnValue: (row, column) => {
-					if (column.property === 'moneyAmountLocal') {
-						return row.moneyAmountLocal;
-					}
-					return undefined;
-				}
+				amountProps: ['lender', 'borrower']
 			}).map((summary, index) => {
-				const column = param.columns[index];
-				return column.property === 'moneyAmountLocal' && summary !== '' ? formatDebitCreditAmount(summary) : summary;
+				const column = columns[index];
+				if (column.property === 'moneyAmountLocal') {
+					const lastRow = data && data.length > 0 ? data[data.length - 1] : null;
+					return lastRow ? formatDebitCreditAmount(lastRow.moneyAmountLocal) : '';
+				}
+				return summary;
 			});
 		}, // 贷方查看明细的弹窗
 		handleCheckBorrowerDetailList(row) {
