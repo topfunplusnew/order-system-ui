@@ -5,6 +5,10 @@ export function createBalanceListQueryParams() {
 		pageNum: 1,
 		pageSize: 20,
 		operateDate: parseTime(new Date(), '{y}-{m}-{d}'),
+		billNo: '',
+		billAccount: '',
+		issueDateRange: [],
+		dueDateRange: [],
 		balanceOperator: '',
 		balanceValue: ''
 	};
