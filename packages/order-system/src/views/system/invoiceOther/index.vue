@@ -4,14 +4,14 @@
 			<el-form-item label="日期范围" prop="invoiceDate">
 				<el-date-picker v-model="dateRange" style="width: 240px" value-format="yyyy-MM-dd HH:mm:ss" type="daterange" start-placeholder="开始日期" end-placeholder="结束日期" />
 			</el-form-item>
-			<el-form-item label="票据单位名称" prop="invoiceCompanyName">
-				<el-input v-model="queryParams.invoiceCompanyName" placeholder="请输入票据单位名称" clearable @keyup.enter.native="handleQuery" />
-			</el-form-item>
 			<el-form-item label="开票方公司名称" prop="Supplier">
 				<el-input v-model="queryParams.Supplier" placeholder="请输入开票方公司名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="对方名称" prop="mixCompanyName">
 				<el-input v-model="queryParams.params.mixCompanyName" placeholder="可搜索供应商或客户名称" clearable @keyup.enter.native="handleQuery" />
+			</el-form-item>
+			<el-form-item label="票据单位名称" prop="invoiceCompanyName">
+				<el-input v-model="queryParams.invoiceCompanyName" placeholder="请输入票据单位名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="开票状态" prop="isInvoiced">
 				<el-select v-model="invoiceStatus" placeholder="请选择开票状态" clearable @change="handleInvoiceStatusChange" style="width: 150px">

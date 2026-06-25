@@ -7,11 +7,11 @@
 			<el-form-item label="供应商公司名称" prop="Supplier">
 				<el-input v-model="queryParams.Supplier" placeholder="请输入供应商公司名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
-			<el-form-item label="开票单位" prop="invoiceCompanyName">
-				<el-input v-model="queryParams.invoiceCompanyName" placeholder="请输入开票单位" clearable @keyup.enter.native="handleQuery" />
-			</el-form-item>
 			<el-form-item label="对方名称" prop="mixCompanyName">
 				<el-input v-model="queryParams.params.mixCompanyName" placeholder="可搜索供应商或客户名称" clearable @keyup.enter.native="handleQuery" />
+			</el-form-item>
+			<el-form-item label="开票单位" prop="invoiceCompanyName">
+				<el-input v-model="queryParams.invoiceCompanyName" placeholder="请输入开票单位" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="开票状态" prop="isInvoiced">
 				<el-select v-model="invoiceStatus" placeholder="请选择开票状态" clearable @change="handleInvoiceStatusChange" style="width: 150px">

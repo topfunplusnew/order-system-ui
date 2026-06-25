@@ -5,6 +5,9 @@
 			<el-form-item label="日期范围" prop="dateRange">
 				<el-date-picker v-model="dateRange" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" @change="handleDateRangeChange" />
 			</el-form-item>
+			<el-form-item label="我方收票主体" prop="invoiceObject">
+				<el-input v-model="queryParams.invoiceObject" placeholder="请输入我方收票主体" clearable @keyup.enter.native="handleQuery" />
+			</el-form-item>
 			<el-form-item label="对方公司" prop="companyName">
 				<el-input v-model="queryParams.companyName" placeholder="请输入对方公司名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
@@ -833,6 +836,7 @@ export default {
 			this.invoiceStatus = '';
 			this.queryParams.beginTime = null;
 			this.queryParams.endTime = null;
+			this.queryParams.invoiceObject = null;
 			this.queryParams.companyName = null;
 			this.queryParams.invoiceCompanyName = null;
 			this.queryParams.params.isInvoiced = null;

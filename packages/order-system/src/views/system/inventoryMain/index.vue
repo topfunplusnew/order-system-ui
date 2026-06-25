@@ -7,10 +7,9 @@
 			<el-form-item v-if="shouldShowField('storeDateRange')" label="入库日期" prop="storeDateRange">
 				<el-date-picker v-model="queryParams.storeDateRange" type="daterange" value-format="yyyy-MM-dd" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" clearable @change="handleDateRangeChange" />
 			</el-form-item>
-			<!-- 2025-11-1 录入人员不用录入了 -->
-			<!-- <el-form-item v-if="shouldShowField('userName')" label="录入人员" prop="userName">
-				<el-input v-model="queryParams.userName" class="input-standard" placeholder="录入人员" clearable @keyup.enter.native="handleQuery" @input="val => (queryParams.UserName = val)" />
-			</el-form-item> -->
+			<el-form-item v-if="shouldShowField('userName')" label="入库人员" prop="userName">
+				<el-input v-model="queryParams.userName" class="input-standard" placeholder="请输入入库人员" clearable @keyup.enter.native="handleQuery" />
+			</el-form-item>
 			<el-form-item v-if="shouldShowField('supplier')" label="供应商" prop="supplier">
 				<el-input v-model="queryParams.params.detail_supplier" class="input-standard" placeholder="请输入供应商" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
@@ -22,7 +21,7 @@
 				<el-input v-model="queryParams.seaDriverName" class="input-standard" placeholder="请输入海运公司" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item v-if="shouldShowField('checkState')" label="审核状态" prop="checkState">
-				<el-select v-model="queryParams.checkState" class="input-standard" placeholder="请选择审核状态" clearable @keyup.enter.native="handleQuery">
+				<el-select v-model="queryParams.checkState" class="input-standard" placeholder="请选择审核状态" clearable style="width: 150px">
 					<el-option label="全部" value=""></el-option>
 					<el-option label="未审核" value="未审核"></el-option>
 					<el-option label="已审核" value="已审核"></el-option>
@@ -969,7 +968,6 @@ export default {
 				{ value: 'storeDateRange', label: '入库日期' },
 				{ value: 'userName', label: '入库人员' },
 				{ value: 'supplier', label: '供应商' },
-				// 2026-02-06 删除货物来源搜索字段
 				{ value: 'landCarNo', label: '陆运车牌' },
 				{ value: 'seaDriverName', label: '海运公司' },
 				{ value: 'checkState', label: '审核状态' }
@@ -1023,23 +1021,23 @@ export default {
 			columns: [
 				{ key: 0, label: 'ID', visible: true },
 				{ key: 1, label: '仓库名称', visible: true },
-				{ key: 2, label: '入库日期', visible: true },
+				{ key: 2, label: '变动日期(入库)', visible: true },
 				{ key: 3, label: '供应商', visible: true },
-				{ key: 5, label: '审核状态', visible: true },
-				{ key: 6, label: '陆运车牌', visible: true },
-				{ key: 7, label: '陆地司机姓名', visible: true },
-				{ key: 8, label: '柜号', visible: true },
-				{ key: 9, label: '海运公司', visible: true },
-				{ key: 10, label: '含税', visible: true },
-				{ key: 11, label: '库存金额', visible: true },
-				{ key: 12, label: '子项陆运费之和', visible: true },
-				{ key: 13, label: '子项海运费之和', visible: true },
-				{ key: 14, label: '录入员', visible: true },
-				{ key: 18, label: '不含税利润', visible: true },
+				{ key: 4, label: '审核状态', visible: true },
+				{ key: 5, label: '陆运车牌', visible: true },
+				{ key: 6, label: '陆地司机姓名', visible: true },
+				{ key: 7, label: '柜号', visible: true },
+				{ key: 8, label: '海运公司', visible: true },
+				{ key: 9, label: '含税', visible: true },
+				{ key: 10, label: '库存金额', visible: true },
+				{ key: 11, label: '子项陆运费之和', visible: true },
+				{ key: 12, label: '子项海运费之和', visible: true },
+				{ key: 13, label: '录入员', visible: true },
+				{ key: 14, label: '不含税利润', visible: true },
 				{ key: 15, label: '附件', visible: true },
 				{ key: 16, label: '收到条附件', visible: true },
-				{ key: 19, label: '审核人员', visible: true },
-				{ key: 17, label: '操作', visible: true }
+				{ key: 17, label: '审核人员', visible: true },
+				{ key: 18, label: '操作', visible: true }
 			],
 			// 表单校验
 			rules: {
@@ -1225,24 +1223,42 @@ export default {
 			}
 		},
 		/**
+		 * @description: 过滤无效的搜索字段配置，仅保留当前页面已实现的字段
+		 * @param {string[]} fields - 待校验的字段名列表
+		 * @returns {string[]} 有效的字段名列表
+		 */
+		normalizeSelectedSearchFields(fields) {
+			const validValues = this.allFields.map(field => field.value);
+			const normalized = _.filter(fields || [], key => validValues.includes(key));
+			return normalized.length > 0 ? normalized : validValues.slice();
+		},
+		/**
+		 * @description: 从用户配置中解析已选搜索字段
+		 * @param {Object|string|null} configValue - 用户配置值
+		 * @returns {string[]} 已选搜索字段
+		 */
+		parseSelectedSearchFields(configValue) {
+			if (typeof configValue === 'string') {
+				try {
+					const parsed = JSON.parse(configValue);
+					return Object.keys(parsed.columns || {}).filter(key => parsed.columns[key]);
+				} catch {
+					return this.allFields.map(field => field.value);
+				}
+			}
+			if (configValue?.columns) {
+				return Object.keys(configValue.columns).filter(key => configValue.columns[key]);
+			}
+			return this.allFields.map(field => field.value);
+		},
+		/**
 		 * @description: 加载用户搜索字段配置
 		 */
 		async loadFieldSettings() {
 			try {
 				const response = await getUserConfig(UserConfigKey.INVENTORY_SEARCH_COLUMNS);
 				const configValue = response?.data?.value || response?.data || null;
-				if (typeof configValue === 'string') {
-					try {
-						const parsed = JSON.parse(configValue);
-						this.selectedFields = Object.keys(parsed.columns || {}).filter(key => parsed.columns[key]);
-					} catch {
-						this.selectedFields = this.allFields.map(f => f.value);
-					}
-				} else if (configValue?.columns) {
-					this.selectedFields = Object.keys(configValue.columns).filter(key => configValue.columns[key]);
-				} else {
-					this.selectedFields = this.allFields.map(f => f.value);
-				}
+				this.selectedFields = this.normalizeSelectedSearchFields(this.parseSelectedSearchFields(configValue));
 			} catch (err) {
 				console.error('加载用户搜索字段配置失败:', err);
 				this.selectedFields = this.allFields.map(f => f.value);
@@ -1279,6 +1295,7 @@ export default {
 		 * @description: 打开字段设置弹窗
 		 */
 		openFieldSetting() {
+			this.selectedFields = this.normalizeSelectedSearchFields(this.selectedFields);
 			this.fieldSettingVisible = true;
 		},
 		// 检查用户是否具有指定权限
@@ -2486,7 +2503,7 @@ export default {
 		 */
 		generateExcelData() {
 			// 获取可见列配置
-			const visibleColumns = this.columns.filter(col => col.visible && col.key !== 17); // 排除操作列
+			const visibleColumns = this.columns.filter(col => col.visible && col.key !== 18); // 排除操作列
 
 			// 生成表头
 			const headers = visibleColumns.map(col => col.label);
@@ -2519,41 +2536,40 @@ export default {
 					return row.storeDate ? parseTime(row.storeDate, '{y}-{m}-{d}') : '';
 				case 3: // 供应商
 					return this.formatSuppliers(row);
-				// 2026-02-06 删除货物来源公司
-				case 5: // 审核状态
+				case 4: // 审核状态
 					return row.checkState || '未审核';
-				case 6: // 陆运车牌
+				case 5: // 陆运车牌
 					return row.landCarNo || '';
-				case 7: // 陆地司机姓名
+				case 6: // 陆地司机姓名
 					return row.landDriverName || '';
-				case 8: // 柜号
+				case 7: // 柜号
 					return row.seaCarNo || '';
-				case 9: // 海运公司
+				case 8: // 海运公司
 					return row.seaDriverName || '';
-				case 10: // 含税
+				case 9: // 含税
 					return row.isIncludeTaxSale === 1 ? '含税' : '不含税';
-				case 11: {
+				case 10: {
 					// 库存金额
 					const raw = this.calculateTotalPayments(row);
 					if (raw === null || raw === undefined || raw === '') return '';
 					const num = Number(String(raw).replace(/,/g, '').trim());
 					return isNaN(num) ? raw : num;
 				}
-				case 12: // 子项陆运费之和
+				case 11: // 子项陆运费之和
 					if (row.allLandFreight === null || row.allLandFreight === undefined || row.allLandFreight === '') return '';
 					{
 						const num = Number(String(row.allLandFreight).replace(/,/g, '').trim());
 						return isNaN(num) ? row.allLandFreight : num;
 					}
-				case 13: // 子项海运费之和
+				case 12: // 子项海运费之和
 					if (row.allSeaFreight === null || row.allSeaFreight === undefined || row.allSeaFreight === '') return '';
 					{
 						const num = Number(String(row.allSeaFreight).replace(/,/g, '').trim());
 						return isNaN(num) ? row.allSeaFreight : num;
 					}
-				case 14: // 录入员
+				case 13: // 录入员
 					return row.userName || '';
-				case 18: {
+				case 14: {
 					// 不含税利润
 					const raw = this.calculateTotalProfitNoTax(row);
 					if (raw === null || raw === undefined || raw === '') return '';
@@ -2564,7 +2580,7 @@ export default {
 					return this.formatAttachments(row.attachmentList, 'path');
 				case 16: // 收到条附件
 					return this.formatAttachments(row.attachmentList, 'receiveProof');
-				case 19: // 审核人员
+				case 17: // 审核人员
 					return row.checkUserName || '';
 				default:
 					return '';
