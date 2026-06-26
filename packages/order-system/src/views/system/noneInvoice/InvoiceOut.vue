@@ -7,6 +7,7 @@
 			<el-form-item label="我方开票主体" prop="invoiceObject">
 				<el-input v-model="queryParams.invoiceObject" placeholder="请输入我方开票主体" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
+			<!-- 2026-06-25 票点管理：搜索框粘贴公司名称自动去除空格/括号 -->
 			<el-form-item label="对方公司" prop="companyName">
 				<el-input v-model="queryParams.companyName" placeholder="请输入对方公司名称" clearable @keyup.enter.native="handleQuery" @paste.native="handleInvoiceCompanyNamePaste($event, 'queryParams', 'companyName')" />
 			</el-form-item>
@@ -257,6 +258,7 @@
 							<el-input disabled v-model="form.companyName" placeholder="请选择" />
 						</el-col>
 						<el-col :span="2">
+							<!-- 2026-06-25 票点管理：SearchOption 粘贴公司名称自动去除空格/括号 -->
 							<SearchOption :limit-info="{ companyType: form.companyType }" :get-data="listCompany" query-info="companyName" query-label="公司名称" :query-name="companyName" :sanitize-company-name-paste="true" @update:queryName="handleUpdateCompanyName" @commitBack="handleCommitBackCompany">
 								<template #table-columns>
 									<el-table-column label="公司名称" align="center" prop="companyName" />
@@ -270,6 +272,7 @@
 					</el-row>
 				</el-form-item>
 				<el-form-item label="票据单位名称" prop="invoiceCompanyName">
+					<!-- 2026-06-25 票点管理：粘贴自动去除空格/括号，保存时不允许其他标点 -->
 					<el-input v-model="form.invoiceCompanyName" placeholder="请输入票据单位名称" @paste.native="handleInvoiceCompanyNamePaste($event, 'form', 'invoiceCompanyName')" />
 				</el-form-item>
 				<el-form-item label="票点" prop="ticketPoint">
@@ -364,6 +367,7 @@ import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfi
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import INVOICE_OUT from '@/components/NeedToShow/INVOICE_OUT.vue';
+// 2026-06-25 票点管理：公司名称粘贴自动去除空格/括号，保存时不允许其他标点
 import invoiceCompanyNameMixin from '@/views/system/shared/invoiceCompanyNameMixin';
 import { createCompanyNameValidatorRule } from '@/utils/companyName';
 
@@ -464,6 +468,7 @@ export default {
 						message: '请输入公司名称',
 						trigger: 'blur'
 					},
+					// 2026-06-25 保存时不允许公司名称含其他标点
 					createCompanyNameValidatorRule('公司名称')
 				],
 				invoiceCompanyName: [
@@ -472,6 +477,7 @@ export default {
 						message: '请输入票据单位名称',
 						trigger: 'blur'
 					},
+					// 2026-06-25 保存时不允许票据单位名称含其他标点
 					createCompanyNameValidatorRule('票据单位名称')
 				],
 				ticketPoint: [{ required: true, message: '请输入票点', trigger: 'blur' }],
@@ -667,6 +673,7 @@ export default {
 		},
 		handleCommitBackCompany(val) {
 			console.log(val);
+			// 2026-06-25 选中公司时清洗名称（去除空格/括号）
 			this.form.companyName = this.sanitizeSelectedCompanyName(val.companyName);
 			this.form.companyID = val.id;
 			this.form.companyType = val.companyType;
@@ -863,6 +870,7 @@ export default {
 		},
 		/** 提交按钮 */
 		submitForm() {
+			// 2026-06-25 提交前校验并规范化公司名称
 			if (
 				!this.normalizeInvoiceCompanyNamesBeforeSave(this.form, [
 					{ key: 'companyName', label: '公司名称' },

@@ -4,6 +4,7 @@
 			<el-form-item label="日期范围" prop="invoiceDate">
 				<el-date-picker v-model="dateRange" type="daterange" start-placeholder="开始日期" end-placeholder="结束日期" range-separator="至" value-format="yyyy-MM-dd" unlink-panels style="width: 240px" />
 			</el-form-item>
+			<!-- 2026-06-25 票点管理：搜索框粘贴公司名称自动去除空格/括号 -->
 			<el-form-item label="供应商公司名称" prop="Supplier">
 				<el-input v-model="queryParams.Supplier" placeholder="请输入供应商公司名称" clearable @keyup.enter.native="handleQuery" @paste.native="handleInvoiceCompanyNamePaste($event, 'queryParams', 'Supplier')" />
 			</el-form-item>
@@ -308,6 +309,7 @@
 								<el-input disabled v-model="form.Supplier" placeholder="请选择" />
 							</el-col>
 							<el-col :span="4">
+								<!-- 2026-06-25 票点管理：SearchOption 粘贴公司名称自动去除空格/括号 -->
 								<SearchOption :limit-info="{ companyType: '供应商' }" :get-data="listCompany" query-info="companyName" query-label="公司名称" :query-name="queryCompanyName" :sanitize-company-name-paste="true" @update:queryName="handleUpdateCompanyName" @commitBack="handleCommitBackCompany">
 									<template #table-columns>
 										<el-table-column label="供应商" align="center" prop="companyName" />
@@ -336,6 +338,7 @@
 								<el-input disabled v-model="form.customer" placeholder="请选择" />
 							</el-col>
 							<el-col :span="4">
+								<!-- 2026-06-25 票点管理：SearchOption 粘贴公司名称自动去除空格/括号 -->
 								<SearchOption :limit-info="{ companyType: '客户' }" :get-data="listCompany" query-info="companyName" query-label="公司名称" :query-name="queryCompanyCustomerName" :sanitize-company-name-paste="true" @update:queryName="handleUpdateCompanyCustomerName" @commitBack="handleCommitBackCompanyCustomer">
 									<template #table-columns>
 										<el-table-column label="客户" align="center" prop="companyName" />
@@ -348,6 +351,7 @@
 							</el-col>
 						</el-form-item>
 						<el-form-item label="客户开票名称" prop="invoiceCompanyName">
+							<!-- 2026-06-25 票点管理：粘贴自动去除空格/括号，保存时不允许其他标点 -->
 							<el-input v-model="form.invoiceCompanyName" placeholder="请输入客户开票名称" @paste.native="handleInvoiceCompanyNamePaste($event, 'form', 'invoiceCompanyName')" />
 						</el-form-item>
 						<el-form-item label="开票日期" prop="extraInfo.actualInvoiceTime">
@@ -451,6 +455,7 @@ import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfi
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import INVOICE_ORTHER from '@/components/NeedToShow/INVOICE_ORTHER.vue';
 import { normalizeCustomerPointAmountForSubmit } from './invoicehave.submit';
+// 2026-06-25 票点管理：公司名称粘贴自动去除空格/括号，保存时不允许其他标点
 import invoiceCompanyNameMixin from '@/views/system/shared/invoiceCompanyNameMixin';
 import { createCompanyNameValidatorRule } from '@/utils/companyName';
 
@@ -566,6 +571,7 @@ export default {
 						message: '请输入供应商公司名称',
 						trigger: 'blur'
 					},
+					// 2026-06-25 保存时不允许供应商公司名称含其他标点
 					createCompanyNameValidatorRule('供应商公司名称')
 				],
 				customer: [
@@ -574,6 +580,7 @@ export default {
 						message: '请输入客户名称',
 						trigger: 'blur'
 					},
+					// 2026-06-25 保存时不允许客户名称含其他标点
 					createCompanyNameValidatorRule('客户名称')
 				],
 				invoiceCompanyName: [
@@ -582,6 +589,7 @@ export default {
 						message: '请输入客户开票名称',
 						trigger: 'blur'
 					},
+					// 2026-06-25 保存时不允许客户开票名称含其他标点
 					createCompanyNameValidatorRule('客户开票名称')
 				]
 			},
@@ -721,10 +729,12 @@ export default {
 			this.queryCompanyName = val;
 		},
 		handleCommitBackCompany(val) {
+			// 2026-06-25 选中公司时清洗名称（去除空格/括号）
 			this.form.Supplier = this.sanitizeSelectedCompanyName(val.companyName);
 			this.form.SupplierID = val.id;
 		},
 		handleCommitBackCompanyCustomer(val) {
+			// 2026-06-25 选中公司时清洗名称（去除空格/括号）
 			this.form.customer = this.sanitizeSelectedCompanyName(val.companyName);
 			this.form.CustomerID = val.id;
 		},
@@ -948,6 +958,7 @@ export default {
 		/** 提交按钮 */
 		submitForm() {
 			console.log('提交表单开始', this.form);
+			// 2026-06-25 提交前校验并规范化公司名称
 			if (
 				!this.normalizeInvoiceCompanyNamesBeforeSave(this.form, [
 					{ key: 'Supplier', label: '供应商公司名称' },

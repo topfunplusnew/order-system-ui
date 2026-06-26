@@ -1,3 +1,6 @@
+/**
+ * 2026-06-25 票点管理：公司名称粘贴清洗与保存校验单元测试
+ */
 import { describe, expect, test } from '@jest/globals';
 import { sanitizeCompanyNamePasted, validateCompanyNameForSave } from '@/utils/companyName';
 

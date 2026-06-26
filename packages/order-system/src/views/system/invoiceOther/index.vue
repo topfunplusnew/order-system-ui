@@ -4,6 +4,7 @@
 			<el-form-item label="日期范围" prop="invoiceDate">
 				<el-date-picker v-model="dateRange" style="width: 240px" value-format="yyyy-MM-dd HH:mm:ss" type="daterange" start-placeholder="开始日期" end-placeholder="结束日期" />
 			</el-form-item>
+			<!-- 2026-06-25 票点管理：搜索框粘贴公司名称自动去除空格/括号 -->
 			<el-form-item label="开票方公司名称" prop="Supplier">
 				<el-input v-model="queryParams.Supplier" placeholder="请输入开票方公司名称" clearable @keyup.enter.native="handleQuery" @paste.native="handleInvoiceCompanyNamePaste($event, 'queryParams', 'Supplier')" />
 			</el-form-item>
@@ -279,6 +280,7 @@
 								<el-input disabled v-model="form.Supplier" placeholder="请选择" />
 							</el-col>
 							<el-col :span="4">
+								<!-- 2026-06-25 票点管理：SearchOption 粘贴公司名称自动去除空格/括号 -->
 								<SearchOption
 									:limit-info="{ companyType: form.supplierCompanyType || PUBLIC_DICT_TYPE.SUPPLIER }"
 									:get-data="listCompany"
@@ -318,6 +320,7 @@
 								<el-input disabled v-model="form.customer" placeholder="请选择" />
 							</el-col>
 							<el-col :span="4">
+								<!-- 2026-06-25 票点管理：SearchOption 粘贴公司名称自动去除空格/括号 -->
 								<SearchOption
 									:limit-info="{ companyType: form.customerCompanyType || PUBLIC_DICT_TYPE.CUSTOMER }"
 									:get-data="listCompany"
@@ -347,6 +350,7 @@
 							<el-input disabled v-model="form.customerPointAmount" placeholder="自动计算收票方票点金额" />
 						</el-form-item>
 						<el-form-item label="票据单位名称" prop="invoiceCompanyName">
+							<!-- 2026-06-25 票点管理：粘贴自动去除空格/括号，保存时不允许其他标点 -->
 							<el-input v-model="form.invoiceCompanyName" placeholder="请输入票据单位名称" @paste.native="handleInvoiceCompanyNamePaste($event, 'form', 'invoiceCompanyName')" />
 						</el-form-item>
 						<el-form-item label="开票日期" prop="extraInfo.actualInvoiceTime">
@@ -431,6 +435,7 @@ import { getInvoiceOther, updateInvoiceOther } from '../../../api/system/invoice
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import INVOICE_ORTHER from '@/components/NeedToShow/INVOICE_ORTHER.vue';
 import { normalizeInvoiceOtherDateRange } from '@/views/system/invoiceOther/invoiceOther.query';
+// 2026-06-25 票点管理：公司名称粘贴自动去除空格/括号，保存时不允许其他标点
 import invoiceCompanyNameMixin from '@/views/system/shared/invoiceCompanyNameMixin';
 import { createCompanyNameValidatorRule } from '@/utils/companyName';
 
@@ -522,6 +527,7 @@ export default {
 						message: '请输入开票方公司名称',
 						trigger: 'blur'
 					},
+					// 2026-06-25 保存时不允许开票方公司名称含其他标点
 					createCompanyNameValidatorRule('开票方公司名称')
 				],
 				customer: [
@@ -530,6 +536,7 @@ export default {
 						message: '请输入收票方公司名称',
 						trigger: 'blur'
 					},
+					// 2026-06-25 保存时不允许收票方公司名称含其他标点
 					createCompanyNameValidatorRule('收票方公司名称')
 				],
 				invoiceCompanyName: [
@@ -538,6 +545,7 @@ export default {
 						message: '请输入票据单位名称',
 						trigger: 'blur'
 					},
+					// 2026-06-25 保存时不允许票据单位名称含其他标点
 					createCompanyNameValidatorRule('票据单位名称')
 				],
 				customerTicketPoint: [
@@ -695,10 +703,12 @@ export default {
 			this.queryCompanyName = val;
 		},
 		handleCommitBackCompany(val) {
+			// 2026-06-25 选中公司时清洗名称（去除空格/括号）
 			this.form.Supplier = this.sanitizeSelectedCompanyName(val.companyName);
 			this.form.SupplierID = val.id;
 		},
 		handleCommitBackCompanyCustomer(val) {
+			// 2026-06-25 选中公司时清洗名称（去除空格/括号）
 			this.form.customer = this.sanitizeSelectedCompanyName(val.companyName);
 			this.form.CustomerID = val.id;
 		},
@@ -874,6 +884,7 @@ export default {
 			this.title = '修改商家直接给客户开发票';
 		},
 		submitForm() {
+			// 2026-06-25 提交前校验并规范化公司名称
 			if (
 				!this.normalizeInvoiceCompanyNamesBeforeSave(this.form, [
 					{ key: 'Supplier', label: '开票方公司名称' },

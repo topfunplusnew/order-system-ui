@@ -4,6 +4,7 @@
 			<el-form-item label="日期范围" prop="dateRange">
 				<el-date-picker v-model="queryParams.dateRange" type="daterange" value-format="yyyy-MM-dd" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" style="width: 240px"></el-date-picker>
 			</el-form-item>
+			<!-- 2026-06-25 票点管理：搜索框粘贴公司名称自动去除空格/括号 -->
 			<el-form-item label="供应商/客户" prop="searchCompamyName">
 				<el-input v-model="queryParams.searchCompamyName" placeholder="请输入供应商/客户" clearable @keyup.enter.native="handleQuery" @paste.native="handleInvoiceCompanyNamePaste($event, 'queryParams', 'searchCompamyName')" />
 			</el-form-item>
@@ -113,12 +114,14 @@
 					<el-input v-model="form.invoiceAmount" placeholder="请输入开票金额" />
 				</el-form-item>
 				<el-form-item label="对方公司名称" prop="companyName">
+					<!-- 2026-06-25 票点管理：粘贴自动去除空格/括号，保存时不允许其他标点 -->
 					<el-input v-model="form.companyName" placeholder="请输入对方公司名称" @paste.native="handleInvoiceCompanyNamePaste($event, 'form', 'companyName')" />
 				</el-form-item>
 				<el-form-item label="对方公司ID" prop="companyID">
 					<el-input v-model="form.companyID" placeholder="请输入对方公司ID" />
 				</el-form-item>
 				<el-form-item label="票据单位名称" prop="invoiceCompanyName">
+					<!-- 2026-06-25 票点管理：粘贴自动去除空格/括号，保存时不允许其他标点 -->
 					<el-input v-model="form.invoiceCompanyName" placeholder="请输入票据单位名称" @paste.native="handleInvoiceCompanyNamePaste($event, 'form', 'invoiceCompanyName')" />
 				</el-form-item>
 				<el-form-item label="票点" prop="ticketPoint">
@@ -162,6 +165,7 @@ import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import { parseTime } from '@/utils/ruoyi';
 import { add, number } from 'mathjs';
 import reLength from '../../dashboard/mixins/reLength';
+// 2026-06-25 票点管理：公司名称粘贴自动去除空格/括号，保存时不允许其他标点
 import invoiceCompanyNameMixin from '@/views/system/shared/invoiceCompanyNameMixin';
 import { createCompanyNameValidatorRule } from '@/utils/companyName';
 
@@ -219,6 +223,7 @@ export default {
 			// 表单参数
 			form: {},
 			// 表单校验
+			// 2026-06-25 保存时不允许公司名称含其他标点
 			rules: {
 				companyName: [createCompanyNameValidatorRule('对方公司名称')],
 				invoiceCompanyName: [createCompanyNameValidatorRule('票据单位名称')]
@@ -372,6 +377,7 @@ export default {
 		// },
 		/** 提交按钮 */
 		submitForm() {
+			// 2026-06-25 提交前校验并规范化公司名称
 			if (
 				!this.normalizeInvoiceCompanyNamesBeforeSave(this.form, [
 					{ key: 'companyName', label: '对方公司名称' },
